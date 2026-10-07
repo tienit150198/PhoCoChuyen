@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Hỏi khách cần gì đã nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Khách này đã tính tiền rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một số trên biển giới hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm mở rồi, biển đã dựng.",
+  "en": ""
+ },
+ {
+  "vi": "🚫 Dựng biển: “Không giới hạn”.",
+  "en": ""
+ },
+ {
+  "vi": "🔨 Bật cây Búa hồng trưng bày: nháy yếu rồi tắt. Pin AAA hết, thay vỉ mới đi.",
+  "en": ""
+ },
+ {
+  "vi": "🔨 Bật cây Búa hồng trưng bày: sáng hồng rực, đổi màu đủ năm chế độ.",
+  "en": ""
+ },
+ {
+  "vi": "Hết pin AAA trong kho. Nhập thêm ở Kho nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thay pin rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🔋 Thay ba viên AAA cho búa trưng bày: sáng lại rực rỡ.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay không phải hạn chốt đặt trước.",
+  "en": ""
+ },
+ {
+  "vi": "Đã chốt đơn với nhà phân phối rồi.",
+  "en": ""
+ },
+ {
+  "vi": "chốt thiếu đặt trước",
+  "en": ""
+ },
+ {
+  "vi": "chốt dư đặt trước",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đếm bản giới hạn đã mở tiệm, bán quá tay lúc nào không hay.",
+  "en": ""
+ },
+ {
+  "vi": "chưa đếm kho",
+  "en": ""
+ },
+ {
+  "vi": "biển giới hạn sai",
+  "en": ""
+ },
+ {
+  "vi": "Búa trưng bày chưa thử, khách hỏi mới biết tắt ngóm.",
+  "en": ""
+ },
+ {
+  "vi": "chưa thử búa trưng bày",
+  "en": ""
+ },
+ {
+  "vi": "Búa trưng bày nháy yếu cả ngày, khách tưởng hàng lỗi.",
+  "en": ""
+ },
+ {
+  "vi": "búa trưng bày hết pin",
+  "en": ""
+ },
+ {
+  "vi": "Quá hạn chốt mà chưa đặt hàng: khách đặt trước sẽ không có Jewel.",
+  "en": ""
+ },
+ {
+  "vi": "quên chốt đặt trước",
+  "en": ""
+ },
+ {
+  "vi": "Đếm kho, dựng biển giới hạn, thử búa trưng bày.",
+  "en": ""
+ },
+ {
+  "vi": "💿 Mở tiệm!",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thơ nhắn: “Ngon, hôm nay bán đắt nha!”",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thơ nhắn: “Mở đi em, mai nhớ kỹ hơn nghe.”",
+  "en": ""
+ },
+ {
+  "vi": "Kệ không có món này.",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ đầy rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Món này chưa có trong giỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Không có lựa chọn này.",
+  "en": ""
+ },
+ {
+  "vi": "Bật hay tắt?",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Bật quét Zchart cho từng bản.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Tắt quét Zchart.",
+  "en": ""
+ },
+ {
+  "vi": "🧻 Cuộn poster vào ống.",
+  "en": ""
+ },
+ {
+  "vi": "🧻 Để poster gập trong album.",
+  "en": ""
+ },
+ {
+  "vi": "🎟️ Ghi phiếu fansign cho mỗi bản.",
+  "en": ""
+ },
+ {
+  "vi": "🎟️ Không ghi phiếu fansign.",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Kèm POB Mây Pop.",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Không kèm POB.",
+  "en": ""
+ },
+ {
+  "vi": "Hết ống cuộn poster. Nhập thêm ở Kho nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Hết POB rồi, nói thật với khách nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Còn chuyện với khách chưa xong: hỏi, rồi chọn cách trả lời nhé.",
+  "en": ""
+ },
+ {
+  "vi": "👉 Trả lời khách",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ còn trống: lấy hàng khách cần trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ còn đủ hàng khách cần mà.",
+  "en": ""
+ },
+ {
+  "vi": "Khách này không có chuyện gì cần quyết.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện này đã xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Không có câu hỏi này.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi câu này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện này không cần trả lời, hỏi là biết.",
+  "en": ""
+ },
+ {
+  "vi": "Không có cách trả lời này.",
+  "en": ""
+ },
+ {
+  "vi": "xử lý sai",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Học nghề xong! Chị Thơ: “Giờ em tự đứng quầy được rồi. Chị ra sau xếp hàng mới về.”",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm sẵn sàng",
+  "en": ""
+ },
+ {
+  "vi": "đếm kho, thử búa",
+  "en": ""
+ },
+ {
+  "vi": "Biển & sổ đặt trước",
+  "en": ""
+ },
+ {
+  "vi": "đúng luật nhà phân phối",
+  "en": ""
+ },
+ {
+  "vi": "biển hoặc sổ chưa đúng",
+  "en": ""
+ },
+ {
+  "vi": "Xử lý đúng",
+  "en": ""
+ },
+ {
+  "vi": "Công bằng, nói thật",
+  "en": ""
+ },
+ {
+  "vi": "Đúng album, đúng phiên bản",
+  "en": ""
+ },
+ {
+  "vi": "đúng lời dặn",
+  "en": ""
+ },
+ {
+  "vi": "sai hoặc thiếu món",
+  "en": ""
+ },
+ {
+  "vi": "đủ như dặn",
+  "en": ""
+ },
+ {
+  "vi": "đúng luật, nói thật",
+  "en": ""
+ },
+ {
+  "vi": ", chốt đúng số Jewel trong sổ đặt trước",
+  "en": ""
+ },
+ {
+  "vi": ", rồi mở tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "quét Zchart",
+  "en": ""
+ },
+ {
+  "vi": "poster cuộn",
+  "en": ""
+ },
+ {
+  "vi": "phiếu fansign",
+  "en": ""
+ },
+ {
+  "vi": "Đếm bản giới hạn → dựng biển đúng số → thử búa trưng bày (yếu thì thay pin) → hạn chốt thì chốt sổ → Mở tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi cho rõ (xem album, tem, seri, mã…) → chọn cách trả lời đúng chính sách và nói thật.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi khách → lấy đúng phiên bản (Digipack chắc card một người, Kit không có CD, ver.2 có Bluetooth ăn pin AA) → bật Zchart, ống poster, phiếu fansign, POB nếu khách dặn → giữ giới hạn → tính tiền → thối đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đếm bản giới hạn, xếp lại kệ album.",
+  "en": ""
+ },
+ {
+  "vi": "Đã phát số thứ tự cho hàng chờ ngoài cửa.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu tiệm album sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ hàng sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản việc tiệm album không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Trạng thái việc tiệm album sai.",
+  "en": ""
+ },
+ {
+  "vi": "Lựa chọn ở quầy sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện với khách sai.",
+  "en": ""
+ },
+ {
+  "vi": "Câu đã hỏi sai.",
+  "en": ""
+ },
+ {
+  "vi": "Kết quả chuyện với khách sai.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy tiệm album sai.",
+  "en": ""
+ },
+ {
+  "vi": "Biển giới hạn sai.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu tiệm album sai.",
+  "en": ""
+ },
+ {
+  "vi": "Bán album ZPOP",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm album Mây Pop",
+  "en": ""
+ },
+ {
+  "vi": "Đúng phiên bản, đúng card bias, đúng giới hạn!",
+  "en": ""
+ },
+ {
+  "vi": "Chiều Phố chợ, loa phát nhạc comeback",
+  "en": ""
+ },
+ {
+  "vi": "Khách mua album",
+  "en": ""
+ },
+ {
+  "vi": "Kệ album & quầy",
+  "en": ""
+ },
+ {
+  "vi": "Đếm bản giới hạn, dựng biển, thử búa trưng bày rồi mở tiệm. Nghe kỹ khách cần phiên bản nào, card ai, Zchart hay poster cuộn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bản nào cũng đúng ý fan",
+  "en": ""
+ },
+ {
+  "vi": "35 · TIỆM ALBUM MÂY POP",
+  "en": ""
+ },
+ {
+  "vi": "Em họ chị Thơ, đếm kho nhanh như máy.",
+  "en": ""
+ },
+ {
+  "vi": "Sinh viên làm thêm, giữ hàng chờ ngày comeback êm ru.",
+  "en": ""
+ },
+ {
+  "vi": "Thuộc mã từng phiên bản, xếp kệ thẳng tắp.",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ tên fan quen, ai vào cũng chào bằng tên bias.",
+  "en": ""
+ },
+ {
+  "vi": "Đếm kho, xếp kệ album",
+  "en": ""
+ },
+ {
+  "vi": "Giữ hàng chờ, phát số thứ tự",
+  "en": ""
+ },
+ {
+  "vi": "Kệ album gọn gàng",
+  "en": ""
+ },
+ {
+  "vi": "Digipack Mận-Ji",
+  "en": ""
+ },
+ {
+  "vi": "Kệ PINK STATIC",
+  "en": ""
+ },
+ {
+  "vi": "Gió Mùa Đêm ver",
+  "en": ""
+ },
+ {
+  "vi": "Kệ 7GIÓ",
+  "en": ""
+ },
+ {
+  "vi": "Vỉ pin AA",
+  "en": ""
+ },
+ {
+  "vi": "Hộc phụ kiện",
+  "en": ""
+ },
+ {
+  "vi": "Búa hồng ver.2",
+  "en": ""
+ },
+ {
+  "vi": "Tủ kính lightstick",
+  "en": ""
+ },
+ {
+  "vi": "Đếm bản giới hạn",
+  "en": ""
+ },
+ {
+  "vi": "Dựng biển giới hạn",
+  "en": ""
+ },
+ {
+  "vi": "Lấy đúng phiên bản khách cần",
+  "en": ""
+ },
+ {
+  "vi": "Quét Zchart, tính tiền",
+  "en": ""
+ },
+ {
+  "vi": "Tờ lịch comeback",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thơ dán tờ lịch comeback của cả năm sau quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày nào có nhóm comeback, chị khoanh đỏ, dặn: “Hôm đó mở sớm.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn học thuộc từng ngày, như học lịch thi.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thơ giữ một tấm card cũ bọc ba lớp toploader.",
+  "en": ""
+ },
+ {
+  "vi": "Tấm card chị đổi được năm mười lăm tuổi, đổi bằng cả tháng tiền ăn sáng.",
+  "en": ""
+ },
+ {
+  "vi": "Chị bảo: “Card nào cũng là tuổi trẻ của ai đó, cầm cho nhẹ tay.”",
+  "en": ""
+ },
+ {
+  "vi": "Hàng chờ lúc sáu giờ",
+  "en": ""
+ },
+ {
+  "vi": "Sáng comeback, hàng đã dài tới đầu hẻm.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn phát số, nhắc giới hạn, mời nước những bạn đứng từ sớm.",
+  "en": ""
+ },
+ {
+  "vi": "Na số 1, cười tít: “Năm nay em đứng đầu rồi!”",
+  "en": ""
+ },
+ {
+  "vi": "Lấy đúng Digipack bias, không phải nhắc.",
+  "en": ""
+ },
+ {
+  "vi": "Poster cuộn ống đàng hoàng, không một nếp gấp.",
+  "en": ""
+ },
+ {
+  "vi": "Giới hạn rõ ràng, ai xếp hàng cũng có phần.",
+  "en": ""
+ },
+ {
+  "vi": "Nói thật tỉ lệ fansign, mua mà yên tâm.",
+  "en": ""
+ },
+ {
+  "vi": "Đếm bản giới hạn → dựng biển → thử búa → mở tiệm. Mỗi khách: hỏi → lấy đúng phiên bản → Zchart, poster cuộn, phiếu fansign, POB nếu khách dặn → giữ giới hạn → tính tiền → thối đúng.",
+  "en": ""
+ },
+ {
+  "vi": "nhóm nữ 4 thành viên",
+  "en": ""
+ },
+ {
+  "vi": "Búa hồng",
+  "en": ""
+ },
+ {
+  "vi": "7GIÓ",
+  "en": ""
+ },
+ {
+  "vi": "Diều",
+  "en": ""
+ },
+ {
+  "vi": "nhóm nam 7 thành viên",
+  "en": ""
+ },
+ {
+  "vi": "nhóm nữ tân binh 5 thành viên",
+  "en": ""
+ },
+ {
+  "vi": "Bơ-Ri",
+  "en": ""
+ },
+ {
+  "vi": "Mận-Ji",
+  "en": ""
+ },
+ {
+  "vi": "Sữa-Ah",
+  "en": ""
+ },
+ {
+  "vi": "Hồng-Bi",
+  "en": ""
+ },
+ {
+  "vi": "Bấc",
+  "en": ""
+ },
+ {
   "vi": "Nồm",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "🔋 Lắp lại pin cho đúng chiều",
-  "en": ""
- },
- {
-  "vi": "Búa sáng hồng rực, ghép ghế B12 ngon lành.",
-  "en": ""
- },
- {
-  "vi": "📲 Cập nhật app rồi ghép lại",
-  "en": ""
- },
- {
-  "vi": "Cập nhật xong, búa nháy theo nhịp ghế B12.",
-  "en": ""
- },
- {
-  "vi": "⚙️ Bật Bluetooth điện thoại",
-  "en": ""
- },
- {
-  "vi": "Bật Bluetooth lên là ghép được liền, Na cười ngượng.",
-  "en": ""
- },
- {
-  "vi": "🎫 Nhập số ghế vào app",
-  "en": ""
- },
- {
-  "vi": "Nhập ghế B12 xong, búa đổi màu theo khu ghế.",
-  "en": ""
- },
- {
-  "vi": "🔄 Đổi búa mới theo bảo hành",
-  "en": ""
- },
- {
-  "vi": "Búa hỏng mạch thật: đổi mới theo bảo hành hãng, Na kịp giờ concert.",
-  "en": ""
- },
- {
-  "vi": "Gửi hàng bán ăn chia",
-  "en": ""
- },
- {
-  "vi": "Em tự làm slogan với sticker fanmade BLANKPINK, gửi tiệm bán ăn chia nha.",
-  "en": ""
- },
- {
-  "vi": "🔍 Soi tem và mã vạch",
-  "en": ""
- },
- {
-  "vi": "Album không tem chính hãng, mã vạch quét ra một hộp sữa.",
-  "en": ""
- },
- {
-  "vi": "Đồ tự làm, ghi rõ “fanmade, không chính hãng”, không in logo công ty.",
-  "en": ""
- },
- {
-  "vi": "❓ Hỏi nguồn hàng",
-  "en": ""
- },
- {
-  "vi": "Tuấn: “Hàng xưởng, y chang hàng thật, ai biết đâu.”",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy: “Tụi em tự vẽ, in ở tiệm in đầu hẻm.”",
-  "en": ""
- },
- {
-  "vi": "📌 Fanmade thì dán bảng tặng miễn phí, không bán",
-  "en": ""
- },
- {
-  "vi": "Album nhái lên bảng tiệm. Khách tưởng tiệm bán hàng nhái.",
-  "en": ""
- },
- {
-  "vi": "Sticker fanmade dán bảng “tặng miễn phí”, fan nhỏ xúm lại xin.",
-  "en": ""
- },
- {
-  "vi": "Tiệm treo album nhái, mất uy tín.",
-  "en": ""
- },
- {
-  "vi": "💰 Nhận bán, ăn chia",
-  "en": ""
- },
- {
-  "vi": "Hàng không chính hãng bày lên kệ. Nhà phân phối cảnh cáo tiệm.",
-  "en": ""
- },
- {
-  "vi": "Tiệm bán hàng không chính hãng chung kệ với hàng thật.",
-  "en": ""
- },
- {
-  "vi": "🙅 Từ chối, tiệm chỉ bán hàng chính hãng",
-  "en": ""
- },
- {
-  "vi": "Tuấn ôm lô hàng đi. Kệ tiệm vẫn sạch.",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy buồn. Đồ fanmade tặng miễn phí thì đâu có sao.",
-  "en": ""
- },
- {
-  "vi": "Khách lai rai: học sinh tan học, fan ghé xem hàng mới.",
-  "en": ""
- },
- {
-  "vi": "Hàng dài từ sớm. Jewel tối đa 2 bản/người, POB tặng kèm PINK STATIC.",
-  "en": ""
- },
- {
-  "vi": "Hạn chốt đặt trước",
-  "en": ""
- },
- {
-  "vi": "Sáng nay chốt số Jewel đặt trước với nhà phân phối.",
-  "en": ""
- },
- {
-  "vi": "Ngày cosplay",
-  "en": ""
- },
- {
-  "vi": "Hội cosplay ghé chụp ảnh, hỏi slogan với lightstick.",
-  "en": ""
- },
- {
-  "vi": "Fan đi theo nhóm, hay mua kèm phụ kiện.",
-  "en": ""
- },
- {
-  "vi": "Hộp album sợ nước: kê thùng lên cao, lau tay trước khi đưa album.",
-  "en": ""
- },
- {
-  "vi": "Bảo Ngọc",
-  "en": ""
- },
- {
-  "vi": "Tường An",
-  "en": ""
- },
- {
-  "vi": "Na kể đu BLANKPINK từ hồi lớp 6, tờ lịch comeback dán ngay đầu giường.",
-  "en": ""
- },
- {
-  "vi": "Na để dành tiền ăn sáng ba tuần mới đủ mua bản này.",
-  "en": ""
- },
- {
-  "vi": "Na khoe binder đủ bộ card Mận-Ji, thiếu đúng một tấm POB năm ngoái.",
-  "en": ""
- },
- {
-  "vi": "Na tự thêu slogan tên Mận-Ji, mang tặng tiệm một cái treo quầy.",
-  "en": ""
- },
- {
-  "vi": "Na trúng fansign! Chạy vô tiệm khóc, ôm chị Thơ: “Em được nắm tay Mận-Ji rồi!”",
-  "en": ""
- },
- {
-  "vi": "Cô Hạnh kể Bống ôm album ngủ, sáng ra còn chào poster.",
-  "en": ""
- },
- {
-  "vi": "Cô Hạnh giờ phân biệt được BLANKPINK với 7GIÓ rồi, khoe ghê lắm.",
-  "en": ""
- },
- {
-  "vi": "Cô Hạnh mang biếu tiệm hũ mứt gừng: “Nhờ con mà Bống chịu học bài.”",
-  "en": ""
- },
- {
-  "vi": "Tuấn dán ba card thừa lên bảng trao đổi, ghi giá rõ ràng.",
-  "en": ""
- },
- {
-  "vi": "Tuấn chỉ cho mấy bé mới cách bọc card bằng toploader.",
-  "en": ""
- },
- {
-  "vi": "Tuấn: “Tiệm này seal chuẩn, anh giới thiệu cả hội qua.”",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng khoe bảng Zchart tuần này, nhóm lên hạng ba.",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng gửi năm bản vào hộp quyên góp của thư viện phường.",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng: “Đẩy chart sạch mới bền, em làm vậy là đúng.”",
-  "en": ""
- },
- {
-  "vi": "Chị Kiều mua đúng giới hạn, lần này không mặc cả.",
-  "en": ""
- },
- {
-  "vi": "Chị Kiều thú nhận: “Bán lại lời ít mà mệt, thôi chị nghỉ.”",
-  "en": ""
- },
- {
-  "vi": "Mít khoe ba thích album Gió Mùa, mở trên xe suốt.",
-  "en": ""
- },
- {
-  "vi": "Mít xếp card 7GIÓ vào binder, nhờ chị Thơ chụp hình.",
-  "en": ""
- },
- {
-  "vi": "Mít rủ cả lớp qua tiệm vào ngày cosplay.",
-  "en": ""
- },
- {
-  "vi": "Mít lên cấp 3, ghé tiệm khoe đậu trường chuyên.",
-  "en": ""
- },
- {
-  "vi": "Giới thiệu nghề: bán album ZPOP",
-  "en": ""
- },
- {
-  "vi": "Tiệm album Mây Pop ở Phố chợ: kệ album BLANKPINK, 7GIÓ, KIWIZ, Búa hồng phát sáng và góc khui album. Chị Thơ từng làm trưởng fanclub mười năm, giờ bạn đứng quầy với chị.",
-  "en": ""
- },
- {
-  "vi": "Đúng phiên bản khách cần",
-  "en": ""
- },
- {
-  "vi": "Quét Zchart, phiếu fansign, POB",
-  "en": ""
- },
- {
-  "vi": "Giữ giới hạn, nói thật",
-  "en": ""
- },
- {
-  "vi": "Sáng: đếm bản giới hạn, dựng biển giới hạn, thử búa trưng bày",
-  "en": ""
- },
- {
-  "vi": "Nghe khách: album nào, phiên bản nào, card ai, nguyên seal không",
-  "en": ""
- },
- {
-  "vi": "Lấy đúng phiên bản: Digipack mới chắc card một thành viên",
-  "en": ""
- },
- {
-  "vi": "Búa ver.1 ăn pin AAA, ver.2 pin AA và có Bluetooth",
-  "en": ""
- },
- {
-  "vi": "Quét Zchart, cuộn poster, phiếu fansign, POB khi khách cần",
-  "en": ""
- },
- {
-  "vi": "Bản giới hạn đúng số mỗi người; không khui trước khi trả tiền",
-  "en": ""
- },
- {
-  "vi": "Na: BLINKY bảy năm, bias Mận-Ji",
-  "en": ""
- },
- {
-  "vi": "Cô Hạnh mua giùm bé Bống, không rành nhóm",
-  "en": ""
- },
- {
-  "vi": "Tuấn Card: đòi khui album tại quầy",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng đẩy chart, mua sỉ",
-  "en": ""
- },
- {
-  "vi": "Mít: fan 7GIÓ, hỏi mười câu",
-  "en": ""
- },
- {
-  "vi": "Zchart, poster, fansign, POB đúng ý",
-  "en": ""
- },
- {
-  "vi": "Công bằng với hàng chờ",
-  "en": ""
- },
- {
-  "vi": "Nói thật về tỉ lệ, hàng nhái, chính sách",
-  "en": ""
- },
- {
-  "vi": "Bài 1 · Phiên bản",
-  "en": ""
- },
- {
-  "vi": "Chị Thơ chỉ kệ: “Pink, Blank, Jewel card ngẫu nhiên. Muốn chắc card ai thì Digipack của người đó.”",
-  "en": ""
- },
- {
-  "vi": "Bài 2 · Lời dặn",
-  "en": ""
- },
- {
-  "vi": "Chị Thơ dặn: “Zchart, poster cuộn, phiếu fansign, POB: khách nói gì làm đó, đừng tự thêm.”",
-  "en": ""
- },
- {
-  "vi": "Bài 3 · Giới hạn",
-  "en": ""
- },
- {
-  "vi": "Chị Thơ nhắc: “Bản giới hạn đúng số trên biển. Ai năn nỉ cũng vậy.”",
-  "en": ""
- },
- {
-  "vi": "Khoan, khách cần CHẮC CHẮN card một người: chỉ Digipack của người đó mới chắc. Đổi lại đi em.",
-  "en": ""
- },
- {
-  "vi": "Kit ver không có đĩa CD đâu em. Khách cần CD thì lấy Sáng hay Đêm.",
-  "en": ""
- },
- {
-  "vi": "Búa ver.1 ăn pin AAA, ver.2 ăn pin AA. Coi lại vỉ pin em.",
-  "en": ""
- },
- {
-  "vi": "Khách muốn loại rẻ nhất mà em. Coi lại giá trên kệ.",
-  "en": ""
- },
- {
-  "vi": "Khách cần Bluetooth: chỉ Búa ver.2 có. Đổi lại em.",
-  "en": ""
- },
- {
-  "vi": "Sai phiên bản rồi em. Đọc lại lời khách dặn.",
-  "en": ""
- },
- {
-  "vi": "Còn thiếu món khách dặn kìa em.",
-  "en": ""
- },
- {
-  "vi": "Món này khách đâu có lấy. Bỏ ra đi em.",
-  "en": ""
- },
- {
-  "vi": "Quá giới hạn trên biển rồi em. Bớt lại cho đúng.",
-  "en": ""
- },
- {
-  "vi": "Khách dặn quét Zchart mà em chưa bật.",
-  "en": ""
- },
- {
-  "vi": "Khách dặn poster cuộn: lấy ống cuộn poster.",
-  "en": ""
- },
- {
-  "vi": "Khách dặn ghi phiếu fansign kìa em.",
-  "en": ""
- },
- {
-  "vi": "Khách đặt POB mà em chưa đưa.",
-  "en": ""
- },
- {
-  "vi": "Mua để chắc có card bias mà bản này card ngẫu nhiên!",
-  "en": ""
- },
- {
-  "vi": "Bản Kit không có đĩa, ba nghe bằng gì giờ?",
-  "en": ""
- },
- {
-  "vi": "Pin không vừa cây búa, về nhà mới biết!",
-  "en": ""
- },
- {
-  "vi": "Có loại rẻ hơn mà không nói gì hết.",
-  "en": ""
- },
- {
-  "vi": "Cây này đâu có Bluetooth, ghép ghế sao được!",
-  "en": ""
- },
- {
-  "vi": "Tôi dặn phiên bản khác mà.",
-  "en": ""
- },
- {
-  "vi": "Thiếu món tôi dặn rồi.",
-  "en": ""
- },
- {
-  "vi": "Tôi đâu có lấy món này, tính tiền luôn là sao?",
-  "en": ""
- },
- {
-  "vi": "Bán quá giới hạn, người xếp hàng sau hết phần.",
-  "en": ""
- },
- {
-  "vi": "Không quét Zchart, mấy bản này không được tính lên bảng!",
-  "en": ""
- },
- {
-  "vi": "Poster bị gập mất rồi, dặn cuộn mà!",
-  "en": ""
- },
- {
-  "vi": "Không ghi phiếu fansign cho tôi à?",
-  "en": ""
- },
- {
-  "vi": "Đặt trước mà không có POB?",
-  "en": ""
- },
- {
-  "vi": "không đúng bản chắc card",
-  "en": ""
- },
- {
-  "vi": "đưa bản không có CD",
-  "en": ""
- },
- {
-  "vi": "sai loại pin",
-  "en": ""
- },
- {
-  "vi": "không đưa loại rẻ nhất",
-  "en": ""
- },
- {
-  "vi": "đưa búa không Bluetooth",
-  "en": ""
- },
- {
-  "vi": "sai phiên bản",
-  "en": ""
- },
- {
-  "vi": "tính thêm món khách không lấy",
-  "en": ""
- },
- {
-  "vi": "bán quá giới hạn",
-  "en": ""
- },
- {
-  "vi": "quên quét Zchart",
-  "en": ""
- },
- {
-  "vi": "poster bị gập",
-  "en": ""
- },
- {
-  "vi": "quên phiếu fansign",
-  "en": ""
- },
- {
-  "vi": "thiếu POB",
-  "en": ""
- },
- {
-  "vi": "Xin bật MV mới thật to",
-  "en": ""
- },
- {
-  "vi": "Một nhóm fan ùa vào: “Chị ơi MV mới ra rồi! Bật loa hết cỡ đi chị, tụi em quẩy!” Nhà bà Tư bên cạnh có em bé đang ngủ trưa.",
-  "en": ""
- },
- {
-  "vi": "Bật trên TV vừa nghe, mở phụ đề",
-  "en": ""
- },
- {
-  "vi": "Cả nhóm hát theo phụ đề, nhún nhảy nhỏ nhỏ. Em bé nhà bà Tư vẫn ngủ ngon.",
-  "en": ""
- },
- {
-  "vi": "Bật hết cỡ cho máu",
-  "en": ""
- },
- {
-  "vi": "Tiệm album mở nhạc ầm ầm giữa trưa, con nhỏ hàng xóm giật mình khóc.",
-  "en": ""
- },
- {
-  "vi": "Bà Tư qua gõ cửa, mặt hầm hầm. Nhóm fan ngại quá chuồn mất.",
-  "en": ""
- },
- {
-  "vi": "Không bật, tiệm đang bán",
-  "en": ""
- },
- {
-  "vi": "Nhóm fan xem chung một cái điện thoại, hơi tiu nghỉu.",
-  "en": ""
- },
- {
-  "vi": "Thùng album móp góc",
-  "en": ""
- },
- {
-  "vi": "Shipper giao thùng PINK STATIC, một góc thùng móp, hai bản bên trong cong bìa.",
-  "en": ""
- },
- {
-  "vi": "Chụp hình, ghi biên bản, báo nhà phân phối đổi",
-  "en": ""
- },
- {
-  "vi": "Nhà phân phối hẹn đổi hai bản mới tuần sau. Biên bản ký đủ.",
-  "en": ""
- },
- {
-  "vi": "Để lẫn vào kệ, ai mua trúng thì thôi",
-  "en": ""
- },
- {
-  "vi": "Mua album nguyên seal mà bìa cong vênh, buồn ghê.",
-  "en": ""
- },
- {
-  "vi": "Na mua trúng bản cong, tiếc đứt ruột.",
-  "en": ""
- },
- {
-  "vi": "Cất riêng, để bán giá trưng bày",
-  "en": ""
- },
- {
-  "vi": "Hai bản cong nằm góc kệ trưng bày, chưa ai hỏi.",
-  "en": ""
- },
- {
-  "vi": "Card rơi dưới quầy",
-  "en": ""
- },
- {
-  "vi": "Quét nhà thấy một tấm card Mận-Ji bọc toploader kẹt dưới chân quầy. Card này trên nhóm trao đổi giá cao lắm.",
-  "en": ""
- },
- {
-  "vi": "Cất ở quầy, đăng nhóm tìm chủ",
-  "en": ""
- },
- {
-  "vi": "Chiều một bé chạy vào, mắt đỏ hoe: “Card em!” Bé cảm ơn rối rít.",
   "en": ""
  }
 ]

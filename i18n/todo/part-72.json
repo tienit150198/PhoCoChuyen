@@ -1,5 +1,505 @@
 [
  {
+  "vi": "MỜI KHÁCH KIỂM NHÀ",
+  "en": ""
+ },
+ {
+  "vi": "Kho tổ giúp việc",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hạnh giới thiệu bạn tới nấu cơm cho các nhà quen trong phường. Mỗi ngày một nhà: nghe dặn, lên thực đơn, đi chợ vừa túi tiền, nấu cho kịp bữa rồi ghi sổ chợ rõ ràng.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe chủ nhà dặn",
+  "en": ""
+ },
+ {
+  "vi": "Bấm [[Nghe chủ nhà dặn]]: mấy người ăn, tiền chợ bao nhiêu, nhà có bé nhỏ, người già hay người ăn kiêng, nhà thích ăn gì.",
+  "en": ""
+ },
+ {
+  "vi": "Lên thực đơn",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một canh, một món mặn, một món xào, một rau. Xem nhãn món (cay, mặn, chiên, dai…) cho hợp người trong nhà, dự tính không quá tiền chợ, rồi [[CHỐT THỰC ĐƠN]].",
+  "en": ""
+ },
+ {
+  "vi": "[[Xem]] từng món: cá mắt đục, thịt nhớt tay, rau úa là không tươi, bấm [[Đổi]]. Mua đủ phần (mỗi phần đủ hai người), [[Xin bớt]] nếu muốn, sạp nào cũng [[Xin hóa đơn]], rồi [[VỀ NHÀ NẤU]].",
+  "en": ""
+ },
+ {
+  "vi": "Nấu từng món",
+  "en": ""
+ },
+ {
+  "vi": "Nồi cơm đổ nước đúng vạch, bày chén đũa, [[Nếm nước mắm]]. Mỗi món [[Rửa sạch]], cắt, nêm, chọn lửa, rồi [[Tắt bếp]] khi kim vào vùng xanh.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn cơm",
+  "en": ""
+ },
+ {
+  "vi": "Hai bếp thôi: món lâu chín bắc trước, món nhanh để sau. Món nguội thì [[Hâm nóng]]. Đủ món, cơm chín thì [[DỌN CƠM]].",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ chợ",
+  "en": ""
+ },
+ {
+  "vi": "Sạp có hóa đơn thì [[Kẹp hóa đơn]], không có thì [[Ghi tay]]. Rồi [[GỬI TIỀN THỪA]] cho chủ nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Nấu thêm một món",
+  "en": ""
+ },
+ {
+  "vi": "Từ chiều, chủ nhà nhờ nấu thêm cháo, chè, trứng hấp… từ đồ có sẵn. Nấu xong bấm [[MANG RA]].",
+  "en": ""
+ },
+ {
+  "vi": "👂 [[Nghe chủ nhà dặn]]: mấy người, tiền chợ, ai kiêng gì.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Một canh, một mặn, một xào, một rau hợp cả nhà, trong tiền chợ.",
+  "en": ""
+ },
+ {
+  "vi": "🛒 [[Xem]] kỹ đồ tươi, mua đủ phần, [[Xin hóa đơn]] từng sạp.",
+  "en": ""
+ },
+ {
+  "vi": "🍚 Bắc nồi cơm, bày chén đũa, [[Nếm nước mắm]].",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Rửa, cắt, nêm, chọn lửa; món lâu chín bắc trước; [[Tắt bếp]] đúng lúc.",
+  "en": ""
+ },
+ {
+  "vi": "📒 [[DỌN CƠM]], ghi sổ chợ, [[GỬI TIỀN THỪA]].",
+  "en": ""
+ },
+ {
+  "vi": "🥗 Thực đơn hợp cả nhà: bé không ăn cay, ông ăn mềm nhạt, người ăn kiêng không chiên.",
+  "en": ""
+ },
+ {
+  "vi": "🐟 Đồ tươi, mua đủ phần cho mọi người.",
+  "en": ""
+ },
+ {
+  "vi": "🍲 Món nào cũng chín tới, nêm vừa khẩu vị nhà.",
+  "en": ""
+ },
+ {
+  "vi": "♨️ Món nào lên mâm cũng nóng.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ chợ có hóa đơn, tiền thừa gửi lại đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Món cay cho bé, món mặn, dai cho ông, món chiên cho người ăn kiêng",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nhà phật ý, có khi bớt tiền công.",
+  "en": ""
+ },
+ {
+  "vi": "Mua cá, thịt không tươi",
+  "en": ""
+ },
+ {
+  "vi": "Ngửi là biết. Cả nhà lo ăn vào đau bụng.",
+  "en": ""
+ },
+ {
+  "vi": "Tắt bếp sớm, thịt cá còn sống",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi nặng: đồ ăn chưa chín, chủ nhà trả nửa công.",
+  "en": ""
+ },
+ {
+  "vi": "Bắc món nhanh trước, món lâu sau",
+  "en": ""
+ },
+ {
+  "vi": "Món xong trước nguội ngắt lúc dọn cơm.",
+  "en": ""
+ },
+ {
+  "vi": "Nêm đậm cho nhà có ông huyết áp cao",
+  "en": ""
+ },
+ {
+  "vi": "Ông không ăn được, bà Toàn buồn.",
+  "en": ""
+ },
+ {
+  "vi": "Quên xin hóa đơn",
+  "en": ""
+ },
+ {
+  "vi": "Phải ghi tay theo trí nhớ, chủ nhà nhìn sổ không yên tâm.",
+  "en": ""
+ },
+ {
+  "vi": "👛 Tiền chợ là tiền của nhà người ta: ví riêng của bạn không bị trừ.",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Bếp nhà có hai bếp: canh, kho lâu chín; xào, luộc nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "🍚 Cơm cho người già đổ nước nhiều hơn một chút cho mềm.",
+  "en": ""
+ },
+ {
+  "vi": "🌤️ Mỗi ngày một kiểu: mưa sáng (rau đắt hơn), nhà có khách (thêm người ăn), cuối tháng (tiền chợ eo hẹp).",
+  "en": ""
+ },
+ {
+  "vi": "👨‍👩‍👧‍👦 Bốn nhà quen: chị Mai có bé Bin, ông Toàn ăn mềm nhạt, anh Khoa ăn kiêng mê cay, cô Lệ nhà đông người.",
+  "en": ""
+ },
+ {
+  "vi": "📱 Chủ nhà gọi dặn thêm, bình ga sắp hết, con mèo rình cá, hàng xóm sang mượn đồ.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Nhà nào mời bạn lại lần sau thì công trả thêm một chút.",
+  "en": ""
+ },
+ {
+  "vi": "CHỐT THỰC ĐƠN",
+  "en": ""
+ },
+ {
+  "vi": "Đổi",
+  "en": ""
+ },
+ {
+  "vi": "Xin bớt",
+  "en": ""
+ },
+ {
+  "vi": "Xin hóa đơn",
+  "en": ""
+ },
+ {
+  "vi": "VỀ NHÀ NẤU",
+  "en": ""
+ },
+ {
+  "vi": "Rửa sạch",
+  "en": ""
+ },
+ {
+  "vi": "Tắt bếp",
+  "en": ""
+ },
+ {
+  "vi": "Hâm nóng",
+  "en": ""
+ },
+ {
+  "vi": "DỌN CƠM",
+  "en": ""
+ },
+ {
+  "vi": "Kẹp hóa đơn",
+  "en": ""
+ },
+ {
+  "vi": "GỬI TIỀN THỪA",
+  "en": ""
+ },
+ {
+  "vi": "Bảo mẫu trông trẻ",
+  "en": ""
+ },
+ {
+  "vi": "Tổ trông trẻ Mèo Con của cô Tâm",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi ngày bạn trông một bé ở một nhà, theo lịch từ 7:30 tới 18:00: nhận bé, cho ăn, chơi, soát nhà, ru ngủ, dỗ bé, rồi bàn giao và kể thật với bố mẹ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận bé",
+  "en": ""
+ },
+ {
+  "vi": "[[Rửa tay]], [[Đọc giấy dặn]] (dị ứng, giờ ngủ, đồ ôm, màn hình), chọn cách chào hợp tính bé, [[Mở túi đồ]], hỏi món còn thiếu rồi [[NHẬN BÉ]].",
+  "en": ""
+ },
+ {
+  "vi": "Bữa phụ, bữa trưa",
+  "en": ""
+ },
+ {
+  "vi": "Đủ nhóm món, tránh món bé dị ứng. Bé dưới 4 tuổi: không đồ cứng, [[Cắt nhỏ]]. Cháo canh [[Để nguội bớt]], cá [[Gỡ xương]]. [[Rửa tay cho bé]], [[Cho bé ngồi ghế ăn]], [[DỌN CHO BÉ ĂN]].",
+  "en": ""
+ },
+ {
+  "vi": "Giờ chơi",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn tâm trạng bé, chọn trò hợp tâm trạng và hợp tuổi. Chơi cùng bé, trả lời bé ân cần, [[Cùng bé dọn đồ chơi]], rồi [[CHƠI XONG]].",
+  "en": ""
+ },
+ {
+  "vi": "Soát nhà",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi ngang tầm bé, chạm vào chỗ dễ nguy hiểm (ổ điện, cốc nóng, cầu thang, đồ nhỏ…) để xử lý, rồi [[CHO BÉ RA CHƠI]].",
+  "en": ""
+ },
+ {
+  "vi": "Ngủ trưa",
+  "en": ""
+ },
+ {
+  "vi": "[[Cho bé đi vệ sinh]], [[Kéo rèm, tắt đèn]], đưa đúng đồ ôm, [[Hát ru một bài]]. Bé thở ra chậm (vạch xanh) thì [[Vỗ nhẹ]], đủ ba lần là [[BÉ NGỦ RỒI]].",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Bé khóc, ngã trầy gối, ăn vạ: dỗ nhẹ nhàng tới khi bé ổn, sơ cứu đúng thứ tự, rồi [[BÉ ỔN RỒI]].",
+  "en": ""
+ },
+ {
+  "vi": "Ghi vào nhật ký những dòng đúng sự thật, kể cả chuyện bé khóc, bé ngã, rồi [[BÀN GIAO BÉ]].",
+  "en": ""
+ },
+ {
+  "vi": "📝 [[Rửa tay]], [[Đọc giấy dặn]], chào bé, kiểm túi, [[NHẬN BÉ]].",
+  "en": ""
+ },
+ {
+  "vi": "🍽️ Món hợp tuổi, tránh món bé dị ứng, sơ chế, [[DỌN CHO BÉ ĂN]].",
+  "en": ""
+ },
+ {
+  "vi": "🧸 Trò hợp tâm trạng bé, chơi cùng bé, [[CHƠI XONG]].",
+  "en": ""
+ },
+ {
+  "vi": "😴 Đủ bước ru ngủ, [[Vỗ nhẹ]] lúc bé thở ra.",
+  "en": ""
+ },
+ {
+  "vi": "👋 Nhật ký thật, [[BÀN GIAO BÉ]].",
+  "en": ""
+ },
+ {
+  "vi": "🛡️ Bé an toàn cả ngày: không món dị ứng, không đồ dễ hóc, nhà không còn chỗ nguy hiểm.",
+  "en": ""
+ },
+ {
+  "vi": "🍽️ Ăn đủ bữa, đúng tuổi.",
+  "en": ""
+ },
+ {
+  "vi": "😴 Ngủ đúng giờ, ngủ ngon.",
+  "en": ""
+ },
+ {
+  "vi": "😊 Bé chơi vui, được trả lời ân cần.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Bàn giao trung thực.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn món có thứ bé dị ứng",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: mất tiền chăm kỹ, bố mẹ bé mất lòng tin.",
+  "en": ""
+ },
+ {
+  "vi": "Cho bé nhỏ ăn đồ cứng, miếng to, cháo nóng",
+  "en": ""
+ },
+ {
+  "vi": "Bé dễ hóc, phỏng miệng. Tiền công bị trừ.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa đồ chơi mảnh nhỏ cho bé dưới 4 tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: bé cho vào miệng là hóc.",
+  "en": ""
+ },
+ {
+  "vi": "Cho xem màn hình khi giấy dặn không cho",
+  "en": ""
+ },
+ {
+  "vi": "Bố mẹ bé phàn nàn.",
+  "en": ""
+ },
+ {
+  "vi": "Quát, dọa bé",
+  "en": ""
+ },
+ {
+  "vi": "Bé càng khóc, bố mẹ bé buồn lòng.",
+  "en": ""
+ },
+ {
+  "vi": "Giấu chuyện bé khóc, bé ngã",
+  "en": ""
+ },
+ {
+  "vi": "Mất lòng tin: không có bồi dưỡng, gia đình ít gửi lại.",
+  "en": ""
+ },
+ {
+  "vi": "Hết ngày chưa bàn giao",
+  "en": ""
+ },
+ {
+  "vi": "Bố mẹ tự đón bé, chỉ gửi nửa ngày công.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Mở [[Giấy dặn của bố mẹ]] bất cứ lúc nào để xem lại dị ứng, giờ ngủ, đồ ôm.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Tiền công theo ngày, thêm tiền chăm kỹ, tiền khách quen và bồi dưỡng khi bé được chăm kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "👪 Mỗi ngày một gia đình: bé Bin, bé Na, bé Sóc, bé Mít, bé Bông, mỗi bé một tính, một món dị ứng.",
+  "en": ""
+ },
+ {
+  "vi": "🌧️ Ngày mưa sàn ướt, ngày bé sổ mũi chỉ uống nước ấm.",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Hai ngày đầu cô Tâm gọi điện nhắc trước khi bạn lỡ tay.",
+  "en": ""
+ },
+ {
+  "vi": "🔔 Hàng xóm cho bánh, người lạ bấm chuông, trán bé hơi ấm: chọn cách xử lý.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc giấy dặn",
+  "en": ""
+ },
+ {
+  "vi": "Mở túi đồ",
+  "en": ""
+ },
+ {
+  "vi": "NHẬN BÉ",
+  "en": ""
+ },
+ {
+  "vi": "Rửa tay cho bé",
+  "en": ""
+ },
+ {
+  "vi": "Cho bé ngồi ghế ăn",
+  "en": ""
+ },
+ {
+  "vi": "DỌN CHO BÉ ĂN",
+  "en": ""
+ },
+ {
+  "vi": "Cùng bé dọn đồ chơi",
+  "en": ""
+ },
+ {
+  "vi": "CHƠI XONG",
+  "en": ""
+ },
+ {
+  "vi": "CHO BÉ RA CHƠI",
+  "en": ""
+ },
+ {
+  "vi": "Vỗ nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "BÉ NGỦ RỒI",
+  "en": ""
+ },
+ {
+  "vi": "BÉ ỔN RỒI",
+  "en": ""
+ },
+ {
+  "vi": "BÀN GIAO BÉ",
+  "en": ""
+ },
+ {
+  "vi": "Cán bộ thư viện – lưu trữ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn phụ cô Nguyệt giữ sách và hồ sơ của phường: mở kho buổi sáng, quầy mượn trả, biên mục, phòng đọc và cửa sổ lưu trữ. Ai nhờ gì cũng nghe, nhưng làm theo nội quy.",
+  "en": ""
+ },
+ {
+  "vi": "Mở cửa buổi sáng",
+  "en": ""
+ },
+ {
+  "vi": "[[Xem ẩm kế kho]] (trên 60% thì [[Bật máy hút ẩm]]), [[Soi bẫy côn trùng]] rồi chọn cách xử lý, [[Mở phòng đọc]], [[Dựng bảng nội quy]], rồi [[MỞ CỬA THƯ VIỆN]].",
+  "en": ""
+ },
+ {
+  "vi": "Mượn sách",
+  "en": ""
+ },
+ {
+  "vi": "[[Tra máy]] xem ký hiệu, còn sách không; [[Kiểm thẻ]]. Sách tra cứu chỉ đọc tại chỗ, sách đang có người mượn thì đặt trước, thẻ hết hạn thì gia hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận trả, tính phí",
+  "en": ""
+ },
+ {
+  "vi": "[[Kiểm sách]], [[Xem dấu hạn]], [[Hỏi lý do]]. Tự báo phí (1 xu/ngày, tối đa 15 xu, cộng phí hỏng), hoặc [[Ghi sổ nợ]], [[Miễn phí]] khi có lý do chính đáng. Sửa sách rồi [[CẤT SÁCH LÊN KỆ]].",
+  "en": ""
+ },
+ {
+  "vi": "Gợi ý sách",
+  "en": ""
+ },
+ {
   "vi": "[[Hỏi cuốn gần nhất thích]], [[Hỏi đang muốn đọc gì]], rồi chọn một trong bốn cuốn hợp cả hai.",
   "en": ""
  },
@@ -1269,366 +1769,6 @@
  },
  {
   "vi": "🎓 Từ ngày 6 lớp có 7 bạn, ba chuyện mỗi tiết, hai bạn dễ lạc bài, và 6 thẻ hoạt động để chọn.",
-  "en": ""
- },
- {
-  "vi": "➕ Dạy xong mà còn sức thì bấm [[Nhận thêm một tiết]].",
-  "en": ""
- },
- {
-  "vi": "🐝 Trong tiết: điện thoại reo, ong bay vào, máy chiếu tắt, mái dột, ban giám hiệu dự giờ. Chọn cách giữ bài học và giữ các bạn.",
-  "en": ""
- },
- {
-  "vi": "🚸 Người lạ tới đón học sinh: giữ bé lại, gọi bố mẹ xác minh. Giao cho người lạ là bị phạt và mất uy tín nặng.",
-  "en": ""
- },
- {
-  "vi": "✉️ Phong bì xin điểm, phụ huynh rủ cà phê riêng, đòi bồi thường vì con ngã: trả lại, hẹn gặp ở trường cùng ban giám hiệu.",
-  "en": ""
- },
- {
-  "vi": "📵 Mất điện thoại trong lớp, hộp quỹ lớp bị cạy, bàn ghế bị phá: có khi bạn phải tự ứng tiền.",
-  "en": ""
- },
- {
-  "vi": "🦺 Sau một lỗi an toàn, hôm sau phường tới lập biên bản. Nhận lỗi, làm lại thì phạt nhẹ; cãi thì phạt gấp đôi.",
-  "en": ""
- },
- {
-  "vi": "Lại gần, nói nhỏ",
-  "en": ""
- },
- {
-  "vi": "Chốt giáo án",
-  "en": ""
- },
- {
-  "vi": "Sang hoạt động",
-  "en": ""
- },
- {
-  "vi": "Thu phiếu",
-  "en": ""
- },
- {
-  "vi": "🪑 Chỗ ngồi",
-  "en": ""
- },
- {
-  "vi": "Bạn soát sổ chi, sao kê và két tiền của các tiệm nhỏ, sửa có ghi chú và giữ sổ sạch.",
-  "en": ""
- },
- {
-  "vi": "Mọi dòng có hóa đơn, phí ghi riêng đúng mức: đóng dấu [[Chốt sổ như đang có]].",
-  "en": ""
- },
- {
-  "vi": "Một khoản ghi hai lần",
-  "en": ""
- },
- {
-  "vi": "Cùng số hóa đơn xuất hiện hai dòng. Đánh dấu dòng trùng, rồi [[Điều chỉnh có ghi chú rồi chốt]].",
-  "en": ""
- },
- {
-  "vi": "Chữ số đi lạc",
-  "en": ""
- },
- {
-  "vi": "So từng dòng sổ với hóa đơn gốc. Số lệch thì đánh dấu, rồi [[Điều chỉnh có ghi chú rồi chốt]].",
-  "en": ""
- },
- {
-  "vi": "Dòng sửa quạt chưa có hóa đơn. Đánh dấu “Có chứng từ”, đóng dấu [[Giữ lại, xin thêm chứng từ]].",
-  "en": ""
- },
- {
-  "vi": "Sao kê lệch phí chuyển khoản",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. Sao kê có phí chưa vào sổ. Xem mức phí trong bản tin, rồi điều chỉnh.",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. Đếm từng tờ, chốt số. Khớp sổ quỹ: [[Chốt quỹ, ký sổ]]. Lệch: [[Lập biên bản lệch quỹ]].",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn nhà lạc vào sổ tiệm",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. Cước điện thoại nhà riêng không phải chi phí tiệm: đánh dấu rồi điều chỉnh.",
-  "en": ""
- },
- {
-  "vi": "Tiền cọc ghi thành doanh thu",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3. Cọc giữ chỗ tiệc cưới chưa là doanh thu: đánh dấu rồi điều chỉnh.",
-  "en": ""
- },
- {
-  "vi": "Khoản chi sai kỳ",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3. Tiền thuê kỳ sau ghi vào kỳ này: đánh dấu rồi điều chỉnh. Ngày cuối kỳ có thêm việc khóa sổ.",
-  "en": ""
- },
- {
-  "vi": "Nhà cung cấp hỏi chuyển trùng",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3. Sao kê trả HĐ 311 hai lần: [[Đề nghị trừ vào lần mua sau]]. Hai hóa đơn khác nhau: [[Gửi bảng đối chiếu cho họ]].",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 4. Luôn bấm [[Gọi số trong hồ sơ]] trước. Thư giả: [[Giữ lại, xin thêm chứng từ]]. Thật: [[Chuyển tiền theo thư]].",
-  "en": ""
- },
- {
-  "vi": "Mỗi 5 ngày. Tìm dòng sửa sổ không ghi lý do, rồi [[Nhận thiếu sót, bổ sung ngay]].",
-  "en": ""
- },
- {
-  "vi": "Chuyện cô Hoa",
-  "en": ""
- },
- {
-  "vi": "Ngày 2, 4, 7, 11. Tách hóa đơn riêng; cô nhờ giấu đơn tiền mặt thì [[Ghi đủ, nói rõ với cô Hoa]].",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ đối chiếu chứng từ",
-  "en": ""
- },
- {
-  "vi": "Mở gốc từng phiếu, sửa lệch, loại bản trùng, rồi ghép phiếu với giao dịch cùng mã HD.",
-  "en": ""
- },
- {
-  "vi": "Sổ tháng của khách nhỏ",
-  "en": ""
- },
- {
-  "vi": "Dock [[Tủ hồ sơ]]: 4 tiệm, mỗi tháng sổ 5 ngày. Mở hộp, soát 4 bước, khóa sổ trong 3 ngày.",
-  "en": ""
- },
- {
-  "vi": "📥 Chạm khách, bấm [[Nhận giấy tờ]] để trải sổ, hóa đơn, sao kê lên bàn.",
-  "en": ""
- },
- {
-  "vi": "📖 Mở [[Sổ quy định hôm nay]]: xem phí chuyển khoản, kỳ sổ và luật MỚI.",
-  "en": ""
- },
- {
-  "vi": "👆 Chạm dòng sai, chọn đúng quy định nó trái. Dòng khóa 🔒 phải kiểm trước.",
-  "en": ""
- },
- {
-  "vi": "🧮 Có két: chạm mỗi tờ để đếm; tờ không sợi bạc 🧵 chạm lần nữa để tách riêng.",
-  "en": ""
- },
- {
-  "vi": "💰 Bấm [[Chốt số đếm]]. Lệch thì [[Đếm lại]] và soát từng tờ.",
-  "en": ""
- },
- {
-  "vi": "🔗 Hồ sơ đối chiếu: [[Mở gốc]], [[Sửa theo gốc]], [[Đánh dấu trùng]], [[Xin nguồn bổ sung]].",
-  "en": ""
- },
- {
-  "vi": "✅ Chọn phiếu và giao dịch cùng mã, bấm [[Ghép nhóm]], rồi [[Kiểm & bàn giao hồ sơ]] (+70 xu).",
-  "en": ""
- },
- {
-  "vi": "🎯 “Chuẩn” (đủ 100% thù lao) khi chọn con dấu tốt nhất và chỉ ra hết chỗ sai.",
-  "en": ""
- },
- {
-  "vi": "❌ Không đánh dấu nhầm lần nào; nhầm làm khách sốt ruột và mất điểm “Có căn cứ”.",
-  "en": ""
- },
- {
-  "vi": "🔍 Làm đủ bước kiểm cần có: đếm két trước khi chốt, gọi xác minh trước khi chuyển tiền.",
-  "en": ""
- },
- {
-  "vi": "✏️ Sửa sổ luôn đi kèm lý do; không sửa số dư cho khớp két, không tự bù tiền.",
-  "en": ""
- },
- {
-  "vi": "📚 Sổ khách: soát đủ 4 bước và khóa đúng hạn mới “Sổ sạch”; khách tin cậy cao còn gửi thêm 10 xu.",
-  "en": ""
- },
- {
-  "vi": "Chốt sổ khi còn dòng trùng, gõ nhầm, sai kỳ, lẫn chi riêng hay cọc thành doanh thu",
-  "en": ""
- },
- {
-  "vi": "Không thù lao, người gửi phàn nàn, review khoảng 3★.",
-  "en": ""
- },
- {
-  "vi": "Khóa sổ cuối kỳ còn khoản của kỳ sau, hoặc chuyển tiền theo thư giả",
-  "en": ""
- },
- {
-  "vi": "Lỗi nặng: không thù lao, review 2★, có thể bị báo cáo lên app.",
-  "en": ""
- },
- {
-  "vi": "Két lệch mà vẫn chốt quỹ, hay sửa sổ cho khớp két",
-  "en": ""
- },
- {
-  "vi": "Không thù lao, cộng điểm rủi ro. “Tự bù phần thiếu” còn mất tiền túi của bạn.",
-  "en": ""
- },
- {
-  "vi": "Chuyển tiền trước khi gọi số trong hồ sơ, dù thư là thật",
-  "en": ""
- },
- {
-  "vi": "Làm theo lời cô Hoa bỏ bớt đơn tiền mặt",
-  "en": ""
- },
- {
-  "vi": "Cô dúi 20 xu nhưng hồ sơ không có thù lao. Sau này cơ quan thuế hỏi, cô phải nộp phạt.",
-  "en": ""
- },
- {
-  "vi": "Khóa sổ khách còn bước chưa soát, trễ hạn hoặc quá hạn",
-  "en": ""
- },
- {
-  "vi": "Còn lỗi: chỉ 40% phí. Trễ: trừ 15 xu. Quá hạn một ngày: khách lấy sổ về, 0 xu.",
-  "en": ""
- },
- {
-  "vi": "Dồn điểm rủi ro tới ngày chị Trâm kiểm tra (mỗi 5 ngày)",
-  "en": ""
- },
- {
-  "vi": "📰 Đầu ngày đọc bản tin: phí chuyển khoản đổi mỗi 3 ngày, kỳ sổ 7 ngày.",
-  "en": ""
- },
- {
-  "vi": "📚 Mở [[Tủ hồ sơ]] xem tiệm nào vừa mang sổ tới và hạn khóa sổ.",
-  "en": ""
- },
- {
-  "vi": "📂 Bấm [[Mở hộp sổ tháng]], soát cả 4 bước như [[Soát hóa đơn chụp trùng]], [[Khớp phiếu chi tiền mặt]].",
-  "en": ""
- },
- {
-  "vi": "📎 Thiếu phiếu: bấm [[Xin khách gửi]]. Khách hay quên thì tới hẹn bấm [[Gọi nhắc lại]].",
-  "en": ""
- },
- {
-  "vi": "🔒 Đủ phiếu thì [[Khóa sổ tháng]]; hết giờ chờ thì [[Khóa kèm ghi chú thiếu]] (75% phí).",
-  "en": ""
- },
- {
-  "vi": "💸 Từ ngày 6 khu phố có tờ 50 xu giả: tờ thật có sợi bạc 🧵, tờ lạ phải tách riêng.",
-  "en": ""
- },
- {
-  "vi": "✉️ Thư “đổi tài khoản” giục chuyển trước 11 giờ: địa chỉ lạ là lừa, gọi số trong hồ sơ.",
-  "en": ""
- },
- {
-  "vi": "📞 “Điện lực” gọi dọa cắt điện đòi chuyển 35 xu: tra ứng dụng điện lực, đừng chuyển.",
-  "en": ""
- },
- {
-  "vi": "🧾 Minh Phát nợ phí quá hạn: gửi biên bản đối chiếu công nợ, đừng ứng thêm tiền cho họ.",
-  "en": ""
- },
- {
-  "vi": "🗯️ Đồng nghiệp đổ lỗi, ví bị móc, laptop bị lấy, bóng bay vỡ kính: giữ bình tĩnh, đưa bằng chứng.",
-  "en": ""
- },
- {
-  "vi": "Chốt số đếm",
-  "en": ""
- },
- {
-  "vi": "Mở hộp sổ tháng",
-  "en": ""
- },
- {
-  "vi": "Xin khách gửi",
-  "en": ""
- },
- {
-  "vi": "Gọi nhắc lại",
-  "en": ""
- },
- {
-  "vi": "Bạn soát chứng từ, định khoản, đối chiếu ngân hàng và khóa sổ cuối tháng cho chị Hạnh, kế toán trưởng.",
-  "en": ""
- },
- {
-  "vi": "Soi từng bộ giấy, chạm khoanh ô sai rồi đóng dấu DUYỆT, TRẢ LẠI hoặc TRÌNH SẾP. Xong bấm [[Chốt khay]].",
-  "en": ""
- },
- {
-  "vi": "Ba chứng từ, mỗi cái chọn đúng tài khoản Nợ và Có rồi bấm [[Ghi bút toán]].",
-  "en": ""
- },
- {
-  "vi": "So hóa đơn với đơn đặt hàng và phiếu nhập. Đánh dấu lỗi: MST, người mua, số lượng, thuế, tổng, chữ ký, trùng.",
-  "en": ""
- },
- {
-  "vi": "Xuất hóa đơn theo số hàng thực giao, không theo số đặt. Rồi ghi doanh thu và giá vốn.",
-  "en": ""
- },
- {
-  "vi": "Tìm dòng lệch giữa sổ và sao kê. Xếp loại: cần ghi sổ, chênh thời điểm, ngân hàng sai. Tính số dư.",
-  "en": ""
- },
- {
-  "vi": "Xếp khoản nợ theo tuổi, cộng tổng khách nợ, chọn thư xác nhận và cách xử lý nợ quá 60 ngày.",
-  "en": ""
- },
- {
-  "vi": "Đếm tiền, tính số dư sổ. Thiếu thì treo 1381, thừa thì treo 3381. Đừng tự bù tiền cho khớp.",
-  "en": ""
- },
- {
-  "vi": "Tính chênh lệch từng món, ra giá trị, tìm nguyên nhân rồi ghi bút toán.",
-  "en": ""
- },
- {
-  "vi": "Tính khấu hao tháng. Tài sản mới mua hay đã khấu hao hết thì bằng 0. Ghi 641/642 đối ứng 214.",
-  "en": ""
- },
- {
-  "vi": "Bảng cân đối thử",
-  "en": ""
- },
- {
-  "vi": "Tìm số chênh: chia hết cho 9 là đảo số, gấp đôi một số dư là ghi nhầm bên. Rồi lập kết quả.",
-  "en": ""
- },
- {
-  "vi": "Ngày 5 của tháng: xếp thứ tự bước, trích trước 642/335, bù trừ thuế 3331/133, kết chuyển 911, lãi vào 421.",
-  "en": ""
- },
- {
-  "vi": "📥 Tab [[Hộp thư]]: bấm [[Nhận khay chứng từ]] hoặc [[Nhận hồ sơ]]. Việc đầu hạn 10:30.",
-  "en": ""
- },
- {
-  "vi": "📑 Tab [[Quy định]]: xem hạn mức duyệt, nhà cung cấp bị chặn, thuế suất tháng này. Mỗi quy định là một dòng, chạm để đọc.",
   "en": ""
  }
 ]

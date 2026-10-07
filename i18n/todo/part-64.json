@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Trễ tới 08:05 vẫn đủ công.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đọc số: “0903 412… à nhầm, 0903 421 785.” Ghi số nào?",
+  "en": ""
+ },
+ {
+  "vi": "Số đọc đầu tiên",
+  "en": ""
+ },
+ {
+  "vi": "Ghi cả hai cho chắc",
+  "en": ""
+ },
+ {
+  "vi": "Lấy số sau cùng người gọi đọc lại.",
+  "en": ""
+ },
+ {
+  "vi": "Người tự xưng giám đốc gọi xin mã OTP để “kiểm tra tài khoản”.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc mã cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Không đọc, báo trưởng nhóm IT",
+  "en": ""
+ },
+ {
+  "vi": "Gửi qua tin nhắn",
+  "en": ""
+ },
+ {
+  "vi": "Không ai được hỏi mã OTP, kể cả sếp.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân dặn: “Mới cưới, chắc sắp sinh con. Loại đi em.” Hồ sơ đủ mọi yêu cầu.",
+  "en": ""
+ },
+ {
+  "vi": "Loại theo lời giám đốc",
+  "en": ""
+ },
+ {
+  "vi": "Mời phỏng vấn như mọi người",
+  "en": ""
+ },
+ {
+  "vi": "Không loại vì hôn nhân hay giới tính; chỉ xét yêu cầu công việc.",
+  "en": ""
+ },
+ {
+  "vi": "CV ghi 3 năm kinh nghiệm, tra cứu BHXH chỉ có 7 tháng.",
+  "en": ""
+ },
+ {
+  "vi": "Cần xác minh chỗ làm cũ",
+  "en": ""
+ },
+ {
+  "vi": "Lệch giữa CV và BHXH thì xác minh trước.",
+  "en": ""
+ },
+ {
+  "vi": "Cháu giám đốc nộp hồ sơ, thiếu bằng bắt buộc.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thẳng vì người nhà",
+  "en": ""
+ },
+ {
+  "vi": "Xét như mọi người: chưa đủ điều kiện",
+  "en": ""
+ },
+ {
+  "vi": "Làm bằng giả cho kịp",
+  "en": ""
+ },
+ {
+  "vi": "Bảng công trống ngày thứ Ba; đơn nghỉ phép của người đó còn “chưa duyệt”.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn chưa duyệt thì chưa tính là nghỉ có phép.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng công trống, nhưng lịch công tác ghi người đó đi giao hàng mẫu hôm đó.",
+  "en": ""
+ },
+ {
+  "vi": "Đi công tác: vẫn tính công",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng nháp ghi thử việc 90 ngày, hưởng 70% lương.",
+  "en": ""
+ },
+ {
+  "vi": "Để nguyên, người lao động đồng ý rồi",
+  "en": ""
+ },
+ {
+  "vi": "Sửa: tối đa 60 ngày, ít nhất 85% lương",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ hẳn điều thử việc",
+  "en": ""
+ },
+ {
+  "vi": "Thử việc không quá 60 ngày, lương thử việc ít nhất 85%.",
+  "en": ""
+ },
+ {
+  "vi": "Bên B chưa ký mà sếp giục lưu hợp đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Lưu bản chưa ký",
+  "en": ""
+ },
+ {
+  "vi": "Không ký thay người lao động.",
+  "en": ""
+ },
+ {
+  "vi": "Khách hẹn “gọi lại sau ba giờ chiều”. Ghi giờ nào?",
+  "en": ""
+ },
+ {
+  "vi": "Giờ ghi theo 24 giờ: ba giờ chiều là 15:00.",
+  "en": ""
+ },
+ {
+  "vi": "Email “nhà cung cấp” báo đổi số tài khoản, nhờ chuyển gấp tiền hàng hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển vào số mới",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại số điện thoại đã biết của nhà cung cấp để xác minh",
+  "en": ""
+ },
+ {
+  "vi": "Đổi tài khoản qua email là chiêu lừa quen thuộc; xác minh bằng số đã biết.",
+  "en": ""
+ },
+ {
+  "vi": "Buổi phỏng vấn nhóm 7 người. Phòng họp nhỏ có 3 chỗ, phòng lớn 8 chỗ.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng họp nhỏ, kê thêm ghế",
+  "en": ""
+ },
+ {
+  "vi": "Chia hai phòng",
+  "en": ""
+ },
+ {
+  "vi": "Phòng phải đủ chỗ cho cả nhóm.",
+  "en": ""
+ },
+ {
+  "vi": "Máy Cô Hằng chậm, cần cài lại. Việc đầu tiên?",
+  "en": ""
+ },
+ {
+  "vi": "Cài lại ngay cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Sao lưu dữ liệu trước",
+  "en": ""
+ },
+ {
+  "vi": "Xóa bớt file cho nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "Sao lưu trước, sửa sau.",
+  "en": ""
+ },
+ {
+  "vi": "Một nhân viên nghỉ việc hôm nay. Tài khoản email và phần mềm của người đó?",
+  "en": ""
+ },
+ {
+  "vi": "Để nguyên một tháng",
+  "en": ""
+ },
+ {
+  "vi": "Khóa quyền ngay hôm nay, chuyển dữ liệu cho người nhận việc",
+  "en": ""
+ },
+ {
+  "vi": "Đưa mật khẩu cho đồng nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Nghỉ việc thì khóa quyền ngay hôm đó.",
+  "en": ""
+ },
+ {
+  "vi": "Màn hình hiện thông báo đòi tiền chuộc, file đổi đuôi lạ.",
+  "en": ""
+ },
+ {
+  "vi": "Trả tiền cho xong",
+  "en": ""
+ },
+ {
+  "vi": "Rút mạng máy đó, báo trưởng nhóm IT",
+  "en": ""
+ },
+ {
+  "vi": "Tắt cảnh báo rồi làm tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Rút mạng trước để mã độc không lây sang máy khác.",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ An toàn người bệnh",
+  "en": ""
+ },
+ {
+  "vi": "An toàn người bệnh",
+  "en": ""
+ },
+ {
+  "vi": "Phòng Điều dưỡng, Bệnh viện phường Lá Sen (lớp giả lập)",
+  "en": ""
+ },
+ {
+  "vi": "Nhận diện người bệnh, sát khuẩn tay, đối chiếu y lệnh, báo bất thường, quyền từ chối của người bệnh. Không có câu nào hỏi liều thuốc: việc đó của bác sĩ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận diện người bệnh bằng hai thông tin: mời người bệnh tự nói họ tên và ngày sinh, đối chiếu vòng tay và phiếu. Không dùng số giường, không hỏi kiểu “có phải bác … không”.",
+  "en": ""
+ },
+ {
+  "vi": "Sát khuẩn tay trước và sau khi chạm người bệnh. Đeo găng không thay được việc sát khuẩn tay.",
+  "en": ""
+ },
+ {
+  "vi": "Trước khi cho thuốc: đúng người, đúng thuốc trên phiếu y lệnh, nhãn khay khớp y lệnh, xem vòng dị ứng so với nhóm thuốc. Có gì không khớp: giữ lại, báo bác sĩ.",
+  "en": ""
+ },
+ {
+  "vi": "Y lệnh có dòng dặn (đo đường huyết trước, nhịn ăn chờ thủ thuật) thì làm đúng dòng dặn. Không tự thêm, bớt, đổi thuốc; thuốc trong túi mình không bao giờ đưa người bệnh.",
+  "en": ""
+ },
+ {
+  "vi": "Đo dấu hiệu sinh tồn rồi ghi đúng số đo thật. Chỉ số ngoài thẻ báo động thì báo bác sĩ ngay, nói rõ chỉ số nào. Số đo lạ so với người bệnh (kẹp ngón lỏng, tay lạnh) thì đo lại.",
+  "en": ""
+ },
+ {
+  "vi": "Người bệnh có quyền từ chối: hỏi vì sao, giải thích, vẫn không đồng ý thì giữ lại, báo bác sĩ, ghi hồ sơ. Không ép, không dọa.",
+  "en": ""
+ },
+ {
+  "vi": "Trước thủ thuật: giấy cam đoan có bác sĩ giải thích và người bệnh ký, nhịn ăn đúng giờ, ghi dị ứng, tháo trang sức. Ăn rồi hoặc đổi ý thì không chuyển đi.",
+  "en": ""
+ },
+ {
+  "vi": "Không nhận phong bì, quà của người bệnh. Không kể bệnh của người này cho người khác. Không quay, đăng hình người bệnh. Ghi sổ giao ca đúng điều đã xảy ra.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn sắp cho thuốc ở giường 3. Cách xác định người bệnh nào đúng?",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi “Bà là bà Tư phải không ạ?”",
+  "en": ""
+ },
+ {
+  "vi": "Mời bà tự nói họ tên, ngày sinh, đối chiếu vòng tay",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn số giường",
+  "en": ""
+ },
+ {
+  "vi": "Hai thông tin do người bệnh tự nói, đối chiếu vòng tay.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng dị ứng ghi “nhóm P”, phiếu y lệnh ghi kháng sinh nhóm P.",
+  "en": ""
+ },
+ {
+  "vi": "Cho theo y lệnh",
+  "en": ""
+ },
+ {
+  "vi": "Giữ lại, báo bác sĩ",
+  "en": ""
+ },
+ {
+  "vi": "Cho một nửa",
+  "en": ""
+ },
+ {
+  "vi": "Trùng nhóm dị ứng: giữ lại và báo bác sĩ.",
+  "en": ""
+ },
+ {
+  "vi": "Máy kẹp ngón báo SpO2 84%, người bệnh nói chuyện bình thường, tay lạnh, kẹp lỏng.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉnh kẹp, xoa ấm tay, đo lại ngón khác",
+  "en": ""
+ },
+ {
+  "vi": "Ghi 84% rồi đi",
+  "en": ""
+ },
+ {
+  "vi": "Tắt máy cho đỡ kêu",
+  "en": ""
+ },
+ {
+  "vi": "Số đo lạ so với người bệnh thì đo lại cho chắc.",
+  "en": ""
+ },
+ {
+  "vi": "Người nhà dúi phong bì “cảm ơn”.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận cho người nhà vui",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn, không nhận, mời viết vào sổ góp ý",
+  "en": ""
+ },
+ {
+  "vi": "Nhận rồi bỏ quỹ khoa",
+  "en": ""
+ },
+ {
+  "vi": "Không nhận phong bì.",
+  "en": ""
+ },
+ {
+  "vi": "Hai người bệnh trùng tên trong khoa. Trước khi cho thuốc, bạn làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Gọi tên to, ai dạ thì đưa",
+  "en": ""
+ },
+ {
+  "vi": "Mời người bệnh tự nói họ tên và ngày sinh, đối chiếu vòng tay và phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Xem số giường",
+  "en": ""
+ },
+ {
+  "vi": "Hai thông tin: họ tên và ngày sinh, đối chiếu vòng tay.",
+  "en": ""
+ },
+ {
+  "vi": "Đồng nghiệp bảo: “Đeo găng rồi khỏi sát khuẩn tay.”",
+  "en": ""
+ },
+ {
+  "vi": "Làm theo cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn sát khuẩn tay trước khi chạm người bệnh",
+  "en": ""
+ },
+ {
+  "vi": "Rửa tay cuối ca là đủ",
+  "en": ""
+ },
+ {
+  "vi": "Đeo găng không thay được sát khuẩn tay.",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn khay của khoa dược ghi một thuốc, phiếu y lệnh ghi thuốc khác.",
+  "en": ""
+ },
+ {
+  "vi": "Cho theo nhãn khay",
+  "en": ""
+ },
+ {
+  "vi": "Cho theo phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Giữ lại, báo khoa dược và bác sĩ",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn khay không khớp y lệnh thì giữ lại, hỏi lại.",
+  "en": ""
+ },
+ {
+  "vi": "Y lệnh ghi: “Đo đường huyết trước; máy báo THẤP thì giữ thuốc, báo bác sĩ.” Máy báo THẤP.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ thuốc, báo bác sĩ ngay",
+  "en": ""
+ },
+ {
+  "vi": "Tiêm theo giờ",
+  "en": ""
+ },
+ {
+  "vi": "Đo lại ngày mai",
+  "en": ""
+ },
+ {
+  "vi": "Làm đúng dòng dặn của y lệnh.",
+  "en": ""
+ },
+ {
+  "vi": "Người bệnh nhịn ăn chờ nội soi, phiếu có thuốc uống lúc 8 giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Cho uống như thường",
+  "en": ""
+ },
+ {
+  "vi": "Giữ lại, hỏi bác sĩ",
+  "en": ""
+ },
+ {
+  "vi": "Cho uống với ít nước",
+  "en": ""
+ },
+ {
+  "vi": "Đang nhịn ăn uống chờ thủ thuật thì hỏi lại bác sĩ.",
+  "en": ""
+ },
+ {
+  "vi": "Người bệnh xin viên giảm đau, trong túi bạn có sẵn một vỉ.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa luôn cho đỡ đau",
+  "en": ""
+ },
+ {
+  "vi": "Không đưa thuốc của mình; hỏi đau, báo bác sĩ",
+  "en": ""
+ },
+ {
+  "vi": "Đưa nửa viên",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc của mình không bao giờ đưa người bệnh.",
+  "en": ""
+ },
+ {
+  "vi": "Nhiệt độ 38,9 °C, ngoài thẻ báo động. Bạn làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Ghi phiếu rồi đi tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Báo bác sĩ ngay, nói rõ chỉ số",
+  "en": ""
+ },
+ {
+  "vi": "Chờ tới lượt đo sau",
+  "en": ""
+ },
+ {
+  "vi": "Ngoài thẻ báo động thì báo bác sĩ ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Gần giao ca, đồng nghiệp bảo chép số đo hôm qua vào phiếu cho kịp.",
+  "en": ""
+ },
+ {
+  "vi": "Chép cho kịp",
+  "en": ""
+ },
+ {
+  "vi": "Đi đo thật, ghi đúng số",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ trống phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ ghi điều mình thật sự đo.",
+  "en": ""
+ },
+ {
+  "vi": "Người bệnh không chịu uống thuốc, đã giải thích mà vẫn không đồng ý.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ lại, báo bác sĩ, ghi hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ qua, không cần báo",
+  "en": ""
+ },
+ {
+  "vi": "Tôn trọng quyền từ chối, báo bác sĩ.",
+  "en": ""
+ },
+ {
+  "vi": "Giấy cam đoan nội soi còn trống, người bệnh đang sợ.",
+  "en": ""
+ },
+ {
+  "vi": "Ký giùm cho kịp giờ",
+  "en": ""
+ },
+ {
+  "vi": "Mời bác sĩ giải thích, người bệnh tự quyết và ký",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển đi, ký sau",
+  "en": ""
+ },
+ {
+  "vi": "Giấy cam đoan phải có bác sĩ giải thích và người bệnh tự ký.",
+  "en": ""
+ },
+ {
+  "vi": "Người bệnh chờ nội soi nói sáng nay lỡ uống ly sữa.",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn chuyển đi",
+  "en": ""
+ },
+ {
+  "vi": "Bảo người bệnh đừng nói ai",
+  "en": ""
+ },
+ {
   "vi": "Ăn uống rồi thì chưa chuyển đi thủ thuật.",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Không ký",
-  "en": ""
- },
- {
-  "vi": "Mặt trời mọc lúc 05:40. Tắt đèn lúc nào?",
-  "en": ""
- },
- {
-  "vi": "Sau giờ mọc 15 phút.",
-  "en": ""
- },
- {
-  "vi": "Danh mục đèn ghi chớp nhóm 3, chu kỳ 15 giây. Bạn đếm được 19 giây.",
-  "en": ""
- },
- {
-  "vi": "Báo đài ngay",
-  "en": ""
- },
- {
-  "vi": "Chắc đồng hồ sai",
-  "en": ""
- },
- {
-  "vi": "Đèn sai đặc tính thì tàu có thể nhận nhầm đèn.",
-  "en": ""
- },
- {
-  "vi": "Lau kính đèn buổi sáng. Việc đầu tiên?",
-  "en": ""
- },
- {
-  "vi": "Lau luôn cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Tắt mô-tơ, treo biển cấm bật",
-  "en": ""
- },
- {
-  "vi": "Chờ trưa nắng",
-  "en": ""
- },
- {
-  "vi": "Bệ đèn quay có thể kẹp tay, cuốn áo.",
-  "en": ""
- },
- {
-  "vi": "Máy đo gió chỉ 12 m/s. Cấp gió?",
-  "en": ""
- },
- {
-  "vi": "Cấp 4",
-  "en": ""
- },
- {
-  "vi": "Cấp 6",
-  "en": ""
- },
- {
-  "vi": "Cấp 8",
-  "en": ""
- },
- {
-  "vi": "Cấp 6 là 10,8–13,8 m/s.",
-  "en": ""
- },
- {
-  "vi": "Áp kế tụt 4 hPa trong ba giờ, gió mới cấp 4.",
-  "en": ""
- },
- {
-  "vi": "Báo đài, phát cảnh báo",
-  "en": ""
- },
- {
-  "vi": "Chờ gió lên rồi báo",
-  "en": ""
- },
- {
-  "vi": "Không cần báo",
-  "en": ""
- },
- {
-  "vi": "Áp giảm nhanh báo trước áp thấp.",
-  "en": ""
- },
- {
-  "vi": "Tàu cá chết máy trôi dạt, không nghiêng, không nước vào.",
-  "en": ""
- },
- {
-  "vi": "PAN-PAN, canh giữ mục tiêu",
-  "en": ""
- },
- {
-  "vi": "Cần giúp mà chưa nguy tới tính mạng.",
-  "en": ""
- },
- {
-  "vi": "Người chới với dưới nước cách bến ba chục mét.",
-  "en": ""
- },
- {
-  "vi": "Nhảy xuống bơi ra",
-  "en": ""
- },
- {
-  "vi": "Ném phao có dây, báo đài, mắt không rời người đó",
-  "en": ""
- },
- {
-  "vi": "Chạy đi tìm người giúp",
-  "en": ""
- },
- {
-  "vi": "Ném phao, không nhảy xuống.",
-  "en": ""
- },
- {
-  "vi": "Có lệnh cấm ra khơi, một tàu cá vẫn rời bến, gọi không nghe.",
-  "en": ""
- },
- {
-  "vi": "Kệ, họ tự biết",
-  "en": ""
- },
- {
-  "vi": "Dọa phạt trên kênh 16",
-  "en": ""
- },
- {
-  "vi": "Không ngăn được thì báo người có thẩm quyền.",
-  "en": ""
- },
- {
-  "vi": "Cặp đôi không giấy tờ xin lên ban công đèn lúc nửa đêm để cầu hôn.",
-  "en": ""
- },
- {
-  "vi": "Cho lên mười phút",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng, mời ra sân trạm, không cho lên tháp",
-  "en": ""
- },
- {
-  "vi": "Đóng cửa không nói gì",
-  "en": ""
- },
- {
-  "vi": "Không ai vào phòng đèn trái nội quy; từ chối mà vẫn tử tế.",
-  "en": ""
- },
- {
-  "vi": "Nhóm làm phim xin tắt đèn mười phút “cho có không khí”.",
-  "en": ""
- },
- {
-  "vi": "Tắt mười phút thôi",
-  "en": ""
- },
- {
-  "vi": "Không tắt, gợi ý quay đèn quét trong sương",
-  "en": ""
- },
- {
-  "vi": "Tắt nếu không có tàu",
-  "en": ""
- },
- {
-  "vi": "Đèn biển không được tắt.",
-  "en": ""
- },
- {
-  "vi": "Người lạ trả tiền xin gửi mấy thùng hàng kín trong kho trạm.",
-  "en": ""
- },
- {
-  "vi": "Nhận tiền, cho gửi",
-  "en": ""
- },
- {
-  "vi": "Từ chối, báo biên phòng qua đài",
-  "en": ""
- },
- {
-  "vi": "Cho gửi, không nhận tiền",
-  "en": ""
- },
- {
-  "vi": "Hàng không rõ nguồn gốc thì báo.",
-  "en": ""
- },
- {
-  "vi": "Thùng phuy lạ có mùi hắc dạt vào bãi đá.",
-  "en": ""
- },
- {
-  "vi": "Cạy nắp xem",
-  "en": ""
- },
- {
-  "vi": "Không đụng vào, rào lối, báo đài",
-  "en": ""
- },
- {
-  "vi": "Đẩy ra biển",
-  "en": ""
- },
- {
-  "vi": "Vật lạ trôi dạt: không mở, báo.",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ Tiếp dân & hòa giải",
-  "en": ""
- },
- {
-  "vi": "Tiếp dân & hòa giải",
-  "en": ""
- },
- {
-  "vi": "Công an phường Mây (lớp bồi dưỡng giả lập)",
-  "en": ""
- },
- {
-  "vi": "Tiếp dân công bằng, giấy tờ đúng, giữ đồ thất lạc, hòa giải hàng xóm, tìm trẻ lạc, xếp tin báo, không nhận phong bì. Luật của trò chơi, không trích luật thật.",
-  "en": ""
- },
- {
-  "vi": "Ai lên phường cũng được tiếp như nhau, theo số thứ tự; ưu tiên người già, người khuyết tật, phụ nữ mang thai, không ưu tiên “người quen”.",
-  "en": ""
- },
- {
-  "vi": "Không nhận tiền, quà của người dân dưới bất cứ hình thức nào. Có ai đưa thì trả lại, nói rõ, ghi vào sổ trực ban.",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ: xem đủ từng giấy. Đủ thì nhận và hẹn giờ trả; thiếu thì chỉ đúng giấy cần bổ sung. Giấy tờ phải là của chính người khai.",
-  "en": ""
- },
- {
-  "vi": "Đồ thất lạc: kiểm đếm cùng người nhặt, ký biên bản. Người tới nhận phải trả lời khớp (bên trong có gì, mất ở đâu) hoặc có giấy tờ; không khớp thì chưa trả.",
-  "en": ""
- },
- {
-  "vi": "Hòa giải: nghe riêng từng bên trước, hỏi điều họ cần nhất, rồi đề xuất. Không dọa phạt, không bênh một bên. Chưa xong thì hẹn tổ hòa giải.",
-  "en": ""
- },
- {
-  "vi": "Trẻ lạc: dỗ bé trước, đứng yên một chỗ dễ thấy, đọc loa hoặc gọi số trên thẻ; không đăng ảnh bé lên mạng. Xác minh người đón hai cách rồi mới giao.",
-  "en": ""
- },
- {
-  "vi": "Tuần tra: lần đầu, chuyện nhỏ thì nhắc; tái phạm hoặc nguy hiểm thì lập biên bản; nguy hiểm trước mắt thì làm cho an toàn trước.",
-  "en": ""
- },
- {
-  "vi": "Tin báo: ai đang gặp nguy thì đi ngay. Gọi lại kiểm tra trước khi coi là tin báo sai. Sổ trực ban chỉ ghi điều thật sự xảy ra.",
-  "en": ""
- },
- {
-  "vi": "Người khai kẹp phong bì trong hồ sơ “cho nhanh”.",
-  "en": ""
- },
- {
-  "vi": "Trả lại, nói rõ hồ sơ đủ thì không mất đồng nào, ghi sổ",
-  "en": ""
- },
- {
-  "vi": "Bảo làm xong hẵng đưa",
-  "en": ""
- },
- {
-  "vi": "Không nhận phong bì; trả lại và ghi sổ.",
-  "en": ""
- },
- {
-  "vi": "Hai nhà cãi nhau vì karaoke. Bạn bắt đầu thế nào?",
-  "en": ""
- },
- {
-  "vi": "Nghe riêng từng bên, hỏi điều họ cần nhất",
-  "en": ""
- },
- {
-  "vi": "Phạt luôn nhà hát",
-  "en": ""
- },
- {
-  "vi": "Bảo tự giải quyết",
-  "en": ""
- },
- {
-  "vi": "Nghe cả hai bên trước.",
-  "en": ""
- },
- {
-  "vi": "Một bé đứng khóc ở chợ. Việc đầu tiên?",
-  "en": ""
- },
- {
-  "vi": "Hỏi dồn tên bố mẹ",
-  "en": ""
- },
- {
-  "vi": "Ngồi xuống dỗ bé, đứng yên một chỗ dễ thấy",
-  "en": ""
- },
- {
-  "vi": "Dắt bé đi khắp chợ tìm",
-  "en": ""
- },
- {
-  "vi": "Dỗ bé trước, đứng một chỗ.",
-  "en": ""
- },
- {
-  "vi": "Bà bán rau mới dọn ra, bày mẹt lấn lối đi lần đầu.",
-  "en": ""
- },
- {
-  "vi": "Lập biên bản ngay",
-  "en": ""
- },
- {
-  "vi": "Nhắc dời vào vạch, chỉ chỗ trống",
-  "en": ""
- },
- {
-  "vi": "Lần đầu, chuyện nhỏ: nhắc nhở.",
-  "en": ""
- },
- {
-  "vi": "Một người nói “chú tôi làm trên quận”, đòi làm trước.",
-  "en": ""
- },
- {
-  "vi": "Làm trước cho yên",
-  "en": ""
- },
- {
-  "vi": "Mời lấy số, chờ đúng lượt",
-  "en": ""
- },
- {
-  "vi": "Gọi “chú” hỏi cho chắc",
-  "en": ""
- },
- {
-  "vi": "Người dân mang túi xoài “cảm ơn” sau khi làm xong giấy tờ.",
-  "en": ""
- },
- {
-  "vi": "Nhận, chia cả tổ",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn, gửi lại, nói làm giấy tờ là việc của mình",
-  "en": ""
- },
- {
-  "vi": "Để đó lát tính",
-  "en": ""
- },
- {
-  "vi": "Không nhận quà của dân.",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ tạm trú thiếu ý kiến chủ nhà.",
-  "en": ""
- },
- {
-  "vi": "Nhận luôn, mai bổ sung",
-  "en": ""
- },
- {
-  "vi": "Hướng dẫn xin ý kiến chủ nhà rồi nộp lại",
-  "en": ""
- },
- {
-  "vi": "Từ chối, không nói thiếu gì",
-  "en": ""
- },
- {
-  "vi": "Thiếu giấy nào thì chỉ đúng giấy đó.",
-  "en": ""
- },
- {
-  "vi": "Ảnh trên giấy tờ không phải người đứng trước bàn: “giấy của em gái em”.",
-  "en": ""
- },
- {
-  "vi": "Nhận cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Không nhận; người khai phải dùng giấy tờ của chính mình",
-  "en": ""
- },
- {
-  "vi": "Nhận, ghi chú bên lề",
-  "en": ""
- },
- {
-  "vi": "Giấy tờ phải là của chính người khai.",
-  "en": ""
- },
- {
-  "vi": "Người tới nhận điện thoại nói sai màu ốp và hình nền.",
-  "en": ""
- },
- {
-  "vi": "Trả cho xong",
-  "en": ""
- },
- {
-  "vi": "Chưa trả, hẹn mang giấy tờ, chứng minh",
-  "en": ""
- },
- {
-  "vi": "Mắng là kẻ gian",
-  "en": ""
- },
- {
-  "vi": "Không khớp thì chưa trả.",
-  "en": ""
- },
- {
-  "vi": "Hòa giải mãi không xong. Đồng nghiệp bảo: “Dọa phạt cả hai cho nhanh.”",
-  "en": ""
- },
- {
-  "vi": "Dọa thử",
-  "en": ""
- },
- {
-  "vi": "Nghe lại từng bên, đề xuất cách khác; chưa xong thì hẹn tổ hòa giải",
-  "en": ""
- },
- {
-  "vi": "Dọa thì ai cũng cứng lại.",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm tới đón bé lạc, bé biết mặt, nhưng bố mẹ chưa nói gì.",
-  "en": ""
- },
- {
-  "vi": "Bé biết mặt là giao",
-  "en": ""
- },
- {
-  "vi": "Gọi bố mẹ xác nhận rồi mới giao",
-  "en": ""
- },
- {
-  "vi": "Bảo hàng xóm tự gọi",
-  "en": ""
- },
- {
-  "vi": "Xác minh với bố mẹ trước.",
-  "en": ""
- },
- {
-  "vi": "Đồng nghiệp muốn đăng ảnh bé lạc lên mạng cho nhanh tìm.",
-  "en": ""
- },
- {
-  "vi": "Đăng ngay",
-  "en": ""
- },
- {
-  "vi": "Không đăng ảnh bé; đọc loa, gọi số trên thẻ",
-  "en": ""
- },
- {
-  "vi": "Đăng kèm tên trường",
-  "en": ""
- },
- {
-  "vi": "Không đăng ảnh, thông tin của trẻ.",
-  "en": ""
- },
- {
-  "vi": "Đi tuần thấy lối thoát hiểm hội chợ bị chắn, tối nay có ca nhạc.",
-  "en": ""
- },
- {
-  "vi": "Nhờ ban tổ chức dọn ngay",
-  "en": ""
- },
- {
-  "vi": "Nhắc lát nhớ dọn",
-  "en": ""
- },
- {
-  "vi": "Nguy hiểm trước mắt thì xử lý ngay.",
-  "en": ""
- },
- {
-  "vi": "Ba cuộc gọi cùng lúc: bà cụ đang ở ngân hàng bị “cán bộ” bảo chuyển tiền; mèo kẹt trên mái; xe loa ồn.",
-  "en": ""
- },
- {
-  "vi": "Mèo trước vì tụi nhỏ đang khóc",
-  "en": ""
- },
- {
-  "vi": "Bà cụ ở ngân hàng trước",
-  "en": ""
- },
- {
-  "vi": "Ai gọi trước đi trước",
-  "en": ""
- },
- {
-  "vi": "Ai đang gặp nguy thì đi trước.",
-  "en": ""
- },
- {
-  "vi": "Một cuộc gọi báo “có cướp” rồi cười khúc khích.",
-  "en": ""
- },
- {
-  "vi": "Gọi lại kiểm tra rồi mới kết luận",
-  "en": ""
- },
- {
-  "vi": "Bỏ qua luôn",
-  "en": ""
- },
- {
-  "vi": "Cử cả tổ tới",
-  "en": ""
- },
- {
-  "vi": "Gọi lại kiểm tra trước.",
-  "en": ""
- },
- {
-  "vi": "Sếp bảo ghi thêm vài biên bản cho đủ chỉ tiêu.",
-  "en": ""
- },
- {
-  "vi": "Ghi cho đủ",
-  "en": ""
- },
- {
-  "vi": "Chỉ ghi điều thật sự xảy ra; báo rõ với sếp",
-  "en": ""
- },
- {
-  "vi": "Ghi một nửa",
-  "en": ""
- },
- {
-  "vi": "Sổ trực ban chỉ ghi điều thật.",
-  "en": ""
- },
- {
-  "vi": "Thi chứng chỉ có trong hành trình.",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ không tồn tại.",
   "en": ""
  }
 ]

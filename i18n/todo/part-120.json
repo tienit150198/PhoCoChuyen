@@ -1,5 +1,125 @@
 [
  {
+  "vi": "còn $1% kiên nhẫn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cô Mai dặn: giặt khăn hôm qua, châm các chai sắp cạn rồi lên đường. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: dọn $2. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hàng chờ $1 khách tan ca. Mỗi người mua vài món, trả tiền mặt: quét từng món, bấm “Tính tiền”, đếm tiền thối vào khay rồi giao hàng. Ai mua bia thì kiểm tuổi. Để khách chờ quá lâu là khách bỏ về.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Về nhà đếm lại mới thấy tiệm thối thiếu $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "thối thiếu $1 xu, khách về nhà mới thấy",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nhét tiền thối vào túi rồi đi luôn, không đếm lại — thối thiếu $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khách để lại tiền lẻ: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 xua tay: “$2” · +$3 xu tiền lẻ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thối dư $1 xu, tôi phải đưa trả lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "thối dư $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 mới $2 tuổi: không bán bia. Bạn nói nhỏ nhẹ, chỉ bán phần còn lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xóa $1 lon bia khỏi máy tính tiền nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 chưa đủ 18 tuổi: không bán bia. Để lon bia lại kệ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bíp! $1 ×$2 · $3 xu. Máy tính tiền: $4 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã xóa $1 khỏi máy tính tiền.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "sao tính cả $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 $3 mà tính $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 chỉ vào màn hình máy tính tiền: “Ủa, $2?” Xóa phần dư rồi tính tiền lại nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nhắc: “Còn $2 chưa tính kìa.” Quét đủ rồi tính tiền lại nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Máy tính tiền: $1 xu. $2 đưa $3 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "— cần thối $1 xu. Đếm tiền thối từ két vào khay.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đếm lại ngay tại quầy: “Thối thiếu $2 xu rồi.” Đặt thêm $3 xu vào khay rồi đưa lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bấm dư tiền, $1 phải tự soi màn hình mới sửa.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Tính thiếu, $1 phải nhắc mới tính đủ.",
   "en": "",
   "pattern": true
@@ -2126,126 +2246,6 @@
  },
  {
   "vi": "$1 còn sống sượng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 hơi quá lửa, nhừ mất ngon.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cháy khét cả nồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 để $2 nên ăn không ngon.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nhạt thếch, quên nêm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mặn quá, ông đang kiêng muối.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 quá so với khẩu vị nhà.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nguội ngắt rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cắt to quá, $2 nhai không nổi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cơm chưa chín, chờ chừng $1 giây nữa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Còn món chưa xong: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 không tươi, ngửi là biết.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cơm $1, ông nhai không nổi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cơm $1 quá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍚 Dọn mâm cơm $1 người. $2 Giờ ghi sổ chợ, gửi lại tiền thừa cho $3 nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Kẹp hóa đơn $1 vào sổ chợ: $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền $1 không có hóa đơn, ghi tay theo trí nhớ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✍️ Không có hóa đơn $1: ghi tay $2 xu theo trí nhớ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ghi sổ chợ đã: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💵 Gửi lại $1 xu tiền thừa cùng sổ chợ ($2 xu tiền chợ).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💰 Công bữa nay $1 xu. $2 $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 chưa xong.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💰 Nhận $1 xu. $2 $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍲 Nấu bữa cơm cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", thêm $1 món",
   "en": "",
   "pattern": true
  }

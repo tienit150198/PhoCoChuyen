@@ -1,5 +1,35 @@
 [
  {
+  "vi": "🐷 Tiết kiệm tới $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "không kỳ hạn $1/năm, có kỳ hạn tới $2/năm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "quẹt trước trả sau, sao kê mỗi $1 ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "tới $1: không mở thẻ, không vay mới, thẻ tạm ngưng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ". Trả sớm để tránh bị ghi nợ xấu (sau $1 lần trễ hạn).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👛 Ví đang nợ $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Thẻ tín dụng Ngân hàng Phố, số cuối $1",
   "en": "",
   "pattern": true
@@ -2216,36 +2246,6 @@
  },
  {
   "vi": "Đang giữ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mở khi ví của bạn từng có $1. Bạn vẫn có thể mua bán vàng ngay.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mây Coin $1 · Vàng $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mua $1 vàng?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giá tiệm bán $1/chỉ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bán $1 vàng?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Việc cần làm $1/",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,125 @@
 [
  {
+  "vi": "Đồ thất lạc: trả $1 cho $2, có ký nhận.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đồ thất lạc: $1 đã trả đúng chủ, đối chiếu đủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả lại $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👛 $1 ký nhận, cảm ơn rối rít.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👛 $1 ký nhận rồi đi vội. Chiều đó chủ thật lên hỏi… 📋 Anh Định lập báo cáo, đi tìm lại đồ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đồ thất lạc: chưa trả $1, người tới nhận chưa chứng minh được là chủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đồ thất lạc: chưa trả $1, người tới nhận được hẹn mang thêm giấy tờ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giữ lại $1 chờ chủ thật.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔒 Bạn cất $1 vào tủ: “Anh mang thêm giấy tờ, chứng minh được thì phường trả.” $2 lủi đi mất.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔒 $1 ngơ ngác: “Tôi trả lời đúng hết mà?” Hẹn mai lên lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Được, tôi chịu.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📝 Đề xuất: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "😤 “Không chịu thì phạt cả hai!” $1 khoanh tay, $2 quay mặt đi. Không khí đặc quánh.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hòa giải $1: hai bên ký biên bản ($2).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hòa giải thành: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🤝 $1 và $2 ký biên bản hòa giải: $3. $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hòa giải $1: chưa thành, chuyển tổ hòa giải, hẹn buổi sau.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hòa giải $1: hai bên đã ký biên bản.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chuyển tổ hòa giải: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📅 Chuyển tổ hòa giải cơ sở, hẹn hai nhà buổi sau. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧸 Bạn ngồi xuống ngang tầm mắt $1, đưa ly nước, nói nhỏ: “Chú/cô ở đây với con, mình đứng chỗ này chờ mẹ nha.” Bé nín dần.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📢 Loa $1 đọc: “Một bé $2, $3 Người nhà mời tới điểm tìm trẻ lạc.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Một lúc sau, $1 tới: “Cho tôi đón bé!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trẻ lạc: $1 ($2) đã giao cho $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Trẻ lạc: $1 đã giao cho người nhà, xác minh đủ.",
   "en": "",
   "pattern": true
@@ -2126,126 +2246,6 @@
  },
  {
   "vi": "$1 Lấy $2 ($3).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kệ hết $1 rồi. Nhập thêm ở Kho, hoặc nói thật với khách.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "↩️ Cất lại $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đang khóa quét của tiệm tới hết ngày $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tôi dặn $1 mà.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💿 Chị Thơ: “$1”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kệ chỉ còn $1 $2. Bớt lại trong giỏ nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 Tính tiền $1 món · $2 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "(bớt $1%)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎟️ $1 phiếu fansign.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nói thật với $1: kệ hết món khách cần, hẹn hàng về.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Thử “$2”: vẫn không được. Khách sốt ruột rồi, coi kỹ lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hoàn tiền: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "(−$1 xu hoàn tiền)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⛔ $1 khóa quét tới hết ngày $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💿 Bán $1 món cho $2 lượt khách.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎟️ Ghi $1 phiếu fansign.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔁 Giải quyết $1 chuyện khách quay lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kho: Pink $1, Blank $2, Jewel $3, Búa $4 · POB $5 bộ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị Thơ dặn: đếm bản giới hạn, dựng biển “tối đa $1 bản/người”, thử búa trưng bày (yếu thì thay pin AAA)$2, rồi mở tiệm. $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị Thơ dặn: đếm bản giới hạn, dựng biển “tối đa $1 bản/người”, thử búa trưng bày (yếu thì thay pin AAA)$2, rồi mở tiệm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị Thơ dặn: đếm bản giới hạn, dựng biển “tối đa $1 bản/người”, thử búa trưng bày (yếu thì thay pin AAA)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “$2” Hỏi giấy nhắn của bé mới biết bé cần gì.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 muốn: $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bé nói qua video: $1",
   "en": "",
   "pattern": true
  }

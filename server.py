@@ -67,6 +67,7 @@ from game import kpi  # 📊 Tổng quan đầu tư: counters (a dict update eac
 from game import leaderboard
 from game import lb_titles
 from game import fair_board  # 🏆 Bảng vàng hội chợ: the fair's titles after the end
+from game import auction  # 🔨 Nhà đấu giá đồ độc bản: the day's lots, settlement
 from game import marriage
 from game import couple
 from game import deco_mate  # 💞 the spouse's furniture in the home both live in (read-only)
@@ -721,6 +722,17 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("petboard:"+(token or self.client_ip()),60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 from game import pets
                 self.json(200,pets.board(self.server.store,token));return
+            if route=="/api/auction":  # 🔨 Nhà đấu giá (game/auction.py view): open lots, history, named landmarks, mine; cached ~2 s
+                token=self.token()
+                if not self.server.rate_limit("auc:"+(token or self.client_ip()),90):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                from game import auction
+                self.json(200,auction.view(self.server.store,token));return
+            if route=="/api/admin/auction":  # 🔨 the operator's list of lots and free catalogue items; admin only
+                try:token,_,_,_=self.guarded(light=True)
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                from game import auction
+                self.json(200,auction.admin_view(self.server.store));return
             if route=="/api/mtq":  # 🎆 Bảng Mạnh Thường Quân tuần, plaques, banners (game/lux.py board): cached ~10 s
                 token=self.token()
                 if not self.server.rate_limit("mtq:"+(token or self.client_ip()),60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -925,6 +937,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/command":
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 if str(data.get("action",""))[:5]=="fair_" and not self.server.rate_limit("fair:"+token,int(os.environ.get("FAIR_PER_MINUTE","40"))):self.error(429,"Từ từ thôi, hội chợ còn dài mà!","rate_limited");return  # 🏮 game/fair.py
+                if str(data.get("action",""))[:7]=="jr_auc_" and not self.server.rate_limit("aucbid:"+token,int(os.environ.get("AUCTION_BIDS_PER_MINUTE","12"))):self.error(429,"Từ từ thôi, mỗi phút trả giá vài lần thôi nhé!","rate_limited");return  # 🔨 game/auction.py
                 if str(data.get("action",""))[:8]=="jr_deco_" and not self.server.rate_limit("deco:"+token,int(os.environ.get("DECO_PER_MINUTE","150"))):self.error(429,"Từ từ thôi, bày trí chậm lại chút nhé!","rate_limited");return  # 🪴 game/deco.py: drags send one move each
                 if length>256*1024 and data.get("action")!="import_save":self.error(413,"Thao tác quá lớn.");return
                 if client_outdated(data,self.headers.get("X-Game-Delta")=="1"):self.error(426,"Trò chơi vừa có bản mới. Tải lại trang để chơi tiếp nhé.","client_outdated");return
@@ -984,6 +997,11 @@ class Handler(BaseHTTPRequestHandler):
                 out=(karaoke.queue if what=="queue" else karaoke.tip)(self.server.store,token,data)
                 if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 self.json(200,out,known=FULL);return
+            if route=="/api/admin/auction":  # 🔨 add a lot (game/auction.py admin_add): a catalogue item or an operator's plate/phone number
+                if not self.server.rate_limit("admin-auc:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.require_admin(token)
+                from game import auction
+                self.json(200,auction.admin_add(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
             if route=="/api/admin/gift":  # 🎁 Tặng xu: queue a gift for one account (game/system_gift.py), paid at its next load; never touches a save
                 if not self.server.rate_limit("admin-gift:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.require_admin(token)
@@ -1514,6 +1532,7 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         step("push",lambda:push.deliver_due(store))
         lb_titles.run_refresh(store)  # 🏅 Danh hiệu tuần: once a Vietnam day (and the week's freeze on Monday 00:00)
         fair_board.run_settle(store)  # 🏆 Bảng vàng hội chợ: the titles, once, after the fair closes
+        auction.run_housekeeping(store)  # 🔨 Nhà đấu giá: today's lots, then settle the ones that ended (row locks: exactly once)
 
 
 def tune_gc()->None:

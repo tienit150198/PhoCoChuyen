@@ -1,5 +1,273 @@
 [
  {
+  "vi": "Tiền cược bị tịch thu",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Danh hiệu mới:",
+  "en": ""
+ },
+ {
+  "vi": "Dạ, em ra chơi bầu cua",
+  "en": ""
+ },
+ {
+  "vi": "Đi dò lô tô",
+  "en": ""
+ },
+ {
+  "vi": "Xóc nè! Nghe kêu lắc cắc chưa…",
+  "en": ""
+ },
+ {
+  "vi": "Hên quá ta! Anh chung liền.",
+  "en": ""
+ },
+ {
+  "vi": "Ván sau chắc chắn tới lượt em!",
+  "en": ""
+ },
+ {
+  "vi": "Chậm",
+  "en": ""
+ },
+ {
+  "vi": "Vé nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Vé vừa",
+  "en": ""
+ },
+ {
+  "vi": "Vé lớn",
+  "en": ""
+ },
+ {
+  "vi": "Vé tài lộc",
+  "en": ""
+ },
+ {
+  "vi": "Vé phú quý",
+  "en": ""
+ },
+ {
+  "vi": "Vé thịnh vượng",
+  "en": ""
+ },
+ {
+  "vi": "Vé đặc biệt",
+  "en": ""
+ },
+ {
+  "vi": "Vé ngàn lộc",
+  "en": ""
+ },
+ {
+  "vi": "Đủ một hàng ngang trên một tờ là kinh.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Bảy đọc số lộn ngược: nghe 21 là số 12, nghe 07 là số 70. Dò cho tỉnh nha!",
+  "en": ""
+ },
+ {
+  "vi": "Phải đủ hai hàng ngang trên cùng một tờ mới kinh.",
+  "en": ""
+ },
+ {
+  "vi": "Kinh cả tờ: đủ hết 15 số. Sáu người cùng chơi nên hũ to!",
+  "en": ""
+ },
+ {
+  "vi": "Funk nhún nhảy",
+  "en": ""
+ },
+ {
+  "vi": "(lật ngược!)",
+  "en": ""
+ },
+ {
+  "vi": "Số vừa gọi",
+  "en": ""
+ },
+ {
+  "vi": "Chưa gọi số",
+  "en": ""
+ },
+ {
+  "vi": "Sân khấu lô tô",
+  "en": ""
+ },
+ {
+  "vi": "Nhạc gánh",
+  "en": ""
+ },
+ {
+  "vi": "Nhạc nền đang tắt trong Cài đặt",
+  "en": ""
+ },
+ {
+  "vi": "🔇 Nhạc (đang tắt trong Cài đặt)",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn dán:",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Danh hiệu mới:",
+  "en": ""
+ },
+ {
+  "vi": "🙈 Kinh hụt ba lần, cô Bảy mời nghỉ ván này",
+  "en": ""
+ },
+ {
+  "vi": "Ván sau dò kỹ rồi hãy hô nha!",
+  "en": ""
+ },
+ {
+  "vi": "Tờ của bạn cũng vừa đủ mà chưa kịp hô. Lần sau hô lẹ nha!",
+  "en": ""
+ },
+ {
+  "vi": "Ván này người khác đủ trước rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🎯 Số chốt ván",
+  "en": ""
+ },
+ {
+  "vi": "Chẵn/lẻ",
+  "en": ""
+ },
+ {
+  "vi": "Ẩn bản dò",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Tự dò lại tờ vừa chơi",
+  "en": ""
+ },
+ {
+  "vi": "Đang mua…",
+  "en": ""
+ },
+ {
+  "vi": "/tờ",
+  "en": ""
+ },
+ {
+  "vi": "Phút sau:",
+  "en": ""
+ },
+ {
+  "vi": "🎟️ Chọn vé",
+  "en": ""
+ },
+ {
+  "vi": "🏺 Hũ ván này:",
+  "en": ""
+ },
+ {
+  "vi": "🎲 Cược phụ (tùy chọn)",
+  "en": ""
+ },
+ {
+  "vi": "Đoán về",
+  "en": ""
+ },
+ {
+  "vi": "số chốt ván",
+  "en": ""
+ },
+ {
+  "vi": ": con số làm đủ tờ đầu tiên trên chiếu (của bạn hay hàng xóm). Kết quả mở khi ván xong.",
+  "en": ""
+ },
+ {
+  "vi": "Chẵn hay lẻ?",
+  "en": ""
+ },
+ {
+  "vi": "ăn 1 trả 1 · số 7 và 70 là số ruột cô Bảy: ra hai số đó thì cô Bảy ăn cả hai cửa",
+  "en": ""
+ },
+ {
+  "vi": "🍀 Cột may mắn",
+  "en": ""
+ },
+ {
+  "vi": "Cô Bảy đang xé tờ…",
+  "en": ""
+ },
+ {
+  "vi": "🎟️ Mua tờ dò",
+  "en": ""
+ },
+ {
+  "vi": "🏅 Bảng kinh hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "lần kinh",
+  "en": ""
+ },
+ {
+  "vi": "👑 Vua kinh hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Cô Bảy hô số nào, bạn chạm số đó trên tờ dò. Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.",
+  "en": ""
+ },
+ {
+  "vi": "Cách chơi gánh lô tô",
+  "en": ""
+ },
+ {
+  "vi": "Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.",
+  "en": ""
+ },
+ {
+  "vi": "rồi dò tiếp, hụt mấy lần cũng được",
+  "en": ""
+ },
+ {
+  "vi": "Hũ = tiền tờ của cả chiếu (của bạn và hàng xóm), cô Bảy giữ một chút tiền gánh. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.",
+  "en": ""
+ },
+ {
+  "vi": ", vừa gọi",
+  "en": ""
+ },
+ {
+  "vi": "Viền đứt: số đã gọi (tới số chốt) mà bạn chưa chạm.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng số úp lại trong vòng lật ngược",
+  "en": ""
+ },
+ {
+  "vi": "🙃 Vòng lật ngược: bảng số úp lại, nghe cô Bảy đọc rồi tự lật nha!",
+  "en": ""
+ },
+ {
+  "vi": "Bảng số đã gọi",
+  "en": ""
+ },
+ {
+  "vi": "chờ 1!",
+  "en": ""
+ },
+ {
+  "vi": "Các số vừa gọi",
+  "en": ""
+ },
+ {
   "vi": "Người chơi khác",
   "en": ""
  },
@@ -1448,6 +1716,10 @@
   "en": ""
  },
  {
+  "vi": "Danh hiệu độc bản · Nhà đấu giá",
+  "en": ""
+ },
+ {
   "vi": "Top 1 tuần này",
   "en": ""
  },
@@ -1525,278 +1797,6 @@
  },
  {
   "vi": "Chuyển chỗ ở",
-  "en": ""
- },
- {
-  "vi": "Trả giường ký túc xá?",
-  "en": ""
- },
- {
-  "vi": "Trả phòng trọ?",
-  "en": ""
- },
- {
-  "vi": "Trả giường",
-  "en": ""
- },
- {
-  "vi": "từ quỹ chung",
-  "en": ""
- },
- {
-  "vi": "Không vay.",
-  "en": ""
- },
- {
-  "vi": "Dọn về ở căn mới.",
-  "en": ""
- },
- {
-  "vi": "Căn mới để trống, chưa dọn về.",
-  "en": ""
- },
- {
-  "vi": "Ký hợp đồng mua nhà",
-  "en": ""
- },
- {
-  "vi": "Tất toán khoản vay mua nhà?",
-  "en": ""
- },
- {
-  "vi": ". Bạn về gác Bà Tám (muốn ở căn khác thì dọn qua đó trước rồi hãy bán)",
-  "en": ""
- },
- {
-  "vi": ". Người ấy dọn ra cùng bạn",
-  "en": ""
- },
- {
-  "vi": "tài khoản",
-  "en": ""
- },
- {
-  "vi": "sẽ để trống.",
-  "en": ""
- },
- {
-  "vi": "Đồ trang trí gói vào túi đồ, bày lại ở nhà mới.",
-  "en": ""
- },
- {
-  "vi": "Gửi lời mời mới nếu muốn người ấy dọn về cùng.",
-  "en": ""
- },
- {
-  "vi": "Dọn nhà",
-  "en": ""
- },
- {
-  "vi": "dọn đi, gửi nốt tiền thuê những ngày đã ở.",
-  "en": ""
- },
- {
-  "vi": "Gỡ tin đang tìm khách NPC.",
-  "en": ""
- },
- {
-  "vi": "Chọn một căn nhà nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn đang có nhà rồi.",
-  "en": ""
- },
- {
-  "vi": "(thuế trước bạ trả từ ví hoặc tài khoản)",
-  "en": ""
- },
- {
-  "vi": ", phí và thuế",
-  "en": ""
- },
- {
-  "vi": "và phí",
-  "en": ""
- },
- {
-  "vi": "Ngân hàng chưa duyệt vay mua nhà.",
-  "en": ""
- },
- {
-  "vi": "Thuê phòng, để dành, mua nhà",
-  "en": ""
- },
- {
-  "vi": "🏠 Nhà của bạn",
-  "en": ""
- },
- {
-  "vi": "Thuê phòng, để dành, mua nhà. Mọi con số tính theo ngày sống.",
-  "en": ""
- },
- {
-  "vi": "Nhà cửa chỉ có trong chế độ hành trình",
-  "en": ""
- },
- {
-  "vi": "Vào hành trình để thuê phòng, để dành và mua nhà cho nhân vật của bạn.",
-  "en": ""
- },
- {
-  "vi": "← Nhà của bạn",
-  "en": ""
- },
- {
-  "vi": "🏦 Nộp tiền vào tài khoản để trả góp",
-  "en": ""
- },
- {
-  "vi": "nhà của bạn đang để trống",
-  "en": ""
- },
- {
-  "vi": "🏦 Mở tài khoản Ngân hàng Phố",
-  "en": ""
- },
- {
-  "vi": "🐷 Gửi tiết kiệm mua nhà",
-  "en": ""
- },
- {
-  "vi": "🔑 Nhà đứng tên bạn",
-  "en": ""
- },
- {
-  "vi": "👥 Ở ghép · giường dưới cạnh cửa sổ",
-  "en": ""
- },
- {
-  "vi": "🧾 Đang thuê",
-  "en": ""
- },
- {
-  "vi": "🪴 Ấm cúng",
-  "en": ""
- },
- {
-  "vi": "🚪 Về góc giường",
-  "en": ""
- },
- {
-  "vi": "🚪 Vào phòng",
-  "en": ""
- },
- {
-  "vi": "Trả giường, nhận lại cọc",
-  "en": ""
- },
- {
-  "vi": "Trả phòng, nhận lại cọc",
-  "en": ""
- },
- {
-  "vi": "chỗ cần sửa",
-  "en": ""
- },
- {
-  "vi": "Nhà sạch đẹp",
-  "en": ""
- },
- {
-  "vi": "🛠️ Sửa nhà",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng & gia hạn",
-  "en": ""
- },
- {
-  "vi": "🏡 Gia đình",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Nhà & Gia đình (cả mục Con chung)\"",
-  "en": ""
- },
- {
-  "vi": "👥 Mời bạn",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Mời bạn về nhà\"",
-  "en": ""
- },
- {
-  "vi": "🏡 Nhà & Gia đình",
-  "en": ""
- },
- {
-  "vi": "Mời bạn về nhà",
-  "en": ""
- },
- {
-  "vi": "(tạm dừng khi trễ hạn trả góp)",
-  "en": ""
- },
- {
-  "vi": "Nơi bạn đang ở",
-  "en": ""
- },
- {
-  "vi": "đậu trước nhà",
-  "en": ""
- },
- {
-  "vi": "Ân hạn",
-  "en": ""
- },
- {
-  "vi": "Lịch trả góp",
-  "en": ""
- },
- {
-  "vi": "Đã tính phí trễ hạn.",
-  "en": ""
- },
- {
-  "vi": "Tinh thần tạm không được cộng.",
-  "en": ""
- },
- {
-  "vi": "Ngày mua",
-  "en": ""
- },
- {
-  "vi": "Giá thị trường hôm nay",
-  "en": ""
- },
- {
-  "vi": "Bán ngay thì nhận",
-  "en": ""
- },
- {
-  "vi": "Phí bảo trì",
-  "en": ""
- },
- {
-  "vi": "/tháng",
-  "en": ""
- },
- {
-  "vi": "Bán nhà",
-  "en": ""
- },
- {
-  "vi": "💞 Về ở chung",
-  "en": ""
- },
- {
-  "vi": "Cho thuê",
-  "en": ""
- },
- {
-  "vi": "🧾 Đang cho người chơi thuê",
   "en": ""
  }
 ]

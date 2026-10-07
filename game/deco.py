@@ -1070,7 +1070,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         return dict(message='Đã làm rồi nè.', duplicate=True)
     if name == 'jr_deco_buy':
         k = p.get('item')
-        need(isinstance(k, str) and k in ITEMS, 'Món này không bán.')
+        need(isinstance(k, str) and k in ITEMS and not ITEMS[k].get('uq'), 'Món này không bán.')   # 🔨 a painting won at auction
         need(p.get('confirm') is True, 'Xác nhận mua đồ.')
         it = ITEMS[k]
         put, grid = p.get('put'), p.get('room') is not None
@@ -1190,6 +1190,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         extra = f' Kèm {_names(kinds, ride)} bên trên.' if ride else ''
         return dict(message=f'Đã thu hồi {lname(it["name"])} vào túi đồ.{extra}', cozy=points(L)['total'])
     # jr_deco_sell
+    need(not it.get('uq'), 'Tranh độc bản là của riêng bạn, không bán lại.', 'locked')   # 🔨 game/auction.py
     need(p.get('confirm') is True, 'Xác nhận bán món đồ.')
     r = rn.get(s)
     ride = riders(L['pos'], uid)
@@ -1308,7 +1309,7 @@ def catalogue() -> dict:
     """Static (journey.content()['deco'], sent once at bootstrap)."""
     return dict(items=[dict(id=k, cat=v['cat'], spot=v['spot'], w=v['w'], h=v['h'], price=v['price'], cozy=v['cozy'],
                             rooms=list(v['rooms']), tags=list(v['tags']), surface=v['surface'], ledge=v['ledge'], name=v['name'],
-                            emoji=v['emoji'], sell=sell_price(k)) for k, v in ITEMS.items()],
+                            emoji=v['emoji'], sell=sell_price(k), **({'uq': True} if v.get('uq') else {})) for k, v in ITEMS.items()],
                 cats=[dict(id=c, emoji=e, name=n) for c, e, n in DC.CATS],
                 sets=[dict(id=k, emoji=v['emoji'], name=v['name'], bonus=v['bonus'], size=len(v['need'])) for k, v in SETS.items()],
                 skins=[dict(id=k, part=v['part'], name=v['name'], price=v['price'], types=list(v['types']) if v['types'] else None)

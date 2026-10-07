@@ -1,5 +1,573 @@
 [
  {
+  "vi": "🙂 Bé gật gù.",
+  "en": ""
+ },
+ {
+  "vi": "😕 Bé xịu mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Chơi xong rồi hẵng dọn.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Hai cô cháu thi nhau nhặt đồ chơi bỏ vào rổ. Gọn gàng!",
+  "en": ""
+ },
+ {
+  "vi": "Chọn trò chơi cho bé trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Chơi với bé thêm chút nữa đã.",
+  "en": ""
+ },
+ {
+  "vi": "🎈 Bé chơi vui hết cỡ!",
+  "en": ""
+ },
+ {
+  "vi": "🙂 Bé chơi vui.",
+  "en": ""
+ },
+ {
+  "vi": "😐 Bé chơi chưa vui lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Món này không có trong phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Xem món này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "còn chỗ nguy hiểm",
+  "en": ""
+ },
+ {
+  "vi": "Bước này không có.",
+  "en": ""
+ },
+ {
+  "vi": "Làm bước này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🚽 Cho bé đi vệ sinh, rửa tay, thay bộ đồ ngủ mềm.",
+  "en": ""
+ },
+ {
+  "vi": "🌙 Kéo rèm, tắt đèn, bật quạt nhẹ.",
+  "en": ""
+ },
+ {
+  "vi": "🎵 Bạn hát khẽ “À ơi…”, bé chớp mắt chậm dần.",
+  "en": ""
+ },
+ {
+  "vi": "Món này không có.",
+  "en": ""
+ },
+ {
+  "vi": "Bé chưa có đồ ôm, chưa chịu nằm yên.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng còn sáng, kéo rèm tắt đèn đã.",
+  "en": ""
+ },
+ {
+  "vi": "Bé ngủ say rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🤲 Vỗ nhẹ đúng nhịp thở ra.",
+  "en": ""
+ },
+ {
+  "vi": "😴 Bé ngủ say rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🤲 Vỗ lệch nhịp, bé cựa mình. Chờ bé thở ra chậm rồi hẵng vỗ.",
+  "en": ""
+ },
+ {
+  "vi": "Bé chưa đi vệ sinh đã ngủ, dậy ướt cả giường.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng sáng trưng, bé ngủ chập chờn.",
+  "en": ""
+ },
+ {
+  "vi": "Bé ngủ mà chẳng ai ru, nằm trằn trọc mãi.",
+  "en": ""
+ },
+ {
+  "vi": "ru ngủ thiếu bước",
+  "en": ""
+ },
+ {
+  "vi": "Bé chưa ngủ: vỗ nhẹ theo nhịp thở thêm chút nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Làm rồi mà.",
+  "en": ""
+ },
+ {
+  "vi": "Bé ổn rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Bé nín hẳn, dụi đầu vào vai bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe nói em quát bé à?",
+  "en": ""
+ },
+ {
+  "vi": "lớn tiếng với bé",
+  "en": ""
+ },
+ {
+  "vi": "Em dọa bé ông kẹ, tối bé không dám ngủ một mình.",
+  "en": ""
+ },
+ {
+  "vi": "dọa bé",
+  "en": ""
+ },
+ {
+  "vi": "Bé khóc là được chiều, mai bé lại khóc tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "chiều theo bé",
+  "en": ""
+ },
+ {
+  "vi": "Kem đánh răng không bôi vết thương được đâu em.",
+  "en": ""
+ },
+ {
+  "vi": "sơ cứu sai cách",
+  "en": ""
+ },
+ {
+  "vi": "Vết xước chưa rửa sạch đã cho chơi tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "chưa rửa vết xước",
+  "en": ""
+ },
+ {
+  "vi": "Sơ cứu lộn thứ tự rồi em.",
+  "en": ""
+ },
+ {
+  "vi": "sơ cứu lộn thứ tự",
+  "en": ""
+ },
+ {
+  "vi": "Bé chưa ổn hẳn, dỗ bé thêm chút nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Cả ngày bé ngoan, không có chuyện gì.",
+  "en": ""
+ },
+ {
+  "vi": "Bé xem hoạt hình gần cả buổi chiều.",
+  "en": ""
+ },
+ {
+  "vi": "Sao chuyện đó em không kể với chị?",
+  "en": ""
+ },
+ {
+  "vi": "giấu chuyện trong ngày",
+  "en": ""
+ },
+ {
+  "vi": "Em kể thiếu chuyện ăn ngủ của bé.",
+  "en": ""
+ },
+ {
+  "vi": "nhật ký thiếu",
+  "en": ""
+ },
+ {
+  "vi": "Bé kể có chuyện mà em ghi “không có gì”.",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký ghi chuyện không có thật.",
+  "en": ""
+ },
+ {
+  "vi": "ghi sai nhật ký",
+  "en": ""
+ },
+ {
+  "vi": "Dòng này không có trong nhật ký.",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Bỏ dòng này khỏi nhật ký.",
+  "en": ""
+ },
+ {
+  "vi": "✍️ Ghi vào nhật ký.",
+  "en": ""
+ },
+ {
+  "vi": "💛 Gia đình hẹn gửi bé lần sau.",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Học nghề xong! Cô Tâm: “Giờ con tự nhận bé được rồi. Có gì cứ gọi cô.”",
+  "en": ""
+ },
+ {
+  "vi": "Nhận bé chu đáo",
+  "en": ""
+ },
+ {
+  "vi": "đọc giấy dặn, kiểm túi",
+  "en": ""
+ },
+ {
+  "vi": "còn sót khâu nhận bé",
+  "en": ""
+ },
+ {
+  "vi": "Bé chịu theo",
+  "en": ""
+ },
+ {
+  "vi": "chào hợp tính bé",
+  "en": ""
+ },
+ {
+  "vi": "bé còn ngại",
+  "en": ""
+ },
+ {
+  "vi": "Món ăn an toàn",
+  "en": ""
+ },
+ {
+  "vi": "đúng giấy dặn, hợp tuổi",
+  "en": ""
+ },
+ {
+  "vi": "món chưa an toàn cho bé",
+  "en": ""
+ },
+ {
+  "vi": "Bữa ăn đàng hoàng",
+  "en": ""
+ },
+ {
+  "vi": "đủ món, ngồi ăn tử tế",
+  "en": ""
+ },
+ {
+  "vi": "bữa ăn còn thiếu sót",
+  "en": ""
+ },
+ {
+  "vi": "Bé chơi vui",
+  "en": ""
+ },
+ {
+  "vi": "Trò chơi hợp tuổi",
+  "en": ""
+ },
+ {
+  "vi": "đúng tuổi, đúng giấy dặn",
+  "en": ""
+ },
+ {
+  "vi": "trò chưa hợp",
+  "en": ""
+ },
+ {
+  "vi": "Nhà an toàn",
+  "en": ""
+ },
+ {
+  "vi": "soát kỹ từng góc",
+  "en": ""
+ },
+ {
+  "vi": "còn sót chỗ nguy hiểm",
+  "en": ""
+ },
+ {
+  "vi": "Bé ngủ ngon",
+  "en": ""
+ },
+ {
+  "vi": "ngủ nhanh, ngủ sâu",
+  "en": ""
+ },
+ {
+  "vi": "bé ngủ hơi khó",
+  "en": ""
+ },
+ {
+  "vi": "Đủ bước ru ngủ",
+  "en": ""
+ },
+ {
+  "vi": "đủ bước",
+  "en": ""
+ },
+ {
+  "vi": "thiếu bước",
+  "en": ""
+ },
+ {
+  "vi": "Dỗ bé nhẹ nhàng",
+  "en": ""
+ },
+ {
+  "vi": "bình tĩnh, ân cần",
+  "en": ""
+ },
+ {
+  "vi": "chưa thật nhẹ nhàng",
+  "en": ""
+ },
+ {
+  "vi": "Bàn giao trung thực",
+  "en": ""
+ },
+ {
+  "vi": "kể rõ, kể thật",
+  "en": ""
+ },
+ {
+  "vi": "nhật ký chưa đúng",
+  "en": ""
+ },
+ {
+  "vi": "Cả ngày chăm bé",
+  "en": ""
+ },
+ {
+  "vi": "bé về nhà vui vẻ",
+  "en": ""
+ },
+ {
+  "vi": "Rửa tay → đọc giấy dặn → chào bé hợp tính → mở túi, hỏi món còn thiếu → nhận bé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món (xem thành phần) → sơ chế hợp tuổi → rửa tay, cho bé ngồi ghế → dọn cho bé ăn.",
+  "en": ""
+ },
+ {
+  "vi": "Món chính, rau canh, đồ uống (xem thành phần) → sơ chế hợp tuổi → rửa tay, cho bé ngồi ghế → dọn cơm.",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn tâm trạng bé → chọn trò hợp tâm trạng, hợp tuổi → chơi cùng bé → dọn đồ chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi ngang tầm bé, chạm vào những chỗ dễ nguy hiểm để xử lý → xong.",
+  "en": ""
+ },
+ {
+  "vi": "Đi vệ sinh → kéo rèm → đúng đồ ôm → hát ru → vỗ nhẹ lúc bé thở ra.",
+  "en": ""
+ },
+ {
+  "vi": "Bình tĩnh, ân cần: chọn từng cách dỗ (sơ cứu theo thứ tự) tới khi bé ổn.",
+  "en": ""
+ },
+ {
+  "vi": "Đánh dấu những dòng đúng sự thật trong nhật ký → bàn giao bé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã rửa bình sữa, xếp đồ chơi vào rổ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã nấu sẵn nồi cháo, để nguội bớt trên bếp.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu nghề trông trẻ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản việc trông trẻ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Trạng thái việc trông trẻ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Tiến độ việc trông trẻ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện gia đình sai.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo mẫu",
+  "en": ""
+ },
+ {
+  "vi": "Tổ trông trẻ Mèo Con",
+  "en": ""
+ },
+ {
+  "vi": "Ăn ngon, ngủ yên, chơi vui, về nhà an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Nắng nhẹ ngõ Hoa Sữa",
+  "en": ""
+ },
+ {
+  "vi": "Lịch trông bé",
+  "en": ""
+ },
+ {
+  "vi": "Nhà của bé",
+  "en": ""
+ },
+ {
+  "vi": "Rửa tay, đọc giấy dặn rồi mới nhận bé. Mỗi việc trong ngày làm theo lịch, cuối ngày kể thật với bố mẹ bé.",
+  "en": ""
+ },
+ {
+  "vi": "Một ngày bình yên của bé",
+  "en": ""
+ },
+ {
+  "vi": "26 · TỔ TRÔNG TRẺ MÈO CON",
+  "en": ""
+ },
+ {
+  "vi": "Sinh viên sư phạm mầm non, gọn gàng, hát hay.",
+  "en": ""
+ },
+ {
+  "vi": "Từng nấu bếp nhà trẻ, cháo nào cũng vừa miệng bé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhanh nhẹn, nhìn đâu cũng thấy chỗ cần dọn.",
+  "en": ""
+ },
+ {
+  "vi": "Liên",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ hết món bé nào dị ứng gì.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn đồ chơi, rửa bình",
+  "en": ""
+ },
+ {
+  "vi": "Nấu cháo, sơ chế món ăn",
+  "en": ""
+ },
+ {
+  "vi": "Giấy dặn của bố mẹ",
+  "en": ""
+ },
+ {
+  "vi": "Dị ứng trứng",
+  "en": ""
+ },
+ {
+  "vi": "Dị ứng đậu phộng",
+  "en": ""
+ },
+ {
+  "vi": "Dị ứng sữa bò",
+  "en": ""
+ },
+ {
+  "vi": "Đọc giấy dặn, nhận bé",
+  "en": ""
+ },
+ {
+  "vi": "Chơi vui, ngủ ngon, nhà an toàn",
+  "en": ""
+ },
+ {
+  "vi": "Bàn giao kể thật",
+  "en": ""
+ },
+ {
+  "vi": "Cô Tâm làm cô nuôi dạy trẻ hai mươi năm, về hưu vẫn không xa được tụi nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Cô mở tổ trông trẻ trong căn hộ tầng hai, cửa sổ dán đầy tranh bút sáp.",
+  "en": ""
+ },
+ {
+  "vi": "Cô bảo: “Trông con người ta là giữ cả trái tim của bố mẹ nó.”",
+  "en": ""
+ },
+ {
+  "vi": "Tờ giấy dặn",
+  "en": ""
+ },
+ {
+  "vi": "Ngày đầu, cô Tâm đưa bạn xấp giấy dặn cũ của các nhà, mép giấy quăn hết.",
+  "en": ""
+ },
+ {
+  "vi": "Dòng nào cũng có chữ in đậm: dị ứng, giờ ngủ, đồ ôm.",
+  "en": ""
+ },
+ {
+  "vi": "Cô nói: “Đọc như đọc thư của người thân. Mỗi dòng là một nỗi lo.”",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bin chỉ ngủ khi ôm con gấu bông nâu đã sờn tai.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm đầu bạn đưa nhầm con thỏ, bé khóc mãi.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ bạn nhớ đồ ôm của từng bé, như nhớ tên các bé vậy.",
+  "en": ""
+ },
+ {
+  "vi": "Bé về nhà vui vẻ, kể về cô suốt buổi tối.",
+  "en": ""
+ },
+ {
   "vi": "Giấy dặn nhớ từng dòng, không phải nhắc.",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Chưa tới bước may.",
-  "en": ""
- },
- {
-  "vi": "Máy đang chạy rồi, canh vạch mà dừng.",
-  "en": ""
- },
- {
-  "vi": "Rè rè rè… kim chạy dọc đường phấn. Dừng khi kim tới vạch xanh!",
-  "en": ""
- },
- {
-  "vi": "Máy chưa chạy.",
-  "en": ""
- },
- {
-  "vi": "Kim chưa tới vạch, đạp thêm chút nữa rồi dừng.",
-  "en": ""
- },
- {
-  "vi": "Dừng ngay vạch! Đường may thẳng băng, lại mũi gọn gàng.",
-  "en": ""
- },
- {
-  "vi": "Hơi lố vạch, cuối đường may bị xiên một chút. Thôi, tính tiền cho khách.",
-  "en": ""
- },
- {
-  "vi": "Cắt lố tay, quần giờ cao tới mắt cá, mặc như quần lửng.",
-  "en": ""
- },
- {
-  "vi": "Bóp lố tay, giờ mặc vào nín thở không nổi.",
-  "en": ""
- },
- {
-  "vi": "Sửa rồi mà vẫn còn dài, chắc phải mang lại lần nữa.",
-  "en": ""
- },
- {
-  "vi": "Bóp rồi mà eo vẫn còn rộng.",
-  "en": ""
- },
- {
-  "vi": "Đường may hơi xiên, nhìn kỹ là thấy.",
-  "en": ""
- },
- {
-  "vi": "đường may bị xiên",
-  "en": ""
- },
- {
-  "vi": "Phòng thử đã vãn khách.",
-  "en": ""
- },
- {
-  "vi": "Không có thẻ số nên chẳng biết khách mang vào mấy món.",
-  "en": ""
- },
- {
-  "vi": "Chưa có ai cần kiểm.",
-  "en": ""
- },
- {
-  "vi": "Phòng thử trống trơn, không còn món nào trên móc.",
-  "en": ""
- },
- {
-  "vi": "Tiệm nghi oan khách ngay trước phòng thử, tôi đứng ngoài mà ngại giùm.",
-  "en": ""
- },
- {
-  "vi": "nghi oan khách ở phòng thử",
-  "en": ""
- },
- {
-  "vi": "Tối kiểm hàng mới biết mất một món.",
-  "en": ""
- },
- {
-  "vi": "Việc phòng thử không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Phòng thử lộn xộn, đồ vào ra không ai đếm.",
-  "en": ""
- },
- {
-  "vi": "để mất đồ ở phòng thử",
-  "en": ""
- },
- {
-  "vi": "Mất ở phòng thử",
-  "en": ""
- },
- {
-  "vi": "Kiểm tem, hóa đơn hoặc tình trạng đồ.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận cách xử lý đổi trả.",
-  "en": ""
- },
- {
-  "vi": "Chọn hoàn tiền, đổi hàng hoặc từ chối.",
-  "en": ""
- },
- {
-  "vi": "Cách nói không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Thao tác đổi trả không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Tem mác còn nguyên, bấm chỉ chắc chắn.",
-  "en": ""
- },
- {
-  "vi": "Tem mác đã bị cắt, chỉ còn lỗ bấm.",
-  "en": ""
- },
- {
-  "vi": "Khách không có hóa đơn: “Chị lỡ làm mất rồi.”",
-  "en": ""
- },
- {
-  "vi": ", có dấu đỏ “SALE — không đổi trả”.",
-  "en": ""
- },
- {
-  "vi": "Đường may bị bung một đoạn — lỗi may của xưởng, không phải do khách.",
-  "en": ""
- },
- {
-  "vi": "Cổ áo có vệt phấn, nách còn mùi nước hoa, vải hơi xù — đồ đã mặc rồi.",
-  "en": ""
- },
- {
-  "vi": "Vải còn mới tinh, gấp nếp nguyên như lúc mua.",
-  "en": ""
- },
- {
-  "vi": "Áo bung chỉ sau một lần mặc mà tiệm còn chối, không nhận lỗi.",
-  "en": ""
- },
- {
-  "vi": "từ chối đổi đồ lỗi của tiệm",
-  "en": ""
- },
- {
-  "vi": "Đồ còn tem, có hóa đơn, đúng hạn mà tiệm không cho đổi.",
-  "en": ""
- },
- {
-  "vi": "từ chối đổi trả đúng chính sách",
-  "en": ""
- },
- {
-  "vi": "Tôi hỏi đổi trả thôi mà nhân viên nói chuyện như đuổi khách.",
-  "en": ""
- },
- {
-  "vi": "nói chuyện cộc lốc với khách",
-  "en": ""
- },
- {
-  "vi": "đồ đã mặc, tem đã cắt",
-  "en": ""
- },
- {
-  "vi": "hàng sale không đổi trả",
-  "en": ""
- },
- {
-  "vi": "không có hóa đơn nên chỉ đổi hàng được thôi",
-  "en": ""
- },
- {
-  "vi": "theo chính sách",
-  "en": ""
- },
- {
-  "vi": "chỉ vào bảng chính sách, nhẹ nhàng giải thích",
-  "en": ""
- },
- {
-  "vi": "Món cũ còn tem, treo lại lên giá.",
-  "en": ""
- },
- {
-  "vi": "Đồ đổi trả không bán lại được",
-  "en": ""
- },
- {
-  "vi": "Món cũ không bán lại được nữa.",
-  "en": ""
- },
- {
-  "vi": "Tiệm dễ dãi thật, đồ mặc đi tiệc rồi vẫn nhận lại.",
-  "en": ""
- },
- {
-  "vi": "nhận lại đồ đã mặc",
-  "en": ""
- },
- {
-  "vi": "Mất hóa đơn mà tiệm vẫn hoàn tiền mặt, dễ ghê.",
-  "en": ""
- },
- {
-  "vi": "hoàn tiền khi không có hóa đơn",
-  "en": ""
- },
- {
-  "vi": "Tưởng không đổi được, ai dè tiệm vẫn nhận. Dễ vậy lần sau tôi đổi hoài.",
-  "en": ""
- },
- {
-  "vi": "đổi trả sai chính sách",
-  "en": ""
- },
- {
-  "vi": "Giá tem không có trong máy in.",
-  "en": ""
- },
- {
-  "vi": "Treo tem sale lên giá?",
-  "en": ""
- },
- {
-  "vi": "Còn món chưa in tem sale.",
-  "en": ""
- },
- {
-  "vi": "Tem sale ghi thấp hơn bảng, khách mua hời mà tiệm lỗ.",
-  "en": ""
- },
- {
-  "vi": "tem sale cao hơn bảng giảm giá",
-  "en": ""
- },
- {
-  "vi": "Bạn treo tem sale cuối mùa cho chị Vy.",
-  "en": ""
- },
- {
-  "vi": "Tem sale đã lên giá, khách ghé lựa rần rần.",
-  "en": ""
- },
- {
-  "vi": "Tem sale ghi thấp hơn bảng",
-  "en": ""
- },
- {
-  "vi": "Có khách cầm tem ra quầy hỏi sao giảm không đúng bảng.",
-  "en": ""
- },
- {
-  "vi": "Thao tác tem sale không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Gói đã dán băng keo rồi.",
-  "en": ""
- },
- {
-  "vi": "Gói đầy rồi.",
-  "en": ""
- },
- {
-  "vi": "Không có gì để lấy ra.",
-  "en": ""
- },
- {
-  "vi": "Đã lấy món đó ra khỏi gói.",
-  "en": ""
- },
- {
-  "vi": "Gói còn trống.",
-  "en": ""
- },
- {
-  "vi": "Gói đã dán rồi.",
-  "en": ""
- },
- {
-  "vi": "đã thanh toán, không thu hộ.",
-  "en": ""
- },
- {
-  "vi": "In phiếu giao trước rồi dán gói.",
-  "en": ""
- },
- {
-  "vi": "Dán băng keo hai vòng, dán phiếu lên mặt gói. Sẵn sàng giao!",
-  "en": ""
- },
- {
-  "vi": "Giao gói hàng cho shipper?",
-  "en": ""
- },
- {
-  "vi": "In phiếu giao trước đã.",
-  "en": ""
- },
- {
-  "vi": "Thao tác đơn online không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "gửi sai size/màu",
-  "en": ""
- },
- {
-  "vi": "gửi thiếu món",
-  "en": ""
- },
- {
-  "vi": "Gói hàng có thêm món tôi không đặt, lại phải gửi trả.",
-  "en": ""
- },
- {
-  "vi": "gửi dư món",
-  "en": ""
- },
- {
-  "vi": "Gói hàng tới nơi bung băng keo, đồ lấm bụi.",
-  "en": ""
- },
- {
-  "vi": "gói hàng không dán kỹ",
-  "en": ""
- },
- {
-  "vi": "Phí ship đơn online",
-  "en": ""
- },
- {
-  "vi": "Tiền chuyển khoản",
-  "en": ""
- },
- {
-  "vi": "Ma-nơ-canh mặc đủ rồi, bớt món ra trước.",
-  "en": ""
- },
- {
-  "vi": "Ma-nơ-canh đang trống.",
-  "en": ""
- },
- {
-  "vi": "Đã cởi món đó ra.",
-  "en": ""
- },
- {
-  "vi": "Mặc đồ lên ma-nơ-canh trước rồi hấp.",
-  "en": ""
- },
- {
-  "vi": "Món này phẳng rồi.",
-  "en": ""
- },
- {
-  "vi": "Xì xì… hơi nước phả ra, nếp nhăn biến mất.",
-  "en": ""
- },
- {
-  "vi": "Trưng bày bộ này?",
-  "en": ""
- },
- {
-  "vi": "Ma-nơ-canh còn trống.",
-  "en": ""
- },
- {
-  "vi": "Thao tác trưng bày không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "người ta nhìn mình",
-  "en": ""
- },
- {
-  "vi": "khách đi ngang ngó rồi lắc đầu",
-  "en": ""
- },
- {
-  "vi": "Đồ trên ma-nơ-canh còn nhăn nhúm, nhìn kém sang.",
-  "en": ""
- },
- {
-  "vi": "Bạn thay đồ cho ma-nơ-canh cạnh cửa.",
-  "en": ""
- },
- {
-  "vi": "Bộ đồ đẹp tới mức mấy chị đi ngang dừng xe chụp ảnh!",
-  "en": ""
- },
- {
-  "vi": "Ma-nơ-canh nhìn tươi hẳn, khách ghé hỏi giá.",
-  "en": ""
- },
- {
-  "vi": "Cũng được, nhưng chưa ai dừng lại ngắm.",
-  "en": ""
- },
- {
-  "vi": "Bộ đồ lạc chủ đề, chị Vy lắc đầu.",
-  "en": ""
- },
- {
-  "vi": "Không có khách nào đang chờ đổi size.",
-  "en": ""
- },
- {
-  "vi": "Đổi size hoặc hoàn tiền.",
-  "en": ""
- },
- {
-  "vi": "Đã ủi hơi giúp một món trên ma-nơ-canh.",
-  "en": ""
- },
- {
-  "vi": "Đã ủi hơi mấy chiếc sơ mi trên giá cho phẳng phiu.",
-  "en": ""
- },
- {
-  "vi": "Đã xếp túi zip, cuộn băng keo và phiếu giao cho gọn.",
-  "en": ""
- },
- {
-  "vi": "Đã gấp lại đồ khách thử, treo lên giá đúng size.",
-  "en": ""
- },
- {
-  "vi": "Nghe khách tả → xem bảng size (form sơ mi ôm: lấy lớn hơn một size so với shop khác) → lấy đúng món, đúng màu → chưa chắc thì mời thử → tính tiền, thối đúng.",
-  "en": ""
- },
- {
-  "vi": "Xem dịp, ngân sách và lời khách dặn → chọn váy/đầm hoặc áo + quần, đúng size khách nói → tránh màu kiêng → thêm phụ kiện hợp dịp → tính tiền. Lố ngân sách: 💬 trao đổi với khách.",
-  "en": ""
- },
- {
-  "vi": "Đo trước → tự may (dừng máy đúng vạch xanh) hoặc gửi Bà Tư (chắc ăn, mất 40% công) → tính tiền công.",
-  "en": ""
- },
- {
-  "vi": "Đếm số món khách cầm vào → đưa thẻ số → khách ra thì đếm lại → thiếu: kiểm phòng trước, rồi hỏi khéo → tính tiền cho khách mua.",
-  "en": ""
- },
- {
-  "vi": "Xem tem, hóa đơn, tình trạng đồ → đối chiếu chính sách → hoàn tiền, đổi hoặc từ chối nhẹ nhàng.",
-  "en": ""
- },
- {
-  "vi": "Giá sale = giá gốc × (100 − % giảm) ÷ 100, làm tròn xuống → in đúng tem → treo lên giá.",
-  "en": ""
- },
- {
-  "vi": "Đọc tin nhắn → bỏ đúng món, size, màu vào gói → in phiếu (COD = tiền gói) → dán gói → giao shipper.",
-  "en": ""
- },
- {
-  "vi": "Chọn bộ hợp chủ đề → hấp phẳng từng món → trưng bày.",
-  "en": ""
- },
- {
-  "vi": "Đúng size, đúng màu",
-  "en": ""
- },
- {
-  "vi": "mặc vừa như đo",
-  "en": ""
- },
- {
-  "vi": "phải quay lại đổi size",
-  "en": ""
- },
- {
-  "vi": "Nhớ lời khách dặn",
-  "en": ""
- },
- {
-  "vi": "quên mất lời dặn",
-  "en": ""
- },
- {
-  "vi": "tiệm hết món khách hỏi",
-  "en": ""
- },
- {
-  "vi": "nhớ đúng lời dặn",
-  "en": ""
- },
- {
-  "vi": "Chuyện ngân sách",
-  "en": ""
- },
- {
-  "vi": "khách chịu chi thêm",
-  "en": ""
- },
- {
-  "vi": "được bớt cho vừa túi",
-  "en": ""
- },
- {
-  "vi": "tư vấn món vừa túi tiền",
-  "en": ""
- },
- {
-  "vi": "nói thật, không ép",
-  "en": ""
- },
- {
-  "vi": "Gu phối đồ",
-  "en": ""
- },
- {
-  "vi": "hợp dịp, có điểm nhấn",
-  "en": ""
- },
- {
-  "vi": "hợp dịp",
-  "en": ""
- },
- {
-  "vi": "chưa hợp dịp",
-  "en": ""
- },
- {
-  "vi": "gọn gàng, lịch sự",
-  "en": ""
- },
- {
-  "vi": "Đường may",
-  "en": ""
- },
- {
-  "vi": "vừa như đo",
-  "en": ""
- },
- {
-  "vi": "chưa chuẩn",
-  "en": ""
- },
- {
-  "vi": "Đúng chính sách",
-  "en": ""
- },
- {
-  "vi": "xử lý rõ ràng",
-  "en": ""
- },
- {
-  "vi": "tạm được",
-  "en": ""
- },
- {
-  "vi": "chưa đúng chính sách",
-  "en": ""
- },
- {
-  "vi": "Thái độ",
-  "en": ""
- },
- {
-  "vi": "cộc lốc",
   "en": ""
  }
 ]

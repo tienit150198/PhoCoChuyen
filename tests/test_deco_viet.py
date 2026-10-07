@@ -70,7 +70,7 @@ class Catalogue(unittest.TestCase):
         js = (ROOT / 'public' / 'js' / 'v4' / 'deco-art.js').read_text(encoding='utf-8')
         art = js[js.index('export const ART={'):js.index('/* ---------------------------------------------------------------- the room')]
         drawn = set(re.findall(r'^\s+([a-z_0-9]+):\{h:', art, re.M))
-        self.assertEqual(drawn, set(DC.ITEMS))
+        self.assertEqual(drawn, {k for k, v in DC.ITEMS.items() if not v.get('uq')})   # 🔨 auction paintings: UQ_ART (test_deco_more)
         en = json.loads((ROOT / 'i18n' / 'overrides.json').read_text(encoding='utf-8'))['strings']
         for k in NEW:
             self.assertIn(DC.ITEMS[k]['name'], en, k)

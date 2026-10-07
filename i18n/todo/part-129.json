@@ -2000,6 +2000,36 @@
   "pattern": true
  },
  {
+  "vi": "🔨 Đã bị trả cao hơn$1: $2 xu. Tiền giữ đã về.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ở “$1”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔨 Bạn thắng đấu giá với $1 xu! Xem ở Của tôi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔒 Đang giữ $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tài khoản đủ $1 ngày mới trả giá được.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔥 $1 xu đã vào quỹ phố",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Từ $1",
   "en": "",
   "pattern": true
@@ -2216,36 +2246,6 @@
  },
  {
   "vi": "Số tài khoản $1 · Ngày sống $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🐷 Tiết kiệm tới $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "không kỳ hạn $1/năm, có kỳ hạn tới $2/năm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "quẹt trước trả sau, sao kê mỗi $1 ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "tới $1: không mở thẻ, không vay mới, thẻ tạm ngưng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ". Trả sớm để tránh bị ghi nợ xấu (sau $1 lần trễ hạn).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👛 Ví đang nợ $1.",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,265 @@
 [
  {
+  "vi": "Gặp riêng",
+  "en": ""
+ },
+ {
+  "vi": "Vẽ hình",
+  "en": ""
+ },
+ {
+  "vi": "Tự thử",
+  "en": ""
+ },
+ {
+  "vi": "Kể ví dụ",
+  "en": ""
+ },
+ {
+  "vi": "Chia nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Đề bài",
+  "en": ""
+ },
+ {
+  "vi": "Đề bài · giáo án",
+  "en": ""
+ },
+ {
+  "vi": "Không khí lớp",
+  "en": ""
+ },
+ {
+  "vi": "Sơ đồ lớp:",
+  "en": ""
+ },
+ {
+  "vi": "bạn ghi riêng",
+  "en": ""
+ },
+ {
+  "vi": "Soạn bài →",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Chọn thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Soạn lại cho hợp lớp",
+  "en": ""
+ },
+ {
+  "vi": "Chọn 3 thẻ hoạt động theo thứ tự",
+  "en": ""
+ },
+ {
+  "vi": "Chọn lại",
+  "en": ""
+ },
+ {
+  "vi": "Cần giúp",
+  "en": ""
+ },
+ {
+  "vi": "đang giơ tay sẽ hạ tay xuống.",
+  "en": ""
+ },
+ {
+  "vi": "Thu phiếu cuối tiết",
+  "en": ""
+ },
+ {
+  "vi": "Giống hệt",
+  "en": ""
+ },
+ {
+  "vi": "So bài với đáp án: đúng → 🌟 Khen cụ thể · sai hoặc chép nhầm → 🪜 Gợi ý một bước · ghi \"Giống hệt phiếu của…\" → 🤝 Gặp riêng. Chấm hết các phiếu rồi bấm Khép tiết.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu tiếp theo:",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Khép tiết, nhận thù lao",
+  "en": ""
+ },
+ {
+  "vi": "Gốm",
+  "en": ""
+ },
+ {
+  "vi": "Bờ sông",
+  "en": ""
+ },
+ {
+  "vi": "Ăn vặt",
+  "en": ""
+ },
+ {
+  "vi": "🧭 Dẫn đoàn",
+  "en": ""
+ },
+ {
+  "vi": "Chọn 3–5 điểm theo thứ tự đi, có một chỗ nghỉ chân (🪑)",
+  "en": ""
+ },
+ {
+  "vi": "Nắng gắt: tối đa 2 điểm ngoài trời · mưa, gió: có điểm đóng cửa",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi người có một điều mong (biểu tượng cạnh tên): ghé nơi có biểu tượng ấy",
+  "en": ""
+ },
+ {
+  "vi": "Người lớn tuổi ngại đồi dốc",
+  "en": ""
+ },
+ {
+  "vi": "Xử lý chuyện của đoàn trước khi đi tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Kể chuyện hợp số đông (số người thích cạnh mỗi cách kể) và hợp nơi đang đứng",
+  "en": ""
+ },
+ {
+  "vi": "Chi tiết từng người",
+  "en": ""
+ },
+ {
+  "vi": "đóng,",
+  "en": ""
+ },
+ {
+  "vi": "🚧 Đóng",
+  "en": ""
+ },
+ {
+  "vi": "🤒 Người ốm trước",
+  "en": ""
+ },
+ {
+  "vi": "Chạm 3–5 điểm",
+  "en": ""
+ },
+ {
+  "vi": "Thời tiết",
+  "en": ""
+ },
+ {
+  "vi": "↶ Chọn lại lộ trình",
+  "en": ""
+ },
+ {
+  "vi": "Quyết cho người ốm trước",
+  "en": ""
+ },
+ {
+  "vi": "🤒 Quyết cho người ốm",
+  "en": ""
+ },
+ {
+  "vi": "Điểm",
+  "en": ""
+ },
+ {
+  "vi": "Chọn điểm",
+  "en": ""
+ },
+ {
+  "vi": "Chọn lại cho hợp đoàn",
+  "en": ""
+ },
+ {
+  "vi": "Lộ trình chưa hợp",
+  "en": ""
+ },
+ {
+  "vi": "Sửa lộ trình",
+  "en": ""
+ },
+ {
+  "vi": "Cắm sạc loa qua đêm",
+  "en": ""
+ },
+ {
+  "vi": "Đặt cơm trưa cho đoàn",
+  "en": ""
+ },
+ {
+  "vi": "🍚 Đặt cơm trưa cho đoàn",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Báo homestay tối nay",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Chưa đủ người",
+  "en": ""
+ },
+ {
+  "vi": "Đã kể",
+  "en": ""
+ },
+ {
+  "vi": "Kể chuyện cho đoàn nghe",
+  "en": ""
+ },
+ {
+  "vi": "🎙️ Chọn cách kể",
+  "en": ""
+ },
+ {
+  "vi": "🎙️ Chọn cách kể chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Đếm đoàn, về bến",
+  "en": ""
+ },
+ {
+  "vi": "Đếm đoàn, đi tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Khép chuyến, nhận thù lao",
+  "en": ""
+ },
+ {
+  "vi": "Ẩn bảng tin",
+  "en": ""
+ },
+ {
+  "vi": "khách để lại tip",
+  "en": ""
+ },
+ {
+  "vi": "món quà cảm ơn",
+  "en": ""
+ },
+ {
+  "vi": "Vào tiệm sáng đèn",
+  "en": ""
+ },
+ {
+  "vi": "Đi tới một tiệm đang sáng để làm",
+  "en": ""
+ },
+ {
+  "vi": "Chọn điểm đến",
+  "en": ""
+ },
+ {
   "vi": "Chỉ đường",
   "en": ""
  },
@@ -1538,278 +1798,5 @@
  {
   "vi": "Người phụ việc đang làm",
   "en": ""
- },
- {
-  "vi": "Nhận khách",
-  "en": ""
- },
- {
-  "vi": "Chưa thể nhận",
-  "en": ""
- },
- {
-  "vi": "Phục vụ khách",
-  "en": ""
- },
- {
-  "vi": "Hủy đơn",
-  "en": ""
- },
- {
-  "vi": "Nhận dịch vụ",
-  "en": ""
- },
- {
-  "vi": "Một lời góp ý (không bắt buộc)",
-  "en": ""
- },
- {
-  "vi": "Nhận xét dịch vụ",
-  "en": ""
- },
- {
-  "vi": "Bạn thấy dịch vụ thế nào?",
-  "en": ""
- },
- {
-  "vi": "Đang mở sổ khách…",
-  "en": ""
- },
- {
-  "vi": "Khách cần bạn phục vụ",
-  "en": ""
- },
- {
-  "vi": "Dịch vụ bạn đã đặt",
-  "en": ""
- },
- {
-  "vi": "Chưa có đơn khách đang chờ.",
-  "en": ""
- },
- {
-  "vi": "Ghé một chỗ làm để nhận dịch vụ đầu tiên.",
-  "en": ""
- },
- {
-  "vi": "Khách ghé chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Xem chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Chưa có ai đang đứng tại đây.",
-  "en": ""
- },
- {
-  "vi": "đơn khách · Mở sổ",
-  "en": ""
- },
- {
-  "vi": "Sổ đơn dịch vụ",
-  "en": ""
- },
- {
-  "vi": "Nói với khách…",
-  "en": ""
- },
- {
-  "vi": "Lời nói với khách ghé",
-  "en": ""
- },
- {
-  "vi": "👋 Chào khách",
-  "en": ""
- },
- {
-  "vi": "Phòng trực tiếp sẽ kết nối khi chỗ làm sẵn sàng.",
-  "en": ""
- },
- {
-  "vi": "Thứ Hai",
-  "en": ""
- },
- {
-  "vi": "Thứ Ba",
-  "en": ""
- },
- {
-  "vi": "Thứ Tư",
-  "en": ""
- },
- {
-  "vi": "Thứ Năm",
-  "en": ""
- },
- {
-  "vi": "Thứ Sáu",
-  "en": ""
- },
- {
-  "vi": "Thứ Bảy",
-  "en": ""
- },
- {
-  "vi": "Cả tuần",
-  "en": ""
- },
- {
-  "vi": "Biết rồi",
-  "en": ""
- },
- {
-  "vi": "Đội đang xử lý đơn riêng",
-  "en": ""
- },
- {
-  "vi": "Quỹ nghề chưa đủ vận hành",
-  "en": ""
- },
- {
-  "vi": "Đội đang tạm nghỉ",
-  "en": ""
- },
- {
-  "vi": "Góc nhìn sau bàn làm việc",
-  "en": ""
- },
- {
-  "vi": "GÓC CỦA BẠN · ĐỘI Ở PHÍA TRƯỚC",
-  "en": ""
- },
- {
-  "vi": "Bàn làm việc đang chờ đội vào ca",
-  "en": ""
- },
- {
-  "vi": "Đơn đã ghi",
-  "en": ""
- },
- {
-  "vi": "Doanh thu đã ghi",
-  "en": ""
- },
- {
-  "vi": "Lãi đã ghi",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể tự phục vụ hoặc giao việc cho nhân viên. Đội trong ca tiếp tục làm khi bạn khép ngày, sang nghề khác hoặc rời game; chỉ nghỉ khi hết hàng, thiếu quỹ hoặc nhân viên không sẵn sàng.",
-  "en": ""
- },
- {
-  "vi": "📦 Nhập nguyên liệu",
-  "en": ""
- },
- {
-  "vi": "🛠️ Thiết bị tăng tốc",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng vừa hoàn thành",
-  "en": ""
- },
- {
-  "vi": "Đang cập nhật các đơn lúc bạn vắng… Số liệu dưới đây là các đơn đã ghi.",
-  "en": ""
- },
- {
-  "vi": "Đội đang làm đơn đầu tiên. Biên nhận xuất hiện khi máy chủ xác nhận hoàn thành.",
-  "en": ""
- },
- {
-  "vi": "Chưa có đơn riêng hoàn thành.",
-  "en": ""
- },
- {
-  "vi": "💰 Lãi ước tính của đội (đã gồm thưởng)",
-  "en": ""
- },
- {
-  "vi": "mỗi ngày (24 giờ) nếu đủ hàng, đủ quỹ",
-  "en": ""
- },
- {
-  "vi": "Đơn tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Lãi ước tính mỗi đơn:",
-  "en": ""
- },
- {
-  "vi": "giá vốn ~",
-  "en": ""
- },
- {
-  "vi": "Khu vực",
-  "en": ""
- },
- {
-  "vi": "Đi đâu mà bỏ $1 vậy em? Khách chờ rồi bỏ về hết.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay em bỏ $1 hai lần rồi. Lần sau còn vậy là cho nghỉ đó nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nói mấy lần rồi. Còn bỏ $1 nữa là cho nghỉ luôn nha em.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quán mở cửa mà không ai đứng $1, khách chờ rồi về hết đó con.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đi đâu mà bỏ $1 vậy con? Khách đứng chờ mãi rồi bỏ đi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay bỏ $1 hai lần rồi đó con. Khách quen bắt đầu kháo nhau rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lại bỏ $1 nữa hả con? Cứ vầy là mất khách quen đó.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bỏ $1 hoài vậy thì ai dám ghé nữa con ơi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Phạt bỏ dở ca ở $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang làm dở: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đang mở, $2 khách đang chờ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Bỏ đi bây giờ: phạt $2 xu, mất $3 $4, khách đang chờ sẽ bỏ về.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã tới giờ đóng cửa. Việc dở vẫn giữ nguyên, lúc nào quay lại thì khép ca nhé.",
-  "en": "",
-  "pattern": true
  }
 ]

@@ -12,6 +12,9 @@ and on a player's card. Never sent by a client; resolved here from the game's ow
   Read from the save (`sessions.state`, journey.titles only) per player, cached; the game announces
   NOTIFY {op: 'honours', pid} when one is granted (a fair round, a live reward).
 * 💍 Khách mời của tuần (live/wedding.py): `w_vip` / `w_pro`, worn the week after the race, like the street's tag.
+* 👑 Danh hiệu độc bản (game/auction.py): a title won at the auction house, its catalogue id (`dh_mat_trang`), first of
+  all (one of a kind). Read from `auction_lots` (status 'sold', kind 'title': a few rows) like the weekly holders, again
+  on NOTIFY {op: 'auction_end'}; a database without the table has none.
 
 Bought titles of the week stay in `st` (live/styles.py); `ti` (the street's text) is unchanged, so an older client
 shows what it showed before and ignores `tt`. An older service sends no `tt`.
@@ -27,6 +30,7 @@ import time
 
 from game.fair import AWARDS as FAIR_AWARDS, TITLE_ROWS as FAIR_ROWS
 from game.lb_titles import honour, tier_of
+from game.auction_content import ITEMS as UQ_ITEMS
 
 from .auth import pid_of
 from .db import Error as DbError, log
@@ -42,6 +46,7 @@ BATCH = 200
 FAIR = tuple(FAIR_AWARDS) + tuple(t for t, *_ in FAIR_ROWS if t not in FAIR_AWARDS)
 FAIR_SET = frozenset(FAIR)
 RACE = ('w_vip', 'w_pro')
+UQ_TITLES = frozenset(it['id'] for it in UQ_ITEMS if it['kind'] == 'title')
 
 
 def lb_id(board: str, rank: int) -> str:
@@ -61,6 +66,7 @@ class Honours:
         self.rows = LRU(CACHE)          # pid -> (fetched monotonic, sid | None, fair ids)
         self.lb: dict = {}              # sid -> [lb ids, best first]
         self.lb_at = -1e18              # monotonic of the last read
+        self.uq: dict = {}              # sid -> [auction title ids] (👑 game/auction.py)
         self.off_until = 0.0
 
     # ---- invalidation (NOTIFY) -------------------------------------------------------------------------------
@@ -91,6 +97,16 @@ class Honours:
             if isinstance(board, str) and tier_of(board, rank) is not None:
                 held.setdefault(r['sid'], []).append((honour(board, rank), lb_id(board, rank)))
         self.lb = {sid: [x for _, x in sorted(v)] for sid, v in held.items()}
+        try:   # 👑 one-of-a-kind titles won at the auction house (SCHEMA_VERSION 29)
+            rows = await self.app.db.fetch("SELECT winner_sid, item FROM auction_lots WHERE status = 'sold' AND kind = 'title' "
+                                           "AND winner_sid <> '' ORDER BY settled_at LIMIT 2000")
+        except DbError:
+            rows = []
+        uq: dict = {}
+        for r in rows:
+            if r['item'] in UQ_TITLES:
+                uq.setdefault(r['winner_sid'], []).append(r['item'])
+        self.uq = uq
 
     def _race(self) -> dict:
         wed = self.app.by_name.get('wedding') if hasattr(self.app, 'by_name') else None
@@ -148,7 +164,7 @@ class Honours:
         for pid in ids:
             hit = self.rows.get(pid)
             sid, fair = (hit[1], hit[2]) if hit else (None, ())
-            got = list(self.lb.get(sid, ())) if sid else []
+            got = (list(self.uq.get(sid, ())) + list(self.lb.get(sid, ()))) if sid else []
             r = race.get(pid)
             awards = [x for x in fair if x in FAIR_AWARDS]
             got += awards + ([r] if r in RACE else []) + [x for x in fair if x not in FAIR_AWARDS]
@@ -182,7 +198,7 @@ def on_notify(app, e: dict) -> None:
     op = e.get('op')
     if op in ('honours', 'face') and isinstance(e.get('pid'), str):
         of_app(app).forget(e['pid'])
-    elif op == 'honours_lb':
+    elif op == 'honours_lb' or (op == 'auction_end' and e.get('status') == 'sold'):   # 👑 a title may have been won
         of_app(app).stale_lb()
 
 

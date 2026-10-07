@@ -33,6 +33,14 @@ const luxChip=p=>{const x=p.shop?.lux;if(!x||typeof x!=='object')return '';const
   if(x.p?.name)out.push(`<span class="chip" title="${esc(x.p.name)}">${esc(x.p.e||'')} ${'★'.repeat(Math.max(1,Math.min(4,Number(x.p.r)||1)))}${Number(x.n)>1?` ×${Number(x.n)}`:''}</span>`);
   if(Number(x.c))out.push(`<span class="chip" aria-label="Đã đi ${Number(x.c)} nước">🛂 ${Number(x.c)}</span>`);
   return out.join('');};
+/** 🔨 One-of-a-kind items won at the auction house (shop.uniq, game/auction.py show_view; absent in older snapshots):
+ * the gold plate, the phone number, the landmark named after them, paintings and titles as a count. */
+const uniqChip=p=>{const x=p.shop?.uniq;if(!x||typeof x!=='object')return '';const out=[];
+  if(typeof x.plate==='string')out.push(`<span class="chip uq-plate" data-no-translate style="background:linear-gradient(160deg,#fff6d5,#f3d27a);color:#3b2a06;font-family:ui-monospace,Menlo,monospace;font-weight:800">${esc(x.plate)}</span>`);
+  if(typeof x.phone==='string')out.push(`<span class="chip" data-no-translate>📱 ${esc(x.phone)}</span>`);
+  for(const t of (Array.isArray(x.land)?x.land:[]).slice(0,1))out.push(`<span class="chip" data-no-translate>🏞️ ${esc(t)}</span>`);
+  const art=Array.isArray(x.art)?x.art.length:0;if(art)out.push(`<span class="chip" title="Tranh độc bản">🖼️ ${art}</span>`);
+  return out.join('');};
 /** 🎨 The colour, frame and title of the week (shop.style, game/spend.py; absent in older snapshots, hidden once over). */
 const stOf=p=>{const s=p.shop?.style;return s&&typeof s==='object'&&Number(s.u)>Date.now()/1000?s:null;};
 function careerName(api,id){return api.content.careers?.[id]?.meta?.short||api.content.catalogue?.find(c=>c.id===id)?.short||id;}
@@ -71,7 +79,7 @@ function playerCard(env,p){
   const shop=p.shop||{},cur=shop.careers?.[0];
   const st=stOf(p),fr=frameAttrs(env.api,st);
   return `<article class="player-card"><span class="avatar big${fr.cls}"${fr.attrs}>${esc(p.avatar)}</span><div class="grow"><h4><span${nameAttrs(env.api,st)}>${esc(p.name)}</span>${titleChip(env.api,st)} ${p.me?pill('Bạn','blue'):''}</h4>${titlesLine(p)}<p class="small muted clip">${esc(p.bio||'Chưa có lời giới thiệu')}</p>
-    <div class="row wrap small">${(shop.careers||[]).slice(0,3).map(c=>`<span class="chip">${esc(c.short)} · Lv${c.level}${c.rating?` · ${c.rating}★`:''}</span>`).join('')}${rideChip(p)}${phoneChip(p)}${luxChip(p)}</div></div>
+    <div class="row wrap small">${(shop.careers||[]).slice(0,3).map(c=>`<span class="chip">${esc(c.short)} · Lv${c.level}${c.rating?` · ${c.rating}★`:''}</span>`).join('')}${rideChip(p)}${phoneChip(p)}${luxChip(p)}${uniqChip(p)}</div></div>
     ${button(p.me?'Chỗ của tôi':'Ghé chỗ làm','workVisit',p.me?{scope:'mine'}:{pid:p.pid},'small primary')}${button('Hồ sơ','socShop',{pid:p.pid},'small ghost')}</article>`;
 }
 
@@ -95,7 +103,7 @@ function shopView(env,pid){
   const reviews=d.reviews.map(r=>`<article class="p-review"><div class="row"><span class="avatar">${esc(r.avatar||'🙂')}</span><div class="grow"><b>${esc(r.author)}</b> <span class="stars">${stars(r.stars)}</span>${r.counted===false?` <span class="tag" title="${esc(r.why||'Không tính vào điểm trung bình')}">Không tính điểm</span>`:''}<small class="muted block">${esc(careerName(api,r.career))} · ${ago(r.at)}${r.why?` · ${esc(r.why)}`:''}</small></div>${r.mine||r.owner?'':button(icon('flag',13),'socReport',{kind:'review',id:r.id},'icon-btn small ghost')}</div><p>${esc(r.text)}</p>${r.reply?`<p class="owner-reply">${icon('chat',13)} <b>${esc(T(r.career,'host'))}:</b> ${esc(r.reply)}</p>`:r.owner?`<form class="row" data-soc-form="reply" data-id="${r.id}"><input class="input grow" name="text" data-preserve maxlength="280" placeholder="Trả lời một lần, thật lòng nhé" required><button class="btn small" type="submit">Trả lời</button></form>`:''}</article>`).join('')||`<p class="muted small">Chưa có hàng xóm nào chấm sao.</p>`;
   const listings=d.listings.length?`<h4 class="section-title">Hàng đang bán</h4><div class="listing-grid">${d.listings.map(m=>listingCard(m)).join('')}</div>`:'';
   const st=stOf(p),fr=frameAttrs(api,st);
-  return `${back}<section class="shop-hero card"><span class="avatar huge${fr.cls}"${fr.attrs}>${esc(p.avatar)}</span><div class="grow"><h3><span${nameAttrs(api,st)}>${esc(p.name)}</span>${titleChip(api,st)}</h3>${titlesLine(p,'small')}<p class="muted">${esc(p.bio||'')}</p><div class="row wrap small">${pill(`${d.visits} lượt ghé`)} ${d.rating?pill(`${d.rating}★ từ hàng xóm`,'amber'):''} ${pill(`${(p.served||0).toLocaleString('vi-VN')} ${T(p.shop?.current,'served')}`,'green')} ${rideChip(p)}${phoneChip(p)}${luxChip(p)}</div></div>
+  return `${back}<section class="shop-hero card"><span class="avatar huge${fr.cls}"${fr.attrs}>${esc(p.avatar)}</span><div class="grow"><h3><span${nameAttrs(api,st)}>${esc(p.name)}</span>${titleChip(api,st)}</h3>${titlesLine(p,'small')}<p class="muted">${esc(p.bio||'')}</p><div class="row wrap small">${pill(`${d.visits} lượt ghé`)} ${d.rating?pill(`${d.rating}★ từ hàng xóm`,'amber'):''} ${pill(`${(p.served||0).toLocaleString('vi-VN')} ${T(p.shop?.current,'served')}`,'green')} ${rideChip(p)}${phoneChip(p)}${luxChip(p)}${uniqChip(p)}</div></div>
     ${me?'':`<div class="row wrap">${button(p.following?'Đang theo dõi':'Theo dõi',p.following?'socUnfollow':'socFollow',{pid},'small '+(p.following?'ghost':''))}${button(icon('flag',13)+' Báo cáo','socReport',{kind:'profile',id:pid},'small ghost')}${button('Chặn','socBlock',{pid},'small ghost danger')}</div>`}</section>
     <div class="shop-careers">${(p.shop?.careers||[]).map(c=>`<div class="kv-card"><b>${esc(c.place)}</b><small>Lv${c.level} · ngày ${c.day} · ${c.rating?c.rating+'★':'chưa có sao'} · ${c.served} khách</small></div>`).join('')||'<p class="muted small">Chưa mở chỗ làm nào.</p>'}</div>
     ${button(me?'Chỗ làm của tôi':'🏪 Ghé chỗ làm','workVisit',me?{scope:'mine'}:{pid},'primary full')}${giftForm}${reviewForm}${listings}<h4 class="section-title">Hàng xóm chấm sao</h4><div class="stack">${reviews}</div>`;

@@ -19,6 +19,8 @@ const CAT=()=>S.env?.api?.content?.journey?.gadgets||{groups:[],items:[],perks:[
 const item=id=>CAT().items.find(x=>x.id===id);
 const perk=id=>CAT().perks.find(p=>p.id===id)||{};
 const isPhone=it=>it?.group==='phone';
+/** 🔨 A phone number won at the auction house (game/auction.py, journey.uniq.own): shown on the phone in use. */
+const uqPhone=()=>{const o=S.env?.api?.state?.journey?.uniq?.own||{};const x=Object.values(o).filter(v=>v?.k==='phone').sort((a,b)=>(b.p||0)-(a.p||0))[0];return x?.t||'';};
 const lname=it=>isPhone(it)?it.name:String(it?.name||'').slice(0,1).toLowerCase()+String(it?.name||'').slice(1);
 const POCKET=['wallet','account'];   // gadgets.py (garage._take): the wallet first, then the bank account
 /** Selfie frames: [id, the perk that opens it, label]. The phone in use decides which are open. */
@@ -152,7 +154,7 @@ function perkList(it,compact=false){
 function mineView(v){
   const h=v.hand&&item(v.hand.id),old=CAT().old||{name:'Máy cũ',desc:''};
   const cheapest=CAT().items.filter(isPhone).sort((a,b)=>a.price-b.price)[0];
-  const lead=h?`<section class="bk-card gd-hand" style="--gd-shell:${esc(h.color)}"><div class="gd-hand-top">${artHTML(h,'big')}<div class="grow"><small>Đang dùng</small><h3>${esc(h.name)}</h3>
+  const lead=h?`<section class="bk-card gd-hand" style="--gd-shell:${esc(h.color)}"><div class="gd-hand-top">${artHTML(h,'big')}<div class="grow"><small>Đang dùng</small><h3>${esc(h.name)}</h3>${uqPhone()?`<p class="gd-number" data-no-translate>📱 <b>${esc(uqPhone())}</b></p>`:''}
       ${perkList(h,true)}</div></div>
       <div class="bk-actions">${(v.perks||[]).includes('selfie')?btn('📸 Chụp selfie','selfie',{},'primary'):`<span class="bk-hint">📸 Selfie có khung mở từ ${esc(CAT().items.find(x=>(x.perks||[]).includes('selfie'))?.name||'máy tầm trung')}.</span>`}${btn('Cất máy, không khoe','use',{},'ghost small')}</div></section>`
     :`<section class="bk-card gd-hand gd-oldcard"><div class="gd-hand-top">${artHTML(null,'big')}<div class="grow"><small>${v.old?'Bạn đã đổi máy cũ':'Đang dùng'}</small><h3>${v.old?'Chưa cầm máy nào':esc(old.name)}</h3><p>${v.old?'Chọn một chiếc điện thoại bên dưới để dùng và khoe.':esc(old.desc)}</p></div></div>

@@ -5,8 +5,8 @@ hears them through a self-hosted SFU (LiveKit, live/sfu.py, deploy/livekit). Lis
 recorded anywhere. This module holds the rules both servers share, and the one thing stored for it:
 
 * The birth year (an optional field of the account, asked the first time someone turns the mic on): the table
-  `account_birth` (sid, year, at), SCHEMA_VERSION 29. A separate table, not a column of `accounts` and not a save key,
-  so a rollback to 1.9.11 never sees it. It is set once (a player cannot retry with another year after a refusal); the
+  `account_birth` (sid, year, at), SCHEMA_VERSION 30. A separate table, not a column of `accounts` and not a save key,
+  so a rollback to 1.9.13 never sees it. It is set once (a player cannot retry with another year after a refusal); the
   admin can clear it. Deleted with the player's data (forget).
 * The age rule: MIN_AGE (16). Only a year is asked, so a player counts as the youngest they can be this Vietnam year
   (year of birth + 1 + MIN_AGE <= this year): someone born in 2010 opens the mic from 2027.

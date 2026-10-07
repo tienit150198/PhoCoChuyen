@@ -910,7 +910,7 @@ function drawer(v){
     if(!list.length)cards=`<div class="dc-empty"><p>Túi đồ trống. Ghé cửa hàng chọn món đầu tiên nhé!</p>${btn('🛒 Cửa hàng','drawer',{d:'shop'},'primary small')}</div>`;
   }else{
     const have=new Set([...v.items.map(i=>i.k),...v.bag.map(b=>b.k)]);
-    const list=C.items.filter(fits);list.forEach(it=>cats.add(it.cat));
+    const list=C.items.filter(it=>fits(it)&&!it.uq);list.forEach(it=>cats.add(it.cat));   // 🔨 a painting won at auction is never sold
     const shown=list.filter(it=>!S.cat||it.cat===S.cat).sort((a,b)=>(here(b)-here(a))||a.price-b.price);
     cards=shown.map(it=>card(it,'shop',have.has(it.id)?'<i class="dc-have">Đã có</i>':'',`${xu(it.price)} · +${it.cozy}`,false,it.price>v.ready)).join('');
   }

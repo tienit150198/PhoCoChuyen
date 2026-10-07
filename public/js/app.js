@@ -305,7 +305,8 @@ function navItems(c){
   if(api.state?.journey?.story&&api.state.journey.gadgets)items.push(['gadgets','phone','Điện thoại & đồ công nghệ']);  // 📱 (v4/gadgets.js, own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.pets)items.push(['pets','paw','Thú cưng']);  // 🐾 v4/pets.js (own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.spend)items.push(['spend','coffee','Đi chơi'],['spendStyle','sparkle','Phong cách']);  // ☕🙏 quán, spa, rạp, công đức; 🎨 màu tên tuần (v4/spend.js, own dialog): only once the server has it
-  if(api.state?.journey?.story&&api.state.journey.lux)items.push(['lux','bag','Mua sắm']);  // 🛍️ du lịch, sưu tập, dinh thự, tiệc, khóa học, Mạnh Thường Quân (v4/lux.js, own dialog): only once the server has it
+  if(api.state?.journey?.story&&api.state.journey.lux)items.push(['lux','bag','Mua sắm']);
+  if(api.state?.journey?.story&&api.content?.journey?.auction)items.push(['auction','award','Nhà đấu giá']);  // 🔨 đồ độc bản (v4/auction.js, own dialog): only once the server has it  // 🛍️ du lịch, sưu tập, dinh thự, tiệc, khóa học, Mạnh Thường Quân (v4/lux.js, own dialog): only once the server has it
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
@@ -334,7 +335,7 @@ const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREE
 const RAIL_GROUPS=[
   ['pho','building','Khu phố',['fair','spend','pets','liveWalk','liveWed','liveKara','nhom','phone','social','jrTown','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
-  ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','garage','gadgets','rui','quay']],
+  ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
   ['minh','gift','Của mình',['jrWardrobe','spendStyle','album','passport','workshop','journal','accountingSchool']],
 ];
@@ -342,6 +343,8 @@ const RAIL_GROUPS=[
 const SPEND_OPEN=new Set(['spend','spendQuan','spendSpa','spendRap','spendChua','spendStyle']);
 /** 🛍️ v4/lux.js (game/lux.py): the menu entry and the town map's doors (each opens its tab). */
 const LUX_OPEN=new Set(['lux','luxTrip','luxSuu','luxNha','luxBay','luxTiec','luxHoc','luxMtq']);
+/** 🔨 v4/auction.js (game/auction.py): the menu entry, the town map's 🔨 and 🏞️ doors. */
+const AUC_OPEN=new Set(['auction','auctionLands']);
 const RAIL_GROUPED=new Set(RAIL_GROUPS.flatMap(g=>g[3]));
 /** Numbers add up; a dot alone stays a dot. */
 function groupBadge(items){
@@ -1578,6 +1581,7 @@ async function handleAction(action,data,el){
       if(action==='gadgets'){await (await import('./v4/gadgets.js')).gadgetsAction(action,data,el,env());break;}  // 📱 Cửa hàng điện thoại: lazy
       if(SPEND_OPEN.has(action)){await (await import('./v4/spend.js')).spendAction(action,data,el,env());break;}  // ☕ Đi quán, spa, rạp, 🙏 công đức, 🎨 phong cách: lazy
       if(LUX_OPEN.has(action)){await (await import('./v4/lux.js')).luxAction(action,data,el,env());break;}  // 🛍️ Mua sắm: lazy
+      if(AUC_OPEN.has(action)){await (await import('./v4/auction.js')).auctionAction(action,data,el,env());break;}  // 🔨 Nhà đấu giá: lazy
       if(action==='vang'){ui.ivMarket='gold';await journeyAction('jrInvest',data,el,env());break;}
       if(action==='rui'){await (await import('./v4/rui.js')).ruiAction(action,data,el,env());break;}
       if(action==='homeGuests'){await (await import('./v4/home-guests.js')).openHomeGuests(env(),data);break;}
@@ -1784,7 +1788,10 @@ try{
   import('./telemetry.js').then(m=>m.telemetryBoot({api,ui})).catch(e=>console.warn('telemetry:',e));  // Giữ chân: leave/error/load beacons
   // 💬 The live socket (chat button, friends): first idle moment after the first frame, not last of the queue below
   // (it came ~6 s late, and after a sign-in sheet even later); its greyed button shows until the welcome.
-  whenIdle(()=>L.live.get().then(m=>m.liveBoot(env())).catch(e=>console.warn('live:',e)),800);
+  whenIdle(()=>L.live.get().then(m=>{m.liveBoot(env());
+    // 🔨 outbid / won anywhere in the game: collect the refund or the item now, a toast (v4/auction.js, loaded on the event)
+    m.live.on('auction_outbid',f=>import('./v4/auction.js').then(a=>a.onOutbid(env(),f)).catch(e=>console.warn('auction:',e)));
+    m.live.on('auction_won',f=>import('./v4/auction.js').then(a=>a.onWon(env(),f)).catch(e=>console.warn('auction:',e)));}).catch(e=>console.warn('live:',e)),800);
   // The rest of the catalogue (api.more), now that the first frame is out: it never competed with it on the wire.
   api.more().catch(e=>console.warn('content:',e));
   // Always-on features (badges, notices, polls, tips) load once the game is on screen, not before it.

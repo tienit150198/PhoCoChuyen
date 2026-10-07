@@ -300,6 +300,378 @@
   "en": ""
  },
  {
+  "vi": "Dữ liệu đấu giá trong bản lưu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đấu giá chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một phiên đấu giá nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang giữ tiền ở nhiều phiên quá.",
+  "en": ""
+ },
+ {
+  "vi": "🔨 Giữ tiền đấu giá",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu đấu giá không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "🔨 Trả lại tiền giữ",
+  "en": ""
+ },
+ {
+  "vi": "🔨 Trả lại phần dư",
+  "en": ""
+ },
+ {
+  "vi": "Đeo ở Phong cách nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tranh nằm trong túi đồ trang trí, treo lên tường nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không có phiên đấu giá này.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên này đã kết thúc.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên này chưa mở.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền giữ đang cập nhật, mở lại phiên rồi thử nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền giữ đang cập nhật, thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Giá vừa đổi, thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản này đã xử lý rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Vô Danh",
+  "en": ""
+ },
+ {
+  "vi": "Cần đăng ký tài khoản",
+  "en": ""
+ },
+ {
+  "vi": "Thời gian không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Không có món này trong danh mục.",
+  "en": ""
+ },
+ {
+  "vi": "Biển số/số điện thoại 3–16 ký tự.",
+  "en": ""
+ },
+ {
+  "vi": "Hạng 1, 2 hoặc 3.",
+  "en": ""
+ },
+ {
+  "vi": "Món này đang đấu giá hoặc đã có chủ.",
+  "en": ""
+ },
+ {
+  "vi": "Trùng mã phiên, thử lại.",
+  "en": ""
+ },
+ {
+  "vi": "Phổ thông",
+  "en": ""
+ },
+ {
+  "vi": "Quý hiếm",
+  "en": ""
+ },
+ {
+  "vi": "Huyền thoại",
+  "en": ""
+ },
+ {
+  "vi": "Biển số đẹp",
+  "en": ""
+ },
+ {
+  "vi": "Số điện thoại đẹp",
+  "en": ""
+ },
+ {
+  "vi": "Tranh độc bản",
+  "en": ""
+ },
+ {
+  "vi": "Đặt tên danh thắng",
+  "en": ""
+ },
+ {
+  "vi": "Danh hiệu độc bản",
+  "en": ""
+ },
+ {
+  "vi": "Mây-6666",
+  "en": ""
+ },
+ {
+  "vi": "68-LỘC-68",
+  "en": ""
+ },
+ {
+  "vi": "88-PHÁT-88",
+  "en": ""
+ },
+ {
+  "vi": "Mây-0001",
+  "en": ""
+ },
+ {
+  "vi": "Mây-2026",
+  "en": ""
+ },
+ {
+  "vi": "39-TÀI-39",
+  "en": ""
+ },
+ {
+  "vi": "Mây-8888",
+  "en": ""
+ },
+ {
+  "vi": "Mùa nước nổi",
+  "en": ""
+ },
+ {
+  "vi": "Lê Mây",
+  "en": ""
+ },
+ {
+  "vi": "Phố Mây lúc năm giờ chiều",
+  "en": ""
+ },
+ {
+  "vi": "Trần Nắng",
+  "en": ""
+ },
+ {
+  "vi": "Gánh hàng rong",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tư Sơn Mài",
+  "en": ""
+ },
+ {
+  "vi": "Con mèo trên mái tôn",
+  "en": ""
+ },
+ {
+  "vi": "Út Mực Tàu",
+  "en": ""
+ },
+ {
+  "vi": "Sen hồ Mây",
+  "en": ""
+ },
+ {
+  "vi": "Cô Ba Lụa",
+  "en": ""
+ },
+ {
+  "vi": "Đêm đèn lồng",
+  "en": ""
+ },
+ {
+  "vi": "Hai Giấy Dó",
+  "en": ""
+ },
+ {
+  "vi": "Chuyến tàu cuối",
+  "en": ""
+ },
+ {
+  "vi": "Ông Sáu Than",
+  "en": ""
+ },
+ {
+  "vi": "Hải đăng gió",
+  "en": ""
+ },
+ {
+  "vi": "Năm Muối",
+  "en": ""
+ },
+ {
+  "vi": "Chợ Tết phố Mây",
+  "en": ""
+ },
+ {
+  "vi": "Tư Lụa Hồng",
+  "en": ""
+ },
+ {
+  "vi": "Trăng rằm trên đồi",
+  "en": ""
+ },
+ {
+  "vi": "Hồ",
+  "en": ""
+ },
+ {
+  "vi": "hồ lớn sau Ngoại ô",
+  "en": ""
+ },
+ {
+  "vi": "Đồi",
+  "en": ""
+ },
+ {
+  "vi": "ngọn đồi thông cạnh hải đăng",
+  "en": ""
+ },
+ {
+  "vi": "Bến",
+  "en": ""
+ },
+ {
+  "vi": "bến sông chiều",
+  "en": ""
+ },
+ {
+  "vi": "vườn hoa ven hồ",
+  "en": ""
+ },
+ {
+  "vi": "Cầu",
+  "en": ""
+ },
+ {
+  "vi": "cây cầu đá cũ",
+  "en": ""
+ },
+ {
+  "vi": "Thác",
+  "en": ""
+ },
+ {
+  "vi": "thác nhỏ trên núi",
+  "en": ""
+ },
+ {
+  "vi": "Người đầu tiên lên Mặt Trăng Phố Mây",
+  "en": ""
+ },
+ {
+  "vi": "Lên Mặt Trăng",
+  "en": ""
+ },
+ {
+  "vi": "Rồng Vàng Phố Mây",
+  "en": ""
+ },
+ {
+  "vi": "Rồng Vàng",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ Lân Phố Mây",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ Lân",
+  "en": ""
+ },
+ {
+  "vi": "Người Giữ Chìa Khóa Phố",
+  "en": ""
+ },
+ {
+  "vi": "Giữ Chìa Khóa",
+  "en": ""
+ },
+ {
+  "vi": "Thuyền Trưởng Sông Mây",
+  "en": ""
+ },
+ {
+  "vi": "Thuyền Trưởng",
+  "en": ""
+ },
+ {
+  "vi": "Công Tước Phố Mây",
+  "en": ""
+ },
+ {
+  "vi": "Công Tước",
+  "en": ""
+ },
+ {
+  "vi": "Ngôi Sao Bắc Đẩu",
+  "en": ""
+ },
+ {
+  "vi": "Sao Bắc Đẩu",
+  "en": ""
+ },
+ {
+  "vi": "Chủ Nhân Đèn Lồng Vàng",
+  "en": ""
+ },
+ {
+  "vi": "Đèn Lồng Vàng",
+  "en": ""
+ },
+ {
+  "vi": "Nghệ Sĩ Không Tên",
+  "en": ""
+ },
+ {
+  "vi": "Nghệ Sĩ",
+  "en": ""
+ },
+ {
+  "vi": "Người Gọi Gió Mùa",
+  "en": ""
+ },
+ {
+  "vi": "Gọi Gió Mùa",
+  "en": ""
+ },
+ {
+  "vi": "Thắng đấu giá",
+  "en": ""
+ },
+ {
+  "vi": "Ẩn danh",
+  "en": ""
+ },
+ {
   "vi": "Ảnh đại diện trong bản lưu không hợp lệ.",
   "en": ""
  },
@@ -1425,378 +1797,6 @@
  },
  {
   "vi": "Ngồi hóng mát đầu ngõ cả ngày",
-  "en": ""
- },
- {
-  "vi": "thím",
-  "en": ""
- },
- {
-  "vi": "thím thấy",
-  "en": ""
- },
- {
-  "vi": "thím hỏi vậy thôi",
-  "en": ""
- },
- {
-  "vi": "Ngồi ghế nhựa đầu ngõ từ sáng tới tối, nói ít mà câu nào cũng lửng lơ, để người khác tự hiểu.",
-  "en": ""
- },
- {
-  "vi": "thím bảy",
-  "en": ""
- },
- {
-  "vi": "Bảo vệ tòa nhà",
-  "en": ""
- },
- {
-  "vi": "coi chừng",
-  "en": ""
- },
- {
-  "vi": "nghi lắm",
-  "en": ""
- },
- {
-  "vi": "đừng bấm link",
-  "en": ""
- },
- {
-  "vi": "Bảo vệ đa nghi: cái gì rẻ quá là lừa đảo, người lạ là đáng ngờ, nhắc mọi người cẩn thận.",
-  "en": ""
- },
- {
-  "vi": "anh tâm",
-  "en": ""
- },
- {
-  "vi": "Cô giáo mầm non",
-  "en": ""
- },
- {
-  "vi": "không sao đâu",
-  "en": ""
- },
- {
-  "vi": "Cô giáo mầm non lạc quan vô đối, chuyện gì cũng thấy mặt tốt, hay động viên.",
-  "en": ""
- },
- {
-  "vi": "chị mai",
-  "en": ""
- },
- {
-  "vi": "Bà con ơi có ai thấy con Mướp nhà bà không 😿 Mèo vàng, đuôi cụt, đeo cái chuông nhỏ. Từ tối qua tới giờ chưa về. Bà coi lịch rồi, hôm nay ngày Hoàng Đạo mà sao xui vậy nè. Ai thấy nhắn bà với nghe, bà cảm ơn nhiều lắm. Bà để sẵn chén cơm cá ở cửa rồi 🐟",
-  "en": ""
- },
- {
-  "vi": "Trời ơi con Mướp đi đâu mất tiêu rồi mọi người ơi 😿 Sáng nay bà mở cửa là nó phóng ra, tới giờ chưa thấy về. Tuổi Mão năm nay xung với mèo hay sao đó, bà lo quá. Ai thấy con mèo vàng đeo chuông thì la lên giùm bà nghe.",
-  "en": ""
- },
- {
-  "vi": "Lúc 4 giờ 12 phút chiều qua cô thấy một con mèo vàng đi ngang quán cô, hướng về phía nhà ông Bảy đó bà. Cô nhớ rõ vì lúc đó cô đang rửa ly. Cô không có ý gì đâu nha, cô chỉ nói những gì cô thấy 👀",
-  "en": ""
- },
- {
-  "vi": "Cô thấy nó rồi bà ơi! 7 giờ 35 sáng nay nó ngồi rình con chim trên mái tôn nhà số 9. Cô ngồi đây cô thấy hết mà 👀",
-  "en": ""
- },
- {
-  "vi": "Con mèo đó sáng nào cũng đi vệ sinh trước cửa nhà tôi!!! Tìm được thì bà giữ nó trong nhà giùm tôi.",
-  "en": ""
- },
- {
-  "vi": "Không thấy. Mà thấy thì tôi cũng đuổi đi, nó cào nát cái chậu mai của tôi rồi!!!",
-  "en": ""
- },
- {
-  "vi": "Thôi thôi ông Bảy, mèo nó có biết gì đâu. Bà Sáu đừng lo, để bà hâm nồi cá kho, mùi bay ra là nó về liền à. Hồi xưa con mèo nhà bà cũng đi ba ngày rồi tự về, còn dắt theo con bồ nữa 😂",
-  "en": ""
- },
- {
-  "vi": "🖼️ [Ảnh chế] Con mèo đeo kính đen, chú thích: “Tôi không bỏ nhà đi, tôi chỉ đi tìm chính mình.” Bà Sáu đừng buồn nha, tui chạy ship ngang đâu tui ngó giùm 🛵",
-  "en": ""
- },
- {
-  "vi": "Con thấy một bạn mèo vàng nằm trên mái nhà cô Ba ạ 🐱 bạn ấy đang ngủ ạ",
-  "en": ""
- },
- {
-  "vi": "Về rồi bà con ơi!!! Nó chui vô thùng giấy trong kho nhà cô Ba ngủ quên 😂 Cảm ơn cả xóm nghe, mai bà nấu chè đậu đen mời nha.",
-  "en": ""
- },
- {
-  "vi": "Tìm được rồi! Nó nằm trên nóc tủ nhà bà nãy giờ, bà già rồi mắt kém không thấy 😅 Cảm ơn mọi người nhiều nghe.",
-  "en": ""
- },
- {
-  "vi": "Hèn chi kho cô sáng nay có tiếng leng keng. Nó ăn mất nửa gói bánh quy của cô đó, tính ra 12 nghìn nha bà Sáu, cô đùa thôi 😆",
-  "en": ""
- },
- {
-  "vi": "D-dạ em xin lỗi làm phiền mọi người ạ… Em làm rơi cái ví màu hồng có thẻ sinh viên đâu đó từ đầu hẻm vào nhà trọ ạ 🥺 Ai thấy cho em xin lại với ạ.",
-  "en": ""
- },
- {
-  "vi": "Em chào mọi người ạ… em lỡ đánh rơi ví hồng chiều nay, trong có thẻ sinh viên với ít tiền ạ. Em xin lỗi vì làm phiền nhóm ạ 🥺",
-  "en": ""
- },
- {
-  "vi": "Em cẩn thận nha. Nếu có ai nhắn tin đòi “phí chuộc” hay bảo chuyển khoản để gửi lại ví là lừa đảo đó. Đừng chuyển gì hết.",
-  "en": ""
- },
- {
-  "vi": "Trời ơi tội con nhỏ. Nghe đâu hồi trưa có đứa nhỏ lượm được cái gì màu hồng ở chỗ đậu xe đó em. Để chị hỏi mấy khách mua xôi coi sao nha.",
-  "en": ""
- },
- {
-  "vi": "Hồi sáng chú lượm được cái ví hồng trước tiệm. Qua lấy. Lần sau cẩn thận chút.",
-  "en": ""
- },
- {
-  "vi": "Ví hồng có con gấu đúng không. Chú cất rồi. Qua lấy đi, đừng có khóc.",
-  "en": ""
- },
- {
-  "vi": "D-dạ đúng rồi ạ!!! Em cảm ơn chú nhiều lắm ạ 🥺🙏",
-  "en": ""
- },
- {
-  "vi": "Ừ. Không phải chú tốt bụng gì đâu, tại nó nằm chắn lối đi thôi.",
-  "en": ""
- },
- {
-  "vi": "Có gì đâu mà cảm ơn. Nó rớt ngay trước tiệm, để đó chướng mắt.",
-  "en": ""
- },
- {
-  "vi": "Thấy chưa, phố mình tử tế lắm nè 🌈 Chú Tư ngoài lạnh mà trong ấm ghê.",
-  "en": ""
- },
- {
-  "vi": "Ai ấm. Đâu có.",
-  "en": ""
- },
- {
-  "vi": "Có ai thấy chùm chìa khóa có cái móc hình cốc bia không nhỉ 🍺 Tối qua chú về hơi muộn, sáng nay tìm mãi không thấy đâu. Mất chìa khóa xe thì hôm nay nghỉ chạy xe ôm mất!",
-  "en": ""
- },
- {
-  "vi": "Anh em ơi, chìa khóa nhà chú biến đâu mất rồi. Móc khóa hình cốc bia, dễ nhận lắm. Ai thấy báo chú, chú mời một chầu nhé!",
-  "en": ""
- },
- {
-  "vi": "Uống cho lắm vào rồi mất hết đồ!!!",
-  "en": ""
- },
- {
-  "vi": "Tối qua 10 giờ 40 cô thấy chú ngồi quán bia đầu ngõ, cái móc khóa để trên bàn cạnh đĩa lạc. 10 giờ 58 chú đứng dậy về, không cầm theo. Cô nhớ vì lúc đó cô đang dọn quán 👀",
-  "en": ""
- },
- {
-  "vi": "ở quán.",
-  "en": ""
- },
- {
-  "vi": "Chuẩn rồi! Chủ quán cất giúp đây rồi. Cảm ơn cả nhà nhé, hôm nào làm cốc! Quân có ra không?",
-  "en": ""
- },
- {
-  "vi": "không uống.",
-  "en": ""
- },
- {
-  "vi": "Chú Hùng làm móc khóa hình cốc bia là để quên ở quán bia cho đúng chủ đề đó hả chú 🤣",
-  "en": ""
- },
- {
-  "vi": "Con chào cả nhà ạ 🌸 con là Na con mượn máy mẹ. Con làm rơi một chiếc dép màu hồng có hình con thỏ ở sân chơi ạ. Chiếc còn lại con vẫn đang đi ạ 👡",
-  "en": ""
- },
- {
-  "vi": "Con chào các ông bà cô chú ạ. Con là Na. Con bị mất một chiếc dép thỏ hồng ạ. Mẹ bảo con tự viết ạ 🐰",
-  "en": ""
- },
- {
-  "vi": "Trời đất ơi dễ thương quá. Để bà ra sân coi liền cho con nghe. Mà con ăn cơm chưa, qua bà cho miếng bánh flan nè 🍮",
-  "en": ""
- },
- {
-  "vi": "Chiếc dép thỏ hồng đang ở trước cửa nhà ông. Ông cất vào trong rồi, cháu sang mà lấy. Nhớ đi đứng cẩn thận.",
-  "en": ""
- },
- {
-  "vi": "Con cảm ơn ông Bảy ạ 🥰 con vẽ tặng ông một bức tranh con mèo nhé ạ",
-  "en": ""
- },
- {
-  "vi": "Ừ. Vẽ con chim thôi, mèo thì thôi.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn bác Bảy nhé. Na nhà em tự viết đấy ạ, lớp 2 mà viết chưa sai chính tả chữ nào, cô giáo khen suốt 😊",
-  "en": ""
- },
- {
-  "vi": "Na viết văn còn hay hơn em nữa xỉu 😭",
-  "en": ""
- },
- {
-  "vi": "📢 THÔNG BÁO: Theo lịch của điện lực, ngày mai khu phố mình cắt điện từ 8 giờ sáng đến 4 giờ chiều để bảo trì đường dây. Bà con chủ động sạc điện thoại, cất đồ tươi sống. Trân trọng cảm ơn.",
-  "en": ""
- },
- {
-  "vi": "📢 Kính gửi bà con: sáng mai tạm ngưng cấp điện từ 7 giờ đến 11 giờ để thay trạm biến áp. Nhà nào có người già, trẻ nhỏ thì chuẩn bị quạt tay, nước uống nhé. Cảm ơn bà con.",
-  "en": ""
- },
- {
-  "vi": "TRỜI ƠI mai chị có lịch làm móng cho khách tại nhà 😭😭 không có đèn sao chị làm, cuộc đời chị sao khổ vậy nè. Tháng này là lần thứ hai rồi đó mọi người!!!",
-  "en": ""
- },
- {
-  "vi": "ok. lên quán cà phê.",
-  "en": ""
- },
- {
-  "vi": "Thật ra lịch cắt điện năm nào cũng có vào mùa này, vì tải tăng khi nắng nóng. Theo anh tìm hiểu thì tủ lạnh đóng kín cửa giữ lạnh được khoảng 4 tiếng. Mọi người đừng mở tủ ra vô nhiều nha, mở một lần là mất lạnh liền à. Anh nói vậy thôi chứ anh cũng không chắc lắm 😅",
-  "en": ""
- },
- {
-  "vi": "May nhà Trang mới lắp máy phát điện nè 😌 không có ý khoe đâu nha. Ai cần sạc điện thoại cứ qua, Trang mời trà sữa luôn 🧋",
-  "en": ""
- },
- {
-  "vi": "Máy phát nhà cô chạy ồn như máy cày!!! Đề nghị tắt trước 10 giờ tối.",
-  "en": ""
- },
- {
-  "vi": "Ai không có chỗ nấu cơm thì qua bà, bà còn bếp than tổ ong. Nấu nồi cơm to ăn chung cho vui, cúp điện thì mình ngồi ngoài hẻm hóng mát kể chuyện 😄",
-  "en": ""
- },
- {
-  "vi": "Cúp điện thì tối mình thắp nến ngồi kể chuyện ma cho tụi nhỏ nghe, vui mà 🕯️🌈",
-  "en": ""
- },
- {
-  "vi": "📢 Bà con lưu ý: tối nay có mưa to kèm gió mạnh. Nhà nào để xe ngoài hẻm thì dắt vào trong, chậu cây trên ban công nên cất xuống. Chúc bà con buổi tối an toàn.",
-  "en": ""
- },
- {
-  "vi": "📢 Dự báo chiều nay mưa giông. Đề nghị bà con kiểm tra máng xối, không để rác chắn cống đầu hẻm kẻo ngập như tháng trước. Cảm ơn bà con.",
-  "en": ""
- },
- {
-  "vi": "Bà coi rồi, hôm nay sao La Hầu chiếu, ra đường phải cẩn thận. Tối nay ai tuổi Tý với tuổi Ngọ thì ở nhà cho lành nghe. Mà mưa là con Mướp nhà bà lại chui vô gầm giường cho coi 😅",
-  "en": ""
- },
- {
-  "vi": "Mái nhà ai dột thì nhắn chú. Không phải chú rảnh đâu, mà thôi, cứ nhắn đi.",
-  "en": ""
- },
- {
-  "vi": "Chúc cả nhà một buổi tối… bơi lội vui vẻ 🏊‍♂️ Shipper tụi tui mai giao hàng bằng thuyền thúng nha 🛶",
-  "en": ""
- },
- {
-  "vi": "Tiệm cô còn áo mưa bộ 35 nghìn, áo mưa cánh dơi 15 nghìn. Hết là hết nha, đừng để ướt rồi mới chạy ra mua.",
-  "en": ""
- },
- {
-  "vi": "Cái cống đầu hẻm tắc từ tuần trước rồi, tôi báo bao nhiêu lần!!!",
-  "en": ""
- },
- {
-  "vi": "Cháu cảm ơn bác Bảy, cô đã báo phường, sáng mai có người xuống thông cống ạ.",
-  "en": ""
- },
- {
-  "vi": "📢 Nhắc lại lịch thu gom rác: xe rác vào hẻm từ 18 giờ đến 19 giờ hằng ngày. Đề nghị bà con không để rác ra trước giờ này để tránh chó mèo bới. Trân trọng.",
-  "en": ""
- },
- {
-  "vi": "📢 Từ tuần này tổ dân phố khuyến khích phân loại rác: rác tái chế (chai, giấy) để riêng, cuối tuần có người qua thu. Bà con hưởng ứng giúp tổ nhé.",
-  "en": ""
- },
- {
-  "vi": "Có nhà cứ trưa là để rác ra rồi!!! Chó mèo bới tung cả đầu ngõ, tôi quét mãi.",
-  "en": ""
- },
- {
-  "vi": "Nhà nào vậy ông, ông nói nhỏ em nghe thôi 👀 em hứa không nói ai đâu.",
-  "en": ""
- },
- {
-  "vi": "Đề nghị không nêu tên cụ thể trên nhóm ạ. Tổ sẽ nhắc riêng từng nhà.",
-  "en": ""
- },
- {
-  "vi": "Ý thức người dân bây giờ kém quá. Thời chúng tôi, rác nhà ai người nấy giữ, không ai phải nhắc. Giới trẻ bây giờ vứt rác như vứt lời hứa.",
-  "en": ""
- },
- {
-  "vi": "Mình làm gương là được nè, tụi nhỏ nhìn là làm theo liền 🌱 Lớp chị đang dạy tụi nhỏ phân loại rác đó, dễ thương lắm.",
-  "en": ""
- },
- {
-  "vi": "Chai nhựa với giấy báo để riêng, cô gom bán ve chai, tiền đó bỏ quỹ khuyến học của tổ. Vừa sạch vừa có lời.",
-  "en": ""
- },
- {
-  "vi": "⚠️ Mọi người cẩn thận: mấy hôm nay có tin nhắn giả ngân hàng, bảo tài khoản bị khóa, bấm vào link để “xác minh”. ĐỪNG BẤM. Ngân hàng không bao giờ xin mật khẩu hay mã OTP qua tin nhắn.",
-  "en": ""
- },
- {
-  "vi": "⚠️ Anh nói trước nha: có người gọi điện xưng là nhân viên điện lực, bảo nợ tiền điện, dọa cắt nếu không chuyển khoản ngay. Lừa đảo đó. Có gì hỏi cô Lụa trước.",
-  "en": ""
- },
- {
-  "vi": "đúng. đừng bấm link.",
-  "en": ""
- },
- {
-  "vi": "Ủa bà mới nhận tin nhắn trúng thưởng xe máy nè! Người ta bảo đóng phí 500 nghìn là giao xe tận nhà. Bà đang tính nhờ thằng Tí chuyển giùm…",
-  "en": ""
- },
- {
-  "vi": "BÀ ƠI ĐÓ LÀ LỪA ĐẢO ĐÓ BÀ!!! Không chuyển đồng nào hết nha bà!",
-  "en": ""
- },
- {
-  "vi": "bà ơi đừng nha bà 😭😭 để chiều em qua xóa tin nhắn đó cho bà, khum có xe máy nào đâu bà ơi",
-  "en": ""
- },
- {
-  "vi": "Trúng xe mà phải đóng tiền trước là lừa. Buôn bán cả đời cô chưa thấy ai cho không cái gì hết.",
-  "en": ""
- },
- {
-  "vi": "Trời đất, vậy hả. Bà xém nữa là mất tiền chợ cả tháng. Cảm ơn mấy đứa nghe 🙏",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn anh Tâm đã nhắc. Nhà nào có ông bà lớn tuổi thì dặn giúp nhé.",
-  "en": ""
- },
- {
-  "vi": "📢 Sáng thứ Bảy phường phun thuốc muỗi phòng sốt xuất huyết. Bà con mở cửa, đậy thức ăn, cho vật nuôi ra ngoài trong lúc phun. Cảm ơn bà con.",
-  "en": ""
- },
- {
-  "vi": "Thuốc muỗi có mùi không cô, chị bị dị ứng nặng lắm 😭 lần trước chị hắt xì cả buổi chiều luôn, khách tưởng chị bị cảm 😭",
-  "en": ""
- },
- {
-  "vi": "Thật ra muỗi vằn đẻ trứng trong nước đọng sạch chứ không phải nước bẩn đâu. Mấy cái chén nước kê chân tủ, lu nước, lốp xe cũ mới là chỗ nguy hiểm nha. Theo anh tìm hiểu thì mỗi tuần thay nước một lần là cắt được vòng đời của nó.",
-  "en": ""
- },
- {
-  "vi": "Để bà dời con Mướp qua nhà cô Ba nghe cô Ba 😅",
-  "en": ""
- },
- {
-  "vi": "Được, mà nó ăn bánh quy của cô thì tính tiền nha bà 😆",
   "en": ""
  }
 ]

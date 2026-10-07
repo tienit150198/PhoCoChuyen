@@ -1,5 +1,401 @@
 [
  {
+  "vi": "Cho thuốc trùng nhóm dị ứng, sai nhãn khay hay nhầm người",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: đánh giá 1★, mất thưởng, chị Hoa lập báo cáo sự cố.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ số bất thường mà không báo bác sĩ",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn, mất thưởng việc đó.",
+  "en": ""
+ },
+ {
+  "vi": "Không sát khuẩn tay, hỏi tên kiểu “có phải không”",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi nhỏ, bớt sao. Ngày đoàn kiểm tra rửa tay thì nặng hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi phiếu sai số đo, ghi sổ giao ca điều chưa xảy ra",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ; sổ giao ca ghi khống bị trừ điểm hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "Ép người bệnh uống thuốc hay đi mổ",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ; ép đi mổ khi người bệnh đã đổi ý là lỗi an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận phong bì, cho người quen chen hàng, ghi thêm ngày nằm viện",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ bị ghi điểm vi phạm; nhiều lần thì tạm đình chỉ trực, hạ bậc.",
+  "en": ""
+ },
+ {
+  "vi": "🕖 Ca ngày 7:00–19:00; 9:00 bác sĩ đi buồng, chiều là giờ thăm bệnh.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Là việc làm thuê: [[Ứng tuyển]] ở Bệnh viện phường Lá Sen. Có lương ngày và thưởng nhỏ cho từng việc làm đúng.",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Chứng chỉ An toàn người bệnh giúp dễ được nhận hơn.",
+  "en": ""
+ },
+ {
+  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, khoa đông, đoàn kiểm tra rửa tay, mùa cúm, chủ nhật thăm bệnh.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Người nhà dúi phong bì, xin giường đẹp, đòi “bác sĩ giỏi nhất”, quay clip, “thần y” mang thuốc nam.",
+  "en": ""
+ },
+ {
+  "vi": "🍺 Khách say quậy ca tối, đồng nghiệp rủ làm tắt, sếp ép trực thêm ca: nói rõ, báo đúng người.",
+  "en": ""
+ },
+ {
+  "vi": "NHẬN CA",
+  "en": ""
+ },
+ {
+  "vi": "Ghi phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Gọi bác sĩ",
+  "en": ""
+ },
+ {
+  "vi": "XONG LƯỢT ĐO",
+  "en": ""
+ },
+ {
+  "vi": "Đọc nhãn khay khoa dược",
+  "en": ""
+ },
+ {
+  "vi": "Thực hiện y lệnh",
+  "en": ""
+ },
+ {
+  "vi": "Đo nhanh",
+  "en": ""
+ },
+ {
+  "vi": "GỬI VÀO KHÁM",
+  "en": ""
+ },
+ {
+  "vi": "CHUYỂN ĐI THỦ THUẬT",
+  "en": ""
+ },
+ {
+  "vi": "Rút kim luồn",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ người bệnh nhắc lại",
+  "en": ""
+ },
+ {
+  "vi": "CHO VỀ",
+  "en": ""
+ },
+ {
+  "vi": "Ghi vào sổ giao ca",
+  "en": ""
+ },
+ {
+  "vi": "Bạn lọc CV, soát bảng chấm công và hợp đồng, xếp lịch phỏng vấn cho chị Huyền. Công bằng với từng người.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi CV một thẻ: đọc yêu cầu vị trí, chạm khay Mời phỏng vấn, Cần xác minh hay Không mời.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm ô sai, chọn lý do: đi muộn, về sớm, nghỉ không phép, chấm hộ… Ô đúng để nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "So hợp đồng nháp với thư mời và CCCD. Chạm chỗ sai, chọn cách viết đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một buổi rồi chạm ô trống: không trùng người, đủ chỗ, đủ máy, tránh giờ bận.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm hiểu từng chuyện (8 phút mỗi lần), rồi chọn cách trả lời vừa đúng nội quy vừa có lối ra.",
+  "en": ""
+ },
+ {
+  "vi": "📥 Tab [[Hộp thư]]: chạm thư việc mới, bấm [[Nhận hồ sơ & đọc yêu cầu]].",
+  "en": ""
+ },
+ {
+  "vi": "🗃️ Giấy tờ kèm theo nằm dưới hồ sơ. Chạm để mở, đọc kỹ trước khi làm.",
+  "en": ""
+ },
+ {
+  "vi": "📞 Có tin “Vừa đổi” giữa chừng: sếp đổi ý hoặc người ta gọi lại. Sửa theo tin mới rồi nộp.",
+  "en": ""
+ },
+ {
+  "vi": "💡 Bí thì bấm Hỏi ở cuối hồ sơ (10 phút, bớt 3 xu thưởng, tối đa 3 lần).",
+  "en": ""
+ },
+ {
+  "vi": "📤 Xong thì bấm [[Nộp hồ sơ]]. Kết quả hiện từng dòng đúng, sai và vì sao.",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Chỉ xét yêu cầu công việc: không loại vì giới tính, hôn nhân, tuổi, quê quán. Người quen vẫn xét như mọi người.",
+  "en": ""
+ },
+ {
+  "vi": "🔎 CV lệch tra cứu BHXH hoặc thiếu bản sao bằng bắt buộc: Cần xác minh, chưa mời ngay.",
+  "en": ""
+ },
+ {
+  "vi": "🕗 Trễ tới 08:05 vẫn đủ công. Sửa nhầm ô đúng cũng tính là sai.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Thử việc tối đa 60 ngày, lương thử việc ít nhất 85%, hợp đồng phải đóng bảo hiểm, không ký thay.",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Nộp kịp hạn, không sai chỗ nào: +1 tin tưởng và đủ thưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Xếp nhầm khay, sửa nhầm ô",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi chỗ sai bớt 3 xu thưởng; lỗi nặng bớt thêm 3 xu và mất tin tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Loại người vì giới tính, tuổi, hôn nhân",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi nặng: ngày đó không tính là chắc tay, chị Huyền mất tin tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Bớt 8 xu thưởng, sếp mất 3 tin tưởng; ngày đó không tính là chắc tay.",
+  "en": ""
+ },
+ {
+  "vi": "Sếp kiểm lại mọi hồ sơ, mỗi lần nộp tốn thêm 20 phút.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ dở việc cuối ngày",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi việc dở mất 2 tin tưởng, tối đa 6.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Phải được tuyển trước: bấm [[Ứng tuyển]], nộp CV, thư xin việc, phỏng vấn với chị Huyền.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Lương theo ngày (Cánh Diều 55–80 xu, văn phòng tuyển dụng 50–70 xu) vào ví khi khép ca, nếu xong ít nhất một việc.",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Mỗi hồ sơ thưởng 20–30 xu, trừ dần theo chỗ sai và số lần hỏi.",
+  "en": ""
+ },
+ {
+  "vi": "🧭 Lộ trình: Thử việc → Chuyên viên nhân sự chính thức → Phụ trách tuyển dụng → Được đề cử phó phòng nhân sự.",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Từ ngày 2, đồng nghiệp nhờ việc: [[Giúp]] hoặc [[Để hôm khác]]. Đã giúp ai thì sau có thể [[Nhờ đỡ]], lùi một hạn thêm 1 giờ.",
+  "en": ""
+ },
+ {
+  "vi": "☕ [[Nghỉ giải lao 15 phút]] mỗi ngày một lần khi mệt.",
+  "en": ""
+ },
+ {
+  "vi": "📨 Mùa tuyển dụng: hồ sơ nào cũng dày hơn thường lệ.",
+  "en": ""
+ },
+ {
+  "vi": "🔄 Anh Quân đổi ý liên tục: hồ sơ hay có tin “Vừa đổi” giữa chừng.",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Thanh tra lao động ghé: không lỗi nặng +10 xu, +3 tin tưởng; còn lỗi −10 xu, −3 tin tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "📆 Ngày thứ 5 mỗi đợt là chốt công cuối tháng: hạn sớm hơn 30 phút, tăng ca được 18 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Cháu giám đốc vào thẳng, ứng viên gửi giỏ trái cây, đồng nghiệp nhờ quẹt thẻ hộ: chọn cách xử lý, có cách đúng nguyên tắc.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn giữ lịch, thư từ và điện thoại cho Anh Quân: sếp quyết nhanh, đổi ý còn nhanh hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi thư một thẻ: Trình sếp, Tự trả lời, Chuyển phòng ban hay Rác / lừa đảo.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc cuộc gọi, điền họ tên, đơn vị, số gọi lại, giờ gọi lại (24 giờ) và việc gì.",
+  "en": ""
+ },
+ {
+  "vi": "Thư mời, thông báo, thư trả lời: chạm chỗ sai (tên, ngày, thứ, giờ), chọn cách viết đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một cuộc họp rồi chạm ô trống: đủ chỗ, có máy chiếu khi cần, tránh giờ sếp bận.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm các bước sẽ làm theo thứ tự (↑ ↓ để đổi chỗ, ✕ để bỏ). Bước có hại thì bỏ qua.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm hiểu trước, rồi chọn cách trả lời khách khó cho khéo mà đúng.",
+  "en": ""
+ },
+ {
+  "vi": "📤 Xong thì bấm [[Nộp hồ sơ]], [[Nộp lời nhắn]] hoặc [[Chốt các bước]].",
+  "en": ""
+ },
+ {
+  "vi": "📞 Số gọi lại: lấy số sau cùng người gọi đọc. Giờ ghi theo 24 giờ: 2 giờ rưỡi chiều là 14:30.",
+  "en": ""
+ },
+ {
+  "vi": "🎣 Thư đòi chuyển tiền gấp, báo đổi số tài khoản: Rác / lừa đảo, rồi gọi xác minh bằng số đã biết.",
+  "en": ""
+ },
+ {
+  "vi": "📅 Ngày và thứ phải khớp lịch. Tên người nhận đúng từng dấu.",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Lịch, thư và giấy tờ của sếp không đưa người ngoài xem.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sai số gọi lại, sai giờ",
+  "en": ""
+ },
+ {
+  "vi": "Sếp gọi nhầm người; mỗi ô sai bớt 3 xu thưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Làm theo thư lừa đảo",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi nặng: mất tin tưởng, ngày đó không tính là chắc tay.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Phải được tuyển trước: bấm [[Ứng tuyển]], nộp CV, thư xin việc, phỏng vấn với Anh Quân.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Lương theo ngày (Cánh Diều 55–80 xu, văn phòng dịch vụ 50–70 xu) vào ví khi khép ca, nếu xong ít nhất một việc.",
+  "en": ""
+ },
+ {
+  "vi": "🧭 Lộ trình: Thử việc → Thư ký chính thức → Thư ký riêng của giám đốc → Được đề cử trợ lý giám đốc.",
+  "en": ""
+ },
+ {
+  "vi": "✈️ Sếp sắp đi công tác: kế hoạch hay đổi phút chót.",
+  "en": ""
+ },
+ {
+  "vi": "🎩 Ngày đón khách lớn: thư từ, điện thoại dày hơn.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Chị Khuê soát việc cuối ngày: không lỗi nặng +10 xu, +3 tin tưởng; còn lỗi −10 xu, −3 tin tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "🏛️ Ngày thứ 5 mỗi đợt là họp hội đồng quản trị: hạn sớm hơn 30 phút, tăng ca được 18 xu.",
+  "en": ""
+ },
+ {
+  "vi": "📲 Tin nhắn “sếp” xin mua thẻ cào, phòng họp bị chiếm, khách đến sớm một tiếng: chọn cách xử lý, có cách đúng nguyên tắc.",
+  "en": ""
+ },
+ {
+  "vi": "Nộp lời nhắn",
+  "en": ""
+ },
+ {
+  "vi": "Chốt các bước",
+  "en": ""
+ },
+ {
+  "vi": "IT văn phòng",
+  "en": ""
+ },
+ {
+  "vi": "Bạn trực bàn IT cùng Anh Long: phiếu hỗ trợ, máy hỏng, tủ mạng, quyền truy cập và những cuộc gọi đòi mã OTP.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi phiếu một thẻ: Khẩn — làm ngay, Trong ngày, Xếp lịch hay Không phải việc IT.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm các bước sửa theo thứ tự. Sao lưu trước, sửa sau; bước có hại thì bỏ qua.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc tem trên máy, ghi số seri, mã tài sản, người dùng, phòng ban và hạn bảo hành.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi ổ mạng một thẻ: xếp vào mạng nhân viên, kế toán, khách hay camera.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm ô sai trong bảng quyền: Cấp quyền, Thu hồi hay Giữ nguyên.",
+  "en": ""
+ },
+ {
   "vi": "Tìm hiểu trước, rồi chọn cách trả lời người xin mật khẩu, mã OTP, cài phần mềm lạ.",
   "en": ""
  },
@@ -1401,318 +1797,6 @@
  },
  {
   "vi": "▶️ Bấm [[Làm tiếp]] để mở màn hình làm việc.",
-  "en": ""
- },
- {
-  "vi": "🔔 Chuông có số: những chuyện cần để ý (hàng sắp hết, hóa đơn, khách chờ).",
-  "en": ""
- },
- {
-  "vi": "⌨️ Trên máy tính: WASD hoặc phím mũi tên để đi, E để dùng đồ gần nhất.",
-  "en": ""
- },
- {
-  "vi": "Bước tiếp theo",
-  "en": ""
- },
- {
-  "vi": "🔘 Nút to ở cuối màn hình làm việc luôn làm bước kế tiếp, hoặc nói rõ còn thiếu gì. Chỗ cần bấm sẽ sáng lên.",
-  "en": ""
- },
- {
-  "vi": "📌 Khi nút ở cuối chưa làm được bước đó, đầu màn hình hiện dòng “Bước tiếp theo”: chạm vào là làm luôn.",
-  "en": ""
- },
- {
-  "vi": "✅ Danh sách việc: ✓ là xong, ✗ là sai cần sửa, ○ là chưa làm. Chạm dòng có → để nhảy tới.",
-  "en": ""
- },
- {
-  "vi": "⋯ Nút ⋯ ở góc trên thẻ việc có [[Để lát nữa]] (cất việc này lại) và [[Xem các việc khác]].",
-  "en": ""
- },
- {
-  "vi": "✅ Xong một việc: còn việc chờ thì bấm [[Công việc tiếp theo]]; hết việc thì [[Khép ca hôm nay]] hoặc nhận thêm.",
-  "en": ""
- },
- {
-  "vi": "✨ Việc đầu tiên ở mỗi chỗ: nút cần bấm sẽ sáng nhấp nháy.",
-  "en": ""
- },
- {
-  "vi": "❓ Nút ? ở góc trên mở hướng dẫn của đúng nghề đang làm.",
-  "en": ""
- },
- {
-  "vi": "Giờ trong ngày",
-  "en": ""
- },
- {
-  "vi": "🕘 Cạnh số ngày ở trên cùng là đồng hồ của nơi làm: giờ, buổi (Sáng, Trưa, Chiều, Tối, Đêm) và một vạch nhỏ cho biết ca đã đi được bao nhiêu.",
-  "en": ""
- },
- {
-  "vi": "⏱️ Mỗi thao tác làm việc tốn khoảng 20 phút giờ tiệm (tiệm sửa đồ 10 phút). Làm xong một bước sẽ hiện số phút vừa trôi, như “+20 phút”.",
-  "en": ""
- },
- {
-  "vi": "🏪 Mỗi nơi có giờ mở và đóng cửa riêng: tạp hoá 06:30–21:30, quán mì 10:00–22:00, giao hàng ca tối 17:00–23:00. Chạm số ngày để xem giờ của nơi đang làm.",
-  "en": ""
- },
- {
-  "vi": "💼 Văn phòng 08:00–17:30, xin tăng ca thì tới 20:00. Tiệm trà sữa 08:00–20:00, ngày đông bán nốt tới muộn nhất 23:00.",
-  "en": ""
- },
- {
-  "vi": "⚽ Có ngày đóng cửa muộn hơn: quán trà đá hôm có trận bóng bán tới 22:00.",
-  "en": ""
- },
- {
-  "vi": "☕ Chưa mở ca thì đồng hồ chỉ giờ chuẩn bị, sớm hơn giờ mở cửa 30 phút.",
-  "en": ""
- },
- {
-  "vi": "🌇 Cảnh tiệm đổi theo giờ: sáng dịu, trưa nắng, chiều vàng, tối lên đèn, đêm tối hẳn.",
-  "en": ""
- },
- {
-  "vi": "🚚 Hàng nhập về theo đồng hồ này: “15–30 phút”, “chiều nay”, “sáng mai trước giờ mở”.",
-  "en": ""
- },
- {
-  "vi": "🎲 Mỗi ngày có một nhịp hên xui: thư thả (2 việc), đời thường (3 việc) hoặc ngày hội khu phố (4 việc).",
-  "en": ""
- },
- {
-  "vi": "Giờ đóng cửa",
-  "en": ""
- },
- {
-  "vi": "⏰ Còn 60 phút và còn 30 phút có lời nhắc; đồng hồ đổi sang vàng rồi cam.",
-  "en": ""
- },
- {
-  "vi": "🔔 Tới giờ đóng cửa đồng hồ chuyển đỏ và không đón thêm khách mới.",
-  "en": ""
- },
- {
-  "vi": "🧑‍🍳 Khách đã vào quán vẫn được làm nốt, không tốn thêm gì. Đồng hồ ghi “Quá giờ đóng cửa … · làm nốt rồi khép ca”.",
-  "en": ""
- },
- {
-  "vi": "🧋 Tiệm trà sữa khác một chút: ngày đông vẫn bán nốt khách đang đợi, muộn nhất 23:00.",
-  "en": ""
- },
- {
-  "vi": "🌙 Bấm [[Khép ca hôm nay]] lúc nào cũng được: việc dở giữ lại, khách hẹn quay lại khi mở cửa sáng mai. Khép ca đàng hoàng không bị tính là bỏ dở việc.",
-  "en": ""
- },
- {
-  "vi": "🌅 Bản tổng kết ghi bạn khép ca lúc mấy giờ (sớm, đúng giờ hay quá giờ) và giờ mở cửa hôm sau.",
-  "en": ""
- },
- {
-  "vi": "Mở ca và khép ca",
-  "en": ""
- },
- {
-  "vi": "☀️ Đầu ngày bấm [[Chuẩn bị ngày mới]] để mở ca.",
-  "en": ""
- },
- {
-  "vi": "➕ Hết việc có thể nhận thêm việc, hoặc bấm [[Khép ca hôm nay]].",
-  "en": ""
- },
- {
-  "vi": "🧾 Khép ca: lương người phụ, điện nước, tiền thuê ghi vào sổ tiệm để trả sau.",
-  "en": ""
- },
- {
-  "vi": "🏠 Mỗi lần khép ca là qua một ngày sống: ví trả tiền phòng và cơm nước.",
-  "en": ""
- },
- {
-  "vi": "📋 Xem lại bản tổng kết ngày ở biểu tượng bảng kẹp trên thẻ việc.",
-  "en": ""
- },
- {
-  "vi": "💰 Trong bản tổng kết, thẻ “✓ Lãi/lỗ hôm nay” (làm công ăn lương: “✓ Kết quả ngày làm”) gập gọn; chạm để xem chi tiết.",
-  "en": ""
- },
- {
-  "vi": "Các mục dễ bị bỏ sót",
-  "en": ""
- },
- {
-  "vi": "📱 Trên điện thoại, nút [[Thêm]] mở các mục còn lại. Mục có dấu › mở một nhóm nhỏ.",
-  "en": ""
- },
- {
-  "vi": "💼 Việc: [[Hành trình]], [[Chuẩn bị]], [[Sổ tiệm]], [[Đánh giá]], [[Việc làm]] (nơi làm thuê).",
-  "en": ""
- },
- {
-  "vi": "🏘️ [[Khu phố]]: [[Nhóm phố]], [[Chuyện phố]], [[Phố nghề]], [[Bản đồ phố]], [[Xếp hạng]].",
-  "en": ""
- },
- {
-  "vi": "👥 [[Quan hệ]]: [[Người quen]], [[Bạn bè]] (người chơi thật), [[Hôn nhân]].",
-  "en": ""
- },
- {
-  "vi": "💰 [[Ngân hàng & nhà]]: [[Tiền của bạn]], [[Ngân hàng]], [[Nhà của bạn]].",
-  "en": ""
- },
- {
-  "vi": "🚩 [[Chuyện của bạn]]: [[Tình huống]], [[Chuyện đời]]. Chấm đỏ là có chuyện chờ bạn quyết.",
-  "en": ""
- },
- {
-  "vi": "🎒 [[Của mình]]: [[Tủ đồ]], [[Kỷ niệm]], [[Hộ chiếu]], [[Trò nhỏ]], [[Sổ tay]].",
-  "en": ""
- },
- {
-  "vi": "Bản đồ phố: đi tới chỗ làm",
-  "en": ""
- },
- {
-  "vi": "🗺️ Bấm [[Hành trình]] trong menu là ra bản đồ phố. Chạm đường để đi, chạm một tiệm để đi tới cửa.",
-  "en": ""
- },
- {
-  "vi": "🚪 Tới cửa hiện một thẻ nhỏ: bấm [[Vào làm]] (hoặc Vào tiếp) là vào làm ở đó. Muốn đổi nghề thì cứ đi sang tiệm khác.",
-  "en": ""
- },
- {
-  "vi": "🔒 Tiệm có ổ khóa là chưa mở: chạm vào để xem chương nào mở. ⏸ Tiệm bạn đã tạm đóng thì bấm [[Mở lại]].",
-  "en": ""
- },
- {
-  "vi": "📋 Thích kiểu cũ thì bấm [[Danh sách]] ở góc trên. Cài đặt → Màn hình chính chọn mở bản đồ hay danh sách.",
-  "en": ""
- },
- {
-  "vi": "Mở Bản đồ phố",
-  "en": ""
- },
- {
-  "vi": "Chuẩn bị, nhiệm vụ và bảng giá",
-  "en": ""
- },
- {
-  "vi": "🧺 Bấm [[Chuẩn bị]] (hoặc [[Chuẩn bị ngày mới]] khi chưa mở ca): xem thời tiết, nhịp của ngày và việc cần lo trước giờ mở cửa.",
-  "en": ""
- },
- {
-  "vi": "🎲 Nhịp ngày là hên xui: thư thả (2 việc đầu ca, khách không mất kiên nhẫn), đời thường (3 việc) hoặc Ngày hội khu phố (4 việc).",
-  "en": ""
- },
- {
-  "vi": "🌞 Nhiệm vụ hôm nay: xong 2 việc +20 xu, xong 1 trò nhỏ +12 xu, trò chuyện với 2 người +8 xu. Mỗi mục thêm 10 XP.",
-  "en": ""
- },
- {
-  "vi": "🎁 Đủ số thì bấm [[Nhận quà]] ở mục đó. Tiền vào quỹ nơi đang làm. Sang ngày mới nhiệm vụ làm lại từ đầu.",
-  "en": ""
- },
- {
-  "vi": "🔥 Làm liền 3 việc không lỗi được thưởng thêm 8 xu, mỗi ngày một lần.",
-  "en": ""
- },
- {
-  "vi": "🌟 Thẻ cấp cho biết cấp của nơi này, mỗi cấp cần 90 XP. Bấm [[Đổi tên]] để treo biển tên mới cho tiệm.",
-  "en": ""
- },
- {
-  "vi": "🏷️ [[Bảng giá]]: tiệm trà sữa và tiệm mẹ & bé đổi được giá từ 75% tới 125% giá gốc, chỉ trước khi mở ca, rồi bấm [[Lưu giá]]. Nơi khác chỉ để xem.",
-  "en": ""
- },
- {
-  "vi": "☀️ Xong xuôi thì bấm [[Mở cửa ngày]] để bắt đầu ca.",
-  "en": ""
- },
- {
-  "vi": "Mở Chuẩn bị",
-  "en": ""
- },
- {
-  "vi": "Chương và nơi làm mới",
-  "en": ""
- },
- {
-  "vi": "📚 Hành trình có 6 chương. Mỗi chương có vài mục tiêu, đọc từ việc bạn đã làm thật.",
-  "en": ""
- },
- {
-  "vi": "🔓 Xong chương 1 mở tiệm thú cưng, salon, tiệm sửa đồ, nông trại, homestay.",
-  "en": ""
- },
- {
-  "vi": "🔓 Xong chương 2 mở shop quần áo, shop thú cưng, trà đá vỉa hè.",
-  "en": ""
- },
- {
-  "vi": "🔓 Xong chương 3 mở nhà thuốc, chăm sóc khách hàng, hướng dẫn viên, giáo viên, kế toán.",
-  "en": ""
- },
- {
-  "vi": "💼 Xong chương 4 mở văn phòng: kế toán doanh nghiệp, thuế & tiền lương. Xong chương 5 mở kế toán tập đoàn.",
-  "en": ""
- },
- {
-  "vi": "🎯 Mục tiêu ví dụ: làm ở 2 nơi, hoàn thành 10 việc, rút tiền lời về ví một lần, giữ ví không nợ vài ngày liền.",
-  "en": ""
- },
- {
-  "vi": "⏸️ Ví đang âm thì câu chuyện tạm dừng: trả hết nợ tiền phòng là đi tiếp được.",
-  "en": ""
- },
- {
-  "vi": "Trưởng thành và danh hiệu",
-  "en": ""
- },
- {
-  "vi": "🌱 Cấp trưởng thành (tối đa 30) cộng từ kinh nghiệm mọi nơi, cộng thêm mỗi nơi bạn đã phục vụ khách.",
-  "en": ""
- },
- {
-  "vi": "🧠 Kỹ năng lớn dần theo việc: cẩn thận, giao tiếp, kiên nhẫn, con số, làm nhóm, sáng tạo…",
-  "en": ""
- },
- {
-  "vi": "🏅 Danh hiệu mở khi đạt mốc: câu chuyện, hành trình, nghề, kỹ năng. Có danh hiệu ẩn.",
-  "en": ""
- },
- {
-  "vi": "🎖️ Đeo cùng lúc tối đa 3 danh hiệu và chứng chỉ: cái đầu hiện tên, các cái sau hiện biểu tượng cạnh tên bạn. Chạm lần nữa để cất.",
-  "en": ""
- },
- {
-  "vi": "Xem danh hiệu",
-  "en": ""
- },
- {
-  "vi": "🧩 Mở [[Trò nhỏ]]: mỗi nơi làm có 4 trò ngắn theo đúng nghề đó, chơi lúc nào cũng được.",
-  "en": ""
- },
- {
-  "vi": "🧺 Xếp đúng góc: bấm một thẻ rồi bấm ngăn hợp với nó. Trên máy tính kéo thả cũng được.",
-  "en": ""
- },
- {
-  "vi": "🃏 Ghép đôi nhãn: mỗi lượt lật hai thẻ để tìm cặp giống nhau. Khác nhau thì nhớ vị trí rồi lật thẻ khác.",
-  "en": ""
- },
- {
-  "vi": "🔢 Xếp nhịp công việc: chọn các bước theo đúng thứ tự, lỡ tay thì [[Hoàn tác]], đủ bước thì bấm [[Kiểm nhịp công việc]]. Sai nhịp thì xếp lại.",
-  "en": ""
- },
- {
-  "vi": "🔗 Nối hai nửa: đọc dấu hiệu, bấm một thẻ rồi bấm nhãn đi với nó.",
-  "en": ""
- },
- {
-  "vi": "⭐ Mỗi trò bắt đầu 100 điểm, mỗi lần thử chưa khớp trừ 8, thấp nhất 30. Thử sai không mất xu. Điểm cao nhất lưu ở Kỷ lục riêng.",
   "en": ""
  }
 ]

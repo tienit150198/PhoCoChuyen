@@ -1,5 +1,481 @@
 [
  {
+  "vi": "Tóc đuôi ngựa buộc cao",
+  "en": ""
+ },
+ {
+  "vi": "Tóc hai búi tròn",
+  "en": ""
+ },
+ {
+  "vi": "Tóc wolf cut",
+  "en": ""
+ },
+ {
+  "vi": "Tóc undercut",
+  "en": ""
+ },
+ {
+  "vi": "Tóc mái bay",
+  "en": ""
+ },
+ {
+  "vi": "Tóc tết bím",
+  "en": ""
+ },
+ {
+  "vi": "Áo croptop trắng",
+  "en": ""
+ },
+ {
+  "vi": "Áo croptop",
+  "en": ""
+ },
+ {
+  "vi": "Áo baby tee hồng",
+  "en": ""
+ },
+ {
+  "vi": "Áo baby tee",
+  "en": ""
+ },
+ {
+  "vi": "Áo khoác bomber xanh rêu",
+  "en": ""
+ },
+ {
+  "vi": "Áo khoác bomber",
+  "en": ""
+ },
+ {
+  "vi": "Hoodie oversize xám",
+  "en": ""
+ },
+ {
+  "vi": "Sơ mi oversize xanh nhạt",
+  "en": ""
+ },
+ {
+  "vi": "Sơ mi oversize",
+  "en": ""
+ },
+ {
+  "vi": "Áo khoác jean",
+  "en": ""
+ },
+ {
+  "vi": "Váy hai dây lụa đen",
+  "en": ""
+ },
+ {
+  "vi": "Váy hai dây",
+  "en": ""
+ },
+ {
+  "vi": "Áo dài cách tân hồng",
+  "en": ""
+ },
+ {
+  "vi": "Áo ba lỗ trắng",
+  "en": ""
+ },
+ {
+  "vi": "Áo ba lỗ",
+  "en": ""
+ },
+ {
+  "vi": "Đầm suông xanh lá",
+  "en": ""
+ },
+ {
+  "vi": "Đầm suông",
+  "en": ""
+ },
+ {
+  "vi": "Váy maxi hoa đào",
+  "en": ""
+ },
+ {
+  "vi": "Váy maxi hoa",
+  "en": ""
+ },
+ {
+  "vi": "Đầm sơ mi xanh trời",
+  "en": ""
+ },
+ {
+  "vi": "Đầm sơ mi",
+  "en": ""
+ },
+ {
+  "vi": "Váy yếm jean",
+  "en": ""
+ },
+ {
+  "vi": "Đầm babydoll hoa nhí",
+  "en": ""
+ },
+ {
+  "vi": "Đầm dạ hội kim sa tím",
+  "en": ""
+ },
+ {
+  "vi": "Đầm dạ hội kim sa",
+  "en": ""
+ },
+ {
+  "vi": "Quần ống rộng be",
+  "en": ""
+ },
+ {
+  "vi": "Quần ống rộng",
+  "en": ""
+ },
+ {
+  "vi": "Quần cargo xanh rêu",
+  "en": ""
+ },
+ {
+  "vi": "Quần cargo",
+  "en": ""
+ },
+ {
+  "vi": "Chân váy tennis trắng",
+  "en": ""
+ },
+ {
+  "vi": "Chân váy tennis",
+  "en": ""
+ },
+ {
+  "vi": "Quần jogger đen",
+  "en": ""
+ },
+ {
+  "vi": "Quần jogger",
+  "en": ""
+ },
+ {
+  "vi": "Quần short jean",
+  "en": ""
+ },
+ {
+  "vi": "Chân váy jean",
+  "en": ""
+ },
+ {
+  "vi": "Chân váy xếp ly dài hồng",
+  "en": ""
+ },
+ {
+  "vi": "Chân váy xếp ly dài",
+  "en": ""
+ },
+ {
+  "vi": "Sneaker chunky trắng",
+  "en": ""
+ },
+ {
+  "vi": "Giày Mary Jane đen",
+  "en": ""
+ },
+ {
+  "vi": "Giày Mary Jane",
+  "en": ""
+ },
+ {
+  "vi": "Bốt cổ ngắn nâu",
+  "en": ""
+ },
+ {
+  "vi": "Bốt cổ ngắn",
+  "en": ""
+ },
+ {
+  "vi": "Dép quai ngang",
+  "en": ""
+ },
+ {
+  "vi": "Kính mát mắt mèo",
+  "en": ""
+ },
+ {
+  "vi": "Mũ bucket",
+  "en": ""
+ },
+ {
+  "vi": "Mũ lưỡi trai",
+  "en": ""
+ },
+ {
+  "vi": "Vòng cổ mặt trăng",
+  "en": ""
+ },
+ {
+  "vi": "Kẹp tóc càng cua",
+  "en": ""
+ },
+ {
+  "vi": "Kính cận gọng vuông",
+  "en": ""
+ },
+ {
+  "vi": "Nơ lụa to hồng",
+  "en": ""
+ },
+ {
+  "vi": "Nơ lụa to",
+  "en": ""
+ },
+ {
+  "vi": "Khuyên tai tròn vàng",
+  "en": ""
+ },
+ {
+  "vi": "Khuyên tai tròn",
+  "en": ""
+ },
+ {
+  "vi": "Khăn bandana đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Khăn bandana",
+  "en": ""
+ },
+ {
+  "vi": "Balo mini vàng",
+  "en": ""
+ },
+ {
+  "vi": "Mở khóa màu",
+  "en": ""
+ },
+ {
+  "vi": "Vàng gold",
+  "en": ""
+ },
+ {
+  "vi": "Trắng kem",
+  "en": ""
+ },
+ {
+  "vi": "Đồ mới trong tủ (bản lưu) không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Tủ đồ trong bản lưu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Màu phụ kiện trong bản lưu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng màu trong bản lưu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin màu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Màu này không có trong bảng màu.",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đồ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Món đồ này không có trong tủ.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang mặc đúng bộ này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thay đồ xong. Trông bạn tươi tắn hẳn!",
+  "en": ""
+ },
+ {
+  "vi": "Màu gốc lúc nào cũng miễn phí.",
+  "en": ""
+ },
+ {
+  "vi": "Món này không đổi màu được.",
+  "en": ""
+ },
+ {
+  "vi": "Đeo luôn rồi nè!",
+  "en": ""
+ },
+ {
+  "vi": "Mặc luôn rồi nè!",
+  "en": ""
+ },
+ {
+  "vi": "Đã cất vào tủ.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác tủ đồ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn bạc khắc tên",
+  "en": ""
+ },
+ {
+  "vi": "Bạc 925, khắc tên hai đứa ở mặt trong.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn vàng tây 18K",
+  "en": ""
+ },
+ {
+  "vi": "Vàng 18K trơn, đeo hằng ngày không lo trầy.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn vàng ta 24K (1 chỉ)",
+  "en": ""
+ },
+ {
+  "vi": "Một chỉ vàng 9999, sau này để dành cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn vàng đính ruby",
+  "en": ""
+ },
+ {
+  "vi": "Viên ruby đỏ như pháo cưới, ổ vàng 18K.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn kim cương 5 ly",
+  "en": ""
+ },
+ {
+  "vi": "Kim cương 5 ly có giấy kiểm định, lấp lánh dưới đèn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạc",
+  "en": ""
+ },
+ {
+  "vi": "Vàng hồng",
+  "en": ""
+ },
+ {
+  "vi": "Kim cương trắng",
+  "en": ""
+ },
+ {
+  "vi": "Ruby đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Ngọc lục bảo",
+  "en": ""
+ },
+ {
+  "vi": "Thạch anh tím",
+  "en": ""
+ },
+ {
+  "vi": "Đá hồng",
+  "en": ""
+ },
+ {
+  "vi": "Mình đi qua bao nhiêu con hẻm, chỉ muốn về chung một nhà với bạn. Bạn đồng ý nhé?",
+  "en": ""
+ },
+ {
+  "vi": "Từ ly trà đầu tiên ở phố, mình đã biết là bạn rồi. Mình cưới nhau nha?",
+  "en": ""
+ },
+ {
+  "vi": "Mai mốt mình cùng mở một tiệm nhỏ, tối nào cũng cùng nhau khép ca. Bạn chịu không?",
+  "en": ""
+ },
+ {
+  "vi": "Không cần pháo hoa, chỉ cần mỗi ngày sống ở phố đều có bạn. Bạn nhận chiếc nhẫn này nhé?",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tám bảo cưới sớm cho bà có dịp nấu nồi canh chua thật to. Mình cũng nghĩ vậy. Còn bạn?",
+  "en": ""
+ },
+ {
+  "vi": "Cả phố biết mình thương bạn rồi, giờ chỉ còn chờ bạn gật đầu thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Rạp cưới tại nhà",
+  "en": ""
+ },
+ {
+  "vi": "Dựng rạp trước ngõ, thuê bàn ghế, bát đĩa; đội nấu cỗ lo cơm nước. Hàng xóm đến đông.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà hàng Hoa Sen",
+  "en": ""
+ },
+ {
+  "vi": "Phí sảnh đã gồm âm thanh, ánh sáng cơ bản và phục vụ bàn.",
+  "en": ""
+ },
+ {
+  "vi": "Trung tâm tiệc cưới Sen Vàng",
+  "en": ""
+ },
+ {
+  "vi": "Sảnh lớn, đèn chùm, màn LED và lối đi hoa. Khách thường mừng nhiều hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Bình dân",
+  "en": ""
+ },
+ {
+  "vi": "Gỏi ngó sen tôm thịt",
+  "en": ""
+ },
+ {
+  "vi": "Gà luộc lá chanh",
+  "en": ""
+ },
+ {
+  "vi": "Nem rán",
+  "en": ""
+ },
+ {
+  "vi": "Xôi gấc",
+  "en": ""
+ },
+ {
+  "vi": "Canh măng móng giò",
+  "en": ""
+ },
+ {
+  "vi": "Rau cải xào tỏi",
+  "en": ""
+ },
+ {
+  "vi": "Bia và nước ngọt",
+  "en": ""
+ },
+ {
+  "vi": "Tiêu chuẩn",
+  "en": ""
+ },
+ {
   "vi": "Súp cua gà xé",
   "en": ""
  },
@@ -485,6 +961,10 @@
  },
  {
   "vi": "Ảnh này đã lưu hoặc hết hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà đấu giá đồ độc bản mỗi tối từ 20:30: biển số đẹp, số điện thoại đẹp, tranh, đặt tên hồ đồi, danh hiệu độc nhất",
   "en": ""
  },
  {
@@ -1317,166 +1797,6 @@
  },
  {
   "vi": "Cuối tiệc cô dâu chú rể tung hoa: ai bắt được nhận 20 xu. Có pháo giấy lúc vào, pháo hoa lúc tiệc tàn.",
-  "en": ""
- },
- {
-  "vi": "Bảng tên cô dâu chú rể to và nổi bật hơn, nhìn là thấy ngay nhân vật chính của buổi tiệc.",
-  "en": ""
- },
- {
-  "vi": "Sửa lỗi mục Kế hoạch cưới không mở được khi kế hoạch của hai bạn đã gửi hoặc đã chốt.",
-  "en": ""
- },
- {
-  "vi": "Thả cảm xúc trong chat: nhấn giữ một tin nhắn rồi chọn ❤️ 😂 😮 😢 👍 🔥. Bấm lại để bỏ, chọn cái khác để đổi.",
-  "en": ""
- },
- {
-  "vi": "Dưới mỗi tin hiện số cảm xúc của mọi người; bấm vào một cảm xúc là thả theo ngay.",
-  "en": ""
- },
- {
-  "vi": "Thẻ Nhiệm vụ hôm nay ghi rõ cách tính từng việc; nhớ bấm Nhận quà trước khi đóng ca.",
-  "en": ""
- },
- {
-  "vi": "Vào nhà của mình: xem từng phòng, sửa nhà và trang trí với 27 món đồ. Nhà càng ấm cúng, sáng dậy càng vui.",
-  "en": ""
- },
- {
-  "vi": "Nghề mới Nội trợ (mở từ chương 2): giúp việc nhà chị Thảo, đi chợ mặc cả, nấu cơm hợp khẩu vị, giặt giũ, chăm bà, đưa đón bé Su.",
-  "en": ""
- },
- {
-  "vi": "Ba vị trí văn phòng mới ở Công ty Cánh Diều (mở từ chương 5): Hành chính – Nhân sự, Thư ký giám đốc, IT văn phòng.",
-  "en": ""
- },
- {
-  "vi": "Nghề kế toán có thêm tình huống mới: sếp xin ứng quỹ, công nhân xin ứng lương, họp chốt số lúc nửa đêm…",
-  "en": ""
- },
- {
-  "vi": "Ở trong tiệc cưới từ 2 phút trở lên mới được tính là đi ăn cưới: tính vào bảng Khách mời của tuần và tiền mừng của cô dâu chú rể.",
-  "en": ""
- },
- {
-  "vi": "Sửa lỗi đơn sỉ của bà Sáu bị treo khi bớt giá kịch khung ngay lần đầu: đơn đang kẹt tự được chốt khi vào game.",
-  "en": ""
- },
- {
-  "vi": "Tiệc cưới mới: 10 phút rộn ràng có MC, cỗ, múa lân, đèn nháy, nhạc cưới, hàng xóm và các bạn nhỏ vào chung vui.",
-  "en": ""
- },
- {
-  "vi": "Có mặt trong tiệc cưới được 20 xu mỗi phút. Mỗi khách đến dự, cô dâu chú rể được 15 xu.",
-  "en": ""
- },
- {
-  "vi": "Vào dự là có lộc ngay từ phút đầu, không phải chờ 5 phút.",
-  "en": ""
- },
- {
-  "vi": "Bỏ phong bì mừng cô dâu chú rể ngay trong tiệc, kèm lời chúc cho cả phòng cùng thấy.",
-  "en": ""
- },
- {
-  "vi": "Bảng Lời chúc trong tiệc cưới: lời mọi người nói được giữ lại, không trôi mất nữa.",
-  "en": ""
- },
- {
-  "vi": "Cặp nào đã cưới cũng tổ chức được tiệc: chọn ngày giờ trong Hôn nhân, mời khách miễn phí.",
-  "en": ""
- },
- {
-  "vi": "Đám cưới trực tiếp: chọn ngày giờ thật, cả phố vào dự, khách nhận +15 xu mỗi 5 phút.",
-  "en": ""
- },
- {
-  "vi": "Kỷ niệm 100 ngày, 1 năm, 500 ngày, 1000 ngày cưới: có quà và danh hiệu riêng.",
-  "en": ""
- },
- {
-  "vi": "Khách mời của tuần: ai dự nhiều đám cưới nhất nhận danh hiệu và xu.",
-  "en": ""
- },
- {
-  "vi": "Góc hẹn hò: ngồi ghế đá chờ ghép đôi, hẹn 5 phút, cùng thả tim là thành “Đang tìm hiểu”.",
-  "en": ""
- },
- {
-  "vi": "Chat đã có! Nhắn riêng với bạn bè, hoặc lập nhóm chat tới 20 người.",
-  "en": ""
- },
- {
-  "vi": "Kênh Cả phố: trò chuyện với mọi người đang online, mỗi người 1 tin mỗi 10 giây.",
-  "en": ""
- },
- {
-  "vi": "Chấm xanh cho biết bạn bè nào đang online. Muốn ẩn thì tắt trong Cài đặt.",
-  "en": ""
- },
- {
-  "vi": "Đi dạo khu phố: Bờ hồ, Chợ đêm, Công viên, Phố đi bộ. Gặp người thật, ngồi bàn tám chuyện, nhặt lì xì.",
-  "en": ""
- },
- {
-  "vi": "Nghề mới: Bán trái cây ở sạp Dì Tư: lựa trái chín, cân đúng từng lạng, trả giá khéo.",
-  "en": ""
- },
- {
-  "vi": "Nghề mới: Thu gom rác ca tối: phân loại đúng ngăn, tách đồ nguy hại, giữ ngõ sạch.",
-  "en": ""
- },
- {
-  "vi": "Nghề mới: Thông ống cống với chú Hai: tìm đúng chỗ tắc, báo giá trước khi làm.",
-  "en": ""
- },
- {
-  "vi": "Nghề mới: Phi công và Tiếp viên hàng không của Hãng bay Cánh Cò, bay chặng ngắn ra đảo.",
-  "en": ""
- },
- {
-  "vi": "Mua nhà: thêm biệt thự và 4 loại căn hộ (studio, 1 phòng ngủ, 2 phòng ngủ, penthouse).",
-  "en": ""
- },
- {
-  "vi": "Bấm vào tiền trên cùng để xem hết: ví, quỹ từng nơi làm, ngân hàng, nhà.",
-  "en": ""
- },
- {
-  "vi": "Nâng cấp hạ tầng đã xong! Game đã chạy trên máy chủ mới, mạnh và nhanh hơn.",
-  "en": ""
- },
- {
-  "vi": "Tiền, nhà, đồ và tiến độ của bạn vẫn giữ nguyên. Chúc mọi người chơi vui, enjoy nhé!",
-  "en": ""
- },
- {
-  "vi": "Ai mà bảo lag nữa là buồn luôn đó.",
-  "en": ""
- },
- {
-  "vi": "Bảo trì ngắn từ 21:00 đến 21:10 tối nay (30/09) để chuyển sang máy chủ mới.",
-  "en": ""
- },
- {
-  "vi": "Trong lúc đó game có thể tạm dừng hoặc cần tải lại trang. Tiền, nhà, đồ và tiến độ giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "Từ 20:00 - 0:00 hôm nay hệ thống sẽ thực hiện nâng cấp hạ tầng.",
-  "en": ""
- },
- {
-  "vi": "Người chơi vẫn có thể chơi bình thường nhưng sẽ ảnh hưởng một chút về trải nghiệm, xin vui lòng thông cảm.",
-  "en": ""
- },
- {
-  "vi": "Đã sửa lỗi “Dữ kiện gốc của nhiệm vụ không hợp lệ”: rút tiền, mở ngày mới và làm việc lại bình thường.",
-  "en": ""
- },
- {
-  "vi": "Đơn shop quần áo làm dở từ trước vẫn giữ nguyên, bạn làm tiếp được.",
   "en": ""
  }
 ]

@@ -1163,8 +1163,9 @@ class Odds(FairBase):
 
     def test_xoc_dia(self):
         rate, ev = self.rounds(self.xd('le', 20))
-        self.assertTrue(fh.WIN_P - .03 <= rate <= fh.WIN_P + .01, rate)   # the 2 % raids lose too
-        expected = (1 - .0176) * (2 * fh.WIN_P - 1) - .0176 * (1 + fh.xd_fine(20) / 20)
+        self.assertTrue(fh.WIN_P - .03 <= rate <= fh.WIN_P + .01, rate)   # the 1 % raids lose too
+        r = fh.RAID_PCT / 100
+        expected = (1 - r) * (2 * fh.WIN_P - 1) - r * (1 + fh.xd_fine(20) / 20)
         self.assertAlmostEqual(ev, expected, delta=.025)
 
     def test_a_long_run_of_one_stall(self):

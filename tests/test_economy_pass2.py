@@ -12,7 +12,7 @@ class PaidStakeLimits(FairBase):
     def test_large_payouts_and_raid_cross_old_net_bound_safely(self):
         state=story(10000)
         state['journey']['fair']=dict(fh.initial(), date=fh.vn_date(self.clock.t), net=999000)
-        self.dice(random.Random(1))
+        self.dice(random.Random(11))   # 07/10: a seed whose raid draw is under WEALTH_RAID_P .35 (seed 1's .445 was under .70)
         with patch.object(xs, 'prize_mult', return_value=50):
             state,result=self.act(state,'fair_xs',price=500)
         self.assertEqual(result['fair']['prize'],25000)
@@ -115,8 +115,8 @@ class PaidStakeLimits(FairBase):
         self.assertEqual(set(xs.NAMES), set(xs.TIERS))
 
     def test_raid_increases_ten_percent_relative_only_on_chieu(self):
-        self.assertAlmostEqual(fh.RAID_PCT, 1.76)
-        for draw, raid in [(.017599, True), (.0176, False)]:
+        self.assertAlmostEqual(fh.RAID_PCT, .88)   # 07/10: half of 1.76%
+        for draw, raid in [(.008799, True), (.0088, False)]:
             self.dice(Dice(draws=[draw, .1]))
             _, result = self.act(story(1000), 'fair_xd', side='chan', stake=500)
             self.assertEqual(result['fair']['raid'], raid)

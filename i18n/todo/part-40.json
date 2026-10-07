@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Báo bác sĩ kịp",
+  "en": ""
+ },
+ {
+  "vi": "báo đủ, đúng lúc",
+  "en": ""
+ },
+ {
+  "vi": "báo thiếu hoặc không báo",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm dị ứng, nhãn, y lệnh",
+  "en": ""
+ },
+ {
+  "vi": "đối chiếu đủ",
+  "en": ""
+ },
+ {
+  "vi": "đối chiếu chưa đủ",
+  "en": ""
+ },
+ {
+  "vi": "Tôn trọng người bệnh",
+  "en": ""
+ },
+ {
+  "vi": "hỏi ý, giải thích",
+  "en": ""
+ },
+ {
+  "vi": "ép hoặc chưa hỏi ý",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định đúng",
+  "en": ""
+ },
+ {
+  "vi": "làm hoặc giữ đúng lúc",
+  "en": ""
+ },
+ {
+  "vi": "giữ lại chưa đúng",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời chuông",
+  "en": ""
+ },
+ {
+  "vi": "chu đáo, an toàn",
+  "en": ""
+ },
+ {
+  "vi": "chưa chu đáo",
+  "en": ""
+ },
+ {
+  "vi": "đúng màu",
+  "en": ""
+ },
+ {
+  "vi": "màu chưa đúng",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi, đo trước khi xếp",
+  "en": ""
+ },
+ {
+  "vi": "hỏi và đo nhanh",
+  "en": ""
+ },
+ {
+  "vi": "xếp khi chưa hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Đồng ý của người bệnh",
+  "en": ""
+ },
+ {
+  "vi": "có giấy cam đoan, không ép",
+  "en": ""
+ },
+ {
+  "vi": "thiếu đồng ý",
+  "en": ""
+ },
+ {
+  "vi": "Chuẩn bị đủ",
+  "en": ""
+ },
+ {
+  "vi": "nhịn ăn, dị ứng, trang sức",
+  "en": ""
+ },
+ {
+  "vi": "chuẩn bị chưa đủ",
+  "en": ""
+ },
+ {
+  "vi": "Giấy tờ, kim luồn",
+  "en": ""
+ },
+ {
+  "vi": "đủ thủ tục",
+  "en": ""
+ },
+ {
+  "vi": "thiếu thủ tục",
+  "en": ""
+ },
+ {
+  "vi": "Dặn dò",
+  "en": ""
+ },
+ {
+  "vi": "dặn đủ, hỏi lại",
+  "en": ""
+ },
+ {
+  "vi": "dặn chưa đủ",
+  "en": ""
+ },
+ {
+  "vi": "Sổ giao ca:",
+  "en": ""
+ },
+ {
+  "vi": "“Ờ, phải.”",
+  "en": ""
+ },
+ {
+  "vi": "Không có dị ứng.",
+  "en": ""
+ },
+ {
+  "vi": "Đã ký từ hôm qua, nhưng hôm nay Tuấn nói không mổ nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc ghi chú từng giường → chọn giường đêm qua có chuyện để xem trước.",
+  "en": ""
+ },
+ {
+  "vi": "Sát khuẩn tay → hỏi tên, ngày sinh → đo đủ năm chỉ số → ghi phiếu → ngoài thẻ báo động thì báo bác sĩ → xong.",
+  "en": ""
+ },
+ {
+  "vi": "Sát khuẩn tay → hỏi tên, ngày sinh → vòng dị ứng → nhãn khay → (đường huyết nếu y lệnh dặn) → cho thuốc hoặc giữ lại, báo bác sĩ.",
+  "en": ""
+ },
+ {
+  "vi": "Tới giường, nghe người bệnh, chọn cách trả lời an toàn và chu đáo.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi và đo nhanh từng người → phát thẻ màu theo dấu hiệu, không theo tiếng la → gửi.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi tên, ngày sinh → giấy cam đoan → nhịn ăn → dị ứng → trang sức → chuyển đi, hoặc giữ lại báo bác sĩ.",
+  "en": ""
+ },
+ {
+  "vi": "Giấy ra viện có chữ ký → thẻ BHYT → rút kim luồn → dặn dò → nhờ nhắc lại → cho về.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thay ga giường, đẩy xe đồ vải về kho.",
+  "en": ""
+ },
+ {
+  "vi": "Đã sắp hồ sơ theo giường, in sẵn giấy tờ chờ bác sĩ ký.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu khoa Nội sai.",
+  "en": ""
+ },
+ {
+  "vi": "Việc ở khoa Nội sai.",
+  "en": ""
+ },
+ {
+  "vi": "Cách xác định người bệnh sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu theo dõi sai.",
+  "en": ""
+ },
+ {
+  "vi": "Lần báo bác sĩ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ màu sai.",
+  "en": ""
+ },
+ {
+  "vi": "Lời người bệnh sai.",
+  "en": ""
+ },
+ {
+  "vi": "Dặn dò sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện người bệnh sai.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu khoa sai.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ giao ca sai.",
+  "en": ""
+ },
+ {
+  "vi": "Điều dưỡng",
+  "en": ""
+ },
+ {
+  "vi": "Bệnh viện phường Lá Sen",
+  "en": ""
+ },
+ {
+  "vi": "Đúng người, đúng y lệnh, báo kịp lúc.",
+  "en": ""
+ },
+ {
+  "vi": "Trời trong, khoa Nội yên ả",
+  "en": ""
+ },
+ {
+  "vi": "Bàn điều dưỡng",
+  "en": ""
+ },
+ {
+  "vi": "Nhận ca lúc 7:00. Đọc sổ giao ca, sát khuẩn tay, hỏi tên và ngày sinh trước mỗi việc, có gì bất thường thì báo bác sĩ.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi giường một con người, mỗi việc một lần kiểm",
+  "en": ""
+ },
+ {
+  "vi": "28 · BỆNH VIỆN LÁ SEN",
+  "en": ""
+ },
+ {
+  "vi": "Hộ lý lâu năm, đỡ người bệnh đi lại chắc tay.",
+  "en": ""
+ },
+ {
+  "vi": "Hưng",
+  "en": ""
+ },
+ {
+  "vi": "Thư ký khoa, sắp hồ sơ theo giường không sót tờ nào.",
+  "en": ""
+ },
+ {
+  "vi": "Nhanh nhẹn, thay ga giường trong hai phút.",
+  "en": ""
+ },
+ {
+  "vi": "Thuộc lòng thủ tục BHYT, người nhà hỏi gì cũng biết.",
+  "en": ""
+ },
+ {
+  "vi": "Hộ lý",
+  "en": ""
+ },
+ {
+  "vi": "Thư ký khoa",
+  "en": ""
+ },
+ {
+  "vi": "Nhận ca lúc 7:00. Chị Hoa đang chờ ở bàn giao ca.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hoa giao thêm một việc trong ca.",
+  "en": ""
+ },
+ {
+  "vi": "Một ca ở khoa Nội",
+  "en": ""
+ },
+ {
+  "vi": "Hai thông tin",
+  "en": ""
+ },
+ {
+  "vi": "Họ tên và ngày sinh",
+  "en": ""
+ },
+ {
+  "vi": "Sát khuẩn tay",
+  "en": ""
+ },
+ {
+  "vi": "Trước khi chạm người bệnh",
+  "en": ""
+ },
+ {
+  "vi": "Vòng dị ứng",
+  "en": ""
+ },
+ {
+  "vi": "Trước khi cho thuốc",
+  "en": ""
+ },
+ {
+  "vi": "Ngoài thẻ báo động",
+  "en": ""
+ },
+ {
+  "vi": "Báo bác sĩ ngay",
+  "en": ""
+ },
+ {
+  "vi": "Nhận giao ca, đọc sổ",
+  "en": ""
+ },
+ {
+  "vi": "Đo, ghi phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Đối chiếu, cho thuốc",
+  "en": ""
+ },
+ {
+  "vi": "Báo bác sĩ, giao ca",
+  "en": ""
+ },
+ {
+  "vi": "Cái đồng hồ quả quýt của chị Hoa",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hoa đeo cái đồng hồ quả quýt trên túi áo, đếm mạch bằng kim giây từ hồi máy đo còn hiếm.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đo thêm một ca; chị chỉ cách nhìn người bệnh trước khi nhìn máy.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hoa dặn: “Máy báo sai được. Mắt mình mở to thì ít khi sai.”",
+  "en": ""
+ },
+ {
+  "vi": "Lá thư của bà Tư",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tư nhờ bạn viết giùm lá thư gửi con trai ở xa.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn làm thêm một ca, đọc lại thư cho bà nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Tuần sau con trai bà về, đứng ở cửa phòng mắt đỏ hoe.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ giao ca cũ",
+  "en": ""
+ },
+ {
+  "vi": "Trong tủ trực có cuốn sổ giao ca từ hai mươi năm trước, chữ chị Hoa nắn nót.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn làm thêm một ca, viết sổ giao ca của mình thật kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hoa đọc xong, đóng sổ lại: “Ca đêm sẽ ngủ yên.”",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi tên, ngày sinh mỗi lần, thấy yên tâm ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Tay lúc nào cũng thơm mùi sát khuẩn.",
+  "en": ""
+ },
+ {
+  "vi": "Báo bác sĩ kịp lúc, nhẹ cả người.",
+  "en": ""
+ },
+ {
+  "vi": "Giải thích từng bước, không ai phải lo.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận giao ca → sát khuẩn tay → hỏi họ tên, ngày sinh, đối chiếu vòng tay → đo, ghi phiếu đúng số → đối chiếu y lệnh, dị ứng, nhãn khay → bất thường thì báo bác sĩ → người bệnh từ chối thì hỏi, giải thích, báo bác sĩ → cuối ca viết sổ giao ca thật.",
+  "en": ""
+ },
+ {
+  "vi": "Bệnh viện phường Lá Sen · Khoa Nội tổng hợp",
+  "en": ""
+ },
+ {
+  "vi": "Điều dưỡng viên khoa Nội",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hoa kèm ba ca đầu",
+  "en": ""
+ },
+ {
+  "vi": "Ca ngày 7:00–19:00",
+  "en": ""
+ },
+ {
+  "vi": "Có bữa trưa ở căng tin",
+  "en": ""
+ },
+ {
+  "vi": "Khoa Nội hai mươi giường, người bệnh đa số lớn tuổi. Ở đây ai cũng hỏi tên, ngày sinh trước mỗi việc, kể cả người nằm cả tháng.",
+  "en": ""
+ },
+ {
+  "vi": "Bệnh viện phường Lá Sen · Phòng khám ngoại trú",
+  "en": ""
+ },
+ {
+  "vi": "Điều dưỡng phòng khám (bán thời gian)",
+  "en": ""
+ },
+ {
+  "vi": "Đứng quầy tiếp đón cùng cô Mỹ",
+  "en": ""
+ },
+ {
+  "vi": "Phòng khám đông từ sáng sớm. Việc chính là đón người bệnh, đo nhanh, phân loại ai vào trước.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn sắp cho thuốc ở giường 3. Bạn xác định người bệnh thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Mời người bệnh tự nói họ tên, ngày sinh; đối chiếu vòng tay và phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hoa gật đầu: đúng thói quen của khoa.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi “Bác là bà Tư phải không ạ?”",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi kiểu có/không thì người lãng tai cũng dạ.",
+  "en": ""
+ },
+ {
+  "vi": "Xem số giường là đủ",
+  "en": ""
+ },
+ {
+  "vi": "Số giường đổi được; người bệnh có khi nằm nhầm giường.",
+  "en": ""
+ },
+ {
+  "vi": "Người bệnh không chịu uống thuốc bác sĩ cho. Bạn làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi vì sao, giải thích, vẫn không chịu thì báo bác sĩ và ghi hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Tôn trọng quyền từ chối, không để người bệnh một mình với nỗi lo.",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ người nhà giữ tay cho uống",
+  "en": ""
+ },
+ {
+  "vi": "Không bao giờ ép người bệnh bằng sức.",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, để đó, không cần báo ai",
+  "en": ""
+ },
+ {
+  "vi": "Bác sĩ cần biết để tìm cách khác.",
+  "en": ""
+ },
+ {
+  "vi": "Người nhà dúi phong bì “cảm ơn”. Bạn nói gì?",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn, xin không nhận, mời viết vài dòng vào sổ góp ý",
+  "en": ""
+ },
+ {
+  "vi": "Lời cảm ơn có chỗ của nó, không phải phong bì.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận rồi bỏ quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "Đổi tên gọi thì vẫn là nhận phong bì.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo để lúc ra viện hẵng đưa",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn lại cũng là nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Ở quầy tiếp đón, một anh la hét đòi khám trước vì trầy tay; một ông cụ ngồi im, tay ôm ngực.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi, đo nhanh cả hai; ông cụ đau ngực vào trước",
+  "en": ""
+ },
+ {
+  "vi": "Người la to chưa chắc là người nặng.",
+  "en": ""
+ },
+ {
+  "vi": "Cho anh la hét vào trước cho yên",
+  "en": ""
+ },
+ {
+  "vi": "Ông cụ đau ngực phải chờ là nguy hiểm.",
+  "en": ""
+ },
+ {
+  "vi": "Ai tới trước khám trước",
+  "en": ""
+ },
+ {
+  "vi": "Công bằng nhưng chưa an toàn: nặng phải vào trước.",
+  "en": ""
+ },
+ {
+  "vi": "Hai mươi năm đi buồng, nhớ tên từng người bệnh. Ghét nhất là làm tắt.",
+  "en": ""
+ },
+ {
   "vi": "Ít nói, y lệnh rõ ràng, câu cửa miệng: “Bất thường thì gọi anh, đừng ngại.”",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Để mèo nằm cho bà vui",
-  "en": ""
- },
- {
-  "vi": "Phòng bệnh mà có mèo hoang nằm trên giường.",
-  "en": ""
- },
- {
-  "vi": "Người nhà giường bên dị ứng lông mèo hắt hơi suốt buổi.",
-  "en": ""
- },
- {
-  "vi": "Cầm chổi đuổi",
-  "en": ""
- },
- {
-  "vi": "Mèo chạy loạn khắp khoa, làm đổ khay bông băng.",
-  "en": ""
- },
- {
-  "vi": "Người bán vé số vào phòng bệnh",
-  "en": ""
- },
- {
-  "vi": "Một chú bán vé số đi dọc các giường mời: “Mua đi bác, nằm viện mua vé số là trúng!” Ông Bảy móc ví.",
-  "en": ""
- },
- {
-  "vi": "Lịch sự mời chú ra ngoài, nhắc giờ thăm và quy định khoa",
-  "en": ""
- },
- {
-  "vi": "Chú bán vé số đi ra, còn chúc cả phòng mau khỏe.",
-  "en": ""
- },
- {
-  "vi": "Mua một tờ cho chú đi lẹ",
-  "en": ""
- },
- {
-  "vi": "Chú đi rồi lại có chú khác vào.",
-  "en": ""
- },
- {
-  "vi": "Quát đuổi trước mặt mọi người",
-  "en": ""
- },
- {
-  "vi": "Y tá quát người ta như quát trộm.",
-  "en": ""
- },
- {
-  "vi": "Cả phòng im phăng phắc, ông Bảy lắc đầu.",
-  "en": ""
- },
- {
-  "vi": "Ông Bảy trốn ra căng tin",
-  "en": ""
- },
- {
-  "vi": "Giường 5 trống trơn. Chị lao công báo: ông Bảy đang ngồi căng tin, trước mặt là ly chè đậu ngọt lịm.",
-  "en": ""
- },
- {
-  "vi": "Ra ngồi cạnh, nói chuyện đường huyết, mời ông về đo lại",
-  "en": ""
- },
- {
-  "vi": "Ông Bảy đẩy ly chè sang một bên: “Thôi, về đo. Mà cô đừng méc con Ngân.”",
-  "en": ""
- },
- {
-  "vi": "Giật ly chè, mắng giữa căng tin",
-  "en": ""
- },
- {
-  "vi": "Bị mắng như con nít giữa căng tin.",
-  "en": ""
- },
- {
-  "vi": "Ông Bảy giận, cả chiều không cho ai đo huyết áp.",
-  "en": ""
- },
- {
-  "vi": "Kệ ông, người lớn tự biết",
-  "en": ""
- },
- {
-  "vi": "Chiều đó đường huyết ông vọt lên, bác sĩ Khang nhíu mày.",
-  "en": ""
- },
- {
-  "vi": "Sàn ướt không biển báo",
-  "en": ""
- },
- {
-  "vi": "Chị lao công vừa lau hành lang, sàn còn loáng nước, không có biển báo. Một bà cụ chống gậy đang đi tới.",
-  "en": ""
- },
- {
-  "vi": "Đỡ bà cụ đi vòng, đặt biển “Sàn ướt”, nhắc chị lao công",
-  "en": ""
- },
- {
-  "vi": "Bà cụ đi qua an toàn. Chị lao công cảm ơn, từ đó luôn mang biển theo.",
-  "en": ""
- },
- {
-  "vi": "Hét từ xa: “Bà ơi coi chừng trơn!”",
-  "en": ""
- },
- {
-  "vi": "Bà cụ giật mình đứng lại kịp.",
-  "en": ""
- },
- {
-  "vi": "Bà cụ giật mình quay lại, trượt chân ngồi bệt. May không gãy gì.",
-  "en": ""
- },
- {
-  "vi": "Không phải việc của mình",
-  "en": ""
- },
- {
-  "vi": "Mẹ tôi trượt ngã ở hành lang mà điều dưỡng đứng nhìn.",
-  "en": ""
- },
- {
-  "vi": "Bà cụ trượt chân. Khoa phải viết báo cáo sự cố té ngã.",
-  "en": ""
- },
- {
-  "vi": "Tranh ổ cắm sạc điện thoại",
-  "en": ""
- },
- {
-  "vi": "Hai nhà người bệnh cãi nhau vì ổ cắm duy nhất ở đầu giường. Một người định rút phích máy hút đờm ra cắm sạc.",
-  "en": ""
- },
- {
-  "vi": "Giữ nguyên ổ cắm máy y tế, chỉ chỗ sạc chung ở phòng chờ",
-  "en": ""
- },
- {
-  "vi": "Máy hút đờm vẫn chạy. Hai nhà xách điện thoại ra phòng chờ, vừa sạc vừa làm quen nhau.",
-  "en": ""
- },
- {
-  "vi": "Cho hai nhà thay phiên cắm ổ đầu giường",
-  "en": ""
- },
- {
-  "vi": "Lúc cắm lúc rút, máy hút đờm tắt lúc nào không hay.",
-  "en": ""
- },
- {
-  "vi": "Kệ họ tự giải quyết",
-  "en": ""
- },
- {
-  "vi": "Người nhà cãi nhau om sòm, điều dưỡng làm ngơ.",
-  "en": ""
- },
- {
-  "vi": "Hai nhà lớn tiếng tới mức bảo vệ phải lên.",
-  "en": ""
- },
- {
-  "vi": "Kim tiêm trong thùng rác thường",
-  "en": ""
- },
- {
-  "vi": "Thấy một cây kim tiêm đã dùng nằm chỏng chơ trong thùng rác thường, chị lao công sắp thò tay gom rác.",
-  "en": ""
- },
- {
-  "vi": "Bảo chị dừng tay, dùng kẹp gắp kim bỏ vào hộp kim, báo trưởng ca",
-  "en": ""
- },
- {
-  "vi": "Chị lao công thở phào. Chị Hoa nhắc cả khoa: kim xong là vào hộp kim ngay tại chỗ.",
-  "en": ""
- },
- {
-  "vi": "Tự nhặt bằng tay cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Suýt bị kim đâm vào ngón tay. Tim đập thình thịch cả buổi.",
-  "en": ""
- },
- {
-  "vi": "Không phải kim mình, kệ",
-  "en": ""
- },
- {
-  "vi": "Chiều đó chị lao công bị kim đâm, phải đi xét nghiệm theo dõi.",
-  "en": ""
- },
- {
-  "vi": "Bé con đi lạc trong khoa",
-  "en": ""
- },
- {
-  "vi": "Một bé gái chừng bốn tuổi đứng khóc ở hành lang: “Con tìm bà ngoại…”",
-  "en": ""
- },
- {
-  "vi": "Dỗ bé, đứng một chỗ, nhờ cô Mỹ gọi loa tìm người nhà",
-  "en": ""
- },
- {
-  "vi": "Năm phút sau bà ngoại bé chạy tới, ôm chầm lấy cháu.",
-  "en": ""
- },
- {
-  "vi": "Dắt bé đi khắp các phòng tìm",
-  "en": ""
- },
- {
-  "vi": "Tìm được bà, nhưng ba giường bấm chuông không ai trực.",
-  "en": ""
- },
- {
-  "vi": "Bảo bé đứng chờ, mình đi làm tiếp",
-  "en": ""
- },
- {
-  "vi": "Bé lạc khóc ngoài hành lang mà nhân viên đi ngang qua.",
-  "en": ""
- },
- {
-  "vi": "Bé đi lang thang tới tận cầu thang.",
-  "en": ""
- },
- {
-  "vi": "Phóng viên mạng hỏi chuyện",
-  "en": ""
- },
- {
-  "vi": "Một bạn tự xưng phóng viên trang tin mạng chĩa micro: “Nghe nói khoa có ca sĩ Mi Mi nằm viện, bệnh gì vậy chị?”",
-  "en": ""
- },
- {
-  "vi": "Không nói gì về người bệnh, mời liên hệ phòng truyền thông bệnh viện",
-  "en": ""
- },
- {
-  "vi": "Bạn phóng viên đi ra, bài viết chỉ có ảnh cổng bệnh viện.",
-  "en": ""
- },
- {
-  "vi": "Hé chút xíu “không nặng đâu”",
-  "en": ""
- },
- {
-  "vi": "Nhân viên bệnh viện kể bệnh của người khác cho báo.",
-  "en": ""
- },
- {
-  "vi": "Tối đó có bài “nguồn tin trong bệnh viện tiết lộ”. Phòng điều dưỡng mời bạn lên.",
-  "en": ""
- },
- {
-  "vi": "Xua tay đuổi",
-  "en": ""
- },
- {
-  "vi": "Bạn phóng viên quay luôn cảnh bị đuổi, nhưng không có gì để viết.",
-  "en": ""
- },
- {
-  "vi": "Bếp cồn trong phòng bệnh",
-  "en": ""
- },
- {
-  "vi": "Người nhà giường 7 lén đặt bếp cồn dưới gầm giường hâm nồi cháo, ngay cạnh bình oxy của giường bên.",
-  "en": ""
- },
- {
-  "vi": "Tắt bếp ngay, giải thích nguy cơ cháy cạnh oxy, chỉ chỗ hâm đồ ăn ở căng tin",
-  "en": ""
- },
- {
-  "vi": "Bếp tắt. Người nhà giật mình: “Trời, không biết oxy nguy hiểm vậy.”",
-  "en": ""
- },
- {
-  "vi": "Nhắc khéo, lát quay lại xem",
-  "en": ""
- },
- {
-  "vi": "Lát quay lại, nồi cháo đã sôi trào, mùi cồn khắp phòng.",
-  "en": ""
- },
- {
-  "vi": "Thương người nhà, kệ cho họ nấu",
-  "en": ""
- },
- {
-  "vi": "Phòng bệnh có bếp cồn cạnh bình oxy mà không ai nhắc.",
-  "en": ""
- },
- {
-  "vi": "Bảo vệ đi tuần phát hiện, khoa bị nhắc nhở trong giao ban.",
-  "en": ""
- },
- {
-  "vi": "Chị Ngân giơ điện thoại: “Đợi bác sĩ hai mươi phút rồi. Không gọi ngay là chị cho bệnh viện một sao, kèm tên em!”",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi vì chờ, nói rõ bác sĩ đang ở ca nào, hẹn giờ cụ thể",
-  "en": ""
- },
- {
-  "vi": "Chị Ngân bớt nóng. Mười phút sau bác sĩ Khang tới đúng như hẹn.",
-  "en": ""
- },
- {
-  "vi": "“Bác sĩ tới liền” (thật ra chưa biết)",
-  "en": ""
- },
- {
-  "vi": "Hứa “tới liền” rồi để chờ thêm nửa tiếng.",
-  "en": ""
- },
- {
-  "vi": "Nửa tiếng sau bác sĩ mới tới, chị Ngân đăng một sao thật.",
-  "en": ""
- },
- {
-  "vi": "“Chị cứ đánh giá đi”",
-  "en": ""
- },
- {
-  "vi": "Điều dưỡng thách người nhà đánh giá. Thái độ!",
-  "en": ""
- },
- {
-  "vi": "Chị Ngân đăng bài dài, tag cả trang bệnh viện.",
-  "en": ""
- },
- {
-  "vi": "Chị Hoa mua bánh mì cho cả ca",
-  "en": ""
- },
- {
-  "vi": "Đầu ca, chị Hoa đặt túi bánh mì lên bàn trực: “Ăn đi rồi đi buồng. Đói bụng là dễ sót việc.”",
-  "en": ""
- },
- {
-  "vi": "Ăn nhanh ở phòng trực, rửa tay rồi vào ca",
-  "en": ""
- },
- {
-  "vi": "No bụng, đầu óc tỉnh táo. Chị Hoa gật gù.",
-  "en": ""
- },
- {
-  "vi": "Thôi, vào làm luôn cho kịp",
-  "en": ""
- },
- {
-  "vi": "Mười giờ bụng réo, tay hơi run khi đo huyết áp.",
-  "en": ""
- },
- {
-  "vi": "Mang bánh mì vào ăn ở phòng bệnh",
-  "en": ""
- },
- {
-  "vi": "Chị Hoa nhắc: không ăn uống ở khu chăm sóc người bệnh.",
-  "en": ""
- },
- {
-  "vi": "Người nhà ho không đeo khẩu trang",
-  "en": ""
- },
- {
-  "vi": "Một anh người nhà ho sù sụ, không khẩu trang, ngồi sát giường bà Tư đang viêm phổi.",
-  "en": ""
- },
- {
-  "vi": "Đưa khẩu trang, mời ngồi xa giường, nhắc rửa tay",
-  "en": ""
- },
- {
-  "vi": "Anh người nhà đeo khẩu trang ngay, còn xin thêm cái cho vợ.",
-  "en": ""
- },
- {
-  "vi": "“Ho vậy mà còn vào thăm?”",
-  "en": ""
- },
- {
-  "vi": "Bị y tá nói như tôi mang dịch vào.",
-  "en": ""
- },
- {
-  "vi": "Anh người nhà bỏ ra ngoài, đập cửa hơi mạnh.",
-  "en": ""
- },
- {
-  "vi": "Kệ, ai cũng ho mùa này",
-  "en": ""
- },
- {
-  "vi": "Tối đó bà Tư ho nhiều hơn.",
-  "en": ""
- },
- {
-  "vi": "Phong bì “bồi dưỡng”",
-  "en": ""
- },
- {
-  "vi": "Ngày ông Bảy ra viện, chị Ngân dúi vào túi áo bạn một phong bì: “Chút lòng thành, em cầm uống cà phê.”",
-  "en": ""
- },
- {
-  "vi": "Bạn là chị Ngân: thấy điều dưỡng chăm bố mình chu đáo, muốn cảm ơn bằng cách quen thuộc nhất.",
-  "en": ""
- },
- {
-  "vi": "Bảng nội quy khoa",
-  "en": ""
- },
- {
-  "vi": "Nhân viên y tế không nhận tiền, quà của người bệnh, người nhà.",
-  "en": ""
- },
- {
-  "vi": "Tấm lòng",
-  "en": ""
- },
- {
-  "vi": "Chị Ngân thật lòng muốn cảm ơn, không đòi hỏi gì thêm.",
-  "en": ""
- },
- {
-  "vi": "Cách cảm ơn khác",
-  "en": ""
- },
- {
-  "vi": "Khoa có sổ góp ý, cảm ơn; một lá thư khen gửi phòng Điều dưỡng được đọc trong giao ban.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn thật lòng, trả lại phong bì, gợi ý viết vài dòng vào sổ góp ý",
-  "en": ""
- },
- {
-  "vi": "Cô điều dưỡng không nhận phong bì, chỉ mong mình ghi vài dòng. Cả nhà quý lắm.",
-  "en": ""
- },
- {
-  "vi": "Chị Ngân viết một trang dài vào sổ. Giao ban sáng thứ hai, chị Hoa đọc to.",
-  "en": ""
- },
- {
-  "vi": "Ngại ghê, mà thấy người ta đàng hoàng thiệt.",
-  "en": ""
- },
- {
-  "vi": "Lời khen trong sổ quý hơn phong bì nhiều.",
-  "en": ""
- },
- {
-  "vi": "Nhận rồi bỏ vào quỹ chung của khoa",
-  "en": ""
- },
- {
-  "vi": "Đưa thì nhận, nói là bỏ quỹ khoa. Ai biết được.",
-  "en": ""
- },
- {
-  "vi": "Quỹ “chung” thành chuyện riêng. Phòng điều dưỡng hỏi tới.",
-  "en": ""
- },
- {
-  "vi": "Vậy là nhận rồi còn gì.",
-  "en": ""
- },
- {
-  "vi": "Không nhận nghĩa là không nhận, đổi tên gọi cũng vậy.",
-  "en": ""
- },
- {
-  "vi": "Nhận cho chị vui",
-  "en": ""
- },
- {
-  "vi": "Thì ra ở đây phải có phong bì mới được chăm kỹ.",
-  "en": ""
- },
- {
-  "vi": "Người nhà giường bên thấy hết, hôm sau ai cũng hỏi “gửi bao nhiêu thì được”.",
-  "en": ""
- },
- {
-  "vi": "Người nhà giường bên",
-  "en": ""
- },
- {
-  "vi": "Không có phong bì chắc bị bỏ rơi quá.",
-  "en": ""
- },
- {
-  "vi": "Một phong bì làm mất lòng tin của cả phòng.",
-  "en": ""
- },
- {
-  "vi": "Không nhận phong bì; lời cảm ơn có chỗ của nó: sổ góp ý, thư khen.",
-  "en": ""
- },
- {
-  "vi": "Hai bà Tư trong một khoa",
-  "en": ""
- },
- {
-  "vi": "Khoa nhận thêm bà Trần Thị Tứ giường 4. Phiếu thuốc trưa của hai bà nằm cạnh nhau trên xe tiêm.",
-  "en": ""
- },
- {
-  "vi": "Hai cái tên",
-  "en": ""
- },
- {
-  "vi": "Bảng phân giường",
-  "en": ""
- },
- {
-  "vi": "Trần Thị Tư (1944, giường 3) và Trần Thị Tứ (1949, giường 4).",
-  "en": ""
- },
- {
-  "vi": "Vòng tay",
-  "en": ""
- },
- {
-  "vi": "Vòng đeo tay",
-  "en": ""
- },
- {
-  "vi": "Vòng tay ghi họ tên, ngày sinh và mã người bệnh, không ghi số giường.",
-  "en": ""
- },
- {
-  "vi": "Tai bà Tư",
-  "en": ""
- },
- {
-  "vi": "Ghi chú giao ca",
-  "en": ""
- },
- {
-  "vi": "Bà Tư lãng tai, hỏi gì cũng “ờ, phải”.",
-  "en": ""
- },
- {
-  "vi": "Hỏi họ tên và ngày sinh, đối chiếu vòng tay; báo khoa dán cảnh báo “trùng tên” lên hai hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Khoa có hai bà trùng tên mà không nhầm một lần nào. Dán cả cảnh báo trùng tên.",
-  "en": ""
- },
- {
-  "vi": "Hai hồ sơ có nhãn “trùng tên”. Ca sau ai cũng nhìn thấy.",
   "en": ""
  }
 ]

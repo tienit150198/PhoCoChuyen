@@ -1,5 +1,125 @@
 [
  {
+  "vi": "Tối qua có người lạ tới tìm $1… đứng nói nhỏ nhỏ ngoài cổng. Thím thấy vậy thôi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ủa tối qua ai tới tìm $1 vậy cả nhà, đứng ngoài cổng thì thầm quá trời 👀 chị hỏi vậy thôi nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nghe đâu $1 nợ tiền phòng nhà bà Tám đó 👀 Tội bà Tám, hiền quá nên người ta ỷ. Cô không có ý gì đâu nha, cô nghe người ta nói vậy thôi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tuần này cô thấy $1 ra cây rút tiền ba lần rồi đó 👀 Rút sạch quỹ về, chắc đang nợ ai hả ta… cô hỏi vậy thôi nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nói nhỏ nè, nghe đâu $1 rút sạch quỹ tiệm về rồi đó cả nhà. Kẹt tiền hay nợ nần gì không biết nữa… chị lo thôi chứ không có ý gì đâu 🫢",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tối qua cô thấy $1 với anh Khoa đi ăn riêng, về tới đầu hẻm còn cười cười 👀 Có gì với nhau rồi hả ta… cô hỏi vậy thôi nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nghe đâu $1 mới chia tay… Chắc tính khó nên người ta đi, cô đoán vậy thôi chứ không có ý gì đâu 👀",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tin buồn nha cả nhà 😢 nghe đâu $1 mới chia tay. Mà chị nghe người ta nói là tại… à thôi thôi chị không nói đâu 🫢",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thấy $1 dạo này hay đi sớm về khuya, mặt mũi phờ phạc, không biết có chuyện gì không… Cô hỏi thăm thôi chứ không có ý gì đâu nha 👀",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạo này $1 đi sớm về khuya, ít chào ai… Thím thấy lạ thôi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cả nhà có thấy dạo này $1 lạ lạ không 👀 đi đâu cũng vội, mặt thì phờ phạc. Chị hỏi thăm thôi nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ủa alo sao nói vậy 😤 $1 đi làm mà, em thấy $2 làm ở tiệm luôn á",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "người ta đang buồn mà nói vậy là khum ổn nha 😤 $1 ơi em gửi cái ôm 🫂",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ mình làm ca tối ở $1, dọn dẹp xong mới về nên khuya thôi ạ. Mọi người đừng lo nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 có gì thắc mắc thì hỏi thẳng mình được không ạ? Nói vậy trên nhóm mình buồn lắm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ờ… vậy hả, $1 chỉ hỏi thăm thôi mà. Thôi $2 xin lỗi nghen, $3 nói hơi quá.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hì, $1 cũng đoán vậy đó 😅 thôi $2 không nói nữa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ơ… $1 có nói gì đâu, $2 chỉ kể những gì $3 thấy thôi mà…",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thôi được rồi, $1 xin lỗi. {Me} sai rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "{Me} đây, $1 thấy tin nhắn rồi 👀",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚠️ Cả nhà cảnh giác: có người trong phố mình vừa dính $1. Anh không nói tên. Mất tiền không phải vì mình ngu, mà vì tụi nó chuyên nghiệp. Ai nhận được y vậy thì chặn số, báo ngân hàng, báo công an, đừng chuyển thêm đồng nào.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📢 Quỹ tình làng nghĩa xóm: $1 vừa bị lừa mất tiền. Cả hẻm góp chút đỡ đần: $2. Cô đã gửi tận tay rồi ạ. Tình làng nghĩa xóm là thứ quý nhất của hẻm mình 🤝",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📢 Cả hẻm gửi $1 một món quà nhỏ sau chuyện bị lừa: $2. Tiền mất thì làm lại, người còn là còn tất cả ạ 🤝",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cuối tuần đi cà phê sống ảo với Trang nha $1, Trang chụp cho tấm hình đẹp nhất năm. Ai không biết quý $2 là người ta thiệt 💅",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "tối nay em rủ $1 chơi game nha, thua em cho thắng luôn 🎮",
   "en": "",
   "pattern": true
@@ -2126,126 +2246,6 @@
  },
  {
   "vi": "🫙 Múc nước mắm ra $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🫘 Lấy nước tương $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🥣 Múc $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tôi gọi $1 mà dĩa không đúng món.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nước mắm $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍚 Đưa $1 $2 cho $3 · $4 xu. Khách đưa $5 xu: thối lại cho đúng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nói thật với $1: quán hết món khách gọi, hẹn bữa sau.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thối dư cho khách: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍚 Bán $1 dĩa, hộp cho $2 khách, xới $3 vá cơm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 vá cơm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗑️ Đồ nấu không để qua đêm: bỏ $1$2. Mai bày khay vừa đủ bán nghe con.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍖 Có $1 lần sườn chưa chín tới tay khách. Dì Bảy dặn: mỗi mặt đủ tám giây trở lên mới trở.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍚 Xới dư $1 vá so với lời khách gọi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dì Bảy dặn: nồi cơm tấm đổ nước lưng đốt ngón tay, nồi cơm trắng một đốt; nếm chén nước mắm, mặn thì thêm nước, lạt thì thêm mắm; nhóm bếp than; bày khay lên tủ kính rồi mở quán. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khay có $1 bộ chứng từ — soi từng bộ rồi đóng dấu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ có $1 chứng từ — làm lần lượt từng bước.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚦 Phạt đèn đỏ $1 xu: còn $2 xu trong Hóa đơn của nghề. Trả khi quỹ nghề đủ tiền; biên nhận chỉ ghi một lần.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚦 Vượt đèn đỏ: phạt $1 xu từ quỹ nghề. Biên nhận đã vào sổ thu chi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Túi COD thiếu $1 xu so với bảng kê — bạn tự bù từ ví.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đền luôn $1 xu cho êm chuyện",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 🔔 Có khách cũ quay lại đòi tiền chênh lệch.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cất $1 lại tiệm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xe chỉ chở được $1 món. Bỏ bớt một món đã.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Buộc $2 lên xe ($3/$4).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tháo $1.",
   "en": "",
   "pattern": true
  }

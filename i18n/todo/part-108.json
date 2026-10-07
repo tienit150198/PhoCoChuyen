@@ -1,5 +1,177 @@
 [
  {
+  "vi": "Đi tới một tiệm rồi bấm Vào làm.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một tiệm để làm.",
+  "en": ""
+ },
+ {
+  "vi": "Xin việc trước, làm theo từng bước.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm Mở cửa.",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ tiệm: tiền của tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Ví của bạn, trả tiền phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Ví của bạn. Bấm để mở Hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Ví của bạn. Bấm để xem hết tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm ngày: ví của bạn, tinh thần, đánh giá.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm Làm tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm nút nổi bật.",
+  "en": ""
+ },
+ {
+  "vi": "Hết khách: Khép ca, xem tổng kết.",
+  "en": ""
+ },
+ {
+  "vi": "Xong bảng này rồi đi tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Xong! Xem lại trong Cài đặt 📘",
+  "en": ""
+ },
+ {
+  "vi": "Xem lại trong Cài đặt 📘",
+  "en": ""
+ },
+ {
+  "vi": "Trên màn này",
+  "en": ""
+ },
+ {
+  "vi": "lúc",
+  "en": ""
+ },
+ {
+  "vi": "ở",
+  "en": ""
+ },
+ {
+  "vi": "mọi",
+  "en": ""
+ },
+ {
+  "vi": "bằng",
+  "en": ""
+ },
+ {
+  "vi": "đi",
+  "en": ""
+ },
+ {
+  "vi": "xuống",
+  "en": ""
+ },
+ {
+  "vi": "Đã có phiên bản mới, bạn tải lại để cập nhật nha",
+  "en": ""
+ },
+ {
+  "vi": "Tải lại để cập nhật",
+  "en": ""
+ },
+ {
+  "vi": "trừ vào ví của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Phạt",
+  "en": ""
+ },
+ {
+  "vi": "đang chờ sẽ bỏ về",
+  "en": ""
+ },
+ {
+  "vi": "Việc đã hẹn vẫn giữ, nhưng khách sẽ phật lòng",
+  "en": ""
+ },
+ {
+  "vi": "và chủ sẽ nhắc “lần sau cho nghỉ”",
+  "en": ""
+ },
+ {
+  "vi": ", khách quen bắt đầu kháo nhau",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn đi",
+  "en": ""
+ },
+ {
+  "vi": "Ở lại làm nốt",
+  "en": ""
+ },
+ {
+  "vi": "Lần sau còn bỏ ngang là bị cho nghỉ.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ quầy nữa là mất khách quen.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền phạt:",
+  "en": ""
+ },
+ {
+  "vi": "khách đã bỏ về",
+  "en": ""
+ },
+ {
+  "vi": "Chủ đã nhắc: lần sau còn bỏ ngang là cho nghỉ.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm đã nhắc: bỏ quầy hoài là mất khách quen.",
+  "en": ""
+ },
+ {
+  "vi": "Liên kết TikTok với tài khoản này",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp tục với TikTok",
+  "en": ""
+ },
+ {
+  "vi": "Giữ nguyên tên đăng nhập, mật khẩu và tiến trình.",
+  "en": ""
+ },
+ {
+  "vi": "TikTok chỉ cung cấp mã tài khoản và tên hiển thị. Không cần mật khẩu game.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập TikTok đang thử nghiệm cho tài khoản được mời.",
+  "en": ""
+ },
+ {
   "vi": "Phiên chơi đã thay đổi. Hãy thử lại.",
   "en": ""
  },
@@ -721,6 +893,102 @@
  },
  {
   "vi": "Chưa hiểu số này",
+  "en": ""
+ },
+ {
+  "vi": "Đang đấu giá",
+  "en": ""
+ },
+ {
+  "vi": "Của tôi",
+  "en": ""
+ },
+ {
+  "vi": "Chưa trả giá được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mở lúc",
+  "en": ""
+ },
+ {
+  "vi": "Đang chốt…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có phiên",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập để trả giá",
+  "en": ""
+ },
+ {
+  "vi": "Chưa trả giá được",
+  "en": ""
+ },
+ {
+  "vi": "Đã hết giờ",
+  "en": ""
+ },
+ {
+  "vi": "Ví đang nợ",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Đang giữ cho đấu giá",
+  "en": ""
+ },
+ {
+  "vi": "Phiên mới mở lúc 20:30 mỗi ngày.",
+  "en": ""
+ },
+ {
+  "vi": "👑 Bạn đang dẫn đầu",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Đã bị trả cao hơn",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ai trả",
+  "en": ""
+ },
+ {
+  "vi": "Giá khởi điểm",
+  "en": ""
+ },
+ {
+  "vi": "Luật đấu giá",
+  "en": ""
+ },
+ {
+  "vi": "Trả giá thì tiền được giữ lại. Bị trả cao hơn: tiền về ngay.",
+  "en": ""
+ },
+ {
+  "vi": "5 phút cuối có người trả: thêm 5 phút.",
+  "en": ""
+ },
+ {
+  "vi": "Người thắng trả cho phố, món đồ là độc nhất.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có người mua",
+  "en": ""
+ },
+ {
+  "vi": "Thắng đấu giá để đặt tên hồ, đồi, bến sông theo tên bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Món độc bản bạn thắng sẽ ở đây.",
   "en": ""
  },
  {
@@ -1529,274 +1797,6 @@
  },
  {
   "vi": "Tiệm nhận vốn",
-  "en": ""
- },
- {
-  "vi": "Chưa có tiệm bạn làm chủ",
-  "en": ""
- },
- {
-  "vi": "Vay mới",
-  "en": ""
- },
- {
-  "vi": "Loại vay",
-  "en": ""
- },
- {
-  "vi": "Xem lại & ký hợp đồng",
-  "en": ""
- },
- {
-  "vi": "Vay mua nhà",
-  "en": ""
- },
- {
-  "vi": "Xem ở Nhà của bạn",
-  "en": ""
- },
- {
-  "vi": "🏠 Vay mua nhà",
-  "en": ""
- },
- {
-  "vi": "Trả trước ít nhất 30% giá nhà, phần còn lại vay tới 3 năm, trả góp mỗi tháng trong game.",
-  "en": ""
- },
- {
-  "vi": "Bạn không có khoản vay nào. 🎈",
-  "en": ""
- },
- {
-  "vi": "Thương",
-  "en": ""
- },
- {
-  "vi": "Giận",
-  "en": ""
- },
- {
-  "vi": "Vừa xong",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được nhóm.",
-  "en": ""
- },
- {
-  "vi": "Viết bằng AI",
-  "en": ""
- },
- {
-  "vi": "Bày tỏ cảm xúc",
-  "en": ""
- },
- {
-  "vi": "Bạn đã giải thích.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã cười trừ cho qua.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã hỏi thẳng.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã chọn im lặng.",
-  "en": ""
- },
- {
-  "vi": "Tin đồn về bạn",
-  "en": ""
- },
- {
-  "vi": "Hỏi thẳng @",
-  "en": ""
- },
- {
-  "vi": "👀 Đang có người bàn tán về bạn.",
-  "en": ""
- },
- {
-  "vi": "Chuyện chưa ai kiểm chứng, nói ra dễ làm tổn thương. Bạn muốn phản hồi thế nào?",
-  "en": ""
- },
- {
-  "vi": "Nhắc tới bạn",
-  "en": ""
- },
- {
-  "vi": "Chuyện trong hẻm",
-  "en": ""
- },
- {
-  "vi": "Viết bình luận",
-  "en": ""
- },
- {
-  "vi": "Gửi bình luận",
-  "en": ""
- },
- {
-  "vi": "Trả lời hàng xóm…",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm đang trả lời…",
-  "en": ""
- },
- {
-  "vi": "Nhắc tên hàng xóm",
-  "en": ""
- },
- {
-  "vi": "Đang đăng…",
-  "en": ""
- },
- {
-  "vi": "Hỏi hàng xóm, kể chuyện, rao đồ… Gõ @ để nhắc tên ai đó.",
-  "en": ""
- },
- {
-  "vi": "Viết bài lên nhóm",
-  "en": ""
- },
- {
-  "vi": "@ Nhắc tên",
-  "en": ""
- },
- {
-  "vi": "Hết lượt đăng hôm nay",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm trả lời bằng AI · đừng gõ thông tin thật",
-  "en": ""
- },
- {
-  "vi": "Giới thiệu nhóm",
-  "en": ""
- },
- {
-  "vi": "thành viên",
-  "en": ""
- },
- {
-  "vi": "· nhóm kín của khu phố",
-  "en": ""
- },
- {
-  "vi": "Nội quy nhóm",
-  "en": ""
- },
- {
-  "vi": "Nói năng lịch sự, không xúc phạm ai.",
-  "en": ""
- },
- {
-  "vi": "Không đăng số điện thoại, địa chỉ, tài khoản.",
-  "en": ""
- },
- {
-  "vi": "Tin chưa rõ thì đừng lan, có gì hỏi thẳng nhau.",
-  "en": ""
- },
- {
-  "vi": "KHU PHỐ · NHÓM KÍN",
-  "en": ""
- },
- {
-  "vi": "tin mới",
-  "en": ""
- },
- {
-  "vi": "Đã xem hết tin mới",
-  "en": ""
- },
- {
-  "vi": "Đang mở nhóm…",
-  "en": ""
- },
- {
-  "vi": "Xem bài cũ hơn",
-  "en": ""
- },
- {
-  "vi": "Nhóm còn yên ắng…",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm đang rôm rả",
-  "en": ""
- },
- {
-  "vi": "👀 Có người nhắc bạn",
-  "en": ""
- },
- {
-  "vi": "Mình giải thích một chút…",
-  "en": ""
- },
- {
-  "vi": "chụp ảnh: sticker",
-  "en": ""
- },
- {
-  "vi": "Đứng thẳng",
-  "en": ""
- },
- {
-  "vi": "Chữ V",
-  "en": ""
- },
- {
-  "vi": "Vẫy tay",
-  "en": ""
- },
- {
-  "vi": "Bắn tim",
-  "en": ""
- },
- {
-  "vi": "Tim nhỏ",
-  "en": ""
- },
- {
-  "vi": "Tim trên đầu",
-  "en": ""
- },
- {
-  "vi": "Chống má",
-  "en": ""
- },
- {
-  "vi": "Nháy mắt",
-  "en": ""
- },
- {
-  "vi": "Hoan hô",
-  "en": ""
- },
- {
-  "vi": "Nhảy lên",
-  "en": ""
- },
- {
-  "vi": "Nghiêng đầu",
-  "en": ""
- },
- {
-  "vi": "Ngầu",
-  "en": ""
- },
- {
-  "vi": "Ngại ngùng",
-  "en": ""
- },
- {
-  "vi": "Suy nghĩ",
   "en": ""
  }
 ]

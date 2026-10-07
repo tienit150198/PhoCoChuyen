@@ -1,5 +1,125 @@
 [
  {
+  "vi": "🫘 Lấy nước tương $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🥣 Múc $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi gọi $1 mà dĩa không đúng món.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nước mắm $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍚 Đưa $1 $2 cho $3 · $4 xu. Khách đưa $5 xu: thối lại cho đúng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nói thật với $1: quán hết món khách gọi, hẹn bữa sau.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thối dư cho khách: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍚 Bán $1 dĩa, hộp cho $2 khách, xới $3 vá cơm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 vá cơm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🗑️ Đồ nấu không để qua đêm: bỏ $1$2. Mai bày khay vừa đủ bán nghe con.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍖 Có $1 lần sườn chưa chín tới tay khách. Dì Bảy dặn: mỗi mặt đủ tám giây trở lên mới trở.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍚 Xới dư $1 vá so với lời khách gọi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dì Bảy dặn: nồi cơm tấm đổ nước lưng đốt ngón tay, nồi cơm trắng một đốt; nếm chén nước mắm, mặn thì thêm nước, lạt thì thêm mắm; nhóm bếp than; bày khay lên tủ kính rồi mở quán. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khay có $1 bộ chứng từ — soi từng bộ rồi đóng dấu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ có $1 chứng từ — làm lần lượt từng bước.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚦 Phạt đèn đỏ $1 xu: còn $2 xu trong Hóa đơn của nghề. Trả khi quỹ nghề đủ tiền; biên nhận chỉ ghi một lần.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚦 Vượt đèn đỏ: phạt $1 xu từ quỹ nghề. Biên nhận đã vào sổ thu chi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Túi COD thiếu $1 xu so với bảng kê — bạn tự bù từ ví.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đền luôn $1 xu cho êm chuyện",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 🔔 Có khách cũ quay lại đòi tiền chênh lệch.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cất $1 lại tiệm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xe chỉ chở được $1 món. Bỏ bớt một món đã.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Buộc $2 lên xe ($3/$4).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tháo $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Sổ hẹn có việc mà xe thiếu $1.",
   "en": "",
   "pattern": true
@@ -2126,126 +2246,6 @@
  },
  {
   "vi": "Trên xe: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "còn $1% kiên nhẫn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cô Mai dặn: giặt khăn hôm qua, châm các chai sắp cạn rồi lên đường. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: dọn $2. $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hàng chờ $1 khách tan ca. Mỗi người mua vài món, trả tiền mặt: quét từng món, bấm “Tính tiền”, đếm tiền thối vào khay rồi giao hàng. Ai mua bia thì kiểm tuổi. Để khách chờ quá lâu là khách bỏ về.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Về nhà đếm lại mới thấy tiệm thối thiếu $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thối thiếu $1 xu, khách về nhà mới thấy",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nhét tiền thối vào túi rồi đi luôn, không đếm lại — thối thiếu $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khách để lại tiền lẻ: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 xua tay: “$2” · +$3 xu tiền lẻ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thối dư $1 xu, tôi phải đưa trả lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thối dư $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mới $2 tuổi: không bán bia. Bạn nói nhỏ nhẹ, chỉ bán phần còn lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xóa $1 lon bia khỏi máy tính tiền nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 chưa đủ 18 tuổi: không bán bia. Để lon bia lại kệ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bíp! $1 ×$2 · $3 xu. Máy tính tiền: $4 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã xóa $1 khỏi máy tính tiền.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "sao tính cả $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 $3 mà tính $4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 chỉ vào màn hình máy tính tiền: “Ủa, $2?” Xóa phần dư rồi tính tiền lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nhắc: “Còn $2 chưa tính kìa.” Quét đủ rồi tính tiền lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Máy tính tiền: $1 xu. $2 đưa $3 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "— cần thối $1 xu. Đếm tiền thối từ két vào khay.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đếm lại ngay tại quầy: “Thối thiếu $2 xu rồi.” Đặt thêm $3 xu vào khay rồi đưa lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bấm dư tiền, $1 phải tự soi màn hình mới sửa.",
   "en": "",
   "pattern": true
  }

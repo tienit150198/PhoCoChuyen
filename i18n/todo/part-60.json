@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Một ông mặt đỏ gay từ quán nhậu bên kia đường sang, đập bàn đòi “trà pha rượu”, lè nhè trêu cô Hoa.",
+  "en": ""
+ },
+ {
+  "vi": "Mời cốc trà nóng đặc, gọi người nhà ra đón",
+  "en": ""
+ },
+ {
+  "vi": "Mềm mỏng, mất chút thời gian",
+  "en": ""
+ },
+ {
+  "vi": "Uống cốc trà nóng, ông ấy dịu hẳn. Vợ ông ra đón, cúi đầu xin lỗi cả quán.",
+  "en": ""
+ },
+ {
+  "vi": "Nói thẳng mời ông đi chỗ khác",
+  "en": ""
+ },
+ {
+  "vi": "Nhanh gọn, nhưng dễ to chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Ông ấy lầm bầm rồi loạng choạng đi về.",
+  "en": ""
+ },
+ {
+  "vi": "Ông ấy nổi khùng đá văng một cái ghế nhựa, gãy cả chân ghế rồi mới chịu đi.",
+  "en": ""
+ },
+ {
+  "vi": "Chiều khách, rót thêm cho ông ấy ngồi",
+  "en": ""
+ },
+ {
+  "vi": "Yên chuyện trước mắt",
+  "en": ""
+ },
+ {
+  "vi": "Quán để người say ngồi trêu phụ nữ cả buổi. Khó chịu!",
+  "en": ""
+ },
+ {
+  "vi": "Ông ấy ngồi lì cả tiếng, trêu hết người này đến người khác. Cô Hoa bỏ về giữa chừng.",
+  "en": ""
+ },
+ {
+  "vi": "Trông hộ xe",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng dựng xe sát bàn: “Trông hộ anh cái xe với thùng hàng nhé, anh chạy lên tầng năm giao đơn, năm phút thôi!”",
+  "en": ""
+ },
+ {
+  "vi": "Dắt xe vào sát gốc bàng rồi trông",
+  "en": ""
+ },
+ {
+  "vi": "Không vướng lối đi, dễ để mắt",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng xuống, thấy xe gọn gàng dưới gốc cây: “Chu đáo quá!” Dúi cho 2 xu mua kẹo.",
+  "en": ""
+ },
+ {
+  "vi": "Ừ, anh cứ đi",
+  "en": ""
+ },
+ {
+  "vi": "Xe đứng giữa lối đi",
+  "en": ""
+ },
+ {
+  "vi": "Năm phút sau anh Hùng xuống, cảm ơn rối rít, dúi 2 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Một bà cụ đi qua vướng xe suýt ngã. Bạn vội chạy ra đỡ, xin lỗi mãi.",
+  "en": ""
+ },
+ {
+  "vi": "Em đang đông khách, anh thông cảm",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng gật đầu, dắt xe đi gửi chỗ khác.",
+  "en": ""
+ },
+ {
+  "vi": "Trông hộ đứa bé",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa dắt thằng cháu năm tuổi sang: “Trông hộ cô nửa tiếng, cô chạy ra chợ lấy gạo nếp. Nó ngoan lắm!”",
+  "en": ""
+ },
+ {
+  "vi": "Cho bé ngồi ghế trong cùng, bóc cho gói bánh quy",
+  "en": ""
+ },
+ {
+  "vi": "Mất một gói bánh",
+  "en": ""
+ },
+ {
+  "vi": "Bé ngồi ngoan ăn bánh, xem ông Khang đánh cờ. Cô Hoa về cảm ơn mãi.",
+  "en": ""
+ },
+ {
+  "vi": "Vâng, cô cứ để đấy",
+  "en": ""
+ },
+ {
+  "vi": "Vừa bán vừa trông",
+  "en": ""
+ },
+ {
+  "vi": "Bé chơi với con mèo nhà bên, không sao cả.",
+  "en": ""
+ },
+ {
+  "vi": "Đang rót trà thì bé chạy ra mép đường nhặt bóng. Bạn lao theo bế vào, tim đập thình thịch, khách chờ cả lượt.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa hơi phụng phịu nhưng hiểu, bế cháu đi chợ cùng.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa có tin nóng",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa ghé sớm, hạ giọng: “Biết gì chưa? Siêu thị mini Mây Mart sắp mở ngay cạnh tạp hoá cô Ba. Khổ thân cô Ba…”",
+  "en": ""
+ },
+ {
+  "vi": "Rót cốc trà, nghe cô kể",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa kể một mạch. Bạn nghe, gật gù, không thêm bớt gì.",
+  "en": ""
+ },
+ {
+  "vi": "Rủ cả phố mua ủng hộ cô Ba",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa gật gù: “Ừ, mớ rau bó hành cũng nên mua chỗ quen.” Chiều ấy cô rủ cả hội chợ sang tạp hoá cô Ba.",
+  "en": ""
+ },
+ {
+  "vi": "Kể lại cho từng khách nghe cho vui",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện càng kể càng to",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi uống trà mà toàn nghe chuyện nhà người khác, mệt.",
+  "en": ""
+ },
+ {
+  "vi": "Đến chiều, tin đồn đã thành “cô Ba sắp dẹp tiệm”. Cô Ba nghe được, buồn lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện quán mì đầu phố",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa: “Quán mì cay Mây đầu phố vừa bị đoàn kiểm tra vệ sinh ghé. Sổ sách đủ cả nên người ta chỉ nhắc nhở thôi.”",
+  "en": ""
+ },
+ {
+  "vi": "Tự thay chậu nước rửa cốc của quán mình",
+  "en": ""
+ },
+ {
+  "vi": "Mất một lượt",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thay chậu nước mới, tráng lại mấy cái cốc. Bà Lựu gật gù: “Phải thế.”",
+  "en": ""
+ },
+ {
+  "vi": "Nghe cho biết",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa kể xong lại sang chuyện nhà số 9.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng bị bom hàng",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng ngồi thừ: “Hôm nay bên Giao nhanh Mây Chiều anh bị bom ba đơn thu hộ. Tiền ứng ra chưa biết đòi ai.”",
+  "en": ""
+ },
+ {
+  "vi": "Mời anh cốc trà, không lấy tiền",
+  "en": ""
+ },
+ {
+  "vi": "Mất 3 xu tiền trà",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng uống một hơi cạn cốc: “Có cốc trà mát là thấy đời dễ thở hơn.”",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc anh gọi xác nhận khách trước khi chạy",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng gật gù: “Ừ, gọi trước mất một phút mà đỡ mất cả buổi.”",
+  "en": ""
+ },
+ {
+  "vi": "Ừ, nghề nào chẳng có lúc xui",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng cười méo xệch rồi lại lên xe.",
+  "en": ""
+ },
+ {
+  "vi": "Rủ cá độ trận tối nay",
+  "en": ""
+ },
+ {
+  "vi": "Bàn bên rủ rê: “Đặt cửa đội nhà thắng đi, 20 ăn 40!” Chú Tường cũng đang hăng máu.",
+  "en": ""
+ },
+ {
+  "vi": "Cười trừ, không chơi",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chỉ rót trà. Xem bóng cho vui là đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Khuyên chú Tường đừng chơi",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường gãi đầu: “Ừ, tiền đấy để đóng học cho con.” Chú cất ví vào túi.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt 20 xu cho vui",
+  "en": ""
+ },
+ {
+  "vi": "Cờ bạc là bác thằng bần",
+  "en": ""
+ },
+ {
+  "vi": "Đội nhà thắng. Bạn được 20 xu, nhưng bà Lựu nghe chuyện thì lắc đầu mãi.",
+  "en": ""
+ },
+ {
+  "vi": "Đội nhà thua. Mất 20 xu, bằng tiền bán gần bảy cốc trà.",
+  "en": ""
+ },
+ {
+  "vi": "Tổ trưởng dân phố nhắc",
+  "en": ""
+ },
+ {
+  "vi": "Bác tổ trưởng dân phố ghé: “Mấy hôm này phường ra quân dẹp vỉa hè đấy. Cháu kê ghế gọn vào, đừng lấn ra lòng đường nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn bác, kê ghế gọn sát gốc cây",
+  "en": ""
+ },
+ {
+  "vi": "Bác tổ trưởng gật đầu, xin cốc trà đá rồi đi báo tiếp các nhà.",
+  "en": ""
+ },
+ {
+  "vi": "“Ai chẳng bày ra thế hả bác”",
+  "en": ""
+ },
+ {
+  "vi": "Bác tổ trưởng lắc đầu: “Tùy cháu, bị phạt thì đừng kêu.”",
+  "en": ""
+ },
+ {
+  "vi": "Cu Tủn mua thuốc lá cho bố",
+  "en": ""
+ },
+ {
+  "vi": "Cu Tủn chìa tờ tiền: “Cô ơi, bố cháu bảo mua ba điếu thuốc.” Ông bố đứng tít đầu ngõ, vẫy vẫy.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là Cu Tủn, học lớp 5, bị bố sai ra quán mua thuốc lá.",
+  "en": ""
+ },
+ {
+  "vi": "Tuổi của khách",
+  "en": ""
+ },
+ {
+  "vi": "Cu Tủn mới mười tuổi. Luật không cho bán thuốc lá cho người dưới 18 tuổi.",
+  "en": ""
+ },
+ {
+  "vi": "Ông bố ở đầu ngõ",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn ra đầu ngõ",
+  "en": ""
+ },
+ {
+  "vi": "Bố Cu Tủn đứng cách quán chừng hai chục bước chân, đang nói điện thoại.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện hằng ngày",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa bảo: “Ông ấy sai thằng bé mua suốt, quán nào cũng bán cho.”",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối nhẹ nhàng, mời bố cháu ra tự mua",
+  "en": ""
+ },
+ {
+  "vi": "Quán không bán thuốc cho con tôi, còn nói khéo. Tôi thấy ngượng, mà phục.",
+  "en": ""
+ },
+ {
+  "vi": "Bố Cu Tủn đi ra, gãi đầu: “Ừ, chú sai rồi.” Ông tự mua, còn hứa sẽ bớt hút.",
+  "en": ""
+ },
+ {
+  "vi": "Cháu cứ tưởng mua hộ thì không sao.",
+  "en": ""
+ },
+ {
+  "vi": "Bố Cu Tủn",
+  "en": ""
+ },
+ {
+  "vi": "Người ta từ chối con mình, mình mới giật mình nghĩ lại.",
+  "en": ""
+ },
+ {
+  "vi": "Bán cho trẻ con một điếu là mất cả cái tiếng ba mươi năm.",
+  "en": ""
+ },
+ {
+  "vi": "“Không bán cho trẻ con!” rồi quay đi",
+  "en": ""
+ },
+ {
+  "vi": "Đúng là không nên bán, nhưng quát thằng bé làm gì.",
+  "en": ""
+ },
+ {
+  "vi": "Cu Tủn mếu máo chạy về. Bố cháu phải tự ra mua, mặt hơi khó chịu.",
+  "en": ""
+ },
+ {
+  "vi": "Cháu có làm gì sai đâu…",
+  "en": ""
+ },
+ {
+  "vi": "Đúng luật, nhưng nói với trẻ con thì nhẹ nhàng thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Bán luôn, bố nó sai mà",
+  "en": ""
+ },
+ {
+  "vi": "Quán bán thuốc lá cho trẻ con. Không chấp nhận được!",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ Cu Tủn biết chuyện, sang tận quán nói to cả phố nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ Cu Tủn",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay mua hộ, mai nó hút thử thì sao?",
+  "en": ""
+ },
+ {
+  "vi": "Vài xu mà mang tiếng cả đời.",
+  "en": ""
+ },
+ {
+  "vi": "Người mua là trẻ con thì không bán thuốc lá, dù ai sai đi mua; từ chối cho khéo để người lớn tự nghĩ lại.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường cãi sổ",
+  "en": ""
+ },
+ {
+  "vi": "Đến hẹn trả sổ, chú Tường lật trang: “Hôm ấy chú uống có một cốc, sao ghi những ba cốc?”",
+  "en": ""
+ },
+ {
+  "vi": "Dòng trong sổ",
+  "en": ""
+ },
+ {
+  "vi": "Dòng ghi: “2 trà đá, 1 gói lạc — 11 xu”, kèm ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm đó ngồi cùng ai",
+  "en": ""
+ },
+ {
+  "vi": "Ông Khang nhớ hôm đó chú Tường khao bạn xe ôm một cốc.",
+  "en": ""
+ },
+ {
+  "vi": "Thói quen ghi sổ",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu dặn: ghi từng món, có ngày, có tên người ngồi cùng.",
+  "en": ""
+ },
+ {
+  "vi": "Cho chú xem dòng sổ, nhắc hôm ấy chú khao bạn",
+  "en": ""
+ },
+ {
+  "vi": "Sổ sách rõ ràng từng món, tôi nhớ nhầm thật. Quán làm ăn tử tế.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường vỗ trán: “À đúng rồi, khao thằng Bảy!” Chú trả đủ, còn cười xòa.",
+  "en": ""
+ },
+ {
+  "vi": "Có sổ có ngày, chú cãi làm gì nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ kỹ thì không ai mất lòng ai.",
+  "en": ""
+ },
+ {
+  "vi": "Thôi bỏ dòng đó cho chú",
+  "en": ""
+ },
+ {
+  "vi": "Quán dễ tính, nhưng cứ thế thì lỗ mất.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường vui, quán mất 11 xu. Bà Lựu nghe chuyện chỉ thở dài.",
+  "en": ""
+ },
+ {
+  "vi": "Được cái dễ tính!",
+  "en": ""
+ },
+ {
+  "vi": "Dễ tính một lần thì lần sau ai cũng cãi sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Cãi to: “Sổ ghi thế thì trả thế!”",
+  "en": ""
+ },
+ {
+  "vi": "Có mấy xu mà quát khách quen giữa phố.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường trả tiền, mặt nặng như chì. Mấy hôm sau chú ngồi quán khác.",
+  "en": ""
+ },
+ {
+  "vi": "Hai mươi năm uống trà ở đây mà bị quát.",
+  "en": ""
+ },
+ {
+  "vi": "Đúng mà nói to thì cũng thành sai.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ ghi nợ phải có ngày, có món, có số; khi khách thắc mắc thì cùng xem sổ, nói nhỏ nhẹ.",
+  "en": ""
+ },
+ {
+  "vi": "Trật tự đô thị ghé phố",
+  "en": ""
+ },
+ {
+  "vi": "Xe trật tự đô thị dừng ở đầu phố, loa phát: “Đề nghị các hộ kinh doanh không lấn chiếm vỉa hè, lòng đường!”",
+  "en": ""
+ },
+ {
+  "vi": "Vạch sơn vỉa hè",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn xuống chân",
+  "en": ""
+ },
+ {
+  "vi": "Phường kẻ vạch: được bày trong 1,5 mét sát tường, chừa lối cho người đi bộ.",
+  "en": ""
+ },
+ {
+  "vi": "Ghế đang bày",
+  "en": ""
+ },
+ {
+  "vi": "Quán",
+  "en": ""
+ },
+ {
+  "vi": "Hai cái ghế đang thò ra mép lòng đường.",
+  "en": ""
+ },
+ {
+  "vi": "Bác tổ trưởng",
+  "en": ""
+ },
+ {
+  "vi": "Lấn chiếm lòng đường bị lập biên bản, ghế bàn có thể bị thu.",
+  "en": ""
+ },
+ {
+  "vi": "Dẹp gọn vào trong vạch, chừa lối đi",
+  "en": ""
+ },
+ {
+  "vi": "Quán gọn gàng, đi bộ qua không phải lách.",
+  "en": ""
+ },
+ {
+  "vi": "Tổ công tác đi qua, gật đầu. Quán bán tiếp như thường.",
+  "en": ""
+ },
+ {
+  "vi": "Hộ nào cũng thế này thì phố đẹp.",
+  "en": ""
+ },
+ {
   "vi": "Người đi bộ",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Chưa mở tiệm: đếm bản giới hạn, dựng biển, thử búa rồi bấm “Mở tiệm” nhé.",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách cần gì đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Khách này đã tính tiền rồi.",
-  "en": ""
- },
- {
-  "vi": "Chọn một số trên biển giới hạn.",
-  "en": ""
- },
- {
-  "vi": "Tiệm mở rồi, biển đã dựng.",
-  "en": ""
- },
- {
-  "vi": "🚫 Dựng biển: “Không giới hạn”.",
-  "en": ""
- },
- {
-  "vi": "🔨 Bật cây Búa hồng trưng bày: nháy yếu rồi tắt. Pin AAA hết, thay vỉ mới đi.",
-  "en": ""
- },
- {
-  "vi": "🔨 Bật cây Búa hồng trưng bày: sáng hồng rực, đổi màu đủ năm chế độ.",
-  "en": ""
- },
- {
-  "vi": "Hết pin AAA trong kho. Nhập thêm ở Kho nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã thay pin rồi.",
-  "en": ""
- },
- {
-  "vi": "🔋 Thay ba viên AAA cho búa trưng bày: sáng lại rực rỡ.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay không phải hạn chốt đặt trước.",
-  "en": ""
- },
- {
-  "vi": "Đã chốt đơn với nhà phân phối rồi.",
-  "en": ""
- },
- {
-  "vi": "chốt thiếu đặt trước",
-  "en": ""
- },
- {
-  "vi": "chốt dư đặt trước",
-  "en": ""
- },
- {
-  "vi": "Chưa đếm bản giới hạn đã mở tiệm, bán quá tay lúc nào không hay.",
-  "en": ""
- },
- {
-  "vi": "chưa đếm kho",
-  "en": ""
- },
- {
-  "vi": "biển giới hạn sai",
-  "en": ""
- },
- {
-  "vi": "Búa trưng bày chưa thử, khách hỏi mới biết tắt ngóm.",
-  "en": ""
- },
- {
-  "vi": "chưa thử búa trưng bày",
-  "en": ""
- },
- {
-  "vi": "Búa trưng bày nháy yếu cả ngày, khách tưởng hàng lỗi.",
-  "en": ""
- },
- {
-  "vi": "búa trưng bày hết pin",
-  "en": ""
- },
- {
-  "vi": "Quá hạn chốt mà chưa đặt hàng: khách đặt trước sẽ không có Jewel.",
-  "en": ""
- },
- {
-  "vi": "quên chốt đặt trước",
-  "en": ""
- },
- {
-  "vi": "Đếm kho, dựng biển giới hạn, thử búa trưng bày.",
-  "en": ""
- },
- {
-  "vi": "💿 Mở tiệm!",
-  "en": ""
- },
- {
-  "vi": "Chị Thơ nhắn: “Ngon, hôm nay bán đắt nha!”",
-  "en": ""
- },
- {
-  "vi": "Chị Thơ nhắn: “Mở đi em, mai nhớ kỹ hơn nghe.”",
-  "en": ""
- },
- {
-  "vi": "Kệ không có món này.",
-  "en": ""
- },
- {
-  "vi": "Giỏ đầy rồi.",
-  "en": ""
- },
- {
-  "vi": "Món này chưa có trong giỏ.",
-  "en": ""
- },
- {
-  "vi": "Không có lựa chọn này.",
-  "en": ""
- },
- {
-  "vi": "Bật hay tắt?",
-  "en": ""
- },
- {
-  "vi": "🧾 Bật quét Zchart cho từng bản.",
-  "en": ""
- },
- {
-  "vi": "🧾 Tắt quét Zchart.",
-  "en": ""
- },
- {
-  "vi": "🧻 Cuộn poster vào ống.",
-  "en": ""
- },
- {
-  "vi": "🧻 Để poster gập trong album.",
-  "en": ""
- },
- {
-  "vi": "🎟️ Ghi phiếu fansign cho mỗi bản.",
-  "en": ""
- },
- {
-  "vi": "🎟️ Không ghi phiếu fansign.",
-  "en": ""
- },
- {
-  "vi": "🎁 Kèm POB Mây Pop.",
-  "en": ""
- },
- {
-  "vi": "🎁 Không kèm POB.",
-  "en": ""
- },
- {
-  "vi": "Hết ống cuộn poster. Nhập thêm ở Kho nhé.",
-  "en": ""
- },
- {
-  "vi": "Hết POB rồi, nói thật với khách nhé.",
-  "en": ""
- },
- {
-  "vi": "Còn chuyện với khách chưa xong: hỏi, rồi chọn cách trả lời nhé.",
-  "en": ""
- },
- {
-  "vi": "👉 Trả lời khách",
-  "en": ""
- },
- {
-  "vi": "Giỏ còn trống: lấy hàng khách cần trước đã.",
-  "en": ""
- },
- {
-  "vi": "Kệ còn đủ hàng khách cần mà.",
-  "en": ""
- },
- {
-  "vi": "Khách này không có chuyện gì cần quyết.",
-  "en": ""
- },
- {
-  "vi": "Chuyện này đã xong rồi.",
-  "en": ""
- },
- {
-  "vi": "Không có câu hỏi này.",
-  "en": ""
- },
- {
-  "vi": "Hỏi câu này rồi.",
-  "en": ""
- },
- {
-  "vi": "Chuyện này không cần trả lời, hỏi là biết.",
-  "en": ""
- },
- {
-  "vi": "Không có cách trả lời này.",
-  "en": ""
- },
- {
-  "vi": "xử lý sai",
-  "en": ""
- },
- {
-  "vi": "🎓 Học nghề xong! Chị Thơ: “Giờ em tự đứng quầy được rồi. Chị ra sau xếp hàng mới về.”",
-  "en": ""
- },
- {
-  "vi": "Tiệm sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "đếm kho, thử búa",
-  "en": ""
- },
- {
-  "vi": "Biển & sổ đặt trước",
-  "en": ""
- },
- {
-  "vi": "đúng luật nhà phân phối",
-  "en": ""
- },
- {
-  "vi": "biển hoặc sổ chưa đúng",
-  "en": ""
- },
- {
-  "vi": "Xử lý đúng",
-  "en": ""
- },
- {
-  "vi": "Công bằng, nói thật",
-  "en": ""
- },
- {
-  "vi": "Đúng album, đúng phiên bản",
-  "en": ""
- },
- {
-  "vi": "đúng lời dặn",
-  "en": ""
- },
- {
-  "vi": "sai hoặc thiếu món",
-  "en": ""
- },
- {
-  "vi": "đủ như dặn",
-  "en": ""
- },
- {
-  "vi": "đúng luật, nói thật",
-  "en": ""
- },
- {
-  "vi": ", chốt đúng số Jewel trong sổ đặt trước",
-  "en": ""
- },
- {
-  "vi": ", rồi mở tiệm.",
-  "en": ""
- },
- {
-  "vi": "quét Zchart",
-  "en": ""
- },
- {
-  "vi": "poster cuộn",
-  "en": ""
- },
- {
-  "vi": "phiếu fansign",
-  "en": ""
- },
- {
-  "vi": "Đếm bản giới hạn → dựng biển đúng số → thử búa trưng bày (yếu thì thay pin) → hạn chốt thì chốt sổ → Mở tiệm.",
-  "en": ""
- },
- {
-  "vi": "Hỏi cho rõ (xem album, tem, seri, mã…) → chọn cách trả lời đúng chính sách và nói thật.",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách → lấy đúng phiên bản (Digipack chắc card một người, Kit không có CD, ver.2 có Bluetooth ăn pin AA) → bật Zchart, ống poster, phiếu fansign, POB nếu khách dặn → giữ giới hạn → tính tiền → thối đúng.",
-  "en": ""
- },
- {
-  "vi": "Đã đếm bản giới hạn, xếp lại kệ album.",
-  "en": ""
- },
- {
-  "vi": "Đã phát số thứ tự cho hàng chờ ngoài cửa.",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu tiệm album sai.",
-  "en": ""
- },
- {
-  "vi": "Giỏ hàng sai.",
-  "en": ""
- },
- {
-  "vi": "Phiên bản việc tiệm album không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Trạng thái việc tiệm album sai.",
-  "en": ""
- },
- {
-  "vi": "Lựa chọn ở quầy sai.",
-  "en": ""
- },
- {
-  "vi": "Chuyện với khách sai.",
-  "en": ""
- },
- {
-  "vi": "Câu đã hỏi sai.",
-  "en": ""
- },
- {
-  "vi": "Kết quả chuyện với khách sai.",
-  "en": ""
- },
- {
-  "vi": "Quầy tiệm album sai.",
-  "en": ""
- },
- {
-  "vi": "Biển giới hạn sai.",
-  "en": ""
- },
- {
-  "vi": "Số liệu tiệm album sai.",
-  "en": ""
- },
- {
-  "vi": "Bán album ZPOP",
-  "en": ""
- },
- {
-  "vi": "Tiệm album Mây Pop",
-  "en": ""
- },
- {
-  "vi": "Đúng phiên bản, đúng card bias, đúng giới hạn!",
-  "en": ""
- },
- {
-  "vi": "Chiều Phố chợ, loa phát nhạc comeback",
-  "en": ""
- },
- {
-  "vi": "Khách mua album",
-  "en": ""
- },
- {
-  "vi": "Kệ album & quầy",
-  "en": ""
- },
- {
-  "vi": "Đếm bản giới hạn, dựng biển, thử búa trưng bày rồi mở tiệm. Nghe kỹ khách cần phiên bản nào, card ai, Zchart hay poster cuộn nhé.",
-  "en": ""
- },
- {
-  "vi": "Bản nào cũng đúng ý fan",
-  "en": ""
- },
- {
-  "vi": "35 · TIỆM ALBUM MÂY POP",
-  "en": ""
- },
- {
-  "vi": "Em họ chị Thơ, đếm kho nhanh như máy.",
-  "en": ""
- },
- {
-  "vi": "Sinh viên làm thêm, giữ hàng chờ ngày comeback êm ru.",
-  "en": ""
- },
- {
-  "vi": "Thuộc mã từng phiên bản, xếp kệ thẳng tắp.",
-  "en": ""
- },
- {
-  "vi": "Nhớ tên fan quen, ai vào cũng chào bằng tên bias.",
-  "en": ""
- },
- {
-  "vi": "Đếm kho, xếp kệ album",
-  "en": ""
- },
- {
-  "vi": "Giữ hàng chờ, phát số thứ tự",
-  "en": ""
- },
- {
-  "vi": "Kệ album gọn gàng",
-  "en": ""
- },
- {
-  "vi": "Digipack Mận-Ji",
-  "en": ""
- },
- {
-  "vi": "Kệ PINK STATIC",
-  "en": ""
- },
- {
-  "vi": "Gió Mùa Đêm ver",
-  "en": ""
- },
- {
-  "vi": "Kệ 7GIÓ",
-  "en": ""
- },
- {
-  "vi": "Vỉ pin AA",
-  "en": ""
- },
- {
-  "vi": "Hộc phụ kiện",
-  "en": ""
- },
- {
-  "vi": "Búa hồng ver.2",
-  "en": ""
- },
- {
-  "vi": "Tủ kính lightstick",
-  "en": ""
- },
- {
-  "vi": "Đếm bản giới hạn",
-  "en": ""
- },
- {
-  "vi": "Dựng biển giới hạn",
-  "en": ""
- },
- {
-  "vi": "Lấy đúng phiên bản khách cần",
-  "en": ""
- },
- {
-  "vi": "Quét Zchart, tính tiền",
-  "en": ""
- },
- {
-  "vi": "Tờ lịch comeback",
-  "en": ""
- },
- {
-  "vi": "Chị Thơ dán tờ lịch comeback của cả năm sau quầy.",
-  "en": ""
- },
- {
-  "vi": "Ngày nào có nhóm comeback, chị khoanh đỏ, dặn: “Hôm đó mở sớm.”",
-  "en": ""
- },
- {
-  "vi": "Bạn học thuộc từng ngày, như học lịch thi.",
-  "en": ""
- },
- {
-  "vi": "Chị Thơ giữ một tấm card cũ bọc ba lớp toploader.",
-  "en": ""
- },
- {
-  "vi": "Tấm card chị đổi được năm mười lăm tuổi, đổi bằng cả tháng tiền ăn sáng.",
-  "en": ""
- },
- {
-  "vi": "Chị bảo: “Card nào cũng là tuổi trẻ của ai đó, cầm cho nhẹ tay.”",
-  "en": ""
- },
- {
-  "vi": "Hàng chờ lúc sáu giờ",
-  "en": ""
- },
- {
-  "vi": "Sáng comeback, hàng đã dài tới đầu hẻm.",
-  "en": ""
- },
- {
-  "vi": "Bạn phát số, nhắc giới hạn, mời nước những bạn đứng từ sớm.",
-  "en": ""
- },
- {
-  "vi": "Na số 1, cười tít: “Năm nay em đứng đầu rồi!”",
-  "en": ""
- },
- {
-  "vi": "Lấy đúng Digipack bias, không phải nhắc.",
-  "en": ""
- },
- {
-  "vi": "Poster cuộn ống đàng hoàng, không một nếp gấp.",
-  "en": ""
- },
- {
-  "vi": "Giới hạn rõ ràng, ai xếp hàng cũng có phần.",
-  "en": ""
- },
- {
-  "vi": "Nói thật tỉ lệ fansign, mua mà yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Đếm bản giới hạn → dựng biển → thử búa → mở tiệm. Mỗi khách: hỏi → lấy đúng phiên bản → Zchart, poster cuộn, phiếu fansign, POB nếu khách dặn → giữ giới hạn → tính tiền → thối đúng.",
-  "en": ""
- },
- {
-  "vi": "nhóm nữ 4 thành viên",
-  "en": ""
- },
- {
-  "vi": "Búa hồng",
-  "en": ""
- },
- {
-  "vi": "7GIÓ",
-  "en": ""
- },
- {
-  "vi": "Diều",
-  "en": ""
- },
- {
-  "vi": "nhóm nam 7 thành viên",
-  "en": ""
- },
- {
-  "vi": "nhóm nữ tân binh 5 thành viên",
-  "en": ""
- },
- {
-  "vi": "Bơ-Ri",
-  "en": ""
- },
- {
-  "vi": "Mận-Ji",
-  "en": ""
- },
- {
-  "vi": "Sữa-Ah",
-  "en": ""
- },
- {
-  "vi": "Hồng-Bi",
-  "en": ""
- },
- {
-  "vi": "Bấc",
   "en": ""
  }
 ]

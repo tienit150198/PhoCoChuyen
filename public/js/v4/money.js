@@ -63,6 +63,7 @@ export function balances(state,scope,till=''){
   const out={wallet,fund,fundName:fundLabel(till,scope.fund)};
   if(scope.account||j?.bank?.pref==='account')out.account=story&&j.bank?.open&&Number.isFinite(Number(j.bank.balance))?Number(j.bank.balance):null;
   if(scope.joint!=null)out.joint=story&&Number.isFinite(Number(scope.joint))?Number(scope.joint):null;
+  const held=story?Number(j.uniq?.held)||0:0;if(held>0)out.held=held;   // 🔨 escrow of auction bids (game/auction.py): still yours
   if(wallet==null&&fund==null&&out.account==null&&out.joint==null)return null;
   return out;
 }
@@ -76,6 +77,7 @@ export function chipHTML(b,{phone=false}={}){
   if(b.account!=null)bits.push(part('🏦',phone?'TK':'Tài khoản',b.account,'mn-account'));
   if(b.joint!=null)bits.push(part('💞','Quỹ chung',b.joint,'mn-joint'));
   if(b.fund!=null)bits.push(part('🏪',b.fundName||'Quỹ tiệm',b.fund,'mn-fund'));
+  if(b.held)bits.push(part('🔒',phone?'Giữ':'Đang giữ cho đấu giá',b.held,'mn-held'));
   return bits.join('<span class="mn-sep" aria-hidden="true">·</span>');
 }
 /** Plain text of the same line (tests, screen-reader labels). */
@@ -86,6 +88,7 @@ export function chipText(b){
   if(b.account!=null)bits.push(`Tài khoản ${fmt(b.account)} xu`);
   if(b.joint!=null)bits.push(`Quỹ chung ${fmt(b.joint)} xu`);
   if(b.fund!=null)bits.push(`${b.fundName||'Quỹ tiệm'} ${fmt(b.fund)} xu`);
+  if(b.held)bits.push(`Đang giữ cho đấu giá ${fmt(b.held)} xu`);
   return bits.join(', ');
 }
 
