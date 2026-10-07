@@ -128,11 +128,13 @@ class Scratch(FairBase):
         self.assertEqual(ps[-1], fh.P_FLOOR)
         self.assertGreaterEqual(min(ps), fh.P_FLOOR)
         self.assertEqual(set(j), {'fair_run2', fh.COOL_KEY})
-        fh.luck_p(j, f, 'bc', OPEN + 300)                           # another stall: one older run key at a time
+        fh.luck_p(j, f, 'bc', OPEN + 300, stake=20)                 # another stall: one older run key at a time
         self.assertEqual(set(j), {'fair_run', fh.COOL_KEY})
         self.assertEqual(fh.luck_p(json.loads(json.dumps(j)), f, 'xs', OPEN + 305, stake=2), fh.P_FLOOR)   # one round: still cold
-        fh.luck_p(j, f, 'bc', OPEN + 301)
-        fh.luck_p(j, f, 'bc', OPEN + 302)                           # three paid rounds elsewhere: warm again
+        fh.luck_p(j, f, 'bc', OPEN + 301, stake=19)                 # under 20 xu: not counted
+        fh.luck_p(j, f, 'bc', OPEN + 302, stake=20)
+        self.assertEqual(fh.luck_p(json.loads(json.dumps(j)), f, 'xs', OPEN + 304, stake=2), fh.P_FLOOR)
+        fh.luck_p(j, f, 'bc', OPEN + 303, stake=20)                 # three paid rounds of 20 xu elsewhere: warm again
         self.assertEqual(fh.luck_p(j, f, 'xs', OPEN + 305, stake=2), fh.LUCK_BASE)
         self.assertEqual(set(j), {'fair_run2', fh.COOL_KEY})
         s = story(100)

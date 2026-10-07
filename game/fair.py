@@ -11,8 +11,8 @@ lợi nhuận của cả hội chợ"):
   50% won rounds.
 * Spam decay (journey[COOL_KEY], _heat): past RUN_FREE rounds of the same luck stall, each round's draw is RUN_STEP
   lower, down to P_FLOOR (40% won rounds; xóc đĩa XD_FLOOR so its won rounds stop at 40% too). Only two things bring a
-  stall back to the full rate: SWITCH_ROUNDS rounds of other paid luck stalls (PAID_LUCK) since its last round, or a
-  RUN_GAP pause from it. Free or skill stalls (ném vòng, ô ăn quan, phóng dao) change nothing. Bầu cua (honest dice)
+  stall back to the full rate: SWITCH_ROUNDS rounds of other paid luck stalls (PAID_LUCK, any mix) since its last
+  round, each staking at least switch_min (max(SWITCH_MIN, ¼ of the last stake there)), or a RUN_GAP pause from it. Free or skill stalls (ném vòng, ô ăn quan, phóng dao) change nothing. Bầu cua (honest dice)
   never cools. The stall shows "Vận đang nguội vì chơi liền một trò" (public: cold).
 * Knife and o an quan remain skill games with unchanged opponents/collisions.
 * Normal back-corner raids remain 1.76%. Paid chance rounds can also bring the police's asset check (chứng minh nguồn
@@ -77,7 +77,8 @@ XD_FLOOR = .407
 DECAY_EXEMPT = ('bc',)         # bầu cua: honest dice with a house edge, no draw to lower
 PAID_LUCK = ('bc', 'xd', 'lt', 'xs')   # the paid luck stalls whose rounds count as a switch
 SWITCH_ROUNDS = 3
-COOL_KEY = 'fair_cool'         # journey['fair_cool'] {stall: {n, at, sw}}: optional, an older server keeps it as is
+SWITCH_MIN, SWITCH_DIV = 20, 4   # a switch round stakes ≥ max(20 xu, ¼ of the last stake on the cooled stall) (07/10)
+COOL_KEY = 'fair_cool'         # journey['fair_cool'] {stall: {n, at, sw, st}}: optional, an older server keeps it as is
 COOL_GAMES = ('xd', 'lt', 'xs', 'ring')
 RUN_GAMES = ('bc', 'xd', 'lt', 'dt')
 # Stalls newer than 1.4.17, whose validator takes only RUN_GAMES in 'fair_run': their run is journey['fair_run2'], the
@@ -506,10 +507,15 @@ def chance_rate(game: str, t: float, stake: int | None = None, net: int = 0) -> 
     return XD_BASE if game == 'xd' else LUCK_BASE
 
 
-def _heat(j: dict, game: str, t: float) -> int:
-    """The spam-decay count of this round of `game` (1: a fresh run). A round of a paid luck stall counts towards
-    every other stall's switch; a stall SWITCH_ROUNDS rounds past its last one, or RUN_GAP after it, starts afresh.
-    A free stall (ring) counts only for itself."""
+def switch_min(r: dict) -> int:
+    """The smallest stake of a round elsewhere that counts towards warming the stall of run `r` up again."""
+    return max(SWITCH_MIN, -(-r['st'] // SWITCH_DIV))
+
+
+def _heat(j: dict, game: str, t: float, stake: int = 0) -> int:
+    """The spam-decay count of this round of `game` (1: a fresh run). A round of a paid luck stall staking at least
+    switch_min counts towards every other stall's switch (a smaller one changes nothing); a stall SWITCH_ROUNDS such
+    rounds past its last one, or RUN_GAP after it, starts afresh. A free stall (ring) counts only for itself."""
     c = j.get(COOL_KEY)
     if not isinstance(c, dict):
         c = j[COOL_KEY] = {}
@@ -518,7 +524,7 @@ def _heat(j: dict, game: str, t: float) -> int:
         if g == game:
             continue
         r = c[g]
-        if game in PAID_LUCK:
+        if game in PAID_LUCK and stake >= switch_min(r):
             r['sw'] = min(SWITCH_ROUNDS, r['sw'] + 1)
         if not 0 <= now - r['at'] <= RUN_GAP or r['sw'] >= SWITCH_ROUNDS:
             del c[g]   # back to the full rate
@@ -528,8 +534,8 @@ def _heat(j: dict, game: str, t: float) -> int:
         return 1
     r = c.get(game)
     if not (isinstance(r, dict) and 0 <= now - r['at'] <= RUN_GAP and r['sw'] < SWITCH_ROUNDS):
-        r = c[game] = dict(n=0, at=now, sw=0)
-    r.update(n=min(10**6, r['n'] + 1), at=now, sw=0)
+        r = c[game] = dict(n=0, at=now, sw=0, st=0)
+    r.update(n=min(10**6, r['n'] + 1), at=now, sw=0, st=min(ROUND_MAX, max(0, int(stake or 0))))
     return r['n']
 
 
@@ -546,12 +552,12 @@ def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = 
     """Count the round in the player's runs and return its draw (run_rate of the decay count): no profit or price
     penalty. The older run keys (_run) are kept up to date for older servers, but decide nothing any more."""
     _run(j, game, t)
-    return run_rate(game, _heat(j, game, t))
+    return run_rate(game, _heat(j, game, t, stake or 0))
 
 
 def cold(j: dict, t: float) -> dict | None:
     """The most recently played stall whose next round is cooled by a long run (public: the "Vận đang nguội" hint),
-    else None. switch: the rounds of another paid luck stall still needed to warm it up again."""
+    else None. switch: the rounds of another paid luck stall still needed to warm it up again, each staking ≥ min."""
     c = j.get(COOL_KEY)
     out = None
     for g, r in (c.items() if isinstance(c, dict) else ()):
@@ -561,7 +567,7 @@ def cold(j: dict, t: float) -> dict | None:
         if p < chance_rate(g, t) and (out is None or r['at'] >= out[0]):
             won = p * (1 - RAID_PCT / 100) if g == 'xd' else p
             out = r['at'], dict(game=g, pct=round(won * 100), n=r['n'], gap=RUN_GAP // 60,
-                                switch=SWITCH_ROUNDS - r['sw'])
+                                switch=SWITCH_ROUNDS - r['sw'], min=switch_min(r))
     return out and out[1]
 
 
@@ -1401,7 +1407,7 @@ def public(s: dict) -> dict:
                            ring_day=RING_DAY, ring_left=RING_DAY, oaq_turn=1, xd_fine_div=FINE_DIV, nocap=1, ring_chance=True,
                            # 07/10 rules under new names: an older client (its line promised a sure win after 4 losses) shows none
                            luck_pct=round(WIN_P * 100), cooled_pct=round(WIN_P_LOW * 100), run_free=RUN_FREE,
-                           floor_pct=round(P_FLOOR * 100), run_gap_min=RUN_GAP // 60, run_switch=SWITCH_ROUNDS,
+                           floor_pct=round(P_FLOOR * 100), run_gap_min=RUN_GAP // 60, run_switch=SWITCH_ROUNDS, run_switch_min=SWITCH_MIN,
                            audit_pct=AUDIT_PCT,
                            audit_from=WEALTH_THRESHOLD, loc_mult=LOC_MULT),
                 cold=cold(j, t),   # the stall whose run has cooled its luck ("Vận đang nguội"), or None
@@ -1467,7 +1473,8 @@ def validate(j: dict) -> None:
         c = j[COOL_KEY]
         need(isinstance(c, dict) and set(c) <= set(COOL_GAMES), 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
         for r in c.values():
-            need(isinstance(r, dict) and set(r) == {'n', 'at', 'sw'}, 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+            need(isinstance(r, dict) and set(r) == {'n', 'at', 'sw', 'st'}, 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+            integer(r['st'], 0, ROUND_MAX)
             integer(r['n'], 0, 10**6)
             integer(r['at'], 0, 10**11)
             integer(r['sw'], 0, SWITCH_ROUNDS)
