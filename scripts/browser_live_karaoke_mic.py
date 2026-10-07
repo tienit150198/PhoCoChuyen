@@ -14,6 +14,10 @@ real jsDelivr URL when --sdk FILE is given (its SRI is still checked by the brow
   * Minh hears her: his inbound RTP packets/bytes grow (getStats), Lan's outbound ones too; Hoa (who blocked her)
     sees the notice but gets no audio; the SFU lists Lan as the only publisher and Minh as a hidden listener;
   * Lan's song is skipped: her mic is cut (the SFU room is gone: no participant left), Minh stops hearing;
+  * Bé joins late (the mic is already live) on a network where the SDK cannot load (both copies fail): "🎧 Đang nối
+    giọng…", two quiet retries, then "Chưa nghe được giọng · Thử lại", and the page's error beacon stores
+    "kara_mic listen sdk: …" (stat_client_errors); the network comes back, Thử lại, and Bé hears Lan too. Nobody
+    fetched the SDK from jsDelivr (our own copy, public/js/vendor/); Minh's stages reach `audio`, Lan's too;
   * Bé (born this year − 15: maybe still 15) is next on stage: 🎙️ → birth year → "từ 16 tuổi", no SFU room.
 --tcp-only runs Chromium with `--force-webrtc-ip-handling-policy=disable_non_proxied_udp` (no UDP at all, as on the
 production server whose provider drops UDP): media must go over ICE/TCP (rtc.tcp_port).
@@ -46,6 +50,7 @@ from pg_test_support import test_env, test_connect, schema_for  # noqa: E402
 STATE = "async () => (await import('/js/v4/karaoke.js')).karaoke.state()"
 STATS = "async () => (await import('/js/v4/karaoke.js')).karaoke.micStats()"
 SDK_URL = 'https://cdn.jsdelivr.net/npm/livekit-client@2.22.3/dist/livekit-client.umd.js'
+OWN_SDK = '/js/vendor/livekit-client-2.22.3.umd.js'
 KEY, SECRET = 'devkey', secrets.token_hex(24)
 
 
@@ -203,7 +208,10 @@ async def run(shots: Path | None, sdk_file: Path | None, tcp_only: bool) -> list
             check('microphone=(self)' in h.get('permissions-policy', '') and 'camera=()' in h.get('permissions-policy', ''), f'Permissions-Policy: {h.get("permissions-policy")}')
             csp = h.get('content-security-policy', '')
             check(SDK_URL in csp and ws in csp and "'unsafe-eval'" not in csp and "default-src 'self'" in csp, 'CSP: the pinned SDK and the SFU only')
-            for p in (lan, minh, hoa, be):
+            cdn = []
+            for p in (lan, minh, hoa):   # (Bé's network fails on purpose below: she falls back to jsDelivr)
+                p.page.on('request', lambda r: cdn.append(r.url) if 'cdn.jsdelivr.net' in r.url else None)
+            for p in (lan, minh, hoa):   # Bé comes in later, once the mic is live
                 await enter(p)
             # Hoa blocks Lan in the room (👥 › 🚫)
             await hoa.page.click('.kr-sheet[open] [data-kr=people]')
@@ -222,7 +230,7 @@ async def run(shots: Path | None, sdk_file: Path | None, tcp_only: bool) -> list
             await mic_flow(lan, 2000)
             await until(lan, 's.pub', 'Lan publishes', 25)
             check(sql(db, 'SELECT year FROM account_birth')[0][0] == 2000, 'the birth year is stored on the account (account_birth)')
-            for p in (lan, minh, hoa, be):
+            for p in (lan, minh, hoa):
                 await p.page.wait_for_selector('.kr-sheet[open] .kr-live', timeout=10000)
                 txt = await p.page.inner_text('.kr-sheet[open] .kr-live')
                 check('Đang phát trực tiếp giọng hát' in txt, f'{p.name} sees "🎤 Đang phát trực tiếp giọng hát"')
@@ -238,12 +246,46 @@ async def run(shots: Path | None, sdk_file: Path | None, tcp_only: bool) -> list
                 check(pair and pair.get('protocol') == 'tcp', f'no UDP: the voice comes over ICE/TCP ({pair})')
             o = await rtp(lan, 'pub')
             check(o['packets'] > 100, f'Lan sends audio (outbound-rtp packets {o["packets"]})')
+            await asyncio.sleep(3.0)
+            sm, sl = await minh.page.evaluate(STATE), await lan.page.evaluate(STATE)
+            check(sm['at'] == 'audio' and sm['ls'] == 'live' and sl['pubAt'] == 'audio', f'stages: Minh {sm["at"]} ({sm["ls"]}), Lan {sl["pubAt"]}')
             sh = await hoa.page.evaluate(STATE)
-            check(sh['live'] and not sh['sub'], 'Hoa (who blocked Lan) sees the notice and gets no audio')
+            check(sh['live'] and not sh['sub'] and sh['ls'] == '', f'Hoa (who blocked Lan) sees the notice and gets no audio, and no "đang nối" either ({sh["ls"]!r})')
+            txt = await hoa.page.inner_text('.kr-sheet[open] .kr-live')
+            check('nối giọng' not in txt and 'Chưa nghe' not in txt, f'Hoa: nothing says why ({txt!r})')
+            # Bé joins late; the SDK cannot load on her network (our copy and jsDelivr both fail)
+            dead = lambda r: r.abort()
+            await be.ctx.route('**' + OWN_SDK + '*', dead)
+            await be.ctx.route(SDK_URL, dead)
+            await enter(be)
+            await be.page.wait_for_selector('.kr-sheet[open] .kr-live', timeout=10000)
+            txt = await be.page.inner_text('.kr-sheet[open] .kr-live')
+            check('Đang nối giọng' in txt, f'Bé (late) sees "🎧 Đang nối giọng…" ({txt!r})')
+            sb = await until(be, "s.ls === 'fail'", 'Bé gives up after the retries', 30)
+            check(sb['tries'] == 3 and not sb['sub'], f'Bé: two quiet retries, then the failure ({sb["tries"]})')
+            txt = await be.page.inner_text('.kr-sheet[open] .kr-live')
+            check('Chưa nghe được giọng' in txt and await be.page.is_visible('.kr-sheet[open] [data-kr=voiceretry]'), f'Bé sees "Chưa nghe được giọng · Thử lại" ({txt!r})')
+            await shot(be, 'listener-fail')
+            rows = []
+            for _ in range(40):
+                rows = sql(db, "SELECT kind, message_key, screen, count FROM stat_client_errors WHERE message_key LIKE 'kara_mic%'")
+                if rows:
+                    break
+                await asyncio.sleep(0.5)
+            print('beacon rows:', rows, flush=True)
+            check(any(r[0] == 'toast' and r[1].startswith('kara_mic listen sdk:') and 'self' in r[1] and 'cdn' in r[1] for r in rows),
+                  f'the error beacon has the stage: kara_mic listen sdk (self + cdn) ({rows})')
+            problems[:] = [x for x in problems if not x.startswith('Bé console: Failed to load resource: net::ERR_FAILED')]   # the cut network
+            await be.ctx.unroute('**' + OWN_SDK + '*', dead)
+            await be.ctx.unroute(SDK_URL, dead)
+            await be.page.click('.kr-sheet[open] [data-kr=voiceretry]')
+            await until(be, 's.sub && s.heard', 'Bé hears Lan after Thử lại', 30)
+            check(True, 'Bé hears Lan after Thử lại (late joiner)')
             rooms = [r for r in await api_client.rooms() if r.startswith('kara-')]
             parts = await api_client.participants(rooms[0]) if rooms else []
             who = {x.get('identity'): x for x in parts}
             pubs = [i for i, x in who.items() if x.get('tracks')]
+            check(not cdn, f'the SDK came from our own origin, not jsDelivr ({cdn[:2]})')
             check(len(rooms) == 1 and pubs == [lan_pid] and minh_pid in who and hoa_pid not in who,
                   f'the SFU: one room, Lan the only publisher, Minh listening, Hoa absent ({sorted(who)})')
             perm = (who.get(minh_pid) or {}).get('permission') or {}

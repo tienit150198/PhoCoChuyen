@@ -2,6 +2,8 @@
 server.py headers): the age rule, the birth year stored once on the account (account_birth), the tokens (what each
 side may do, signed, expiring), the switch (off: headers and routes exactly as before), the admin tools, and that the
 browser module pins the same SDK the CSP allows. The rooms themselves: tests/test_live_karaoke_mic.py."""
+import base64
+import hashlib
 import os
 import re
 import time
@@ -134,8 +136,18 @@ class Switch(unittest.TestCase):
 
     def test_browser_module_pins_the_same_sdk(self):
         js = (ROOT / 'public/js/v4/karaoke-mic.js').read_text(encoding='utf-8')
-        self.assertIn(f"url:'{server_module().KARA_MIC_SDK}'", js)
+        self.assertIn(f"urls:['/js/vendor/livekit-client-2.22.3.umd.js','{server_module().KARA_MIC_SDK}']", js)   # our copy first, then the CDN
         self.assertRegex(js, r"sri:'sha384-[A-Za-z0-9+/]{64}'")
+        # our copy is the very file jsDelivr serves: the same SRI checks both (and the release never minifies vendor/)
+        own = (ROOT / 'public/js/vendor/livekit-client-2.22.3.umd.js').read_bytes()
+        sri = 'sha384-' + base64.b64encode(hashlib.sha384(own).digest()).decode()
+        self.assertIn(f"sri:'{sri}'", js)
+        self.assertTrue((ROOT / 'public/js/vendor/livekit-client.LICENSE').is_file())
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('build_static', ROOT / 'scripts/build_static.py')
+        bs = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(bs)
+        self.assertNotIn(ROOT / 'public/js/vendor/livekit-client-2.22.3.umd.js', bs.sources(ROOT, '.js'))
         self.assertIn('s.integrity=SDK.sri', js)
         self.assertIn("s.crossOrigin='anonymous'", js)
         self.assertIn('echoCancellation:true,noiseSuppression:true', js)
