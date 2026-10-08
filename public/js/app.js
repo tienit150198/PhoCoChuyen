@@ -1537,7 +1537,7 @@ async function handleAction(action,data,el){
     case'stPause':closeSheet();setPaused(!ui.paused);break;
     case'stView':openSheet('home',{jrView:data.view});break;
     case'money':openSheet('money');loadJoint(env());break;
-    case'wlDraw':await wealthAction(action,data,el,{...env(),placeName:cid=>placeOf(cid).name});break;
+    case'wlDraw':case'wlInvest':case'wlMode':case'wlAmt':await wealthAction(action,data,el,{...env(),placeName:cid=>placeOf(cid).name});break;  // 💼 Rút / góp vốn (F#259)
     case'journal':if(['teacher','tour_guide','milk_tea'].includes(career()))openSheet('passport');else openSheet('journal',{journalTab:'quests'});break;
     case'library':if(['teacher','tour_guide','milk_tea'].includes(career()))openSheet('workshop');else openSheet('journal',{journalTab:'library'});break;
     case'journalTab':ui.journalTab=data.tab;renderSheet(false);break;

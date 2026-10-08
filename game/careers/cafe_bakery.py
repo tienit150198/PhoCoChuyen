@@ -133,8 +133,11 @@ BAKES = {
                          recipe={'flour': 1, 'butter': 1, 'sugar': 1, 'egg': 1, 'matcha': 1}, allergens=['gluten', 'lactose'], fresh=2, max_age=3, donate=True, unlock=3),
     'cacao_muffin': dict(id='cacao_muffin', name='Muffin cacao', emoji='🧁', proof=False, qty=6, window=(14, 20, 25),
                         recipe={'flour': 1, 'butter': 1, 'egg': 2, 'sugar': 1, 'cacao': 1}, allergens=['gluten', 'lactose'], fresh=0, max_age=1, donate=True, unlock=3),
+    # F#248 (08/10): "và bánh đào nướng". Vỏ bơ, nhân đào ngâm; nướng ngay như muffin, bán trong ngày, hôm sau −50%.
+    'peach_tart': dict(id='peach_tart', name='Bánh đào nướng', emoji='🥧', proof=False, qty=6, window=(14, 20, 25),
+                       recipe={'flour': 1, 'butter': 1, 'egg': 1, 'sugar': 1, 'peach': 2}, allergens=['gluten', 'lactose'], fresh=0, max_age=1, donate=True, unlock=2),
 }
-CASE_ITEMS = ('croissant', 'banhmi', 'cookie', 'bonglan', 'matcha_cookie', 'cacao_muffin')
+CASE_ITEMS = ('croissant', 'banhmi', 'cookie', 'bonglan', 'matcha_cookie', 'cacao_muffin', 'peach_tart')
 DONENESS = ('pale', 'golden', 'dark', 'burnt')
 LOT_Q = ('golden', 'dark', 'pale', 'flat', 'dense')
 LOT_Q_LABEL = dict(golden='vàng đều', dark='hơi sậm', pale='nhạt màu', flat='xẹp vì ủ quá lâu', dense='đặc ruột vì men đói')
@@ -200,6 +203,7 @@ ITEMS = [
     dict(id='matcha', name='Bột matcha', emoji='🍵', group='dry', unit='phần', cost=4, life=30, start=0, unlock=3),
     dict(id='cacao', name='Bột cacao', emoji='🍫', group='dry', unit='phần', cost=3, life=30, start=0, unlock=3),
     dict(id='jelly', name='Thạch dừa', emoji='🧊', group='fridge', unit='phần', cost=2, life=4, start=0, unlock=3),
+    dict(id='peach', name='Đào ngâm', emoji='🍑', group='fridge', unit='phần', cost=2, life=10, start=0, unlock=2),
     dict(id='cup', name='Ly giấy + nắp', emoji='🥤', group='pack', unit='bộ', cost=1, start=20),
     dict(id='bag', name='Túi giấy', emoji='🛍️', group='pack', unit='cái', cost=1, start=16),
     dict(id='cake_box', name='Hộp bánh kem + nến', emoji='📦', group='pack', unit='bộ', cost=3, start=4),
@@ -353,7 +357,7 @@ MODS = [
     dict(id='festival', emoji='🎉', label='Cuối tuần có hội', hint='Giá bán +10%. Nhiều bánh kem đặt trước, khách đi theo nhóm.', min_day=5, weight=1, walkin=0.3, patience=1, buyers=2),
 ]
 MOD_INDEX = {m['id']: m for m in MODS}
-BUYER_WANTS = dict(croissant=3, banhmi=3, cookie=2, bonglan=2, matcha_cookie=2, cacao_muffin=2)
+BUYER_WANTS = dict(croissant=3, banhmi=3, cookie=2, bonglan=2, matcha_cookie=2, cacao_muffin=2, peach_tart=1)
 
 
 def _level_hint(day: int) -> int:
@@ -2832,7 +2836,8 @@ SPEC = dict(
     inventory=dict(items=ITEMS, capacity=40),
     prices={'espresso': 25, 'americano': 30, 'latte': 38, 'cappuccino': 38, 'bacxiu': 32,
             'matcha_latte': 40, 'matcha_blend': 45, 'cacao_blend': 45,
-            'croissant': 22, 'banhmi': 12, 'cookie': 12, 'bonglan': 20, 'cake': 160, 'matcha_cookie': 16, 'cacao_muffin': 24},
+            'croissant': 22, 'banhmi': 12, 'cookie': 12, 'bonglan': 20, 'cake': 160, 'matcha_cookie': 16, 'cacao_muffin': 24,
+            'peach_tart': 26},
     tip=3,
     physical=('cb_pull', 'cb_milk', 'cb_pick', 'cb_serve', 'cb_dump', 'cb_bake', 'cb_frost', 'cb_done', 'cb_box_send', 'cb_mix', 'cb_blend', 'cb_jelly'),
     wait=True,  # the queue drains in handle (food_service.patience_tick → kit.wait_tick), not the engine's flat -1

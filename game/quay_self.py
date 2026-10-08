@@ -60,6 +60,10 @@ MORE_MENUS = {
  'grocery': [('sua','🥛','Hộp sữa',10),('dau_an','🫙','Dầu ăn',18),('duong','🧂','Túi đường',12),('muoi','🧂','Túi muối',5),('giay','🧻','Khăn giấy',9),('xa_phong','🧼','Xà phòng',11)],
  'clothing': [('ao_somi','👔','Áo sơ mi',30),('ao_khoac','🧥','Áo khoác',45),('quan_short','🩳','Quần short',24),('tat','🧦','Đôi tất',8),('tui','👜','Túi vải',20),('do_bo','👚','Đồ bộ',32)],
 }
+# F#248 (08/10): "thêm trà đào cam sả, trà thạch đào… và bánh đào nướng". A new dish starts off on a board saved before
+# (turn it on in 🍽️ Menu); a counter opened from now on sells the whole trade (default_menu).
+MORE_MENUS['milk_tea'] += [('tra_dao_cam_sa', '🍑', 'Trà đào cam sả', 12), ('tra_thach_dao', '🍑', 'Trà thạch đào', 11)]
+MORE_MENUS['cafe_bakery'] += [('banh_dao_nuong', '🥧', 'Bánh đào nướng', 12)]
 for _trade, _dishes in MORE_MENUS.items():
     MENUS[_trade].extend(_dishes)
 DISH = {t: {d[0]: dict(id=d[0], emoji=d[1], name=d[2], base=d[3]) for d in rows} for t, rows in MENUS.items()}

@@ -19,10 +19,12 @@ SHOPS = {
     'co_lan': dict(emoji='☕', name='Cà phê Cô Lan', items=(
         dict(id='ca_phe_muoi', emoji='🧂', name='Cà phê muối', price=9, full=0, wake=20),
         dict(id='bac_xiu', emoji='🥛', name='Bạc xỉu', price=8, full=5, wake=12),
+        dict(id='banh_dao_nuong', emoji='🥧', name='Bánh đào nướng', price=12, full=25, wake=0),   # F#248
     )),
     'tra_sua_may': dict(emoji='🧋', name='Trà sữa Mây', items=(
         dict(id='tra_sua_tc', emoji='🧋', name='Trà sữa trân châu', price=12, full=10, wake=8),
         dict(id='tra_dao', emoji='🍑', name='Trà đào cam sả', price=14, full=5, wake=10),
+        dict(id='tra_thach_dao', emoji='🍑', name='Trà thạch đào', price=13, full=10, wake=8),   # F#248
     )),
     'pho_hang_may': dict(emoji='🍜', name='Phở Hàng Mây', items=(
         dict(id='pho_tai_lan', emoji='🍜', name='Phở tái lăn', price=15, full=45, wake=0),

@@ -43,3 +43,22 @@ body.reduce-motion .mn-chip.mn-bump{animation:none}
 .wl-row.here .wl-name{color:var(--accent-text)}
 .wl-extra{grid-column:2/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .wl-extra small{font-size:.8rem}
+/* 💼 Rút / góp vốn (F#259, v4/wealth.js fundMoveHTML): the two moves side by side, a typed amount, quick chips. Also in
+   the journey's Sổ ví (.jr-fund-actions). */
+.wl-row .wl-extra:has(>.wl-move){grid-column:1/-1}
+.wl-move{display:flex;flex-direction:column;gap:8px;width:100%;min-width:0}
+.wl-move.open{padding:10px;border-radius:14px;background:var(--surface-2)}
+.wl-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.wl-tab{min-height:40px;padding:6px 10px;border-radius:12px;border:1.5px solid var(--line-strong);background:var(--surface);font-size:.867rem;font-weight:700;color:var(--ink-2);white-space:nowrap}
+.wl-tab.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text)}
+@media (hover:hover){.wl-tab:not(.on):hover{background:var(--surface-2)}}
+.wl-amount{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.wl-amount .wl-st{min-width:40px;min-height:40px;font-size:1.1rem;font-weight:800}
+.wl-amount input.qty-in{min-height:40px;border-radius:10px;border:1.5px solid var(--field-line,var(--line-strong));background:var(--surface)}
+.wl-of{font-size:.8rem;color:var(--muted);white-space:nowrap}
+.wl-chips{display:flex;flex-wrap:wrap;gap:6px}
+.wl-chip{min-height:36px;padding:4px 14px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface);font-size:.867rem;font-weight:700;color:var(--ink-2)}
+.wl-chip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text)}
+.wl-after,.wl-why{margin:0;font-size:.867rem;color:var(--ink-2)}
+.wl-after b{font-variant-numeric:tabular-nums;color:var(--ink)}
+.wl-move .wl-go{align-self:flex-start}

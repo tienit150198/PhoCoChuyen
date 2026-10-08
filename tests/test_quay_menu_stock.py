@@ -15,7 +15,7 @@ class BoardAndStock(unittest.TestCase):
         s = opened('kiot', wallet=20000)
         st = ST(s)
         self.assertEqual(st['menu']['on'], [d[0] for d in qs.MENUS[st['trade']]][:qs.MENU_MAX])
-        self.assertEqual(len(st['menu']['on']), 12)
+        self.assertEqual(len(st['menu']['on']), min(len(qs.MENUS[st['trade']]), qs.MENU_MAX))   # 14 from F#248
         validate_state(s)
         now = st['business']['cursor'] / 1000
         st['business']['stock'] = {d: 50 for d in qs.DISH[st['trade']]}
