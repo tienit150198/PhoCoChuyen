@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Đèn Hòn Gió sáng lúc $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Ghi sổ trực buổi tối, ký tên. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "📻 Bạn: “Trạm Hòn Gió báo: tàu $1, phương vị $2, nhờ đài chuyển đồn biên phòng.” Chị Hải Yến: “Rõ, đã chuyển. Biên phòng cho tàu ra ngay.”",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "$1 đi $2: giông lúc tới",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đi $2: sương sớm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đi $2: kiểm tra kỹ thuật",
   "en": "",
   "pattern": true
  }

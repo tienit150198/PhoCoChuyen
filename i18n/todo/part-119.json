@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Loa to quá, nhưng mà vui! Quẩy lên mọi người ơi 🔊",
+  "en": ""
+ },
+ {
   "vi": "Xôi gấc đỏ au, ăn lấy may cả năm nha!",
   "en": ""
  },
@@ -2036,11 +2040,6 @@
  },
  {
   "vi": "$1: Sao kê thẻ •••• $2 kỳ này $3 xu, tối thiểu $4 xu, hạn thanh toán Ngày $5.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: Sổ tiết kiệm $2 $3 xu đã đáo hạn, tiền gốc và lãi $4 xu đã về tài khoản thanh toán.",
   "en": "",
   "pattern": true
  }

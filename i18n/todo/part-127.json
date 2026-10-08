@@ -1,5 +1,15 @@
 [
  {
+  "vi": "$1 ở nhà trông nhà.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 chưa học trò này.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 $2: $3! Cả xóm vỗ tay.",
   "en": "",
   "pattern": true

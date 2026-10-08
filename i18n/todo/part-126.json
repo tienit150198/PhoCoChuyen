@@ -1,5 +1,15 @@
 [
  {
+  "vi": "$1 Đạt! Điểm cao nhất của bạn: $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Đạt! 📜 Chứng nhận Lịch sử Việt Nam đã được cấp, kèm danh hiệu 📜 Người kể sử và học bổng $2 xu vào ví.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 Đạt! 📜 Chứng nhận Lịch sử Việt Nam đã được cấp.",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "🦮 $1 đi dạo cùng bạn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 ở nhà trông nhà.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 chưa học trò này.",
   "en": "",
   "pattern": true
  }

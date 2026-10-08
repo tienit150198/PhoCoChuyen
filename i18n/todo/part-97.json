@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Chỉ đánh giá dịch vụ đã được phục vụ và thanh toán.",
+  "en": ""
+ },
+ {
   "vi": "Không thể gửi nội dung cho đơn này.",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Mốc cuối",
-  "en": ""
- },
- {
-  "vi": "Nơi làm",
   "en": ""
  }
 ]

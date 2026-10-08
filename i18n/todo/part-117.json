@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Giao đúng sở trường (ô xanh): nhanh và ít lỗi.",
+  "en": ""
+ },
+ {
   "vi": "Việc trả về có ⚠️: bấm ↩️ để làm lại, được thêm điểm.",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Khóa phiên lạ khi được cảnh báo để chặn vụ hack, không tốn xu.",
-  "en": ""
- },
- {
-  "vi": "Bình yên",
   "en": ""
  }
 ]
