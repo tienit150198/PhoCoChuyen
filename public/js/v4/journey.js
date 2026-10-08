@@ -10,7 +10,7 @@ import {storiesBoot,storiesCard,storiesAction,maybeStory} from './stories.js';
 import {investView,investEntry,investAction,investBoot} from './invest.js';
 import {boardEntry} from './board.js';
 import {abandonTrust} from './abandon.js';
-import {certsView,certsEntry,certBadges,certTitles,certAction} from './certificates.js';
+import {certsView,certsEntry,certBadges,certTitles,certAction,certPlaceLine,certBadge} from './certificates.js';
 import {lifeView,lifeEntry,lifeCard,lifeAction,lifeBoot} from './life.js';
 import {householdView,householdAction,householdSubmit} from './household.js';
 import {outingsView,outingsAction} from './outings.js';
@@ -48,7 +48,7 @@ export function townOn(env){
   return !(J.story&&!J.intro&&!J.gender);   // a brand-new player picks a look and a name first
 }
 /** What the town needs from here (the list's own helpers, so both say the same). */
-const TOWN_HELP={emojiOf:m=>emojiOf(m),catOf:m=>catOf(m),get CATS(){return CATS;},FIRST_JOB,acctPlace:(api,cid)=>acctPlace(api,cid),chapterCard};
+const TOWN_HELP={emojiOf:m=>emojiOf(m),catOf:m=>catOf(m),get CATS(){return CATS;},FIRST_JOB,acctPlace:(api,cid)=>acctPlace(api,cid),chapterCard,certBadge:api=>certBadge(api)};
 function townPage(env){
   const m=TW.use();
   return m?m.townHTML(env,TOWN_HELP):`<div class="tw-home"><header class="tw-top home-top"><div class="tw-title"><h2>Khu phố</h2></div><button type="button" class="tw-chip tw-list" data-action="jrList">📋 Danh sách</button></header>${skeleton()}</div>`;
@@ -224,7 +224,7 @@ function placeCard(env,cid){
   const action=aj&&!aj.ok?btn(`Đi học ${icon('arrow',13)}`,'accountingSchool',{},'cream small'):p?.paused?btn('Mở lại','jrReopen',{career:cid},'cream small'):
     btn(`${c.started?'Tiếp tục':job.required&&job.status!=='hired'?'Xin việc':'Bắt đầu'} ${icon('arrow',13)}`,'choose',{career:cid},c.started?'primary small':'cream small');
   return `<article class="jr-place ${p?.paused?'paused':''} ${cid===api.state.current?'current':''}" style="--career:${colour(m.color)}"><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span>
-    <div class="jr-place-text"><span class="eyebrow">${esc(CATS[catOf(m)]||'')}</span><h3>${esc(m.place||m.short)}</h3><small>${esc(m.short||'')}</small><div class="jr-tags">${acctTags(aj,tags,tag).join('')}</div>${money}</div>${action}</article>`;
+    <div class="jr-place-text"><span class="eyebrow">${esc(CATS[catOf(m)]||'')}</span><h3>${esc(m.place||m.short)}</h3><small>${esc(m.short||'')}</small><div class="jr-tags">${acctTags(aj,tags,tag).join('')}</div>${money}${J.story?certPlaceLine(env,cid):''}</div>${action}</article>`;
 }
 
 function lockedTile(env,cid){
@@ -272,8 +272,9 @@ function homeMain(env){
   const {api}=env,J=api.state.journey;
   const town=townOK()?btn('🗺️ Bản đồ phố','jrTown',{},'cream small jr-town'):'';
   const top=`<header class="jr-top"><div class="grow"><span class="eyebrow">${J.story?`Khu phố nhỏ · Ngày sống ${fmt(J.life_day)}`:'Khu phố nhỏ · mọi nơi đều mở'}</span><h1>Hành trình của bạn</h1></div>${town}${accountChip(env)}${api.state.current?btn(icon('x',20),'close',{},'ghost small jr-close','aria-label="Đóng"'):''}</header>`;
-  const more=`${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${certsEntry(env)}${storiesCard(env)}`;
-  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${J.story?chapterCard(env):''}${!J.story||J.finale?resumeCard(env):''}${meCard(env)}${J.story?houseCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
+  // 🎓 F#267: Thi chứng chỉ sits in the first column, right under the goals (it was last in the third, under the places).
+  const more=`${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${storiesCard(env)}`;
+  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${J.story?chapterCard(env):''}${!J.story||J.finale?resumeCard(env):''}${certsEntry(env)}${meCard(env)}${J.story?houseCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
 }
 
 /* 🏮 Hội chợ dân gian (v4/fair.js, own dialog; game/fair.py): a small banner while the fair is open or about to open. */

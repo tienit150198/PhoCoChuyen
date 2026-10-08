@@ -5,7 +5,7 @@ import {icon,portrait,escapeHTML as esc} from '../icons.js';
 import {asset} from '../assets.js';
 import {nextHint,stepCta,pending,goAttrs} from './guide.js';
 import {CAREERS as GUIDE} from '../tutorial/guide-data.js';
-import {certInfo,certCss} from './certificates.js';
+import {certInfo,certCss,certsFor} from './certificates.js';
 import {lockChip} from '../careers/stage_fold.js';
 import {wordsFor} from '../scenes/index.js';
 import {fundLabel} from './money.js';
@@ -664,6 +664,15 @@ function resultCard(p,job,day,ex,env){
     <p class="notice amber small">${icon('leaf',15)}<span><b>Bước tiếp theo:</b> ${esc(next)}</span></p>
     ${examFail?`<p class="small">Cần đúng ${ex?.pass_mark??4}/${sh.qs.length} câu. Lời giải các câu sai:</p>${examReview(job)}`:''}${story?nextWays(env,p,job,examFail,when):''}</section>`;
 }
+/** 🎓 F#267 ("đã được nhận cứu hộ bơi mà chưa thi chứng chỉ"): hired without the place's certificate, the job sheet
+ * says so and opens the exam in one tap (v4/certificates.js). */
+function hiredCert(env,id){
+  const rows=certsFor(env.api,id).filter(x=>!x.held);if(!rows.length)return '';
+  certCss();
+  const J=env.api.state.journey;
+  return rows.map(({g,studying})=>{const ready=studying&&J.study?.ready_now;
+    return `<div class="notice blue small ct-banner"><span aria-hidden="true">${g.emoji}</span><span class="grow">${studying?`Đang học <b>${esc(g.name)}</b>.`:`Bạn chưa có <b>${esc(g.name)}</b>. Thi lúc nào cũng được: đề ${env.api.content.journey.certs.draw} câu, có 💡 gợi ý.`}${g.perk?` 🎁 ${esc(g.perk)}`:''}</span>${button(ready?'📝 Vào thi':studying?'Xem bài học':'Đi thi ngay','jrCerts',{cert:g.id,career:id},ready||!studying?'primary small':'ghost small')}</div>`;}).join('');
+}
 export function jobView(env){
   const {api,ui}=env,id=api.state.current,c=api.state.careers[id],job=c.job,E=api.content.employment;
   const posts=E.postings[id]||[];const qs=E.questions[id]||{};const ex=E.exams?.[id]||null;const cert=certOf(job,ex);
@@ -676,7 +685,7 @@ export function jobView(env){
     // 🎖️ Thăng tiến (game/promotion.py): the step's title, the good days and a bar; a tap opens the ladder.
     const pr=c.promo,pn=pr?.next,promo=pr?`<button type="button" class="pm-strip" data-action="promo"><span aria-hidden="true">🎖️</span><b>${esc(pr.title)}</b>${pr.due?'<small>Sếp hẹn gặp</small>':pn?`<small>${pn.good}/${pn.need}</small><span class="bar"><i style="width:${Math.round(100*pn.good/Math.max(1,pn.need))}%"></i></span>`:''}</button>`:'';
     return head('Hồ sơ công việc',esc(p?.org||''),'VIỆC LÀM · '+esc(place))+`<div class="sheet-body">${promo}<article class="card"><h3>${esc(job.title)}</h3>
-<p>${esc(p?.culture||'')}</p><div class="kv"><div class="kv-row"><span>Lương</span><b>${job.salary} xu/ngày${job.probation?' · thử việc 85%':''}</b></div>${p?.wage_note?`<div class="kv-row"><span>Tiền tiệm</span><b>${esc(p.wage_note)}</b></div>`:''}${cert?`<div class="kv-row"><span>Chứng chỉ</span><b>✓ ${esc(ex.name)}</b></div>`:''}${ci?.held?`<div class="kv-row"><span>Chứng chỉ nghề</span><b>${ci.g.emoji} ${esc(ci.g.name)}</b></div>`:''}${job.backdoor&&job.backdoor.posting===job.employer?`<div class="kv-row"><span>Vào làm</span><b>🚪 Qua cửa sau (${job.backdoor.fee} xu)</b></div>`:''}<div class="kv-row"><span>Ngày đã làm</span><b>${job.days_worked}</b></div>${job.probation?`<div class="kv-row"><span>Thử việc còn</span><b>${job.probation_left} ngày có làm việc</b></div>`:''}</div><p class="muted small">Lương trả khi khép ca nếu hôm đó bạn hoàn thành ít nhất một việc. Hết thử việc, đánh giá trung bình từ 3.5★ sẽ được ký chính thức.</p>${confirmCmd('Xin nghỉ việc','job_quit',{},'Nghỉ việc ở đây? Bạn cần ứng tuyển lại trước ca tiếp theo.','ghost small',c.open)}</article></div>`;
+<p>${esc(p?.culture||'')}</p><div class="kv"><div class="kv-row"><span>Lương</span><b>${job.salary} xu/ngày${job.probation?' · thử việc 85%':''}</b></div>${p?.wage_note?`<div class="kv-row"><span>Tiền tiệm</span><b>${esc(p.wage_note)}</b></div>`:''}${cert?`<div class="kv-row"><span>Chứng chỉ</span><b>✓ ${esc(ex.name)}</b></div>`:''}${ci?.held?`<div class="kv-row"><span>Chứng chỉ nghề</span><b>${ci.g.emoji} ${esc(ci.g.name)}</b></div>`:''}${job.backdoor&&job.backdoor.posting===job.employer?`<div class="kv-row"><span>Vào làm</span><b>🚪 Qua cửa sau (${job.backdoor.fee} xu)</b></div>`:''}<div class="kv-row"><span>Ngày đã làm</span><b>${job.days_worked}</b></div>${job.probation?`<div class="kv-row"><span>Thử việc còn</span><b>${job.probation_left} ngày có làm việc</b></div>`:''}</div><p class="muted small">Lương trả khi khép ca nếu hôm đó bạn hoàn thành ít nhất một việc. Hết thử việc, đánh giá trung bình từ 3.5★ sẽ được ký chính thức.</p>${hiredCert(env,id)}${confirmCmd('Xin nghỉ việc','job_quit',{},'Nghỉ việc ở đây? Bạn cần ứng tuyển lại trước ca tiếp theo.','ghost small',c.open)}</article></div>`;
   }
   const app=job.application;
   if(job.status==='offer'){

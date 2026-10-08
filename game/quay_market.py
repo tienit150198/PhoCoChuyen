@@ -39,6 +39,29 @@ def snapshot(at):
                 starts_at=epoch * EPOCH_MS / 1000, ends_at=(epoch + 1) * EPOCH_MS / 1000)
 
 
+# F#263/#264 (08/10, "mở 5 tiệm quần áo, không độn giá mà suy thoái cả 5"): the phase is one calendar for the whole
+# town, every counter of every player at once (not the price, not how many counters you own). These say so on screen.
+DAY_PERCENT = round(_CYCLE_WORK / _CYCLE_MS)          # the day's average demand, percent of a normal hour
+DOWN_MINUTES = sum(EPOCH_MS for p in _PHASES if p[0] == 'downturn') // 60000   # downturn minutes in a day
+
+
+def outlook(at, runs=4):
+    """The market from `at`: the current run of one phase (same state and demand, epochs merged) and the next ones,
+    [{state, label, demand_factor, starts_at, ends_at}] (seconds). Read-only, from the fixed calendar: a client whose
+    state is a little old can still pick the run of its own clock."""
+    epoch = max(0, int(at)) // EPOCH_MS
+    out = []
+    while len(out) < runs:
+        state, label, percent = _PHASES[epoch % CYCLE_EPOCHS]
+        start = epoch
+        while _PHASES[(epoch + 1) % CYCLE_EPOCHS][::2] == (state, percent) and epoch + 1 - start < CYCLE_EPOCHS:
+            epoch += 1
+        out.append(dict(state=state, label=label, demand_factor=percent / 100,
+                        starts_at=start * EPOCH_MS / 1000, ends_at=(epoch + 1) * EPOCH_MS / 1000))
+        epoch += 1
+    return out
+
+
 def demand_clock(at):
     """Exact integrated demand in percent-milliseconds, including full days."""
     cycles, tail = divmod(max(0, int(at)), _CYCLE_MS)

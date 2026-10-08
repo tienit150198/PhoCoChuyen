@@ -20,6 +20,7 @@ import {dayclockBoot,clockChip,clockAria,clockCard,clockSummary,closingNote,cloc
 import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCareerData,careerContext,startTicker,tickNow,careerSwitchButton,CSS_KIT} from './v4/careers.js';
 import {applyGuide,guideAction,nextHint,stepCta,plainText,firstTime,barParts} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
+import {certBadge} from './v4/certificates.js';
 import {moneyBoot,confirmMoney,confirmShort,dialogBalances,isSpend,priceIn} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
 import {quickOpen,firstDay} from './v4/onboard.js';  // a brand-new player's first minutes
 import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} from './v4/wealth.js';  // 💰 Tiền của bạn (top bar chips + sheet)
@@ -322,12 +323,14 @@ function navItems(c){
   if(api.state?.journey?.story&&api.content?.journey?.auction)items.push(['auction','award','Nhà đấu giá']);  // 🔨 đồ độc bản (v4/auction.js, own dialog): only once the server has it  // 🛍️ du lịch, sưu tập, dinh thự, tiệc, khóa học, Mạnh Thường Quân (v4/lux.js, own dialog): only once the server has it
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
+  if(api.state?.journey?.story&&api.content?.journey?.certs)items.push(['jrCerts','clipboard','Thi chứng chỉ',certBadge(api)]);  // 🎓 F#267: in sight on the rail / top of "Thêm", not in a hub (v4/certificates.js)
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
   if(api.state?.fair?.show)items.push(['fair','flag','Hội chợ',api.state.fair.open&&!api.state.fair.played?'dot':0]);  // 🏮 Hội chợ dân gian (v4/fair.js, own dialog): only around the fair's days
   // A career with its own shell (the air crew: no Sổ tiệm, a flight log instead) reshapes the list; others keep it.
   const result=careerUI(career())?.nav?.(items,careerContext(env()))||items;
   if(!result.some(x=>x[0]==='accountingSchool'))result.push(['accountingSchool','calculator','Học kế toán']);  // 📒 Học kế toán (v4/accounting-school.js): every career, after a career's own reshaping
   if(api.state?.journey?.story&&!result.some(x=>x[0]==='jrInvest'))result.push(['jrInvest','coin','Đầu tư']);
+  if(api.state?.journey?.story&&api.content?.journey?.certs&&!result.some(x=>x[0]==='jrCerts'))result.push(['jrCerts','clipboard','Thi chứng chỉ',certBadge(api)]);
   return result;
 }
 /** 🏪 A dot when a counter needs its owner: a thief, rent to pay, closed waiting, or a till to collect soon. */
@@ -340,7 +343,7 @@ const RAIL_NOTE={home:'Hành trình · mục tiêu của bạn',jrTown:'Dạo ph
 const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${RAIL_NOTE[a]?`<small class="rail-note">${RAIL_NOTE[a]}</small>`:''}${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
-const RAIL_MAIN=['liveChat','home','prepare','operations','jrInvest','prices','feedback','jobapp','accountingSchool'];   // 💬 Chat first, one tap (owner, 01/10)
+const RAIL_MAIN=['liveChat','home','prepare','operations','jrInvest','prices','feedback','jobapp','jrCerts','accountingSchool'];   // 💬 Chat first, one tap (owner, 01/10)
 /** Học kế toán is a work page for the office accountants; everyone else finds it under "Của mình". */
 const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accounting'];
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()));

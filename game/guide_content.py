@@ -5762,10 +5762,12 @@ GROUPS = [{'id': 'start',
              {'id': 'certificates',
               'emoji': '🎓',
               'title': 'Học và thi chứng chỉ',
-              'points': ['🎓 Năm nhóm chứng chỉ: an toàn lao động, chăm sóc tóc & thú cưng, chăm sóc khách hàng, sư '
-                         'phạm, kế toán.',
-                         '🧭 Mở ô [[Thi chứng chỉ]] trong Hành trình, hoặc bấm [[Đi học lấy chứng chỉ]] ngay trên thẻ '
-                         'kết quả khi trượt phỏng vấn.',
+              'points': ['🎓 Mỗi nhóm nghề làm thuê có một chứng chỉ: an toàn lao động, chăm sóc khách hàng, sư phạm, '
+                         'kế toán, cứu hộ hồ bơi, an toàn bay… Vài nghề có chứng chỉ tay nghề tặng món mới (🎁).',
+                         '🧭 Bấm [[🎓 Chứng chỉ]] trên Bản đồ phố, ô [[Thi chứng chỉ]] đầu trang Hành trình, mục [[Thi '
+                         'chứng chỉ]] trong menu, hoặc [[Đi thi ngay]] trên thẻ nơi làm việc và trong Hồ sơ công việc.',
+                         '💼 Được nhận rồi vẫn thi được bất cứ lúc nào: nơi bạn đang làm mà chưa có chứng chỉ thì có '
+                         'chấm nhắc.',
                          '📈 Có chứng chỉ đúng nhóm: phỏng vấn dưới 60 điểm vẫn có 50% cơ hội được nhận. Không bù được '
                          'bước làm mất an toàn hay CV ghi sai sự thật.',
                          '📚 [[Lớp cấp tốc]] có học phí, học xong thi ngay hôm nay. [[Tự học]] miễn phí, thi từ ngày '

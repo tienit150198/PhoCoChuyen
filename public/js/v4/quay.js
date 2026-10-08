@@ -19,7 +19,7 @@ import {confirmPurchase} from './payment.js';
 import {RIDE,rideSVG,turnChoices} from './quay-ride.js';
 import {signalHTML,mountSignals} from './traffic.js';
 import {cloneMenu,selectDishes,menuPayload,filterDishes,pricePreview,restockQuote,createQuayPoller,focusSnapshot,restoreInputFocus,syncDraftValue} from './quay-business-ui.js';
-import {businessControls,tickRunningCosts,theftRiskHTML} from './business-economy-ui.js';
+import {businessControls,tickRunningCosts,theftRiskHTML,marketBanner} from './business-economy-ui.js';
 import {staffLifeCard} from '../staff-life-ui.js';
 import {ownerQueueHTML,ownerArrivalText,counterActivity,counterActivityHTML} from './quay-owner-queue.js';
 import {shopEventCard} from '../shop-events-ui.js';
@@ -375,7 +375,7 @@ function listView(v){
   const more=(CAT().unlimited||v.stalls.length<CAT().max)&&!v.lock?`<div class="bk-actions center">${btn('＋ Mở thêm quầy','new',{},'ghost')}</div>`:'';
   const pages=Math.ceil(v.stalls.length/PAGE_SIZE);S.page=Math.min(S.page,pages-1);
   const nav=pages>1?`<nav class="bk-actions center" aria-label="Trang quầy">${btn('‹ Trước','page',{page:S.page-1},'small',S.page?'':'Trang đầu')}<span>${fmt(v.stalls.length)} quầy · ${S.page+1}/${pages}</span>${btn('Sau ›','page',{page:S.page+1},'small',S.page<pages-1?'':'Trang cuối')}</nav>`:'';
-  return nav+v.stalls.slice(S.page*PAGE_SIZE,(S.page+1)*PAGE_SIZE).map(stallCard).join('')+nav+more+hiredReceipts(v.receipts);
+  return marketBanner(v.stalls)+nav+v.stalls.slice(S.page*PAGE_SIZE,(S.page+1)*PAGE_SIZE).map(stallCard).join('')+nav+more+hiredReceipts(v.receipts);
 }
 
 const ownerEvents=st=>shopEventCard(st.shop_events,(label,e,ch)=>btn(label,'ownerEvent',{id:st.id,event:e.id,choice:ch.id},'shop-event-choice',ch.affordable===false?'Chưa đủ tiền':''));

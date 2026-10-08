@@ -38,14 +38,52 @@ export function certInfo(api,cid){
   return {g,rec,held:held(rec),bonus:k.bonus,cap:k.cap,studying:J.study?.cert===gid};
 }
 
+/** 🎓 F#267 (08/10, "thi chứng chỉ bấm ở đâu"): every certificate a workplace has (its hire certificate first, then a
+ * craft one such as Chứng chỉ làm kem), with what the player holds of it. [] outside the story or before the catalogue. */
+export function certsFor(api,cid){
+  const k=K(api),J=api.state?.journey;if(!k||!J?.story)return [];
+  const hire=k.by_career?.[cid];
+  return k.groups.filter(g=>g.id===hire||g.careers.includes(cid)).sort((a,b)=>(b.id===hire)-(a.id===hire))
+    .map(g=>({g,rec:J.certificates?.[g.id]||null,held:held(J.certificates?.[g.id]),studying:J.study?.cert===g.id}));
+}
+/** The first workplace the player is hired at (the current one first) whose certificate they have not earned yet:
+ * {cid, g} or null. The nudge on the home entry, the town chip and the work menu. */
+export function certMissing(api,fresh=false){
+  const J=api.state?.journey,C=api.state?.careers||{};if(!J?.story)return null;
+  const ids=[api.state.current,...(J.unlocked||[])].filter((cid,i,a)=>cid&&a.indexOf(cid)===i&&C[cid]?.job?.status==='hired');
+  for(const cid of ids){const x=certsFor(api,cid).find(x=>!x.held&&!x.studying&&!(fresh&&x.rec));if(x)return {cid,g:x.g};}
+  return null;
+}
+/** A dot for the menu and the town chip: the exam is open, or a workplace you work at has a certificate you have
+ * never sat (after a first try the dot stops: the home entry and the workplace card still say it). */
+export function certBadge(api){
+  const J=api.state?.journey;if(!J?.story||!K(api))return 0;
+  return J.study?.ready_now||certMissing(api,true)?'dot':0;
+}
+/** The certificate line on a workplace card (journey list): what it has, and one tap to the exam. */
+export function certPlaceLine(env,cid){
+  const {api}=env,rows=certsFor(api,cid);if(!rows.length)return '';
+  certCss();
+  const J=api.state.journey,hired=api.state.careers[cid]?.job?.status==='hired';
+  return rows.map(({g,rec,held:has,studying})=>{
+    if(has)return `<button type="button" class="ct-place have" data-action="jrCertDiploma" data-cert="${esc(g.id)}" aria-label="${esc(`${g.name} · ${rec.best} điểm`)}"><span aria-hidden="true">${g.emoji}</span><span class="grow">${esc(g.short)} · ${rec.best} điểm</span></button>`;
+    const ready=studying&&J.study?.ready_now;
+    const what=ready?'📝 Vào thi':studying?'📖 Đang học':'Đi thi ngay';
+    // The card is narrow on a phone (two columns): the certificate's short name, the button on its own line if needed.
+    return `<button type="button" class="ct-place${hired&&!studying||ready?' due':''}" data-action="jrCerts" data-cert="${esc(g.id)}" data-career="${esc(cid)}" aria-label="${esc(`${g.name} · ${what}`)}"><span class="grow">🎓 ${esc(g.short)}${hired&&!studying?' · chưa có':''}</span><b>${what}</b></button>`;}).join('');
+}
+
 /* ------------------------------------------------------------------ home, profile, titles */
 export function certsEntry(env){
   const {api}=env,J=api.state.journey,k=K(api);if(!J?.story||!k)return '';
   certCss();
   const got=k.groups.filter(g=>held(J.certificates?.[g.id])).length,st=J.study;
-  const g=st&&k.groups.find(x=>x.id===st.cert);
-  const line=st&&g?(st.ready_now?`${g.emoji} Bài thi ${g.name} đã mở`:`${g.emoji} Đang học · thi từ Ngày ${fmt(st.ready)}${st.days_left?` (còn ${st.days_left} ngày)`:''}`):'Học rồi thi lấy chứng chỉ nghề';
-  return `<button type="button" class="jr-card ct-entry" data-action="jrCerts"><span class="ct-entry-icon" aria-hidden="true">🎓</span><span class="grow"><b>Thi chứng chỉ</b><small>${esc(line)}</small></span>${st?.ready_now?'<span class="tag green">Vào thi</span>':`<span class="ct-count">${got}/${k.groups.length}</span>`}${icon('arrow',16)}</button>`;
+  const g=st&&k.groups.find(x=>x.id===st.cert),miss=!st&&certMissing(api);
+  const line=st&&g?(st.ready_now?`${g.emoji} Bài thi ${g.name} đã mở`:`${g.emoji} Đang học · thi từ Ngày ${fmt(st.ready)}${st.days_left?` (còn ${st.days_left} ngày)`:''}`)
+    :miss?`${miss.g.emoji} Bạn làm ở ${placeOf(api,miss.cid)} mà chưa có ${miss.g.name}`:'Học rồi thi lấy chứng chỉ nghề';
+  const tail=st?.ready_now?'<span class="tag green">Vào thi</span>':miss?'<span class="tag amber">Đi thi ngay</span>':`<span class="ct-count">${got}/${k.groups.length}</span>`;
+  const data=miss?` data-cert="${esc(miss.g.id)}" data-career="${esc(miss.cid)}"`:'';
+  return `<button type="button" class="jr-card ct-entry${st?.ready_now||miss?' due':''}" data-action="jrCerts"${data}><span class="ct-entry-icon" aria-hidden="true">🎓</span><span class="grow"><b>Thi chứng chỉ</b><small>${esc(line)}</small></span>${tail}${icon('arrow',16)}</button>`;
 }
 
 /** Earned certificates as badges (profile card). */

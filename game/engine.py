@@ -625,7 +625,12 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     elif action.startswith("fb_"):
         result.update(fbk.action(s,c,career,action,p,internal))
     elif action.startswith("job_"):
+        was=c["job"].get("status") if isinstance(c.get("job"),dict) else None
         result.update(emp.action(s,c,career,action,p))
+        if was!="hired" and isinstance(c.get("job"),dict) and c["job"].get("status")=="hired":
+            from . import certificates as ct_
+            tip=ct_.hire_nudge(s,career)  # 🎓 F#267: hired without the place's certificate → say where the exam is
+            if tip:result["message"]=f'{result.get("message") or ""} {tip}'.strip()
     elif action.startswith("pm_"):  # 🎖️ the review, 🧑‍💼 the manager's board (game/promotion.py)
         result.update(pm.action(s,c,career,action,p))
     elif action.startswith("cl_"):
