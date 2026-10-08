@@ -217,13 +217,17 @@ class FairWinRate(FairBase):
         validate_state(s)
         return wins / (n or self.N)
 
-    def test_every_luck_stall_is_won_about_50_percent(self):
+    def test_every_luck_stall_is_won_at_its_own_rate(self):
+        # owner 08/10 "đảm bảo nhà cái luôn thắng": each stall's fresh draw (fair.BASES) is under what breaks even
         for game in fh.CHANCE_GAMES:
             if game == 'bc':
                 continue   # owner 06/10: bầu cua rolls honest dice (tests/test_fair_bc_honest.py), no luck draw
             with self.subTest(game=game):
                 rate = self.play(game)
-                self.assertAlmostEqual(rate, fh.WIN_P, delta=.03, msg=(game, rate))
+                want = fh.BASES[game] * (1 - fh.RAID_PCT / 100) if game == 'xd' else fh.BASES[game]   # a raid is a loss
+                self.assertAlmostEqual(rate, want, delta=.03, msg=(game, rate))
+                if game in ('xd', 'lt'):
+                    self.assertLess(want, .5)   # the even-money stalls
 
     def test_spamming_one_stall_cools_to_40_percent(self):
         for game in ('xd', 'xs', 'ring'):
@@ -231,7 +235,7 @@ class FairWinRate(FairBase):
                 rate = self.play(game, run=None, n=1000, skip=fh.RUN_FREE + 12)
                 self.assertAlmostEqual(rate, .40, delta=.035, msg=(game, rate))
 
-    def test_long_streaks_never_cool_below_50_percent(self):
+    def test_long_streaks_cool_only_to_win_p_low(self):
         for game, base in (('bc', fh.LUCK_BASE), ('xd', fh.XD_BASE)):
             j, used = {}, []
 
@@ -243,10 +247,11 @@ class FairWinRate(FairBase):
             with patch.object(fh, '_rng', Spy(77)):
                 results = [fh._draw_luck(j, game, base) for _ in range(60000)]
             rate = sum(results) / len(results)
-            want = fh.WIN_P if game == 'bc' else fh.WIN_P / (1 - fh.RAID_PCT / 100)   # xóc đĩa: raids come before the draw
-            self.assertAlmostEqual(rate, want, delta=.01, msg=game)
+            self.assertAlmostEqual(rate, base, delta=.01, msg=game)   # the stall's own rate (fair.BASES), streaks and all
+            if game == 'xd':
+                self.assertLess(base * (1 - fh.RAID_PCT / 100), .5)
             windows = [sum(results[i:i + 1000]) / 1000 for i in range(0, 60000, 1000)]
-            self.assertGreaterEqual(min(windows), fh.WIN_P_LOW, game)
+            self.assertGreaterEqual(min(windows), fh.WIN_P_LOW - .02, game)   # 1000 draws at .485: some noise
             streak = 0   # after four wins in a row the next draw is never worse than WIN_P_LOW
             for won, x in zip(results, used):
                 if streak >= fh.STREAK:

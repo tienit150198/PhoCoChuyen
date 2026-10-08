@@ -35,7 +35,16 @@ How the three betting patterns play:
 - **Lô tô side bets are closed** (`SIDE_OPEN`). The số chốt is a call of the minute's sequence, and that sequence is the
   same for every tờ bought that minute. A player could buy a cheap first tờ, see the calls, then bet a second one on
   the likely parity or column. Rounds bought before still settle and validate.
-- **The rules line** shows each stall's rate (`rules.luck`). An older client still reads the single `luck_pct`, now 48.
+- **No numbers shown** (owner 08/10: "số liệu k hiển thị ra"). No win rate reaches the client: `rules` has no
+  `luck_pct`, `luck`, `cooled_pct`, `floor_pct`, `run_free` or `raid_pct`, and the "Vận đang nguội" hint is sent as
+  `cool`, without its rate. An older client's 🍀 line needs `luck_pct` and its cold hint reads `cold`, so it shows
+  neither. The new client has no 🍀 line; the 🚨 police line stays.
+- **Stakes** (owner 08/10: "mn đặt cược bao nhiêu thoải mái nhé"). Bầu cua and chiếu trong take any whole stake the
+  wallet holds, typed or from the quick chips. `STAKE_MAX` (1,000,000 a round) is only a technical bound: a bão pays 10
+  times the stake, and one Sổ ví row must stay within ±10,000,000 for every validator. `NET_SAFE` keeps today's saved
+  net far from its ±10^9 bound. Lô tô, phóng dao and vé cào keep their menus: a lô tô round (≤ `ROUND_MAX` 1,000) and a
+  knife stake (`fair_knife.STAKES`) are saved and checked by older servers, and vé cào sells fixed-price tickets.
+  None of this changes a return: every stake gets the same odds.
 
 ## Not a wager
 
@@ -51,13 +60,13 @@ How the three betting patterns play:
 
   The ladder alone would let a good thumb win without limit, so (owner 08/10) the house caps it:
 
-  - **Daily cap: 300 xu** (`fair.KN_DAY_CAP`) a player and Vietnam day. What each run pays over its stake counts
-    (rounded up to 10 xu, the house's side); a losing run does not give any of it back, so the stall's net for the
-    player can only be lower. A run that would cross the cap pays the stake back plus what is left of it, and the
-    prize the stall shows (`run.prize`, `run.win`) is already capped, so nothing promised is cut later. Once the cap is
-    reached the stall takes no new stake that day ("Hôm nay bạn đã thắng đủ ở Phóng dao, mai quay lại nhé."), and a
-    payout that reaches it ends with that line. This is cleaner than letting the player keep staking for at most the
-    stake back, which could only lose. `api.state.fair.knife` gains `cap` and `cap_left` (an older client ignores them).
+  - **Daily cap: 300 xu** (`fair.KN_DAY_CAP`) a player and Vietnam day, and **silent**: no message, no public field.
+    What each paid run wins over its stake counts (rounded up to 10 xu, the house's side); a losing run does not give
+    any of it back, so the player's real net from the stall can only be lower. A level whose clearing would win past
+    what is left (`_kn_over`) starts on the hardest board (`hot = HEAT_MAX`), and if every throw still lands clean, the
+    clearing throw glances off: the run is lost like any crash ("Dao chạm dao rồi!"). The stall keeps taking stakes, and
+    the prizes it shows are the ladder's. Once the cap is reached, the first level of any stake is such a level, so
+    every run after it loses its stake. The payout is also clamped to stake + what is left, as a backstop only.
   - **Why 300:** it is the bound the older validators already put on the saved counter it uses: the legacy points
     tally `fair.dpts` (reset each Vietnam day and each edition, unused since points went on 03/10) is checked as
     0..`POINTS_DAY` = 30, and stored in 10-xu steps that makes 300 xu. That needs no new save key, and a 1.9.21 server
@@ -65,7 +74,8 @@ How the three betting patterns play:
     three easy clears at 100 xu: a real reward for a good thumb, but small next to a day's work.
   - **Worst case for the house:** a player can net at most **+300 xu a day** from Phóng dao, whatever the stake or the
     number of runs. That is at most 1,500 xu over the five fair days. A prize left waiting overnight is paid under the
-    next day's cap. The police's checks and the heat on a winning day still apply on top.
+    next day's cap (fresh that day, since the prize is paid by the day's first command). The police's checks and the
+    heat on a winning day still apply on top.
 - **Ô ăn quan and ném vòng take no stake.** They pay out but cost nothing.
 
 ## Save compatibility

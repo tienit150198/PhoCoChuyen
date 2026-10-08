@@ -56,12 +56,12 @@ class Decay(FairBase):
 
     def test_a_ten_minute_pause_recovers(self):
         s = self.xd(story(10**6), 30)
-        self.assertEqual(public_state(s)['fair']['cold']['game'], 'xd')
-        self.assertEqual(public_state(s)['fair']['cold']['pct'], 40)
+        self.assertEqual(public_state(s)['fair']['cool']['game'], 'xd')
+        self.assertNotIn('pct', public_state(s)['fair']['cool'])   # owner 08/10: no rate reaches the client
         self.clock.t += fh.RUN_GAP - 5
         self.assertEqual(self.xd_p(s), fh.XD_FLOOR)                  # 9m55s: still cold
         self.clock.t += 6                                            # a 10-minute pause
-        self.assertIsNone(public_state(s)['fair']['cold'])
+        self.assertIsNone(public_state(s)['fair']['cool'])
         self.assertEqual(self.xd_p(s), fh.XD_BASE)
         validate_state(s)
 
@@ -69,7 +69,7 @@ class Decay(FairBase):
         s = self.xd(story(10**6), 30)
         s = self.xs(s, 2)                                            # two vé cào: not yet
         self.assertEqual(s['journey'][fh.COOL_KEY]['xd']['sw'], 2)
-        cold = public_state(s)['fair']['cold']
+        cold = public_state(s)['fair']['cool']
         self.assertEqual((cold['game'], cold['switch'], cold['min']), ('xd', 1, 20))
         self.assertEqual(self.xd_p(s), fh.XD_FLOOR)
         s = self.xd(s, 1)                                            # back to xóc đĩa: the switch starts over
@@ -102,13 +102,13 @@ class Decay(FairBase):
 
     def test_a_quarter_of_the_last_stake_on_the_cooled_stall(self):
         s = self.xd(story(10**6), 30, stake=1000)
-        self.assertEqual(public_state(s)['fair']['cold']['min'], 250)
+        self.assertEqual(public_state(s)['fair']['cool']['min'], 250)
         s = self.xs(s, 3, price=200)                                 # 200 < 250: nothing
         self.assertEqual(self.xd_p(s), fh.XD_FLOOR)
         s = self.xs(s, 2, price=500)
-        self.assertEqual(public_state(s)['fair']['cold']['switch'], 1)
+        self.assertEqual(public_state(s)['fair']['cool']['switch'], 1)
         s = self.xd(s, 1, stake=40)                                  # back at 40 xu: the switch starts over, min 20
-        self.assertEqual(public_state(s)['fair']['cold']['min'], 20)
+        self.assertEqual(public_state(s)['fair']['cool']['min'], 20)
         s = self.xs(s, 3, price=20)
         self.assertEqual(self.xd_p(s), fh.XD_BASE)
         validate_state(s)
@@ -122,7 +122,7 @@ class Decay(FairBase):
         s, _ = self.act(s, 'fair_kn_start', stake=2)                # phóng dao
         self.assertNotIn('fair_run', s['journey'])                   # the older run keys still break, as before
         self.assertEqual(s['journey'][fh.COOL_KEY]['xd'], dict(n=30, at=s['journey'][fh.COOL_KEY]['xd']['at'], sw=0, st=10))
-        self.assertEqual(public_state(s)['fair']['cold']['game'], 'xd')
+        self.assertEqual(public_state(s)['fair']['cool']['game'], 'xd')
         self.assertEqual(self.xd_p(s), fh.XD_FLOOR)
         validate_state(s)
 
@@ -145,22 +145,23 @@ class Decay(FairBase):
         for _ in range(5):   # a few rounds of each stall, 20 xu or more
             s = self.xd(s, 4, stake=20)
             s = self.xs(s, 4, price=20)
-            self.assertIsNone(public_state(s)['fair']['cold'])
+            self.assertIsNone(public_state(s)['fair']['cool'])
         self.assertLessEqual(s['journey']['fair_run2']['n'], fh.RUN_FREE)
         self.assertEqual(set(s['journey'][fh.COOL_KEY]), {'xs'})     # four vé cào warmed xóc đĩa up each time
 
     def test_the_hint_shows_from_the_first_cooled_round(self):
         s = story(10**6)
         for i in range(fh.RUN_FREE):
-            self.assertIsNone(public_state(s)['fair']['cold'], i)
+            self.assertIsNone(public_state(s)['fair']['cool'], i)
             self.dice(Dice(draws=[.99]))
             s, _ = self.act(s, 'fair_xs', price=2)
-        cold = public_state(s)['fair']['cold']
-        self.assertEqual((cold['game'], cold['pct'], cold['gap'], cold['switch'], cold['min']), ('xs', 48, 10, 3, 20))
+        cold = public_state(s)['fair']['cool']
+        self.assertEqual((cold['game'], cold['gap'], cold['switch'], cold['min']), ('xs', 10, 3, 20))
+        self.assertNotIn('cold', public_state(s)['fair'])   # an older client printed "khoảng N% thắng" from it
         rules = public_state(s)['fair']['rules']
-        self.assertEqual((rules['luck_pct'], rules['cooled_pct'], rules['floor_pct'], rules['run_free'], rules['run_switch'],
-                          rules['run_switch_min']), (48, 45, 40, 10, 3, 20))
-        self.assertEqual(rules['luck'], dict(xd=48, lt=46, xs=50, ring=50))   # 08/10: each stall's own, in 100 rounds
+        self.assertEqual((rules['run_switch'], rules['run_switch_min']), (3, 20))
+        for key in ('luck_pct', 'cooled_pct', 'floor_pct', 'run_free', 'luck', 'raid_pct'):   # owner 08/10: no rates shown
+            self.assertNotIn(key, rules)
         self.assertNotIn('win_pct', rules)   # an older client's line (a sure win after 4 losses) is not shown any more
 
     def test_bau_cua_is_exempt(self):
@@ -170,7 +171,7 @@ class Decay(FairBase):
             s, r = self.act(s, 'fair_bc', bets={'cua': 1})
             self.assertEqual(r['fair']['dice'], ['bau', 'tom', 'ga'])   # the dice stay honest: whatever they show
         self.assertEqual(s['journey']['fair_run']['n'], 60)
-        self.assertIsNone(public_state(s)['fair']['cold'])
+        self.assertIsNone(public_state(s)['fair']['cool'])
         self.assertEqual(fh.luck_p(s['journey'], None, 'bc', self.clock.t), fh.LUCK_BASE)
         self.assertNotIn('fair_balance', s['journey'])               # no luck draw at bầu cua
         validate_state(s)

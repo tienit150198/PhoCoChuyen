@@ -249,8 +249,10 @@ class SavingsTier(unittest.TestCase):
 
 class Fair(unittest.TestCase):
     def test_the_scratch_card_keeps_a_small_edge(self):
+        # owner 08/10 "đảm bảo nhà cái luôn thắng": a fresh ticket returns about 90% (docs/FAIR_HOUSE_EDGE.md)
+        from game import fair as fh
         ev = lambda p: p * sum(m * w for m, w in xs.PRIZES) / sum(w for _, w in xs.PRIZES)
-        self.assertTrue(.95 <= ev(xs.P_LO) <= ev(xs.P_HI) < 1.0)
+        self.assertTrue(.88 <= ev(xs.P_LO) <= ev(xs.P_HI) == ev(fh.BASES['xs']) < .95)
 
     def test_the_knife_ladder_top(self):
         self.assertEqual(kn.LADDER[:5], (11, 12, 16, 21, 28))              # the sensible play pays as before
