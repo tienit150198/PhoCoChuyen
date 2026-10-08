@@ -8,7 +8,7 @@
  * The dialog lives outside #view (its own element on <body>), so a list refresh never resets what is typed. */
 import {esc,icon,hm,num,toast,tag} from './ui.js';
 
-const CHIPS=[1000,10000,50000,100000];
+const CHIPS=[1000,10000,100000,1000000];
 const STATUS={pending:['Chờ vào game','warn'],applied:['Đã vào ví','info'],seen:['Đã xem thiệp','good']};
 const defText=n=>`Ban quản lý phố tặng bạn ${num(n)} xu. Chơi vui nha! 💛`;
 const newRid=()=>{try{return crypto.randomUUID();}catch{return [...crypto.getRandomValues(new Uint8Array(16))].map(b=>b.toString(16).padStart(2,'0')).join('');}};
@@ -31,7 +31,7 @@ export class GiftAdmin{
       .catch(e=>{if(e.status===403||e.status===401){this.hooks.forbidden(e);return;}this.error=e.status===429?'Chậm lại một chút nhé.':e.message;})
       .finally(()=>{this.busy=false;this.hooks.rerender();});
   }
-  get max(){return this.data?.max||100000;}
+  get max(){return this.data?.max||1000000000;}
   get large(){return this.data?.large||1000;}
   meta(){const d=this.data;return d?`${num(d.users.length)} tài khoản${d.q?` bắt đầu bằng “${esc(d.q)}”`:' mới nhất'} · ${num(d.recent.length)} quà gần nhất`:'Tặng xu vào ví người chơi';}
 
