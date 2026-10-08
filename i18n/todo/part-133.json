@@ -1,5 +1,65 @@
 [
  {
+  "vi": "🧾 Bảo trì $1/tháng",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "năm ($1 tháng)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thuê $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kỳ thuê của $1 đã hết. Người thuê được báo dọn đi, không bị trừ thêm tiền.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả $1, nhận lại cọc $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cọc $1, trả lại khi dọn đi. $2 $3/ngày (gác Bà Tám: $4).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chuyển sang $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thuê · cọc $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhận lại $1 tiền cọc, về gác Bà Tám.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả ngay $1 (gồm phí $2$3)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "thuế trước bạ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Vay $1, $2 kỳ × $3, lãi $4/năm.",
   "en": "",
   "pattern": true
@@ -740,6 +800,11 @@
   "pattern": true
  },
  {
+  "vi": "🎆 Bắn · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Tài trợ · $1 xu",
   "en": "",
   "pattern": true
@@ -1341,6 +1406,11 @@
  },
  {
   "vi": "Trả $1 xu một lần. Ví trước, thiếu thì lấy từ tài khoản.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả $1 xu.",
   "en": "",
   "pattern": true
  },
@@ -2176,76 +2246,6 @@
  },
  {
   "vi": "📦 Hết $1: nhập hàng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "tinh thần $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "−$1 trong tài khoản",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "−$1 tiền mặt",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛡️ Bảo hiểm trả $1%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chọn trong $1 ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Không chọn sau $1 ngày: tự chọn cách nhẹ nhất.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "/tháng · trả $1%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Có hiệu lực sau $1 ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tài sản từ $1: khả năng trộm/hack gấp $2 lần mức cơ bản, trước đồ bảo vệ. Thiệt hại trộm/hack tính theo tài sản, đồ bảo vệ và tiền đang có.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚔 Đã trình báo $1 vụ hack. Kết quả gần nhất sau $2 ngày sống.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tổng ví, tài khoản, tiết kiệm và vàng dưới $1 xu: không có chuyện gì.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trộm/hack mới: mức mất được chốt theo tổng tài sản khi báo trước, có giới hạn theo tháng và tiền thực có. Các sự cố khác: mỗi lần tối đa $1%, mỗi tháng tối đa $2% phần tài sản trên $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảo hiểm mới mua có hiệu lực sau $1 ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bị hack: mất $1% tài khoản thanh toán, tối đa $2 xu trước đồ bảo vệ và chịu giới hạn rủi ro chung.",
   "en": "",
   "pattern": true
  }

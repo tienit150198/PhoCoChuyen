@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Cần $1 xu để sửa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sửa xong.$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 hỏng",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Uy tín $1$2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hao hụt tính theo tài sản lúc phát sinh, $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🎲 Hên xui · $1% lấy lại đủ, không mất xu. Không được thì:",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "nghe nói $1 được khen trên mạng, có người còn bảo $2 sắp nổi tiếng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "người ta đồn $1 làm một lúc mấy nghề, chắc sắp mua nhà mặt phố",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "nghe nói phố sắp có hội to, ai cũng đồn chỗ $1 sẽ đông nghẹt",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "nghe đâu $1 sắp mở thêm chỗ mới ở đầu hẻm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "có người đồn $1 là cháu của một đại gia nào đó, nên mới dám mở tiệm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "nghe nói có người hay ghé chỗ $1 chỉ để ngắm chủ quán",
   "en": "",
   "pattern": true
  }

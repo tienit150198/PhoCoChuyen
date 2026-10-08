@@ -1,5 +1,473 @@
 [
  {
+  "vi": "🛌 Xin nghỉ bù",
+  "en": ""
+ },
+ {
+  "vi": "⛴️ Hôm nay có tàu tiếp tế",
+  "en": ""
+ },
+ {
+  "vi": "🏝️ Đời sống trên đảo",
+  "en": ""
+ },
+ {
+  "vi": "🐈‍⬛ Mun đang ngủ",
+  "en": ""
+ },
+ {
+  "vi": "🐈‍⬛ Chơi với Mun",
+  "en": ""
+ },
+ {
+  "vi": "🪴 Đã tưới",
+  "en": ""
+ },
+ {
+  "vi": "🪴 Tưới vườn rau",
+  "en": ""
+ },
+ {
+  "vi": "📞 Đã gọi",
+  "en": ""
+ },
+ {
+  "vi": "📞 Gọi về nhà",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Tạm đình chỉ trực hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Đèn vẫn phải sáng: chú Bảy trực thay. Mai lên trình bày qua bộ đàm.",
+  "en": ""
+ },
+ {
+  "vi": "Làm ca sáng, ký sổ trực trước",
+  "en": ""
+ },
+ {
+  "vi": "Tắt đèn đúng giờ",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn giờ tắt đèn",
+  "en": ""
+ },
+ {
+  "vi": "Thử từng thiết bị",
+  "en": ""
+ },
+ {
+  "vi": "👉 Thử thiết bị",
+  "en": ""
+ },
+ {
+  "vi": "Lau kính đèn (an toàn)",
+  "en": ""
+ },
+ {
+  "vi": "👉 Lau kính",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ dầu đúng số đo",
+  "en": ""
+ },
+ {
+  "vi": "👉 Sổ dầu",
+  "en": ""
+ },
+ {
+  "vi": "Tự xử lý chỗ hỏng",
+  "en": ""
+ },
+ {
+  "vi": "🔧 Xử lý",
+  "en": ""
+ },
+ {
+  "vi": "Báo đúng nơi (ảnh hưởng đèn, còi thì báo đài)",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn nơi báo",
+  "en": ""
+ },
+ {
+  "vi": "Đọc đủ bốn thứ",
+  "en": ""
+ },
+ {
+  "vi": "👉 Quan trắc",
+  "en": ""
+ },
+ {
+  "vi": "Báo đài bốn số liệu",
+  "en": ""
+ },
+ {
+  "vi": "👉 Báo đài",
+  "en": ""
+ },
+ {
+  "vi": "👉 Xem có cần cảnh báo",
+  "en": ""
+ },
+ {
+  "vi": "Thắp đèn trước giờ lặn 15 phút",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn giờ thắp đèn",
+  "en": ""
+ },
+ {
+  "vi": "Đếm chớp so với danh mục đèn",
+  "en": ""
+ },
+ {
+  "vi": "⏱️ Đếm chớp",
+  "en": ""
+ },
+ {
+  "vi": "Sương mù: chạy còi",
+  "en": ""
+ },
+ {
+  "vi": "📯 Chạy còi",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ trực đúng sự thật",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn dòng ghi sổ",
+  "en": ""
+ },
+ {
+  "vi": "🔭 Nhìn kỹ",
+  "en": ""
+ },
+ {
+  "vi": "👉 Gọi tàu",
+  "en": ""
+ },
+ {
+  "vi": "Báo đài đúng mức, đúng phương vị (nếu cần)",
+  "en": ""
+ },
+ {
+  "vi": "Ném phao, kéo còi, canh giữ mục tiêu: tùy chuyện",
+  "en": ""
+ },
+ {
+  "vi": "👉 Việc ngoài bến",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời theo nội quy trạm",
+  "en": ""
+ },
+ {
+  "vi": "👉 Trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Có người leo lên tháp: đưa xuống",
+  "en": ""
+ },
+ {
+  "vi": "🧗 Chặn lại",
+  "en": ""
+ },
+ {
+  "vi": "Đo bồn trước và sau khi bơm",
+  "en": ""
+ },
+ {
+  "vi": "👉 Đo bồn",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm từng món, ghi món thiếu, hỏng",
+  "en": ""
+ },
+ {
+  "vi": "👉 Kiểm hàng",
+  "en": ""
+ },
+ {
+  "vi": "Ký đúng số lít đo được",
+  "en": ""
+ },
+ {
+  "vi": "👉 Ký phiếu",
+  "en": ""
+ },
+ {
+  "vi": "✍️ KÝ SỔ TRỰC",
+  "en": ""
+ },
+ {
+  "vi": "📒 GHI SỔ QUAN TRẮC",
+  "en": ""
+ },
+ {
+  "vi": "📒 GHI SỔ TRỰC",
+  "en": ""
+ },
+ {
+  "vi": "📒 GHI SỔ KHÁCH",
+  "en": ""
+ },
+ {
+  "vi": "Quyết chuyện trên đảo",
+  "en": ""
+ },
+ {
+  "vi": "🗼 Vào ca thôi!",
+  "en": ""
+ },
+ {
+  "vi": "🔭 Nhìn ra biển",
+  "en": ""
+ },
+ {
+  "vi": "⛴️ Ra bến đón tàu",
+  "en": ""
+ },
+ {
+  "vi": "🚤 Ra bến đón khách",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện trên đảo",
+  "en": ""
+ },
+ {
+  "vi": "Quan trắc",
+  "en": ""
+ },
+ {
+  "vi": "🗼 Ca trực hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "☀️ Mở ca",
+  "en": ""
+ },
+ {
+  "vi": "🧋 Quầy trà sữa",
+  "en": ""
+ },
+ {
+  "vi": "Một ly đúng phiếu",
+  "en": ""
+ },
+ {
+  "vi": "🥤 Lấy ly đúng cỡ",
+  "en": ""
+ },
+ {
+  "vi": "🫖 Rót trà nền, 🍑 siro, 🧋 topping",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Đá, 🍯 đường như khách dặn",
+  "en": ""
+ },
+ {
+  "vi": "✅ Dán nắp rồi giao",
+  "en": ""
+ },
+ {
+  "vi": "Ủ, nấu & đặt hàng",
+  "en": ""
+ },
+ {
+  "vi": "Ủ trà, nấu trân châu, đặt hàng đều trừ vào quỹ tiệm. Ủ trà, nấu trân châu mất 20 phút khi quán mở. Trà ủ và trân châu không để qua đêm.",
+  "en": ""
+ },
+ {
+  "vi": "👥 Người phụ kiếm thêm xu khi khép ca; bạn vẫn tự pha từng ly.",
+  "en": ""
+ },
+ {
+  "vi": "Người phụ",
+  "en": ""
+ },
+ {
+  "vi": "Xem việc đội đang làm",
+  "en": ""
+ },
+ {
+  "vi": "· không còn topping khác để mời đổi",
+  "en": ""
+ },
+ {
+  "vi": "chưa ủ thêm được",
+  "en": ""
+ },
+ {
+  "vi": "Ủ +5",
+  "en": ""
+ },
+ {
+  "vi": "Đánh +5",
+  "en": ""
+ },
+ {
+  "vi": "👛 Góp tiền từ ví vào quỹ",
+  "en": ""
+ },
+ {
+  "vi": "mở ca trước",
+  "en": ""
+ },
+ {
+  "vi": "Ngừng bán",
+  "en": ""
+ },
+ {
+  "vi": "ngừng bán",
+  "en": ""
+ },
+ {
+  "vi": "đã hết. Chưa gọi hỏa tốc được",
+  "en": ""
+ },
+ {
+  "vi": "món mở ở",
+  "en": ""
+ },
+ {
+  "vi": "Đổ ly để đổi cỡ",
+  "en": ""
+ },
+ {
+  "vi": ". Ly đang có trà: đổ ly rồi mới đổi cỡ",
+  "en": ""
+ },
+ {
+  "vi": "Pha xong trà, đá, đường rồi mới dán nắp",
+  "en": ""
+ },
+ {
+  "vi": "Dán nắp",
+  "en": ""
+ },
+ {
+  "vi": "So phiếu miễn phí: không tính lỗi, không trôi thời gian. Trao ly sai hoặc đổ làm lại vẫn tính lỗi.",
+  "en": ""
+ },
+ {
+  "vi": "Ly này sai rồi. Đổ ly và pha lại từ đầu?",
+  "en": ""
+ },
+ {
+  "vi": "🗑️ Đổ ly, pha lại",
+  "en": ""
+ },
+ {
+  "vi": "⚙️ Dán nắp",
+  "en": ""
+ },
+ {
+  "vi": "máy dán nắp đang ngưng, chờ có điện",
+  "en": ""
+ },
+ {
+  "vi": "✅ Dán nắp",
+  "en": ""
+ },
+ {
+  "vi": "(không gọi)",
+  "en": ""
+ },
+ {
+  "vi": "(đang sai, chỉnh lại)",
+  "en": ""
+ },
+ {
+  "vi": "(sai, cần đổ ly làm lại)",
+  "en": ""
+ },
+ {
+  "vi": "(đã đúng)",
+  "en": ""
+ },
+ {
+  "vi": "(chưa làm)",
+  "en": ""
+ },
+ {
+  "vi": "Món khách gọi",
+  "en": ""
+ },
+ {
+  "vi": "✓ Ly đã xong · giao cho tài xế",
+  "en": ""
+ },
+ {
+  "vi": "✓ Ly đã xong · trao cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách xử lý chuyện ở quầy",
+  "en": ""
+ },
+ {
+  "vi": "👍 Làm tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Khách có thể trả ly.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nhà nào bán mặt hàng này.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Số thùng",
+  "en": ""
+ },
+ {
+  "vi": "Số phần",
+  "en": ""
+ },
+ {
+  "vi": "· ngừng bán",
+  "en": ""
+ },
+ {
+  "vi": "🚫 ngừng bán ·",
+  "en": ""
+ },
+ {
+  "vi": "dùng hết ngày mai",
+  "en": ""
+ },
+ {
+  "vi": "⚠ Cần nhập / cần ủ",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Quỹ tiệm",
+  "en": ""
+ },
+ {
+  "vi": ", hoặc góp tiền từ ví vào quỹ",
+  "en": ""
+ },
+ {
   "vi": "❔ Ủ, nấu & đặt hàng thế nào?",
   "en": ""
  },
@@ -1329,474 +1797,6 @@
  },
  {
   "vi": "Không sai chỗ nào. Gọn!",
-  "en": ""
- },
- {
-  "vi": "Thẻ",
-  "en": ""
- },
- {
-  "vi": "· chưa xếp",
-  "en": ""
- },
- {
-  "vi": "Các thẻ",
-  "en": ""
- },
- {
-  "vi": "Xếp thẻ này vào khay",
-  "en": ""
- },
- {
-  "vi": "Xếp vào khay",
-  "en": ""
- },
- {
-  "vi": "thẻ đã xếp",
-  "en": ""
- },
- {
-  "vi": "Vừa đổi",
-  "en": ""
- },
- {
-  "vi": "chạm để sửa",
-  "en": ""
- },
- {
-  "vi": "— ô này đúng chưa?",
-  "en": ""
- },
- {
-  "vi": "— sửa thành:",
-  "en": ""
- },
- {
-  "vi": "(giữ nguyên)",
-  "en": ""
- },
- {
-  "vi": "Bảng cần soát",
-  "en": ""
- },
- {
-  "vi": "Soát từng chỗ",
-  "en": ""
- },
- {
-  "vi": "chạm vào chỗ sai để sửa",
-  "en": ""
- },
- {
-  "vi": "Chạm một ô, chọn lý do nếu ô đó sai. Ô đúng thì để nguyên.",
-  "en": ""
- },
- {
-  "vi": "Chữ gạch chân chấm là chỗ chạm được. Chỗ đúng thì để nguyên.",
-  "en": ""
- },
- {
-  "vi": "🔍 Soát",
-  "en": ""
- },
- {
-  "vi": "Chưa xếp",
-  "en": ""
- },
- {
-  "vi": "Việc cần xếp",
-  "en": ""
- },
- {
-  "vi": "Bảng phòng và giờ",
-  "en": ""
- },
- {
-  "vi": "đã xếp",
-  "en": ""
- },
- {
-  "vi": "Điều cần nhớ khi xếp",
-  "en": ""
- },
- {
-  "vi": "Đang xếp:",
-  "en": ""
- },
- {
-  "vi": "— chạm một ô trống trên bảng.",
-  "en": ""
- },
- {
-  "vi": "Chọn trên lịch",
-  "en": ""
- },
- {
-  "vi": "Chọn ngày trên lịch",
-  "en": ""
- },
- {
-  "vi": "📝 Ghi lại cho đủ",
-  "en": ""
- },
- {
-  "vi": "Lời người ta nói",
-  "en": ""
- },
- {
-  "vi": "Chạm các bước bên dưới theo thứ tự sẽ làm. Bước có hại thì bỏ qua.",
-  "en": ""
- },
- {
-  "vi": "Các bước sẽ làm",
-  "en": ""
- },
- {
-  "vi": "bước",
-  "en": ""
- },
- {
-  "vi": "🧭 Các bước",
-  "en": ""
- },
- {
-  "vi": "Có thể làm",
-  "en": ""
- },
- {
-  "vi": "Cần tìm hiểu trước",
-  "en": ""
- },
- {
-  "vi": "Trả lời theo cách này? Chọn rồi không đổi được.",
-  "en": ""
- },
- {
-  "vi": "chuyện",
-  "en": ""
- },
- {
-  "vi": "Trả lời thế nào?",
-  "en": ""
- },
- {
-  "vi": "Đã điền đủ các ô — đọc lại rồi nộp.",
-  "en": ""
- },
- {
-  "vi": "👇 Quyết chuyện này trước",
-  "en": ""
- },
- {
-  "vi": "📥 Nhận việc",
-  "en": ""
- },
- {
-  "vi": "👇 Chọn khay cho thẻ này",
-  "en": ""
- },
- {
-  "vi": "Soát từng chỗ, sửa chỗ sai",
-  "en": ""
- },
- {
-  "vi": "👇 Chạm chỗ sai để sửa",
-  "en": ""
- },
- {
-  "vi": "👇 Chạm một ô trống trên bảng",
-  "en": ""
- },
- {
-  "vi": "📤 Nộp lời nhắn",
-  "en": ""
- },
- {
-  "vi": "Chọn các bước sẽ làm, theo thứ tự",
-  "en": ""
- },
- {
-  "vi": "👇 Chạm các bước theo thứ tự",
-  "en": ""
- },
- {
-  "vi": "📤 Chốt các bước",
-  "en": ""
- },
- {
-  "vi": "Chọn cách trả lời",
-  "en": ""
- },
- {
-  "vi": "👇 Chọn cách trả lời",
-  "en": ""
- },
- {
-  "vi": "📞 Có thay đổi",
-  "en": ""
- },
- {
-  "vi": "Làm hồ sơ rồi nộp",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ đã nộp",
-  "en": ""
- },
- {
-  "vi": "Chỗ sai trong ngày",
-  "en": ""
- },
- {
-  "vi": "hồ sơ đã nộp",
-  "en": ""
- },
- {
-  "vi": "Chạm chọn ít nhất một bước trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Quần áo 14 ngày",
-  "en": ""
- },
- {
-  "vi": "Thuốc có đơn",
-  "en": ""
- },
- {
-  "vi": "Sạc dự phòng",
-  "en": ""
- },
- {
-  "vi": "Mì cay",
-  "en": ""
- },
- {
-  "vi": "Tạ tay",
-  "en": ""
- },
- {
-  "vi": "Bánh Má gói",
-  "en": ""
- },
- {
-  "vi": "Keo xịt tóc",
-  "en": ""
- },
- {
-  "vi": "Dao gấp",
-  "en": ""
- },
- {
-  "vi": "Rượu thuốc",
-  "en": ""
- },
- {
-  "vi": "Đồ bơi giữ nhiệt",
-  "en": ""
- },
- {
-  "vi": "Bình thở",
-  "en": ""
- },
- {
-  "vi": "Chụp tai",
-  "en": ""
- },
- {
-  "vi": "“Túi gọn, mặc đồ bơi giữ nhiệt, nghe hướng dẫn thoát hiểm.”",
-  "en": ""
- },
- {
-  "vi": ": để ở nhà",
-  "en": ""
- },
- {
-  "vi": "Thoát hiểm",
-  "en": ""
- },
- {
-  "vi": "Video thoát hiểm trực thăng",
-  "en": ""
- },
- {
-  "vi": "Túi mềm",
-  "en": ""
- },
- {
-  "vi": "Túi mềm lên trực thăng",
-  "en": ""
- },
- {
-  "vi": "Mối nguy hôm nay",
-  "en": ""
- },
- {
-  "vi": "Mối nguy của việc hôm nay",
-  "en": ""
- },
- {
-  "vi": "Mối nguy",
-  "en": ""
- },
- {
-  "vi": "Phụ cấp",
-  "en": ""
- },
- {
-  "vi": "Thức dậy",
-  "en": ""
- },
- {
-  "vi": "Thỉnh chuông sáng",
-  "en": ""
- },
- {
-  "vi": "Công phu sáng",
-  "en": ""
- },
- {
-  "vi": "Điểm tâm",
-  "en": ""
- },
- {
-  "vi": "Mở loa ra đường 4h",
-  "en": ""
- },
- {
-  "vi": "Lau khăn ẩm vắt kiệt",
-  "en": ""
- },
- {
-  "vi": "Bày lại như cũ",
-  "en": ""
- },
- {
-  "vi": "Khóa cửa hông",
-  "en": ""
- },
- {
-  "vi": "Ghế người già hàng đầu",
-  "en": ""
- },
- {
-  "vi": "Chụp người nhận đăng mạng",
-  "en": ""
- },
- {
-  "vi": "Dập bằng bình, khăn ướt",
-  "en": ""
- },
- {
-  "vi": "Dời đèn, lư sang bên",
-  "en": ""
- },
- {
-  "vi": "Đốt lá góc sân",
-  "en": ""
- },
- {
-  "vi": "Gỡ phướn, kéo xuống đất",
-  "en": ""
- },
- {
-  "vi": "Xếp hàng, cụ già trước",
-  "en": ""
- },
- {
-  "vi": "Hô lùi ra xa",
-  "en": ""
- },
- {
-  "vi": "Phủi bụi trên xuống",
-  "en": ""
- },
- {
-  "vi": "Loa vừa đủ trong sân",
-  "en": ""
- },
- {
-  "vi": "Chừa lối đi, cửa hông",
-  "en": ""
- },
- {
-  "vi": "Nhặt rác",
-  "en": ""
- },
- {
-  "vi": "Mời nước, chỗ mát",
-  "en": ""
- },
- {
-  "vi": "Quét hiên ra cổng",
-  "en": ""
- },
- {
-  "vi": "Phát suất, hai tay",
-  "en": ""
- },
- {
-  "vi": "Rửa tay, khẩu trang",
-  "en": ""
- },
- {
-  "vi": "Đứng lên bàn thờ",
-  "en": ""
- },
- {
-  "vi": "Tưới cau, kiểng",
-  "en": ""
- },
- {
-  "vi": "Xá trước khi lau",
-  "en": ""
- },
- {
-  "vi": "Xem còn tàn lửa",
-  "en": ""
- },
- {
-  "vi": "Gram mỗi bữa",
-  "en": ""
- },
- {
-  "vi": "🐾 Tiệm chăm thú cưng",
-  "en": ""
- },
- {
-  "vi": "📜 Nội quy tiệm",
-  "en": ""
- },
- {
-  "vi": "Sổ tiêm",
-  "en": ""
- },
- {
-  "vi": "Lông",
-  "en": ""
- },
- {
-  "vi": "Sờ thân",
-  "en": ""
- },
- {
-  "vi": "Bước đi",
-  "en": ""
- },
- {
-  "vi": "Bát ăn",
-  "en": ""
- },
- {
-  "vi": "Chỗ ở",
-  "en": ""
- },
- {
-  "vi": "Giờ vắng",
-  "en": ""
- },
- {
-  "vi": "Trẻ nhỏ",
   "en": ""
  }
 ]

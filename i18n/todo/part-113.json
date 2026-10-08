@@ -1,5 +1,477 @@
 [
  {
+  "vi": "Sân ga tấp nập, xình xịch đoàn tàu",
+  "en": ""
+ },
+ {
+  "vi": "Bà ngồi đầu hiên, kể chuyện cho cháu",
+  "en": ""
+ },
+ {
+  "vi": "Bờ đê lộng gió, trắng xóa bông lau",
+  "en": ""
+ },
+ {
+  "vi": "Ca dao ông bà, là của quý báu",
+  "en": ""
+ },
+ {
+  "vi": "Mới lạ hôm trước, quen thân hôm sau",
+  "en": ""
+ },
+ {
+  "vi": "Hội chợ vui quá, vỗ tay vỗ tay",
+  "en": ""
+ },
+ {
+  "vi": "Cánh diều no gió tung bay",
+  "en": ""
+ },
+ {
+  "vi": "Ớt xanh ớt đỏ, trái nào cũng cay",
+  "en": ""
+ },
+ {
+  "vi": "Trâu ra ruộng sớm, cùng bác đi cày",
+  "en": ""
+ },
+ {
+  "vi": "Thóc vàng mới gặt, chở về nhà xay",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng hò câu hát, nghe sao mà hay",
+  "en": ""
+ },
+ {
+  "vi": "Chúc bà con mình, ai cũng gặp may",
+  "en": ""
+ },
+ {
+  "vi": "Con đường làng nhỏ, bé tung tăng chạy",
+  "en": ""
+ },
+ {
+  "vi": "Cô giáo hiền hậu, chữ đẹp cô dạy",
+  "en": ""
+ },
+ {
+  "vi": "Bốn mùa xuân hạ, thu đông đổi thay",
+  "en": ""
+ },
+ {
+  "vi": "Ai ăn quýt ngọt, ai ăn cam",
+  "en": ""
+ },
+ {
+  "vi": "Áo ai phơi nắng màu lam",
+  "en": ""
+ },
+ {
+  "vi": "Ngày mai đi hội, hôm nay lo làm",
+  "en": ""
+ },
+ {
+  "vi": "Thuyền xuôi về bắc, chim bay về nam",
+  "en": ""
+ },
+ {
+  "vi": "Mây chiều kéo tới, trời ngả màu xám",
+  "en": ""
+ },
+ {
+  "vi": "Rừng tràm xanh mát, thơm ngát hoa tràm",
+  "en": ""
+ },
+ {
+  "vi": "Gà con lích chích, mổ thóc mổ cám",
+  "en": ""
+ },
+ {
+  "vi": "Bé ngoan không khóc, khi bác sĩ khám",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sách đọc truyện, bé mê bé ham",
+  "en": ""
+ },
+ {
+  "vi": "Đứng đây mà ngó mà nhìn",
+  "en": ""
+ },
+ {
+  "vi": "Lời thương nhắn gửi ai tin",
+  "en": ""
+ },
+ {
+  "vi": "Bánh bông lan nướng, xốp mềm mà mịn",
+  "en": ""
+ },
+ {
+  "vi": "Qua cầu khỉ nhỏ, nhớ tay vịn",
+  "en": ""
+ },
+ {
+  "vi": "Bé đang khóc nhè, cho kẹo là nín",
+  "en": ""
+ },
+ {
+  "vi": "Tờ dò cô Bảy, mới tinh mới in",
+  "en": ""
+ },
+ {
+  "vi": "Cả xóm vô xem, đông tới cả nghìn",
+  "en": ""
+ },
+ {
+  "vi": "Áo cô Bảy mặc, kim tuyến hàng xịn",
+  "en": ""
+ },
+ {
+  "vi": "Lúa vàng trĩu hạt, trái cây đã chín",
+  "en": ""
+ },
+ {
+  "vi": "Muốn mượn đồ chơi, lễ phép thưa xin",
+  "en": ""
+ },
+ {
+  "vi": "Cô hàng nước miệng cười tươi",
+  "en": ""
+ },
+ {
+  "vi": "Cả phố đi hội đông người",
+  "en": ""
+ },
+ {
+  "vi": "Vô sở thú ngó chú đười ươi",
+  "en": ""
+ },
+ {
+  "vi": "Bà ngoại cho quà, một trái bưởi",
+  "en": ""
+ },
+ {
+  "vi": "Thuyền về bến cá, đầy ắp khoang lưới",
+  "en": ""
+ },
+ {
+  "vi": "Vườn rau xanh mướt, sáng chiều siêng tưới",
+  "en": ""
+ },
+ {
+  "vi": "Rộn ràng hội chợ, xóm trên xóm dưới",
+  "en": ""
+ },
+ {
+  "vi": "Trời lạnh căm căm, quây quần bếp sưởi",
+  "en": ""
+ },
+ {
+  "vi": "Ăn rồi làm việc, chẳng có ai lười",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm sang chơi, tiếng nói tiếng cười",
+  "en": ""
+ },
+ {
+  "vi": "là con số {w}!",
+  "en": ""
+ },
+ {
+  "vi": "ra con số {w}!",
+  "en": ""
+ },
+ {
+  "vi": "con số {w} đây!",
+  "en": ""
+ },
+ {
+  "vi": "số {w} nè bà con!",
+  "en": ""
+ },
+ {
+  "vi": "Mở hàng con số đầu dàn: số một!",
+  "en": ""
+ },
+ {
+  "vi": "Số ruột của cô Bảy nè bà con: số bảy!",
+  "en": ""
+ },
+ {
+  "vi": "Tròn trịa như hai bánh xe đạp: số tám!",
+  "en": ""
+ },
+ {
+  "vi": "Mười ngón tay xinh, đếm hoài không hết: số mười!",
+  "en": ""
+ },
+ {
+  "vi": "Hai chiếc đũa đứng song song: mười một!",
+  "en": ""
+ },
+ {
+  "vi": "Mười hai con giáp đủ mặt cả làng: mười hai!",
+  "en": ""
+ },
+ {
+  "vi": "Hai con vịt nhỏ bơi tung tăng: hai mươi hai!",
+  "en": ""
+ },
+ {
+  "vi": "Ba với ba, cặp đôi dễ thương: ba mươi ba!",
+  "en": ""
+ },
+ {
+  "vi": "Đứng giữa dàn số, chẳng lớn chẳng nhỏ: bốn mươi lăm!",
+  "en": ""
+ },
+ {
+  "vi": "Năm với năm, đập tay cái bốp: năm mươi lăm!",
+  "en": ""
+ },
+ {
+  "vi": "Hai con nòng nọc ngoắt đuôi bơi: sáu mươi sáu!",
+  "en": ""
+ },
+ {
+  "vi": "Số ruột thứ hai của cô Bảy: bảy mươi!",
+  "en": ""
+ },
+ {
+  "vi": "Bảy với bảy, cô Bảy mừng gấp đôi: bảy mươi bảy!",
+  "en": ""
+ },
+ {
+  "vi": "Tám mươi chưa già, ông còn chạy bộ: tám mươi!",
+  "en": ""
+ },
+ {
+  "vi": "Lớn nhất cả dàn: chín mươi!",
+  "en": ""
+ },
+ {
+  "vi": "Cô Bảy Lô Tô",
+  "en": ""
+ },
+ {
+  "vi": "Xin chào bà con cô bác! Gánh lô tô cô Bảy về tới rồi đây!",
+  "en": ""
+ },
+ {
+  "vi": "Mua tờ dò đi bà con ơi, vui thôi mà, xu nhỏ cũng chơi!",
+  "en": ""
+ },
+ {
+  "vi": "Nhạc lên đèn sáng, ai mua tờ dò thì ngồi xuống nha!",
+  "en": ""
+ },
+ {
+  "vi": "Áo kim tuyến cô Bảy mặc rồi, chỉ còn chờ bà con mua vé!",
+  "en": ""
+ },
+ {
+  "vi": "Chuẩn bị nha bà con… số đầu tiên ra liền!",
+  "en": ""
+ },
+ {
+  "vi": "Có người chờ một số rồi đó nha, dò cho kỹ!",
+  "en": ""
+ },
+ {
+  "vi": "Ai chờ thì ngồi im, đừng có nhấp nhổm nha!",
+  "en": ""
+ },
+ {
+  "vi": "Nóng rồi nóng rồi, sắp có người kinh!",
+  "en": ""
+ },
+ {
+  "vi": "Ủa ủa, kinh gì kỳ vậy nè? Hàng còn trống kìa!",
+  "en": ""
+ },
+ {
+  "vi": "Kinh hụt rồi! Hát một câu chuộc lỗi đi nha!",
+  "en": ""
+ },
+ {
+  "vi": "Ha ha, kinh sớm quá! Dò lại cho kỹ nha cưng!",
+  "en": ""
+ },
+ {
+  "vi": "Khán giả cười quá trời kìa, dò lại đi nha!",
+  "en": ""
+ },
+ {
+  "vi": "Kinh rồi! Kinh rồi! Chúc mừng người thắng, vỗ tay lên nào!",
+  "en": ""
+ },
+ {
+  "vi": "Trời ơi hên quá xá! Lên nhận thưởng nè!",
+  "en": ""
+ },
+ {
+  "vi": "Kinh ngọt xớt! Cả gánh chúc mừng nha!",
+  "en": ""
+ },
+ {
+  "vi": "{who} kinh rồi! Ván sau tới lượt mình nha.",
+  "en": ""
+ },
+ {
+  "vi": "{who} hô “Kinh!” trước mất rồi, ván sau gỡ nha!",
+  "en": ""
+ },
+ {
+  "vi": "Ván này về tay {who}, mình chơi tiếp ván sau nha!",
+  "en": ""
+ },
+ {
+  "vi": "Đôi múa quạt",
+  "en": ""
+ },
+ {
+  "vi": "Một, hai, ba, xoay! Bà con vỗ tay theo nhịp nha!",
+  "en": ""
+ },
+ {
+  "vi": "Quạt hồng quạt tím, múa cho cả xóm coi!",
+  "en": ""
+ },
+ {
+  "vi": "Bé Tí đánh trống",
+  "en": ""
+ },
+ {
+  "vi": "Tùng tùng cắc, tùng tùng cắc! Trống lên là có số!",
+  "en": ""
+ },
+ {
+  "vi": "Bé Tí đánh trống chầu, ván sau ai kinh trước đây?",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu tung banh",
+  "en": ""
+ },
+ {
+  "vi": "Một banh, hai banh, ba banh… ủa, banh thứ tư đâu rồi?",
+  "en": ""
+ },
+ {
+  "vi": "Tung cao tung thấp, chụp không rớt trái nào!",
+  "en": ""
+ },
+ {
+  "vi": "Tiểu phẩm",
+  "en": ""
+ },
+ {
+  "vi": "Anh Tèo: “Cô Bảy ơi, sao số 7 ra hoài vậy?” — Cô Bảy: “Tại nó nhớ chị nó đó!”",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bi: “Con dò số giỏi lắm!” — Bà Năm: “Giỏi sao tờ dò của con cầm ngược?”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu: “Tui kinh!” — Cô Bảy: “Chú ơi, chưa mua tờ dò mà kinh cái gì?”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Ba: “Sao cô Bảy hô số hay vậy?” — Cô Bảy: “Tập hát từ hồi còn bú bình đó!”",
+  "en": ""
+ },
+ {
+  "vi": "Bác Tư: “Đeo kính vô rồi mà sao số nhảy lung tung?” — Chị Mận: “Bác đeo kính râm đó bác!”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Tèo: “Em mua ba tờ cho chắc ăn!” — Cô Bảy: “Ba tờ mà dò một tờ thì cũng như một tờ thôi nha!”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Bảy chào khán giả",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn bà con đã ghé gánh lô tô cô Bảy! Vui là chính, hên là mười!",
+  "en": ""
+ },
+ {
+  "vi": "Gánh nhỏ mà vui, chơi xu nhỏ mà cười to!",
+  "en": ""
+ },
+ {
+  "vi": "Gà con may mắn",
+  "en": ""
+ },
+ {
+  "vi": "Hổ con dò số",
+  "en": ""
+ },
+ {
+  "vi": "Gấu trúc hên xui",
+  "en": ""
+ },
+ {
+  "vi": "Cáo nhỏ lanh lợi",
+  "en": ""
+ },
+ {
+  "vi": "Ếch xanh nhảy số",
+  "en": ""
+ },
+ {
+  "vi": "Thỏ ngọc kinh nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Dì Hai vé số",
+  "en": ""
+ },
+ {
+  "vi": "Vé số cào đây! Cào trúng ăn liền nè con!",
+  "en": ""
+ },
+ {
+  "vi": "Ba ô giống nhau là trúng, cào thử một tấm đi!",
+  "en": ""
+ },
+ {
+  "vi": "Vé mới về, toàn vé đẹp không à!",
+  "en": ""
+ },
+ {
+  "vi": "Cào từ từ thôi, coi kỹ từng ô nha!",
+  "en": ""
+ },
+ {
+  "vi": "Hồi hộp chưa? Dì cũng hồi hộp nè!",
+  "en": ""
+ },
+ {
+  "vi": "Cào đi con, vé này dì thấy đẹp lắm!",
+  "en": ""
+ },
+ {
+  "vi": "Trúng rồi! Dì nói vé đẹp mà!",
+  "en": ""
+ },
+ {
+  "vi": "Hên quá trời! Mua thêm tấm nữa hông?",
+  "en": ""
+ },
+ {
+  "vi": "Đó, ba ô y chang, dì chung liền!",
+  "en": ""
+ },
+ {
+  "vi": "Trời đất! Trúng lớn rồi bà con ơi!",
+  "en": ""
+ },
+ {
   "vi": "Trúng đậm luôn! Dì bán vé bao năm mới thấy!",
   "en": ""
  },
@@ -1325,478 +1797,6 @@
  },
  {
   "vi": "Bánh tráng nướng giòn rụm, ăn liền cho nóng nha!",
-  "en": ""
- },
- {
-  "vi": "Chú Năm nước mía",
-  "en": ""
- },
- {
-  "vi": "Chè ba màu mát lạnh đây bà con ơi!",
-  "en": ""
- },
- {
-  "vi": "Tàu hũ nước đường gừng, ăn ấm bụng nè!",
-  "en": ""
- },
- {
-  "vi": "Kẹo bông, bắp nướng, nước mía, chè… vài xu một món",
-  "en": ""
- },
- {
-  "vi": "Chọn món đi, chú Năm làm liền!",
-  "en": ""
- },
- {
-  "vi": "Chọn món đi, cô Út làm liền!",
-  "en": ""
- },
- {
-  "vi": "Trả bằng xu trong ví, ăn xong no bụng hơn.",
-  "en": ""
- },
- {
-  "vi": "🍭 Qua xe kẹo bông",
-  "en": ""
- },
- {
-  "vi": "🥤 Qua xe nước mía",
-  "en": ""
- },
- {
-  "vi": "Ăn vặt trả bằng xu trong ví, no bụng và tỉnh táo tăng như ăn thêm lúc đi làm. No rồi vẫn mua ăn cho vui được.",
-  "en": ""
- },
- {
-  "vi": "Nhà & Gia đình",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được gia đình của bạn.",
-  "en": ""
- },
- {
-  "vi": "Thử tải lại",
-  "en": ""
- },
- {
-  "vi": "Đã gửi · Chờ người ấy",
-  "en": ""
- },
- {
-  "vi": "Lời mời cần bạn trả lời",
-  "en": ""
- },
- {
-  "vi": "🏡 Mời về ở chung",
-  "en": ""
- },
- {
-  "vi": "👶 Mời đón con chung",
-  "en": ""
- },
- {
-  "vi": "Đón bé mới sinh",
-  "en": ""
- },
- {
-  "vi": "Người ấy mở Nhà & Gia đình để đồng ý hoặc từ chối.",
-  "en": ""
- },
- {
-  "vi": "Chỉ khi bạn đồng ý, hai bạn mới",
-  "en": ""
- },
- {
-  "vi": "ở chung nhà.",
-  "en": ""
- },
- {
-  "vi": "cùng đón bé.",
-  "en": ""
- },
- {
-  "vi": "Hủy lời mời",
-  "en": ""
- },
- {
-  "vi": "Đồng ý ở chung",
-  "en": ""
- },
- {
-  "vi": "Đồng ý đón bé",
-  "en": ""
- },
- {
-  "vi": "🏡 Nhà của hai bạn",
-  "en": ""
- },
- {
-  "vi": "Nhà ở & quỹ chung",
-  "en": ""
- },
- {
-  "vi": "Nhà và đồ vẫn thuộc từng người. Góp tiền mua nhà qua Quỹ chung rồi chọn “Lấy từ quỹ chung” khi mua.",
-  "en": ""
- },
- {
-  "vi": "Đang ở chung",
-  "en": ""
- },
- {
-  "vi": "Chưa ở chung",
-  "en": ""
- },
- {
-  "vi": "Cùng trở về nhà và dùng nội thất của hai bạn.",
-  "en": ""
- },
- {
-  "vi": "Lời mời đã gửi. Chờ người ấy đồng ý để dọn về cùng nhau.",
-  "en": ""
- },
- {
-  "vi": "Bạn có lời mời ở chung ở phía trên.",
-  "en": ""
- },
- {
-  "vi": "Chủ nhà cần đang ở căn nhà mình sở hữu để gửi lời mời. Mở Nhà của bạn để mua nhà hoặc dọn về căn đã có; nếu nhà của người ấy, nhờ người ấy gửi lời mời.",
-  "en": ""
- },
- {
-  "vi": "🚪 Vào nhà",
-  "en": ""
- },
- {
-  "vi": "Mời người ấy về ở chung",
-  "en": ""
- },
- {
-  "vi": "🏠 Chọn nhà để ở chung",
-  "en": ""
- },
- {
-  "vi": "Mở quỹ chung",
-  "en": ""
- },
- {
-  "vi": "Rời nhà chung",
-  "en": ""
- },
- {
-  "vi": "🏡 Một mái nhà của bạn",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể mời bạn bè ở chung ngay. Hoàn tất lễ cưới để mở phần con chung.",
-  "en": ""
- },
- {
-  "vi": "Mời bạn bè vào chơi hoặc ở chung lâu dài, không cần kết hôn. Người nhận cần đồng ý lời mời.",
-  "en": ""
- },
- {
-  "vi": "Xem kế hoạch cưới",
-  "en": ""
- },
- {
-  "vi": "Kết bạn với người ấy",
-  "en": ""
- },
- {
-  "vi": "Tên gọi & đồ của bé",
-  "en": ""
- },
- {
-  "vi": "Tên gọi",
-  "en": ""
- },
- {
-  "vi": "Đồ của bé",
-  "en": ""
- },
- {
-  "vi": "Bé bạn tiếp tục chăm",
-  "en": ""
- },
- {
-  "vi": "✓ Hôm nay đã chăm đủ các mục.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay, cùng chăm bé nhé",
-  "en": ""
- },
- {
-  "vi": "Bạn tiếp tục chăm bé theo tiến trình riêng.",
-  "en": ""
- },
- {
-  "vi": "Cả hai dùng chung tiến trình chăm bé.",
-  "en": ""
- },
- {
-  "vi": "👶 Cùng đón con chung",
-  "en": ""
- },
- {
-  "vi": "Mỗi cặp cùng chăm một bé sau khi cả hai đồng ý.",
-  "en": ""
- },
- {
-  "vi": "Tên bé",
-  "en": ""
- },
- {
-  "vi": "Cả hai cần đạt ngày sống 10. Cả hai cách đều miễn phí và cùng chăm một bé như nhau. Nhận nuôi: bé về ngay sau khi người ấy đồng ý. Đón bé mới sinh: bé về vào ngày lịch Việt Nam kế tiếp, không phải sau khi khép một ca làm.",
-  "en": ""
- },
- {
-  "vi": "Cách đón bé",
-  "en": ""
- },
- {
-  "vi": "Nhận nuôi miễn phí",
-  "en": ""
- },
- {
-  "vi": "Gửi lời mời đón con",
-  "en": ""
- },
- {
-  "vi": "Tiếp tục hành trình",
-  "en": ""
- },
- {
-  "vi": "Lời mời đón con đang chờ trả lời ở phía trên.",
-  "en": ""
- },
- {
-  "vi": "Tiến trình của bé khi hai bạn chia tay",
-  "en": ""
- },
- {
-  "vi": "Mỗi người giữ một bản tiến trình để tiếp tục chăm riêng. Xóa tài khoản chỉ xóa bản của người xóa.",
-  "en": ""
- },
- {
-  "vi": "👥 Bạn bè & người ở cùng",
-  "en": ""
- },
- {
-  "vi": "Mời vào chơi hoặc ở chung lâu dài. Người ở chung có thể vào nhà khi chủ offline.",
-  "en": ""
- },
- {
-  "vi": "🐾 Góc chăm riêng",
-  "en": ""
- },
- {
-  "vi": "Chăm con riêng và thú cưng theo ngày sống của nhân vật.",
-  "en": ""
- },
- {
-  "vi": "Mời bạn bè · Xem lời mời",
-  "en": ""
- },
- {
-  "vi": "Con riêng & thú cưng",
-  "en": ""
- },
- {
-  "vi": "Làm mới gia đình",
-  "en": ""
- },
- {
-  "vi": "Gửi lời mời đón con chung?",
-  "en": ""
- },
- {
-  "vi": "Đón bé mới sinh sau một ngày lịch Việt Nam.",
-  "en": ""
- },
- {
-  "vi": "Nhận nuôi miễn phí.",
-  "en": ""
- },
- {
-  "vi": "Mời người ấy về ở chung?",
-  "en": ""
- },
- {
-  "vi": ". Người ấy cần đồng ý. Quyền sở hữu nhà và đồ vẫn riêng.",
-  "en": ""
- },
- {
-  "vi": "Đồng ý ở chung?",
-  "en": ""
- },
- {
-  "vi": "Cùng đón bé?",
-  "en": ""
- },
- {
-  "vi": "Bạn chuyển về căn nhà được mời, miễn phí. Nhà cá nhân để trống, vẫn thuộc bạn; phòng trọ trả lại tiền cọc. Nội thất vẫn thuộc từng người.",
-  "en": ""
- },
- {
-  "vi": "Chờ một ngày lịch Việt Nam để đón bé.",
-  "en": ""
- },
- {
-  "vi": "Rời nhà chung?",
-  "en": ""
- },
- {
-  "vi": "Bạn thôi ở nhà chung. Nhà và đồ cá nhân vẫn thuộc mỗi người; nếu chưa có chỗ ở riêng, bạn về gác Bà Tám. Con chung vẫn được cả hai chăm.",
-  "en": ""
- },
- {
-  "vi": "Dọn ra",
-  "en": ""
- },
- {
-  "vi": "Thống kê",
-  "en": ""
- },
- {
-  "vi": "📊 Thống kê",
-  "en": ""
- },
- {
-  "vi": "🎞️ Tạp chí",
-  "en": ""
- },
- {
-  "vi": "🪞 Ảnh đôi",
-  "en": ""
- },
- {
-  "vi": "✨ Viền vàng",
-  "en": ""
- },
- {
-  "vi": "Điện thoại, đồng hồ, tai nghe, máy ảnh",
-  "en": ""
- },
- {
-  "vi": "Cửa hàng đang mở cửa",
-  "en": ""
- },
- {
-  "vi": "Máy mới đang được bày lên kệ. Mở lại sau ít phút nhé.",
-  "en": ""
- },
- {
-  "vi": "Chỉ có trong chế độ hành trình",
-  "en": ""
- },
- {
-  "vi": "Vào hành trình để sắm điện thoại cho nhân vật của bạn.",
-  "en": ""
- },
- {
-  "vi": "Mục cửa hàng",
-  "en": ""
- },
- {
-  "vi": "🙌 Khoe trên hồ sơ",
-  "en": ""
- },
- {
-  "vi": "📸 Nhãn dán ảnh selfie",
-  "en": ""
- },
- {
-  "vi": "📸 Chụp selfie",
-  "en": ""
- },
- {
-  "vi": "máy tầm trung",
-  "en": ""
- },
- {
-  "vi": "Cất máy, không khoe",
-  "en": ""
- },
- {
-  "vi": "Bạn đã đổi máy cũ",
-  "en": ""
- },
- {
-  "vi": "Chưa cầm máy nào",
-  "en": ""
- },
- {
-  "vi": "Chọn một chiếc điện thoại bên dưới để dùng và khoe.",
-  "en": ""
- },
- {
-  "vi": "Lên đời",
-  "en": ""
- },
- {
-  "vi": "✋ Đang dùng",
-  "en": ""
- },
- {
-  "vi": "Dùng máy này",
-  "en": ""
- },
- {
-  "vi": "Đồ của bạn",
-  "en": ""
- },
- {
-  "vi": "Máy đang dùng và 3 món đắt nhất hiện trên hồ sơ, cho cả phố cùng xem.",
-  "en": ""
- },
- {
-  "vi": "✓ Đủ tiền mua",
-  "en": ""
- },
- {
-  "vi": "Xem máy",
-  "en": ""
- },
- {
-  "vi": "Xem món này",
-  "en": ""
- },
- {
-  "vi": "Máy càng xịn càng mở thêm vài món vui: khung selfie, vỏ máy khoe trên hồ sơ. Không máy nào làm ra tiền, không phí tháng.",
-  "en": ""
- },
- {
-  "vi": "Đồ chơi công nghệ để khoe và làm nhãn dán trong ảnh selfie.",
-  "en": ""
- },
- {
-  "vi": "máy cũ",
-  "en": ""
- },
- {
-  "vi": "Ảnh lưu trên máy bạn, không gửi đi đâu. Đăng lên Cả phố hay khoe bạn bè tùy bạn.",
-  "en": ""
- },
- {
-  "vi": "💾 Lưu ảnh về máy",
-  "en": ""
- },
- {
-  "vi": "Máy chưa lưu được ảnh. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Selfie Phố Có Chuyện",
-  "en": ""
- },
- {
-  "vi": "Đã lưu ảnh selfie về máy.",
-  "en": ""
- },
- {
-  "vi": "Đang đi",
   "en": ""
  }
 ]

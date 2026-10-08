@@ -32,6 +32,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.9.21", date="2026-10-08", items=(
+        dict(emoji='🎆', text='Pháo hoa giờ bắn thật cho cả server cùng xem, kèm thông báo tên và lời chúc. Tìm ở Khu phố → Bắn pháo hoa.'),
+        dict(emoji='💊', text='Nhà thuốc: luôn hiện Hôm nay là ngày mấy ở quầy, hạn dùng ghi rõ còn mấy ngày, Sổ lô có nút Rút hết hộp quá hạn'),
+        dict(emoji='🛡️', text='Bảo hiểm có thêm Gói trọn 100%: hỏng xe, sửa nhà, đi khám được bảo hiểm trả hết, đổi gói lúc nào cũng được'),
+        dict(emoji='💡', text='Mới: Bảo hiểm điện nước lo máy bơm, bình nóng lạnh, tủ lạnh, chập điện, vỡ ống, chọn gói 80% hoặc 100%'),
+    )),
     dict(version="1.9.20", date="2026-10-08", items=(
         dict(emoji='🎓', text='Thi chứng chỉ giờ ở ngay bên ngoài: nút 🎓 Chứng chỉ trên phố, trang hành trình và thẻ nơi làm'),
         dict(emoji='🎖️', text='Lên chức là lên lương: thẻ việc làm hiện rõ từng bậc và lương mỗi bậc, chức càng cao lương càng cao'),

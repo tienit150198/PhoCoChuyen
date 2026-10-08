@@ -1,5 +1,477 @@
 [
  {
+  "vi": "TỦ ĐỒ THẤT LẠC",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG TIẾP DÂN",
+  "en": ""
+ },
+ {
+  "vi": "Mướp nằm dưới hàng ghế chờ",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… Mướp cũng muốn lấy số thứ tự.",
+  "en": ""
+ },
+ {
+  "vi": "Điện thoại trực ban sắp reo rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Giao ban, đọc sổ trực ban rồi tiếp dân nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Phường đang yên",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp ở phường Mây.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và nhận xét của người dân.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ album",
+  "en": ""
+ },
+ {
+  "vi": "Quầy & máy quét Zchart",
+  "en": ""
+ },
+ {
+  "vi": "SỔ TIỆM ALBUM",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG BÁN ALBUM",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… cho Mướp nằm trên chồng album, ấm ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Học sinh sắp tan trường ghé tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Đếm bản giới hạn, dựng biển rồi mở tiệm nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang vãn",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp ở tiệm album Mây Pop.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và đánh giá quanh tiệm album.",
+  "en": ""
+ },
+ {
+  "vi": "Kho lạnh & sơ chế",
+  "en": ""
+ },
+ {
+  "vi": "KHU SƠ CHẾ",
+  "en": ""
+ },
+ {
+  "vi": "KHO LẠNH",
+  "en": ""
+ },
+ {
+  "vi": "Bàn sơ chế",
+  "en": ""
+ },
+ {
+  "vi": "Kệ gia vị dự trữ",
+  "en": ""
+ },
+ {
+  "vi": "MÌ",
+  "en": ""
+ },
+ {
+  "vi": "ĐÁ",
+  "en": ""
+ },
+ {
+  "vi": "Thùng hàng sáng nay",
+  "en": ""
+ },
+ {
+  "vi": "Thùng rau sáng nay: cải thảo, hành boa rô, nấm kim châm. Tươi rói.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn 3 thêm một tô cấp 7!",
+  "en": ""
+ },
+ {
+  "vi": "Hết hành phi rồi, phi thêm nha!",
+  "en": ""
+ },
+ {
+  "vi": "Rau mới về, rửa liền nè.",
+  "en": ""
+ },
+ {
+  "vi": "CHỢ MÂY",
+  "en": ""
+ },
+ {
+  "vi": "NGUY HẠI",
+  "en": ""
+ },
+ {
+  "vi": "CHÒI GÁC BẾN MÂY",
+  "en": ""
+ },
+ {
+  "vi": "XOÀI CÁT 14 XU/KÝ",
+  "en": ""
+ },
+ {
+  "vi": "cân đủ, trừ bì",
+  "en": ""
+ },
+ {
+  "vi": "PHÂN LOẠI",
+  "en": ""
+ },
+ {
+  "vi": "ĐỔ RÁC 18:00–19:30",
+  "en": ""
+ },
+ {
+  "vi": "đúng giờ, đúng túi",
+  "en": ""
+ },
+ {
+  "vi": "GIỜ TÀU",
+  "en": ""
+ },
+ {
+  "vi": "DỪNG LẠI KHI CÓ TÀU",
+  "en": ""
+ },
+ {
+  "vi": "chuông kêu, đèn đỏ: không qua",
+  "en": ""
+ },
+ {
+  "vi": "nhận ca lúc 5:30",
+  "en": ""
+ },
+ {
+  "vi": "ĐỒ NGHỀ",
+  "en": ""
+ },
+ {
+  "vi": "BẢNG GIÁ",
+  "en": ""
+ },
+ {
+  "vi": "THÔNG CỐNG",
+  "en": ""
+ },
+ {
+  "vi": "báo giá trước khi làm",
+  "en": ""
+ },
+ {
+  "vi": "gọi là tới",
+  "en": ""
+ },
+ {
+  "vi": "NỘI QUY",
+  "en": ""
+ },
+ {
+  "vi": "KHO LƯU TRỮ",
+  "en": ""
+ },
+ {
+  "vi": "ẩm!",
+  "en": ""
+ },
+ {
+  "vi": "mượn · trả · tra cứu",
+  "en": ""
+ },
+ {
+  "vi": "TRẢ",
+  "en": ""
+ },
+ {
+  "vi": "HÀNH LANG",
+  "en": ""
+ },
+ {
+  "vi": "MÁY PHÁT",
+  "en": ""
+ },
+ {
+  "vi": "Đang có khách",
+  "en": ""
+ },
+ {
+  "vi": "Hành lang phòng",
+  "en": ""
+ },
+ {
+  "vi": "CÁC PHÒNG NGHỈ",
+  "en": ""
+ },
+ {
+  "vi": "Xe dọn phòng",
+  "en": ""
+ },
+ {
+  "vi": "Phòng Đồi Thông xin thêm cái chăn!",
+  "en": ""
+ },
+ {
+  "vi": "Ga giường phơi khô rồi nè.",
+  "en": ""
+ },
+ {
+  "vi": "Sương xuống dày ghê, đóng cửa sổ giùm nha.",
+  "en": ""
+ },
+ {
+  "vi": "Bếp ăn sáng",
+  "en": ""
+ },
+ {
+  "vi": "BẾP ĂN SÁNG",
+  "en": ""
+ },
+ {
+  "vi": "TỦ LẠNH",
+  "en": ""
+ },
+ {
+  "vi": "Bàn ăn sáng",
+  "en": ""
+ },
+ {
+  "vi": "Bàn ăn sáng nhìn ra đồi thông. Trứng, bánh mì, dâu Đà Lạt, cà phê nóng.",
+  "en": ""
+ },
+ {
+  "vi": "Khách phòng Đồi Thông muốn trứng lòng đào!",
+  "en": ""
+ },
+ {
+  "vi": "Dâu tây mới hái nè.",
+  "en": ""
+ },
+ {
+  "vi": "Sương dày quá, bật lò sưởi chưa?",
+  "en": ""
+ },
+ {
+  "vi": "Sảnh",
+  "en": ""
+ },
+ {
+  "vi": "KHO HÀNG CÔ BA",
+  "en": ""
+ },
+ {
+  "vi": "Kệ hàng dự trữ",
+  "en": ""
+ },
+ {
+  "vi": "MÌ GÓI",
+  "en": ""
+ },
+ {
+  "vi": "NƯỚC MẮM",
+  "en": ""
+ },
+ {
+  "vi": "DẦU ĂN",
+  "en": ""
+ },
+ {
+  "vi": "BỘT GIẶT",
+  "en": ""
+ },
+ {
+  "vi": "SỮA",
+  "en": ""
+ },
+ {
+  "vi": "MUỐI",
+  "en": ""
+ },
+ {
+  "vi": "Bao gạo",
+  "en": ""
+ },
+ {
+  "vi": "NƯỚC SUỐI",
+  "en": ""
+ },
+ {
+  "vi": "BÁNH",
+  "en": ""
+ },
+ {
+  "vi": "Gạo thơm với gạo nở. Ai mua lẻ thì xúc bằng lon sữa bò.",
+  "en": ""
+ },
+ {
+  "vi": "Xe hàng tới rồi, ra phụ một tay!",
+  "en": ""
+ },
+ {
+  "vi": "Cô Ba ơi, thùng mì này để đâu?",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ đếm lại thùng nước suối nha.",
+  "en": ""
+ },
+ {
+  "vi": "GIẤY DẶN",
+  "en": ""
+ },
+ {
+  "vi": "bé no · bé ngủ · bé vui",
+  "en": ""
+ },
+ {
+  "vi": "MÂY TRE",
+  "en": ""
+ },
+ {
+  "vi": "CÁNH",
+  "en": ""
+ },
+ {
+  "vi": "DIỀU",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG PHỤC VỤ",
+  "en": ""
+ },
+ {
+  "vi": "TIỆM CÁ CẢNH CHÚ ÚT",
+  "en": ""
+ },
+ {
+  "vi": "CÁ · CHIM · THỨC ĂN",
+  "en": ""
+ },
+ {
+  "vi": "CÁ BETTA",
+  "en": ""
+ },
+ {
+  "vi": "TÌM THÚ LẠC",
+  "en": ""
+ },
+ {
+  "vi": "HẠT · PATE · CÁT",
+  "en": ""
+ },
+ {
+  "vi": "HSD RÕ",
+  "en": ""
+ },
+ {
+  "vi": "GIẢM GIÁ",
+  "en": ""
+ },
+ {
+  "vi": "Dãy bể",
+  "en": ""
+ },
+ {
+  "vi": "CÁCH LY",
+  "en": ""
+ },
+ {
+  "vi": "CÁT",
+  "en": ""
+ },
+ {
+  "vi": "NHẬN NUÔI",
+  "en": ""
+ },
+ {
+  "vi": "PHỞ BÒ NAM ĐỊNH",
+  "en": ""
+ },
+ {
+  "vi": "THỰC ĐƠN",
+  "en": ""
+ },
+ {
+  "vi": "Phở tái · chín · nạm",
+  "en": ""
+ },
+ {
+  "vi": "Phở gầu · gân · bò viên",
+  "en": ""
+ },
+ {
+  "vi": "Tô lớn · trứng trần · quẩy",
+  "en": ""
+ },
+ {
+  "vi": "PHỞ BÒ",
+  "en": ""
+ },
+ {
+  "vi": "Tô 30 · Lớn 38",
+  "en": ""
+ },
+ {
+  "vi": "Mang về 32",
+  "en": ""
+ },
+ {
+  "vi": "SỔ NƯỚC",
+  "en": ""
+ },
+ {
+  "vi": "mắt không rời mặt nước",
+  "en": ""
+ },
+ {
+  "vi": "Phòng gội",
+  "en": ""
+ },
+ {
+  "vi": "PHÒNG GỘI ĐẦU",
+  "en": ""
+ },
+ {
+  "vi": "Ghế gội đầu",
+  "en": ""
+ },
+ {
+  "vi": "Ghế gội thứ hai",
+  "en": ""
+ },
+ {
+  "vi": "Nước ấm vừa tay, dầu gội hương bưởi. Khách nào cũng lim dim.",
+  "en": ""
+ },
+ {
   "vi": "Nước ấm vừa chưa chị?",
   "en": ""
  },
@@ -1325,478 +1797,6 @@
  },
  {
   "vi": "Đã phân bổ",
-  "en": ""
- },
- {
-  "vi": "Đã ghi doanh thu",
-  "en": ""
- },
- {
-  "vi": "Chờ phân bổ",
-  "en": ""
- },
- {
-  "vi": "Đáo hạn tháng",
-  "en": ""
- },
- {
-  "vi": "Lãi dự thu",
-  "en": ""
- },
- {
-  "vi": "Giá trị sổ",
-  "en": ""
- },
- {
-  "vi": "Lãi suất hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Đối tượng",
-  "en": ""
- },
- {
-  "vi": "Loại tiền",
-  "en": ""
- },
- {
-  "vi": "Nguyên tệ",
-  "en": ""
- },
- {
-  "vi": "Tỷ giá ban đầu",
-  "en": ""
- },
- {
-  "vi": "Tỷ giá sổ",
-  "en": ""
- },
- {
-  "vi": "Giá trị VND",
-  "en": ""
- },
- {
-  "vi": "Nguyên liệu trực tiếp",
-  "en": ""
- },
- {
-  "vi": "Sản xuất chung",
-  "en": ""
- },
- {
-  "vi": "Sản phẩm hoàn thành",
-  "en": ""
- },
- {
-  "vi": "Dở dang cuối kỳ",
-  "en": ""
- },
- {
-  "vi": "Sổ chi tiết",
-  "en": ""
- },
- {
-  "vi": "Bảng tập hợp giá thành",
-  "en": ""
- },
- {
-  "vi": "Khoản mục",
-  "en": ""
- },
- {
-  "vi": "Báo cáo đang được chuẩn bị từ sổ đã ghi.",
-  "en": ""
- },
- {
-  "vi": "B01 · Tình hình tài chính",
-  "en": ""
- },
- {
-  "vi": "B02 · Kết quả",
-  "en": ""
- },
- {
-  "vi": "B03 · Dòng tiền",
-  "en": ""
- },
- {
-  "vi": "B09 · Thuyết minh",
-  "en": ""
- },
- {
-  "vi": "Bốn báo cáo tài chính",
-  "en": ""
- },
- {
-  "vi": "Bạn đang lập báo cáo này ở việc hiện tại. Lấy số từ Cân đối phát sinh và Sổ chi tiết; bản đầy đủ hiện ra sau khi chấm đúng.",
-  "en": ""
- },
- {
-  "vi": "Thuyết minh",
-  "en": ""
- },
- {
-  "vi": "Kỳ này (VND)",
-  "en": ""
- },
- {
-  "vi": "Kỳ trước (VND)",
-  "en": ""
- },
- {
-  "vi": "Trang nguồn",
-  "en": ""
- },
- {
-  "vi": "Báo cáo học tập theo kỳ tháng, gồm cả các chỉ tiêu không phát sinh.",
-  "en": ""
- },
- {
-  "vi": "Mẫu TT99 và Phụ lục IV chính thức",
-  "en": ""
- },
- {
-  "vi": "VĂN PHÒNG THỰC HÀNH",
-  "en": ""
- },
- {
-  "vi": "Đi từ chứng từ đến bộ sổ và bốn báo cáo trong 12 kỳ của năm 2026. Hồ sơ dùng VND; lương trong trò chơi dùng xu.",
-  "en": ""
- },
- {
-  "vi": "Lương kế toán doanh nghiệp áp dụng ×3 sau khi đạt chứng nhận, không cộng dồn sau thi lại. Nghề hiện tại của bạn vẫn được giữ.",
-  "en": ""
- },
- {
-  "vi": "Nhận việc thực hành",
-  "en": ""
- },
- {
-  "vi": "Thi đạt chứng nhận Kế toán doanh nghiệp Việt Nam để nhận việc.",
-  "en": ""
- },
- {
-  "vi": "Đã mở nguồn",
-  "en": ""
- },
- {
-  "vi": "Đọc nguồn trước",
-  "en": ""
- },
- {
-  "vi": "Mở chứng từ gốc",
-  "en": ""
- },
- {
-  "vi": "Mở và đọc hồ sơ trước khi nhập bút toán. Sổ sách cập nhật sau khi câu trả lời được chấm đúng.",
-  "en": ""
- },
- {
-  "vi": "Chứng từ, kết chuyển và bốn báo cáo đã được chấm đúng.",
-  "en": ""
- },
- {
-  "vi": "Đã nhận lương kỳ này",
-  "en": ""
- },
- {
-  "vi": "Nhận lương ca thực hành",
-  "en": ""
- },
- {
-  "vi": "Mở tháng tiếp theo →",
-  "en": ""
- },
- {
-  "vi": "Hoàn thành 12 kỳ năm 2026",
-  "en": ""
- },
- {
-  "vi": "Nhật ký kỳ hiện tại",
-  "en": ""
- },
- {
-  "vi": "Nhật ký các kỳ trước",
-  "en": ""
- },
- {
-  "vi": "Đầu kỳ Nợ",
-  "en": ""
- },
- {
-  "vi": "Đầu kỳ Có",
-  "en": ""
- },
- {
-  "vi": "Phát sinh Nợ",
-  "en": ""
- },
- {
-  "vi": "Phát sinh Có",
-  "en": ""
- },
- {
-  "vi": "Cuối kỳ Nợ",
-  "en": ""
- },
- {
-  "vi": "Cuối kỳ Có",
-  "en": ""
- },
- {
-  "vi": "DOANH NGHIỆP THỰC HÀNH · VND",
-  "en": ""
- },
- {
-  "vi": "Đã nhận lương",
-  "en": ""
- },
- {
-  "vi": "Đang ghi sổ",
-  "en": ""
- },
- {
-  "vi": "Tiến độ kỳ thực hành",
-  "en": ""
- },
- {
-  "vi": "Chứng từ & việc đang làm",
-  "en": ""
- },
- {
-  "vi": "Cân đối phát sinh",
-  "en": ""
- },
- {
-  "vi": "Bốn báo cáo",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ doanh nghiệp",
-  "en": ""
- },
- {
-  "vi": "Vào làm ở",
-  "en": ""
- },
- {
-  "vi": "Đến",
-  "en": ""
- },
- {
-  "vi": "· bạn đang làm ở đây",
-  "en": ""
- },
- {
-  "vi": "Nhận bạn",
-  "en": ""
- },
- {
-  "vi": "Chưa đủ chứng nhận",
-  "en": ""
- },
- {
-  "vi": "Giới thiệu việc làm",
-  "en": ""
- },
- {
-  "vi": "Những nơi dưới đây nhận người có chứng nhận của bạn. Lương kế toán ×3, ngày lễ ×5; mỗi ca mở bằng vài câu kiểm tra kiến thức.",
-  "en": ""
- },
- {
-  "vi": "Thi đạt chứng nhận để được giới thiệu vào làm. Lương kế toán ×3, ngày lễ ×5.",
-  "en": ""
- },
- {
-  "vi": "Bài kiểm tra đang được tải.",
-  "en": ""
- },
- {
-  "vi": "Bài nên xem lại",
-  "en": ""
- },
- {
-  "vi": "Làm bài khác",
-  "en": ""
- },
- {
-  "vi": "Đang chấm bài…",
-  "en": ""
- },
- {
-  "vi": "Tiến độ kiểm tra",
-  "en": ""
- },
- {
-  "vi": "SỔ HỌC & THỰC HÀNH",
-  "en": ""
- },
- {
-  "vi": "Từ hiểu nghiệp vụ đến tự lập bộ sổ",
-  "en": ""
- },
- {
-  "vi": "TRƯỚC GIỜ VÀO CA",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra kiến thức",
-  "en": ""
- },
- {
-  "vi": "Vài câu ngắn từ ngân hàng đề của khóa học",
-  "en": ""
- },
- {
-  "vi": "Chương trình đang được tải. Mở lại sau một chút để tiếp tục.",
-  "en": ""
- },
- {
-  "vi": "Lương kế toán doanh nghiệp:",
-  "en": ""
- },
- {
-  "vi": "Bài học",
-  "en": ""
- },
- {
-  "vi": "Bài thi đang làm",
-  "en": ""
- },
- {
-  "vi": "Thi & chứng nhận",
-  "en": ""
- },
- {
-  "vi": "Doanh nghiệp thực hành",
-  "en": ""
- },
- {
-  "vi": "· thi lại không cộng dồn",
-  "en": ""
- },
- {
-  "vi": "Hoàn thành đủ câu trả lời; nhập số nguyên và kiểm tra các tài khoản trước khi nộp.",
-  "en": ""
- },
- {
-  "vi": "PHỐ CÓ CHUYỆN · CHỨNG NHẬN TRONG GAME",
-  "en": ""
- },
- {
-  "vi": "Ghi nhận học tập trong trò chơi, không thay văn bằng hay chứng chỉ hành nghề.",
-  "en": ""
- },
- {
-  "vi": "In bản này",
-  "en": ""
- },
- {
-  "vi": "Hủy bài thi đang làm?",
-  "en": ""
- },
- {
-  "vi": "Các câu đã nộp trong lần thi này sẽ bị bỏ. Bài học và chứng nhận đã có vẫn được giữ.",
-  "en": ""
- },
- {
-  "vi": "Hủy bài thi",
-  "en": ""
- },
- {
-  "vi": "🔒 Cần thi chứng nhận",
-  "en": ""
- },
- {
-  "vi": "Ngày đời trung bình",
-  "en": ""
- },
- {
-  "vi": "Số dòng mỗi bảng",
-  "en": ""
- },
- {
-  "vi": "Chỉ tài khoản vận hành xem được thống kê. Đăng nhập đúng tài khoản rồi mở lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Góp ý đang mở",
-  "en": ""
- },
- {
-  "vi": "Số quá lớn",
-  "en": ""
- },
- {
-  "vi": "Chưa hiểu số này",
-  "en": ""
- },
- {
-  "vi": "Đang đấu giá",
-  "en": ""
- },
- {
-  "vi": "Của tôi",
-  "en": ""
- },
- {
-  "vi": "Chưa trả giá được. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Mở lúc",
-  "en": ""
- },
- {
-  "vi": "Đang chốt…",
-  "en": ""
- },
- {
-  "vi": "Chưa có phiên",
-  "en": ""
- },
- {
-  "vi": "Đăng nhập để trả giá",
-  "en": ""
- },
- {
-  "vi": "Chưa trả giá được",
-  "en": ""
- },
- {
-  "vi": "Đã hết giờ",
-  "en": ""
- },
- {
-  "vi": "Ví đang nợ",
-  "en": ""
- },
- {
-  "vi": "Chỉ có trong hành trình.",
-  "en": ""
- },
- {
-  "vi": "Đang giữ cho đấu giá",
-  "en": ""
- },
- {
-  "vi": "👥 Toàn người chơi thật. Ai thắng mất hẳn số xu.",
-  "en": ""
- },
- {
-  "vi": "Phiên mở lúc 20:30 mỗi ngày.",
-  "en": ""
- },
- {
-  "vi": "👑 Bạn đang dẫn đầu",
-  "en": ""
- },
- {
-  "vi": "⚠️ Đã bị trả cao hơn",
-  "en": ""
- },
- {
-  "vi": "Chưa ai trả",
   "en": ""
  }
 ]

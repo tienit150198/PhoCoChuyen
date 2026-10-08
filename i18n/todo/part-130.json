@@ -1,5 +1,60 @@
 [
  {
+  "vi": "⏰ $1′ sau nhận",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giao trong $1 phút sau khi nhận",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⏰ Giao trong $1 phút sau khi nhận",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🗺️ Lên lộ trình tới $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tới $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⏩ Đi nhanh tới $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tự lái tới $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "➕ Đếm tờ $1 · $2/",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "➕ Đếm thêm tờ $1 xu · $2/",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đếm đủ $1 xu COD theo bảng kê",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đang đếm $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "💵 Nộp $1 xu",
   "en": "",
   "pattern": true
@@ -2191,61 +2246,6 @@
  },
  {
   "vi": "📋 Đọc giường $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đo $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "giường $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✋ $1, báo bác sĩ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Viết sổ giao ca · $1 dòng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🌙 Tăng ca +$1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😮‍💨 $1/100 · chậm$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😮‍💨 Sức bền $1/100",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👩‍💼 Thanh màu: $1 tin bạn tới đâu. Nộp đúng hạn, ít sai thì tăng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lịch $1 ngày tới",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "người$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "làm trước tiên sáng mai · hạn sớm nhất $1",
   "en": "",
   "pattern": true
  }

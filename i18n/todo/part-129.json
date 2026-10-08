@@ -1,5 +1,30 @@
 [
  {
+  "vi": "người ta đồn $1 làm một lúc mấy nghề, chắc sắp mua nhà mặt phố",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nghe nói phố sắp có hội to, ai cũng đồn chỗ $1 sẽ đông nghẹt",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nghe đâu $1 sắp mở thêm chỗ mới ở đầu hẻm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "có người đồn $1 là cháu của một đại gia nào đó, nên mới dám mở tiệm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nghe nói có người hay ghé chỗ $1 chỉ để ngắm chủ quán",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "người ta bảo $1 nuôi một con mèo biết đếm tiền",
   "en": "",
   "pattern": true
@@ -1055,6 +1080,11 @@
   "pattern": true
  },
  {
+  "vi": "📅 Ngày $1 ở quầy",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đọc nhãn các lô $1",
   "en": "",
   "pattern": true
@@ -1086,6 +1116,11 @@
  },
  {
   "vi": "Phiếu: mã $1 $2, $3 hộp",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "HSD ngày $1 ·",
   "en": "",
   "pattern": true
  },
@@ -1160,6 +1195,11 @@
   "pattern": true
  },
  {
+  "vi": "🧹 $1 hộp cần rút",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đủ $1 kiện",
   "en": "",
   "pattern": true
@@ -1191,6 +1231,21 @@
  },
  {
   "vi": "Đặt $1 · $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📅 Hôm nay: ngày $1 ở quầy",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧹 Rút hết $1 hộp",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Rút $1 hộp quá hạn, thu hồi hay hỏng lạnh khỏi kệ?",
   "en": "",
   "pattern": true
  },
@@ -2191,61 +2246,6 @@
  },
  {
   "vi": "Hẹn giao trước $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⏰ $1′ sau nhận",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giao trong $1 phút sau khi nhận",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⏰ Giao trong $1 phút sau khi nhận",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗺️ Lên lộ trình tới $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tới $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⏩ Đi nhanh tới $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tự lái tới $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "➕ Đếm tờ $1 · $2/",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "➕ Đếm thêm tờ $1 xu · $2/",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đếm đủ $1 xu COD theo bảng kê",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đang đếm $1 xu",
   "en": "",
   "pattern": true
  }

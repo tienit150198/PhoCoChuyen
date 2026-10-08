@@ -1,5 +1,477 @@
 [
  {
+  "vi": "VUI QUÁ!",
+  "en": ""
+ },
+ {
+  "vi": "chụp ảnh: dáng",
+  "en": ""
+ },
+ {
+  "vi": "Vui ghê",
+  "en": ""
+ },
+ {
+  "vi": "Đỉnh!",
+  "en": ""
+ },
+ {
+  "vi": "Yêu lắm",
+  "en": ""
+ },
+ {
+  "vi": "Ố là la",
+  "en": ""
+ },
+ {
+  "vi": "VÉ HỘI CHỢ",
+  "en": ""
+ },
+ {
+  "vi": "Biểu cảm",
+  "en": ""
+ },
+ {
+  "vi": "Tim & lấp lánh",
+  "en": ""
+ },
+ {
+  "vi": "Đồ ăn hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Chữ xinh",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn dán",
+  "en": ""
+ },
+ {
+  "vi": "Cười híp",
+  "en": ""
+ },
+ {
+  "vi": "Ngại đỏ mặt",
+  "en": ""
+ },
+ {
+  "vi": "Ngủ khò khò",
+  "en": ""
+ },
+ {
+  "vi": "Kính râm ngầu",
+  "en": ""
+ },
+ {
+  "vi": "Tim đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Tim đôi",
+  "en": ""
+ },
+ {
+  "vi": "Kẹo bông",
+  "en": ""
+ },
+ {
+  "vi": "Cá viên chiên",
+  "en": ""
+ },
+ {
+  "vi": "Bắp rang bơ",
+  "en": ""
+ },
+ {
+  "vi": "Kẹo hồ lô",
+  "en": ""
+ },
+ {
+  "vi": "Đèn ông sao",
+  "en": ""
+ },
+ {
+  "vi": "Đèn cá chép",
+  "en": ""
+ },
+ {
+  "vi": "Bánh trung thu",
+  "en": ""
+ },
+ {
+  "vi": "Trăng rằm",
+  "en": ""
+ },
+ {
+  "vi": "Thỏ ngọc",
+  "en": ""
+ },
+ {
+  "vi": "Đầu lân",
+  "en": ""
+ },
+ {
+  "vi": "Băng keo hồng",
+  "en": ""
+ },
+ {
+  "vi": "Băng keo xanh",
+  "en": ""
+ },
+ {
+  "vi": "Góc ảnh nơ",
+  "en": ""
+ },
+ {
+  "vi": "Vé hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Khung thoại",
+  "en": ""
+ },
+ {
+  "vi": "Khung ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Huy hiệu 2026",
+  "en": ""
+ },
+ {
+  "vi": "lương",
+  "en": ""
+ },
+ {
+  "vi": "thuê chỗ",
+  "en": ""
+ },
+ {
+  "vi": "điện",
+  "en": ""
+ },
+ {
+  "vi": "môi trường",
+  "en": ""
+ },
+ {
+  "vi": "bảo vệ",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả cho thời gian mở quầy:",
+  "en": ""
+ },
+ {
+  "vi": "Lương, thuê chỗ, điện, phí môi trường và bảo vệ tính theo thời gian quầy mở và làm việc, kể cả lúc chưa có khách. Vắng khách thì bấm 🔴 Đóng quầy để ngừng tính.",
+  "en": ""
+ },
+ {
+  "vi": "đang dừng",
+  "en": ""
+ },
+ {
+  "vi": "mỗi ngày bán",
+  "en": ""
+ },
+ {
+  "vi": "🕵️ Rủi ro trộm:",
+  "en": ""
+ },
+ {
+  "vi": ". Camera −50%, chuông −25%, két sắt −20% và trộm lấy tối đa nửa két, bảo vệ cơ bản −20%, tăng cường −40%.",
+  "en": ""
+ },
+ {
+  "vi": "Cả phố cùng lúc: mọi quầy của mọi người chơi cùng vắng khách. Không phải do giá của bạn, cũng không phải do bạn mở nhiều quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Cả phố cùng lúc: mọi quầy của mọi người chơi cùng một mức.",
+  "en": ""
+ },
+ {
+  "vi": "🏷️ Giá menu quầy này vừa phải: không làm khách bớt mua.",
+  "en": ""
+ },
+ {
+  "vi": "Chợ cả phố:",
+  "en": ""
+ },
+ {
+  "vi": "Đơn đã nhận vẫn được phục vụ. Thời gian đóng không tạo đơn bán bù.",
+  "en": ""
+ },
+ {
+  "vi": "🟢 Mở quầy",
+  "en": ""
+ },
+ {
+  "vi": "🔴 Đóng quầy",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang đóng, không nhận khách mới.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang mở nhận khách khi đủ hàng và vốn.",
+  "en": ""
+ },
+ {
+  "vi": "Gói bảo vệ giảm khả năng bị trộm khi quầy hoạt động: cơ bản −20%, tăng cường −40%. Phí theo tổng tài sản của bạn, gồm tiền, nhà, xe và đầu tư; báo giá giữ trong ngày game. Chi phí lấy từ vốn/két và ghi trong sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo vệ quầy",
+  "en": ""
+ },
+ {
+  "vi": "Đang sử dụng",
+  "en": ""
+ },
+ {
+  "vi": "Đổi nghề hoặc nơi làm việc",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nghề khác; tiến trình từng nghề vẫn được lưu",
+  "en": ""
+ },
+ {
+  "vi": "📝 Vào thi",
+  "en": ""
+ },
+ {
+  "vi": "📖 Đang học",
+  "en": ""
+ },
+ {
+  "vi": "Đi thi ngay",
+  "en": ""
+ },
+ {
+  "vi": "· chưa có",
+  "en": ""
+ },
+ {
+  "vi": "Đang học · thi từ Ngày",
+  "en": ""
+ },
+ {
+  "vi": "Học rồi thi lấy chứng chỉ nghề",
+  "en": ""
+ },
+ {
+  "vi": "Vào thi",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ đã có",
+  "en": ""
+ },
+ {
+  "vi": "xem giấy chứng nhận",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đang đeo · chạm để cất",
+  "en": ""
+ },
+ {
+  "vi": "Học và thi ở 🎓 Thi chứng chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thi",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ nghề",
+  "en": ""
+ },
+ {
+  "vi": "Lớp cấp tốc",
+  "en": ""
+ },
+ {
+  "vi": "Tự học",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ lại bài học:",
+  "en": ""
+ },
+ {
+  "vi": "💡 Gợi ý (miễn phí)",
+  "en": ""
+ },
+ {
+  "vi": "Bài thi",
+  "en": ""
+ },
+ {
+  "vi": "là đạt · phân vân cứ bấm 💡, không trừ điểm.",
+  "en": ""
+ },
+ {
+  "vi": "disabled aria-label=\"Đáp án đã loại\"",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đúng.",
+  "en": ""
+ },
+ {
+  "vi": "✗ Chưa đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Câu làm thử không tính điểm và khác đề thi thật.",
+  "en": ""
+ },
+ {
+  "vi": "· sau khi khép ca hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Khóa đang học",
+  "en": ""
+ },
+ {
+  "vi": "✏️ Làm thử trước (không tính điểm)",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ khóa học",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Xem giấy chứng nhận",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đạt",
+  "en": ""
+ },
+ {
+  "vi": "câu sai",
+  "en": ""
+ },
+ {
+  "vi": "Đang học khóa này (ở trên).",
+  "en": ""
+ },
+ {
+  "vi": "Đang học một khóa khác. Thi xong hoặc bỏ khóa đó rồi đăng ký tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Điểm tối đa rồi. Giỏi quá!",
+  "en": ""
+ },
+ {
+  "vi": "Lớp ôn",
+  "en": ""
+ },
+ {
+  "vi": "Học xong thi ngay hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "📖 Tự học · miễn phí",
+  "en": ""
+ },
+ {
+  "vi": "Thi từ Ngày",
+  "en": ""
+ },
+ {
+  "vi": "(ngày mai)",
+  "en": ""
+ },
+ {
+  "vi": "Dùng cho",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Thi chứng chỉ",
+  "en": ""
+ },
+ {
+  "vi": "lớp ôn",
+  "en": ""
+ },
+ {
+  "vi": "lớp cấp tốc",
+  "en": ""
+ },
+ {
+  "vi": "Học xong vào thi luôn hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa mở được giấy chứng nhận, thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ khóa học?",
+  "en": ""
+ },
+ {
+  "vi": "Học phí đã đóng không được hoàn. Muốn thi thì đăng ký lại từ đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ khóa",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc nhẹ nè 💛 Ở phố mình chơi vui là chính, nhưng đừng gửi địa chỉ nhà, trường, số điện thoại hay nick Zalo/FB/IG/TikTok cho người mới quen, và đừng hẹn gặp người lạ ngoài đời nha. Bạn dưới 18 tuổi thì càng cần cẩn thận hơn. Ai làm bạn thấy không ổn: chạm vào tin nhắn → Báo cáo → “An toàn / trẻ vị thành niên”, hoặc kể với người lớn bạn tin tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắn gì đó…",
+  "en": ""
+ },
+ {
+  "vi": "Đang kết nối lại…",
+  "en": ""
+ },
+ {
+  "vi": "Tạo tài khoản để thả cảm xúc nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tin nhắn không còn khả dụng",
+  "en": ""
+ },
+ {
+  "vi": "Hủy trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Đang trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Đã gửi lời mời kết bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghim lên đầu Cả phố.",
+  "en": ""
+ },
+ {
+  "vi": "Đã bỏ ghim.",
+  "en": ""
+ },
+ {
+  "vi": "Đã tắt thông báo của cuộc trò chuyện này.",
+  "en": ""
+ },
+ {
   "vi": "Đã bật thông báo.",
   "en": ""
  },
@@ -1325,478 +1797,6 @@
  },
  {
   "vi": "Bánh chưng thường gói bằng lá gì?",
-  "en": ""
- },
- {
-  "vi": "Lá dong",
-  "en": ""
- },
- {
-  "vi": "Lá chuối",
-  "en": ""
- },
- {
-  "vi": "Lá sen",
-  "en": ""
- },
- {
-  "vi": "Tết Trung thu vào rằm tháng mấy âm lịch?",
-  "en": ""
- },
- {
-  "vi": "Tháng 8",
-  "en": ""
- },
- {
-  "vi": "Tháng 7",
-  "en": ""
- },
- {
-  "vi": "Con giáp đứng đầu trong 12 con giáp?",
-  "en": ""
- },
- {
-  "vi": "Tý (chuột)",
-  "en": ""
- },
- {
-  "vi": "Sửu (trâu)",
-  "en": ""
- },
- {
-  "vi": "Dần (hổ)",
-  "en": ""
- },
- {
-  "vi": "Xôi được nấu từ loại gạo nào?",
-  "en": ""
- },
- {
-  "vi": "Gạo nếp",
-  "en": ""
- },
- {
-  "vi": "Gạo tẻ",
-  "en": ""
- },
- {
-  "vi": "Gạo lứt",
-  "en": ""
- },
- {
-  "vi": "Hồ Gươm còn có tên là gì?",
-  "en": ""
- },
- {
-  "vi": "Hồ Hoàn Kiếm",
-  "en": ""
- },
- {
-  "vi": "Hồ Tây",
-  "en": ""
- },
- {
-  "vi": "Hồ Trúc Bạch",
-  "en": ""
- },
- {
-  "vi": "Áo dài truyền thống có mấy tà?",
-  "en": ""
- },
- {
-  "vi": "Hai tà",
-  "en": ""
- },
- {
-  "vi": "Một tà",
-  "en": ""
- },
- {
-  "vi": "Ba tà",
-  "en": ""
- },
- {
-  "vi": "Một năm có bao nhiêu mùa?",
-  "en": ""
- },
- {
-  "vi": "Bốn mùa",
-  "en": ""
- },
- {
-  "vi": "Ba mùa",
-  "en": ""
- },
- {
-  "vi": "Năm mùa",
-  "en": ""
- },
- {
-  "vi": "Chè ba màu có mấy màu?",
-  "en": ""
- },
- {
-  "vi": "Ba màu",
-  "en": ""
- },
- {
-  "vi": "Năm màu",
-  "en": ""
- },
- {
-  "vi": "Hôm nay chưa hợp, phố còn đông người mà!",
-  "en": ""
- },
- {
-  "vi": "Bạn đã rời buổi hẹn.",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy có việc phải đi trước rồi. Phố còn đông người mà!",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy",
-  "en": ""
- },
- {
-  "vi": "Nói gì đó…",
-  "en": ""
- },
- {
-  "vi": "Mất kết nối, thử lại sau nhé.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo vì…",
-  "en": ""
- },
- {
-  "vi": "Rời buổi hẹn",
-  "en": ""
- },
- {
-  "vi": "người đang chờ ở góc hẹn hò",
-  "en": ""
- },
- {
-  "vi": "Chỉ có bạn đang chờ",
-  "en": ""
- },
- {
-  "vi": "Chưa ai đang chờ",
-  "en": ""
- },
- {
-  "vi": "người ghé trong 30 phút qua",
-  "en": ""
- },
- {
-  "vi": "🎲 Hỏi nhanh đáp nhanh",
-  "en": ""
- },
- {
-  "vi": "Câu khác",
-  "en": ""
- },
- {
-  "vi": "Đúng rồi! 👏",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm ngồi cùng",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm ngồi chờ cùng",
-  "en": ""
- },
- {
-  "vi": "Rủ mọi người",
-  "en": ""
- },
- {
-  "vi": "Muốn gặp",
-  "en": ""
- },
- {
-  "vi": "Đang tìm người hợp gu…",
-  "en": ""
- },
- {
-  "vi": "Hẹn 5 phút ở quán cà phê",
-  "en": ""
- },
- {
-  "vi": "Tạo tài khoản để hẹn hò.",
-  "en": ""
- },
- {
-  "vi": "Ngồi chờ",
-  "en": ""
- },
- {
-  "vi": "Chọn Nam/Nữ cho nhân vật để người khác tìm thấy bạn.",
-  "en": ""
- },
- {
-  "vi": "Đã là bạn bè",
-  "en": ""
- },
- {
-  "vi": "cũng thả tim!",
-  "en": ""
- },
- {
-  "vi": "Ngồi ghế tiếp",
-  "en": ""
- },
- {
-  "vi": "Hợp nhau! 💞",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy chưa kịp chọn 😴",
-  "en": ""
- },
- {
-  "vi": "Khác gu 😆",
-  "en": ""
- },
- {
-  "vi": "chọn rồi",
-  "en": ""
- },
- {
-  "vi": "Trúng phóc! 🎯",
-  "en": ""
- },
- {
-  "vi": "chưa kịp gọi",
-  "en": ""
- },
- {
-  "vi": "Chọn món cho nhau",
-  "en": ""
- },
- {
-  "vi": "gọi cho bạn",
-  "en": ""
- },
- {
-  "vi": "gọi xong rồi",
-  "en": ""
- },
- {
-  "vi": "Bạn đang thèm món gì?",
-  "en": ""
- },
- {
-  "vi": "Bạn thèm",
-  "en": ""
- },
- {
-  "vi": "Một phút trò chuyện. Mở lời đi!",
-  "en": ""
- },
- {
-  "vi": "Chờ bạn ấy…",
-  "en": ""
- },
- {
-  "vi": "Xong, chọn thôi",
-  "en": ""
- },
- {
-  "vi": "Đã chọn. Chờ chút…",
-  "en": ""
- },
- {
-  "vi": "Chỉ bạn thấy lựa chọn của mình.",
-  "en": ""
- },
- {
-  "vi": "Hẹn tiếp",
-  "en": ""
- },
- {
-  "vi": "Chào nhé",
-  "en": ""
- },
- {
-  "vi": "5 phút ở quán cà phê phố",
-  "en": ""
- },
- {
-  "vi": "🪑 Đang chờ",
-  "en": ""
- },
- {
-  "vi": "Quay lại buổi hẹn",
-  "en": ""
- },
- {
-  "vi": "Góc hẹn hò: đang chờ",
-  "en": ""
- },
- {
-  "vi": "Hẹn hò?",
-  "en": ""
- },
- {
-  "vi": "Giờ trong game",
-  "en": ""
- },
- {
-  "vi": "Mỗi việc làm tốn một ít thời gian trên đồng hồ của nơi làm.",
-  "en": ""
- },
- {
-  "vi": "· chưa mở cửa",
-  "en": ""
- },
- {
-  "vi": "Ca làm hôm nay",
-  "en": ""
- },
- {
-  "vi": "Giờ trong game · đồng hồ ca làm tiến theo thao tác của bạn.",
-  "en": ""
- },
- {
-  "vi": "Giờ giấc ở đây",
-  "en": ""
- },
- {
-  "vi": "Còn 60 phút và 30 phút có lời nhắc; tới giờ đóng cửa thì không đón thêm khách.",
-  "en": ""
- },
- {
-  "vi": "Khách đã vào quán vẫn được làm nốt. Khép ca lúc nào cũng được: việc dở giữ lại, khách hẹn quay lại khi mở cửa sáng mai, không bị tính là bỏ dở.",
-  "en": ""
- },
- {
-  "vi": "Sắp đóng cửa",
-  "en": ""
- },
- {
-  "vi": "làm nốt khách đang làm rồi khép ca nhé.",
-  "en": ""
- },
- {
-  "vi": "không đón thêm khách nữa.",
-  "en": ""
- },
- {
-  "vi": "Trần Bảo Ngọc",
-  "en": ""
- },
- {
-  "vi": "Lâm Thu Hà",
-  "en": ""
- },
- {
-  "vi": "Đỗ Thanh Tâm",
-  "en": ""
- },
- {
-  "vi": "Nguyễn Hoài An",
-  "en": ""
- },
- {
-  "vi": "Võ Minh Châu",
-  "en": ""
- },
- {
-  "vi": "Hồ Gia Bảo",
-  "en": ""
- },
- {
-  "vi": "Lê Ngọc Diệp",
-  "en": ""
- },
- {
-  "vi": "Trịnh Khánh Linh",
-  "en": ""
- },
- {
-  "vi": "Mai Đức Toàn",
-  "en": ""
- },
- {
-  "vi": "Đặng Mỹ Duyên",
-  "en": ""
- },
- {
-  "vi": "PHỐ CÓ CHUYỆN VOCATIONAL TRAINING CENTRE",
-  "en": ""
- },
- {
-  "vi": "Phố Có Chuyện · a job-life simulation game",
-  "en": ""
- },
- {
-  "vi": "PHỐ CÓ CHUYỆN • VOCATIONAL TRAINING CENTRE •",
-  "en": ""
- },
- {
-  "vi": "Phố Có Chuyện Vocational Training Centre",
-  "en": ""
- },
- {
-  "vi": "TRUNG TÂM ĐÀO TẠO NGHỀ PHỐ CÓ CHUYỆN",
-  "en": ""
- },
- {
-  "vi": "Đơn vị đào tạo",
-  "en": ""
- },
- {
-  "vi": "GIẤY CHỨNG NHẬN",
-  "en": ""
- },
- {
-  "vi": "Chứng nhận",
-  "en": ""
- },
- {
-  "vi": "đã hoàn thành khóa học và đạt kỳ thi sát hạch nghề",
-  "en": ""
- },
- {
-  "vi": "Ngành",
-  "en": ""
- },
- {
-  "vi": "ĐIỂM THI",
-  "en": ""
- },
- {
-  "vi": "XẾP LOẠI",
-  "en": ""
- },
- {
-  "vi": "NGÀY SỐNG",
-  "en": ""
- },
- {
-  "vi": "Có giá trị khi ứng tuyển tại",
-  "en": ""
- },
- {
-  "vi": "GIẢNG VIÊN HƯỚNG DẪN",
-  "en": ""
- },
- {
-  "vi": "GIÁM ĐỐC TRUNG TÂM",
-  "en": ""
- },
- {
-  "vi": "Số hiệu",
-  "en": ""
- },
- {
-  "vi": "Phố Có Chuyện · trò chơi mô phỏng nghề",
   "en": ""
  }
 ]

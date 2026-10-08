@@ -1,5 +1,169 @@
 [
  {
+  "vi": "Góp ý viết dài tới 10.000 chữ",
+  "en": ""
+ },
+ {
+  "vi": "Sửa lỗi: tiệm hoa trên điện thoại chọn hoa được, giúp việc, chùa, giáo viên, giao hàng, tiệm quần áo",
+  "en": ""
+ },
+ {
+  "vi": "Thêm 45 món mới cho avatar: tóc, váy đầm, áo quần, giày, phụ kiện",
+  "en": ""
+ },
+ {
+  "vi": "Cửa hàng điện thoại cạnh Gara: mua máy, khoe trên tay, khung selfie",
+  "en": ""
+ },
+ {
+  "vi": "Bầu cua lăn xúc xắc ngẫu nhiên thật",
+  "en": ""
+ },
+ {
+  "vi": "Thăng tiến rõ ràng hơn, cấp hàm Phó Tổng Giám đốc mới",
+  "en": ""
+ },
+ {
+  "vi": "Giao diện quen thuộc đã trở lại: bản đồ phố và từng tiệm như trước",
+  "en": ""
+ },
+ {
+  "vi": "Quầy có nhân viên bán lãi hơn 50%",
+  "en": ""
+ },
+ {
+  "vi": "Cập nhật toàn bộ UI UX",
+  "en": ""
+ },
+ {
+  "vi": "Thêm Top tài phú trên Bảng xếp hạng",
+  "en": ""
+ },
+ {
+  "vi": "thay đổi cơ cấu đầu tư: giá vàng/coin sẽ biến động theo thời gian thực: quy đổi 1h đời thực = 1 ngày game",
+  "en": ""
+ },
+ {
+  "vi": "tăng tốc độ xử lý, giảm lag",
+  "en": ""
+ },
+ {
+  "vi": "tăng cơ hội kiếm tiền khi đầu tư quầy",
+  "en": ""
+ },
+ {
+  "vi": "cân bằng game",
+  "en": ""
+ },
+ {
+  "vi": "Tặng xu chơi hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Tăng tỷ lệ thắng khi chơi hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Tăng tỷ lệ lãi khi mở tiệm riêng",
+  "en": ""
+ },
+ {
+  "vi": "Tối ưu tải chỗ làm và cập nhật đơn dịch vụ, giảm xử lý nền để thao tác chơi nhẹ hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng Khách ghé gọn lại, không che nút Làm tiếp hay Hoàn thành. Trên điện thoại, khách và công việc nằm ở hai hàng riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách bạn bè gọn hơn: nút nhắn tin và ghé chỗ làm nhỏ đều nhau, nằm cạnh tên bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy riêng mở không giới hạn, menu thêm nhiều món và tự đặt giá. Giá bán ảnh hưởng lượng khách, tiền lãi và đánh giá.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên tự động ở Quầy riêng và Sổ tiệm làm cả khi bạn offline, đến khi hết hàng hoặc quỹ lương. Không thuê thì tự làm!",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi nghề có thiết bị giúp làm nhanh hơn; giao hàng cũng có đồ tăng tốc. Mở mục Làm nhanh hơn để chọn nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Ghé chỗ làm của bạn bè, làm khách và đặt dịch vụ. Xong đơn mới đánh giá; chủ tiệm có thể trả lời nhận xét của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn ghé nhà hoặc ở chung lâu dài, không cần kết hôn. Bạn đã nhận lời ở chung có thể vào khi chủ offline.",
+  "en": ""
+ },
+ {
+  "vi": "Cùng thấy nhau và đồ trang trí trong nhà. Gửi ôm, hôn, thả tim; người kia chọn Đáp lại, Ngại ngùng hay Giận dỗi!",
+  "en": ""
+ },
+ {
+  "vi": "Nhà & Gia đình, Mời về ở và Con chung dễ tìm hơn; lời mời cần trả lời nằm ngay đầu trang.",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng handmade có gấu bông: tự đo, cắt, may, nhồi bông rồi gắn mặt và nơ. Làm lại từng bước ngay trên bàn thủ công.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một tin nhắn rồi bấm Trả lời để trích đúng tin. Đổi tên nhân vật cũng cập nhật tên trong bạn bè và chat.",
+  "en": ""
+ },
+ {
+  "vi": "Shop thú cưng chia cá vào từng bể riêng, kiểm tra sức chứa và loài phù hợp; không còn gom nhiều loại cá vào một bể.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa lỗi mở lại máy cà phê đang pha ở bản lưu cũ. Công việc đang làm được giữ để bạn tiếp tục.",
+  "en": ""
+ },
+ {
+  "vi": "Vợ chồng có thể cùng đón con và chăm bé: mở Hôn nhân để gửi lời mời, người kia đồng ý rồi cùng bắt đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Về ở chung có lời mời và xác nhận; dùng đồ trong nhà chung, vẫn giữ nhà riêng và tiền cọc thuê được hoàn đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ giới hạn 60 món nội thất! TV và sofa có hướng trước/sau để bạn sắp nhà theo ý mình.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển khoản bạn bè và rút quỹ chung không còn hạn mức ngày; vẫn cần đủ số dư.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa chat riêng: tin mới không còn bị mất khỏi màn hình khi mở phòng, tải tin cũ hoặc kết nối lại.",
+  "en": ""
+ },
+ {
+  "vi": "Máy cà phê có nhịp 1×/2×/4×; nhập áo chọn đúng size, đổi nghề dễ tìm hơn và bảng trên điện thoại dễ cuộn hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Rời Hãng bay khi đang làm dở: hộp “Bỏ dở việc” hiện lại đủ hai nút Vẫn đi / Ở lại làm nốt, dễ bấm như cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Quà cả phố: mỗi người chơi nhận 100 xu, vào game là thấy thiệp quà nha! Cảm ơn cả nhà đã chơi cùng phố.",
+  "en": ""
+ },
+ {
+  "vi": "Ai từng bị trừ phí “Nơi làm khác” được hoàn lại toàn bộ vào ví, xem dòng Hoàn phí trong sổ ví nha!",
+  "en": ""
+ },
+ {
+  "vi": "Tự chạy giao đơn online ở quầy: nút chỉ đúng hướng trên bản đồ, đường đi xuống đã có nút ⬇️ Đi xuống.",
+  "en": ""
+ },
+ {
   "vi": "Đổi nghề rồi thì nơi làm cũ không trừ tiền nữa (hết dòng “Nơi làm khác”); mở lại nơi tạm đóng cũng miễn phí.",
   "en": ""
  },
@@ -1345,450 +1509,6 @@
  },
  {
   "vi": "Đơn riêng: phở chín mang về",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: cơm trứng rau mang về",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: lau kính một phòng",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: chuẩn bị một phần ăn đặt trước",
-  "en": ""
- },
- {
-  "vi": "Lượt riêng: hỗ trợ một buổi trông trẻ",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: bao bìa, dán nhãn một chồng sách cho trường",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: hỗ trợ kiểm tra kế hoạch bay",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: chuẩn bị một lượt phục vụ",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: chăm sóc người bệnh theo yêu cầu của khoa",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ riêng: kiểm và lưu hồ sơ nhân sự",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: chuẩn bị lịch và hồ sơ cuộc họp",
-  "en": ""
- },
- {
-  "vi": "Yêu cầu riêng: kiểm tra và hỗ trợ thiết bị",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: trực gác thay một ca ngắn",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: trực đèn thay một ca ngắn",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: trực tổng đài thay một ca ngắn",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: trực cứu hộ cho một lớp bơi",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: hỗ trợ tiếp dân một buổi",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: một bản PINK STATIC Pink ver",
-  "en": ""
- },
- {
-  "vi": "Nhân viên đang xử lý đơn riêng.",
-  "en": ""
- },
- {
-  "vi": "Nơi làm việc đã đóng ca.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã tạm dừng đơn của nhân viên.",
-  "en": ""
- },
- {
-  "vi": "Chưa có nhân viên trong ca.",
-  "en": ""
- },
- {
-  "vi": "Nhân viên đang nghỉ hoặc chờ xử lý sự cố.",
-  "en": ""
- },
- {
-  "vi": "Hết nguyên liệu cho đơn riêng; nhập hàng để tiếp tục.",
-  "en": ""
- },
- {
-  "vi": "Quỹ nơi làm việc không đủ trả lương và vật tư trước đơn tiếp theo.",
-  "en": ""
- },
- {
-  "vi": "Sổ thu chi đã đạt giới hạn lưu trữ.",
-  "en": ""
- },
- {
-  "vi": "Món này nhân viên không bán.",
-  "en": ""
- },
- {
-  "vi": "Đã giữ quá nhiều món.",
-  "en": ""
- },
- {
-  "vi": "Lương đơn riêng",
-  "en": ""
- },
- {
-  "vi": "Vật tư đơn riêng",
-  "en": ""
- },
- {
-  "vi": "Thưởng 40% lợi nhuận",
-  "en": ""
- },
- {
-  "vi": "đơn riêng",
-  "en": ""
- },
- {
-  "vi": "Mỗi đơn trả 1/4 lương ca, làm tròn lên; vật tư trừ quỹ nơi làm việc.",
-  "en": ""
- },
- {
-  "vi": "Nhân viên đang phục vụ khách người chơi.",
-  "en": ""
- },
- {
-  "vi": "quần áo còn size bán được",
-  "en": ""
- },
- {
-  "vi": "cho đơn riêng; nhập hàng để đội làm tiếp.",
-  "en": ""
- },
- {
-  "vi": "cho ca của bạn.",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu đơn riêng của nhân viên không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Không có phần dữ liệu này.",
-  "en": ""
- },
- {
-  "vi": "Chờ một chút rồi cập nhật giá nhé.",
-  "en": ""
- },
- {
-  "vi": "Tham số không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Khoảng ngày chỉ nhận 7, 30 hoặc 90.",
-  "en": ""
- },
- {
-  "vi": "Máy chủ đang bận, thử lại sau ít giây nhé.",
-  "en": ""
- },
- {
-  "vi": "Không có mục thống kê này.",
-  "en": ""
- },
- {
-  "vi": "Chỉ mục Giữ chân và Tổng quan đầu tư có bản CSV.",
-  "en": ""
- },
- {
-  "vi": "Số liệu đang được tính, thử lại sau ít giây nhé.",
-  "en": ""
- },
- {
-  "vi": "Không có phần báo cáo này.",
-  "en": ""
- },
- {
-  "vi": "Máy chủ đang bận, thử lại sau giây lát.",
-  "en": ""
- },
- {
-  "vi": "Thử quá nhiều lần. Chờ một phút rồi thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Từ từ thôi, hội chợ còn dài mà!",
-  "en": ""
- },
- {
-  "vi": "Từ từ thôi, mỗi phút trả giá vài lần thôi nhé!",
-  "en": ""
- },
- {
-  "vi": "Từ từ thôi, bày trí chậm lại chút nhé!",
-  "en": ""
- },
- {
-  "vi": "Trò chơi vừa có bản mới. Tải lại trang để chơi tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra nhiều bài quá, nghỉ chút nhé.",
-  "en": ""
- },
- {
-  "vi": "Không nhận từ website khác.",
-  "en": ""
- },
- {
-  "vi": "Chưa có phiên chơi.",
-  "en": ""
- },
- {
-  "vi": "Đã dừng. Tiến trình đã được lưu.",
-  "en": ""
- },
- {
-  "vi": "Nhấn Ctrl+C để dừng.",
-  "en": ""
- },
- {
-  "vi": "Máy chủ phản hồi quá lâu. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Mất kết nối máy chủ. Thử lại sau nhé.",
-  "en": ""
- },
- {
-  "vi": "Thô tục",
-  "en": ""
- },
- {
-  "vi": "Lộ thông tin",
-  "en": ""
- },
- {
-  "vi": "🛟 An toàn / trẻ vị thành niên",
-  "en": ""
- },
- {
-  "vi": "Nhắn riêng",
-  "en": ""
- },
- {
-  "vi": "10 phút",
-  "en": ""
- },
- {
-  "vi": "1 giờ",
-  "en": ""
- },
- {
-  "vi": "24 giờ",
-  "en": ""
- },
- {
-  "vi": "1 tin/phút · 1 giờ",
-  "en": ""
- },
- {
-  "vi": "1 tin/2 phút · 24 giờ",
-  "en": ""
- },
- {
-  "vi": "30 giây/tin · 1 giờ",
-  "en": ""
- },
- {
-  "vi": "1 phút/tin · 1 giờ",
-  "en": ""
- },
- {
-  "vi": "1 phút/tin · 3 giờ",
-  "en": ""
- },
- {
-  "vi": "tên chat",
-  "en": ""
- },
- {
-  "vi": "tên Phố nghề",
-  "en": ""
- },
- {
-  "vi": "tên nhân vật",
-  "en": ""
- },
- {
-  "vi": "Tìm chữ, tên hoặc mã người chơi",
-  "en": ""
- },
- {
-  "vi": "Tìm tin nhắn",
-  "en": ""
- },
- {
-  "vi": "Tìm",
-  "en": ""
- },
- {
-  "vi": "Bỏ lọc",
-  "en": ""
- },
- {
-  "vi": "Tin bị bộ lọc che (•••) có thêm dòng",
-  "en": ""
- },
- {
-  "vi": "Gốc",
-  "en": ""
- },
- {
-  "vi": ": chữ người chơi gõ, chỉ quản trị thấy. Tin trước bản 1.2.2 chỉ còn bản đã che.",
-  "en": ""
- },
- {
-  "vi": "Tải cũ hơn",
-  "en": ""
- },
- {
-  "vi": "đã xem đến tin #",
-  "en": ""
- },
- {
-  "vi": "· còn tin cũ hơn",
-  "en": ""
- },
- {
-  "vi": "Báo cáo, ẩn tin và khóa chat",
-  "en": ""
- },
- {
-  "vi": "Không có tin nào bị báo cáo. 👌",
-  "en": ""
- },
- {
-  "vi": "Mở khóa",
-  "en": ""
- },
- {
-  "vi": "bởi @",
-  "en": ""
- },
- {
-  "vi": "Không ai đang bị khóa chat.",
-  "en": ""
- },
- {
-  "vi": "Bình thường (mặc định của máy chủ).",
-  "en": ""
- },
- {
-  "vi": "Tắt chế độ chậm",
-  "en": ""
- },
- {
-  "vi": "Bỏ chậm",
-  "en": ""
- },
- {
-  "vi": "Không ai đang bị cho chậm. Bấm 🐢 ở một tin nhắn để làm chậm người gửi.",
-  "en": ""
- },
- {
-  "vi": "Không có tên nào vi phạm bộ lọc tên. 👌",
-  "en": ""
- },
- {
-  "vi": "Không tự đổi tên ai. Bấm \"Đổi tên an toàn\" để đổi tên vi phạm thành tên gợi ý; tiến trình và tiền của người chơi giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "Đổi tên an toàn →",
-  "en": ""
- },
- {
-  "vi": "Cho chậm",
-  "en": ""
- },
- {
-  "vi": "Đã ẩn",
-  "en": ""
- },
- {
-  "vi": "Tự ẩn",
-  "en": ""
- },
- {
-  "vi": "Xem tin của người này",
-  "en": ""
- },
- {
-  "vi": "Xem cả cuộc trò chuyện",
-  "en": ""
- },
- {
-  "vi": "📢 Quản trị",
-  "en": ""
- },
- {
-  "vi": "báo cáo",
-  "en": ""
- },
- {
-  "vi": "(đã thu hồi)",
-  "en": ""
- },
- {
-  "vi": "Hiện lại",
-  "en": ""
- },
- {
-  "vi": "Ẩn",
-  "en": ""
- },
- {
-  "vi": "Báo cáo an toàn / trẻ vị thành niên: xem kỹ ngữ cảnh (hẹn gặp, hỏi địa chỉ, tuổi, trường, số điện thoại…). Khóa chat hoặc cho chậm nếu cần; hệ thống không tự cấm ai.",
-  "en": ""
- },
- {
-  "vi": "Ẩn tin này",
-  "en": ""
- },
- {
-  "vi": "Giữ (không vi phạm)",
-  "en": ""
- },
- {
-  "vi": "Đã ẩn tin nhắn.",
-  "en": ""
- },
- {
-  "vi": "Đã giữ tin nhắn.",
   "en": ""
  }
 ]

@@ -724,6 +724,14 @@
   "en": ""
  },
  {
+  "vi": "Kệ không còn hộp quá hạn, thu hồi hay hỏng lạnh nào.",
+  "en": ""
+ },
+ {
+  "vi": "Các hộp cần rút đang nằm trong khay một phiếu. Trả về kệ trước.",
+  "en": ""
+ },
+ {
   "vi": "kiện thiếu món",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Căn nhà đã thay đổi. Nhờ người ấy gửi lời mời mới.",
-  "en": ""
- },
- {
-  "vi": "🏡 Người ấy đã",
-  "en": ""
- },
- {
-  "vi": "đồng ý",
   "en": ""
  }
 ]

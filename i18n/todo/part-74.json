@@ -1,5 +1,41 @@
 [
  {
+  "vi": "⏰ Nộp trước hạn: +2 tin tưởng, tin tưởng từ 75 thêm 5 xu. Không sai bước được 32 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Ghép nhầm cặp hoặc gắn nhầm nhãn",
+  "en": ""
+ },
+ {
+  "vi": "Mất 20 phút (thử việc 13 phút), mất 1 tin tưởng, thưởng bàn đối chiếu bị trừ 4 xu mỗi lỗi (thử việc 2 xu).",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời sai một bước hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Mất thêm 15 phút (thử việc 8 phút), thưởng giảm dần. Nhiều lỗi vẫn còn 14 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Để công ty con nộp gói báo cáo trễ mà không giục",
+  "en": ""
+ },
+ {
+  "vi": "Cuối quý mất 2 tin tưởng mỗi gói trễ không được giục.",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời câu hỏi kiểm toán trễ hạn",
+  "en": ""
+ },
+ {
+  "vi": "Mất 3 tin tưởng với chị Mai Anh.",
+  "en": ""
+ },
+ {
   "vi": "Sếp kiểm lại mọi hồ sơ, mỗi lần tốn thêm 20 phút.",
   "en": ""
  },
@@ -1669,26 +1705,6 @@
  },
  {
   "vi": "Nhìn, hỏi từng người rồi chọn: mời vào, vào sau khi sửa, chỉ khu cạn có người lớn, hay hôm nay không xuống nước. Xong bấm [[XONG LƯỢT CỔNG]].",
-  "en": ""
- },
- {
-  "vi": "Lớp bơi trẻ em",
-  "en": ""
- },
- {
-  "vi": "[[Xem sổ đón phụ huynh]], cho từng bé [[Bơi thử ở làn sát thành]], phát vòng tay theo bài bơi thử, dạy theo giáo án, [[Điểm danh lúc lên bờ]], rồi [[TAN LỚP]].",
-  "en": ""
- },
- {
-  "vi": "[[Hỏi chuyện gì xảy ra]], [[Đeo găng tay]] trước khi chạm, chọn cách sơ cứu an toàn. Không đưa thuốc của mình.",
-  "en": ""
- },
- {
-  "vi": "Có sấm là cho tất cả lên bờ vào sảnh có mái, đếm người, [[Chờ, xem trời]]. Ba mươi phút sau tiếng sấm cuối mới [[MỞ LẠI HỒ]].",
-  "en": ""
- },
- {
-  "vi": "🧪 Mở hồ: kiểm đủ tám món, ghi số que thử vào sổ nước, ngoài bảng mẫu thì chưa mở.",
   "en": ""
  }
 ]

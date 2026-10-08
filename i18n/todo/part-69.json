@@ -1,5 +1,13 @@
 [
  {
+  "vi": "🗺️ Ở 🗺️ Lộ trình (tự mở khi tới bước lên lộ trình), chạm các điểm dừng theo thứ tự, bấm [[Chốt lộ trình]]. Mỗi chặng chọn [[Đường chính tới]] hoặc [[Hẻm tắt]].",
+  "en": ""
+ },
+ {
+  "vi": "🛵 [[Tự lái]]: theo chỉ dẫn rẽ, giữ phanh trong ô vàng trước người vẫy tay. Chạm map để xem đường; xe sẽ dừng. Xem nút Cách lái hoặc chọn [[Đi nhanh]].",
+  "en": ""
+ },
+ {
   "vi": "⚖️ Ở điểm lấy: kiện hàng thì [[Cân & kiểm hàng]]; đồ ăn thì [[Chờ quán 5 phút]] rồi [[So túi với bill]].",
   "en": ""
  },
@@ -1589,18 +1597,6 @@
  },
  {
   "vi": "⚡ Hạt Nắng 4 chuyến/ngày (đặt trước 09:00, 12:00, 15:00, 18:00). Hỏa tốc Mây Xanh 15–30 phút nhưng đắt nhất.",
-  "en": ""
- },
- {
-  "vi": "🔢 Thùng tới: [[Mở thùng & xếp lên kệ]], đếm rồi bấm [[Nhận vào kệ]]; giao thiếu thì [[Khiếu nại phần thiếu]].",
-  "en": ""
- },
- {
-  "vi": "⚠️ Hết túi nhặt phân thì không dắt chó ra đường được; hết hạt tiệm thì không cho bé lưu trú ăn được.",
-  "en": ""
- },
- {
-  "vi": "🧭 Hết túi nhặt phân hay khăn giữa việc: gợi ý bước tiếp hiện nút nhập hàng; hàng đang về thì nút báo còn bao lâu.",
   "en": ""
  }
 ]

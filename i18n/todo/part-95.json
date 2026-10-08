@@ -1,5 +1,153 @@
 [
  {
+  "vi": "đá cầu",
+  "en": ""
+ },
+ {
+  "vi": "khoe thêm một chiến tích",
+  "en": ""
+ },
+ {
+  "vi": "lè lưỡi rồi chạy",
+  "en": ""
+ },
+ {
+  "vi": "rủ chơi một trò cho vui",
+  "en": ""
+ },
+ {
+  "vi": "Đố biết con gì đi bằng đầu? Là con ốc vít đó, hí hí!",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay con leo lên được cây ổi sau nhà, mà mẹ chưa biết đâu nha.",
+  "en": ""
+ },
+ {
+  "vi": "Con chạy nhanh nhất lớp đó, nhanh hơn cả con chó nhà bên!",
+  "en": ""
+ },
+ {
+  "vi": "{Toi} chạy nhanh nhất lớp đó, nhanh hơn cả con chó nhà bên!",
+  "en": ""
+ },
+ {
+  "vi": "Người phỏng vấn ấm áp",
+  "en": ""
+ },
+ {
+  "vi": "chuyên nghiệp nhưng thân thiện, khích lệ ứng viên nói thật",
+  "en": ""
+ },
+ {
+  "vi": "khen một ý cụ thể rồi hỏi sâu hơn",
+  "en": ""
+ },
+ {
+  "vi": "giữ đúng khuôn khổ buổi phỏng vấn",
+  "en": ""
+ },
+ {
+  "vi": "không hứa kết quả",
+  "en": ""
+ },
+ {
+  "vi": "Cứ bình tĩnh nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Kể thêm đi.",
+  "en": ""
+ },
+ {
+  "vi": "Ý đó hay đấy.",
+  "en": ""
+ },
+ {
+  "vi": "kinh nghiệm thật của ứng viên",
+  "en": ""
+ },
+ {
+  "vi": "cách xử lý tình huống",
+  "en": ""
+ },
+ {
+  "vi": "ghi nhận, hỏi tiếp nhẹ nhàng",
+  "en": ""
+ },
+ {
+  "vi": "bình tĩnh nhắc giữ lịch sự",
+  "en": ""
+ },
+ {
+  "vi": "trấn an, cho thêm thời gian suy nghĩ",
+  "en": ""
+ },
+ {
+  "vi": "Người phỏng vấn nghiêm khắc",
+  "en": ""
+ },
+ {
+  "vi": "chuyên nghiệp, đòi câu trả lời cụ thể, không khen suông",
+  "en": ""
+ },
+ {
+  "vi": "hỏi vặn chi tiết",
+  "en": ""
+ },
+ {
+  "vi": "câu ngắn, rõ ràng",
+  "en": ""
+ },
+ {
+  "vi": "Cụ thể hơn đi.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Câu tiếp theo.",
+  "en": ""
+ },
+ {
+  "vi": "trách nhiệm",
+  "en": ""
+ },
+ {
+  "vi": "sai sót và cách sửa",
+  "en": ""
+ },
+ {
+  "vi": "gật đầu, chuyển câu",
+  "en": ""
+ },
+ {
+  "vi": "nhắc thẳng thái độ cần đúng mực",
+  "en": ""
+ },
+ {
+  "vi": "cho thêm một cơ hội trả lời lại",
+  "en": ""
+ },
+ {
+  "vi": "Cụ thể hơn đi. {Ban} đã làm việc đó ở đâu, kết quả thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Câu trả lời chưa đủ. Nếu sai sót xảy ra, ai chịu trách nhiệm?",
+  "en": ""
+ },
+ {
+  "vi": "Được. Câu tiếp theo.",
+  "en": ""
+ },
+ {
+  "vi": "Bắt đầu nhé.",
+  "en": ""
+ },
+ {
   "vi": "Chào. Mời ngồi.",
   "en": ""
  },
@@ -1468,6 +1616,22 @@
   "en": ""
  },
  {
+  "vi": "Pháo hoa giờ bắn thật cho cả server cùng xem, kèm thông báo tên và lời chúc. Tìm ở Khu phố → Bắn pháo hoa.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà thuốc: luôn hiện Hôm nay là ngày mấy ở quầy, hạn dùng ghi rõ còn mấy ngày, Sổ lô có nút Rút hết hộp quá hạn",
+  "en": ""
+ },
+ {
+  "vi": "Bảo hiểm có thêm Gói trọn 100%: hỏng xe, sửa nhà, đi khám được bảo hiểm trả hết, đổi gói lúc nào cũng được",
+  "en": ""
+ },
+ {
+  "vi": "Mới: Bảo hiểm điện nước lo máy bơm, bình nóng lạnh, tủ lạnh, chập điện, vỡ ống, chọn gói 80% hoặc 100%",
+  "en": ""
+ },
+ {
   "vi": "Thi chứng chỉ giờ ở ngay bên ngoài: nút 🎓 Chứng chỉ trên phố, trang hành trình và thẻ nơi làm",
   "en": ""
  },
@@ -1633,170 +1797,6 @@
  },
  {
   "vi": "Nhân viên tiệm bán nhanh gấp 1,6 lần ngày đầu",
-  "en": ""
- },
- {
-  "vi": "Góp ý viết dài tới 10.000 chữ",
-  "en": ""
- },
- {
-  "vi": "Sửa lỗi: tiệm hoa trên điện thoại chọn hoa được, giúp việc, chùa, giáo viên, giao hàng, tiệm quần áo",
-  "en": ""
- },
- {
-  "vi": "Thêm 45 món mới cho avatar: tóc, váy đầm, áo quần, giày, phụ kiện",
-  "en": ""
- },
- {
-  "vi": "Cửa hàng điện thoại cạnh Gara: mua máy, khoe trên tay, khung selfie",
-  "en": ""
- },
- {
-  "vi": "Bầu cua lăn xúc xắc ngẫu nhiên thật",
-  "en": ""
- },
- {
-  "vi": "Thăng tiến rõ ràng hơn, cấp hàm Phó Tổng Giám đốc mới",
-  "en": ""
- },
- {
-  "vi": "Giao diện quen thuộc đã trở lại: bản đồ phố và từng tiệm như trước",
-  "en": ""
- },
- {
-  "vi": "Quầy có nhân viên bán lãi hơn 50%",
-  "en": ""
- },
- {
-  "vi": "Cập nhật toàn bộ UI UX",
-  "en": ""
- },
- {
-  "vi": "Thêm Top tài phú trên Bảng xếp hạng",
-  "en": ""
- },
- {
-  "vi": "thay đổi cơ cấu đầu tư: giá vàng/coin sẽ biến động theo thời gian thực: quy đổi 1h đời thực = 1 ngày game",
-  "en": ""
- },
- {
-  "vi": "tăng tốc độ xử lý, giảm lag",
-  "en": ""
- },
- {
-  "vi": "tăng cơ hội kiếm tiền khi đầu tư quầy",
-  "en": ""
- },
- {
-  "vi": "cân bằng game",
-  "en": ""
- },
- {
-  "vi": "Tặng xu chơi hội chợ",
-  "en": ""
- },
- {
-  "vi": "Tăng tỷ lệ thắng khi chơi hội chợ",
-  "en": ""
- },
- {
-  "vi": "Tăng tỷ lệ lãi khi mở tiệm riêng",
-  "en": ""
- },
- {
-  "vi": "Tối ưu tải chỗ làm và cập nhật đơn dịch vụ, giảm xử lý nền để thao tác chơi nhẹ hơn.",
-  "en": ""
- },
- {
-  "vi": "Bảng Khách ghé gọn lại, không che nút Làm tiếp hay Hoàn thành. Trên điện thoại, khách và công việc nằm ở hai hàng riêng.",
-  "en": ""
- },
- {
-  "vi": "Danh sách bạn bè gọn hơn: nút nhắn tin và ghé chỗ làm nhỏ đều nhau, nằm cạnh tên bạn.",
-  "en": ""
- },
- {
-  "vi": "Quầy riêng mở không giới hạn, menu thêm nhiều món và tự đặt giá. Giá bán ảnh hưởng lượng khách, tiền lãi và đánh giá.",
-  "en": ""
- },
- {
-  "vi": "Nhân viên tự động ở Quầy riêng và Sổ tiệm làm cả khi bạn offline, đến khi hết hàng hoặc quỹ lương. Không thuê thì tự làm!",
-  "en": ""
- },
- {
-  "vi": "Mỗi nghề có thiết bị giúp làm nhanh hơn; giao hàng cũng có đồ tăng tốc. Mở mục Làm nhanh hơn để chọn nhé!",
-  "en": ""
- },
- {
-  "vi": "Ghé chỗ làm của bạn bè, làm khách và đặt dịch vụ. Xong đơn mới đánh giá; chủ tiệm có thể trả lời nhận xét của bạn.",
-  "en": ""
- },
- {
-  "vi": "Mời bạn ghé nhà hoặc ở chung lâu dài, không cần kết hôn. Bạn đã nhận lời ở chung có thể vào khi chủ offline.",
-  "en": ""
- },
- {
-  "vi": "Cùng thấy nhau và đồ trang trí trong nhà. Gửi ôm, hôn, thả tim; người kia chọn Đáp lại, Ngại ngùng hay Giận dỗi!",
-  "en": ""
- },
- {
-  "vi": "Nhà & Gia đình, Mời về ở và Con chung dễ tìm hơn; lời mời cần trả lời nằm ngay đầu trang.",
-  "en": ""
- },
- {
-  "vi": "Xưởng handmade có gấu bông: tự đo, cắt, may, nhồi bông rồi gắn mặt và nơ. Làm lại từng bước ngay trên bàn thủ công.",
-  "en": ""
- },
- {
-  "vi": "Chọn một tin nhắn rồi bấm Trả lời để trích đúng tin. Đổi tên nhân vật cũng cập nhật tên trong bạn bè và chat.",
-  "en": ""
- },
- {
-  "vi": "Shop thú cưng chia cá vào từng bể riêng, kiểm tra sức chứa và loài phù hợp; không còn gom nhiều loại cá vào một bể.",
-  "en": ""
- },
- {
-  "vi": "Sửa lỗi mở lại máy cà phê đang pha ở bản lưu cũ. Công việc đang làm được giữ để bạn tiếp tục.",
-  "en": ""
- },
- {
-  "vi": "Vợ chồng có thể cùng đón con và chăm bé: mở Hôn nhân để gửi lời mời, người kia đồng ý rồi cùng bắt đầu.",
-  "en": ""
- },
- {
-  "vi": "Về ở chung có lời mời và xác nhận; dùng đồ trong nhà chung, vẫn giữ nhà riêng và tiền cọc thuê được hoàn đúng.",
-  "en": ""
- },
- {
-  "vi": "Bỏ giới hạn 60 món nội thất! TV và sofa có hướng trước/sau để bạn sắp nhà theo ý mình.",
-  "en": ""
- },
- {
-  "vi": "Chuyển khoản bạn bè và rút quỹ chung không còn hạn mức ngày; vẫn cần đủ số dư.",
-  "en": ""
- },
- {
-  "vi": "Sửa chat riêng: tin mới không còn bị mất khỏi màn hình khi mở phòng, tải tin cũ hoặc kết nối lại.",
-  "en": ""
- },
- {
-  "vi": "Máy cà phê có nhịp 1×/2×/4×; nhập áo chọn đúng size, đổi nghề dễ tìm hơn và bảng trên điện thoại dễ cuộn hơn.",
-  "en": ""
- },
- {
-  "vi": "Rời Hãng bay khi đang làm dở: hộp “Bỏ dở việc” hiện lại đủ hai nút Vẫn đi / Ở lại làm nốt, dễ bấm như cũ.",
-  "en": ""
- },
- {
-  "vi": "Quà cả phố: mỗi người chơi nhận 100 xu, vào game là thấy thiệp quà nha! Cảm ơn cả nhà đã chơi cùng phố.",
-  "en": ""
- },
- {
-  "vi": "Ai từng bị trừ phí “Nơi làm khác” được hoàn lại toàn bộ vào ví, xem dòng Hoàn phí trong sổ ví nha!",
-  "en": ""
- },
- {
-  "vi": "Tự chạy giao đơn online ở quầy: nút chỉ đúng hướng trên bản đồ, đường đi xuống đã có nút ⬇️ Đi xuống.",
   "en": ""
  }
 ]

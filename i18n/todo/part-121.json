@@ -1,5 +1,145 @@
 [
  {
+  "vi": "Khay $1 còn đầy, bán bớt rồi bày thêm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kho hết $1. Nhập thêm ở kho nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Bày khay $2 lên tủ kính: $3 phần.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nước mắm còn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍚 Mở quán! $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khay giữ ấm chỉ để được $1 miếng, bán bớt đã.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kho còn $1 miếng sườn ướp. Nhập thêm ở kho nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍖 Đặt $1 miếng sườn lên vỉ, mỡ chảy xèo xèo. Canh lửa rồi trở mặt nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔄 Trở mặt sườn sau $1 giây: $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chưa trở mặt: một mặt nướng $1 giây, mặt kia còn sống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hai mặt $1 và $2 giây.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍖 Gắp $1 miếng sườn ra khay giữ ấm: $2. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Miếng sườn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🗑️ Bỏ miếng sườn $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Lấy $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nồi $1 hết cơm. Nấu nồi mới nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nồi $1 chưa chín, chờ chừng $2 giây nữa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚠️ Cơm $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Xới một vá $2: dĩa có $3 vá ($4).$5",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚠️ Miếng này $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khay $1 hết rồi. Bày thêm khay từ kho nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Gắp $2 lên $3.$4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍳 Đập trứng vào chảo mỡ nóng, $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🫙 Múc nước mắm ra $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🫘 Lấy nước tương $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🥣 Múc $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi gọi $1 mà dĩa không đúng món.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nước mắm $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🍚 Đưa $1 $2 cho $3 · $4 xu. Khách đưa $5 xu: thối lại cho đúng.",
   "en": "",
   "pattern": true
@@ -2106,146 +2246,6 @@
  },
  {
   "vi": "Lấy khăn lau bồn cầu đi lau $1! Mất vệ sinh quá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🟥 Khăn đỏ là khăn bồn cầu: lau $1 bằng khăn này là mang bẩn đi khắp nhà.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🤔 $1 không hợp với $2 ($3). Đổi dụng cụ khác.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🤔 $1 không làm sạch $2 được. Đổi chai khác.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 $3… còn $4 lượt nữa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✨ $1 sạch bong.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhưng bụi rơi xuống $1 vừa lau: phải lau lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 ở $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Cất $2 vào khay nhỏ trên kệ. Lát báo $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Bế Mướp sang phòng ngủ, khép cửa. Mướp ngáp một cái rồi ngủ tiếp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Nhấc $2 ra, đặt lên khăn mềm ở góc an toàn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đặt $2 lại đúng chỗ cũ, xoay đúng mặt như lúc đầu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tôi dặn lau kỹ $1 mà vẫn còn bẩn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "và $1 chỗ nữa",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 vẫn bẩn$3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 để dưới góc, không đặt lại chỗ cũ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚪 $1 đi một vòng:",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💍 Đưa $1 khay đồ: $2. “Ôi, cảm ơn em!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Sạch quá, lần sau em lại tới nhé!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💸 Ting ting: nhận $1 xu tiền công",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧹 Dọn $1 nhà, $2 phòng, $3 lượt lau.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⭐ $1/$2 nhà khách khen sạch, không chê chỗ nào.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔁 $1 chỗ phải lau lại vì bụi rơi từ trên xuống.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trên xe: $1 lần lau.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trên xe: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "còn $1% kiên nhẫn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cô Mai dặn: giặt khăn hôm qua, châm các chai sắp cạn rồi lên đường. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: dọn $2. $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hàng chờ $1 khách tan ca. Mỗi người mua vài món, trả tiền mặt: quét từng món, bấm “Tính tiền”, đếm tiền thối vào khay rồi giao hàng. Ai mua bia thì kiểm tuổi. Để khách chờ quá lâu là khách bỏ về.",
   "en": "",
   "pattern": true
  }

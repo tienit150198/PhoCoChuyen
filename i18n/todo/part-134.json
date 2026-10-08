@@ -1,5 +1,85 @@
 [
  {
+  "vi": "tinh thần $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "−$1 trong tài khoản",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "−$1 tiền mặt",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛡️ Bảo hiểm trả $1%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chọn trong $1 ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Không chọn sau $1 ngày: tự chọn cách nhẹ nhất.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Có hiệu lực sau $1 ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gói 100% có hiệu lực sau $1 ngày, giờ vẫn trả $2%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tài sản từ $1: khả năng trộm/hack gấp $2 lần mức cơ bản, trước đồ bảo vệ. Thiệt hại trộm/hack tính theo tài sản, đồ bảo vệ và tiền đang có.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚔 Đã trình báo $1 vụ hack. Kết quả gần nhất sau $2 ngày sống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tổng ví, tài khoản, tiết kiệm và vàng dưới $1 xu: không có chuyện gì.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trộm/hack mới: mức mất được chốt theo tổng tài sản khi báo trước, có giới hạn theo tháng và tiền thực có. Các sự cố khác: mỗi lần tối đa $1%, mỗi tháng tối đa $2% phần tài sản trên $3 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảo hiểm mới mua có hiệu lực sau $1 ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gói trọn 100%: giá gấp $1 gói thường, trả hết tiền sửa, tiền khám.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đổi gói lúc nào cũng được: giá mới tính từ hôm nay. Lên 100% thì sau $1 ngày mới trả đủ, trong lúc chờ vẫn trả 80%.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bị hack: mất $1% tài khoản thanh toán, tối đa $2 xu trước đồ bảo vệ và chịu giới hạn rủi ro chung.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Từ $1 tài sản: khả năng trộm/hack gấp $2 lần; trần trộm nhà/hack tăng theo $3% tài sản nếu cao hơn trần cơ bản.",
   "en": "",
   "pattern": true
@@ -26,6 +106,11 @@
  },
  {
   "vi": "Tiệm bán $1 · mua lại $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phí mới $1/tháng, tính từ hôm nay. Sau $2 ngày bảo hiểm trả 100%, trong lúc chờ vẫn trả 80%.",
   "en": "",
   "pattern": true
  },

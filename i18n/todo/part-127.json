@@ -2155,17 +2155,12 @@
   "pattern": true
  },
  {
-  "vi": "Trả $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", bảo hiểm trả $1%.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "$1 xu còn thiếu được miễn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "bảo hiểm trả $1%",
   "en": "",
   "pattern": true
  },
@@ -2190,6 +2185,36 @@
   "pattern": true
  },
  {
+  "vi": "Bảo hiểm trả $1%, bạn không mất xu nào.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", bảo hiểm trả $1%.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thợ sửa xong, điện nước chạy ngon lại.$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phòng trước: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thợ xử lý sớm, điện nước ổn rồi.$1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã gửi $1 xu vào ngân hàng. Kẻ gian có đến cũng về tay không.",
   "en": "",
   "pattern": true
@@ -2200,52 +2225,27 @@
   "pattern": true
  },
  {
-  "vi": "Trả $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Phòng trước: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đã mua $2: $3 xu/tháng, trả $4% từ ngày sống $5.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "Đã ngưng $1.",
   "en": "",
   "pattern": true
  },
  {
+  "vi": "$1 Đã mua $2 gói $3%: $4 xu/tháng, trả $5% từ ngày sống $6.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Đã lên gói trọn 100%: $2 xu/tháng từ hôm nay, trả 100% từ ngày sống $3 (trước đó vẫn trả $4%).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Đã về gói thường $2%: $3 xu/tháng từ hôm nay.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 Đã mua $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cần $1 xu để sửa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sửa xong, trả $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 hỏng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Uy tín $1$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hao hụt tính theo tài sản lúc phát sinh, $1",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,449 @@
 [
  {
+  "vi": "Ngày đời TB",
+  "en": ""
+ },
+ {
+  "vi": "Trung vị · p90",
+  "en": ""
+ },
+ {
+  "vi": "Chế độ câu chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Bật nhân vật AI",
+  "en": ""
+ },
+ {
+  "vi": "Bật nhạc",
+  "en": ""
+ },
+ {
+  "vi": "Chương đang ở",
+  "en": ""
+ },
+ {
+  "vi": "Cấp nghề cao nhất",
+  "en": ""
+ },
+ {
+  "vi": "Mất vì lừa đảo",
+  "en": ""
+ },
+ {
+  "vi": "Người bị lừa",
+  "en": ""
+ },
+ {
+  "vi": "Lượt sa bẫy",
+  "en": ""
+ },
+ {
+  "vi": "Số xu trong ví",
+  "en": ""
+ },
+ {
+  "vi": "Chưa lượt chơi nào có hai phần này.",
+  "en": ""
+ },
+ {
+  "vi": "Có “Chuyện đời”",
+  "en": ""
+ },
+ {
+  "vi": "Tinh thần TB",
+  "en": ""
+ },
+ {
+  "vi": "Lần đi chơi",
+  "en": ""
+ },
+ {
+  "vi": "Lần gặp lừa",
+  "en": ""
+ },
+ {
+  "vi": "Tin đồn",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện ấm · khó",
+  "en": ""
+ },
+ {
+  "vi": "Có Nhóm cư dân",
+  "en": ""
+ },
+ {
+  "vi": "Người đã đăng bài",
+  "en": ""
+ },
+ {
+  "vi": "Bài · trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Lượt thả cảm xúc",
+  "en": ""
+ },
+ {
+  "vi": "Người chơi theo giờ",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi người/ngày",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi lượt chơi",
+  "en": ""
+ },
+ {
+  "vi": "/ngày",
+  "en": ""
+ },
+ {
+  "vi": "Phút/người",
+  "en": ""
+ },
+ {
+  "vi": "Phút/lượt",
+  "en": ""
+ },
+ {
+  "vi": "Lượt/người",
+  "en": ""
+ },
+ {
+  "vi": "Người mới · ngày đầu",
+  "en": ""
+ },
+ {
+  "vi": "Số người",
+  "en": ""
+ },
+ {
+  "vi": "Phút TB",
+  "en": ""
+ },
+ {
+  "vi": "Phút mỗi người/ngày · 7 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Chạy liên tục",
+  "en": ""
+ },
+ {
+  "vi": "Dung lượng dữ liệu",
+  "en": ""
+ },
+ {
+  "vi": "cơ sở dữ liệu",
+  "en": ""
+ },
+ {
+  "vi": "Tổng số dòng",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản game",
+  "en": ""
+ },
+ {
+  "vi": "đã cấu hình",
+  "en": ""
+ },
+ {
+  "vi": "chưa cấu hình",
+  "en": ""
+ },
+ {
+  "vi": "Khởi động lúc",
+  "en": ""
+ },
+ {
+  "vi": "tạm giữ: máy chủ bận",
+  "en": ""
+ },
+ {
+  "vi": "đang tạm giữ",
+  "en": ""
+ },
+ {
+  "vi": "đang chạy",
+  "en": ""
+ },
+ {
+  "vi": "Tổng quan tính lúc",
+  "en": ""
+ },
+ {
+  "vi": "Thời gian tính",
+  "en": ""
+ },
+ {
+  "vi": "bản tính nền",
+  "en": ""
+ },
+ {
+  "vi": "vừa tính mới",
+  "en": ""
+ },
+ {
+  "vi": "Việc tính nền",
+  "en": ""
+ },
+ {
+  "vi": "Bản lưu tính lúc",
+  "en": ""
+ },
+ {
+  "vi": "Bảng dữ liệu tính lúc",
+  "en": ""
+ },
+ {
+  "vi": "Mẫu lượt chơi",
+  "en": ""
+ },
+ {
+  "vi": "Cách đọc mẫu",
+  "en": ""
+ },
+ {
+  "vi": "Python (dự phòng)",
+  "en": ""
+ },
+ {
+  "vi": "Ngày (giờ VN)",
+  "en": ""
+ },
+ {
+  "vi": "Tóm tắt lưu đệm 30 giây, số trực tiếp 10 giây. Bảng dữ liệu tính nền 2 phút một lần; số liệu từ lượt chơi 30 phút một lần, trên mẫu lượt chơi gần nhất, và tạm giữ khi máy chủ bận để không làm chậm người chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập với",
+  "en": ""
+ },
+ {
+  "vi": "Quyền vận hành đến từ biến môi trường",
+  "en": ""
+ },
+ {
+  "vi": "trên máy chủ và được kiểm tra lại ở mỗi lần gọi.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng lớn hiện số ước tính (≈) để không phải đếm hết.",
+  "en": ""
+ },
+ {
+  "vi": "Số dòng đếm ở chế độ nền.",
+  "en": ""
+ },
+ {
+  "vi": "Số theo ngày bắt đầu đếm từ hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng số theo ngày",
+  "en": ""
+ },
+ {
+  "vi": "Hoạt động mỗi ngày",
+  "en": ""
+ },
+ {
+  "vi": "Người mới mỗi ngày",
+  "en": ""
+ },
+ {
+  "vi": "Hoạt động 7 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Hoạt động 30 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Đã chơi",
+  "en": ""
+ },
+ {
+  "vi": "Lượt mở trang",
+  "en": ""
+ },
+ {
+  "vi": "Mới chơi",
+  "en": ""
+ },
+ {
+  "vi": "Mở trang",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có góp ý nào.",
+  "en": ""
+ },
+ {
+  "vi": "Chờ được đọc",
+  "en": ""
+ },
+ {
+  "vi": "Còn chờ đọc",
+  "en": ""
+ },
+ {
+  "vi": "5 góp ý mới nhất",
+  "en": ""
+ },
+ {
+  "vi": "Mở hộp góp ý",
+  "en": ""
+ },
+ {
+  "vi": "từ lúc khởi động",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ chưa cấu hình AI: nhân vật dùng lời có sẵn.",
+  "en": ""
+ },
+ {
+  "vi": "Câu AI bị lọc",
+  "en": ""
+ },
+ {
+  "vi": "Chặn lời lẽ xấu",
+  "en": ""
+ },
+ {
+  "vi": "Cộng mọi tiến trình máy chủ, lưu trong cơ sở dữ liệu (ghi mỗi 30 giây; khởi động lại không mất).",
+  "en": ""
+ },
+ {
+  "vi": "Tính số liệu",
+  "en": ""
+ },
+ {
+  "vi": "Chi tiết",
+  "en": ""
+ },
+ {
+  "vi": "Trực tiếp",
+  "en": ""
+ },
+ {
+  "vi": "chưa có thao tác",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu trực tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Mới hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác / phút",
+  "en": ""
+ },
+ {
+  "vi": "máy chủ bận nên dùng bản tính ở chế độ nền.",
+  "en": ""
+ },
+ {
+  "vi": "Số có thể đã cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu bản lưu cập nhật lúc",
+  "en": ""
+ },
+ {
+  "vi": "(đang tạm giữ để game nhanh).",
+  "en": ""
+ },
+ {
+  "vi": "Hoạt động hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Người mới hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Góp ý chưa đọc",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ghi nhận",
+  "en": ""
+ },
+ {
+  "vi": "Không tải được danh sách người dùng.",
+  "en": ""
+ },
+ {
+  "vi": "khớp tìm kiếm",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách tài khoản đã đăng ký",
+  "en": ""
+ },
+ {
+  "vi": "Tìm theo tên hoặc username",
+  "en": ""
+ },
+ {
+  "vi": "Đang tải danh sách…",
+  "en": ""
+ },
+ {
+  "vi": "Ngày tạo",
+  "en": ""
+ },
+ {
+  "vi": "Hoạt động gần nhất",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy người dùng khớp tên hoặc username.",
+  "en": ""
+ },
+ {
+  "vi": "Trang trước",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách người dùng",
+  "en": ""
+ },
+ {
+  "vi": "Tìm một phần tên hoặc username, không phân biệt hoa thường. Bao gồm tên tài khoản và tên nhân vật hiện tại.",
+  "en": ""
+ },
+ {
+  "vi": "Mật khẩu cần 8–128 ký tự.",
+  "en": ""
+ },
+ {
+  "vi": "Các phiên đăng nhập cũ của tài khoản này sẽ cần đăng nhập lại.",
+  "en": ""
+ },
+ {
+  "vi": "Đang đổi…",
+  "en": ""
+ },
+ {
   "vi": "Thao tác quá nhanh. Chờ một chút rồi thử lại nhé.",
   "en": ""
  },
@@ -249,6 +693,10 @@
  },
  {
   "vi": "📒 Bàn đối chiếu",
+  "en": ""
+ },
+ {
+  "vi": "hết hạn sau hôm nay",
   "en": ""
  },
  {
@@ -508,6 +956,10 @@
   "en": ""
  },
  {
+  "vi": "HSD gần nhất: ngày",
+  "en": ""
+ },
+ {
   "vi": "Gộp",
   "en": ""
  },
@@ -537,6 +989,22 @@
  },
  {
   "vi": "Đặt đơn gộp",
+  "en": ""
+ },
+ {
+  "vi": "Hạn dùng trên kệ",
+  "en": ""
+ },
+ {
+  "vi": "hộp cần rút ngay",
+  "en": ""
+ },
+ {
+  "vi": "hộp hết hạn trong 3 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Không hộp nào sắp hết hạn.",
   "en": ""
  },
  {
@@ -1329,474 +1797,6 @@
  },
  {
   "vi": "Vỗ nhẹ lúc bé thở ra",
-  "en": ""
- },
- {
-  "vi": "🤲 Vỗ lúc bé thở ra",
-  "en": ""
- },
- {
-  "vi": "😴 BÉ NGỦ RỒI",
-  "en": ""
- },
- {
-  "vi": "vỗ cho bé ngủ say",
-  "en": ""
- },
- {
-  "vi": "Dỗ bé tới khi bé ổn",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn cách dỗ",
-  "en": ""
- },
- {
-  "vi": "💛 BÉ ỔN RỒI",
-  "en": ""
- },
- {
-  "vi": "dỗ bé thêm",
-  "en": ""
- },
- {
-  "vi": "Ghi nhật ký thật",
-  "en": ""
- },
- {
-  "vi": "👉 Ghi nhật ký",
-  "en": ""
- },
- {
-  "vi": "👋 BÀN GIAO BÉ",
-  "en": ""
- },
- {
-  "vi": "Quyết chuyện ở nhà bé",
-  "en": ""
- },
- {
-  "vi": "👶 Vào việc thôi!",
-  "en": ""
- },
- {
-  "vi": "mới quen",
-  "en": ""
- },
- {
-  "vi": "Bố mẹ",
-  "en": ""
- },
- {
-  "vi": "Các gia đình",
-  "en": ""
- },
- {
-  "vi": "Chuyện ở nhà bé",
-  "en": ""
- },
- {
-  "vi": "Trông bé",
-  "en": ""
- },
- {
-  "vi": "Việc của bước này",
-  "en": ""
- },
- {
-  "vi": "📝 Giấy dặn của bố mẹ",
-  "en": ""
- },
- {
-  "vi": "Bé hít vào…",
-  "en": ""
- },
- {
-  "vi": "Bé thở ra chậm: vỗ nhẹ!",
-  "en": ""
- },
- {
-  "vi": "Đợi nhịp thở sau…",
-  "en": ""
- },
- {
-  "vi": "Việc trong ngày",
-  "en": ""
- },
- {
-  "vi": "Chăm kỹ",
-  "en": ""
- },
- {
-  "vi": "Dị ứng, giờ ngủ, đồ ôm",
-  "en": ""
- },
- {
-  "vi": "2×: chờ một nửa; 4×: chờ một phần tư khi chiết, đánh sữa và nướng. Thanh chạy nhanh tương ứng: tự bấm dừng ở vùng xanh. Mẻ đang trong lò giữ nhịp lúc cho vào.",
-  "en": ""
- },
- {
-  "vi": "Nhịp pha và nướng",
-  "en": ""
- },
- {
-  "vi": "rất nhanh",
-  "en": ""
- },
- {
-  "vi": "⚡ Nhịp pha & nướng",
-  "en": ""
- },
- {
-  "vi": "1× · Bình thường",
-  "en": ""
- },
- {
-  "vi": "4× · Rất nhanh",
-  "en": ""
- },
- {
-  "vi": "chưa hòa bột",
-  "en": ""
- },
- {
-  "vi": "đã xay mịn",
-  "en": ""
- },
- {
-  "vi": "có thạch dừa",
-  "en": ""
- },
- {
-  "vi": "Bỏ bánh này và làm lại? Nguyên liệu đã dùng được ghi hao hụt.",
-  "en": ""
- },
- {
-  "vi": "🗑️ Bỏ bánh, làm lại",
-  "en": ""
- },
- {
-  "vi": "Đổ ly này và làm lại từ đầu? Nguyên liệu đã dùng được ghi hao hụt.",
-  "en": ""
- },
- {
-  "vi": "🗑️ Đổ ly, làm lại",
-  "en": ""
- },
- {
-  "vi": "Gắp",
-  "en": ""
- },
- {
-  "vi": "túi giấy",
-  "en": ""
- },
- {
-  "vi": "🛍️ Cho bánh vào túi",
-  "en": ""
- },
- {
-  "vi": "Chiết shot trước",
-  "en": ""
- },
- {
-  "vi": "Tắt vòi hơi trước",
-  "en": ""
- },
- {
-  "vi": "Đánh sữa nóng trước",
-  "en": ""
- },
- {
-  "vi": "ly giấy",
-  "en": ""
- },
- {
-  "vi": "🧊 Múc đá đầy ly",
-  "en": ""
- },
- {
-  "vi": "1 phần",
-  "en": ""
- },
- {
-  "vi": "Hòa tan trước khi pha sữa",
-  "en": ""
- },
- {
-  "vi": "▶️ Chiết shot · tự dừng",
-  "en": ""
- },
- {
-  "vi": "♨️ Đánh",
-  "en": ""
- },
- {
-  "vi": "· tự tắt",
-  "en": ""
- },
- {
-  "vi": "Xay mịn cùng đá và sữa",
-  "en": ""
- },
- {
-  "vi": "🌀 Xay mịn đồ uống",
-  "en": ""
- },
- {
-  "vi": "Thêm thạch dừa",
-  "en": ""
- },
- {
-  "vi": "Thêm sau khi xay",
-  "en": ""
- },
- {
-  "vi": "🧊 Thêm thạch dừa",
-  "en": ""
- },
- {
-  "vi": "thạch dừa",
-  "en": ""
- },
- {
-  "vi": "sữa không mịn, hình sẽ loang",
-  "en": ""
- },
- {
-  "vi": "ra lò hôm nay",
-  "en": ""
- },
- {
-  "vi": "🥤 Đậy nắp + dán tem tên",
-  "en": ""
- },
- {
-  "vi": "chờ bánh nguội",
-  "en": ""
- },
- {
-  "vi": "🔥 Lò đầy: lấy bớt một khay ra",
-  "en": ""
- },
- {
-  "vi": "🔥 Tủ ủ đầy: nướng bớt một khay",
-  "en": ""
- },
- {
-  "vi": "🎂 Nướng cốt bánh kem",
-  "en": ""
- },
- {
-  "vi": "✍️ Viết chữ lên bánh",
-  "en": ""
- },
- {
-  "vi": "📦 Đóng hộp + nến + dao",
-  "en": ""
- },
- {
-  "vi": "hộp bánh",
-  "en": ""
- },
- {
-  "vi": "đang trong lò",
-  "en": ""
- },
- {
-  "vi": "▶️ Chiết shot (máy tự dừng)",
-  "en": ""
- },
- {
-  "vi": "♨️ Đánh nóng (máy tự tắt)",
-  "en": ""
- },
- {
-  "vi": "Rót hình",
-  "en": ""
- },
- {
-  "vi": "· có đá",
-  "en": ""
- },
- {
-  "vi": "· có nước",
-  "en": ""
- },
- {
-  "vi": "Xay & định lượng",
-  "en": ""
- },
- {
-  "vi": "tay cầm đã có bột",
-  "en": ""
- },
- {
-  "vi": "đang đánh",
-  "en": ""
- },
- {
-  "vi": "Nắp",
-  "en": ""
- },
- {
-  "vi": "đã đậy",
-  "en": ""
- },
- {
-  "vi": "Bánh gọi kèm",
-  "en": ""
- },
- {
-  "vi": "✓ Đã xay mịn",
-  "en": ""
- },
- {
-  "vi": "🌀 Xay mịn",
-  "en": ""
- },
- {
-  "vi": "✓ Có thạch dừa",
-  "en": ""
- },
- {
-  "vi": "Hòa bột",
-  "en": ""
- },
- {
-  "vi": "Đá và sữa lạnh",
-  "en": ""
- },
- {
-  "vi": "→ xay mịn",
-  "en": ""
- },
- {
-  "vi": "→ thạch dừa",
-  "en": ""
- },
- {
-  "vi": "✓ Có đá",
-  "en": ""
- },
- {
-  "vi": "📜 Quy tắc tủ kính",
-  "en": ""
- },
- {
-  "vi": "📦 nhập",
-  "en": ""
- },
- {
-  "vi": "chạm để nhập ở Kho",
-  "en": ""
- },
- {
-  "vi": "Việc chăm tiệm",
-  "en": ""
- },
- {
-  "vi": "xong hết",
-  "en": ""
- },
- {
-  "vi": "hòa bột",
-  "en": ""
- },
- {
-  "vi": "xay mịn cùng đá và sữa",
-  "en": ""
- },
- {
-  "vi": "thêm thạch dừa",
-  "en": ""
- },
- {
-  "vi": "🛎️ Giao bánh kem",
-  "en": ""
- },
- {
-  "vi": "Khách sẽ nhận và nếm thử.",
-  "en": ""
- },
- {
-  "vi": "chọn cách xử lý chuyện bất ngờ trước",
-  "en": ""
- },
- {
-  "vi": "làm món trước đã",
-  "en": ""
- },
- {
-  "vi": "Chọn cách xử lý chuyện bất ngờ",
-  "en": ""
- },
- {
-  "vi": "Đặt ly này lên khay?",
-  "en": ""
- },
- {
-  "vi": "làm ly này trước đã",
-  "en": ""
- },
- {
-  "vi": "☕ Quầy cà phê & bánh",
-  "en": ""
- },
- {
-  "vi": "Một order",
-  "en": ""
- },
- {
-  "vi": "📝 Nhận order, đọc phiếu",
-  "en": ""
- },
- {
-  "vi": "☕ Pha, 🔥 nướng, 🥐 lấy bánh theo phiếu",
-  "en": ""
- },
- {
-  "vi": "Gõ đúng chữ trên phiếu vào ô, rồi bấm “Viết lên bánh”.",
-  "en": ""
- },
- {
-  "vi": "Áo dài",
-  "en": ""
- },
- {
-  "vi": "Đồ bé",
-  "en": ""
- },
- {
-  "vi": "Thắt lưng",
-  "en": ""
- },
- {
-  "vi": "Tất",
-  "en": ""
- },
- {
-  "vi": "Set váy",
-  "en": ""
- },
- {
-  "vi": "Chân váy",
-  "en": ""
- },
- {
-  "vi": "Bông tai",
-  "en": ""
- },
- {
-  "vi": "Tiệm áo",
-  "en": ""
- },
- {
-  "vi": "Công việc gồm…",
-  "en": ""
- },
- {
-  "vi": "Bạn sẽ gặp…",
   "en": ""
  }
 ]

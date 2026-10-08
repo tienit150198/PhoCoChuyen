@@ -1,5 +1,545 @@
 [
  {
+  "vi": "Dịch vụ đã sẵn sàng",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ đã hoàn tất",
+  "en": ""
+ },
+ {
+  "vi": "Đang hoàn lại xu",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tiệm chưa thể nhận",
+  "en": ""
+ },
+ {
+  "vi": "Thực hiện yêu cầu trên phiếu công việc.",
+  "en": ""
+ },
+ {
+  "vi": "Thân thiện",
+  "en": ""
+ },
+ {
+  "vi": "Chăm chút",
+  "en": ""
+ },
+ {
+  "vi": "Giá hợp lý",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã rời phòng trực tiếp. Quyền ghé thăm có thể vừa thay đổi.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa kết nối được. Các đơn và bản nháp vẫn được giữ.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được chỗ làm. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa gửi được. Bạn có thể thử lại.",
+  "en": ""
+ },
+ {
+  "vi": "Làm khách tại",
+  "en": ""
+ },
+ {
+  "vi": "xu. Xu được giữ cho đơn dịch vụ này.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "GHÉ NHAU MỘT CHÚT",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Quay lại\"",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm quanh phố",
+  "en": ""
+ },
+ {
+  "vi": "Mọi người",
+  "en": ""
+ },
+ {
+  "vi": "Đơn của tôi",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chỗ làm muốn ghé",
+  "en": ""
+ },
+ {
+  "vi": "Mọi người đang làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Đón khách theo cách của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay ghé ai nhỉ?",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nơi làm để đặt quyền ghé thăm và xem khách.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một chỗ làm để xem bạn ấy đang làm gì.",
+  "en": ""
+ },
+ {
+  "vi": "Đang tìm những cánh cửa đang mở…",
+  "en": ""
+ },
+ {
+  "vi": "Quầy riêng",
+  "en": ""
+ },
+ {
+  "vi": "Nghề hiện tại",
+  "en": ""
+ },
+ {
+  "vi": "Ghé xem dịch vụ và tình hình tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Xem chỗ của tôi",
+  "en": ""
+ },
+ {
+  "vi": "Xem thêm chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có chỗ làm có thể ghé ở đây. Bạn có thể xem Mọi người quanh phố.",
+  "en": ""
+ },
+ {
+  "vi": "Không gian ghé chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ đứng của bạn. Dùng phím mũi tên để di chuyển.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi chỗ đứng",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm của người chơi",
+  "en": ""
+ },
+ {
+  "vi": "QUẦY ĐÓN KHÁCH",
+  "en": ""
+ },
+ {
+  "vi": "GÓC LÀM VIỆC",
+  "en": ""
+ },
+ {
+  "vi": "· Bạn",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn ghé vào",
+  "en": ""
+ },
+ {
+  "vi": "👋 Chào",
+  "en": ""
+ },
+ {
+  "vi": "💗 Thả tim",
+  "en": ""
+ },
+ {
+  "vi": "👏 Cổ vũ",
+  "en": ""
+ },
+ {
+  "vi": "Bên trái",
+  "en": ""
+ },
+ {
+  "vi": "Ở giữa",
+  "en": ""
+ },
+ {
+  "vi": "Bên phải",
+  "en": ""
+ },
+ {
+  "vi": "Nói một câu tại đây…",
+  "en": ""
+ },
+ {
+  "vi": "Lời nói trong chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa kết nối phòng trực tiếp. Đơn dịch vụ vẫn cập nhật.",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở cửa chỗ làm…",
+  "en": ""
+ },
+ {
+  "vi": "Công việc hiện tại",
+  "en": ""
+ },
+ {
+  "vi": "Ai có thể ghé?",
+  "en": ""
+ },
+ {
+  "vi": "LÀM KHÁCH",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn cần gì?",
+  "en": ""
+ },
+ {
+  "vi": "Không bắt buộc",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn cho người phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn cho người làm",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên có thể phục vụ khi chủ tiệm vắng.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tiệm nhận đơn và tự thực hiện trước khi bạn nhận.",
+  "en": ""
+ },
+ {
+  "vi": "nhận đơn và tự làm trước khi bạn nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn dịch vụ để xem giá và gửi lời nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một việc để xem giá và gửi lời nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Nơi này chưa có dịch vụ nhận khách lúc này.",
+  "en": ""
+ },
+ {
+  "vi": "Nơi này chưa nhận khách lúc này.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đang ghé",
+  "en": ""
+ },
+ {
+  "vi": "Đơn của bạn tại đây",
+  "en": ""
+ },
+ {
+  "vi": "Khách đã nhận dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "đã ghé",
+  "en": ""
+ },
+ {
+  "vi": "Gửi lời trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có đánh giá dịch vụ.",
+  "en": ""
+ },
+ {
+  "vi": "Người phụ việc đang làm",
+  "en": ""
+ },
+ {
+  "vi": "Nhận khách",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thể nhận",
+  "en": ""
+ },
+ {
+  "vi": "Phục vụ khách",
+  "en": ""
+ },
+ {
+  "vi": "Hủy đơn",
+  "en": ""
+ },
+ {
+  "vi": "Nhận dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "Một lời góp ý (không bắt buộc)",
+  "en": ""
+ },
+ {
+  "vi": "Nhận xét dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thấy dịch vụ thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở sổ khách…",
+  "en": ""
+ },
+ {
+  "vi": "Khách cần bạn phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ bạn đã đặt",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có đơn khách đang chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Ghé một chỗ làm để nhận dịch vụ đầu tiên.",
+  "en": ""
+ },
+ {
+  "vi": "Khách ghé chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Xem chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có ai đang đứng tại đây.",
+  "en": ""
+ },
+ {
+  "vi": "đơn khách · Mở sổ",
+  "en": ""
+ },
+ {
+  "vi": "Sổ đơn dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "Nói với khách…",
+  "en": ""
+ },
+ {
+  "vi": "Lời nói với khách ghé",
+  "en": ""
+ },
+ {
+  "vi": "👋 Chào khách",
+  "en": ""
+ },
+ {
+  "vi": "Phòng trực tiếp sẽ kết nối khi chỗ làm sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "Thứ Hai",
+  "en": ""
+ },
+ {
+  "vi": "Thứ Ba",
+  "en": ""
+ },
+ {
+  "vi": "Thứ Tư",
+  "en": ""
+ },
+ {
+  "vi": "Thứ Năm",
+  "en": ""
+ },
+ {
+  "vi": "Thứ Sáu",
+  "en": ""
+ },
+ {
+  "vi": "Thứ Bảy",
+  "en": ""
+ },
+ {
+  "vi": "Cả tuần",
+  "en": ""
+ },
+ {
+  "vi": "Biết rồi",
+  "en": ""
+ },
+ {
+  "vi": "Đội đang xử lý đơn riêng",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Đội dừng: giữ hàng cho bạn",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ nghề chưa đủ vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Đội đang tạm nghỉ",
+  "en": ""
+ },
+ {
+  "vi": "Góc nhìn sau bàn làm việc",
+  "en": ""
+ },
+ {
+  "vi": "GÓC CỦA BẠN · ĐỘI Ở PHÍA TRƯỚC",
+  "en": ""
+ },
+ {
+  "vi": "Bàn làm việc đang chờ đội vào ca",
+  "en": ""
+ },
+ {
+  "vi": "Đơn đã ghi",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu đã ghi",
+  "en": ""
+ },
+ {
+  "vi": "Lãi đã ghi",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có thể tự phục vụ hoặc giao việc cho nhân viên. Đội trong ca tiếp tục làm khi bạn khép ngày, sang nghề khác hoặc rời game; chỉ nghỉ khi hết hàng, thiếu quỹ hoặc nhân viên không sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Nhập nguyên liệu",
+  "en": ""
+ },
+ {
+  "vi": "🛠️ Thiết bị tăng tốc",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng vừa hoàn thành",
+  "en": ""
+ },
+ {
+  "vi": "Đang cập nhật các đơn lúc bạn vắng… Số liệu dưới đây là các đơn đã ghi.",
+  "en": ""
+ },
+ {
+  "vi": "Đội đang làm đơn đầu tiên. Biên nhận xuất hiện khi máy chủ xác nhận hoàn thành.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có đơn riêng hoàn thành.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Lãi ước tính của đội (đã gồm thưởng)",
+  "en": ""
+ },
+ {
+  "vi": "mỗi ngày (24 giờ) nếu đủ hàng, đủ quỹ",
+  "en": ""
+ },
+ {
+  "vi": "Đơn tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Lãi ước tính mỗi đơn:",
+  "en": ""
+ },
+ {
+  "vi": "giá vốn ~",
+  "en": ""
+ },
+ {
+  "vi": "Khu vực",
+  "en": ""
+ },
+ {
+  "vi": "Đi đâu mà bỏ $1 vậy em? Khách chờ rồi bỏ về hết.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm nay em bỏ $1 hai lần rồi. Lần sau còn vậy là cho nghỉ đó nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nói mấy lần rồi. Còn bỏ $1 nữa là cho nghỉ luôn nha em.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quán mở cửa mà không ai đứng $1, khách chờ rồi về hết đó con.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đi đâu mà bỏ $1 vậy con? Khách đứng chờ mãi rồi bỏ đi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm nay bỏ $1 hai lần rồi đó con. Khách quen bắt đầu kháo nhau rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lại bỏ $1 nữa hả con? Cứ vầy là mất khách quen đó.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bỏ $1 hoài vậy thì ai dám ghé nữa con ơi.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Phạt bỏ dở ca ở $1",
   "en": "",
   "pattern": true
@@ -1496,146 +2036,6 @@
  },
  {
   "vi": "{Me} ngồi đầu hẻm $1 biết hết, để $2 để ý giùm cho 👀",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Để $1 nhớ lại coi… lúc chiều khoảng 4 giờ 20 $2 thấy có đứa nhỏ cầm cái gì đó đi về phía ngã ba 👀",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chào $1. {Me} biết $2 rồi, hôm $3 mới dọn tới $4 thấy mà 👀",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "{Me} đọc rồi nha 👀 $1 ngồi đầu hẻm $2 thấy hết mà.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ôm $1 một cái nè 🫂 buồn hôm nay để mai vui gấp đôi. Mai trời lại nắng mà 🌈",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hay quá nè 🌈 cảm ơn $1 đã chia sẻ!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📢 Chào mừng $1 mới về ở gác nhà bà Tám tham gia Nhóm Cư Dân Phố! Nội quy nhỏ: nói năng lịch sự, không đăng số điện thoại, địa chỉ, không quảng cáo đầu tư lạ. Có việc gì cứ hỏi nhóm, bà con ở đây tốt bụng lắm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đứa nhỏ ở gác nhà tui đó bà con ơi, ngoan lắm, mới tới còn lạ nước lạ cái, mọi người thương giùm tui nghe. Mà $1 ơi tối nay xuống ăn canh chua với bà, bà nấu dư rồi 🍲",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "welcome to the group $1 ơi 🥳 hẻm mình drama dữ lắm, chuẩn bị bỏng ngô đi nha 🍿",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📢 Tổ dân phố xin chúc mừng $1! Mới về phố chưa lâu mà đã giúp được bao nhiêu nơi. Cả hẻm ai cũng nhắc: “$2”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hóng nè cả nhà ơi: nghe đâu $1 mới bắt đầu làm ở $2 đó 👀 Ai ghé ủng hộ thì ghé nha, người trong hẻm mình mà!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà khoe chút nghe bà con: đứa nhỏ ở gác nhà bà giờ đã lên tay nghề ở $1 rồi đó 🥹 Mới hôm nào còn lóng ngóng, giờ người ta khen quá trời.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ Dạo này có người nhắn rủ góp tiền vào “$1”, hứa lãi 30% mỗi tuần, mời thêm người còn được thưởng. Anh nói thẳng: LỪA ĐẢO. Không ai trả lãi như vậy đâu. Mọi người đừng chuyển tiền.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghe gì chưa cả nhà ơi 😱 Cái dự án “$1” sập rồi đó, trang web đóng cửa, nhóm chat bị xóa sạch. Nghe đâu có người mất mấy chục triệu… Tội nghiệp ghê.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chào mừng đồng nghiệp văn phòng mới của phố mình 👔 $1 vừa được nhận vào $2 rồi đó mọi người. Thật ra đi làm văn phòng có nhiều cái phải học lắm: email, họp hành, báo cáo… để anh chỉ dần cho nha 🤓",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cô không có ý gì đâu nha, nhưng mấy hôm nay thấy $1 đêm nào cũng về khuya lắm, hôm qua gần 12 giờ mới dắt xe vô hẻm. Làm gì mà khuya dữ vậy ta… chắc đi làm “phố đêm” 🤔 Cô chỉ nói những gì cô thấy thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nói nhỏ nha cả nhà 👀 đêm nào $1 cũng về khuya lơ khuya lắc, đồ thì mặc đẹp ghê. Làm ca đêm hay làm “phố đêm” vậy ta 🤭 Chị hỏi cho vui thôi à.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm qua cô đếm, $1 ra vô hẻm 4 lần, mỗi lần mặc một kiểu 👀 làm gì mà bận dữ vậy ta, cô không có ý gì đâu nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hóng nè: $1 một ngày chạy ba bốn chỗ, chỗ nào cũng có người quen 👀 Làm gì mà bận như bộ trưởng vậy ta, chị thắc mắc xíu thôi nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạo này thấy $1 tiêu rủng rỉnh ghê, hôm trước còn nghe than hết tiền, nay lại xách đồ mới về 👀 Chắc làm ăn gì… cô không biết nữa, cô chỉ thắc mắc thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghe đâu dạo này $1 xài tiền như nước nha cả nhà 👀 mới lên phố mà. Chị không có ý gì, chị chỉ thấy lạ lạ thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm qua có cái xe chở hàng đậu trước $1, người ta khuân vô khuân ra gần tiếng đồng hồ, cô đếm được 11 thùng 👀 Buôn bán gì to vậy ta, có giấy phép không ta…",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xe tải lại đỗ trước $1… thùng lớn thùng nhỏ. Hàng gì mà nhiều dữ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Có người gửi chị tấm hình xe tải đổ hàng trước $1 nè 📸 Hàng gì mà về tối ngày vậy ta, có tem nhãn đàng hoàng không ta 👀",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tối qua có người lạ đứng trước cổng nhà bà Tám tìm $1, nói chuyện nhỏ nhỏ mười mấy phút rồi đi 👀 Cô không có ý gì đâu nha, dạo này nhiều người lạ quá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tối qua có người lạ tới tìm $1… đứng nói nhỏ nhỏ ngoài cổng. Thím thấy vậy thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ủa tối qua ai tới tìm $1 vậy cả nhà, đứng ngoài cổng thì thầm quá trời 👀 chị hỏi vậy thôi nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghe đâu $1 nợ tiền phòng nhà bà Tám đó 👀 Tội bà Tám, hiền quá nên người ta ỷ. Cô không có ý gì đâu nha, cô nghe người ta nói vậy thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tuần này cô thấy $1 ra cây rút tiền ba lần rồi đó 👀 Rút sạch quỹ về, chắc đang nợ ai hả ta… cô hỏi vậy thôi nha.",
   "en": "",
   "pattern": true
  }

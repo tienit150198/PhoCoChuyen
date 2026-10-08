@@ -1,5 +1,505 @@
 [
  {
+  "vi": "Chú Năm nước mía",
+  "en": ""
+ },
+ {
+  "vi": "Chè ba màu mát lạnh đây bà con ơi!",
+  "en": ""
+ },
+ {
+  "vi": "Tàu hũ nước đường gừng, ăn ấm bụng nè!",
+  "en": ""
+ },
+ {
+  "vi": "Kẹo bông, bắp nướng, nước mía, chè… vài xu một món",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món đi, chú Năm làm liền!",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món đi, cô Út làm liền!",
+  "en": ""
+ },
+ {
+  "vi": "Trả bằng xu trong ví, ăn xong no bụng hơn.",
+  "en": ""
+ },
+ {
+  "vi": "🍭 Qua xe kẹo bông",
+  "en": ""
+ },
+ {
+  "vi": "🥤 Qua xe nước mía",
+  "en": ""
+ },
+ {
+  "vi": "Ăn vặt trả bằng xu trong ví, no bụng và tỉnh táo tăng như ăn thêm lúc đi làm. No rồi vẫn mua ăn cho vui được.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà & Gia đình",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được gia đình của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Thử tải lại",
+  "en": ""
+ },
+ {
+  "vi": "Đã gửi · Chờ người ấy",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời cần bạn trả lời",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Mời về ở chung",
+  "en": ""
+ },
+ {
+  "vi": "👶 Mời đón con chung",
+  "en": ""
+ },
+ {
+  "vi": "Đón bé mới sinh",
+  "en": ""
+ },
+ {
+  "vi": "Người ấy mở Nhà & Gia đình để đồng ý hoặc từ chối.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ khi bạn đồng ý, hai bạn mới",
+  "en": ""
+ },
+ {
+  "vi": "ở chung nhà.",
+  "en": ""
+ },
+ {
+  "vi": "cùng đón bé.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy lời mời",
+  "en": ""
+ },
+ {
+  "vi": "Đồng ý ở chung",
+  "en": ""
+ },
+ {
+  "vi": "Đồng ý đón bé",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Nhà của hai bạn",
+  "en": ""
+ },
+ {
+  "vi": "Nhà ở & quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "Nhà và đồ vẫn thuộc từng người. Góp tiền mua nhà qua Quỹ chung rồi chọn “Lấy từ quỹ chung” khi mua.",
+  "en": ""
+ },
+ {
+  "vi": "Đang ở chung",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ở chung",
+  "en": ""
+ },
+ {
+  "vi": "Cùng trở về nhà và dùng nội thất của hai bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời đã gửi. Chờ người ấy đồng ý để dọn về cùng nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có lời mời ở chung ở phía trên.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nhà cần đang ở căn nhà mình sở hữu để gửi lời mời. Mở Nhà của bạn để mua nhà hoặc dọn về căn đã có; nếu nhà của người ấy, nhờ người ấy gửi lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Vào nhà",
+  "en": ""
+ },
+ {
+  "vi": "Mời người ấy về ở chung",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Chọn nhà để ở chung",
+  "en": ""
+ },
+ {
+  "vi": "Mở quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "Rời nhà chung",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Một mái nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có thể mời bạn bè ở chung ngay. Hoàn tất lễ cưới để mở phần con chung.",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn bè vào chơi hoặc ở chung lâu dài, không cần kết hôn. Người nhận cần đồng ý lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "Xem kế hoạch cưới",
+  "en": ""
+ },
+ {
+  "vi": "Kết bạn với người ấy",
+  "en": ""
+ },
+ {
+  "vi": "Tên gọi & đồ của bé",
+  "en": ""
+ },
+ {
+  "vi": "Tên gọi",
+  "en": ""
+ },
+ {
+  "vi": "Đồ của bé",
+  "en": ""
+ },
+ {
+  "vi": "Bé bạn tiếp tục chăm",
+  "en": ""
+ },
+ {
+  "vi": "✓ Hôm nay đã chăm đủ các mục.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay, cùng chăm bé nhé",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tiếp tục chăm bé theo tiến trình riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Cả hai dùng chung tiến trình chăm bé.",
+  "en": ""
+ },
+ {
+  "vi": "👶 Cùng đón con chung",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi cặp cùng chăm một bé sau khi cả hai đồng ý.",
+  "en": ""
+ },
+ {
+  "vi": "Tên bé",
+  "en": ""
+ },
+ {
+  "vi": "Cả hai cần đạt ngày sống 10. Cả hai cách đều miễn phí và cùng chăm một bé như nhau. Nhận nuôi: bé về ngay sau khi người ấy đồng ý. Đón bé mới sinh: bé về vào ngày lịch Việt Nam kế tiếp, không phải sau khi khép một ca làm.",
+  "en": ""
+ },
+ {
+  "vi": "Cách đón bé",
+  "en": ""
+ },
+ {
+  "vi": "Nhận nuôi miễn phí",
+  "en": ""
+ },
+ {
+  "vi": "Gửi lời mời đón con",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp tục hành trình",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời đón con đang chờ trả lời ở phía trên.",
+  "en": ""
+ },
+ {
+  "vi": "Tiến trình của bé khi hai bạn chia tay",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi người giữ một bản tiến trình để tiếp tục chăm riêng. Xóa tài khoản chỉ xóa bản của người xóa.",
+  "en": ""
+ },
+ {
+  "vi": "👥 Bạn bè & người ở cùng",
+  "en": ""
+ },
+ {
+  "vi": "Mời vào chơi hoặc ở chung lâu dài. Người ở chung có thể vào nhà khi chủ offline.",
+  "en": ""
+ },
+ {
+  "vi": "🐾 Góc chăm riêng",
+  "en": ""
+ },
+ {
+  "vi": "Chăm con riêng và thú cưng theo ngày sống của nhân vật.",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn bè · Xem lời mời",
+  "en": ""
+ },
+ {
+  "vi": "Con riêng & thú cưng",
+  "en": ""
+ },
+ {
+  "vi": "Làm mới gia đình",
+  "en": ""
+ },
+ {
+  "vi": "Gửi lời mời đón con chung?",
+  "en": ""
+ },
+ {
+  "vi": "Đón bé mới sinh sau một ngày lịch Việt Nam.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận nuôi miễn phí.",
+  "en": ""
+ },
+ {
+  "vi": "Mời người ấy về ở chung?",
+  "en": ""
+ },
+ {
+  "vi": ". Người ấy cần đồng ý. Quyền sở hữu nhà và đồ vẫn riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Đồng ý ở chung?",
+  "en": ""
+ },
+ {
+  "vi": "Cùng đón bé?",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chuyển về căn nhà được mời, miễn phí. Nhà cá nhân để trống, vẫn thuộc bạn; phòng trọ trả lại tiền cọc. Nội thất vẫn thuộc từng người.",
+  "en": ""
+ },
+ {
+  "vi": "Chờ một ngày lịch Việt Nam để đón bé.",
+  "en": ""
+ },
+ {
+  "vi": "Rời nhà chung?",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thôi ở nhà chung. Nhà và đồ cá nhân vẫn thuộc mỗi người; nếu chưa có chỗ ở riêng, bạn về gác Bà Tám. Con chung vẫn được cả hai chăm.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn ra",
+  "en": ""
+ },
+ {
+  "vi": "Thống kê",
+  "en": ""
+ },
+ {
+  "vi": "📊 Thống kê",
+  "en": ""
+ },
+ {
+  "vi": "vừa bắn pháo hoa nhỏ mừng cả phố!",
+  "en": ""
+ },
+ {
+  "vi": "Pháo hoa nhỏ đang nở trên phố!",
+  "en": ""
+ },
+ {
+  "vi": "vừa bắn pháo hoa lớn mừng cả phố!",
+  "en": ""
+ },
+ {
+  "vi": "Pháo hoa lớn đang nở trên phố!",
+  "en": ""
+ },
+ {
+  "vi": "vừa mở đại tiệc pháo hoa mừng cả phố!",
+  "en": ""
+ },
+ {
+  "vi": "Đại tiệc pháo hoa trên phố!",
+  "en": ""
+ },
+ {
+  "vi": "🎆 Bắn pháo hoa",
+  "en": ""
+ },
+ {
+  "vi": "🎞️ Tạp chí",
+  "en": ""
+ },
+ {
+  "vi": "🪞 Ảnh đôi",
+  "en": ""
+ },
+ {
+  "vi": "✨ Viền vàng",
+  "en": ""
+ },
+ {
+  "vi": "Điện thoại, đồng hồ, tai nghe, máy ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Cửa hàng đang mở cửa",
+  "en": ""
+ },
+ {
+  "vi": "Máy mới đang được bày lên kệ. Mở lại sau ít phút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ có trong chế độ hành trình",
+  "en": ""
+ },
+ {
+  "vi": "Vào hành trình để sắm điện thoại cho nhân vật của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Mục cửa hàng",
+  "en": ""
+ },
+ {
+  "vi": "🙌 Khoe trên hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "📸 Nhãn dán ảnh selfie",
+  "en": ""
+ },
+ {
+  "vi": "📸 Chụp selfie",
+  "en": ""
+ },
+ {
+  "vi": "máy tầm trung",
+  "en": ""
+ },
+ {
+  "vi": "Cất máy, không khoe",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã đổi máy cũ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa cầm máy nào",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một chiếc điện thoại bên dưới để dùng và khoe.",
+  "en": ""
+ },
+ {
+  "vi": "Lên đời",
+  "en": ""
+ },
+ {
+  "vi": "✋ Đang dùng",
+  "en": ""
+ },
+ {
+  "vi": "Dùng máy này",
+  "en": ""
+ },
+ {
+  "vi": "Đồ của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Máy đang dùng và 3 món đắt nhất hiện trên hồ sơ, cho cả phố cùng xem.",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đủ tiền mua",
+  "en": ""
+ },
+ {
+  "vi": "Xem máy",
+  "en": ""
+ },
+ {
+  "vi": "Xem món này",
+  "en": ""
+ },
+ {
+  "vi": "Máy càng xịn càng mở thêm vài món vui: khung selfie, vỏ máy khoe trên hồ sơ. Không máy nào làm ra tiền, không phí tháng.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ chơi công nghệ để khoe và làm nhãn dán trong ảnh selfie.",
+  "en": ""
+ },
+ {
+  "vi": "máy cũ",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh lưu trên máy bạn, không gửi đi đâu. Đăng lên Cả phố hay khoe bạn bè tùy bạn.",
+  "en": ""
+ },
+ {
+  "vi": "💾 Lưu ảnh về máy",
+  "en": ""
+ },
+ {
+  "vi": "Máy chưa lưu được ảnh. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Selfie Phố Có Chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Đã lưu ảnh selfie về máy.",
+  "en": ""
+ },
+ {
+  "vi": "Đang đi",
+  "en": ""
+ },
+ {
   "vi": "Xe đạp, xe máy, ô tô, du thuyền, máy bay",
   "en": ""
  },
@@ -1297,506 +1797,6 @@
  },
  {
   "vi": "aria-label=\"Mời bạn về nhà\"",
-  "en": ""
- },
- {
-  "vi": "🏡 Nhà & Gia đình",
-  "en": ""
- },
- {
-  "vi": "Mời bạn về nhà",
-  "en": ""
- },
- {
-  "vi": "(tạm dừng khi trễ hạn trả góp)",
-  "en": ""
- },
- {
-  "vi": "Nơi bạn đang ở",
-  "en": ""
- },
- {
-  "vi": "đậu trước nhà",
-  "en": ""
- },
- {
-  "vi": "Ân hạn",
-  "en": ""
- },
- {
-  "vi": "Lịch trả góp",
-  "en": ""
- },
- {
-  "vi": "Đã tính phí trễ hạn.",
-  "en": ""
- },
- {
-  "vi": "Tinh thần tạm không được cộng.",
-  "en": ""
- },
- {
-  "vi": "Ngày mua",
-  "en": ""
- },
- {
-  "vi": "Giá thị trường hôm nay",
-  "en": ""
- },
- {
-  "vi": "Bán ngay thì nhận",
-  "en": ""
- },
- {
-  "vi": "Phí bảo trì",
-  "en": ""
- },
- {
-  "vi": "/tháng",
-  "en": ""
- },
- {
-  "vi": "Bán nhà",
-  "en": ""
- },
- {
-  "vi": "💞 Về ở chung",
-  "en": ""
- },
- {
-  "vi": "Cho thuê",
-  "en": ""
- },
- {
-  "vi": "🧾 Đang cho người chơi thuê",
-  "en": ""
- },
- {
-  "vi": "📣 Đang đăng cho người chơi thuê",
-  "en": ""
- },
- {
-  "vi": "📣 Đang tìm khách NPC",
-  "en": ""
- },
- {
-  "vi": "Chưa kiểm tra được trạng thái cho thuê.",
-  "en": ""
- },
- {
-  "vi": "Đang kiểm tra trạng thái cho thuê…",
-  "en": ""
- },
- {
-  "vi": "🔑 Đang để trống",
-  "en": ""
- },
- {
-  "vi": "Để trống không tốn gì.",
-  "en": ""
- },
- {
-  "vi": "Quản lý cho thuê",
-  "en": ""
- },
- {
-  "vi": "🚚 Dọn về ở",
-  "en": ""
- },
- {
-  "vi": "Còn nợ vay",
-  "en": ""
- },
- {
-  "vi": "Bạn đang ở giường dưới phòng này.",
-  "en": ""
- },
- {
-  "vi": "Bạn đang thuê phòng này.",
-  "en": ""
- },
- {
-  "vi": "✓ Đủ tiền cọc",
-  "en": ""
- },
- {
-  "vi": "Chuyển qua đây",
-  "en": ""
- },
- {
-  "vi": "Thuê",
-  "en": ""
- },
- {
-  "vi": "(chưa tính quỹ chung)",
-  "en": ""
- },
- {
-  "vi": "Đủ trả trước",
-  "en": ""
- },
- {
-  "vi": "Đủ mua đứt",
-  "en": ""
- },
- {
-  "vi": "Trả trước",
-  "en": ""
- },
- {
-  "vi": "Đây là nhà của bạn.",
-  "en": ""
- },
- {
-  "vi": "🐷 Tiết kiệm mua nhà",
-  "en": ""
- },
- {
-  "vi": "Có tài khoản Ngân hàng Phố mới gửi tiết kiệm và vay mua nhà được.",
-  "en": ""
- },
- {
-  "vi": "Sổ tiết kiệm:",
-  "en": ""
- },
- {
-  "vi": "Gửi 1.000 xu nhận thêm",
-  "en": ""
- },
- {
-  "vi": "Khi đáo hạn",
-  "en": ""
- },
- {
-  "vi": "🏘️ Thuê & cho thuê",
-  "en": ""
- },
- {
-  "vi": "Tự đặt giá, tìm khách NPC hoặc thuê nhà người chơi.",
-  "en": ""
- },
- {
-  "vi": "Mở chợ thuê nhà",
-  "en": ""
- },
- {
-  "vi": "🏷️ Nhà đang rao",
-  "en": ""
- },
- {
-  "vi": "nơi",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Thuê & cho thuê: tự đặt giá, tìm khách NPC hoặc thuê nhà người chơi\"",
-  "en": ""
- },
- {
-  "vi": "Nhà đang rao",
-  "en": ""
- },
- {
-  "vi": "Sổ nhà cửa",
-  "en": ""
- },
- {
-  "vi": "Đã gửi lời mời · Chờ người ấy đồng ý.",
-  "en": ""
- },
- {
-  "vi": "Hai bạn đang ở chung nhà.",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể mời người ấy về căn nhà đang ở.",
-  "en": ""
- },
- {
-  "vi": "Người ấy có nhà. Nhờ người ấy gửi lời mời về ở chung.",
-  "en": ""
- },
- {
-  "vi": "Mua nhà hoặc dọn về căn nhà bạn sở hữu để mời người ấy.",
-  "en": ""
- },
- {
-  "vi": "Mời bạn bè vào chơi hoặc ở chung mà không cần kết hôn. Con chung nằm trong mục Gia đình.",
-  "en": ""
- },
- {
-  "vi": "Xem và trả lời lời mời",
-  "en": ""
- },
- {
-  "vi": "Xem lời mời đã gửi",
-  "en": ""
- },
- {
-  "vi": "Trả ngay",
-  "en": ""
- },
- {
-  "vi": "Tổng lãi",
-  "en": ""
- },
- {
-  "vi": "Thời hạn vay",
-  "en": ""
- },
- {
-  "vi": "Cần tài khoản Ngân hàng Phố để vay.",
-  "en": ""
- },
- {
-  "vi": "Trả đủ một lần, không vay",
-  "en": ""
- },
- {
-  "vi": "💞 Góp từ quỹ chung để mua nhà. Mua xong, mở Gia đình chung gửi lời mời ở chung; người ấy cần đồng ý.",
-  "en": ""
- },
- {
-  "vi": "Góc gia đình chỉ có trong hành trình.",
-  "en": ""
- },
- {
-  "vi": "Mỗi ngày chăm một lần cho từng mục: ăn, vệ sinh, chơi hoặc đọc truyện. Ngày mới tính khi bạn khép ca làm việc.",
-  "en": ""
- },
- {
-  "vi": "Tên gọi & đồ dùng",
-  "en": ""
- },
- {
-  "vi": "🏡 Góc gia đình",
-  "en": ""
- },
- {
-  "vi": "Một góc nhỏ để trở về cùng nhau",
-  "en": ""
- },
- {
-  "vi": "🏡 Nhà & Gia đình với người ấy",
-  "en": ""
- },
- {
-  "vi": "🐾 Con riêng & thú cưng",
-  "en": ""
- },
- {
-  "vi": "Tối đa một bé và một mèo hoặc cún. Chăm theo ngày sống của nhân vật; không tự thu phí khi vắng mặt.",
-  "en": ""
- },
- {
-  "vi": "Mở lời mời ở chung và chăm con chung tại đây.",
-  "en": ""
- },
- {
-  "vi": "Mời bạn bè vào chơi hoặc ở chung mà không cần kết hôn. Con chung mở sau khi cưới.",
-  "en": ""
- },
- {
-  "vi": "Đón thành viên về chăm riêng",
-  "en": ""
- },
- {
-  "vi": "Mở từ ngày sống 10.",
-  "en": ""
- },
- {
-  "vi": "Tên bạn muốn gọi",
-  "en": ""
- },
- {
-  "vi": "Đón về nhà",
-  "en": ""
- },
- {
-  "vi": "· nhận nuôi miễn phí",
-  "en": ""
- },
- {
-  "vi": "💇 Đi làm đẹp · 🎨 DIY",
-  "en": ""
- },
- {
-  "vi": "Mua đồ cho bé",
-  "en": ""
- },
- {
-  "vi": "Mua và mặc",
-  "en": ""
- },
- {
-  "vi": "Khôi phục uy tín thế nào?",
-  "en": ""
- },
- {
-  "vi": "Uy tín này đổi theo cách xử lý những Chuyện đời mới ở nơi đang làm. Trả lại đồ nhặt được, hợp tác hoặc xử lý hậu quả đúng mực có thể tăng điểm; kết quả sẽ ghi mức tăng hoặc giảm. Bỏ dở việc có thể làm giảm uy tín.",
-  "en": ""
- },
- {
-  "vi": "Tình làng nghĩa xóm là chỉ số riêng. Trò chuyện, nhậu, karaoke và Nhớ lại chuyện cũ không tăng uy tín này.",
-  "en": ""
- },
- {
-  "vi": "🏮 Xem Tình làng nghĩa xóm",
-  "en": ""
- },
- {
-  "vi": "Huy hiệu Công an phường Mây",
-  "en": ""
- },
- {
-  "vi": "Khung thời gian biểu đồ",
-  "en": ""
- },
- {
-  "vi": "H = giờ · D = ngày · W = tuần · M = 30 ngày ngoài đời",
-  "en": ""
- },
- {
-  "vi": "Chưa có lịch sử giá cho biểu đồ.",
-  "en": ""
- },
- {
-  "vi": "Xem giá tại thời điểm",
-  "en": ""
- },
- {
-  "vi": "% trong dữ liệu hiển thị",
-  "en": ""
- },
- {
-  "vi": "Kéo để xem giá từng mốc",
-  "en": ""
- },
- {
-  "vi": "/chỉ",
-  "en": ""
- },
- {
-  "vi": "Thị trường mới mở, đang hiển thị toàn bộ lịch sử đã có.",
-  "en": ""
- },
- {
-  "vi": "Lịch sử giá theo thời gian thực.",
-  "en": ""
- },
- {
-  "vi": "· bấm Cập nhật giá để tải khung đã chọn",
-  "en": ""
- },
- {
-  "vi": "Chưa cập nhật được giá. Bấm Cập nhật giá để thử lại.",
-  "en": ""
- },
- {
-  "vi": "TÀI SẢN CỦA BẠN",
-  "en": ""
- },
- {
-  "vi": "phiên trước",
-  "en": ""
- },
- {
-  "vi": "Phiên hiện tại",
-  "en": ""
- },
- {
-  "vi": "phiên 10 phút",
-  "en": ""
- },
- {
-  "vi": "Vàng đổi giá theo ngày thực · Coin đổi giá theo ngày sống.",
-  "en": ""
- },
- {
-  "vi": "Giá chung cả phố · 1 giờ thực = 1 ngày thị trường.",
-  "en": ""
- },
- {
-  "vi": "Số xu khác",
-  "en": ""
- },
- {
-  "vi": "Trị giá hiện tại",
-  "en": ""
- },
- {
-  "vi": "Giá được chốt khi máy chủ nhận lệnh.",
-  "en": ""
- },
- {
-  "vi": "so với phiên trước",
-  "en": ""
- },
- {
-  "vi": "📰 Tin thị trường trong game",
-  "en": ""
- },
- {
-  "vi": "Đang hỗ trợ đà tăng",
-  "en": ""
- },
- {
-  "vi": "Đang tạo áp lực giảm",
-  "en": ""
- },
- {
-  "vi": "phân",
-  "en": ""
- },
- {
-  "vi": "chỉ",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được giá vàng. Mở lại mục Đầu tư để thử nhé.",
-  "en": ""
- },
- {
-  "vi": "Số vàng giao dịch",
-  "en": ""
- },
- {
-  "vi": "Tiệm vàng Kim Phát",
-  "en": ""
- },
- {
-  "vi": "Bán ngay được",
-  "en": ""
- },
- {
-  "vi": "Tiền đã bỏ vào",
-  "en": ""
- },
- {
-  "vi": "1 chỉ = 10 phân. Mua bằng ví, thiếu thì lấy từ tài khoản ngân hàng; bán nhận xu vào ví. Giá mua/bán đã gồm chênh lệch 2,5% mỗi chiều.",
-  "en": ""
- },
- {
-  "vi": "Biến động so với phiên trước. Giá được chốt khi máy chủ nhận lệnh.",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Bớt vàng\"",
-  "en": ""
- },
- {
-  "vi": "Số chỉ vàng",
-  "en": ""
- },
- {
-  "vi": "Số phân vàng lẻ",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Thêm vàng\"",
-  "en": ""
- },
- {
-  "vi": "1 chỉ",
   "en": ""
  }
 ]

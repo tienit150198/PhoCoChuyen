@@ -1,5 +1,60 @@
 [
  {
+  "vi": "Đo $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "giường $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✋ $1, báo bác sĩ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Viết sổ giao ca · $1 dòng",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🌙 Tăng ca +$1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "😮‍💨 $1/100 · chậm$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "😮‍💨 Sức bền $1/100",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👩‍💼 Thanh màu: $1 tin bạn tới đâu. Nộp đúng hạn, ít sai thì tăng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lịch $1 ngày tới",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "người$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "làm trước tiên sáng mai · hạn sớm nhất $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "😮‍💨 Sức bền $1/100: mai làm chậm hơn, không tăng ca được",
   "en": "",
   "pattern": true
@@ -1845,6 +1900,11 @@
   "pattern": true
  },
  {
+  "vi": "📅 Hôm nay: ngày $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Giá $1–$2 xu",
   "en": "",
   "pattern": true
@@ -2186,66 +2246,6 @@
  },
  {
   "vi": "/$1 đã đúng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kết quả gần nhất: $1/100",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tháng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "VIỆC $1/",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã hoàn thành bộ sổ tháng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Có $1 lần thử lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhật ký các kỳ trước · $1 hồ sơ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tháng $1/2026 · $2/$3 việc đã xong",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Danh sách hồ sơ · $1/$2 đã xong",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎉 Hôm nay lễ ($1): lương kế toán x5",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cần chứng nhận “$1”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "× 3 · lễ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng $1/$2 câu là vào ca. Lương hôm nay ×$3.",
   "en": "",
   "pattern": true
  }

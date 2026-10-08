@@ -1,5 +1,29 @@
 [
  {
+  "vi": "📉 Mỗi lần nộp hồ sơ vay hay mở thẻ, điểm giảm một chút. Đừng nộp dồn dập.",
+  "en": ""
+ },
+ {
+  "vi": "Thuê phòng, mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Mở [[Nhà của bạn]] ở trang Hành trình hoặc trong Ngân hàng. Luôn thấy tiền mặt, tài khoản và còn thiếu bao nhiêu.",
+  "en": ""
+ },
+ {
+  "vi": "🛏️ Phòng trọ khép kín: cọc 60 xu (trả lại khi dọn đi), tiền phòng 15 xu/ngày, tinh thần +1 mỗi sáng.",
+  "en": ""
+ },
+ {
+  "vi": "👥 Ký túc xá Hẻm 7: ở ghép giường tầng, cọc 20 xu, 7 xu/ngày. Từ chương 3 rẻ hơn gác Bà Tám, có 3 bạn cùng phòng.",
+  "en": ""
+ },
+ {
+  "vi": "🏢 Căn hộ, nhà phố, biệt thự rao bán từ 1.800 tới 60.000 xu. Trả trước ít nhất 30% giá và 2% phí công chứng, sang tên.",
+  "en": ""
+ },
+ {
   "vi": "💹 Thuế trước bạ (từ 07/10): thêm 10% giá nhà, 20% từ 20.000 xu, 30% từ 60.000 xu. Trả cùng khoản trả trước, bằng ví hoặc tài khoản (không vay, không lấy từ quỹ chung). Thuế không cộng vào giá bán lại.",
   "en": ""
  },
@@ -1365,22 +1389,6 @@
  },
  {
   "vi": "🪪 Có mã người chơi dạng PCC-XXXXXX thì gõ mã vào cùng ô đó. Mã của bạn ở cuối mục Bạn bè, bấm [[Chép mã]] để gửi cho người quen.",
-  "en": ""
- },
- {
-  "vi": "📨 Bấm [[Kết bạn]] để gửi lời mời. Người kia chọn [[Chấp nhận]], [[Từ chối]] hoặc [[Chặn]]. Nếu họ đã mời bạn trước, nút thành [[Chấp nhận kết bạn]] và hai bạn thành bạn ngay.",
-  "en": ""
- },
- {
-  "vi": "⏳ Lời mời bạn gửi nằm ở “Đang chờ trả lời”, đổi ý thì bấm [[Rút lại]]. Có lời mời mới, nút [[Bạn bè]] trên thanh bên hiện số.",
-  "en": ""
- },
- {
-  "vi": "🔢 Mỗi ngày tìm tối đa 100 lần (20 lần mỗi phút) và gửi 10 lời mời; cùng lúc chờ tối đa 20 lời mời; danh sách giữ tối đa 200 bạn.",
-  "en": ""
- },
- {
-  "vi": "💍 Thẻ bạn bè ghi tên hiển thị, nghề chính, cấp và tình trạng: Độc thân, Đã đính hôn, Đã kết hôn. Bạn đang độc thân thì có nút [[Cầu hôn]] ngay trên thẻ.",
   "en": ""
  }
 ]

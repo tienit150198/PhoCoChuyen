@@ -1,5 +1,65 @@
 [
  {
+  "vi": "Kết quả gần nhất: $1/100",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tháng $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "VIỆC $1/",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã hoàn thành bộ sổ tháng $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Có $1 lần thử lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhật ký các kỳ trước · $1 hồ sơ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tháng $1/2026 · $2/$3 việc đã xong",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Danh sách hồ sơ · $1/$2 đã xong",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎉 Hôm nay lễ ($1): lương kế toán x5",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cần chứng nhận “$1”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "× 3 · lễ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đúng $1/$2 câu là vào ca. Lương hôm nay ×$3.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Cần đúng $1/$2 câu để vào ca. Không mất xu nào: xem lại bài gợi ý rồi làm bài khác.",
   "en": "",
   "pattern": true
@@ -2186,66 +2246,6 @@
  },
  {
   "vi": "Danh hiệu của $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 Bảo trì $1/tháng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "năm ($1 tháng)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thuê $1?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kỳ thuê của $1 đã hết. Người thuê được báo dọn đi, không bị trừ thêm tiền.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả $1, nhận lại cọc $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cọc $1, trả lại khi dọn đi. $2 $3/ngày (gác Bà Tám: $4).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chuyển sang $1?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thuê · cọc $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhận lại $1 tiền cọc, về gác Bà Tám.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả ngay $1 (gồm phí $2$3)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thuế trước bạ $1",
   "en": "",
   "pattern": true
  }
