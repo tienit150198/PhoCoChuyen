@@ -158,9 +158,12 @@ export const shell={
     applyLayout();applyTheme(env.api.state.settings);watchViewport();
     let t;window.addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(applyLayout,120);});
     window.addEventListener('orientationchange',()=>setTimeout(applyLayout,200));
-    const unlock=()=>{syncMusic(env).then(()=>music?.unlock());};
-    window.addEventListener('pointerdown',unlock,{once:true});
-    window.addEventListener('keydown',unlock,{once:true});
+    // The first tap/key loads the music module (then it hears every tap itself: audio.js onGesture). A tap before
+    // the save arrived or a failed import keeps listening, so the next tap tries again.
+    const off=()=>{window.removeEventListener('pointerdown',unlock);window.removeEventListener('keydown',unlock);};
+    const unlock=()=>{syncMusic(env).then(()=>{if(music){off();music.unlock();}}).catch(()=>{/* the next tap */});};
+    window.addEventListener('pointerdown',unlock);
+    window.addEventListener('keydown',unlock);
     document.addEventListener('visibilitychange',()=>{if(music)music.setHidden(document.hidden);});
     // Phone "Thêm" menu (the rail as a bottom sheet): any tap closes it, except opening or leaving a hub
     // inside it (data-menu-stay); taps outside the menu are swallowed so they don't also hit the scene.
@@ -178,7 +181,7 @@ export const shell={
     const st=env.api.state.settings,key=[st.uiTheme,st.reduceMotion,st.largeText].join('|');
     if(key!==themeKey){themeKey=key;applyTheme(st);}
     if(env.api.state.settings.lang!==language())setLanguage(env.api.state.settings.lang).then(()=>{if(env.api.state.settings.lang==='vi')location.reload();});
-    if(music||env.api.state.settings.music)syncMusic(env);
+    if(music||env.api.state.settings.music)syncMusic(env).catch(()=>{/* the module failed to load: the next tap */});
   },
   async action(action,data,el,env){
     switch(action){

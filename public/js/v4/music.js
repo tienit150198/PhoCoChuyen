@@ -9,7 +9,10 @@
  * - A song streams: the first ~20 s play as soon as they are in (about a second on a slow phone
  *   network), then the whole song takes over at the same sample and loops.
  * - Changing career crossfades; hiding the tab pauses the context so the song resumes in place;
- *   switching music off stops the song and frees its buffer (tens of MB). */
+ *   switching music off stops the song and frees its buffer (tens of MB).
+ * - A song that failed to load (a phone network hiccup, a lock mid-download, a failed decode) is tried again
+ *   (RETRY: a few seconds, then longer; at once when the phone is back online); first seconds that ran out
+ *   before the whole song came no longer leave the music silent for good. */
 import {audioContext,wantAudio,onGesture,onDuck,ducked} from '../audio.js';
 
 const FILES={cider:'apple-cider',springs:'hot-springs-town',lullaby:'happy-lullaby',morning:'good-morning',urban:'urban-shop',puzzle:'cozy-puzzle'};
@@ -28,37 +31,54 @@ const MOOD={calm:'lullaby',bright:'urban'};
 const FADE=1.5;
 const HEAD=160*1024;  // ~20 s of a 64 kbps track (public/music/CREDITS.md): enough to start while the rest arrives
 const url=name=>globalThis.__mnlBoot?.asset?.(`/music/${FILES[name]}.mp3`)||`/music/${FILES[name]}.mp3`;
+const RETRY=[2000,5000,15000,30000,60000];  // ms before the n-th new try of a song that failed (then every minute)
 
 /** Decode at 32 kHz (the tracks are mono 32 kHz): a song stays near 25 MB instead of ~38 MB at 48 kHz. */
 function decode(data,ctx){
   const OAC=window.OfflineAudioContext||window.webkitOfflineAudioContext;
   let dec=ctx;try{if(OAC)dec=new OAC(1,1,32000);}catch{/* rate not supported: the page context */}
-  return new Promise((ok,fail)=>{const p=dec.decodeAudioData(data,ok,fail);p?.catch?.(()=>{/* fail() had it */});});  // callback form: older Safari
+  const once=(c,bytes)=>new Promise((ok,fail)=>{const p=c.decodeAudioData(bytes,ok,fail);p?.catch?.(()=>{/* fail() had it */});});  // callback form: older Safari
+  if(dec===ctx)return once(ctx,data);
+  // decodeAudioData takes the bytes away: keep a copy for the page context if the 32 kHz decoder fails.
+  const copy=data.slice(0);
+  return once(dec,data).catch(()=>once(ctx,copy));
 }
 
-/** The whole file; onHead(bytes) once its first HEAD bytes are in, while the rest is still downloading. */
+/** The whole file; onHead(bytes) once its first HEAD bytes are in, while the rest is still downloading.
+ * A download that stalls (no byte for STALL ms: a phone locked mid-download, a dead connection that never
+ * errors) is aborted, so it fails and is tried again instead of leaving the song "loading" for good. */
+const STALL=20000,SLOW=90000;
 async function download(name,onHead){
-  const r=await fetch(url(name));if(!r.ok)throw new Error(r.status);
-  const total=Number(r.headers.get('Content-Length'))||0;
-  if(!r.body?.getReader||r.headers.get('Content-Encoding')||total<HEAD*1.5)return r.arrayBuffer();
-  const reader=r.body.getReader();let all=new Uint8Array(total),got=0,told=false;
-  for(;;){
-    const {done,value}=await reader.read();if(done)break;
-    if(got+value.length>all.length){const more=new Uint8Array(Math.max(all.length*2,got+value.length));more.set(all.subarray(0,got));all=more;}
-    all.set(value,got);got+=value.length;
-    if(!told&&got>=HEAD){told=true;try{onHead(all.slice(0,got).buffer);}catch{/* music only */}}
-  }
-  return all.buffer.slice(0,got);
+  const ab=typeof AbortController==='function'?new AbortController():null;
+  let timer=0;const wait=ms=>{clearTimeout(timer);if(ab)timer=setTimeout(()=>ab.abort(),ms);};
+  wait(STALL);
+  try{
+    const r=await fetch(url(name),ab?{signal:ab.signal}:undefined);if(!r.ok)throw new Error(r.status);
+    const total=Number(r.headers.get('Content-Length'))||0;
+    if(!r.body?.getReader||r.headers.get('Content-Encoding')||total<HEAD*1.5){wait(SLOW);return await r.arrayBuffer();}
+    const reader=r.body.getReader();let all=new Uint8Array(total),got=0,told=false;
+    for(;;){
+      wait(STALL);
+      const {done,value}=await reader.read();if(done)break;
+      if(got+value.length>all.length){const more=new Uint8Array(Math.max(all.length*2,got+value.length));more.set(all.subarray(0,got));all=more;}
+      all.set(value,got);got+=value.length;
+      if(!told&&got>=HEAD){told=true;try{onHead(all.slice(0,got).buffer);}catch{/* music only */}}
+    }
+    return all.buffer.slice(0,got);
+  }finally{clearTimeout(timer);}
 }
 
 export class Music{
   constructor(){this.ctx=null;this.on=false;this.volume=.45;this.hidden=false;this.armed=false;this.want='cider';this.cur=null;this.pending=null;this.buffers=new Map();
+    this.fail={name:'',n:0,at:0};this.retry=RETRY;this.timer=0;
     // Every tap (inside the gesture): arm, and start the song if it is on.
     onGesture(()=>this.unlock());
+    // Back online: a song that failed is tried again now.
+    globalThis.addEventListener?.('online',()=>{this.fail.at=0;this.refresh();});
     // The wedding party plays its own music: this one fades out meanwhile and comes back after.
     onDuck(()=>{if(this.master)this.master.gain.setTargetAtTime(this.level(),this.ctx.currentTime,.4);});}
   // Armed by the first tap/key: a song is 0.3-1.6 MB, never fetched while the game is still loading.
-  unlock(){this.armed=true;this.refresh();}
+  unlock(){this.armed=true;this.hidden=false;this.refresh();}  // a tap: the page is on screen
   setHidden(h){this.hidden=h;this.refresh();}
   configure({on,volume,track,career}){
     this.on=!!on&&track!=='off';this.volume=Math.max(0,Math.min(1,(volume??45)/100));
@@ -79,11 +99,22 @@ export class Music{
     this.init();if(!this.ctx)return;
     // Inside a tap this starts the context (iPhone); elsewhere it works once a tap has started it before.
     if(this.ctx.state!=='running'&&this.ctx.state!=='closed')this.ctx.resume().catch(()=>{/* the next tap */});
-    if(this.cur?.name!==this.want&&this.pending!==this.want)this.play(this.want);
+    // Back to the song that is playing while another one loads (A→B→A): forget B, or it would replace A on arrival.
+    if(this.cur?.name===this.want){if(this.pending&&this.pending!==this.want)this.pending=null;return;}
+    if(this.pending===this.want)return;
+    const f=this.fail,wait=f.name===this.want?f.at-Date.now():0;
+    if(wait>0){clearTimeout(this.timer);this.timer=setTimeout(()=>this.refresh(),wait+50);return;}
+    this.play(this.want);
+  }
+  /** The song failed to load: try it again later (sooner on a tap after the wait, at once when back online). */
+  failed(name){
+    const f=this.fail;if(f.name!==name){f.name=name;f.n=0;}
+    f.at=Date.now()+this.retry[Math.min(f.n,this.retry.length-1)];f.n++;
+    clearTimeout(this.timer);this.timer=setTimeout(()=>this.refresh(),f.at-Date.now()+50);
   }
   /** Music switched off: fade out and free the song. */
   stop(){
-    this.pending=null;const cur=this.cur;this.cur=null;this.buffers.clear();
+    this.pending=null;const cur=this.cur;this.cur=null;this.buffers.clear();clearTimeout(this.timer);this.fail={name:'',n:0,at:0};  // switched on again: a fresh try
     if(cur&&this.ctx){const t=this.ctx.currentTime;cur.g.gain.cancelScheduledValues(t);cur.g.gain.setValueAtTime(cur.g.gain.value,t);cur.g.gain.linearRampToValueAtTime(0,t+.3);try{cur.src.stop(t+.35);}catch{/* not started */}}
   }
   /** A source for `buf` fading in over the playing song (which fades out). */
@@ -91,7 +122,10 @@ export class Music{
     const c=this.ctx,t=c.currentTime,old=this.cur,g=c.createGain(),src=c.createBufferSource();
     g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(1,t+FADE);g.connect(this.master);
     src.buffer=buf;src.loop=!head;src.connect(g);src.start(t);
-    this.cur={name,src,g,t0:t,head};
+    const cur=this.cur={name,src,g,t0:t,head};
+    // The first seconds ran out and the whole song never came (failed, still loading): nothing would ever play
+    // again (refresh saw this song as playing). Forget it; refresh starts it again (or waits for the retry).
+    if(head)src.onended=()=>{if(this.cur===cur){this.cur=null;this.refresh();}};
     if(old){old.g.gain.cancelScheduledValues(t);old.g.gain.setValueAtTime(old.g.gain.value,t);old.g.gain.linearRampToValueAtTime(0,t+FADE);try{old.src.stop(t+FADE+.05);}catch{/* not started */}}
   }
   async play(name){
@@ -99,18 +133,18 @@ export class Music{
     if(!this.buffers.has(name)){
       const onHead=bytes=>decode(bytes,this.ctx).then(buf=>{if(this.pending===name&&this.cur?.name!==name)this.start(name,buf,true);}).catch(()=>{/* wait for the whole song */});
       const p=download(name,onHead).then(data=>decode(data,this.ctx));
-      this.buffers.set(name,p);p.catch(()=>this.buffers.delete(name));
+      this.buffers.set(name,p);p.catch(()=>{if(this.buffers.get(name)===p)this.buffers.delete(name);});
     }
-    let buf;try{buf=await this.buffers.get(name);}catch{if(this.pending===name)this.pending=null;return;}  // silent: the game plays fine without music
+    let buf;try{buf=await this.buffers.get(name);}catch{if(this.pending===name){this.pending=null;this.failed(name);}return;}  // the game plays on meanwhile
     if(this.pending!==name)return;
-    this.pending=null;
+    this.pending=null;if(this.fail.name===name)this.fail={name:'',n:0,at:0};
     const cur=this.cur,c=this.ctx;
     if(cur?.name===name&&cur.head){
       // The first seconds are playing: the whole song carries on from the same sample, then loops.
       const at=c.currentTime+.08,pos=at-cur.t0;
       if(pos<Math.min(cur.src.buffer.duration,buf.duration)-.05){
         const src=c.createBufferSource();src.buffer=buf;src.loop=true;src.connect(cur.g);src.start(at,pos);
-        try{cur.src.stop(at);}catch{/* ended */}
+        cur.src.onended=null;try{cur.src.stop(at);}catch{/* ended */}
         this.cur={name,src,g:cur.g,t0:cur.t0,head:false};
       }else this.start(name,buf,false);  // the head ran out first: start the song again
     }else this.start(name,buf,false);
