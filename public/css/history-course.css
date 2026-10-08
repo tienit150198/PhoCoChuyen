@@ -1,0 +1,24 @@
+/* 📜 Học lịch sử Việt Nam (public/js/v4/history-course.js): built on the Học kế toán sheet (accounting-school.css). */
+.hc-school .hc-intro{padding:16px;border:1px solid var(--as-rule);border-radius:var(--radius);background:var(--as-paper);margin-bottom:16px}
+.hc-school .hc-intro>p:first-child{margin:0 0 12px}
+.hc-school .hc-intro .as-hint{margin:8px 0 12px}
+.hc-school .hc-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.hc-school .hc-lesson{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:10px 12px;border:1px solid var(--as-rule);border-radius:var(--radius-sm);background:var(--as-paper);color:var(--as-ink);text-align:left;cursor:pointer}
+.hc-school .hc-lesson:hover{background:var(--as-inset)}
+.hc-school .hc-lesson.done{border-color:var(--as-ledger)}
+.hc-school .hc-emoji{font-size:1.4rem;flex:0 0 32px;text-align:center}
+.hc-school .hc-name{display:flex;flex-direction:column;flex:1 1 auto;min-width:0}
+.hc-school .hc-name b{font-weight:700;line-height:1.4}
+.hc-school .hc-mark{flex:0 0 auto;font-size:.85rem;font-weight:700;color:var(--as-pencil)}
+.hc-school .hc-lesson.done .hc-mark{color:var(--as-ledger)}
+.hc-school .hc-reading .as-lesson-body p{margin:0 0 12px;padding:4px 8px;border-left:3px solid transparent;border-radius:var(--radius-sm)}
+.hc-school .hc-reading .as-lesson-body p.hc-hint{background:rgba(240,190,40,.24);border-left-color:#d9a21b}
+.hc-school .hc-options{display:grid;gap:8px;margin-top:12px}
+.hc-school .hc-option{display:flex;align-items:flex-start;gap:10px;width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--as-rule);border-radius:var(--radius-sm);background:var(--as-paper);color:var(--as-ink);text-align:left;line-height:1.5;cursor:pointer}
+.hc-school .hc-option:hover{background:var(--as-inset);border-color:var(--as-ledger)}
+.hc-school .hc-exam .as-progress{margin:8px 0 16px}
+.hc-school .hc-review ol{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.hc-school .hc-review li{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid var(--as-rule);border-left:3px solid var(--as-ledger);border-radius:var(--radius-sm);background:var(--as-paper)}
+.hc-school .hc-review li.no{border-left-color:var(--bad)}
+.hc-school .hc-review b{font-weight:700;line-height:1.5}
+@media(max-width:760px){.hc-school .hc-intro{padding:12px}.hc-school .hc-reading{padding:16px 12px}}

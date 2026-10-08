@@ -51,6 +51,7 @@ const L={
   social:lazy(()=>import('./v4/social.js')),  // Phố nghề
   classroom:lazy(()=>import('./v4/classroom.js')),  // Lớp học
   accountingSchool:lazy(()=>import('./v4/accounting-school.js'),{css:['/css/accounting-school.css']}),
+  historyCourse:lazy(()=>import('./v4/history-course.js'),{css:['/css/accounting-school.css','/css/history-course.css']}),  // 📜 Học lịch sử Việt Nam
   desk:lazy(()=>import('./desk.js')),  // office dossiers
   inc:lazy(()=>import('./v4/incidents.js')),  // Chuyện đời
   chat:lazy(()=>import('./v4/ai-chat.js')),  // AI characters
@@ -327,6 +328,7 @@ function navItems(c){
   // A career with its own shell (the air crew: no Sổ tiệm, a flight log instead) reshapes the list; others keep it.
   const result=careerUI(career())?.nav?.(items,careerContext(env()))||items;
   if(!result.some(x=>x[0]==='accountingSchool'))result.push(['accountingSchool','calculator','Học kế toán']);  // 📒 Học kế toán (v4/accounting-school.js): every career, after a career's own reshaping
+  if(!result.some(x=>x[0]==='historyCourse'))result.push(['historyCourse','book','Học lịch sử']);  // 📜 Học lịch sử Việt Nam (v4/history-course.js): every career, free
   if(api.state?.journey?.story&&!result.some(x=>x[0]==='jrInvest'))result.push(['jrInvest','coin','Đầu tư']);
   return result;
 }
@@ -350,7 +352,7 @@ const RAIL_GROUPS=[
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
-  ['minh','gift','Của mình',['jrWardrobe','spendStyle','album','passport','workshop','journal','accountingSchool']],
+  ['minh','gift','Của mình',['jrWardrobe','spendStyle','album','passport','workshop','journal','accountingSchool','historyCourse']],
 ];
 /** ☕ v4/spend.js (game/spend.py): the menu entries and the town map's doors (each opens its tab). */
 const SPEND_OPEN=new Set(['spend','spendQuan','spendSpa','spendRap','spendChua','spendStyle']);
@@ -635,6 +637,7 @@ function renderSheet(preserve=true){
     case'jobapp':dialog.classList.add('medium','v4-sheet');html=moreView(()=>jobAppView(env()));break;
     case'classroom':dialog.classList.add('wide','v4-sheet');html=lazyView(L.classroom,m=>m.classroomView(env()));break;
     case'accountingSchool':dialog.classList.add('wide','v4-sheet','as-sheet');html=lazyView(L.accountingSchool,m=>m.accountingSchoolView(env()));break;
+    case'historyCourse':dialog.classList.add('wide','v4-sheet','as-sheet');html=lazyView(L.historyCourse,m=>m.historyCourseView(env()));break;
     case'operations':dialog.classList.add('operations');html=moreView(()=>lazyView(L.ops,m=>m.operationsView(career(),room(),api.content.operations,ui,api.state)));break;
     case'promo':dialog.classList.add('narrow','v4-sheet','pm-sheet');html=lazyView(L.promo,m=>m.promoView(env()));break;  // 🎖️
     case'manager':dialog.classList.add('medium','v4-sheet','pm-sheet');html=lazyView(L.promo,m=>m.managerView(env()));break;  // 🧑‍💼
@@ -1517,6 +1520,7 @@ async function handleAction(action,data,el){
     case'expVisit':ui.townPlace=data.place;await cmd('life_town',{place:data.place});renderSheet();break;
     case'home':openSheet('home',{homeMode:null});break;  // 🗺️ the setting's choice again (Bản đồ phố / Danh sách)
     case'accountingSchool':if(await (await viaLazy(L.accountingSchool,el)).accountingSchoolOpen(env()))openSheet('accountingSchool');break;
+    case'historyCourse':if(await (await viaLazy(L.historyCourse,el)).historyCourseOpen(env()))openSheet('historyCourse');break;
     case'v4Group':railGroup(data.group||'');break;
     // "Thêm" opens on its first page, not inside the hub left open last time.
     case'v4Menu':if(ui.railGroup&&layout()==='phone')railGroup(null,false);await shell.action(action,data,el,env());break;
@@ -1626,6 +1630,7 @@ async function handleAction(action,data,el){
       if((L.fb.m||action==='gopy')&&await (await viaLazy(L.fb,el)).feedbackAction(action,data,el,env()))break;
       if(procedureAction(action,data,el,env()))break;
       if(/^as[A-Z]/.test(action)&&await (await viaLazy(L.accountingSchool,el)).accountingSchoolAction(action,data,el,env()))break;
+      if(/^vs[A-Z]/.test(action)&&await (await viaLazy(L.historyCourse,el)).historyCourseAction(action,data,el,env()))break;
       if(action==='classroom'){openSheet('classroom');break;}
       if(await shell.action(action,data,el,env()))break;
       toast('Chưa có tương tác này.',true);
