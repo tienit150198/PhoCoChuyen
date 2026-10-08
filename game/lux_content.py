@@ -191,7 +191,7 @@ GIVES = (
     dict(id='phao_hoa', emoji='🎆', name='Pháo hoa cả phố', sizes=(
         dict(id='nho', name='Pháo hoa nhỏ', price=20000),
         dict(id='lon', name='Pháo hoa lớn', price=80000),
-        dict(id='dai_tiec', name='Đại tiệc pháo hoa', price=300000)), gap=600),
+        dict(id='dai_tiec', name='Đại tiệc pháo hoa', price=300000)), gap=0),   # owner 08/10: "pháo hoa bắn k cần đợi" (was 600 s between shows)
     dict(id='ghe_da', emoji='🪑', name='Ghế đá khắc tên', price=30000, slots=24, where='Công viên bờ hồ'),
     dict(id='cot_den', emoji='💡', name='Cột đèn khắc tên', price=60000, slots=12, where='Đường ven sông'),
     dict(id='hoi_cho', emoji='🏮', name='Tài trợ hội chợ', price=150000, week=True),

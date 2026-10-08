@@ -10,7 +10,7 @@ and this sends `fireworks {id, size, name, wish, ago}` to every ready socket, wh
 page draws the bursts and a long banner: public/js/v4/fireworks.js). A player who blocked the giver, or was blocked by
 them (Player.hidden, either way), still sees the sky but not who or the wish (`name` and `wish` empty). The pid never
 leaves the service (the game's id holds it, so a page gets a random key instead: an anonymous giver stays anonymous).
-The street allows one show every `gap` seconds (game/lux_content.py), so no queue is needed here; a repeated id is
+Shows may come back to back (gap 0 since 08/10, game/lux_content.py): each page queues them; a repeated id is
 dropped (the page queues anyway).
 
 Late arrivals: a page that connects within LATE seconds of the start gets the same show in its welcome (`fw`, with

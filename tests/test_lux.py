@@ -426,29 +426,27 @@ class Database(unittest.TestCase):
         self.assertEqual(self.store.read(b)[0]['journey']['wallet'], 2_000_000)
         self.cmd(b, 'jr_lux_give', kind='ghe_da', slot=8, msg='bo', anon=True, confirm=True)
         self.cmd(a, 'jr_lux_give', kind='phao_hoa', size='lon', confirm=True)
-        with self.assertRaises(GameError) as cm:                         # one show at a time on the whole street
-            self.cmd(b, 'jr_lux_give', kind='phao_hoa', size='nho', confirm=True)
-        self.assertEqual(cm.exception.code, 'busy')
-        self.assertEqual(self.store.read(b)[0]['journey']['wallet'], 2_000_000 - 30_000)
+        self.cmd(b, 'jr_lux_give', kind='phao_hoa', size='nho', confirm=True)   # no waiting between shows (owner 08/10)
+        self.assertEqual(self.store.read(b)[0]['journey']['wallet'], 2_000_000 - 30_000 - 20_000)
         self.cmd(b, 'jr_lux_give', kind='thu_vien', amount=250_000, confirm=True)
         self.cmd(a, 'jr_lux_give', kind='hoi_cho', confirm=True)
         news = [r['text'] for r in self.rows("SELECT text FROM news WHERE kind='lux' ORDER BY id")]
         self.assertTrue(any('pháo hoa lớn' in t and lux.GUEST_NAME in t for t in news), news)   # a guest is never named
         chat = self.rows("SELECT pid, channel, text FROM chat_messages WHERE channel='town'")
-        self.assertEqual(len(chat), 1)
-        self.assertEqual(chat[0]['pid'], 'admin')
+        self.assertEqual(len(chat), 2)                                   # one line in Cả phố per show
+        self.assertEqual({c['pid'] for c in chat}, {'admin'})
         self.assertEqual(lux.board(self.store, a)['mine'], 260_000)
         with self.store.connect() as db:   # Lan signs up: the board shows her account's display name
             db.execute("INSERT INTO accounts(username, display, pw, sid) VALUES('lan', 'Lan Mây', 'x', ?)", (self.store.key(a),))
         lux._BOARD.clear()
         board = lux.board(self.store, a)
-        self.assertEqual(board['xu'], 30_000 + 30_000 + 80_000 + 250_000 + 150_000)
+        self.assertEqual(board['xu'], 30_000 + 30_000 + 80_000 + 20_000 + 250_000 + 150_000)
         self.assertEqual([(x['name'], x['xu']) for x in board['top']],
-                         [('Lan Mây', 260_000), (lux.GUEST_NAME, 250_000), (lux.ANON_NAME, 30_000)])   # a guest is never named
+                         [(lux.GUEST_NAME, 270_000), ('Lan Mây', 260_000), (lux.ANON_NAME, 30_000)])   # a guest is never named
         self.assertEqual(board['banners'], {'hoi_cho': 'Lan Mây'})
         self.assertEqual(board['library'], dict(name=lux.GUEST_NAME, xu=250_000))
         self.assertEqual({(p['k'], p['s'], p['name']) for p in board['plaques']}, {('ghe_da', 7, 'Lan Mây'), ('ghe_da', 8, lux.ANON_NAME)})
-        self.assertGreater(board['fw_wait'], 0)
+        self.assertEqual(board['fw_wait'], 0)                         # no waiting between shows
         self.store.delete(b)                                              # erased: what Minh gave stays, anonymous
         lux._BOARD.clear()
         self.assertEqual(lux.board(self.store, None)['library'], dict(name=lux.ANON_NAME, xu=250_000))

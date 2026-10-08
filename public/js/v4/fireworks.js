@@ -21,7 +21,7 @@ const SIZES={
 /** Names the server writes for a guest or an anonymous giver: words to translate, not a player's name. */
 const PLAIN_NAMES=new Set(['Một người hàng xóm','Một người hàng xóm giấu tên','Bạn']);
 const COLORS=['#ff5d73','#ffd25e','#6fe3a8','#6ec8ff','#c792ff','#ff9f5a','#ffffff','#ff7ad9'];
-const QUEUE_MAX=2,SPARK_MAX=1600,SEEN_KEY='mnl-fw-seen';
+const QUEUE_MAX=6,SPARK_MAX=1600,SEEN_KEY='mnl-fw-seen';
 const S={env:null,cur:null,queue:[],seen:new Set()};
 try{for(const k of JSON.parse(sessionStorage.getItem(SEEN_KEY)||'[]'))if(typeof k==='string')S.seen.add(k);}catch{/* storage blocked */}
 

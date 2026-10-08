@@ -74,13 +74,11 @@ class Purchase(unittest.TestCase):
                 chat = [r['text'] for r in db.execute("SELECT text FROM chat_messages WHERE channel='town'").fetchall()]
             self.assertTrue(any('Mừng sinh nhật' in t for t in news), news)
             self.assertTrue(any('Lan Mây' in t and 'đại tiệc pháo hoa' in t for t in chat), chat)
-            # one show at a time on the street: refused, nothing paid, nothing shown
+            # owner 08/10 "pháo hoa bắn k cần đợi": a second show right away is paid and shown too (pages queue them)
             sent.clear()
-            with self.assertRaises(GameError) as cm:
-                self.cmd(b, 'jr_lux_give', kind='phao_hoa', size='nho', confirm=True)
-            self.assertEqual(cm.exception.code, 'busy')
-            self.assertEqual(self.store.read(b)[0]['journey']['wallet'], 2_000_000)
-            self.assertFalse([e for e in sent if e.get('op') == 'fireworks'])
+            self.cmd(b, 'jr_lux_give', kind='phao_hoa', size='nho', confirm=True)
+            self.assertEqual(self.store.read(b)[0]['journey']['wallet'], 2_000_000 - 20_000)
+            self.assertEqual(len([e for e in sent if e.get('op') == 'fireworks']), 1)
 
     def test_wish_is_optional_and_from_the_list(self):
         a = self.player()
