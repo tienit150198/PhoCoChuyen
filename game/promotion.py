@@ -5,8 +5,10 @@ summary says so and the next morning brings a short review: two situation questi
 office for an employee, the street traders' association for an owner), then, for an employee, the
 pay ask. Passing gives the new title and, for good:
 
-* an employee: a raise on the contract salary (+8 / 16 / 25 / 35 %, plus up to +12 points earned in
-  the pay asks), paid by employment.on_close before probation and the ×3/×5 accounting rate;
+* an employee: a raise on the contract salary (+8 / 20 / 35 / 55 %, plus up to +12 points earned in
+  the pay asks), paid by employment.on_close before probation and the ×3/×5 accounting rate (#249, 08/10: "lên chức
+  cao lương cao": the top steps pay clearly more, never ×5; steps above 4 go +66 / 77 / 88 %, and with the asks'
+  points a step stays ≤ 100 %, the bound older builds validate a log row's pct at);
   `job['salary']` itself never changes (its validator keeps it inside the posting's range);
 * an owner: regulars tip a share of the day's sales (+3 / 6 / 9 / 12 %, capped per day).
 
@@ -48,12 +50,12 @@ VERSION = 1
 # Steps 5..7 exist only in a career with a longer ladder (TOP_BY_CAREER); office: good days in the 🏢 office.
 EMP_STEPS = (None,
              dict(good=5, ratio=70, pct=8),
-             dict(good=8, pct=16),
-             dict(good=12, pct=25, served=40, cert=True),
-             dict(good=20, pct=35, served=80, chapter=5),
-             dict(good=24, pct=45, served=120),
-             dict(good=28, pct=55, served=160, office=5),
-             dict(good=32, pct=65, served=200, office=8))
+             dict(good=8, pct=20),
+             dict(good=12, pct=35, served=40, cert=True),
+             dict(good=20, pct=55, served=80, chapter=5),
+             dict(good=24, pct=66, served=120),
+             dict(good=28, pct=77, served=160, office=5),
+             dict(good=32, pct=88, served=200, office=8))
 OWN_STEPS = (None,
              dict(good=5, ratio=70, served=15, pct=3, cap=10),
              dict(good=8, served=30, rating=40, pct=6, cap=18),
@@ -301,6 +303,34 @@ def raise_pct(s: dict, c: dict, career: str) -> int:
     return EMP_STEPS[_rank(rec)]['pct'] + rec['extra']
 
 
+def ladder_pcts(s: dict, c: dict, career: str) -> list[int] | None:
+    """Employee: the raise (%) at every step 0..top with the asks' points earned so far (the job card's pay ladder).
+    None for an owner or a career on an org ladder (its pay is the grade's, game/org.py)."""
+    if track(career) != 'emp' or ORG.wears(career, c):
+        return None
+    rec = _live(s, c, career)
+    extra = rec['extra'] if rec else 0
+    return [step_pct(career, n, extra) for n in range(0, top(career) + 1)]
+
+
+def need_good(s: dict, st: dict) -> int:
+    """A step's good days: fewer with a degree from ✈️ Du học (game/abroad.py good_need)."""
+    from . import abroad
+    return abroad.good_need(s, st['good'])
+
+
+def bonus_good(s: dict, c: dict, career: str, n: int) -> bool:
+    """🌏 A contract abroad done (game/abroad.py): `n` good days towards the next step of that job. False when it
+    does not apply (an org ladder, the top step, no live record)."""
+    if ORG.wears(career, c):
+        return False
+    rec = _live(s, c, career, create=True)
+    if rec is None or _rank(rec) >= top(career):
+        return False
+    rec['good'] = min(10**6, rec['good'] + int(n))
+    return True
+
+
 def step_pct(career: str, n: int, extra: int = 0) -> int:
     if n < 1:
         return 0
@@ -366,8 +396,9 @@ def _gates(s: dict, c: dict, career: str, rec: dict) -> list[dict]:
     served = st.get('served', 0)
     if st.get('cert'):
         from . import certificates as ct
-        rows.append(dict(id='certificate_or_served', met=bool(ct.held_for(s, career) or _served(c) >= served),
-                         label=f'🎓 Chứng chỉ nhóm nghề hoặc {served} lượt khách'))
+        from . import abroad
+        rows.append(dict(id='certificate_or_served', met=bool(ct.held_for(s, career) or abroad.degrees(s) or _served(c) >= served),
+                         label=f'🎓 Chứng chỉ nhóm nghề, bằng du học hoặc {served} lượt khách'))
     elif served:
         rows.append(dict(id='served', met=_served(c) >= served, label=f'{served} lượt khách ({_served(c)} rồi)'))
     if st.get('rating'):
@@ -406,7 +437,7 @@ def ready(s: dict, c: dict, career: str, rec: dict) -> bool:
     if n > top(career) or rec['wait'] > 0 or _due(rec):
         return False
     st = (EMP_STEPS if track(career) == 'emp' else OWN_STEPS)[n]
-    if rec['good'] < st['good']:
+    if rec['good'] < need_good(s, st):
         return False
     if st.get('ratio') and rec['good'] * 100 < st['ratio'] * rec['worked']:
         return False
@@ -1007,8 +1038,9 @@ def _next(s: dict, c: dict, career: str, rec: dict) -> dict | None:
     if n > top(career):
         return None
     st = (EMP_STEPS if track(career) == 'emp' else OWN_STEPS)[n]
-    requirements = [dict(id='good', met=rec['good'] >= st['good'],
-                         label=f'{rec["good"]}/{st["good"]} ngày tốt từ lần lên bậc gần nhất')]
+    good = need_good(s, st)
+    requirements = [dict(id='good', met=rec['good'] >= good,
+                         label=f'{rec["good"]}/{good} ngày tốt từ lần lên bậc gần nhất' + (' (🎓 bằng du học: bớt ngày)' if good < st['good'] else ''))]
     if st.get('ratio'):
         # Keep the full numerator and compare integers, exactly as ready does. A rounded
         # percentage (e.g. 69.99 -> 70) must never make a blocked review appear eligible.
@@ -1021,7 +1053,7 @@ def _next(s: dict, c: dict, career: str, rec: dict) -> dict | None:
         requirements.append(dict(id='wait', met=False, label=f'Hẹn xét lại sau {rec["wait"]} ngày làm'))
     if _due(rec):
         requirements.append(dict(id='review', met=False, label='Đã có lịch xét bậc ở đầu ca sau'))
-    return dict(title=title(s, c, career, n), good=min(rec['good'], st['good']), need=st['good'],
+    return dict(title=title(s, c, career, n), good=min(rec['good'], good), need=good,
                 why=gate(s, c, career, rec), wait=rec['wait'], pct=step_pct(career, n, rec['extra']),
                 requirements=requirements)
 
@@ -1124,8 +1156,9 @@ def public(s: dict, c: dict, career: str) -> dict | None:
              next=_next(s, c, career, rec), mgr=can_manage(s, c, career), team=TEAM.get(min(max(n, MGR_FROM), TOP)),
              due=_due_view(s, c, career, rec), log=_logs(rec)[-3:], shifts=rec['mgr']['n'],
              pcts=[step_pct(career, i) for i in range(1, t + 1)])
-    if t > TOP:   # a long ladder: the whole way up, for "Xem thêm"
-        v['ladder'] = [title(s, c, career, i) for i in range(1, t + 1)]
+    # The whole way up, for "Xem thêm" and the job card (#249: every career shows its ladder, not only the long ones).
+    v['ladder'] = [title(s, c, career, i) for i in range(1, t + 1)]
+    v['base_title'] = title(s, c, career, 0)
     if career in PC.INSIGNIA:
         x = PC.INSIGNIA[career][n]
         v['insignia'] = dict(x, label=PC.insignia_label(x))

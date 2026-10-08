@@ -274,8 +274,17 @@ function homeMain(env){
   const town=townOK()?btn('🗺️ Bản đồ phố','jrTown',{},'cream small jr-town'):'';
   const top=`<header class="jr-top"><div class="grow"><span class="eyebrow">${J.story?`Khu phố nhỏ · Ngày sống ${fmt(J.life_day)}`:'Khu phố nhỏ · mọi nơi đều mở'}</span><h1>Hành trình của bạn</h1></div>${town}${accountChip(env)}${api.state.current?btn(icon('x',20),'close',{},'ghost small jr-close','aria-label="Đóng"'):''}</header>`;
   // 🎓 F#267: Thi chứng chỉ sits in the first column, right under the goals (it was last in the third, under the places).
-  const more=`${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${storiesCard(env)}`;
+  const more=`${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${abroadEntry(env)}${storiesCard(env)}`;
   return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${J.story?chapterCard(env):''}${!J.story||J.finale?resumeCard(env):''}${certsEntry(env)}${meCard(env)}${J.story?houseCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
+}
+
+/* ✈️ Du học, 🌏 Làm việc ở nước ngoài (v4/abroad.js, game/abroad.py): one line, under 🎓 Thi chứng chỉ (its styles). */
+function abroadEntry(env){
+  const {api}=env,J=api.state.journey,A=J?.abroad,K=api.content.journey?.abroad;if(!J?.story||!A||!K)return '';
+  const w=A.work,d=w&&K.dests.find(x=>x.id===w.to),st=A.study,sd=st&&K.dests.find(x=>x.id===st.p);
+  const line=d?`${d.flag} Đang làm ở ${d.city} · ngày ${w.n}/${w.need}`:sd?`${sd.flag} Đang học ở ${sd.city} · buổi ${st.n}/${st.of}${st.lesson?' · hôm nay chưa học':''}`
+    :A.deg.length?`🎓 ${A.deg.length} bằng du học · lương làm thuê +${A.deg_pct}%`:'Học ở nước ngoài, hay sang chi nhánh làm lương cao';
+  return `<button type="button" class="jr-card ct-entry" data-action="abroad" data-tab="${w?'work':'study'}"><span class="ct-entry-icon" aria-hidden="true">✈️</span><span class="grow"><b>Du học & đi làm nước ngoài</b><small>${esc(line)}</small></span>${st?.lesson?'<span class="tag green">Vào học</span>':''}${icon('arrow',16)}</button>`;
 }
 
 /* 🏮 Hội chợ dân gian (v4/fair.js, own dialog; game/fair.py): a small banner while the fair is open or about to open. */

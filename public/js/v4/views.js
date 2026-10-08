@@ -675,6 +675,28 @@ function hiredCert(env,id){
   return rows.map(({g,studying})=>{const ready=studying&&J.study?.ready_now;
     return `<div class="notice blue small ct-banner"><span aria-hidden="true">${g.emoji}</span><span class="grow">${studying?`Đang học <b>${esc(g.name)}</b>.`:`Bạn chưa có <b>${esc(g.name)}</b>. Thi lúc nào cũng được: đề ${env.api.content.journey.certs.draw} câu, có 💡 gợi ý.`}${g.perk?` 🎁 ${esc(g.perk)}`:''}</span>${button(ready?'📝 Vào thi':studying?'Xem bài học':'Đi thi ngay','jrCerts',{cert:g.id,career:id},ready||!studying?'primary small':'ghost small')}</div>`;}).join('');
 }
+/** #249 🎖️ Chức vụ & lương on the job card (game/promotion.py, game/employment.py public ladder_pay): the post held,
+ * what today's pay is made of, the next post with its pay and what it still needs, and the whole ladder in xu a day.
+ * An org ladder (police) keeps its own sheet; an older server without ladder_pay shows nothing new. */
+function jobLadder(c,job){
+  const p=c.promo,pays=job.ladder_pay;if(!p||p.org||!Array.isArray(pays)||!pays.length)return '';
+  const titles=[p.base_title||job.title,...(p.ladder||[])].slice(0,pays.length),n=p.next;
+  const parts=[`gốc ${fmt(job.base_salary)} xu`];
+  if(job.raise)parts.push(`chức vụ +${job.raise}%`);if(job.degree)parts.push(`🎓 bằng du học +${job.degree}%`);
+  if(job.away)parts.push(`🌏 nước ngoài +${job.away}%`);if(job.salary_multiplier>1)parts.push(`kế toán ×${job.salary_multiplier}`);
+  const need=(n?.requirements||[]).filter(r=>!r.met).map(r=>esc(r.label));
+  const next=n?`<p class="jb-next"><span>⬆️ Lên <b>${esc(n.title)}</b>: <b>${fmt(pays[p.rank+1])} xu/ngày</b> (+${n.pct}%)</span><small>${need.length?'Cần: '+need.join(' · '):'Đủ điều kiện: sếp sẽ hẹn xét lên chức.'}</small></p>`
+    :`<p class="jb-next">🏆 Bạn đang giữ chức vụ cao nhất ở đây.</p>`;
+  const rows=titles.map((t,i)=>`<li class="${i===p.rank?'on':i<p.rank?'done':''}"><span>${i<p.rank?'✓ ':i===p.rank?'👉 ':''}${esc(t)}</span><b>${fmt(pays[i])} xu</b></li>`).join('');
+  return `<article class="card jb-ladder"><div class="kv"><div class="kv-row"><span>Chức vụ</span><b>${esc(p.title)}</b></div><div class="kv-row"><span>Lương mỗi ngày</span><b>${fmt(job.salary)} xu</b></div></div><p class="small muted">${parts.join(' · ')}</p>${next}<details class="jb-path" data-fold="jb-path"><summary>🪜 Lộ trình lương · ${titles.length} bậc</summary><ol>${rows}</ol><p class="small muted">Lên chức là tăng lương, không bao giờ bị giáng chức.</p></details>${button('🎖️ Xem thăng tiến','promo',{},'ghost small')}</article>`;
+}
+/** ✈️🌏 (game/abroad.py): the contract abroad running on this job, or the way to Du học / Làm việc ở nước ngoài. */
+function jobAbroad(api,id){
+  const A=api.state.journey?.abroad,K=api.content.journey?.abroad;if(!A||!K)return '';
+  const w=A.work,d=w&&K.dests.find(x=>x.id===w.to);
+  if(w&&w.career===id&&d)return `<p class="notice blue small jb-abroad"><span aria-hidden="true">${d.flag}</span><span class="grow">Đang làm ở chi nhánh <b>${esc(d.city)}</b>: ngày ${w.n}/${w.need}, lương +${w.pct}%.</span>${button('🌏 Xem','abroad',{tab:'work'},'ghost small')}</p>`;
+  return `<div class="row wrap jb-abroad">${button('✈️ Du học','abroad',{tab:'study'},'cream small')}${button('🌏 Làm việc ở nước ngoài','abroad',{tab:'work'},'cream small')}</div>`;
+}
 export function jobView(env){
   const {api,ui}=env,id=api.state.current,c=api.state.careers[id],job=c.job,E=api.content.employment;
   const posts=E.postings[id]||[];const qs=E.questions[id]||{};const ex=E.exams?.[id]||null;const cert=certOf(job,ex);
@@ -687,7 +709,7 @@ export function jobView(env){
     // 🎖️ Thăng tiến (game/promotion.py): the step's title, the good days and a bar; a tap opens the ladder.
     const pr=c.promo,pn=pr?.next,promo=pr?`<button type="button" class="pm-strip" data-action="promo"><span aria-hidden="true">🎖️</span><b>${esc(pr.title)}</b>${pr.due?'<small>Sếp hẹn gặp</small>':pn?`<small>${pn.good}/${pn.need}</small><span class="bar"><i style="width:${Math.round(100*pn.good/Math.max(1,pn.need))}%"></i></span>`:''}</button>`:'';
     return head('Hồ sơ công việc',esc(p?.org||''),'VIỆC LÀM · '+esc(place))+`<div class="sheet-body">${promo}<article class="card"><h3>${esc(job.title)}</h3>
-<p>${esc(p?.culture||'')}</p><div class="kv"><div class="kv-row"><span>Lương</span><b>${job.salary} xu/ngày${job.probation?' · thử việc 85%':''}</b></div>${p?.wage_note?`<div class="kv-row"><span>Tiền tiệm</span><b>${esc(p.wage_note)}</b></div>`:''}${cert?`<div class="kv-row"><span>Chứng chỉ</span><b>✓ ${esc(ex.name)}</b></div>`:''}${ci?.held?`<div class="kv-row"><span>Chứng chỉ nghề</span><b>${ci.g.emoji} ${esc(ci.g.name)}</b></div>`:''}${job.backdoor&&job.backdoor.posting===job.employer?`<div class="kv-row"><span>Vào làm</span><b>🚪 Qua cửa sau (${job.backdoor.fee} xu)</b></div>`:''}<div class="kv-row"><span>Ngày đã làm</span><b>${job.days_worked}</b></div>${job.probation?`<div class="kv-row"><span>Thử việc còn</span><b>${job.probation_left} ngày có làm việc</b></div>`:''}</div><p class="muted small">Lương trả khi khép ca nếu hôm đó bạn hoàn thành ít nhất một việc. Hết thử việc, đánh giá trung bình từ 3.5★ sẽ được ký chính thức.</p>${hiredCert(env,id)}${confirmCmd('Xin nghỉ việc','job_quit',{},'Nghỉ việc ở đây? Bạn cần ứng tuyển lại trước ca tiếp theo.','ghost small',c.open)}</article></div>`;
+<p>${esc(p?.culture||'')}</p><div class="kv"><div class="kv-row"><span>Lương</span><b>${job.salary} xu/ngày${job.probation?' · thử việc 85%':''}</b></div>${p?.wage_note?`<div class="kv-row"><span>Tiền tiệm</span><b>${esc(p.wage_note)}</b></div>`:''}${cert?`<div class="kv-row"><span>Chứng chỉ</span><b>✓ ${esc(ex.name)}</b></div>`:''}${ci?.held?`<div class="kv-row"><span>Chứng chỉ nghề</span><b>${ci.g.emoji} ${esc(ci.g.name)}</b></div>`:''}${job.backdoor&&job.backdoor.posting===job.employer?`<div class="kv-row"><span>Vào làm</span><b>🚪 Qua cửa sau (${job.backdoor.fee} xu)</b></div>`:''}<div class="kv-row"><span>Ngày đã làm</span><b>${job.days_worked}</b></div>${job.probation?`<div class="kv-row"><span>Thử việc còn</span><b>${job.probation_left} ngày có làm việc</b></div>`:''}</div><p class="muted small">Lương trả khi khép ca nếu hôm đó bạn hoàn thành ít nhất một việc. Hết thử việc, đánh giá trung bình từ 3.5★ sẽ được ký chính thức.</p>${hiredCert(env,id)}${jobAbroad(api,id)}${confirmCmd('Xin nghỉ việc','job_quit',{},'Nghỉ việc ở đây? Bạn cần ứng tuyển lại trước ca tiếp theo.','ghost small',c.open)}</article>${jobLadder(c,job)}</div>`;
   }
   const app=job.application;
   if(job.status==='offer'){

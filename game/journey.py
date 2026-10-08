@@ -62,6 +62,7 @@ from . import accounting_jobs as aj   # 💼 Việc làm kế toán: exam gate, 
 from . import history_course as hcourse   # 📜 Học lịch sử Việt Nam: its title (game/history_course.py)
 from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
 from . import quay as qy   # 🏪 Quầy của bạn: your own counter, staff, the till (game/quay.py)
+from . import abroad as ab   # ✈️ Du học, 🌏 Làm việc ở nước ngoài (game/abroad.py)
 
 VERSION = 1
 START_WALLET = 60
@@ -601,6 +602,7 @@ def gate(s: dict, career: str, action: str, internal: bool = False, p: dict | No
         e.need(j['intro'] or j['gender'], 'Chọn nhân vật của bạn trước nhé.', 'no_profile')
     if action == 'start_day':
         e.need(career not in j['paused'], 'Nơi này đang tạm đóng. Mở lại ở trang Hành trình rồi làm tiếp nhé.', 'paused')
+        ab.gate_start(s, career)   # 🌏 away on a contract abroad: only that job's branch opens
 
 
 def on_select(s: dict, career: str) -> None:
@@ -631,6 +633,7 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
         j['stats']['salary'] += pay
         notes.append(f'Lương {pay} xu đã về ví của bạn.' if times <= 1 else
                      f'Lương kế toán x{times}{" ngày lễ" if times == aj.X5 else ""}: {pay} xu đã về ví của bạn.')
+    notes.extend(ab.day_lines(job_note))   # 🌏 a day at the branch abroad: the city, a letter from home, coming home
     # 🔥 This career's x3 day (game/x3_week.py): the day's net once more, twice, into the wallet.
     extra = 0
     if x3.on(career):
@@ -719,6 +722,7 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
     qy.on_life_day(s, result)   # 🏪 each counter runs the day that just ended (after the month's bills)
     qy.on_shift(s, career, action, result)   # 💼 a hired shift at another player's counter ends with its day (game/quay_hire.py)
     ship.on_action(s, career, action, p, result)
+    ab.sync(s)   # 🌏 a contract abroad whose job was quit or changed ends
     if action == 'start_day' and career in s['careers']:
         line = _emp().backdoor_remark(s, s['careers'][career], career)   # vào bằng cửa sau: one remark, day one
         if line:
@@ -908,6 +912,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(vang.action(s, name, p))
     elif name.startswith('jr_quay_'):
         result.update(qy.action(s, name, p))
+    elif name.startswith('jr_abroad_'):
+        result.update(ab.action(s, name, p))   # ✈️🌏
     else:
         raise e.GameError('Thao tác hành trình không hợp lệ.', 'unknown_action')
     after(s, None, name, p, result)
@@ -991,7 +997,8 @@ def public(s: dict) -> dict:
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
         bank=bk.public(s), home=hs.public(s), household=hh.public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
         garage=gr.public(s), gadgets=gd.public(s), spend=sp.public(s), pets=pt.public(s), lux=lx.public(s), **({'uniq': u} if (u := auc.public(s)) else {}), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
-        **({'quay': qy.public(s)} if qy.visible(s) else {}))   # 🏪 only once a save reaches it (state size)
+        **({'quay': qy.public(s)} if qy.visible(s) else {}),   # 🏪 only once a save reaches it (state size)
+        **({'abroad': a} if (a := ab.public(s)) else {}))   # ✈️🌏 story mode
 
 
 def _skill_ids() -> list[str]:
@@ -1016,7 +1023,8 @@ def content() -> dict:
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
         unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
-        garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), pets=pt.catalogue(), lux=lx.catalogue(), auction=auc.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content())
+        garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), pets=pt.catalogue(), lux=lx.catalogue(), auction=auc.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content(),
+        abroad=ab.catalogue())
 
 
 def validate(s: dict) -> None:
@@ -1108,3 +1116,4 @@ def validate(s: dict) -> None:
     rui.validate(s)   # 🛡️ journey['rui'] (optional)
     vang.validate(s)   # 💰 journey['vang'] (optional)
     qy.validate(s)   # 🏪 journey['quay'] (optional)
+    ab.validate(s)   # ✈️🌏 journey['abroad'] (optional)

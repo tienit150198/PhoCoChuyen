@@ -64,9 +64,11 @@ const L={
   live:lazy(()=>import('./v4/live.js')),  // 💬 Chat: the live socket, the chat button + badge (the dialog is v4/chat.js)
   tm:lazy(()=>import('./careers/tomorrow_kit.js'),{css:['/css/careers/tomorrow_kit.css']}),  // 🌅 Ngày mai in the pharmacy's day summary
   promo:lazy(()=>import('./v4/promo.js'),{css:['/css/promo.css']}),  // 🎖️ Thăng tiến, 🧑‍💼 Ca quản lý (game/promotion.py)
+  abroad:lazy(()=>import('./v4/abroad.js'),{css:['/css/abroad.css']}),  // ✈️ Du học, 🌏 Làm việc ở nước ngoài (game/abroad.py)
 };
 const TUT_OPEN=new Set(['help','tutGuide','tutReplay']);  // tutorial actions whose buttons other modules render
 const PROMO_OPEN=new Set(['promo','pmBoard','pmStart','pmPick','pmMate','pmOffice']);  // 🎖️ v4/promo.js
+const ABROAD_OPEN=new Set(['abroad','abTab','abJob','abLesson']);  // ✈️🌏 v4/abroad.js
 /** A sheet whose code is not in yet: its header (with the close button) and a skeleton. */
 const lazyView=(h,fn)=>h.use()?fn(h.m):header('')+`<div class="sheet-body">${skeleton()}</div>`;
 /** A sheet that reads the catalogue's `more` part (api.more(): job postings, the shop book, situations, story texts):
@@ -321,6 +323,7 @@ function navItems(c){
   if(api.state?.journey?.story&&api.state.journey.pets)items.push(['pets','paw','Thú cưng']);  // 🐾 v4/pets.js (own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.spend)items.push(['spend','coffee','Đi chơi'],['spendStyle','sparkle','Phong cách']);  // ☕🙏 quán, spa, rạp, công đức; 🎨 màu tên tuần (v4/spend.js, own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.lux)items.push(['lux','bag','Mua sắm']);
+  if(api.state?.journey?.story&&api.state.journey.abroad)items.push(['abroad','globe','Du học & nước ngoài',api.state.journey.abroad.study?.lesson?'dot':0]);  // ✈️🌏 v4/abroad.js: a dot when today's lesson waits
   if(api.state?.journey?.story&&api.content?.journey?.auction)items.push(['auction','award','Nhà đấu giá']);  // 🔨 đồ độc bản (v4/auction.js, own dialog): only once the server has it  // 🛍️ du lịch, sưu tập, dinh thự, tiệc, khóa học, Mạnh Thường Quân (v4/lux.js, own dialog): only once the server has it
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
@@ -355,7 +358,7 @@ const RAIL_GROUPS=[
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
-  ['minh','gift','Của mình',['jrWardrobe','spendStyle','album','passport','workshop','journal','accountingSchool','historyCourse']],
+  ['minh','gift','Của mình',['jrWardrobe','spendStyle','album','passport','workshop','journal','accountingSchool','historyCourse','abroad']],
 ];
 /** ☕ v4/spend.js (game/spend.py): the menu entries and the town map's doors (each opens its tab). */
 const SPEND_OPEN=new Set(['spend','spendQuan','spendSpa','spendRap','spendChua','spendStyle']);
@@ -644,6 +647,7 @@ function renderSheet(preserve=true){
     case'operations':dialog.classList.add('operations');html=moreView(()=>lazyView(L.ops,m=>m.operationsView(career(),room(),api.content.operations,ui,api.state)));break;
     case'promo':dialog.classList.add('narrow','v4-sheet','pm-sheet');html=lazyView(L.promo,m=>m.promoView(env()));break;  // 🎖️
     case'manager':dialog.classList.add('medium','v4-sheet','pm-sheet');html=lazyView(L.promo,m=>m.managerView(env()));break;  // 🧑‍💼
+    case'abroad':dialog.classList.add('medium','v4-sheet','ab-sheet');html=lazyView(L.abroad,m=>m.abroadView(env()));break;  // ✈️🌏
     default:html=header('Một khoảng thảnh thơi')+`<div class="sheet-body">${empty('Cửa sổ chưa mở','Quay lại cảnh để tiếp tục nhé.')}</div>`;
   }}
   html=shortWork(shutWork(html));
@@ -1592,6 +1596,7 @@ async function handleAction(action,data,el){
       if(await boardAction(action,data,el,env()))break;
       if((L.rank.m||action==='rank')&&await (await viaLazy(L.rank,el)).leaderboardAction(action,data,el,env()))break;
       if((L.promo.m||PROMO_OPEN.has(action))&&await (await viaLazy(L.promo,el)).promoAction(action,data,el,env()))break;  // 🎖️🧑‍💼
+      if(ABROAD_OPEN.has(action)&&await (await viaLazy(L.abroad,el)).abroadAction(action,data,el,env()))break;  // ✈️🌏
 
       if(action==='liveChat'){(await viaLazy(L.live,el)).openChat(data);break;}  // 💬 Chat (v4/chat.js)
       if(action==='liveWalk'){const w=await import('./v4/walk.js');L.live.m?.benchSpot(w.walk);await w.openWalk(env(),data);break;}  // 🚶 Đi dạo (v4/walk.js): its own dialog; 💕 its benches are the dating bench
