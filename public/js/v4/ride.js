@@ -15,6 +15,8 @@
  *   steer(r,dx,dist,dt)           the side it faces, the turn (a short squash through the middle), the wheels' angle
  * The art faces left (the front at -x) in character units (the character is about 140 tall, origin at its feet). */
 import {paintPlayer,CANVAS} from './look.js';
+// 👶 carrying a baby means walking (v4/baby.js)
+import {carrying,setCarry} from './baby.js';
 import {R,E,L,P,bloom} from '../scenes/kit.js';
 
 /** Garage vehicle id → how it is drawn. An id this build does not know: by its group (bike: a scooter, car: a small car). */
@@ -86,7 +88,7 @@ export const canRide=(state,content,o)=>options(state,content,o).length>0;
 /** The vehicle ridden now, or null (walking). */
 export function choice(state,content,o){
   const list=options(state,content,o);if(!list.length)return null;
-  const p=pref();if(!p.on)return null;
+  const p=pref();if(!p.on||carrying(state))return null;
   return list.find(v=>v.key===p.pick)||list[0];
 }
 /** The toggle: the next owned vehicle, then walking, then the first again. Returns the new choice. */
@@ -95,6 +97,7 @@ export function next(state,content,o){
   const now=choice(state,content,o),i=now?list.findIndex(v=>v.key===now.key):-1;
   const v=i<0?list[0]:list[i+1]||null;
   write(Boolean(v),v?.key||null);
+  if(v&&carrying(state))setCarry('');   // 👶 on the vehicle: the baby stays home
   return v;
 }
 /** The toggle's words: what the player does now (a tap changes it). */

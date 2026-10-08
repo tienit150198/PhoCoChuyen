@@ -10,6 +10,8 @@
  * draws the wardrobe top and accessory with art(), topDetail() and accBust(). */
 import {R,E,L,P,heart,bloom} from '../scenes/kit.js';
 import {paintRank} from './insignia.js';
+// 👶 F.bb: the baby in the character's arms (v4/baby.js)
+import {paintCarried} from './baby-art.js';
 
 export const SLOTS=['hair','shade','skin','top','bottom','shoes','acc'];
 // Same as game/wardrobe.py DEFAULTS (tests/test_wardrobe.py compares them).
@@ -393,12 +395,12 @@ export function paintAcc(c,F,K=CANVAS){
  * photobooth poses): {l, r} hand points [x, y]; a side given gets a sleeve from the shoulder to that hand instead of the
  * hand resting at the side (drawn last, over the face and hair). */
 export function paintPlayer(c,F,K=SVG,arms=null){
-  const sk=F.skin,male=F.g==='male';
+  const sk=F.skin,male=F.g==='male',bb=!arms&&F.bb&&typeof F.bb==='object'?F.bb:null;   // 👶 carrying: the arms hold the baby
   K.E(c,0,0,26,8,'#81644823');
   paintLegs(c,F,0,K);paintHairBack(c,F,K);
-  K.R(c,-23,-52,46,36,F.topC||F.classic,15);if(!arms?.l)K.E(c,-25,-36,8,14,sk.hand);if(!arms?.r)K.E(c,25,-36,8,14,sk.hand);
+  K.R(c,-23,-52,46,36,F.topC||F.classic,15);if(!arms?.l&&!bb)K.E(c,-25,-36,8,14,sk.hand);if(!arms?.r&&!bb)K.E(c,25,-36,8,14,sk.hand);
   paintTop(c,F,K);
-  if(!arms?.r&&/^#[0-9a-f]{6}$/i.test(F.L?.held||'')){K.R(c,19,-47,12,19,F.L.held,3,'#3b2a22',1.5);K.R(c,21.5,-44,7,12,'#bfe0f2',2);K.E(c,25,-33,6,5,sk.hand);}   // 📱 the phone in use, in the right hand
+  if(!bb&&!arms?.r&&/^#[0-9a-f]{6}$/i.test(F.L?.held||'')){K.R(c,19,-47,12,19,F.L.held,3,'#3b2a22',1.5);K.R(c,21.5,-44,7,12,'#bfe0f2',2);K.E(c,25,-33,6,5,sk.hand);}   // 📱 the phone in use, in the right hand
   K.E(c,0,-84,33,35,F.hair);K.E(c,-29,-71,5,8,sk.ear);K.E(c,29,-71,5,8,sk.ear);K.E(c,0,-77,29,28,sk.face);
   K.path(c,F.short?FRONT.short:FRONT.soft,F.hair);
   K.E(c,-20,-67,7,4,male?'#efb3a466':'#efa7a0');K.E(c,20,-67,7,4,male?'#efb3a466':'#efa7a0');
@@ -407,6 +409,7 @@ export function paintPlayer(c,F,K=SVG,arms=null){
   K.stroke(c,'M4 -66A4 4 0 0 1 -4 -66','#b17c69',1.6);
   paintHairFront(c,F,K);paintAcc(c,F,K);
   if(F.rk)paintRank(c,F,K);   // 🎖️ cấp hiệu and huy hiệu over the top
+  if(bb)paintCarried(c,bb,K,F);   // 👶 in front of everything: held to the chest
   if(arms)for(const [s,p] of [[-1,arms.l],[1,arms.r]])if(p){K.L(c,s*20,-44,p[0],p[1],F.topC||F.classic,11);K.E(c,p[0],p[1],7,7.5,sk.hand);}
 }
 /** Full-body SVG of a look (the wardrobe mirror and the item tiles). */

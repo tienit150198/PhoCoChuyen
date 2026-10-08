@@ -71,6 +71,7 @@ from game import auction  # 🔨 Nhà đấu giá đồ độc bản: the day's 
 from game import marriage
 from game import couple
 from game import deco_mate  # 💞 the spouse's furniture in the home both live in (read-only)
+from game import family as family_babies  # 👶 the shared child at home (GET /api/family/baby, read-only)
 from game import system_gift
 from game import live_effects, live_dating
 from game import quay_hire
@@ -788,6 +789,10 @@ class Handler(BaseHTTPRequestHandler):
                 out=bank_xfer.get(self.server.store,token,state)
                 if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 self.json(200,out,known=FULL);return
+            if route=="/api/family/baby":  # 👶 the shared child and custody copies as the home room draws them (game/family.py babies)
+                token,state,_,_=self.require_session()
+                if not self.server.rate_limit("family-baby:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,family_babies.babies(self.server.store,token));return
             if route=="/api/deco/mate":  # 💞 the spouse's pieces in the shared home (game/deco_mate.py): read-only, {} otherwise
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("deco-mate:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return

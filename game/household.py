@@ -34,6 +34,11 @@ def _e():
     return engine
 
 
+def _cr():
+    from . import cradle
+    return cradle
+
+
 def _name(value):
     _e().need(isinstance(value, str) and 1 <= len(value.strip()) <= 24 and
               not any(ord(c) < 32 or c in '<>' for c in value), 'Tên cần từ 1 đến 24 ký tự, không dùng ký tự đặc biệt.')
@@ -62,7 +67,11 @@ def public(s):
         days = m['care_days']
         stage = ('Em bé' if days < 5 else 'Bé tập đi' if days < 20 else 'Bé đi học') if key == 'child' else ('Đang làm quen' if days < 5 else 'Bạn thân trong nhà' if days < 20 else 'Gắn bó thân thiết')
         done = _today(j, m)
-        members.append(dict(id=key, kind=m['kind'], name=m['name'], emoji=KINDS[m['kind']][0], stage=stage,
+        extra = {}
+        if key == 'child':   # 👶 how the baby is drawn at home and in your arms (game/cradle.py)
+            age = _cr().household_age(j, m)
+            extra = dict(age=age, grow=_cr().grow(age))
+        members.append(dict(id=key, kind=m['kind'], name=m['name'], emoji=KINDS[m['kind']][0], stage=stage, **extra,
                             care_days=days, next=5 if days < 5 else 20 if days < 20 else None,
                             bond=m['bond'], needs=_meters(j, m), outfit=m['outfit'], owned=list(m['owned']),
                             acts=[dict(id=k, **x, done=x['slot'] in done) for k, x in ACTS.items() if m['kind'] in x['kinds']]))
@@ -110,7 +119,7 @@ def action(s, name, p):
         e.need(key == 'child' and isinstance(item, str) and item in OUTFITS, 'Chọn bộ đồ cho bé.')
         if item not in m['owned']:
             e.need(p.get('confirm') is True, 'Xác nhận mua bộ đồ cho bé.')
-            bank.pay(s, OUTFITS[item]['cost'], OUTFITS[item]['name'], method=p.get('pay', 'auto'), kind='life')
+            _cr().pay(s, OUTFITS[item]['cost'], OUTFITS[item]['name'], p.get('pay', 'auto'))   # 👶 never on credit
             m['owned'].append(item)
         m['outfit'] = item
         return dict(message=f'{m["name"]} đã thay {OUTFITS[item]["name"].lower()}.')
@@ -119,7 +128,12 @@ def action(s, name, p):
     x = ACTS[aid]
     did = _today(j, m)
     e.need(x['slot'] not in did, 'Hôm nay đã chăm sóc phần này rồi. Mai ghé lại nhé.', 'already_done')
-    payment = bank.pay(s, x['cost'], x['name'], method=p.get('pay', 'auto'), kind='life') if x['cost'] else None
+    if not x['cost']:
+        payment = None
+    elif key == 'child':   # 👶 a baby never goes on credit (game/cradle.py)
+        payment = _cr().pay(s, x['cost'], x['name'], p.get('pay', 'auto'))
+    else:
+        payment = bank.pay(s, x['cost'], x['name'], method=p.get('pay', 'auto'), kind='life')
     m.update(_meters(j, m))
     if not did:
         m['care_days'] = min(10**6, m['care_days'] + 1)

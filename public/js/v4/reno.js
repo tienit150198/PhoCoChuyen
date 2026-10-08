@@ -22,6 +22,9 @@ import {setup as walkSetup} from './home-walk.js';
 import {live} from './live.js';
 import {sharedRooms,ownershipOrder,guestSession} from './home-view.js';
 import {morph,railScroll,railRestore} from './home-morph.js';
+// 👶 Bé nhà mình: the babies at home, their moments, "Bế bé đi chơi" (game/cradle.py)
+import * as BB from './baby.js';
+import {babyRoom,babyPortrait} from './baby-art.js';
 
 const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',busy:false,flash:null,
   undo:[],undoKey:'',press:null,drag:null,dragEnd:0,resetStrip:false,toTop:false,pop:'',cheer:false,photo:null,listening:false,lastLv:-1,
@@ -141,6 +144,7 @@ export async function openReno(env,mode,guestCode=''){
   hw().reopen();
   loadMate();   // its first lines run now: a room that is not shared any more drops the spouse's pieces before drawing
   render();
+  if(!S.remote){BB.css();BB.loadFamily(env.api).then(()=>{if(seq!==openSeq||!S.dlg?.open||S.remote)return;render();BB.greet(env,{here:true});});}   // 👶
 }
 export const openGuestReno=(env,code)=>openReno(env,'visit',code);
 /** 💞 The spouse's pieces when this is the home both live in (each time the room opens, and after a move). */
@@ -186,7 +190,8 @@ async function send(action,payload={},opts={}){
 const ask=(title,msg,label,cost)=>S.env.confirmAction(title,msg,label,cost?{cost,pocket:POCKET}:undefined);
 /** 🚶 the character walking around the room when not decorating (v4/home-walk.js), made on first use. */
 let HW=null;
-const hw=()=>HW??=walkSetup({S,A,V:useV,roomOf,inRoom,mateIn,hostFor,send,render,sfx,calm,roomSvg,live});
+const hw=()=>HW??=walkSetup({S,A,V:useV,roomOf,inRoom,mateIn,hostFor,send,render,sfx,calm,roomSvg,live,babyAt,
+  babyCard:()=>{const el=S.dlg?.querySelector('#dc-baby-card');el?.scrollIntoView?.({block:'nearest',behavior:calm()?'auto':'smooth'});el?.querySelector('[data-dc="bbMoment"]:not([disabled]),[data-dc="bbCarry"]')?.focus?.({preventScroll:true});}});
 
 /* ---- the layout, as the client sees it (free units; game/deco.py check) ---- */
 const roomOf=id=>(V()?.rooms||[]).find(r=>r.id===id)||null;
@@ -362,6 +367,7 @@ function roomMarkup(rm,opts={}){
   }
   if(all.some(o=>o.k==='may_chieu'))out.push(A.galaxy(rm,G,Lt));   // 🌌 the star projector lights up the wall
   out.push(catsMarkup(rm,G,list,photo));
+  out.push(babiesMarkup(rm,G,photo,edit));   // 👶
   if(!photo)out.push(hw().markup(rm,G));
   out.push(A.roomFront(rm,G));
   out.push(A.roomLight(G,Lt,glows,uid));
@@ -418,6 +424,56 @@ function catsFor(rm,G,list){
   return CATS.list;
 }
 const PET_POSE={walk:'walk',sleep:'sleep',melt:'sleep',loaf:'sit'};
+
+/* ---- 👶 the babies at home (v4/baby.js, game/cradle.py): in a cradle, crawling on a mat or toddling, asleep after
+ * "Ru bé ngủ" today; not the one carried out. Only in your own home. A tap walks you to the baby (v4/home-walk.js). ---- */
+const BABY_K=.6;
+const homeBabies=()=>S.remote?[]:BB.babies(S.env?.api?.state).filter(b=>b.id!==BB.carried(S.env?.api?.state)?.id);
+const doneWith=b=>new Set((J().cradle?.did||[]).filter(k=>k.startsWith(b.id+':')).map(k=>k.slice(b.id.length+1)));
+/** Where baby i stays in room rm: on the floor (a rug is fine), clear of the furniture standing there, a pool or a
+ * fixture that keeps pieces off, and of the babies placed before it. */
+function babySpot(rm,G,i){
+  const list=inRoom(rm),pieces=list.filter(o=>!o.q.on&&o.it.spot!=='wall'&&o.it.spot!=='rug').map(o=>bbox(o.it,A.anchor(o.it,o.q,G)));
+  const hit=(x,y,[bx,by,bw,bh])=>x+24>bx&&x-24<bx+bw&&y>by&&y-36<by+bh;
+  const blocked=(x,y,taken)=>(rm.fix||[]).some(f=>f.layer==='floor'&&f.block&&x>A.PX+f.x*A.CW-26&&x<A.PX+(f.x+f.w)*A.CW+26&&y>G.FY+f.y*A.FR-6&&y<G.FY+(f.y+f.h)*A.FR+14)
+    ||pieces.some(b=>hit(x,y,b))||taken.some(p=>Math.abs(p.x-x)<56&&Math.abs(p.y-y)<30);
+  const rows=[.72,.92,.5].map(f=>G.FY+A.FR*Math.max(.9,Math.min(rm.frows-.3,rm.frows*f))),taken=[];
+  let out=null;
+  for(let k=0;k<=i;k++){
+    out=null;
+    for(const y of rows){for(const fx of [.55,.3,.75,.42,.18,.86,.64]){const x=A.PX+rm.cols*A.CW*fx;if(!blocked(x,y,taken)){out={x,y};break;}}if(out)break;}
+    out??={x:A.PX+rm.cols*A.CW*.3+k*44,y:rows[0]};taken.push(out);
+  }
+  return out;
+}
+export function babyAt(uid){
+  const rm=roomOf(S.room),list=homeBabies(),i=list.findIndex(b=>`baby:${b.id}`===uid);
+  return rm&&i>=0?{...babySpot(rm,A.geom(rm),i),b:list[i]}:null;
+}
+function babiesMarkup(rm,G,photo,edit){
+  return homeBabies().map((b,i)=>{
+    const p=babySpot(rm,G,i),art=`<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) scale(${BABY_K})">${babyRoom({g:b.grow,o:b.outfit},{asleep:doneWith(b).has('ru')})}</g>`;
+    if(photo)return art;
+    if(edit)return `<g class="dc-baby" pointer-events="none" aria-hidden="true">${art}</g>`;
+    return `<g class="dc-baby" data-uid="baby:${esc(b.id)}" data-y="${p.y.toFixed(1)}" tabindex="0" role="button" aria-label="${esc(b.name)} · ${esc(BB.growName(b.grow))}">${art}<rect class="dc-hit" x="${(p.x-24).toFixed(1)}" y="${(p.y-34).toFixed(1)}" width="48" height="40" rx="8"/></g>`;
+  }).join('');
+}
+/** The card beside the room: each baby, its three free moments of the day, carry it out or leave it home. */
+function babyCard(){
+  if(S.remote)return '';
+  const st=S.env?.api?.state,list=BB.babies(st);if(!list.length)return '';
+  const C=J().cradle,acts=C?.acts||BB.family()?.acts||[],cur=BB.carried(st);
+  const rows=list.map(b=>{
+    const done=doneWith(b),out=cur?.id===b.id;
+    const moments=acts.map(a=>btn(`${a.emoji} ${esc(a.names?.[b.grow]||a.names?.so_sinh||'')}${done.has(a.id)?' ✓':''}`,'bbMoment',{baby:b.id,act:a.id},done.has(a.id)?'ghost small':'cream small',done.has(a.id)?' disabled':'')).join('');
+    return `<div class="dc-baby-row"><div class="dc-baby-pic">${babyPortrait({g:b.grow,o:b.outfit},{size:76,asleep:!out&&done.has('ru')})}</div><div class="dc-baby-info"><b>${esc(b.name)}</b>`
+      +`<small>${esc(BB.growName(b.grow))} · ${fmt(b.age)} ngày tuổi · Gắn bó ${fmt(b.bond)}/100</small>`
+      +`${out?'<p class="dc-baby-out">🤱 Bé đang trong vòng tay bạn: đi dạo phố, hội chợ, công viên cùng nhau nhé.</p>':''}</div>`
+      +`${moments?`<div class="dc-baby-acts">${moments}</div>`:''}<div class="dc-baby-acts">${btn(out?'🏡 Để bé ở nhà':'🤱 Bế bé đi chơi','bbCarry',{baby:b.id},out?'ghost small':'primary small',` aria-pressed="${out}"`)}${btn('🍼 Chăm bé','bbCare',{baby:b.id},'ghost small')}</div></div>`;
+  }).join('');
+  const left=C?C.spirit_left:0;
+  return `<section class="bk-card dc-baby-card" id="dc-baby-card"><h3>👶 Bé nhà mình</h3>${rows}<p class="bk-hint">${acts.length?`Miễn phí, mỗi việc một lần mỗi ngày: gắn bó +1${left?`, tinh thần +1 (còn ${left} lần hôm nay)`:''}. `:''}Bế bé thì đi bộ, không đi xe.</p></section>`;
+}
 const catInner=c=>{
   if(c.pet){const pose=PET_POSE[c.pose]||'sit',w=c.pet.p.w||{},acc=pose==='sleep'?w:{...w,bed:null};   // its bed only under a nap
     return `<g class="dc-cat-in ${c.pose} pet-svg"><g transform="scale(${c.flip?-.62:.62} .62)">${petInner(c.pet.L.breed,c.pet.L.coat,pose,acc)}</g></g>`;}
@@ -530,6 +586,16 @@ async function onClick(op,data){
       finally{S.busy=false;render();}return;}
     case'photoClose':S.photo=null;render();return;
     case'tipOk':tipDone();render();return;
+    case'bbMoment':{const b=BB.babies(S.env.api.state).find(x=>x.id===data.baby);if(!b||S.busy)return;   // 👶 a free moment
+      if(b.id==='child'){const r=await send('jr_cradle_do',{baby:'child',act:data.act},{loud:true,flash:false});if(r){sfx('chime');hw().say(r.message.replace(/^\S+\s/,''),true);}return;}
+      S.busy=true;paintBusy();
+      try{const m=await BB.moment(S.env,b,data.act);sfx('chime');if(m)hw().say(m.replace(/^\S+\s/,''),true);}
+      catch(e){if(!e.quiet){S.flash={text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};sfx('error');}}
+      finally{S.busy=false;render();}return;}
+    case'bbCarry':{const st=S.env.api.state,out=BB.carried(st)?.id===data.baby;BB.setCarry(out?'':data.baby);sfx('pop');
+      const b=BB.babies(st).find(x=>x.id===data.baby);
+      S.flash=b?{text:out?`${b.name} ở nhà ngủ ngoan.`:`Bạn bế ${b.name} rồi. Ra phố, công viên hay hội chợ, bé đi cùng bạn (đi bộ).`,kind:'good'}:null;render();return;}
+    case'bbCare':{S.dlg.close();if(data.baby==='child')S.env.openSheet?.('home',{jrView:'household'});else S.env.act?.('marriage',{tab:'family',section:'children'});return;}
     case'relax':{const a=(V()?.relax||[]).find(x=>x.id===data.act);if(!a||!a.ok)return;
       const r=await send('jr_relax_do',{act:a.id},{loud:true});if(r)sfx('chime');return;}
     case'fix':{const r=R();const all=data.part==='all',p=r.parts.find(x=>x.id===data.part),cost=all?r.fix_all:p?.fix;if(!cost)return;
@@ -844,7 +910,7 @@ function decoPage(v){
     ?`<div class="dc-actions">${btn('↶ Hoàn tác','undo',{},'ghost',S.undo.length?'':' disabled')}${btn('🎒 Cất hết','pickAll',{},'ghost',v.items.length?'':' disabled')}${btn('✓ Xong','done',{},'primary')}</div>`
     :`<div class="dc-actions">${btn(v.items.length?'✏️ Bày trí phòng':'✏️ Bắt đầu bày trí','edit',{},'primary')}${btn('📸 Chụp phòng','photo',{},'ghost')}</div>`;
   const stage=`<div class="dc-stage">${roomTabs(v)}<div class="dc-roomwrap">${svg}${S.edit?'':`${hw().hint(use,rm)}${hw().sayHTML()}`}</div>${hw().socialPanel()}${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(use,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
-  const side=S.remote?`<section class="bk-card"><h3>🏡 Nhà ${esc(S.remote.owner.name)}</h3><p>${S.remote.access?.kind==='stay'?'Bạn ở chung tại đây, có thể vào khi chủ nhà vắng mặt.':'Bạn đang ghé chơi theo lời mời.'}</p><p class="bk-hint">Chạm sàn để đi lại, gặp bạn trong phòng và giao lưu.</p></section>`:`${relaxCard(use,rm)}${S.edit&&wide?drawer(v):''}${cozyCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}`;
+  const side=S.remote?`<section class="bk-card"><h3>🏡 Nhà ${esc(S.remote.owner.name)}</h3><p>${S.remote.access?.kind==='stay'?'Bạn ở chung tại đây, có thể vào khi chủ nhà vắng mặt.':'Bạn đang ghé chơi theo lời mời.'}</p><p class="bk-hint">Chạm sàn để đi lại, gặp bạn trong phòng và giao lưu.</p></section>`:`${S.edit?'':babyCard()}${relaxCard(use,rm)}${S.edit&&wide?drawer(v):''}${cozyCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}`;
   return `<div class="dc-grid">${stage}<div class="dc-side">${side}</div></div>`;
 }
 function scrollRail(key,html){

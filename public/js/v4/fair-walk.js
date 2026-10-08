@@ -20,6 +20,8 @@ import {figure,figureOf,paintPlayer,CANVAS,lookOf} from './look.js';
 import {t as tr} from './i18n.js';
 import {crowd} from './fair-crowd.js';
 import {choice,next as nextRide,canRide,label as rideLabel,speedOf,drawRide,rider,steer,halfOf,topOf,wire,spouse as spouseOf,loadSpouse} from './ride.js';
+// 👶 the baby in my arms (v4/baby.js)
+import {withBaby,wire as babyWire} from './baby.js';
 
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
@@ -34,7 +36,7 @@ export function setup(ctx){
   const pl=()=>plan(W.port,has());
   const pixels=new Map();let pixelsKey='',fontEpoch=0;
   document.fonts?.addEventListener?.('loadingdone',()=>{fontEpoch++;W.bgKey='';W.drawn=0;wake();});
-  const CR=crowd({state:()=>S.env?.api?.state,content:()=>S.env?.api?.content,redraw:()=>{W.drawn=0;paintCo();wake();},still,onBack,onTaken});
+  const CR=crowd({state:()=>S.env?.api?.state,content:()=>S.env?.api?.content,redraw:()=>{W.drawn=0;paintCo();wake();},still,onBack,onTaken,onBaby});
   /** Scene point → fractions of the floor (what the others get: their fairground may be the other layout). */
   const frac=([x,y])=>{const f=pl().floor;return [(x-f[0])/(f[2]-f[0]),(y-f[1])/(f[3]-f[1])];};
 
@@ -152,6 +154,8 @@ export function setup(ctx){
     setRide(false);W.drawn=0;paintCo();wake();
   }
   /** The spouse drives the vehicle I asked for: on foot until another pick, and a little question. */
+  /** 👶 The husband / wife already carries our shared child: I walk without it this visit, told in a bubble. */
+  function onBaby(line){W.figKey='';W.drawn=0;if(line&&W.me&&W.say)speak({hit:[W.me.x,W.me.y-110],line});wake();}
   function onTaken(f){W.taken={by:f.by,name:String(f.name||'')};W.blocked=W.ride?.key||W.blocked;setRide(false);W.drawn=0;paintCo();}
   /** The line under the toggle (written only when it changes): sitting behind, a vehicle taken, or "🛵 Ngồi sau". */
   function paintCo(){
@@ -233,7 +237,8 @@ export function setup(ctx){
   function speak(s){
     const [x,y]=s.hit,sx=W.ox+x*W.k,sy=W.oy+(y-20)*W.k;
     W.say.textContent=tr(s.line||'');W.say.hidden=false;
-    W.say.style.left=`${Math.max(70,Math.min(W.cw-70,sx))}px`;W.say.style.top=`${Math.max(44,sy)}px`;
+    const half=Math.max(70,(W.say.offsetWidth||140)/2+6);   // a long line stays inside the fairground
+    W.say.style.left=`${Math.max(half,Math.min(W.cw-half,sx))}px`;W.say.style.top=`${Math.max(44,sy)}px`;
     W.sayAt=performance.now();
   }
   function hush(){if(W.say&&!W.say.hidden){W.say.hidden=true;W.say.textContent='';}}
@@ -314,8 +319,8 @@ export function setup(ctx){
   const badge=id=>id==='loan'?'':STALLS[id]?.icon||CARTS[id]||'';
   /** My figure for a vehicle (mine, or my spouse's when I sit behind), cached on my look. */
   function myFig(){
-    const st=S.env.api.state,key=JSON.stringify([lookOf(st),st.journey?.gender]);
-    if(key!==W.figKey){W.figKey=key;W.fig=figure(st);}
+    const st=S.env.api.state,key=JSON.stringify([lookOf(st),st.journey?.gender,babyWire(st)]);
+    if(key!==W.figKey){W.figKey=key;W.fig=withBaby(figure(st),st);}
     return {F:W.fig,fk:key};
   }
   function drawMe(c,s){

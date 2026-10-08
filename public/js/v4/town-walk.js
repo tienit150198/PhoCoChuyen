@@ -20,6 +20,8 @@ import {t as tr,language} from './i18n.js';
 import {lightAt} from './dayclock.js';
 import {escapeHTML as esc,icon} from '../icons.js';
 import {choice,next as nextRide,canRide,label as rideLabel,speedOf,drawRide,rider,steer,halfOf,loadSpouse} from './ride.js';
+// 👶 "Bế bé đi chơi": the baby in your arms (v4/baby.js), a toggle under the ride's
+import * as BB from './baby.js';
 
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
@@ -124,11 +126,12 @@ function build(){
   const el=document.createElement('div');el.className='tw-stage';el.setAttribute('data-morph-keep','');
   el.innerHTML=`<canvas class="tw-canvas" tabindex="0" role="img"></canvas>
     <form class="tw-route-picker"><select aria-label="${esc(tr('Chọn điểm đến'))}"></select><button type="submit">${esc(tr('Chỉ đường'))}</button></form>
-    <div class="tw-where" aria-live="polite"></div><button type="button" class="rd-toggle" hidden></button>
+    <div class="tw-where" aria-live="polite"></div><button type="button" class="rd-toggle" hidden></button><button type="button" class="bb-toggle" hidden></button>
     <div class="tw-map-tools" role="group" aria-label="${esc(tr('Độ phóng bản đồ'))}"><button type="button" data-tw-zoom="out" aria-label="${esc(tr('Thu nhỏ bản đồ'))}">−</button><output>100%</output><button type="button" data-tw-zoom="in" aria-label="${esc(tr('Phóng to bản đồ'))}">+</button><button type="button" data-tw-zoom="me" aria-label="${esc(tr('Về vị trí của bạn'))}">◎</button></div>
     <div class="tw-card" hidden></div>`;
   W.el=el;W.cv=el.querySelector('canvas');W.c=W.cv.getContext('2d');W.where=el.querySelector('.tw-where');W.card=el.querySelector('.tw-card');
-  W.btn=el.querySelector('.rd-toggle');W.btn.addEventListener('click',()=>{nextRide(S(),W.env.api.content);setRide();});
+  W.btn=el.querySelector('.rd-toggle');W.btn.addEventListener('click',()=>{nextRide(S(),W.env.api.content);setRide();setBaby();});
+  W.bb=el.querySelector('.bb-toggle');W.bb.addEventListener('click',()=>{BB.nextCarry(S());setRide();setBaby();});   // 👶
   el.querySelector('.tw-route-picker').addEventListener('submit',e=>{
     e.preventDefault();const key=el.querySelector('.tw-route-picker select').value,it=W.pl.items.find(it=>it.key===key);remember(key);
     if(it&&!W.st(it).off&&!W.st(it).lock)goItem(it,true);
@@ -154,7 +157,7 @@ export function townMount(env,h){
   const slot=document.querySelector('#sheet [data-tw-slot]');
   if(!slot)return;
   if(!W.el)build();
-  if(!W.hooked){W.hooked=true;env.api.addEventListener('state',()=>{if(visible())refresh();});}
+  if(!W.hooked){W.hooked=true;env.api.addEventListener('state',()=>{if(visible())refresh();});BB.onChange(()=>{if(visible()){setRide();setBaby();}});}
   if(W.el.parentNode!==slot){slot.prepend(W.el);W.cw=0;}
   refresh();
   if(!W.cw)size();
@@ -180,6 +183,7 @@ function refresh(){
   W.stKey=JSON.stringify([W.pl.items.map(it=>{const s=st(it);return [s.lock,s.cur,s.x3,s.glow,s.paused,s.off,s.name];}),t?.m??-1,language()]);
   const cur=S().current||null;
   setRide(false);loadSpouse(W.env.api).then(()=>setRide(false));   // 💑 the spouse's vehicles too (cached a minute)
+  setBaby();BB.loadFamily(W.env.api).then(()=>{if(visible())BB.greet(W.env);});   // 👶 the shared child too (cached a minute)
   if(!W.me||cur!==W.lastCur){W.lastCur=cur;place(spawn());W.free=false;snap();hide();parkAtDoor();}
   else if(W.at){const it=W.pl.items.find(x=>x.key===W.at);if(it&&!W.card.hidden)showCard(it,false);}
   W.drawn=0;kick();
@@ -209,6 +213,13 @@ function setRide(fresh=true){
   W.drawn=0;kick();
 }
 const riding=()=>!!W.ride&&!W.park;
+/** 👶 The baby toggle (only with a baby at home) and the sprite with the baby in your arms. */
+function setBaby(){
+  if(!W.bb)return;
+  const any=BB.hasBaby(S()),b=BB.carried(S());W.bb.hidden=!any;
+  if(any){BB.css();const t=tr(BB.label(b));if(W.bb.textContent!==t)W.bb.textContent=t;W.bb.setAttribute('aria-pressed',String(!!b));}
+  W.drawn=0;kick();
+}
 /** Where the vehicle waits by a door: beside the stand point, on the side the player came from. */
 function parkSpot(it,fromX){
   const side=fromX<=it.stand[0]?-1:1,off=halfOf(W.ride)*ME+16;
@@ -402,11 +413,11 @@ function backdrop(){
 }
 /** The player as one small bitmap, made again only when the look or the zoom changes. */
 function sprite(){
-  const sc=ME*W.k*W.dpr,look=lookOf(S()),key=JSON.stringify([look,S().journey?.gender,sc.toFixed(3),S().journey?.gadgets?.hand?.color]);   // 📱 the phone in hand
+  const sc=ME*W.k*W.dpr,look=lookOf(S()),key=JSON.stringify([look,S().journey?.gender,sc.toFixed(3),S().journey?.gadgets?.hand?.color,BB.wire(S())]);   // 📱 the phone in hand · 👶 the baby in your arms
   if(W.sprite&&W.spriteKey===key)return W.sprite;
   const cv=W.sprite||document.createElement('canvas'),w=Math.ceil(110*sc),h=Math.ceil(170*sc);cv.width=w;cv.height=h;
   const c=cv.getContext('2d');c.setTransform(sc,0,0,sc,w/2,h-12*sc);
-  try{paintPlayer(c,figure(S()),CANVAS);}catch{/* look not ready */}
+  try{paintPlayer(c,BB.withBaby(figure(S()),S()),CANVAS);}catch{/* look not ready */}
   W.sprite=cv;W.spriteKey=key;W.spriteFoot=[w/2,h-12*sc];return cv;
 }
 function draw(){

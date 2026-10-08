@@ -50,7 +50,7 @@ export async function familyAction(action,data,{env,family:f,form={},post}){
       const item=op==='care'?child.acts.find(a=>a.id===data.act):f.outfits.find(o=>o.id===data.item);
       if(!item||(op==='care'&&item.done))return true;
       const cost=op==='style'&&child.owned.includes(item.id)?0:item.cost;
-      const pay=cost?await confirmPurchase(env,{title:item.name,message:`Cho ${child.name}: ${cost} xu.`,label:'Xác nhận',cost,noJoint:true}):'cash';
+      const pay=cost?await confirmPurchase(env,{title:item.name,message:`Cho ${child.name}: ${cost} xu.`,label:'Xác nhận',cost,noJoint:true,noCredit:true}):'cash';   // 👶 never on credit (game/cradle.py)
       if(!pay)return true;
       Object.assign(payload,op==='care'?{act:item.id,pay}:{item:item.id,pay});
     }

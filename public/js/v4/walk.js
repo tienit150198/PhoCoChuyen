@@ -52,6 +52,8 @@ import * as feast from './wedfeast.js';
 import {paint as stPaint,nameAttrs as stName} from './style-tag.js';   // 🎨 name colour / frame of the week (`st`, live/styles.py)
 import {chips as hnChips,titles as hnTitles,icons as hnIcons} from './honours.js';   // 🏅 `tt`: every honour title held now (live/honours.py)
 import {choice,next as nextRide,canRide,label as rideLabel,wire,fromWire,drawRide,rider,steer,topOf,spouse as spouseOf,loadSpouse} from './ride.js';
+// 👶 the baby in a stroller's arms (`bb`, live/babies.py; v4/baby.js)
+import * as BB from './baby.js';
 
 const W=WORLD.w,H=WORLD.h,AV=.5,LOG_MAX=40,BUBBLE_MS=6000,EMO_MS=2600,MOVE_GAP=260,PLACE_KEY='mnl.walk.place',WSOUND_KEY='mnl.wed.sound';
 const EMOTES=[['wave','👋'],['heart','❤️'],['laugh','😂'],['wow','😮'],['pray','🙏'],['dance','💃']];   // 💃: weddings only
@@ -105,7 +107,7 @@ export const walk={
   spot(name){const s=S.geo?.spots?.[name];return s?{x:s[0],y:s[1]}:null;},
   on(k,fn){hooks[k]?.add(fn);return ()=>hooks[k]?.delete(fn);},
   state(){const t=nowS();return {open:Boolean(S.dlg?.open),place:S.room?.place||null,room:S.room?.room||null,me:S.room?.me||null,
-    people:[...S.people.values()].map(p=>{const [x,y]=posAt(p.p,p.at,t,p.v);return {pid:p.pid,name:p.name,x,y,seat:p.s,said:p.bub?.text||null,emote:p.emo?.e||null,tint:p.lk?.tint||null,ride:p.r?.v||null,b:p.b||null};}),co:S.dlg?.querySelector(".rd-co")?.hidden===false?S.dlg.querySelector(".rd-co").textContent:null,
+    people:[...S.people.values()].map(p=>{const [x,y]=posAt(p.p,p.at,t,p.v);return {pid:p.pid,name:p.name,x,y,seat:p.s,said:p.bub?.text||null,emote:p.emo?.e||null,tint:p.lk?.tint||null,ride:p.r?.v||null,b:p.b||null,bb:p.bb||null};}),co:S.dlg?.querySelector(".rd-co")?.hidden===false?S.dlg.querySelector(".rd-co").textContent:null,
     tables:S.tables.map(tb=>({seats:tb.seats,topic:tb.topic})),happening:S.hap?.k||null,envelope:S.envl?{id:S.envl.id,x:S.envl.x,y:S.envl.y}:null,
     view:{k:S.k,ox:S.ox,oy:S.oy}};},
   moveTo(x,y){go(x,y);},
@@ -148,7 +150,7 @@ function dialog(){
 
 /** The menu entry: open on the last place (or the busiest), straight into the scene. */
 export async function openWalk(env,data={}){
-  S.env=env;bind();await css();
+  S.env=env;bind();await Promise.all([css(),BB.loadFamily(env?.api)]);   // 👶 the shared child, if it is carried (cached a minute)
   loadSpouse(env?.api).then(()=>{if(S.dlg)paintRide();});   // 💑 the spouse's vehicles and live id (none: unchanged)
   const d=dialog();
   if(!d.open){d.showModal();}
@@ -173,7 +175,7 @@ function onClose(){
 function leaveLocal(){S.log=[];S.logOpen=false;S.envp=null;S.tray=null;S.toss=null;S.dj=false;paintLog();S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];S.photo=null;syncMusic();paintOverlays();}
 
 function enter(place){
-  const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined,...(rankRef(st)?{rk:rankRef(st)}:{}),...(st.journey?.pets?.ref?{pt:st.journey.pets.ref}:{})};   // 🐾 pt: the pet with me (older services ignore it)   // 🎖️ rk: the rank worn (live/street.py clean_rank; older services ignore it)
+  const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined,...(rankRef(st)?{rk:rankRef(st)}:{}),...(st.journey?.pets?.ref?{pt:st.journey.pets.ref}:{}),...(BB.wire(st)?{bb:BB.wire(st)}:{})};   // 🐾 pt: the pet with me · 👶 bb: the baby in my arms (older services ignore both)   // 🎖️ rk: the rank worn (live/street.py clean_rank; older services ignore it)
   if(S.wedding!==null){S.want='wed';live.send({t:'wed_in',id:S.wedding,...me});return;}
   S.want=place;
   const r=wire(choice(st,S.env?.api?.content,TWO));
@@ -196,6 +198,7 @@ function bind(){
     const before=S.room;
     S.room=f;S.geo=f.geo;S.speed=f.speed||170;S.want=null;S.card=null;S.invite=null;S.sent=null;S.floaters=[];
     S.people=new Map(f.people.map(p=>[p.pid,person(p)]));S.taken=f.taken&&!f.private?f.taken:null;
+    if(f.bb_taken){const t=BB.taken(f.bb_taken);if(t)setTimeout(()=>toast(t),400);}   // 💑 the spouse carries the shared child
     S.tables=f.tables;S.hap=f.hap;S.envl=f.env;S.bgKey='';
     S.wed=f.wed||null;S.wedding=f.wed?f.wed.id:null;S.photo=null;if(f.wed)S.ended=null;S.dj=false;feast.setPick(S.wed?.music,S.wed?.at);
     if(S.wed&&S.wed.overflow!=='account')claimGift();
@@ -291,7 +294,7 @@ function tagTitle(p){
   const lead=p.ti||`${L[0].emoji} ${L[0].short}`,more=hnIcons(api,p.tt,lead);
   return more?`${lead} ${more}`:lead;
 }
-function person(p){const q={pid:p.pid,name:p.name,ti:tagTitle(p),tt:Array.isArray(p.tt)?p.tt:null,lk:p.lk,rk:p.rk||null,pt:p.pt&&typeof p.pt==='object'?p.pt:null,g:p.g,st:p.st&&typeof p.st==='object'?p.st:null,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
+function person(p){const q={pid:p.pid,name:p.name,ti:tagTitle(p),tt:Array.isArray(p.tt)?p.tt:null,lk:p.lk,rk:p.rk||null,pt:p.pt&&typeof p.pt==='object'?p.pt:null,bb:p.bb&&typeof p.bb==='object'?p.bb:null,g:p.g,st:p.st&&typeof p.st==='object'?p.st:null,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
 /** 💑 Sitting behind someone (`b`: the driver's pid, optional, from a newer live service): their speed is the driver's. */
 function behind(q,e){const b=typeof e.b==='string'?e.b:null,v=Number(e.v);if(b)q.v=v>0&&v<2000?v:q.v;else if(q.b&&!q.r)q.v=undefined;q.b=b;}
 /** 🛵 A people entry's vehicle (r, v: optional, from a newer live service), the rider's motion. */
@@ -703,7 +706,7 @@ function sprite(p){
   const key=`${S.k}|${S.dpr}`;if(p.sp&&p.spk===key)return p.sp;
   const s=AV*S.k*S.dpr,cv=document.createElement('canvas');cv.width=Math.ceil(110*s);cv.height=Math.ceil(160*s);
   const c=cv.getContext('2d');c.setTransform(s,0,0,s,55*s,150*s);
-  try{const F=figureOf(p.lk,p.g);if(p.rk)F.rk=p.rk;paintPlayer(c,F,CANVAS);}catch(e){console.warn('walk: look',e);}
+  try{const F=figureOf(p.lk,p.g);if(p.rk)F.rk=p.rk;if(p.bb&&!p.r)F.bb=p.bb;paintPlayer(c,F,CANVAS);}catch(e){console.warn('walk: look',e);}   // 👶 bb: carrying a baby
   p.sp=cv;p.spk=key;return cv;
 }
 /* 🐾 A stroller's pet: beside them, a step behind the way they walk; sits when they stop. */

@@ -881,6 +881,9 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(cg.action(s, name, p))
     elif name.startswith('jr_relax_'):
         result.update(rx.action(s, name, p))
+    elif name.startswith('jr_cradle_'):   # 👶 a moment with the baby at home (game/cradle.py)
+        from . import cradle
+        result.update(cradle.action(s, name, p))
     elif name.startswith('jr_fridge_'):
         result.update(fr.action(s, name, p))
     elif name.startswith('jr_rui_'):
@@ -969,9 +972,14 @@ def public(s: dict) -> dict:
         clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=tree_copy(j['news']),
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
-        bank=bk.public(s), home=hs.public(s), household=hh.public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
+        bank=bk.public(s), home=hs.public(s), household=hh.public(s), cradle=_cradle_public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
         garage=gr.public(s), gadgets=gd.public(s), spend=sp.public(s), pets=pt.public(s), lux=lx.public(s), **({'uniq': u} if (u := auc.public(s)) else {}), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
         **({'quay': qy.public(s)} if qy.visible(s) else {}))   # 🏪 only once a save reaches it (state size)
+
+
+def _cradle_public(s: dict):
+    from . import cradle
+    return cradle.public(s)
 
 
 def _skill_ids() -> list[str]:
@@ -1064,6 +1072,8 @@ def validate(s: dict) -> None:
     promotion.validate(s)   # 🎖️ journey['promo'] (optional)
 
     rx.validate(s)   # 🏊 journey['relax'] (optional)
+    from . import cradle
+    cradle.validate(s)   # 👶 journey['cradle'] (optional)
     ls.validate(s)   # 🏝️ journey['leisure'] (optional: only once a leisure round was played)
     fr.validate(s)   # 🧊 journey['fridge'] (optional)
     ct.validate(s)

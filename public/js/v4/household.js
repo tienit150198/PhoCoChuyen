@@ -21,13 +21,13 @@ export async function householdAction(action,data,el,env){
   let payload={member:m.id},command='';
   if(action==='jrHhCare'){
     const x=m.acts.find(a=>a.id===data.act);if(!x||x.done)return true;
-    const how=x.cost?await confirmPurchase(env,{title:x.name,message:`Chuẩn bị cho ${m.name}: ${x.cost} xu.`,label:'Chăm sóc',cost:x.cost}):'cash';
+    const how=x.cost?await confirmPurchase(env,{title:x.name,message:`Chuẩn bị cho ${m.name}: ${x.cost} xu.`,label:'Chăm sóc',cost:x.cost,noCredit:m.kind==='child'}):'cash';   // 👶 a baby never goes on credit
     if(!how)return true;
     command='jr_hh_care';payload.act=x.id;payload.pay=how;
   }else if(action==='jrHhStyle'){
     const x=v.outfits.find(o=>o.id===data.item);if(!x)return true;
     const cost=m.owned.includes(x.id)?0:x.cost;
-    const how=cost?await confirmPurchase(env,{title:'Mua đồ cho bé',message:`${x.name}: ${cost} xu.`,label:'Mua và mặc',cost}):'cash';
+    const how=cost?await confirmPurchase(env,{title:'Mua đồ cho bé',message:`${x.name}: ${cost} xu.`,label:'Mua và mặc',cost,noCredit:true}):'cash';
     if(!how)return true;
     command='jr_hh_style';payload={...payload,item:x.id,confirm:true,pay:how};
   }

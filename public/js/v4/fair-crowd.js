@@ -13,11 +13,13 @@
  * play a stall. A vehicle this build cannot draw: walking.
  * 💑 Husband and wife (live/coride.py): `b` on someone is the driver they sit behind (drawn on that vehicle, behind);
  * my own walks coming back with `b` mean I sit behind (onBack), without it I am on foot again; `taken` (fair_room) /
- * `fair_taken`: the spouse drives the vehicle I asked for (onTaken).
+ * `fair_taken`: the spouse drives the vehicle I asked for (onTaken); `bb_taken`: the spouse carries our shared child (onBaby).
  * Light: at most CAP others (the server's instance size), each a cached sprite; frames only while someone walks. */
 import {live} from './live.js';
 import {lookOf,figureOf,paintPlayer,CANVAS} from './look.js';
 import {fromWire,drawRide,rider,steer,halfOf,topOf} from './ride.js';
+// 👶 `bb`: the baby in a fairgoer's arms (live/babies.py)
+import * as BB from './baby.js';
 
 const CAP=30,GAP=260,PTS=16,AV_W=110,AV_H=160;
 /** Where the 1st, 2nd… of the others at one stall stand around its stand point (scene units; the stand itself is mine). */
@@ -33,7 +35,7 @@ const pidOf=v=>typeof v==='string'&&/^[0-9a-f]{16}$/.test(v)?v:null;
 
 /** state(): the save (look, gender); content(): the static lists (the garage's, to draw a vehicle); redraw(): a frame
  * is due; still(): reduced motion (the others jump). */
-export function crowd({state,content=()=>null,redraw,still,onBack=()=>{},onTaken=()=>{}}){
+export function crowd({state,content=()=>null,redraw,still,onBack=()=>{},onTaken=()=>{},onBaby=()=>{}}){
   const C={want:false,room:null,me:null,at:null,s:null,r:null,people:new Map(),pend:null,sentAt:0,timer:0,retry:0,joining:false,back:null};
   let fontEpoch=0;
   globalThis.document?.fonts?.addEventListener?.('loadingdone',()=>{fontEpoch++;redraw();});
@@ -44,7 +46,8 @@ export function crowd({state,content=()=>null,redraw,still,onBack=()=>{},onTaken
     C.want=true;if(at)C.at=at.map(r3);if(r!==undefined)C.r=rideOf(r);
     if(C.room||C.joining||!ok())return;
     const st=state()||{};
-    C.joining=live.send({t:'fair_in',look:lookOf(st),g:st.journey?.gender??null,x:C.at?.[0]??.2,y:C.at?.[1]??.95,...(C.s?{s:C.s}:{}),...(C.r?{r:C.r}:{})});
+    const bb=BB.wire(st);
+    C.joining=live.send({t:'fair_in',look:lookOf(st),g:st.journey?.gender??null,x:C.at?.[0]??.2,y:C.at?.[1]??.95,...(C.s?{s:C.s}:{}),...(C.r?{r:C.r}:{}),...(bb?{bb}:{})});
   }
   function leave(){
     if(!C.want&&!C.room)return;
@@ -84,7 +87,7 @@ export function crowd({state,content=()=>null,redraw,still,onBack=()=>{},onTaken
   }
 
   /* ---- the others ---- */
-  function person(e){return {pid:e.pid,name:e.name||'',lk:e.lk,g:e.g,x:e.x,y:e.y,s:word(e.s),r:rideOf(e.r),b:pidOf(e.b),path:null,t0:0,ms:0,len:0,sp:null,spk:'',rv:rider(),lx:null,fig:null,fk:'p'+JSON.stringify([e.lk,e.g])};}
+  function person(e){return {pid:e.pid,name:e.name||'',lk:e.lk,g:e.g,x:e.x,y:e.y,s:word(e.s),r:rideOf(e.r),b:pidOf(e.b),bb:e.bb&&typeof e.bb==='object'?e.bb:null,path:null,t0:0,ms:0,len:0,sp:null,spk:'',rv:rider(),lx:null,fig:null,fk:'p'+JSON.stringify([e.lk,e.g])};}
   function add(e){if(e.pid===C.me||C.people.has(e.pid)||C.people.size>=CAP||typeof e.x!=='number')return;C.people.set(e.pid,person(e));}
   function move(e){
     const q=C.people.get(e.pid);if(!q||!Array.isArray(e.p)||!e.p.length)return;
@@ -112,6 +115,7 @@ export function crowd({state,content=()=>null,redraw,still,onBack=()=>{},onTaken
     C.room=f.room;C.me=f.me;C.people.clear();
     for(const e of (f.people||[]).slice(0,CAP))add(e);
     if(f.taken)onTaken(f.taken);
+    if(f.bb_taken)onBaby(BB.taken(f.bb_taken));   // 💑 the spouse carries the shared child: I walk without it
     redraw();
   });
   live.on('fair',f=>{
@@ -137,7 +141,7 @@ export function crowd({state,content=()=>null,redraw,still,onBack=()=>{},onTaken
     const key=String(Math.round(px*100));if(q.sp&&q.spk===key)return q.sp;
     const cv=q.sp||document.createElement('canvas');cv.width=Math.ceil(AV_W*px);cv.height=Math.ceil(AV_H*px);
     const c=cv.getContext('2d');c.setTransform(px,0,0,px,55*px,150*px);c.clearRect(-55,-150,AV_W,AV_H);
-    try{paintPlayer(c,figureOf(q.lk,q.g),CANVAS);}catch(e){console.warn('hội chợ: look',e);}
+    try{const F=figureOf(q.lk,q.g);if(q.bb)F.bb=q.bb;paintPlayer(c,F,CANVAS);}catch(e){console.warn('hội chợ: look',e);}   // 👶
     q.sp=cv;q.spk=key;return cv;
   }
   /** [[depth y, draw]] for each other walker (sorted with the stalls and me by the caller); fills q.sx/q.sy for tags.
@@ -205,5 +209,5 @@ export function crowd({state,content=()=>null,redraw,still,onBack=()=>{},onTaken
   const pillion=pid=>{for(const q of C.people.values())if(q.b===pid)return q;return null;};
 
   return {join,leave,walk,items,tags,busy,back,where,pillion,me:()=>C.me,behind:()=>C.back,coride:()=>Boolean(live.flags?.coride),
-    state:()=>({on:Boolean(C.room),room:C.room,me:C.me,s:C.s,back:C.back,people:[...C.people.values()].map(q=>{const [x,y,m]=at(q,performance.now());return {pid:q.pid,name:q.name,x,y,walking:m,s:q.s,ride:q.r?.v||null,b:q.b};})})};
+    state:()=>({on:Boolean(C.room),room:C.room,me:C.me,s:C.s,back:C.back,people:[...C.people.values()].map(q=>{const [x,y,m]=at(q,performance.now());return {pid:q.pid,name:q.name,x,y,walking:m,s:q.s,ride:q.r?.v||null,b:q.b,bb:q.bb||null};})})};
 }

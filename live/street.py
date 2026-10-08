@@ -32,6 +32,9 @@ Moving (memory only, never the database)
   so an older client shows it as text. Optional: an older client ignores `st`, an older service sends none.
 * 🏅 Every honour title held now (live/honours.py: weekly leaderboard tops, fair titles, the wedding race) goes out as
   `tt` [ids] on a public entry and a `card`; `ti` keeps its text for older clients.
+* 👶 Bế bé đi chơi (live/babies.py): `walk_in` / `wed_in` may carry `bb` {n, g, o, sh?}, the baby in the player's
+  arms; their public entry has `bb` while set. The shared child is carried by one spouse at a time (`bb_taken` in
+  walk_room). Optional: an older client ignores it.
 
 Talking
 * `say {text}` goes through the chat's store_message (filters, mutes, duplicates, kept like all chat) in the
@@ -50,7 +53,7 @@ Tables and happenings
 
 Frames (client → server; replies in brackets)
   walk_places {}                                   [walk_places {places: [{id, name, icon, n}]}]
-  walk_in {place, look, g, title, titles, r?}      [walk_room {place, room, me, people, tables, geo, hap, at}]
+  walk_in {place, look, g, title, titles, r?, bb?} [walk_room {place, room, me, people, tables, geo, hap, at, bb_taken?}]
   walk_out {}  move {x, y}  say {text}  emote {e}  sit {table}  stand {}  topic {}  ride {r}  back {to}
   card {pid}                                       [card {...}]
   invite {pid}                                     [invite_sent {id, pid}]; the other gets invited {id, pid, name}
@@ -71,7 +74,7 @@ import re
 import secrets
 import time
 
-from . import coride, effects, honours, styles
+from . import babies, coride, effects, honours, styles
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
 from .street_data import ORG_GRADES, PET_ACCS, PET_BREEDS
@@ -302,11 +305,11 @@ def clean_pet(pt) -> dict | None:
 
 
 class Walker:
-    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk', 'tt', 'pt')
+    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk', 'tt', 'pt', 'bb')
 
     def __init__(self, player, look: dict, g, title, at: tuple, now: float, ride: dict | None = None, rk: dict | None = None,
-                 pt: dict | None = None):
-        self.rk, self.pt = rk, pt
+                 pt: dict | None = None, bb: dict | None = None):
+        self.rk, self.pt, self.bb = rk, pt, bb   # 👶 bb: the baby in their arms (live/babies.py)
         self.pid, self.player = player.pid, player
         self.name = player.name or 'Khách dạo phố'
         self.title, self.look, self.g = title, look, g
@@ -330,6 +333,8 @@ class Walker:
             d['rk'] = self.rk
         if self.pt:
             d['pt'] = self.pt
+        if self.bb:
+            d['bb'] = self.bb
         if self.ride:
             d['r'], d['v'] = self.ride, self.speed
         if self.back:
@@ -618,19 +623,24 @@ class StreetFeature(Feature):
         tt = await honours.of_app(self.app).one(p.pid)  # 🏅 read from the game's records, never from the frame
         title = self.title_of(p, f.get('title'), f.get('titles'), st)
         await self._ensure_loaded(p)
+        bb = babies.clean_baby(f.get('bb'))   # 👶 the baby carried (optional)
+        bsp = await babies.spouse_of(self.db, p, bb)
         r, by = await coride.check(self.db, self.hub, p, clean_ride(f.get('r')))   # no await from here on
+        bb, bby = babies.claim(self.hub, bb, bsp)
         self._leave_player(p, 'other', keep=conn)
         room = self._pick(place, p)
         now = time.time()
         sx, sy = GEO[place].spots['spawn']
         at = GEO[place].clamp(sx + random.uniform(-150, 150), sy + random.uniform(-45, 45))
-        w = Walker(p, look, g, title, at, now, r, clean_rank(f.get('rk')), clean_pet(f.get('pt')))
+        w = Walker(p, look, g, title, at, now, r, clean_rank(f.get('rk')), clean_pet(f.get('pt')), bb)
         w.st = st or None
         w.tt = tt or None
         self._enter(room, conn, w)
         out = self._snapshot(room, p, now)
         if by:
             out['taken'] = coride.taken_frame('walk_taken', self.hub, by)
+        if bby:
+            out['bb_taken'] = babies.taken_frame(self.hub, bby)
         return out
 
     @on('walk_out', rate=(10, 60))
