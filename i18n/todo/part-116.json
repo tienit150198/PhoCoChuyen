@@ -1,5 +1,189 @@
 [
  {
+  "vi": "Số xu tài trợ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được mục Hôn nhân.",
+  "en": ""
+ },
+ {
+  "vi": "💌 Gửi thiệp mời cả phố",
+  "en": ""
+ },
+ {
+  "vi": "Miễn phí. Tiệc 10 phút có MC, cỗ, múa lân, nhạc cưới. Ai có mặt được 20 xu mỗi phút, mỗi khách đến hai bạn được 15 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Tổ chức tiệc cưới",
+  "en": ""
+ },
+ {
+  "vi": "Chọn ngày giờ để cả phố vào dự. Đây cũng là ngày cưới hiện trên thẻ của hai bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Chốt giờ tiệc",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Tiệc cưới đã tổ chức",
+  "en": ""
+ },
+ {
+  "vi": "khách đến chung vui 💛",
+  "en": ""
+ },
+ {
+  "vi": "🎊 Tiệc cưới đang mở!",
+  "en": ""
+ },
+ {
+  "vi": "Vào dự",
+  "en": ""
+ },
+ {
+  "vi": "💌 Mời khách",
+  "en": ""
+ },
+ {
+  "vi": "💌 Thiệp mời cả phố",
+  "en": ""
+ },
+ {
+  "vi": "Tiệc mở trước 5 phút ở Khu phố › Lịch cưới. Bạn bè được nhắc trước 30 phút.",
+  "en": ""
+ },
+ {
+  "vi": "💌 Đã mời bạn bè và cả phố",
+  "en": ""
+ },
+ {
+  "vi": "💌 Mời khách (miễn phí)",
+  "en": ""
+ },
+ {
+  "vi": "Đổi giờ",
+  "en": ""
+ },
+ {
+  "vi": "Lưu giờ mới",
+  "en": ""
+ },
+ {
+  "vi": "phí địa điểm",
+  "en": ""
+ },
+ {
+  "vi": "Mã của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Bán chiếc nhẫn dư?",
+  "en": ""
+ },
+ {
+  "vi": "Bán nhẫn",
+  "en": ""
+ },
+ {
+  "vi": "Mang nhẫn ra tiệm kim hoàn?",
+  "en": ""
+ },
+ {
+  "vi": "Nhập đúng tên đăng nhập của bạn ấy nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chặn người này?",
+  "en": ""
+ },
+ {
+  "vi": "Người này sẽ không tìm thấy bạn, không gửi được lời mời kết bạn hay lời cầu hôn cho bạn nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn sẽ không còn trong danh sách bạn bè của nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy kết bạn",
+  "en": ""
+ },
+ {
+  "vi": "Khoản này vào sổ nợ của hai bạn. Người ấy trả dần lúc nào cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền chuyển từ ví của bạn sang ví của người ấy.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu cần nhờ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản này vào sổ nợ, người ấy sẽ trả lại.",
+  "en": ""
+ },
+ {
+  "vi": "Xóa khoản nợ này?",
+  "en": ""
+ },
+ {
+  "vi": "Người ấy không cần trả nữa. Sổ nợ vẫn ghi lại.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận lời cầu hôn?",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn sẽ đính hôn. Mỗi người chỉ có một người thương cùng lúc, các lời cầu hôn khác tự đóng lại.",
+  "en": ""
+ },
+ {
+  "vi": "Người này sẽ không gửi lời cầu hôn cho bạn được nữa. Bạn bỏ chặn lúc nào cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Chốt kế hoạch và đặt cọc?",
+  "en": ""
+ },
+ {
+  "vi": "Đặt cọc",
+  "en": ""
+ },
+ {
+  "vi": "PHỐ CÓ CHUYỆN",
+  "en": ""
+ },
+ {
+  "vi": "👥 Bạn bè",
+  "en": ""
+ },
+ {
+  "vi": "💍 Hôn nhân",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn cưới, lời cầu hôn và một đám cưới cho cả phố.",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở sổ hôn nhân…",
+  "en": ""
+ },
+ {
+  "vi": "💍 Hai bạn",
+  "en": ""
+ },
+ {
+  "vi": "💍 Kim hoàn",
+  "en": ""
+ },
+ {
   "vi": "💞 Hai bạn",
   "en": ""
  },
@@ -1613,190 +1797,6 @@
  },
  {
   "vi": "Giao đúng sở trường (ô xanh): nhanh và ít lỗi.",
-  "en": ""
- },
- {
-  "vi": "Việc trả về có ⚠️: bấm ↩️ để làm lại, được thêm điểm.",
-  "en": ""
- },
- {
-  "vi": "Việc ổn mà trả về: mất thời gian, đội buồn.",
-  "en": ""
- },
- {
-  "vi": "Thưởng = 2 xu × điểm ⭐ (có trần).",
-  "en": ""
- },
- {
-  "vi": "Ngày tốt!",
-  "en": ""
- },
- {
-  "vi": "Hôm nay chưa đạt ngày tốt.",
-  "en": ""
- },
- {
-  "vi": "Chạm một việc trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Nhập giá nguyên dương, tối đa 1.000.000 xu.",
-  "en": ""
- },
- {
-  "vi": "Giá thấp hơn tiền nguyên liệu.",
-  "en": ""
- },
- {
-  "vi": "Giá cao: khách có thể ít hơn, đánh giá giá cả giảm.",
-  "en": ""
- },
- {
-  "vi": "Giá mềm: dễ thu hút khách, lãi mỗi món mỏng hơn.",
-  "en": ""
- },
- {
-  "vi": "Giá gần mức tham khảo.",
-  "en": ""
- },
- {
-  "vi": "Khách người chơi",
-  "en": ""
- },
- {
-  "vi": "Hoạt động khách tại quầy",
-  "en": ""
- },
- {
-  "vi": "khách đang tại quầy",
-  "en": ""
- },
- {
-  "vi": "lượt vừa mua xong",
-  "en": ""
- },
- {
-  "vi": "Vừa mua xong",
-  "en": ""
- },
- {
-  "vi": "Đang phục vụ",
-  "en": ""
- },
- {
-  "vi": "Lượt mua đã ghi sổ trong 90 giây gần đây.",
-  "en": ""
- },
- {
-  "vi": "Quầy đã mở. Giá trên menu đang cao nên khách ghé thưa hơn; bạn vẫn có thể rời quầy bất cứ lúc nào.",
-  "en": ""
- },
- {
-  "vi": "Khách đang ghé. Đơn mới tiếp tục tới trong lúc bạn chuẩn bị món và tính tiền.",
-  "en": ""
- },
- {
-  "vi": "Đang giục lớn",
-  "en": ""
- },
- {
-  "vi": "Sốt ruột",
-  "en": ""
- },
- {
-  "vi": "Dễ tính",
-  "en": ""
- },
- {
-  "vi": "Có khách tại quầy",
-  "en": ""
- },
- {
-  "vi": "khách tại quầy",
-  "en": ""
- },
- {
-  "vi": "người chờ tới lượt",
-  "en": ""
- },
- {
-  "vi": "Người tiếp theo đang ghé",
-  "en": ""
- },
- {
-  "vi": "Đi lên",
-  "en": ""
- },
- {
-  "vi": "Sang phải",
-  "en": ""
- },
- {
-  "vi": "Đi xuống",
-  "en": ""
- },
- {
-  "vi": "Sang trái",
-  "en": ""
- },
- {
-  "vi": "↰ RẼ TRÁI",
-  "en": ""
- },
- {
-  "vi": "↑ ĐI THẲNG",
-  "en": ""
- },
- {
-  "vi": "RẼ PHẢI ↱",
-  "en": ""
- },
- {
-  "vi": "ĐIỂM GIAO HÀNG",
-  "en": ""
- },
- {
-  "vi": "Góc nhìn người lái",
-  "en": ""
- },
- {
-  "vi": "đã qua các ngã tư",
-  "en": ""
- },
- {
-  "vi": "ngã tư",
-  "en": ""
- },
- {
-  "vi": "ĐÓNG CỬA",
-  "en": ""
- },
- {
-  "vi": "Tiệm đang mở",
-  "en": ""
- },
- {
-  "vi": "Sổ bán hàng ở bên dưới",
-  "en": ""
- },
- {
-  "vi": "Mọi đơn đều được ghi tại quầy",
-  "en": ""
- },
- {
-  "vi": "LƯỢT BÁN VỪA GHI NHẬN",
-  "en": ""
- },
- {
-  "vi": "KHÁCH ĐANG CHỜ",
-  "en": ""
- },
- {
-  "vi": "KHAY MÓN",
-  "en": ""
- },
- {
-  "vi": "KÉT QUẦY",
   "en": ""
  }
 ]

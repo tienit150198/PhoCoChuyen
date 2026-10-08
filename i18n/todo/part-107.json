@@ -1,5 +1,181 @@
 [
  {
+  "vi": "💬 Trao đổi với khách về giá",
+  "en": ""
+ },
+ {
+  "vi": "Báo giá vượt ngân sách: trao đổi với khách",
+  "en": ""
+ },
+ {
+  "vi": "Thoa thuốc",
+  "en": ""
+ },
+ {
+  "vi": "🖌️ Thoa thuốc từ chân tới ngọn",
+  "en": ""
+ },
+ {
+  "vi": "Bát sai: đổ, pha lại",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Về bàn pha màu",
+  "en": ""
+ },
+ {
+  "vi": "Lấy thuốc theo bảng pha",
+  "en": ""
+ },
+ {
+  "vi": "✨ Lấy theo bảng",
+  "en": ""
+ },
+ {
+  "vi": "Chọn tuýp toner",
+  "en": ""
+ },
+ {
+  "vi": "Chọn tuýp màu",
+  "en": ""
+ },
+ {
+  "vi": "Chọn oxy",
+  "en": ""
+ },
+ {
+  "vi": "Chọn tỷ lệ thuốc ∶ oxy",
+  "en": ""
+ },
+ {
+  "vi": "Dỗ bé ngồi yên",
+  "en": ""
+ },
+ {
+  "vi": "Dỗ bé",
+  "en": ""
+ },
+ {
+  "vi": "🧒 Chọn cách dỗ bé",
+  "en": ""
+ },
+ {
+  "vi": "Chia vùng tóc",
+  "en": ""
+ },
+ {
+  "vi": "✂️ Chia vùng tóc",
+  "en": ""
+ },
+ {
+  "vi": "Cắt thêm",
+  "en": ""
+ },
+ {
+  "vi": "Cắt đường chuẩn · bớt",
+  "en": ""
+ },
+ {
+  "vi": "Khách thấy còn dài: cắt thêm",
+  "en": ""
+ },
+ {
+  "vi": "Tỉa tầng nhẹ (mẫu có tầng)",
+  "en": ""
+ },
+ {
+  "vi": "✂️ Tỉa tầng",
+  "en": ""
+ },
+ {
+  "vi": "🪞 Soi đối xứng & chốt",
+  "en": ""
+ },
+ {
+  "vi": "💨 Chọn kiểu sấy hợp khách",
+  "en": ""
+ },
+ {
+  "vi": "Khách sẽ soi gương và đánh giá.",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Chờ vùng xanh · còn",
+  "en": ""
+ },
+ {
+  "vi": "🚿 Xả thuốc ngay!",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ khách đã có công thức, sức khỏe tóc và lần cắt trước.",
+  "en": ""
+ },
+ {
+  "vi": "📇 Khách quen",
+  "en": ""
+ },
+ {
+  "vi": "💇 Sổ tiệm hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Quy định bàn thư ký",
+  "en": ""
+ },
+ {
+  "vi": "📅 Bàn thư ký hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Nhắc khách đưa thêm",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi nhẹ nhàng, khách tự đếm lại",
+  "en": ""
+ },
+ {
+  "vi": "🚓 Báo công an",
+  "en": ""
+ },
+ {
+  "vi": "Phải chờ công an tới, khách phía sau sốt ruột",
+  "en": ""
+ },
+ {
+  "vi": "🤐 Bỏ qua, coi như bớt giá",
+  "en": ""
+ },
+ {
+  "vi": "Mất khoản thiếu, khách vui vẻ ra về",
+  "en": ""
+ },
+ {
+  "vi": "📒 Cho nợ, mai trả",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn bé mai mang ra trả",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Bớt món cho vừa tiền",
+  "en": ""
+ },
+ {
+  "vi": "Bé để lại bớt một món",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Thôi, cho con luôn",
+  "en": ""
+ },
+ {
+  "vi": "Mất khoản thiếu, bé vui",
+  "en": ""
+ },
+ {
   "vi": "🚶 Để khách đi",
   "en": ""
  },
@@ -1621,182 +1797,6 @@
  },
  {
   "vi": "〰️ Thắt dây an toàn!",
-  "en": ""
- },
- {
-  "vi": "Cà phê phin pha sẵn. Một ngụm rồi đọc bản tin.",
-  "en": ""
- },
- {
-  "vi": "Sảnh ga",
-  "en": ""
- },
- {
-  "vi": "Cổng ra tàu",
-  "en": ""
- },
- {
-  "vi": "Sân đỗ",
-  "en": ""
- },
- {
-  "vi": "MÂY POP",
-  "en": ""
- },
- {
-  "vi": "BÚA HỒNG",
-  "en": ""
- },
- {
-  "vi": "⇡ GIỮ KHÔ",
-  "en": ""
- },
- {
-  "vi": "ALBUM MỚI",
-  "en": ""
- },
- {
-  "vi": "mai mời ghé",
-  "en": ""
- },
- {
-  "vi": "· việc đang ở đây",
-  "en": ""
- },
- {
-  "vi": "BỈM · SỮA",
-  "en": ""
- },
- {
-  "vi": "KHO MÂY NHỎ",
-  "en": ""
- },
- {
-  "vi": "BỈM S",
-  "en": ""
- },
- {
-  "vi": "BỈM M",
-  "en": ""
- },
- {
-  "vi": "BỈM L",
-  "en": ""
- },
- {
-  "vi": "BỈM XL",
-  "en": ""
- },
- {
-  "vi": "Kho bỉm & sữa",
-  "en": ""
- },
- {
-  "vi": "Bàn đóng gói",
-  "en": ""
- },
- {
-  "vi": "Sữa lon mới về, nhớ xem hạn dùng nha!",
-  "en": ""
- },
- {
-  "vi": "Bỉm size M sắp hết rồi đó.",
-  "en": ""
- },
- {
-  "vi": "Có mẹ bầu gọi hỏi váy bầu nè.",
-  "en": ""
- },
- {
-  "vi": "Gian hàng",
-  "en": ""
- },
- {
-  "vi": "GẠO",
-  "en": ""
- },
- {
-  "vi": "NGÀY",
-  "en": ""
- },
- {
-  "vi": "TÁCH TÁCH",
-  "en": ""
- },
- {
-  "vi": "GIẤY IN",
-  "en": ""
- },
- {
-  "vi": "ĐẠO CỤ",
-  "en": ""
- },
- {
-  "vi": "KHUNG MẪU",
-  "en": ""
- },
- {
-  "vi": "CHỤP 4 Ô",
-  "en": ""
- },
- {
-  "vi": "in liền tay",
-  "en": ""
- },
- {
-  "vi": "Tiệm ảnh Tách Tách",
-  "en": ""
- },
- {
-  "vi": "TIỆM MAY BÀ TƯ",
-  "en": ""
- },
- {
-  "vi": "MAY ĐO · SỬA ĐỒ",
-  "en": ""
- },
- {
-  "vi": "THỬ",
-  "en": ""
- },
- {
-  "vi": "Bàn may",
-  "en": ""
- },
- {
-  "vi": "Phòng thử & kho",
-  "en": ""
- },
- {
-  "vi": "PHÒNG THỬ ĐỒ",
-  "en": ""
- },
- {
-  "vi": "PHÒNG 1",
-  "en": ""
- },
- {
-  "vi": "Phòng thử 1",
-  "en": ""
- },
- {
-  "vi": "PHÒNG 2",
-  "en": ""
- },
- {
-  "vi": "Phòng thử 2",
-  "en": ""
- },
- {
-  "vi": "ÁO S",
-  "en": ""
- },
- {
-  "vi": "ÁO M",
-  "en": ""
- },
- {
-  "vi": "QUẦN",
   "en": ""
  }
 ]

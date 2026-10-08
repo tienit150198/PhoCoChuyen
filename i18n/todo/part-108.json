@@ -1,5 +1,181 @@
 [
  {
+  "vi": "Cà phê phin pha sẵn. Một ngụm rồi đọc bản tin.",
+  "en": ""
+ },
+ {
+  "vi": "Sảnh ga",
+  "en": ""
+ },
+ {
+  "vi": "Cổng ra tàu",
+  "en": ""
+ },
+ {
+  "vi": "Sân đỗ",
+  "en": ""
+ },
+ {
+  "vi": "MÂY POP",
+  "en": ""
+ },
+ {
+  "vi": "BÚA HỒNG",
+  "en": ""
+ },
+ {
+  "vi": "⇡ GIỮ KHÔ",
+  "en": ""
+ },
+ {
+  "vi": "ALBUM MỚI",
+  "en": ""
+ },
+ {
+  "vi": "mai mời ghé",
+  "en": ""
+ },
+ {
+  "vi": "· việc đang ở đây",
+  "en": ""
+ },
+ {
+  "vi": "BỈM · SỮA",
+  "en": ""
+ },
+ {
+  "vi": "KHO MÂY NHỎ",
+  "en": ""
+ },
+ {
+  "vi": "BỈM S",
+  "en": ""
+ },
+ {
+  "vi": "BỈM M",
+  "en": ""
+ },
+ {
+  "vi": "BỈM L",
+  "en": ""
+ },
+ {
+  "vi": "BỈM XL",
+  "en": ""
+ },
+ {
+  "vi": "Kho bỉm & sữa",
+  "en": ""
+ },
+ {
+  "vi": "Bàn đóng gói",
+  "en": ""
+ },
+ {
+  "vi": "Sữa lon mới về, nhớ xem hạn dùng nha!",
+  "en": ""
+ },
+ {
+  "vi": "Bỉm size M sắp hết rồi đó.",
+  "en": ""
+ },
+ {
+  "vi": "Có mẹ bầu gọi hỏi váy bầu nè.",
+  "en": ""
+ },
+ {
+  "vi": "Gian hàng",
+  "en": ""
+ },
+ {
+  "vi": "GẠO",
+  "en": ""
+ },
+ {
+  "vi": "NGÀY",
+  "en": ""
+ },
+ {
+  "vi": "TÁCH TÁCH",
+  "en": ""
+ },
+ {
+  "vi": "GIẤY IN",
+  "en": ""
+ },
+ {
+  "vi": "ĐẠO CỤ",
+  "en": ""
+ },
+ {
+  "vi": "KHUNG MẪU",
+  "en": ""
+ },
+ {
+  "vi": "CHỤP 4 Ô",
+  "en": ""
+ },
+ {
+  "vi": "in liền tay",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm ảnh Tách Tách",
+  "en": ""
+ },
+ {
+  "vi": "TIỆM MAY BÀ TƯ",
+  "en": ""
+ },
+ {
+  "vi": "MAY ĐO · SỬA ĐỒ",
+  "en": ""
+ },
+ {
+  "vi": "THỬ",
+  "en": ""
+ },
+ {
+  "vi": "Bàn may",
+  "en": ""
+ },
+ {
+  "vi": "Phòng thử & kho",
+  "en": ""
+ },
+ {
+  "vi": "PHÒNG THỬ ĐỒ",
+  "en": ""
+ },
+ {
+  "vi": "PHÒNG 1",
+  "en": ""
+ },
+ {
+  "vi": "Phòng thử 1",
+  "en": ""
+ },
+ {
+  "vi": "PHÒNG 2",
+  "en": ""
+ },
+ {
+  "vi": "Phòng thử 2",
+  "en": ""
+ },
+ {
+  "vi": "ÁO S",
+  "en": ""
+ },
+ {
+  "vi": "ÁO M",
+  "en": ""
+ },
+ {
+  "vi": "QUẦN",
+  "en": ""
+ },
+ {
   "vi": "VÁY",
   "en": ""
  },
@@ -1621,182 +1797,6 @@
  },
  {
   "vi": "Nhận thêm một việc hoặc giao ca hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Giao ca hôm nay?",
-  "en": ""
- },
- {
-  "vi": "Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho ca sau.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở khoa Nội.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và nhận xét của người bệnh, người nhà.",
-  "en": ""
- },
- {
-  "vi": "Sổ nhật ký & bản đồ",
-  "en": ""
- },
- {
-  "vi": "Điện thoại khẩn",
-  "en": ""
- },
- {
-  "vi": "Giá bộ đàm",
-  "en": ""
- },
- {
-  "vi": "Bàn giấy tờ",
-  "en": ""
- },
- {
-  "vi": "Bản đồ phường",
-  "en": ""
- },
- {
-  "vi": "An ninh trung tâm",
-  "en": ""
- },
- {
-  "vi": "GIÁ BỘ ĐÀM",
-  "en": ""
- },
- {
-  "vi": "Mướp ngủ cạnh giá bộ đàm",
-  "en": ""
- },
- {
-  "vi": "Mrrr… Mướp nằm ổ thôi, không nằm lên bàn bộ đàm đâu.",
-  "en": ""
- },
- {
-  "vi": "Đường dây sắp réo rồi.",
-  "en": ""
- },
- {
-  "vi": "Nhận ca, gọi bộ đàm từng đội rồi ký nhé.",
-  "en": ""
- },
- {
-  "vi": "Đường dây đang yên",
-  "en": ""
- },
- {
-  "vi": "Hết cuộc gọi rồi!",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một cuộc gọi hoặc giao ca hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một cuộc gọi",
-  "en": ""
- },
- {
-  "vi": "Chưa có cuộc gọi nào đang chờ",
-  "en": ""
- },
- {
-  "vi": "Cuộc gọi tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Lương ngày vào quỹ lương. Cuộc gọi chưa xong được giao lại cho ca sau.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở tổng đài cứu hộ.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và nhận xét của người gọi, của đội.",
-  "en": ""
- },
- {
-  "vi": "Sổ nước & que thử",
-  "en": ""
- },
- {
-  "vi": "Bàn trực cứu hộ",
-  "en": ""
- },
- {
-  "vi": "Máy AED & điện thoại khẩn",
-  "en": ""
- },
- {
-  "vi": "Giá phao & sào cứu hộ",
-  "en": ""
- },
- {
-  "vi": "Bàn sổ trực",
-  "en": ""
- },
- {
-  "vi": "An ninh hồ bơi",
-  "en": ""
- },
- {
-  "vi": "ĐANG MỞ HỒ",
-  "en": ""
- },
- {
-  "vi": "HỒ ĐÃ ĐÓNG",
-  "en": ""
- },
- {
-  "vi": "Mướp ngồi ngoài hàng rào",
-  "en": ""
- },
- {
-  "vi": "Mrrr… Mướp sợ nước lắm, ngồi ngoài hàng rào ngó thôi.",
-  "en": ""
- },
- {
-  "vi": "Mặt hồ đang lấp lánh.",
-  "en": ""
- },
- {
-  "vi": "Thử nước, kiểm phao rồi mở cổng nhé.",
-  "en": ""
- },
- {
-  "vi": "Hồ đang yên",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở Hồ bơi Sóng Xanh.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và nhận xét của khách bơi, phụ huynh.",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ theo tổ",
-  "en": ""
- },
- {
-  "vi": "Bảng tin phường",
-  "en": ""
- },
- {
-  "vi": "Máy số thứ tự & điện thoại trực ban",
-  "en": ""
- },
- {
-  "vi": "Tủ đồ thất lạc",
-  "en": ""
- },
- {
-  "vi": "Hàng ghế chờ",
   "en": ""
  }
 ]

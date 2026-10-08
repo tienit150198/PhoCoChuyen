@@ -1,3 +1,7 @@
+# v1.9.23 — 2026-10-08
+
+💌 Thiệp mời cưới cả phố (chủ game 08/10): cặp đã đính hôn/kết hôn viết lời mời (10–200 ký tự, qua bộ lọc chat), 10.000 xu mỗi thiệp (ví trước, rồi ngân hàng/thẻ); mọi người thấy một lần (popup như Có gì mới), tối đa 3 thiệp/người/ngày; 1 thiệp/tiệc, 1 thiệp/24 giờ mỗi người gửi; tôn trọng chặn; admin xem/gỡ thiệp; MNL_WED_INVITE_OFF=1 tắt. CSDL: SCHEMA_VERSION 32 (wed_invites, wed_invite_seen — chỉ thêm bảng). Không thêm khóa save.
+
 # v1.9.22 — 2026-10-08
 
 🎆 Pháo hoa không phải đợi (chủ game 08/10 "pháo hoa bắn k cần đợi"): gap 600 → 0 giây (game/lux_content.py), trang xếp hàng tối đa 6 màn pháo hoa (public/js/v4/fireworks.js). Không đổi save, không đổi CSDL.

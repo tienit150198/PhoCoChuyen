@@ -1,5 +1,181 @@
 [
  {
+  "vi": "🙏 Nói thật: quán hết món này",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa đang làm phải bỏ. Nói thật với khách là quán hết món?",
+  "en": ""
+ },
+ {
+  "vi": "🍚 ĐƯA CƠM",
+  "en": ""
+ },
+ {
+  "vi": "làm dĩa cơm trước đã",
+  "en": ""
+ },
+ {
+  "vi": "＋ Bày",
+  "en": ""
+ },
+ {
+  "vi": "🍱 Tủ kính",
+  "en": ""
+ },
+ {
+  "vi": "🍚 Nồi hết cơm",
+  "en": ""
+ },
+ {
+  "vi": "đổ nước tới đâu?",
+  "en": ""
+ },
+ {
+  "vi": "Nấu cơm, mở quán",
+  "en": ""
+ },
+ {
+  "vi": "Xới cơm cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Việc mở quán",
+  "en": ""
+ },
+ {
+  "vi": "Cơm của khách",
+  "en": ""
+ },
+ {
+  "vi": "chín rồi",
+  "en": ""
+ },
+ {
+  "vi": "vá cơm",
+  "en": ""
+ },
+ {
+  "vi": "📦 Sắp hết",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Mở Kho",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa, hộp đã bán",
+  "en": ""
+ },
+ {
+  "vi": "Vá cơm xới dư",
+  "en": ""
+ },
+ {
+  "vi": "Đồ bỏ cuối ngày",
+  "en": ""
+ },
+ {
+  "vi": "Nhập gạo, sườn, trứng, đồ kho, hộp…",
+  "en": ""
+ },
+ {
+  "vi": "đã mở",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn:",
+  "en": ""
+ },
+ {
+  "vi": "Số lượng THỰC GIAO (Biên bản giao nhận) × Đơn giá chưa thuế (Đơn đặt hàng).",
+  "en": ""
+ },
+ {
+  "vi": "Tiền hàng chưa thuế × 10%.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền hàng chưa thuế + Thuế GTGT.",
+  "en": ""
+ },
+ {
+  "vi": "Số dư cuối kỳ theo Sổ tiền gửi, cộng tiền vào / trừ tiền ra của các khoản cần ghi bổ sung.",
+  "en": ""
+ },
+ {
+  "vi": "Cộng cột “Còn phải thu” của mọi hóa đơn chưa thu đủ (Sổ chi tiết công nợ 131).",
+  "en": ""
+ },
+ {
+  "vi": "Bảng kiểm đếm: mỗi dòng mệnh giá × số tờ, rồi cộng lại.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ quỹ: tồn quỹ đầu ngày + các phiếu thu − các phiếu chi.",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên giá ÷ (số năm × 12), theo Sổ tài sản cố định. Mới dùng trong tháng hoặc đã khấu hao hết thì ghi 0.",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên giá − hao mòn lũy kế − khấu hao tháng này (Sổ tài sản cố định).",
+  "en": ""
+ },
+ {
+  "vi": "Thực đếm (Biên bản kiểm kê) − Tồn theo sổ (Thẻ kho). Thiếu ghi số âm, khớp ghi 0.",
+  "en": ""
+ },
+ {
+  "vi": "Số lượng thiếu (bước trước) × Đơn giá vốn trên Thẻ kho.",
+  "en": ""
+ },
+ {
+  "vi": "Thuế đầu ra (TK 3331) − thuế đầu vào được khấu trừ (TK 133), trên bảng số dư.",
+  "en": ""
+ },
+ {
+  "vi": "Tổng cột Dư Nợ và tổng cột Dư Có của bảng cân đối thử: lấy tổng lớn trừ tổng nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Số dư TK 511 trên Sổ cái.",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu thuần − Giá vốn (TK 632).",
+  "en": ""
+ },
+ {
+  "vi": "Lợi nhuận gộp − chi phí bán hàng (641) − chi phí quản lý (642), theo số đã sửa.",
+  "en": ""
+ },
+ {
+  "vi": "Mở trước:",
+  "en": ""
+ },
+ {
+  "vi": "đã đóng dấu",
+  "en": ""
+ },
+ {
+  "vi": "bảng hàng hóa",
+  "en": ""
+ },
+ {
+  "vi": "giấy kẹp kèm",
+  "en": ""
+ },
+ {
+  "vi": "chỗ sai",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Bàn kế toán",
+  "en": ""
+ },
+ {
   "vi": "📥 Nhận khay",
   "en": ""
  },
@@ -1621,182 +1797,6 @@
  },
  {
   "vi": "🚪 Đón khách",
-  "en": ""
- },
- {
-  "vi": "🦺 Hướng dẫn an toàn",
-  "en": ""
- },
- {
-  "vi": "🛒 Xe đẩy",
-  "en": ""
- },
- {
-  "vi": "🗣️ Khách khó chịu",
-  "en": ""
- },
- {
-  "vi": "🩺 Khách không khỏe",
-  "en": ""
- },
- {
-  "vi": "Khách đã lên đủ. Đóng cửa khoang.",
-  "en": ""
- },
- {
-  "vi": "🎫 Thẻ lên tàu",
-  "en": ""
- },
- {
-  "vi": ": người lớn",
-  "en": ""
- },
- {
-  "vi": "🧳 Vali lớn",
-  "en": ""
- },
- {
-  "vi": "🎒 Túi nhỏ",
-  "en": ""
- },
- {
-  "vi": "Chị Thu đọc:",
-  "en": ""
- },
- {
-  "vi": "Chị Thu đọc từng câu: giơ đúng món làm mẫu cho câu chị đang đọc.",
-  "en": ""
- },
- {
-  "vi": "Làm mẫu",
-  "en": ""
- },
- {
-  "vi": "Giơ đúng món làm mẫu cho câu chị đang đọc.",
-  "en": ""
- },
- {
-  "vi": "✅ Làm mẫu xong · 🚶 hàng",
-  "en": ""
- },
- {
-  "vi": "Ghế",
-  "en": ""
- },
- {
-  "vi": "Khoang trước cất cánh",
-  "en": ""
- },
- {
-  "vi": "🥬 Suất chay · ghế",
-  "en": ""
- },
- {
-  "vi": "🥜 Dị ứng đậu phộng · ghế",
-  "en": ""
- },
- {
-  "vi": ": cả hàng",
-  "en": ""
- },
- {
-  "vi": "không phát đậu phộng",
-  "en": ""
- },
- {
-  "vi": "Suất đặc biệt",
-  "en": ""
- },
- {
-  "vi": "Phiếu suất ăn đặc biệt",
-  "en": ""
- },
- {
-  "vi": "Không có suất đặc biệt.",
-  "en": ""
- },
- {
-  "vi": "· ♨️ không đồ nóng",
-  "en": ""
- },
- {
-  "vi": "Đã mời",
-  "en": ""
- },
- {
-  "vi": "😴 Để khách ngủ",
-  "en": ""
- },
- {
-  "vi": "Hàng này đã xong.",
-  "en": ""
- },
- {
-  "vi": "✓ đã làm",
-  "en": ""
- },
- {
-  "vi": "🧰 Túi sơ cứu",
-  "en": ""
- },
- {
-  "vi": "Cất xe, cất bình nóng, về ghế",
-  "en": ""
- },
- {
-  "vi": "〰️ Cất xe, về ghế!",
-  "en": ""
- },
- {
-  "vi": "Quyết chuyện trong khoang",
-  "en": ""
- },
- {
-  "vi": "🧣 Vào ca bay",
-  "en": ""
- },
- {
-  "vi": "📋 Nhận phiếu suất ăn",
-  "en": ""
- },
- {
-  "vi": "📋 Nhận phiếu suất ăn đặc biệt",
-  "en": ""
- },
- {
-  "vi": "🚪 Ra cửa",
-  "en": ""
- },
- {
-  "vi": "🚪 Ra cửa đón khách",
-  "en": ""
- },
- {
-  "vi": "👂 Hỏi chuyện khách",
-  "en": ""
- },
- {
-  "vi": "🚪 ĐÓNG CỬA KHOANG",
-  "en": ""
- },
- {
-  "vi": "👉 Đọc thẻ, chọn cách giúp",
-  "en": ""
- },
- {
-  "vi": "🚶 Đi dọc lối kiểm tra",
-  "en": ""
- },
- {
-  "vi": "📞 BÁO BUỒNG LÁI: SẴN SÀNG",
-  "en": ""
- },
- {
-  "vi": "(trẻ nhỏ không uống đồ nóng)",
-  "en": ""
- },
- {
-  "vi": "(suất chay)",
   "en": ""
  }
 ]

@@ -1,5 +1,181 @@
 [
  {
+  "vi": "☁ Cầm bông mềm",
+  "en": ""
+ },
+ {
+  "vi": "Cầm một hạt",
+  "en": ""
+ },
+ {
+  "vi": "Gắn vào chỗ sáng",
+  "en": ""
+ },
+ {
+  "vi": "In chính giữa",
+  "en": ""
+ },
+ {
+  "vi": "In góc trái",
+  "en": ""
+ },
+ {
+  "vi": "In góc phải",
+  "en": ""
+ },
+ {
+  "vi": "↶ Bỏ dấu cuối",
+  "en": ""
+ },
+ {
+  "vi": "Giữ và kéo trên đường sáng",
+  "en": ""
+ },
+ {
+  "vi": "Dùng phím mũi tên",
+  "en": ""
+ },
+ {
+  "vi": "Bàn phím: chọn “Dùng phím mũi tên”, rồi dùng ↑ ↓ ← → để đưa dụng cụ theo đường.",
+  "en": ""
+ },
+ {
+  "vi": "Có thể dùng hai thanh thước bên dưới; Tab để chọn, phím mũi tên để chỉnh từng cm.",
+  "en": ""
+ },
+ {
+  "vi": "Tối đa 12 dấu. Dùng nút in để thao tác bằng bàn phím.",
+  "en": ""
+ },
+ {
+  "vi": "Có thể dùng các nút cầm và gắn bên dưới để thao tác bằng bàn phím.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đủ 12 dấu. Bỏ dấu cuối nếu bạn muốn đổi vị trí.",
+  "en": ""
+ },
+ {
+  "vi": "Cầm một món trong khay trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt quai vào vị trí cùng số nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Cầm bông mềm trong khay rồi chọn một vùng còn trống.",
+  "en": ""
+ },
+ {
+  "vi": "Kéo bông vào một vùng sáng trên bạn gấu.",
+  "en": ""
+ },
+ {
+  "vi": "Đang cầm bông mềm. Chọn vùng cần nhồi trên bạn gấu.",
+  "en": ""
+ },
+ {
+  "vi": "Đang cầm một hạt. Chọn vị trí còn trống.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ đã đủ 24 món. Bản nháp của bạn vẫn được giữ.",
+  "en": ""
+ },
+ {
+  "vi": "Cất món tự tay làm lên kệ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thanh toán. Thành phẩm vẫn ở đây để bạn cất sau.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa cất được thành phẩm. Bản nháp vẫn còn; hãy thử lại khi kết nối ổn định.",
+  "en": ""
+ },
+ {
+  "vi": "Kết nối bị gián đoạn. Bản nháp vẫn còn, bạn có thể thử cất lại.",
+  "en": ""
+ },
+ {
+  "vi": "Mình làm tiếp món đang dở nhé. Bản nháp đã được mở lại.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nam",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nữ",
+  "en": ""
+ },
+ {
+  "vi": "Ai cũng được",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tư bán xôi",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi chờ ai đó hả con? Bà ngồi chung chút cho vui nha.",
+  "en": ""
+ },
+ {
+  "vi": "Hồi xưa bà với ông cũng quen nhau ở cái ghế đá này đó.",
+  "en": ""
+ },
+ {
+  "vi": "Người hợp gu tới liền à, kiên nhẫn chút.",
+  "en": ""
+ },
+ {
+  "vi": "Rảnh thì chơi hỏi nhanh đáp nhanh với bà nè.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Ba sửa xe",
+  "en": ""
+ },
+ {
+  "vi": "Chú ghé ngồi nghỉ tay chút, con cứ chờ tự nhiên nha.",
+  "en": ""
+ },
+ {
+  "vi": "Tối nào phố cũng đông, chờ xíu là có bạn à.",
+  "en": ""
+ },
+ {
+  "vi": "Đố vui cho đỡ buồn không? Chú hỏi nè.",
+  "en": ""
+ },
+ {
+  "vi": "Xe cộ gì hư cứ mang qua tiệm chú nha.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Mai tiệm hoa",
+  "en": ""
+ },
+ {
+  "vi": "Chị mới đóng tiệm, ngồi đây hóng gió với em chút.",
+  "en": ""
+ },
+ {
+  "vi": "Hoa hồng hôm nay đẹp lắm, ai được tặng chắc vui ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Chờ người hợp gu cũng như chờ hoa nở, đáng mà.",
+  "en": ""
+ },
+ {
+  "vi": "Chơi đố vui với chị cho đỡ sốt ruột nè.",
+  "en": ""
+ },
+ {
   "vi": "Bánh chưng thường gói bằng lá gì?",
   "en": ""
  },
@@ -1621,182 +1797,6 @@
  },
  {
   "vi": "Con thỏ nhảy nhót, vểnh đôi tai",
-  "en": ""
- },
- {
-  "vi": "Bé học chăm ngoan, thuộc làu từng bài",
-  "en": ""
- },
- {
-  "vi": "Mùa này trái chín, ngọt lịm trái xoài",
-  "en": ""
- },
- {
-  "vi": "Đứng đây ngó quanh, đố bà con là ai",
-  "en": ""
- },
- {
-  "vi": "Tiểu phẩm xem xong, cười té ghế vì hài",
-  "en": ""
- },
- {
-  "vi": "Áo mới cúc vàng, cô Bảy khéo cài",
-  "en": ""
- },
- {
-  "vi": "Dò cho thiệt kỹ, kẻo lỡ dò sai",
-  "en": ""
- },
- {
-  "vi": "Hội chợ đông vui, khách tới gần xa",
-  "en": ""
- },
- {
-  "vi": "Cơm trắng canh chua, thêm chén dưa cà",
-  "en": ""
- },
- {
-  "vi": "Sáng sớm tinh mơ, gáy vang con gà",
-  "en": ""
- },
- {
-  "vi": "Chiều chiều ông nội, pha ấm nước trà",
-  "en": ""
- },
- {
-  "vi": "Hội chợ tan rồi, ai cũng có quà",
-  "en": ""
- },
- {
-  "vi": "Vườn xuân rực rỡ, muôn sắc muôn hoa",
-  "en": ""
- },
- {
-  "vi": "Cả xóm quây quần, cùng hát cùng ca",
-  "en": ""
- },
- {
-  "vi": "Đò ơi đợi chút, cho em sang qua",
-  "en": ""
- },
- {
-  "vi": "Cây đa đầu làng, gió mát la đà",
-  "en": ""
- },
- {
-  "vi": "Trăng lên đầu ngõ, sáng cả sân nhà",
-  "en": ""
- },
- {
-  "vi": "Mưa rơi trên mái, lách tách mái tôn",
-  "en": ""
- },
- {
-  "vi": "Đường về xóm nhỏ, đầu làng cuối thôn",
-  "en": ""
- },
- {
-  "vi": "Lục bình trôi nổi, ghé vào bãi cồn",
-  "en": ""
- },
- {
-  "vi": "Nghe tiếng trống chầu, ai nấy bồn chồn",
-  "en": ""
- },
- {
-  "vi": "Học ăn học nói, mai mốt nên khôn",
-  "en": ""
- },
- {
-  "vi": "Hoa tươi trong chậu, nước tưới đầy bồn",
-  "en": ""
- },
- {
-  "vi": "Gió đưa tiếng hát, rộn ràng tâm hồn",
-  "en": ""
- },
- {
-  "vi": "Nhớ ai mà viết lá thư",
-  "en": ""
- },
- {
-  "vi": "Ngồi dò cho kỹ, chớ có chần chừ",
-  "en": ""
- },
- {
-  "vi": "Nồi cơm má nấu, ăn no còn dư",
-  "en": ""
- },
- {
-  "vi": "Bé ngoan vâng lời, chẳng có chút hư",
-  "en": ""
- },
- {
-  "vi": "Tay dò số giỏi, thiệt là quá cừ",
-  "en": ""
- },
- {
-  "vi": "Rủ đi coi hội, bạn gật đầu: ừ",
-  "en": ""
- },
- {
-  "vi": "Mưa dầm sụt sùi, trời đất lừ đừ",
-  "en": ""
- },
- {
-  "vi": "Nói hay chưa bằng làm, cứ thong thả từ từ",
-  "en": ""
- },
- {
-  "vi": "Ai đi xa nhớ ghé về thăm",
-  "en": ""
- },
- {
-  "vi": "Đêm nay trăng sáng tròn như rằm",
-  "en": ""
- },
- {
-  "vi": "Trưa hè gió mát, đong đưa võng nằm",
-  "en": ""
- },
- {
-  "vi": "Ruộng ai cày cấy, sớm tối siêng chăm",
-  "en": ""
- },
- {
-  "vi": "Cơm ngon nhờ có chén nước mắm",
-  "en": ""
- },
- {
-  "vi": "Bánh tét bánh chưng, má gói cả trăm",
-  "en": ""
- },
- {
-  "vi": "Cô Bảy hát hay, khán giả mê lắm",
-  "en": ""
- },
- {
-  "vi": "Thuyền ai về bến, sóng nước êm đằm",
-  "en": ""
- },
- {
-  "vi": "Cơm nắm muối mè, ăn xong một nắm",
-  "en": ""
- },
- {
-  "vi": "Hai đứa mình đi hội cùng nhau",
-  "en": ""
- },
- {
-  "vi": "Miếng trầu têm với quả cau",
-  "en": ""
- },
- {
-  "vi": "Vườn nhà má trồng mấy luống rau",
-  "en": ""
- },
- {
-  "vi": "Mua tờ dò lẹ, chạy nhanh cho mau",
   "en": ""
  }
 ]

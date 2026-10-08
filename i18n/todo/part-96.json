@@ -1,5 +1,69 @@
 [
  {
+  "vi": "Chăm làm có thưởng: tăng ca ×2, thưởng năng suất 30%",
+  "en": ""
+ },
+ {
+  "vi": "Mua sắm: du lịch nước ngoài, bộ sưu tập, dinh thự, phi cơ, Mạnh Thường Quân",
+  "en": ""
+ },
+ {
+  "vi": "Giá cả trong phố tăng nhẹ ~10%, đồ đã mua giữ nguyên giá",
+  "en": ""
+ },
+ {
+  "vi": "Công an có cấp bậc từ Binh nhì đến Đại tá, chức vụ phường và thành phố, cấp hiệu trên vai",
+  "en": ""
+ },
+ {
+  "vi": "Phòng hát Mây: cả phòng xem YouTube chung, xếp bài hát, đoán bài qua lời và emoji",
+  "en": ""
+ },
+ {
+  "vi": "Gọn chữ toàn bộ: mọi nghề và nhà, bản đồ, ngân hàng, hội chợ trên điện thoại",
+  "en": ""
+ },
+ {
+  "vi": "Sửa lỗi: ném vòng hội chợ lặp ván, quán ăn gợi ý món đã hết, phòng homestay có đơn app chờ",
+  "en": ""
+ },
+ {
+  "vi": "Gọn chữ thêm 14 nghề: công an, điều dưỡng, cứu hộ bể bơi, dầu khí, phi công, tiếp viên, văn phòng, tiệm thú cưng",
+  "en": ""
+ },
+ {
+  "vi": "Giao diện gọn hơn trên điện thoại: ít chữ, một nút chính, thông báo không che nút",
+  "en": ""
+ },
+ {
+  "vi": "Nút chưa bấm được sẽ mờ và nói lý do",
+  "en": ""
+ },
+ {
+  "vi": "Đi quán, spa, Rạp Mây: tiêu xu cho vui, no bụng, tỉnh táo",
+  "en": ""
+ },
+ {
+  "vi": "Công đức Chùa Gió Lành, có bảng công đức tuần",
+  "en": ""
+ },
+ {
+  "vi": "Màu tên, khung hồ sơ, danh hiệu 7 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Nông trại mới: vườn lớn theo giờ thật, nuôi vịt bò heo, khách đặt hàng, nhà kính, máy cày, VietGAP",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi nghề một cách nói: chùa, bệnh viện, công an, trường học không còn gọi là “tiệm”",
+  "en": ""
+ },
+ {
+  "vi": "Nghề làm công lương không còn bị trừ thuế tiệm và tiền thuê",
+  "en": ""
+ },
+ {
   "vi": "Nhân viên tiệm bán nhanh gấp 1,6 lần ngày đầu",
   "en": ""
  },
@@ -1377,138 +1441,6 @@
  },
  {
   "vi": "Chỉ đánh giá dịch vụ đã được phục vụ và thanh toán.",
-  "en": ""
- },
- {
-  "vi": "Không thể gửi nội dung cho đơn này.",
-  "en": ""
- },
- {
-  "vi": "Mỗi đơn chỉ có một đánh giá xác thực.",
-  "en": ""
- },
- {
-  "vi": "Chưa có đánh giá để trả lời.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã trả lời đánh giá này.",
-  "en": ""
- },
- {
-  "vi": "Đã lưu đánh giá xác thực.",
-  "en": ""
- },
- {
-  "vi": "Đã gửi lời cảm ơn khách.",
-  "en": ""
- },
- {
-  "vi": "Thao tác chỗ làm không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: một món đồ em bé",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: xuất một hộp theo phiếu đã kiểm",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ riêng: phân loại và đối chiếu phiếu",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ riêng: xác minh và trả lời một yêu cầu",
-  "en": ""
- },
- {
-  "vi": "Buổi riêng: hỗ trợ một bài thực hành",
-  "en": ""
- },
- {
-  "vi": "Lượt riêng: hướng dẫn khách tại điểm tham quan",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: trà sữa size M không topping",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: mì kim chi mang về",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: gói một cành hồng",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: một túi gạo",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: chuẩn bị luống và gieo hạt thuê",
-  "en": ""
- },
- {
-  "vi": "Lượt riêng: thay ga và chuẩn bị phòng thuê",
-  "en": ""
- },
- {
-  "vi": "Lượt riêng: vệ sinh và chăm sóc thú cưng",
-  "en": ""
- },
- {
-  "vi": "Lượt riêng: gội và cắt tóc đơn giản",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ riêng: kiểm chứng từ doanh nghiệp",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ riêng: rà soát bảng lương",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ riêng: đối chiếu nội bộ",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: áo thun đúng cỡ",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: thức ăn chó trưởng thành",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: trà nóng và bánh quy",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: một phần xoài",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: thu gom một bao rác",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: dọn và sắp xếp một phòng",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: hộp kem dừa mang về 1,2 kg",
-  "en": ""
- },
- {
-  "vi": "Lượt riêng: cắt dũa và sơn móng thường",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: chuẩn bị vật phẩm theo đặt hàng",
   "en": ""
  }
 ]

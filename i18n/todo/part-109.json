@@ -1,5 +1,181 @@
 [
  {
+  "vi": "Giao ca hôm nay?",
+  "en": ""
+ },
+ {
+  "vi": "Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho ca sau.",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp ở khoa Nội.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và nhận xét của người bệnh, người nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nhật ký & bản đồ",
+  "en": ""
+ },
+ {
+  "vi": "Điện thoại khẩn",
+  "en": ""
+ },
+ {
+  "vi": "Giá bộ đàm",
+  "en": ""
+ },
+ {
+  "vi": "Bàn giấy tờ",
+  "en": ""
+ },
+ {
+  "vi": "Bản đồ phường",
+  "en": ""
+ },
+ {
+  "vi": "An ninh trung tâm",
+  "en": ""
+ },
+ {
+  "vi": "GIÁ BỘ ĐÀM",
+  "en": ""
+ },
+ {
+  "vi": "Mướp ngủ cạnh giá bộ đàm",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… Mướp nằm ổ thôi, không nằm lên bàn bộ đàm đâu.",
+  "en": ""
+ },
+ {
+  "vi": "Đường dây sắp réo rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận ca, gọi bộ đàm từng đội rồi ký nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đường dây đang yên",
+  "en": ""
+ },
+ {
+  "vi": "Hết cuộc gọi rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thêm một cuộc gọi hoặc giao ca hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thêm một cuộc gọi",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có cuộc gọi nào đang chờ",
+  "en": ""
+ },
+ {
+  "vi": "Cuộc gọi tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Lương ngày vào quỹ lương. Cuộc gọi chưa xong được giao lại cho ca sau.",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp ở tổng đài cứu hộ.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và nhận xét của người gọi, của đội.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nước & que thử",
+  "en": ""
+ },
+ {
+  "vi": "Bàn trực cứu hộ",
+  "en": ""
+ },
+ {
+  "vi": "Máy AED & điện thoại khẩn",
+  "en": ""
+ },
+ {
+  "vi": "Giá phao & sào cứu hộ",
+  "en": ""
+ },
+ {
+  "vi": "Bàn sổ trực",
+  "en": ""
+ },
+ {
+  "vi": "An ninh hồ bơi",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG MỞ HỒ",
+  "en": ""
+ },
+ {
+  "vi": "HỒ ĐÃ ĐÓNG",
+  "en": ""
+ },
+ {
+  "vi": "Mướp ngồi ngoài hàng rào",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… Mướp sợ nước lắm, ngồi ngoài hàng rào ngó thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Mặt hồ đang lấp lánh.",
+  "en": ""
+ },
+ {
+  "vi": "Thử nước, kiểm phao rồi mở cổng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ đang yên",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp ở Hồ bơi Sóng Xanh.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và nhận xét của khách bơi, phụ huynh.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ theo tổ",
+  "en": ""
+ },
+ {
+  "vi": "Bảng tin phường",
+  "en": ""
+ },
+ {
+  "vi": "Máy số thứ tự & điện thoại trực ban",
+  "en": ""
+ },
+ {
+  "vi": "Tủ đồ thất lạc",
+  "en": ""
+ },
+ {
+  "vi": "Hàng ghế chờ",
+  "en": ""
+ },
+ {
   "vi": "SỔ TRỰC BAN",
   "en": ""
  },
@@ -1621,182 +1797,6 @@
  },
  {
   "vi": "Tìm theo số hiệu hoặc tên",
-  "en": ""
- },
- {
-  "vi": "Không thấy tài khoản khớp.",
-  "en": ""
- },
- {
-  "vi": "CHỨNG NHẬN TRONG GAME",
-  "en": ""
- },
- {
-  "vi": "Lưu bản để in",
-  "en": ""
- },
- {
-  "vi": "Thi lại để ôn tập",
-  "en": ""
- },
- {
-  "vi": "Thi hoàn thành khóa",
-  "en": ""
- },
- {
-  "vi": "Bắt đầu thi",
-  "en": ""
- },
- {
-  "vi": "Cần chứng nhận Kế toán cơ bản và hoàn thành 60 bài của khóa này. Thi đạt mở việc ở Sông Hồng Group, lương kế toán ×3 (ngày lễ ×5), không cộng dồn khi thi lại.",
-  "en": ""
- },
- {
-  "vi": "Chương trình học đang được tải.",
-  "en": ""
- },
- {
-  "vi": "Mục lục khóa học",
-  "en": ""
- },
- {
-  "vi": "NỀN TẢNG",
-  "en": ""
- },
- {
-  "vi": "DOANH NGHIỆP · TT99",
-  "en": ""
- },
- {
-  "vi": "· hoàn thành",
-  "en": ""
- },
- {
-  "vi": "BẮT ĐẦU TỪ BẢN CHẤT GIAO DỊCH",
-  "en": ""
- },
- {
-  "vi": "Đọc bài và ví dụ, rồi làm đúng ba bài tập để hoàn thành từng bài. Tiến độ được giữ trong bản lưu.",
-  "en": ""
- },
- {
-  "vi": "Mở lại bài học",
-  "en": ""
- },
- {
-  "vi": "Tiếp tục học",
-  "en": ""
- },
- {
-  "vi": "Sau bài này",
-  "en": ""
- },
- {
-  "vi": "THEO DÕI CÁCH LÀM",
-  "en": ""
- },
- {
-  "vi": "Tự làm bài tập",
-  "en": ""
- },
- {
-  "vi": "Bài đã hoàn thành",
-  "en": ""
- },
- {
-  "vi": "Hoàn thành bài",
-  "en": ""
- },
- {
-  "vi": "Bài tiếp theo →",
-  "en": ""
- },
- {
-  "vi": "Xem điều kiện thi →",
-  "en": ""
- },
- {
-  "vi": "Chọn khóa học",
-  "en": ""
- },
- {
-  "vi": "BÀI THI",
-  "en": ""
- },
- {
-  "vi": "Câu đã nộp được giữ lại. Đáp án và điểm chỉ xuất hiện sau khi nộp đủ bài.",
-  "en": ""
- },
- {
-  "vi": "Tiến độ thi",
-  "en": ""
- },
- {
-  "vi": "Hủy bài thi đang làm",
-  "en": ""
- },
- {
-  "vi": "Khóa thi",
-  "en": ""
- },
- {
-  "vi": "Cần ôn thêm",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể xem lại cách làm.",
-  "en": ""
- },
- {
-  "vi": "Mở lại bài học có liên quan rồi thi lại miễn phí.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã nộp:",
-  "en": ""
- },
- {
-  "vi": "Ôn bài liên quan",
-  "en": ""
- },
- {
-  "vi": "TSCĐ",
-  "en": ""
- },
- {
-  "vi": "Phân bổ bảo hiểm",
-  "en": ""
- },
- {
-  "vi": "Tiền gửi kỳ hạn",
-  "en": ""
- },
- {
-  "vi": "Ngoại tệ",
-  "en": ""
- },
- {
-  "vi": "Giá thành",
-  "en": ""
- },
- {
-  "vi": "Số tháng",
-  "en": ""
- },
- {
-  "vi": "Hao mòn",
-  "en": ""
- },
- {
-  "vi": "Từ tháng",
-  "en": ""
- },
- {
-  "vi": "Số kỳ",
-  "en": ""
- },
- {
-  "vi": "Mỗi kỳ",
   "en": ""
  }
 ]

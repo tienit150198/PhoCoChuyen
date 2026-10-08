@@ -1,5 +1,181 @@
 [
  {
+  "vi": "🙃 Vòng lật ngược: bảng số úp lại, nghe cô Bảy đọc rồi tự lật nha!",
+  "en": ""
+ },
+ {
+  "vi": "Bảng số đã gọi",
+  "en": ""
+ },
+ {
+  "vi": "chờ 1!",
+  "en": ""
+ },
+ {
+  "vi": "Các số vừa gọi",
+  "en": ""
+ },
+ {
+  "vi": "Người chơi khác",
+  "en": ""
+ },
+ {
+  "vi": "Tốc độ gọi số",
+  "en": ""
+ },
+ {
+  "vi": "🙈 Kinh hụt",
+  "en": ""
+ },
+ {
+  "vi": "một hàng ngang",
+  "en": ""
+ },
+ {
+  "vi": "hai hàng ngang trên một tờ",
+  "en": ""
+ },
+ {
+  "vi": "cả tờ",
+  "en": ""
+ },
+ {
+  "vi": "Hàng nào đủ 5 số mới kinh được nha!",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có hàng nào đủ 5 số đâu, dò tiếp nha!",
+  "en": ""
+ },
+ {
+  "vi": "Nhạc hội",
+  "en": ""
+ },
+ {
+  "vi": "hội chợ: no fairground",
+  "en": ""
+ },
+ {
+  "vi": "Buồng chụp ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được bảng vàng.",
+  "en": ""
+ },
+ {
+  "vi": "Hội đã tàn · Bảng vàng chung cuộc",
+  "en": ""
+ },
+ {
+  "vi": "ngày chơi",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở Bảng vàng…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ai lời xu nào. Thắng là có tên trên bảng!",
+  "en": ""
+ },
+ {
+  "vi": "· hạng",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ ai đang lời mới có tên trên bảng.",
+  "en": ""
+ },
+ {
+  "vi": "Tên bạn đang ẩn nên chưa lên bảng và chưa nhận được danh hiệu. Bật “Hiện tên tôi” ở Xếp hạng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🏆 Bảng vàng hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Cách xếp hạng",
+  "en": ""
+ },
+ {
+  "vi": "Xếp theo số xu bạn thắng ở hội chợ lần này: tiền thắng trừ tiền thua ở bầu cua, phóng dao, vé số cào, lô tô, chiếu trong, cộng xu kiếm từ ô ăn quan và ném vòng.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền vốn được tặng, tiền vay và tiền trả nợ không tính.",
+  "en": ""
+ },
+ {
+  "vi": "Bằng xu thì ai đạt trước đứng trên.",
+  "en": ""
+ },
+ {
+  "vi": "Danh hiệu đã trao khi hội tàn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã bỏ vô ví 👛",
+  "en": ""
+ },
+ {
+  "vi": "Đã bỏ vô ví của bạn. Chúc bà con chơi hội vui vẻ, ăn nhiều nha!",
+  "en": ""
+ },
+ {
+  "vi": "🏮 Vào hội",
+  "en": ""
+ },
+ {
+  "vi": "· trả lúc nào cũng được",
+  "en": ""
+ },
+ {
+  "vi": "Hội tàn mà chưa trả thì bà tự thu: lấy tiền trong ví trước, thiếu thì lấy từ tài khoản ngân hàng, vẫn thiếu thì trừ dần khi bạn có tiền vào ví. Ví không bao giờ bị âm.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đủ thì cứ chơi tiếp, có đủ rồi ghé trả bà nha.",
+  "en": ""
+ },
+ {
+  "vi": "Có tiền rồi hả? Trả bà là xong, vay tiếp lúc nào cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Đang trả…",
+  "en": ""
+ },
+ {
+  "vi": "Số tiền vay",
+  "en": ""
+ },
+ {
+  "vi": "💸 Vay nóng hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "· trả lại",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi lần một khoản. Trả hết lúc nào cũng được ngay tại đây. Hội tàn mà chưa trả thì bà tự thu từ ví, rồi tài khoản ngân hàng; còn thiếu thì trừ dần khi có tiền vào ví.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu vốn chơi hội hả con? Bà cho vay liền, lãi hai chục phần trăm thôi, trả lúc nào cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Út kẹo bông",
+  "en": ""
+ },
+ {
+  "vi": "Bắp nướng mỡ hành mới lên lò nè, thơm lừng!",
+  "en": ""
+ },
+ {
   "vi": "Bánh tráng nướng giòn rụm, ăn liền cho nóng nha!",
   "en": ""
  },
@@ -1621,182 +1797,6 @@
  },
  {
   "vi": "Căn mới để trống, chưa dọn về.",
-  "en": ""
- },
- {
-  "vi": "Ký hợp đồng mua nhà",
-  "en": ""
- },
- {
-  "vi": "Tất toán khoản vay mua nhà?",
-  "en": ""
- },
- {
-  "vi": ". Bạn về gác Bà Tám (muốn ở căn khác thì dọn qua đó trước rồi hãy bán)",
-  "en": ""
- },
- {
-  "vi": ". Người ấy dọn ra cùng bạn",
-  "en": ""
- },
- {
-  "vi": "tài khoản",
-  "en": ""
- },
- {
-  "vi": "sẽ để trống.",
-  "en": ""
- },
- {
-  "vi": "Đồ trang trí gói vào túi đồ, bày lại ở nhà mới.",
-  "en": ""
- },
- {
-  "vi": "Gửi lời mời mới nếu muốn người ấy dọn về cùng.",
-  "en": ""
- },
- {
-  "vi": "Dọn nhà",
-  "en": ""
- },
- {
-  "vi": "dọn đi, gửi nốt tiền thuê những ngày đã ở.",
-  "en": ""
- },
- {
-  "vi": "Gỡ tin đang tìm khách NPC.",
-  "en": ""
- },
- {
-  "vi": "Chọn một căn nhà nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn đang có nhà rồi.",
-  "en": ""
- },
- {
-  "vi": "(thuế trước bạ trả từ ví hoặc tài khoản)",
-  "en": ""
- },
- {
-  "vi": ", phí và thuế",
-  "en": ""
- },
- {
-  "vi": "và phí",
-  "en": ""
- },
- {
-  "vi": "Ngân hàng chưa duyệt vay mua nhà.",
-  "en": ""
- },
- {
-  "vi": "Thuê phòng, để dành, mua nhà",
-  "en": ""
- },
- {
-  "vi": "🏠 Nhà của bạn",
-  "en": ""
- },
- {
-  "vi": "Thuê phòng, để dành, mua nhà. Mọi con số tính theo ngày sống.",
-  "en": ""
- },
- {
-  "vi": "Nhà cửa chỉ có trong chế độ hành trình",
-  "en": ""
- },
- {
-  "vi": "Vào hành trình để thuê phòng, để dành và mua nhà cho nhân vật của bạn.",
-  "en": ""
- },
- {
-  "vi": "← Nhà của bạn",
-  "en": ""
- },
- {
-  "vi": "🏦 Nộp tiền vào tài khoản để trả góp",
-  "en": ""
- },
- {
-  "vi": "nhà của bạn đang để trống",
-  "en": ""
- },
- {
-  "vi": "🏦 Mở tài khoản Ngân hàng Phố",
-  "en": ""
- },
- {
-  "vi": "🐷 Gửi tiết kiệm mua nhà",
-  "en": ""
- },
- {
-  "vi": "🏰 Dinh thự của bạn",
-  "en": ""
- },
- {
-  "vi": "🔑 Nhà đứng tên bạn",
-  "en": ""
- },
- {
-  "vi": "👥 Ở ghép · giường dưới cạnh cửa sổ",
-  "en": ""
- },
- {
-  "vi": "🧾 Đang thuê",
-  "en": ""
- },
- {
-  "vi": "🪴 Ấm cúng",
-  "en": ""
- },
- {
-  "vi": "🚪 Về góc giường",
-  "en": ""
- },
- {
-  "vi": "🚪 Vào phòng",
-  "en": ""
- },
- {
-  "vi": "Về nhà cũ",
-  "en": ""
- },
- {
-  "vi": "Trả giường, nhận lại cọc",
-  "en": ""
- },
- {
-  "vi": "Trả phòng, nhận lại cọc",
-  "en": ""
- },
- {
-  "vi": "chỗ cần sửa",
-  "en": ""
- },
- {
-  "vi": "Nhà sạch đẹp",
-  "en": ""
- },
- {
-  "vi": "🛠️ Sửa nhà",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng & gia hạn",
-  "en": ""
- },
- {
-  "vi": "🏡 Gia đình",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Nhà & Gia đình (cả mục Con chung)\"",
-  "en": ""
- },
- {
-  "vi": "👥 Mời bạn",
   "en": ""
  }
 ]

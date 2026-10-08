@@ -1,5 +1,137 @@
 [
  {
+  "vi": "Không thể gửi nội dung cho đơn này.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi đơn chỉ có một đánh giá xác thực.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có đánh giá để trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã trả lời đánh giá này.",
+  "en": ""
+ },
+ {
+  "vi": "Đã lưu đánh giá xác thực.",
+  "en": ""
+ },
+ {
+  "vi": "Đã gửi lời cảm ơn khách.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác chỗ làm không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: một món đồ em bé",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: xuất một hộp theo phiếu đã kiểm",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ riêng: phân loại và đối chiếu phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ riêng: xác minh và trả lời một yêu cầu",
+  "en": ""
+ },
+ {
+  "vi": "Buổi riêng: hỗ trợ một bài thực hành",
+  "en": ""
+ },
+ {
+  "vi": "Lượt riêng: hướng dẫn khách tại điểm tham quan",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: trà sữa size M không topping",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: mì kim chi mang về",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: gói một cành hồng",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: một túi gạo",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: chuẩn bị luống và gieo hạt thuê",
+  "en": ""
+ },
+ {
+  "vi": "Lượt riêng: thay ga và chuẩn bị phòng thuê",
+  "en": ""
+ },
+ {
+  "vi": "Lượt riêng: vệ sinh và chăm sóc thú cưng",
+  "en": ""
+ },
+ {
+  "vi": "Lượt riêng: gội và cắt tóc đơn giản",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ riêng: kiểm chứng từ doanh nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ riêng: rà soát bảng lương",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ riêng: đối chiếu nội bộ",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: áo thun đúng cỡ",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: thức ăn chó trưởng thành",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: trà nóng và bánh quy",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: một phần xoài",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: thu gom một bao rác",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: dọn và sắp xếp một phòng",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: hộp kem dừa mang về 1,2 kg",
+  "en": ""
+ },
+ {
+  "vi": "Lượt riêng: cắt dũa và sơn móng thường",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: chuẩn bị vật phẩm theo đặt hàng",
+  "en": ""
+ },
+ {
   "vi": "Đơn riêng: phở chín mang về",
   "en": ""
  },
@@ -1665,138 +1797,6 @@
  },
  {
   "vi": "Nơi làm",
-  "en": ""
- },
- {
-  "vi": "Bước hướng dẫn",
-  "en": ""
- },
- {
-  "vi": "Nút bấm cuối",
-  "en": ""
- },
- {
-  "vi": "Chưa có người mới được đo.",
-  "en": ""
- },
- {
-  "vi": "Chưa chọn",
-  "en": ""
- },
- {
-  "vi": "Rời ngay sau lượt chơi đầu",
-  "en": ""
- },
- {
-  "vi": "Người mới",
-  "en": ""
- },
- {
-  "vi": "Chỉ chơi 1 lượt",
-  "en": ""
- },
- {
-  "vi": "Lượt đó dài",
-  "en": ""
- },
- {
-  "vi": "trung vị",
-  "en": ""
- },
- {
-  "vi": "Rớt ở đâu",
-  "en": ""
- },
- {
-  "vi": "Rời ngay sau lượt đầu",
-  "en": ""
- },
- {
-  "vi": "Bị từ chối nhiều nhất",
-  "en": ""
- },
- {
-  "vi": "Bắt đầu: phục vụ khách đầu ở nghề này trong 30 ngày. Người mới: phục vụ khách đầu tiên ở đây; D3/D7 của họ. Thao tác bị từ chối nhiều nhất trong 7 ngày (số lần, tỉ lệ).",
-  "en": ""
- },
- {
-  "vi": "utm_source của đường dẫn, nếu không có thì trang dẫn tới (facebook, tiktok, google, zalo…); direct: gõ thẳng hoặc không rõ.",
-  "en": ""
- },
- {
-  "vi": "Tải mới",
-  "en": ""
- },
- {
-  "vi": "Có sẵn",
-  "en": ""
- },
- {
-  "vi": "Không rõ",
-  "en": ""
- },
- {
-  "vi": "Lượt",
-  "en": ""
- },
- {
-  "vi": "Tốc độ tải",
-  "en": ""
- },
- {
-  "vi": "Khung hình đầu",
-  "en": ""
- },
- {
-  "vi": "Byte đầu (TTFB)",
-  "en": ""
- },
- {
-  "vi": "DOM sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "Lượt đo",
-  "en": ""
- },
- {
-  "vi": "Khung hình đầu theo ngày",
-  "en": ""
- },
- {
-  "vi": "Chưa có lượt tải nào được đo.",
-  "en": ""
- },
- {
-  "vi": "Theo mạng, người mới, bộ nhớ đệm, máy",
-  "en": ""
- },
- {
-  "vi": "Bộ nhớ đệm",
-  "en": ""
- },
- {
-  "vi": "Từ lúc mở trang tới khung hình đầu của game, đo trên máy người chơi (7 ngày). Người mới: lượt chơi mở trong ngày.",
-  "en": ""
- },
- {
-  "vi": "Lỗi phía người chơi",
-  "en": ""
- },
- {
-  "vi": "Chưa ghi nhận lỗi nào.",
-  "en": ""
- },
- {
-  "vi": "Dung lượng log:",
-  "en": ""
- },
- {
-  "vi": "bảng khác",
-  "en": ""
- },
- {
-  "vi": "Mọi số liệu được giữ mãi, kể cả khi bản lưu bị xoá.",
   "en": ""
  }
 ]

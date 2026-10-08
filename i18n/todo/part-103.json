@@ -1,5 +1,181 @@
 [
  {
+  "vi": "⏱️ Đếm được:",
+  "en": ""
+ },
+ {
+  "vi": "⏱️ Bấm giờ đếm chớp",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã báo đài đèn sai đặc tính",
+  "en": ""
+ },
+ {
+  "vi": "📻 Báo đài: đèn sai đặc tính",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã báo đài còi hỏng",
+  "en": ""
+ },
+ {
+  "vi": "📻 Báo đài: còi sương mù hỏng",
+  "en": ""
+ },
+ {
+  "vi": "📯 Còi đang chạy",
+  "en": ""
+ },
+ {
+  "vi": "📯 Chạy còi sương mù",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ trực buổi tối",
+  "en": ""
+ },
+ {
+  "vi": "Chọn đúng những gì đã xảy ra tối nay.",
+  "en": ""
+ },
+ {
+  "vi": "· 🌫️ sương mù",
+  "en": ""
+ },
+ {
+  "vi": "✍️ GHI SỔ TRỰC TỐI",
+  "en": ""
+ },
+ {
+  "vi": "💡 Thắp đèn",
+  "en": ""
+ },
+ {
+  "vi": "🔭 Nhìn kỹ qua ống nhòm",
+  "en": ""
+ },
+ {
+  "vi": "📻 Gọi tàu trên kênh 16",
+  "en": ""
+ },
+ {
+  "vi": "Nói gì (1–2 ý)",
+  "en": ""
+ },
+ {
+  "vi": "Chọn điều muốn nói",
+  "en": ""
+ },
+ {
+  "vi": "Phương vị",
+  "en": ""
+ },
+ {
+  "vi": "Chọn mức báo, phương vị",
+  "en": ""
+ },
+ {
+  "vi": ", số người",
+  "en": ""
+ },
+ {
+  "vi": "Liều mạng…",
+  "en": ""
+ },
+ {
+  "vi": "Một mình ra khơi, nhảy xuống bơi là thành người thứ hai cần cứu.",
+  "en": ""
+ },
+ {
+  "vi": "📻 Báo đài duyên hải",
+  "en": ""
+ },
+ {
+  "vi": "Chiều theo…",
+  "en": ""
+ },
+ {
+  "vi": "Không ai vào phòng đèn, không ai ở lại trái nội quy.",
+  "en": ""
+ },
+ {
+  "vi": "🏃 Có người đang leo cầu thang tháp!",
+  "en": ""
+ },
+ {
+  "vi": "🧗 Chạy lên chặn, mời xuống, khóa cửa tháp",
+  "en": ""
+ },
+ {
+  "vi": "· 🌙 ban đêm",
+  "en": ""
+ },
+ {
+  "vi": "trước khi bơm",
+  "en": ""
+ },
+ {
+  "vi": "sau khi bơm",
+  "en": ""
+ },
+ {
+  "vi": "✍️ Đã ghi thiếu/hỏng",
+  "en": ""
+ },
+ {
+  "vi": "✍️ Ghi thiếu/hỏng",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Kiểm",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Chú Tư Lực mang giỏ về.",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Không mua giỏ.",
+  "en": ""
+ },
+ {
+  "vi": "chú hét",
+  "en": ""
+ },
+ {
+  "vi": "· trả lại:",
+  "en": ""
+ },
+ {
+  "vi": "Bạn trả",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Trả giá",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, không mua",
+  "en": ""
+ },
+ {
+  "vi": "📦 Hàng theo phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Ký nhận số lít",
+  "en": ""
+ },
+ {
+  "vi": "✍️ KÝ PHIẾU GIAO HÀNG",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ hàng riêng",
+  "en": ""
+ },
+ {
   "vi": "Gửi xí nghiệp",
   "en": ""
  },
@@ -1621,182 +1797,6 @@
  },
  {
   "vi": "👋 Tới giường",
-  "en": ""
- },
- {
-  "vi": "Chuyện trong khoa",
-  "en": ""
- },
- {
-  "vi": "Quầy tiếp đón",
-  "en": ""
- },
- {
-  "vi": "lần báo bác sĩ",
-  "en": ""
- },
- {
-  "vi": "lần giữ lại",
-  "en": ""
- },
- {
-  "vi": "người phân loại",
-  "en": ""
- },
- {
-  "vi": "🏥 Ca hôm nay",
-  "en": ""
- },
- {
-  "vi": "Điền đủ năm ô rồi ghi phiếu nhé.",
-  "en": ""
- },
- {
-  "vi": "— văn phòng khóa cửa.",
-  "en": ""
- },
- {
-  "vi": "— hết giờ hành chính.",
-  "en": ""
- },
- {
-  "vi": "việc gì cũng chậm hơn một chút, hôm nay không tăng ca được. Về đúng giờ là hồi lại.",
-  "en": ""
- },
- {
-  "vi": "Sức bền thấp",
-  "en": ""
- },
- {
-  "vi": "📥 Hộp thư · 📂 Hồ sơ · 📋 Quy định: chạm thẻ trên cùng để chuyển.",
-  "en": ""
- },
- {
-  "vi": "⏰ Hạn của hồ sơ đang mở. Đồng hồ chỉ chạy khi bạn làm việc.",
-  "en": ""
- },
- {
-  "vi": "🔋 Sức bền: về đúng giờ thì hồi, tăng ca thì giảm. Thấp quá thì làm chậm hơn.",
-  "en": ""
- },
- {
-  "vi": "🌙 Tăng ca tới 20:00 được trả thêm, mai vào muộn 30 phút.",
-  "en": ""
- },
- {
-  "vi": "việc làm được",
-  "en": ""
- },
- {
-  "vi": "👥 Đồng nghiệp",
-  "en": ""
- },
- {
-  "vi": "người nợ bạn",
-  "en": ""
- },
- {
-  "vi": "hồ sơ dở",
-  "en": ""
- },
- {
-  "vi": "để sáng mai · hạn 10:00",
-  "en": ""
- },
- {
-  "vi": "🌙 Hôm nay tăng ca: mai vào muộn 30 phút",
-  "en": ""
- },
- {
-  "vi": "📅 Hạn mai",
-  "en": ""
- },
- {
-  "vi": "quy định",
-  "en": ""
- },
- {
-  "vi": "đổi từ mai",
-  "en": ""
- },
- {
-  "vi": "🗂️ Chuẩn bị ngày mai",
-  "en": ""
- },
- {
-  "vi": "quy định · chạm để đọc",
-  "en": ""
- },
- {
-  "vi": "Văn phòng đã đóng cửa.",
-  "en": ""
- },
- {
-  "vi": "Văn phòng đã đóng cửa",
-  "en": ""
- },
- {
-  "vi": "Chỉ chỗ:",
-  "en": ""
- },
- {
-  "vi": "👇 Chọn một đáp án",
-  "en": ""
- },
- {
-  "vi": "Chọn đáp án đang sáng",
-  "en": ""
- },
- {
-  "vi": "↕️ Xếp lại bằng ↑ ↓",
-  "en": ""
- },
- {
-  "vi": "✍️ Điền theo chứng từ",
-  "en": ""
- },
- {
-  "vi": "📥 Bàn làm việc",
-  "en": ""
- },
- {
-  "vi": "thư · lịch & quy định",
-  "en": ""
- },
- {
-  "vi": "· chưa đủ tiền",
-  "en": ""
- },
- {
-  "vi": "Chuyện bất ngờ ở văn phòng",
-  "en": ""
- },
- {
-  "vi": "Giấy tờ kèm theo",
-  "en": ""
- },
- {
-  "vi": "tờ · chạm để mở",
-  "en": ""
- },
- {
-  "vi": "Xem hồ sơ vừa cập nhật",
-  "en": ""
- },
- {
-  "vi": "Mở ô vừa cập nhật",
-  "en": ""
- },
- {
-  "vi": "📞 Thông tin mới:",
-  "en": ""
- },
- {
-  "vi": "💡 Hỏi",
-  "en": ""
- },
- {
-  "vi": "💡 Hết lượt hỏi",
   "en": ""
  }
 ]

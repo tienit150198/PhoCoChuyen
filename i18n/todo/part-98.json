@@ -1,5 +1,137 @@
 [
  {
+  "vi": "Bước hướng dẫn",
+  "en": ""
+ },
+ {
+  "vi": "Nút bấm cuối",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có người mới được đo.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa chọn",
+  "en": ""
+ },
+ {
+  "vi": "Rời ngay sau lượt chơi đầu",
+  "en": ""
+ },
+ {
+  "vi": "Người mới",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ chơi 1 lượt",
+  "en": ""
+ },
+ {
+  "vi": "Lượt đó dài",
+  "en": ""
+ },
+ {
+  "vi": "trung vị",
+  "en": ""
+ },
+ {
+  "vi": "Rớt ở đâu",
+  "en": ""
+ },
+ {
+  "vi": "Rời ngay sau lượt đầu",
+  "en": ""
+ },
+ {
+  "vi": "Bị từ chối nhiều nhất",
+  "en": ""
+ },
+ {
+  "vi": "Bắt đầu: phục vụ khách đầu ở nghề này trong 30 ngày. Người mới: phục vụ khách đầu tiên ở đây; D3/D7 của họ. Thao tác bị từ chối nhiều nhất trong 7 ngày (số lần, tỉ lệ).",
+  "en": ""
+ },
+ {
+  "vi": "utm_source của đường dẫn, nếu không có thì trang dẫn tới (facebook, tiktok, google, zalo…); direct: gõ thẳng hoặc không rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Tải mới",
+  "en": ""
+ },
+ {
+  "vi": "Có sẵn",
+  "en": ""
+ },
+ {
+  "vi": "Không rõ",
+  "en": ""
+ },
+ {
+  "vi": "Lượt",
+  "en": ""
+ },
+ {
+  "vi": "Tốc độ tải",
+  "en": ""
+ },
+ {
+  "vi": "Khung hình đầu",
+  "en": ""
+ },
+ {
+  "vi": "Byte đầu (TTFB)",
+  "en": ""
+ },
+ {
+  "vi": "DOM sẵn sàng",
+  "en": ""
+ },
+ {
+  "vi": "Lượt đo",
+  "en": ""
+ },
+ {
+  "vi": "Khung hình đầu theo ngày",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có lượt tải nào được đo.",
+  "en": ""
+ },
+ {
+  "vi": "Theo mạng, người mới, bộ nhớ đệm, máy",
+  "en": ""
+ },
+ {
+  "vi": "Bộ nhớ đệm",
+  "en": ""
+ },
+ {
+  "vi": "Từ lúc mở trang tới khung hình đầu của game, đo trên máy người chơi (7 ngày). Người mới: lượt chơi mở trong ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi phía người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ghi nhận lỗi nào.",
+  "en": ""
+ },
+ {
+  "vi": "Dung lượng log:",
+  "en": ""
+ },
+ {
+  "vi": "bảng khác",
+  "en": ""
+ },
+ {
+  "vi": "Mọi số liệu được giữ mãi, kể cả khi bản lưu bị xoá.",
+  "en": ""
+ },
+ {
   "vi": "Chưa có mốc nào được ghi.",
   "en": ""
  },
@@ -461,6 +593,50 @@
  },
  {
   "vi": "Chưa xác nhận được kết quả. Kiểm tra kết nối và thử đăng nhập bằng mật khẩu mới trước khi gửi lại.",
+  "en": ""
+ },
+ {
+  "vi": "· ĐANG TẮT (MNL_WED_INVITE_OFF)",
+  "en": ""
+ },
+ {
+  "vi": "Thiệp mời cưới gửi cả phố",
+  "en": ""
+ },
+ {
+  "vi": "có tiệc",
+  "en": ""
+ },
+ {
+  "vi": "thông báo",
+  "en": ""
+ },
+ {
+  "vi": "đang hiện",
+  "en": ""
+ },
+ {
+  "vi": "🗑️ Gỡ thiệp",
+  "en": ""
+ },
+ {
+  "vi": "Thiệp mời cưới",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ thiệp: không ai thấy thiệp đó nữa, người gửi không được hoàn xu.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có thiệp nào.",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ thiệp này khỏi cả phố?",
+  "en": ""
+ },
+ {
+  "vi": "Đã gỡ thiệp.",
   "en": ""
  },
  {
@@ -1621,182 +1797,6 @@
  },
  {
   "vi": "✓ Đã rửa tay bé",
-  "en": ""
- },
- {
-  "vi": "🧼 Rửa tay cho bé",
-  "en": ""
- },
- {
-  "vi": "✓ Bé ngồi ghế",
-  "en": ""
- },
- {
-  "vi": "🪑 Cho bé ngồi ghế ăn",
-  "en": ""
- },
- {
-  "vi": "mảnh nhỏ",
-  "en": ""
- },
- {
-  "vi": "màn hình",
-  "en": ""
- },
- {
-  "vi": "✓ Đã dọn đồ chơi",
-  "en": ""
- },
- {
-  "vi": "🧺 Cùng bé dọn đồ chơi",
-  "en": ""
- },
- {
-  "vi": "🧸 Kệ đồ chơi",
-  "en": ""
- },
- {
-  "vi": "Ngồi ngang tầm bé: chạm vào chỗ dễ nguy hiểm.",
-  "en": ""
- },
- {
-  "vi": "🤲 Vỗ nhẹ",
-  "en": ""
- },
- {
-  "vi": "😴 Phòng ngủ",
-  "en": ""
- },
- {
-  "vi": "bé ngủ say",
-  "en": ""
- },
- {
-  "vi": "Tắt đèn, đưa đúng đồ ôm, bé nằm yên rồi mới vỗ.",
-  "en": ""
- },
- {
-  "vi": "khách quen +",
-  "en": ""
- },
- {
-  "vi": "chăm kỹ +",
-  "en": ""
- },
- {
-  "vi": "📝 Nhật ký trong ngày",
-  "en": ""
- },
- {
-  "vi": "chỉ ghi chuyện có thật",
-  "en": ""
- },
- {
-  "vi": "🧼 Rửa tay",
-  "en": ""
- },
- {
-  "vi": "📝 Đọc giấy dặn",
-  "en": ""
- },
- {
-  "vi": "Chào bé hợp tính",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn cách chào bé",
-  "en": ""
- },
- {
-  "vi": "🎒 Mở túi đồ",
-  "en": ""
- },
- {
-  "vi": "Hỏi món còn thiếu",
-  "en": ""
- },
- {
-  "vi": "👉 Hỏi món còn thiếu",
-  "en": ""
- },
- {
-  "vi": "👶 NHẬN BÉ",
-  "en": ""
- },
- {
-  "vi": "🪑 Cho bé ngồi ghế",
-  "en": ""
- },
- {
-  "vi": "🍽️ DỌN CHO BÉ ĂN",
-  "en": ""
- },
- {
-  "vi": "chọn món cho bé",
-  "en": ""
- },
- {
-  "vi": "Chọn trò hợp tâm trạng bé",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn trò chơi",
-  "en": ""
- },
- {
-  "vi": "Chơi cùng bé",
-  "en": ""
- },
- {
-  "vi": "👉 Trả lời bé",
-  "en": ""
- },
- {
-  "vi": "🧺 Dọn đồ chơi",
-  "en": ""
- },
- {
-  "vi": "✅ CHƠI XONG",
-  "en": ""
- },
- {
-  "vi": "chơi với bé thêm chút nữa",
-  "en": ""
- },
- {
-  "vi": "Chạm chỗ dễ nguy hiểm",
-  "en": ""
- },
- {
-  "vi": "👉 Soát phòng",
-  "en": ""
- },
- {
-  "vi": "🛡️ CHO BÉ RA CHƠI",
-  "en": ""
- },
- {
-  "vi": "🚽 Đi vệ sinh",
-  "en": ""
- },
- {
-  "vi": "🌙 Kéo rèm",
-  "en": ""
- },
- {
-  "vi": "Đúng đồ ôm của bé",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn đồ ôm",
-  "en": ""
- },
- {
-  "vi": "Hát ru",
-  "en": ""
- },
- {
-  "vi": "🎵 Hát ru",
   "en": ""
  }
 ]

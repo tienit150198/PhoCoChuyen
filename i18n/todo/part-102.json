@@ -1,5 +1,181 @@
 [
  {
+  "vi": "Quy tắc kho",
+  "en": ""
+ },
+ {
+  "vi": "Quét giỏ, tính tiền, thối đúng cho từng khách",
+  "en": ""
+ },
+ {
+  "vi": "⏱️ Mở quầy",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Mời đặt hàng",
+  "en": ""
+ },
+ {
+  "vi": "Số dư trên Sổ phải thu − số dư trên Sổ phải trả.",
+  "en": ""
+ },
+ {
+  "vi": "Số dư của bên KHÔNG phải điều chỉnh (theo nguyên nhân ở bước trước).",
+  "en": ""
+ },
+ {
+  "vi": "Hàng nội bộ CÒN TỒN cuối kỳ (giá nội bộ) × tỷ suất lãi gộp; phần đã bán ra ngoài không tính.",
+  "en": ""
+ },
+ {
+  "vi": "Tổng cổ tức (Nghị quyết) × tỷ lệ sở hữu của công ty mẹ (Cơ cấu sở hữu).",
+  "en": ""
+ },
+ {
+  "vi": "Tổng cổ tức − phần của công ty mẹ.",
+  "en": ""
+ },
+ {
+  "vi": "Số NM trên Bảng cân đối thử × tỷ giá đã chọn ở bước trước (Tỷ giá tập đoàn duyệt).",
+  "en": ""
+ },
+ {
+  "vi": "Tài sản − nợ phải trả (đã quy đổi) − vốn góp × tỷ giá lịch sử − (doanh thu − chi phí đã quy đổi). Có thể âm.",
+  "en": ""
+ },
+ {
+  "vi": "Cộng ngang số của ba công ty trên dòng đó, rồi cộng cột loại trừ (số âm).",
+  "en": ""
+ },
+ {
+  "vi": "Cộng tổng tài sản ba công ty − các khoản loại trừ phía tài sản (phải thu nội bộ, khoản đầu tư).",
+  "en": ""
+ },
+ {
+  "vi": "Lợi nhuận sau thuế của SH Logistics × tỷ lệ của cổ đông ngoài (Cơ cấu sở hữu).",
+  "en": ""
+ },
+ {
+  "vi": "Lợi nhuận hợp nhất (Kết quả hợp nhất) − phần của cổ đông không kiểm soát.",
+  "en": ""
+ },
+ {
+  "vi": "30% vốn chủ đầu năm + phần lãi của cổ đông không kiểm soát − 30% cổ tức đã chia.",
+  "en": ""
+ },
+ {
+  "vi": "5% × lợi nhuận trước thuế (giấy Mức trọng yếu).",
+  "en": ""
+ },
+ {
+  "vi": "Thực tế − Ngân sách trên cùng dòng, giữ nguyên dấu (âm nếu thực tế nhỏ hơn).",
+  "en": ""
+ },
+ {
+  "vi": "hai sổ khớp",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Chờ gói báo cáo",
+  "en": ""
+ },
+ {
+  "vi": "Chờ gói báo cáo về lúc",
+  "en": ""
+ },
+ {
+  "vi": "cùng",
+  "en": ""
+ },
+ {
+  "vi": "xu — vì sao?",
+  "en": ""
+ },
+ {
+  "vi": "dòng",
+  "en": ""
+ },
+ {
+  "vi": "👆 Chạm một dòng để bắt đầu",
+  "en": ""
+ },
+ {
+  "vi": "dòng lẻ — chọn dòng rồi chọn lý do",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ chọn dòng thừa",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nhầm dòng — bỏ chọn rồi làm lại",
+  "en": ""
+ },
+ {
+  "vi": "🏢 Bàn hợp nhất",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi lần ghép sai tốn thêm thời gian soát lại (người đang thử việc tốn ít hơn).",
+  "en": ""
+ },
+ {
+  "vi": "📥 Nhận hai sổ",
+  "en": ""
+ },
+ {
+  "vi": "việc đã chốt",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thảo dặn",
+  "en": ""
+ },
+ {
+  "vi": "Chạm để chọn, chạm lần nữa để bỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món",
+  "en": ""
+ },
+ {
+  "vi": "Đã xếp",
+  "en": ""
+ },
+ {
+  "vi": "Xếp thứ tự",
+  "en": ""
+ },
+ {
+  "vi": "Bối cảnh",
+  "en": ""
+ },
+ {
+  "vi": "Đếm lại trước mặt chị",
+  "en": ""
+ },
+ {
+  "vi": "Nhét túi quần",
+  "en": ""
+ },
+ {
+  "vi": "Còn:",
+  "en": ""
+ },
+ {
+  "vi": "📜 Quy tắc",
+  "en": ""
+ },
+ {
+  "vi": "trùng",
+  "en": ""
+ },
+ {
+  "vi": "💡 App đặt phòng đồng bộ chậm nên có lúc bán trùng phòng đã có khách, kể cả khi lịch của bạn đúng. Dòng",
+  "en": ""
+ },
+ {
   "vi": ": chạm một phòng trống đủ chỗ rồi bấm",
   "en": ""
  },
@@ -1621,182 +1797,6 @@
  },
  {
   "vi": "🚰 Rửa mặt, pha trà cho tỉnh",
-  "en": ""
- },
- {
-  "vi": "⏱️ Đếm được:",
-  "en": ""
- },
- {
-  "vi": "⏱️ Bấm giờ đếm chớp",
-  "en": ""
- },
- {
-  "vi": "✓ Đã báo đài đèn sai đặc tính",
-  "en": ""
- },
- {
-  "vi": "📻 Báo đài: đèn sai đặc tính",
-  "en": ""
- },
- {
-  "vi": "✓ Đã báo đài còi hỏng",
-  "en": ""
- },
- {
-  "vi": "📻 Báo đài: còi sương mù hỏng",
-  "en": ""
- },
- {
-  "vi": "📯 Còi đang chạy",
-  "en": ""
- },
- {
-  "vi": "📯 Chạy còi sương mù",
-  "en": ""
- },
- {
-  "vi": "📒 Sổ trực buổi tối",
-  "en": ""
- },
- {
-  "vi": "Chọn đúng những gì đã xảy ra tối nay.",
-  "en": ""
- },
- {
-  "vi": "· 🌫️ sương mù",
-  "en": ""
- },
- {
-  "vi": "✍️ GHI SỔ TRỰC TỐI",
-  "en": ""
- },
- {
-  "vi": "💡 Thắp đèn",
-  "en": ""
- },
- {
-  "vi": "🔭 Nhìn kỹ qua ống nhòm",
-  "en": ""
- },
- {
-  "vi": "📻 Gọi tàu trên kênh 16",
-  "en": ""
- },
- {
-  "vi": "Nói gì (1–2 ý)",
-  "en": ""
- },
- {
-  "vi": "Chọn điều muốn nói",
-  "en": ""
- },
- {
-  "vi": "Phương vị",
-  "en": ""
- },
- {
-  "vi": "Chọn mức báo, phương vị",
-  "en": ""
- },
- {
-  "vi": ", số người",
-  "en": ""
- },
- {
-  "vi": "Liều mạng…",
-  "en": ""
- },
- {
-  "vi": "Một mình ra khơi, nhảy xuống bơi là thành người thứ hai cần cứu.",
-  "en": ""
- },
- {
-  "vi": "📻 Báo đài duyên hải",
-  "en": ""
- },
- {
-  "vi": "Chiều theo…",
-  "en": ""
- },
- {
-  "vi": "Không ai vào phòng đèn, không ai ở lại trái nội quy.",
-  "en": ""
- },
- {
-  "vi": "🏃 Có người đang leo cầu thang tháp!",
-  "en": ""
- },
- {
-  "vi": "🧗 Chạy lên chặn, mời xuống, khóa cửa tháp",
-  "en": ""
- },
- {
-  "vi": "· 🌙 ban đêm",
-  "en": ""
- },
- {
-  "vi": "trước khi bơm",
-  "en": ""
- },
- {
-  "vi": "sau khi bơm",
-  "en": ""
- },
- {
-  "vi": "✍️ Đã ghi thiếu/hỏng",
-  "en": ""
- },
- {
-  "vi": "✍️ Ghi thiếu/hỏng",
-  "en": ""
- },
- {
-  "vi": "🔍 Kiểm",
-  "en": ""
- },
- {
-  "vi": "🧺 Chú Tư Lực mang giỏ về.",
-  "en": ""
- },
- {
-  "vi": "🧺 Không mua giỏ.",
-  "en": ""
- },
- {
-  "vi": "chú hét",
-  "en": ""
- },
- {
-  "vi": "· trả lại:",
-  "en": ""
- },
- {
-  "vi": "Bạn trả",
-  "en": ""
- },
- {
-  "vi": "🧺 Trả giá",
-  "en": ""
- },
- {
-  "vi": "Thôi, không mua",
-  "en": ""
- },
- {
-  "vi": "📦 Hàng theo phiếu",
-  "en": ""
- },
- {
-  "vi": "Ký nhận số lít",
-  "en": ""
- },
- {
-  "vi": "✍️ KÝ PHIẾU GIAO HÀNG",
-  "en": ""
- },
- {
-  "vi": "Giỏ hàng riêng",
   "en": ""
  }
 ]

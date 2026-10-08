@@ -1,5 +1,181 @@
 [
  {
+  "vi": "hẹn mang giấy tờ, chứng minh",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm đếm, ký biên bản",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi người tới nhận (ít nhất hai câu)",
+  "en": ""
+ },
+ {
+  "vi": "❓ Hỏi người tới nhận",
+  "en": ""
+ },
+ {
+  "vi": "Trả lại hoặc chưa trả",
+  "en": ""
+ },
+ {
+  "vi": "📝 Các lần đề xuất",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Hai bên đã đồng ý. Ký biên bản hòa giải.",
+  "en": ""
+ },
+ {
+  "vi": "Đề xuất",
+  "en": ""
+ },
+ {
+  "vi": "Đề xuất của bạn",
+  "en": ""
+ },
+ {
+  "vi": "📝 Đề xuất",
+  "en": ""
+ },
+ {
+  "vi": "📝 Đề xuất với hai bên",
+  "en": ""
+ },
+ {
+  "vi": "Cách khác…",
+  "en": ""
+ },
+ {
+  "vi": "😤 Dọa phạt cả hai cho xong",
+  "en": ""
+ },
+ {
+  "vi": "“không chịu thì phạt hết”",
+  "en": ""
+ },
+ {
+  "vi": "📅 Chuyển tổ hòa giải, hẹn buổi sau",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển tổ hòa giải, hẹn hai nhà buổi sau?",
+  "en": ""
+ },
+ {
+  "vi": "Đề xuất để hai bên cùng đồng ý",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Đề xuất",
+  "en": ""
+ },
+ {
+  "vi": ", đứng yên một chỗ dễ thấy",
+  "en": ""
+ },
+ {
+  "vi": "🧸 Ngồi dỗ bé",
+  "en": ""
+ },
+ {
+  "vi": "🧸 Ngồi xuống dỗ bé, đứng yên một chỗ",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Hỏi bé",
+  "en": ""
+ },
+ {
+  "vi": "🎒 Xem balo, thẻ tên",
+  "en": ""
+ },
+ {
+  "vi": "📢 Tìm người nhà",
+  "en": ""
+ },
+ {
+  "vi": "tới đón bé",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Giao bé cho người nhà",
+  "en": ""
+ },
+ {
+  "vi": "đã xác minh",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Giữ bé ở phường",
+  "en": ""
+ },
+ {
+  "vi": "gọi bố mẹ xác nhận",
+  "en": ""
+ },
+ {
+  "vi": "Dỗ bé, đứng một chỗ",
+  "en": ""
+ },
+ {
+  "vi": "🧸 Dỗ bé",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi bé, xem thẻ tên",
+  "en": ""
+ },
+ {
+  "vi": "Tìm người nhà",
+  "en": ""
+ },
+ {
+  "vi": "Xác minh người đón (hai cách)",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Xác minh người đón",
+  "en": ""
+ },
+ {
+  "vi": "Giao bé hoặc giữ lại",
+  "en": ""
+ },
+ {
+  "vi": "📏 Quy tắc tuần tra phường Mây",
+  "en": ""
+ },
+ {
+  "vi": "💬 Lần đầu, chuyện nhỏ: nhắc nhở, hướng dẫn.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Tái phạm hoặc gây nguy hiểm: lập biên bản.",
+  "en": ""
+ },
+ {
+  "vi": "🛑 Nguy hiểm trước mắt: làm cho an toàn trước.",
+  "en": ""
+ },
+ {
+  "vi": "✉️ Phong bì, chiếu bạc: không bao giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Luật của trò chơi.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Xem kỹ, hỏi chuyện",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Chọn cách xử lý",
+  "en": ""
+ },
+ {
   "vi": "✉️ Đọc thư mời",
   "en": ""
  },
@@ -1621,182 +1797,6 @@
  },
  {
   "vi": "👉 Chọn dịch vụ cho khách",
-  "en": ""
- },
- {
-  "vi": "💬 Trao đổi với khách về giá",
-  "en": ""
- },
- {
-  "vi": "Báo giá vượt ngân sách: trao đổi với khách",
-  "en": ""
- },
- {
-  "vi": "Thoa thuốc",
-  "en": ""
- },
- {
-  "vi": "🖌️ Thoa thuốc từ chân tới ngọn",
-  "en": ""
- },
- {
-  "vi": "Bát sai: đổ, pha lại",
-  "en": ""
- },
- {
-  "vi": "🎨 Về bàn pha màu",
-  "en": ""
- },
- {
-  "vi": "Lấy thuốc theo bảng pha",
-  "en": ""
- },
- {
-  "vi": "✨ Lấy theo bảng",
-  "en": ""
- },
- {
-  "vi": "Chọn tuýp toner",
-  "en": ""
- },
- {
-  "vi": "Chọn tuýp màu",
-  "en": ""
- },
- {
-  "vi": "Chọn oxy",
-  "en": ""
- },
- {
-  "vi": "Chọn tỷ lệ thuốc ∶ oxy",
-  "en": ""
- },
- {
-  "vi": "Dỗ bé ngồi yên",
-  "en": ""
- },
- {
-  "vi": "Dỗ bé",
-  "en": ""
- },
- {
-  "vi": "🧒 Chọn cách dỗ bé",
-  "en": ""
- },
- {
-  "vi": "Chia vùng tóc",
-  "en": ""
- },
- {
-  "vi": "✂️ Chia vùng tóc",
-  "en": ""
- },
- {
-  "vi": "Cắt thêm",
-  "en": ""
- },
- {
-  "vi": "Cắt đường chuẩn · bớt",
-  "en": ""
- },
- {
-  "vi": "Khách thấy còn dài: cắt thêm",
-  "en": ""
- },
- {
-  "vi": "Tỉa tầng nhẹ (mẫu có tầng)",
-  "en": ""
- },
- {
-  "vi": "✂️ Tỉa tầng",
-  "en": ""
- },
- {
-  "vi": "🪞 Soi đối xứng & chốt",
-  "en": ""
- },
- {
-  "vi": "💨 Chọn kiểu sấy hợp khách",
-  "en": ""
- },
- {
-  "vi": "Khách sẽ soi gương và đánh giá.",
-  "en": ""
- },
- {
-  "vi": "⏳ Chờ vùng xanh · còn",
-  "en": ""
- },
- {
-  "vi": "🚿 Xả thuốc ngay!",
-  "en": ""
- },
- {
-  "vi": "Thẻ khách đã có công thức, sức khỏe tóc và lần cắt trước.",
-  "en": ""
- },
- {
-  "vi": "📇 Khách quen",
-  "en": ""
- },
- {
-  "vi": "💇 Sổ tiệm hôm nay",
-  "en": ""
- },
- {
-  "vi": "Quy định bàn thư ký",
-  "en": ""
- },
- {
-  "vi": "📅 Bàn thư ký hôm nay",
-  "en": ""
- },
- {
-  "vi": "🙏 Nhắc khách đưa thêm",
-  "en": ""
- },
- {
-  "vi": "Hỏi nhẹ nhàng, khách tự đếm lại",
-  "en": ""
- },
- {
-  "vi": "🚓 Báo công an",
-  "en": ""
- },
- {
-  "vi": "Phải chờ công an tới, khách phía sau sốt ruột",
-  "en": ""
- },
- {
-  "vi": "🤐 Bỏ qua, coi như bớt giá",
-  "en": ""
- },
- {
-  "vi": "Mất khoản thiếu, khách vui vẻ ra về",
-  "en": ""
- },
- {
-  "vi": "📒 Cho nợ, mai trả",
-  "en": ""
- },
- {
-  "vi": "Hẹn bé mai mang ra trả",
-  "en": ""
- },
- {
-  "vi": "🧺 Bớt món cho vừa tiền",
-  "en": ""
- },
- {
-  "vi": "Bé để lại bớt một món",
-  "en": ""
- },
- {
-  "vi": "🎁 Thôi, cho con luôn",
-  "en": ""
- },
- {
-  "vi": "Mất khoản thiếu, bé vui",
   "en": ""
  }
 ]
