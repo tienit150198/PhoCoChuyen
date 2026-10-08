@@ -27,8 +27,11 @@ Rooms and positions (memory only, never the database)
   off again there): the passenger's entry has `b`, every walk of the driver is sent as theirs too (with `b`); a walk
   without `b` is them on foot. The driver playing a stall, getting off or leaving: the passenger gets off.
 
+* 👶 Bế bé (live/babies.py): `fair_in` may carry `bb`, the baby in the player's arms, kept while they stay; their entry
+  has `bb`. The shared child goes with one spouse at a time (`bb_taken` in fair_room). Older peers ignore it.
+
 Frames (client → server; replies in brackets)
-  fair_in {look, g, x, y, s?, r?}  [fair_room {room, me, people: [{pid, name, lk, g, x, y, s?, r?}], cap}]
+  fair_in {look, g, x, y, s?, r?, bb?}  [fair_room {room, me, people: [{pid, name, lk, g, x, y, s?, r?, bb?}], cap, bb_taken?}]
   fair_mv {p, ms, s?, r?}          fair_out {}  [fair_left {why: 'out'}]  fair_back {to, x?, y?}
 Server pushes: fair {ev: [{k: in|mv|out, ...}]}, fair_left {why: 'other'}.
 A live service without this file answers `fair_in` with error 'unknown'; clients only send it when the welcome's
@@ -43,7 +46,7 @@ import re
 import time
 
 from .protocol import Feature, LiveError, on
-from . import coride
+from . import babies, coride
 from .street import clean_look, clean_ride
 
 PREFIX = 'fair:'
@@ -77,9 +80,10 @@ def clean_stall(v) -> str | None:
 
 
 class Goer:
-    __slots__ = ('pid', 'player', 'name', 'look', 'g', 'x', 'y', 's', 'r', 'b', 'pill')
+    __slots__ = ('pid', 'player', 'name', 'look', 'g', 'x', 'y', 's', 'r', 'b', 'pill', 'bb')
 
-    def __init__(self, player, look: dict, g, at: list, s: str | None = None, r: dict | None = None):
+    def __init__(self, player, look: dict, g, at: list, s: str | None = None, r: dict | None = None, bb: dict | None = None):
+        self.bb = bb   # 👶 the baby in their arms (live/babies.py), set on fair_in
         self.pid, self.player = player.pid, player
         self.name = player.name or ''
         self.look, self.g = look, g
@@ -96,6 +100,8 @@ class Goer:
             d['r'] = self.r
         if self.b:
             d['b'] = self.b
+        if self.bb:
+            d['bb'] = self.bb
         return d
 
 
@@ -253,11 +259,14 @@ class FairFeature(Feature):
         at = clean_point([x, y]) if x is not None or y is not None else [round(random.uniform(.1, .3), 3), .97]
         p = conn.player
         await self._ensure_loaded(p)
+        bb = babies.clean_baby(f.get('bb'))   # 👶 the baby carried (optional)
+        bsp = await babies.spouse_of(self.db, p, bb)
         r, by = await coride.check(self.db, self.hub, p, clean_ride(f.get('r')))   # no await from here on
+        bb, bby = babies.claim(self.hub, bb, bsp)
         self._leave_player(p, 'other', keep=conn)
         room = self._pick(p)
         room.add(conn)
-        w = Goer(p, look, g, at, clean_stall(f.get('s')), r)
+        w = Goer(p, look, g, at, clean_stall(f.get('s')), r, bb)
         room.data['people'][p.pid] = w
         p.ext['fair'] = room.id
         conn.ext['fair'] = room.id
@@ -267,6 +276,8 @@ class FairFeature(Feature):
         out = dict(t='fair_room', room=room.id, me=p.pid, people=people, cap=CAP)
         if by:
             out['taken'] = coride.taken_frame('fair_taken', self.hub, by)
+        if bby:
+            out['bb_taken'] = babies.taken_frame(self.hub, bby)
         return out
 
     @on('fair_out', rate=(20, 60))

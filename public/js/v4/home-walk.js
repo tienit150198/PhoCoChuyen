@@ -13,6 +13,8 @@
 import {figure,lookOf,figureSVG,wornColor} from './look.js';
 import {escapeHTML as esc} from '../icons.js';
 import {crowd} from './home-crowd.js';
+// 👶 the baby in your arms when you carry it (v4/baby.js)
+import {withBaby} from './baby.js';
 
 const K=.42;                 // the figure (about 150 units tall) in room pixels
 const SPEED=150;             // room pixels a second
@@ -44,6 +46,9 @@ const LINES={
 const BED_LINE=['Ngả lưng một chút cho đỡ mỏi. Tối rồi ngủ hẳn nhé.','Nằm nghe quạt chạy vù vù, suýt ngủ quên.'];
 const FLOOR_LINE=['Đi một vòng quanh phòng.','Vươn vai một cái cho đỡ mỏi.'];
 const pick=a=>a[Math.random()*a.length|0];
+/* 👶 What the character says beside the baby (v4/baby.js; the moments themselves are in the card beside the room). */
+const BABY_LINE={so_sinh:['Bé ngủ ngoan quá, thương ghê.','Nắm bàn tay bé xíu, mềm ơi là mềm.'],biet_bo:['Bé bò lại đòi bế kìa.','Bé bò nhanh ghê, coi chừng nha!'],
+  chap_chung:['Bé lẫm chẫm đi lại, giỏi quá!','Bé dang tay đòi bế, cưng xỉu.']};
 
 export function setup(ctx){
   const {S,A,roomOf,inRoom,hostFor,send,render,sfx,calm,roomSvg}=ctx;
@@ -118,7 +123,7 @@ export function setup(ctx){
   /* ---- the figure ---- */
   function markup(rm,G){
     if(W.room!==rm.id)enter(rm,G);
-    const out=[];try{out.push(HC.figure(figure(st())));}catch{/* look not ready */}
+    const out=[];try{out.push(HC.figure(withBaby(figure(st()),st())));}catch{/* look not ready */}
     const at=W.to||{x:W.x,y:W.y};
     return `<g class="hw-me" data-y="${at.y}" aria-hidden="true" style="transform:translate(${W.x.toFixed(1)}px,${W.y.toFixed(1)}px)" data-to="${at.x.toFixed(1)},${at.y.toFixed(1)}"><g class="hw-fig${W.to?' walk':''}"><g transform="scale(${K})">${out.join('')}</g></g></g>${HC.markup(W.room,homeScope())}`;
   }
@@ -128,7 +133,7 @@ export function setup(ctx){
   function order(){
     const el=meEl();if(!el)return;
     const y=W.to?.y??W.y;el.dataset.y=String(y);
-    const next=[...el.parentNode.querySelectorAll(':scope>g.dc-it[data-y],:scope>g.dc-mate[data-y],:scope>g.hc-person[data-y]')].find(g=>+g.dataset.y>y+2);
+    const next=[...el.parentNode.querySelectorAll(':scope>g.dc-it[data-y],:scope>g.dc-mate[data-y],:scope>g.hc-person[data-y],:scope>g.dc-baby[data-y]')].find(g=>+g.dataset.y>y+2);
     const before=next||el.parentNode.querySelector(':scope>.dc-cats')||el;
     if(before!==el&&el.nextSibling!==before)el.parentNode.insertBefore(el,before);
   }
@@ -179,6 +184,8 @@ export function setup(ctx){
     const G=A.geom(rm),list=useRoom(rm);
     if(W.room!==rm.id)enter(rm,G);
     hush();
+    if(uid?.startsWith('baby:')){const p=ctx.babyAt?.(uid);   // 👶 walk up beside the baby, say a word, show its card
+      if(p){walkTo(clampTo(rm,G,p.x+(p.x>W.x?-30:30),p.y+4),()=>{say(pick(BABY_LINE[p.b.grow]||BABY_LINE.so_sinh));ctx.babyCard?.();});return;}}
     const o=uid&&list.find(x=>x.id===uid);
     if(o){walkTo(standFor(rm,G,o,list),()=>use(rm,o));return;}
     const p=clampTo(rm,G,pt.x,pt.y+18);   // the finger points at the body: the feet are a little lower
@@ -319,5 +326,5 @@ export function setup(ctx){
   globalThis.__homeWalk={state:()=>({room:W.room,me:[W.x,W.y],to:W.to&&[W.to.x,W.to.y],fridge:W.fridge,say:W.say?.text||''}),
     screen:uid=>{const svg=roomSvg(),g=svg?.querySelector(`g[data-uid="${CSS.escape(uid)}"] .dc-hit`);if(!g)return null;const r=g.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];}};
 
-  return {markup,freeze,resume,tap,key,panel,hint,click,paint,sayHTML,reset,stop,socialPanel:()=>HC.panel(W.room,homeScope()),reopen:HC.reopen};
+  return {markup,freeze,resume,tap,key,panel,hint,click,paint,sayHTML,reset,stop,say,socialPanel:()=>HC.panel(W.room,homeScope()),reopen:HC.reopen};
 }

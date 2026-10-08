@@ -11,7 +11,7 @@ import hashlib
 import json
 import re
 
-from . import household as hh, housing as hs, marriage as mr, archive as ar
+from . import household as hh, housing as hs, marriage as mr, archive as ar, cradle as cr
 from .engine import GameError, migrate_state, validate_state
 
 VN = datetime.timezone(datetime.timedelta(hours=7))
@@ -53,7 +53,9 @@ def _public(data, child_id, personal=False):
     days = m['care_days']
     waiting = today() < m['born']
     done = m['did'] if m['day'] == today() else []
+    age = 0 if waiting else cr.calendar_age(m['born'], today())   # 👶 how the baby is drawn (game/cradle.py)
     return dict(id=child_id, name=m['name'], kind='child', emoji='👶', origin=m['origin'], born=m['born'], waiting=waiting,
+                age=age, grow=cr.grow(age),
                 personal=personal, care_days=days, stage='Chờ đón bé' if waiting else 'Em bé' if days < 5 else 'Bé tập đi' if days < 20 else 'Bé đi học',
                 bond=m['bond'], needs={k:m[k] for k in ('food','clean','joy')}, outfit=m['outfit'], owned=m['owned'],
                 acts=[dict(id=k, **x, done=waiting or x['slot'] in done) for k,x in hh.ACTS.items() if 'child' in x['kinds']])
@@ -92,6 +94,27 @@ def view(db, sid, c, state):
         out['partner_home_name']=hs.HOMES[po['kind']]['name'] if po else ''
         out['together'] = same_home(state.get('journey') or {}, pj, c['id'])
     return out
+
+
+def babies(store, token) -> dict:
+    """GET /api/family/baby: the shared child and the custody copies as the home room draws them (👶 game/cradle.py),
+    {child, copies, day}. Light (no save is read or written); {} without a session. Never raises: a home never blocks."""
+    try:
+        sid = store.key(token) if token else None
+        if not sid:
+            return {}
+        out = dict(day=today(), child=None, copies=[], acts=cr.catalog())
+        with store.connect() as db:
+            for r in db.execute('SELECT child,state FROM family_custody WHERE sid=? ORDER BY child', (sid,)):
+                out['copies'].append(_public(json.loads(r['state']), f'copy:{r["child"]}', True))
+            c = mr._bond(db, sid)
+            if c and c['status'] == 'married':
+                row = db.execute('SELECT state FROM family_children WHERE couple=?', (c['id'],)).fetchone()
+                if row:
+                    out['child'] = _public(json.loads(row['state']), 'shared')
+        return out
+    except Exception:  # noqa: BLE001
+        return {}
 
 
 def _save(db, sid, state, cut):
@@ -142,6 +165,7 @@ def act(store, sid, op, p):
         cuts[sid].extend(_archive_rows(box,before[sid],states[sid],''))
         for who in sorted(changed): _save(db,who,states[who],cuts[who])
         result = dict(message=message,changed=bool(changed))
+        if op=='family_child_moment': result['quiet'] = True   # 👶 the room reloads /api/family/baby: no heavy marriage view
         db.execute('INSERT INTO family_receipts(sid,rid,op,fingerprint,result,at) VALUES(?,?,?,?,?,?)',(sid,rid,op,fingerprint,_json(result),mr.now()))
         return result
     return store.transaction(run)
@@ -204,7 +228,7 @@ def _apply(db,sid,c,states,op,p,rid,changed):
         hs.leave_shared(state)
         changed.add(sid)
         return 'Đã dọn khỏi nhà chung. Nhà và đồ cá nhân vẫn thuộc về mỗi người.'
-    _need(op in ('family_child_care','family_child_style','family_child_rename'),'Không có thao tác gia đình này.','not_found',404)
+    _need(op in ('family_child_care','family_child_style','family_child_rename','family_child_moment'),'Không có thao tác gia đình này.','not_found',404)
     target = p.get('child','shared')
     if target=='shared':
         row = db.execute('SELECT state FROM family_children WHERE couple=? FOR UPDATE',(c['id'],)).fetchone()
@@ -218,6 +242,15 @@ def _apply(db,sid,c,states,op,p,rid,changed):
     data = json.loads(row['state'])
     _need(today()>=data['born'],'Gia đình đang chờ đón bé. Quay lại vào '+data['born']+'.','waiting')
     cost,label = 0,''
+    if op=='family_child_moment':   # 👶 a free moment at home (game/cradle.py): the player's tinh thần, the baby's gắn bó
+        try:
+            out = cr.moment(state, target, p.get('act'), data['name'], cr.grow(cr.calendar_age(data['born'], today())))
+        except GameError as e:
+            raise mr.MarriageError(e.message, e.code, 409 if e.code=='already_done' else 400) from None
+        changed.add(sid)
+        data['bond']=min(100,data['bond']+1)
+        db.execute(f'UPDATE {table} SET state=?,revision=revision+1 WHERE {where}',(_json(data),*args))
+        return out['message']
     if op=='family_child_rename':
         data['name']=_name(p.get('name'))
     elif op=='family_child_style':
@@ -241,6 +274,7 @@ def _apply(db,sid,c,states,op,p,rid,changed):
     if cost:
         how=p.get('pay','auto')
         _need(how in ('auto','cash','account','card'),'Chọn tiền mặt, tài khoản hoặc thẻ cá nhân. Quỹ chung dùng ở mục Quỹ chung.','bad_payment')
+        how=cr.no_credit(state,cost,how)   # 👶 a baby never goes on credit
         effect_id='family:'+hashlib.sha256(f'{sid}:{rid}'.encode()).hexdigest()[:48]
         eff=mr._effect(effect_id,sid,'wallet',-cost,label)
         _need(mr._can_spend(state,cost,how),'Chưa đủ tiền chăm bé.','not_enough')
@@ -271,4 +305,4 @@ def forget(db, sid):
 
 ACTIONS={name:(lambda store,sid,display,p,op=name:act(store,sid,op,p)) for name in (
     'family_child_request','family_home_request','family_answer','family_cancel','family_home_leave',
-    'family_child_care','family_child_style','family_child_rename')}
+    'family_child_care','family_child_style','family_child_rename','family_child_moment')}

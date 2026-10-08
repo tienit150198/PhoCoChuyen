@@ -74,6 +74,14 @@ html[data-layout="phone"] .tw-go{padding:0 14px}
 .tw-route-picker :focus-visible,.tw-map-tools button:focus-visible{outline:3px solid var(--focus,#bd741c);outline-offset:2px}
 .tw-where{top:78px;max-width:calc(100% - 145px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tw-stage .rd-toggle{top:78px}
+/* 👶 Bế bé đi chơi (v4/baby.js): under the ride's toggle, in its place when there is no vehicle. */
+.tw-stage .bb-toggle{position:absolute;right:10px;top:124px;z-index:1;min-height:40px;padding:6px 13px;border-radius:var(--radius-pill);border:1.5px solid #e2b6c4;background:#fff7f9f0;color:#4a3a30;font:inherit;font-weight:800;font-size:.88rem;box-shadow:0 2px 8px #0002;cursor:pointer;max-width:calc(100% - 20px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tw-stage .rd-toggle[hidden]+.bb-toggle{top:78px}
+.tw-stage .bb-toggle[hidden]{display:none}
+.tw-stage .bb-toggle[aria-pressed="true"]{border-color:#d9809b;background:#ffe9efef}
+.tw-stage .bb-toggle:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+html[data-layout="phone"] .tw-stage .bb-toggle{top:112px}
+html[data-layout="phone"] .tw-stage .rd-toggle[hidden]+.bb-toggle{top:66px}
 .tw-map-tools{position:absolute;right:10px;bottom:12px;z-index:1;display:flex;align-items:center;gap:4px;padding:4px;border:1px solid #c9b49a;border-radius:12px;background:#fffaf0f5;box-shadow:0 2px 8px #0002}
 .tw-map-tools output{min-width:4ch;text-align:center;color:#4a3a30;font:800 12px system-ui;font-variant-numeric:tabular-nums}
 .tw-map-tools button:disabled{opacity:.4;cursor:default}

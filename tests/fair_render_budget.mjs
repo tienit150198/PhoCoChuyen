@@ -48,7 +48,7 @@ test('fair walk sleeps while idle, stops in reduced motion, and wakes immediatel
   let redraw;const slot={},crowd={busy:()=>false,items:()=>[],tags:noop,join:noop,walk:noop,leave:noop,me:()=>null,coride:()=>false};
   const p={floor:[0,0,1000,1000],spots:[],has:{}};
   let avatarPaints=0,propPaints=0,onDraw=noop;
-  const deps={VIEW:{port:[0,0,1000,1000],land:[0,0,1000,1000]},plan:()=>p,route:(p,a,b)=>[a,b],nearestFree:(p,a)=>a,paintBack:noop,props:(c,p,o)=>{onDraw();return [[1,()=>o.bitmap?o.bitmap('fixture',[0,0,100,100],()=>propPaints++):propPaints++]];},marks:noop,STALLS:{},figure:()=>({}),figureOf:noop,paintPlayer:()=>avatarPaints++,CANVAS:{},lookOf:s=>s.look||{},tr:s=>s,crowd:args=>(redraw=args.redraw,crowd),choice:()=>null,nextRide:noop,canRide:()=>false,rideLabel:noop,speedOf:()=>1,drawRide:noop,rider:()=>({turn:1}),steer:noop,halfOf:noop,topOf:noop,wire:noop,spouseOf:noop,loadSpouse:()=>Promise.resolve()};
+  const deps={VIEW:{port:[0,0,1000,1000],land:[0,0,1000,1000]},plan:()=>p,route:(p,a,b)=>[a,b],nearestFree:(p,a)=>a,paintBack:noop,props:(c,p,o)=>{onDraw();return [[1,()=>o.bitmap?o.bitmap('fixture',[0,0,100,100],()=>propPaints++):propPaints++]];},marks:noop,STALLS:{},figure:()=>({}),figureOf:noop,paintPlayer:()=>avatarPaints++,CANVAS:{},lookOf:s=>s.look||{},tr:s=>s,crowd:args=>(redraw=args.redraw,crowd),choice:()=>null,nextRide:noop,canRide:()=>false,rideLabel:noop,speedOf:()=>1,drawRide:noop,rider:()=>({turn:1}),steer:noop,halfOf:noop,topOf:noop,wire:noop,spouseOf:noop,loadSpouse:()=>Promise.resolve(),withBaby:F=>F,babyWire:()=>null};
   const S={env:{api:{state:{journey:{}},content:{}}},dlg:{open:true,querySelector:()=>slot,addEventListener:noop}},ui=load('fair-walk.js',deps)({S,F:()=>({open:true}),go:noop,list:noop,bar:noop,esc:s=>s});
   Object.assign(S.walk,{ok:true,el:{isConnected:true,parentNode:slot},cv:h.canvas(),c:h.ctx(),cw:300,ch:400,me:{x:400,y:500,path:null,step:0}});
   ui.mount();h.frame();assert.equal(h.raf.size,0,'idle fair does not wake on every display frame');assert.equal(h.timers.size,1);
@@ -66,7 +66,7 @@ test('fair walk sleeps while idle, stops in reduced motion, and wakes immediatel
 test('crowd nameplates cache bounded per person and invalidate badge, pixel ratio, font and replaced identity',()=>{
  const h=env();try{
   const handlers=new Map(),live={flags:{fair:true},state:'open',on:(k,f)=>handlers.set(k,f),send:()=>true};
-  const crowd=load('fair-crowd.js',{live,lookOf:()=>({}),figureOf:()=>({}),paintPlayer:noop,CANVAS:{},fromWire:()=>null,drawRide:noop,rider:()=>({turn:1}),steer:noop,halfOf:noop,topOf:noop});
+  const crowd=load('fair-crowd.js',{live,lookOf:()=>({}),figureOf:()=>({}),paintPlayer:noop,CANVAS:{},fromWire:()=>null,drawRide:noop,rider:()=>({turn:1}),steer:noop,halfOf:noop,topOf:noop,BB:{wire:()=>null,taken:()=>''}});
   const c=crowd({state:()=>({}),redraw:noop,still:()=>true}),ctx=h.ctx(),pid='aaaaaaaaaaaaaaaa';
   c.join([.5,.5]);const room=name=>handlers.get('fair_room')({room:'r',me:'bbbbbbbbbbbbbbbb',people:[{pid,name,x:.5,y:.5}]});room('Lan');
   const draw=(dpr=2,fallback='Khách')=>{c.items(ctx,{xy:(x,y)=>[x*100,y*100],scale:()=>1,px:1,t:0});c.tags(ctx,{sx:x=>x,sy:y=>y,fallback,badge:s=>s==='dt'?'🗡️':'',dpr});};

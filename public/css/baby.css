@@ -1,0 +1,24 @@
+/* 👶 Bé nhà mình (v4/baby.js, v4/reno.js): the card beside the home room and the announcement card. */
+.dc-baby{cursor:pointer;outline:none}
+.dc-baby:focus-visible .dc-hit{stroke:var(--focus);stroke-width:2.5;fill:rgba(255,255,255,.15)}
+.dc-baby-card h3{margin:0 0 8px}
+.dc-baby-row{display:grid;grid-template-columns:76px minmax(0,1fr);gap:0 12px;align-items:center;padding:10px 0;border-top:1px dashed var(--line)}
+.dc-baby-row:first-of-type{border-top:0;padding-top:0}
+.dc-baby-pic{flex:none;width:76px;display:grid;place-items:center;border-radius:14px;background:#fff4e6;border:1px solid var(--line)}
+.dc-baby-info{min-width:0;flex:1}
+.dc-baby-info>b{display:block;font-size:1.02rem}
+.dc-baby-info>small{display:block;color:var(--muted);margin-top:2px}
+.dc-baby-out{margin:6px 0 0;font-size:.88rem;color:var(--good)}
+.dc-baby-acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.dc-baby-acts .btn{min-height:40px}
+dialog.bb-hello{border:0;padding:0;background:transparent;max-width:min(360px,calc(100vw - 32px));width:100%;margin:auto}
+dialog.bb-hello::backdrop{background:var(--overlay,rgba(52,34,24,.46))}
+.bb-hello-card{background:var(--surface,#fffdf9);color:var(--ink,#3a2a21);border-radius:var(--radius-lg,22px);box-shadow:var(--shadow-lg);padding:20px 18px 16px;text-align:center}
+.bb-hello-art{display:grid;place-items:center;margin:0 auto 8px;width:180px;height:150px;border-radius:50%;background:radial-gradient(circle at 50% 60%,#ffe9ef,#fff6e8 70%)}
+.bb-hello-card h2{margin:4px 0 6px;font-size:1.3rem}
+.bb-hello-card p{margin:0 0 8px;line-height:1.45}
+.bb-hello-small{color:var(--muted);font-size:.88rem}
+.bb-hello-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.bb-hello-row .btn{min-height:44px}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) dialog.bb-hello[open] .bb-hello-card{animation:bb-pop .28s ease-out}}
+@keyframes bb-pop{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
