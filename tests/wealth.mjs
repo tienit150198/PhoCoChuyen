@@ -67,66 +67,64 @@ assert.match(html,new RegExp(`data-wl-total="${P.assets}">${P.assets.toLocaleStr
 assert.match(html,new RegExp(`data-wl-debt="${P.debt}">−${P.debt.toLocaleString('vi-VN')} xu`));
 for(const id of ['wallet','account','demand','term','loan','card','fund','joint','home','home-loan'])assert.match(html,new RegExp(`data-wl="${id}"`),id);
 assert.match(html,/12 tháng.*đáo hạn Ngày 100 · còn 60 ngày/);
-// 💼 F#259: the place on screen is open (here milk_tea, nothing to draw → Góp vốn), the others fold to two tabs.
-assert.match(html,/data-wl-move="milk_tea"[^>]*>|class="wl-move open" data-wl-move="milk_tea"/);
-assert.match(html,/class="wl-move open" data-wl-move="milk_tea">.*data-action="wlInvest" data-career="milk_tea" data-amount="50">Góp 50 xu vào quỹ/s);
-assert.match(html,/class="wl-move" data-wl-move="florist"><div class="wl-tabs"[^]*?data-mode="draw" data-fold="1" aria-pressed="false">👛 Rút về ví[^]*?data-mode="invest" data-fold="1" aria-pressed="false">📈 Góp vốn/);
-assert.doesNotMatch(html,/data-action="wlDraw" data-career="florist"/,'a folded row has no amount yet');
+// 💼 F#259 + feedback 08/10 ("cho góp vốn bên cạnh chỗ rút thôi"): Rút về ví is one tap for the most the fund can
+// give (as before 1.9.20), 📈 Góp vốn sits beside it and only it opens a typed amount.
+assert.match(html,/class="wl-move" data-wl-move="florist"><div class="wl-tabs"><button type="button" class="btn small primary wl-draw" data-action="wlDraw" data-career="florist" data-amount="320">👛 Rút về ví · tối đa 320 xu<\/button><button type="button" class="wl-tab" data-action="wlMode" data-quick data-career="florist" data-mode="invest" data-fold="1" aria-pressed="false">📈 Góp vốn<\/button>/);
 assert.doesNotMatch(html,/data-action="wlDraw" data-career="milk_tea"/,'nothing to withdraw: no Rút button');
-// Open a move: a quarter by default (never "all"), − N + typed box, 25% / 50% / Tất cả, what stays in the fund.
+assert.match(html,/data-wl-move="milk_tea"><div class="wl-tabs"><p class="wl-why">Chưa rút được: quỹ phải giữ 80 xu[^]*?📈 Góp vốn/);
+assert.doesNotMatch(html,/wl-move open|qty-in|wlInvest/,'nothing typed until Góp vốn is tapped');
 assert.equal(investMax(rich),120+800,'Góp vốn: the wallet, then the bank account');
 assert.equal(investMax({journey:{story:true,wallet:-5,bank:{open:true,balance:900}}}),0,'a wallet in debt puts nothing in');
 assert.equal(investMax({journey:{story:true,wallet:30,invest_max:77}}),77,'the server says it first');
 assert.equal(firstAmount('draw',320),80);assert.equal(firstAmount('draw',1),1);assert.equal(firstAmount('draw',3),1);assert.equal(firstAmount('invest',920),50);assert.equal(firstAmount('invest',20),20);assert.equal(firstAmount('draw',0),0);
-let mv=fundMove(rich,'florist',{open:true});
-assert.deepEqual([mv.mode,mv.max,mv.n,mv.fund],['draw',320,80,500]);
-html=fundMoveHTML(rich,'florist',{open:true});
-assert.match(html,/data-mode="draw" aria-pressed="true">👛 Rút về ví/);
-assert.match(html,/data-action="wlAmt" data-quick data-career="florist" data-n="70" aria-label="Bớt 10 xu">−/);
-assert.match(html,/<input class="qty-in"[^>]*data-min="1" data-max="320"[^>]*value="80"[^>]*data-qty-money data-qty-go="data-action=&quot;wlAmt&quot; data-quick data-career=&quot;florist&quot; data-n=&quot;987654321&quot;" data-qty-live[^>]*id="wl-amt-florist"/);
-assert.match(html,/data-n="80" aria-pressed="true">25%<\/button>.*data-n="160" aria-pressed="false">50%<\/button>.*data-n="320" aria-pressed="false">Tất cả<\/button>/s);
-assert.match(html,/Quỹ còn lại <b>420 xu<\/b>/);
-assert.match(html,/data-action="wlDraw" data-career="florist" data-amount="80">Rút 80 xu về ví/);
-MOVE.amt['florist:draw']=999;assert.equal(fundMove(rich,'florist',{open:true}).n,320,'a typed number over the max is the max');
-MOVE.amt['florist:draw']=0;assert.equal(fundMove(rich,'florist',{open:true}).n,1);
-delete MOVE.amt['florist:draw'];
+let mv=fundMove(rich,'florist');
+assert.deepEqual([mv.mode,mv.open,mv.draw,mv.fund],['draw',false,320,500]);
+// Góp vốn tapped: − N + typed box, 25% / 50% / Tất cả, what the fund becomes; the one-tap Rút stays beside it.
 MOVE.mode.florist='invest';
-mv=fundMove(rich,'florist');assert.ok(mv.open,'a chosen move opens a folded row');
+mv=fundMove(rich,'florist');assert.deepEqual([mv.mode,mv.open,mv.max,mv.n],['invest',true,920,50]);
+html=fundMoveHTML(rich,'florist');
+assert.match(html,/class="wl-move open"[^]*data-action="wlDraw" data-career="florist" data-amount="320">👛 Rút về ví · tối đa 320 xu[^]*data-mode="invest" data-fold="1" aria-pressed="true">📈 Góp vốn/);
+assert.match(html,/data-action="wlAmt" data-quick data-career="florist" data-n="40" aria-label="Bớt 10 xu">−/);
+assert.match(html,/<input class="qty-in"[^>]*data-min="1" data-max="920"[^>]*value="50"[^>]*data-qty-money data-qty-go="data-action=&quot;wlAmt&quot; data-quick data-career=&quot;florist&quot; data-n=&quot;987654321&quot;" data-qty-live[^>]*id="wl-amt-florist"/);
+assert.match(html,/data-n="230" aria-pressed="false">25%<\/button>.*data-n="460" aria-pressed="false">50%<\/button>.*data-n="920" aria-pressed="false">Tất cả<\/button>/s);
+MOVE.amt['florist:invest']=9999;assert.equal(fundMove(rich,'florist').n,920,'a typed number over the max is the max');
+MOVE.amt['florist:invest']=0;assert.equal(fundMove(rich,'florist').n,1);
 MOVE.amt['florist:invest']=200;mv=fundMove(rich,'florist');
 assert.deepEqual([mv.mode,mv.n,mv.cash,mv.bank],['invest',200,120,80]);
 html=fundMoveHTML(rich,'florist');
 assert.match(html,/Quỹ thành <b>700 xu<\/b> · lấy 120 xu từ ví, 80 xu từ tài khoản ngân hàng/);
 assert.match(html,/data-action="wlInvest" data-career="florist" data-amount="200">Góp 200 xu vào quỹ/);
 delete MOVE.mode.florist;delete MOVE.amt['florist:invest'];
-html=fundMoveHTML(poorState,'grocery',{open:true});
-assert.match(html,/data-action="wlDraw" data-career="grocery" data-amount="10">Rút 10 xu về ví/);
-MOVE.mode.grocery='invest';html=fundMoveHTML(poorState,'grocery',{open:true});delete MOVE.mode.grocery;
+html=fundMoveHTML(poorState,'grocery');
+assert.match(html,/data-action="wlDraw" data-career="grocery" data-amount="40">👛 Rút về ví · tối đa 40 xu/);
+MOVE.mode.grocery='invest';html=fundMoveHTML(poorState,'grocery');delete MOVE.mode.grocery;
 assert.match(html,/Ví đang nợ\. Trả nợ trước rồi góp vốn nhé\./);assert.doesNotMatch(html,/wlInvest/);
 const thin={journey:{story:true,wallet:200,places:{grocery:{fund:90,withdraw_max:0}}}};
-assert.match(fundMoveHTML(thin,'grocery',{open:true}),/data-mode="invest" aria-pressed="true">📈 Góp vốn.*data-action="wlInvest"/s,'nothing to draw: Góp vốn opens first');
-MOVE.mode.grocery='draw';html=fundMoveHTML(thin,'grocery',{open:true});delete MOVE.mode.grocery;
+html=fundMoveHTML(thin,'grocery');
 assert.match(html,/Chưa rút được: quỹ phải giữ 80 xu/);assert.doesNotMatch(html,/data-action="wlDraw"/);
-// The actions: a confirm that says what stays in the fund, then the server command with the typed amount.
+// The actions: Rút is the most the fund can give after a confirm; Góp vốn opens, then the typed amount after a confirm.
 {
   const sent=[],asked=[];let renders=0;
   const env={api:{state:rich},renderSheet:()=>{renders++;},placeName:()=>'Tiệm hoa Mây',
     confirmAction:async(t,m,l)=>{asked.push([t,m,l]);return true;},cmd:async(c,p)=>{sent.push([c,p]);return {};}};
   assert.equal(await wealthAction('somethingElse',{},null,env),false);
-  await wealthAction('wlAmt',{career:'florist',n:'150'},null,env);
-  assert.equal(MOVE.amt['florist:draw'],150);
-  await wealthAction('wlDraw',{career:'florist',amount:'150'},null,env);
-  assert.deepEqual(sent.pop(),['jr_withdraw',{career:'florist',amount:150}]);
-  assert.match(asked.pop()[1],/quỹ còn lại 350 xu/);
-  assert.equal(MOVE.amt['florist:draw'],undefined,'done: back to the default amount');
   await wealthAction('wlDraw',{career:'florist',amount:'320'},null,env);
-  assert.match(asked.pop()[1],/đây là mức rút tối đa, quỹ chỉ còn 180 xu/);sent.pop();
+  assert.deepEqual(sent.pop(),['jr_withdraw',{career:'florist',amount:320}]);
+  let q=asked.pop();assert.equal(q[0],'Rút 320 xu về ví?');assert.match(q[1],/quỹ còn lại 180 xu/);
+  await wealthAction('wlDraw',{career:'florist',amount:'99999'},null,env);
+  assert.deepEqual(sent.pop(),['jr_withdraw',{career:'florist',amount:320}],'never more than the fund can give');asked.pop();
+  await wealthAction('wlInvest',{career:'florist',amount:'50'},null,env);
+  assert.equal(sent.length,0,'Góp vốn not opened: nothing sent');
   await wealthAction('wlMode',{career:'florist',mode:'invest',fold:'1'},null,env);
   assert.equal(MOVE.mode.florist,'invest');
+  await wealthAction('wlAmt',{career:'florist',n:'150'},null,env);
+  assert.equal(MOVE.amt['florist:invest'],150);
   await wealthAction('wlInvest',{career:'florist',amount:'500'},null,env);
   assert.deepEqual(sent.pop(),['jr_invest',{career:'florist',amount:500}]);
   assert.match(asked.pop()[1],/Lấy 120 xu từ ví và 380 xu từ tài khoản ngân hàng\. Quỹ thành 1\.000 xu\./);
+  assert.equal(MOVE.amt['florist:invest'],undefined,'done: back to the default amount');
   await wealthAction('wlMode',{career:'florist',mode:'invest',fold:'1'},null,env);
-  assert.equal(MOVE.mode.florist,undefined,'tapping the open move again folds the row');
+  assert.equal(MOVE.mode.florist,undefined,'tapping Góp vốn again folds it');
   const no={...env,confirmAction:async()=>false};
   await wealthAction('wlDraw',{career:'florist',amount:'20'},null,no);
   assert.equal(sent.length,0,'no confirm, no command');

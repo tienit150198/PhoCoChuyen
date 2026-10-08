@@ -43,13 +43,15 @@ body.reduce-motion .mn-chip.mn-bump{animation:none}
 .wl-row.here .wl-name{color:var(--accent-text)}
 .wl-extra{grid-column:2/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .wl-extra small{font-size:.8rem}
-/* 💼 Rút / góp vốn (F#259, v4/wealth.js fundMoveHTML): the two moves side by side, a typed amount, quick chips. Also in
+/* 💼 Rút / góp vốn (F#259, v4/wealth.js fundMoveHTML): Rút về ví in one tap, Góp vốn beside it opens a typed amount. Also in
    the journey's Sổ ví (.jr-fund-actions). */
 .wl-row .wl-extra:has(>.wl-move){grid-column:1/-1}
 .wl-move{display:flex;flex-direction:column;gap:8px;width:100%;min-width:0}
 .wl-move.open{padding:10px;border-radius:14px;background:var(--surface-2)}
 .wl-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .wl-tab{min-height:40px;padding:6px 10px;border-radius:12px;border:1.5px solid var(--line-strong);background:var(--surface);font-size:.867rem;font-weight:700;color:var(--ink-2);white-space:nowrap}
+.wl-tabs .wl-draw{min-height:40px;width:100%;white-space:normal;line-height:1.2}
+.wl-tabs>.wl-why{align-self:center}
 .wl-tab.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text)}
 @media (hover:hover){.wl-tab:not(.on):hover{background:var(--surface-2)}}
 .wl-amount{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
