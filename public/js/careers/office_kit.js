@@ -165,14 +165,14 @@ export function careSummary(care,x){
 }
 
 /** "🌅 Ngày mai" at the top of an office desk's day summary, while the day is closed: the dossiers carried over (due
- * 10:00), a late start after overtime, then what the server already shows for the next day in the room (its calendar
+ * 10:00, or from office.carry_due when the desk spreads its deadlines), a late start after overtime, then what the server already shows for the next day in the room (its calendar
  * items, its luck, rules that change, low energy) and `extra` lines (ready HTML), with one plain button (the footer's
  * "Bắt đầu ngày N" stays the one primary): the dossiers kept for tomorrow, or Chuẩn bị. '' when there is nothing to
  * say or the next day has started (the room shows that day). */
 export function tomorrowPlan(x,data,extra=[]){
   const room=x.room;if(room.open)return '';
   const o=data?.office||{},d=room.data||{},lines=[];
-  if(o.carried)lines.push(`📂 <b>${Number(o.carried)} hồ sơ dở</b> để sáng mai · hạn 10:00`);
+  if(o.carried)lines.push(`📂 <b>${Number(o.carried)} hồ sơ dở</b> ${o.carry_due?`làm trước tiên sáng mai · hạn sớm nhất ${x.esc(o.carry_due)}`:'để sáng mai · hạn 10:00'}`);   // carry_due: a desk that spreads its deadlines (corp_accounting)
   if(o.overtime)lines.push('🌙 Hôm nay tăng ca: mai vào muộn 30 phút');
   const due=(d.care?.calendar?.[0]?.items||[]).filter(i=>i.state==='due'||i.state==='late');
   if(due.length)lines.push(`📅 Hạn mai: ${due.map(i=>`<span class="ok-tm-due">${x.esc(i.emoji)} ${x.esc(i.text)}</span>${i.state==='late'?' <span>(đã trễ)</span>':''}`).join(' · ')}`);

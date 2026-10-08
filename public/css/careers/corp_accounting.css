@@ -77,6 +77,14 @@
 .career-job.ca .ca-warn,.career-job.ca .ca-tip{margin:0;padding:8px 12px;border-radius:var(--radius-sm);background:var(--surface-2);font-size:.933rem;line-height:1.45}
 .career-job.ca .ca-warn{background:var(--warn-soft);border-left:4px solid var(--warn)}
 .career-job.ca .ca-tip{background:var(--info-soft);border-left:4px solid var(--info)}
+/* ✗ a wrong check or stamp, said in place (feedback #265): big, red, stays until “Đã hiểu” or the next answer */
+.career-job.ca .ca-miss{display:grid;gap:6px;margin:0;padding:12px 14px;border-radius:var(--radius-sm);background:var(--bad-soft);border:2px solid var(--bad);color:var(--ink);scroll-margin:16px 0 120px}
+.career-job.ca .ca-miss-h{display:flex;align-items:center;gap:8px;color:var(--bad);font-size:1.067rem;line-height:1.3}
+.career-job.ca .ca-miss-h span{display:grid;place-items:center;flex:none;width:26px;height:26px;border-radius:50%;background:var(--bad);color:var(--on-bad,#fff);font-size:.933rem}
+.career-job.ca .ca-miss p{margin:0;font-size:1.033rem;font-weight:600;line-height:1.55;overflow-wrap:anywhere}
+.career-job.ca .ca-miss-x{justify-self:end;min-height:40px}
+@media (prefers-reduced-motion:no-preference){.career-job.ca .ca-miss{animation:ca-miss-in .28s var(--ease,ease-out)}}
+@keyframes ca-miss-in{0%{transform:translateX(-6px)}40%{transform:translateX(5px)}70%{transform:translateX(-3px)}100%{transform:none}}
 .career-job.ca .ca-stepfoot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .career-job.ca .ca-stepfoot small{font-size:.933rem;color:var(--muted)}
 .career-job.ca .ca-options{display:grid;gap:8px}

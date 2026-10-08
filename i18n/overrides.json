@@ -1,5 +1,8 @@
 {
   "strings": {
+  "📥 Tab [[Hộp thư]]: bấm [[Nhận khay chứng từ]] hoặc [[Nhận hồ sơ]]. Hạn ghi trên từng việc: hồ sơ dài được nhiều giờ hơn.": "📥 [[Inbox]] tab: tap [[Receive the document tray]] or [[Take the file]]. Each job shows its own deadline: longer files get more time.",
+  "➕ Còn dưới 4 việc mà muốn làm thêm: bấm [[Nhận thêm việc]]. Việc nhận giữa ngày có hạn ít nhất 2 tiếng rưỡi sau đó.": "➕ Fewer than 4 jobs and want more: tap [[Take on more tasks]]. A job taken mid-day is due at least two and a half hours later.",
+  "Chưa đúng — đọc kỹ nhé": "Not quite — read this carefully",
   "Khỏi bấm + mỏi tay: số lượng nhập hàng, vàng, lương, số khách… giờ chạm vào là gõ số được luôn": "No more tapping + : stock orders, gold, wages, guest counts… tap the number and type it",
   "Phòng hát: giọng người hát và nhạc giờ khớp nhau hơn ở máy người nghe": "Karaoke: the singer’s voice and the music now line up better for listeners",
   "Giữ lại cho ca của bạn: trong Kho chạm một món, đặt số muốn giữ; nhân viên bán tới đó thì dừng (quầy: tab 📦 Hàng)": "Keep stock for your shift: in Stock tap an item and set how many to keep; staff stop selling at that point (stalls: 📦 tab)",
@@ -21481,6 +21484,8 @@
     "Đã trả lời câu này rồi.": "Already answered this one."
   },
   "patterns": {
+  "hạn sớm nhất $1": "earliest due $1",
+  "làm trước tiên sáng mai · hạn sớm nhất $1": "first thing tomorrow morning · earliest due $1",
   "Comeback: Jewel tối đa $1 bản/người, POB tặng kèm PINK STATIC.": "Comeback: Jewel max $1 copies/person, free POB with PINK STATIC.",
   "📦 Đếm kho: Jewel còn $1 bản · POB còn $2 bộ · ống poster còn $3.": "📦 Stock count: Jewel $1 left · POB $2 sets · poster tubes $3.",
   "🚫 Dựng biển: “Bản giới hạn tối đa $1 bản/người”.": "🚫 Sign up: “Limited edition max $1 copies/person”.",
