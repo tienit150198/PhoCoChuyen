@@ -69,13 +69,26 @@ function popHTML(){
 }
 
 /* ---- the "Bảo hiểm" page ---- */
+/* One policy: its name, then two tiers side by side (player #275): Gói thường 80% and Gói trọn 100% (twice the price).
+ * The tier in use says so; the other one buys or switches (game/rui.py jr_rui_pol {id, on, full}). */
+function tierBtn(p,c,full){
+  const pct=full?(c.full||100):c.cover,price=full?(p.full_month??p.month*2):p.month;
+  const cur=p.on&&!!p.full===full,company=!full&&p.company&&!(p.on&&p.full);
+  const now=cur||company;
+  const foot=company?'Công ty đóng':cur?'✓ Đang dùng':p.on||p.company?'Đổi sang gói này':'Mua';
+  const tag=company?'Công ty đóng':`${xu(price)}/tháng`;
+  return `<button type="button" class="rui-tier${full?' full':''}${now?' cur':''}" data-rui="pol" data-id="${p.id}" data-on="1" data-full="${full?1:0}" aria-pressed="${now}"${now||S.busy?' disabled':''}>`+
+    `<span class="rui-pct">${pct}%</span><span class="rui-tname">${full?'Gói trọn':'Gói thường'}</span><span class="rui-tprice">${esc(tag)}</span><span class="rui-tfoot">${esc(foot)}</span></button>`;
+}
 function polRow(p){
-  const c=CAT().policies.find(x=>x.id===p.id)||{name:p.id,emoji:'🛡️',what:'',cover:80};
-  const price=p.company?'Công ty đóng':p.can||p.on?`${xu(p.month)}/tháng · trả ${c.cover}%`:'Chưa có gì để bảo hiểm';
-  const wait=p.on&&p.wait?`<em class="rui-wait">Có hiệu lực sau ${p.wait} ngày</em>`:'';
-  const btn=p.company?'':p.on?`<button type="button" class="btn ghost small" data-rui="pol" data-id="${p.id}" data-on="0"${S.busy?' disabled':''}>Ngưng</button>`
-    :`<button type="button" class="btn primary small" data-rui="pol" data-id="${p.id}" data-on="1"${S.busy||!p.can?' disabled':''}>Mua</button>`;
-  return `<li class="rui-row${p.on?' on':''}"><span class="rui-ico" aria-hidden="true">${c.emoji}</span><span class="grow"><b>${esc(c.name)}${p.on?' ✓':''}</b><small>${esc(c.what)}</small><small>${esc(price)}</small>${wait}</span>${btn}</li>`;
+  const c=CAT().policies.find(x=>x.id===p.id)||{name:p.id,emoji:'🛡️',what:'',cover:80,full:100};
+  const notes=[];
+  if(!p.on&&!p.can&&!p.company)notes.push('Chưa có gì để bảo hiểm');
+  if(p.on&&p.wait)notes.push(`Có hiệu lực sau ${p.wait} ngày`);
+  else if(p.on&&p.wait_full)notes.push(`Gói 100% có hiệu lực sau ${p.wait_full} ngày, giờ vẫn trả ${c.cover}%`);
+  const stop=p.on?`<button type="button" class="btn ghost small" data-rui="pol" data-id="${p.id}" data-on="0"${S.busy?' disabled':''}>Ngưng</button>`:'';
+  return `<li class="rui-pol${p.on?' on':''}"><div class="rui-row"><span class="rui-ico" aria-hidden="true">${c.emoji}</span><span class="grow"><b>${esc(c.name)}${p.on?' ✓':''}</b><small>${esc(c.what)}</small>${notes.map(n=>`<em class="rui-wait">${esc(n)}</em>`).join('')}</span>${stop}</div>`+
+    (p.on||p.can||p.company?`<div class="rui-tiers" role="group" aria-label="${esc(c.name)}">${tierBtn(p,c,false)}${tierBtn(p,c,true)}</div>`:'')+'</li>';
 }
 function gearRow(g,have){
   const btn=have?'<span class="rui-have">✓ Đã có</span>':`<button type="button" class="btn small" data-rui="gear" data-id="${g.id}"${S.busy?' disabled':''}>Mua · ${xu(g.price)}</button>`;
@@ -91,11 +104,13 @@ function ruiPage(){
   const pending=r.hack_pending?`<p class="rui-calm">${esc(r.hack_pending.days?`🚔 Đã trình báo ${r.hack_pending.n} vụ hack. Kết quả gần nhất sau ${r.hack_pending.days} ngày sống.`:'🚔 Tiền hoàn đang chờ: cần tài khoản ngân hàng và số dư dưới mức tối đa để nhận ở ngày sống tiếp theo.')}</p>`:'';
   const broken=(r.broken||[]).length?`<h3 class="rui-h">🔧 Đang hỏng</h3><ul class="rui-list">${r.broken.map(b=>`<li class="rui-row"><span class="rui-ico" aria-hidden="true">${b.kind==='xe'?'🚗':'🏠'}</span><span class="grow"><b>${esc(b.name)}</b></span><button type="button" class="btn primary small" data-rui="fix" data-kind="${b.kind}" data-ref="${esc(b.ref)}"${S.busy?' disabled':''}>Sửa · ${xu(b.cost)}</button></li>`).join('')}</ul>`:'';
   return head('🛡️','Bảo hiểm & rủi ro','Phòng trước, đỡ lo','ruiPageTitle')+`<div class="wn-body">${flash()}${alert}${calm}${wealthNote}${pending}${broken}`+
-    `<h3 class="rui-h">🛡️ Bảo hiểm</h3><ul class="rui-list">${(r.pol||[]).map(polRow).join('')}</ul>`+
+    `<h3 class="rui-h">🛡️ Bảo hiểm</h3><ul class="rui-list rui-pols">${(r.pol||[]).map(polRow).join('')}</ul>`+
     `<h3 class="rui-h">🔒 Đồ phòng thân</h3><ul class="rui-list">${CAT().gear.map(g=>gearRow(g,(r.gear||[]).includes(g.id))).join('')}</ul>`+
     help(['Chuyện xấu luôn báo trước 1–2 ngày. Phòng trước là tránh được.',`Tổng ví, tài khoản, tiết kiệm và vàng dưới ${fmt(rules.floor||300)} xu: không có chuyện gì.`,
       `Trộm/hack mới: mức mất được chốt theo tổng tài sản khi báo trước, có giới hạn theo tháng và tiền thực có. Các sự cố khác: mỗi lần tối đa ${rules.event_pct||8}%, mỗi tháng tối đa ${rules.month_pct||12}% phần tài sản trên ${fmt(rules.floor||300)} xu.`,
       `Bảo hiểm mới mua có hiệu lực sau ${rules.wait||3} ngày.`,
+      `Gói trọn 100%: giá gấp ${rules.full_x||2} gói thường, trả hết tiền sửa, tiền khám.`,
+      `Đổi gói lúc nào cũng được: giá mới tính từ hôm nay. Lên 100% thì sau ${rules.wait||3} ngày mới trả đủ, trong lúc chờ vẫn trả 80%.`,
       `Bị hack: mất ${rules.hack_pct||8}% tài khoản thanh toán, tối đa ${fmt(exposure?.hack_max||rules.hack_max||3000)} xu trước đồ bảo vệ và chịu giới hạn rủi ro chung.`,
       ...(rules.wealth_bands||[]).filter(b=>b.threshold).map(b=>`Từ ${xu(b.threshold)} tài sản: khả năng trộm/hack gấp ${fmt(b.odds_pct/100)} lần; trần trộm nhà/hack tăng theo ${b.cap_pct}% tài sản nếu cao hơn trần cơ bản.`),
       'Khóa phiên lạ khi được cảnh báo để chặn vụ hack, không tốn xu.','Không truy thu rủi ro trong thời gian offline.','Không bao giờ bị nợ vì rủi ro.'])+`</div>`;
@@ -204,7 +219,12 @@ async function onClick(d,op,data){
       const res=await send(op==='choose'?'jr_rui_choose':'jr_rui_prevent',op==='choose'?{id:data.id,choice:data.choice}:{opt:data.opt});
       if(res&&d===S.pop){S.done={emoji:src.emoji,title:src.title,text:S.flash?.text||res.message||''};S.flash=null;render();}
       return;}
-    case'pol':send('jr_rui_pol',{id:data.id,on:data.on==='1'});return;
+    case'pol':{
+      if(data.on!=='1'){send('jr_rui_pol',{id:data.id,on:false});return;}
+      const full=data.full==='1',p=(R()?.pol||[]).find(x=>x.id===data.id),wait=CAT().rules?.wait||3;
+      // Switching up mid-term: say when the 100% starts and what it costs (nothing extra today).
+      if(full&&p?.on&&!p.full&&!await ask('Lên gói trọn 100%?',`Phí mới ${xu(p.full_month??p.month*2)}/tháng, tính từ hôm nay. Sau ${wait} ngày bảo hiểm trả 100%, trong lúc chờ vẫn trả 80%.`,'Lên gói 100%'))return;
+      send('jr_rui_pol',{id:data.id,on:true,full});return;}
     case'gear':{const it=CAT().gear.find(x=>x.id===data.id);if(!it)return;
       if(await ask(`Mua ${it.name.toLowerCase()}?`,it.what,`Mua · ${xu(it.price)}`,{cost:it.price,pocket:POCKET}))send('jr_rui_gear',{id:it.id});return;}
     case'fix':send('jr_rui_fix',{kind:data.kind,ref:data.ref});return;
