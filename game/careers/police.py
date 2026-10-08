@@ -75,10 +75,14 @@ CFG = dict(crew='👮 Gọi anh Định', company='🏢 Báo Ban chỉ huy phư�
                    'bargain': dict(rule='Vượt giờ quy định rồi.', paper='Cho em xin văn bản.')},
            ground_line='⚖️ Ban chỉ huy: tạm dừng nhiệm vụ hết hôm nay, mai lên giải trình.',
            harass_note='🛡️ Báo là đúng: phường có quy trình bảo vệ cán bộ đang làm nhiệm vụ.',
-           demote_line='⚖️ Hội đồng kỷ luật: hạ xuống {demoted}, tạm dừng nhiệm vụ hôm nay, không có thưởng tới khi hồ sơ sạch lại.',
+           # The conduct record touches the task bonus only; the cấp bậc hàm and its ⚠️ cảnh cáo are game/org.py's (players
+           # read "hạ bậc", "cảnh cáo", "cách chức" here as their rank: feedback #258, 07/10).
+           demote_line='⚖️ Hội đồng kỷ luật: tạm dừng nhiệm vụ hôm nay, chưa có thưởng việc tới khi hồ sơ nhẹ lại. Cấp bậc hàm giữ nguyên.',
+           warn_line='📝 Bị khiển trách, ghi vào hồ sơ.',
+           restore_line='🎖️ Hồ sơ đã nhẹ lại: có thưởng việc trở lại.',
            tired_line='😮‍💨 Mệt rồi: thưởng việc chỉ còn một nửa. Xin nghỉ bù ở phòng trực.',
            rest_ok=' Ca của bạn đã có người trực thay; bạn thấy nhẹ cả người.',
-           levels={'ground': 'Tạm dừng nhiệm vụ'})
+           levels={'warn': 'Bị khiển trách', 'ground': 'Tạm dừng nhiệm vụ', 'demote': 'Đang chịu kỷ luật'})
 
 
 # ================================================================ small helpers
@@ -379,6 +383,23 @@ def _task_of(c: dict, p: dict) -> dict | None:
 def _grace(c: dict, d: dict) -> bool:
     """While anh Định stands beside a new officer, or on probation: a reminder, not a warning."""
     return d['learn']['n'] < LEARN or bool((c.get('job') or {}).get('probation'))
+
+
+def heal_save(s: dict, c: dict) -> None:
+    """migrate_state: ⚠️ warnings whose discipline is already served (10 worked days in a row without a violation, counted
+    the way builds up to 1.9.19 logged them) are cleared on load, so an officer kept from promotion by them is unblocked
+    at once (feedback #251/#253/#258). A record it cannot read is left as it is for validation to judge."""
+    from .. import org
+    try:
+        x = org.get(_promo().record(s, ID))
+        if not (x and isinstance(x.get('warns'), list) and x['warns'] and isinstance(x.get('wlog'), list)
+                and type(x.get('clean')) is int and x.get('org') in org.OC.ORGS):
+            return
+        y = copy.deepcopy(x)
+        org.heal(y, org._day(s))
+    except (KeyError, TypeError, ValueError, AttributeError):
+        return
+    x.update(y)
 
 
 def _rank_note(result: dict, line: str) -> None:
@@ -1212,7 +1233,7 @@ def _finish(s: dict, c: dict, d: dict, t: dict, reward: int, narrative: str, job
     if pay:
         parts.append(f'Thưởng {pay} xu.')
     elif full and not pay:
-        parts.append('(Đang bị hạ bậc: chưa có thưởng.)')
+        parts.append('(Đang chịu kỷ luật: chưa có thưởng việc.)')
     if full and pay and pay < full:
         parts.append('(Mệt quá: nửa thưởng.)')
     if note:

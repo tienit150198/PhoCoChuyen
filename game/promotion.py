@@ -1071,14 +1071,15 @@ def _org_next(x: dict) -> dict | None:
     """The strip's line (good/need/title) and requirements: the next grade inside the post, else the next post."""
     ng = ORG.next_grade(x)
     if ng:
-        return dict(title=ng['name'], good=ng['good'], need=ng['need'], requirements=ng['rows'], why=None, wait=x['wait'], pct=0)
+        return dict(title=ng['name'], good=ng['good'], need=ng['need'], requirements=ng['rows'] + ORG.waits(x), why=None, wait=x['wait'], pct=0)
     tp = ORG.target(x)
     if not tp:
         return None
     o = ORG.OC.ORGS[x['org']]
     days = ORG.post(x)['days']
-    return dict(title=ORG._post(o, tp)['short'], good=min(x['tip'], days), need=days, requirements=ORG.post_rows(x, tp), why=None,
-                wait=x['wait'], pct=0)
+    # The waits (a suspension, a retry, the seat) are listed too, so "all met" on screen never hides what holds it back.
+    return dict(title=ORG._post(o, tp)['short'], good=min(x['tip'], days), need=days, requirements=ORG.post_rows(x, tp) + ORG.waits(x),
+                why=None, wait=x['wait'], pct=0)
 
 
 def _org_public(s: dict, c: dict, career: str, rec: dict | None) -> dict | None:

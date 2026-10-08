@@ -25,7 +25,7 @@ for rest days is the player's own move from the crew room.
 Other careers reuse the engine (oil keeps the air crew's words; railway, nurse, lighthouse, rescue, lifeguard and
 police word it their own way). Besides crew, company, union, office, demoted and title, a career's cfg may carry,
 each optional (the air crew's line otherwise): labels {kind: {word id: label}}, levels {level id: label},
-harass_note, ground_line, demote_line ('{demoted}' is filled in), tired_line and rest_ok.
+harass_note, ground_line, demote_line ('{demoted}' is filled in), warn_line, restore_line, tired_line and rest_ok.
 The air kit's oddCard/restCard read cfg.kinds and cfg.rest_to.
 """
 from __future__ import annotations
@@ -398,7 +398,7 @@ def _conduct(c: dict, odd: dict, delta: int, cfg: dict) -> str:
         cd['ground'] = c['day']
         return cfg.get('ground_line') or '⚖️ Phòng an toàn: tạm đình chỉ bay hết hôm nay, mai lên trình bày.'
     if before < 4 <= after:
-        return '⚠️ Cảnh cáo bằng văn bản vào hồ sơ.'
+        return cfg.get('warn_line') or '⚠️ Cảnh cáo bằng văn bản vào hồ sơ.'
     if before < 2 <= after:
         return '📝 Bị nhắc nhở, ghi vào hồ sơ.'
     return f'📝 Hồ sơ +{delta} điểm vi phạm.'
@@ -419,7 +419,7 @@ def flown(odd: dict, clean: bool, cfg: dict) -> str:
         cd['points'] -= 1
         if cd['demoted'] and cd['points'] <= RESTORE_AT:
             cd['demoted'] = False
-            return f'🎖️ Hồ sơ sạch dần: được phục chức {cfg["title"]}.'
+            return cfg.get('restore_line') or f'🎖️ Hồ sơ sạch dần: được phục chức {cfg["title"]}.'
     return ''
 
 

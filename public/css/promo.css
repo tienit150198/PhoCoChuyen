@@ -128,6 +128,8 @@
 .og-post{margin:0 0 6px;font-weight:700;color:var(--muted)}
 .og-stats{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:0 0 8px;font-weight:700}
 .og-stats span{padding:2px 8px;border-radius:99px;background:var(--surface-2,#0000000d)}
+.og-todo{margin:2px 0 10px;font-size:.88rem}
+ul.og-todo{list-style:none;padding:0;display:inline-block;text-align:left}
 .og-warn{padding:2px 8px;border-radius:99px;font-weight:800;background:#0000000d}
 .og-warn.on{background:#fde3c8;color:#8a3d00}
 .og-ladder{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px}
