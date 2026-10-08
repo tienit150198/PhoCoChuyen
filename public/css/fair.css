@@ -735,3 +735,8 @@ html[data-theme="dem"] .fh-pb-code-chip b{background:#3a2a4f;color:#ffe9a8;borde
 .fh-wstage .rd-co{top:auto;bottom:8px;right:8px}   /* the fair: under the stalls, never over their signs */
 /* #18 (1.9.2): today's win/loss by trò */
 .fh-wl{font-size:.82rem}.fh-strip .fh-wl b.up{color:var(--good,var(--ink))}.fh-strip .fh-wl b.down{color:var(--bad,var(--ink))}
+/* owner 08/10: a typed stake next to the quick chips */
+.fh-amtbox{display:inline-flex}
+.fh-amt{width:7.5em;height:44px;padding:0 10px;border-radius:999px;border:2px dashed color-mix(in srgb,var(--fh-gold) 70%,var(--line));background:var(--surface);color:var(--ink);font:700 .95rem/1 var(--font)}
+.fh-amt:focus{outline:2px solid #c98a12;outline-offset:1px}
+.fh-amt:disabled{opacity:.5}

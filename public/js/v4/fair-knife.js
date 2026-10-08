@@ -342,7 +342,8 @@ export function setup(ctx){
       // Chance responses carry display placeholders: only their confirmed count is authoritative here.
       L.stuck=L.b.chance?judge(L.b,k,L.taps).stuck.slice(0,x.stuck?.length??(x.cleared?L.taps.length:L.stuck.length)):x.stuck||L.stuck;
     }
-    if(L.b.chance&&x&&visible()){
+    // the server's word wins: a throw it judged off the board (the board wobbled) falls out even if it looked stuck here
+    if((L.b.chance||x?.lost&&L.over!=='lost')&&x&&visible()){
       if(x.lost){
         L.over='lost';L.at=performance.now();
         const p=(lands(L.b,k,L.taps[L.taps.length-1])+(L.frozen??angleAt(L.b,L.at-L.t0)))*Math.PI/180;
