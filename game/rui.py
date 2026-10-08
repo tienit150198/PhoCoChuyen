@@ -30,6 +30,16 @@ draft, but fair:
   flaw) and pauses the Ấm cúng bonus until it is fixed here or in Sửa nhà. A company's BHYT (a promotion, job.promo
   rank ≥ 1, when a build has it) covers illness like BHYT.
 
+* Two tiers per policy (player #275, owner 08/10: "giá tăng x2 so với hiện tại cho gói bảo hiểm 100%"): the gói thường
+  pays COVER % (80) at the price above; the gói trọn pays FULL % (100) at exactly FULL_X (2) times that price (twice the
+  thousandths accrued a day). Switch any time: the new price is accrued from that life day and the 100 % applies to events
+  first warned WAIT life days after the switch (until then the 80 % still pays); going back to 80 % is immediate.
+* 💡 Bảo hiểm điện nước (`dn`, owner 08/10 "thêm mấy cái điện nước này kia"): small household mishaps (DN_SUBS: máy
+  bơm, bình nóng lạnh, ổ điện, tủ lạnh) wherever you live (your home, a rented or shared room; not the dorm, not Bà
+  Tám's attic), rolled on their own random stream ('dn') only on a day the other risks rolled nothing, inside the same
+  caps (GAP, MONTH_EVENTS, the budget) and at low odds (DN_P), so the game is not harsher overall. It also covers the
+  vỡ ống and chập điện of a home you own (the better of nhà and điện nước pays). A light premium (a few xu a tháng).
+
 Kinds (KINDS, ids stored in saves: never rename): xe (a motor vehicle breaks), nha (a home: dột, vỡ ống, chập điện,
 cháy bếp, ngập), om (ill), moc (pickpocket: cash or the phone), trom (burglary: cash at home), phat (a parking fine
 while driving a car; the first one is only a warning), hack (a compromised bank account).
@@ -53,9 +63,17 @@ does nothing; unknown fields a newer build adds are kept):
     sick, fines          the life day of the last illness (0), parking fines so far
     back                 {day, amount} the police bring back on that morning, or None
     hack_back            optional [{id, day, amount}]: bank hack investigations; refunds go to the account
+    full                 optional {policy id: the life day its gói trọn 100 % began} (1.9.21; older builds ignore it:
+                         they pay 80 % and bill the gói thường price)
+    pol2                 optional {policy id: the life day it was switched on} for policies newer than 1.9.20 (dn):
+                         the 1.9.20 validator only allows yte, xe and nha in `pol`
+    dn                   optional {warn: {sub, day, at, cost} | None, card: {id, sub, day, cost, cover} | None}: the
+                         điện nước mishap (a slot of its own: KINDS of 1.9.20 has no 'dn', its views would not know it)
     seq, log, stats      card ids; the last LOG_MAX lines; counters (STATS)
 Commands (journey.action, the jr_rui_ prefix): jr_rui_prevent {opt}, jr_rui_choose {id, choice}, jr_rui_pol {id, on},
-jr_rui_gear {id}, jr_rui_fix {kind, ref}. Deterministic: every draw is seeded by the journey seed and the life day.
+jr_rui_gear {id}, jr_rui_fix {kind, ref}. jr_rui_pol takes an optional `full` (bool): true buys or switches to the gói
+trọn 100 %, false to the gói thường 80 %, absent keeps the tier of a policy already on (80 % for a new one).
+Deterministic: every draw is seeded by the journey seed and the life day.
 """
 from __future__ import annotations
 
@@ -89,7 +107,7 @@ LEAD = (1, 2)                     # life days from the warning to the event
 
 KINDS = ('xe', 'nha', 'om', 'moc', 'trom', 'phat', 'hack')
 STATS = ('warned', 'prevented', 'events', 'paid', 'covered', 'lost', 'waived', 'premiums', 'gear', 'back', 'fizzled')
-WALLET = dict(xe='life', nha='home', om='life', moc='life', trom='incident', phat='incident', pol='upkeep', gear='life')
+WALLET = dict(xe='life', nha='home', om='life', moc='life', trom='incident', phat='incident', pol='upkeep', gear='life', dn='home')
 
 # Policies: id -> (emoji, name, what it covers, cover %, premium: ('flat', xu a tháng) | ('bp', basis points a tháng
 # of the price of what it insures)).
@@ -98,7 +116,12 @@ POLICIES = {
     'xe': dict(emoji='🚗', name='Bảo hiểm xe', what='Xe hỏng, sửa xe', cover=80, bp=25),
     'nha': dict(emoji='🏠', name='Bảo hiểm nhà', what='Dột, vỡ ống, chập điện, cháy, ngập', cover=80, bp=8),
 }
-POLICY_OF = dict(om='yte', xe='xe', nha='nha')
+POLICIES['dn'] = dict(emoji='💡', name='Bảo hiểm điện nước', what='Máy bơm, bình nóng lạnh, tủ lạnh, chập điện, vỡ ống', cover=80,
+                      flat=2, bp=1, most=20, hbp=3)   # a few xu (by means), + basis points of the homes owned (vỡ ống, chập điện)
+POLICY_OF = dict(om='yte', xe='xe', nha='nha', dn='dn')
+OLD_POL = ('yte', 'xe', 'nha')    # stored in `pol` (the 1.9.20 validator allows only these); the others in `pol2`
+FULL, FULL_X = 100, 2             # the gói trọn: pays 100 %, costs exactly twice the gói thường
+DN_POWER = ('ong', 'dien')        # the home mishaps the điện nước insurance covers too (reno part 'power')
 
 GEAR = {
     'tui': dict(emoji='👜', name='Túi đeo chéo', price=40, what='Móc túi giảm một nửa'),
@@ -142,7 +165,16 @@ PHAT_BP, PHAT_MIN, PHAT_MAX = 30, 20, 300
 BAO_BACK = 30                     # % the police find the money (half of it), BACK_DAYS later
 BACK_DAYS = 2
 XIN_OK, XIN_MORE = 30, 150        # "xin bỏ qua": % waived; else the fine × XIN_MORE / 100
-SPIRIT = dict(tu_xe=-8, tu_nha=-10, thuoc=-4, nghi=-12, nghi_lai=-8, cu=-6)
+SPIRIT = dict(tu_xe=-8, tu_nha=-10, thuoc=-4, nghi=-12, nghi_lai=-8, cu=-6, chiu=-6)
+# 💡 điện nước: odds per 10 000 a life day (living in a home or a room), the cost: basis points of W − FLOOR, clamped,
+# × the sub's % (then the budget). sub: (weight, cost %, emoji, title, the event, the warning)
+DN_P, DN_BP, DN_MIN, DN_MAX = 150, 60, 12, 240
+DN_SUBS = {
+    'bom': (30, 100, '🚰', 'Máy bơm hỏng', 'Máy bơm cháy cuộn dây, nhà hết nước xài.', 'Máy bơm kêu rè rè, nước chảy yếu hẳn.'),
+    'nong': (25, 120, '🚿', 'Bình nóng lạnh hỏng', 'Bình nóng lạnh rò nước, tắm nước lạnh run cầm cập.', 'Bình nóng lạnh kêu tách tách, nước lúc nóng lúc lạnh.'),
+    'o': (25, 60, '🔌', 'Ổ điện cháy', 'Ổ cắm xẹt lửa, cháy đen một góc tường.', 'Ổ cắm hơi lỏng, sờ vào thấy ấm.'),
+    'lanh': (20, 150, '🧊', 'Tủ lạnh hỏng', 'Tủ lạnh tắt hẳn, đồ ăn bắt đầu hỏng.', 'Tủ lạnh kêu to, đá không đông.'),
+}
 
 KIND_META = {
     'xe': ('🔧', 'Xe hỏng'), 'nha': ('🏚️', 'Nhà gặp sự cố'), 'om': ('🤒', 'Ốm'),
@@ -347,11 +379,40 @@ def _company_cover(s: dict) -> bool:
 
 
 # ---------------------------------------------------------------- insurance
+def _pols(r: dict, pid: str) -> dict:
+    """The dict a policy's start day lives in: `pol` for the 1.9.20 ones, `pol2` for the newer ones."""
+    return r['pol'] if pid in OLD_POL else r.setdefault('pol2', {})
+
+
+def started(r: dict, pid: str) -> int | None:
+    """The life day policy `pid` was switched on (None: off)."""
+    x = (r['pol'] if pid in OLD_POL else r.get('pol2') or {}).get(pid)
+    return x if type(x) is int else None
+
+
+def is_full(r: dict, pid: str) -> bool:
+    """The policy is on and on the gói trọn 100 % (a mark older than the policy is stale: an older build switched it
+    off and on again at 80 %)."""
+    start, f = started(r, pid), (r.get('full') or {}).get(pid)
+    return start is not None and type(f) is int and f >= start
+
+
+def _tidy(r: dict) -> None:
+    """Drop stale gói trọn marks (see is_full)."""
+    f = r.get('full')
+    if isinstance(f, dict):
+        for pid in [k for k in f if k not in POLICIES or not is_full(r, k)]:
+            f.pop(pid)
+
+
 def premium_milli(s: dict, pid: str) -> int:
-    """One life day of policy `pid` for what is owned now, in thousandths of a xu."""
+    """One life day of policy `pid` (gói thường) for what is owned now, in thousandths of a xu."""
     P = POLICIES[pid]
     if pid == 'yte':   # like the real BHYT, by means: a few xu, a little more for a bigger W (the clinic costs more)
         return min(P['most'], P['flat'] + room(s) * P['bp'] // 10000) * 1000 // MONTH_DAYS
+    if pid == 'dn':    # by means, + a little of the homes owned (their vỡ ống, chập điện)
+        homes = sum(x['price'] for x in _homes(s))
+        return (min(P['most'], P['flat'] + room(s) * P['bp'] // 10000) * 1000 + homes * P['hbp'] // 10) // MONTH_DAYS
     if pid == 'xe':
         base = sum(car['p'] for _, car, _ in _motor(s))
     else:
@@ -360,22 +421,40 @@ def premium_milli(s: dict, pid: str) -> int:
 
 
 def premium_month(s: dict, pid: str) -> int:
+    """The gói thường's price a tháng (the gói trọn: FULL_X times it)."""
     return (premium_milli(s, pid) * MONTH_DAYS + 500) // 1000
 
 
+def _accrue(s: dict, r: dict, pid: str) -> int:
+    """What one life day of an active policy accrues at its tier (the gói trọn: exactly FULL_X times)."""
+    return premium_milli(s, pid) * (FULL_X if is_full(r, pid) else 1)
+
+
 def insurable(s: dict, pid: str) -> bool:
+    if pid == 'dn':
+        return _where(s) in ('own', 'rent', 'shared') or bool(_homes(s))
     return pid == 'yte' or (pid == 'xe' and bool(_motor(s))) or (pid == 'nha' and bool(_homes(s)))
 
 
-def cover(s: dict, r: dict, kind: str, day: int) -> int:
-    """% the insurance pays for an event of `kind` first warned on life day `day`."""
+def policy_cover(s: dict, r: dict, pid: str, day: int) -> int:
+    """% policy `pid` pays for an event first warned on life day `day` (its tier once its waiting days are over)."""
+    best = POLICIES['yte']['cover'] if pid == 'yte' and _company_cover(s) else 0
+    start = started(r, pid)
+    if start is not None and start + WAIT <= day:
+        best = max(best, FULL if is_full(r, pid) and r['full'][pid] + WAIT <= day else POLICIES[pid]['cover'])
+    return best
+
+
+def cover(s: dict, r: dict, kind: str, day: int, sub: str = '') -> int:
+    """% the insurance pays for an event of `kind` first warned on life day `day` (a home's vỡ ống or chập điện: the
+    better of nhà and điện nước)."""
     pid = POLICY_OF.get(kind)
     if not pid:
         return 0
-    if pid == 'yte' and _company_cover(s):
-        return POLICIES['yte']['cover']
-    start = r['pol'].get(pid)
-    return POLICIES[pid]['cover'] if type(start) is int and start + WAIT <= day else 0
+    got = policy_cover(s, r, pid, day)
+    if kind == 'nha' and sub in DN_POWER:
+        got = max(got, policy_cover(s, r, 'dn', day))
+    return got
 
 
 def _bill(s: dict, r: dict, day: int, notes: list) -> None:
@@ -383,9 +462,11 @@ def _bill(s: dict, r: dict, day: int, notes: list) -> None:
     r['acc'] %= 1000
     if amount <= 0:
         return
-    names = ', '.join(POLICIES[p]['name'].replace('Bảo hiểm ', '') for p in POLICIES if p in r['pol'])
+    names = ', '.join(POLICIES[p]['name'].replace('Bảo hiểm ', '') for p in POLICIES if started(r, p) is not None)
     if _have(s) < amount:
         r['pol'] = {}
+        r.pop('pol2', None)
+        r.pop('full', None)
         r['acc'] = 0
         notes.append(f'🛡️ Bảo hiểm tạm ngưng: ví và tài khoản chưa đủ {_fmt(amount)} xu. Bật lại khi có tiền nhé.')
         _log(r, day, 'Bảo hiểm tạm ngưng (chưa đủ tiền đóng phí)')
@@ -521,7 +602,7 @@ def _projected(s: dict, r: dict, kind: str, sub: str, ref) -> int:
 
 def _roll(s: dict, r: dict, day: int, notes: list) -> None:
     m = _month(s, r, day)
-    if r['warn'] or r['card'] or day < r['next_ok'] or m['n'] >= MONTH_EVENTS or _budget(s, r, day) < MIN_COST:
+    if r['warn'] or r['card'] or dn_busy(r) or day < r['next_ok'] or m['n'] >= MONTH_EVENTS or _budget(s, r, day) < MIN_COST:
         return
     rng = _rng(s, 'roll', day)
     cands = candidates(s, r, day)
@@ -635,7 +716,7 @@ def _fire(s: dict, r: dict, day: int, notes: list) -> None:
         r['sick'] = day
     m['n'] += 1
     _stat(r, 'events')
-    _new_card(r, day, kind, sub, ref, cost, 0, cover(s, r, kind, w['at']))
+    _new_card(r, day, kind, sub, ref, cost, 0, cover(s, r, kind, w['at'], sub))
     c = card_view(s, r)
     notes.append(f'{c["emoji"]} {c["title"]}: {c["text"]}')
 
@@ -808,19 +889,23 @@ def _resolve(s: dict, r: dict, choice: str, day: int, auto: bool = False) -> str
             msg = 'Đã nộp phạt. Lần sau gửi xe vào bãi nhé.'
         else:
             msg = 'Lần sau nhớ gửi xe vào bãi nhé.'
+    insured = k in POLICY_OF and choice in ('sua', 'tu', 'tho', 'kham')
+    if insured and cov:
+        full = cost if choice != 'tu' else cost // 2
+        _stat(r, 'covered', full - pay)
     if pay > 0:
         got = _take(s, pay, WALLET[k], label or KIND_META[k][1])
         if got < pay:
             _stat(r, 'waived', pay - got)
         _stat(r, 'paid', got)
-        if k in POLICY_OF and choice in ('sua', 'tu', 'tho', 'kham'):
-            full = cost if choice != 'tu' else cost // 2
-            _stat(r, 'covered', full - pay)
         r['month']['lost'] = r['month'].get('lost', 0) + got
         _log(r, day, label or KIND_META[k][1], -got)
-        msg += f' Trả {_fmt(got)} xu' + (f', bảo hiểm trả {cov}%.' if cov and choice in ('sua', 'tu', 'tho', 'kham') else '.')
+        msg += _paid_line(got, cov if insured else 0)
         if got < pay:
             msg += f' {_fmt(pay - got)} xu còn thiếu được miễn.'
+    elif insured and cov:   # the gói trọn 100 %: the insurance pays it all
+        _log(r, day, f'{label or KIND_META[k][1]} · bảo hiểm trả {cov}%')
+        msg += _paid_line(0, cov)
     if opt['spirit']:
         got = _spirit(s, opt['spirit'])
         if got:
@@ -870,7 +955,7 @@ def prevent_fee(s: dict, r: dict) -> int:
         return 0
     cost = min(w['cost'], max(MIN_COST, _budget(s, r, s['journey']['life_day'])))
     fee = max(3, _ceil_pct(cost, PREVENT_PCT))
-    return _part(fee, cover(s, r, w['kind'], w['at']))
+    return _part(fee, cover(s, r, w['kind'], w['at'], w['sub']))
 
 
 # ---------------------------------------------------------------- the daily tick
@@ -939,9 +1024,10 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     while r['day'] < target:
         r['day'] += 1
         n = r['day']
+        _tidy(r)
         for pid in POLICIES:
-            if pid in r['pol']:
-                r['acc'] = min(ACC_MAX, r['acc'] + premium_milli(s, pid))
+            if started(r, pid) is not None:
+                r['acc'] = min(ACC_MAX, r['acc'] + _accrue(s, r, pid))
         if n % MONTH_DAYS == 0:
             _bill(s, r, n, notes)
         _month(s, r, n)
@@ -972,9 +1058,161 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
                 r['warn']['day'] = n + 1   # one card at a time: a follow-up waits for the open one
         elif eligible(s, r, n):
             _roll(s, r, n, notes)
+        _dn_day(s, r, n, notes)
     if notes and isinstance(result, dict):
         result.setdefault('effects', []).extend(notes)
     return notes
+
+
+# ---------------------------------------------------------------- 💡 điện nước
+def _dn(r: dict) -> dict | None:
+    x = r.get('dn')
+    return x if isinstance(x, dict) else None
+
+
+def dn_busy(r: dict) -> bool:
+    """A điện nước warning or card is open (the other risks wait, one thing at a time)."""
+    d = _dn(r)
+    return bool(d and (d.get('warn') or d.get('card')))
+
+
+def _dn_cost(s: dict, sub: str) -> int:
+    return max(DN_MIN, min(DN_MAX, room(s) * DN_BP // 10000)) * DN_SUBS[sub][1] // 100
+
+
+def _dn_day(s: dict, r: dict, day: int, notes: list) -> None:
+    """The điện nước slot's life day: an unanswered card takes its default, a warning comes true, or (a calm day, the
+    other risks rolled nothing) maybe a new warning, on its own random stream."""
+    d = _dn(r)
+    if d and d.get('card') and day >= d['card']['day'] + CARD_DAYS:
+        notes.append(_dn_resolve(s, r, 'chiu', day, auto=True))
+    if d and d.get('warn'):
+        if day >= d['warn']['day']:
+            if r['card'] is None and not d.get('card'):
+                _dn_fire(s, r, day, notes)
+            else:
+                d['warn']['day'] = day + 1
+        return
+    if (r['warn'] or r['card'] or dn_busy(r) or day < r['next_ok'] or not eligible(s, r, day)
+            or _where(s) not in ('own', 'rent', 'shared')):
+        return
+    m = _month(s, r, day)
+    if m['n'] >= MONTH_EVENTS or _budget(s, r, day) < MIN_COST:
+        return
+    rng = _rng(s, 'dn', day)
+    odds = DN_P // 2 if day < EASE_DAY or wealth(s) < EASE_W else DN_P
+    if rng.random() * 10000 >= odds:
+        return
+    sub = rng.choices(list(DN_SUBS), weights=[v[0] for v in DN_SUBS.values()])[0]
+    cost = _dn_cost(s, sub)
+    if min(cost, _budget(s, r, day)) < MIN_COST:
+        return
+    r['dn'] = dict(warn=dict(sub=sub, day=day + rng.choice(LEAD), at=day, cost=int(cost)), card=None)
+    r['next_ok'] = day + GAP
+    _stat(r, 'warned')
+    w = dn_warn_view(s, r)
+    notes.append(f'{w["emoji"]} {w["title"]}: {w["text"]}')
+
+
+def _dn_fire(s: dict, r: dict, day: int, notes: list) -> None:
+    d = r['dn']
+    w = d['warn']
+    d['warn'] = None
+    m = _month(s, r, day)
+    cost = min(w['cost'], _budget(s, r, day))
+    if wealth(s) < FLOOR or m['n'] >= MONTH_EVENTS or cost < MIN_COST:
+        _stat(r, 'fizzled')
+        return
+    m['n'] += 1
+    _stat(r, 'events')
+    r['seq'] += 1
+    d['card'] = dict(id=f'r{r["seq"]}', sub=w['sub'], day=day, cost=int(cost), cover=policy_cover(s, r, 'dn', w['at']))
+    c = dn_card_view(s, r)
+    notes.append(f'{c["emoji"]} {c["title"]}: {c["text"]}')
+
+
+def _opt(have: int, oid: str, emoji: str, label: str, pay: int = 0, spirit: int = 0, default: bool = False, note: str = '') -> dict:
+    ok = pay <= have
+    return dict(id=oid, emoji=emoji, label=label, cost=pay, spirit=spirit, ok=ok,
+                why='' if ok else f'Còn thiếu {_fmt(pay - have)} xu', default=default, note=note)
+
+
+def dn_options(s: dict, r: dict) -> list[dict]:
+    d = _dn(r)
+    c = d and d.get('card')
+    if not c:
+        return []
+    have = _have(s)
+    return [_opt(have, 'tho', '👷', 'Gọi thợ sửa', _part(c['cost'], c['cover'])),
+            _opt(have, 'chiu', '⏸️', 'Chịu khó vài hôm', 0, SPIRIT['chiu'], default=True)]
+
+
+def dn_warn_options(s: dict, r: dict) -> list[dict]:
+    d = _dn(r)
+    w = d and d.get('warn')
+    if not w:
+        return []
+    cost = min(w['cost'], max(MIN_COST, _budget(s, r, s['journey']['life_day'])))
+    fee = _part(max(3, _ceil_pct(cost, PREVENT_PCT)), policy_cover(s, r, 'dn', w['at']))
+    have = _have(s)
+    return [dict(id='kiem', emoji='👷', label='Gọi thợ xem trước', cost=fee, ok=fee <= have,
+                 why='' if fee <= have else f'Còn thiếu {_fmt(fee - have)} xu')]
+
+
+def _paid_line(got: int, cov: int) -> str:
+    """' Trả N xu, bảo hiểm trả C%.' (the gói trọn: nothing to pay)."""
+    if cov and got <= 0:
+        return f' Bảo hiểm trả {cov}%, bạn không mất xu nào.'
+    return f' Trả {_fmt(got)} xu' + (f', bảo hiểm trả {cov}%.' if cov else '.')
+
+
+def _dn_resolve(s: dict, r: dict, choice: str, day: int, auto: bool = False) -> str:
+    d = r['dn']
+    c = d['card']
+    opt = next(x for x in dn_options(s, r) if x['id'] == choice)
+    d['card'] = None
+    title = DN_SUBS[c['sub']][3]
+    if choice == 'tho':
+        pay, label = opt['cost'], f'Sửa điện nước · {title}'
+        got = _take(s, pay, WALLET['dn'], label) if pay > 0 else 0
+        if got < pay:
+            _stat(r, 'waived', pay - got)
+        _stat(r, 'paid', got)
+        if c['cover']:
+            _stat(r, 'covered', c['cost'] - pay)
+        r['month']['lost'] = r['month'].get('lost', 0) + got
+        _log(r, day, label, -got)
+        msg = 'Thợ sửa xong, điện nước chạy ngon lại.' + _paid_line(got, c['cover'])
+        if got < pay:
+            msg += f' {_fmt(pay - got)} xu còn thiếu được miễn.'
+    else:
+        msg = 'Chịu khó vài hôm rồi cũng xong.'
+        got = _spirit(s, opt['spirit'])
+        if got:
+            msg += f' Tinh thần {got}.'
+    if auto:
+        msg = f'{DN_SUBS[c["sub"]][2]} Chưa chọn nên tự động: {opt["label"].lower()}. ' + msg
+    return msg.strip()
+
+
+def dn_warn_view(s: dict, r: dict) -> dict | None:
+    d = _dn(r)
+    w = d and d.get('warn')
+    if not w:
+        return None
+    S = DN_SUBS[w['sub']]
+    return dict(kind='dn', sub=w['sub'], ref=None, emoji=S[2], title='Điện nước trong nhà', text=S[5],
+                days=max(0, w['day'] - s['journey']['life_day']), opts=dn_warn_options(s, r))
+
+
+def dn_card_view(s: dict, r: dict) -> dict | None:
+    d = _dn(r)
+    c = d and d.get('card')
+    if not c:
+        return None
+    S = DN_SUBS[c['sub']]
+    return dict(id=c['id'], kind='dn', sub=c['sub'], ref=None, emoji=S[2], title=S[3], text=S[4], loss=0, cover=c['cover'],
+                left=max(0, c['day'] + CARD_DAYS - s['journey']['life_day']), opts=dn_options(s, r))
 
 
 # ---------------------------------------------------------------- commands
@@ -990,7 +1228,7 @@ def _ensure(s: dict) -> dict:
 
 def fix_cost(s: dict, r: dict, kind: str, ref) -> int:
     b = r['broken'][kind].get(ref)
-    return _part(b['c'], cover(s, r, kind, b['d'])) if b else 0
+    return _part(b['c'], cover(s, r, kind, b['d'], 'dien' if kind == 'nha' and b.get('p') == 'power' else '')) if b else 0
 
 
 def action(s: dict, name: str, p: dict) -> dict:
@@ -1004,6 +1242,18 @@ def action(s: dict, name: str, p: dict) -> dict:
     if name == 'jr_rui_prevent':
         need(set(p) <= {'opt'}, 'Dữ liệu không hợp lệ.')
         w = r['warn']
+        dw = (_dn(r) or {}).get('warn')
+        if not w and dw:   # 💡 the điện nước warning (shown when no other warning is open)
+            opt = next((x for x in dn_warn_options(s, r) if x['id'] == p.get('opt')), None)
+            need(opt is not None, 'Chọn một cách phòng nhé.')
+            need(opt['ok'], opt['why'] or 'Chưa làm được.', 'not_enough')
+            cov = policy_cover(s, r, 'dn', dw['at'])
+            got = _take(s, opt['cost'], WALLET['dn'], 'Thợ xem điện nước') if opt['cost'] else 0
+            _stat(r, 'paid', got)
+            r['dn']['warn'] = None
+            _stat(r, 'prevented')
+            _log(r, day, f'Phòng trước: {opt["label"]}')
+            return dict(message='Thợ xử lý sớm, điện nước ổn rồi.' + (_paid_line(got, cov) if got or cov else ''))
         if not w:
             return dict(message='Chuyện đó qua rồi, không sao nữa.', duplicate=True)
         opt = next((x for x in warn_options(s, r) if x['id'] == p.get('opt')), None)
@@ -1031,8 +1281,9 @@ def action(s: dict, name: str, p: dict) -> dict:
             _stat(r, 'paid', got)
             msg = {'xe': 'Thợ siết lại vài con ốc, xe êm ru.', 'nha': 'Thợ xử lý sớm, không sao nữa.',
                    'om': 'Bác sĩ dặn ăn ngủ đúng giờ. Khỏe rồi.', 'phat': 'Xe gửi trong bãi, yên tâm.'}[k]
-            if got:
-                msg += f' Trả {_fmt(got)} xu.'
+            cov = cover(s, r, k, w['at'], w['sub'])
+            if got or cov:
+                msg += _paid_line(got, cov)
         r['warn'] = None
         _stat(r, 'prevented')
         _log(r, day, f'Phòng trước: {opt["label"]}')
@@ -1040,6 +1291,12 @@ def action(s: dict, name: str, p: dict) -> dict:
     if name == 'jr_rui_choose':
         need(set(p) <= {'id', 'choice'}, 'Dữ liệu không hợp lệ.')
         c = r['card']
+        dc = (_dn(r) or {}).get('card')
+        if (not c or c['id'] != p.get('id')) and dc and dc['id'] == p.get('id'):   # 💡 the điện nước card
+            opt = next((x for x in dn_options(s, r) if x['id'] == p.get('choice')), None)
+            need(opt is not None, 'Chọn một cách nhé.')
+            need(opt['ok'], opt['why'] or 'Chưa làm được.', 'not_enough')
+            return dict(message=_dn_resolve(s, r, opt['id'], day))
         if not c or c['id'] != p.get('id'):
             return dict(message='Chuyện này đã xong rồi.', duplicate=True)
         opt = next((x for x in options(s, r) if x['id'] == p.get('choice')), None)
@@ -1047,18 +1304,36 @@ def action(s: dict, name: str, p: dict) -> dict:
         need(opt['ok'], opt['why'] or 'Chưa làm được.', 'not_enough')
         return dict(message=_resolve(s, r, opt['id'], day))
     if name == 'jr_rui_pol':
-        need(set(p) <= {'id', 'on'} and p.get('id') in POLICIES and type(p.get('on')) is bool, 'Chọn một loại bảo hiểm nhé.')
+        need(set(p) <= {'id', 'on', 'full'} and p.get('id') in POLICIES and type(p.get('on')) is bool
+             and type(p.get('full', False)) is bool, 'Chọn một loại bảo hiểm nhé.')
         pid, on = p['id'], p['on']
         P = POLICIES[pid]
-        if on == (pid in r['pol']):
+        _tidy(r)
+        was = started(r, pid) is not None
+        if not on:
+            if not was:
+                return dict(message='Không có gì thay đổi.', duplicate=True)
+            _pols(r, pid).pop(pid)
+            (r.get('full') or {}).pop(pid, None)
+            return dict(message=f'Đã ngưng {_lname(P["name"])}.')
+        full = p.get('full', is_full(r, pid) if was else False)   # absent: keep the tier of a policy already on
+        if was and full == is_full(r, pid):
             return dict(message='Không có gì thay đổi.', duplicate=True)
-        if on:
+        if not was:
             need(insurable(s, pid), 'Chưa có gì để bảo hiểm.' if pid != 'yte' else 'Chưa bật được.')
-            r['pol'][pid] = day
-            return dict(message=f'{P["emoji"]} Đã mua {_lname(P["name"])}: {_fmt(premium_month(s, pid))} xu/tháng, '
-                                f'trả {P["cover"]}% từ ngày sống {day + WAIT}.')
-        r['pol'].pop(pid)
-        return dict(message=f'Đã ngưng {_lname(P["name"])}.')
+            _pols(r, pid)[pid] = day
+        if full:
+            r.setdefault('full', {})[pid] = day
+        else:
+            (r.get('full') or {}).pop(pid, None)
+        pct, price = (FULL, FULL_X * premium_month(s, pid)) if full else (P['cover'], premium_month(s, pid))
+        if not was:
+            return dict(message=f'{P["emoji"]} Đã mua {_lname(P["name"])} gói {pct}%: {_fmt(price)} xu/tháng, '
+                                f'trả {pct}% từ ngày sống {day + WAIT}.')
+        if full:
+            return dict(message=f'{P["emoji"]} Đã lên gói trọn 100%: {_fmt(price)} xu/tháng từ hôm nay, '
+                                f'trả 100% từ ngày sống {day + WAIT} (trước đó vẫn trả {P["cover"]}%).')
+        return dict(message=f'{P["emoji"]} Đã về gói thường {pct}%: {_fmt(price)} xu/tháng từ hôm nay.')
     if name == 'jr_rui_gear':
         need(set(p) <= {'id'} and p.get('id') in GEAR, 'Chọn một món nhé.')
         gid = p['id']
@@ -1087,12 +1362,13 @@ def action(s: dict, name: str, p: dict) -> dict:
             rp = _reno_part(s, ref, b['p'])
             if rp:
                 rp['c'] = 100
-        got = _take(s, pay, WALLET[kind], label)
+        got = _take(s, pay, WALLET[kind], label) if pay > 0 else 0
+        cov = cover(s, r, kind, b['d'], 'dien' if kind == 'nha' and b.get('p') == 'power' else '')
         r['broken'][kind].pop(ref)
         _stat(r, 'paid', got)
         _stat(r, 'covered', b['c'] - pay)
         _log(r, day, label, -got)
-        return dict(message=f'Sửa xong, trả {_fmt(got)} xu.')
+        return dict(message='Sửa xong.' + _paid_line(got, cov))
     raise e.GameError('Thao tác bảo hiểm không hợp lệ.', 'unknown_action')
 
 
@@ -1178,10 +1454,16 @@ def public(s: dict) -> dict | None:
     day = j['life_day']
     pol = []
     for pid, P in POLICIES.items():
-        start = r['pol'].get(pid)
+        start = started(r, pid)
         row = dict(id=pid, on=start is not None, month=premium_month(s, pid), can=insurable(s, pid))
+        row['full_month'] = FULL_X * row['month']   # the gói trọn 100 %: exactly twice the gói thường
         if start is not None and start + WAIT > day:
             row['wait'] = start + WAIT - day
+        if is_full(r, pid):
+            row['full'] = True
+            f = r['full'][pid]
+            if f + WAIT > day and f > start:   # switched up: 100 % in a few days, 80 % until then
+                row['wait_full'] = f + WAIT - day
         if pid == 'yte' and _company_cover(s):
             row['company'] = True
         pol.append(row)
@@ -1198,7 +1480,7 @@ def public(s: dict) -> dict | None:
         out['hack_pending'] = dict(n=len(cases), days=max(0, min(x['day'] for x in cases) - day))
     if day < START_DAY or j.get('chapter', 1) < START_CHAPTER:
         out['calm'] = True   # a new player: nothing happens yet
-    w, c = warn_view(s, r), card_view(s, r)
+    w, c = warn_view(s, r) or dn_warn_view(s, r), card_view(s, r) or dn_card_view(s, r)
     if w:
         out['warn'] = w
     if c:
@@ -1208,11 +1490,11 @@ def public(s: dict) -> dict | None:
 
 def catalogue() -> dict:
     """Static rules for the client (bootstrap content)."""
-    return dict(policies=[dict(id=k, emoji=v['emoji'], name=v['name'], what=v['what'], cover=v['cover']) for k, v in POLICIES.items()],
+    return dict(policies=[dict(id=k, emoji=v['emoji'], name=v['name'], what=v['what'], cover=v['cover'], full=FULL) for k, v in POLICIES.items()],
                 gear=[dict(id=k, **v) for k, v in GEAR.items()],
                 rules=dict(floor=FLOOR, event_pct=EVENT_PCT, month_pct=MONTH_PCT, wait=WAIT, start_day=START_DAY,
                            start_chapter=START_CHAPTER, prevent_pct=PREVENT_PCT, card_days=CARD_DAYS,
-                           hack_pct=HACK_PCT, hack_max=HACK_MAX,
+                           hack_pct=HACK_PCT, hack_max=HACK_MAX, full_x=FULL_X,
                            wealth_bands=[dict(threshold=t, odds_pct=p, cap_pct=c) for t, p, c in WEALTH_BANDS]))
 
 
@@ -1254,6 +1536,20 @@ def validate(s: dict) -> None:
     need(isinstance(r['pol'], dict) and set(r['pol']) <= set(POLICIES) and all(day_ok(v, 1) for v in r['pol'].values()),
          bad, 'invalid_save')
     need(isinstance(r['gear'], list) and len(set(r['gear'])) == len(r['gear']) and set(r['gear']) <= set(GEAR), bad, 'invalid_save')
+    for k, ids in (('pol2', set(POLICIES) - set(OLD_POL)), ('full', set(POLICIES))):   # 1.9.21, optional
+        if k in r:
+            need(isinstance(r[k], dict) and set(r[k]) <= ids and all(day_ok(v, 1) for v in r[k].values()), bad, 'invalid_save')
+    if 'dn' in r:
+        d = r['dn']
+        need(isinstance(d, dict) and set(d) <= {'warn', 'card'}, bad, 'invalid_save')
+        w, c = d.get('warn'), d.get('card')
+        need(w is None or (isinstance(w, dict) and set(w) == {'sub', 'day', 'at', 'cost'} and w['sub'] in DN_SUBS
+                           and day_ok(w['day'], 1) and day_ok(w['at'], 1) and type(w['cost']) is int and 0 <= w['cost'] <= 10**9),
+             bad, 'invalid_save')
+        need(c is None or (isinstance(c, dict) and set(c) == {'id', 'sub', 'day', 'cost', 'cover'} and isinstance(c['id'], str)
+                           and 0 < len(c['id']) <= 16 and c['sub'] in DN_SUBS and day_ok(c['day'], 1)
+                           and type(c['cost']) is int and 0 <= c['cost'] <= 10**9 and type(c['cover']) is int and 0 <= c['cover'] <= 100),
+             bad, 'invalid_save')
     br = r['broken']
     need(isinstance(br, dict) and {'xe', 'nha'} <= set(br) and isinstance(br['xe'], dict) and isinstance(br['nha'], dict)
          and len(br['xe']) <= 64 and len(br['nha']) <= 64, bad, 'invalid_save')

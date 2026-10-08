@@ -37,6 +37,26 @@
 .rui-row.on .rui-ico{background:var(--good-soft)}
 .rui-have{flex:none;color:var(--good);font-weight:700}
 .rui-wait{font-style:normal;font-size:.85rem;color:var(--warn)}
+/* Two tiers per policy, side by side (player #275): the % big, the tier in use marked. */
+.rui-pol{padding:4px 0 12px;border-bottom:1px solid var(--line)}
+.rui-pol:last-child{border-bottom:0}
+.rui-pol>.rui-row{border-bottom:0;padding-bottom:6px}
+.rui-pol.on .rui-ico{background:var(--good-soft)}
+.rui-tiers{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rui-tier{display:flex;flex-direction:column;align-items:center;gap:1px;min-height:var(--tap);padding:8px 6px 9px;border:1.5px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink);font:inherit;text-align:center;cursor:pointer}
+.rui-tier.full{border-color:var(--accent);background:var(--accent-soft)}
+.rui-tier.cur{border:2px solid var(--good);background:var(--good-soft);cursor:default}
+.rui-tier:disabled:not(.cur){opacity:.5;cursor:not-allowed}
+@media (hover:hover){.rui-tier:not(:disabled):hover{border-color:var(--accent-strong)}}
+.rui-tier:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.rui-pct{font-size:1.75rem;font-weight:800;line-height:1.1}
+.rui-tier.full .rui-pct{color:var(--accent-strong)}
+.rui-tier.cur .rui-pct{color:var(--good)}
+.rui-tname{font-weight:700;font-size:.95rem}
+.rui-tprice{font-size:.88rem;color:var(--ink-2)}
+.rui-tfoot{margin-top:3px;font-size:.82rem;font-weight:700;color:var(--muted)}
+.rui-tier.cur .rui-tfoot{color:var(--good)}
+.rui-tier:not(:disabled) .rui-tfoot{color:var(--accent-strong)}
 .rui-now{display:flex;align-items:center;gap:10px;width:100%;margin:2px 0 6px;padding:10px 12px;border:1.5px solid var(--warn);border-radius:var(--radius);background:var(--warn-soft);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
 .rui-now>span:first-child{font-size:1.4rem}
 .rui-now .grow{display:flex;flex-direction:column;min-width:0}
