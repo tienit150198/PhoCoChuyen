@@ -13,9 +13,11 @@
  * stage line; the first time a short note with the headphones advice, then the birth year if the account has none,
  * then the browser's permission prompt); everyone in the room then sees "🎤 Đang phát trực tiếp giọng hát" and hears
  * the voice over their own YouTube player (a 🎤 volume of its own, 🔇, and "Chạm để nghe" when a phone wants a tap).
- * The SDK and the SFU are in v4/karaoke-mic.js, loaded only then. While a listener hears the voice, their video follows
- * the singer's own (kara_vt, about once a second) minus the voice's delay, not the shared clock (follow(); 07/10 "bị
- * delay xíu": the singer sings to their video, the voice comes later); without one it is the clock, as without a mic.
+ * The SDK and the SFU are in v4/karaoke-mic.js, loaded only then. While a listener hears the voice, their video keeps a
+ * little behind the singer's own (kara_vt, about once a second) minus the voice's delay, and the voice is held in a
+ * Web Audio delay to play exactly with it (mixNow(); 07/10 "bị delay xíu": the singer sings to their video, the voice
+ * comes later); without one it is the clock, as without a mic. 🎤 Hát cùng: others in the room ask to sing along, the
+ * stage singer says yes or no; every voice is held to the listener's music the same way (coJoin … coListen).
  * Each side shows where it is: a listener "🎧 Đang nối giọng…", then the voice (or "Chạm để nghe giọng"), or "Chưa
  * nghe được giọng · Thử lại"; the singer "Đang nối mic…", then the timer, or "Chưa phát được giọng · Thử lại". A
  * failed step (and a wait given up on) goes to the page's error beacon (micReport) with the stage it stopped at:
@@ -30,9 +32,11 @@ const DRIFT=.35,REACT=['👏','❤️','🔥','🌹'],YT_HOST='https://www.youtu
 const K={dlg:null,env:null,bound:false,view:'list',rooms:null,room:null,stage:null,queue:[],round:null,n:0,people:[],said:[],fx:{},cheer:0,
   off:0,best:9,c:0,sent:{},yt:null,player:null,ready:false,vid:null,e:null,durSent:null,timer:0,tick:0,panel:null,song:null,busy:false,
   err:'',ticket:null,clap:null,startAt:0,blanks:new Set(),mode:'lyric',want:false,near:0,won:null,reveal:null,
-  live:null,M:null,ct:0,vt:null,vtOff:false,vSeeks:0,far:0,
+  live:null,M:null,ct:0,vt:null,vtOff:false,vSeeks:0,far:0,rateOk:null,rateAt:0,
+  co:new Map(),cvt:new Map(),coList:[],asks:[],coOff:false,birthNext:'',
   mic:{pub:null,pubE:null,sub:null,subE:null,busy:false,joining:false,tap:false,muted:false,tries:0,vol:vol(),
-    ls:'',at:'',gen:0,t0:0,hc:0,pubAt:'',pubFail:null,lag:{},sy:null,syE:null,up:null,vtAt:0,pt:0,polling:false}};
+    ls:'',at:'',gen:0,t0:0,hc:0,pubAt:'',pubFail:null,lag:{},sy:null,syE:null,up:null,vtAt:0,pt:0,polling:false,
+    cpub:null,cpubE:null,co:{st:''},side:0}};
 function vol(){try{const v=Number(localStorage.getItem('kr-voice-vol'));return v>=0&&v<=1&&localStorage.getItem('kr-voice-vol')!==null?v:.9;}catch{return .9;}}
 const micFlag=()=>!!live.flags?.kara_mic;
 const mic=()=>import('./karaoke-mic.js').then(m=>(K.M=m));
@@ -56,9 +60,16 @@ function bind(){
   on('kara_votes',f=>{if(!here(f)||K.stage?.e!==f.e)return;K.stage.votes=f.n;K.stage.need=f.need;paint();});
   on('kara_end',f=>{if(!here(f))return;liveOff();if(K.stage?.e===f.e)K.stage.phase='clap';K.clap={...f};if(f.why!=='done'&&f.why!=='cut')stopVideo();paint();});
   on('kara_live',f=>{if(!here(f))return;onLive(f);});
-  on('kara_listen',f=>{if(here(f)&&!f.on&&K.mic.sub){stopListen();paint();}});   // the server took my listening away (a block)
+  on('kara_listen',f=>{if(!here(f)||f.on)return;   // the server took my listening away (a block); 🎤 `pid`: a co-singer's voice
+    if(f.pid&&f.pid!==K.live?.by?.pid){if(K.co.has(f.pid)){coDrop(f.pid);paint();}}else if(K.mic.sub){stopListen();paint();}});
   on('kara_vt',f=>{if(!here(f)||!K.stage||f.e!==K.stage.e||!Number.isFinite(f.vt)||!Number.isFinite(f.at))return;   // 🎙️ the singer's own video time
-    K.vt={e:f.e,vt:f.vt,at:f.at,r:Number.isFinite(f.r)?f.r:1,up:Number.isFinite(f.rtt)?f.rtt/1000:null,got:Date.now()};if(K.mic.sy)K.mic.sy.up=K.vt.up;});
+    K.vt=vtOf(f);if(K.mic.sy)K.mic.sy.up=K.vt.up;});
+  on('kara_cvt',f=>{if(!here(f)||!K.stage||f.e!==K.stage.e||typeof f.pid!=='string'||!Number.isFinite(f.vt)||!Number.isFinite(f.at))return;   // 🎤 a co-singer's
+    if(K.co.has(f.pid))K.cvt.set(f.pid,vtOf(f));});
+  on('kara_ask',f=>{if(!here(f)||!K.live||f.e!==K.live.e)return;   // 🎤 the singer: someone asks to sing along
+    K.asks=K.asks.filter(a=>a.pid!==f.pid);if(f.on){K.asks.push({pid:f.pid,name:f.name,until:f.until});toast(`🙋 ${f.name||''} muốn hát cùng`);}paint();});
+  on('kara_sing',f=>{if(!here(f))return;if(f.on)coPublish(f);else coRefused(f);});
+  on('kara_co',f=>{if(!here(f)||!K.stage||f.e!==K.stage.e)return;onCo(f);paint();});
   on('kara_fx',f=>{if(!here(f))return;K.cheer=f.cheer||0;for(const [k,n] of Object.entries(f.r||{}))floatFx(k,Math.min(n,6));if(K.stage)K.stage.hearts=(K.stage.hearts||0)+Object.values(f.r||{}).reduce((a,b)=>a+b,0);paintMeter();});
   on('kara_tipped',f=>{if(!here(f))return;if(K.stage?.e===f.e)K.stage.tips=f.tips;floatFx('💰',2);said({pid:f.frm?.pid,name:f.frm?.name,text:`💰 +${f.xu} xu`,sys:1});});
   on('kara_said',f=>{if(f.ch!==K.room?.id)return;said(f);});
@@ -68,9 +79,15 @@ function bind(){
   on('kara_won',f=>{toast(`🎉 Bạn đoán đúng! +${f.xu} xu`);});
   on('deleted',f=>{if(f.ch&&f.ch===K.room?.id){K.said=K.said.filter(m=>m.id!==f.id);paintSaid();}});
   on('error',f=>{if(f.ref==='kara_vt'&&(f.code==='unknown'||f.code==='off'))K.vtOff=true;   // an older live service: stop sending it
-    if(!String(f.ref||'').startsWith('kara_')||['kara_dur','kara_time','kara_react','kara_cheer','kara_can','kara_mic','kara_listen','kara_vt'].includes(f.ref))return;K.busy=false;K.err=f.msg||'Chưa được, thử lại nhé.';toast(K.err,true);render();});
-  on('welcome',()=>{K.vtOff=false;if(K.dlg?.open){if(K.room)live.send({t:'kara_in',id:K.room.id});else live.send({t:'kara_list'});clock();}});
+    if(f.ref==='kara_join'&&f.code==='unknown'){K.coOff=true;paint();}   // 🎤 an older live service: no "Hát cùng"
+    if(f.ref==='kara_let')toast(f.msg||'Chưa được, thử lại nhé.',true);
+    if(!String(f.ref||'').startsWith('kara_')||['kara_dur','kara_time','kara_react','kara_cheer','kara_can','kara_mic','kara_listen','kara_vt','kara_join','kara_let'].includes(f.ref))return;K.busy=false;K.err=f.msg||'Chưa được, thử lại nhé.';toast(K.err,true);render();});
+  on('welcome',()=>{K.vtOff=false;K.coOff=false;if(K.dlg?.open){if(K.room)live.send({t:'kara_in',id:K.room.id});else live.send({t:'kara_list'});clock();}});
 }
+/** A singer's video time (kara_vt / kara_cvt) as the page keeps it: `up` their path's round trip, `ol` their own
+ * output + capture latency, both in seconds. */
+const vtOf=f=>({e:f.e,pid:f.pid,vt:f.vt,at:f.at,r:Number.isFinite(f.r)?f.r:1,up:Number.isFinite(f.rtt)?f.rtt/1000:null,
+  ol:Number.isFinite(f.ol)&&f.ol>0?f.ol/1000:0,got:Date.now()});
 const here=f=>K.room&&f.id===K.room.id;
 function clock(){K.best=9;for(let i=0;i<5;i++)setTimeout(timeAsk,i*250);}
 /** One more clock reading (kept only if its round trip beats the best so far): every CLOCK_EVERY s in a room, as the
@@ -91,7 +108,8 @@ function dialog(){
       <input class="kr-input" maxlength="120" autocomplete="off" enterkeyhint="send">
       <button type="submit" class="btn primary kr-main"></button></div></form></div>`;
   d.addEventListener('click',e=>{
-    if(K.mic.sub&&K.mic.tap&&!e.target.closest('[data-kr=voicetap]'))voiceTap();   // iPhone: any tap in the sheet may start the voice
+    K.M?.resumeAudio?.();   // the voices' shared context, inside a tap (iPhone)
+    if(tapWanted()&&!e.target.closest('[data-kr=voicetap]'))voiceTap();   // iPhone: any tap in the sheet may start the voice
     const el=e.target.closest('[data-kr]');if(!el||el.disabled)return;e.preventDefault();act(el.dataset.kr,el.dataset,el);});
   d.addEventListener('close',()=>{if(K.room)live.send({t:'kara_out'});leaveLocal(true);clearInterval(K.timer);});
   const f=d.querySelector('.kr-bar');
@@ -124,7 +142,11 @@ function enterRoom(f){
   duck('kara',true);
   if(K.stage&&K.stage.phase!=='clap')play();else stopVideo();
   const m=K.stage?.mic;liveOff();
-  if(m?.on&&K.stage.phase!=='clap')onLive({on:1,e:K.stage.e,by:K.stage.by,until:m.until});
+  if(m?.on&&K.stage.phase!=='clap'){
+    onLive({on:1,e:K.stage.e,by:K.stage.by,until:m.until});
+    for(const c of m.co||[])onCo({on:1,e:K.stage.e,pid:c.pid,name:c.name});   // 🎤 the co-singers singing now
+    K.asks=(f.asks||[]).filter(a=>a&&a.pid);
+  }
   render();
 }
 function leaveLocal(closing=false){
@@ -185,81 +207,128 @@ function onState(e){
 function stopVideo(){clearTimeout(K.startAt);try{K.player?.stopVideo?.();}catch{/* gone */}K.vid=null;const box=K.dlg?.querySelector('.kr-video');if(box&&!K.stage)box.hidden=true;}
 /** Drift control (B2, "nhạc cứ giật giật"): every seek buffers again, and on a weak phone that buffer is new drift, so
  * a tight seek loop stutters. Under SEEK_AT seconds off nothing is sought: past DRIFT the playback rate is nudged
- * (0.95 / 1.05, only where YouTube offers such a rate; otherwise left alone) until within NUDGE_OK. Past SEEK_AT one
- * seek, at most every SEEK_GAP ms, aimed ahead by what the last seek took to play again (≤ SEEK_LEAD s). Only while
- * YouTube says it is playing: never during an ad, a buffer or a pause. */
+ * (0.95 / 1.05) until within NUDGE_OK. 08/10: YouTube lists only 0.25 steps, so asking only for a listed rate never
+ * nudged at all; now the rate is asked for and kept where the player plays it (rateSeen). Past SEEK_AT one seek, at
+ * most every SEEK_GAP ms, aimed ahead by what the last seek took to play again (≤ SEEK_LEAD s). Only while YouTube
+ * says it is playing: never during an ad, a buffer or a pause. */
 const SEEK_AT=2,SEEK_GAP=10000,SEEK_LEAD=1.5,NUDGE_OK=.12;   // a lead < SEEK_AT: a wrong guess is nudged, never sought again
-/** 🎙️ Following a live voice (follow()) is tighter: a nudge past DRIFT_V (two readings in a row: YouTube's time comes
- * through postMessage and jitters) until within NUDGE_OK_V; a seek past SEEK_AT_V, VOICE_SEEKS a song at most (then
- * only past SEEK_AT, as without: a phone whose seeks are slow never loops). The singer's own sync is unchanged: it
- * sends its video time (kara_vt) every VT_EVERY ms while its mic is live and its video plays. */
-const DRIFT_V=.12,NUDGE_OK_V=.05,SEEK_AT_V=.6,VOICE_SEEKS=2,VT_EVERY=900;
+/** 🎙️ While I hear live voices (mixNow), each voice is held in a delay of its own so it plays with my music; my music
+ * only keeps a little behind them (voiceMove): a nudge past DRIFT_V (two readings in a row) until within NUDGE_OK_V,
+ * a seek only when a voice would come later than my music (VOICE_SEEKS a song, VSEEK_GAP apart). A singer sends its
+ * video time (kara_vt) every VT_EVERY ms while its mic is live and its video plays. */
+const DRIFT_V=.12,NUDGE_OK_V=.05,VOICE_SEEKS=3,VSEEK_GAP=6000,VT_EVERY=900;
 function sync(){
   const p=K.player,st=K.stage;if(!p||!K.ready||!st||st.phase==='clap'||K.clap)return;
   const clock=pos();if(clock<0)return;
   let s,cur;try{s=p.getPlayerState();cur=p.getCurrentTime();}catch{return;}
   if(s!==1)return;
-  if(K.mic.pub&&K.mic.pubE===st.e)sendVt(st.e,cur);
-  const {t:target,voice,hearing}=follow(clock);
-  const off=cur-target,now=Date.now(),seekAt=voice&&K.vSeeks<VOICE_SEEKS?SEEK_AT_V:SEEK_AT;
+  rateSeen(p);
+  if((K.mic.pub&&K.mic.pubE===st.e)||(K.mic.cpub&&K.mic.cpubE===st.e))sendVt(st.e,cur);
+  const {t:target,voice,hearing,margin,late}=mixNow(clock,cur,true);
+  const off=cur-target,now=Date.now();
   if(hearing&&K.mic.sy)K.mic.sy.h++;
-  if(voice)syncSeen(off);
-  if(Math.abs(off)>seekAt){
+  if(voice){syncSeen(late);return voiceMove(p,off,target,margin,now);}
+  if(Math.abs(off)>SEEK_AT){
     if(now-(K.seekAt||0)<SEEK_GAP)return nudge(p,off);
-    K.seekAt=now;K.seekT=performance.now();nudge(p,0);K.far=0;if(voice)K.vSeeks++;
+    K.seekAt=now;K.seekT=performance.now();nudge(p,0);K.far=0;
     try{p.seekTo(target+(K.lag||0),true);}catch{/* gone */}
     return;
   }
-  if(voice){K.far=Math.abs(off)>DRIFT_V?K.far+1:0;return nudge(p,K.far>=2||(K.rate&&K.rate!==1&&Math.abs(off)>NUDGE_OK_V)?off:0);}
   K.far=0;
   nudge(p,Math.abs(off)>DRIFT||(K.rate&&K.rate!==1&&Math.abs(off)>NUDGE_OK)?off:0);
 }
-/** 🎙️ sync()'s target: while I hear a live voice and the singer's video time is fresh, theirs minus the voice's delay
- * (karaoke-mic.js followTarget, voiceLag); otherwise the shared clock, exactly as without a mic. */
-function follow(clock){
-  const M=K.M,h=K.mic.sub,v=K.vt,e=K.stage?.e;
-  const hearing=!!(M&&h&&K.mic.subE===e&&!K.mic.tap&&h.heard());
-  if(!hearing||!v||v.e!==e)return {t:clock,voice:false,hearing};
-  return {...M.followTarget({clock,vt:v,now:snow(),age:(Date.now()-v.got)/1000,lag:M.voiceLag(K.mic.lag,v.up),voice:true}),hearing};
+/** 🎙️ My music while voices lead it (karaoke-mic.js musicMove): a seek only when a voice would play later than my
+ * music, or would need too long a hold (VOICE_SEEKS a song, VSEEK_GAP apart; then only past SEEK_AT, as without);
+ * otherwise a gentle rate toward the aim (two readings in a row) while the holds keep every voice in time. */
+function voiceMove(p,off,target,margin,now){
+  const mv=K.M.musicMove(off,margin),gap=now-(K.seekAt||0);
+  if(mv==='seek'&&((K.vSeeks<VOICE_SEEKS&&gap>=VSEEK_GAP)||(Math.abs(off)>SEEK_AT&&gap>=SEEK_GAP))){
+    K.seekAt=now;K.seekT=performance.now();nudge(p,0);K.far=0;K.vSeeks++;
+    try{p.seekTo(target+(K.lag||0),true);}catch{/* gone */}
+    return;
+  }
+  K.far=mv!=='ok'?K.far+1:0;
+  nudge(p,K.far>=2||(K.rate&&K.rate!==1&&Math.abs(off)>NUDGE_OK_V)?off:0);
 }
-/** 🎙️ The singer: my video's time now, for the listeners to follow (live/karaoke.py kara_vt relays it, stamped). */
+/** 🎙️ Every voice I hear, with my music (karaoke-mic.js mixPlan): each one's target is the singer's own video time
+ * minus that voice's delay (followTarget, voiceLag with the singer's `ol` and my Web Audio path); `apply` holds each
+ * voice (setDelay) so it plays exactly with my music now. My music follows the voices (a listener: all of them; a
+ * co-singer: the stage singer's) a margin behind, or the shared clock: the stage singer, or no fresh video time (an
+ * older page or service), exactly as without a mic. */
+function mixNow(clock,cur,apply){
+  const M=K.M,e=K.stage?.e,none={t:clock,voice:false,hearing:false,margin:0};
+  if(!M||!e)return none;
+  const role=K.mic.pub&&K.mic.pubE===e?'stage':K.mic.cpub&&K.mic.cpubE===e?'co':'ear';
+  const now=snow(),list=[],lead=[],hs={};
+  const add=(id,h,vt,lag,main)=>{
+    hs[id]=h;
+    const ok=vt&&vt.e===e;
+    const r=ok?M.followTarget({clock,vt,now,age:(Date.now()-vt.got)/1000,lag:M.voiceLag(lag,vt.up,(vt.ol||0)+(h.base?.()||0)),voice:true}):null;
+    list.push({id,t:r?.voice?r.t:null});
+    if(role==='ear'||(role==='co'&&main))lead.push(id);
+  };
+  if(K.mic.sub&&K.mic.subE===e&&!K.mic.tap&&K.mic.sub.heard())add('',K.mic.sub,K.vt,K.mic.lag,true);
+  for(const [pid,v] of K.co)if(v.h&&v.e===e&&!v.tap&&v.h.heard())add(pid,v.h,K.cvt.get(pid),v.lag,false);
+  if(!list.length)return none;
+  const margin=role==='co'?M.MIX.coMargin:M.MIX.margin;
+  const plan=M.mixPlan({cur,voices:list,lead,margin});
+  if(apply)for(const [id,d] of Object.entries(plan.d))hs[id]?.setDelay?.(d);
+  const late=Math.max(0,...list.filter(v=>Number.isFinite(v.t)&&lead.includes(v.id)).map(v=>cur-v.t));   // what no hold can fix
+  return {t:plan.aim??clock,voice:plan.aim!==null,hearing:true,margin,late};
+}
+/** Where YouTube takes 0.95 / 1.05 (desktop Chrome does, though its list says only 0.25 steps): nudge() asks for it and
+ * a second later the player says what it plays. A rate it rounded off: no more nudges on this page (seeks, and the
+ * voices' holds, still work). */
+function rateSeen(p){
+  if(!K.rate||K.rate===1||!K.rateAt||Date.now()-K.rateAt<1500||K.rateOk)return;
+  let r;try{r=p.getPlaybackRate?.();}catch{return;}
+  if(!Number.isFinite(r))return;
+  if(Math.abs(r-K.rate)<.01){K.rateOk=true;return;}
+  K.rateOk=false;K.rate=r;nudge(p,0);
+}
+/** 🎙️ A singer (stage or 🎤 co): my video's time now, for the listeners to follow (live/karaoke.py kara_vt relays it,
+ * stamped), with my own output + capture latency (`ol`, ms) where the browser says it. */
 function sendVt(e,cur){
   const t=Date.now();if(K.vtOff||t-K.mic.vtAt<VT_EVERY||!Number.isFinite(cur))return;
   K.mic.vtAt=t;
   const f={t:'kara_vt',e,vt:Math.round(cur*1000)/1000,st:Math.round(snow()*1000)/1000};
   if(K.rate&&K.rate!==1)f.r=K.rate;if(Number.isFinite(K.mic.up))f.rtt=Math.round(K.mic.up*1000);
+  if(K.mic.side>0)f.ol=Math.round(K.mic.side*1000);
   live.send(f);
 }
-/** 🎙️ Every 2 s while the mic is in play, from getStats: a listener's voice delay (jitter buffer, path; lagStep), the
- * singer's path round trip (sent with kara_vt). */
+/** 🎙️ Every 2 s while the mic is in play, from getStats: each voice's delay as I hear it (jitter buffer, path;
+ * lagStep), and, singing, my path's round trip and my own latency (sent with kara_vt). */
 function micPoll(){
-  const M=K.M,sub=K.mic.sub,pub=K.mic.pub;
-  if(!M||!(sub||pub)||K.mic.polling||++K.mic.pt%2)return;
+  const M=K.M;if(!M||K.mic.polling||++K.mic.pt%2)return;
+  const jobs=[],pub=K.mic.pub||K.mic.cpub,sub=K.mic.sub;
+  if(pub){K.mic.side=M.localLatency(pub.track);
+    jobs.push(Promise.resolve(pub.path?.()).then(r=>{if((K.mic.pub||K.mic.cpub)===pub&&Number.isFinite(r?.rtt))K.mic.up=r.rtt;}));}
+  if(sub)jobs.push(Promise.resolve(sub.delay?.()).then(r=>{if(K.mic.sub===sub)K.mic.lag=M.lagStep(K.mic.lag,r);}));
+  for(const v of K.co.values())if(v.h){const h=v.h;jobs.push(Promise.resolve(h.delay?.()).then(r=>{if(v.h===h)v.lag=M.lagStep(v.lag,r);}));}
+  if(!jobs.length)return;
   K.mic.polling=true;
-  Promise.resolve(sub?sub.delay?.():pub.path?.()).then(r=>{
-    if(sub){if(K.mic.sub===sub)K.mic.lag=M.lagStep(K.mic.lag,r);}
-    else if(K.mic.pub===pub&&Number.isFinite(r?.rtt))K.mic.up=r.rtt;
-  }).catch(()=>{/* closed */}).then(()=>{K.mic.polling=false;});
+  Promise.allSettled(jobs).then(()=>{K.mic.polling=false;});
 }
 /** 🎙️ Once a song a listener tells the error beacon (as micReport does) how the voice and the video lined up. The
  * server masks digits, so each value is a letter (karaoke-mic.js bucket: a 0–99 ms, b 100–199 ms … p ≥ 1.5 s): jb my
- * jitter buffer, rtt my path's round trip, up the singer's, lag the delay followed, off how far my video stayed from
- * its target (median of the last 10 s); `novt` when no video time of the singer came (an older page or service).
+ * jitter buffer, rtt my path's round trip, up the singer's, lag the delay followed, off how late the voice still
+ * played against my music once held (08/10; before: how far my video stayed from its target; median of the last 10 s), hold the voice's delay held now (08/10), ol the singer's own latency, co how
+ * many co-singers I hear (a = 0, b = 1 …); `novt` when no video time of the singer came (an older page or service).
  * Sent after 30 s of following, or when listening stops (if the voice played 10 s or more). */
 function syncSeen(off){const y=K.mic.sy;if(!y)return;y.n++;y.offs.push(Math.abs(off));if(y.offs.length>10)y.offs.shift();if(y.n===30)syncReport();}
 function syncReport(){
   const y=K.mic.sy,M=K.M;if(!y||!M||K.mic.syE===y.e||y.h<10)return;   // heard 10 s at least
   K.mic.syE=y.e;
   const b=x=>M.bucket(Number.isFinite(x)?x*1000:NaN),l=K.mic.lag||{},o=[...y.offs].sort((a,c)=>a-c)[y.offs.length>>1];
-  try{beacon('toast',`kara_mic sync${y.n?'':' novt'} jb=${b(l.jb)} rtt=${b(l.rtt)} up=${b(y.up)} lag=${b(M.voiceLag(l,y.up))} off=${b(o)}`,'kara');}catch{/* never in the way */}
+  try{beacon('toast',`kara_mic sync${y.n?'':' novt'} jb=${b(l.jb)} rtt=${b(l.rtt)} up=${b(y.up)} lag=${b(M.voiceLag(l,y.up,(K.vt?.ol||0)+(K.mic.sub?.base?.()||0)))} off=${b(o)} hold=${b(K.mic.sub?.held?.())} ol=${b(K.vt?.ol)} co=${b(K.co.size/10)}`,'kara');}catch{/* never in the way */}
 }
-/** Play a little faster (behind) or slower (ahead), or at 1. YouTube rounds an unoffered rate toward 1: a no-op then. */
+/** Play a little faster (behind) or slower (ahead), or at 1. 1.9.19 took only a rate YouTube listed, and it lists
+ * none between 0.75 and 1.25: no nudge ever happened. Now 1.05 / 0.95 are asked for unless this page saw the player
+ * round them off (rateSeen: K.rateOk false). */
 function nudge(p,off){
-  let want=1;
-  if(off){let r=[];try{r=p.getAvailablePlaybackRates?.()||[];}catch{/* gone */}
-    want=(off<0?r.filter(x=>x>1&&x<=1.05+1e-9).sort((a,b)=>b-a)[0]:r.filter(x=>x<1&&x>=.95-1e-9).sort((a,b)=>a-b)[0])||1;}
+  const want=off&&K.rateOk!==false?(off<0?1.05:.95):1;
   if(want===(K.rate||1))return;
-  try{p.setPlaybackRate?.(want);K.rate=want;}catch{/* gone */}
+  try{p.setPlaybackRate?.(want);K.rate=want;K.rateAt=Date.now();}catch{/* gone */}
 }
 
 /* ---------------------------------------------------------------- what the room sees */
@@ -325,17 +394,38 @@ function singHTML(mine){
 /** 🎙️ "Đang phát trực tiếp": for everyone while the mic is on; the singer sees their time, a listener the voice's own volume. */
 function liveHTML(){
   const lv=K.live;if(!lv||!K.stage||lv.e!==K.stage.e)return '';
-  const mine=lv.by?.pid===K.room?.me;
-  if(mine)return `<div class="kr-live mine" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b><small><span data-kr-mic>${K.mic.pub?`🔴 ${fmt(lv.until-snow())}`:'🎙️ Đang nối mic…'}</span> · 🎧 Đeo tai nghe cho đỡ vọng nhạc</small></div>`;
+  const mine=lv.by?.pid===K.room?.me,coHeard=[...K.co.values()].some(v=>v.h);
+  if(mine)return `<div class="kr-live mine" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b><small><span data-kr-mic>${K.mic.pub?`🔴 ${fmt(lv.until-snow())}`:'🎙️ Đang nối mic…'}</span> · 🎧 Đeo tai nghe cho đỡ vọng nhạc</small>${coHTML(true)}${coHeard||tapWanted()?`<div class="kr-live-ctl">${tapHTML()}${volHTML()}</div>`:''}</div>`;
   const ls=K.mic.ls;
   if(!K.mic.sub&&ls==='nortc')return `<div class="kr-live" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b><small>Máy này chưa nghe được giọng trực tiếp. Mở bằng Chrome hoặc Safari nhé.</small></div>`;
-  if(!K.mic.sub&&ls==='fail')return `<div class="kr-live fail" role="alert"><b>🎤 Đang phát trực tiếp giọng hát</b><div class="kr-live-ctl"><span class="grow">Chưa nghe được giọng</span><button type="button" class="btn small" data-kr="voiceretry">Thử lại</button></div></div>`;
-  if(!K.mic.sub&&ls==='join')return `<div class="kr-live" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b><small>🎧 Đang nối giọng…</small></div>`;
-  const tap=K.mic.sub&&K.mic.tap?`<button type="button" class="btn primary kr-tap" data-kr="voicetap">🔈 Chạm để nghe giọng</button>`:'';
-  const ctl=K.mic.sub?`<label class="kr-vol"><span aria-hidden="true">🎤</span><input type="range" min="0" max="100" step="5" value="${Math.round(K.mic.vol*100)}" data-kr-vol aria-label="Âm lượng giọng hát"></label>
-    <button type="button" class="kr-pill" data-kr="voicemute" aria-pressed="${K.mic.muted}" aria-label="${K.mic.muted?'Bật tiếng giọng hát':'Tắt tiếng giọng hát'}">${K.mic.muted?'🔇':'🔊'}</button>`:'';
-  return `<div class="kr-live" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b>${tap||ctl?`<div class="kr-live-ctl">${tap}${ctl}</div>`:''}</div>`;
+  if(!K.mic.sub&&ls==='fail')return `<div class="kr-live fail" role="alert"><b>🎤 Đang phát trực tiếp giọng hát</b><div class="kr-live-ctl"><span class="grow">Chưa nghe được giọng</span><button type="button" class="btn small" data-kr="voiceretry">Thử lại</button></div>${coHTML(false)}</div>`;
+  if(!K.mic.sub&&ls==='join')return `<div class="kr-live" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b><small>🎧 Đang nối giọng…</small>${coHTML(false)}</div>`;
+  const tap=tapHTML(),ctl=K.mic.sub||coHeard?volHTML():'';
+  return `<div class="kr-live" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b>${tap||ctl?`<div class="kr-live-ctl">${tap}${ctl}</div>`:''}${coHTML(false)}</div>`;
 }
+const tapHTML=()=>tapWanted()?`<button type="button" class="btn primary kr-tap" data-kr="voicetap">🔈 Chạm để nghe giọng</button>`:'';
+const volHTML=()=>`<label class="kr-vol"><span aria-hidden="true">🎤</span><input type="range" min="0" max="100" step="5" value="${Math.round(K.mic.vol*100)}" data-kr-vol aria-label="Âm lượng giọng hát"></label>
+    <button type="button" class="kr-pill" data-kr="voicemute" aria-pressed="${K.mic.muted}" aria-label="${K.mic.muted?'Bật tiếng giọng hát':'Tắt tiếng giọng hát'}">${K.mic.muted?'🔇':'🔊'}</button>`;
+/** 🎤 Hát cùng in the live line: who sings along (the stage singer can turn each one off), the asks waiting for the
+ * stage singer, and for anyone else the one button (or where their own ask / mic is). */
+function coHTML(mine){
+  const me=K.room?.me,list=K.coList;
+  let h=list.length?`<div class="kr-co"><small>🎤 Hát cùng:</small>${list.map(c=>`<span class="kr-co-n"><b data-no-translate>${esc(c.name||'')}</b>${mine?`<button type="button" class="kr-x-s" data-kr="cokick" data-pid="${esc(c.pid)}" aria-label="Tắt mic người hát cùng">✕</button>`:''}</span>`).join('')}</div>`:'';
+  if(mine){
+    const now=snow();
+    return h+K.asks.filter(a=>!(a.until<now)).map(a=>`<div class="kr-ask"><span class="grow">🙋 <b data-no-translate>${esc(a.name||'')}</b> <span>muốn hát cùng</span></span>
+      <button type="button" class="btn small primary" data-kr="let" data-pid="${esc(a.pid)}" data-ok="1">Cho hát</button><button type="button" class="kr-pill" data-kr="let" data-pid="${esc(a.pid)}" data-ok="0" aria-label="Không cho">✕</button></div>`).join('');
+  }
+  if(!coCan())return h;
+  const c=K.mic.co;
+  if(K.mic.cpub)return h+`<div class="kr-live-ctl"><b class="grow">🔴 Bạn đang hát cùng</b><button type="button" class="btn small" data-kr="joinoff">Tắt mic</button></div><small>🎧 Đeo tai nghe cho đỡ vọng nhạc</small>`;
+  if(c.st==='ask')return h+`<div class="kr-live-ctl"><small class="grow">🙋 Đang chờ người hát đồng ý…</small><button type="button" class="btn small" data-kr="joinoff">Hủy</button></div>`;
+  if(c.st==='join')return h+`<small>🎙️ Đang nối mic…</small>`;
+  if(c.st==='fail')return h+`<div class="kr-live-ctl"><span class="grow">Chưa phát được giọng</span><button type="button" class="btn small" data-kr="join">Thử lại</button></div>`;
+  return list.length<CO_MAX||list.some(x=>x.pid===me)?h+`<div class="kr-live-ctl"><button type="button" class="btn small kr-join" data-kr="join">🎤 Hát cùng</button></div>`:h;
+}
+const CO_MAX=3;
+const coCan=()=>micFlag()&&!!K.room?.account&&!K.coOff&&!!window.RTCPeerConnection;
 function roundHTML(){
   if(K.reveal){const v=K.reveal;return `<div class="kr-round done" role="status"><b>🧩 ${esc(v.answer)}</b><small>${v.by?`🎉 ${esc(v.by.name)}${v.xu?` +${v.xu} xu`:''}`:'Hết giờ'}</small></div>`;}
   const rd=K.round;if(!rd)return '';
@@ -395,6 +485,8 @@ function panelHTML(){
   }
   if(p==='micask')return `<div class="kr-panel">${close}<b>🎙️ Hát trực tiếp</b><p class="kr-note">Cả phòng nghe giọng bạn ngay lúc hát. Không ghi âm. Mic tự tắt khi hết bài hoặc sau 6 phút.</p>
     <p class="kr-note">🎧 Đeo tai nghe để nhạc không vọng vào mic.</p><button type="button" class="btn primary wide" data-kr="micgo"${K.mic.busy?' disabled':''}>🎙️ Bật mic</button></div>`;
+  if(p==='coask')return `<div class="kr-panel">${close}<b>🎤 Hát cùng</b><p class="kr-note">Người hát đồng ý là cả phòng nghe giọng bạn hát chung. Không ghi âm.</p>
+    <p class="kr-note">🎧 Đeo tai nghe để nhạc không vọng vào mic.</p><button type="button" class="btn primary wide" data-kr="joingo">🙋 Xin hát cùng</button></div>`;
   if(p==='birth'){
     const y=new Date().getFullYear();let opts='<option value="">Năm sinh</option>';for(let i=y;i>=1930;i--)opts+=`<option value="${i}">${i}</option>`;
     return `<div class="kr-panel">${close}<b>🎂 Bạn sinh năm nào?</b><p class="kr-note">Chỉ để mở mic trực tiếp (từ 16 tuổi). Lưu một lần, không đổi được.</p>
@@ -438,16 +530,21 @@ async function act(a,d){
     case'block':if(!confirm('Chặn người này? Hai bạn sẽ không thấy tin, không nghe giọng nhau.'))return;live.send({t:'block',pid:d.pid});toast('Đã chặn.');K.panel=null;paint();return;
     case'mic':if(K.mic.pub){micOff();return;}if(!micCan())return;if(!seenAsk()){K.panel='micask';K.err='';paint();return;}micOn();return;
     case'micgo':seenAsk(true);K.panel=null;micOn();return;
+    case'join':if(!micCan())return;if(!seenAsk()){K.panel='coask';K.err='';paint();return;}coJoin();return;
+    case'joingo':seenAsk(true);K.panel=null;coJoin();return;
+    case'joinoff':coOff();return;
+    case'let':if(K.live)live.send({t:'kara_let',e:K.live.e,pid:d.pid,ok:d.ok==='1'?1:0});K.asks=K.asks.filter(a=>a.pid!==d.pid);paint();return;
+    case'cokick':if(K.live)live.send({t:'kara_let',e:K.live.e,pid:d.pid,ok:0});return;
     case'birthgo':{
       const y=Number(K.dlg.querySelector('[data-kr-year]')?.value||0);if(!y){K.err='Chọn năm sinh nhé.';paint();return;}
       K.busy=true;K.err='';paint();
-      try{const r=await api.post('/api/karaoke/birth',{year:y});K.busy=false;if(!r.mic){K.panel='young';paint();return;}K.panel=null;paint();micOn();}
+      try{const r=await api.post('/api/karaoke/birth',{year:y});K.busy=false;if(!r.mic){K.panel='young';paint();return;}K.panel=null;paint();if(K.birthNext==='join')coJoin();else micOn();}
       catch(e){K.busy=false;K.err=e.message||'Chưa lưu được.';paint();}
       return;
     }
     case'voicetap':voiceTap();return;
     case'voiceretry':K.mic.tries=0;K.mic.ls='';listen();return;
-    case'voicemute':K.mic.muted=!K.mic.muted;K.mic.sub?.mute(K.mic.muted);paint();return;
+    case'voicemute':K.mic.muted=!K.mic.muted;for(const h of voices())h.mute(K.mic.muted);paint();return;
     case'micreport':K.panel='micreport';paint();return;
     case'micreportgo':if(K.live?.by?.pid)live.send({t:'kara_report',pid:K.live.by.pid,reason:d.r});toast('Đã báo cáo. Cảm ơn bạn!');K.panel=null;paint();return;
     case'adm-mic':live.send({t:'kara_mic_cut'});K.panel=null;paint();return;
@@ -503,11 +600,12 @@ function readRound(){
   if(q('[data-kr-clue]')){const c=q('[data-kr-clue]').value;if(c!==K.clue)K.blanks=new Set();K.clue=c;}
   if(q('[data-kr-ans]'))K.ans=q('[data-kr-ans]').value;if(q('[data-kr-reward]'))K.reward=q('[data-kr-reward]').value;
 }
-/** One request/answer over the socket (an error frame for it ends it too). */
-function ask(t,frame,reply,ms=4000){
+/** One request/answer over the socket (an error frame for it ends it too). `match`: only a reply it accepts (two asks
+ * of the same type at once: 🎤 one voice's kara_listen each). */
+function ask(t,frame,reply,ms=4000,match=null){
   return new Promise(ok=>{
     let done=false;const fin=v=>{if(done)return;done=true;off1();off2();ok(v);};
-    const off1=live.on(reply,fin),off2=live.on('error',f=>{if(f.ref===t)fin({ok:false,msg:f.msg,code:f.code});});
+    const off1=live.on(reply,f=>{if(!match||match(f))fin(f);}),off2=live.on('error',f=>{if(f.ref===t)fin({ok:false,msg:f.msg,code:f.code});});
     if(!live.send({t,...frame}))fin({ok:false,msg:'Đang kết nối lại…'});
     setTimeout(()=>fin(null),ms);
   });
@@ -533,13 +631,13 @@ async function micOn(){
   const e0=K.stage.e;
   K.mic.busy=true;K.mic.pubFail=null;K.mic.pubAt='';paint();
   let M;
-  try{M=await mic();K.mic.pubAt='mod';await M.loadSDK();K.mic.pubAt='sdk';}   // before the server puts the mic live for the room
+  try{M=await mic();K.mic.pubAt='mod';ownLatency(M);await M.loadSDK();K.mic.pubAt='sdk';}   // before the server puts the mic live for the room
   catch(err){K.mic.busy=false;singFailed(e0,err?.stage||NEXT[K.mic.pubAt],err);paint();return;}
   if(!K.stage||K.stage.e!==e0){K.mic.busy=false;paint();return;}
   const r=await ask('kara_mic',{on:1},'kara_mic',8000);
   if(!r?.on){
     K.mic.busy=false;
-    if(r?.code==='birth'){K.panel='birth';K.err='';}else if(r?.code==='young')K.panel='young';else toast(r?.msg||'Chưa bật được mic, thử lại nhé.',true);
+    if(r?.code==='birth'){K.panel='birth';K.err='';K.birthNext='';}else if(r?.code==='young')K.panel='young';else toast(r?.msg||'Chưa bật được mic, thử lại nhé.',true);
     if(!r)micReport('sing','token','timeout');   // a refusal with a reason is the game saying no, not a failure
     paint();return;
   }
@@ -566,13 +664,16 @@ function singFailed(e,stage,err){
   toast(err?.name==='NotAllowedError'?MIC_NO_PERM:err?.name==='NotFoundError'?'Không thấy micro trên máy này.':'Chưa kết nối được mic, thử lại nhé.',true);
 }
 /** The singer's voice leaves the phone: outbound RTP bytes a few seconds after publishing. */
-function sendCheck(h){
+function sendCheck(h,role='sing'){
+  const mine=()=>K.mic.pub===h||K.mic.cpub===h;
   setTimeout(async()=>{
-    if(K.mic.pub!==h)return;
-    const s=await h.stats?.();if(K.mic.pub!==h)return;
-    if(s&&s.bytes>0)K.mic.pubAt='audio';else micReport('sing','audio','notx');
+    if(!mine())return;
+    const s=await h.stats?.();if(!mine())return;
+    if(s&&s.bytes>0){if(role==='sing')K.mic.pubAt='audio';}else micReport(role,'audio','notx');
   },5000);
 }
+/** A singer's own latency needs a running AudioContext to read (Chrome; where `outputLatency` exists at all). */
+function ownLatency(M){try{if('outputLatency' in (window.AudioContext||Object).prototype)M.audioCtx();}catch{/* none */}}
 function micOff(){if(!K.mic.pub)return;micStop();live.send({t:'kara_mic',on:0});paint();}
 function micStop(){const h=K.mic.pub;K.mic.pub=null;K.mic.pubE=null;K.mic.up=null;K.mic.vtAt=0;try{h?.stop();}catch{/* gone */}}
 /** Listening off here. A listener still waiting after 8 s (the song ended, they left) is reported with its stage. */
@@ -585,9 +686,9 @@ function stopListen(){
   try{h?.stop();}catch{/* gone */}
 }
 /** Everything of the mic off here (a new song, the end, leaving the room). */
-function liveOff(){K.live=null;micStop();stopListen();}
+function liveOff(){K.live=null;micStop();stopListen();coReset();}
 function onLive(f){
-  if(!f.on){if(K.live&&K.live.e!==f.e)return;K.live=null;if(K.mic.pubE===f.e)micStop();stopListen();paint();return;}
+  if(!f.on){if(K.live&&K.live.e!==f.e)return;K.live=null;if(K.mic.pubE===f.e)micStop();stopListen();coReset();paint();return;}
   if(!K.stage||K.stage.e!==f.e)return;
   if(K.live&&K.live.e!==f.e)stopListen();
   K.live={on:1,e:f.e,by:f.by,until:f.until};K.mic.tries=0;K.mic.pubFail=null;
@@ -606,11 +707,11 @@ async function listen(){
   try{
     M=await mic();reach('mod');if(!still())return;
     await M.loadSDK();reach('sdk');if(!still())return;
-    const r=await ask('kara_listen',{},'kara_listen',6000);if(!still())return;
+    const r=await ask('kara_listen',{},'kara_listen',6000,f=>!f.pid);if(!still())return;
     if(!r)throw M.fail('token','timeout');
     if(!r.on||r.e!==e){K.mic.ls='';return;}   // off meanwhile, or not for me: nothing to hear and nothing to say (a block stays unseen)
     reach('token');
-    h=await M.listen({url:r.url,token:r.token,volume:K.mic.vol,onStage:reach,
+    h=await M.listen({url:r.url,token:r.token,volume:K.mic.vol,ctx:M.audioCtx(),onStage:reach,
       onTap:need=>{if(!mine())return;const was=K.mic.tap;K.mic.tap=need;if(was&&!need&&K.mic.sub)heardCheck(gen);if(was!==need)paint();},
       onEnd:(_,why)=>{
         if(!mine()||!h||K.mic.sub!==h)return;
@@ -650,14 +751,131 @@ function listenFailed(gen,stage,code){
   }else K.mic.ls=K.live?'fail':'';
   paint();
 }
-/** "Chạm để nghe giọng" (or any tap in the sheet while the phone waits for one): inside the click, iPhone resumes audio. */
+/** "Chạm để nghe giọng" (or any tap in the sheet while the phone waits for one): inside the click, iPhone resumes audio.
+ * 🎤 Every voice waiting for it (they share one AudioContext, but each LiveKit room keeps its own flag). */
 function voiceTap(){
-  const h=K.mic.sub;if(!h)return;
-  let p;try{p=h.tap();}catch(err){p=Promise.reject(err);}
-  Promise.resolve(p).then(()=>{if(K.mic.sub!==h)return;if(h.canPlay()){K.mic.tap=false;heardCheck(K.mic.gen);}paint();})
-    .catch(err=>{micReport('listen','audio',`tap ${errCode(err)}`);});
+  const h=K.mic.sub;
+  if(h&&K.mic.tap){
+    let p;try{p=h.tap();}catch(err){p=Promise.reject(err);}
+    Promise.resolve(p).then(()=>{if(K.mic.sub!==h)return;if(h.canPlay()){K.mic.tap=false;heardCheck(K.mic.gen);}paint();})
+      .catch(err=>{micReport('listen','audio',`tap ${errCode(err)}`);});
+  }
+  for(const v of K.co.values())if(v.h&&v.tap){const c=v.h;Promise.resolve().then(()=>c.tap()).then(()=>{if(v.h===c&&c.canPlay()){v.tap=false;paint();}}).catch(()=>{/* the next tap */});}
 }
-function setVol(v){K.mic.vol=v;K.mic.sub?.setVolume(v);try{localStorage.setItem('kr-voice-vol',String(v));}catch{/* private mode */}}
+const tapWanted=()=>!!(K.mic.sub&&K.mic.tap)||[...K.co.values()].some(v=>v.h&&v.tap);
+/** Every voice handle I hear now. */
+const voices=()=>[K.mic.sub,...[...K.co.values()].map(v=>v.h)].filter(Boolean);
+function setVol(v){K.mic.vol=v;for(const h of voices())h.setVolume(v);try{localStorage.setItem('kr-voice-vol',String(v));}catch{/* private mode */}}
+
+/* ---------------------------------------------------------------- 🎤 hát cùng (live/karaoke.py kara_join / kara_let)
+ * Anyone else in the room may ask to sing along while the stage singer's mic is live (🎤 Hát cùng; the headphones note
+ * the first time, the birth year if the account has none); the stage singer answers on their live line (Cho hát / ✕)
+ * and can turn a co-singer off (✕ by the name). A co-singer publishes like the stage singer (their own SFU room), hears
+ * the stage singer with their music a little behind it (mixNow: lead), never hears themselves (no local monitor), and
+ * the other co-singers as soon as they arrive. Every page hears each co-singer through a listen() of its own. */
+async function coJoin(){
+  const lv=K.live,st=K.stage;if(!lv||!st||lv.e!==st.e||K.mic.cpub||K.mic.co.st==='ask'||K.mic.co.st==='join')return;
+  const e=lv.e;K.mic.co={st:'ask',e};paint();
+  mic().then(M=>{ownLatency(M);return M.loadSDK();}).catch(()=>{/* coPublish says so */});   // while the singer decides
+  const r=await ask('kara_join',{e,on:1},'kara_join',8000);
+  if(K.mic.co.e!==e||K.mic.co.st!=='ask')return;
+  if(r?.on)return;   // waiting (kara_sing comes with the answer) or live again (kara_sing came first)
+  K.mic.co={st:''};
+  if(r?.code==='birth'){K.panel='birth';K.err='';K.birthNext='join';}
+  else if(r?.code==='young')K.panel='young';
+  else if(r?.code==='unknown')K.coOff=true;
+  else toast(r?.msg||'Chưa xin hát cùng được, thử lại nhé.',true);
+  paint();
+}
+function coRefused(f){
+  if(K.mic.co.e!==f.e||K.mic.cpub)return;
+  const was=K.mic.co.st;K.mic.co={st:''};
+  if(was==='ask'||was==='join')toast(f.why==='time'?'Người hát chưa trả lời, lát thử lại nhé.':f.why==='sfu'?'Mic đang bận, thử lại sau ít phút nhé.':'Lần này bạn nghe cùng mọi người nhé 🎧',true);
+  paint();
+}
+/** The stage singer said yes (or I asked again while on): my mic into my own SFU room. */
+async function coPublish(f){
+  if(!K.stage||K.stage.e!==f.e||!K.live||K.live.e!==f.e)return;
+  if(K.mic.cpub){if(K.mic.cpubE===f.e)return;coStop();}
+  if(K.mic.co.st==='join')return;
+  K.mic.co={st:'join',e:f.e};paint();
+  let h=null;
+  try{
+    const M=await mic();ownLatency(M);
+    h=await M.publish({url:f.url,token:f.token,onEnd:(_,why)=>{
+      if(!h||K.mic.cpub!==h)return;
+      K.mic.cpub=null;K.mic.cpubE=null;K.mic.co={st:''};
+      if(SERVER_END.has(why)){paint();return;}   // turned off by the server: its kara_co / kara_live frame says so
+      live.send({t:'kara_join',e:f.e,on:0});micReport('cosing','ice',`dropped r${why??'?'}`);
+      K.mic.co={st:'fail',e:f.e};toast('Mic đã ngắt kết nối.',true);paint();}});
+    if(!K.stage||K.stage.e!==f.e||!K.live||K.live.e!==f.e||K.mic.co.st!=='join'){h.stop();live.send({t:'kara_join',e:f.e,on:0});K.mic.co={st:''};}
+    else{K.mic.cpub=h;K.mic.cpubE=f.e;K.mic.co={st:'live',e:f.e};sendCheck(h,'cosing');}
+  }catch(err){
+    live.send({t:'kara_join',e:f.e,on:0});micReport('cosing',err?.stage||'?',errCode(err));
+    K.mic.co={st:'fail',e:f.e};
+    toast(err?.name==='NotAllowedError'?MIC_NO_PERM:err?.name==='NotFoundError'?'Không thấy micro trên máy này.':'Chưa kết nối được mic, thử lại nhé.',true);
+  }
+  paint();
+}
+/** I stop: an ask withdrawn, or my co-singer mic off. */
+function coOff(){
+  const c=K.mic.co,e=c.e||K.mic.cpubE||K.live?.e;
+  coStop();K.mic.co={st:''};
+  if(e)live.send({t:'kara_join',e,on:0});
+  paint();
+}
+function coStop(){const h=K.mic.cpub;K.mic.cpub=null;K.mic.cpubE=null;if(!K.mic.pub)K.mic.up=null;try{h?.stop();}catch{/* gone */}}
+/** All of hát cùng off here (the mic went off, a new song, leaving). */
+function coReset(){coStop();K.mic.co={st:''};for(const pid of [...K.co.keys()])coDrop(pid);K.cvt.clear();K.coList=[];K.asks=[];}
+/** kara_co: a co-singer on (hear them) or off (stop hearing them; mine: my mic off). */
+function onCo(f){
+  const me=K.room?.me;
+  K.coList=K.coList.filter(c=>c.pid!==f.pid);
+  if(f.on){
+    K.coList.push({pid:f.pid,name:f.name});K.asks=K.asks.filter(a=>a.pid!==f.pid);
+    if(f.pid!==me)coListen(f.pid);
+    return;
+  }
+  if(f.pid===me){
+    const was=!!K.mic.cpub||K.mic.co.st==='join';coStop();K.mic.co={st:''};
+    if(was&&f.why!=='off')toast(f.why==='kick'?'Người hát đã tắt mic hát cùng của bạn.':'Mic hát cùng đã tắt.',f.why==='kick');
+  }else coDrop(f.pid);
+}
+/** One co-singer's voice in my page: like listen() (the SDK, a token for that voice, the SFU), held with my music. */
+async function coListen(pid){
+  const lv=K.live;if(!lv||!micFlag()||pid===K.room?.me||!window.RTCPeerConnection)return;
+  let v=K.co.get(pid);if(v&&(v.h||v.joining))return;
+  if(!v){v={pid,h:null,e:lv.e,joining:false,tries:0,gen:0,tap:false,lag:{}};K.co.set(pid,v);}
+  const gen=++v.gen,e=lv.e,still=()=>K.co.get(pid)===v&&v.gen===gen&&K.live?.e===e;
+  v.joining=true;v.e=e;
+  try{
+    const M=await mic();await M.loadSDK();if(!still())return;
+    const r=await ask('kara_listen',{pid},'kara_listen',6000,f=>f.pid===pid);if(!still())return;
+    if(!r)throw M.fail('token','timeout');
+    if(!r.on||r.e!==e)return;   // off meanwhile, or not for me (a block stays unseen)
+    const h=await M.listen({url:r.url,token:r.token,volume:K.mic.vol,ctx:M.audioCtx(),
+      onTap:need=>{if(!still())return;const was=v.tap;v.tap=need;if(was!==need)paint();},
+      onEnd:(_,why)=>{if(!still()||v.h!==h)return;v.h=null;if(SERVER_END.has(why)){paint();return;}coListenFailed(v,gen,'ice',`dropped r${why??'?'}`);}});
+    if(!still()){h.stop();return;}
+    v.h=h;v.lag={};h.mute(K.mic.muted);
+  }catch(err){
+    if(still())coListenFailed(v,gen,err?.stage||'?',errCode(err));
+  }finally{
+    if(K.co.get(pid)===v&&v.gen===gen)v.joining=false;
+    paint();
+  }
+}
+/** A co-singer's voice failed: reported, then tried again by itself twice (2 s, 4 s); after that it stays quiet. */
+function coListenFailed(v,gen,stage,code){
+  if(v.gen!==gen)return;
+  const h=v.h;v.gen++;v.joining=false;v.h=null;v.tap=false;
+  try{h?.stop();}catch{/* gone */}
+  micReport('colisten',stage,code);
+  if(K.live&&++v.tries<=2){const g=v.gen;setTimeout(()=>{if(K.co.get(v.pid)===v&&v.gen===g&&!v.h&&!v.joining)coListen(v.pid);},2000*v.tries);}
+}
+function coDrop(pid){const v=K.co.get(pid);if(!v)return;K.co.delete(pid);K.cvt.delete(pid);v.gen++;try{v.h?.stop();}catch{/* gone */}}
+/** My music's position now (the state export's target). */
+const curNow=()=>{try{return K.player?.getCurrentTime?.()??NaN;}catch{return NaN;}};
 
 /** For tests and the browser check: what this page holds now. */
 export const karaoke={state:()=>({view:K.view,room:K.room?.id||null,stage:K.stage?{e:K.stage.e,vid:K.stage.vid,at:K.stage.at,phase:K.stage.phase}:null,
@@ -665,8 +883,12 @@ export const karaoke={state:()=>({view:K.view,room:K.room?.id||null,stage:K.stag
   cur:(()=>{try{return K.player?.getCurrentTime?.()??null;}catch{return null;}})(),ps:(()=>{try{return K.player?.getPlayerState?.()??null;}catch{return null;}})(),said:K.said.length,
   live:K.live?{e:K.live.e,by:K.live.by?.pid}:null,pub:!!K.mic.pub,sub:!!K.mic.sub,heard:!!K.mic.sub?.heard(),tap:K.mic.tap,panel:K.panel,
   ls:K.mic.ls,at:K.mic.at,pubAt:K.mic.pubAt,pubFail:K.mic.pubFail?.stage||null,tries:K.mic.tries,
-  follow:K.stage?follow(pos()).voice:false,target:K.stage?follow(pos()).t:null,vt:K.vt?{vt:K.vt.vt,at:K.vt.at,up:K.vt.up,age:(Date.now()-K.vt.got)/1000}:null,vtOff:K.vtOff,
-  lag:K.M&&K.mic.sub?K.M.voiceLag(K.mic.lag,K.vt?.up):null,jb:K.mic.lag?.jb??null,rate:K.rate||1}),
-  /** 🎙️ the RTP counters of my mic (singer) or of the voice I hear (listener) */
-  micStats:async()=>({pub:await K.mic.pub?.stats?.()??null,sub:await K.mic.sub?.stats?.()??null}),
+  follow:K.stage?mixNow(pos(),curNow(),false).voice:false,target:K.stage?mixNow(pos(),curNow(),false).t:null,vt:K.vt?{vt:K.vt.vt,at:K.vt.at,up:K.vt.up,ol:K.vt.ol,age:(Date.now()-K.vt.got)/1000}:null,vtOff:K.vtOff,
+  lag:K.M&&K.mic.sub?K.M.voiceLag(K.mic.lag,K.vt?.up,(K.vt?.ol||0)+(K.mic.sub.base?.()||0)):null,jb:K.mic.lag?.jb??null,rate:K.rate||1,rateOk:K.rateOk,
+  hold:K.mic.sub?.held?.()??null,side:K.mic.side,
+  co:K.coList.map(c=>c.pid),coHeard:[...K.co.values()].filter(v=>v.h&&v.h.heard()).map(v=>v.pid),coHold:Object.fromEntries([...K.co.values()].filter(v=>v.h).map(v=>[v.pid,v.h.held()])),
+  cpub:!!K.mic.cpub,coSt:K.mic.co.st,asks:K.asks.map(a=>a.pid),coOff:K.coOff}),
+  /** 🎙️ the RTP counters of my mic (singer, 🎤 co-singer) or of the voices I hear (listener) */
+  micStats:async()=>({pub:await (K.mic.pub||K.mic.cpub)?.stats?.()??null,sub:await K.mic.sub?.stats?.()??null,
+    co:Object.fromEntries(await Promise.all([...K.co.values()].filter(v=>v.h).map(async v=>[v.pid,await v.h.stats()])))}),
   micPath:async()=>await K.mic.sub?.path?.()??null};

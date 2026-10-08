@@ -423,6 +423,11 @@ class Headers(unittest.TestCase):
         """B2 (07/10 "nhạc cứ giật giật"): a seek re-buffers, so it is the last resort (scripts/browser_live_karaoke.py)."""
         js = (Path(__file__).resolve().parents[1] / 'public/js/v4/karaoke.js').read_text(encoding='utf-8')
         self.assertIn('const SEEK_AT=2,SEEK_GAP=10000,', js)   # ≥ 2 s off, at most once per 10 s
-        body = js[js.index('function sync('):js.index('function nudge(')]
+        body = js[js.index('function sync('):js.index('function voiceMove(')]
         self.assertIn('if(s!==1)return;', body)                 # never while buffering, an ad or a pause
         self.assertEqual(body.count('seekTo('), 1)
+        # 🎙️ following live voices (08/10): a seek only when a voice would come late, a few a song, 6 s apart
+        voice = js[js.index('function voiceMove('):js.index('function mixNow(')]
+        self.assertEqual(voice.count('seekTo('), 1)
+        self.assertIn("mv==='seek'&&((K.vSeeks<VOICE_SEEKS&&gap>=VSEEK_GAP)||(Math.abs(off)>SEEK_AT&&gap>=SEEK_GAP))", voice)
+        self.assertIn('VOICE_SEEKS=3,VSEEK_GAP=6000', js)

@@ -229,7 +229,16 @@ class VoiceSync(unittest.TestCase):
         self.assertIn("f.ref==='kara_vt'&&(f.code==='unknown'||f.code==='off'))K.vtOff=true", js)   # 'unknown': stop sending
         self.assertIn("on('welcome',()=>{K.vtOff=false;", js)              # a new service may know it
         self.assertIn('if(K.vtOff||', js)
-        self.assertRegex(js, r"if\(!hearing\|\|!v\|\|v\.e!==e\)return \{t:clock,voice:false,hearing\};")   # no video time: the clock
+        self.assertIn('none={t:clock,voice:false,hearing:false,margin:0}', js)   # no voice heard: the clock
+        self.assertIn("const r=ok?M.followTarget(", js)                           # no video time of this song: no target …
+        self.assertIn("lead.push(id)", js)
+        # 🎤 hát cùng against an older live service: 'unknown' hides the button, its refusals never toast twice
+        self.assertIn("'kara_join','kara_let'].includes(f.ref)", js)
+        self.assertIn("if(f.ref==='kara_join'&&f.code==='unknown'){K.coOff=true;", js)
+        self.assertIn("K.coOff=false;", re.search(r"on\('welcome',.*", js).group(0))
+        # a co-singer's voice only from a reply for that pid; the stage singer's only from one without
+        self.assertIn("f=>f.pid===pid", js)
+        self.assertIn("'kara_listen',6000,f=>!f.pid", js)
 
 
 if __name__ == '__main__':
