@@ -1723,6 +1723,7 @@ PH_REGULARS=(
 PH_REG={r["id"]:r for r in PH_REGULARS}
 PH_COLD=("P-05",)
 PH_PAY=30
+PH_SHELF_RISK_CAP=2  # risk points a day for bad boxes left on the shelf at close (#273)
 PH_UNIT=8
 FRIDGE_SLOTS={"am":dict(label="Sáng",until=12*60,since=None),"pm":dict(label="Chiều",until=None,since=14*60)}
 FRIDGE_FIX={"door":"Đóng kín cửa tủ, dán lại ron, đo lại sau một giờ","move":"Chuyển hộp lạnh sang tủ dự phòng, gọi thợ điện (15 xu)"}
@@ -1852,6 +1853,30 @@ def _ph_action(s:dict,c:dict,action:str,p:dict)->dict:
         metric(c,"refills");c["xp"]+=6
         _care_log(care,day,f'Giao {spec["qty"]} × {lid} cho {spec["name"]}'+(" đúng hẹn." if on_time else " (khách quên lịch, tới trễ)."))
         return dict(message=f'Đã giao {spec["qty"]} × {lid} cho {spec["name"]} · +{pay} xu. Hẹn đợt sau ngày {r["due"]}.',celebrate=on_time)
+    if action=="ph_lot_pull" and p.get("all") is True:
+        # #273 (1.9.21): "Rút hết" in Sổ lô: every out-of-date, recalled or warmed box that is free on the shelf, in one
+        # tap. Each batch goes exactly as a single pull would; boxes sitting in a slip's tray stay until put back.
+        bad=[b for b in care["batches"] if _ph_flag(b,day)]
+        need(bad,"Kệ không còn hộp quá hạn, thu hồi hay hỏng lạnh nào.")
+        free=[];left={}
+        for b in sorted(bad,key=lambda x:(x["lot"],x["exp"],x["id"])):
+            room=left.setdefault(b["lot"],available(c,b["lot"]))
+            if room>=b["qty"]:free.append(b);left[b["lot"]]=room-b["qty"]
+        need(free,"Các hộp cần rút đang nằm trong khay một phiếu. Trả về kệ trước.")
+        boxes=refund=loss=0
+        for b in free:
+            flag=_ph_flag(b,day);value=b["qty"]*PH_UNIT
+            c["stock"][b["lot"]]-=b["qty"];care["batches"]=[x for x in care["batches"] if x["id"]!=b["id"]];metric(c,"lots_pulled")
+            if flag=="recalled":
+                money(s,c,value,f'Nhà phân phối hoàn lô thu hồi {b["id"]}',b["id"],"refund");refund+=value
+            else:
+                care["waste"]=min(10**7,care["waste"]+value);loss+=value
+            boxes+=b["qty"]
+        parts=[f'Đã rút {boxes} hộp khỏi kệ']+([f'nhà phân phối hoàn {refund} xu'] if refund else [])+([f'ghi hao hụt {loss} xu'] if loss else [])
+        msg=" · ".join(parts)+"."
+        if len(free)<len(bad):msg=f'Đã rút {boxes} hộp khỏi kệ. Còn hộp nằm trong khay một phiếu: trả về kệ rồi rút nốt.'
+        _care_log(care,day,msg)
+        return dict(message=msg)
     if action=="ph_lot_pull":
         b=next((x for x in care["batches"] if x["id"]==p.get("batch")),None);need(b,"Không thấy lô hàng này trên kệ.")
         flag=_ph_flag(b,day);need(flag,"Chỉ rút hộp quá hạn, bị thu hồi hoặc hỏng do tủ mát.")
@@ -1917,7 +1942,19 @@ def _ph_start(s:dict,c:dict)->list[str]:
             notes.append("📢 "+text+" Rút khỏi kệ để được hoàn tiền.")
     due=[PH_REG[k]["name"] for k,r in care["regulars"].items() if r["due"]-1<=day<=r["due"] and not r["called"]]
     if due:notes.append("📞 Tới lịch nhắc lấy phiếu lặp lại: "+", ".join(due)+".")
+    notes+=_ph_date_warnings(care,day)
     return notes
+
+
+def _ph_date_warnings(care:dict,day:int)->list[str]:
+    """#273: use-by dates count the counter's own days (ngày N ở quầy), not the town's. Morning reminders, before
+    anything costs a point: what is already out of date on the shelf, and what goes out of date tonight."""
+    out=[]
+    bad=sum(b["qty"] for b in care["batches"] if b["qty"]>0 and _ph_flag(b,day)=="expired")
+    if bad:out.append(f'⚠️ Hôm nay là ngày {day} ở quầy: kệ có {bad} hộp đã quá hạn dùng. Kho → Sổ lô → Rút hết, kẻo đoàn kiểm tra ghi lỗi.')
+    last=sum(b["qty"] for b in care["batches"] if b["qty"]>0 and b["exp"]==day and not _ph_flag(b,day))
+    if last:out.append(f'⏳ {last} hộp hết hạn sau hôm nay (HSD ngày {day}): bán trước, mai nhớ rút.')
+    return out
 
 
 def _ph_close(s:dict,c:dict)->list[str]:
@@ -1948,8 +1985,9 @@ def _ph_close(s:dict,c:dict)->list[str]:
     lines.append(f"Sổ nhiệt độ tủ mát: {pts}/3"+(" · "+", ".join(notes) if notes else " · đủ hai lượt đo."))
     flagged=[b for b in care["batches"] if _ph_flag(b,day)]
     if flagged:
-        risk+=len(flagged)
-        lines.append("Còn trên kệ: "+", ".join(f'{b["id"]} ({b["lot"]} × {b["qty"]})' for b in flagged[:4])+" cần rút.")
+        # #273 (1.9.21): at most 2 points a day for the shelf (it was one per batch), and the line says what they cost.
+        pts_shelf=min(PH_SHELF_RISK_CAP,len(flagged));risk+=pts_shelf
+        lines.append("Còn trên kệ: "+", ".join(f'{b["id"]} ({b["lot"]} × {b["qty"]})' for b in flagged[:4])+f" cần rút · +{pts_shelf} điểm rủi ro cho đợt kiểm tra.")
     soon=[b for b in care["batches"] if b["exp"]==day and not _ph_flag(b,day)]
     if soon:lines.append("Hết hạn sau hôm nay: "+", ".join(f'{b["lot"]} × {b["qty"]}' for b in soon[:4])+" (mai phải rút).")
     tomorrow=[(PH_REG[k],r) for k,r in care["regulars"].items() if r["due"]<=day+1<=r["due"]+1]
@@ -1976,6 +2014,8 @@ def _ph_notices(c:dict)->list[str]:
         if any(r["cause"] and r["fix"] is None for r in f["logs"].values()):out.append("🌡️ Tủ mát đang vượt 8°C, cần xử lý.")
     n=sum(b["qty"] for b in care["batches"] if _ph_flag(b,day))
     if n:out.append(f"⚠️ Kệ còn {n} hộp quá hạn/thu hồi cần rút.")
+    last=sum(b["qty"] for b in care["batches"] if b["qty"]>0 and b["exp"]==day and not _ph_flag(b,day))
+    if last:out.append(f"⏳ {last} hộp hết hạn sau hôm nay (ngày {day} ở quầy).")
     return out
 
 

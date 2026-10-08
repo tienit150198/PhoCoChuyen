@@ -517,12 +517,16 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
             outcome = 'praise'
         elif risk <= 3:
             note = f'{who} nhắc nhở {risk} điểm rủi ro từ các lần đóng dấu vội. Lần sau soát kỹ hơn nhé.'
+            if career == 'pharmacy':  # #273: the shelf and the fridge log add points too: say so
+                note = f'{who} nhắc nhở {risk} điểm rủi ro (hồ sơ giao vội, hộp quá hạn để trên kệ, sổ tủ mát). Lần sau soát kỹ hơn nhé.'
             outcome = 'warning'
         else:
             fine = min(60, 10 * (risk - 3), c['money'])
             if fine:
                 e.money(s, c, -fine, f'{who} lập biên bản quy trình', f'desk-inspect-{day}', 'fine')
             note = f'{who} lập biên bản: {risk} điểm rủi ro · trừ {fine} xu.'
+            if career == 'pharmacy':
+                note = f'{who} lập biên bản: {risk} điểm rủi ro (hồ sơ giao vội, hộp quá hạn để trên kệ, sổ tủ mát) · trừ {fine} xu.'
             outcome = 'fine'
         d['inspections'] = ar.last(d['inspections'] + [dict(day=day, risk=risk, outcome=outcome)], 20, 'desk.inspections', c)
         d['risk'] = 0

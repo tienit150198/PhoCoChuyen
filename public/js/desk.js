@@ -72,6 +72,14 @@ function rulebook(t){
   return `<details class="dk-book"${fresh?' data-fresh':''}><summary${slim(t)?' aria-label="Sổ quy định hôm nay"':''}>${icon('book',16)} ${slim(t)?'Quy định':'Sổ quy định hôm nay'} <span class="dk-count">${t.rules.length}</span>${fresh?`<span class="dk-new">${fresh} MỚI</span>`:''}</summary>${t.bulletin?.length?`<ul class="dk-notices">${t.bulletin.map(n=>`<li>📰 ${esc(n)}</li>`).join('')}</ul>`:''}${stamps}<ol class="dk-rules">${t.rules.map(r=>`<li class="${r.new?'new':''}"><b>${esc(r.short)}</b>${r.new?' <span class="dk-new">MỚI</span>':''}<span>${esc(r.text)}</span></li>`).join('')}</ol></details>`;
 }
 
+/** #273: the dates on the papers ("Hết ngày 5") count this desk's own working days, which the town's day at the top
+ * (the journey's life day) does not show. Today's number stays in sight above the papers and on the slip's date line. */
+const DATED=new Set(['slip.until']);
+function today(t){
+  if(!Number.isInteger(t.day))return'';
+  return `<p class="dk-today"><span aria-hidden="true">📅</span><span><span>Hôm nay: <b>ngày ${t.day}</b></span><small>Hạn trên giấy tờ tính theo ngày này.</small></span></p>`;
+}
+
 function markOf(t,ref){const ms=(t.marks||[]).filter(m=>m.field===ref);return ms.find(m=>m.result==='found')||ms.find(m=>m.result==='partial')||ms[ms.length-1];}
 
 function docCard(t,d,api){
@@ -84,7 +92,8 @@ function docCard(t,d,api){
     const chip=r=>{const b=act(esc(r.short),'desk:flag',{task:t.id,field:ref,rule:r.id},'dk-chip'+(r.new?' fresh':''));
       return full||tried(r)?b.replace('<button ',`<button disabled title="${full?'Đủ dấu rồi':'Đã đánh dấu quy định này'}" `):b;};
     const chips=sel?`<div class="dk-chips" role="group" aria-label="Chọn quy định bị trái">${full?'<p class="dk-hint">Đủ dấu rồi: đóng dấu quyết định.</p>':''}${t.rules.map(chip).join('')}${act('Bỏ chọn','desk:unsel',{},'dk-chip ghost')}</div>`:'';
-    return `<button type="button" class="dk-field ${sel?'sel':''} ${m?m.result:''}" data-action="desk:sel" data-field="${esc(ref)}" data-task="${esc(t.id)}" aria-pressed="${sel}"><span>${esc(f.label)}</span><strong>${art}${esc(f.value)}</strong>${stamp}</button>${chips}`;}).join('');
+    const now=DATED.has(ref)&&Number.isInteger(t.day)?`<small class="dk-now">📅 Hôm nay: ngày ${t.day}</small>`:'';
+    return `<button type="button" class="dk-field ${sel?'sel':''} ${m?m.result:''}" data-action="desk:sel" data-field="${esc(ref)}" data-task="${esc(t.id)}" aria-pressed="${sel}"><span>${esc(f.label)}${now}</span><strong>${art}${esc(f.value)}</strong>${stamp}</button>${chips}`;}).join('');
   return `<article class="dk-doc ${esc(d.kind)}"><h4>${d.icon} ${esc(d.title)}</h4>${rows}</article>`;
 }
 
@@ -146,7 +155,7 @@ export function deskJob(t,ctx){
     body+=`<div class="dk-start">${cmdBtn('📥 '+(t.career==='customer_care'?'Mở hồ sơ đơn':'Nhận giấy tờ'),'ask',{task:t.id},'primary full dk-cta',!room(api).open)}</div>`;
   }else{
     const how='Chạm vào dòng có vấn đề, rồi chọn quy định mà nó trái.';
-    body+=rulebook(t)+(slim(t)?tip(how,'Soát giấy tờ','p'):`<p class="dk-hint">${how}</p>`)+`<div class="dk-docs">${(t.docs||[]).map(d=>docCard(t,d,api)).join('')}</div>`+progress(t)+drawer(t,api)+checks(t,api)+stamps(t,api);
+    body+=today(t)+rulebook(t)+(slim(t)?tip(how,'Soát giấy tờ','p'):`<p class="dk-hint">${how}</p>`)+`<div class="dk-docs">${(t.docs||[]).map(d=>docCard(t,d,api)).join('')}</div>`+progress(t)+drawer(t,api)+checks(t,api)+stamps(t,api);
     // The shared bar: the next step points at its place (a check to run is the main button), short labels.
     if(slim(t)){
       const SHORT={'Đếm két: chạm từng tờ rồi chốt số':'🧮 Đếm két','Soát từng dòng: chạm dòng sai, chọn quy định nó trái':'👆 Soát từng dòng','Đóng dấu quyết định':'🔏 Đóng dấu'};

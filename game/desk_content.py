@@ -90,7 +90,7 @@ def verdicts(career, ids):
 RULES = {
     'pharmacy': {
         'ph_rx': ('Cần phiếu', 'Thuốc nhóm K và hàng lạnh chỉ giao khi có phiếu của phòng khám.'),
-        'ph_date': ('Phiếu còn hạn', 'Phiếu chỉ dùng tới hết ngày ghi ở dòng “Hạn phiếu”.'),
+        'ph_date': ('Phiếu còn hạn', 'Phiếu chỉ dùng tới hết ngày ghi ở dòng “Hạn phiếu”. Hôm nay là ngày {day} ở quầy.'),
         'ph_name': ('Đúng tên, đúng hàm lượng', 'Tên và hàm lượng trên hộp phải trùng từng chữ với phiếu.'),
         'ph_qty': ('Không quá số lượng', 'Không giao nhiều hơn số lượng ghi trên phiếu.'),
         'ph_stamp': ('Dấu đúng mẫu', 'Con dấu phải đúng mẫu phòng khám đã đăng ký trong bản tin hôm nay.'),
@@ -238,6 +238,7 @@ def bulletin(career: str, day: int) -> dict:
     notices, fmt, new = [], {}, set()
     extra = {}
     if career == 'pharmacy':
+        fmt['ph_date'] = dict(day=day)  # #273: the slip's "Hết ngày N" counts the counter's days, not the town's (journey life day)
         lots = recall_lots(day)
         if lots:
             rules.append('ph_recall')
