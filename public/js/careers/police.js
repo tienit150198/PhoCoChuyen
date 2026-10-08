@@ -31,7 +31,12 @@ function learnNote(x){
 }
 function groundCard(x){
   const cd=data(x).odd?.conduct||{};if(!cd.ground)return '';
-  return `<section class="cap-ground" role="status"><h3>⚖️ ${cd.demoted?'Bị hạ bậc, tạm dừng nhiệm vụ hôm nay':'Tạm dừng nhiệm vụ hôm nay'}</h3><p class="small">Mai lên Ban chỉ huy giải trình. Hôm nay tan ca sớm.</p>${x.button('Tan ca','end',{},'primary')}</section>`;
+  return `<section class="cap-ground" role="status"><h3>⚖️ ${cd.demoted?'Bị kỷ luật, tạm dừng nhiệm vụ hôm nay':'Tạm dừng nhiệm vụ hôm nay'}</h3><p class="small">Mai lên Ban chỉ huy giải trình. Hôm nay tan ca sớm.</p>${x.button('Tan ca','end',{},'primary')}</section>`;
+}
+/** How the conduct record clears, and that it is not the rank (feedback #258: “hạ bậc”, “cảnh cáo” read as the cấp bậc hàm). */
+function recordHow(x){
+  const cd=data(x).odd?.conduct||{};if(!cd.points)return '';
+  return `<p class="small muted">🧽 Cứ 3 việc làm đúng quy trình, hồ sơ nhẹ bớt 1 điểm${cd.demoted?'; nhẹ về mức nhắc nhở là có thưởng lại':''}. Hồ sơ này chỉ tính thưởng việc, không đổi cấp bậc hàm.</p>`;
 }
 function wardStep(x){
   const o=data(x).odd||{};
@@ -312,7 +317,7 @@ export default {
     const td=d.today||{};
     const tiles=[[td.tasks||0,'việc'],[td.helped||0,'lần giúp dân'],[td.reminders||0,'lần nhắc nhở'],[td.reports||0,'biên bản']];
     return `<div class="career-job sk cap">${head}${dayBar(x)}${rankBar(x)}<section class="card cap-today"><h4>👮 Ca hôm nay</h4><div class="cap-tiles">${tiles.map(([v,l])=>`<div><b>${x.esc(v)}</b><small>${x.esc(l)}</small></div>`).join('')}</div></section>
-      ${logCard(x)}<section class="card cap-record"><h4>📁 Hồ sơ của bạn</h4>${record(x)}${restCard(x,ODD_CFG)}</section></div>`;
+      ${logCard(x)}<section class="card cap-record"><h4>📁 Hồ sơ của bạn</h4>${record(x)}${recordHow(x)}${restCard(x,ODD_CFG)}</section></div>`;
   },
   tick(root){keepBarAboveFooter(root);},
   actions:{...kitActions,...oddActions,

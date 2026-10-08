@@ -8,8 +8,9 @@ Rank (cấp bậc hàm) and post (chức vụ) are two separate tracks:
   questions the next morning. A transfer never lowers the grade.
 
 Warnings (shared by every ranked career): a procedure violation the career detects is a ⚠️ cảnh cáo (`violation`).
-The 4th demotes one grade and resets the count; one expires after 10 clean worked days, or is cleared by an end-of-
-period "Hoàn thành xuất sắc nhiệm vụ". At the entry grade the 4th is a 3-day tạm đình chỉ (no salary). An accepted
+The 4th demotes one grade and resets the count; 10 worked days in a row without a violation clear them all (the
+discipline is served: player feedback #251/#253/#258, 07/10), and an end-of-period "Hoàn thành xuất sắc nhiệm vụ"
+clears one. At the entry grade the 4th is a 3-day tạm đình chỉ (no salary). An accepted
 bribe (`bribe`) demotes one grade at once and writes a permanent integrity mark (it bars Trợ lý BGĐ, PGĐ and Đại tá
 for good); owning up in the same shift (`own`) turns the demotion into a normal warning, the mark stays. A grade
 below the post's own drops the player to the highest post the new grade allows (the NPC who takes the seat is named).
@@ -176,6 +177,58 @@ def _seed(s: dict) -> int:
 
 
 # ------------------------------------------------------------------------------------- grade rows (what the next needs)
+def clean_row(x: dict) -> dict:
+    """No open warning; while there is one, how far the 10 days without a violation that clear them are."""
+    if not x['warns']:
+        return dict(id='clean', met=True, label='Không còn cảnh cáo')
+    n = OC.ORGS[x['org']]['decay_days']
+    return dict(id='clean', met=False, label=f'Xóa cảnh cáo: {min(x["clean"], n)}/{n} ngày làm không vi phạm')
+
+
+def waits(x: dict) -> list[dict]:
+    """What holds the next step back besides its requirements (for the screens only, never a requirement itself):
+    a suspension, a retry after a failed interview, the seat of the next post not free yet."""
+    rows = []
+    if x['susp'] > 0:
+        rows.append(dict(id='susp', met=False, label=f'Hết tạm đình chỉ: còn {x["susp"]} ngày'))
+    if next_grade(x) is None and target(x):
+        if x['wait'] > 0:
+            rows.append(dict(id='wait', met=False, label=f'Hẹn xét lại sau {x["wait"]} ngày làm'))
+        if x['vac']:
+            rows.append(dict(id='seat', met=False, label=f'Chờ ghế {_post(OC.ORGS[x["org"]], target(x))["short"]} trống: {x["vac"]} ngày làm nữa'))
+    return rows
+
+
+_BREAK = ('warn', 'demote', 'susp', 'bribe', 'own')   # wlog kinds that end a run of days without a violation
+
+
+def streak(x: dict) -> int:
+    """Worked days in a row without a violation. Builds up to 1.9.19 cleared one warning per 10 such days and started
+    the count again each time: every 'expire' logged since the last violation stands for those 10 days."""
+    n = x['clean']
+    for w in reversed(x['wlog']):
+        if w['k'] in _BREAK:
+            break
+        if w['k'] == 'expire':
+            n += OC.ORGS[x['org']]['decay_days']
+    return n
+
+
+def heal(x: dict | None, d: int) -> str:
+    """Warnings whose discipline is served (10 days in a row without a violation) are cleared; also run on load, so a
+    save from a build that kept them longer recovers at once. '' when nothing changes."""
+    if not x or not x['warns']:
+        return ''
+    o = OC.ORGS[x['org']]
+    run = streak(x)
+    if run < o['decay_days']:
+        return ''
+    x['warns'] = []
+    x['clean'] = min(999, run)
+    _log(x, d, 'expire', 'clean')
+    return f'🧽 {o["decay_days"]} ngày làm không vi phạm: xóa hết cảnh cáo.'
+
+
 def _gate_rows(x: dict, gi: int) -> list[dict]:
     """What the step from grade gi to gi+1 asks beyond days and ★ (a course, a clean record, the mark)."""
     o = OC.ORGS[x['org']]
@@ -205,7 +258,7 @@ def next_grade(x: dict) -> dict | None:
     st = stars(x)
     rows = [dict(id='days', met=x['tig'] >= gr['days'], label=f'{min(x["tig"], gr["days"])}/{gr["days"]} ngày làm ở cấp này'),
             dict(id='stars', met=st is not None and st >= gr['need'], label=f'★ {gr["need"] / 10:.1f} ({(st or 0) / 10:.1f} hiện tại)'),
-            dict(id='clean', met=not x['warns'], label='Không còn cảnh cáo')]
+            clean_row(x)]
     rows += _gate_rows(x, g)
     nxt = o['grades'][g + 1]
     return dict(id=nxt['id'], name=nxt['name'], ins=nxt['ins'], rows=rows, good=min(x['tig'], gr['days']), need=gr['days'])
@@ -231,7 +284,7 @@ def post_rows(x: dict, pid: str) -> list[dict]:
     rows = [dict(id='grade', met=x['g'] >= lo - 1, label=f'Từ {o["grades"][max(0, lo - 1)]["name"]} trở lên'),
             dict(id='days', met=x['tip'] >= cur['days'], label=f'{min(x["tip"], cur["days"])}/{cur["days"]} ngày ở chức vụ này'),
             dict(id='stars', met=st is not None and st >= tp['need'], label=f'★ {tp["need"] / 10:.1f} ({(st or 0) / 10:.1f} hiện tại)'),
-            dict(id='clean', met=not x['warns'], label='Không còn cảnh cáo')]
+            clean_row(x)]
     if tp['extra'].get('good_evals'):
         n = tp['extra']['good_evals']
         rows.append(dict(id='evals', met=_good_evals(x) >= n, label=f'{min(_good_evals(x), n)}/{n} kỳ “Hoàn thành tốt” trở lên'))
@@ -275,7 +328,7 @@ def _step_down(x: dict, d: int, why: str) -> str:
     i = max(cands) if cands else 0
     old = post(x)
     new_p = o['posts'][i]
-    x['p'], x['tip'], x['aim'], x['due'] = new_p['id'], 0, None, None
+    x['p'], x['tip'], x['aim'], x['due'], x['vac'] = new_p['id'], 0, None, None, None   # the seat waited for is another post's
     _hist(x, d, 'p', old['id'], new_p['id'], why)
     who = OC.SEAT_NPC[_rng('seat', d, old['id']).randrange(len(OC.SEAT_NPC))]
     return f'Chức vụ: {old["short"]} → {new_p["short"]}. {who} nhận ghế {old["short"]}.'
@@ -379,16 +432,16 @@ def close(x: dict, s: dict, c: dict, career: str, worked: bool, good: bool, day_
     x['tip'] = min(10**6, x['tip'] + 1)
     if x['wait'] > 0:
         x['wait'] -= 1
-    # Decay: one warning expires after N clean worked days.
+    # The discipline served: N worked days in a row without a violation clear every open warning.
     if viol:
         x['clean'] = 0
     else:
         x['clean'] = min(999, x['clean'] + 1)
-        if x['warns'] and x['clean'] >= o['decay_days']:
-            x['warns'].pop(0)
-            x['clean'] = 0
-            _log(x, d, 'expire', 'clean')
-            lines.append(f'🧽 {o["decay_days"]} ngày sạch: hết 1 cảnh cáo (còn {len(x["warns"])}/{o["warn_max"]}).')
+        line = heal(x, d)
+        if line:
+            lines.append(line)
+    if x['warns']:   # how far the clearing is (a violation today starts it again)
+        lines.append(f'🧽 Xóa cảnh cáo: {x["clean"]}/{o["decay_days"]} ngày làm không vi phạm.')
     # The end-of-period evaluation.
     x['evn'] = min(999, x['evn'] + 1)
     if x['evn'] >= o['eval_window']:
@@ -649,7 +702,7 @@ def public(x: dict, c: dict) -> dict:
                 mark=dict(on=x['mark']['b'] is not None, d=x['mark']['b'], self=x['mark']['s']), liem=x['liem'],
                 eval=dict((k, lab) for _, k, lab in o['evals'])[ev['g']] if ev else None, evn=x['evn'], window=o['eval_window'],
                 next_grade=nb, next_post=nxt_post, aims=[dict(id=a, short=_post(o, a)['short']) for a in _aims(x)], aim=tp,
-                due=due, wait=x['wait'], susp=x['susp'], pct=raise_pct(x), own=can_own(x, c),
+                due=due, wait=x['wait'], susp=x['susp'], waits=waits(x), pct=raise_pct(x), own=can_own(x, c),
                 ladder=[dict(id=gg['id'], name=gg['name'], ins=gg['ins'], on=i <= x['g']) for i, gg in enumerate(o['grades'][:-1])],
                 boss=OC.BOSS, insp=insp_public(x, c) if p.get('olv') == 4 else None)
 

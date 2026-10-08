@@ -191,20 +191,26 @@ class Warnings(unittest.TestCase):
         self.assertEqual(org(j2)['p'], 'to_vien')
         self.assertEqual(pm.record(j2.state, 'police')['rank'], 0)
 
-    def test_warnings_decay_after_clean_days_and_an_excellent_period_clears_one(self):
+    def test_warnings_clear_after_clean_days_and_an_excellent_period_clears_one(self):
         j = officer('to_vien', 'binh_nhi')
         pm.violation(j.state, j.c, 'police', 'skip_step', 'a')
         pm.violation(j.state, j.c, 'police', 'skip_step', 'b')
-        day(j)   # the violation day itself is not clean
-        for _ in range(O['decay_days']):
+        r = day(j)   # the violation day itself is not clean
+        self.assertIn('🧽 Xóa cảnh cáo: 0/10', ' '.join(r['summary']['promo']['org']))
+        for _ in range(O['decay_days'] - 1):
             day(j)
-        self.assertEqual(len(org(j)['warns']), 1)
+        self.assertEqual(len(org(j)['warns']), 2)
+        r = day(j)   # the discipline is served: every warning goes at once (feedback #258)
+        self.assertEqual(org(j)['warns'], [])
+        self.assertIn('xóa hết cảnh cáo', ' '.join(r['summary']['promo']['org']))
         x = org(j)
+        x['warns'] = [dict(d=1, c='threat')] * 2
         x['st'] = [48] * 10
         x['evn'] = O['eval_window'] - 1
         x['clean'] = 0
+        x['wlog'].append(dict(d=1, k='warn', c='threat'))
         r = day(j)
-        self.assertEqual(org(j)['warns'], [])
+        self.assertEqual(len(org(j)['warns']), 1)
         self.assertIn('xuất sắc', ' '.join(r['summary']['promo']['org']).lower())
 
     def test_fourth_warning_at_the_entry_grade_suspends_without_salary(self):
@@ -222,6 +228,113 @@ class Warnings(unittest.TestCase):
         self.assertEqual(org(j)['susp'], 0)
         r = day(j)
         self.assertGreater(r['summary']['job']['salary'], 0)
+
+
+class Feedback251(unittest.TestCase):
+    """#251/#253/#258 (07/10): a Trung úy with every milestone met was not made Tổ trưởng; warnings "served for 10 days"
+    still showed. Warnings were cleared one per 10 clean days (two took 20, three took 30) and the card showed a full bar
+    with the 🔒 hidden under "Xem thêm"."""
+
+    def ready(self, warns=0):
+        j = officer('to_pho', 'trung_uy')
+        x = org(j)
+        x['st'], x['tip'] = [45] * 10, 6
+        for i in range(warns):
+            pm.violation(j.state, j.c, 'police', 'skip_step', f'w{i}')
+        return j
+
+    def test_a_served_discipline_clears_every_warning_and_the_appointment_follows(self):
+        j = self.ready(warns=3)
+        nxt = view(j)['next']
+        self.assertEqual(nxt['title'], 'Tổ trưởng')
+        lock = [r['label'] for r in nxt['requirements'] if not r['met']]
+        self.assertEqual(lock, ['Xóa cảnh cáo: 0/10 ngày làm không vi phạm'])
+        day(j)   # the violation day
+        for i in range(O['decay_days'] - 1):
+            day(j)
+            self.assertEqual(len(org(j)['warns']), 3)
+        self.assertIn('Xóa cảnh cáo: 9/10 ngày làm không vi phạm', [r['label'] for r in view(j)['next']['requirements']])
+        day(j)
+        x = org(j)
+        self.assertEqual(x['warns'], [])
+        self.assertEqual(x['clean'], O['decay_days'])
+        for _ in range(ORG.VAC_WAIT + 1):
+            if org(j)['due']:
+                break
+            day(j)
+        self.assertEqual((org(j)['due']['k'], org(j)['due']['to']), ('post', 'to_truong'))
+        answer_due(j)
+        x = org(j)
+        self.assertEqual((x['p'], O['grades'][x['g']]['id']), ('to_truong', 'thuong_uy'))
+        validate_state(j.state)
+
+    def test_the_card_names_what_holds_the_appointment_back(self):
+        j = self.ready()
+        x = org(j)
+        self.assertTrue(all(r['met'] for r in view(j)['next']['requirements']))
+        x['vac'] = 2
+        rows = {r['id']: r for r in view(j)['next']['requirements']}
+        self.assertEqual(rows['seat']['label'], 'Chờ ghế Tổ trưởng trống: 2 ngày làm nữa')
+        self.assertFalse(rows['seat']['met'])
+        x['vac'], x['wait'] = None, 2
+        rows = {r['id']: r for r in view(j)['next']['requirements']}
+        self.assertEqual(rows['wait']['label'], 'Hẹn xét lại sau 2 ngày làm')
+        self.assertEqual([r['id'] for r in view(j)['org']['waits']], ['wait'])
+        self.assertNotIn('wait', [r['id'] for r in ORG.post_rows(x, 'to_truong')])   # the screens only, never a requirement
+        x['wait'] = 0
+        x['vac'] = 1
+        day(j)   # the seat wait still counts down and books the interview
+        self.assertEqual(org(j)['due']['to'], 'to_truong')
+
+    def test_a_save_from_the_old_rule_recovers_on_load(self):
+        from game.engine import migrate_state
+        j = self.ready()
+        x = org(j)
+        # 1.9.19: two warnings, 10 clean days took one of them and started the count again; 4 more clean days since.
+        x['warns'] = [dict(d=5, c='skip_step')]
+        x['clean'] = 4
+        x['wlog'] = [dict(d=4, k='warn', c='skip_step'), dict(d=5, k='warn', c='skip_step'), dict(d=16, k='expire', c='clean')]
+        s = copy.deepcopy(j.state)
+        s.pop('check', None)   # a save from an older build goes through the migration
+        back = migrate_state(s)
+        validate_state(back)
+        y = back['journey']['promo']['police']['org']
+        self.assertEqual(y['warns'], [])
+        self.assertEqual(y['clean'], 14)
+        self.assertEqual(y['wlog'][-1]['k'], 'expire')
+        # Not served yet (a violation after the expiry): left as it is, and so is a record it cannot read.
+        x['wlog'].append(dict(d=17, k='warn', c='threat'))
+        x['warns'] = [dict(d=17, c='threat')]
+        s = copy.deepcopy(j.state)
+        s.pop('check', None)
+        self.assertEqual(migrate_state(s)['journey']['promo']['police']['org']['warns'], [dict(d=17, c='threat')])
+        s['journey']['promo']['police']['org']['wlog'] = 'x'
+        s2 = migrate_state(s)
+        self.assertEqual(s2['journey']['promo']['police']['org']['wlog'], 'x')
+        with self.assertRaises(GameError):
+            validate_state(s2)
+
+    def test_the_close_heals_an_old_record_too(self):
+        j = self.ready()
+        x = org(j)
+        x['warns'] = [dict(d=5, c='skip_step')]
+        x['clean'] = 0
+        x['wlog'] = [dict(d=5, k='warn', c='skip_step'), dict(d=16, k='expire', c='clean')]
+        lines = ORG.close(x, j.state, j.c, 'police', True, True, 4.5)   # a save already stamped by this build
+        self.assertEqual(x['warns'], [])
+        self.assertEqual(lines[0], '🧽 10 ngày làm không vi phạm: xóa hết cảnh cáo.')
+        self.assertTrue(x['due'] or x['vac'])   # nothing left in the way of Tổ trưởng
+
+    def test_the_conduct_record_never_says_the_rank_went_down(self):
+        """#258: the conduct record (task bonus only) said "hạ xuống cán bộ tập sự", "Bị cách chức", "Bị cảnh cáo"."""
+        from game.careers import air_odd as ao, police as P
+        odd = ao.ensure(self.ready().c['ext']['data'])
+        line = ao.penalize(dict(day=3), odd, 8, P.CFG)
+        self.assertNotIn('hạ xuống', line)
+        self.assertIn('Cấp bậc hàm giữ nguyên', line)
+        self.assertEqual(ao.public(dict(day=3), odd, [], 'police', P.CFG)['conduct']['label'], 'Đang chịu kỷ luật')
+        odd['conduct'].update(points=4, clean=2)
+        self.assertEqual(ao.flown(odd, True, P.CFG), '🎖️ Hồ sơ đã nhẹ lại: có thưởng việc trở lại.')
 
 
 class Bribe(unittest.TestCase):

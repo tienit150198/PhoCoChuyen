@@ -18,10 +18,18 @@ function due(o,act){
   return `<article class="pm-card pm-review">${top}<p class="pm-q">${esc(d.q.text)}</p><div class="pm-opts">${d.q.options.map(x=>act(esc(x.label),'pmAnswer',{question:d.q.id,option:x.id},'pm-opt')).join('')}</div>
     <details class="pm-more"><summary>?</summary><p class="small muted">Câu 0 điểm: hẹn xét lại sau 3 ngày làm.</p></details></article>`;
 }
+/** What still holds the next step back, on the card itself (not only under "Xem thêm": feedback #251, a full bar with a
+ * 🔒 hidden below read as "everything met"). The bar already counts the days; a suspension is the card's line. */
+function missing(n){
+  const left=(n?.requirements||[]).filter(r=>!r.met&&r.id!=='days'&&r.id!=='susp');
+  if(!n)return '';
+  if(!left.length)return n.good>=n.need?`<p class="small og-todo">✅ Đủ điều kiện: cuối ca Ban chỉ huy xét.</p>`:'';
+  return `<ul class="pm-rules og-todo">${left.slice(0,3).map(r=>`<li class="bad">🔒 ${esc(r.label)}</li>`).join('')}</ul>`;
+}
 function rows(list){return `<ul class="pm-rules">${(list||[]).map(r=>`<li>${r.met?'✓':'🔒'} ${esc(r.label)}</li>`).join('')}</ul>`;}
 function more(o,cmd){
   const warns=o.warns.length?`<p class="pm-eyebrow">⚠️ Cảnh cáo đang có</p><ul class="pm-rules">${o.warns.map(w=>`<li class="bad">⚠️ ${esc(w.why)}<small class="pm-hint">📖 ${esc(w.how)}</small></li>`).join('')}</ul>
-    <p class="small muted">🧽 ${o.clean}/${o.decay} ngày sạch → hết 1 cảnh cáo. Lần thứ 4: hạ 1 bậc hàm.</p>`:'';
+    <p class="small muted">🧽 ${Math.min(o.clean,o.decay)}/${o.decay} ngày làm không vi phạm → xóa hết cảnh cáo. Có vi phạm mới thì đếm lại từ 0. Lần thứ 4: hạ 1 bậc hàm.</p>`:'';
   const hist=o.wlog.length?`<p class="pm-eyebrow">📜 Lịch sử</p><ul class="pm-rules">${o.wlog.map(w=>`<li>${esc(w.k)}${w.why?` · ${esc(w.why)}`:''}<small class="pm-hint">Ngày ${w.d}</small></li>`).join('')}</ul>`:'';
   const ng=o.next_grade?`<p class="pm-eyebrow">⭐ Lên ${esc(o.next_grade.name)}</p>${rows(o.next_grade.rows)}`:'';
   const np=o.next_post?`<p class="pm-eyebrow">🪑 Bổ nhiệm ${esc(o.next_post.short)}</p>${rows(o.next_post.rows)}`:'';
@@ -29,7 +37,7 @@ function more(o,cmd){
   const ladder=`<ol class="og-ladder">${o.ladder.map(g=>`<li class="${g.on?'on':''}">${boardSVG(g.ins,44)}<span>${esc(g.name)}</span></li>`).join('')}</ol>`;
   const mark=o.mark.on?`<p class="small bad">💵 Dấu liêm chính${o.mark.self?' (đã tự giác)':''}: không bổ nhiệm Trợ lý BGĐ, Phó Giám đốc, không lên Đại tá.</p>`:'';
   return `<details class="pm-more"><summary>Xem thêm</summary>${warns}${ng}${np}${aims}${mark}${hist}${ladder}
-    <ul class="pm-rules"><li>Vi phạm quy trình: cảnh cáo. Lần 4: hạ 1 bậc hàm.</li><li>Nhận phong bì: hạ bậc ngay, ghi dấu liêm chính mãi mãi.</li><li>${esc(o.boss)}: không bổ nhiệm người chơi.</li></ul></details>`;
+    <ul class="pm-rules"><li>Vi phạm quy trình: cảnh cáo. ${o.decay||10} ngày làm không vi phạm: xóa hết. Lần 4: hạ 1 bậc hàm.</li><li>Nhận phong bì: hạ bậc ngay, ghi dấu liêm chính mãi mãi.</li><li>${esc(o.boss)}: không bổ nhiệm người chơi.</li></ul></details>`;
 }
 export function orgView(env,head,act,cmd,place){
   const c=env.api.state.careers[env.api.state.current],p=c.promo,o=p.org;
@@ -43,7 +51,7 @@ export function orgView(env,head,act,cmd,place){
     <div class="og-top">${badgeSVG(34)}${boardSVG(o.grade.ins,120,o.grade.name)}</div>
     <h3 class="pm-title">${esc(o.grade.name)}</h3><p class="og-post">${esc(o.post.short)}</p>
     <p class="og-stats">${warnChip(o)}<span>★ ${st(o.stars)}</span><span>🛡️ ${o.liem}</span>${o.mark.on?'<span class="bad">💵</span>':''}</p>
-    ${n&&!o.susp?bar(n.good,n.need):''}<p class="pm-line">${line}</p>${main}${own&&office?office:''}${more(o,cmd)}</article></div>`;
+    ${n&&!o.susp?bar(n.good,n.need):''}<p class="pm-line">${line}</p>${o.susp?'':missing(n)}${main}${own&&office?office:''}${more(o,cmd)}</article></div>`;
 }
 
 /* ------------------------------------------------------------------ 🔎 kiểm tra điều lệnh (Trợ lý BGĐ) */
