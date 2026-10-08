@@ -156,7 +156,7 @@ async function rentalPost(op,payload){
 function startBuy(kind){
   const m=MK().find(x=>x.id===kind);if(!m)return;
   const ready=(V().have?.ready||0)+(S.joint?.balance||0);
-  S.view='buy';S.buy={kind,down:Math.min(m.price,Math.max(m.down_min,Math.floor(Math.max(0,ready-m.fee)/10)*10)),months:36,joint:0,move_in:!V().own&&!V().shared};   // living in a home already (yours or the spouse's): the new one stays empty unless ticked (feedback #137)
+  S.view='buy';S.buy={kind,down:Math.min(m.price,Math.max(m.down_min,Math.floor(Math.max(0,ready-m.fee)/10)*10)),months:36,joint:0,move_in:!V().own&&!V().shared&&V().place?.where_id!=='estate'};   // living in a home already (yours or the spouse's): the new one stays empty unless ticked (feedback #137)
 }
 
 async function onClick(op,data){
@@ -185,6 +185,7 @@ async function onClick(op,data){
     case'back':S.view='home';S.flash=null;render();return;
     case'look':startBuy(data.kind);S.flash=null;render();S.dlg.querySelector('.hs-body')?.scrollTo?.(0,0);return;
     case'bank':S.dlg.close();(await import('./bank.js')).openBank(S.env,data.tab||'save');return;
+    case'leaveEstate':await send('jr_lux_live',{id:null});return;   // 🏰 out of the villa, back to the home in journey.home
     case'inside':S.dlg.close();(await import('./reno.js')).openReno(S.env,data.mode);return;   // 🛠️ Trong nhà: xem, sửa, trang trí
     case'garage':S.dlg.close();(await import('./garage.js')).openGarage(S.env);return;   // 🚗 the vehicle parked out front
     case'wardrobe':S.dlg.close();S.env.openSheet('home',{jrView:'wardrobe'});return;   // 👗 Tủ đồ (v4/wardrobe.js)
@@ -334,14 +335,17 @@ function dormRoom(D){
 }
 function placeCard(v){
   const p=v.place||{},c=p.cost||{},bed=p.kind===DORM;
-  const unit=['own','shared','lease'].includes(p.where_id)?'Điện nước':bed?'Tiền giường':'Tiền phòng';
-  const costLine=clean()?`<span aria-label="${esc(`${unit} ${xu(c.rent)} · cơm ${xu(c.meals)} mỗi ngày`)}">${['own','shared','lease'].includes(p.where_id)?'⚡':bed?'🛏️':'🏠'} ${fmt(c.rent)} · 🍚 ${fmt(c.meals)} xu/ngày</span>`:`${unit} ${xu(c.rent)} · cơm ${xu(c.meals)} mỗi ngày`;
-  const who=p.where_id==='shared'?`<p class="hs-tag">💞 Nhà chung với ${esc(p.with)}</p>`:p.where_id==='own'?'<p class="hs-tag">🔑 Nhà đứng tên bạn</p>':bed?'<p class="hs-tag">👥 Ở ghép · giường dưới cạnh cửa sổ</p>':['rent','lease'].includes(p.where_id)?'<p class="hs-tag">🧾 Đang thuê</p>':'';
+  const unit=['own','shared','lease','estate'].includes(p.where_id)?'Điện nước':bed?'Tiền giường':'Tiền phòng';
+  const costLine=clean()?`<span aria-label="${esc(`${unit} ${xu(c.rent)} · cơm ${xu(c.meals)} mỗi ngày`)}">${['own','shared','lease','estate'].includes(p.where_id)?'⚡':bed?'🛏️':'🏠'} ${fmt(c.rent)} · 🍚 ${fmt(c.meals)} xu/ngày</span>`:`${unit} ${xu(c.rent)} · cơm ${xu(c.meals)} mỗi ngày`;
+  const who=p.where_id==='estate'?'<p class="hs-tag">🏰 Dinh thự của bạn</p>':p.where_id==='shared'?`<p class="hs-tag">💞 Nhà chung với ${esc(p.with)}</p>`:p.where_id==='own'?'<p class="hs-tag">🔑 Nhà đứng tên bạn</p>':bed?'<p class="hs-tag">👥 Ở ghép · giường dưới cạnh cửa sổ</p>':['rent','lease'].includes(p.where_id)?'<p class="hs-tag">🧾 Đang thuê</p>':'';
   let actions='';
   const DC=J().deco,deco=DC&&!clean()?`<p class="hs-chips"><span${clean()?` title="${esc(DC.cozy.level)}"`:''}>🪴 Ấm cúng ${DC.cozy.total}${clean()?'':` · ${esc(DC.cozy.level)}`}</span>${DC.bag.length?`<span>🎒 ${DC.bag.length} món trong túi</span>`:''}</p>`:'';
   const cozy=DC&&clean()?` <small class="hs-cozy" aria-label="${esc(`Ấm cúng ${DC.cozy.total}: ${DC.cozy.level}`)}">🪴 ${DC.cozy.total}</small>`:'';
   const setUp=DC?btn((bed?'🚪 Về góc giường':p.where_id==='shared'?'🚪 Vào nhà':'🚪 Vào phòng')+cozy,'inside',{},'primary'):'';   // 🚶 rentals, the attic, a shared home: walk in, decor inside (v4/home-walk.js)
-  if(p.where_id==='rent')actions=`${bed?dormRoom(p.dorm):''}${deco}<div class="bk-actions">${setUp}${btn(bed?'Trả giường, nhận lại cọc':'Trả phòng, nhận lại cọc','leave',{},'ghost')}</div>`;
+  // 🏰 Living in a villa bought in Mua sắm (housing.py _place_view): every "Vào nhà" opens it, so the way back home
+  // is here too (owner 08/10: a home moved into from a villa could not be entered; game/estates.py move_out).
+  if(p.where_id==='estate')actions=`${deco}<div class="bk-actions">${btn('🚪 Vào nhà'+cozy,'inside',{},'primary')}${btn('Về nhà cũ','leaveEstate',{},'ghost')}</div>`;
+  else if(p.where_id==='rent')actions=`${bed?dormRoom(p.dorm):''}${deco}<div class="bk-actions">${setUp}${btn(bed?'Trả giường, nhận lại cọc':'Trả phòng, nhận lại cọc','leave',{},'ghost')}</div>`;
   else if(p.where_id==='own'&&J().reno){const R=J().reno,worn=R.parts.filter(x=>x.worn).length;
     actions=`<p class="hs-chips"><span>🪴 Ấm cúng ${R.cozy}</span><span>🛠️ ${worn?`${worn} chỗ cần sửa`:'Nhà sạch đẹp'}</span></p><div class="bk-actions">${btn('🚪 Vào nhà','inside',{},'primary')}${worn?btn('🛠️ Sửa nhà','inside',{mode:'fix'},'ghost'):''}</div>`;}
   else if(DC)actions=`${deco}<div class="bk-actions">${setUp}</div>`;

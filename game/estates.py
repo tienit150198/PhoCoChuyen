@@ -162,6 +162,16 @@ def living_in(j: dict) -> str | None:
     return eid if isinstance(eid, str) and eid in ESTATE and eid in own else None
 
 
+def move_out(j: dict) -> None:
+    """Moving into another home (game/housing.py: buy and move in, move, rent a room, the spouse's home; game/rentals.py:
+    a player's home) ends living in a villa. place() puts the villa first, so before 08/10 such a move changed the
+    house screen but every "Vào nhà" still opened the villa: the new home (often a Biệt thự Sông Hồng or Vườn Cau)
+    could not be entered. The villa stays owned (journey.lux.own); "Dọn về ở" in Mua sắm moves back."""
+    b = j.get('lux') if isinstance(j, dict) else None
+    if isinstance(b, dict) and b.get('live') is not None:
+        b['live'] = None
+
+
 def place(j: dict) -> dict | None:
     """deco.place for a player living in a villa (None: not)."""
     eid = living_in(j)
