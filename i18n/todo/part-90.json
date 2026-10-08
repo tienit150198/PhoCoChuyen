@@ -1,5 +1,137 @@
 [
  {
+  "vi": "giọng tổng đài rõ ràng, nói chậm vừa phải",
+  "en": ""
+ },
+ {
+  "vi": "nghe mình kể hết rồi mới trả lời, không cắt ngang",
+  "en": ""
+ },
+ {
+  "vi": "Nói nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "Đồng cảm",
+  "en": ""
+ },
+ {
+  "vi": "trả lời như văn mẫu",
+  "en": ""
+ },
+ {
+  "vi": "nghe mình kể bức xúc mà trả lời như đọc văn mẫu",
+  "en": ""
+ },
+ {
+  "vi": "mình đang bực mà bạn cứ \"dạ quý khách vui lòng\" hoài",
+  "en": ""
+ },
+ {
+  "vi": "bạn tổng đài nói \"em hiểu, chuyện này bực thật\", nghe mà nguôi giận",
+  "en": ""
+ },
+ {
+  "vi": "được xin lỗi thật lòng chứ không phải câu cho có",
+  "en": ""
+ },
+ {
+  "vi": "Văn mẫu.",
+  "en": ""
+ },
+ {
+  "vi": "Thấu hiểu.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại báo kết quả",
+  "en": ""
+ },
+ {
+  "vi": "hứa gọi lại mà không gọi",
+  "en": ""
+ },
+ {
+  "vi": "hứa gọi lại mà chờ cả ngày không thấy",
+  "en": ""
+ },
+ {
+  "vi": "phải tự gọi hỏi lại mới biết đã xử lý tới đâu",
+  "en": ""
+ },
+ {
+  "vi": "hẹn gọi lại là gọi lại thật, báo kết quả rõ ràng",
+  "en": ""
+ },
+ {
+  "vi": "xử lý xong còn nhắn tin xác nhận, yên tâm ghê",
+  "en": ""
+ },
+ {
+  "vi": "Bặt tin.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại đúng hẹn.",
+  "en": ""
+ },
+ {
+  "vi": "{X}, vậy mà cũng mở cửa đón khách.",
+  "en": ""
+ },
+ {
+  "vi": "{X}, cái này thì không chê.",
+  "en": ""
+ },
+ {
+  "vi": "{X}. Khen chê cho công bằng.",
+  "en": ""
+ },
+ {
+  "vi": "{X}, thế đấy.",
+  "en": ""
+ },
+ {
+  "vi": "{X}. Tôi nói thật, cái này phải sửa.",
+  "en": ""
+ },
+ {
+  "vi": "{X}, hồi xưa tôi mà thấy là nhắc liền.",
+  "en": ""
+ },
+ {
+  "vi": "{X}, đúng như tôi vẫn dạy.",
+  "en": ""
+ },
+ {
+  "vi": "{X}. Nghe tôi thì sửa nốt chỗ kia.",
+  "en": ""
+ },
+ {
+  "vi": "{X} nè 💛",
+  "en": ""
+ },
+ {
+  "vi": "{X}, nói chung vẫn thương quán.",
+  "en": ""
+ },
+ {
+  "vi": "{X}. Anh làm nghề mười năm, nhìn là thấy.",
+  "en": ""
+ },
+ {
+  "vi": "{X}, cái này thực tập sinh cũng biết em ạ.",
+  "en": ""
+ },
+ {
+  "vi": "{X}, đúng kiểu anh hay dạy.",
+  "en": ""
+ },
+ {
+  "vi": "{X}. Anh nói vậy thôi, tự hiểu.",
+  "en": ""
+ },
+ {
   "vi": "{X}. Chán.",
   "en": ""
  },
@@ -1665,138 +1797,6 @@
  },
  {
   "vi": "{Line}. Vậy đó. {Praise}, nhưng tôi nhớ chuyện kia hơn.",
-  "en": ""
- },
- {
-  "vi": "{Line}, nên 5 sao, khỏi bàn.",
-  "en": ""
- },
- {
-  "vi": "Tôi viết hơi dài, mọi người thông cảm.",
-  "en": ""
- },
- {
-  "vi": "Chuyện là chiều nay tôi tan làm sớm, định ghé cho vui.",
-  "en": ""
- },
- {
-  "vi": "Tôi vốn ít khi đánh giá, nhưng hôm nay phải nói.",
-  "en": ""
- },
- {
-  "vi": "Mở đầu bằng một lời khen cho công bằng.",
-  "en": ""
- },
- {
-  "vi": "Trên đường tới đây tôi còn gặp con chó nhà ai đuổi theo xe.",
-  "en": ""
- },
- {
-  "vi": "Nhân tiện, hôm nay tôi mặc áo mới, ai để ý thì cảm ơn.",
-  "en": ""
- },
- {
-  "vi": "Tôi kể thêm là sáng nay tôi làm rơi chìa khóa, nhưng cái đó không liên quan.",
-  "en": ""
- },
- {
-  "vi": "Mẹ tôi dặn đi đâu cũng phải nhận xét cho công tâm.",
-  "en": ""
- },
- {
-  "vi": "Vì vậy, với tất cả sự công tâm, tôi trừ một sao.",
-  "en": ""
- },
- {
-  "vi": "Tóm lại là tốt, nhưng một sao kia tôi giữ lại vì chuyện đó.",
-  "en": ""
- },
- {
-  "vi": "Tóm lại vẫn đủ sao, chỉ mong quán để ý.",
-  "en": ""
- },
- {
-  "vi": "Viết dài vậy thôi chứ tôi vẫn quý, sao để nguyên.",
-  "en": ""
- },
- {
-  "vi": "Tôi xin phép nhắn dài một chút.",
-  "en": ""
- },
- {
-  "vi": "Tối qua con ăn cơm xong cứ ngồi kể chuyện lớp mãi.",
-  "en": ""
- },
- {
-  "vi": "Nhân tiện, bà nội cháu gửi lời hỏi thăm cô/thầy.",
-  "en": ""
- },
- {
-  "vi": "Vì vậy gia đình xin trừ một sao để cô/thầy lưu ý.",
-  "en": ""
- },
- {
-  "vi": "Gia đình vẫn giữ nguyên đánh giá, chỉ mong cô/thầy để ý.",
-  "en": ""
- },
- {
-  "vi": "Ừ thì chuyện đó cũng không phải lỗi bên bạn. Thôi trả lại sao cho công bằng.",
-  "en": ""
- },
- {
-  "vi": "Đọc trả lời thấy dễ chịu, thôi bỏ qua chuyện kia, sửa sao nè.",
-  "en": ""
- },
- {
-  "vi": "Công nhận phần chính làm tốt. Tôi hơi khó tính vụ kia thôi, sửa lại sao.",
-  "en": ""
- },
- {
-  "vi": "Vâng, chuyện đó cũng không phải lỗi của cô/thầy. Gia đình sửa lại đánh giá ạ.",
-  "en": ""
- },
- {
-  "vi": "Nghe cô/thầy nói vậy tôi thấy mình hơi khắt khe. Tôi sửa lại ạ.",
-  "en": ""
- },
- {
-  "vi": "Bạn làm được việc chính như ý, nhưng trừ sao vì một chuyện ngoài lề (unfair_claim.claim) chẳng liên quan dịch vụ. Nếu chủ quán trả lời dễ thương, xin lỗi khéo hoặc nêu sự thật nhẹ nhàng, bạn có thể bỏ qua và trả lại sao; nếu bị cãi hoặc mỉa, bạn cãi cố cho vui, xéo xắt nhưng không tục.",
-  "en": ""
- },
- {
-  "vi": "Năm sao. Đừng quen.",
-  "en": ""
- },
- {
-  "vi": "Ngon. Lạ thật đấy.",
-  "en": ""
- },
- {
-  "vi": "Được, tiếc là tôi không tìm ra chỗ chê cho đủ năm câu.",
-  "en": ""
- },
- {
-  "vi": "Ba sao, một sao cho sự cố gắng, hai sao cho… thôi khỏi.",
-  "en": ""
- },
- {
-  "vi": "Khá. Tôi mà mở quán thì còn khá hơn.",
-  "en": ""
- },
- {
-  "vi": "Đạt. Tôi đã kiểm hai lần cho chắc.",
-  "en": ""
- },
- {
-  "vi": "ăn một miếng thấy đời bớt deadline 🥹",
-  "en": ""
- },
- {
-  "vi": "cx đc, nma chưa đủ để kể với hội bạn 🤷",
-  "en": ""
- },
- {
-  "vi": "Được. Anh gật đầu, hiếm lắm đấy.",
   "en": ""
  }
 ]

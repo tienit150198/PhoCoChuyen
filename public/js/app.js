@@ -330,7 +330,7 @@ function navItems(c){
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story&&api.content?.journey?.certs)items.push(['jrCerts','clipboard','Thi chứng chỉ',certBadge(api)]);  // 🎓 F#267: in sight on the rail / top of "Thêm", not in a hub (v4/certificates.js)
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
-  if(api.state?.fair?.show)items.push(['fair','flag',api.state.fair.soon?'Hội chợ (sắp mở)':'Hội chợ',api.state.fair.open&&!api.state.fair.played?'dot':0]);  // 🏮 Hội chợ dân gian (v4/fair.js, own dialog): only around the fair's days
+  if(api.state?.fair?.show)items.push(['fair','flag',api.state.fair.soon?'Chợ đen (sắp mở)':'Chợ đen',api.state.fair.open&&!api.state.fair.played?'dot':0]);  // 🏮 Hội chợ dân gian (v4/fair.js, own dialog): only around the fair's days
   // A career with its own shell (the air crew: no Sổ tiệm, a flight log instead) reshapes the list; others keep it.
   const result=careerUI(career())?.nav?.(items,careerContext(env()))||items;
   if(!result.some(x=>x[0]==='accountingSchool'))result.push(['accountingSchool','calculator','Học kế toán']);  // 📒 Học kế toán (v4/accounting-school.js): every career, after a career's own reshaping

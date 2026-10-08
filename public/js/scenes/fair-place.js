@@ -41,11 +41,11 @@ export const STALLS={
   pb:{tab:'pb',icon:'📸',name:'Chụp ảnh'},
 };
 export const LOOKS={
-  gate:'Cổng hội treo đầy lồng đèn đỏ. Bà con vô chơi vui nha!',
+  gate:'Cổng chợ đen treo lồng đèn đỏ lờ mờ. Nộp bảo kê rồi vô chơi nha!',
   candy:'Kẹo bông gòn đây! Hồng hồng, xốp xốp, ngọt lịm nè!',
   cane:'Nước mía ép tại chỗ, thêm chút tắc cho thơm, mát lạnh luôn!',
 };
-export const CROWD_LINES=['Hội năm nay vui quá trời!','Qua coi cô Bảy hô lô tô kìa, vui lắm!','Tui ném vòng trúng ba chai rồi đó!','Bầu cua chỗ chú Tám đông ghê ha.',
+export const CROWD_LINES=['Chợ năm nay vui quá trời!','Qua coi cô Bảy hô lô tô kìa, vui lắm!','Tui ném vòng trúng ba chai rồi đó!','Bầu cua chỗ chú Tám đông ghê ha.',
   'Mẹ ơi, con muốn ăn kẹo bông!','Đi chậm thôi, đông người lắm.','Ông Hai chơi ô ăn quan cao tay lắm đó.','Tối nay có đèn lồng đẹp ghê.',
   'Tui mới cào vé số chỗ dì Hai, trúng gấp đôi nè!','Rủ bạn vô buồng chụp ảnh đi, khung Tết đẹp lắm!'];
 
@@ -276,7 +276,7 @@ function gate(c,g,big){
   const {x,y,w}=g,hw=w/2,top=y-200*Math.min(big,1.1);
   for(const px of [x-hw,x+hw]){R(c,px-8,top,16,y-top,RED,4,RED_D,2);R(c,px-12,y-12,24,12,'#7a3a2a',3);}
   R(c,x-hw-22,top-6,w+44,16,RED_D,6);R(c,x-hw-6,top+12,w+12,30*big,GOLD,8,RED_D,2);
-  T(c,'HỘI CHỢ',x,top+27*big,fit(c,'HỘI CHỢ',w,17*big,900),RED_D,900);
+  T(c,'CHỢ ĐEN',x,top+27*big,fit(c,'CHỢ ĐEN',w,17*big,900),RED_D,900);
   for(let i=0;i<3;i++){const lx=x-hw+18+i*(w-36)/2;L(c,lx,top+42*big,lx,top+56*big,'#5a3a2a',1.4);E(c,lx,top+66*big,9*big,11*big,i===1?GOLD:RED);}
 }
 function cart(c,s,big,kind){

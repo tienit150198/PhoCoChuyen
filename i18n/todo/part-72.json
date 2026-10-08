@@ -1,5 +1,69 @@
 [
  {
+  "vi": "Chan nước, dừng muôi",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nồi: nước trong, nước béo hay nồi nhỏ không mì chính. Bấm [[Chan nước dùng]], nước dâng trong tô; bấm [[Dừng muôi]] khi nước tới vạch xanh khách dặn.",
+  "en": ""
+ },
+ {
+  "vi": "Mang về",
+  "en": ""
+ },
+ {
+  "vi": "Lấy hộp mang về: tái để riêng, chan túi nước tới vạch rồi [[Buộc túi nước]]. Tổ thợ của anh Tuấn đặt bốn suất một lúc.",
+  "en": ""
+ },
+ {
+  "vi": "Nồi sắp cạn",
+  "en": ""
+ },
+ {
+  "vi": "Bấm [[Châm nồi]]: thêm nước và một mẻ xương. Nồi tụt nhiệt, nổi bọt, nhạt đi: chờ lăn tăn lại, hớt bọt, nếm lại rồi chan.",
+  "en": ""
+ },
+ {
+  "vi": "Học nghề với bác Lâm",
+  "en": ""
+ },
+ {
+  "vi": "Ba khách đầu bác Lâm đứng cạnh bếp: lỡ sai chỗ nào bác nhắc một lần trước khi bưng ra. Xong ba khách là bạn tự đứng bếp.",
+  "en": ""
+ },
+ {
+  "vi": "👂 Bấm [[Hỏi khách gọi gì]]: xem tô, thịt, lời dặn (ít nước, không hành, nước béo, không mì chính).",
+  "en": ""
+ },
+ {
+  "vi": "🍜 Lấy tô, [[Nhúng rổ bánh]] ba bốn lượt, xếp thịt, [[Rắc hành]].",
+  "en": ""
+ },
+ {
+  "vi": "🫗 Chọn nồi, [[Chan nước dùng]], [[Dừng muôi]] đúng vạch.",
+  "en": ""
+ },
+ {
+  "vi": "🥖 Thêm quẩy, đĩa rau nếu khách gọi, rồi [[BƯNG PHỞ RA]] khi còn nóng hổi.",
+  "en": ""
+ },
+ {
+  "vi": "🍲 Nước trong, nóng, vừa miệng: lửa lăn tăn, hớt bọt, nếm trước khi bán.",
+  "en": ""
+ },
+ {
+  "vi": "🍜 Bánh tơi mềm: ba bốn lượt nhúng.",
+  "en": ""
+ },
+ {
+  "vi": "🫗 Nước đúng mức khách dặn, không tràn mép tô.",
+  "en": ""
+ },
+ {
+  "vi": "🧅 Nhớ lời dặn: không hành, nhiều hành, nước béo, không mì chính, tái để riêng.",
+  "en": ""
+ },
+ {
   "vi": "⏱️ Bưng ra khi phở còn nóng hổi; trời gió mùa phở nguội nhanh hơn.",
   "en": ""
  },
@@ -1733,70 +1797,6 @@
  },
  {
   "vi": "Không thù lao, khách từ chối, 1★, báo cáo lên app. Hôm sau thanh tra dược tới làm việc.",
-  "en": ""
- },
- {
-  "vi": "Giao quá số lượng hoặc giao cho người không có tên trên phiếu",
-  "en": ""
- },
- {
-  "vi": "Không thù lao, review chỉ còn 2–3★, cô Thu gọi khách mang trả.",
-  "en": ""
- },
- {
-  "vi": "Từ chối phiếu hợp lệ, hoặc từ chối khi chỉ cần đổi hộp, đổi lô",
-  "en": ""
- },
- {
-  "vi": "Không thù lao, khách về tay không, review khoảng 3★.",
-  "en": ""
- },
- {
-  "vi": "Chuyển cô Thu hay đổi hộp khi mọi thứ đã đúng",
-  "en": ""
- },
- {
-  "vi": "Chỉ được “Đạt” hoặc “Chưa đúng”; khách chờ lâu, review tụt còn 4★.",
-  "en": ""
- },
- {
-  "vi": "Đóng dấu khi chưa làm bước kiểm bắt buộc",
-  "en": ""
- },
- {
-  "vi": "Tính là sai, cộng điểm rủi ro. Từ phiếu nhắc thứ ba trong ngày bị trừ tới 20 xu.",
-  "en": ""
- },
- {
-  "vi": "Dồn nhiều điểm rủi ro tới ngày kiểm tra (mỗi 4 ngày)",
-  "en": ""
- },
- {
-  "vi": "Đoàn lập biên bản, trừ tới 60 xu. Không sai sót nào thì được thưởng 25 xu.",
-  "en": ""
- },
- {
-  "vi": "Quên ghi nhiệt độ, để hộp quá hạn trên kệ, lỡ hẹn khách quen",
-  "en": ""
- },
- {
-  "vi": "Cộng điểm rủi ro cho đợt kiểm tra. Khách quen lỡ đợt thì mua nơi khác, giảm tin cậy.",
-  "en": ""
- },
- {
-  "vi": "📦 Dock [[Kho hàng]]: chọn nhà cung cấp, nhập số hộp, bấm [[Đặt nhập]]. Chỉ đặt được lô hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "🚚 Thiện Tâm chạy 4 chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau khoảng 1 tiếng. Giá niêm yết.",
-  "en": ""
- },
- {
-  "vi": "🏬 Kho tổng Bình An: rẻ hơn (×0,85), đặt trước 13:00 thì chiều nay có, đặt sau thì xe đêm tới trước giờ mở cửa.",
-  "en": ""
- },
- {
-  "vi": "🔢 Kiện tới thì đếm đúng số hộp trong kiện, bấm [[Kiểm & nhập kho]].",
   "en": ""
  }
 ]

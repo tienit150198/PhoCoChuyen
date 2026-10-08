@@ -1,5 +1,137 @@
 [
  {
+  "vi": "Ân nhân thư viện",
+  "en": ""
+ },
+ {
+  "vi": "Góp 50.000 xu thư viện",
+  "en": ""
+ },
+ {
+  "vi": "vị món",
+  "en": ""
+ },
+ {
+  "vi": "giá cả (không nói số)",
+  "en": ""
+ },
+ {
+  "vi": "nhanh chậm",
+  "en": ""
+ },
+ {
+  "vi": "bày trí/lên hình",
+  "en": ""
+ },
+ {
+  "vi": "tiện lợi",
+  "en": ""
+ },
+ {
+  "vi": "nhạc/tiếng ồn",
+  "en": ""
+ },
+ {
+  "vi": "thời tiết",
+  "en": ""
+ },
+ {
+  "vi": "đời mình",
+  "en": ""
+ },
+ {
+  "vi": "chuyện hẻm",
+  "en": ""
+ },
+ {
+  "vi": "so với trước (không nêu thương hiệu)",
+  "en": ""
+ },
+ {
+  "vi": "tay nghề",
+  "en": ""
+ },
+ {
+  "vi": "chuyện trên mạng",
+  "en": ""
+ },
+ {
+  "vi": "u là trời",
+  "en": ""
+ },
+ {
+  "vi": "gòy soq",
+  "en": ""
+ },
+ {
+  "vi": "tới công chuyện",
+  "en": ""
+ },
+ {
+  "vi": "hết nước chấm",
+  "en": ""
+ },
+ {
+  "vi": "đỉnh",
+  "en": ""
+ },
+ {
+  "vi": "đỉnh nóc",
+  "en": ""
+ },
+ {
+  "vi": "out trình",
+  "en": ""
+ },
+ {
+  "vi": "ổn áp",
+  "en": ""
+ },
+ {
+  "vi": "xịn xò",
+  "en": ""
+ },
+ {
+  "vi": "ét o ét",
+  "en": ""
+ },
+ {
+  "vi": "gét gô",
+  "en": ""
+ },
+ {
+  "vi": "xu cà na",
+  "en": ""
+ },
+ {
+  "vi": "hên lắm mới xui được vậy",
+  "en": ""
+ },
+ {
+  "vi": "về kể không ai tin",
+  "en": ""
+ },
+ {
+  "vi": "giỡn vậy có nên không trời",
+  "en": ""
+ },
+ {
+  "vi": "ê khó nha bro",
+  "en": ""
+ },
+ {
+  "vi": "chưa đủ wow",
+  "en": ""
+ },
+ {
+  "vi": "đọc STK",
+  "en": ""
+ },
+ {
+  "vi": "tích lũy tài sản",
+  "en": ""
+ },
+ {
   "vi": "động lực thoái hóa",
   "en": ""
  },
@@ -924,11 +1056,11 @@
   "en": ""
  },
  {
-  "vi": "300 xu chơi hội chợ 🎪",
+  "vi": "300 xu chơi chợ đen 🎪",
   "en": ""
  },
  {
-  "vi": "Phố gửi bạn 300 xu vào ví để vui hội chợ! Tỷ lệ thắng đã tăng, ghé các gian chơi và thử vận may nhé 💛",
+  "vi": "Phố gửi bạn 300 xu vào ví để vui chợ đen! Tỷ lệ thắng đã tăng, ghé các gian chơi và thử vận may nhé 💛",
   "en": ""
  },
  {
@@ -1665,138 +1797,6 @@
  },
  {
   "vi": "Mua ở đây yên tâm, không sợ trái dập.",
-  "en": ""
- },
- {
-  "vi": "Ngõ sạch bong, cảm ơn tổ thu gom.",
-  "en": ""
- },
- {
-  "vi": "Tối nào cũng đúng giờ, quý lắm.",
-  "en": ""
- },
- {
-  "vi": "Nhắc phân loại dễ nghe ghê.",
-  "en": ""
- },
- {
-  "vi": "Làm cực mà lúc nào cũng vui vẻ.",
-  "en": ""
- },
- {
-  "vi": "Thông một phát nước rút ào ào.",
-  "en": ""
- },
- {
-  "vi": "Báo giá rõ ràng, làm đúng giá.",
-  "en": ""
- },
- {
-  "vi": "Dọn sạch sẽ, không một vết bẩn.",
-  "en": ""
- },
- {
-  "vi": "Giải thích dễ hiểu, cảm ơn thợ.",
-  "en": ""
- },
- {
-  "vi": "Dĩa cơm đầy đặn, xới nhanh tay.",
-  "en": ""
- },
- {
-  "vi": "Nhớ đúng từng sticker tụi mình dặn.",
-  "en": ""
- },
- {
-  "vi": "Cắt thẳng tắp, có bao kiếng đàng hoàng.",
-  "en": ""
- },
- {
-  "vi": "Canh bấm máy đúng lúc, không phải chụp lại.",
-  "en": ""
- },
- {
-  "vi": "Nóc tủ vuốt tay không dính bụi.",
-  "en": ""
- },
- {
-  "vi": "Bình hoa đặt lại y chỗ cũ.",
-  "en": ""
- },
- {
-  "vi": "Nhớ đúng lời dặn, bàn làm việc không ai động.",
-  "en": ""
- },
- {
-  "vi": "Sàn lau nước sạch, thơm mà không nồng.",
-  "en": ""
- },
- {
-  "vi": "Nhớ cả lời dặn kiêng muối của ông.",
-  "en": ""
- },
- {
-  "vi": "Sổ chợ rõ ràng, hóa đơn đủ cả.",
-  "en": ""
- },
- {
-  "vi": "Tìm sách trúng phóc, chẳng phải chờ.",
-  "en": ""
- },
- {
-  "vi": "Phí phạt rõ ràng, có biên lai.",
-  "en": ""
- },
- {
-  "vi": "Gợi ý cuốn sách đúng gu luôn.",
-  "en": ""
- },
- {
-  "vi": "Phòng đọc yên mà ai cũng được nói nhẹ nhàng.",
-  "en": ""
- },
- {
-  "vi": "Bé về nhà vui, kể về cô suốt bữa tối.",
-  "en": ""
- },
- {
-  "vi": "Nhớ từng dòng giấy dặn, không phải nhắc.",
-  "en": ""
- },
- {
-  "vi": "Nhật ký trong ngày rõ ràng, kể thật.",
-  "en": ""
- },
- {
-  "vi": "Nước dùng trong, ngọt xương.",
-  "en": ""
- },
- {
-  "vi": "Nhớ cả lời dặn không mì chính.",
-  "en": ""
- },
- {
-  "vi": "Bưng ra nóng hổi, húp cạn tô.",
-  "en": ""
- },
- {
-  "vi": "Món quà đúng ý bé luôn.",
-  "en": ""
- },
- {
-  "vi": "Tư vấn kỹ, không bán thừa món nào.",
-  "en": ""
- },
- {
-  "vi": "Gói quà xinh quá trời.",
-  "en": ""
- },
- {
-  "vi": "Tìm đúng món cho bé rồi.",
-  "en": ""
- },
- {
-  "vi": "Chuyến đi đáng nhớ lắm!",
   "en": ""
  }
 ]

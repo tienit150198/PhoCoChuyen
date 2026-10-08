@@ -1,5 +1,85 @@
 [
  {
+  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, mùa mưa bão, anh Khải soi KPI, nắng nóng, trực thay ca tối.",
+  "en": ""
+ },
+ {
+  "vi": "👴 Ông Ba gọi mười lần, bé Na nghịch máy, DJ Long xin “một câu”, mèo kẹt trên cây từ ba giờ sáng.",
+  "en": ""
+ },
+ {
+  "vi": "👔 “Người quan trọng” đòi ưu tiên, khách say đòi taxi, karaoke hàng xóm, gọi nhầm đặt phở.",
+  "en": ""
+ },
+ {
+  "vi": "📊 Sếp ép KPI, đồng nghiệp rủ cúp máy khỏi hỏi, tắt ghi âm: nói rõ, báo đúng người.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi bộ đàm",
+  "en": ""
+ },
+ {
+  "vi": "Nhấc máy",
+  "en": ""
+ },
+ {
+  "vi": "Tìm chỗ người gọi",
+  "en": ""
+ },
+ {
+  "vi": "Trấn an người gọi",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra cuộc gọi",
+  "en": ""
+ },
+ {
+  "vi": "GỬI ĐỘI",
+  "en": ""
+ },
+ {
+  "vi": "CHUYỂN ĐÚNG NƠI",
+  "en": ""
+ },
+ {
+  "vi": "Giữ máy tới khi đội tới",
+  "en": ""
+ },
+ {
+  "vi": "Kết thúc cuộc gọi",
+  "en": ""
+ },
+ {
+  "vi": "NHẤC THEO THỨ TỰ",
+  "en": ""
+ },
+ {
+  "vi": "Ghi vào sổ nhật ký",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ngồi ghế cao ở hồ bơi phường: kiểm hồ trước khi mở, quét đủ năm khu, thổi còi đúng luật, xuống cứu khi cần và đóng hồ khi có sấm. Anh Hải kèm ba việc đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm từng món trong danh sách, [[Ghi sổ nước]] đúng số que thử, món hỏng thì tự xử lý hoặc báo đúng người. An toàn thì [[Mở cổng đón khách]], chưa thì [[Hoãn mở, chờ kỹ thuật xử lý]].",
+  "en": ""
+ },
+ {
+  "vi": "[[BẮT ĐẦU VÒNG QUÉT]], chạm đủ năm khu trong một phút. Chạm khu đã nhìn để [[Thổi còi nhắc…]] hoặc báo động, rồi [[KẾT THÚC VÒNG QUÉT]].",
+  "en": ""
+ },
+ {
+  "vi": "Cứu người",
+  "en": ""
+ },
+ {
+  "vi": "Người đuối nước im lặng, dựng đứng, không tiến lên được: [[Còi dài: có người đang chìm!]], gọi hỗ trợ, với hoặc ném trước, xuống nước thì mang phao ống, xem thở rồi sơ cứu.",
+  "en": ""
+ },
+ {
   "vi": "Soát người ở cổng",
   "en": ""
  },
@@ -1469,58 +1549,6 @@
  },
  {
   "vi": "🛍️ Thẻ dùng để trả học phí, đi cửa sau, mua nhẫn và lo cưới. Chọn cách trả mặc định ở mục “Khi mua sắm cá nhân”.",
-  "en": ""
- },
- {
-  "vi": "🧾 Cứ 7 ngày sống có một sao kê. Hạn trả là 3 ngày sau sao kê.",
-  "en": ""
- },
- {
-  "vi": "✅ [[Trả hết sao kê]] trước hạn thì không mất lãi. [[Trả tối thiểu]] (10% sao kê, ít nhất 10 xu) thì phần còn lại chịu lãi 0,5%/ngày.",
-  "en": ""
- },
- {
-  "vi": "⏰ Trễ hạn: phạt 9 xu, trừ điểm tín dụng, thẻ tạm khóa tới khi trả phần quá hạn.",
-  "en": ""
- },
- {
-  "vi": "🤖 Chọn “Tự động trả toàn bộ sao kê” hoặc “Tự động trả tối thiểu” rồi bấm [[Lưu cách tự động trả]] để khỏi quên.",
-  "en": ""
- },
- {
-  "vi": "🏧 [[Ứng tiền mặt]]: phí 4% (ít nhất 3 xu), lãi tính ngay, tối đa 50% hạn mức. Chỉ dùng khi thật cần.",
-  "en": ""
- },
- {
-  "vi": "Vay tiền và điểm tín dụng",
-  "en": ""
- },
- {
-  "vi": "💸 Vay tiêu dùng: tiền vào tài khoản của bạn, lãi 4% mỗi kỳ 7 ngày.",
-  "en": ""
- },
- {
-  "vi": "🏪 Vay mở rộng tiệm: tiền vào thẳng quỹ một tiệm bạn làm chủ, lãi 3,5% mỗi kỳ.",
-  "en": ""
- },
- {
-  "vi": "📆 Vay 50–5.000 xu, kỳ hạn 14, 21 hoặc 28 ngày, tối đa 2 khoản cùng lúc. Xem lịch trả rồi bấm [[Xem lại & ký hợp đồng]].",
-  "en": ""
- },
- {
-  "vi": "🔁 Tới ngày trả góp, ngân hàng tự trích từ tài khoản (thiếu thì lấy thêm tiền mặt). Trễ hạn phạt 5% kỳ đó, ít nhất 3 xu.",
-  "en": ""
- },
- {
-  "vi": "⚠️ Trễ hạn (thẻ hay khoản vay) 3 lần là bị ghi nợ xấu 30 ngày: không mở thẻ, không vay mới, thẻ tạm ngưng.",
-  "en": ""
- },
- {
-  "vi": "📈 Điểm tín dụng 300–850, bắt đầu 650. Trả đúng hạn, dư nợ thẻ dưới 30% hạn mức, thu nhập đều thì điểm tăng.",
-  "en": ""
- },
- {
-  "vi": "📉 Mỗi lần nộp hồ sơ vay hay mở thẻ, điểm giảm một chút. Đừng nộp dồn dập.",
   "en": ""
  }
 ]

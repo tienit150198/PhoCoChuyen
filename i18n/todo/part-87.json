@@ -1,5 +1,137 @@
 [
  {
+  "vi": "Bột sắn",
+  "en": ""
+ },
+ {
+  "vi": "Nước dừa",
+  "en": ""
+ },
+ {
+  "vi": "Trà gừng",
+  "en": ""
+ },
+ {
+  "vi": "Dưa lưới",
+  "en": ""
+ },
+ {
+  "vi": "Đu đủ",
+  "en": ""
+ },
+ {
+  "vi": "Dứa cắt",
+  "en": ""
+ },
+ {
+  "vi": "Táo cắt",
+  "en": ""
+ },
+ {
+  "vi": "Kem sô cô la",
+  "en": ""
+ },
+ {
+  "vi": "Kem sầu riêng",
+  "en": ""
+ },
+ {
+  "vi": "Bánh phô mai",
+  "en": ""
+ },
+ {
+  "vi": "Bánh chuối",
+  "en": ""
+ },
+ {
+  "vi": "Trà vải",
+  "en": ""
+ },
+ {
+  "vi": "Trà sen",
+  "en": ""
+ },
+ {
+  "vi": "Trà sữa khoai môn",
+  "en": ""
+ },
+ {
+  "vi": "Sữa chua uống",
+  "en": ""
+ },
+ {
+  "vi": "Bó sen",
+  "en": ""
+ },
+ {
+  "vi": "Cẩm chướng",
+  "en": ""
+ },
+ {
+  "vi": "Cẩm tú cầu",
+  "en": ""
+ },
+ {
+  "vi": "Bó hoa khô",
+  "en": ""
+ },
+ {
+  "vi": "Dầu ăn",
+  "en": ""
+ },
+ {
+  "vi": "Túi đường",
+  "en": ""
+ },
+ {
+  "vi": "Túi muối",
+  "en": ""
+ },
+ {
+  "vi": "Khăn giấy",
+  "en": ""
+ },
+ {
+  "vi": "Xà phòng",
+  "en": ""
+ },
+ {
+  "vi": "Áo sơ mi",
+  "en": ""
+ },
+ {
+  "vi": "Áo khoác",
+  "en": ""
+ },
+ {
+  "vi": "Quần short",
+  "en": ""
+ },
+ {
+  "vi": "Đôi tất",
+  "en": ""
+ },
+ {
+  "vi": "Túi vải",
+  "en": ""
+ },
+ {
+  "vi": "Đồ bộ",
+  "en": ""
+ },
+ {
+  "vi": "Trà đào cam sả",
+  "en": ""
+ },
+ {
+  "vi": "Trà thạch đào",
+  "en": ""
+ },
+ {
+  "vi": "Ống hút",
+  "en": ""
+ },
+ {
   "vi": "Nĩa, muỗng",
   "en": ""
  },
@@ -1665,138 +1797,6 @@
  },
  {
   "vi": "trong quán hơi ám mùi dầu mỡ, về áo còn mùi",
-  "en": ""
- },
- {
-  "vi": "gần thùng rác nên thoảng mùi khó chịu",
-  "en": ""
- },
- {
-  "vi": "mùi nước rửa chén hắc quá",
-  "en": ""
- },
- {
-  "vi": "vào quán là thấy thơm, dễ chịu",
-  "en": ""
- },
- {
-  "vi": "quán thơm mùi bánh nướng, đói bụng liền",
-  "en": ""
- },
- {
-  "vi": "vào cửa là thơm mùi cà phê rang",
-  "en": ""
- },
- {
-  "vi": "thơm mùi nước dùng từ đầu hẻm",
-  "en": ""
- },
- {
-  "vi": "quán thơm mùi trà với đường nâu",
-  "en": ""
- },
- {
-  "vi": "thoảng mùi chè mới pha, mát cả người",
-  "en": ""
- },
- {
-  "vi": "Ám mùi.",
-  "en": ""
- },
- {
-  "vi": "Thơm.",
-  "en": ""
- },
- {
-  "vi": "Ruồi muỗi",
-  "en": ""
- },
- {
-  "vi": "có ruồi",
-  "en": ""
- },
- {
-  "vi": "có vài con ruồi bay quanh bàn",
-  "en": ""
- },
- {
-  "vi": "ngồi một lúc là muỗi cắn chân",
-  "en": ""
- },
- {
-  "vi": "ruồi bu quanh xô đá, nhìn hơi ngại",
-  "en": ""
- },
- {
-  "vi": "Ruồi.",
-  "en": ""
- },
- {
-  "vi": "Nhạc",
-  "en": ""
- },
- {
-  "vi": "nhạc mở to",
-  "en": ""
- },
- {
-  "vi": "nhạc mở to quá, nói chuyện phải hét",
-  "en": ""
- },
- {
-  "vi": "nhạc xập xình, không hợp ngồi làm việc",
-  "en": ""
- },
- {
-  "vi": "nhạc lặp đi lặp lại một bài, nghe muốn thuộc",
-  "en": ""
- },
- {
-  "vi": "nhạc nhẹ nhàng, ngồi cả buổi không chán",
-  "en": ""
- },
- {
-  "vi": "nhạc chill đúng gu, âm lượng vừa",
-  "en": ""
- },
- {
-  "vi": "nhạc xưa nghe mà thấy thương",
-  "en": ""
- },
- {
-  "vi": "Nhạc to.",
-  "en": ""
- },
- {
-  "vi": "Nhạc hay.",
-  "en": ""
- },
- {
-  "vi": "Máy lạnh, quạt",
-  "en": ""
- },
- {
-  "vi": "nóng, máy lạnh yếu",
-  "en": ""
- },
- {
-  "vi": "máy lạnh yếu, ngồi mồ hôi rịn ra",
-  "en": ""
- },
- {
-  "vi": "quạt thổi thẳng vào mặt, lạnh buốt",
-  "en": ""
- },
- {
-  "vi": "trong tiệm hơi hầm, đứng lâu thấy bí",
-  "en": ""
- },
- {
-  "vi": "trưa nắng chang chang mà trong này cũng hầm hập",
-  "en": ""
- },
- {
-  "vi": "nắng hắt vào tận chỗ ngồi, nóng ran",
   "en": ""
  }
 ]

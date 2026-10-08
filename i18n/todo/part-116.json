@@ -1,5 +1,461 @@
 [
  {
+  "vi": "Mic đã ngắt kết nối.",
+  "en": ""
+ },
+ {
+  "vi": "Không thấy micro trên máy này.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa kết nối được mic, thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xin hát cùng được, thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Người hát chưa trả lời, lát thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mic đang bận, thử lại sau ít phút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Lần này bạn nghe cùng mọi người nhé 🎧",
+  "en": ""
+ },
+ {
+  "vi": "Người hát đã tắt mic hát cùng của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Mic hát cùng đã tắt.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được bảng xếp hạng.",
+  "en": ""
+ },
+ {
+  "vi": "Tài sản ròng như ở “Tiền của bạn”, cộng tiết kiệm Mây, xe và quầy riêng theo giá bán lại, Mây Coin và vàng theo giá vốn, trừ mọi nợ kể cả vay nóng chợ đen. Không tính Quỹ chung. Bằng nhau: ai nhiều tài sản hơn, rồi ai đạt trước.",
+  "en": ""
+ },
+ {
+  "vi": "Xếp theo số danh hiệu trò chơi đã có, rồi danh hiệu bí mật, rồi ai có sớm hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Xếp theo số chứng chỉ đã có, rồi tổng điểm thi cao nhất, rồi ai có sớm hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Điểm là XP trưởng thành: XP ở mọi nơi làm, cộng 80 cho mỗi nơi đã phục vụ khách. Bằng điểm thì ai thạo nhiều nghề hơn, rồi làm nhiều ngày hơn đứng trước.",
+  "en": ""
+ },
+ {
+  "vi": "Tài sản ròng · coin/vàng tính theo giá vốn · không tính Quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "bí mật",
+  "en": ""
+ },
+ {
+  "vi": "điểm thi",
+  "en": ""
+ },
+ {
+  "vi": "nghề thạo",
+  "en": ""
+ },
+ {
+  "vi": "danh hiệu",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ai giữ",
+  "en": ""
+ },
+ {
+  "vi": "Cập nhật hằng ngày",
+  "en": ""
+ },
+ {
+  "vi": "Tuần trước",
+  "en": ""
+ },
+ {
+  "vi": "Danh hiệu tuần này",
+  "en": ""
+ },
+ {
+  "vi": "🏅 Danh hiệu tuần này",
+  "en": ""
+ },
+ {
+  "vi": "Bảng này chỉ tính người chơi theo câu chuyện: chơi tự do không có ví riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Tài sản ròng của bạn chưa trên 0 xu. Trả bớt nợ, để dành thêm là có tên trên bảng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chưa có danh hiệu nào. Hoàn thành việc đầu tiên là có ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chưa có chứng chỉ nào. Thi đỗ chứng chỉ đầu tiên để có tên trên bảng này.",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn thành việc đầu tiên để có tên trên bảng này.",
+  "en": ""
+ },
+ {
+  "vi": "Vị trí của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Tên hiện là",
+  "en": ""
+ },
+ {
+  "vi": "Tên bạn đang ẩn.",
+  "en": ""
+ },
+ {
+  "vi": "Hiện tên tôi",
+  "en": ""
+ },
+ {
+  "vi": "Đặt tên cho nhân vật (khác “Mây”) để có tên trên bảng.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt tên nhân vật",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ai lên bảng",
+  "en": ""
+ },
+ {
+  "vi": "Có tài sản ròng trên 0 xu là có tên trên bảng này.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ai có danh hiệu",
+  "en": ""
+ },
+ {
+  "vi": "Làm việc ở phố để nhận danh hiệu đầu tiên nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ai có chứng chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Thi đỗ chứng chỉ đầu tiên để mở hàng bảng này nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng còn trống",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ai hiện tên trên bảng. Làm việc đầu tiên rồi bật “Hiện tên tôi” để mở hàng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn bảng",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được bảng.",
+  "en": ""
+ },
+ {
+  "vi": "Đang tải bảng xếp hạng…",
+  "en": ""
+ },
+ {
+  "vi": "Tuần này chưa ai dự cưới",
+  "en": ""
+ },
+ {
+  "vi": "Dự một đám cưới để có tên.",
+  "en": ""
+ },
+ {
+  "vi": "Khách mời",
+  "en": ""
+ },
+ {
+  "vi": "Loại bảng",
+  "en": ""
+ },
+ {
+  "vi": "Ai dày dạn nhất phố? Mọi con số tính từ những gì đã làm trong game.",
+  "en": ""
+ },
+ {
+  "vi": "Không ai thấy tên đăng nhập hay thông tin khác của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản hiện tên hiển thị theo mặc định.",
+  "en": ""
+ },
+ {
+  "vi": "Khách chỉ hiện tên khi tự bật.",
+  "en": ""
+ },
+ {
+  "vi": "Ẩn tên tôi",
+  "en": ""
+ },
+ {
+  "vi": "Hiện tên tôi trên bảng xếp hạng",
+  "en": ""
+ },
+ {
+  "vi": "Khách chỉ hiện tên nhân vật khi bạn bật.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa lưu được. Thử lại sau nhé.",
+  "en": ""
+ },
+ {
+  "vi": "tinh thần",
+  "en": ""
+ },
+ {
+  "vi": "Tự chọn cách xả stress",
+  "en": ""
+ },
+ {
+  "vi": "Cả xóm góp",
+  "en": ""
+ },
+ {
+  "vi": "Cả xóm góp tay",
+  "en": ""
+ },
+ {
+  "vi": "Xả stress kiểu gì đây?",
+  "en": ""
+ },
+ {
+  "vi": "Dễ thương ghê 💛",
+  "en": ""
+ },
+ {
+  "vi": "Cả chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn mọi người 💛",
+  "en": ""
+ },
+ {
+  "vi": "Bạn giúp thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Giờ sao?",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tính sao?",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Để sau\"",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Có chuyện đang chờ bạn",
+  "en": ""
+ },
+ {
+  "vi": "Đời thường",
+  "en": ""
+ },
+ {
+  "vi": "Tình làng nghĩa xóm",
+  "en": ""
+ },
+ {
+  "vi": "🎈 Xả stress",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký đời thường",
+  "en": ""
+ },
+ {
+  "vi": "· 💬 có chuyện chờ",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện đời thường có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có chuyện gì. Cứ sống, chuyện sẽ tới.",
+  "en": ""
+ },
+ {
+  "vi": "Ăn thêm, trả bằng ví",
+  "en": ""
+ },
+ {
+  "vi": "· hôm nay xả rồi",
+  "en": ""
+ },
+ {
+  "vi": "· mỗi ngày một lần",
+  "en": ""
+ },
+ {
+  "vi": "Có chuyện chờ bạn:",
+  "en": ""
+ },
+ {
+  "vi": "Chat · đang kết nối…",
+  "en": ""
+ },
+ {
+  "vi": "💬 Chat đang kết nối… chờ xíu nha.",
+  "en": ""
+ },
+ {
+  "vi": "Sưu tập",
+  "en": ""
+ },
+ {
+  "vi": "Phi cơ & du thuyền",
+  "en": ""
+ },
+ {
+  "vi": "Mở tiệc",
+  "en": ""
+ },
+ {
+  "vi": "Khóa học",
+  "en": ""
+ },
+ {
+  "vi": "Mai bay tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay đã đi",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Phỏng vấn",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời câu hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một câu trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Chọn giấy tờ",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Vào nhà",
+  "en": ""
+ },
+ {
+  "vi": "Dọn về ở",
+  "en": ""
+ },
+ {
+  "vi": "Mai đi tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay đi rồi",
+  "en": ""
+ },
+ {
+  "vi": "Mai mở tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay mở tiệc rồi",
+  "en": ""
+ },
+ {
+  "vi": "✓ Tốt nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Mai học tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay học rồi",
+  "en": ""
+ },
+ {
+  "vi": "Trời đang có pháo hoa",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một chỗ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn số",
+  "en": ""
+ },
+ {
+  "vi": "chưa có visa",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Quà",
+  "en": ""
+ },
+ {
+  "vi": "📷 Chụp ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Ví chưa đủ",
+  "en": ""
+ },
+ {
+  "vi": "🛡️ Bảo hiểm",
+  "en": ""
+ },
+ {
+  "vi": "Phỏng vấn: trả lời thật, có vé khứ hồi.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu hay sai một giấy là bị trả hồ sơ, phí không hoàn.",
+  "en": ""
+ },
+ {
   "vi": "Các phòng",
   "en": ""
  },
@@ -1341,462 +1797,6 @@
  },
  {
   "vi": "Spa Mèo Mập",
-  "en": ""
- },
- {
-  "vi": "Thợ người chơi",
-  "en": ""
- },
- {
-  "vi": "🛍️ Mua đồ diện",
-  "en": ""
- },
- {
-  "vi": "Đi dạo cùng",
-  "en": ""
- },
- {
-  "vi": "Về quê",
-  "en": ""
- },
- {
-  "vi": "💗 Ủng hộ Chân Nhỏ",
-  "en": ""
- },
- {
-  "vi": "Đồ",
-  "en": ""
- },
- {
-  "vi": "Chưa lưu được ảnh.",
-  "en": ""
- },
- {
-  "vi": "Dây đèn",
-  "en": ""
- },
- {
-  "vi": "Hoa đào",
-  "en": ""
- },
- {
-  "vi": "Lồng đèn",
-  "en": ""
- },
- {
-  "vi": "Pháo hoa",
-  "en": ""
- },
- {
-  "vi": "Mặt cười",
-  "en": ""
- },
- {
-  "vi": "Trong trẻo",
-  "en": ""
- },
- {
-  "vi": "Mát",
-  "en": ""
- },
- {
-  "vi": "An khang thịnh vượng",
-  "en": ""
- },
- {
-  "vi": "Rước đèn tháng Tám",
-  "en": ""
- },
- {
-  "vi": "Thơm ngát đầm sen",
-  "en": ""
- },
- {
-  "vi": "Đèn lồng phố Hội",
-  "en": ""
- },
- {
-  "vi": "Cute hết nấc",
-  "en": ""
- },
- {
-  "vi": "Trăm năm hạnh phúc",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng tân cử nhân",
-  "en": ""
- },
- {
-  "vi": "Nắng, gió và sóng",
-  "en": ""
- },
- {
-  "vi": "Chiều mưa phố mình",
-  "en": ""
- },
- {
-  "vi": "Tuổi mới thật vui",
-  "en": ""
- },
- {
-  "vi": "Pháo hoa rực trời",
-  "en": ""
- },
- {
-  "vi": "Tuổi học trò",
-  "en": ""
- },
- {
-  "vi": "Mùa an lành",
-  "en": ""
- },
- {
-  "vi": "Hội chợ đêm",
-  "en": ""
- },
- {
-  "vi": "Đèn giăng rực rỡ",
-  "en": ""
- },
- {
-  "vi": "Tết rộn ràng",
-  "en": ""
- },
- {
-  "vi": "Xuân sang phát tài",
-  "en": ""
- },
- {
-  "vi": "Pastel ngọt",
-  "en": ""
- },
- {
-  "vi": "Ngọt như kẹo bông",
-  "en": ""
- },
- {
-  "vi": "Cuộn phim",
-  "en": ""
- },
- {
-  "vi": "PHIM MÀU 400",
-  "en": ""
- },
- {
-  "vi": "Dán sticker",
-  "en": ""
- },
- {
-  "vi": "Cute xỉu luôn",
-  "en": ""
- },
- {
-  "vi": "Phố cổ đêm",
-  "en": ""
- },
- {
-  "vi": "Đèn lồng soi bóng",
-  "en": ""
- },
- {
-  "vi": "Tăng ca, thưởng năng suất",
-  "en": ""
- },
- {
-  "vi": "Việc gấp",
-  "en": ""
- },
- {
-  "vi": "🏢 Ngày điều hành tốt: trong ca, tự xếp ít nhất 1 việc ở 🗓️ Điều phối, rồi khép ngày với điểm điều hành từ 60/100.",
-  "en": ""
- },
- {
-  "vi": "Điểm = ½ tỷ lệ đúng giờ + 0,3 × tinh thần + 20, trừ 6 mỗi phàn nàn và 2 mỗi % vượt quỹ lương. Việc bỏ trống, việc cần quyết để tới cuối ngày đều thêm phàn nàn.",
-  "en": ""
- },
- {
-  "vi": "🔁 Xoay ca: ai đã làm 2 ngày liền thì sáng hôm sau dễ 🥱 mệt (1 phần 2), và hôm đó làm dễ trễ hơn hẳn. Đừng để ai làm ngày thứ 3 liền, cho nghỉ 1 ngày là hết mệt.",
-  "en": ""
- },
- {
-  "vi": "Số ngày điều hành tốt đếm lại từ 0 sau mỗi lần lên bậc.",
-  "en": ""
- },
- {
-  "vi": "🪜 Cách lên bậc",
-  "en": ""
- },
- {
-  "vi": "1️⃣ Ngày chắc tay = ngày tốt",
-  "en": ""
- },
- {
-  "vi": "2️⃣ Giữ tin tưởng sếp",
-  "en": ""
- },
- {
-  "vi": "3️⃣ Đủ hai mốc → hẹn xét",
-  "en": ""
- },
- {
-  "vi": "Ngày chắc tay: nộp ít nhất 1 hồ sơ, không trễ hạn, không lỗi nặng. Mỗi ngày như vậy cộng 1 ngày tốt và 1 ngày vào 🧭 Lộ trình. Lộ trình bậc 2 cần 6 ngày chắc tay và tin tưởng từ 55, bậc 3 cần 10 ngày và tin tưởng từ 70. Tin tưởng lên khi nộp sớm, bắt đúng lỗi; xuống khi trễ hạn, duyệt nhầm. Đủ mốc thì cuối ngày tự lên bậc lộ trình.",
-  "en": ""
- },
- {
-  "vi": "Ngày tốt: ca thường xong từ 2 việc, đánh giá trong ngày từ ★3.5 nếu có. Nghề văn phòng theo kết quả “ngày chắc tay”; ca quản lý đạt chất lượng từ 60%.",
-  "en": ""
- },
- {
-  "vi": "Không bao giờ bị giáng chức. Ngày chưa tốt không cộng ngày tốt và vẫn tính vào tỷ lệ ngày làm.",
-  "en": ""
- },
- {
-  "vi": "Mỗi bậc: tăng lương",
-  "en": ""
- },
- {
-  "vi": "Mỗi bậc",
-  "en": ""
- },
- {
-  "vi": "(nhân viên + phụ việc thời vụ)",
-  "en": ""
- },
- {
-  "vi": "🏢 Phòng sếp",
-  "en": ""
- },
- {
-  "vi": "🏮 Hội buôn phố",
-  "en": ""
- },
- {
-  "vi": "Mỗi câu có cách tốt nhất, cách tạm được và cách sếp chưa ưng (0 điểm). Có câu 0 điểm là hẹn xét lại sau 3 ngày làm. Chọn cách đúng quy trình, có trách nhiệm nhất.",
-  "en": ""
- },
- {
-  "vi": "💰 Lương mới:",
-  "en": ""
- },
- {
-  "vi": "Xin hợp lý, xin cao: được thêm khi cả hai câu đều trả lời tốt nhất. “Xin cao” mà có câu mới tạm được thì sếp hẹn 3 ngày làm nữa. Chưa chắc thì chọn “Xin hợp lý”.",
-  "en": ""
- },
- {
-  "vi": "⏳ Chỉ đếm ngày có làm việc. Làm thêm",
-  "en": ""
- },
- {
-  "vi": "ngày là sếp hẹn xét lại ở đầu ca kế tiếp.",
-  "en": ""
- },
- {
-  "vi": "💡 Lần xét trước chưa qua: có câu bị chấm 0 điểm, hoặc chọn “Xin cao” khi chưa trả lời tốt nhất cả hai câu. Lần sau chọn cách đúng quy trình nhất rồi “Xin hợp lý”.",
-  "en": ""
- },
- {
-  "vi": "📋 Lần xét vừa rồi",
-  "en": ""
- },
- {
-  "vi": "Chỉ được khi cả hai câu đều tốt nhất. Lần sau chọn “Xin hợp lý”.",
-  "en": ""
- },
- {
-  "vi": "🎖️ Thăng tiến",
-  "en": ""
- },
- {
-  "vi": "Có việc làm rồi mới tính chuyện lên chức nhé.",
-  "en": ""
- },
- {
-  "vi": "Bậc cao nhất rồi!",
-  "en": ""
- },
- {
-  "vi": "Ngày tốt khi: tự xếp ít nhất 1 việc ở 🗓️ Điều phối và cuối ngày điểm điều hành từ 60/100.",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể mở ca quản lý: giao việc cho đội, kiểm tra kết quả và xử lý chuyện trong ca. Mỗi ngày vẫn có thể chọn tự làm ở quầy.",
-  "en": ""
- },
- {
-  "vi": "Công việc ở quầy vẫn như trước. Từ bậc 3, bạn có thêm ca quản lý để giao việc cho đội và kiểm tra kết quả.",
-  "en": ""
- },
- {
-  "vi": "việc cần quyết",
-  "en": ""
- },
- {
-  "vi": "✅ Không còn việc nào chờ quyết hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Để đó tới cuối ngày thì phương án tệ nhất sẽ xảy ra.",
-  "en": ""
- },
- {
-  "vi": "🚫 đình chỉ",
-  "en": ""
- },
- {
-  "vi": "😴 phải nghỉ",
-  "en": ""
- },
- {
-  "vi": "🎓 chưa đủ bậc",
-  "en": ""
- },
- {
-  "vi": "📌 đã có việc",
-  "en": ""
- },
- {
-  "vi": "👇 Chọn người",
-  "en": ""
- },
- {
-  "vi": "✕ Bỏ xếp",
-  "en": ""
- },
- {
-  "vi": "Tay nghề cao, tinh thần tốt: dễ đúng giờ. Đang có chuyện chưa xử lý (⚠️) thì dễ trễ.",
-  "en": ""
- },
- {
-  "vi": "🗳️ Còn",
-  "en": ""
- },
- {
-  "vi": "lượt quyết nhân sự hôm nay · mỗi người một quyết định/ngày",
-  "en": ""
- },
- {
-  "vi": "Mỗi người có tính cách riêng: cùng một quyết định, người này cảm ơn, người kia tự ái.",
-  "en": ""
- },
- {
-  "vi": "Có lý do (đang có lỗi, đã nhắc từ trước, làm tốt thật) thì quyết định có tác dụng. Không có lý do thì người đó buồn và cả phòng để ý.",
-  "en": ""
- },
- {
-  "vi": "Mệt không phải là lỗi: cho nghỉ, đừng phạt.",
-  "en": ""
- },
- {
-  "vi": "Thăng chức, tăng lương làm quỹ lương tăng. Bị dồn quá thì người ta nghỉ việc.",
-  "en": ""
- },
- {
-  "vi": "🚫 Đình chỉ",
-  "en": ""
- },
- {
-  "vi": "😴 Phải nghỉ",
-  "en": ""
- },
- {
-  "vi": "✓ Đã quyết hôm nay",
-  "en": ""
- },
- {
-  "vi": "🔒 Chưa rõ tính cách: nói chuyện riêng để hiểu.",
-  "en": ""
- },
- {
-  "vi": "Tự xếp ít nhất 1 việc ở 🗓️ Điều phối",
-  "en": ""
- },
- {
-  "vi": "Đã quyết hết 📥 việc",
-  "en": ""
- },
- {
-  "vi": "chưa xếp người",
-  "en": ""
- },
- {
-  "vi": "Đã xếp đủ người",
-  "en": ""
- },
- {
-  "vi": "Xoay ca: không ai làm ngày thứ 3 liền",
-  "en": ""
- },
- {
-  "vi": "Quỹ lương đang vượt (trừ 2 điểm mỗi %)",
-  "en": ""
- },
- {
-  "vi": "Quỹ lương trong mức",
-  "en": ""
- },
- {
-  "vi": "Hôm nay tính ngày tốt?",
-  "en": ""
- },
- {
-  "vi": "🏢 Phòng điều hành",
-  "en": ""
- },
- {
-  "vi": "Phòng mở từ ca sau. Mở ca là có việc ngay.",
-  "en": ""
- },
- {
-  "vi": "Phòng điều hành làm việc trong ca. Mở ca để điều phối và quyết việc.",
-  "en": ""
- },
- {
-  "vi": "🗓️ Điều phối",
-  "en": ""
- },
- {
-  "vi": "👥 Nhân sự",
-  "en": ""
- },
- {
-  "vi": "việc chờ quyết",
-  "en": ""
- },
- {
-  "vi": "Bảng hôm nay đã xếp đủ",
-  "en": ""
- },
- {
-  "vi": "🧑‍💼 Ca quản lý",
-  "en": ""
- },
- {
-  "vi": "🧑‍💼 Chốt ca",
-  "en": ""
- },
- {
-  "vi": "việc tốt",
-  "en": ""
- },
- {
-  "vi": "chất lượng",
-  "en": ""
- },
- {
-  "vi": "tinh thần đội",
-  "en": ""
- },
- {
-  "vi": "Khép ngày",
-  "en": ""
- },
- {
-  "vi": "👆 Chọn người",
-  "en": ""
- },
- {
-  "vi": "Gỡ rối",
   "en": ""
  }
 ]

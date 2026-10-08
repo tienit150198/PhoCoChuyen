@@ -1,5 +1,137 @@
 [
  {
+  "vi": "phòng tắm rộng, sạch, có đủ dầu gội",
+  "en": ""
+ },
+ {
+  "vi": "phòng tắm khô ráo, có cả dép riêng",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tắm bẩn.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tắm sạch.",
+  "en": ""
+ },
+ {
+  "vi": "Ga gối",
+  "en": ""
+ },
+ {
+  "vi": "ga gối chưa thơm",
+  "en": ""
+ },
+ {
+  "vi": "ga giường còn nếp nhăn, gối hơi xẹp",
+  "en": ""
+ },
+ {
+  "vi": "chăn có mùi ẩm",
+  "en": ""
+ },
+ {
+  "vi": "gối có vệt ố mờ, nhìn hơi ngại",
+  "en": ""
+ },
+ {
+  "vi": "ga gối trắng tinh, thơm mùi nắng",
+  "en": ""
+ },
+ {
+  "vi": "chăn dày ấm, ngủ một mạch tới sáng",
+  "en": ""
+ },
+ {
+  "vi": "nệm êm, gối vừa đầu",
+  "en": ""
+ },
+ {
+  "vi": "Chăn ẩm.",
+  "en": ""
+ },
+ {
+  "vi": "Chăn thơm.",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng ồn",
+  "en": ""
+ },
+ {
+  "vi": "phòng ồn",
+  "en": ""
+ },
+ {
+  "vi": "phòng cách âm kém, nghe rõ tiếng phòng bên",
+  "en": ""
+ },
+ {
+  "vi": "sáng sớm tiếng xe máy ngoài ngõ vọng vào",
+  "en": ""
+ },
+ {
+  "vi": "khách phòng bên hát karaoke tới khuya",
+  "en": ""
+ },
+ {
+  "vi": "phòng yên tĩnh, ngủ ngon lành",
+  "en": ""
+ },
+ {
+  "vi": "đêm chỉ nghe tiếng dế, ngủ sâu lắm",
+  "en": ""
+ },
+ {
+  "vi": "Ồn.",
+  "en": ""
+ },
+ {
+  "vi": "Yên tĩnh.",
+  "en": ""
+ },
+ {
+  "vi": "nước nóng chờ lâu",
+  "en": ""
+ },
+ {
+  "vi": "nước nóng chờ mãi mới lên",
+  "en": ""
+ },
+ {
+  "vi": "tắm được nửa chừng thì hết nước nóng",
+  "en": ""
+ },
+ {
+  "vi": "nước nóng có liền, tắm đêm lạnh sướng",
+  "en": ""
+ },
+ {
+  "vi": "bình nóng lạnh mạnh, cả nhà tắm không phải chờ",
+  "en": ""
+ },
+ {
+  "vi": "Nước nóng ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Đón khách, nhận phòng",
+  "en": ""
+ },
+ {
+  "vi": "nhận phòng lâu",
+  "en": ""
+ },
+ {
+  "vi": "tới nơi phải đứng chờ ở cổng một lúc mới có người ra",
+  "en": ""
+ },
+ {
+  "vi": "thủ tục nhận phòng hơi rườm rà",
+  "en": ""
+ },
+ {
   "vi": "nhận phòng mà không ai chỉ chỗ bật nước nóng",
   "en": ""
  },
@@ -1665,138 +1797,6 @@
  },
  {
   "vi": "đọc kịch bản như máy, không nghe mình nói",
-  "en": ""
- },
- {
-  "vi": "giọng tổng đài rõ ràng, nói chậm vừa phải",
-  "en": ""
- },
- {
-  "vi": "nghe mình kể hết rồi mới trả lời, không cắt ngang",
-  "en": ""
- },
- {
-  "vi": "Nói nhanh.",
-  "en": ""
- },
- {
-  "vi": "Đồng cảm",
-  "en": ""
- },
- {
-  "vi": "trả lời như văn mẫu",
-  "en": ""
- },
- {
-  "vi": "nghe mình kể bức xúc mà trả lời như đọc văn mẫu",
-  "en": ""
- },
- {
-  "vi": "mình đang bực mà bạn cứ \"dạ quý khách vui lòng\" hoài",
-  "en": ""
- },
- {
-  "vi": "bạn tổng đài nói \"em hiểu, chuyện này bực thật\", nghe mà nguôi giận",
-  "en": ""
- },
- {
-  "vi": "được xin lỗi thật lòng chứ không phải câu cho có",
-  "en": ""
- },
- {
-  "vi": "Văn mẫu.",
-  "en": ""
- },
- {
-  "vi": "Thấu hiểu.",
-  "en": ""
- },
- {
-  "vi": "Gọi lại báo kết quả",
-  "en": ""
- },
- {
-  "vi": "hứa gọi lại mà không gọi",
-  "en": ""
- },
- {
-  "vi": "hứa gọi lại mà chờ cả ngày không thấy",
-  "en": ""
- },
- {
-  "vi": "phải tự gọi hỏi lại mới biết đã xử lý tới đâu",
-  "en": ""
- },
- {
-  "vi": "hẹn gọi lại là gọi lại thật, báo kết quả rõ ràng",
-  "en": ""
- },
- {
-  "vi": "xử lý xong còn nhắn tin xác nhận, yên tâm ghê",
-  "en": ""
- },
- {
-  "vi": "Bặt tin.",
-  "en": ""
- },
- {
-  "vi": "Gọi lại đúng hẹn.",
-  "en": ""
- },
- {
-  "vi": "{X}, vậy mà cũng mở cửa đón khách.",
-  "en": ""
- },
- {
-  "vi": "{X}, cái này thì không chê.",
-  "en": ""
- },
- {
-  "vi": "{X}. Khen chê cho công bằng.",
-  "en": ""
- },
- {
-  "vi": "{X}, thế đấy.",
-  "en": ""
- },
- {
-  "vi": "{X}. Tôi nói thật, cái này phải sửa.",
-  "en": ""
- },
- {
-  "vi": "{X}, hồi xưa tôi mà thấy là nhắc liền.",
-  "en": ""
- },
- {
-  "vi": "{X}, đúng như tôi vẫn dạy.",
-  "en": ""
- },
- {
-  "vi": "{X}. Nghe tôi thì sửa nốt chỗ kia.",
-  "en": ""
- },
- {
-  "vi": "{X} nè 💛",
-  "en": ""
- },
- {
-  "vi": "{X}, nói chung vẫn thương quán.",
-  "en": ""
- },
- {
-  "vi": "{X}. Anh làm nghề mười năm, nhìn là thấy.",
-  "en": ""
- },
- {
-  "vi": "{X}, cái này thực tập sinh cũng biết em ạ.",
-  "en": ""
- },
- {
-  "vi": "{X}, đúng kiểu anh hay dạy.",
-  "en": ""
- },
- {
-  "vi": "{X}. Anh nói vậy thôi, tự hiểu.",
   "en": ""
  }
 ]

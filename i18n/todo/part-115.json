@@ -1,5 +1,465 @@
 [
  {
+  "vi": "👗 Mở tủ đồ",
+  "en": ""
+ },
+ {
+  "vi": "mua ngày",
+  "en": ""
+ },
+ {
+  "vi": "🅿️ Đậu trước nhà",
+  "en": ""
+ },
+ {
+  "vi": "🚗 Mở ga-ra",
+  "en": ""
+ },
+ {
+  "vi": "giấy dán tường",
+  "en": ""
+ },
+ {
+  "vi": "sàn nhà",
+  "en": ""
+ },
+ {
+  "vi": "Đồ đạc của bạn",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Đồ đạc",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Đồ đạc của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Mọi thứ bạn đang có, chạm từng mục để xem tên và thông tin. Dọn nhà thì đồ đi theo bạn.",
+  "en": ""
+ },
+ {
+  "vi": "🪴 Nội thất & đồ trang trí",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có món nào. Vào phòng, mở 🛒 Cửa hàng để mua món đầu tiên nhé.",
+  "en": ""
+ },
+ {
+  "vi": "👗 Quần áo & phụ kiện",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có đồ nào.",
+  "en": ""
+ },
+ {
+  "vi": "🚗 Xe & phương tiện",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có xe. Ghé Cửa hàng xe trong ga-ra nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Đồ ăn trong tủ lạnh",
+  "en": ""
+ },
+ {
+  "vi": "Tủ lạnh đang trống.",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Giấy dán tường & sàn đã mua",
+  "en": ""
+ },
+ {
+  "vi": "Chưa mua mẫu nào (mẫu miễn phí luôn dùng được).",
+  "en": ""
+ },
+ {
+  "vi": "Bật ti vi xem dự báo thời tiết, mai trời nắng đẹp.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển kênh một vòng, toàn phim đã xem rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi phịch xuống sofa, êm quá trời.",
+  "en": ""
+ },
+ {
+  "vi": "Dựa lưng vào sofa, nghỉ một chút đã.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi vào bàn, lên kế hoạch cho ngày mai.",
+  "en": ""
+ },
+ {
+  "vi": "Sắp xếp lại giấy tờ trên bàn cho gọn.",
+  "en": ""
+ },
+ {
+  "vi": "Mở sổ ra ôn lại mấy điều học được hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Rút một cuốn sách ra đọc vài trang.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ sách hơi bụi, lau sơ một chút.",
+  "en": ""
+ },
+ {
+  "vi": "Gảy thử vài hợp âm, nghe cũng ra gì đó.",
+  "en": ""
+ },
+ {
+  "vi": "Gảy đàn bầu một khúc, tiếng ngân nghe thương ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Rắc chút thức ăn, đàn cá bơi lại đớp lia lịa.",
+  "en": ""
+ },
+ {
+  "vi": "Nồi cơm còn ấm, thơm mùi gạo mới.",
+  "en": ""
+ },
+ {
+  "vi": "Lò vi sóng kêu tinh một tiếng, xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đun ấm nước pha trà nóng.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ đồ vào máy giặt, chiều phơi là khô.",
+  "en": ""
+ },
+ {
+  "vi": "Chơi một ván game cho đỡ căng thẳng.",
+  "en": ""
+ },
+ {
+  "vi": "Mở một bài nhạc nhẹ, phòng ấm hẳn lên.",
+  "en": ""
+ },
+ {
+  "vi": "Vặn radio nghe tin tức buổi tối.",
+  "en": ""
+ },
+ {
+  "vi": "Tưới chút nước cho cây, lá xanh mướt.",
+  "en": ""
+ },
+ {
+  "vi": "Ôm gấu bông một cái cho đỡ mệt.",
+  "en": ""
+ },
+ {
+  "vi": "Lau bàn ăn sạch sẽ.",
+  "en": ""
+ },
+ {
+  "vi": "Pha một ấm trà, ngồi nhâm nhi.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi nghỉ chân một chút.",
+  "en": ""
+ },
+ {
+  "vi": "Bật đèn lên, phòng sáng ấm hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Ngắm nghía một chút, nhìn cũng xinh.",
+  "en": ""
+ },
+ {
+  "vi": "Nghịch một chút cho vui.",
+  "en": ""
+ },
+ {
+  "vi": "Sắp xếp lại góc này cho gọn.",
+  "en": ""
+ },
+ {
+  "vi": "Rửa mặt cho tỉnh táo.",
+  "en": ""
+ },
+ {
+  "vi": "Hít một hơi gió mát bên hồ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn mà thấy Tết tới gần.",
+  "en": ""
+ },
+ {
+  "vi": "Ngả lưng một chút cho đỡ mỏi. Tối rồi ngủ hẳn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nằm nghe quạt chạy vù vù, suýt ngủ quên.",
+  "en": ""
+ },
+ {
+  "vi": "Đi một vòng quanh phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Vươn vai một cái cho đỡ mỏi.",
+  "en": ""
+ },
+ {
+  "vi": "Bé ngủ ngoan quá, thương ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Nắm bàn tay bé xíu, mềm ơi là mềm.",
+  "en": ""
+ },
+ {
+  "vi": "Bé bò lại đòi bế kìa.",
+  "en": ""
+ },
+ {
+  "vi": "Bé bò nhanh ghê, coi chừng nha!",
+  "en": ""
+ },
+ {
+  "vi": "Bé lẫm chẫm đi lại, giỏi quá!",
+  "en": ""
+ },
+ {
+  "vi": "Bé dang tay đòi bế, cưng xỉu.",
+  "en": ""
+ },
+ {
+  "vi": "Chúc ngủ ngon nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tủ lạnh chạy êm ru, mát rượi.",
+  "en": ""
+ },
+ {
+  "vi": "Ngăn của bạn trong tủ lạnh chung",
+  "en": ""
+ },
+ {
+  "vi": "No bụng +",
+  "en": ""
+ },
+ {
+  "vi": "Tỉnh táo +",
+  "en": ""
+ },
+ {
+  "vi": "Quần áo trong tủ",
+  "en": ""
+ },
+ {
+  "vi": "🗄️ Quần áo trong tủ",
+  "en": ""
+ },
+ {
+  "vi": "Đồ mua ở shop tự xuất hiện ở đây, cùng quần áo cơ bản sẵn có. Chọn để ngắm thử, rồi mở Tủ đồ để mặc.",
+  "en": ""
+ },
+ {
+  "vi": "Đóng tủ",
+  "en": ""
+ },
+ {
+  "vi": "Trang phục đang mặc",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có quần áo trong tủ.",
+  "en": ""
+ },
+ {
+  "vi": "‹ Trước",
+  "en": ""
+ },
+ {
+  "vi": "👗 Mở Tủ đồ để thay",
+  "en": ""
+ },
+ {
+  "vi": "Tủ lạnh chung ở cuối phòng, mỗi người một ngăn.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Mở ngăn tủ của bạn",
+  "en": ""
+ },
+ {
+  "vi": "🍽️ Ăn",
+  "en": ""
+ },
+ {
+  "vi": "Tủ còn trống. Cất vài món bên dưới, đói thì lấy ra ăn.",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Đi chợ cất tủ",
+  "en": ""
+ },
+ {
+  "vi": "Mua bằng tiền trong ví. Đói lúc nào thì lấy ra ăn lúc đó.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Bày tủ lạnh ra để cất đồ ăn",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Có tủ lạnh là cất được đồ ăn",
+  "en": ""
+ },
+ {
+  "vi": "Chạm sàn để đi · chạm đồ để dùng",
+  "en": ""
+ },
+ {
+  "vi": "Trải nghiệm",
+  "en": ""
+ },
+ {
+  "vi": "Tài phú",
+  "en": ""
+ },
+ {
+  "vi": "Siêng việc chùa",
+  "en": ""
+ },
+ {
+  "vi": "Thần lô tô",
+  "en": ""
+ },
+ {
+  "vi": "Kinh đôi",
+  "en": ""
+ },
+ {
+  "vi": "Đọc ngược",
+  "en": ""
+ },
+ {
+  "vi": "Bão bầu cua",
+  "en": ""
+ },
+ {
+  "vi": "Mắt thần",
+  "en": ""
+ },
+ {
+  "vi": "Bị hỏi thăm",
+  "en": ""
+ },
+ {
+  "vi": "Khách quý",
+  "en": ""
+ },
+ {
+  "vi": "Khách mời của tuần",
+  "en": ""
+ },
+ {
+  "vi": "Ăn cưới pro",
+  "en": ""
+ },
+ {
+  "vi": "Danh hiệu độc bản · Nhà đấu giá",
+  "en": ""
+ },
+ {
+  "vi": "Top 1 tuần này",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải thêm được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được chợ nhà. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thanh toán và dọn vào nhà thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cập nhật.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xác nhận được kết quả. Bấm lại để kiểm tra cùng giao dịch, không trả tiền lần hai.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thực hiện được giao dịch.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập giá thuê là số nguyên dương hợp lệ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Trả trước 5 ngày sống của bạn. Hết kỳ cần gia hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Gia hạn thuê nhà?",
+  "en": ""
+ },
+ {
+  "vi": "Trả nhà đang thuê?",
+  "en": ""
+ },
+ {
+  "vi": "Tiền thuê đã trả trước cho những ngày còn lại không được hoàn. Bạn dọn khỏi nhà thuê và giữ đồ của mình.",
+  "en": ""
+ },
+ {
+  "vi": "Trả nhà",
+  "en": ""
+ },
+ {
+  "vi": "Lấy lại nhà?",
+  "en": ""
+ },
+ {
+  "vi": "người thuê",
+  "en": ""
+ },
+ {
+  "vi": "Lấy lại nhà",
+  "en": ""
+ },
+ {
+  "vi": "Tiền giường",
+  "en": ""
+ },
+ {
+  "vi": "Tiền phòng",
+  "en": ""
+ },
+ {
+  "vi": "Ở ghép với 3 bạn cùng phòng.",
+  "en": ""
+ },
+ {
   "vi": "Chuyển chỗ ở",
   "en": ""
  },
@@ -904,11 +1364,7 @@
   "en": ""
  },
  {
-  "vi": "Hội chợ dân gian đang mở",
-  "en": ""
- },
- {
-  "vi": "Hội chợ dân gian sắp mở",
+  "vi": "Chợ đen đang mở",
   "en": ""
  },
  {
@@ -1341,462 +1797,6 @@
  },
  {
   "vi": "Chưa bật được mic, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Mic đã ngắt kết nối.",
-  "en": ""
- },
- {
-  "vi": "Không thấy micro trên máy này.",
-  "en": ""
- },
- {
-  "vi": "Chưa kết nối được mic, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa xin hát cùng được, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Người hát chưa trả lời, lát thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Mic đang bận, thử lại sau ít phút nhé.",
-  "en": ""
- },
- {
-  "vi": "Lần này bạn nghe cùng mọi người nhé 🎧",
-  "en": ""
- },
- {
-  "vi": "Người hát đã tắt mic hát cùng của bạn.",
-  "en": ""
- },
- {
-  "vi": "Mic hát cùng đã tắt.",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được bảng xếp hạng.",
-  "en": ""
- },
- {
-  "vi": "Tài sản ròng như ở “Tiền của bạn”, cộng tiết kiệm Mây, xe và quầy riêng theo giá bán lại, Mây Coin và vàng theo giá vốn, trừ mọi nợ kể cả vay nóng hội chợ. Không tính Quỹ chung. Bằng nhau: ai nhiều tài sản hơn, rồi ai đạt trước.",
-  "en": ""
- },
- {
-  "vi": "Xếp theo số danh hiệu trò chơi đã có, rồi danh hiệu bí mật, rồi ai có sớm hơn.",
-  "en": ""
- },
- {
-  "vi": "Xếp theo số chứng chỉ đã có, rồi tổng điểm thi cao nhất, rồi ai có sớm hơn.",
-  "en": ""
- },
- {
-  "vi": "Điểm là XP trưởng thành: XP ở mọi nơi làm, cộng 80 cho mỗi nơi đã phục vụ khách. Bằng điểm thì ai thạo nhiều nghề hơn, rồi làm nhiều ngày hơn đứng trước.",
-  "en": ""
- },
- {
-  "vi": "Tài sản ròng · coin/vàng tính theo giá vốn · không tính Quỹ chung",
-  "en": ""
- },
- {
-  "vi": "bí mật",
-  "en": ""
- },
- {
-  "vi": "điểm thi",
-  "en": ""
- },
- {
-  "vi": "nghề thạo",
-  "en": ""
- },
- {
-  "vi": "danh hiệu",
-  "en": ""
- },
- {
-  "vi": "Chưa ai giữ",
-  "en": ""
- },
- {
-  "vi": "Cập nhật hằng ngày",
-  "en": ""
- },
- {
-  "vi": "Tuần trước",
-  "en": ""
- },
- {
-  "vi": "Danh hiệu tuần này",
-  "en": ""
- },
- {
-  "vi": "🏅 Danh hiệu tuần này",
-  "en": ""
- },
- {
-  "vi": "Bảng này chỉ tính người chơi theo câu chuyện: chơi tự do không có ví riêng.",
-  "en": ""
- },
- {
-  "vi": "Tài sản ròng của bạn chưa trên 0 xu. Trả bớt nợ, để dành thêm là có tên trên bảng.",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa có danh hiệu nào. Hoàn thành việc đầu tiên là có ngay.",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa có chứng chỉ nào. Thi đỗ chứng chỉ đầu tiên để có tên trên bảng này.",
-  "en": ""
- },
- {
-  "vi": "Hoàn thành việc đầu tiên để có tên trên bảng này.",
-  "en": ""
- },
- {
-  "vi": "Vị trí của bạn",
-  "en": ""
- },
- {
-  "vi": "Tên hiện là",
-  "en": ""
- },
- {
-  "vi": "Tên bạn đang ẩn.",
-  "en": ""
- },
- {
-  "vi": "Hiện tên tôi",
-  "en": ""
- },
- {
-  "vi": "Đặt tên cho nhân vật (khác “Mây”) để có tên trên bảng.",
-  "en": ""
- },
- {
-  "vi": "Đặt tên nhân vật",
-  "en": ""
- },
- {
-  "vi": "Chưa ai lên bảng",
-  "en": ""
- },
- {
-  "vi": "Có tài sản ròng trên 0 xu là có tên trên bảng này.",
-  "en": ""
- },
- {
-  "vi": "Chưa ai có danh hiệu",
-  "en": ""
- },
- {
-  "vi": "Làm việc ở phố để nhận danh hiệu đầu tiên nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa ai có chứng chỉ",
-  "en": ""
- },
- {
-  "vi": "Thi đỗ chứng chỉ đầu tiên để mở hàng bảng này nhé.",
-  "en": ""
- },
- {
-  "vi": "Bảng còn trống",
-  "en": ""
- },
- {
-  "vi": "Chưa ai hiện tên trên bảng. Làm việc đầu tiên rồi bật “Hiện tên tôi” để mở hàng nhé.",
-  "en": ""
- },
- {
-  "vi": "Chọn bảng",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được bảng.",
-  "en": ""
- },
- {
-  "vi": "Đang tải bảng xếp hạng…",
-  "en": ""
- },
- {
-  "vi": "Tuần này chưa ai dự cưới",
-  "en": ""
- },
- {
-  "vi": "Dự một đám cưới để có tên.",
-  "en": ""
- },
- {
-  "vi": "Khách mời",
-  "en": ""
- },
- {
-  "vi": "Loại bảng",
-  "en": ""
- },
- {
-  "vi": "Ai dày dạn nhất phố? Mọi con số tính từ những gì đã làm trong game.",
-  "en": ""
- },
- {
-  "vi": "Không ai thấy tên đăng nhập hay thông tin khác của bạn.",
-  "en": ""
- },
- {
-  "vi": "Tài khoản hiện tên hiển thị theo mặc định.",
-  "en": ""
- },
- {
-  "vi": "Khách chỉ hiện tên khi tự bật.",
-  "en": ""
- },
- {
-  "vi": "Ẩn tên tôi",
-  "en": ""
- },
- {
-  "vi": "Hiện tên tôi trên bảng xếp hạng",
-  "en": ""
- },
- {
-  "vi": "Khách chỉ hiện tên nhân vật khi bạn bật.",
-  "en": ""
- },
- {
-  "vi": "Chưa lưu được. Thử lại sau nhé.",
-  "en": ""
- },
- {
-  "vi": "tinh thần",
-  "en": ""
- },
- {
-  "vi": "Tự chọn cách xả stress",
-  "en": ""
- },
- {
-  "vi": "Cả xóm góp",
-  "en": ""
- },
- {
-  "vi": "Cả xóm góp tay",
-  "en": ""
- },
- {
-  "vi": "Xả stress kiểu gì đây?",
-  "en": ""
- },
- {
-  "vi": "Dễ thương ghê 💛",
-  "en": ""
- },
- {
-  "vi": "Cả chuyện",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn mọi người 💛",
-  "en": ""
- },
- {
-  "vi": "Bạn giúp thế nào?",
-  "en": ""
- },
- {
-  "vi": "Giờ sao?",
-  "en": ""
- },
- {
-  "vi": "Bạn tính sao?",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Để sau\"",
-  "en": ""
- },
- {
-  "vi": "Chuyện hôm nay",
-  "en": ""
- },
- {
-  "vi": "Có chuyện đang chờ bạn",
-  "en": ""
- },
- {
-  "vi": "Đời thường",
-  "en": ""
- },
- {
-  "vi": "Tình làng nghĩa xóm",
-  "en": ""
- },
- {
-  "vi": "🎈 Xả stress",
-  "en": ""
- },
- {
-  "vi": "Nhật ký đời thường",
-  "en": ""
- },
- {
-  "vi": "· 💬 có chuyện chờ",
-  "en": ""
- },
- {
-  "vi": "Chuyện đời thường có trong hành trình.",
-  "en": ""
- },
- {
-  "vi": "Chưa có chuyện gì. Cứ sống, chuyện sẽ tới.",
-  "en": ""
- },
- {
-  "vi": "Ăn thêm, trả bằng ví",
-  "en": ""
- },
- {
-  "vi": "· hôm nay xả rồi",
-  "en": ""
- },
- {
-  "vi": "· mỗi ngày một lần",
-  "en": ""
- },
- {
-  "vi": "Có chuyện chờ bạn:",
-  "en": ""
- },
- {
-  "vi": "Chat · đang kết nối…",
-  "en": ""
- },
- {
-  "vi": "💬 Chat đang kết nối… chờ xíu nha.",
-  "en": ""
- },
- {
-  "vi": "Sưu tập",
-  "en": ""
- },
- {
-  "vi": "Phi cơ & du thuyền",
-  "en": ""
- },
- {
-  "vi": "Mở tiệc",
-  "en": ""
- },
- {
-  "vi": "Khóa học",
-  "en": ""
- },
- {
-  "vi": "Mai bay tiếp",
-  "en": ""
- },
- {
-  "vi": "Hôm nay đã đi",
-  "en": ""
- },
- {
-  "vi": "🗣️ Phỏng vấn",
-  "en": ""
- },
- {
-  "vi": "Trả lời câu hỏi",
-  "en": ""
- },
- {
-  "vi": "Chọn một câu trả lời",
-  "en": ""
- },
- {
-  "vi": "Chọn giấy tờ",
-  "en": ""
- },
- {
-  "vi": "🏠 Vào nhà",
-  "en": ""
- },
- {
-  "vi": "Dọn về ở",
-  "en": ""
- },
- {
-  "vi": "Mai đi tiếp",
-  "en": ""
- },
- {
-  "vi": "Hôm nay đi rồi",
-  "en": ""
- },
- {
-  "vi": "Mai mở tiếp",
-  "en": ""
- },
- {
-  "vi": "Hôm nay mở tiệc rồi",
-  "en": ""
- },
- {
-  "vi": "✓ Tốt nghiệp",
-  "en": ""
- },
- {
-  "vi": "Mai học tiếp",
-  "en": ""
- },
- {
-  "vi": "Hôm nay học rồi",
-  "en": ""
- },
- {
-  "vi": "Trời đang có pháo hoa",
-  "en": ""
- },
- {
-  "vi": "Chọn một chỗ",
-  "en": ""
- },
- {
-  "vi": "Chọn số",
-  "en": ""
- },
- {
-  "vi": "chưa có visa",
-  "en": ""
- },
- {
-  "vi": "🎁 Quà",
-  "en": ""
- },
- {
-  "vi": "📷 Chụp ảnh",
-  "en": ""
- },
- {
-  "vi": "Ví chưa đủ",
-  "en": ""
- },
- {
-  "vi": "🛡️ Bảo hiểm",
-  "en": ""
- },
- {
-  "vi": "Phỏng vấn: trả lời thật, có vé khứ hồi.",
-  "en": ""
- },
- {
-  "vi": "Thiếu hay sai một giấy là bị trả hồ sơ, phí không hoàn.",
   "en": ""
  }
 ]

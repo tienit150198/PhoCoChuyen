@@ -740,3 +740,10 @@ html[data-theme="dem"] .fh-pb-code-chip b{background:#3a2a4f;color:#ffe9a8;borde
 .fh-amt{width:7.5em;height:44px;padding:0 10px;border-radius:999px;border:2px dashed color-mix(in srgb,var(--fh-gold) 70%,var(--line));background:var(--surface);color:var(--ink);font:700 .95rem/1 var(--font)}
 .fh-amt:focus{outline:2px solid #c98a12;outline-offset:1px}
 .fh-amt:disabled{opacity:.5}
+/* 🕶️ Chợ đen: the bảo kê at the gate (v4/fair.js bmGate) */
+.fh-bm{text-align:center;border-color:color-mix(in srgb,#000 35%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,#1b1b24 22%,var(--surface)),var(--surface) 70%)}
+.fh-bm h3{margin:4px 0 10px}
+.fh-bm .fh-npcline{text-align:left}
+.fh-bm-go{display:grid;gap:8px;max-width:340px;margin:12px auto 4px}
+.fh-bm-go .fh-why{margin:-2px 0 2px}
+.fh-bm.ban{background:linear-gradient(180deg,var(--bad-soft),var(--surface) 70%)}

@@ -1,5 +1,137 @@
 [
  {
+  "vi": "gần thùng rác nên thoảng mùi khó chịu",
+  "en": ""
+ },
+ {
+  "vi": "mùi nước rửa chén hắc quá",
+  "en": ""
+ },
+ {
+  "vi": "vào quán là thấy thơm, dễ chịu",
+  "en": ""
+ },
+ {
+  "vi": "quán thơm mùi bánh nướng, đói bụng liền",
+  "en": ""
+ },
+ {
+  "vi": "vào cửa là thơm mùi cà phê rang",
+  "en": ""
+ },
+ {
+  "vi": "thơm mùi nước dùng từ đầu hẻm",
+  "en": ""
+ },
+ {
+  "vi": "quán thơm mùi trà với đường nâu",
+  "en": ""
+ },
+ {
+  "vi": "thoảng mùi chè mới pha, mát cả người",
+  "en": ""
+ },
+ {
+  "vi": "Ám mùi.",
+  "en": ""
+ },
+ {
+  "vi": "Thơm.",
+  "en": ""
+ },
+ {
+  "vi": "Ruồi muỗi",
+  "en": ""
+ },
+ {
+  "vi": "có ruồi",
+  "en": ""
+ },
+ {
+  "vi": "có vài con ruồi bay quanh bàn",
+  "en": ""
+ },
+ {
+  "vi": "ngồi một lúc là muỗi cắn chân",
+  "en": ""
+ },
+ {
+  "vi": "ruồi bu quanh xô đá, nhìn hơi ngại",
+  "en": ""
+ },
+ {
+  "vi": "Ruồi.",
+  "en": ""
+ },
+ {
+  "vi": "Nhạc",
+  "en": ""
+ },
+ {
+  "vi": "nhạc mở to",
+  "en": ""
+ },
+ {
+  "vi": "nhạc mở to quá, nói chuyện phải hét",
+  "en": ""
+ },
+ {
+  "vi": "nhạc xập xình, không hợp ngồi làm việc",
+  "en": ""
+ },
+ {
+  "vi": "nhạc lặp đi lặp lại một bài, nghe muốn thuộc",
+  "en": ""
+ },
+ {
+  "vi": "nhạc nhẹ nhàng, ngồi cả buổi không chán",
+  "en": ""
+ },
+ {
+  "vi": "nhạc chill đúng gu, âm lượng vừa",
+  "en": ""
+ },
+ {
+  "vi": "nhạc xưa nghe mà thấy thương",
+  "en": ""
+ },
+ {
+  "vi": "Nhạc to.",
+  "en": ""
+ },
+ {
+  "vi": "Nhạc hay.",
+  "en": ""
+ },
+ {
+  "vi": "Máy lạnh, quạt",
+  "en": ""
+ },
+ {
+  "vi": "nóng, máy lạnh yếu",
+  "en": ""
+ },
+ {
+  "vi": "máy lạnh yếu, ngồi mồ hôi rịn ra",
+  "en": ""
+ },
+ {
+  "vi": "quạt thổi thẳng vào mặt, lạnh buốt",
+  "en": ""
+ },
+ {
+  "vi": "trong tiệm hơi hầm, đứng lâu thấy bí",
+  "en": ""
+ },
+ {
+  "vi": "trưa nắng chang chang mà trong này cũng hầm hập",
+  "en": ""
+ },
+ {
+  "vi": "nắng hắt vào tận chỗ ngồi, nóng ran",
+  "en": ""
+ },
+ {
   "vi": "không có quạt, ngồi chút là mồ hôi nhễ nhại",
   "en": ""
  },
@@ -1665,138 +1797,6 @@
  },
  {
   "vi": "phòng tắm sạch bóng, khăn tắm thơm",
-  "en": ""
- },
- {
-  "vi": "phòng tắm rộng, sạch, có đủ dầu gội",
-  "en": ""
- },
- {
-  "vi": "phòng tắm khô ráo, có cả dép riêng",
-  "en": ""
- },
- {
-  "vi": "Phòng tắm bẩn.",
-  "en": ""
- },
- {
-  "vi": "Phòng tắm sạch.",
-  "en": ""
- },
- {
-  "vi": "Ga gối",
-  "en": ""
- },
- {
-  "vi": "ga gối chưa thơm",
-  "en": ""
- },
- {
-  "vi": "ga giường còn nếp nhăn, gối hơi xẹp",
-  "en": ""
- },
- {
-  "vi": "chăn có mùi ẩm",
-  "en": ""
- },
- {
-  "vi": "gối có vệt ố mờ, nhìn hơi ngại",
-  "en": ""
- },
- {
-  "vi": "ga gối trắng tinh, thơm mùi nắng",
-  "en": ""
- },
- {
-  "vi": "chăn dày ấm, ngủ một mạch tới sáng",
-  "en": ""
- },
- {
-  "vi": "nệm êm, gối vừa đầu",
-  "en": ""
- },
- {
-  "vi": "Chăn ẩm.",
-  "en": ""
- },
- {
-  "vi": "Chăn thơm.",
-  "en": ""
- },
- {
-  "vi": "Tiếng ồn",
-  "en": ""
- },
- {
-  "vi": "phòng ồn",
-  "en": ""
- },
- {
-  "vi": "phòng cách âm kém, nghe rõ tiếng phòng bên",
-  "en": ""
- },
- {
-  "vi": "sáng sớm tiếng xe máy ngoài ngõ vọng vào",
-  "en": ""
- },
- {
-  "vi": "khách phòng bên hát karaoke tới khuya",
-  "en": ""
- },
- {
-  "vi": "phòng yên tĩnh, ngủ ngon lành",
-  "en": ""
- },
- {
-  "vi": "đêm chỉ nghe tiếng dế, ngủ sâu lắm",
-  "en": ""
- },
- {
-  "vi": "Ồn.",
-  "en": ""
- },
- {
-  "vi": "Yên tĩnh.",
-  "en": ""
- },
- {
-  "vi": "nước nóng chờ lâu",
-  "en": ""
- },
- {
-  "vi": "nước nóng chờ mãi mới lên",
-  "en": ""
- },
- {
-  "vi": "tắm được nửa chừng thì hết nước nóng",
-  "en": ""
- },
- {
-  "vi": "nước nóng có liền, tắm đêm lạnh sướng",
-  "en": ""
- },
- {
-  "vi": "bình nóng lạnh mạnh, cả nhà tắm không phải chờ",
-  "en": ""
- },
- {
-  "vi": "Nước nóng ngay.",
-  "en": ""
- },
- {
-  "vi": "Đón khách, nhận phòng",
-  "en": ""
- },
- {
-  "vi": "nhận phòng lâu",
-  "en": ""
- },
- {
-  "vi": "tới nơi phải đứng chờ ở cổng một lúc mới có người ra",
-  "en": ""
- },
- {
-  "vi": "thủ tục nhận phòng hơi rườm rà",
   "en": ""
  }
 ]

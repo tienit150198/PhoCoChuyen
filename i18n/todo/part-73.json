@@ -1,5 +1,69 @@
 [
  {
+  "vi": "Giao quá số lượng hoặc giao cho người không có tên trên phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Không thù lao, review chỉ còn 2–3★, cô Thu gọi khách mang trả.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối phiếu hợp lệ, hoặc từ chối khi chỉ cần đổi hộp, đổi lô",
+  "en": ""
+ },
+ {
+  "vi": "Không thù lao, khách về tay không, review khoảng 3★.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển cô Thu hay đổi hộp khi mọi thứ đã đúng",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ được “Đạt” hoặc “Chưa đúng”; khách chờ lâu, review tụt còn 4★.",
+  "en": ""
+ },
+ {
+  "vi": "Đóng dấu khi chưa làm bước kiểm bắt buộc",
+  "en": ""
+ },
+ {
+  "vi": "Tính là sai, cộng điểm rủi ro. Từ phiếu nhắc thứ ba trong ngày bị trừ tới 20 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Dồn nhiều điểm rủi ro tới ngày kiểm tra (mỗi 4 ngày)",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn lập biên bản, trừ tới 60 xu. Không sai sót nào thì được thưởng 25 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Quên ghi nhiệt độ, để hộp quá hạn trên kệ, lỡ hẹn khách quen",
+  "en": ""
+ },
+ {
+  "vi": "Cộng điểm rủi ro cho đợt kiểm tra. Khách quen lỡ đợt thì mua nơi khác, giảm tin cậy.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Dock [[Kho hàng]]: chọn nhà cung cấp, nhập số hộp, bấm [[Đặt nhập]]. Chỉ đặt được lô hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "🚚 Thiện Tâm chạy 4 chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau khoảng 1 tiếng. Giá niêm yết.",
+  "en": ""
+ },
+ {
+  "vi": "🏬 Kho tổng Bình An: rẻ hơn (×0,85), đặt trước 13:00 thì chiều nay có, đặt sau thì xe đêm tới trước giờ mở cửa.",
+  "en": ""
+ },
+ {
+  "vi": "🔢 Kiện tới thì đếm đúng số hộp trong kiện, bấm [[Kiểm & nhập kho]].",
+  "en": ""
+ },
+ {
   "vi": "🧊 Đầu ca ghi nhiệt độ lượt sáng trước 12:00; xem tab [[Sổ lô]] có hộp nào cần rút.",
   "en": ""
  },
@@ -1433,66 +1497,6 @@
  },
  {
   "vi": "SH Nami: tài sản, nợ dùng tỷ giá cuối kỳ; doanh thu, chi phí tỷ giá bình quân; vốn tỷ giá lịch sử.",
-  "en": ""
- },
- {
-  "vi": "Điền cột hợp nhất, cộng tổng tài sản, kiểm tra hai bên cân nhau.",
-  "en": ""
- },
- {
-  "vi": "SH Logistics có 30% cổ đông ngoài: tính phần lãi của họ, lãi công ty mẹ, số dư cuối kỳ.",
-  "en": ""
- },
- {
-  "vi": "PBC & câu hỏi kiểm toán",
-  "en": ""
- },
- {
-  "vi": "Ai cung cấp từng giấy tờ, mức trọng yếu 5%, khoản nào trọng yếu, trả lời kèm bằng chứng.",
-  "en": ""
- },
- {
-  "vi": "So ngân sách cho HĐQT",
-  "en": ""
- },
- {
-  "vi": "Tính chênh lệch, tìm dòng bất lợi nhất, nêu nguyên nhân và viết nhận xét cân bằng.",
-  "en": ""
- },
- {
-  "vi": "📥 Tab [[Hộp thư]]: bấm [[Nhận hai sổ đối chiếu]] hoặc [[Nhận hồ sơ]].",
-  "en": ""
- },
- {
-  "vi": "👆 Bàn đối chiếu: chạm một dòng bên bán, một dòng bên mua, rồi [[Ghép cặp này]]. Chọn nhầm thì [[Bỏ chọn]].",
-  "en": ""
- },
- {
-  "vi": "💱 Số lệch nhau: chọn [[Lệch tỷ giá]] hay [[Gõ nhầm số]].",
-  "en": ""
- },
- {
-  "vi": "🏷️ Dòng chỉ có một bên: gắn [[Hàng đi đường]], [[Hóa đơn chưa ghi]], [[Tiền đang chuyển]]…",
-  "en": ""
- },
- {
-  "vi": "📑 Từ ngày 2 có thêm nhãn [[Ghi trùng]], từ ngày 3 có [[Không phải nội bộ]] cho khoản bán ra khách ngoài.",
-  "en": ""
- },
- {
-  "vi": "✂️ Hai bên khớp thì bấm [[Loại trừ]] để ghi Nợ 331 / Có 131.",
-  "en": ""
- },
- {
-  "vi": "🧮 Hồ sơ: làm từng bước, bấm [[Xác nhận]], [[Chốt thứ tự]] hoặc [[Ghi bút toán hợp nhất]].",
-  "en": ""
- },
- {
-  "vi": "💡 Bí dòng nào thì chạm dòng đó, bấm [[Gợi ý]]. Hồ sơ thì bấm [[Xin gợi ý]]. Mỗi lần mất 5 phút.",
-  "en": ""
- },
- {
-  "vi": "📝 Ở bước cuối Ghi chú bàn giao, chọn câu có số liệu cụ thể, rồi bấm [[Nộp hồ sơ]].",
   "en": ""
  }
 ]

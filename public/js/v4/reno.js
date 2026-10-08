@@ -515,7 +515,7 @@ function babyCard(){
     const moments=acts.map(a=>btn(`${a.emoji} ${esc(a.names?.[b.grow]||a.names?.so_sinh||'')}${done.has(a.id)?' ✓':''}`,'bbMoment',{baby:b.id,act:a.id},done.has(a.id)?'ghost small':'cream small',done.has(a.id)?' disabled':'')).join('');
     return `<div class="dc-baby-row"><div class="dc-baby-pic">${babyPortrait({g:b.grow,o:b.outfit},{size:76,asleep:!out&&done.has('ru')})}</div><div class="dc-baby-info"><b>${esc(b.name)}</b>`
       +`<small>${esc(BB.growName(b.grow))} · ${fmt(b.age)} ngày tuổi · Gắn bó ${fmt(b.bond)}/100</small>`
-      +`${out?'<p class="dc-baby-out">🤱 Bé đang trong vòng tay bạn: đi dạo phố, hội chợ, công viên cùng nhau nhé.</p>':''}</div>`
+      +`${out?'<p class="dc-baby-out">🤱 Bé đang trong vòng tay bạn: đi dạo phố, công viên cùng nhau nhé.</p>':''}</div>`
       +`${moments?`<div class="dc-baby-acts">${moments}</div>`:''}<div class="dc-baby-acts">${btn(out?'🏡 Để bé ở nhà':'🤱 Bế bé đi chơi','bbCarry',{baby:b.id},out?'ghost small':'primary small',` aria-pressed="${out}"`)}${btn('🍼 Chăm bé','bbCare',{baby:b.id},'ghost small')}</div></div>`;
   }).join('');
   const left=C?C.spirit_left:0;
@@ -643,7 +643,7 @@ async function onClick(op,data){
       finally{S.busy=false;render();}return;}
     case'bbCarry':{const st=S.env.api.state,out=BB.carried(st)?.id===data.baby;BB.setCarry(out?'':data.baby);sfx('pop');
       const b=BB.babies(st).find(x=>x.id===data.baby);
-      S.flash=b?{text:out?`${b.name} ở nhà ngủ ngoan.`:`Bạn bế ${b.name} rồi. Ra phố, công viên hay hội chợ, bé đi cùng bạn (đi bộ).`,kind:'good'}:null;render();return;}
+      S.flash=b?{text:out?`${b.name} ở nhà ngủ ngoan.`:`Bạn bế ${b.name} rồi. Ra phố hay công viên, bé đi cùng bạn (đi bộ).`,kind:'good'}:null;render();return;}
     case'bbCare':{S.dlg.close();if(data.baby==='child')S.env.openSheet?.('home',{jrView:'household'});else S.env.act?.('marriage',{tab:'family',section:'children'});return;}
     case'relax':{const a=(V()?.relax||[]).find(x=>x.id===data.act);if(!a||!a.ok)return;
       const r=await send('jr_relax_do',{act:a.id},{loud:true});if(r)sfx('chime');return;}

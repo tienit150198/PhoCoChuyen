@@ -1,5 +1,15 @@
 [
  {
+  "vi": "🚚 $1 đang về$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📦 Hết $1: nhập hàng",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "tinh thần $1",
   "en": "",
   "pattern": true

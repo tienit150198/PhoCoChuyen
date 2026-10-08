@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Top $1 $2 · tuần này",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Danh hiệu của $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🧾 Bảo trì $1/tháng",
   "en": "",
   "pattern": true
@@ -1955,7 +1965,7 @@
   "pattern": true
  },
  {
-  "vi": "Bạn bế $1 rồi. Ra phố, công viên hay hội chợ, bé đi cùng bạn (đi bộ).",
+  "vi": "Bạn bế $1 rồi. Ra phố hay công viên, bé đi cùng bạn (đi bộ).",
   "en": "",
   "pattern": true
  },
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "🚚 Hàng đang về$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚚 $1 đang về$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📦 Hết $1: nhập hàng",
   "en": "",
   "pattern": true
  }

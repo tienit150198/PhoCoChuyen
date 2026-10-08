@@ -15,3 +15,6 @@ os.environ.setdefault("MNL_HOLIDAY_OFF", "1")
 # 🎁 Quà cả phố (game/system_gift.py BROADCASTS) follows the real calendar: off, so a test's gifts and wallet do not
 # depend on the day it runs (tests/test_system_gift.py turns it on where it checks it).
 os.environ.setdefault("MNL_BROADCAST_OFF", "1")
+# 🕶️ Chợ đen (game/fair_bm.py): no bảo kê gate and no arrests in the tests of the stalls' own rules (their scripted
+# rounds); tests/test_black_market.py turns it on.
+os.environ.setdefault("MNL_BM_OFF", "1")

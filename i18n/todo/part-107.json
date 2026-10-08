@@ -1,5 +1,389 @@
 [
  {
+  "vi": "🎓 Học sinh −10%",
+  "en": ""
+ },
+ {
+  "vi": "🥢 Vớt mì đúng lúc (tự canh)",
+  "en": ""
+ },
+ {
+  "vi": "🥢 Vớt mì ngay!",
+  "en": ""
+ },
+ {
+  "vi": "🥢 Vớt mì ngay (hơi mềm rồi)",
+  "en": ""
+ },
+ {
+  "vi": "🥢 Vớt mì (nát rồi)",
+  "en": ""
+ },
+ {
+  "vi": "🗑️ Đổ tô, làm lại",
+  "en": ""
+ },
+ {
+  "vi": "🧽 Hết tô sạch: rửa tô trước",
+  "en": ""
+ },
+ {
+  "vi": "🥡 Lấy hộp mang về",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Lấy tô",
+  "en": ""
+ },
+ {
+  "vi": "hai rổ đang bận",
+  "en": ""
+ },
+ {
+  "vi": "hơi mềm, vẫn ăn được",
+  "en": ""
+ },
+ {
+  "vi": "Chan nước dùng theo hình",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nước dùng hợp khách",
+  "en": ""
+ },
+ {
+  "vi": "khách dị ứng hải sản",
+  "en": ""
+ },
+ {
+  "vi": "👉 Thêm topping theo hình",
+  "en": ""
+ },
+ {
+  "vi": "topping theo hình",
+  "en": ""
+ },
+ {
+  "vi": "🌶️ Bơm 1 lượt ớt",
+  "en": ""
+ },
+ {
+  "vi": "📦 Đậy nắp hộp",
+  "en": ""
+ },
+ {
+  "vi": "Khách sẽ nếm và soi lại tô.",
+  "en": ""
+ },
+ {
+  "vi": "tô cần có mì và nước dùng",
+  "en": ""
+ },
+ {
+  "vi": "Chờ khách nhận món",
+  "en": ""
+ },
+ {
+  "vi": "🥶 1 tô = 2 phần nồi",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Ngày hội: cộng cả tô theo giá trên rồi nhân 1,1 (làm tròn) mới ra giá bán.",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Hôm nay giảm 10% cho học sinh trên mọi đơn còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Mì chín tới là tự vớt, chờ chút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhuộm",
+  "en": ""
+ },
+ {
+  "vi": "Tẩy",
+  "en": ""
+ },
+ {
+  "vi": "Phục hồi",
+  "en": ""
+ },
+ {
+  "vi": "Sấy",
+  "en": ""
+ },
+ {
+  "vi": "Hóa chất",
+  "en": ""
+ },
+ {
+  "vi": "Độ dài",
+  "en": ""
+ },
+ {
+  "vi": "💇 Tiệm tóc",
+  "en": ""
+ },
+ {
+  "vi": "📜 Quy tắc pha màu",
+  "en": ""
+ },
+ {
+  "vi": "· khử khuẩn, kho",
+  "en": ""
+ },
+ {
+  "vi": "(dưới 3★ trả nửa)",
+  "en": ""
+ },
+ {
+  "vi": "📅 Hẹn lần tới",
+  "en": ""
+ },
+ {
+  "vi": "tro, lạnh",
+  "en": ""
+ },
+ {
+  "vi": "vàng, ấm",
+  "en": ""
+ },
+ {
+  "vi": "đỏ, ấm đậm",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Bảng màu",
+  "en": ""
+ },
+ {
+  "vi": "Mã tuýp: số trước dấu chấm là level (1 đen → 10 bạch kim), số sau là ánh: .0 tự nhiên · .1 tro lạnh · .3 vàng ấm · .6 đỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Level tóc",
+  "en": ""
+ },
+ {
+  "vi": "Tuýp nhuộm trong tủ",
+  "en": ""
+ },
+ {
+  "vi": "Pha hai tuýp",
+  "en": ""
+ },
+ {
+  "vi": "Level bát = trung bình theo số phần: 1 phần 3.0 + 1 phần 7.3 ra level 5; 2 phần 3.0 + 1 phần 6.1 ra level 4.",
+  "en": ""
+ },
+ {
+  "vi": "Ánh tro kéo màu lạnh đi, ánh vàng hay đỏ kéo màu ấm lên; tuýp .0 giữ màu tự nhiên.",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc nhuộm không làm sáng màu nhuộm cũ: muốn sáng hơn thì tẩy trước, rồi toner khử ánh còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa hỏi ngân sách",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi khách rộng tay một kiểu: hỏi chuyện, xem tính khách rồi chọn cách nói.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Báo giá",
+  "en": ""
+ },
+ {
+  "vi": "💡 Giải thích giá, gợi ý dời bớt dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "Bớt quá 20% báo giá — tiệm không cho.",
+  "en": ""
+ },
+ {
+  "vi": "Bớt hơi nhiều: tiệm chịu phần lỗ này.",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Nói thật: hôm nay chưa làm vừa túi tiền",
+  "en": ""
+ },
+ {
+  "vi": "Khách sẽ về, không làm gì hôm nay. Chắc chưa?",
+  "en": ""
+ },
+ {
+  "vi": "khách dời lần sau",
+  "en": ""
+ },
+ {
+  "vi": "tro lạnh",
+  "en": ""
+ },
+ {
+  "vi": "hơi lạnh",
+  "en": ""
+ },
+ {
+  "vi": "hơi ấm",
+  "en": ""
+ },
+ {
+  "vi": "ấm đậm",
+  "en": ""
+ },
+ {
+  "vi": "📸 Ảnh có filter — soi ảnh gốc rồi hãy so",
+  "en": ""
+ },
+ {
+  "vi": "Khách không cần bát nhuộm",
+  "en": ""
+ },
+ {
+  "vi": "✓ Khớp màu khách cần",
+  "en": ""
+ },
+ {
+  "vi": "≠ Thiếu nền tự nhiên — thêm tuýp x.0",
+  "en": ""
+ },
+ {
+  "vi": "ấm quá — thêm tuýp tro",
+  "en": ""
+ },
+ {
+  "vi": "lạnh quá — thêm tuýp ánh vàng, đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Xem chân tóc để biết cần oxy mấy vol",
+  "en": ""
+ },
+ {
+  "vi": "và có tóc bạc không",
+  "en": ""
+ },
+ {
+  "vi": "Oxy 40 vol không bao giờ thoa sát da đầu",
+  "en": ""
+ },
+ {
+  "vi": "— cần một nửa",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xem thân tóc — ánh thật có thể lệch",
+  "en": ""
+ },
+ {
+  "vi": "Thân tóc ánh cam: bát ấm thêm một bậc (đã tính)",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh gốc",
+  "en": ""
+ },
+ {
+  "vi": "Bát ra",
+  "en": ""
+ },
+ {
+  "vi": "Tẩy, xả xong mới soi được ánh nền",
+  "en": ""
+ },
+ {
+  "vi": "Khử đúng ánh đang có",
+  "en": ""
+ },
+ {
+  "vi": "Toner này không khử đúng ánh đang có",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đúng bảng pha",
+  "en": ""
+ },
+ {
+  "vi": "≠ Chưa đúng bảng pha",
+  "en": ""
+ },
+ {
+  "vi": "Tỷ lệ hàng ∶ cột",
+  "en": ""
+ },
+ {
+  "vi": "Bảng pha màu",
+  "en": ""
+ },
+ {
+  "vi": "chạm ô để thử",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi tuýp 1 phần",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Bảng pha màu",
+  "en": ""
+ },
+ {
+  "vi": "chưa chốt phương án",
+  "en": ""
+ },
+ {
+  "vi": "Sản phẩm mời (khách có thể không lấy)",
+  "en": ""
+ },
+ {
+  "vi": "Tiền gấp nếu kịp giờ",
+  "en": ""
+ },
+ {
+  "vi": "Tạm tính tối đa",
+  "en": ""
+ },
+ {
+  "vi": "Làm sai, khách có thể bớt tiền dịch vụ.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ mời khi hợp tóc và vừa ngân sách",
+  "en": ""
+ },
+ {
+  "vi": "🛍️ Sản phẩm hợp tóc (tùy chọn)",
+  "en": ""
+ },
+ {
+  "vi": "Chờ vùng xanh rồi xả thuốc",
+  "en": ""
+ },
+ {
+  "vi": "Ra quầy: chọn một cách xử lý",
+  "en": ""
+ },
+ {
+  "vi": "🧴 Khử khuẩn",
+  "en": ""
+ },
+ {
+  "vi": "💬 Mời ngồi",
+  "en": ""
+ },
+ {
+  "vi": "Xem tận tay",
+  "en": ""
+ },
+ {
   "vi": "📸 Soi ảnh gốc",
   "en": ""
  },
@@ -1413,390 +1797,6 @@
  },
  {
   "vi": "Bấm 💬 ở một công việc, hoặc Người quen → Trò chuyện, với 2 người khác nhau (chat Cả phố không tính)",
-  "en": ""
- },
- {
-  "vi": "Đóng ca là tính lại từ đầu, nhớ bấm Nhận quà trước khi đóng ca.",
-  "en": ""
- },
- {
-  "vi": "Đổi tên",
-  "en": ""
- },
- {
-  "vi": "(đang mở ca: đóng ca rồi đổi)",
-  "en": ""
- },
- {
-  "vi": "🏷️ Bảng giá của tiệm",
-  "en": ""
- },
- {
-  "vi": "Giá tính ngay trong từng việc.",
-  "en": ""
- },
- {
-  "vi": "🏆 Kỷ lục riêng",
-  "en": ""
- },
- {
-  "vi": "Đã nhận huy hiệu Hẹn ở ngày hội.",
-  "en": ""
- },
- {
-  "vi": "Đã mở góc ngày hội. Bấm Nhận huy hiệu để lưu vào hộ chiếu nghề này.",
-  "en": ""
- },
- {
-  "vi": "Nhận huy hiệu",
-  "en": ""
- },
- {
-  "vi": "Trong cùng ca Ngày hội, làm xong 3 việc và 1 trò nhỏ bằng Chơi ngay (Luyện không thưởng không tính). Sau đó bấm Mở góc ngày hội trước khi đóng ca, rồi Nhận huy hiệu.",
-  "en": ""
- },
- {
-  "vi": "Làm tiếp công việc",
-  "en": ""
- },
- {
-  "vi": "Chơi trò nhỏ",
-  "en": ""
- },
- {
-  "vi": "Ca sắp tới là Ngày hội. Mở ca để bắt đầu 3 việc và 1 trò nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Ngày hội xuất hiện ngẫu nhiên theo nhịp khu phố. Tiếp tục làm việc và xem nhịp ngày ở Chuẩn bị; khi có Ngày hội, mở ca của nghề này.",
-  "en": ""
- },
- {
-  "vi": "Mở ca Ngày hội",
-  "en": ""
- },
- {
-  "vi": "Xem nhịp ngày",
-  "en": ""
- },
- {
-  "vi": "Tiến độ tính riêng trong ca của nghề này; đóng ca sẽ tính lại từ đầu.",
-  "en": ""
- },
- {
-  "vi": "trò nhỏ",
-  "en": ""
- },
- {
-  "vi": "Huy hiệu",
-  "en": ""
- },
- {
-  "vi": "🎟️ Chưa có thiệp.",
-  "en": ""
- },
- {
-  "vi": "🔒 Giữ cho ca bạn",
-  "en": ""
- },
- {
-  "vi": "Thống kê sử dụng",
-  "en": ""
- },
- {
-  "vi": "Cho phép Google thống kê lượt ghé, các bước chơi và tốc độ để cải thiện game?",
-  "en": ""
- },
- {
-  "vi": "Cho phép",
-  "en": ""
- },
- {
-  "vi": "Chuyện nhân viên",
-  "en": ""
- },
- {
-  "vi": "Bỏ dở việc",
-  "en": ""
- },
- {
-  "vi": "Tăng ca, năng suất",
-  "en": ""
- },
- {
-  "vi": "Tạm dừng: còn sự cố đang mở",
-  "en": ""
- },
- {
-  "vi": "Hôm nay không có ca (lịch ngày lẻ)",
-  "en": ""
- },
- {
-  "vi": "Hôm nay không có ca (lịch ngày chẵn)",
-  "en": ""
- },
- {
-  "vi": "Đang xử lý đơn riêng",
-  "en": ""
- },
- {
-  "vi": "Đang chuẩn bị vào việc",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng dùng nguyên liệu và quỹ nghề. Thiếu hàng hoặc tiền lương thì đội tạm dừng, không tự rút tiền cá nhân.",
-  "en": ""
- },
- {
-  "vi": "Đội làm việc cùng bạn",
-  "en": ""
- },
- {
-  "vi": "Muốn mở thêm cơ sở?",
-  "en": ""
- },
- {
-  "vi": "🏪 Quầy của bạn",
-  "en": ""
- },
- {
-  "vi": "có kho, vốn và nhân viên riêng.",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể tự tay pha từng ly và làm các bước của trò pha chế.",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể tự tay làm các bước của nghề.",
-  "en": ""
- },
- {
-  "vi": "xu lương / đơn riêng · trả từ quỹ nghề",
-  "en": ""
- },
- {
-  "vi": "Chọn người phụ bên dưới 👇",
-  "en": ""
- },
- {
-  "vi": "xu/đơn riêng",
-  "en": ""
- },
- {
-  "vi": "kỳ này",
-  "en": ""
- },
- {
-  "vi": "Thuế dự kiến",
-  "en": ""
- },
- {
-  "vi": "Tiền thuê đã tích lũy",
-  "en": ""
- },
- {
-  "vi": "Mỗi 7 ca, thuế bằng 4% doanh thu nghề.",
-  "en": ""
- },
- {
-  "vi": "xu mỗi ca đóng, theo tài sản lúc mở ca. Hỗ trợ 60% giá trị phần chưa thu hồi, chỉ khi đã bật trước sự việc.",
-  "en": ""
- },
- {
-  "vi": "Xử lý sự cố đang mở",
-  "en": ""
- },
- {
-  "vi": "Xử lý hồ sơ đang mở",
-  "en": ""
- },
- {
-  "vi": "Về",
-  "en": ""
- },
- {
-  "vi": "SÂN BAY",
-  "en": ""
- },
- {
-  "vi": "CÒ TRẮNG",
-  "en": ""
- },
- {
-  "vi": "DẦU",
-  "en": ""
- },
- {
-  "vi": "CỬA 3",
-  "en": ""
- },
- {
-  "vi": "ĐÚNG GIỜ",
-  "en": ""
- },
- {
-  "vi": "GIÔNG",
-  "en": ""
- },
- {
-  "vi": "SƯƠNG",
-  "en": ""
- },
- {
-  "vi": "ĐẸP",
-  "en": ""
- },
- {
-  "vi": "ĐÃ CẤT CÁNH",
-  "en": ""
- },
- {
-  "vi": "ĐÃ HỦY",
-  "en": ""
- },
- {
-  "vi": "ĐANG BAY",
-  "en": ""
- },
- {
-  "vi": "ĐANG LÊN TÀU",
-  "en": ""
- },
- {
-  "vi": "TRỄ",
-  "en": ""
- },
- {
-  "vi": "KHỞI HÀNH",
-  "en": ""
- },
- {
-  "vi": "Quý khách vui lòng trông giữ hành lý cẩn thận.",
-  "en": ""
- },
- {
-  "vi": "Ưu tiên lên tàu: người già, trẻ nhỏ và mẹ bế em bé.",
-  "en": ""
- },
- {
-  "vi": "Xin mời quý khách làm thủ tục tại quầy 1 đến 3.",
-  "en": ""
- },
- {
-  "vi": "Bàn bản tin",
-  "en": ""
- },
- {
-  "vi": "Màn hình thời tiết",
-  "en": ""
- },
- {
-  "vi": "Chơi với Mướp trên ghế sofa",
-  "en": ""
- },
- {
-  "vi": "Trời đẹp, gió nhẹ",
-  "en": ""
- },
- {
-  "vi": "VÂN",
-  "en": ""
- },
- {
-  "vi": "PHÒNG TỔ BAY · CÁNH CÒ",
-  "en": ""
- },
- {
-  "vi": "PHIẾU DẦU",
-  "en": ""
- },
- {
-  "vi": "ĐÃ BÁO DANH",
-  "en": ""
- },
- {
-  "vi": "BÁO DANH",
-  "en": ""
- },
- {
-  "vi": "Quầy làm thủ tục",
-  "en": ""
- },
- {
-  "vi": "Soi chiếu an ninh",
-  "en": ""
- },
- {
-  "vi": "đảo",
-  "en": ""
- },
- {
-  "vi": "Soi chiếu: tháo thắt lưng, bỏ chai nước ra ngoài, máy tính để riêng một khay.",
-  "en": ""
- },
- {
-  "vi": "Quầy cửa ra tàu",
-  "en": ""
- },
- {
-  "vi": "Cửa kính nhìn ra sân đỗ",
-  "en": ""
- },
- {
-  "vi": "Sân đỗ vắng: chuyến của mình đang trên trời.",
-  "en": ""
- },
- {
-  "vi": "Cò Trắng đậu ngay ngoài kia, xe hành lý chạy tới chạy lui.",
-  "en": ""
- },
- {
-  "vi": "CHƯA MỞ",
-  "en": ""
- },
- {
-  "vi": "Bảng điều khiển",
-  "en": ""
- },
- {
-  "vi": "Chị Vân cười: “Khoang khách ổn chứ em? Có gì báo chị liền nhé.”",
-  "en": ""
- },
- {
-  "vi": "Ghế cơ trưởng còn trống. Chị Vân đang uống cà phê ở phòng tổ bay.",
-  "en": ""
- },
- {
-  "vi": "“Đọc từng dòng nhé, không vội. Checklist là bạn của mình.”",
-  "en": ""
- },
- {
-  "vi": "“Mắt trên đồng hồ, tai nghe đài. Giữ độ cao này.”",
-  "en": ""
- },
- {
-  "vi": "“Ổn định ở cổng đầu chưa? Chưa ổn thì bay lại, không xấu hổ gì cả.”",
-  "en": ""
- },
- {
-  "vi": "“Bản tin xong thì mình ra vòng quanh tàu nhé.”",
-  "en": ""
- },
- {
-  "vi": "ĐC 2",
-  "en": ""
- },
- {
-  "vi": "ĐC 1",
-  "en": ""
- },
- {
-  "vi": "Xe đẩy suất ăn",
-  "en": ""
- },
- {
-  "vi": "Bếp tàu",
   "en": ""
  }
 ]

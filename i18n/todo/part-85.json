@@ -1,5 +1,137 @@
 [
  {
+  "vi": "Bảo bạn ấy hỏi sếp",
+  "en": ""
+ },
+ {
+  "vi": "Sát hạn nộp mà số liệu còn lệch.",
+  "en": ""
+ },
+ {
+  "vi": "Báo sếp sớm, xin thêm giờ",
+  "en": ""
+ },
+ {
+  "vi": "Nộp đại cho kịp",
+  "en": ""
+ },
+ {
+  "vi": "Thức khuya tự sửa, không báo",
+  "en": ""
+ },
+ {
+  "vi": "Bạn mới vào nhóm làm sai nhiều.",
+  "en": ""
+ },
+ {
+  "vi": "Kèm cặp, chỉ từng bước",
+  "en": ""
+ },
+ {
+  "vi": "Làm thay cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Báo sếp đổi người",
+  "en": ""
+ },
+ {
+  "vi": "Khách gọi tới bực vì chờ lâu.",
+  "en": ""
+ },
+ {
+  "vi": "Xin lỗi, hẹn giờ trả lời rõ",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển máy cho người khác",
+  "en": ""
+ },
+ {
+  "vi": "Bảo khách chờ tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Sếp giao hai việc gấp cùng lúc.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi sếp việc nào trước",
+  "en": ""
+ },
+ {
+  "vi": "Làm cả hai cho xong",
+  "en": ""
+ },
+ {
+  "vi": "Chọn việc mình quen",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thấy lỗi của chính mình tuần trước.",
+  "en": ""
+ },
+ {
+  "vi": "Báo ngay và sửa",
+  "en": ""
+ },
+ {
+  "vi": "Sửa lặng lẽ",
+  "en": ""
+ },
+ {
+  "vi": "Kệ, chưa ai thấy",
+  "en": ""
+ },
+ {
+  "vi": "Khách quen xin bớt giá quá nhiều.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ giá, tặng thêm chút dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "Bớt luôn cho vui",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối cộc lốc",
+  "en": ""
+ },
+ {
+  "vi": "Khách phàn nàn to trước mặt người khác.",
+  "en": ""
+ },
+ {
+  "vi": "Mời ra chỗ riêng, nghe hết",
+  "en": ""
+ },
+ {
+  "vi": "Cãi lại cho rõ",
+  "en": ""
+ },
+ {
+  "vi": "Đồng nghiệp đến trễ lần thứ ba.",
+  "en": ""
+ },
+ {
+  "vi": "Nói riêng, hỏi lý do",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc trước mọi người",
+  "en": ""
+ },
+ {
+  "vi": "Làm thay, không nói gì",
+  "en": ""
+ },
+ {
+  "vi": "Một bước làm tắt có thể hại khách.",
+  "en": ""
+ },
+ {
   "vi": "Dừng lại, làm đủ quy trình",
   "en": ""
  },
@@ -1665,138 +1797,6 @@
  },
  {
   "vi": "Cuối tháng vẫn bị hỏi, cả tổ lo.",
-  "en": ""
- },
- {
-  "vi": "“Anh em mình cả”",
-  "en": ""
- },
- {
-  "vi": "Một tổ trưởng nhắn riêng: “Anh em mình cả, đợt kiểm tra tới phần tổ em nương tay nhé.”",
-  "en": ""
- },
- {
-  "vi": "Trả lời rõ: kiểm tra như mọi tổ",
-  "en": ""
- },
- {
-  "vi": "Tổ trưởng hơi ngượng, nhưng cả đơn vị nể.",
-  "en": ""
- },
- {
-  "vi": "Hứa nương tay",
-  "en": ""
- },
- {
-  "vi": "Chuyện lộ ra, các tổ khác thấy bất công.",
-  "en": ""
- },
- {
-  "vi": "Không trả lời, để đó",
-  "en": ""
- },
- {
-  "vi": "Tổ trưởng tưởng là đồng ý.",
-  "en": ""
- },
- {
-  "vi": "Giỏ trái cây lên phòng",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn, từ chối khéo, mời chị về",
-  "en": ""
- },
- {
-  "vi": "Cả đơn vị xì xào chuyện “quà cáp”.",
-  "en": ""
- },
- {
-  "vi": "Nhận, chia cho cả phòng",
-  "en": ""
- },
- {
-  "vi": "Vẫn là nhận. Đoàn kiểm tra hỏi tới.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo trước 7 giờ sáng",
-  "en": ""
- },
- {
-  "vi": "Lãnh đạo cần báo cáo tình hình an ninh trật tự trước 7 giờ sáng mai.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo gọn, đúng hạn, không ai thức trắng.",
-  "en": ""
- },
- {
-  "vi": "Bắt cả tổ trực ban ở lại làm tới khuya",
-  "en": ""
- },
- {
-  "vi": "Báo cáo đẹp, sáng mai ai cũng phờ phạc.",
-  "en": ""
- },
- {
-  "vi": "Gửi số liệu tháng trước cho kịp",
-  "en": ""
- },
- {
-  "vi": "Số liệu cũ bị phát hiện, mất uy tín.",
-  "en": ""
- },
- {
-  "vi": "Bài chê phường trên mạng",
-  "en": ""
- },
- {
-  "vi": "Bàn tiếp dân thêm số thứ tự, bài viết được sửa thành lời khen.",
-  "en": ""
- },
- {
-  "vi": "Mời lên phường cho “biết điều”",
-  "en": ""
- },
- {
-  "vi": "Giấy mời không căn cứ. Chuyện lên báo.",
-  "en": ""
- },
- {
-  "vi": "Nhắn người đó gỡ bài",
-  "en": ""
- },
- {
-  "vi": "Ảnh chụp tin nhắn lan khắp nhóm khu phố.",
-  "en": ""
- },
- {
-  "vi": "Tuần tra đêm thứ ba liền",
-  "en": ""
- },
- {
-  "vi": "Camera ghi hình tắt",
-  "en": ""
- },
- {
-  "vi": "Lập biên bản sự việc, kiểm tra lại toàn bộ thiết bị",
-  "en": ""
- },
- {
-  "vi": "Lỗi pin được thay, tổ yên tâm làm đúng.",
-  "en": ""
- },
- {
-  "vi": "Người dân khiếu nại, không có hình đối chứng.",
-  "en": ""
- },
- {
-  "vi": "Chuyện lộ ra, mất niềm tin.",
-  "en": ""
- },
- {
-  "vi": "Quán karaoke gửi “quà”",
   "en": ""
  }
 ]

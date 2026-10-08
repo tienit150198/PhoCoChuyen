@@ -1,5 +1,389 @@
 [
  {
+  "vi": "Đóng ca là tính lại từ đầu, nhớ bấm Nhận quà trước khi đóng ca.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi tên",
+  "en": ""
+ },
+ {
+  "vi": "(đang mở ca: đóng ca rồi đổi)",
+  "en": ""
+ },
+ {
+  "vi": "🏷️ Bảng giá của tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Giá tính ngay trong từng việc.",
+  "en": ""
+ },
+ {
+  "vi": "🏆 Kỷ lục riêng",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhận huy hiệu Hẹn ở ngày hội.",
+  "en": ""
+ },
+ {
+  "vi": "Đã mở góc ngày hội. Bấm Nhận huy hiệu để lưu vào hộ chiếu nghề này.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận huy hiệu",
+  "en": ""
+ },
+ {
+  "vi": "Trong cùng ca Ngày hội, làm xong 3 việc và 1 trò nhỏ bằng Chơi ngay (Luyện không thưởng không tính). Sau đó bấm Mở góc ngày hội trước khi đóng ca, rồi Nhận huy hiệu.",
+  "en": ""
+ },
+ {
+  "vi": "Làm tiếp công việc",
+  "en": ""
+ },
+ {
+  "vi": "Chơi trò nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Ca sắp tới là Ngày hội. Mở ca để bắt đầu 3 việc và 1 trò nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày hội xuất hiện ngẫu nhiên theo nhịp khu phố. Tiếp tục làm việc và xem nhịp ngày ở Chuẩn bị; khi có Ngày hội, mở ca của nghề này.",
+  "en": ""
+ },
+ {
+  "vi": "Mở ca Ngày hội",
+  "en": ""
+ },
+ {
+  "vi": "Xem nhịp ngày",
+  "en": ""
+ },
+ {
+  "vi": "Tiến độ tính riêng trong ca của nghề này; đóng ca sẽ tính lại từ đầu.",
+  "en": ""
+ },
+ {
+  "vi": "trò nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Huy hiệu",
+  "en": ""
+ },
+ {
+  "vi": "🎟️ Chưa có thiệp.",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Giữ cho ca bạn",
+  "en": ""
+ },
+ {
+  "vi": "Thống kê sử dụng",
+  "en": ""
+ },
+ {
+  "vi": "Cho phép Google thống kê lượt ghé, các bước chơi và tốc độ để cải thiện game?",
+  "en": ""
+ },
+ {
+  "vi": "Cho phép",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện nhân viên",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ dở việc",
+  "en": ""
+ },
+ {
+  "vi": "Tăng ca, năng suất",
+  "en": ""
+ },
+ {
+  "vi": "Tạm dừng: còn sự cố đang mở",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay không có ca (lịch ngày lẻ)",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay không có ca (lịch ngày chẵn)",
+  "en": ""
+ },
+ {
+  "vi": "Đang xử lý đơn riêng",
+  "en": ""
+ },
+ {
+  "vi": "Đang chuẩn bị vào việc",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng dùng nguyên liệu và quỹ nghề. Thiếu hàng hoặc tiền lương thì đội tạm dừng, không tự rút tiền cá nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Đội làm việc cùng bạn",
+  "en": ""
+ },
+ {
+  "vi": "Muốn mở thêm cơ sở?",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Quầy của bạn",
+  "en": ""
+ },
+ {
+  "vi": "có kho, vốn và nhân viên riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có thể tự tay pha từng ly và làm các bước của trò pha chế.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có thể tự tay làm các bước của nghề.",
+  "en": ""
+ },
+ {
+  "vi": "xu lương / đơn riêng · trả từ quỹ nghề",
+  "en": ""
+ },
+ {
+  "vi": "Chọn người phụ bên dưới 👇",
+  "en": ""
+ },
+ {
+  "vi": "xu/đơn riêng",
+  "en": ""
+ },
+ {
+  "vi": "kỳ này",
+  "en": ""
+ },
+ {
+  "vi": "Thuế dự kiến",
+  "en": ""
+ },
+ {
+  "vi": "Tiền thuê đã tích lũy",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi 7 ca, thuế bằng 4% doanh thu nghề.",
+  "en": ""
+ },
+ {
+  "vi": "xu mỗi ca đóng, theo tài sản lúc mở ca. Hỗ trợ 60% giá trị phần chưa thu hồi, chỉ khi đã bật trước sự việc.",
+  "en": ""
+ },
+ {
+  "vi": "Xử lý sự cố đang mở",
+  "en": ""
+ },
+ {
+  "vi": "Xử lý hồ sơ đang mở",
+  "en": ""
+ },
+ {
+  "vi": "Về",
+  "en": ""
+ },
+ {
+  "vi": "SÂN BAY",
+  "en": ""
+ },
+ {
+  "vi": "CÒ TRẮNG",
+  "en": ""
+ },
+ {
+  "vi": "DẦU",
+  "en": ""
+ },
+ {
+  "vi": "CỬA 3",
+  "en": ""
+ },
+ {
+  "vi": "ĐÚNG GIỜ",
+  "en": ""
+ },
+ {
+  "vi": "GIÔNG",
+  "en": ""
+ },
+ {
+  "vi": "SƯƠNG",
+  "en": ""
+ },
+ {
+  "vi": "ĐẸP",
+  "en": ""
+ },
+ {
+  "vi": "ĐÃ CẤT CÁNH",
+  "en": ""
+ },
+ {
+  "vi": "ĐÃ HỦY",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG BAY",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG LÊN TÀU",
+  "en": ""
+ },
+ {
+  "vi": "TRỄ",
+  "en": ""
+ },
+ {
+  "vi": "KHỞI HÀNH",
+  "en": ""
+ },
+ {
+  "vi": "Quý khách vui lòng trông giữ hành lý cẩn thận.",
+  "en": ""
+ },
+ {
+  "vi": "Ưu tiên lên tàu: người già, trẻ nhỏ và mẹ bế em bé.",
+  "en": ""
+ },
+ {
+  "vi": "Xin mời quý khách làm thủ tục tại quầy 1 đến 3.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn bản tin",
+  "en": ""
+ },
+ {
+  "vi": "Màn hình thời tiết",
+  "en": ""
+ },
+ {
+  "vi": "Chơi với Mướp trên ghế sofa",
+  "en": ""
+ },
+ {
+  "vi": "Trời đẹp, gió nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "VÂN",
+  "en": ""
+ },
+ {
+  "vi": "PHÒNG TỔ BAY · CÁNH CÒ",
+  "en": ""
+ },
+ {
+  "vi": "PHIẾU DẦU",
+  "en": ""
+ },
+ {
+  "vi": "ĐÃ BÁO DANH",
+  "en": ""
+ },
+ {
+  "vi": "BÁO DANH",
+  "en": ""
+ },
+ {
+  "vi": "Quầy làm thủ tục",
+  "en": ""
+ },
+ {
+  "vi": "Soi chiếu an ninh",
+  "en": ""
+ },
+ {
+  "vi": "đảo",
+  "en": ""
+ },
+ {
+  "vi": "Soi chiếu: tháo thắt lưng, bỏ chai nước ra ngoài, máy tính để riêng một khay.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy cửa ra tàu",
+  "en": ""
+ },
+ {
+  "vi": "Cửa kính nhìn ra sân đỗ",
+  "en": ""
+ },
+ {
+  "vi": "Sân đỗ vắng: chuyến của mình đang trên trời.",
+  "en": ""
+ },
+ {
+  "vi": "Cò Trắng đậu ngay ngoài kia, xe hành lý chạy tới chạy lui.",
+  "en": ""
+ },
+ {
+  "vi": "CHƯA MỞ",
+  "en": ""
+ },
+ {
+  "vi": "Bảng điều khiển",
+  "en": ""
+ },
+ {
+  "vi": "Chị Vân cười: “Khoang khách ổn chứ em? Có gì báo chị liền nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Ghế cơ trưởng còn trống. Chị Vân đang uống cà phê ở phòng tổ bay.",
+  "en": ""
+ },
+ {
+  "vi": "“Đọc từng dòng nhé, không vội. Checklist là bạn của mình.”",
+  "en": ""
+ },
+ {
+  "vi": "“Mắt trên đồng hồ, tai nghe đài. Giữ độ cao này.”",
+  "en": ""
+ },
+ {
+  "vi": "“Ổn định ở cổng đầu chưa? Chưa ổn thì bay lại, không xấu hổ gì cả.”",
+  "en": ""
+ },
+ {
+  "vi": "“Bản tin xong thì mình ra vòng quanh tàu nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "ĐC 2",
+  "en": ""
+ },
+ {
+  "vi": "ĐC 1",
+  "en": ""
+ },
+ {
+  "vi": "Xe đẩy suất ăn",
+  "en": ""
+ },
+ {
+  "vi": "Bếp tàu",
+  "en": ""
+ },
+ {
   "vi": "Đèn gọi tiếp viên",
   "en": ""
  },
@@ -444,7 +828,7 @@
   "en": ""
  },
  {
-  "vi": "Cổng hội treo đầy lồng đèn đỏ. Bà con vô chơi vui nha!",
+  "vi": "Cổng chợ đen treo lồng đèn đỏ lờ mờ. Nộp bảo kê rồi vô chơi nha!",
   "en": ""
  },
  {
@@ -456,7 +840,7 @@
   "en": ""
  },
  {
-  "vi": "Hội năm nay vui quá trời!",
+  "vi": "Chợ năm nay vui quá trời!",
   "en": ""
  },
  {
@@ -528,7 +912,7 @@
   "en": ""
  },
  {
-  "vi": "HỘI CHỢ",
+  "vi": "CHỢ ĐEN",
   "en": ""
  },
  {
@@ -1413,390 +1797,6 @@
  },
  {
   "vi": "Những người bạn gặp ở tiệm ảnh Tách Tách.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá quanh tiệm ảnh.",
-  "en": ""
- },
- {
-  "vi": "Chậu giặt khăn",
-  "en": ""
- },
- {
-  "vi": "Thùng chai",
-  "en": ""
- },
- {
-  "vi": "Ví tiền công",
-  "en": ""
- },
- {
-  "vi": "SỔ TỔ GIÚP VIỆC",
-  "en": ""
- },
- {
-  "vi": "THÙNG CHAI",
-  "en": ""
- },
- {
-  "vi": "Nghỉ hôm nay",
-  "en": ""
- },
- {
-  "vi": "Nhận lịch hẹn",
-  "en": ""
- },
- {
-  "vi": "ĐANG NHẬN DỌN",
-  "en": ""
- },
- {
-  "vi": "MAI GỌI NHÉ",
-  "en": ""
- },
- {
-  "vi": "Mrrr… nhà sạch thơm thế này, nằm đâu cũng sướng.",
-  "en": ""
- },
- {
-  "vi": "Lịch hẹn kế tiếp sắp tới giờ.",
-  "en": ""
- },
- {
-  "vi": "Giặt khăn, châm chai rồi lên đường nhé.",
-  "en": ""
- },
- {
-  "vi": "Xe đồ nghề đang rảnh",
-  "en": ""
- },
- {
-  "vi": "Xong lịch rồi!",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một nhà hoặc nghỉ hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một nhà",
-  "en": ""
- },
- {
-  "vi": "Chưa có nhà nào đang chờ",
-  "en": ""
- },
- {
-  "vi": "Sang nhà tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Những khách quen của tổ Nhà Thơm.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá của khách nhà.",
-  "en": ""
- },
- {
-  "vi": "Kệ đồ chơi",
-  "en": ""
- },
- {
-  "vi": "Bếp nhỏ của bé",
-  "en": ""
- },
- {
-  "vi": "Rương đồ chơi",
-  "en": ""
- },
- {
-  "vi": "Bàn vẽ của bé",
-  "en": ""
- },
- {
-  "vi": "SỔ TRÔNG BÉ",
-  "en": ""
- },
- {
-  "vi": "RƯƠNG ĐỒ",
-  "en": ""
- },
- {
-  "vi": "Vào trông bé",
-  "en": ""
- },
- {
-  "vi": "ĐANG TRÔNG BÉ",
-  "en": ""
- },
- {
-  "vi": "Cũi của bé",
-  "en": ""
- },
- {
-  "vi": "Mrrr… bé ngủ rồi, mèo đi nhẹ chân nhé.",
-  "en": ""
- },
- {
-  "vi": "Chơi với Mướp bên cửa sổ",
-  "en": ""
- },
- {
-  "vi": "An toàn cho bé",
-  "en": ""
- },
- {
-  "vi": "Bố mẹ bé sắp tới gửi bé.",
-  "en": ""
- },
- {
-  "vi": "Rửa tay, đọc giấy dặn rồi nhận bé nhé.",
-  "en": ""
- },
- {
-  "vi": "Bé đang chơi ngoan",
-  "en": ""
- },
- {
-  "vi": "Làm thêm một việc hoặc về nhà hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Làm thêm một việc",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở tổ trông trẻ Mèo Con.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và nhận xét của bố mẹ các bé.",
-  "en": ""
- },
- {
-  "vi": "Kệ sách theo ký hiệu",
-  "en": ""
- },
- {
-  "vi": "Xe sách trả",
-  "en": ""
- },
- {
-  "vi": "Sổ mượn trả",
-  "en": ""
- },
- {
-  "vi": "SỔ MƯỢN TRẢ",
-  "en": ""
- },
- {
-  "vi": "KHO VẬT TƯ",
-  "en": ""
- },
- {
-  "vi": "Quỹ thư viện",
-  "en": ""
- },
- {
-  "vi": "Đóng cửa thư viện",
-  "en": ""
- },
- {
-  "vi": "Mở cửa thư viện",
-  "en": ""
- },
- {
-  "vi": "HẸN MAI ĐỌC TIẾP",
-  "en": ""
- },
- {
-  "vi": "Kho lưu trữ hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Mrrr… nằm trên chồng báo cũ ấm ghê, đừng đuổi mèo nha.",
-  "en": ""
- },
- {
-  "vi": "Vuốt mèo ngủ trên chồng báo",
-  "en": ""
- },
- {
-  "vi": "Trông coi kho, phòng đọc",
-  "en": ""
- },
- {
-  "vi": "Ông Thạc đã đứng chờ ngoài cửa.",
-  "en": ""
- },
- {
-  "vi": "Xem ẩm kế kho, soi bẫy rồi mở phòng đọc nhé.",
-  "en": ""
- },
- {
-  "vi": "Đón thêm bạn đọc hoặc đóng cửa thư viện hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Đón thêm một bạn đọc",
-  "en": ""
- },
- {
-  "vi": "Chưa có bạn đọc nào đang chờ",
-  "en": ""
- },
- {
-  "vi": "Mời bạn đọc tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở thư viện phường Mây.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và nhận xét của bạn đọc.",
-  "en": ""
- },
- {
-  "vi": "Cờ đỏ, cờ xanh",
-  "en": ""
- },
- {
-  "vi": "Bảng giờ tàu",
-  "en": ""
- },
- {
-  "vi": "SỔ NHẬT KÝ",
-  "en": ""
- },
- {
-  "vi": "TỦ DỤNG CỤ",
-  "en": ""
- },
- {
-  "vi": "Thưởng ca",
-  "en": ""
- },
- {
-  "vi": "ĐANG GÁC",
-  "en": ""
- },
- {
-  "vi": "Chòi gác Bến Mây",
-  "en": ""
- },
- {
-  "vi": "Mrrr… mèo nằm trong chòi thôi, ra ray là bị bế vô liền.",
-  "en": ""
- },
- {
-  "vi": "Vuốt con mèo nằm trong chòi",
-  "en": ""
- },
- {
-  "vi": "Bộ đàm sắp reo.",
-  "en": ""
- },
- {
-  "vi": "Nhận ca, thử từng thiết bị rồi ký sổ nhé.",
-  "en": ""
- },
- {
-  "vi": "Đường ngang đang thông",
-  "en": ""
- },
- {
-  "vi": "Hết tàu rồi!",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một chuyến tàu hoặc giao ca hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một chuyến tàu",
-  "en": ""
- },
- {
-  "vi": "Chưa có chuyến tàu nào đang tới",
-  "en": ""
- },
- {
-  "vi": "Chuyến tàu tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở đường ngang Bến Mây.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và nhận xét quanh đường ngang.",
-  "en": ""
- },
- {
-  "vi": "Cửa ra tàu",
-  "en": ""
- },
- {
-  "vi": "SỔ TIẾP VIÊN",
-  "en": ""
- },
- {
-  "vi": "Khách chuyến sau đang xếp hàng ở cổng.",
-  "en": ""
- },
- {
-  "vi": "Thắt khăn quàng, ra cửa tàu đón khách nhé.",
-  "en": ""
- },
- {
-  "vi": "Khoang khách đang yên",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp trên khoang khách.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và nhận xét của hành khách.",
-  "en": ""
- },
- {
-  "vi": "Chuông gọi & sát khuẩn tay",
-  "en": ""
- },
- {
-  "vi": "Xe tiêm & tủ vật tư",
-  "en": ""
- },
- {
-  "vi": "Bàn hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Giường bệnh",
-  "en": ""
- },
- {
-  "vi": "An ninh bệnh viện",
-  "en": ""
- },
- {
-  "vi": "SỔ KHOA",
-  "en": ""
- },
- {
-  "vi": "ĐANG TRỰC",
-  "en": ""
- },
- {
-  "vi": "ĐÃ GIAO CA",
-  "en": ""
- },
- {
-  "vi": "Mướp nằm ngoài cửa sổ",
   "en": ""
  }
 ]

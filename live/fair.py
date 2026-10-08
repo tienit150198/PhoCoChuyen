@@ -120,7 +120,7 @@ class FairFeature(Feature):
         if ok:
             return max(ok, key=lambda r: (len(r.data['people']), -int(r.id[len(PREFIX):])))
         if len(rooms) >= INSTANCES_MAX:
-            raise LiveError('full', 'Hội chợ đông quá, lát quay lại nhé.')
+            raise LiveError('full', 'Chợ đen đông quá, lát quay lại nhé.')
         used = {r.id for r in rooms}
         n = 1
         while f'{PREFIX}{n}' in used:
@@ -194,7 +194,7 @@ class FairFeature(Feature):
         room = self.hub.rooms.get(rid) if rid else None
         w = room.data['people'].get(conn.player.pid) if room is not None else None
         if w is None:
-            raise LiveError('not_in', 'Bạn chưa vào hội chợ.')
+            raise LiveError('not_in', 'Bạn chưa vào chợ đen.')
         return room, w
 
     async def _ensure_loaded(self, p) -> None:

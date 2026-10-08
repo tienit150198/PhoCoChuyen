@@ -1,5 +1,69 @@
 [
  {
+  "vi": "Đơn đồ ăn",
+  "en": ""
+ },
+ {
+  "vi": "Tới quán, chờ món xong, [[So túi với bill]] rồi [[Nhận món lên thùng]]. Có giờ hẹn; trễ quá 30 phút là khách hủy.",
+  "en": ""
+ },
+ {
+  "vi": "Kiện hàng thường",
+  "en": ""
+ },
+ {
+  "vi": "Ở bưu cục bấm [[Cân & kiểm hàng]], gói đúng vật tư rồi [[Nhận hàng lên xe]]. Lệch cân thì báo lên app để được thêm phí.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng dễ vỡ, giữ lạnh, hở keo",
+  "en": ""
+ },
+ {
+  "vi": "Dễ vỡ bọc Màng xốp hơi; sữa chua dùng Túi giữ lạnh + đá gel; thùng hở mép dán Băng keo.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn thu hộ (COD)",
+  "en": ""
+ },
+ {
+  "vi": "Khách đưa tờ lớn, bạn đếm tiền thối bằng các tờ 50, 20, 10, 5, 2, 1. Túi COD giữ tối đa 250 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu số phòng, khách hay vắng",
+  "en": ""
+ },
+ {
+  "vi": "[[Gọi khách]] trước để biết số phòng hoặc giờ khách về. Không gọi là gõ nhầm cửa, mất thêm 8 phút.",
+  "en": ""
+ },
+ {
+  "vi": "Giấy tờ gốc & thư bảo đảm",
+  "en": ""
+ },
+ {
+  "vi": "Phải giữ khô, có đơn phải tới trước giờ hẹn. Thư bảo đảm chỉ đúng người nhận ký, không gửi hộ.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi chòi bảo vệ",
+  "en": ""
+ },
+ {
+  "vi": "Khách cho phép thì [[Gửi chòi bảo vệ]] và chụp ảnh làm bằng chứng. Đơn thu hộ không được gửi.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng cồng kềnh, quá tải",
+  "en": ""
+ },
+ {
+  "vi": "Hàng to phải có Dây ràng (mở ở cấp 2). Nặng quá 20 kg thì [[Từ chối nhận]] để bưu cục chuyển xe tải.",
+  "en": ""
+ },
+ {
   "vi": "Về Bưu cục Mây Chiều, đếm đúng tổng bảng kê rồi nộp cho kế toán trước khi túi đầy.",
   "en": ""
  },
@@ -1549,54 +1613,6 @@
  },
  {
   "vi": "Nhận bé đang sốt hoặc đang ho, cho ăn thứ bé dị ứng, cho thuốc sai liều trên nhãn",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn: 1★, chủ không trả tiền, báo cáo lên app, có thể bị kiểm tra hôm sau.",
-  "en": ""
- },
- {
-  "vi": "Sai sữa tắm, lau sâu tai đang đau, tắm khi lông còn rối, sấy ấm cho bé mặt ngắn",
-  "en": ""
- },
- {
-  "vi": "Lỗi rõ: sao giảm mạnh, chủ càu nhàu hoặc đòi bớt 25–50% tiền.",
-  "en": ""
- },
- {
-  "vi": "Thấy dấu hiệu bệnh mà không báo, hoặc tự đoán bệnh bảo mua thuốc",
-  "en": ""
- },
- {
-  "vi": "Lỗi rõ: review nêu đúng lỗi, sao giảm, có thể bị đòi lại tiền.",
-  "en": ""
- },
- {
-  "vi": "Nước lạnh/hơi nóng, còn sót bọt, lông còn ẩm, khẩu phần lệch bảng, cho bánh khi chủ dặn không",
-  "en": ""
- },
- {
-  "vi": "Lỗi nhỏ: mất 1 sao; nhiều lỗi cộng lại thì khách đòi giảm tiền hoặc bỏ đi không trả.",
-  "en": ""
- },
- {
-  "vi": "Từ chối oan bé khỏe, hoặc giao bé nhận nuôi không hợp nếp nhà",
-  "en": ""
- },
- {
-  "vi": "Từ chối oan: không mất tiền nhưng review xấu. Giao sai: lỗi nặng, sau đó bé bị mang trả về.",
-  "en": ""
- },
- {
-  "vi": "🧽 Đầu ngày bấm [[Khử khuẩn chuồng & bàn tắm]]: thú y phường kiểm sổ, chưa ký là phạt 15 xu.",
-  "en": ""
- },
- {
-  "vi": "📦 Mở [[Kho & nhập hàng]] kiểm sữa tắm, khăn, bông, bột cầm máu, túi nhặt phân, hạt chó, hạt mèo, bánh thưởng.",
-  "en": ""
- },
- {
-  "vi": "🚚 Kho sỉ thú cưng Mây rẻ: đặt trước 13:00 chiều nay tới, đặt sau thì sáng mai. Thỉnh thoảng giao thiếu.",
   "en": ""
  }
 ]

@@ -1,5 +1,65 @@
 [
  {
+  "vi": "Mã thao tác đã dùng cho việc khác.",
+  "en": ""
+ },
+ {
+  "vi": "Cả hai cần mở hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Cả hai mở hành trình đến ngày sống 10 trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã có lời mời đang chờ trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn đã có con chung.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nhận nuôi hoặc đón bé mới sinh.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn vào căn nhà của bạn trước khi mời người ấy.",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Có lời mời đang chờ bạn trả lời. Mở Nhà & Gia đình để xem nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã gửi lời mời. Chỉ thay đổi khi người ấy đồng ý.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn lời mời hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời đã được trả lời hoặc hủy.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ người gửi được hủy lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "Đã hủy lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ người được mời mới trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn đồng ý hoặc từ chối.",
+  "en": ""
+ },
+ {
   "vi": "Cả hai cần hành trình từ ngày sống 10.",
   "en": ""
  },
@@ -349,6 +409,10 @@
  },
  {
   "vi": "Đang tỉnh rồi",
+  "en": ""
+ },
+ {
+  "vi": "(\\d{1,6}) món",
   "en": ""
  },
  {
@@ -1733,70 +1797,6 @@
  },
  {
   "vi": "Bạn chạy xe máy ca chiều: nhận đơn, lên lộ trình, lấy hàng, gói kỹ, giao tận tay và nộp tiền thu hộ về bưu cục.",
-  "en": ""
- },
- {
-  "vi": "Đơn đồ ăn",
-  "en": ""
- },
- {
-  "vi": "Tới quán, chờ món xong, [[So túi với bill]] rồi [[Nhận món lên thùng]]. Có giờ hẹn; trễ quá 30 phút là khách hủy.",
-  "en": ""
- },
- {
-  "vi": "Kiện hàng thường",
-  "en": ""
- },
- {
-  "vi": "Ở bưu cục bấm [[Cân & kiểm hàng]], gói đúng vật tư rồi [[Nhận hàng lên xe]]. Lệch cân thì báo lên app để được thêm phí.",
-  "en": ""
- },
- {
-  "vi": "Hàng dễ vỡ, giữ lạnh, hở keo",
-  "en": ""
- },
- {
-  "vi": "Dễ vỡ bọc Màng xốp hơi; sữa chua dùng Túi giữ lạnh + đá gel; thùng hở mép dán Băng keo.",
-  "en": ""
- },
- {
-  "vi": "Đơn thu hộ (COD)",
-  "en": ""
- },
- {
-  "vi": "Khách đưa tờ lớn, bạn đếm tiền thối bằng các tờ 50, 20, 10, 5, 2, 1. Túi COD giữ tối đa 250 xu.",
-  "en": ""
- },
- {
-  "vi": "Thiếu số phòng, khách hay vắng",
-  "en": ""
- },
- {
-  "vi": "[[Gọi khách]] trước để biết số phòng hoặc giờ khách về. Không gọi là gõ nhầm cửa, mất thêm 8 phút.",
-  "en": ""
- },
- {
-  "vi": "Giấy tờ gốc & thư bảo đảm",
-  "en": ""
- },
- {
-  "vi": "Phải giữ khô, có đơn phải tới trước giờ hẹn. Thư bảo đảm chỉ đúng người nhận ký, không gửi hộ.",
-  "en": ""
- },
- {
-  "vi": "Gửi chòi bảo vệ",
-  "en": ""
- },
- {
-  "vi": "Khách cho phép thì [[Gửi chòi bảo vệ]] và chụp ảnh làm bằng chứng. Đơn thu hộ không được gửi.",
-  "en": ""
- },
- {
-  "vi": "Hàng cồng kềnh, quá tải",
-  "en": ""
- },
- {
-  "vi": "Hàng to phải có Dây ràng (mở ở cấp 2). Nặng quá 20 kg thì [[Từ chối nhận]] để bưu cục chuyển xe tải.",
   "en": ""
  }
 ]

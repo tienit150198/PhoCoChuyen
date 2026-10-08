@@ -53,21 +53,21 @@ def apply(s: dict, name: str, p: dict, t: float, ed: str, is_open: bool) -> dict
     result = dict(message='', effects=[])
     if name == 'fair_gift':
         need(not p, 'Dữ liệu thao tác không hợp lệ.')
-        need(is_open, 'Hội chợ đang đóng.', 'fair_closed')
-        need(c['gift'] != ed, 'Bạn đã nhận tiền vốn hội chợ rồi nha.', 'fair_gift_done')
+        need(is_open, 'Chợ đen đang đóng.', 'fair_closed')
+        need(c['gift'] != ed, 'Bạn đã nhận tiền vốn chợ đen rồi nha.', 'fair_gift_done')
         c['gift'] = ed
-        _jr()._wallet(j, GIFT, 'fair', '🎁 Tiền vốn hội chợ (ban tổ chức tặng)')
+        _jr()._wallet(j, GIFT, 'fair', '🎁 Tiền vốn chợ đen (chủ chợ tặng)')
         result['fair'] = dict(game='cash', gift=GIFT)
         result['message'] = f'Ban tổ chức tặng {GIFT} xu làm vốn chơi hội!'
     elif name == 'fair_borrow':
         need(set(p) == {'amount'} and type(p['amount']) is int and p['amount'] in LOAN_STEPS,
              f'Vay {", ".join(map(str, LOAN_STEPS))} xu thôi nha.')
-        need(is_open, 'Hội chợ đang đóng.', 'fair_closed')
+        need(is_open, 'Chợ đen đang đóng.', 'fair_closed')
         need(c['loan'] is None, 'Trả hết khoản đang vay rồi mới vay tiếp nha.', 'fair_loan_open')
         need(c['debt'] == 0, 'Còn nợ vay nóng kỳ trước, trả xong rồi vay tiếp nha.', 'fair_loan_open')
         amount = p['amount']
         c['loan'] = dict(ed=ed, p=amount, due=owed(amount))
-        _jr()._wallet(j, amount, 'fair', f'💸 Vay nóng hội chợ (trả {owed(amount)} xu)')
+        _jr()._wallet(j, amount, 'fair', f'💸 Vay nóng chợ đen (trả {owed(amount)} xu)')
         result['fair'] = dict(game='cash', borrowed=amount, due=owed(amount))
         result['message'] = f'Đã vay {amount} xu, trả lại {owed(amount)} xu nha.'
     elif name == 'fair_repay':
@@ -76,7 +76,7 @@ def apply(s: dict, name: str, p: dict, t: float, ed: str, is_open: bool) -> dict
         need(due > 0, 'Bạn không nợ gì cả.', 'fair_loan_none')
         need(j['wallet'] >= due, f'Ví cần đủ {due} xu để trả hết nha.', 'fair_wallet')
         c['loan'], c['debt'] = None, 0
-        _jr()._wallet(j, -due, 'fair', '💸 Trả vay nóng hội chợ')
+        _jr()._wallet(j, -due, 'fair', '💸 Trả vay nóng chợ đen')
         result['fair'] = dict(game='cash', repaid=due)
         result['message'] = f'Đã trả {due} xu, hết nợ rồi!'
     return result
@@ -95,7 +95,7 @@ def settle(s: dict, ed: str, closed: bool) -> None:
         due = ln['due']
         cash = min(max(0, j['wallet']), due)
         if cash:
-            _jr()._wallet(j, -cash, 'fair', '💸 Hội chợ tàn: thu vay nóng')
+            _jr()._wallet(j, -cash, 'fair', '💸 Chợ đen tàn: thu vay nóng')
         rest = due - cash
         if rest:
             from . import bank as bk
@@ -103,15 +103,15 @@ def settle(s: dict, ed: str, closed: bool) -> None:
             take = min(max(0, b['balance']), rest) if b else 0
             if take:
                 b['balance'] -= take
-                bk._log(b, j['life_day'], 'acc', 'Hội chợ thu vay nóng', -take)
+                bk._log(b, j['life_day'], 'acc', 'Chợ đen thu vay nóng', -take)
                 rest -= take
         if rest:
             c['debt'] += rest
-            _jr()._history(j, 0, 'fair', f'💸 Còn nợ vay nóng hội chợ {rest} xu (trừ dần khi có tiền vào ví)')
+            _jr()._history(j, 0, 'fair', f'💸 Còn nợ vay nóng chợ đen {rest} xu (trừ dần khi có tiền vào ví)')
     if c['debt'] and j['wallet'] > 0:
         take = min(j['wallet'], c['debt'])
         c['debt'] -= take
-        _jr()._wallet(j, -take, 'fair', '💸 Trả dần nợ vay nóng hội chợ' + ('' if c['debt'] else ' (hết nợ)'))
+        _jr()._wallet(j, -take, 'fair', '💸 Trả dần nợ vay nóng chợ đen' + ('' if c['debt'] else ' (hết nợ)'))
 
 
 def public(j: dict, ed: str, is_open: bool) -> dict:
@@ -125,7 +125,7 @@ def validate(j: dict) -> None:
     if 'fair_cash' not in j:
         return
     from .engine import need, integer
-    bad = 'Dữ liệu vay nóng hội chợ không hợp lệ.'
+    bad = 'Dữ liệu vay nóng chợ đen không hợp lệ.'
     c = j['fair_cash']
     need(isinstance(c, dict) and set(c) == set(KEYS) and c['v'] == VERSION and isinstance(c['gift'], str)
          and len(c['gift']) <= 12, bad, 'invalid_save')

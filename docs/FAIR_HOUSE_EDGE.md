@@ -1,4 +1,4 @@
-# 🎪 Hội chợ: the house always wins (08/10/2026)
+# 🕶️ Chợ đen (was Hội chợ): the house always wins (08/10/2026)
 
 Owner 08/10: "mở hội chợ nhé, tỷ lệ chỉnh lại làm sao cho phù hợp, đảm bảo nhà cái luôn thắng", then "chợ đen để
 luôn ở ngoài nhé". This edition runs from 09/10 to 13/10 (`FAIR_START` 2026-10-09, `FAIR_DAYS` 5, edition
@@ -46,6 +46,34 @@ How the three betting patterns play:
   knife stake (`fair_knife.STAKES`) are saved and checked by older servers, and vé cào sells fixed-price tickets.
   None of this changes a return: every stake gets the same odds.
 
+## 🕶️ Chợ đen: bảo kê and arrests (owner 08/10, late)
+
+Owner 08/10 23:15: "k phải là hội chợ, nó là "Chợ đen". Vào chợ đen phải nộp bảo kê, phí bảo kê là 10k xu, nếu k nộp
+thì bị trấn lột 30% tiền hiện có. vào chợ đen có thể bị công an bắt, tỷ lệ bị bắt cực cao". Players see "Chợ đen"
+everywhere (ids, keys, endpoints and the edition `fair20261009` are unchanged). The rules live in `game/fair_bm.py`:
+
+- **Bảo kê** once per Vietnam day (UTC+7): `fair_bm_pay` takes `BM_FEE` (10,000 xu, shown: it is a price) from the
+  wallet; `fair_bm_refuse` lets the đàn em take `ROB_PCT` (30%) of the wallet, cash only, never the bank account, 0 when
+  the wallet is empty. Either way the player is in until the day ends. Until then every `fair_*` command except
+  finishing what was begun (`fair.LATE`), the gift and repaying a loan is refused (`fair_bm_gate`).
+- **Arrests on every paid round** (bầu cua, chiếu trong, a lô tô purchase, a vé cào, a phóng dao run's stake):
+  `BM_ARREST_P` (20%) per round, drawn by `fair_bm._arrest_roll` from its own random source before the round is drawn.
+  Caught: the stake is lost with no outcome, a fine of `FINE_PCT` (30%) of the wallet left after the stake, and a ban
+  (`fair_bm_ban`) until the Vietnam day ends. The wallet never goes below zero. The arrest replaces neither the chiếu
+  trong's own rare dẹp chiếu (`RAID_PCT`) nor the police's wealth check and asset check; those still run on rounds the
+  police did not catch.
+- **What it does to the house edge:** every return in the table above is now multiplied by 0.8 (one round in five
+  returns nothing), before the fine: at most 0.8 × 97.4% ≈ **77.9%** of the stake for the best stall with the 🍀 gate
+  open, and 76.3% (bầu cua) to 76.9% (chiếu trong) without it. The fine (30% of the wallet on an arrest) makes the
+  expected loss of a round grow with the wallet, not the stake: on average 6% of the wallet left per paid round, on
+  top. The day's bảo kê (10,000 xu, or 30% of the wallet) comes before any round. Phóng dao's stake is lost to an
+  arrest too, so its daily cap now applies to a game that also loses one run in five outright.
+- **Nothing reaches the client** about the rate or the percentages: `fair.bm` carries only the fee, today's standing
+  (`st`, `inside`, `ban`) and the đàn em's name. Receipts give xu (the robbery, the fine).
+- **Save:** `journey['fair_bm']` `{d, s}` (the Vietnam date; `paid`, `robbed` or `ban`) sits beside `journey['fair']`,
+  where a 1.9.26 server's fair validator would refuse a new key; the journey keeps unknown optional blocks, so a
+  1.9.20–1.9.26 server validates and keeps the save (it just has no gate).
+
 ## Not a wager
 
 - **🗡️ Phóng dao is a skill game.** Owner 05/10: no chance draw ever turns a clean board into a loss. Its return
@@ -80,6 +108,6 @@ How the three betting patterns play:
 
 ## Save compatibility
 
-There are no new save keys. A save from the last edition starts afresh on its first command: money, days, Bảng vàng,
+The house-edge changes added no save keys (the Chợ đen's bảo kê adds the optional `journey['fair_bm']`, above). A save from the last edition starts afresh on its first command: money, days, Bảng vàng,
 gift and the police's mark reset, and its loan is collected. `fair_board.settle` also settles `fair.PAST` editions that
 a server missed, once each.

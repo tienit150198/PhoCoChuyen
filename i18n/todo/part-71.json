@@ -1,5 +1,65 @@
 [
  {
+  "vi": "🌙 Bà Năm gọi lúc tối cần sửa gấp áo dài cưới: phải đo trên người mặc, đừng đoán.",
+  "en": ""
+ },
+ {
+  "vi": "🧋 Bé nhà chị Hằng làm đổ trà sữa lên váy mới: dỗ bé trước, giặt ngay vết bẩn.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Từ ngày 2 thỉnh thoảng khách đưa thiếu tiền. Bấm [[Đếm lại tiền khách đưa]]; thiếu thật thì phải chọn cách xử lý rồi mới giao đồ được.",
+  "en": ""
+ },
+ {
+  "vi": "🙏 [[Nhắc khách đưa thêm]]: người đếm nhầm trả đủ, có khi còn tip. [[Bỏ qua, coi như bớt giá]]: mất khoản thiếu. [[Báo công an]]: chờ gần 20 phút, khách sau sốt ruột.",
+  "en": ""
+ },
+ {
+  "vi": "🧒 Trẻ con không đủ tiền: [[Cho nợ, mai trả]] (hôm sau hay quay lại trả), [[Bớt món cho vừa tiền]] hoặc [[Thôi, cho con luôn]] (có khi bố mẹ ghé cảm ơn, gửi lại tiền).",
+  "en": ""
+ },
+ {
+  "vi": "😤 Khách cố tình đưa thiếu rồi chối: [[Để khách đi]] thì mất khoản thiếu; báo công an thì khách phải trả đủ, hàng xóm khen tiệm làm đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe khách tả size",
+  "en": ""
+ },
+ {
+  "vi": "Đếm lại tiền khách đưa",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc khách đưa thêm",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ qua, coi như bớt giá",
+  "en": ""
+ },
+ {
+  "vi": "Cho nợ, mai trả",
+  "en": ""
+ },
+ {
+  "vi": "Bớt món cho vừa tiền",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, cho con luôn",
+  "en": ""
+ },
+ {
+  "vi": "Để khách đi",
+  "en": ""
+ },
+ {
+  "vi": "Bạn phụ Nhã trông tiệm của chú Út: tư vấn thức ăn, setup bể cá, chăm thú trong tiệm, giao bé cho đúng người và tính tiền cho đúng.",
+  "en": ""
+ },
+ {
   "vi": "Hỏi tuổi, cân nặng, dị ứng rồi đọc nhãn bao: đúng loài, đúng tuổi, đúng cỡ, tránh vị bé dị ứng. Món khách tự lấy trong rổ giảm giá thì [[Xem hạn từng lon]].",
   "en": ""
  },
@@ -1577,70 +1637,6 @@
  },
  {
   "vi": "Xếp thịt lên mặt bánh trước khi chan. Khách dặn tái riêng thì bấm [[Tái để riêng]]. [[Rắc hành]] theo lời dặn. Trứng trần thì [[Đập trứng]] trước khi chan.",
-  "en": ""
- },
- {
-  "vi": "Chan nước, dừng muôi",
-  "en": ""
- },
- {
-  "vi": "Chọn nồi: nước trong, nước béo hay nồi nhỏ không mì chính. Bấm [[Chan nước dùng]], nước dâng trong tô; bấm [[Dừng muôi]] khi nước tới vạch xanh khách dặn.",
-  "en": ""
- },
- {
-  "vi": "Mang về",
-  "en": ""
- },
- {
-  "vi": "Lấy hộp mang về: tái để riêng, chan túi nước tới vạch rồi [[Buộc túi nước]]. Tổ thợ của anh Tuấn đặt bốn suất một lúc.",
-  "en": ""
- },
- {
-  "vi": "Nồi sắp cạn",
-  "en": ""
- },
- {
-  "vi": "Bấm [[Châm nồi]]: thêm nước và một mẻ xương. Nồi tụt nhiệt, nổi bọt, nhạt đi: chờ lăn tăn lại, hớt bọt, nếm lại rồi chan.",
-  "en": ""
- },
- {
-  "vi": "Học nghề với bác Lâm",
-  "en": ""
- },
- {
-  "vi": "Ba khách đầu bác Lâm đứng cạnh bếp: lỡ sai chỗ nào bác nhắc một lần trước khi bưng ra. Xong ba khách là bạn tự đứng bếp.",
-  "en": ""
- },
- {
-  "vi": "👂 Bấm [[Hỏi khách gọi gì]]: xem tô, thịt, lời dặn (ít nước, không hành, nước béo, không mì chính).",
-  "en": ""
- },
- {
-  "vi": "🍜 Lấy tô, [[Nhúng rổ bánh]] ba bốn lượt, xếp thịt, [[Rắc hành]].",
-  "en": ""
- },
- {
-  "vi": "🫗 Chọn nồi, [[Chan nước dùng]], [[Dừng muôi]] đúng vạch.",
-  "en": ""
- },
- {
-  "vi": "🥖 Thêm quẩy, đĩa rau nếu khách gọi, rồi [[BƯNG PHỞ RA]] khi còn nóng hổi.",
-  "en": ""
- },
- {
-  "vi": "🍲 Nước trong, nóng, vừa miệng: lửa lăn tăn, hớt bọt, nếm trước khi bán.",
-  "en": ""
- },
- {
-  "vi": "🍜 Bánh tơi mềm: ba bốn lượt nhúng.",
-  "en": ""
- },
- {
-  "vi": "🫗 Nước đúng mức khách dặn, không tràn mép tô.",
-  "en": ""
- },
- {
-  "vi": "🧅 Nhớ lời dặn: không hành, nhiều hành, nước béo, không mì chính, tái để riêng.",
   "en": ""
  }
 ]

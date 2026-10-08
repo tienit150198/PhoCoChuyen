@@ -474,7 +474,7 @@ class Wired(unittest.TestCase):
         self.assertIn("tab('wealth','Tài phú','💰')", js)
         self.assertIn("const OWN=['certs','titles','wealth']", js)
         self.assertIn('Tài sản ròng · coin/vàng tính theo giá vốn · không tính Quỹ chung', js)
-        self.assertIn('Mây Coin và vàng theo giá vốn, trừ mọi nợ kể cả vay nóng hội chợ. Không tính Quỹ chung.', js)
+        self.assertIn('Mây Coin và vàng theo giá vốn, trừ mọi nợ kể cả vay nóng chợ đen. Không tính Quỹ chung.', js)
         self.assertNotIn('Chưa tính Mây Coin', js)
         self.assertIn("tabs.length>4?'five':'four'", js)
         css = (ROOT / 'public/css/leaderboard.css').read_text(encoding='utf-8')

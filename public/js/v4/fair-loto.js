@@ -25,8 +25,8 @@ export const VERSES={
     'Con thỏ nhảy nhót, vểnh đôi tai','Bé học chăm ngoan, thuộc làu từng bài','Mùa này trái chín, ngọt lịm trái xoài',
     'Đứng đây ngó quanh, đố bà con là ai','Tiểu phẩm xem xong, cười té ghế vì hài','Áo mới cúc vàng, cô Bảy khéo cài',
     'Dò cho thiệt kỹ, kẻo lỡ dò sai'],
-  a:['Hội chợ đông vui, khách tới gần xa','Cơm trắng canh chua, thêm chén dưa cà','Sáng sớm tinh mơ, gáy vang con gà',
-    'Chiều chiều ông nội, pha ấm nước trà','Hội chợ tan rồi, ai cũng có quà','Vườn xuân rực rỡ, muôn sắc muôn hoa',
+  a:['Chợ đen đông vui, khách tới gần xa','Cơm trắng canh chua, thêm chén dưa cà','Sáng sớm tinh mơ, gáy vang con gà',
+    'Chiều chiều ông nội, pha ấm nước trà','Chợ đen tan rồi, ai cũng có quà','Vườn xuân rực rỡ, muôn sắc muôn hoa',
     'Cả xóm quây quần, cùng hát cùng ca','Đò ơi đợi chút, cho em sang qua','Cây đa đầu làng, gió mát la đà',
     'Trăng lên đầu ngõ, sáng cả sân nhà'],
   on:['Mưa rơi trên mái, lách tách mái tôn','Đường về xóm nhỏ, đầu làng cuối thôn','Lục bình trôi nổi, ghé vào bãi cồn',
@@ -42,7 +42,7 @@ export const VERSES={
     'Mua tờ dò lẹ, chạy nhanh cho mau','Cầu vồng sau mưa, rực rỡ bảy màu','Sân ga tấp nập, xình xịch đoàn tàu',
     'Bà ngồi đầu hiên, kể chuyện cho cháu','Bờ đê lộng gió, trắng xóa bông lau','Ca dao ông bà, là của quý báu',
     'Mới lạ hôm trước, quen thân hôm sau'],
-  ay:['Hội chợ vui quá, vỗ tay vỗ tay','Cánh diều no gió tung bay','Ớt xanh ớt đỏ, trái nào cũng cay',
+  ay:['Chợ đen vui quá, vỗ tay vỗ tay','Cánh diều no gió tung bay','Ớt xanh ớt đỏ, trái nào cũng cay',
     'Trâu ra ruộng sớm, cùng bác đi cày','Thóc vàng mới gặt, chở về nhà xay','Tiếng hò câu hát, nghe sao mà hay',
     'Chúc bà con mình, ai cũng gặp may','Con đường làng nhỏ, bé tung tăng chạy','Cô giáo hiền hậu, chữ đẹp cô dạy',
     'Bốn mùa xuân hạ, thu đông đổi thay'],
@@ -55,7 +55,7 @@ export const VERSES={
     'Muốn mượn đồ chơi, lễ phép thưa xin'],
   uoi:['Cô hàng nước miệng cười tươi','Cả phố đi hội đông người','Vô sở thú ngó chú đười ươi',
     'Bà ngoại cho quà, một trái bưởi','Thuyền về bến cá, đầy ắp khoang lưới','Vườn rau xanh mướt, sáng chiều siêng tưới',
-    'Rộn ràng hội chợ, xóm trên xóm dưới','Trời lạnh căm căm, quây quần bếp sưởi','Ăn rồi làm việc, chẳng có ai lười',
+    'Rộn ràng chợ đen, xóm trên xóm dưới','Trời lạnh căm căm, quây quần bếp sưởi','Ăn rồi làm việc, chẳng có ai lười',
     'Hàng xóm sang chơi, tiếng nói tiếng cười'],
 };
 const TAILS=['là con số {w}!','ra con số {w}!','con số {w} đây!','số {w} nè bà con!'];

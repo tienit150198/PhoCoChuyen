@@ -201,7 +201,7 @@ class BauCua(FairBase):
         s, _ = self.act(s, 'fair_bc', bets={'cua': 2})
         s, _ = self.act(s, 'fair_bc', bets={'cua': 2})
         rows = [r for r in s['journey']['history'] if r['kind'] == 'fair']
-        self.assertEqual([r['label'] for r in rows], ['🦀 Bầu cua hội chợ · 3 ván', '🎱 Lô tô hội chợ · 1 tờ'])
+        self.assertEqual([r['label'] for r in rows], ['🦀 Bầu cua chợ đen · 3 ván', '🎱 Lô tô chợ đen · 1 tờ'])
         self.assertEqual(rows[0]['amount'], (2 * (1 + fh.BAO) - 2) - 2 + 2)   # bão, nothing, one cua
         self.assertEqual(sum(r['amount'] for r in rows), s['journey']['wallet'] - 500)
         validate_state(s)
@@ -1275,7 +1275,7 @@ class FairFood(FairBase):
         y = ff.MENU['nuoc_mia']
         self.assertEqual(s['journey']['needs']['wake'], 50 + y['wake'])
         row = s['journey']['history'][-1]
-        self.assertEqual((row['kind'], row['label'], row['amount']), ('fair', '🍡 Ăn vặt hội chợ · 2 món', -(x['price'] + y['price'])))
+        self.assertEqual((row['kind'], row['label'], row['amount']), ('fair', '🍡 Ăn vặt chợ đen · 2 món', -(x['price'] + y['price'])))
         self.assertNotIn('fair', s['journey'])            # not a game: journey['fair'] is not even created
         self.assertEqual(fh.money_of(s['journey']), (0, 0))   # snacks are not on the Bảng vàng
         self.assertNotIn('lt', public_state(s)['fair']['today_xu'])
@@ -1327,7 +1327,7 @@ class FairFood(FairBase):
         s['journey']['needs']['full'] = 40
         s, _ = self.act(s, 'fair_snack', item='tau_hu')
         rows = [r for r in s['journey']['history'] if r['label'].startswith(ff.LABEL)]
-        self.assertEqual([r['label'] for r in rows], ['🍡 Ăn vặt hội chợ · 1 món'] * 2)
+        self.assertEqual([r['label'] for r in rows], ['🍡 Ăn vặt chợ đen · 1 món'] * 2)
 
 
 
@@ -1344,7 +1344,7 @@ class FairPhoto(FairBase):
         s, r = self.act(s, 'fair_photo', mode='friends')
         self.assertEqual((s['journey']['wallet'], r['fair']['n']), (12 - 2 * fp.PRICE, 2))
         row = s['journey']['history'][-1]
-        self.assertEqual((row['kind'], row['label'], row['amount']), ('fair', '📸 Chụp ảnh hội chợ · 2 lượt', -2 * fp.PRICE))
+        self.assertEqual((row['kind'], row['label'], row['amount']), ('fair', '📸 Chụp ảnh chợ đen · 2 lượt', -2 * fp.PRICE))
         self.assertEqual([k for k in s['journey'] if k.startswith('fair')], [])   # nothing of the fair in the save
         self.assertEqual(fh.money_of(s['journey']), (0, 0))
         self.assertEqual(public_state(s)['fair']['photo'], dict(price=fp.PRICE, shots=fp.SHOTS, ok=False, why='Chưa đủ xu'))
@@ -1356,7 +1356,7 @@ class FairPhoto(FairBase):
         s['journey']['wallet'] = 20
         s, _ = self.act(s, 'fair_photo')
         rows = [r['label'] for r in s['journey']['history'] if r['label'].startswith(fp.LABEL)]
-        self.assertEqual(rows, ['📸 Chụp ảnh hội chợ · 2 lượt', '📸 Chụp ảnh hội chợ · 1 lượt'])
+        self.assertEqual(rows, ['📸 Chụp ảnh chợ đen · 2 lượt', '📸 Chụp ảnh chợ đen · 1 lượt'])
         validate_state(s)
 
     def test_refused_when_closed_or_malformed(self):
@@ -1552,7 +1552,7 @@ class Board(StoreBase):
         old = lb.view(self.store, fh.edition(), 20, a)                       # an older client asks by the edition
         self.assertEqual((old['board'], old['rows'], bool(old['fair'])), (fh.edition(), view['rows'], True))
         self.assertFalse(view['fair']['settled'])
-        self.assertEqual([t['name'] for t in view['fair']['tiers']], ['Vua trò chơi', 'Cao thủ hội chợ'])
+        self.assertEqual([t['name'] for t in view['fair']['tiers']], ['Vua trò chơi', 'Cao thủ chợ đen'])
         self.assertEqual(lb.parse_query({'board': ed}), (ed, 50))
         self.assertEqual(lb.parse_query({'board': fh.edition()}), (fh.edition(), 50))
         # not before the end

@@ -17,7 +17,8 @@ import re
 from . import needs as nd
 
 COMMANDS = ('fair_snack',)
-LABEL = '🍡 Ăn vặt hội chợ'
+LABEL = '🍡 Ăn vặt chợ đen'
+LABEL_OLD = '🍡 Ăn vặt hội chợ'   # today's row written under the former name: still this row
 CARTS = ('candy', 'cane')       # fair-place.js spots: cô Út's kẹo bông cart, chú Năm's nước mía cart
 # id → the cart that sells it, what it is, its price (xu), no bụng / tỉnh táo added, the line when it is eaten
 MENU = {
@@ -65,7 +66,7 @@ def _row(j: dict, price: int) -> None:
         if not isinstance(row, dict) or row.get('day') != j['life_day']:
             break
         label = str(row.get('label', ''))
-        m = re.fullmatch(re.escape(LABEL) + r' · (\d{1,6}) món', label)
+        m = re.fullmatch(f'(?:{re.escape(LABEL)}|{re.escape(LABEL_OLD)})' + r' · (\d{1,6}) món', label)
         if row.get('kind') == 'fair' and row.get('career') is None and m and abs(row['amount'] - price) <= 10**7:
             j['wallet'] -= price
             row['amount'] -= price

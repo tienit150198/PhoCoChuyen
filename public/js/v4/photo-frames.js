@@ -228,7 +228,7 @@ function washi(c,x,y,w,h,rot,col){c.save();c.translate(x,y);c.rotate(rot);c.glob
 function hoaDang(c,x,y,s){glow(c,x,y-s*.5,s*3,'#ffcf6e');lotus(c,x,y,s,'#f7a1b9','#ffd1dc');rr(c,x-s*.12,y-s*.95,s*.24,s*.5,s*.06,'#fff6d6');el(c,x,y-s*1.05,s*.1,s*.16,'#ffb347');}
 function rainbow(c,x,y,s){for(const [k,col] of [[1,'#ff9aa8'],[.84,'#ffd48a'],[.68,'#a8e6a1'],[.52,'#9fd0ff']]){c.beginPath();c.arc(x,y,s*k,Math.PI,0);c.lineTo(x+s*(k-.16),y);c.arc(x,y,s*(k-.16),0,Math.PI,true);c.closePath();c.fillStyle=col;c.fill();}cloud(c,x-s*.8,y,s*.24,'#ffffff');cloud(c,x+s*.8,y,s*.24,'#ffffff');}
 export const FAIR_FRAMES=[
-  F('hoi_dem','Hội chợ đêm','🎡','Đèn giăng rực rỡ','#241a4d','#ffe08a','#ff8fab','#ffe08a',SANS,
+  F('hoi_dem','Chợ đêm','🎡','Đèn giăng rực rỡ','#241a4d','#ffe08a','#ff8fab','#ffe08a',SANS,
     (c,L,r)=>{const g=c.createLinearGradient(0,0,0,L.h);g.addColorStop(0,'#150f36');g.addColorStop(.6,'#2b1d5c');g.addColorStop(1,'#4a2a70');c.fillStyle=g;c.fillRect(0,0,L.w,L.h);
       for(let i=0;i<60;i++)el(c,r()*L.w,r()*L.h,.6+r()*.9,.6+r()*.9,'#ffffffaa');
       for(let i=0;i<16;i++){const rad=6+r()*16;el(c,r()*L.w,r()*L.h,rad,rad,['#ff8fab','#ffd36e','#8fd3ff','#b6f28c'][i%4]+'1c');}},

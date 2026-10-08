@@ -1460,6 +1460,16 @@
   "pattern": true
  },
  {
+  "vi": "Ví chưa đủ $1 để nộp bảo kê.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ".$1 Hôm nay được ra vô chợ đen.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🥶 Vận đang nguội vì chơi liền một trò. $1 hoặc nghỉ $2 phút là vận ấm lại; ném vòng, ô ăn quan, phóng dao không tính.",
   "en": "",
   "pattern": true
@@ -1470,7 +1480,7 @@
   "pattern": true
  },
  {
-  "vi": "Khai hội ngày $1, mở $2 ngày. Hẹn bà con ghé chơi ô ăn quan, ném vòng, bầu cua, lô tô nha!",
+  "vi": "Chợ mở ngày $1, mở $2 ngày. Hẹn bà con ghé chơi ô ăn quan, ném vòng, bầu cua, lô tô nha!",
   "en": "",
   "pattern": true
  },
@@ -1825,12 +1835,12 @@
   "pattern": true
  },
  {
-  "vi": "Trao khi hội tàn ($1 00:00), giữ mãi trong bộ sưu tập.",
+  "vi": "Trao khi chợ tàn ($1 00:00), giữ mãi trong bộ sưu tập.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ban tổ chức tặng $1 làm vốn chơi hội!",
+  "vi": "Chủ chợ tặng $1 làm vốn chơi!",
   "en": "",
   "pattern": true
  },
@@ -1850,7 +1860,7 @@
   "pattern": true
  },
  {
-  "vi": "Nợ còn lại từ lần hội trước: $1 (tự trừ dần khi có tiền vào ví).",
+  "vi": "Nợ còn lại từ lần chợ trước: $1 (tự trừ dần khi có tiền vào ví).",
   "en": "",
   "pattern": true
  },
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "😴 Tỉnh táo $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Top $1 $2 · tuần này",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Danh hiệu của $1",
   "en": "",
   "pattern": true
  }

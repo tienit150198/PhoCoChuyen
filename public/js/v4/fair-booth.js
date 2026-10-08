@@ -51,7 +51,7 @@ const BOOTH_FRAMES=[...FAIR_FRAMES,...FIRST.map(id=>FRAME[id]).filter(Boolean),.
 const BGS=[...FAIR_BACKDROPS,...BACKDROPS],BG_IDS=new Set(BGS.map(b=>b.id));
 const STICKS=[...STICKERS,...FAIR_STICKERS];
 // the words on the strip
-const TEXTS=[['hoi','🏮','Hội chợ','Hội chợ Phố Có Chuyện'],['vui','🎉','Vui hết nấc','Vui hết nấc!'],['ban','💞','Bạn thân','Bạn thân mãi đỉnh'],['none','🚫','Không chữ','']];
+const TEXTS=[['hoi','🕶️','Chợ đen','Chợ đen Phố Có Chuyện'],['vui','🎉','Vui hết nấc','Vui hết nấc!'],['ban','💞','Bạn thân','Bạn thân mãi đỉnh'],['none','🚫','Không chữ','']];
 const DECO_MAX=200;   // stickers on one strip: no limit a player meets, a sane one for a phone
 const SHOTS=4,GAP=3200,STICKER_MAX=8,TICKET='mnl.fair.pbticket',PRINT_SCALE=3,CONN_MS=10000;
 const CELL=[260,162];   // one photo of the strip (./photo-frames.js stripBox): the stage has its shape
@@ -292,7 +292,7 @@ export function setup(ctx){
     c.textAlign='center';c.textBaseline='middle';c.font='700 8px "Trebuchet MS",sans-serif';
     if(D.step!=='lobby')ppl.forEach((p,i)=>{
       const x=at[i]?.x??W*(i+.5)/ppl.length,room=ppl.length>1?Math.min(...at.map((a,j)=>j===i?Infinity:Math.abs(a.x-x)),W)-6:W*.6;
-      const tick=p.ready&&D.mode!=='solo'?'✓ ':'';let name=String(p.name||tr('Khách đi hội')).slice(0,18);
+      const tick=p.ready&&D.mode!=='solo'?'✓ ':'';let name=String(p.name||tr('Khách đi chợ')).slice(0,18);
       while(name.length>3&&c.measureText(tick+name).width+8>room)name=name.slice(0,-2)+'…';
       const tw=c.measureText(tick+name).width+8;
       c.fillStyle='rgba(255,250,240,.88)';c.beginPath();c.roundRect(x-tw/2,H-13,tw,11,5.5);c.fill();c.fillStyle='#4a3226';c.fillText(tick+name,x,H-7.2);});
@@ -373,7 +373,7 @@ export function setup(ctx){
     const [d,m]=vnDate(),name=`hoi-cho-${d}-${m}-${Date.now()%100000}.png`;
     let file=null;try{file=new File([D.blob],name,{type:'image/png'});}catch{/* old browser */}
     if(matchMedia('(pointer: coarse)').matches&&file&&navigator.canShare?.({files:[file]})){
-      try{await navigator.share({files:[file],title:tr('Ảnh hội chợ')});return;}catch(e){if(e?.name==='AbortError')return;}
+      try{await navigator.share({files:[file],title:tr('Ảnh chợ đen')});return;}catch(e){if(e?.name==='AbortError')return;}
     }
     const a=document.createElement('a');a.href=D.url;a.download=name;a.rel='noopener';document.body.append(a);a.click();a.remove();
     S.flash={text:'Đã lưu ảnh về máy. Trên iPhone: nhấn giữ ảnh để lưu.',kind:'good'};render();
@@ -395,7 +395,7 @@ export function setup(ctx){
     return `${stage()}${conn}
       <div class="fh-pb-modes" role="group" aria-label="Cách chụp">
         ${card('pbsolo','🙋','Một mình','Chụp riêng nhân vật của bạn',false)}
-        ${card('pbfind','🎲','Người lạ','Ghép với một người đang ở hội chợ',!shared()||busy)}
+        ${card('pbfind','🎲','Người lạ','Ghép với một người đang ở chợ đen',!shared()||busy)}
         ${card('pbmake','👫','Bạn bè · tạo phòng','Nhận mã phòng gửi cho bạn bè, tối đa 4 người',!shared()||busy)}
       </div>
       <div class="fh-pb-join"><label for="fh-pb-code">Có mã phòng của bạn bè?</label><div class="fh-pb-joinrow"><input id="fh-pb-code" class="fh-pb-code" data-fh-key="pb-code" maxlength="8" lang="en" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="VD: A7K2"${shared()?'':' disabled'}>${btn(D.pendingJoin&&D.mode==='friends'?'Đang vào…':'Vào phòng','pbjoin',{},'primary',!shared()||busy?' disabled data-fh-key="pbjoin"':' data-fh-key="pbjoin"')}</div></div>
@@ -420,7 +420,7 @@ export function setup(ctx){
     const cid='pbi-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
     D.invites[key]={cid,state:'pending'};
     // The existing DM endpoint checks current friendship, both directions of blocks, and account/mute rules.
-    const text=tr('📸 Mời bạn chụp ảnh ở hội chợ! Mã phòng: {code}. Mở Hội chợ → Chụp ảnh → nhập mã để vào cùng nhé.').replace('{code}',code);
+    const text=tr('📸 Mời bạn chụp ảnh ở chợ đen! Mã phòng: {code}. Mở Chợ đen → Chụp ảnh → nhập mã để vào cùng nhé.').replace('{code}',code);
     if(!live.send({t:'send',to:pid,text,cid})){D.invites[key].state='error';S.flash={text:'Chưa kết nối được. Thử lại nhé.',kind:'bad'};}
     setTimeout(()=>{if(D.invites[key]?.cid===cid&&D.invites[key].state==='pending'){D.invites[key].state='error';S.flash={text:'Chưa nhận được xác nhận lời mời. Kiểm tra tin nhắn trước khi gửi lại.',kind:'warn'};redraw();}},10000);
     render();
@@ -429,7 +429,7 @@ export function setup(ctx){
   function roomView(){
     const ppl=people(),host=isHost(),r=D.room,shooting=D.step==='shoot'||!!r?.shooting,me=mine();
     const code=D.mode==='friends'&&r?.code?`<div class="fh-pb-code-chip"><span>Mã phòng</span><b>${esc(r.code)}</b>${btn('📋 Chép mã','pbcopy',{},'cream small',' data-fh-key="pbcopy"')}${live.me?.account?btn('👫 Mời bạn bè','pbinvites',{},'cream small',' data-fh-key="pbinvites"'):''}</div>${D.inviteOpen?inviteView():''}`:'';
-    const list=D.mode==='solo'?'':`<ul class="fh-pb-people">${ppl.map(p=>`<li><span class="fh-pb-tick${p.ready?' on':''}" aria-hidden="true">${p.ready?'✓':'…'}</span><b>${esc(p.name||tr('Khách đi hội'))}</b>${p.pid===r.host?'<em>👑 chủ phòng</em>':''}${p.pid===D.me?'<em>bạn</em>':''}<small>${p.away?'đang quay lại…':p.ready?'sẵn sàng':'đang chọn dáng'}</small>${host&&p.pid!==D.me&&D.mode==='friends'?btn('Mời ra','pbkick',{pid:p.pid},'ghost small',` data-fh-key="pbkick-${esc(p.pid)}"`):''}</li>`).join('')}${D.mode==='friends'&&ppl.length<(r.cap||4)?`<li class="empty"><span aria-hidden="true">＋</span><small>Còn ${(r.cap||4)-ppl.length} chỗ: gửi mã cho bạn bè</small></li>`:''}</ul>`;
+    const list=D.mode==='solo'?'':`<ul class="fh-pb-people">${ppl.map(p=>`<li><span class="fh-pb-tick${p.ready?' on':''}" aria-hidden="true">${p.ready?'✓':'…'}</span><b>${esc(p.name||tr('Khách đi chợ'))}</b>${p.pid===r.host?'<em>👑 chủ phòng</em>':''}${p.pid===D.me?'<em>bạn</em>':''}<small>${p.away?'đang quay lại…':p.ready?'sẵn sàng':'đang chọn dáng'}</small>${host&&p.pid!==D.me&&D.mode==='friends'?btn('Mời ra','pbkick',{pid:p.pid},'ghost small',` data-fh-key="pbkick-${esc(p.pid)}"`):''}</li>`).join('')}${D.mode==='friends'&&ppl.length<(r.cap||4)?`<li class="empty"><span aria-hidden="true">＋</span><small>Còn ${(r.cap||4)-ppl.length} chỗ: gửi mã cho bạn bè</small></li>`:''}</ul>`;
     const fr=frameId(),frames=`${host?'':'<p class="fh-pb-hint">Khung ảnh: chủ phòng chọn</p>'}<div class="fh-pb-frames" role="group" aria-label="Khung ảnh">${BOOTH_FRAMES.map(f=>`<button type="button" class="fh-pb-frame${fr===f.id?' on':''}" data-fh="pbframe" data-v="${f.id}" aria-pressed="${fr===f.id}" data-fh-key="pbframe-${f.id}"${host&&!shooting?'':' disabled'}><img alt="" src="${frameThumb(f.id)}"><span><i aria-hidden="true">${f.emoji}</i> ${esc(f.name)}</span></button>`).join('')}</div>`;
     const bg=bgId(),bgs=`${host?'':'<p class="fh-pb-hint">Phông nền: chủ phòng chọn</p>'}<div class="fh-pb-chips" role="group" aria-label="Phông nền">${BGS.map(b=>chip('pbbg',b.id,bg===b.id,`<span aria-hidden="true">${b.emoji}</span> ${esc(b.name)}`,b.name,!host||shooting)).join('')}</div>`;
     const pose=me?.pose||D.pose,pr=me?.prop||D.prop;
@@ -474,7 +474,7 @@ export function setup(ctx){
   }
   function printView(){
     const ed=edit(),n=ed.items.length,sel=ed.sel>=0,full=n>=DECO_MAX;
-    const strip=`${D.base?'':`<div class="fh-pb-print wait" role="status">${esc('Đang in ảnh…')}</div>`}<div class="fh-pb-edbox" data-fh-live data-fh-key="pb-ed"${D.base?'':' hidden'}><canvas class="fh-pb-ed" tabindex="0" role="img" aria-label="${esc(tr('Dải ảnh hội chợ'))}"></canvas></div>`;
+    const strip=`${D.base?'':`<div class="fh-pb-print wait" role="status">${esc('Đang in ảnh…')}</div>`}<div class="fh-pb-edbox" data-fh-live data-fh-key="pb-ed"${D.base?'':' hidden'}><canvas class="fh-pb-ed" tabindex="0" role="img" aria-label="${esc(tr('Dải ảnh chợ đen'))}"></canvas></div>`;
     const bar=`<div class="fh-pb-edbar" role="group" aria-label="Sửa sticker">${btn('↩ Hoàn tác','pbedundo',{},'ghost small',ed.canUndo()?' data-fh-key="pbedundo"':' disabled data-fh-key="pbedundo"')}${btn('⬆️ Lên trên','pbedfront',{},'ghost small',sel?' data-fh-key="pbedfront"':' disabled data-fh-key="pbedfront"')}${btn('🗑 Xoá','pbeddel',{},'ghost small',sel?' data-fh-key="pbeddel"':' disabled data-fh-key="pbeddel"')}${btn('🧹 Xoá hết','pbedclear',{},'ghost small',n?' data-fh-key="pbedclear"':' disabled data-fh-key="pbedclear"')}</div>`;
     const cats=`<div class="fh-pb-dcats" role="group" aria-label="Loại sticker">${DECO_CATS.map(c=>`<button type="button" class="fh-pb-dcat${D.dcat===c.id?' on':''}" data-fh="pbdcat" data-v="${c.id}" aria-pressed="${D.dcat===c.id}" data-fh-key="pbdcat-${c.id}"><span aria-hidden="true">${c.emoji}</span> ${esc(c.name)}</button>`).join('')}</div>`;
     const tiles=`<div class="fh-pb-dtiles" role="group" aria-label="Sticker">${DECO.filter(d=>d.cat===D.dcat).map(d=>`<button type="button" class="fh-pb-dtile" data-fh="pbdeco" data-v="${d.id}" data-fh-key="pbdeco-${d.id}" title="${esc(d.name)}" aria-label="${esc(d.name)}"${full||!D.base?' disabled':''}><img alt="" src="${decoThumb(d.id,96,{t:tr})}" width="48" height="48"></button>`).join('')}</div>`;

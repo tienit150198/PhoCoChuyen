@@ -1172,11 +1172,11 @@
   "en": ""
  },
  {
-  "vi": "🚨 Công an kiểm tra tài sản · Thu 10% tiền lời hội chợ",
+  "vi": "🚨 Công an kiểm tra tài sản · Thu 10% tiền lời chợ đen",
   "en": ""
  },
  {
-  "vi": "Chào em, nghe nói em lời ở hội chợ hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.",
+  "vi": "Chào em, nghe nói em lời ở chợ đen hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.",
   "en": ""
  },
  {
@@ -1212,7 +1212,7 @@
   "en": ""
  },
  {
-  "vi": "Thắng Ông Hai một ván ô ăn quan ở hội chợ dân gian.",
+  "vi": "Thắng Ông Hai một ván ô ăn quan ở chợ đen.",
   "en": ""
  },
  {
@@ -1220,15 +1220,15 @@
   "en": ""
  },
  {
-  "vi": "Ném trúng cả năm cổ chai trong một lượt ở hội chợ.",
+  "vi": "Ném trúng cả năm cổ chai trong một lượt ở chợ đen.",
   "en": ""
  },
  {
-  "vi": "Thần lô tô hội chợ",
+  "vi": "Thần lô tô chợ đen",
   "en": ""
  },
  {
-  "vi": "Hô “Kinh!” thắng một ván lô tô ở hội chợ dân gian.",
+  "vi": "Hô “Kinh!” thắng một ván lô tô ở chợ đen.",
   "en": ""
  },
  {
@@ -1236,7 +1236,7 @@
   "en": ""
  },
  {
-  "vi": "Thắng một vòng Kinh đôi ở gánh lô tô hội chợ.",
+  "vi": "Thắng một vòng Kinh đôi ở gánh lô tô chợ đen.",
   "en": ""
  },
  {
@@ -1244,7 +1244,7 @@
   "en": ""
  },
  {
-  "vi": "Thắng một vòng lô tô lật ngược ở hội chợ.",
+  "vi": "Thắng một vòng lô tô lật ngược ở chợ đen.",
   "en": ""
  },
  {
@@ -1260,7 +1260,7 @@
   "en": ""
  },
  {
-  "vi": "Ba con xúc xắc cùng ra đúng mặt bạn đặt ở hội chợ.",
+  "vi": "Ba con xúc xắc cùng ra đúng mặt bạn đặt ở chợ đen.",
   "en": ""
  },
  {
@@ -1268,7 +1268,7 @@
   "en": ""
  },
  {
-  "vi": "Phóng phi tiêu cắm ngay hồng tâm ở hội chợ dân gian.",
+  "vi": "Phóng phi tiêu cắm ngay hồng tâm ở chợ đen.",
   "en": ""
  },
  {
@@ -1276,7 +1276,7 @@
   "en": ""
  },
  {
-  "vi": "Đang chơi ở chiếu trong thì công an phường tới kiểm tra.",
+  "vi": "Đang chơi ở chợ đen thì công an phường ập vào kiểm tra.",
   "en": ""
  },
  {
@@ -1284,47 +1284,55 @@
   "en": ""
  },
  {
-  "vi": "Đứng đầu Bảng vàng hội chợ dân gian khi hội tàn.",
+  "vi": "Đứng đầu Bảng vàng chợ đen khi chợ tàn.",
   "en": ""
  },
  {
-  "vi": "Cao thủ hội chợ",
+  "vi": "Cao thủ chợ đen",
   "en": ""
  },
  {
-  "vi": "Lọt top 10 Bảng vàng hội chợ dân gian khi hội tàn.",
+  "vi": "Lọt top 10 Bảng vàng chợ đen khi chợ tàn.",
   "en": ""
  },
  {
-  "vi": "🦀 Bầu cua hội chợ",
+  "vi": "🦀 Bầu cua chợ đen",
   "en": ""
  },
  {
-  "vi": "🕯️ Chiếu trong hội chợ",
+  "vi": "🕯️ Chiếu trong chợ đen",
   "en": ""
  },
  {
-  "vi": "🎱 Lô tô hội chợ",
+  "vi": "🎱 Lô tô chợ đen",
   "en": ""
  },
  {
-  "vi": "🪨 Ô ăn quan hội chợ",
+  "vi": "🪨 Ô ăn quan chợ đen",
   "en": ""
  },
  {
-  "vi": "💍 Ném vòng hội chợ",
+  "vi": "💍 Ném vòng chợ đen",
   "en": ""
  },
  {
-  "vi": "🎯 Phi tiêu hội chợ",
+  "vi": "🎯 Phi tiêu chợ đen",
   "en": ""
  },
  {
-  "vi": "🎟️ Vé số cào hội chợ",
+  "vi": "🎟️ Vé số cào chợ đen",
   "en": ""
  },
  {
-  "vi": "🗡️ Phóng dao hội chợ",
+  "vi": "🗡️ Phóng dao chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "hội chợ",
   "en": ""
  },
  {
@@ -1344,11 +1352,11 @@
   "en": ""
  },
  {
-  "vi": "Hội chợ đã tàn, hẹn lần sau nha!",
+  "vi": "Chợ đen đã tàn, hẹn lần sau nha!",
   "en": ""
  },
  {
-  "vi": "Hội chợ chưa mở đâu, hẹn bạn ngày khai hội nha!",
+  "vi": "Chợ đen chưa mở đâu, hẹn bạn ngày chợ mở nha!",
   "en": ""
  },
  {
@@ -1360,7 +1368,7 @@
   "en": ""
  },
  {
-  "vi": "Ví không đủ xu cho ván này. Hội chợ không cho vay để chơi đâu nha.",
+  "vi": "Ví không đủ xu cho ván này. Chợ đen không cho vay để chơi đâu nha.",
   "en": ""
  },
  {
@@ -1404,11 +1412,11 @@
   "en": ""
  },
  {
-  "vi": "🚨 Công an kiểm tra hội chợ · Thu tiền trong ví",
+  "vi": "🚨 Công an kiểm tra chợ đen · Thu tiền trong ví",
   "en": ""
  },
  {
-  "vi": "Công an thu 10% tiền lời hội chợ",
+  "vi": "Công an thu 10% tiền lời chợ đen",
   "en": ""
  },
  {
@@ -1416,11 +1424,15 @@
   "en": ""
  },
  {
-  "vi": "Thao tác hội chợ không hợp lệ.",
+  "vi": ". Hôm nay bạn bị đuổi khỏi chợ đen.",
   "en": ""
  },
  {
-  "vi": "Hội chợ chỉ có trong hành trình.",
+  "vi": "Thao tác chợ đen không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chợ đen chỉ có trong hành trình.",
   "en": ""
  },
  {
@@ -1528,11 +1540,11 @@
   "en": ""
  },
  {
-  "vi": "Chuỗi kết quả hội chợ không hợp lệ.",
+  "vi": "Chuỗi kết quả chợ đen không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Dữ liệu hội chợ không hợp lệ.",
+  "vi": "Dữ liệu chợ đen không hợp lệ.",
   "en": ""
  },
  {
@@ -1540,19 +1552,67 @@
   "en": ""
  },
  {
+  "vi": "🕶️ Nộp bảo kê chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "🕶️ Bị trấn lột ở chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Công an bắt ở chợ đen · Nộp phạt",
+  "en": ""
+ },
+ {
+  "vi": "Đàn em chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "Ví không đủ 10.000 xu tiền bảo kê.",
+  "en": ""
+ },
+ {
+  "vi": "Vào chợ đen phải nộp bảo kê trước đã. Tải lại trang nếu chưa thấy đàn em ở cổng nha.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn bị đuổi khỏi chợ đen rồi, mai quay lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không nộp hả? Vậy anh em lục ví chút nha.",
+  "en": ""
+ },
+ {
+  "vi": "Ví trống trơn à? Thôi vô đi, lần sau nhớ nộp.",
+  "en": ""
+ },
+ {
+  "vi": "Nộp đủ rồi, hôm nay cứ ra vô thoải mái.",
+  "en": ""
+ },
+ {
+  "vi": "Tất cả đứng im! Đánh bạc ăn tiền hả? Tiền cược tịch thu, nộp phạt rồi ra khỏi chợ.",
+  "en": ""
+ },
+ {
+  "vi": "Ví trống trơn, đàn em cho qua.",
+  "en": ""
+ },
+ {
   "vi": "Bà Sáu cho vay nóng",
   "en": ""
  },
  {
-  "vi": "Hội chợ đang đóng.",
+  "vi": "Chợ đen đang đóng.",
   "en": ""
  },
  {
-  "vi": "Bạn đã nhận tiền vốn hội chợ rồi nha.",
+  "vi": "Bạn đã nhận tiền vốn chợ đen rồi nha.",
   "en": ""
  },
  {
-  "vi": "🎁 Tiền vốn hội chợ (ban tổ chức tặng)",
+  "vi": "🎁 Tiền vốn chợ đen (chủ chợ tặng)",
   "en": ""
  },
  {
@@ -1568,19 +1628,19 @@
   "en": ""
  },
  {
-  "vi": "💸 Trả vay nóng hội chợ",
+  "vi": "💸 Trả vay nóng chợ đen",
   "en": ""
  },
  {
-  "vi": "💸 Hội chợ tàn: thu vay nóng",
+  "vi": "💸 Chợ đen tàn: thu vay nóng",
   "en": ""
  },
  {
-  "vi": "Hội chợ thu vay nóng",
+  "vi": "Chợ đen thu vay nóng",
   "en": ""
  },
  {
-  "vi": "💸 Trả dần nợ vay nóng hội chợ",
+  "vi": "💸 Trả dần nợ vay nóng chợ đen",
   "en": ""
  },
  {
@@ -1588,7 +1648,11 @@
   "en": ""
  },
  {
-  "vi": "Dữ liệu vay nóng hội chợ không hợp lệ.",
+  "vi": "Dữ liệu vay nóng chợ đen không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "🍡 Ăn vặt chợ đen",
   "en": ""
  },
  {
@@ -1648,10 +1712,6 @@
   "en": ""
  },
  {
-  "vi": "(\\d{1,6}) món",
-  "en": ""
- },
- {
   "vi": "· (\\d{1,6}) món",
   "en": ""
  },
@@ -1664,11 +1724,11 @@
   "en": ""
  },
  {
-  "vi": "📸 Chụp ảnh hội chợ",
+  "vi": "📸 Chụp ảnh chợ đen",
   "en": ""
  },
  {
-  "vi": "(\\d{1,6}) lượt",
+  "vi": "📸 Chụp ảnh hội chợ",
   "en": ""
  },
  {
@@ -1737,66 +1797,6 @@
  },
  {
   "vi": "Cần kết hôn để dùng gia đình chung.",
-  "en": ""
- },
- {
-  "vi": "Mã thao tác đã dùng cho việc khác.",
-  "en": ""
- },
- {
-  "vi": "Cả hai cần mở hành trình.",
-  "en": ""
- },
- {
-  "vi": "Cả hai mở hành trình đến ngày sống 10 trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã có lời mời đang chờ trả lời.",
-  "en": ""
- },
- {
-  "vi": "Hai bạn đã có con chung.",
-  "en": ""
- },
- {
-  "vi": "Chọn nhận nuôi hoặc đón bé mới sinh.",
-  "en": ""
- },
- {
-  "vi": "Dọn vào căn nhà của bạn trước khi mời người ấy.",
-  "en": ""
- },
- {
-  "vi": "🏡 Có lời mời đang chờ bạn trả lời. Mở Nhà & Gia đình để xem nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã gửi lời mời. Chỉ thay đổi khi người ấy đồng ý.",
-  "en": ""
- },
- {
-  "vi": "Chọn lời mời hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Lời mời đã được trả lời hoặc hủy.",
-  "en": ""
- },
- {
-  "vi": "Chỉ người gửi được hủy lời mời.",
-  "en": ""
- },
- {
-  "vi": "Đã hủy lời mời.",
-  "en": ""
- },
- {
-  "vi": "Chỉ người được mời mới trả lời.",
-  "en": ""
- },
- {
-  "vi": "Chọn đồng ý hoặc từ chối.",
   "en": ""
  }
 ]

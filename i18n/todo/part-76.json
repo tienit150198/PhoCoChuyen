@@ -1,5 +1,57 @@
 [
  {
+  "vi": "🧾 Cứ 7 ngày sống có một sao kê. Hạn trả là 3 ngày sau sao kê.",
+  "en": ""
+ },
+ {
+  "vi": "✅ [[Trả hết sao kê]] trước hạn thì không mất lãi. [[Trả tối thiểu]] (10% sao kê, ít nhất 10 xu) thì phần còn lại chịu lãi 0,5%/ngày.",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Trễ hạn: phạt 9 xu, trừ điểm tín dụng, thẻ tạm khóa tới khi trả phần quá hạn.",
+  "en": ""
+ },
+ {
+  "vi": "🤖 Chọn “Tự động trả toàn bộ sao kê” hoặc “Tự động trả tối thiểu” rồi bấm [[Lưu cách tự động trả]] để khỏi quên.",
+  "en": ""
+ },
+ {
+  "vi": "🏧 [[Ứng tiền mặt]]: phí 4% (ít nhất 3 xu), lãi tính ngay, tối đa 50% hạn mức. Chỉ dùng khi thật cần.",
+  "en": ""
+ },
+ {
+  "vi": "Vay tiền và điểm tín dụng",
+  "en": ""
+ },
+ {
+  "vi": "💸 Vay tiêu dùng: tiền vào tài khoản của bạn, lãi 4% mỗi kỳ 7 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Vay mở rộng tiệm: tiền vào thẳng quỹ một tiệm bạn làm chủ, lãi 3,5% mỗi kỳ.",
+  "en": ""
+ },
+ {
+  "vi": "📆 Vay 50–5.000 xu, kỳ hạn 14, 21 hoặc 28 ngày, tối đa 2 khoản cùng lúc. Xem lịch trả rồi bấm [[Xem lại & ký hợp đồng]].",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Tới ngày trả góp, ngân hàng tự trích từ tài khoản (thiếu thì lấy thêm tiền mặt). Trễ hạn phạt 5% kỳ đó, ít nhất 3 xu.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Trễ hạn (thẻ hay khoản vay) 3 lần là bị ghi nợ xấu 30 ngày: không mở thẻ, không vay mới, thẻ tạm ngưng.",
+  "en": ""
+ },
+ {
+  "vi": "📈 Điểm tín dụng 300–850, bắt đầu 650. Trả đúng hạn, dư nợ thẻ dưới 30% hạn mức, thu nhập đều thì điểm tăng.",
+  "en": ""
+ },
+ {
+  "vi": "📉 Mỗi lần nộp hồ sơ vay hay mở thẻ, điểm giảm một chút. Đừng nộp dồn dập.",
+  "en": ""
+ },
+ {
   "vi": "Thuê phòng, mua nhà",
   "en": ""
  },
@@ -960,7 +1012,7 @@
   "en": ""
  },
  {
-  "vi": "🚗 Mua xe ở [[Gara]] (bản đồ phố, Phố dịch vụ). Có xe là chạy được trên bản đồ phố, hội chợ và lúc đi dạo.",
+  "vi": "🚗 Mua xe ở [[Gara]] (bản đồ phố, Phố dịch vụ). Có xe là chạy được trên bản đồ phố, chợ đen và lúc đi dạo.",
   "en": ""
  },
  {
@@ -1000,11 +1052,11 @@
   "en": ""
  },
  {
-  "vi": "Chụp ảnh ở hội chợ",
+  "vi": "Chụp ảnh ở chợ đen",
   "en": ""
  },
  {
-  "vi": "🏮 Lúc hội chợ mở, vào [[Cổng hội chợ]] rồi tới [[Buồng chụp ảnh]].",
+  "vi": "🕶️ Lúc chợ đen mở, vào [[Cổng chợ đen]], nộp bảo kê rồi tới [[Buồng chụp ảnh]].",
   "en": ""
  },
  {
@@ -1016,7 +1068,27 @@
   "en": ""
  },
  {
-  "vi": "Mở Hội chợ",
+  "vi": "Mở Chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "Vào chợ đen: bảo kê và công an",
+  "en": ""
+ },
+ {
+  "vi": "💵 Mỗi ngày (giờ Việt Nam) vào chợ đen phải nộp bảo kê 10.000 xu cho đàn em ở cổng. Nộp rồi thì ra vô thoải mái tới hết ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Không nộp thì bị trấn lột một phần tiền trong ví (không đụng tới tài khoản ngân hàng), rồi mới được vô.",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược ván đó, nộp phạt từ ví và bị đuổi về tới hết ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🎮 Ô ăn quan, ném vòng không cần đặt cược; bầu cua, chiếu trong, lô tô, vé cào, phóng dao thì có.",
   "en": ""
  },
  {
@@ -1304,7 +1376,7 @@
   "en": ""
  },
  {
-  "vi": "➕ Tài phú còn cộng sổ tiết kiệm Mây, Mây Coin và vàng theo giá vốn, xe theo giá bán lại, quầy riêng theo giá sang nhượng, và trừ vay nóng hội chợ. Không tính Quỹ chung.",
+  "vi": "➕ Tài phú còn cộng sổ tiết kiệm Mây, Mây Coin và vàng theo giá vốn, xe theo giá bán lại, quầy riêng theo giá sang nhượng, và trừ vay nóng chợ đen. Không tính Quỹ chung.",
   "en": ""
  },
  {
@@ -1337,58 +1409,6 @@
  },
  {
   "vi": "👥 Bước 2: kết bạn với người ấy bằng đúng tên đăng nhập hoặc mã PCC-…, chờ họ [[Chấp nhận]]. Chỉ bạn bè mới cầu hôn được nhau. Xem mục “Bạn bè giữa người chơi”.",
-  "en": ""
- },
- {
-  "vi": "💛 Bước 3 (nên làm): thân với hàng xóm. Người càng thân càng hay tới dự và mừng dày, đỡ tiền tiệc. Xem mục “Thân thiết với hàng xóm”.",
-  "en": ""
- },
- {
-  "vi": "💰 Bước 4: để dành tiền trong ví. Nhẫn 55–990 xu; lúc chốt kế hoạch cưới mỗi người đặt cọc phần mình trong 30% tổng tiệc. Rút tiền lời từ nơi làm về ví trước.",
-  "en": ""
- },
- {
-  "vi": "💎 Bước 5: mua nhẫn ở tab [[Tiệm nhẫn]] của mục [[Hôn nhân]], chọn màu rồi bấm [[Mua]]. Xem mục “Tiệm nhẫn: mua và đổi màu nhẫn”.",
-  "en": ""
- },
- {
-  "vi": "💌 Bước 6: tab [[Cầu hôn]], chọn người bạn, chiếc nhẫn, một lời soạn sẵn rồi bấm [[Gửi lời cầu hôn]]. Người ấy bấm [[Đồng ý]] là đính hôn. Xem “Cầu hôn và trả lời”.",
-  "en": ""
- },
- {
-  "vi": "📋 Bước 7: một người lập [[Kế hoạch cưới]] (nơi, số bàn, thực đơn, ngày, tỉ lệ góp) rồi gửi; người kia bấm [[Xác nhận & đặt cọc]]. Xem “Đám cưới từng bước”.",
-  "en": ""
- },
- {
-  "vi": "🎊 Bước 8: sau 2–10 ngày sống, đám cưới tự diễn ra kể cả khi một người vắng. Khách mừng, trả nốt tiệc, hai bạn thành vợ chồng. Xem “Ngày cưới: khách và tiền mừng”.",
-  "en": ""
- },
- {
-  "vi": "🏡 Bước 9: sống chung với [[Quỹ chung]], thẻ chung, [[Tương tác]] mỗi ngày và sổ nợ. Xem “Quỹ chung & thẻ chung”, “Đời vợ chồng” và “Ly hôn và hủy hôn ước”.",
-  "en": ""
- },
- {
-  "vi": "Mở Hôn nhân",
-  "en": ""
- },
- {
-  "vi": "Bạn bè giữa người chơi",
-  "en": ""
- },
- {
-  "vi": "🔐 Bạn bè là người chơi thật nên cần tài khoản. Khách chưa có tài khoản mở [[Bạn bè]] sẽ thấy nút [[Tạo tài khoản]].",
-  "en": ""
- },
- {
-  "vi": "🔎 Ở “Tìm bạn”, gõ đúng tên đăng nhập của người ấy rồi bấm [[Tìm]]. Không tìm gần đúng, không có danh sách để lướt; chữ hoa hay thường đều được.",
-  "en": ""
- },
- {
-  "vi": "🪪 Có mã người chơi dạng PCC-XXXXXX thì gõ mã vào cùng ô đó. Mã của bạn ở cuối mục Bạn bè, bấm [[Chép mã]] để gửi cho người quen.",
-  "en": ""
- },
- {
-  "vi": "📨 Bấm [[Kết bạn]] để gửi lời mời. Người kia chọn [[Chấp nhận]], [[Từ chối]] hoặc [[Chặn]]. Nếu họ đã mời bạn trước, nút thành [[Chấp nhận kết bạn]] và hai bạn thành bạn ngay.",
   "en": ""
  }
 ]

@@ -1,5 +1,389 @@
 [
  {
+  "vi": "Màn hình yên hơn: thông báo từng dòng, Đánh giá, Tổng kết ngày và Sổ tiệm gọn gàng.",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ cập nhật không làm mất thao tác, nhẹ hơn khi đông người chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Bộ chia khay và máy in nhãn",
+  "en": ""
+ },
+ {
+  "vi": "Máy quét lô và khay kiểm phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Bộ máy quét chứng từ",
+  "en": ""
+ },
+ {
+  "vi": "Bàn phím và bộ tra cứu hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Bộ học liệu và máy in bài",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đàm và bộ soạn tuyến",
+  "en": ""
+ },
+ {
+  "vi": "Bộ định lượng và linh kiện quầy pha",
+  "en": ""
+ },
+ {
+  "vi": "Bộ bếp và giỏ trụng cải tiến",
+  "en": ""
+ },
+ {
+  "vi": "Bộ bơm máy pha và quạt lò",
+  "en": ""
+ },
+ {
+  "vi": "Bộ kéo và giá xử lý hoa",
+  "en": ""
+ },
+ {
+  "vi": "Máy quét hàng và bộ chia kệ",
+  "en": ""
+ },
+ {
+  "vi": "Bộ dụng cụ và máy chẩn đoán",
+  "en": ""
+ },
+ {
+  "vi": "Bộ tưới và dụng cụ thu hoạch",
+  "en": ""
+ },
+ {
+  "vi": "Bộ truyền động và dẫn đường",
+  "en": ""
+ },
+ {
+  "vi": "Xe dụng cụ và bộ dọn phòng",
+  "en": ""
+ },
+ {
+  "vi": "Bộ vòi tắm và máy sấy",
+  "en": ""
+ },
+ {
+  "vi": "Bộ kéo và máy hấp tóc",
+  "en": ""
+ },
+ {
+  "vi": "Máy quét hóa đơn và bộ xử lý sổ",
+  "en": ""
+ },
+ {
+  "vi": "Bộ xử lý bảng lương",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đối soát và máy trạm",
+  "en": ""
+ },
+ {
+  "vi": "Động cơ máy may và bàn cắt",
+  "en": ""
+ },
+ {
+  "vi": "Bộ chia thức ăn và xe hàng",
+  "en": ""
+ },
+ {
+  "vi": "Bình ủ và bộ định lượng",
+  "en": ""
+ },
+ {
+  "vi": "Bộ dao và máy ép cải tiến",
+  "en": ""
+ },
+ {
+  "vi": "Xe dụng cụ và bộ gắp rác",
+  "en": ""
+ },
+ {
+  "vi": "Máy hút và bộ đầu thông",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đồ dùng và xe dọn nhà",
+  "en": ""
+ },
+ {
+  "vi": "Bộ giữ lạnh và muỗng định lượng",
+  "en": ""
+ },
+ {
+  "vi": "Bộ máy và khay dụng cụ nail",
+  "en": ""
+ },
+ {
+  "vi": "Xe dụng cụ và bộ chuẩn bị lễ",
+  "en": ""
+ },
+ {
+  "vi": "Bếp giữ nhiệt và bộ trụng phở",
+  "en": ""
+ },
+ {
+  "vi": "Nồi cơm và bếp nướng cải tiến",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đèn và linh kiện máy ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Máy hút bụi và bộ lau nhà",
+  "en": ""
+ },
+ {
+  "vi": "Bộ nồi và bếp gia đình",
+  "en": ""
+ },
+ {
+  "vi": "Bộ chuẩn bị bữa và đồ chăm bé",
+  "en": ""
+ },
+ {
+  "vi": "Máy quét mã vạch và máy hút ẩm kho",
+  "en": ""
+ },
+ {
+  "vi": "Máy quét và bộ xử lý hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Bộ máy trạm và thiết bị văn phòng",
+  "en": ""
+ },
+ {
+  "vi": "Bộ chẩn đoán và linh kiện dự phòng",
+  "en": ""
+ },
+ {
+  "vi": "Bộ cờ đèn và tay quay cần chắn",
+  "en": ""
+ },
+ {
+  "vi": "Xe tiêm và bộ máy đo cầm tay",
+  "en": ""
+ },
+ {
+  "vi": "Ống nhòm và bộ đàm VHF",
+  "en": ""
+ },
+ {
+  "vi": "Tai nghe, bộ đàm và màn hình điều phối",
+  "en": ""
+ },
+ {
+  "vi": "Phao ống, sào cứu hộ và máy AED",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đàm tuần tra và máy quét giấy tờ",
+  "en": ""
+ },
+ {
+  "vi": "Máy quét Zchart và kệ kính lightstick",
+  "en": ""
+ },
+ {
+  "vi": "Giảm thời gian chạy tuyến và tăng tốc xe khi tự lái.",
+  "en": ""
+ },
+ {
+  "vi": "Tăng nhịp chiết cà phê, đánh sữa và lò nướng cho lượt bắt đầu mới.",
+  "en": ""
+ },
+ {
+  "vi": "Đang thực hiện yêu cầu",
+  "en": ""
+ },
+ {
+  "vi": "Đang đón và hỏi khách",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tiệm cần chuẩn bị một yêu cầu nghề nghiệp còn trống.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên đang phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Chủ quầy phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên cần đủ quỹ để nhận thêm đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy cần nhập thêm hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm này đã đóng.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập để ghé chỗ làm của bạn bè.",
+  "en": ""
+ },
+ {
+  "vi": "Người chơi đã rời",
+  "en": ""
+ },
+ {
+  "vi": "Thanh toán đơn đã phục vụ tại quầy đã đóng",
+  "en": ""
+ },
+ {
+  "vi": "Thanh toán đơn khách thật",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tiền đơn chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy chỗ làm này.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn danh sách chỗ làm.",
+  "en": ""
+ },
+ {
+  "vi": "Trang không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin đặt dịch vụ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu mã thao tác đặt đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi đơn gồm một dịch vụ.",
+  "en": ""
+ },
+ {
+  "vi": "Hãy ghé chỗ làm của người khác nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ này hiện chưa sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "Giá đã thay đổi. Xem lại giá trước khi đặt nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ khách thật dùng ví hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ tiền đơn chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm hiện không nhận đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin dịch vụ đã đổi. Xem giá mới trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang có nhiều đơn chờ. Hoàn thành hoặc hủy bớt nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm đang có nhiều khách chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã giữ tiền cho đơn; trạng thái phục vụ được cập nhật tại đây.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin nhận đơn không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn không còn chờ nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Không thể nhận đơn này.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ quầy cần trực tiếp nhận đơn này.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn đã được xử lý.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm không còn nhận khách này.",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhận khách. Vào nghề để phục vụ yêu cầu thực tế nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin hủy đơn không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn đã bắt đầu phục vụ, không thể hủy ở đây.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn đã dừng và tiền đã hoàn về ví khách.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin nhận tiền không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đối soát các đơn đã phục vụ thực tế.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn ai được ghé chỗ làm.",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy chỗ làm của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cập nhật quyền ghé chỗ làm.",
+  "en": ""
+ },
+ {
   "vi": "Thông tin đánh giá không hợp lệ.",
   "en": ""
  },
@@ -344,7 +728,7 @@
   "en": ""
  },
  {
-  "vi": "Từ từ thôi, hội chợ còn dài mà!",
+  "vi": "Từ từ thôi, chợ đen còn dài mà!",
   "en": ""
  },
  {
@@ -1413,390 +1797,6 @@
  },
  {
   "vi": "Tặng xu",
-  "en": ""
- },
- {
-  "vi": "Hệ thống",
-  "en": ""
- },
- {
-  "vi": "Báo cáo số liệu",
-  "en": ""
- },
- {
-  "vi": "Chuyển sang giao diện sáng",
-  "en": ""
- },
- {
-  "vi": "Chuyển sang giao diện tối",
-  "en": ""
- },
- {
-  "vi": "Giao diện sáng",
-  "en": ""
- },
- {
-  "vi": "Giao diện tối",
-  "en": ""
- },
- {
-  "vi": "Tài khoản này không còn quyền vận hành.",
-  "en": ""
- },
- {
-  "vi": "Phiên đăng nhập đã hết. Đăng nhập lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Nhập tên đăng nhập và mật khẩu.",
-  "en": ""
- },
- {
-  "vi": "Phiên vừa được làm mới. Bấm đăng nhập lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Không đăng nhập được. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã đăng xuất.",
-  "en": ""
- },
- {
-  "vi": "Làm mới hơi dồn dập. Chờ một chút nhé.",
-  "en": ""
- },
- {
-  "vi": "Máy chủ đang bận, thử lại sau.",
-  "en": ""
- },
- {
-  "vi": "Không tải được phần này.",
-  "en": ""
- },
- {
-  "vi": "Trang vận hành",
-  "en": ""
- },
- {
-  "vi": "Trình duyệt này đang có tiến trình chơi chưa gắn tài khoản.",
-  "en": ""
- },
- {
-  "vi": "Đăng nhập sẽ thay nó bằng tiến trình của tài khoản vận hành. Bấm “Vẫn đăng nhập” nếu bạn đồng ý.",
-  "en": ""
- },
- {
-  "vi": "Đăng nhập vận hành",
-  "en": ""
- },
- {
-  "vi": "Dùng tài khoản game có quyền vận hành.",
-  "en": ""
- },
- {
-  "vi": "← Về trang game",
-  "en": ""
- },
- {
-  "vi": "Đang kiểm tra…",
-  "en": ""
- },
- {
-  "vi": "Vẫn đăng nhập",
-  "en": ""
- },
- {
-  "vi": "Thôi, không đăng nhập",
-  "en": ""
- },
- {
-  "vi": "Tài khoản này không có quyền vận hành",
-  "en": ""
- },
- {
-  "vi": "Bạn đang đăng nhập với",
-  "en": ""
- },
- {
-  "vi": ". Đăng xuất rồi đăng nhập bằng tài khoản vận hành nhé.",
-  "en": ""
- },
- {
-  "vi": "Đăng xuất ở đây cũng đăng xuất khỏi game trên trình duyệt này.",
-  "en": ""
- },
- {
-  "vi": "Không kết nối được máy chủ.",
-  "en": ""
- },
- {
-  "vi": "Mục vận hành",
-  "en": ""
- },
- {
-  "vi": "Người vận hành",
-  "en": ""
- },
- {
-  "vi": "Mở trang game",
-  "en": ""
- },
- {
-  "vi": "Vận hành",
-  "en": ""
- },
- {
-  "vi": "Đóng menu",
-  "en": ""
- },
- {
-  "vi": "Mở menu",
-  "en": ""
- },
- {
-  "vi": "Đang mở trang vận hành…",
-  "en": ""
- },
- {
-  "vi": "Hộp thư góp ý của người chơi",
-  "en": ""
- },
- {
-  "vi": "Tự làm mới mỗi 60 giây",
-  "en": ""
- },
- {
-  "vi": "Tự làm mới",
-  "en": ""
- },
- {
-  "vi": "Làm mới",
-  "en": ""
- },
- {
-  "vi": "Đang tính số liệu…",
-  "en": ""
- },
- {
-  "vi": "Người chơi rời đi ở đâu, lúc nào",
-  "en": ""
- },
- {
-  "vi": "Kỳ tính",
-  "en": ""
- },
- {
-  "vi": "Mọi phần trong một tệp CSV",
-  "en": ""
- },
- {
-  "vi": "CSV của phần đang xem",
-  "en": ""
- },
- {
-  "vi": "In / Lưu PDF",
-  "en": ""
- },
- {
-  "vi": "Xuất báo cáo",
-  "en": ""
- },
- {
-  "vi": "Số liệu cho nhà đầu tư, người mua hoặc nhận nhượng quyền",
-  "en": ""
- },
- {
-  "vi": "Khoảng thời gian",
-  "en": ""
- },
- {
-  "vi": "· tự làm mới mỗi phút",
-  "en": ""
- },
- {
-  "vi": "Máy chủ đang bận nên số liệu được tính ở chế độ nền, chờ chút nhé…",
-  "en": ""
- },
- {
-  "vi": "Đang hiện số liệu cũ.",
-  "en": ""
- },
- {
-  "vi": "Nghề được chơi nhiều",
-  "en": ""
- },
- {
-  "vi": "Đời sống & Nhóm cư dân",
-  "en": ""
- },
- {
-  "vi": "Thời gian chơi",
-  "en": ""
- },
- {
-  "vi": "Máy chủ đang cộng số liệu các ngày trước, chờ chút nhé…",
-  "en": ""
- },
- {
-  "vi": "Máy chủ đang tính số liệu, chờ chút nhé…",
-  "en": ""
- },
- {
-  "vi": "Quay lại theo ngày bắt đầu",
-  "en": ""
- },
- {
-  "vi": "Phễu người mới",
-  "en": ""
- },
- {
-  "vi": "Trước và sau 0.9.16",
-  "en": ""
- },
- {
-  "vi": "Máy chủ đang tính số liệu lần đầu (chạy nền, không ảnh hưởng người chơi), chờ chút nhé…",
-  "en": ""
- },
- {
-  "vi": "Người hoạt động mỗi ngày",
-  "en": ""
- },
- {
-  "vi": "Chờ một chút rồi thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Số liệu đang được tính, thử lại sau ít phút nhé.",
-  "en": ""
- },
- {
-  "vi": "Không tải được CSV.",
-  "en": ""
- },
- {
-  "vi": "Bảng dữ liệu",
-  "en": ""
- },
- {
-  "vi": "Môi trường",
-  "en": ""
- },
- {
-  "vi": "Số liệu thống kê",
-  "en": ""
- },
- {
-  "vi": "Màn mở đầu",
-  "en": ""
- },
- {
-  "vi": "Cảnh nơi làm",
-  "en": ""
- },
- {
-  "vi": "Trang chủ",
-  "en": ""
- },
- {
-  "vi": "Đang tải",
-  "en": ""
- },
- {
-  "vi": "Vừa vào game",
-  "en": ""
- },
- {
-  "vi": "Việc của khách",
-  "en": ""
- },
- {
-  "vi": "Chuẩn bị ngày",
-  "en": ""
- },
- {
-  "vi": "Tổng kết ngày",
-  "en": ""
- },
- {
-  "vi": "Tiền của bạn",
-  "en": ""
- },
- {
-  "vi": "Hộp xác nhận",
-  "en": ""
- },
- {
-  "vi": "Cảnh truyện",
-  "en": ""
- },
- {
-  "vi": "Cảnh đời",
-  "en": ""
- },
- {
-  "vi": "Cảnh hành trình",
-  "en": ""
- },
- {
-  "vi": "Tour hướng dẫn",
-  "en": ""
- },
- {
-  "vi": "Ghi chú hướng dẫn",
-  "en": ""
- },
- {
-  "vi": "Lỗi JS",
-  "en": ""
- },
- {
-  "vi": "Tệp",
-  "en": ""
- },
- {
-  "vi": "Chưa có số liệu.",
-  "en": ""
- },
- {
-  "vi": "Chưa đủ ngày",
-  "en": ""
- },
- {
-  "vi": "Quay lại D1",
-  "en": ""
- },
- {
-  "vi": "Phục vụ khách đầu",
-  "en": ""
- },
- {
-  "vi": "người mới 7 ngày",
-  "en": ""
- },
- {
-  "vi": "Rời sau lượt đầu",
-  "en": ""
- },
- {
-  "vi": "Không quay lại",
-  "en": ""
- },
- {
-  "vi": "Người bắt đầu chơi trong ngày đó (có thao tác) và % có thao tác lại đúng 1, 3, 7, 14, 30 ngày sau. “·”: chưa đủ ngày.",
-  "en": ""
- },
- {
-  "vi": "ước tính",
-  "en": ""
- },
- {
-  "vi": "Chưa có người mới được đo trong khoảng này (đo từ khi bản ghi mốc được bật).",
-  "en": ""
- },
- {
-  "vi": "Có mốc ước tính (gieo từ bản lưu, không có thời gian).",
   "en": ""
  }
 ]

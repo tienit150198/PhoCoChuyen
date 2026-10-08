@@ -23,8 +23,8 @@ const FACE_NAME={bau:'Bầu',cua:'Cua',tom:'Tôm',ca:'Cá',ga:'Gà',nai:'Nai'};
 const GOURD='<svg class="fh-gourd" viewBox="0 0 40 48" aria-hidden="true"><path d="M20 4c1.2 0 2 .9 2 2v3.4c2.9 1 4.8 3.6 4.8 6.6 0 1.8-.6 3.4-1.7 4.7C31 22.8 35 27.6 35 33.5 35 41.2 28.3 46 20 46S5 41.2 5 33.5c0-5.9 4-10.7 9.9-12.8-1.1-1.3-1.7-2.9-1.7-4.7 0-3 1.9-5.6 4.8-6.6V6c0-1.1.8-2 2-2z" fill="#86b84a" stroke="#3f6b1d" stroke-width="2"/><path d="M21 6.5c2.6-2.4 6.6-2.6 9.2-.6" fill="none" stroke="#3f6b1d" stroke-width="2" stroke-linecap="round"/><path d="M13 31c1.5-3 4-4.6 7-5" fill="none" stroke="#e9f5d3" stroke-width="2.4" stroke-linecap="round" opacity=".8"/></svg>';
 const FACE_ART={bau:GOURD,cua:'🦀',tom:'🦐',ca:'🐟',ga:'🐓',nai:'🦌'};
 const art=f=>`<span class="fh-art" aria-hidden="true">${FACE_ART[f]||'❔'}</span>`;
-const TITLE_NAMES={f_kinh2:'🎎 Kinh đôi rộn ràng',f_nguoc:'🙃 Đọc ngược như xuôi',f_hu:'🏺 Ôm hũ đêm hội',f_loto:'🎱 Thần lô tô hội chợ',f_bao:'🌪️ Trúng bão bầu cua',f_raid:'🚨 Bị công an hỏi thăm',f_oaq:'🪨 Cao tay ô ăn quan',f_ring:'💍 Tay ném vòng thần sầu',f_dart:'🎯 Mắt thần phi tiêu'};
-const GAMES={home:['🏮','Cổng hội'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],dt:['🗡️','Phóng dao'],xs:['🎟️','Vé số cào'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng'],food:['🍡','Hàng ăn vặt'],pb:['📸','Chụp ảnh']};
+const TITLE_NAMES={f_kinh2:'🎎 Kinh đôi rộn ràng',f_nguoc:'🙃 Đọc ngược như xuôi',f_hu:'🏺 Ôm hũ đêm hội',f_loto:'🎱 Thần lô tô chợ đen',f_bao:'🌪️ Trúng bão bầu cua',f_raid:'🚨 Bị công an hỏi thăm',f_oaq:'🪨 Cao tay ô ăn quan',f_ring:'💍 Tay ném vòng thần sầu',f_dart:'🎯 Mắt thần phi tiêu'};
+const GAMES={home:['🕶️','Cổng chợ'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],dt:['🗡️','Phóng dao'],xs:['🎟️','Vé số cào'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng'],food:['🍡','Hàng ăn vặt'],pb:['📸','Chụp ảnh']};
 const MINI_BOARD='<svg viewBox="0 0 64 40" aria-hidden="true"><rect x="2" y="6" width="60" height="28" rx="14" fill="#e9c98f" stroke="#8a5a26" stroke-width="2"/><path d="M14 6v28M50 6v28M14 20h36M23 6v28M32 6v28M41 6v28" stroke="#8a5a26" stroke-width="1.6"/><circle cx="8" cy="20" r="4" fill="#5b4636"/><circle cx="56" cy="20" r="4" fill="#5b4636"/><g fill="#7a8b99"><circle cx="18" cy="13" r="1.8"/><circle cx="27" cy="27" r="1.8"/><circle cx="36" cy="13" r="1.8"/><circle cx="45" cy="27" r="1.8"/><circle cx="20" cy="28" r="1.8"/><circle cx="38" cy="25" r="1.8"/></g></svg>';
 const MINI_BOTTLES='<svg viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2d5a3d" stroke-width="1.4"><path d="M12 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#7cc79a"/><path d="M28 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#8fb6e8"/><path d="M44 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#f0b46a"/></g><ellipse cx="34" cy="10" rx="7" ry="2.6" fill="none" stroke="#e2462d" stroke-width="2.4"/></svg>';
 const CHIPS=[1,2,5,10,50,100,200,500,1000];
@@ -126,7 +126,7 @@ export async function openFair(env,data={}){
     S.listening=true;
     let seen='';
     env.api.addEventListener('state',()=>{const f=F();if(typeof f.now==='number')S.skew=f.now*1000-Date.now();
-      const key=JSON.stringify([f.wallet,f.today,f.earn,f.raid_left>0,f.loto?.id,f.loto?.stage,f.oaq?.stage,f.oaq?.ply,f.ring?.id,f.money?.total,f.open]);if(key===seen)return;seen=key;
+      const key=JSON.stringify([f.wallet,f.today,f.earn,f.raid_left>0,f.loto?.id,f.loto?.stage,f.oaq?.stage,f.oaq?.ply,f.ring?.id,f.money?.total,f.open,f.bm?.st]);if(key===seen)return;seen=key;
       if(S.dlg?.open&&!animating())render();});
   }
   const f=F();if(typeof f.now==='number')S.skew=f.now*1000-Date.now();
@@ -156,8 +156,10 @@ const animating=()=>S.busy||S.tab==='dt'&&!!KN?.busy()||S.tab==='xs'&&!!XS?.busy
 
 async function send(action,payload={}){
   const {api}=S.env;
-  try{const result=await api.command(action,payload);if(result?.fair?.wealth_raid)S.wealthRaid=result.fair.wealth_raid;if(result?.fair?.audit)S.audit=result.fair.audit;if(result?.fair?.loc)S.loc=result.fair.loc;return result;}
-  catch(e){S.err=e.code||e.data?.code||'';S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
+  try{const result=await api.command(action,payload);
+    if(result?.fair?.arrest){S.arrest={...result.fair.arrest,titles:result.fair.titles||[]};S.flash=null;sfx('siren');return null;}   // 🕶️ the police caught the round: no outcome, the stall resets
+    if(result?.fair?.wealth_raid)S.wealthRaid=result.fair.wealth_raid;if(result?.fair?.audit)S.audit=result.fair.audit;if(result?.fair?.loc)S.loc=result.fair.loc;return result;}
+  catch(e){S.err=e.code||e.data?.code||'';if(String(S.err).startsWith('fair_bm'))api.refresh().then(()=>render()).catch(()=>{/* the next state */});S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
 }
 
 /* ---- rendering ----
@@ -209,11 +211,12 @@ function render(){
   if(!S.dlg)return;
   keep(()=>{const root=S.dlg.querySelector('.fh-root');tplEl.innerHTML=page();
     const box=document.createElement('div');box.append(tplEl.content);morph(root,Object.assign(box,{className:root.className}));});
-  if(S.tab==='xs')XS?.mount();   // a new ticket's silver: painted once, then left to the finger
-  if(S.tab==='pb')PB?.mount();   // the photobooth's stage: its canvas, drawn when the room changes
-  if(S.tab==='dt')KN?.mount();   // the phóng dao board: its canvas, drawn by its own frames
+  const shut=blocked();   // the bảo kê gate, a ban or an arrest's receipt: no stall behind it
+  if(S.tab==='xs'&&!shut)XS?.mount();   // a new ticket's silver: painted once, then left to the finger
+  if(S.tab==='pb'&&!shut)PB?.mount();   // the photobooth's stage: its canvas, drawn when the room changes
+  if(S.tab==='dt'&&!shut)KN?.mount();   // the phóng dao board: its canvas, drawn by its own frames
   if(S.dlg.getAttribute('aria-busy')!==String(S.busy))S.dlg.setAttribute('aria-busy',String(S.busy));
-  const walking=walkOn();if(S.dlg.classList.contains('fh-walking')!==walking)S.dlg.classList.toggle('fh-walking',walking);
+  const walking=walkOn()&&!shut;if(S.dlg.classList.contains('fh-walking')!==walking)S.dlg.classList.toggle('fh-walking',walking);
   if(walking){if(S.tab==='home')WALK.mount();else WALK.play(S.tab==='food'?S.food.cart:S.tab);}   // on a stall page: seen standing at it
   else WALK?.off();
 }
@@ -236,8 +239,8 @@ function head(){
   return `<header class="fh-head">
     <div class="fh-bunting" aria-hidden="true"></div>
     <div class="fh-lanterns" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-    <div class="fh-headrow"><span class="fh-logo" aria-hidden="true">🏮</span>
-      <div class="grow"><span class="eyebrow">${clean()?'⏳':'KHU PHỐ MỞ HỘI ·'} <span data-fh-count="close">${esc(when)}</span></span><h2 id="fh-title">Hội chợ dân gian</h2></div>
+    <div class="fh-headrow"><span class="fh-logo" aria-hidden="true">🕶️</span>
+      <div class="grow"><span class="eyebrow">${clean()?'⏳':'CHỢ ĐEN MỞ ·'} <span data-fh-count="close">${esc(when)}</span></span><h2 id="fh-title">Chợ đen</h2></div>
       <button class="icon-btn fh-x" type="button" data-fh="close" aria-label="Đóng">${icon('x',21)}</button></div>
   </header>`;
 }
@@ -258,8 +261,8 @@ function winLoss(f){
 function nav(){
   if(S.tab==='home')return '';
   const [e,l]=GAMES[S.tab]||GAMES.home;
-  const back=walkOn()?'<span aria-hidden="true">←</span> Ra lối đi':'<span aria-hidden="true">‹</span> Cổng hội';
-  return `<nav class="fh-nav" aria-label="Hội chợ">${btn(back,'tab',{tab:'home'},'ghost small fh-back',' data-fh-key="home"')}<b><span aria-hidden="true">${e}</span> ${esc(l)}</b></nav>`;
+  const back=walkOn()?'<span aria-hidden="true">←</span> Ra lối đi':'<span aria-hidden="true">‹</span> Cổng chợ';
+  return `<nav class="fh-nav" aria-label="Chợ đen">${btn(back,'tab',{tab:'home'},'ghost small fh-back',' data-fh-key="home"')}<b><span aria-hidden="true">${e}</span> ${esc(l)}</b></nav>`;
 }
 /** The small-stake stalls: what is left of today's loss cap. */
 const xuLine=tab=>{const x=F().today_xu;if(!x||!GAMES[tab]||tab==='home'||tab==='board'||tab==='loan'||tab==='food'||tab==='pb')return '';const n=(x[tab==='dt'?'kn':tab]||0)-(tab==='xs'?xsHold():0);   // the dt tab is the phóng dao ('kn')
@@ -267,16 +270,67 @@ const xuLine=tab=>{const x=F().today_xu;if(!x||!GAMES[tab]||tab==='home'||tab===
 const luckLine=()=>{const t=F().today||{};if(R().nocap)return '';return `<p class="fh-luck-left">🎟️ Thử vận hôm nay còn chơi được <b>${xu(t.left)}</b> <small>(thua tối đa ${xu(R().cap)} mỗi ngày)</small></p>`;};
 const flash=()=>`<p class="fh-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
 // The "no real money" line always shows; on the clean layout in its short form.
-const note=()=>`<p class="fh-note">🎪 ${clean()?'Chơi bằng xu trong game, không có tiền thật.':'Trò chơi dân gian ở hội chợ, chơi bằng xu trong game. Không có tiền thật.'}</p>`;
+const note=()=>`<p class="fh-note">🎪 ${clean()?'Chơi bằng xu trong game, không có tiền thật.':'Trò chơi ở chợ đen chỉ chơi bằng xu trong game. Không có tiền thật.'}</p>`;
 function page(){
   const f=F();
   if(!f.show&&!f.over&&!f.soon)return head()+`<div class="sheet-body fh-body">${closedCard(true)}</div>`;
-  if(!f.open&&S.tab!=='board')return head()+`<div class="sheet-body fh-body">${closedCard()}${S.env?.api?.state?.journey?.story?btn('🏆 Xem Bảng vàng hội chợ','tab',{tab:'board'},'cream full'):''}${note()}</div>`;
+  if(!f.open&&S.tab!=='board')return head()+`<div class="sheet-body fh-body">${closedCard()}${S.env?.api?.state?.journey?.story?btn('🏆 Xem Bảng vàng chợ đen','tab',{tab:'board'},'cream full'):''}${note()}</div>`;
+  if(S.arrest)return head()+`<div class="sheet-body fh-body">${arrestCard()}${note()}</div>`;
+  if(gated()&&S.tab!=='board')return head()+giftPop()+`<div class="sheet-body fh-body">${flash()}${bmGate()}${note()}</div>`;
   const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().knife?kn().view():homeView(),xs:()=>F().scratch?xs().view():homeView(),pb:()=>F().photo?pb().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
   const gifting=!!S.gift&&clean();   // the gift card is the whole screen until "Vào hội" (clean layout: nothing else behind it)
-  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open&&!gifting?strip():''}${f.open?nav():''}${wealthRaidCard()}${auditCard()}${locCard()}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab)+coldLine(S.tab):''}${body}${gifting?'':note()}</div>`;
+  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open&&!gifting?strip():''}${f.open?nav():''}${robCard()}${wealthRaidCard()}${auditCard()}${locCard()}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab)+coldLine(S.tab):''}${body}${gifting?'':note()}</div>`;
 }
+/* ---- 🕶️ Chợ đen: the bảo kê at the gate, the police (game/fair_bm.py; an older server sends no `bm`: no gate) ----
+ * No rate and no percentage is ever shown (owner 08/10): the fee is a price, the receipts say the xu taken. */
+const BM=()=>F().bm||null;
+const gated=()=>{const b=BM();return !!b&&!!F().open&&!b.inside;};
+const blocked=()=>!!S.arrest||gated()&&S.tab!=='board';
+const GUARD=()=>{const w=BM()?.who||[];return {name:w[0]||'Đàn em chợ đen',emoji:w[1]||'🕶️'};};
+function bmGate(){
+  const b=BM(),w=F().wallet||0,short=w<b.fee;
+  if(b.ban)return `<section class="fh-card fh-bm ban" data-fh-key="bm-ban"><div class="fh-big" aria-hidden="true">🚫</div><h3>Hôm nay bạn bị đuổi khỏi chợ đen</h3>
+    <p>Công an vừa ập vào, hôm nay chợ không cho bạn vô nữa. Mai quay lại nhé.</p>${btn('‹ Quay về','close',{},'primary full',' data-fh-key="bm-back"')}</section>`;
+  return `<section class="fh-card fh-bm" data-fh-key="bm-gate"><div class="fh-big" aria-hidden="true">🕶️</div><h3>Cổng chợ đen</h3>
+    ${say(GUARD(),'Vào chợ đen phải nộp tiền bảo kê. Nộp rồi thì hôm nay ra vô thoải mái.','dark')}
+    <div class="fh-bm-go">${btn(`💵 Nộp bảo kê · ${xu(b.fee)}`,'bmpay',{},'primary big full',short||S.busy?' disabled data-fh-key="bm-pay"':' data-fh-key="bm-pay"')}
+      ${short?`<p class="fh-why">Ví chưa đủ ${xu(b.fee)} để nộp bảo kê.</p>`:''}
+      ${btn(S.bmSure?'Chắc chưa? Không nộp':'🙅 Không nộp','bmrefuse',{},'ghost full'+(S.bmSure?' danger':''),S.busy?' disabled data-fh-key="bm-no"':' data-fh-key="bm-no"')}
+      <p class="fh-why">Không nộp thì coi chừng bị trấn lột đó nha.</p>
+      ${btn('‹ Quay về','close',{},'ghost full',' data-fh-key="bm-back"')}</div>
+    <p class="fh-rule">🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược, nộp phạt và bị đuổi về tới hết ngày.</p></section>`;
+}
+function robCard(){
+  const r=S.robbed;if(!r)return '';
+  return `<section class="fh-card fh-raid" role="alert" data-fh-key="bm-rob"><h3>${r.robbed?'🕶️ Bị trấn lột':'🕶️ Đàn em cho qua'}</h3>${say(GUARD(),r.say||'','dark')}
+    ${r.robbed?`<div class="fh-raid-bill"><span>Bị lấy từ ví</span><b>−${xu(r.robbed)}</b></div>`:''}
+    <p>Ví còn <b>${xu(r.wallet)}</b>.${r.robbed?' Đã ghi trong Sổ ví.':''} Hôm nay được ra vô chợ đen.</p>${btn('Vào chợ đen','robok',{},'primary',' data-fh-key="bm-robok"')}</section>`;
+}
+function arrestCard(){
+  const r=S.arrest;
+  return `<section class="fh-card fh-raid" role="alert" data-fh-key="bm-arrest"><div class="fh-siren" aria-hidden="true"><i></i><i></i></div>
+    <h3>🚨 Công an ập vào!</h3>${say({name:'Công an phường',emoji:'👮'},r.say||'')}
+    <div class="fh-raid-bill"><span>Tiền cược bị tịch thu</span><b>−${xu(r.stake)}</b><span>Nộp phạt</span><b>−${xu(r.fine)}</b></div>
+    <p>Ví còn <b>${xu(r.wallet)}</b>. Khoản phạt đã ghi trong Sổ ví.</p><p><b>Hôm nay bạn bị đuổi khỏi chợ đen, mai quay lại nhé.</b></p>
+    ${r.titles?.includes('f_raid')?'<p class="fh-award">🚨 Danh hiệu mới: <b>Bị công an hỏi thăm</b></p>':''}
+    ${btn('Dạ, em về','arrestok',{},'primary',' data-fh-key="bm-arrestok"')}</section>`;
+}
+async function bmPay(){
+  if(S.busy)return;S.busy=true;S.bmSure=false;S.flash=null;render();
+  const r=await send('fair_bm_pay',{});S.busy=false;
+  if(r?.fair?.paid)S.flash={text:r.message||'Đã nộp bảo kê.',kind:'good'};
+  render();
+}
+async function bmRefuse(){
+  if(S.busy)return;
+  if(!S.bmSure){S.bmSure=true;render();return;}
+  S.bmSure=false;S.busy=true;S.flash=null;render();
+  const r=await send('fair_bm_refuse',{});S.busy=false;
+  if(r?.fair&&'robbed' in r.fair){S.robbed={...r.fair};if(r.fair.robbed)sfx('lose');}
+  render();
+}
+
 // 🥶 a long run of one luck stall cools its luck (server: fair.cold); honest about it, in that stall only
 const coldLine=tab=>{const c=F().cool||F().cold;if(!c||c.game!==tab)return '';
   return `<p class="fh-cold" role="note">🥶 Vận đang nguội vì chơi liền một trò. ${c.switch?`Cần thêm ${c.switch} ván ≥ ${xu(c.min||20)} ở trò khác (bầu cua, chiếu trong, lô tô, vé cào)`:'Đổi trò khác'} hoặc nghỉ ${c.gap} phút là vận ấm lại; ném vòng, ô ăn quan, phóng dao không tính.</p>`;};
@@ -293,13 +347,13 @@ function wealthRaidCard(){
 function auditCard(){
   const r=S.audit;if(!r)return '';
   return `<section class="fh-card fh-raid" role="alert" data-fh-key="asset-audit"><h3>🚨 Công an hỏi nguồn tài sản</h3>${r.after_raid?'<p><small>Thêm một lần nữa, sau lần thu 30% ví ở trên.</small></p>':''}${r.say?say({name:'Công an phường',emoji:'👮'},r.say):''}
-    <div class="fh-raid-bill"><span>Tiền lời mới ở hội chợ</span><b>${xu(r.gain)}</b><span>Thu ${r.pct}%</span><b>−${xu(r.amount)}</b>${r.bank?`<span>Từ ví</span><b>−${xu(r.cash)}</b><span>Từ tài khoản ngân hàng</span><b>−${xu(r.bank)}</b>`:''}</div>
+    <div class="fh-raid-bill"><span>Tiền lời mới ở chợ đen</span><b>${xu(r.gain)}</b><span>Thu ${r.pct}%</span><b>−${xu(r.amount)}</b>${r.bank?`<span>Từ ví</span><b>−${xu(r.cash)}</b><span>Từ tài khoản ngân hàng</span><b>−${xu(r.bank)}</b>`:''}</div>
     <p>${esc(r.message)}</p><p>Ví còn <b>${xu(r.wallet)}</b>. Khoản thu đã được ghi trong Sổ ví.</p>${btn('Dạ, em hiểu','auditok',{},'primary')}</section>`;
 }
 function closedCard(gone){
   const f=F();
-  if(f.soon)return `<section class="fh-card fh-closed"><div class="fh-big" aria-hidden="true">🏮</div><h3>Hội chợ sắp mở</h3><p>Khai hội ngày ${esc(dateOf(f.opens))}, mở ${Math.round((f.closes-f.opens)/86400)} ngày. Hẹn bà con ghé chơi ô ăn quan, ném vòng, bầu cua, lô tô nha!</p></section>`;
-  return `<section class="fh-card fh-closed"><div class="fh-big" aria-hidden="true">🎐</div><h3>Hội chợ đã tàn, hẹn lần sau</h3><p>${gone?'Lều bạt đã dọn, đèn lồng đã cất.':'Cảm ơn bà con đã ghé hội. Bảng vàng vẫn còn đó để xem lại.'}</p></section>`;
+  if(f.soon)return `<section class="fh-card fh-closed"><div class="fh-big" aria-hidden="true">🕶️</div><h3>Chợ đen sắp mở</h3><p>Chợ mở ngày ${esc(dateOf(f.opens))}, mở ${Math.round((f.closes-f.opens)/86400)} ngày. Hẹn bà con ghé chơi ô ăn quan, ném vòng, bầu cua, lô tô nha!</p></section>`;
+  return `<section class="fh-card fh-closed"><div class="fh-big" aria-hidden="true">🎐</div><h3>Chợ đen đã tàn, hẹn lần sau</h3><p>${gone?'Lều bạt đã dọn, đèn lồng đã cất.':'Cảm ơn bà con đã ghé chợ. Bảng vàng vẫn còn đó để xem lại.'}</p></section>`;
 }
 const enoughCard=()=>`<section class="fh-card fh-enough"><span aria-hidden="true">🍵</span><div><b>Hôm nay chơi vậy đủ rồi, mai ghé tiếp nha.</b><small>Mỗi ngày thua tối đa ${xu(R().cap)}. Qua chơi ô ăn quan, ném vòng kiếm xu, hoặc ghé xem Bảng vàng nhé.</small></div></section>`;
 const say=(who,text,cls='')=>`<div class="fh-npcline ${cls}"><span class="fh-npc" aria-hidden="true">${who.emoji}</span><div class="fh-bubble"><small>${esc(who.name)}</small><p>${esc(text)}</p></div></div>`;
@@ -312,14 +366,15 @@ function gateList(){
   const f=F(),r=R(),e=f.earn||{},o=f.oaq,m=won(),pr=r.oaq_prize||{de:50,kho:10000};
   const oaqLine=o?.stage==='play'?`<em class="fh-live">Đang chơi dở với ${esc(o.name)} · chơi tiếp</em>`:`Đấu với Bé Bi (thắng +${pr.de} xu) hoặc Ông Hai (thắng +${fmt(pr.kho)} xu)`;
   const luck=(id,ico,name,sub,warn='')=>`<button type="button" class="fh-luckgame" data-fh="tab" data-tab="${id}" data-fh-key="g-${id}"><span class="fh-lico" aria-hidden="true">${ico}</span><span class="grow"><b>${name}</b><small>${sub}</small></span>${warn}${f.loto?.stage==='play'&&id==='lt'||id==='dt'&&['play','choice'].includes(f.knife?.run?.stage)?'<i class="fh-dot" aria-label="đang chơi"></i>':''}</button>`;
-  return `<section class="fh-gate" aria-label="Cổng hội">
+  return `<section class="fh-gate" aria-label="Cổng chợ">
     <div class="fh-sec"><h3>💰 Chơi kiếm xu</h3><span class="fh-tag good">Không cần đặt cược</span></div>
     <div class="fh-earn">
       <button type="button" class="fh-game" data-fh="tab" data-tab="oaq" data-fh-key="g-oaq"><span class="fh-gico">${MINI_BOARD}</span><span class="grow"><b>Ô ăn quan</b><small>${oaqLine}</small>${meter(e.oaq)}</span></button>
       <button type="button" class="fh-game" data-fh="tab" data-tab="ring" data-fh-key="g-ring"><span class="fh-gico">${MINI_BOTTLES}</span><span class="grow"><b>Ném vòng cổ chai</b><small>${r.nocap?`Mỗi vòng trúng +${r.ring_hit} xu, trúng cả ${r.rings||5} vòng thêm ${r.ring_all} xu`:`Trúng mỗi chai +${r.ring_hit||2} xu, đủ ${r.rings||5} chai thêm ${r.ring_all||5} xu`}</small>${meter(e.ring)}</span></button>
     </div>
     <div class="fh-sec"><h3>🎲 Thử vận may</h3><span class="fh-tag">Cược bằng xu</span></div>
-    ${r.audit_from?`<p class="fh-rule">🚨 Lời ở hội chợ nhiều quá thì công an có thể ghé hỏi nguồn tài sản và thu lại một phần tiền lời.</p>`:''}
+    ${BM()?`<p class="fh-rule">🚨 Chợ đen hay bị công an ập vào: bị bắt thì mất tiền cược, nộp phạt và bị đuổi về tới hết ngày.</p>`:''}
+    ${r.audit_from?`<p class="fh-rule">🚨 Lời ở chợ đen nhiều quá thì công an có thể ghé hỏi nguồn tài sản và thu lại một phần tiền lời.</p>`:''}
     <div class="fh-luck">
       ${luck('bc',FACE_ART.cua,'Bầu cua','Đặt bao nhiêu tùy bạn')}
       ${f.knife?luck('dt','🗡️','Phóng dao',`Đặt ${Math.min(...f.knife.stakes)}–${Math.max(...f.knife.stakes)} xu, qua màn nhận thưởng hoặc liều chơi tiếp`):''}
@@ -328,7 +383,7 @@ function gateList(){
       ${luck('xd','🕯️','Chiếu trong',`Cược từ ${r.xd_min} xu`,'<span class="fh-warnchip">🚨 công an</span>')}
     </div>
     ${loanRow()}${foodRow()}${photoRow()}
-    <button type="button" class="fh-goldlink" data-fh="tab" data-tab="board" data-fh-key="g-board"><span aria-hidden="true">🏆</span><span class="grow"><b>Bảng vàng hội chợ</b><small>${m>0?`Bạn đang lời ${xu(m)}`:m<0?`Bạn đang lỗ ${xu(-m)}`:'Ai thắng nhiều xu nhất đứng đầu'} · Top 1 khi hội tàn thành 👑 Vua trò chơi</small></span><span aria-hidden="true">›</span></button>
+    <button type="button" class="fh-goldlink" data-fh="tab" data-tab="board" data-fh-key="g-board"><span aria-hidden="true">🏆</span><span class="grow"><b>Bảng vàng chợ đen</b><small>${m>0?`Bạn đang lời ${xu(m)}`:m<0?`Bạn đang lỗ ${xu(-m)}`:'Ai thắng nhiều xu nhất đứng đầu'} · Top 1 khi chợ tàn thành 👑 Vua trò chơi</small></span><span aria-hidden="true">›</span></button>
   </section>`;
 }
 
@@ -621,7 +676,7 @@ function xdView(){
 function raidCard(r){
   return `<section class="fh-card fh-raid" role="alert"><div class="fh-siren" aria-hidden="true"><i></i><i></i></div>
     <h3>🚨 Công an phường kiểm tra!</h3>
-    <p class="fh-cop">“Hội chợ vui thì vui, chiếu trong là dẹp nha bà con! Ai ngồi đây thì ghi tên, nộp phạt rồi ra trước chơi cho đàng hoàng.”</p>
+    <p class="fh-cop">“Chợ đen vui thì vui, chiếu trong là dẹp nha bà con! Ai ngồi đây thì ghi tên, nộp phạt rồi ra trước chơi cho đàng hoàng.”</p>
     <div class="fh-raid-bill"><span>Tiền cược bị tịch thu</span><b>−${xu(r.stake)}</b><span>Nộp phạt</span><b>−${xu(r.fine)}</b></div>
     <p class="muted small">Anh Ba chiếu trong đã cuốn chiếu chạy mất. Chiếu dẹp ${Math.round((r.cooldown||120)/60)} phút.</p>
     ${r.titles?.includes('f_raid')?'<p class="fh-award">🚨 Danh hiệu mới: <b>Bị công an hỏi thăm</b></p>':''}
@@ -982,8 +1037,8 @@ function mark(ci,n){
 /* ---- 🏮 Đi dạo hội chợ: ./fair-walk.js (loaded with the fair's styles, set up with this file's helpers) ---- */
 let WALK=null,walkLoad=null;
 function loadWalk(){
-  return walkLoad??=import('./fair-walk.js').then(m=>{WALK=m.setup({S,F,esc,list:gateList,bar:()=>gameMusic()?musicBtn('Nhạc hội'):'',
-    go:tab=>onClick('tab',{tab}),food:cart=>F().food?(onClick('cart',{v:cart}),true):false});}).catch(e=>{console.warn('hội chợ: no fairground',e);});   // the list stays
+  return walkLoad??=import('./fair-walk.js').then(m=>{WALK=m.setup({S,F,esc,list:gateList,bar:()=>gameMusic()?musicBtn('Nhạc chợ'):'',
+    go:tab=>onClick('tab',{tab}),food:cart=>F().food?(onClick('cart',{v:cart}),true):false});}).catch(e=>{console.warn('chợ đen: no fairground',e);});   // the list stays
 }
 const walkOn=()=>!!WALK?.active();
 
@@ -1015,15 +1070,15 @@ async function loadBoard(force=false){
 }
 function boardView(){
   const f=F(),m=won(),B=S.board.data,fair=B?.fair,me=B?.me;
-  const tiers=(fair?.tiers||[{label:'Top 1',emoji:'👑',name:'Vua trò chơi'},{label:'Top 2–10',emoji:'🎪',name:'Cao thủ hội chợ'}]).map(t=>`<li><span aria-hidden="true">${esc(t.emoji)}</span><b>${esc(t.name)}</b><small>${esc(t.label)}</small></li>`).join('');
-  const crowned=fair?.winners?.length?`<div class="fh-card fh-crowned"><h3>Hội đã tàn · Bảng vàng chung cuộc</h3><ol>${fair.winners.map(w=>`<li class="${w.me?'me':''}"><span aria-hidden="true">${esc(w.emoji)}</span><b>${esc(w.name)}</b><small>${esc(w.title)} · <b>+${xu(w.score)}</b></small></li>`).join('')}</ol></div>`:'';
+  const tiers=(fair?.tiers||[{label:'Top 1',emoji:'👑',name:'Vua trò chơi'},{label:'Top 2–10',emoji:'🎪',name:'Cao thủ chợ đen'}]).map(t=>`<li><span aria-hidden="true">${esc(t.emoji)}</span><b>${esc(t.name)}</b><small>${esc(t.label)}</small></li>`).join('');
+  const crowned=fair?.winners?.length?`<div class="fh-card fh-crowned"><h3>Chợ đã tàn · Bảng vàng chung cuộc</h3><ol>${fair.winners.map(w=>`<li class="${w.me?'me':''}"><span aria-hidden="true">${esc(w.emoji)}</span><b>${esc(w.name)}</b><small>${esc(w.title)} · <b>+${xu(w.score)}</b></small></li>`).join('')}</ol></div>`:'';
   const rows=B?.rows?.length?`<ol class="fh-board">${B.rows.map(r=>`<li class="${r.me?'me':''}${r.rank===1?' first':''}"><span class="fh-rank">${r.rank===1?'👑':r.rank<=10?'🎪':r.rank}</span><span class="grow"><b>${esc(r.name||'')}</b>${r.guest?'<em class="fh-guest">khách</em>':''}<small>${fmt(r.days)} ngày chơi</small></span><b class="fh-score">+${xu(r.xu??r.score)}</b></li>`).join('')}</ol>`
     :S.board.loading||!B?'<p class="muted fh-wait">Đang mở Bảng vàng…</p>':'<p class="muted fh-wait">Chưa ai lời xu nào. Thắng là có tên trên bảng!</p>';
   const mine=me?`<div class="fh-me"><span>${m===null?'Bạn':`Bạn đang ${m<0?'lỗ':'lời'} <b>${xu(Math.abs(m))}</b>`}${me.rank&&me.visible!==false?` · hạng <b>${fmt(me.rank)}</b>`:''}</span>${m!==null&&m<=0?'<small>Chỉ ai đang lời mới có tên trên bảng.</small>':''}${me.visible===false?`<small class="fh-hidden">Tên bạn đang ẩn nên chưa lên bảng và chưa nhận được danh hiệu. Bật “Hiện tên tôi” ở Xếp hạng nhé.</small>`:''}</div>`:'';
-  return `<section class="fh-stall fh-gold" aria-label="Bảng vàng hội chợ">
-    <div class="fh-card fh-crown"><h3>🏆 Bảng vàng hội chợ</h3><ul class="fh-tiers">${tiers}</ul><p class="small">${f.over?'Danh hiệu đã trao khi hội tàn.':`Trao khi hội tàn (${esc(dateOf(f.closes))} 00:00), giữ mãi trong bộ sưu tập.`}</p></div>
+  return `<section class="fh-stall fh-gold" aria-label="Bảng vàng chợ đen">
+    <div class="fh-card fh-crown"><h3>🏆 Bảng vàng chợ đen</h3><ul class="fh-tiers">${tiers}</ul><p class="small">${f.over?'Danh hiệu đã trao khi chợ tàn.':`Trao khi chợ tàn (${esc(dateOf(f.closes))} 00:00), giữ mãi trong bộ sưu tập.`}</p></div>
     ${crowned}${mine}${S.board.error?`<p class="fh-flash bad">${esc(S.board.error)}</p>`:''}${rows}
-    <details class="fh-how"><summary>Cách xếp hạng</summary><ul><li>Xếp theo số xu bạn thắng ở hội chợ lần này: tiền thắng trừ tiền thua ở bầu cua, phóng dao, vé số cào, lô tô, chiếu trong, cộng xu kiếm từ ô ăn quan và ném vòng.</li><li>Tiền vốn được tặng, tiền vay và tiền trả nợ không tính.</li><li>Chỉ ai đang lời mới có tên trên bảng.</li><li>Bằng xu thì ai đạt trước đứng trên.</li></ul></details>
+    <details class="fh-how"><summary>Cách xếp hạng</summary><ul><li>Xếp theo số xu bạn thắng ở chợ đen lần này: tiền thắng trừ tiền thua ở bầu cua, phóng dao, vé số cào, lô tô, chiếu trong, cộng xu kiếm từ ô ăn quan và ném vòng.</li><li>Tiền vốn được tặng, tiền vay và tiền trả nợ không tính.</li><li>Chỉ ai đang lời mới có tên trên bảng.</li><li>Bằng xu thì ai đạt trước đứng trên.</li></ul></details>
   </section>`;
 }
 
@@ -1040,8 +1095,8 @@ async function claimGift(){
 function giftPop(){
   if(!S.gift)return '';
   return `<div class="fh-giftpop" role="dialog" aria-modal="true" aria-labelledby="fh-gift-h"><div class="fh-giftcard">
-    <div class="fh-giftbox" aria-hidden="true">🎁</div><h3 id="fh-gift-h">Ban tổ chức tặng ${xu(S.gift)} làm vốn chơi hội!</h3>
-    <p>${clean()?'Đã bỏ vô ví 👛':'Đã bỏ vô ví của bạn. Chúc bà con chơi hội vui vẻ, ăn nhiều nha!'}</p>${btn('🏮 Vào hội','giftok',{},'primary big full',' data-fh-key="giftok"')}</div></div>`;
+    <div class="fh-giftbox" aria-hidden="true">🎁</div><h3 id="fh-gift-h">Chủ chợ tặng ${xu(S.gift)} làm vốn chơi!</h3>
+    <p>${clean()?'Đã bỏ vô ví 👛':'Đã bỏ vô ví của bạn. Chúc bà con chơi vui vẻ, ăn nhiều nha!'}</p>${btn('🕶️ Vào chợ','giftok',{},'primary big full',' data-fh-key="giftok"')}</div></div>`;
 }
 function loanRow(){
   const c=C();if(!c)return '';
@@ -1056,21 +1111,21 @@ function loanView(){
     const short=(f.wallet||0)<owe;
     return `<section class="fh-stall fh-loan" aria-label="Vay nóng">
       ${say(who,short?'Chưa đủ thì cứ chơi tiếp, có đủ rồi ghé trả bà nha.':'Có tiền rồi hả? Trả bà là xong, vay tiếp lúc nào cũng được.')}
-      <div class="fh-card fh-loancard"><h3>Đang nợ ${xu(owe)}</h3>${c.loan?`<p>Vay ${xu(c.loan.p)}, lãi ${c.rate}%: trả ${xu(c.loan.due)}.</p>`:''}${c.debt?`<p>Nợ còn lại từ lần hội trước: ${xu(c.debt)} (tự trừ dần khi có tiền vào ví).</p>`:''}
+      <div class="fh-card fh-loancard"><h3>Đang nợ ${xu(owe)}</h3>${c.loan?`<p>Vay ${xu(c.loan.p)}, lãi ${c.rate}%: trả ${xu(c.loan.due)}.</p>`:''}${c.debt?`<p>Nợ còn lại từ lần chợ trước: ${xu(c.debt)} (tự trừ dần khi có tiền vào ví).</p>`:''}
       ${btn(S.busy?'Đang trả…':`💸 Trả hết ${xu(owe)}`,'repay',{},'primary big full',short||S.busy?' disabled data-fh-key="repay"':' data-fh-key="repay"')}
       ${short?`<p class="fh-why">Ví đang có ${xu(f.wallet||0)}, cần đủ ${xu(owe)} để trả hết.</p>`:''}</div>
-      <p class="fh-rule">Hội tàn mà chưa trả thì bà tự thu: lấy tiền trong ví trước, thiếu thì lấy từ tài khoản ngân hàng, vẫn thiếu thì trừ dần khi bạn có tiền vào ví. Ví không bao giờ bị âm.</p>
+      <p class="fh-rule">Chợ tàn mà chưa trả thì bà tự thu: lấy tiền trong ví trước, thiếu thì lấy từ tài khoản ngân hàng, vẫn thiếu thì trừ dần khi bạn có tiền vào ví. Ví không bao giờ bị âm.</p>
     </section>`;
   }
   const amt=c.steps.includes(L0.amt)?L0.amt:c.steps[1]||c.steps[0],due=Math.ceil(amt*(100+c.rate)/100);
   return `<section class="fh-stall fh-loan" aria-label="Vay nóng">
-    ${say(who,'Thiếu vốn chơi hội hả con? Bà cho vay liền, lãi hai chục phần trăm thôi, trả lúc nào cũng được.')}
-    <div class="fh-card fh-loancard"><h3>💸 Vay nóng hội chợ</h3>
+    ${say(who,'Thiếu vốn chơi hả con? Bà cho vay liền, lãi hai chục phần trăm thôi, trả lúc nào cũng được.')}
+    <div class="fh-card fh-loancard"><h3>💸 Vay nóng chợ đen</h3>
       <div class="fh-chips" role="group" aria-label="Số tiền vay"><span>Vay</span>${c.steps.map(v=>`<button type="button" class="fh-chip${amt===v?' on':''}" data-fh="loanamt" data-v="${v}" aria-pressed="${amt===v}" data-fh-key="loan-${v}">${v}</button>`).join('')}</div>
       <p class="fh-loansum">Nhận <b>${xu(amt)}</b> · trả lại <b>${xu(due)}</b> <small>(lãi ${c.rate}%)</small></p>
       ${btn(S.busy?'Đang đếm tiền…':L0.sure?`Chắc chưa? Vay ${xu(amt)}, trả ${xu(due)}`:`Vay ${xu(amt)}`,'borrow',{},'primary big full'+(L0.sure?' danger':''),!f.open||S.busy?' disabled data-fh-key="borrow"':' data-fh-key="borrow"')}
     </div>
-    <p class="fh-rule">Mỗi lần một khoản. Trả hết lúc nào cũng được ngay tại đây. Hội tàn mà chưa trả thì bà tự thu từ ví, rồi tài khoản ngân hàng; còn thiếu thì trừ dần khi có tiền vào ví.</p>
+    <p class="fh-rule">Mỗi lần một khoản. Trả hết lúc nào cũng được ngay tại đây. Chợ tàn mà chưa trả thì bà tự thu từ ví, rồi tài khoản ngân hàng; còn thiếu thì trừ dần khi có tiền vào ví.</p>
   </section>`;
 }
 async function borrow(){
@@ -1150,6 +1205,10 @@ async function onClick(op,data){
     case'wealthraidok':S.wealthRaid=null;render();return;
     case'auditok':S.audit=null;render();return;
     case'locok':S.loc=null;render();return;
+    case'bmpay':bmPay();return;
+    case'bmrefuse':bmRefuse();return;
+    case'robok':S.robbed=null;render();return;
+    case'arrestok':S.arrest=null;S.tab='home';pauseLoto();ltMusic();render();S.dlg.scrollTop=0;return;
     case'buy':buy();return;
     case'mark':mark(Number(data.c)||0,Number(data.n));return;
     case'kinh':kinh();return;

@@ -1,5 +1,57 @@
 [
  {
+  "vi": "💛 Bước 3 (nên làm): thân với hàng xóm. Người càng thân càng hay tới dự và mừng dày, đỡ tiền tiệc. Xem mục “Thân thiết với hàng xóm”.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Bước 4: để dành tiền trong ví. Nhẫn 55–990 xu; lúc chốt kế hoạch cưới mỗi người đặt cọc phần mình trong 30% tổng tiệc. Rút tiền lời từ nơi làm về ví trước.",
+  "en": ""
+ },
+ {
+  "vi": "💎 Bước 5: mua nhẫn ở tab [[Tiệm nhẫn]] của mục [[Hôn nhân]], chọn màu rồi bấm [[Mua]]. Xem mục “Tiệm nhẫn: mua và đổi màu nhẫn”.",
+  "en": ""
+ },
+ {
+  "vi": "💌 Bước 6: tab [[Cầu hôn]], chọn người bạn, chiếc nhẫn, một lời soạn sẵn rồi bấm [[Gửi lời cầu hôn]]. Người ấy bấm [[Đồng ý]] là đính hôn. Xem “Cầu hôn và trả lời”.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Bước 7: một người lập [[Kế hoạch cưới]] (nơi, số bàn, thực đơn, ngày, tỉ lệ góp) rồi gửi; người kia bấm [[Xác nhận & đặt cọc]]. Xem “Đám cưới từng bước”.",
+  "en": ""
+ },
+ {
+  "vi": "🎊 Bước 8: sau 2–10 ngày sống, đám cưới tự diễn ra kể cả khi một người vắng. Khách mừng, trả nốt tiệc, hai bạn thành vợ chồng. Xem “Ngày cưới: khách và tiền mừng”.",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Bước 9: sống chung với [[Quỹ chung]], thẻ chung, [[Tương tác]] mỗi ngày và sổ nợ. Xem “Quỹ chung & thẻ chung”, “Đời vợ chồng” và “Ly hôn và hủy hôn ước”.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Hôn nhân",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bè giữa người chơi",
+  "en": ""
+ },
+ {
+  "vi": "🔐 Bạn bè là người chơi thật nên cần tài khoản. Khách chưa có tài khoản mở [[Bạn bè]] sẽ thấy nút [[Tạo tài khoản]].",
+  "en": ""
+ },
+ {
+  "vi": "🔎 Ở “Tìm bạn”, gõ đúng tên đăng nhập của người ấy rồi bấm [[Tìm]]. Không tìm gần đúng, không có danh sách để lướt; chữ hoa hay thường đều được.",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Có mã người chơi dạng PCC-XXXXXX thì gõ mã vào cùng ô đó. Mã của bạn ở cuối mục Bạn bè, bấm [[Chép mã]] để gửi cho người quen.",
+  "en": ""
+ },
+ {
+  "vi": "📨 Bấm [[Kết bạn]] để gửi lời mời. Người kia chọn [[Chấp nhận]], [[Từ chối]] hoặc [[Chặn]]. Nếu họ đã mời bạn trước, nút thành [[Chấp nhận kết bạn]] và hai bạn thành bạn ngay.",
+  "en": ""
+ },
+ {
   "vi": "⏳ Lời mời bạn gửi nằm ở “Đang chờ trả lời”, đổi ý thì bấm [[Rút lại]]. Có lời mời mới, nút [[Bạn bè]] trên thanh bên hiện số.",
   "en": ""
  },
@@ -1097,138 +1149,6 @@
  },
  {
   "vi": "Chợ đang đông, một thanh niên đứng chọn trái, rồi ôm luôn cả rổ xoài chín lẩn vào dòng người.",
-  "en": ""
- },
- {
-  "vi": "Trộm ôm rổ xoài",
-  "en": ""
- },
- {
-  "vi": "Giật túi tiền đeo hông",
-  "en": ""
- },
- {
-  "vi": "Bạn cúi xuống lựa cam cho khách, túi tiền lẻ đeo hông lủng lẳng. Một chiếc xe máy áp sát, giật phăng rồi rồ ga.",
-  "en": ""
- },
- {
-  "vi": "Mất túi tiền lẻ",
-  "en": ""
- },
- {
-  "vi": "Tụi nhỏ làm đổ rổ cam",
-  "en": ""
- },
- {
-  "vi": "Mấy đứa nhỏ rượt nhau quanh chợ, va vào sạp. Rổ cam đổ ào, trái lăn khắp lối đi, vài trái bị xe cán bẹp.",
-  "en": ""
- },
- {
-  "vi": "Cam lăn ra đường, bẹp dập",
-  "en": ""
- },
- {
-  "vi": "Chó hoang tha nải chuối",
-  "en": ""
- },
- {
-  "vi": "Một con chó gầy lảng vảng quanh sạp, chồm lên tha luôn nải chuối rồi chạy mất vào hẻm.",
-  "en": ""
- },
- {
-  "vi": "Chó tha mất nải chuối",
-  "en": ""
- },
- {
-  "vi": "Túi trái của khách bị rách",
-  "en": ""
- },
- {
-  "vi": "Bạn xách túi trái đưa khách, quai túi đứt phựt. Trái rơi xuống đất, dập mấy trái.",
-  "en": ""
- },
- {
-  "vi": "Đền trái cho khách",
-  "en": ""
- },
- {
-  "vi": "Đêm qua sạp bị lục",
-  "en": ""
- },
- {
-  "vi": "Sáng ra tấm bạt che sạp bị rạch một đường, mấy rổ trái hụt đi trông thấy.",
-  "en": ""
- },
- {
-  "vi": "Mất trái trong đêm",
-  "en": ""
- },
- {
-  "vi": "Kẻ gian xách rổ thịt bò",
-  "en": ""
- },
- {
-  "vi": "Quán đông nghẹt giờ đi làm, bạn quay lưng chan nước. Một người lạ xách rổ thịt bò trên thớt rồi lẩn ra đầu ngõ.",
-  "en": ""
- },
- {
-  "vi": "Mất rổ thịt bò",
-  "en": ""
- },
- {
-  "vi": "Giật hộp tiền trên bàn thu",
-  "en": ""
- },
- {
-  "vi": "Hộp tiền lẻ để cạnh ống đũa. Một chiếc xe máy tạt sát vỉa hè, chộp lấy rồi rồ ga mất hút.",
-  "en": ""
- },
- {
-  "vi": "Tụi nhỏ đá bóng trúng rổ quẩy",
-  "en": ""
- },
- {
-  "vi": "Mấy đứa nhỏ đá bóng trong ngõ, quả bóng bay thẳng vào rổ quẩy, quẩy rơi lả tả xuống đất.",
-  "en": ""
- },
- {
-  "vi": "Đổ cả rổ quẩy",
-  "en": ""
- },
- {
-  "vi": "Nước phở bắn lên áo khách",
-  "en": ""
- },
- {
-  "vi": "Bạn bưng tô phở qua lối hẹp, vấp chân ghế nhựa. Nước dùng sóng sánh bắn lên tà áo sơ mi trắng của một anh đi làm.",
-  "en": ""
- },
- {
-  "vi": "Đêm qua tủ thịt bị cạy",
-  "en": ""
- },
- {
-  "vi": "Sáng ra khóa tủ đựng thịt bị bẻ cong, tấm bạt che rách một đường. Mấy phần thịt bò ướp sẵn không còn.",
-  "en": ""
- },
- {
-  "vi": "Mất thịt trong đêm",
-  "en": ""
- },
- {
-  "vi": "Khách lạ cầm nhầm đạo cụ",
-  "en": ""
- },
- {
-  "vi": "Bạn đang cắt ảnh cho khách. Một nhóm lạ chụp xong đi ra, rổ đạo cụ hụt cái vương miện với cặp kính tim.",
-  "en": ""
- },
- {
-  "vi": "Mất mấy món đạo cụ",
-  "en": ""
- },
- {
-  "vi": "Hộp tiền để sát cửa cho tiện thối. Một chiếc xe máy tạt vào lề, chộp lấy rồi rồ ga mất hút về phía chợ đêm.",
   "en": ""
  }
 ]

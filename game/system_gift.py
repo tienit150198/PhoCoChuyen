@@ -112,7 +112,7 @@ BROADCASTS = (
     dict(prefix='all1004', coins=100, until=1791727200,   # until 11/10 21:00 (VN)
          title='Quà cả phố 🎁', text='Phố Có Chuyện gửi mỗi người 100 xu, cảm ơn bạn đã chơi cùng cả phố! Chơi vui nha 💛'),
     dict(prefix='fair1005', coins=300, until=1791727200,
-         title='300 xu chơi hội chợ 🎪', text='Phố gửi bạn 300 xu vào ví để vui hội chợ! Tỷ lệ thắng đã tăng, ghé các gian chơi và thử vận may nhé 💛'),
+         title='300 xu chơi chợ đen 🎪', text='Phố gửi bạn 300 xu vào ví để vui chợ đen! Tỷ lệ thắng đã tăng, ghé các gian chơi và thử vận may nhé 💛'),
 )
 
 

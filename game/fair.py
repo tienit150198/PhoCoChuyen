@@ -71,6 +71,7 @@ from . import fair_ring as ring
 from . import fair_cash as fc   # 🎁 tiền vốn and 💸 vay nóng
 from . import fair_food as ff   # 🍡 the food carts
 from . import fair_photo as fp  # 📸 the photobooth's ticket
+from . import fair_bm as bm     # 🕶️ Chợ đen: the bảo kê at the gate, the police's arrests
 
 VERSION = 1
 FAIR_START = '2026-10-09'      # first day (Vietnam date), 00:00 UTC+7 (owner 08/10: the fair opens again)
@@ -150,8 +151,8 @@ WEALTH_THRESHOLD, WEALTH_CHECK_GAP, WEALTH_RAID_P = 50000, 1800, .35   # 07/10: 
 # of the profit made since the last check.
 AUDIT_FROM, AUDIT_GAP, AUDIT_P = 50000, 7200, .225
 AUDIT_KEY, AUDIT_PCT = 'fair_audit', 10   # journey['fair_audit'] {ed, base, at}: the profit left, the last check's time
-AUDIT_LABEL = '🚨 Công an kiểm tra tài sản · Thu 10% tiền lời hội chợ'
-POLICE_SAY = 'Chào em, nghe nói em lời ở hội chợ hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.'
+AUDIT_LABEL = '🚨 Công an kiểm tra tài sản · Thu 10% tiền lời chợ đen'
+POLICE_SAY = 'Chào em, nghe nói em lời ở chợ đen hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.'
 # 🍀 Lộc trời cho (owner 07/10): a won round of a paid luck stall pays LOC_MULT× its stake, LOC_P of the time, once per
 # LOC_GAP for the whole server (the mnl_meta row LOC_KEY holds the last one's time).
 # 08/10: LOC_P .015 → .003, so a won round's Lộc stays inside the house edge even with the gate always open (a lone
@@ -222,17 +223,17 @@ KN_DAY_CAP = KN_CAP_UNIT * POINTS_DAY
 MONEY = ('won', 'lost', 'earned')   # the stats that make the board's score, reset with each edition
 
 TITLE_ROWS = (   # journey.TITLES (secret, granted here only)
-    ('f_oaq', '🪨', 'Cao tay ô ăn quan', 'Thắng Ông Hai một ván ô ăn quan ở hội chợ dân gian.'),
-    ('f_ring', '💍', 'Tay ném vòng thần sầu', 'Ném trúng cả năm cổ chai trong một lượt ở hội chợ.'),
-    ('f_loto', '🎱', 'Thần lô tô hội chợ', 'Hô “Kinh!” thắng một ván lô tô ở hội chợ dân gian.'),
-    ('f_kinh2', '🎎', 'Kinh đôi rộn ràng', 'Thắng một vòng Kinh đôi ở gánh lô tô hội chợ.'),
-    ('f_nguoc', '🙃', 'Đọc ngược như xuôi', 'Thắng một vòng lô tô lật ngược ở hội chợ.'),
+    ('f_oaq', '🪨', 'Cao tay ô ăn quan', 'Thắng Ông Hai một ván ô ăn quan ở chợ đen.'),
+    ('f_ring', '💍', 'Tay ném vòng thần sầu', 'Ném trúng cả năm cổ chai trong một lượt ở chợ đen.'),
+    ('f_loto', '🎱', 'Thần lô tô chợ đen', 'Hô “Kinh!” thắng một ván lô tô ở chợ đen.'),
+    ('f_kinh2', '🎎', 'Kinh đôi rộn ràng', 'Thắng một vòng Kinh đôi ở gánh lô tô chợ đen.'),
+    ('f_nguoc', '🙃', 'Đọc ngược như xuôi', 'Thắng một vòng lô tô lật ngược ở chợ đen.'),
     ('f_hu', '🏺', 'Ôm hũ đêm hội', 'Kinh cả tờ, ôm Hũ đêm hội ở gánh lô tô.'),
-    ('f_bao', '🌪️', 'Trúng bão bầu cua', 'Ba con xúc xắc cùng ra đúng mặt bạn đặt ở hội chợ.'),
-    ('f_dart', '🎯', 'Mắt thần phi tiêu', 'Phóng phi tiêu cắm ngay hồng tâm ở hội chợ dân gian.'),
-    ('f_raid', '🚨', 'Bị công an hỏi thăm', 'Đang chơi ở chiếu trong thì công an phường tới kiểm tra.'),
-    ('f_king', '👑', 'Vua trò chơi', 'Đứng đầu Bảng vàng hội chợ dân gian khi hội tàn.'),
-    ('f_master', '🎪', 'Cao thủ hội chợ', 'Lọt top 10 Bảng vàng hội chợ dân gian khi hội tàn.'),
+    ('f_bao', '🌪️', 'Trúng bão bầu cua', 'Ba con xúc xắc cùng ra đúng mặt bạn đặt ở chợ đen.'),
+    ('f_dart', '🎯', 'Mắt thần phi tiêu', 'Phóng phi tiêu cắm ngay hồng tâm ở chợ đen.'),
+    ('f_raid', '🚨', 'Bị công an hỏi thăm', 'Đang chơi ở chợ đen thì công an phường ập vào kiểm tra.'),
+    ('f_king', '👑', 'Vua trò chơi', 'Đứng đầu Bảng vàng chợ đen khi chợ tàn.'),
+    ('f_master', '🎪', 'Cao thủ chợ đen', 'Lọt top 10 Bảng vàng chợ đen khi chợ tàn.'),
 )
 AWARDS = ('f_king', 'f_master')   # granted after the end by game/fair_board.py (through game/live_effects.py)
 AWARD_NAMES = {tid: f'{emoji} {name}' for tid, emoji, name, _ in TITLE_ROWS if tid in AWARDS}
@@ -245,8 +246,11 @@ LOTO_KEYS = ('slot', 'rs', 'at', 'stage')
 OAQ_KEYS = ('lv', 'g', 'at', 'stage')
 RING_KEYS = ('rs', 'at', 'stage')
 EARN_KEYS = ('oaq', 'ring', 'ring_n')   # today: xu earned per game, ném vòng rounds
-LABELS = dict(bc='🦀 Bầu cua hội chợ', xd='🕯️ Chiếu trong hội chợ', lt='🎱 Lô tô hội chợ', oaq='🪨 Ô ăn quan hội chợ',
-              ring='💍 Ném vòng hội chợ', dt='🎯 Phi tiêu hội chợ', xs='🎟️ Vé số cào hội chợ', kn='🗡️ Phóng dao hội chợ')
+LABELS = dict(bc='🦀 Bầu cua chợ đen', xd='🕯️ Chiếu trong chợ đen', lt='🎱 Lô tô chợ đen', oaq='🪨 Ô ăn quan chợ đen',
+              ring='💍 Ném vòng chợ đen', dt='🎯 Phi tiêu chợ đen', xs='🎟️ Vé số cào chợ đen', kn='🗡️ Phóng dao chợ đen')
+# The rows an older server wrote today under the fair's former name (owner 08/10: "k phải là hội chợ, nó là Chợ đen") are
+# still the stall's rows: kept up to date, counted in today_xu.
+LABELS_OLD = {g: v.replace('chợ đen', 'hội chợ') for g, v in LABELS.items()}
 UNITS = dict(bc='ván', xd='ván', lt='tờ', oaq='ván thắng', ring='lượt', dt='lượt', xs='vé', kn='lượt')
 # 🗡️ Phóng dao: journey['fair_kn'] {n: runs, w: runs cashed out, b: the most levels cleared in a run, top: the biggest
 # payout, run: the run going on or the last one}; a run {st: stake, lv: level, sd: the level's seed, hot: its heat,
@@ -259,8 +263,8 @@ KN_RUN = ('st', 'lv', 'sd', 'hot', 'at', 'sg', 'bn', 'x2', 'nx', 'tp', 'day', 'p
 KN_STAGES = ('play', 'choice', 'lost', 'done')   # a level being thrown, cleared (Dừng or Chơi tiếp), lost, cashed out
 DART_GONE = 'Sạp phi tiêu đã đổi thành trò phóng dao. Tải lại trang để chơi nha.'
 
-CLOSED = 'Hội chợ đã tàn, hẹn lần sau nha!'
-SOON = 'Hội chợ chưa mở đâu, hẹn bạn ngày khai hội nha!'
+CLOSED = 'Chợ đen đã tàn, hẹn lần sau nha!'
+SOON = 'Chợ đen chưa mở đâu, hẹn bạn ngày chợ mở nha!'
 ENOUGH = 'Hôm nay chơi vậy đủ rồi, mai ghé tiếp nha.'
 TOO_BIG = 'Ván lớn cỡ này nhà cái không nhận đâu, đặt ít lại chút nha.'   # past STAKE_MAX (no number shown)
 
@@ -412,7 +416,7 @@ def _pay(j: dict, f: dict, game: str, amount: int) -> None:
     for row in reversed(j['history'][-12:]):
         if not isinstance(row, dict) or row.get('day') != j['life_day']:
             break
-        if row.get('kind') == KIND and row.get('career') is None and str(row.get('label', '')).startswith(LABELS[game]):
+        if row.get('kind') == KIND and row.get('career') is None and str(row.get('label', '')).startswith((LABELS[game], LABELS_OLD[game])):
             last = row
             break
     if game == 'xs':   # one _pay a ticket and no counter in the save: the row's own count, one more
@@ -764,7 +768,7 @@ def _guard_free(e, f: dict, j: dict, t: float, stake: int) -> None:
     """A new round of a stall with no daily money or round limit (owner 03/10: the lô tô, the phi tiêu): open, paid
     from the wallet (no loans), not too fast. Counts the day played."""
     need = e.need
-    need(j['wallet'] >= stake, 'Ví không đủ xu cho ván này. Hội chợ không cho vay để chơi đâu nha.', 'fair_wallet')
+    need(j['wallet'] >= stake, 'Ví không đủ xu cho ván này. Chợ đen không cho vay để chơi đâu nha.', 'fair_wallet')
     need(abs(f['net']) + stake < NET_SAFE, ENOUGH, 'fair_enough')   # the saved net's sane bound; pending prizes still settle
     ms = int(t * 1000)
     need(ms - f['last'] >= GAP_MS or f['last'] > ms, 'Từ từ thôi, xúc xắc chưa kịp lăn!', 'fair_slow')
@@ -897,6 +901,7 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
              'Lượt trước còn chờ: chơi tiếp hoặc dừng nhận thưởng đã nha.' if run and run['sg'] == 'choice'
              else 'Màn này đang chơi dở, phóng tiếp nha.', 'fair_kn_busy')
         _guard_free(e, f, j, t, stake)
+        _police(j, f, t, 'kn', stake)
         run = k['run'] = dict(st=stake, lv=1, sd=0, hot=0, at=0, sg='play', bn=0, x2=0, nx=0, tp=[], day='', pz=0)
         _kn_level(f, run, t)
         _set_kn_skill(j, run)
@@ -986,6 +991,7 @@ def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
     need(set(p) == {'price'} and type(price) is int and price in scratch.TIERS,
          f'Vé số cào có giá {", ".join(map(str, scratch.TIERS))} xu thôi nha.')
     _guard_free(e, f, j, t, price)
+    _police(j, f, t, 'xs', price)
     win = _draw_luck(j, 'xs', luck_p(j, f, 'xs', t, stake=price))
     mult = scratch.prize_mult(_rng) if win else 0
     cells = scratch.layout(price, mult, _rng)
@@ -1002,7 +1008,7 @@ def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
 def _guard_round(e, f: dict, j: dict, t: float, stake: int, worst: int) -> None:
     """A new round: open, paid from the wallet (no loans), not too fast. Counts the day played."""
     need = e.need
-    need(j['wallet'] >= stake, 'Ví không đủ xu cho ván này. Hội chợ không cho vay để chơi đâu nha.', 'fair_wallet')
+    need(j['wallet'] >= stake, 'Ví không đủ xu cho ván này. Chợ đen không cho vay để chơi đâu nha.', 'fair_wallet')
     need(abs(f['net']) + worst * (BAO + 1) < NET_SAFE, ENOUGH, 'fair_enough')   # the saved net's sane bound
     ms = int(t * 1000)
     need(ms - f['last'] >= GAP_MS or f['last'] > ms, 'Từ từ thôi, xúc xắc chưa kịp lăn!', 'fair_slow')
@@ -1043,7 +1049,7 @@ def _wealth_raid(j: dict, f: dict, t: float) -> dict | None:
     if not amount:
         return None
     from . import journey as jr
-    jr._wallet(j, -amount, KIND, '🚨 Công an kiểm tra hội chợ · Thu tiền trong ví')
+    jr._wallet(j, -amount, KIND, '🚨 Công an kiểm tra chợ đen · Thu tiền trong ví')
     f['net'] -= amount
     f['stats']['lost'] += amount
     f['stats']['raids'] += 1
@@ -1080,7 +1086,7 @@ def _asset_audit(s: dict, j: dict, f: dict, t: float, raided: bool = False) -> d
     bank = min(max(0, b['balance']), due - cash) if b and type(b.get('balance')) is int else 0
     if bank:
         b['balance'] -= bank
-        bk._log(b, j['life_day'], 'acc', 'Công an thu 10% tiền lời hội chợ', -bank)
+        bk._log(b, j['life_day'], 'acc', 'Công an thu 10% tiền lời chợ đen', -bank)
     took = cash + bank
     if took:
         f['net'] -= took
@@ -1088,7 +1094,7 @@ def _asset_audit(s: dict, j: dict, f: dict, t: float, raided: bool = False) -> d
         f['stats']['raids'] += 1
     j[AUDIT_KEY]['base'] = profit - took
     where = ' và '.join(x for x in (cash and f'ví {_xu(cash)}', bank and f'tài khoản ngân hàng {_xu(bank)}') if x)
-    msg = (f'Công an hỏi nguồn tài sản: thu 10% tiền lời mới ở hội chợ, {_xu(took)} xu ({where}).' if took else
+    msg = (f'Công an hỏi nguồn tài sản: thu 10% tiền lời mới ở chợ đen, {_xu(took)} xu ({where}).' if took else
            'Công an hỏi nguồn tài sản, nhưng ví với tài khoản trống trơn nên lần này cho qua.')
     return dict(amount=took, cash=cash, bank=bank, due=due, gain=gain, pct=AUDIT_PCT, say=POLICE_SAY,
                 wallet=j['wallet'], after_raid=raided, message=msg)
@@ -1157,16 +1163,71 @@ def _loc(j: dict, f: dict, game: str, stake: int, gain: int, t: float) -> dict |
                 message=f'🍀 Lộc trời cho! Ván này ăn ×{LOC_MULT} tiền cược: +{_xu(LOC_MULT * stake)} xu.')
 
 
+class _Caught(Exception):
+    """🚨 The police caught a paid round (fair_bm.arrest): the command's whole result."""
+    def __init__(self, result: dict):
+        super().__init__('caught')
+        self.result = result
+
+
+def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
+    """🕶️ Every paid round of the Chợ đen, once its checks passed and before anything is drawn: the police may raid it
+    (fair_bm.BM_ARREST_P). Caught: the stake is gone, the fine, the ban for the rest of the Vietnam day; the round has
+    no outcome (raises _Caught, which apply() turns into the command's result)."""
+    if not bm._gate_on() or not bm._arrest_roll():
+        return
+    if game in f['stats']:   # the round counts on the stall's Sổ ví row ("· N ván")
+        f['stats'][game] = min(10**9, f['stats'][game] + 1)
+    r = bm.arrest(j, f, t, game, stake, lambda amount: _pay(j, f, game, amount))
+    f['stats']['raids'] = min(10**9, f['stats']['raids'] + 1)
+    got: list = []
+    _grant(j, 'f_raid', got)
+    fair = dict(game=game, arrest=r)
+    if got:
+        fair['titles'] = got
+    msg = (f'🚨 Công an ập vào! Mất {_xu(stake)} xu tiền cược' + (f', nộp phạt {_xu(r["fine"])} xu' if r['fine'] else '')
+           + '. Hôm nay bạn bị đuổi khỏi chợ đen.')
+    raise _Caught(dict(message=msg, effects=[], fair=fair))
+
+
+def _gate(need, j: dict, t: float) -> None:
+    """🕶️ Inside the Chợ đen only with today's bảo kê settled, and not after an arrest (fair_bm)."""
+    if not bm._gate_on():
+        return
+    st = bm.status(j, t)
+    need(st != 'ban', bm.BANNED, 'fair_bm_ban')
+    need(st in ('paid', 'robbed'), bm.NEED_IN, 'fair_bm_gate')
+
+
+# What the bảo kê gate lets through: finishing what was begun (LATE), the organisers' gift, paying a loan back.
+GATE_FREE = LATE + fc.LATE + ('fair_gift',)
+
+
 def apply(s: dict, name: str, p: dict) -> dict:
+    """`fair_*` commands (a round the police caught: its receipt)."""
+    try:
+        return _apply(s, name, p)
+    except _Caught as c:
+        return c.result
+
+
+def _apply(s: dict, name: str, p: dict) -> dict:
     """`fair_*` commands. Checks everything before changing anything (the engine works on a copy anyway)."""
     from . import engine as e
     need = e.need
     j = s['journey']
     need(isinstance(p, dict), 'Dữ liệu thao tác không hợp lệ.')
-    need(name in COMMANDS or name in fc.COMMANDS or name in ff.COMMANDS or name in fp.COMMANDS, 'Thao tác hội chợ không hợp lệ.', 'unknown_action')
-    need(j.get('story'), 'Hội chợ chỉ có trong hành trình.', 'not_story')
+    need(name in COMMANDS or name in fc.COMMANDS or name in ff.COMMANDS or name in fp.COMMANDS or name in bm.COMMANDS,
+         'Thao tác chợ đen không hợp lệ.', 'unknown_action')
+    need(j.get('story'), 'Chợ đen chỉ có trong hành trình.', 'not_story')
     t = now()
     opens, closes = window()
+    if name in bm.COMMANDS:   # 🕶️ the bảo kê at the gate: only while the Chợ đen is open
+        need(t >= opens, SOON, 'fair_closed')
+        need(t < closes, CLOSED, 'fair_closed')
+        return bm.apply(s, name, p, _state(j, t), t)
+    if name not in GATE_FREE and opens <= t < closes:
+        _gate(need, j, t)
     if name in fc.COMMANDS:
         return fc.apply(s, name, p, t, edition(), opens <= t < closes)
     if name in ff.COMMANDS:   # 🍡 a snack from the food carts: only while the fair is open
@@ -1195,6 +1256,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
              'Chờ chú Tám mở bát đã nha!', 'fair_slow')
         luck_p(j, f, 'bc', t, stake=stake)   # the run counters only
         _guard_round(e, f, j, t, stake, stake)
+        _police(j, f, t, 'bc', stake)
         # Owner 06/10 ("ra cua nhiều quá, bị cheat, cho random lại"): three honest dice, each face 1/6, nothing
         # decided before the roll and no sure win after a losing streak (bets no longer pull the dice their way).
         dice = bc_fair_roll()
@@ -1223,6 +1285,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         fine = xd_fine(stake)
         want = None
         _guard_round(e, f, j, t, stake, stake + fine)
+        _police(j, f, t, 'xd', stake)
         st['xd'] += 1
         probability = luck_p(j, f, 'xd', t, stake=stake)
         if _rng.random() * 100 < RAID_PCT:
@@ -1271,6 +1334,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         stake = cost + sum(b[1] for b in sb.values())
         need(stake <= ROUND_MAX, f'Tổng tiền vé và cược phụ mỗi ván tối đa {ROUND_MAX} xu.')
         _guard_free(e, f, j, t, stake)   # no daily money or round limit (owner 03/10)
+        _police(j, f, t, 'lt', stake)
         want = _draw_luck(j, 'lt', luck_p(j, f, 'lt', t, stake=stake))  # one count per purchase
         lt = f['loto']
         if lt and lt['stage'] == 'play':
@@ -1494,7 +1558,7 @@ def today_xu(j: dict) -> dict:
             break
         if row.get('kind') == KIND and row.get('career') is None:
             label = str(row.get('label', ''))
-            game = next((g for g, name in LABELS.items() if label.startswith(name)), None)
+            game = next((g for g, name in LABELS.items() if label.startswith((name, LABELS_OLD[g]))), None)
             if game and game not in out and isinstance(row.get('amount'), int):
                 out[game] = row['amount']
     return out
@@ -1556,6 +1620,8 @@ def public(s: dict) -> dict:
                 oaq=oaq_view(o) if o and (o['stage'] == 'play' or t - o['at'] < 6 * 3600) else None,
                 ring=ring_view((f or {}).get('ring'), t, j),
                 loto=loto, stats={k: st.get(k, 0) for k in STATS},
+                # 🕶️ the bảo kê at the gate and today's standing (absent from older servers: no gate on the client)
+                bm=bm.public(j, t),
                 food=ff.public(s),   # 🍡 the food carts' menus (absent from older servers: the carts only say a line)
                 photo=fp.public(s),   # 📸 the photobooth's ticket (absent from older servers: the client leaves the booth out)
                 # 🗡️ phóng dao, in the phi tiêu's place (absent from older servers: the client then leaves the stall
@@ -1602,24 +1668,25 @@ def settle(s: dict) -> None:
 def validate(j: dict) -> None:
     """journey['fair'] and journey['fair_cash'] (both optional)."""
     fc.validate(j)
+    bm.validate(j)
     if 'fair_balance' in j:
         from .engine import need, integer
         balance = j['fair_balance']
-        need(isinstance(balance, dict) and set(balance) <= set(CHANCE_GAMES), 'Chuỗi kết quả hội chợ không hợp lệ.', 'invalid_save')
+        need(isinstance(balance, dict) and set(balance) <= set(CHANCE_GAMES), 'Chuỗi kết quả chợ đen không hợp lệ.', 'invalid_save')
         for streak in balance.values():integer(streak, -4, 4)
     if AUDIT_KEY in j:   # 07/10, optional: an older server ignores it (the journey keeps unknown blocks)
         from .engine import need, integer
         a = j[AUDIT_KEY]
         need(isinstance(a, dict) and set(a) == {'ed', 'base', 'at'} and isinstance(a['ed'], str) and len(a['ed']) <= 12,
-             'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+             'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
         integer(a['base'], -10**10, 10**10)
         integer(a['at'], 0, 10**11)
     if COOL_KEY in j:   # 07/10, optional: an older server keeps it as is
         from .engine import need, integer
         c = j[COOL_KEY]
-        need(isinstance(c, dict) and set(c) <= set(COOL_GAMES), 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+        need(isinstance(c, dict) and set(c) <= set(COOL_GAMES), 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
         for r in c.values():
-            need(isinstance(r, dict) and set(r) == {'n', 'at', 'sw', 'st'}, 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+            need(isinstance(r, dict) and set(r) == {'n', 'at', 'sw', 'st'}, 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
             integer(r['st'], 0, ROUND_MAX)
             integer(r['n'], 0, 10**6)
             integer(r['at'], 0, 10**11)
@@ -1627,14 +1694,14 @@ def validate(j: dict) -> None:
     if SESS_KEY in j:   # 07/10 (B6), optional: an older server keeps it as is
         from .engine import need, integer
         ss = j[SESS_KEY]
-        need(isinstance(ss, dict) and set(ss) == {'at', 'n', 'ls'}, 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+        need(isinstance(ss, dict) and set(ss) == {'at', 'n', 'ls'}, 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
         integer(ss['at'], 0, 10**11)
         integer(ss['n'], 0, 10**6)
         integer(ss['ls'], 0, 10**11)
     if 'fair_run3' in j:
         from .engine import need, integer
         r = j['fair_run3']
-        need(isinstance(r, dict) and set(r) == {'g', 'n', 'at'} and r['g'] == 'ring', 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+        need(isinstance(r, dict) and set(r) == {'g', 'n', 'at'} and r['g'] == 'ring', 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
         integer(r['n'], 0, 10**6)
         integer(r['at'], 0, 10**11)
     if 'fair_kn_skill' in j:
@@ -1653,12 +1720,12 @@ def validate(j: dict) -> None:
     if 'fair_chance' in j:
         from .engine import need, integer
         c = j['fair_chance']
-        need(isinstance(c, dict) and set(c) <= {'kn', 'ring'}, 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+        need(isinstance(c, dict) and set(c) <= {'kn', 'ring'}, 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
         for game, r in c.items():
-            need(isinstance(r, dict) and {'at', 'seed', 'p'} <= set(r) <= ({'at', 'seed', 'p', 'difficulty'} if game == 'kn' else {'at', 'seed', 'p'}), 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+            need(isinstance(r, dict) and {'at', 'seed', 'p'} <= set(r) <= ({'at', 'seed', 'p', 'difficulty'} if game == 'kn' else {'at', 'seed', 'p'}), 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
             if 'difficulty' in r:
                 integer(r['difficulty'], 135, 150)
-                need(r['difficulty'] in (135, 150), 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+                need(r['difficulty'] in (135, 150), 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
             integer(r['at'], 0, 10**14)
             integer(r['seed'], 0, 2**31)
             # New repeated ring rounds may reach 40%; older locked odds stay valid.
@@ -1666,13 +1733,13 @@ def validate(j: dict) -> None:
     if 'fair_run' in j:
         from .engine import need, integer
         r = j['fair_run']
-        need(isinstance(r, dict) and set(r) == {'g', 'n', 'at'} and r['g'] in RUN_GAMES, 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+        need(isinstance(r, dict) and set(r) == {'g', 'n', 'at'} and r['g'] in RUN_GAMES, 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
         integer(r['n'], 0, 10**6)
         integer(r['at'], 0, 10**11)
     if 'fair_run2' in j:
         from .engine import need, integer
         r = j['fair_run2']
-        need(isinstance(r, dict) and set(r) == {'g', 'n', 'at'} and r['g'] in RUN_GAMES2, 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+        need(isinstance(r, dict) and set(r) == {'g', 'n', 'at'} and r['g'] in RUN_GAMES2, 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
         integer(r['n'], 0, 10**6)
         integer(r['at'], 0, 10**11)
     if KN_KEY in j:
@@ -1680,7 +1747,7 @@ def validate(j: dict) -> None:
     if 'fair' not in j:
         return
     from .engine import need, integer
-    bad = 'Dữ liệu hội chợ không hợp lệ.'
+    bad = 'Dữ liệu chợ đen không hợp lệ.'
     f = j['fair']
     need(isinstance(f, dict) and set(KEYS) <= set(f) <= set(KEYS + KEYS_OPT) and f['v'] == VERSION, bad, 'invalid_save')
     need(isinstance(f['date'], str) and len(f['date']) <= 10, bad, 'invalid_save')
@@ -1755,7 +1822,7 @@ def validate(j: dict) -> None:
 def _kn_validate(k: object) -> None:
     """journey['fair_kn'] (🗡️ phóng dao, optional)."""
     from .engine import need, integer
-    bad = 'Dữ liệu hội chợ không hợp lệ.'
+    bad = 'Dữ liệu chợ đen không hợp lệ.'
     need(isinstance(k, dict) and set(k) == set(KN_KEYS), bad, 'invalid_save')
     for x in ('n', 'w', 'b', 'top'):
         integer(k[x], 0, 10**9)

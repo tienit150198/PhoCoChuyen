@@ -19,7 +19,8 @@ from . import price_index as pi   # 💹 07/10: PRICE (base 5 xu)
 COMMANDS = ('fair_photo',)
 PRICE = pi.price(5)             # xu a shoot (four shots), each player pays their own (owner: "xu sinks")
 SHOTS = 4
-LABEL = '📸 Chụp ảnh hội chợ'
+LABEL = '📸 Chụp ảnh chợ đen'
+LABEL_OLD = '📸 Chụp ảnh hội chợ'   # today's row written under the former name: still this row
 MODES = ('solo', 'stranger', 'friends')
 
 
@@ -41,7 +42,7 @@ def _row(j: dict, price: int) -> int:
     for row in reversed(j['history'][-12:]):
         if not isinstance(row, dict) or row.get('day') != j['life_day']:
             break
-        m = re.fullmatch(re.escape(LABEL) + r' · (\d{1,6}) lượt', str(row.get('label', '')))
+        m = re.fullmatch(f'(?:{re.escape(LABEL)}|{re.escape(LABEL_OLD)})' + r' · (\d{1,6}) lượt', str(row.get('label', '')))
         if row.get('kind') == 'fair' and row.get('career') is None and m and abs(row['amount'] - price) <= 10**7:
             n = min(10**6, int(m.group(1)) + 1)
             j['wallet'] -= price

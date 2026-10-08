@@ -1,5 +1,65 @@
 [
  {
+  "vi": "Điền cột hợp nhất, cộng tổng tài sản, kiểm tra hai bên cân nhau.",
+  "en": ""
+ },
+ {
+  "vi": "SH Logistics có 30% cổ đông ngoài: tính phần lãi của họ, lãi công ty mẹ, số dư cuối kỳ.",
+  "en": ""
+ },
+ {
+  "vi": "PBC & câu hỏi kiểm toán",
+  "en": ""
+ },
+ {
+  "vi": "Ai cung cấp từng giấy tờ, mức trọng yếu 5%, khoản nào trọng yếu, trả lời kèm bằng chứng.",
+  "en": ""
+ },
+ {
+  "vi": "So ngân sách cho HĐQT",
+  "en": ""
+ },
+ {
+  "vi": "Tính chênh lệch, tìm dòng bất lợi nhất, nêu nguyên nhân và viết nhận xét cân bằng.",
+  "en": ""
+ },
+ {
+  "vi": "📥 Tab [[Hộp thư]]: bấm [[Nhận hai sổ đối chiếu]] hoặc [[Nhận hồ sơ]].",
+  "en": ""
+ },
+ {
+  "vi": "👆 Bàn đối chiếu: chạm một dòng bên bán, một dòng bên mua, rồi [[Ghép cặp này]]. Chọn nhầm thì [[Bỏ chọn]].",
+  "en": ""
+ },
+ {
+  "vi": "💱 Số lệch nhau: chọn [[Lệch tỷ giá]] hay [[Gõ nhầm số]].",
+  "en": ""
+ },
+ {
+  "vi": "🏷️ Dòng chỉ có một bên: gắn [[Hàng đi đường]], [[Hóa đơn chưa ghi]], [[Tiền đang chuyển]]…",
+  "en": ""
+ },
+ {
+  "vi": "📑 Từ ngày 2 có thêm nhãn [[Ghi trùng]], từ ngày 3 có [[Không phải nội bộ]] cho khoản bán ra khách ngoài.",
+  "en": ""
+ },
+ {
+  "vi": "✂️ Hai bên khớp thì bấm [[Loại trừ]] để ghi Nợ 331 / Có 131.",
+  "en": ""
+ },
+ {
+  "vi": "🧮 Hồ sơ: làm từng bước, bấm [[Xác nhận]], [[Chốt thứ tự]] hoặc [[Ghi bút toán hợp nhất]].",
+  "en": ""
+ },
+ {
+  "vi": "💡 Bí dòng nào thì chạm dòng đó, bấm [[Gợi ý]]. Hồ sơ thì bấm [[Xin gợi ý]]. Mỗi lần mất 5 phút.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Ở bước cuối Ghi chú bàn giao, chọn câu có số liệu cụ thể, rồi bấm [[Nộp hồ sơ]].",
+  "en": ""
+ },
+ {
   "vi": "🔍 Chị Mai Anh cần con số có nguồn: ghép đúng cặp, gắn đúng nhãn, không đoán.",
   "en": ""
  },
@@ -1629,86 +1689,6 @@
  },
  {
   "vi": "☎️ Ngoài đời ở Việt Nam: 114 cháy và cứu nạn, 115 cấp cứu, 113 công an, 112 tìm kiếm cứu nạn.",
-  "en": ""
- },
- {
-  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, mùa mưa bão, anh Khải soi KPI, nắng nóng, trực thay ca tối.",
-  "en": ""
- },
- {
-  "vi": "👴 Ông Ba gọi mười lần, bé Na nghịch máy, DJ Long xin “một câu”, mèo kẹt trên cây từ ba giờ sáng.",
-  "en": ""
- },
- {
-  "vi": "👔 “Người quan trọng” đòi ưu tiên, khách say đòi taxi, karaoke hàng xóm, gọi nhầm đặt phở.",
-  "en": ""
- },
- {
-  "vi": "📊 Sếp ép KPI, đồng nghiệp rủ cúp máy khỏi hỏi, tắt ghi âm: nói rõ, báo đúng người.",
-  "en": ""
- },
- {
-  "vi": "Gọi bộ đàm",
-  "en": ""
- },
- {
-  "vi": "Nhấc máy",
-  "en": ""
- },
- {
-  "vi": "Tìm chỗ người gọi",
-  "en": ""
- },
- {
-  "vi": "Trấn an người gọi",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra cuộc gọi",
-  "en": ""
- },
- {
-  "vi": "GỬI ĐỘI",
-  "en": ""
- },
- {
-  "vi": "CHUYỂN ĐÚNG NƠI",
-  "en": ""
- },
- {
-  "vi": "Giữ máy tới khi đội tới",
-  "en": ""
- },
- {
-  "vi": "Kết thúc cuộc gọi",
-  "en": ""
- },
- {
-  "vi": "NHẤC THEO THỨ TỰ",
-  "en": ""
- },
- {
-  "vi": "Ghi vào sổ nhật ký",
-  "en": ""
- },
- {
-  "vi": "Bạn ngồi ghế cao ở hồ bơi phường: kiểm hồ trước khi mở, quét đủ năm khu, thổi còi đúng luật, xuống cứu khi cần và đóng hồ khi có sấm. Anh Hải kèm ba việc đầu.",
-  "en": ""
- },
- {
-  "vi": "Kiểm từng món trong danh sách, [[Ghi sổ nước]] đúng số que thử, món hỏng thì tự xử lý hoặc báo đúng người. An toàn thì [[Mở cổng đón khách]], chưa thì [[Hoãn mở, chờ kỹ thuật xử lý]].",
-  "en": ""
- },
- {
-  "vi": "[[BẮT ĐẦU VÒNG QUÉT]], chạm đủ năm khu trong một phút. Chạm khu đã nhìn để [[Thổi còi nhắc…]] hoặc báo động, rồi [[KẾT THÚC VÒNG QUÉT]].",
-  "en": ""
- },
- {
-  "vi": "Cứu người",
-  "en": ""
- },
- {
-  "vi": "Người đuối nước im lặng, dựng đứng, không tiến lên được: [[Còi dài: có người đang chìm!]], gọi hỗ trợ, với hoặc ném trước, xuống nước thì mang phao ống, xem thở rồi sơ cứu.",
   "en": ""
  }
 ]

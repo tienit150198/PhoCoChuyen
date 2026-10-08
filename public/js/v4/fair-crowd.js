@@ -141,7 +141,7 @@ export function crowd({state,content=()=>null,redraw,still,onBack=()=>{},onTaken
     const key=String(Math.round(px*100));if(q.sp&&q.spk===key)return q.sp;
     const cv=q.sp||document.createElement('canvas');cv.width=Math.ceil(AV_W*px);cv.height=Math.ceil(AV_H*px);
     const c=cv.getContext('2d');c.setTransform(px,0,0,px,55*px,150*px);c.clearRect(-55,-150,AV_W,AV_H);
-    try{const F=figureOf(q.lk,q.g);if(q.bb)F.bb=q.bb;paintPlayer(c,F,CANVAS);}catch(e){console.warn('hội chợ: look',e);}   // 👶
+    try{const F=figureOf(q.lk,q.g);if(q.bb)F.bb=q.bb;paintPlayer(c,F,CANVAS);}catch(e){console.warn('chợ đen: look',e);}   // 👶
     q.sp=cv;q.spk=key;return cv;
   }
   /** [[depth y, draw]] for each other walker (sorted with the stalls and me by the caller); fills q.sx/q.sy for tags.

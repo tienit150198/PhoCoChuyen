@@ -1,5 +1,137 @@
 [
  {
+  "vi": "“Anh em mình cả”",
+  "en": ""
+ },
+ {
+  "vi": "Một tổ trưởng nhắn riêng: “Anh em mình cả, đợt kiểm tra tới phần tổ em nương tay nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời rõ: kiểm tra như mọi tổ",
+  "en": ""
+ },
+ {
+  "vi": "Tổ trưởng hơi ngượng, nhưng cả đơn vị nể.",
+  "en": ""
+ },
+ {
+  "vi": "Hứa nương tay",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện lộ ra, các tổ khác thấy bất công.",
+  "en": ""
+ },
+ {
+  "vi": "Không trả lời, để đó",
+  "en": ""
+ },
+ {
+  "vi": "Tổ trưởng tưởng là đồng ý.",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ trái cây lên phòng",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn, từ chối khéo, mời chị về",
+  "en": ""
+ },
+ {
+  "vi": "Cả đơn vị xì xào chuyện “quà cáp”.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận, chia cho cả phòng",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn là nhận. Đoàn kiểm tra hỏi tới.",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo trước 7 giờ sáng",
+  "en": ""
+ },
+ {
+  "vi": "Lãnh đạo cần báo cáo tình hình an ninh trật tự trước 7 giờ sáng mai.",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo gọn, đúng hạn, không ai thức trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Bắt cả tổ trực ban ở lại làm tới khuya",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo đẹp, sáng mai ai cũng phờ phạc.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi số liệu tháng trước cho kịp",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu cũ bị phát hiện, mất uy tín.",
+  "en": ""
+ },
+ {
+  "vi": "Bài chê phường trên mạng",
+  "en": ""
+ },
+ {
+  "vi": "Bàn tiếp dân thêm số thứ tự, bài viết được sửa thành lời khen.",
+  "en": ""
+ },
+ {
+  "vi": "Mời lên phường cho “biết điều”",
+  "en": ""
+ },
+ {
+  "vi": "Giấy mời không căn cứ. Chuyện lên báo.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắn người đó gỡ bài",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh chụp tin nhắn lan khắp nhóm khu phố.",
+  "en": ""
+ },
+ {
+  "vi": "Tuần tra đêm thứ ba liền",
+  "en": ""
+ },
+ {
+  "vi": "Camera ghi hình tắt",
+  "en": ""
+ },
+ {
+  "vi": "Lập biên bản sự việc, kiểm tra lại toàn bộ thiết bị",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi pin được thay, tổ yên tâm làm đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Người dân khiếu nại, không có hình đối chứng.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện lộ ra, mất niềm tin.",
+  "en": ""
+ },
+ {
+  "vi": "Quán karaoke gửi “quà”",
+  "en": ""
+ },
+ {
   "vi": "Quán thử lại với tổ khác.",
   "en": ""
  },
@@ -1665,138 +1797,6 @@
  },
  {
   "vi": "Mơ đá",
-  "en": ""
- },
- {
-  "vi": "Bột sắn",
-  "en": ""
- },
- {
-  "vi": "Nước dừa",
-  "en": ""
- },
- {
-  "vi": "Trà gừng",
-  "en": ""
- },
- {
-  "vi": "Dưa lưới",
-  "en": ""
- },
- {
-  "vi": "Đu đủ",
-  "en": ""
- },
- {
-  "vi": "Dứa cắt",
-  "en": ""
- },
- {
-  "vi": "Táo cắt",
-  "en": ""
- },
- {
-  "vi": "Kem sô cô la",
-  "en": ""
- },
- {
-  "vi": "Kem sầu riêng",
-  "en": ""
- },
- {
-  "vi": "Bánh phô mai",
-  "en": ""
- },
- {
-  "vi": "Bánh chuối",
-  "en": ""
- },
- {
-  "vi": "Trà vải",
-  "en": ""
- },
- {
-  "vi": "Trà sen",
-  "en": ""
- },
- {
-  "vi": "Trà sữa khoai môn",
-  "en": ""
- },
- {
-  "vi": "Sữa chua uống",
-  "en": ""
- },
- {
-  "vi": "Bó sen",
-  "en": ""
- },
- {
-  "vi": "Cẩm chướng",
-  "en": ""
- },
- {
-  "vi": "Cẩm tú cầu",
-  "en": ""
- },
- {
-  "vi": "Bó hoa khô",
-  "en": ""
- },
- {
-  "vi": "Dầu ăn",
-  "en": ""
- },
- {
-  "vi": "Túi đường",
-  "en": ""
- },
- {
-  "vi": "Túi muối",
-  "en": ""
- },
- {
-  "vi": "Khăn giấy",
-  "en": ""
- },
- {
-  "vi": "Xà phòng",
-  "en": ""
- },
- {
-  "vi": "Áo sơ mi",
-  "en": ""
- },
- {
-  "vi": "Áo khoác",
-  "en": ""
- },
- {
-  "vi": "Quần short",
-  "en": ""
- },
- {
-  "vi": "Đôi tất",
-  "en": ""
- },
- {
-  "vi": "Túi vải",
-  "en": ""
- },
- {
-  "vi": "Đồ bộ",
-  "en": ""
- },
- {
-  "vi": "Trà đào cam sả",
-  "en": ""
- },
- {
-  "vi": "Trà thạch đào",
-  "en": ""
- },
- {
-  "vi": "Ống hút",
   "en": ""
  }
 ]

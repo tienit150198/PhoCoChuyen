@@ -30,7 +30,7 @@ export const ROWS=[
 /** Landmarks: what they open (an existing data-action) and their sign. */
 export const LANDMARKS={
   bank:{emoji:'🏦',name:'Ngân hàng',action:'bank'},garage:{emoji:'🚗',name:'Gara',action:'garage'},gadgets:{emoji:'📱',name:'Điện thoại',action:'gadgets'},pets:{emoji:'🐾',name:'Nuôi thú cưng',action:'pets'},
-  fair:{emoji:'🏮',name:'Cổng hội chợ',action:'fair'},board:{emoji:'📋',name:'Nhóm phố',action:'nhom'},
+  fair:{emoji:'🕶️',name:'Cổng chợ đen',action:'fair'},board:{emoji:'📋',name:'Nhóm phố',action:'nhom'},
   walk:{emoji:'🚶',name:'Đi dạo',action:'liveWalk'},house:{emoji:'🏠',name:'Nhà mình',action:'house'},
   quay:{emoji:'🏪',name:'Quầy của bạn',action:'quay'},square:{emoji:'🎏',name:'Quảng trường',action:'town'},
   // ☕ chỗ tiêu xu (v4/spend.js, game/spend.py): each door opens its tab

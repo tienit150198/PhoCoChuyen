@@ -1,5 +1,389 @@
 [
  {
+  "vi": "Hệ thống",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo số liệu",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển sang giao diện sáng",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển sang giao diện tối",
+  "en": ""
+ },
+ {
+  "vi": "Giao diện sáng",
+  "en": ""
+ },
+ {
+  "vi": "Giao diện tối",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản này không còn quyền vận hành.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên đăng nhập đã hết. Đăng nhập lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập tên đăng nhập và mật khẩu.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên vừa được làm mới. Bấm đăng nhập lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không đăng nhập được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đăng xuất.",
+  "en": ""
+ },
+ {
+  "vi": "Làm mới hơi dồn dập. Chờ một chút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đang bận, thử lại sau.",
+  "en": ""
+ },
+ {
+  "vi": "Không tải được phần này.",
+  "en": ""
+ },
+ {
+  "vi": "Trang vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Trình duyệt này đang có tiến trình chơi chưa gắn tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập sẽ thay nó bằng tiến trình của tài khoản vận hành. Bấm “Vẫn đăng nhập” nếu bạn đồng ý.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Dùng tài khoản game có quyền vận hành.",
+  "en": ""
+ },
+ {
+  "vi": "← Về trang game",
+  "en": ""
+ },
+ {
+  "vi": "Đang kiểm tra…",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn đăng nhập",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, không đăng nhập",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản này không có quyền vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang đăng nhập với",
+  "en": ""
+ },
+ {
+  "vi": ". Đăng xuất rồi đăng nhập bằng tài khoản vận hành nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng xuất ở đây cũng đăng xuất khỏi game trên trình duyệt này.",
+  "en": ""
+ },
+ {
+  "vi": "Không kết nối được máy chủ.",
+  "en": ""
+ },
+ {
+  "vi": "Mục vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Người vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Mở trang game",
+  "en": ""
+ },
+ {
+  "vi": "Vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Đóng menu",
+  "en": ""
+ },
+ {
+  "vi": "Mở menu",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở trang vận hành…",
+  "en": ""
+ },
+ {
+  "vi": "Hộp thư góp ý của người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Tự làm mới mỗi 60 giây",
+  "en": ""
+ },
+ {
+  "vi": "Tự làm mới",
+  "en": ""
+ },
+ {
+  "vi": "Làm mới",
+  "en": ""
+ },
+ {
+  "vi": "Đang tính số liệu…",
+  "en": ""
+ },
+ {
+  "vi": "Người chơi rời đi ở đâu, lúc nào",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ tính",
+  "en": ""
+ },
+ {
+  "vi": "Mọi phần trong một tệp CSV",
+  "en": ""
+ },
+ {
+  "vi": "CSV của phần đang xem",
+  "en": ""
+ },
+ {
+  "vi": "In / Lưu PDF",
+  "en": ""
+ },
+ {
+  "vi": "Xuất báo cáo",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu cho nhà đầu tư, người mua hoặc nhận nhượng quyền",
+  "en": ""
+ },
+ {
+  "vi": "Khoảng thời gian",
+  "en": ""
+ },
+ {
+  "vi": "· tự làm mới mỗi phút",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đang bận nên số liệu được tính ở chế độ nền, chờ chút nhé…",
+  "en": ""
+ },
+ {
+  "vi": "Đang hiện số liệu cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Nghề được chơi nhiều",
+  "en": ""
+ },
+ {
+  "vi": "Đời sống & Nhóm cư dân",
+  "en": ""
+ },
+ {
+  "vi": "Thời gian chơi",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đang cộng số liệu các ngày trước, chờ chút nhé…",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đang tính số liệu, chờ chút nhé…",
+  "en": ""
+ },
+ {
+  "vi": "Quay lại theo ngày bắt đầu",
+  "en": ""
+ },
+ {
+  "vi": "Phễu người mới",
+  "en": ""
+ },
+ {
+  "vi": "Trước và sau 0.9.16",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đang tính số liệu lần đầu (chạy nền, không ảnh hưởng người chơi), chờ chút nhé…",
+  "en": ""
+ },
+ {
+  "vi": "Người hoạt động mỗi ngày",
+  "en": ""
+ },
+ {
+  "vi": "Chờ một chút rồi thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu đang được tính, thử lại sau ít phút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không tải được CSV.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng dữ liệu",
+  "en": ""
+ },
+ {
+  "vi": "Môi trường",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu thống kê",
+  "en": ""
+ },
+ {
+  "vi": "Màn mở đầu",
+  "en": ""
+ },
+ {
+  "vi": "Cảnh nơi làm",
+  "en": ""
+ },
+ {
+  "vi": "Trang chủ",
+  "en": ""
+ },
+ {
+  "vi": "Đang tải",
+  "en": ""
+ },
+ {
+  "vi": "Vừa vào game",
+  "en": ""
+ },
+ {
+  "vi": "Việc của khách",
+  "en": ""
+ },
+ {
+  "vi": "Chuẩn bị ngày",
+  "en": ""
+ },
+ {
+  "vi": "Tổng kết ngày",
+  "en": ""
+ },
+ {
+  "vi": "Tiền của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Hộp xác nhận",
+  "en": ""
+ },
+ {
+  "vi": "Cảnh truyện",
+  "en": ""
+ },
+ {
+  "vi": "Cảnh đời",
+  "en": ""
+ },
+ {
+  "vi": "Cảnh hành trình",
+  "en": ""
+ },
+ {
+  "vi": "Tour hướng dẫn",
+  "en": ""
+ },
+ {
+  "vi": "Ghi chú hướng dẫn",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi JS",
+  "en": ""
+ },
+ {
+  "vi": "Tệp",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có số liệu.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đủ ngày",
+  "en": ""
+ },
+ {
+  "vi": "Quay lại D1",
+  "en": ""
+ },
+ {
+  "vi": "Phục vụ khách đầu",
+  "en": ""
+ },
+ {
+  "vi": "người mới 7 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Rời sau lượt đầu",
+  "en": ""
+ },
+ {
+  "vi": "Không quay lại",
+  "en": ""
+ },
+ {
+  "vi": "Người bắt đầu chơi trong ngày đó (có thao tác) và % có thao tác lại đúng 1, 3, 7, 14, 30 ngày sau. “·”: chưa đủ ngày.",
+  "en": ""
+ },
+ {
+  "vi": "ước tính",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có người mới được đo trong khoảng này (đo từ khi bản ghi mốc được bật).",
+  "en": ""
+ },
+ {
+  "vi": "Có mốc ước tính (gieo từ bản lưu, không có thời gian).",
+  "en": ""
+ },
+ {
   "vi": "Người mở game trong ngày đó, % đã qua mốc tới giờ. 30/09 là trước bản khởi đầu mới (0.9.16). * có mốc ước tính.",
   "en": ""
  },
@@ -764,7 +1148,7 @@
   "en": ""
  },
  {
-  "vi": "Hội chợ (sắp mở)",
+  "vi": "Chợ đen (sắp mở)",
   "en": ""
  },
  {
@@ -1413,390 +1797,6 @@
  },
  {
   "vi": "📦 Nhập thêm",
-  "en": ""
- },
- {
-  "vi": "két quầy",
-  "en": ""
- },
- {
-  "vi": "Chi phí quầy",
-  "en": ""
- },
- {
-  "vi": "Trình duyệt này quá cũ nên khu phố chưa mở được 😢 Bạn cập nhật iOS (Cài đặt → Cài đặt chung → Cập nhật phần mềm) hoặc mở game bằng Chrome nha!",
-  "en": ""
- },
- {
-  "vi": "Mạng hơi chậm, khu phố vẫn đang tải… Lâu quá thì bấm Tải lại nha.",
-  "en": ""
- },
- {
-  "vi": "Tải chưa xong rồi 😢 Mạng chập chờn hoặc khu phố vừa cập nhật. Bấm Tải lại là vào được nha!",
-  "en": ""
- },
- {
-  "vi": "lỗi cú pháp",
-  "en": ""
- },
- {
-  "vi": "mất kết nối",
-  "en": ""
- },
- {
-  "vi": "chưa tải được",
-  "en": ""
- },
- {
-  "vi": "Trình duyệt cũ",
-  "en": ""
- },
- {
-  "vi": "Lỗi cú pháp",
-  "en": ""
- },
- {
-  "vi": "Lịch bay hôm nay có khi báo danh.",
-  "en": ""
- },
- {
-  "vi": "Bảng giờ bay",
-  "en": ""
- },
- {
-  "vi": "GIỜ",
-  "en": ""
- },
- {
-  "vi": "CHUYẾN",
-  "en": ""
- },
- {
-  "vi": "ĐẾN",
-  "en": ""
- },
- {
-  "vi": "CỬA",
-  "en": ""
- },
- {
-  "vi": "TÌNH TRẠNG",
-  "en": ""
- },
- {
-  "vi": "Vào phòng tổ bay",
-  "en": ""
- },
- {
-  "vi": "Sân bay Thành phố",
-  "en": ""
- },
- {
-  "vi": "Tan ca hôm nay",
-  "en": ""
- },
- {
-  "vi": "Tan ca hiện tại, rồi chọn Mở ca quản lý để giao việc cho tổ bay.",
-  "en": ""
- },
- {
-  "vi": "Chọn Thăng tiến → Mở ca quản lý để giao việc cho tổ bay.",
-  "en": ""
- },
- {
-  "vi": "Từ bậc 3 · Cơ trưởng huấn luyện, mở Ca quản lý. Hoàn thành ngày bay tốt và trả lời buổi xét thăng chức.",
-  "en": ""
- },
- {
-  "vi": "🧑‍💼 Thăng tiến · Ca quản lý",
-  "en": ""
- },
- {
-  "vi": "🎖️ Xem lộ trình thăng tiến",
-  "en": ""
- },
- {
-  "vi": "Lịch bay hôm nay",
-  "en": ""
- },
- {
-  "vi": "Mục tiêu hôm nay",
-  "en": ""
- },
- {
-  "vi": "🎁 Có quà",
-  "en": ""
- },
- {
-  "vi": "Tổ bay hôm nay",
-  "en": ""
- },
- {
-  "vi": "SỔ BAY",
-  "en": ""
- },
- {
-  "vi": "Gần đây",
-  "en": ""
- },
- {
-  "vi": "Chưa có chuyến nào trong sổ.",
-  "en": ""
- },
- {
-  "vi": "😮‍💨 Bạn đang mệt: còn mệt thì thưởng chuyến chỉ được một nửa. Xin nghỉ bù ở phòng tổ bay.",
-  "en": ""
- },
- {
-  "vi": "⚖️ Đang bị cách chức: chưa có thưởng chuyến.",
-  "en": ""
- },
- {
-  "vi": "🌅 Ngày mai",
-  "en": ""
- },
- {
-  "vi": "🪪 Vào phòng tổ bay",
-  "en": ""
- },
- {
-  "vi": "chưa có nhận xét",
-  "en": ""
- },
- {
-  "vi": "🛬 Tan ca lúc",
-  "en": ""
- },
- {
-  "vi": ". Về tới hẻm kịp cơm tối.",
-  "en": ""
- },
- {
-  "vi": "Các chuyến hôm nay",
-  "en": ""
- },
- {
-  "vi": "Phòng tổ bay",
-  "en": ""
- },
- {
-  "vi": "Tổ bay & khách quen",
-  "en": ""
- },
- {
-  "vi": "Đã báo",
-  "en": ""
- },
- {
-  "vi": "Chiều theo",
-  "en": ""
- },
- {
-  "vi": "Bỏ ngỏ",
-  "en": ""
- },
- {
-  "vi": "Đã chốt",
-  "en": ""
- },
- {
-  "vi": "Đúng luật",
-  "en": ""
- },
- {
-  "vi": "Bị phạt",
-  "en": ""
- },
- {
-  "vi": "Lời mời khó từ chối",
-  "en": ""
- },
- {
-  "vi": "Quấy rối",
-  "en": ""
- },
- {
-  "vi": "Yêu cầu oái oăm",
-  "en": ""
- },
- {
-  "vi": "Làm tắt",
-  "en": ""
- },
- {
-  "vi": "Mặc cả với hãng",
-  "en": ""
- },
- {
-  "vi": "😮‍💨 Mệt",
-  "en": ""
- },
- {
-  "vi": "hợp lý ≤",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Bớt\"",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Thêm\"",
-  "en": ""
- },
- {
-  "vi": "Giọng",
-  "en": ""
- },
- {
-  "vi": "💬 Nói",
-  "en": ""
- },
- {
-  "vi": "Chọn giọng và ý muốn nói",
-  "en": ""
- },
- {
-  "vi": "📝 Hôm nay đã xin nghỉ rồi.",
-  "en": ""
- },
- {
-  "vi": "Gửi điều phái",
-  "en": ""
- },
- {
-  "vi": "· đang mệt",
-  "en": ""
- },
- {
-  "vi": "📝 Gửi đơn",
-  "en": ""
- },
- {
-  "vi": "Mai lên phòng an toàn trình bày. Hôm nay tan ca sớm.",
-  "en": ""
- },
- {
-  "vi": "Bị cách chức, tạm đình chỉ bay hôm nay",
-  "en": ""
- },
- {
-  "vi": "Tạm đình chỉ bay hôm nay",
-  "en": ""
- },
- {
-  "vi": "💬 Trả lời",
-  "en": ""
- },
- {
-  "vi": "Tạm đình chỉ bay: tan ca",
-  "en": ""
- },
- {
-  "vi": "Khách cần",
-  "en": ""
- },
- {
-  "vi": "đã đúng",
-  "en": ""
- },
- {
-  "vi": "Mở phiếu khách",
-  "en": ""
- },
- {
-  "vi": "Thu gọn phiếu khách",
-  "en": ""
- },
- {
-  "vi": "Xong hết, giao cho khách thôi!",
-  "en": ""
- },
- {
-  "vi": "Bớt 1",
-  "en": ""
- },
- {
-  "vi": "Thêm 1",
-  "en": ""
- },
- {
-  "vi": "Bữa phụ",
-  "en": ""
- },
- {
-  "vi": "Bữa trưa",
-  "en": ""
- },
- {
-  "vi": "📝 Giấy dặn chưa đọc",
-  "en": ""
- },
- {
-  "vi": "✅ Không dị ứng",
-  "en": ""
- },
- {
-  "vi": "📺 Không màn hình",
-  "en": ""
- },
- {
-  "vi": "Lúc đón bé",
-  "en": ""
- },
- {
-  "vi": "Lịch trong ngày",
-  "en": ""
- },
- {
-  "vi": "Tính bé",
-  "en": ""
- },
- {
-  "vi": "· ⚠️ đổi cách chào",
-  "en": ""
- },
- {
-  "vi": "Bé chưa chịu làm quen. Thử cách chào khác hợp tính bé.",
-  "en": ""
- },
- {
-  "vi": "Ngồi ngang tầm mắt, nhỏ nhẹ",
-  "en": ""
- },
- {
-  "vi": "Đập tay chào",
-  "en": ""
- },
- {
-  "vi": "Để bé ôm mẹ, chìa đồ chơi",
-  "en": ""
- },
- {
-  "vi": "Hỏi chuyện hôm qua",
-  "en": ""
- },
- {
-  "vi": "Bế xốc lên",
-  "en": ""
- },
- {
-  "vi": "Túi đồ",
-  "en": ""
- },
- {
-  "vi": "🎒 Trong túi",
-  "en": ""
- },
- {
-  "vi": "chạm món còn thiếu để hỏi",
-  "en": ""
- },
- {
-  "vi": "Chào bé",
-  "en": ""
- },
- {
-  "vi": "🙂 Chào bé",
   "en": ""
  }
 ]

@@ -294,7 +294,7 @@ const ART={
   xinh:{word:'Xinh',draw:(c,k,o)=>letters(c,k,o.t('Xinh'),{top:'#ffc6dc',bot:'#ff6f9f',ink:'#c2416f',shade:'#a83a66',heart:'#ffcf3d'})},
   iu:{word:'iu',draw:(c,k,o)=>letters(c,k,o.t('iu'),{top:'#ff9a8f',bot:'#e2574c',ink:'#a8302b',shade:'#8f2a26',heart:'#ff6f9f'})},
   ban_than:{word:'Bạn thân',draw:(c,k,o)=>pill(c,k,o.t('Bạn thân'),{top:'#8fd0ea',bot:'#5bb6d9',ink:'#2f7fa3',deco:'hearts'})},
-  hoi_cho:{word:'Hội chợ',draw:(c,k,o)=>pill(c,k,o.t('Hội chợ'),{top:'#ff8a80',bot:'#e2574c',ink:'#a8302b',deco:'star',rim:'#ffcf3d'})},
+  hoi_cho:{word:'Chợ đen',draw:(c,k,o)=>pill(c,k,o.t('Chợ đen'),{top:'#ff8a80',bot:'#e2574c',ink:'#a8302b',deco:'star',rim:'#ffcf3d'})},
   vui_ghe:{word:'Vui ghê',draw:(c,k,o)=>pill(c,k,o.t('Vui ghê'),{top:'#bfe8d6',bot:'#86cdb0',ink:'#3f8f72',deco:'spark',tail:1})},
   cute:{word:'Cute',draw:(c,k,o)=>letters(c,k,o.t('Cute'),{top:'#e2d0fa',bot:'#b48be8',ink:'#7a52b3',shade:'#6a4799',spark:'#ffb3cf'})},
   dinh:{word:'Đỉnh!',draw:(c,k,o)=>letters(c,k,o.t('Đỉnh!'),{top:'#fff1a0',bot:'#ffbf2e',ink:'#c97a1f',shade:'#a8621a',spark:'#ff6f9f'})},
@@ -416,7 +416,7 @@ function pill(c,k,s,o){
 
 /* ---------------------------------------------------------------- the catalogue */
 export const DECO_CATS=[
-  {id:'mat',emoji:'😊',name:'Biểu cảm'},{id:'tim',emoji:'💖',name:'Tim & lấp lánh'},{id:'an',emoji:'🍡',name:'Đồ ăn hội chợ'},
+  {id:'mat',emoji:'😊',name:'Biểu cảm'},{id:'tim',emoji:'💖',name:'Tim & lấp lánh'},{id:'an',emoji:'🍡',name:'Đồ ăn chợ đen'},
   {id:'trung_thu',emoji:'🏮',name:'Trung thu'},{id:'chu',emoji:'💬',name:'Chữ xinh'},{id:'nhan',emoji:'🎀',name:'Nhãn dán'},
 ];
 const ROWS=[
@@ -429,10 +429,10 @@ const ROWS=[
   ['an','bap_rang','Bắp rang bơ','🍿'],['an','ho_lo','Kẹo hồ lô','🍡'],['an','dua_hau','Dưa hấu','🍉'],['an','banh_bao','Bánh bao','🥟'],
   ['trung_thu','ong_sao','Đèn ông sao','🌟'],['trung_thu','ca_chep','Đèn cá chép','🐟'],['trung_thu','banh_tt','Bánh trung thu','🥮'],
   ['trung_thu','trang_ram','Trăng rằm','🌕'],['trung_thu','tho_ngoc','Thỏ ngọc','🐰'],['trung_thu','keo_quan','Đèn kéo quân','🏮'],['trung_thu','dau_lan','Đầu lân','🦁'],
-  ['chu','xinh','Xinh','💖'],['chu','iu','iu','💕'],['chu','ban_than','Bạn thân','👭'],['chu','hoi_cho','Hội chợ','🎡'],['chu','vui_ghe','Vui ghê','😄'],
+  ['chu','xinh','Xinh','💖'],['chu','iu','iu','💕'],['chu','ban_than','Bạn thân','👭'],['chu','hoi_cho','Chợ đen','🎡'],['chu','vui_ghe','Vui ghê','😄'],
   ['chu','cute','Cute','🌸'],['chu','dinh','Đỉnh!','🔥'],['chu','yeu_lam','Yêu lắm','💘'],['chu','o_la_la','Ố là la','🎶'],
   ['nhan','washi_hong','Băng keo hồng','🩷'],['nhan','washi_mint','Băng keo xanh','🩵'],['nhan','goc_no','Góc ảnh nơ','📐'],['nhan','ky_niem','Kỷ niệm','🎗️'],
-  ['nhan','ve_hoi_cho','Vé hội chợ','🎟️'],['nhan','bong_thoai','Khung thoại','💬'],['nhan','polaroid','Khung ảnh','📷'],['nhan','huy_hieu','Huy hiệu 2026','🏅'],
+  ['nhan','ve_hoi_cho','Vé chợ đen','🎟️'],['nhan','bong_thoai','Khung thoại','💬'],['nhan','polaroid','Khung ảnh','📷'],['nhan','huy_hieu','Huy hiệu 2026','🏅'],
 ];
 export const DECO=ROWS.map(([cat,id,name,emoji])=>({id,cat,name,emoji}));
 export const DECO_BY=Object.fromEntries(DECO.map(d=>[d.id,d]));

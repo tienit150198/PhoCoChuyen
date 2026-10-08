@@ -1,5 +1,389 @@
 [
  {
+  "vi": "vá",
+  "en": ""
+ },
+ {
+  "vi": "· không hành mỡ",
+  "en": ""
+ },
+ {
+  "vi": "· có canh",
+  "en": ""
+ },
+ {
+  "vi": "còn hồng…",
+  "en": ""
+ },
+ {
+  "vi": "VÀNG ĐỀU — ĐƯỢC RỒI!",
+  "en": ""
+ },
+ {
+  "vi": "xém cạnh rồi…",
+  "en": ""
+ },
+ {
+  "vi": "cháy khét!",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Bếp than",
+  "en": ""
+ },
+ {
+  "vi": "Bếp chưa nhóm.",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Nhóm bếp than",
+  "en": ""
+ },
+ {
+  "vi": "miếng sườn trên vỉ",
+  "en": ""
+ },
+ {
+  "vi": "mặt thứ nhất",
+  "en": ""
+ },
+ {
+  "vi": "đã trở, mặt thứ hai",
+  "en": ""
+ },
+ {
+  "vi": "🔄 Trở mặt",
+  "en": ""
+ },
+ {
+  "vi": "🍖 Gắp ra khay",
+  "en": ""
+ },
+ {
+  "vi": "Đặt sườn lên vỉ",
+  "en": ""
+ },
+ {
+  "vi": "Hết sườn: nhập ở Kho",
+  "en": ""
+ },
+ {
+  "vi": "Khay giữ ấm đầy",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ miếng sườn này?",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Bếp than · vỉ sườn",
+  "en": ""
+ },
+ {
+  "vi": "Khay giữ ấm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có miếng nào.",
+  "en": ""
+ },
+ {
+  "vi": "hết cơm",
+  "en": ""
+ },
+ {
+  "vi": "dẻo thơm",
+  "en": ""
+ },
+ {
+  "vi": "Xe cơm",
+  "en": ""
+ },
+ {
+  "vi": "vừa miệng",
+  "en": ""
+ },
+ {
+  "vi": "chưa vừa",
+  "en": ""
+ },
+ {
+  "vi": "chưa nếm",
+  "en": ""
+ },
+ {
+  "vi": "khay trống",
+  "en": ""
+ },
+ {
+  "vi": "👂 Hỏi khách gọi gì",
+  "en": ""
+ },
+ {
+  "vi": "📿 Ăn chay",
+  "en": ""
+ },
+ {
+  "vi": "👀 Liếc dĩa kỹ",
+  "en": ""
+ },
+ {
+  "vi": "(lẫn hai nồi)",
+  "en": ""
+ },
+ {
+  "vi": "chưa xới cơm",
+  "en": ""
+ },
+ {
+  "vi": "🌿 mỡ hành",
+  "en": ""
+ },
+ {
+  "vi": "🗑️ Làm lại dĩa này",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ dĩa đang làm, làm lại cái khác?",
+  "en": ""
+ },
+ {
+  "vi": "🍽️ Trên quầy",
+  "en": ""
+ },
+ {
+  "vi": "Xới cơm",
+  "en": ""
+ },
+ {
+  "vi": "Chan, rưới",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa",
+  "en": ""
+ },
+ {
+  "vi": "🌿 Mỡ hành",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Bịch canh",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Chén canh",
+  "en": ""
+ },
+ {
+  "vi": "Không nước mắm",
+  "en": ""
+ },
+ {
+  "vi": ": đổ nước tới đâu?",
+  "en": ""
+ },
+ {
+  "vi": "🥄 Nếm nước mắm",
+  "en": ""
+ },
+ {
+  "vi": "chưa bày",
+  "en": ""
+ },
+ {
+  "vi": "Đổ nước mấy đốt ngón tay? Gạo tấm hút ít nước hơn gạo trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Bày khay",
+  "en": ""
+ },
+ {
+  "vi": "💧 Mấy đốt? Tấm ít hơn",
+  "en": ""
+ },
+ {
+  "vi": "Đổ nước tới đâu (đốt ngón tay)? Gạo tấm hút ít nước hơn gạo trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Hai nồi cơm",
+  "en": ""
+ },
+ {
+  "vi": "🥄 Nếm",
+  "en": ""
+ },
+ {
+  "vi": "Nếm chén nước mắm pha tối qua",
+  "en": ""
+ },
+ {
+  "vi": "✓ Than hồng",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Đồ nấu không để qua đêm: bày vừa đủ bán.",
+  "en": ""
+ },
+ {
+  "vi": "Bày khay lên tủ kính",
+  "en": ""
+ },
+ {
+  "vi": "🍚 Hai nồi cơm",
+  "en": ""
+ },
+ {
+  "vi": "Gạo tấm hút ít nước hơn gạo trắng.",
+  "en": ""
+ },
+ {
+  "vi": "🫙 Chén nước mắm pha tối qua",
+  "en": ""
+ },
+ {
+  "vi": "🍱 Bày khay lên tủ kính",
+  "en": ""
+ },
+ {
+  "vi": "✓ Than hồng đều",
+  "en": ""
+ },
+ {
+  "vi": "Nếm chén nước mắm",
+  "en": ""
+ },
+ {
+  "vi": "Chỉnh nước mắm cho vừa",
+  "en": ""
+ },
+ {
+  "vi": "Chỉnh",
+  "en": ""
+ },
+ {
+  "vi": "khay · bày vừa đủ",
+  "en": ""
+ },
+ {
+  "vi": "trên khay hết miếng ngon",
+  "en": ""
+ },
+ {
+  "vi": "🍖 Đặt sườn lên vỉ",
+  "en": ""
+ },
+ {
+  "vi": "Hết sườn ướp",
+  "en": ""
+ },
+ {
+  "vi": "nhập ở Kho hoặc nói thật với khách",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Nhập ở Kho",
+  "en": ""
+ },
+ {
+  "vi": "Chờ mặt dưới vàng rồi trở",
+  "en": ""
+ },
+ {
+  "vi": "Chờ mặt kia vàng rồi gắp",
+  "en": ""
+ },
+ {
+  "vi": "giây nữa",
+  "en": ""
+ },
+ {
+  "vi": "Trở mặt sườn",
+  "en": ""
+ },
+ {
+  "vi": "Gắp sườn ra khay",
+  "en": ""
+ },
+ {
+  "vi": "Xới",
+  "en": ""
+ },
+ {
+  "vi": "· nồi chưa sẵn",
+  "en": ""
+ },
+ {
+  "vi": "Gắp miếng sườn vàng đều",
+  "en": ""
+ },
+ {
+  "vi": "🍖 Gắp sườn",
+  "en": ""
+ },
+ {
+  "vi": "hết trứng: nhập ở Kho hoặc nói thật với khách",
+  "en": ""
+ },
+ {
+  "vi": "Chan mỡ hành",
+  "en": ""
+ },
+ {
+  "vi": "Khách không ăn mỡ hành",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ mỡ hành",
+  "en": ""
+ },
+ {
+  "vi": "Múc canh",
+  "en": ""
+ },
+ {
+  "vi": "Khách không lấy canh",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Múc canh",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ canh",
+  "en": ""
+ },
+ {
+  "vi": "Mở quán xong mới bán",
+  "en": ""
+ },
+ {
+  "vi": "Khách mua mang về: lấy hộp",
+  "en": ""
+ },
+ {
+  "vi": "Khách ngồi ăn: lấy dĩa",
+  "en": ""
+ },
+ {
+  "vi": "🗑️ Làm lại",
+  "en": ""
+ },
+ {
+  "vi": "làm sau",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa này không đúng món khách gọi",
+  "en": ""
+ },
+ {
   "vi": "Quyết chuyện ở quán",
   "en": ""
  },
@@ -1413,390 +1797,6 @@
  },
  {
   "vi": "Nhà hàng Bếp Mây",
-  "en": ""
- },
- {
-  "vi": "Sạp cô Hai",
-  "en": ""
- },
- {
-  "vi": "Vựa anh Tuấn",
-  "en": ""
- },
- {
-  "vi": "Nhà bé Mít",
-  "en": ""
- },
- {
-  "vi": "Lò bánh flan Bà Năm",
-  "en": ""
- },
- {
-  "vi": "🟫 Bón lót",
-  "en": ""
- },
- {
-  "vi": "🧹 Dọn luống",
-  "en": ""
- },
- {
-  "vi": "🧺 Thu hoạch",
-  "en": ""
- },
- {
-  "vi": "🟫 Bón & phun",
-  "en": ""
- },
- {
-  "vi": "🌾 Cho gà ăn",
-  "en": ""
- },
- {
-  "vi": "🐔 Xem đàn gà",
-  "en": ""
- },
- {
-  "vi": "❄️ Kho mát & thùng hàng",
-  "en": ""
- },
- {
-  "vi": "📈 Bán sỉ cho anh Tuấn",
-  "en": ""
- },
- {
-  "vi": "🌟 Trang trại",
-  "en": ""
- },
- {
-  "vi": "🌤️ Xem dự báo",
-  "en": ""
- },
- {
-  "vi": "🌱 gieo hạt",
-  "en": ""
- },
- {
-  "vi": "🌱 chọn hạt để gieo",
-  "en": ""
- },
- {
-  "vi": "đang gọi",
-  "en": ""
- },
- {
-  "vi": "đang gọi đặt hàng",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng: chỉ loại A",
-  "en": ""
- },
- {
-  "vi": "Bắt buộc hữu cơ + QR",
-  "en": ""
- },
- {
-  "vi": "🐔 Chuồng gà",
-  "en": ""
- },
- {
-  "vi": "📈 Chợ đầu mối",
-  "en": ""
- },
- {
-  "vi": "🌤️ Thời tiết",
-  "en": ""
- },
- {
-  "vi": "🧾 Đơn hàng",
-  "en": ""
- },
- {
-  "vi": "🚶 Tự đi",
-  "en": ""
- },
- {
-  "vi": "⏩ Bấm nhanh",
-  "en": ""
- },
- {
-  "vi": "Bấm nhanh",
-  "en": ""
- },
- {
-  "vi": "Góc nhìn",
-  "en": ""
- },
- {
-  "vi": "Góc nhìn thứ nhất",
-  "en": ""
- },
- {
-  "vi": "Góc nhìn thứ ba",
-  "en": ""
- },
- {
-  "vi": "👁️ Thứ nhất",
-  "en": ""
- },
- {
-  "vi": "Thứ ba",
-  "en": ""
- },
- {
-  "vi": "📯 Bóp còi",
-  "en": ""
- },
- {
-  "vi": "Máy hơi chậm nên vườn chuyển sang Bấm nhanh. Muốn đi lại thì chạm 🚶 Tự đi.",
-  "en": ""
- },
- {
-  "vi": "Mai trời",
-  "en": ""
- },
- {
-  "vi": "🧺 Luống chín:",
-  "en": ""
- },
- {
-  "vi": "🐔 Hôm nay gà chưa được ăn: mai đẻ ít",
-  "en": ""
- },
- {
-  "vi": "Bán sỉ ở chợ đầu mối (xu)",
-  "en": ""
- },
- {
-  "vi": "Tinh thần đàn gà",
-  "en": ""
- },
- {
-  "vi": "🌱 Nông trại hôm nay",
-  "en": ""
- },
- {
-  "vi": "Bán",
-  "en": ""
- },
- {
-  "vi": "Điểm nông",
-  "en": ""
- },
- {
-  "vi": "Quá lứa · loại B",
-  "en": ""
- },
- {
-  "vi": "Chín · loại B",
-  "en": ""
- },
- {
-  "vi": "Chín · loại A",
-  "en": ""
- },
- {
-  "vi": "🌱 Chọn hạt",
-  "en": ""
- },
- {
-  "vi": "🚜 Cả vườn",
-  "en": ""
- },
- {
-  "vi": "🚜 Thu cả vườn",
-  "en": ""
- },
- {
-  "vi": "🚜 Chăm cả vườn",
-  "en": ""
- },
- {
-  "vi": "☀️ Nắng gắt: cây khát",
-  "en": ""
- },
- {
-  "vi": "🌤️ Nắng: nhớ tưới",
-  "en": ""
- },
- {
-  "vi": "🍃 Gió: đất mau khô",
-  "en": ""
- },
- {
-  "vi": "🌧️ Mưa: coi chừng giông",
-  "en": ""
- },
- {
-  "vi": "⛅ Râm: dễ có mưa",
-  "en": ""
- },
- {
-  "vi": "· 💧 tưới nhỏ giọt",
-  "en": ""
- },
- {
-  "vi": "· 🏠 nhà kính",
-  "en": ""
- },
- {
-  "vi": "🔒 Cần chuồng trại",
-  "en": ""
- },
- {
-  "vi": "Heo đã lớn!",
-  "en": ""
- },
- {
-  "vi": "💰 Bán heo",
-  "en": ""
- },
- {
-  "vi": "Đói rồi",
-  "en": ""
- },
- {
-  "vi": "Xong rồi!",
-  "en": ""
- },
- {
-  "vi": "· chợ đủ hàng",
-  "en": ""
- },
- {
-  "vi": "Loại A",
-  "en": ""
- },
- {
-  "vi": "✋ Giữ giá",
-  "en": ""
- },
- {
-  "vi": "🚚 Giao hàng",
-  "en": ""
- },
- {
-  "vi": "“Bớt chút nha em?”",
-  "en": ""
- },
- {
-  "vi": "🧾 Đơn đặc sản",
-  "en": ""
- },
- {
-  "vi": "bán ở chợ",
-  "en": ""
- },
- {
-  "vi": "Chưa có đơn, thu hoạch thêm rồi quay lại nha.",
-  "en": ""
- },
- {
-  "vi": "✓ Đã có",
-  "en": ""
- },
- {
-  "vi": "Trang trại mới",
-  "en": ""
- },
- {
-  "vi": "⏱ Cây lớn theo giờ thật, cả lúc bạn đi vắng",
-  "en": ""
- },
- {
-  "vi": "🐛 Mỗi vụ một kiểu chăm",
-  "en": ""
- },
- {
-  "vi": "🦆 Vịt, bò sữa, heo",
-  "en": ""
- },
- {
-  "vi": "🧾 Khách đặt hàng khó tính",
-  "en": ""
- },
- {
-  "vi": "🛠️ Nhà kính, máy cày, VietGAP",
-  "en": ""
- },
- {
-  "vi": "🌟 Mở trang trại",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Trang trại\"",
-  "en": ""
- },
- {
-  "vi": "Mở trang trại mới",
-  "en": ""
- },
- {
-  "vi": "🌟 Xem trang trại mới",
-  "en": ""
- },
- {
-  "vi": "Nông trại: đi quanh vườn, tới gần một chỗ để làm việc",
-  "en": ""
- },
- {
-  "vi": "CHUỒNG GÀ",
-  "en": ""
- },
- {
-  "vi": "KHO MÁT",
-  "en": ""
- },
- {
-  "vi": "Đã bón lót · gieo được",
-  "en": ""
- },
- {
-  "vi": "Gieo được",
-  "en": ""
- },
- {
-  "vi": "Khát nước",
-  "en": ""
- },
- {
-  "vi": "Thu được!",
-  "en": ""
- },
- {
-  "vi": "Quá lứa",
-  "en": ""
- },
- {
-  "vi": "Chín hôm nay",
-  "en": ""
- },
- {
-  "vi": "Chín mai",
-  "en": ""
- },
- {
-  "vi": "Đi tới luống rau để chăm",
-  "en": ""
- },
- {
-  "vi": "Bíp bíp!",
-  "en": ""
- },
- {
-  "vi": "Đã giao hàng!",
-  "en": ""
- },
- {
-  "vi": "Chưa giao được, quay về trại",
-  "en": ""
- },
- {
-  "vi": "Đang giao hàng…",
-  "en": ""
- },
- {
-  "vi": "Chuyện trong khoang",
   "en": ""
  }
 ]

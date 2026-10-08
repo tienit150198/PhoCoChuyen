@@ -49,7 +49,7 @@ export function setup(ctx){
 
   /** The gate's page: the fairground (a slot the stage is put into after the render) and the list under it. */
   function html(){
-    return `<section class="fh-walk" aria-label="Hội chợ">
+    return `<section class="fh-walk" aria-label="Chợ đen">
       <div class="fh-wslot" data-fh-live data-fh-key="wslot"></div>
       <div class="fh-wbar">${bar()}</div>
       <details class="fh-wlist" data-fh-key="wlist"><summary data-fh-key="wlistsum">📋 Danh sách trò</summary>${list()}</details>
@@ -57,7 +57,7 @@ export function setup(ctx){
   }
   function build(){
     const el=document.createElement('div');el.className='fh-wstage';
-    el.innerHTML=`<canvas class="fh-wcanvas" tabindex="0" role="img" aria-label="${esc(tr('Hội chợ: chạm vào gian hàng để đi tới'))}"></canvas><div class="fh-wsay" role="status" aria-live="polite" hidden></div><button type="button" class="rd-toggle" hidden></button><div class="rd-co" hidden></div>`;
+    el.innerHTML=`<canvas class="fh-wcanvas" tabindex="0" role="img" aria-label="${esc(tr('Chợ đen: chạm vào gian hàng để đi tới'))}"></canvas><div class="fh-wsay" role="status" aria-live="polite" hidden></div><button type="button" class="rd-toggle" hidden></button><div class="rd-co" hidden></div>`;
     W.el=el;W.cv=el.querySelector('canvas');W.c=W.cv.getContext('2d');W.say=el.querySelector('.fh-wsay');
     W.btn=el.querySelector('.rd-toggle');W.btn.addEventListener('click',()=>{W.blocked='';W.taken=null;nextRide(S.env.api.state,S.env.api.content,TWO);setRide(true);if(W.me){const h=frac([W.me.x,W.me.y]);CR.walk([h,h],0,null,wire(W.ride));}paintCo();});
     W.co=el.querySelector('.rd-co');W.co.addEventListener('click',e=>{const a=e.target.closest('[data-co]')?.dataset.co;
@@ -280,7 +280,7 @@ export function setup(ctx){
     const bg=W.bg||document.createElement('canvas');bg.width=W.cv.width;bg.height=W.cv.height;
     const c=bg.getContext('2d');c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,bg.width,bg.height);
     c.setTransform(W.dpr*W.k,0,0,W.dpr*W.k,W.dpr*W.ox,W.dpr*W.oy);
-    try{paintBack(c,W.port,has(),{t:0,reduced:true});}catch(e){console.warn('hội chợ: backdrop',e);}
+    try{paintBack(c,W.port,has(),{t:0,reduced:true});}catch(e){console.warn('chợ đen: backdrop',e);}
     W.bg=bg;W.bgKey=key;return bg;
   }
   function draw(){
@@ -301,8 +301,8 @@ export function setup(ctx){
       const near=p.spots.find(s=>s.kind==='stall'&&Math.hypot(W.me.x-s.stand[0],W.me.y-s.stand[1])<30);
       marks(c,p,o,near?.id||null);
       c.setTransform(W.dpr,0,0,W.dpr,0,0);
-      CR.tags(c,{sx:x=>W.ox+x*W.k,sy:y=>W.oy+y*W.k,fallback:tr('Khách đi hội'),badge,dpr:W.dpr});
-    }catch(e){console.warn('hội chợ: draw',e);}
+      CR.tags(c,{sx:x=>W.ox+x*W.k,sy:y=>W.oy+y*W.k,fallback:tr('Khách đi chợ'),badge,dpr:W.dpr});
+    }catch(e){console.warn('chợ đen: draw',e);}
   }
   /** Small transparent sprites keep each static prop at its original depth; markers translate them as they bob. */
   function bitmap(id,box,paint){

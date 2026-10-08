@@ -1,5 +1,389 @@
 [
  {
+  "vi": "rồi đối chiếu vòng tay",
+  "en": ""
+ },
+ {
+  "vi": "hỏi có hay không",
+  "en": ""
+ },
+ {
+  "vi": "🔢 Xem số giường",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Xác định người bệnh",
+  "en": ""
+ },
+ {
+  "vi": "Mai lên phòng Điều dưỡng trình bày. Hôm nay tan ca sớm.",
+  "en": ""
+ },
+ {
+  "vi": "Tạm đình chỉ trực hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "✋ Giữ lại, báo bác sĩ…",
+  "en": ""
+ },
+ {
+  "vi": "Đọc ghi chú ca đêm",
+  "en": ""
+ },
+ {
+  "vi": "📋 Sổ giao ca",
+  "en": ""
+ },
+ {
+  "vi": "Giường xem trước",
+  "en": ""
+ },
+ {
+  "vi": "📋 Sổ giao ca đêm qua",
+  "en": ""
+ },
+ {
+  "vi": "🚶 Giường xem trước",
+  "en": ""
+ },
+ {
+  "vi": "Đọc ghi chú từng giường",
+  "en": ""
+ },
+ {
+  "vi": "Chọn giường xem trước",
+  "en": ""
+ },
+ {
+  "vi": "🚶 Chọn giường xem trước",
+  "en": ""
+ },
+ {
+  "vi": "đã đo lại",
+  "en": ""
+ },
+ {
+  "vi": "🔁 đo lại",
+  "en": ""
+ },
+ {
+  "vi": "hỏi điểm đau",
+  "en": ""
+ },
+ {
+  "vi": "đo",
+  "en": ""
+ },
+ {
+  "vi": ". Ngoài thẻ là báo bác sĩ (luật của trò chơi).",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Thẻ báo động Lá Sen",
+  "en": ""
+ },
+ {
+  "vi": "Luật của trò chơi: ngoài thẻ là báo bác sĩ.",
+  "en": ""
+ },
+ {
+  "vi": "Sinh tồn",
+  "en": ""
+ },
+ {
+  "vi": "📝 Phiếu theo dõi",
+  "en": ""
+ },
+ {
+  "vi": "Tâm thu",
+  "en": ""
+ },
+ {
+  "vi": "Tâm trương",
+  "en": ""
+ },
+ {
+  "vi": "📝 Ghi phiếu theo dõi",
+  "en": ""
+ },
+ {
+  "vi": "📝 Ghi phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Gõ đúng số vừa đo.",
+  "en": ""
+ },
+ {
+  "vi": "📞 Đã báo bác sĩ",
+  "en": ""
+ },
+ {
+  "vi": "📞 Báo bác sĩ Khang…",
+  "en": ""
+ },
+ {
+  "vi": "📞 Gọi bác sĩ",
+  "en": ""
+ },
+ {
+  "vi": "Xác định người bệnh",
+  "en": ""
+ },
+ {
+  "vi": "Đo đủ năm chỉ số",
+  "en": ""
+ },
+ {
+  "vi": "Ghi phiếu theo dõi",
+  "en": ""
+ },
+ {
+  "vi": "So thẻ báo động, báo bác sĩ nếu cần",
+  "en": ""
+ },
+ {
+  "vi": "🚨 So với thẻ báo động",
+  "en": ""
+ },
+ {
+  "vi": "📄 Phiếu y lệnh",
+  "en": ""
+ },
+ {
+  "vi": "Đường dùng",
+  "en": ""
+ },
+ {
+  "vi": "🪧 Biển đầu giường:",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Đối chiếu",
+  "en": ""
+ },
+ {
+  "vi": "🔴 Xem vòng dị ứng",
+  "en": ""
+ },
+ {
+  "vi": "⚪ Không có vòng dị ứng",
+  "en": ""
+ },
+ {
+  "vi": "🏷️ Đọc nhãn khay khoa dược",
+  "en": ""
+ },
+ {
+  "vi": "🏷️ Nhãn khay:",
+  "en": ""
+ },
+ {
+  "vi": "🩸 Đo đường huyết",
+  "en": ""
+ },
+ {
+  "vi": "🩸 Máy báo",
+  "en": ""
+ },
+ {
+  "vi": "THẤP",
+  "en": ""
+ },
+ {
+  "vi": "🩸 Trong ngưỡng",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Hỏi vì sao, giải thích",
+  "en": ""
+ },
+ {
+  "vi": "😤 Ép uống cho xong",
+  "en": ""
+ },
+ {
+  "vi": "“không uống là nặng thêm đó”",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Quyết định",
+  "en": ""
+ },
+ {
+  "vi": "💊 Thực hiện y lệnh",
+  "en": ""
+ },
+ {
+  "vi": "cho thuốc, ký phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Đọc nhãn khay",
+  "en": ""
+ },
+ {
+  "vi": "🏷️ Đọc nhãn khay",
+  "en": ""
+ },
+ {
+  "vi": "Đo đường huyết",
+  "en": ""
+ },
+ {
+  "vi": "Cho thuốc hoặc giữ lại",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ màu",
+  "en": ""
+ },
+ {
+  "vi": "🩺 Đo nhanh",
+  "en": ""
+ },
+ {
+  "vi": "🚦 Thẻ màu Lá Sen",
+  "en": ""
+ },
+ {
+  "vi": "Xếp theo dấu hiệu, không theo tiếng la. Luật của trò chơi.",
+  "en": ""
+ },
+ {
+  "vi": "💍 Tháo trang sức, giao người nhà",
+  "en": ""
+ },
+ {
+  "vi": "📞 Mời bác sĩ tới giải thích",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Hỏi điều người bệnh lo, giải thích",
+  "en": ""
+ },
+ {
+  "vi": "😤 Thuyết phục ép cho xong",
+  "en": ""
+ },
+ {
+  "vi": "“không mổ là tay lệch luôn đó”",
+  "en": ""
+ },
+ {
+  "vi": "📝 Đã ký giấy cam đoan sau khi bác sĩ giải thích",
+  "en": ""
+ },
+ {
+  "vi": "💍 Đã tháo trang sức",
+  "en": ""
+ },
+ {
+  "vi": "📞 Mời bác sĩ khám lại, ký giấy",
+  "en": ""
+ },
+ {
+  "vi": "🩹 Rút kim luồn",
+  "en": ""
+ },
+ {
+  "vi": "📄 Thủ tục",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Dặn dò",
+  "en": ""
+ },
+ {
+  "vi": "📄 Xem giấy ra viện",
+  "en": ""
+ },
+ {
+  "vi": "💳 Xem thẻ BHYT",
+  "en": ""
+ },
+ {
+  "vi": "🩹 Xem kim luồn",
+  "en": ""
+ },
+ {
+  "vi": "📄 Bác sĩ đã ký giấy ra viện",
+  "en": ""
+ },
+ {
+  "vi": "🩹 Đã rút kim luồn",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Người bệnh đã nhắc lại",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Nhờ người bệnh nhắc lại",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ nhắc lại",
+  "en": ""
+ },
+ {
+  "vi": "Đã viết sổ giao ca.",
+  "en": ""
+ },
+ {
+  "vi": "Đã viết sổ giao ca (còn thiếu).",
+  "en": ""
+ },
+ {
+  "vi": "Sổ giao ca có dòng ghi khống.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn những gì thật sự đã xảy ra, đủ để ca đêm theo dõi.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Ghi vào sổ giao ca",
+  "en": ""
+ },
+ {
+  "vi": "🔔 Chọn cách trả lời",
+  "en": ""
+ },
+ {
+  "vi": "📋 NHẬN CA",
+  "en": ""
+ },
+ {
+  "vi": "chọn giường xem trước",
+  "en": ""
+ },
+ {
+  "vi": "✅ XONG LƯỢT ĐO",
+  "en": ""
+ },
+ {
+  "vi": "🚦 GỬI VÀO KHÁM",
+  "en": ""
+ },
+ {
+  "vi": "phát thẻ màu cho cả ba người",
+  "en": ""
+ },
+ {
+  "vi": "🛏️ CHUYỂN ĐI THỦ THUẬT",
+  "en": ""
+ },
+ {
+  "vi": "🏠 CHO VỀ",
+  "en": ""
+ },
+ {
+  "vi": "Quyết chuyện trong khoa",
+  "en": ""
+ },
+ {
   "vi": "🏥 Vào ca thôi!",
   "en": ""
  },
@@ -1413,390 +1797,6 @@
  },
  {
   "vi": "Vớt bé màu nào?",
-  "en": ""
- },
- {
-  "vi": "❓ Hỏi người muốn nuôi",
-  "en": ""
- },
- {
-  "vi": "🎒 Đồ dùng mang về",
-  "en": ""
- },
- {
-  "vi": "Hỏi han người muốn nuôi",
-  "en": ""
- },
- {
-  "vi": "Quyết định có giao bé không",
-  "en": ""
- },
- {
-  "vi": "🤔 Quyết định giao bé hay chưa",
-  "en": ""
- },
- {
-  "vi": "Ký giấy nhận nuôi",
-  "en": ""
- },
- {
-  "vi": "📝 Làm giấy nhận nuôi",
-  "en": ""
- },
- {
-  "vi": "Đặt bé lên quầy",
-  "en": ""
- },
- {
-  "vi": "🤲 Đặt bé lên quầy",
-  "en": ""
- },
- {
-  "vi": "Đồ dùng bé cần ở nhà mới",
-  "en": ""
- },
- {
-  "vi": "🎒 Chọn đồ dùng mang về",
-  "en": ""
- },
- {
-  "vi": "🍽️ Cho ăn",
-  "en": ""
- },
- {
-  "vi": "🩺 Kiểm tra",
-  "en": ""
- },
- {
-  "vi": "chuồng",
-  "en": ""
- },
- {
-  "vi": "🌡️ Đo nhiệt",
-  "en": ""
- },
- {
-  "vi": "🔥 Bật lại sưởi",
-  "en": ""
- },
- {
-  "vi": "👀 Soi kỹ từng bé",
-  "en": ""
- },
- {
-  "vi": "🚑 Cách ly bé ốm",
-  "en": ""
- },
- {
-  "vi": "🧺 Vòng chăm sáng nay",
-  "en": ""
- },
- {
-  "vi": "Cho từng bé ăn đúng khẩu phần",
-  "en": ""
- },
- {
-  "vi": "Dọn chỗ bẩn",
-  "en": ""
- },
- {
-  "vi": "Đo nhiệt từng bể cá",
-  "en": ""
- },
- {
-  "vi": "Soi kỹ từng bé",
-  "en": ""
- },
- {
-  "vi": "📋 Quy định đổi trả",
-  "en": ""
- },
- {
-  "vi": "🔍 Kiểm tra món khách mang trả",
-  "en": ""
- },
- {
-  "vi": "? Việc này sẽ khép lại.",
-  "en": ""
- },
- {
-  "vi": "Xem hóa đơn, seal, mã lô, hạn, lỗi",
-  "en": ""
- },
- {
-  "vi": "Quyết định theo quy định",
-  "en": ""
- },
- {
-  "vi": "⚖️ Quyết định đổi trả",
-  "en": ""
- },
- {
-  "vi": "TÌM",
-  "en": ""
- },
- {
-  "vi": "🏃 Đã báo chủ đi gặp",
-  "en": ""
- },
- {
-  "vi": "📵 Đã gác máy",
-  "en": ""
- },
- {
-  "vi": "🤫 Hỏi dấu riêng",
-  "en": ""
- },
- {
-  "vi": "🏃 Báo chủ đi gặp",
-  "en": ""
- },
- {
-  "vi": "Báo chủ nuôi liên lạc với người này?",
-  "en": ""
- },
- {
-  "vi": "📵 Cảm ơn, gác máy",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn rồi gác máy?",
-  "en": ""
- },
- {
-  "vi": "📝 Tờ tìm thú",
-  "en": ""
- },
- {
-  "vi": "❓ Hỏi chủ nuôi",
-  "en": ""
- },
- {
-  "vi": "Chọn dòng in lên tờ giấy dán ngoài bảng (ai đi ngang cũng đọc được).",
-  "en": ""
- },
- {
-  "vi": "✏️ Viết lại tờ",
-  "en": ""
- },
- {
-  "vi": "✏️ Viết tờ tìm thú",
-  "en": ""
- },
- {
-  "vi": "📌 Dán lên bảng",
-  "en": ""
- },
- {
-  "vi": "☎️ Điện thoại tiệm reo",
-  "en": ""
- },
- {
-  "vi": "Hỏi chủ nuôi về bé",
-  "en": ""
- },
- {
-  "vi": "Viết tờ tìm thú",
-  "en": ""
- },
- {
-  "vi": "📝 Viết tờ tìm thú",
-  "en": ""
- },
- {
-  "vi": "Dán tờ lên bảng",
-  "en": ""
- },
- {
-  "vi": "Trả lời một cuộc gọi",
-  "en": ""
- },
- {
-  "vi": "☎️ Nghe cuộc gọi tới",
-  "en": ""
- },
- {
-  "vi": "Xe tải nhỏ",
-  "en": ""
- },
- {
-  "vi": "💵 Phiếu thu hộ",
-  "en": ""
- },
- {
-  "vi": "+ phí ship",
-  "en": ""
- },
- {
-  "vi": "shipper thu của khách.",
-  "en": ""
- },
- {
-  "vi": "Số tiền thu hộ (xu)",
-  "en": ""
- },
- {
-  "vi": "✍️ Ghi phiếu",
-  "en": ""
- },
- {
-  "vi": "📞 Gọi lại cho khách",
-  "en": ""
- },
- {
-  "vi": "📦 Đóng hàng",
-  "en": ""
- },
- {
-  "vi": "🛵 Gọi shipper",
-  "en": ""
- },
- {
-  "vi": "📍 Gọi xác nhận địa chỉ",
-  "en": ""
- },
- {
-  "vi": "📦 Đóng",
-  "en": ""
- },
- {
-  "vi": "Chọn shipper hợp với đơn",
-  "en": ""
- },
- {
-  "vi": "🛵 Chọn shipper",
-  "en": ""
- },
- {
-  "vi": "Ghi tiền thu hộ",
-  "en": ""
- },
- {
-  "vi": "💵 Ghi tiền thu hộ",
-  "en": ""
- },
- {
-  "vi": "✅ XONG VÒNG CHĂM",
-  "en": ""
- },
- {
-  "vi": "cho các bé ăn trước",
-  "en": ""
- },
- {
-  "vi": "📌 XONG VIỆC TÌM THÚ",
-  "en": ""
- },
- {
-  "vi": "dán tờ và trả lời hết cuộc gọi",
-  "en": ""
- },
- {
-  "vi": "🛵 GIAO HÀNG",
-  "en": ""
- },
- {
-  "vi": "chốt hóa đơn, chọn shipper, ghi thu hộ",
-  "en": ""
- },
- {
-  "vi": "💵 ĐƯA HÀNG · THỐI TIỀN",
-  "en": ""
- },
- {
-  "vi": "chốt hóa đơn trước",
-  "en": ""
- },
- {
-  "vi": "bé chờ nhà mới",
-  "en": ""
- },
- {
-  "vi": "🐟 Dãy bể & chuồng",
-  "en": ""
- },
- {
-  "vi": "🏡 Góc nhận nuôi · nhóm Chân Nhỏ",
-  "en": ""
- },
- {
-  "vi": "Các bé đều đã có nhà mới.",
-  "en": ""
- },
- {
-  "vi": "🎨 Màu sơn của tiệm",
-  "en": ""
- },
- {
-  "vi": "📒 Sổ thú quen",
-  "en": ""
- },
- {
-  "vi": "Chuyện của khách quen sẽ được ghi ở đây.",
-  "en": ""
- },
- {
-  "vi": "Hỏi han, chọn bao hạt, tính tiền",
-  "en": ""
- },
- {
-  "vi": "Chọn bể, chọn cá, dặn khách",
-  "en": ""
- },
- {
-  "vi": "Hỏi kỹ rồi mới giao bé",
-  "en": ""
- },
- {
-  "vi": "Cho ăn, dọn bể, soi từng bé",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra món trả, quyết định",
-  "en": ""
- },
- {
-  "vi": "Viết tờ tìm thú, lọc cuộc gọi",
-  "en": ""
- },
- {
-  "vi": "Đóng hàng, gọi shipper",
-  "en": ""
- },
- {
-  "vi": "Đánh dấu ít nhất một mục trong giấy nhé.",
-  "en": ""
- },
- {
-  "vi": "Chọn ít nhất một dòng cho tờ tìm thú nhé.",
-  "en": ""
- },
- {
-  "vi": "Điền số tiền thu hộ trước nhé.",
-  "en": ""
- },
- {
-  "vi": "🦴 Châm nồi",
-  "en": ""
- },
- {
-  "vi": "👅 Nếm",
-  "en": ""
- },
- {
-  "vi": "Lửa bếp",
-  "en": ""
- },
- {
-  "vi": "· nước đục",
-  "en": ""
- },
- {
-  "vi": "Nồi còn",
-  "en": ""
- },
- {
-  "vi": "Phở còn nóng hổi",
   "en": ""
  }
 ]

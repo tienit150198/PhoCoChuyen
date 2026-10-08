@@ -27,17 +27,17 @@ const NOUN={milk_tea:'trà sữa',grocery:'tạp hóa',delivery:'giao hàng',caf
 const CAREER_TITLE={pagoda:['🪷','Siêng việc chùa nhất tuần','Siêng việc chùa']};
 // game/fair.py TITLE_ROWS (full names) with a short one for the chip; game/wedding_live.py TITLE_NAMES (the race)
 const EVENT={
-  f_king:['👑','Vua trò chơi','Vua trò chơi','Hội chợ dân gian'],
-  f_master:['🎪','Cao thủ hội chợ','Cao thủ hội chợ','Hội chợ dân gian'],
-  f_oaq:['🪨','Cao tay ô ăn quan','Ô ăn quan','Hội chợ dân gian'],
-  f_ring:['💍','Tay ném vòng thần sầu','Ném vòng','Hội chợ dân gian'],
-  f_loto:['🎱','Thần lô tô hội chợ','Thần lô tô','Hội chợ dân gian'],
-  f_kinh2:['🎎','Kinh đôi rộn ràng','Kinh đôi','Hội chợ dân gian'],
-  f_nguoc:['🙃','Đọc ngược như xuôi','Đọc ngược','Hội chợ dân gian'],
-  f_hu:['🏺','Ôm hũ đêm hội','Hũ đêm hội','Hội chợ dân gian'],
-  f_bao:['🌪️','Trúng bão bầu cua','Bão bầu cua','Hội chợ dân gian'],
-  f_dart:['🎯','Mắt thần phi tiêu','Mắt thần','Hội chợ dân gian'],
-  f_raid:['🚨','Bị công an hỏi thăm','Bị hỏi thăm','Hội chợ dân gian'],
+  f_king:['👑','Vua trò chơi','Vua trò chơi','Chợ đen'],
+  f_master:['🎪','Cao thủ chợ đen','Cao thủ chợ đen','Chợ đen'],
+  f_oaq:['🪨','Cao tay ô ăn quan','Ô ăn quan','Chợ đen'],
+  f_ring:['💍','Tay ném vòng thần sầu','Ném vòng','Chợ đen'],
+  f_loto:['🎱','Thần lô tô chợ đen','Thần lô tô','Chợ đen'],
+  f_kinh2:['🎎','Kinh đôi rộn ràng','Kinh đôi','Chợ đen'],
+  f_nguoc:['🙃','Đọc ngược như xuôi','Đọc ngược','Chợ đen'],
+  f_hu:['🏺','Ôm hũ đêm hội','Hũ đêm hội','Chợ đen'],
+  f_bao:['🌪️','Trúng bão bầu cua','Bão bầu cua','Chợ đen'],
+  f_dart:['🎯','Mắt thần phi tiêu','Mắt thần','Chợ đen'],
+  f_raid:['🚨','Bị công an hỏi thăm','Bị hỏi thăm','Chợ đen'],
   w_vip:['🥇','Khách quý của phố','Khách quý','Khách mời của tuần'],
   w_pro:['🎊','Ăn cưới chuyên nghiệp','Ăn cưới pro','Khách mời của tuần'],
 };

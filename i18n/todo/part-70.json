@@ -1,5 +1,53 @@
 [
  {
+  "vi": "Lỗi an toàn: 1★, chủ không trả tiền, báo cáo lên app, có thể bị kiểm tra hôm sau.",
+  "en": ""
+ },
+ {
+  "vi": "Sai sữa tắm, lau sâu tai đang đau, tắm khi lông còn rối, sấy ấm cho bé mặt ngắn",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ: sao giảm mạnh, chủ càu nhàu hoặc đòi bớt 25–50% tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Thấy dấu hiệu bệnh mà không báo, hoặc tự đoán bệnh bảo mua thuốc",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ: review nêu đúng lỗi, sao giảm, có thể bị đòi lại tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Nước lạnh/hơi nóng, còn sót bọt, lông còn ẩm, khẩu phần lệch bảng, cho bánh khi chủ dặn không",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi nhỏ: mất 1 sao; nhiều lỗi cộng lại thì khách đòi giảm tiền hoặc bỏ đi không trả.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối oan bé khỏe, hoặc giao bé nhận nuôi không hợp nếp nhà",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối oan: không mất tiền nhưng review xấu. Giao sai: lỗi nặng, sau đó bé bị mang trả về.",
+  "en": ""
+ },
+ {
+  "vi": "🧽 Đầu ngày bấm [[Khử khuẩn chuồng & bàn tắm]]: thú y phường kiểm sổ, chưa ký là phạt 15 xu.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Mở [[Kho & nhập hàng]] kiểm sữa tắm, khăn, bông, bột cầm máu, túi nhặt phân, hạt chó, hạt mèo, bánh thưởng.",
+  "en": ""
+ },
+ {
+  "vi": "🚚 Kho sỉ thú cưng Mây rẻ: đặt trước 13:00 chiều nay tới, đặt sau thì sáng mai. Thỉnh thoảng giao thiếu.",
+  "en": ""
+ },
+ {
   "vi": "✈️ Hàng nhập Nhật Mây (sữa tắm da nhạy cảm, dầu xả, bột cầm máu) rẻ hơn đại lý nhưng 1–2 ngày mới tới.",
   "en": ""
  },
@@ -1657,66 +1705,6 @@
  },
  {
   "vi": "💸 Tuấn chỉ đủ tiền cho nửa bộ đi phỏng vấn: tư vấn đủ dùng, đừng ép mua thêm.",
-  "en": ""
- },
- {
-  "vi": "🌙 Bà Năm gọi lúc tối cần sửa gấp áo dài cưới: phải đo trên người mặc, đừng đoán.",
-  "en": ""
- },
- {
-  "vi": "🧋 Bé nhà chị Hằng làm đổ trà sữa lên váy mới: dỗ bé trước, giặt ngay vết bẩn.",
-  "en": ""
- },
- {
-  "vi": "💵 Từ ngày 2 thỉnh thoảng khách đưa thiếu tiền. Bấm [[Đếm lại tiền khách đưa]]; thiếu thật thì phải chọn cách xử lý rồi mới giao đồ được.",
-  "en": ""
- },
- {
-  "vi": "🙏 [[Nhắc khách đưa thêm]]: người đếm nhầm trả đủ, có khi còn tip. [[Bỏ qua, coi như bớt giá]]: mất khoản thiếu. [[Báo công an]]: chờ gần 20 phút, khách sau sốt ruột.",
-  "en": ""
- },
- {
-  "vi": "🧒 Trẻ con không đủ tiền: [[Cho nợ, mai trả]] (hôm sau hay quay lại trả), [[Bớt món cho vừa tiền]] hoặc [[Thôi, cho con luôn]] (có khi bố mẹ ghé cảm ơn, gửi lại tiền).",
-  "en": ""
- },
- {
-  "vi": "😤 Khách cố tình đưa thiếu rồi chối: [[Để khách đi]] thì mất khoản thiếu; báo công an thì khách phải trả đủ, hàng xóm khen tiệm làm đúng.",
-  "en": ""
- },
- {
-  "vi": "Nghe khách tả size",
-  "en": ""
- },
- {
-  "vi": "Đếm lại tiền khách đưa",
-  "en": ""
- },
- {
-  "vi": "Nhắc khách đưa thêm",
-  "en": ""
- },
- {
-  "vi": "Bỏ qua, coi như bớt giá",
-  "en": ""
- },
- {
-  "vi": "Cho nợ, mai trả",
-  "en": ""
- },
- {
-  "vi": "Bớt món cho vừa tiền",
-  "en": ""
- },
- {
-  "vi": "Thôi, cho con luôn",
-  "en": ""
- },
- {
-  "vi": "Để khách đi",
-  "en": ""
- },
- {
-  "vi": "Bạn phụ Nhã trông tiệm của chú Út: tư vấn thức ăn, setup bể cá, chăm thú trong tiệm, giao bé cho đúng người và tính tiền cho đúng.",
   "en": ""
  }
 ]

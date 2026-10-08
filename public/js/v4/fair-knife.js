@@ -108,7 +108,7 @@ export function setup(ctx){
       <p>Dừng bây giờ nhận <b>${xu(r.prize)}</b>. Chơi tiếp màn ${next}: qua màn được <b>${xu(r.win)}</b>, thua mất hết.</p>
       <div class="fh-kn-pick">${btn(D.busy&&D.act==='stop'?'Đang đếm tiền…':`💰 Dừng, nhận ${xu(r.prize)}`,'knstop',{},'cream big',D.busy?' disabled data-fh-key="knstop"':' data-fh-key="knstop"')}
       ${btn(D.busy&&D.act==='next'?'Đang dựng bia…':`🗡️ Chơi tiếp màn ${next}`,'knnext',{},'primary big',D.busy||!F().open?' disabled data-fh-key="knnext"':' data-fh-key="knnext"')}</div>
-      ${F().open?'':'<p class="fh-why">Hội chợ đã tàn: chỉ còn nhận thưởng thôi.</p>'}</div>`;
+      ${F().open?'':'<p class="fh-why">Chợ đen đã tàn: chỉ còn nhận thưởng thôi.</p>'}</div>`;
   }
   function resultCard(){
     const r=run();
@@ -130,7 +130,7 @@ export function setup(ctx){
     }else if(r?.stage==='choice')body=status(r)+choiceCard(r);
     else body=resultCard()+stakeRow();
     const ladder=k.ladder.map((m,i)=>`<li>Qua màn ${i+1}: <b>${xu(prize(r&&live()?r.stake:D.stake,i+1))}</b></li>`).join('');
-    const hot=!chance&&k.hot?`<p class="fh-why">🔥 Hôm nay bạn đang thắng đậm ở hội chợ nên bia quay gắt hơn.</p>`:'';
+    const hot=!chance&&k.hot?`<p class="fh-why">🔥 Hôm nay bạn đang thắng đậm ở chợ đen nên bia quay gắt hơn.</p>`:'';
     const tally=k.n?`<p class="fh-rule">Bạn đã chơi <b>${k.n}</b> lượt, dừng nhận thưởng <b>${k.w}</b> lượt, xa nhất màn <b>${k.b}</b>${k.top?`, thưởng lớn nhất ${xu(k.top)}`:''}.</p>`:'';
     return `<section class="fh-stall fh-kn" aria-label="Phóng dao">
       ${say(KEEPER,D.say)}
