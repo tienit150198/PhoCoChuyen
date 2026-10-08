@@ -2838,3 +2838,17 @@ input.amt-unread{border-color:var(--warn)!important;border-style:dashed!importan
 .rental-price{display:grid;gap:6px;margin:10px 0}
 .rental-price input{max-width:100%;width:100%;min-height:44px;border:1px solid var(--line-strong);border-radius:10px;padding:10px;background:var(--surface);color:var(--ink)}
 .rental-news{border-left:3px solid var(--accent);padding:8px 12px;background:var(--surface-2);font-size:.85rem;line-height:1.4}
+/* #249 🎖️ Chức vụ & lương on the job card (v4/views.js jobLadder); ✈️🌏 its way abroad (jobAbroad). */
+.jb-ladder{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.jb-ladder>.btn{align-self:flex-start}
+.jb-ladder>.kv,.jb-ladder>p{margin:0}
+.jb-next{margin:0;display:flex;flex-direction:column;gap:2px;font-size:.92rem}
+.jb-next small{color:var(--muted);font-size:.8rem}
+.jb-path>summary{cursor:pointer;font-weight:700;min-height:36px;display:flex;align-items:center}
+.jb-path ol{list-style:none;margin:4px 0;padding:0;display:flex;flex-direction:column;gap:4px}
+.jb-path li{display:flex;justify-content:space-between;gap:10px;padding:6px 10px;border-radius:10px;background:var(--surface-2);font-size:.88rem}
+.jb-path li span{min-width:0;overflow-wrap:anywhere}
+.jb-path li b{white-space:nowrap}
+.jb-path li.on{background:var(--accent-soft);font-weight:700}
+.jb-path li.done{color:var(--muted)}
+.jb-abroad{margin:8px 0;gap:8px}

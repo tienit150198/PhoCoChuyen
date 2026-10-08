@@ -776,14 +776,24 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
     from .accounting_jobs import pay as boosted
     multiplier = salary_multiplier(s,career)   # 💼 ×3 kế toán with its certificate, ×5 on a holiday (game/accounting_jobs.py)
     # 🎖️ A promotion's raise multiplies the contract salary (job['salary'] itself stays inside the posting's range).
+    # 🎓 A degree from ✈️ Du học adds its own points; 🌏 a contract abroad multiplies the day (game/abroad.py).
+    from . import abroad
     lift = promotion.raise_pct(s, c, career)
-    pay = boosted(round(job['salary'] * (100 + lift) / 100 * (.85 if job['probation'] else 1)), multiplier)
-    e.money(s, c, pay, 'Lương ngày ' + str(c['day']) + (' (thử việc 85%)' if job['probation'] else '') + (f' · +{lift}% chức vụ' if lift else ''),
+    deg = abroad.degree_pct(s)
+    away = abroad.pay_pct(s, c, career)
+    pay = boosted(round(_lifted(job['salary'], lift + deg, away) * (.85 if job['probation'] else 1)), multiplier)
+    e.money(s, c, pay, 'Lương ngày ' + str(c['day']) + (' (thử việc 85%)' if job['probation'] else '') + (f' · +{lift}% chức vụ' if lift else '')
+            + (f' · +{deg}% bằng du học' if deg else '') + (f' · 🌏 +{away}% ở nước ngoài' if away else ''),
             f'salary-{c["day"]}', category='salary')
     job['days_worked'] += 1
     note = dict(salary=pay, probation=job['probation'])
     if lift:
         note['raise'] = lift
+    if deg:
+        note['degree'] = deg
+    if away:
+        note['away'] = away
+    abroad.on_paid(s, c, career, note)   # 🌏 the day abroad counts; the last one brings you home
 
     if multiplier > 1:
         note['multiplier'] = multiplier   # the wallet row says ×3 / ×5 (journey._end_of_day)
@@ -807,6 +817,22 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
     if boss:
         note['boss'] = boss
     return note
+
+
+def _lifted(salary: int, pct: int, away: int = 0) -> float:
+    """The contract salary with the step's raise (and a degree's points), then a contract abroad's %. Kept as one
+    expression so a day without anything abroad pays exactly what it always did."""
+    x = salary * (100 + pct) / 100
+    return x * (100 + away) / 100 if away else x
+
+
+def day_pay(s: dict, c: dict, career: str, away: int = 0) -> int:
+    """A worked day's salary as on_close pays it off probation (the step's raise, a degree, `away` % abroad)."""
+    from .accounting_school import salary_multiplier
+    from .accounting_jobs import pay as boosted
+    from . import abroad, promotion
+    lift = promotion.raise_pct(s, c, career) + abroad.degree_pct(s)
+    return boosted(round(_lifted(int(c['job']['salary']), lift, away)), salary_multiplier(s, career))
 
 
 def _dy():
@@ -854,10 +880,21 @@ def public(c: dict, career: str, s: dict | None = None) -> dict:
         job['salary_multiplier'] = salary_multiplier(s,career)
         from .accounting_jobs import pay as boosted
         from . import promotion
+        from . import abroad
         lift = promotion.raise_pct(s, c, career)   # 🎖️ the step's raise, as on_close pays it
+        deg = abroad.degree_pct(s)   # 🎓 a degree from ✈️ Du học
+        away = abroad.pay_pct(s, c, career)   # 🌏 a contract abroad
         if lift:
             job['raise'] = lift
-        job['salary'] = boosted(round(job['salary'] * (100 + lift) / 100), job['salary_multiplier'])
+        if deg:
+            job['degree'] = deg
+        if away:
+            job['away'] = away
+        job['salary'] = boosted(round(_lifted(job['salary'], lift + deg, away)), job['salary_multiplier'])
+        if job.get('status') == 'hired':   # 🎖️ the whole ladder in xu a day, as the job card shows it (today's: abroad too)
+            pcts = promotion.ladder_pcts(s, c, career)
+            if pcts:
+                job['ladder_pay'] = [boosted(round(_lifted(job['base_salary'], x + deg, away)), job['salary_multiplier']) for x in pcts]
 
     job['certs'] = list(job.get('certs') or [])
     ex = exam(career)

@@ -276,11 +276,11 @@ class Review(unittest.TestCase):
         base = j.c['job']['salary']
         with mock.patch('game.accounting_school.salary_multiplier', return_value=3):
             r = day(j)
-        self.assertEqual(r['summary']['job']['salary'], min(600, round(base * 1.35) * 3))
+        self.assertEqual(r['summary']['job']['salary'], min(600, round(base * 1.55) * 3))
         j.c['job']['probation'] = True
         j.c['job']['probation_left'] = 5
         r = day(j)
-        self.assertEqual(r['summary']['job']['salary'], round(base * 1.35 * .85))
+        self.assertEqual(r['summary']['job']['salary'], round(base * 1.55 * .85))
         with mock.patch('game.accounting_school.salary_multiplier', return_value=5):
             j.c['job']['probation'] = False
             r = day(j)
@@ -533,7 +533,8 @@ class Saves(unittest.TestCase):
         self.assertNotIn('promo', v['journey'])
         bare = copy.deepcopy(j.state)
         del bare['journey']['promo']
-        self.assertEqual(json.dumps(v['journey'], ensure_ascii=False), json.dumps(public_state(bare)['journey'], ensure_ascii=False))
+        flat = lambda x: json.dumps({k: y for k, y in x.items() if k != 'abroad'}, ensure_ascii=False)   # 🌏 quotes the raised day pay
+        self.assertEqual(flat(v['journey']), flat(public_state(bare)['journey']))
         self.assertLess(len(json.dumps(v['careers']['delivery']['promo'], ensure_ascii=False)), 2600)
         self.assertNotIn('promo', v['careers']['pho'])   # careers not on screen: summary stubs only
 

@@ -154,7 +154,7 @@ class Ladders(unittest.TestCase):
         self.assertIn('Phòng điều hành bay', r['message'])
         rec = pm.record(j.state, 'pilot')
         self.assertEqual((rec['rank'], rec['hi']['n'], pm.rank(j.state, j.c, 'pilot')), (4, 1, 5))
-        self.assertEqual(pm.raise_pct(j.state, j.c, 'pilot'), 45)
+        self.assertEqual(pm.raise_pct(j.state, j.c, 'pilot'), 66)   # #249: +66 % at step 5
         self.assertEqual(pm.public(j.state, j.c, 'pilot')['insignia']['s'], 2)
         validate_state(j.state)
 

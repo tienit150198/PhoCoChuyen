@@ -1,0 +1,28 @@
+/* ✈️ Du học, 🌏 Làm việc ở nước ngoài (public/js/v4/abroad.js). Theme tokens only. */
+.ab-body{display:flex;flex-direction:column;gap:12px}
+.ab-tabs{align-self:stretch}
+.ab-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.ab-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;border:1px solid var(--line);border-radius:var(--radius-lg,18px);background:var(--surface);box-shadow:var(--shadow-sm);min-width:0}
+.ab-card h3{margin:0;font-size:1.02rem}
+.ab-card p{margin:0}
+.ab-card .btn{min-height:40px}
+.ab-now{border-color:var(--accent);background:var(--accent-soft)}
+.ab-eyebrow{font-size:.8rem;font-weight:800;letter-spacing:.03em;color:var(--muted);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.ab-dots{display:inline-flex;gap:5px}
+.ab-dots i{width:10px;height:10px;border-radius:50%;background:var(--surface-3);border:1px solid var(--line-strong)}
+.ab-dots i.on{background:var(--star);border-color:var(--star)}
+.ab-scene{font-style:italic;color:var(--ink-2,var(--ink))}
+.ab-q{font-weight:700}
+.ab-opts{display:flex;flex-direction:column;gap:8px;align-self:stretch}
+.ab-opts .btn{width:100%;justify-content:flex-start;text-align:left;min-height:46px}
+.ab-last{padding:10px 12px;border-radius:12px;background:var(--surface-2);font-size:.9rem;margin:0}
+.ab-last.good{background:var(--good-soft)}
+.ab-wait,.ab-why{margin:0;font-size:.9rem;color:var(--ink-2,var(--ink))}
+.ab-why{color:var(--warn)}
+.ab-perk{margin:0;font-size:.88rem;color:var(--ink-2,var(--ink))}
+.ab-degs{display:flex;flex-wrap:wrap;gap:6px}
+.ab-deg{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:999px;background:var(--good-soft);font-size:.84rem;font-weight:700}
+.ab-deg small{font-weight:600;color:var(--muted)}
+.ab-jobs{display:flex;flex-wrap:wrap;gap:6px}
+.ab-job{min-height:40px;padding:6px 12px;border:2px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:inherit;font-size:.86rem;cursor:pointer}
+.ab-job.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
