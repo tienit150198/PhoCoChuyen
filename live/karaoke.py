@@ -68,6 +68,21 @@ Moderation
 * Blocks: a player who blocked the singer, or whom the singer blocked, gets no listening token; a block made while the
   mic is on removes that listener from the SFU room within a second (tick). Leaving the Phòng hát room does too.
 
+🎤 Hát cùng (feedback #268, owner 08/10 "cho nhiều người hát chung"; same switch and gates as the mic)
+* While the stage singer's mic is on, anyone else in the room (account, not muted, the mic's birth-year and account-age
+  gates, not blocked either way with the singer) may ask to sing along: `kara_join {e, on: 1}`. The singer sees
+  `kara_ask {pid, name, on, until}` and decides: `kara_let {e, pid, ok}` (an admin too). Yes: the co-singer gets an
+  SFU room of their own (one publisher a room, so every block rule above holds per voice) and `kara_sing {on: 1, url,
+  room, token, until}`; the room sees `kara_co {pid, name, on: 1}` (`stage.mic.co` for late comers). No, or no answer
+  within ASK_SECS: `kara_sing {on: 0, why}`; a "no" (or a later `kara_let ok: 0`, which also cuts a live co-singer's mic)
+  holds for the rest of the song. CO_MAX co-singers at most.
+* Everyone (the singers too) asks `kara_listen {pid}` for each co-singer's voice; `kara_listen {}` stays the stage
+  singer's. A co-singer's page sends its video time like the singer's; it reaches that voice's listeners as
+  `kara_cvt {pid, e, vt, at, …}`. The pages hold each voice in a Web Audio delay so it plays with their own music.
+* A co-singer's mic goes off with the singer's (and with every cut above), when they turn it off (`kara_join {on: 0}`),
+  leave, are kicked or muted, are blocked by the singer, or get MIC_REPORTS reports: `kara_co {pid, on: 0, why}`.
+* Older pages ignore every frame here (they hear the stage singer only); an older live service answers 'unknown'.
+
 Frames (client → server; replies in brackets)
   kara_time {c}                     [kara_time {c, at}]  (the server clock)
   kara_list {}                      [kara_list {rooms: [{id, name, emoji, theme, n, cap, song, q, closed}]}]
@@ -79,11 +94,15 @@ Frames (client → server; replies in brackets)
   kara_react {k}   kara_cheer {}    kara_say {text} [kara_said … to the room]      kara_report {pid | vid, reason}
   kara_round {mode, clue, answer, vid?}   kara_round_end {}       kara_kick {pid}  kara_close {}  kara_ban {vid}
   kara_mic {on}                     [kara_mic {on, url?, token?, until?}]   kara_listen {} [kara_listen {on, url?, token?, e?}]
-  kara_mic_cut {}  (admin)          kara_vt {e, vt, st?, r?, rtt?}  (the live singer; no reply)
+  kara_mic_cut {}  (admin)          kara_vt {e, vt, st?, r?, rtt?, ol?}  (a live singer or co-singer; no reply)
+  kara_listen {pid}                 [kara_listen {pid, on, url?, token?, e?}]  (a co-singer's voice)
+  kara_join {e, on}                 [kara_join {e, on, ask?, until?}]      kara_let {e, pid, ok}  (the singer, an admin)
 Server pushes: kara_ppl {n, pid, name, on}, kara_q {queue}, kara_play, kara_stage, kara_votes {e, n, need},
 kara_end, kara_fx {r, cheer}, kara_tipped {e, frm, name, xu}, kara_said, kara_round, kara_reveal, kara_near,
-kara_won {xu}, kara_left {why: out | other | kick | closed}, kara_live {on, e, by?, until?, why?}, kara_listen {on: 0},
-kara_vt {e, vt, at, r?, rtt?} (to the mic's listeners).
+kara_won {xu}, kara_left {why: out | other | kick | closed}, kara_live {on, e, by?, until?, why?}, kara_listen {on: 0, pid?},
+kara_vt {e, pid, vt, at, r?, rtt?, ol?} (to the mic's listeners), kara_cvt {e, pid, vt, at, …} (to a co-singer's),
+kara_ask {e, pid, name, on, until?} (to the singer), kara_sing {e, on, url?, room?, token?, until?, why?} (to a
+co-singer), kara_co {e, pid, name?, on, why?}.
 """
 from __future__ import annotations
 
@@ -134,6 +153,10 @@ VT_SPAN = 15.0                # a singer's video time this far from the shared c
 VT_BACK = 1.5                 # the singer's own time stamp is trusted this far back at most
 VT_RTT_MAX = 3000             # ms
 VT_RATE = (0.5, 2.0)          # a playback rate relayed (the page nudges 0.95 / 1.05)
+VT_OL_MAX = 1000              # ms: a singer's own capture + output latency (Bluetooth earphones ~250)
+CO_MAX = 3                    # 🎤 co-singers at once (4 voices with the stage singer)
+ASK_SECS = 30.0               # a "Hát cùng" ask unanswered this long lapses
+CO_GRACE = 0.5                # 🎤 a co-singer's SFU room is deleted this long after its kara_co / kara_live frame (pages leave first)
 
 
 class Member:
@@ -181,7 +204,7 @@ class KaraokeFeature(Feature):
         self.kicked = LRU(5000)          # pid -> until (an admin's kick: every room)
         self.closed: dict = {}           # room id -> until (an admin closed it)
         self.tasks: set = set()
-        self.plays = self.rounds = self.wins = self.mics = 0
+        self.plays = self.rounds = self.wins = self.mics = self.cos = 0
         cfg = self.cfg
         self.sfu = Sfu(cfg.sfu_url, cfg.sfu_api, cfg.sfu_key, cfg.sfu_secret)
 
@@ -283,6 +306,9 @@ class KaraokeFeature(Feature):
         mic = d.get('mic')
         if mic is not None and mic['on'] and mic['e'] == st.e:
             out['mic'] = dict(on=1, until=round(mic['until'], 3))
+            co = [dict(pid=c['pid'], name=c['name']) for c in mic['co'].values() if c['on']]
+            if co:
+                out['mic']['co'] = co
         return out
 
     def _round(self, d, p=None) -> dict | None:
@@ -298,10 +324,18 @@ class KaraokeFeature(Feature):
 
     def snapshot(self, room, p) -> dict:
         d = room.data
-        return dict(t='kara_room', id=room.id, name=d['name'], emoji=d['emoji'], theme=d['theme'], cap=ROOM_CAP, me=p.pid,
-                    account=bool(p.account), adm=1 if self._admin(p) else 0, n=len(d['people']), people=self._people(room, p),
-                    stage=self._stage(d), queue=[e.view() for e in d['queue']], round=self._round(d, p), now=round(time.time(), 3),
-                    reacts=list(REACTS), tips=list(KG.TIP_CHIPS), price=KG.QUEUE_XU, lead=LEAD)
+        stage = self._stage(d)
+        out = dict(t='kara_room', id=room.id, name=d['name'], emoji=d['emoji'], theme=d['theme'], cap=ROOM_CAP, me=p.pid,
+                   account=bool(p.account), adm=1 if self._admin(p) else 0, n=len(d['people']), people=self._people(room, p),
+                   stage=stage, queue=[e.view() for e in d['queue']], round=self._round(d, p), now=round(time.time(), 3),
+                   reacts=list(REACTS), tips=list(KG.TIP_CHIPS), price=KG.QUEUE_XU, lead=LEAD)
+        sm = (stage or {}).get('mic')
+        if sm and sm.get('co'):   # 🎤 co-singers, but not those I blocked or who blocked me
+            sm['co'] = [c for c in sm['co'] if not self._split(p.pid, c['pid'])]
+        mic = self._song_mic(d)
+        if mic is not None and mic['on'] and mic['pid'] == p.pid and mic['asks']:   # the singer back in: the asks waiting
+            out['asks'] = [dict(pid=k, name=a['name'], until=round(a['until'], 3)) for k, a in mic['asks'].items()]
+        return out
 
     def _tell_queue(self, room) -> None:
         room.send(dict(t='kara_q', id=room.id, queue=[e.view() for e in room.data['queue']]))
@@ -411,9 +445,13 @@ class KaraokeFeature(Feature):
         if mic is not None and mic['on']:
             if mic['pid'] == p.pid:          # the singer left the room: their mic goes off (they may turn it on again)
                 self._mic_off(room, 'left')
-            elif p.pid in mic['subs']:       # a listener left: out of the SFU room too
-                mic['subs'].discard(p.pid)
-                self.spawn(self.sfu.remove(mic['sfu'], p.pid))
+            else:
+                self._ask_off(room, mic, p.pid, None)
+                self._co_off(room, mic, p.pid, 'left')   # 🎤 a co-singer's mic goes with them
+                for s in self._sessions(mic):            # a listener left: out of every SFU room too
+                    if p.pid in s['subs']:
+                        s['subs'].discard(p.pid)
+                        self.spawn(self.sfu.remove(s['sfu'], p.pid))
         rd = d['round']
         if rd and rd['host'] == p.pid:
             self._reveal(room, None, 'left')
@@ -741,8 +779,27 @@ class KaraokeFeature(Feature):
 
     @staticmethod
     def _new_mic(st: Entry, name: str, now: float, cut: str | None = None) -> dict:
+        """The stage singer's mic for one song. 🎤 `co`: the co-singers' sessions (pid → the same keys: pid, name, sfu,
+        on, subs, reports, vt_at), `asks`: pid → {name, until} waiting for the singer, `barred`: told no or cut, for the
+        rest of the song."""
         return dict(e=st.e, pid=st.pid, name=name, n=0, sfu='', on=False, busy=False, cut=cut, until=now + KM.MIC_SECS,
-                    subs=set(), reports=set(), vt_at=0.0)
+                    subs=set(), reports=set(), vt_at=0.0, co={}, asks={}, barred=set())
+
+    @staticmethod
+    def _sessions(mic: dict) -> list:
+        """Every voice live now: the stage singer's session (the mic dict itself) and each co-singer's."""
+        out = [mic] if mic['on'] else []
+        return out + [c for c in mic['co'].values() if c['on']]
+
+    @staticmethod
+    def _session_of(mic: dict | None, pid) -> dict | None:
+        """The live voice session of `pid` (the singer's or a co-singer's), if any."""
+        if mic is None or not mic['on'] or not isinstance(pid, str):
+            return None
+        if pid == mic['pid']:
+            return mic
+        c = mic['co'].get(pid)
+        return c if c is not None and c['on'] else None
 
     def _song_mic(self, d) -> dict | None:
         """The mic session of the song on stage (None: not turned on yet, or the dict is an older song's)."""
@@ -776,7 +833,51 @@ class KaraokeFeature(Feature):
         mic['on'] = False
         name, mic['subs'] = mic['sfu'], set()
         self.spawn(self.sfu.delete_room(name))
+        for c in mic['co'].values():   # 🎤 the co-singers' mics go with it (the kara_live below says so to every page)
+            if c['on']:
+                c['on'], c['subs'] = False, set()
+                self.spawn(self._delete_soon(c['sfu']))
+        mic['asks'] = {}
         room.send(dict(t='kara_live', id=room.id, on=0, e=mic['e'], why=why))
+
+    # ---- 🎤 hát cùng: co-singers --------------------------------------------------------------------------
+    def _member_conn(self, room, pid: str):
+        m = room.data['people'].get(pid)
+        return m.conn if m is not None else None
+
+    def _ask_off(self, room, mic: dict, pid: str, why: str | None) -> None:
+        """An ask ends unanswered (`why` to the asker: 'no' | 'time' | 'sfu'; None: they withdrew or left)."""
+        a = mic['asks'].pop(pid, None)
+        if a is None:
+            return
+        host = self._member_conn(room, mic['pid'])
+        if host is not None:
+            self.hub.send(host, dict(t='kara_ask', id=room.id, e=mic['e'], pid=pid, on=0))
+        c = self._member_conn(room, pid) if why else None
+        if c is not None:
+            self.hub.send(c, dict(t='kara_sing', id=room.id, e=mic['e'], on=0, why=why))
+
+    def _co_off(self, room, mic: dict, pid: str, why: str, bar: bool = False) -> None:
+        """A co-singer's mic goes off (its SFU room deleted). `bar`: not again for the rest of this song."""
+        if bar:
+            mic['barred'].add(pid)
+        c = mic['co'].get(pid)
+        if c is None or not c['on']:
+            return
+        c['on'], name, c['subs'] = False, c['sfu'], set()
+        self.spawn(self._delete_soon(name))
+        room.send(dict(t='kara_co', id=room.id, e=mic['e'], pid=pid, on=0, why=why))
+
+    async def _delete_soon(self, name: str) -> None:
+        """A co-singer's room goes CO_GRACE after the frame that says so: the pages disconnect by themselves first
+        (no "WS closed unexpectedly" in their consoles); the room is deleted all the same, so a page that ignores the
+        frame is cut anyway, and nobody gets a token for it meanwhile (the session is off)."""
+        await asyncio.sleep(CO_GRACE)
+        await self.sfu.delete_room(name)
+
+    def _co_token(self, room, mic: dict, c: dict, now: float) -> dict:
+        return dict(t='kara_sing', id=room.id, e=mic['e'], on=1, url=self.sfu.url, room=c['sfu'], until=round(mic['until'], 3),
+                    token=self.sfu.token(c['pid'], c['name'], c['sfu'], publish=True, ttl=mic['until'] - now + 30, now=now))
 
     def _mic_ban(self, room, why: str) -> None:
         """An admin cut: the mic goes off and stays off for this song, even if it was not on yet."""
@@ -787,13 +888,40 @@ class KaraokeFeature(Feature):
         self._mic_off(room, why, cut=True)
 
     def _mic_blocks(self, room, mic: dict) -> None:
-        """A block made while the mic is on: that listener leaves the SFU room."""
-        for pid in [x for x in mic['subs'] if self._split(mic['pid'], x)]:
-            mic['subs'].discard(pid)
-            self.spawn(self.sfu.remove(mic['sfu'], pid))
-            self.hub.send_many(self.hub.conns_of(pid), dict(t='kara_listen', id=room.id, on=0, e=mic['e']))
+        """A block made while the mic is on: that listener leaves the voice's SFU room (each voice its own). 🎤 A
+        co-singer and the stage singer blocked either way: the co-singer's mic goes off for the song."""
+        for c in list(mic['co'].values()):
+            if c['on'] and self._split(mic['pid'], c['pid']):
+                self._co_off(room, mic, c['pid'], 'block', bar=True)
+        for pid in [k for k in mic['asks'] if self._split(mic['pid'], k)]:
+            self._ask_off(room, mic, pid, 'no')
+        for s in self._sessions(mic):
+            for pid in [x for x in s['subs'] if self._split(s['pid'], x)]:
+                s['subs'].discard(pid)
+                self.spawn(self.sfu.remove(s['sfu'], pid))
+                frame = dict(t='kara_listen', id=room.id, on=0, e=mic['e'])
+                if s is not mic:
+                    frame['pid'] = s['pid']
+                self.hub.send_many(self.hub.conns_of(pid), frame)
 
     MIC_NO = dict(cut='Mic của bài này đã bị tắt.', time=f'Hết {KM.MIC_SECS // 60} phút mic của bài này rồi.', busy='Đang bật mic, chờ chút nhé.')
+
+    async def _mic_gate(self, p) -> None:
+        """Who may sing into a live mic (the stage singer and co-singers alike): an account, a stored birth year of
+        someone MIN_AGE or older, an account MIC_ACCOUNT_DAYS old (admins excepted)."""
+        try:
+            row = await self.db.fetchrow('SELECT a.created_at, b.year FROM accounts a LEFT JOIN account_birth b ON b.sid=a.sid WHERE a.sid=?', (p.sid,))
+        except DbError as e:
+            log('karaoke mic:', type(e).__name__)
+            raise LiveError('busy', 'Máy chủ đang bận, thử lại nhé.') from None
+        if not row:
+            raise LiveError('account', 'Tạo tài khoản để hát trực tiếp nhé.')
+        if row['year'] is None:
+            raise LiveError('birth', 'Cho Phòng hát biết năm sinh của bạn trước khi mở mic nhé.')
+        if not KM.age_ok(int(row['year'])):
+            raise LiveError('young', f'Mic trực tiếp dành cho bạn từ {KM.MIN_AGE} tuổi. Bạn vẫn nghe và cổ vũ mọi người được nha 🎧')
+        if not KM.account_old_enough(row['created_at']) and not self._admin(p):
+            raise LiveError('too_new', f'Mic trực tiếp mở khi tài khoản đủ {KM.MIC_ACCOUNT_DAYS} ngày nhé.')
 
     @on('kara_mic', rate=(10, 60))
     async def kara_mic(self, conn, f):
@@ -825,19 +953,7 @@ class KaraokeFeature(Feature):
         out = ready(self._song_mic(d), time.time())
         if out:
             return out
-        try:
-            row = await self.db.fetchrow('SELECT a.created_at, b.year FROM accounts a LEFT JOIN account_birth b ON b.sid=a.sid WHERE a.sid=?', (p.sid,))
-        except DbError as e:
-            log('karaoke mic:', type(e).__name__)
-            raise LiveError('busy', 'Máy chủ đang bận, thử lại nhé.') from None
-        if not row:
-            raise LiveError('account', 'Tạo tài khoản để hát trực tiếp nhé.')
-        if row['year'] is None:
-            raise LiveError('birth', 'Cho Phòng hát biết năm sinh của bạn trước khi mở mic nhé.')
-        if not KM.age_ok(int(row['year'])):
-            raise LiveError('young', f'Mic trực tiếp dành cho bạn từ {KM.MIN_AGE} tuổi. Bạn vẫn nghe và cổ vũ mọi người được nha 🎧')
-        if not KM.account_old_enough(row['created_at']) and not self._admin(p):
-            raise LiveError('too_new', f'Mic trực tiếp mở khi tài khoản đủ {KM.MIC_ACCOUNT_DAYS} ngày nhé.')
+        await self._mic_gate(p)
         now = time.time()
         st = self._my_stage(room, p)   # again: the song may have ended meanwhile
         mic = self._song_mic(d)
@@ -864,24 +980,134 @@ class KaraokeFeature(Feature):
         room.send(self._mic_view(room, mic))
         return self._mic_token(room, mic, m, time.time())
 
-    @on('kara_listen', rate=(20, 60))
+    @on('kara_listen', rate=(40, 60))
     async def kara_listen(self, conn, f):
         """A listening token for the mic on now: subscribe only, hidden, LISTEN_TTL seconds to join. Nothing for the
-        singer, for anyone the singer blocked or who blocked them (and nothing says why), or when it is off."""
+        singer, for anyone the singer blocked or who blocked them (and nothing says why), or when it is off.
+        🎤 `pid`: that co-singer's voice instead (the same rules with them; the reply carries the pid)."""
         room, m = self._mine(conn)
         d = room.data
         mic = self._song_mic(d)
-        if not self._mic_on() or mic is None or not mic['on'] or m.pid == mic['pid'] or self._split(mic['pid'], m.pid):
-            return dict(t='kara_listen', id=room.id, on=0)
-        mic['subs'].add(m.pid)
-        return dict(t='kara_listen', id=room.id, on=1, e=mic['e'], url=self.sfu.url, room=mic['sfu'],
-                    token=self.sfu.token(m.pid, m.name, mic['sfu'], publish=False, ttl=KM.LISTEN_TTL))
+        want = f.get('pid')
+        s = self._session_of(mic, want if isinstance(want, str) else (mic or {}).get('pid'))
+        out = dict(t='kara_listen', id=room.id, on=0)
+        if isinstance(want, str):
+            out['pid'] = want[:40]
+        if not self._mic_on() or s is None or m.pid == s['pid'] or self._split(s['pid'], m.pid):
+            return out
+        s['subs'].add(m.pid)
+        return dict(out, on=1, e=mic['e'], url=self.sfu.url, room=s['sfu'],
+                    token=self.sfu.token(m.pid, m.name, s['sfu'], publish=False, ttl=KM.LISTEN_TTL))
+
+    # ---- 🎤 hát cùng ----------------------------------------------------------------------------------------
+    CO_NO = dict(nolive='Người hát chưa bật mic, chờ chút nhé.', bad='Bạn đang hát chính rồi.', no='Bài này bạn nghe cùng mọi người nhé.',
+                 full=f'Đã đủ {CO_MAX} người hát cùng rồi.')
+
+    def _co_ok(self, room, mic, p, f) -> None:
+        """Refusals for an ask (before and after the gate's await)."""
+        d = room.data
+        if mic is None or not mic['on'] or f.get('e') != mic['e'] or d['phase'] not in ('deck', 'play') or p.pid not in d['people']:
+            raise LiveError('nolive', self.CO_NO['nolive'])
+        if mic['pid'] == p.pid:
+            raise LiveError('bad', self.CO_NO['bad'])
+        if p.pid in mic['barred'] or self._split(mic['pid'], p.pid):   # told no, cut, or a block (which nothing reveals)
+            raise LiveError('no', self.CO_NO['no'])
+        if sum(1 for c in mic['co'].values() if c['on']) >= CO_MAX:
+            raise LiveError('full', self.CO_NO['full'])
+
+    @on('kara_join', rate=(10, 60))
+    async def kara_join(self, conn, f):
+        """🎤 Ask to sing along with the stage singer (`on: 1`), or stop (`on: 0`: the ask withdrawn or the mic off).
+        Asked again while on (the page lost the SFU): a fresh kara_sing for the same session."""
+        room, m = self._mine(conn)
+        if not self._mic_on():
+            raise LiveError('off', 'Mic trực tiếp chưa mở.')
+        d, p = room.data, conn.player
+        mic = self._song_mic(d)
+        if not f.get('on'):
+            if mic is not None and mic['pid'] != p.pid:
+                self._ask_off(room, mic, p.pid, None)
+                self._co_off(room, mic, p.pid, 'off')
+            return dict(t='kara_join', id=room.id, e=f.get('e') if isinstance(f.get('e'), str) else None, on=0)
+        self._need_account(p, 'hát cùng')
+        c = self._session_of(mic, p.pid)
+        if c is not None and c is not mic and f.get('e') == mic['e']:
+            self.hub.send(conn, self._co_token(room, mic, c, time.time()))
+            return dict(t='kara_join', id=room.id, e=mic['e'], on=1, live=1)
+        self._co_ok(room, mic, p, f)
+        if p.pid in mic['asks']:
+            return dict(t='kara_join', id=room.id, e=mic['e'], on=1, ask=1, until=round(mic['asks'][p.pid]['until'], 3))
+        await self._mic_gate(p)
+        mic = self._song_mic(d)
+        if self.hub.rooms.get(room.id) is not room:
+            raise LiveError('nolive', self.CO_NO['nolive'])
+        self._co_ok(room, mic, p, f)
+        until = time.time() + ASK_SECS
+        mic['asks'][p.pid] = dict(name=m.name, until=until)
+        host = self._member_conn(room, mic['pid'])
+        if host is not None:
+            self.hub.send(host, dict(t='kara_ask', id=room.id, e=mic['e'], pid=p.pid, name=m.name, on=1, until=round(until, 3)))
+        return dict(t='kara_join', id=room.id, e=mic['e'], on=1, ask=1, until=round(until, 3))
+
+    @on('kara_let', rate=(30, 60))
+    async def kara_let(self, conn, f):
+        """🎤 The stage singer (or an admin) answers an ask: `ok` 1 opens the co-singer's own SFU room and hands them a
+        publishing token; 0 says no, or cuts a co-singer already live; either "no" holds for the rest of the song."""
+        room, m = self._mine(conn)
+        d, p = room.data, conn.player
+        mic, pid = self._song_mic(d), f.get('pid')
+        if mic is None or not mic['on'] or f.get('e') != mic['e']:
+            raise LiveError('gone', 'Mic của bài này đã tắt.')
+        if mic['pid'] != m.pid and not self._admin(p):
+            raise LiveError('bad', 'Chỉ người hát chính quyết được.')
+        if not isinstance(pid, str) or not KG.PID_RX.fullmatch(pid) or pid == mic['pid']:
+            raise LiveError('bad', 'Người chơi không hợp lệ.')
+        if not f.get('ok'):
+            self._ask_off(room, mic, pid, 'no')
+            self._co_off(room, mic, pid, 'kick', bar=True)
+            mic['barred'].add(pid)
+            return None
+        a = mic['asks'].pop(pid, None)
+        if a is None:
+            raise LiveError('gone', 'Lời xin hát cùng đã hết hạn.')
+        host = self._member_conn(room, mic['pid'])
+        if host is not None:
+            self.hub.send(host, dict(t='kara_ask', id=room.id, e=mic['e'], pid=pid, on=0))
+        st = d['stage']
+
+        def fit() -> bool:
+            return (d.get('mic') is mic and mic['on'] and d['stage'] is st and d['phase'] in ('deck', 'play') and pid in d['people']
+                    and pid not in mic['barred'] and not self._split(mic['pid'], pid) and self.hub.rooms.get(room.id) is room
+                    and self._session_of(mic, pid) is None and sum(1 for c in mic['co'].values() if c['on']) < CO_MAX)
+        if not fit():
+            c = self._member_conn(room, pid)
+            if c is not None:
+                self.hub.send(c, dict(t='kara_sing', id=room.id, e=mic['e'], on=0, why='gone'))
+            raise LiveError('gone', 'Chưa thêm được người hát cùng.')
+        mic['n'] += 1
+        name = room_name(room.id, mic['e'], mic['n'])
+        ok = await self.sfu.create_room(name, ROOM_CAP + 10)
+        if not ok or not fit():
+            if ok:
+                self.spawn(self.sfu.delete_room(name))
+            c = self._member_conn(room, pid)
+            if c is not None:
+                self.hub.send(c, dict(t='kara_sing', id=room.id, e=mic['e'], on=0, why='sfu' if not ok else 'gone'))
+            raise LiveError('sfu' if not ok else 'gone', 'Mic đang bận, thử lại sau ít phút nhé.' if not ok else 'Chưa thêm được người hát cùng.')
+        who = d['people'][pid]
+        co = mic['co'][pid] = dict(pid=pid, name=who.name, sfu=name, on=True, subs=set(), reports=set(), vt_at=0.0)
+        self.cos += 1
+        self.hub.send(who.conn, self._co_token(room, mic, co, time.time()))
+        self._send_from(room, dict(t='kara_co', id=room.id, e=mic['e'], pid=pid, name=who.name, on=1), pid)
+        return None
 
     @on('kara_vt', rate=(4, 3.0))
     async def kara_vt(self, conn, f):
         """🎙️ Voice and music together ("bị delay xíu", 07/10): while the mic is on, the singer's page sends its own
         video time about once a second (`vt`, seconds into the song; `st`, its server-clock reading of that moment;
-        `r`, its playback rate while its own sync nudges it; `rtt`, its media path's round trip in ms). Only the stage singer of the live mic, a number near the shared
+        `r`, its playback rate while its own sync nudges it; `rtt`, its media path's round trip in ms; `ol`, 08/10, its
+        own capture + output latency in ms: Bluetooth earphones make a singer hear the music, and so sing, that much
+        later). Only a live voice of this song (the stage singer, 🎤 or a co-singer: kara_cvt), a number near the shared
         clock (VT_SPAN), at most one every VT_GAP seconds. Relayed, stamped with `at` (server time of `vt`: the
         singer's `st` when it is no more than VT_BACK old, else now), to the mic's listeners in this room (blocks
         respected); a listener's video then follows the singer's minus the voice's delay. Anything else is dropped
@@ -889,22 +1115,25 @@ class KaraokeFeature(Feature):
         room, m = self._mine(conn)
         d = room.data
         mic = self._song_mic(d)
-        if mic is None or not mic['on'] or mic['pid'] != m.pid or f.get('e') != mic['e'] or d['phase'] not in ('deck', 'play'):
+        s = self._session_of(mic, m.pid)   # 🎤 a co-singer's too: relayed as kara_cvt to that voice's listeners
+        if s is None or f.get('e') != mic['e'] or d['phase'] not in ('deck', 'play'):
             return None
-        vt, st, r, rtt = f.get('vt'), f.get('st'), f.get('r'), f.get('rtt')
+        vt, st, r, rtt, ol = f.get('vt'), f.get('st'), f.get('r'), f.get('rtt'), f.get('ol')
         if type(vt) not in (int, float) or not math.isfinite(vt) or not 0 <= vt <= DUR_MAX + VT_SPAN:
             return None
         now = time.time()
-        if abs(vt - (now - d['at'])) > VT_SPAN or now - mic['vt_at'] < VT_GAP:
+        if abs(vt - (now - d['at'])) > VT_SPAN or now - s['vt_at'] < VT_GAP:
             return None
-        mic['vt_at'] = now
+        s['vt_at'] = now
         at = min(now, max(now - VT_BACK, float(st))) if type(st) in (int, float) and math.isfinite(st) else now
-        frame = dict(t='kara_vt', id=room.id, e=mic['e'], vt=round(float(vt), 3), at=round(at, 3))
+        frame = dict(t='kara_vt' if s is mic else 'kara_cvt', id=room.id, e=mic['e'], pid=m.pid, vt=round(float(vt), 3), at=round(at, 3))
         if type(rtt) in (int, float) and math.isfinite(rtt) and 0 <= rtt <= VT_RTT_MAX:
             frame['rtt'] = int(rtt)
         if type(r) in (int, float) and math.isfinite(r) and VT_RATE[0] <= r <= VT_RATE[1] and r != 1:
             frame['r'] = round(float(r), 3)
-        subs = mic['subs']
+        if type(ol) in (int, float) and math.isfinite(ol) and 0 < ol <= VT_OL_MAX:
+            frame['ol'] = int(ol)
+        subs = s['subs']
         self.hub.send_many([c for c in room.conns if c is not conn and c.player.pid in subs and not self._split(m.pid, c.player.pid)], frame)
         return None
 
@@ -935,15 +1164,18 @@ class KaraokeFeature(Feature):
         else:
             raise LiveError('bad', 'Không tìm thấy mục để báo cáo.')
         mic = self._song_mic(d)
-        live = mic is not None and mic['on'] and target == 'p:' + mic['pid']
-        if live:   # 🎙️ about the live voice: the admin queue shows it as such ('m:<pid>')
-            target = 'm:' + mic['pid']
+        s = self._session_of(mic, target[2:]) if target.startswith('p:') else None
+        if s is not None:   # 🎙️ about a live voice (🎤 a co-singer's too): the admin queue shows it as such ('m:<pid>')
+            target = 'm:' + s['pid']
         await self.db.execute("INSERT INTO reports(reporter, kind, target, reason, at) VALUES(?, 'kara', ?, ?, ?) "
                               'ON CONFLICT(reporter, kind, target) DO NOTHING', (p.pid, target, reason, time.time()))
-        if live and mic['on'] and self.hub.rooms.get(room.id) is room:   # 🎙️ reports of the live singer cut the mic
-            mic['reports'].add(p.pid)
-            if len(mic['reports']) >= KM.MIC_REPORTS:
-                self._mic_off(room, 'reports', cut=True)
+        if s is not None and s['on'] and self.hub.rooms.get(room.id) is room and d.get('mic') is mic:   # reports of a live voice cut its mic
+            s['reports'].add(p.pid)
+            if len(s['reports']) >= KM.MIC_REPORTS:
+                if s is mic:
+                    self._mic_off(room, 'reports', cut=True)
+                else:
+                    self._co_off(room, mic, s['pid'], 'reports', bar=True)
         return dict(t='kara_reported', target=target)
 
     # ---- admins ------------------------------------------------------------------------------------------
@@ -1027,6 +1259,10 @@ class KaraokeFeature(Feature):
             self._tell_queue(room)
         if d['stage'] is not None and d['stage'].pid == pid and not d['stage'].reward:
             self._end(room, end_why, time.time())
+        mic = self._song_mic(d)
+        if mic is not None and mic['on'] and mic['pid'] != pid:   # 🎤 a co-singer's mic (or ask) too
+            self._ask_off(room, mic, pid, None)
+            self._co_off(room, mic, pid, end_why, bar=True)
         if d['round'] and d['round']['host'] == pid:
             self._reveal(room, None, 'admin')
 
@@ -1077,6 +1313,8 @@ class KaraokeFeature(Feature):
                 if now >= mic['until']:
                     self._mic_off(room, 'time', cut=True)
                 else:
+                    for pid in [k for k, a in mic['asks'].items() if now >= a['until']]:   # 🎤 an ask nobody answered
+                        self._ask_off(room, mic, pid, 'time')
                     self._mic_blocks(room, mic)
             if d['phase'] == 'deck' and now >= d['at']:
                 d['phase'] = 'play'
@@ -1114,5 +1352,5 @@ class KaraokeFeature(Feature):
     def stats(self) -> dict:
         rooms = self._rooms()
         return dict(kara_rooms=len(rooms), kara_people=sum(len(r.data.get('people') or {}) for r in rooms), kara_plays=self.plays,
-                    kara_rounds=self.rounds, kara_wins=self.wins, kara_mics=self.mics,
+                    kara_rounds=self.rounds, kara_wins=self.wins, kara_mics=self.mics, kara_cos=self.cos,
                     kara_live=sum(1 for r in rooms if (r.data.get('mic') or {}).get('on')), kara_sfu_fails=self.sfu.fails)

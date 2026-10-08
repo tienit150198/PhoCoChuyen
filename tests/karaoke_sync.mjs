@@ -1,7 +1,8 @@
 // 🎙️ Voice and music together (07/10 "bị delay xíu"): the listener's video target while a live voice plays
 // (public/js/v4/karaoke-mic.js followTarget, voiceLag, lagStep, bucket). Run by tests/test_karaoke_mic.py.
 import assert from 'node:assert/strict';
-import {followTarget,voiceLag,lagStep,bucket,LAG} from '../public/js/v4/karaoke-mic.js';
+import {followTarget,voiceLag,lagStep,bucket,LAG,mixPlan,musicMove,MIX} from '../public/js/v4/karaoke-mic.js';
+import {run,SCENARIOS} from './karaoke_sim.mjs';
 
 const near=(a,b,eps=1e-9,msg)=>assert.ok(Math.abs(a-b)<=eps,`${msg||''} ${a} ≉ ${b}`);
 const vt={vt:42,at:1000};
@@ -71,4 +72,47 @@ for(const drift of [-.35,0,.3])for(const L of [.15,.45,.9]){
 // the beacon's letters (its server masks digits)
 assert.deepEqual([0,99,100,250,1499,1500,99999,-5].map(bucket),['a','a','b','c','o','p','p','a']);
 assert.equal(bucket(NaN),'-');assert.equal(bucket(undefined),'-');
-console.log('karaoke voice sync: target, fallback, delay estimate and beacon buckets passed');
+// 08/10: the singer's own output + capture latency (kara_vt `ol`) and my Web Audio path count in the delay
+near(voiceLag({jb:.25,rtt:.08},.06,.18),.04+.25+.07+.18);
+near(voiceLag({jb:.25,rtt:.08},.06,9),.04+.25+.07+LAG.side,1e-9,'side bounded');
+near(voiceLag({jb:.25,rtt:.08},.06,-1),.04+.25+.07,1e-9,'a nonsense side: none');
+near(voiceLag({jb:.25,rtt:.08},.06,NaN),.04+.25+.07);
+
+// 🎙️ every voice with my music: the aim a margin behind the earliest lead voice, each voice held t − cur
+let pl=mixPlan({cur:50,voices:[{id:'',t:50.3}],lead:['']});
+near(pl.aim,50.3-MIX.margin);near(pl.d[''],.3,1e-9,'my music behind the voice: held .3 s');
+pl=mixPlan({cur:50.4,voices:[{id:'',t:50.3}],lead:['']});
+near(pl.d[''],0,1e-9,'a voice later than my music plays at once');
+near(pl.aim,50.1);
+pl=mixPlan({cur:40,voices:[{id:'',t:45}],lead:['']});
+near(pl.d[''],MIX.dmax,1e-9,'held at most dmax');
+pl=mixPlan({cur:50,voices:[{id:'',t:null},{id:'b',t:NaN}],lead:['','b']});
+assert.deepEqual(pl,{aim:null,d:{}},'no video time: the clock, holds unchanged');
+assert.deepEqual(mixPlan({cur:NaN,voices:[{id:'',t:50}],lead:['']}),{aim:null,d:{}});
+// several singers: a listener follows the latest of them; every voice is held to the same music
+pl=mixPlan({cur:59.8,voices:[{id:'',t:60.1},{id:'lan',t:59.95},{id:'minh',t:60.4}],lead:['','lan','minh']});
+near(pl.aim,59.95-MIX.margin);
+for(const [id,t] of [['',60.1],['lan',59.95],['minh',60.4]])near(59.8+pl.d[id],t,1e-9,`voice ${id} with my music`);
+// a co-singer follows the stage singer only (another co-singer's voice, later, plays at once); the stage singer none
+pl=mixPlan({cur:60.2,voices:[{id:'',t:60.3},{id:'minh',t:59.9}],lead:[''],margin:MIX.coMargin});
+near(pl.aim,60.3-MIX.coMargin);near(pl.d[''],.1);near(pl.d.minh,0);
+pl=mixPlan({cur:60.2,voices:[{id:'lan',t:59.7}],lead:[]});
+assert.equal(pl.aim,null);near(pl.d.lan,0);
+
+// my music: seek only when a lead voice would come late, or the hold would be too long; else nudge, or nothing
+assert.equal(musicMove(0),'ok');assert.equal(musicMove(.1),'ok');assert.equal(musicMove(-.1),'ok');
+assert.equal(musicMove(.15),'nudge');assert.equal(musicMove(-.5),'nudge');
+assert.equal(musicMove(MIX.margin+MIX.late+.01),'seek','a voice late past MIX.late');
+assert.equal(musicMove(-(MIX.dmax-MIX.margin-.25)-.01),'seek','a hold near dmax');
+assert.equal(musicMove(NaN),'ok');
+
+// before / after (karaoke_sim.mjs): the ear's error, voice against music, over a song
+const ms=x=>`${Math.round(x*1000)} ms`;
+for(const [name,o] of SCENARIOS){
+  const b=run({algo:'before',...o}),a=run({algo:'after',...o});
+  console.log(`  ${name}: before ${ms(b.mean)} (p95 ${ms(b.p95)}), after ${ms(a.mean)} (p95 ${ms(a.p95)})`);
+  assert.ok(a.mean<.07,`${name}: after ${a.mean}`);
+  assert.ok(a.mean<b.mean/3,`${name}: after ${a.mean} vs before ${b.mean}`);
+}
+assert.ok(run({algo:'before',L:.35}).mean>.3,'1.9.19 left a 0.35 s voice that late (no nudge, no seek under 0.6 s)');
+console.log('karaoke voice sync: target, fallback, delay estimate, voice holds, several singers and beacon buckets passed');

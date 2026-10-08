@@ -7,7 +7,8 @@
  * The singer publishes the microphone only (echo cancellation and noise suppression on, music preset, no DTX, no
  * RED: over TCP it only doubles the bytes); a listener subscribes only. Nothing is recorded: no MediaRecorder, no file.
  * The singer's voice plays in the page (Web Audio, so its volume works on iPhone too) over the YouTube player, whose
- * own volume stays the listener's: we never touch it.
+ * own volume stays the listener's: we never touch it. 🎤 With co-singers (live/karaoke.py "Hát cùng") each voice is its
+ * own SFU room and its own listen(); all of them mix into one AudioContext (audioCtx), each through a hold (setDelay).
  *
  * Stages (`onStage(name)`, for the page's state and its error beacon): sdk → signal (the SFU's WebSocket) → ice
  * (the media path, ICE/TCP on the production server) → track (listener: the voice subscribed; singer: published).
@@ -88,16 +89,42 @@ export async function publish({url,token,onEnd,onStage}){
   return {stop,room,track,stats:()=>rtp(track,'outbound-rtp'),path:()=>path(track)};
 }
 
+/** 🎙️ One AudioContext for every voice of the page (each LiveKit room mixes into it: webAudioMix), so a voice can be
+ * held in a delay of its own (listen() setDelay) and one tap starts them all. `make` false: only the one there is. */
+let ctx=null;
+export function audioCtx(make=true){
+  if(ctx&&ctx.state!=='closed')return ctx;
+  if(!make)return null;
+  const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;
+  try{ctx=new C({latencyHint:'interactive'});}catch{ctx=null;}
+  return ctx;
+}
+/** Inside a tap: a suspended context starts (iPhone). */
+export function resumeAudio(){try{if(ctx&&ctx.state==='suspended')ctx.resume().catch(()=>{});}catch{/* closed */}}
+/** A singer's own latency in seconds (sent with kara_vt as `ol`): the output (they hear the music that late, and sing
+ * to it: Bluetooth earphones ~0.15–0.25 s) and the microphone's capture, where the browser says (Chrome; Safari has
+ * neither: 0). Within 0..0.5. */
+export function localLatency(track){
+  let out=0,cap=0;
+  try{const c=audioCtx(false);if(c&&c.state==='running'&&num(c.outputLatency))out=c.outputLatency;}catch{/* none */}
+  try{const s=track?.mediaStreamTrack?.getSettings?.();if(num(s?.latency))cap=s.latency;}catch{/* none */}
+  return Math.max(0,Math.min(.5,(out>0&&out<.5?out:0)+(cap>0&&cap<.2?cap:0)));
+}
+
 /** A listener: the singer's voice, at `volume` (0..1). Resolves once the voice is subscribed. `onTap(true)` when the
- * phone needs a tap to play sound (iPhone: a new AudioContext starts suspended). */
-export async function listen({url,token,volume=1,onTap,onEnd,onStage}){
+ * phone needs a tap to play sound (iPhone: a new AudioContext starts suspended). `ctx` (audioCtx()): the voice goes
+ * through a DelayNode there (setDelay), else LiveKit's own context and no delay (as before). */
+export async function listen({url,token,volume=1,onTap,onEnd,onStage,ctx:ac=null}){
   const LK=await loadSDK();onStage?.('sdk');
-  const room=new LK.Room({adaptiveStream:false,dynacast:false,webAudioMix:true,disconnectOnPageLeave:true});
+  const room=new LK.Room({adaptiveStream:false,dynacast:false,webAudioMix:ac?{audioContext:ac}:true,disconnectOnPageLeave:true});
   let done=false,vol=volume,muted=false,voice=null,got=null;
+  const hold=ac?holder(ac):null;
   const first=new Promise(ok=>{got=ok;});
   const apply=()=>{for(const p of room.remoteParticipants.values())try{p.setVolume(muted?0:vol);}catch{/* not yet */}};
-  const stop=()=>{if(done)return;done=true;got?.(null);try{voice?.detach().forEach(el=>el.remove());}catch{/* gone */}voice=null;room.disconnect().catch(()=>{});};
-  room.on(LK.RoomEvent.TrackSubscribed,(track)=>{if(track.kind!=='audio')return;voice=track;const el=track.attach();el.hidden=true;el.dataset.krVoice='1';document.body.append(el);apply();got?.(track);});
+  const stop=()=>{if(done)return;done=true;got?.(null);try{voice?.detach().forEach(el=>el.remove());}catch{/* gone */}voice=null;hold?.off();room.disconnect().catch(()=>{});};
+  room.on(LK.RoomEvent.TrackSubscribed,(track)=>{if(track.kind!=='audio')return;voice=track;
+    if(hold)try{track.setWebAudioPlugins?.(hold.nodes);}catch{/* plays undelayed */}
+    const el=track.attach();el.hidden=true;el.dataset.krVoice='1';document.body.append(el);apply();got?.(track);});
   room.on(LK.RoomEvent.TrackUnsubscribed,(track)=>{try{track.detach().forEach(el=>el.remove());}catch{/* gone */}if(voice===track)voice=null;});
   room.on(LK.RoomEvent.AudioPlaybackStatusChanged,()=>onTap?.(!room.canPlaybackAudio));
   room.on(LK.RoomEvent.Disconnected,(reason)=>{const was=done;stop();if(!was)onEnd?.('sfu',reason);});
@@ -119,7 +146,38 @@ export async function listen({url,token,volume=1,onTap,onEnd,onStage}){
     stats:()=>voice?rtp(voice,'inbound-rtp'):Promise.resolve(null),
     path:()=>voice?path(voice):Promise.resolve(null),
     delay:()=>voice?delay(voice):Promise.resolve(null),
+    /** Hold the voice `s` seconds (mixPlan's d): small changes glide, a big one jumps under a short fade. */
+    setDelay:s=>!!hold?.set(s),
+    held:()=>hold?hold.now():null,
+    /** The extra latency of this voice's own path in my page (the Web Audio render quantum), seconds. */
+    base:()=>{try{return ac&&num(ac.baseLatency)?Math.max(0,Math.min(.1,ac.baseLatency)):0;}catch{return 0;}},
     heard:()=>!!voice};
+}
+
+/** 🎙️ A voice's hold: DelayNode → GainNode (LiveKit's webAudio plugins, before its volume). A change under MIX.jump
+ * glides at MIX.glide (s per s: 0.03 = 3 % faster or slower for a moment, about half a semitone); a bigger one (the
+ * first lock, after my music sought) jumps while the gain dips for 40 ms. Changes under MIX.dead are left alone. */
+function holder(ac){
+  let dn,g;try{dn=ac.createDelay(MIX.dmax+.5);g=ac.createGain();dn.connect(g);}catch{return null;}
+  let want=0;
+  return {nodes:[dn,g],
+    now:()=>{try{return dn.delayTime.value;}catch{return want;}},
+    set(s){
+      if(!num(s))return false;
+      s=Math.max(0,Math.min(MIX.dmax,s));
+      const step=s-want;if(Math.abs(step)<MIX.dead)return true;
+      try{
+        const t=ac.currentTime,p=dn.delayTime,v=p.value;
+        p.cancelScheduledValues(t);
+        if(Math.abs(s-v)>MIX.jump){
+          g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(0,t+.02);
+          p.setValueAtTime(v,t);p.setValueAtTime(s,t+.02);
+          g.gain.setValueAtTime(0,t+.02);g.gain.linearRampToValueAtTime(1,t+.04);
+        }else{p.setValueAtTime(v,t);p.linearRampToValueAtTime(s,t+Math.abs(s-v)/MIX.glide);}
+        want=s;return true;
+      }catch{return false;}
+    },
+    off(){try{dn.disconnect();g.disconnect();}catch{/* gone */}}};
 }
 
 /** For the checks: the network path the voice takes (udp / tcp; host / relay), from getStats. */
@@ -157,7 +215,7 @@ async function rtp(track,type){
  * The singer sings to their OWN video; the voice reaches a listener `voiceLag` seconds later. So while a listener
  * hears the voice, their video follows the singer's (kara_vt: its time `vt` at server time `at`, relayed by the live
  * service) minus that delay, instead of the shared server clock. Pure functions: v4/karaoke.js sync() and the tests. */
-export const LAG={base:.04,guess:.2,max:1.5,fresh:3,span:15,a:.3};
+export const LAG={base:.04,guess:.2,max:1.5,fresh:3,span:15,a:.3,side:.6};
 const num=Number.isFinite;
 /** One getStats reading (delay(): {jbd, jbn, rtt}) into the running estimate `s` ({} at first): the jitter buffer's
  * delay over the samples played since the last reading (Δ jitterBufferDelay / Δ jitterBufferEmittedCount, seconds;
@@ -175,10 +233,46 @@ export function lagStep(s,raw){
 }
 /** Seconds from the singer's mouth to my ear: capture and encode (LAG.base), half the singer's round trip to the SFU
  * (`up`, seconds, theirs when the frame carried it, else as mine), half of mine, and my jitter buffer (LAG.guess
- * until getStats has one). Within 0..LAG.max. */
-export function voiceLag(s,up){
-  const mine=num(s?.rtt)?s.rtt:0,theirs=num(up)&&up>=0?up:mine;
-  return Math.max(0,Math.min(LAG.max,LAG.base+(num(s?.jb)?s.jb:LAG.guess)+(mine+theirs)/2));
+ * until getStats has one), plus `side` (08/10: the singer's own output + capture latency, kara_vt `ol`, and my Web
+ * Audio path's; 0..LAG.side). Within 0..LAG.max. */
+export function voiceLag(s,up,side){
+  const mine=num(s?.rtt)?s.rtt:0,theirs=num(up)&&up>=0?up:mine,x=num(side)?Math.max(0,Math.min(LAG.side,side)):0;
+  return Math.max(0,Math.min(LAG.max,LAG.base+(num(s?.jb)?s.jb:LAG.guess)+(mine+theirs)/2+x));
+}
+
+/* ---------------------------------------------------------------- 🎙️ every voice with my music (08/10)
+ * 1.9.19 moved only the listener's VIDEO toward the singer's minus the voice's delay, by a playback rate of 0.95 /
+ * 1.05 "where YouTube offers it" and a seek past 0.6 s. YouTube's embed offers [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75,
+ * 2] (measured 08/10; the test stand-in offered 0.95/1.05): the nudge never ran, so a voice under 0.6 s late (most of
+ * them: ICE/TCP, jitter buffer, round trips ≈ 0.2–0.5 s) stayed that late. Now my music sits a little behind the
+ * voices (one seek when it is not), and each voice is held in a Web Audio delay of its own, to the millisecond, until
+ * it plays exactly with my music: target − cur, which a video seek can never land on. With several singers each voice
+ * gets its own hold, so all of them line up with one music. */
+export const MIX={margin:.2,coMargin:.1,late:.08,dmax:2,dead:.012,jump:.25,glide:.03,nudge:.12};
+/** Where my music should be and how long to hold each voice. `voices` [{id, t}]: t is the music position a voice
+ * matches when it reaches my ear now (followTarget; null when unknown). `cur` my music position now. `lead` the voice
+ * ids my music follows (a listener: all it hears; a co-singer: the stage singer's; the stage singer: none, it keeps the
+ * shared clock). aim = the earliest lead target − margin (null: no lead voice known, so the clock), so that every voice
+ * is held d = t − cur ≥ 0 (within 0..MIX.dmax) and plays with my music; a voice already later than my music (another
+ * co-singer for a singer) has d = 0: it plays at once, the smallest delay there is. Unknown t: absent from `d` (the
+ * hold stays as it was). */
+export function mixPlan({cur,voices,lead,margin=MIX.margin}){
+  const d={};let lo=Infinity;
+  if(!num(cur))return {aim:null,d};
+  for(const v of voices||[]){
+    if(!v||!num(v.t))continue;
+    d[v.id]=Math.max(0,Math.min(MIX.dmax,v.t-cur));
+    if((lead||[]).includes(v.id))lo=Math.min(lo,v.t);
+  }
+  return {aim:lo<Infinity?lo-margin:null,d};
+}
+/** What my music does about `off` = cur − aim (seconds) while voices lead it: 'seek' when a lead voice would play
+ * later than my music by more than MIX.late (no hold can bring it back) or when holding the earliest one would need
+ * nearly MIX.dmax; 'nudge' (a playback rate, where YouTube takes it) past MIX.nudge; else 'ok' (the holds absorb it). */
+export function musicMove(off,margin=MIX.margin){
+  if(!num(off))return 'ok';
+  if(off>margin+MIX.late||off<-(MIX.dmax-margin-.25))return 'seek';
+  return Math.abs(off)>MIX.nudge?'nudge':'ok';
 }
 /** Where my video should be now. `clock` the shared server-clock position (pos()), `vt` the last kara_vt
  * ({vt, at, r?}), `now` my server-clock time, `age` seconds since it came, `lag` voiceLag(), `voice` true while I hear

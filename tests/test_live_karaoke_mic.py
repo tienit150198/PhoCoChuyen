@@ -398,3 +398,247 @@ class VideoTime(MicCase):
         await a.send(t='kara_vt', e=e, vt=1.0)
         self.assertEqual((await a.expect('error'))['ref'], 'kara_vt')   # the page ignores it (v4/karaoke.js)
         await b.nothing('kara_vt')
+
+
+class CoSing(MicCase):
+    """🎤 Hát cùng (feedback #268): others ask to sing along with the live stage singer, who says yes or no; each
+    co-singer gets an SFU room of their own (one publisher a room: every block rule holds per voice)."""
+
+    async def asyncSetUp(self):
+        grace = patch.object(lk, 'CO_GRACE', 0.05)   # (the pages' head start before a co room is deleted)
+        grace.start()
+        self.addCleanup(grace.stop)
+        await super().asyncSetUp()
+
+    async def test_the_frame_goes_before_the_room(self):
+        """A co-singer's room is deleted CO_GRACE after kara_co on:0: the pages disconnect cleanly first."""
+        a, b, c, e, host = await self.live()
+        await self.let_in(a, b, e)
+        rb = self.co_room(b)
+        with patch.object(lk, 'CO_GRACE', 0.4):
+            await a.send(t='kara_let', e=e, pid=b.pid, ok=0)
+            self.assertEqual((await c.expect('kara_co', on=0, pid=b.pid))['why'], 'kick')
+            self.assertNotIn(rb, [x['room'] for x in self.sfu.made('DeleteRoom')])
+            self.assertTrue(await self.deleted(rb))
+
+    async def live(self):
+        a, b, c, e = await self.singing()
+        self.born(b, 1999)
+        host = await self.mic_on(a)
+        return a, b, c, e, host
+
+    async def let_in(self, a, x, e):
+        """x asks, a says yes: x's kara_sing (with the publishing token)."""
+        got = await x.call('kara_join', 'kara_join', e=e, on=1)
+        self.assertEqual((got['on'], got['ask']), (1, 1))
+        ask = await a.expect('kara_ask', on=1, pid=x.pid)
+        self.assertEqual(ask['e'], e)
+        await a.send(t='kara_let', e=e, pid=x.pid, ok=1)
+        return await x.expect('kara_sing', on=1)
+
+    def co_room(self, x):
+        return self.room().data['mic']['co'][x.pid]['sfu']
+
+    async def deleted(self, room):
+        return await Cuts.deleted(self, room)
+
+    async def test_ask_yes_tokens_and_listening(self):
+        a, b, c, e, host = await self.live()
+        sing = await self.let_in(a, b, e)
+        room = sing['room']
+        self.assertNotEqual(room, host['room'])
+        self.assertIn(room, self.sfu.live)
+        claims = verify(sing['token'], SECRET)
+        v = claims['video']
+        self.assertEqual((claims['sub'], v['room'], v['canPublish'], v['canPublishSources'], v['canSubscribe'], v['canPublishData']),
+                         (b.pid, room, True, ['microphone'], False, False))
+        await a.expect('kara_ask', on=0, pid=b.pid)               # the ask is gone from the singer's line
+        for x in (a, b, c):                                       # everyone sees who sings along
+            co = await x.expect('kara_co', on=1)
+            self.assertEqual((co['pid'], co['name'], co['e']), (b.pid, 'Minh', e))
+        # listening: each voice its own token; nobody hears themselves
+        lc = await c.call('kara_listen', 'kara_listen', pid=b.pid)
+        self.assertEqual((lc['on'], lc['pid'], lc['room']), (1, b.pid, room))
+        lv = verify(lc['token'], SECRET)['video']
+        self.assertEqual((lv['room'], lv['canPublish'], lv['canSubscribe'], lv['hidden']), (room, False, True, True))
+        self.assertEqual((await c.call('kara_listen', 'kara_listen'))['room'], host['room'])   # no pid: the stage singer, as before
+        self.assertEqual((await b.call('kara_listen', 'kara_listen'))['room'], host['room'])   # the co-singer hears the singer
+        self.assertEqual((await a.call('kara_listen', 'kara_listen', pid=b.pid))['room'], room)   # and the singer them
+        self.assertEqual((await b.call('kara_listen', 'kara_listen', pid=b.pid))['on'], 0)
+        self.assertEqual((await c.call('kara_listen', 'kara_listen', pid='nobody'))['on'], 0)
+        # a late comer: the stage lists the co-singers
+        d = await self.enter('Tú')
+        self.assertEqual(d.room['stage']['mic']['co'], [dict(pid=b.pid, name='Minh')])
+        # asked again while on (the page lost the SFU): a fresh token for the same room
+        again = await b.call('kara_join', 'kara_join', e=e, on=1)
+        self.assertEqual(again['live'], 1)
+        self.assertEqual((await b.expect('kara_sing', on=1))['room'], room)
+        self.assertEqual(len(self.sfu.made('CreateRoom')), 2)
+
+    async def test_no_kick_and_the_gates(self):
+        a, b, c, e, host = await self.live()
+        await b.send(t='kara_join', e=e, on=1)
+        await a.expect('kara_ask', on=1, pid=b.pid)
+        await a.send(t='kara_let', e=e, pid=b.pid, ok=0)
+        self.assertEqual((await b.expect('kara_sing', on=0))['why'], 'no')
+        await b.send(t='kara_join', e=e, on=1)                    # a "no" holds for the song
+        self.assertEqual((await b.expect('error'))['code'], 'no')
+        self.born(c, 2001)
+        await self.let_in(a, c, e)
+        rc = self.co_room(c)
+        await a.send(t='kara_let', e=e, pid=c.pid, ok=0)          # the singer turns a co-singer off
+        off = await b.expect('kara_co', on=0, pid=c.pid)
+        self.assertEqual(off['why'], 'kick')
+        self.assertTrue(await self.deleted(rc))
+        await c.send(t='kara_join', e=e, on=1)
+        self.assertEqual((await c.expect('error'))['code'], 'no')
+        # the gates: the singer cannot ask; a guest, a missing birth year, the young; only the singer decides
+        await a.send(t='kara_join', e=e, on=1)
+        self.assertEqual((await a.expect('error'))['code'], 'bad')
+        g = await self.enter('Khách', account=False)
+        await g.send(t='kara_join', e=e, on=1)
+        self.assertEqual((await g.expect('error'))['code'], 'account')
+        d = await self.enter('Tú')
+        await d.send(t='kara_join', e=e, on=1)
+        self.assertEqual((await d.expect('error'))['code'], 'birth')
+        self.born(d, km.vn_year() - km.MIN_AGE + 1)
+        await d.send(t='kara_join', e=e, on=1)
+        self.assertEqual((await d.expect('error'))['code'], 'young')
+        await d.send(t='kara_let', e=e, pid=b.pid, ok=1)
+        self.assertEqual((await d.expect('error'))['code'], 'bad')
+        await d.send(t='kara_join', e='kq-old', on=1)              # another song's
+        self.assertEqual((await d.expect('error'))['code'], 'nolive')
+        await a.send(t='kara_let', e=e, pid=d.pid, ok=1)           # nothing asked: nothing to let in
+        self.assertEqual((await a.expect('error'))['code'], 'gone')
+
+    async def test_full_and_an_ask_nobody_answers(self):
+        a, b, c, e, host = await self.live()
+        self.born(c, 1998)
+        with patch.object(lk, 'CO_MAX', 1):
+            await self.let_in(a, b, e)
+            await c.send(t='kara_join', e=e, on=1)
+            self.assertEqual((await c.expect('error'))['code'], 'full')
+            await b.send(t='kara_join', e=e, on=0)                 # b stops: a place again
+            self.assertEqual((await c.expect('kara_co', on=0, pid=b.pid))['why'], 'off')
+            self.assertEqual((await c.call('kara_join', 'kara_join', e=e, on=1))['ask'], 1)
+        await a.expect('kara_ask', on=1, pid=c.pid)
+        await self.tick(time.time() + lk.ASK_SECS + 1)
+        self.assertEqual((await c.expect('kara_sing', on=0))['why'], 'time')
+        await a.expect('kara_ask', on=0, pid=c.pid)
+        self.assertEqual((await c.call('kara_join', 'kara_join', e=e, on=1))['ask'], 1)   # may ask again
+        await a.expect('kara_ask', on=1, pid=c.pid)
+        await c.send(t='kara_join', e=e, on=0)                     # and withdraw it
+        await a.expect('kara_ask', on=0, pid=c.pid)
+        await a.send(t='kara_let', e=e, pid=c.pid, ok=1)
+        self.assertEqual((await a.expect('error'))['code'], 'gone')
+
+    async def test_the_singer_mic_off_song_end_and_leaving_cut_co_singers(self):
+        a, b, c, e, host = await self.live()
+        self.born(c, 1998)
+        await self.let_in(a, b, e)
+        rb = self.co_room(b)
+        await a.send(t='kara_mic', on=0)                           # the stage singer's mic off: every co-singer's too
+        await c.expect('kara_live', on=0)
+        self.assertTrue(await self.deleted(rb))
+        self.assertTrue(await self.deleted(host['room']))
+        self.assertIsNone(self.feat._session_of(self.room().data['mic'], b.pid))
+        await b.send(t='kara_join', e=e, on=1)                     # nothing to sing along with now
+        self.assertEqual((await b.expect('error'))['code'], 'nolive')
+        await self.mic_on(a)                                       # on again: ask again
+        await self.let_in(a, b, e)
+        await self.let_in(a, c, e)
+        rc = self.co_room(c)
+        await c.send(t='kara_out')                                 # a co-singer leaves the room
+        self.assertEqual((await b.expect('kara_co', on=0, pid=c.pid))['why'], 'left')
+        self.assertTrue(await self.deleted(rc))
+        rb = self.co_room(b)
+        await a.send(t='kara_skip', e=e)                           # the song ends
+        await b.expect('kara_live', on=0)
+        self.assertTrue(await self.deleted(rb))
+
+    async def test_blocks_per_voice(self):
+        a, b, c, e, host = await self.live()
+        d = await self.enter('Tú')
+        await d.send(t='block', pid=b.pid)                         # d blocked b before b sings
+        await d.expect('blocked')
+        await self.let_in(a, b, e)
+        rb = self.co_room(b)
+        await d.nothing('kara_co', on=1)                           # nothing of b for d …
+        self.assertEqual((await d.call('kara_listen', 'kara_listen', pid=b.pid))['on'], 0)
+        self.assertEqual((await d.call('kara_listen', 'kara_listen'))['on'], 1)   # … the stage singer still
+        self.assertEqual((await c.call('kara_listen', 'kara_listen', pid=b.pid))['on'], 1)
+        await c.send(t='block', pid=b.pid)                         # mid-song: c out of b's room only
+        await c.expect('blocked')
+        await self.tick(time.time())
+        self.assertEqual((await c.expect('kara_listen', on=0))['pid'], b.pid)
+        self.assertIn(dict(room=rb, identity=c.pid), self.sfu.made('RemoveParticipant'))
+        self.assertNotIn(dict(room=host['room'], identity=c.pid), self.sfu.made('RemoveParticipant'))
+        await a.send(t='block', pid=b.pid)                         # the singer blocks a co-singer: their mic off for the song
+        await a.expect('blocked')
+        await self.tick(time.time())
+        self.assertEqual((await a.expect('kara_co', on=0, pid=b.pid))['why'], 'block')
+        self.assertTrue(await self.deleted(rb))
+        await b.send(t='kara_join', e=e, on=1)
+        self.assertEqual((await b.expect('error'))['code'], 'no')
+
+    async def test_blocked_by_the_singer_cannot_ask(self):
+        a, b, c, e, host = await self.live()
+        await a.send(t='block', pid=b.pid)
+        await a.expect('blocked')
+        await b.send(t='kara_join', e=e, on=1)
+        self.assertEqual((await b.expect('error'))['code'], 'no')
+        await a.nothing('kara_ask')
+
+    async def test_video_time_relayed_per_voice_with_own_latency(self):
+        a, b, c, e, host = await self.live()
+        await self.let_in(a, b, e)
+        d = await self.enter('Tú')
+        for x in (c, b):
+            await x.call('kara_listen', 'kara_listen')             # the stage singer's voice
+        for x in (c, a):
+            await x.call('kara_listen', 'kara_listen', pid=b.pid)  # b's voice (d never asks)
+        t0 = time.time()
+        await b.send(t='kara_vt', e=e, vt=1.5, st=t0, rtt=90, ol=180)
+        for x in (c, a):
+            f = await x.expect('kara_cvt')
+            self.assertEqual((f['pid'], f['e'], f['vt'], f['rtt'], f['ol']), (b.pid, e, 1.5, 90, 180))
+        await d.nothing('kara_cvt', wait=0.05)
+        await b.nothing('kara_cvt', wait=0.05)
+        await a.send(t='kara_vt', e=e, vt=1.6, ol=5000)            # a nonsense latency is dropped, the rest relayed
+        for x in (c, b):
+            f = await x.expect('kara_vt')
+            self.assertEqual((f['pid'], f['vt'], f.get('ol')), (a.pid, 1.6, None))
+        await c.send(t='kara_vt', e=e, vt=1.6)                     # a listener steers nothing
+        await a.nothing('kara_cvt', wait=0.05)
+
+    async def test_reports_cut_a_co_singer(self):
+        a, b, c, e, host = await self.live()
+        await self.let_in(a, b, e)
+        rb = self.co_room(b)
+        d, f = await self.enter('Tú'), await self.enter('Khoa')
+        for x in (c, d, f):
+            await x.send(t='kara_report', pid=b.pid, reason='rude')
+            self.assertEqual((await x.expect('kara_reported'))['target'], 'm:' + b.pid)
+        self.assertEqual((await a.expect('kara_co', on=0, pid=b.pid))['why'], 'reports')
+        self.assertTrue(await self.deleted(rb))
+        self.assertIn(host['room'], self.sfu.live)                 # the stage singer sings on
+
+    async def test_admin_cut_and_mute(self):
+        a, b, c, e, host = await self.live()
+        await self.let_in(a, b, e)
+        rb = self.co_room(b)
+        await self.feat.on_notify(dict(op='mute', pid=b.pid, until=time.time() + 600))
+        self.assertEqual((await a.expect('kara_co', on=0, pid=b.pid))['why'], 'admin')
+        self.assertTrue(await self.deleted(rb))
+        self.born(c, 1998)
+        await self.let_in(a, c, e)
+        rc = self.co_room(c)
+        await self.feat.on_notify(dict(op='kara', act='mic', room='kara:tre'))   # the admin site's cut: every voice
+        await b.expect('kara_live', on=0)
+        self.assertTrue(await self.deleted(rc))
+
+    async def test_switch_off(self):
+        self.cfg.kara_mic = False
+        a, b, c, e = await self.singing()
+        await b.send(t='kara_join', e=e, on=1)
+        self.assertEqual((await b.expect('error'))['code'], 'off')
