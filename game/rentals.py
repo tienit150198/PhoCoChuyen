@@ -16,6 +16,7 @@ import re
 import time
 
 from . import archive as ar
+from . import estates as es
 from . import housing as hs
 from . import marriage as mr
 
@@ -262,6 +263,7 @@ def act(store, token, action, data):
                         if h['rent']:
                             hs._leave_rent(actor, h, j['life_day'])
                         h['shared'] = None
+                        es.move_out(j)   # 🏰 out of a villa bought in Mua sắm too (game/estates.py move_out)
                         row.update(status='leased', tenant=sid, tenant_name=display, start_day=j['life_day'], end_day=j['life_day'] + PERIOD)
                         j['rental'] = _marker(row)
                         db.execute("UPDATE rentals SET status='leased',tenant=?,tenant_name=?,start_day=?,end_day=?,updated=? WHERE id=?",

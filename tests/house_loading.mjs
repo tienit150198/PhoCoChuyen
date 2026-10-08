@@ -9,9 +9,9 @@ const source=readFileSync(new URL('../public/js/v4/house.js',import.meta.url),'u
 const deferred=()=>{let resolve,reject;const promise=new Promise((yes,no)=>{resolve=yes;reject=no;});return {promise,resolve,reject};};
 function harness(){
   const reads=[],posts=[],commands=[],accepted=[];
-  const api={state:{journey:{home:{}}},json(){const d=deferred();reads.push(d);return d.promise;},post(){const d=deferred();posts.push(d);return d.promise;},command(){const d=deferred();commands.push(d);return d.promise;},accept:r=>accepted.push(r)};
-  const ctx=vm.createContext({esc:escapeHTML,icon:()=>'',rentalRetryable,propertyNews,crypto:{randomUUID:()=> 'request-id'},console});
-  vm.runInContext(source+'\nrender=()=>{};globalThis.h={S,loadRentals,rentalPost,send,btn,propCard,nextStep,onClick};',ctx);
+  const api={state:{journey:{home:{}}},json(){const d=deferred();reads.push(d);return d.promise;},post(){const d=deferred();posts.push(d);return d.promise;},command(action,payload){const d=deferred();Object.assign(d,{action,payload});commands.push(d);return d.promise;},accept:r=>accepted.push(r)};
+  const ctx=vm.createContext({esc:escapeHTML,icon:()=>'',clean:()=>false,rentalRetryable,propertyNews,crypto:{randomUUID:()=> 'request-id'},console});
+  vm.runInContext(source+'\nrender=()=>{};globalThis.h={S,loadRentals,rentalPost,send,btn,propCard,placeCard,nextStep,onClick};',ctx);
   const h=ctx.h;h.S.env={api};return {...h,reads,posts,commands,accepted};
 }
 test('slow rental read leaves navigation and mortgage actions available',async()=>{
@@ -75,4 +75,14 @@ test('payment completion after closing the dialog does not start another rental 
   h.commands[0].resolve({approved:true});await payment;
   assert.equal(h.reads.length,1);
   h.reads[0].resolve({market:[],mine:[]});await pending;
+});
+test('living in a villa: the house card opens it and leads back home (owner 08/10)',async()=>{
+  const h=harness(),deco={cozy:{total:12,level:'Ấm'},bag:[]};h.S.env.api.state.journey.deco=deco;
+  const html=h.placeCard({place:{where_id:'estate',kind:'bt_kinh',name:'Biệt thự kính',cost:{rent:40,meals:30}}});
+  assert.match(html,/🏰 Dinh thự của bạn/);assert.match(html,/data-hs="inside"/);assert.match(html,/data-hs="leaveEstate"/);
+  assert.match(html,/Điện nước/);
+  const going=h.onClick('leaveEstate',{});
+  assert.equal(h.commands[0].action,'jr_lux_live');assert.deepEqual({...h.commands[0].payload},{id:null});
+  h.commands[0].resolve({approved:true});await going;
+  assert.doesNotMatch(h.placeCard({place:{where_id:'own',kind:'biet_thu_song',name:'Biệt thự Sông Hồng',cost:{rent:30,meals:30}}}),/leaveEstate/);
 });

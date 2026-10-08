@@ -246,6 +246,11 @@ def _rn():
     return reno
 
 
+def _es():
+    from . import estates
+    return estates
+
+
 def _couple():
     try:
         from . import couple
@@ -728,6 +733,7 @@ def accept_shared(s: dict, data: dict) -> None:
     if h['own']:
         _move_out(s, h, s['journey']['life_day'])
     apply_effect(s, dict(data, set='in'))
+    _es().move_out(s['journey'])   # 🏰 out of the villa too
 
 
 def leave_shared(s: dict) -> None:
@@ -844,6 +850,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
             _leave_rent(s, h, day)
         _take(s, H['deposit'], f'Đặt cọc {lname(H["name"])}', day)
         h['rent'] = dict(kind=kind, since=day, deposit=H['deposit'])
+        _es().move_out(j)   # 🏰 out of the villa too (game/estates.py move_out)
         _log(h, day, f'Thuê {lname(H["name"])}, đặt cọc {_fmt(H["deposit"])} xu.', -H['deposit'])
         bed = kind == DORM
         msg = (f'Đã thuê {lname(H["name"])}: tiền {"giường" if bed else "phòng"} {_fmt(H["rent"])} xu/ngày, '
@@ -868,7 +875,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         need(len(homes(h)) < OWNED_MAX, f'Bạn đang có {OWNED_MAX} căn nhà. Bán bớt một căn rồi hãy mua thêm nhé.', 'too_many')
         # A page loaded before several homes never sends it. Living in a home already (yours, or the spouse's: feedback
         # #137 "đang ở biệt thự, mua căn hộ xong ở luôn căn hộ") the new one stays empty unless the player says so.
-        move_in = p.get('move_in', own is None and not _shared_ok(s, h['shared'] if h else None))
+        move_in = p.get('move_in', own is None and not _shared_ok(s, h['shared'] if h else None) and not _es().living_in(j))
         need(type(move_in) is bool, 'Chọn dọn về ở hay để trống nhé.')
         price, fee, duty = H['price'], buy_fee(H['price']), tax(kind)
         down = _int(p, 'down', down_min(price), price, f'Trả trước từ {_fmt(down_min(price))} xu ({DOWN_PCT}% giá nhà) tới {_fmt(price)} xu.')
@@ -928,6 +935,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
                 _move_out(s, h, day)
             back = _leave_rent(s, h, day) if h['rent'] else 0
             h['own'] = x
+            _es().move_out(j)   # 🏰 out of the villa too
         else:
             h['props'].append(x)
         h['stats']['bought'] += 1
@@ -957,6 +965,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         need(short <= 0, f'Thuê xe dọn nhà {_fmt(MOVE_FEE)} xu: bạn còn thiếu {_fmt(short)} xu.', 'not_enough')
         _take(s, MOVE_FEE, f'Thuê xe dọn về {hn}', day)
         _move_out(s, h, day)
+        _es().move_out(j)   # 🏰 out of the villa too
         h['stats']['moves'] += 1
         _log(h, day, f'Dọn về ở chung {hn} của {sh["name"]}.', -MOVE_FEE)
         return dict(message=f'Đã dọn về ở chung {hn} của {sh["name"]}, xe chở đồ {_fmt(MOVE_FEE)} xu. '
@@ -978,6 +987,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         if own:
             _move_out(s, h, day)
         _move_in(s, h, x, day)
+        _es().move_out(j)   # 🏰 out of the villa too
         h['stats']['moves'] += 1
         _log(h, day, f'Dọn về {lname(H["name"])}.', -MOVE_FEE)
         msg = f'Đã dọn về {lname(H["name"])}, xe chở đồ {_fmt(MOVE_FEE)} xu.'
@@ -1138,6 +1148,11 @@ def _place_view(s: dict, h: dict | None) -> dict:
     if active_lease(j):
         place, kind = 'lease', j['rental']['kind']
     cost = living(j, _jr().LIVING.get(j['chapter'], _jr().LIVING[_jr().LAST]))
+    eid = _es().living_in(j)
+    if eid:   # 🏰 living in a villa bought in Mua sắm (game/estates.py): where you are, where "Vào nhà" goes
+        E = _es().ESTATE[eid]
+        return dict(emoji=E['emoji'], name=E['name'], where=E['where'], desc='', where_id='estate', kind=eid, group='villa',
+                    comfort=0, perk=None, cost=_es().living(j, cost))
     if place == 'attic':
         return dict(ATTIC, where_id='attic', kind=None, group=None, comfort=0, perk=None, cost=cost)
     H = HOMES[kind]
