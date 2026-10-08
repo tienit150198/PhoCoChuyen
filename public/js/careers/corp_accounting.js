@@ -123,7 +123,7 @@ const how=(t,st,id,x)=>{const h=HOW[`${t.variant}:${st.id}`],s=h?.[id]??h?.['*']
 const missOf=(x,t,st)=>new Set(x.ui.miss?.[dkey(t,st)]||[]);
 function widget(t,st,x){
   const k=dkey(t,st),dr=drafts(x);
-  if(st.kind==='choice')return `<div class="ca-options">${(st.options||[]).map(o=>x.cmd(x.esc(o.label),P+'step',{task:t.id,step:st.id,answer:o.id},'ca-opt').replace('<button ',`<button data-opt="${x.esc(o.id)}" `)).join('')}</div>`;
+  if(st.kind==='choice')return `<div class="ca-options">${(st.options||[]).map(o=>btn(x,x.esc(o.label),'car:choose',{task:t.id,step:st.id,answer:o.id},'ca-opt').replace('<button ',`<button data-opt="${x.esc(o.id)}" `)).join('')}</div>`;
   if(st.kind==='multi'){
     const sel=dr[k]||[];
     return `<div class="ca-checks" data-multi="${x.esc(k)}">${(st.options||[]).map(o=>`<label class="ca-check"><input type="checkbox" value="${x.esc(o.id)}" ${sel.includes(o.id)?'checked':''}><span>${x.esc(o.label)}</span></label>`).join('')}</div>`;
@@ -163,7 +163,7 @@ function stepCard(t,x){
       <p class="ca-prompt">${x.esc(cur.prompt||'')}</p>
       ${missing.length?`<p class="ca-warn">📁 ${clean()?'':'Mở trước: '}${missing.map(id=>x.esc(t.docs.find(d=>d.id===id).title)).join(', ')}</p>`:''}
       ${cur.tip?`<p class="ca-tip">💡 ${x.esc(cur.tip)}</p>`:''}
-      ${widget(t,cur,x)}
+      ${missNote(x,dkey(t,cur))}${widget(t,cur,x)}
       <div class="ca-stepfoot">${tries?`<small>${clean()?`↻ ${tries}`:`Đã thử ${tries} lần`}</small>`:'<span></span>'}${cur.tip?'':x.cmd(clean()?'💡 Gợi ý':'💡 Xin gợi ý',P+'hint',{task:t.id},'ghost small')}</div></article>`;
   }else body=handover(t,x);
   const pct=total?Math.round(solved.length/total*100):0;
@@ -223,7 +223,7 @@ function caseCard(t,c,x){
   const memo=`<div class="ca-from"><span class="ca-doc-ico" aria-hidden="true">${DOC_ICON[c.doc]||'📄'}</span><div class="grow"><small>Bộ ${i+1}/${cs.length} · ${x.esc(c.who||'')}</small><p>“${x.esc(c.quote||'')}”</p></div></div>`;
   if(c.stamp){
     const [ic,label]=RES[c.result]||['•',''];
-    return `<section class="ca-case done">${memo}${paperView(t,c,x)}
+    return `<section class="ca-case done">${memo}${missNote(x,`${t.id}:${c.id}`)}${paperView(t,c,x)}
       <div class="ca-verdict ${x.esc(c.result||'')}" role="status"><b>${ic} ${label}</b><span>Dấu của bạn: ${VLAB[c.stamp]}${c.result!=='ok'?` · Cần: ${VLAB[c.truth?.v]||''}`:''}</span><p>${x.esc(c.truth?.why||'')}</p></div></section>`;
   }
   return `<section class="ca-case" data-step-card="${x.esc(t.id)}:${x.esc(c.id)}">${memo}${paperView(t,c,x)}${c.tip?`<p class="ca-tip">💡 ${x.esc(c.tip)}</p>`:''}
@@ -312,7 +312,7 @@ const careBadge=x=>x.room.data?.care?.asked?1:0;
 /* ---------------------------------------------------------------- the office desktop */
 const strip=(x,t)=>statusStrip(x,t,{boss:BOSS,op:'ca_overtime',help:deskHelp(x,{key:'ok-corp_accounting',title:'🗂️ Bàn kế toán',boss:BOSS})});
 /** Office shut: every ca_ command takes office time; these car: actions send one. */
-const SHUT={prefix:'ca_',acts:['open','multi','num','order','match','fields','entry','submit','stamp','circle']};
+const SHUT={prefix:'ca_',acts:['open','choose','multi','num','order','match','fields','entry','submit','stamp','circle']};
 const todayRules=x=>rulesList(x,x.room.data?.today?.rules||[],'Quy định đang áp dụng');
 function currentMail(t,x){
   const timed=typeof t.due==='number',k=t.kind_info||{};
@@ -396,7 +396,7 @@ export default {
     if(o.late)row('Việc nộp trễ hạn',String(o.late));
     if(o.fines)row('Bị trừ tiền',`${o.fines} xu`);
     if(o.overtime)row('Tăng ca','Có (mai vào muộn 30 phút)');
-    if(o.carried)row('Việc dở để sáng mai',`${o.carried} (hạn 10:00)`);
+    if(o.carried)row('Việc dở để sáng mai',o.carry_due?`${o.carried} · hạn sớm nhất ${o.carry_due}`:`${o.carried} (hạn 10:00)`);
     if(Array.isArray(data.milestones)&&data.milestones.length)row('Mốc tháng đã xong',data.milestones.join(', '));
     const ch=Number(o.trust_change)||0;
     const trust=o.trust_label?`<p class="ca-sum-trust">👩‍💼 Chị Hạnh: <b>${x.esc(o.trust_label)}</b> (${o.trust}/100${ch?`, ${ch>0?'+':''}${ch} hôm nay`:''})</p>`:'';
@@ -441,8 +441,8 @@ export default {
       if(!c)return;
       if(data.verdict!=='approve'&&!(c.circles||[]).length){x.toast(`Khoanh ít nhất một chỗ làm căn cứ trước khi ${data.verdict==='reject'?'trả lại':'trình sếp'}.`,true);return;}
       sels(x)[data.task]=data.case;
-      const r=await x.send(P+'stamp',{task:data.task,case:data.case,verdict:data.verdict});
-      if(r){x.ui.fresh=data.case;x.render();}
+      const r=await x.send(P+'stamp',{task:data.task,case:data.case,verdict:data.verdict},{quiet:true});
+      if(r){said(x,r,`${data.task}:${data.case}`);x.ui.fresh=data.case;x.render();showMiss(x);}
     },
     flag(data,el,x){
       const root=rootOf(el),box=root.querySelector(`[data-multi="${CSS.escape(data.key)}"]`);
@@ -453,6 +453,8 @@ export default {
       el.classList.toggle('flagged',input.checked);el.setAttribute('aria-pressed',String(input.checked));
       sync(root,x);
     },
+    async choose(data,el,x){const [t,st]=stepOf(x,data);if(!st)return;await send(x,t,st,data.answer);},
+    missClose(data,el,x){delete misses(x)[data.key];x.render();},
     async multi(data,el,x){
       sync(rootOf(el),x);const [t,st]=stepOf(x,data);if(!st)return;
       const ans=drafts(x)[dkey(t,st)]||[];
@@ -536,7 +538,24 @@ function stepOf(x,data){
 }
 /** A step check. A wrong one names the boxes that are off (never their values): marked until the next check. */
 async function send(x,t,st,answer){
-  const r=await x.send(P+'step',{task:t.id,step:st.id,answer});
-  if(r){(x.ui.miss??={})[dkey(t,st)]=r.correct===false?(st.kind==='number'?['']:Array.isArray(r.bad)?r.bad:[]):null;if(r.correct===false)x.render();}
+  const r=await x.send(P+'step',{task:t.id,step:st.id,answer},{quiet:true});
+  if(r){(x.ui.miss??={})[dkey(t,st)]=r.correct===false?(st.kind==='number'?['']:Array.isArray(r.bad)?r.bad:[]):null;said(x,r,dkey(t,st));if(r.correct===false){x.render();showMiss(x);}}
   return r;
+}
+/* ✗ A wrong check or stamp, said big and where the player is looking (feedback #265 08/10: the red toast sat in a
+ * corner, showed a few words and left before it could be read). The server's whole message stays on that step / that
+ * set until the next answer there or “Đã hiểu”; a right answer still says its line in the usual toast. */
+const misses=x=>(x.ui.missNote??={});
+function said(x,r,key){
+  if(r.correct===false){misses(x)[key]=String(r.message||'').replace(/^✗\s*/,'');return;}
+  delete misses(x)[key];
+  x.toast(r.message,r.celebrate?'good':false);
+}
+function missNote(x,key){
+  const m=misses(x)[key];if(!m)return '';
+  return `<div class="ca-miss" role="alert"><b class="ca-miss-h"><span aria-hidden="true">✗</span> ${clean()?'Chưa đúng':'Chưa đúng — đọc kỹ nhé'}</b><p>${x.esc(m)}</p>${btn(x,'Đã hiểu','car:missClose',{key},'small ca-miss-x')}</div>`;
+}
+/** Brings the note into view (the confirm button sits in the bottom bar, the note in the scrolling sheet). */
+function showMiss(x){
+  if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>document.querySelector('.career-job.ca .ca-miss')?.scrollIntoView({block:'nearest',behavior:'smooth'}));
 }

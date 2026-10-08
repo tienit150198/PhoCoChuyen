@@ -87,7 +87,12 @@ class CorpAccountingTests(unittest.TestCase):
         self.assertEqual(t['gen'], CA.GEN)
         self.assertEqual(len(t['cases']), 3)
         self.assertEqual(t['due'], office.DUE[0])
-        self.assertEqual([x['due'] for x in self.j.c['tasks']], list(office.DUE[:len(self.j.c['tasks'])]))
+        tasks = self.j.c['tasks']
+        dues = [x['due'] for x in tasks]
+        self.assertEqual(dues, CA.plan_dues(tasks, 1, office.OPEN))
+        # Never earlier than the old deadline of that place in the day, never after 17:30, one after another.
+        self.assertTrue(all(office.DUE[i] <= d <= office.CLOSE for i, d in enumerate(dues)), dues)
+        self.assertEqual(dues, sorted(dues))
 
     def test_dossier_happy_path_review_and_money(self):
         tid = self.use('journal')
@@ -487,9 +492,13 @@ class CorpAccountingTests(unittest.TestCase):
         j.act('start_day')
         old = [t for t in j.c['tasks'] if t['day'] == 1]
         self.assertTrue(old)
-        self.assertTrue(all(t['due'] == office.CARRY_DUE and t['due_day'] == 2 for t in old))
-        new = [t for t in j.c['tasks'] if t['day'] == 2]
-        self.assertTrue(all(t['due'] in office.DUE + (office.CLOSE,) for t in new))
+        # Leftovers come first, spread out like any day's dossiers (not all due at 10:00).
+        self.assertTrue(all(t['due_day'] == 2 for t in old))
+        dues = [t['due'] for t in CA._queue(j.c, 2)]
+        self.assertEqual(dues, CA.plan_dues(CA._queue(j.c, 2), 2, office.OPEN))
+        self.assertEqual(r['summary']['career']['office']['carry_due'], office.hhmm(old[0]['due']))
+        self.assertEqual(len(set(t['due'] for t in old)), len(old))
+        self.assertTrue(all(office.DUE[0] <= d <= office.CLOSE for d in dues))
         roundtrip(j)
 
     def test_more_work_is_due_later_the_same_day(self):
@@ -500,7 +509,10 @@ class CorpAccountingTests(unittest.TestCase):
         validate_state(j.state)
         j.act('more_work')
         t = j.c['tasks'][-1]
-        self.assertEqual(t['due'], office.OPEN + 200 + office.MORE_WORK_WINDOW)
+        # At least the old 2.5 hours, more when the dossier itself needs more.
+        need = CA._after(office.OPEN + 200, CA.allowance(t, CA._mod(1)['id'] == 'lag'))
+        self.assertEqual(t['due'], max(office.OPEN + 200 + office.MORE_WORK_WINDOW, min(office.LOCK, need)))
+        self.assertGreaterEqual(t['due'], office.OPEN + 200 + office.MORE_WORK_WINDOW)
 
     def test_boss_away_hints_are_slow_and_lag_doubles_reading(self):
         away = day_with('boss_away')
@@ -1385,6 +1397,106 @@ class OfficeCareTests(unittest.TestCase):
         self.assertGreaterEqual(self.care['rank'], 1)
         self.assertEqual(len(self.care['days']), 6)
         roundtrip(j)
+
+
+class DeadlineTests(unittest.TestCase):
+    """Feedback #265, #269 (08/10): a correct player finished no dossier on time. Each dossier now gets PACE times the
+    office minutes a clean hand-in takes, one after another from the opening, leftovers first."""
+
+    def play_day(self, j, careful=False, skip=False):
+        late = []
+        if not skip:
+            for t in sorted(open_dossiers(j), key=lambda t: (t['due'], t['id'])):
+                (careful_solve if careful else solve_task)(j, t['id'])
+                late += [t['id']] if j.get(t['id'])['late'] else []
+        roundtrip(j)
+        j.act('end_day', carry_event=True)
+        return late
+
+    def test_allowance_follows_the_work(self):
+        day, slot = slot_for('month_close')
+        close = make_task(CAR, day, slot, 1)
+        clean = len(close['docs']) * office.COST['open'] + len(close['proc']) * office.COST['step'] + office.COST['submit']
+        self.assertEqual(CA.clean_minutes(close), clean)
+        self.assertEqual(CA.allowance(close), -(-clean * CA.PACE // 15) * 15)
+        self.assertGreater(CA.allowance(close, lag=True), CA.allowance(close))
+        desk = make_task(CAR, 1, 0, 1)
+        self.assertLess(CA.allowance(desk), CA.allowance(close))
+        # Lunch does not count; the plan never goes past 17:30.
+        self.assertEqual(CA._after(office.LUNCH - 30, 60), office.LUNCH + 30 + office.LUNCH_MIN)
+        self.assertEqual(CA._mod(1)['id'], 'normal')
+        self.assertEqual(CA.plan_dues([close] * 6, 1, office.OPEN)[-1], office.CLOSE)
+        self.assertEqual(CA.plan_dues([close] * 6, day, office.OPEN)[-1], office.CLOSE - 30)   # month-end crunch
+
+    def test_a_clean_player_is_never_late(self):
+        j = Journey(CAR)
+        late = []
+        for day in range(1, 7):     # day 5 is the month-end crunch
+            if day > 1:
+                j.act('start_day')
+            late += self.play_day(j)
+        self.assertEqual(late, [])
+
+    def test_a_careful_player_has_room(self):
+        """A hint and a wrong try in every dossier (each wrong try costs the step again) still lands on time."""
+        j = Journey(CAR)
+        late = []
+        for day in range(1, 5):
+            if day > 1:
+                j.act('start_day')
+            late += self.play_day(j, careful=True)
+        self.assertEqual(late, [])
+
+    def test_an_unfinished_day_does_not_make_the_next_late(self):
+        j = Journey(CAR)
+        n = len(open_dossiers(j))
+        self.play_day(j, skip=True)          # nothing handed in on day 1
+        j.act('start_day')
+        left = open_dossiers(j)
+        self.assertEqual(len(left), n)
+        self.assertNotIn(office.CARRY_DUE, [t['due'] for t in left[1:]], 'not every leftover due at 10:00')
+        self.assertEqual(self.play_day(j), [])
+
+
+class MistakeNoteTests(unittest.TestCase):
+    def test_wrong_answer_is_said_in_place(self):
+        """Feedback #265: the client says a wrong check / stamp big, in the work card, until “Đã hiểu” (node)."""
+        import shutil
+        import subprocess
+        from pathlib import Path
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        root = Path(__file__).resolve().parents[1]
+        out = subprocess.run([node, str(root / 'tests' / 'corp_accounting_miss.mjs')], cwd=root, capture_output=True, text=True,
+                             encoding='utf-8', timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr + out.stdout)
+
+
+def open_dossiers(j):
+    return [t for t in j.c['tasks'] if t['status'] not in ('completed', 'referred', 'cancelled')]
+
+
+def careful_solve(j, tid):
+    """Hand in a dossier right after asking one hint and getting one step wrong (choice or number)."""
+    j.act('ask', task=tid)
+    for d in j.get(tid)['docs']:
+        j.act('ca_open', task=tid, doc=d['id'])
+    t = j.get(tid)
+    if t['variant'] == 'desk':
+        j.act('ca_hint', task=tid, case=t['cases'][0]['id'])
+        return solve_task(j, tid)
+    j.act('ca_hint', task=tid)
+    wrong = False
+    for st in t['proc']:
+        bad = None if wrong else (next(o['id'] for o in st['options'] if o['id'] != st['_key']) if st['kind'] == 'choice'
+                                  else st['_key'] + 7 if st['kind'] == 'number' else None)
+        if bad is not None:
+            r = j.act('ca_step', task=tid, step=st['id'], answer=bad)
+            assert r['correct'] is False
+            wrong = True
+        j.act('ca_step', task=tid, step=st['id'], answer=answer(st))
+    return j.act('ca_submit', task=tid, note='specific', confirm=True)
 
 
 if __name__ == '__main__':

@@ -1667,14 +1667,112 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
     raise kit.eng().GameError('Thao tác kế toán không hợp lệ.')
 
 
+# ---------------------------------------------------------------- deadlines (feedback #265, #269 · 08/10)
+# "3 hồ sơ không cái nào kịp dù không sai gì": deadlines went by the dossier's place in the day (10:30 · 12:00 · 15:00)
+# whatever its length — a month-end close needs 145 office minutes even when every answer is right — and every
+# leftover was due at 10:00 the next morning, so one unfinished day made the next ones late too. Now each dossier gets
+# PACE times the office minutes a clean hand-in of it takes (room for a hint and a wrong try or two), rounded up to a
+# quarter hour; the day's dossiers follow one another from the opening (leftovers first, lunch skipped), never earlier
+# than the old time for that place in the day and never after 17:30. The crunch day stays 30 minutes earlier.
+PACE = 2
+QUARTER = 15
+DONE = ('completed', 'referred', 'cancelled')
+
+
+def clean_minutes(t: dict, lag: bool = False) -> int:
+    """Office minutes a clean hand-in of what is left of this dossier takes (no hint, no wrong try)."""
+    desk = t.get('variant') == 'desk'
+    read = office.COST['ref' if desk else 'open'] * (2 if lag else 1)
+    m = read * sum(1 for x in t.get('docs') or [] if x['id'] not in t.get('inspected', [])) + office.COST['submit']
+    if desk:
+        stamped = t.get('stamps') or {}
+        for x in t.get('cases') or []:
+            if x['id'] not in stamped:
+                m += office.COST['stamp'] + (office.COST['circle'] if x['_truth']['v'] != 'approve' else 0)
+    else:
+        m += office.COST['step'] * max(0, len(t.get('proc') or []) - (t.get('proc_state') or {}).get('at', 0))
+    return m
+
+
+def allowance(t: dict, lag: bool = False) -> int:
+    m = clean_minutes(t, lag) * PACE
+    return -(-m // QUARTER) * QUARTER
+
+
+def _after(clock: int, minutes: int) -> int:
+    """The office clock `minutes` of work after `clock` (the lunch hour does not count, as in office.spend)."""
+    end = clock + minutes
+    return end + office.LUNCH_MIN if clock < office.LUNCH <= end else end
+
+
+def _slot(t: dict) -> int:
+    return int(str(t['id']).rsplit('-', 1)[-1])
+
+
+def _queue(c: dict, day: int, extra: dict | None = None) -> list:
+    """Open dossiers in the order they are worked: leftovers first, then today's by arrival."""
+    rows = [t for t in c['tasks'] if t.get('career') == ID and t['status'] not in DONE and t['day'] <= day
+            and (t.get('gen') or type(t.get('due')) is int)]
+    if extra is not None and all(x is not extra for x in rows):
+        rows.append(extra)
+    return sorted(rows, key=lambda t: (t['day'], _slot(t)))
+
+
+def _day_start(o: dict, day: int) -> int:
+    return office.OPEN + (office.TIRED_MIN if o['tired'] == day else 0)
+
+
+def plan_dues(rows: list, day: int, start: int) -> list:
+    """Deadlines of `rows` (in working order) for a day whose work starts at `start`."""
+    mod = _mod(day)['id']
+    clock, out = start, []
+    for i, t in enumerate(rows):
+        clock = _after(clock, allowance(t, mod == 'lag'))
+        due = min(office.CLOSE, max(office.DUE[i] if i < len(office.DUE) else office.CLOSE, clock))
+        out.append(max(office.OPEN + 60, due - 30) if mod == 'crunch' else due)
+    return out
+
+
+def plan_day(c: dict, o: dict) -> None:
+    """Spread the deadlines of every open dossier over the day (at the start of the day, before any work)."""
+    day = c['day']
+    rows = _queue(c, day)
+    for t, due in zip(rows, plan_dues(rows, day, _day_start(o, day))):
+        t['due'], t['due_day'] = due, day
+
+
 def on_task(s: dict, c: dict, t: dict) -> None:
     if not t.get('gen'):
         return
     o = _data(c)['office']
-    office.sync(o, c['day'])
-    office.set_due(c, t, o)
-    if _mod(t['day'])['id'] == 'crunch':
-        t['due'] = max(office.OPEN + 60, t['due'] - 30)
+    day = c['day']
+    office.sync(o, day)
+    lag = _mod(day)['id'] == 'lag'
+    if o['day'] == day and c.get('open') and o['clock'] > office.OPEN + office.TIRED_MIN:
+        # Taken mid-day: 2.5 hours later as before, or the time its own work needs when that is longer.
+        office.set_due(c, t, o)
+        t['due'] = max(t['due'], min(office.LOCK, _after(o['clock'], allowance(t, lag))))
+        if _mod(t['day'])['id'] == 'crunch':
+            t['due'] = max(office.OPEN + 60, t['due'] - 30)
+        return
+    # Early in the day: planned after the dossiers before it; the ones already planned keep their deadlines,
+    # so it also starts no earlier than the last of those is due.
+    rows = _queue(c, day, t)
+    i = next(k for k, x in enumerate(rows) if x is t)
+    due = plan_dues(rows[:i + 1], day, _day_start(o, day))[-1]
+    planned = [x['due'] for x in rows[:i] if x.get('due_day') == day and type(x.get('due')) is int]
+    if planned:
+        due = max(due, min(office.CLOSE, _after(max(planned), allowance(t, lag))))
+    t['due'], t['due_day'] = due, day
+
+
+def carry_due(c: dict, o: dict) -> str | None:
+    """At the close: when tomorrow's first leftover will be due (the day summary says it), or None."""
+    rows = _queue(c, c['day'])
+    if not rows:
+        return None
+    day = c['day'] + 1
+    return office.hhmm(plan_dues(rows[:1], day, _day_start(o, day))[0])
 
 
 def on_start(s: dict, c: dict) -> None:
@@ -1683,6 +1781,7 @@ def on_start(s: dict, c: dict) -> None:
     mod = _mod(c['day'])
     office.begin(o, c['day'])
     office.carry(c, ID, o)
+    plan_day(c, o)
     d['day_stamps'] = []
     care_start(d['care'], CARE, c['day'])
     _close_plan(d['care'], c['day'])
@@ -1886,6 +1985,9 @@ def on_close(s: dict, c: dict) -> dict:
     if close:
         out['close'] = close
     out['office'] = office.close_day(c, ID, o)
+    first = carry_due(c, o)
+    if first:
+        out['office']['carry_due'] = first
     out['care'] = care_close(s, c, d['care'], CARE, o, ok, why)
     d['day_posted'] = 0
     d['day_done'] = 0

@@ -3992,7 +3992,7 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                                'name': 'Khóa sổ cuối tháng',
                                'how': 'Ngày 5 của tháng: xếp thứ tự bước, trích trước 642/335, bù trừ thuế 3331/133, '
                                       'kết chuyển 911, lãi vào 421.'}],
-                     'steps': ['📥 Tab [[Hộp thư]]: bấm [[Nhận khay chứng từ]] hoặc [[Nhận hồ sơ]]. Việc đầu hạn 10:30.',
+                     'steps': ['📥 Tab [[Hộp thư]]: bấm [[Nhận khay chứng từ]] hoặc [[Nhận hồ sơ]]. Hạn ghi trên từng việc: hồ sơ dài được nhiều giờ hơn.',
                                '📑 Tab [[Quy định]]: xem hạn mức duyệt, nhà cung cấp bị chặn, thuế suất tháng này. Mỗi '
                                'quy định là một dòng, chạm để đọc.',
                                '⭕ Khay: chạm ô sai trên giấy để khoanh (1–3 ô), rồi bấm [[DUYỆT]], [[TRẢ LẠI]] hoặc '
@@ -4050,7 +4050,7 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                               '🔋 Sức bền: về đúng giờ +15 mỗi đêm, tăng ca −25. Dưới 35 là kiệt sức: việc gì cũng chậm '
                               'hơn, không được tăng ca.',
                               '➕ Còn dưới 4 việc mà muốn làm thêm: bấm [[Nhận thêm việc]]. Việc nhận giữa ngày có hạn '
-                              '2 tiếng rưỡi sau đó.',
+                              'ít nhất 2 tiếng rưỡi sau đó.',
                               '🔰 Hồ sơ đầu tiên có chị Hạnh kèm từng bước, không tính điểm soát. Nút gợi ý làm giúp '
                               'luôn (như “✍️ Điền theo chứng từ”); từ hồ sơ thứ hai bạn tự chọn.',
                               '📅 Lịch 5 ngày tới gọn trong chip 📅 ở hàng giờ; chạm để mở.'],
