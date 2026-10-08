@@ -1,5 +1,115 @@
 [
  {
+  "vi": "Cho $1 mượn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mượn của $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 gửi",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mỗi ngày gửi tiền được $1 lần thôi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💸 $1 vừa $2 $3 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "cho $1 mượn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "gửi $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã $1 $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã nhờ $1. Chờ trả lời nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 chưa giúp được lần này.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã giúp $1 $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Vừa nhắc rồi. $1 giờ sau hẵng nhắc lại cho đỡ căng nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 $1: \"$2\" (còn nợ $3 xu)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã nhắc $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🙏 $1 xin khất: \"$2\"",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả nợ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 $1 vừa trả $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", còn $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 Trả nợ $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã trả $1 $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Còn $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💝 $1 đã xóa khoản nợ $2 xu cho bạn.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã xóa nợ cho $1.",
   "en": "",
   "pattern": true
@@ -2136,116 +2246,6 @@
  },
  {
   "vi": "Tiền thuốc: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: mất $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dự án “lãi khủng” biến mất cùng $1 xu của bạn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhắn tin đang vui thì $1 im bặt.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ôm một cái, chúc $1 đi bình an",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn thấy $1 đi cùng người khác ở phố đi bộ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tối đó $1 vẫn nhắn “nhớ anh”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tối đó $1 vẫn nhắn “nhớ em”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tối đó $1 vẫn nhắn “nhớ lắm”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sinh nhật bạn, $1 quên.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm qua bạn làm tới tối mịt ở $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nói với cả dãy: “Đêm nào cũng về khuya, chắc làm ăn gì…”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ghé nói chuyện nhỏ nhẹ với $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 còn thêm mấy dấu chấm lửng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mời $1 ly cà phê cho vui vẻ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Uống xong, $1 quay ra bênh bạn chằm chặp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Mới lên phố mà tiêu như nước, chắc làm ăn gì mờ ám.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 ậm ừ, nói trớ sang chuyện thời tiết.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đồn: “Nó rút sạch quỹ, chắc đang nợ ai đó.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tối qua bạn đi ăn với $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Hai người đó đi riêng, chắc có gì rồi…”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cười cho qua cùng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 thêm thắt: “Chắc tính khó nên người ta bỏ.”",
   "en": "",
   "pattern": true
  }

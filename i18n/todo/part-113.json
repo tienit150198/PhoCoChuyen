@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Mọi người sẵn sàng rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Chờ chủ phòng bấm chụp…",
+  "en": ""
+ },
+ {
   "vi": "Chờ mọi người sẵn sàng…",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Chắc chưa? Bỏ ván",
-  "en": ""
- },
- {
-  "vi": "Bỏ ván",
-  "en": ""
- },
- {
-  "vi": "🤝 Huề",
   "en": ""
  }
 ]

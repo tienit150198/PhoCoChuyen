@@ -1,5 +1,13 @@
 [
  {
+  "vi": "có sẵn",
+  "en": ""
+ },
+ {
+  "vi": "Đang mặc",
+  "en": ""
+ },
+ {
   "vi": "👗 Mở tủ đồ",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Máy này chỉ nghe được. Mở bằng Safari/Chrome để hát trực tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa cho phép micro. Mở cài đặt trang web › Micro để bật nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa bật được mic, thử lại nhé.",
   "en": ""
  }
 ]

@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Bạn chưa cho phép micro. Mở cài đặt trang web › Micro để bật nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa bật được mic, thử lại nhé.",
+  "en": ""
+ },
+ {
   "vi": "Mic đã ngắt kết nối.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Tay không",
-  "en": ""
- },
- {
-  "vi": "🛍️ Mua đồ chơi",
-  "en": ""
- },
- {
-  "vi": "Spa Mèo Mập",
   "en": ""
  }
 ]

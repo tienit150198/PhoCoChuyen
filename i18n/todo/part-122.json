@@ -1,5 +1,115 @@
 [
  {
+  "vi": "Thợ thông cống chặt chém $1 rồi không chịu trả lại. Ai gọi thì cẩn thận.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛵 Làm $1 việc: $2 thông tận gốc",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", $1 thông tạm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔁 Chạy về tiệm lấy đồ $1 lần.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 Chú Hai dò sổ: hôm nay nói thách khách $1 xu. “Tiền đó không giữ được khách đâu con.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💵 Thu $1 xu tiền công.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ hẹn hôm nay: $1. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ hẹn hôm nay: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ hẹn hôm nay: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Vụ này đã thúc đủ $1%, không rút thêm được nữa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhổ cỏ cả vườn: sạch $1 luống ($2).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thăm cả vườn: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1. Xử lý luống mức 2 trở lên kẻo lan.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 sâu mức $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phân thúc pha theo liều $1%.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Vụ này chỉ còn thúc thêm được $1% (tối đa $2% mỗi vụ).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cần $1 xu để mua phân bón thúc.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mua phân bón lá thúc cho $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phun phân bón lá đạm cá thúc cây (hữu cơ): thời gian lớn còn $1%.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phun phân bón lá thúc luống $1 (−$2 xu): thời gian lớn còn $3%, đã thúc $4/$5%. Đất màu $6 → $7.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã giao hàng · +$1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 loại B × $3",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "($1) × $2% nhãn hữu cơ",
   "en": "",
   "pattern": true
@@ -2136,116 +2246,6 @@
  },
  {
   "vi": "Lọc hồ sơ: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị Huyền đặt chồng hồ sơ lên bàn: “Vị trí $1 có $2 bạn nộp. Em lọc giúp chị nhé.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lọc $1 hồ sơ ứng tuyển $2: xếp mỗi hồ sơ vào một khay, đúng yêu cầu vị trí.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Yêu cầu vị trí: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✅ Đơn nghỉ phép ĐÃ DUYỆT: $1 — $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mang đơn nghỉ phép $2 lên — chị Huyền vừa ký duyệt.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⏳ Đơn nghỉ phép CHƯA DUYỆT: $1 — $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚚 Lịch công tác: $1 đi giao hàng mẫu ở Bình Dương — $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📹 Camera cổng: $1 không đến công ty $2, nhưng máy vẫn ghi giờ quẹt thẻ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Soát bảng chấm công $1 người × 5 ngày: chạm ô nào sai và chọn lý do; ô đúng thì để nguyên.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thư mời ghi $1 ngày; thử việc không quá 60 ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thư mời ghi $1%; lương thử việc không thấp hơn 85%.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Anh Quân vừa duyệt: lương chính thức của $1 nâng lên $2 xu cho giữ chân người giỏi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "HỢP ĐỒNG LAO ĐỘNG số $1/2025/HĐLĐ-CD",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Soát hợp đồng: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị Huyền đưa bản nháp: “Hợp đồng của $1 đây. Em soát với thư mời và CCCD rồi đưa chị lưu nhé.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Họ tên: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vị trí: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ngày bắt đầu: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thử việc: $1 ngày, hưởng $2% lương",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lương chính thức: $1 xu/tháng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Họ và tên: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ngày sinh: $1",
   "en": "",
   "pattern": true
  }

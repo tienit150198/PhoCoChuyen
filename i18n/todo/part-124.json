@@ -1,5 +1,115 @@
 [
  {
+  "vi": "Về nhà không biết $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: đã ra viện, rút kim, dặn dò, có giấy ra viện.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: đã ra viện (còn thiếu: $2).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: ra viện đủ thủ tục, dặn dò đầy đủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Làm thủ tục ra viện giường $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏠 $1 chào cả phòng ra về. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: chuông gọi — $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: chuông gọi, đã xử lý chu đáo.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả lời chuông giường $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2: thẻ $3 · $4.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xem lại $1: dấu hiệu đó trên thẻ là màu gì?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2: đúng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nặng mà phải ngồi chờ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2: hơi cao, $3 $4 là đủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quầy tiếp đón: phân loại $1 người",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", $1 thẻ đỏ đã gọi bác sĩ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Chị Hoa đọc sổ, khựng lại ở dòng “$1”: “Cái này đâu có xảy ra, em?” Ghi khống vào sổ giao ca. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Sổ giao ca thật, nhưng thiếu: “$1”. Ca đêm phải gọi điện hỏi lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏥 Ca ngày: $1 việc ở khoa Nội.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📞 Báo bác sĩ $1 lần. Bất thường thì báo: đúng bài.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✋ Giữ lại $1 lần cho tới khi bác sĩ xem lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚦 Phân loại $1 người ở quầy tiếp đón.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "📋 $1 báo cáo sự cố. Mai họp khoa rút kinh nghiệm.",
   "en": "",
   "pattern": true
@@ -2136,116 +2246,6 @@
  },
  {
   "vi": "Bạn kéo $1 ra sau vạch dừng, ghi tên vào sổ người vượt chắn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tàu $1 gần sát mới hạ chắn, xe phanh rít cả dãy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Còn $1 phút tàu mới tới: hạ sớm quá, dân sẽ sốt ruột.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🟩 $1, đứng nghiêm bên chòi, mắt nhìn về phía tàu tới.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🟥 Bạn gọi ga: “Dừng tàu $1, đường ngang có vật cản!” rồi cầm $2 chạy về phía tàu tới.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Bạn báo ga: “Đường ngang đã thông.” Tàu $1 kéo còi, chạy chậm qua đường ngang. Nhìn kỹ đoàn tàu nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "〰️ Ray bắt đầu rung nhè nhẹ: tàu còn khoảng $1 phút.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gác chắn nâng chắn cho $1 qua khi tàu đang tới.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏃 $1 Kéo người đó ra ngay, hoặc báo dừng tàu!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👁️ Bạn đếm đủ $1 toa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Bạn: “Tàu $1 vừa qua Bến Mây không có đèn đuôi.” Chị Nguyệt: “Rõ! Ga dừng tàu kiểm tra ngay.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Bạn: “Tàu $1, toa số $2 có bất thường.” Chị Nguyệt: “Rõ! Báo lái tàu dừng ở Bến Mây kiểm tra.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tàu $1 đang tới đúng giờ: giữ chắn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tàu $1 đã chạy lại rồi: chuẩn bị đóng chắn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Chị Nguyệt: “Tàu $1 đã chạy khỏi Bến Gỗ rồi, còn $2 phút. Giữ chắn!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Chị Nguyệt: “Tàu $1 còn đứng ở Bến Gỗ, chưa có lệnh chạy. Đường ngang được mở tạm, khi tàu chạy ga gọi lại.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Chị Nguyệt: “Còn! Tàu hàng $1 chạy ngược chiều, còn $2 phút. Giữ nguyên chắn!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚂 Tàu $1 rầm rập qua đường bên kia. 📻 Chị Nguyệt: “Hết tàu. Đường ngang Bến Mây được nâng chắn.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nâng chắn khi tàu $1 chưa qua, chưa có xác nhận của ga.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vừa nâng chắn thì tàu hàng $1 rúc còi lao tới. Xe máy phanh dúi dụi, bạn hạ chắn khẩn cấp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚂 Tàu $1 qua sát nút. Tim bạn đập thình thịch.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tàu $1 qua không có đèn đuôi mà gác chắn không báo ga.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Toa số $1 tàu $2 có bất thường mà không ai báo ga.",
   "en": "",
   "pattern": true
  }

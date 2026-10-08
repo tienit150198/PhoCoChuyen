@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Bấm để chào khu phố.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nhân vật, đặt tên.",
+  "en": ""
+ },
+ {
   "vi": "Bấm mở Hành trình.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Rút về tài khoản",
-  "en": ""
- },
- {
-  "vi": "Chưa có sổ nào.",
-  "en": ""
- },
- {
-  "vi": "💳 Khi mua sắm",
   "en": ""
  }
 ]

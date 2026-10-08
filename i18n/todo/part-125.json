@@ -1,5 +1,115 @@
 [
  {
+  "vi": "Tàu $1 gần sát mới hạ chắn, xe phanh rít cả dãy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Còn $1 phút tàu mới tới: hạ sớm quá, dân sẽ sốt ruột.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🟩 $1, đứng nghiêm bên chòi, mắt nhìn về phía tàu tới.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🟥 Bạn gọi ga: “Dừng tàu $1, đường ngang có vật cản!” rồi cầm $2 chạy về phía tàu tới.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Bạn báo ga: “Đường ngang đã thông.” Tàu $1 kéo còi, chạy chậm qua đường ngang. Nhìn kỹ đoàn tàu nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "〰️ Ray bắt đầu rung nhè nhẹ: tàu còn khoảng $1 phút.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gác chắn nâng chắn cho $1 qua khi tàu đang tới.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏃 $1 Kéo người đó ra ngay, hoặc báo dừng tàu!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👁️ Bạn đếm đủ $1 toa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Bạn: “Tàu $1 vừa qua Bến Mây không có đèn đuôi.” Chị Nguyệt: “Rõ! Ga dừng tàu kiểm tra ngay.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Bạn: “Tàu $1, toa số $2 có bất thường.” Chị Nguyệt: “Rõ! Báo lái tàu dừng ở Bến Mây kiểm tra.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tàu $1 đang tới đúng giờ: giữ chắn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tàu $1 đã chạy lại rồi: chuẩn bị đóng chắn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Chị Nguyệt: “Tàu $1 đã chạy khỏi Bến Gỗ rồi, còn $2 phút. Giữ chắn!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Chị Nguyệt: “Tàu $1 còn đứng ở Bến Gỗ, chưa có lệnh chạy. Đường ngang được mở tạm, khi tàu chạy ga gọi lại.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Chị Nguyệt: “Còn! Tàu hàng $1 chạy ngược chiều, còn $2 phút. Giữ nguyên chắn!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚂 Tàu $1 rầm rập qua đường bên kia. 📻 Chị Nguyệt: “Hết tàu. Đường ngang Bến Mây được nâng chắn.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nâng chắn khi tàu $1 chưa qua, chưa có xác nhận của ga.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Vừa nâng chắn thì tàu hàng $1 rúc còi lao tới. Xe máy phanh dúi dụi, bạn hạ chắn khẩn cấp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚂 Tàu $1 qua sát nút. Tim bạn đập thình thịch.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tàu $1 qua không có đèn đuôi mà gác chắn không báo ga.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Toa số $1 tàu $2 có bất thường mà không ai báo ga.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Tàu $1 qua đường ngang Bến Mây",
   "en": "",
   "pattern": true
@@ -2136,116 +2246,6 @@
  },
  {
   "vi": "Đã rút $1 xu về ví. Quỹ chung còn $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cho $1 mượn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mượn của $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 gửi",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mỗi ngày gửi tiền được $1 lần thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💸 $1 vừa $2 $3 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "cho $1 mượn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "gửi $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã $1 $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã nhờ $1. Chờ trả lời nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 chưa giúp được lần này.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã giúp $1 $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vừa nhắc rồi. $1 giờ sau hẵng nhắc lại cho đỡ căng nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 $1: \"$2\" (còn nợ $3 xu)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã nhắc $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🙏 $1 xin khất: \"$2\"",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả nợ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 $1 vừa trả $2 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", còn $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 Trả nợ $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1 $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Còn $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💝 $1 đã xóa khoản nợ $2 xu cho bạn.",
   "en": "",
   "pattern": true
  }

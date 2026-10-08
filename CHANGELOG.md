@@ -1,3 +1,7 @@
+# v1.9.27 — 2026-10-09
+
+🕶️ Chợ đen (chủ game 08/10 23:15: "k phải là hội chợ, nó là Chợ đen. Vào chợ đen phải nộp bảo kê, phí bảo kê là 10k xu, nếu k nộp thì bị trấn lột 30% tiền hiện có. vào chợ đen có thể bị công an bắt, tỷ lệ bị bắt cực cao"): đổi tên hiển thị Hội chợ → Chợ đen; cổng bảo kê 10.000 xu mỗi ngày (giờ VN), không nộp bị trấn lột 30% ví (không đụng ngân hàng) rồi được vào; mỗi ván có đặt tiền có thể bị công an ập vào (game/fair_bm.py BM_ARREST_P, không hiện ra): mất tiền cược, phạt 30% ví, bị đuổi tới hết ngày. Trạng thái lưu ở journey.fair_bm (bản 1.9.26 vẫn đọc được). Không đổi CSDL.
+
 # v1.9.26 — 2026-10-08
 
 🏮 Hội chợ mở lại 09/10–13/10 (chủ game 08/10: "mở hội chợ nhé, tỷ lệ chỉnh lại làm sao cho phù hợp, đảm bảo nhà cái luôn thắng"; "chợ đen để luôn ở ngoài"; "số liệu k hiển thị ra, mn đặt cược bao nhiêu thoải mái"): FAIR_START 2026-10-09, 5 ngày; mọi trò trả tiền đều có lợi thế nhà cái (docs/FAIR_HOUSE_EDGE.md, scripts/sim_fair_odds.py); lô tô cược phụ đóng; phóng dao giới hạn lời mỗi ngày không báo ra; bầu cua / chiếu trong gõ số cược tùy ý (trần ẩn 1.000.000 xu/ván); không gửi tỷ lệ thắng cho trang; lối vào 🏮 Hội chợ ngay trên khu phố (town-walk.js). Không đổi CSDL.

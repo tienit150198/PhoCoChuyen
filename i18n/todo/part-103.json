@@ -1,5 +1,13 @@
 [
  {
+  "vi": "📋 Xem sổ đón phụ huynh",
+  "en": ""
+ },
+ {
+  "vi": "📞 Mẹ đã quay lại",
+  "en": ""
+ },
+ {
   "vi": "📞 Gọi số trong sổ đón",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Chưa có họ tên, ngày sinh để đối chiếu.",
-  "en": ""
- },
- {
-  "vi": "🪪 Người bệnh",
-  "en": ""
- },
- {
-  "vi": "🗣️ Mời tự nói họ tên, ngày sinh",
   "en": ""
  }
 ]

@@ -1,5 +1,115 @@
 [
  {
+  "vi": "Chị Huyền đặt chồng hồ sơ lên bàn: “Vị trí $1 có $2 bạn nộp. Em lọc giúp chị nhé.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lọc $1 hồ sơ ứng tuyển $2: xếp mỗi hồ sơ vào một khay, đúng yêu cầu vị trí.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Yêu cầu vị trí: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✅ Đơn nghỉ phép ĐÃ DUYỆT: $1 — $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 mang đơn nghỉ phép $2 lên — chị Huyền vừa ký duyệt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⏳ Đơn nghỉ phép CHƯA DUYỆT: $1 — $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚚 Lịch công tác: $1 đi giao hàng mẫu ở Bình Dương — $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📹 Camera cổng: $1 không đến công ty $2, nhưng máy vẫn ghi giờ quẹt thẻ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Soát bảng chấm công $1 người × 5 ngày: chạm ô nào sai và chọn lý do; ô đúng thì để nguyên.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thư mời ghi $1 ngày; thử việc không quá 60 ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thư mời ghi $1%; lương thử việc không thấp hơn 85%.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Anh Quân vừa duyệt: lương chính thức của $1 nâng lên $2 xu cho giữ chân người giỏi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "HỢP ĐỒNG LAO ĐỘNG số $1/2025/HĐLĐ-CD",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Soát hợp đồng: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Huyền đưa bản nháp: “Hợp đồng của $1 đây. Em soát với thư mời và CCCD rồi đưa chị lưu nhé.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Họ tên: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Vị trí: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ngày bắt đầu: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thử việc: $1 ngày, hưởng $2% lương",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lương chính thức: $1 xu/tháng",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Họ và tên: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ngày sinh: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Số: $1",
   "en": "",
   "pattern": true
@@ -2136,116 +2246,6 @@
  },
  {
   "vi": "🔁 $1 nhắc lại đủ từng điều. Người nhà ghi vào điện thoại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Về nhà không biết $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: đã ra viện, rút kim, dặn dò, có giấy ra viện.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: đã ra viện (còn thiếu: $2).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: ra viện đủ thủ tục, dặn dò đầy đủ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Làm thủ tục ra viện giường $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏠 $1 chào cả phòng ra về. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: chuông gọi — $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: chuông gọi, đã xử lý chu đáo.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả lời chuông giường $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2: thẻ $3 · $4.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xem lại $1: dấu hiệu đó trên thẻ là màu gì?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2: đúng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nặng mà phải ngồi chờ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2: hơi cao, $3 $4 là đủ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quầy tiếp đón: phân loại $1 người",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", $1 thẻ đỏ đã gọi bác sĩ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Chị Hoa đọc sổ, khựng lại ở dòng “$1”: “Cái này đâu có xảy ra, em?” Ghi khống vào sổ giao ca. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Sổ giao ca thật, nhưng thiếu: “$1”. Ca đêm phải gọi điện hỏi lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏥 Ca ngày: $1 việc ở khoa Nội.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📞 Báo bác sĩ $1 lần. Bất thường thì báo: đúng bài.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✋ Giữ lại $1 lần cho tới khi bác sĩ xem lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚦 Phân loại $1 người ở quầy tiếp đón.",
   "en": "",
   "pattern": true
  }

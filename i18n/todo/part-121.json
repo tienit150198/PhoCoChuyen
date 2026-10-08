@@ -1,5 +1,115 @@
 [
  {
+  "vi": "Cảm ơn $1 đã phản ánh. Bên phường đã ghi vào sổ tiếp dân ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bên phường xin nhận một điểm trừ mục $1 😅 Cán bộ trực đã được “ôn bài” lại rồi ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ trực ban ghi $1 ạ. Lần sau $2 mang đủ giấy tờ là xong trong năm phút thôi 🙂",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Theo sổ trực ban hôm đó: $1. {Who} cần đối chiếu, mời ghé trụ sở giờ hành chính ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bên phường nhận thiếu sót ở $1. Cán bộ trực đã được nhắc lại quy trình tiếp dân.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mời $1 sáng thứ Hai ghé gặp cán bộ phụ trách để giải quyết dứt điểm ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ em cảm ơn $1 đã góp ý, em ghi vào sổ việc để lần sau làm chu đáo hơn ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ em xin nhận một điểm “cần cố gắng” ở mục $1 😅 Mai em nộp bản “xịn” hơn ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ theo lịch đã gửi thì $1 ạ. Chắc email hôm đó trôi giữa 200 cái khác thôi ạ 🙂",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ, theo lịch họp và sổ ghi điện thoại hôm đó: $1. Em gửi $2 bản chụp để đối chiếu ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ em nhận thiếu sót ở $1. Từ mai em đọc lại tên và số người gọi trước khi gác máy ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ em cảm ơn $1 đã nhắn, lần sau em nhớ kỹ góc đó ạ 💛",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ em xin nhận một vé “lau lại” cho $1 😅 Lần sau góc đó bóng loáng luôn ạ!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ ảnh em gửi lúc dọn xong có chụp $1 đó ạ, chắc Mướp nghịch sau khi em về 😌",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ ảnh em gửi hôm đó có chụp: $1. {Who} xem lại giúp em ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Em xin lỗi $1 về $2. Buổi tới em ghé sớm 15 phút làm lại góc đó, không tính thêm ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ lần sau nhà $1 sạch bóng như có filter luôn nha ✨",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cảm ơn $1 đã dành thời gian góp ý. {Self} đọc kỹ từng dòng rồi ạ 💛",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ $1 cảm ơn $2 thật lòng. Chuyện $3 $4 đã ghi vào $5 để làm tốt hơn ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lời $1 viết $2 đọc lại cả buổi. Cảm ơn $3 đã nói thẳng ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đọc xong $1 đứng hình mất năm giây 😅 Hứa lần sau $2 sẽ khác hẳn ạ!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ $1 xin nhận một điểm “cần cố gắng” ở mục $2 ạ 😅 Lần sau bù ngay!",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Góp ý này $1 dán ngay cạnh $2 để sáng nào cũng đọc 😂 Cảm ơn $3 ạ.",
   "en": "",
   "pattern": true
@@ -2136,116 +2246,6 @@
  },
  {
   "vi": "$1: “Giải thích cái gì, chặt chém thì nhận đi!” Ông Lộc lắc đầu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thợ thông cống chặt chém $1 rồi không chịu trả lại. Ai gọi thì cẩn thận.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛵 Làm $1 việc: $2 thông tận gốc",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", $1 thông tạm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔁 Chạy về tiệm lấy đồ $1 lần.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 Chú Hai dò sổ: hôm nay nói thách khách $1 xu. “Tiền đó không giữ được khách đâu con.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💵 Thu $1 xu tiền công.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sổ hẹn hôm nay: $1. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sổ hẹn hôm nay: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sổ hẹn hôm nay: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vụ này đã thúc đủ $1%, không rút thêm được nữa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhổ cỏ cả vườn: sạch $1 luống ($2).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thăm cả vườn: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1. Xử lý luống mức 2 trở lên kẻo lan.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 sâu mức $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Phân thúc pha theo liều $1%.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vụ này chỉ còn thúc thêm được $1% (tối đa $2% mỗi vụ).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cần $1 xu để mua phân bón thúc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mua phân bón lá thúc cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Phun phân bón lá đạm cá thúc cây (hữu cơ): thời gian lớn còn $1%.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Phun phân bón lá thúc luống $1 (−$2 xu): thời gian lớn còn $3%, đã thúc $4/$5%. Đất màu $6 → $7.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã giao hàng · +$1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 loại B × $3",
   "en": "",
   "pattern": true
  }
