@@ -1,17 +1,5 @@
 [
  {
-  "vi": "hẹn mang giấy tờ, chứng minh",
-  "en": ""
- },
- {
-  "vi": "Kiểm đếm, ký biên bản",
-  "en": ""
- },
- {
-  "vi": "Hỏi người tới nhận (ít nhất hai câu)",
-  "en": ""
- },
- {
   "vi": "❓ Hỏi người tới nhận",
   "en": ""
  },
@@ -1797,6 +1785,18 @@
  },
  {
   "vi": "👉 Chọn dịch vụ cho khách",
+  "en": ""
+ },
+ {
+  "vi": "💬 Trao đổi với khách về giá",
+  "en": ""
+ },
+ {
+  "vi": "Báo giá vượt ngân sách: trao đổi với khách",
+  "en": ""
+ },
+ {
+  "vi": "Thoa thuốc",
   "en": ""
  }
 ]

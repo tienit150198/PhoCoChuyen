@@ -1,21 +1,5 @@
 [
  {
-  "vi": "Làm thay, không nói gì",
-  "en": ""
- },
- {
-  "vi": "Một bước làm tắt có thể hại khách.",
-  "en": ""
- },
- {
-  "vi": "Dừng lại, làm đủ quy trình",
-  "en": ""
- },
- {
-  "vi": "Hỏi ý khách",
-  "en": ""
- },
- {
   "vi": "Khách để quên đồ quý ở quầy.",
   "en": ""
  },
@@ -1797,6 +1781,22 @@
  },
  {
   "vi": "Người dân khiếu nại, không có hình đối chứng.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện lộ ra, mất niềm tin.",
+  "en": ""
+ },
+ {
+  "vi": "Quán karaoke gửi “quà”",
+  "en": ""
+ },
+ {
+  "vi": "Quán thử lại với tổ khác.",
+  "en": ""
+ },
+ {
+  "vi": "Bậc của bạn chưa có quyền này.",
   "en": ""
  }
 ]

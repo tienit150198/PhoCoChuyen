@@ -1,17 +1,5 @@
 [
  {
-  "vi": "Ký hợp đồng mua nhà",
-  "en": ""
- },
- {
-  "vi": "Tất toán khoản vay mua nhà?",
-  "en": ""
- },
- {
-  "vi": ". Bạn về gác Bà Tám (muốn ở căn khác thì dọn qua đó trước rồi hãy bán)",
-  "en": ""
- },
- {
   "vi": ". Người ấy dọn ra cùng bạn",
   "en": ""
  },
@@ -1797,6 +1785,18 @@
  },
  {
   "vi": "Lời khắc",
+  "en": ""
+ },
+ {
+  "vi": "Số xu tài trợ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được mục Hôn nhân.",
+  "en": ""
+ },
+ {
+  "vi": "💌 Gửi thiệp mời cả phố",
   "en": ""
  }
 ]

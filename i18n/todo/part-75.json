@@ -1152,7 +1152,7 @@
   "en": ""
  },
  {
-  "vi": "3️⃣ Chọn [[Rút về ví]], gõ số xu hoặc bấm 25%, 50%, [[Tất cả]]. Bấm nút Rút rồi xác nhận: tiền vào ví ngay, khung xác nhận ghi rõ quỹ còn lại bao nhiêu.",
+  "vi": "3️⃣ Bấm nút [[Rút về ví]] (ghi sẵn số rút tối đa) rồi xác nhận: tiền vào ví ngay, khung xác nhận ghi rõ quỹ còn lại bao nhiêu.",
   "en": ""
  },
  {
@@ -1168,15 +1168,7 @@
   "en": ""
  },
  {
-  "vi": "⚠️ Báo “Chỉ rút được tối đa … xu”: số bạn gõ lớn hơn mức cho phép. Bấm [[Tất cả]] để điền đúng số.",
-  "en": ""
- },
- {
-  "vi": "✏️ Báo “Nhập số xu là số nguyên dương”: gõ số nguyên từ 1 trở lên, không có dấu chấm hay phẩy.",
-  "en": ""
- },
- {
-  "vi": "⬇️ Rút nhầm, hay tiệm thiếu tiền nhập hàng: chọn [[Góp vốn]] ngay cạnh, gõ số xu rồi xác nhận. Tiền lấy từ ví trước, thiếu mới lấy tài khoản ngân hàng.",
+  "vi": "⬇️ Rút nhầm, hay tiệm thiếu tiền nhập hàng: bấm [[Góp vốn]] ngay cạnh, gõ số xu rồi xác nhận. Tiền lấy từ ví trước, thiếu mới lấy tài khoản ngân hàng.",
   "en": ""
  },
  {
@@ -1517,6 +1509,18 @@
  },
  {
   "vi": "📈 Điểm tín dụng 300–850, bắt đầu 650. Trả đúng hạn, dư nợ thẻ dưới 30% hạn mức, thu nhập đều thì điểm tăng.",
+  "en": ""
+ },
+ {
+  "vi": "📉 Mỗi lần nộp hồ sơ vay hay mở thẻ, điểm giảm một chút. Đừng nộp dồn dập.",
+  "en": ""
+ },
+ {
+  "vi": "Thuê phòng, mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Mở [[Nhà của bạn]] ở trang Hành trình hoặc trong Ngân hàng. Luôn thấy tiền mặt, tài khoản và còn thiếu bao nhiêu.",
   "en": ""
  }
 ]

@@ -1,17 +1,5 @@
 [
  {
-  "vi": "Cà phê phin pha sẵn. Một ngụm rồi đọc bản tin.",
-  "en": ""
- },
- {
-  "vi": "Sảnh ga",
-  "en": ""
- },
- {
-  "vi": "Cổng ra tàu",
-  "en": ""
- },
- {
   "vi": "Sân đỗ",
   "en": ""
  },
@@ -1797,6 +1785,18 @@
  },
  {
   "vi": "Nhận thêm một việc hoặc giao ca hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Giao ca hôm nay?",
+  "en": ""
+ },
+ {
+  "vi": "Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho ca sau.",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp ở khoa Nội.",
   "en": ""
  }
 ]

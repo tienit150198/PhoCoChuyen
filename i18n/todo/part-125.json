@@ -1,60 +1,5 @@
 [
  {
-  "vi": "$1 trả lại $2 xu: “Thối dư nè, coi chừng lỗ nha!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tối kiểm két mới thấy thối dư $1 xu, khách cầm về luôn rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khách cho giữ tiền thối: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 xua tay: “Khỏi thối, giữ tiền lẻ đi!” (+$2 xu tip)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã dặn anh Tuấn xe đá: mỗi sáng thả $1 cây đá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 🚨 Xe trật tự đô thị đang tới đầu phố! Dẹp ghế, gấp ô ngay!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Bày quán ở $2. $3$4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quán chỉ có $1 cái ghế.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ Chỗ này chỉ vừa $1 ghế, ghế thừa sẽ tràn ra lối đi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🪑 Đã bày $1 ghế nhựa.$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bày ít nhất $1 ghế rồi mới mở hàng.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "Dọn hàng ở $1, $2 ghế.",
   "en": "",
   "pattern": true
@@ -2246,6 +2191,61 @@
  },
  {
   "vi": "$1 Đạt! 📜 Chứng nhận Lịch sử Việt Nam đã được cấp, kèm danh hiệu 📜 Người kể sử và học bổng $2 xu vào ví.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Đạt! 📜 Chứng nhận Lịch sử Việt Nam đã được cấp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đã đặt lại $1 như cũ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đã đặt lại $1 món như cũ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đã cất $1 vào túi",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đã đặt $1 ở $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đã đặt $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đã dời $1 sang $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đã lật $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đã xoay $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đã đổi lớp $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đã dời $1",
   "en": "",
   "pattern": true
  }

@@ -1,13 +1,5 @@
 [
  {
-  "vi": "📨 Bấm [[Kết bạn]] để gửi lời mời. Người kia chọn [[Chấp nhận]], [[Từ chối]] hoặc [[Chặn]]. Nếu họ đã mời bạn trước, nút thành [[Chấp nhận kết bạn]] và hai bạn thành bạn ngay.",
-  "en": ""
- },
- {
-  "vi": "⏳ Lời mời bạn gửi nằm ở “Đang chờ trả lời”, đổi ý thì bấm [[Rút lại]]. Có lời mời mới, nút [[Bạn bè]] trên thanh bên hiện số.",
-  "en": ""
- },
- {
   "vi": "🔢 Mỗi ngày tìm tối đa 100 lần (20 lần mỗi phút) và gửi 10 lời mời; cùng lúc chờ tối đa 20 lời mời; danh sách giữ tối đa 200 bạn.",
   "en": ""
  },
@@ -700,7 +692,7 @@
   "en": ""
  },
  {
-  "vi": "👛 Chạm ô tiền ở góc trên để mở [[Tiền của bạn]]. Quỹ tiệm: chọn [[Rút về ví]], gõ số xu rồi xác nhận.",
+  "vi": "👛 Chạm ô tiền ở góc trên để mở [[Tiền của bạn]]. Quỹ tiệm: bấm [[Rút về ví]] rồi xác nhận.",
   "en": ""
  },
  {
@@ -1225,6 +1217,22 @@
  },
  {
   "vi": "Bạn đang cắt ảnh cho khách. Một nhóm lạ chụp xong đi ra, rổ đạo cụ hụt cái vương miện với cặp kính tim.",
+  "en": ""
+ },
+ {
+  "vi": "Mất mấy món đạo cụ",
+  "en": ""
+ },
+ {
+  "vi": "Hộp tiền để sát cửa cho tiện thối. Một chiếc xe máy tạt vào lề, chộp lấy rồi rồ ga mất hút về phía chợ đêm.",
+  "en": ""
+ },
+ {
+  "vi": "Bé giật đổ cây đèn vòng",
+  "en": ""
+ },
+ {
+  "vi": "Một bé chạy vào buồng chụp, níu chân đèn vòng. Cây đèn ngã xuống, xấp giấy in trên ghế rơi tung tóe.",
   "en": ""
  }
 ]

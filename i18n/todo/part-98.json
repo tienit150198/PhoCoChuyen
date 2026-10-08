@@ -1,17 +1,5 @@
 [
  {
-  "vi": "Bước hướng dẫn",
-  "en": ""
- },
- {
-  "vi": "Nút bấm cuối",
-  "en": ""
- },
- {
-  "vi": "Chưa có người mới được đo.",
-  "en": ""
- },
- {
   "vi": "Chưa chọn",
   "en": ""
  },
@@ -1797,6 +1785,18 @@
  },
  {
   "vi": "✓ Đã rửa tay bé",
+  "en": ""
+ },
+ {
+  "vi": "🧼 Rửa tay cho bé",
+  "en": ""
+ },
+ {
+  "vi": "✓ Bé ngồi ghế",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Cho bé ngồi ghế ăn",
   "en": ""
  }
 ]

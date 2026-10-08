@@ -116,7 +116,7 @@ export function wealthHTML(state,o={}){
   }
   if(P.places.length){
     const rows=P.places.map(p=>{const m=place(p.cid);
-      const move=P.story&&state?.journey?.places?.[p.cid]?fundMoveHTML(state,p.cid,{open:p.cid===o.current}):'';
+      const move=P.story&&state?.journey?.places?.[p.cid]?fundMoveHTML(state,p.cid):'';
       return row(esc(m.emoji||'🏪'),esc(m.name||p.cid),p.fund<0?minus(-p.fund):xu(p.fund),{cls:(p.fund<0?'bad ':'')+(p.cid===o.current?'here':''),id:'fund',sub:p.cid===o.current?'đang ở đây':p.paused?'tạm đóng':p.employed?'làm thuê':'',extra:move});
     }).join('');
     parts.push(section('Quỹ nơi làm việc',rows));
@@ -143,40 +143,40 @@ export function firstAmount(mode,max){
   if(!(max>=1))return 0;
   return mode==='draw'?Math.max(1,Math.floor(max/4)):Math.min(max,50);
 }
-/** One place's move, from the public state: {mode, open, max, n, fund, draw, invest, cash, bank}. `cash`/`bank`: what
- * Góp vốn would take from the wallet and from the account. */
-export function fundMove(state,cid,{open=false}={}){
+/** One place's move, from the public state: {mode, open, max, n, fund, draw, invest, cash, bank}. Rút về ví is one tap
+ * (the most the fund can give, as before 1.9.20); only Góp vốn opens a typed amount, when it is tapped (player feedback
+ * 08/10 "cho góp vốn bên cạnh chỗ rút thôi"). `cash`/`bank`: what Góp vốn would take from the wallet and from the account. */
+export function fundMove(state,cid){
   const j=state?.journey||{},p=j.places?.[cid]||{};
   const fund=num(p.fund),draw=Math.max(0,Math.floor(num(p.withdraw_max))),invest=investMax(state);
-  const chosen=MOVE.mode[cid];
-  const mode=chosen||(draw>0?'draw':'invest');
+  const mode=MOVE.mode[cid]==='invest'?'invest':'draw';
   const max=mode==='draw'?draw:invest;
   const typed=MOVE.amt[`${cid}:${mode}`];
   const n=max<1?0:Math.min(max,Math.max(1,Math.round(num(typed??firstAmount(mode,max)))));
   const cash=mode==='invest'?Math.min(Math.max(0,num(j.wallet)),n):0;
-  return {mode,open:Boolean(open||chosen),max,n,fund,draw,invest,cash,bank:mode==='invest'?n-cash:0,debt:num(j.wallet)<0};
+  return {mode,open:mode==='invest',max,n,fund,draw,invest,cash,bank:mode==='invest'?n-cash:0,debt:num(j.wallet)<0};
 }
-const tab=(cid,mode,on,label,fold)=>`<button type="button" class="wl-tab${on?' on':''}" data-action="wlMode" data-quick data-career="${esc(cid)}" data-mode="${mode}"${fold?' data-fold="1"':''} aria-pressed="${on}">${label}</button>`;
-/** The block under a workplace fund: the two moves side by side; the open one has its amount and its button. */
-export function fundMoveHTML(state,cid,o={}){
-  const M=fundMove(state,cid,o),c=esc(cid);
-  const tabs=`<div class="wl-tabs" role="group" aria-label="Rút về ví hay góp vốn">${tab(cid,'draw',M.open&&M.mode==='draw','👛 Rút về ví',!o.open)}${tab(cid,'invest',M.open&&M.mode==='invest','📈 Góp vốn',!o.open)}</div>`;
+/** The block under a workplace fund: 👛 Rút về ví · tối đa X (one tap, then a confirm) and 📈 Góp vốn beside it; Góp vốn
+ * opens its amount below, tapped again it folds. */
+export function fundMoveHTML(state,cid){
+  const M=fundMove(state,cid),c=esc(cid);
+  const draw=M.draw>=1?`<button type="button" class="btn small primary wl-draw" data-action="wlDraw" data-career="${c}" data-amount="${M.draw}">👛 Rút về ví · tối đa ${xu(M.draw)}</button>`
+    :`<p class="wl-why">Chưa rút được: quỹ phải giữ 80 xu dự phòng và đủ tiền hóa đơn chưa trả.</p>`;
+  const tabs=`<div class="wl-tabs">${draw}<button type="button" class="wl-tab${M.open?' on':''}" data-action="wlMode" data-quick data-career="${c}" data-mode="invest" data-fold="1" aria-pressed="${M.open}">📈 Góp vốn</button></div>`;
   if(!M.open)return `<div class="wl-move" data-wl-move="${c}">${tabs}</div>`;
   let body;
   if(M.max<1){
-    body=`<p class="wl-why">${M.mode==='draw'?'Chưa rút được: quỹ phải giữ 80 xu dự phòng và đủ tiền hóa đơn chưa trả.'
-      :M.debt?'Ví đang nợ. Trả nợ trước rồi góp vốn nhé.':'Ví và tài khoản ngân hàng đang trống, chưa có tiền để góp.'}</p>`;
+    body=`<p class="wl-why">${M.debt?'Ví đang nợ. Trả nợ trước rồi góp vốn nhé.':'Ví và tài khoản ngân hàng đang trống, chưa có tiền để góp.'}</p>`;
   }else{
     const step=(by,label,aria)=>`<button type="button" class="btn ghost small wl-st" data-action="wlAmt" data-quick data-career="${c}" data-n="${M.n+by}" aria-label="${aria}"${(by<0?M.n<=1:M.n>=M.max)?' disabled':''}>${label}</button>`;
-    const box=qtyBox({value:M.n,min:1,max:M.max,money:true,live:true,label:M.mode==='draw'?'Số xu rút về ví':'Số xu góp vốn',
+    const box=qtyBox({value:M.n,min:1,max:M.max,money:true,live:true,label:'Số xu góp vốn',
       go:`data-action="wlAmt" data-quick data-career="${c}" data-n="${QTY}"`,attrs:`id="wl-amt-${c}"`});
     const chips=[[25,'25%'],[50,'50%'],[100,'Tất cả']].map(([pc,l])=>{const v=Math.max(1,Math.floor(M.max*pc/100));
       return `<button type="button" class="wl-chip${v===M.n?' on':''}" data-action="wlAmt" data-quick data-career="${c}" data-n="${v}" aria-pressed="${v===M.n}">${l}</button>`;}).join('');
     const from=!M.bank?`lấy ${xu(M.cash)} từ ví`:M.cash?`lấy ${xu(M.cash)} từ ví, ${xu(M.bank)} từ tài khoản ngân hàng`:`lấy ${xu(M.bank)} từ tài khoản ngân hàng`;
-    const after=M.mode==='draw'?`Quỹ còn lại <b>${xu(M.fund-M.n)}</b>`:`Quỹ thành <b>${xu(M.fund+M.n)}</b> · ${from}`;
     body=`<div class="wl-amount">${step(-STEP,'−','Bớt 10 xu')}${box}${step(STEP,'+','Thêm 10 xu')}<small class="wl-of">tối đa ${xu(M.max)}</small></div>
-      <div class="wl-chips">${chips}</div><p class="wl-after">${after}</p>
-      <button type="button" class="btn small ${M.mode==='draw'?'primary':'cream'} wl-go" data-action="${M.mode==='draw'?'wlDraw':'wlInvest'}" data-career="${c}" data-amount="${M.n}">${M.mode==='draw'?`Rút ${xu(M.n)} về ví`:`Góp ${xu(M.n)} vào quỹ`}</button>`;
+      <div class="wl-chips">${chips}</div><p class="wl-after">Quỹ thành <b>${xu(M.fund+M.n)}</b> · ${from}</p>
+      <button type="button" class="btn small cream wl-go" data-action="wlInvest" data-career="${c}" data-amount="${M.n}">Góp ${xu(M.n)} vào quỹ</button>`;
   }
   return `<div class="wl-move open" data-wl-move="${c}">${tabs}${body}</div>`;
 }
@@ -197,37 +197,36 @@ export async function loadJoint(env,force=false){
   if(env.ui.view==='money'&&document.getElementById('sheet')?.open)env.renderSheet();
 }
 
-/** 'wlMode' / 'wlAmt' (page only, data-quick: they work while a command is on the wire): open a move, set its amount
- * (the − / + buttons, the chips and the typed box). 'wlDraw' /
- * 'wlInvest': the amount in the box (or the button's), after a confirm that says what stays in the fund. */
+/** 'wlMode' / 'wlAmt' (page only, data-quick: they work while a command is on the wire): open or fold Góp vốn, set its
+ * amount (the − / + buttons, the chips and the typed box). 'wlDraw': the most the fund can give, one tap and a confirm.
+ * 'wlInvest': the amount in the box (or the button's), after a confirm. */
 export const WEALTH_ACTIONS=['wlMode','wlAmt','wlDraw','wlInvest'];
 export async function wealthAction(action,data,el,env){
   if(!WEALTH_ACTIONS.includes(action))return false;
   const cid=data.career,state=env.api?.state;
   if(!cid||!state?.journey?.places?.[cid])return true;
   if(action==='wlMode'){
-    const was=MOVE.mode[cid];MOVE.mode[cid]=data.mode==='invest'?'invest':'draw';
-    if(was===MOVE.mode[cid]&&data.fold)delete MOVE.mode[cid];   // a folding row: tap the open move again to fold it
+    if(MOVE.mode[cid]==='invest')delete MOVE.mode[cid];else MOVE.mode[cid]='invest';
     env.renderSheet();return true;
   }
-  const M=fundMove(state,cid,{open:true});
+  const M=fundMove(state,cid);
   if(action==='wlAmt'){
-    if(M.max>=1)MOVE.amt[`${cid}:${M.mode}`]=Math.min(M.max,Math.max(1,Math.round(num(data.n))));
+    if(M.open&&M.max>=1)MOVE.amt[`${cid}:invest`]=Math.min(M.max,Math.max(1,Math.round(num(data.n))));
     env.renderSheet();return true;
   }
-  const box=globalThis.document?.getElementById?.(`wl-amt-${cid}`);
-  const amount=Math.min(M.max,Math.max(0,Math.round(qtyVal(box)||num(data.amount))));
-  if(!Number.isInteger(amount)||amount<1)return true;
   const name=env.placeName?.(cid)||cid;
   if(action==='wlDraw'){
-    const rest=M.fund-amount,all=amount>=M.draw;
+    const amount=Math.min(M.draw,Math.round(num(data.amount))||M.draw);
+    if(!Number.isInteger(amount)||amount<1)return true;
     if(!await env.confirmAction(`Rút ${fmt(amount)} xu về ví?`,
-      all?`Từ quỹ ${name}: đây là mức rút tối đa, quỹ chỉ còn ${fmt(rest)} xu để nhập hàng, trả lương và hóa đơn. Rút nhầm thì bấm Góp vốn để bỏ lại vào quỹ.`
-        :`Từ quỹ ${name}: quỹ còn lại ${fmt(rest)} xu để nhập hàng, trả lương và hóa đơn. Rút nhầm thì bấm Góp vốn để bỏ lại vào quỹ.`,
+      `Từ quỹ ${name}: quỹ còn lại ${fmt(M.fund-amount)} xu để nhập hàng, trả lương và hóa đơn. Rút nhầm thì bấm Góp vốn để bỏ lại vào quỹ.`,
       `Rút · ${fmt(amount)} xu`))return true;
-    const r=await env.cmd('jr_withdraw',{career:cid,amount});
-    if(r)delete MOVE.amt[`${cid}:draw`];
+    await env.cmd('jr_withdraw',{career:cid,amount});
   }else{
+    if(!M.open)return true;
+    const box=globalThis.document?.getElementById?.(`wl-amt-${cid}`);
+    const amount=Math.min(M.max,Math.max(0,Math.round(qtyVal(box)||num(data.amount))));
+    if(!Number.isInteger(amount)||amount<1)return true;
     const cash=Math.min(Math.max(0,num(state.journey.wallet)),amount),bank=amount-cash;
     if(!await env.confirmAction(`Góp ${fmt(amount)} xu vào ${name}?`,
       !bank?`Lấy ${fmt(cash)} xu từ ví. Quỹ thành ${fmt(M.fund+amount)} xu.`

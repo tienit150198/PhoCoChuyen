@@ -1,13 +1,5 @@
 [
  {
-  "vi": "Chăm làm có thưởng: tăng ca ×2, thưởng năng suất 30%",
-  "en": ""
- },
- {
-  "vi": "Mua sắm: du lịch nước ngoài, bộ sưu tập, dinh thự, phi cơ, Mạnh Thường Quân",
-  "en": ""
- },
- {
   "vi": "Giá cả trong phố tăng nhẹ ~10%, đồ đã mua giữ nguyên giá",
   "en": ""
  },
@@ -1441,6 +1433,18 @@
  },
  {
   "vi": "Chỉ đánh giá dịch vụ đã được phục vụ và thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Không thể gửi nội dung cho đơn này.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi đơn chỉ có một đánh giá xác thực.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có đánh giá để trả lời.",
   "en": ""
  }
 ]

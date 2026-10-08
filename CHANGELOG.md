@@ -1,3 +1,11 @@
+# v1.9.25 — 2026-10-08
+
+👛 Người chơi góp ý 08/10 ("rút về ví cồng kềnh quá … trở lại như cũ, cho góp vốn bên cạnh chỗ rút thôi"): quỹ nơi làm việc lại có nút một chạm "👛 Rút về ví · tối đa X xu" (rút mức tối đa rồi xác nhận, như trước 1.9.20); "📈 Góp vốn" ngay bên cạnh, bấm mới mở ô gõ số xu (public/js/v4/wealth.js, journey.js, money.css; cẩm nang sửa theo). Không đổi save, không đổi CSDL.
+
+# v1.9.24 — 2026-10-08
+
+🎵 Nhạc "lúc nghe được lúc không" (chủ game 08/10): iPhone iOS 15–16.3 không có navigator.audioSession nên công tắc im lặng tắt Web Audio → thêm thẻ <audio> im lặng (WAV blob:) khi nhạc bật; tự chạy lại AudioContext khi statechange/pageshow/focus/devicechange và kiểm tra 2,5 s; nhạc tải hỏng thử lại 2/5/15/30/60 s, tải treo 20 s thì huỷ; bộ giải mã 32 kHz hỏng thì dùng context của trang; sửa A→B→A phát nhầm bài; chạm đầu khi module chưa tải vẫn được nghe lại (public/js/audio.js, v4/music.js, shell.js). Không đổi save, không đổi CSDL.
+
 # v1.9.23 — 2026-10-08
 
 💌 Thiệp mời cưới cả phố (chủ game 08/10): cặp đã đính hôn/kết hôn viết lời mời (10–200 ký tự, qua bộ lọc chat), 10.000 xu mỗi thiệp (ví trước, rồi ngân hàng/thẻ); mọi người thấy một lần (popup như Có gì mới), tối đa 3 thiệp/người/ngày; 1 thiệp/tiệc, 1 thiệp/24 giờ mỗi người gửi; tôn trọng chặn; admin xem/gỡ thiệp; MNL_WED_INVITE_OFF=1 tắt. CSDL: SCHEMA_VERSION 32 (wed_invites, wed_invite_seen — chỉ thêm bảng). Không thêm khóa save.

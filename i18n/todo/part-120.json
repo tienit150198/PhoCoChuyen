@@ -1,40 +1,5 @@
 [
  {
-  "vi": "$1: Sổ tiết kiệm $2 đã tái tục: nhập lãi $3 xu vào gốc, sổ mới $4 xu, đáo hạn Ngày $5.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: Đã trích $2 xu trả kỳ $3/$4 khoản $5. Cảm ơn quý khách.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ đang ghi nhận nợ xấu tới $1 nên ngân hàng chưa thể xét duyệt. Trả hết khoản quá hạn và chờ hết thời gian ghi nhận nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Điểm tín dụng chưa đủ để ngân hàng duyệt ($1, cần từ $2).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ngân hàng cần thấy thu nhập đều: ít nhất $1 ngày có lương hoặc tiền lời rút về ví trong $2 ngày gần nhất.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đã nộp nhiều hồ sơ tín dụng trong $1 ngày gần đây. Nộp lại được $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền trả góp mỗi tuần sẽ vượt $1% thu nhập của bạn. Chọn số tiền nhỏ hơn hoặc kỳ hạn dài hơn nhé.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "Lời nhắn tối đa $1 ký tự nhé.",
   "en": "",
   "pattern": true
@@ -2226,6 +2191,61 @@
  },
  {
   "vi": "Bạn cho $1 mặc thử, ghim kim ở mắt cá: cần cắt lên $2 cm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn quấn thước dây quanh eo, ghim hai bên hông: cần bóp vào $1 cm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn phấn một đường $1 cm rồi ngồi vào máy may. Đạp máy, dừng đúng vạch nha!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn mang đồ sang gian bên cho Bà Tư. Bà đeo kính lên: “Để đó, chút xíu là xong.” (công $1 xu)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bà Tư còn đang may, chờ thêm chút nha (khoảng $1 nhịp).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "cắt lố $1 cm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "sửa thiếu $1 cm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đã có thẻ rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn đưa $1 thẻ số $2 món. $3 kéo rèm bước vào.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 ra rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 bước ra, trả $2 món rồi đi luôn.$3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 trả lại đủ $2/$3 món, cảm ơn rồi đi. Mời người kế tiếp.",
   "en": "",
   "pattern": true
  }

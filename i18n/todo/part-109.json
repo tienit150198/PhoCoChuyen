@@ -1,17 +1,5 @@
 [
  {
-  "vi": "Giao ca hôm nay?",
-  "en": ""
- },
- {
-  "vi": "Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho ca sau.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở khoa Nội.",
-  "en": ""
- },
- {
   "vi": "Lời nhắn và nhận xét của người bệnh, người nhà.",
   "en": ""
  },
@@ -1797,6 +1785,18 @@
  },
  {
   "vi": "Tìm theo số hiệu hoặc tên",
+  "en": ""
+ },
+ {
+  "vi": "Không thấy tài khoản khớp.",
+  "en": ""
+ },
+ {
+  "vi": "CHỨNG NHẬN TRONG GAME",
+  "en": ""
+ },
+ {
+  "vi": "Lưu bản để in",
   "en": ""
  }
 ]

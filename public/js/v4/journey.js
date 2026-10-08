@@ -383,8 +383,8 @@ function walletView(env){
   if(!J.story)return head('Ví của bạn','',{back:true})+`<div class="sheet-body jr-body"><p class="muted">Ví và quỹ nơi làm việc có trong hành trình.</p></div>`;
   const places=Object.entries(J.places).map(([cid,p])=>{
     const m=meta(api,cid),c=api.state.careers[cid];
-    // 💼 Rút về ví and Góp vốn side by side, a typed amount with 25% / 50% / Tất cả, a confirm (v4/wealth.js, F#259).
-    const move=fundMoveHTML(api.state,cid,{open:true});
+    // 💼 Rút về ví in one tap, Góp vốn beside it with a typed amount (v4/wealth.js, F#259).
+    const move=fundMoveHTML(api.state,cid);
     // A place you are away from costs nothing (game/journey.py upkeep()): no "Tạm đóng" to save fees any more; an old pause reopens free.
     const pause=!p.employed&&p.paused?btn('Mở lại','jrReopen',{career:cid},'cream small'):'';
     return `<details class="jr-fundrow ${p.paused?'paused':''}"><summary><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span><span class="grow"><b>${esc(m.place||m.short)}</b><small>${p.employed?'Làm thuê · lương về ví':p.paused?'Tạm đóng · mở lại miễn phí':'Vắng chủ không tốn phí'}</small></span><b class="jr-amt">${fmt(p.fund)} xu</b></summary>

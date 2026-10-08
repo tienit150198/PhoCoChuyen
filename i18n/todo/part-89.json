@@ -1,21 +1,5 @@
 [
  {
-  "vi": "tới nơi phải đứng chờ ở cổng một lúc mới có người ra",
-  "en": ""
- },
- {
-  "vi": "thủ tục nhận phòng hơi rườm rà",
-  "en": ""
- },
- {
-  "vi": "nhận phòng mà không ai chỉ chỗ bật nước nóng",
-  "en": ""
- },
- {
-  "vi": "nhận phòng nhanh, được dặn kỹ chỗ ăn chỗ chơi",
-  "en": ""
- },
- {
   "vi": "được đón bằng ly nước chanh mát, dễ thương ghê",
   "en": ""
  },
@@ -1797,6 +1781,22 @@
  },
  {
   "vi": "{X}, cái này thực tập sinh cũng biết em ạ.",
+  "en": ""
+ },
+ {
+  "vi": "{X}, đúng kiểu anh hay dạy.",
+  "en": ""
+ },
+ {
+  "vi": "{X}. Anh nói vậy thôi, tự hiểu.",
+  "en": ""
+ },
+ {
+  "vi": "{X}. Chán.",
+  "en": ""
+ },
+ {
+  "vi": "{X}. Thế thôi.",
   "en": ""
  }
 ]

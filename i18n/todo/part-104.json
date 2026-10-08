@@ -1,17 +1,5 @@
 [
  {
-  "vi": "Chuyện trong khoa",
-  "en": ""
- },
- {
-  "vi": "Quầy tiếp đón",
-  "en": ""
- },
- {
-  "vi": "lần báo bác sĩ",
-  "en": ""
- },
- {
   "vi": "lần giữ lại",
   "en": ""
  },
@@ -1797,6 +1785,18 @@
  },
  {
   "vi": "🎀 đã buộc",
+  "en": ""
+ },
+ {
+  "vi": "túi chưa buộc",
+  "en": ""
+ },
+ {
+  "vi": "🗑️ Đổ tô đang làm",
+  "en": ""
+ },
+ {
+  "vi": "Đổ tô đang làm, trụng lại tô khác?",
   "en": ""
  }
 ]
