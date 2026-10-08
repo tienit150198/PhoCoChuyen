@@ -1,5 +1,33 @@
 [
  {
+  "vi": "Thông tin đánh giá không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn từ 1 đến 5 sao.",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn đánh giá không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ đánh giá dịch vụ đã được phục vụ và thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Không thể gửi nội dung cho đơn này.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi đơn chỉ có một đánh giá xác thực.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có đánh giá để trả lời.",
+  "en": ""
+ },
+ {
   "vi": "Bạn đã trả lời đánh giá này.",
   "en": ""
  },
@@ -1769,34 +1797,6 @@
  },
  {
   "vi": "Có mốc ước tính (gieo từ bản lưu, không có thời gian).",
-  "en": ""
- },
- {
-  "vi": "Người mở game trong ngày đó, % đã qua mốc tới giờ. 30/09 là trước bản khởi đầu mới (0.9.16). * có mốc ước tính.",
-  "en": ""
- },
- {
-  "vi": "Màn hình lúc rời",
-  "en": ""
- },
- {
-  "vi": "Mốc cuối",
-  "en": ""
- },
- {
-  "vi": "Nơi làm",
-  "en": ""
- },
- {
-  "vi": "Bước hướng dẫn",
-  "en": ""
- },
- {
-  "vi": "Nút bấm cuối",
-  "en": ""
- },
- {
-  "vi": "Chưa có người mới được đo.",
   "en": ""
  }
 ]

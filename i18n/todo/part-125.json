@@ -1,5 +1,170 @@
 [
  {
+  "vi": "Thu nhập tính thuế $1 chưa vượt bậc đầu: chỉ một mức thuế suất, làm tròn xuống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trừ nghỉ = số ngày nghỉ KHÔNG lương × Lương 1 ngày bạn ghi ($1), nên phải chia hết cho $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cộng bằng chính số của bạn: Lương cơ bản tháng (Hợp đồng) − $1 + ăn trưa + trách nhiệm + điện thoại + $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảo hiểm tính trên Lương đóng bảo hiểm trong Hợp đồng, không phải Tổng thu nhập ($1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thu nhập tính thuế phải nhỏ hơn Tổng thu nhập ($1): còn trừ ăn trưa, bảo hiểm và giảm trừ gia cảnh.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đi từng nấc từ Tổng thu nhập $1: − ăn trưa (miễn tối đa 700) − BHXH − BHYT − BHTN (bước 3) − 5.000 bản thân − 2.000 × người phụ thuộc ĐÃ đăng ký (Ghi chú nhân sự).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thực lĩnh không thể lớn hơn Tổng thu nhập ($1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lấy Tổng thu nhập $1 trừ BHXH, BHYT, BHTN (bước 3) và Thuế TNCN (bước 4); phụ cấp đã nằm trong Tổng thu nhập.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Riêng phần bản thân cả năm đã là 12 × $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Người phụ thuộc tính theo SỐ THÁNG trên giấy “Người phụ thuộc đã đăng ký”: $1 × số tháng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cộng thu nhập chịu thuế của MỌI chứng từ khấu trừ, trừ bảo hiểm bắt buộc, rồi trừ Tổng giảm trừ bạn ghi ($1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lấy Thuế phải nộp cả năm bạn ghi ($1) trừ tổng “Thuế đã khấu trừ” ở MỌI chứng từ; âm nghĩa là được hoàn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng lương có $1 người — soát từng dòng rồi chuyển lương.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ có $1 bước — làm lần lượt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giảm trừ = $1 bản thân + $2 × $3 tháng người phụ thuộc = $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thu nhập tính thuế = $1 tổng thu nhập − $2 bảo hiểm − $3 giảm trừ = $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 − $2 đã khấu trừ =",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nộp thêm $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "được hoàn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đếm lại: “Thối thiếu $2 xu rồi nè.” Thối thêm cho đủ rồi đưa lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Về nhà đếm lại mới thấy bị thối thiếu $1 xu. Buôn bán kiểu này thì ai dám quay lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "thối thiếu $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 trả lại $2 xu: “Thối dư nè, coi chừng lỗ nha!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tối kiểm két mới thấy thối dư $1 xu, khách cầm về luôn rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khách cho giữ tiền thối: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 xua tay: “Khỏi thối, giữ tiền lẻ đi!” (+$2 xu tip)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã dặn anh Tuấn xe đá: mỗi sáng thả $1 cây đá.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 🚨 Xe trật tự đô thị đang tới đầu phố! Dẹp ghế, gấp ô ngay!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Bày quán ở $2. $3$4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quán chỉ có $1 cái ghế.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚠️ Chỗ này chỉ vừa $1 ghế, ghế thừa sẽ tràn ra lối đi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🪑 Đã bày $1 ghế nhựa.$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bày ít nhất $1 ghế rồi mới mở hàng.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Dọn hàng ở $1, $2 ghế.",
   "en": "",
   "pattern": true
@@ -1725,11 +1890,6 @@
   "pattern": true
  },
  {
-  "vi": "Mỗi ván đặt tối đa $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "Bão $1! +$2 xu.",
   "en": "",
   "pattern": true
@@ -1740,7 +1900,7 @@
   "pattern": true
  },
  {
-  "vi": "Chiếu trong đặt từ $1 đến $2 xu.",
+  "vi": "Chiếu trong đặt từ $1 xu nha.",
   "en": "",
   "pattern": true
  },
@@ -2086,166 +2246,6 @@
  },
  {
   "vi": "$1 xu tiền mặt và $2 xu từ tài khoản",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 xu từ tài khoản",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 xu tiền mặt",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví đang nợ $1 xu. Trả nợ xong rồi hãy mua xe nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví cần $1 xu tiền xăng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1 cho $2 màu $3.$4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 giờ màu $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", biển tên “$1”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giờ bạn đi $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền xăng $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😊 Tinh thần +$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👥 Chỉ gửi cho bạn bè đã kết bạn đủ $1 phút.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📅 Tài khoản đã chơi game đủ $1 ngày (đời thực) và nhân vật đủ $2 ngày sống.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2: đọc bài rồi trả lời hai câu hỏi nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng rồi! $1 Bạn đã xong bài này.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng rồi! $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bắt đầu thi: $1 câu, đúng từ $2 câu là đạt. Thi lại miễn phí.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã ghi câu $1/$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng $1/$2 câu ($3 điểm).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Cần đúng $2 câu. Xem lời giải, đọc lại bài rồi thi lại miễn phí nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đạt! Điểm cao nhất của bạn: $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đạt! 📜 Chứng nhận Lịch sử Việt Nam đã được cấp, kèm danh hiệu 📜 Người kể sử và học bổng $2 xu vào ví.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đạt! 📜 Chứng nhận Lịch sử Việt Nam đã được cấp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã đặt lại $1 như cũ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã đặt lại $1 món như cũ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã cất $1 vào túi",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã đặt $1 ở $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã đặt $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã dời $1 sang $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã lật $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã xoay $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã đổi lớp $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã dời $1",
   "en": "",
   "pattern": true
  }

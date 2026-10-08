@@ -1,5 +1,37 @@
 [
  {
+  "vi": "Học bài chăm chỉ, cô khen trò ngoan trò tốt",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay vui vẻ, hẹn nhau ngày mai",
+  "en": ""
+ },
+ {
+  "vi": "Tóc ai dài óng, thả ngang bờ vai",
+  "en": ""
+ },
+ {
+  "vi": "Chợ chiều bán khoai, củ to củ dài",
+  "en": ""
+ },
+ {
+  "vi": "Con thỏ nhảy nhót, vểnh đôi tai",
+  "en": ""
+ },
+ {
+  "vi": "Bé học chăm ngoan, thuộc làu từng bài",
+  "en": ""
+ },
+ {
+  "vi": "Mùa này trái chín, ngọt lịm trái xoài",
+  "en": ""
+ },
+ {
+  "vi": "Đứng đây ngó quanh, đố bà con là ai",
+  "en": ""
+ },
+ {
   "vi": "Tiểu phẩm xem xong, cười té ghế vì hài",
   "en": ""
  },
@@ -1156,7 +1188,7 @@
   "en": ""
  },
  {
-  "vi": "Cược nhỏ bằng xu",
+  "vi": "Cược bằng xu",
   "en": ""
  },
  {
@@ -1168,7 +1200,11 @@
   "en": ""
  },
  {
-  "vi": "đổi trò",
+  "vi": "🚨 Lời ở hội chợ nhiều quá thì công an có thể ghé hỏi nguồn tài sản và thu lại một phần tiền lời.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt bao nhiêu tùy bạn",
   "en": ""
  },
  {
@@ -1388,6 +1424,10 @@
   "en": ""
  },
  {
+  "vi": "Tự nhập số xu",
+  "en": ""
+ },
+ {
   "vi": "🔁 Lắc tiếp",
   "en": ""
  },
@@ -1408,7 +1448,7 @@
   "en": ""
  },
  {
-  "vi": "🎲 Ba con xúc xắc lăn ngẫu nhiên thật: mỗi mặt 1/6, đặt mặt nào cũng vậy. Lắc liền bao nhiêu ván cũng không bị vận nguội.",
+  "vi": "🎲 Ba con xúc xắc lăn ngẫu nhiên thật, đặt mặt nào cũng như nhau.",
   "en": ""
  },
  {
@@ -1501,6 +1541,10 @@
  },
  {
   "vi": "Tiền cược",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Chiếu trong thỉnh thoảng có công an phường ghé kiểm tra: mất tiền cược và bị phạt.",
   "en": ""
  },
  {
@@ -1753,50 +1797,6 @@
  },
  {
   "vi": "👑 Vua kinh hôm nay",
-  "en": ""
- },
- {
-  "vi": "Cô Bảy hô số nào, bạn chạm số đó trên tờ dò. Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.",
-  "en": ""
- },
- {
-  "vi": "Cách chơi gánh lô tô",
-  "en": ""
- },
- {
-  "vi": "Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.",
-  "en": ""
- },
- {
-  "vi": "rồi dò tiếp, hụt mấy lần cũng được",
-  "en": ""
- },
- {
-  "vi": "Hũ = tiền tờ của cả chiếu (của bạn và hàng xóm), cô Bảy giữ một chút tiền gánh. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.",
-  "en": ""
- },
- {
-  "vi": ", vừa gọi",
-  "en": ""
- },
- {
-  "vi": "Viền đứt: số đã gọi (tới số chốt) mà bạn chưa chạm.",
-  "en": ""
- },
- {
-  "vi": "Bảng số úp lại trong vòng lật ngược",
-  "en": ""
- },
- {
-  "vi": "🙃 Vòng lật ngược: bảng số úp lại, nghe cô Bảy đọc rồi tự lật nha!",
-  "en": ""
- },
- {
-  "vi": "Bảng số đã gọi",
-  "en": ""
- },
- {
-  "vi": "chờ 1!",
   "en": ""
  }
 ]

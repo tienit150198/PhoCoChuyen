@@ -1,5 +1,170 @@
 [
  {
+  "vi": "Bạn bớt $1 xu “lấy hên”. $2 cười tít: “Vậy mới là khách quen chứ!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn bớt luôn $1 xu. $2 hớn hở — chị Vy đứng trong nhìn ra, hơi nhíu mày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Còn $2 xu. $3 đưa $4 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đang chờ bạn trả lời chuyện bớt giá.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giá treo vừa hết $1 $2. Bill được mở lại, chọn lại giùm khách nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 để đồ lại trên quầy, không mua nữa: “$2”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 để đồ lại, không lấy nữa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn đã phục vụ $1: “$2”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thất thoát ở quầy: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gửi Bà Tư $1 xu tiền công.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã thu $1 xu · +$2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Về nhà mặc thử mới thấy $1, phải quay lại tiệm đổi size.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "lấy sai size ($1 thay vì $2)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đi $1 mà bộ này lạc quẻ, tới nơi mới thấy không hợp dịp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 mà mặc màu $2, người ta nhìn mình quá trời.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "chọn màu $1 kiêng kỵ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Màu $1 hơi lệch với dịp $2, nhưng thôi cũng tạm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "màu $1 chưa hợp dịp",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 mà thiếu $2, tiếc ghê.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiệm bỏ thêm $1 vào bộ đi $2, chẳng biết mặc lúc nào.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "thêm $1 không hợp dịp",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn cho $1 mặc thử, ghim kim ở mắt cá: cần cắt lên $2 cm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn quấn thước dây quanh eo, ghim hai bên hông: cần bóp vào $1 cm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn phấn một đường $1 cm rồi ngồi vào máy may. Đạp máy, dừng đúng vạch nha!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn mang đồ sang gian bên cho Bà Tư. Bà đeo kính lên: “Để đó, chút xíu là xong.” (công $1 xu)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bà Tư còn đang may, chờ thêm chút nha (khoảng $1 nhịp).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "cắt lố $1 cm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "sửa thiếu $1 cm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đã có thẻ rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn đưa $1 thẻ số $2 món. $3 kéo rèm bước vào.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 ra rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 bước ra, trả $2 món rồi đi luôn.$3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 trả lại đủ $2/$3 món, cảm ơn rồi đi. Mời người kế tiếp.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 trả lại $2 món, thẻ ghi $3. Thiếu $4 món! Kiểm phòng thử hoặc hỏi khéo khách.",
   "en": "",
   "pattern": true
@@ -2081,171 +2246,6 @@
  },
  {
   "vi": "🩸 Tay trần nhặt $1, bị đâm vào tay! Rửa, sát trùng, ra trạm y tế kiểm tra.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔴 Tách $1 bỏ vào hộp đỏ, đậy nắp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ngăn $1 đầy rồi: đẩy xe ra điểm tập kết đổ đã.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🩸 Túi trông bình thường mà có $1 giấu bên trong, đâm $2! Xử lý vết thương đã.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🩸 Mảnh kính đâm xuyên túi, đứt tay! Túi đã vào ngăn $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📝 Dán tờ nhắc phân loại ở $1, nói nhẹ nhàng với chủ nhà.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛒 Đẩy xe tới $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗑️ $1 Khoảng $2 bao, xe không chở hết một chuyến.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bỏ sót $1 túi rác trước cửa, để qua đêm bốc mùi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 túi bỏ nhầm ngăn, phân loại xong lại trộn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Để $1 lẫn trong túi lên xe ép, dễ cháy nổ, rò độc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xe rác tới muộn, qua $1 mới thấy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gom $1/$2 túi ở $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhắc $1 nhà phân loại lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✅ Xong ngõ! $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 túi hữu cơ lên xe ủ phân",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 túi còn lại lên xe ép",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 túi tái chế cho cô Tám",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 món nguy hại giao điểm thu gom riêng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cô Tám mua ve chai: $1 túi tái chế sạch",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cô Tám trả $1 xu tiền ve chai.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cô Tám lắc đầu với $1 túi tái chế lẫn đồ ăn: “Bẩn vậy không bán được.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚛 Đổ xe ở điểm tập kết: $1.$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tìm hiểu thêm đã: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tìm hiểu thêm đã: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😤 Chủ nhà $1 ra chặn xe: $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏥 Ra trạm y tế: rửa vết thương, tiêm phòng ($1 xu). Chị Hạnh gom nốt giúp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛒🛒 Đi hai chuyến, gom sạch $1 bao. Mỏi nhừ tay, ngõ sạch bong. Bấm “Xong ngõ”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛻 Gọi xe ba gác ($1 xu) chở $2 bao ra điểm tập kết. Bấm “Xong ngõ”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💥 Nhồi cho bằng hết, nắp xe bung bản lề, rác rơi dọc ngõ. Sửa xe mất $1 xu. Bấm “Xong ngõ”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😤 $1: “Giảng đạo à? Cút mẹ mày đi!” Hàng xóm ló đầu ra xem.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗣️ Bạn giải thích nhẹ nhàng. $1: “Ờ… để mai tao phân loại lại.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗣️ Bạn giải thích. $1 lầm bầm rồi đóng cửa đánh rầm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏷️ Dán phiếu “Chưa phân loại, chưa thu”. $1 gãi đầu: “Ừ thì lần sau tao phân loại.”",
   "en": "",
   "pattern": true
  }

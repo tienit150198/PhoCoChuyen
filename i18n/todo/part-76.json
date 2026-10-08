@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Thuê phòng, mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Mở [[Nhà của bạn]] ở trang Hành trình hoặc trong Ngân hàng. Luôn thấy tiền mặt, tài khoản và còn thiếu bao nhiêu.",
+  "en": ""
+ },
+ {
   "vi": "🛏️ Phòng trọ khép kín: cọc 60 xu (trả lại khi dọn đi), tiền phòng 15 xu/ngày, tinh thần +1 mỗi sáng.",
   "en": ""
  },
@@ -1381,10 +1389,6 @@
  },
  {
   "vi": "📨 Bấm [[Kết bạn]] để gửi lời mời. Người kia chọn [[Chấp nhận]], [[Từ chối]] hoặc [[Chặn]]. Nếu họ đã mời bạn trước, nút thành [[Chấp nhận kết bạn]] và hai bạn thành bạn ngay.",
-  "en": ""
- },
- {
-  "vi": "⏳ Lời mời bạn gửi nằm ở “Đang chờ trả lời”, đổi ý thì bấm [[Rút lại]]. Có lời mời mới, nút [[Bạn bè]] trên thanh bên hiện số.",
   "en": ""
  }
 ]

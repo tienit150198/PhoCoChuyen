@@ -1,5 +1,170 @@
 [
  {
+  "vi": "⛽ Ghi sổ dầu: $1 lít.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ký sổ trực mà chưa thử $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Không ai biết cho tới khi trời tối.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ dầu ghi $1 lít, bồn thật có $2 lít.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thấy hỏng mà chưa xử lý: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chưa $1: xí nghiệp và ca sau không ai biết.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Máy đo gió: $1 m/s, kim nhích lên xuống đều.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Áp kế: $1 hPa. Sổ áp ghi lúc 04:00: $2 hPa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Báo đài mà chưa đọc $1: số liệu đoán mò.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Báo gió cấp $1, thật ra cấp $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Bạn: “Trạm Hòn Gió, bảy giờ: gió cấp $1, $2, tầm nhìn $3, áp suất $4.” · Chị Hải Yến: “Đài nhận đủ. Cảm ơn trạm.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gió cấp $1, áp kế $2 mà trạm không phát cảnh báo.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quan trắc bảy giờ: gió cấp $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Ghi sổ quan trắc. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thắp đèn lúc $1, trời đã tối, tàu ngoài khơi tìm mốc không thấy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💡 Bạn thắp đèn lúc $1. Trời đã tối hẳn, bộ đàm có tàu hỏi “đèn Hòn Gió đâu?”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thắp đèn lúc $1, nắng còn chang chang, hao ắc quy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💡 Bạn thắp đèn lúc $1. Nắng còn gắt, đèn sáng mà chẳng ai thấy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💡 Thắp đèn lúc $1. Tia sáng đầu tiên quét qua mặt biển còn ửng hồng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⏱️ Bạn bấm đồng hồ nhìn đèn quét: $1 Danh mục đèn ghi: $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đèn Hòn Gió sáng lúc $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Ghi sổ trực buổi tối, ký tên. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Bạn: “Trạm Hòn Gió báo: tàu $1, phương vị $2, nhờ đài chuyển đồn biên phòng.” Chị Hải Yến: “Rõ, đã chuyển. Biên phòng cho tàu ra ngay.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", $1 người",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Bạn: “$1. Trạm Hòn Gió: $2, phương vị $3 từ đèn Hòn Gió, cách $4 hải lý$5.” Chị Hải Yến: “Đài nhận. Điều tàu cứu nạn. Trạm canh giữ mục tiêu, báo đài mỗi mười lăm phút.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chưa $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thấy $1 mà không báo đồn biên phòng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Báo phương vị $1, thật ra $2: tàu cứu nạn tìm sai hướng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Báo $1 người, thật ra $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tàu cứu nạn theo phương vị $1 vớt được $2 ngư dân.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tàu kéo của đồn biên phòng kéo tàu $1 về âu Cửa Lở.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tàu $1 tránh được bãi đá ngầm hòn Mõ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Ghi sổ trực: $1 $2",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🏃 $1 Xuống đưa người đó ra ngay!",
   "en": "",
   "pattern": true
@@ -2081,171 +2246,6 @@
  },
  {
   "vi": "Tôi dặn dán $1 mà.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tôi muốn $1 mà.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📷 Chị Lam: “$1”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gói $1 in $2 tấm: chọn đủ $3 tấm trước.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hết $1 rồi. Nhập thêm ở Kho, hoặc nói thật với khách.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ Cuộn mực còn $1 tấm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🖨️ Máy in rè rè… tấm ảnh $1trồi ra, màu lên dần. Giờ $2.$3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gói này in $1 tấm thôi. Bỏ chọn bớt rồi chọn tấm khác.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🖼️ Đưa ảnh cho $1 · $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 xem ảnh, cười tít: “Đẹp quá trời!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nói thật với $1: tiệm hết vật tư cho gói này, hẹn hôm sau.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📸 Chụp $1 kiểu cho $2 lượt khách, in $3 tấm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⏱️ $1/$2 kiểu bấm đúng lúc ($3%).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗑️ In lại $1 lần: giấy đó tiệm chịu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cuộn mực còn $1 tấm · giấy dải $2, tờ đôi $3, ảnh lớn $4, khung $5, bao $6.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị Lam dặn: lau ống kính, xem cuộn mực in (sắp hết thì thay), chụp thử một tấm rồi mở tiệm. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 muốn: $2.$3 $4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "lệch $1 chấm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 ft/phút",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chuyến $1 đi $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đi $2: giông lúc tới",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đi $2: sương sớm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đi $2: kiểm tra kỹ thuật",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị Vân: “Chặng $1 nhé em. Nhận bản tin, tính dầu, rồi mình đi một vòng quanh tàu.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị Thu ló vào buồng lái: “$1 khách, có vài cụ lớn tuổi. Chị báo trước để em biết.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✋ Chị Vân lắc đầu: “Thiếu dầu đi $1. Dầu chặng + dầu dự bị + 30 phút dự phòng. Tính lại nhé.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✋ Anh Lộc: “$1 khách với đầy bình là quá trọng lượng cất cánh. Chọn lại mức dầu!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⛽ Xe dầu nạp $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "chờ sương tan ở $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🌫️ Lùi giờ cất cánh $1 phút, chờ sương tan. Nhớ thông báo cho khách trước khi cất cánh.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ $1 $2 Xử lý trước khi bay.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔧 Chú Mẫn chạy ra, cười: “Cái này cháu tự làm được mà.” $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔧 Chú Mẫn: “May mà cháu thấy.” $1 Chậm $2 phút: nhớ thông báo cho khách.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thấy lỗi ở tàu mà định bỏ qua cho kịp giờ. $1",
   "en": "",
   "pattern": true
  }

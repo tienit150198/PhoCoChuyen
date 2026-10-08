@@ -1,5 +1,17 @@
 [
  {
+  "vi": "🧊 Đầu ca ghi nhiệt độ lượt sáng trước 12:00; xem tab [[Sổ lô]] có hộp nào cần rút.",
+  "en": ""
+ },
+ {
+  "vi": "📞 Gọi nhắc khách quen từ hôm trước ngày hẹn, và để đủ hộp lô A trên kệ cho họ.",
+  "en": ""
+ },
+ {
+  "vi": "⏸️ Nghi một lô thì bấm [[Tạm giữ]]; muốn mở lại thì [[Cô Thu kiểm lại]].",
+  "en": ""
+ },
+ {
   "vi": "🌡️ Từ ngày 3, tủ mát có thể vượt 8°C. Cửa hở: [[Đóng kín cửa, đo lại]]. Mất điện: [[Tủ dự phòng · gọi thợ]] (15 xu).",
   "en": ""
  },
@@ -1481,18 +1493,6 @@
  },
  {
   "vi": "📝 Ở bước cuối Ghi chú bàn giao, chọn câu có số liệu cụ thể, rồi bấm [[Nộp hồ sơ]].",
-  "en": ""
- },
- {
-  "vi": "🔍 Chị Mai Anh cần con số có nguồn: ghép đúng cặp, gắn đúng nhãn, không đoán.",
-  "en": ""
- },
- {
-  "vi": "💱 Tỷ giá đúng loại, chênh lệch chuyển đổi đưa vào vốn chủ, tài khoản 413.",
-  "en": ""
- },
- {
-  "vi": "🧩 Phần 30% của cổ đông ngoài tách riêng trong vốn chủ, không cộng vào lãi công ty mẹ.",
   "en": ""
  }
 ]

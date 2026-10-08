@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Quán thử lại với tổ khác.",
+  "en": ""
+ },
+ {
+  "vi": "Bậc của bạn chưa có quyền này.",
+  "en": ""
+ },
+ {
   "vi": "Hết lượt quyết nhân sự hôm nay. Mai tính tiếp.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Ống hút",
-  "en": ""
- },
- {
-  "vi": "Nĩa, muỗng",
-  "en": ""
- },
- {
-  "vi": "Muỗng",
   "en": ""
  }
 ]

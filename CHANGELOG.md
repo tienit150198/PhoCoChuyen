@@ -1,3 +1,7 @@
+# v1.9.26 — 2026-10-08
+
+🏮 Hội chợ mở lại 09/10–13/10 (chủ game 08/10: "mở hội chợ nhé, tỷ lệ chỉnh lại làm sao cho phù hợp, đảm bảo nhà cái luôn thắng"; "chợ đen để luôn ở ngoài"; "số liệu k hiển thị ra, mn đặt cược bao nhiêu thoải mái"): FAIR_START 2026-10-09, 5 ngày; mọi trò trả tiền đều có lợi thế nhà cái (docs/FAIR_HOUSE_EDGE.md, scripts/sim_fair_odds.py); lô tô cược phụ đóng; phóng dao giới hạn lời mỗi ngày không báo ra; bầu cua / chiếu trong gõ số cược tùy ý (trần ẩn 1.000.000 xu/ván); không gửi tỷ lệ thắng cho trang; lối vào 🏮 Hội chợ ngay trên khu phố (town-walk.js). Không đổi CSDL.
+
 # v1.9.25 — 2026-10-08
 
 👛 Người chơi góp ý 08/10 ("rút về ví cồng kềnh quá … trở lại như cũ, cho góp vốn bên cạnh chỗ rút thôi"): quỹ nơi làm việc lại có nút một chạm "👛 Rút về ví · tối đa X xu" (rút mức tối đa rồi xác nhận, như trước 1.9.20); "📈 Góp vốn" ngay bên cạnh, bấm mới mở ô gõ số xu (public/js/v4/wealth.js, journey.js, money.css; cẩm nang sửa theo). Không đổi save, không đổi CSDL.

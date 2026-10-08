@@ -1,5 +1,33 @@
 [
  {
+  "vi": "Người mở game trong ngày đó, % đã qua mốc tới giờ. 30/09 là trước bản khởi đầu mới (0.9.16). * có mốc ước tính.",
+  "en": ""
+ },
+ {
+  "vi": "Màn hình lúc rời",
+  "en": ""
+ },
+ {
+  "vi": "Mốc cuối",
+  "en": ""
+ },
+ {
+  "vi": "Nơi làm",
+  "en": ""
+ },
+ {
+  "vi": "Bước hướng dẫn",
+  "en": ""
+ },
+ {
+  "vi": "Nút bấm cuối",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có người mới được đo.",
+  "en": ""
+ },
+ {
   "vi": "Chưa chọn",
   "en": ""
  },
@@ -733,6 +761,10 @@
  },
  {
   "vi": "Quầy của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Hội chợ (sắp mở)",
   "en": ""
  },
  {
@@ -1765,38 +1797,6 @@
  },
  {
   "vi": "🙂 Chào bé",
-  "en": ""
- },
- {
-  "vi": "cứng, hạt nhỏ",
-  "en": ""
- },
- {
-  "vi": "🍽️ Bàn bếp",
-  "en": ""
- },
- {
-  "vi": "🥣 Đĩa của bé",
-  "en": ""
- },
- {
-  "vi": "Chạm món trên bàn bếp để lấy ra đĩa.",
-  "en": ""
- },
- {
-  "vi": "✓ Đã rửa tay bé",
-  "en": ""
- },
- {
-  "vi": "🧼 Rửa tay cho bé",
-  "en": ""
- },
- {
-  "vi": "✓ Bé ngồi ghế",
-  "en": ""
- },
- {
-  "vi": "🪑 Cho bé ngồi ghế ăn",
   "en": ""
  }
 ]
