@@ -32,9 +32,9 @@ def at(y, m, d, hh=12, mm=0, ss=0):
     return datetime.datetime(y, m, d, hh, mm, ss, tzinfo=VN).timestamp()
 
 
-OPEN = at(2026, 10, 4, 20)          # day 2 of the default fair (03/10 → 07/10)
-BEFORE = at(2026, 10, 2, 23, 59)
-AFTER = at(2026, 10, 8, 0, 0)        # the first second after the fair
+OPEN = at(2026, 10, 10, 20)         # day 2 of the default fair (09/10 → 13/10, owner 08/10: the fair opens again)
+BEFORE = at(2026, 10, 8, 23, 59)
+AFTER = at(2026, 10, 14, 0, 0)       # the first second after the fair
 
 
 class Dice:
@@ -293,13 +293,13 @@ class Calendar(FairBase):
 
     def test_window_and_override(self):
         a, b = fh.window()
-        self.assertEqual((a, b), (int(at(2026, 10, 3, 0)), int(at(2026, 10, 8, 0))))
-        self.assertTrue(fh.is_open(at(2026, 10, 3, 0)) and fh.is_open(at(2026, 10, 7, 23, 59)) and not fh.is_open(AFTER))
+        self.assertEqual((a, b), (int(at(2026, 10, 9, 0)), int(at(2026, 10, 14, 0))))
+        self.assertTrue(fh.is_open(at(2026, 10, 9, 0)) and fh.is_open(at(2026, 10, 13, 23, 59)) and not fh.is_open(AFTER))
         with mock.patch.dict(os.environ, {'MNL_FAIR_START': '2026-11-20', 'MNL_FAIR_DAYS': '3'}):
             self.assertEqual(fh.window(), (int(at(2026, 11, 20, 0)), int(at(2026, 11, 23, 0))))
             self.assertEqual(fh.edition(), 'fair20261120')
         with mock.patch.dict(os.environ, {'MNL_FAIR_START': 'not a date'}):
-            self.assertEqual(fh.edition(), 'fair20261003')
+            self.assertEqual(fh.edition(), 'fair20261009')
 
     def test_story_only(self):
         s = new_state()
@@ -526,12 +526,30 @@ class LotoShow(FairBase):
         f = s['journey']['fair']
         # owner 03/10: no daily money cap and no round limit for the lô tô; the wallet is the only limit
         f.update(date=fh.vn_date(self.clock.t + 120), net=-(fh.DAY_CAP + 500), rounds=fh.ROUNDS_DAY)
-        s, r, rv = self.buy(s, tier='lon', n=1, cl=['chan', 6], cot=[2, 6])
+        s, r, rv = self.buy(s, tier='lon', n=1)
         self.assertEqual(s['journey']['fair']['rounds'], fh.ROUNDS_DAY)   # not counted against the other stalls' rounds
         self.assertLess(s['journey']['fair']['net'], -fh.DAY_CAP)
         validate_state(s)
 
+    def test_side_bets_take_no_new_bets(self):
+        """08/10 (SIDE_OPEN): the minute's calls are public, a player who saw them could pick the likely chẵn/lẻ or cột
+        (scripts/sim_fair_odds.py --side: 107% / 164% back): no new side bet, the tờ alone are still sold."""
+        self.assertFalse(fh.SIDE_OPEN)
+        s = story(200)
+        for p in (dict(cl=['le', 4]), dict(cot=[3, 6]), dict(cl=['chan', 2], cot=[0, 2])):
+            with self.assertRaises(GameError, msg=p) as e:
+                self.buy(s, tier='nho', n=1, **p)
+            self.assertEqual(e.exception.code, 'fair_loto_side')
+            self.assertEqual(s['journey']['wallet'], 200)
+        g = public_state(s)['fair']['ganh']
+        self.assertEqual((g['side'], g['side_stakes']), (False, []))
+        s, r, rv = self.buy(s, tier='nho', n=1)
+        self.assertEqual(s['journey']['wallet'], 200 - 2)
+        self.assertNotIn('sb', s['journey']['fair']['loto'])
+
+    @mock.patch.object(fh, 'SIDE_OPEN', True)
     def test_side_bets_are_settled_at_the_purchase(self):
+        """Rounds bought while they were open (before 08/10) settled at the purchase; the save and the view keep them."""
         s = story(200)
         s, r, rv = self.buy(s, tier='nho', n=1, cl=['le', 4], cot=[3, 6])
         back = fh.side_back({'cl': ['le', 4], 'cot': [3, 6]}, rv['chot_n'])
@@ -557,8 +575,9 @@ class LotoShow(FairBase):
         self.assertEqual(fh.side_back({'cl': ['chan', 6]}, 70), {'cl': 0})
 
     def test_odds_with_perfect_play(self):
-        """Seeded purchases drawn like fair_loto_buy: a perfect player wins about WIN_P of the rounds of every vòng and
-        comes out a little ahead (the 20 000-round figures are in game/fair.py); the side bets keep a small edge."""
+        """Seeded purchases drawn like fair_loto_buy: a perfect player wins about BASES['lt'] of the rounds of every vòng
+        and still comes out a little behind (08/10, the house always wins: scripts/sim_fair_odds.py); blind side bets keep a
+        small edge."""
         self.dice(random.Random(4242))
         cl = cot = 0
         for mode in fh.LOTO_MODES:
@@ -580,12 +599,12 @@ class LotoShow(FairBase):
                 ev = gain / (N * n * 5)
                 expected = probability * fh.prize_of(mode, 5, n) / (n * 5) - 1
                 self.assertAlmostEqual(ev, expected, delta=.20, msg=(mode, n, ev))
-        for k in fh.LOTO_MODES:   # 07/10: about even money; timely Kinh claims at most +5% a xu (no farming)
-            self.assertTrue(1.0 <= fh.WIN_P * fh.LOTO_PAY[k] / 10 <= 1.05 + 1e-9, k)
+        p = fh.chance_rate('lt', OPEN)
+        for k in fh.LOTO_MODES:   # 08/10: the house always wins: a perfect player gets 91..96% back (no farming)
             for tier, price in fh.LOTO_TIERS.items():
                 for n in range(1, fh.LOTO_CARDS + 1):
-                    self.assertTrue(0 <= fh.WIN_P * fh.prize_of(k, price, n) / (n * price) - 1 <= .05 + 1e-9, (k, tier, n))
-        self.assertTrue(.88 < cl / 600 < 1.05, cl / 600)
+                    self.assertTrue(.90 <= p * fh.prize_of(k, price, n) / (n * price) <= .96, (k, tier, n))
+        self.assertTrue(.88 < cl / 600 < 1.05, cl / 600)   # blind side bets (closed since 08/10: SIDE_OPEN)
         self.assertTrue(.8 < cot / 600 < 1.05, cot / 600)
 
     def test_kinh_by_the_players_own_marks(self):
@@ -670,9 +689,9 @@ class LotoShow(FairBase):
             self.act(s2, 'fair_loto_kinh', row=0, at=90)
 
     def test_hu_dem_hoi_and_lat_nguoc(self):
-        t = at(2026, 10, 4, 20, 5)
+        t = at(2026, 10, 10, 20, 5)
         self.assertEqual({fh.mode_of(int(t // 60) + i) for i in range(100)}, {'dem'})
-        self.assertNotIn('dem', {fh.mode_of(int(at(2026, 10, 4, 12) // 60) + i) for i in range(100)})
+        self.assertNotIn('dem', {fh.mode_of(int(at(2026, 10, 10, 12) // 60) + i) for i in range(100)})
         self.clock.t = t
         s = story(200)
         s, _, rv = self.buy(s, 'dem')
@@ -697,11 +716,12 @@ class LotoShow(FairBase):
         s, _, _ = self.buy(s)                            # a new purchase folds the round being played
         self.assertEqual(sum(s['journey']['fair']['ltd']['npc']), 2)
         self.assertEqual(public_state(s)['fair']['ganh']['today']['r'], 3)
-        self.clock.t = at(2026, 10, 5, 9)
+        self.clock.t = at(2026, 10, 11, 9)
         s, _ = self.act(s, 'fair_bc', bets={'cua': 1})
         self.assertNotIn('ltd', s['journey']['fair'])   # a new Vietnam day: a new tally
         self.assertEqual(public_state(s)['fair']['ganh']['today']['r'], 0)
 
+    @mock.patch.object(fh, 'SIDE_OPEN', True)   # a round with side bets, bought before 08/10
     def test_saves_old_and_new(self):
         s = story(200)
         s, _, _ = self.buy(s, tier='lon', n=2, cl=['chan', 2], cot=[0, 2])
@@ -972,7 +992,7 @@ class OAQStall(FairBase):
         self.assertEqual(s['journey']['wallet'], 40000)
         self.assertLessEqual(s['journey']['fair']['earn']['oaq'], fh.EARN_DAY['oaq'])   # the counter stays in the older bound
         self.assertTrue(public_state(s)['fair']['earn']['oaq']['nocap'])
-        self.clock.t = at(2026, 10, 5, 9)                              # a new day
+        self.clock.t = at(2026, 10, 11, 9)                              # a new day
         with mock.patch.object(oaq, 'ai_move', weakest):
             s, _ = self.act(s, 'fair_oaq_start', lv='de')
             s, r = self.finish(s)
