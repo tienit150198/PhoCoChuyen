@@ -203,6 +203,13 @@ DEDICATIONS = (
     ('me', 'Tặng mẹ'), ('bo', 'Tặng bố'), ('nguoi_thuong', 'Tặng người thương'), ('ca_xom', 'Cho cả xóm'),
     ('ong_ba', 'Nhớ ông bà'), ('ngay_cuoi', 'Kỷ niệm ngày cưới'), ('pho_may', 'Cảm ơn phố Mây'),
 )
+# 🎆 A wish shown with the fireworks on every open screen (optional; a fixed list, nothing to moderate). Ids are stored
+# in the give's `m` (an id, like a plaque's dedication), so an older build keeps a save that has one.
+FW_WISHES = (
+    ('ca_pho', 'Chúc cả phố vui vẻ'), ('sinh_nhat', 'Mừng sinh nhật'), ('cuoi', 'Mừng đám cưới'),
+    ('nha_moi', 'Mừng nhà mới'), ('tot_nghiep', 'Mừng tốt nghiệp'), ('viec_moi', 'Mừng việc mới'),
+    ('nguoi_thuong', 'Tặng người thương'), ('me', 'Tặng mẹ'), ('bo', 'Tặng bố'), ('cam_on', 'Cảm ơn phố Mây'),
+)
 NEWS_GAP = 120              # seconds between two lines a sponsorship puts on the ticker (fireworks keep their own gap)
 
 # ---------------------------------------------------------------- 🏷️ titles earned here (worn through game/spend.py)

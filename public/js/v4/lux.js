@@ -10,9 +10,9 @@ import {withWhy,whyTap} from '../ui-kit.js';
 import {qtyBox,QTY,afterTap,qtyVal} from '../qty-input.js';
 
 const TABS=[['trip','✈️','Du lịch'],['suu','💎','Sưu tập'],['nha','🏰','Dinh thự'],['bay','🛫','Phi cơ & du thuyền'],['tiec','🎉','Mở tiệc'],['hoc','🎓','Khóa học'],['mtq','🎆','Mạnh Thường Quân']];
-export const ACTIONS={lux:'',luxTrip:'trip',luxSuu:'suu',luxNha:'nha',luxBay:'bay',luxTiec:'tiec',luxHoc:'hoc',luxMtq:'mtq'};
+export const ACTIONS={lux:'',luxTrip:'trip',luxSuu:'suu',luxNha:'nha',luxBay:'bay',luxTiec:'tiec',luxHoc:'hoc',luxMtq:'mtq',luxFw:'mtq'};   // luxFw: 🎆 straight to the fireworks (the menu, the show's banner)
 const S={dlg:null,env:null,tab:'trip',country:'',cls:'pho_thong',docs:{},iv:null,answers:[],souv:'',set:'',piece:'',estate:'',fly:'',
-  pkind:'sinh_nhat',tier:'binh_dan',guests:20,course:'',give:'phao_hoa',size:'nho',slot:0,msg:'me',amount:10000,anon:false,
+  pkind:'sinh_nhat',tier:'binh_dan',guests:20,course:'',give:'phao_hoa',size:'nho',slot:0,msg:'me',wish:'',amount:10000,anon:false,
   board:null,boardAt:0,busy:false,flash:null,listening:false};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const J=()=>S.env?.api?.state?.journey||{};
@@ -45,6 +45,7 @@ function dialog(){
   d.addEventListener('change',e=>{
     const t=e.target;
     if(t.name==='msg')S.msg=t.value;
+    else if(t.name==='fwish')S.wish=t.value;
     else if(t.name==='anon')S.anon=t.checked;
     else if(t.name==='amount'){const g=give('thu_vien'),n=qtyVal(t);if(n)S.amount=Math.max(g.min,Math.min(g.max,n));afterTap(render);}
   });
@@ -68,6 +69,7 @@ export async function openLux(env,tab){
 }
 export async function luxAction(action,data,el,env){
   if(!(action in ACTIONS))return false;
+  if(action==='luxFw'){S.give='phao_hoa';S.slot=0;}
   await openLux(env,ACTIONS[action]||data?.tab);return true;
 }
 async function loadBoard(force=false){
@@ -144,6 +146,7 @@ function main(v){
       const wait=g.id==='phao_hoa'?Number(S.board?.fw_wait)||0:0;
       if(wait)return [`Đợi ${Math.ceil(wait/60)} phút`,'give','Trời đang có pháo hoa'];
       if(g.slots&&!S.slot)return ['Chọn một chỗ','give','Chọn số'];
+      if(g.id==='phao_hoa')return [`🎆 Bắn · ${fmt(price)} xu`,'give',readyWhy(price)];
       return [`Tài trợ · ${fmt(price)} xu`,'give',readyWhy(price)];}
   }
   return ['','',''];
@@ -193,9 +196,18 @@ async function onClick(op,data){
       else if(what==='study')await send('jr_lux_study',{id:course().id});
       else if(what==='give'){const g=give(),p={kind:g.id,anon:S.anon,confirm:true};
         if(g.sizes?.length)p.size=S.size;if(g.slots){p.slot=S.slot;p.msg=S.msg;}if(g.min)p.amount=S.amount;
-        const r=await send('jr_lux_give',p);if(r){S.slot=0;loadBoard(true);}}
+        if(g.id==='phao_hoa'&&S.wish)p.msg=S.wish;
+        const r=await send('jr_lux_give',p);if(r){S.slot=0;loadBoard(true);if(g.id==='phao_hoa')shot(r);}}
       return;}
   }
+}
+
+/** 🎆 Bought: close the shop so the sky shows (live/fireworks.py sends the show to every page, this one too). With
+ * no live socket open nothing comes back, so this page plays it by itself. */
+function shot(r){
+  const env=S.env,size=S.size,wish=(CAT().fw_wishes||[]).find(x=>x.id===S.wish)?.text||'';
+  S.dlg.close();if(r?.message)env.toast?.(r.message,'good');
+  if(env.live?.()?.state!=='open')import('./fireworks.js').then(m=>m.playLocal(env,size,wish)).catch(e=>console.warn('fireworks:',e));
 }
 
 /* ---- rendering ---- */
@@ -287,7 +299,8 @@ function mtq(v,c){
   const g=give(),b=S.board&&!S.board.error?S.board:null;
   const kinds=`<div class="sd-chips">${c.gives.map(x=>chip('give',x.id,x.emoji,x.id===g.id,x.name)).join('')}</div>`;
   let body='';
-  if(g.sizes?.length)body=`<div class="sd-list">${g.sizes.map(z=>row('size',z.id,'🎆',z.name,fmt(z.price),z.id===S.size)).join('')}</div>`;
+  if(g.sizes?.length)body=`<p class="lx-sub">🌏 Ai đang online cũng thấy pháo hoa trên màn hình.</p><div class="sd-list">${g.sizes.map(z=>row('size',z.id,'🎆',z.name,fmt(z.price),z.id===S.size)).join('')}</div>`+
+    (c.fw_wishes?.length?`<label class="sd-select"><span class="sr-only">Lời chúc</span><select name="fwish"><option value=""${S.wish?'':' selected'}>Không kèm lời chúc</option>${c.fw_wishes.map(w=>`<option value="${esc(w.id)}"${S.wish===w.id?' selected':''}>${esc(w.text)}</option>`).join('')}</select></label>`:'');
   else if(g.slots){const taken=new Set((b?.plaques||[]).filter(p=>p.k===g.id).map(p=>p.s));
     body=`<div class="lx-slots">${Array.from({length:g.slots},(_,i)=>i+1).map(n=>`<button type="button" class="sd-chip${S.slot===n?' on':''}" data-lx="slot" data-n="${n}"${taken.has(n)?' disabled':''} aria-pressed="${S.slot===n}">${n}</button>`).join('')}</div>
       <label class="sd-select"><span class="sr-only">Lời khắc</span><select name="msg">${c.dedications.map(d=>`<option value="${esc(d.id)}"${S.msg===d.id?' selected':''}>${esc(d.text)}</option>`).join('')}</select></label>`;}

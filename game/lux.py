@@ -28,6 +28,9 @@ caps, and public plaques.
   night's sponsor of the week, the school library fund. A pure sink, public: the `lux_gifts` row is written in the save's
   own transaction (command_commit: a taken slot or fireworks too soon refuse the whole command, so nothing is paid), a
   line on the street's ticker (`news`), fireworks also on Cả phố. GET /api/mtq is the weekly board.
+  🎆 Fireworks (owner 08/10: "phải có bắn toàn server cho mọi người thấy chứ k phải là chỉ có chữ"): with an optional
+  wish from C.FW_WISHES (`msg`, an id kept in give.last.m), and on commit a NOTIFY op 'fireworks' that the live service
+  (live/fireworks.py) turns into a real show on every open screen: bursts over the page and a long banner.
 * 🏷️ Titles earned here are granted into game/spend.py's block for good (own until spend_content.PERMANENT) and worn
   from Phong cách like the weekly ones: the live service shows them as `st.t` (an older one ignores the id).
 
@@ -96,6 +99,7 @@ PARTY_TIER = {t['id']: t for t in C.PARTY_TIERS}
 COURSE = {c['id']: c for c in C.COURSES}
 GIVE = {g['id']: g for g in C.GIVES}
 DEDICATION = dict(C.DEDICATIONS)
+FW_WISH = dict(C.FW_WISHES)
 
 
 # ---------------------------------------------------------------- helpers
@@ -789,7 +793,10 @@ def _give(s: dict, p: dict) -> dict:
     if 'slots' in g:
         slot, msg = p.get('slot'), p.get('msg')
         need(type(slot) is int and 1 <= slot <= g['slots'], 'Chọn một chỗ nhé.')
-        need(msg in DEDICATION, 'Chọn lời khắc nhé.')
+        need(isinstance(msg, str) and msg in DEDICATION, 'Chọn lời khắc nhé.')
+    elif g['id'] == 'phao_hoa' and p.get('msg') not in (None, ''):   # 🎆 an optional wish shown with the show
+        msg = p['msg']
+        need(isinstance(msg, str) and msg in FW_WISH, 'Chọn lời chúc nhé.')
     _confirm(p, f'{g["name"].lower()} {_fmt(price)} xu')
     _pay_ok(s, price)
     how = _take(s, price, f'{g["name"]}' + (f' số {slot}' if slot else ''))
@@ -806,6 +813,9 @@ def _give(s: dict, p: dict) -> dict:
     b['stats']['xu'] += price
     _album(b, 'give', g['id'], p.get('size') or '', s['journey']['life_day'], price)
     where = f' Ghế/cột số {slot}, {g["where"]}: “{DEDICATION[msg]}”.' if slot else ''
+    if g['id'] == 'phao_hoa':
+        z = next(z for z in g['sizes'] if z['id'] == p['size'])
+        return dict(message=f'🎆 {z["name"]} lên trời rồi, cả phố cùng xem! ({how})')
     return dict(message=f'{g["emoji"]} {g["name"]} ({how}).{where} Cả phố cảm ơn bạn!')
 
 
@@ -887,7 +897,8 @@ def catalogue() -> dict:
                 sell_pct=C.SELL_PCT, party_kinds=[dict(k) for k in C.PARTY_KINDS], party_tiers=[dict(t) for t in C.PARTY_TIERS],
                 guests=dict(min=C.GUESTS_MIN, max=C.GUESTS_MAX, step=C.GUESTS_STEP), courses=[dict(c) for c in C.COURSES],
                 gives=[dict(g, sizes=[dict(z) for z in g.get('sizes', ())]) for g in C.GIVES],
-                dedications=[dict(id=k, text=v) for k, v in C.DEDICATIONS], month_days=bk.MONTH_DAYS, **es.catalogue())
+                dedications=[dict(id=k, text=v) for k, v in C.DEDICATIONS], fw_wishes=[dict(id=k, text=v) for k, v in C.FW_WISHES],
+                month_days=bk.MONTH_DAYS, **es.catalogue())
 
 
 # ---------------------------------------------------------------- database (the save's own transaction)
@@ -924,6 +935,15 @@ def _town_chat(db, text: str) -> None:
                    'RETURNING id', ('🎆 Pháo hoa phố', text[:300], now())).fetchone()
     if r:
         live_chat.notify(db, dict(op='unhide', id=int(r['id'])))
+
+
+def _show(db, rid: str, pid: str, size: str, who: str, wish: str, at) -> None:
+    """🎆 The show itself on every open screen (live/fireworks.py): bursts over the page and a long banner with the name
+    and the wish. Sent on commit (NOTIFY), so a refused command shows nothing. `pid` lets the live service leave the
+    name and the wish out for players who blocked the giver (or were blocked); it never reaches a page. An older live
+    service ignores the op."""
+    from . import live_chat
+    live_chat.notify(db, dict(op='fireworks', id=rid, pid=pid, size=size, name=who, wish=wish, at=float(at)))
 
 
 def command_commit(db, sid: str, action: str, after: dict) -> None:
@@ -966,9 +986,11 @@ def command_commit(db, sid: str, action: str, after: dict) -> None:
     who = _display(db, sid, x['anon'])
     if g['id'] == 'phao_hoa':
         z = next(z for z in g['sizes'] if z['id'] == x['z'])
-        text = f'🎆 {who} bắn {z["name"].lower()} tặng cả phố!'
+        wish = FW_WISH.get(x['m'], '')
+        text = f'🎆 {who} bắn {z["name"].lower()} tặng cả phố!' + (f' “{wish}”' if wish else '')
         _news(db, f'lux:{rid}', text, force=True)
         _town_chat(db, text + ' Ngước lên trời nào 🎇')
+        _show(db, rid, pid, z['id'], who, wish, x['at'])
     elif 'slots' in g:
         _news(db, f'lux:{rid}', f'{g["emoji"]} {who} khắc tên {g["name"].split()[0].lower()} số {x["s"]} ({g["where"]}): “{DEDICATION.get(x["m"], "")}”.')
     elif g.get('week'):
