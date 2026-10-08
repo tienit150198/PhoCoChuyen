@@ -22,6 +22,9 @@ money or not) and help a neighbour in trouble in return.
 * 🛏️ While the player rents a bed in the Ký túc xá Hẻm 7 (game/housing.py DORM), some days bring a small
   roommate moment instead (kind and stage 'dorm', cat 'ktx', life_content.DORM): two choices, ±1–3 tinh thần,
   a few xu at most, its own random stream so nobody else's cards change.
+* 🏠 Renting or letting a home (game/tenancy.py, feedback #261): on a day this layer drew no card, now and then a
+  small moment with the landlord, the neighbours or your tenant, kept in journey.tenancy (never in this block) and
+  shown here as the pending card; lf_choose / lf_close with its `tn-` id go there.
 
 Commands (engine routes the `lf_` prefix): lf_choose {id, choice}, lf_cope {choice},
 lf_close {id}. Design: docs/superpowers/specs/2026-09-29-life-design.md
@@ -91,6 +94,11 @@ def _core():
 def _jr():
     from . import journey
     return journey
+
+
+def _tn():
+    from . import tenancy
+    return tenancy
 
 
 def _cast() -> dict:
@@ -853,16 +861,19 @@ def on_life_day(s: dict, result: dict | None = None, career: str | None = None) 
         if card and card['stage'] != 'done':
             _auto(s, L, card)
         L['pending'] = None
+        _tn().settle(s)
         if last:
             _watch_scams(s, L, career)
             L['pending'] = _roll(s, L, nd, career, facts(s, career, summary, nd))
+            if L['pending'] is None:
+                _tn().roll(s, L, nd, career)
         L['day'] = nd
     L['mark'] = L['spirit']
     if isinstance(summary, dict):
         card = L['pending']
         summary['life'] = dict(spirit=L['spirit'], delta=L['spirit'] - before, warmth=warmth(L), notes=notes,
                                pending=dict(emoji=_emoji(card), title=_title(s, card), cat_label=CATS[card['cat']][1])
-                               if card else None, **mood(L['spirit']))
+                               if card else _tn().summary(s), **mood(L['spirit']))
 
 
 def after(s: dict, career: str | None, action: str, result: dict) -> None:
@@ -889,6 +900,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
     result = dict(message='', effects=[])
     if name == 'lf_choose':
         need(set(p) == {'id', 'choice'} and isinstance(p['id'], str) and isinstance(p['choice'], str), 'Chọn một cách nhé.')
+        if _tn().is_mine(p['id']):
+            return _tn().choose(s, p)
         need(card and card['id'] == p['id'] and card['stage'] != 'done', 'Chuyện này đã qua rồi.', 'already_decided')
         lines = _apply(s, L, card, p['choice'])
         result['message'] = lines[0] if lines else ''
@@ -903,6 +916,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
         result['message'] = lines[0] if lines else ''
     elif name == 'lf_close':
         need(set(p) == {'id'} and isinstance(p['id'], str), 'Dữ liệu thao tác không hợp lệ.')
+        if _tn().is_mine(p['id']):
+            return _tn().close(s, p)
         need(card and card['id'] == p['id'], 'Chuyện này đã cất rồi.', 'already_decided')
         need(card['stage'] in ('done', 'joy'), 'Chọn một cách trước đã nhé.')
         if card['stage'] == 'joy':
@@ -977,7 +992,7 @@ def public(s: dict) -> dict:
         for c in cope:
             c.update(ok=False, why=None)      # the sheet says it once: "hôm nay xả rồi"
     return dict(enabled=bool(j.get('story')), spirit=L['spirit'], mood=mood(L['spirit']), warmth=w, warmth_name=warmth_name(w),
-                bonds=bonds, pending=_card_view(s, L, card) if card else None,
+                bonds=bonds, pending=_card_view(s, L, card) if card else _tn().view(s) if j.get('story') else None,
                 log=[dict(r, who=[x for x in (_who_view(k) for k in r['who']) if x]) for r in reversed(L['log'][-20:])],
                 stats=dict(L['stats']), cope=cope, cope_used=cope_used, wallet=j.get('wallet', 0),
                 hangover=bool(L['hangover']), low=L['spirit'] < IMPULSE_SPIRIT)
@@ -988,6 +1003,7 @@ def validate(s: dict) -> None:
     e = _core()
     need, integer, txt = e.need, e.integer, e.clean_text
     j = s.get('journey')
+    _tn().validate(s)   # 🏠 journey.tenancy (its own block)
     if not isinstance(j, dict) or 'life' not in j:
         return
     L = j['life']

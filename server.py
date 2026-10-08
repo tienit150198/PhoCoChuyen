@@ -1069,6 +1069,9 @@ class Handler(BaseHTTPRequestHandler):
                 out=bank_xfer.act(self.server.store,token,route[len("/api/bank/xfer/"):],data)
                 if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 self.json(200,out,known=FULL);return
+            if route.startswith("/api/home-guests/deco/"):  # 🎨 Cho trang trí: each move a friend makes is one request (game/home_coop.py)
+                if not self.server.rate_limit("home-deco:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,home_guests.post(self.server.store,token,state,route[len("/api/home-guests/"):],data));return
             if route.startswith("/api/home-guests/"):
                 if not self.server.rate_limit("home-guests:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,home_guests.post(self.server.store,token,state,route[len("/api/home-guests/"):],data));return

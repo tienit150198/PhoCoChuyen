@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 30  # 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 31  # 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -534,12 +534,31 @@ CREATE INDEX IF NOT EXISTS auction_bids_sid ON auction_bids(sid, lot);
 CREATE TABLE IF NOT EXISTS account_birth (
   sid {T} PRIMARY KEY, year bigint NOT NULL, at double precision NOT NULL
 );
+-- 🎨 Cho trang trí (game/home_coop.py; SCHEMA_VERSION 31): a friend may move the owner's furniture in one home they own
+-- (expires_at NULL: until revoked), and every change they make, with the spots before (`undo`) and after, for Hoàn tác.
+-- Tables only, no save key: an older build or a rollback never sees them.
+CREATE TABLE IF NOT EXISTS home_deco_grants (
+  id {T} PRIMARY KEY, owner {T} NOT NULL, guest {T} NOT NULL,
+  home_id {T} NOT NULL, home_kind {T} NOT NULL,
+  status {T} NOT NULL CHECK (status IN ('active','revoked','left','expired','ended')),
+  created_at double precision NOT NULL, expires_at double precision, ended_at double precision,
+  CHECK (owner <> guest)
+);
+CREATE TABLE IF NOT EXISTS home_deco_log (
+  id {ID} PRIMARY KEY, owner {T} NOT NULL, actor {T} NOT NULL,
+  home_id {T} NOT NULL, home_kind {T} NOT NULL, text {T} NOT NULL,
+  undo {T} NOT NULL, after {T} NOT NULL, at double precision NOT NULL, undone double precision
+);
 """
 
 INDEX_DDL = """
 CREATE UNIQUE INDEX IF NOT EXISTS home_guest_active_pair ON home_guest_invites(owner,guest)
   WHERE status IN ('pending','accepted');
 CREATE INDEX IF NOT EXISTS home_guest_recipient ON home_guest_invites(guest,status);
+CREATE UNIQUE INDEX IF NOT EXISTS home_deco_active_pair ON home_deco_grants(owner,guest) WHERE status='active';
+CREATE INDEX IF NOT EXISTS home_deco_guest ON home_deco_grants(guest,status);
+CREATE INDEX IF NOT EXISTS home_deco_log_owner ON home_deco_log(owner,id);
+CREATE INDEX IF NOT EXISTS home_deco_log_actor ON home_deco_log(actor);
 CREATE UNIQUE INDEX IF NOT EXISTS family_pending_kind ON family_requests(couple,kind) WHERE status='pending';
 CREATE INDEX IF NOT EXISTS family_request_recipient ON family_requests(to_sid,status);
 CREATE INDEX IF NOT EXISTS family_custody_owner ON family_custody(sid);
@@ -820,6 +839,8 @@ TABLES = [
     dict(name='auction_lots', identity=None),
     dict(name='auction_bids', identity=None),
     dict(name='account_birth', identity=None),
+    dict(name='home_deco_grants', identity=None),
+    dict(name='home_deco_log', identity='id'),
     dict(name='mnl_meta', identity=None),
 ]
 

@@ -49,7 +49,7 @@ assert.ok(html.includes('Vào chơi trong 2 giờ kể từ khi đồng ý.'),'t
 // Exercise the actual renderer with precisely the minimal, private-field-free server projection.
 globalThis.document={body:{classList:{contains:()=>true}}};
 globalThis.window={matchMedia:()=>({matches:false})};
-const source=(await readFile(new URL('../public/js/v4/reno.js',import.meta.url),'utf8')).replace(/^import .*;\r?\n/gm,'').replace(/^export /gm,'');
+const source=(await readFile(new URL('../public/js/v4/reno.js',import.meta.url),'utf8')).replace(/^import .*;.*\r?\n/gm,'').replace(/^export /gm,'');
 const renderer=new Function('A','walkSetup','live','sharedRooms','ownershipOrder','guestSession','icon','esc','Sound',source+'\nreturn {S,page,onClick,send,guest,loadMate,tintOf};')(art,setup,{on:()=>()=>{}},view.sharedRooms,view.ownershipOrder,view.guestSession,icon,escapeHTML,class {});
 const remote={owner:{code:'A',name:'An'},access:{kind:'stay'},deco:{place:{key:'house-A',where:'own',name:'Nhà phố',emoji:'🏡',repairs:false},rooms:[{...room,name:'Phòng ngủ',emoji:'🛏️',wrows:3,skin:{},cap:30}],more:[],items:[]},reno:{parts:[]},mate:{},colors:{deco:{}}};
 Object.assign(renderer.S,{env:{api:{state,content:{journey:{deco:{items:[]}}},command:(...args)=>commands.push(args)}},remote,dlg:{querySelector:()=>null},room:'bed'});
@@ -72,7 +72,7 @@ await renderer.loadMate();
 assert.equal(closed,1,'revocation closes the room on the next refresh');
 assert.equal(notified,1,'revocation explains why the guest view closed');
 assert.equal(renderer.S.remote,null);
-const managerSource=(await readFile(new URL('../public/js/v4/home-guests.js',import.meta.url),'utf8')).replace(/^import .*;\r?\n/gm,'').replace(/^export /gm,'');
+const managerSource=(await readFile(new URL('../public/js/v4/home-guests.js',import.meta.url),'utf8')).replace(/^import .*;.*\r?\n/gm,'').replace(/^export /gm,'');
 const manager=new Function('icon','esc','live',managerSource+'\nreturn {S,act};')(icon,escapeHTML,{on:()=>()=>{}});
 const sent=[];
 Object.assign(manager.S,{data:listing,env:{api:{csrf:'test',json:async(url,options)=>{if(options?.method==='POST')sent.push(JSON.parse(options.body));return listing;}}},dlg:{open:true,querySelector:()=>({innerHTML:''}),setAttribute:()=>{}}});
@@ -81,4 +81,53 @@ for(const op of ['answer','revoke','leave']){
   clearTimeout(manager.S.timer);
 }
 assert.deepEqual(sent.map(r=>r.id),Array(3).fill('abcdef0123456789abcdef0123456789'),'opaque invitation IDs remain strings in accept, revoke, and leave requests');
-console.log('Guest home: isolated state, preserved drafts, stale reads, and denied furniture actions passed');
+
+// 🎨 Trang trí giúp (game/home_coop.py): the owner's bag only, every change a checked POST, nothing personal.
+const sofa={id:'sofa',name:'Sofa vải',cat:'table',spot:'floor',w:3,h:1,price:200,sell:100,cozy:3,rooms:['bed'],tags:[],surface:0,ledge:0};
+const coopRemote={...remote,access:{kind:'deco'},deco:{...remote.deco,bag:[{id:'b1',k:'sofa'}],count:2,items:[{id:'p1',k:'sofa',r:'bed',x:0,y:0,f:0}]},coop:{id:'g1',expires_at:null,log:[{id:7,name:'Bình <b>',text:'đã đặt Sofa vải ở phòng ngủ',undone:false}]}};
+const posts=[],coopCommands=[];
+Object.assign(renderer.S,{coop:true,edit:true,held:null,sel:'',drawer:'bag',undo:[],env:{toast:()=>notified++,api:{csrf:'t',state,content:{journey:{deco:{items:[sofa],cats:[],sets:[],levels:[],skins:[]}}},command:(...args)=>coopCommands.push(args),
+  json:async(url,options)=>{posts.push([url,options?JSON.parse(options.body):null]);return {message:'Đã dời Sofa vải.',duplicate:false,view:{...coopRemote,deco:{...coopRemote.deco,bag:[]}}};}}},
+  dlg:{open:false,querySelector:()=>null,querySelectorAll:()=>[],setAttribute:()=>{}}});
+await renderer.guest.open('A',async()=>coopRemote);renderer.S.edit=true;   // openCoopReno opens straight into decorating
+let coopScreen=renderer.page();
+for(const text of ['Trang trí giúp nhà An','Túi chủ nhà','data-dc="done"','đã đặt Sofa vải ở phòng ngủ','Bình &lt;b&gt;','hoàn tác được'])assert.ok(coopScreen.includes(text),text);
+for(const text of ['dc-money','data-d="shop"','data-d="skin"','data-dc="pickAll"','data-dc="photo"'])assert.ok(!coopScreen.includes(text),`coop hides ${text}`);
+renderer.S.sel='p1';coopScreen=renderer.page();
+assert.ok(coopScreen.includes('data-dc="flip"')&&coopScreen.includes('data-dc="pick"'),'a friend can flip and put back');
+assert.ok(!coopScreen.includes('data-dc="sell"')&&!coopScreen.includes('data-dc="tint"'),'a friend can never sell or paint');
+for(const [op,data] of [['buyBag',{}],['sell',{uid:'p1'}],['pickAll',{}],['tint',{uid:'p1'}],['skin',{part:'wall',skin:'x'}],['photoSave',{}],['fix',{part:'all'}],['relax',{act:'x'}],['drawer',{d:'shop'}],['hold',{k:'sofa',src:'shop'}]])await renderer.onClick(op,data);
+assert.equal(renderer.S.drawer,'bag','the shop never opens');assert.equal(renderer.S.held,null,'nothing held from the shop');
+for(const action of ['jr_deco_buy','jr_deco_sell','jr_deco_skin','jr_wd_deco','jr_relax_do','jr_reno_fix'])assert.equal(await renderer.send(action,{uid:'p1'}),null,action);
+assert.deepEqual(posts,[],'only place / move / put back / undo reach the server');
+const moved=await renderer.send('jr_deco_put',{uid:'p1',r:'bed',x:4,y:0,f:0});
+assert.equal(posts.length,1);assert.equal(posts[0][0],'/api/home-guests/deco/act');
+assert.deepEqual(posts[0][1],{uid:'p1',r:'bed',x:4,y:0,f:0,code:'A',action:'put'});
+assert.equal(moved.duplicate,false);assert.deepEqual(renderer.S.remote.deco.bag,[],'the owner room that came back is the one drawn');
+await renderer.send('jr_deco_pick',{uid:'p1'});await renderer.send('jr_deco_layout',{set:{p1:null}});
+assert.deepEqual(posts.slice(1).map(p=>p[1].action),['pick','layout']);
+assert.deepEqual(coopCommands,[],'the friend\'s own save never gets a command');
+let coopClosed=0;renderer.S.dlg={open:true,querySelector:()=>null,querySelectorAll:()=>[],setAttribute:()=>{},close(){coopClosed++;this.open=false;}};
+renderer.S.env.api.json=async()=>{throw Object.assign(new Error('Quyền trang trí đã kết thúc.'),{status:403});};
+assert.equal(await renderer.send('jr_deco_put',{uid:'p1',r:'bed',x:0,y:0,f:0}),null);
+assert.equal(coopClosed,1,'a revoked permission closes the room');
+renderer.guest.close();renderer.S.coop=false;
+
+const {decoView}=await import('../public/js/v4/home-guests.js');
+const decoList={...listing,friends:[{code:'A',name:'An'},{code:'B',name:'Bình'}],deco:{hours:[0,2,24,168],mine:[{id:'g1',code:'B',name:'Bình',expires_at:null}],homes:[{id:'g2',code:'A',name:'An <i>',expires_at:2e9,home:{name:'Nhà phố'}}],
+  log:[{id:9,name:'Bình',text:'đã dời Sofa vải',undo:true,undone:false},{id:8,name:'Bình',text:'đã cất Đèn vào túi',undo:false,undone:true}]}};
+const decoHtml=decoView(decoList,{decoCode:'A'});
+for(const text of ['Cho trang trí','Thu hồi','Vào trang trí','Thôi trang trí','↶ Hoàn tác','Đã hoàn tác','An &lt;i&gt;','7 ngày','không đổi chủ'])assert.ok(decoHtml.includes(text),text);
+assert.ok(!/<option value="B"/.test(decoHtml),'a friend who already may decorate is not offered again');
+assert.match(decoHtml,/value="A" selected/);
+assert.ok(decoView({...decoList,own_home:null},{}).includes('căn nhà mình sở hữu'),'only an owner can grant');
+assert.equal(decoView(listing,{}),'','older servers without the listing show nothing');
+Object.assign(manager.S,{data:decoList,decoCode:'A',decoHours:24});sent.length=0;
+const urls=[];manager.S.env.api.json=async(url,options)=>{if(options?.method==='POST'){urls.push(url);sent.push(JSON.parse(options.body));}return decoList;};
+manager.S.env.api.refresh=async()=>{};
+for(const [op,data] of [['decoGrant',{}],['decoRevoke',{id:'g1'}],['decoLeave',{id:'g2'}],['decoUndo',{id:'9'}]]){await manager.act(op,data);clearTimeout(manager.S.timer);}
+assert.deepEqual(urls,['grant','revoke','leave','undo'].map(x=>`/api/home-guests/deco/${x}`));
+assert.deepEqual(sent,[{code:'A',hours:24},{id:'g1'},{id:'g2'},{id:9}]);
+manager.S.decoCode='nobody';sent.length=0;await manager.act('decoGrant',{});clearTimeout(manager.S.timer);
+assert.deepEqual(sent,[],'only a friend in the list can be granted');
+console.log('Guest home: isolated state, preserved drafts, stale reads, and denied furniture actions passed; Trang trí giúp: bag only, checked POSTs, owner controls');

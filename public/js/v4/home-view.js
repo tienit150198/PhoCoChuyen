@@ -20,7 +20,9 @@ export function guestSession(S){
     try{const data=await read(host);if(seq!==version||host!==code)return false;S.remote=data;S.mate=data.mate||null;return true;}
     catch(error){if(seq!==version||host!==code)return false;throw error;}
   }
-  return {close,refresh,get code(){return code;},async open(host,read){
+  /** 🎨 A projection that came back with a friend's change (game/home_coop.py): newer than any read still on the way. */
+  function adopt(host,data){if(host!==code||!data)return false;version++;S.remote=data;S.mate=data.mate||null;return true;}
+  return {close,refresh,adopt,get code(){return code;},async open(host,read){
     if(!saved)saved=Object.fromEntries(keys.map(k=>[k,S[k]]));
     code=host;S.remote={owner:{code:host}};S.edit=false;S.held=null;S.sel='';S.try=null;S.tryTint=null;S.mate=null;
     try{return await refresh(read);}catch(error){close();throw error;}
