@@ -20,6 +20,7 @@ import {lazy,skeleton} from '../lazy.js';
 import {FIRST_JOB,quiet,firstDay} from './onboard.js';
 import {highlight} from './guide.js';
 import {acctPlace,acctTag,acctTags} from './acct-jobs.js';   // 💼 kế toán: exam first, ×3/×5 (game/accounting_jobs.py)
+import {fundMoveHTML} from './wealth.js';   // 💼 Rút / góp vốn with a typed amount (F#259)
 // The town map's compact goal card on the clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded for tests.
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
 // 👗 Tủ đồ (v4/wardrobe.js): the sheet loads the first time it opens.
@@ -372,13 +373,12 @@ function walletView(env){
   if(!J.story)return head('Ví của bạn','',{back:true})+`<div class="sheet-body jr-body"><p class="muted">Ví và quỹ nơi làm việc có trong hành trình.</p></div>`;
   const places=Object.entries(J.places).map(([cid,p])=>{
     const m=meta(api,cid),c=api.state.careers[cid];
-    const draw=p.withdraw_max>0?`<form class="jr-move" data-jr-form="withdraw" data-career="${esc(cid)}"><label><span>Rút về ví</span><input type="number" name="amount" inputmode="numeric" min="1" max="${p.withdraw_max}" value="${Math.min(p.withdraw_max,50)}" id="jr-draw-${esc(cid)}" data-preserve></label><button type="submit" class="btn primary small">Rút</button>${btn('Tối đa','jrMax',{input:'jr-draw-'+cid,value:p.withdraw_max},'ghost small')}</form>`
-      :`<p class="muted small">Quỹ cần giữ ${fmt(C.reserve)} xu và đủ tiền hóa đơn chưa trả${p.unpaid?` (${fmt(p.unpaid)} xu)`:''}, nên chưa rút được.</p>`;
-    const invest=J.wallet>0?`<form class="jr-move" data-jr-form="invest" data-career="${esc(cid)}"><label><span>Góp vốn</span><input type="number" name="amount" inputmode="numeric" min="1" max="${J.wallet}" value="${Math.min(J.wallet,20)}" id="jr-invest-${esc(cid)}" data-preserve></label><button type="submit" class="btn cream small">Góp</button></form>`:'';
+    // 💼 Rút về ví and Góp vốn side by side, a typed amount with 25% / 50% / Tất cả, a confirm (v4/wealth.js, F#259).
+    const move=fundMoveHTML(api.state,cid,{open:true});
     // A place you are away from costs nothing (game/journey.py upkeep()): no "Tạm đóng" to save fees any more; an old pause reopens free.
     const pause=!p.employed&&p.paused?btn('Mở lại','jrReopen',{career:cid},'cream small'):'';
     return `<details class="jr-fundrow ${p.paused?'paused':''}"><summary><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span><span class="grow"><b>${esc(m.place||m.short)}</b><small>${p.employed?'Làm thuê · lương về ví':p.paused?'Tạm đóng · mở lại miễn phí':'Vắng chủ không tốn phí'}</small></span><b class="jr-amt">${fmt(p.fund)} xu</b></summary>
-      <div class="jr-fund-actions">${draw}${invest}<div class="row wrap">${pause}</div></div></details>`;
+      <div class="jr-fund-actions">${move}${pause?`<div class="row wrap">${pause}</div>`:''}</div></details>`;
   }).join('')||`<p class="muted">Chưa có nơi làm việc nào. Bắt đầu ở một tiệm trong hẻm nhé.</p>`;
   const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️',life:'🌿',study:'📚',backdoor:'🚪',bank:'🏦',home:'🔑',fair:'🏮',karaoke:'🎤'};
   // A label that brings its own emoji ("🎁 Quà từ Phố Có Chuyện") shows it in place of the kind's.

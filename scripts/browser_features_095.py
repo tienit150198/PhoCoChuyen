@@ -623,11 +623,11 @@ async def s_wealth(w: Walk) -> None:
     w.need(shown == funds, f'fund rows {shown}, state {funds}')
     if own:
         w.need(amt.get('home', [''])[0].startswith(vi_num(own['value'])), f'home row {amt.get("home")} vs {own["value"]}')
-    # "Rút về ví": the most the place can give lands in the wallet.
+    # "Rút về ví" (F#259: a typed amount, a quarter of the most by default): the amount lands in the wallet.
     draw = p.locator('#sheet [data-action="wlDraw"]').first
     if await draw.count():
         amount, place = int(await draw.get_attribute('data-amount')), await draw.get_attribute('data-career')
-        w.need(amount == places[place]['withdraw_max'], f'"Rút về ví" offers {amount}, withdraw_max {places[place]["withdraw_max"]}')
+        w.need(1 <= amount <= places[place]['withdraw_max'], f'"Rút về ví" offers {amount}, withdraw_max {places[place]["withdraw_max"]}')
         w0 = J['wallet']
         await w.celebrate()
         await p.evaluate("document.querySelectorAll('dialog[open]:not(#sheet)').forEach(d=>d.close())")

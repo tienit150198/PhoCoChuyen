@@ -364,6 +364,16 @@ def withdraw_max(c: dict) -> int:
     return max(0, c['money'] - _unpaid(c) - RESERVE)
 
 
+def invest_max(s: dict) -> int:
+    """The most Góp vốn can put into a workplace fund: the cash in the wallet, then the bank account (0 while the
+    wallet is in debt). Never the credit card or the savings."""
+    j = s['journey']
+    if j['wallet'] < 0:
+        return 0
+    b = bk.get(s)
+    return j['wallet'] + (b['balance'] if b else 0)
+
+
 def _need_xp(level: int) -> int:
     return 60 * level * (level - 1)
 
@@ -819,14 +829,20 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
             _transfer(s, c, -amount, 'Rút tiền lời về ví', 'owner_draw')
             _wallet(j, amount, 'draw', f'Rút từ {place}', cid)
             j['stats']['withdrawn'] += amount
-            result['message'] = f'Đã rút {amount} xu từ {place} về ví.'
+            result['message'] = f'Đã rút {amount} xu từ {place} về ví. Quỹ còn {c["money"]} xu.'
         elif name == 'jr_invest':
+            # F#259 (08/10): put money back after drawing too much. The wallet first, then the bank account, like
+            # 🏪 Góp vốn quầy (quay._take); never into debt, never the credit card.
             amount = e.integer(p.get('amount'), 1, 10**6)
-            need(j['wallet'] >= amount, 'Ví không đủ để góp vốn số này.')
-            _transfer(s, c, amount, 'Góp vốn từ ví của bạn', 'owner_capital')
-            _wallet(j, -amount, 'invest', f'Góp vốn cho {place}', cid)
+            need(j['wallet'] >= 0, 'Ví đang nợ. Trả nợ trước rồi góp vốn nhé.')
+            b = bk.get(s)
+            need(invest_max(s) >= amount, 'Ví và tài khoản ngân hàng chưa đủ số này.' if b else 'Ví không đủ để góp vốn số này.')
+            from_bank = amount - min(j['wallet'], amount)
+            _transfer(s, c, amount, 'Góp vốn từ ví của bạn' if not from_bank else 'Góp vốn từ ví và tài khoản của bạn', 'owner_capital')
+            qy._take(s, amount, f'Góp vốn cho {place}', cid)
             j['stats']['invested'] += amount
-            result['message'] = f'Đã góp {amount} xu vào quỹ {place}.'
+            result['message'] = (f'Đã góp {amount} xu vào quỹ {place} ({from_bank} xu từ tài khoản ngân hàng). Quỹ thành {c["money"]} xu.'
+                                 if from_bank else f'Đã góp {amount} xu vào quỹ {place}. Quỹ thành {c["money"]} xu.')
         elif name == 'jr_pause':
             need(cid not in j['paused'], 'Nơi này đang tạm đóng rồi.')
             need(not _employed(cid), 'Nơi làm thuê không cần tạm đóng: không làm thì không tốn phí duy trì.')
@@ -959,7 +975,8 @@ def public(s: dict) -> dict:
         story=j['story'], gender=j['gender'], intro=j['intro'], chapter=j['chapter'], done=list(j['done']),
         finale=j['chapter'] > LAST,
         unlocked=list(j['unlocked']) + [cid for cid in aj.opened(s) if cid not in j['unlocked']] if j['story'] else list(s['careers']),
-        wallet=j['wallet'], debt=max(0, -j['wallet']), life_day=j['life_day'], living=living_cost(j),
+        wallet=j['wallet'], debt=max(0, -j['wallet']), invest_max=min(10**6, invest_max(s)) if j['story'] else 0,
+        life_day=j['life_day'], living=living_cost(j),
         places=places, titles=sorted(([tid, day] for tid, day in j['titles'].items()), key=lambda x: (-x[1], x[0])),
         equipped=j['equipped'], equipped_title=dict(id=eq['id'], name=eq['name'], emoji=eq['emoji']) if eq else None,
         worn=worn_view(j), wear_max=WEAR_MAX,

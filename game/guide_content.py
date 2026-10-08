@@ -589,7 +589,7 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                                          'bỏ.'}],
                  'prep': ['📦 Hạt, sữa, bột, bơ, trứng, ly giấy, túi, hộp bánh nhập ở [[Kho]] (thanh dưới), trả tiền '
                           'khi đặt.',
-                          '🚚 Chợ đầu mối (sữa, kem, bột, bơ, trứng, đường, hạnh nhân) rẻ, hay thiếu: đặt trước 13:00 '
+                          '🚚 Chợ đầu mối (sữa, kem, bột, bơ, trứng, đường, hạnh nhân, đào ngâm) rẻ, hay thiếu: đặt trước 13:00 '
                           'chiều nay có, sau thì sáng mai.',
                           '☕ Xưởng rang Đồi Mây bán hạt rẻ và thơm hơn: đặt trước 11:00 hạt tới chiều nay, đặt sau thì '
                           'sáng mai.',
@@ -603,7 +603,7 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                           '🧺 Bánh hôm qua: [[Rổ −50%]], [[Tặng bếp cơm]] hoặc [[Bỏ]]. Bông lan trứng muối chỉ bán '
                           'trong ngày.',
                           '🧁 Giữ tủ kính đầy bánh mới: sau mỗi order có khách mua lẻ, tủ trống là lỡ bán.',
-                          '⭐ Lên cấp mở thêm: cấp 2 hạt Decaf, hình lá dương xỉ, bông lan trứng muối; cấp 3 bạc xỉu, '
+                          '⭐ Lên cấp mở thêm: cấp 2 hạt Decaf, hình lá dương xỉ, bông lan trứng muối, bánh đào nướng; cấp 3 bạc xỉu, '
                           'sữa đặc, hình tulip.'],
                  'surprises': ['📋 Đoàn kiểm tra vệ sinh: đã vệ sinh máy thì được tem “Quầy sạch”; chưa thì phạt 30 xu, '
                                'phong bì phạt 60 xu.',
@@ -5536,18 +5536,19 @@ GROUPS = [{'id': 'start',
                          'thì rút tiền lời từ quỹ về ví.',
                          '1️⃣ Mở [[Hành trình]], bấm ô [[Ví của bạn]]. (Hoặc chạm số ngày, chọn ô Ví của bạn.)',
                          '2️⃣ Ở mục “Quỹ các nơi làm việc”, chạm tên nơi muốn rút để mở ra.',
-                         '3️⃣ Gõ số xu vào ô “Rút về ví”, hoặc bấm [[Tối đa]]. Rồi bấm [[Rút]]: tiền vào ví ngay.',
+                         '3️⃣ Chọn [[Rút về ví]], gõ số xu hoặc bấm 25%, 50%, [[Tất cả]]. Bấm nút Rút rồi xác nhận: tiền vào ví '
+                         'ngay, khung xác nhận ghi rõ quỹ còn lại bao nhiêu.',
                          '🔒 Quỹ luôn phải giữ lại 80 xu và đủ tiền các hóa đơn chưa trả. Rút được tối đa = quỹ − 80 − '
                          'hóa đơn chưa trả.',
                          '🧮 Ví dụ: quỹ 200 xu, hóa đơn chưa trả 30 xu. Rút được tối đa 200 − 80 − 30 = 90 xu.',
                          '⛔ Báo “Quỹ cần giữ 80 xu và đủ tiền hóa đơn chưa trả, nên chưa rút được”: quỹ còn mỏng. Làm '
                          'thêm việc ở nơi đó rồi quay lại rút.',
-                         '⚠️ Báo “Chỉ rút được tối đa … xu”: số bạn gõ lớn hơn mức cho phép. Bấm [[Tối đa]] để điền '
+                         '⚠️ Báo “Chỉ rút được tối đa … xu”: số bạn gõ lớn hơn mức cho phép. Bấm [[Tất cả]] để điền '
                          'đúng số.',
                          '✏️ Báo “Nhập số xu là số nguyên dương”: gõ số nguyên từ 1 trở lên, không có dấu chấm hay '
                          'phẩy.',
-                         '⬇️ Chiều ngược lại: gõ số vào ô “Góp vốn” rồi bấm [[Góp]] để đưa tiền từ ví vào quỹ, khi '
-                         'tiệm thiếu tiền nhập hàng.',
+                         '⬇️ Rút nhầm, hay tiệm thiếu tiền nhập hàng: chọn [[Góp vốn]] ngay cạnh, gõ số xu rồi xác nhận. Tiền '
+                         'lấy từ ví trước, thiếu mới lấy tài khoản ngân hàng.',
                          '💼 Nơi làm thuê (nhà thuốc, lớp học, văn phòng…) không cần rút: lương và tiền bo về thẳng ví '
                          'khi khép ca.',
                          '🏦 Tiền trong tài khoản ngân hàng: mở [[Ngân hàng]], gõ số xu, bấm [[Rút tiền]]. Chọn cây ATM '
@@ -6606,9 +6607,9 @@ QUICK = [{'id': 'q_goal',
  {'id': 'q_withdraw',
   'emoji': '🏧',
   'q': 'Rút tiền về ví thế nào?',
-  'a': ['👛 Chạm ô tiền ở góc trên để mở [[Tiền của bạn]]. Tiền trong quỹ tiệm: bấm [[Rút về ví]] ở nơi muốn rút.',
+  'a': ['👛 Chạm ô tiền ở góc trên để mở [[Tiền của bạn]]. Quỹ tiệm: chọn [[Rút về ví]], gõ số xu rồi xác nhận.',
         '🏦 Tiền trong ngân hàng: mở [[Ngân hàng]], gõ số xu rồi bấm [[Rút tiền]]. Cây ATM Ngân hàng Phố không mất phí.',
-        '🔒 Quỹ tiệm luôn giữ lại 80 xu và tiền hóa đơn chưa trả, nên không rút hết được.'],
+        '🔒 Quỹ tiệm luôn giữ lại 80 xu và tiền hóa đơn chưa trả. Rút nhầm thì bấm [[Góp vốn]] để bỏ lại vào quỹ.'],
   'go': {'action': 'money', 'label': 'Mở Tiền của bạn'}},
  {'id': 'q_salary',
   'emoji': '📚',

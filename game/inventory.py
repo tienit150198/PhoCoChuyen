@@ -251,7 +251,7 @@ SUPPLIERS = {
              note='Gói nước dùng, phô mai, bánh gạo, bò Mỹ nhập thẳng: rẻ hơn hẳn nhưng 1–2 ngày mới tới. Đặt sớm cho cả tuần.'),
     ],
     'cafe_bakery': [
-        _s(MARKET, items=['milk', 'oat', 'condensed', 'cream', 'flour', 'butter', 'egg', 'sugar', 'almond']),
+        _s(MARKET, items=['milk', 'oat', 'condensed', 'cream', 'flour', 'butter', 'egg', 'sugar', 'almond', 'peach']),
         PARTNER, EXPRESS,
         dict(id='roaster', name='Xưởng rang Đồi Mây', emoji='☕', kind='next', cutoff=None, at=(90, 120),
              day_run=(11 * 60, 14 * 60, 15 * 60),
