@@ -407,7 +407,7 @@ class HTTP(unittest.TestCase):
 class LargeGift(unittest.TestCase):
     """03/10: the owner gives one player 100k xu. The game pays up to MAX_COINS; the tool asks for --large above LARGE."""
     def test_caps(self):
-        self.assertEqual((sg.MAX_COINS, sg.LARGE), (100_000, 1000))
+        self.assertEqual((sg.MAX_COINS, sg.LARGE), (10**9, 1000))
 
     def test_the_tool_wants_large_above_1000(self):
         import subprocess, sys as _s, os as _o

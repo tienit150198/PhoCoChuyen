@@ -131,9 +131,17 @@ class AdminGiftHTTP(unittest.TestCase):
         self.assertEqual(self.give(1, 'rid-bounds-0003')[1]['status'], 'created')
         status, out = self.give(sg.MAX_COINS, 'rid-bounds-0004', large=True)
         self.assertEqual((status, out['status'], out['gift']['coins']), (200, 'created', sg.MAX_COINS))
-        self.assertEqual(out['gift']['text'], 'Ban quản lý phố tặng bạn 100.000 xu. Chơi vui nha! 💛')
+        self.assertEqual(out['gift']['text'], 'Ban quản lý phố tặng bạn 1.000.000.000 xu. Chơi vui nha! 💛')
         self.assertEqual(out['gift']['title'], 'Quà từ Phố Có Chuyện')
         self.store.transaction(lambda db: db.execute('DELETE FROM system_gifts'))  # leave the other tests a clean table
+
+    def test_a_big_gift_has_no_cap_but_the_wallet(self):
+        """Owner 08/10 "cho admin có thể tặng tiền xu k giới hạn": 5 triệu xu goes through (with the typo check) and is paid."""
+        before = self.boot(self.other)['state']['journey']['wallet']
+        status, out = self.give(5_000_000, 'rid-big-0000001', user='be_nam', large=True)
+        self.assertEqual((status, out['status'], out['gift']['coins']), (200, 'created', 5_000_000))
+        self.assertEqual(self.boot(self.other)['state']['journey']['wallet'], before + 5_000_000)
+        self.store.transaction(lambda db: db.execute('DELETE FROM system_gifts'))
 
     def test_idempotent_paid_once_and_recorded(self):
         before = self.boot(self.other)['state']['journey']['wallet']
