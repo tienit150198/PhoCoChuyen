@@ -1206,6 +1206,10 @@ def _home_view(s: dict, h: dict, x: dict, day: int, ready: int) -> dict:
         emoji, who = tenant(L)
         nd = next_rent_day(x, day)
         out['let'] = dict(L, emoji=emoji, name=who, next=nd, next_amount=_rent_due(L, nd))
+        from . import tenancy   # 🏠 closeness with this tenant, once a moment happened (game/tenancy.py)
+        close = tenancy.closeness(s, x)
+        if close is not None:
+            out['let']['close'] = close
     if x is not h['own']:
         back = h['rent']['deposit'] if h['rent'] else 0
         out['move'] = dict(ok=not L and ready + back >= MOVE_FEE, fee=MOVE_FEE,

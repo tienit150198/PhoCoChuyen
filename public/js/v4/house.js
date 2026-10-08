@@ -405,7 +405,7 @@ function propCard(v,x){
   const grow=x.value-x.price,L=x.let,mv=x.move||{},sl=x.sell||{};
   const checking=!rentalStatusReady(),listing=playerListing(x.id);
   const occupied=listing?.status==='leased';
-  const status=L?`<p class="hs-tag let">${L.emoji} Cho thuê · ${esc(L.name)}</p>`:listing?`<p class="hs-tag let">${occupied?'🧾 Đang cho người chơi thuê':'📣 Đang đăng cho người chơi thuê'}</p>`:x.rental_ad?'<p class="hs-tag idle">📣 Đang tìm khách NPC</p>':checking?`<p class="hs-tag idle">${S.rentals?.error?'Chưa kiểm tra được trạng thái cho thuê.':'Đang kiểm tra trạng thái cho thuê…'}</p>`:'<p class="hs-tag idle">🔑 Đang để trống</p>';
+  const status=L?`<p class="hs-tag let">${L.emoji} Cho thuê · ${esc(L.name)}${L.close!=null?` · 💛 Thân thiết ${L.close}/100`:''}</p>`:listing?`<p class="hs-tag let">${occupied?'🧾 Đang cho người chơi thuê':'📣 Đang đăng cho người chơi thuê'}</p>`:x.rental_ad?'<p class="hs-tag idle">📣 Đang tìm khách NPC</p>':checking?`<p class="hs-tag idle">${S.rentals?.error?'Chưa kiểm tra được trạng thái cho thuê.':'Đang kiểm tra trạng thái cho thuê…'}</p>`:'<p class="hs-tag idle">🔑 Đang để trống</p>';
   const fee=x.care?` Phí bảo trì ${xu(x.care)}/tháng.`:'';
   const rent=L?`<p class="bk-hint">Tiền thuê ${xu(L.rent)}/tháng · kỳ tới ${onDay(L.next)}${L.next_amount!==L.rent?` (${xu(L.next_amount)} cho số ngày đã ở)`:''}${L.owed?` · đang khất ${xu(L.owed)}`:''}.${fee}</p>`
     :`<p class="bk-hint">${x.care?`Để trống vẫn tốn phí bảo trì ${xu(x.care)}/tháng.`:'Để trống không tốn gì.'} Cho thuê được khoảng ${xu(x.let_rent)}/tháng.</p>`;

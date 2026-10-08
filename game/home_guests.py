@@ -177,6 +177,8 @@ def forget(db, sid):
     rows = db.execute('DELETE FROM home_guest_invites WHERE owner=? OR guest=? RETURNING owner,guest', (sid, sid)).fetchall()
     if rows:
         _notify(db, *{r[k] for r in rows for k in ('owner', 'guest')})
+    from . import home_coop   # 🎨 Cho trang trí: its grants and log
+    home_coop.forget(db, sid)
 
 
 def command_commit(db, sid, before, after, action):
@@ -188,6 +190,8 @@ def command_commit(db, sid, before, after, action):
     identity = lambda home: (home['id'], home['kind']) if home else None
     if action.startswith('jr_home_') or identity(previous) != identity(current):
         invalidate(db, sid)
+        from . import home_coop   # 🎨 Cho trang trí ends with the home it was given for
+        home_coop.command_commit(db, sid, before, after, action)
 
 
 def _actor(store, token):
@@ -214,8 +218,10 @@ def _list(db, sid):
                 homes.append(dict(**other, home=item['home'], kind=r['kind']))
     friends = [dict(code=r['code'], name=mr._clean_name(r['display']))
                for r in db.execute(FRIENDS_SQL, (sid, social.pid_of(sid))).fetchall()]
+    from . import home_coop   # 🎨 Cho trang trí (an older page ignores the key)
     return dict(own_home=dict(**_person(db, sid), home=_home(own)) if own else None,
-                friends=friends, incoming=incoming, outgoing=outgoing, active=active, homes=homes)
+                friends=friends, incoming=incoming, outgoing=outgoing, active=active, homes=homes,
+                deco=home_coop.listing(db, sid))
 
 
 def _projection(db, row, access, code):
@@ -245,10 +251,13 @@ def _projection(db, row, access, code):
 
 
 def get(store, token, state, sub, query):
+    from . import home_coop
+    if isinstance(sub, str) and sub.startswith('deco/'):   # 🎨 Cho trang trí: deco/view, deco/log
+        return home_coop.get(store, token, state, sub[5:], query)
     sid = _actor(store, token)
     from . import friends
     friends.ensure_codes(store, sid)
-    store.transaction(lambda db: invalidate(db, sid))
+    store.transaction(lambda db: (invalidate(db, sid), home_coop._sweep(db, sid)))
     with store.connect() as db:
         if sub in ('', None):
             return _list(db, sid)
@@ -261,6 +270,9 @@ def get(store, token, state, sub, query):
 
 
 def post(store, token, state, sub, data):
+    if isinstance(sub, str) and sub.startswith('deco/'):   # 🎨 Cho trang trí: grant, revoke, leave, act, undo
+        from . import home_coop
+        return home_coop.post(store, token, state, sub[5:], data)
     sid = _actor(store, token)
     need(isinstance(data, dict), 'Yêu cầu không hợp lệ.')
     need(sub in ('invite', 'answer', 'revoke', 'leave'), 'Không tìm thấy mục này.', 'not_found', 404)

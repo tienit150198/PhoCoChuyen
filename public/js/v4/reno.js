@@ -12,7 +12,11 @@
  * 🎨 Màu (bảng màu): a selected piece opens the palette picker (v4/palette.js); its colour is state.colors.deco[uid]
  * (jr_wd_deco), kept by the piece in the bag and in the next home; drawn wherever the piece is (room, photo, a table).
  * 💞 A home shared with the spouse: their pieces come from GET /api/deco/mate (game/deco_mate.py) and are drawn with
- * these (room and photo), read-only: never selected or dragged, not in the bag, not in Ấm cúng, Cất hết or undo. */
+ * these (room and photo), read-only: never selected or dragged, not in the bag, not in Ấm cúng, Cất hết or undo.
+ * 🎨 Trang trí giúp (game/home_coop.py, F#257): a friend the owner allowed opens the owner's home here in coop mode
+ * (openCoopReno): the owner's bag only, place / move / flip / turn / reorder / put back / undo, each one a POST to
+ * /api/home-guests/deco/act that the server checks and logs. No shop, paints, colours, selling or Cất hết. The owner
+ * sees the friends' latest changes beside the room, each with its own Hoàn tác. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {Sound} from '../audio.js';
 import * as A from './deco-art.js';
@@ -25,10 +29,15 @@ import {morph,railScroll,railRestore} from './home-morph.js';
 
 const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',busy:false,flash:null,
   undo:[],undoKey:'',press:null,drag:null,dragEnd:0,resetStrip:false,toTop:false,pop:'',cheer:false,photo:null,listening:false,lastLv:-1,
-  try:null,nudge:null,tryTint:null,mate:null,mateState:null,mateKey:'',mateTimer:0,mateSeq:0};
+  try:null,nudge:null,tryTint:null,mate:null,mateState:null,mateKey:'',mateTimer:0,mateSeq:0,coop:false,coopLog:null,coopSeq:0};
 const guest=guestSession(S);
 let openSeq=0;
-const readGuest=code=>S.env.api.json(`/api/home-guests/view?code=${encodeURIComponent(code)}`);
+const readGuest=code=>S.env.api.json(`/api/home-guests/${S.coop?'deco/':''}view?code=${encodeURIComponent(code)}`);
+/** 🎨 The only commands a friend decorating a home sends, as home_coop actions. */
+const COOP={jr_deco_put:'put',jr_deco_pick:'pick',jr_deco_layout:'layout'};
+const VISIT_OPS=new Set(['scroll','close','back','room','guests','hwEmote','hwReply']);
+const COOP_OPS=new Set([...VISIT_OPS,'floor','edit','done','drawer','cat','hold','unhold','move','flip','pin','face','zup','zdown','pick','undo','tipOk']);
+const post=(url,body)=>S.env.api.json(url,{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':S.env.api.csrf},body:JSON.stringify(body)});
 const U=A.U;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
@@ -108,7 +117,7 @@ function dialog(){
   d.addEventListener('pointerup',onUp);
   d.addEventListener('pointercancel',onCancel);
   d.addEventListener('cancel',e=>{if(S.held||S.sel){e.preventDefault();S.held=null;S.sel='';render();}});
-  d.addEventListener('close',()=>{openSeq++;S.flash=null;S.held=null;S.sel='';S.photo=null;S.drag=null;S.press=null;S.try=null;clearTimeout(S.mateTimer);S.mateTimer=0;S.mateSeq++;floatGhost(null);catsStop();hw().reset();guest.close();});
+  d.addEventListener('close',()=>{openSeq++;S.flash=null;S.held=null;S.sel='';S.photo=null;S.drag=null;S.press=null;S.try=null;clearTimeout(S.mateTimer);S.mateTimer=0;S.mateSeq++;floatGhost(null);catsStop();hw().reset();S.coop=false;S.coopSeq++;guest.close();});
   S.dlg=d;return d;
 }
 
@@ -121,7 +130,7 @@ export async function openReno(env,mode,guestCode=''){
     env.api.addEventListener('state',()=>{const j=S.env.api.state?.journey,sp=S.env.api.state?.marriage?.spouse;const key=JSON.stringify([j?.deco,j?.reno,j?.wallet,S.env.api.state?.colors?.deco,sp]);if(key===seen)return;seen=key;
       if(S.dlg?.open)refreshMate();
       if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();});
-    live.on('home_changed',refreshMate);
+    live.on('home_changed',()=>{refreshMate();loadCoopLog();});
     live.on('home_guests_changed',refreshMate);
     live.on('welcome',refreshMate);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshMate();});
@@ -132,17 +141,41 @@ export async function openReno(env,mode,guestCode=''){
   clearTimeout(S.mateTimer);S.mateSeq++;hw().reset();
   if(guestCode){
     clearTimeout(S.nudge?.t);S.nudge=null;
+    S.coop=mode==='coop';
     if(!await guest.open(guestCode,readGuest)||seq!==openSeq)return;
-  }else guest.close();
-  S.tab=mode==='fix'&&R()?'fix':'deco';S.edit=mode==='decor';S.held=null;S.sel='';S.flash=null;S.photo=null;S.cat='';S.try=null;
+    if(S.coop){S.undo=[];S.undoKey='';S.drawer='bag';}
+  }else{S.coop=false;guest.close();}
+  S.tab=mode==='fix'&&R()?'fix':'deco';S.edit=mode==='decor'||S.coop;S.held=null;S.sel='';S.flash=null;S.photo=null;S.cat='';S.try=null;
   const v=V();
   if(v){if(!v.rooms.some(r=>r.id===S.room))S.room=v.rooms[0]?.id||'';if(!S.remote)S.drawer=v.bag.length?'bag':'shop';}
   if(!d.open){d.showModal();d.scrollTop=0;S.toTop=true;}
   hw().reopen();
   loadMate();   // its first lines run now: a room that is not shared any more drops the spouse's pieces before drawing
   render();
+  if(!S.remote)loadCoopLog();
 }
 export const openGuestReno=(env,code)=>openReno(env,'visit',code);
+/** 🎨 A friend's home that its owner lets you decorate (home_coop): opens straight into decorating. */
+export const openCoopReno=(env,code)=>openReno(env,'coop',code);
+/** 🎨 Your friends' latest changes to your home (GET /api/home-guests/deco/log), for the card beside the room. */
+async function loadCoopLog(){
+  if(S.remote||!S.dlg?.open||!S.env)return;
+  const seq=++S.coopSeq;
+  if(V()?.place?.where!=='own'){if(S.coopLog){S.coopLog=null;render();}return;}
+  let d;try{d=await S.env.api.json('/api/home-guests/deco/log');}catch{return;}
+  if(seq!==S.coopSeq||S.remote||!S.dlg?.open)return;
+  const changed=JSON.stringify(S.coopLog)!==JSON.stringify(d);S.coopLog=d;
+  if(changed&&!S.busy&&!S.drag&&!S.press)render();
+}
+/** 🎨 The owner puts back what one friend change moved (POST deco/undo), then reads the home again. */
+async function coopUndo(id){
+  if(!Number.isInteger(id)||id<=0||S.remote)return;
+  S.busy=true;paintBusy();
+  try{const r=await post('/api/home-guests/deco/undo',{id});if(r.deco)S.coopLog=r.deco;S.flash={text:r.message||'Đã hoàn tác.',kind:'good'};sfx('pop');
+    try{await S.env.api.refresh();}catch{/* the next command catches up */}}
+  catch(e){S.flash={text:e.message||'Chưa hoàn tác được. Thử lại nhé.',kind:'bad'};sfx('error');}
+  finally{S.busy=false;render();}
+}
 /** 💞 The spouse's pieces when this is the home both live in (each time the room opens, and after a move). */
 function refreshMate(){
   if(!S.dlg?.open)return;
@@ -171,7 +204,7 @@ async function loadMate(){
 }
 
 async function send(action,payload={},opts={}){
-  if(S.remote)return null;
+  if(S.remote)return S.coop&&COOP[action]?coopSend(action,payload,opts):null;
   const {api}=S.env;S.busy=true;paintBusy();
   try{
     const r=await api.command(action,payload);
@@ -182,6 +215,21 @@ async function send(action,payload={},opts={}){
     if(!e.quiet){S.flash={text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};if(!opts.silent)sfx('error');}
     return null;
   }finally{S.busy=false;render();}
+}
+/** 🎨 A friend's change: the server checks the permission, applies it to the owner's save and logs it; the view that
+ * comes back is the owner's room as it is now. A permission that ended closes the room. */
+async function coopSend(action,payload,opts){
+  const code=guest.code;S.busy=true;paintBusy();
+  try{
+    const r=await post('/api/home-guests/deco/act',{...payload,code,action:COOP[action]});
+    if(r.view)guest.adopt(code,r.view);
+    S.flash=r.duplicate&&!opts.loud?S.flash:{text:r.message||'',kind:'good'};
+    return r;
+  }catch(e){
+    if([401,403,404,410].includes(e.status)){S.busy=false;S.dlg?.close();S.env.toast?.(e.message||'Quyền trang trí đã kết thúc.','hint');return null;}
+    S.flash={text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};if(!opts.silent)sfx('error');
+    return null;
+  }finally{S.busy=false;if(S.dlg?.open)render();}
 }
 const ask=(title,msg,label,cost)=>S.env.confirmAction(title,msg,label,cost?{cost,pocket:POCKET}:undefined);
 /** 🚶 the character walking around the room when not decorating (v4/home-walk.js), made on first use. */
@@ -477,7 +525,8 @@ function catsTick(){
 
 /* ---- clicks ---- */
 async function onClick(op,data){
-  if(S.remote&&!['scroll','close','back','room','guests','hwEmote','hwReply'].includes(op))return;
+  if(S.remote&&!(S.coop?COOP_OPS:VISIT_OPS).has(op))return;
+  if(S.coop&&((op==='drawer'&&data.d!=='bag')||(op==='hold'&&data.src!=='bag')))return;   // the owner's bag only
   const v=V();
   switch(op){
     case'scroll':{const rail=S.dlg.querySelector(`[data-dc-rail="${data.rail}"]`);rail?.scrollBy({left:(Number(data.dir)||1)*Math.max(120,rail.clientWidth*.8),behavior:'smooth'});return;}
@@ -521,6 +570,7 @@ async function onClick(op,data){
         const prev=Object.fromEntries(v.items.map(p=>[p.id,qOf(p)]));
         const r=await send('jr_deco_pick',{uid:'all'});if(r){pushUndo(prev);S.sel='';sfx('click');render();}}return;}
     case'undo':return undo();
+    case'coopUndo':return coopUndo(Number(data.id));
     case'skin':return pickSkin(data.part,data.skin);
     case'photo':return takePhoto();
     case'photoSave':{if(!S.photo)return;const career=S.env.api.state?.current||S.env.api.state?.focus;
@@ -840,11 +890,13 @@ function decoPage(v){
   const {svg}=roomMarkup(rm,{edit:S.edit});
   const wide=!!window.matchMedia?.('(min-width:720px)').matches;   // a wide sheet: the drawer beside the room, so a card is always in reach
   const tip=S.edit&&!tipSeen()?`<div class="dc-tip" role="note"><span aria-hidden="true">👆</span><p><b>Giữ một món rồi kéo đi đâu cũng được</b><small>Đồ nhỏ thả lên bàn, kệ, giường sẽ đứng trên đó. Chạm món đồ để lật, đổi phòng hoặc cất đi.</small></p>${btn('Hiểu rồi','tipOk',{},'ghost small')}</div>`:'';
-  const bar=S.remote?`<div class="dc-actions">${btn('← Bạn bè & nhà','guests',{},'primary')}</div>`:S.edit
+  const bar=S.coop?(S.edit?`<div class="dc-actions">${btn('↶ Hoàn tác','undo',{},'ghost',S.undo.length?'':' disabled')}${btn('✓ Xong','done',{},'primary')}</div>`
+      :`<div class="dc-actions">${btn('✏️ Trang trí giúp','edit',{},'primary')}${btn('← Bạn bè & nhà','guests',{},'ghost')}</div>`)
+    :S.remote?`<div class="dc-actions">${btn('← Bạn bè & nhà','guests',{},'primary')}</div>`:S.edit
     ?`<div class="dc-actions">${btn('↶ Hoàn tác','undo',{},'ghost',S.undo.length?'':' disabled')}${btn('🎒 Cất hết','pickAll',{},'ghost',v.items.length?'':' disabled')}${btn('✓ Xong','done',{},'primary')}</div>`
     :`<div class="dc-actions">${btn(v.items.length?'✏️ Bày trí phòng':'✏️ Bắt đầu bày trí','edit',{},'primary')}${btn('📸 Chụp phòng','photo',{},'ghost')}</div>`;
   const stage=`<div class="dc-stage">${roomTabs(v)}<div class="dc-roomwrap">${svg}${S.edit?'':`${hw().hint(use,rm)}${hw().sayHTML()}`}</div>${hw().socialPanel()}${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(use,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
-  const side=S.remote?`<section class="bk-card"><h3>🏡 Nhà ${esc(S.remote.owner.name)}</h3><p>${S.remote.access?.kind==='stay'?'Bạn ở chung tại đây, có thể vào khi chủ nhà vắng mặt.':'Bạn đang ghé chơi theo lời mời.'}</p><p class="bk-hint">Chạm sàn để đi lại, gặp bạn trong phòng và giao lưu.</p></section>`:`${relaxCard(use,rm)}${S.edit&&wide?drawer(v):''}${cozyCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}`;
+  const side=S.coop?`${coopCard()}${S.edit&&wide?drawer(v):''}`:S.remote?`<section class="bk-card"><h3>🏡 Nhà ${esc(S.remote.owner.name)}</h3><p>${S.remote.access?.kind==='stay'?'Bạn ở chung tại đây, có thể vào khi chủ nhà vắng mặt.':'Bạn đang ghé chơi theo lời mời.'}</p><p class="bk-hint">Chạm sàn để đi lại, gặp bạn trong phòng và giao lưu.</p></section>`:`${relaxCard(use,rm)}${S.edit&&wide?drawer(v):''}${cozyCard(v)}${coopOwnerCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}`;
   return `<div class="dc-grid">${stage}<div class="dc-side">${side}</div></div>`;
 }
 function scrollRail(key,html){
@@ -881,11 +933,12 @@ function heldBar(v){
 /** The selected piece's buttons (one string each: easy to add one). */
 function toolButtons(v,p,it){
   const tb=(label,op,tip,cls='')=>btn(label,op,{uid:p.id},`ghost small${cls}`,` title="${esc(tip)}" aria-label="${esc(tip)}"`);
-  const pin=isPinned(p.id),layered=it.spot==='wall'||it.spot==='rug'||!!p.on,out=[tb(pin?'📌 Đã ghim':'📌 Ghim','pin',pin?'Bỏ ghim để kéo được':'Ghim: không kéo nhầm'),tb('⇋ Lật','flip','Lật ngược'),tb('🎨 Màu','tint','Đổi màu')];
+  const pin=isPinned(p.id),layered=it.spot==='wall'||it.spot==='rug'||!!p.on,out=[tb(pin?'📌 Đã ghim':'📌 Ghim','pin',pin?'Bỏ ghim để kéo được':'Ghim: không kéo nhầm'),tb('⇋ Lật','flip','Lật ngược'),...(S.coop?[]:[tb('🎨 Màu','tint','Đổi màu')])];
   if((CD().facing||[]).includes(p.k))out.unshift(tb(`↻ Xoay hướng · ${p.face==='back'?'Mặt sau':'Mặt trước'}`,'face',`Xoay hướng sang ${p.face==='back'?'mặt trước':'mặt sau'} (R)`));
   if(layered)out.push(tb('⬆ Lên','zup','Đưa lên trên'),tb('⬇ Xuống','zdown','Đưa xuống dưới'));
   if(v.rooms.filter(r=>it.rooms.includes(r.type)).length>1)out.push(tb('🚪 Đổi phòng','move','Sang phòng khác'));
-  out.push(tb('🎒 Cất túi','pick','Thu hồi vào túi'),tb(`💰 Bán · ${xu(it.sell)}`,'sell',`Bán lại · ${xu(it.sell)}`,' danger'));
+  out.push(tb('🎒 Cất túi','pick','Thu hồi vào túi'));
+  if(!S.coop)out.push(tb(`💰 Bán · ${xu(it.sell)}`,'sell',`Bán lại · ${xu(it.sell)}`,' danger'));
   return out;
 }
 function tools(v){
@@ -903,7 +956,8 @@ function drawer(v){
     list.forEach(x=>cats.add(x.it.cat));
     const shown=list.filter(x=>!S.cat||x.it.cat===S.cat).sort((a,b)=>(here(b.it)-here(a.it))||(fits(b.it)-fits(a.it))||a.it.name.localeCompare(b.it.name,'vi'));
     cards=shown.map(({it,n})=>card(it,'bag',`${n>1?`<i class="dc-n">×${n}</i>`:''}`,fits(it)?`Ấm cúng +${it.cozy}`:'Không hợp chỗ này',!fits(it))).join('');
-    if(!list.length)cards=`<div class="dc-empty"><p>Túi đồ trống. Ghé cửa hàng chọn món đầu tiên nhé!</p>${btn('🛒 Cửa hàng','drawer',{d:'shop'},'primary small')}</div>`;
+    if(!list.length)cards=S.coop?'<div class="dc-empty"><p>Túi đồ của chủ nhà đang trống. Dời những món đã bày nhé!</p></div>'
+      :`<div class="dc-empty"><p>Túi đồ trống. Ghé cửa hàng chọn món đầu tiên nhé!</p>${btn('🛒 Cửa hàng','drawer',{d:'shop'},'primary small')}</div>`;
   }else{
     const have=new Set([...v.items.map(i=>i.k),...v.bag.map(b=>b.k)]);
     const list=C.items.filter(it=>fits(it)&&!it.uq);list.forEach(it=>cats.add(it.cat));   // 🔨 a painting won at auction is never sold
@@ -912,8 +966,8 @@ function drawer(v){
   }
   const chips=S.drawer==='skin'?[]:[['','Tất cả'],...C.cats.filter(c=>cats.has(c.id)).map(c=>[c.id,`${c.emoji} ${c.name}`])];
   return `<section class="dc-drawer" aria-label="Đồ đạc">
-    <div class="dc-drawer-top"><div class="segmented dc-seg" role="tablist">${[['bag',`🎒 Túi · ${v.bag.length}`],['shop','🛒 Cửa hàng'],['skin','🎨 Tường & sàn']].map(([id,l])=>`<button type="button" role="tab" aria-selected="${S.drawer===id}" class="${S.drawer===id?'active':''}" data-dc="drawer" data-d="${id}">${l}</button>`).join('')}</div>
-    <span class="dc-money" title="Tài khoản + ví">💰 ${xu(v.ready)}</span></div>
+    <div class="dc-drawer-top"><div class="segmented dc-seg" role="tablist">${(S.coop?[['bag',`🎒 Túi chủ nhà · ${v.bag.length}`]]:[['bag',`🎒 Túi · ${v.bag.length}`],['shop','🛒 Cửa hàng'],['skin','🎨 Tường & sàn']]).map(([id,l])=>`<button type="button" role="tab" aria-selected="${S.drawer===id}" class="${S.drawer===id?'active':''}" data-dc="drawer" data-d="${id}">${l}</button>`).join('')}</div>
+    ${S.coop?'':`<span class="dc-money" title="Tài khoản + ví">💰 ${xu(v.ready)}</span>`}</div>
     ${chips.length>2?scrollRail('cats',`<div class="dc-cats" data-dc-rail="cats">${chips.map(([id,l])=>`<button type="button" class="dc-catchip${S.cat===id?' on':''}" data-dc="cat" data-cat="${id}" aria-pressed="${S.cat===id}">${l}</button>`).join('')}</div>`):''}
     ${S.drawer==='skin'?cards:scrollRail('items',`<div class="dc-strip" data-dc-rail="items" role="list">${cards}</div>`)}</section>`;
 }
@@ -970,6 +1024,25 @@ function relaxCard(v,rm){
   const acts=(v.relax||[]).filter(a=>a.room===rm.id);if(!acts.length)return '';
   const row=a=>`<li>${btn(`${a.emoji} ${esc(a.name)}`,'relax',{act:a.id},a.ok?'primary':'ghost',a.ok?'':' disabled')}<small>${a.done?'✓ Hôm nay rồi':a.ok?`😊 Tinh thần +${a.spirit}`:esc(a.why)}</small></li>`;
   return `<section class="bk-card dc-relax"><h3>${rm.type==='pool'||rm.type==='infinity'?'🏖️ Thư giãn bên hồ':'🛁 Thư giãn trong nhà tắm'}</h3><ul>${acts.map(row).join('')}</ul><p class="bk-hint">Miễn phí, mỗi ngày một lần.</p></section>`;
+}
+/** 🎨 Decorating a friend's home: whose things these are and that the owner sees (and may undo) every change. */
+const until=t=>t?new Date(t*1000).toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'}):'';
+function coopCard(){
+  const R0=S.remote,c=R0.coop||{},log=(c.log||[]).slice(0,6);
+  return `<section class="bk-card dc-coop"><h3>🎨 Trang trí giúp nhà ${esc(R0.owner.name||'')}</h3>
+    <p>Bày bằng đồ trong túi của chủ nhà: không mua, không bán, đồ và tiền không đổi chủ.</p>
+    <p class="bk-hint">Mỗi thay đổi đều được ghi lại, chủ nhà xem và hoàn tác được.</p>
+    ${c.expires_at?`<p class="bk-hint">Quyền trang trí đến ${esc(until(c.expires_at))}.</p>`:''}
+    ${log.length?`<h4>Thay đổi gần đây</h4><ul class="dc-coop-log">${log.map(r=>`<li><p><b>${esc(r.name)}</b> <span>${esc(r.text)}</span></p>${r.undone?'<small>Đã hoàn tác</small>':''}</li>`).join('')}</ul>`:''}</section>`;
+}
+/** 🎨 In your own home: who may decorate it and their latest changes, each with Hoàn tác. */
+function coopOwnerCard(v){
+  const d=S.coopLog;if(!d||v.place.where!=='own')return '';
+  const log=(d.log||[]).slice(0,6),mine=d.mine||[];if(!log.length&&!mine.length)return '';
+  return `<section class="bk-card dc-coop"><h3>🎨 Bạn bè trang trí giúp</h3>
+    ${mine.length?`<p>Đang cho ${mine.map(m=>`<b>${esc(m.name)}</b>`).join(', ')} trang trí nhà bằng đồ trong túi của bạn.</p>`:''}
+    ${log.length?`<ul class="dc-coop-log">${log.map(r=>`<li><p><b>${esc(r.name)}</b> <span>${esc(r.text)}</span></p>${r.undone?'<small>Đã hoàn tác</small>':r.undo?btn('↶ Hoàn tác','coopUndo',{id:r.id},'ghost small'):''}</li>`).join('')}</ul>`:'<p class="bk-hint">Chưa có thay đổi nào.</p>'}
+    <div class="dc-actions">${btn('Quản lý quyền trang trí','guests',{},'ghost small')}</div></section>`;
 }
 function guestCard(v){
   const g=v.guest;if(!g)return '';

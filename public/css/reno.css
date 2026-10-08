@@ -293,3 +293,6 @@
 /* 🏰 a villa's floors (v4/reno.js floorTabs) */
 .dc-floors{display:flex;gap:6px;margin:0 2px 6px}
 .dc-floors button{flex:1;min-height:36px}
+/* 🎨 Trang trí giúp (game/home_coop.py): the friends' changes beside the room */
+.dc-coop h4{margin:12px 0 4px}.dc-coop-log{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}.dc-coop-log li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:6px;border-top:1px dashed var(--line,#e5d8c5)}.dc-coop-log p{margin:0;line-height:1.4;min-width:0}.dc-coop-log small{color:var(--muted,#746453);flex:none}.dc-coop-log .btn{flex:none}
+.dc-coop .dc-actions{margin-top:10px}
