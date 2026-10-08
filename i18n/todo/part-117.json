@@ -1,21 +1,5 @@
 [
  {
-  "vi": "Giao đúng sở trường (ô xanh): nhanh và ít lỗi.",
-  "en": ""
- },
- {
-  "vi": "Việc trả về có ⚠️: bấm ↩️ để làm lại, được thêm điểm.",
-  "en": ""
- },
- {
-  "vi": "Việc ổn mà trả về: mất thời gian, đội buồn.",
-  "en": ""
- },
- {
-  "vi": "Thưởng = 2 xu × điểm ⭐ (có trần).",
-  "en": ""
- },
- {
   "vi": "Ngày tốt!",
   "en": ""
  },
@@ -1797,6 +1781,22 @@
  },
  {
   "vi": "Khóa phiên lạ khi được cảnh báo để chặn vụ hack, không tốn xu.",
+  "en": ""
+ },
+ {
+  "vi": "Bình yên",
+  "en": ""
+ },
+ {
+  "vi": "Không có chuyện gì cả.",
+  "en": ""
+ },
+ {
+  "vi": "Công ty đóng",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đang dùng",
   "en": ""
  }
 ]

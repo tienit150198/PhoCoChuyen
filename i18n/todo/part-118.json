@@ -1,21 +1,5 @@
 [
  {
-  "vi": "Bình yên",
-  "en": ""
- },
- {
-  "vi": "Không có chuyện gì cả.",
-  "en": ""
- },
- {
-  "vi": "Công ty đóng",
-  "en": ""
- },
- {
-  "vi": "✓ Đang dùng",
-  "en": ""
- },
- {
   "vi": "Đổi sang gói này",
   "en": ""
  },
@@ -1572,11 +1556,7 @@
   "en": ""
  },
  {
-  "vi": "Rút về ví hay góp vốn",
-  "en": ""
- },
- {
-  "vi": "👛 Rút về ví",
+  "vi": "Chưa rút được: quỹ phải giữ 80 xu dự phòng và đủ tiền hóa đơn chưa trả.",
   "en": ""
  },
  {
@@ -1584,23 +1564,11 @@
   "en": ""
  },
  {
-  "vi": "Chưa rút được: quỹ phải giữ 80 xu dự phòng và đủ tiền hóa đơn chưa trả.",
-  "en": ""
- },
- {
   "vi": "Ví và tài khoản ngân hàng đang trống, chưa có tiền để góp.",
   "en": ""
  },
  {
-  "vi": "Số xu rút về ví",
-  "en": ""
- },
- {
   "vi": "Số xu góp vốn",
-  "en": ""
- },
- {
-  "vi": "Quỹ còn lại",
   "en": ""
  },
  {
@@ -1797,6 +1765,38 @@
  },
  {
   "vi": "Canh măng này ai nấu mà ngọt nước dữ vậy!",
+  "en": ""
+ },
+ {
+  "vi": "Loa to quá, nhưng mà vui! Quẩy lên mọi người ơi 🔊",
+  "en": ""
+ },
+ {
+  "vi": "Xôi gấc đỏ au, ăn lấy may cả năm nha!",
+  "en": ""
+ },
+ {
+  "vi": "Bia thì ít thôi nha, còn chạy xe về đó 🛵",
+  "en": ""
+ },
+ {
+  "vi": "Đèn sân khấu đẹp ghê, như đi xem ca nhạc vậy!",
+  "en": ""
+ },
+ {
+  "vi": "Trúc xinh trúc mọc đầu đình, em xinh em đứng một mình cũng xinh 🎶",
+  "en": ""
+ },
+ {
+  "vi": "Tùng dinh dinh tùng tùng tùng dinh dinh! 🥁",
+  "en": ""
+ },
+ {
+  "vi": "Cô dâu xinh xỉu up xỉu down luôn á 😍",
+  "en": ""
+ },
+ {
+  "vi": "Chú rể hôm nay đẹp trai mười điểm không có nhưng 🤩",
   "en": ""
  }
 ]

@@ -1,21 +1,5 @@
 [
  {
-  "vi": "Chỉ đánh giá dịch vụ đã được phục vụ và thanh toán.",
-  "en": ""
- },
- {
-  "vi": "Không thể gửi nội dung cho đơn này.",
-  "en": ""
- },
- {
-  "vi": "Mỗi đơn chỉ có một đánh giá xác thực.",
-  "en": ""
- },
- {
-  "vi": "Chưa có đánh giá để trả lời.",
-  "en": ""
- },
- {
   "vi": "Bạn đã trả lời đánh giá này.",
   "en": ""
  },
@@ -1797,6 +1781,22 @@
  },
  {
   "vi": "Mốc cuối",
+  "en": ""
+ },
+ {
+  "vi": "Nơi làm",
+  "en": ""
+ },
+ {
+  "vi": "Bước hướng dẫn",
+  "en": ""
+ },
+ {
+  "vi": "Nút bấm cuối",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có người mới được đo.",
   "en": ""
  }
 ]

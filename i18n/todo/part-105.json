@@ -1,21 +1,5 @@
 [
  {
-  "vi": "🎀 đã buộc",
-  "en": ""
- },
- {
-  "vi": "túi chưa buộc",
-  "en": ""
- },
- {
-  "vi": "🗑️ Đổ tô đang làm",
-  "en": ""
- },
- {
-  "vi": "Đổ tô đang làm, trụng lại tô khác?",
-  "en": ""
- },
- {
   "vi": "🌿 đĩa rau, giá",
   "en": ""
  },
@@ -1797,6 +1781,22 @@
  },
  {
   "vi": "khớp với biên bản",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Chưa trả",
+  "en": ""
+ },
+ {
+  "vi": "hẹn mang giấy tờ, chứng minh",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm đếm, ký biên bản",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi người tới nhận (ít nhất hai câu)",
   "en": ""
  }
 ]

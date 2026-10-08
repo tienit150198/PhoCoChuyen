@@ -1,21 +1,5 @@
 [
  {
-  "vi": "Tìm theo số hiệu hoặc tên",
-  "en": ""
- },
- {
-  "vi": "Không thấy tài khoản khớp.",
-  "en": ""
- },
- {
-  "vi": "CHỨNG NHẬN TRONG GAME",
-  "en": ""
- },
- {
-  "vi": "Lưu bản để in",
-  "en": ""
- },
- {
   "vi": "Thi lại để ôn tập",
   "en": ""
  },
@@ -1797,6 +1781,22 @@
  },
  {
   "vi": "Cười lớn",
+  "en": ""
+ },
+ {
+  "vi": "Ngạc nhiên",
+  "en": ""
+ },
+ {
+  "vi": "Tay mèo",
+  "en": ""
+ },
+ {
+  "vi": "Gồng cơ",
+  "en": ""
+ },
+ {
+  "vi": "Hôn gió",
   "en": ""
  }
 ]
