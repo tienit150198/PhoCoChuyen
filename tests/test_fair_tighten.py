@@ -34,7 +34,7 @@ class Decay(FairBase):
         self.assertAlmostEqual(rates[fh.RUN_FREE], fh.XD_BASE - .015)
         self.assertEqual(rates[25:], [fh.XD_FLOOR] * 175)
         self.assertAlmostEqual(fh.XD_FLOOR * (1 - fh.RAID_PCT / 100), .40, delta=.001)   # 40% won rounds after raids
-        self.assertEqual([fh.run_rate('xs', n) for n in (1, 10, 11, 16, 17, 200)], [.503, .503, .488, .413, .40, .40])
+        self.assertEqual([fh.run_rate('xs', n) for n in (1, 10, 11, 16, 17, 200)], [.50, .50, .485, .41, .40, .40])
         # A draw a little under the floor still wins on round 41, one a little over loses.
         self.dice(Dice(draws=[.5, fh.XD_FLOOR - .001]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=10)
@@ -156,10 +156,11 @@ class Decay(FairBase):
             self.dice(Dice(draws=[.99]))
             s, _ = self.act(s, 'fair_xs', price=2)
         cold = public_state(s)['fair']['cold']
-        self.assertEqual((cold['game'], cold['pct'], cold['gap'], cold['switch'], cold['min']), ('xs', 49, 10, 3, 20))
+        self.assertEqual((cold['game'], cold['pct'], cold['gap'], cold['switch'], cold['min']), ('xs', 48, 10, 3, 20))
         rules = public_state(s)['fair']['rules']
         self.assertEqual((rules['luck_pct'], rules['cooled_pct'], rules['floor_pct'], rules['run_free'], rules['run_switch'],
-                          rules['run_switch_min']), (50, 45, 40, 10, 3, 20))
+                          rules['run_switch_min']), (48, 45, 40, 10, 3, 20))
+        self.assertEqual(rules['luck'], dict(xd=48, lt=46, xs=50, ring=50))   # 08/10: each stall's own, in 100 rounds
         self.assertNotIn('win_pct', rules)   # an older client's line (a sure win after 4 losses) is not shown any more
 
     def test_bau_cua_is_exempt(self):
@@ -328,7 +329,7 @@ class StoreLoc(StoreBase):
                     'INSERT INTO mnl_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value',
                     (fh.LOC_KEY, str(int(self.clock.t)))))
             return real(db, result)
-        self.dice(Dice(draws=[.5, .1, 0, .99, .5, .1, 0, .99]))
+        self.dice(Dice(draws=[.5, .1, 0, .99, .1, .1, 0, .99]))   # the second computation wins its round too
         with mock.patch.object(fh, 'loc_claim', side_effect=rival_first):
             r = self.cmd(tok, 'fair_xd', dict(side='chan', stake=100))
         self.assertNotIn('loc', r['result']['fair'])

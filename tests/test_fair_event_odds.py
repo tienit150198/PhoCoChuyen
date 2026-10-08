@@ -12,10 +12,10 @@ from tests.test_fair_knife import safe_taps, crash_tap
 
 class EventOdds(unittest.TestCase):
     def test_each_chance_stall_starts_at_requested_rate(self):
-        for game in fh.CHANCE_GAMES:   # owner 07/10: the neutral draw that gives 50% won rounds in the long run
+        for game in fh.CHANCE_GAMES:   # owner 08/10: each stall's fresh draw (BASES), below what breaks even
             with self.subTest(game=game):
-                self.assertAlmostEqual(fh.luck_p({}, None, game, OPEN), fh.XD_BASE if game == 'xd' else fh.LUCK_BASE)
-        self.assertEqual((xs.P_HI, xs.P_LO), (fh.WIN_P, fh.WIN_P))
+                self.assertAlmostEqual(fh.luck_p({}, None, game, OPEN), fh.BASES.get(game, fh.LUCK_BASE))
+        self.assertEqual((xs.P_HI, xs.P_LO), (fh.BASES['xs'], fh.BASES['xs']))
 
     def test_repetition_cools_every_luck_stall_but_bau_cua(self):
         for game in fh.CHANCE_GAMES:

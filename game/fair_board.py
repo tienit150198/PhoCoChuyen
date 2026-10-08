@@ -2,7 +2,7 @@
 nhận danh hiệu vua trò chơi nhé").
 
 * The board: the xu won at the fair this edition (game/fair.py money_of; owner 03/10: "tiền thắng nhiều xếp top",
-  before that participation points) on the existing leaderboard table, board `fair.board()` ('fair20261003xu'; only
+  before that participation points) on the existing leaderboard table, board `fair.board()` ('fair20261009xu'; only
   players ahead). Its rows come with the save like every board (game/leaderboard.py summary,
   written in the save's own transaction), so the top 20 is one indexed range of `leaderboard_rank`, never a scan
   of the saves; the same privacy rules (accounts under their display name unless hidden, guests only when they
@@ -57,11 +57,16 @@ def standings(db, board: str, n: int = TOP) -> list:
 
 def settle(store, t: float | None = None, best_effort_ms: int | None = None) -> list | None:
     """Once the fair is over: grant its titles. Returns the winners when this call did it, else None. Cheap before
-    the end (a clock read) and after it is done (a memo)."""
-    from .wedding_live import grant
+    the end (a clock read) and after it is done (a memo). An earlier edition (fair.past(): a server that was not
+    running at its end) is settled first, the same way, at most once too."""
     t = now() if t is None else t
-    _, closes = fh.window()
-    ed = fh.edition()
+    for ed, board, closes in fh.past():
+        _settle(store, ed, board, closes, t, best_effort_ms)
+    return _settle(store, fh.edition(), fh.board(), fh.window()[1], t, best_effort_ms)
+
+
+def _settle(store, ed: str, board: str, closes: int, t: float, best_effort_ms: int | None) -> list | None:
+    from .wedding_live import grant
     memo = (_key(store), ed)
     if t < closes + GRACE or memo in _done:
         return None
@@ -75,7 +80,7 @@ def settle(store, t: float | None = None, best_effort_ms: int | None = None) -> 
             if db.execute('INSERT INTO leaderboard_meta(k,v) VALUES(?,?) ON CONFLICT(k) DO NOTHING', (META + ed, '[]')).rowcount != 1:
                 return False
             winners = []
-            for rank, sid, score in standings(db, fh.board()):
+            for rank, sid, score in standings(db, board):
                 tid = title_for(rank)
                 grant(db, sid, 'title', 1, f'{ed}:{tid}:{sid}', dict(title=tid, src='fair'))
                 winners.append(dict(rank=rank, sid=sid, score=score, title=tid))

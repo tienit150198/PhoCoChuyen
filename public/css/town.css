@@ -23,9 +23,12 @@ html[data-layout="phone"] .tw-top{padding:18px max(12px,var(--safe-r)) 8px max(1
 .tw-x3{border-color:transparent;background:var(--warn-soft);color:var(--warn)}
 .tw-cert{position:relative;border-color:transparent;background:var(--second-soft)}
 .tw-cert.due{border-color:var(--accent)}
-.tw-cert .dot{position:absolute;top:2px;right:2px;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--surface)}
+.tw-fair{position:relative;border-color:transparent;background:var(--warn-soft)}
+.tw-fair.due{border-color:var(--accent)}
+.tw-fair small{font-weight:700;opacity:.8}
+.tw-fair .dot,.tw-cert .dot{position:absolute;top:2px;right:2px;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--surface)}
 /* A phone with the 🔥 x3, 🎓 and 📋 chips: no room for "Khu phố" too (it was cut to "Khu"); the chips say where you are. */
-@media (max-width:430px){.tw-top:has(.tw-x3):has(.tw-cert) .tw-title{display:none}}
+@media (max-width:430px){.tw-top:has(.tw-x3):has(.tw-cert) .tw-title,.tw-top:has(.tw-fair):has(.tw-cert) .tw-title{display:none}}
 .tw-close{flex:none;width:42px;height:42px}
 .tw-hint{margin:0;padding:8px 16px;background:var(--accent-soft);color:var(--ink);font-weight:800;font-size:.95rem;text-align:center}
 .tw-slot{position:relative;flex:1 1 auto;min-height:240px}
@@ -87,3 +90,5 @@ html[data-layout="phone"] .tw-stage .rd-toggle[hidden]+.bb-toggle{top:66px}
 .tw-map-tools button:disabled{opacity:.4;cursor:default}
 .tw-stage:has(.tw-card:not([hidden])) .tw-map-tools{bottom:110px}
 @media(max-height:740px){.tw-goals{max-height:28%}.tw-slot{min-height:320px}}
+/* 🏮 With the fair's chip too, a phone's top bar wraps onto a second line instead of cutting 📋 Danh sách off. */
+@media (max-width:430px){.tw-top:has(.tw-fair){flex-wrap:wrap;row-gap:6px}}

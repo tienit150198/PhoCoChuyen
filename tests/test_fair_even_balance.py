@@ -9,10 +9,11 @@ from tests.test_fair import FairBase, Dice, OPEN, story
 
 
 class EvenRates(unittest.TestCase):
-    """Owner 07/10: about 50% of luck rounds are won, whatever the price, time or net (a long run of one stall cools)."""
+    """Owner 07/10: one rate a stall whatever the price, time or net (a long run of one stall cools); 08/10: each
+    stall's own (BASES), below what breaks even."""
     def test_every_price_time_and_net_has_the_same_base_rate(self):
         for game in fh.CHANCE_GAMES:
-            want = fh.XD_BASE if game == 'xd' else fh.LUCK_BASE
+            want = fh.BASES.get(game, fh.LUCK_BASE)
             for i in range(100):
                 for price in (2, 10, 50, 500, 1000):
                     self.assertEqual(fh.chance_rate(game, OPEN + i*1800, price, 100000), want)
@@ -23,11 +24,11 @@ class EvenRates(unittest.TestCase):
         # 07/10: the sure win after four losses is gone (bet small four times, then big): a bad stream loses on.
         j = {}
         with patch.object(fh, '_rng', Dice(draws=[.999]*100)):
-            results = [fh._draw_luck(j, 'xs', fh.LUCK_BASE) for _ in range(50)]
+            results = [fh._draw_luck(j, 'xs', fh.BASES['xs']) for _ in range(50)]
         self.assertFalse(any(results))
         self.assertEqual(j['fair_balance']['xs'], -4)   # still within the older validator's bound
-        with patch.object(fh, '_rng', Dice(draws=[fh.LUCK_BASE - .001])):
-            self.assertTrue(fh._draw_luck(j, 'xs', fh.LUCK_BASE))   # a draw under the rate still wins
+        with patch.object(fh, '_rng', Dice(draws=[fh.BASES['xs'] - .001])):
+            self.assertTrue(fh._draw_luck(j, 'xs', fh.BASES['xs']))   # a draw under the rate still wins
 
     def test_a_winning_streak_cools_to_the_floor_never_below(self):
         j = {}
@@ -46,7 +47,7 @@ class EvenRates(unittest.TestCase):
         self.assertTrue(all(-4 <= v <= 4 for v in j['fair_balance'].values()))   # the older validator's bound
         j = json.loads(json.dumps(j))
         with patch.object(fh, '_rng', Dice(draws=[.999])):
-            self.assertFalse(fh._draw_luck(j, 'xs', fh.LUCK_BASE))
+            self.assertFalse(fh._draw_luck(j, 'xs', fh.BASES['xs']))
 
 
 class EvenCommands(FairBase):

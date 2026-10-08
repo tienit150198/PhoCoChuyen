@@ -1,14 +1,29 @@
-"""Folk fair, played with in-game xu only. Current rules (owner 07/10: "giảm tỷ lệ thắng của mọi người ở hội chợ,
-nếu ai spam 1 trò thì tỷ lệ thắng sẽ giảm dần xuống còn 40%, công an sẽ đòi chứng minh tài sản ở đâu ra và thu 10%
-lợi nhuận của cả hội chợ"):
+"""Folk fair, played with in-game xu only.
 
-* Every luck stall (xóc đĩa, lô tô, vé cào, ném vòng's draw) is won about 50% of the time in normal play (WIN_P), for
-  every stake, time slot and net profit: about even money, no farming. Bầu cua is three honest dice (owner 06/10),
-  house edge −10/216 a xu. A lô tô Kinh pays LOTO_PAY tenths of the tờ (2.1×, rounded down: at most +5% a xu).
-* Per-player, per-stall winning streaks: after four wins in a row the next rounds cool off to WIN_P_LOW (45%). The sure
-  win after four losses is gone (07/10: bet small four times, then big). The neutral draw (LUCK_BASE, a little above
-  50%) makes the long-run rate WIN_P with the cool-off; xóc đĩa's draw is higher again so its 0.88% raids still leave
-  50% won rounds.
+🎪 The house always wins (owner 08/10: "mở hội chợ nhé, tỷ lệ chỉnh lại làm sao cho phù hợp, đảm bảo nhà cái luôn
+thắng"; the edition from FAIR_START 2026-10-09). Every paid luck stall returns less than it takes on every round, so
+no way of betting (big when warm, small when cooled, switching stalls, a long pause) comes out ahead in the long run.
+The most a round can return per xu staked (a fresh run, perfect play, see docs/FAIR_HOUSE_EDGE.md and
+scripts/sim_fair_odds.py, which checks it on 10^6 rounds a stall):
+
+  stall        how                                                  return  with 🍀 Lộc (gate always open)
+  bầu cua      three honest dice, 1:1 a die, bão BAO:1               95.4%   96.5%
+  chiếu trong  even money, BASES['xd'] won draws, RAID_PCT raids     96.1%   97.4%   (no fine: wallet short)
+  lô tô        BASES['lt'] rounds go the player's way, Kinh 2.1×     95.6%   96.8%   (2- and 5-xu tờ: 91.0%)
+  vé cào       BASES['xs'] tickets win, scratch.PRIZES mean 1.80×    90.0%   90.5%
+
+Every other state is lower: the cool-off after STREAK wins (WIN_P_LOW), the spam decay (RUN_STEP down to P_FLOOR),
+a Kinh called late, the police (raids, the asset check). The lô tô side bets are closed (SIDE_OPEN: the minute's
+calls are the same for everyone, so a player who saw them could pick the likely chẵn/lẻ or cột). 🍀 Lộc trời cho stays
+(LOC_P lower: on a busy server it still comes about once an hour). Phóng dao is a skill game (owner 05/10: no chance
+draw ever turns a clean board into a loss): its return depends on the thumb, see game/fair_knife.py, but what it
+pays over its stakes is capped at KN_DAY_CAP (300) xu a player and Vietnam day. Ô ăn quan and ném vòng take no stake.
+
+Earlier rules (owner 07/10: "giảm tỷ lệ thắng của mọi người ở hội chợ, nếu ai spam 1 trò thì tỷ lệ thắng sẽ giảm dần
+xuống còn 40%, công an sẽ đòi chứng minh tài sản ở đâu ra và thu 10% lợi nhuận của cả hội chợ"), still in force:
+
+* Per-player, per-stall winning streaks: after four wins in a row the next rounds cool off to WIN_P_LOW (45%), a draw
+  already lower stays lower. The sure win after four losses is gone (07/10: bet small four times, then big).
 * Spam decay (journey[COOL_KEY], _heat): past RUN_FREE rounds of the same luck stall, each round's draw is RUN_STEP
   lower, down to P_FLOOR (40% won rounds; xóc đĩa XD_FLOOR so its won rounds stop at 40% too). Only two things bring a
   stall back to the full rate: SWITCH_ROUNDS rounds of other paid luck stalls (PAID_LUCK, any mix) since its last
@@ -29,7 +44,7 @@ lợi nhuận của cả hội chợ"):
   stake instead of its normal winnings, at most once per LOC_GAP across the whole server (mnl_meta row LOC_KEY, taken in
   the command's own transaction by storage: loc_prepare / loc_claim).
 
-Wallet limits, side bets, deadlines, the calendar and leaderboard remain unchanged.
+Wallet limits, deadlines and the leaderboard remain unchanged.
 Scratch prizes lean towards refunds/small prizes. Loto still requires correct
 marks and a Kinh claim. There are no daily money or round limits.
 
@@ -57,8 +72,10 @@ from . import fair_food as ff   # 🍡 the food carts
 from . import fair_photo as fp  # 📸 the photobooth's ticket
 
 VERSION = 1
-FAIR_START = '2026-10-03'      # first day (Vietnam date), 00:00 UTC+7
+FAIR_START = '2026-10-09'      # first day (Vietnam date), 00:00 UTC+7 (owner 08/10: the fair opens again)
 FAIR_DAYS = 5
+PAST = (('2026-10-03', 5),)    # earlier editions (first day, days): their titles are settled even by a server that
+                               # missed their end (game/fair_board.py)
 SHOW_BEFORE = 2 * 86400        # the entry shows "sắp mở" this long before the start
 SHOW_AFTER = 3 * 86400         # and "đã tàn" this long after the end
 VN = datetime.timezone(datetime.timedelta(hours=7))
@@ -69,11 +86,16 @@ KIND = 'fair'                  # journey wallet history kind (journey.HISTORY_KI
 # puts on the saved counters (rolling release), which therefore stop there.
 DAY_CAP = 150
 ROUNDS_DAY = 400
-# Same base chance for all paid/free luck stalls (owner 07/10: lower, 65% → 55% → 50%: no money farming).
-WIN_P, WIN_P_LOW = .50, .45   # the long-run rate of won rounds, and the cool-off after a winning streak
-LOTO_WIN_P = WIN_P
-LUCK_BASE = .503               # the draw at a neutral streak: with the cool-off the long run is WIN_P (3 decimals: a
-XD_BASE = .508                 # ring round keeps it as p/1000); xóc đĩa: raids (RAID_PCT) come first, so a higher draw
+# The draw of a fresh round, per stall (owner 08/10: "đảm bảo nhà cái luôn thắng"): each one below what breaks even,
+# so every round of every paid stall returns less than its stake (the table at the top, docs/FAIR_HOUSE_EDGE.md).
+# xóc đĩa: even money, its raids (RAID_PCT) come first; lô tô: a Kinh pays LOTO_PAY tenths of the tờ; vé cào: a won
+# ticket pays scratch.PRIZES; ném vòng takes no stake (3 decimals: a ring round keeps its draw as p/1000).
+BASES = dict(xd=.485, lt=.455, xs=.50, ring=.503)
+WIN_P, WIN_P_LOW = .50, .45   # the older single rate (rules.luck_pct for an older client), and the streak cool-off
+LOTO_WIN_P = BASES['lt']
+LUCK_BASE = BASES['ring']      # the draw of a stall without its own BASES entry
+XD_BASE = BASES['xd']
+LUCK_PCT = 48                  # rules.luck_pct, the one rate an older client shows for all of them (about BASES' mean)
 STREAK = 4                     # wins in a row before the cool-off (no sure win after losses since 07/10)
 # Spam decay (owner 07/10): rounds RUN_FREE + 1, + 2, … of one luck stall draw RUN_STEP less each, down to P_FLOOR
 # (XD_FLOOR for xóc đĩa: 40% won rounds after its raids). Back to the full rate: SWITCH_ROUNDS rounds of other PAID_LUCK
@@ -126,7 +148,9 @@ AUDIT_LABEL = '🚨 Công an kiểm tra tài sản · Thu 10% tiền lời hội
 POLICE_SAY = 'Chào em, nghe nói em lời ở hội chợ hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.'
 # 🍀 Lộc trời cho (owner 07/10): a won round of a paid luck stall pays LOC_MULT× its stake, LOC_P of the time, once per
 # LOC_GAP for the whole server (the mnl_meta row LOC_KEY holds the last one's time).
-LOC_MULT, LOC_P, LOC_GAP, LOC_KEY = 10, .015, 3600, 'fair_loc_at'
+# 08/10: LOC_P .015 → .003, so a won round's Lộc stays inside the house edge even with the gate always open (a lone
+# player at night); on a busy server the gate still opens about once an hour, the first lucky won round takes it.
+LOC_MULT, LOC_P, LOC_GAP, LOC_KEY = 10, .003, 3600, 'fair_loc_at'
 # 🚓 A quiet start (owner 07/10, B6: "vừa vào bị tóm", "tay đầu tiên bị tóm luôn"): time away counted towards both
 # police cooldowns, so the first paid round after a break rolled the raid and the asset check at once. A fair session
 # starts with a paid round SESSION_GAP or more after the last one; neither check (_wealth_raid, _asset_audit) runs in its
@@ -140,9 +164,8 @@ LOC_ACTIONS = ('fair_bc', 'fair_xd', 'fair_xs', 'fair_loto_kinh')
 LOTO_PRICE = 5
 LOTO_PRIZE = 10                # the older client's plain card: prize_of('thuong', LOTO_PRICE, 1) (was 23, a pot)
 LOTO_NPCS = 4
-# Loto uses the same base chance as other luck stalls (WIN_P, 06/10) (legacy constants below
-# like the other luck stalls), and a Kinh pays LOTO_PAY tenths of what the tờ cost, rounded down (07/10: 2.1×, was
-# 2.2× / 2.3×): a player who always calls in time comes out at most +5% a xu at WIN_P (0% on the 2- and 5-xu tờ).
+# Loto: BASES['lt'] of the rounds go the player's way, and a Kinh pays LOTO_PAY tenths of what the tờ cost, rounded
+# down (07/10: 2.1×, was 2.2× / 2.3×): a player who always calls in time gets 95.6% back (91% on the 2- and 5-xu tờ).
 LOTO_PAY = dict(thuong=21, nguoc=21, doi=21, dem=21)
 LOTO_TRIES = 300               # round ids tried for the outcome drawn (≈2..8 needed); the last one tried after that
 LOTO_TTL = 20 * 60             # a card can be claimed this long after it was bought
@@ -157,6 +180,10 @@ DEM_HOURS = (20, 21)           # Vietnam hours of the Hũ đêm hội: every rou
 KINH_FINE = 1                  # a Kinh hụt (the marks do not fill the pattern, or a mark was never called); no limit
 FK_MAX = 10**6                 # Kinh hụt counted in a round / a day at most (the save's sane bound)
 SIDE_STAKES = (2, 4, 6, 10, 20, 50, 100, 200)  # even: cột's 8.5× stays whole xu
+# The side bets (chẵn/lẻ, cột may mắn) take no new bets since 08/10: they are settled on the số chốt, a call of the
+# minute's sequence (calls(slot), the same for every card of that minute), so a player who saw the minute's calls on a
+# first tờ could bet a second one on the likely parity or column and come out ahead. Rounds bought before still settle.
+SIDE_OPEN = False
 BAY_NUMS = (7, 70)             # cô Bảy's own numbers: a số chốt on one of them loses both chẵn and lẻ
 COT_PAY_HALF = 17              # cột may mắn: stake × 17 / 2 back
 LOTO_OPT = ('mode', 'tier', 'n', 'sb', 'fk')   # newer round keys (absent in older saves: thuong, vua, 1 tờ)
@@ -178,6 +205,13 @@ EARN_GAMES = tuple(EARN_DAY)
 # 🏆 Bảng vàng hội chợ: xu won (money_of); the points it counted until 03/10 are gone, POINTS_DAY only bounds the
 # saved 'dpts' (older validators)
 POINTS_DAY = 30
+# 🗡️ Phóng dao stays a skill game, but the house still always wins (owner 08/10): what its runs win over their stakes
+# is capped at KN_DAY_CAP xu a player and Vietnam day. The tally lives in the legacy 'dpts' (reset each Vietnam day and
+# each edition, no other use since 03/10) in KN_CAP_UNIT steps, rounded up: the older validators' bound POINTS_DAY
+# makes the cap 300 xu, so no new save key. Losing runs do not give it back. Once it is reached the stall takes no stake.
+KN_CAP_UNIT = 10
+KN_DAY_CAP = KN_CAP_UNIT * POINTS_DAY
+KN_CAP_MSG = 'Hôm nay bạn đã thắng đủ ở Phóng dao, mai quay lại nhé.'
 MONEY = ('won', 'lost', 'earned')   # the stats that make the board's score, reset with each edition
 
 TITLE_ROWS = (   # journey.TITLES (secret, granted here only)
@@ -269,8 +303,23 @@ def vn_date(t: float) -> str:
 
 
 def edition() -> str:
-    """This fair's id ('fair20261003'): the save's edition (its days, its money), its titles' settle mark."""
+    """This fair's id ('fair20261009'): the save's edition (its days, its money), its titles' settle mark. A new id
+    starts afresh: the save's days and money of the fair (_state), its Bảng vàng (board()), the police's mark
+    (audit_base), the gift (fair_cash); a loan of an older edition is collected (fair_cash.settle)."""
     return 'fair' + _start_date().strftime('%Y%m%d')
+
+
+def past() -> list[tuple[str, str, int]]:
+    """The earlier editions before this one: [(edition, its board, its close as epoch seconds)]."""
+    cur = _start_date()
+    out = []
+    for raw, days in PAST:
+        d = datetime.date.fromisoformat(raw)
+        if d < cur:
+            t0 = int(datetime.datetime(d.year, d.month, d.day, tzinfo=VN).timestamp())
+            ed = 'fair' + d.strftime('%Y%m%d')
+            out.append((ed, ed + 'xu', t0 + days * 86400))
+    return out
 
 
 # ---------------------------------------------------------------- the save
@@ -320,7 +369,7 @@ def money_of(j: dict) -> tuple[int, int]:
 
 
 def board() -> str:
-    """The Bảng vàng's leaderboard board: 'fair20261003xu' (xu won). Not the edition itself, whose rows an older
+    """The Bảng vàng's leaderboard board: 'fair20261009xu' (xu won). Not the edition itself, whose rows an older
     server filled with points (rolling release 03/10): they are simply not read, and go when that save is next written."""
     return edition() + 'xu'
 
@@ -497,8 +546,8 @@ def side_back(sb: dict | None, x: int) -> dict:
 
 
 def odds(net: int, hi: float | None = None, lo: float | None = None) -> float:
-    """The long-run share of luck rounds that go the player's way: WIN_P at any net (no money taper since 05/10; kept
-    for older callers). Winning streaks cool off in _draw_luck, never below WIN_P_LOW."""
+    """The older single rate of luck rounds (WIN_P at any net; no money taper since 05/10; kept for older callers):
+    each stall now draws its own BASES. Winning streaks cool off in _draw_luck."""
     return WIN_P if hi is None else hi
 
 
@@ -522,8 +571,8 @@ def featured_game(t: float) -> str:
 
 
 def chance_rate(game: str, t: float, stake: int | None = None, net: int = 0) -> float:
-    """The neutral-streak draw of a stall, independent of money or repetition (WIN_P won rounds in the long run)."""
-    return XD_BASE if game == 'xd' else LUCK_BASE
+    """The draw of a fresh round of a stall (BASES), independent of money or time: the most it ever is."""
+    return BASES.get(game, LUCK_BASE)
 
 
 def switch_min(r: dict) -> int:
@@ -766,16 +815,38 @@ def _kn_level(f: dict, run: dict, t: float) -> None:
     run.update(sd=_rng.getrandbits(31), hot=knife.heat(_today(f, t)['net']), at=int(t * 1000), sg='play', tp=[], day='')
 
 
+def kn_cap_left(f: dict | None, t: float) -> int:
+    """How many more xu Phóng dao may win over its stakes today (KN_DAY_CAP)."""
+    if not f or f.get('date') != vn_date(t):
+        return KN_DAY_CAP
+    return max(0, KN_DAY_CAP - f['dpts'] * KN_CAP_UNIT)
+
+
+def _kn_capped(j: dict | None, t: float, stake: int, prize: int) -> int:
+    """A prize as today's cap lets it be paid: never more than the stake back plus what is left of KN_DAY_CAP."""
+    f = j.get('fair') if isinstance(j, dict) else None
+    return min(prize, stake + kn_cap_left(f if isinstance(f, dict) else None, t))
+
+
 def _kn_pay(j: dict, f: dict, run: dict) -> int:
-    """Dừng: the prize of the levels cleared into the wallet; the run is done."""
+    """Dừng: the prize of the levels cleared into the wallet, capped by KN_DAY_CAP (f is today's _state); the run is
+    done."""
     k = _kn(j)
-    pz = knife.prize(run['st'], _kn_cleared(run), run['bn'])
+    st = run['st']
+    pz = min(knife.prize(st, _kn_cleared(run), run['bn']), st + max(0, KN_DAY_CAP - f['dpts'] * KN_CAP_UNIT))
+    if pz > st:   # the gain, in KN_CAP_UNIT steps rounded up (the house's side)
+        f['dpts'] = min(POINTS_DAY, f['dpts'] + -(-(pz - st) // KN_CAP_UNIT))
     run.update(sg='done', pz=pz)
     if pz:
         _pay(j, f, 'kn', pz)
     k['w'] = min(10**9, k['w'] + 1)
     k['top'] = max(k['top'], pz)
     return pz
+
+
+def _kn_cap_note(f: dict, t: float, message: str) -> str:
+    """A payout message, with KN_CAP_MSG once today's cap is reached."""
+    return f'{message} {KN_CAP_MSG}' if kn_cap_left(f, t) <= 0 else message
 
 
 def _kn_view_run(run: dict | None, t: float, j: dict | None = None) -> dict | None:
@@ -785,18 +856,19 @@ def _kn_view_run(run: dict | None, t: float, j: dict | None = None) -> dict | No
     sg = 'lost' if _kn_late(run, t) else run['sg']
     st, lv, bn = run['st'], run['lv'], run['bn']
     chance = _chance(j or {}, 'kn', run) is not None
-    out = dict(stake=st, lv=lv, stage=sg, x2=bool(run['x2']), prize=knife.prize(st, _kn_cleared(dict(run, sg=sg)), bn), chance=chance)
+    out = dict(stake=st, lv=lv, stage=sg, x2=bool(run['x2']), chance=chance,
+               prize=_kn_capped(j, t, st, knife.prize(st, _kn_cleared(dict(run, sg=sg)), bn)))
     if sg == 'play':
         ms = int(t * 1000)
         board = knife.public_schedule(_kn_sched(run, j))
         if chance:
             board.update(chance=True, pre=[])
         out.update(board=board, id=f'{run["sd"]}-{lv}', el=ms - run['at'],
-                   tp=list(run['tp']), win=knife.prize(st, lv, bn + (knife.x2_bonus(st, lv) if run['x2'] else 0)))
+                   tp=list(run['tp']), win=_kn_capped(j, t, st, knife.prize(st, lv, bn + (knife.x2_bonus(st, lv) if run['x2'] else 0))))
     elif sg == 'choice':
         nxt = lv + 1
         out.update(nx=bool(run['nx']), late=run['day'] != vn_date(t),
-                   win=knife.prize(st, nxt, bn + (knife.x2_bonus(st, nxt) if run['nx'] else 0)))
+                   win=_kn_capped(j, t, st, knife.prize(st, nxt, bn + (knife.x2_bonus(st, nxt) if run['nx'] else 0))))
     elif sg == 'done':
         out.update(paid=run['pz'])
     else:   # lost: the prize that was riding on the level went with it
@@ -821,6 +893,7 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
         need(not run or run['sg'] in ('lost', 'done'),
              'Lượt trước còn chờ: chơi tiếp hoặc dừng nhận thưởng đã nha.' if run and run['sg'] == 'choice'
              else 'Màn này đang chơi dở, phóng tiếp nha.', 'fair_kn_busy')
+        need(kn_cap_left(f, t) > 0, KN_CAP_MSG, 'fair_kn_cap')
         _guard_free(e, f, j, t, stake)
         run = k['run'] = dict(st=stake, lv=1, sd=0, hot=0, at=0, sg='play', bn=0, x2=0, nx=0, tp=[], day='', pz=0)
         _kn_level(f, run, t)
@@ -868,7 +941,7 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
         if lv >= knife.LEVELS:   # the last level: nothing more to risk, the prize is paid
             pz = _kn_pay(j, f, run)
             out.update(cleared=True, all=True, paid=pz, run=_kn_view_run(run, t, j))
-            return dict(fair=out, message=f'Phá đảo cả {knife.LEVELS} màn! +{pz} xu.')
+            return dict(fair=out, message=_kn_cap_note(f, t, f'Phá đảo cả {knife.LEVELS} màn! +{pz} xu.'))
         run['nx'] = int(not run['x2'] and _rng.random() < knife.X2_P)   # never two x2 levels in a row
         out.update(cleared=True, run=_kn_view_run(run, t, j))
         return dict(fair=out, message='')
@@ -885,7 +958,7 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
         return dict(fair=dict(game='kn', stopped=True, prize=run['pz'], again=True, run=_kn_view_run(run, t, j)),
                     message='Thưởng lượt này đã vô ví rồi.')
     pz = _kn_pay(j, f, run)
-    return dict(fair=dict(game='kn', stopped=True, prize=pz, run=_kn_view_run(run, t, j)), message=f'Nhận thưởng {pz} xu!')
+    return dict(fair=dict(game='kn', stopped=True, prize=pz, run=_kn_view_run(run, t, j)), message=_kn_cap_note(f, t, f'Nhận thưởng {pz} xu!'))
 
 
 def _kn_settle(s: dict) -> None:
@@ -1183,6 +1256,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
                      and (bet[0] in picks if k == 'cl' else type(bet[0]) is int and bet[0] in picks),
                      f'Cược phụ đặt {", ".join(map(str, SIDE_STAKES))} xu thôi nha.')
                 sb[k] = [bet[0], bet[1]]
+            need(SIDE_OPEN or not sb, 'Gánh lô tô giờ không nhận cược phụ, bỏ chọn chẵn lẻ và cột rồi mua tờ nha.',
+                 'fair_loto_side')
             tier, n = p['tier'], p['n']
         else:
             mode, tier, n, sb = 'thuong', 'vua', 1, {}
@@ -1465,7 +1540,9 @@ def public(s: dict) -> dict:
                            quan_non=oaq.QUAN_NON, ring_hit=RING_HIT, ring_all=RING_ALL, rings=ring.RINGS, ring_tol=ring.TOL,
                            ring_day=RING_DAY, ring_left=RING_DAY, oaq_turn=1, xd_fine_div=FINE_DIV, nocap=1, ring_chance=True,
                            # 07/10 rules under new names: an older client (its line promised a sure win after 4 losses) shows none
-                           luck_pct=round(WIN_P * 100), cooled_pct=round(WIN_P_LOW * 100), run_free=RUN_FREE,
+                           luck_pct=LUCK_PCT, cooled_pct=round(WIN_P_LOW * 100), run_free=RUN_FREE,
+                           # 08/10: each stall's own rate (won rounds in 100; xóc đĩa after its raids), newer clients
+                           luck={g: round(p * (1 - RAID_PCT / 100) * 100 if g == 'xd' else p * 100) for g, p in BASES.items()},
                            floor_pct=round(P_FLOOR * 100), run_gap_min=RUN_GAP // 60, run_switch=SWITCH_ROUNDS, run_switch_min=SWITCH_MIN,
                            audit_pct=AUDIT_PCT,
                            audit_from=AUDIT_FROM, loc_mult=LOC_MULT),
@@ -1484,7 +1561,10 @@ def public(s: dict) -> dict:
                 # 🎱 the gánh lô tô: the vòng of this minute and the next nine, the tiers and side bets, today's tally
                 # (hut_max 0: no limit on Kinh hụt; the older client showed it as "hụt N lần là nghỉ ván")
                 ganh=dict(modes=[[slot + i, mode_of(slot + i)] for i in range(10)], names=dict(MODE_NAMES),
-                           tiers=dict(LOTO_TIERS), cards=LOTO_CARDS, max_stake=ROUND_MAX, side_stakes=list(SIDE_STAKES), bay=list(BAY_NUMS),
+                           # side_stakes [] and side False: no new side bets (SIDE_OPEN; an older client still shows them,
+                           # the server then says so)
+                           tiers=dict(LOTO_TIERS), cards=LOTO_CARDS, max_stake=ROUND_MAX, bay=list(BAY_NUMS),
+                           side_stakes=list(SIDE_STAKES) if SIDE_OPEN else [], side=SIDE_OPEN,
                            cot_pay=COT_PAY_HALF / 2, fine=KINH_FINE, hut_max=0, dem_hours=list(DEM_HOURS),
                            modes_rule={m: dict(need=v[0], npcs=v[1], cut=v[2], pay=LOTO_PAY[m] / 10) for m, v in LOTO_MODES.items()},
                            prizes={m: {tr: [prize_of(m, pr, n) for n in range(1, LOTO_CARDS + 1)] for tr, pr in LOTO_TIERS.items()}
@@ -1500,7 +1580,8 @@ def knife_public(j: dict, f: dict | None, t: float) -> dict:
     return dict(stakes=list(knife.STAKES), ladder=list(knife.LADDER), prizes=[list(knife.prizes(x)) for x in knife.STAKES],
                 levels=knife.LEVELS, gap=knife.GAP, chance=False,
                 draw=knife.DRAW_W, fly=knife.FLY_MS, impact=knife.IMPACT, min_tap=knife.MIN_TAP, level_ms=knife.LEVEL_MS,
-                hot=knife.heat(_today(f, t)['net']), **{x: k.get(x, 0) for x in ('n', 'w', 'b', 'top')},
+                hot=knife.heat(_today(f, t)['net']), cap=KN_DAY_CAP, cap_left=kn_cap_left(f, t),
+                **{x: k.get(x, 0) for x in ('n', 'w', 'b', 'top')},
                 run=_kn_view_run(k.get('run'), t, j))
 
 

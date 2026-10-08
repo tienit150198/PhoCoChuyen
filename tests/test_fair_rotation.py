@@ -21,7 +21,7 @@ class Rotation(unittest.TestCase):
             self.assertIn(selected, games)
             self.assertEqual(fh.featured_game(t + 1799.999), selected)
             self.assertNotEqual(fh.featured_game(t + 1800), selected)
-            self.assertTrue(all(fh.chance_rate(g, t) == (fh.XD_BASE if g == 'xd' else fh.LUCK_BASE) for g in games))
+            self.assertTrue(all(fh.chance_rate(g, t) == fh.BASES.get(g, fh.LUCK_BASE) for g in games))
         self.assertEqual(set(picked[:5]), set(games))
         self.assertEqual(picked[:5], picked[5:])
 
@@ -54,10 +54,10 @@ class Rotation(unittest.TestCase):
         mean = sum(m * w for m, w in xs.PRIZES) / sum(w for _, w in xs.PRIZES)
         with mock.patch.object(fh, 'featured_game', return_value='xs'):
             returns = [fh.chance_rate('xs', OPEN, p) * mean for p in xs.TIERS]
-        # Owner 07/10 (50% of tickets win, the prize table unchanged): every tier returns less than it costs.
-        self.assertAlmostEqual(returns[0], fh.LUCK_BASE * 1.59)
+        # Owner 08/10 (50% of tickets win, a won one pays 1.80× on average): every tier returns 90% of what it costs.
+        self.assertAlmostEqual(returns[0], fh.BASES['xs'] * 1.801)
         self.assertTrue(all(abs(r - returns[0]) < 1e-9 for r in returns))
-        self.assertLess(fh.WIN_P * mean, .9)
+        self.assertLess(returns[0], .91)
 
 
 class RotationCommands(FairBase):
@@ -65,16 +65,16 @@ class RotationCommands(FairBase):
         for selected in ('xs','ring'):
             with mock.patch.object(fh,'featured_game',return_value=selected):
                 for price in (2,500):
-                    for draw,win in ((fh.LUCK_BASE-.001,True),(fh.LUCK_BASE,False)):
+                    for draw,win in ((fh.BASES['xs']-.001,True),(fh.BASES['xs'],False)):
                         self.dice(Draws([draw]))
                         _,result=self.act(story(1000),'fair_xs',price=price)
                         self.assertEqual(result['fair']['prize']>0,win)
 
-    def test_total_bets_cards_and_side_bets_set_the_rate(self):
+    def test_total_bets_and_cards_set_the_rate(self):
         for command, args, game, stake in [
             ('fair_bc', dict(bets={'cua': 150, 'ca': 150}), 'bc', 300),
             ('fair_xd', dict(side='chan', stake=500), 'xd', 500),
-            ('fair_loto_buy', dict(tier='tram', n=3, cl=['chan', 100], cot=[1, 100]), 'lt', 500),
+            ('fair_loto_buy', dict(tier='tram', n=3), 'lt', 300),   # no side bets since 08/10 (SIDE_OPEN)
         ]:
             with self.subTest(command=command), mock.patch.object(fh, 'luck_p', wraps=fh.luck_p) as odds:
                 self.dice(Dice(draws=[.9, .9]))

@@ -15,7 +15,7 @@ class ThousandStake(FairBase):
             ('fair_kn_start', dict(stake=1000)),
             ('fair_xs', dict(price=1000)),
             ('fair_loto_buy', dict(tier='nghin', n=1)),
-            ('fair_loto_buy', dict(tier='cao', n=3, cl=['chan', 200], cot=[1, 200])),
+            ('fair_loto_buy', dict(tier='dac_biet', n=2)),   # 2 × 500 (no side bets since 08/10: SIDE_OPEN)
         ):
             with self.subTest(command=command, args=args):
                 state, _ = self.act(story(10000), command, **args)
