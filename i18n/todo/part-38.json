@@ -1,5 +1,449 @@
 [
  {
+  "vi": "Tôi chỉ làm đúng nội quy.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng clip cà khịa lại.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ, vài bữa hết.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng bài xin lỗi Vy cho yên.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn khóa trang, chụp lại hết. Vài hôm sau đám fan cũng chán.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn báo công an và xí nghiệp. Xí nghiệp đăng thông báo bảo vệ nhân viên làm đúng nội quy; Vy gỡ clip, xin lỗi công khai.",
+  "en": ""
+ },
+ {
+  "vi": "Đám fan chửi thêm mấy hôm. Không phải lỗi của bạn: báo công an và xí nghiệp là quyền của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn xin lỗi vì một việc mình làm đúng. Đám fan càng hăng. Không phải lỗi của bạn; lần sau cứ báo.",
+  "en": ""
+ },
+ {
+  "vi": "“Quay đèn về phía lưới giùm”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Sáu Ghe · chủ tàu cá",
+  "en": ""
+ },
+ {
+  "vi": "“Cậu quay cái đèn rọi về hướng đông bắc giùm tui, cá mực thấy sáng là lên đầy lưới. Có một đêm thôi!”",
+  "en": ""
+ },
+ {
+  "vi": "“Đèn của nhà nước, rọi chút có mất gì đâu.”",
+  "en": ""
+ },
+ {
+  "vi": "“Hồi xưa ông trạm trưởng cũ còn cho mà!”",
+  "en": ""
+ },
+ {
+  "vi": "Đèn quay đều theo danh mục đèn, tàu cả vịnh dựa vào nó.",
+  "en": ""
+ },
+ {
+  "vi": "Ông dùng đèn câu trên tàu, đúng luật mà cá vẫn lên.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Sáu Ghe càu nhàu: “Ờ, thì thôi.” Rồi gọi hỏi bản tin gió đêm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn hứa “để xem”. Ông Sáu kể khắp bến là trạm sắp rọi đèn cho ông. Xí nghiệp gọi hỏi ngay chiều đó.",
+  "en": ""
+ },
+ {
+  "vi": "Không chiều tui, nhưng nói có lý, còn chỉ cách.",
+  "en": ""
+ },
+ {
+  "vi": "Hứa rồi để đó. Nói cho vui à?",
+  "en": ""
+ },
+ {
+  "vi": "“Tắt còi đi, cá sợ chạy hết”",
+  "en": ""
+ },
+ {
+  "vi": "Tổ lưới chụp Cửa Lở",
+  "en": ""
+ },
+ {
+  "vi": "“Đêm sương cậu kéo còi ầm ầm, cá chạy hết! Tắt còi giùm tụi tui một đêm thôi!”",
+  "en": ""
+ },
+ {
+  "vi": "“Tụi tui biết đường về, cần gì còi!”",
+  "en": ""
+ },
+ {
+  "vi": "“Không tắt là tụi tui làm đơn lên xã đó!”",
+  "en": ""
+ },
+ {
+  "vi": "Sương mù là còi phải chạy, tàu lạ không biết đảo ở đâu.",
+  "en": ""
+ },
+ {
+  "vi": "Các anh thả lưới cách đảo hai hải lý, tiếng còi nhỏ hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Tổ lưới chụp lầm bầm rồi dời ra xa hơn. Đêm đó còi vẫn kêu đều.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tắt còi. Ba giờ sáng, một tàu hàng lạ suýt mắc cạn ở hòn Mõ trong sương.",
+  "en": ""
+ },
+ {
+  "vi": "“Bật đèn ban ngày cho em chụp”",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn khách tàu du lịch",
+  "en": ""
+ },
+ {
+  "vi": "“Anh ơi bật cái đèn lên cho tụi em chụp ảnh đèn sáng đi, ban ngày nhìn không ra gì hết!”",
+  "en": ""
+ },
+ {
+  "vi": "“Năm phút thôi, có tốn bao nhiêu điện đâu.”",
+  "en": ""
+ },
+ {
+  "vi": "“Tụi em trả tiền tour rồi mà anh!”",
+  "en": ""
+ },
+ {
+  "vi": "Đèn chỉ bật theo giờ, bật bậy tàu ngoài khơi tưởng tín hiệu.",
+  "en": ""
+ },
+ {
+  "vi": "Chiều nay tàu Biển Ngọc có tour hoàng hôn, xem đèn thắp thật luôn.",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn khách tiếc rẻ nhưng chụp tấm hình cái tháp trắng dưới nắng. Cô Thắm ghi luôn tour hoàng hôn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bật đèn giữa trưa. Đài gọi hỏi sao đèn Hòn Gió sáng lúc mười hai giờ.",
+  "en": ""
+ },
+ {
+  "vi": "“Về quê xem mặt đi con!”",
+  "en": ""
+ },
+ {
+  "vi": "Má bạn",
+  "en": ""
+ },
+ {
+  "vi": "“Má hẹn nhà bác Tư rồi, chủ nhật này con về xem mặt con gái/con trai bác. Đèn đóm gì một hôm, nhờ ông trạm trưởng trực giùm!”",
+  "en": ""
+ },
+ {
+  "vi": "“Con ở đảo hoài, ai mà chịu lấy?”",
+  "en": ""
+ },
+ {
+  "vi": "“Má già rồi, má muốn bồng cháu…”",
+  "en": ""
+ },
+ {
+  "vi": "Ca trực có lịch, con không bỏ trạm được má ơi.",
+  "en": ""
+ },
+ {
+  "vi": "Đợt nghỉ phép tháng sau con về, má hẹn lại giùm con nha.",
+  "en": ""
+ },
+ {
+  "vi": "Má thở dài: “Ừ, tháng sau về đó nha.” Rồi gửi theo tàu một hũ mắm.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bỏ trạm về quê một ngày. Chú Bảy trực một mình ba mươi sáu tiếng, ngã ở cầu thang tháp.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Út hỏi mượn tiền",
+  "en": ""
+ },
+ {
+  "vi": "“Con ở đảo đâu có tiêu gì, lương dư nhiều lắm phải không? Cho cô mượn hai trăm sửa nhà, Tết cô trả.”",
+  "en": ""
+ },
+ {
+  "vi": "“Cô nuôi con hồi nhỏ mà…”",
+  "en": ""
+ },
+ {
+  "vi": "“Không cho mượn thì nói luôn đi!”",
+  "en": ""
+ },
+ {
+  "vi": "Lương con còn lo cho má với tiền học em, con không dư nhiều vậy.",
+  "en": ""
+ },
+ {
+  "vi": "Con gửi cô ít tiền mua vật liệu, còn lại cô hỏi thêm mấy anh chị nha.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Út im một lúc rồi bảo: “Ừ, thôi cô hỏi chỗ khác.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chuyển hai trăm. Tết năm đó cô Út không nhắc gì tới chuyện trả.",
+  "en": ""
+ },
+ {
+  "vi": "“Sơn tháp màu hồng cho clip quảng bá”",
+  "en": ""
+ },
+ {
+  "vi": "“Tỉnh làm clip du lịch. Cậu sơn giùm cái ban công màu hồng pastel cho lên hình đẹp. Tự mua sơn, về xí nghiệp thanh toán sau.”",
+  "en": ""
+ },
+ {
+  "vi": "“Có cái ban công thôi mà, làm trong một buổi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Lãnh đạo tỉnh thích màu hồng, cậu hiểu chưa?”",
+  "en": ""
+ },
+ {
+  "vi": "Màu tháp là dấu hiệu nhận biết ban ngày trong danh mục đèn, không tự đổi được.",
+  "en": ""
+ },
+ {
+  "vi": "Em gửi anh ảnh tháp lúc hoàng hôn, lên clip đẹp mà đúng màu.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi im một lúc: “Ừ… gửi ảnh hoàng hôn đi.” Clip du lịch dùng ảnh của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn sơn hồng ban công. Tháng sau Cục hàng hải gửi công văn hỏi vì sao dấu hiệu ban ngày của đèn Hòn Gió bị đổi.",
+  "en": ""
+ },
+ {
+  "vi": "“Đếm hải âu báo cáo hằng ngày”",
+  "en": ""
+ },
+ {
+  "vi": "“Xí nghiệp có đề tài môi trường. Từ mai cậu đếm hải âu trên đảo, sáng trưa chiều, gửi báo cáo kèm ảnh từng con.”",
+  "en": ""
+ },
+ {
+  "vi": "“Có đếm thôi mà, cậu rảnh mà.”",
+  "en": ""
+ },
+ {
+  "vi": "“Không làm thì cuối năm khỏi thi đua.”",
+  "en": ""
+ },
+ {
+  "vi": "Em ưu tiên quan trắc và đèn trước, việc thêm cần văn bản giao.",
+  "en": ""
+ },
+ {
+  "vi": "Em đếm một lần buổi sáng, ghi chung vào sổ quan trắc nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đề tài cần số liệu gì ạ?",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi lầm bầm: “Ừ, một lần sáng là được.” Sổ quan trắc có thêm cột “hải âu”.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đếm hải âu cả ngày, trễ giờ quan trắc trưa. Đài gọi hỏi bản tin ba lần.",
+  "en": ""
+ },
+ {
+  "vi": "“Báo cáo thời tiết mỗi nửa tiếng”",
+  "en": ""
+ },
+ {
+  "vi": "“Mùa bão rồi. Từ giờ cậu gọi tôi báo thời tiết mỗi nửa tiếng, cả đêm, gọi số riêng của tôi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Gọi có mấy giây thôi mà.”",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi là sếp, tôi cần biết.”",
+  "en": ""
+ },
+ {
+  "vi": "Quan trắc theo giờ quy định gửi đài, đài phát cho mọi người.",
+  "en": ""
+ },
+ {
+  "vi": "Có gì bất thường em gọi anh ngay, còn lại anh nghe bản tin của đài nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi hừ một tiếng: “Bất thường thì gọi ngay đấy.” Rồi cúp máy.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn gọi anh Khôi suốt đêm. Gần sáng gục trên bàn trực, quên ghi giờ quan trắc năm giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà văn xin ở lại thêm",
+  "en": ""
+ },
+ {
+  "vi": "“Cho tôi ở thêm năm ngày thôi. Tôi cần cảm nhận cái cô đơn thật sự của đêm thứ bảy trên đảo…”",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi ngủ nhà kho cũng được, tự nấu ăn.”",
+  "en": ""
+ },
+ {
+  "vi": "“Tác phẩm này sẽ làm người ta hiểu nghề của các anh hơn mà.”",
+  "en": ""
+ },
+ {
+  "vi": "Giấy của xí nghiệp chỉ cho tham quan trong ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Anh xin xí nghiệp giấy ở lại, hoặc em kể anh nghe qua điện thoại mỗi tối.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Đức gật đầu, xuống tàu chiều. Tối đó anh gọi điện hỏi chuyện đèn tới khuya.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cho anh Đức ở lại. Đêm thứ ba anh lên phòng đèn hút thuốc “tìm cảm hứng”.",
+  "en": ""
+ },
+ {
+  "vi": "Kênh ma xin tắt đèn mười phút",
+  "en": ""
+ },
+ {
+  "vi": "“Anh tắt đèn mười phút thôi, tụi em quay cảnh “đèn tự tắt”, sau đó bật lại liền! View triệu đó anh!”",
+  "en": ""
+ },
+ {
+  "vi": "“Giờ này làm gì có tàu nào, anh lo xa quá!”",
+  "en": ""
+ },
+ {
+  "vi": "“Tụi em chia anh nửa tiền quảng cáo!”",
+  "en": ""
+ },
+ {
+  "vi": "Đèn biển không được tắt dù một phút.",
+  "en": ""
+ },
+ {
+  "vi": "Các bạn quay cảnh đèn quét trong sương, rợn hơn nhiều.",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm làm phim quay cảnh đèn quét trong sương. Clip “ánh sáng ma quái” vẫn hút view.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tắt đèn. Đúng mười phút đó một tàu hàng gọi đài hỏi đèn Hòn Gió đâu rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Làng xin làm lễ trên mỏm đá lúc nửa đêm",
+  "en": ""
+ },
+ {
+  "vi": "Ông trưởng thôn Cửa Lở",
+  "en": ""
+ },
+ {
+  "vi": "“Rằm này làng làm lễ cầu ngư trên mỏm đá cạnh trạm. Cậu mở cổng trạm cho bà con đi qua, tắt đèn pha sân cho linh thiêng.”",
+  "en": ""
+ },
+ {
+  "vi": "“Xã đồng ý miệng rồi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Cả làng có một đêm, cậu khó gì thế.”",
+  "en": ""
+ },
+ {
+  "vi": "Nửa đêm đông người qua sân trạm trên đá là không an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Làng làm lễ lúc chiều, có giấy của xí nghiệp, em mở lối và đi kèm.",
+  "en": ""
+ },
+ {
+  "vi": "Ông trưởng thôn gật gù dời lễ sang buổi chiều. Bà con còn để lại cho trạm mâm xôi gà.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn mở cổng lúc nửa đêm. Một cụ bà trượt chân trên đá rêu, phải gọi ghe đưa vào bờ gấp.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi cá trong tủ đông của trạm",
+  "en": ""
+ },
+ {
+  "vi": "“Cho tui gửi hai thùng cá trong tủ đông của trạm vài hôm, máy tàu tui hư. Chạy máy phát thêm chút có sao!”",
+  "en": ""
+ },
+ {
+  "vi": "“Dầu của nhà nước mà, có mất của cậu đâu.”",
+  "en": ""
+ },
+ {
+  "vi": "“Cá ươn hết là tui lỗ cả tháng.”",
+  "en": ""
+ },
+ {
+  "vi": "Dầu máy phát là dầu giữ đèn, sổ dầu phải khớp.",
+  "en": ""
+ },
+ {
+  "vi": "Ông nhờ tàu tiếp tế chở cá vào bờ, em gọi chú Tư Lực giùm.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Sáu Ghe gọi chú Tư Lực chở cá vào bờ. Mất ít tiền xăng nhưng cá còn tươi.",
+  "en": ""
+ },
+ {
   "vi": "Bạn cho gửi cá, chạy máy phát thêm bốn tiếng mỗi ngày. Cuối tuần sổ dầu hụt ba mươi lít.",
   "en": ""
  },
@@ -1353,450 +1797,6 @@
  },
  {
   "vi": "Nhà chị Mai",
-  "en": ""
- },
- {
-  "vi": "Bé Bin đi học về là đòi ăn liền.",
-  "en": ""
- },
- {
-  "vi": "Nhà ông Toàn",
-  "en": ""
- },
- {
-  "vi": "Bà Toàn dặn: ông vừa đi tái khám huyết áp về.",
-  "en": ""
- },
- {
-  "vi": "Nhà anh Khoa",
-  "en": ""
- },
- {
-  "vi": "Anh Khoa với chị Vy ăn tối sau giờ chạy bộ.",
-  "en": ""
- },
- {
-  "vi": "Nhà cô Lệ",
-  "en": ""
- },
- {
-  "vi": "Mấy đứa cháu đi học về là đói meo.",
-  "en": ""
- },
- {
-  "vi": "Chợ phường đông vừa, đồ tươi đủ cả.",
-  "en": ""
- },
- {
-  "vi": "Mưa sáng, chợ vắng: rau đắt hơn một xu mỗi phần.",
-  "en": ""
- },
- {
-  "vi": "Nhà có khách tới chơi: thêm hai người ăn, tiền chợ cũng nhiều hơn.",
-  "en": ""
- },
- {
-  "vi": "Cuối tháng",
-  "en": ""
- },
- {
-  "vi": "Cuối tháng, tiền chợ eo hẹp: chọn món vừa túi tiền.",
-  "en": ""
- },
- {
-  "vi": "“Ngon quá, cả nhà ăn sạch nồi!”",
-  "en": ""
- },
- {
-  "vi": "“Cơm nhà đúng nghĩa luôn đó.”",
-  "en": ""
- },
- {
-  "vi": "“Lần sau để ý giúp chị chút nhé.”",
-  "en": ""
- },
- {
-  "vi": "“Cũng được, mà chưa được như lần trước.”",
-  "en": ""
- },
- {
-  "vi": "“Hôm nay chị bớt chút công nhé, sai thế là phải chịu.”",
-  "en": ""
- },
- {
-  "vi": "“Chị trừ một ít, coi như nhắc em.”",
-  "en": ""
- },
- {
-  "vi": "“Bữa này chị chỉ tính nửa công thôi.”",
-  "en": ""
- },
- {
-  "vi": "Bé Bin ăn xế",
-  "en": ""
- },
- {
-  "vi": "Bé Bin ngủ trưa dậy đòi ăn. Em hấp giúp chị chén trứng thịt bằm, cắt nhỏ cho bé nha.",
-  "en": ""
- },
- {
-  "vi": "Trứng, thịt bằm trong tủ lạnh.",
-  "en": ""
- },
- {
-  "vi": "Chè cho cả nhà",
-  "en": ""
- },
- {
-  "vi": "Tối nay cả nhà xem phim, em nấu giúp chị nồi chè đậu xanh, ngọt vừa thôi.",
-  "en": ""
- },
- {
-  "vi": "Đậu xanh ngâm sẵn từ sáng.",
-  "en": ""
- },
- {
-  "vi": "Cháo cho ông",
-  "en": ""
- },
- {
-  "vi": "Ông ăn cơm không quen, con nấu giúp bà nồi cháo thịt bằm thật nhừ, nhạt muối nghe.",
-  "en": ""
- },
- {
-  "vi": "Gạo, thịt bằm có sẵn trong bếp.",
-  "en": ""
- },
- {
-  "vi": "Chè đậu xanh cho bà",
-  "en": ""
- },
- {
-  "vi": "Bà thèm chén chè đậu xanh, con nấu ít đường thôi nghe, bà kiêng ngọt.",
-  "en": ""
- },
- {
-  "vi": "Đậu xanh trong hũ trên kệ.",
-  "en": ""
- },
- {
-  "vi": "Thêm đĩa rau xào",
-  "en": ""
- },
- {
-  "vi": "Bạn anh ghé ăn ké, em xào thêm đĩa bí xanh nha, ít dầu thôi.",
-  "en": ""
- },
- {
-  "vi": "Bí xanh còn trong tủ lạnh.",
-  "en": ""
- },
- {
-  "vi": "Rau luộc ăn tối",
-  "en": ""
- },
- {
-  "vi": "Tối anh chỉ ăn rau, em luộc giúp anh đĩa rau muống nha.",
-  "en": ""
- },
- {
-  "vi": "Rau muống còn một bó.",
-  "en": ""
- },
- {
-  "vi": "Thêm đĩa rau cho cháu",
-  "en": ""
- },
- {
-  "vi": "Mấy đứa cháu ăn hết rau rồi, con luộc thêm đĩa nữa nghe, nêm đậm chút.",
-  "en": ""
- },
- {
-  "vi": "Rau muống mua dư hôm qua.",
-  "en": ""
- },
- {
-  "vi": "Nồi cháo cho đứa út",
-  "en": ""
- },
- {
-  "vi": "Thằng út hơi sốt, con nấu giúp cô nồi cháo thịt bằm, băm nhỏ nghe.",
-  "en": ""
- },
- {
-  "vi": "Gạo, thịt bằm có sẵn.",
-  "en": ""
- },
- {
-  "vi": "Chị Mai: “Bé Bin hỏi hoài: mai cô nấu cơm có tới nữa không mẹ?”",
-  "en": ""
- },
- {
-  "vi": "Chị Mai được lên trưởng phòng, nhắn cảm ơn vì tối nào cũng có cơm nóng.",
-  "en": ""
- },
- {
-  "vi": "Bé Bin vẽ tặng bức tranh cả nhà ngồi quanh mâm cơm, có cả bạn đeo tạp dề.",
-  "en": ""
- },
- {
-  "vi": "Chị Mai giới thiệu bạn cho mấy nhà trong chung cư.",
-  "en": ""
- },
- {
-  "vi": "Ông Toàn: “Cá hấp mềm, ông ăn được hết chén cơm.”",
-  "en": ""
- },
- {
-  "vi": "Bà Toàn khoe huyết áp ông tháng này ổn hơn hẳn.",
-  "en": ""
- },
- {
-  "vi": "Ông Toàn chép tặng bạn một bài thơ về bữa cơm nhà.",
-  "en": ""
- },
- {
-  "vi": "Anh Khoa: “Ăn kiêng mà vẫn thấy ngon, lạ ghê.”",
-  "en": ""
- },
- {
-  "vi": "Anh Khoa xuống được ba ký, rủ bạn chạy bộ cuối tuần.",
-  "en": ""
- },
- {
-  "vi": "Anh Khoa với chị Vy mời bạn dự đám cưới nhỏ ở quê.",
-  "en": ""
- },
- {
-  "vi": "Cô Lệ: “Tiền chợ dư ra, cô để dành mua sữa cho mấy đứa nhỏ.”",
-  "en": ""
- },
- {
-  "vi": "Cô Lệ dúi cho bạn bịch khô cá nhà làm.",
-  "en": ""
- },
- {
-  "vi": "Cô Lệ nói cả xóm ai cần người nấu cơm cũng chỉ tới bạn.",
-  "en": ""
- },
- {
-  "vi": "Giới thiệu nghề: nấu cơm gia đình",
-  "en": ""
- },
- {
-  "vi": "Cô Hạnh giới thiệu bạn tới nấu cơm cho các nhà quen trong phường. Mỗi ngày một nhà: nghe dặn, lên thực đơn, đi chợ vừa túi tiền, về nấu cho kịp bữa rồi tính sổ chợ rõ ràng.",
-  "en": ""
- },
- {
-  "vi": "Lên thực đơn: một canh, một mặn, một xào, một rau",
-  "en": ""
- },
- {
-  "vi": "Nhớ người trong nhà: bé nhỏ, ông bà, người ăn kiêng",
-  "en": ""
- },
- {
-  "vi": "Đi chợ: xem kỹ đồ tươi, mua đủ phần, xin hóa đơn",
-  "en": ""
- },
- {
-  "vi": "Rửa, cắt, nêm, canh lửa từng món",
-  "en": ""
- },
- {
-  "vi": "Món lâu bắc trước, các món lên mâm cùng lúc",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ chợ, gửi lại tiền thừa",
-  "en": ""
- },
- {
-  "vi": "Chị Mai: bé Bin năm tuổi",
-  "en": ""
- },
- {
-  "vi": "Ông Toàn: ăn mềm, nhạt muối",
-  "en": ""
- },
- {
-  "vi": "Anh Khoa: ăn kiêng mà mê cay",
-  "en": ""
- },
- {
-  "vi": "Cô Lệ: nhà bảy người, tiền chợ eo hẹp",
-  "en": ""
- },
- {
-  "vi": "Mưa sáng, nhà có khách, cuối tháng",
-  "en": ""
- },
- {
-  "vi": "Thực đơn hợp cả nhà",
-  "en": ""
- },
- {
-  "vi": "Đồ tươi, đủ ăn",
-  "en": ""
- },
- {
-  "vi": "Chín tới, vừa miệng",
-  "en": ""
- },
- {
-  "vi": "Món nào lên mâm cũng nóng",
-  "en": ""
- },
- {
-  "vi": "Sổ chợ rõ từng xu",
-  "en": ""
- },
- {
-  "vi": "Chủ nhà gọi điện dặn thêm",
-  "en": ""
- },
- {
-  "vi": "Điện thoại rung: “Em ơi, bữa nay bé Bin hơi ho, nhớ đừng cho đá vào nước nha, rau luộc chín kỹ giúp chị.”",
-  "en": ""
- },
- {
-  "vi": "Ghi lại lời dặn, dán lên cửa tủ lạnh",
-  "en": ""
- },
- {
-  "vi": "Tờ giấy dán ngay cửa tủ lạnh, nấu tới đâu nhìn tới đó.",
-  "en": ""
- },
- {
-  "vi": "Dạ, em nhớ rồi",
-  "en": ""
- },
- {
-  "vi": "Chị Mai cúp máy. Hy vọng là nhớ thật.",
-  "en": ""
- },
- {
-  "vi": "Bình ga sắp hết",
-  "en": ""
- },
- {
-  "vi": "Lửa bếp ga cứ phập phù, nghiêng bình nghe nhẹ tênh. Bình này chắc chỉ còn đủ một món.",
-  "en": ""
- },
- {
-  "vi": "Gọi đại lý đổi bình ngay, ứng tiền rồi xin hóa đơn",
-  "en": ""
- },
- {
-  "vi": "Chủ nhà trả lại sau",
-  "en": ""
- },
- {
-  "vi": "Mười lăm phút sau có bình mới. Hóa đơn kẹp vào sổ chợ, chủ nhà gửi lại tiền đủ.",
-  "en": ""
- },
- {
-  "vi": "Cứ nấu, hết thì tính",
-  "en": ""
- },
- {
-  "vi": "Đang kho dở thì tắt lửa, phải chạy đi đổi bình, cả nhà chờ cơm hơi lâu.",
-  "en": ""
- },
- {
-  "vi": "Con mèo nhà rình cá",
-  "en": ""
- },
- {
-  "vi": "Con mèo mướp của nhà ngồi chễm chệ trên ghế, mắt dán vào rổ cá vừa mua về.",
-  "en": ""
- },
- {
-  "vi": "Đậy lồng bàn, cất cá vào tủ lạnh",
-  "en": ""
- },
- {
-  "vi": "Mèo ngáp một cái rồi bỏ đi tìm chỗ nằm.",
-  "en": ""
- },
- {
-  "vi": "Xua mèo ra sân",
-  "en": ""
- },
- {
-  "vi": "Mèo ra sân được một lúc rồi lại lẻn vào.",
-  "en": ""
- },
- {
-  "vi": "Cho mèo miếng cá cho xong",
-  "en": ""
- },
- {
-  "vi": "Người nấu cơm cho mèo ăn cá của nhà, không hỏi một câu.",
-  "en": ""
- },
- {
-  "vi": "Mèo ăn xong còn đòi thêm. Chủ nhà nhìn rổ cá vơi đi, không nói gì.",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm sang hỏi mượn",
-  "en": ""
- },
- {
-  "vi": "Bà hàng xóm ló đầu qua cửa: “Con ơi, cho bà mượn cái nồi áp suất của nhà một bữa nghe.”",
-  "en": ""
- },
- {
-  "vi": "Dạ để con nhắn hỏi chủ nhà đã",
-  "en": ""
- },
- {
-  "vi": "Chủ nhà nhắn lại: “Cho bà mượn đi em.” Bà hàng xóm cảm ơn rối rít.",
-  "en": ""
- },
- {
-  "vi": "Đưa luôn cho bà",
-  "en": ""
- },
- {
-  "vi": "Người nấu cơm tự cho hàng xóm mượn đồ, không hỏi chủ nhà.",
-  "en": ""
- },
- {
-  "vi": "Tối chủ nhà tìm nồi áp suất không thấy, hơi phật ý.",
-  "en": ""
- },
- {
-  "vi": "Dạ con không dám",
-  "en": ""
- },
- {
-  "vi": "Bà hàng xóm gật gù rồi về.",
-  "en": ""
- },
- {
-  "vi": "Mưa ướt hết giỏ chợ",
-  "en": ""
- },
- {
-  "vi": "Mưa xối xả lúc ra chợ, giỏ đi chợ với tờ danh sách món ướt sũng.",
-  "en": ""
- },
- {
-  "vi": "Mượn túi nilon bọc giỏ, chép lại danh sách",
-  "en": ""
- },
- {
-  "vi": "Giỏ khô ráo, danh sách rõ ràng, đi chợ không sót món nào.",
-  "en": ""
- },
- {
-  "vi": "Cứ đi, về rồi tính",
-  "en": ""
- },
- {
-  "vi": "Về tới nhà, mấy bó rau dập nát vì nước mưa.",
   "en": ""
  }
 ]

@@ -1,5 +1,449 @@
 [
  {
+  "vi": "Máy tra cứu",
+  "en": ""
+ },
+ {
+  "vi": "Thư viện có tài khoản đọc bản điện tử của giáo trình này, đọc tại chỗ.",
+  "en": ""
+ },
+ {
+  "vi": "Cả lớp",
+  "en": ""
+ },
+ {
+  "vi": "Vy định chia bản photo cho bốn mươi bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Photo một chương đang cần, chỉ cách đọc bản điện tử",
+  "en": ""
+ },
+ {
+  "vi": "Không photo hết được nhưng chị chỉ em đọc bản điện tử, đỡ hẳn tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Vy đọc bản điện tử tại phòng máy, nhắn cả lớp lên thư viện đọc.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa ra có bản điện tử, ai biết đâu.",
+  "en": ""
+ },
+ {
+  "vi": "Tác giả giáo trình",
+  "en": ""
+ },
+ {
+  "vi": "Sách mình viết được đọc đúng cách, vui.",
+  "en": ""
+ },
+ {
+  "vi": "Photo cả cuốn cho sinh viên",
+  "en": ""
+ },
+ {
+  "vi": "Photo được cả cuốn, mà nghe nói thư viện bị nhắc vì vi phạm bản quyền.",
+  "en": ""
+ },
+ {
+  "vi": "Bản photo lan ra cả khoa. Nhà xuất bản gửi thư nhắc thư viện.",
+  "en": ""
+ },
+ {
+  "vi": "Thư viện mà làm lậu sách thì ai giữ sách.",
+  "en": ""
+ },
+ {
+  "vi": "Rẻ thì rẻ, mà áy náy.",
+  "en": ""
+ },
+ {
+  "vi": "Không photo thì thôi, mà nói câu cộc lốc.",
+  "en": ""
+ },
+ {
+  "vi": "Vy về tự mua bản photo lậu ngoài tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Biết vậy ra tiệm luôn.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối đúng, nhưng phải chỉ đường khác.",
+  "en": ""
+ },
+ {
+  "vi": "Sao chụp để học chỉ một phần nhỏ của cuốn sách; nói rõ lý do và chỉ cách khác hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "“Đưa lên đây, nhanh!”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Bính gọi xuống: “Mang ngay hồ sơ quy hoạch lên phòng họp, đoàn khách đang chờ. Phiếu với sổ để sau!”",
+  "en": ""
+ },
+ {
+  "vi": "Sổ khai thác",
+  "en": ""
+ },
+ {
+  "vi": "Quy định kho",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ ra khỏi kho phải ghi sổ, người nhận ký phiếu.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ, ký phiếu chỉ mất một phút.",
+  "en": ""
+ },
+ {
+  "vi": "Năm ngoái một hồ sơ mang lên họp “để sau ký” rồi thất lạc ba tháng.",
+  "en": ""
+ },
+ {
+  "vi": "Mang lên ngay, kèm phiếu, xin ông ký một chữ",
+  "en": ""
+ },
+ {
+  "vi": "Nhanh mà vẫn đúng quy định. Tôi ký mất có mười giây.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ lên kịp. Họp xong, ông Bính tự mang trả, sổ ghi đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Đúng là có phiếu thì khỏi ai hỏi ai.",
+  "en": ""
+ },
+ {
+  "vi": "Lãnh đạo cũng phải ký, vậy mới giữ được hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "Mang lên luôn, sổ để sau",
+  "en": ""
+ },
+ {
+  "vi": "Mang hồ sơ lên mà không ai ký, giờ không biết đang ở bàn ai.",
+  "en": ""
+ },
+ {
+  "vi": "Họp xong hồ sơ nằm lẫn trong chồng giấy phòng họp, ba hôm sau mới tìm thấy.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi tưởng cô ấy mang về rồi.",
+  "en": ""
+ },
+ {
+  "vi": "“Để sau” là lúc hồ sơ đi lạc.",
+  "en": ""
+ },
+ {
+  "vi": "Bắt ông xuống tận kho làm đủ thủ tục",
+  "en": ""
+ },
+ {
+  "vi": "Đúng quy định nhưng cứng quá, đoàn khách chờ mười lăm phút.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Bính xuống ký, mặt không vui. Đoàn khách chờ lâu.",
+  "en": ""
+ },
+ {
+  "vi": "Mang phiếu lên cho tôi ký có phải nhanh không.",
+  "en": ""
+ },
+ {
+  "vi": "Phường làm việc chậm quá.",
+  "en": ""
+ },
+ {
+  "vi": "Việc gấp vẫn ghi sổ, ký phiếu; mang phiếu tới tận nơi là vừa nhanh vừa đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn sách cũ quý hiếm",
+  "en": ""
+ },
+ {
+  "vi": "Trong thùng sách tặng có cuốn Truyện Kiều in năm 1960. Một ông khách lạ đứng xem, ngỏ ý mua lại 200 xu “cho thư viện có tiền”.",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn sách",
+  "en": ""
+ },
+ {
+  "vi": "Trang bản quyền",
+  "en": ""
+ },
+ {
+  "vi": "Bản in năm 1960, còn nguyên, ít nơi còn giữ.",
+  "en": ""
+ },
+ {
+  "vi": "Người tặng",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tặng sách",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thạc tặng, ghi “để bà con cùng đọc”.",
+  "en": ""
+ },
+ {
+  "vi": "Sách tặng là tài sản của thư viện, không bán cho cá nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ lại, đưa vào kệ sách quý, đọc tại chỗ",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn sách của tôi được giữ đúng ý: để bà con cùng đọc.",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn sách lên kệ quý. Ông Thạc ngày nào cũng ghé nhìn một cái.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi tặng là để người ta đọc, không phải để bán.",
+  "en": ""
+ },
+ {
+  "vi": "Sách gì mà cũ hơn cả ông nội em.",
+  "en": ""
+ },
+ {
+  "vi": "Bán lấy tiền mua sách mới",
+  "en": ""
+ },
+ {
+  "vi": "Sách tôi tặng mà thư viện đem bán cho người lạ!",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thạc biết chuyện, giận cả tháng.",
+  "en": ""
+ },
+ {
+  "vi": "Biết vậy tôi giữ ở nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Sách tặng không phải để mình mang đi bán.",
+  "en": ""
+ },
+ {
+  "vi": "Sách cũ quá, loại khỏi kho",
+  "en": ""
+ },
+ {
+  "vi": "Sách quý vậy mà định bỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Nguyệt nhặt lại từ thùng thanh lý, lắc đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Cũ không phải là hỏng.",
+  "en": ""
+ },
+ {
+  "vi": "Bản in năm 1960 là tư liệu đó.",
+  "en": ""
+ },
+ {
+  "vi": "Sách cũ chưa chắc là sách hỏng: sách quý giữ lại cho bạn đọc, không bán cho cá nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền phạt của cậu bé",
+  "en": ""
+ },
+ {
+  "vi": "Đạt trả sách trễ mười hai ngày. Theo nội quy phải nộp 12 xu, mà em chỉ có 3 xu, mắt đỏ hoe.",
+  "en": ""
+ },
+ {
+  "vi": "Em ở nhà trông em gái hai tuần vì mẹ nằm viện, có giấy ra viện của mẹ.",
+  "en": ""
+ },
+ {
+  "vi": "Trả trễ vì ốm đau, thiên tai, có giấy tờ: cán bộ được miễn phí trễ hạn, ghi rõ lý do.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm sách",
+  "en": ""
+ },
+ {
+  "vi": "Sách còn nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "Miễn phí trễ hạn, ghi lý do vào sổ",
+  "en": ""
+ },
+ {
+  "vi": "Cô hiểu chuyện nhà em, còn dặn em mượn tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Đạt cười toe, mượn thêm cuốn Toán vui. Sổ ghi rõ lý do miễn.",
+  "en": ""
+ },
+ {
+  "vi": "Em tưởng bị phạt hết tiền ăn sáng.",
+  "en": ""
+ },
+ {
+  "vi": "Kế toán phường",
+  "en": ""
+ },
+ {
+  "vi": "Có lý do, có ghi sổ, vậy là đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Phạt đủ 12 xu, ghi nợ phần thiếu",
+  "en": ""
+ },
+ {
+  "vi": "Đúng nội quy nhưng nhà em đang khó mà.",
+  "en": ""
+ },
+ {
+  "vi": "Đạt nộp 3 xu, nợ 9 xu, mấy hôm không dám lên thư viện.",
+  "en": ""
+ },
+ {
+  "vi": "Em không dám mượn nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Nội quy có chỗ cho lý do chính đáng.",
+  "en": ""
+ },
+ {
+  "vi": "Lờ đi, không ghi gì cả",
+  "en": ""
+ },
+ {
+  "vi": "Không phạt thì tốt, mà sổ không ghi gì.",
+  "en": ""
+ },
+ {
+  "vi": "Cuối tháng sổ phí lệch, kế toán phường hỏi, không ai nhớ vì sao.",
+  "en": ""
+ },
+ {
+  "vi": "Miễn được, nhưng phải ghi.",
+  "en": ""
+ },
+ {
+  "vi": "Ơ, vậy là được à?",
+  "en": ""
+ },
+ {
+  "vi": "Miễn phí khi có lý do chính đáng là đúng, nhưng phải ghi rõ lý do vào sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ huynh đòi gỡ sách",
+  "en": ""
+ },
+ {
+  "vi": "Chị Loan cầm cuốn truyện thiếu nhi về tình bạn của hai bạn nhỏ: “Truyện có cảnh hai bạn cãi nhau với bố mẹ, gỡ ngay, dạy hư con tôi!”",
+  "en": ""
+ },
+ {
+  "vi": "Bìa sau",
+  "en": ""
+ },
+ {
+  "vi": "Sách ghi độ tuổi 9 – 12, được nhiều trường giới thiệu.",
+  "en": ""
+ },
+ {
+  "vi": "Tiêu chí chọn sách",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tay thư viện",
+  "en": ""
+ },
+ {
+  "vi": "Sách được chọn theo độ tuổi, nội dung cả cuốn; ý kiến bạn đọc được ghi nhận, xem xét.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Bé Su bảy tuổi, mới lớp hai.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi nhận, gợi ý sách hợp tuổi bé Su, giữ sách trên kệ 9 – 12",
+  "en": ""
+ },
+ {
+  "vi": "Cô nghe tôi nói hết, còn chọn giúp sách hợp tuổi con.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Loan mượn ba cuốn cho tuổi lên bảy. Cuốn kia vẫn ở kệ 9 – 12.",
+  "en": ""
+ },
+ {
+  "vi": "Ừ, sách đó cho bé lớn, chị chọn nhầm.",
+  "en": ""
+ },
+ {
+  "vi": "Một bé lớp 5",
+  "en": ""
+ },
+ {
+  "vi": "Truyện đó hay mà, may không bị gỡ.",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ sách ngay cho chị vui",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ thì gỡ, mà có ai xem nội dung đâu.",
+  "en": ""
+ },
+ {
+  "vi": "Tuần sau một phụ huynh khác hỏi sao cuốn sách trường giới thiệu không còn.",
+  "en": ""
+ },
+ {
+  "vi": "Một người không thích thì chưa phải lý do gỡ sách.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ huynh khác",
+  "en": ""
+ },
+ {
   "vi": "Con tôi đang cần cuốn đó.",
   "en": ""
  },
@@ -1353,450 +1797,6 @@
  },
  {
   "vi": "Bơi sải nhanh nhất nhóm, mới học xong lớp sơ cứu.",
-  "en": ""
- },
- {
-  "vi": "Nói chuyện khéo, khách khó tính cỡ nào cũng chịu đội mũ.",
-  "en": ""
- },
- {
-  "vi": "Cứu hộ thời vụ",
-  "en": ""
- },
- {
-  "vi": "Lễ tân hồ",
-  "en": ""
- },
- {
-  "vi": "Mở hồ lúc 6:00. Anh Hải đang chờ ở ghế trực.",
-  "en": ""
- },
- {
-  "vi": "Anh Hải giao thêm một việc trong ca.",
-  "en": ""
- },
- {
-  "vi": "Một ca trên ghế cao",
-  "en": ""
- },
- {
-  "vi": "Người đuối nước",
-  "en": ""
- },
- {
-  "vi": "Im lặng, dựng đứng",
-  "en": ""
- },
- {
-  "vi": "Với, ném",
-  "en": ""
- },
- {
-  "vi": "Trước khi xuống nước",
-  "en": ""
- },
- {
-  "vi": "Có sấm",
-  "en": ""
- },
- {
-  "vi": "Tất cả lên bờ",
-  "en": ""
- },
- {
-  "vi": "Dốc ngược",
-  "en": ""
- },
- {
-  "vi": "Thử nước, kiểm phao",
-  "en": ""
- },
- {
-  "vi": "Quét đủ năm khu",
-  "en": ""
- },
- {
-  "vi": "Với, ném, phao ống",
-  "en": ""
- },
- {
-  "vi": "Sơ cứu, ghi sổ",
-  "en": ""
- },
- {
-  "vi": "Cái còi đồng của anh Hải đã mòn vẹt chỗ ngậm, mười lăm năm chưa đổi.",
-  "en": ""
- },
- {
-  "vi": "Bạn trực thêm một ca; anh chỉ cách thổi: một tiếng nhắc, ba tiếng gọi người, một hồi dài là có chuyện.",
-  "en": ""
- },
- {
-  "vi": "Anh Hải dặn: “Còi để người ta nghe, chứ không phải để người ta sợ.”",
-  "en": ""
- },
- {
-  "vi": "Ông Tư nhất định không đội mũ bơi, mười năm nay vẫn vậy.",
-  "en": ""
- },
- {
-  "vi": "Bạn trực thêm một ca, mua tặng ông cái mũ màu cam “cho dễ thấy”.",
-  "en": ""
- },
- {
-  "vi": "Sáng hôm sau ông Tư xuống nước, mũ cam trên đầu, còn khoe với cả làn.",
-  "en": ""
- },
- {
-  "vi": "Vòng tay xanh của bé Bon",
-  "en": ""
- },
- {
-  "vi": "Bé Bon đeo vòng đỏ, mỗi lần đi ngang khu sâu lại nhìn thèm thuồng.",
-  "en": ""
- },
- {
-  "vi": "Bạn dạy thêm một buổi, Bon nổi được mười giây không cần ai đỡ.",
-  "en": ""
- },
- {
-  "vi": "Cuối hè Bon bơi hết 25 mét, giơ tay nhận vòng xanh, cả lớp vỗ tay.",
-  "en": ""
- },
- {
-  "vi": "Cứu hộ quét hồ không rời mắt, gửi con thấy yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Còi đúng lúc, nói dễ nghe.",
-  "en": ""
- },
- {
-  "vi": "Có sấm là cho lên bờ liền, chuyên nghiệp ghê.",
-  "en": ""
- },
- {
-  "vi": "Bơi thử từng bé rồi mới cho ra khu sâu, cẩn thận.",
-  "en": ""
- },
- {
-  "vi": "Mở hồ: thử từng món, ghi sổ nước, sửa hoặc báo đúng người, chưa an toàn thì hoãn → lên ghế quét đủ năm khu → nhắc đúng luật → người đuối nước thì im lặng: báo động, gọi hỗ trợ, với hoặc ném trước, xuống nước thì mang phao ống → xem thở không, gọi 115, không dốc ngược → có sấm thì lên bờ, ba mươi phút sau tiếng sấm cuối mới mở lại → cuối ca ghi sổ trực thật.",
-  "en": ""
- },
- {
-  "vi": "Hồ bơi Sóng Xanh · Trung tâm Văn hóa – Thể thao phường",
-  "en": ""
- },
- {
-  "vi": "Nhân viên cứu hộ hồ bơi",
-  "en": ""
- },
- {
-  "vi": "Anh Hải kèm ba việc đầu",
-  "en": ""
- },
- {
-  "vi": "Ca 6:00–20:00 xoay ghế mỗi giờ",
-  "en": ""
- },
- {
-  "vi": "Bơi miễn phí ngoài giờ trực",
-  "en": ""
- },
- {
-  "vi": "Hồ bơi phường bốn làn, một khu cạn trẻ em. Ở đây ai lên ghế cũng quàng phao ống, mắt không rời mặt nước, kể cả lúc hồ vắng.",
-  "en": ""
- },
- {
-  "vi": "Hồ bơi Sóng Xanh · Lớp bơi hè thiếu nhi",
-  "en": ""
- },
- {
-  "vi": "Cứu hộ kiêm dạy bơi hè (bán thời gian)",
-  "en": ""
- },
- {
-  "vi": "Ca sáng ngắn",
-  "en": ""
- },
- {
-  "vi": "Đứng lớp cùng anh Hải",
-  "en": ""
- },
- {
-  "vi": "Mỗi lớp ba bé, khu cạn. Việc chính là bơi thử, phát vòng tay đúng sức từng bé và dạy các bé biết gọi người lớn.",
-  "en": ""
- },
- {
-  "vi": "Trên ghế cao, bạn thấy một bé đứng thẳng trong nước, đầu ngửa ra sau, miệng ngang mặt nước, không kêu. Bạn nghĩ gì?",
-  "en": ""
- },
- {
-  "vi": "Bé đang đuối nước: báo động, xuống cứu ngay",
-  "en": ""
- },
- {
-  "vi": "Người đuối nước thật thường im lặng, không vẫy được.",
-  "en": ""
- },
- {
-  "vi": "Bé đang chơi trò nín thở, để ý thêm chút",
-  "en": ""
- },
- {
-  "vi": "Chờ thêm là mất những giây quý nhất.",
-  "en": ""
- },
- {
-  "vi": "Gọi to hỏi bé có sao không",
-  "en": ""
- },
- {
-  "vi": "Người đang chìm không trả lời được.",
-  "en": ""
- },
- {
-  "vi": "Một người lớn đang chìm cách thành hồ một sải tay. Bạn làm gì?",
-  "en": ""
- },
- {
-  "vi": "Nằm thấp trên bờ, chìa sào hoặc phao ống cho họ bám",
-  "en": ""
- },
- {
-  "vi": "Với được từ bờ thì với: an toàn cho cả hai.",
-  "en": ""
- },
- {
-  "vi": "Nhảy xuống tay không ôm họ vào",
-  "en": ""
- },
- {
-  "vi": "Người đuối nước ôm ghì là chìm cả hai.",
-  "en": ""
- },
- {
-  "vi": "Gọi người khác tới rồi tính",
-  "en": ""
- },
- {
-  "vi": "Gọi hỗ trợ là đúng, nhưng cứu thì không chờ.",
-  "en": ""
- },
- {
-  "vi": "Nghe sấm xa, trời chưa mưa, quản lý bảo cứ cho bơi. Bạn làm gì?",
-  "en": ""
- },
- {
-  "vi": "Cho tất cả lên bờ, vào nơi trú kiên cố, ba mươi phút sau tiếng sấm cuối mới mở",
-  "en": ""
- },
- {
-  "vi": "Sét không chờ mưa.",
-  "en": ""
- },
- {
-  "vi": "Chỉ cho khu sâu lên bờ",
-  "en": ""
- },
- {
-  "vi": "Nước nào cũng nguy hiểm khi có sét.",
-  "en": ""
- },
- {
-  "vi": "Chờ mưa xuống rồi đóng",
-  "en": ""
- },
- {
-  "vi": "Nghe được sấm là đã ở trong tầm sét.",
-  "en": ""
- },
- {
-  "vi": "Một bé tám tuổi khoe “con bơi được 50 mét”, đòi ra khu sâu. Bạn làm gì?",
-  "en": ""
- },
- {
-  "vi": "Cho bơi thử ở làn sát thành, qua được mới ra khu sâu",
-  "en": ""
- },
- {
-  "vi": "Không tin miệng, tin bài bơi thử.",
-  "en": ""
- },
- {
-  "vi": "Bé nói vậy thì cho ra",
-  "en": ""
- },
- {
-  "vi": "Trẻ con hay nói quá khả năng.",
-  "en": ""
- },
- {
-  "vi": "Trẻ con không bao giờ được ra khu sâu",
-  "en": ""
- },
- {
-  "vi": "An toàn nhưng chưa công bằng với bé bơi giỏi.",
-  "en": ""
- },
- {
-  "vi": "Mười lăm năm ngồi ghế cao, cả hồ gọi là “Hải Rái Cá”. Cái còi đeo cổ chưa rời người ngày nào.",
-  "en": ""
- },
- {
-  "vi": "Mở mắt ra là hỏi doanh thu. Thương nhân viên, nhưng sợ nhất trên đời là phải hoàn tiền vé.",
-  "en": ""
- },
- {
-  "vi": "Khách bơi sáng, 72 tuổi",
-  "en": ""
- },
- {
-  "vi": "Bơi ếch từ hồi còn tắm sông, mười năm nay sáng nào cũng xuống hồ lúc 6 giờ. Ghét đội mũ bơi.",
-  "en": ""
- },
- {
-  "vi": "Trưởng nhóm thể dục dưới nước",
-  "en": ""
- },
- {
-  "vi": "Loa bluetooth đeo hông, dắt mười hai chị em nhảy aerobic; khoái nhất làn bơi nhanh vì “nước sạch hơn”.",
-  "en": ""
- },
- {
-  "vi": "Học viên lớp bơi, 8 tuổi",
-  "en": ""
- },
- {
-  "vi": "Hỏi gì cũng “con biết rồi”, kể cả bơi. Thật ra mới nổi được ba giây.",
-  "en": ""
- },
- {
-  "vi": "Mẹ bé Bon",
-  "en": ""
- },
- {
-  "vi": "Thả con xuống khu cạn rồi nằm ghế trả lời tin nhắn khách đặt hàng online.",
-  "en": ""
- },
- {
-  "vi": "Học sinh lớp 11, “Kha Flip”",
-  "en": ""
- },
- {
-  "vi": "Mười sáu tuổi, kênh TikTok chín chục nghìn follow, đi đâu cũng muốn nhào lộn một cú cho có content.",
-  "en": ""
- },
- {
-  "vi": "Kỹ thuật viên nước hồ",
-  "en": ""
- },
- {
-  "vi": "Giữ chìa khóa phòng máy và tủ hóa chất. Ít nói, nhìn màu nước là đoán được que thử.",
-  "en": ""
- },
- {
-  "vi": "Bờ hồ",
-  "en": ""
- },
- {
-  "vi": "Khu cạn trẻ em · 0,6 m",
-  "en": ""
- },
- {
-  "vi": "Làn bơi chậm · 1,2 m",
-  "en": ""
- },
- {
-  "vi": "Làn bơi nhanh · 1,4 m",
-  "en": ""
- },
- {
-  "vi": "Khu sâu · 1,8 m",
-  "en": ""
- },
- {
-  "vi": "Clo: từ 1 tới 3 trên bảng mẫu",
-  "en": ""
- },
- {
-  "vi": "pH: từ 7,2 tới 7,8",
-  "en": ""
- },
- {
-  "vi": "Độ trong của nước",
-  "en": ""
- },
- {
-  "vi": "Nhìn rõ nắp hút đáy ở chỗ sâu nhất, nước trong veo.",
-  "en": ""
- },
- {
-  "vi": "Que thử Clo & pH",
-  "en": ""
- },
- {
-  "vi": "Nắp hút đáy",
-  "en": ""
- },
- {
-  "vi": "Nắp hút đáy bắt đủ ốc, không nứt, không bung.",
-  "en": ""
- },
- {
-  "vi": "Phao ống ở ghế trực",
-  "en": ""
- },
- {
-  "vi": "Phao ống nguyên vẹn, dây đeo chắc, khóa bấm tốt.",
-  "en": ""
- },
- {
-  "vi": "Phao tròn & sào cứu hộ",
-  "en": ""
- },
- {
-  "vi": "Phao tròn có dây treo đúng chỗ, sào dài nằm trên giá.",
-  "en": ""
- },
- {
-  "vi": "Đủ găng tay, gạc, băng, nước rửa, mặt nạ thổi ngạt, chăn giữ ấm.",
-  "en": ""
- },
- {
-  "vi": "Biển độ sâu & nội quy",
-  "en": ""
- },
- {
-  "vi": "Biển độ sâu đủ bốn góc, biển “Không nhảy cắm đầu” còn rõ chữ.",
-  "en": ""
- },
- {
-  "vi": "Điện thoại khẩn cấp",
-  "en": ""
- },
- {
-  "vi": "Điện thoại bàn có tiếng tút, bảng số 115 dán ngay cạnh.",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ trực ca",
-  "en": ""
- },
- {
-  "vi": "Phiếu báo kỹ thuật (anh Tâm)",
-  "en": ""
- },
- {
-  "vi": "Gọi quản lý ngay (chị Phượng)",
-  "en": ""
- },
- {
-  "vi": "Nước đục mờ như nước vo gạo, đứng trên bờ không thấy nắp hút đáy ở khu sâu.",
-  "en": ""
- },
- {
-  "vi": "Nước đục không thấy đáy mà vẫn mở hồ: có ai chìm ở khu sâu cũng không ai thấy.",
   "en": ""
  }
 ]

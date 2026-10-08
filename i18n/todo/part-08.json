@@ -1,5 +1,937 @@
 [
  {
+  "vi": "Khoản tối thiểu kỳ này đã trả đủ rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ sao kê kỳ này đã trả hết rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng tiền mặt tại ATM",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách tự động trả nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã tắt tự động trả thẻ.",
+  "en": ""
+ },
+ {
+  "vi": "Trả hết dư nợ rồi mới hủy thẻ được.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận hủy thẻ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã hủy thẻ tín dụng.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn loại khoản vay nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn kỳ hạn vay nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận ký hợp đồng vay.",
+  "en": ""
+ },
+ {
+  "vi": "Điều khoản vay vừa thay đổi. Xem lại lịch trả nợ rồi ký nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một tiệm bạn làm chủ để nhận vốn vay.",
+  "en": ""
+ },
+ {
+  "vi": "tài khoản của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Khoản vay đã trả xong!",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận tất toán khoản vay trước hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã lưu thiết lập ngân hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu ngân hàng không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng Phố",
+  "en": ""
+ },
+ {
+  "vi": "NH Phố",
+  "en": ""
+ },
+ {
+  "vi": "Rất tốt",
+  "en": ""
+ },
+ {
+  "vi": "Trung bình",
+  "en": ""
+ },
+ {
+  "vi": "Cần cải thiện",
+  "en": ""
+ },
+ {
+  "vi": "Trả thẻ đúng hạn, tốt nhất là trả hết dư nợ sao kê: điểm lên đều mỗi kỳ.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ dư nợ thẻ dưới 30% hạn mức khi chốt sao kê.",
+  "en": ""
+ },
+ {
+  "vi": "Có thu nhập đều đặn (lương, tiền lời rút về ví) giúp điểm tăng mỗi tuần.",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản càng lâu năm, điểm càng vững.",
+  "en": ""
+ },
+ {
+  "vi": "Đừng nộp nhiều hồ sơ vay, mở thẻ dồn dập: mỗi lần ngân hàng tra cứu là điểm giảm một chút.",
+  "en": ""
+ },
+ {
+  "vi": "Trễ hạn một kỳ là mất nhiều điểm. Bật tự động trả tối thiểu nếu hay quên.",
+  "en": ""
+ },
+ {
+  "vi": "Mở tài khoản: hồ sơ tín dụng mới",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng tra cứu hồ sơ tín dụng",
+  "en": ""
+ },
+ {
+  "vi": "Nhiều hồ sơ tín dụng trong thời gian ngắn",
+  "en": ""
+ },
+ {
+  "vi": "Trả hết dư nợ sao kê đúng hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trả tối thiểu thẻ đúng hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trễ hạn thanh toán thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Trả góp khoản vay đúng hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trễ hạn trả góp khoản vay",
+  "en": ""
+ },
+ {
+  "vi": "Tất toán khoản vay",
+  "en": ""
+ },
+ {
+  "vi": "Thu nhập đều đặn trong tuần",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản thêm một tuần tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ thẻ thấp so với hạn mức",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ thẻ chiếm hơn 30% hạn mức",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ thẻ chiếm hơn 70% hạn mức",
+  "en": ""
+ },
+ {
+  "vi": "Bị ghi nhận nợ xấu",
+  "en": ""
+ },
+ {
+  "vi": "Trả góp nhà đúng hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trễ hạn trả góp nhà",
+  "en": ""
+ },
+ {
+  "vi": "Trả xong khoản vay mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "Không kỳ hạn",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ hạn 7 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ hạn 14 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ hạn 3 tháng",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ hạn 6 tháng",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ hạn 12 tháng",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ hạn 2 năm",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ hạn 3 năm",
+  "en": ""
+ },
+ {
+  "vi": "Vay tiêu dùng tín chấp",
+  "en": ""
+ },
+ {
+  "vi": "Không cần tài sản bảo đảm. Hạn mức theo thu nhập và điểm tín dụng. Tiền giải ngân vào tài khoản của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Vay mở rộng tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Giải ngân thẳng vào quỹ một tiệm bạn làm chủ, như một khoản góp vốn. Lãi thấp hơn vay tiêu dùng.",
+  "en": ""
+ },
+ {
+  "vi": "Cây ATM Ngân hàng Phố",
+  "en": ""
+ },
+ {
+  "vi": "Cây ATM khác ngân hàng",
+  "en": ""
+ },
+ {
+  "vi": "Tự trả tay",
+  "en": ""
+ },
+ {
+  "vi": "Tự động trả tối thiểu",
+  "en": ""
+ },
+ {
+  "vi": "Tự động trả toàn bộ sao kê",
+  "en": ""
+ },
+ {
+  "vi": "Tự động: ví đủ thì trả tiền mặt, thiếu thì quẹt thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Trả trực tiếp từ tài khoản thanh toán",
+  "en": ""
+ },
+ {
+  "vi": "Luôn trả tiền mặt",
+  "en": ""
+ },
+ {
+  "vi": "Ưu tiên quẹt thẻ tín dụng",
+  "en": ""
+ },
+ {
+  "vi": "Ưu tiên thẻ chung vợ chồng (quỹ chung)",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang có khoản quá hạn. Thanh toán khoản đó trước rồi hãy nộp hồ sơ mới nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Tạo tài khoản để chuyển khoản nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển khoản chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Mã giao dịch không hợp lệ. Tải lại trang nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chuyển từ tài khoản hoặc tiền mặt nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy tiến trình.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một người bạn để chuyển nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ chuyển được cho bạn bè thôi nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không chuyển được cho người này.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa chuyển được, thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "một tiệm trong phố",
+  "en": ""
+ },
+ {
+  "vi": "tiệm trong phố",
+  "en": ""
+ },
+ {
+  "vi": "cậu thanh niên ở gác nhà bà Tám",
+  "en": ""
+ },
+ {
+  "vi": "cô gái ở gác nhà bà Tám",
+  "en": ""
+ },
+ {
+  "vi": "bạn trẻ ở gác nhà bà Tám",
+  "en": ""
+ },
+ {
+  "vi": "dự án lãi khủng",
+  "en": ""
+ },
+ {
+  "vi": "một vụ lừa đảo",
+  "en": ""
+ },
+ {
+  "vi": "Bài có từ ngữ không hợp với nhóm. Sửa lại giúp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu bài đăng không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đăng lên Nhóm Cư Dân Phố.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu bình luận không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Bài này không còn trên nhóm.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã trả lời bài này nhiều rồi. Đăng bài mới nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Cách trả lời này không dùng được ở đây.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chọn im lặng. Có người lên tiếng giúp bạn rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả lời trong nhóm.",
+  "en": ""
+ },
+ {
+  "vi": "Viết gì đó rồi gửi nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác nhóm không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu cảm xúc không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Cảm xúc không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác này chỉ máy chủ dùng.",
+  "en": ""
+ },
+ {
+  "vi": "Hết lượt AI hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Viết MỘT bình luận trả lời người chơi trong chuỗi bình luận này.",
+  "en": ""
+ },
+ {
+  "vi": "Viết MỘT bình luận tiếp nối cuộc trò chuyện giữa các hàng xóm (người chơi không tham gia).",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu nhóm cư dân không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Viết gì đó rồi đăng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "ấm áp, thương người, lúc nào cũng hỏi ăn cơm chưa và đòi gửi đồ ăn qua",
+  "en": ""
+ },
+ {
+  "vi": "tổ trưởng tổ dân phố: lịch sự, hơi hành chính, hay mở đầu bằng thông báo, nhắc nhở mọi người giữ hòa khí",
+  "en": ""
+ },
+ {
+  "vi": "Ngoài lạnh trong nóng",
+  "en": ""
+ },
+ {
+  "vi": "ngoài mặt cằn nhằn, tỏ ra phiền, nhưng rồi lặng lẽ giúp và chối \"không phải vì lo đâu nhé\"",
+  "en": ""
+ },
+ {
+  "vi": "Biết tuốt",
+  "en": ""
+ },
+ {
+  "vi": "biết tuốt: chuyện gì cũng giải thích dài dòng, hay mở đầu \"thật ra là…\", \"theo anh tìm hiểu…\"",
+  "en": ""
+ },
+ {
+  "vi": "Gen Z: teencode nhẹ (khum, xỉu, j z, ủa alo, đỉnh nóc), nhiều emoji, thẳng thắn, dễ thương",
+  "en": ""
+ },
+ {
+  "vi": "Mê tử vi",
+  "en": ""
+ },
+ {
+  "vi": "mê tử vi, coi ngày tốt xấu, tuổi, hướng, sao chiếu mệnh; hiền lành",
+  "en": ""
+ },
+ {
+  "vi": "Thực dụng",
+  "en": ""
+ },
+ {
+  "vi": "thực dụng: nói chuyện giá cả, lời lỗ, chỗ nào rẻ, việc gì đáng làm; nói ngắn gọn",
+  "en": ""
+ },
+ {
+  "vi": "Lạnh lùng",
+  "en": ""
+ },
+ {
+  "vi": "lạnh lùng, cực kỳ kiệm lời: trả lời một hai chữ như \"ok.\", \"ừ.\", \"👍\", \"không.\"",
+  "en": ""
+ },
+ {
+  "vi": "Nhiều chuyện",
+  "en": ""
+ },
+ {
+  "vi": "nhiều chuyện, hóng hớt, \"nghe đâu\", \"nói nhỏ thôi nha\", thích lan tin nhưng không ác ý",
+  "en": ""
+ },
+ {
+  "vi": "Hài hước",
+  "en": ""
+ },
+ {
+  "vi": "hài hước, hay chế ảnh, chơi chữ, biến mọi chuyện thành trò đùa",
+  "en": ""
+ },
+ {
+  "vi": "ông cụ khó tính: than ồn, than rác, than xe đậu chắn cửa, hay dùng \"!!!\", nhưng không ác",
+  "en": ""
+ },
+ {
+  "vi": "hay khoe và sống ảo: khoe đơn hàng, đồ mới, check-in, luôn nói \"không có ý khoe đâu nha\"",
+  "en": ""
+ },
+ {
+  "vi": "nhút nhát, rụt rè, hay xin lỗi, câu ngắn, \"d-dạ\", emoji 🥺",
+  "en": ""
+ },
+ {
+  "vi": "drama: chuyện nhỏ cũng thành khủng hoảng, VIẾT HOA, nhiều 😭, nhưng dễ nguôi",
+  "en": ""
+ },
+ {
+  "vi": "Mê bia hơi",
+  "en": ""
+ },
+ {
+  "vi": "chú vui tính mê bia hơi, rủ rê \"làm cốc\", xởi lởi, giọng Bắc",
+  "en": ""
+ },
+ {
+  "vi": "bà mẹ hay so sánh con mình với con nhà người ta, khoe điểm số, hỏi thành tích",
+  "en": ""
+ },
+ {
+  "vi": "Bé con",
+  "en": ""
+ },
+ {
+  "vi": "em bé 7 tuổi mượn máy mẹ: hồn nhiên, câu ngắn, lễ phép, hay kể chuyện nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Phán xét",
+  "en": ""
+ },
+ {
+  "vi": "hay phán xét xã hội, đạo lý: \"giới trẻ bây giờ…\", \"thời chúng tôi…\", nói thẳng nhưng không chửi",
+  "en": ""
+ },
+ {
+  "vi": "Camera chạy bằng cơm",
+  "en": ""
+ },
+ {
+  "vi": "soi hàng xóm: nhớ ai đi đâu, mấy giờ, với ai; hay nói bóng gió rồi chối \"không có ý gì đâu\"",
+  "en": ""
+ },
+ {
+  "vi": "Đa nghi",
+  "en": ""
+ },
+ {
+  "vi": "đa nghi: cái gì cũng ngờ là lừa đảo, dặn đừng bấm link, đừng chuyển tiền",
+  "en": ""
+ },
+ {
+  "vi": "Lạc quan",
+  "en": ""
+ },
+ {
+  "vi": "lạc quan tếu: chuyện gì cũng thấy mặt tốt, \"mai trời lại sáng 🌈\"",
+  "en": ""
+ },
+ {
+  "vi": "cực ngắn: 1 câu hoặc vài chữ, có khi chỉ một emoji",
+  "en": ""
+ },
+ {
+  "vi": "Vừa phải",
+  "en": ""
+ },
+ {
+  "vi": "1 đến 3 câu ngắn",
+  "en": ""
+ },
+ {
+  "vi": "Nói nhiều",
+  "en": ""
+ },
+ {
+  "vi": "nói dài, lan man, lạc đề sang chuyện khác, 4 đến 6 câu, vài emoji",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nhà trọ, cho bạn thuê gác",
+  "en": ""
+ },
+ {
+  "vi": "trời đất",
+  "en": ""
+ },
+ {
+  "vi": "Bà chủ nhà trọ thương người như con cháu, hở ra là nấu canh chua, chè, gửi đồ ăn; hay kể chuyện ngày xưa.",
+  "en": ""
+ },
+ {
+  "vi": "bà tám",
+  "en": ""
+ },
+ {
+  "vi": "Bắc",
+  "en": ""
+ },
+ {
+  "vi": "trân trọng",
+  "en": ""
+ },
+ {
+  "vi": "Tổ trưởng chu đáo, đăng thông báo có biểu tượng 📢, nhắc nội quy nhóm, giữ hòa khí.",
+  "en": ""
+ },
+ {
+  "vi": "cô lụa",
+  "en": ""
+ },
+ {
+  "vi": "Thợ tiệm sửa đồ",
+  "en": ""
+ },
+ {
+  "vi": "Cằn nhằn \"phiền ghê\", rồi lẳng lặng sửa giúp không lấy tiền; luôn chối là vì lo cho ai.",
+  "en": ""
+ },
+ {
+  "vi": "chú tư",
+  "en": ""
+ },
+ {
+  "vi": "nói chung là",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện gì cũng có lý thuyết, trích \"theo anh tìm hiểu\", giải thích dài, đôi khi sai mà không nhận.",
+  "en": ""
+ },
+ {
+  "vi": "ủa alo",
+  "en": ""
+ },
+ {
+  "vi": "Cậu nhóc lớp 9 nói teencode, mê game, hay \"cà khịa\" người lớn một cách dễ thương.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm lâu năm, nuôi mèo Mướp",
+  "en": ""
+ },
+ {
+  "vi": "đó con",
+  "en": ""
+ },
+ {
+  "vi": "trời ơi",
+  "en": ""
+ },
+ {
+  "vi": "Bà cụ hiền, mê coi ngày, tuổi, hướng nhà; nuôi con mèo Mướp hay đi lạc.",
+  "en": ""
+ },
+ {
+  "vi": "bà sáu",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tạp hóa đầu hẻm",
+  "en": ""
+ },
+ {
+  "vi": "tính ra",
+  "en": ""
+ },
+ {
+  "vi": "Buôn bán lâu năm, cái gì cũng tính lời lỗ, chỉ chỗ mua rẻ, nói thẳng mà tốt bụng.",
+  "en": ""
+ },
+ {
+  "vi": "cô ba",
+  "en": ""
+ },
+ {
+  "vi": "Lập trình viên làm đêm",
+  "en": ""
+ },
+ {
+  "vi": "Dân IT ít nói nhất phố, trả lời \"ok.\", \"ừ.\", \"👍\"; thật ra giúp mọi người sửa wifi.",
+  "en": ""
+ },
+ {
+  "vi": "quân",
+  "en": ""
+ },
+ {
+  "vi": "minh quân",
+  "en": ""
+ },
+ {
+  "vi": "Chị Tư Zalo",
+  "en": ""
+ },
+ {
+  "vi": "Bán xôi đầu hẻm, admin nhóm",
+  "en": ""
+ },
+ {
+  "vi": "nghe đâu",
+  "en": ""
+ },
+ {
+  "vi": "nói nhỏ thôi nha",
+  "en": ""
+ },
+ {
+  "vi": "Bà hoàng hóng hớt của hẻm, lập ra nhóm Zalo khu phố: tin gì cũng biết trước, kể tràng giang, kèm quảng cáo xôi.",
+  "en": ""
+ },
+ {
+  "vi": "chị tư zalo",
+  "en": ""
+ },
+ {
+  "vi": "tư zalo",
+  "en": ""
+ },
+ {
+  "vi": "chị tư",
+  "en": ""
+ },
+ {
+  "vi": "Tùng Tủn",
+  "en": ""
+ },
+ {
+  "vi": "cười ẻ",
+  "en": ""
+ },
+ {
+  "vi": "hài vãi",
+  "en": ""
+ },
+ {
+  "vi": "Shipper vui tính, hay đăng ảnh chế, chơi chữ, chuyện gì cũng bẻ ra cười.",
+  "en": ""
+ },
+ {
+  "vi": "tùng tủn",
+  "en": ""
+ },
+ {
+  "vi": "tùng",
+  "en": ""
+ },
+ {
+  "vi": "tủn",
+  "en": ""
+ },
+ {
+  "vi": "Hưu trí, nhà số 12",
+  "en": ""
+ },
+ {
+  "vi": "Ông cụ khó tính: ghét ồn sau 10 giờ, ghét xe đậu trước cửa, ghét rác bỏ sai giờ; thật ra rất quý trẻ con.",
+  "en": ""
+ },
+ {
+  "vi": "ông bảy",
+  "en": ""
+ },
+ {
+  "vi": "Kiều Trang",
+  "en": ""
+ },
+ {
+  "vi": "Bán hàng online",
+  "en": ""
+ },
+ {
+  "vi": "Hot girl bán online, khoe đơn, khoe túi, check-in; luôn chêm \"không có ý khoe đâu nha\".",
+  "en": ""
+ },
+ {
+  "vi": "kiều trang",
+  "en": ""
+ },
+ {
+  "vi": "Sinh viên năm hai, ở trọ",
+  "en": ""
+ },
+ {
+  "vi": "d-dạ",
+  "en": ""
+ },
+ {
+  "vi": "Sinh viên rụt rè, xin lỗi liên tục, nói rất ngắn, biết ơn mọi người.",
+  "en": ""
+ },
+ {
+  "vi": "em thư",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên spa",
+  "en": ""
+ },
+ {
+  "vi": "TRỜI ƠI",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện gì cũng là thảm họa: viết hoa, khóc, kể lể; nhưng dỗ một câu là vui lại.",
+  "en": ""
+ },
+ {
+  "vi": "chị diệp",
+  "en": ""
+ },
+ {
+  "vi": "diệp",
+  "en": ""
+ },
+ {
+  "vi": "Xe ôm, trưởng ban bia hơi",
+  "en": ""
+ },
+ {
+  "vi": "làm cốc",
+  "en": ""
+ },
+ {
+  "vi": "dô",
+  "en": ""
+ },
+ {
+  "vi": "Chú xe ôm xởi lởi, chuyện gì cũng kết bằng \"chiều ra làm cốc\", sẵn lòng chở giúp ai cần.",
+  "en": ""
+ },
+ {
+  "vi": "chú hùng",
+  "en": ""
+ },
+ {
+  "vi": "Kế toán, mẹ bé Na",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ bé Na, hay kể thành tích của con và hỏi con nhà người khác được mấy điểm.",
+  "en": ""
+ },
+ {
+  "vi": "cô hạnh",
+  "en": ""
+ },
+ {
+  "vi": "hạnh",
+  "en": ""
+ },
+ {
+  "vi": "Bé Na (máy mẹ Hạnh)",
+  "en": ""
+ },
+ {
+  "vi": "Bé Na mượn điện thoại mẹ để đăng: hồn nhiên, lễ phép, kể chuyện con mèo, bức tranh.",
+  "en": ""
+ },
+ {
+  "vi": "bé na",
+  "en": ""
+ },
+ {
+  "vi": "Bác Liêm",
+  "en": ""
+ },
+ {
+  "vi": "Thầy giáo về hưu",
+  "en": ""
+ },
+ {
+  "vi": "giới trẻ bây giờ",
+  "en": ""
+ },
+ {
+  "vi": "thời chúng tôi",
+  "en": ""
+ },
+ {
+  "vi": "nói thẳng",
+  "en": ""
+ },
+ {
+  "vi": "Thầy giáo về hưu hay đạo lý, phán xét giới trẻ, nhưng khi thấy việc tốt thì khen thật lòng.",
+  "en": ""
+ },
+ {
+  "vi": "bác liêm",
+  "en": ""
+ },
+ {
+  "vi": "liêm",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hai Loa",
+  "en": ""
+ },
+ {
+  "vi": "Bán nước đầu hẻm, chuyện gì cũng biết",
+  "en": ""
+ },
+ {
+  "vi": "cô thấy hết",
+  "en": ""
+ },
+ {
+  "vi": "không có ý gì đâu",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi quán nước đầu hẻm cả ngày, nhớ chính xác ai đi đâu mấy giờ, hay nói bóng gió rồi chối; giọng to nên cả hẻm gọi là \"Hai Loa\".",
+  "en": ""
+ },
+ {
+  "vi": "cô hai loa",
+  "en": ""
+ },
+ {
+  "vi": "Thím Bảy",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi hóng mát đầu ngõ cả ngày",
+  "en": ""
+ },
+ {
   "vi": "thím",
   "en": ""
  },
@@ -837,382 +1769,6 @@
  },
  {
   "vi": "🔥 FLASH SALE tối nay 8 giờ nha cả nhà 🔥 Son, kem chống nắng, túi xách, giảm tới 50%! Hôm qua Trang chốt 120 đơn, mệt xỉu mà vui 😘 không có ý khoe đâu nha. Hàng xóm mua Trang freeship luôn!",
-  "en": ""
- },
- {
-  "vi": "Giảm 50% là có vấn đề. Hàng thật hay hàng giả vậy em?",
-  "en": ""
- },
- {
-  "vi": "Hàng chính hãng có hóa đơn đàng hoàng nha anh Tâm 😤 Trang làm ăn uy tín 5 năm rồi.",
-  "en": ""
- },
- {
-  "vi": "TRỜI ƠI chị đang cần son mà chị hết tiền rồi 😭 tháng này chị tiêu quá tay.",
-  "en": ""
- },
- {
-  "vi": "Mua thì mua cái cần, đừng thấy giảm giá là mua. Cô bán hàng cả đời, cô biết.",
-  "en": ""
- },
- {
-  "vi": "Giới trẻ bây giờ cứ thấy chữ “sale” là như thiêu thân lao vào đèn.",
-  "en": ""
- },
- {
-  "vi": "Tối nay tui là shipper chính thức của flash sale nè 🛵💨 ai đặt ở hẻm mình tui giao trong 3 phút!",
-  "en": ""
- },
- {
-  "vi": "Con bán tranh con tự vẽ ạ 🎨 mỗi bức 2 nghìn ạ. Tiền con để mua màu mới ạ. Có tranh mèo, tranh nhà, tranh bà Tám ạ 🌸",
-  "en": ""
- },
- {
-  "vi": "Bà mua bức tranh bà Tám! Bà treo ở phòng khách liền 🥹",
-  "en": ""
- },
- {
-  "vi": "Ông lấy tranh con chim. Không có thì vẽ.",
-  "en": ""
- },
- {
-  "vi": "lấy 1 bức mèo.",
-  "en": ""
- },
- {
-  "vi": "Na nhà em mới học vẽ có ba tháng thôi đấy ạ, cô giáo bảo có năng khiếu 😊",
-  "en": ""
- },
- {
-  "vi": "Tôi đặt một bức phong cảnh. Trẻ con biết tự làm ra tiền từ sức mình, tốt. Đáng khen.",
-  "en": ""
- },
- {
-  "vi": "Con cảm ơn cả nhà ạ 🥰 con vẽ xong hết rồi ạ",
-  "en": ""
- },
- {
-  "vi": "Cây mãng cầu trước nhà tôi năm nay sai quả. Tôi không bán, ai muốn ăn thì sang hái, nhớ hái trái chín, trái non để lại. Tôi nói trước: không bẻ cành, không trèo lên mái nhà tôi.",
-  "en": ""
- },
- {
-  "vi": "Mãng cầu là trái tượng trưng cho “cầu được ước thấy” đó mọi người, ăn lấy hên 🙏",
-  "en": ""
- },
- {
-  "vi": "bác Liêm ơi em xin một trái mà em hứa khum trèo nha 🙏",
-  "en": ""
- },
- {
-  "vi": "Được. Cháu Tí gần đây lễ phép hơn rồi đấy.",
-  "en": ""
- },
- {
-  "vi": "Mãng cầu ngoài chợ giờ mắc lắm đó, bác cho vậy là quý rồi.",
-  "en": ""
- },
- {
-  "vi": "Bác Liêm ngoài phán xét trong mãng cầu 🤣🍈",
-  "en": ""
- },
- {
-  "vi": "Khoe chút ạ: Na nhà em thi cuối kỳ được điểm 10 cả toán lẫn tiếng Việt, được cô giáo khen trước lớp 🥰 Nhà mình có cháu nào thi chưa, được bao nhiêu điểm ạ?",
-  "en": ""
- },
- {
-  "vi": "Giỏi quá trời! Mà nghe đâu lớp đó nhiều đứa được 10 lắm đó chị 👀",
-  "en": ""
- },
- {
-  "vi": "Giỏi quá con ơi, qua bà thưởng hộp sữa chua nghe 🥹",
-  "en": ""
- },
- {
-  "vi": "Na lớp 2 được 10, em lớp 9 được 6 phẩy mà mẹ em khen quá trời 😭 mỗi nhà một chuẩn",
-  "en": ""
- },
- {
-  "vi": "Điểm cao là tốt, nhưng học đi đôi với hành. Học giỏi mà không biết chào hỏi thì cũng vứt.",
-  "en": ""
- },
- {
-  "vi": "Dạ Na nhà em lễ phép lắm bác ạ, chào cả con mèo đầu ngõ 😅",
-  "en": ""
- },
- {
-  "vi": "Giỏi quá Na ơi 🌟 mà 6 phẩy của Tí cũng đáng khen nè, có tiến bộ là giỏi rồi!",
-  "en": ""
- },
- {
-  "vi": "Con cảm ơn cả nhà ạ 🥰",
-  "en": ""
- },
- {
-  "vi": "Thông báo trọng đại: anh hai tui cuối tháng này cưới vợ 🎉 Cả hẻm mời hết nha, tiệc ở nhà văn hóa. Anh em nào đi thì comment để tui báo số bàn, ai không đi thì… cũng comment để tui buồn 😂",
-  "en": ""
- },
- {
-  "vi": "Có bia không cháu? Có thì chú đi hai suất 🍺",
-  "en": ""
- },
- {
-  "vi": "Bà coi ngày rồi, ngày đó tốt lắm, hợp tuổi cô dâu chú rể. Trăm năm hạnh phúc nghe con.",
-  "en": ""
- },
- {
-  "vi": "Trang lo phần chụp hình check-in cho! Backdrop hoa tươi luôn nha, không có ý khoe đâu 💐",
-  "en": ""
- },
- {
-  "vi": "Đi đám cưới giờ phong bì bao nhiêu cho vừa ta, vật giá lên hết rồi 😅",
-  "en": ""
- },
- {
-  "vi": "Hát karaoke đến mấy giờ?",
-  "en": ""
- },
- {
-  "vi": "Tới 10 giờ thôi ông ơi, tui hứa bằng danh dự shipper 🫡",
-  "en": ""
- },
- {
-  "vi": "chúc mừng.",
-  "en": ""
- },
- {
-  "vi": "🎂 Hôm nay là sinh nhật lần thứ 76 của bà Sáu, người sống lâu năm nhất hẻm mình. Tổ dân phố kính chúc bà luôn mạnh khỏe, vui vẻ bên con Mướp ạ!",
-  "en": ""
- },
- {
-  "vi": "Trời ơi bà cảm ơn cô Lụa với cả xóm nghe 🥹 Năm nay bà tuổi Ngọ gặp sao Thái Âm, tốt lắm. Chiều bà nấu nồi chè mời cả xóm nha.",
-  "en": ""
- },
- {
-  "vi": "Chúc bà Sáu sống lâu trăm tuổi, năm nào tui với bà cũng ngồi nói chuyện đầu hẻm nghe 🥹",
-  "en": ""
- },
- {
-  "vi": "chúc mừng sinh nhật bà.",
-  "en": ""
- },
- {
-  "vi": "Con chúc bà Sáu sinh nhật vui vẻ ạ 🎂 con vẽ tặng bà con Mướp ạ",
-  "en": ""
- },
- {
-  "vi": "Chúc bà mạnh khỏe. Bảo con mèo đừng sang nhà tôi.",
-  "en": ""
- },
- {
-  "vi": "🖼️ [Ảnh chế] Con Mướp đội nón sinh nhật: “Hôm nay sen nhà tui sinh nhật, cấm ai la tui.” 🎉",
-  "en": ""
- },
- {
-  "vi": "Chính thức rước em xe mới về rồi nè cả nhà 🚗✨ Làm lụng mấy năm cuối cùng cũng có. Không có ý khoe đâu nha, chỉ muốn chia vui thôi 😘 Mai Trang chở mấy chị đi uống cà phê!",
-  "en": ""
- },
- {
-  "vi": "Xe to thế đậu ở đâu? Không được đậu trước cửa tôi!!!",
-  "en": ""
- },
- {
-  "vi": "Nghe đâu xe này trả góp đó mọi người 👀 à mà thôi chị nói nhỏ thôi, chúc mừng em nha!",
-  "en": ""
- },
- {
-  "vi": "Giới trẻ bây giờ thích khoe của. Thời chúng tôi có cái xe đạp là mừng cả tháng.",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng! Xe mới thì cần shipper mới làm tài xế không, tui nhận việc liền 🛵➡️🚗",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng Trang nha, làm ra tiền bằng sức mình là giỏi rồi 🌈",
-  "en": ""
- },
- {
-  "vi": "Xe đẹp. Nhớ tính tiền xăng, tiền gửi xe, tiền bảo hiểm mỗi tháng, đừng để xe nuôi người mệt quá nha con.",
-  "en": ""
- },
- {
-  "vi": "📢 Cảm ơn cháu Quân đã lắp lại mạng wifi miễn phí ở nhà văn hóa cho các cháu học bài. Tổ dân phố ghi nhận tinh thần của cháu ạ.",
-  "en": ""
- },
- {
-  "vi": "anh Quân đỉnh quá 🫡 giờ wifi nhà văn hóa mạnh hơn wifi nhà em luôn",
-  "en": ""
- },
- {
-  "vi": "Thằng Quân ít nói mà làm được việc ghê, qua bà cho hộp cơm nghe con.",
-  "en": ""
- },
- {
-  "vi": "Giới trẻ như cháu Quân thì tôi không có gì để phàn nàn.",
-  "en": ""
- },
- {
-  "vi": "Quân mà nói hơn 3 chữ trong một câu chắc wifi cả phố sập 🤣",
-  "en": ""
- },
- {
-  "vi": "Tin vui nè cả nhà ơi!!! Nhà số 7 mới có em bé đó, bé trai, 3 ký 2, mẹ tròn con vuông 👶 Chị biết đầu tiên luôn vì sáng nay ông nội ra mua xôi mà cười không khép miệng được 😂 Ai ghé thăm thì nhớ nói nhỏ nha, em bé đang ngủ.",
-  "en": ""
- },
- {
-  "vi": "Bé tuổi này mạng Kim, sau này làm ăn khá lắm đó. Bà mừng quá 🥹",
-  "en": ""
- },
- {
-  "vi": "Bà nấu nồi cháo móng giò gửi qua cho mẹ bé liền, mẹ đẻ phải ăn cho có sữa.",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng nhà số 7 nhé! Na nhà em hồi đẻ ra 3 ký 5 cơ, bác sĩ khen suốt.",
-  "en": ""
- },
- {
-  "vi": "Có em bé thì cả hẻm nhớ nói nhỏ, đừng hát hò nữa!!!",
-  "en": ""
- },
- {
-  "vi": "Chú chở mẹ con đi tiêm chủng miễn phí nhé, cứ gọi chú!",
-  "en": ""
- },
- {
-  "vi": "TRỜI ƠI mọi người ơi 😭😭😭 Chị đi cắt tóc mà thợ cắt hư hết rồi, giờ chị như cây nấm luôn. Mai chị còn đi đám cưới nữa, chị không dám ra đường luôn đó. Cuộc đời chị sao khổ vậy nè 😭",
-  "en": ""
- },
- {
-  "vi": "Chị ơi tóc nấm đang là mốt đó, nhìn trẻ ra 5 tuổi luôn nè 🌈",
-  "en": ""
- },
- {
-  "vi": "Tóc mọc lại. Đừng khóc nữa.",
-  "en": ""
- },
- {
-  "vi": "Qua salon quen của Trang nè chị, em book cho, chị tỉa lại là xinh lung linh liền ✨",
-  "en": ""
- },
- {
-  "vi": "🖼️ [Ảnh chế] Cây nấm đội mũ đi đám cưới, chú thích: “Khách mời VIP.” Đùa thôi chị Diệp đừng giận tui 🙏",
-  "en": ""
- },
- {
-  "vi": "Tóc tai không quan trọng bằng cái nết.",
-  "en": ""
- },
- {
-  "vi": "Thôi chị đội nón đi đám cưới. Cảm ơn mọi người đã dỗ chị 🥹",
-  "en": ""
- },
- {
-  "vi": "MỌI NGƯỜI ƠI chị mất điện thoại rồi 😭😭 tìm cả buổi sáng không thấy, trong đó có danh bạ khách hàng, hình ảnh, tất cả mọi thứ 😭 Chị muốn xỉu luôn. Ai thấy cái điện thoại ốp hồng có hình con mèo không 😭",
-  "en": ""
- },
- {
-  "vi": "Em đăng bài bằng gì vậy Diệp? 🤨",
-  "en": ""
- },
- {
-  "vi": "…bằng máy tính bảng 😭 mà thôi chị tìm thấy rồi, nó nằm trong tủ lạnh, chị để cạnh hộp sữa chua 😭😭",
-  "en": ""
- },
- {
-  "vi": "Điện thoại cũng cần được làm mát mà chị 🤣🧊",
-  "en": ""
- },
- {
-  "vi": "Để bà coi, tuần này tuổi Dần hay quên, chị Diệp tuổi Dần phải không 😅",
-  "en": ""
- },
- {
-  "vi": "Tìm được là vui rồi nè, lại còn mát lạnh nữa 🌈",
-  "en": ""
- },
- {
-  "vi": "Chị chia tay rồi mọi người ạ 💔 5 năm quen nhau mà giờ người ta nói “mình không hợp”. Hợp 5 năm rồi mới không hợp hả 😭 Tối nay chị ngồi một mình ăn hết một hộp kem luôn rồi 😭",
-  "en": ""
- },
- {
-  "vi": "Thôi con, người không thương mình thì mình thương mình. Qua bà nấu cháo, ăn đồ ấm cho đỡ buồn. Hồi xưa bà cũng từng khóc vì một người, giờ bà còn không nhớ mặt ổng nữa 😄",
-  "en": ""
- },
- {
-  "vi": "Chị xứng đáng với người tốt hơn nè 🌈 Mai chị em mình đi dạo công viên nha.",
-  "en": ""
- },
- {
-  "vi": "Buồn thì qua tiệm chú ngồi. Chú không nói gì đâu, có ấm trà thôi.",
-  "en": ""
- },
- {
-  "vi": "Nghe đâu ông kia có người mới rồi đó… à thôi thôi chị không nói nữa, em đừng buồn 🫢",
-  "en": ""
- },
- {
-  "vi": "Nhắc nhẹ cả nhà: chuyện riêng của người khác mình động viên thôi, không bàn thêm nhé.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn mọi người nhiều lắm 🥹 có hàng xóm như vầy chị thấy đỡ cô đơn ghê.",
-  "en": ""
- },
- {
-  "vi": "🖼️ [Ảnh chế] Một người mở tủ lạnh lần thứ 7 trong 5 phút, chú thích: “Biết đâu lần này có món mới.” Ai giống tui điểm danh 🙋‍♂️",
-  "en": ""
- },
- {
-  "vi": "🖼️ [Ảnh chế] Con mèo nằm úp mặt xuống bàn phím, chú thích: “Tôi lúc 3 giờ chiều thứ Hai.” Cả hẻm ai đang giống con mèo này 😂",
-  "en": ""
- },
- {
-  "vi": "em nè 🙋 tủ lạnh nhà em toàn nước lọc mà em vẫn mở 😭",
-  "en": ""
- },
- {
-  "vi": "Chị luôn đó, mở ra đóng vô rồi ăn bánh tráng 😭😂",
-  "en": ""
- },
- {
-  "vi": "Giới trẻ bây giờ rảnh quá mới ngồi chế ảnh.",
-  "en": ""
- },
- {
-  "vi": "Bác ơi bác đang đọc ảnh chế trên điện thoại đó bác 🤭",
-  "en": ""
- },
- {
-  "vi": "Mở tủ lạnh nhà bà là có đồ ăn liền nè, qua đây 😂",
-  "en": ""
- },
- {
-  "vi": "Chiều nay tôi ngồi công viên, đếm được 23 thanh niên, 22 người cắm mặt vào điện thoại. Giới trẻ bây giờ không còn nói chuyện với nhau nữa. Thời chúng tôi, chiều ra công viên là đánh cờ, đá cầu, bàn chuyện thời sự. Tôi viết mấy dòng này mong các cháu suy nghĩ.",
-  "en": ""
- },
- {
-  "vi": "bác ơi bác đang đăng bài trên điện thoại đó ạ 🤭",
-  "en": ""
- },
- {
-  "vi": "Tôi dùng điện thoại có mục đích!",
-  "en": ""
- },
- {
-  "vi": "Bác nói cũng đúng nè, cuối tuần này lớp chị tổ chức ngày không điện thoại cho tụi nhỏ chơi ô ăn quan đó 🌈 bác qua dạy tụi nhỏ đánh cờ không bác?",
-  "en": ""
- },
- {
-  "vi": "Được. Chín giờ sáng tôi qua.",
-  "en": ""
- },
- {
-  "vi": "Người thứ 23 là tui, tui đang coi bản đồ giao hàng bác ơi 😭",
-  "en": ""
- },
- {
-  "vi": "Bà coi tử vi tuần này cho cả xóm nè 🔮 Tuổi Tý có quý nhân phù trợ, tuổi Sửu nên kiêng đi xa, tuổi Dần hao tài nhẹ, tuổi Mão (con Mướp nhà bà) được ăn ngon 😂 Ai tuổi gì nói bà coi thêm cho. Mà nhớ nghe, tin thì tin vừa vừa thôi, sống tốt là quan trọng nhất.",
   "en": ""
  }
 ]

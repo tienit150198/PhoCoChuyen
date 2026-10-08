@@ -1,5 +1,473 @@
 [
  {
+  "vi": "xử lý nguy hiểm ngay",
+  "en": ""
+ },
+ {
+  "vi": "bỏ qua nguy hiểm",
+  "en": ""
+ },
+ {
+  "vi": "Đúng chuyện cần nghe",
+  "en": ""
+ },
+ {
+  "vi": "nói đúng chuyện của tổ",
+  "en": ""
+ },
+ {
+  "vi": "chưa sát",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời đúng",
+  "en": ""
+ },
+ {
+  "vi": "các cụ hiểu, nhớ",
+  "en": ""
+ },
+ {
+  "vi": "trả lời chưa đúng",
+  "en": ""
+ },
+ {
+  "vi": "Người gặp nguy đi trước",
+  "en": ""
+ },
+ {
+  "vi": "đúng người cần trước",
+  "en": ""
+ },
+ {
+  "vi": "để người gặp nguy chờ",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "kiểm tra rồi mới xếp",
+  "en": ""
+ },
+ {
+  "vi": "xếp chưa đúng",
+  "en": ""
+ },
+ {
+  "vi": "Sổ trực ban:",
+  "en": ""
+ },
+ {
+  "vi": "Ba cuộc gọi:",
+  "en": ""
+ },
+ {
+  "vi": "Đọc từng mục sổ trực ban → chọn chuyện có người đang cần mình ngay để làm trước.",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời người khai nếu có chuyện → xem từng giấy → đủ thì nhận, thiếu thì chỉ đúng giấy cần bổ sung.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm đếm cùng người nhặt → hỏi người tới nhận ít nhất hai câu (bên trong có gì, giấy tờ) → khớp thì trả, không khớp thì giữ lại.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe bên này → nghe bên kia → đề xuất từng điều khoản → hai bên đồng ý thì ký biên bản.",
+  "en": ""
+ },
+ {
+  "vi": "Dỗ bé trước → hỏi, xem thẻ tên → đọc loa hoặc gọi số trên thẻ → xác minh người đón hai cách → giao hoặc giữ lại.",
+  "en": ""
+ },
+ {
+  "vi": "Xem kỹ từng chuyện → lần đầu, chuyện nhỏ thì nhắc; tái phạm, nguy hiểm thì lập biên bản; nguy hiểm trước mắt thì xử lý ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc thư mời → chọn đúng chủ đề tổ đang gặp → trình bày → trả lời câu hỏi của các cụ.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại từng cuộc → ai đang gặp nguy thì đi ngay → tin báo sai thì ghi nhận, nhắc nhở → điều động.",
+  "en": ""
+ },
+ {
+  "vi": "Đã sắp hồ sơ tạm trú theo tổ, phát số thứ tự cho hàng chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đi một vòng hẻm nhắc bà con khóa cửa, cất xe.",
+  "en": ""
+ },
+ {
+  "vi": "Việc ở Công an phường sai.",
+  "en": ""
+ },
+ {
+  "vi": "Câu trả lời ở bàn cư trú sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đề xuất hòa giải sai.",
+  "en": ""
+ },
+ {
+  "vi": "Mức ưu tiên sai.",
+  "en": ""
+ },
+ {
+  "vi": "Việc tuần tra sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ đề sai.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu Công an phường sai.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu phường sai.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ trực ban sai.",
+  "en": ""
+ },
+ {
+  "vi": "Công an phường",
+  "en": ""
+ },
+ {
+  "vi": "Công an phường Mây",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc trước, biên bản sau, phong bì thì không bao giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Trời trong, phường yên",
+  "en": ""
+ },
+ {
+  "vi": "Bàn tiếp dân",
+  "en": ""
+ },
+ {
+  "vi": "Giao ban lúc 7:30. Đọc sổ trực ban, làm việc gấp trước, ai cũng như ai, không nhận gì của ai.",
+  "en": ""
+ },
+ {
+  "vi": "Giúp dân từng việc nhỏ, giữ phường bình yên",
+  "en": ""
+ },
+ {
+  "vi": "34 · CÔNG AN PHƯỜNG MÂY",
+  "en": ""
+ },
+ {
+  "vi": "Văn thư tiếp dân, thuộc lòng thủ tục, chữ đẹp như in.",
+  "en": ""
+ },
+ {
+  "vi": "Tổ an ninh dân phố, biết mặt từng nhà trong hẻm.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập hồ sơ nhanh, không sót tờ nào.",
+  "en": ""
+ },
+ {
+  "vi": "Đứng cổng trường mười năm, tụi nhỏ gọi là “ông Bảy đèn xanh”.",
+  "en": ""
+ },
+ {
+  "vi": "Văn thư tiếp dân",
+  "en": ""
+ },
+ {
+  "vi": "Tổ an ninh dân phố",
+  "en": ""
+ },
+ {
+  "vi": "Giao ban lúc 7:30. Anh Định đang chờ ở phòng giao ban.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Định giao thêm một việc trong ca.",
+  "en": ""
+ },
+ {
+  "vi": "Một ca ở Công an phường",
+  "en": ""
+ },
+ {
+  "vi": "Trả lại, ghi sổ",
+  "en": ""
+ },
+ {
+  "vi": "Hai bên tranh chấp",
+  "en": ""
+ },
+ {
+  "vi": "Nghe cả hai",
+  "en": ""
+ },
+ {
+  "vi": "Người tới đón trẻ",
+  "en": ""
+ },
+ {
+  "vi": "Xác minh hai cách",
+  "en": ""
+ },
+ {
+  "vi": "Lần đầu, chuyện nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Giao ban, đọc sổ",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp dân, giấy tờ",
+  "en": ""
+ },
+ {
+  "vi": "Hòa giải, tuần tra",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ trực ban",
+  "en": ""
+ },
+ {
+  "vi": "Anh Định có cuốn sổ nhỏ ghi tên từng nhà, từng cụ già sống một mình trong khu vực.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đi tuần thêm một buổi, ghi thêm vài dòng vào sổ của mình.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Định đọc sổ của bạn, gật gù: “Thuộc hẻm rồi đó em.”",
+  "en": ""
+ },
+ {
+  "vi": "Cái cặp lồng của bà Năm",
+  "en": ""
+ },
+ {
+  "vi": "Bà Năm lên phường mỗi trưa, lần nào cũng mang theo cặp lồng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn làm thêm một ca, ghé nhà bà nghe kể chuyện mười phút.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Năm lưu số phường đầu danh bạ: “Có gì bà gọi con trước.”",
+  "en": ""
+ },
+ {
+  "vi": "Bảng thành tích mới",
+  "en": ""
+ },
+ {
+  "vi": "Anh Vượng treo bảng thành tích đếm biên bản.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn làm thêm một ca, ghi đủ từng lần nhắc nhở, hòa giải, giúp dân.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng thành tích đổi tên: “Số việc giúp dân”.",
+  "en": ""
+ },
+ {
+  "vi": "Không nhận gì của ai, làm đúng hẹn.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe hết rồi mới nói, dễ chịu ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc khéo mà ai cũng nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Có cán bộ đứng cổng trường, yên tâm hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Giao ban, đọc sổ trực ban → việc gấp làm trước → bàn cư trú xem đủ giấy tờ → đồ thất lạc hỏi kỹ người nhận → hòa giải nghe cả hai bên → trẻ lạc dỗ bé, xác minh người đón → tuần tra nhắc trước, biên bản sau → không bao giờ nhận phong bì → cuối ca ghi sổ trực ban thật.",
+  "en": ""
+ },
+ {
+  "vi": "Công an phường Mây · Tổ cảnh sát khu vực",
+  "en": ""
+ },
+ {
+  "vi": "Cán bộ cảnh sát khu vực",
+  "en": ""
+ },
+ {
+  "vi": "Anh Định kèm ba việc đầu",
+  "en": ""
+ },
+ {
+  "vi": "Ca ngày 7:30–17:30",
+  "en": ""
+ },
+ {
+  "vi": "Có cơm trưa ở căng tin phường",
+  "en": ""
+ },
+ {
+  "vi": "Tổ khu vực sáu người, phụ trách bảy tổ dân phố. Ở đây ai lên phường cũng được tiếp như nhau, và không ai nhận phong bì.",
+  "en": ""
+ },
+ {
+  "vi": "Công an phường Mây · Bàn tiếp dân",
+  "en": ""
+ },
+ {
+  "vi": "Hỗ trợ tiếp dân (bán thời gian)",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi bàn cư trú cùng chị Hằng",
+  "en": ""
+ },
+ {
+  "vi": "Bàn cư trú đông từ sáng. Việc chính là xem giấy tờ, hướng dẫn bổ sung đúng giấy, giữ hàng chờ đúng lượt.",
+  "en": ""
+ },
+ {
+  "vi": "Người khai kẹp phong bì trong hồ sơ “cho nhanh”. Bạn làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Trả lại, nói rõ hồ sơ đủ thì không mất đồng nào, ghi vào sổ",
+  "en": ""
+ },
+ {
+  "vi": "Anh Định gật đầu: đúng nếp của phường.",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ chung hay quỹ riêng thì vẫn là nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo để làm xong hẵng đưa",
+  "en": ""
+ },
+ {
+  "vi": "Một người nói “chú tôi làm trên quận”, đòi làm trước. Bạn nói gì?",
+  "en": ""
+ },
+ {
+  "vi": "Mời lấy số, chờ đúng lượt như mọi người",
+  "en": ""
+ },
+ {
+  "vi": "Ai cũng như ai.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi hỏi “chú” cho chắc",
+  "en": ""
+ },
+ {
+  "vi": "Không cần biết chú ai, hàng chờ vẫn là hàng chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Làm trước cho yên chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Người chờ từ sáng sẽ nghĩ gì?",
+  "en": ""
+ },
+ {
+  "vi": "Hai nhà cãi nhau vì karaoke tới khuya. Bạn bắt đầu thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Nghe riêng từng bên, hỏi điều họ cần nhất, rồi đề xuất",
+  "en": ""
+ },
+ {
+  "vi": "Người được nghe thì chịu nhường.",
+  "en": ""
+ },
+ {
+  "vi": "Phạt luôn nhà hát karaoke cho xong",
+  "en": ""
+ },
+ {
+  "vi": "Hòa giải là để hai nhà còn nhìn mặt nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện hàng xóm, tự giải quyết",
+  "en": ""
+ },
+ {
+  "vi": "Để lâu thì to chuyện.",
+  "en": ""
+ },
+ {
+  "vi": "Một người tới đón bé lạc, nói là hàng xóm được nhờ. Bạn làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi bé, hỏi người đón, gọi bố mẹ xác nhận rồi mới giao",
+  "en": ""
+ },
+ {
+  "vi": "Xác minh hai cách, chắc rồi mới giao.",
+  "en": ""
+ },
+ {
+  "vi": "Bé gật đầu là giao",
+  "en": ""
+ },
+ {
+  "vi": "Bé biết mặt chưa chắc là bố mẹ nhờ.",
+  "en": ""
+ },
+ {
+  "vi": "Giao luôn cho đỡ mất thời gian",
+  "en": ""
+ },
+ {
+  "vi": "Không bao giờ giao trẻ khi chưa xác minh.",
+  "en": ""
+ },
+ {
+  "vi": "Người tới nhận",
+  "en": ""
+ },
+ {
+  "vi": "Dúi tờ 200 nghìn vào tay bạn: “Cán bộ cầm uống cà phê, trả nhanh giúp em nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Đặt hộp bánh kẹp phong bì lên bàn: “Chút lòng thành, khỏi hỏi nhiều cho mệt.”",
+  "en": ""
+ },
+ {
   "vi": "Một bên tranh chấp",
   "en": ""
  },
@@ -1329,474 +1797,6 @@
  },
  {
   "vi": "Chiều đó thêm một người báo mất ví.",
-  "en": ""
- },
- {
-  "vi": "Một chị mua thịt kêu sạp cân thiếu, hai bên to tiếng.",
-  "en": ""
- },
- {
-  "vi": "Ban quản lý chợ có cân đối chứng ngay cổng. Chưa ai cân lại.",
-  "en": ""
- },
- {
-  "vi": "Mời hai bên ra cân đối chứng, ban quản lý chợ xử lý theo kết quả",
-  "en": ""
- },
- {
-  "vi": "Cân đối chứng: thiếu một lạng. Chủ sạp bù đủ, xin lỗi; ban quản lý nhắc kiểm định cân.",
-  "en": ""
- },
- {
-  "vi": "Bênh người mua, mắng chủ sạp trước mặt mọi người",
-  "en": ""
- },
- {
-  "vi": "Chưa cân lại đã kết luận. Chủ sạp làm đơn phản ánh.",
-  "en": ""
- },
- {
-  "vi": "Chuyện mua bán, tự giải quyết",
-  "en": ""
- },
- {
-  "vi": "Hai bên cãi nhau thêm nửa tiếng rồi bỏ đi.",
-  "en": ""
- },
- {
-  "vi": "Cụ ông đứng ngơ ngác giữa chợ, hỏi ai cũng “nhà tôi ở đâu?”.",
-  "en": ""
- },
- {
-  "vi": "Cụ đeo vòng tay ghi “Ông Lâm, tổ 6” và số điện thoại của con gái.",
-  "en": ""
- },
- {
-  "vi": "Mời cụ ngồi nghỉ, cho uống nước, gọi số trên vòng tay",
-  "en": ""
- },
- {
-  "vi": "Mười phút sau con gái cụ chạy tới, cảm ơn rối rít.",
-  "en": ""
- },
- {
-  "vi": "Chỉ đường về tổ 6 cho cụ tự đi",
-  "en": ""
- },
- {
-  "vi": "Cụ đi được một đoạn rồi lại lạc sang chợ cá.",
-  "en": ""
- },
- {
-  "vi": "Chắc có người nhà gần đây",
-  "en": ""
- },
- {
-  "vi": "Cụ đứng giữa nắng thêm một tiếng.",
-  "en": ""
- },
- {
-  "vi": "Sau sạp đồ khô, ổ điện nối chằng chịt, có mùi khét.",
-  "en": ""
- },
- {
-  "vi": "Ổ cắm đã chảy nhựa một góc. Gần đó là mấy bao giấy và thùng các-tông.",
-  "en": ""
- },
- {
-  "vi": "Nhờ chủ sạp ngắt điện ngay, báo ban quản lý gọi thợ điện",
-  "en": ""
- },
- {
-  "vi": "Ngắt điện kịp. Thợ điện nói thêm một lúc nữa là bén lửa.",
-  "en": ""
- },
- {
-  "vi": "Nhắc chủ sạp “nhớ sửa nha”",
-  "en": ""
- },
- {
-  "vi": "Chủ sạp hứa mai sửa. Ổ điện vẫn nóng.",
-  "en": ""
- },
- {
-  "vi": "Chiều đó ổ điện bốc khói, cả dãy hốt hoảng.",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh đậu xe hàng ba trước cổng trường, xe khác không qua được.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay là ngày đầu trường kẻ vạch đậu xe mới, chưa ai biết.",
-  "en": ""
- },
- {
-  "vi": "Hướng dẫn phụ huynh đậu vào vạch mới, chỉ lối ra",
-  "en": ""
- },
- {
-  "vi": "Năm phút sau xe đậu thẳng hàng, đường thông.",
-  "en": ""
- },
- {
-  "vi": "Lập biên bản từng xe",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh bức xúc, cổng trường càng tắc thêm.",
-  "en": ""
- },
- {
-  "vi": "Tan học là tắc, chịu thôi",
-  "en": ""
- },
- {
-  "vi": "Tắc thêm hai mươi phút.",
-  "en": ""
- },
- {
-  "vi": "Một bé lớp 1 tuột tay mẹ, định chạy băng qua đường đông xe.",
-  "en": ""
- },
- {
-  "vi": "Đường trước cổng không có đèn, xe máy chạy nhanh.",
-  "en": ""
- },
- {
-  "vi": "Giơ tay ra hiệu xe dừng, dắt bé qua vạch, giao cho mẹ",
-  "en": ""
- },
- {
-  "vi": "Xe dừng, bé qua đường an toàn. Mẹ bé cảm ơn mãi.",
-  "en": ""
- },
- {
-  "vi": "Hét gọi bé đứng lại",
-  "en": ""
- },
- {
-  "vi": "Bé giật mình đứng khựng giữa đường. May xe kịp phanh.",
-  "en": ""
- },
- {
-  "vi": "Mẹ bé ở gần đó mà",
-  "en": ""
- },
- {
-  "vi": "Một xe máy phanh gấp sát bé. Cả cổng trường hú hồn.",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh chở con, cả hai không đội mũ bảo hiểm.",
-  "en": ""
- },
- {
-  "vi": "Lần đầu bạn thấy. Phụ huynh nói đi vội, mũ để quên ở nhà.",
-  "en": ""
- },
- {
-  "vi": "Nhắc nhẹ, chỉ chỗ trường cho mượn mũ, dặn lần sau đội đủ",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh mượn mũ cho bé ngay, cảm ơn.",
-  "en": ""
- },
- {
-  "vi": "Lập biên bản ngay trước cổng",
-  "en": ""
- },
- {
-  "vi": "Đúng quy định, nhưng phụ huynh xấu hổ trước cả lớp của con.",
-  "en": ""
- },
- {
-  "vi": "Có một đoạn ngắn, kệ",
-  "en": ""
- },
- {
-  "vi": "Sáng mai hai mẹ con lại không đội mũ.",
-  "en": ""
- },
- {
-  "vi": "Xe đẩy bán xúc xích đậu chắn ngay giữa cổng trường.",
-  "en": ""
- },
- {
-  "vi": "Đã nhắc hai lần tuần trước. Hôm qua một bé vấp ngã vì chen qua xe đẩy.",
-  "en": ""
- },
- {
-  "vi": "Lập biên bản, yêu cầu dời xe ra xa cổng",
-  "en": ""
- },
- {
-  "vi": "Xe đẩy dời ra góc đường. Cổng trường thông thoáng.",
-  "en": ""
- },
- {
-  "vi": "Nhắc lần nữa",
-  "en": ""
- },
- {
-  "vi": "Chú bán xúc xích dời một mét, mai lại vào chỗ cũ.",
-  "en": ""
- },
- {
-  "vi": "Mua hai cây xúc xích rồi đi",
-  "en": ""
- },
- {
-  "vi": "Xe đẩy vẫn chắn cổng. Phụ huynh nhìn bạn ăn xúc xích.",
-  "en": ""
- },
- {
-  "vi": "Một thanh niên rồ ga phóng nhanh qua cổng đúng giờ tan học.",
-  "en": ""
- },
- {
-  "vi": "Xe chạy qua rồi. Bạn kịp nhìn biển số và màu áo.",
-  "en": ""
- },
- {
-  "vi": "Ghi biển số, thời gian, báo tổ tuần tra; trấn an phụ huynh",
-  "en": ""
- },
- {
-  "vi": "Tổ tuần tra nhận thông tin. Chiều sau có người đứng cổng sớm hơn.",
-  "en": ""
- },
- {
-  "vi": "Lên xe đuổi theo giữa giờ tan học",
-  "en": ""
- },
- {
-  "vi": "Đuổi qua đám học sinh đông nghẹt. Anh Định gọi bạn về ngay.",
-  "en": ""
- },
- {
-  "vi": "Đi mất rồi, thôi",
-  "en": ""
- },
- {
-  "vi": "Hôm sau thanh niên đó lại phóng qua.",
-  "en": ""
- },
- {
-  "vi": "Một con chó lớn không dây chạy loanh quanh cổng trường, mấy bé khóc thét.",
-  "en": ""
- },
- {
-  "vi": "Chó có vòng cổ ghi số điện thoại chủ, đang hoảng vì đông người.",
-  "en": ""
- },
- {
-  "vi": "Dồn học sinh vào sân trường, đứng chắn, gọi số trên vòng cổ",
-  "en": ""
- },
- {
-  "vi": "Chủ chó chạy tới dắt về, xin lỗi cả cổng trường.",
-  "en": ""
- },
- {
-  "vi": "Cầm gậy đuổi chó",
-  "en": ""
- },
- {
-  "vi": "Chó hoảng chạy vào đám học sinh. Một bé té trầy gối.",
-  "en": ""
- },
- {
-  "vi": "Chó hiền mà",
-  "en": ""
- },
- {
-  "vi": "Bé lớp 1 sợ không dám ra cổng.",
-  "en": ""
- },
- {
-  "vi": "Sau lều hàng khô, có người rủ rê khách vào “chiếu trong” chơi ăn tiền.",
-  "en": ""
- },
- {
-  "vi": "Đánh bạc ăn tiền không được phép ở hội chợ. Tuần trước phường đã kiểm tra một lần.",
-  "en": ""
- },
- {
-  "vi": "Dừng chiếu bạc, lập biên bản, báo ban tổ chức",
-  "en": ""
- },
- {
-  "vi": "Chiếu bạc giải tán. Ban tổ chức dán thêm biển cấm.",
-  "en": ""
- },
- {
-  "vi": "Nhắc “chơi nhỏ thôi nha”",
-  "en": ""
- },
- {
-  "vi": "Chiếu bạc chơi tiếp tới khuya.",
-  "en": ""
- },
- {
-  "vi": "Ngồi xuống chơi thử một ván",
-  "en": ""
- },
- {
-  "vi": "Bạn ngồi xuống chiếu. Có người chụp ảnh gửi ngay cho anh Vượng.",
-  "en": ""
- },
- {
-  "vi": "Lối thoát hiểm phía sau sân khấu bị chắn bằng cả chục thùng hàng.",
-  "en": ""
- },
- {
-  "vi": "Sân khấu tối nay có ca nhạc, dự kiến vài trăm người.",
-  "en": ""
- },
- {
-  "vi": "Nhờ ban tổ chức dọn ngay, kiểm lại biển chỉ lối",
-  "en": ""
- },
- {
-  "vi": "Lối thoát hiểm thông, biển sáng đèn.",
-  "en": ""
- },
- {
-  "vi": "Nhắc ban tổ chức “lát nhớ dọn”",
-  "en": ""
- },
- {
-  "vi": "Tới giờ diễn mới dọn được một nửa.",
-  "en": ""
- },
- {
-  "vi": "Có cháy đâu mà lo",
-  "en": ""
- },
- {
-  "vi": "Tối đó cúp điện năm phút, người chen nhau ở lối ra duy nhất.",
-  "en": ""
- },
- {
-  "vi": "Dây điện dàn đèn vắt ngang lối đi, tụi nhỏ chạy nhảy qua lại.",
-  "en": ""
- },
- {
-  "vi": "Băng keo đã bong, chỗ nối dây hở ra một đoạn.",
-  "en": ""
- },
- {
-  "vi": "Rào tạm chỗ đó, nhờ thợ điện của ban tổ chức đi lại dây, bọc kín",
-  "en": ""
- },
- {
-  "vi": "Dây được đi sát mép, bọc kín. Tụi nhỏ chạy thoải mái.",
-  "en": ""
- },
- {
-  "vi": "Tự lấy băng keo dán đè lên",
-  "en": ""
- },
- {
-  "vi": "Đỡ hơn, nhưng mối nối vẫn hở bên dưới.",
-  "en": ""
- },
- {
-  "vi": "Chắc không sao",
-  "en": ""
- },
- {
-  "vi": "Một bé vấp dây, đèn sân khấu tắt phụt.",
-  "en": ""
- },
- {
-  "vi": "Khu sân khấu đông nghẹt, rào chắn phía trước lung lay.",
-  "en": ""
- },
- {
-  "vi": "Người phía sau vẫn đang ùa vào, phía trước có nhiều trẻ nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Nhờ ban tổ chức tạm ngừng cho vào, giãn hàng, gia cố rào",
-  "en": ""
- },
- {
-  "vi": "Đám đông giãn ra, rào được buộc thêm dây.",
-  "en": ""
- },
- {
-  "vi": "Cầm loa hét mọi người lùi lại",
-  "en": ""
- },
- {
-  "vi": "Người phía trước lùi, người phía sau không nghe thấy.",
-  "en": ""
- },
- {
-  "vi": "Hội chợ thì phải đông",
-  "en": ""
- },
- {
-  "vi": "Rào đổ, mấy bé té nhào. May chỉ trầy xước.",
-  "en": ""
- },
- {
-  "vi": "Loa hội chợ vừa đọc: một bé trai bốn tuổi áo đỏ đi lạc.",
-  "en": ""
- },
- {
-  "vi": "Hội chợ có điểm hẹn trẻ lạc ở cổng chính; ban tổ chức có danh sách tình nguyện viên.",
-  "en": ""
- },
- {
-  "vi": "Chia vùng tìm với tình nguyện viên, giữ một người ở điểm hẹn",
-  "en": ""
- },
- {
-  "vi": "Mười phút sau bé được tìm thấy ở quầy kem.",
-  "en": ""
- },
- {
-  "vi": "Tự chạy khắp hội chợ tìm một mình",
-  "en": ""
- },
- {
-  "vi": "Bạn chạy ba vòng. Bé đã tự về điểm hẹn từ lâu.",
-  "en": ""
- },
- {
-  "vi": "Đã có loa đọc rồi",
-  "en": ""
- },
- {
-  "vi": "Mẹ bé khóc ở điểm hẹn suốt nửa tiếng.",
-  "en": ""
- },
- {
-  "vi": "Gian trò chơi ném vòng đông nghẹt, chủ gian để tiền thu được trong hộp mở, không người trông.",
-  "en": ""
- },
- {
-  "vi": "Hội chợ đông, đã có người báo mất ví ở khu này.",
-  "en": ""
- },
- {
-  "vi": "Nhắc chủ gian cất tiền, cử người trông, dặn khách giữ ví",
-  "en": ""
- },
- {
-  "vi": "Chủ gian cất hộp tiền. Cả buổi không ai mất gì.",
-  "en": ""
- },
- {
-  "vi": "Lập biên bản chủ gian vì để tiền hớ hênh",
-  "en": ""
- },
- {
-  "vi": "Chủ gian không vi phạm gì. Ban tổ chức phải xin lỗi giùm.",
   "en": ""
  }
 ]

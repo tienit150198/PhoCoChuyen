@@ -1,5 +1,473 @@
 [
  {
+  "vi": "Hàng xóm hay say",
+  "en": ""
+ },
+ {
+  "vi": "Hiền khô, chỉ tội chiều nào cũng vài chén, hay ngủ quên ở bờ ray.",
+  "en": ""
+ },
+ {
+  "vi": "Thợ tuần đường cung Sông Mây",
+  "en": ""
+ },
+ {
+  "vi": "Ít nói, mỗi ngày đi bộ mấy cây số ray, thuộc từng thanh tà vẹt.",
+  "en": ""
+ },
+ {
+  "vi": "Tàu khách Thống Nhất",
+  "en": ""
+ },
+ {
+  "vi": "Tàu khách nhanh",
+  "en": ""
+ },
+ {
+  "vi": "ĐP",
+  "en": ""
+ },
+ {
+  "vi": "Tàu địa phương",
+  "en": ""
+ },
+ {
+  "vi": "Tàu hàng",
+  "en": ""
+ },
+ {
+  "vi": "Bắc → Nam",
+  "en": ""
+ },
+ {
+  "vi": "Nam → Bắc",
+  "en": ""
+ },
+ {
+  "vi": "Chuông & đèn đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Bấm thử chuông, nhìn hai cụm đèn đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Chuông kêu giòn, hai cụm đèn đỏ nhấp nháy đều.",
+  "en": ""
+ },
+ {
+  "vi": "Cần chắn hai bên",
+  "en": ""
+ },
+ {
+  "vi": "Hạ thử rồi nâng cần chắn",
+  "en": ""
+ },
+ {
+  "vi": "Cần chắn hạ êm, nâng êm, khóa chốt chắc.",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đàm & điện thoại ga",
+  "en": ""
+ },
+ {
+  "vi": "Gọi thử ga Bến Mây",
+  "en": ""
+ },
+ {
+  "vi": "Chị Nguyệt: “Ga nghe rõ. Chào ca mới.”",
+  "en": ""
+ },
+ {
+  "vi": "Cờ đỏ, cờ xanh, đèn cầm tay, còi",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm cờ, đèn, còi",
+  "en": ""
+ },
+ {
+  "vi": "Cờ lành, đèn cầm tay sáng, còi kêu rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nhật ký & bảng giờ tàu",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ giao ca, chép giờ tàu lên bảng",
+  "en": ""
+ },
+ {
+  "vi": "Sổ giao ca đã đọc, bảng giờ tàu hôm nay đã chép.",
+  "en": ""
+ },
+ {
+  "vi": "Đồng phục & áo phản quang",
+  "en": ""
+ },
+ {
+  "vi": "Mặc áo phản quang, đội mũ",
+  "en": ""
+ },
+ {
+  "vi": "Áo phản quang, mũ, thẻ ngành: đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ giao ca",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu báo hỏng gửi cung",
+  "en": ""
+ },
+ {
+  "vi": "cần thợ cung đường tới sửa",
+  "en": ""
+ },
+ {
+  "vi": "Điện báo ga ngay",
+  "en": ""
+ },
+ {
+  "vi": "ảnh hưởng an toàn chạy tàu",
+  "en": ""
+ },
+ {
+  "vi": "Một bóng đèn đỏ phía Nam không sáng.",
+  "en": ""
+ },
+ {
+  "vi": "Đèn đỏ thiếu một bóng, xe phía Nam khó thấy. Thợ cung phải thay bóng.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm mãi chuông chỉ rè rè rồi tắt.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy chuông tay dự phòng treo ở cửa chòi",
+  "en": ""
+ },
+ {
+  "vi": "Chuông hỏng: ga phải dặn lái tàu kéo còi dài từ xa, mình dùng chuông tay.",
+  "en": ""
+ },
+ {
+  "vi": "Mô-tơ cần chắn phía Bắc kêu ù ù, cần không nhúc nhích.",
+  "en": ""
+ },
+ {
+  "vi": "Lắp tay quay, hạ nâng bằng tay",
+  "en": ""
+ },
+ {
+  "vi": "Cần chắn kẹt: hôm nay phải quay tay, chậm hơn một phút. Ga cần biết để báo tàu sớm hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đàm nháy đèn pin yếu, tiếng rè rè.",
+  "en": ""
+ },
+ {
+  "vi": "Thay pin dự phòng trong tủ",
+  "en": ""
+ },
+ {
+  "vi": "Pin yếu thì mình tự thay; ghi sổ để ca sau sạc pin cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Đèn cầm tay bật không lên.",
+  "en": ""
+ },
+ {
+  "vi": "Thay pin đèn cầm tay",
+  "en": ""
+ },
+ {
+  "vi": "Đèn cầm tay là tín hiệu ban đêm: thay pin ngay, ghi sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Lá cờ đỏ rách một đường dài, bạc màu.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy cờ đỏ dự phòng",
+  "en": ""
+ },
+ {
+  "vi": "Cờ đỏ phải rõ màu. Dùng cờ dự phòng, xin cờ mới qua phiếu.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu ghi: “Đêm qua tàu hàng H6 chậm 20 phút. Chốt cần chắn phía Nam hơi khô, chú đã tra dầu.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu ghi: “Chiều qua có thằng thanh niên chui chắn, đã ghi biển số. Ca sau để ý giờ tan tầm.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu ghi: “Bà Bông lại phơi ớt trên ray. Nhắc khéo, đừng to tiếng, bà dỗi cả tuần.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu ghi: “Cô Mận xin kê thêm ghế sát ray cho khách chụp ảnh. Chú không cho. Con cũng đừng cho.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu ghi: “Đèn chòi gác chập chờn, đã báo cung. Pin dự phòng còn hai cục trong tủ.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu ghi: “Chú Hớn hôm qua ngủ quên ở bờ ray lúc chập tối. Thấy là dìu vô, đừng để chú nằm đó.”",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn trẻ đứng giữa ray chụp ảnh",
+  "en": ""
+ },
+ {
+  "vi": "“Chờ xíu anh ơi, tấm nữa thôi, góc này lên hình xịn lắm!”",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn vẫn tạo dáng, chẳng ai quay lại.",
+  "en": ""
+ },
+ {
+  "vi": "Mấy đứa nhỏ ngồi bắn bi trên ray",
+  "en": ""
+ },
+ {
+  "vi": "“Tụi con chơi xíu nữa thôi mà chú!”",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ vẫy tay chào, rồi bắn bi tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Hớn ngủ gục sát mép ray",
+  "en": ""
+ },
+ {
+  "vi": "“Ơ… tàu hả… để chú nằm xíu…”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Hớn ngáy to hơn cả tiếng còi.",
+  "en": ""
+ },
+ {
+  "vi": "Con bò ai thả gặm cỏ giữa đường ray",
+  "en": ""
+ },
+ {
+  "vi": "Con bò nhai cỏ, nhìn bạn bằng ánh mắt vô cảm.",
+  "en": ""
+ },
+ {
+  "vi": "Con bò vẫy đuôi đuổi ruồi, không nhúc nhích.",
+  "en": ""
+ },
+ {
+  "vi": "Xe ba gác chở dưa kẹt bánh vào khe ray",
+  "en": ""
+ },
+ {
+  "vi": "“Kẹt bánh rồi em ơi, đẩy phụ chị với!”",
+  "en": ""
+ },
+ {
+  "vi": "Chị bán dưa vẫn loay hoay, bánh xe kẹt cứng.",
+  "en": ""
+ },
+ {
+  "vi": "Xe máy chết máy ngay giữa ray",
+  "en": ""
+ },
+ {
+  "vi": "“Đề mãi không nổ, khổ quá trời!”",
+  "en": ""
+ },
+ {
+  "vi": "Anh kia đạp đề lia lịa, xe vẫn nằm im trên ray.",
+  "en": ""
+ },
+ {
+  "vi": "Cô bán xôi đẩy xe băng ngang ray",
+  "en": ""
+ },
+ {
+  "vi": "“Cô qua liền, qua liền mà!”",
+  "en": ""
+ },
+ {
+  "vi": "Cô bán xôi đứng lại mời khách giữa ray.",
+  "en": ""
+ },
+ {
+  "vi": "Ghế nhựa quán cà phê bày sát mép ray",
+  "en": ""
+ },
+ {
+  "vi": "Cô Mận: “Khách đang ngồi chụp ảnh mà, dẹp gì sớm vậy!”",
+  "en": ""
+ },
+ {
+  "vi": "Mấy cái ghế vẫn chĩa ra sát mép ray.",
+  "en": ""
+ },
+ {
+  "vi": "Nong ớt bà Bông phơi trên thanh ray",
+  "en": ""
+ },
+ {
+  "vi": "Bà Bông: “Nắng đẹp thế này không phơi thì phí!”",
+  "en": ""
+ },
+ {
+  "vi": "Bà Bông giả vờ không nghe, quạt nồi nước chè.",
+  "en": ""
+ },
+ {
+  "vi": "Con chó vàng nằm phơi nắng giữa ray",
+  "en": ""
+ },
+ {
+  "vi": "Con chó ngóc đầu nhìn bạn, đuôi đập đập xuống đá ba-lát.",
+  "en": ""
+ },
+ {
+  "vi": "Con chó lăn ra ngủ tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Đàn vịt lạch bạch băng qua ray",
+  "en": ""
+ },
+ {
+  "vi": "Ông chủ đàn vịt: “Từ từ, từ từ, vịt nó sợ!”",
+  "en": ""
+ },
+ {
+  "vi": "Đàn vịt quay vòng giữa hai thanh ray.",
+  "en": ""
+ },
+ {
+  "vi": "Ông khách Tây kéo vali dọc đường ray tìm homestay",
+  "en": ""
+ },
+ {
+  "vi": "Ông khách vẫy tay cảm ơn rồi kéo vali tiếp dọc ray.",
+  "en": ""
+ },
+ {
+  "vi": "Thổi còi, phất cờ từ chòi",
+  "en": ""
+ },
+ {
+  "vi": "Ra tận nơi nhắc, dẫn vào lề",
+  "en": ""
+ },
+ {
+  "vi": "Phụ đẩy, lùa ra khỏi ray",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn trẻ giật mình, chạy ra ngoài vạch: “Xin lỗi anh, tụi em không biết!”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn dắt tụi nhỏ vào lề, dặn: “Ray là đường tàu, không phải sân chơi nha.” Tụi nhỏ cắp bi chạy về.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn lay chú Hớn dậy, dìu chú vào hiên nhà bà Bông, rót cho chú cốc nước.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn với ông hàng xóm lùa con bò ra bãi cỏ, buộc dây vào gốc xoan.",
+  "en": ""
+ },
+ {
+  "vi": "Ba người hè nhau nhấc bánh xe khỏi khe ray. Chị bán dưa cảm ơn rối rít.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đẩy phụ chiếc xe ra khỏi ray, anh kia dắt vào lề đạp tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Cô bán xôi đẩy xe lùi lại sau vạch dừng, miệng vẫn mời “xôi nóng đây”.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn xếp gọn mấy cái ghế vào trong quán. Cô Mận bĩu môi nhưng không cãi.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bê nong ớt vào hiên. Bà Bông càm ràm: “Lại đây phơi nhờ cái nắng cũng không yên.”",
+  "en": ""
+ },
+ {
+  "vi": "Con chó vàng giật mình, chạy tót vào gầm bàn quán nước.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn với ông chủ vịt dang tay lùa cả đàn qua bên kia, không sót con nào.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn dẫn ông khách ra đường đất, chỉ lối tới homestay. “Thank you! Train… dangerous, yes!”",
+  "en": ""
+ },
+ {
+  "vi": "Giữ chắn: “Không qua được ạ.”",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ bảng giờ: tàu sắp tới",
+  "en": ""
+ },
+ {
+  "vi": "Mời lùi sau vạch dừng, chờ cùng",
+  "en": ""
+ },
+ {
+  "vi": "Ghi biển số, báo công an phường",
+  "en": ""
+ },
+ {
+  "vi": "Nâng chắn cho qua",
+  "en": ""
+ },
+ {
+  "vi": "Anh Tài · xe ôm công nghệ",
+  "en": ""
+ },
+ {
+  "vi": "“Em ơi nâng xíu cho anh qua, khách hủy cuốc là anh toang, tàu còn xa lắc mà!”",
+  "en": ""
+ },
+ {
+  "vi": "“Anh có thấy đèn tàu đâu đâu. Hai giây thôi, anh phóng nhanh lắm!”",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn đưa tang nhà ông Tư",
+  "en": ""
+ },
+ {
+  "vi": "“Cháu ơi, giờ đẹp đưa cụ ra đồng rồi, trễ giờ là cả họ không yên…”",
+  "en": ""
+ },
+ {
   "vi": "“Thầy cúng dặn đúng giờ Tỵ, cháu thương mà mở cho đoàn qua trước…”",
   "en": ""
  },
@@ -1329,474 +1797,6 @@
  },
  {
   "vi": "Lái tàu",
-  "en": ""
- },
- {
-  "vi": "Tôi kéo phanh mà tay run cả buổi.",
-  "en": ""
- },
- {
-  "vi": "“Không là không, đứng đó mà chờ”",
-  "en": ""
- },
- {
-  "vi": "Đúng quy định nhưng nói năng lạnh lùng với người đang có tang.",
-  "en": ""
- },
- {
-  "vi": "Đoàn chờ, nhưng ai cũng nhìn bạn không vui.",
-  "en": ""
- },
- {
-  "vi": "Bà con trong đoàn",
-  "en": ""
- },
- {
-  "vi": "Đúng thì đúng, nhưng nói một câu chia buồn cũng được mà.",
-  "en": ""
- },
- {
-  "vi": "Giữ chắn bằng tay, nói chuyện bằng lòng.",
-  "en": ""
- },
- {
-  "vi": "Chắn đã hạ thì không nâng cho ai; nói rõ còn mấy phút và nói bằng sự tôn trọng.",
-  "en": ""
- },
- {
-  "vi": "Nhắc lại lệnh ậm ừ",
-  "en": ""
- },
- {
-  "vi": "Bộ đàm rè rè: “Đường ngang Bến Mây, tàu TN… rời Bến Gỗ lúc… dự kiến qua…” Bạn nghe được nửa câu.",
-  "en": ""
- },
- {
-  "vi": "Tai bạn",
-  "en": ""
- },
- {
-  "vi": "Tiếng rè to, không nghe rõ số hiệu tàu lẫn giờ.",
-  "en": ""
- },
- {
-  "vi": "Sổ tay ca gác",
-  "en": ""
- },
- {
-  "vi": "Lệnh nào cũng phải nhắc lại đủ số hiệu, giờ đi, giờ qua; không rõ thì hỏi lại.",
-  "en": ""
- },
- {
-  "vi": "Chị Nguyệt đang trực một mình, bận nhiều đường dây.",
-  "en": ""
- },
- {
-  "vi": "Xin ga nhắc lại, rồi đọc lại đủ số hiệu, giờ đi, giờ qua",
-  "en": ""
- },
- {
-  "vi": "Ca gác hỏi lại cho rõ rồi nhắc lệnh rành rọt. Yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Chị Nguyệt đọc lại: TN2, rời 10:05, qua đường ngang 10:12. Bạn nhắc lại đúng.",
-  "en": ""
- },
- {
-  "vi": "Hỏi lại mất mười giây, nhầm thì mất cả đời.",
-  "en": ""
- },
- {
-  "vi": "Không rõ mà “rõ” là tội to nhất của gác chắn.",
-  "en": ""
- },
- {
-  "vi": "“Rõ!” rồi đoán theo bảng giờ",
-  "en": ""
- },
- {
-  "vi": "Nhận lệnh kiểu đoán mò, tàu chậm mười phút mà ca gác không biết.",
-  "en": ""
- },
- {
-  "vi": "Tàu TN2 chậm mười phút. Bạn hạ chắn theo giờ cũ, xe dồn ứ cả phố.",
-  "en": ""
- },
- {
-  "vi": "Tôi đọc chậm mười phút, cậu “rõ” cái gì?",
-  "en": ""
- },
- {
-  "vi": "Chờ mười lăm phút mà không thấy tàu đâu!",
-  "en": ""
- },
- {
-  "vi": "Để đó, lát gọi lại hỏi",
-  "en": ""
- },
- {
-  "vi": "Có hỏi lại, nhưng chậm mất mấy phút quý.",
-  "en": ""
- },
- {
-  "vi": "Gọi lại thì ga đang bận, mãi mới được nghe.",
-  "en": ""
- },
- {
-  "vi": "Không rõ thì hỏi ngay, đừng để lát.",
-  "en": ""
- },
- {
-  "vi": "Tàu không chờ mình “lát nữa”.",
-  "en": ""
- },
- {
-  "vi": "Không rõ lệnh thì hỏi lại ngay; nhắc lại đủ số hiệu tàu, giờ đi, giờ qua.",
-  "en": ""
- },
- {
-  "vi": "Tàu qua mà không thấy đèn đuôi",
-  "en": ""
- },
- {
-  "vi": "Tàu hàng hai mươi sáu toa vừa qua. Bạn nhìn theo toa cuối: không thấy cái đèn đuôi đỏ đâu.",
-  "en": ""
- },
- {
-  "vi": "Đèn đuôi cho biết đoàn tàu còn nguyên. Không có đèn đuôi có thể là đứt toa, toa còn nằm lại trên đường.",
-  "en": ""
- },
- {
-  "vi": "Tàu sau",
-  "en": ""
- },
- {
-  "vi": "Hai mươi phút nữa có tàu khách chạy cùng chiều.",
-  "en": ""
- },
- {
-  "vi": "Ai cần biết",
-  "en": ""
- },
- {
-  "vi": "Thấy bất thường của đoàn tàu: báo ngay trực ban ga.",
-  "en": ""
- },
- {
-  "vi": "Gọi ngay ga: “Tàu H vừa qua không có đèn đuôi”, ghi giờ, giữ chắn chờ ga trả lời",
-  "en": ""
- },
- {
-  "vi": "Ca gác báo ngay đoàn tàu thiếu đèn đuôi. Ga kiểm tra kịp, hóa ra móc nối toa cuối lỏng.",
-  "en": ""
- },
- {
-  "vi": "Ga dừng tàu H ở Bến Mây kiểm tra: móc nối toa cuối lỏng thật. Tàu khách sau chạy an toàn.",
-  "en": ""
- },
- {
-  "vi": "Một cuộc gọi cứu cả chuyến tàu khách sau.",
-  "en": ""
- },
- {
-  "vi": "Lái tàu hàng",
-  "en": ""
- },
- {
-  "vi": "Tôi không biết toa cuối lỏng. Cảm ơn ca gác.",
-  "en": ""
- },
- {
-  "vi": "Chắc đèn hỏng thôi, ghi sổ cuối ca báo",
-  "en": ""
- },
- {
-  "vi": "Thấy tàu không có đèn đuôi mà để cuối ca mới báo.",
-  "en": ""
- },
- {
-  "vi": "Tàu khách sau phải dừng gấp vì ga mãi mới biết.",
-  "en": ""
- },
- {
-  "vi": "Cái đó không chờ cuối ca được.",
-  "en": ""
- },
- {
-  "vi": "Đèn đuôi là đèn của cả đoàn tàu.",
-  "en": ""
- },
- {
-  "vi": "Không có gì, tàu qua là xong",
-  "en": ""
- },
- {
-  "vi": "Gác chắn không nhìn tàu đi qua.",
-  "en": ""
- },
- {
-  "vi": "Toa cuối bị tuột nằm lại ở Km 6. May tàu sau thấy từ xa.",
-  "en": ""
- },
- {
-  "vi": "Gác chắn không chỉ nâng hạ cần chắn.",
-  "en": ""
- },
- {
-  "vi": "Suýt nữa thì…",
-  "en": ""
- },
- {
-  "vi": "Nhìn hết đoàn tàu; không thấy đèn đuôi hay có khói, cửa toa mở: báo ga ngay.",
-  "en": ""
- },
- {
-  "vi": "Ray treo hẫng sau mưa",
-  "en": ""
- },
- {
-  "vi": "Đi tuần sau trận mưa đêm, bạn thấy đá ba-lát dưới một đoạn ray trôi mất, ray treo hẫng. Mười lăm phút nữa có tàu.",
-  "en": ""
- },
- {
-  "vi": "Đoạn ray",
-  "en": ""
- },
- {
-  "vi": "Mắt bạn",
-  "en": ""
- },
- {
-  "vi": "Ray treo hẫng hai gang tay, tà vẹt lơ lửng.",
-  "en": ""
- },
- {
-  "vi": "Tàu khách SE tới sau mười lăm phút.",
-  "en": ""
- },
- {
-  "vi": "Nội quy tuần đường",
-  "en": ""
- },
- {
-  "vi": "Thấy chỗ nguy hiểm: cắm cờ đỏ phòng vệ hai đầu, điện khẩn ngay cho ga.",
-  "en": ""
- },
- {
-  "vi": "Điện khẩn cho ga, cắm cờ đỏ phòng vệ hai đầu, đứng chờ tổ thợ",
-  "en": ""
- },
- {
-  "vi": "Thợ tuần đường báo khẩn kịp, tàu dừng trước đoạn hỏng. Đúng quy trình.",
-  "en": ""
- },
- {
-  "vi": "Ga dừng tàu SE ở Bến Gỗ. Tổ thợ chèn đá xong, tàu qua chậm an toàn.",
-  "en": ""
- },
- {
-  "vi": "Báo khẩn mà sai thì mất mười phút. Không báo mà đúng thì mất cả chuyến tàu.",
-  "en": ""
- },
- {
-  "vi": "Hành khách tàu SE",
-  "en": ""
- },
- {
-  "vi": "Trễ hai mươi phút, không ai biết mình vừa thoát cái gì.",
-  "en": ""
- },
- {
-  "vi": "Ghi phiếu báo hỏng gửi cung, mai thợ tới",
-  "en": ""
- },
- {
-  "vi": "Ray treo hẫng mà chỉ ghi phiếu, không báo khẩn.",
-  "en": ""
- },
- {
-  "vi": "Tàu SE qua đoạn ray hẫng, rung lắc dữ dội. Ga gọi hỏi tại sao không báo.",
-  "en": ""
- },
- {
-  "vi": "Tôi tưởng tàu trật bánh.",
-  "en": ""
- },
- {
-  "vi": "Sai kênh báo là sai to.",
-  "en": ""
- },
- {
-  "vi": "Tự xúc đá chèn tạm rồi đi tiếp",
-  "en": ""
- },
- {
-  "vi": "Tự chèn tạm mà không báo ga, không phòng vệ.",
-  "en": ""
- },
- {
-  "vi": "Chèn được ít đá, ray vẫn lún. Tàu qua chậm vì lái tàu tự thấy.",
-  "en": ""
- },
- {
-  "vi": "Việc đó của tổ thợ, việc của mình là báo và phòng vệ.",
-  "en": ""
- },
- {
-  "vi": "Ga mà biết sớm thì đâu cần lái tàu tự thấy.",
-  "en": ""
- },
- {
-  "vi": "Chỗ hỏng nguy hiểm: phòng vệ trước và báo khẩn cho ga; phiếu báo hỏng chỉ cho việc không gấp.",
-  "en": ""
- },
- {
-  "vi": "Sếp bảo ghi giờ cho đẹp",
-  "en": ""
- },
- {
-  "vi": "Cuối tháng, anh Quý nói nhỏ: “Mấy chuyến chậm tuần này em ghi đúng giờ hết cho báo cáo cung đẹp nhé.”",
-  "en": ""
- },
- {
-  "vi": "Sổ nhật ký đường ngang là văn bản gốc khi điều tra sự cố.",
-  "en": ""
- },
- {
-  "vi": "Sự thật",
-  "en": ""
- },
- {
-  "vi": "Tuần này có ba chuyến chậm trên mười lăm phút.",
-  "en": ""
- },
- {
-  "vi": "Cung đạt chỉ tiêu đúng giờ thì cả cung được thưởng.",
-  "en": ""
- },
- {
-  "vi": "Ghi đúng sự thật, đề nghị ghi chú lý do chậm để cung giải trình",
-  "en": ""
- },
- {
-  "vi": "Ca gác ghi sổ trung thực, có ghi chú lý do. Báo cáo giải trình rõ ràng.",
-  "en": ""
- },
- {
-  "vi": "Anh Quý im lặng một lúc rồi gật: “Ừ. Ghi lý do vào.”",
-  "en": ""
- },
- {
-  "vi": "Cấp trên đọc thấy lý do, chẳng ai trách.",
-  "en": ""
- },
- {
-  "vi": "Sổ sai một lần thì không ai tin sổ nữa.",
-  "en": ""
- },
- {
-  "vi": "Ghi đúng giờ như sếp bảo",
-  "en": ""
- },
- {
-  "vi": "Sổ nhật ký ghi giờ không đúng thực tế.",
-  "en": ""
- },
- {
-  "vi": "Tháng sau có sự cố, đoàn kiểm tra đối chiếu sổ với ga: vênh hết.",
-  "en": ""
- },
- {
-  "vi": "Sổ ghi một đằng, ga ghi một nẻo.",
-  "en": ""
- },
- {
-  "vi": "Tôi sai khi bảo cậu vậy.",
-  "en": ""
- },
- {
-  "vi": "Ừ cho qua, rồi vẫn ghi đúng",
-  "en": ""
- },
- {
-  "vi": "Ghi đúng, nhưng không nói thẳng nên sếp tưởng cậu đã sửa.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo vẫn đúng, nhưng anh Quý bất ngờ và phật lòng.",
-  "en": ""
- },
- {
-  "vi": "Không đồng ý thì nói thẳng chứ.",
-  "en": ""
- },
- {
-  "vi": "Đúng rồi, nhưng nói ra thì tốt hơn.",
-  "en": ""
- },
- {
-  "vi": "Sổ nhật ký phải ghi đúng sự thật; muốn đẹp thì ghi rõ lý do, không sửa giờ.",
-  "en": ""
- },
- {
-  "vi": "Xe tải chết máy giữa ray",
-  "en": ""
- },
- {
-  "vi": "Ga vừa báo tàu còn bốn phút. Một xe tải chở gạch chết máy ngay giữa đường ngang, tài xế đạp đề mãi không nổ.",
-  "en": ""
- },
- {
-  "vi": "Tàu còn bốn phút, đang chạy tốc độ thường.",
-  "en": ""
- },
- {
-  "vi": "Báo dừng tàu",
-  "en": ""
- },
- {
-  "vi": "Đường ngang có vật cản không dẹp kịp: báo ga dừng tàu, ra cờ đỏ về phía tàu tới.",
-  "en": ""
- },
- {
-  "vi": "Xe tải chở gạch nặng hơn mười tấn, người không đẩy nổi.",
-  "en": ""
- },
- {
-  "vi": "Báo ga dừng tàu ngay, cầm cờ đỏ chạy ngược về phía tàu tới, gọi xe cứu hộ",
-  "en": ""
- },
- {
-  "vi": "Ca gác báo dừng tàu kịp thời, cờ đỏ ra đúng hướng. Không ai bị gì.",
-  "en": ""
- },
- {
-  "vi": "Tàu dừng cách đường ngang ba trăm mét. Xe cứu hộ kéo xe tải ra sau hai mươi phút.",
-  "en": ""
- },
- {
-  "vi": "Thấy cờ đỏ từ xa là tôi phanh luôn.",
-  "en": ""
- },
- {
-  "vi": "Tài xế xe tải",
-  "en": ""
- },
- {
-  "vi": "Tôi tưởng hết đời rồi.",
-  "en": ""
- },
- {
-  "vi": "Gọi mọi người ra đẩy xe",
-  "en": ""
- },
- {
-  "vi": "Gọi người dân ra đẩy xe tải giữa ray lúc tàu sắp tới. Quá liều.",
-  "en": ""
- },
- {
-  "vi": "Xe không nhúc nhích. Tàu tới, mọi người chạy tán loạn, lái tàu phanh khẩn cấp.",
   "en": ""
  }
 ]

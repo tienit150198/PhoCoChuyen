@@ -1,5 +1,549 @@
 [
  {
+  "vi": "Chan quá vạch hoặc tràn tô",
+  "en": ""
+ },
+ {
+  "vi": "Nhiều hơn lời dặn là lỗi nhỏ; tràn mép tô thì bưng bỏng tay khách.",
+  "en": ""
+ },
+ {
+  "vi": "Đập trứng sau khi chan",
+  "en": ""
+ },
+ {
+  "vi": "Lòng đỏ sống nằm trơ trên mặt tô. Trứng trần phải vào trước nước sôi.",
+  "en": ""
+ },
+ {
+  "vi": "Quên buộc túi nước mang về",
+  "en": ""
+ },
+ {
+  "vi": "Nước đổ lênh láng túi xách của khách.",
+  "en": ""
+ },
+ {
+  "vi": "🍜 Bánh phở, thịt bò, xương ống, quẩy, rau, trứng, hộp mang về nhập ở [[Kho quán phở]]. Bánh phở để được hai ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🌅 Bánh còn qua đêm thì sáng mai có thể chua: ngửi trước khi trụng.",
+  "en": ""
+ },
+ {
+  "vi": "👥 Nhân viên: Tí, Hưng canh nồi hớt bọt; Mai, Thảo dọn bàn rót trà.",
+  "en": ""
+ },
+ {
+  "vi": "🌤️ Mỗi ngày một kiểu: gió mùa (phở nguội nhanh, nồi mất nhiệt), mưa sáng, cuối tuần, chợ sớm.",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Bình gas hết giữa ca: thay bình, kiểm van rồi mới bật lửa.",
+  "en": ""
+ },
+ {
+  "vi": "😭 Bé bị nước dùng đổ vào tay: xả nước mát, không bôi kem đánh răng.",
+  "en": ""
+ },
+ {
+  "vi": "🥩 Người mời mua thịt bò rẻ không giấy tờ: không lấy.",
+  "en": ""
+ },
+ {
+  "vi": "Vặn lửa lăn tăn",
+  "en": ""
+ },
+ {
+  "vi": "Hớt bọt",
+  "en": ""
+ },
+ {
+  "vi": "Nếm nước dùng",
+  "en": ""
+ },
+ {
+  "vi": "Nêm nước mắm",
+  "en": ""
+ },
+ {
+  "vi": "Châm nước sôi",
+  "en": ""
+ },
+ {
+  "vi": "Ngửi rổ bánh phở",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ bánh chua",
+  "en": ""
+ },
+ {
+  "vi": "Nhúng rổ bánh",
+  "en": ""
+ },
+ {
+  "vi": "Tái để riêng",
+  "en": ""
+ },
+ {
+  "vi": "Rắc hành",
+  "en": ""
+ },
+ {
+  "vi": "Đập trứng",
+  "en": ""
+ },
+ {
+  "vi": "Dừng muôi",
+  "en": ""
+ },
+ {
+  "vi": "Buộc túi nước",
+  "en": ""
+ },
+ {
+  "vi": "Châm nồi",
+  "en": ""
+ },
+ {
+  "vi": "BƯNG PHỞ RA",
+  "en": ""
+ },
+ {
+  "vi": "Kho quán phở",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm ảnh photobooth",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm ảnh Tách Tách của chị Lam",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đứng tiệm photobooth của chị Lam cạnh chợ đêm: hỏi kỹ khách muốn gì, bố trí buồng chụp, bấm máy đúng lúc cả nhóm mở mắt, cho khách chọn ảnh, trang trí, in, cắt, giao và thối đúng tiền.",
+  "en": ""
+ },
+ {
+  "vi": "[[Lau ống kính]], [[Chụp thử phông trống]] để máy in báo mực. Mực sắp hết thì [[Thay cuộn mực mới]]. Rồi [[MỞ TIỆM]].",
+  "en": ""
+ },
+ {
+  "vi": "Bấm [[Hỏi khách muốn chụp gì]]: gói (dải 4 ô, 2 dải, khung lớn), khung chủ đề, phông, đạo cụ, đèn, sticker, ngày, màu.",
+  "en": ""
+ },
+ {
+  "vi": "Bố trí buồng chụp",
+  "en": ""
+ },
+ {
+  "vi": "Ở thẻ ① Bố trí: chọn gói, khung, phông nền, ánh đèn và đạo cụ đúng lời khách dặn.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm máy đúng lúc",
+  "en": ""
+ },
+ {
+  "vi": "[[Bắt đầu đếm 3-2-1]], đợi cả nhóm vào dáng rồi [[BẤM MÁY]] khi kim vào vùng xanh. Sớm quá thì nhòe, trễ quá thì có người chớp mắt.",
+  "en": ""
+ },
+ {
+  "vi": "Cho khách chọn ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Đủ ảnh thì [[Cho khách xem ảnh]], khách chỉ tấm nào thì chọn tấm đó. Không đủ ảnh đẹp thì [[Xóa, chụp lượt mới]].",
+  "en": ""
+ },
+ {
+  "vi": "Trang trí và in",
+  "en": ""
+ },
+ {
+  "vi": "Dán sticker, đóng ngày, chọn màu như khách dặn, xem bản xem trước rồi [[In ảnh]]. Sửa sau khi in thì phải [[In lại]], tờ cũ bỏ đi.",
+  "en": ""
+ },
+ {
+  "vi": "Cắt và giao",
+  "en": ""
+ },
+ {
+  "vi": "[[Cắt, bỏ bao kiếng]] (khung lớn thì [[Lồng vào khung gỗ]]), rồi [[ĐƯA ẢNH]] và [[ĐƯA TIỀN THỐI]].",
+  "en": ""
+ },
+ {
+  "vi": "👂 [[Hỏi khách muốn chụp gì]], đọc kỹ phiếu đơn.",
+  "en": ""
+ },
+ {
+  "vi": "🎀 Chọn gói, khung chủ đề, phông, đèn, đạo cụ.",
+  "en": ""
+ },
+ {
+  "vi": "📸 [[Bắt đầu đếm 3-2-1]], [[BẤM MÁY]] lúc cả nhóm đứng yên, mở mắt.",
+  "en": ""
+ },
+ {
+  "vi": "🖥️ [[Cho khách xem ảnh]], chọn đúng những tấm khách chỉ.",
+  "en": ""
+ },
+ {
+  "vi": "✨ Sticker, ngày, màu đúng lời dặn rồi [[In ảnh]].",
+  "en": ""
+ },
+ {
+  "vi": "✂️ [[Cắt, bỏ bao kiếng]], [[ĐƯA ẢNH]], đặt tiền thối vào khay rồi [[ĐƯA TIỀN THỐI]].",
+  "en": ""
+ },
+ {
+  "vi": "🖼️ Đúng gói, đúng khung, đúng phông, đúng đạo cụ, đúng đèn.",
+  "en": ""
+ },
+ {
+  "vi": "📸 Ảnh nào cũng đứng yên, mở mắt, ống kính sạch.",
+  "en": ""
+ },
+ {
+  "vi": "🖥️ Khách được tự chọn ảnh mình thích.",
+  "en": ""
+ },
+ {
+  "vi": "✨ Sticker, ngày tháng, màu ảnh đúng lời dặn.",
+  "en": ""
+ },
+ {
+  "vi": "⏱️ Gọn: không bắt khách chờ lâu.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm máy trước khi cả nhóm vào dáng",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh nhòe. Khách thấy ngay khi chọn ảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm trễ, giữ dáng quá lâu",
+  "en": ""
+ },
+ {
+  "vi": "Có người chớp mắt. Khách khó tính soi từng đôi mắt, chấm sao thấp.",
+  "en": ""
+ },
+ {
+  "vi": "In mà không cho khách chọn ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Khách bực: tấm mình thích không có trong dải.",
+  "en": ""
+ },
+ {
+  "vi": "Sai khung, sai phông, thiếu đạo cụ",
+  "en": ""
+ },
+ {
+  "vi": "Khách chê không giống lời dặn, có khi đòi bớt tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Ống kính bẩn, mưa hơi nước không lau",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh nào cũng mờ.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa sau khi đã in",
+  "en": ""
+ },
+ {
+  "vi": "Phải in lại, tờ cũ bỏ đi, tiệm chịu tiền giấy và mực.",
+  "en": ""
+ },
+ {
+  "vi": "Hết giấy mà vẫn nhận đơn",
+  "en": ""
+ },
+ {
+  "vi": "Nói thật: [[Nói thật: tiệm hết giấy, khung]], hẹn khách hôm sau.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Giấy in dải, giấy in đôi, giấy khung lớn, khung gỗ, bao kiếng, cuộn mực nhập ở [[Kho tiệm ảnh]].",
+  "en": ""
+ },
+ {
+  "vi": "🖨️ Một cuộn mực in được 24 tờ: chụp thử buổi sáng để biết còn bao nhiêu.",
+  "en": ""
+ },
+ {
+  "vi": "👀 Bé nhỏ giữ dáng rất ngắn, ông bà cười chậm: canh nhịp từng nhóm.",
+  "en": ""
+ },
+ {
+  "vi": "🌤️ Mỗi ngày một kiểu: cuối tuần đông, mưa (ống kính đọng hơi nước), lễ hội, mùa tan trường mặc đồng phục.",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Học nghề ba khách đầu: chị Lam đứng cạnh, chặn một lỗi trước khi in.",
+  "en": ""
+ },
+ {
+  "vi": "🖨️ Kẹt giấy trong máy in, điện thoại bỏ quên trong buồng, người lạ xin ảnh của khách, bé nghịch đèn vòng.",
+  "en": ""
+ },
+ {
+  "vi": "Lau ống kính",
+  "en": ""
+ },
+ {
+  "vi": "Chụp thử phông trống",
+  "en": ""
+ },
+ {
+  "vi": "Thay cuộn mực mới",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi khách muốn chụp gì",
+  "en": ""
+ },
+ {
+  "vi": "Bắt đầu đếm 3-2-1",
+  "en": ""
+ },
+ {
+  "vi": "BẤM MÁY",
+  "en": ""
+ },
+ {
+  "vi": "Cho khách xem ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Xóa, chụp lượt mới",
+  "en": ""
+ },
+ {
+  "vi": "In ảnh",
+  "en": ""
+ },
+ {
+  "vi": "In lại",
+  "en": ""
+ },
+ {
+  "vi": "Cắt, bỏ bao kiếng",
+  "en": ""
+ },
+ {
+  "vi": "Lồng vào khung gỗ",
+  "en": ""
+ },
+ {
+  "vi": "ĐƯA ẢNH",
+  "en": ""
+ },
+ {
+  "vi": "Nói thật: tiệm hết giấy, khung",
+  "en": ""
+ },
+ {
+  "vi": "Kho tiệm ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Tổ giúp việc Nhà Thơm của cô Mai",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đẩy xe đồ nghề tới từng nhà khách: nghe khách dặn, dọn từng phòng bằng đúng khăn, đúng chai, từ trên cao xuống, khô trước ướt sau, giữ đồ của khách, rồi mời khách đi một vòng kiểm nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Soạn xe đầu ngày",
+  "en": ""
+ },
+ {
+  "vi": "[[Giặt khăn]] hôm qua, [[Châm đầy]] chai nào sắp cạn (một chai lau được 12 lượt), rồi [[LÊN ĐƯỜNG]].",
+  "en": ""
+ },
+ {
+  "vi": "Tới nhà, bấm [[Bấm chuông, nghe khách dặn]]: dọn phòng nào, chỗ nào để nguyên, nhà có mèo hay có bé.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn từng phòng",
+  "en": ""
+ },
+ {
+  "vi": "Chọn phòng, cầm đúng dụng cụ và đúng chai trên xe, chạm vào từng chỗ để lau. Mỗi lần chạm là một lượt.",
+  "en": ""
+ },
+ {
+  "vi": "Phủi quạt trần, nóc tủ trước; rồi bàn kệ; rồi quét, hút sàn; lau ướt sau cùng.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ đồ của khách",
+  "en": ""
+ },
+ {
+  "vi": "Đồ dễ vỡ nhấc ra trước khi lau rồi đặt lại; nhẫn, đồng hồ cất vào khay; mèo bế sang phòng khác.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm nhà, nhận tiền công",
+  "en": ""
+ },
+ {
+  "vi": "Xong hết thì [[MỜI KHÁCH KIỂM NHÀ]]. Khách đi một vòng, chuyển khoản tiền công; khách ưng thì thành khách quen.",
+  "en": ""
+ },
+ {
+  "vi": "🧺 [[Giặt khăn]], [[Châm đầy]] chai sắp cạn, [[LÊN ĐƯỜNG]].",
+  "en": ""
+ },
+ {
+  "vi": "🔔 [[Bấm chuông, nghe khách dặn]], đọc kỹ lời dặn.",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Chọn phòng, nhấc đồ dễ vỡ ra, cất đồ quý vào khay.",
+  "en": ""
+ },
+ {
+  "vi": "🧽 Cầm đúng dụng cụ, đúng chai; lau từ trên cao xuống, khô trước ướt sau.",
+  "en": ""
+ },
+ {
+  "vi": "🏺 Đặt đồ dễ vỡ lại chỗ cũ rồi [[MỜI KHÁCH KIỂM NHÀ]].",
+  "en": ""
+ },
+ {
+  "vi": "✨ Phòng nào, chỗ nào cũng sạch.",
+  "en": ""
+ },
+ {
+  "vi": "🟦 Khăn xanh cho kính, khăn vàng cho bàn bếp, khăn đỏ chỉ cho bồn cầu.",
+  "en": ""
+ },
+ {
+  "vi": "🏺 Đồ dễ vỡ nguyên vẹn, đúng chỗ cũ; đồ quý cất vào khay.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Nhớ lời dặn: chỗ để nguyên, nhà có mèo, có bé thì sàn lau nước sạch.",
+  "en": ""
+ },
+ {
+  "vi": "⏱️ Làm có thứ tự, không phải lau đi lau lại.",
+  "en": ""
+ },
+ {
+  "vi": "Lau sàn trước rồi mới phủi quạt trần",
+  "en": ""
+ },
+ {
+  "vi": "Bụi rơi xuống sàn vừa lau, phải lau lại, khách chờ lâu.",
+  "en": ""
+ },
+ {
+  "vi": "Lau ướt khi sàn còn bụi tóc",
+  "en": ""
+ },
+ {
+  "vi": "Bụi bết thành vệt, lượt lau đó coi như bỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Dùng khăn đỏ lau chỗ khác",
+  "en": ""
+ },
+ {
+  "vi": "Mang bẩn bồn cầu đi khắp nhà, khách chấm sao thấp.",
+  "en": ""
+ },
+ {
+  "vi": "Xịt tẩy dầu mỡ lên mặt gỗ",
+  "en": ""
+ },
+ {
+  "vi": "Gỗ bạc màu một mảng, khách bực.",
+  "en": ""
+ },
+ {
+  "vi": "Lau mà không nhấc bình gốm ra",
+  "en": ""
+ },
+ {
+  "vi": "Bình chao đảo hoặc vỡ, phải đền tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Động vào chỗ khách dặn để nguyên",
+  "en": ""
+ },
+ {
+  "vi": "Khách mất lòng tin, có khi đòi bớt tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Mời khách kiểm khi còn chỗ bẩn",
+  "en": ""
+ },
+ {
+  "vi": "Khách chỉ từng chỗ, trả ít đi, không thành khách quen.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Chai lau kính, tẩy rửa dịu, tẩy dầu mỡ, tẩy bồn cầu, can nước lau sàn nhập ở [[Kho tổ giúp việc]].",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Khăn dùng xong tối nào cũng bẩn: sáng nào cũng giặt.",
+  "en": ""
+ },
+ {
+  "vi": "🌧️ Mưa dầm sàn lấm bùn, trời nồm gương đọng nước: châm đầy chai trước khi đi.",
+  "en": ""
+ },
+ {
+  "vi": "🌤️ Mỗi ngày một kiểu: cuối tuần, mưa dầm, trời nồm, hanh khô nhiều bụi, mùa tổng vệ sinh.",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Hai nhà đầu tiên cô Mai đi cùng, chặn mỗi kiểu lỗi một lần trước khi xảy ra.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Tiền rơi dưới gầm sofa, hàng xóm nhờ dọn riêng, thang máy hỏng, khách gọi video kiểm tra.",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Khách ưng nhà sạch thì lần sau thêm tiền công, kể bạn nghe chuyện nhà họ.",
+  "en": ""
+ },
+ {
+  "vi": "Giặt khăn",
+  "en": ""
+ },
+ {
+  "vi": "Châm đầy",
+  "en": ""
+ },
+ {
+  "vi": "Bấm chuông, nghe khách dặn",
+  "en": ""
+ },
+ {
   "vi": "MỜI KHÁCH KIỂM NHÀ",
   "en": ""
  },
@@ -1253,522 +1797,6 @@
  },
  {
   "vi": "Gọi nhắc lấy thuốc",
-  "en": ""
- },
- {
-  "vi": "Ghi nhiệt độ",
-  "en": ""
- },
- {
-  "vi": "Hỏi rõ phiếu",
-  "en": ""
- },
- {
-  "vi": "Đóng kín cửa, đo lại",
-  "en": ""
- },
- {
-  "vi": "Tủ dự phòng · gọi thợ",
-  "en": ""
- },
- {
-  "vi": "Bạn chọn lộ trình hợp cả đoàn, dẫn đi từng điểm, kể chuyện, xử lý sự cố và đưa đủ người về Bến Mây.",
-  "en": ""
- },
- {
-  "vi": "Chuyến đi trong ngày",
-  "en": ""
- },
- {
-  "vi": "Chọn 3–5 điểm, gom đoàn ở Bến Mây, kể chuyện ở từng điểm rồi đếm đủ người về bến.",
-  "en": ""
- },
- {
-  "vi": "Đoàn nhiều ngày",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3 có đoàn ở 2–3 ngày: chuyến đầu mỗi ngày là cùng những người đó. Sức khách mòn dần qua từng ngày.",
-  "en": ""
- },
- {
-  "vi": "Chăm khách ốm buổi sáng",
-  "en": ""
- },
- {
-  "vi": "Khách quá mệt có thể ốm sáng hôm sau. Quyết trước khi chốt lộ trình: nghỉ ở homestay hoặc đi khám.",
-  "en": ""
- },
- {
-  "vi": "Gọi bạn hàng",
-  "en": ""
- },
- {
-  "vi": "Ngày có đoàn nhiều ngày: [[Đặt cơm trưa]] trước giờ đi, [[Báo homestay]] mỗi tối, đặt đò ông Bảy.",
-  "en": ""
- },
- {
-  "vi": "Giữ đồ nghề",
-  "en": ""
- },
- {
-  "vi": "Loa cài áo, túi sơ cứu, cờ dẫn đoàn. Xem ở mục [[Việc chăm hôm nay]] và lo trước khi đi.",
-  "en": ""
- },
- {
-  "vi": "Sổ tay điểm đến",
-  "en": ""
- },
- {
-  "vi": "Kể hợp đoàn 4 lần ở một điểm mở chuyện ít ai biết (+2 nhịp), 10 lần mở góc ẩn (+4 nhịp).",
-  "en": ""
- },
- {
-  "vi": "Trang đặt tour",
-  "en": ""
- },
- {
-  "vi": "Từ 5 đánh giá, trung bình 4,5★ trở lên thì được đề xuất: thêm một đoàn mỗi sáng.",
-  "en": ""
- },
- {
-  "vi": "🌅 Bấm [[Bắt đầu ngày]], mở [[Đoàn khách]] chọn một đoàn rồi [[Dẫn đoàn]].",
-  "en": ""
- },
- {
-  "vi": "🤒 Có người ốm: chọn [[nghỉ ở homestay, nhờ cô Hạnh trông]] hoặc [[ra trạm y tế khám trước giờ đi]].",
-  "en": ""
- },
- {
-  "vi": "🗺️ Chạm 3–5 điểm theo thứ tự đi. Cần một chỗ nghỉ chân 🪑, đủ giờ và đủ quỹ vé, rồi [[Chốt lộ trình]].",
-  "en": ""
- },
- {
-  "vi": "📍 Ở điểm hẹn, xử lý người chưa tới rồi bấm [[Xuất phát]].",
-  "en": ""
- },
- {
-  "vi": "🎙️ Mỗi điểm chọn cách kể: [[Chuyện xưa]], [[Trò vui]] hoặc [[Góc ảnh]], xem nút ghi mấy người thích.",
-  "en": ""
- },
- {
-  "vi": "⚠️ Có “Chuyện trên đường” thì chọn cách xử lý trước khi đi tiếp.",
-  "en": ""
- },
- {
-  "vi": "👣 Bấm [[Đếm đoàn & đi tiếp]]. Ở điểm cuối bấm [[Đếm đoàn & về bến]].",
-  "en": ""
- },
- {
-  "vi": "✅ Bấm [[Khép chuyến]] để nhận thù lao và tip của đoàn.",
-  "en": ""
- },
- {
-  "vi": "😊 Mỗi người có một mong muốn. Lộ trình có điểm hợp càng nhiều người, nhịp đoàn khởi đầu càng cao.",
-  "en": ""
- },
- {
-  "vi": "⛰️ Đồi dốc làm người lớn tuổi mệt. Nắng gắt chỉ đi tối đa 2 điểm ngoài trời.",
-  "en": ""
- },
- {
-  "vi": "🎙️ Cách kể được nhiều người thích và hợp điểm thì nhịp tăng. Kể nhạt từ 2 điểm trở lên, đoàn phàn nàn.",
-  "en": ""
- },
- {
-  "vi": "⏱️ Về đúng giờ. Trễ mỗi 5 phút, nhịp đoàn tụt thêm.",
-  "en": ""
- },
- {
-  "vi": "💰 Thù lao 70 xu, cộng nửa số quỹ còn dư (tối đa 10). Nhịp từ 85% mỗi người tip 1 xu, từ 70% còn một nửa.",
-  "en": ""
- },
- {
-  "vi": "⭐ Đoàn nhiều ngày chấm theo nhịp trung bình: từ 85% là 5★. Bỏ ngày, giục người ốm, không báo homestay bị trừ sao.",
-  "en": ""
- },
- {
-  "vi": "Bỏ khách trễ ở điểm hẹn, để khách lạc tự bắt taxi, nói bừa “no peanut”, cho bé đi vệ sinh một mình",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn: trưởng đoàn không trả tiền, 1★, báo cáo lên app. Hôm sau phường tới kiểm tra.",
-  "en": ""
- },
- {
-  "vi": "Giục hay bỏ lại người say nắng, ép khách đang ốm đi cả ngày",
-  "en": ""
- },
- {
-  "vi": "Cũng là lỗi an toàn. Khách bị ép đi lúc ốm thì sáng mai vẫn còn ốm.",
-  "en": ""
- },
- {
-  "vi": "Cho cả đoàn tản ra tìm người, chen qua đám rước, hô chạy dưới mưa trơn, làm ngơ người lạ bám sau",
-  "en": ""
- },
- {
-  "vi": "Đoàn đòi bớt hoặc hoàn tiền, mất hết tip, review tụt.",
-  "en": ""
- },
- {
-  "vi": "Nhận phong bì, dẫn khách vào tiệm và giục mua",
-  "en": ""
- },
- {
-  "vi": "Được 15 xu hoa hồng nhưng mất lòng đoàn, bị trừ tiền chuyến, có bài chê trên phố.",
-  "en": ""
- },
- {
-  "vi": "Để khách bị hét giá dừa, đổi lịch theo ý một người, làm ngơ đèn flash, dẫn khách quần đùi vào chùa",
-  "en": ""
- },
- {
-  "vi": "Lỗi nhỏ: đoàn càu nhàu, tip còn một nửa, review thường còn 4★.",
-  "en": ""
- },
- {
-  "vi": "Về trễ giờ hẹn, lộ trình bỏ qua mong muốn của nhiều người",
-  "en": ""
- },
- {
-  "vi": "Đoàn phàn nàn trong đánh giá. Tiêu lố quỹ đoàn thì phải bù bằng tiền túi.",
-  "en": ""
- },
- {
-  "vi": "💼 Phải được tuyển trước: mở [[Việc làm]], chọn Mây Lang Thang, bấm [[Ứng tuyển]].",
-  "en": ""
- },
- {
-  "vi": "🪪 Qua [[Thi chứng chỉ]] 5 câu về điểm đến và an toàn, đúng 4 câu mới đạt. Trượt thì mai thi lại.",
-  "en": ""
- },
- {
-  "vi": "📝 Rồi [[Nộp CV]], phỏng vấn với anh Hải và bấm [[Ký hợp đồng thử việc]].",
-  "en": ""
- },
- {
-  "vi": "🔋 Loa tốn 8% pin mỗi lần kể. Pin yếu thì [[Cắm sạc loa]] để sáng mai đầy.",
-  "en": ""
- },
- {
-  "vi": "🩹 Túi sơ cứu thấp thì [[Bổ sung]]. Cờ bạc màu thì [[Khâu cờ]], không thì khách khó thấy, nhịp tụt.",
-  "en": ""
- },
- {
-  "vi": "🛶 Trời đẹp có thể [[Đặt đò mai]] cho đoàn nhiều ngày. Đò nghỉ khi mưa, gió; đặt mà không đi là ông Bảy giận.",
-  "en": ""
- },
- {
-  "vi": "🌦️ Xem dự báo ngày mai. Mưa đóng Lối Bờ Mây và Đồi, gió đóng Đồi. Khách mệt thì tránh dốc, đi dưới 100 phút.",
-  "en": ""
- },
- {
-  "vi": "⏰ Trên đường: khách lạc, sạp hét giá, xe điện hết pin, đám rước lân, mưa rào, bé cần vệ sinh, dọa 1 sao…",
-  "en": ""
- },
- {
-  "vi": "🥜 Tom dị ứng đậu phộng: bấm [[Hỏi kỹ người bán thành phần]]. Người say nắng: [[Đưa vào bóng râm]] (lấy đồ trong túi sơ cứu).",
-  "en": ""
- },
- {
-  "vi": "🎁 Phong bì hoa hồng: [[Cảm ơn và từ chối]], để khách tự chọn nơi mua. Đoàn khen bạn thật thà.",
-  "en": ""
- },
- {
-  "vi": "🪪 Thanh tra hỏi thẻ hướng dẫn viên: xuất trình và nhận lỗi. Nói mình chỉ là bạn đi cùng thì bị phạt nặng hơn.",
-  "en": ""
- },
- {
-  "vi": "👜 Khách bị móc túi hay giật túi: giữ đoàn một chỗ, đưa khách tới chốt công an trình báo.",
-  "en": ""
- },
- {
-  "vi": "Đặt cơm trưa",
-  "en": ""
- },
- {
-  "vi": "Báo homestay",
-  "en": ""
- },
- {
-  "vi": "nghỉ ở homestay, nhờ cô Hạnh trông",
-  "en": ""
- },
- {
-  "vi": "ra trạm y tế khám trước giờ đi",
-  "en": ""
- },
- {
-  "vi": "Đếm đoàn & đi tiếp",
-  "en": ""
- },
- {
-  "vi": "Đếm đoàn & về bến",
-  "en": ""
- },
- {
-  "vi": "Cắm sạc loa",
-  "en": ""
- },
- {
-  "vi": "Khâu cờ",
-  "en": ""
- },
- {
-  "vi": "Đặt đò mai",
-  "en": ""
- },
- {
-  "vi": "Hỏi kỹ người bán thành phần",
-  "en": ""
- },
- {
-  "vi": "Đưa vào bóng râm",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn và từ chối",
-  "en": ""
- },
- {
-  "vi": "Bạn điểm danh, soạn tiết học hợp từng bạn nhỏ, dạy, chấm phiếu và giữ liên lạc với phụ huynh.",
-  "en": ""
- },
- {
-  "vi": "Tiết học trên lớp",
-  "en": ""
- },
- {
-  "vi": "Mỗi ngày thường 3 tiết. Mỗi tiết đi 5 bước: điểm danh, soạn bài, dạy, chấm phiếu, khép tiết.",
-  "en": ""
- },
- {
-  "vi": "Bạn giơ tay hỏi bài",
-  "en": ""
- },
- {
-  "vi": "Tới hoạt động 2, một bạn giơ tay. Trả lời có “vì sao”. Bạn nhút nhát thì bấm [[Lại gần, nói nhỏ]] trước.",
-  "en": ""
- },
- {
-  "vi": "Tiết chuyên đề trong Kế hoạch lớp",
-  "en": ""
- },
- {
-  "vi": "Toán đi chợ, thí nghiệm nổi chìm, thể dục ngày nóng… Đọc ghi chú rồi làm từng bước, bấm [[Kiểm tra]].",
-  "en": ""
- },
- {
-  "vi": "Chấm bài và viết lời phê",
-  "en": ""
- },
- {
-  "vi": "Chấm theo đáp án, không trừ điểm chữ xấu. Lời phê chỉ rõ chỗ sai và cách sửa, không so sánh.",
-  "en": ""
- },
- {
-  "vi": "Gặp phụ huynh",
-  "en": ""
- },
- {
-  "vi": "Gặp riêng, họp đầu kỳ (tháng 9, 1, 5) hoặc nhóm chat “nổ”. Khen trước, nghe hoàn cảnh, không kể con nhà khác.",
-  "en": ""
- },
- {
-  "vi": "Dạy thay đồng nghiệp",
-  "en": ""
- },
- {
-  "vi": "Làm đúng giấy nhắn của Cô Hạ. Người lạ xin đón học sinh thì giữ lại, nhờ văn phòng gọi mẹ xác nhận.",
-  "en": ""
- },
- {
-  "vi": "Sự kiện năm học",
-  "en": ""
- },
- {
-  "vi": "Trung thu, 20/11, hội khỏe, Tết, dã ngoại, diễn tập cháy, ngày đọc sách, tổng kết. Mỗi tháng có sinh nhật chung.",
-  "en": ""
- },
- {
-  "vi": "Bài về nhà",
-  "en": ""
- },
- {
-  "vi": "Mở [[Kế hoạch lớp]], tab [[📚 Bài về nhà]]. Dạy xong một tiết mới giao được, chọn [[Nhẹ · 3 câu]] hoặc [[Vừa · 6 câu]]. Hôm sau chấm vở.",
-  "en": ""
- },
- {
-  "vi": "Nhắn tin phụ huynh",
-  "en": ""
- },
- {
-  "vi": "Mở [[Kế hoạch lớp]], tab [[💌 Phụ huynh]]. Chọn câu soạn sẵn hoặc gõ rồi bấm [[Gửi]]. Mỗi ngày nhắn một nhà một lần.",
-  "en": ""
- },
- {
-  "vi": "Xếp chỗ ngồi",
-  "en": ""
- },
- {
-  "vi": "Mở [[Kế hoạch lớp]], tab [[🪑 Chỗ ngồi]], bấm [[Đổi chỗ]] ngoài giờ dạy. Chỗ ngồi và bạn cùng bàn làm các bạn tiến bộ nhanh hoặc chậm hơn.",
-  "en": ""
- },
- {
-  "vi": "🌅 Bấm [[Bắt đầu ngày]] (hoặc chạm cửa [[Vào lớp]]), rồi [[Vào tiết tiếp theo]] để bắt đầu tiết.",
-  "en": ""
- },
- {
-  "vi": "📋 Bấm [[Có mặt]] cho các bạn đang ngồi. Bạn ốm có tin nhắn: [[Ghi vắng có phép]].",
-  "en": ""
- },
- {
-  "vi": "🚪 Đến muộn: [[Cho vào chỗ, hỏi riêng sau]]. Ghế trống: [[Báo văn phòng, nhắn phụ huynh ngay]].",
-  "en": ""
- },
- {
-  "vi": "📝 Chạm 3 thẻ hoạt động theo thứ tự, 25–35 phút, có hoạt động chính, rồi [[Chốt giáo án]].",
-  "en": ""
- },
- {
-  "vi": "💬 Xử lý “Chuyện trong lớp”. Bạn cần giúp: chọn [[Vẽ hình mẫu cho xem]], [[Đưa đồ vật cho tự thử]]…",
-  "en": ""
- },
- {
-  "vi": "🧩 …hoặc [[Kể ví dụ, cho nói lại]], [[Chia nhỏ từng bước]], đúng cách học của bạn ấy.",
-  "en": ""
- },
- {
-  "vi": "▶️ Bấm [[Sang hoạt động]] tới hết, rồi [[Thu phiếu]].",
-  "en": ""
- },
- {
-  "vi": "🎫 Phiếu đúng [[Khen cụ thể]], sai [[Gợi ý một bước]], giống hệt bạn bên [[Gặp riêng sau giờ]]. Xong bấm [[Khép tiết]].",
-  "en": ""
- },
- {
-  "vi": "⭐ Giáo án 3 sao: mở đầu hợp không khí lớp, có đủ cách học của các bạn có mặt, kết bằng thẻ Kiểm tra.",
-  "en": ""
- },
- {
-  "vi": "🌡️ Lớp ồn thì mở nhẹ nhàng, lớp lờ đờ thì vận động, sắp kiểm tra thì trò chơi. Thiếu sao, nhịp lớp tụt.",
-  "en": ""
- },
- {
-  "vi": "💡 Bạn thiếu cách học hợp mình sẽ lạc bài. Giúp đúng cách thì bạn hiểu và tin bạn hơn.",
-  "en": ""
- },
- {
-  "vi": "🎫 Chấm phiếu đúng loại. Thù lao: 45 xu, +5 mỗi sao, tới +10 theo số bạn hiểu, +5 nếu nhịp lớp từ 80%.",
-  "en": ""
- },
- {
-  "vi": "🌟 Không lỗi nào thì phụ huynh chấm 5★. Một lỗi nhỏ còn 4★, lỗi an toàn chỉ 1★.",
-  "en": ""
- },
- {
-  "vi": "📒 Ở Kế hoạch lớp: làm không sai bước nào là “Tuyệt vời”, đủ thưởng. Sai 1–2 lần còn 70%, nhiều hơn còn 40%.",
-  "en": ""
- },
- {
-  "vi": "Ghế trống mà bấm [[Ghi vắng rồi dạy tiếp]]",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn: phụ huynh làm việc với trường, mất cả thù lao tiết, 1★, phản ánh lên nhà trường. Hôm sau phường tới kiểm tra.",
-  "en": ""
- },
- {
-  "vi": "Khen phiếu sai, gọi riêng bạn tự làm, bắt làm lại phiếu đúng, bỏ qua phiếu chép bài",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh phản ánh lên trường. Nhà trường trừ một phần thù lao tiết, sao tụt.",
-  "en": ""
- },
- {
-  "vi": "Nêu tên bạn trước lớp, phạt cả bạn bị xô, cười theo khi bạn bị nhại giọng, đập ong, không cho bạn đau bụng ra ngoài",
-  "en": ""
- },
- {
-  "vi": "Mất tin tưởng của bạn nhỏ, phụ huynh nhắn trách, nhà trường có thể trừ tiền.",
-  "en": ""
- },
- {
-  "vi": "Ghi bạn ốm là có mặt, bắt bạn đến muộn [[Đứng ngoài năm phút cho nhớ]]",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh phàn nàn sau giờ học, review còn 4★ hoặc thấp hơn.",
-  "en": ""
- },
- {
-  "vi": "Để bạn lạc bài không ai kèm, hoặc đổi cách giảng sai 2 lần với một bạn",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh kể con không theo kịp, bạn ấy làm sai phiếu cuối tiết.",
-  "en": ""
- },
- {
-  "vi": "Gạt câu hỏi (“chú ý vào”), hoặc bỏ mặc bạn giơ tay rồi sang hoạt động",
-  "en": ""
- },
- {
-  "vi": "Bạn hạ tay, buồn hơn và ít dám hỏi. Gạt đi còn tính là lỗi.",
-  "en": ""
- },
- {
-  "vi": "Nhắn phụ huynh kể chuyện con nhà khác, đổ lỗi, so sánh; để tin nhắn chờ 2 ngày",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh mất tin tưởng. Vở không chấm sau 3 ngày bị trả về, bạn nhỏ buồn.",
-  "en": ""
- },
- {
-  "vi": "💼 Phải được tuyển trước: mở [[Việc làm]], chọn trường, bấm [[Ứng tuyển]], [[Nộp CV]] đúng việc bạn đã làm.",
-  "en": ""
- },
- {
-  "vi": "📝 Viết thư, trả lời phỏng vấn, rồi bấm [[Ký hợp đồng thử việc]]. Lớp cộng đồng nhận nhanh nhất nhưng lương thấp.",
-  "en": ""
- },
- {
-  "vi": "💰 Lương theo ngày (35–90 xu tùy nơi) vào ví khi khép ca, nếu hôm đó dạy xong ít nhất một tiết. Thù lao từng tiết cộng riêng.",
-  "en": ""
- },
- {
-  "vi": "🧪 Thử việc nhận 85% lương. Hết thử việc mà đánh giá trung bình từ 3,5★ là ký chính thức, thấp hơn thì thử thêm 2 ngày.",
-  "en": ""
- },
- {
-  "vi": "🪑 Trước giờ dạy: bạn học bằng mắt ngồi gần bảng, bạn cần từng bước tránh cửa sổ.",
-  "en": ""
- },
- {
-  "vi": "👫 Minh cạnh Vy hoặc Khoa thì tốt. Đừng xếp Bảo cạnh Vy hay Tú, Vy cạnh Linh.",
-  "en": ""
- },
- {
-  "vi": "📚 Sau tiết giao bài về nhà. Mai và Linh dễ thức khuya với bài dài, nên giao nhẹ.",
-  "en": ""
- },
- {
-  "vi": "📓 Chấm vở: đúng hết [[Khen cụ thể]], sai hai câu [[Chữa cùng con]], không nộp hay buồn ngủ [[Hỏi riêng vì sao]].",
-  "en": ""
- },
- {
-  "vi": "💌 Mỗi phụ huynh cần nghe tin khoảng 4 ngày một lần. Nêu tên con, môn học và một việc cụ thể tối nay.",
-  "en": ""
- },
- {
-  "vi": "📈 Ngày 1–2 lớp có 5 bạn, một chuyện mỗi tiết. Từ ngày 3 có 6 bạn, hai chuyện, có thể gặp ghế trống, dự giờ, mái dột.",
-  "en": ""
- },
- {
-  "vi": "🎓 Từ ngày 6 lớp có 7 bạn, ba chuyện mỗi tiết, hai bạn dễ lạc bài, và 6 thẻ hoạt động để chọn.",
   "en": ""
  }
 ]

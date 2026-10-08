@@ -1,5 +1,561 @@
 [
  {
+  "vi": "Sếp kiểm lại mọi hồ sơ, mỗi lần tốn thêm 20 phút.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Phải được tuyển trước: bấm [[Ứng tuyển]], nộp CV thật, thư xin việc, phỏng vấn với chị Mai Anh.",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Có thư mời thì [[Ký hợp đồng thử việc]], có thể [[Thương lượng lương]] một lần.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Lương theo ngày (Ban Tài chính từ 90 xu, SH Food 75 xu, thực tập 50 xu) vào ví khi khép ca, nếu xong ít nhất một việc. Thử việc 85%.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Thẻ gói báo cáo: bấm [[Soát gói]] (15 phút). Tới hạn ngày 2 mà chưa có thì [[Gọi giục]] (10 phút, mỗi ngày một lần). Thẻ gập gọn trong Hộp thư tới khi tới hạn; chạm để mở.",
+  "en": ""
+ },
+ {
+  "vi": "🏅 Cuối quý mỗi gói đã soát +1 tin tưởng. Soát đủ cả 4 gói thưởng thêm 10 xu.",
+  "en": ""
+ },
+ {
+  "vi": "✉️ Từ ngày 3 có câu hỏi kiểm toán: [[Trả lời]]. Gói đã soát thì trả lời nhanh hơn nhiều.",
+  "en": ""
+ },
+ {
+  "vi": "☕ [[Nghỉ giải lao 15 phút]] mỗi ngày một lần. Thân với đồng nghiệp thì họ không nộp gói trễ.",
+  "en": ""
+ },
+ {
+  "vi": "🧭 Lộ trình với chị Mai Anh: ngày làm chắc tay là nộp ít nhất một hồ sơ, không trễ hạn, sửa sai tối đa một lần.",
+  "en": ""
+ },
+ {
+  "vi": "⭐ 3 ngày chắc tay: Chuyên viên hợp nhất chính thức, nghỉ giải lao hồi +10 sức bền.",
+  "en": ""
+ },
+ {
+  "vi": "📈 6 ngày chắc tay và tin tưởng từ 55: phụ trách đối chiếu nội bộ, +4 xu mỗi ngày chắc tay.",
+  "en": ""
+ },
+ {
+  "vi": "🏅 10 ngày chắc tay và tin tưởng từ 70: được đề cử trưởng nhóm hợp nhất, +8 xu mỗi ngày chắc tay.",
+  "en": ""
+ },
+ {
+  "vi": "🔰 Hồ sơ đầu tiên: nút gợi ý làm giúp luôn (như “👆 Chọn HĐ-93”). Từ hồ sơ thứ hai bạn tự chọn.",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Ngày gói báo cáo về trễ: tới 10:00 mới có. Bấm [[Gọi giục anh Phong]] để có sớm hơn.",
+  "en": ""
+ },
+ {
+  "vi": "🕵️ Chị Thảo kiểm toán soát cuối ngày: không phải sửa gì +10 xu, +3 tin tưởng; sửa từ 3 chỗ −10 xu, −3 tin tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "🏛️ Ngày họp HĐQT: gợi ý chờ 15 phút. Xong hết, sửa tối đa 1 chỗ được +12 xu, +3 tin tưởng; không thì −2 tin tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "💱 Ngày tỷ giá biến động: cẩn thận các dòng lệch vì tỷ giá.",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Ngày thứ 5 mỗi quý là ngày chốt hợp nhất: hạn sớm hơn 30 phút, tăng ca được 18 xu và +3 tin tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "🤫 Bạn cũ hỏi lợi nhuận quý trước ngày công bố, sếp nhờ mời kiểm toán đi nhậu: từ chối.",
+  "en": ""
+ },
+ {
+  "vi": "Ghép cặp này",
+  "en": ""
+ },
+ {
+  "vi": "Ghi bút toán hợp nhất",
+  "en": ""
+ },
+ {
+  "vi": "Soát gói",
+  "en": ""
+ },
+ {
+  "vi": "Gọi giục",
+  "en": ""
+ },
+ {
+  "vi": "Gọi giục anh Phong",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là cơ phó tàu cánh quạt, bay chặng ngắn ra đảo và về miền Tây cùng cơ trưởng Vân. Mỗi việc là một chặng bay, từ bản tin tới lúc tắt máy.",
+  "en": ""
+ },
+ {
+  "vi": "Chặng bay thường",
+  "en": ""
+ },
+ {
+  "vi": "Bấm [[Nhận bản tin bay]], nạp dầu, kiểm bốn điểm quanh tàu, bật công tắc theo checklist, [[CẤT CÁNH]], qua hai cổng rồi hạ cánh.",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 2. Nạp thêm dầu chờ 20 phút. Tới nơi giông còn trên sân bay: bay chờ, hoặc bay đi sân bay dự bị.",
+  "en": ""
+ },
+ {
+  "vi": "Đích còn sương dưới mức tối thiểu: lùi giờ cất cánh, chờ dưới đất rồi thông báo cho khách.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra kỹ thuật",
+  "en": ""
+ },
+ {
+  "vi": "Lốp mòn, vệt dầu dưới động cơ: [[Gọi chú Mẫn kiểm tra, ghi sổ kỹ thuật]]. Chuyến chậm 30 phút, nhớ thông báo cho khách.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thu báo vào buồng lái. Còn gần tới đích thì bay tiếp, xa thì chuyển hướng xuống sân bay gần nhất có bệnh viện.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Bấm [[Nhận bản tin bay]]: xem thời tiết ở đích, số khách và phiếu dầu.",
+  "en": ""
+ },
+ {
+  "vi": "⛽ Chọn mức dầu = dầu chặng + dầu đi dự bị + 30 phút dự phòng. Dự báo giông lúc tới: thêm dầu chờ.",
+  "en": ""
+ },
+ {
+  "vi": "🚶 Chạm từng điểm trên hình chiếc tàu: bánh, động cơ, cánh và ống pitot, cửa khoang hàng.",
+  "en": ""
+ },
+ {
+  "vi": "✅ Bật công tắc theo đúng thứ tự trên thẻ checklist, rồi bấm [[CẤT CÁNH]].",
+  "en": ""
+ },
+ {
+  "vi": "✈️ [[Tự bay]]: tự đẩy ga, cất mũi, vòng tránh mây giông và hạ cánh, giữ 2 trắng 2 đỏ. Muốn nhanh thì chọn [[Bay nhanh]].",
+  "en": ""
+ },
+ {
+  "vi": "📢 Chuyến chậm thì chọn câu thông báo nói rõ vì sao, chậm bao lâu, xin lỗi và hẹn báo lại.",
+  "en": ""
+ },
+ {
+  "vi": "🛬 Mỗi cổng: so số liệu với giới hạn. Ổn định thì [[Ổn định · tiếp tục]], chưa thì [[Bay lại]].",
+  "en": ""
+ },
+ {
+  "vi": "🅿️ Hạ cánh xong bấm [[TẮT MÁY · GHI SỔ]].",
+  "en": ""
+ },
+ {
+  "vi": "⛽ Dầu đủ mà không thừa: tàu kín khách đừng đổ đầy bình.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Không bỏ qua lỗi nào khi kiểm tàu, dù có trễ giờ.",
+  "en": ""
+ },
+ {
+  "vi": "✅ Checklist đúng thứ tự.",
+  "en": ""
+ },
+ {
+  "vi": "↗️ Chưa ổn định thì bay lại. Bay lại khi đã ổn định chỉ là lỗi nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "📢 Chậm chuyến thì nói thật, nói rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Nạp thiếu dầu dự bị",
+  "en": ""
+ },
+ {
+  "vi": "Chị Vân không cho cất cánh, phải chọn lại. Lỗi rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ qua lỗi khi kiểm tàu",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: chị Vân kiểm lại và phát hiện, chuyến vẫn phải chờ sửa, đánh giá 1★, mất thưởng chuyến.",
+  "en": ""
+ },
+ {
+  "vi": "Làm checklist lộn thứ tự",
+  "en": ""
+ },
+ {
+  "vi": "Chị Vân dừng lại đọc lại từ dòng đang dở. Lỗi nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Hạ cánh khi chưa ổn định, gió ngang quá giới hạn",
+  "en": ""
+ },
+ {
+  "vi": "Tàu chạm mạnh, lỗi rõ. Chưa thấy đường băng mà vẫn xuống: lỗi an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Bay xuyên mây giông, cố hạ cánh khi giông còn trên sân bay",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn, phòng an toàn bay đọc lại chuyến bay cùng bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Thông báo mập mờ hoặc nói “sắp bay rồi” khi chưa chắc",
+  "en": ""
+ },
+ {
+  "vi": "Khách mất kiên nhẫn, đánh giá thông báo thấp.",
+  "en": ""
+ },
+ {
+  "vi": "🕠 Ca bay bắt đầu 05:30 ở sân bay thành phố; tối về kịp cơm ở hẻm.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Là việc làm thuê: nộp hồ sơ [[Ứng tuyển]] ở Hãng bay Cánh Cò, có lương ngày và thưởng từng chặng bay đúng bài.",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Chứng chỉ An toàn bay cơ bản giúp dễ được nhận hơn.",
+  "en": ""
+ },
+ {
+  "vi": "🌤️ Mỗi ngày một kiểu trời: trời đẹp, mùa giông chiều, sương sớm, gió mùa, cao điểm hè kín khách.",
+  "en": ""
+ },
+ {
+  "vi": "🐦 Đàn cò trên đường băng, flycam gần hàng rào, sếp gọi ép đúng giờ, chị Vân mệt: an toàn đi trước.",
+  "en": ""
+ },
+ {
+  "vi": "〰️ Trên đường bay có thể gặp vùng rung lắc, mây giông, hoặc khách ốm cần quyết nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận bản tin bay",
+  "en": ""
+ },
+ {
+  "vi": "CẤT CÁNH",
+  "en": ""
+ },
+ {
+  "vi": "Tự bay",
+  "en": ""
+ },
+ {
+  "vi": "Gọi chú Mẫn kiểm tra, ghi sổ kỹ thuật",
+  "en": ""
+ },
+ {
+  "vi": "Ổn định · tiếp tục",
+  "en": ""
+ },
+ {
+  "vi": "TẮT MÁY · GHI SỔ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là tiếp viên của Hãng bay Cánh Cò, cùng chị Thu lo khoang khách 68 chỗ: đón khách, làm mẫu an toàn, đẩy xe phục vụ và chăm từng người.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm [[Ra cửa đón khách]], đọc thẻ và hành lý từng người rồi chọn cách giúp. Đủ khách thì [[ĐÓNG CỬA KHOANG]].",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thu đọc tới đâu, giơ đúng món làm mẫu tới đó. Rồi [[Đi dọc lối kiểm tra]], chạm từng ghế chưa sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm [[Nhận phiếu suất ăn đặc biệt]], rồi phục vụ từng hàng: chạm ghế, chạm món trên xe. Xong hàng cuối thì [[THU LY, CẤT XE]].",
+  "en": ""
+ },
+ {
+  "vi": "Khách khó chịu",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 2. Ba lượt nói: lắng nghe, nói rõ quy định và vì sao, rồi tìm cho khách một lối ra.",
+  "en": ""
+ },
+ {
+  "vi": "Khách không khỏe",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 2. Hỏi khách trước, dùng đúng đồ trong túi sơ cứu rồi bấm [[XONG, THEO DÕI KHÁCH]].",
+  "en": ""
+ },
+ {
+  "vi": "🎫 Ở cửa: [[Chỉ chỗ ngồi]], [[Gửi khoang hàng]] cho vali lớn, [[Đổi chỗ ngồi]], hoặc [[Pin sạc mang theo người]].",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Hàng 1 và hàng 17 cạnh cửa thoát hiểm: chỉ người lớn đi lại được, mở được cửa.",
+  "en": ""
+ },
+ {
+  "vi": "🦺 Làm mẫu theo câu chị Thu đang đọc, rồi đi dọc lối, chạm từng ghế có biểu tượng lạ.",
+  "en": ""
+ },
+ {
+  "vi": "📞 Hết ghế chưa sẵn sàng thì bấm [[BÁO BUỒNG LÁI: SẴN SÀNG]].",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Xe đẩy: chạm ghế trên sơ đồ, chạm món trên xe. Khách ngủ thì [[Để khách ngủ]].",
+  "en": ""
+ },
+ {
+  "vi": "〰️ Đèn thắt dây bật giữa lúc phục vụ: [[Khóa phanh xe đẩy]], [[Cất bình nước nóng]], [[Về ghế, thắt dây]] trước khi hết giờ.",
+  "en": ""
+ },
+ {
+  "vi": "🔋 Pin sạc dự phòng mang theo người, không gửi khoang hàng.",
+  "en": ""
+ },
+ {
+  "vi": "🥜 Hàng có khách dị ứng đậu phộng: không phát đậu phộng cho ai trong hàng đó.",
+  "en": ""
+ },
+ {
+  "vi": "♨️ Trẻ nhỏ không uống đồ nóng: mời nước cam hoặc nước lọc.",
+  "en": ""
+ },
+ {
+  "vi": "🥬 Suất chay theo đúng phiếu suất ăn đặc biệt.",
+  "en": ""
+ },
+ {
+  "vi": "💊 Không đưa thuốc của mình; khách nặng thì báo cơ trưởng, tìm bác sĩ trên chuyến.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi pin sạc dự phòng xuống khoang hàng",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: chị Thu kéo vali lại, đánh giá 1★, mất thưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Để người già, trẻ em, người bế con ngồi hàng thoát hiểm",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ, chị Thu phải đổi chỗ lại.",
+  "en": ""
+ },
+ {
+  "vi": "Báo sẵn sàng khi còn khách chưa thắt dây",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn. Bàn ăn chưa gập, ghế còn ngả, rèm đóng: lỗi nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Phát đậu phộng ở hàng có khách dị ứng, đưa đồ nóng cho trẻ nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thu giữ lại kịp, nhưng vẫn là lỗi an toàn (đậu phộng) và lỗi rõ (đồ nóng).",
+  "en": ""
+ },
+ {
+  "vi": "Không kịp cất xe khi rung lắc",
+  "en": ""
+ },
+ {
+  "vi": "Nước nóng đổ trúng khách, xe trôi va đầu gối khách: mỗi thứ là một lỗi rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa thuốc của mình cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn. Khách đau ngực mà không báo cơ trưởng cũng vậy.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Là việc làm thuê: nộp hồ sơ [[Ứng tuyển]] ở Hãng bay Cánh Cò, có lương ngày và thưởng từng việc làm chu đáo.",
+  "en": ""
+ },
+ {
+  "vi": "🌤️ Mỗi ngày một kiểu chuyến: ngày thường, mùa gió hay rung lắc, nghỉ hè nhiều trẻ em, chuyến sớm khách ngủ gật, cao điểm lễ.",
+  "en": ""
+ },
+ {
+  "vi": "〰️ Từ ngày 2, đèn thắt dây có thể bật giữa lúc phục vụ: đồng hồ đếm ngược 20–25 giây.",
+  "en": ""
+ },
+ {
+  "vi": "🥭 Túi xoài của bà Chín, kỷ niệm ngày cưới, điện thoại rơi khe ghế, bé Bơ khóc cả chuyến: mỗi cách chọn đều có hậu quả.",
+  "en": ""
+ },
+ {
+  "vi": "Ra cửa đón khách",
+  "en": ""
+ },
+ {
+  "vi": "ĐÓNG CỬA KHOANG",
+  "en": ""
+ },
+ {
+  "vi": "Đi dọc lối kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "Nhận phiếu suất ăn đặc biệt",
+  "en": ""
+ },
+ {
+  "vi": "THU LY, CẤT XE",
+  "en": ""
+ },
+ {
+  "vi": "XONG, THEO DÕI KHÁCH",
+  "en": ""
+ },
+ {
+  "vi": "BÁO BUỒNG LÁI: SẴN SÀNG",
+  "en": ""
+ },
+ {
+  "vi": "Để khách ngủ",
+  "en": ""
+ },
+ {
+  "vi": "Điều dưỡng khoa Nội",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là điều dưỡng ca ngày ở khoa Nội. Bác sĩ quyết điều trị; bạn chăm người bệnh, làm đúng y lệnh, kiểm từng bước và báo ngay khi có gì bất thường. Chị Hoa kèm ba việc đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận giao ca",
+  "en": ""
+ },
+ {
+  "vi": "Đọc ghi chú ca đêm của từng giường, chọn giường xem trước (giường đêm qua có chuyện), bấm [[NHẬN CA]].",
+  "en": ""
+ },
+ {
+  "vi": "Đo dấu hiệu sinh tồn",
+  "en": ""
+ },
+ {
+  "vi": "[[Sát khuẩn tay]], hỏi tên và ngày sinh, đo đủ năm chỉ số, gõ số vào phiếu rồi [[Ghi phiếu]]. Ngoài thẻ báo động thì [[Gọi bác sĩ]].",
+  "en": ""
+ },
+ {
+  "vi": "Cho thuốc theo y lệnh",
+  "en": ""
+ },
+ {
+  "vi": "Đối chiếu phiếu y lệnh: người bệnh, [[Xem vòng dị ứng]], [[Đọc nhãn khay khoa dược]], đường huyết khi y lệnh dặn. Khớp hết thì [[Thực hiện y lệnh]], không khớp thì giữ lại, báo bác sĩ.",
+  "en": ""
+ },
+ {
+  "vi": "Chuông gọi",
+  "en": ""
+ },
+ {
+  "vi": "Tới giường xem chuyện gì rồi chọn cách trả lời: an toàn trước, chu đáo sau.",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 2. Ba người tới cùng lúc: [[Hỏi]], [[Đo nhanh]], phát thẻ màu Lá Sen cho từng người, rồi [[GỬI VÀO KHÁM]].",
+  "en": ""
+ },
+ {
+  "vi": "Chuẩn bị thủ thuật",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3. Giấy cam đoan, nhịn ăn, dị ứng, trang sức. Đủ thì [[CHUYỂN ĐI THỦ THUẬT]]; chưa ký hay đổi ý thì mời bác sĩ, không ép.",
+  "en": ""
+ },
+ {
+  "vi": "Ra viện",
+  "en": ""
+ },
+ {
+  "vi": "Giấy ra viện có chữ ký, thẻ BHYT, [[Rút kim luồn]], dặn dò, [[Nhờ người bệnh nhắc lại]], rồi [[CHO VỀ]].",
+  "en": ""
+ },
+ {
+  "vi": "🧴 Mỗi người bệnh: [[Sát khuẩn tay]] trước khi chạm.",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Mời người bệnh tự nói họ tên, ngày sinh rồi đối chiếu vòng tay. Không dùng số giường.",
+  "en": ""
+ },
+ {
+  "vi": "🌡️ Đo xong gõ đúng số vào phiếu. Số lạ so với người bệnh thì đo lại.",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Chỉ số ngoài thẻ báo động: [[Gọi bác sĩ]], chọn đúng chỉ số muốn báo, rồi [[XONG LƯỢT ĐO]].",
+  "en": ""
+ },
+ {
+  "vi": "💊 Trùng nhóm dị ứng, sai nhãn, sai người, đang nhịn ăn, đường huyết thấp: giữ lại, báo bác sĩ.",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Người bệnh từ chối: hỏi vì sao, giải thích; vẫn không đồng ý thì giữ lại, báo bác sĩ.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Cuối ca: [[Ghi vào sổ giao ca]] những gì thật sự đã xảy ra.",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Đúng người bệnh mỗi lần.",
+  "en": ""
+ },
+ {
+  "vi": "🧴 Tay sạch trước khi chạm người bệnh.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Phiếu ghi đúng số đo thật.",
+  "en": ""
+ },
+ {
+  "vi": "📞 Báo bác sĩ kịp lúc, nói rõ chỉ số.",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Tôn trọng người bệnh từ chối; không ép, không dọa.",
+  "en": ""
+ },
+ {
   "vi": "Cho thuốc trùng nhóm dị ứng, sai nhãn khay hay nhầm người",
   "en": ""
  },
@@ -1133,670 +1689,6 @@
  },
  {
   "vi": "🧪 Mở hồ: kiểm đủ tám món, ghi số que thử vào sổ nước, ngoài bảng mẫu thì chưa mở.",
-  "en": ""
- },
- {
-  "vi": "👀 Lên ghế: quét đủ năm khu trong một phút. Té nước, la hét mà đứng vững là đang chơi.",
-  "en": ""
- },
- {
-  "vi": "🫥 Người đuối nước thường im lặng: người dựng đứng, đầu ngửa ra sau, miệng ngang mặt nước.",
-  "en": ""
- },
- {
-  "vi": "🪝 Với từ bờ được thì với, ném được thì ném; xuống nước luôn mang phao ống.",
-  "en": ""
- },
- {
-  "vi": "🩺 Lên bờ: gọi to, vỗ vai, nhìn ngực mười giây. Không thở: 115, máy AED. Không bao giờ dốc ngược.",
-  "en": ""
- },
- {
-  "vi": "⛈️ Nghe sấm: tất cả lên bờ, đếm người, ba mươi phút sau tiếng sấm cuối mới mở lại.",
-  "en": ""
- },
- {
-  "vi": "📒 Cuối ca: [[Ghi vào sổ trực]] những gì thật sự đã xảy ra.",
-  "en": ""
- },
- {
-  "vi": "👀 Mắt không rời mặt nước, quét đủ năm khu.",
-  "en": ""
- },
- {
-  "vi": "🛟 Phao ống luôn trong tay; với, ném trước khi xuống.",
-  "en": ""
- },
- {
-  "vi": "🚫 Không dốc ngược người đuối nước; không đưa thuốc của mình.",
-  "en": ""
- },
- {
-  "vi": "⛈️ Sấm là lên bờ, chờ đủ ba mươi phút, sếp giục cũng vậy.",
-  "en": ""
- },
- {
-  "vi": "🏫 Bơi thử rồi mới phát vòng tay, không tin miệng.",
-  "en": ""
- },
- {
-  "vi": "Không thấy người đang chìm, mở hồ khi nắp hút đáy bung hay nước đục",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn: đánh giá 1★, mất thưởng, anh Hải lập biên bản.",
-  "en": ""
- },
- {
-  "vi": "Dốc ngược người đuối nước, đỡ người bất tỉnh ngồi dậy, cho người say xuống nước",
-  "en": ""
- },
- {
-  "vi": "Nhảy xuống tay không, không gọi hỗ trợ",
-  "en": ""
- },
- {
-  "vi": "Lỗi rõ: bớt sao, bớt thưởng.",
-  "en": ""
- },
- {
-  "vi": "Thổi còi nhầm người, quét chậm quá một phút",
-  "en": ""
- },
- {
-  "vi": "Lỗi nhỏ, bớt sao.",
-  "en": ""
- },
- {
-  "vi": "Mở lại hồ khi chưa đủ ba mươi phút sau tiếng sấm cuối",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn; chiều theo sếp còn bị ghi điểm vi phạm.",
-  "en": ""
- },
- {
-  "vi": "Nhận quà giữ làn riêng, ghi sổ trực khống",
-  "en": ""
- },
- {
-  "vi": "🕕 Hồ mở 6:00 tới 20:00; trưa nắng gắt đông trẻ con, chiều dễ có dông.",
-  "en": ""
- },
- {
-  "vi": "💼 Là việc làm thuê: [[Ứng tuyển]] ở Hồ bơi Sóng Xanh. Có lương ngày và thưởng nhỏ cho từng việc làm đúng.",
-  "en": ""
- },
- {
-  "vi": "🎓 Chứng chỉ Cứu hộ hồ bơi giúp dễ được nhận hơn.",
-  "en": ""
- },
- {
-  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, nắng gắt cuối tuần, chiều có dông, khai giảng lớp bơi hè, đoàn kiểm tra.",
-  "en": ""
- },
- {
-  "vi": "🧢 Ông Tư không đội mũ, cô Hằng nhảy aerobic ở làn nhanh, Kha nhào lộn quay TikTok, phụ huynh dán mắt vào điện thoại, bé Bon nói dối biết bơi.",
-  "en": ""
- },
- {
-  "vi": "👑 Đại gia đòi làn riêng, khách tán tỉnh xin dạy riêng, sếp không cho đóng hồ khi có sấm: nói rõ, báo đúng người.",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ nước",
-  "en": ""
- },
- {
-  "vi": "Mở cổng đón khách",
-  "en": ""
- },
- {
-  "vi": "Hoãn mở, chờ kỹ thuật xử lý",
-  "en": ""
- },
- {
-  "vi": "BẮT ĐẦU VÒNG QUÉT",
-  "en": ""
- },
- {
-  "vi": "Thổi còi nhắc…",
-  "en": ""
- },
- {
-  "vi": "KẾT THÚC VÒNG QUÉT",
-  "en": ""
- },
- {
-  "vi": "Còi dài: có người đang chìm!",
-  "en": ""
- },
- {
-  "vi": "XONG LƯỢT CỔNG",
-  "en": ""
- },
- {
-  "vi": "Xem sổ đón phụ huynh",
-  "en": ""
- },
- {
-  "vi": "Bơi thử ở làn sát thành",
-  "en": ""
- },
- {
-  "vi": "Điểm danh lúc lên bờ",
-  "en": ""
- },
- {
-  "vi": "TAN LỚP",
-  "en": ""
- },
- {
-  "vi": "Hỏi chuyện gì xảy ra",
-  "en": ""
- },
- {
-  "vi": "Đeo găng tay",
-  "en": ""
- },
- {
-  "vi": "Chờ, xem trời",
-  "en": ""
- },
- {
-  "vi": "MỞ LẠI HỒ",
-  "en": ""
- },
- {
-  "vi": "Ghi vào sổ trực",
-  "en": ""
- },
- {
-  "vi": "Tiệm album Mây Pop của chị Thơ",
-  "en": ""
- },
- {
-  "vi": "Bạn đứng quầy tiệm album Mây Pop: lấy đúng phiên bản fan cần, giữ giới hạn, quét Zchart, cuộn poster, ghi phiếu fansign và nói thật với khách. Các nhóm nhạc đều là hư cấu.",
-  "en": ""
- },
- {
-  "vi": "[[Đếm bản giới hạn]], dựng biển đúng số nhà phân phối cho, [[Thử búa trưng bày]] (yếu thì [[Thay pin AAA]]). Ngày hạn chốt thì cộng sổ rồi [[Chốt đơn]]. Rồi [[MỞ TIỆM]].",
-  "en": ""
- },
- {
-  "vi": "Bấm [[Hỏi khách cần gì]]. Khách hay nói bằng thứ bên trong album: card ai, có CD không, có Bluetooth không.",
-  "en": ""
- },
- {
-  "vi": "Lấy đúng phiên bản",
-  "en": ""
- },
- {
-  "vi": "Pink, Blank, Jewel: card ngẫu nhiên. Muốn chắc card một người: Digipack của người đó. Kit ver không có CD.",
-  "en": ""
- },
- {
-  "vi": "Búa hồng và pin",
-  "en": ""
- },
- {
-  "vi": "Ver.1 ăn pin AAA, không Bluetooth. Ver.2 ăn pin AA, ghép ghế concert. Khách dặn lắp sẵn thì lấy đúng vỉ pin.",
-  "en": ""
- },
- {
-  "vi": "Lời dặn ở quầy",
-  "en": ""
- },
- {
-  "vi": "Ở thẻ Quầy bật đúng lời khách: [[Quét Zchart]], [[Ống poster]], [[Phiếu fansign]], [[POB]]. Đừng tự thêm món khách không lấy.",
-  "en": ""
- },
- {
-  "vi": "Khách khó",
-  "en": ""
- },
- {
-  "vi": "Hỏi trước (mã đặt trước, số điện thoại, tem, seri…), rồi chọn cách trả lời. Khách tự quyết theo tính của họ.",
-  "en": ""
- },
- {
-  "vi": "Bấm [[TÍNH TIỀN]], đặt tiền thối vào khay rồi [[ĐƯA TIỀN THỐI]]. Hết hàng thật thì [[Nói thật: kệ hết hàng]].",
-  "en": ""
- },
- {
-  "vi": "🌅 Đếm kho, dựng biển giới hạn, thử búa rồi [[MỞ TIỆM]].",
-  "en": ""
- },
- {
-  "vi": "👂 [[Hỏi khách cần gì]], đọc kỹ lời khách: card ai, CD, Bluetooth, nguyên seal.",
-  "en": ""
- },
- {
-  "vi": "💿 Lấy đúng phiên bản ở thẻ Album, phụ kiện ở thẻ Phụ kiện.",
-  "en": ""
- },
- {
-  "vi": "🧾 Bật Zchart, ống poster, phiếu fansign, POB nếu khách dặn.",
-  "en": ""
- },
- {
-  "vi": "🚫 Bản giới hạn đúng số trên biển, ai năn nỉ cũng vậy.",
-  "en": ""
- },
- {
-  "vi": "💵 [[TÍNH TIỀN]], thối đúng rồi [[ĐƯA TIỀN THỐI]].",
-  "en": ""
- },
- {
-  "vi": "💿 Đúng album, đúng phiên bản, đúng pin.",
-  "en": ""
- },
- {
-  "vi": "🧾 Zchart, poster cuộn, phiếu fansign, POB đúng lời dặn.",
-  "en": ""
- },
- {
-  "vi": "🚫 Giữ giới hạn, công bằng với hàng chờ.",
-  "en": ""
- },
- {
-  "vi": "🙏 Nói thật về tỉ lệ fansign, hàng nhái, chính sách đổi trả.",
-  "en": ""
- },
- {
-  "vi": "⏱️ Nhanh gọn.",
-  "en": ""
- },
- {
-  "vi": "Khách cần chắc card một người mà đưa bản ngẫu nhiên",
-  "en": ""
- },
- {
-  "vi": "Khui ra không phải bias, khách giận, chấm sao thấp.",
-  "en": ""
- },
- {
-  "vi": "Đưa Kit ver cho người cần đĩa CD",
-  "en": ""
- },
- {
-  "vi": "Về nhà mới biết không có đĩa để nghe.",
-  "en": ""
- },
- {
-  "vi": "Bán quá giới hạn bản giới hạn",
-  "en": ""
- },
- {
-  "vi": "Người xếp hàng sau hết phần, fan lên mạng phàn nàn.",
-  "en": ""
- },
- {
-  "vi": "Cho khui album trước khi trả tiền",
-  "en": ""
- },
- {
-  "vi": "Khách đẩy lại bản đã khui, tiệm chịu lỗ.",
-  "en": ""
- },
- {
-  "vi": "Hứa chắc trúng fansign",
-  "en": ""
- },
- {
-  "vi": "Ngày công bố không trúng, tiệm mang tiếng nói dối.",
-  "en": ""
- },
- {
-  "vi": "Chỉ in hóa đơn Zchart, giữ album bán lại",
-  "en": ""
- },
- {
-  "vi": "Zchart phát hiện quét trùng, khóa quét của tiệm mấy ngày.",
-  "en": ""
- },
- {
-  "vi": "Giao hàng đặt trước mà không hỏi mã",
-  "en": ""
- },
- {
-  "vi": "Có khi giao nhầm người, tiệm phải đền.",
-  "en": ""
- },
- {
-  "vi": "📦 Album, Búa hồng, slogan nhập ở nhà phân phối; pin, toploader, binder, ống poster có ở chợ sỉ: [[Kho album]].",
-  "en": ""
- },
- {
-  "vi": "🎁 Ngày comeback nhà phân phối gửi POB; hết POB thì nói thật với khách.",
-  "en": ""
- },
- {
-  "vi": "🎟️ Fansign có 30 suất, tỉ lệ hiện ngay ở quầy: đọc đúng số đó cho khách.",
-  "en": ""
- },
- {
-  "vi": "🌤️ Mỗi ngày một kiểu: comeback (giới hạn 2, hàng dài), hạn chốt đặt trước, ngày cosplay, cuối tuần, mưa.",
-  "en": ""
- },
- {
-  "vi": "🎓 Học nghề ba khách đầu: chị Thơ đứng cạnh, chặn một lỗi trước khi tính tiền.",
-  "en": ""
- },
- {
-  "vi": "😤 Khách khó: dân trao đổi card, phụ huynh không rành nhóm, người mua sỉ đẩy chart, dân buôn bản giới hạn, người lấy hàng đặt trước giùm.",
-  "en": ""
- },
- {
-  "vi": "🔁 Khách quay lại: đòi trả album vì card, búa mua ngoài đòi bảo hành, búa không ghép ghế, người gửi hàng nhái.",
-  "en": ""
- },
- {
-  "vi": "Thử búa trưng bày",
-  "en": ""
- },
- {
-  "vi": "Chốt đơn",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách cần gì",
-  "en": ""
- },
- {
-  "vi": "Quét Zchart",
-  "en": ""
- },
- {
-  "vi": "Phiếu fansign",
-  "en": ""
- },
- {
-  "vi": "Nói thật: kệ hết hàng",
-  "en": ""
- },
- {
-  "vi": "Bạn là cán bộ khu vực ở Công an phường Mây: làm giấy tờ, giữ đồ thất lạc, hòa giải, tìm trẻ lạc, đi tuần, nhận tin báo. Ai cũng như ai, không nhận gì của ai. Anh Định kèm ba việc đầu.",
-  "en": ""
- },
- {
-  "vi": "Đọc từng mục sổ trực ban ([[Đọc mục này]]), chọn chuyện có người đang cần mình ngay, bấm [[GIAO BAN XONG]].",
-  "en": ""
- },
- {
-  "vi": "Có phong bì, “người quen”, người hối thì trả lời trước. Xem từng giấy; đủ thì [[Nhận hồ sơ]], thiếu thì [[Hướng dẫn bổ sung…]] đúng giấy.",
-  "en": ""
- },
- {
-  "vi": "[[Kiểm đếm cùng người nhặt, ký biên bản]]; hỏi người tới nhận ít nhất hai câu; khớp thì [[Trả lại, ký nhận]], không khớp thì [[Chưa trả]].",
-  "en": ""
- },
- {
-  "vi": "Hòa giải",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. [[Nghe riêng]] từng bên, chọn từng điều khoản, [[Đề xuất với hai bên]]. Hai bên gật đầu thì [[KÝ BIÊN BẢN HÒA GIẢI]].",
-  "en": ""
- },
- {
-  "vi": "Trẻ lạc",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. [[Ngồi xuống dỗ bé, đứng yên một chỗ]], hỏi bé, [[Xem balo, thẻ tên]], đọc loa hoặc gọi số trên thẻ; xác minh người đón hai cách.",
-  "en": ""
- },
- {
-  "vi": "Tuần tra",
-  "en": ""
- },
- {
-  "vi": "Chợ, cổng trường, hội chợ, đám cưới: [[Xem kỹ, hỏi chuyện]] rồi chọn cách xử lý; xong ba chuyện bấm [[XONG VÒNG TUẦN TRA]].",
-  "en": ""
- },
- {
-  "vi": "Nói chuyện chống lừa đảo",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3. [[Đọc thư mời]], chọn tối đa ba chủ đề đúng chuyện tổ đang gặp, [[TRÌNH BÀY]], rồi trả lời câu hỏi của các cụ.",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. Ba cuộc gọi cùng lúc: [[Gọi lại hỏi rõ]], xếp mức ưu tiên cho từng cuộc, rồi [[ĐIỀU ĐỘNG]].",
-  "en": ""
- },
- {
-  "vi": "📋 Đọc hết sổ trực ban; ai đang gặp nguy thì làm trước.",
-  "en": ""
- },
- {
-  "vi": "✉️ Có ai đưa phong bì, quà: trả lại, nói rõ, ghi sổ. Không bao giờ nhận.",
-  "en": ""
- },
- {
-  "vi": "🎫 Ai cũng lấy số, chờ đúng lượt; ưu tiên người già, người khuyết tật, không ưu tiên “người quen”.",
-  "en": ""
- },
- {
-  "vi": "👂 Hòa giải: nghe riêng cả hai bên trước, rồi mới đề xuất. Không dọa phạt.",
-  "en": ""
- },
- {
-  "vi": "🪪 Đồ thất lạc, trẻ lạc: xác minh kỹ rồi mới giao. Không đăng ảnh trẻ lên mạng.",
-  "en": ""
- },
- {
-  "vi": "🚶 Tuần tra: lần đầu chuyện nhỏ thì nhắc; tái phạm, nguy hiểm thì lập biên bản; nguy hiểm trước mắt thì xử lý ngay.",
-  "en": ""
- },
- {
-  "vi": "📒 Cuối ca: [[Ghi vào sổ trực ban]] những gì thật sự đã xảy ra.",
-  "en": ""
- },
- {
-  "vi": "⚖️ Ai cũng như ai, đúng lượt, đúng thủ tục.",
-  "en": ""
- },
- {
-  "vi": "🚫 Không nhận phong bì, quà, “phở miễn phí”.",
-  "en": ""
- },
- {
-  "vi": "👂 Hai bên đều được nghe trước khi đề xuất.",
-  "en": ""
- },
- {
-  "vi": "🪪 Đồ về đúng chủ, bé về đúng người nhà.",
-  "en": ""
- },
- {
-  "vi": "🚨 Người đang gặp nguy được đi trước.",
-  "en": ""
- },
- {
-  "vi": "Nhận phong bì, ngồi vào chiếu bạc, nhận quà “lấy hên”",
-  "en": ""
- },
- {
-  "vi": "Lỗi nặng: 1★, mất thưởng, hồ sơ bị ghi điểm vi phạm; nhiều lần thì tạm dừng nhiệm vụ, hạ bậc.",
-  "en": ""
- },
- {
-  "vi": "Trả đồ cho người không phải chủ, giao bé cho người bố mẹ không nhờ",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn: 1★, mất thưởng, anh Định lập báo cáo.",
-  "en": ""
- },
- {
-  "vi": "Để người đang gặp nguy chờ, bỏ qua nguy hiểm khi đi tuần",
-  "en": ""
- },
- {
-  "vi": "Lập biên bản chuyện nhỏ lần đầu, dọa phạt khi hòa giải, đăng ảnh trẻ lạc",
-  "en": ""
- },
- {
-  "vi": "Lỗi rõ, bớt sao.",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ trực ban điều chưa xảy ra cho đủ chỉ tiêu",
-  "en": ""
- },
- {
-  "vi": "Ghi khống: hồ sơ bị trừ điểm.",
-  "en": ""
- },
- {
-  "vi": "🕢 Ca ngày 7:30–17:30; giờ tan học đứng cổng trường.",
-  "en": ""
- },
- {
-  "vi": "💼 Là việc làm thuê: [[Ứng tuyển]] ở Công an phường Mây. Có lương ngày và thưởng nhỏ cho từng việc làm đúng.",
-  "en": ""
- },
- {
-  "vi": "🎓 Chứng chỉ Tiếp dân & hòa giải giúp dễ được nhận hơn.",
-  "en": ""
- },
- {
-  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, chợ phiên, tuần khai giảng, mùa cưới mùa hội, đoàn kiểm tra hồ sơ, mưa bão.",
-  "en": ""
- },
- {
-  "vi": "✉️ Phong bì “cà phê”, cháu “sếp quận”, karaoke nửa đêm, “người khả nghi” đầu hẻm, TikToker quay cả bàn tiếp dân.",
-  "en": ""
- },
- {
-  "vi": "🍺 Chú say quậy bàn tiếp dân, bà Năm mang chè ngồi kể chuyện cả tiếng, tin báo sai, sếp đòi đủ chỉ tiêu biên bản.",
-  "en": ""
- },
- {
-  "vi": "Đọc mục này",
-  "en": ""
- },
- {
-  "vi": "Hướng dẫn bổ sung…",
-  "en": ""
- },
- {
-  "vi": "Kiểm đếm cùng người nhặt, ký biên bản",
-  "en": ""
- },
- {
-  "vi": "Trả lại, ký nhận",
-  "en": ""
- },
- {
-  "vi": "Chưa trả",
-  "en": ""
- },
- {
-  "vi": "Nghe riêng",
-  "en": ""
- },
- {
-  "vi": "Đề xuất với hai bên",
-  "en": ""
- },
- {
-  "vi": "KÝ BIÊN BẢN HÒA GIẢI",
-  "en": ""
- },
- {
-  "vi": "Ngồi xuống dỗ bé, đứng yên một chỗ",
-  "en": ""
- },
- {
-  "vi": "Xem balo, thẻ tên",
-  "en": ""
- },
- {
-  "vi": "Xem kỹ, hỏi chuyện",
-  "en": ""
- },
- {
-  "vi": "XONG VÒNG TUẦN TRA",
-  "en": ""
- },
- {
-  "vi": "Đọc thư mời",
-  "en": ""
- },
- {
-  "vi": "TRÌNH BÀY",
-  "en": ""
- },
- {
-  "vi": "Gọi lại hỏi rõ",
-  "en": ""
- },
- {
-  "vi": "ĐIỀU ĐỘNG",
-  "en": ""
- },
- {
-  "vi": "Ghi vào sổ trực ban",
-  "en": ""
- },
- {
-  "vi": "🏘️ Bạn là một người trẻ vừa dọn tới căn gác nhà Bà Tám, trong một con hẻm nhỏ.",
-  "en": ""
- },
- {
-  "vi": "👤 Lần đầu vào game: chọn Nam hoặc Nữ và đặt tên. Hàng xóm gọi bạn theo đó.",
-  "en": ""
- },
- {
-  "vi": "✏️ Đổi tên sau: [[Cài đặt]] → [[Cách chơi]] → [[Hồ sơ]].",
-  "en": ""
- },
- {
-  "vi": "🧭 Chỉ có một nhân vật, sống một đời, làm nhiều nghề khác nhau.",
-  "en": ""
- },
- {
-  "vi": "Việc làm đầu tiên",
-  "en": ""
- },
- {
-  "vi": "🏪 Chương 1 mở sẵn 7 chỗ: trà sữa, tạp hoá, giao hàng, bánh & cà phê, tiệm hoa, mẹ & bé, quán mì.",
-  "en": ""
- },
- {
-  "vi": "👆 Mở [[Hành trình]]: dạo phố, tới chỗ đang sáng rồi bấm [[Vào làm]]. Thích kiểu cũ thì bấm [[Danh sách]].",
-  "en": ""
- },
- {
-  "vi": "⚠️ Đang làm dở mà bỏ đi chỗ khác là bị phạt và mất điểm tin cậy. Làm xong việc đang cầm rồi hãy đi.",
-  "en": ""
- },
- {
-  "vi": "🌱 Ngày đầu dễ: cứ bấm vào chỗ đang sáng lên là làm được.",
-  "en": ""
- },
- {
-  "vi": "Mở Hành trình",
-  "en": ""
- },
- {
-  "vi": "Màn hình chính",
-  "en": ""
- },
- {
-  "vi": "🖼️ Giữa màn hình là cảnh tiệm. Chạm sàn để đi, chạm người hoặc đồ vật để làm.",
-  "en": ""
- },
- {
-  "vi": "🃏 Thẻ việc ở dưới chỉ ghi một dòng: việc cần làm ngay bây giờ.",
-  "en": ""
- },
- {
-  "vi": "▶️ Bấm [[Làm tiếp]] để mở màn hình làm việc.",
   "en": ""
  }
 ]

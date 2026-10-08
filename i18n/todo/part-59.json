@@ -1,5 +1,473 @@
 [
  {
+  "vi": "Sếp ngái ngủ nhưng chốt được đơn, chiều còn mua trà sữa cho bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi lời nhắn, chờ 13:00",
+  "en": ""
+ },
+ {
+  "vi": "13:00 khách đã lên máy bay. Đơn hoãn sang tháng sau.",
+  "en": ""
+ },
+ {
+  "vi": "Tự hứa với khách “đồng ý hết”",
+  "en": ""
+ },
+ {
+  "vi": "Thư ký tự quyết thay giám đốc.",
+  "en": ""
+ },
+ {
+  "vi": "Sếp phải gọi lại đính chính từng điều khoản.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng họp bị chiếm",
+  "en": ""
+ },
+ {
+  "vi": "Năm phút nữa khách của sếp tới mà phòng họp A đang có phòng kinh doanh ngồi, Linh bảo: “Bọn em họp gấp, chị lấy phòng khác đi!”",
+  "en": ""
+ },
+ {
+  "vi": "Mở lịch chung cho Linh xem, xin trả phòng và gợi ý phòng B đang trống",
+  "en": ""
+ },
+ {
+  "vi": "Linh xin lỗi, dọn sang phòng B. Khách tới phòng đã sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "Nhường, đưa khách vào phòng giám đốc chật chội",
+  "en": ""
+ },
+ {
+  "vi": "Khách ngồi chen chúc, không có máy chiếu.",
+  "en": ""
+ },
+ {
+  "vi": "Lớn tiếng đuổi cả phòng ra",
+  "en": ""
+ },
+ {
+  "vi": "Thư ký lớn tiếng ngay trước mặt khách.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đến đúng lúc nghe hai bên to tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "Sếp quên sinh nhật vợ",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân hốt hoảng: “Hôm nay sinh nhật vợ anh! Em đặt hoa giúp anh, lấy quỹ tiếp khách cũng được.”",
+  "en": ""
+ },
+ {
+  "vi": "Đặt hoa, nhờ sếp chuyển khoản tiền riêng",
+  "en": ""
+ },
+ {
+  "vi": "Hoa tới đúng giờ, tiền riêng ra tiền riêng. Sếp gật gù: “Em chu đáo thật.”",
+  "en": ""
+ },
+ {
+  "vi": "Lấy quỹ tiếp khách cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ tiếp khách mua hoa cho vợ giám đốc à?",
+  "en": ""
+ },
+ {
+  "vi": "Cuối tháng cô Hằng hỏi: “Khoản hoa này tiếp khách nào?”",
+  "en": ""
+ },
+ {
+  "vi": "“Anh tự đặt nhé”",
+  "en": ""
+ },
+ {
+  "vi": "Sếp quên tiếp. Tối về bị giận.",
+  "en": ""
+ },
+ {
+  "vi": "Dò lịch sếp",
+  "en": ""
+ },
+ {
+  "vi": "Linh hỏi nhỏ: “Sếp hẹn ai bên nhân sự chiều nay thế? Có phải sắp cho ai nghỉ không chị?”",
+  "en": ""
+ },
+ {
+  "vi": "“Lịch sếp chị không nói được em ạ.” Đổi chủ đề nhẹ nhàng",
+  "en": ""
+ },
+ {
+  "vi": "Linh cười trừ. Tin đồn không bắt đầu từ bàn bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Nháy mắt: “Em đoán xem”",
+  "en": ""
+ },
+ {
+  "vi": "Đến chiều cả phòng kinh doanh đồn ầm có người bị đuổi.",
+  "en": ""
+ },
+ {
+  "vi": "Kể hết cho Linh",
+  "en": ""
+ },
+ {
+  "vi": "Lịch giám đốc lộ ra ngoài từ bàn thư ký.",
+  "en": ""
+ },
+ {
+  "vi": "Sếp biết chuyện, gọi bạn vào nói chuyện riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy tài liệu cũ",
+  "en": ""
+ },
+ {
+  "vi": "Sếp đưa ba tập hồ sơ: “Hủy hết đi em.” Lướt qua, bạn thấy một bản hợp đồng gốc còn hiệu lực đến năm sau.",
+  "en": ""
+ },
+ {
+  "vi": "Rút bản hợp đồng ra, hỏi lại sếp trước khi hủy",
+  "en": ""
+ },
+ {
+  "vi": "“Ơ, may quá, bản gốc duy nhất đấy!” Sếp cất ngay vào tủ.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy hết như sếp bảo",
+  "en": ""
+ },
+ {
+  "vi": "Tháng sau tranh chấp với nhà cung cấp, không còn bản gốc.",
+  "en": ""
+ },
+ {
+  "vi": "Không hủy gì, cất hết vào kho",
+  "en": ""
+ },
+ {
+  "vi": "Kho chật thêm ba tập hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "Tin nhắn “sếp” xin mua thẻ cào",
+  "en": ""
+ },
+ {
+  "vi": "Số lạ nhắn Zalo, ảnh đại diện là anh Quân: “Anh đang họp, em mua giúp anh 10 thẻ cào 500 xu, gửi mã qua đây, về anh trả.”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi số cũ của sếp để hỏi, báo IT số lạ này",
+  "en": ""
+ },
+ {
+  "vi": "Sếp đang ngồi ăn sáng, không nhắn gì. IT cảnh báo cả công ty.",
+  "en": ""
+ },
+ {
+  "vi": "Mua ngay kẻo sếp chờ",
+  "en": ""
+ },
+ {
+  "vi": "Mất 50 xu. Sếp không hề nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Lờ đi",
+  "en": ""
+ },
+ {
+  "vi": "Hôm sau Nhi nhận được tin y hệt và suýt mua.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đến sớm một tiếng",
+  "en": ""
+ },
+ {
+  "vi": "Nhi gọi: “Khách hẹn 10 giờ mà 9 giờ đã tới rồi chị ơi, phòng họp còn đang dọn.”",
+  "en": ""
+ },
+ {
+  "vi": "Mời khách ngồi phòng chờ, pha trà, đưa catalogue xem trước",
+  "en": ""
+ },
+ {
+  "vi": "Khách xem catalogue, tới giờ họp đã chọn sẵn ba mẫu.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi sếp họp sớm luôn",
+  "en": ""
+ },
+ {
+  "vi": "Sếp đang dở việc khác, bước vào họp mặt nặng mày nhẹ.",
+  "en": ""
+ },
+ {
+  "vi": "Để khách tự ngồi chờ ở sảnh",
+  "en": ""
+ },
+ {
+  "vi": "Đến sớm thì ngồi sảnh một tiếng không ai hỏi.",
+  "en": ""
+ },
+ {
+  "vi": "Khách ngồi bấm điện thoại một tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "Máy in kẹt 5 phút trước họp",
+  "en": ""
+ },
+ {
+  "vi": "Tài liệu họp mới in được nửa thì máy kẹt giấy. Năm phút nữa vào họp.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi bản PDF lên màn hình phòng họp, gọi IT xử lý máy",
+  "en": ""
+ },
+ {
+  "vi": "Mọi người đọc trên màn hình; in xong bản giấy mang vào giữa buổi.",
+  "en": ""
+ },
+ {
+  "vi": "Giật mạnh tờ giấy ra",
+  "en": ""
+ },
+ {
+  "vi": "Xin hoãn họp 20 phút",
+  "en": ""
+ },
+ {
+  "vi": "Khách phải chờ, sếp không vui.",
+  "en": ""
+ },
+ {
+  "vi": "Sếp quát oan",
+  "en": ""
+ },
+ {
+  "vi": "Vừa bị khách phàn nàn, anh Quân quay sang quát bạn vì “lịch hẹn lộn xộn” — mà lịch đó do chính anh đổi sáng nay.",
+  "en": ""
+ },
+ {
+  "vi": "Bình tĩnh đưa lịch sử thay đổi, đề xuất chốt lịch mỗi sáng",
+  "en": ""
+ },
+ {
+  "vi": "Sếp đọc, im một lúc: “Ừ, anh đổi. Mai mình chốt lịch lúc 8 giờ.”",
+  "en": ""
+ },
+ {
+  "vi": "Nhận lỗi cho xong",
+  "en": ""
+ },
+ {
+  "vi": "Êm chuyện, nhưng tuần sau sếp lại đổi lịch y hệt.",
+  "en": ""
+ },
+ {
+  "vi": "Cãi lại trước mặt mọi người",
+  "en": ""
+ },
+ {
+  "vi": "Cả phòng im phăng phắc. Sếp đóng sầm cửa.",
+  "en": ""
+ },
+ {
+  "vi": "Quà Tết của nhà cung cấp",
+  "en": ""
+ },
+ {
+  "vi": "Ông Lực gửi riêng cho bạn một hộp quà to: “Cảm ơn cháu sắp lịch cho chú gặp sếp nhanh.”",
+  "en": ""
+ },
+ {
+  "vi": "Báo sếp, đưa quà vào quỹ chung của văn phòng",
+  "en": ""
+ },
+ {
+  "vi": "Cả phòng chia nhau hộp bánh; ông Lực hiểu thư ký không nhận quà riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ riêng, không ai biết",
+  "en": ""
+ },
+ {
+  "vi": "Muốn gặp giám đốc nhanh thì gửi quà cho thư ký.",
+  "en": ""
+ },
+ {
+  "vi": "Tuần sau ông Lực xin chen lịch sếp, “như lần trước”.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi trả lại ngay",
+  "en": ""
+ },
+ {
+  "vi": "Ông Lực hơi quê nhưng không nói gì.",
+  "en": ""
+ },
+ {
+  "vi": "Sếp bảo nói dối khách",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân: “Ông Lực mà gọi thì bảo hàng đã chuyển khoản rồi, ngân hàng lỗi.” Bạn biết tiền chưa hề chuyển.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là giám đốc đang kẹt dòng tiền, cần thêm ba ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ chi",
+  "en": ""
+ },
+ {
+  "vi": "Lệnh chuyển tiền chưa được tạo; quỹ đang chờ khách trả nợ thứ Năm.",
+  "en": ""
+ },
+ {
+  "vi": "Quan hệ với Lực Thành",
+  "en": ""
+ },
+ {
+  "vi": "Mười năm làm ăn, chưa lần nào trễ quá một tuần.",
+  "en": ""
+ },
+ {
+  "vi": "Cách khác",
+  "en": ""
+ },
+ {
+  "vi": "Có thể gọi xin gia hạn ba ngày, cam kết bằng văn bản.",
+  "en": ""
+ },
+ {
+  "vi": "Đề xuất sếp tự gọi xin gia hạn ba ngày kèm cam kết; bạn soạn sẵn thư",
+  "en": ""
+ },
+ {
+  "vi": "Nói thật, xin hẹn rõ ràng — tôi chịu chờ. Làm ăn là phải vậy.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Lực đồng ý gia hạn, vẫn giao vải đúng hẹn.",
+  "en": ""
+ },
+ {
+  "vi": "Biết trước thì tôi xoay được.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa ra nói thật nhẹ hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Nói dối theo lời sếp",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng lỗi ba ngày liền à? Tôi không tin nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Lực gọi ngân hàng kiểm tra, biết bị lừa, ngừng giao vải.",
+  "en": ""
+ },
+ {
+  "vi": "Mất tiền thì ít, mất lòng tin thì nhiều.",
+  "en": ""
+ },
+ {
+  "vi": "Tránh nghe máy cả ngày",
+  "en": ""
+ },
+ {
+  "vi": "Gọi mãi không ai nghe, bực mình.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Lực lên tận công ty, chuyện to hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Em phải đứng đỡ lời ở sảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Thư ký giữ uy tín cho sếp bằng cách giúp sếp nói thật cho khéo.",
+  "en": ""
+ },
+ {
+  "vi": "Bản tin cuối ngày cho sếp",
+  "en": ""
+ },
+ {
+  "vi": "Chị Khuê: “Hồi chị làm thư ký, cuối ngày chị gửi sếp một bản tin năm dòng. Em có muốn thử không?”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là trợ lý cũ, biết sếp quên trước quên sau, muốn người mới bớt vất vả.",
+  "en": ""
+ },
+ {
+  "vi": "Thói quen của sếp",
+  "en": ""
+ },
+ {
+  "vi": "Sếp đọc tin nhắn ngắn buổi tối, không đọc email dài.",
+  "en": ""
+ },
+ {
+  "vi": "Việc bị quên tuần trước",
+  "en": ""
+ },
+ {
+  "vi": "Hai lời nhắn của đối tác bị sếp quên gọi lại.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi tối mất 10 phút.",
+  "en": ""
+ },
+ {
+  "vi": "Làm bản tin năm dòng: việc đã xong, việc mai, ai cần gọi lại",
+  "en": ""
+ },
+ {
+  "vi": "Có bản tin tối, sáng anh vào là biết làm gì. Hay!",
+  "en": ""
+ },
+ {
+  "vi": "Không còn lời nhắn nào bị quên; sếp đổi lịch ít hẳn.",
+  "en": ""
+ },
+ {
   "vi": "Anh đỡ phải nhớ.",
   "en": ""
  },
@@ -1329,474 +1797,6 @@
  },
  {
   "vi": "Cả hội ra xem bóng! Năm trà đá, một trà chanh, hai gói hướng dương, một gói lạc. Hôm nay chú khao, trả tiền mặt!",
-  "en": ""
- },
- {
-  "vi": "Phải ra đủ trước khi hết hiệp một.",
-  "en": ""
- },
- {
-  "vi": "Chú Tường: “Cháu mới à? Chú chạy xe ôm đầu ngõ này hai mươi năm rồi. Có gì cứ gọi chú!”",
-  "en": ""
- },
- {
-  "vi": "Chú Tường cá với ông Khang đội nhà thắng hai bàn. Thua thì khao cả quán trà.",
-  "en": ""
- },
- {
-  "vi": "Chú Tường khoe con gái đỗ đại học, móc ví ra xem ảnh mãi.",
-  "en": ""
- },
- {
-  "vi": "Chú Tường bảo giờ nhiều người đặt xe qua app, chú đang tập dùng điện thoại.",
-  "en": ""
- },
- {
-  "vi": "Chú Tường nhận cuốc xe qua app đầu tiên, về kể cả buổi: “Nó chỉ đường tận nơi, hay phết!”",
-  "en": ""
- },
- {
-  "vi": "Ông Khang: “Chè phải đậm thì mới tỉnh mà đánh cờ.”",
-  "en": ""
- },
- {
-  "vi": "Ông Khang dạy Linh thế cờ “pháo đầu”, con bé học nhanh ra phết.",
-  "en": ""
- },
- {
-  "vi": "Ông Khang kể hồi trẻ ông làm thợ in, tay lúc nào cũng đen mực.",
-  "en": ""
- },
- {
-  "vi": "Ông Khang mang cho quán cái điếu cày cũ: “Để dành cho khách quen.”",
-  "en": ""
- },
- {
-  "vi": "Ông Khang nhấp ngụm trà: “Chè cháu pha giờ ngon gần bằng bà Lựu rồi.”",
-  "en": ""
- },
- {
-  "vi": "Anh Đạt thở dài: “Sếp lại bắt làm báo cáo cuối tháng.”",
-  "en": ""
- },
- {
-  "vi": "Anh Đạt bảo đang định bỏ thuốc, hôm nay chỉ mua đúng một điếu.",
-  "en": ""
- },
- {
-  "vi": "Anh Đạt được lên trưởng nhóm, khao cả phòng trà đá.",
-  "en": ""
- },
- {
-  "vi": "Anh Đạt chuyển sang uống trà nóng, bảo đang cai thuốc tuần thứ hai.",
-  "en": ""
- },
- {
-  "vi": "Anh Đạt khoe đã bỏ hẳn thuốc lá, giờ ra đây chỉ để ngồi cho vui.",
-  "en": ""
- },
- {
-  "vi": "Linh hỏi bà Lựu hè này quán có cần người phụ không.",
-  "en": ""
- },
- {
-  "vi": "Linh đang ôn thi chuyên Văn, mang cả tập đề ra quán đọc.",
-  "en": ""
- },
- {
-  "vi": "Linh thi xong môn Văn, bảo đề hỏi đúng bài em thích.",
-  "en": ""
- },
- {
-  "vi": "Linh đỗ trường chuyên, dẫn cả nhóm ra quán ăn mừng.",
-  "en": ""
- },
- {
-  "vi": "Linh viết bài văn về “quán trà đá gốc bàng”, được cô giáo đọc trước lớp.",
-  "en": ""
- },
- {
-  "vi": "Cô Hoa: “Cháu bà Lựu đấy à? Trông sáng sủa đấy!”",
-  "en": ""
- },
- {
-  "vi": "Cô Hoa kể nhà số 9 sắp cưới con gái, cỗ những ba mươi mâm.",
-  "en": ""
- },
- {
-  "vi": "Cô Hoa than giá gạo nếp tăng, nồi xôi phải bớt đỗ.",
-  "en": ""
- },
- {
-  "vi": "Cô Hoa mang sang cho quán nắm xôi xéo còn nóng hổi.",
-  "en": ""
- },
- {
-  "vi": "Cô Hoa bảo cả phố khen quán trà giờ sạch sẽ hơn hẳn.",
-  "en": ""
- },
- {
-  "vi": "Anh Hùng: “Uống vội cốc trà thôi em, app nó đếm từng phút.”",
-  "en": ""
- },
- {
-  "vi": "Anh Hùng bị khách bom hai đơn liền, ngồi thừ ra cả buổi.",
-  "en": ""
- },
- {
-  "vi": "Anh Hùng được thưởng tài xế chăm chỉ, mua cho quán một gói chè ngon.",
-  "en": ""
- },
- {
-  "vi": "Anh Hùng kể vợ sắp sinh, đang chạy thêm ca tối.",
-  "en": ""
- },
- {
-  "vi": "Anh Hùng khoe ảnh con gái mới sinh: “Đặt tên là Trà My, nghe mát không?”",
-  "en": ""
- },
- {
-  "vi": "Cu Tủn khoe được điểm mười môn Toán.",
-  "en": ""
- },
- {
-  "vi": "Cu Tủn học được cách đếm tiền thối, đòi đứng quầy phụ.",
-  "en": ""
- },
- {
-  "vi": "Cu Tủn bảo bố nó hứa bỏ thuốc lá rồi.",
-  "en": ""
- },
- {
-  "vi": "Bà Lựu giao quán",
-  "en": ""
- },
- {
-  "vi": "Bà Lựu đưa chùm chìa khóa tủ chè: “Bà đau lưng, cháu trông quán hộ bà mấy hôm nhé.”",
-  "en": ""
- },
- {
-  "vi": "Bà dặn: “Chè phải đậm, cốc phải sạch, tiền phải đếm. Khách quen thì nhớ mặt.”",
-  "en": ""
- },
- {
-  "vi": "Bà Lựu nếm chè",
-  "en": ""
- },
- {
-  "vi": "Bà Lựu chống gậy ra, rót một cốc, nhấp một ngụm: “Được. Có tay rồi đấy.”",
-  "en": ""
- },
- {
-  "vi": "Bà sai cháu nội mang sang hai cái ghế nhựa đỏ: “Thêm chỗ cho khách.”",
-  "en": ""
- },
- {
-  "vi": "Bàn cờ của ông Khang",
-  "en": ""
- },
- {
-  "vi": "Ông Khang đặt bàn cờ tướng cũ lên bàn: “Để lại quán, ai rảnh thì đánh.”",
-  "en": ""
- },
- {
-  "vi": "Từ hôm đó chiều nào gốc bàng cũng có người đứng xem cờ.",
-  "en": ""
- },
- {
-  "vi": "Chiếc ô mới",
-  "en": ""
- },
- {
-  "vi": "Chiếc ô cũ rách một mảng. Bà Lựu dúi tiền: “Mua cái ô to vào, nắng thế này đá tan hết.”",
-  "en": ""
- },
- {
-  "vi": "Ô mới màu xanh lá, che kín cả bàn. Thùng đá tan chậm hẳn.",
-  "en": ""
- },
- {
-  "vi": "Tấm biển “Trà đá bà Lựu”",
-  "en": ""
- },
- {
-  "vi": "Linh vẽ tặng tấm biển: “Trà đá bà Lựu · Chè đậm, đá mát, có sổ ghi.”",
-  "en": ""
- },
- {
-  "vi": "Bà Lựu đứng ngắm mãi: “Giờ là quán của hai bà cháu rồi.”",
-  "en": ""
- },
- {
-  "vi": "Thêm 2 ghế nhựa",
-  "en": ""
- },
- {
-  "vi": "Thêm chỗ ngồi cho nhóm đông.",
-  "en": ""
- },
- {
-  "vi": "Thêm 4 cốc thủy tinh",
-  "en": ""
- },
- {
-  "vi": "Đỡ phải rửa cốc liên tục.",
-  "en": ""
- },
- {
-  "vi": "Ô to che nắng",
-  "en": ""
- },
- {
-  "vi": "Che kín bàn: đá tan chậm, mưa nhỏ không ướt ghế.",
-  "en": ""
- },
- {
-  "vi": "Biển hiệu của quán",
-  "en": ""
- },
- {
-  "vi": "Người qua đường nhận ra quán từ xa.",
-  "en": ""
- },
- {
-  "vi": "Giới thiệu nghề: bán trà đá vỉa hè",
-  "en": ""
- },
- {
-  "vi": "Một chiếc bàn gỗ, bình chè, thùng đá và dăm cái ghế nhựa dưới gốc bàng. Bà Lựu bán ở đây ba mươi năm; mấy hôm nay bà đau lưng, nhờ bạn trông quán.",
-  "en": ""
- },
- {
-  "vi": "Dọn hàng: chọn chỗ, bày ghế, dựng ô, đặt thùng đá",
-  "en": ""
- },
- {
-  "vi": "Pha bình chè: đủ chè thì đậm, châm nước nhiều là nhạt",
-  "en": ""
- },
- {
-  "vi": "Đập đá, canh thùng đá: trời nóng đá tan rất nhanh",
-  "en": ""
- },
- {
-  "vi": "Rót trà đá, trà nóng, trà chanh, sấu dầm",
-  "en": ""
- },
- {
-  "vi": "Bán hướng dương, lạc, kẹo lạc, bánh quy, thuốc lẻ",
-  "en": ""
- },
- {
-  "vi": "Rửa cốc trong chậu, nước đục thì thay",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ cho chú xe ôm, đến hẹn thì thu",
-  "en": ""
- },
- {
-  "vi": "Thu tiền lẻ, thối đúng từng xu",
-  "en": ""
- },
- {
-  "vi": "Chú Tường xe ôm: bàn chuyện bóng đá, uống ghi sổ",
-  "en": ""
- },
- {
-  "vi": "Ông Khang: ngồi cả chiều một cốc, chê chè nhạt",
-  "en": ""
- },
- {
-  "vi": "Anh Đạt: ra hút thuốc giữa giờ, đếm tiền kỹ",
-  "en": ""
- },
- {
-  "vi": "Linh và lũ bạn: trà chanh nhiều đá",
-  "en": ""
- },
- {
-  "vi": "Cô Hoa: tin gì trong phố cô cũng biết",
-  "en": ""
- },
- {
-  "vi": "Anh Hùng shipper: uống vội rồi chạy",
-  "en": ""
- },
- {
-  "vi": "Trật tự đô thị: dẹp nhanh kẻo bị phạt, mất ghế",
-  "en": ""
- },
- {
-  "vi": "Mưa rào, nắng gắt, đêm bóng đá, khách quỵt, người say",
-  "en": ""
- },
- {
-  "vi": "Rót đúng món, đủ số cốc",
-  "en": ""
- },
- {
-  "vi": "Chè đậm vừa, không để ôi",
-  "en": ""
- },
- {
-  "vi": "Trà đá có đá, cốc sạch",
-  "en": ""
- },
- {
-  "vi": "Thối đúng tiền, ghi sổ đúng số",
-  "en": ""
- },
- {
-  "vi": "Không bán thuốc lá cho trẻ con",
-  "en": ""
- },
- {
-  "vi": "Bày quán gọn, không lấn lòng đường",
-  "en": ""
- },
- {
-  "vi": "Mưa rào ập tới",
-  "en": ""
- },
- {
-  "vi": "Mây đen kéo sập xuống, mưa rào quất ngang vỉa hè. Khách ôm cốc chạy toán loạn, ghế nhựa ướt nhẹp.",
-  "en": ""
- },
- {
-  "vi": "Bê bàn, ghế, thùng đá vào mái hiên tiệm may",
-  "en": ""
- },
- {
-  "vi": "Mất chút thời gian, quán vẫn bán tiếp",
-  "en": ""
- },
- {
-  "vi": "Cả quán dời vào mái hiên. Chật một chút nhưng khô ráo, khách ngồi lại uống trà nóng chờ tạnh.",
-  "en": ""
- },
- {
-  "vi": "Căng tấm bạt che tạm",
-  "en": ""
- },
- {
-  "vi": "Tốn 4 xu mua bạt",
-  "en": ""
- },
- {
-  "vi": "Tấm bạt xanh căng vội qua cành bàng. Dột một góc, nhưng tạm ổn.",
-  "en": ""
- },
- {
-  "vi": "Mưa bóng mây thôi, cứ ngồi nguyên",
-  "en": ""
- },
- {
-  "vi": "Không tốn gì… nếu mưa tạnh nhanh",
-  "en": ""
- },
- {
-  "vi": "Mưa hắt ướt hết ghế mà quán cứ để nguyên. Cốc nào cũng lẫn nước mưa.",
-  "en": ""
- },
- {
-  "vi": "Mưa không tạnh. Mấy cái cốc úp trên bàn lẫn nước mưa, phải rửa lại hết.",
-  "en": ""
- },
- {
-  "vi": "Xe đá đi ngang",
-  "en": ""
- },
- {
-  "vi": "Anh Tuấn xe đá bấm còi tin tin: “Nắng thế này đá tan nhanh lắm, lấy thêm cây không em?”",
-  "en": ""
- },
- {
-  "vi": "Lấy thêm 2 cây đá (10 xu)",
-  "en": ""
- },
- {
-  "vi": "Đắt hơn giao buổi sáng, nhưng có ngay",
-  "en": ""
- },
- {
-  "vi": "Hai cây đá lạnh buốt được thả vào bao tải cạnh thùng.",
-  "en": ""
- },
- {
-  "vi": "Lấy 1 cây thôi (5 xu)",
-  "en": ""
- },
- {
-  "vi": "Dự phòng một ít",
-  "en": ""
- },
- {
-  "vi": "Thêm một cây đá dự phòng.",
-  "en": ""
- },
- {
-  "vi": "Thôi, còn đủ",
-  "en": ""
- },
- {
-  "vi": "Nhớ canh thùng đá",
-  "en": ""
- },
- {
-  "vi": "Xe đá đi mất hút cuối phố.",
-  "en": ""
- },
- {
-  "vi": "Khách uống xong chuồn thẳng",
-  "en": ""
- },
- {
-  "vi": "Hai thanh niên lạ mặt uống bốn cốc trà đá, cắn hết gói hướng dương rồi đứng dậy nổ máy phóng đi, không trả một đồng.",
-  "en": ""
- },
- {
-  "vi": "Gọi với theo",
-  "en": ""
- },
- {
-  "vi": "Một cậu quay xe lại, gãi đầu: “Em tưởng bạn em trả rồi.” Trả đủ 17 xu.",
-  "en": ""
- },
- {
-  "vi": "Tiếng gọi chìm trong tiếng còi xe. Mất trắng 17 xu tiền trà và hướng dương.",
-  "en": ""
- },
- {
-  "vi": "Nhờ chú Tường xe ôm đuổi theo",
-  "en": ""
- },
- {
-  "vi": "Chú thuộc từng ngõ ngách",
-  "en": ""
- },
- {
-  "vi": "Chú Tường đuổi kịp ở ngã tư, hai cậu kia xin lỗi rối rít, gửi đủ 17 xu. Chú còn dặn: “Khách lạ thì thu tiền trước nhé.”",
-  "en": ""
- },
- {
-  "vi": "Hai cậu kia vượt đèn đỏ, chú Tường đành quay về: “Thôi, của đi thay người.”",
-  "en": ""
- },
- {
-  "vi": "Thôi, coi như làm phúc",
-  "en": ""
- },
- {
-  "vi": "Mất 17 xu tiền hàng",
-  "en": ""
- },
- {
-  "vi": "Bạn thở dài dọn bốn cái cốc. Cô Hoa lắc đầu: “Khách lạ thì thu tiền luôn cháu ạ.”",
-  "en": ""
- },
- {
-  "vi": "Ông khách say lè nhè",
   "en": ""
  }
 ]

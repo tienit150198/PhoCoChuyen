@@ -1,5 +1,449 @@
 [
  {
+  "vi": "An toàn, nhớ lời dặn",
+  "en": ""
+ },
+ {
+  "vi": "chín kỹ, nhớ ăn chay",
+  "en": ""
+ },
+ {
+  "vi": "Dì Bảy dặn: nồi cơm tấm đổ nước lưng đốt ngón tay, nồi cơm trắng một đốt; nếm chén nước mắm, mặn thì thêm nước, lạt thì thêm mắm; nhóm bếp than; bày khay lên tủ kính rồi mở quán.",
+  "en": ""
+ },
+ {
+  "vi": "Mang về.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Ăn chay.",
+  "en": ""
+ },
+ {
+  "vi": "Nấu nồi tấm (lưng đốt) và nồi trắng (một đốt) → nếm nước mắm, chỉnh cho vừa → nhóm bếp than → bày khay → Mở quán.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi khách → lấy dĩa / hộp → xới đúng nồi, đủ vá → gắp món → mỡ hành, nước mắm, canh theo lời dặn → đưa cơm → thu tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhóm bếp than, quạt cho than hồng đều.",
+  "en": ""
+ },
+ {
+  "vi": "Đã quạt than, cời tro cho bếp cháy đều.",
+  "en": ""
+ },
+ {
+  "vi": "Đã rửa chén dĩa, lau bàn ghế sạch sẽ.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu quán cơm sai.",
+  "en": ""
+ },
+ {
+  "vi": "Món khách gọi sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản việc quán cơm không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Trạng thái việc quán cơm sai.",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa trên quầy sai.",
+  "en": ""
+ },
+ {
+  "vi": "Cách giải quyết sai.",
+  "en": ""
+ },
+ {
+  "vi": "Quán cơm sai.",
+  "en": ""
+ },
+ {
+  "vi": "Nồi cơm sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chén nước mắm sai.",
+  "en": ""
+ },
+ {
+  "vi": "Bếp than sai.",
+  "en": ""
+ },
+ {
+  "vi": "Mẻ sườn trên vỉ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Khay giữ ấm sai.",
+  "en": ""
+ },
+ {
+  "vi": "Tủ kính sai.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu quán cơm sai.",
+  "en": ""
+ },
+ {
+  "vi": "Bán cơm",
+  "en": ""
+ },
+ {
+  "vi": "Cơm tấm Dì Bảy",
+  "en": ""
+ },
+ {
+  "vi": "Cơm dẻo, sườn thơm, nước mắm vừa miệng.",
+  "en": ""
+ },
+ {
+  "vi": "Nắng sớm đầu chợ",
+  "en": ""
+ },
+ {
+  "vi": "Khách gọi cơm",
+  "en": ""
+ },
+ {
+  "vi": "Xe cơm & bếp than",
+  "en": ""
+ },
+ {
+  "vi": "Nấu hai nồi cơm, nếm chén nước mắm, nhóm bếp than, bày khay lên tủ kính rồi mở quán. Khách gọi gì, dặn gì thì làm đúng vậy nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa cơm nào cũng đủ vá, đúng món",
+  "en": ""
+ },
+ {
+  "vi": "25 · CƠM TẤM DÌ BẢY",
+  "en": ""
+ },
+ {
+  "vi": "Cháu dì Bảy, quạt than đều tay, mắt không rời vỉ sườn.",
+  "en": ""
+ },
+ {
+  "vi": "Rửa chén dĩa nhanh thoăn thoắt, bàn nào cũng lau sạch bong.",
+  "en": ""
+ },
+ {
+  "vi": "Sinh viên làm thêm buổi sáng, kỹ tính từng miếng sườn.",
+  "en": ""
+ },
+ {
+  "vi": "Quen mặt cả chợ, vừa dọn bàn vừa chào khách.",
+  "en": ""
+ },
+ {
+  "vi": "Quạt than, canh bếp",
+  "en": ""
+ },
+ {
+  "vi": "Rửa chén, dọn bàn",
+  "en": ""
+ },
+ {
+  "vi": "Xe cơm gọn gàng",
+  "en": ""
+ },
+ {
+  "vi": "Nồi bên trái",
+  "en": ""
+ },
+ {
+  "vi": "Sáu khay món",
+  "en": ""
+ },
+ {
+  "vi": "Chén pha sẵn",
+  "en": ""
+ },
+ {
+  "vi": "Nấu cơm đúng nước",
+  "en": ""
+ },
+ {
+  "vi": "Nếm nước mắm",
+  "en": ""
+ },
+ {
+  "vi": "Nướng sườn, trở một lần",
+  "en": ""
+ },
+ {
+  "vi": "Xới cơm, gắp món, thu tiền",
+  "en": ""
+ },
+ {
+  "vi": "Nước mắm dì Bảy",
+  "en": ""
+ },
+ {
+  "vi": "Tối nào dì Bảy cũng pha một thau nước mắm: mắm nhĩ, đường, chanh, nước sôi để nguội.",
+  "en": ""
+ },
+ {
+  "vi": "Dì giã tỏi ớt bằng cái cối đá của bà ngoại, không cho vào máy xay.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng ra dì nếm đầu đũa, thiếu gì thêm nấy, không bao giờ để khách ăn chén mặn chát.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bình kể: cơm tấm ngon là miếng sườn hơi cháy cạnh, thơm mùi than.",
+  "en": ""
+ },
+ {
+  "vi": "Nhưng cháy cạnh khác cháy khét, dì Bảy nói, và giữa miếng thịt không được hồng.",
+  "en": ""
+ },
+ {
+  "vi": "Từ đó mẻ sườn nào bạn cũng đếm giây, trở đúng một lần.",
+  "en": ""
+ },
+ {
+  "vi": "Bữa cơm ngày rằm",
+  "en": ""
+ },
+ {
+  "vi": "Ngày rằm, bà Sương ghé quán ăn chay.",
+  "en": ""
+ },
+ {
+  "vi": "Dì Bảy lấy chén, muỗng riêng, múc nước tương, không chan mỡ hành.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Sương nói: “Quán nhớ bà ăn chay, bà mừng lắm.”",
+  "en": ""
+ },
+ {
+  "vi": "Cơm dẻo, sườn thơm mùi than.",
+  "en": ""
+ },
+ {
+  "vi": "Nước mắm vừa miệng, chan là mê.",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ cả lời dặn ăn chay của mẹ tôi.",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa cơm đầy đặn, giá mềm.",
+  "en": ""
+ },
+ {
+  "vi": "Nấu nồi tấm (lưng đốt), nồi trắng (một đốt) → nếm nước mắm → nhóm bếp → bày khay → mở quán. Mỗi khách: hỏi → dĩa / hộp → xới cơm → gắp món → mỡ hành, nước mắm, canh → đưa cơm → thu tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ thiếu 40 xu",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm quỹ cuối ngày thiếu đúng 40 xu. Cô Lụa mặt tái mét: “Cô không lấy đâu, thề đấy…”",
+  "en": ""
+ },
+ {
+  "vi": "Đếm lại lần hai, có người chứng kiến: vẫn thiếu 40 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Trong kẹp hồ sơ có phiếu chi tạm ứng 40 xu cho Bảo đi công tác, Bảo đã ký nhận, chưa nhập sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Tự bỏ 40 xu vào két cho khớp, khỏi rắc rối",
+  "en": ""
+ },
+ {
+  "vi": "Giám đốc xin ứng quỹ mua quà sinh nhật",
+  "en": ""
+ },
+ {
+  "vi": "Anh Tùng ghé phòng kế toán: “Cô Lụa ứng anh 300 xu mua quà sinh nhật vợ nhé, cuối tháng anh trả. Cứ ghi tạm là tiếp khách.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là giám đốc, quên ví ở nhà mà tối nay là sinh nhật vợ.",
+  "en": ""
+ },
+ {
+  "vi": "Quy chế quỹ",
+  "en": ""
+ },
+ {
+  "vi": "Tạm ứng cá nhân phải có giấy đề nghị ghi đúng mục đích, giám đốc ký và hoàn ứng trong 30 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi cô Lụa",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ đủ tiền, nhưng ghi “tiếp khách” thì cuối tháng không có hóa đơn nào để khớp.",
+  "en": ""
+ },
+ {
+  "vi": "Mẫu giấy tạm ứng",
+  "en": ""
+ },
+ {
+  "vi": "Tủ biểu mẫu",
+  "en": ""
+ },
+ {
+  "vi": "Mẫu giấy đề nghị tạm ứng có sẵn, điền mất hai phút.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa anh Tùng giấy đề nghị tạm ứng cá nhân, ghi đúng “quà sinh nhật”, hẹn hoàn ứng cuối tháng",
+  "en": ""
+ },
+ {
+  "vi": "Hai phút điền giấy mà sổ sạch, cuối tháng khỏi ai hỏi han.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Lụa chi đúng quy trình; cuối tháng anh Tùng hoàn ứng, sổ quỹ khớp từng xu.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi đúng tên thì mình cũng yên tâm, khỏi ai nói ra nói vào.",
+  "en": ""
+ },
+ {
+  "vi": "Có giấy là tôi chi ngay, không sợ lệch quỹ.",
+  "en": ""
+ },
+ {
+  "vi": "Sếp cũng ứng như mọi người, thế mới công bằng.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi là tiếp khách cho nhanh, sếp mà",
+  "en": ""
+ },
+ {
+  "vi": "Cuối năm kiểm toán hỏi hóa đơn tiếp khách, chẳng ai trả lời được.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản chi không có chứng từ bị loại khỏi chi phí; công ty nộp thêm thuế và bị nhắc nhở.",
+  "en": ""
+ },
+ {
+  "vi": "Chi tiếp khách không có hóa đơn là thứ tôi tìm đầu tiên.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi ký sổ quỹ mà không biết giải thích sao.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối: “Quỹ công ty không cho mượn ạ”",
+  "en": ""
+ },
+ {
+  "vi": "Đúng là không ghi bừa được, nhưng có cách hợp lệ sao không chỉ anh?",
+  "en": ""
+ },
+ {
+  "vi": "Anh Tùng tự đi rút tiền, hơi phật ý với phòng kế toán.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi đâu có định lấy không.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối thì dễ, chỉ cách làm đúng mới khó.",
+  "en": ""
+ },
+ {
+  "vi": "Giám đốc cũng tạm ứng bằng giấy, ghi đúng mục đích — sổ sạch thì ai cũng yên tâm.",
+  "en": ""
+ },
+ {
+  "vi": "Xin “xóa giùm” hóa đơn đã gửi khách",
+  "en": ""
+ },
+ {
+  "vi": "Bảo chạy sang: “Khách đổi ý không lấy 20 giỏ mây nữa, chị xóa giùm em cái hóa đơn hôm qua nhé, coi như chưa có.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là nhân viên kinh doanh, sợ bị trừ doanh số vì đơn hủy.",
+  "en": ""
+ },
+ {
+  "vi": "Quy định hóa đơn điện tử",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn đã gửi khách thì không xóa được; phải lập biên bản với khách và xuất hóa đơn điều chỉnh.",
+  "en": ""
+ },
+ {
+  "vi": "Email của khách",
+  "en": ""
+ },
+ {
+  "vi": "Khách xác nhận trả lại 20 giỏ, đồng ý ký biên bản.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi chú Toàn",
+  "en": ""
+ },
+ {
+  "vi": "Hàng chưa rời kho, 20 giỏ vẫn còn nguyên trên kệ.",
+  "en": ""
+ },
+ {
+  "vi": "Lập biên bản với khách, xuất hóa đơn điều chỉnh giảm, báo chú Toàn giữ hàng trong kho",
+  "en": ""
+ },
+ {
+  "vi": "Giấy tờ rõ ràng, khách ký một lần là xong, em yên tâm.",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu ghi đúng, kho khớp, cuối tháng không ai phải giải trình.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa ra không mất doanh số, chỉ cần làm đúng thủ tục.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng trên kệ, sổ kho cũng khớp. Tốt.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn đã gửi thì không ai xóa được, nhớ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm cách xóa hóa đơn trên phần mềm, coi như chưa có",
+  "en": ""
+ },
+ {
   "vi": "Số hóa đơn nhảy cóc, cơ quan thuế hỏi thì cả phòng toát mồ hôi.",
   "en": ""
  },
@@ -1353,450 +1797,6 @@
  },
  {
   "vi": "Khách gọi liên tục “tới chưa”",
-  "en": ""
- },
- {
-  "vi": "Anh Phong gọi cuộc thứ năm trong mười phút: “Tới chưa? Tới đâu rồi? Nhanh lên, khách trọ chửi anh nãy giờ nè!”",
-  "en": ""
- },
- {
-  "vi": "Nhắn giờ tới cụ thể, gửi định vị",
-  "en": ""
- },
- {
-  "vi": "Anh Phong thôi gọi. Tới nơi đúng giờ đã hẹn.",
-  "en": ""
- },
- {
-  "vi": "Tắt chuông cho đỡ phiền",
-  "en": ""
- },
- {
-  "vi": "Tới nơi thấy anh Phong mặt hằm hằm: “Gọi hai chục cuộc không nghe!”",
-  "en": ""
- },
- {
-  "vi": "“Gọi nữa là em quay xe đó nha”",
-  "en": ""
- },
- {
-  "vi": "Hối thợ có tí mà thợ dọa bỏ, láo toét.",
-  "en": ""
- },
- {
-  "vi": "Anh Phong im, nhưng lúc trả tiền không thèm nói cảm ơn.",
-  "en": ""
- },
- {
-  "vi": "Tới nơi khách không có nhà",
-  "en": ""
- },
- {
-  "vi": "Gõ cửa mười phút không ai mở. Gọi điện, Hùng ngái ngủ: “Ơ em quên, em đi chơi rồi. Anh đợi xíu, nửa tiếng nữa em về.”",
-  "en": ""
- },
- {
-  "vi": "Báo phí đi lại 5 xu, hẹn lại giờ khác",
-  "en": ""
- },
- {
-  "vi": "Hùng chuyển khoản 5 xu phí đi lại, hẹn chiều mai. Rõ ràng, sòng phẳng.",
-  "en": ""
- },
- {
-  "vi": "Ngồi đợi ở cửa",
-  "en": ""
- },
- {
-  "vi": "Mất cả buổi",
-  "en": ""
- },
- {
-  "vi": "Hùng về muộn gần tiếng, còn hỏi “đợi lâu chưa anh”.",
-  "en": ""
- },
- {
-  "vi": "Bỏ về, chặn số luôn",
-  "en": ""
- },
- {
-  "vi": "Hẹn thợ rồi thợ bỏ về, không thèm đợi.",
-  "en": ""
- },
- {
-  "vi": "Hùng lên nhóm cư dân kể thợ “bùng hẹn”.",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm chửi vì mùi cống",
-  "en": ""
- },
- {
-  "vi": "Mở nắp hố ga ra, bà nhà bên thò đầu qua cửa sổ: “Hôi quá trời! Làm gì thì làm lẹ lên, bốc mùi vô tận nhà người ta rồi nè!”",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi, đậy tạm nắp, làm nhanh gọn",
-  "en": ""
- },
- {
-  "vi": "Bà nhà bên đóng cửa sổ. Làm xong bạn xịt khử mùi quanh miệng hố.",
-  "en": ""
- },
- {
-  "vi": "Bà ấy chửi đổng thêm mấy câu rồi cũng thôi.",
-  "en": ""
- },
- {
-  "vi": "“Cống nhà bà cũng thải ra đây đó bà”",
-  "en": ""
- },
- {
-  "vi": "Thợ cống ăn nói xấc xược với người già.",
-  "en": ""
- },
- {
-  "vi": "Hai bên to tiếng. Ông Lộc phải ra can.",
-  "en": ""
- },
- {
-  "vi": "Đổ hóa chất cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Bà Ngọc giục: “Đổ nguyên gói bột thông cống vào cho nhanh, thợ trước cũng làm thế mà!”",
-  "en": ""
- },
- {
-  "vi": "Bạn là bà Ngọc, sợ tốn tiền, nghĩ bột thông cống là cách rẻ nhất.",
-  "en": ""
- },
- {
-  "vi": "Đường ống",
-  "en": ""
- },
- {
-  "vi": "Ống gang cũ gỉ sét, mối nối đã rạn.",
-  "en": ""
- },
- {
-  "vi": "Bột thông cống",
-  "en": ""
- },
- {
-  "vi": "Nhãn gói bột",
-  "en": ""
- },
- {
-  "vi": "Xút ăn mòn mạnh, sinh nhiệt, bắn vào mắt có thể mù; ống cũ dễ thủng.",
-  "en": ""
- },
- {
-  "vi": "Cháu nội bà hai tuổi hay chạy vào nhà tắm.",
-  "en": ""
- },
- {
-  "vi": "Giải thích rủi ro, thông bằng dây lò xo, không dùng hóa chất",
-  "en": ""
- },
- {
-  "vi": "Thợ nói kỹ vì sao không nên đổ hóa chất vào ống cũ. Làm bằng dụng cụ, sạch sẽ.",
-  "en": ""
- },
- {
-  "vi": "Ống thông, không mùi xút. Bà Ngọc cất gói bột lên cao, xa tầm tay cháu.",
-  "en": ""
- },
- {
-  "vi": "Thì ra ống cũ mà đổ xút là thủng.",
-  "en": ""
- },
- {
-  "vi": "Hóa chất là đường tắt, mà đường tắt hay đi lạc.",
-  "en": ""
- },
- {
-  "vi": "Đổ nửa gói cho bà vui",
-  "en": ""
- },
- {
-  "vi": "Nước rút được một hôm, rồi ống rỉ nước ra tường.",
-  "en": ""
- },
- {
-  "vi": "Tuần sau tường nhà tắm thấm ố vàng.",
-  "en": ""
- },
- {
-  "vi": "Rẻ được mấy đồng, giờ tốn gấp mười.",
-  "en": ""
- },
- {
-  "vi": "Chiều khách mà hại khách là không nên.",
-  "en": ""
- },
- {
-  "vi": "Đổ cả gói, làm cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Hơi xút bốc lên cay mắt, cháu tôi suýt chạy vào. Làm ăn ẩu!",
-  "en": ""
- },
- {
-  "vi": "Hơi nóng bốc lên, ống gang rò một chỗ.",
-  "en": ""
- },
- {
-  "vi": "Cháu nội",
-  "en": ""
- },
- {
-  "vi": "(Suýt chạm vào vũng nước xút.)",
-  "en": ""
- },
- {
-  "vi": "Thế này thì gọi thợ làm gì.",
-  "en": ""
- },
- {
-  "vi": "Hóa chất thông cống ăn mòn ống cũ và nguy hiểm cho người: dùng dụng cụ cơ học trước.",
-  "en": ""
- },
- {
-  "vi": "Xuống hố ga cho kịp",
-  "en": ""
- },
- {
-  "vi": "Trời sắp mưa tiếp, ông Lộc giục: “Xuống múc luôn đi cháu, đo đạc gì cho mất thời gian!”",
-  "en": ""
- },
- {
-  "vi": "Mùi dưới hố",
-  "en": ""
- },
- {
-  "vi": "Miệng hố",
-  "en": ""
- },
- {
-  "vi": "Mùi trứng thối xộc lên: khí H₂S sinh ra từ bùn phân hủy, nồng độ cao gây ngất.",
-  "en": ""
- },
- {
-  "vi": "Chuyện cũ",
-  "en": ""
- },
- {
-  "vi": "Chú Hai kể năm ngoái có hai thợ ở phường bên ngất dưới hố ga vì không đo khí.",
-  "en": ""
- },
- {
-  "vi": "Máy đo khí",
-  "en": ""
- },
- {
-  "vi": "Đo khí và thông gió chỉ mất khoảng mười phút.",
-  "en": ""
- },
- {
-  "vi": "Rào chắn, đo khí, bật quạt, có người canh rồi mới xuống",
-  "en": ""
- },
- {
-  "vi": "Tổ thợ làm đúng quy trình an toàn, hố ga sạch trước cơn mưa.",
-  "en": ""
- },
- {
-  "vi": "Mười phút sau khí an toàn. Hố ga sạch trước khi mưa lại.",
-  "en": ""
- },
- {
-  "vi": "Chờ mười phút mà yên tâm cả đời.",
-  "en": ""
- },
- {
-  "vi": "Không đo khí thì chú không cho ai xuống.",
-  "en": ""
- },
- {
-  "vi": "Nín thở xuống nhanh múc vài xô",
-  "en": ""
- },
- {
-  "vi": "Thợ xuống hố ga không đo khí, suýt ngất. Nguy hiểm quá!",
-  "en": ""
- },
- {
-  "vi": "Xuống được một lúc thì choáng váng, chú Hai phải kéo lên.",
-  "en": ""
- },
- {
-  "vi": "Tim chú muốn rớt ra ngoài.",
-  "en": ""
- },
- {
-  "vi": "Tôi giục bậy, xin lỗi cháu.",
-  "en": ""
- },
- {
-  "vi": "Chỉ múc từ trên miệng hố, không xuống",
-  "en": ""
- },
- {
-  "vi": "Làm an toàn nhưng chưa sạch hẳn.",
-  "en": ""
- },
- {
-  "vi": "Nước rút tạm được, đáy hố còn bùn.",
-  "en": ""
- },
- {
-  "vi": "Tạm được, mưa to chắc lại tràn.",
-  "en": ""
- },
- {
-  "vi": "Đúng là không xuống thì an toàn, nhưng việc chưa xong.",
-  "en": ""
- },
- {
-  "vi": "Hố ga là không gian hạn chế: rào chắn, đo khí, thông gió và có người canh trước khi xuống.",
-  "en": ""
- },
- {
-  "vi": "Báo giá thật hay nói thách",
-  "en": ""
- },
- {
-  "vi": "Anh Phong hỏi giá thông ống chính nhà trọ. Chú Hai vắng, bạn tự báo giá.",
-  "en": ""
- },
- {
-  "vi": "Bảng giá của tiệm",
-  "en": ""
- },
- {
-  "vi": "Tờ giấy dán trong hộp đồ nghề",
-  "en": ""
- },
- {
-  "vi": "Ống thoát chính: 35 xu, thêm 10 xu nếu phải phun rửa mỡ.",
-  "en": ""
- },
- {
-  "vi": "Nhìn quanh",
-  "en": ""
- },
- {
-  "vi": "Nhà trọ mười hai phòng, anh Phong đi xe hơi.",
-  "en": ""
- },
- {
-  "vi": "Tiếng tăm",
-  "en": ""
- },
- {
-  "vi": "Chú Hai dặn: “Tiệm sống được là nhờ người ta giới thiệu nhau.”",
-  "en": ""
- },
- {
-  "vi": "Báo đúng bảng giá, nói rõ phần phát sinh nếu có",
-  "en": ""
- },
- {
-  "vi": "Báo giá rõ ràng, làm xong đúng như báo.",
-  "en": ""
- },
- {
-  "vi": "Anh Phong gật đầu, còn đặt lịch vệ sinh ống định kỳ.",
-  "en": ""
- },
- {
-  "vi": "Giá rõ ràng thì làm ăn lâu dài.",
-  "en": ""
- },
- {
-  "vi": "Một khách tin mình bằng mười khách mới.",
-  "en": ""
- },
- {
-  "vi": "Nhà giàu, báo gấp đôi",
-  "en": ""
- },
- {
-  "vi": "Hỏi thêm mới biết bị nói thách gấp đôi. Mất lòng tin.",
-  "en": ""
- },
- {
-  "vi": "Anh Phong hỏi giá chỗ khác, gọi lại trách.",
-  "en": ""
- },
- {
-  "vi": "Tôi có xe hơi thì phải trả gấp đôi à?",
-  "en": ""
- },
- {
-  "vi": "Giá không đổi theo cái xe của khách.",
-  "en": ""
- },
- {
-  "vi": "Báo rẻ cho được việc",
-  "en": ""
- },
- {
-  "vi": "Rẻ, được việc.",
-  "en": ""
- },
- {
-  "vi": "Được việc, nhưng tính ra tiệm lỗ tiền máy.",
-  "en": ""
- },
- {
-  "vi": "Rẻ thế thì tốt quá.",
-  "en": ""
- },
- {
-  "vi": "Rẻ quá thì lấy gì mua máy mới.",
-  "en": ""
- },
- {
-  "vi": "Báo giá theo bảng giá, trước khi làm; phát sinh thì nói rõ và hỏi lại khách.",
-  "en": ""
- },
- {
-  "vi": "Thông tạm hay làm tới nơi",
-  "en": ""
- },
- {
-  "vi": "Chị Hồng giục: “Làm sao cho nước rút là được, quán sắp bán rồi, không cần kỹ!”",
-  "en": ""
- },
- {
-  "vi": "Trong ống",
-  "en": ""
- },
- {
-  "vi": "Mỡ đông bám dày cả đoạn ống, dây lò xo chỉ khoét được một lỗ nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Phun áp lực mất thêm hai mươi phút.",
-  "en": ""
- },
- {
-  "vi": "Nếu thông tạm",
-  "en": ""
- },
- {
-  "vi": "Thông tạm bằng lò xo thì vài hôm mỡ lại bít kín.",
-  "en": ""
- },
- {
-  "vi": "Nói rõ, xin thêm hai mươi phút phun rửa tận gốc",
-  "en": ""
- },
- {
-  "vi": "Thợ giải thích dễ hiểu, làm tận gốc, cả tháng không tắc lại.",
   "en": ""
  }
 ]

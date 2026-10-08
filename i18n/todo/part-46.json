@@ -1,5 +1,449 @@
 [
  {
+  "vi": "Hỏi khách → lấy tô → nhúng bánh 3–4 lượt → xếp thịt → hành, trứng → chan nước, dừng muôi đúng vạch → bưng ra khi còn nóng → thu tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Đã hớt sạch bọt trên mặt nồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã lau bàn, thay ống đũa, rót sẵn trà đá.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu quán phở sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản việc quán phở không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Trạng thái việc quán phở sai.",
+  "en": ""
+ },
+ {
+  "vi": "Tô trên quầy sai.",
+  "en": ""
+ },
+ {
+  "vi": "Thịt trong tô sai.",
+  "en": ""
+ },
+ {
+  "vi": "Trứng trong tô sai.",
+  "en": ""
+ },
+ {
+  "vi": "Nước dùng trong tô sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ ăn kèm sai.",
+  "en": ""
+ },
+ {
+  "vi": "Muôi nước dùng sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đồng hồ phở nguội sai.",
+  "en": ""
+ },
+ {
+  "vi": "Quán phở sai.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu quán phở sai.",
+  "en": ""
+ },
+ {
+  "vi": "Bán phở",
+  "en": ""
+ },
+ {
+  "vi": "Quán phở Cây Si",
+  "en": ""
+ },
+ {
+  "vi": "Nước trong, tái hồng, bánh tơi.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng sớm đầu ngõ",
+  "en": ""
+ },
+ {
+  "vi": "Khách gọi phở",
+  "en": ""
+ },
+ {
+  "vi": "Nồi nước dùng & rổ trụng",
+  "en": ""
+ },
+ {
+  "vi": "Vặn lửa lăn tăn, hớt bọt, nếm nước rồi mở quán. Mỗi tô: nhúng bánh ba bốn lượt, xếp thịt, chan nước dừng muôi đúng vạch khách dặn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nồi nước lăn tăn từ ba giờ sáng",
+  "en": ""
+ },
+ {
+  "vi": "26 · QUÁN PHỞ CÂY SI",
+  "en": ""
+ },
+ {
+  "vi": "Cháu bác Lâm, hớt bọt, canh nồi chăm chỉ.",
+  "en": ""
+ },
+ {
+  "vi": "Sinh viên làm thêm ca sáng, bưng bê nhanh nhẹn.",
+  "en": ""
+ },
+ {
+  "vi": "Thợ phụ bếp cũ, nhìn mặt nồi là biết sôi già hay non.",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ mặt khách quen, rót trà đá không ai phải gọi.",
+  "en": ""
+ },
+ {
+  "vi": "Canh nồi, hớt bọt",
+  "en": ""
+ },
+ {
+  "vi": "Dọn bàn, rót trà",
+  "en": ""
+ },
+ {
+  "vi": "Bếp phở gọn gàng",
+  "en": ""
+ },
+ {
+  "vi": "Ninh từ ba giờ sáng",
+  "en": ""
+ },
+ {
+  "vi": "Rổ trụng",
+  "en": ""
+ },
+ {
+  "vi": "Nồi nước sôi riêng",
+  "en": ""
+ },
+ {
+  "vi": "Thớt thịt",
+  "en": ""
+ },
+ {
+  "vi": "Tái, chín, nạm, gầu",
+  "en": ""
+ },
+ {
+  "vi": "Rổ quẩy",
+  "en": ""
+ },
+ {
+  "vi": "Quẩy giòn mới chiên",
+  "en": ""
+ },
+ {
+  "vi": "Vặn lửa lăn tăn, hớt bọt",
+  "en": ""
+ },
+ {
+  "vi": "Nếm nước, nêm cho vừa",
+  "en": ""
+ },
+ {
+  "vi": "Nhúng bánh, xếp thịt",
+  "en": ""
+ },
+ {
+  "vi": "Chan nước, bưng ra, thu tiền",
+  "en": ""
+ },
+ {
+  "vi": "Ba giờ sáng bác Lâm đã chần xương, rửa sạch, thả vào nồi nước lạnh.",
+  "en": ""
+ },
+ {
+  "vi": "Gừng, hành nướng thơm lừng, quế hồi thảo quả rang vừa dậy mùi.",
+  "en": ""
+ },
+ {
+  "vi": "Lửa lăn tăn suốt đêm, nước trong như hổ phách.",
+  "en": ""
+ },
+ {
+  "vi": "Muôi đồng của bác Lâm",
+  "en": ""
+ },
+ {
+  "vi": "Cái muôi đồng sáng bóng treo cạnh nồi, cán quấn vải.",
+  "en": ""
+ },
+ {
+  "vi": "Bác bảo muôi nào cũng được, quan trọng là dừng tay đúng lúc.",
+  "en": ""
+ },
+ {
+  "vi": "Từ đó bạn nhìn vạch nước trong tô trước khi bưng ra.",
+  "en": ""
+ },
+ {
+  "vi": "Ông giáo và tờ báo",
+  "en": ""
+ },
+ {
+  "vi": "Sáng nào ông giáo Thụ cũng ngồi bàn trong cùng, trải tờ báo.",
+  "en": ""
+ },
+ {
+  "vi": "Ông chỉ cần nếm một thìa là biết nồi hôm nay sôi to hay nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Bác Lâm bảo: “Khách như ông giáo là thầy dạy nấu phở.”",
+  "en": ""
+ },
+ {
+  "vi": "Nước dùng trong veo, ngọt xương.",
+  "en": ""
+ },
+ {
+  "vi": "Tái chín hồng, bánh tơi mềm.",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ cả lời dặn không mì chính của tôi.",
+  "en": ""
+ },
+ {
+  "vi": "Bưng ra còn nóng hổi, khói nghi ngút.",
+  "en": ""
+ },
+ {
+  "vi": "Vặn lửa lăn tăn → hớt bọt → nếm, nêm → ngửi bánh → mở quán. Mỗi khách: hỏi gọi gì → lấy tô → nhúng bánh 3–4 lượt → xếp thịt → hành, trứng → chan nước, dừng muôi đúng vạch → bưng ra → thu tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Dải 4 ô",
+  "en": ""
+ },
+ {
+  "vi": "2 dải 4 ô",
+  "en": ""
+ },
+ {
+  "vi": "Khung lớn",
+  "en": ""
+ },
+ {
+  "vi": "Tết sum vầy",
+  "en": ""
+ },
+ {
+  "vi": "Phố cổ",
+  "en": ""
+ },
+ {
+  "vi": "Phim cũ",
+  "en": ""
+ },
+ {
+  "vi": "Dễ thương",
+  "en": ""
+ },
+ {
+  "vi": "Ngày cưới",
+  "en": ""
+ },
+ {
+  "vi": "Biển gọi",
+  "en": ""
+ },
+ {
+  "vi": "Mưa Sài Gòn",
+  "en": ""
+ },
+ {
+  "vi": "Đêm hội",
+  "en": ""
+ },
+ {
+  "vi": "Mùa phượng",
+  "en": ""
+ },
+ {
+  "vi": "Giáng sinh",
+  "en": ""
+ },
+ {
+  "vi": "Phông kem trơn",
+  "en": ""
+ },
+ {
+  "vi": "Phông hồng phấn",
+  "en": ""
+ },
+ {
+  "vi": "Phông xanh bạc hà",
+  "en": ""
+ },
+ {
+  "vi": "Phông đen sang",
+  "en": ""
+ },
+ {
+  "vi": "Tường hoa giấy",
+  "en": ""
+ },
+ {
+  "vi": "Rèm kim tuyến",
+  "en": ""
+ },
+ {
+  "vi": "Mũ sinh nhật",
+  "en": ""
+ },
+ {
+  "vi": "Nón lá",
+  "en": ""
+ },
+ {
+  "vi": "Mũ tốt nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Bờm tai thỏ",
+  "en": ""
+ },
+ {
+  "vi": "Vương miện",
+  "en": ""
+ },
+ {
+  "vi": "Kính trái tim",
+  "en": ""
+ },
+ {
+  "vi": "Kính râm",
+  "en": ""
+ },
+ {
+  "vi": "Bảng chữ",
+  "en": ""
+ },
+ {
+  "vi": "Bó hoa",
+  "en": ""
+ },
+ {
+  "vi": "Bong bóng",
+  "en": ""
+ },
+ {
+  "vi": "Lồng đèn ông sao",
+  "en": ""
+ },
+ {
+  "vi": "Ngôi sao",
+  "en": ""
+ },
+ {
+  "vi": "Mặt mèo",
+  "en": ""
+ },
+ {
+  "vi": "Thỏ con",
+  "en": ""
+ },
+ {
+  "vi": "Bông hoa",
+  "en": ""
+ },
+ {
+  "vi": "Đám mây",
+  "en": ""
+ },
+ {
+  "vi": "Lấp lánh",
+  "en": ""
+ },
+ {
+  "vi": "Nốt nhạc",
+  "en": ""
+ },
+ {
+  "vi": "Cầu vồng",
+  "en": ""
+ },
+ {
+  "vi": "Màu gốc",
+  "en": ""
+ },
+ {
+  "vi": "Đen trắng",
+  "en": ""
+ },
+ {
+  "vi": "Cổ điển (nâu)",
+  "en": ""
+ },
+ {
+  "vi": "Nắng ấm",
+  "en": ""
+ },
+ {
+  "vi": "Xanh mát",
+  "en": ""
+ },
+ {
+  "vi": "Hồng mộng mơ",
+  "en": ""
+ },
+ {
+  "vi": "Đèn dịu",
+  "en": ""
+ },
+ {
+  "vi": "Đèn sáng",
+  "en": ""
+ },
+ {
+  "vi": "Đèn vàng ấm",
+  "en": ""
+ },
+ {
+  "vi": "đẹp, ai cũng mở mắt",
+  "en": ""
+ },
+ {
+  "vi": "nhòe, cả nhóm còn đang nhúc nhích",
+  "en": ""
+ },
+ {
+  "vi": "có người nhắm mắt",
+  "en": ""
+ },
+ {
+  "vi": "hết dáng, có người quay đi",
+  "en": ""
+ },
+ {
+  "vi": "Giấy in dải 5×15",
+  "en": ""
+ },
+ {
+  "vi": "Giấy in tờ đôi 10×15",
+  "en": ""
+ },
+ {
   "vi": "Giấy in ảnh lớn 15×20",
   "en": ""
  },
@@ -1353,450 +1797,6 @@
  },
  {
   "vi": "Ô ảnh nhòe nhoẹt, cả nhóm như bóng ma.",
-  "en": ""
- },
- {
-  "vi": "Ô ảnh có đứa quay đi chỗ khác, mất dáng rồi.",
-  "en": ""
- },
- {
-  "vi": "in ảnh hỏng",
-  "en": ""
- },
- {
-  "vi": "Không cho tụi tôi xem chọn ảnh gì hết.",
-  "en": ""
- },
- {
-  "vi": "không cho khách chọn ảnh",
-  "en": ""
- },
- {
-  "vi": "Tụi tôi chọn mấy tấm khác mà.",
-  "en": ""
- },
- {
-  "vi": "in không đúng tấm khách chọn",
-  "en": ""
- },
- {
-  "vi": "sai phông",
-  "en": ""
- },
- {
-  "vi": "Đạo cụ không đúng như tôi dặn.",
-  "en": ""
- },
- {
-  "vi": "Tôi đâu có cầm đạo cụ gì.",
-  "en": ""
- },
- {
-  "vi": "sai đạo cụ",
-  "en": ""
- },
- {
-  "vi": "Đèn chói quá, chụp ai cũng nheo mắt.",
-  "en": ""
- },
- {
-  "vi": "Ảnh tối thui.",
-  "en": ""
- },
- {
-  "vi": "Màu da xanh xao, không ấm như tôi muốn.",
-  "en": ""
- },
- {
-  "vi": "sai đèn",
-  "en": ""
- },
- {
-  "vi": "Ảnh mờ mờ như chụp qua cửa kính đọng hơi nước.",
-  "en": ""
- },
- {
-  "vi": "ống kính bẩn, ảnh mờ",
-  "en": ""
- },
- {
-  "vi": "thiếu sticker khách dặn",
-  "en": ""
- },
- {
-  "vi": "Tôi đâu có kêu dán thêm mấy cái này.",
-  "en": ""
- },
- {
-  "vi": "Tôi dặn đừng dán gì mà.",
-  "en": ""
- },
- {
-  "vi": "dán sticker khách không muốn",
-  "en": ""
- },
- {
-  "vi": "Tôi dặn ghi ngày tháng mà.",
-  "en": ""
- },
- {
-  "vi": "Ghi ngày chi vậy, tôi dặn đừng ghi.",
-  "en": ""
- },
- {
-  "vi": "ngày tháng sai lời dặn",
-  "en": ""
- },
- {
-  "vi": "Chọn gói ảnh trước đã.",
-  "en": ""
- },
- {
-  "vi": "Chọn khung ảnh trước đã.",
-  "en": ""
- },
- {
-  "vi": "Ảnh đã cắt xong rồi.",
-  "en": ""
- },
- {
-  "vi": "Máy in báo hết mực: thay cuộn mực mới đã.",
-  "en": ""
- },
- {
-  "vi": "Ảnh in lại",
-  "en": ""
- },
- {
-  "vi": "cắt đôi theo vạch, mỗi dải một bao kiếng",
-  "en": ""
- },
- {
-  "vi": "lồng vào khung gỗ",
-  "en": ""
- },
- {
-  "vi": "cắt rìa, bỏ bao kiếng",
-  "en": ""
- },
- {
-  "vi": "in lại",
-  "en": ""
- },
- {
-  "vi": "Hết khung gỗ rồi. Nhập thêm ở Kho nhé.",
-  "en": ""
- },
- {
-  "vi": "Hết bao kiếng rồi. Nhập thêm ở Kho nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa in ảnh.",
-  "en": ""
- },
- {
-  "vi": "Cắt xong rồi.",
-  "en": ""
- },
- {
-  "vi": "✂️ Cắt rìa dải ảnh thẳng tắp, bỏ vào bao kiếng.",
-  "en": ""
- },
- {
-  "vi": "✂️ Cắt đôi tờ ảnh đúng vạch giữa, hai dải hai bao kiếng.",
-  "en": ""
- },
- {
-  "vi": "🪵 Lau kính, lồng tấm ảnh vào khung gỗ, đóng nẹp sau lưng.",
-  "en": ""
- },
- {
-  "vi": "Cắt ảnh, bỏ bao (hoặc lồng khung) trước khi đưa khách.",
-  "en": ""
- },
- {
-  "vi": "Ảnh không giao được",
-  "en": ""
- },
- {
-  "vi": "🎓 Học nghề xong! Chị Lam: “Giờ em tự đứng máy được rồi. Chị ra sau dán khung mẫu đây.”",
-  "en": ""
- },
- {
-  "vi": "Gói ảnh",
-  "en": ""
- },
- {
-  "vi": "Phông",
-  "en": ""
- },
- {
-  "vi": "Đèn",
-  "en": ""
- },
- {
-  "vi": "Chị Lam: “Tay bấm chắc rồi đó!”",
-  "en": ""
- },
- {
-  "vi": "Chị Lam: “Canh vạch xanh, đừng vội.”",
-  "en": ""
- },
- {
-  "vi": "Máy ảnh sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "lau kính, chụp thử",
-  "en": ""
- },
- {
-  "vi": "Máy in đủ mực",
-  "en": ""
- },
- {
-  "vi": "cuộn mực đủ dùng",
-  "en": ""
- },
- {
-  "vi": "mực sắp hết",
-  "en": ""
- },
- {
-  "vi": "hết vật tư thì nói thật",
-  "en": ""
- },
- {
-  "vi": "Có ảnh đúng ý",
-  "en": ""
- },
- {
-  "vi": "Đúng gói, đúng khung",
-  "en": ""
- },
- {
-  "vi": "đúng như đã chọn",
-  "en": ""
- },
- {
-  "vi": "chưa đúng gói, khung",
-  "en": ""
- },
- {
-  "vi": "Ảnh đẹp, ai cũng mở mắt",
-  "en": ""
- },
- {
-  "vi": "ô nào cũng đẹp",
-  "en": ""
- },
- {
-  "vi": "có ô nhắm mắt, nhòe",
-  "en": ""
- },
- {
-  "vi": "ảnh mờ, sai đèn",
-  "en": ""
- },
- {
-  "vi": "Trang trí đúng ý",
-  "en": ""
- },
- {
-  "vi": "sticker, ngày, màu đúng lời dặn",
-  "en": ""
- },
- {
-  "vi": "trang trí chưa đúng ý",
-  "en": ""
- },
- {
-  "vi": "Chị Lam dặn: lau ống kính, xem cuộn mực in (sắp hết thì thay), chụp thử một tấm rồi mở tiệm.",
-  "en": ""
- },
- {
-  "vi": "Khách soi ảnh rất kỹ.",
-  "en": ""
- },
- {
-  "vi": "Có bé nhỏ, khó ngồi yên.",
-  "en": ""
- },
- {
-  "vi": "Ông bà cười chậm, giữ dáng lâu.",
-  "en": ""
- },
- {
-  "vi": "Lau ống kính → xem cuộn mực (sắp hết thì thay) → chụp thử → Mở tiệm.",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách → gói, khung, phông, đạo cụ, đèn → bấm chụp lúc vạch xanh → cho khách xem, chọn đúng tấm → sticker, ngày, màu → in → cắt, bỏ bao → đưa ảnh → thu tiền.",
-  "en": ""
- },
- {
-  "vi": "Đã lau ống kính, xếp lại rổ đạo cụ.",
-  "en": ""
- },
- {
-  "vi": "Đã mời khách xếp hàng, phát phiếu chọn khung.",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu tiệm chụp ảnh sai.",
-  "en": ""
- },
- {
-  "vi": "Phiên bản việc tiệm chụp ảnh không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Trạng thái việc tiệm chụp ảnh sai.",
-  "en": ""
- },
- {
-  "vi": "Cài đặt buồng chụp sai.",
-  "en": ""
- },
- {
-  "vi": "Đạo cụ sai.",
-  "en": ""
- },
- {
-  "vi": "Máy chụp sai.",
-  "en": ""
- },
- {
-  "vi": "Ảnh đã chụp sai.",
-  "en": ""
- },
- {
-  "vi": "Ảnh khách chọn sai.",
-  "en": ""
- },
- {
-  "vi": "Ảnh đã chọn sai.",
-  "en": ""
- },
- {
-  "vi": "Trang trí ảnh sai.",
-  "en": ""
- },
- {
-  "vi": "Ảnh đã in sai.",
-  "en": ""
- },
- {
-  "vi": "Buồng chụp sai.",
-  "en": ""
- },
- {
-  "vi": "Số liệu tiệm chụp ảnh sai.",
-  "en": ""
- },
- {
-  "vi": "Tiệm chụp ảnh Tách Tách",
-  "en": ""
- },
- {
-  "vi": "Ba, hai, một… ai cũng mở mắt!",
-  "en": ""
- },
- {
-  "vi": "Chiều tối phố chợ đêm",
-  "en": ""
- },
- {
-  "vi": "Khách vào chụp",
-  "en": ""
- },
- {
-  "vi": "Buồng chụp & máy in",
-  "en": ""
- },
- {
-  "vi": "Lau ống kính, xem cuộn mực, chụp thử rồi mở tiệm. Bấm chụp lúc cả nhóm mở mắt, cho khách chọn ảnh rồi mới in nhé.",
-  "en": ""
- },
- {
-  "vi": "Ô ảnh nào cũng mở mắt",
-  "en": ""
- },
- {
-  "vi": "24 · TIỆM ẢNH TÁCH TÁCH",
-  "en": ""
- },
- {
-  "vi": "Em họ chị Lam, lau kính, xếp đạo cụ nhanh tay.",
-  "en": ""
- },
- {
-  "vi": "Sinh viên làm thêm buổi tối, nói chuyện duyên.",
-  "en": ""
- },
- {
-  "vi": "Mê máy ảnh, lau ống kính như lau báu vật.",
-  "en": ""
- },
- {
-  "vi": "Nhớ tên khách quen, ai vào cũng chào.",
-  "en": ""
- },
- {
-  "vi": "Lau kính, xếp đạo cụ",
-  "en": ""
- },
- {
-  "vi": "Đón khách, phát phiếu chọn khung",
-  "en": ""
- },
- {
-  "vi": "Buồng chụp gọn gàng",
-  "en": ""
- },
- {
-  "vi": "Rổ đạo cụ",
-  "en": ""
- },
- {
-  "vi": "Giấy in dải",
-  "en": ""
- },
- {
-  "vi": "Ngăn máy in",
-  "en": ""
- },
- {
-  "vi": "Khung gỗ",
-  "en": ""
- },
- {
-  "vi": "Kệ khung",
-  "en": ""
- },
- {
-  "vi": "Khăn lau kính",
-  "en": ""
- },
- {
-  "vi": "Hộp máy ảnh",
-  "en": ""
- },
- {
-  "vi": "Lau ống kính, chụp thử",
-  "en": ""
- },
- {
-  "vi": "Xem cuộn mực in",
-  "en": ""
- },
- {
-  "vi": "Bấm chụp lúc cả nhóm mở mắt",
-  "en": ""
- },
- {
-  "vi": "In, cắt, bỏ bao, thu tiền",
   "en": ""
  }
 ]

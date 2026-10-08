@@ -1,5 +1,473 @@
 [
  {
+  "vi": "và cái ô",
+  "en": ""
+ },
+ {
+  "vi": "Xe còn ở đầu phố, tranh thủ dẹp tiếp!",
+  "en": ""
+ },
+ {
+  "vi": "Phạt lấn chiếm vỉa hè",
+  "en": ""
+ },
+ {
+  "vi": "✅ Xe trật tự đi qua. Quán đã dẹp gọn sát gốc cây, các anh chỉ gật đầu. Bày lại quán rồi bán tiếp!",
+  "en": ""
+ },
+ {
+  "vi": "Dẹp gọn kịp lúc, trật tự đô thị đi qua không nhắc nhở gì.",
+  "en": ""
+ },
+ {
+  "vi": "ô chưa gấp",
+  "en": ""
+ },
+ {
+  "vi": "quán bày lấn lòng đường",
+  "en": ""
+ },
+ {
+  "vi": ". Bày lại quán rồi bán tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Không có chuyện mới của quán.",
+  "en": ""
+ },
+ {
+  "vi": "Vỉa hè không kê thêm ghế được nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Khay cốc đã đủ nhiều rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Quán đã có ô to rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Quán đã có biển rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Quán mất một cái ghế.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Tuấn xe đá ghé, nhưng quỹ quán không đủ tiền lấy đá.",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Xe trật tự tới đúng lúc quán đang dọn về: không bị nhắc nhở.",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Không bán thuốc lá cho trẻ con. Bà Lựu khen phải.",
+  "en": ""
+ },
+ {
+  "vi": "khớp từng dòng",
+  "en": ""
+ },
+ {
+  "vi": "✅ Dẹp gọn kịp lúc khi trật tự đô thị đi qua.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng mai không đặt đá.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ bày quán",
+  "en": ""
+ },
+ {
+  "vi": "gọn, đúng chỗ",
+  "en": ""
+ },
+ {
+  "vi": "chỗ bày chưa hợp",
+  "en": ""
+ },
+ {
+  "vi": "chè, đá, ô đủ cả",
+  "en": ""
+ },
+ {
+  "vi": "Sổ sách rõ ràng",
+  "en": ""
+ },
+ {
+  "vi": "từng dòng có ngày, có món",
+  "en": ""
+ },
+ {
+  "vi": "có dòng ghi lố",
+  "en": ""
+ },
+ {
+  "vi": "Cách nói chuyện",
+  "en": ""
+ },
+ {
+  "vi": "đủ cốc, đúng món",
+  "en": ""
+ },
+ {
+  "vi": "Chè ngon",
+  "en": ""
+ },
+ {
+  "vi": "chè đậm vừa",
+  "en": ""
+ },
+ {
+  "vi": "chè nhạt hoặc để lâu",
+  "en": ""
+ },
+ {
+  "vi": "Cốc sạch, đá mát",
+  "en": ""
+ },
+ {
+  "vi": "cốc sạch, đá mát",
+  "en": ""
+ },
+ {
+  "vi": "cốc chưa sạch hoặc thiếu đá",
+  "en": ""
+ },
+ {
+  "vi": "Có trách nhiệm",
+  "en": ""
+ },
+ {
+  "vi": "không bán thuốc cho trẻ em",
+  "en": ""
+ },
+ {
+  "vi": "chưa nói rõ với cháu",
+  "en": ""
+ },
+ {
+  "vi": ", dựng ô",
+  "en": ""
+ },
+ {
+  "vi": ", đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng.",
+  "en": ""
+ },
+ {
+  "vi": "· Khách là trẻ con.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chỗ → bày ghế → dựng ô → đặt thùng đá → pha ấm chè → đập đá → Mở hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ cho chú → có dòng thắc mắc thì cùng xem sổ (ghi lố thì sửa) → thu tiền, thối đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi món → rót đủ cốc, lấy đồ ăn vặt → đưa trà → ghi đúng số tiền vào sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Trẻ con mua thuốc lá: từ chối khéo, bán phần còn lại, thối tiền đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi món → rót đúng cốc (trà đá cần đá) → lấy đồ ăn vặt → đưa trà → thu tiền, thối đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thay chậu nước rửa cốc.",
+  "en": ""
+ },
+ {
+  "vi": "Đã lau bàn, quét lá bàng quanh quán.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đập thêm một cây đá vào thùng.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đậy kín thùng đá, kê lại chỗ râm.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu quán trà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản việc quán trà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Trạng thái việc quán trà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Khay trà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Cốc trà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ ăn vặt sai.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn sổ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Tổng sổ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Dòng thắc mắc sai.",
+  "en": ""
+ },
+ {
+  "vi": "Dòng sổ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Quán trà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Cốc sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện quán sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đợt dẹp vỉa hè sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ dẹp vỉa hè sai.",
+  "en": ""
+ },
+ {
+  "vi": "Kết quả dẹp vỉa hè sai.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch sử dẹp vỉa hè sai.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu quán sai.",
+  "en": ""
+ },
+ {
+  "vi": "Trà đá vỉa hè",
+  "en": ""
+ },
+ {
+  "vi": "Trà đá gốc bàng",
+  "en": ""
+ },
+ {
+  "vi": "Cốc trà đá, cái ghế nhựa, chuyện cả phố.",
+  "en": ""
+ },
+ {
+  "vi": "Nắng nhẹ dưới tán bàng",
+  "en": ""
+ },
+ {
+  "vi": "Quán trà",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng, pha bình chè, đập đá, rót trà, thu tiền lẻ. Nhớ ghi sổ cho chú xe ôm và canh xe trật tự đô thị nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Một cốc trà đá, trăm câu chuyện phố",
+  "en": ""
+ },
+ {
+  "vi": "18 · TRÀ ĐÁ GỐC BÀNG",
+  "en": ""
+ },
+ {
+  "vi": "Cháu nội bà Lựu, rửa cốc nhanh thoăn thoắt.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn xe ôm của chú Tường, đập đá khỏe.",
+  "en": ""
+ },
+ {
+  "vi": "Sinh viên làm thêm, cốc nào cũng tráng hai lần.",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ giờ xe đá, thùng đá lúc nào cũng đầy.",
+  "en": ""
+ },
+ {
+  "vi": "Rửa cốc",
+  "en": ""
+ },
+ {
+  "vi": "Đập đá",
+  "en": ""
+ },
+ {
+  "vi": "Quán trà gọn gàng",
+  "en": ""
+ },
+ {
+  "vi": "Hộp thiếc",
+  "en": ""
+ },
+ {
+  "vi": "Thùng đá",
+  "en": ""
+ },
+ {
+  "vi": "Lọ thủy tinh",
+  "en": ""
+ },
+ {
+  "vi": "Cốc bẩn",
+  "en": ""
+ },
+ {
+  "vi": "Chậu rửa",
+  "en": ""
+ },
+ {
+  "vi": "Bày ghế, dựng ô",
+  "en": ""
+ },
+ {
+  "vi": "Pha bình chè",
+  "en": ""
+ },
+ {
+  "vi": "Đập đá, rót trà",
+  "en": ""
+ },
+ {
+  "vi": "Chè của bà Lựu",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu bảo chè ngon phải là chè Thái, sao kỹ, tráng ấm bằng nước sôi.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn pha thử ba ấm: ít chè, vừa chè, nhiều chè. Ông Khang nếm từng cốc.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Khang chọn ấm vừa chè: “Thế này mới là trà đá gốc bàng.”",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn sổ của chú Tường",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường uống ghi sổ đã hai mươi năm, sổ cũ nát cả gáy.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chép sang cuốn sổ mới, ghi rõ từng ngày, từng món.",
+  "en": ""
+ },
+ {
+  "vi": "Đến hẹn chú trả đủ, còn khen: “Sổ này đọc sướng mắt!”",
+  "en": ""
+ },
+ {
+  "vi": "Sấu non về chợ, Linh hỏi quán có sấu dầm không.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu dạy bạn dầm sấu với đường, gừng, ớt.",
+  "en": ""
+ },
+ {
+  "vi": "Cốc sấu đá đầu mùa, cả nhóm của Linh xuýt xoa.",
+  "en": ""
+ },
+ {
+  "vi": "Chè đậm, đá mát, ngồi gốc bàng gió thổi mát rượi.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền lẻ thối đúng từng xu, nhanh gọn.",
+  "en": ""
+ },
+ {
+  "vi": "Cốc sạch bong, uống yên tâm.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi một cốc mà nghe được cả chuyện phố, vui!",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng → pha chè → đập đá → rót trà → đưa trà → thu tiền, thối đúng. Chú xe ôm: ghi đúng số vào sổ, đến hẹn thu. Xe trật tự tới: dẹp ghế, gấp ô thật nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "Hạn chốt: cộng sổ đặt trước, chốt đúng số Jewel với nhà phân phối.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày cosplay: dọn góc standee cho hội cosplay chụp.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa chiều: kê thùng album lên cao.",
+  "en": ""
+ },
+ {
+  "vi": "Đếm bản giới hạn, dựng biển, thử búa trưng bày rồi mở tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Mở tiệm album đầu ngày",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thơ nhắn: “Chị đi lấy hàng. Em đếm bản giới hạn, dựng biển giới hạn, thử cây búa trưng bày rồi hẵng mở tiệm nghe.”",
+  "en": ""
+ },
+ {
+  "vi": "Vào việc thôi! Kệ album đã xếp, Búa hồng trưng bày đang nháy.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác không có ở tiệm album.",
+  "en": ""
+ },
+ {
+  "vi": "Việc này không thuộc tiệm album.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa mở tiệm: đếm bản giới hạn, dựng biển, thử búa rồi bấm “Mở tiệm” nhé.",
+  "en": ""
+ },
+ {
   "vi": "Hỏi khách cần gì đã nhé.",
   "en": ""
  },
@@ -1329,474 +1797,6 @@
  },
  {
   "vi": "❓ Hỏi album mua xong để đâu",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng: “Nhóm anh chỉ cần hóa đơn quét Zchart. Album để lại tiệm, em bán lại cho người khác, bớt anh 30% là được.”",
-  "en": ""
- },
- {
-  "vi": "🧾 Bán đủ giá, quét từng bản; album anh mang về hoặc gửi hộp quyên góp thư viện",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng gật gù, chất album lên xe; năm bản gửi hộp quyên góp cho thư viện phường. Doanh số sạch, Zchart tính đủ.",
-  "en": ""
- },
- {
-  "vi": "🤫 Bớt 30%, chỉ in hóa đơn, giữ album lại bán tiếp",
-  "en": ""
- },
- {
-  "vi": "Zchart soi ra một lô album quét hai lần. Tiệm bị khóa quét ba ngày, nhóm fan khác lên mạng bóc.",
-  "en": ""
- },
- {
-  "vi": "Tiệm bán hóa đơn ảo đẩy chart, BLINKY tẩy chay nha.",
-  "en": ""
- },
- {
-  "vi": "🙅 Không bán sỉ",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng hậm hực qua tiệm khác. Tiệm mất một mối, nhưng sạch sẽ.",
-  "en": ""
- },
- {
-  "vi": "Gom hết bản giới hạn",
-  "en": ""
- },
- {
-  "vi": "📒 Đối số điện thoại trong sổ",
-  "en": ""
- },
- {
-  "vi": "Số này đứng tên ba phiếu đặt trước khác, mỗi phiếu một tên.",
-  "en": ""
- },
- {
-  "vi": "Số này chưa từng đặt hàng ở tiệm.",
-  "en": ""
- },
- {
-  "vi": "❓ Hỏi mua cho ai",
-  "en": ""
- },
- {
-  "vi": "Chị Kiều: “Cho em gái… với mấy đứa bạn em gái. Hỏi chi nhiều vậy?”",
-  "en": ""
- },
- {
-  "vi": "Chị Kiều: “Ba đứa em gái chị, đứa nào cũng mê Mận-Ji.”",
-  "en": ""
- },
- {
-  "vi": "🚫 Bán đúng giới hạn mỗi người",
-  "en": ""
- },
- {
-  "vi": "Chị Kiều cầm đúng số bản giới hạn, càu nhàu. Hàng sau còn phần cho mọi người.",
-  "en": ""
- },
- {
-  "vi": "💸 Bán hết cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Chiều đó bản Jewel lên mạng giá gấp đôi. BLINKY xếp hàng sau về tay không.",
-  "en": ""
- },
- {
-  "vi": "Tiệm bán hết bản giới hạn cho dân buôn, fan thật về tay trắng.",
-  "en": ""
- },
- {
-  "vi": "🙅 Không bán bản nào",
-  "en": ""
- },
- {
-  "vi": "Chị Kiều bỏ đi. Giới hạn là để chia đều, không phải để đuổi khách.",
-  "en": ""
- },
- {
-  "vi": "Ba đứa em chị Kiều không có bản nào, mà giới hạn cho mua mà.",
-  "en": ""
- },
- {
-  "vi": "Chị Kiều nhỏ giọng: “Thêm 20 xu mỗi bản, bán hết cho chị đi em.”",
-  "en": ""
- },
- {
-  "vi": "Lấy hàng đặt trước giùm",
-  "en": ""
- },
- {
-  "vi": "🔢 Hỏi mã đặt trước",
-  "en": ""
- },
- {
-  "vi": "Ấp úng: “Mã gì ta… em quên rồi.”",
-  "en": ""
- },
- {
-  "vi": "📱 Đối 4 số cuối điện thoại",
-  "en": ""
- },
- {
-  "vi": "☎️ Gọi số trong sổ",
-  "en": ""
- },
- {
-  "vi": "Thảo nghe máy: “Dạ em nhờ lấy giùm đó chị.”",
-  "en": ""
- },
- {
-  "vi": "Thảo nghe máy: “Em đâu có nhờ ai! Chiều em tự qua lấy.”",
-  "en": ""
- },
- {
-  "vi": "✅ Giao hàng đặt trước",
-  "en": ""
- },
- {
-  "vi": "Hàng tới tay người được nhờ, Thảo nhắn cảm ơn tiệm.",
-  "en": ""
- },
- {
-  "vi": "Chiều Thảo tới lấy thì hàng đã giao cho người khác. Tiệm phải đền.",
-  "en": ""
- },
- {
-  "vi": "⏸️ Chưa giao, hẹn chính chủ tới",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy về tay không, Thảo phải chạy qua lấy. Hơi phiền mà đúng quy trình.",
-  "en": ""
- },
- {
-  "vi": "Người kia bỏ đi. Chiều Thảo tới lấy đủ hàng, cảm ơn tiệm giữ kỹ.",
-  "en": ""
- },
- {
-  "vi": "Hỏi chắc trúng fansign không",
-  "en": ""
- },
- {
-  "vi": "Na suy nghĩ rồi vẫn mua: “Biết tỉ lệ rồi, mua vì thương idol thôi.”",
-  "en": ""
- },
- {
-  "vi": "🤞 “Mua năm bản chắc trúng, mua mười càng chắc”",
-  "en": ""
- },
- {
-  "vi": "Ngày công bố không có tên Na. Na đăng bài: tiệm hứa chắc trúng để bán.",
-  "en": ""
- },
- {
-  "vi": "Tiệm hứa chắc trúng fansign để bán album, xạo ghê.",
-  "en": ""
- },
- {
-  "vi": "🤷 “Chị cũng không biết nữa”",
-  "en": ""
- },
- {
-  "vi": "Na mua mà cứ thấp thỏm, không biết tỉ lệ ra sao.",
-  "en": ""
- },
- {
-  "vi": "Na: “Thôi chị nói đại là chắc trúng đi, cho em yên tâm mua!”",
-  "en": ""
- },
- {
-  "vi": "Đòi POB của tiệm khác",
-  "en": ""
- },
- {
-  "vi": "🙏 Nói thật: tiệm chỉ có POB Mây Pop",
-  "en": ""
- },
- {
-  "vi": "Tuấn tặc lưỡi rồi lấy POB Mây Pop: “Bộ này cũng xinh.”",
-  "en": ""
- },
- {
-  "vi": "🤞 Hứa mai về có POB Ziniverse",
-  "en": ""
- },
- {
-  "vi": "Mai không có. Tuấn quay lại làm ầm ở quầy.",
-  "en": ""
- },
- {
-  "vi": "Hứa POB tiệm khác rồi không có, làm ăn không thật.",
-  "en": ""
- },
- {
-  "vi": "🎭 Đưa card tiệm mình, bảo là POB Ziniverse",
-  "en": ""
- },
- {
-  "vi": "Tuấn soi logo là biết. Bài “tiệm tráo POB” lên nhóm trao đổi trong năm phút.",
-  "en": ""
- },
- {
-  "vi": "Đưa POB tiệm mình rồi nói là của Ziniverse, tráo trắng trợn.",
-  "en": ""
- },
- {
-  "vi": "Có người chen hàng",
-  "en": ""
- },
- {
-  "vi": "🎫 Xin coi số thứ tự",
-  "en": ""
- },
- {
-  "vi": "Bạn kia không có số. Na chỉ: “Em số 7 nè, bạn đó mới tới!”",
-  "en": ""
- },
- {
-  "vi": "Bạn kia đưa số 6, bạn ra mua nước nhờ Na giữ chỗ.",
-  "en": ""
- },
- {
-  "vi": "🎫 Bán đúng số thứ tự trên vé",
-  "en": ""
- },
- {
-  "vi": "Bạn kia không có số, lủi xuống cuối hàng. Cả hàng vỗ tay.",
-  "en": ""
- },
- {
-  "vi": "Bạn số 6 mua trước Na một chút, đúng thứ tự, cả hàng gật gù.",
-  "en": ""
- },
- {
-  "vi": "👉 Đuổi bạn kia xuống cuối hàng, khỏi hỏi",
-  "en": ""
- },
- {
-  "vi": "Bạn kia lủi xuống cuối hàng, mà chưa ai coi số nên vẫn có người xì xào.",
-  "en": ""
- },
- {
-  "vi": "Bạn số 6 bị đuổi oan xuống cuối hàng, Na cũng thấy kỳ.",
-  "en": ""
- },
- {
-  "vi": "🤷 Bán cho bạn chen trước cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Cả hàng nhao nhao. Na đứng chờ thêm mười phút, mặt xị.",
-  "en": ""
- },
- {
-  "vi": "Bạn số 6 mua trước, Na chờ thêm chút.",
-  "en": ""
- },
- {
-  "vi": "Đòi trả album vì card",
-  "en": ""
- },
- {
-  "vi": "Seal đã xé, card Sữa-Ah còn nguyên trong túi, đủ CD và poster.",
-  "en": ""
- },
- {
-  "vi": "Seal đã xé, túi card trống trơn: album thiếu card từ nhà sản xuất.",
-  "en": ""
- },
- {
-  "vi": "🧾 Xem hóa đơn",
-  "en": ""
- },
- {
-  "vi": "Mua ở tiệm hôm qua, một bản Pink ver.",
-  "en": ""
- },
- {
-  "vi": "🙏 Album đã khui không đổi trả; chỉ bảng trao đổi card",
-  "en": ""
- },
- {
-  "vi": "Mít xị mặt nhưng dán card Sữa-Ah lên bảng trao đổi. Hai hôm sau đổi được Mận-Ji.",
-  "en": ""
- },
- {
-  "vi": "Album lỗi thật mà tiệm không đổi. Mít mếu máo về.",
-  "en": ""
- },
- {
-  "vi": "Album thiếu card mà tiệm không đổi cho em.",
-  "en": ""
- },
- {
-  "vi": "🔄 Đổi bản mới nguyên seal",
-  "en": ""
- },
- {
-  "vi": "Đổi album vì không thích card: bản đã khui coi như bỏ. Lỡ một lần là cả hội kéo tới đòi đổi.",
-  "en": ""
- },
- {
-  "vi": "Đổi bản mới, tiệm gửi bản lỗi về nhà phân phối. Mít cười tít.",
-  "en": ""
- },
- {
-  "vi": "💸 Hoàn tiền cho xong",
-  "en": ""
- },
- {
-  "vi": "Hoàn tiền một bản đã khui: tiệm lỗ trắng, mà chính sách thì vỡ.",
-  "en": ""
- },
- {
-  "vi": "😤 Cãi: “Ai biểu mua album ngẫu nhiên”",
-  "en": ""
- },
- {
-  "vi": "Mít khóc ngay quầy, mẹ Mít lên mạng kể.",
-  "en": ""
- },
- {
-  "vi": "Nhân viên cãi tay đôi với con nít.",
-  "en": ""
- },
- {
-  "vi": "Bảo hành búa mua ngoài",
-  "en": ""
- },
- {
-  "vi": "Tem mờ, nghiêng không đổi màu, chữ BLANKPINK lệch nét.",
-  "en": ""
- },
- {
-  "vi": "Tem đổi màu hồng sang tím khi nghiêng.",
-  "en": ""
- },
- {
-  "vi": "🔢 Đối số seri thân và hộp",
-  "en": ""
- },
- {
-  "vi": "Thân búa không có seri. Hộp ghi seri 000000.",
-  "en": ""
- },
- {
-  "vi": "Seri thân và hộp khớp nhau.",
-  "en": ""
- },
- {
-  "vi": "📱 Thử nhận diện trên app",
-  "en": ""
- },
- {
-  "vi": "App báo: “Không nhận diện được thiết bị.”",
-  "en": ""
- },
- {
-  "vi": "App nhận búa, còn bảo hành tới tháng sau.",
-  "en": ""
- },
- {
-  "vi": "🛠️ Nhận gửi bảo hành hãng",
-  "en": ""
- },
- {
-  "vi": "Nhà phân phối trả về: hàng nhái. Tiệm chịu phí ship hai chiều.",
-  "en": ""
- },
- {
-  "vi": "Gửi hãng, ba hôm sau có búa đổi mới. Mít mừng rơn.",
-  "en": ""
- },
- {
-  "vi": "🙏 Giải thích hàng nhái, chỉ cách nhận biết",
-  "en": ""
- },
- {
-  "vi": "Mít buồn nhưng hiểu, hẹn để dành tiền mua búa thật.",
-  "en": ""
- },
- {
-  "vi": "Búa thật mà bị bảo là hàng nhái. Mít mang qua tiệm khác bảo hành được ngay.",
-  "en": ""
- },
- {
-  "vi": "Búa thật mà tiệm bảo hàng nhái, không chịu bảo hành.",
-  "en": ""
- },
- {
-  "vi": "🎁 Đổi luôn cây búa mới cho vui",
-  "en": ""
- },
- {
-  "vi": "Tiệm mất một cây Búa ver.2. Tối đó ba bạn khác mang búa nhái tới đòi đổi.",
-  "en": ""
- },
- {
-  "vi": "Búa không ghép ghế",
-  "en": ""
- },
- {
-  "vi": "🔋 Mở nắp pin",
-  "en": ""
- },
- {
-  "vi": "Một viên pin lắp ngược chiều.",
-  "en": ""
- },
- {
-  "vi": "Pin đúng chiều, mới tinh.",
-  "en": ""
- },
- {
-  "vi": "Pin đúng chiều, còn đầy.",
-  "en": ""
- },
- {
-  "vi": "📲 Mở app ghép ghế",
-  "en": ""
- },
- {
-  "vi": "App báo: “Có bản cập nhật bắt buộc.”",
-  "en": ""
- },
- {
-  "vi": "App là bản mới nhất.",
-  "en": ""
- },
- {
-  "vi": "⚙️ Xem cài đặt điện thoại",
-  "en": ""
- },
- {
-  "vi": "Bluetooth điện thoại đang tắt.",
-  "en": ""
- },
- {
-  "vi": "Bluetooth đang bật.",
-  "en": ""
- },
- {
-  "vi": "🎫 Xem vé và app",
-  "en": ""
- },
- {
-  "vi": "Vé ghế B12, app chưa nhập số ghế.",
-  "en": ""
- },
- {
-  "vi": "App đã nhập ghế B12.",
-  "en": ""
- },
- {
-  "vi": "🔋 Lắp lại pin cho đúng chiều",
   "en": ""
  }
 ]

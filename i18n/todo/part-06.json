@@ -1,5 +1,609 @@
 [
  {
+  "vi": "Tăng 243 và ghi thu nhập thuế hoãn lại bên Có 8212.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản phạt không được trừ và không đảo ngược có tự tạo 243 không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; đây là chênh vĩnh viễn trong giả định",
+  "en": ""
+ },
+ {
+  "vi": "Có; mọi chi không được trừ đều 243",
+  "en": ""
+ },
+ {
+  "vi": "Có; luôn nhân 20%",
+  "en": ""
+ },
+ {
+  "vi": "Hoãn lại gắn chênh tạm thời và điều kiện, không phải mọi điều chỉnh thuế.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi tăng thuế hoãn lại phải trả 600.000đ ảnh hưởng kết quả theo đề.",
+  "en": ""
+ },
+ {
+  "vi": "Tăng chi phí thuế hoãn lại và nghĩa vụ 347.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 243,347,8212; VAS17; tỷ lệ thuế giả định",
+  "en": ""
+ },
+ {
+  "vi": "11. Vốn chủ sở hữu và phân phối",
+  "en": ""
+ },
+ {
+  "vi": "Vốn góp và thay đổi vốn",
+  "en": ""
+ },
+ {
+  "vi": "Ghi 411 theo hồ sơ góp vốn",
+  "en": ""
+ },
+ {
+  "vi": "Phân biệt vốn với tiền vay",
+  "en": ""
+ },
+ {
+  "vi": "TK 411 phản ánh vốn đầu tư của chủ sở hữu theo hồ sơ và quy định; không ghi đủ vốn đăng ký chưa thực góp thành tiền nếu không có quyền và căn cứ tương ứng. Góp bằng tài sản cần quyền chuyển giao, giá trị được xác định hợp lệ và điều kiện ghi tài sản. Khoản chủ cho vay khác góp vốn dù người chuyển tiền là cùng một người.",
+  "en": ""
+ },
+ {
+  "vi": "Tăng, giảm vốn và hoàn trả vốn cần căn cứ doanh nghiệp, quyết định và thủ tục liên quan. Chênh lệch đánh giá tài sản góp vốn phải theo hướng dẫn, không dùng 412 tự động cho mọi khác biệt giá thị trường. Đối chiếu sổ vốn với hồ sơ pháp lý và từng chủ giúp tránh ghi trùng hay bỏ nghĩa vụ còn phải trả.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ góp thực tế 20.000.000đ vào 112: Nợ 112/Có 411.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ cho công ty vay 5.000.000đ theo hợp đồng vay: xem 341, không cộng 411 chỉ theo người gửi.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận tiền góp vốn hợp lệ 35.000.000đ vào 112.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi tài sản tiền và vốn góp đã thực nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Vốn thực góp đầu kỳ 50.000.000đ, tăng hợp lệ 15.000.000đ, không giảm. Cuối kỳ?",
+  "en": ""
+ },
+ {
+  "vi": "50+15=65 triệu đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ chuyển tiền theo hợp đồng cho công ty vay. Có tự ghi 411 không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; phản ánh nghĩa vụ vay theo bản chất",
+  "en": ""
+ },
+ {
+  "vi": "Có; chủ gửi là vốn",
+  "en": ""
+ },
+ {
+  "vi": "Có; tiền nào vào cũng 411",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn tiền từ chủ vẫn có thể là nợ phải trả.",
+  "en": ""
+ },
+ {
+  "vi": "Vốn điều lệ đăng ký 80 triệu, mới thực góp 50 triệu. Có ghi 112 đủ 80 triệu không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; tiền phải phản ánh thực nhận",
+  "en": ""
+ },
+ {
+  "vi": "Có; đăng ký là tiền",
+  "en": ""
+ },
+ {
+  "vi": "Có; để báo cáo cân",
+  "en": ""
+ },
+ {
+  "vi": "Không tạo tài sản tiền chưa tồn tại.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 411,412; pháp luật doanh nghiệp liên quan",
+  "en": ""
+ },
+ {
+  "vi": "Hiểu 419 là điều chỉnh vốn",
+  "en": ""
+ },
+ {
+  "vi": "Không coi cổ phiếu của mình là 121",
+  "en": ""
+ },
+ {
+  "vi": "TK 419 theo TT99 mang tên Cổ phiếu mua lại của chính mình. Khoản mua lại được xử lý trong vốn chủ sở hữu theo hướng dẫn, khác chứng khoán đầu tư của doanh nghiệp khác ở 121. Mua lại có điều kiện pháp lý, hồ sơ phê duyệt và quyền của cổ đông; kế toán không tự tạo giao dịch chỉ để điều chỉnh tỷ lệ tài chính.",
+  "en": ""
+ },
+ {
+  "vi": "Giá mua, chi phí trực tiếp và xử lý tái phát hành hoặc hủy phải đọc nội dung 419 và tài khoản vốn liên quan. Chênh lệch không tự ghi lãi đầu tư 515 như bán chứng khoán bên ngoài. Trong bài giản lược, chỉ ghi mua lại bằng tiền theo giá trị đề, không mô phỏng đầy đủ thủ tục giảm vốn.",
+  "en": ""
+ },
+ {
+  "vi": "Mua lại cổ phiếu của chính mình giá 4.000.000đ: Nợ 419/Có 112 theo tình huống.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền giảm 4.000.000đ và khoản điều chỉnh vốn tăng bên Nợ; không phát sinh tài sản 121.",
+  "en": ""
+ },
+ {
+  "vi": "Mua lại cổ phiếu của chính đơn vị giá 3.000.000đ bằng 112, đủ căn cứ, bỏ qua phí.",
+  "en": ""
+ },
+ {
+  "vi": "419 phản ánh điều chỉnh vốn, không chứng khoán kinh doanh 121.",
+  "en": ""
+ },
+ {
+  "vi": "Vốn chủ trước điều chỉnh 70.000.000đ, mua lại cổ phiếu 5.000.000đ, không khoản khác. Vốn chủ thuần theo đề?",
+  "en": ""
+ },
+ {
+  "vi": "70−5=65 triệu đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Cổ phiếu của chính mình mua lại có bản chất giống đầu tư 121 vào công ty khác không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; là khoản điều chỉnh vốn chủ theo 419",
+  "en": ""
+ },
+ {
+  "vi": "Có; cứ cổ phiếu là 121",
+  "en": ""
+ },
+ {
+  "vi": "Có; ghi cả 121 và 419",
+  "en": ""
+ },
+ {
+  "vi": "Phải phân biệt chủ thể phát hành và bản chất vốn.",
+  "en": ""
+ },
+ {
+  "vi": "Tên 419 được dùng trong TT99 là gì?",
+  "en": ""
+ },
+ {
+  "vi": "Mọi chứng khoán kinh doanh",
+  "en": ""
+ },
+ {
+  "vi": "Thuế hoãn lại",
+  "en": ""
+ },
+ {
+  "vi": "Danh mục TT99 sử dụng tên đầy đủ này.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 419; pháp luật doanh nghiệp liên quan",
+  "en": ""
+ },
+ {
+  "vi": "Lợi nhuận và cổ tức phải trả",
+  "en": ""
+ },
+ {
+  "vi": "Dùng 332 thay thói quen 338",
+  "en": ""
+ },
+ {
+  "vi": "Phân biệt phân phối với chi phí",
+  "en": ""
+ },
+ {
+  "vi": "Lợi nhuận chưa phân phối 421 gồm lũy kế đến cuối năm trước 4211 và năm nay 4212 theo TT99. Kết quả năm nay được chuyển từ 911 sau chi phí thuế. Có lợi nhuận không đồng nghĩa đủ tiền mặt chia; cần thỏa điều kiện pháp luật và quyết định có thẩm quyền trước khi xác lập nghĩa vụ phân phối.",
+  "en": ""
+ },
+ {
+  "vi": "TT99 có 332 Phải trả cổ tức, lợi nhuận. Khi phân phối được xác định hợp lệ, giảm lợi nhuận chưa phân phối và tăng 332; trả tiền giảm 332. Không ghi cổ tức trả chủ vào chi phí quản lý hay chi phí tài chính của đơn vị. Số đang ở 338 theo chế độ cũ cần xem chuyển 332 theo Điều 29.",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định chia 4.000.000đ: Nợ 421/Có 332.",
+  "en": ""
+ },
+ {
+  "vi": "Trả 3.000.000đ vào tài khoản người nhận: Nợ 332/Có 112; còn nghĩa vụ 1.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Xác lập cổ tức phải trả hợp lệ 2.000.000đ từ 421 theo quyết định.",
+  "en": ""
+ },
+ {
+  "vi": "Phân phối lợi nhuận không tạo chi phí kinh doanh.",
+  "en": ""
+ },
+ {
+  "vi": "Trả cổ tức đã ghi 332 là 1.500.000đ bằng 112.",
+  "en": ""
+ },
+ {
+  "vi": "Giảm nghĩa vụ cổ tức và tiền gửi.",
+  "en": ""
+ },
+ {
+  "vi": "Cổ tức phải trả 6.000.000đ, đã trả 4.200.000đ. Còn nợ?",
+  "en": ""
+ },
+ {
+  "vi": "6.000.000−4.200.000=1.800.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Cổ tức phải trả đang theo 338 ở sổ cũ cần chuyển TT99 sang mã nào?",
+  "en": ""
+ },
+ {
+  "vi": "Điều 29 hướng chuyển cổ tức/lợi nhuận phải trả sang 332.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 332,4211,4212; Điều 29",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ thuộc vốn và nguồn vốn chuyển đổi",
+  "en": ""
+ },
+ {
+  "vi": "Phân biệt 414,418 với 353",
+  "en": ""
+ },
+ {
+  "vi": "Xử lý nguồn vốn cũ theo Điều 29",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ đầu tư phát triển 414 và quỹ khác thuộc vốn chủ 418 có bản chất vốn chủ theo hướng dẫn. Quỹ phúc lợi 353 ở nhóm khác và có cách sử dụng, trình bày riêng. Trích quỹ từ lợi nhuận là phân phối kết quả, không tự làm tiền tăng hoặc biến một khoản thu thành doanh thu.",
+  "en": ""
+ },
+ {
+  "vi": "Danh mục TT99 không giữ 441 và 466 như tài khoản cấp 1 đang áp dụng; Điều 29 hướng các số dư nguồn vốn đầu tư xây dựng cơ bản và kinh phí đã hình thành TSCĐ sang 4118. Việc chuyển số dư có bảng đối chiếu và hồ sơ, không xóa tài sản đã hình thành. Nguồn tài trợ hoặc hỗ trợ mới cần xét bản chất và quy định riêng, không tự quay lại mã cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Trích quỹ 414 3.000.000đ từ 421: Nợ 421/Có 414.",
+  "en": ""
+ },
+ {
+  "vi": "Số dư nguồn cũ 441 8.000.000đ chuyển theo bảng chuyển đổi 4118; tài sản liên quan vẫn đối chiếu.",
+  "en": ""
+ },
+ {
+  "vi": "Trích quỹ đầu tư phát triển 2.500.000đ từ lợi nhuận 421 theo phê duyệt.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển trong vốn chủ, không tạo dòng tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn cũ 441 là 6.000.000đ và 466 là 4.000.000đ, đều chuyển sang 4118. Tổng chuyển theo đề?",
+  "en": ""
+ },
+ {
+  "vi": "6+4=10 triệu đồng, giữ hồ sơ từng nguồn.",
+  "en": ""
+ },
+ {
+  "vi": "Trích quỹ vốn có làm tiền 112 tự tăng không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; chỉ phân loại nguồn vốn",
+  "en": ""
+ },
+ {
+  "vi": "Có; bằng số trích",
+  "en": ""
+ },
+ {
+  "vi": "Có; ngân hàng cấp thêm tiền",
+  "en": ""
+ },
+ {
+  "vi": "Phân phối vốn không phát sinh dòng tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn 441 và 466 được chuyển theo Điều 29 sang tài khoản nào?",
+  "en": ""
+ },
+ {
+  "vi": "TT99 hướng nguồn vốn cũ về Vốn khác 4118; không tiếp tục mã cấp 1 cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 4118,414,418,421; Điều 29",
+  "en": ""
+ },
+ {
+  "vi": "12. Doanh thu theo hợp đồng",
+  "en": ""
+ },
+ {
+  "vi": "Bán hàng và thời điểm chuyển giao",
+  "en": ""
+ },
+ {
+  "vi": "Dùng bằng chứng giao hàng",
+  "en": ""
+ },
+ {
+  "vi": "Ghi doanh thu, VAT, giá vốn riêng",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu bán hàng theo 511 cần thỏa VAS14, xét chuyển giao, quyền lợi và nghĩa vụ, khả năng thu lợi ích và xác định giá trị. Xuất kho hoặc xuất hóa đơn không tự đủ trong mọi hợp đồng. Điều khoản giao tại kho khách, quyền trả lại hoặc điều kiện nghiệm thu có thể ảnh hưởng thời điểm ghi nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Một giao dịch bán gồm doanh thu chưa thuế, thuế đầu ra theo pháp luật và giá vốn của phần đã bán. Cần liên kết chứng từ bán với xuất kho và công nợ để tránh bỏ giá vốn hoặc ghi sai kỳ. Bài VAT 10% chỉ là giả định; khoản thu hộ và chiết khấu theo hợp đồng phải phân loại riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Bán đủ điều kiện 10.000.000đ chưa thuế, VAT giả định 10%: phải thu 11.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Giá vốn 6.000.000đ: Nợ 632/Có 156 6.000.000đ, lãi gộp 4.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Bán chưa thuế 8.000.000đ, VAT đề 10%. Khách phải trả?",
+  "en": ""
+ },
+ {
+  "vi": "8.000.000+800.000=8.800.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Bán chịu đủ điều kiện giá chưa thuế 6.000.000đ, VAT giả định 10%. Chỉ ghi doanh thu và thuế.",
+  "en": ""
+ },
+ {
+  "vi": "Tách doanh thu 6 triệu và thuế đầu ra 600 nghìn.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ có phiếu xuất kho trong hợp đồng giao tại kho khách có chắc đã đủ doanh thu?",
+  "en": ""
+ },
+ {
+  "vi": "Không; cần kiểm tra chuyển giao và điều kiện hợp đồng",
+  "en": ""
+ },
+ {
+  "vi": "Có; xuất kho là xong mọi điều kiện",
+  "en": ""
+ },
+ {
+  "vi": "Có nếu xe đã rời cổng",
+  "en": ""
+ },
+ {
+  "vi": "Thời điểm chuyển giao không luôn trùng xuất kho.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi giá vốn lô hàng đã đủ điều kiện bán, trị giá 3.600.000đ đang ở 156.",
+  "en": ""
+ },
+ {
+  "vi": "Giá vốn và doanh thu ghi riêng cho phần đã bán.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 511,131,3331,632; VAS14; VAT giả định",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ nhiều kỳ và tiền nhận trước",
+  "en": ""
+ },
+ {
+  "vi": "Xác định phần dịch vụ hoàn thành",
+  "en": ""
+ },
+ {
+  "vi": "Phân bổ doanh thu có căn cứ",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ thực hiện nhiều kỳ cần đánh giá kết quả theo VAS14 và điều khoản hợp đồng, xác định phần hoàn thành và khả năng đo lường đáng tin cậy. Thu toàn bộ tiền đầu kỳ không tự tạo toàn bộ doanh thu. Dịch vụ bảo trì 12 tháng khác bán một phần mềm và có nghĩa vụ hỗ trợ tách riêng; cần đọc bản chất từng nghĩa vụ.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản doanh thu chờ phân bổ đủ điều kiện theo 3387 được đưa 511 theo kỳ hưởng; khách ứng trước chưa thuộc nội dung 3387 có thể theo 131. Không sử dụng một tài khoản cho tất cả tiền nhận trước. Chi phí cung cấp dịch vụ và dở dang theo 154 được xem cùng doanh thu để phản ánh đúng kết quả, không chờ thu tiền mới ghi.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng dịch vụ đều 12 kỳ, giá 12.000.000đ chưa thuế và đủ căn cứ phân bổ: mỗi kỳ 1.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Nếu đã hoàn thành 3 kỳ theo giả định: doanh thu lũy kế 3.000.000đ, chưa phân bổ 9.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ 18.000.000đ cho 9 kỳ đồng đều, đề cho đủ điều kiện phân bổ. Doanh thu một kỳ?",
+  "en": ""
+ },
+ {
+  "vi": "18.000.000/9=2.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Phân bổ doanh thu dịch vụ đã đủ điều kiện 1.800.000đ từ 3387 sang 511.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi phần doanh thu của kỳ thực hiện.",
+  "en": ""
+ },
+ {
+  "vi": "Thu tiền cả hợp đồng trước khi cung cấp dịch vụ có luôn ghi đủ 511 không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; xem phần thực hiện và điều kiện ghi nhận",
+  "en": ""
+ },
+ {
+  "vi": "Có; ngân hàng đã báo Có",
+  "en": ""
+ },
+ {
+  "vi": "Có; tiền không được trả lại",
+  "en": ""
+ },
+ {
+  "vi": "Điều kiện ghi nhận dịch vụ cần được đánh giá theo bản chất hợp đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu chờ phân bổ 24.000.000đ cho 12 kỳ đều, đã ghi 4 kỳ. Còn chưa phân bổ?",
+  "en": ""
+ },
+ {
+  "vi": "24−4×2=16 triệu đồng theo đề.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 154,131,3387,511; VAS14",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng xây dựng và TK 337",
+  "en": ""
+ },
+ {
+  "vi": "Phân biệt thanh toán theo tiến độ với doanh thu",
+  "en": ""
+ },
+ {
+  "vi": "Tập hợp chi phí hợp đồng",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng xây dựng cần xét VAS15 về doanh thu, chi phí và mức hoàn thành. Khoản thanh toán theo tiến độ có thể khác doanh thu được xác định; TK 337 hỗ trợ phản ánh thanh toán theo tiến độ hợp đồng xây dựng theo nội dung TT99. Không dùng lịch thu tiền làm tỷ lệ hoàn thành nếu không phản ánh công việc thực tế.",
+  "en": ""
+ },
+ {
+  "vi": "Chi phí vật liệu, nhân công, máy thi công và chung được theo đối tượng hợp đồng qua 621,622,623,627,154 tùy hướng dẫn. Dự kiến lỗ, thay đổi dự toán và các khoản đòi thêm cần căn cứ và cách xử lý chuẩn mực. Bài chỉ cho tỷ lệ hoàn thành được xác định đáng tin cậy để tính số minh họa, không thay đánh giá hợp đồng thực tế.",
+  "en": ""
+ },
+ {
+  "vi": "Giá hợp đồng 40.000.000đ chưa thuế, tỷ lệ hoàn thành đáng tin 30%: doanh thu minh họa 12.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Thanh toán theo tiến độ 10.000.000đ không bắt buộc bằng 12.000.000đ doanh thu.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng 50.000.000đ, tỷ lệ hoàn thành đề xác định 20%, đủ điều kiện. Doanh thu minh họa?",
+  "en": ""
+ },
+ {
+  "vi": "50.000.000×20%=10.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền thanh toán theo tiến độ có luôn bằng doanh thu đã hoàn thành không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; hai số có thể khác",
+  "en": ""
+ },
+ {
+  "vi": "Có; không cần đánh giá mức hoàn thành",
+  "en": ""
+ },
+ {
+  "vi": "Có nếu thanh toán bằng 112",
+  "en": ""
+ },
+ {
+  "vi": "VAS15 và 337 tách doanh thu với lịch thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Ghép khoản chi hợp đồng với tài khoản tập hợp.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân công trực tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Sử dụng máy thi công",
+  "en": ""
+ },
+ {
+  "vi": "Theo chức năng chi phí và đối tượng hợp đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu hợp đồng lũy kế cần 12.000.000đ, đã ghi 8.500.000đ. Doanh thu ghi thêm kỳ này?",
+  "en": ""
+ },
+ {
+  "vi": "12.000.000−8.500.000=3.500.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 337,511,623,154; VAS15",
+  "en": ""
+ },
+ {
+  "vi": "Chiết khấu, trả lại và đại lý",
+  "en": ""
+ },
+ {
+  "vi": "Tách thương mại với thanh toán",
+  "en": ""
+ },
+ {
+  "vi": "Kết chuyển 521 đúng thứ tự",
+  "en": ""
+ },
+ {
+  "vi": "Chiết khấu thương mại gắn lượng hoặc điều khoản giá, giảm giá hàng và hàng trả lại thuộc giảm trừ doanh thu theo hướng dẫn 521 khi phù hợp. Chiết khấu thanh toán vì trả sớm thuộc tài chính. Chứng từ điều chỉnh phải liên kết lô bán và thuế tương ứng theo pháp luật thuế, không giảm tiền khách mà bỏ hồ sơ.",
+  "en": ""
+ },
+ {
   "vi": "Hàng trả lại còn có xử lý hàng nhập và giá vốn nếu phù hợp; không chỉ giảm doanh thu. Cuối kỳ 521 chuyển sang 511 trước khi kết chuyển doanh thu thuần vào 911. Đại lý bán đúng giá hưởng phí có thể chỉ ghi doanh thu phí của mình theo bản chất, không tự coi toàn bộ tiền hàng thu hộ là doanh thu đại lý.",
   "en": ""
  },
@@ -857,938 +1461,6 @@
  },
  {
   "vi": "Luôn là sai sót gian lận",
-  "en": ""
- },
- {
-  "vi": "Luôn đổi đơn vị tiền tệ",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu mới có thể thay ước tính thời gian hữu ích.",
-  "en": ""
- },
- {
-  "vi": "Giá trị phải khấu hao còn 18.000.000đ, thời gian còn 36 tháng theo ước tính mới. Khấu hao tháng?",
-  "en": ""
- },
- {
-  "vi": "18.000.000/36=500.000đ theo giả định.",
-  "en": ""
- },
- {
-  "vi": "Bỏ sót hóa đơn đã có năm trước có nên gọi là thay ước tính không?",
-  "en": ""
- },
- {
-  "vi": "Không; xét sai sót và mức trọng yếu",
-  "en": ""
- },
- {
-  "vi": "Có; mọi thay số đều ước tính",
-  "en": ""
- },
- {
-  "vi": "Có; để không thuyết minh",
-  "en": ""
- },
- {
-  "vi": "Thông tin đã tồn tại nhưng bỏ sót có bản chất sai sót.",
-  "en": ""
- },
- {
-  "vi": "Đổi phương pháp tính giá xuất kho vì muốn làm lợi nhuận cao hơn có đủ căn cứ chính sách không?",
-  "en": ""
- },
- {
-  "vi": "Không; cần lý do phù hợp chuẩn mực và xử lý theo VAS29",
-  "en": ""
- },
- {
-  "vi": "Có; doanh nghiệp thích là đủ",
-  "en": ""
- },
- {
-  "vi": "Có; không cần thông tin so sánh",
-  "en": ""
- },
- {
-  "vi": "Thay chính sách phải phù hợp yêu cầu chuẩn mực và trình bày.",
-  "en": ""
- },
- {
-  "vi": "Điều 30; VAS29",
-  "en": ""
- },
- {
-  "vi": "Nhóm doanh nghiệp và hoạt động liên tục",
-  "en": ""
- },
- {
-  "vi": "Tách sổ riêng với báo cáo hợp nhất",
-  "en": ""
- },
- {
-  "vi": "Đánh giá khả năng hoạt động liên tục",
-  "en": ""
- },
- {
-  "vi": "Công ty mẹ và công ty con lập sổ riêng theo pháp nhân, đồng thời có thể cần báo cáo hợp nhất theo quy định VAS25 và văn bản liên quan. Hợp nhất không chỉ cộng số: khoản đầu tư, công nợ, doanh thu nội bộ và lợi nhuận chưa thực hiện cần loại trừ phù hợp. Giao dịch hợp nhất kinh doanh cần xét VAS11, không coi giá mua luôn bằng vốn trên sổ bên bán.",
-  "en": ""
- },
- {
-  "vi": "Giả định hoạt động liên tục cần đánh giá khả năng duy trì hoạt động, nợ đến hạn, nguồn tài trợ và kế hoạch có cơ sở. Đơn vị không đáp ứng giả định dùng hướng dẫn trình bày phù hợp Điều 22–24 và thuyết minh; không dùng mẫu giá trị thông thường để che rủi ro. Thiếu tiền tạm thời khác chắc chắn giải thể nhưng đều cần xét bằng chứng.",
-  "en": ""
- },
- {
-  "vi": "A có phải thu B 5.000.000đ, B có phải trả A 5.000.000đ: báo cáo hợp nhất trong phạm vi phải xem loại trừ.",
-  "en": ""
- },
- {
-  "vi": "Nợ đến hạn 10.000.000đ, tiền 3.000.000đ: thiếu 7.000.000đ trước nguồn tài trợ; xem kế hoạch và khả năng huy động.",
-  "en": ""
- },
- {
-  "vi": "Nợ đến hạn 14.000.000đ, tiền có 6.000.000đ, không nguồn khác trong đề. Khoảng thiếu?",
-  "en": ""
- },
- {
-  "vi": "14−6=8 triệu đồng; là dữ liệu đánh giá, không tự kết luận phá sản.",
-  "en": ""
- },
- {
-  "vi": "Hợp nhất chỉ cộng mọi số dư và giữ nguyên công nợ nội bộ có đủ không?",
-  "en": ""
- },
- {
-  "vi": "Không; cần loại trừ và điều chỉnh theo phạm vi",
-  "en": ""
- },
- {
-  "vi": "Có; tổng cân là đủ",
-  "en": ""
- },
- {
-  "vi": "Có nếu cùng phần mềm",
-  "en": ""
- },
- {
-  "vi": "Số liệu nội bộ không thể giữ trùng như giao dịch với bên ngoài.",
-  "en": ""
- },
- {
-  "vi": "Chọn bằng chứng cần khi đánh giá hoạt động liên tục.",
-  "en": ""
- },
- {
-  "vi": "Lịch nợ và tiền có thể sử dụng",
-  "en": ""
- },
- {
-  "vi": "Khả năng thực hiện kế hoạch tài trợ",
-  "en": ""
- },
- {
-  "vi": "Chỉ lời hứa không có căn cứ",
-  "en": ""
- },
- {
-  "vi": "Đánh giá dựa khả năng và thông tin đáng tin cậy.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo đơn vị không đáp ứng hoạt động liên tục có cần hướng dẫn và thuyết minh riêng không?",
-  "en": ""
- },
- {
-  "vi": "Có; xét Điều 22–24 và căn cứ trình bày phù hợp",
-  "en": ""
- },
- {
-  "vi": "Không; dùng mọi giả định như cũ",
-  "en": ""
- },
- {
-  "vi": "Không; chỉ đổi tên báo cáo",
-  "en": ""
- },
- {
-  "vi": "Cơ sở lập báo cáo phải phù hợp điều kiện hoạt động thực tế.",
-  "en": ""
- },
- {
-  "vi": "Điều 14–24; VAS11,25; quy định báo cáo hợp nhất liên quan",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ thương mại, sản xuất, dịch vụ và ngành đặc thù",
-  "en": ""
- },
- {
-  "vi": "Chọn mô hình theo hoạt động",
-  "en": ""
- },
- {
-  "vi": "Kết nối chứng từ đến báo cáo",
-  "en": ""
- },
- {
-  "vi": "Thương mại thường trọng tâm 156,157 và công nợ; sản xuất có 152,621,622,627,154,155; dịch vụ có hợp đồng và mức hoàn thành; xây dựng thêm 623,337; nông nghiệp cần xét 215 cùng 211 và hàng thu hoạch. Ngành có kho bảo thuế 158, repo 171 hay quỹ 357 cần căn cứ riêng, không áp mô hình cửa hàng cho mọi doanh nghiệp.",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ tổng hợp phải liên kết chứng từ, nhật ký, sổ chi tiết, sổ cái, bảng cân đối số phát sinh, điều chỉnh, kết chuyển và bốn báo cáo. Kiểm tra thuế bằng hồ sơ và luật riêng, VAS bằng điều kiện ghi nhận, TT99 bằng hệ thống và trình bày. Kết quả khóa học thể hiện nội dung đã học trong trò chơi; tình huống phức tạp thực tế còn cần xét đoán và căn cứ chuyên ngành.",
-  "en": ""
- },
- {
-  "vi": "Xưởng có chi phí hợp lệ 12.000.000đ, dở dang cuối 2.000.000đ, đầu 0: sản phẩm hoàn thành 10.000.000đ.",
-  "en": ""
- },
- {
-  "vi": "Bán 60% sản phẩm giá vốn 6.000.000đ, doanh thu 9.000.000đ không thuế: kho còn 4.000.000đ, lãi gộp 3.000.000đ.",
-  "en": ""
- },
- {
-  "vi": "Chi phí sản xuất 15.000.000đ, dở dang đầu 1.000.000đ, cuối 4.000.000đ. Sản phẩm hoàn thành?",
-  "en": ""
- },
- {
-  "vi": "1+15−4=12 triệu đồng.",
-  "en": ""
- },
- {
-  "vi": "Sắp xếp hồ sơ chốt kỳ doanh nghiệp.",
-  "en": ""
- },
- {
-  "vi": "Đối chiếu chứng từ, sổ chi tiết và sổ cái",
-  "en": ""
- },
- {
-  "vi": "Điều chỉnh, tính giá thành và kết chuyển",
-  "en": ""
- },
- {
-  "vi": "Lập B01,B02,B03,B09 rồi kiểm tra liên kết",
-  "en": ""
- },
- {
-  "vi": "Mỗi bước là căn cứ bước sau, vẫn giữ dấu vết chứng từ.",
-  "en": ""
- },
- {
-  "vi": "Một đơn vị nông nghiệp có nên đưa mọi cây vật nuôi vào 215 không?",
-  "en": ""
- },
- {
-  "vi": "Không; xét phạm vi 215,211 và hàng thu hoạch",
-  "en": ""
- },
- {
-  "vi": "Có; cùng là nông nghiệp",
-  "en": ""
- },
- {
-  "vi": "Có; để giảm số tài khoản",
-  "en": ""
- },
- {
-  "vi": "Phân loại theo tài sản cụ thể và hướng dẫn, không chỉ ngành.",
-  "en": ""
- },
- {
-  "vi": "Xưởng đầu dở dang 0, chi phí 20.000.000đ, cuối dở dang 5.000.000đ; sản phẩm hoàn thành đã bán giá vốn 9.000.000đ, doanh thu 14.000.000đ. Điền thành phẩm chưa bán và lãi gộp.",
-  "en": ""
- },
- {
-  "vi": "Sản phẩm chưa bán",
-  "en": ""
- },
- {
-  "vi": "Hoàn thành 20−5=15; chưa bán 15−9=6; lãi 14−9=5 triệu đồng, còn dở dang 5 triệu.",
-  "en": ""
- },
- {
-  "vi": "Điều 11–17; Phụ lục I–IV; căn cứ ngành và VAS theo từng nghiệp vụ",
-  "en": ""
- },
- {
-  "vi": "Kế toán doanh nghiệp Việt Nam – TT99",
-  "en": ""
- },
- {
-  "vi": "60 bài về TT99, phân biệt căn cứ VAS và giả định thuế; thực hành từ chứng từ đến bốn báo cáo tài chính.",
-  "en": ""
- },
- {
-  "vi": "cặk",
-  "en": ""
- },
- {
-  "vi": "kặc",
-  "en": ""
- },
- {
-  "vi": "sục",
-  "en": ""
- },
- {
-  "vi": "đcm",
-  "en": ""
- },
- {
-  "vi": "đmm",
-  "en": ""
- },
- {
-  "vi": "đkm",
-  "en": ""
- },
- {
-  "vi": "chịch",
-  "en": ""
- },
- {
-  "vi": "nứng",
-  "en": ""
- },
- {
-  "vi": "Tài khoản không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Không thấy tài khoản này.",
-  "en": ""
- },
- {
-  "vi": "Tên này không nằm trong danh sách cần đổi.",
-  "en": ""
- },
- {
-  "vi": "Làm nghề (phục vụ khách)",
-  "en": ""
- },
- {
-  "vi": "Ngân hàng & đầu tư",
-  "en": ""
- },
- {
-  "vi": "Học & chứng chỉ",
-  "en": ""
- },
- {
-  "vi": "Nhà & nội thất",
-  "en": ""
- },
- {
-  "vi": "Tủ đồ & màu sắc",
-  "en": ""
- },
- {
-  "vi": "Nhu cầu nhân vật",
-  "en": ""
- },
- {
-  "vi": "Bảng tin cư dân",
-  "en": ""
- },
- {
-  "vi": "Đời sống",
-  "en": ""
- },
- {
-  "vi": "Cốt truyện & sự kiện",
-  "en": ""
- },
- {
-  "vi": "Hội chợ",
-  "en": ""
- },
- {
-  "vi": "Bảo hiểm & tiệm vàng",
-  "en": ""
- },
- {
-  "vi": "Tìm việc / đổi nghề",
-  "en": ""
- },
- {
-  "vi": "Tổng bản lưu",
-  "en": ""
- },
- {
-  "vi": "Mọi bản lưu đang có trong cơ sở dữ liệu, kể cả người mở game rồi đi ngay và bot.",
-  "en": ""
- },
- {
-  "vi": "Người đã chơi",
-  "en": ""
- },
- {
-  "vi": "Bản lưu có ít nhất một thao tác chơi thật của người chơi (không tính bản lưu chỉ được nâng cấp phiên bản khi mở lại).",
-  "en": ""
- },
- {
-  "vi": "sessions có revision > 0 và (có ngày hoạt động trong stat_active/stat_players, hoặc tạo trước khi có nhật ký ngày)",
-  "en": ""
- },
- {
-  "vi": "Người chơi đã đăng ký tài khoản (tên đăng nhập + mật khẩu).",
-  "en": ""
- },
- {
-  "vi": "Khách đã chơi",
-  "en": ""
- },
- {
-  "vi": "Người đã chơi nhưng chưa đăng ký tài khoản.",
-  "en": ""
- },
- {
-  "vi": "Người đã chơi − người có tài khoản",
-  "en": ""
- },
- {
-  "vi": "Tỉ lệ có tài khoản",
-  "en": ""
- },
- {
-  "vi": "Trong những người đã chơi, bao nhiêu phần trăm đã đăng ký.",
-  "en": ""
- },
- {
-  "vi": "bản lưu có tài khoản ÷ người đã chơi",
-  "en": ""
- },
- {
-  "vi": "Lượt mở game mới",
-  "en": ""
- },
- {
-  "vi": "Bản lưu mới được tạo trong ngày (mỗi trình duyệt/thiết bị mới một bản; gồm cả bot và người chỉ mở rồi đi).",
-  "en": ""
- },
- {
-  "vi": "stat_births theo ngày Việt Nam",
-  "en": ""
- },
- {
-  "vi": "Người chơi mới",
-  "en": ""
- },
- {
-  "vi": "Bản lưu tạo trong ngày VÀ có thao tác chơi ngay trong ngày đó. Đây là \"nhóm\" (cohort) dùng để tính giữ chân.",
-  "en": ""
- },
- {
-  "vi": "stat_births ∩ stat_active cùng ngày; ngày đã qua: số đông cứng (stat_kpi_daily)",
-  "en": ""
- },
- {
-  "vi": "Tài khoản đăng ký trong ngày (giờ Việt Nam).",
-  "en": ""
- },
- {
-  "vi": "accounts.created_at (UTC) đổi sang ngày UTC+7",
-  "en": ""
- },
- {
-  "vi": "Tỉ lệ kích hoạt",
-  "en": ""
- },
- {
-  "vi": "Trong các lượt mở game mới, bao nhiêu phần trăm thực sự chơi ngay ngày đầu. Bot và người mở thử làm tỉ lệ này thấp.",
-  "en": ""
- },
- {
-  "vi": "người chơi mới ÷ lượt mở game mới",
-  "en": ""
- },
- {
-  "vi": "Lần đầu hoạt động",
-  "en": ""
- },
- {
-  "vi": "Người có ngày hoạt động đầu tiên (kể từ khi có nhật ký) rơi vào ngày này, gồm cả người tạo bản lưu trước đó.",
-  "en": ""
- },
- {
-  "vi": "Người từng hoạt động (cộng dồn)",
-  "en": ""
- },
- {
-  "vi": "Tổng số người đã có ít nhất một ngày hoạt động tính đến hết ngày đó.",
-  "en": ""
- },
- {
-  "vi": "cộng dồn \"lần đầu hoạt động\"",
-  "en": ""
- },
- {
-  "vi": "Số người chơi có thao tác trong ngày (giờ Việt Nam, 00:00–24:00).",
-  "en": ""
- },
- {
-  "vi": "COUNT(stat_active) theo ngày",
-  "en": ""
- },
- {
-  "vi": "Số người khác nhau có thao tác trong 7 ngày tính đến hết ngày đó.",
-  "en": ""
- },
- {
-  "vi": "COUNT(DISTINCT sid) stat_active, 7 ngày",
-  "en": ""
- },
- {
-  "vi": "Số người khác nhau có thao tác trong 30 ngày tính đến hết ngày đó.",
-  "en": ""
- },
- {
-  "vi": "COUNT(DISTINCT sid) stat_active, 30 ngày",
-  "en": ""
- },
- {
-  "vi": "Độ dính (DAU/MAU)",
-  "en": ""
- },
- {
-  "vi": "Một người chơi trong tháng quay lại trung bình bao nhiêu phần trăm số ngày. 20% ≈ 6 ngày/tháng.",
-  "en": ""
- },
- {
-  "vi": "DAU ÷ MAU của cùng ngày",
-  "en": ""
- },
- {
-  "vi": "Người quay lại",
-  "en": ""
- },
- {
-  "vi": "DAU trừ người chơi mới của ngày đó.",
-  "en": ""
- },
- {
-  "vi": "DAU − người chơi mới",
-  "en": ""
- },
- {
-  "vi": "Người trở lại sau ≥7 ngày",
-  "en": ""
- },
- {
-  "vi": "Người hoạt động hôm nay mà lần hoạt động trước cách đó từ 8 ngày trở lên.",
-  "en": ""
- },
- {
-  "vi": "stat_players.last_day ≤ ngày − 8 trước khi cập nhật",
-  "en": ""
- },
- {
-  "vi": "Đỉnh người online",
-  "en": ""
- },
- {
-  "vi": "Số người có thao tác trong 5 phút gần nhất, lấy mức cao nhất trong ngày (đo mỗi phút).",
-  "en": ""
- },
- {
-  "vi": "MAX mỗi phút COUNT(sessions.updated_at ≥ now − 5 phút)",
-  "en": ""
- },
- {
-  "vi": "Đỉnh thao tác/phút",
-  "en": ""
- },
- {
-  "vi": "Số thao tác chơi mỗi phút của mọi tiến trình máy chủ, mức cao nhất trong ngày.",
-  "en": ""
- },
- {
-  "vi": "MAX mỗi phút (thao tác/phút)",
-  "en": ""
- },
- {
-  "vi": "Người có thời gian chơi",
-  "en": ""
- },
- {
-  "vi": "Số người có ít nhất một thao tác được tính giờ trong ngày.",
-  "en": ""
- },
- {
-  "vi": "Phút chơi / người / ngày",
-  "en": ""
- },
- {
-  "vi": "Thời gian chơi trung bình của một người trong một ngày. Một phiên kết thúc khi 5 phút không có thao tác.",
-  "en": ""
- },
- {
-  "vi": "tổng giây ÷ số người (ngày)",
-  "en": ""
- },
- {
-  "vi": "Trung vị phút chơi",
-  "en": ""
- },
- {
-  "vi": "Một nửa người chơi chơi ít hơn mức này mỗi ngày (không bị vài người chơi rất lâu kéo lên).",
-  "en": ""
- },
- {
-  "vi": "trung vị phân bố giây/người",
-  "en": ""
- },
- {
-  "vi": "Phiên / người / ngày",
-  "en": ""
- },
- {
-  "vi": "Số lần vào chơi (phiên) trung bình của một người trong ngày.",
-  "en": ""
- },
- {
-  "vi": "số phiên ÷ số người",
-  "en": ""
- },
- {
-  "vi": "Tổng giờ chơi",
-  "en": ""
- },
- {
-  "vi": "Tổng số giờ mọi người chơi trong ngày.",
-  "en": ""
- },
- {
-  "vi": "tổng giây ÷ 3600",
-  "en": ""
- },
- {
-  "vi": "Thao tác chơi",
-  "en": ""
- },
- {
-  "vi": "Số thao tác chơi (mỗi lần bấm làm gì đó trong game) đã ghi.",
-  "en": ""
- },
- {
-  "vi": "Giữ chân D1",
-  "en": ""
- },
- {
-  "vi": "Trong người chơi mới của một ngày, bao nhiêu phần trăm quay lại chơi đúng 1 ngày sau. Chỉ tính các nhóm đã qua hết ngày đó.",
-  "en": ""
- },
- {
-  "vi": "Σ quay lại ngày+1 ÷ Σ người chơi mới (các ngày đủ điều kiện)",
-  "en": ""
- },
- {
-  "vi": "Giữ chân D3",
-  "en": ""
- },
- {
-  "vi": "Như D1 nhưng đúng 3 ngày sau.",
-  "en": ""
- },
- {
-  "vi": "tương tự, ngày+3",
-  "en": ""
- },
- {
-  "vi": "Giữ chân D7",
-  "en": ""
- },
- {
-  "vi": "Như D1 nhưng đúng 7 ngày sau.",
-  "en": ""
- },
- {
-  "vi": "tương tự, ngày+7",
-  "en": ""
- },
- {
-  "vi": "Giữ chân D14",
-  "en": ""
- },
- {
-  "vi": "Như D1 nhưng đúng 14 ngày sau.",
-  "en": ""
- },
- {
-  "vi": "tương tự, ngày+14",
-  "en": ""
- },
- {
-  "vi": "Giữ chân D30",
-  "en": ""
- },
- {
-  "vi": "Như D1 nhưng đúng 30 ngày sau.",
-  "en": ""
- },
- {
-  "vi": "tương tự, ngày+30",
-  "en": ""
- },
- {
-  "vi": "Giữ chân cuốn (rolling)",
-  "en": ""
- },
- {
-  "vi": "Phần trăm người chơi mới còn quay lại vào ngày k HOẶC bất kỳ ngày nào sau đó (luôn ≥ giữ chân đúng ngày).",
-  "en": ""
- },
- {
-  "vi": "có stat_active ở ngày ≥ ngày đầu + k",
-  "en": ""
- },
- {
-  "vi": "Tỉ lệ rời bỏ tuần",
-  "en": ""
- },
- {
-  "vi": "Trong người chơi của tuần trước, bao nhiêu phần trăm không chơi tuần này.",
-  "en": ""
- },
- {
-  "vi": "wk_churned ÷ wk_prev (tuần thứ Hai–Chủ nhật)",
-  "en": ""
- },
- {
-  "vi": "Giữ chân tuần",
-  "en": ""
- },
- {
-  "vi": "Trong người chơi của tuần trước, bao nhiêu phần trăm chơi tiếp tuần này.",
-  "en": ""
- },
- {
-  "vi": "Khách → tài khoản",
-  "en": ""
- },
- {
-  "vi": "Trong người chơi mới của 30 ngày đã qua, bao nhiêu phần trăm hiện đã đăng ký tài khoản.",
-  "en": ""
- },
- {
-  "vi": "người chơi mới có dòng trong accounts ÷ người chơi mới",
-  "en": ""
- },
- {
-  "vi": "Số ngày hoạt động / người",
-  "en": ""
- },
- {
-  "vi": "Mỗi người đã chơi bao nhiêu ngày khác nhau (từ khi có nhật ký).",
-  "en": ""
- },
- {
-  "vi": "Dùng tính năng",
-  "en": ""
- },
- {
-  "vi": "Trong người chơi hoạt động, bao nhiêu phần trăm dùng tính năng này (trung bình mỗi ngày).",
-  "en": ""
- },
- {
-  "vi": "người dùng nhóm thao tác trong ngày (stat_actions) ÷ DAU",
-  "en": ""
- },
- {
-  "vi": "Người trên bảng xếp hạng",
-  "en": ""
- },
- {
-  "vi": "Người có tên trên bảng tổng (mọi người đã làm ít nhất một nơi).",
-  "en": ""
- },
- {
-  "vi": "Đã thành thạo ≥1 nghề",
-  "en": ""
- },
- {
-  "vi": "Phần trăm người trên bảng tổng đã lên cấp 3 ở ít nhất một nơi làm.",
-  "en": ""
- },
- {
-  "vi": "mastered ≥ 1 ÷ người trên bảng",
-  "en": ""
- },
- {
-  "vi": "Ngày làm việc (trung vị)",
-  "en": ""
- },
- {
-  "vi": "Một nửa người chơi đã làm ít hơn số ngày trong game này (cộng mọi nơi làm).",
-  "en": ""
- },
- {
-  "vi": "trung vị leaderboard.days (board='all')",
-  "en": ""
- },
- {
-  "vi": "Cột mốc",
-  "en": ""
- },
- {
-  "vi": "Trong mọi người đã mở game từ khi đo phễu (01/10), bao nhiêu phần trăm đã đạt cột mốc (một số người cũ được ước tính).",
-  "en": ""
- },
- {
-  "vi": "stat_milestones theo key ÷ số \"Mở game\"",
-  "en": ""
- },
- {
-  "vi": "Tin nhắn chat",
-  "en": ""
- },
- {
-  "vi": "Tin nhắn người chơi gửi trong chat chung trong ngày (không tính tin quản trị).",
-  "en": ""
- },
- {
-  "vi": "chat_messages theo ngày, adm = 0",
-  "en": ""
- },
- {
-  "vi": "Người nhắn tin",
-  "en": ""
- },
- {
-  "vi": "Số người khác nhau gửi ít nhất một tin trong ngày.",
-  "en": ""
- },
- {
-  "vi": "Tỉ lệ người nhắn tin",
-  "en": ""
- },
- {
-  "vi": "Người nhắn tin ÷ DAU của ngày.",
-  "en": ""
- },
- {
-  "vi": "Cặp bạn bè",
-  "en": ""
- },
- {
-  "vi": "Số cặp đã kết bạn với nhau.",
-  "en": ""
- },
- {
-  "vi": "Người có bạn",
-  "en": ""
- },
- {
-  "vi": "Số người có ít nhất một bạn.",
-  "en": ""
- },
- {
-  "vi": "Cặp đôi",
-  "en": ""
- },
- {
-  "vi": "Số cặp đang yêu hoặc đã cưới (chưa chia tay).",
-  "en": ""
- },
- {
-  "vi": "couples chưa kết thúc",
-  "en": ""
- },
- {
-  "vi": "Đã cưới",
-  "en": ""
- },
- {
-  "vi": "Số cặp đã kết hôn.",
-  "en": ""
- },
- {
-  "vi": "couples.married_at có giá trị",
-  "en": ""
- },
- {
-  "vi": "Đám cưới đã tổ chức",
-  "en": ""
- },
- {
-  "vi": "Tiệc cưới trực tiếp đã diễn ra.",
-  "en": ""
- },
- {
-  "vi": "Hẹn hò 30 ngày",
-  "en": ""
- },
- {
-  "vi": "Số buổi hẹn hò trực tiếp giữa hai người chơi trong 30 ngày.",
-  "en": ""
- },
- {
-  "vi": "Xu tạo ra",
-  "en": ""
- },
- {
-  "vi": "Xu người chơi nhận được qua thao tác (lương, bán hàng, lãi, vay…). Tiền chuyển giữa ví, quỹ nơi làm và ngân hàng không tính.",
-  "en": ""
- },
- {
-  "vi": "Σ mức tăng (ví + quỹ nơi làm + ngân hàng) mỗi thao tác",
-  "en": ""
- },
- {
-  "vi": "Xu tiêu đi",
-  "en": ""
- },
- {
-  "vi": "Xu người chơi chi ra qua thao tác (mua sắm, nhà, học, trả nợ…).",
-  "en": ""
- },
- {
-  "vi": "Σ mức giảm mỗi thao tác",
-  "en": ""
- },
- {
-  "vi": "Xu ròng",
-  "en": ""
- },
- {
-  "vi": "Xu tạo ra trừ xu tiêu đi. Dương kéo dài = lạm phát (mỗi người ngày càng nhiều xu).",
-  "en": ""
- },
- {
-  "vi": "Xu tạo ra / DAU",
-  "en": ""
- },
- {
-  "vi": "Xu tạo ra trong ngày chia cho số người chơi hôm đó.",
-  "en": ""
- },
- {
-  "vi": "Ví trung vị (mẫu)",
-  "en": ""
- },
- {
-  "vi": "Số xu giữa của người chơi gần đây (mẫu 400 bản lưu thay đổi gần nhất, không phải mẫu ngẫu nhiên).",
-  "en": ""
- },
- {
-  "vi": "trung vị ví trong mẫu",
-  "en": ""
- },
- {
-  "vi": "Game chưa có thanh toán, quảng cáo hay gói trả phí: doanh thu = 0. Không ước tính.",
-  "en": ""
- },
- {
-  "vi": "chưa bật",
-  "en": ""
- },
- {
-  "vi": "Góp ý người chơi gửi trong game theo ngày.",
-  "en": ""
- },
- {
-  "vi": "Góp ý / 100 DAU",
   "en": ""
  }
 ]

@@ -1,5 +1,473 @@
 [
  {
+  "vi": "Mở khi khách đòi",
+  "en": ""
+ },
+ {
+  "vi": "Ba mươi phút sau tiếng sấm cuối mới xuống lại.",
+  "en": ""
+ },
+ {
+  "vi": "Bé tám tuổi nói biết bơi, đòi ra khu sâu.",
+  "en": ""
+ },
+ {
+  "vi": "Tin lời bé",
+  "en": ""
+ },
+ {
+  "vi": "Cho bơi thử ở làn sát thành rồi mới quyết",
+  "en": ""
+ },
+ {
+  "vi": "Bảo mẹ bé quyết",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ nghiệp vụ lưu trữ",
+  "en": ""
+ },
+ {
+  "vi": "Lưu trữ",
+  "en": ""
+ },
+ {
+  "vi": "Trung tâm bồi dưỡng nghiệp vụ quận cùng Thư viện phường Mây (lớp giả lập)",
+  "en": ""
+ },
+ {
+  "vi": "Phường trả thêm phụ cấp lưu trữ cho mỗi lượt hồ sơ ở Thư viện – Lưu trữ phường Mây.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ kho khô ráo, tiếp cận hồ sơ đúng quy định, giữ kín thông tin cá nhân, cấp bản sao chứ không đưa bản gốc, ghi sổ đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Kho giấy giữ độ ẩm 45–60%. Cao hơn thì bật máy hút ẩm, kéo kệ cách tường; thấy mốc thì cách ly, không lau bằng khăn ướt.",
+  "en": ""
+ },
+ {
+  "vi": "Thấy mọt sách: cho sách bị mọt vào túi kín, báo khử trùng. Không xịt thuốc diệt côn trùng thẳng lên sách.",
+  "en": ""
+ },
+ {
+  "vi": "Ba mức tiếp cận: tài liệu mở ai cũng đọc được; hồ sơ cá nhân chỉ chính chủ, người thân có giấy tờ hoặc người được ủy quyền; tài liệu hạn chế cần lãnh đạo ký duyệt.",
+  "en": ""
+ },
+ {
+  "vi": "Người xin hồ sơ: xem căn cước, giấy tờ chứng minh quyền (ủy quyền có chứng thực, giấy chứng tử và giấy tờ quan hệ khi làm thừa kế), điền phiếu yêu cầu.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu giấy tờ thì hướng dẫn rõ còn thiếu gì; việc không được phép (xem hồ sơ người khác, sửa hồ sơ, rút trang) thì từ chối và chỉ nơi làm đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Bản gốc không rời kho: cấp bản sao có dấu “sao y bản lưu trữ”. Cho mượn bản gốc trong cơ quan chỉ khi có phiếu đã duyệt và người nhận ký.",
+  "en": ""
+ },
+ {
+  "vi": "Mở hộp hồ sơ cũ: găng tay vải sạch, khẩu trang; cầm nhẹ tay giấy giòn. Mọi lượt khai thác ghi vào sổ, người nhận ký.",
+  "en": ""
+ },
+ {
+  "vi": "Mục lục ghi mà không thấy hồ sơ: tìm các hộp kế bên, xem sổ giao nhận trước. Chỉ lập biên bản thất lạc khi đã tìm kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "Ẩm kế kho chỉ 68%. Bạn làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Bật máy hút ẩm, kiểm giấy trong hộp",
+  "en": ""
+ },
+ {
+  "vi": "Mở toang cửa sổ cho thoáng",
+  "en": ""
+ },
+ {
+  "vi": "Để đó, chiều xem",
+  "en": ""
+ },
+ {
+  "vi": "Kho giấy giữ 45–60%.",
+  "en": ""
+ },
+ {
+  "vi": "Người hàng xóm xin xem hồ sơ đất nhà bên cạnh.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, hướng dẫn đề nghị qua bộ phận địa chính",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ cá nhân của người khác không cấp khi không có quyền.",
+  "en": ""
+ },
+ {
+  "vi": "Bản gốc giấy phép xây dựng năm 1996, người dân muốn mang đi công chứng.",
+  "en": ""
+ },
+ {
+  "vi": "Cho mượn một buổi",
+  "en": ""
+ },
+ {
+  "vi": "Cấp bản sao có dấu sao y",
+  "en": ""
+ },
+ {
+  "vi": "Cho mang đi, ghi nợ",
+  "en": ""
+ },
+ {
+  "vi": "Bản gốc không rời kho.",
+  "en": ""
+ },
+ {
+  "vi": "Mở hộp hồ sơ bụi năm 1980.",
+  "en": ""
+ },
+ {
+  "vi": "Găng tay vải, khẩu trang",
+  "en": ""
+ },
+ {
+  "vi": "Tay không cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Lau bụi bằng khăn ướt",
+  "en": ""
+ },
+ {
+  "vi": "Mồ hôi tay làm ố giấy; bụi cũ không tốt cho phổi.",
+  "en": ""
+ },
+ {
+  "vi": "Độ ẩm kho giấy nên giữ trong khoảng nào?",
+  "en": ""
+ },
+ {
+  "vi": "Quá ẩm giấy mốc, quá khô giấy giòn.",
+  "en": ""
+ },
+ {
+  "vi": "Ba cuốn sách mốc trắng mép trên kệ sát tường.",
+  "en": ""
+ },
+ {
+  "vi": "Lau bằng khăn ướt",
+  "en": ""
+ },
+ {
+  "vi": "Cách ly vào túi, kéo kệ cách tường, báo phụ trách",
+  "en": ""
+ },
+ {
+  "vi": "Xếp lại chỗ cũ",
+  "en": ""
+ },
+ {
+  "vi": "Khăn ướt làm mốc ăn sâu hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Dưới kệ có bụi gỗ vàng li ti, trang sách thủng lỗ nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Xịt thuốc lên kệ",
+  "en": ""
+ },
+ {
+  "vi": "Cho sách bị mọt vào túi kín, báo khử trùng",
+  "en": ""
+ },
+ {
+  "vi": "Để đó",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc xịt dính lên sách, độc cho người đọc.",
+  "en": ""
+ },
+ {
+  "vi": "Bà cụ xin bản sao giấy phép xây nhà của chính mình, có căn cước.",
+  "en": ""
+ },
+ {
+  "vi": "Cấp bản sao, điền phiếu yêu cầu",
+  "en": ""
+ },
+ {
+  "vi": "Bắt xin lãnh đạo duyệt",
+  "en": ""
+ },
+ {
+  "vi": "Chính chủ có giấy tờ thì được cấp.",
+  "en": ""
+ },
+ {
+  "vi": "Con gái xin hồ sơ hộ khẩu cũ của bố đã mất để làm thừa kế, quên giấy chứng tử.",
+  "en": ""
+ },
+ {
+  "vi": "Cấp luôn cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Hướng dẫn mang thêm giấy chứng tử, giấy tờ quan hệ",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối hẳn",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu giấy tờ thì hướng dẫn bổ sung.",
+  "en": ""
+ },
+ {
+  "vi": "Ai đó xin xem hồ sơ đất nhà hàng xóm “để kiện”.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, chỉ nơi làm đúng thủ tục",
+  "en": ""
+ },
+ {
+  "vi": "Cho xem, không chụp",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ cá nhân không cấp cho người không có quyền.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ lý lịch cán bộ (tài liệu hạn chế) cho người viết sách.",
+  "en": ""
+ },
+ {
+  "vi": "Cấp luôn",
+  "en": ""
+ },
+ {
+  "vi": "Trình lãnh đạo ký duyệt",
+  "en": ""
+ },
+ {
+  "vi": "Cho đọc tại chỗ không cần ai biết",
+  "en": ""
+ },
+ {
+  "vi": "Tài liệu hạn chế phải có lãnh đạo duyệt.",
+  "en": ""
+ },
+ {
+  "vi": "Người xin muốn mang bản gốc ra tiệm photo đầu ngõ cho rẻ.",
+  "en": ""
+ },
+ {
+  "vi": "Cho mang đi, dặn giữ kỹ",
+  "en": ""
+ },
+ {
+  "vi": "Sao tại thư viện, bản gốc ở lại",
+  "en": ""
+ },
+ {
+  "vi": "Cho mang, giữ căn cước làm tin",
+  "en": ""
+ },
+ {
+  "vi": "Phó Chủ tịch phường cần hồ sơ gấp, bảo “sổ với phiếu để sau”.",
+  "en": ""
+ },
+ {
+  "vi": "Mang lên ngay kèm phiếu, xin ký",
+  "en": ""
+ },
+ {
+  "vi": "Mang lên, khỏi ghi sổ",
+  "en": ""
+ },
+ {
+  "vi": "Bắt chờ đủ thủ tục ở kho",
+  "en": ""
+ },
+ {
+  "vi": "Gấp vẫn ghi sổ, mang phiếu tới tận nơi.",
+  "en": ""
+ },
+ {
+  "vi": "Mục lục ghi hồ sơ ở hộp 12 mà mở ra không thấy.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo người xin về",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ hay kẹp nhầm hộp bên, hoặc đang có phòng ban mượn.",
+  "en": ""
+ },
+ {
+  "vi": "Bà cụ nhờ sửa năm sinh trong sổ cũ cho khớp căn cước.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa một nét bút",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, hướng dẫn thủ tục đính chính",
+  "en": ""
+ },
+ {
+  "vi": "Dán giấy ghi chú đè lên",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ lưu trữ không được sửa tay.",
+  "en": ""
+ },
+ {
+  "vi": "Cấp bản sao xong. Việc cuối trước khi trả hộp về kệ?",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ khai thác, người nhận ký",
+  "en": ""
+ },
+ {
+  "vi": "Không cần ghi",
+  "en": ""
+ },
+ {
+  "vi": "Ghi vào giấy nháp",
+  "en": ""
+ },
+ {
+  "vi": "Mọi lượt khai thác đều ghi sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ Gác đèn biển",
+  "en": ""
+ },
+ {
+  "vi": "Gác đèn biển",
+  "en": ""
+ },
+ {
+  "vi": "Trung tâm huấn luyện Xí nghiệp Bảo đảm hàng hải Vịnh Ngọc (lớp giả lập)",
+  "en": ""
+ },
+ {
+  "vi": "Giữ đèn đúng giờ, đúng đặc tính; quan trắc và báo đài; báo nạn đúng mức, đúng vị trí; giữ nội quy trạm. Luật chơi đơn giản của game.",
+  "en": ""
+ },
+ {
+  "vi": "Thắp đèn trước giờ mặt trời lặn 15 phút, tắt sau giờ mặt trời mọc 15 phút (nội quy trạm của game). Tắt sớm lúc trời còn tối là nguy hiểm.",
+  "en": ""
+ },
+ {
+  "vi": "Thắp xong thì bấm giờ đếm chớp, so với danh mục đèn. Đèn sai đặc tính, còi sương mù hỏng: báo đài ngay để đài phát thông báo hàng hải.",
+  "en": ""
+ },
+ {
+  "vi": "Lau kính đèn thì tắt mô-tơ, treo biển cấm bật trước. Không lau khi bệ đèn đang quay.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ trực, sổ dầu ghi đúng số đo, đúng sự thật. Ký nhận dầu thì đo bồn trước và sau khi bơm, ký đúng số lít vào.",
+  "en": ""
+ },
+ {
+  "vi": "Quan trắc: đọc máy đo gió, nhìn mặt biển, các mốc tầm xa, áp kế; báo đủ bốn số liệu. Gió từ cấp 6 hoặc áp giảm nhanh thì phát cảnh báo cho tàu thuyền.",
+  "en": ""
+ },
+ {
+  "vi": "Thấy người gặp nạn: báo đài đúng mức (MAYDAY RELAY khi tính mạng bị đe dọa, PAN-PAN khi cần giúp mà chưa nguy), đọc phương vị, khoảng cách, số người, rồi canh giữ mục tiêu.",
+  "en": ""
+ },
+ {
+  "vi": "Người dưới nước gần bờ: ném phao có dây, không nhảy xuống. Không bao giờ tự lấy xuồng ra khơi giữa sóng gió.",
+  "en": ""
+ },
+ {
+  "vi": "Khách ra đảo: xem giấy của xí nghiệp, chỉ ban ngày, có người đi kèm, không ai vào phòng đèn, không ai ở lại qua đêm. Người gặp nạn thì luôn cho trú tạm và báo đài.",
+  "en": ""
+ },
+ {
+  "vi": "Mặt trời lặn lúc 17:45. Thắp đèn lúc nào?",
+  "en": ""
+ },
+ {
+  "vi": "Trước giờ lặn 15 phút.",
+  "en": ""
+ },
+ {
+  "vi": "Đêm bão thấy pháo hiệu đỏ, xuồng của trạm nằm dưới bến.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy xuồng ra cứu",
+  "en": ""
+ },
+ {
+  "vi": "Báo đài MAYDAY RELAY, đủ vị trí, canh giữ mục tiêu",
+  "en": ""
+ },
+ {
+  "vi": "Chờ pháo hiệu thứ hai",
+  "en": ""
+ },
+ {
+  "vi": "Báo đài đúng mức và canh giữ; không tự ra khơi.",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn chèo kayak ướt sũng, không giấy tờ, xin trú lúc trời tối.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối vì không có giấy",
+  "en": ""
+ },
+ {
+  "vi": "Cho trú tạm, báo đài",
+  "en": ""
+ },
+ {
+  "vi": "Cho ở lại, khỏi báo ai",
+  "en": ""
+ },
+ {
+  "vi": "Người gặp nạn luôn được trú, và đài phải biết.",
+  "en": ""
+ },
+ {
+  "vi": "Tàu tiếp tế bơm vào 170 lít, phiếu ghi 200.",
+  "en": ""
+ },
+ {
+  "vi": "Ký 200 cho êm",
+  "en": ""
+ },
+ {
+  "vi": "Ký 170, ghi chú giao thiếu",
+  "en": ""
+ },
+ {
+  "vi": "Không ký",
+  "en": ""
+ },
+ {
   "vi": "Mặt trời mọc lúc 05:40. Tắt đèn lúc nào?",
   "en": ""
  },
@@ -1329,474 +1797,6 @@
  },
  {
   "vi": "Có gì cần sửa CV hay viết thư ứng tuyển cứ quăng anh xem.",
-  "en": ""
- },
- {
-  "vi": "Làm hàng xóm với em vui ghê, hẻm mình có thêm người để tám.",
-  "en": ""
- },
- {
-  "vi": "Cái quạt nhà con kêu thì mang qua chú coi cho.",
-  "en": ""
- },
- {
-  "vi": "Nghề nào cũng vậy, tay quen rồi thì mắt tinh.",
-  "en": ""
- },
- {
-  "vi": "Chú đang sửa cái radio cũ, nghe lại mấy bài xưa hay lắm.",
-  "en": ""
- },
- {
-  "vi": "Rảnh ghé chú làm ly trà, chú kể chuyện hồi chú mới vô nghề.",
-  "en": ""
- },
- {
-  "vi": "Con làm ăn đàng hoàng, chú nhìn là biết.",
-  "en": ""
- },
- {
-  "vi": "Xe cộ có gì trục trặc cứ dắt qua, chú sửa khỏi lấy tiền.",
-  "en": ""
- },
- {
-  "vi": "Anh ơi, bài toán này khó quá à!",
-  "en": ""
- },
- {
-  "vi": "Chị ơi, bài toán này khó quá à!",
-  "en": ""
- },
- {
-  "vi": "Ơi, bài toán này khó quá à!",
-  "en": ""
- },
- {
-  "vi": "Mẹ em nói phải học xong mới được chơi. Chán ghê!",
-  "en": ""
- },
- {
-  "vi": "Anh có biết chơi quay không? Em mới tập nè.",
-  "en": ""
- },
- {
-  "vi": "Chị có biết chơi quay không? Em mới tập nè.",
-  "en": ""
- },
- {
-  "vi": "Có biết chơi quay không? Em mới tập nè.",
-  "en": ""
- },
- {
-  "vi": "Anh ơi! Em được điểm 9 môn toán nè, khoe anh trước tiên luôn!",
-  "en": ""
- },
- {
-  "vi": "Chị ơi! Em được điểm 9 môn toán nè, khoe chị trước tiên luôn!",
-  "en": ""
- },
- {
-  "vi": "Em được điểm 9 môn toán nè, khoe đầu tiên luôn!",
-  "en": ""
- },
- {
-  "vi": "Mai anh dắt em đi ăn kem nha, em để dành tiền rồi nè.",
-  "en": ""
- },
- {
-  "vi": "Mai chị dắt em đi ăn kem nha, em để dành tiền rồi nè.",
-  "en": ""
- },
- {
-  "vi": "Mai dắt em đi ăn kem nha, em để dành tiền rồi nè.",
-  "en": ""
- },
- {
-  "vi": "Lớn lên em muốn giỏi nhiều nghề như anh.",
-  "en": ""
- },
- {
-  "vi": "Lớn lên em muốn giỏi nhiều nghề như chị.",
-  "en": ""
- },
- {
-  "vi": "Lớn lên em muốn giỏi nhiều nghề vậy luôn.",
-  "en": ""
- },
- {
-  "vi": "Con mèo nhà bà lại trốn lên mái rồi, con có thấy nó không?",
-  "en": ""
- },
- {
-  "vi": "Hồi xưa hẻm này toàn nhà lá, giờ khác quá.",
-  "en": ""
- },
- {
-  "vi": "Đi làm về trễ vậy con? Nhớ ăn uống cho đủ.",
-  "en": ""
- },
- {
-  "vi": "Bà có hũ dưa cải muối, lát bà xới cho con một ít.",
-  "en": ""
- },
- {
-  "vi": "Con giống thằng cháu nội bà hồi trẻ, siêng mà hiền.",
-  "en": ""
- },
- {
-  "vi": "Ngồi đây với bà chút, bà kể chuyện hẻm mình hồi xưa cho nghe.",
-  "en": ""
- },
- {
-  "vi": "Mấy bữa nay bận quá, chưa ghé được. Tuần sau mình ghé nha!",
-  "en": ""
- },
- {
-  "vi": "{Anh} ơi, mình mới đi chơi về, có mua chút quà, bữa nào ghé lấy nha!",
-  "en": ""
- },
- {
-  "vi": "Đám giỗ ông nhà",
-  "en": ""
- },
- {
-  "vi": "Mai nhà bà làm đám giỗ ông nhà. Cháu ghé thắp nén nhang, ăn bữa cơm với cả nhà nghe.",
-  "en": ""
- },
- {
-  "vi": "Đầy tháng cháu nội",
-  "en": ""
- },
- {
-  "vi": "Cháu nội cô đầy tháng rồi! Tối mai con qua ăn mừng với cô nha.",
-  "en": ""
- },
- {
-  "vi": "Tiệc tổ dân phố",
-  "en": ""
- },
- {
-  "vi": "Tổ mình làm tiệc cuối tuần ở đầu hẻm. Cháu tới góp vui với cả tổ nghe.",
-  "en": ""
- },
- {
-  "vi": "Tân gia",
-  "en": ""
- },
- {
-  "vi": "Anh mới dọn chỗ làm việc tại gia, tối mai làm vài món tân gia. Qua chơi nha em!",
-  "en": ""
- },
- {
-  "vi": "Sinh nhật chú Tư",
-  "en": ""
- },
- {
-  "vi": "Chú sáu mươi tuổi rồi, bà xã chú làm mâm cơm. Con qua ăn với chú nghe.",
-  "en": ""
- },
- {
-  "vi": "Sinh nhật Bé Tí",
-  "en": ""
- },
- {
-  "vi": "Mai sinh nhật em! Anh qua ăn bánh kem với em nha, em mời cả lớp luôn.",
-  "en": ""
- },
- {
-  "vi": "Mai sinh nhật em! Chị qua ăn bánh kem với em nha, em mời cả lớp luôn.",
-  "en": ""
- },
- {
-  "vi": "Mai sinh nhật em! Qua ăn bánh kem với em nha, em mời cả lớp luôn.",
-  "en": ""
- },
- {
-  "vi": "Mừng thọ Bà Sáu",
-  "en": ""
- },
- {
-  "vi": "Con cháu làm lễ mừng thọ bà tám mươi. Con ghé chung vui với bà nghe.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay con mệt không? Đi làm về nhớ ăn cơm nghe.",
-  "en": ""
- },
- {
-  "vi": "Có gì buồn thì nói ra, cả hẻm ở đây mà.",
-  "en": ""
- },
- {
-  "vi": "Nghe nói chỗ làm dạo này đông khách, cố lên nha!",
-  "en": ""
- },
- {
-  "vi": "Hiệu sách cũ Mực Nâu",
-  "en": ""
- },
- {
-  "vi": "Cô Mực",
-  "en": ""
- },
- {
-  "vi": "Trong thùng sách vừa nhận có những lời nhắn chưa gửi. Bạn muốn mang cuốn nào về?",
-  "en": ""
- },
- {
-  "vi": "Cuốn sách kẹp thư",
-  "en": ""
- },
- {
-  "vi": "Lá thư bên trang 42",
-  "en": ""
- },
- {
-  "vi": "Bạn tìm thấy lá thư của một người con cảm ơn mẹ vì những bữa cơm chờ. Cô Mực giữ lại phong bì để tìm người nhận; bạn mang cuốn sách về đọc.",
-  "en": ""
- },
- {
-  "vi": "Người gửi thư đã quay lại. Cô Mực kể hai mẹ con vừa cùng ghé tiệm, và gửi bạn chiếc thẻ đánh dấu trang hình bát cơm.",
-  "en": ""
- },
- {
-  "vi": "Trang cuối còn trống. Bạn viết vào đó một điều muốn nói với người thân, rồi cất sách lên kệ.",
-  "en": ""
- },
- {
-  "vi": "Tập truyện có bản đồ",
-  "en": ""
- },
- {
-  "vi": "Bản đồ tiệm sách nhỏ",
-  "en": ""
- },
- {
-  "vi": "Bản đồ dẫn đến chiếc ghế dưới cây sấu. Ở đó có mẩu chuyện về bác bán báo luôn để dành truyện tranh cho trẻ trong phố.",
-  "en": ""
- },
- {
-  "vi": "Bạn theo nét bút chì tìm tới sạp báo cũ. Bác kể ngày mưa mọi người từng chuyền sách qua mái hiên để chúng khỏi ướt.",
-  "en": ""
- },
- {
-  "vi": "Bạn bổ sung tiệm Mực Nâu vào bản đồ. Một nơi mới để người sau tìm được câu chuyện của mình.",
-  "en": ""
- },
- {
-  "vi": "Sổ tay làm vườn",
-  "en": ""
- },
- {
-  "vi": "Trang ép hoa đầu mùa",
-  "en": ""
- },
- {
-  "vi": "Giữa trang sách là một bông hoa ép. Dòng chữ nhỏ nhắc rằng cây lớn chậm nhưng người chăm không cần vội.",
-  "en": ""
- },
- {
-  "vi": "Bạn thử ghi lại màu lá và buổi tưới đầu tiên, thay vì chỉ đếm ngày ra hoa. Cô Mực tặng thêm một tờ giấy ép lá.",
-  "en": ""
- },
- {
-  "vi": "Cuốn sổ có thêm nét chữ của bạn. Bạn để lại một trang trống cho người sẽ cùng chăm cây sau này.",
-  "en": ""
- },
- {
-  "vi": "CLB Mỹ thuật",
-  "en": ""
- },
- {
-  "vi": "Chị Màu",
-  "en": ""
- },
- {
-  "vi": "Buổi vẽ góc phố: chọn điều bạn muốn giữ lại trong tranh.",
-  "en": ""
- },
- {
-  "vi": "Vẽ ánh sáng",
-  "en": ""
- },
- {
-  "vi": "Tranh Nắng qua mái hiên",
-  "en": ""
- },
- {
-  "vi": "Bạn pha màu vàng dịu rồi chừa khoảng trắng. Chị Màu chỉ cách bóng mái hiên làm vệt nắng nổi hơn.",
-  "en": ""
- },
- {
-  "vi": "Bạn thử cùng góc phố lúc chiều xuống: màu cam nhạt, bóng dài hơn. Hai bức tranh kể hai nhịp sống khác nhau.",
-  "en": ""
- },
- {
-  "vi": "Vẽ người trong phố",
-  "en": ""
- },
- {
-  "vi": "Phác họa Người hàng xóm",
-  "en": ""
- },
- {
-  "vi": "Bạn xin phép bác bán hoa trước khi phác họa. Bác chọn đứng cạnh thùng cúc đang nở.",
-  "en": ""
- },
- {
-  "vi": "Bạn thêm đôi bàn tay đang buộc bó hoa. Chị Màu nhận ra nhân vật qua cử chỉ, dù gương mặt chỉ vài nét.",
-  "en": ""
- },
- {
-  "vi": "CLB Âm nhạc",
-  "en": ""
- },
- {
-  "vi": "Anh Nhịp",
-  "en": ""
- },
- {
-  "vi": "Cả nhóm đang tập một đoạn nhạc tự sáng tác. Bạn chọn phần mình muốn thử.",
-  "en": ""
- },
- {
-  "vi": "Giữ nhịp cùng nhóm",
-  "en": ""
- },
- {
-  "vi": "Thẻ nhịp 4 phách",
-  "en": ""
- },
- {
-  "vi": "Bạn gõ đều bốn phách rồi chừa chỗ cho tiếng đàn. Cả nhóm kết thúc cùng nhau.",
-  "en": ""
- },
- {
-  "vi": "Bạn thử giữ nhịp nhẹ ở đoạn nhỏ và mạnh hơn ở điệp khúc; cả nhóm nghe nhau rõ hơn.",
-  "en": ""
- },
- {
-  "vi": "Thử giai điệu",
-  "en": ""
- },
- {
-  "vi": "Trang nhạc Chiều bên sông",
-  "en": ""
- },
- {
-  "vi": "Bạn ngân một giai điệu ngắn. Anh Nhịp chép lại để buổi sau cả nhóm thử hòa giọng.",
-  "en": ""
- },
- {
-  "vi": "Nhóm hát lại giai điệu bạn góp, rồi thêm một khoảng lặng trước câu cuối.",
-  "en": ""
- },
- {
-  "vi": "CLB Đọc sách",
-  "en": ""
- },
- {
-  "vi": "Cô Trang",
-  "en": ""
- },
- {
-  "vi": "Nhóm đọc câu chuyện về một người trở về phố cũ. Bạn muốn chia sẻ điều gì?",
-  "en": ""
- },
- {
-  "vi": "Nói về nhân vật",
-  "en": ""
- },
- {
-  "vi": "Ghi chú Người trở về",
-  "en": ""
- },
- {
-  "vi": "Bạn nghĩ nhân vật im lặng vì chưa biết bắt đầu từ đâu. Cô Trang mời mọi người tìm một chi tiết trong truyện để hiểu thêm.",
-  "en": ""
- },
- {
-  "vi": "Bạn đọc lại lời chào ngắn ở cuối truyện và nhận ra đôi khi bắt đầu chỉ cần một câu đơn giản.",
-  "en": ""
- },
- {
-  "vi": "Viết một kết thúc khác",
-  "en": ""
- },
- {
-  "vi": "Trang kết của riêng bạn",
-  "en": ""
- },
- {
-  "vi": "Bạn viết cảnh nhân vật gõ cửa tiệm quen. Một tách trà được đặt xuống, không ai hỏi vì sao đi lâu thế.",
-  "en": ""
- },
- {
-  "vi": "Cả nhóm đọc các kết thúc khác nhau. Bạn giữ lại phiên bản có bữa cơm đông người nhất.",
-  "en": ""
- },
- {
-  "vi": "CLB Làm vườn",
-  "en": ""
- },
- {
-  "vi": "Bác Lá",
-  "en": ""
- },
- {
-  "vi": "Bồn cây chung cần chăm. Chọn một việc và nghe bác Lá chia sẻ.",
-  "en": ""
- },
- {
-  "vi": "Kiểm đất rồi tưới",
-  "en": ""
- },
- {
-  "vi": "Nhật ký bồn cây",
-  "en": ""
- },
- {
-  "vi": "Bạn chạm lớp đất trước khi tưới. Chậu còn ẩm được để nghỉ; chậu khô nhận một ca nước nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Bạn thấy mầm mới bên gốc. Bác Lá nhắc xoay chậu về phía sáng và ghi vào nhật ký.",
-  "en": ""
- },
- {
-  "vi": "Ươm một khay hạt",
-  "en": ""
- },
- {
-  "vi": "Khay mầm của nhóm",
-  "en": ""
- },
- {
-  "vi": "Bạn cùng nhóm gieo hạt, ghi tên và ngày lên thẻ. Khay được đặt cạnh cửa có ánh sáng dịu.",
-  "en": ""
- },
- {
-  "vi": "Bạn tỉa chỗ quá dày và chia mầm cho nhóm mang về. Khay hạt giờ thành nhiều góc xanh.",
-  "en": ""
- },
- {
-  "vi": "Phòng hát Mây",
-  "en": ""
- },
- {
-  "vi": "Chọn tiết mục cho buổi hát. Có thể mở beat YouTube của bạn ở một tab riêng.",
-  "en": ""
- },
- {
-  "vi": "Hát một mình",
-  "en": ""
- },
- {
-  "vi": "Vé hát Solo",
-  "en": ""
- },
- {
-  "vi": "Bạn thử đoạn đầu nhỏ nhẹ rồi hát trọn điệp khúc. Chị Ngân vỗ tay cho một lần dám cầm mic.",
   "en": ""
  }
 ]

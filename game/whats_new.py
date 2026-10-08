@@ -32,6 +32,25 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.9.20", date="2026-10-08", items=(
+        dict(emoji='🎓', text='Thi chứng chỉ giờ ở ngay bên ngoài: nút 🎓 Chứng chỉ trên phố, trang hành trình và thẻ nơi làm'),
+        dict(emoji='🎖️', text='Lên chức là lên lương: thẻ việc làm hiện rõ từng bậc và lương mỗi bậc, chức càng cao lương càng cao'),
+        dict(emoji='✈️', text='Du học: chọn một khóa ở nước ngoài, mỗi ngày một bài; có bằng thì lương cao hơn, lên chức nhanh hơn'),
+        dict(emoji='🌏', text='Làm việc ở nước ngoài: sang chi nhánh vài ngày với lương cao hơn, xong hợp đồng được hoàn vé'),
+        dict(emoji='📜', text='Học lịch sử Việt Nam: 12 bài ngắn từ Văn Lang đến Đổi Mới, học xong thi lấy chứng nhận (mục Của mình)'),
+        dict(emoji='👶', text='Bé ở nhà: cho bé ăn, ru ngủ, tập đi để bé lớn dần; bấm Bế bé đi chơi để ẵm bé ra phố'),
+        dict(emoji='🎨', text='Cho bạn trang trí: chủ nhà cho phép một người bạn vào bày trí nhà mình, xem được ai đã đổi gì'),
+        dict(emoji='🏠', text='Chuyện nhà thuê: ở trọ hay cho thuê nhà giờ có thêm những chuyện nhỏ với chủ nhà, hàng xóm'),
+        dict(emoji='🎤', text='Phòng hát có 🎤 Hát cùng: tối đa 3 người lên hát chung với người đang hát'),
+        dict(emoji='🎧', text='Phòng hát: giọng hát khớp nhạc hơn nữa, bớt chậm ở máy người nghe'),
+        dict(emoji='🏰', text='Sửa lỗi không vào được một số biệt thự; có thêm nút Về nhà cũ khi đang ở chỗ khác'),
+        dict(emoji='👮', text='Công an: làm đủ 10 ngày liền không vi phạm là xóa hết cảnh cáo; thẻ cấp bậc ghi rõ còn thiếu gì'),
+        dict(emoji='📒', text='Kế toán doanh nghiệp: hạn nộp hồ sơ rộng hơn, chỗ sai được ghi chú ngay tại chỗ'),
+        dict(emoji='🍑', text='Món mới: Trà đào cam sả, Trà thạch đào và Bánh đào nướng'),
+        dict(emoji='💼', text='Góp vốn, rút vốn quầy: gõ thẳng số tiền muốn góp hoặc rút'),
+        dict(emoji='🪙', text='Vàng gõ theo chỉ, kệ mẹ & bé đặt một lần cả kệ, giỏ hàng báo ✓ Đã thêm rõ ràng'),
+        dict(emoji='🌧️', text='Quầy bán chậm lúc chợ ế: giờ có dòng báo cả phố đang vắng khách, không phải lỗi của bạn'),
+    )),
     dict(version="1.9.19", date="2026-10-07", items=(
         dict(emoji='🔢', text='Khỏi bấm + mỏi tay: số lượng nhập hàng, vàng, lương, số khách… giờ chạm vào là gõ số được luôn'),
         dict(emoji='🎙️', text='Phòng hát: giọng người hát và nhạc giờ khớp nhau hơn ở máy người nghe'),

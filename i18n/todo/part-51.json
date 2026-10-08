@@ -1,5 +1,473 @@
 [
  {
+  "vi": "Đường tắc thêm mười lăm phút.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Năm mang cơm trưa",
+  "en": ""
+ },
+ {
+  "vi": "Bà Năm xách cặp lồng cơm lên: “Bà nấu dư, con ăn đi. Ngồi đây bà kể chuyện thằng cháu bà nghe nè…”",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn bà, ngồi nghe bà mười phút, xin phép làm tiếp, hẹn chiều ghé nhà",
+  "en": ""
+ },
+ {
+  "vi": "Bà Năm vui vẻ đi về: “Chiều nhớ ghé nghe con.”",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi nghe bà kể hết chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Bà kể từ thằng cháu tới con mèo tới hồi năm bảy mấy. Hàng chờ dài ra.",
+  "en": ""
+ },
+ {
+  "vi": "“Bà về đi, con đang bận”",
+  "en": ""
+ },
+ {
+  "vi": "Bà lên thăm mà bị đuổi về như đuổi tà.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Năm lặng lẽ xách cặp lồng về.",
+  "en": ""
+ },
+ {
+  "vi": "Chó lạc vào sân phường",
+  "en": ""
+ },
+ {
+  "vi": "Một chú chó nhỏ đeo nơ chạy vào sân phường, run lẩy bẩy.",
+  "en": ""
+ },
+ {
+  "vi": "Cho nước, nhờ tổ dân phố báo nhóm khu phố tìm chủ",
+  "en": ""
+ },
+ {
+  "vi": "Một tiếng sau, cô bé chủ chó chạy tới ôm chầm lấy nó.",
+  "en": ""
+ },
+ {
+  "vi": "Đuổi ra ngoài",
+  "en": ""
+ },
+ {
+  "vi": "Chú chó chạy ra đường lớn, suýt bị xe tông.",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ Kha quay clip tìm chủ",
+  "en": ""
+ },
+ {
+  "vi": "Clip được ba nghìn lượt xem. Chủ chó tìm tới, Kha có thêm content.",
+  "en": ""
+ },
+ {
+  "vi": "Phong bì trong bìa hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Lật bìa hồ sơ tạm trú, bạn thấy một phong bì dày kẹp giữa hai tờ giấy. Người khai cười: “Chút cà phê thôi mà.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là người khai: nghe người quen bảo “lên phường phải có chút gì mới nhanh”, nên chuẩn bị sẵn.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng nội quy bàn tiếp dân",
+  "en": ""
+ },
+ {
+  "vi": "Cán bộ không nhận tiền, quà của người dân dưới bất cứ hình thức nào.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn cư trú",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ của người này đủ cả, làm theo thủ tục là xong trong ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Trụ sở",
+  "en": ""
+ },
+ {
+  "vi": "Bàn tiếp dân có camera; sổ trực ban có mục ghi những lần từ chối quà.",
+  "en": ""
+ },
+ {
+  "vi": "Trả lại phong bì, nói rõ hồ sơ đủ thì không mất đồng nào, ghi vào sổ trực ban",
+  "en": ""
+ },
+ {
+  "vi": "Cán bộ trả lại phong bì, còn giải thích hồ sơ đủ rồi. Từ giờ tôi hết tin chuyện “phải có chút gì”.",
+  "en": ""
+ },
+ {
+  "vi": "Người khai đỏ mặt, cảm ơn. Chiều đó có giấy hẹn, đúng như lời bạn nói.",
+  "en": ""
+ },
+ {
+  "vi": "Người khai",
+  "en": ""
+ },
+ {
+  "vi": "Ngại ghê, mà nhẹ cả người.",
+  "en": ""
+ },
+ {
+  "vi": "Một lần từ chối đàng hoàng, cả hàng chờ cùng nghe thấy.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận rồi bỏ vào quỹ chung của tổ",
+  "en": ""
+ },
+ {
+  "vi": "Đưa thì nhận, nói là bỏ quỹ chung. Ai biết được.",
+  "en": ""
+ },
+ {
+  "vi": "Camera quay đủ cả. Anh Định gọi bạn vào làm tường trình.",
+  "en": ""
+ },
+ {
+  "vi": "Người xếp hàng sau",
+  "en": ""
+ },
+ {
+  "vi": "Vậy là phải có phong bì thật.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận cho người ta yên tâm",
+  "en": ""
+ },
+ {
+  "vi": "Thì ra lên phường phải có phong bì.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện “phải có phong bì” lan khắp tổ 4. Tuần sau ai cũng kẹp sẵn.",
+  "en": ""
+ },
+ {
+  "vi": "Bà cụ chờ phía sau",
+  "en": ""
+ },
+ {
+  "vi": "Tôi không có tiền kẹp, chắc phải chờ tới chiều.",
+  "en": ""
+ },
+ {
+  "vi": "Một phong bì làm mất tám năm giữ tiếng của bàn này.",
+  "en": ""
+ },
+ {
+  "vi": "Không nhận phong bì. Làm đúng thủ tục để người dân thấy không cần “chút gì” mới được việc.",
+  "en": ""
+ },
+ {
+  "vi": "Cháu “sếp quận”",
+  "en": ""
+ },
+ {
+  "vi": "Một thanh niên đi thẳng lên đầu hàng: “Chú tôi làm trên quận. Anh Vượng biết chú tôi. Làm cho tôi trước.” Anh Vượng gọi xuống: “Làm giùm cậu ấy đi em.”",
+  "en": ""
+ },
+ {
+  "vi": "Mười hai người đang chờ theo số, có bà cụ chờ từ 7 giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên tắc",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp dân theo thứ tự; ưu tiên người già, người khuyết tật, phụ nữ mang thai, không ưu tiên “người quen”.",
+  "en": ""
+ },
+ {
+  "vi": "Sếp",
+  "en": ""
+ },
+ {
+  "vi": "Anh Vượng nói qua điện thoại, không có văn bản nào.",
+  "en": ""
+ },
+ {
+  "vi": "Mời cậu ấy lấy số; báo lại anh Vượng rằng hàng đang có người chờ từ sáng, làm đúng lượt",
+  "en": ""
+ },
+ {
+  "vi": "Ở phường này ai cũng xếp hàng như nhau, kể cả cháu của ai. Phục.",
+  "en": ""
+ },
+ {
+  "vi": "Cậu thanh niên hậm hực ngồi chờ. Anh Vượng im lặng, chiều đó không nhắc lại.",
+  "en": ""
+ },
+ {
+  "vi": "Bà cụ chờ từ 7 giờ",
+  "en": ""
+ },
+ {
+  "vi": "Vậy là công bằng.",
+  "en": ""
+ },
+ {
+  "vi": "Sếp sai thì mình nói nhẹ mà rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Làm trước vì sếp đã dặn",
+  "en": ""
+ },
+ {
+  "vi": "Có “chú trên quận” là được làm trước. Còn tụi tôi đứng chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng chờ xì xào. Kha livestream đúng lúc đó.",
+  "en": ""
+ },
+ {
+  "vi": "Content tự tới luôn sếp ơi.",
+  "en": ""
+ },
+ {
+  "vi": "Già rồi, không có ai làm “chú”.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo cậu ấy ra quầy khác chờ, làm sau bà cụ",
+  "en": ""
+ },
+ {
+  "vi": "Cũng có lấy số, mà chen trước mấy người.",
+  "en": ""
+ },
+ {
+  "vi": "Bà cụ được làm trước, nhưng năm người khác vẫn bị chen.",
+  "en": ""
+ },
+ {
+  "vi": "Người đứng thứ ba",
+  "en": ""
+ },
+ {
+  "vi": "Vậy tôi thì sao?",
+  "en": ""
+ },
+ {
+  "vi": "Nửa đúng thì vẫn là chưa đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp dân theo thứ tự và ưu tiên đúng người cần; không có “người quen”. Sếp dặn sai thì báo lại rõ ràng.",
+  "en": ""
+ },
+ {
+  "vi": "“Người khả nghi” đầu hẻm",
+  "en": ""
+ },
+ {
+  "vi": "Lần thứ năm trong tuần, cô Thoa gọi: “Cái cậu xăm tay, đội mũ, đứng đầu hẻm cả buổi. Bắt nó về phường hỏi đi!”",
+  "en": ""
+ },
+ {
+  "vi": "Cậu ấy là ai",
+  "en": ""
+ },
+ {
+  "vi": "Sổ cư trú",
+  "en": ""
+ },
+ {
+  "vi": "Cậu Tín, tài xế công nghệ, thuê trọ hẻm 7, đã khai báo tạm trú tuần trước.",
+  "en": ""
+ },
+ {
+  "vi": "Vẻ ngoài",
+  "en": ""
+ },
+ {
+  "vi": "Hình xăm, cái mũ, đứng chờ khách không phải là dấu hiệu phạm tội.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Thoa ở một mình, sợ trộm từ hồi nhà bị mất xe năm ngoái.",
+  "en": ""
+ },
+ {
+  "vi": "Ghé nói chuyện với cô Thoa, cho biết cậu Tín là người thuê trọ đã khai báo, dặn cô có gì cụ thể thì báo ngay",
+  "en": ""
+ },
+ {
+  "vi": "Cán bộ giải thích rõ, không bỏ ngoài tai lời tôi. Tôi yên tâm hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Thoa gọi ít hẳn. Tuần sau cô còn nhờ cậu Tín chở đi khám mắt.",
+  "en": ""
+ },
+ {
+  "vi": "Thì ra nó ở trọ hẻm 7, vậy mà tôi cứ tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Cậu Tín",
+  "en": ""
+ },
+ {
+  "vi": "Em chỉ đứng chờ khách thôi mà.",
+  "en": ""
+ },
+ {
+  "vi": "Mời cậu ấy về phường “hỏi chuyện” cho cô Thoa yên tâm",
+  "en": ""
+ },
+ {
+  "vi": "Đứng chờ khách cũng bị mời về phường. Vì cái hình xăm à?",
+  "en": ""
+ },
+ {
+  "vi": "Cậu Tín mất ba cuốc xe, lên mạng kể chuyện bị “nghi oan”.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi làm gì sai?",
+  "en": ""
+ },
+ {
+  "vi": "Nghi người vì vẻ ngoài là sai từ đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Thoa báo hoài, lần này khỏi nghe",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lên phường mà không ai buồn hỏi một câu.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Thoa gọi lên tận anh Vượng. Lần sau cô có chuyện thật thì không ai tin.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi già rồi nên nói không ai nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe hết, kiểm tra, rồi giải thích.",
+  "en": ""
+ },
+ {
+  "vi": "Không nghi ai vì vẻ ngoài; nghe người báo, kiểm tra thông tin, rồi giải thích cho họ yên tâm.",
+  "en": ""
+ },
+ {
+  "vi": "Quán của bạn thân",
+  "en": ""
+ },
+ {
+  "vi": "Đi tuần tra, bạn thấy quán cà phê của thằng bạn thân hồi cấp ba bày bàn ghế lấn kín vỉa hè, lần thứ ba trong tuần.",
+  "en": ""
+ },
+ {
+  "vi": "Lần thứ ba",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tuần tra",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhắc hai lần, có ghi sổ. Quán khác cùng dãy đã bị lập biên bản.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thân",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nhắn: “Mày làm phường mà, du di giùm tao.”",
+  "en": ""
+ },
+ {
+  "vi": "Đổi người",
+  "en": ""
+ },
+ {
+  "vi": "Việc dính tới người thân, bạn bè thì báo tổ trưởng để người khác xử lý.",
+  "en": ""
+ },
+ {
+  "vi": "Xử như mọi quán: lần thứ ba thì lập biên bản; báo anh Định vì là bạn thân",
+  "en": ""
+ },
+ {
+  "vi": "Quán bạn thân cán bộ cũng bị lập biên bản như ai. Vậy mới phục.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Định cử người khác lập biên bản. Thằng bạn giận một tuần, rồi tự dọn bàn ghế.",
+  "en": ""
+ },
+ {
+  "vi": "Giận thì giận, mà công nhận mày đàng hoàng.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ quán bên cạnh",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc riêng qua tin nhắn, không ghi sổ",
+  "en": ""
+ },
+ {
+  "vi": "Quán tôi bị biên bản, quán bạn cán bộ thì không. Hay ha.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ quán bên cạnh làm đơn phản ánh có kèm ảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Luật chỉ dành cho người không quen ai.",
+  "en": ""
+ },
+ {
+  "vi": "Một lần du di, mất cả dãy phố tin.",
+  "en": ""
+ },
+ {
+  "vi": "Phạt nặng hơn mọi người cho khỏi bị nói",
+  "en": ""
+ },
+ {
+  "vi": "Bị làm nặng tay hơn quán khác, vì là bạn của cán bộ.",
+  "en": ""
+ },
+ {
+  "vi": "Thằng bạn làm đơn phản ánh “bị trù dập”.",
+  "en": ""
+ },
+ {
   "vi": "Bạn bè mà còn tệ hơn người lạ.",
   "en": ""
  },
@@ -1329,474 +1797,6 @@
  },
  {
   "vi": "Bạn cho mượn mũ áo. Ảnh lên mạng kèm chú thích “công an mới của phường”.",
-  "en": ""
- },
- {
-  "vi": "Gọi điện trực ban tâm sự",
-  "en": ""
- },
- {
-  "vi": "Một bạn trẻ thất tình · 22:10",
-  "en": ""
- },
- {
-  "vi": "“Anh ơi, người yêu em bỏ em rồi, em buồn quá, anh nói chuyện với em chút đi…” Điện thoại trực ban bị chiếm hai mươi phút.",
-  "en": ""
- },
- {
-  "vi": "“Anh nghe em nói thêm chút nữa thôi.”",
-  "en": ""
- },
- {
-  "vi": "“Không ai nghe em hết.”",
-  "en": ""
- },
- {
-  "vi": "Anh nghe em năm phút, rồi gửi em số đường dây tư vấn tâm lý và gọi người nhà ở cạnh em.",
-  "en": ""
- },
- {
-  "vi": "Em đang ở đâu, có ai ở cạnh không?",
-  "en": ""
- },
- {
-  "vi": "Bạn trẻ khóc một lúc rồi bình tĩnh lại, hứa gọi chị gái qua ở cùng.",
-  "en": ""
- },
- {
-  "vi": "Bạn nghe cả tiếng. Trong lúc đó hai cuộc gọi báo tin không gọi vào được.",
-  "en": ""
- },
- {
-  "vi": "“Dọa con tôi giùm”",
-  "en": ""
- },
- {
-  "vi": "Một bà mẹ ở cổng trường",
-  "en": ""
- },
- {
-  "vi": "“Anh nói với thằng Bo là không học bài thì công an bắt đi giùm chị. Nó sợ công an lắm.”",
-  "en": ""
- },
- {
-  "vi": "“Dọa chút thôi mà, nó mới nghe.”",
-  "en": ""
- },
- {
-  "vi": "“Anh nói một câu thôi.”",
-  "en": ""
- },
- {
-  "vi": "Dọa trẻ con sợ công an thì lúc lạc nó không dám tới nhờ.",
-  "en": ""
- },
- {
-  "vi": "Anh nói chuyện với Bo về chuyện đi học đúng giờ, vui vẻ thôi.",
-  "en": ""
- },
- {
-  "vi": "Bạn ngồi xuống nói chuyện với Bo, kể chuyện tuần tra. Bo hứa làm bài xong mới coi hoạt hình.",
-  "en": ""
- },
- {
-  "vi": "Bạn dọa Bo. Tuần sau Bo đi lạc ở chợ, thấy công an là bỏ chạy.",
-  "en": ""
- },
- {
-  "vi": "Báo nhà hoang có ma",
-  "en": ""
- },
- {
-  "vi": "Ba bạn học sinh lớp 7",
-  "en": ""
- },
- {
-  "vi": "“Chú công an ơi, căn nhà hoang hẻm 9 tối nào cũng có ánh đèn, chắc có ma! Chú vào bắt ma đi!”",
-  "en": ""
- },
- {
-  "vi": "“Thật mà chú, tụi con thấy tận mắt!”",
-  "en": ""
- },
- {
-  "vi": "“Chú sợ ma hả?”",
-  "en": ""
- },
- {
-  "vi": "Tụi con thấy đèn mấy giờ, ở tầng nào?",
-  "en": ""
- },
- {
-  "vi": "Chú ghé xem lúc tuần tra, tụi con đừng tự vào nhà hoang nha.",
-  "en": ""
- },
- {
-  "vi": "Tối đó bạn ghé: một chú vô gia cư ngủ nhờ, thắp đèn dầu. Bạn báo tổ dân phố tìm chỗ ở cho chú.",
-  "en": ""
- },
- {
-  "vi": "Bạn bảo tụi nhỏ “tự vào xem đi”. Ba đứa leo rào vào, một đứa trầy chân.",
-  "en": ""
- },
- {
-  "vi": "Mẹ gọi về ăn giỗ",
-  "en": ""
- },
- {
-  "vi": "Mẹ bạn",
-  "en": ""
- },
- {
-  "vi": "“Con xin về sớm ăn giỗ ông nội đi. Có con làm phường mà họ hàng hỏi suốt.”",
-  "en": ""
- },
- {
-  "vi": "“Xin một buổi thôi mà con.”",
-  "en": ""
- },
- {
-  "vi": "“Cả họ chờ con đó.”",
-  "en": ""
- },
- {
-  "vi": "Con đang trong ca, bỏ ca là cả tổ thiếu người.",
-  "en": ""
- },
- {
-  "vi": "Tối tan ca con về thắp nhang ông, con nhờ mẹ để phần.",
-  "en": ""
- },
- {
-  "vi": "Mẹ thở dài: “Ừ, tối về thắp nhang ông.”",
-  "en": ""
- },
- {
-  "vi": "Bạn bỏ ca về sớm. Chiều đó có trẻ lạc ở chợ mà tổ thiếu người.",
-  "en": ""
- },
- {
-  "vi": "Dì nhờ “xin” vụ phạt xe",
-  "en": ""
- },
- {
-  "vi": "Dì Hai · dì ruột",
-  "en": ""
- },
- {
-  "vi": "“Thằng em họ con bị lập biên bản vì chở ba. Con làm công an mà, nói giúp một tiếng cho dì.”",
-  "en": ""
- },
- {
-  "vi": "“Người nhà mà con.”",
-  "en": ""
- },
- {
-  "vi": "“Có đứa cháu làm công an cũng như không.”",
-  "en": ""
- },
- {
-  "vi": "Vi phạm thì ai cũng như ai, con không xin được.",
-  "en": ""
- },
- {
-  "vi": "Con chỉ dì cách đóng phạt, dặn em lần sau đội mũ, đừng chở ba.",
-  "en": ""
- },
- {
-  "vi": "Dì Hai lầm bầm, nhưng tối đó dặn thằng em họ đi xe cho đàng hoàng.",
-  "en": ""
- },
- {
-  "vi": "Bạn gọi “xin giùm”. Chuyện lan khắp họ: có đứa làm công an là được xin.",
-  "en": ""
- },
- {
-  "vi": "Em họ mượn danh công an",
-  "en": ""
- },
- {
-  "vi": "Tuấn · em họ",
-  "en": ""
- },
- {
-  "vi": "“Anh ơi, em nói với mấy người ở quán nhậu là anh làm công an, để họ khỏi đòi nợ. Anh xác nhận giùm em nha.”",
-  "en": ""
- },
- {
-  "vi": "“Anh em mà anh.”",
-  "en": ""
- },
- {
-  "vi": "“Một câu thôi mà.”",
-  "en": ""
- },
- {
-  "vi": "Không ai được mượn danh công an để dọa người khác.",
-  "en": ""
- },
- {
-  "vi": "Nợ thì em trả dần, anh giúp em tính cách trả.",
-  "en": ""
- },
- {
-  "vi": "Tuấn gãi đầu: “Ờ thì em trả dần.”",
-  "en": ""
- },
- {
-  "vi": "Bạn xác nhận. Tuấn đi khắp nơi nói “anh tao công an”, có người làm đơn lên phường.",
-  "en": ""
- },
- {
-  "vi": "“Ký biên bản trống”",
-  "en": ""
- },
- {
-  "vi": "“Em ký trước vào biên bản trống đi, chiều anh điền nội dung sau cho nhanh.”",
-  "en": ""
- },
- {
-  "vi": "“Anh em tin nhau mà.”",
-  "en": ""
- },
- {
-  "vi": "“Lính mới mà khó tính quá.”",
-  "en": ""
- },
- {
-  "vi": "Mình làm biên bản ngay tại chỗ, điền đủ rồi ký.",
-  "en": ""
- },
- {
-  "vi": "Anh Bền cằn nhằn nhưng điền đủ trước khi đưa bạn ký.",
-  "en": ""
- },
- {
-  "vi": "Bạn ký vào biên bản trống. Tuần sau tờ biên bản có chữ ký của bạn xuất hiện với nội dung bạn chưa từng thấy.",
-  "en": ""
- },
- {
-  "vi": "“Người quen, khỏi xem giấy tờ”",
-  "en": ""
- },
- {
-  "vi": "“Ví đó trả cho ông này luôn đi, người quen của anh, xem giấy tờ làm gì.”",
-  "en": ""
- },
- {
-  "vi": "“Anh bảo đảm mà.”",
-  "en": ""
- },
- {
-  "vi": "“Em không tin anh à?”",
-  "en": ""
- },
- {
-  "vi": "Hỏi vài câu, xem giấy tờ, ký nhận là xong, có hai phút.",
-  "en": ""
- },
- {
-  "vi": "Anh Bền gật đầu. Ông kia trả lời đúng hết, ký nhận đàng hoàng.",
-  "en": ""
- },
- {
-  "vi": "Bạn trả luôn. Chiều đó chủ ví thật lên nhận.",
-  "en": ""
- },
- {
-  "vi": "“Ghi thêm cho đủ số”",
-  "en": ""
- },
- {
-  "vi": "Anh Vượng · phó trưởng Công an phường",
-  "en": ""
- },
- {
-  "vi": "“Tuần này tổ mình thiếu biên bản. Em ghi thêm mấy vụ ‘nhắc nhở lấn chiếm’ vào sổ cho đủ chỉ tiêu, ai mà kiểm.”",
-  "en": ""
- },
- {
-  "vi": "“Tổ khác làm được sao em không làm được?”",
-  "en": ""
- },
- {
-  "vi": "“Thiếu số là cả tổ bị nhắc trong giao ban đó.”",
-  "en": ""
- },
- {
-  "vi": "Lính mới cứng đầu, mà nói cũng có lý.",
-  "en": ""
- },
- {
-  "vi": "Vụ nào chưa xảy ra thì em không ghi được.",
-  "en": ""
- },
- {
-  "vi": "Em đi tuần thêm buổi chiều, có gì ghi nấy.",
-  "en": ""
- },
- {
-  "vi": "Anh Vượng im một lúc: “Ờ… thì ghi đúng.” Sổ tuần này ít số mà sạch.",
-  "en": ""
- },
- {
-  "vi": "Bạn ghi khống. Đoàn kiểm tra đối chiếu camera: mấy vụ đó không có thật.",
-  "en": ""
- },
- {
-  "vi": "“Lấy xe tạm giữ đi chút”",
-  "en": ""
- },
- {
-  "vi": "“Xe tạm giữ trong kho có chiếc ngon lắm. Mượn đi giao đồ chút rồi trả, ai biết.”",
-  "en": ""
- },
- {
-  "vi": "“Chạy có mười phút.”",
-  "en": ""
- },
- {
-  "vi": "“Xe để không cũng phí.”",
-  "en": ""
- },
- {
-  "vi": "Đi xe của mình, xe trong kho niêm phong, không ai được động vào.",
-  "en": ""
- },
- {
-  "vi": "Anh Bền gãi đầu, dắt xe mình ra.",
-  "en": ""
- },
- {
-  "vi": "Chiếc xe tạm giữ bị trầy một vệt dài. Chủ xe nhận lại thì phát hiện.",
-  "en": ""
- },
- {
-  "vi": "“Tắt camera cho thoải mái”",
-  "en": ""
- },
- {
-  "vi": "“Tắt camera bàn tiếp dân đi, nói chuyện với dân cho thoải mái.”",
-  "en": ""
- },
- {
-  "vi": "“Camera làm gì, mình có làm gì sai đâu.”",
-  "en": ""
- },
- {
-  "vi": "“Có nó ai cũng khớp.”",
-  "en": ""
- },
- {
-  "vi": "Camera để cả dân và mình yên tâm, cứ để chạy.",
-  "en": ""
- },
- {
-  "vi": "Anh Bền nhún vai, camera vẫn chạy.",
-  "en": ""
- },
- {
-  "vi": "Camera tắt. Đúng chiều đó có người tố bạn quát dân, không có gì để đối chiếu.",
-  "en": ""
- },
- {
-  "vi": "“Ngồi cà phê, ghi đã tuần tra”",
-  "en": ""
- },
- {
-  "vi": "“Trời nóng quá, ngồi cà phê đầu chợ một tiếng đi, sổ cứ ghi ‘đã tuần tra chợ’.”",
-  "en": ""
- },
- {
-  "vi": "“Chợ có gì đâu mà đi.”",
-  "en": ""
- },
- {
-  "vi": "“Mình ngồi đây cũng nhìn thấy chợ mà.”",
-  "en": ""
- },
- {
-  "vi": "Đi một vòng chợ rồi ghé uống ly trà đá năm phút.",
-  "en": ""
- },
- {
-  "vi": "Anh Bền thở dài, đi một vòng chợ. Ở dãy cá, một cụ đang lạc đường.",
-  "en": ""
- },
- {
-  "vi": "Bạn ngồi cà phê. Trong lúc đó ở dãy cá một cụ ông đi lạc cả tiếng.",
-  "en": ""
- },
- {
-  "vi": "“Không ai nhận thì chia nhau”",
-  "en": ""
- },
- {
-  "vi": "“Cái ví trong tủ đồ thất lạc ba tuần không ai nhận. Chia nhau đi, để đó cũng vậy.”",
-  "en": ""
- },
- {
-  "vi": "“Ai mà biết.”",
-  "en": ""
- },
- {
-  "vi": "“Lính mới mà làm như thánh.”",
-  "en": ""
- },
- {
-  "vi": "Đồ thất lạc có sổ, có biên bản, phải làm đúng thủ tục.",
-  "en": ""
- },
- {
-  "vi": "Mình gọi lại số trong ví lần nữa, rồi làm theo quy định.",
-  "en": ""
- },
- {
-  "vi": "Anh Bền im lặng. Bạn gọi lại số trong ví: chủ ví đi công tác xa, mai về nhận.",
-  "en": ""
- },
- {
-  "vi": "Hai người chia nhau. Tuần sau chủ ví về nhận, tủ đồ thất lạc trống trơn.",
-  "en": ""
- },
- {
-  "vi": "“Hôm nay khỏi đứng cổng trường”",
-  "en": ""
- },
- {
-  "vi": "“Mưa lâm râm, khỏi đứng cổng trường, ghi là có đứng.”",
-  "en": ""
- },
- {
-  "vi": "“Có ai kiểm đâu.”",
-  "en": ""
- },
- {
-  "vi": "“Đứng cũng như không.”",
-  "en": ""
- },
- {
-  "vi": "Mặc áo mưa đứng nửa tiếng giờ tan học là được.",
-  "en": ""
- },
- {
-  "vi": "Hai người mặc áo mưa đứng cổng trường. Đường trơn, bạn dắt ba bé qua đường.",
-  "en": ""
- },
- {
-  "vi": "Không ai đứng cổng. Một bé trượt ngã khi chạy qua đường.",
-  "en": ""
- },
- {
-  "vi": "Chỉ tiêu biên bản",
-  "en": ""
- },
- {
-  "vi": "“Tuần này mỗi người phải đủ mười biên bản xử lý. Nhắc nhở không tính. Ai thiếu thì giao ban nêu tên.”",
-  "en": ""
- },
- {
-  "vi": "“Phường khác làm được.”",
   "en": ""
  }
 ]

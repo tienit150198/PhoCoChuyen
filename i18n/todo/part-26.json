@@ -1,5 +1,449 @@
 [
  {
+  "vi": "Khăn vàng",
+  "en": ""
+ },
+ {
+  "vi": "Bàn, bếp",
+  "en": ""
+ },
+ {
+  "vi": "Khăn đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ bồn cầu",
+  "en": ""
+ },
+ {
+  "vi": "Cây lau",
+  "en": ""
+ },
+ {
+  "vi": "Sàn, sau cùng",
+  "en": ""
+ },
+ {
+  "vi": "Giặt khăn, châm chai",
+  "en": ""
+ },
+ {
+  "vi": "Nghe khách dặn",
+  "en": ""
+ },
+ {
+  "vi": "Trên cao trước, khô trước ướt sau",
+  "en": ""
+ },
+ {
+  "vi": "Mời khách kiểm nhà",
+  "en": ""
+ },
+ {
+  "vi": "Ngày đầu đi làm, cô Mai đưa bạn ba cái khăn: xanh, vàng, đỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Cô bảo: “Khăn đỏ mà lẫn sang bàn bếp là mang bồn cầu vào nồi cơm nhà người ta.”",
+  "en": ""
+ },
+ {
+  "vi": "Từ đó bạn gấp ba màu ba chồng, không bao giờ lẫn.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Mai kiểm nhà bằng một ngón tay vuốt lên nóc tủ.",
+  "en": ""
+ },
+ {
+  "vi": "Ngón tay sạch thì cô gật đầu, ngón tay xám thì cô cười: “Lên ghế đi con.”",
+  "en": ""
+ },
+ {
+  "vi": "Giờ tới nhà nào bạn cũng nhìn lên trên trước.",
+  "en": ""
+ },
+ {
+  "vi": "Cái khay sứ",
+  "en": ""
+ },
+ {
+  "vi": "Nhà bà Xuân có cái khay sứ nhỏ trên kệ gương.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn, bông tai, đồng hồ, gì nằm lung tung bạn đều cất vào đó rồi nhắn bà.",
+  "en": ""
+ },
+ {
+  "vi": "Bà bảo: “Có con, bà không còn sợ mất đồ.”",
+  "en": ""
+ },
+ {
+  "vi": "Nhà sạch thơm, chỗ nào cũng bóng.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ đạc nguyên chỗ, không mất không vỡ gì.",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ đúng từng lời tôi dặn.",
+  "en": ""
+ },
+ {
+  "vi": "Làm có thứ tự, nhanh mà kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Mai nhắn thêm một lịch hẹn mới.",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhận lịch hẹn hôm nay. Soạn xe đồ nghề rồi lên đường nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng: giặt khăn, châm chai → Lên đường. Mỗi nhà: nghe dặn → chọn phòng → cầm đúng dụng cụ, đúng chai → lau từ trên cao xuống, khô trước ướt sau → nhấc đồ dễ vỡ ra rồi đặt lại, cất đồ quý vào khay → Mời khách kiểm nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Hai mươi năm dọn nhà theo giờ, vuốt ngón tay lên nóc tủ là biết người dọn có kỹ không.",
+  "en": ""
+ },
+ {
+  "vi": "Lập trình viên làm việc ở nhà",
+  "en": ""
+ },
+ {
+  "vi": "Căn studio tầng mười hai, bàn làm việc ba màn hình, ghét nhất ai đụng vào giấy tờ.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hà",
+  "en": ""
+ },
+ {
+  "vi": "Chủ của mèo Mướp",
+  "en": ""
+ },
+ {
+  "vi": "Căn hộ hai phòng ngủ, mèo Mướp rụng lông khắp sofa và sợ tiếng máy hút bụi.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà ống trong ngõ, có gian thờ, tủ kính bình gốm của ông, hay để quên nhẫn trên lavabo.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ của bé Bin hai tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bin bò khắp nhà, mút tay: sàn chỉ lau nước sạch, hóa chất phải cất cao.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ căn hộ cho thuê theo ngày",
+  "en": ""
+ },
+ {
+  "vi": "Khách trả phòng mười hai giờ, khách mới tới hai giờ: dọn nhanh mà phải sạch bong.",
+  "en": ""
+ },
+ {
+  "vi": "Đeo găng tay trắng vuốt nóc tủ để kiểm, ít khen, mà khen là khen thật.",
+  "en": ""
+ },
+ {
+  "vi": "Chổi phất trần",
+  "en": ""
+ },
+ {
+  "vi": "Phất trần",
+  "en": ""
+ },
+ {
+  "vi": "Phủi",
+  "en": ""
+ },
+ {
+  "vi": "Máy hút bụi",
+  "en": ""
+ },
+ {
+  "vi": "Hút bụi",
+  "en": ""
+ },
+ {
+  "vi": "Hút",
+  "en": ""
+ },
+ {
+  "vi": "Chổi quét nhà",
+  "en": ""
+ },
+ {
+  "vi": "Chổi",
+  "en": ""
+ },
+ {
+  "vi": "kính, gương",
+  "en": ""
+ },
+ {
+  "vi": "bàn, kệ, bếp",
+  "en": ""
+ },
+ {
+  "vi": "chỉ bồn cầu",
+  "en": ""
+ },
+ {
+  "vi": "Bàn chải cọ",
+  "en": ""
+ },
+ {
+  "vi": "Bàn chải",
+  "en": ""
+ },
+ {
+  "vi": "Cọ",
+  "en": ""
+ },
+ {
+  "vi": "Cây lau nhà",
+  "en": ""
+ },
+ {
+  "vi": "Khô",
+  "en": ""
+ },
+ {
+  "vi": "Nước sạch",
+  "en": ""
+ },
+ {
+  "vi": "Lau kính",
+  "en": ""
+ },
+ {
+  "vi": "Nước tẩy rửa dịu",
+  "en": ""
+ },
+ {
+  "vi": "Tẩy dịu",
+  "en": ""
+ },
+ {
+  "vi": "Tẩy dầu mỡ",
+  "en": ""
+ },
+ {
+  "vi": "Tẩy dầu",
+  "en": ""
+ },
+ {
+  "vi": "Tẩy bồn cầu",
+  "en": ""
+ },
+ {
+  "vi": "Nước lau sàn",
+  "en": ""
+ },
+ {
+  "vi": "Lau sàn",
+  "en": ""
+ },
+ {
+  "vi": "Trên cao",
+  "en": ""
+ },
+ {
+  "vi": "Bàn, kệ, đồ đạc",
+  "en": ""
+ },
+ {
+  "vi": "Sàn: quét, hút",
+  "en": ""
+ },
+ {
+  "vi": "Sàn: lau ướt",
+  "en": ""
+ },
+ {
+  "vi": "Tẩy dầu mỡ lên mặt gỗ: bạc trắng một mảng.",
+  "en": ""
+ },
+ {
+  "vi": "mặt gỗ bạc màu",
+  "en": ""
+ },
+ {
+  "vi": "Đổ tẩy bồn cầu lên đồ gỗ, gỗ loang lổ hết rồi.",
+  "en": ""
+ },
+ {
+  "vi": "mặt gỗ loang lổ",
+  "en": ""
+ },
+ {
+  "vi": "Xịt nước lên máy tính, bàn phím chập chờn cả buổi.",
+  "en": ""
+ },
+ {
+  "vi": "xịt nước lên máy tính",
+  "en": ""
+ },
+ {
+  "vi": "Lau bàn thờ bằng nước tẩy, mùi hóa chất bay khắp gian thờ.",
+  "en": ""
+ },
+ {
+  "vi": "lau bàn thờ bằng hóa chất",
+  "en": ""
+ },
+ {
+  "vi": "Sofa vải ướt loang một vệt, mấy hôm mới khô.",
+  "en": ""
+ },
+ {
+  "vi": "đồ vải bị ướt",
+  "en": ""
+ },
+ {
+  "vi": "Tẩy bồn cầu làm mờ mặt kính, nhìn như có sương.",
+  "en": ""
+ },
+ {
+  "vi": "mặt kính bị mờ",
+  "en": ""
+ },
+ {
+  "vi": "Cọ bàn chải lên mặt bếp kính, xước mấy đường.",
+  "en": ""
+ },
+ {
+  "vi": "mặt bếp bị xước",
+  "en": ""
+ },
+ {
+  "vi": "Quạt trần",
+  "en": ""
+ },
+ {
+  "vi": "bụi bám cánh",
+  "en": ""
+ },
+ {
+  "vi": "Nóc tủ",
+  "en": ""
+ },
+ {
+  "vi": "bụi dày",
+  "en": ""
+ },
+ {
+  "vi": "Máy hút mùi",
+  "en": ""
+ },
+ {
+  "vi": "dầu mỡ",
+  "en": ""
+ },
+ {
+  "vi": "Đèn trần",
+  "en": ""
+ },
+ {
+  "vi": "bụi, xác muỗi",
+  "en": ""
+ },
+ {
+  "vi": "Bàn trà kính",
+  "en": ""
+ },
+ {
+  "vi": "kính, vết tay",
+  "en": ""
+ },
+ {
+  "vi": "Kệ ti vi gỗ",
+  "en": ""
+ },
+ {
+  "vi": "gỗ, bụi",
+  "en": ""
+ },
+ {
+  "vi": "Bàn ăn gỗ",
+  "en": ""
+ },
+ {
+  "vi": "gỗ, vụn cơm",
+  "en": ""
+ },
+ {
+  "vi": "máy tính, giấy tờ",
+  "en": ""
+ },
+ {
+  "vi": "Bàn thờ",
+  "en": ""
+ },
+ {
+  "vi": "gỗ, tàn nhang",
+  "en": ""
+ },
+ {
+  "vi": "kính, bụi",
+  "en": ""
+ },
+ {
+  "vi": "Gương",
+  "en": ""
+ },
+ {
+  "vi": "kính, vệt nước",
+  "en": ""
+ },
+ {
+  "vi": "Mặt bếp",
+  "en": ""
+ },
+ {
+  "vi": "Bồn rửa chén",
+  "en": ""
+ },
+ {
+  "vi": "inox, cặn",
+  "en": ""
+ },
+ {
+  "vi": "Cửa tủ lạnh",
+  "en": ""
+ },
+ {
+  "vi": "vết tay",
+  "en": ""
+ },
+ {
+  "vi": "sứ, cặn xà phòng",
+  "en": ""
+ },
+ {
+  "vi": "sứ, ố vàng",
+  "en": ""
+ },
+ {
+  "vi": "Sofa vải",
+  "en": ""
+ },
+ {
+  "vi": "vải, lông, bụi",
+  "en": ""
+ },
+ {
   "vi": "Nệm giường",
   "en": ""
  },
@@ -1353,450 +1797,6 @@
  },
  {
   "vi": "Hỏi chị Thảo",
-  "en": ""
- },
- {
-  "vi": "Kiểm toán Sao Mai",
-  "en": ""
- },
- {
-  "vi": "Còn hai bút toán điều chỉnh đang chờ, lợi nhuận có thể giảm.",
-  "en": ""
- },
- {
-  "vi": "Lịch công bố",
-  "en": ""
- },
- {
-  "vi": "Kế hoạch quý",
-  "en": ""
- },
- {
-  "vi": "Ba ngày nữa tập đoàn công bố báo cáo chính thức.",
-  "en": ""
- },
- {
-  "vi": "Xin ông chờ ba ngày, đăng cùng báo cáo đã kiểm toán; gửi trước ông bản tóm tắt nội bộ ghi rõ “chưa công bố”",
-  "en": ""
- },
- {
-  "vi": "Ba ngày thôi mà, đăng số chính thức vẫn hãnh diện hơn.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo công bố đúng hẹn, lợi nhuận giảm nhẹ sau điều chỉnh; may là chưa ai đăng số cũ.",
-  "en": ""
- },
- {
-  "vi": "Đăng số sai rồi phải sửa thì mất mặt hơn.",
-  "en": ""
- },
- {
-  "vi": "Số chưa kiểm toán mà ra ngoài là chúng tôi phải ghi chú.",
-  "en": ""
- },
- {
-  "vi": "Giữ đúng ngày công bố là giữ uy tín tập đoàn.",
-  "en": ""
- },
- {
-  "vi": "Chụp bảng gửi luôn cho ông vui",
-  "en": ""
- },
- {
-  "vi": "Số đăng lên rồi phải đính chính, ngân hàng gọi hỏi liên tục.",
-  "en": ""
- },
- {
-  "vi": "Lợi nhuận sau điều chỉnh thấp hơn số đã đăng; tập đoàn phải đính chính công khai.",
-  "en": ""
- },
- {
-  "vi": "Một tấm ảnh mà mất cả tuần giải thích.",
-  "en": ""
- },
- {
-  "vi": "Thông tin lộ trước kỳ công bố là điểm tôi phải báo cáo.",
-  "en": ""
- },
- {
-  "vi": "Từ chối thẳng: “Không gửi được ạ”",
-  "en": ""
- },
- {
-  "vi": "Đúng là không gửi được, nhưng nói một câu cụt lủn với tôi thì…",
-  "en": ""
- },
- {
-  "vi": "Ông Đại không đăng, nhưng phật ý mấy hôm.",
-  "en": ""
- },
- {
-  "vi": "Tôi hỏi thì giải thích cho tôi một câu.",
-  "en": ""
- },
- {
-  "vi": "Giữ được thông tin, lần sau nói khéo hơn.",
-  "en": ""
- },
- {
-  "vi": "Số chưa kiểm toán, chưa công bố thì chưa ra ngoài — kể cả để chia vui; nói rõ lý do và hẹn ngày đăng số chính thức.",
-  "en": ""
- },
- {
-  "vi": "📥 Đơn chờ",
-  "en": ""
- },
- {
-  "vi": "chờ đồng bộ",
-  "en": ""
- },
- {
-  "vi": "✕ Bỏ một nơi",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn tính dư, mình phải chỉ ra mới được sửa.",
-  "en": ""
- },
- {
-  "vi": "Khách trả tiền mặt.",
-  "en": ""
- },
- {
-  "vi": "Khách chuyển khoản.",
-  "en": ""
- },
- {
-  "vi": "tính dư, về nhà mới thấy",
-  "en": ""
- },
- {
-  "vi": "Tiền thối",
-  "en": ""
- },
- {
-  "vi": "Nói nhẹ nhưng soát kỹ; ghét nhất hồ sơ thiếu chữ ký.",
-  "en": ""
- },
- {
-  "vi": "Giám đốc Công ty Cánh Diều",
-  "en": ""
- },
- {
-  "vi": "Quyết nhanh, đổi ý còn nhanh hơn.",
-  "en": ""
- },
- {
-  "vi": "Nhanh nhảu, hay quên quẹt thẻ chấm công.",
-  "en": ""
- },
- {
-  "vi": "Tổ trưởng xưởng may balo",
-  "en": ""
- },
- {
-  "vi": "Thương thợ, ghét giấy tờ, nóng như lò hơi.",
-  "en": ""
- },
- {
-  "vi": "Chỉ tin giấy có dấu đỏ.",
-  "en": ""
- },
- {
-  "vi": "Ít nói, tay nghề giỏi nhất tổ.",
-  "en": ""
- },
- {
-  "vi": "làm kho",
-  "en": ""
- },
- {
-  "vi": "Excel cơ bản",
-  "en": ""
- },
- {
-  "vi": "kiểm đếm hàng",
-  "en": ""
- },
- {
-  "vi": "xếp pallet",
-  "en": ""
- },
- {
-  "vi": "Thợ may mẫu",
-  "en": ""
- },
- {
-  "vi": "may mẫu",
-  "en": ""
- },
- {
-  "vi": "máy may công nghiệp",
-  "en": ""
- },
- {
-  "vi": "đọc rập",
-  "en": ""
- },
- {
-  "vi": "may khóa kéo",
-  "en": ""
- },
- {
-  "vi": "Nhân viên bán hàng online",
-  "en": ""
- },
- {
-  "vi": "bán hàng online",
-  "en": ""
- },
- {
-  "vi": "chụp ảnh sản phẩm",
-  "en": ""
- },
- {
-  "vi": "trả lời tin nhắn khách",
-  "en": ""
- },
- {
-  "vi": "lái xe tải",
-  "en": ""
- },
- {
-  "vi": "thuộc đường nội thành",
-  "en": ""
- },
- {
-  "vi": "bốc xếp hàng",
-  "en": ""
- },
- {
-  "vi": "giao nhận chứng từ",
-  "en": ""
- },
- {
-  "vi": "bằng lái xe hạng C",
-  "en": ""
- },
- {
-  "vi": "Kế toán kho",
-  "en": ""
- },
- {
-  "vi": "phần mềm kế toán",
-  "en": ""
- },
- {
-  "vi": "Excel nâng cao",
-  "en": ""
- },
- {
-  "vi": "đối chiếu công nợ",
-  "en": ""
- },
- {
-  "vi": "bằng cao đẳng kế toán",
-  "en": ""
- },
- {
-  "vi": "tiếng Anh giao tiếp",
-  "en": ""
- },
- {
-  "vi": "nấu ăn",
-  "en": ""
- },
- {
-  "vi": "đàn guitar",
-  "en": ""
- },
- {
-  "vi": "cờ tướng",
-  "en": ""
- },
- {
-  "vi": "chạy bộ",
-  "en": ""
- },
- {
-  "vi": "trồng cây",
-  "en": ""
- },
- {
-  "vi": "Mời phỏng vấn",
-  "en": ""
- },
- {
-  "vi": "Không mời",
-  "en": ""
- },
- {
-  "vi": "“Mới cưới, chắc sắp sinh con. Loại đi em.” — Anh Quân",
-  "en": ""
- },
- {
-  "vi": "“Quê xa thế, làm vài tháng lại về quê thôi.” — Linh",
-  "en": ""
- },
- {
-  "vi": "“Lớn tuổi rồi, khó bảo lắm.” — Chú Lâm",
-  "en": ""
- },
- {
-  "vi": "“Con gái chân yếu tay mềm, làm sao bê nổi.” — Chú Lâm",
-  "en": ""
- },
- {
-  "vi": "Tốt nghiệp THPT",
-  "en": ""
- },
- {
-  "vi": "Trung cấp nghề",
-  "en": ""
- },
- {
-  "vi": "Cao đẳng",
-  "en": ""
- },
- {
-  "vi": "Đủ kinh nghiệm, kỹ năng và bằng cấp theo yêu cầu.",
-  "en": ""
- },
- {
-  "vi": "Bằng là yêu cầu bắt buộc mà chưa có bản sao — xin bổ sung rồi mới mời.",
-  "en": ""
- },
- {
-  "vi": "Lương mong muốn cao hơn khung chỉ cần thương lượng; đủ điều kiện thì vẫn mời.",
-  "en": ""
- },
- {
-  "vi": "“Email gì mà trẻ con thế, loại cho nhanh.” — Linh",
-  "en": ""
- },
- {
-  "vi": "Địa chỉ email ngộ nghĩnh không phải lý do để loại người đủ điều kiện.",
-  "en": ""
- },
- {
-  "vi": "Không loại vì giới tính, hôn nhân, quê quán hay tuổi tác — chỉ xét yêu cầu công việc.",
-  "en": ""
- },
- {
-  "vi": "“Cháu anh đấy, cho vào thẳng nhé.” — Anh Quân",
-  "en": ""
- },
- {
-  "vi": "Người quen giới thiệu vẫn phỏng vấn như mọi người; hồ sơ đủ điều kiện.",
-  "en": ""
- },
- {
-  "vi": "Kinh nghiệm: chưa đi làm",
-  "en": ""
- },
- {
-  "vi": "Đã có sổ BHXH bổ sung, đủ kinh nghiệm.",
-  "en": ""
- },
- {
-  "vi": "Ứng viên đã rút hồ sơ.",
-  "en": ""
- },
- {
-  "vi": "Nguyên tắc lọc hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Chỉ xét yêu cầu công việc: không loại vì giới tính, hôn nhân, tuổi, quê quán.",
-  "en": ""
- },
- {
-  "vi": "CV và tra cứu BHXH lệch nhau, hoặc thiếu bản sao bằng bắt buộc → Cần xác minh.",
-  "en": ""
- },
- {
-  "vi": "Người quen giới thiệu vẫn xét như mọi người.",
-  "en": ""
- },
- {
-  "vi": "thứ Hai",
-  "en": ""
- },
- {
-  "vi": "thứ Ba",
-  "en": ""
- },
- {
-  "vi": "thứ Tư",
-  "en": ""
- },
- {
-  "vi": "thứ Năm",
-  "en": ""
- },
- {
-  "vi": "thứ Sáu",
-  "en": ""
- },
- {
-  "vi": "✓ Đủ công",
-  "en": ""
- },
- {
-  "vi": "Đi muộn",
-  "en": ""
- },
- {
-  "vi": "Về sớm",
-  "en": ""
- },
- {
-  "vi": "Thiếu giờ ra/vào",
-  "en": ""
- },
- {
-  "vi": "Nghỉ có phép",
-  "en": ""
- },
- {
-  "vi": "Nghỉ không phép",
-  "en": ""
- },
- {
-  "vi": "Chấm hộ",
-  "en": ""
- },
- {
-  "vi": "Đi công tác",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng (Xưởng)",
-  "en": ""
- },
- {
-  "vi": "Trễ trong 5 phút cho phép, vẫn đủ công.",
-  "en": ""
- },
- {
-  "vi": "Vào sau 08:05 là đi muộn.",
-  "en": ""
- },
- {
-  "vi": "Ra trước 17:00 là về sớm.",
-  "en": ""
- },
- {
-  "vi": "Máy chỉ ghi một lần quẹt thẻ.",
-  "en": ""
- },
- {
-  "vi": "Có đơn nghỉ phép đã duyệt.",
-  "en": ""
- },
- {
-  "vi": "Vắng mà không có đơn từ gì.",
   "en": ""
  }
 ]

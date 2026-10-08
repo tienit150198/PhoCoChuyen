@@ -1,5 +1,473 @@
 [
  {
+  "vi": "👂 Tiếng thở dốc, đứt quãng, tiếng ghế đổ.",
+  "en": ""
+ },
+ {
+  "vi": "👂 Tiếng cải lương ra-đi-ô, tiếng quạt máy.",
+  "en": ""
+ },
+ {
+  "vi": "🔎 “Đau từ nãy… lan ra tay trái… mồ hôi ướt áo…”",
+  "en": ""
+ },
+ {
+  "vi": "🔎 “Ờ thì… hồi sáng đau, giờ đỡ rồi. Cô nói chuyện chút đi.”",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Gọi lại: ông thở dốc, giọng yếu: “Ngực… đau quá…”",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Gọi lại: “Ờ cô hả! Tại tui lỡ tay. Mà cô ăn cơm chưa?”",
+  "en": ""
+ },
+ {
+  "vi": "Cuộc gọi im lặng",
+  "en": ""
+ },
+ {
+  "vi": "(Im lặng… tiếng thở… rồi tiếng đồ vật rơi.)",
+  "en": ""
+ },
+ {
+  "vi": "(Thì thầm) “…số 8 hẻm 21 Lý Mây…”",
+  "en": ""
+ },
+ {
+  "vi": "(Thì thầm) “…có người lạ… cạy cửa…”",
+  "en": ""
+ },
+ {
+  "vi": "(Thì thầm) “…em với bé… trốn trong phòng…”",
+  "en": ""
+ },
+ {
+  "vi": "(Thì thầm) “…nó cầm cây sắt…”",
+  "en": ""
+ },
+ {
+  "vi": "(Bấm phím 5)",
+  "en": ""
+ },
+ {
+  "vi": "(Tiếng xe máy, tiếng gió.)",
+  "en": ""
+ },
+ {
+  "vi": "(Tiếng nhạc bolero, tiếng ai đó hát theo.)",
+  "en": ""
+ },
+ {
+  "vi": "(Không ai trả lời.)",
+  "en": ""
+ },
+ {
+  "vi": "(Tiếng còi xe.)",
+  "en": ""
+ },
+ {
+  "vi": "👂 Tiếng thở dồn dập, tiếng cửa bị cạy kèn kẹt.",
+  "en": ""
+ },
+ {
+  "vi": "👂 Tiếng gió, tiếng xe máy, ai đó hát bolero lạc giọng.",
+  "en": ""
+ },
+ {
+  "vi": "🔎 “Không nói được thì bấm phím 5.” — Tít. Tít.",
+  "en": ""
+ },
+ {
+  "vi": "🔎 “Không nói được thì bấm phím 5.” — Không có tiếng phím nào, chỉ tiếng xe.",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Gọi lại: máy đổ một hồi rồi tắt, như có người vội bấm tắt.",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Gọi lại: “Ủa alo? Chắc máy trong túi quần tự bấm, xin lỗi nha!”",
+  "en": ""
+ },
+ {
+  "vi": "“Có cướp!” ở nhà bên",
+  "en": ""
+ },
+ {
+  "vi": "“Có cướp! Có cướp ở nhà bên! Cho công an tới liền!”",
+  "en": ""
+ },
+ {
+  "vi": "“Số 12 đường Bàng, nhà bên cạnh nhà tôi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Hai thằng trèo tường vô nhà bên, nhà đó đi vắng.”",
+  "en": ""
+ },
+ {
+  "vi": "“Nhà đó không có ai.”",
+  "en": ""
+ },
+ {
+  "vi": "“Tụi nó có xe máy chờ ngoài.”",
+  "en": ""
+ },
+ {
+  "vi": "“Số tôi nè.”",
+  "en": ""
+ },
+ {
+  "vi": "“Thì… nó đậu xe chắn cổng nhà tôi! Cướp lối đi là cướp chứ gì!”",
+  "en": ""
+ },
+ {
+  "vi": "“Nhà nó ba người, ngồi nhậu.”",
+  "en": ""
+ },
+ {
+  "vi": "“Nguy hiểm là tôi không dắt xe ra được!”",
+  "en": ""
+ },
+ {
+  "vi": "👂 Tiếng chó sủa dữ dội, tiếng ngói rơi, tiếng xe máy nổ máy chờ.",
+  "en": ""
+ },
+ {
+  "vi": "👂 Tiếng nhậu “dô dô”, tiếng karaoke.",
+  "en": ""
+ },
+ {
+  "vi": "🔎 “Hai đứa áo đen, đội nón, đang khiêng cái ti vi ra.”",
+  "en": ""
+ },
+ {
+  "vi": "🔎 “Ờ thì nó không cướp đồ… nó cướp chỗ đậu xe.”",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Gọi lại: “Tụi nó đang chạy ra đầu hẻm kìa!”",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Gọi lại: “Thôi được rồi, xe chắn cổng thôi, mà cô cho công an tới đi!”",
+  "en": ""
+ },
+ {
+  "vi": "“Có người trôi trên kênh!”",
+  "en": ""
+ },
+ {
+  "vi": "“Hình như có người trôi trên kênh! Tôi đứng trên cầu thấy!”",
+  "en": ""
+ },
+ {
+  "vi": "“Cầu Mây, phía chợ, giữa cầu.”",
+  "en": ""
+ },
+ {
+  "vi": "“Có cái gì như người nổi trên mặt nước, trôi chậm.”",
+  "en": ""
+ },
+ {
+  "vi": "“Một người, hình như mặc áo đỏ.”",
+  "en": ""
+ },
+ {
+  "vi": "“Hình như… có tay… mà không chắc.”",
+  "en": ""
+ },
+ {
+  "vi": "“Nó trôi lững lờ.”",
+  "en": ""
+ },
+ {
+  "vi": "👂 Tiếng người dưới nước kêu “cứu… cứu…” đứt quãng.",
+  "en": ""
+ },
+ {
+  "vi": "👂 Chỉ tiếng nước và tiếng xe trên cầu.",
+  "en": ""
+ },
+ {
+  "vi": "🔎 “Nó đang quơ tay! Là người thật, đang chới với!”",
+  "en": ""
+ },
+ {
+  "vi": "🔎 “Đợi chút… à, là cái bao phân bón màu đỏ. Xin lỗi cô.”",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Gọi lại: “Người thật đó cô! Có người ném can nhựa xuống rồi!”",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Gọi lại: “Bao rác thôi cô ơi, tôi nhìn nhầm.”",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi bị đau tim” (gọi tuần nào cũng gọi)",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi đau tim sắp chết rồi! Cho xe tới, cho cả phóng viên tới luôn!”",
+  "en": ""
+ },
+ {
+  "vi": "“Số 44 đường Lý Mây, lầu một.”",
+  "en": ""
+ },
+ {
+  "vi": "“Tim tôi đập loạn, khó thở.”",
+  "en": ""
+ },
+ {
+  "vi": "“Có mình tôi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Số tôi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Bồ tôi chia tay tôi! Đau tim đó! Cho xe tới để nó biết tôi khổ!”",
+  "en": ""
+ },
+ {
+  "vi": "“Có tôi với con mèo, mà con mèo bỏ đi rồi.”",
+  "en": ""
+ },
+ {
+  "vi": "👂 Tiếng thở gấp, đứt câu.",
+  "en": ""
+ },
+ {
+  "vi": "👂 Tiếng nhạc buồn, tiếng gõ phím “đăng story”.",
+  "en": ""
+ },
+ {
+  "vi": "🔎 “Đau từ ngực lan ra lưng, chóng mặt, tay lạnh…”",
+  "en": ""
+ },
+ {
+  "vi": "🔎 “Ờ… không đau lắm. Mà xe tới có chụp hình được không?”",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Gọi lại: giọng yếu dần: “Tôi… mệt quá…”",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Gọi lại: “Thôi khỏi, bồ tôi nhắn lại rồi. Cảm ơn nha!”",
+  "en": ""
+ },
+ {
+  "vi": "Khách say đòi gọi taxi",
+  "en": ""
+ },
+ {
+  "vi": "“Ê… tổng đài… gọi giùm anh cái taxi… (nấc) anh xỉn quá…”",
+  "en": ""
+ },
+ {
+  "vi": "“Quán… quán Ba Khía… đường Lý Mây.”",
+  "en": ""
+ },
+ {
+  "vi": "“Nhậu xong… gọi xe về… (nấc)”",
+  "en": ""
+ },
+ {
+  "vi": "“Có anh với… cái xe máy.”",
+  "en": ""
+ },
+ {
+  "vi": "“Không… anh tính chạy về luôn cũng được.”",
+  "en": ""
+ },
+ {
+  "vi": "“Số anh nè… em lưu đi (cười).”",
+  "en": ""
+ },
+ {
+  "vi": "“Tổng đài gì mà taxi cũng không gọi giùm?”",
+  "en": ""
+ },
+ {
+  "vi": "“Vậy em cho xe cứu thương chở anh về đi, free mà!”",
+  "en": ""
+ },
+ {
+  "vi": "Mèo kẹt trên cây từ ba giờ sáng",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi gọi từ ba giờ sáng mà máy bận hoài! Con Mun nhà tôi kẹt trên cây xoài từ đó tới giờ!”",
+  "en": ""
+ },
+ {
+  "vi": "“Số 6 hẻm 9 Cây Me, nhà có cây xoài to.”",
+  "en": ""
+ },
+ {
+  "vi": "“Con Mun leo lên cây xoài, kêu meo meo không chịu xuống.”",
+  "en": ""
+ },
+ {
+  "vi": "“Không ai bị gì, có con Mun thôi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Không có gì nguy hiểm… trừ cái đầu tôi nhức.”",
+  "en": ""
+ },
+ {
+  "vi": "“Cho xe cứu hỏa có thang tới đi, nó sợ lắm!”",
+  "en": ""
+ },
+ {
+  "vi": "“Mèo cũng là mạng sống mà cháu!”",
+  "en": ""
+ },
+ {
+  "vi": "Karaoke hàng xóm hát tới khuya",
+  "en": ""
+ },
+ {
+  "vi": "“Nhà số 14 hát karaoke từ chiều tới giờ, loa thùng rung cả kính! Cho công an tới bắt!”",
+  "en": ""
+ },
+ {
+  "vi": "“Hẻm 9 Cây Me, nhà số 14.”",
+  "en": ""
+ },
+ {
+  "vi": "“Hát karaoke, loa thùng, bài “Đắp mộ cuộc tình” lần thứ tám.”",
+  "en": ""
+ },
+ {
+  "vi": "“Nhà họ chục người. Bên tôi có bà cụ không ngủ được.”",
+  "en": ""
+ },
+ {
+  "vi": "“Không có, chỉ ồn.”",
+  "en": ""
+ },
+ {
+  "vi": "“Số cô Hạnh tổ 4.”",
+  "en": ""
+ },
+ {
+  "vi": "“Đường dây khẩn mà không xử chuyện khẩn của dân à?”",
+  "en": ""
+ },
+ {
+  "vi": "“Bà cụ mất ngủ là khẩn chứ gì nữa!”",
+  "en": ""
+ },
+ {
+  "vi": "MC radio xin “một câu cho thính giả”",
+  "en": ""
+ },
+ {
+  "vi": "“Hello tổng đài! Long đây, Mây FM giờ cao điểm. Cho xin một câu chill chill về vụ cháy hôm qua đi, đang lên sóng nè!”",
+  "en": ""
+ },
+ {
+  "vi": "“Đài Mây FM, phòng thu số 2 nha.”",
+  "en": ""
+ },
+ {
+  "vi": "“Xin một câu nói về vụ cháy hôm qua, ai bị gì, nhà ai.”",
+  "en": ""
+ },
+ {
+  "vi": "“Có Long với ba chục ngàn thính giả.”",
+  "en": ""
+ },
+ {
+  "vi": "“Nguy hiểm là rating tụt đó.”",
+  "en": ""
+ },
+ {
+  "vi": "“Số đài, ghi đi cho vibe.”",
+  "en": ""
+ },
+ {
+  "vi": "“Một câu thôi mà, nói tên người bị nạn cho thính giả cầu nguyện đi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Không nói thì Long nói tổng đài làm khó báo chí nha.”",
+  "en": ""
+ },
+ {
+  "vi": "“Người quan trọng” đòi công an dẫn đường",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi là phó chủ tịch hội doanh nghiệp. Kẹt xe quá, cho xe công an hú còi dẫn đường cho tôi ra sân bay!”",
+  "en": ""
+ },
+ {
+  "vi": "“Đại lộ Mây, đang kẹt ở cầu.”",
+  "en": ""
+ },
+ {
+  "vi": "“Kẹt xe, tôi trễ chuyến bay đi Singapore.”",
+  "en": ""
+ },
+ {
+  "vi": "“Có tôi với tài xế.”",
+  "en": ""
+ },
+ {
+  "vi": "“Nguy hiểm là trễ hợp đồng mấy tỷ!”",
+  "en": ""
+ },
+ {
+  "vi": "“Số tôi, lưu vào danh bạ VIP đi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi gọi giám đốc trung tâm cô liền bây giờ!”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi nhầm đặt phở",
+  "en": ""
+ },
+ {
+  "vi": "“Cho hai tô phở tái nạm, một tô không hành, giao số 3 đường Bàng nha em!”",
+  "en": ""
+ },
+ {
+  "vi": "“Số 3 đường Bàng.”",
+  "en": ""
+ },
+ {
+  "vi": "“Hai tô phở tái nạm, một tô không hành.”",
+  "en": ""
+ },
+ {
+  "vi": "“Hai người ăn.”",
+  "en": ""
+ },
+ {
+  "vi": "“Đói là nguy hiểm đó em (cười).”",
+  "en": ""
+ },
+ {
+  "vi": "“Số chị nè.”",
+  "en": ""
+ },
+ {
+  "vi": "Bà cụ hỏi kết quả xổ số",
+  "en": ""
+ },
+ {
   "vi": "“Tổng đài hả con? Chiều nay đài Mây xổ con gì vậy con?”",
   "en": ""
  },
@@ -1329,474 +1797,6 @@
  },
  {
   "vi": "Hừm… báo cáo này thuyết phục hơn biểu đồ đẹp.",
-  "en": ""
- },
- {
-  "vi": "Sửa giờ cho đẹp",
-  "en": ""
- },
- {
-  "vi": "Nhật ký tổng đài bị sửa giờ, người khiếu nại đối chiếu ra ngay.",
-  "en": ""
- },
- {
-  "vi": "Một người khiếu nại đối chiếu với điện thoại của họ. Nhật ký bị phát hiện sửa.",
-  "en": ""
- },
- {
-  "vi": "Người khiếu nại",
-  "en": ""
- },
- {
-  "vi": "Máy tôi ghi ba phút mới có người nghe, sổ ghi mười giây?",
-  "en": ""
- },
- {
-  "vi": "Không sửa, nhưng cũng không nói gì",
-  "en": ""
- },
- {
-  "vi": "Không sửa là đúng, nhưng chẳng ai biết vì sao chậm.",
-  "en": ""
- },
- {
-  "vi": "Số liệu thật, nhưng quý sau vẫn thiếu người như cũ.",
-  "en": ""
- },
- {
-  "vi": "Không sửa là tốt. Nói ra lý do thì tốt hơn.",
-  "en": ""
- },
- {
-  "vi": "Nhật ký cuộc gọi phải đúng sự thật; số liệu xấu cần lý do và đề xuất, không cần tô vẽ.",
-  "en": ""
- },
- {
-  "vi": "Ba cuộc gọi đùa, cuộc thứ tư",
-  "en": ""
- },
- {
-  "vi": "Sáng nay ba cuộc gọi đùa “cháy nhà” từ cùng một khu. Cuộc thứ tư, cũng khu đó, một giọng nhỏ: “Có khói… thiệt mà…”",
-  "en": ""
- },
- {
-  "vi": "Mỗi cuộc gọi là một cuộc mới. Gọi đùa ba lần không làm cuộc thứ tư thành đùa.",
-  "en": ""
- },
- {
-  "vi": "Cách kiểm",
-  "en": ""
- },
- {
-  "vi": "Nghe tiếng nền, hỏi chi tiết, gọi lại số máy trước khi quyết không gửi.",
-  "en": ""
- },
- {
-  "vi": "Chính bạn",
-  "en": ""
- },
- {
-  "vi": "Bạn đã bực vì ba cuộc trước.",
-  "en": ""
- },
- {
-  "vi": "Hỏi chi tiết, lắng nghe, gọi lại; có dấu hiệu thật thì gửi xe ngay",
-  "en": ""
- },
- {
-  "vi": "Em gọi cháy lần đầu trong đời mà cô tổng đài tin em, hỏi kỹ lắm.",
-  "en": ""
- },
- {
-  "vi": "Tiếng lửa lách tách rõ trong máy. Xe tới khi lửa mới bén tới mái hiên.",
-  "en": ""
- },
- {
-  "vi": "Tới sớm năm phút là cứu được cả dãy.",
-  "en": ""
- },
- {
-  "vi": "Cậu bé gọi",
-  "en": ""
- },
- {
-  "vi": "Em sợ không ai tin em.",
-  "en": ""
- },
- {
-  "vi": "“Lại đùa nữa hả!” rồi cúp máy",
-  "en": ""
- },
- {
-  "vi": "Gọi báo cháy thật mà bị mắng là gọi đùa.",
-  "en": ""
- },
- {
-  "vi": "Mười phút sau cuộc gọi thứ năm: cháy thật, lan ba căn.",
-  "en": ""
- },
- {
-  "vi": "Cái bực của mình không được quyết thay cho người gọi.",
-  "en": ""
- },
- {
-  "vi": "Gửi xe luôn, khỏi hỏi",
-  "en": ""
- },
- {
-  "vi": "Xe tới nhanh, nhưng địa chỉ không rõ nên vòng hai lần.",
-  "en": ""
- },
- {
-  "vi": "Xe tới được, nhưng tổng đài không có số nhà nên đội phải dò.",
-  "en": ""
- },
- {
-  "vi": "Gửi là đúng, nhưng cho anh cái địa chỉ chứ.",
-  "en": ""
- },
- {
-  "vi": "Mỗi cuộc gọi là một cuộc mới: kiểm tra rồi quyết, đừng để cái bực quyết thay.",
-  "en": ""
- },
- {
-  "vi": "Người gọi là hàng xóm của bạn",
-  "en": ""
- },
- {
-  "vi": "Giọng quen quen: là cô Hạnh hàng xóm. “Nhà bà Tám cạnh nhà con bốc khói! Con về liền đi!”",
-  "en": ""
- },
- {
-  "vi": "Bàn trực",
-  "en": ""
- },
- {
-  "vi": "Trực ban không rời bàn khi ca chưa có người thay.",
-  "en": ""
- },
- {
-  "vi": "Đội",
-  "en": ""
- },
- {
-  "vi": "Xe chữa cháy cách đó ba phút, xe cấp cứu sẵn sàng.",
-  "en": ""
- },
- {
-  "vi": "Lòng bạn",
-  "en": ""
- },
- {
-  "vi": "Nhà bạn sát bên, mẹ bạn đang ở nhà.",
-  "en": ""
- },
- {
-  "vi": "Làm đúng kịch bản, gửi xe, hướng dẫn cô Hạnh đưa mọi người ra ngoài; nhờ chị Thảo gọi cho mẹ",
-  "en": ""
- },
- {
-  "vi": "Con bé nghe giọng run run mà vẫn hỏi đủ, xe tới liền. Cả xóm ra ngoài an toàn.",
-  "en": ""
- },
- {
-  "vi": "Xe tới sau ba phút. Mẹ bạn đứng ngoài đầu hẻm, gọi điện báo “mẹ không sao”.",
-  "en": ""
- },
- {
-  "vi": "Nó run mà vẫn bình tĩnh hơn tôi.",
-  "en": ""
- },
- {
-  "vi": "Bàn trực vững thì cả xóm vững.",
-  "en": ""
- },
- {
-  "vi": "Bỏ bàn trực chạy về",
-  "en": ""
- },
- {
-  "vi": "Trực ban bỏ máy chạy về nhà, ba cuộc gọi khác không ai nghe.",
-  "en": ""
- },
- {
-  "vi": "Bạn về tới thì xe đã tới. Trong lúc đó tổng đài thiếu một người.",
-  "en": ""
- },
- {
-  "vi": "Em chạy về cũng không dập được lửa.",
-  "en": ""
- },
- {
-  "vi": "Gửi xe luôn, bỏ qua câu hỏi vì biết nhà rồi",
-  "en": ""
- },
- {
-  "vi": "Gửi nhanh nhưng không hỏi có ai kẹt trong nhà không.",
-  "en": ""
- },
- {
-  "vi": "Đội tới mới biết bà Tám còn ở trên gác, mất thêm hai phút tìm.",
-  "en": ""
- },
- {
-  "vi": "Biết có người trên gác từ đầu thì anh vô thẳng.",
-  "en": ""
- },
- {
-  "vi": "Chuyện của người quen vẫn làm đủ kịch bản; bàn trực không bỏ trống.",
-  "en": ""
- },
- {
-  "vi": "“Giọng em dễ thương quá”",
-  "en": ""
- },
- {
-  "vi": "Anh Tùng · người gọi hỏi đường",
-  "en": ""
- },
- {
-  "vi": "“Ủa tổng đài gì mà giọng ngọt vậy? Cho anh xin số riêng, tối anh gọi nghe giọng em ngủ.”",
-  "en": ""
- },
- {
-  "vi": "“Có số thôi mà, anh hứa không làm phiền.”",
-  "en": ""
- },
- {
-  "vi": "“Lạnh lùng vl, tổng đài phải thân thiện chứ.”",
-  "en": ""
- },
- {
-  "vi": "Đây là đường dây khẩn, tôi phải giữ máy cho người cần.",
-  "en": ""
- },
- {
-  "vi": "Tổng đài không cho số riêng.",
-  "en": ""
- },
- {
-  "vi": "Hỏi đường thì anh gọi tổng đài thông tin nhé.",
-  "en": ""
- },
- {
-  "vi": "Anh Tùng “ờ” một tiếng rồi cúp. Đường dây trống kịp cho cuộc gọi kế.",
-  "en": ""
- },
- {
-  "vi": "Bạn cho số. Tối đó anh Tùng gọi mười cuộc, có cuộc lúc hai giờ sáng.",
-  "en": ""
- },
- {
-  "vi": "Giỏ trái cây “cảm ơn”",
-  "en": ""
- },
- {
-  "vi": "Bà Liên · người được cứu tuần trước",
-  "en": ""
- },
- {
-  "vi": "Bà Liên xách giỏ trái cây có kẹp phong bì lên tận phòng trực: “Con nhận cho bà vui, nhờ con mà nhà bà còn.”",
-  "en": ""
- },
- {
-  "vi": "“Có chút trái cây với ít tiền uống nước thôi mà.”",
-  "en": ""
- },
- {
-  "vi": "“Không nhận là chê bà hả con?”",
-  "en": ""
- },
- {
-  "vi": "Trung tâm không cho nhận tiền của người dân.",
-  "en": ""
- },
- {
-  "vi": "Bà viết vài dòng vào hộp thư cảm ơn là con vui lắm rồi.",
-  "en": ""
- },
- {
-  "vi": "Bà Liên rút phong bì lại, để giỏ trái cây cho cả phòng: “Vậy cái này chia nhau ăn.” Chị Thảo ghi vào sổ quà tặng.",
-  "en": ""
- },
- {
-  "vi": "Bạn nhận phong bì. Tuần sau có người gọi tổng đài hỏi “gửi bao nhiêu thì xe tới nhanh hơn”.",
-  "en": ""
- },
- {
-  "vi": "DJ Long rủ lên sóng",
-  "en": ""
- },
- {
-  "vi": "DJ Long · Mây FM",
-  "en": ""
- },
- {
-  "vi": "“Lên sóng với Long đi, kể vụ cháy hôm qua cho drama, Long tặng vé concert hai người, ngồi hàng VIP!”",
-  "en": ""
- },
- {
-  "vi": "“Vé VIP đó, cháy vé từ tuần trước.”",
-  "en": ""
- },
- {
-  "vi": "“Một chút thôi, đổi tên người bị nạn là được mà.”",
-  "en": ""
- },
- {
-  "vi": "Chuyện của người gọi là bí mật, không kể lên sóng.",
-  "en": ""
- },
- {
-  "vi": "Long mời phòng truyền thông nói về cách gọi tổng đài cho đúng đi.",
-  "en": ""
- },
- {
-  "vi": "DJ Long nghĩ một hồi: “Ờ, mục ‘gọi tổng đài cho đúng’ nghe cũng có vibe.”",
-  "en": ""
- },
- {
-  "vi": "Bạn lên sóng kể chuyện. Người trong vụ cháy nghe ra nhà mình, gọi lên trung tâm khiếu nại.",
-  "en": ""
- },
- {
-  "vi": "Tổng đài không kể chuyện người ta, mà gợi ý cho mình mục hay ghê.",
-  "en": ""
- },
- {
-  "vi": "Lên sóng vui mà hôm sau bị khiếu nại, toang.",
-  "en": ""
- },
- {
-  "vi": "Rủ đi ăn tối đổi lịch trực",
-  "en": ""
- },
- {
-  "vi": "Anh Khải · Giám đốc trung tâm",
-  "en": ""
- },
- {
-  "vi": "“Tối nay đi ăn với anh, chỉ hai đứa. Lịch trực tháng sau anh xếp cho em toàn ca ngày.”",
-  "en": ""
- },
- {
-  "vi": "“Lịch trực nằm trong tay anh đó.”",
-  "en": ""
- },
- {
-  "vi": "“Em nghĩ kỹ đi, người khác muốn còn không được.”",
-  "en": ""
- },
- {
-  "vi": "Lịch trực xếp theo quy định, không đổi bằng một bữa ăn.",
-  "en": ""
- },
- {
-  "vi": "Anh Khải cười nhạt: “Cứng ghê.” Lịch trực tháng sau vẫn xếp đều như cả phòng.",
-  "en": ""
- },
- {
-  "vi": "Bạn đi ăn. Cả trung tâm xì xào, lịch trực “đẹp” của bạn bị đem ra họp.",
-  "en": ""
- },
- {
-  "vi": "Fan cuồng của “giọng tổng đài”",
-  "en": ""
- },
- {
-  "vi": "Một bạn trẻ · gọi mỗi tối",
-  "en": ""
- },
- {
-  "vi": "“Em nghe giọng chị trên clip cứu người, mê luôn. Cho em gặp chị một lần, em đứng dưới cổng trung tâm rồi nè!”",
-  "en": ""
- },
- {
-  "vi": "“Em chờ tới tan ca cũng được.”",
-  "en": ""
- },
- {
-  "vi": "“Chị không gặp là em gọi đường dây khẩn hoài đó.”",
-  "en": ""
- },
- {
-  "vi": "Chị không gặp riêng ai qua đường dây này.",
-  "en": ""
- },
- {
-  "vi": "Đường dây này để cứu người, em giữ cho người cần nhé.",
-  "en": ""
- },
- {
-  "vi": "Gọi đường dây khẩn không có việc khẩn là vi phạm.",
-  "en": ""
- },
- {
-  "vi": "Bạn trẻ im một hồi rồi “dạ” nhỏ, cúp máy. Bảo vệ báo bạn ấy đã về.",
-  "en": ""
- },
- {
-  "vi": "Bạn xuống cổng gặp. Từ đó bạn ấy gọi đường dây khẩn mỗi tối “để nghe giọng chị”.",
-  "en": ""
- },
- {
-  "vi": "“Chị bán hàng online không?”",
-  "en": ""
- },
- {
-  "vi": "Chị Mai · chủ shop online",
-  "en": ""
- },
- {
-  "vi": "“Em làm tổng đài chắc biết số điện thoại nhiều người lắm ha? Chia chị danh sách, chị trả hoa hồng ngon nè!”",
-  "en": ""
- },
- {
-  "vi": "“Có ai biết đâu em, danh sách thôi mà.”",
-  "en": ""
- },
- {
-  "vi": "“Một số một xu, ngàn số là ngàn xu đó.”",
-  "en": ""
- },
- {
-  "vi": "Số điện thoại người gọi là bí mật, không bán, không cho.",
-  "en": ""
- },
- {
-  "vi": "Em không làm chuyện đó.",
-  "en": ""
- },
- {
-  "vi": "Chị Mai tặc lưỡi rồi đi. Danh sách người gọi vẫn nằm yên trong hệ thống.",
-  "en": ""
- },
- {
-  "vi": "Bạn lén chép danh sách. Ba tuần sau người gọi tổng đài nhận tin rác bán kem trộn, thanh tra lần ra máy bạn.",
-  "en": ""
- },
- {
-  "vi": "Người gọi chửi rủa",
-  "en": ""
- },
- {
-  "vi": "Một người gọi say xỉn",
-  "en": ""
- },
- {
-  "vi": "“Tổng đài vô dụng! Tao gọi taxi mà mày không gọi! Tao biết mặt mày rồi đó, con kia!”",
-  "en": ""
- },
- {
-  "vi": "“Mày ngon thì nói tên ra!”",
-  "en": ""
- },
- {
-  "vi": "Hắn gọi lại lần nữa, giọng còn to hơn.",
-  "en": ""
- },
- {
-  "vi": "Tôi sẽ kết thúc cuộc gọi nếu anh tiếp tục xúc phạm.",
   "en": ""
  }
 ]

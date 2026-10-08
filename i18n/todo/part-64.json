@@ -1,5 +1,473 @@
 [
  {
+  "vi": "Khách muốn gửi vali có pin sạc dự phòng xuống khoang hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi luôn",
+  "en": ""
+ },
+ {
+  "vi": "Lấy pin ra cho khách mang theo người rồi mới gửi",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ pin vào thùng rác",
+  "en": ""
+ },
+ {
+  "vi": "Pin sạc dự phòng dễ cháy, phải ở trong khoang khách.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng 9 có khách dị ứng đậu phộng. Khách bên cạnh xin một gói đậu phộng.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa, vì người khác xin",
+  "en": ""
+ },
+ {
+  "vi": "Mời bánh bông lan thay, không phát đậu phộng cả hàng",
+  "en": ""
+ },
+ {
+  "vi": "Đưa nhưng dặn ăn nhỏ nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "Bụi đậu phộng cũng đủ làm người dị ứng khó thở.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đau ngực, vã mồ hôi giữa chuyến bay.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa thuốc của mình cho khách uống",
+  "en": ""
+ },
+ {
+  "vi": "Cho thở dưỡng khí, tìm bác sĩ trên chuyến, báo cơ trưởng",
+  "en": ""
+ },
+ {
+  "vi": "Chờ xem có đỡ không",
+  "en": ""
+ },
+ {
+  "vi": "Không đưa thuốc của mình; báo cơ trưởng để quyết định chuyển hướng.",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ An toàn đường ngang",
+  "en": ""
+ },
+ {
+  "vi": "An toàn đường ngang",
+  "en": ""
+ },
+ {
+  "vi": "Trung tâm huấn luyện Xí nghiệp Đường sắt Sông Mây (lớp giả lập)",
+  "en": ""
+ },
+ {
+  "vi": "Nhận lệnh và nhắc lại, đóng chắn đúng lúc, không mở chắn cho ai, nhìn hết đoàn tàu, tuần đường và báo đúng kênh. Luật chơi đơn giản của game.",
+  "en": ""
+ },
+ {
+  "vi": "Ga báo tàu: nhắc lại đủ số hiệu tàu, giờ rời ga trước, giờ qua đường ngang. Không rõ thì hỏi lại ngay, không “rõ” cho qua.",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn hai phía đường ngang trước khi đóng. Người, xe, gia súc trên ray: dẹp trước. Không dẹp kịp thì báo ga dừng tàu, cờ đỏ về phía tàu tới.",
+  "en": ""
+ },
+ {
+  "vi": "Chuông đèn bật trước, cần chắn hạ sau. Hạ khi tàu còn khoảng ba phút: sớm quá dân sốt ruột chui chắn, muộn quá là nguy hiểm.",
+  "en": ""
+ },
+ {
+  "vi": "Chắn đã hạ thì không nâng cho bất kỳ ai, kể cả xe cứu thương, đám tang, người dúi tiền. Nói rõ còn mấy phút, mời chờ sau vạch.",
+  "en": ""
+ },
+ {
+  "vi": "Đứng cờ xanh (đêm: đèn trắng) báo đường thông chỉ khi trên ray không còn ai. Có vật cản: cờ đỏ, đèn đỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn hết đoàn tàu: khói ở bầu trục, cửa toa mở, xích quệt lửa, không có đèn đuôi toa cuối: báo ga ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Trước khi nâng chắn, hỏi ga còn tàu nào không. Tàu chậm mà ga xác nhận tàu còn đứng ở ga trước thì được mở tạm.",
+  "en": ""
+ },
+ {
+  "vi": "Tuần đường: bu lông lỏng tự siết, ghi sổ; tà vẹt nứt ghi phiếu báo hỏng; ray nứt, đá trôi, ray cong: cắm cờ phòng vệ hai đầu và điện khẩn cho ga.",
+  "en": ""
+ },
+ {
+  "vi": "Ga báo tàu còn tám phút. Bạn làm gì trước?",
+  "en": ""
+ },
+ {
+  "vi": "Hạ chắn ngay",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc lại lệnh, nhìn đường ngang, dẹp người trên ray",
+  "en": ""
+ },
+ {
+  "vi": "Chờ thấy tàu rồi tính",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc lại lệnh, nhìn và dẹp đường ngang trước; còn khoảng ba phút thì đóng.",
+  "en": ""
+ },
+ {
+  "vi": "Chắn đã hạ, xe cứu thương xin qua, tàu còn hai phút.",
+  "en": ""
+ },
+ {
+  "vi": "Nâng chắn cho xe ưu tiên",
+  "en": ""
+ },
+ {
+  "vi": "Giữ chắn, nói rõ còn hai phút",
+  "en": ""
+ },
+ {
+  "vi": "Bảo xe đi đường khác rồi bỏ đi",
+  "en": ""
+ },
+ {
+  "vi": "Tàu không phanh kịp; hai phút chờ là an toàn cho cả xe cứu thương.",
+  "en": ""
+ },
+ {
+  "vi": "Tàu qua, bạn không thấy đèn đuôi toa cuối.",
+  "en": ""
+ },
+ {
+  "vi": "Báo ngay trực ban ga",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ cuối ca",
+  "en": ""
+ },
+ {
+  "vi": "Không có đèn đuôi có thể là đứt toa.",
+  "en": ""
+ },
+ {
+  "vi": "Đi tuần thấy bu lông mối nối lỏng.",
+  "en": ""
+ },
+ {
+  "vi": "Tự siết lại, ghi sổ tuần đường",
+  "en": ""
+ },
+ {
+  "vi": "Để tổ thợ tự thấy",
+  "en": ""
+ },
+ {
+  "vi": "Việc nhỏ trong tầm tay thì tự xử lý và ghi sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đàm rè, bạn chỉ nghe được nửa lệnh báo tàu.",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời “rõ” rồi đoán theo bảng giờ",
+  "en": ""
+ },
+ {
+  "vi": "Xin ga nhắc lại, rồi đọc lại đủ số hiệu và giờ",
+  "en": ""
+ },
+ {
+  "vi": "Chờ thấy tàu",
+  "en": ""
+ },
+ {
+  "vi": "Không rõ thì hỏi lại ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Thứ tự đúng khi đóng đường ngang?",
+  "en": ""
+ },
+ {
+  "vi": "Hạ chắn rồi bật chuông",
+  "en": ""
+ },
+ {
+  "vi": "Bật chuông đèn rồi mới hạ chắn",
+  "en": ""
+ },
+ {
+  "vi": "Bật cùng lúc",
+  "en": ""
+ },
+ {
+  "vi": "Chuông đèn báo trước để người đi đường dừng lại.",
+  "en": ""
+ },
+ {
+  "vi": "Khi nào hạ chắn?",
+  "en": ""
+ },
+ {
+  "vi": "Ngay khi ga báo, dù tàu còn hai mươi phút",
+  "en": ""
+ },
+ {
+  "vi": "Khi tàu còn khoảng ba phút",
+  "en": ""
+ },
+ {
+  "vi": "Khi thấy đèn tàu",
+  "en": ""
+ },
+ {
+  "vi": "Sớm quá người ta chui chắn, muộn quá thì nguy hiểm.",
+  "en": ""
+ },
+ {
+  "vi": "Chắn đã hạ, người dúi tiền xin nâng cho xe qua.",
+  "en": ""
+ },
+ {
+  "vi": "Nâng nhanh hai giây",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, giữ chắn, ghi biển số báo công an",
+  "en": ""
+ },
+ {
+  "vi": "Nhận tiền rồi không nâng",
+  "en": ""
+ },
+ {
+  "vi": "Chắn đã hạ thì không nâng cho ai.",
+  "en": ""
+ },
+ {
+  "vi": "Ga báo tàu còn hai phút, con bò đứng lì giữa ray.",
+  "en": ""
+ },
+ {
+  "vi": "Báo ga dừng tàu, cờ đỏ về phía tàu tới",
+  "en": ""
+ },
+ {
+  "vi": "Hạ chắn kệ con bò",
+  "en": ""
+ },
+ {
+  "vi": "Cầm cờ xanh cho tàu chạy chậm",
+  "en": ""
+ },
+ {
+  "vi": "Không dẹp kịp thì dừng tàu.",
+  "en": ""
+ },
+ {
+  "vi": "Khi nào giơ cờ xanh báo đường thông?",
+  "en": ""
+ },
+ {
+  "vi": "Khi chắn đã hạ và trên ray không còn ai",
+  "en": ""
+ },
+ {
+  "vi": "Khi tàu tới gần",
+  "en": ""
+ },
+ {
+  "vi": "Bất cứ lúc nào chắn đã hạ",
+  "en": ""
+ },
+ {
+  "vi": "Cờ xanh là lời bảo đảm đường ngang thông.",
+  "en": ""
+ },
+ {
+  "vi": "Tàu hàng vừa qua không có đèn đuôi.",
+  "en": ""
+ },
+ {
+  "vi": "Nâng chắn, ghi sổ",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lái tàu bằng điện thoại riêng",
+  "en": ""
+ },
+ {
+  "vi": "Tàu vừa qua hết. Trước khi nâng chắn bạn làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Nâng ngay cho xe đỡ dồn",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi ga còn tàu nào không",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn một bên rồi nâng",
+  "en": ""
+ },
+ {
+  "vi": "Có thể còn tàu chạy ngược chiều trên đường bên kia.",
+  "en": ""
+ },
+ {
+  "vi": "Chắn đã hạ, ga báo tàu chậm thêm hai mươi phút.",
+  "en": ""
+ },
+ {
+  "vi": "Tự nâng chắn cho xe qua",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi ga: tàu còn đứng ở ga trước không, ga xác nhận thì mở tạm",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ chòi đi uống nước",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ mở tạm khi ga xác nhận tàu còn đứng.",
+  "en": ""
+ },
+ {
+  "vi": "Đi tuần thấy đá ba-lát trôi, ray treo hẫng.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi phiếu báo hỏng",
+  "en": ""
+ },
+ {
+  "vi": "Tự xúc đá chèn rồi đi tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ nguy hiểm: phòng vệ và báo khẩn.",
+  "en": ""
+ },
+ {
+  "vi": "Đi tuần thấy một thanh tà vẹt nứt chân.",
+  "en": ""
+ },
+ {
+  "vi": "Điện khẩn, dừng hết tàu",
+  "en": ""
+ },
+ {
+  "vi": "Không gấp thì báo bằng phiếu cho tổ thợ.",
+  "en": ""
+ },
+ {
+  "vi": "Đồng nghiệp nhờ ký sổ giao ca “thiết bị bình thường” khi chưa thử.",
+  "en": ""
+ },
+ {
+  "vi": "Ký giúp",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, thử từng thiết bị rồi mới ký",
+  "en": ""
+ },
+ {
+  "vi": "Ký nhưng ghi “chưa thử”",
+  "en": ""
+ },
+ {
+  "vi": "Ký là nhận trách nhiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ Hành chính văn phòng",
+  "en": ""
+ },
+ {
+  "vi": "Hành chính văn phòng",
+  "en": ""
+ },
+ {
+  "vi": "Lọc hồ sơ công bằng, chấm công, hợp đồng lao động, lời nhắn và lịch họp, thư lừa đảo, an toàn máy tính. Luật chơi đơn giản của game.",
+  "en": ""
+ },
+ {
+  "vi": "Lọc hồ sơ chỉ theo yêu cầu công việc: kinh nghiệm, kỹ năng, bằng cấp. Không loại vì giới tính, hôn nhân, tuổi hay quê quán.",
+  "en": ""
+ },
+ {
+  "vi": "CV và tra cứu BHXH lệch nhau, hoặc thiếu bản sao bằng bắt buộc: xếp “Cần xác minh”, chưa mời ngay. Người quen giới thiệu vẫn xét như mọi người.",
+  "en": ""
+ },
+ {
+  "vi": "Chấm công: vào 08:00, trễ tới 08:05 vẫn đủ công. Nghỉ chỉ tính có phép khi đơn đã duyệt; đi công tác có lịch vẫn tính công.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng lao động: thử việc tối đa 60 ngày, lương thử việc ít nhất 85%; hợp đồng từ 1 tháng phải đóng bảo hiểm; không ký thay người lao động.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn điện thoại: ghi đủ họ tên, lấy số sau cùng người gọi đọc lại, giờ ghi theo 24 giờ (2 giờ rưỡi chiều là 14:30).",
+  "en": ""
+ },
+ {
+  "vi": "Thư lạ đòi chuyển tiền gấp hay báo đổi số tài khoản: gọi lại bằng số đã biết để xác minh, không làm theo thư.",
+  "en": ""
+ },
+ {
+  "vi": "Xếp lịch họp: không trùng người, phòng đủ chỗ và đủ thiết bị, tránh giờ người ta bận, vòng sau xếp sau vòng trước.",
+  "en": ""
+ },
+ {
+  "vi": "Máy tính: sao lưu trước khi sửa; không ai được hỏi mã OTP hay mật khẩu; nghỉ việc thì khóa quyền ngay hôm đó; nghi nhiễm mã độc thì rút mạng trước.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng viên đủ mọi yêu cầu nhưng email là “heocon.2k1@gmail.com”.",
+  "en": ""
+ },
+ {
+  "vi": "Loại vì email trẻ con",
+  "en": ""
+ },
+ {
+  "vi": "Email ngộ nghĩnh không phải lý do để loại người đủ điều kiện.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng công ghi 08:04 – 17:10.",
+  "en": ""
+ },
+ {
+  "vi": "Đủ công",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu giờ ra",
+  "en": ""
+ },
+ {
   "vi": "Trễ tới 08:05 vẫn đủ công.",
   "en": ""
  },
@@ -1329,474 +1797,6 @@
  },
  {
   "vi": "Mở từ 15:35, khi đã đủ ba mươi phút",
-  "en": ""
- },
- {
-  "vi": "Mở khi khách đòi",
-  "en": ""
- },
- {
-  "vi": "Ba mươi phút sau tiếng sấm cuối mới xuống lại.",
-  "en": ""
- },
- {
-  "vi": "Bé tám tuổi nói biết bơi, đòi ra khu sâu.",
-  "en": ""
- },
- {
-  "vi": "Tin lời bé",
-  "en": ""
- },
- {
-  "vi": "Cho bơi thử ở làn sát thành rồi mới quyết",
-  "en": ""
- },
- {
-  "vi": "Bảo mẹ bé quyết",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ nghiệp vụ lưu trữ",
-  "en": ""
- },
- {
-  "vi": "Lưu trữ",
-  "en": ""
- },
- {
-  "vi": "Trung tâm bồi dưỡng nghiệp vụ quận cùng Thư viện phường Mây (lớp giả lập)",
-  "en": ""
- },
- {
-  "vi": "Phường trả thêm phụ cấp lưu trữ cho mỗi lượt hồ sơ ở Thư viện – Lưu trữ phường Mây.",
-  "en": ""
- },
- {
-  "vi": "Giữ kho khô ráo, tiếp cận hồ sơ đúng quy định, giữ kín thông tin cá nhân, cấp bản sao chứ không đưa bản gốc, ghi sổ đủ.",
-  "en": ""
- },
- {
-  "vi": "Kho giấy giữ độ ẩm 45–60%. Cao hơn thì bật máy hút ẩm, kéo kệ cách tường; thấy mốc thì cách ly, không lau bằng khăn ướt.",
-  "en": ""
- },
- {
-  "vi": "Thấy mọt sách: cho sách bị mọt vào túi kín, báo khử trùng. Không xịt thuốc diệt côn trùng thẳng lên sách.",
-  "en": ""
- },
- {
-  "vi": "Ba mức tiếp cận: tài liệu mở ai cũng đọc được; hồ sơ cá nhân chỉ chính chủ, người thân có giấy tờ hoặc người được ủy quyền; tài liệu hạn chế cần lãnh đạo ký duyệt.",
-  "en": ""
- },
- {
-  "vi": "Người xin hồ sơ: xem căn cước, giấy tờ chứng minh quyền (ủy quyền có chứng thực, giấy chứng tử và giấy tờ quan hệ khi làm thừa kế), điền phiếu yêu cầu.",
-  "en": ""
- },
- {
-  "vi": "Thiếu giấy tờ thì hướng dẫn rõ còn thiếu gì; việc không được phép (xem hồ sơ người khác, sửa hồ sơ, rút trang) thì từ chối và chỉ nơi làm đúng.",
-  "en": ""
- },
- {
-  "vi": "Bản gốc không rời kho: cấp bản sao có dấu “sao y bản lưu trữ”. Cho mượn bản gốc trong cơ quan chỉ khi có phiếu đã duyệt và người nhận ký.",
-  "en": ""
- },
- {
-  "vi": "Mở hộp hồ sơ cũ: găng tay vải sạch, khẩu trang; cầm nhẹ tay giấy giòn. Mọi lượt khai thác ghi vào sổ, người nhận ký.",
-  "en": ""
- },
- {
-  "vi": "Mục lục ghi mà không thấy hồ sơ: tìm các hộp kế bên, xem sổ giao nhận trước. Chỉ lập biên bản thất lạc khi đã tìm kỹ.",
-  "en": ""
- },
- {
-  "vi": "Ẩm kế kho chỉ 68%. Bạn làm gì?",
-  "en": ""
- },
- {
-  "vi": "Bật máy hút ẩm, kiểm giấy trong hộp",
-  "en": ""
- },
- {
-  "vi": "Mở toang cửa sổ cho thoáng",
-  "en": ""
- },
- {
-  "vi": "Để đó, chiều xem",
-  "en": ""
- },
- {
-  "vi": "Kho giấy giữ 45–60%.",
-  "en": ""
- },
- {
-  "vi": "Người hàng xóm xin xem hồ sơ đất nhà bên cạnh.",
-  "en": ""
- },
- {
-  "vi": "Từ chối, hướng dẫn đề nghị qua bộ phận địa chính",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ cá nhân của người khác không cấp khi không có quyền.",
-  "en": ""
- },
- {
-  "vi": "Bản gốc giấy phép xây dựng năm 1996, người dân muốn mang đi công chứng.",
-  "en": ""
- },
- {
-  "vi": "Cho mượn một buổi",
-  "en": ""
- },
- {
-  "vi": "Cấp bản sao có dấu sao y",
-  "en": ""
- },
- {
-  "vi": "Cho mang đi, ghi nợ",
-  "en": ""
- },
- {
-  "vi": "Bản gốc không rời kho.",
-  "en": ""
- },
- {
-  "vi": "Mở hộp hồ sơ bụi năm 1980.",
-  "en": ""
- },
- {
-  "vi": "Găng tay vải, khẩu trang",
-  "en": ""
- },
- {
-  "vi": "Tay không cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Lau bụi bằng khăn ướt",
-  "en": ""
- },
- {
-  "vi": "Mồ hôi tay làm ố giấy; bụi cũ không tốt cho phổi.",
-  "en": ""
- },
- {
-  "vi": "Độ ẩm kho giấy nên giữ trong khoảng nào?",
-  "en": ""
- },
- {
-  "vi": "Quá ẩm giấy mốc, quá khô giấy giòn.",
-  "en": ""
- },
- {
-  "vi": "Ba cuốn sách mốc trắng mép trên kệ sát tường.",
-  "en": ""
- },
- {
-  "vi": "Lau bằng khăn ướt",
-  "en": ""
- },
- {
-  "vi": "Cách ly vào túi, kéo kệ cách tường, báo phụ trách",
-  "en": ""
- },
- {
-  "vi": "Xếp lại chỗ cũ",
-  "en": ""
- },
- {
-  "vi": "Khăn ướt làm mốc ăn sâu hơn.",
-  "en": ""
- },
- {
-  "vi": "Dưới kệ có bụi gỗ vàng li ti, trang sách thủng lỗ nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Xịt thuốc lên kệ",
-  "en": ""
- },
- {
-  "vi": "Cho sách bị mọt vào túi kín, báo khử trùng",
-  "en": ""
- },
- {
-  "vi": "Để đó",
-  "en": ""
- },
- {
-  "vi": "Thuốc xịt dính lên sách, độc cho người đọc.",
-  "en": ""
- },
- {
-  "vi": "Bà cụ xin bản sao giấy phép xây nhà của chính mình, có căn cước.",
-  "en": ""
- },
- {
-  "vi": "Cấp bản sao, điền phiếu yêu cầu",
-  "en": ""
- },
- {
-  "vi": "Bắt xin lãnh đạo duyệt",
-  "en": ""
- },
- {
-  "vi": "Chính chủ có giấy tờ thì được cấp.",
-  "en": ""
- },
- {
-  "vi": "Con gái xin hồ sơ hộ khẩu cũ của bố đã mất để làm thừa kế, quên giấy chứng tử.",
-  "en": ""
- },
- {
-  "vi": "Cấp luôn cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Hướng dẫn mang thêm giấy chứng tử, giấy tờ quan hệ",
-  "en": ""
- },
- {
-  "vi": "Từ chối hẳn",
-  "en": ""
- },
- {
-  "vi": "Thiếu giấy tờ thì hướng dẫn bổ sung.",
-  "en": ""
- },
- {
-  "vi": "Ai đó xin xem hồ sơ đất nhà hàng xóm “để kiện”.",
-  "en": ""
- },
- {
-  "vi": "Từ chối, chỉ nơi làm đúng thủ tục",
-  "en": ""
- },
- {
-  "vi": "Cho xem, không chụp",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ cá nhân không cấp cho người không có quyền.",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ lý lịch cán bộ (tài liệu hạn chế) cho người viết sách.",
-  "en": ""
- },
- {
-  "vi": "Cấp luôn",
-  "en": ""
- },
- {
-  "vi": "Trình lãnh đạo ký duyệt",
-  "en": ""
- },
- {
-  "vi": "Cho đọc tại chỗ không cần ai biết",
-  "en": ""
- },
- {
-  "vi": "Tài liệu hạn chế phải có lãnh đạo duyệt.",
-  "en": ""
- },
- {
-  "vi": "Người xin muốn mang bản gốc ra tiệm photo đầu ngõ cho rẻ.",
-  "en": ""
- },
- {
-  "vi": "Cho mang đi, dặn giữ kỹ",
-  "en": ""
- },
- {
-  "vi": "Sao tại thư viện, bản gốc ở lại",
-  "en": ""
- },
- {
-  "vi": "Cho mang, giữ căn cước làm tin",
-  "en": ""
- },
- {
-  "vi": "Phó Chủ tịch phường cần hồ sơ gấp, bảo “sổ với phiếu để sau”.",
-  "en": ""
- },
- {
-  "vi": "Mang lên ngay kèm phiếu, xin ký",
-  "en": ""
- },
- {
-  "vi": "Mang lên, khỏi ghi sổ",
-  "en": ""
- },
- {
-  "vi": "Bắt chờ đủ thủ tục ở kho",
-  "en": ""
- },
- {
-  "vi": "Gấp vẫn ghi sổ, mang phiếu tới tận nơi.",
-  "en": ""
- },
- {
-  "vi": "Mục lục ghi hồ sơ ở hộp 12 mà mở ra không thấy.",
-  "en": ""
- },
- {
-  "vi": "Bảo người xin về",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ hay kẹp nhầm hộp bên, hoặc đang có phòng ban mượn.",
-  "en": ""
- },
- {
-  "vi": "Bà cụ nhờ sửa năm sinh trong sổ cũ cho khớp căn cước.",
-  "en": ""
- },
- {
-  "vi": "Sửa một nét bút",
-  "en": ""
- },
- {
-  "vi": "Từ chối, hướng dẫn thủ tục đính chính",
-  "en": ""
- },
- {
-  "vi": "Dán giấy ghi chú đè lên",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ lưu trữ không được sửa tay.",
-  "en": ""
- },
- {
-  "vi": "Cấp bản sao xong. Việc cuối trước khi trả hộp về kệ?",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ khai thác, người nhận ký",
-  "en": ""
- },
- {
-  "vi": "Không cần ghi",
-  "en": ""
- },
- {
-  "vi": "Ghi vào giấy nháp",
-  "en": ""
- },
- {
-  "vi": "Mọi lượt khai thác đều ghi sổ.",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ Gác đèn biển",
-  "en": ""
- },
- {
-  "vi": "Gác đèn biển",
-  "en": ""
- },
- {
-  "vi": "Trung tâm huấn luyện Xí nghiệp Bảo đảm hàng hải Vịnh Ngọc (lớp giả lập)",
-  "en": ""
- },
- {
-  "vi": "Giữ đèn đúng giờ, đúng đặc tính; quan trắc và báo đài; báo nạn đúng mức, đúng vị trí; giữ nội quy trạm. Luật chơi đơn giản của game.",
-  "en": ""
- },
- {
-  "vi": "Thắp đèn trước giờ mặt trời lặn 15 phút, tắt sau giờ mặt trời mọc 15 phút (nội quy trạm của game). Tắt sớm lúc trời còn tối là nguy hiểm.",
-  "en": ""
- },
- {
-  "vi": "Thắp xong thì bấm giờ đếm chớp, so với danh mục đèn. Đèn sai đặc tính, còi sương mù hỏng: báo đài ngay để đài phát thông báo hàng hải.",
-  "en": ""
- },
- {
-  "vi": "Lau kính đèn thì tắt mô-tơ, treo biển cấm bật trước. Không lau khi bệ đèn đang quay.",
-  "en": ""
- },
- {
-  "vi": "Sổ trực, sổ dầu ghi đúng số đo, đúng sự thật. Ký nhận dầu thì đo bồn trước và sau khi bơm, ký đúng số lít vào.",
-  "en": ""
- },
- {
-  "vi": "Quan trắc: đọc máy đo gió, nhìn mặt biển, các mốc tầm xa, áp kế; báo đủ bốn số liệu. Gió từ cấp 6 hoặc áp giảm nhanh thì phát cảnh báo cho tàu thuyền.",
-  "en": ""
- },
- {
-  "vi": "Thấy người gặp nạn: báo đài đúng mức (MAYDAY RELAY khi tính mạng bị đe dọa, PAN-PAN khi cần giúp mà chưa nguy), đọc phương vị, khoảng cách, số người, rồi canh giữ mục tiêu.",
-  "en": ""
- },
- {
-  "vi": "Người dưới nước gần bờ: ném phao có dây, không nhảy xuống. Không bao giờ tự lấy xuồng ra khơi giữa sóng gió.",
-  "en": ""
- },
- {
-  "vi": "Khách ra đảo: xem giấy của xí nghiệp, chỉ ban ngày, có người đi kèm, không ai vào phòng đèn, không ai ở lại qua đêm. Người gặp nạn thì luôn cho trú tạm và báo đài.",
-  "en": ""
- },
- {
-  "vi": "Mặt trời lặn lúc 17:45. Thắp đèn lúc nào?",
-  "en": ""
- },
- {
-  "vi": "Trước giờ lặn 15 phút.",
-  "en": ""
- },
- {
-  "vi": "Đêm bão thấy pháo hiệu đỏ, xuồng của trạm nằm dưới bến.",
-  "en": ""
- },
- {
-  "vi": "Lấy xuồng ra cứu",
-  "en": ""
- },
- {
-  "vi": "Báo đài MAYDAY RELAY, đủ vị trí, canh giữ mục tiêu",
-  "en": ""
- },
- {
-  "vi": "Chờ pháo hiệu thứ hai",
-  "en": ""
- },
- {
-  "vi": "Báo đài đúng mức và canh giữ; không tự ra khơi.",
-  "en": ""
- },
- {
-  "vi": "Hai bạn chèo kayak ướt sũng, không giấy tờ, xin trú lúc trời tối.",
-  "en": ""
- },
- {
-  "vi": "Từ chối vì không có giấy",
-  "en": ""
- },
- {
-  "vi": "Cho trú tạm, báo đài",
-  "en": ""
- },
- {
-  "vi": "Cho ở lại, khỏi báo ai",
-  "en": ""
- },
- {
-  "vi": "Người gặp nạn luôn được trú, và đài phải biết.",
-  "en": ""
- },
- {
-  "vi": "Tàu tiếp tế bơm vào 170 lít, phiếu ghi 200.",
-  "en": ""
- },
- {
-  "vi": "Ký 200 cho êm",
-  "en": ""
- },
- {
-  "vi": "Ký 170, ghi chú giao thiếu",
-  "en": ""
- },
- {
-  "vi": "Không ký",
   "en": ""
  }
 ]

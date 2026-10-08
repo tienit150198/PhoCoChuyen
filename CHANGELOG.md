@@ -1,3 +1,7 @@
+# v1.9.20 — 2026-10-08
+
+Gom một bản các việc từ góp ý người chơi #248–#271 (chủ game 08/10): cấp bậc công an và cảnh cáo (#251 #253 #258), hạn kế toán doanh nghiệp (#265 #269), thi chứng chỉ ra ngoài (#267) và báo chợ ế cả phố (#263 #264), món đào và góp/rút vốn gõ số (#248 #259), học lịch sử Việt Nam (#255), ô nhập số (#250 #260 #262), phòng hát khớp giọng + 🎤 Hát cùng, thang lương theo chức + du học + làm ở nước ngoài (#249 #254; không có lương x5), biệt thự vào được (#270 #271), cho bạn trang trí + chuyện nhà thuê (#257 #261), bé ở nhà + bế bé đi chơi (#252). CSDL: SCHEMA_VERSION 31 (home_deco_grants, home_deco_log). Nhân viên tự nhập kho: không làm (chủ game).
+
 # v1.9.19 — 2026-10-07
 
 Gồm kara-sync (người nghe theo video của người hát trừ độ trễ giọng; `kara_vt` qua live, không khóa lưu) và typed-qty (gõ số trong mọi ô − N +, `public/js/qty-input.js`).

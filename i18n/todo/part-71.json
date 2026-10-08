@@ -1,5 +1,417 @@
 [
  {
+  "vi": "Cho ăn, dọn bể và chuồng, đo nhiệt, soi từng bể, cách ly bé ốm. Từ ngày 5, ngày lẻ nào cũng mở ca bằng vòng chăm.",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 2. Xem hóa đơn, seal, mã lô, hạn dùng, lỗi rồi quyết theo quy định: 7 ngày, có hóa đơn, còn nguyên seal; hàng lỗi đổi mới.",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3. Hỏi chủ nuôi, viết tờ tìm thú, dán lên bảng rồi lọc từng cuộc gọi: tin thật, nhầm con khác, kẻ lừa đòi chuyển tiền trước.",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3. Gọi xác nhận địa chỉ, đóng đúng đơn, chốt hóa đơn, chọn xe máy (10 xu) hoặc xe tải nhỏ (30 xu), ghi tiền thu hộ.",
+  "en": ""
+ },
+ {
+  "vi": "👂 Bấm [[Nghe khách nói]] (đơn giao hàng: [[Nghe máy]]) để biết khách cần gì.",
+  "en": ""
+ },
+ {
+  "vi": "❓ Chạm câu hỏi như [[Bé mấy tuổi?]], [[Bé có dị ứng gì không?]]. Hỏi ít nhất 2 điều rồi mới chọn.",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Đặt đúng món lên quầy: bao hạt trên kệ, cỡ bể với cá và đồ cho bể, hoặc bé thú kèm đồ dùng mang về.",
+  "en": ""
+ },
+ {
+  "vi": "📟 Ở máy tính tiền, bấm 📟 từng dòng cho đủ số món trên quầy; quét dư thì bấm − để bớt.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Bấm [[Chốt hóa đơn]]. Thấy sai thì [[Quét lại]] trước khi nhận tiền của khách.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Xem khách đưa bao nhiêu, chạm tờ tiền để đặt đủ tiền thối vào khay; đặt nhầm thì [[Bớt tờ cuối]].",
+  "en": ""
+ },
+ {
+  "vi": "✅ Bấm [[ĐƯA HÀNG · THỐI TIỀN]] để giao hàng và thối tiền.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Việc không qua quầy thì khép bằng [[XONG VÒNG CHĂM]], [[XONG VIỆC TÌM THÚ]], [[GIAO HÀNG]] hoặc nút quyết định đổi trả.",
+  "en": ""
+ },
+ {
+  "vi": "❓ Hỏi han: hỏi từ 2 điều trở lên mới được 5; không hỏi gì chỉ còn 3.",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Thức ăn đúng loài, đúng tuổi, đúng cỡ chó, đúng số túi, không có vị bé dị ứng.",
+  "en": ""
+ },
+ {
+  "vi": "🐠 Bể đủ lít cho cả đàn, có lọc (cá vàng hoặc bể từ 30 lít), luôn có khử clo, dặn ngâm túi cá và thay 1/3 nước.",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Hamster mang về đủ lồng, thức ăn, mùn lót; yến phụng đủ lồng, hạt kê. Nhận nuôi thì đánh đủ 3 mục trong giấy.",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Khách dặn màu nào thì chạm đúng màu đó; màu hiếm tính thêm tiền mỗi con.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Hóa đơn đúng từng món, thối đủ tiền.",
+  "en": ""
+ },
+ {
+  "vi": "⏱️ Làm nhanh: kiên nhẫn còn từ 90% mới được 5 ở Thời gian chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Bán hạt có vị bé dị ứng, hoặc để lọt lon pate quá hạn trong rổ giảm giá",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: 1★, khách không nhận, báo cáo lên app, hôm sau thú y phường tới kiểm tra. Sai loài là lỗi nặng, sai tuổi là lỗi rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Bể quá tải, thả 2 betta chung, betta với tứ vân, cá vàng với cá nhiệt đới",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn như trên: cá bệnh, rách vây, chết. Thiếu lọc, thiếu khử clo, dặn sai cách chăm là lỗi rõ (3★).",
+  "en": ""
+ },
+ {
+  "vi": "Giao thú cho người chưa sẵn sàng (bé đi mua một mình, chủ trọ cấm nuôi, nhà có người hen)",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: bé bị mang trả, 1★. Từ chối người đủ điều kiện, hoặc giao thiếu đồ dùng, là lỗi rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng chăm: không cách ly bé ốm, bỏ đói, thay sạch toàn bộ nước bể cá, để bể lạnh 22°C",
+  "en": ""
+ },
+ {
+  "vi": "Không cách ly là lỗi an toàn. Bỏ đói, sốc nước, bể lạnh là lỗi rõ. Bỏ dở tới tối: các bé yếu đi, mai có thể bị kiểm tra.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi trả sai quy định",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối món đúng quy định là lỗi rõ (hàng tiệm bán quá hạn: lỗi nặng). Nhận bao ăn dở, bao mua ngoài chợ: hoàn tiền thì lỗ nguyên giá, đổi món thì lỗ giá vốn.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng tìm thú: báo chủ đi gặp kẻ đòi chuyển tiền, gác máy người thấy bé thật",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nuôi bị lừa là lỗi nặng; bỏ lỡ tin thật là lỗi rõ. In dấu riêng lên tờ giấy thì kẻ gian đọc theo mà lừa.",
+  "en": ""
+ },
+ {
+  "vi": "Chở bể 30–60 lít bằng xe máy, xe máy chở quá 20 kg, không gọi xác nhận địa chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Bể nứt là lỗi nặng; bao rách, shipper chạy lòng vòng là lỗi rõ. Thu hộ dư là lỗi rõ, thu thiếu thì tiệm chịu.",
+  "en": ""
+ },
+ {
+  "vi": "Quét dư, quét sót, thối thiếu hoặc thối dư",
+  "en": ""
+ },
+ {
+  "vi": "Khách kỹ bắt ngay tại quầy (lỗi nhỏ). Về nhà mới thấy thì tụt sao, thối thiếu còn 2★, có khi báo cáo. Quét sót, thối dư: tiệm chịu.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Bấm [[Kho]] để nhập thức ăn, pate, cám, đồ dùng, bể, lồng. Trả tiền khi đặt, hàng tới thì đếm rồi mới lên kệ.",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Chợ đầu mối Mây rẻ nhất: đặt trước 13:00 hàng tới chiều, đặt sau thì sáng mai. Hay giao thiếu: [[Khiếu nại phần thiếu]].",
+  "en": ""
+ },
+ {
+  "vi": "🚚 Nhà phân phối Hạt Nắng: giá niêm yết, bốn chuyến xe (đặt trước 09:00, 12:00, 15:00, 18:00), tới sau khoảng một tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "⚡ Giao hỏa tốc Mây Xanh: đắt nhất, tới trong 15–30 phút, dùng khi kệ hết hàng giữa ca.",
+  "en": ""
+ },
+ {
+  "vi": "🐟 Cá, hamster, yến phụng không đặt ở Kho: trước giờ mở cửa, trại Bến Mây tự giao thêm loại nào còn dưới nửa đàn, tính giá vốn.",
+  "en": ""
+ },
+ {
+  "vi": "🌱 Tiệm lớn dần theo việc trọn vẹn: góc nhận nuôi (từ ngày 2), bể trong có bể cách ly (ngày 4), ngày hội nhận nuôi (ngày 6).",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Bấm [[Đổi màu]] để sơn lại tiệm (40–80 xu, miễn phí khi tiệm tới đúng chặng) và đổi màu chữ biển hiệu.",
+  "en": ""
+ },
+ {
+  "vi": "👥 Nhân viên: chị Nguyệt, anh Phát quét giúp món trên quầy; Tú đo nhiệt bể cá; bé Hân lau chuồng đang yếu nhất.",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Ngày 7, 14, 21… là ngày nhận nuôi: hai khách đầu ngày tới xin nhận chó mèo ở góc của nhóm Chân Nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "🌡️ Sau đêm cúp điện có bể lạnh 22°C; có hôm một bé ốm lẫn trong đàn: đốm trắng trên vây, hamster lờ đờ, mèo con hắt hơi.",
+  "en": ""
+ },
+ {
+  "vi": "🚚 Xe tải chở chó con mời bán sỉ, 🦜 người lạ bán vẹt bắt ngoài rừng: từ chối và báo người lo. Mua vào là mất tiền, mất tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "📵 Số lạ nhắn “nhặt được thú” đòi chuyển tiền trước: hỏi dấu riêng, không chuyển tiền giùm ai.",
+  "en": ""
+ },
+ {
+  "vi": "🩺 Thú y phường kiểm tra sau phản ánh: nhận lỗi, cách ly bé ốm thì phạt 40 xu; cãi thì phạt 90 xu và bị kiểm tra lại.",
+  "en": ""
+ },
+ {
+  "vi": "🥫 Rổ giảm giá của chú Út lẫn lon quá hạn; bà Hai mang bao hạt ăn dở, bao mua ngoài chợ tới đòi trả tiền.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Từ ngày 2 thỉnh thoảng khách đưa thiếu tiền. Bấm [[Đếm lại tiền khách đưa]]; thiếu thật thì phải chọn cách xử lý rồi mới đưa hàng được.",
+  "en": ""
+ },
+ {
+  "vi": "Xem hạn từng lon",
+  "en": ""
+ },
+ {
+  "vi": "Chốt hóa đơn",
+  "en": ""
+ },
+ {
+  "vi": "Quét lại",
+  "en": ""
+ },
+ {
+  "vi": "ĐƯA HÀNG · THỐI TIỀN",
+  "en": ""
+ },
+ {
+  "vi": "XONG VÒNG CHĂM",
+  "en": ""
+ },
+ {
+  "vi": "XONG VIỆC TÌM THÚ",
+  "en": ""
+ },
+ {
+  "vi": "Đổi màu",
+  "en": ""
+ },
+ {
+  "vi": "Bạn trông quán trà đá gốc bàng cho bà Lựu: dọn hàng, pha chè, đập đá, rót trà, thối tiền lẻ và ghi sổ cho khách quen.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chỗ, bày ghế, dựng ô, đặt thùng đá, pha bình chè, đập một cây đá rồi bấm [[MỞ HÀNG]]. Chưa mở hàng thì chưa bán được.",
+  "en": ""
+ },
+ {
+  "vi": "Khách ngồi uống",
+  "en": ""
+ },
+ {
+  "vi": "Rót trà đá, trà nóng, trà chanh, sấu dầm đá (mùa sấu), lấy đồ ăn vặt, đưa trà rồi thu tiền, thối tiền lẻ.",
+  "en": ""
+ },
+ {
+  "vi": "Cu Tủn mua hộ thuốc lá",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 2. Bấm [[Không bán thuốc lá cho trẻ con]], vẫn bán cho cháu phần còn lại như kẹo lạc, trà chanh.",
+  "en": ""
+ },
+ {
+  "vi": "Chú xe ôm uống không trả tiền ngay. Đưa trà xong, điền đúng số tiền rồi [[Ghi vào sổ]]; tối nào bà Lựu cũng dò sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày 3, 6, 9… chú ghé trả. Bấm [[Mở sổ, đọc cho chú]], dòng nào chú hỏi lại thì xem kỹ, rồi thu tiền, thối đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn xem bóng",
+  "en": ""
+ },
+ {
+  "vi": "Tối có trận (từ ngày 3): 6 người gọi 5 trà đá, 1 trà chanh, hướng dương, lạc. Ra đủ món thật nhanh (khoảng 8 thao tác kể từ cốc đầu), khách trả tiền mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Trật tự đô thị",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3. Xe phường tới là đồng hồ đếm ngược: bấm [[Xếp chồng ghế]] (mỗi lần 2 ghế) và [[Gấp ô]] cho kịp.",
+  "en": ""
+ },
+ {
+  "vi": "Canh quầy",
+  "en": ""
+ },
+ {
+  "vi": "Để mắt bình chè, thùng đá, cốc và chậu rửa: sắp cạn thì pha, đập, rửa trước khi khách tới.",
+  "en": ""
+ },
+ {
+  "vi": "👂 Bấm [[Hỏi khách gọi gì]]: xem món, số người ngồi, trả tiền mặt hay ghi sổ.",
+  "en": ""
+ },
+ {
+  "vi": "🍵 Bình chè hết, nhạt hay ôi thì pha bình mới: 2 nắm là vừa, 1 nắm nhạt, 3 nắm đậm.",
+  "en": ""
+ },
+ {
+  "vi": "🥤 Chạm từng món trong Rót trà cho đủ số cốc. Trà đá, trà chanh, sấu dầm cần đá trong thùng.",
+  "en": ""
+ },
+ {
+  "vi": "🌻 Chạm đồ ăn vặt khách gọi. Lấy nhầm thì chạm món đó trong khay để đổ bỏ hoặc cất lại.",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Nhóm đông thì bày thêm ghế cho đủ chỗ ngồi.",
+  "en": ""
+ },
+ {
+  "vi": "🥤 Bấm [[ĐƯA TRÀ · TÍNH TIỀN]] (khách ghi sổ: [[ĐƯA TRÀ · GHI SỔ]]).",
+  "en": ""
+ },
+ {
+  "vi": "💵 Xem khách đưa bao nhiêu, chạm tờ tiền đặt đủ tiền thối vào khay, rồi bấm [[ĐƯA TIỀN THỐI]].",
+  "en": ""
+ },
+ {
+  "vi": "📒 Khách ghi sổ: điền đúng số tiền của hóa đơn, bấm [[Ghi vào sổ]].",
+  "en": ""
+ },
+ {
+  "vi": "🧰 Bình chè, thùng đá, cốc, ghế gọn trong dòng 🧰; trạm nào cần dùng hoặc sắp cạn tự mở, bấm dòng 🧰 để xem hết.",
+  "en": ""
+ },
+ {
+  "vi": "🍵 Chè đậm vừa, châm nước ít thôi, không để bình quá lâu kẻo ôi (ngày nắng gắt ôi nhanh hơn).",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Trà đá phải có đá: thùng sắp cạn thì [[Đập 1 cây đá]].",
+  "en": ""
+ },
+ {
+  "vi": "🥛 Cốc sạch: nước chậu đục thì [[Thay nước]] rồi mới [[Rửa cốc]], không thì cốc còn nhờn.",
+  "en": ""
+ },
+ {
+  "vi": "✅ Đúng món, đủ cốc, đủ đồ ăn vặt, đủ ghế cho cả nhóm.",
+  "en": ""
+ },
+ {
+  "vi": "⏱️ Nhanh gọn: kiên nhẫn còn từ 85% mới được 5 ở Nhanh gọn.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Thối đúng từng xu. Thối vừa đủ, có khách xua tay “khỏi thối” khi tiền thối từ 20 xu trở xuống.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ ghi đúng số; chú Tường thắc mắc dòng ghi đúng thì [[Cho chú xem dòng sổ]], nói nhỏ nhẹ.",
+  "en": ""
+ },
+ {
+  "vi": "Bán thuốc lá cho Cu Tủn",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: 1★, khách không trả đồng nào, cô Hoa làm ầm lên, báo cáo lên app, phố bớt tin quán.",
+  "en": ""
+ },
+ {
+  "vi": "Rót nhầm món hoặc thiếu cốc",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ (3★): khách càu nhàu, có khi đòi bớt tiền. Cốc thiếu không được trả tiền. Rót thừa là lỗi nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Chè nhạt như nước lã vì châm nước nhiều lần",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ. Chè hơi nhạt, chè ôi, trà đá không có đá, cốc nhờn, quên đồ ăn vặt, thiếu ghế: mỗi thứ là một lỗi nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng sát mép lòng đường, quên dựng ô, chưa pha chè hay chưa đập đá đã mở hàng",
+  "en": ""
+ },
+ {
+  "vi": "Lấn lòng đường là lỗi rõ. Quên ô là lỗi nhỏ (ngày nắng gắt: lỗi rõ). Thiếu chè, thiếu đá là lỗi nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Không dẹp kịp khi trật tự đô thị tới",
+  "en": ""
+ },
+ {
+  "vi": "Phạt 10 xu, thêm 3 xu mỗi ghế còn ngoài, 5 xu nếu ô chưa gấp, 15 xu nếu bày lấn lòng đường; bị thu tới 3 ghế.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ sai số",
+  "en": ""
+ },
+ {
+  "vi": "Ghi thiếu thì quán mất phần đó. Ghi lố thì tới hẹn chú Tường hỏi lại: sửa ngay thì êm, cứ chìa sổ ra là lỗi rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Cãi to với chú Tường lúc trả sổ",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi nhỏ, sổ ghi lố thật thì thành lỗi rõ và chú gạch luôn dòng đó không trả.",
+  "en": ""
+ },
+ {
+  "vi": "Khách kỹ như anh Đạt đếm lại đòi ngay (lỗi nhỏ). Về nhà mới thấy thì 2★, có khi báo cáo. Thối dư có người cầm luôn.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Anh Tuấn xe đá thả đá mỗi sáng, 4 xu một cây. Chỉnh số cây (0–6) trong [[Sắm sửa cho quán]]. Đá cây chỉ để được trong ngày.",
+  "en": ""
+ },
+ {
   "vi": "🔨 Một cây đá đập được 8 phần, thùng chứa 24 phần. Đá tan nhanh ngoài nắng, gấp đôi ngày nắng gắt; ô to giúp tan chậm.",
   "en": ""
  },
@@ -1253,550 +1665,6 @@
  },
  {
   "vi": "Khách nếm là biết. Khách dặn không mì chính thì múc nồi nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Chan quá vạch hoặc tràn tô",
-  "en": ""
- },
- {
-  "vi": "Nhiều hơn lời dặn là lỗi nhỏ; tràn mép tô thì bưng bỏng tay khách.",
-  "en": ""
- },
- {
-  "vi": "Đập trứng sau khi chan",
-  "en": ""
- },
- {
-  "vi": "Lòng đỏ sống nằm trơ trên mặt tô. Trứng trần phải vào trước nước sôi.",
-  "en": ""
- },
- {
-  "vi": "Quên buộc túi nước mang về",
-  "en": ""
- },
- {
-  "vi": "Nước đổ lênh láng túi xách của khách.",
-  "en": ""
- },
- {
-  "vi": "🍜 Bánh phở, thịt bò, xương ống, quẩy, rau, trứng, hộp mang về nhập ở [[Kho quán phở]]. Bánh phở để được hai ngày.",
-  "en": ""
- },
- {
-  "vi": "🌅 Bánh còn qua đêm thì sáng mai có thể chua: ngửi trước khi trụng.",
-  "en": ""
- },
- {
-  "vi": "👥 Nhân viên: Tí, Hưng canh nồi hớt bọt; Mai, Thảo dọn bàn rót trà.",
-  "en": ""
- },
- {
-  "vi": "🌤️ Mỗi ngày một kiểu: gió mùa (phở nguội nhanh, nồi mất nhiệt), mưa sáng, cuối tuần, chợ sớm.",
-  "en": ""
- },
- {
-  "vi": "🔥 Bình gas hết giữa ca: thay bình, kiểm van rồi mới bật lửa.",
-  "en": ""
- },
- {
-  "vi": "😭 Bé bị nước dùng đổ vào tay: xả nước mát, không bôi kem đánh răng.",
-  "en": ""
- },
- {
-  "vi": "🥩 Người mời mua thịt bò rẻ không giấy tờ: không lấy.",
-  "en": ""
- },
- {
-  "vi": "Vặn lửa lăn tăn",
-  "en": ""
- },
- {
-  "vi": "Hớt bọt",
-  "en": ""
- },
- {
-  "vi": "Nếm nước dùng",
-  "en": ""
- },
- {
-  "vi": "Nêm nước mắm",
-  "en": ""
- },
- {
-  "vi": "Châm nước sôi",
-  "en": ""
- },
- {
-  "vi": "Ngửi rổ bánh phở",
-  "en": ""
- },
- {
-  "vi": "Bỏ bánh chua",
-  "en": ""
- },
- {
-  "vi": "Nhúng rổ bánh",
-  "en": ""
- },
- {
-  "vi": "Tái để riêng",
-  "en": ""
- },
- {
-  "vi": "Rắc hành",
-  "en": ""
- },
- {
-  "vi": "Đập trứng",
-  "en": ""
- },
- {
-  "vi": "Dừng muôi",
-  "en": ""
- },
- {
-  "vi": "Buộc túi nước",
-  "en": ""
- },
- {
-  "vi": "Châm nồi",
-  "en": ""
- },
- {
-  "vi": "BƯNG PHỞ RA",
-  "en": ""
- },
- {
-  "vi": "Kho quán phở",
-  "en": ""
- },
- {
-  "vi": "Tiệm ảnh photobooth",
-  "en": ""
- },
- {
-  "vi": "Tiệm ảnh Tách Tách của chị Lam",
-  "en": ""
- },
- {
-  "vi": "Bạn đứng tiệm photobooth của chị Lam cạnh chợ đêm: hỏi kỹ khách muốn gì, bố trí buồng chụp, bấm máy đúng lúc cả nhóm mở mắt, cho khách chọn ảnh, trang trí, in, cắt, giao và thối đúng tiền.",
-  "en": ""
- },
- {
-  "vi": "[[Lau ống kính]], [[Chụp thử phông trống]] để máy in báo mực. Mực sắp hết thì [[Thay cuộn mực mới]]. Rồi [[MỞ TIỆM]].",
-  "en": ""
- },
- {
-  "vi": "Bấm [[Hỏi khách muốn chụp gì]]: gói (dải 4 ô, 2 dải, khung lớn), khung chủ đề, phông, đạo cụ, đèn, sticker, ngày, màu.",
-  "en": ""
- },
- {
-  "vi": "Bố trí buồng chụp",
-  "en": ""
- },
- {
-  "vi": "Ở thẻ ① Bố trí: chọn gói, khung, phông nền, ánh đèn và đạo cụ đúng lời khách dặn.",
-  "en": ""
- },
- {
-  "vi": "Bấm máy đúng lúc",
-  "en": ""
- },
- {
-  "vi": "[[Bắt đầu đếm 3-2-1]], đợi cả nhóm vào dáng rồi [[BẤM MÁY]] khi kim vào vùng xanh. Sớm quá thì nhòe, trễ quá thì có người chớp mắt.",
-  "en": ""
- },
- {
-  "vi": "Cho khách chọn ảnh",
-  "en": ""
- },
- {
-  "vi": "Đủ ảnh thì [[Cho khách xem ảnh]], khách chỉ tấm nào thì chọn tấm đó. Không đủ ảnh đẹp thì [[Xóa, chụp lượt mới]].",
-  "en": ""
- },
- {
-  "vi": "Trang trí và in",
-  "en": ""
- },
- {
-  "vi": "Dán sticker, đóng ngày, chọn màu như khách dặn, xem bản xem trước rồi [[In ảnh]]. Sửa sau khi in thì phải [[In lại]], tờ cũ bỏ đi.",
-  "en": ""
- },
- {
-  "vi": "Cắt và giao",
-  "en": ""
- },
- {
-  "vi": "[[Cắt, bỏ bao kiếng]] (khung lớn thì [[Lồng vào khung gỗ]]), rồi [[ĐƯA ẢNH]] và [[ĐƯA TIỀN THỐI]].",
-  "en": ""
- },
- {
-  "vi": "👂 [[Hỏi khách muốn chụp gì]], đọc kỹ phiếu đơn.",
-  "en": ""
- },
- {
-  "vi": "🎀 Chọn gói, khung chủ đề, phông, đèn, đạo cụ.",
-  "en": ""
- },
- {
-  "vi": "📸 [[Bắt đầu đếm 3-2-1]], [[BẤM MÁY]] lúc cả nhóm đứng yên, mở mắt.",
-  "en": ""
- },
- {
-  "vi": "🖥️ [[Cho khách xem ảnh]], chọn đúng những tấm khách chỉ.",
-  "en": ""
- },
- {
-  "vi": "✨ Sticker, ngày, màu đúng lời dặn rồi [[In ảnh]].",
-  "en": ""
- },
- {
-  "vi": "✂️ [[Cắt, bỏ bao kiếng]], [[ĐƯA ẢNH]], đặt tiền thối vào khay rồi [[ĐƯA TIỀN THỐI]].",
-  "en": ""
- },
- {
-  "vi": "🖼️ Đúng gói, đúng khung, đúng phông, đúng đạo cụ, đúng đèn.",
-  "en": ""
- },
- {
-  "vi": "📸 Ảnh nào cũng đứng yên, mở mắt, ống kính sạch.",
-  "en": ""
- },
- {
-  "vi": "🖥️ Khách được tự chọn ảnh mình thích.",
-  "en": ""
- },
- {
-  "vi": "✨ Sticker, ngày tháng, màu ảnh đúng lời dặn.",
-  "en": ""
- },
- {
-  "vi": "⏱️ Gọn: không bắt khách chờ lâu.",
-  "en": ""
- },
- {
-  "vi": "Bấm máy trước khi cả nhóm vào dáng",
-  "en": ""
- },
- {
-  "vi": "Ảnh nhòe. Khách thấy ngay khi chọn ảnh.",
-  "en": ""
- },
- {
-  "vi": "Bấm trễ, giữ dáng quá lâu",
-  "en": ""
- },
- {
-  "vi": "Có người chớp mắt. Khách khó tính soi từng đôi mắt, chấm sao thấp.",
-  "en": ""
- },
- {
-  "vi": "In mà không cho khách chọn ảnh",
-  "en": ""
- },
- {
-  "vi": "Khách bực: tấm mình thích không có trong dải.",
-  "en": ""
- },
- {
-  "vi": "Sai khung, sai phông, thiếu đạo cụ",
-  "en": ""
- },
- {
-  "vi": "Khách chê không giống lời dặn, có khi đòi bớt tiền.",
-  "en": ""
- },
- {
-  "vi": "Ống kính bẩn, mưa hơi nước không lau",
-  "en": ""
- },
- {
-  "vi": "Ảnh nào cũng mờ.",
-  "en": ""
- },
- {
-  "vi": "Sửa sau khi đã in",
-  "en": ""
- },
- {
-  "vi": "Phải in lại, tờ cũ bỏ đi, tiệm chịu tiền giấy và mực.",
-  "en": ""
- },
- {
-  "vi": "Hết giấy mà vẫn nhận đơn",
-  "en": ""
- },
- {
-  "vi": "Nói thật: [[Nói thật: tiệm hết giấy, khung]], hẹn khách hôm sau.",
-  "en": ""
- },
- {
-  "vi": "📦 Giấy in dải, giấy in đôi, giấy khung lớn, khung gỗ, bao kiếng, cuộn mực nhập ở [[Kho tiệm ảnh]].",
-  "en": ""
- },
- {
-  "vi": "🖨️ Một cuộn mực in được 24 tờ: chụp thử buổi sáng để biết còn bao nhiêu.",
-  "en": ""
- },
- {
-  "vi": "👀 Bé nhỏ giữ dáng rất ngắn, ông bà cười chậm: canh nhịp từng nhóm.",
-  "en": ""
- },
- {
-  "vi": "🌤️ Mỗi ngày một kiểu: cuối tuần đông, mưa (ống kính đọng hơi nước), lễ hội, mùa tan trường mặc đồng phục.",
-  "en": ""
- },
- {
-  "vi": "🎓 Học nghề ba khách đầu: chị Lam đứng cạnh, chặn một lỗi trước khi in.",
-  "en": ""
- },
- {
-  "vi": "🖨️ Kẹt giấy trong máy in, điện thoại bỏ quên trong buồng, người lạ xin ảnh của khách, bé nghịch đèn vòng.",
-  "en": ""
- },
- {
-  "vi": "Lau ống kính",
-  "en": ""
- },
- {
-  "vi": "Chụp thử phông trống",
-  "en": ""
- },
- {
-  "vi": "Thay cuộn mực mới",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách muốn chụp gì",
-  "en": ""
- },
- {
-  "vi": "Bắt đầu đếm 3-2-1",
-  "en": ""
- },
- {
-  "vi": "BẤM MÁY",
-  "en": ""
- },
- {
-  "vi": "Cho khách xem ảnh",
-  "en": ""
- },
- {
-  "vi": "Xóa, chụp lượt mới",
-  "en": ""
- },
- {
-  "vi": "In ảnh",
-  "en": ""
- },
- {
-  "vi": "In lại",
-  "en": ""
- },
- {
-  "vi": "Cắt, bỏ bao kiếng",
-  "en": ""
- },
- {
-  "vi": "Lồng vào khung gỗ",
-  "en": ""
- },
- {
-  "vi": "ĐƯA ẢNH",
-  "en": ""
- },
- {
-  "vi": "Nói thật: tiệm hết giấy, khung",
-  "en": ""
- },
- {
-  "vi": "Kho tiệm ảnh",
-  "en": ""
- },
- {
-  "vi": "Tổ giúp việc Nhà Thơm của cô Mai",
-  "en": ""
- },
- {
-  "vi": "Bạn đẩy xe đồ nghề tới từng nhà khách: nghe khách dặn, dọn từng phòng bằng đúng khăn, đúng chai, từ trên cao xuống, khô trước ướt sau, giữ đồ của khách, rồi mời khách đi một vòng kiểm nhà.",
-  "en": ""
- },
- {
-  "vi": "Soạn xe đầu ngày",
-  "en": ""
- },
- {
-  "vi": "[[Giặt khăn]] hôm qua, [[Châm đầy]] chai nào sắp cạn (một chai lau được 12 lượt), rồi [[LÊN ĐƯỜNG]].",
-  "en": ""
- },
- {
-  "vi": "Tới nhà, bấm [[Bấm chuông, nghe khách dặn]]: dọn phòng nào, chỗ nào để nguyên, nhà có mèo hay có bé.",
-  "en": ""
- },
- {
-  "vi": "Dọn từng phòng",
-  "en": ""
- },
- {
-  "vi": "Chọn phòng, cầm đúng dụng cụ và đúng chai trên xe, chạm vào từng chỗ để lau. Mỗi lần chạm là một lượt.",
-  "en": ""
- },
- {
-  "vi": "Phủi quạt trần, nóc tủ trước; rồi bàn kệ; rồi quét, hút sàn; lau ướt sau cùng.",
-  "en": ""
- },
- {
-  "vi": "Giữ đồ của khách",
-  "en": ""
- },
- {
-  "vi": "Đồ dễ vỡ nhấc ra trước khi lau rồi đặt lại; nhẫn, đồng hồ cất vào khay; mèo bế sang phòng khác.",
-  "en": ""
- },
- {
-  "vi": "Kiểm nhà, nhận tiền công",
-  "en": ""
- },
- {
-  "vi": "Xong hết thì [[MỜI KHÁCH KIỂM NHÀ]]. Khách đi một vòng, chuyển khoản tiền công; khách ưng thì thành khách quen.",
-  "en": ""
- },
- {
-  "vi": "🧺 [[Giặt khăn]], [[Châm đầy]] chai sắp cạn, [[LÊN ĐƯỜNG]].",
-  "en": ""
- },
- {
-  "vi": "🔔 [[Bấm chuông, nghe khách dặn]], đọc kỹ lời dặn.",
-  "en": ""
- },
- {
-  "vi": "🚪 Chọn phòng, nhấc đồ dễ vỡ ra, cất đồ quý vào khay.",
-  "en": ""
- },
- {
-  "vi": "🧽 Cầm đúng dụng cụ, đúng chai; lau từ trên cao xuống, khô trước ướt sau.",
-  "en": ""
- },
- {
-  "vi": "🏺 Đặt đồ dễ vỡ lại chỗ cũ rồi [[MỜI KHÁCH KIỂM NHÀ]].",
-  "en": ""
- },
- {
-  "vi": "✨ Phòng nào, chỗ nào cũng sạch.",
-  "en": ""
- },
- {
-  "vi": "🟦 Khăn xanh cho kính, khăn vàng cho bàn bếp, khăn đỏ chỉ cho bồn cầu.",
-  "en": ""
- },
- {
-  "vi": "🏺 Đồ dễ vỡ nguyên vẹn, đúng chỗ cũ; đồ quý cất vào khay.",
-  "en": ""
- },
- {
-  "vi": "📝 Nhớ lời dặn: chỗ để nguyên, nhà có mèo, có bé thì sàn lau nước sạch.",
-  "en": ""
- },
- {
-  "vi": "⏱️ Làm có thứ tự, không phải lau đi lau lại.",
-  "en": ""
- },
- {
-  "vi": "Lau sàn trước rồi mới phủi quạt trần",
-  "en": ""
- },
- {
-  "vi": "Bụi rơi xuống sàn vừa lau, phải lau lại, khách chờ lâu.",
-  "en": ""
- },
- {
-  "vi": "Lau ướt khi sàn còn bụi tóc",
-  "en": ""
- },
- {
-  "vi": "Bụi bết thành vệt, lượt lau đó coi như bỏ.",
-  "en": ""
- },
- {
-  "vi": "Dùng khăn đỏ lau chỗ khác",
-  "en": ""
- },
- {
-  "vi": "Mang bẩn bồn cầu đi khắp nhà, khách chấm sao thấp.",
-  "en": ""
- },
- {
-  "vi": "Xịt tẩy dầu mỡ lên mặt gỗ",
-  "en": ""
- },
- {
-  "vi": "Gỗ bạc màu một mảng, khách bực.",
-  "en": ""
- },
- {
-  "vi": "Lau mà không nhấc bình gốm ra",
-  "en": ""
- },
- {
-  "vi": "Bình chao đảo hoặc vỡ, phải đền tiền.",
-  "en": ""
- },
- {
-  "vi": "Động vào chỗ khách dặn để nguyên",
-  "en": ""
- },
- {
-  "vi": "Khách mất lòng tin, có khi đòi bớt tiền.",
-  "en": ""
- },
- {
-  "vi": "Mời khách kiểm khi còn chỗ bẩn",
-  "en": ""
- },
- {
-  "vi": "Khách chỉ từng chỗ, trả ít đi, không thành khách quen.",
-  "en": ""
- },
- {
-  "vi": "📦 Chai lau kính, tẩy rửa dịu, tẩy dầu mỡ, tẩy bồn cầu, can nước lau sàn nhập ở [[Kho tổ giúp việc]].",
-  "en": ""
- },
- {
-  "vi": "🧺 Khăn dùng xong tối nào cũng bẩn: sáng nào cũng giặt.",
-  "en": ""
- },
- {
-  "vi": "🌧️ Mưa dầm sàn lấm bùn, trời nồm gương đọng nước: châm đầy chai trước khi đi.",
-  "en": ""
- },
- {
-  "vi": "🌤️ Mỗi ngày một kiểu: cuối tuần, mưa dầm, trời nồm, hanh khô nhiều bụi, mùa tổng vệ sinh.",
-  "en": ""
- },
- {
-  "vi": "🎓 Hai nhà đầu tiên cô Mai đi cùng, chặn mỗi kiểu lỗi một lần trước khi xảy ra.",
-  "en": ""
- },
- {
-  "vi": "💵 Tiền rơi dưới gầm sofa, hàng xóm nhờ dọn riêng, thang máy hỏng, khách gọi video kiểm tra.",
-  "en": ""
- },
- {
-  "vi": "⭐ Khách ưng nhà sạch thì lần sau thêm tiền công, kể bạn nghe chuyện nhà họ.",
-  "en": ""
- },
- {
-  "vi": "Giặt khăn",
-  "en": ""
- },
- {
-  "vi": "Châm đầy",
-  "en": ""
- },
- {
-  "vi": "Bấm chuông, nghe khách dặn",
   "en": ""
  }
 ]

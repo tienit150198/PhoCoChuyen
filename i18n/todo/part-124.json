@@ -1,1631 +1,2251 @@
 [
  {
-  "vi": "Kệ $1 không đủ chỗ cho $2 $3 (tính cả hàng đang giao). Bớt lại nhé.",
+  "vi": "Đồ thất lạc: chưa trả $1, người tới nhận chưa chứng minh được là chủ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đơn dưới $1 xu chị không chạy xe đâu em.",
+  "vi": "Đồ thất lạc: chưa trả $1, người tới nhận được hẹn mang thêm giấy tờ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Bên em chỉ nhận đơn gộp từ $1 xu ạ.",
+  "vi": "Giữ lại $1 chờ chủ thật.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1: “$2” Thêm hàng hoặc đặt lẻ từng món nhé.",
+  "vi": "🔒 Bạn cất $1 vào tủ: “Anh mang thêm giấy tờ, chứng minh được thì phường trả.” $2 lủi đi mất.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Thiếu $1 xu để đặt đơn này (quỹ nghề còn $2 xu). Tiền nhập hàng trừ vào quỹ của nghề đang làm, không lấy từ ví hay vốn quầy.",
+  "vi": "🔒 $1 ngơ ngác: “Tôi trả lời đúng hết mà?” Hẹn mai lên lại.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Hết $1 rồi em, giao trước mấy món kia nha.",
+  "vi": "$1: “Được, tôi chịu.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Kho tạm hết $1, bên em giao trước phần còn lại ạ.",
+  "vi": "📝 Đề xuất: $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "” Không tính tiền $1.",
+  "vi": "😤 “Không chịu thì phạt cả hai!” $1 khoanh tay, $2 quay mặt đi. Không khí đặc quánh.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Gộp $1 món soạn không kịp chuyến, $2 mới tới nha em.",
+  "vi": "Hòa giải $1: hai bên ký biên bản ($2).",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đơn gộp $1 món cần soạn riêng, $2 mới giao được ạ.",
+  "vi": "Hòa giải thành: $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Nhập gộp $1 món",
+  "vi": "🤝 $1 và $2 ký biên bản hòa giải: $3. $4",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đã đặt đơn gộp $1 món · $2.",
+  "vi": "Hòa giải $1: chưa thành, chuyển tổ hòa giải, hẹn buổi sau.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 giao một chuyến $2 ($3).",
+  "vi": "Hòa giải $1: hai bên đã ký biên bản.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Số đếm $1 chưa khớp số hàng thực có trong thùng. Đếm lại nhé.",
+  "vi": "Chuyển tổ hòa giải: $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Kiểm nhận đơn gộp từ $1: $2.",
+  "vi": "📅 Chuyển tổ hòa giải cơ sở, hẹn hai nhà buổi sau. $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đã nhập kho cả thùng: $1.",
+  "vi": "🧸 Bạn ngồi xuống ngang tầm mắt $1, đưa ly nước, nói nhỏ: “Chú/cô ở đây với con, mình đứng chỗ này chờ mẹ nha.” Bé nín dần.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Giao thiếu $1 món: bấm “Khiếu nại phần thiếu” ngay trong kho để được hoàn $2 xu.",
+  "vi": "📢 Loa $1 đọc: “Một bé $2, $3 Người nhà mời tới điểm tìm trẻ lạc.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "cho $1 xu đầu, phần trên lãi $2,$3%/ngày",
+  "vi": "Một lúc sau, $1 tới: “Cho tôi đón bé!”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đã gửi $1 xu. Lãi $2,$3%/ngày$4, cộng vào sổ mỗi $5 ngày.",
+  "vi": "Trẻ lạc: $1 ($2) đã giao cho $3.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Lương kế toán x$1$2: $3 xu đã về ví của bạn.",
+  "vi": "Trẻ lạc: $1 đã giao cho người nhà, xác minh đủ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🔥 Thưởng ngày x$1",
+  "vi": "Giao $1 cho người nhà.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🔥 Hôm nay $1 lời x$2: thưởng thêm $3 xu vào ví.",
+  "vi": "🧒 $1 về với $2. Cả hai cảm ơn rối rít.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🎁 Bà Tám gửi quà chào hàng xóm mới: +$1 xu vào ví.",
+  "vi": "🧒 $1 dắt bé đi. Mười phút sau ông ngoại bé tới… 📋 Anh Định gọi ngay cho mẹ bé, lập báo cáo.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ngày sống $1: $2 $3 xu",
+  "vi": "Trẻ lạc: giữ $1 ở phường, gọi bố mẹ xác nhận.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đeo tối đa $1 danh hiệu và chứng chỉ cùng lúc. Bỏ bớt một cái trước nhé.",
+  "vi": "Giữ $1 chờ bố mẹ xác nhận.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đang đeo $1/$2.",
+  "vi": "🏠 Bạn giữ bé ở phường, gọi mẹ bé. Mười phút sau ông ngoại tới, mẹ xác nhận qua điện thoại. $1 gật gù: “Vậy là đúng.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 tạm đóng. Mở lại lúc nào cũng được, không tốn phí.",
+  "vi": "🏠 $1 phải ngồi chờ thêm mười phút cho phường gọi xác nhận, hơi phật ý.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 mở cửa lại (không tốn phí).",
+  "vi": "Tuần tra $1: $2 lần nhắc nhở, $3 biên bản — có chuyện nguy hiểm bị bỏ qua.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Một câu ngắn thôi, tối đa $1 chữ.",
+  "vi": "Tuần tra $1: $2 lần nhắc nhở, $3 biên bản.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Một câu ngắn thôi, tối đa $1 ký tự.",
+  "vi": "Tuần tra $1: lập $2 biên bản xử lý vi phạm.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ví còn $1 xu, chưa đủ $2 xu xếp bài.",
+  "vi": "Tuần tra $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Chọn $1 xu nhé.",
+  "vi": "🚶 Xong vòng tuần tra $1. $2",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Tặng xu mở khi tài khoản đủ $1 ngày.",
+  "vi": "Chọn tối đa $1 chủ đề cho một buổi.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ví còn $1 xu.",
+  "vi": "Bỏ chủ đề: $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Hôm nay bạn tặng đủ $1 xu rồi.",
+  "vi": "$1 Thêm chủ đề: $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Trùm $1",
+  "vi": "Nói đủ thứ mà không nhắc chuyện $1, đúng cái tổ đang gặp.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Số dòng cần từ 1 đến $1.",
+  "vi": "🎤 $1 Các cụ bắt đầu hỏi.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Bạn bắt được $1! Đã lưu vào sổ cá của bạn.",
+  "vi": "Cán bộ trả lời sai câu hỏi về lừa đảo: “$1”.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 rủ đi chơi",
+  "vi": "Nói chuyện chống lừa đảo ở $1: $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Góp $1 xu",
+  "vi": "Nói chuyện chống lừa đảo ở $1: trả lời đúng hết mọi câu hỏi.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ví còn $1 xu",
+  "vi": "Nói chuyện chống lừa đảo ở $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ví đang nợ $1 xu",
+  "vi": "🎤 $1 Buổi nói chuyện kết thúc, các cụ vỗ tay.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Chưa đủ tiền: $1.",
+  "vi": "Xem lại $1: có người đang gặp nguy không?",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Quà của xóm: $1",
+  "vi": "$1 gọi báo người đang gặp nguy mà phải chờ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Xả stress: $1",
+  "vi": "Tin báo thật của $1 bị coi là báo sai.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Góp giúp: $1",
+  "vi": "Trực ban: ba cuộc gọi, đi ngay: $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Buồn quá tiêu tiền: $1",
+  "vi": "📒 Anh Định đọc sổ, khựng lại ở dòng “$1”: “Cái này đâu có xảy ra, em?” Ghi khống vào sổ trực ban. $2",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ký túc xá: $1",
+  "vi": "📒 Sổ trực ban thật, nhưng thiếu: “$1”. Ca sau phải gọi điện hỏi lại.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Tiền thuốc: $1",
+  "vi": "👮 Ca trực: $1 việc ở Công an phường Mây.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1: mất $2 xu.",
+  "vi": "🤝 Giúp dân $1 việc: giấy tờ, đồ thất lạc, hòa giải, trẻ lạc, tin báo.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Dự án “lãi khủng” biến mất cùng $1 xu của bạn.",
+  "vi": "🚶 Tuần tra: $1 lần nhắc nhở, $2 biên bản. Nhắc trước, biên bản sau.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Nhắn tin đang vui thì $1 im bặt.",
+  "vi": "✉️ Từ chối $1 phong bì. Đúng bài.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ôm một cái, chúc $1 đi bình an",
+  "vi": "📋 $1 báo cáo sự việc. Mai họp tổ rút kinh nghiệm.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Bạn thấy $1 đi cùng người khác ở phố đi bộ.",
+  "vi": "Sổ trực ban: $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Tối đó $1 vẫn nhắn “nhớ anh”.",
+  "vi": "Sổ trực ban: $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Tối đó $1 vẫn nhắn “nhớ em”.",
+  "vi": "$1 ($2) khai báo tạm trú: $3.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Tối đó $1 vẫn nhắn “nhớ lắm”.",
+  "vi": "$1 nộp $2 nhặt được: $3.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Sinh nhật bạn, $1 quên.",
+  "vi": "Tuần tra $1:",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Hôm qua bạn làm tới tối mịt ở $1.",
+  "vi": "Ba cuộc gọi: $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 nói với cả dãy: “Đêm nào cũng về khuya, chắc làm ăn gì…”",
+  "vi": "Anh Vượng: “Ok, chốt $1 $2.” Biên bản phải theo vụ việc thật, nên con số này sẽ đè lên mỗi lần bạn đi tuần.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ghé nói chuyện nhỏ nhẹ với $1",
+  "vi": "⚖️ Hội đồng kỷ luật xí nghiệp: hạ xuống $1, tạm đình chỉ gác hôm nay, thưởng ca về 0 tới khi hồ sơ sạch lại.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 còn thêm mấy dấu chấm lửng.",
+  "vi": "$1, rời Bến Gỗ $2, qua đường ngang $3. Rõ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Mời $1 ly cà phê cho vui vẻ",
+  "vi": "$1$2, rời Bến Gỗ $3, qua đường ngang $4. Rõ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Uống xong, $1 quay ra bênh bạn chằm chặp.",
+  "vi": "Hạ chắn khi tàu còn khoảng $1 phút, chuông đèn bật trước. Chắn đã hạ thì không mở cho ai.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1: “Mới lên phố mà tiêu như nước, chắc làm ăn gì mờ ám.”",
+  "vi": "Tàu $1 $2",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 ậm ừ, nói trớ sang chuyện thời tiết.",
+  "vi": "📻 Bộ đàm rè rè: “Đường ngang Bến Mây, ga Bến Mây gọi. Có tàu $1, nghe rõ trả lời.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 đồn: “Nó rút sạch quỹ, chắc đang nợ ai đó.”",
+  "vi": "Ký nhận ca mà chưa thử $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Tối qua bạn đi ăn với $1.",
+  "vi": "$1 Không ai biết cho tới khi tàu tới.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1: “Hai người đó đi riêng, chắc có gì rồi…”",
+  "vi": "Chưa $1: ca sau, tổ thợ không ai biết.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Cười cho qua cùng $1",
+  "vi": "📻 Chị Nguyệt: “Đường ngang Bến Mây, tàu $1 còn đứng ở ga Bến Gỗ, chậm thêm $2 phút. Nhắc lại.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 thêm thắt: “Chắc tính khó nên người ta bỏ.”",
+  "vi": "📻 Chị Nguyệt: “Tàu $1 đã chạy khỏi Bến Gỗ, còn $2 phút tới đường ngang.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Hàng vừa về $1, thùng lớn thùng nhỏ.",
+  "vi": "🟥 Tàu $1 phanh dừng cách đường ngang ba trăm mét, chờ bạn báo đường đã thông.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1: “Hàng về tối ngày, không biết buôn gì…”",
+  "vi": "Tàu $1 tới mà cần chắn chưa hạ. Lái tàu kéo phanh khẩn cấp, xe máy phanh cháy lốp.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Mọi người thả tim. $1 im luôn.",
+  "vi": "Tàu $1 tới mà trên ray vẫn còn người. Lái tàu kéo còi, phanh khẩn cấp, may họ nhảy ra kịp.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Mời $1 ghé tiệm, tặng món nhỏ",
+  "vi": "🚆 Tàu $1 $2 toa ầm ầm qua đường ngang. Gió tàu thốc tung vạt áo.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Xe giao hàng đỗ trước $1 mấy lần trong tuần.",
+  "vi": "📻 Chị Nguyệt: “Sai! Nghe lại: tàu $1, rời Bến Gỗ $2, qua đường ngang $3. Nhắc lại cho đúng.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1: “Chắc hàng trôi nổi, rẻ bất thường.”",
+  "vi": "📻 Bạn: “$1” · Chị Nguyệt: “Đúng. Đường ngang Bến Mây chuẩn bị.” Tàu còn khoảng $2 phút.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "+$1 xu vào ví.",
+  "vi": "👀 Nhìn hai phía đường ngang: $1. Dẹp hết rồi mới hạ chắn.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Danh hiệu mới: $1.",
+  "vi": "👀 Nhìn hai phía đường ngang: $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🧾 $1 (bảo hiểm, bảo dưỡng, nhân viên): $2 xu.",
+  "vi": "$1 chui qua chắn, đứng giữa ray",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Thiếu $1 xu được miễn, không tính nợ.",
+  "vi": "$1 $2 Cách này không ăn thua.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "ảnh chụp quá $1 ngày rồi",
+  "vi": "$1 $2: được một nửa rồi, thêm chút nữa!",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "sao kê chưa đủ $1 xu",
+  "vi": "Bạn kéo $1 ra sau vạch dừng, ghi tên vào sổ người vượt chắn.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "chưa đủ $1 ngày đi làm để xác nhận",
+  "vi": "Tàu $1 gần sát mới hạ chắn, xe phanh rít cả dãy.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Xác nhận $1.",
+  "vi": "Còn $1 phút tàu mới tới: hạ sớm quá, dân sẽ sốt ruột.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 🏷️ Danh hiệu mới: $2 (đeo ở Phong cách).",
+  "vi": "🟩 $1, đứng nghiêm bên chòi, mắt nhìn về phía tàu tới.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 🏷️ Danh hiệu mới: $2",
+  "vi": "🟥 Bạn gọi ga: “Dừng tàu $1, đường ngang có vật cản!” rồi cầm $2 chạy về phía tàu tới.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 🏷️ Danh hiệu mới:",
+  "vi": "📻 Bạn báo ga: “Đường ngang đã thông.” Tàu $1 kéo còi, chạy chậm qua đường ngang. Nhìn kỹ đoàn tàu nhé.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 Đã có $2: trả $3.",
+  "vi": "〰️ Ray bắt đầu rung nhè nhẹ: tàu còn khoảng $1 phút.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Phí giữ $1 xu/tháng.",
+  "vi": "Gác chắn nâng chắn cho $1 qua khi tàu đang tới.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "bán $1 lấy $2 xu",
+  "vi": "🏃 $1 Kéo người đó ra ngay, hoặc báo dừng tàu!",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "khui $1 (không bán lại được nữa)",
+  "vi": "👁️ Bạn đếm đủ $1 toa.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "📷 Ảnh 3.5×4.5 nền trắng ($1 xu), dùng $2 ngày.",
+  "vi": "📻 Bạn: “Tàu $1 vừa qua Bến Mây không có đèn đuôi.” Chị Nguyệt: “Rõ! Ga dừng tàu kiểm tra ngay.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 không đòi bảo hiểm du lịch.",
+  "vi": "📻 Bạn: “Tàu $1, toa số $2 có bất thường.” Chị Nguyệt: “Rõ! Báo lái tàu dừng ở Bến Mây kiểm tra.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🛡️ Bảo hiểm du lịch $1 ($2).",
+  "vi": "Tàu $1 đang tới đúng giờ: giữ chắn.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Visa $1 còn $2 ngày.",
+  "vi": "Tàu $1 đã chạy lại rồi: chuẩn bị đóng chắn.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "nộp hồ sơ visa $1, phí $2 xu",
+  "vi": "📻 Chị Nguyệt: “Tàu $1 đã chạy khỏi Bến Gỗ rồi, còn $2 phút. Giữ chắn!”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🛂 Lãnh sự trả hồ sơ: $1. Phí $2 không hoàn lại.",
+  "vi": "📻 Chị Nguyệt: “Tàu $1 còn đứng ở Bến Gỗ, chưa có lệnh chạy. Đường ngang được mở tạm, khi tàu chạy ga gọi lại.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🛂 Visa $1 được duyệt, dùng $2 ngày ($3).",
+  "vi": "📻 Chị Nguyệt: “Còn! Tàu hàng $1 chạy ngược chiều, còn $2 phút. Giữ nguyên chắn!”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Cần visa $1 trước.",
+  "vi": "🚂 Tàu $1 rầm rập qua đường bên kia. 📻 Chị Nguyệt: “Hết tàu. Đường ngang Bến Mây được nâng chắn.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "đi $1 hạng $2 $3 xu",
+  "vi": "Nâng chắn khi tàu $1 chưa qua, chưa có xác nhận của ga.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Du lịch $1",
+  "vi": "Vừa nâng chắn thì tàu hàng $1 rúc còi lao tới. Xe máy phanh dúi dụi, bạn hạ chắn khẩn cấp.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 $2, hạng $3 ($4). Đóng dấu hộ chiếu.",
+  "vi": "🚂 Tàu $1 qua sát nút. Tim bạn đập thình thịch.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Quà này chỉ mua được khi đang ở $1.",
+  "vi": "Tàu $1 qua không có đèn đuôi mà gác chắn không báo ga.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "mở tiệc $1 $2 xu",
+  "vi": "Toa số $1 tàu $2 có bất thường mà không ai báo ga.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Tiệc $1 · $2 · $3 khách",
+  "vi": "Tàu $1 qua đường ngang Bến Mây",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 Tiệc $2 $3, $4 khách ($5).",
+  "vi": ", chậm $1 phút",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "đăng ký $1 $2 xu",
+  "vi": "📒 Ghi sổ nhật ký, ký tên.$1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 Đăng ký $2 ($3). $4 buổi, mỗi ngày một buổi.",
+  "vi": "Bỏ $1 ở $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 Buổi $2/$3.",
+  "vi": "Bỏ qua đoạn $1, ghi sổ như đã đi.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ghế/cột số $1, $2: “$3”.",
+  "vi": "$1 ở $2 không ai thấy cho tới khi tàu tới.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 $2 ($3).$4 Cả phố cảm ơn bạn!",
+  "vi": "Chỗ nguy hiểm ở $1 mà không điện khẩn cho ga.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Bạn đang ở $1 rồi.",
+  "vi": "Chỗ hỏng nguy hiểm ở $1 không cắm cờ phòng vệ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 Dọn về $2. Vào nhà bày trí từng phòng nhé!",
+  "vi": "Thấy $1 ở $2 mà để nguyên.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🎉 $1 mở tiệc $2 $3, $4 khách!",
+  "vi": "$1: chưa $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Trời đang có pháo hoa. Đợi $1 phút nữa nhé.",
+  "vi": "Tuần đường $1: $2 chỗ cần để ý.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🎆 $1 bắn $2 tặng cả phố!",
+  "vi": "📒 Ký sổ tuần đường.$1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 Ngước lên trời nào 🎇",
+  "vi": "🚆 $1 chuyến tàu qua đường ngang, $2 chuyến an toàn tuyệt đối.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 $2 khắc tên $3 số $4 ($5): “$6”.",
+  "vi": "✋ Giữ chắn trước $1 người đòi qua",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 $2 $3 tuần này!",
+  "vi": ", ghi biển số $1 người.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 $2 góp $3 xu cho $4.",
+  "vi": "🟥 Báo dừng tàu $1 lần vì có vật cản. Đúng quy trình.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 nhận từ $2 đến $3 bàn.",
+  "vi": "🔩 Tuần đường: $1 chỗ cần để ý đã ghi sổ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ngày cưới cách từ $1 đến $2 ngày sống.",
+  "vi": "Bảng giờ tàu hôm nay: $1. $2 $3",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 $2 · phí địa điểm",
+  "vi": "Tuần đường $1: $2 điểm. $3",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 bàn × $2 xu · thực đơn $3",
+  "vi": "📻 Chị Nguyệt: “Đường ngang Bến Mây! Tàu $1 $2, $3 toa, rời ga Bến Gỗ lúc $4, dự kiến qua đường ngang $5. Nhắc lại!” $6",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "tráp $1 mâm",
+  "vi": "Đã ra dẫn khỏi đường ray: $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 $2 · $3 khách",
+  "vi": "Chỉ đường vòng qua $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 gửi bù phong bì cưới",
+  "vi": "$1 lùi lại, lầm bầm nhưng đứng chờ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🎊 Đám cưới của $1 và $2 đã diễn ra: $3 khách, tiền mừng $4 xu. Mở mục Hôn nhân để xem thiệp kỷ niệm!",
+  "vi": "$1 nhìn bảng giờ: “Ờ… còn có $2 phút thật à.” Rồi đứng chờ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Bạn đang giữ $1 chiếc nhẫn rồi. Cất bớt ý định lại nhé!",
+  "vi": "$1 quay đầu xe chạy về phía cầu vượt.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ví chưa đủ $1 xu để mua $2. Rút tiền lời từ nơi làm việc về ví trước nhé.",
+  "vi": "$1 dịu giọng, lùi sau vạch dừng chờ cùng bạn.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đã mua $1 ($2 xu). Giờ chỉ còn thiếu một lời cầu hôn.",
+  "vi": "Bạn ghi biển số, gọi công an phường. $1 xụ mặt lùi lại.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đã bán nhẫn dư, $1 xu vào ví (80% giá mua nhẫn).",
+  "vi": "$1 hậm hực đứng chờ, miệng chưa thôi càm ràm.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Tiệm kim hoàn: đổi màu $1",
+  "vi": "$1 lách xuống chui qua cần chắn, đang đứng giữa đường ray!",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ví chưa đủ $1 xu để đổi màu nhẫn.",
+  "vi": "$1 chửi đổng một tràng, quay clip mặt bạn: “Gác chắn gì mà như quan!”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "💍 $1 vừa mang nhẫn cưới ra tiệm kim hoàn: giờ là $2",
+  "vi": "Bạn nâng cần chắn cho $1 qua. Đúng lúc đó còi tàu rúc lên từ khúc cua. Tim bạn muốn rớt ra ngoài.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": ", đá $1.",
+  "vi": "Ghi biển số một người đang lo việc hiếu, việc bệnh thì nặng tay quá. $1 nhìn bạn, mắt đỏ hoe.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Tiệm kim hoàn đã làm xong ($1 xu): $2",
+  "vi": "Một bầu trục toa số $1 bốc khói, mùi khét lẹt.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Bạn vừa khép lại một cuộc hôn nhân. Cho lòng nghỉ $1 tiếng rồi hẵng tính tiếp nhé.",
+  "vi": "Cửa toa hàng số $1 mở toang, tấm bạt bay phần phật.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Người ấy vừa từ chối. Cho nhau $1 tiếng để nghĩ thêm nhé.",
+  "vi": "Có sợi xích lòng thòng quệt tóe lửa dưới gầm toa số $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Mỗi ngày chỉ gửi được $1 lời cầu hôn. Mai thử lại nhé.",
+  "vi": "Một cái chòi nhỏ, hai cần chắn sọc đỏ trắng, cái chuông, cờ đỏ, cờ xanh và cái bộ đàm. Chú Sáu đã gác $1 hai mươi tám năm; bạn vào $2, theo chú học nghề.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "💍 $1 vừa gửi lời cầu hôn tới bạn. Mở mục Hôn nhân để trả lời nhé.",
+  "vi": "Bạn báo đội trưởng. Đội ghi nhận và nhắc khéo $1; hồ sơ bạn thêm dòng “xử lý đúng mực”.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đã gửi lời cầu hôn tới $1. Chờ người ấy trả lời nhé!",
+  "vi": "Bạn báo cung trưởng (người báo không bị phạt). Cung cử người kiểm tra lại; $1 phải học lại quy trình.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 chưa nhận lời cầu hôn lần này. Chiếc nhẫn vẫn nằm trong hộp của bạn.",
+  "vi": "sửa $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Một trong hai bạn vừa khép lại một cuộc hôn nhân, chờ thêm $1 tiếng nhé.",
+  "vi": "+ dữ liệu $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "💞 $1 đã nhận lời cầu hôn của bạn! Hai bạn cùng lên kế hoạch cưới nhé.",
+  "vi": "− khách bớt $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "💞 Bạn và $1 đã đính hôn! Cùng lên kế hoạch cưới nhé.",
+  "vi": "+ tiền gấp $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "📋 $1 vừa gửi kế hoạch cưới: $2 bàn, tổng $3 xu. Mở mục Hôn nhân để xem và xác nhận.",
+  "vi": "Đã giao máy khi chưa chạy thử · +$1 xu$2.$3",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đã gửi kế hoạch cho $1. Khi $2 xác nhận, tiền cọc mới được trừ.",
+  "vi": "Đã bàn giao máy, phụ kiện và phiếu bảo hành · +$1 xu$2.$3",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 muốn bàn lại kế hoạch cưới. Sửa rồi gửi lại nhé.",
+  "vi": "Chị Thảo: “Mưa to, $1 đường dây réo cùng lúc. Nghe nhanh từng máy, xếp ưu tiên rồi nhấc theo thứ tự.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ví của bạn chưa đủ $1 xu tiền cọc.",
+  "vi": "📞 Đèn đường dây $1 nháy đỏ, chuông réo.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ví của $1 chưa đủ $2 xu tiền cọc. Nhờ $3 rút thêm tiền về ví rồi xác nhận lại nhé.",
+  "vi": "✋ Chị Thảo bấm nút nghe kèm: “$1”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "✅ $1 đã xác nhận kế hoạch cưới. Tiền cọc đã đặt. Hẹn cả phố lúc $2! 💍",
+  "vi": "Bảng đội: $1 tạm ngưng.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "✅ $1 đã xác nhận kế hoạch cưới. Tiền cọc đã đặt, còn $2 ngày nữa là tới ngày vui!",
+  "vi": "🗺️ Ký nhận ca.$1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ngày cưới của bạn: Ngày $1 (còn $2 ngày).",
+  "vi": "$1 Người gọi vẫn bình tĩnh: “Dạ, tôi nghe đây.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Còn $1 ngày nữa là tới ngày cưới!",
+  "vi": "$1 Giọng người gọi chậm lại: “…được rồi… tôi nghe đây.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Cưới lúc $1: cả phố được mời dự 💍",
+  "vi": "$1 Người gọi thở hổn hển, vẫn còn run: “…dạ… dạ…”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đã chốt kế hoạch và đặt cọc $1 xu (phần của bạn $2 xu). $3",
+  "vi": "$1 Gửi $2 · mức $3. $4",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Gõ $1 để xác nhận.",
+  "vi": "↪️ $1 tạm ngưng: tự động mượn đội phường bên.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Cả hai cần $1 tiếng trước khi tính chuyện mới.",
+  "vi": "Gọi $1 không ai trả lời: bảng đội chưa đánh dấu tạm ngưng, mất ba phút mới mượn được phường bên.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🎉 $1 đã hẹn tiệc cưới của hai bạn lúc $2. Mời bạn bè tới chung vui nhé!",
+  "vi": "📻 $1 không trả lời! Bảng đội chưa đánh dấu tạm ngưng: mất ba phút mới mượn được phường bên.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đã hẹn tiệc cưới lúc $1. Bấm “Mời khách” để báo bạn bè và cả phố nhé 💌",
+  "vi": "$1 còn đang đi một chuyến không cần thiết lúc nãy, ca này phải chờ đội phường bên.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đã mời $1 người bạn và cả phố. Miễn phí, không mất xu nào 💌",
+  "vi": "⏳ $1 còn kẹt ở chuyến không cần thiết lúc nãy: chờ đội phường bên.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🙏 Góp ý gửi thầy trụ trì: $1 Mong chùa nhắc nhở lại.",
+  "vi": "↪️ $1 đang đi ca trước, đội phường bên hỗ trợ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🙏 Khách thập phương nhờ chuyển lời lên thầy trụ trì: $1",
+  "vi": "🙂 $1 $2. $3 nằn nì: $4 (Đường dây bị giữ thêm nửa phút.)",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ăn tối cùng $1",
+  "vi": "Khoan! Đọc lại thẻ “$1”: làm vậy có an toàn không?",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Tinh thần −$1.",
+  "vi": "Tổng đài hướng dẫn sai: $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ăn tối: $1",
+  "vi": "⚠️ Bạn đọc: “$1”. $2",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 Tối qua: $2, ngủ lúc $3.",
+  "vi": "🗣️ Bạn đọc: “$1.” — “Dạ, tôi làm liền.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 Tối nay: $2, ngủ lúc $3. Sáng mai tỉnh táo $4.",
+  "vi": "Trong lúc chờ xe, người gọi cần làm gì cho an toàn? Đọc thẻ “$1”.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "☕ Ăn sáng xong$1. No bụng $2, tỉnh táo $3.",
+  "vi": "Gửi thừa $1: đội đó bị giữ chân.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "☕ Ăn sáng xong$1",
+  "vi": "Không hướng dẫn người gọi: $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": ". No bụng $1, tỉnh táo $2.",
+  "vi": "Quên dặn: $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🍱 Tranh thủ ăn hộp cơm mang theo. No bụng $1.",
+  "vi": "$1: gửi $2 ($3).",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🍚 Hôm nay ăn đủ bữa. Tinh thần +$1.",
+  "vi": "$1: gửi xe, tới nơi không có chuyện gì.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ví còn $1 xu, chưa đủ $2 xu. Ăn cơm hộp mang theo nhé.",
+  "vi": "$1: không gửi xe, $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ăn trưa: $1",
+  "vi": "$1: đã hỏi đủ kịch bản, gửi đúng đội, hướng dẫn đầy đủ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 Ăn trưa: $2",
+  "vi": "$1: đã hỏi đủ kịch bản, chuyển đúng nơi, lời lẽ lịch sự.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": ". No bụng $1",
+  "vi": "Nghe lại $1: chuyện đó có nguy hiểm tính mạng không?",
   "en": "",
   "pattern": true
  },
  {
-  "vi": ", tỉnh táo $1",
+  "vi": "$1 nguy hiểm mà phải chờ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ăn thêm: $1",
+  "vi": "$1 $2: hơi cao, $3 là đủ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 Ăn thêm: $2 ($3 xu). $4",
+  "vi": "$1 Mưa lớn: xếp $2 đường dây, $3 ca khẩn cấp nhấc trước.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ngủ ngon nhé. Sáng mai tỉnh táo $1.",
+  "vi": "$1 Mưa lớn: xếp đúng hết các đường dây.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ví còn $1 xu, chưa đủ $2 xu. Chọn bữa ở nhà nhé.",
+  "vi": "📒 Chị Thảo đối chiếu băng ghi âm, khựng lại ở dòng “$1”: “Băng đâu có vậy, em?” Ghi khống sổ nhật ký. $2",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1: $2 việc",
+  "vi": "📒 Sổ nhật ký thật, nhưng thiếu: “$1”. Ca sau phải nghe lại băng mới biết.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Kết kỳ $1–$2: doanh thu $3 xu × $4% = thuế $5 xu (làm tròn lên), thuê $6 xu; hạn đóng ngày $7.",
+  "vi": "📞 Ca trực: $1 cuộc gọi ở tổng đài cứu hộ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Có sự cố của $1. Bạn ấy tạm dừng việc tới khi xử lý xong: mở Sổ tiệm → Nhân viên.",
+  "vi": "🚒 Gửi đội $1 lần.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đã thanh toán $1 khoản, tổng $2 xu.",
+  "vi": "↪️ Chuyển đúng nơi $1 cuộc không cần xe.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Còn $1 khoản chưa đủ xu.",
+  "vi": "🔎 Kiểm tra $1 cuộc gọi nghi ngờ trước khi quyết.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1/$2 ngày làm ở cấp này",
+  "vi": "🗣️ Đọc $1 hướng dẫn an toàn trong lúc chờ xe.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "★ $1 ($2 hiện tại)",
+  "vi": "⏱️ Trung bình $1 giây mỗi cuộc (anh Khải có xem biểu đồ).",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Từ $1 trở lên",
+  "vi": "📋 $1 báo cáo sự cố. Mai họp ca rút kinh nghiệm.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1/$2 ngày ở chức vụ này",
+  "vi": "Bảng đội: $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1/$2 kỳ “Hoàn thành tốt” trở lên",
+  "vi": "Bảng đội: $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "⛔ Tạm đình chỉ công tác $1 ngày: không có lương. Đã ở cấp thấp nhất.",
+  "vi": "Chị Thảo: “$1 đường dây réo cùng lúc, xếp ưu tiên giúp chị.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "⬇️ Hạ 1 bậc hàm: $1 → $2.",
+  "vi": "$1 hơi chững lại: “Quên rồi hả?” Món đã hiện trên phiếu order và được ghi vào sổ khách quen.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Chức vụ: $1 → $2. $3 nhận ghế $4.",
+  "vi": "Tô chỉ còn chỗ cho $1 phần topping.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "📖 Nhắc quy trình: $1. $2 (Đang kèm việc: chưa tính cảnh cáo.)",
+  "vi": "Thêm $1$2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "⚠️ Cảnh cáo lần $1: $2.",
+  "vi": "Thêm $1$2",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "⚠️ Cảnh cáo $1/$2: $3. 📖 $4",
+  "vi": "$1 phần",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "💵 Nhận phong bì: phong bì bị tịch thu. $1 Ghi dấu liêm chính vĩnh viễn. Tự giác nộp lại trong ca thì chỉ tính cảnh cáo.",
+  "vi": "Khách đồng ý đổi $1 sang $2, giá tô giữ nguyên.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🙇 Tự giác nộp lại phong bì, báo cáo. Giữ bậc hàm, $1 Dấu liêm chính vẫn ghi “đã tự giác”.",
+  "vi": "Bạn giải thích từng khoản. $1 lắc đầu: “Phần nào mình cũng cần hết á.” Thử xin thêm ngân sách, bớt giá hoặc nói thật là hôm nay chưa làm đủ được.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🙇 Tự giác nộp lại phong bì, báo cáo. Giữ bậc hàm, $1",
+  "vi": "Bạn giải thích giá từng khoản. $1 gật gù: “Vậy $2 để lần sau nha.” Bỏ dịch vụ đó ra rồi chốt lại phương án.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🛡️ Liêm chính +1 (tổng $1).",
+  "vi": "$1 cau mày: “Mình nói rồi mà, không thêm nữa đâu.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "⛔ Đang tạm đình chỉ: còn $1 ngày.",
+  "vi": "$1 ngập ngừng rồi gật: “Thôi làm cho đẹp, mình thêm $2 xu.” Chốt lại phương án nhé.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🧽 $1 ngày sạch: hết 1 cảnh cáo (còn $2/$3).",
+  "vi": "$1: “Không được đâu, mình chỉ mang $2 xu thôi.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "📋 Đánh giá kỳ: $1 (★ $2).",
+  "vi": "Phải bớt $1 xu, quá $2% báo giá — tiệm không cho. Thử cách khác nhé.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "⭐ Quyết định thăng cấp bậc hàm: $1 → $2.",
+  "vi": "Bạn bớt $1 xu cho vừa $2 xu. $3 cười: “Vậy được, cảm ơn nha!”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1: bài kiểm tra cuối khóa đầu ca sau.",
+  "vi": "$1 Chốt lại phương án nhé.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🪑 Chờ ghế $1 trống: $2 ngày làm nữa.",
+  "vi": "Tiệm báo thật là hôm nay không làm vừa $1 xu được. Tiếc, nhưng ít ra nói thẳng.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🎖️ Ban chỉ huy hẹn đầu ca sau: xét bổ nhiệm $1.",
+  "vi": "$1 chưa làm tóc vì vượt ngân sách.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Chưa đạt. Câu “$1”: “$2”. Hẹn xét lại sau $3 ngày làm.",
+  "vi": "Bạn nói thật: với $1 xu hôm nay chưa làm đủ được. $2 hơi tiếc nhưng cảm ơn bạn đã không vẽ thêm.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🎓 Đạt $1.",
+  "vi": "$1: “$2 xu hả… vượt ngân sách mất rồi.” 💬 Trao đổi với khách: dời bớt dịch vụ, xin thêm ngân sách, bớt giá, hoặc nói thật là hôm nay chưa làm đủ được.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🎉 Quyết định bổ nhiệm: $1.",
+  "vi": "dịch vụ $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Thăng cấp $1 → $2.",
+  "vi": "sản phẩm $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🧭 Hướng tới: $1.",
+  "vi": "tiền gấp $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "📋 Kiểm tra: $1.",
+  "vi": "(chưa vừa ý, chỉ trả nửa giá $1 xu)",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "📤 Trình PGĐ: đúng $1%",
+  "vi": "$1 $2 tới đúng hẹn — $3. +$4 xu$5 · $6★.$7",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "phát hiện $1 cán bộ nhận phong bì · Liêm chính +$2",
+  "vi": "Đơn đặt balo năm học mới · $1 xu",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "bỏ sót $1 vi phạm",
+  "vi": "Đặt 20 balo · tổng $1 xu",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Bậc thợ $1/7",
+  "vi": "Anh $1 · In ấn Phúc Lộc",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Bậc thợ $1",
+  "vi": "Phụ huynh $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "⏱️ Tăng ca ×2 · việc thứ $1",
+  "vi": "Hộp thư sáng nay ($1 thư)",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "⚡ Thưởng năng suất $1% · $2 việc",
+  "vi": "Xếp $1 thư vào bốn khay: trình sếp, tự trả lời, chuyển phòng ban, rác/lừa đảo.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Sân với bàn Phật còn vài chỗ chưa gọn: $1.",
+  "vi": "Alô, $1 là $2, kế toán bên $3. Cho $4 gặp anh Quân.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Có chỗ còn sơ suất ($1).",
+  "vi": "Khoản tiền vải tháng trước, $1 xu, quá hạn năm hôm rồi. Nhờ anh Quân gọi lại cho $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Chỗ nhang đèn làm tôi hơi lo: $1.",
+  "vi": "Chào em, $1 là $2, phụ trách mua sắm của $3.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Chuyện công đức nên rõ ràng hơn: $1.",
+  "vi": "Trường muốn đặt khoảng $1 balo cho học sinh lớp 1, cần báo giá. Số tổng đài trường là 028 3$2, nhưng em đừng gọi số đó, giờ hành chính không ai nghe đâu.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Có chỗ chưa được chu đáo: $1.",
+  "vi": "Alô! $1 là $2, phụ huynh. Balo mua bên các anh chị mới hai tuần đã đứt quai!",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Có điều tôi nhớ hôm đó $1.",
+  "vi": "Mã đơn của $1 là CD-$2. $3 cần người có trách nhiệm gọi lại.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Chỉ tiếc là $1.",
+  "vi": "Chào em, anh $1 bên $2. Xe chở vải cho Cánh Diều bị kẹt cầu.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Việc $1 làm chu đáo.",
+  "vi": "Xe đến trễ, cần người ở kho ký nhận. Hotline công ty anh là 1900 $1, nhưng em gọi thẳng di động anh cho nhanh.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 làm khéo, nhìn là thấy có lòng.",
+  "vi": "Chào em, $1 là $2, giám đốc kinh doanh $3.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Việc $1 còn vội.",
+  "vi": "$1 muốn hẹn gặp anh Quân tuần sau để giới thiệu mẫu khóa kéo mới.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Mẹ tôi mất năm ngoái, rằm nào tôi cũng lên chùa thắp nén nhang. Hôm nay $1 đứng chờ tôi khấn xong mới dọn chiếu, không hối. Cảm ơn nhiều.",
+  "vi": "Chào em, $1 là $2, cán bộ tín dụng $3.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Tôi làm ca đêm, sáng tan ca hay ghé chùa ngồi nghe công phu. Hôm nay $1 rót cho chén trà nóng, ấm cả bụng.",
+  "vi": "Số $1: $2… à không, nhầm, $3. Số kia là của vợ $4.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "A Di Đà Phật. Cảm ơn $1 đã ghé chùa và viết mấy dòng này. Góp ý về $2, chùa xin ghi nhận ạ.",
+  "vi": "Số $1: $2… à không, nhầm, $3. Số kia là của chồng $4.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Cảm ơn $1 đã lên chùa. Chuyện $2 chùa đã nghe, sẽ để ý hơn ạ.",
+  "vi": "Số $1 là $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đọc lời $1 viết, cả chùa thấy quý. Chùa xin ghi nhận và sửa dần ạ.",
+  "vi": "Gọi lại sau $1 nhé, trước đó $2 không nghe máy được.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đọc xong mà chổi tre trong tay cũng đứng hình 😅 Chùa xin nhận phần $1 về sửa ạ.",
+  "vi": "À, có ai hỏi thì số bàn $1 là $2, nhưng gọi di động thôi nhé.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Dạ chùa xin ghi chuyện $1 lên bảng nội quy, sáng nào quét sân cũng đọc lại 😄",
+  "vi": "“$1” là $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Thầy trụ trì đọc xong cười hiền, giao ngay bài tập về $1 cho chùa rồi ạ 😅",
+  "vi": "Người gọi đã đổi giờ: “$1” là $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Dạ theo sổ chùa thì $1 ạ. Chắc hôm đó trời nóng nên $2 thấy lâu hơn thôi 🙂",
+  "vi": "$1 vừa gọi lại lần nữa — nghe máy đi!",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Chùa ghi nhận hết ạ. Riêng chuyện $1 thì $2, mời $3 ghé lại một sáng ngồi nghe chuông là thấy liền 😌",
+  "vi": "À em ơi, $1 đổi giờ nhé: $2 mới gọi được.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Dạ, sổ chùa hôm đó ghi: $1. Chùa gửi lại để $2 cùng xem cho rõ ạ.",
+  "vi": "Ghi lời nhắn: $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Chùa đã xem lại sổ ghi chép hôm đó: $1. Nếu $2 còn thấy chỗ nào chưa ổn, chùa xin xem thêm ạ.",
+  "vi": "$1 đến làm việc lúc",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Dạ có ghi nhận cụ thể: $1. Chùa gửi $2 để mình cùng nhìn lại cho công bằng ạ.",
+  "vi": "Ngày $1 là $2 (xem lịch).",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "A Di Đà Phật, chùa xin lỗi $1 vì $2 chưa chu đáo. Thầy trụ trì đã nhắc lại cả chùa, lần sau sẽ cẩn thận hơn ạ.",
+  "vi": "$1 cho mùa tựu trường.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Chùa xin lỗi $1 ạ. Chuyện $2 là thiếu sót của chùa, đã sửa lại rồi ạ.",
+  "vi": "Rất mong $1 sắp xếp thời gian tham dự.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Dạ chùa nhận thiếu sót. Mong $1 hoan hỷ, lần sau lên chùa sẽ thấy khác ạ.",
+  "vi": "Đề nghị $1 có mặt đúng giờ, nếu không sẽ hủy đơn.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Cảm ơn $1 đã góp ý. Rằm tới mời $2 ghé lễ, chùa sẽ đón tiếp chu đáo hơn ạ.",
+  "vi": "Anh Quân đổi ý: “Dời giờ hẹn sang $1 nhé, sửa thư trước khi gửi.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Lần sau $1 lên chùa cứ gọi một tiếng, chùa chỉ đường, dọn chỗ ngồi cho $2 ạ.",
+  "vi": "Soát thư mời: $1 $2",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Mời $1 sáng nào rảnh ghé nghe chuông, uống chén trà với chùa ạ 🍵",
+  "vi": "Mời $1 $2 — $3, $4.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Dạ ở chùa việc gì cũng theo thời khóa: sáng quét sân, trưa lo bếp chay, công đức thì hai người cùng đếm. Hôm đó $1, chùa đang xem lại chỗ cần kỹ hơn ạ.",
+  "vi": "Hẹn $1, ngày $2, Phòng họp lớn.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Chùa làm theo nếp: nghe thầy dặn, làm từng việc, xong thì xem lại. Góp ý về $1 chùa đưa vào lời dặn mỗi sáng ạ.",
+  "vi": "Bàn đơn $1 $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Dạ ngày rằm khách thập phương đông, chùa chỉ dẫn lần lượt nên có lúc phải chờ. Chùa đang sắp xếp lại để $1 tốt hơn ạ.",
+  "vi": "Lịch tháng $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Dạ chùa “note” lại liền ạ 📝 Lần sau $1 sẽ chỉn chu hơn, $2 ghé lại nghe chuông nha 🪷",
+  "vi": "$1, ngày $2",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Real ạ, chùa nhận hết 🙏 Lần sau $1 lên là thấy khác liền nha ✨",
+  "vi": "THÔNG BÁO NGHỈ LỄ $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "A Di Đà Phật. Chùa đã đọc, cảm ơn $1 ạ.",
+  "vi": "lễ $1 từ ngày",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Không vừa ý thì $1 đi chùa khác, ở đây không cần.",
+  "vi": "thứ Hai, ngày $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "A Di Đà Phật. Cảm ơn $1 đã ghé chùa, đọc mấy dòng này cả chùa vui lây ạ.",
+  "vi": "Soát thông báo nghỉ $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Cảm ơn $1 đã thương chùa. Rằm tới mời $2 lên lễ ạ.",
+  "vi": "Nghỉ lễ $1: $2 ngày, từ $3 đến hết $4.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đọc xong cả chùa cười hiền, chổi tre quét sân cũng nhẹ tay hơn 😄 Cảm ơn $1 ạ!",
+  "vi": "Soát thư trả lời khiếu nại $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Dạ chùa vẫn quét sân mỗi sáng mà, nhưng được $1 để ý thì vẫn vui ạ 😌",
+  "vi": "$1 $2 · đơn $3",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Dạ sổ chùa hôm đó ghi: $1. Cảm ơn $2 đã để ý kỹ vậy ạ.",
+  "vi": "$1 lúc $2 phòng kinh doanh đã đặt trước.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Nếu có gì chưa chu đáo, chùa xin $1 hoan hỷ bỏ qua ạ. Cảm ơn $2 nhiều.",
+  "vi": "$1 lúc $2 có lớp đào tạo an toàn lao động.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Cảm ơn $1 nhiều ạ! Lần sau lên chùa, mời $2 ở lại dùng cơm chay trưa ạ.",
+  "vi": "Xếp lịch làm việc của sếp ($1 việc)",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Dạ nếp chùa là làm từng việc nhỏ, việc nào cũng xem lại. Cảm ơn $1 đã nhận ra ạ.",
+  "vi": "Xếp $1 cuộc họp vào phòng và giờ: không trùng người, đủ chỗ, đúng thiết bị, tránh giờ người ta bận.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Được khen là chùa vui lắm luôn ạ 🙏 $1 ghé lại nghe chuông nha ✨",
+  "vi": "$1: “Rồi rồi, trả nè. Đòi gì đòi dai thế không biết.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "A Di Đà Phật, cảm ơn $1 ạ.",
+  "vi": "$1 móc ví đếm đủ: “Xin lỗi nha, quên mất tiêu.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đọc lời $1 viết mà thấy nhẹ lòng, tôi sửa lại sao nhé.",
+  "vi": "$1: “Có nhiêu đây thôi, cầm tạm đi, phần còn lại tính sau.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Cảm ơn $1 đã trả lời tử tế. Tôi thêm sao.",
+  "vi": "$1 dúi mấy tờ: “Đang kẹt, trả dần nha, đừng có hối.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "A Di Đà Phật, cảm ơn $1. Rằm tới tôi lại lên chùa.",
+  "vi": "$1: “Mai, mai chắc chắn luôn, hứa đó.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Cảm ơn $1 đã trả lời. Tôi để nguyên cảm nhận nhé.",
+  "vi": "$1: “Cuối tuần có lương là trả liền, gấp gì.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Tôi vẫn thấy $1, mong $2 xem lại giúp.",
+  "vi": "$1: “Ủa trả rồi mà? Nhớ nhầm người rồi đó bà nội.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Không phải tôi khó, nhưng hôm đó đúng là $1.",
+  "vi": "$1: “Nợ hồi nào? Có giấy tờ gì không mà đòi?”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đùa kiểu đó không hợp ở chùa đâu $1.",
+  "vi": "$1: “Đòi nợ kiểu xã hội đen vậy hả? Có mấy đồng làm như ghê lắm, vl.”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Dạ, tôi cảm ơn $1. Hẹn ngày rằm.",
+  "vi": "$1 gân cổ: “Làm nhục người ta giữa đường, cút đi cho khuất mắt!”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "A Di Đà Phật, cảm ơn $1 nhiều.",
+  "vi": "Hàng xóm bảo $1 dọn đi đâu mất rồi, số điện thoại cũng không liên lạc được.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Ơ, tôi bấm nhầm sao thật. Sửa lại liền, xin lỗi $1 🙏",
+  "vi": "Phòng trọ của $1 đã có người khác thuê. Khoản này coi như mất.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Thôi thấy $1 trả lời hiền quá, tôi thêm một sao.",
+  "vi": "Xóa nợ cho $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Nghe $1 kể nên sáng nay lên chùa, đúng là yên thật 🙏",
+  "vi": "🤝 Xóa khoản nợ $1 xu cho $2. Coi như làm phúc.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 rủ đi lễ rằm, lần đầu lên mà thấy thương chùa liền.",
+  "vi": "Hôm nay đã đòi $1 rồi. Mai hẵng đòi tiếp.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đọc lời $1 viết, tôi dắt mẹ lên chùa. Mẹ vui cả buổi.",
+  "vi": "$1 trả nợ",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 rủ bà con lên chùa: thêm $2 cảm nhận tốt.",
+  "vi": "$1 tự mang tiền nợ tới trả",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Câu trả lời gắt bị chụp lại, lan khắp xóm: thêm $1 cảm nhận 1★.",
+  "vi": "$1 tự tới trả đủ, còn xin lỗi vì để lâu.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Câu đùa bị chụp lại, bà con không vui: thêm $1 cảm nhận 1★.",
+  "vi": "💵 $1 tự mang $2 xu tới trả nợ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 kể chuyện khắp xóm: thêm $2 cảm nhận 1★.",
+  "vi": "Bậc $1: $2 × $3% = $4",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Không gỡ được: khách có ghé chùa thật. $1 biết chuyện và buồn hơn.",
+  "vi": "Thuế = $1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Thêm $1 cảm nhận 1★ vì chuyện này.",
+  "vi": "$1 có trong Hồ sơ nhân sự, đang làm, chỉ một dòng trong bảng.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 quấn chân, tinh thần +$2.",
+  "vi": "Chấm công: nghỉ không lương $1 ngày · phép năm $2 ngày.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🎉 $1 vừa học được: $2 $3!",
+  "vi": "Ngày công hưởng lương = $1 − $2 ngày không lương = $3 ngày.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Tên bé tối đa $1 ký tự nhé.",
+  "vi": "$1 ngày phép năm vẫn hưởng lương — không trừ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Nhà đã đủ $1 bé rồi. Gửi một bé về quê với bà trước nhé.",
+  "vi": "Lương giờ của $1: $2 xu.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 đã có nhà mới hôm nay rồi.",
+  "vi": "$1$2: $3 giờ × $4 × $5% = $6",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Xác nhận đón bé $1 về nhà.",
+  "vi": "$1: $2 giờ chưa có phiếu duyệt — không trả.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Thú cưng · $1 $2",
+  "vi": "Cộng: $1 giờ · $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🏠 $1 về nhà mới rồi!",
+  "vi": "Hợp đồng ghi $1 · mức sàn kỳ này $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🐾 $1 về nhà! ($2)",
+  "vi": "$1 thấp hơn mức sàn → đóng theo mức sàn $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Xác nhận ủng hộ $1 xu.",
+  "vi": "$1 không thấp hơn mức sàn → giữ đúng số hợp đồng $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "💗 Đã ủng hộ $1. Mấy bé ở Chân Nhỏ có thêm bữa pate rồi!",
+  "vi": "Hồ sơ nhân sự: $1 người đã đăng ký.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🛍️ Đã trả $1 cho $2",
+  "vi": "Hồ sơ mới nộp $1/$2, trước mốc $3/$4 → được tính từ kỳ này (+1).",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Nhà đã đủ $1 bé rồi.",
+  "vi": "Hồ sơ mới nộp $1/$2, không trước mốc $3/$4 → kỳ sau mới tính.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🏡 $1 về lại nhà, mập lên trông thấy. Bà gửi kèm túi cơm cháy.",
+  "vi": "Kỳ này tính $1 người.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Giờ bé tên là $1.",
+  "vi": "Sổ tạm ứng không có tên $1 → không trừ.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 no căng rồi, để lát nữa nhé.",
+  "vi": "Sổ tạm ứng: $1 ứng $2",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 chơi mệt rồi, đang nằm thở.",
+  "vi": "Trừ đúng một lần: $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Bạn ném dép, $1 chạy theo cười toe.",
+  "vi": "Hồ sơ nhân sự: tài khoản $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Bạn lắc sợi dây, $1 vồ trượt rồi giả vờ không quan tâm.",
+  "vi": "Tin nhắn xin đổi sang $1 không có đơn ký tên — không có giá trị.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 $2 mê $3 lắm luôn!",
+  "vi": "$1 người đã đăng ký",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 đang thơm phức rồi.",
+  "vi": "+ 1 hồ sơ nộp $1/$2 (trước mốc $3/$4)",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Xác nhận spa cho $1 ($2 xu).",
+  "vi": "Hồ sơ nhân sự: $1 = $2 người phụ thuộc; bảng nháp chỉ ghi $3 nên trừ thuế cao hơn.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 đang khỏe re, chưa cần khám.",
+  "vi": "$1 không có trong Hồ sơ nhân sự — “lương ma”, không được trả.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 còn hạn tiêm $2 ngày.",
+  "vi": "$1 đã có ở dòng $2 — cùng người, cùng tài khoản.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Xác nhận $1 cho $2 ($3 xu).",
+  "vi": "Hồ sơ nhân sự: $1 — $2.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đã tháo cho $1.",
+  "vi": "Không còn trong kỳ lương tháng $1.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 đang có bé khác dùng. Mua thêm một cái nhé.",
+  "vi": "Quy định “$1”",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 $2 diện $3, xinh xỉu!",
+  "vi": "Sót $1 lỗi ($2)",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🦮 $1 đi dạo cùng bạn.",
+  "vi": "— bị trừ $1 xu",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 ở nhà trông nhà.",
+  "vi": "Đánh dấu nhầm $1 ô đúng ($2) — chị Hồng mất công soát lại.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 chưa học trò này.",
+  "vi": "(dòng $1)",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1 $2: $3! Cả xóm vỗ tay.",
+  "vi": "và $1 ô khác",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "📸 Tạch! Ảnh $1 xinh hết nấc.",
+  "vi": "Giữ lương oan ở những ô vốn đúng$1, chị phải soát lại từng dòng.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Xác nhận gửi $1 về quê với bà.",
+  "vi": "Giữ lương oan ở những ô vốn đúng$1",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "🏡 $1 về quê với bà, có vườn rộng chạy nhảy. Muốn đón về lúc nào cũng được.",
+  "vi": "✗ Chưa khớp $1/$2 ô.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "CREATE TABLE IF NOT EXISTS mnl_meta (key $1 PRIMARY KEY, value $2 NOT NULL); CREATE TABLE IF NOT EXISTS sessions ( sid $3 PRIMARY KEY, csrf $4 NOT NULL, revision bigint NOT NULL DEFAULT 0, state $5 NOT NULL, updated_at $6 NOT NULL DEFAULT $7 ); CREATE TABLE IF NOT EXISTS receipts ( sid $8 NOT NULL, request_id $9 NOT NULL, request_hash $10 NOT NULL, result $11 NOT NULL, created_at $12 NOT NULL DEFAULT $13, PRIMARY KEY (sid, request_id) ); CREATE TABLE IF NOT EXISTS accounts ( uid $14 PRIMARY KEY, username $15 UNIQUE NOT NULL, display $16 NOT NULL, pw $17 NOT NULL, sid $18 UNIQUE NOT NULL, created_at $19 NOT NULL DEFAULT $20, updated_at $21 NOT NULL DEFAULT $22 ); CREATE TABLE IF NOT EXISTS logins ( token $23 PRIMARY KEY, sid $24 NOT NULL, csrf $25 NOT NULL, created_at $26 NOT NULL DEFAULT $27, seen_at $28 NOT NULL DEFAULT $29 ); CREATE TABLE IF NOT EXISTS tiktok_identities ( client_key $30 NOT NULL, open_id $31 NOT NULL, uid bigint NOT NULL, sid $32 NOT NULL, display $33 NOT NULL, created_at $34 NOT NULL DEFAULT $35, PRIMARY KEY(client_key,open_id), UNIQUE(client_key,uid) ); CREATE TABLE IF NOT EXISTS tiktok_flows ( state_hash $36 PRIMARY KEY, binding_hash $37 UNIQUE NOT NULL, source_token $38 NOT NULL, source_sid $39 NOT NULL, source_login bigint NOT NULL, mode $40 NOT NULL, client_key $41 NOT NULL, expires_at double precision NOT NULL, phase $42 NOT NULL, target_uid bigint, nonce_hash $43 ); CREATE TABLE IF NOT EXISTS player_feedback ( id $44 PRIMARY KEY, sid $45 NOT NULL, account $46, kind $47 NOT NULL, text $48 NOT NULL, context $49 NOT NULL DEFAULT '{}', status $50 NOT NULL DEFAULT 'new', reply $51, created_at double precision NOT NULL, updated_at double precision NOT NULL, replied_at double precision ); CREATE TABLE IF NOT EXISTS archive ( sid $52 NOT NULL, career $53 NOT NULL, kind $54 NOT NULL, seq bigint NOT NULL, day bigint, row $55 NOT NULL, created_at double precision NOT NULL DEFAULT $56, CONSTRAINT archive_rows UNIQUE (sid, career, kind, seq) ); CREATE TABLE IF NOT EXISTS profiles ( pid $57 PRIMARY KEY, sid $58 UNIQUE NOT NULL, name $59, name_key $60 UNIQUE, bio $61 NOT NULL DEFAULT '', avatar $62 NOT NULL DEFAULT '🌸', visible bigint NOT NULL DEFAULT 0, shop $63 NOT NULL DEFAULT '{}', served bigint NOT NULL DEFAULT 0, week_key $64 NOT NULL DEFAULT '', week_base bigint NOT NULL DEFAULT 0, reports bigint NOT NULL DEFAULT 0, hidden bigint NOT NULL DEFAULT 0, created double precision NOT NULL, updated double precision NOT NULL, seen double precision NOT NULL ); CREATE TABLE IF NOT EXISTS work_visit_places ( id $65 PRIMARY KEY, owner $66 NOT NULL, kind $67 NOT NULL, target $68 NOT NULL, visibility $69 NOT NULL DEFAULT 'friends', data $70 NOT NULL, updated_at double precision NOT NULL, UNIQUE(owner,kind,target) ); CREATE TABLE IF NOT EXISTS work_service_orders ( id $71 PRIMARY KEY, place $72 NOT NULL, customer $73 NOT NULL, provider $74 NOT NULL, status $75 NOT NULL, price bigint NOT NULL CHECK(price >= 0), request_id $76 NOT NULL, fingerprint $77 NOT NULL, data $78 NOT NULL, created_at double precision NOT NULL, updated_at double precision NOT NULL, UNIQUE(customer,request_id) ); CREATE TABLE IF NOT EXISTS work_service_reviews ( order_id $79 PRIMARY KEY, place $80 NOT NULL, customer $81 NOT NULL, provider $82 NOT NULL, stars bigint NOT NULL CHECK(stars BETWEEN 1 AND 5), tags $83 NOT NULL, comment $84 NOT NULL, reply $85 NOT NULL DEFAULT '', created_at double precision NOT NULL, updated_at double precision NOT NULL ); CREATE TABLE IF NOT EXISTS visits ( from_pid $86, to_pid $87, day $88, at double precision, PRIMARY KEY (from_pid, to_pid, day) ); CREATE TABLE IF NOT EXISTS previews ( id $89 PRIMARY KEY, from_pid $90 NOT NULL, to_pid $91 NOT NULL, career $92 NOT NULL, day $93 NOT NULL, stars bigint NOT NULL, text $94 NOT NULL, reply $95, reply_at double precision, at double precision NOT NULL, reports bigint NOT NULL DEFAULT 0, hidden bigint NOT NULL DEFAULT 0, UNIQUE (from_pid, to_pid, day) ); CREATE TABLE IF NOT EXISTS gifts ( id $96 PRIMARY KEY, from_pid $97 NOT NULL, to_pid $98 NOT NULL, sticker $99 NOT NULL, coins bigint NOT NULL, note $100 NOT NULL DEFAULT '', day $101 NOT NULL, at double precision NOT NULL, claimed bigint NOT NULL DEFAULT 0 ); CREATE TABLE IF NOT EXISTS market ( id $102 PRIMARY KEY, seller $103 NOT NULL, career $104 NOT NULL, item $105 NOT NULL, qty bigint NOT NULL, price bigint NOT NULL, life_left bigint NOT NULL, unit_cost bigint NOT NULL, listed_day bigint NOT NULL, status $106 NOT NULL, buyer $107, at double precision NOT NULL, sold_at double precision, settled bigint NOT NULL DEFAULT 0, reports bigint NOT NULL DEFAULT 0, hidden bigint NOT NULL DEFAULT 0 ); CREATE TABLE IF NOT EXISTS board ( id $108 PRIMARY KEY, pid $109 NOT NULL, career $110 NOT NULL, kind $111 NOT NULL, text $112 NOT NULL, at double precision NOT NULL, reports bigint NOT NULL DEFAULT 0, hidden bigint NOT NULL DEFAULT 0 ); CREATE TABLE IF NOT EXISTS comments ( id $113 PRIMARY KEY, post bigint NOT NULL, pid $114 NOT NULL, text $115 NOT NULL, at double precision NOT NULL, reports bigint NOT NULL DEFAULT 0, hidden bigint NOT NULL DEFAULT 0 ); CREATE TABLE IF NOT EXISTS reactions (post bigint NOT NULL, pid $116 NOT NULL, emoji $117 NOT NULL, PRIMARY KEY (post, pid, emoji)); CREATE TABLE IF NOT EXISTS follows (pid $118 NOT NULL, target $119 NOT NULL, at double precision NOT NULL, PRIMARY KEY (pid, target)); CREATE TABLE IF NOT EXISTS blocks (pid $120 NOT NULL, target $121 NOT NULL, at double precision NOT NULL, PRIMARY KEY (pid, target)); CREATE TABLE IF NOT EXISTS reports ( reporter $122 NOT NULL, kind $123 NOT NULL, target $124 NOT NULL, reason $125 NOT NULL, at double precision NOT NULL, PRIMARY KEY (reporter, kind, target) ); CREATE TABLE IF NOT EXISTS inbox ( id $126 PRIMARY KEY, pid $127 NOT NULL, kind $128 NOT NULL, text $129 NOT NULL, ref $130, at double precision NOT NULL, read bigint NOT NULL DEFAULT 0 ); CREATE TABLE IF NOT EXISTS push_subs ( endpoint $131 PRIMARY KEY, sid $132 NOT NULL, created double precision NOT NULL, last_ok double precision, fails bigint NOT NULL DEFAULT 0, prefs $133 NOT NULL DEFAULT '{}' ); CREATE TABLE IF NOT EXISTS push_queue ( id $134 PRIMARY KEY, sid $135 NOT NULL, kind $136 NOT NULL, body $137 NOT NULL, url $138 NOT NULL, at double precision NOT NULL, sent bigint NOT NULL DEFAULT 0, shown bigint NOT NULL DEFAULT 0 ); CREATE TABLE IF NOT EXISTS push_daily (sid $139 PRIMARY KEY, day $140 NOT NULL); CREATE TABLE IF NOT EXISTS stat_births (sid $141 PRIMARY KEY, day $142 NOT NULL); CREATE TABLE IF NOT EXISTS stat_active (day $143 NOT NULL, sid $144 NOT NULL, PRIMARY KEY (day, sid)); CREATE TABLE IF NOT EXISTS stat_fb_ack (id bigint PRIMARY KEY, at double precision NOT NULL); -- Play time per save per Vietnam day (game/admin_stats.py \"Thời gian chơi\"), kept by the trigger -- stat_play_cmd on receipts (one receipt = one game command). Today's rows are updated on every -- command: room on each page for HOT updates (no index write) and an early vacuum. CREATE TABLE IF NOT EXISTS stat_play ( day $145 NOT NULL, sid $146 NOT NULL, secs bigint NOT NULL, sessions bigint NOT NULL, cmds bigint NOT NULL, first_at double precision NOT NULL, last_at double precision NOT NULL, hours bigint NOT NULL DEFAULT 0, sess_at double precision NOT NULL, lens $147 NOT NULL DEFAULT '', PRIMARY KEY (day, sid) ) WITH (fillfactor = 90, autovacuum_vacuum_scale_factor = 0.01, autovacuum_analyze_scale_factor = 0.02); CREATE TABLE IF NOT EXISTS stat_play_est (day $148 PRIMARY KEY, saves bigint NOT NULL, capped bigint NOT NULL, at double precision NOT NULL); -- One row per finished day of stat_play, written before its per-player rows are purged (kept forever). CREATE TABLE IF NOT EXISTS stat_play_daily (day $149 PRIMARY KEY, players bigint NOT NULL, secs bigint NOT NULL, sessions bigint NOT NULL, cmds bigint NOT NULL, data $150 NOT NULL, at double precision NOT NULL); -- Giữ chân (game/retention.py): funnel steps per save (kept), commands per player per day (fillfactor: -- today's rows are updated by each worker's flush, HOT), leave beacons, client errors, load times, -- where new players came from. None of them is ever read to serve a player. CREATE TABLE IF NOT EXISTS stat_milestones ( sid $151 NOT NULL, key $152 NOT NULL, at double precision, day bigint, career $153, detail $154, PRIMARY KEY (sid, key) ); CREATE TABLE IF NOT EXISTS stat_actions ( day $155 NOT NULL, sid $156 NOT NULL, career $157 NOT NULL, action $158 NOT NULL, n integer NOT NULL, errors integer NOT NULL DEFAULT 0, err $159, PRIMARY KEY (day, sid, career, action) ) WITH (fillfactor = 90, autovacuum_vacuum_scale_factor = 0.02, autovacuum_analyze_scale_factor = 0.05); CREATE TABLE IF NOT EXISTS stat_actions_daily ( day $160 NOT NULL, career $161 NOT NULL, action $162 NOT NULL, players bigint NOT NULL, n bigint NOT NULL, errors bigint NOT NULL, err $163, PRIMARY KEY (day, career, action) ); CREATE TABLE IF NOT EXISTS stat_rollups (kind $164 NOT NULL, day $165 NOT NULL, rows bigint NOT NULL, at double precision NOT NULL, PRIMARY KEY (kind, day)); CREATE TABLE IF NOT EXISTS stat_leaves ( id $166 PRIMARY KEY, sid $167 NOT NULL, at double precision NOT NULL, day $168 NOT NULL, payload $169 NOT NULL ); CREATE TABLE IF NOT EXISTS stat_leave_last (sid $170 PRIMARY KEY, at double precision NOT NULL, payload $171 NOT NULL) WITH (fillfactor = 80); CREATE TABLE IF NOT EXISTS stat_client_errors ( day $172 NOT NULL, kind $173 NOT NULL, message_key $174 NOT NULL, screen $175 NOT NULL, count bigint NOT NULL, last_at double precision NOT NULL, sample $176, PRIMARY KEY (day, kind, message_key, screen) ); CREATE TABLE IF NOT EXISTS stat_loads ( day $177 NOT NULL, metric $178 NOT NULL, net $179 NOT NULL, who $180 NOT NULL, cache $181 NOT NULL, tier $182 NOT NULL, bucket integer NOT NULL, n bigint NOT NULL, PRIMARY KEY (day, metric, net, who, cache, tier, bucket) ); CREATE TABLE IF NOT EXISTS stat_acquisition ( sid $183 PRIMARY KEY, at double precision NOT NULL, day $184 NOT NULL, source $185, medium $186, campaign $187, ref_domain $188 ); CREATE TABLE IF NOT EXISTS hits (k $189 NOT NULL, at double precision NOT NULL); -- Bảng xếp hạng (game/leaderboard.py) CREATE TABLE IF NOT EXISTS leaderboard ( sid $190 NOT NULL, board $191 NOT NULL, score bigint NOT NULL, k1 bigint NOT NULL, k2 bigint NOT NULL, level bigint NOT NULL, days bigint NOT NULL, served bigint NOT NULL, stars bigint NOT NULL, mastered bigint NOT NULL, since double precision NOT NULL, updated double precision NOT NULL, PRIMARY KEY (sid, board) ); CREATE TABLE IF NOT EXISTS leaderboard_players ( sid $192 PRIMARY KEY, name $193, show bigint, updated double precision NOT NULL DEFAULT 0 ); CREATE TABLE IF NOT EXISTS leaderboard_meta (k $194 PRIMARY KEY, v $195 NOT NULL); -- 🏅 Danh hiệu tuần (game/lb_titles.py): the holders per (week, board, rank); final=0 now, final=1 past weeks (kept) CREATE TABLE IF NOT EXISTS lb_weekly ( week $196 NOT NULL, board $197 NOT NULL, rank bigint NOT NULL, sid $198 NOT NULL, score bigint NOT NULL, title $199 NOT NULL, final bigint NOT NULL DEFAULT 0, day $200 NOT NULL, at double precision NOT NULL, PRIMARY KEY (week, board, rank) ); -- Hôn nhân (game/marriage.py), bạn bè (game/friends.py), vợ chồng (game/couple.py) CREATE TABLE IF NOT EXISTS marriage_people ( sid $201 PRIMARY KEY, code $202 UNIQUE NOT NULL, accept bigint NOT NULL DEFAULT 1, life_day bigint, pool $203, remarry_after double precision NOT NULL DEFAULT 0, notice $204, notice_at double precision, created double precision NOT NULL, updated double precision NOT NULL ); CREATE TABLE IF NOT EXISTS marriage_rings ( id $205 PRIMARY KEY, sid $206 NOT NULL, tier $207 NOT NULL, price bigint NOT NULL, status $208 NOT NULL, at double precision NOT NULL, metal $209, stone $210 ); CREATE TABLE IF NOT EXISTS proposals ( id $211 PRIMARY KEY, from_sid $212 NOT NULL, to_sid $213 NOT NULL, ring $214 NOT NULL, message $215 NOT NULL, announce bigint NOT NULL DEFAULT 1, status $216 NOT NULL, at double precision NOT NULL, decided double precision ); CREATE TABLE IF NOT EXISTS couples ( id $217 PRIMARY KEY, a $218 NOT NULL, b $219 NOT NULL, ring $220, status $221 NOT NULL, since double precision NOT NULL, married_at double precision, ended double precision, ended_by $222 ); CREATE TABLE IF NOT EXISTS marriage_bonds (sid $223 PRIMARY KEY, couple bigint NOT NULL); CREATE TABLE IF NOT EXISTS weddings ( id $224 PRIMARY KEY, couple bigint NOT NULL, status $225 NOT NULL, version bigint NOT NULL DEFAULT 1, planner $226, plan $227 NOT NULL, quote $228 NOT NULL, split_a bigint NOT NULL DEFAULT 50, announce_a bigint NOT NULL DEFAULT 1, announce_b bigint NOT NULL DEFAULT 1, days bigint NOT NULL, target_a bigint, target_b bigint, due_at double precision, deposit_a bigint NOT NULL DEFAULT 0, deposit_b bigint NOT NULL DEFAULT 0, result $229, seen_a bigint NOT NULL DEFAULT 0, seen_b bigint NOT NULL DEFAULT 0, created double precision NOT NULL, confirmed_at double precision, done_at double precision ); CREATE TABLE IF NOT EXISTS marriage_effects ( id $230 PRIMARY KEY, sid $231 NOT NULL, kind $232 NOT NULL, amount bigint NOT NULL DEFAULT 0, label $233 NOT NULL DEFAULT '', data $234 NOT NULL DEFAULT '{}', status $235 NOT NULL, due double precision NOT NULL DEFAULT 0, at double precision NOT NULL, applied_at double precision ); CREATE TABLE IF NOT EXISTS marriage_blocks (sid $236 NOT NULL, target $237 NOT NULL, at double precision NOT NULL, PRIMARY KEY (sid, target)); CREATE TABLE IF NOT EXISTS news ( id $238 PRIMARY KEY, kind $239 NOT NULL, ref $240 UNIQUE NOT NULL, text $241 NOT NULL, a $242, b $243, at double precision NOT NULL ); CREATE TABLE IF NOT EXISTS friend_prefs (sid $244 PRIMARY KEY, findable bigint NOT NULL DEFAULT 1); CREATE TABLE IF NOT EXISTS friend_requests ( id $245 PRIMARY KEY, from_sid $246 NOT NULL, to_sid $247 NOT NULL, status $248 NOT NULL, at double precision NOT NULL, decided double precision ); CREATE TABLE IF NOT EXISTS friends (sid $249 NOT NULL, friend $250 NOT NULL, since double precision NOT NULL, PRIMARY KEY (sid, friend)); CREATE TABLE IF NOT EXISTS home_guest_invites ( id $251 PRIMARY KEY, owner $252 NOT NULL, guest $253 NOT NULL, home_id $254 NOT NULL, home_kind $255 NOT NULL, kind $256 NOT NULL CHECK (kind IN ('visit','stay')), status $257 NOT NULL CHECK (status IN ('pending','accepted','declined','revoked','left','expired')), created_at double precision NOT NULL, expires_at double precision, CHECK (owner <> guest) ); CREATE TABLE IF NOT EXISTS friend_searches (sid $258 NOT NULL, at double precision NOT NULL); CREATE TABLE IF NOT EXISTS joint_funds (couple bigint PRIMARY KEY, balance bigint NOT NULL DEFAULT 0, updated double precision NOT NULL); CREATE TABLE IF NOT EXISTS joint_ledger ( id $259 PRIMARY KEY, couple bigint NOT NULL, sid $260, kind $261 NOT NULL, amount bigint NOT NULL, balance bigint NOT NULL, label $262 NOT NULL DEFAULT '', ref $263 UNIQUE NOT NULL, status $264 NOT NULL DEFAULT 'done', at double precision NOT NULL ); CREATE TABLE IF NOT EXISTS couple_requests ( id $265 PRIMARY KEY, couple bigint NOT NULL, from_sid $266 NOT NULL, to_sid $267 NOT NULL, kind $268 NOT NULL, amount bigint NOT NULL DEFAULT 0, note $269 NOT NULL DEFAULT '', loan bigint NOT NULL DEFAULT 0, debt bigint, status $270 NOT NULL, at double precision NOT NULL, decided double precision ); CREATE TABLE IF NOT EXISTS couple_debts ( id $271 PRIMARY KEY, couple bigint NOT NULL, lender $272 NOT NULL, borrower $273 NOT NULL, amount bigint NOT NULL, repaid bigint NOT NULL DEFAULT 0, status $274 NOT NULL, note $275 NOT NULL DEFAULT '', ref $276 UNIQUE NOT NULL, at double precision NOT NULL, updated double precision NOT NULL ); CREATE TABLE IF NOT EXISTS couple_moments ( id $277 PRIMARY KEY, couple bigint NOT NULL, sid $278 NOT NULL, kind $279 NOT NULL, text $280 NOT NULL, key $281 UNIQUE NOT NULL, at double precision NOT NULL, seen bigint NOT NULL DEFAULT 0 ); CREATE TABLE IF NOT EXISTS couple_stats ( couple bigint PRIMARY KEY, happy bigint NOT NULL DEFAULT 0, streak bigint NOT NULL DEFAULT 0, best bigint NOT NULL DEFAULT 0, last_day bigint NOT NULL DEFAULT 0, today bigint NOT NULL DEFAULT 0 ); -- 👶 Shared family, mutual invitations and surviving parents' private custody copies. CREATE TABLE IF NOT EXISTS family_children ( couple bigint PRIMARY KEY, state $282 NOT NULL, revision bigint NOT NULL DEFAULT 0 ); CREATE TABLE IF NOT EXISTS family_custody ( child bigint NOT NULL, sid $283 NOT NULL, state $284 NOT NULL, revision bigint NOT NULL DEFAULT 0, PRIMARY KEY (child,sid) ); CREATE TABLE IF NOT EXISTS family_requests ( id $285 PRIMARY KEY, couple bigint NOT NULL, from_sid $286 NOT NULL, to_sid $287 NOT NULL, kind $288 NOT NULL, data $289 NOT NULL, status $290 NOT NULL DEFAULT 'pending', at double precision NOT NULL ); CREATE TABLE IF NOT EXISTS family_receipts ( sid $291 NOT NULL, rid $292 NOT NULL, op $293 NOT NULL, fingerprint $294 NOT NULL, result $295 NOT NULL, at double precision NOT NULL, PRIMARY KEY (sid,rid) ); -- 🎁 Quà từ Phố Có Chuyện (game/system_gift.py): a gift from the operator to one save, pending -> applied -> seen CREATE TABLE IF NOT EXISTS system_gifts ( id $296 PRIMARY KEY, sid $297 NOT NULL, coins bigint NOT NULL, title $298 NOT NULL, text $299 NOT NULL, status $300 NOT NULL, created double precision NOT NULL, applied_at double precision, seen_at double precision, granted_by $301 ); -- granted_by: the admin account that gave it from /admin (\"🎁 Tặng xu\"); NULL for scripts/grant_gift.py and older rows. -- Added in 16 (nullable, no default: no table rewrite); earlier releases name their columns and never read it. ALTER TABLE system_gifts ADD COLUMN IF NOT EXISTS granted_by $302; -- 💬 Chat (the live service, live/; admin side in game/live_chat.py). Messages are kept: a player's own -- delete empties the text (deleted=1); reports and the admin hide (hidden 1 = auto-hidden after 3 reports, -- 2 = hidden by an admin) never remove a row. CREATE TABLE IF NOT EXISTS chat_channels ( id $303 PRIMARY KEY, kind $304 NOT NULL, title $305 NOT NULL DEFAULT '', owner_pid $306, created double precision NOT NULL ); CREATE TABLE IF NOT EXISTS chat_members ( channel $307 NOT NULL, pid $308 NOT NULL, sid $309 NOT NULL, role $310 NOT NULL DEFAULT 'member', joined double precision NOT NULL, last_read bigint NOT NULL DEFAULT 0, muted_until double precision NOT NULL DEFAULT 0, pushed_at double precision NOT NULL DEFAULT 0, PRIMARY KEY (channel, pid) ); CREATE TABLE IF NOT EXISTS chat_messages ( id $311 PRIMARY KEY, channel $312 NOT NULL, pid $313 NOT NULL, name $314 NOT NULL DEFAULT '', av $315 NOT NULL DEFAULT '', text $316 NOT NULL, at double precision NOT NULL, hidden bigint NOT NULL DEFAULT 0, deleted bigint NOT NULL DEFAULT 0, reports bigint NOT NULL DEFAULT 0, reviewed_at double precision, adm bigint NOT NULL DEFAULT 0, raw $317 ); -- adm = 1: written by an admin (ADMIN_USERS) on Cả phố. Added in 10 (a constant default: no table rewrite). ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS adm bigint NOT NULL DEFAULT 0; -- raw: what the player typed when the filter masked part of it (NULL when the text is as typed). Admins only, -- never sent to players. Added in 11 (nullable, no default: no table rewrite); older rows stay NULL. -- Since 13 a message its author takes back (Thu hồi) after somebody reported it keeps its text here for the admin. ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS raw $318; ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS reply_to bigint; CREATE TABLE IF NOT EXISTS chat_mutes ( pid $319 PRIMARY KEY, until double precision NOT NULL, by_admin $320 NOT NULL DEFAULT '', reason $321 NOT NULL DEFAULT '', at double precision NOT NULL ); CREATE TABLE IF NOT EXISTS chat_prefs (pid $322 PRIMARY KEY, online bigint NOT NULL DEFAULT 1, updated double precision NOT NULL); -- 😍 Reactions (live/chat.py): one per player per message, replaced or removed by the player. CREATE TABLE IF NOT EXISTS chat_reacts ( msg bigint NOT NULL, pid $323 NOT NULL, emoji $324 NOT NULL, at double precision NOT NULL, PRIMARY KEY (msg, pid) ); -- 📌 The pinned message of a channel (Cả phố only for now): one row, read by the live service by primary key. CREATE TABLE IF NOT EXISTS chat_pins ( channel $325 PRIMARY KEY, msg bigint NOT NULL, by_pid $326 NOT NULL, at double precision NOT NULL ); -- 🙂 The face of a player's chat avatar (live/faces.py code of whitelisted ids), written by the live service only. CREATE TABLE IF NOT EXISTS chat_faces (pid $327 PRIMARY KEY, code $328 NOT NULL, at double precision NOT NULL); -- 🗑️ Deleted on one side only (live/chat.py): a message a player removed from their own screen, and a whole chat -- emptied for one player (every message up to `upto`, the chat's newest id then). Nobody else's view changes; the -- messages themselves stay (admins still see them). Written by the live service only. CREATE TABLE IF NOT EXISTS chat_hides (pid $329 NOT NULL, msg bigint NOT NULL, at double precision NOT NULL, PRIMARY KEY (pid, msg)); CREATE TABLE IF NOT EXISTS chat_clears ( channel $330 NOT NULL, pid $331 NOT NULL, upto bigint NOT NULL, at double precision NOT NULL, PRIMARY KEY (channel, pid) ); -- 🐢 Slow mode set by an admin (game/live_chat.py, read by live/chat.py; SCHEMA_VERSION 24): one player may post on -- Cả phố once per `every` seconds until `until`; the row with pid 'town' slows Cả phố for everyone. Never a ban. CREATE TABLE IF NOT EXISTS chat_slow ( pid $332 PRIMARY KEY, every double precision NOT NULL, until double precision NOT NULL, by_admin $333 NOT NULL DEFAULT '', at double precision NOT NULL ); -- 🙏 Công đức Chùa Gió Lành (game/spend.py; SCHEMA_VERSION 25): one row per donation, written in the save's own -- transaction (id '<pid>:<n>', idempotent). The weekly board reads it by week. A player who erases their data stays -- on the board as anonymous (sid ''). CREATE TABLE IF NOT EXISTS donations ( id $334 PRIMARY KEY, sid $335 NOT NULL, week $336 NOT NULL, amount bigint NOT NULL CHECK(amount > 0), wish $337 NOT NULL DEFAULT '', anon bigint NOT NULL DEFAULT 1, at double precision NOT NULL ); CREATE INDEX IF NOT EXISTS donations_week ON donations(week, sid); -- 🎨 Màu tên, khung hồ sơ, danh hiệu tuần worn now (game/spend.py writes it with the save; live/styles.py reads it by -- pid and shows it as `st` beside the name). An expired item is ignored by its `_until` (unix seconds). CREATE TABLE IF NOT EXISTS chat_style ( pid $338 PRIMARY KEY, sid $339 NOT NULL, color $340 NOT NULL DEFAULT '', color_until double precision NOT NULL DEFAULT 0, frame $341 NOT NULL DEFAULT '', frame_until double precision NOT NULL DEFAULT 0, title $342 NOT NULL DEFAULT '', title_until double precision NOT NULL DEFAULT 0, at double precision NOT NULL ); CREATE INDEX IF NOT EXISTS chat_style_sid ON chat_style(sid); -- Rewards the live service grants (phase 3 dates, phase 2 lucky envelopes); the game server applies them on load. CREATE TABLE IF NOT EXISTS live_effects ( id $343 PRIMARY KEY, sid $344 NOT NULL, kind $345 NOT NULL, amount bigint NOT NULL DEFAULT 0, data $346 NOT NULL DEFAULT '{}', status $347 NOT NULL DEFAULT 'pending', at double precision NOT NULL, applied_at double precision ); -- 💼 Hired players' shifts at someone's counter (game/quay_hire.py): one row per offer, guarded status changes. CREATE TABLE IF NOT EXISTS quay_jobs ( id $348 PRIMARY KEY, owner $349 NOT NULL, owner_name $350 NOT NULL, stall $351 NOT NULL, stall_name $352 NOT NULL, trade $353 NOT NULL, place $354 NOT NULL, wage bigint NOT NULL, value bigint NOT NULL, friend $355, worker $356, status $357 NOT NULL, day $358 NOT NULL, taken_day $359, at double precision NOT NULL, taken_at double precision, ended double precision, until double precision NOT NULL, tasks bigint NOT NULL DEFAULT 0, stars bigint NOT NULL DEFAULT 0, earned bigint NOT NULL DEFAULT 0 ); -- 💸 Transfers between friends (game/bank_xfer.py): one row per transfer (the audit log), guarded status changes; CREATE TABLE IF NOT EXISTS quay_funding ( job $360 PRIMARY KEY, owner $361 NOT NULL, rid $362, fingerprint $363 NOT NULL, source $364 NOT NULL, couple bigint, UNIQUE(owner,rid) ); -- the day counters move with conditional upserts (the caps hold under concurrency). CREATE TABLE IF NOT EXISTS bank_xfers ( id $365 PRIMARY KEY, code $366 NOT NULL, sender $367 NOT NULL, receiver $368 NOT NULL, from_name $369 NOT NULL, to_name $370 NOT NULL, amount bigint NOT NULL, note $371 NOT NULL DEFAULT '', src $372 NOT NULL, status $373 NOT NULL, day $374 NOT NULL, at double precision NOT NULL, done_at double precision ); -- Prepaid player leases. Session rows are always locked before rental rows. CREATE TABLE IF NOT EXISTS rentals ( id $375 PRIMARY KEY, owner $376 NOT NULL, property $377 NOT NULL, kind $378 NOT NULL, owner_name $379 NOT NULL, tenant $380, tenant_name $381 NOT NULL DEFAULT '', rent bigint NOT NULL, status $382 NOT NULL, start_day bigint, end_day bigint, at double precision NOT NULL, updated double precision NOT NULL ); CREATE UNIQUE INDEX IF NOT EXISTS rentals_property_active ON rentals(owner,property) WHERE status IN ('listing','leased'); CREATE UNIQUE INDEX IF NOT EXISTS rentals_tenant_active ON rentals(tenant) WHERE status='leased'; CREATE INDEX IF NOT EXISTS rentals_market ON rentals(status,at); CREATE INDEX IF NOT EXISTS rentals_owner ON rentals(owner,at); CREATE INDEX IF NOT EXISTS rentals_tenant ON rentals(tenant,status); CREATE TABLE IF NOT EXISTS rental_closed_accounts (sid $383 PRIMARY KEY); CREATE TABLE IF NOT EXISTS rental_receipts ( sid $384 NOT NULL, rid $385 NOT NULL, fingerprint $386 NOT NULL, result $387 NOT NULL, PRIMARY KEY(sid,rid) ); CREATE TABLE IF NOT EXISTS bank_xfer_days ( sid $388 NOT NULL, day $389 NOT NULL, sent bigint NOT NULL DEFAULT 0, n bigint NOT NULL DEFAULT 0, got bigint NOT NULL DEFAULT 0, PRIMARY KEY (sid, day) ); -- 💕 Dates of the live service (live/dating.py; game/live_dating.py): one row per café date (pids a < b), and the -- bond \"đang tìm hiểu\" of two saves (sids a < b) that both tapped ❤️. CREATE TABLE IF NOT EXISTS live_dates ( id $390 PRIMARY KEY, a $391 NOT NULL, b $392 NOT NULL, a_sid $393 NOT NULL, b_sid $394 NOT NULL, at double precision NOT NULL, ended double precision, how $395 NOT NULL DEFAULT '', same bigint NOT NULL DEFAULT 0, hits bigint NOT NULL DEFAULT 0 ); CREATE TABLE IF NOT EXISTS date_bonds (a $396 NOT NULL, b $397 NOT NULL, at double precision NOT NULL, PRIMARY KEY (a, b)); -- 💍 Live weddings (game/wedding_live.py, live/wedding.py): the couple's date for good (insert-only), the parties, -- the guests who stayed 5 minutes, the group photos, the settled weekly race, closeness between players. CREATE TABLE IF NOT EXISTS wedding_dates ( couple bigint PRIMARY KEY, at double precision NOT NULL, source $398 NOT NULL, wedding bigint, created double precision NOT NULL ); CREATE TABLE IF NOT EXISTS wedding_parties ( wedding bigint PRIMARY KEY, couple bigint NOT NULL, a $399 NOT NULL, b $400 NOT NULL, at double precision NOT NULL, status $401 NOT NULL DEFAULT 'booked', reminded double precision, guests bigint NOT NULL DEFAULT 0, done_at double precision, created double precision NOT NULL ); CREATE TABLE IF NOT EXISTS wedding_guests ( wedding bigint NOT NULL, sid $402 NOT NULL, pid $403 NOT NULL, ok bigint NOT NULL DEFAULT 0, paid bigint NOT NULL DEFAULT 0, steps bigint NOT NULL DEFAULT 0, counted_at double precision NOT NULL, day $404 NOT NULL, week $405 NOT NULL, PRIMARY KEY (wedding, sid) ); CREATE TABLE IF NOT EXISTS wedding_photos ( wedding bigint NOT NULL, n bigint NOT NULL, sid $406 NOT NULL, at double precision NOT NULL, image $407, PRIMARY KEY (wedding, n) ); CREATE TABLE IF NOT EXISTS wedding_race (week $408 PRIMARY KEY, settled double precision NOT NULL, top $409 NOT NULL DEFAULT '[]'); CREATE TABLE IF NOT EXISTS player_closeness ( sid $410 NOT NULL, other $411 NOT NULL, points bigint NOT NULL DEFAULT 0, updated double precision NOT NULL, PRIMARY KEY (sid, other) ); -- 🎤 Phòng hát (game/karaoke.py, live/karaoke.py; SCHEMA_VERSION 26): the oEmbed cache of each YouTube id (only the id, -- never a link; banned by an admin), the \"lượt hát\" tickets and tips (one row each, idempotent by id; a queue ticket is -- redeemed by the live service (used) and stamped when its song starts (played)), and the admin's reviews of reports. CREATE TABLE IF NOT EXISTS kara_songs ( vid $412 PRIMARY KEY, title $413 NOT NULL DEFAULT '', channel $414 NOT NULL DEFAULT '', ok bigint NOT NULL DEFAULT 0, why $415 NOT NULL DEFAULT '', checked_at double precision NOT NULL DEFAULT 0, plays bigint NOT NULL DEFAULT 0, banned bigint NOT NULL DEFAULT 0, banned_by $416, banned_at double precision ); CREATE TABLE IF NOT EXISTS kara_tickets ( id $417 PRIMARY KEY, sid $418 NOT NULL, kind $419 NOT NULL, amount bigint NOT NULL DEFAULT 0, got bigint NOT NULL DEFAULT 0, ref $420, to_sid $421, vid $422, room $423, used bigint NOT NULL DEFAULT 0, played double precision, day $424 NOT NULL, at double precision NOT NULL ); CREATE TABLE IF NOT EXISTS kara_reviews ( target $425 PRIMARY KEY, verdict $426 NOT NULL, by_admin $427 NOT NULL DEFAULT '', at double precision NOT NULL ); -- 🐾 Bé cưng của tuần (game/pets.py; SCHEMA_VERSION 27): each player's best-cared pet of a Vietnam ISO week, written in -- the save's own transaction on jr_pet_* commands. Cosmetic only. A player who erases their data leaves the board. CREATE TABLE IF NOT EXISTS pet_board ( sid $428 NOT NULL, week $429 NOT NULL, name $430 NOT NULL, breed $431 NOT NULL, coat bigint NOT NULL DEFAULT 0, acc $432 NOT NULL DEFAULT '[]', pts bigint NOT NULL DEFAULT 0, at double precision NOT NULL, PRIMARY KEY (sid, week) ); CREATE INDEX IF NOT EXISTS pet_board_week ON pet_board(week, pts); -- 🎆 Mạnh Thường Quân (game/lux.py; SCHEMA_VERSION 28): one row per public sponsorship (fireworks, a numbered bench or -- lamp, the fair's or a ZPOP night's sponsor of the week, the school library fund), written in the save's own -- transaction (id '<pid>:<n>', idempotent). `slot` ('ghe_da:7') is unique among plaques: a slot taken refuses the whole -- command. The weekly board reads it by week. A player who erases their data stays as anonymous (sid ''). CREATE TABLE IF NOT EXISTS lux_gifts ( id $433 PRIMARY KEY, sid $434 NOT NULL, week $435 NOT NULL, kind $436 NOT NULL, slot $437 NOT NULL DEFAULT '', size $438 NOT NULL DEFAULT '', amount bigint NOT NULL CHECK(amount > 0), msg $439 NOT NULL DEFAULT '', anon bigint NOT NULL DEFAULT 0, at double precision NOT NULL ); CREATE INDEX IF NOT EXISTS lux_gifts_week ON lux_gifts(week, sid); CREATE INDEX IF NOT EXISTS lux_gifts_kind ON lux_gifts(kind, at); CREATE UNIQUE INDEX IF NOT EXISTS lux_gifts_slot ON lux_gifts(slot) WHERE slot <> ''; -- 🔨 Nhà đấu giá đồ độc bản (game/auction.py; SCHEMA_VERSION 29). One row per lot (system lots: the day's plan -- '<yyyymmdd>-<slot>' or an operator's 'a<hex>'), locked FOR UPDATE by every bid and by the settlement; `seq` moves on -- every change (compare-and-set). An item is in at most one open or sold lot (an unsold one goes back to the pool). CREATE TABLE IF NOT EXISTS auction_lots ( id $440 PRIMARY KEY, item $441 NOT NULL, kind $442 NOT NULL, tier bigint NOT NULL, name $443 NOT NULL, emoji $444 NOT NULL DEFAULT '', data $445 NOT NULL DEFAULT '{}', start bigint NOT NULL CHECK(start > 0), step bigint NOT NULL CHECK(step > 0), starts_at double precision NOT NULL, ends_at double precision NOT NULL, planned_end double precision NOT NULL, status $446 NOT NULL DEFAULT 'open', high bigint NOT NULL DEFAULT 0, high_sid $447 NOT NULL DEFAULT '', high_anon bigint NOT NULL DEFAULT 0, bids bigint NOT NULL DEFAULT 0, seq bigint NOT NULL DEFAULT 0, winner_sid $448 NOT NULL DEFAULT '', winner_name $449 NOT NULL DEFAULT '', price bigint NOT NULL DEFAULT 0, settled_at double precision, src $450 NOT NULL DEFAULT 'plan', created double precision NOT NULL ); CREATE UNIQUE INDEX IF NOT EXISTS auction_lots_item ON auction_lots(item) WHERE status IN ('open', 'sold'); CREATE INDEX IF NOT EXISTS auction_lots_due ON auction_lots(status, ends_at); CREATE INDEX IF NOT EXISTS auction_lots_settled ON auction_lots(settled_at); -- One row per player per lot: the latest bid and the escrow the database knows (`held`, 0 once refunded or burned; -- refunds travel through live_effects rows 'auc:<lot>:<pid>:b<n>', `refunds` = n). CREATE TABLE IF NOT EXISTS auction_bids ( lot $451 NOT NULL, sid $452 NOT NULL, amount bigint NOT NULL CHECK(amount > 0), held bigint NOT NULL DEFAULT 0 CHECK(held >= 0), anon bigint NOT NULL DEFAULT 0, n bigint NOT NULL DEFAULT 0, refunds bigint NOT NULL DEFAULT 0, at double precision NOT NULL, pushed_at double precision NOT NULL DEFAULT 0, PRIMARY KEY(lot, sid) ); CREATE INDEX IF NOT EXISTS auction_bids_sid ON auction_bids(sid, lot); -- 🎙️ Phòng hát mic trực tiếp (game/karaoke_mic.py, live/karaoke.py; SCHEMA_VERSION 30): an account's optional birth year, -- asked the first time it turns the live mic on (under 16: listening only). Set once; deleted with the player's data. -- Its own table (not a column of accounts, not a save key): a rollback never sees it. CREATE TABLE IF NOT EXISTS account_birth ( sid $453 PRIMARY KEY, year bigint NOT NULL, at double precision NOT NULL );",
+  "vi": "Khớp $1/$2 ô — chưa khớp: $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đúng $1/$2 mục cần chọn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", thừa $1 mục",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ghép đúng $1/$2 dòng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thuế không thể lớn hơn thu nhập tính thuế ($1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bậc cao nhất cũng chỉ 20%: thuế không thể vượt 1/5 thu nhập tính thuế ($1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lũy tiến không nhân cả $1 với một mức thuế suất: mỗi phần chỉ chịu thuế suất của bậc chứa nó.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chia thu nhập tính thuế $1 thành từng bậc: $2. Tính thuế từng bậc rồi cộng lại, làm tròn xuống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thu nhập tính thuế $1 chưa vượt bậc đầu: chỉ một mức thuế suất, làm tròn xuống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trừ nghỉ = số ngày nghỉ KHÔNG lương × Lương 1 ngày bạn ghi ($1), nên phải chia hết cho $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cộng bằng chính số của bạn: Lương cơ bản tháng (Hợp đồng) − $1 + ăn trưa + trách nhiệm + điện thoại + $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảo hiểm tính trên Lương đóng bảo hiểm trong Hợp đồng, không phải Tổng thu nhập ($1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thu nhập tính thuế phải nhỏ hơn Tổng thu nhập ($1): còn trừ ăn trưa, bảo hiểm và giảm trừ gia cảnh.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đi từng nấc từ Tổng thu nhập $1: − ăn trưa (miễn tối đa 700) − BHXH − BHYT − BHTN (bước 3) − 5.000 bản thân − 2.000 × người phụ thuộc ĐÃ đăng ký (Ghi chú nhân sự).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thực lĩnh không thể lớn hơn Tổng thu nhập ($1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lấy Tổng thu nhập $1 trừ BHXH, BHYT, BHTN (bước 3) và Thuế TNCN (bước 4); phụ cấp đã nằm trong Tổng thu nhập.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Riêng phần bản thân cả năm đã là 12 × $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Người phụ thuộc tính theo SỐ THÁNG trên giấy “Người phụ thuộc đã đăng ký”: $1 × số tháng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cộng thu nhập chịu thuế của MỌI chứng từ khấu trừ, trừ bảo hiểm bắt buộc, rồi trừ Tổng giảm trừ bạn ghi ($1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lấy Thuế phải nộp cả năm bạn ghi ($1) trừ tổng “Thuế đã khấu trừ” ở MỌI chứng từ; âm nghĩa là được hoàn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng lương có $1 người — soát từng dòng rồi chuyển lương.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ có $1 bước — làm lần lượt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giảm trừ = $1 bản thân + $2 × $3 tháng người phụ thuộc = $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thu nhập tính thuế = $1 tổng thu nhập − $2 bảo hiểm − $3 giảm trừ = $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 − $2 đã khấu trừ =",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nộp thêm $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "được hoàn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đếm lại: “Thối thiếu $2 xu rồi nè.” Thối thêm cho đủ rồi đưa lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Về nhà đếm lại mới thấy bị thối thiếu $1 xu. Buôn bán kiểu này thì ai dám quay lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "thối thiếu $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 trả lại $2 xu: “Thối dư nè, coi chừng lỗ nha!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tối kiểm két mới thấy thối dư $1 xu, khách cầm về luôn rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khách cho giữ tiền thối: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 xua tay: “Khỏi thối, giữ tiền lẻ đi!” (+$2 xu tip)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã dặn anh Tuấn xe đá: mỗi sáng thả $1 cây đá.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 🚨 Xe trật tự đô thị đang tới đầu phố! Dẹp ghế, gấp ô ngay!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Bày quán ở $2. $3$4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quán chỉ có $1 cái ghế.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚠️ Chỗ này chỉ vừa $1 ghế, ghế thừa sẽ tràn ra lối đi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🪑 Đã bày $1 ghế nhựa.$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bày ít nhất $1 ghế rồi mới mở hàng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dọn hàng ở $1, $2 ghế.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🪑 Bày lại quán: $1 ghế, dựng ô. Khách lục tục ngồi lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chỉ còn $1 nắm chè. Mở kho nhập thêm nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍵 Tráng ấm, bỏ $1 nắm chè, chế nước sôi: $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(Đổ bỏ $1 cốc chè cũ.)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🫖 Châm thêm nước sôi: bình đầy hơn, chè nhạt đi.$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔨 Cốc cốc cốc! Đập xong một cây đá: thùng có $1 phần đá.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧽 Rửa $1 cốc… nhưng nước trong chậu đục ngầu rồi, cốc vẫn nhờn. Thay nước đã!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧽 Rửa sạch $1 cốc, úp lên khay cho ráo.$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hết $1 rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Rót một cốc $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hết $1 rồi. Mở kho nhập thêm nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Lấy 1 $2 $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "↩️ Cất lại 1 $1 $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚰 Đổ bỏ cốc $1, cốc cho vào chậu rửa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi gọi $1 mà lại mang $2 ra.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gọi $1 mà thiếu mất $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Rót thừa $1, tôi có gọi đâu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi có gọi $1 mà quên mất rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đi $1 người mà quán chỉ bày $2 ghế, phải đứng uống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cô Hoa trông thấy, chạy sang: “Bán thuốc cho trẻ con à?” $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 uống xong, không ghi gì.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Ghi sổ cho chú nhé!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lắc đầu bỏ đi, không trả đồng nào.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🥤 Đưa trà cho $1. Khách đưa $2 xu: tính tiền, thối lại cho đúng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Ghi sổ: ngày $1 · $2 · $3 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Đọc sổ: $1 dòng, $2 xu. Chú Tường nhíu mày: “Ơ, ngày $3 chú uống gì mà những $4 xu?”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Đọc sổ: $1 dòng, cộng $2 xu. Chú Tường gật gù móc ví.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Chú đưa $2 xu, thối lại cho đúng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dòng ngày $1 ghi đúng rồi ($2): cho chú xem sổ là được.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✏️ Sửa dòng ngày $1 thành $2 xu. Chú Tường cười: “Thấy chưa, chú nhớ mà!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ ghi lố tiền của tôi: hôm đó $1 mà ghi $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Chú Tường dí ngón tay vào dòng: “$1, $2 xu thôi chứ, sao ghi $3?” Sửa lại hoặc bỏ dòng đó.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Chỉ dòng ngày $1: $2. Chú Tường vỗ trán: “À, hôm ấy chú khao thằng Bảy!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🤝 Bỏ dòng ngày $1 ($2 xu) cho chú. Chú Tường vui ra mặt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "😤 Hai bên to tiếng. Chú Tường gạch luôn dòng ngày $1: “Dòng này chú không trả!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📦 Xếp chồng ghế… còn $1 ghế",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 ghế còn trên vỉa hè",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚨 Không kịp rồi: $1. Lập biên bản, phạt $2 xu$3. Bày lại quán rồi bán tiếp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚨 Không kịp rồi: $1. Lập biên bản, phạt $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", thu $1 ghế",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mua $1 hết $2 xu nhé?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chưa đủ $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Đã mua $2. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cốc phải rửa lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Anh Tuấn xe đá giao $1 cây đá",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Anh Tuấn xe đá thả $1 cây đá trước cửa ($2 xu).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bà bán sấu để lại $1 phần sấu dầm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bà bán sấu ghé để lại $1 phần sấu dầm ($2 xu).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🥤 Rót $1 cốc, bán $2 món ăn vặt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧊 Đá tan mất $1 phần trong thùng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍵 $1 lượt khách chê chè nhạt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ghi thiếu $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ghi lố $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Bà Lựu dò sổ tối nay: $1 dòng mới, $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Sổ chú Tường đang nợ $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚨 Bị phạt $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", mất $1 ghế.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚰 Đổ bỏ $1 cốc chè thừa, úp bình.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧽 Rửa nốt $1 cốc, úp gọn vào khay.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sáng mai anh Tuấn xe đá thả $1 cây đá.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế$4, đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng. $5",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế$4, đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "· $1 người ngồi",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 gọi: $2$3 · $4.$5 $6",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã rửa $1 cốc.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Comeback: Jewel tối đa $1 bản/người, POB tặng kèm PINK STATIC.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📦 Đếm kho: Jewel còn $1 bản · POB còn $2 bộ · ống poster còn $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚫 Dựng biển: “Bản giới hạn tối đa $1 bản/người”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kho chỉ còn chỗ cho $1 bản Jewel.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chốt $1 bản cần $2 xu, quỹ tiệm chưa đủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chốt đặt trước $1 bản Jewel",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ ghi $1 bản mà chỉ chốt $2: có người đặt trước sẽ không có hàng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ ghi $1 bản mà chốt tới $2: tiền nằm chết trong kho.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Chốt $1 bản Jewel với $2: −$3 xu, hàng đã về kho.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Biển giới hạn ghi sai: hôm nay nhà phân phối cho $1 bản/người.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💿 Mở tiệm! $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Lấy $2 ($3).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kệ hết $1 rồi. Nhập thêm ở Kho, hoặc nói thật với khách.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "↩️ Cất lại $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đang khóa quét của tiệm tới hết ngày $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi dặn $1 mà.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💿 Chị Thơ: “$1”",
   "en": "",
   "pattern": true
  }

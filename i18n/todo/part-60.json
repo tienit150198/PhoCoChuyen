@@ -1,5 +1,473 @@
 [
  {
+  "vi": "Phải ra đủ trước khi hết hiệp một.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường: “Cháu mới à? Chú chạy xe ôm đầu ngõ này hai mươi năm rồi. Có gì cứ gọi chú!”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường cá với ông Khang đội nhà thắng hai bàn. Thua thì khao cả quán trà.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường khoe con gái đỗ đại học, móc ví ra xem ảnh mãi.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường bảo giờ nhiều người đặt xe qua app, chú đang tập dùng điện thoại.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường nhận cuốc xe qua app đầu tiên, về kể cả buổi: “Nó chỉ đường tận nơi, hay phết!”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Khang: “Chè phải đậm thì mới tỉnh mà đánh cờ.”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Khang dạy Linh thế cờ “pháo đầu”, con bé học nhanh ra phết.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Khang kể hồi trẻ ông làm thợ in, tay lúc nào cũng đen mực.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Khang mang cho quán cái điếu cày cũ: “Để dành cho khách quen.”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Khang nhấp ngụm trà: “Chè cháu pha giờ ngon gần bằng bà Lựu rồi.”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Đạt thở dài: “Sếp lại bắt làm báo cáo cuối tháng.”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Đạt bảo đang định bỏ thuốc, hôm nay chỉ mua đúng một điếu.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Đạt được lên trưởng nhóm, khao cả phòng trà đá.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Đạt chuyển sang uống trà nóng, bảo đang cai thuốc tuần thứ hai.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Đạt khoe đã bỏ hẳn thuốc lá, giờ ra đây chỉ để ngồi cho vui.",
+  "en": ""
+ },
+ {
+  "vi": "Linh hỏi bà Lựu hè này quán có cần người phụ không.",
+  "en": ""
+ },
+ {
+  "vi": "Linh đang ôn thi chuyên Văn, mang cả tập đề ra quán đọc.",
+  "en": ""
+ },
+ {
+  "vi": "Linh thi xong môn Văn, bảo đề hỏi đúng bài em thích.",
+  "en": ""
+ },
+ {
+  "vi": "Linh đỗ trường chuyên, dẫn cả nhóm ra quán ăn mừng.",
+  "en": ""
+ },
+ {
+  "vi": "Linh viết bài văn về “quán trà đá gốc bàng”, được cô giáo đọc trước lớp.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa: “Cháu bà Lựu đấy à? Trông sáng sủa đấy!”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa kể nhà số 9 sắp cưới con gái, cỗ những ba mươi mâm.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa than giá gạo nếp tăng, nồi xôi phải bớt đỗ.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa mang sang cho quán nắm xôi xéo còn nóng hổi.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa bảo cả phố khen quán trà giờ sạch sẽ hơn hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng: “Uống vội cốc trà thôi em, app nó đếm từng phút.”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng bị khách bom hai đơn liền, ngồi thừ ra cả buổi.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng được thưởng tài xế chăm chỉ, mua cho quán một gói chè ngon.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng kể vợ sắp sinh, đang chạy thêm ca tối.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng khoe ảnh con gái mới sinh: “Đặt tên là Trà My, nghe mát không?”",
+  "en": ""
+ },
+ {
+  "vi": "Cu Tủn khoe được điểm mười môn Toán.",
+  "en": ""
+ },
+ {
+  "vi": "Cu Tủn học được cách đếm tiền thối, đòi đứng quầy phụ.",
+  "en": ""
+ },
+ {
+  "vi": "Cu Tủn bảo bố nó hứa bỏ thuốc lá rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu giao quán",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu đưa chùm chìa khóa tủ chè: “Bà đau lưng, cháu trông quán hộ bà mấy hôm nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Bà dặn: “Chè phải đậm, cốc phải sạch, tiền phải đếm. Khách quen thì nhớ mặt.”",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu nếm chè",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu chống gậy ra, rót một cốc, nhấp một ngụm: “Được. Có tay rồi đấy.”",
+  "en": ""
+ },
+ {
+  "vi": "Bà sai cháu nội mang sang hai cái ghế nhựa đỏ: “Thêm chỗ cho khách.”",
+  "en": ""
+ },
+ {
+  "vi": "Bàn cờ của ông Khang",
+  "en": ""
+ },
+ {
+  "vi": "Ông Khang đặt bàn cờ tướng cũ lên bàn: “Để lại quán, ai rảnh thì đánh.”",
+  "en": ""
+ },
+ {
+  "vi": "Từ hôm đó chiều nào gốc bàng cũng có người đứng xem cờ.",
+  "en": ""
+ },
+ {
+  "vi": "Chiếc ô mới",
+  "en": ""
+ },
+ {
+  "vi": "Chiếc ô cũ rách một mảng. Bà Lựu dúi tiền: “Mua cái ô to vào, nắng thế này đá tan hết.”",
+  "en": ""
+ },
+ {
+  "vi": "Ô mới màu xanh lá, che kín cả bàn. Thùng đá tan chậm hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Tấm biển “Trà đá bà Lựu”",
+  "en": ""
+ },
+ {
+  "vi": "Linh vẽ tặng tấm biển: “Trà đá bà Lựu · Chè đậm, đá mát, có sổ ghi.”",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu đứng ngắm mãi: “Giờ là quán của hai bà cháu rồi.”",
+  "en": ""
+ },
+ {
+  "vi": "Thêm 2 ghế nhựa",
+  "en": ""
+ },
+ {
+  "vi": "Thêm chỗ ngồi cho nhóm đông.",
+  "en": ""
+ },
+ {
+  "vi": "Thêm 4 cốc thủy tinh",
+  "en": ""
+ },
+ {
+  "vi": "Đỡ phải rửa cốc liên tục.",
+  "en": ""
+ },
+ {
+  "vi": "Ô to che nắng",
+  "en": ""
+ },
+ {
+  "vi": "Che kín bàn: đá tan chậm, mưa nhỏ không ướt ghế.",
+  "en": ""
+ },
+ {
+  "vi": "Biển hiệu của quán",
+  "en": ""
+ },
+ {
+  "vi": "Người qua đường nhận ra quán từ xa.",
+  "en": ""
+ },
+ {
+  "vi": "Giới thiệu nghề: bán trà đá vỉa hè",
+  "en": ""
+ },
+ {
+  "vi": "Một chiếc bàn gỗ, bình chè, thùng đá và dăm cái ghế nhựa dưới gốc bàng. Bà Lựu bán ở đây ba mươi năm; mấy hôm nay bà đau lưng, nhờ bạn trông quán.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng: chọn chỗ, bày ghế, dựng ô, đặt thùng đá",
+  "en": ""
+ },
+ {
+  "vi": "Pha bình chè: đủ chè thì đậm, châm nước nhiều là nhạt",
+  "en": ""
+ },
+ {
+  "vi": "Đập đá, canh thùng đá: trời nóng đá tan rất nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Rót trà đá, trà nóng, trà chanh, sấu dầm",
+  "en": ""
+ },
+ {
+  "vi": "Bán hướng dương, lạc, kẹo lạc, bánh quy, thuốc lẻ",
+  "en": ""
+ },
+ {
+  "vi": "Rửa cốc trong chậu, nước đục thì thay",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ cho chú xe ôm, đến hẹn thì thu",
+  "en": ""
+ },
+ {
+  "vi": "Thu tiền lẻ, thối đúng từng xu",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường xe ôm: bàn chuyện bóng đá, uống ghi sổ",
+  "en": ""
+ },
+ {
+  "vi": "Ông Khang: ngồi cả chiều một cốc, chê chè nhạt",
+  "en": ""
+ },
+ {
+  "vi": "Anh Đạt: ra hút thuốc giữa giờ, đếm tiền kỹ",
+  "en": ""
+ },
+ {
+  "vi": "Linh và lũ bạn: trà chanh nhiều đá",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hoa: tin gì trong phố cô cũng biết",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng shipper: uống vội rồi chạy",
+  "en": ""
+ },
+ {
+  "vi": "Trật tự đô thị: dẹp nhanh kẻo bị phạt, mất ghế",
+  "en": ""
+ },
+ {
+  "vi": "Mưa rào, nắng gắt, đêm bóng đá, khách quỵt, người say",
+  "en": ""
+ },
+ {
+  "vi": "Rót đúng món, đủ số cốc",
+  "en": ""
+ },
+ {
+  "vi": "Chè đậm vừa, không để ôi",
+  "en": ""
+ },
+ {
+  "vi": "Trà đá có đá, cốc sạch",
+  "en": ""
+ },
+ {
+  "vi": "Thối đúng tiền, ghi sổ đúng số",
+  "en": ""
+ },
+ {
+  "vi": "Không bán thuốc lá cho trẻ con",
+  "en": ""
+ },
+ {
+  "vi": "Bày quán gọn, không lấn lòng đường",
+  "en": ""
+ },
+ {
+  "vi": "Mưa rào ập tới",
+  "en": ""
+ },
+ {
+  "vi": "Mây đen kéo sập xuống, mưa rào quất ngang vỉa hè. Khách ôm cốc chạy toán loạn, ghế nhựa ướt nhẹp.",
+  "en": ""
+ },
+ {
+  "vi": "Bê bàn, ghế, thùng đá vào mái hiên tiệm may",
+  "en": ""
+ },
+ {
+  "vi": "Mất chút thời gian, quán vẫn bán tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Cả quán dời vào mái hiên. Chật một chút nhưng khô ráo, khách ngồi lại uống trà nóng chờ tạnh.",
+  "en": ""
+ },
+ {
+  "vi": "Căng tấm bạt che tạm",
+  "en": ""
+ },
+ {
+  "vi": "Tốn 4 xu mua bạt",
+  "en": ""
+ },
+ {
+  "vi": "Tấm bạt xanh căng vội qua cành bàng. Dột một góc, nhưng tạm ổn.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa bóng mây thôi, cứ ngồi nguyên",
+  "en": ""
+ },
+ {
+  "vi": "Không tốn gì… nếu mưa tạnh nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Mưa hắt ướt hết ghế mà quán cứ để nguyên. Cốc nào cũng lẫn nước mưa.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa không tạnh. Mấy cái cốc úp trên bàn lẫn nước mưa, phải rửa lại hết.",
+  "en": ""
+ },
+ {
+  "vi": "Xe đá đi ngang",
+  "en": ""
+ },
+ {
+  "vi": "Anh Tuấn xe đá bấm còi tin tin: “Nắng thế này đá tan nhanh lắm, lấy thêm cây không em?”",
+  "en": ""
+ },
+ {
+  "vi": "Lấy thêm 2 cây đá (10 xu)",
+  "en": ""
+ },
+ {
+  "vi": "Đắt hơn giao buổi sáng, nhưng có ngay",
+  "en": ""
+ },
+ {
+  "vi": "Hai cây đá lạnh buốt được thả vào bao tải cạnh thùng.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy 1 cây thôi (5 xu)",
+  "en": ""
+ },
+ {
+  "vi": "Dự phòng một ít",
+  "en": ""
+ },
+ {
+  "vi": "Thêm một cây đá dự phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, còn đủ",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ canh thùng đá",
+  "en": ""
+ },
+ {
+  "vi": "Xe đá đi mất hút cuối phố.",
+  "en": ""
+ },
+ {
+  "vi": "Khách uống xong chuồn thẳng",
+  "en": ""
+ },
+ {
+  "vi": "Hai thanh niên lạ mặt uống bốn cốc trà đá, cắn hết gói hướng dương rồi đứng dậy nổ máy phóng đi, không trả một đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi với theo",
+  "en": ""
+ },
+ {
+  "vi": "Một cậu quay xe lại, gãi đầu: “Em tưởng bạn em trả rồi.” Trả đủ 17 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng gọi chìm trong tiếng còi xe. Mất trắng 17 xu tiền trà và hướng dương.",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ chú Tường xe ôm đuổi theo",
+  "en": ""
+ },
+ {
+  "vi": "Chú thuộc từng ngõ ngách",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường đuổi kịp ở ngã tư, hai cậu kia xin lỗi rối rít, gửi đủ 17 xu. Chú còn dặn: “Khách lạ thì thu tiền trước nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Hai cậu kia vượt đèn đỏ, chú Tường đành quay về: “Thôi, của đi thay người.”",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, coi như làm phúc",
+  "en": ""
+ },
+ {
+  "vi": "Mất 17 xu tiền hàng",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thở dài dọn bốn cái cốc. Cô Hoa lắc đầu: “Khách lạ thì thu tiền luôn cháu ạ.”",
+  "en": ""
+ },
+ {
+  "vi": "Ông khách say lè nhè",
+  "en": ""
+ },
+ {
   "vi": "Một ông mặt đỏ gay từ quán nhậu bên kia đường sang, đập bàn đòi “trà pha rượu”, lè nhè trêu cô Hoa.",
   "en": ""
  },
@@ -1329,474 +1797,6 @@
  },
  {
   "vi": "Ô đã gấp rồi.",
-  "en": ""
- },
- {
-  "vi": "và cái ô",
-  "en": ""
- },
- {
-  "vi": "Xe còn ở đầu phố, tranh thủ dẹp tiếp!",
-  "en": ""
- },
- {
-  "vi": "Phạt lấn chiếm vỉa hè",
-  "en": ""
- },
- {
-  "vi": "✅ Xe trật tự đi qua. Quán đã dẹp gọn sát gốc cây, các anh chỉ gật đầu. Bày lại quán rồi bán tiếp!",
-  "en": ""
- },
- {
-  "vi": "Dẹp gọn kịp lúc, trật tự đô thị đi qua không nhắc nhở gì.",
-  "en": ""
- },
- {
-  "vi": "ô chưa gấp",
-  "en": ""
- },
- {
-  "vi": "quán bày lấn lòng đường",
-  "en": ""
- },
- {
-  "vi": ". Bày lại quán rồi bán tiếp.",
-  "en": ""
- },
- {
-  "vi": "Không có chuyện mới của quán.",
-  "en": ""
- },
- {
-  "vi": "Vỉa hè không kê thêm ghế được nữa.",
-  "en": ""
- },
- {
-  "vi": "Khay cốc đã đủ nhiều rồi.",
-  "en": ""
- },
- {
-  "vi": "Quán đã có ô to rồi.",
-  "en": ""
- },
- {
-  "vi": "Quán đã có biển rồi.",
-  "en": ""
- },
- {
-  "vi": "Quán mất một cái ghế.",
-  "en": ""
- },
- {
-  "vi": "Anh Tuấn xe đá ghé, nhưng quỹ quán không đủ tiền lấy đá.",
-  "en": ""
- },
- {
-  "vi": "🚨 Xe trật tự tới đúng lúc quán đang dọn về: không bị nhắc nhở.",
-  "en": ""
- },
- {
-  "vi": "🙅 Không bán thuốc lá cho trẻ con. Bà Lựu khen phải.",
-  "en": ""
- },
- {
-  "vi": "khớp từng dòng",
-  "en": ""
- },
- {
-  "vi": "✅ Dẹp gọn kịp lúc khi trật tự đô thị đi qua.",
-  "en": ""
- },
- {
-  "vi": "Sáng mai không đặt đá.",
-  "en": ""
- },
- {
-  "vi": "Chỗ bày quán",
-  "en": ""
- },
- {
-  "vi": "gọn, đúng chỗ",
-  "en": ""
- },
- {
-  "vi": "chỗ bày chưa hợp",
-  "en": ""
- },
- {
-  "vi": "chè, đá, ô đủ cả",
-  "en": ""
- },
- {
-  "vi": "Sổ sách rõ ràng",
-  "en": ""
- },
- {
-  "vi": "từng dòng có ngày, có món",
-  "en": ""
- },
- {
-  "vi": "có dòng ghi lố",
-  "en": ""
- },
- {
-  "vi": "Cách nói chuyện",
-  "en": ""
- },
- {
-  "vi": "đủ cốc, đúng món",
-  "en": ""
- },
- {
-  "vi": "Chè ngon",
-  "en": ""
- },
- {
-  "vi": "chè đậm vừa",
-  "en": ""
- },
- {
-  "vi": "chè nhạt hoặc để lâu",
-  "en": ""
- },
- {
-  "vi": "Cốc sạch, đá mát",
-  "en": ""
- },
- {
-  "vi": "cốc sạch, đá mát",
-  "en": ""
- },
- {
-  "vi": "cốc chưa sạch hoặc thiếu đá",
-  "en": ""
- },
- {
-  "vi": "Có trách nhiệm",
-  "en": ""
- },
- {
-  "vi": "không bán thuốc cho trẻ em",
-  "en": ""
- },
- {
-  "vi": "chưa nói rõ với cháu",
-  "en": ""
- },
- {
-  "vi": ", dựng ô",
-  "en": ""
- },
- {
-  "vi": ", đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng.",
-  "en": ""
- },
- {
-  "vi": "· Khách là trẻ con.",
-  "en": ""
- },
- {
-  "vi": "Chọn chỗ → bày ghế → dựng ô → đặt thùng đá → pha ấm chè → đập đá → Mở hàng.",
-  "en": ""
- },
- {
-  "vi": "Đọc sổ cho chú → có dòng thắc mắc thì cùng xem sổ (ghi lố thì sửa) → thu tiền, thối đúng.",
-  "en": ""
- },
- {
-  "vi": "Hỏi món → rót đủ cốc, lấy đồ ăn vặt → đưa trà → ghi đúng số tiền vào sổ.",
-  "en": ""
- },
- {
-  "vi": "Trẻ con mua thuốc lá: từ chối khéo, bán phần còn lại, thối tiền đúng.",
-  "en": ""
- },
- {
-  "vi": "Hỏi món → rót đúng cốc (trà đá cần đá) → lấy đồ ăn vặt → đưa trà → thu tiền, thối đúng.",
-  "en": ""
- },
- {
-  "vi": "Đã thay chậu nước rửa cốc.",
-  "en": ""
- },
- {
-  "vi": "Đã lau bàn, quét lá bàng quanh quán.",
-  "en": ""
- },
- {
-  "vi": "Đã đập thêm một cây đá vào thùng.",
-  "en": ""
- },
- {
-  "vi": "Đã đậy kín thùng đá, kê lại chỗ râm.",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu quán trà sai.",
-  "en": ""
- },
- {
-  "vi": "Phiên bản việc quán trà không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Trạng thái việc quán trà sai.",
-  "en": ""
- },
- {
-  "vi": "Khay trà sai.",
-  "en": ""
- },
- {
-  "vi": "Cốc trà sai.",
-  "en": ""
- },
- {
-  "vi": "Đồ ăn vặt sai.",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn sổ sai.",
-  "en": ""
- },
- {
-  "vi": "Tổng sổ sai.",
-  "en": ""
- },
- {
-  "vi": "Dòng thắc mắc sai.",
-  "en": ""
- },
- {
-  "vi": "Dòng sổ sai.",
-  "en": ""
- },
- {
-  "vi": "Quán trà sai.",
-  "en": ""
- },
- {
-  "vi": "Cốc sai.",
-  "en": ""
- },
- {
-  "vi": "Chuyện quán sai.",
-  "en": ""
- },
- {
-  "vi": "Đợt dẹp vỉa hè sai.",
-  "en": ""
- },
- {
-  "vi": "Giờ dẹp vỉa hè sai.",
-  "en": ""
- },
- {
-  "vi": "Kết quả dẹp vỉa hè sai.",
-  "en": ""
- },
- {
-  "vi": "Lịch sử dẹp vỉa hè sai.",
-  "en": ""
- },
- {
-  "vi": "Số liệu quán sai.",
-  "en": ""
- },
- {
-  "vi": "Trà đá vỉa hè",
-  "en": ""
- },
- {
-  "vi": "Trà đá gốc bàng",
-  "en": ""
- },
- {
-  "vi": "Cốc trà đá, cái ghế nhựa, chuyện cả phố.",
-  "en": ""
- },
- {
-  "vi": "Nắng nhẹ dưới tán bàng",
-  "en": ""
- },
- {
-  "vi": "Quán trà",
-  "en": ""
- },
- {
-  "vi": "Dọn hàng, pha bình chè, đập đá, rót trà, thu tiền lẻ. Nhớ ghi sổ cho chú xe ôm và canh xe trật tự đô thị nhé.",
-  "en": ""
- },
- {
-  "vi": "Một cốc trà đá, trăm câu chuyện phố",
-  "en": ""
- },
- {
-  "vi": "18 · TRÀ ĐÁ GỐC BÀNG",
-  "en": ""
- },
- {
-  "vi": "Cháu nội bà Lựu, rửa cốc nhanh thoăn thoắt.",
-  "en": ""
- },
- {
-  "vi": "Bạn xe ôm của chú Tường, đập đá khỏe.",
-  "en": ""
- },
- {
-  "vi": "Sinh viên làm thêm, cốc nào cũng tráng hai lần.",
-  "en": ""
- },
- {
-  "vi": "Nhớ giờ xe đá, thùng đá lúc nào cũng đầy.",
-  "en": ""
- },
- {
-  "vi": "Rửa cốc",
-  "en": ""
- },
- {
-  "vi": "Đập đá",
-  "en": ""
- },
- {
-  "vi": "Quán trà gọn gàng",
-  "en": ""
- },
- {
-  "vi": "Hộp thiếc",
-  "en": ""
- },
- {
-  "vi": "Thùng đá",
-  "en": ""
- },
- {
-  "vi": "Lọ thủy tinh",
-  "en": ""
- },
- {
-  "vi": "Cốc bẩn",
-  "en": ""
- },
- {
-  "vi": "Chậu rửa",
-  "en": ""
- },
- {
-  "vi": "Bày ghế, dựng ô",
-  "en": ""
- },
- {
-  "vi": "Pha bình chè",
-  "en": ""
- },
- {
-  "vi": "Đập đá, rót trà",
-  "en": ""
- },
- {
-  "vi": "Chè của bà Lựu",
-  "en": ""
- },
- {
-  "vi": "Bà Lựu bảo chè ngon phải là chè Thái, sao kỹ, tráng ấm bằng nước sôi.",
-  "en": ""
- },
- {
-  "vi": "Bạn pha thử ba ấm: ít chè, vừa chè, nhiều chè. Ông Khang nếm từng cốc.",
-  "en": ""
- },
- {
-  "vi": "Ông Khang chọn ấm vừa chè: “Thế này mới là trà đá gốc bàng.”",
-  "en": ""
- },
- {
-  "vi": "Cuốn sổ của chú Tường",
-  "en": ""
- },
- {
-  "vi": "Chú Tường uống ghi sổ đã hai mươi năm, sổ cũ nát cả gáy.",
-  "en": ""
- },
- {
-  "vi": "Bạn chép sang cuốn sổ mới, ghi rõ từng ngày, từng món.",
-  "en": ""
- },
- {
-  "vi": "Đến hẹn chú trả đủ, còn khen: “Sổ này đọc sướng mắt!”",
-  "en": ""
- },
- {
-  "vi": "Sấu non về chợ, Linh hỏi quán có sấu dầm không.",
-  "en": ""
- },
- {
-  "vi": "Bà Lựu dạy bạn dầm sấu với đường, gừng, ớt.",
-  "en": ""
- },
- {
-  "vi": "Cốc sấu đá đầu mùa, cả nhóm của Linh xuýt xoa.",
-  "en": ""
- },
- {
-  "vi": "Chè đậm, đá mát, ngồi gốc bàng gió thổi mát rượi.",
-  "en": ""
- },
- {
-  "vi": "Tiền lẻ thối đúng từng xu, nhanh gọn.",
-  "en": ""
- },
- {
-  "vi": "Cốc sạch bong, uống yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Ngồi một cốc mà nghe được cả chuyện phố, vui!",
-  "en": ""
- },
- {
-  "vi": "Dọn hàng → pha chè → đập đá → rót trà → đưa trà → thu tiền, thối đúng. Chú xe ôm: ghi đúng số vào sổ, đến hẹn thu. Xe trật tự tới: dẹp ghế, gấp ô thật nhanh.",
-  "en": ""
- },
- {
-  "vi": "Hạn chốt: cộng sổ đặt trước, chốt đúng số Jewel với nhà phân phối.",
-  "en": ""
- },
- {
-  "vi": "Ngày cosplay: dọn góc standee cho hội cosplay chụp.",
-  "en": ""
- },
- {
-  "vi": "Mưa chiều: kê thùng album lên cao.",
-  "en": ""
- },
- {
-  "vi": "Đếm bản giới hạn, dựng biển, thử búa trưng bày rồi mở tiệm.",
-  "en": ""
- },
- {
-  "vi": "Mở tiệm album đầu ngày",
-  "en": ""
- },
- {
-  "vi": "Chị Thơ nhắn: “Chị đi lấy hàng. Em đếm bản giới hạn, dựng biển giới hạn, thử cây búa trưng bày rồi hẵng mở tiệm nghe.”",
-  "en": ""
- },
- {
-  "vi": "Vào việc thôi! Kệ album đã xếp, Búa hồng trưng bày đang nháy.",
-  "en": ""
- },
- {
-  "vi": "Thao tác không có ở tiệm album.",
-  "en": ""
- },
- {
-  "vi": "Việc này không thuộc tiệm album.",
-  "en": ""
- },
- {
-  "vi": "Chưa mở tiệm: đếm bản giới hạn, dựng biển, thử búa rồi bấm “Mở tiệm” nhé.",
   "en": ""
  }
 ]

@@ -1,5 +1,753 @@
 [
  {
+  "vi": "Mất giấy in trong đêm",
+  "en": ""
+ },
+ {
+  "vi": "Mất túi đồ bảo hộ trên xe",
+  "en": ""
+ },
+ {
+  "vi": "Bạn vào ngõ gom túi rác, túi găng tay và khẩu trang treo ở tay xe đẩy biến mất lúc nào không hay.",
+  "en": ""
+ },
+ {
+  "vi": "Mất găng tay, khẩu trang",
+  "en": ""
+ },
+ {
+  "vi": "Bao ve chai bị lấy mất",
+  "en": ""
+ },
+ {
+  "vi": "Bao lon, chai nhựa sạch bạn gom riêng để bán cô Tám, quay ra đã bị một người đạp xe lấy mất.",
+  "en": ""
+ },
+ {
+  "vi": "Mất bao ve chai sạch",
+  "en": ""
+ },
+ {
+  "vi": "Thanh niên đạp đổ xe rác",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm thanh niên đi nhậu về, một cậu đạp vào xe đẩy cho vui. Xe đổ nghiêng, một ngăn bung nắp.",
+  "en": ""
+ },
+ {
+  "vi": "Xe đẩy gãy bản lề nắp",
+  "en": ""
+ },
+ {
+  "vi": "Chó bới tung túi rác",
+  "en": ""
+ },
+ {
+  "vi": "Con chó nhà cuối ngõ lao ra, cắn rách hai túi rác bạn vừa gom, rác vương vãi khắp nơi.",
+  "en": ""
+ },
+ {
+  "vi": "Túi rách, phải quét lại",
+  "en": ""
+ },
+ {
+  "vi": "Xe đẩy quẹt xước ô tô trong ngõ",
+  "en": ""
+ },
+ {
+  "vi": "Ngõ hẹp, ô tô đậu lấn lối. Góc xe đẩy quẹt một đường dài trên cửa xe.",
+  "en": ""
+ },
+ {
+  "vi": "Đền sơn cửa ô tô",
+  "en": ""
+ },
+ {
+  "vi": "Đêm qua xe đẩy bị tháo bánh",
+  "en": ""
+ },
+ {
+  "vi": "Sáng ra chỗ gửi xe đẩy, bánh xe đã bị ai tháo mất một cái.",
+  "en": ""
+ },
+ {
+  "vi": "Mua bánh xe mới",
+  "en": ""
+ },
+ {
+  "vi": "Mất cuộn dây lò xo trên xe",
+  "en": ""
+ },
+ {
+  "vi": "Bạn vào nhà khách xem bồn cầu, cuộn dây lò xo buộc sau xe máy bị ai đó cắt dây mang đi.",
+  "en": ""
+ },
+ {
+  "vi": "Mua cuộn dây lò xo mới",
+  "en": ""
+ },
+ {
+  "vi": "Điện thoại đặt trên bệ bị cuỗm",
+  "en": ""
+ },
+ {
+  "vi": "Đang cúi dưới gầm lavabo, bạn để điện thoại trên bệ cửa. Ngẩng lên thì bệ trống trơn.",
+  "en": ""
+ },
+ {
+  "vi": "Mất điện thoại, mua máy cũ dùng tạm",
+  "en": ""
+ },
+ {
+  "vi": "Trẻ con nghịch máy phun",
+  "en": ""
+ },
+ {
+  "vi": "Bạn quay đi lấy xô, mấy đứa nhỏ nhà bên bật công tắc máy phun, vòi nước quật tung tóe.",
+  "en": ""
+ },
+ {
+  "vi": "Vòi phun bị gãy đầu",
+  "en": ""
+ },
+ {
+  "vi": "Làm nứt viên gạch nhà khách",
+  "en": ""
+ },
+ {
+  "vi": "Tháo nắp thoát sàn mạnh tay, viên gạch men quanh miệng cống nứt đôi.",
+  "en": ""
+ },
+ {
+  "vi": "Đền gạch cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Nước bẩn bắn lên tường mới sơn",
+  "en": ""
+ },
+ {
+  "vi": "Rút dây lò xo ra nhanh quá, nước cống bắn một vệt dài lên bức tường vừa sơn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Đền tiền sơn lại tường",
+  "en": ""
+ },
+ {
+  "vi": "Mất chai trên xe đồ nghề",
+  "en": ""
+ },
+ {
+  "vi": "Bạn để xe đồ nghề ở sảnh chung cư, chạy lên tầng lấy chìa khóa. Quay xuống, ngăn chai trên xe hụt mất mấy chai.",
+  "en": ""
+ },
+ {
+  "vi": "Mất mấy chai nước tẩy",
+  "en": ""
+ },
+ {
+  "vi": "Mất ví trong thang máy",
+  "en": ""
+ },
+ {
+  "vi": "Thang máy chật cứng giờ cao điểm, bạn ôm xô với cây lau. Ra tới cửa nhà khách thì túi áo đã nhẹ tênh.",
+  "en": ""
+ },
+ {
+  "vi": "Mất ví riêng",
+  "en": ""
+ },
+ {
+  "vi": "Bé nhà bên nghịch xô nước",
+  "en": ""
+ },
+ {
+  "vi": "Bé nhà hàng xóm chạy qua hành lang, thò tay khuấy xô nước lau rồi đá đổ. Nước tràn, mấy chai trên xe ướt nhãn trôi mất chữ.",
+  "en": ""
+ },
+ {
+  "vi": "Đổ chai, phải bỏ",
+  "en": ""
+ },
+ {
+  "vi": "Chó nhà khách tha khăn",
+  "en": ""
+ },
+ {
+  "vi": "Con chó nhỏ nhà khách thấy khăn vàng phất phơ, ngoạm một cái chạy ra ban công, cắn rách tả tơi.",
+  "en": ""
+ },
+ {
+  "vi": "Mua khăn mới",
+  "en": ""
+ },
+ {
+  "vi": "Làm đổ lọ nước hoa của khách",
+  "en": ""
+ },
+ {
+  "vi": "Lau bàn trang điểm, bạn nhấc từng lọ ra. Lọ nước hoa cuối cùng trơn tay, rơi xuống gạch vỡ tan, thơm cả phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Đền lọ nước hoa",
+  "en": ""
+ },
+ {
+  "vi": "Chai tẩy bắn lên rèm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bóp chai tẩy hơi mạnh, nước tẩy bắn lên rèm cửa màu xanh. Một vệt trắng loang ngay giữa rèm.",
+  "en": ""
+ },
+ {
+  "vi": "Đền tiền rèm",
+  "en": ""
+ },
+ {
+  "vi": "Quả bóng bay qua cửa sổ",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ trong ngõ đá bóng. Quả bóng bay qua cửa sổ, làm rơi chậu cây trên bậu cửa. Bé giật mình rồi cười khanh khách.",
+  "en": ""
+ },
+ {
+  "vi": "Mua lại chậu cây cho nhà bé",
+  "en": ""
+ },
+ {
+  "vi": "Mèo nhà bên nhảy vào bếp",
+  "en": ""
+ },
+ {
+  "vi": "Bạn quay đi lấy yếm cho bé, con mèo nhà bên nhảy lên bàn, hất đổ bát cháo vừa múc ra. Bé chỉ tay: “Meo meo!”",
+  "en": ""
+ },
+ {
+  "vi": "Nấu lại bát cháo khác",
+  "en": ""
+ },
+ {
+  "vi": "Lỡ tay làm vỡ cốc sứ của nhà bé",
+  "en": ""
+ },
+ {
+  "vi": "Lau bàn sau bữa trưa, bạn gạt trúng chiếc cốc sứ vẽ hoa của mẹ bé. Cốc rơi xuống sàn, vỡ đôi.",
+  "en": ""
+ },
+ {
+  "vi": "Đền cốc cho mẹ bé",
+  "en": ""
+ },
+ {
+  "vi": "Bé vẽ bút sáp lên tường",
+  "en": ""
+ },
+ {
+  "vi": "Bạn rửa bát có một lát, quay ra thì bé đã vẽ một ông mặt trời to đùng lên bức tường mới sơn.",
+  "en": ""
+ },
+ {
+  "vi": "Đền tiền sơn lại góc tường",
+  "en": ""
+ },
+ {
+  "vi": "Giặt lẫn áo làm loang màu",
+  "en": ""
+ },
+ {
+  "vi": "Bạn giặt giúp bộ đồ bé thay ra, lẫn chiếc tất đỏ vào. Chiếc áo trắng của bé loang thành màu hồng.",
+  "en": ""
+ },
+ {
+  "vi": "Đền chiếc áo cho bé",
+  "en": ""
+ },
+ {
+  "vi": "Trẻ con xô đổ kệ truyện tranh",
+  "en": ""
+ },
+ {
+  "vi": "Hai bé đuổi nhau quanh góc thiếu nhi, va mạnh vào kệ truyện tranh. Cả kệ đổ nghiêng, mấy cuốn bung gáy.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa kệ, dán lại gáy sách",
+  "en": ""
+ },
+ {
+  "vi": "Mèo hoang nhảy vào phòng đọc",
+  "en": ""
+ },
+ {
+  "vi": "Một con mèo hoang chui qua cửa sổ, nhảy lên bàn đọc, hất đổ chậu cây xuống chồng báo mới.",
+  "en": ""
+ },
+ {
+  "vi": "Lau dọn, mua lại chậu cây",
+  "en": ""
+ },
+ {
+  "vi": "Điện thoại để quầy bị lấy mất",
+  "en": ""
+ },
+ {
+  "vi": "Bạn quay vào kho lấy hộp hồ sơ một lát. Ra tới nơi, điện thoại để trên quầy mượn trả đã không còn.",
+  "en": ""
+ },
+ {
+  "vi": "Đổ cà phê lên sổ đăng ký bạn đọc",
+  "en": ""
+ },
+ {
+  "vi": "Lúc với lấy con dấu, bạn gạt đổ cốc cà phê lên cuốn sổ đăng ký bạn đọc. Mấy trang loang nâu.",
+  "en": ""
+ },
+ {
+  "vi": "Mua sổ mới, chép lại",
+  "en": ""
+ },
+ {
+  "vi": "Trượt thang, rơi chồng sách quý",
+  "en": ""
+ },
+ {
+  "vi": "Đứng thang lấy hộp trên cao, bạn trượt chân. Chồng sách quý trên tay rơi xuống, một cuốn gãy gáy.",
+  "en": ""
+ },
+ {
+  "vi": "Đền tiền sửa gáy sách quý",
+  "en": ""
+ },
+ {
+  "vi": "Kẻ gian lấy hộp cơm trên xe",
+  "en": ""
+ },
+ {
+  "vi": "Trưa đông khách, bạn cúi xuống xới cơm. Một người lạ cầm luôn hai hộp cơm đã gói trên xe rồi lẩn vào dòng người đi chợ.",
+  "en": ""
+ },
+ {
+  "vi": "Mất hộp cơm đã gói",
+  "en": ""
+ },
+ {
+  "vi": "Giật hộp tiền trên ghế",
+  "en": ""
+ },
+ {
+  "vi": "Hộp tiền lẻ để trên ghế nhựa sát lề. Một chiếc xe máy tạt sát, chộp lấy rồi rồ ga mất hút về phía chợ.",
+  "en": ""
+ },
+ {
+  "vi": "Chó chợ tha miếng sườn",
+  "en": ""
+ },
+ {
+  "vi": "Một con chó vàng lảng vảng quanh bếp than, chồm lên khay giữ ấm tha luôn mấy miếng sườn rồi chạy biến vào chợ.",
+  "en": ""
+ },
+ {
+  "vi": "Chó tha mất sườn nướng",
+  "en": ""
+ },
+ {
+  "vi": "Đổ chén canh lên áo khách",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bưng chén canh nóng qua bàn, vấp chân ghế nhựa. Canh đổ trúng vạt áo sơ mi trắng của một anh nhân viên văn phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Đêm qua kho gạo bị cạy",
+  "en": ""
+ },
+ {
+  "vi": "Sáng ra ổ khóa kho gạo méo xệch, tấm bạt che bị rạch. Mấy bao gạo tấm và vỉ trứng không còn.",
+  "en": ""
+ },
+ {
+  "vi": "Mất gạo trong đêm",
+  "en": ""
+ },
+ {
+  "vi": "Giật giỏ chợ ở cổng chợ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cúi khóa xe ở cổng chợ, giỏ đi chợ treo ở tay lái. Một chiếc xe máy lướt qua, giật luôn giỏ cùng mấy đồng tiền chợ.",
+  "en": ""
+ },
+ {
+  "vi": "Bù tiền chợ bị giật",
+  "en": ""
+ },
+ {
+  "vi": "Mất ví ở hàng tôm",
+  "en": ""
+ },
+ {
+  "vi": "Hàng tôm chen chúc, bạn cúi lựa từng con. Đứng dậy thì túi áo nhẹ tênh, ví riêng của bạn không còn.",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ đá banh trúng chồng chén",
+  "en": ""
+ },
+ {
+  "vi": "Mấy đứa cháu cô Lệ đá banh trong hẻm. Quả banh bay qua cửa sổ, trúng chồng chén vừa rửa để trên kệ.",
+  "en": ""
+ },
+ {
+  "vi": "Mua lại mấy cái chén",
+  "en": ""
+ },
+ {
+  "vi": "Mèo nhà bên tha khúc cá",
+  "en": ""
+ },
+ {
+  "vi": "Bạn quay đi lấy rổ, con mèo nhà bên nhảy lên bàn bếp, ngoạm khúc cá vừa rửa rồi chuồn qua cửa sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Mua lại khúc cá khác",
+  "en": ""
+ },
+ {
+  "vi": "Làm sứt nồi đất của bà",
+  "en": ""
+ },
+ {
+  "vi": "Rửa nồi kho cá, bạn trượt tay. Cái nồi đất bà Toàn dùng mấy chục năm sứt một miếng ở miệng.",
+  "en": ""
+ },
+ {
+  "vi": "Đền nồi đất cho bà",
+  "en": ""
+ },
+ {
+  "vi": "Văng dầu lên áo anh Khoa",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đổ gà vào chảo dầu đang nóng, dầu văng một vệt lên chiếc áo chạy bộ anh Khoa phơi gần bếp.",
+  "en": ""
+ },
+ {
+  "vi": "Đền áo chạy bộ",
+  "en": ""
+ },
+ {
+  "vi": "Túi đồ bị lấy ở phòng chờ tổ bay",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đặt túi lên ghế phòng chờ tổ bay để ký sổ. Quay lại, túi còn đó nhưng ví trong ngăn ngoài đã biến mất.",
+  "en": ""
+ },
+ {
+  "vi": "Mất ví ở phòng chờ",
+  "en": ""
+ },
+ {
+  "vi": "Giật điện thoại ở cổng ra tàu",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đứng ở cổng ra tàu gọi điện cho bà Tám. Một người đi ngang giật phắt điện thoại rồi lẫn vào dòng khách.",
+  "en": ""
+ },
+ {
+  "vi": "Mất mũ bảo hiểm ở bãi xe nhân viên",
+  "en": ""
+ },
+ {
+  "vi": "Tan ca ra bãi xe nhân viên, chiếc mũ bảo hiểm móc trên gương đã không còn. Đường về hẻm còn mười cây số.",
+  "en": ""
+ },
+ {
+  "vi": "Mua mũ bảo hiểm mới",
+  "en": ""
+ },
+ {
+  "vi": "Làm đổ cà phê lên máy tính của khách",
+  "en": ""
+ },
+ {
+  "vi": "Tàu chao nhẹ đúng lúc bạn đặt ly cà phê xuống. Cà phê tràn lên bàn phím máy tính của một khách đang làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "Đền tiền sửa máy tính cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Làm gãy bánh vali của khách",
+  "en": ""
+ },
+ {
+  "vi": "Bạn giúp khách nhấc vali xuống khỏi hộc hành lý, vali tuột tay rơi xuống sàn, gãy một bánh xe.",
+  "en": ""
+ },
+ {
+  "vi": "Đền bánh vali cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Làm rơi tai nghe buồng lái",
+  "en": ""
+ },
+ {
+  "vi": "Bạn kẹp bộ tai nghe mượn của hãng dưới nách để ký sổ kỹ thuật. Tai nghe tuột xuống bậc thang, vỡ một bên loa.",
+  "en": ""
+ },
+ {
+  "vi": "Đền một phần tai nghe cho hãng",
+  "en": ""
+ },
+ {
+  "vi": "Máy tính bảng tài liệu bay rơi xuống sân đỗ",
+  "en": ""
+ },
+ {
+  "vi": "Gió sân đỗ thổi tung tập giấy, bạn chụp vội thì máy tính bảng tài liệu bay tuột tay, nứt màn hình.",
+  "en": ""
+ },
+ {
+  "vi": "Đền một phần máy tính bảng cho hãng",
+  "en": ""
+ },
+ {
+  "vi": "Mất ví ở chòi gác",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ra đứng cờ đón tàu, để áo khoác trên ghế trong chòi. Tàu qua, quay vào thì ví trong túi áo đã không còn.",
+  "en": ""
+ },
+ {
+  "vi": "Giật điện thoại lúc đứng chờ tàu",
+  "en": ""
+ },
+ {
+  "vi": "Bạn rút điện thoại xem giờ tàu thì một chiếc xe máy trong dòng xe đang chờ chắn vọt tới giật phắt rồi quay đầu chạy.",
+  "en": ""
+ },
+ {
+  "vi": "Mất mũ bảo hiểm sau chòi",
+  "en": ""
+ },
+ {
+  "vi": "Tan ca ra sau chòi lấy xe, chiếc mũ bảo hiểm móc trên gương đã biến mất. Đường về hẻm còn ba cây số.",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ ném vỡ kính chòi gác",
+  "en": ""
+ },
+ {
+  "vi": "Mấy đứa nhỏ chơi ném đá vào cột điện, một hòn bay lệch trúng ô kính chòi gác vỡ toang.",
+  "en": ""
+ },
+ {
+  "vi": "Thay ô kính chòi gác",
+  "en": ""
+ },
+ {
+  "vi": "Làm rơi đèn cầm tay của xí nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Bạn vội chạy ra đón tàu đêm, vấp bậc chòi. Cái đèn cầm tay rơi xuống đá ba-lát, vỡ kính.",
+  "en": ""
+ },
+ {
+  "vi": "Đền một phần đèn cầm tay cho xí nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Cần chắn quệt gương xe máy",
+  "en": ""
+ },
+ {
+  "vi": "Một anh dừng xe sát quá vạch, cần chắn hạ xuống quệt gãy gương chiếu hậu. Anh ấy đòi bạn đền.",
+  "en": ""
+ },
+ {
+  "vi": "Đền gương xe máy",
+  "en": ""
+ },
+ {
+  "vi": "Tủ đồ phòng trực bị cạy",
+  "en": ""
+ },
+ {
+  "vi": "Hết ca đi buồng quay về phòng trực, cửa tủ đồ cá nhân của bạn hé mở, ổ khóa cong vênh. Ví trong túi áo khoác đã biến mất.",
+  "en": ""
+ },
+ {
+  "vi": "Mất ví ở phòng trực",
+  "en": ""
+ },
+ {
+  "vi": "Mất mũ bảo hiểm ở bãi xe bệnh viện",
+  "en": ""
+ },
+ {
+  "vi": "Giao ca xong ra bãi xe nhân viên, chiếc mũ bảo hiểm móc trên gương đã không còn. Trời lại sắp mưa.",
+  "en": ""
+ },
+ {
+  "vi": "Làm rơi kính của bà Tư",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nâng gối cho bà Tư ngồi dậy, chiếc kính lão trên gối trượt xuống sàn, nứt một bên tròng.",
+  "en": ""
+ },
+ {
+  "vi": "Đền kính lão cho bà Tư",
+  "en": ""
+ },
+ {
+  "vi": "Làm rơi điện thoại của Tuấn",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đỡ Tuấn ngồi dậy, chiếc điện thoại đang livestream trên gối trượt xuống sàn, nứt một góc màn hình.",
+  "en": ""
+ },
+ {
+  "vi": "Đền một phần tiền thay kính điện thoại",
+  "en": ""
+ },
+ {
+  "vi": "Túi xách để ở bàn trực bị lấy",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chạy vào giường 3 trả lời chuông, quay ra thì chiếc túi để dưới gầm bàn trực không còn. Hành lang giờ thăm đông người lạ.",
+  "en": ""
+ },
+ {
+  "vi": "Mất ví ở bàn trực",
+  "en": ""
+ },
+ {
+  "vi": "Mất ví lúc khách du lịch ra đảo",
+  "en": ""
+ },
+ {
+  "vi": "Bạn dẫn đoàn khách đi quanh sân trạm, để áo khoác trên ghế ở nhà trạm. Tàu khách về rồi, ví trong túi áo đã không còn.",
+  "en": ""
+ },
+ {
+  "vi": "Mất ví ở nhà trạm",
+  "en": ""
+ },
+ {
+  "vi": "Làm rơi ống nhòm của trạm",
+  "en": ""
+ },
+ {
+  "vi": "Gió giật mạnh lúc bạn đứng trên ban công đếm tàu. Ống nhòm chưa đeo dây tuột tay, rơi xuống chân tháp vỡ một mắt.",
+  "en": ""
+ },
+ {
+  "vi": "Đền một phần ống nhòm cho xí nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Làm vỡ ấm trà của chú Bảy",
+  "en": ""
+ },
+ {
+  "vi": "Bạn với tay lấy cuốn sổ trực, cùi chỏ quẹt trúng cái ấm trà men xanh chú Bảy giữ ba mươi năm. Ấm rơi xuống sàn đá, mẻ vòi.",
+  "en": ""
+ },
+ {
+  "vi": "Đền ấm trà cho chú Bảy",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ ném đá vỡ kính nhà trạm",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ theo ghe ra đảo chơi ném thia lia, một hòn bay lệch trúng ô kính cửa sổ nhà trạm vỡ toang.",
+  "en": ""
+ },
+ {
+  "vi": "Thay ô kính nhà trạm",
+  "en": ""
+ },
+ {
+  "vi": "Điện thoại rơi xuống biển",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chụp ảnh hoàng hôn trên mỏm đá cho má xem. Một con sóng hắt lên, điện thoại tuột tay chìm nghỉm giữa khe đá.",
+  "en": ""
+ },
+ {
+  "vi": "Mua điện thoại cũ thay tạm",
+  "en": ""
+ },
+ {
+  "vi": "Tủ đồ phòng trực tổng đài bị mở",
+  "en": ""
+ },
+ {
+  "vi": "Giao ca xong mở tủ đồ, ổ khóa bị bẻ cong. Ví trong túi áo khoác đã không còn, chỉ còn cái thẻ nhân viên.",
+  "en": ""
+ },
+ {
+  "vi": "Mất mũ bảo hiểm ở bãi xe trung tâm",
+  "en": ""
+ },
+ {
+  "vi": "Ra bãi xe sau ca trực, chiếc mũ bảo hiểm móc trên gương đã biến mất. Trời lại lất phất mưa.",
+  "en": ""
+ },
+ {
+  "vi": "Giật đứt dây tai nghe",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đứng bật dậy chỉ bảng đội, quên đang đeo tai nghe. Dây giật phựt, đầu cắm gãy lìa.",
+  "en": ""
+ },
+ {
+  "vi": "Đền một phần tai nghe cho trung tâm",
+  "en": ""
+ },
+ {
+  "vi": "Làm vỡ ly sứ của chị Thảo",
+  "en": ""
+ },
+ {
+  "vi": "Với tay lấy bộ đàm, bạn quẹt trúng cái ly sứ in chữ “Trưởng ca dễ thương” của chị Thảo. Ly rơi vỡ đôi.",
+  "en": ""
+ },
+ {
+  "vi": "Đền ly sứ cho chị Thảo",
+  "en": ""
+ },
+ {
+  "vi": "Điện thoại cá nhân để ở bàn nghỉ bị lấy",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chạy vào bàn trực nhấc máy cuộc gọi khẩn, quay ra bàn nghỉ thì chiếc điện thoại sạc ở đó không còn.",
+  "en": ""
+ },
+ {
   "vi": "Tủ đồ nhân viên ở hồ bơi bị cạy",
   "en": ""
  },
@@ -156,1647 +904,899 @@
   "en": ""
  },
  {
-  "vi": "Gia đình vừa thay đổi. Tải lại rồi thử nhé.",
+  "vi": "Thời dựng nước",
   "en": ""
  },
  {
-  "vi": "Hai bạn không còn cùng ở căn nhà này. Tải lại nhà rồi thử nhé.",
+  "vi": "Văn Lang – Âu Lạc",
   "en": ""
  },
  {
-  "vi": "Chỗ ở vừa thay đổi. Tải lại nhà rồi thử nhé.",
+  "vi": "Theo truyền thuyết, các vua Hùng dựng nước Văn Lang, nhà nước đầu tiên của người Việt, ở vùng đồng bằng sông Hồng.",
   "en": ""
  },
  {
-  "vi": "Đăng nhập để mời bạn về nhà.",
+  "vi": "Cư dân Văn Lang trồng lúa nước và đúc đồ đồng; trống đồng Ngọc Lũ là hiện vật tiêu biểu nhất của văn hóa Đông Sơn, nay là bảo vật quốc gia.",
   "en": ""
  },
  {
-  "vi": "Không tìm thấy căn nhà này.",
+  "vi": "Khoảng thế kỷ 3 trước Công nguyên, Thục Phán hợp nhất người Lạc Việt và Âu Việt, lập nước Âu Lạc và xưng là An Dương Vương.",
   "en": ""
  },
  {
-  "vi": "Không tìm thấy mục này.",
+  "vi": "An Dương Vương xây thành Cổ Loa, nay thuộc Hà Nội.",
   "en": ""
  },
  {
-  "vi": "Bạn chưa có quyền ghé căn nhà này hoặc lời mời đã kết thúc.",
+  "vi": "Giỗ Tổ Hùng Vương ngày 10/3 âm lịch là ngày nghỉ lễ; tín ngưỡng thờ cúng Hùng Vương ở Phú Thọ được UNESCO ghi danh năm 2012.",
   "en": ""
  },
  {
-  "vi": "Yêu cầu không hợp lệ.",
+  "vi": "Theo truyền thuyết, nhà nước đầu tiên của người Việt tên là gì?",
   "en": ""
  },
  {
-  "vi": "Chọn ghé thăm hoặc ở cùng.",
+  "vi": "Văn Lang",
   "en": ""
  },
  {
-  "vi": "Không tìm thấy người bạn này.",
+  "vi": "Đại Việt",
   "en": ""
  },
  {
-  "vi": "Không tìm thấy lời mời.",
+  "vi": "Vạn Xuân",
   "en": ""
  },
  {
-  "vi": "Không tìm thấy người chơi.",
+  "vi": "Các vua Hùng dựng nước Văn Lang ở vùng đồng bằng sông Hồng.",
   "en": ""
  },
  {
-  "vi": "Bạn cần đang ở căn nhà do mình sở hữu để mời bạn.",
+  "vi": "Ai cho xây thành Cổ Loa?",
   "en": ""
  },
  {
-  "vi": "Chỉ mời người đang là bạn bè của bạn.",
+  "vi": "Ngô Quyền",
   "en": ""
  },
  {
-  "vi": "Bạn đã có lời mời hoặc quyền ở cùng với người này.",
+  "vi": "An Dương Vương",
   "en": ""
  },
  {
-  "vi": "Lời mời không còn chờ bạn trả lời.",
+  "vi": "Lý Công Uẩn",
   "en": ""
  },
  {
-  "vi": "Chọn nhận hoặc từ chối lời mời.",
+  "vi": "An Dương Vương (Thục Phán) lập nước Âu Lạc và xây thành Cổ Loa.",
   "en": ""
  },
  {
-  "vi": "Lời mời không còn hiệu lực.",
+  "vi": "Trống đồng Ngọc Lũ là hiện vật tiêu biểu của nền văn hóa nào?",
   "en": ""
  },
  {
-  "vi": "Bạn không thể đổi lời mời này.",
+  "vi": "Văn hóa Óc Eo",
   "en": ""
  },
  {
-  "vi": "Lời mời đã kết thúc.",
+  "vi": "Văn hóa Sa Huỳnh",
   "en": ""
  },
  {
-  "vi": "Cún",
+  "vi": "Văn hóa Đông Sơn",
   "en": ""
  },
  {
-  "vi": "Chuẩn bị sữa và bữa ăn",
+  "vi": "Trống đồng Ngọc Lũ là đỉnh cao của nghề đúc đồng thời Đông Sơn.",
   "en": ""
  },
  {
-  "vi": "Cho ăn",
+  "vi": "Giỗ Tổ Hùng Vương vào ngày nào?",
   "en": ""
  },
  {
-  "vi": "Vệ sinh, thay đồ sạch",
+  "vi": "Ngày 10/3 âm lịch",
   "en": ""
  },
  {
-  "vi": "Đọc truyện cho bé",
+  "vi": "Ngày 2/9",
   "en": ""
  },
  {
-  "vi": "Dạo quanh sân",
+  "vi": "Rằm tháng Tám",
   "en": ""
  },
  {
-  "vi": "Đồ ở nhà",
+  "vi": "Giỗ Tổ Hùng Vương là ngày 10 tháng 3 âm lịch hằng năm.",
   "en": ""
  },
  {
-  "vi": "Yếm cầu vồng",
+  "vi": "Thế kỷ 1 – thế kỷ 6",
   "en": ""
  },
  {
-  "vi": "Bộ hoa nhỏ",
+  "vi": "Bắc thuộc và những cuộc khởi nghĩa",
   "en": ""
  },
  {
-  "vi": "Tên cần từ 1 đến 24 ký tự, không dùng ký tự đặc biệt.",
+  "vi": "Sau thời Âu Lạc, đất nước bị các triều đại phương Bắc đô hộ hơn một nghìn năm, gọi là thời Bắc thuộc.",
   "en": ""
  },
  {
-  "vi": "Đang làm quen",
+  "vi": "Mùa xuân năm 40, Hai Bà Trưng (Trưng Trắc, Trưng Nhị) khởi nghĩa chống nhà Đông Hán; Trưng Trắc được tôn làm vua, đóng đô ở Mê Linh.",
   "en": ""
  },
  {
-  "vi": "Bạn thân trong nhà",
+  "vi": "Năm 43, quân Hán do Mã Viện chỉ huy dập tắt cuộc khởi nghĩa, nhưng Hai Bà vẫn được nhân dân đời đời thờ phụng.",
   "en": ""
  },
  {
-  "vi": "Gắn bó thân thiết",
+  "vi": "Năm 248, Bà Triệu (Triệu Thị Trinh) dựng cờ khởi nghĩa ở núi Nưa (Thanh Hóa) chống quân Ngô.",
   "en": ""
  },
  {
-  "vi": "Chăm sóc gia đình chỉ có trong hành trình.",
+  "vi": "Năm 544, Lý Bí lên ngôi, đặt tên nước là Vạn Xuân.",
   "en": ""
  },
  {
-  "vi": "Mở góc gia đình từ ngày sống 10.",
+  "vi": "Hai Bà Trưng khởi nghĩa vào năm nào?",
   "en": ""
  },
  {
-  "vi": "Thao tác gia đình không hợp lệ.",
+  "vi": "Năm 248",
   "en": ""
  },
  {
-  "vi": "Cách thanh toán không hợp lệ.",
+  "vi": "Năm 40",
   "en": ""
  },
  {
-  "vi": "Chọn em bé, mèo hoặc cún.",
+  "vi": "Năm 938",
   "en": ""
  },
  {
-  "vi": "Nhà đã có thành viên này rồi.",
+  "vi": "Mùa xuân năm 40, Hai Bà Trưng khởi nghĩa chống nhà Đông Hán.",
   "en": ""
  },
  {
-  "vi": "Xác nhận đón thành viên mới về nhà.",
+  "vi": "Bà Triệu khởi nghĩa chống quân nào?",
   "en": ""
  },
  {
-  "vi": "Đồ dùng đón thú cưng",
+  "vi": "Quân Ngô",
   "en": ""
  },
  {
-  "vi": "Chưa có thành viên này.",
+  "vi": "Quân Mông – Nguyên",
   "en": ""
  },
  {
-  "vi": "Xác nhận mua bộ đồ cho bé.",
+  "vi": "Quân Thanh",
   "en": ""
  },
  {
-  "vi": "Chọn một việc chăm sóc phù hợp.",
+  "vi": "Năm 248, Bà Triệu khởi nghĩa ở núi Nưa chống quân Ngô.",
   "en": ""
  },
  {
-  "vi": "Hôm nay đã chăm sóc phần này rồi. Mai ghé lại nhé.",
+  "vi": "Trưng Trắc lên làm vua, đóng đô ở đâu?",
   "en": ""
  },
  {
-  "vi": "ăn ngon lành, trông vui hẳn lên",
+  "vi": "Hoa Lư",
   "en": ""
  },
  {
-  "vi": "sạch sẽ thơm tho rồi",
+  "vi": "Phú Xuân",
   "en": ""
  },
  {
-  "vi": "thích lắm, cứ muốn chơi cùng bạn thêm",
+  "vi": "Mê Linh",
   "en": ""
  },
  {
-  "vi": "Dữ liệu gia đình không hợp lệ.",
+  "vi": "Trưng Trắc được tôn làm vua và đóng đô ở Mê Linh.",
   "en": ""
  },
  {
-  "vi": "Cô giáo Hà",
+  "vi": "Năm 544, Lý Bí đặt tên nước là gì?",
   "en": ""
  },
  {
-  "vi": "Vợ chồng anh Tài",
+  "vi": "Đại Cồ Việt",
   "en": ""
  },
  {
-  "vi": "Hai bạn sinh viên",
+  "vi": "Âu Lạc",
   "en": ""
  },
  {
-  "vi": "Anh Phúc đầu bếp",
+  "vi": "Lý Bí lên ngôi năm 544 và đặt tên nước là Vạn Xuân.",
   "en": ""
  },
  {
-  "vi": "vòi nước bị rỉ",
+  "vi": "Ngô Quyền và trận Bạch Đằng",
   "en": ""
  },
  {
-  "vi": "bóng đèn nhà tắm bị hư",
+  "vi": "Năm 938, quân Nam Hán do Lưu Hoằng Tháo chỉ huy theo đường biển kéo vào nước ta.",
   "en": ""
  },
  {
-  "vi": "ổ khóa cửa bị kẹt",
+  "vi": "Ngô Quyền cho cắm cọc gỗ vót nhọn, bịt sắt dưới lòng sông Bạch Đằng, rồi nhử thuyền giặc vào lúc nước triều lên.",
   "en": ""
  },
  {
-  "vi": "máy nước nóng chập chờn",
+  "vi": "Khi nước triều rút, cọc nhô lên làm thuyền giặc vỡ đắm; quân mai phục hai bên bờ đánh ra và thắng lớn.",
   "en": ""
  },
  {
-  "vi": "cửa sổ bị kẹt bản lề",
+  "vi": "Mùa xuân năm 939, Ngô Quyền xưng vương và đóng đô ở Cổ Loa.",
   "en": ""
  },
  {
-  "vi": "Căn gác nhà Bà Tám",
+  "vi": "Chiến thắng Bạch Đằng chấm dứt hơn một nghìn năm Bắc thuộc, mở ra thời kỳ độc lập lâu dài.",
   "en": ""
  },
  {
-  "vi": "Trên gác nhà Bà Tám, đầu hẻm",
+  "vi": "Năm 938, Ngô Quyền đánh thắng quân nào trên sông Bạch Đằng?",
   "en": ""
  },
  {
-  "vi": "Phòng nhỏ trên gác, cửa sổ nhìn ra hẻm. Tiền phòng và cơm nước Bà Tám tính theo ngày.",
+  "vi": "Quân Tống",
   "en": ""
  },
  {
-  "vi": "Phòng thuê",
+  "vi": "Quân Nam Hán",
   "en": ""
  },
  {
-  "vi": "Căn hộ",
+  "vi": "Quân Minh",
   "en": ""
  },
  {
-  "vi": "Nhà phố",
+  "vi": "Quân Nam Hán do Lưu Hoằng Tháo chỉ huy bị đánh tan trên sông Bạch Đằng.",
   "en": ""
  },
  {
-  "vi": "Biệt thự",
+  "vi": "Ngô Quyền dùng cách gì để phá thuyền giặc?",
   "en": ""
  },
  {
-  "vi": "Ký túc xá Hẻm 7",
+  "vi": "Cắm cọc nhọn dưới lòng sông và chờ nước triều rút",
   "en": ""
  },
  {
-  "vi": "Hẻm 7 · giường tầng",
+  "vi": "Xây một bức tường đá chắn ngang sông",
   "en": ""
  },
  {
-  "vi": "Phòng máy lạnh bốn giường tầng, giường nào cũng có rèm riêng và tủ khóa. Ở ghép với ba bạn trẻ, chia nhau tiền phòng.",
+  "vi": "Đào hào quanh kinh thành",
   "en": ""
  },
  {
-  "vi": "👥 Ở ghép với 3 bạn cùng phòng",
+  "vi": "Cọc nhọn bịt sắt cắm dưới sông, nước triều rút thì cọc nhô lên đâm thủng thuyền giặc.",
   "en": ""
  },
  {
-  "vi": "Phòng trọ khép kín",
+  "vi": "Mùa xuân năm 939, Ngô Quyền đóng đô ở đâu?",
   "en": ""
  },
  {
-  "vi": "Hẻm 12, cạnh chợ",
+  "vi": "Thăng Long",
   "en": ""
  },
  {
-  "vi": "Phòng 18 m² có gác lửng, cửa sổ, nhà vệ sinh riêng. Cô Hạnh chủ nhà cho nuôi mèo.",
+  "vi": "Cổ Loa",
   "en": ""
  },
  {
-  "vi": "Căn tập thể cũ",
+  "vi": "Ngô Quyền xưng vương và chọn Cổ Loa, kinh đô cũ của Âu Lạc.",
   "en": ""
  },
  {
-  "vi": "Khu tập thể đầu phố, tầng 4",
+  "vi": "Chiến thắng Bạch Đằng năm 938 có ý nghĩa gì?",
   "en": ""
  },
  {
-  "vi": "35 m², hai phòng nhỏ. Cầu thang hơi dốc nhưng hàng xóm vui tính, chiều nào cũng có người pha trà.",
+  "vi": "Mở đầu nhà Nguyễn",
   "en": ""
  },
  {
-  "vi": "Studio Nắng Mai",
+  "vi": "Chấm dứt thời Bắc thuộc, mở ra thời kỳ độc lập lâu dài",
   "en": ""
  },
  {
-  "vi": "Tòa Nắng Mai, tầng 9",
+  "vi": "Dời kinh đô ra Thăng Long",
   "en": ""
  },
  {
-  "vi": "Căn studio 28 m², bếp mở, cửa kính lớn đón nắng sớm. Nhỏ mà xinh, phí quản lý hơi cao.",
+  "vi": "Sau Bạch Đằng 938, nước ta bước vào thời kỳ độc lập lâu dài.",
   "en": ""
  },
  {
-  "vi": "Căn hộ mini",
+  "vi": "Nhà Đinh, nhà Tiền Lê",
   "en": ""
  },
  {
-  "vi": "Đường Hoa Sữa",
+  "vi": "Sau khi Ngô Quyền mất, đất nước rơi vào cảnh mười hai sứ quân cát cứ.",
   "en": ""
  },
  {
-  "vi": "30 m², có thang máy, ban công nhỏ phơi đồ, bảo vệ giữ xe dưới sảnh.",
+  "vi": "Đinh Bộ Lĩnh dẹp yên các sứ quân; năm 968 ông lên ngôi hoàng đế (Đinh Tiên Hoàng), đặt tên nước là Đại Cồ Việt và đóng đô ở Hoa Lư.",
   "en": ""
  },
  {
-  "vi": "Căn hộ Mây Xanh",
+  "vi": "Năm 970, nhà vua thôi dùng niên hiệu của hoàng đế phương Bắc, đặt niên hiệu riêng là Thái Bình.",
   "en": ""
  },
  {
-  "vi": "Tòa Mây Xanh, tầng 12 · 1 phòng ngủ",
+  "vi": "Năm 980, Lê Hoàn lên ngôi, lập nhà Tiền Lê; mùa xuân năm 981, ông lãnh đạo quân dân đánh thắng quân Tống.",
   "en": ""
  },
  {
-  "vi": "Một phòng ngủ riêng, phòng khách nhìn ra hồ, sảnh có quầy trà sữa. Chiều gió lồng lộng.",
+  "vi": "Năm 968, Đinh Tiên Hoàng đặt tên nước là gì?",
   "en": ""
  },
  {
-  "vi": "Căn hộ Cánh Diều",
+  "vi": "Đại Nam",
   "en": ""
  },
  {
-  "vi": "Tòa Cánh Diều, tầng 15 · 2 phòng ngủ",
+  "vi": "Nhà Đinh đặt tên nước là Đại Cồ Việt.",
   "en": ""
  },
  {
-  "vi": "Hai phòng ngủ, hai ban công, sân chơi trẻ con dưới sảnh. Đủ chỗ cho cả nhà.",
+  "vi": "Kinh đô của nhà Đinh ở đâu?",
   "en": ""
  },
  {
-  "vi": "Penthouse Mây Xanh",
+  "vi": "Đinh Tiên Hoàng đóng đô ở Hoa Lư.",
   "en": ""
  },
  {
-  "vi": "Tầng thượng tòa Mây Xanh",
+  "vi": "Đinh Bộ Lĩnh thống nhất đất nước sau khi dẹp loạn gì?",
   "en": ""
  },
  {
-  "vi": "Tầng cao nhất, sân thượng riêng trồng rau thơm. Tối ngồi ngắm cả phố lên đèn.",
+  "vi": "Cuộc xâm lược của quân Mông – Nguyên",
   "en": ""
  },
  {
-  "vi": "🌿 Sân thượng riêng",
+  "vi": "Loạn mười hai sứ quân",
   "en": ""
  },
  {
-  "vi": "Nhà phố nhỏ",
+  "vi": "Cuộc khởi nghĩa Tây Sơn",
   "en": ""
  },
  {
-  "vi": "Hẻm xe hơi sau chợ",
+  "vi": "Đinh Bộ Lĩnh dẹp yên mười hai sứ quân rồi lên ngôi năm 968.",
   "en": ""
  },
  {
-  "vi": "Một trệt một lầu, ngang 3 mét, phòng khách đủ kê bộ bàn ghế gỗ và một bàn thờ nhỏ.",
+  "vi": "Năm 981, ai lãnh đạo kháng chiến chống Tống thắng lợi?",
   "en": ""
  },
  {
-  "vi": "Nhà có sân",
+  "vi": "Lê Hoàn",
   "en": ""
  },
  {
-  "vi": "Cuối hẻm, gần bờ kênh",
+  "vi": "Lê Lợi",
   "en": ""
  },
  {
-  "vi": "Sân trước có cây khế và giàn bông giấy, cổng sắt sơn xanh, chỗ để hai chiếc xe.",
+  "vi": "Trần Hưng Đạo",
   "en": ""
  },
  {
-  "vi": "Biệt thự Vườn Cau",
+  "vi": "Lê Hoàn lên ngôi năm 980 và đánh thắng quân Tống mùa xuân năm 981.",
   "en": ""
  },
  {
-  "vi": "Đường ven kênh, cuối phố",
+  "vi": "Nhà Lý và kinh đô Thăng Long",
   "en": ""
  },
  {
-  "vi": "Hai tầng giữa vườn cau và hàng chuối, hồ bơi nhỏ sau nhà. Sáng nghe chim, chiều hái rau, cuối tuần cả xóm sang chơi.",
+  "vi": "Năm 1009, Lý Công Uẩn lên ngôi, mở đầu nhà Lý.",
   "en": ""
  },
  {
-  "vi": "🌳 Vườn rộng, có xích đu",
+  "vi": "Năm 1010, nhà vua ban Chiếu dời đô, chuyển kinh đô từ Hoa Lư về thành Đại La và đặt tên mới là Thăng Long, nghĩa là rồng bay lên.",
   "en": ""
  },
  {
-  "vi": "Biệt thự Sông Hồng",
+  "vi": "Năm 1054, nhà Lý đổi tên nước thành Đại Việt; năm 1070 xây Văn Miếu, năm 1076 lập Quốc Tử Giám.",
   "en": ""
  },
  {
-  "vi": "Bờ sông, cuối con đê",
+  "vi": "Năm 1077, Lý Thường Kiệt chặn đứng quân Tống ở phòng tuyến sông Như Nguyệt; bài thơ Nam quốc sơn hà gắn với trận đánh này.",
   "en": ""
  },
  {
-  "vi": "Ba tầng nhìn ra sông, hồ bơi nhỏ sau nhà. Hoàng hôn đổ xuống mặt nước mỗi chiều.",
+  "vi": "Hoàng thành Thăng Long được UNESCO ghi danh là di sản văn hóa thế giới năm 2010.",
   "en": ""
  },
  {
-  "vi": "🌊 Hồ bơi và bến ngắm sông",
+  "vi": "Năm 1010, Lý Công Uẩn dời đô về đâu?",
   "en": ""
  },
  {
-  "vi": "Bà Tám dúi cho bịch trái cây: “Ở đâu cũng nhớ về ăn cơm với bà nghe cháu.”",
+  "vi": "Thành Đại La, đặt tên là Thăng Long",
   "en": ""
  },
  {
-  "vi": "Bà Tám lau nước mắt: “Có nhà rồi, mừng cho cháu quá. Bữa nào tân gia nhớ gọi bà!”",
+  "vi": "Chiếu dời đô năm 1010 chuyển kinh đô từ Hoa Lư về Đại La, đổi tên là Thăng Long.",
   "en": ""
  },
  {
-  "vi": "Bà Tám mở cửa gác, phủi lại cái chiếu: “Phòng vẫn để đó, về lúc nào cũng được.”",
+  "vi": "Tên Thăng Long có nghĩa là gì?",
   "en": ""
  },
  {
-  "vi": "Quân, Anh Tuấn và My dọn sẵn giường dưới cạnh cửa sổ, My còn dán tên bạn lên tủ.",
+  "vi": "Rồng bay lên",
   "en": ""
  },
  {
-  "vi": "My dúi cho cái móc khóa, Anh Tuấn hẹn bữa nào ghé ăn mì chung.",
+  "vi": "Sông dài",
   "en": ""
  },
  {
-  "vi": "Hàng xóm cũ phụ khiêng cái tủ lên xe, còn dặn: “Cuối tuần nhớ ghé uống trà nghe!”",
+  "vi": "Núi cao",
   "en": ""
  },
  {
-  "vi": "Cơm nước và điện nước nhà mình",
+  "vi": "Thăng Long nghĩa là rồng bay lên.",
   "en": ""
  },
  {
-  "vi": "Tiền giường ký túc xá và cơm nước",
+  "vi": "Văn Miếu ở Thăng Long được xây dưới triều nào?",
   "en": ""
  },
  {
-  "vi": "Tiền phòng trọ và cơm nước",
+  "vi": "Nhà Nguyễn",
   "en": ""
  },
  {
-  "vi": "Mở tài khoản Ngân hàng Phố trước rồi mới vay mua nhà được.",
+  "vi": "Nhà Đinh",
   "en": ""
  },
  {
-  "vi": "vay mua nhà",
+  "vi": "Nhà Lý",
   "en": ""
  },
  {
-  "vi": "Căn nhà chung đã bán",
+  "vi": "Văn Miếu được xây năm 1070, thời nhà Lý.",
   "en": ""
  },
  {
-  "vi": "Trả nhà đang thuê của người chơi trước khi dọn về nhà chung.",
+  "vi": "Năm 1077, Lý Thường Kiệt chặn quân Tống ở đâu?",
   "en": ""
  },
  {
-  "vi": "tài khoản ngân hàng",
+  "vi": "Phòng tuyến sông Như Nguyệt",
   "en": ""
  },
  {
-  "vi": "Thao tác nhà ở không hợp lệ.",
+  "vi": "Rạch Gầm – Xoài Mút",
   "en": ""
  },
  {
-  "vi": "Thuê và mua nhà chỉ có trong chế độ hành trình.",
+  "vi": "Gò Đống Đa",
   "en": ""
  },
  {
-  "vi": "Trả nhà đang thuê của người chơi trước khi đổi chỗ ở nhé.",
+  "vi": "Quân Tống bị chặn ở phòng tuyến sông Như Nguyệt (một đoạn sông Cầu).",
   "en": ""
  },
  {
-  "vi": "Chọn phòng muốn thuê nhé.",
+  "vi": "Nhà Trần và ba lần thắng quân Mông – Nguyên",
   "en": ""
  },
  {
-  "vi": "Bạn đã có nhà riêng rồi.",
+  "vi": "Năm 1226, nhà Trần thay nhà Lý, vẫn đóng đô ở Thăng Long.",
   "en": ""
  },
  {
-  "vi": "Bạn đang ở đây rồi.",
+  "vi": "Trong ba mươi năm, quân Mông – Nguyên ba lần sang xâm lược, vào các năm 1258, 1285 và 1288, và cả ba lần đều bị đánh bại.",
   "en": ""
  },
  {
-  "vi": "Xác nhận thuê phòng.",
+  "vi": "Trước cuộc kháng chiến lần thứ hai, các bô lão họp ở điện Diên Hồng đồng thanh hô: \"Đánh!\"",
   "en": ""
  },
  {
-  "vi": "Bạn không thuê phòng nào.",
+  "vi": "Hưng Đạo Đại Vương Trần Quốc Tuấn thống lĩnh toàn quân và viết Hịch tướng sĩ để khích lệ binh sĩ.",
   "en": ""
  },
  {
-  "vi": "Xác nhận trả phòng.",
+  "vi": "Năm 1288, quân dân nhà Trần lại dùng trận địa cọc trên sông Bạch Đằng, tiêu diệt đoàn thuyền quân Nguyên.",
   "en": ""
  },
  {
-  "vi": "Chọn căn nhà muốn mua nhé.",
+  "vi": "Nhà Trần đánh thắng quân Mông – Nguyên mấy lần?",
   "en": ""
  },
  {
-  "vi": "Chọn dọn về ở hay để trống nhé.",
+  "vi": "Hai lần",
   "en": ""
  },
  {
-  "vi": "Số xu lấy từ quỹ chung không hợp lệ.",
+  "vi": "Ba lần",
   "en": ""
  },
  {
-  "vi": "Quỹ chung chỉ góp mua căn nhà cả hai cùng về ở.",
+  "vi": "Năm lần",
   "en": ""
  },
  {
-  "vi": "Xác nhận ký hợp đồng mua nhà.",
+  "vi": "Ba lần: năm 1258, 1285 và 1288.",
   "en": ""
  },
  {
-  "vi": "Chọn thời hạn vay nhé.",
+  "vi": "Ai thống lĩnh toàn quân nhà Trần chống quân Nguyên?",
   "en": ""
  },
  {
-  "vi": "Điều khoản vay vừa thay đổi. Xem lại lịch trả góp rồi ký nhé.",
+  "vi": "Hưng Đạo Đại Vương Trần Quốc Tuấn thống lĩnh toàn quân.",
   "en": ""
  },
  {
-  "vi": "💹 Thuế trước bạ",
+  "vi": "Ở hội nghị Diên Hồng, các bô lão đồng thanh nói gì?",
   "en": ""
  },
  {
-  "vi": ", trả đủ một lần",
+  "vi": "\"Đánh!\"",
   "en": ""
  },
  {
-  "vi": "Bạn không có nhà chung với người ấy để về.",
+  "vi": "\"Hòa!\"",
   "en": ""
  },
  {
-  "vi": "Bạn đang ở nhà chung rồi.",
+  "vi": "\"Chờ thêm!\"",
   "en": ""
  },
  {
-  "vi": "Xác nhận dọn nhà.",
+  "vi": "Các bô lão đồng thanh hô \"Đánh!\".",
   "en": ""
  },
  {
-  "vi": "Chọn căn nhà muốn dọn về nhé.",
+  "vi": "Trận Bạch Đằng năm 1288 đánh bại quân nào?",
   "en": ""
  },
  {
-  "vi": "Chọn căn nhà nhé.",
+  "vi": "Quân Nguyên",
   "en": ""
  },
  {
-  "vi": "Chọn cho thuê hay lấy lại nhà nhé.",
+  "vi": "Năm 1288, đoàn thuyền quân Nguyên bị tiêu diệt trên sông Bạch Đằng.",
   "en": ""
  },
  {
-  "vi": "Xác nhận nhé.",
+  "vi": "Lê Lợi và khởi nghĩa Lam Sơn",
   "en": ""
  },
  {
-  "vi": "Bạn đang ở căn này: dọn sang căn khác rồi mới cho thuê được nhé.",
+  "vi": "Đầu thế kỷ 15, nhà Minh sang đô hộ nước ta.",
   "en": ""
  },
  {
-  "vi": "Nhà mua bằng quỹ chung cần giữ quyền của cả hai, chưa thể cho thuê.",
+  "vi": "Năm 1418, Lê Lợi dựng cờ khởi nghĩa chống quân Minh ở Lam Sơn (Thanh Hóa), xưng là Bình Định Vương; Nguyễn Trãi cùng ông bàn mưu kế.",
   "en": ""
  },
  {
-  "vi": "Giá thuê phải là số xu nguyên dương.",
+  "vi": "Sau mười năm, nghĩa quân thắng trận quyết định Chi Lăng – Xương Giang năm 1427.",
   "en": ""
  },
  {
-  "vi": "Đã gỡ tin cho NPC thuê nhà.",
+  "vi": "Năm 1428, Lê Lợi lên ngôi, lập nhà Hậu Lê, tên nước vẫn là Đại Việt; Nguyễn Trãi viết Bình Ngô đại cáo.",
   "en": ""
  },
  {
-  "vi": ". Căn nhà đang để trống.",
+  "vi": "Truyền thuyết kể rằng sau chiến thắng, Rùa Vàng đã đòi lại gươm báu, nên hồ Lục Thủy được gọi là hồ Hoàn Kiếm.",
   "en": ""
  },
  {
-  "vi": "Bạn không có khoản vay mua nhà nào.",
+  "vi": "Lê Lợi khởi nghĩa chống quân nào?",
   "en": ""
  },
  {
-  "vi": "Khoản vay đã trả xong, căn nhà hoàn toàn là của bạn!",
+  "vi": "Quân Xiêm",
   "en": ""
  },
  {
-  "vi": "Xác nhận tất toán khoản vay mua nhà.",
+  "vi": "Khởi nghĩa Lam Sơn chống ách đô hộ của nhà Minh.",
   "en": ""
  },
  {
-  "vi": "Bạn chưa có nhà để bán.",
+  "vi": "Ai viết Bình Ngô đại cáo?",
   "en": ""
  },
  {
-  "vi": "Xác nhận bán nhà.",
+  "vi": "Nguyễn Trãi",
   "en": ""
  },
  {
-  "vi": "Giá thị trường vừa thay đổi. Xem lại rồi bán nhé.",
+  "vi": "Nguyễn Trãi viết Bình Ngô đại cáo năm 1428.",
   "en": ""
  },
  {
-  "vi": "Tiền bán nhà chưa đủ trả hết khoản vay. Nộp thêm tiền trả bớt nợ rồi hãy bán nhé.",
+  "vi": "Khởi nghĩa Lam Sơn bắt đầu năm nào?",
   "en": ""
  },
  {
-  "vi": "Tiền bán chưa đủ trả hết nợ vay",
+  "vi": "Năm 1010",
   "en": ""
  },
  {
-  "vi": "Đang cho thuê: lấy lại nhà trước",
+  "vi": "Năm 1418",
   "en": ""
  },
  {
-  "vi": "Dữ liệu nhà ở không hợp lệ.",
+  "vi": "Năm 1789",
   "en": ""
  },
  {
-  "vi": "Mối hàng “hiệu” giá rẻ",
+  "vi": "Lê Lợi dựng cờ khởi nghĩa năm 1418.",
   "en": ""
  },
  {
-  "vi": "Một người chở tới hai bao quần áo gắn mác hãng nổi tiếng, giá chỉ bằng một phần năm: “Hàng xách tay, bán chạy lắm em.”",
+  "vi": "Trận quyết định của nghĩa quân Lam Sơn năm 1427 là trận nào?",
   "en": ""
  },
  {
-  "vi": "Đường may lệch, chữ trên mác in nhòe.",
+  "vi": "Chi Lăng – Xương Giang",
   "en": ""
  },
  {
-  "vi": "Không có hóa đơn, không có giấy nhập khẩu.",
+  "vi": "Ngọc Hồi – Đống Đa",
   "en": ""
  },
  {
-  "vi": "Bán hàng giả mạo nhãn hiệu có thể bị tịch thu và phạt.",
+  "vi": "Như Nguyệt",
   "en": ""
  },
  {
-  "vi": "Từ chối, chỉ bán hàng có nguồn gốc rõ ràng",
+  "vi": "Chi Lăng – Xương Giang năm 1427 kết thúc mười năm kháng chiến.",
   "en": ""
  },
  {
-  "vi": "Người đó lầm bầm rồi chở bao hàng đi. Chị Vy gật gù: “Tiệm nhỏ nhưng phải sạch.”",
+  "vi": "Quang Trung và Ngọc Hồi – Đống Đa",
   "en": ""
  },
  {
-  "vi": "Lấy một bao, dán mác tiệm lên bán",
+  "vi": "Mùa xuân năm 1771, ba anh em Nguyễn Nhạc, Nguyễn Huệ, Nguyễn Lữ khởi nghĩa ở Tây Sơn.",
   "en": ""
  },
  {
-  "vi": "Kho có thêm một bao hàng rẻ. Tuần sau đội quản lý thị trường đi kiểm tra cả dãy phố.",
+  "vi": "Năm 1785, Nguyễn Huệ đánh tan quân Xiêm ở Rạch Gầm – Xoài Mút trên sông Mỹ Tho.",
   "en": ""
  },
  {
-  "vi": "Bài đăng chê tiệm không cho trả đồ",
+  "vi": "Cuối năm 1788, Nguyễn Huệ lên ngôi hoàng đế, lấy niên hiệu Quang Trung, rồi tiến quân ra Bắc đánh quân Thanh.",
   "en": ""
  },
  {
-  "vi": "Một bài đăng trong nhóm cư dân: “Tiệm áo đầu hẻm không cho trả váy, thái độ lồi lõm!” Kèm ảnh chiếc váy đã cắt mác.",
+  "vi": "Mùa xuân Kỷ Dậu 1789, quân Tây Sơn đánh tan quân Thanh ở Ngọc Hồi – Đống Đa; sáng mùng 5 Tết, vua Quang Trung tiến vào Thăng Long.",
   "en": ""
  },
  {
-  "vi": "Hóa đơn ghi rõ chính sách: còn tem, chưa mặc.",
+  "vi": "Ngày nay, hội gò Đống Đa ở Hà Nội vẫn mở vào mùng 5 Tết để tưởng nhớ chiến thắng này.",
   "en": ""
  },
  {
-  "vi": "Chiếc váy trong ảnh đã cắt mác, cổ váy có vệt phấn.",
+  "vi": "Nguyễn Huệ lên ngôi lấy niên hiệu gì?",
   "en": ""
  },
  {
-  "vi": "Nhiều khách quen đang đọc bài.",
+  "vi": "Thuận Thiên",
   "en": ""
  },
  {
-  "vi": "Trả lời nhẹ nhàng, đăng ảnh bảng chính sách, mời chị ghé uống trà nói chuyện",
+  "vi": "Cuối năm 1788, Nguyễn Huệ lên ngôi, niên hiệu Quang Trung.",
   "en": ""
  },
  {
-  "vi": "Khách quen vào bình luận bênh tiệm. Chị khách tự gỡ bài, hôm sau ghé mua đôi tất làm hòa.",
+  "vi": "Chiến thắng Ngọc Hồi – Đống Đa đánh bại quân nào?",
   "en": ""
  },
  {
-  "vi": "Hoàn tiền cho yên chuyện",
+  "vi": "Mùa xuân 1789, quân Tây Sơn đánh tan quân Thanh.",
   "en": ""
  },
  {
-  "vi": "Bài đăng được gỡ, nhưng trong nhóm bắt đầu rủ nhau “mặc một lần rồi trả”.",
+  "vi": "Năm 1785, quân Tây Sơn đánh tan quân Xiêm ở đâu?",
   "en": ""
  },
  {
-  "vi": "Đăng bài đáp trả, bêu tên khách",
+  "vi": "Sông Bạch Đằng",
   "en": ""
  },
  {
-  "vi": "Hai bên cãi nhau hơn trăm bình luận. Ai đọc cũng ngại ghé tiệm.",
+  "vi": "Điện Biên Phủ",
   "en": ""
  },
  {
-  "vi": "Xe tải chở chó con tới mời bán sỉ",
+  "vi": "Trận Rạch Gầm – Xoài Mút diễn ra trên sông Mỹ Tho năm 1785.",
   "en": ""
  },
  {
-  "vi": "Một chiếc xe tải đậu trước tiệm, thùng sau chật cứng lồng chó con. Người lái xe chìa giá rẻ như cho, chú Út nghe mà xiêu lòng.",
+  "vi": "Năm 1789, vua Quang Trung tiến vào Thăng Long vào ngày nào?",
   "en": ""
  },
  {
-  "vi": "Không lồng nào có sổ tiêm, vài bé đang tiêu chảy.",
+  "vi": "Sáng mùng 5 Tết",
   "en": ""
  },
  {
-  "vi": "Góc nhận nuôi của tiệm dán rõ: chó mèo chỉ về nhà mới qua nhóm cứu hộ.",
+  "vi": "Rằm tháng Giêng",
   "en": ""
  },
  {
-  "vi": "Từ chối mua, gọi nhóm Chân Nhỏ và thú y phường tới xem các bé",
+  "vi": "Sáng mùng 5 Tết Kỷ Dậu, vua Quang Trung vào Thăng Long.",
   "en": ""
  },
  {
-  "vi": "Nhóm cứu hộ nhận chữa mấy bé yếu nhất, thú y phường ghi lại biển số xe. Chú Út lặng người một lúc rồi gật đầu.",
+  "vi": "Nhà Nguyễn và tên nước Việt Nam",
   "en": ""
  },
  {
-  "vi": "Từ chối cho xong",
+  "vi": "Năm 1802, Nguyễn Ánh lên ngôi, lấy niên hiệu Gia Long, lập nhà Nguyễn và đóng đô ở Phú Xuân (Huế).",
   "en": ""
  },
  {
-  "vi": "Xe tải chạy sang phường bên. Mấy bé chó con không ai biết đi đâu.",
+  "vi": "Năm 1804, vua Gia Long đặt quốc hiệu là Việt Nam.",
   "en": ""
  },
  {
-  "vi": "Lấy vài con về bán cho có lời",
+  "vi": "Ngày 1/9/1858, liên quân Pháp – Tây Ban Nha nổ súng đánh Đà Nẵng, mở đầu cuộc xâm lược của thực dân Pháp.",
   "en": ""
  },
  {
-  "vi": "Hai hôm sau hai bé ốm nặng, cả góc nhận nuôi phải khử trùng, tiệm bỏ tiền chữa.",
+  "vi": "Quần thể di tích Cố đô Huế là di sản thế giới đầu tiên của Việt Nam, được UNESCO ghi danh năm 1993.",
   "en": ""
  },
  {
-  "vi": "Tin nhắn “nhặt được thú cưng” đòi chuyển tiền",
+  "vi": "Ngày 30/8/1945, vua Bảo Đại thoái vị ở Ngọ Môn (Huế), khép lại chế độ quân chủ.",
   "en": ""
  },
  {
-  "vi": "Tờ tìm mèo dán trên bảng của tiệm vừa lên nhóm Zalo khu phố. Một số lạ nhắn vào máy tiệm: “Tôi nhặt được mèo. Chuyển trước 200 xu tiền giữ giùm, tôi mang tới liền.”",
+  "vi": "Kinh đô của nhà Nguyễn ở đâu?",
   "en": ""
  },
  {
-  "vi": "Người đó không trả lời được con mèo có dấu riêng gì.",
+  "vi": "Phú Xuân (Huế)",
   "en": ""
  },
  {
-  "vi": "Ảnh gửi kèm là ảnh lấy trên mạng.",
+  "vi": "Nhà Nguyễn đóng đô ở Phú Xuân, tức Huế.",
   "en": ""
  },
  {
-  "vi": "Hỏi dấu riêng, không chuyển tiền, báo chủ nuôi cảnh giác",
+  "vi": "Quốc hiệu Việt Nam được đặt năm nào?",
   "en": ""
  },
  {
-  "vi": "Người kia chặn số ngay. Chủ nuôi cảm ơn tiệm đã chặn giùm một vố lừa.",
+  "vi": "Năm 1804",
   "en": ""
  },
  {
-  "vi": "Người kia nhắn sang chủ nuôi. May mà chủ nuôi hỏi lại tiệm kịp.",
+  "vi": "Năm 1975",
   "en": ""
  },
  {
-  "vi": "Chuyển tiền giùm cho nhanh, chủ nuôi trả lại sau",
+  "vi": "Năm 1804, vua Gia Long đặt quốc hiệu Việt Nam.",
   "en": ""
  },
  {
-  "vi": "Chuyển xong thì bị chặn số. Tiền mất, mèo vẫn chưa về.",
+  "vi": "Vị vua cuối cùng của nhà Nguyễn là ai?",
   "en": ""
  },
  {
-  "vi": "Người lạ mời bán vẹt bắt ngoài rừng",
+  "vi": "Bảo Đại",
   "en": ""
  },
  {
-  "vi": "Một anh đội mũ sụp đưa lồng vẹt lông xanh lạ mắt: “Hàng hiếm, bắt ngoài rừng. Tiệm lấy về bán giá cao!”",
+  "vi": "Minh Mạng",
   "en": ""
  },
  {
-  "vi": "Chân con chim còn vết dây buộc, lông xơ xác.",
+  "vi": "Vua Bảo Đại thoái vị ngày 30/8/1945.",
   "en": ""
  },
  {
-  "vi": "Chim hoang dã không được mua bán; tiệm chỉ bán chim nuôi có giấy nguồn gốc.",
+  "vi": "Di sản thế giới đầu tiên của Việt Nam được UNESCO ghi danh là gì?",
   "en": ""
  },
  {
-  "vi": "Không mua, báo kiểm lâm",
+  "vi": "Quần thể di tích Cố đô Huế",
   "en": ""
  },
  {
-  "vi": "Kiểm lâm tới nhận con vẹt về trạm cứu hộ, cảm ơn tiệm đã báo sớm.",
+  "vi": "Hoàng thành Thăng Long",
   "en": ""
  },
  {
-  "vi": "Không mua, bảo anh ta đi chỗ khác",
+  "vi": "Thành Cổ Loa",
   "en": ""
  },
  {
-  "vi": "Anh ta đi mất. Con vẹt chắc lại bị bán ở đâu đó.",
+  "vi": "Quần thể di tích Cố đô Huế được ghi danh năm 1993, sớm nhất ở Việt Nam.",
   "en": ""
  },
  {
-  "vi": "Mua lại bán cho dân chơi chim",
+  "vi": "Độc lập 1945 và Điện Biên Phủ",
   "en": ""
  },
  {
-  "vi": "Đoàn kiểm tra phát hiện, tịch thu con vẹt và lập biên bản tiệm.",
+  "vi": "Tháng 8/1945, Cách mạng tháng Tám giành chính quyền trong cả nước.",
   "en": ""
  },
  {
-  "vi": "Thú y phường kiểm tra sau phản ánh",
+  "vi": "Ngày 2/9/1945, tại Quảng trường Ba Đình (Hà Nội), Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập, khai sinh nước Việt Nam Dân chủ Cộng hòa; ngày 2/9 trở thành ngày Quốc khánh.",
   "en": ""
  },
  {
-  "vi": "Hôm qua có người phản ánh lên app về cách tiệm chăm và bán thú. Sáng nay bác sĩ thú y phường ghé, xem từng bể, từng chuồng và sổ nhập thú.",
+  "vi": "Ngày 7/5/1954, sau 56 ngày đêm, chiến dịch Điện Biên Phủ toàn thắng.",
   "en": ""
  },
  {
-  "vi": "Phản ánh kèm ảnh chụp bể cá và lồng thú.",
+  "vi": "Tháng 7/1954, Hiệp định Giơ-ne-vơ được ký, chấm dứt chiến tranh ở Đông Dương và lấy vĩ tuyến 17 làm giới tuyến quân sự tạm thời.",
   "en": ""
  },
  {
-  "vi": "Sổ nhập thú của tiệm ghi nguồn gốc từ trại Bến Mây.",
+  "vi": "Tuyên ngôn Độc lập ngày 2/9/1945 được đọc ở đâu?",
   "en": ""
  },
  {
-  "vi": "Mở sổ, nhận lỗi, cách ly bé ốm, cam kết hỏi kỹ trước khi bán",
+  "vi": "Ngọ Môn (Huế)",
   "en": ""
  },
  {
-  "vi": "Bác sĩ lập biên bản nhắc nhở, phạt mức thấp và hẹn tuần sau ghé lại. Nhã dán bảng “Hỏi kỹ rồi mới bán” ngay trước quầy.",
+  "vi": "Quảng trường Ba Đình (Hà Nội)",
   "en": ""
  },
  {
-  "vi": "Cãi rằng tiệm nào cũng bán vậy",
+  "vi": "Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập tại Quảng trường Ba Đình.",
   "en": ""
  },
  {
-  "vi": "Bác sĩ chụp ảnh bể quá đông và bé ốm để chung. Biên bản ghi phạt nặng, khách đăng bài nhắc cả khu phố.",
+  "vi": "Ngày Quốc khánh của Việt Nam là ngày nào?",
   "en": ""
  },
  {
-  "vi": "Tiệm bán thú mà không lo cho thú. Mọi người cân nhắc.",
+  "vi": "Ngày 30/4",
   "en": ""
  },
  {
-  "vi": "Không bảo đảm điều kiện chăm sóc, vệ sinh thú nuôi để bán",
+  "vi": "Ngày 1/5",
   "en": ""
  },
  {
-  "vi": "Báo giá chuyện đời không hợp lệ.",
+  "vi": "Ngày 2/9/1945 nước Việt Nam Dân chủ Cộng hòa ra đời, nay là ngày Quốc khánh.",
   "en": ""
  },
  {
-  "vi": "Tỷ lệ chuyện đời không hợp lệ.",
+  "vi": "Chiến dịch Điện Biên Phủ toàn thắng vào ngày nào?",
   "en": ""
  },
  {
-  "vi": "Sáu",
+  "vi": "Ngày 2/9/1945",
   "en": ""
  },
  {
-  "vi": "Xe tuyến kẹt ở trạm nên về trễ mấy tiếng, kho xin lỗi quý khách.",
+  "vi": "Ngày 30/4/1975",
   "en": ""
  },
  {
-  "vi": "Mẻ hôm nay ra lò muộn, xưởng giao trễ hơn hẹn ạ.",
+  "vi": "Ngày 7/5/1954",
   "en": ""
  },
  {
-  "vi": "Xe từ Đà Lạt xuống bị sương mù đèo Mây, tới trễ chừng một tiếng.",
-  "en": ""
- },
- {
-  "vi": "Rẻ nhất. Đặt trước 13:00, hàng tới chiều nay; đặt sau, hàng tới sáng mai trước giờ mở cửa. Thỉnh thoảng giao thiếu, cần đếm kỹ.",
-  "en": ""
- },
- {
-  "vi": "Giá niêm yết, có phiếu giao rõ ràng. Xe chạy bốn chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng.",
-  "en": ""
- },
- {
-  "vi": "Đắt nhất nhưng tới trong 15–30 phút. Dùng khi cháy hàng giữa ca.",
-  "en": ""
- },
- {
-  "vi": "Gói nước dùng, phô mai, bánh gạo, bò Mỹ nhập thẳng: rẻ hơn hẳn nhưng 1–2 ngày mới tới. Đặt sớm cho cả tuần.",
-  "en": ""
- },
- {
-  "vi": "Rang theo đơn hai mẻ mỗi ngày. Đặt trước 11:00, hạt mới rang tới chiều nay; đặt sau, sáng mai có. Rẻ và thơm hơn.",
-  "en": ""
- },
- {
-  "vi": "Chợ hoa họp đêm, ban ngày còn sạp sỉ: đặt trước 15:00, hoa tới chiều nay; đặt sau, hoa tới sáng mai trước giờ mở cửa. Rẻ, nhưng hay gãy hoặc thiếu vài cành.",
-  "en": ""
- },
- {
-  "vi": "Hoa cắt tại vườn: đặt trước 09:00, vườn gửi xe khách, chiều nay tới; đặt sau, hoa đi xe đêm, sáng mai tới. Rẻ nhất và tươi thêm 1 ngày, nhưng xe đèo hay trễ.",
-  "en": ""
- },
- {
-  "vi": "Hàng khô, nước, bia theo thùng: giá sỉ, sáng mai giao. Hợp để trữ hàng không hạn.",
-  "en": ""
- },
- {
-  "vi": "Linh kiện tương thích và đồ tháo máy giá mềm. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có. Đôi khi thiếu, đếm kỹ.",
-  "en": ""
- },
- {
-  "vi": "Hàng hãng có tem bảo hành, gửi từ kho miền: 1–2 ngày. Rẻ hơn đại lý nhưng phải hẹn khách trước.",
-  "en": ""
- },
- {
-  "vi": "Giá xã viên. Đặt trước 11:00, xe hợp tác xã chở tới chiều nay; đặt sau, sáng mai có. Thỉnh thoảng thiếu một bao.",
-  "en": ""
- },
- {
-  "vi": "Chở gấp trong 15–30 phút, đắt. Dùng khi gà sắp hết cám.",
-  "en": ""
- },
- {
-  "vi": "Cây giống ươm theo đơn: rẻ nhất nhưng 1–2 ngày mới có.",
-  "en": ""
- },
- {
-  "vi": "Giá sỉ bao bì. Đặt trước 20:00, tối nay có; đặt sau, chiều mai có trước giờ vào ca. Đôi khi thiếu, đếm kỹ.",
-  "en": ""
- },
- {
-  "vi": "Giá niêm yết, xe tải nhỏ giao trong 1–2 giờ. Quá giờ tan ca thì hàng chờ sẵn trước ca mai.",
-  "en": ""
- },
- {
-  "vi": "Xe tải của kho kẹt ở cầu Mây, bên em báo trễ chừng mười lăm phút ạ.",
-  "en": ""
- },
- {
-  "vi": "Đồ ăn sáng và minibar giá chợ. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có trước giờ khách dậy. Hay thiếu vài món.",
-  "en": ""
- },
- {
-  "vi": "Ga gối, khăn, bộ đồ tắm từ xưởng: rẻ nhất, 1–2 ngày mới giao. Đặt trước mùa đông khách.",
-  "en": ""
- },
- {
-  "vi": "Giá sỉ cho tiệm. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có trước giờ mở cửa. Thỉnh thoảng thiếu, đếm kỹ.",
-  "en": ""
- },
- {
-  "vi": "Sữa tắm da nhạy cảm, dầu xả, bột cầm máu hàng nhập: rẻ hơn đại lý, 1–2 ngày mới tới.",
-  "en": ""
- },
- {
-  "vi": "Dầu gội, khăn, găng, giấy bạc giá sỉ. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có. Hay thiếu vài món.",
-  "en": ""
- },
- {
-  "vi": "Thuốc nhuộm, oxy, toner, keratin chính hãng từ kho hãng: rẻ nhất, 1–2 ngày. Đặt trước khi hết tuýp.",
-  "en": ""
- },
- {
-  "vi": "Chợ sỉ phụ kiện Mây",
-  "en": ""
- },
- {
-  "vi": "Pin, toploader, binder, ống poster giá sỉ. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có. Hay thiếu vài món.",
-  "en": ""
- },
- {
-  "vi": "Nhà phân phối Sóng Âm",
-  "en": ""
- },
- {
-  "vi": "Album, Búa hồng, slogan chính hãng có tem. Xe chạy bốn chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng.",
-  "en": ""
- },
- {
-  "vi": "Giá sát lắm rồi, chở miễn phí cho em là được.",
-  "en": ""
- },
- {
-  "vi": "Bớt vậy lấy gì ăn em? Giá này là chót rồi.",
-  "en": ""
- },
- {
-  "vi": "Trả giá kiểu này thì em qua sạp khác đi!",
-  "en": ""
- },
- {
-  "vi": "Giá niêm yết không giảm được ạ, bên em xin miễn phí giao cho đơn này.",
-  "en": ""
- },
- {
-  "vi": "Giá đã là giá niêm yết, bên em không giảm thêm được ạ.",
-  "en": ""
- },
- {
-  "vi": "Yêu cầu đã được ghi nhận. Lần sau quý khách vui lòng đặt theo bảng giá.",
-  "en": ""
- },
- {
-  "vi": "Hỏa tốc tính theo cuốc xe, bên em không giảm ạ.",
-  "en": ""
- },
- {
-  "vi": "Mặt hàng này không có size đó.",
-  "en": ""
- },
- {
-  "vi": "Đang có nhiều hàng chờ giao. Nhận bớt rồi đặt tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Chọn mức xin bớt có sẵn nhé.",
-  "en": ""
- },
- {
-  "vi": "Thêm hàng vào đơn trước rồi mới trả giá nhé.",
-  "en": ""
- },
- {
-  "vi": "· miễn ship",
-  "en": ""
- },
- {
-  "vi": "Thao tác đơn gộp không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Kệ đã đủ hàng, không cần nhập thêm.",
-  "en": ""
- },
- {
-  "vi": "Món này có nhiều size trong đơn: chọn đúng dòng size nhé.",
-  "en": ""
- },
- {
-  "vi": "Món này chưa có trong đơn.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận đơn gộp và số tiền trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Đơn đang trống. Thêm hàng vào đơn trước nhé.",
-  "en": ""
- },
- {
-  "vi": "(miễn ship)",
-  "en": ""
- },
- {
-  "vi": "Đơn không tồn tại.",
-  "en": ""
- },
- {
-  "vi": "Đếm từng món trong thùng trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Đơn gộp sai mã.",
-  "en": ""
- },
- {
-  "vi": "Đơn gộp không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Dòng đơn gộp sai.",
-  "en": ""
- },
- {
-  "vi": "Đơn gộp trùng món.",
-  "en": ""
- },
- {
-  "vi": "Giá thương lượng sai.",
-  "en": ""
- },
- {
-  "vi": "Giá coin cập nhật mỗi 10 phút thực. Chỉ dùng tiền nhàn rỗi nhé.",
-  "en": ""
- },
- {
-  "vi": "Quà chào hàng xóm mới 🎁",
-  "en": ""
- },
- {
-  "vi": "Đứa cháu bà mê nhóm nhạc BLANKPINK gì đó, ngày nào cũng đòi ra tiệm album Mây Pop. Chị Thơ ở đó đang cần người đứng quầy.",
-  "en": ""
- },
- {
-  "vi": "Thằng Mẫn nhà bên làm thợ máy ở sân bay. Nó bảo Hãng bay Cánh Cò đang tuyển cơ phó với tiếp viên đó.",
-  "en": ""
- },
- {
-  "vi": "Đường ngang Bến Mây đầu phố Ray đang thiếu người gác chắn. Chú Sáu Cờ gác ở đó gần ba chục năm, đang tìm người cẩn thận để kèm.",
-  "en": ""
- },
- {
-  "vi": "Tuần trước bà nằm viện Lá Sen, mấy đứa điều dưỡng chăm bà khéo lắm. Khoa Nội đang tuyển người đó con.",
-  "en": ""
- },
- {
-  "vi": "Ông Bảy giữ đèn biển Hòn Gió ngoài đảo kia đang tìm người kèm. Ở đảo buồn lắm, mà đêm nào cũng có tàu nhờ cái đèn đó mà về.",
-  "en": ""
- },
- {
-  "vi": "Tổng đài cứu hộ phường Mây đang tìm người trực máy. Giọng bình tĩnh, hỏi địa chỉ trước tiên là được việc.",
-  "en": ""
- },
- {
-  "vi": "Hè này em học bơi ở Hồ bơi Sóng Xanh. Anh Hải cứu hộ bảo đang tìm thêm người cẩn thận, anh thử không?",
-  "en": ""
- },
- {
-  "vi": "Hè này em học bơi ở Hồ bơi Sóng Xanh. Anh Hải cứu hộ bảo đang tìm thêm người cẩn thận, chị thử không?",
-  "en": ""
- },
- {
-  "vi": "Hè này em học bơi ở Hồ bơi Sóng Xanh. Anh Hải cứu hộ bảo đang tìm thêm người cẩn thận, thử không?",
-  "en": ""
- },
- {
-  "vi": "Công an phường Mây đang tuyển cán bộ khu vực. Cô thấy cháu nói nhẹ mà dứt khoát, không nhận của ai cái gì. Hợp lắm.",
-  "en": ""
- },
- {
-  "vi": "Công ty balo Cánh Diều cuối phố cũng đang tuyển người làm nhân sự, thư ký giám đốc với bạn trực máy tính. Không giỏi số vẫn làm được, miễn cẩn thận.",
-  "en": ""
- },
- {
-  "vi": "Người giữ hồ sơ nhân sự",
-  "en": ""
- },
- {
-  "vi": "Đạt cấp 3 ở phòng nhân sự Cánh Diều.",
-  "en": ""
- },
- {
-  "vi": "Thư ký chu đáo",
-  "en": ""
- },
- {
-  "vi": "Đạt cấp 3 ở bàn thư ký giám đốc Cánh Diều.",
-  "en": ""
- },
- {
-  "vi": "Cứu tinh máy tính",
-  "en": ""
- },
- {
-  "vi": "Đạt cấp 3 ở bàn IT Cánh Diều.",
-  "en": ""
- },
- {
-  "vi": "Người giữ lửa Hòn Gió",
-  "en": ""
- },
- {
-  "vi": "Đạt cấp 3 ở đèn biển Hòn Gió.",
-  "en": ""
- },
- {
-  "vi": "Giọng nói giữ bình tĩnh",
-  "en": ""
- },
- {
-  "vi": "Đạt cấp 3 ở tổng đài cứu hộ phường Mây.",
-  "en": ""
- },
- {
-  "vi": "Người giữ bình yên hẻm",
-  "en": ""
- },
- {
-  "vi": "Đạt cấp 3 ở Công an phường Mây.",
-  "en": ""
- },
- {
-  "vi": "Người giữ seal nguyên vẹn",
-  "en": ""
- },
- {
-  "vi": "Đạt cấp 3 ở tiệm album Mây Pop.",
-  "en": ""
- },
- {
-  "vi": "An cư",
-  "en": ""
- },
- {
-  "vi": "Có căn nhà đứng tên mình.",
-  "en": ""
- },
- {
-  "vi": "Nhà hết nợ",
-  "en": ""
- },
- {
-  "vi": "Trả xong khoản vay mua nhà.",
-  "en": ""
- },
- {
-  "vi": "Đám cưới đông vui",
-  "en": ""
- },
- {
-  "vi": "Đám cưới có từ 20 khách ở lại dự.",
-  "en": ""
- },
- {
-  "vi": "Trăm ngày bên nhau",
-  "en": ""
- },
- {
-  "vi": "Tròn 100 ngày cưới.",
-  "en": ""
- },
- {
-  "vi": "Tròn một năm",
-  "en": ""
- },
- {
-  "vi": "Tròn một năm ngày cưới.",
-  "en": ""
- },
- {
-  "vi": "Năm trăm ngày thương",
-  "en": ""
- },
- {
-  "vi": "Tròn 500 ngày cưới.",
-  "en": ""
- },
- {
-  "vi": "Nghìn ngày son sắt",
-  "en": ""
- },
- {
-  "vi": "Tròn 1000 ngày cưới.",
-  "en": ""
- },
- {
-  "vi": "Khách quý của phố",
-  "en": ""
- },
- {
-  "vi": "Đứng đầu bảng Khách mời của tuần.",
-  "en": ""
- },
- {
-  "vi": "Ăn cưới chuyên nghiệp",
-  "en": ""
- },
- {
-  "vi": "Lọt top 3 Khách mời của tuần.",
-  "en": ""
- },
- {
-  "vi": "Hoàn phí duy trì nơi vắng chủ 💰",
-  "en": ""
- },
- {
-  "vi": "Danh sách đang đeo không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Mỗi danh hiệu chỉ đeo một lần thôi.",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa có chứng chỉ này.",
-  "en": ""
- },
- {
-  "vi": "Đã cất hết danh hiệu.",
-  "en": ""
- },
- {
-  "vi": "🎤 Phòng hát",
-  "en": ""
- },
- {
-  "vi": "🎤 Tặng xu ca sĩ",
-  "en": ""
- },
- {
-  "vi": "Bài hát YouTube",
-  "en": ""
- },
- {
-  "vi": "Chọn đoán qua lời hoặc qua emoji nhé.",
-  "en": ""
- },
- {
-  "vi": "Gợi ý chưa hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chỉ dùng emoji thôi nha 🙂",
-  "en": ""
- },
- {
-  "vi": "Từ 2 tới 12 emoji nhé.",
-  "en": ""
- },
- {
-  "vi": "Che ít nhất một chữ bằng ___ nhé.",
-  "en": ""
- },
- {
-  "vi": "Để lại vài chữ làm gợi ý nhé.",
-  "en": ""
- },
- {
-  "vi": "Video này không cho phát ngoài YouTube.",
-  "en": ""
- },
- {
-  "vi": "Video không còn trên YouTube.",
-  "en": ""
- },
- {
-  "vi": "Bài này đã bị tắt trong Phòng hát.",
-  "en": ""
- },
- {
-  "vi": "Chưa thấy link YouTube trong đó.",
-  "en": ""
- },
- {
-  "vi": "Đang kiểm tra nhiều bài quá, thử lại sau ít phút nhé.",
-  "en": ""
- },
- {
-  "vi": "YouTube chưa trả lời, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Tạo tài khoản để hát cùng mọi người nhé.",
-  "en": ""
- },
- {
-  "vi": "Mã lượt không hợp lệ. Tải lại trang nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn đang bị tạm khóa chat, chưa xếp bài được.",
-  "en": ""
- },
- {
-  "vi": "Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Phòng hát thu phí trong hành trình. Hôm nay bạn đã hát lượt miễn phí rồi.",
-  "en": ""
- },
- {
-  "vi": "bài",
-  "en": ""
- },
- {
-  "vi": "Bài này không còn trên sân khấu.",
-  "en": ""
- },
- {
-  "vi": "Không tự tặng mình được nha 😄",
-  "en": ""
- },
- {
-  "vi": "Bạn đang bị tạm khóa chat.",
-  "en": ""
- },
- {
-  "vi": "Ca sĩ chưa có tài khoản.",
-  "en": ""
- },
- {
-  "vi": "Không tặng được cho người này.",
-  "en": ""
- },
- {
-  "vi": "Tặng xu chỉ có trong hành trình.",
-  "en": ""
- },
- {
-  "vi": "Ca sĩ đã nhận đủ xu hôm nay rồi.",
-  "en": ""
- },
- {
-  "vi": "Phòng hát",
-  "en": ""
- },
- {
-  "vi": "Mã bài không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Mục không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Phòng không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Mic trực tiếp chưa mở.",
-  "en": ""
- },
- {
-  "vi": "Chọn năm sinh của bạn nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa lưu được, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Trùm cuối của phố",
-  "en": ""
- },
- {
-  "vi": "Chiến thần cày cuốc",
-  "en": ""
- },
- {
-  "vi": "Dân cày top 10",
-  "en": ""
- },
- {
-  "vi": "Vua săn danh hiệu",
-  "en": ""
- },
- {
-  "vi": "Nhà sưu tầm xịn sò",
-  "en": ""
- },
- {
-  "vi": "Hội săn danh hiệu",
-  "en": ""
- },
- {
-  "vi": "Thủ khoa của phố",
-  "en": ""
- },
- {
-  "vi": "Học bá chính hiệu",
-  "en": ""
- },
- {
-  "vi": "Mọt sách có số má",
-  "en": ""
- },
- {
-  "vi": "Đại gia của phố",
-  "en": ""
- },
- {
-  "vi": "Đại gia mới nổi",
-  "en": ""
- },
- {
-  "vi": "Hội nhà giàu",
-  "en": ""
- },
- {
-  "vi": "tạp hóa",
-  "en": ""
- },
- {
-  "vi": "giao hàng",
-  "en": ""
- },
- {
-  "vi": "bánh & cà phê",
-  "en": ""
- },
- {
-  "vi": "tiệm hoa",
-  "en": ""
- },
- {
-  "vi": "mẹ & bé",
-  "en": ""
- },
- {
-  "vi": "mì cay",
-  "en": ""
- },
- {
-  "vi": "chăm thú cưng",
-  "en": ""
- },
- {
-  "vi": "salon tóc",
-  "en": ""
- },
- {
-  "vi": "sửa đồ",
-  "en": ""
- },
- {
-  "vi": "nông trại",
-  "en": ""
- },
- {
-  "vi": "shop quần áo",
-  "en": ""
- },
- {
-  "vi": "shop thú cưng",
-  "en": ""
- },
- {
-  "vi": "trà đá",
-  "en": ""
- },
- {
-  "vi": "quán phở",
-  "en": ""
- },
- {
-  "vi": "quán cơm",
-  "en": ""
- },
- {
-  "vi": "tiệm ảnh",
-  "en": ""
- },
- {
-  "vi": "giúp việc",
-  "en": ""
- },
- {
-  "vi": "bếp nhà khách",
-  "en": ""
- },
- {
-  "vi": "trông trẻ",
-  "en": ""
- },
- {
-  "vi": "kế toán doanh nghiệp",
-  "en": ""
- },
- {
-  "vi": "thuế & lương",
-  "en": ""
- },
- {
-  "vi": "khoa Nội",
-  "en": ""
- },
- {
-  "vi": "hải đăng",
-  "en": ""
- },
- {
-  "vi": "công an phường",
-  "en": ""
- },
- {
-  "vi": "tiệm album",
-  "en": ""
- },
- {
-  "vi": "Siêng việc chùa nhất tuần",
-  "en": ""
- },
- {
-  "vi": "Đặt tên cho nhân vật (khác “Mây”) để tên bạn hiện trên bảng xếp hạng nhé.",
-  "en": ""
- },
- {
-  "vi": "Tên bạn đã hiện trên bảng xếp hạng.",
-  "en": ""
- },
- {
-  "vi": "Đã ẩn tên bạn khỏi bảng xếp hạng.",
-  "en": ""
- },
- {
-  "vi": "Cá rô",
-  "en": ""
- },
- {
-  "vi": "Cá chép",
-  "en": ""
- },
- {
-  "vi": "Cá trắm",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu hoạt động không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chọn câu cá, chèo thuyền hoặc hồ bơi.",
-  "en": ""
- },
- {
-  "vi": "Hoạt động không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Vòng chơi không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Hãy bắt đầu một vòng chơi trước.",
-  "en": ""
- },
- {
-  "vi": "Vòng này đã được lưu.",
+  "vi": "Ngày 7/5/1954, sau 56 ngày đêm.",
   "en": ""
  }
 ]

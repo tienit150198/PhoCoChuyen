@@ -1,5 +1,473 @@
 [
  {
+  "vi": "Chủ xưởng vải Lực Thành (nhà cung cấp)",
+  "en": ""
+ },
+ {
+  "vi": "Nóng tính, đòi gặp giám đốc ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Hay nhờ chen vào lịch sếp.",
+  "en": ""
+ },
+ {
+  "vi": "Hiền, hay hoảng khi khách to tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "Trình sếp",
+  "en": ""
+ },
+ {
+  "vi": "Tự trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển phòng ban",
+  "en": ""
+ },
+ {
+  "vi": "Rác / lừa đảo",
+  "en": ""
+ },
+ {
+  "vi": "Trường Tiểu học Hoa Sen",
+  "en": ""
+ },
+ {
+  "vi": "Trường THCS Lê Lợi",
+  "en": ""
+ },
+ {
+  "vi": "Trường Tiểu học Bình Minh",
+  "en": ""
+ },
+ {
+  "vi": "Trung tâm Anh ngữ Ngôi Sao",
+  "en": ""
+ },
+ {
+  "vi": "Shop Cặp Xinh",
+  "en": ""
+ },
+ {
+  "vi": "Nhà sách Mặt Trời",
+  "en": ""
+ },
+ {
+  "vi": "Văn phòng phẩm Thiên Long Phát",
+  "en": ""
+ },
+ {
+  "vi": "Cửa hàng Bé Đến Trường",
+  "en": ""
+ },
+ {
+  "vi": "Cần giám đốc ký hợp đồng trước thứ Sáu.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn từ 50.000 xu cần giám đốc ký.",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ báo giá và ngày giao.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn dưới 50.000 xu: chuyển phòng kinh doanh lo.",
+  "en": ""
+ },
+ {
+  "vi": "Sở Công Thương",
+  "en": ""
+ },
+ {
+  "vi": "Giấy mời hội nghị doanh nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Kính mời đại diện lãnh đạo công ty tham dự.",
+  "en": ""
+ },
+ {
+  "vi": "Cơ quan nhà nước mời lãnh đạo: trình sếp.",
+  "en": ""
+ },
+ {
+  "vi": "Chi cục Thuế quận",
+  "en": ""
+ },
+ {
+  "vi": "Thông báo lịch kiểm tra thuế",
+  "en": ""
+ },
+ {
+  "vi": "Đề nghị công ty chuẩn bị hồ sơ năm 2024.",
+  "en": ""
+ },
+ {
+  "vi": "Thư của cơ quan thuế: trình sếp ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Phóng viên báo Thị Trường",
+  "en": ""
+ },
+ {
+  "vi": "Xin phỏng vấn về tin cắt giảm nhân sự",
+  "en": ""
+ },
+ {
+  "vi": "Mong giám đốc trả lời trước 17 giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Báo chí: chỉ giám đốc quyết định trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "Ban tổ chức Hội chợ Đồ dùng học tập",
+  "en": ""
+ },
+ {
+  "vi": "Mời đặt gian hàng hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Phí gian hàng 30.000 xu, cần lãnh đạo xác nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản chi lớn cần lãnh đạo xác nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Xin hẹn gặp giám đốc tuần sau",
+  "en": ""
+ },
+ {
+  "vi": "Muốn giới thiệu mẫu in túi mới.",
+  "en": ""
+ },
+ {
+  "vi": "Xin lịch hẹn: thư ký trả lời theo lịch trống của sếp.",
+  "en": ""
+ },
+ {
+  "vi": "Thư cảm ơn đã tặng 100 cặp sách",
+  "en": ""
+ },
+ {
+  "vi": "Các em học sinh gửi lời cảm ơn công ty.",
+  "en": ""
+ },
+ {
+  "vi": "Thư cảm ơn: thư ký trả lời thay, báo sếp trong bản tin cuối ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng vải Lực Thành",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhận đơn đặt vải, giao ngày 20",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ xác nhận lại địa chỉ kho nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ cần xác nhận địa chỉ kho — thư ký trả lời được.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch bảo trì máy chủ tối thứ Bảy",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ chị báo giúp sếp tắt máy trước khi về.",
+  "en": ""
+ },
+ {
+  "vi": "Thư thật từ IT nội bộ (đúng tên miền canhdieu.vn): xác nhận và nhắc sếp.",
+  "en": ""
+ },
+ {
+  "vi": "Công ty Điện lực",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn tiền điện tháng 9",
+  "en": ""
+ },
+ {
+  "vi": "Hạn thanh toán ngày 25.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn: chuyển phòng kế toán.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng tuyển thợ may mẫu",
+  "en": ""
+ },
+ {
+  "vi": "Em gửi CV và ảnh sản phẩm đã may.",
+  "en": ""
+ },
+ {
+  "vi": "CV: chuyển phòng nhân sự.",
+  "en": ""
+ },
+ {
+  "vi": "Nhi (lễ tân)",
+  "en": ""
+ },
+ {
+  "vi": "Máy tính lễ tân không lên màn hình",
+  "en": ""
+ },
+ {
+  "vi": "Em bật mãi không được ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Máy hỏng: chuyển IT.",
+  "en": ""
+ },
+ {
+  "vi": "Balo con tôi đứt quai sau 2 tuần",
+  "en": ""
+ },
+ {
+  "vi": "Yêu cầu công ty trả lời trong hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Khiếu nại sản phẩm: chuyển kinh doanh, họ trả lời trong ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân <quan.canhdieu.gd@gmail.com>",
+  "en": ""
+ },
+ {
+  "vi": "GẤP: chuyển 85.000 xu cho đối tác trước 11h",
+  "en": ""
+ },
+ {
+  "vi": "Anh đang họp, không nghe máy được. Em chuyển ngay vào số tài khoản này rồi báo anh.",
+  "en": ""
+ },
+ {
+  "vi": "Giả danh giám đốc: địa chỉ gmail lạ, đòi chuyển tiền gấp, không cho gọi lại — lừa đảo.",
+  "en": ""
+ },
+ {
+  "vi": "Lực Thành Kế toán <lucthanh.ketoan@outlook.com>",
+  "en": ""
+ },
+ {
+  "vi": "Thông báo đổi số tài khoản nhận tiền",
+  "en": ""
+ },
+ {
+  "vi": "Từ tháng này vui lòng chuyển tiền vào tài khoản mới dưới đây.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi số tài khoản qua email: không làm theo, gọi lại số đã lưu để xác minh.",
+  "en": ""
+ },
+ {
+  "vi": "Ban tổ chức Quay số Tri ân",
+  "en": ""
+ },
+ {
+  "vi": "Chúc mừng công ty trúng xe máy",
+  "en": ""
+ },
+ {
+  "vi": "Bấm vào link để nhận thưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Trúng thưởng không tham gia: rác.",
+  "en": ""
+ },
+ {
+  "vi": "Bộ phận IT <it-support@canhdieu-secure.net>",
+  "en": ""
+ },
+ {
+  "vi": "Mật khẩu email sắp hết hạn",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập lại tại đường link này.",
+  "en": ""
+ },
+ {
+  "vi": "Tên miền lạ (không phải canhdieu.vn), đòi đăng nhập qua link: lừa đảo.",
+  "en": ""
+ },
+ {
+  "vi": "Khóa học Làm giàu 4.0",
+  "en": ""
+ },
+ {
+  "vi": "Giảm 90% hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ còn 3 suất cuối cùng!",
+  "en": ""
+ },
+ {
+  "vi": "Quảng cáo: rác.",
+  "en": ""
+ },
+ {
+  "vi": "Sếp đã giao hội chợ cho phòng kinh doanh.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân nhắn: “Hội chợ năm nay anh giao hết cho phòng kinh doanh, đừng trình anh nữa.”",
+  "en": ""
+ },
+ {
+  "vi": "Sếp muốn tự gọi cho người này.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân nhắn: “Thư anh Phúc Lộc đưa anh, anh tự gọi — người quen cũ.”",
+  "en": ""
+ },
+ {
+  "vi": "Sếp đã ủy quyền chị Khuê ký đơn này.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân nhắn: “Đơn của trường anh ủy quyền chị Khuê ký, chuyển kinh doanh luôn.”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân vừa đi ngang: “Em lọc thư giúp anh. Cái gì anh phải xem thì để riêng, đừng để anh đọc thư rác.”",
+  "en": ""
+ },
+ {
+  "vi": "Sếp dặn",
+  "en": ""
+ },
+ {
+  "vi": "Trình sếp: đơn từ 50.000 xu, cơ quan nhà nước, báo chí, khoản chi lớn cần lãnh đạo.",
+  "en": ""
+ },
+ {
+  "vi": "Tự trả lời: xin lịch hẹn, cảm ơn, xác nhận thông tin đơn giản.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển phòng: hóa đơn → kế toán · CV → nhân sự · máy hỏng → IT · khiếu nại, đơn nhỏ → kinh doanh.",
+  "en": ""
+ },
+ {
+  "vi": "Rác/lừa đảo: trúng thưởng, quảng cáo, đòi chuyển tiền gấp, đổi số tài khoản, link đăng nhập lạ.",
+  "en": ""
+ },
+ {
+  "vi": "Email thật của công ty luôn có đuôi @canhdieu.vn.",
+  "en": ""
+ },
+ {
+  "vi": "Thanh toán / công nợ",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi giá / đặt hàng",
+  "en": ""
+ },
+ {
+  "vi": "Khiếu nại",
+  "en": ""
+ },
+ {
+  "vi": "Giao nhận hàng",
+  "en": ""
+ },
+ {
+  "vi": "Xin hẹn gặp",
+  "en": ""
+ },
+ {
+  "vi": "hai giờ rưỡi chiều",
+  "en": ""
+ },
+ {
+  "vi": "ba giờ chiều",
+  "en": ""
+ },
+ {
+  "vi": "bốn giờ kém mười lăm chiều",
+  "en": ""
+ },
+ {
+  "vi": "mười giờ sáng",
+  "en": ""
+ },
+ {
+  "vi": "chín rưỡi sáng",
+  "en": ""
+ },
+ {
+  "vi": "bốn giờ chiều",
+  "en": ""
+ },
+ {
+  "vi": "mười một giờ trưa",
+  "en": ""
+ },
+ {
+  "vi": "năm giờ chiều",
+  "en": ""
+ },
+ {
+  "vi": "bốn rưỡi chiều",
+  "en": ""
+ },
+ {
+  "vi": "Phụ huynh (khách lẻ)",
+  "en": ""
+ },
+ {
+  "vi": "Vận tải Nhanh Như Gió",
+  "en": ""
+ },
+ {
+  "vi": "Công ty Khóa kéo Sao Mai",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng Phương Nam",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ vay của công ty còn thiếu một chữ ký trên giấy nhận nợ, cần xử lý trước khi giải ngân.",
+  "en": ""
+ },
+ {
+  "vi": "📞 Khách",
+  "en": ""
+ },
+ {
+  "vi": "🙋 Bạn",
+  "en": ""
+ },
+ {
   "vi": "Dạ anh Quân đang họp ạ. Mình để lại lời nhắn giúp em nhé?",
   "en": ""
  },
@@ -1329,474 +1797,6 @@
  },
  {
   "vi": "Gõ cửa báo sếp: đơn lớn, khách sắp bay",
-  "en": ""
- },
- {
-  "vi": "Sếp ngái ngủ nhưng chốt được đơn, chiều còn mua trà sữa cho bạn.",
-  "en": ""
- },
- {
-  "vi": "Ghi lời nhắn, chờ 13:00",
-  "en": ""
- },
- {
-  "vi": "13:00 khách đã lên máy bay. Đơn hoãn sang tháng sau.",
-  "en": ""
- },
- {
-  "vi": "Tự hứa với khách “đồng ý hết”",
-  "en": ""
- },
- {
-  "vi": "Thư ký tự quyết thay giám đốc.",
-  "en": ""
- },
- {
-  "vi": "Sếp phải gọi lại đính chính từng điều khoản.",
-  "en": ""
- },
- {
-  "vi": "Phòng họp bị chiếm",
-  "en": ""
- },
- {
-  "vi": "Năm phút nữa khách của sếp tới mà phòng họp A đang có phòng kinh doanh ngồi, Linh bảo: “Bọn em họp gấp, chị lấy phòng khác đi!”",
-  "en": ""
- },
- {
-  "vi": "Mở lịch chung cho Linh xem, xin trả phòng và gợi ý phòng B đang trống",
-  "en": ""
- },
- {
-  "vi": "Linh xin lỗi, dọn sang phòng B. Khách tới phòng đã sẵn sàng.",
-  "en": ""
- },
- {
-  "vi": "Nhường, đưa khách vào phòng giám đốc chật chội",
-  "en": ""
- },
- {
-  "vi": "Khách ngồi chen chúc, không có máy chiếu.",
-  "en": ""
- },
- {
-  "vi": "Lớn tiếng đuổi cả phòng ra",
-  "en": ""
- },
- {
-  "vi": "Thư ký lớn tiếng ngay trước mặt khách.",
-  "en": ""
- },
- {
-  "vi": "Khách đến đúng lúc nghe hai bên to tiếng.",
-  "en": ""
- },
- {
-  "vi": "Sếp quên sinh nhật vợ",
-  "en": ""
- },
- {
-  "vi": "Anh Quân hốt hoảng: “Hôm nay sinh nhật vợ anh! Em đặt hoa giúp anh, lấy quỹ tiếp khách cũng được.”",
-  "en": ""
- },
- {
-  "vi": "Đặt hoa, nhờ sếp chuyển khoản tiền riêng",
-  "en": ""
- },
- {
-  "vi": "Hoa tới đúng giờ, tiền riêng ra tiền riêng. Sếp gật gù: “Em chu đáo thật.”",
-  "en": ""
- },
- {
-  "vi": "Lấy quỹ tiếp khách cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Quỹ tiếp khách mua hoa cho vợ giám đốc à?",
-  "en": ""
- },
- {
-  "vi": "Cuối tháng cô Hằng hỏi: “Khoản hoa này tiếp khách nào?”",
-  "en": ""
- },
- {
-  "vi": "“Anh tự đặt nhé”",
-  "en": ""
- },
- {
-  "vi": "Sếp quên tiếp. Tối về bị giận.",
-  "en": ""
- },
- {
-  "vi": "Dò lịch sếp",
-  "en": ""
- },
- {
-  "vi": "Linh hỏi nhỏ: “Sếp hẹn ai bên nhân sự chiều nay thế? Có phải sắp cho ai nghỉ không chị?”",
-  "en": ""
- },
- {
-  "vi": "“Lịch sếp chị không nói được em ạ.” Đổi chủ đề nhẹ nhàng",
-  "en": ""
- },
- {
-  "vi": "Linh cười trừ. Tin đồn không bắt đầu từ bàn bạn.",
-  "en": ""
- },
- {
-  "vi": "Nháy mắt: “Em đoán xem”",
-  "en": ""
- },
- {
-  "vi": "Đến chiều cả phòng kinh doanh đồn ầm có người bị đuổi.",
-  "en": ""
- },
- {
-  "vi": "Kể hết cho Linh",
-  "en": ""
- },
- {
-  "vi": "Lịch giám đốc lộ ra ngoài từ bàn thư ký.",
-  "en": ""
- },
- {
-  "vi": "Sếp biết chuyện, gọi bạn vào nói chuyện riêng.",
-  "en": ""
- },
- {
-  "vi": "Hủy tài liệu cũ",
-  "en": ""
- },
- {
-  "vi": "Sếp đưa ba tập hồ sơ: “Hủy hết đi em.” Lướt qua, bạn thấy một bản hợp đồng gốc còn hiệu lực đến năm sau.",
-  "en": ""
- },
- {
-  "vi": "Rút bản hợp đồng ra, hỏi lại sếp trước khi hủy",
-  "en": ""
- },
- {
-  "vi": "“Ơ, may quá, bản gốc duy nhất đấy!” Sếp cất ngay vào tủ.",
-  "en": ""
- },
- {
-  "vi": "Hủy hết như sếp bảo",
-  "en": ""
- },
- {
-  "vi": "Tháng sau tranh chấp với nhà cung cấp, không còn bản gốc.",
-  "en": ""
- },
- {
-  "vi": "Không hủy gì, cất hết vào kho",
-  "en": ""
- },
- {
-  "vi": "Kho chật thêm ba tập hồ sơ.",
-  "en": ""
- },
- {
-  "vi": "Tin nhắn “sếp” xin mua thẻ cào",
-  "en": ""
- },
- {
-  "vi": "Số lạ nhắn Zalo, ảnh đại diện là anh Quân: “Anh đang họp, em mua giúp anh 10 thẻ cào 500 xu, gửi mã qua đây, về anh trả.”",
-  "en": ""
- },
- {
-  "vi": "Gọi số cũ của sếp để hỏi, báo IT số lạ này",
-  "en": ""
- },
- {
-  "vi": "Sếp đang ngồi ăn sáng, không nhắn gì. IT cảnh báo cả công ty.",
-  "en": ""
- },
- {
-  "vi": "Mua ngay kẻo sếp chờ",
-  "en": ""
- },
- {
-  "vi": "Mất 50 xu. Sếp không hề nhắn.",
-  "en": ""
- },
- {
-  "vi": "Lờ đi",
-  "en": ""
- },
- {
-  "vi": "Hôm sau Nhi nhận được tin y hệt và suýt mua.",
-  "en": ""
- },
- {
-  "vi": "Khách đến sớm một tiếng",
-  "en": ""
- },
- {
-  "vi": "Nhi gọi: “Khách hẹn 10 giờ mà 9 giờ đã tới rồi chị ơi, phòng họp còn đang dọn.”",
-  "en": ""
- },
- {
-  "vi": "Mời khách ngồi phòng chờ, pha trà, đưa catalogue xem trước",
-  "en": ""
- },
- {
-  "vi": "Khách xem catalogue, tới giờ họp đã chọn sẵn ba mẫu.",
-  "en": ""
- },
- {
-  "vi": "Gọi sếp họp sớm luôn",
-  "en": ""
- },
- {
-  "vi": "Sếp đang dở việc khác, bước vào họp mặt nặng mày nhẹ.",
-  "en": ""
- },
- {
-  "vi": "Để khách tự ngồi chờ ở sảnh",
-  "en": ""
- },
- {
-  "vi": "Đến sớm thì ngồi sảnh một tiếng không ai hỏi.",
-  "en": ""
- },
- {
-  "vi": "Khách ngồi bấm điện thoại một tiếng.",
-  "en": ""
- },
- {
-  "vi": "Máy in kẹt 5 phút trước họp",
-  "en": ""
- },
- {
-  "vi": "Tài liệu họp mới in được nửa thì máy kẹt giấy. Năm phút nữa vào họp.",
-  "en": ""
- },
- {
-  "vi": "Gửi bản PDF lên màn hình phòng họp, gọi IT xử lý máy",
-  "en": ""
- },
- {
-  "vi": "Mọi người đọc trên màn hình; in xong bản giấy mang vào giữa buổi.",
-  "en": ""
- },
- {
-  "vi": "Giật mạnh tờ giấy ra",
-  "en": ""
- },
- {
-  "vi": "Xin hoãn họp 20 phút",
-  "en": ""
- },
- {
-  "vi": "Khách phải chờ, sếp không vui.",
-  "en": ""
- },
- {
-  "vi": "Sếp quát oan",
-  "en": ""
- },
- {
-  "vi": "Vừa bị khách phàn nàn, anh Quân quay sang quát bạn vì “lịch hẹn lộn xộn” — mà lịch đó do chính anh đổi sáng nay.",
-  "en": ""
- },
- {
-  "vi": "Bình tĩnh đưa lịch sử thay đổi, đề xuất chốt lịch mỗi sáng",
-  "en": ""
- },
- {
-  "vi": "Sếp đọc, im một lúc: “Ừ, anh đổi. Mai mình chốt lịch lúc 8 giờ.”",
-  "en": ""
- },
- {
-  "vi": "Nhận lỗi cho xong",
-  "en": ""
- },
- {
-  "vi": "Êm chuyện, nhưng tuần sau sếp lại đổi lịch y hệt.",
-  "en": ""
- },
- {
-  "vi": "Cãi lại trước mặt mọi người",
-  "en": ""
- },
- {
-  "vi": "Cả phòng im phăng phắc. Sếp đóng sầm cửa.",
-  "en": ""
- },
- {
-  "vi": "Quà Tết của nhà cung cấp",
-  "en": ""
- },
- {
-  "vi": "Ông Lực gửi riêng cho bạn một hộp quà to: “Cảm ơn cháu sắp lịch cho chú gặp sếp nhanh.”",
-  "en": ""
- },
- {
-  "vi": "Báo sếp, đưa quà vào quỹ chung của văn phòng",
-  "en": ""
- },
- {
-  "vi": "Cả phòng chia nhau hộp bánh; ông Lực hiểu thư ký không nhận quà riêng.",
-  "en": ""
- },
- {
-  "vi": "Giữ riêng, không ai biết",
-  "en": ""
- },
- {
-  "vi": "Muốn gặp giám đốc nhanh thì gửi quà cho thư ký.",
-  "en": ""
- },
- {
-  "vi": "Tuần sau ông Lực xin chen lịch sếp, “như lần trước”.",
-  "en": ""
- },
- {
-  "vi": "Gửi trả lại ngay",
-  "en": ""
- },
- {
-  "vi": "Ông Lực hơi quê nhưng không nói gì.",
-  "en": ""
- },
- {
-  "vi": "Sếp bảo nói dối khách",
-  "en": ""
- },
- {
-  "vi": "Anh Quân: “Ông Lực mà gọi thì bảo hàng đã chuyển khoản rồi, ngân hàng lỗi.” Bạn biết tiền chưa hề chuyển.",
-  "en": ""
- },
- {
-  "vi": "Bạn là giám đốc đang kẹt dòng tiền, cần thêm ba ngày.",
-  "en": ""
- },
- {
-  "vi": "Sổ chi",
-  "en": ""
- },
- {
-  "vi": "Lệnh chuyển tiền chưa được tạo; quỹ đang chờ khách trả nợ thứ Năm.",
-  "en": ""
- },
- {
-  "vi": "Quan hệ với Lực Thành",
-  "en": ""
- },
- {
-  "vi": "Mười năm làm ăn, chưa lần nào trễ quá một tuần.",
-  "en": ""
- },
- {
-  "vi": "Cách khác",
-  "en": ""
- },
- {
-  "vi": "Có thể gọi xin gia hạn ba ngày, cam kết bằng văn bản.",
-  "en": ""
- },
- {
-  "vi": "Đề xuất sếp tự gọi xin gia hạn ba ngày kèm cam kết; bạn soạn sẵn thư",
-  "en": ""
- },
- {
-  "vi": "Nói thật, xin hẹn rõ ràng — tôi chịu chờ. Làm ăn là phải vậy.",
-  "en": ""
- },
- {
-  "vi": "Ông Lực đồng ý gia hạn, vẫn giao vải đúng hẹn.",
-  "en": ""
- },
- {
-  "vi": "Biết trước thì tôi xoay được.",
-  "en": ""
- },
- {
-  "vi": "Hóa ra nói thật nhẹ hơn.",
-  "en": ""
- },
- {
-  "vi": "Nói dối theo lời sếp",
-  "en": ""
- },
- {
-  "vi": "Ngân hàng lỗi ba ngày liền à? Tôi không tin nữa.",
-  "en": ""
- },
- {
-  "vi": "Ông Lực gọi ngân hàng kiểm tra, biết bị lừa, ngừng giao vải.",
-  "en": ""
- },
- {
-  "vi": "Mất tiền thì ít, mất lòng tin thì nhiều.",
-  "en": ""
- },
- {
-  "vi": "Tránh nghe máy cả ngày",
-  "en": ""
- },
- {
-  "vi": "Gọi mãi không ai nghe, bực mình.",
-  "en": ""
- },
- {
-  "vi": "Ông Lực lên tận công ty, chuyện to hơn.",
-  "en": ""
- },
- {
-  "vi": "Em phải đứng đỡ lời ở sảnh.",
-  "en": ""
- },
- {
-  "vi": "Thư ký giữ uy tín cho sếp bằng cách giúp sếp nói thật cho khéo.",
-  "en": ""
- },
- {
-  "vi": "Bản tin cuối ngày cho sếp",
-  "en": ""
- },
- {
-  "vi": "Chị Khuê: “Hồi chị làm thư ký, cuối ngày chị gửi sếp một bản tin năm dòng. Em có muốn thử không?”",
-  "en": ""
- },
- {
-  "vi": "Bạn là trợ lý cũ, biết sếp quên trước quên sau, muốn người mới bớt vất vả.",
-  "en": ""
- },
- {
-  "vi": "Thói quen của sếp",
-  "en": ""
- },
- {
-  "vi": "Sếp đọc tin nhắn ngắn buổi tối, không đọc email dài.",
-  "en": ""
- },
- {
-  "vi": "Việc bị quên tuần trước",
-  "en": ""
- },
- {
-  "vi": "Hai lời nhắn của đối tác bị sếp quên gọi lại.",
-  "en": ""
- },
- {
-  "vi": "Lịch của bạn",
-  "en": ""
- },
- {
-  "vi": "Mỗi tối mất 10 phút.",
-  "en": ""
- },
- {
-  "vi": "Làm bản tin năm dòng: việc đã xong, việc mai, ai cần gọi lại",
-  "en": ""
- },
- {
-  "vi": "Có bản tin tối, sáng anh vào là biết làm gì. Hay!",
-  "en": ""
- },
- {
-  "vi": "Không còn lời nhắn nào bị quên; sếp đổi lịch ít hẳn.",
   "en": ""
  }
 ]

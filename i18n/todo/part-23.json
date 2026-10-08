@@ -1,5 +1,449 @@
 [
  {
+  "vi": "Chị Thảo: “Mua nhanh giúp chị, sếp đang gọi.”",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thảo được lên trưởng nhóm, mua trái cây đãi cả phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thảo bảo trái cây sạp mình ăn chiều cả phòng khen.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Hai đặt cân lên sạp: “Cân lại cho chắc, đừng giận bà.”",
+  "en": ""
+ },
+ {
+  "vi": "Bà Hai cân lại, gật gù: “Đủ. Cháu này thật thà.”",
+  "en": ""
+ },
+ {
+  "vi": "Bà Hai bảo từ nay khỏi mang cân, tin sạp này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Tuấn: “Chuối là chân ái của dân tập gym đó.”",
+  "en": ""
+ },
+ {
+  "vi": "Tuấn tăng được hai ký cơ, khoe ảnh chụp trước gương.",
+  "en": ""
+ },
+ {
+  "vi": "Tuấn dẫn cả đội gym tới mua bơ.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Lâm: “Trái chín kỹ mà ngọt là anh lấy hết.”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Lâm kể quán sinh tố mới có thêm bàn ngoài vỉa hè.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Lâm bảo nhờ sạp mà ly sinh tố bơ của anh đắt hàng hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Bé Mơ: “Mẹ con dặn lựa trái tươi, không lấy trái dập ạ.”",
+  "en": ""
+ },
+ {
+  "vi": "Bé Mơ khoe mẹ đã khỏe, cảm ơn cô bán cam ngọt.",
+  "en": ""
+ },
+ {
+  "vi": "Bé Mơ được học sinh giỏi, ghé khoe giấy khen.",
+  "en": ""
+ },
+ {
+  "vi": "Giới thiệu nghề: bán trái cây ở chợ",
+  "en": ""
+ },
+ {
+  "vi": "Một sạp gỗ đầu chợ, mấy rổ tre, cây dù và cái cân đồng hồ. Sáng nào dì Tư cũng đi chợ đầu mối từ bốn giờ; bạn trông sạp giúp dì.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn sạp: dựng dù, trời mưa thì căng bạt",
+  "en": ""
+ },
+ {
+  "vi": "Thử cân với quả cân 1 ký, lệch thì chỉnh kim",
+  "en": ""
+ },
+ {
+  "vi": "Lựa trái dập ra khỏi rổ trước khi mở hàng",
+  "en": ""
+ },
+ {
+  "vi": "Chọn trái đúng độ chín: ăn liền, để dành hay xay sinh tố",
+  "en": ""
+ },
+ {
+  "vi": "Trừ bì rổ, cân đúng, đọc giá theo ký",
+  "en": ""
+ },
+ {
+  "vi": "Trả giá: giữ giá, bớt chút hay tặng thêm trái",
+  "en": ""
+ },
+ {
+  "vi": "Chiều tối rao xả trái chín kỹ, héo",
+  "en": ""
+ },
+ {
+  "vi": "Thu tiền, thối đúng từng xu",
+  "en": ""
+ },
+ {
+  "vi": "Cô Năm: lựa kỹ, trả giá từng xu",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy: mâm ngũ quả ngày rằm",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thảo: mua vội giờ trưa",
+  "en": ""
+ },
+ {
+  "vi": "Bà Hai: mang cân riêng, cân lại",
+  "en": ""
+ },
+ {
+  "vi": "Tuấn: chuối, bơ làm sinh tố",
+  "en": ""
+ },
+ {
+  "vi": "Anh Lâm: gom trái chín kỹ giá rẻ",
+  "en": ""
+ },
+ {
+  "vi": "Mưa dầm, nắng gắt, thu phí chợ, xe hàng dán nhãn giả",
+  "en": ""
+ },
+ {
+  "vi": "Trái đúng độ chín khách cần",
+  "en": ""
+ },
+ {
+  "vi": "Trừ bì, cân đúng, không cân lệch",
+  "en": ""
+ },
+ {
+  "vi": "Không bán trái dập",
+  "en": ""
+ },
+ {
+  "vi": "Trả giá vui vẻ, không cãi",
+  "en": ""
+ },
+ {
+  "vi": "Hết hàng đúng ý thì nói thật",
+  "en": ""
+ },
+ {
+  "vi": "Mưa ập xuống",
+  "en": ""
+ },
+ {
+  "vi": "Gió lật cả mép dù, mưa hắt thẳng vào mấy rổ trái. Nước đọng lại dưới đáy rổ cam.",
+  "en": ""
+ },
+ {
+  "vi": "Căng bạt, kê rổ lên cao",
+  "en": ""
+ },
+ {
+  "vi": "Tấm bạt xanh căng kín sạp. Rổ trái khô ráo, khách đứng nép dưới bạt chọn tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy bao tải trùm tạm",
+  "en": ""
+ },
+ {
+  "vi": "Nhanh, nhưng dễ ủ hơi",
+  "en": ""
+ },
+ {
+  "vi": "Trùm được mấy rổ, nhưng rổ cam ủ hơi nóng, vài trái bắt đầu mềm.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa bóng mây, chắc tạnh liền",
+  "en": ""
+ },
+ {
+  "vi": "Không tốn gì… nếu tạnh",
+  "en": ""
+ },
+ {
+  "vi": "Mưa không tạnh. Nước ngấm vào đáy rổ, mấy trái bị úng.",
+  "en": ""
+ },
+ {
+  "vi": "Ban quản lý chợ thu phí",
+  "en": ""
+ },
+ {
+  "vi": "Anh thu phí của ban quản lý chợ ghé: “Phí vệ sinh với chỗ ngồi hôm nay 4 xu nha. Có biên lai đàng hoàng.”",
+  "en": ""
+ },
+ {
+  "vi": "Đóng 4 xu, lấy biên lai",
+  "en": ""
+ },
+ {
+  "vi": "Anh thu phí xé biên lai, còn dặn sáng mai có xe xịt rửa đường chợ.",
+  "en": ""
+ },
+ {
+  "vi": "Dúi 8 xu “cho chỗ đẹp hơn”, khỏi biên lai",
+  "en": ""
+ },
+ {
+  "vi": "Nghe cũng tiện…",
+  "en": ""
+ },
+ {
+  "vi": "Anh ta cầm tiền rồi đi. Chỗ ngồi chẳng đổi gì, lại mất thêm tiền không biên lai.",
+  "en": ""
+ },
+ {
+  "vi": "Cãi: “Sạp nhỏ xíu mà thu gì!”",
+  "en": ""
+ },
+ {
+  "vi": "Sạp cãi nhau với ban quản lý ngay đầu chợ, ồn ào.",
+  "en": ""
+ },
+ {
+  "vi": "Cãi một hồi vẫn phải đóng, khách đứng chờ mặt ngán ngẩm.",
+  "en": ""
+ },
+ {
+  "vi": "Khách nếm cả chùm nho",
+  "en": ""
+ },
+ {
+  "vi": "Một bà khách lạ bứt nho nếm hết quả này tới quả khác, ăn gần nửa chùm rồi bảo: “Chua, không mua.”",
+  "en": ""
+ },
+ {
+  "vi": "Mời nếm một quả, nói khéo là trái bán theo ký",
+  "en": ""
+ },
+ {
+  "vi": "Bà khách ngượng, mua luôn nửa ký cam. Cô Năm đứng bên gật gù.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ, cho qua",
+  "en": ""
+ },
+ {
+  "vi": "Mất nửa chùm nho",
+  "en": ""
+ },
+ {
+  "vi": "Bà khách đi mất. Chùm nho vặt trụi phải bỏ riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Quát: “Ăn thì phải mua chứ!”",
+  "en": ""
+ },
+ {
+  "vi": "Sạp quát khách giữa chợ, sợ luôn.",
+  "en": ""
+ },
+ {
+  "vi": "Cả dãy chợ ngoái lại nhìn. Bà khách bỏ đi, còn nói to cho người khác nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Xe hàng dán nhãn",
+  "en": ""
+ },
+ {
+  "vi": "Một xe tải nhỏ ghé: “Xoài nhập giá rẻ, có sẵn tem “xoài cát Hòa Lộc” dán vào là bán gấp đôi. Lấy không em?”",
+  "en": ""
+ },
+ {
+  "vi": "Không lấy: bán trái gì nói trái đó",
+  "en": ""
+ },
+ {
+  "vi": "Xe đi sang sạp khác. Dì Tư về nghe chuyện, gật đầu: “Giữ cái tiếng là giữ khách.”",
+  "en": ""
+ },
+ {
+  "vi": "Mua vài ký nhưng bán đúng tên, đúng giá",
+  "en": ""
+ },
+ {
+  "vi": "Tốn 10 xu, được 3 trái xoài",
+  "en": ""
+ },
+ {
+  "vi": "Bán đúng tên, giá thấp. Không lời mấy nhưng yên tâm.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy tem dán, bán giá hàng xịn",
+  "en": ""
+ },
+ {
+  "vi": "Lời to… nếu không ai biết",
+  "en": ""
+ },
+ {
+  "vi": "Mua “xoài cát Hòa Lộc” mà bổ ra xơ, nhạt. Dán nhãn giả!",
+  "en": ""
+ },
+ {
+  "vi": "Chiều đó có khách quay lại, cầm trái xoài chỉ vào con tem bong ra.",
+  "en": ""
+ },
+ {
+  "vi": "Rổ cam lăn ra đường",
+  "en": ""
+ },
+ {
+  "vi": "Một cậu nhóc chạy vấp chân sạp, rổ cam đổ ào, mấy trái lăn ra giữa lối xe máy.",
+  "en": ""
+ },
+ {
+  "vi": "Kéo bé vào trong trước, rồi mới nhặt cam",
+  "en": ""
+ },
+ {
+  "vi": "Bé không sao. Hai trái cam bị xe cán bẹp, còn lại nhặt vào rổ. Mẹ bé cảm ơn rối rít.",
+  "en": ""
+ },
+ {
+  "vi": "Bắt mẹ bé đền tiền cam",
+  "en": ""
+ },
+ {
+  "vi": "Trẻ con lỡ tay mà sạp bắt đền, kỳ ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ bé đưa 4 xu, mặt hằm hằm. Người đứng xem xì xào.",
+  "en": ""
+ },
+ {
+  "vi": "Lao ra nhặt cam ngay",
+  "en": ""
+ },
+ {
+  "vi": "Suýt bị xe máy quẹt. Nhặt được gần hết, tim đập thình thịch.",
+  "en": ""
+ },
+ {
+  "vi": "Bà bán rau nhờ trông hàng",
+  "en": ""
+ },
+ {
+  "vi": "Bà bán rau sạp bên: “Trông giùm bà mấy mớ rau nha, bà chạy về nấu cơm cho ông, nửa tiếng thôi.”",
+  "en": ""
+ },
+ {
+  "vi": "Nhận trông, ghi giá rau ra giấy",
+  "en": ""
+ },
+ {
+  "vi": "Bán giùm được ba mớ rau. Bà về dúi cho 2 xu với bó hành.",
+  "en": ""
+ },
+ {
+  "vi": "Khéo từ chối vì đang đông khách",
+  "en": ""
+ },
+ {
+  "vi": "Bà gật đầu, nhờ sạp khác.",
+  "en": ""
+ },
+ {
+  "vi": "Khách bóp nát cả rổ",
+  "en": ""
+ },
+ {
+  "vi": "Một bà khách bóp từng trái xoài chín, trái nào cũng lõm một vết ngón tay, rồi phán: “Mềm hết rồi, không mua.”",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ khéo: “Cô chọn bằng mắt giúp con, bóp là dập đó”",
+  "en": ""
+ },
+ {
+  "vi": "Bà khách khựng lại, mua hai trái cho đỡ ngại.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ, lựa trái dập ra sau",
+  "en": ""
+ },
+ {
+  "vi": "Mất vài trái",
+  "en": ""
+ },
+ {
+  "vi": "Hai trái xoài thâm vết tay, chỉ còn bán xả.",
+  "en": ""
+ },
+ {
+  "vi": "“Bóp nát rồi thì mua đi chứ!”",
+  "en": ""
+ },
+ {
+  "vi": "Chưa mua đã bị quát, sạp gì mà dữ.",
+  "en": ""
+ },
+ {
+  "vi": "Bà khách bỏ đi, vừa đi vừa chửi đổng cả dãy chợ nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Cắn dở rồi đòi đổi",
+  "en": ""
+ },
+ {
+  "vi": "Tuấn cầm trái xoài đã cắn một miếng quay lại: “Chua lè, đổi trái khác đi, không thì trả tiền.”",
+  "en": ""
+ },
+ {
+  "vi": "Nếm thử miếng khác trong rổ cùng lô, nói rõ lô này ngọt",
+  "en": ""
+ },
+ {
+  "vi": "Tuấn nếm miếng bạn cắt: “Ờ ngọt thật, chắc tại em cắn chỗ gần vỏ.” Không đòi đổi nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi cho xong chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Mất một trái",
+  "en": ""
+ },
+ {
+  "vi": "Tuấn cầm trái mới đi, còn nháy mắt: “Uy tín!”",
+  "en": ""
+ },
+ {
+  "vi": "“Cắn rồi ai đổi, trò gì vậy?”",
+  "en": ""
+ },
+ {
   "vi": "Mua trái chua mà không cho đổi, bán hàng kiểu gì vậy trời.",
   "en": ""
  },
@@ -1353,450 +1797,6 @@
  },
  {
   "vi": "xem trái rồi mới nói",
-  "en": ""
- },
- {
-  "vi": "Giải quyết thật lòng",
-  "en": ""
- },
- {
-  "vi": "nhận đúng phần lỗi",
-  "en": ""
- },
- {
-  "vi": "đổ lỗi, cãi khách",
-  "en": ""
- },
- {
-  "vi": "hết hàng đúng ý thì nói thật",
-  "en": ""
- },
- {
-  "vi": "Có hàng đúng ý",
-  "en": ""
- },
- {
-  "vi": "Đúng trái",
-  "en": ""
- },
- {
-  "vi": "Trái ngon, đúng độ chín",
-  "en": ""
- },
- {
-  "vi": "đúng độ chín khách cần",
-  "en": ""
- },
- {
-  "vi": "trái chưa đúng ý",
-  "en": ""
- },
- {
-  "vi": "Cân đủ, trung thực",
-  "en": ""
- },
- {
-  "vi": "cân đủ lạng đủ ký",
-  "en": ""
- },
- {
-  "vi": "Vui vẻ khi trả giá",
-  "en": ""
- },
- {
-  "vi": "mềm mỏng",
-  "en": ""
- },
- {
-  "vi": "cứng giá quá",
-  "en": ""
- },
- {
-  "vi": "Dì Tư dặn:",
-  "en": ""
- },
- {
-  "vi": "căng bạt che kín,",
-  "en": ""
- },
- {
-  "vi": "dựng dù,",
-  "en": ""
- },
- {
-  "vi": "thử cân với quả cân 1 ký (lệch thì chỉnh), lựa trái dập ra rồi mở hàng.",
-  "en": ""
- },
- {
-  "vi": "· Khách mang cân riêng, sẽ cân lại.",
-  "en": ""
- },
- {
-  "vi": "Dựng dù (mưa thì căng bạt) → thử cân, lệch thì chỉnh → lựa trái dập → Mở hàng.",
-  "en": ""
- },
- {
-  "vi": "Xem trái → lỗi ở sạp thì đổi hoặc hoàn tiền; khách để chưa tới độ thì giải thích nhẹ nhàng.",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách → trừ bì rổ → chọn trái đúng độ chín → cân → trả giá (nếu có) → thu tiền, thối đúng.",
-  "en": ""
- },
- {
-  "vi": "Đã lau sạp, xếp lại mấy rổ cho đẹp.",
-  "en": ""
- },
- {
-  "vi": "Đã rao mời khách qua đường ghé xem trái.",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu sạp trái cây sai.",
-  "en": ""
- },
- {
-  "vi": "Phiên bản việc sạp trái cây không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Trạng thái việc sạp trái cây sai.",
-  "en": ""
- },
- {
-  "vi": "Rổ trái sai.",
-  "en": ""
- },
- {
-  "vi": "Trái trong rổ sai.",
-  "en": ""
- },
- {
-  "vi": "Cách trả giá sai.",
-  "en": ""
- },
- {
-  "vi": "Quà tặng thêm sai.",
-  "en": ""
- },
- {
-  "vi": "Khách xin nợ sai.",
-  "en": ""
- },
- {
-  "vi": "Sạp trái cây sai.",
-  "en": ""
- },
- {
-  "vi": "Cân sai.",
-  "en": ""
- },
- {
-  "vi": "Trái dập sai.",
-  "en": ""
- },
- {
-  "vi": "Số liệu sạp sai.",
-  "en": ""
- },
- {
-  "vi": "Bán trái cây",
-  "en": ""
- },
- {
-  "vi": "Sạp trái cây Dì Tư",
-  "en": ""
- },
- {
-  "vi": "Trái chín đúng độ, cân đủ từng lạng.",
-  "en": ""
- },
- {
-  "vi": "Khách mua",
-  "en": ""
- },
- {
-  "vi": "Sạp trái cây",
-  "en": ""
- },
- {
-  "vi": "Dựng dù, thử cân, lựa trái dập rồi mở hàng. Hỏi khách ăn liền hay để dành để chọn trái đúng độ chín nhé.",
-  "en": ""
- },
- {
-  "vi": "Mỗi rổ trái một độ chín",
-  "en": ""
- },
- {
-  "vi": "19 · SẠP TRÁI CÂY DÌ TƯ",
-  "en": ""
- },
- {
-  "vi": "Cháu dì Tư, lựa trái dập nhanh như máy.",
-  "en": ""
- },
- {
-  "vi": "Giọng rao vang cả dãy chợ.",
-  "en": ""
- },
- {
-  "vi": "Sinh viên làm thêm, lựa từng trái rất kỹ.",
-  "en": ""
- },
- {
-  "vi": "Quen mặt cả chợ, ai đi qua cũng chào.",
-  "en": ""
- },
- {
-  "vi": "Lựa hàng",
-  "en": ""
- },
- {
-  "vi": "Rao hàng",
-  "en": ""
- },
- {
-  "vi": "Sạp trái gọn gàng",
-  "en": ""
- },
- {
-  "vi": "Xoài chín",
-  "en": ""
- },
- {
-  "vi": "Rổ bán ngay",
-  "en": ""
- },
- {
-  "vi": "Xoài xanh",
-  "en": ""
- },
- {
-  "vi": "Rổ để dành",
-  "en": ""
- },
- {
-  "vi": "Rổ lựa riêng",
-  "en": ""
- },
- {
-  "vi": "Mặt cân",
-  "en": ""
- },
- {
-  "vi": "Dựng dù, bày rổ",
-  "en": ""
- },
- {
-  "vi": "Thử cân, chỉnh kim",
-  "en": ""
- },
- {
-  "vi": "Trừ bì rổ, cân trái",
-  "en": ""
- },
- {
-  "vi": "Cái cân của dì Tư",
-  "en": ""
- },
- {
-  "vi": "Cái cân đồng hồ của dì Tư đã dùng mười lăm năm, kim hơi rung.",
-  "en": ""
- },
- {
-  "vi": "Sáng nào dì cũng đặt quả cân 1 ký lên thử, lệch thì vặn con ốc bên dưới.",
-  "en": ""
- },
- {
-  "vi": "Dì bảo: “Cân đúng thì khách quay lại, cân sai thì bán được một lần.”",
-  "en": ""
- },
- {
-  "vi": "Xoài chín cây",
-  "en": ""
- },
- {
-  "vi": "Cô Năm dạy bạn phân biệt xoài chín tự nhiên và xoài ủ thuốc.",
-  "en": ""
- },
- {
-  "vi": "Xoài chín cây cuống thơm, vỏ vàng không đều, bóp mềm đều tay.",
-  "en": ""
- },
- {
-  "vi": "Từ đó bạn chỉ lấy xoài xanh về tự để chín trong rổ thoáng.",
-  "en": ""
- },
- {
-  "vi": "Mâm ngũ quả ngày rằm",
-  "en": ""
- },
- {
-  "vi": "Chú Bảy dặn mâm ngũ quả phải có trái chắc, bày được ba ngày.",
-  "en": ""
- },
- {
-  "vi": "Bạn chọn bưởi, nải chuối xanh, cam, xoài xanh, thanh long.",
-  "en": ""
- },
- {
-  "vi": "Qua rằm, chú Bảy mang tặng lại sạp một trái bưởi: “Lộc của ông bà.”",
-  "en": ""
- },
- {
-  "vi": "Trái ngon đúng độ, về ăn liền ngọt lịm.",
-  "en": ""
- },
- {
-  "vi": "Cân đủ, trừ bì rổ đàng hoàng.",
-  "en": ""
- },
- {
-  "vi": "Trả giá vui vẻ, còn được tặng thêm.",
-  "en": ""
- },
- {
-  "vi": "Lựa trái kỹ, không có trái dập.",
-  "en": ""
- },
- {
-  "vi": "Dọn sạp → thử cân → lựa trái dập → mở hàng. Mỗi khách: hỏi ăn liền hay để dành → trừ bì rổ → chọn trái đúng độ chín → cân → trả giá → thu tiền.",
-  "en": ""
- },
- {
-  "vi": "Tái chế",
-  "en": ""
- },
- {
-  "vi": "Nguy hại",
-  "en": ""
- },
- {
-  "vi": "Túi xanh",
-  "en": ""
- },
- {
-  "vi": "Túi vàng",
-  "en": ""
- },
- {
-  "vi": "Túi đen",
-  "en": ""
- },
- {
-  "vi": "Áo phản quang",
-  "en": ""
- },
- {
-  "vi": "Vỏ trái cây",
-  "en": ""
- },
- {
-  "vi": "Rau úa, lá cây",
-  "en": ""
- },
- {
-  "vi": "Cơm canh thừa",
-  "en": ""
- },
- {
-  "vi": "Bã cà phê, bã trà",
-  "en": ""
- },
- {
-  "vi": "Chai nhựa",
-  "en": ""
- },
- {
-  "vi": "Lon nhôm",
-  "en": ""
- },
- {
-  "vi": "Giấy, thùng các-tông",
-  "en": ""
- },
- {
-  "vi": "Chai thủy tinh",
-  "en": ""
- },
- {
-  "vi": "Túi ni-lông bẩn",
-  "en": ""
- },
- {
-  "vi": "Tã giấy",
-  "en": ""
- },
- {
-  "vi": "Hộp xốp dính dầu",
-  "en": ""
- },
- {
-  "vi": "Mảnh kính vỡ",
-  "en": ""
- },
- {
-  "vi": "Pin cũ",
-  "en": ""
- },
- {
-  "vi": "Bóng đèn tuýp",
-  "en": ""
- },
- {
-  "vi": "Vỏ bình xịt côn trùng",
-  "en": ""
- },
- {
-  "vi": "Kim tiêm",
-  "en": ""
- },
- {
-  "vi": "Lưỡi dao lam",
-  "en": ""
- },
- {
-  "vi": "Túi nặng bất thường, kêu lọc cọc.",
-  "en": ""
- },
- {
-  "vi": "Một ống dài màu trắng thò ra miệng túi.",
-  "en": ""
- },
- {
-  "vi": "Sờ thấy một vỏ lon tròn cứng, có mùi thuốc xịt.",
-  "en": ""
- },
- {
-  "vi": "Lấp ló một cái nắp nhựa nhỏ màu cam.",
-  "en": ""
- },
- {
-  "vi": "Góc túi bị thủng, có cạnh sắc lòi ra.",
-  "en": ""
- },
- {
-  "vi": "Túi rỉ nước, bốc mùi chua.",
-  "en": ""
- },
- {
-  "vi": "Túi phồng, sột soạt tiếng nhựa.",
-  "en": ""
- },
- {
-  "vi": "Túi kêu leng keng tiếng lon.",
-  "en": ""
- },
- {
-  "vi": "Túi nặng, mùi khai.",
-  "en": ""
- },
- {
-  "vi": "Túi buộc gọn, đúng màu.",
-  "en": ""
- },
- {
-  "vi": "Túi cột chặt, khô ráo.",
   "en": ""
  }
 ]

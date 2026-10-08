@@ -1,5 +1,665 @@
 [
  {
+  "vi": "Thu tiền chưa đồng nghĩa ghi nhận toàn bộ doanh thu; phần chờ phân bổ theo hợp đồng ghi 3387.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi doanh thu các hợp đồng dịch vụ đang thực hiện",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi hợp đồng thực hiện 3 kỳ. Biên bản gồm hợp đồng mới và hợp đồng cũ còn thời gian thực hiện, tổng phần hoàn thành kỳ này{n0}.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi phần hoàn thành của toàn bộ hợp đồng đang thực hiện, giảm 3387 và tăng 511; không bỏ sót các kỳ còn lại của hợp đồng cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi thuế TNDN hiện hành",
+  "en": ""
+ },
+ {
+  "vi": "Bộ phận thuế cung cấp bảng xác định nghĩa vụ hợp lệ: thuế TNDN hiện hành kỳ này {n0}. Không suy ra thuế suất từ TT99.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi chi phí thuế hiện hành 8211 và khoản phải nộp 3334; xác định nghĩa vụ thực hiện theo luật thuế.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi thuế TNDN hoãn lại phải trả",
+  "en": ""
+ },
+ {
+  "vi": "Bảng chênh lệch tạm thời chịu thuế và mức thuế dự kiến đã soát xét xác nhận tăng nghĩa vụ hoãn lại {n0}.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi chi phí thuế hoãn lại 8212 và thuế hoãn lại phải trả 347; không trộn với khoản thuế hiện hành 3334.",
+  "en": ""
+ },
+ {
+  "vi": "Chi phí bán hàng đã chi trả",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ dịch vụ tiếp thị thuê ngoài phục vụ bán hàng và báo Nợ xác nhận {n0}; không có thuế đầu vào khấu trừ trong bộ dữ liệu.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi chi phí bán hàng 641; không đưa vào chi phí quản lý hay giá kho.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi nhận nghĩa vụ chia cổ tức",
+  "en": ""
+ },
+ {
+  "vi": "Nghị quyết và hồ sơ pháp lý xác nhận công ty đã không còn quyền từ chối chi trả cổ tức {n0}, đủ lợi nhuận được phân phối.",
+  "en": ""
+ },
+ {
+  "vi": "Giảm lợi nhuận đủ điều kiện phân phối: tháng 1 dùng 4211 của năm trước, các tháng sau dùng 4212 đã kết chuyển từ kỳ trước. Ghi nghĩa vụTK 332; cổ tức không là chi phí.",
+  "en": ""
+ },
+ {
+  "vi": "Trả cổ tức đã công bố",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng xác nhận trả {n0}, khớp nghĩa vụ cổ tức đã ghi nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Giảm 332 và 112; dòng tiền tài chính.",
+  "en": ""
+ },
+ {
+  "vi": "Khấu trừ GTGT đầu vào với thuế đầu ra",
+  "en": ""
+ },
+ {
+  "vi": "Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh",
+  "en": ""
+ },
+ {
+  "vi": ", số đủ điều kiện 1331",
+  "en": ""
+ },
+ {
+  "vi": "và 1332",
+  "en": ""
+ },
+ {
+  "vi": ". Phân bổ khấu trừ theo bảng: dùng 1331 trước, phần còn lại 1332; không vượt thuế đầu ra. Thuế đầu vào chưa dùng chuyển kỳ sau.",
+  "en": ""
+ },
+ {
+  "vi": "Cuối kỳ ghiNợ 3331/Có 133 theo bảng khấu trừ; giảm đồng thời đầu ra phải nộp và đầu vào đã sử dụng, phần đầu vào còn được khấu trừ giữ nguyên 133. Không là một dòng tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Kết chuyển giảm trừ doanh thu",
+  "en": ""
+ },
+ {
+  "vi": "Bảng khóa sổ: tổng phát sinh giảm trừ bên Nợ 521 là {n0}.",
+  "en": ""
+ },
+ {
+  "vi": "Kết chuyển 521 sang 511 trước khi kết chuyển doanh thu thuần vào 911.",
+  "en": ""
+ },
+ {
+  "vi": "Kết chuyển doanh thu thuần và tài chính",
+  "en": ""
+ },
+ {
+  "vi": "Bảng khóa sổ đã trừ 521: doanh thu thuần {n0}; doanh thu tài chính {n1}.",
+  "en": ""
+ },
+ {
+  "vi": "Kết chuyển doanh thu thuần 511 và doanh thu tài chính 515 vào 911.",
+  "en": ""
+ },
+ {
+  "vi": "Kết chuyển chi phí và thuế",
+  "en": ""
+ },
+ {
+  "vi": "Bảng chi phí khóa sổ: giá vốn {n0}; tài chính {n1}; bán hàng {n2}; quản lý {n3}; thuế hiện hành {n4}; thuế hoãn lại {n5}.",
+  "en": ""
+ },
+ {
+  "vi": "Kết chuyển các chi phí vào bên Nợ 911; chi phí sản xuất đã qua 154/155/632, không chuyển trực tiếp 621-627.",
+  "en": ""
+ },
+ {
+  "vi": "Kết chuyển lợi nhuận sau thuế",
+  "en": ""
+ },
+ {
+  "vi": "Bảng xác định kết quả sau thuế: kỳ này lãi {n0}.",
+  "en": ""
+ },
+ {
+  "vi": "Lãi kết chuyển Nợ 911/Có 4212; sau khóa sổ 911 và các tài khoản doanh thu, chi phí đều hết số dư.",
+  "en": ""
+ },
+ {
+  "vi": "B01-DN · Báo cáo tình hình tài chính",
+  "en": ""
+ },
+ {
+  "vi": "B02-DN · Báo cáo kết quả hoạt động kinh doanh",
+  "en": ""
+ },
+ {
+  "vi": "B03-DN · Báo cáo lưu chuyển tiền tệ trực tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu thuần",
+  "en": ""
+ },
+ {
+  "vi": "Tổng chi phí thuế TNDN",
+  "en": ""
+ },
+ {
+  "vi": "Lưu chuyển thuần kinh doanh",
+  "en": ""
+ },
+ {
+  "vi": "Lưu chuyển thuần đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Lưu chuyển thuần tài chính",
+  "en": ""
+ },
+ {
+  "vi": "Lưu chuyển tiền thuần",
+  "en": ""
+ },
+ {
+  "vi": "Tiền đầu kỳ",
+  "en": ""
+ },
+ {
+  "vi": "Tiền cuối kỳ",
+  "en": ""
+ },
+ {
+  "vi": "Lấy số từ sổ đã ghi, điền các chỉ tiêu bằng VND.",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo lấy số từ cùng nhật ký. B01 tách số dư Nợ/Có chi tiết công nợ; B02 lấy phát sinh trước kết chuyển; B03 loại chuyển tiền nội bộ và nghiệp vụ không bằng tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Căn cứ lập báo cáo",
+  "en": ""
+ },
+ {
+  "vi": "Đối chiếu Sổ cái, sổ chi tiết công nợ và phân loại dòng tiền trong tab Sổ sách.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục IV",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục IV –",
+  "en": ""
+ },
+ {
+  "vi": "B09-DN · Thuyết minh chính sách và số liệu",
+  "en": ""
+ },
+ {
+  "vi": "Chọn thuyết minh phù hợp với hồ sơ doanh nghiệp và số đã ghi.",
+  "en": ""
+ },
+ {
+  "vi": "VND; hoạt động liên tục; trình bày công nợ theo từng đối tượng; tiền gửi 6 tháng ở 1281; bảng thuế và tỷ giá có căn cứ riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Bù khoản khách trả trước với khách còn nợ để báo cáo gọn; coi tiền gửi 6 tháng là tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ ghi nghiệp vụ đã thu hoặc chi tiền; bỏ dự phòng, khấu hao và thuế hoãn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Thuyết minh phải khớp đơn vị tiền tệ, cơ sở lập, chính sách và số chi tiết trong bộ sổ, giải thích các khoản trọng yếu và các giả định.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ chính sách",
+  "en": ""
+ },
+ {
+  "vi": "Doanh nghiệp sản xuất – thương mại; kỳ tháng thuộc năm 2026; VND; hoạt động liên tục; kê khai thường xuyên. Giá trị xuất kho đã được bảng tính giá thành xác định; tiền gửi 6 tháng không là tương đương tiền. Các nghĩa vụ thuế và bảng tỷ giá có hồ sơ độc lập.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục IV – B09-DN",
+  "en": ""
+ },
+ {
+  "vi": "Mở chứng từ của việc đang làm.",
+  "en": ""
+ },
+ {
+  "vi": "Làm theo thứ tự hồ sơ; việc này đã ghi hoặc chưa tới.",
+  "en": ""
+ },
+ {
+  "vi": "Mở và đọc chứng từ trước khi ghi sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Câu trả lời chưa đúng định dạng; kiểm tài khoản và số tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn thành khóa sổ và bốn báo cáo trước khi mở kỳ tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã hoàn thành trọn 12 kỳ thực hành năm 2026.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tư 99 và phụ lục",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu giả lập bằng VND; nghĩa vụ thuế, trích lương và giá trị quy đổi lấy từ bảng có sẵn. TT99 hướng dẫn ghi nhận và trình bày; không xác định nghĩa vụ thuế.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ doanh nghiệp không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu bộ sổ đã hoàn thành của kỳ trước.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ khóa kỳ trước không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ lương chưa đủ điều kiện.",
+  "en": ""
+ },
+ {
+  "vi": "Tiến độ sổ không khớp đáp án.",
+  "en": ""
+ },
+ {
+  "vi": "Bút toán hoặc báo cáo đã lưu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ doanh nghiệp không cân đối Nợ/Có.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền mặt hoặc tiền gửi không kỳ hạn âm; đối chiếu chứng từ.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tư 99/2025/TT-BTC – Công báo chính thức",
+  "en": ""
+ },
+ {
+  "vi": "Ban hành 27/10/2025; hiệu lực 01/01/2026; Điều 1–31 và Phụ lục I–IV",
+  "en": ""
+ },
+ {
+  "vi": "Luật Kế toán 88/2015/QH13 – Cổng thông tin Chính phủ",
+  "en": ""
+ },
+ {
+  "vi": "Quy định chung, chứng từ, tài khoản và sổ kế toán; đọc cùng văn bản sửa đổi hiện hành",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định 149/2001/QĐ-BTC – VAS đợt 1",
+  "en": ""
+ },
+ {
+  "vi": "VAS02,03,04,14 – hàng tồn kho, TSCĐ và doanh thu",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định 165/2002/QĐ-BTC – VAS đợt 2",
+  "en": ""
+ },
+ {
+  "vi": "VAS01,06,10,15,16,24 – nguyên tắc, thuê, ngoại tệ, xây dựng, đi vay, dòng tiền",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định 234/2003/QĐ-BTC – VAS đợt 3",
+  "en": ""
+ },
+ {
+  "vi": "VAS05,07,08,21,25,26 – BĐSĐT, đầu tư, trình bày, hợp nhất, bên liên quan",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định 12/2005/QĐ-BTC – VAS đợt 4",
+  "en": ""
+ },
+ {
+  "vi": "VAS17,22,23,27,28,29 – thuế thu nhập, sự kiện sau kỳ, chính sách và sai sót",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định 100/2005/QĐ-BTC – VAS đợt 5",
+  "en": ""
+ },
+ {
+  "vi": "VAS11,18,19,30 – hợp nhất kinh doanh, dự phòng và thông tin liên quan",
+  "en": ""
+ },
+ {
+  "vi": "Thuế GTGT – Văn bản hợp nhất 114/VBHN-VPQH (20/05/2026)",
+  "en": ""
+ },
+ {
+  "vi": "Tra cứu nghĩa vụ và điều kiện thuế GTGT; kiểm tra kỳ áp dụng. Bản hợp nhất không tạo hiệu lực riêng; tỷ lệ bài tập là giả định",
+  "en": ""
+ },
+ {
+  "vi": "Thuế TNDN – Văn bản hợp nhất 113/VBHN-VPQH (20/05/2026)",
+  "en": ""
+ },
+ {
+  "vi": "Tra cứu thu nhập tính thuế, khoản điều chỉnh và điều kiện; kiểm tra kỳ áp dụng. Bản hợp nhất không tạo hiệu lực riêng; tỷ lệ bài tập là giả định",
+  "en": ""
+ },
+ {
+  "vi": "Nghị quyết 107/2023/QH15 – Thuế TNDN bổ sung theo quy định chống xói mòn cơ sở thuế toàn cầu",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn pháp luật riêng cho thuế tối thiểu toàn cầu; kiểm tra đối tượng, kỳ áp dụng và văn bản hướng dẫn, không suy ra nghĩa vụ từ ví dụ",
+  "en": ""
+ },
+ {
+  "vi": "Thuế TNCN – Văn bản hợp nhất 112/VBHN-VPQH (20/05/2026)",
+  "en": ""
+ },
+ {
+  "vi": "Tra cứu nghĩa vụ khấu trừ thuế TNCN; kiểm tra kỳ áp dụng. Bản hợp nhất không tạo hiệu lực riêng; khấu trừ bài tập là giả định",
+  "en": ""
+ },
+ {
+  "vi": "Bảo hiểm xã hội – Luật 41/2024/QH15",
+  "en": ""
+ },
+ {
+  "vi": "Hiệu lực 01/07/2025; đọc cùng văn bản hướng dẫn và kỳ áp dụng. Tỷ lệ trích trong bài là giả định, không thay việc xác định đối tượng và mức đóng",
+  "en": ""
+ },
+ {
+  "vi": "TT99 – Công báo chính thức, phần 1/10",
+  "en": ""
+ },
+ {
+  "vi": "PDF Công báo, phần 1; đối chiếu Điều và Phụ lục ghi trong bài",
+  "en": ""
+ },
+ {
+  "vi": "TT99 – Công báo chính thức, phần 2/10",
+  "en": ""
+ },
+ {
+  "vi": "PDF Công báo, phần 2; đối chiếu Điều và Phụ lục ghi trong bài",
+  "en": ""
+ },
+ {
+  "vi": "TT99 – Công báo chính thức, phần 3/10",
+  "en": ""
+ },
+ {
+  "vi": "PDF Công báo, phần 3; đối chiếu Điều và Phụ lục ghi trong bài",
+  "en": ""
+ },
+ {
+  "vi": "TT99 – Công báo chính thức, phần 4/10",
+  "en": ""
+ },
+ {
+  "vi": "PDF Công báo, phần 4; đối chiếu Điều và Phụ lục ghi trong bài",
+  "en": ""
+ },
+ {
+  "vi": "TT99 – Công báo chính thức, phần 5/10",
+  "en": ""
+ },
+ {
+  "vi": "PDF Công báo, phần 5; đối chiếu Điều và Phụ lục ghi trong bài",
+  "en": ""
+ },
+ {
+  "vi": "TT99 – Công báo chính thức, phần 6/10",
+  "en": ""
+ },
+ {
+  "vi": "PDF Công báo, phần 6; đối chiếu Điều và Phụ lục ghi trong bài",
+  "en": ""
+ },
+ {
+  "vi": "TT99 – Công báo chính thức, phần 7/10",
+  "en": ""
+ },
+ {
+  "vi": "PDF Công báo, phần 7; đối chiếu Điều và Phụ lục ghi trong bài",
+  "en": ""
+ },
+ {
+  "vi": "TT99 – Công báo chính thức, phần 8/10",
+  "en": ""
+ },
+ {
+  "vi": "PDF Công báo, phần 8; đối chiếu Điều và Phụ lục ghi trong bài",
+  "en": ""
+ },
+ {
+  "vi": "TT99 – Công báo chính thức, phần 9/10",
+  "en": ""
+ },
+ {
+  "vi": "PDF Công báo, phần 9; đối chiếu Điều và Phụ lục ghi trong bài",
+  "en": ""
+ },
+ {
+  "vi": "TT99 – Công báo chính thức, phần 10/10",
+  "en": ""
+ },
+ {
+  "vi": "PDF Công báo, phần 10; đối chiếu Điều và Phụ lục ghi trong bài",
+  "en": ""
+ },
+ {
+  "vi": "Chứng khoán kinh doanh",
+  "en": ""
+ },
+ {
+  "vi": "Đầu tư nắm giữ đến ngày đáo hạn",
+  "en": ""
+ },
+ {
+  "vi": "Phải thu nội bộ",
+  "en": ""
+ },
+ {
+  "vi": "Phải thu khác",
+  "en": ""
+ },
+ {
+  "vi": "Hàng mua đang đi đường",
+  "en": ""
+ },
+ {
+  "vi": "Công cụ, dụng cụ",
+  "en": ""
+ },
+ {
+  "vi": "Hàng gửi đi bán",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên liệu, vật tư tại kho bảo thuế",
+  "en": ""
+ },
+ {
+  "vi": "Giao dịch mua, bán lại trái phiếu chính phủ",
+  "en": ""
+ },
+ {
+  "vi": "Tài sản cố định thuê tài chính",
+  "en": ""
+ },
+ {
+  "vi": "Tài sản cố định vô hình",
+  "en": ""
+ },
+ {
+  "vi": "Tài sản sinh học",
+  "en": ""
+ },
+ {
+  "vi": "Bất động sản đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Đầu tư vào công ty liên doanh, liên kết",
+  "en": ""
+ },
+ {
+  "vi": "Đầu tư khác",
+  "en": ""
+ },
+ {
+  "vi": "Dự phòng tổn thất tài sản",
+  "en": ""
+ },
+ {
+  "vi": "Dự phòng giảm giá hàng tồn kho",
+  "en": ""
+ },
+ {
+  "vi": "Dự phòng giảm giá chứng khoán kinh doanh",
+  "en": ""
+ },
+ {
+  "vi": "Dự phòng tổn thất đầu tư vào đơn vị khác",
+  "en": ""
+ },
+ {
+  "vi": "Dự phòng tổn thất tài sản sinh học",
+  "en": ""
+ },
+ {
+  "vi": "Xây dựng cơ bản dở dang",
+  "en": ""
+ },
+ {
+  "vi": "Sửa chữa, bảo dưỡng định kỳ TSCĐ",
+  "en": ""
+ },
+ {
+  "vi": "Nâng cấp, cải tạo TSCĐ",
+  "en": ""
+ },
+ {
+  "vi": "Ký quỹ, ký cược",
+  "en": ""
+ },
+ {
+  "vi": "Thuế và các khoản phải nộp Nhà nước",
+  "en": ""
+ },
+ {
+  "vi": "Phải trả nội bộ",
+  "en": ""
+ },
+ {
+  "vi": "Thanh toán theo tiến độ hợp đồng xây dựng",
+  "en": ""
+ },
+ {
+  "vi": "Phải trả, phải nộp khác",
+  "en": ""
+ },
+ {
+  "vi": "Trái phiếu phát hành",
+  "en": ""
+ },
+ {
+  "vi": "Nhận ký quỹ, ký cược",
+  "en": ""
+ },
+ {
+  "vi": "Dự phòng phải trả",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ khen thưởng, phúc lợi",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ phát triển khoa học và công nghệ",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ bình ổn giá",
+  "en": ""
+ },
+ {
+  "vi": "Chênh lệch đánh giá lại tài sản",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ đầu tư phát triển",
+  "en": ""
+ },
+ {
+  "vi": "Các quỹ khác thuộc vốn chủ sở hữu",
+  "en": ""
+ },
+ {
+  "vi": "Cổ phiếu mua lại của chính mình",
+  "en": ""
+ },
+ {
+  "vi": "Vốn khác",
+  "en": ""
+ },
+ {
+  "vi": "Đầu tư góp vốn vào đơn vị khác",
+  "en": ""
+ },
+ {
+  "vi": "Chi phí sử dụng máy thi công",
+  "en": ""
+ },
+ {
+  "vi": "Thu nhập khác",
+  "en": ""
+ },
+ {
   "vi": "Chi phí khác",
   "en": ""
  },
@@ -453,10 +1113,6 @@
  },
  {
   "vi": "Bài tập này đã được chấm đúng.",
-  "en": ""
- },
- {
-  "vi": "Khóa học không tồn tại.",
   "en": ""
  },
  {
@@ -1141,662 +1797,6 @@
  },
  {
   "vi": "Đối chiếu và quản trị vẫn giữ bản chất 112",
-  "en": ""
- },
- {
-  "vi": "Biến tiền có kỳ hạn thành 112",
-  "en": ""
- },
- {
-  "vi": "Biến khoản vay thành tài sản tiền",
-  "en": ""
- },
- {
-  "vi": "Chi tiết tăng khả năng kiểm soát, không đổi bản chất tài khoản.",
-  "en": ""
- },
- {
-  "vi": "Ghép tài khoản TT99 với nội dung đúng.",
-  "en": ""
- },
- {
-  "vi": "Các tên này phản ánh danh mục TT99 cập nhật.",
-  "en": ""
- },
- {
-  "vi": "Thay phương pháp FIFO sang bình quân cần xem gì ngoài việc đổi mã phần mềm?",
-  "en": ""
- },
- {
-  "vi": "VAS29, lý do thay đổi và trình bày ảnh hưởng",
-  "en": ""
- },
- {
-  "vi": "Chỉ nút cài đặt",
-  "en": ""
- },
- {
-  "vi": "Chỉ số hóa đơn tháng này",
-  "en": ""
- },
- {
-  "vi": "Đổi chính sách cần xử lý và thuyết minh theo chuẩn mực.",
-  "en": ""
- },
- {
-  "vi": "Danh mục mặc định TT99 còn TK 611 và 631 không?",
-  "en": ""
- },
- {
-  "vi": "Không; không dùng hai mã đó như danh mục TT99 mặc định",
-  "en": ""
- },
- {
-  "vi": "Có, luôn bắt buộc dùng",
-  "en": ""
- },
- {
-  "vi": "Chỉ 631 là bắt buộc cho mọi đơn vị",
-  "en": ""
- },
- {
-  "vi": "Phụ lục II TT99 không có 611/631; không sao chép nguyên danh mục cũ.",
-  "en": ""
- },
- {
-  "vi": "Điều 11; Phụ lục II – danh mục tài khoản",
-  "en": ""
- },
- {
-  "vi": "Tổ chức kế toán và phân quyền",
-  "en": ""
- },
- {
-  "vi": "Phân nhiệm phù hợp quy mô",
-  "en": ""
- },
- {
-  "vi": "Thiết lập trách nhiệm kiểm tra",
-  "en": ""
- },
- {
-  "vi": "Người quản lý tổ chức công tác kế toán để chứng từ, tài khoản, sổ và báo cáo nhất quán. Phân công rõ người lập, duyệt, ghi sổ, giữ tiền và kiểm tra; bảo đảm người làm công tác kế toán có quyền truy cập tài liệu cần thiết. Dịch vụ thuê ngoài không xóa trách nhiệm cung cấp chứng từ thật và tổ chức kiểm soát của đơn vị.",
-  "en": ""
- },
- {
-  "vi": "Hệ thống phân quyền cần kiểm soát cả danh mục và giao dịch: tạo nhà cung cấp, sửa số tài khoản nhận tiền, duyệt thanh toán, mở kỳ đã khóa. Đơn vị ít người dùng kiểm soát bù trừ có bằng chứng, như người quản lý xem sao kê từ ngân hàng. Nhật ký truy cập và phê duyệt là công cụ kiểm tra, không thay sự kiểm tra bản chất.",
-  "en": ""
- },
- {
-  "vi": "Kế toán lập lệnh trả 15.000.000đ; người có thẩm quyền duyệt; ngân hàng xác nhận; người khác đối chiếu.",
-  "en": ""
- },
- {
-  "vi": "Nếu đổi tài khoản người bán, gọi xác nhận bằng kênh đã biết trước khi duyệt trả.",
-  "en": ""
- },
- {
-  "vi": "Sắp xếp quy trình trả người bán có kiểm soát.",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra hóa đơn và công nợ",
-  "en": ""
- },
- {
-  "vi": "Người có quyền phê duyệt lệnh",
-  "en": ""
- },
- {
-  "vi": "Thực hiện trả và đối chiếu sao kê",
-  "en": ""
- },
- {
-  "vi": "Căn cứ và quyền duyệt được kiểm tra trước chuyển tiền.",
-  "en": ""
- },
- {
-  "vi": "Người lập nhà cung cấp giả cũng tự duyệt trả tiền là rủi ro gì?",
-  "en": ""
- },
- {
-  "vi": "Xung đột nhiệm vụ tạo đối tượng và duyệt chi",
-  "en": ""
- },
- {
-  "vi": "Chỉ rủi ro đổi màu giao diện",
-  "en": ""
- },
- {
-  "vi": "Không rủi ro nếu sổ cân",
-  "en": ""
- },
- {
-  "vi": "Cần tách hoặc kiểm soát bù trừ hai quyền.",
-  "en": ""
- },
- {
-  "vi": "Chọn bằng chứng kiểm soát hữu ích.",
-  "en": ""
- },
- {
-  "vi": "Dấu vết phê duyệt lệnh chi",
-  "en": ""
- },
- {
-  "vi": "Đối chiếu sao kê độc lập",
-  "en": ""
- },
- {
-  "vi": "Ghi nhớ miệng không lưu gì",
-  "en": ""
- },
- {
-  "vi": "Bằng chứng giúp tái kiểm tra trách nhiệm và nghiệp vụ.",
-  "en": ""
- },
- {
-  "vi": "Thuê dịch vụ kế toán có làm doanh nghiệp hết trách nhiệm về chứng từ cung cấp không?",
-  "en": ""
- },
- {
-  "vi": "Không; đơn vị vẫn phải tổ chức và cung cấp thông tin trung thực",
-  "en": ""
- },
- {
-  "vi": "Có; mọi trách nhiệm chuyển hết",
-  "en": ""
- },
- {
-  "vi": "Có nếu phí dịch vụ cao",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng dịch vụ không thay trách nhiệm pháp lý của đơn vị.",
-  "en": ""
- },
- {
-  "vi": "Điều 3,28; yêu cầu tổ chức kế toán",
-  "en": ""
- },
- {
-  "vi": "2. Chứng từ, sổ và phần mềm",
-  "en": ""
- },
- {
-  "vi": "Bộ chứng từ mua bán và thanh toán",
-  "en": ""
- },
- {
-  "vi": "Đối chiếu hợp đồng với giao nhận",
-  "en": ""
- },
- {
-  "vi": "Xác định kỳ từ bằng chứng",
-  "en": ""
- },
- {
-  "vi": "Một bộ mua hàng thường liên kết đề nghị mua, phê duyệt, hợp đồng, giao nhận, hóa đơn và chứng từ thanh toán. Mỗi tài liệu chứng minh khía cạnh khác nhau: hóa đơn không tự chứng minh đã nhận hàng; sao kê không chứng minh khoản đã trả đúng đối tượng; biên bản giao nhận không tự quyết định mọi điều kiện khấu trừ thuế.",
-  "en": ""
- },
- {
-  "vi": "TT99 cho phép thiết kế chứng từ đáp ứng quy định thay vì chỉ điền mẫu tham khảo. Khi chứng từ chênh lượng, ngày hoặc giá, ghi hồ sơ xác minh và tách phần giao dịch đã đủ căn cứ. Ngày nhận quyền kiểm soát và nghĩa vụ có thể khác ngày hóa đơn; ghi đúng kỳ vẫn cần phối hợp quy định thuế và pháp luật hợp đồng.",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng 100 bộ ×150.000đ, kho xác nhận 98 bộ: phần nhận 14.700.000đ, còn 2 bộ cần xử lý theo hợp đồng.",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ trả người bán nối khoản nợ, số hóa đơn và người nhận được xác minh.",
-  "en": ""
- },
- {
-  "vi": "Kho nhận 36 bộ ×250.000đ theo giá chưa thuế. Giá trị phần nhận?",
-  "en": ""
- },
- {
-  "vi": "36×250.000=9.000.000đ.",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn ghi 40 bộ nhưng nhận 36 bộ. Nên làm gì?",
-  "en": ""
- },
- {
-  "vi": "Đối chiếu và lập hồ sơ phần chênh",
-  "en": ""
- },
- {
-  "vi": "Tự sửa phiếu nhận thành 40",
-  "en": ""
- },
- {
-  "vi": "Ghi mọi phần thiếu vào doanh thu",
-  "en": ""
- },
- {
-  "vi": "Chứng từ phải phản ánh thực tế, phần chênh cần xác minh.",
-  "en": ""
- },
- {
-  "vi": "Một khoản trả người bán cần đối chiếu với gì?",
-  "en": ""
- },
- {
-  "vi": "Công nợ và hóa đơn liên quan",
-  "en": ""
- },
- {
-  "vi": "Danh tính và tài khoản nhận đã xác minh",
-  "en": ""
- },
- {
-  "vi": "Tên người nhận gần giống là đủ",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra nghĩa vụ và đúng đối tượng tránh trả trùng hoặc trả sai.",
-  "en": ""
- },
- {
-  "vi": "Nhận 90 kg nguyên liệu đơn giá 80.000đ, vận chuyển cần thiết 300.000đ, bỏ qua thuế. Giá gốc?",
-  "en": ""
- },
- {
-  "vi": "90×80.000+300.000=7.500.000đ.",
-  "en": ""
- },
- {
-  "vi": "Chứng từ điện tử và tính toàn vẹn",
-  "en": ""
- },
- {
-  "vi": "Bảo quản thông tin và xác thực",
-  "en": ""
- },
- {
-  "vi": "Truy vết bản sửa đổi",
-  "en": ""
- },
- {
-  "vi": "Chứng từ điện tử cần bảo đảm nội dung, tính toàn vẹn, xác thực và khả năng đọc, tra cứu trong thời hạn lưu trữ. Khi nhận hóa đơn điện tử cần giữ dữ liệu gốc và thông tin tra cứu phù hợp, không chỉ ảnh hiển thị. Việc ký, truyền và chuyển đổi chứng từ phải theo pháp luật liên quan ngoài mẫu tham khảo TT99.",
-  "en": ""
- },
- {
-  "vi": "Hệ thống cần phát hiện trùng số chứng từ, sửa dữ liệu sau phê duyệt và thay file không lưu lịch sử. Sai chứng từ điện tử được xử lý theo loại chứng từ và quy định áp dụng; kế toán không tự sửa file gốc để khớp sổ. Bản hủy hoặc điều chỉnh vẫn giữ liên kết với bản gốc và lý do nhằm tái lập sự kiện.",
-  "en": ""
- },
- {
-  "vi": "Hai file hóa đơn cùng số, ký hiệu và bên bán: kiểm tra trùng trước khi ghi thêm nợ.",
-  "en": ""
- },
- {
-  "vi": "File điều chỉnh giảm 500.000đ liên kết hóa đơn gốc; sổ lưu cả căn cứ gốc và điều chỉnh.",
-  "en": ""
- },
- {
-  "vi": "Chỉ lưu ảnh màn hình hóa đơn thay dữ liệu gốc có luôn đủ không?",
-  "en": ""
- },
- {
-  "vi": "Không; cần dữ liệu và khả năng xác thực theo quy định",
-  "en": ""
- },
- {
-  "vi": "Có; ảnh đẹp là đủ",
-  "en": ""
- },
- {
-  "vi": "Có nếu chụp bằng điện thoại mới",
-  "en": ""
- },
- {
-  "vi": "Bảo quản phải giữ tính toàn vẹn, đọc và xác thực.",
-  "en": ""
- },
- {
-  "vi": "Hai chứng từ gốc 2.000.000đ và 3.000.000đ; hóa đơn 3.000.000đ nhập trùng một lần. Tổng đúng?",
-  "en": ""
- },
- {
-  "vi": "Chỉ có hai giao dịch thật:2+3=5 triệu đồng.",
-  "en": ""
- },
- {
-  "vi": "Sắp xếp việc xử lý bản điều chỉnh điện tử.",
-  "en": ""
- },
- {
-  "vi": "Xác minh bản gốc và nội dung điều chỉnh",
-  "en": ""
- },
- {
-  "vi": "Phê duyệt ghi sổ theo căn cứ hợp lệ",
-  "en": ""
- },
- {
-  "vi": "Lưu liên kết bản gốc với bản điều chỉnh",
-  "en": ""
- },
- {
-  "vi": "Không thay mất bản gốc và dấu vết.",
-  "en": ""
- },
- {
-  "vi": "Người dùng sửa file đã ký để đổi số tiền rồi ghi sổ. Vấn đề chính?",
-  "en": ""
- },
- {
-  "vi": "Làm mất tính toàn vẹn và xác thực chứng từ",
-  "en": ""
- },
- {
-  "vi": "Chỉ sai màu nền",
-  "en": ""
- },
- {
-  "vi": "Không vấn đề nếu tổng sổ cân",
-  "en": ""
- },
- {
-  "vi": "File đã ký cần được bảo toàn, sửa sai phải theo quy trình pháp lý.",
-  "en": ""
- },
- {
-  "vi": "Điều 8–10,28; pháp luật chứng từ điện tử",
-  "en": ""
- },
- {
-  "vi": "Sổ nhật ký và đối chiếu sổ cái",
-  "en": ""
- },
- {
-  "vi": "Thiết kế dấu vết chứng từ",
-  "en": ""
- },
- {
-  "vi": "Phát hiện chênh tổng hợp",
-  "en": ""
- },
- {
-  "vi": "Sổ kế toán theo Điều 12–13 và Phụ lục III phải phản ánh đầy đủ nghiệp vụ, căn cứ, thời gian và số liệu phục vụ báo cáo. Nhật ký theo thời gian, sổ cái theo tài khoản và sổ chi tiết theo đối tượng là những góc nhìn của cùng giao dịch, không phải ba lần ghi độc lập tạo ba giao dịch.",
-  "en": ""
- },
- {
-  "vi": "Đối chiếu theo cùng kỳ, đơn vị tiền tệ và phạm vi. Một khoản khách ứng trước phải ở đúng đối tượng để trình bày nghĩa vụ, không trừ mọi phải thu. Chênh sổ tổng hợp và chi tiết thường do thiếu mã đối tượng, sai ánh xạ hoặc bỏ sót; phải truy chứng từ chứ không tạo dòng điều chỉnh không căn cứ.",
-  "en": ""
- },
- {
-  "vi": "Dư Nợ chi tiết 131: A 10.000.000đ, B 6.000.000đ; tổng 16.000.000đ.",
-  "en": ""
- },
- {
-  "vi": "C ứng trước 3.000.000đ là dư Có riêng, không biến tổng phải thu thành 13.000.000đ khi trình bày.",
-  "en": ""
- },
- {
-  "vi": "Sổ cái 156 là 25.000.000đ, chi tiết các kho cộng 24.400.000đ. Chênh cần tìm?",
-  "en": ""
- },
- {
-  "vi": "25.000.000−24.400.000=600.000đ.",
-  "en": ""
- },
- {
-  "vi": "Chứng từ có ở nhật ký và sổ cái có nghĩa phát sinh hai nghiệp vụ?",
-  "en": ""
- },
- {
-  "vi": "Không; đó là hai cách tổ chức cùng dữ liệu",
-  "en": ""
- },
- {
-  "vi": "Có; phải nhân đôi số tiền",
-  "en": ""
- },
- {
-  "vi": "Có nếu có hai người nhập",
-  "en": ""
- },
- {
-  "vi": "Cần một nguồn giao dịch và liên kết sổ.",
-  "en": ""
- },
- {
-  "vi": "A dư Nợ 8.000.000đ, B dư Nợ 5.000.000đ, C dư Có 2.000.000đ ở 131. Điền tổng từng bên chi tiết.",
-  "en": ""
- },
- {
-  "vi": "Dư Nợ chi tiết",
-  "en": ""
- },
- {
-  "vi": "Dư Có chi tiết",
-  "en": ""
- },
- {
-  "vi": "Cộng riêng hai bên để giữ quyền thu và nghĩa vụ.",
-  "en": ""
- },
- {
-  "vi": "Chi tiết vật tư 3.000.000đ, công cụ 2.000.000đ, hàng hóa 9.000.000đ. Tổng ba khoản tồn theo số liệu đề?",
-  "en": ""
- },
- {
-  "vi": "3+2+9=14 triệu đồng; vẫn giữ phân loại tài khoản.",
-  "en": ""
- },
- {
-  "vi": "Phần mềm, sao lưu và khóa kỳ",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra kết quả thay vì tin phần mềm",
-  "en": ""
- },
- {
-  "vi": "Tổ chức quyền sửa dữ liệu",
-  "en": ""
- },
- {
-  "vi": "Điều 28 đặt yêu cầu cho phần mềm kế toán đáp ứng pháp luật và nghiệp vụ của đơn vị. Phần mềm phải hỗ trợ chứng từ, sổ, báo cáo và khả năng kiểm tra dữ liệu. Không mặc định phần mềm tự đúng: mẫu tài khoản cũ, quy tắc kết chuyển sai hoặc ánh xạ báo cáo sai vẫn tạo báo cáo cân nhưng sai bản chất.",
-  "en": ""
- },
- {
-  "vi": "Cần phân quyền sửa danh mục, nhập giao dịch, duyệt, khóa kỳ và phục hồi. Sao lưu được kiểm tra khôi phục, ghi rõ phiên bản và người có quyền. Mở lại kỳ đã khóa cần phê duyệt và lịch sử; bản báo cáo đã phát hành vẫn giữ để phân biệt với số liệu điều chỉnh sau này. Dữ liệu có khóa kỳ không thay kiểm tra chứng từ.",
-  "en": ""
- },
- {
-  "vi": "Chạy thử mua chịu 2.000.000đ: kiểm tra 156 và 331 cùng tăng, rồi kiểm tra sổ và báo cáo.",
-  "en": ""
- },
- {
-  "vi": "Khôi phục bản sao lưu trên môi trường kiểm tra, xác nhận số chứng từ và tổng trước khi dùng thực tế.",
-  "en": ""
- },
- {
-  "vi": "Phần mềm còn tên 242 Chi phí trả trước. Khi cập nhật TT99 cần làm gì?",
-  "en": ""
- },
- {
-  "vi": "Rà cả tên và nội dung thành Chi phí chờ phân bổ",
-  "en": ""
- },
- {
-  "vi": "Chỉ đổi logo",
-  "en": ""
- },
- {
-  "vi": "Giữ mọi quy tắc cũ không kiểm tra",
-  "en": ""
- },
- {
-  "vi": "Đổi tên phải đi cùng kiểm tra phạm vi phản ánh và báo cáo.",
-  "en": ""
- },
- {
-  "vi": "Sắp xếp một kiểm thử phục hồi dữ liệu.",
-  "en": ""
- },
- {
-  "vi": "Lấy bản sao lưu được xác định",
-  "en": ""
- },
- {
-  "vi": "Khôi phục trên môi trường kiểm tra",
-  "en": ""
- },
- {
-  "vi": "Đối chiếu chứng từ và số dư",
-  "en": ""
- },
- {
-  "vi": "Cần xác nhận bản sao có thể dùng và số liệu toàn vẹn.",
-  "en": ""
- },
- {
-  "vi": "Quyền nào cần hạn chế và có lịch sử?",
-  "en": ""
- },
- {
-  "vi": "Mở kỳ đã khóa",
-  "en": ""
- },
- {
-  "vi": "Sửa tài khoản nhận tiền người bán",
-  "en": ""
- },
- {
-  "vi": "Đọc tên bài học công khai",
-  "en": ""
- },
- {
-  "vi": "Hai quyền ảnh hưởng trực tiếp độ tin cậy dữ liệu và thanh toán.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo phần mềm cân nhưng dùng mã B02 cũ. Có thể tuyên bố phù hợp TT99 không?",
-  "en": ""
- },
- {
-  "vi": "Không; phải kiểm tra ánh xạ mẫu và công thức mới",
-  "en": ""
- },
- {
-  "vi": "Có; cân là đủ",
-  "en": ""
- },
- {
-  "vi": "Có nếu in đượcPDF",
-  "en": ""
- },
- {
-  "vi": "Sự cân đối số học không chứng minh dùng đúng biểu mẫu.",
-  "en": ""
- },
- {
-  "vi": "Điều 28; Phụ lục II–IV",
-  "en": ""
- },
- {
-  "vi": "3. Tiền và ngoại tệ ban đầu",
-  "en": ""
- },
- {
-  "vi": "TK 111 và kiểm kê quỹ",
-  "en": ""
- },
- {
-  "vi": "Kiểm soát thu chi quỹ",
-  "en": ""
- },
- {
-  "vi": "Ghi thiếu quỹ chờ xử lý có căn cứ",
-  "en": ""
- },
- {
-  "vi": "TK 111 phản ánh tiền tại quỹ, được theo dõi theo loại tiền và thông tin cần quản lý. Thu chi có chứng từ hợp lệ, người giao nhận và phê duyệt. Kế toán đối chiếu sổ với thủ quỹ và kiểm kê; không dùng tiền cá nhân để che thiếu quỹ rồi sửa chứng từ thu bán hàng.",
-  "en": ""
- },
- {
-  "vi": "Khi kiểm kê thiếu, lập biên bản và xác định nguyên nhân. Phần chưa rõ có thể theo dõi phải thu khác chờ xử lý theo hướng dẫn; khi có quyết định mới ghi bồi thường hoặc chi phí phù hợp. Thiếu tiền không tự đồng nghĩa giảm doanh thu; thừa cũng không tự đồng nghĩa doanh thu của đơn vị.",
-  "en": ""
- },
- {
-  "vi": "Sổ 10.000.000đ, kiểm kê 9.800.000đ: thiếu 200.000đ.",
-  "en": ""
- },
- {
-  "vi": "Có biên bản chờ xử lý: Nợ 138/Có 111 200.000đ theo tình huống; quyết định xử lý theo hồ sơ riêng.",
-  "en": ""
- },
- {
-  "vi": "Sổ quỹ 6.500.000đ, kiểm kê 6.350.000đ. Thiếu bao nhiêu?",
-  "en": ""
- },
- {
-  "vi": "6.500.000−6.350.000=150.000đ.",
-  "en": ""
- },
- {
-  "vi": "Biên bản kiểm kê xác định thiếu quỹ 100.000đ chưa rõ nguyên nhân, đưa vào 138 chờ xử lý.",
-  "en": ""
- },
- {
-  "vi": "Giảm tiền thực có và theo dõi khoản thiếu chờ xử lý.",
-  "en": ""
- },
- {
-  "vi": "Có nên giảm doanh thu tùy ý để làm quỹ khớp?",
-  "en": ""
- },
- {
-  "vi": "Không; xác minh và xử lý theo biên bản",
-  "en": ""
- },
- {
-  "vi": "Có; doanh thu luôn là nguồn thiếu",
-  "en": ""
- },
- {
-  "vi": "Có nếu thiếu dưới 1 triệu",
-  "en": ""
- },
- {
-  "vi": "Chênh quỹ cần căn cứ và quyết định, không sửa bản chất doanh thu.",
-  "en": ""
- },
- {
-  "vi": "Thu tiền bán hàng đã ghi phải thu 800.000đ bằng tiền mặt.",
-  "en": ""
- },
- {
-  "vi": "Tăng tiền quỹ, giảm nợ khách; không ghi doanh thu lần nữa.",
-  "en": ""
- },
- {
-  "vi": "Phụ lục II – TK 111,138",
-  "en": ""
- },
- {
-  "vi": "TK 112 và đối chiếu ngân hàng",
-  "en": ""
- },
- {
-  "vi": "Tách tiền gửi không kỳ hạn",
-  "en": ""
- },
- {
-  "vi": "Nhận diện phí và thấu chi",
-  "en": ""
- },
- {
-  "vi": "Theo TT99, TK 112 là Tiền gửi không kỳ hạn. Theo dõi từng ngân hàng, loại tiền và số tài khoản để đối chiếu sao kê. Tiền gửi có kỳ hạn thuộc đầu tư nắm giữ đến ngày đáo hạn theo bản chất; thấu chi phản ánh như khoản vay, không trình bày 112 âm để bù tiền ở ngân hàng khác.",
-  "en": ""
- },
- {
-  "vi": "Bảng đối chiếu chỉ rõ khoản đã ghi sổ chưa có sao kê, khoản sao kê có mà sổ thiếu và lỗi cần xác minh. Phí ngân hàng đã trừ cần ghi vào chi phí phù hợp sau kiểm tra; không ghi lại khoản đang chờ ngân hàng nếu đã có ở sổ và chỉ chênh thời điểm. Quyền duyệt chuyển tiền tách khỏi nhập giao dịch.",
   "en": ""
  }
 ]

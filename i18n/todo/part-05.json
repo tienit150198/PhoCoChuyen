@@ -1,5 +1,565 @@
 [
  {
+  "vi": "Chi nghiên cứu và chi triển khai có nguyên tắc khác; chi triển khai chỉ được vốn hóa khi thỏa toàn bộ điều kiện chuẩn mực và có hồ sơ. Chi trước thời điểm thỏa điều kiện không tự phục hồi thành tài sản bằng cách đổi tên dự án. Theo dõi nguyên giá và hao mòn 213/214 cùng thời gian sử dụng phù hợp, tách điều kiện thuế khi tính chi phí được trừ.",
+  "en": ""
+ },
+ {
+  "vi": "Bản quyền phần mềm 36.000.000đ đủ điều kiện 213 dùng 36 tháng, thu hồi 0: khấu hao tháng 1.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Quyền phần mềm 48.000.000đ trong 24 tháng đủ điều kiện TSCĐ: khấu hao tháng 2.000.000đ theo giả định.",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn hiệu đơn vị tự xây dựng có tự ghi 213 theo số tiền ước đoán không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; phải theo điều kiện và giới hạn VAS04",
+  "en": ""
+ },
+ {
+  "vi": "Có; tên đẹp là tài sản",
+  "en": ""
+ },
+ {
+  "vi": "Có; theo giá chủ tự chọn",
+  "en": ""
+ },
+ {
+  "vi": "Danh tiếng tự tạo không tự thỏa ghi nhận TSCĐ vô hình.",
+  "en": ""
+ },
+ {
+  "vi": "Quyền phần mềm 36.000.000đ đủ điều kiện TSCĐ, khấu hao đều 36 tháng, thu hồi 0. Mỗi tháng?",
+  "en": ""
+ },
+ {
+  "vi": "36.000.000/36=1.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Mua quyền phần mềm đủ điều kiện 213 giá 40.000.000đ chưa trả, bỏ qua thuế.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi TSCĐ vô hình và nghĩa vụ trả người bán.",
+  "en": ""
+ },
+ {
+  "vi": "Chi nghiên cứu không đủ điều kiện vốn hóa có thể chuyển 213 chỉ vì dự án thành công sau này không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; xử lý theo VAS04, không tự phục hồi chi đã ghi",
+  "en": ""
+ },
+ {
+  "vi": "Có; chuyển hết mọi năm",
+  "en": ""
+ },
+ {
+  "vi": "Có nếu có doanh thu đầu tiên",
+  "en": ""
+ },
+ {
+  "vi": "Thời điểm đáp ứng điều kiện và quy tắc chuẩn mực quyết định ghi nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 213,214; VAS04",
+  "en": ""
+ },
+ {
+  "vi": "Tài sản thuê tài chính và thuê hoạt động",
+  "en": ""
+ },
+ {
+  "vi": "Phân loại theo rủi ro lợi ích",
+  "en": ""
+ },
+ {
+  "vi": "Tách gốc nợ với lãi thuê",
+  "en": ""
+ },
+ {
+  "vi": "Thuê tài chính theo VAS06 dựa chuyển giao phần lớn rủi ro và lợi ích, không chỉ tên hợp đồng hay việc sở hữu pháp lý ngay. Bên thuê ghi tài sản 212 và nợ thuê theo hướng dẫn khi đủ điều kiện; thuê hoạt động có cách ghi chi phí thuê khác. Cần đọc thời hạn, quyền mua, giá trị thanh toán và điều khoản hợp đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản trả thuê tài chính gồm gốc nợ và lãi theo lịch trả; chỉ lãi thuộc chi phí tài chính hoặc chi phí được vốn hóa nếu đủ điều kiện. Tài sản thuê được khấu hao theo chính sách thích hợp. Tổng tiền chuyển ngân hàng không được ghi hết chi phí thuê khi đã nhận tài sản và ghi nghĩa vụ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận tài sản thuê tài chính 30.000.000đ theo giá trị đề: Nợ 212/Có 341.",
+  "en": ""
+ },
+ {
+  "vi": "Trả 3.000.000đ gồm gốc 2.500.000đ và lãi 500.000đ: tách 341 và 635 theo giả định không vốn hóa.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận tài sản thuê tài chính giá trị ghi nhận 36.000.000đ; đề cho nợ thuê bằng đúng giá trị.",
+  "en": ""
+ },
+ {
+  "vi": "Tăng tài sản thuê và nợ thuê tài chính.",
+  "en": ""
+ },
+ {
+  "vi": "Trả kỳ thuê 4.000.000đ, lãi 600.000đ. Phần gốc?",
+  "en": ""
+ },
+ {
+  "vi": "4.000.000−600.000=3.400.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Phân loại thuê tài chính chỉ căn cứ tiêu đề hợp đồng có đủ không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; xét chuyển giao rủi ro và lợi ích theo VAS06",
+  "en": ""
+ },
+ {
+  "vi": "Có; tên hợp đồng quyết định hết",
+  "en": ""
+ },
+ {
+  "vi": "Có nếu có hóa đơn",
+  "en": ""
+ },
+ {
+  "vi": "Bản chất điều khoản thuê quyết định phân loại.",
+  "en": ""
+ },
+ {
+  "vi": "Trả gốc nợ thuê 2.000.000đ và lãi 300.000đ bằng 112, lãi vào 635, bỏ qua thuế.",
+  "en": ""
+ },
+ {
+  "vi": "Tách giảm nợ gốc và chi phí lãi thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 212,214,341,635; VAS06",
+  "en": ""
+ },
+ {
+  "vi": "TK 215: tài sản sinh học",
+  "en": ""
+ },
+ {
+  "vi": "Phân biệt phạm vi 215 và 211",
+  "en": ""
+ },
+ {
+  "vi": "Theo dõi giai đoạn và sản phẩm thu hoạch",
+  "en": ""
+ },
+ {
+  "vi": "TT99 có TK 215 để theo dõi tài sản sinh học theo nội dung cụ thể, không phải gán mọi cây và vật nuôi vào một mã. Cây lâu năm cho sản phẩm định kỳ và súc vật làm việc thuộc 211 theo hướng dẫn; cần phân loại loại tài sản, mục đích và giai đoạn. Tài sản sinh học có hệ chi tiết phục vụ theo dõi nguyên giá, khấu hao và loại tài sản.",
+  "en": ""
+ },
+ {
+  "vi": "Khi thu hoạch, sản phẩm thu hoạch được xử lý như hàng tồn kho theo VAS02 và hướng dẫn, không giữ mọi sản phẩm mã 215. Chi phí và tổn thất cần hồ sơ số lượng, giai đoạn, mức lợi ích và quyết định. TK 2295 theo dõi dự phòng tổn thất tài sản sinh học; không nhập chung 2294 chỉ vì sản phẩm sau này có thể bán.",
+  "en": ""
+ },
+ {
+  "vi": "Đàn vật nuôi đủ phạm vi 215 có giá trị 20.000.000đ; theo dõi theo nhóm và giai đoạn.",
+  "en": ""
+ },
+ {
+  "vi": "Giá trị cần dự phòng theo hồ sơ 2.000.000đ, đã có 500.000đ: cần lập thêm 1.500.000đ theo loại chi phí phù hợp.",
+  "en": ""
+ },
+ {
+  "vi": "Cây lâu năm cho sản phẩm định kỳ theo hướng dẫn TT99 xét tài khoản nào?",
+  "en": ""
+ },
+ {
+  "vi": "215 cho mọi cây không phân biệt",
+  "en": ""
+ },
+ {
+  "vi": "Phạm vi 215 loại trừ cây lâu năm cho sản phẩm định kỳ và súc vật làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "Dự phòng sinh học cần 3.000.000đ, đã có 1.200.000đ. Số tăng cần xem xét?",
+  "en": ""
+ },
+ {
+  "vi": "3.000.000−1.200.000=1.800.000đ theo hồ sơ đề.",
+  "en": ""
+ },
+ {
+  "vi": "Sản phẩm nông nghiệp đã thu hoạch cần chuyển sang nguyên tắc nào?",
+  "en": ""
+ },
+ {
+  "vi": "Hàng tồn kho và VAS02 theo hướng dẫn",
+  "en": ""
+ },
+ {
+  "vi": "Giữ mã 215 cho mọi thời điểm",
+  "en": ""
+ },
+ {
+  "vi": "Ghi tiền ngay dù chưa bán",
+  "en": ""
+ },
+ {
+  "vi": "Sau thu hoạch, sản phẩm có bản chất hàng tồn kho.",
+  "en": ""
+ },
+ {
+  "vi": "Dự phòng tổn thất tài sản sinh học có mã chi tiết nào được bổ sung?",
+  "en": ""
+ },
+ {
+  "vi": "TT99 bổ sung 2295 cho tổn thất tài sản sinh học.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 211,215,2295; VAS02 cho sản phẩm thu hoạch",
+  "en": ""
+ },
+ {
+  "vi": "7. Dự án, phân bổ và bất động sản",
+  "en": ""
+ },
+ {
+  "vi": "Tập hợp 241 theo dự án",
+  "en": ""
+ },
+ {
+  "vi": "Bàn giao tài sản khi đủ điều kiện",
+  "en": ""
+ },
+ {
+  "vi": "TK 241 tập hợp chi phí đầu tư, xây dựng và các công việc có nội dung theo hướng dẫn, cần chi tiết từng dự án và hạng mục. Hóa đơn tạm ứng nhà thầu không tự đồng nghĩa khối lượng đã thực hiện. Chi phí đi vay chỉ vốn hóa khi thỏa VAS16; phần không đủ điều kiện vào chi phí kỳ.",
+  "en": ""
+ },
+ {
+  "vi": "Khi công trình hoàn thành, sẵn sàng sử dụng và đủ căn cứ ghi tài sản, chuyển chi phí hợp lệ sang 211 hoặc tài khoản phù hợp; không đợi vô hạn chỉ vì chưa quyết toán cuối cùng nếu phải ghi theo hướng dẫn. Khoản vượt, không hợp lệ hoặc tổn thất cần xử lý riêng. Hồ sơ gồm nghiệm thu, bàn giao, tập hợp chi phí và chính sách khấu hao.",
+  "en": ""
+ },
+ {
+  "vi": "Chi phí công trình 32.000.000đ gồm 30.000.000đ xây lắp và 2.000.000đ trực tiếp hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn giao đủ điều kiện 211: Nợ 211/Có 241 32.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Xây lắp 25.000.000đ, thiết kế 2.000.000đ đủ điều kiện, không thuế. Chi phí dự án?",
+  "en": ""
+ },
+ {
+  "vi": "25+2=27 triệu đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Công trình đã đủ điều kiện đưa vào 211, giá trị hợp lệ từ 241 là 35.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển dự án dở dang sang tài sản sẵn sàng sử dụng.",
+  "en": ""
+ },
+ {
+  "vi": "Tạm ứng nhà thầu có tự chứng minh khối lượng xây lắp hoàn thành không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; cần nghiệm thu và căn cứ quyền nghĩa vụ",
+  "en": ""
+ },
+ {
+  "vi": "Có; cứ trả tiền là 241 hoàn thành",
+  "en": ""
+ },
+ {
+  "vi": "Có nếu chuyển khoản",
+  "en": ""
+ },
+ {
+  "vi": "Thanh toán trước khác khối lượng thực hiện.",
+  "en": ""
+ },
+ {
+  "vi": "Dự án đã tập hợp 40.000.000đ, phần không đủ điều kiện vốn hóa xác định 3.000.000đ. Phần hợp lệ theo đề?",
+  "en": ""
+ },
+ {
+  "vi": "40−3=37 triệu đồng; phần loại ra xử lý riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 241,211; VAS03,16",
+  "en": ""
+ },
+ {
+  "vi": "Sửa chữa định kỳ, nâng cấp và TK 242",
+  "en": ""
+ },
+ {
+  "vi": "Tách 2413 với 2414",
+  "en": ""
+ },
+ {
+  "vi": "Phân bổ chi phí thực tế nhiều kỳ",
+  "en": ""
+ },
+ {
+  "vi": "TT99 phân biệt 2413 Sửa chữa, bảo dưỡng định kỳ TSCĐ với 2414 Nâng cấp, cải tạo TSCĐ. Chi sửa chữa định kỳ thực tế có thể chuyển 242 nếu đủ điều kiện hưởng lợi nhiều kỳ; nâng cấp đủ điều kiện tăng tài sản xử lý theo hồ sơ. Không coi mọi chi sửa chữa là nguyên giá hoặc mọi khoản 242 là tiền đã trả trước.",
+  "en": ""
+ },
+ {
+  "vi": "Công cụ 153 khi xuất dùng có thể được phân bổ qua 242 theo thời gian hưởng lợi hợp lý. Đơn vị cần bảng phân bổ theo từng khoản và chức năng sử dụng. Quy định chuyển tiếp đối với trích trước sửa chữa lớn cần đọc Điều 30: ngừng trích tiếp đến khi thực hiện và đối chiếu thực tế, không tiếp tục máy móc theo cách cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Công cụ quản lý 6.000.000đ đủ điều kiện phân bổ 6 tháng: Nợ 242/Có 153; mỗi tháng Nợ 642/Có 242 1.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản nâng cấp dở dang cũ ở 2413 cần xem chuyển 2414 theo Điều 29.",
+  "en": ""
+ },
+ {
+  "vi": "Xuất công cụ 153 giá 3.000.000đ dùng nhiều kỳ, đủ điều kiện đưa 242.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển công cụ sang chi phí chờ phân bổ.",
+  "en": ""
+ },
+ {
+  "vi": "Chi phí sửa chữa thực tế đủ điều kiện 242 là 8.000.000đ phân bổ 8 tháng. Mỗi tháng?",
+  "en": ""
+ },
+ {
+  "vi": "8.000.000/8=1.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Ghép mã với công việc theo TT99.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa chữa, bảo dưỡng định kỳ",
+  "en": ""
+ },
+ {
+  "vi": "Nâng cấp, cải tạo",
+  "en": ""
+ },
+ {
+  "vi": "Hai công việc có nội dung tài khoản riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Phân bổ công cụ cho sản xuất chung kỳ này 900.000đ từ 242.",
+  "en": ""
+ },
+ {
+  "vi": "Phân bổ vào chức năng sử dụng, không luôn 642.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 153,2413,2414,242; Điều 29–30",
+  "en": ""
+ },
+ {
+  "vi": "Xác định mục đích 217",
+  "en": ""
+ },
+ {
+  "vi": "Tách kết quả bán bất động sản đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Bất động sản đầu tư theo 217 được nắm giữ nhằm thu tiền thuê hoặc tăng giá, khác tài sản dùng trong sản xuất quản lý và khác bất động sản để bán trong hoạt động thông thường. Phân loại phải theo mục đích thực tế và VAS05, có hồ sơ khi đổi mục đích; không đổi mã chỉ để thay kết quả kế toán.",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên giá, khấu hao, chi phí khai thác và doanh thu được xử lý theo chuẩn mực và hướng dẫn. Mẫu B02 TT99 có chỉ tiêu lãi/lỗ bán, thanh lý bất động sản đầu tư mã 21; không ghép sai vào mã tài chính của mẫu cũ. Ví dụ giá bán trừ giá trị còn lại minh họa phần kết quả, bỏ qua thuế và chi phí bán theo giả định.",
+  "en": ""
+ },
+ {
+  "vi": "Tòa nhà cho thuê có nguyên giá 80.000.000đ, hao mòn 20.000.000đ: còn 60.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Bán giá 70.000.000đ không thuế/chi khác: chênh minh họa 10.000.000đ, trình bày đúng chỉ tiêu.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà đang dùng làm trụ sở quản lý có mặc định là 217 không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; mục đích dùng nội bộ khác bất động sản đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Có; mọi nhà đất đều 217",
+  "en": ""
+ },
+ {
+  "vi": "Có nếu giá thị trường tăng",
+  "en": ""
+ },
+ {
+  "vi": "Phân loại dựa mục đích nắm giữ theo VAS05.",
+  "en": ""
+ },
+ {
+  "vi": "BĐSĐT nguyên giá 100.000.000đ, hao mòn 30.000.000đ. Giá trị còn lại?",
+  "en": ""
+ },
+ {
+  "vi": "100−30=70 triệu đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Bán BĐSĐT 80.000.000đ, giá trị còn lại 65.000.000đ, bỏ qua thuế và chi phí bán. Chênh lệch?",
+  "en": ""
+ },
+ {
+  "vi": "80−65=15 triệu đồng theo giả định đề.",
+  "en": ""
+ },
+ {
+  "vi": "Mã 21 B02 TT99 dùng cho nội dung nào?",
+  "en": ""
+ },
+ {
+  "vi": "Lãi/lỗ bán, thanh lý bất động sản đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu tài chính theo mẫu cũ",
+  "en": ""
+ },
+ {
+  "vi": "B02 TT99 thay đổi vị trí mã so với mẫu trước.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 217; Phụ lục IV – B02 mã 21; VAS05",
+  "en": ""
+ },
+ {
+  "vi": "Ký quỹ, ký cược và tài sản bảo đảm",
+  "en": ""
+ },
+ {
+  "vi": "Tách 244 với 344",
+  "en": ""
+ },
+ {
+  "vi": "Theo dõi tài sản thế chấp",
+  "en": ""
+ },
+ {
+  "vi": "TK 244 theo dõi ký quỹ, ký cược của đơn vị; TK 344 theo dõi tiền nhận ký quỹ, ký cược theo nội dung. Trả tiền bảo đảm thực hiện hợp đồng khác chi phí ngay; nhận ký cược không là doanh thu nếu còn nghĩa vụ hoàn lại. Có hợp đồng, điều kiện hoàn trả và đối tượng chi tiết để phân loại thời hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Tài sản đem cầm cố hoặc thế chấp có thể vẫn là tài sản của đơn vị theo quyền và bản chất; không tự ghi giảm 211 chỉ vì ngân hàng giữ hồ sơ. Cần thuyết minh hạn chế và tài sản bảo đảm, theo dõi nghĩa vụ vay riêng. Khi ký cược bị khấu trừ, phải có căn cứ xử lý vào công nợ hoặc chi phí phù hợp, không tự xóa 244.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt ký cược 3.000.000đ bằng 112: Nợ 244/Có 112.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận ký cược 2.000.000đ: Nợ 112/Có 344; khi hoàn trả giảm 344.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển khoản ký cược thuê mặt bằng 4.000.000đ, có quyền nhận lại theo hợp đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản bảo đảm chưa là chi phí thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận tiền ký cược khách 5.000.000đ vào 112, còn nghĩa vụ hoàn trả.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi tiền và nghĩa vụ ký cược nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Máy thế chấp vay có tự bị xóa khỏi 211 không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; xem quyền kiểm soát, tiếp tục theo dõi và thuyết minh",
+  "en": ""
+ },
+ {
+  "vi": "Có; ngân hàng giữ giấy là không còn tài sản",
+  "en": ""
+ },
+ {
+  "vi": "Có; chuyển hết 635",
+  "en": ""
+ },
+ {
+  "vi": "Bảo đảm khoản vay không tự đồng nghĩa bán tài sản.",
+  "en": ""
+ },
+ {
+  "vi": "Ký cược 244 ban đầu 6.000.000đ, đã được trả lại 2.000.000đ. Còn quyền đòi theo đề?",
+  "en": ""
+ },
+ {
+  "vi": "6−2=4 triệu đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 244,344; Phụ lục IV – thuyết minh tài sản bảo đảm",
+  "en": ""
+ },
+ {
+  "vi": "8. Đầu tư và tổn thất đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Phân loại mục đích 121",
+  "en": ""
+ },
+ {
+  "vi": "Tính kết quả bán và tổn thất",
+  "en": ""
+ },
+ {
+  "vi": "TK 121 phản ánh chứng khoán nắm giữ với mục đích kinh doanh theo hướng dẫn. Giá ghi nhận cần xét chi phí giao dịch và bản chất công cụ, không chỉ số chuyển tiền cho môi giới. Theo dõi từng loại, số lượng và giá trị; mục đích giữ đến đáo hạn hoặc nắm quyền kiểm soát có hệ tài khoản khác.",
+  "en": ""
+ },
+ {
+  "vi": "Khi bán, tách giá trị sổ và chênh lệch tài chính theo hướng dẫn. Cuối kỳ xem dự phòng tổn thất 2291 với căn cứ thích hợp; giá thị trường tăng không tự cho phép ghi một khoản lãi chưa thực hiện vào 515 trong mô hình giá gốc. Chi phí thuế của khoản dự phòng cần xét pháp luật thuế riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Chứng khoán giá sổ 8.000.000đ bán thu 9.000.000đ, không phí: lãi 1.000.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Chứng khoán khác giá sổ 5.000.000đ, giá đánh giá 4.200.000đ: tổn thất cần xem 800.000đ.",
+  "en": ""
+ },
+ {
   "vi": "Bán chứng khoán thu 6.800.000đ, giá trị sổ 6.000.000đ, không phí. Lãi?",
   "en": ""
  },
@@ -873,610 +1433,6 @@
  },
  {
   "vi": "Ghi tài sản thuế hoãn lại đủ điều kiện 1.000.000đ, ảnh hưởng kết quả theo đề.",
-  "en": ""
- },
- {
-  "vi": "Tăng 243 và ghi thu nhập thuế hoãn lại bên Có 8212.",
-  "en": ""
- },
- {
-  "vi": "Khoản phạt không được trừ và không đảo ngược có tự tạo 243 không?",
-  "en": ""
- },
- {
-  "vi": "Không; đây là chênh vĩnh viễn trong giả định",
-  "en": ""
- },
- {
-  "vi": "Có; mọi chi không được trừ đều 243",
-  "en": ""
- },
- {
-  "vi": "Có; luôn nhân 20%",
-  "en": ""
- },
- {
-  "vi": "Hoãn lại gắn chênh tạm thời và điều kiện, không phải mọi điều chỉnh thuế.",
-  "en": ""
- },
- {
-  "vi": "Ghi tăng thuế hoãn lại phải trả 600.000đ ảnh hưởng kết quả theo đề.",
-  "en": ""
- },
- {
-  "vi": "Tăng chi phí thuế hoãn lại và nghĩa vụ 347.",
-  "en": ""
- },
- {
-  "vi": "Phụ lục II – TK 243,347,8212; VAS17; tỷ lệ thuế giả định",
-  "en": ""
- },
- {
-  "vi": "11. Vốn chủ sở hữu và phân phối",
-  "en": ""
- },
- {
-  "vi": "Vốn góp và thay đổi vốn",
-  "en": ""
- },
- {
-  "vi": "Ghi 411 theo hồ sơ góp vốn",
-  "en": ""
- },
- {
-  "vi": "Phân biệt vốn với tiền vay",
-  "en": ""
- },
- {
-  "vi": "TK 411 phản ánh vốn đầu tư của chủ sở hữu theo hồ sơ và quy định; không ghi đủ vốn đăng ký chưa thực góp thành tiền nếu không có quyền và căn cứ tương ứng. Góp bằng tài sản cần quyền chuyển giao, giá trị được xác định hợp lệ và điều kiện ghi tài sản. Khoản chủ cho vay khác góp vốn dù người chuyển tiền là cùng một người.",
-  "en": ""
- },
- {
-  "vi": "Tăng, giảm vốn và hoàn trả vốn cần căn cứ doanh nghiệp, quyết định và thủ tục liên quan. Chênh lệch đánh giá tài sản góp vốn phải theo hướng dẫn, không dùng 412 tự động cho mọi khác biệt giá thị trường. Đối chiếu sổ vốn với hồ sơ pháp lý và từng chủ giúp tránh ghi trùng hay bỏ nghĩa vụ còn phải trả.",
-  "en": ""
- },
- {
-  "vi": "Chủ góp thực tế 20.000.000đ vào 112: Nợ 112/Có 411.",
-  "en": ""
- },
- {
-  "vi": "Chủ cho công ty vay 5.000.000đ theo hợp đồng vay: xem 341, không cộng 411 chỉ theo người gửi.",
-  "en": ""
- },
- {
-  "vi": "Nhận tiền góp vốn hợp lệ 35.000.000đ vào 112.",
-  "en": ""
- },
- {
-  "vi": "Ghi tài sản tiền và vốn góp đã thực nhận.",
-  "en": ""
- },
- {
-  "vi": "Vốn thực góp đầu kỳ 50.000.000đ, tăng hợp lệ 15.000.000đ, không giảm. Cuối kỳ?",
-  "en": ""
- },
- {
-  "vi": "50+15=65 triệu đồng.",
-  "en": ""
- },
- {
-  "vi": "Chủ chuyển tiền theo hợp đồng cho công ty vay. Có tự ghi 411 không?",
-  "en": ""
- },
- {
-  "vi": "Không; phản ánh nghĩa vụ vay theo bản chất",
-  "en": ""
- },
- {
-  "vi": "Có; chủ gửi là vốn",
-  "en": ""
- },
- {
-  "vi": "Có; tiền nào vào cũng 411",
-  "en": ""
- },
- {
-  "vi": "Nguồn tiền từ chủ vẫn có thể là nợ phải trả.",
-  "en": ""
- },
- {
-  "vi": "Vốn điều lệ đăng ký 80 triệu, mới thực góp 50 triệu. Có ghi 112 đủ 80 triệu không?",
-  "en": ""
- },
- {
-  "vi": "Không; tiền phải phản ánh thực nhận",
-  "en": ""
- },
- {
-  "vi": "Có; đăng ký là tiền",
-  "en": ""
- },
- {
-  "vi": "Có; để báo cáo cân",
-  "en": ""
- },
- {
-  "vi": "Không tạo tài sản tiền chưa tồn tại.",
-  "en": ""
- },
- {
-  "vi": "Phụ lục II – TK 411,412; pháp luật doanh nghiệp liên quan",
-  "en": ""
- },
- {
-  "vi": "Hiểu 419 là điều chỉnh vốn",
-  "en": ""
- },
- {
-  "vi": "Không coi cổ phiếu của mình là 121",
-  "en": ""
- },
- {
-  "vi": "TK 419 theo TT99 mang tên Cổ phiếu mua lại của chính mình. Khoản mua lại được xử lý trong vốn chủ sở hữu theo hướng dẫn, khác chứng khoán đầu tư của doanh nghiệp khác ở 121. Mua lại có điều kiện pháp lý, hồ sơ phê duyệt và quyền của cổ đông; kế toán không tự tạo giao dịch chỉ để điều chỉnh tỷ lệ tài chính.",
-  "en": ""
- },
- {
-  "vi": "Giá mua, chi phí trực tiếp và xử lý tái phát hành hoặc hủy phải đọc nội dung 419 và tài khoản vốn liên quan. Chênh lệch không tự ghi lãi đầu tư 515 như bán chứng khoán bên ngoài. Trong bài giản lược, chỉ ghi mua lại bằng tiền theo giá trị đề, không mô phỏng đầy đủ thủ tục giảm vốn.",
-  "en": ""
- },
- {
-  "vi": "Mua lại cổ phiếu của chính mình giá 4.000.000đ: Nợ 419/Có 112 theo tình huống.",
-  "en": ""
- },
- {
-  "vi": "Tiền giảm 4.000.000đ và khoản điều chỉnh vốn tăng bên Nợ; không phát sinh tài sản 121.",
-  "en": ""
- },
- {
-  "vi": "Mua lại cổ phiếu của chính đơn vị giá 3.000.000đ bằng 112, đủ căn cứ, bỏ qua phí.",
-  "en": ""
- },
- {
-  "vi": "419 phản ánh điều chỉnh vốn, không chứng khoán kinh doanh 121.",
-  "en": ""
- },
- {
-  "vi": "Vốn chủ trước điều chỉnh 70.000.000đ, mua lại cổ phiếu 5.000.000đ, không khoản khác. Vốn chủ thuần theo đề?",
-  "en": ""
- },
- {
-  "vi": "70−5=65 triệu đồng.",
-  "en": ""
- },
- {
-  "vi": "Cổ phiếu của chính mình mua lại có bản chất giống đầu tư 121 vào công ty khác không?",
-  "en": ""
- },
- {
-  "vi": "Không; là khoản điều chỉnh vốn chủ theo 419",
-  "en": ""
- },
- {
-  "vi": "Có; cứ cổ phiếu là 121",
-  "en": ""
- },
- {
-  "vi": "Có; ghi cả 121 và 419",
-  "en": ""
- },
- {
-  "vi": "Phải phân biệt chủ thể phát hành và bản chất vốn.",
-  "en": ""
- },
- {
-  "vi": "Tên 419 được dùng trong TT99 là gì?",
-  "en": ""
- },
- {
-  "vi": "Mọi chứng khoán kinh doanh",
-  "en": ""
- },
- {
-  "vi": "Thuế hoãn lại",
-  "en": ""
- },
- {
-  "vi": "Danh mục TT99 sử dụng tên đầy đủ này.",
-  "en": ""
- },
- {
-  "vi": "Phụ lục II – TK 419; pháp luật doanh nghiệp liên quan",
-  "en": ""
- },
- {
-  "vi": "Lợi nhuận và cổ tức phải trả",
-  "en": ""
- },
- {
-  "vi": "Dùng 332 thay thói quen 338",
-  "en": ""
- },
- {
-  "vi": "Phân biệt phân phối với chi phí",
-  "en": ""
- },
- {
-  "vi": "Lợi nhuận chưa phân phối 421 gồm lũy kế đến cuối năm trước 4211 và năm nay 4212 theo TT99. Kết quả năm nay được chuyển từ 911 sau chi phí thuế. Có lợi nhuận không đồng nghĩa đủ tiền mặt chia; cần thỏa điều kiện pháp luật và quyết định có thẩm quyền trước khi xác lập nghĩa vụ phân phối.",
-  "en": ""
- },
- {
-  "vi": "TT99 có 332 Phải trả cổ tức, lợi nhuận. Khi phân phối được xác định hợp lệ, giảm lợi nhuận chưa phân phối và tăng 332; trả tiền giảm 332. Không ghi cổ tức trả chủ vào chi phí quản lý hay chi phí tài chính của đơn vị. Số đang ở 338 theo chế độ cũ cần xem chuyển 332 theo Điều 29.",
-  "en": ""
- },
- {
-  "vi": "Quyết định chia 4.000.000đ: Nợ 421/Có 332.",
-  "en": ""
- },
- {
-  "vi": "Trả 3.000.000đ vào tài khoản người nhận: Nợ 332/Có 112; còn nghĩa vụ 1.000.000đ.",
-  "en": ""
- },
- {
-  "vi": "Xác lập cổ tức phải trả hợp lệ 2.000.000đ từ 421 theo quyết định.",
-  "en": ""
- },
- {
-  "vi": "Phân phối lợi nhuận không tạo chi phí kinh doanh.",
-  "en": ""
- },
- {
-  "vi": "Trả cổ tức đã ghi 332 là 1.500.000đ bằng 112.",
-  "en": ""
- },
- {
-  "vi": "Giảm nghĩa vụ cổ tức và tiền gửi.",
-  "en": ""
- },
- {
-  "vi": "Cổ tức phải trả 6.000.000đ, đã trả 4.200.000đ. Còn nợ?",
-  "en": ""
- },
- {
-  "vi": "6.000.000−4.200.000=1.800.000đ.",
-  "en": ""
- },
- {
-  "vi": "Cổ tức phải trả đang theo 338 ở sổ cũ cần chuyển TT99 sang mã nào?",
-  "en": ""
- },
- {
-  "vi": "Điều 29 hướng chuyển cổ tức/lợi nhuận phải trả sang 332.",
-  "en": ""
- },
- {
-  "vi": "Phụ lục II – TK 332,4211,4212; Điều 29",
-  "en": ""
- },
- {
-  "vi": "Quỹ thuộc vốn và nguồn vốn chuyển đổi",
-  "en": ""
- },
- {
-  "vi": "Phân biệt 414,418 với 353",
-  "en": ""
- },
- {
-  "vi": "Xử lý nguồn vốn cũ theo Điều 29",
-  "en": ""
- },
- {
-  "vi": "Quỹ đầu tư phát triển 414 và quỹ khác thuộc vốn chủ 418 có bản chất vốn chủ theo hướng dẫn. Quỹ phúc lợi 353 ở nhóm khác và có cách sử dụng, trình bày riêng. Trích quỹ từ lợi nhuận là phân phối kết quả, không tự làm tiền tăng hoặc biến một khoản thu thành doanh thu.",
-  "en": ""
- },
- {
-  "vi": "Danh mục TT99 không giữ 441 và 466 như tài khoản cấp 1 đang áp dụng; Điều 29 hướng các số dư nguồn vốn đầu tư xây dựng cơ bản và kinh phí đã hình thành TSCĐ sang 4118. Việc chuyển số dư có bảng đối chiếu và hồ sơ, không xóa tài sản đã hình thành. Nguồn tài trợ hoặc hỗ trợ mới cần xét bản chất và quy định riêng, không tự quay lại mã cũ.",
-  "en": ""
- },
- {
-  "vi": "Trích quỹ 414 3.000.000đ từ 421: Nợ 421/Có 414.",
-  "en": ""
- },
- {
-  "vi": "Số dư nguồn cũ 441 8.000.000đ chuyển theo bảng chuyển đổi 4118; tài sản liên quan vẫn đối chiếu.",
-  "en": ""
- },
- {
-  "vi": "Trích quỹ đầu tư phát triển 2.500.000đ từ lợi nhuận 421 theo phê duyệt.",
-  "en": ""
- },
- {
-  "vi": "Chuyển trong vốn chủ, không tạo dòng tiền.",
-  "en": ""
- },
- {
-  "vi": "Nguồn cũ 441 là 6.000.000đ và 466 là 4.000.000đ, đều chuyển sang 4118. Tổng chuyển theo đề?",
-  "en": ""
- },
- {
-  "vi": "6+4=10 triệu đồng, giữ hồ sơ từng nguồn.",
-  "en": ""
- },
- {
-  "vi": "Trích quỹ vốn có làm tiền 112 tự tăng không?",
-  "en": ""
- },
- {
-  "vi": "Không; chỉ phân loại nguồn vốn",
-  "en": ""
- },
- {
-  "vi": "Có; bằng số trích",
-  "en": ""
- },
- {
-  "vi": "Có; ngân hàng cấp thêm tiền",
-  "en": ""
- },
- {
-  "vi": "Phân phối vốn không phát sinh dòng tiền.",
-  "en": ""
- },
- {
-  "vi": "Nguồn 441 và 466 được chuyển theo Điều 29 sang tài khoản nào?",
-  "en": ""
- },
- {
-  "vi": "TT99 hướng nguồn vốn cũ về Vốn khác 4118; không tiếp tục mã cấp 1 cũ.",
-  "en": ""
- },
- {
-  "vi": "Phụ lục II – TK 4118,414,418,421; Điều 29",
-  "en": ""
- },
- {
-  "vi": "12. Doanh thu theo hợp đồng",
-  "en": ""
- },
- {
-  "vi": "Bán hàng và thời điểm chuyển giao",
-  "en": ""
- },
- {
-  "vi": "Dùng bằng chứng giao hàng",
-  "en": ""
- },
- {
-  "vi": "Ghi doanh thu, VAT, giá vốn riêng",
-  "en": ""
- },
- {
-  "vi": "Doanh thu bán hàng theo 511 cần thỏa VAS14, xét chuyển giao, quyền lợi và nghĩa vụ, khả năng thu lợi ích và xác định giá trị. Xuất kho hoặc xuất hóa đơn không tự đủ trong mọi hợp đồng. Điều khoản giao tại kho khách, quyền trả lại hoặc điều kiện nghiệm thu có thể ảnh hưởng thời điểm ghi nhận.",
-  "en": ""
- },
- {
-  "vi": "Một giao dịch bán gồm doanh thu chưa thuế, thuế đầu ra theo pháp luật và giá vốn của phần đã bán. Cần liên kết chứng từ bán với xuất kho và công nợ để tránh bỏ giá vốn hoặc ghi sai kỳ. Bài VAT 10% chỉ là giả định; khoản thu hộ và chiết khấu theo hợp đồng phải phân loại riêng.",
-  "en": ""
- },
- {
-  "vi": "Bán đủ điều kiện 10.000.000đ chưa thuế, VAT giả định 10%: phải thu 11.000.000đ.",
-  "en": ""
- },
- {
-  "vi": "Giá vốn 6.000.000đ: Nợ 632/Có 156 6.000.000đ, lãi gộp 4.000.000đ.",
-  "en": ""
- },
- {
-  "vi": "Bán chưa thuế 8.000.000đ, VAT đề 10%. Khách phải trả?",
-  "en": ""
- },
- {
-  "vi": "8.000.000+800.000=8.800.000đ.",
-  "en": ""
- },
- {
-  "vi": "Bán chịu đủ điều kiện giá chưa thuế 6.000.000đ, VAT giả định 10%. Chỉ ghi doanh thu và thuế.",
-  "en": ""
- },
- {
-  "vi": "Tách doanh thu 6 triệu và thuế đầu ra 600 nghìn.",
-  "en": ""
- },
- {
-  "vi": "Chỉ có phiếu xuất kho trong hợp đồng giao tại kho khách có chắc đã đủ doanh thu?",
-  "en": ""
- },
- {
-  "vi": "Không; cần kiểm tra chuyển giao và điều kiện hợp đồng",
-  "en": ""
- },
- {
-  "vi": "Có; xuất kho là xong mọi điều kiện",
-  "en": ""
- },
- {
-  "vi": "Có nếu xe đã rời cổng",
-  "en": ""
- },
- {
-  "vi": "Thời điểm chuyển giao không luôn trùng xuất kho.",
-  "en": ""
- },
- {
-  "vi": "Ghi giá vốn lô hàng đã đủ điều kiện bán, trị giá 3.600.000đ đang ở 156.",
-  "en": ""
- },
- {
-  "vi": "Giá vốn và doanh thu ghi riêng cho phần đã bán.",
-  "en": ""
- },
- {
-  "vi": "Phụ lục II – TK 511,131,3331,632; VAS14; VAT giả định",
-  "en": ""
- },
- {
-  "vi": "Dịch vụ nhiều kỳ và tiền nhận trước",
-  "en": ""
- },
- {
-  "vi": "Xác định phần dịch vụ hoàn thành",
-  "en": ""
- },
- {
-  "vi": "Phân bổ doanh thu có căn cứ",
-  "en": ""
- },
- {
-  "vi": "Dịch vụ thực hiện nhiều kỳ cần đánh giá kết quả theo VAS14 và điều khoản hợp đồng, xác định phần hoàn thành và khả năng đo lường đáng tin cậy. Thu toàn bộ tiền đầu kỳ không tự tạo toàn bộ doanh thu. Dịch vụ bảo trì 12 tháng khác bán một phần mềm và có nghĩa vụ hỗ trợ tách riêng; cần đọc bản chất từng nghĩa vụ.",
-  "en": ""
- },
- {
-  "vi": "Khoản doanh thu chờ phân bổ đủ điều kiện theo 3387 được đưa 511 theo kỳ hưởng; khách ứng trước chưa thuộc nội dung 3387 có thể theo 131. Không sử dụng một tài khoản cho tất cả tiền nhận trước. Chi phí cung cấp dịch vụ và dở dang theo 154 được xem cùng doanh thu để phản ánh đúng kết quả, không chờ thu tiền mới ghi.",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng dịch vụ đều 12 kỳ, giá 12.000.000đ chưa thuế và đủ căn cứ phân bổ: mỗi kỳ 1.000.000đ.",
-  "en": ""
- },
- {
-  "vi": "Nếu đã hoàn thành 3 kỳ theo giả định: doanh thu lũy kế 3.000.000đ, chưa phân bổ 9.000.000đ.",
-  "en": ""
- },
- {
-  "vi": "Dịch vụ 18.000.000đ cho 9 kỳ đồng đều, đề cho đủ điều kiện phân bổ. Doanh thu một kỳ?",
-  "en": ""
- },
- {
-  "vi": "18.000.000/9=2.000.000đ.",
-  "en": ""
- },
- {
-  "vi": "Phân bổ doanh thu dịch vụ đã đủ điều kiện 1.800.000đ từ 3387 sang 511.",
-  "en": ""
- },
- {
-  "vi": "Ghi phần doanh thu của kỳ thực hiện.",
-  "en": ""
- },
- {
-  "vi": "Thu tiền cả hợp đồng trước khi cung cấp dịch vụ có luôn ghi đủ 511 không?",
-  "en": ""
- },
- {
-  "vi": "Không; xem phần thực hiện và điều kiện ghi nhận",
-  "en": ""
- },
- {
-  "vi": "Có; ngân hàng đã báo Có",
-  "en": ""
- },
- {
-  "vi": "Có; tiền không được trả lại",
-  "en": ""
- },
- {
-  "vi": "Điều kiện ghi nhận dịch vụ cần được đánh giá theo bản chất hợp đồng.",
-  "en": ""
- },
- {
-  "vi": "Doanh thu chờ phân bổ 24.000.000đ cho 12 kỳ đều, đã ghi 4 kỳ. Còn chưa phân bổ?",
-  "en": ""
- },
- {
-  "vi": "24−4×2=16 triệu đồng theo đề.",
-  "en": ""
- },
- {
-  "vi": "Phụ lục II – TK 154,131,3387,511; VAS14",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng xây dựng và TK 337",
-  "en": ""
- },
- {
-  "vi": "Phân biệt thanh toán theo tiến độ với doanh thu",
-  "en": ""
- },
- {
-  "vi": "Tập hợp chi phí hợp đồng",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng xây dựng cần xét VAS15 về doanh thu, chi phí và mức hoàn thành. Khoản thanh toán theo tiến độ có thể khác doanh thu được xác định; TK 337 hỗ trợ phản ánh thanh toán theo tiến độ hợp đồng xây dựng theo nội dung TT99. Không dùng lịch thu tiền làm tỷ lệ hoàn thành nếu không phản ánh công việc thực tế.",
-  "en": ""
- },
- {
-  "vi": "Chi phí vật liệu, nhân công, máy thi công và chung được theo đối tượng hợp đồng qua 621,622,623,627,154 tùy hướng dẫn. Dự kiến lỗ, thay đổi dự toán và các khoản đòi thêm cần căn cứ và cách xử lý chuẩn mực. Bài chỉ cho tỷ lệ hoàn thành được xác định đáng tin cậy để tính số minh họa, không thay đánh giá hợp đồng thực tế.",
-  "en": ""
- },
- {
-  "vi": "Giá hợp đồng 40.000.000đ chưa thuế, tỷ lệ hoàn thành đáng tin 30%: doanh thu minh họa 12.000.000đ.",
-  "en": ""
- },
- {
-  "vi": "Thanh toán theo tiến độ 10.000.000đ không bắt buộc bằng 12.000.000đ doanh thu.",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng 50.000.000đ, tỷ lệ hoàn thành đề xác định 20%, đủ điều kiện. Doanh thu minh họa?",
-  "en": ""
- },
- {
-  "vi": "50.000.000×20%=10.000.000đ.",
-  "en": ""
- },
- {
-  "vi": "Tiền thanh toán theo tiến độ có luôn bằng doanh thu đã hoàn thành không?",
-  "en": ""
- },
- {
-  "vi": "Không; hai số có thể khác",
-  "en": ""
- },
- {
-  "vi": "Có; không cần đánh giá mức hoàn thành",
-  "en": ""
- },
- {
-  "vi": "Có nếu thanh toán bằng 112",
-  "en": ""
- },
- {
-  "vi": "VAS15 và 337 tách doanh thu với lịch thanh toán.",
-  "en": ""
- },
- {
-  "vi": "Ghép khoản chi hợp đồng với tài khoản tập hợp.",
-  "en": ""
- },
- {
-  "vi": "Nhân công trực tiếp",
-  "en": ""
- },
- {
-  "vi": "Sử dụng máy thi công",
-  "en": ""
- },
- {
-  "vi": "Theo chức năng chi phí và đối tượng hợp đồng.",
-  "en": ""
- },
- {
-  "vi": "Doanh thu hợp đồng lũy kế cần 12.000.000đ, đã ghi 8.500.000đ. Doanh thu ghi thêm kỳ này?",
-  "en": ""
- },
- {
-  "vi": "12.000.000−8.500.000=3.500.000đ.",
-  "en": ""
- },
- {
-  "vi": "Phụ lục II – TK 337,511,623,154; VAS15",
-  "en": ""
- },
- {
-  "vi": "Chiết khấu, trả lại và đại lý",
-  "en": ""
- },
- {
-  "vi": "Tách thương mại với thanh toán",
-  "en": ""
- },
- {
-  "vi": "Kết chuyển 521 đúng thứ tự",
-  "en": ""
- },
- {
-  "vi": "Chiết khấu thương mại gắn lượng hoặc điều khoản giá, giảm giá hàng và hàng trả lại thuộc giảm trừ doanh thu theo hướng dẫn 521 khi phù hợp. Chiết khấu thanh toán vì trả sớm thuộc tài chính. Chứng từ điều chỉnh phải liên kết lô bán và thuế tương ứng theo pháp luật thuế, không giảm tiền khách mà bỏ hồ sơ.",
   "en": ""
  }
 ]

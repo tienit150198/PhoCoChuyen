@@ -1,5 +1,473 @@
 [
  {
+  "vi": "Sửa giờ cho đẹp",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký tổng đài bị sửa giờ, người khiếu nại đối chiếu ra ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Một người khiếu nại đối chiếu với điện thoại của họ. Nhật ký bị phát hiện sửa.",
+  "en": ""
+ },
+ {
+  "vi": "Người khiếu nại",
+  "en": ""
+ },
+ {
+  "vi": "Máy tôi ghi ba phút mới có người nghe, sổ ghi mười giây?",
+  "en": ""
+ },
+ {
+  "vi": "Không sửa, nhưng cũng không nói gì",
+  "en": ""
+ },
+ {
+  "vi": "Không sửa là đúng, nhưng chẳng ai biết vì sao chậm.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu thật, nhưng quý sau vẫn thiếu người như cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Không sửa là tốt. Nói ra lý do thì tốt hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký cuộc gọi phải đúng sự thật; số liệu xấu cần lý do và đề xuất, không cần tô vẽ.",
+  "en": ""
+ },
+ {
+  "vi": "Ba cuộc gọi đùa, cuộc thứ tư",
+  "en": ""
+ },
+ {
+  "vi": "Sáng nay ba cuộc gọi đùa “cháy nhà” từ cùng một khu. Cuộc thứ tư, cũng khu đó, một giọng nhỏ: “Có khói… thiệt mà…”",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi cuộc gọi là một cuộc mới. Gọi đùa ba lần không làm cuộc thứ tư thành đùa.",
+  "en": ""
+ },
+ {
+  "vi": "Cách kiểm",
+  "en": ""
+ },
+ {
+  "vi": "Nghe tiếng nền, hỏi chi tiết, gọi lại số máy trước khi quyết không gửi.",
+  "en": ""
+ },
+ {
+  "vi": "Chính bạn",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã bực vì ba cuộc trước.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi chi tiết, lắng nghe, gọi lại; có dấu hiệu thật thì gửi xe ngay",
+  "en": ""
+ },
+ {
+  "vi": "Em gọi cháy lần đầu trong đời mà cô tổng đài tin em, hỏi kỹ lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng lửa lách tách rõ trong máy. Xe tới khi lửa mới bén tới mái hiên.",
+  "en": ""
+ },
+ {
+  "vi": "Tới sớm năm phút là cứu được cả dãy.",
+  "en": ""
+ },
+ {
+  "vi": "Cậu bé gọi",
+  "en": ""
+ },
+ {
+  "vi": "Em sợ không ai tin em.",
+  "en": ""
+ },
+ {
+  "vi": "“Lại đùa nữa hả!” rồi cúp máy",
+  "en": ""
+ },
+ {
+  "vi": "Gọi báo cháy thật mà bị mắng là gọi đùa.",
+  "en": ""
+ },
+ {
+  "vi": "Mười phút sau cuộc gọi thứ năm: cháy thật, lan ba căn.",
+  "en": ""
+ },
+ {
+  "vi": "Cái bực của mình không được quyết thay cho người gọi.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi xe luôn, khỏi hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Xe tới nhanh, nhưng địa chỉ không rõ nên vòng hai lần.",
+  "en": ""
+ },
+ {
+  "vi": "Xe tới được, nhưng tổng đài không có số nhà nên đội phải dò.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi là đúng, nhưng cho anh cái địa chỉ chứ.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi cuộc gọi là một cuộc mới: kiểm tra rồi quyết, đừng để cái bực quyết thay.",
+  "en": ""
+ },
+ {
+  "vi": "Người gọi là hàng xóm của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Giọng quen quen: là cô Hạnh hàng xóm. “Nhà bà Tám cạnh nhà con bốc khói! Con về liền đi!”",
+  "en": ""
+ },
+ {
+  "vi": "Bàn trực",
+  "en": ""
+ },
+ {
+  "vi": "Trực ban không rời bàn khi ca chưa có người thay.",
+  "en": ""
+ },
+ {
+  "vi": "Đội",
+  "en": ""
+ },
+ {
+  "vi": "Xe chữa cháy cách đó ba phút, xe cấp cứu sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "Lòng bạn",
+  "en": ""
+ },
+ {
+  "vi": "Nhà bạn sát bên, mẹ bạn đang ở nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Làm đúng kịch bản, gửi xe, hướng dẫn cô Hạnh đưa mọi người ra ngoài; nhờ chị Thảo gọi cho mẹ",
+  "en": ""
+ },
+ {
+  "vi": "Con bé nghe giọng run run mà vẫn hỏi đủ, xe tới liền. Cả xóm ra ngoài an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Xe tới sau ba phút. Mẹ bạn đứng ngoài đầu hẻm, gọi điện báo “mẹ không sao”.",
+  "en": ""
+ },
+ {
+  "vi": "Nó run mà vẫn bình tĩnh hơn tôi.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn trực vững thì cả xóm vững.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ bàn trực chạy về",
+  "en": ""
+ },
+ {
+  "vi": "Trực ban bỏ máy chạy về nhà, ba cuộc gọi khác không ai nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn về tới thì xe đã tới. Trong lúc đó tổng đài thiếu một người.",
+  "en": ""
+ },
+ {
+  "vi": "Em chạy về cũng không dập được lửa.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi xe luôn, bỏ qua câu hỏi vì biết nhà rồi",
+  "en": ""
+ },
+ {
+  "vi": "Gửi nhanh nhưng không hỏi có ai kẹt trong nhà không.",
+  "en": ""
+ },
+ {
+  "vi": "Đội tới mới biết bà Tám còn ở trên gác, mất thêm hai phút tìm.",
+  "en": ""
+ },
+ {
+  "vi": "Biết có người trên gác từ đầu thì anh vô thẳng.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện của người quen vẫn làm đủ kịch bản; bàn trực không bỏ trống.",
+  "en": ""
+ },
+ {
+  "vi": "“Giọng em dễ thương quá”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Tùng · người gọi hỏi đường",
+  "en": ""
+ },
+ {
+  "vi": "“Ủa tổng đài gì mà giọng ngọt vậy? Cho anh xin số riêng, tối anh gọi nghe giọng em ngủ.”",
+  "en": ""
+ },
+ {
+  "vi": "“Có số thôi mà, anh hứa không làm phiền.”",
+  "en": ""
+ },
+ {
+  "vi": "“Lạnh lùng vl, tổng đài phải thân thiện chứ.”",
+  "en": ""
+ },
+ {
+  "vi": "Đây là đường dây khẩn, tôi phải giữ máy cho người cần.",
+  "en": ""
+ },
+ {
+  "vi": "Tổng đài không cho số riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi đường thì anh gọi tổng đài thông tin nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Tùng “ờ” một tiếng rồi cúp. Đường dây trống kịp cho cuộc gọi kế.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cho số. Tối đó anh Tùng gọi mười cuộc, có cuộc lúc hai giờ sáng.",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ trái cây “cảm ơn”",
+  "en": ""
+ },
+ {
+  "vi": "Bà Liên · người được cứu tuần trước",
+  "en": ""
+ },
+ {
+  "vi": "Bà Liên xách giỏ trái cây có kẹp phong bì lên tận phòng trực: “Con nhận cho bà vui, nhờ con mà nhà bà còn.”",
+  "en": ""
+ },
+ {
+  "vi": "“Có chút trái cây với ít tiền uống nước thôi mà.”",
+  "en": ""
+ },
+ {
+  "vi": "“Không nhận là chê bà hả con?”",
+  "en": ""
+ },
+ {
+  "vi": "Trung tâm không cho nhận tiền của người dân.",
+  "en": ""
+ },
+ {
+  "vi": "Bà viết vài dòng vào hộp thư cảm ơn là con vui lắm rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Liên rút phong bì lại, để giỏ trái cây cho cả phòng: “Vậy cái này chia nhau ăn.” Chị Thảo ghi vào sổ quà tặng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nhận phong bì. Tuần sau có người gọi tổng đài hỏi “gửi bao nhiêu thì xe tới nhanh hơn”.",
+  "en": ""
+ },
+ {
+  "vi": "DJ Long rủ lên sóng",
+  "en": ""
+ },
+ {
+  "vi": "DJ Long · Mây FM",
+  "en": ""
+ },
+ {
+  "vi": "“Lên sóng với Long đi, kể vụ cháy hôm qua cho drama, Long tặng vé concert hai người, ngồi hàng VIP!”",
+  "en": ""
+ },
+ {
+  "vi": "“Vé VIP đó, cháy vé từ tuần trước.”",
+  "en": ""
+ },
+ {
+  "vi": "“Một chút thôi, đổi tên người bị nạn là được mà.”",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện của người gọi là bí mật, không kể lên sóng.",
+  "en": ""
+ },
+ {
+  "vi": "Long mời phòng truyền thông nói về cách gọi tổng đài cho đúng đi.",
+  "en": ""
+ },
+ {
+  "vi": "DJ Long nghĩ một hồi: “Ờ, mục ‘gọi tổng đài cho đúng’ nghe cũng có vibe.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn lên sóng kể chuyện. Người trong vụ cháy nghe ra nhà mình, gọi lên trung tâm khiếu nại.",
+  "en": ""
+ },
+ {
+  "vi": "Tổng đài không kể chuyện người ta, mà gợi ý cho mình mục hay ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Lên sóng vui mà hôm sau bị khiếu nại, toang.",
+  "en": ""
+ },
+ {
+  "vi": "Rủ đi ăn tối đổi lịch trực",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khải · Giám đốc trung tâm",
+  "en": ""
+ },
+ {
+  "vi": "“Tối nay đi ăn với anh, chỉ hai đứa. Lịch trực tháng sau anh xếp cho em toàn ca ngày.”",
+  "en": ""
+ },
+ {
+  "vi": "“Lịch trực nằm trong tay anh đó.”",
+  "en": ""
+ },
+ {
+  "vi": "“Em nghĩ kỹ đi, người khác muốn còn không được.”",
+  "en": ""
+ },
+ {
+  "vi": "Lịch trực xếp theo quy định, không đổi bằng một bữa ăn.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khải cười nhạt: “Cứng ghê.” Lịch trực tháng sau vẫn xếp đều như cả phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đi ăn. Cả trung tâm xì xào, lịch trực “đẹp” của bạn bị đem ra họp.",
+  "en": ""
+ },
+ {
+  "vi": "Fan cuồng của “giọng tổng đài”",
+  "en": ""
+ },
+ {
+  "vi": "Một bạn trẻ · gọi mỗi tối",
+  "en": ""
+ },
+ {
+  "vi": "“Em nghe giọng chị trên clip cứu người, mê luôn. Cho em gặp chị một lần, em đứng dưới cổng trung tâm rồi nè!”",
+  "en": ""
+ },
+ {
+  "vi": "“Em chờ tới tan ca cũng được.”",
+  "en": ""
+ },
+ {
+  "vi": "“Chị không gặp là em gọi đường dây khẩn hoài đó.”",
+  "en": ""
+ },
+ {
+  "vi": "Chị không gặp riêng ai qua đường dây này.",
+  "en": ""
+ },
+ {
+  "vi": "Đường dây này để cứu người, em giữ cho người cần nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi đường dây khẩn không có việc khẩn là vi phạm.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn trẻ im một hồi rồi “dạ” nhỏ, cúp máy. Bảo vệ báo bạn ấy đã về.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn xuống cổng gặp. Từ đó bạn ấy gọi đường dây khẩn mỗi tối “để nghe giọng chị”.",
+  "en": ""
+ },
+ {
+  "vi": "“Chị bán hàng online không?”",
+  "en": ""
+ },
+ {
+  "vi": "Chị Mai · chủ shop online",
+  "en": ""
+ },
+ {
+  "vi": "“Em làm tổng đài chắc biết số điện thoại nhiều người lắm ha? Chia chị danh sách, chị trả hoa hồng ngon nè!”",
+  "en": ""
+ },
+ {
+  "vi": "“Có ai biết đâu em, danh sách thôi mà.”",
+  "en": ""
+ },
+ {
+  "vi": "“Một số một xu, ngàn số là ngàn xu đó.”",
+  "en": ""
+ },
+ {
+  "vi": "Số điện thoại người gọi là bí mật, không bán, không cho.",
+  "en": ""
+ },
+ {
+  "vi": "Em không làm chuyện đó.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Mai tặc lưỡi rồi đi. Danh sách người gọi vẫn nằm yên trong hệ thống.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn lén chép danh sách. Ba tuần sau người gọi tổng đài nhận tin rác bán kem trộn, thanh tra lần ra máy bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Người gọi chửi rủa",
+  "en": ""
+ },
+ {
+  "vi": "Một người gọi say xỉn",
+  "en": ""
+ },
+ {
+  "vi": "“Tổng đài vô dụng! Tao gọi taxi mà mày không gọi! Tao biết mặt mày rồi đó, con kia!”",
+  "en": ""
+ },
+ {
+  "vi": "“Mày ngon thì nói tên ra!”",
+  "en": ""
+ },
+ {
+  "vi": "Hắn gọi lại lần nữa, giọng còn to hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi sẽ kết thúc cuộc gọi nếu anh tiếp tục xúc phạm.",
+  "en": ""
+ },
+ {
   "vi": "Cuộc gọi được ghi âm; xúc phạm trực ban là vi phạm.",
   "en": ""
  },
@@ -1329,474 +1797,6 @@
  },
  {
   "vi": "Chỉ việc tận tình, câu cửa miệng “sếp ghét nhất là…”.",
-  "en": ""
- },
- {
-  "vi": "Chủ xưởng vải Lực Thành (nhà cung cấp)",
-  "en": ""
- },
- {
-  "vi": "Nóng tính, đòi gặp giám đốc ngay.",
-  "en": ""
- },
- {
-  "vi": "Hay nhờ chen vào lịch sếp.",
-  "en": ""
- },
- {
-  "vi": "Hiền, hay hoảng khi khách to tiếng.",
-  "en": ""
- },
- {
-  "vi": "Trình sếp",
-  "en": ""
- },
- {
-  "vi": "Tự trả lời",
-  "en": ""
- },
- {
-  "vi": "Chuyển phòng ban",
-  "en": ""
- },
- {
-  "vi": "Rác / lừa đảo",
-  "en": ""
- },
- {
-  "vi": "Trường Tiểu học Hoa Sen",
-  "en": ""
- },
- {
-  "vi": "Trường THCS Lê Lợi",
-  "en": ""
- },
- {
-  "vi": "Trường Tiểu học Bình Minh",
-  "en": ""
- },
- {
-  "vi": "Trung tâm Anh ngữ Ngôi Sao",
-  "en": ""
- },
- {
-  "vi": "Shop Cặp Xinh",
-  "en": ""
- },
- {
-  "vi": "Nhà sách Mặt Trời",
-  "en": ""
- },
- {
-  "vi": "Văn phòng phẩm Thiên Long Phát",
-  "en": ""
- },
- {
-  "vi": "Cửa hàng Bé Đến Trường",
-  "en": ""
- },
- {
-  "vi": "Cần giám đốc ký hợp đồng trước thứ Sáu.",
-  "en": ""
- },
- {
-  "vi": "Đơn từ 50.000 xu cần giám đốc ký.",
-  "en": ""
- },
- {
-  "vi": "Nhờ báo giá và ngày giao.",
-  "en": ""
- },
- {
-  "vi": "Đơn dưới 50.000 xu: chuyển phòng kinh doanh lo.",
-  "en": ""
- },
- {
-  "vi": "Sở Công Thương",
-  "en": ""
- },
- {
-  "vi": "Giấy mời hội nghị doanh nghiệp",
-  "en": ""
- },
- {
-  "vi": "Kính mời đại diện lãnh đạo công ty tham dự.",
-  "en": ""
- },
- {
-  "vi": "Cơ quan nhà nước mời lãnh đạo: trình sếp.",
-  "en": ""
- },
- {
-  "vi": "Chi cục Thuế quận",
-  "en": ""
- },
- {
-  "vi": "Thông báo lịch kiểm tra thuế",
-  "en": ""
- },
- {
-  "vi": "Đề nghị công ty chuẩn bị hồ sơ năm 2024.",
-  "en": ""
- },
- {
-  "vi": "Thư của cơ quan thuế: trình sếp ngay.",
-  "en": ""
- },
- {
-  "vi": "Phóng viên báo Thị Trường",
-  "en": ""
- },
- {
-  "vi": "Xin phỏng vấn về tin cắt giảm nhân sự",
-  "en": ""
- },
- {
-  "vi": "Mong giám đốc trả lời trước 17 giờ.",
-  "en": ""
- },
- {
-  "vi": "Báo chí: chỉ giám đốc quyết định trả lời.",
-  "en": ""
- },
- {
-  "vi": "Ban tổ chức Hội chợ Đồ dùng học tập",
-  "en": ""
- },
- {
-  "vi": "Mời đặt gian hàng hội chợ",
-  "en": ""
- },
- {
-  "vi": "Phí gian hàng 30.000 xu, cần lãnh đạo xác nhận.",
-  "en": ""
- },
- {
-  "vi": "Khoản chi lớn cần lãnh đạo xác nhận.",
-  "en": ""
- },
- {
-  "vi": "Xin hẹn gặp giám đốc tuần sau",
-  "en": ""
- },
- {
-  "vi": "Muốn giới thiệu mẫu in túi mới.",
-  "en": ""
- },
- {
-  "vi": "Xin lịch hẹn: thư ký trả lời theo lịch trống của sếp.",
-  "en": ""
- },
- {
-  "vi": "Thư cảm ơn đã tặng 100 cặp sách",
-  "en": ""
- },
- {
-  "vi": "Các em học sinh gửi lời cảm ơn công ty.",
-  "en": ""
- },
- {
-  "vi": "Thư cảm ơn: thư ký trả lời thay, báo sếp trong bản tin cuối ngày.",
-  "en": ""
- },
- {
-  "vi": "Xưởng vải Lực Thành",
-  "en": ""
- },
- {
-  "vi": "Đã nhận đơn đặt vải, giao ngày 20",
-  "en": ""
- },
- {
-  "vi": "Nhờ xác nhận lại địa chỉ kho nhận.",
-  "en": ""
- },
- {
-  "vi": "Chỉ cần xác nhận địa chỉ kho — thư ký trả lời được.",
-  "en": ""
- },
- {
-  "vi": "Lịch bảo trì máy chủ tối thứ Bảy",
-  "en": ""
- },
- {
-  "vi": "Nhờ chị báo giúp sếp tắt máy trước khi về.",
-  "en": ""
- },
- {
-  "vi": "Thư thật từ IT nội bộ (đúng tên miền canhdieu.vn): xác nhận và nhắc sếp.",
-  "en": ""
- },
- {
-  "vi": "Công ty Điện lực",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn tiền điện tháng 9",
-  "en": ""
- },
- {
-  "vi": "Hạn thanh toán ngày 25.",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn: chuyển phòng kế toán.",
-  "en": ""
- },
- {
-  "vi": "Ứng tuyển thợ may mẫu",
-  "en": ""
- },
- {
-  "vi": "Em gửi CV và ảnh sản phẩm đã may.",
-  "en": ""
- },
- {
-  "vi": "CV: chuyển phòng nhân sự.",
-  "en": ""
- },
- {
-  "vi": "Nhi (lễ tân)",
-  "en": ""
- },
- {
-  "vi": "Máy tính lễ tân không lên màn hình",
-  "en": ""
- },
- {
-  "vi": "Em bật mãi không được ạ.",
-  "en": ""
- },
- {
-  "vi": "Máy hỏng: chuyển IT.",
-  "en": ""
- },
- {
-  "vi": "Balo con tôi đứt quai sau 2 tuần",
-  "en": ""
- },
- {
-  "vi": "Yêu cầu công ty trả lời trong hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Khiếu nại sản phẩm: chuyển kinh doanh, họ trả lời trong ngày.",
-  "en": ""
- },
- {
-  "vi": "Anh Quân <quan.canhdieu.gd@gmail.com>",
-  "en": ""
- },
- {
-  "vi": "GẤP: chuyển 85.000 xu cho đối tác trước 11h",
-  "en": ""
- },
- {
-  "vi": "Anh đang họp, không nghe máy được. Em chuyển ngay vào số tài khoản này rồi báo anh.",
-  "en": ""
- },
- {
-  "vi": "Giả danh giám đốc: địa chỉ gmail lạ, đòi chuyển tiền gấp, không cho gọi lại — lừa đảo.",
-  "en": ""
- },
- {
-  "vi": "Lực Thành Kế toán <lucthanh.ketoan@outlook.com>",
-  "en": ""
- },
- {
-  "vi": "Thông báo đổi số tài khoản nhận tiền",
-  "en": ""
- },
- {
-  "vi": "Từ tháng này vui lòng chuyển tiền vào tài khoản mới dưới đây.",
-  "en": ""
- },
- {
-  "vi": "Đổi số tài khoản qua email: không làm theo, gọi lại số đã lưu để xác minh.",
-  "en": ""
- },
- {
-  "vi": "Ban tổ chức Quay số Tri ân",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng công ty trúng xe máy",
-  "en": ""
- },
- {
-  "vi": "Bấm vào link để nhận thưởng.",
-  "en": ""
- },
- {
-  "vi": "Trúng thưởng không tham gia: rác.",
-  "en": ""
- },
- {
-  "vi": "Bộ phận IT <it-support@canhdieu-secure.net>",
-  "en": ""
- },
- {
-  "vi": "Mật khẩu email sắp hết hạn",
-  "en": ""
- },
- {
-  "vi": "Đăng nhập lại tại đường link này.",
-  "en": ""
- },
- {
-  "vi": "Tên miền lạ (không phải canhdieu.vn), đòi đăng nhập qua link: lừa đảo.",
-  "en": ""
- },
- {
-  "vi": "Khóa học Làm giàu 4.0",
-  "en": ""
- },
- {
-  "vi": "Giảm 90% hôm nay",
-  "en": ""
- },
- {
-  "vi": "Chỉ còn 3 suất cuối cùng!",
-  "en": ""
- },
- {
-  "vi": "Quảng cáo: rác.",
-  "en": ""
- },
- {
-  "vi": "Sếp đã giao hội chợ cho phòng kinh doanh.",
-  "en": ""
- },
- {
-  "vi": "Anh Quân nhắn: “Hội chợ năm nay anh giao hết cho phòng kinh doanh, đừng trình anh nữa.”",
-  "en": ""
- },
- {
-  "vi": "Sếp muốn tự gọi cho người này.",
-  "en": ""
- },
- {
-  "vi": "Anh Quân nhắn: “Thư anh Phúc Lộc đưa anh, anh tự gọi — người quen cũ.”",
-  "en": ""
- },
- {
-  "vi": "Sếp đã ủy quyền chị Khuê ký đơn này.",
-  "en": ""
- },
- {
-  "vi": "Anh Quân nhắn: “Đơn của trường anh ủy quyền chị Khuê ký, chuyển kinh doanh luôn.”",
-  "en": ""
- },
- {
-  "vi": "Anh Quân vừa đi ngang: “Em lọc thư giúp anh. Cái gì anh phải xem thì để riêng, đừng để anh đọc thư rác.”",
-  "en": ""
- },
- {
-  "vi": "Sếp dặn",
-  "en": ""
- },
- {
-  "vi": "Trình sếp: đơn từ 50.000 xu, cơ quan nhà nước, báo chí, khoản chi lớn cần lãnh đạo.",
-  "en": ""
- },
- {
-  "vi": "Tự trả lời: xin lịch hẹn, cảm ơn, xác nhận thông tin đơn giản.",
-  "en": ""
- },
- {
-  "vi": "Chuyển phòng: hóa đơn → kế toán · CV → nhân sự · máy hỏng → IT · khiếu nại, đơn nhỏ → kinh doanh.",
-  "en": ""
- },
- {
-  "vi": "Rác/lừa đảo: trúng thưởng, quảng cáo, đòi chuyển tiền gấp, đổi số tài khoản, link đăng nhập lạ.",
-  "en": ""
- },
- {
-  "vi": "Email thật của công ty luôn có đuôi @canhdieu.vn.",
-  "en": ""
- },
- {
-  "vi": "Thanh toán / công nợ",
-  "en": ""
- },
- {
-  "vi": "Hỏi giá / đặt hàng",
-  "en": ""
- },
- {
-  "vi": "Khiếu nại",
-  "en": ""
- },
- {
-  "vi": "Giao nhận hàng",
-  "en": ""
- },
- {
-  "vi": "Xin hẹn gặp",
-  "en": ""
- },
- {
-  "vi": "hai giờ rưỡi chiều",
-  "en": ""
- },
- {
-  "vi": "ba giờ chiều",
-  "en": ""
- },
- {
-  "vi": "bốn giờ kém mười lăm chiều",
-  "en": ""
- },
- {
-  "vi": "mười giờ sáng",
-  "en": ""
- },
- {
-  "vi": "chín rưỡi sáng",
-  "en": ""
- },
- {
-  "vi": "bốn giờ chiều",
-  "en": ""
- },
- {
-  "vi": "mười một giờ trưa",
-  "en": ""
- },
- {
-  "vi": "năm giờ chiều",
-  "en": ""
- },
- {
-  "vi": "bốn rưỡi chiều",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh (khách lẻ)",
-  "en": ""
- },
- {
-  "vi": "Vận tải Nhanh Như Gió",
-  "en": ""
- },
- {
-  "vi": "Công ty Khóa kéo Sao Mai",
-  "en": ""
- },
- {
-  "vi": "Ngân hàng Phương Nam",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ vay của công ty còn thiếu một chữ ký trên giấy nhận nợ, cần xử lý trước khi giải ngân.",
-  "en": ""
- },
- {
-  "vi": "📞 Khách",
-  "en": ""
- },
- {
-  "vi": "🙋 Bạn",
   "en": ""
  }
 ]

@@ -1,78 +1,1258 @@
 [
  {
-  "vi": "🏠 Vào nhà",
+  "vi": "Xe đạp, xe máy, ô tô, du thuyền, máy bay",
   "en": ""
  },
  {
-  "vi": "Dọn về ở",
+  "vi": "Nhà xe đang mở cửa",
   "en": ""
  },
  {
-  "vi": "Mai đi tiếp",
+  "vi": "Cửa hàng đang sắp xe ra. Mở lại sau ít phút nhé.",
   "en": ""
  },
  {
-  "vi": "Hôm nay đi rồi",
+  "vi": "Mua xe chỉ có trong chế độ hành trình",
   "en": ""
  },
  {
-  "vi": "Mai mở tiếp",
+  "vi": "Vào hành trình để sắm xe cho nhân vật của bạn.",
   "en": ""
  },
  {
-  "vi": "Hôm nay mở tiệc rồi",
+  "vi": "Mục nhà xe",
   "en": ""
  },
  {
-  "vi": "✓ Tốt nghiệp",
+  "vi": "🗓️ 1 chuyến/ngày",
   "en": ""
  },
  {
-  "vi": "Mai học tiếp",
+  "vi": "⛽ Không tốn xăng",
   "en": ""
  },
  {
-  "vi": "Hôm nay học rồi",
+  "vi": "Hôm nay đã đi chơi một chuyến. Mai lại đi tiếp nhé.",
   "en": ""
  },
  {
-  "vi": "Trời đang có pháo hoa",
+  "vi": "Nhà xe còn trống",
   "en": ""
  },
  {
-  "vi": "Chọn một chỗ",
+  "vi": "Trả đủ một lần, không vay. Có xe rồi, mỗi ngày đi chơi một chuyến cho tinh thần phơi phới.",
   "en": ""
  },
  {
-  "vi": "Chọn số",
+  "vi": "🛞 Đang đi",
   "en": ""
  },
  {
-  "vi": "chưa có visa",
+  "vi": "Đi chiếc này",
   "en": ""
  },
  {
-  "vi": "🎁 Quà",
+  "vi": "🎨 Sơn & biển tên",
   "en": ""
  },
  {
-  "vi": "📷 Chụp ảnh",
+  "vi": "Không khoe xe trên hồ sơ",
   "en": ""
  },
  {
-  "vi": "Ví chưa đủ",
+  "vi": "Xe của bạn",
   "en": ""
  },
  {
-  "vi": "🛡️ Bảo hiểm",
+  "vi": "Chiếc “đang đi” hiện trên hồ sơ, trước nhà và trong Phố nghề.",
   "en": ""
  },
  {
-  "vi": "Phỏng vấn: trả lời thật, có vé khứ hồi.",
+  "vi": "✓ Đã có trong nhà xe",
   "en": ""
  },
  {
-  "vi": "Thiếu hay sai một giấy là bị trả hồ sơ, phí không hoàn.",
+  "vi": "Xem & chọn màu",
+  "en": ""
+ },
+ {
+  "vi": "Màu sơn",
+  "en": ""
+ },
+ {
+  "vi": "Màu:",
+  "en": ""
+ },
+ {
+  "vi": ". Đổi màu sau này không tốn xu.",
+  "en": ""
+ },
+ {
+  "vi": "VD: MÂY 01",
+  "en": ""
+ },
+ {
+  "vi": "Xe đạp không tốn phí giữ xe. Tiền xăng chỉ trả khi bạn đi chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền xăng chỉ trả khi bạn đi chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã vào ví của bạn 👛",
+  "en": ""
+ },
+ {
+  "vi": "Nhận quà 💛",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xong",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ chỗ",
+  "en": ""
+ },
+ {
+  "vi": "Ở ngay trên",
+  "en": ""
+ },
+ {
+  "vi": "chạm",
+  "en": ""
+ },
+ {
+  "vi": "CHỨNG NHẬN TRONG PHỐ CÓ CHUYỆN",
+  "en": ""
+ },
+ {
+  "vi": "Mười hai bài ngắn từ thời Hùng Vương tới ngày nay. Đọc bài rồi trả lời hai câu hỏi; trả lời sai cứ thử lại, bài sẽ tô vàng câu cần đọc lại.",
+  "en": ""
+ },
+ {
+  "vi": "Tiến độ học lịch sử",
+  "en": ""
+ },
+ {
+  "vi": "· đã có chứng nhận",
+  "en": ""
+ },
+ {
+  "vi": "Học tiếp →",
+  "en": ""
+ },
+ {
+  "vi": "Bắt đầu học →",
+  "en": ""
+ },
+ {
+  "vi": "Thi lấy chứng nhận →",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở bài học…",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời nhanh",
+  "en": ""
+ },
+ {
+  "vi": "← Mục lục",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một đáp án là nộp câu đó. Kết quả và lời giải hiện sau câu cuối.",
+  "en": ""
+ },
+ {
+  "vi": "Tiến độ bài thi",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ bài thi",
+  "en": ""
+ },
+ {
+  "vi": "Thi lấy chứng nhận",
+  "en": ""
+ },
+ {
+  "vi": "Bài thi gần nhất",
+  "en": ""
+ },
+ {
+  "vi": "ĐỌC NGẮN · HỎI NHANH",
+  "en": ""
+ },
+ {
+  "vi": "📜 Học lịch sử Việt Nam",
+  "en": ""
+ },
+ {
+  "vi": "Từ thời Hùng Vương tới Đổi Mới",
+  "en": ""
+ },
+ {
+  "vi": "Bài học đang được tải. Mở lại sau một chút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi nhận học tập trong trò chơi, không thay văn bằng hay chứng chỉ.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ bài thi đang làm?",
+  "en": ""
+ },
+ {
+  "vi": "Các câu đã chọn trong lần thi này sẽ bị bỏ. Bài đã học và chứng nhận vẫn giữ nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "Ôm",
+  "en": ""
+ },
+ {
+  "vi": "ôm",
+  "en": ""
+ },
+ {
+  "vi": "Hôn",
+  "en": ""
+ },
+ {
+  "vi": "hôn",
+  "en": ""
+ },
+ {
+  "vi": "Thả tim",
+  "en": ""
+ },
+ {
+  "vi": "thả tim cho",
+  "en": ""
+ },
+ {
+  "vi": "Người thương",
+  "en": ""
+ },
+ {
+  "vi": "Đang mất kết nối. Mọi người sẽ gặp lại khi kết nối trở lại.",
+  "en": ""
+ },
+ {
+  "vi": "Đang vào nhà…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có ai khác ở phòng này.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một cử chỉ để lại gần người trong phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Cùng ở nhà",
+  "en": ""
+ },
+ {
+  "vi": "đang ở cùng phòng",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời cử chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Đáp lại",
+  "en": ""
+ },
+ {
+  "vi": "☺ Ngại ngùng",
+  "en": ""
+ },
+ {
+  "vi": "😤 Giận dỗi",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, để sau",
+  "en": ""
+ },
+ {
+  "vi": "người thương",
+  "en": ""
+ },
+ {
+  "vi": "Chưa gặp được người thương. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đang chờ người thương nhận cử chỉ…",
+  "en": ""
+ },
+ {
+  "vi": "Đợi nhân vật dừng lại rồi đáp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đang gửi lời đáp…",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang ở nhà trong cửa sổ khác. Đóng rồi mở lại nhà để quay về đây.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà chung đã thay đổi. Đóng rồi mở lại nhà nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Người ấy đã rời phòng.",
+  "en": ""
+ },
+ {
+  "vi": "· Bạn muốn đáp lại thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "· Chờ người thương đáp lại…",
+  "en": ""
+ },
+ {
+  "vi": "Cử chỉ đã khép lại. Hai bạn có thể thử lại lúc khác.",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn cùng đáp lại cử chỉ 💞",
+  "en": ""
+ },
+ {
+  "vi": "Ngại quá… nhưng vẫn thấy vui ☺",
+  "en": ""
+ },
+ {
+  "vi": "Giận dỗi một chút thôi nhé 😤",
+  "en": ""
+ },
+ {
+  "vi": "Để lúc khác nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Người thương chưa đáp lại. Để lúc khác nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Cử chỉ đã khép lại.",
+  "en": ""
+ },
+ {
+  "vi": "Đang mất kết nối với nhà chung…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thể làm lúc này. Thử lại sau nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Ở chung",
+  "en": ""
+ },
+ {
+  "vi": "Vào chơi",
+  "en": ""
+ },
+ {
+  "vi": "Đến khi thu hồi",
+  "en": ""
+ },
+ {
+  "vi": "2 giờ",
+  "en": ""
+ },
+ {
+  "vi": "Đến khi chủ nhà thu hồi",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Trang trí giúp",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Vào trang trí",
+  "en": ""
+ },
+ {
+  "vi": "Thôi trang trí",
+  "en": ""
+ },
+ {
+  "vi": "Đã hoàn tác",
+  "en": ""
+ },
+ {
+  "vi": "Chọn bạn",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một người bạn",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Cho trang trí",
+  "en": ""
+ },
+ {
+  "vi": "Mọi người bạn đều đang có quyền trang trí.",
+  "en": ""
+ },
+ {
+  "vi": "Kết bạn trước để nhờ trang trí.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cần đang ở căn nhà mình sở hữu để cho bạn bè trang trí.",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Cho bạn trang trí nhà",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bè dùng đồ trong túi của bạn để bày giúp: không mua bán gì, đồ và tiền không đổi chủ. Mỗi thay đổi đều được ghi lại và bạn hoàn tác được.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà bạn bè nhờ trang trí",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Nhà bạn bè nhờ trang trí",
+  "en": ""
+ },
+ {
+  "vi": "Đang cho trang trí",
+  "en": ""
+ },
+ {
+  "vi": "Thay đổi gần đây",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở lời mời…",
+  "en": ""
+ },
+ {
+  "vi": "· Chờ trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Vào chơi trong 2 giờ kể từ khi đồng ý.",
+  "en": ""
+ },
+ {
+  "vi": "Thu hồi quyền vào nhà",
+  "en": ""
+ },
+ {
+  "vi": "Rời nhà",
+  "en": ""
+ },
+ {
+  "vi": "Nhà có thể vào",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn đến nhà",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nhà có thể thu hồi quyền vào nhà; người được mời có thể từ chối hoặc rời nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời nhận được",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời dành cho bạn",
+  "en": ""
+ },
+ {
+  "vi": "Vào được cả khi chủ nhà vắng mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Đồng ý lời mời của bạn bè để vào nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Mời vào chơi",
+  "en": ""
+ },
+ {
+  "vi": "Mời ở chung",
+  "en": ""
+ },
+ {
+  "vi": "Vào nhà lâu dài, kể cả khi bạn không online. Không cần kết hôn.",
+  "en": ""
+ },
+ {
+  "vi": "Kết bạn trước để gửi lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cần đang ở căn nhà mình sở hữu để mời bạn bè.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời đã gửi",
+  "en": ""
+ },
+ {
+  "vi": "Quản lý người ở & khách",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "BẠN BÈ & NHÀ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa vào được nhà để trang trí. Hãy làm mới.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa vào được nhà. Hãy làm mới lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "Đã gửi lời mời. Chờ bạn đồng ý.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đồng ý. Chọn “Vào nhà” để ghé nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cập nhật lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thực hiện được.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cho trang trí. Bạn ấy sẽ thấy nhà bạn trong mục Bạn bè & nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thu hồi quyền trang trí.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thôi trang trí nhà bạn ấy.",
+  "en": ""
+ },
+ {
+  "vi": "ở chung",
+  "en": ""
+ },
+ {
+  "vi": "vào chơi",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Trong nhà",
+  "en": ""
+ },
+ {
+  "vi": "🎒 Trong túi đồ (chưa bày)",
+  "en": ""
+ },
+ {
+  "vi": "treo tường",
+  "en": ""
+ },
+ {
+  "vi": "trải sàn",
+  "en": ""
+ },
+ {
+  "vi": "đồ nhỏ, đặt lên bàn kệ",
+  "en": ""
+ },
+ {
+  "vi": "đặt sàn",
+  "en": ""
+ },
+ {
+  "vi": "ấm cúng +",
+  "en": ""
+ },
+ {
+  "vi": "đang quay mặt sau",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Vào phòng bày trí",
+  "en": ""
+ },
+ {
+  "vi": "đang mặc",
+  "en": ""
+ },
+ {
+  "vi": "trong tủ đồ",
+  "en": ""
+ },
+ {
+  "vi": "có sẵn",
+  "en": ""
+ },
+ {
+  "vi": "Đang mặc",
+  "en": ""
+ },
+ {
+  "vi": "👗 Mở tủ đồ",
+  "en": ""
+ },
+ {
+  "vi": "mua ngày",
+  "en": ""
+ },
+ {
+  "vi": "🅿️ Đậu trước nhà",
+  "en": ""
+ },
+ {
+  "vi": "🚗 Mở ga-ra",
+  "en": ""
+ },
+ {
+  "vi": "giấy dán tường",
+  "en": ""
+ },
+ {
+  "vi": "sàn nhà",
+  "en": ""
+ },
+ {
+  "vi": "Đồ đạc của bạn",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Đồ đạc",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Đồ đạc của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Mọi thứ bạn đang có, chạm từng mục để xem tên và thông tin. Dọn nhà thì đồ đi theo bạn.",
+  "en": ""
+ },
+ {
+  "vi": "🪴 Nội thất & đồ trang trí",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có món nào. Vào phòng, mở 🛒 Cửa hàng để mua món đầu tiên nhé.",
+  "en": ""
+ },
+ {
+  "vi": "👗 Quần áo & phụ kiện",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có đồ nào.",
+  "en": ""
+ },
+ {
+  "vi": "🚗 Xe & phương tiện",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có xe. Ghé Cửa hàng xe trong ga-ra nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Đồ ăn trong tủ lạnh",
+  "en": ""
+ },
+ {
+  "vi": "Tủ lạnh đang trống.",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Giấy dán tường & sàn đã mua",
+  "en": ""
+ },
+ {
+  "vi": "Chưa mua mẫu nào (mẫu miễn phí luôn dùng được).",
+  "en": ""
+ },
+ {
+  "vi": "Bật ti vi xem dự báo thời tiết, mai trời nắng đẹp.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển kênh một vòng, toàn phim đã xem rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi phịch xuống sofa, êm quá trời.",
+  "en": ""
+ },
+ {
+  "vi": "Dựa lưng vào sofa, nghỉ một chút đã.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi vào bàn, lên kế hoạch cho ngày mai.",
+  "en": ""
+ },
+ {
+  "vi": "Sắp xếp lại giấy tờ trên bàn cho gọn.",
+  "en": ""
+ },
+ {
+  "vi": "Mở sổ ra ôn lại mấy điều học được hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Rút một cuốn sách ra đọc vài trang.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ sách hơi bụi, lau sơ một chút.",
+  "en": ""
+ },
+ {
+  "vi": "Gảy thử vài hợp âm, nghe cũng ra gì đó.",
+  "en": ""
+ },
+ {
+  "vi": "Gảy đàn bầu một khúc, tiếng ngân nghe thương ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Rắc chút thức ăn, đàn cá bơi lại đớp lia lịa.",
+  "en": ""
+ },
+ {
+  "vi": "Nồi cơm còn ấm, thơm mùi gạo mới.",
+  "en": ""
+ },
+ {
+  "vi": "Lò vi sóng kêu tinh một tiếng, xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đun ấm nước pha trà nóng.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ đồ vào máy giặt, chiều phơi là khô.",
+  "en": ""
+ },
+ {
+  "vi": "Chơi một ván game cho đỡ căng thẳng.",
+  "en": ""
+ },
+ {
+  "vi": "Mở một bài nhạc nhẹ, phòng ấm hẳn lên.",
+  "en": ""
+ },
+ {
+  "vi": "Vặn radio nghe tin tức buổi tối.",
+  "en": ""
+ },
+ {
+  "vi": "Tưới chút nước cho cây, lá xanh mướt.",
+  "en": ""
+ },
+ {
+  "vi": "Ôm gấu bông một cái cho đỡ mệt.",
+  "en": ""
+ },
+ {
+  "vi": "Lau bàn ăn sạch sẽ.",
+  "en": ""
+ },
+ {
+  "vi": "Pha một ấm trà, ngồi nhâm nhi.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi nghỉ chân một chút.",
+  "en": ""
+ },
+ {
+  "vi": "Bật đèn lên, phòng sáng ấm hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Ngắm nghía một chút, nhìn cũng xinh.",
+  "en": ""
+ },
+ {
+  "vi": "Nghịch một chút cho vui.",
+  "en": ""
+ },
+ {
+  "vi": "Sắp xếp lại góc này cho gọn.",
+  "en": ""
+ },
+ {
+  "vi": "Rửa mặt cho tỉnh táo.",
+  "en": ""
+ },
+ {
+  "vi": "Hít một hơi gió mát bên hồ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn mà thấy Tết tới gần.",
+  "en": ""
+ },
+ {
+  "vi": "Ngả lưng một chút cho đỡ mỏi. Tối rồi ngủ hẳn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nằm nghe quạt chạy vù vù, suýt ngủ quên.",
+  "en": ""
+ },
+ {
+  "vi": "Đi một vòng quanh phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Vươn vai một cái cho đỡ mỏi.",
+  "en": ""
+ },
+ {
+  "vi": "Bé ngủ ngoan quá, thương ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Nắm bàn tay bé xíu, mềm ơi là mềm.",
+  "en": ""
+ },
+ {
+  "vi": "Bé bò lại đòi bế kìa.",
+  "en": ""
+ },
+ {
+  "vi": "Bé bò nhanh ghê, coi chừng nha!",
+  "en": ""
+ },
+ {
+  "vi": "Bé lẫm chẫm đi lại, giỏi quá!",
+  "en": ""
+ },
+ {
+  "vi": "Bé dang tay đòi bế, cưng xỉu.",
+  "en": ""
+ },
+ {
+  "vi": "Chúc ngủ ngon nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tủ lạnh chạy êm ru, mát rượi.",
+  "en": ""
+ },
+ {
+  "vi": "Ngăn của bạn trong tủ lạnh chung",
+  "en": ""
+ },
+ {
+  "vi": "No bụng +",
+  "en": ""
+ },
+ {
+  "vi": "Tỉnh táo +",
+  "en": ""
+ },
+ {
+  "vi": "Quần áo trong tủ",
+  "en": ""
+ },
+ {
+  "vi": "🗄️ Quần áo trong tủ",
+  "en": ""
+ },
+ {
+  "vi": "Đồ mua ở shop tự xuất hiện ở đây, cùng quần áo cơ bản sẵn có. Chọn để ngắm thử, rồi mở Tủ đồ để mặc.",
+  "en": ""
+ },
+ {
+  "vi": "Đóng tủ",
+  "en": ""
+ },
+ {
+  "vi": "Trang phục đang mặc",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có quần áo trong tủ.",
+  "en": ""
+ },
+ {
+  "vi": "‹ Trước",
+  "en": ""
+ },
+ {
+  "vi": "👗 Mở Tủ đồ để thay",
+  "en": ""
+ },
+ {
+  "vi": "Tủ lạnh chung ở cuối phòng, mỗi người một ngăn.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Mở ngăn tủ của bạn",
+  "en": ""
+ },
+ {
+  "vi": "🍽️ Ăn",
+  "en": ""
+ },
+ {
+  "vi": "Tủ còn trống. Cất vài món bên dưới, đói thì lấy ra ăn.",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Đi chợ cất tủ",
+  "en": ""
+ },
+ {
+  "vi": "Mua bằng tiền trong ví. Đói lúc nào thì lấy ra ăn lúc đó.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Bày tủ lạnh ra để cất đồ ăn",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Có tủ lạnh là cất được đồ ăn",
+  "en": ""
+ },
+ {
+  "vi": "Chạm sàn để đi · chạm đồ để dùng",
+  "en": ""
+ },
+ {
+  "vi": "Trải nghiệm",
+  "en": ""
+ },
+ {
+  "vi": "Tài phú",
+  "en": ""
+ },
+ {
+  "vi": "Siêng việc chùa",
+  "en": ""
+ },
+ {
+  "vi": "Thần lô tô",
+  "en": ""
+ },
+ {
+  "vi": "Kinh đôi",
+  "en": ""
+ },
+ {
+  "vi": "Đọc ngược",
+  "en": ""
+ },
+ {
+  "vi": "Bão bầu cua",
+  "en": ""
+ },
+ {
+  "vi": "Mắt thần",
+  "en": ""
+ },
+ {
+  "vi": "Bị hỏi thăm",
+  "en": ""
+ },
+ {
+  "vi": "Khách quý",
+  "en": ""
+ },
+ {
+  "vi": "Khách mời của tuần",
+  "en": ""
+ },
+ {
+  "vi": "Ăn cưới pro",
+  "en": ""
+ },
+ {
+  "vi": "Danh hiệu độc bản · Nhà đấu giá",
+  "en": ""
+ },
+ {
+  "vi": "Top 1 tuần này",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải thêm được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được chợ nhà. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thanh toán và dọn vào nhà thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cập nhật.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xác nhận được kết quả. Bấm lại để kiểm tra cùng giao dịch, không trả tiền lần hai.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thực hiện được giao dịch.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập giá thuê là số nguyên dương hợp lệ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Trả trước 5 ngày sống của bạn. Hết kỳ cần gia hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Gia hạn thuê nhà?",
+  "en": ""
+ },
+ {
+  "vi": "Trả nhà đang thuê?",
+  "en": ""
+ },
+ {
+  "vi": "Tiền thuê đã trả trước cho những ngày còn lại không được hoàn. Bạn dọn khỏi nhà thuê và giữ đồ của mình.",
+  "en": ""
+ },
+ {
+  "vi": "Trả nhà",
+  "en": ""
+ },
+ {
+  "vi": "Lấy lại nhà?",
+  "en": ""
+ },
+ {
+  "vi": "người thuê",
+  "en": ""
+ },
+ {
+  "vi": "Lấy lại nhà",
+  "en": ""
+ },
+ {
+  "vi": "Tiền giường",
+  "en": ""
+ },
+ {
+  "vi": "Tiền phòng",
+  "en": ""
+ },
+ {
+  "vi": "Ở ghép với 3 bạn cùng phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển chỗ ở",
+  "en": ""
+ },
+ {
+  "vi": "Trả giường ký túc xá?",
+  "en": ""
+ },
+ {
+  "vi": "Trả phòng trọ?",
+  "en": ""
+ },
+ {
+  "vi": "Trả giường",
+  "en": ""
+ },
+ {
+  "vi": "từ quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "Không vay.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn về ở căn mới.",
+  "en": ""
+ },
+ {
+  "vi": "Căn mới để trống, chưa dọn về.",
+  "en": ""
+ },
+ {
+  "vi": "Ký hợp đồng mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "Tất toán khoản vay mua nhà?",
+  "en": ""
+ },
+ {
+  "vi": ". Bạn về gác Bà Tám (muốn ở căn khác thì dọn qua đó trước rồi hãy bán)",
+  "en": ""
+ },
+ {
+  "vi": ". Người ấy dọn ra cùng bạn",
+  "en": ""
+ },
+ {
+  "vi": "tài khoản",
+  "en": ""
+ },
+ {
+  "vi": "sẽ để trống.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ trang trí gói vào túi đồ, bày lại ở nhà mới.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi lời mời mới nếu muốn người ấy dọn về cùng.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn nhà",
+  "en": ""
+ },
+ {
+  "vi": "dọn đi, gửi nốt tiền thuê những ngày đã ở.",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ tin đang tìm khách NPC.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một căn nhà nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang có nhà rồi.",
+  "en": ""
+ },
+ {
+  "vi": "(thuế trước bạ trả từ ví hoặc tài khoản)",
+  "en": ""
+ },
+ {
+  "vi": ", phí và thuế",
+  "en": ""
+ },
+ {
+  "vi": "và phí",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng chưa duyệt vay mua nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Thuê phòng, để dành, mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Thuê phòng, để dành, mua nhà. Mọi con số tính theo ngày sống.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà cửa chỉ có trong chế độ hành trình",
+  "en": ""
+ },
+ {
+  "vi": "Vào hành trình để thuê phòng, để dành và mua nhà cho nhân vật của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "← Nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Nộp tiền vào tài khoản để trả góp",
+  "en": ""
+ },
+ {
+  "vi": "nhà của bạn đang để trống",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Mở tài khoản Ngân hàng Phố",
+  "en": ""
+ },
+ {
+  "vi": "🐷 Gửi tiết kiệm mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "🏰 Dinh thự của bạn",
+  "en": ""
+ },
+ {
+  "vi": "🔑 Nhà đứng tên bạn",
+  "en": ""
+ },
+ {
+  "vi": "👥 Ở ghép · giường dưới cạnh cửa sổ",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Đang thuê",
+  "en": ""
+ },
+ {
+  "vi": "🪴 Ấm cúng",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Về góc giường",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Vào phòng",
   "en": ""
  },
  {
@@ -80,1723 +1260,543 @@
   "en": ""
  },
  {
-  "vi": "Các phòng",
+  "vi": "Trả giường, nhận lại cọc",
   "en": ""
  },
  {
-  "vi": "🏠 Đang ở ·",
+  "vi": "Trả phòng, nhận lại cọc",
   "en": ""
  },
  {
-  "vi": "Bớt khách",
+  "vi": "chỗ cần sửa",
   "en": ""
  },
  {
-  "vi": "Thêm khách",
+  "vi": "Nhà sạch đẹp",
   "en": ""
  },
  {
-  "vi": "Số khách",
+  "vi": "🛠️ Sửa nhà",
   "en": ""
  },
  {
-  "vi": "Lời khắc",
+  "vi": "Hợp đồng & gia hạn",
   "en": ""
  },
  {
-  "vi": "Chưa tải được mục Hôn nhân.",
+  "vi": "🏡 Gia đình",
   "en": ""
  },
  {
-  "vi": "Miễn phí. Tiệc 10 phút có MC, cỗ, múa lân, nhạc cưới. Ai có mặt được 20 xu mỗi phút, mỗi khách đến hai bạn được 15 xu.",
+  "vi": "aria-label=\"Nhà & Gia đình (cả mục Con chung)\"",
   "en": ""
  },
  {
-  "vi": "🎉 Tổ chức tiệc cưới",
+  "vi": "👥 Mời bạn",
   "en": ""
  },
  {
-  "vi": "Chọn ngày giờ để cả phố vào dự. Đây cũng là ngày cưới hiện trên thẻ của hai bạn.",
+  "vi": "aria-label=\"Mời bạn về nhà\"",
   "en": ""
  },
  {
-  "vi": "Chốt giờ tiệc",
+  "vi": "🏡 Nhà & Gia đình",
   "en": ""
  },
  {
-  "vi": "🎉 Tiệc cưới đã tổ chức",
+  "vi": "Mời bạn về nhà",
   "en": ""
  },
  {
-  "vi": "khách đến chung vui 💛",
+  "vi": "(tạm dừng khi trễ hạn trả góp)",
   "en": ""
  },
  {
-  "vi": "🎊 Tiệc cưới đang mở!",
+  "vi": "Nơi bạn đang ở",
   "en": ""
  },
  {
-  "vi": "Vào dự",
+  "vi": "đậu trước nhà",
   "en": ""
  },
  {
-  "vi": "💌 Mời khách",
+  "vi": "Ân hạn",
   "en": ""
  },
  {
-  "vi": "Tiệc mở trước 5 phút ở Khu phố › Lịch cưới. Bạn bè được nhắc trước 30 phút.",
+  "vi": "Lịch trả góp",
   "en": ""
  },
  {
-  "vi": "💌 Đã mời bạn bè và cả phố",
+  "vi": "Đã tính phí trễ hạn.",
   "en": ""
  },
  {
-  "vi": "💌 Mời khách (miễn phí)",
+  "vi": "Tinh thần tạm không được cộng.",
   "en": ""
  },
  {
-  "vi": "Đổi giờ",
+  "vi": "Ngày mua",
   "en": ""
  },
  {
-  "vi": "Lưu giờ mới",
+  "vi": "Giá thị trường hôm nay",
   "en": ""
  },
  {
-  "vi": "phí địa điểm",
+  "vi": "Bán ngay thì nhận",
   "en": ""
  },
  {
-  "vi": "Mã của bạn",
+  "vi": "Phí bảo trì",
   "en": ""
  },
  {
-  "vi": "Bán chiếc nhẫn dư?",
+  "vi": "/tháng",
   "en": ""
  },
  {
-  "vi": "Bán nhẫn",
+  "vi": "Bán nhà",
   "en": ""
  },
  {
-  "vi": "Mang nhẫn ra tiệm kim hoàn?",
+  "vi": "💞 Về ở chung",
   "en": ""
  },
  {
-  "vi": "Nhập đúng tên đăng nhập của bạn ấy nhé.",
+  "vi": "Cho thuê",
   "en": ""
  },
  {
-  "vi": "Chặn người này?",
+  "vi": "🧾 Đang cho người chơi thuê",
   "en": ""
  },
  {
-  "vi": "Người này sẽ không tìm thấy bạn, không gửi được lời mời kết bạn hay lời cầu hôn cho bạn nữa.",
+  "vi": "📣 Đang đăng cho người chơi thuê",
   "en": ""
  },
  {
-  "vi": "Hai bạn sẽ không còn trong danh sách bạn bè của nhau.",
+  "vi": "📣 Đang tìm khách NPC",
   "en": ""
  },
  {
-  "vi": "Hủy kết bạn",
+  "vi": "Chưa kiểm tra được trạng thái cho thuê.",
   "en": ""
  },
  {
-  "vi": "Khoản này vào sổ nợ của hai bạn. Người ấy trả dần lúc nào cũng được.",
+  "vi": "Đang kiểm tra trạng thái cho thuê…",
   "en": ""
  },
  {
-  "vi": "Tiền chuyển từ ví của bạn sang ví của người ấy.",
+  "vi": "🔑 Đang để trống",
   "en": ""
  },
  {
-  "vi": "Nhập số xu cần nhờ nhé.",
+  "vi": "Để trống không tốn gì.",
   "en": ""
  },
  {
-  "vi": "Khoản này vào sổ nợ, người ấy sẽ trả lại.",
+  "vi": "Quản lý cho thuê",
   "en": ""
  },
  {
-  "vi": "Xóa khoản nợ này?",
+  "vi": "🚚 Dọn về ở",
   "en": ""
  },
  {
-  "vi": "Người ấy không cần trả nữa. Sổ nợ vẫn ghi lại.",
+  "vi": "Còn nợ vay",
   "en": ""
  },
  {
-  "vi": "Nhận lời cầu hôn?",
+  "vi": "Bạn đang ở giường dưới phòng này.",
   "en": ""
  },
  {
-  "vi": "Hai bạn sẽ đính hôn. Mỗi người chỉ có một người thương cùng lúc, các lời cầu hôn khác tự đóng lại.",
+  "vi": "Bạn đang thuê phòng này.",
   "en": ""
  },
  {
-  "vi": "Người này sẽ không gửi lời cầu hôn cho bạn được nữa. Bạn bỏ chặn lúc nào cũng được.",
+  "vi": "✓ Đủ tiền cọc",
   "en": ""
  },
  {
-  "vi": "Chốt kế hoạch và đặt cọc?",
+  "vi": "Chuyển qua đây",
   "en": ""
  },
  {
-  "vi": "Đặt cọc",
+  "vi": "Thuê",
   "en": ""
  },
  {
-  "vi": "PHỐ CÓ CHUYỆN",
+  "vi": "(chưa tính quỹ chung)",
   "en": ""
  },
  {
-  "vi": "👥 Bạn bè",
+  "vi": "Đủ trả trước",
   "en": ""
  },
  {
-  "vi": "💍 Hôn nhân",
+  "vi": "Đủ mua đứt",
   "en": ""
  },
  {
-  "vi": "Nhẫn cưới, lời cầu hôn và một đám cưới cho cả phố.",
+  "vi": "Trả trước",
   "en": ""
  },
  {
-  "vi": "Đang mở sổ hôn nhân…",
+  "vi": "Đây là nhà của bạn.",
   "en": ""
  },
  {
-  "vi": "💍 Hai bạn",
+  "vi": "🐷 Tiết kiệm mua nhà",
   "en": ""
  },
  {
-  "vi": "💍 Kim hoàn",
+  "vi": "Có tài khoản Ngân hàng Phố mới gửi tiết kiệm và vay mua nhà được.",
   "en": ""
  },
  {
-  "vi": "💞 Hai bạn",
+  "vi": "Sổ tiết kiệm:",
   "en": ""
  },
  {
-  "vi": "📋 Kế hoạch cưới",
+  "vi": "Gửi 1.000 xu nhận thêm",
   "en": ""
  },
  {
-  "vi": "💍 Tiệm nhẫn",
+  "vi": "Khi đáo hạn",
   "en": ""
  },
  {
-  "vi": "Mục hôn nhân",
+  "vi": "🏘️ Thuê & cho thuê",
   "en": ""
  },
  {
-  "vi": "Kết bạn trước, rồi mới trao nhẫn.",
+  "vi": "Tự đặt giá, tìm khách NPC hoặc thuê nhà người chơi.",
   "en": ""
  },
  {
-  "vi": "Tạo tài khoản để kết hôn",
+  "vi": "Mở chợ thuê nhà",
   "en": ""
  },
  {
-  "vi": "Kết hôn là chuyện giữa hai người chơi thật trên phố, nên cần một tài khoản để giữ nhẫn, lời hứa và ngày cưới của hai bạn.",
+  "vi": "🏷️ Nhà đang rao",
   "en": ""
  },
  {
-  "vi": "Có gì ở đây?",
+  "vi": "nơi",
   "en": ""
  },
  {
-  "vi": "Mua nhẫn ở tiệm vàng đầu hẻm, cầu hôn bằng mã người chơi.",
+  "vi": "aria-label=\"Thuê & cho thuê: tự đặt giá, tìm khách NPC hoặc thuê nhà người chơi\"",
   "en": ""
  },
  {
-  "vi": "Cùng nhau lên kế hoạch cưới: rạp, số bàn, thực đơn, lễ ăn hỏi, xe hoa…",
+  "vi": "Nhà đang rao",
   "en": ""
  },
  {
-  "vi": "Ngày cưới, hàng xóm thân quen tới dự và mừng phong bì.",
+  "vi": "Sổ nhà cửa",
   "en": ""
  },
  {
-  "vi": "Cả phố thấy tin vui chạy trên bảng tin (nếu hai bạn đồng ý).",
+  "vi": "Đã gửi lời mời · Chờ người ấy đồng ý.",
   "en": ""
  },
  {
-  "vi": "Tiệm nhẫn",
+  "vi": "Hai bạn đang ở chung nhà.",
   "en": ""
  },
  {
-  "vi": "Màu kim loại",
+  "vi": "Bạn có thể mời người ấy về căn nhà đang ở.",
   "en": ""
  },
  {
-  "vi": "Màu đá",
+  "vi": "Người ấy có nhà. Nhờ người ấy gửi lời mời về ở chung.",
   "en": ""
  },
  {
-  "vi": "cầu hôn bạn",
+  "vi": "Mua nhà hoặc dọn về căn nhà bạn sở hữu để mời người ấy.",
   "en": ""
  },
  {
-  "vi": "Báo tin vui cho cả phố (bảng tin chạy chữ)",
+  "vi": "Mời bạn bè vào chơi hoặc ở chung mà không cần kết hôn. Con chung nằm trong mục Gia đình.",
   "en": ""
  },
  {
-  "vi": "Nhẫn",
+  "vi": "Xem và trả lời lời mời",
   "en": ""
  },
  {
-  "vi": "💞 Đồng ý",
+  "vi": "Xem lời mời đã gửi",
   "en": ""
  },
  {
-  "vi": "Chặn người này",
+  "vi": "Trả ngay",
   "en": ""
  },
  {
-  "vi": "Muốn cầu hôn thì cần một chiếc nhẫn trước đã.",
+  "vi": "Tổng lãi",
   "en": ""
  },
  {
-  "vi": "💍 Đến tiệm nhẫn",
+  "vi": "Thời hạn vay",
   "en": ""
  },
  {
-  "vi": "Chỉ cầu hôn được bạn bè. Kết bạn với người ấy trước nhé.",
+  "vi": "Cần tài khoản Ngân hàng Phố để vay.",
   "en": ""
  },
  {
-  "vi": "👥 Mở danh sách bạn bè",
+  "vi": "Trả đủ một lần, không vay",
   "en": ""
  },
  {
-  "vi": "✓ Gửi tới",
+  "vi": "💞 Góp từ quỹ chung để mua nhà. Mua xong, mở Gia đình chung gửi lời mời ở chung; người ấy cần đồng ý.",
   "en": ""
  },
  {
-  "vi": "Gửi tới người bạn",
+  "vi": "Góc gia đình chỉ có trong hành trình.",
   "en": ""
  },
  {
-  "vi": "Chọn một người bạn…",
+  "vi": "Mỗi ngày chăm một lần cho từng mục: ăn, vệ sinh, chơi hoặc đọc truyện. Ngày mới tính khi bạn khép ca làm việc.",
   "en": ""
  },
  {
-  "vi": "Chiếc nhẫn",
+  "vi": "Tên gọi & đồ dùng",
   "en": ""
  },
  {
-  "vi": "Lời cầu hôn",
+  "vi": "🏡 Góc gia đình",
   "en": ""
  },
  {
-  "vi": "Nếu người ấy đồng ý, báo tin vui cho cả phố",
+  "vi": "Một góc nhỏ để trở về cùng nhau",
   "en": ""
  },
  {
-  "vi": "💍 Gửi lời cầu hôn",
+  "vi": "🏡 Nhà & Gia đình với người ấy",
   "en": ""
  },
  {
-  "vi": "Lời cầu hôn đã gửi",
+  "vi": "🐾 Con riêng & thú cưng",
   "en": ""
  },
  {
-  "vi": "đang chờ trả lời",
+  "vi": "Tối đa một bé và một mèo hoặc cún. Chăm theo ngày sống của nhân vật; không tự thu phí khi vắng mặt.",
   "en": ""
  },
  {
-  "vi": "chưa nhận lời",
+  "vi": "Mở lời mời ở chung và chăm con chung tại đây.",
   "en": ""
  },
  {
-  "vi": "đã nhận lời",
+  "vi": "Mời bạn bè vào chơi hoặc ở chung mà không cần kết hôn. Con chung mở sau khi cưới.",
   "en": ""
  },
  {
-  "vi": "Rút lại",
+  "vi": "Đón thành viên về chăm riêng",
   "en": ""
  },
  {
-  "vi": "Chuyện cũ đã khép lại. Mỗi người đều có quyền bắt đầu lại.",
+  "vi": "Mở từ ngày sống 10.",
   "en": ""
  },
  {
-  "vi": "Nhận lời cầu hôn",
+  "vi": "Tên bạn muốn gọi",
   "en": ""
  },
  {
-  "vi": "Tắt đi thì không ai gửi được lời mới cho bạn.",
+  "vi": "Đón về nhà",
   "en": ""
  },
  {
-  "vi": "Lời cầu hôn gửi tới bạn",
+  "vi": "· nhận nuôi miễn phí",
   "en": ""
  },
  {
-  "vi": "Độc thân",
+  "vi": "💇 Đi làm đẹp · 🎨 DIY",
   "en": ""
  },
  {
-  "vi": "Chấp nhận kết bạn",
+  "vi": "Mua đồ cho bé",
   "en": ""
  },
  {
-  "vi": "➕ Kết bạn",
+  "vi": "Mua và mặc",
   "en": ""
  },
  {
-  "vi": "Không tìm thấy người chơi này.",
+  "vi": "Khôi phục uy tín thế nào?",
   "en": ""
  },
  {
-  "vi": "Tên đăng nhập của bạn ấy",
+  "vi": "Uy tín này đổi theo cách xử lý những Chuyện đời mới ở nơi đang làm. Trả lại đồ nhặt được, hợp tác hoặc xử lý hậu quả đúng mực có thể tăng điểm; kết quả sẽ ghi mức tăng hoặc giảm. Bỏ dở việc có thể làm giảm uy tín.",
   "en": ""
  },
  {
-  "vi": "Lời mời kết bạn",
+  "vi": "Tình làng nghĩa xóm là chỉ số riêng. Trò chuyện, nhậu, karaoke và Nhớ lại chuyện cũ không tăng uy tín này.",
   "en": ""
  },
  {
-  "vi": "muốn kết bạn",
+  "vi": "🏮 Xem Tình làng nghĩa xóm",
   "en": ""
  },
  {
-  "vi": "Chấp nhận",
+  "vi": "Huy hiệu Công an phường Mây",
   "en": ""
  },
  {
-  "vi": "Mới vào phố",
+  "vi": "Khung thời gian biểu đồ",
   "en": ""
  },
  {
-  "vi": "🏪 Ghé chỗ làm",
+  "vi": "H = giờ · D = ngày · W = tuần · M = 30 ngày ngoài đời",
   "en": ""
  },
  {
-  "vi": "🏡 Mời về nhà",
+  "vi": "Chưa có lịch sử giá cho biểu đồ.",
   "en": ""
  },
  {
-  "vi": "💍 Cầu hôn",
+  "vi": "Xem giá tại thời điểm",
   "en": ""
  },
  {
-  "vi": "Chưa có bạn bè nào. Xin tên đăng nhập của người quen ngoài đời rồi tìm ở trên nhé.",
+  "vi": "% trong dữ liệu hiển thị",
   "en": ""
  },
  {
-  "vi": "Đang chờ trả lời",
+  "vi": "Kéo để xem giá từng mốc",
   "en": ""
  },
  {
-  "vi": "Cho phép tìm tôi bằng tên đăng nhập",
+  "vi": "/chỉ",
   "en": ""
  },
  {
-  "vi": "Tắt đi thì chỉ ai có mã người chơi mới tìm được bạn.",
+  "vi": "Thị trường mới mở, đang hiển thị toàn bộ lịch sử đã có.",
   "en": ""
  },
  {
-  "vi": "Mã người chơi của bạn:",
+  "vi": "Lịch sử giá theo thời gian thực.",
   "en": ""
  },
  {
-  "vi": "Người khác chỉ thấy tên hiển thị",
+  "vi": "· bấm Cập nhật giá để tải khung đã chọn",
   "en": ""
  },
  {
-  "vi": "🏘️ Mọi người đang làm gì?",
+  "vi": "Chưa cập nhật được giá. Bấm Cập nhật giá để thử lại.",
   "en": ""
  },
  {
-  "vi": "Chép mã",
+  "vi": "TÀI SẢN CỦA BẠN",
   "en": ""
  },
  {
-  "vi": "bàn · thực đơn",
+  "vi": "phiên trước",
   "en": ""
  },
  {
-  "vi": "Tổng chi phí",
+  "vi": "Phiên hiện tại",
   "en": ""
  },
  {
-  "vi": "Trả nốt ngày cưới",
+  "vi": "phiên 10 phút",
   "en": ""
  },
  {
-  "vi": "Khách dự kiến",
+  "vi": "Vàng đổi giá theo ngày thực · Coin đổi giá theo ngày sống.",
   "en": ""
  },
  {
-  "vi": "Tiền mừng dự kiến",
+  "vi": "Giá chung cả phố · 1 giờ thực = 1 ngày thị trường.",
   "en": ""
  },
  {
-  "vi": "Nhẫn của hai bạn",
+  "vi": "Số xu khác",
   "en": ""
  },
  {
-  "vi": "Bạn &",
+  "vi": "Trị giá hiện tại",
   "en": ""
  },
  {
-  "vi": "Điểm hạnh phúc",
+  "vi": "Giá được chốt khi máy chủ nhận lệnh.",
   "en": ""
  },
  {
-  "vi": "Quỹ chung",
+  "vi": "so với phiên trước",
   "en": ""
  },
  {
-  "vi": "ngày liền",
+  "vi": "📰 Tin thị trường trong game",
   "en": ""
  },
  {
-  "vi": "Gửi một lời chào hôm nay nhé",
+  "vi": "Đang hỗ trợ đà tăng",
   "en": ""
  },
  {
-  "vi": "Có lời nhờ đang chờ",
+  "vi": "Đang tạo áp lực giảm",
   "en": ""
  },
  {
-  "vi": "Gửi, rút, giúp nhau",
+  "vi": "phân",
   "en": ""
  },
  {
-  "vi": "muốn bàn lại kế hoạch. Sửa rồi gửi lại nhé.",
+  "vi": "chỉ",
   "en": ""
  },
  {
-  "vi": "Kế hoạch cưới",
+  "vi": "Chưa tải được giá vàng. Mở lại mục Đầu tư để thử nhé.",
   "en": ""
  },
  {
-  "vi": "Chọn nơi tổ chức, số bàn, thực đơn, nghi lễ và ai góp bao nhiêu. Tiền chỉ bị trừ khi cả hai cùng xác nhận.",
+  "vi": "Số vàng giao dịch",
   "en": ""
  },
  {
-  "vi": "📋 Lên kế hoạch cưới",
+  "vi": "Tiệm vàng Kim Phát",
   "en": ""
  },
  {
-  "vi": "Sửa kế hoạch",
+  "vi": "Bán ngay được",
   "en": ""
  },
  {
-  "vi": "Báo tin cưới cho cả phố (bảng tin chạy chữ)",
+  "vi": "Tiền đã bỏ vào",
   "en": ""
  },
  {
-  "vi": "Muốn bàn lại",
+  "vi": "1 chỉ = 10 phân. Mua bằng ví, thiếu thì lấy từ tài khoản ngân hàng; bán nhận xu vào ví. Giá mua/bán đã gồm chênh lệch 2,5% mỗi chiều.",
   "en": ""
  },
  {
-  "vi": "Kế hoạch đã chốt",
+  "vi": "Biến động so với phiên trước. Giá được chốt khi máy chủ nhận lệnh.",
   "en": ""
  },
  {
-  "vi": "Ngày cưới đã tới!",
+  "vi": "aria-label=\"Bớt vàng\"",
   "en": ""
  },
  {
-  "vi": "Gõ",
+  "vi": "Số chỉ vàng",
   "en": ""
  },
  {
-  "vi": "để xác nhận",
+  "vi": "Số phân vàng lẻ",
   "en": ""
  },
  {
-  "vi": "Ly hôn",
+  "vi": "aria-label=\"Thêm vàng\"",
   "en": ""
  },
  {
-  "vi": "Hủy hôn ước",
-  "en": ""
- },
- {
-  "vi": "Ly hôn thì hai bạn thôi là vợ chồng, nhãn “Đã về chung một nhà” được gỡ.",
-  "en": ""
- },
- {
-  "vi": "Hủy hôn ước thì kế hoạch cưới dừng lại, tiền cọc không hoàn lại.",
-  "en": ""
- },
- {
-  "vi": "Nếu chia tay: quỹ chung chia đôi (lẻ 1 xu thuộc về người không đệ đơn); ai còn nợ thì trả từ phần của mình trước, phần nợ còn lại được xóa.",
-  "en": ""
- },
- {
-  "vi": "Có lời mời đang chờ bạn trả lời.",
-  "en": ""
- },
- {
-  "vi": "Vào nhà, mời người ấy về ở và cùng chăm con.",
-  "en": ""
- },
- {
-  "vi": "Người thân quen đã đến",
-  "en": ""
- },
- {
-  "vi": "Khoảnh khắc",
-  "en": ""
- },
- {
-  "vi": "Thiệp kỷ niệm đám cưới",
-  "en": ""
- },
- {
-  "vi": "Khách tới dự",
-  "en": ""
- },
- {
-  "vi": "Tiền mừng",
-  "en": ""
- },
- {
-  "vi": "Màu mới",
-  "en": ""
- },
- {
-  "vi": "nhẫn của hai bạn",
-  "en": ""
- },
- {
-  "vi": "đang trao đi",
-  "en": ""
- },
- {
-  "vi": "🎨 Đổi màu",
-  "en": ""
- },
- {
-  "vi": "Hộp nhẫn · tiệm kim hoàn",
-  "en": ""
- },
- {
-  "vi": "Đổi màu nhẫn hoặc bán nhẫn dư trong hộp để nhận lại 80% giá mua vào ví. Nhẫn đang cầu hôn và nhẫn của hai bạn không bán được.",
-  "en": ""
- },
- {
-  "vi": "Ví của bạn:",
-  "en": ""
- },
- {
-  "vi": "Chọn màu kim loại và màu đá, xem trước rồi mới mua. Nhẫn trả bằng ví riêng; người ấy từ chối thì nhẫn vẫn nằm trong hộp của bạn.",
-  "en": ""
- },
- {
-  "vi": "Không kèm lời nhắn",
-  "en": ""
- },
- {
-  "vi": "Gửi vào",
-  "en": ""
- },
- {
-  "vi": "Rút ra",
-  "en": ""
- },
- {
-  "vi": "Chia quỹ",
-  "en": ""
- },
- {
-  "vi": "· đang xử lý",
-  "en": ""
- },
- {
-  "vi": "Có ghi sổ nợ",
-  "en": ""
- },
- {
-  "vi": "Để lần sau",
-  "en": ""
- },
- {
-  "vi": "Kiểu gửi",
-  "en": ""
- },
- {
-  "vi": "Quỹ chung của hai bạn",
-  "en": ""
- },
- {
-  "vi": "Lịch sử quỹ",
-  "en": ""
- },
- {
-  "vi": "🎁 Tặng luôn",
-  "en": ""
- },
- {
-  "vi": "🧾 Cho mượn",
-  "en": ""
- },
- {
-  "vi": "Mượn thôi, sẽ trả lại (ghi sổ nợ)",
-  "en": ""
- },
- {
-  "vi": "Cho mượn thì khoản này vào sổ nợ, người ấy trả dần lúc nào cũng được.",
-  "en": ""
- },
- {
-  "vi": "Tiền đi thẳng từ ví của bạn sang ví của người ấy.",
-  "en": ""
- },
- {
-  "vi": "Không nêu lý do",
-  "en": ""
- },
- {
-  "vi": "trợ giúp",
-  "en": ""
- },
- {
-  "vi": "Còn nợ",
-  "en": ""
- },
- {
-  "vi": "Đã trả hết",
-  "en": ""
- },
- {
-  "vi": "Đã xóa nợ",
-  "en": ""
- },
- {
-  "vi": "Trừ khi chia quỹ",
-  "en": ""
- },
- {
-  "vi": "Xóa khi chia tay",
-  "en": ""
- },
- {
-  "vi": "nợ bạn",
-  "en": ""
- },
- {
-  "vi": "Bạn đã nhắc",
-  "en": ""
- },
- {
-  "vi": "Được nhắc",
-  "en": ""
- },
- {
-  "vi": "· đã xin khất",
-  "en": ""
- },
- {
-  "vi": "Câu đòi nợ",
-  "en": ""
- },
- {
-  "vi": "Đòi tiền",
-  "en": ""
- },
- {
-  "vi": "Vừa nhắc rồi, để người ấy thở chút nha.",
-  "en": ""
- },
- {
-  "vi": "Trả bớt bao nhiêu",
-  "en": ""
- },
- {
-  "vi": "Trả bớt",
-  "en": ""
- },
- {
-  "vi": "Câu xin khất",
-  "en": ""
- },
- {
-  "vi": "Xin khất",
-  "en": ""
- },
- {
-  "vi": "🧾 Sổ nợ",
-  "en": ""
- },
- {
-  "vi": "Đã gửi hôm nay",
-  "en": ""
- },
- {
-  "vi": "🎁 Quà nhỏ từ túi quà",
-  "en": ""
- },
- {
-  "vi": "Chọn một món…",
-  "en": ""
- },
- {
-  "vi": "Túi quà đang trống",
-  "en": ""
- },
- {
-  "vi": "Đã tặng hôm nay",
-  "en": ""
- },
- {
-  "vi": "Chuỗi ngày",
-  "en": ""
- },
- {
-  "vi": "Nhật ký hai bạn",
-  "en": ""
- },
- {
-  "vi": "Kế hoạch đang chờ bạn xác nhận ở mục “Hai bạn”.",
-  "en": ""
- },
- {
-  "vi": "Xem kế hoạch",
-  "en": ""
- },
- {
-  "vi": "Đám cưới của hai bạn xem ở mục “Hai bạn”.",
-  "en": ""
- },
- {
-  "vi": "Xem đám cưới",
-  "en": ""
- },
- {
-  "vi": "/bàn",
-  "en": ""
- },
- {
-  "vi": "Số mâm tráp ăn hỏi",
-  "en": ""
- },
- {
-  "vi": "Bạn 60%",
-  "en": ""
- },
- {
-  "vi": "Bạn 70%",
-  "en": ""
- },
- {
-  "vi": "Bạn 40%",
-  "en": ""
- },
- {
-  "vi": "Bạn bao hết",
-  "en": ""
- },
- {
-  "vi": "Bớt một bàn",
-  "en": ""
- },
- {
-  "vi": "Số bàn",
-  "en": ""
- },
- {
-  "vi": "Thêm một bàn",
-  "en": ""
- },
- {
-  "vi": "Tỉ lệ góp",
-  "en": ""
- },
- {
-  "vi": "Chi phí dự tính",
-  "en": ""
- },
- {
-  "vi": "1 · Nơi tổ chức",
-  "en": ""
- },
- {
-  "vi": "2 · Số bàn",
-  "en": ""
- },
- {
-  "vi": "3 · Thực đơn",
-  "en": ""
- },
- {
-  "vi": "4 · Nghi lễ",
-  "en": ""
- },
- {
-  "vi": "5 · Dịch vụ thêm",
-  "en": ""
- },
- {
-  "vi": "6 · Ngày cưới & góp tiền",
-  "en": ""
- },
- {
-  "vi": "💍 Cả phố được mời dự tiệc lúc đó.",
-  "en": ""
- },
- {
-  "vi": "Ai góp bao nhiêu",
-  "en": ""
- },
- {
-  "vi": "Báo tin cưới cho cả phố (cần cả hai đồng ý)",
-  "en": ""
- },
- {
-  "vi": "Tự chọn: bạn góp",
-  "en": ""
- },
- {
-  "vi": "góp",
-  "en": ""
- },
- {
-  "vi": "Không chọn",
-  "en": ""
- },
- {
-  "vi": "Bảng dự trù",
-  "en": ""
- },
- {
-  "vi": "Trả nốt vào ngày cưới",
-  "en": ""
- },
- {
-  "vi": "Lời / lỗ dự kiến",
-  "en": ""
- },
- {
-  "vi": "Đang ước lượng khách và tiền mừng…",
-  "en": ""
- },
- {
-  "vi": "Trả trực tiếp từ tài khoản thanh toán.",
-  "en": ""
- },
- {
-  "vi": "Trả bằng tiền mặt trong ví.",
-  "en": ""
- },
- {
-  "vi": "Quẹt thẻ tín dụng, trả khi có sao kê.",
-  "en": ""
- },
- {
-  "vi": "Ưu tiên quỹ chung; nếu không đủ, thử ví rồi thẻ tín dụng.",
-  "en": ""
- },
- {
-  "vi": "Giữ",
-  "en": ""
- },
- {
-  "vi": "cho khoản này.",
-  "en": ""
- },
- {
-  "vi": "trên 100",
-  "en": ""
- },
- {
-  "vi": "Bỏ bữa",
-  "en": ""
- },
- {
-  "vi": "Giờ ăn trưa",
-  "en": ""
- },
- {
-  "vi": "Trưa rồi, ăn gì đây?",
-  "en": ""
- },
- {
-  "vi": "Đói bụng rồi? Ăn thêm gì đó",
-  "en": ""
- },
- {
-  "vi": "Ăn thêm",
-  "en": ""
- },
- {
-  "vi": "Chúc ngủ ngon!",
-  "en": ""
- },
- {
-  "vi": "Bữa sáng có sẵn, không tốn thêm xu.",
-  "en": ""
- },
- {
-  "vi": "Ăn chưa xong",
-  "en": ""
- },
- {
-  "vi": "Như mọi khi",
-  "en": ""
- },
- {
-  "vi": "Bữa tối",
-  "en": ""
- },
- {
-  "vi": "Giờ đi ngủ",
-  "en": ""
- },
- {
-  "vi": "Tối nay ăn gì?",
-  "en": ""
- },
- {
-  "vi": "Cơm nhà đã tính trong tiền cơm nước mỗi ngày, nên không tốn thêm.",
-  "en": ""
- },
- {
-  "vi": "Mấy giờ đi ngủ?",
-  "en": ""
- },
- {
-  "vi": "⭐ 1 khách nữa là lên cấp!",
-  "en": ""
- },
- {
-  "vi": "📚 Bài kiểm tra cuối khóa",
-  "en": ""
- },
- {
-  "vi": "🏛️ Ban chỉ huy",
-  "en": ""
- },
- {
-  "vi": "Câu 0 điểm: hẹn xét lại sau 3 ngày làm.",
-  "en": ""
- },
- {
-  "vi": "⚠️ Cảnh cáo đang có",
-  "en": ""
- },
- {
-  "vi": "📜 Lịch sử",
-  "en": ""
- },
- {
-  "vi": "(đã tự giác)",
-  "en": ""
- },
- {
-  "vi": "Vi phạm quy trình: cảnh cáo. Lần 4: hạ 1 bậc hàm.",
-  "en": ""
- },
- {
-  "vi": "Nhận phong bì: hạ bậc ngay, ghi dấu liêm chính mãi mãi.",
-  "en": ""
- },
- {
-  "vi": "không bổ nhiệm người chơi.",
-  "en": ""
- },
- {
-  "vi": "🎖️ Cấp bậc",
-  "en": ""
- },
- {
-  "vi": "Cao nhất rồi!",
-  "en": ""
- },
- {
-  "vi": "🙇 Tự giác nộp lại phong bì",
-  "en": ""
- },
- {
-  "vi": "Về ca",
-  "en": ""
- },
- {
-  "vi": "Mở ca để kiểm tra.",
-  "en": ""
- },
- {
-  "vi": "· 📣 nhiều phản ánh",
-  "en": ""
- },
- {
-  "vi": "Vi phạm",
-  "en": ""
- },
- {
-  "vi": "nhiệm vụ",
-  "en": ""
- },
- {
-  "vi": "📤 Trình PGĐ",
-  "en": ""
- },
- {
-  "vi": "Xưởng handmade",
-  "en": ""
- },
- {
-  "vi": "Sách, CLB & gia đình",
-  "en": ""
- },
- {
-  "vi": "Bản xem màu móng",
-  "en": ""
- },
- {
-  "vi": "Đang chuẩn bị góc đi chơi…",
-  "en": ""
- },
- {
-  "vi": "Chọn kiểu tóc và ngắm thử trong gương. Kiểu mới sẽ vào tủ đồ và theo nhân vật ra phố.",
-  "en": ""
- },
- {
-  "vi": "1. Chọn kiểu tóc",
-  "en": ""
- },
- {
-  "vi": ". Chọn màu",
-  "en": ""
- },
- {
-  "vi": ". Chọn họa tiết",
-  "en": ""
- },
- {
-  "vi": "Tự tay làm từng công đoạn trên bàn: đo, cắt, may hoặc xâu hạt. Có vạch hướng dẫn, làm lại được và không bị giục giờ.",
-  "en": ""
- },
- {
-  "vi": "Thử màu và họa tiết trước khi sơn. Bộ móng được lưu để lần sau ghé lại vẫn thấy.",
-  "en": ""
- },
- {
-  "vi": "Gấu bông của riêng bạn",
-  "en": ""
- },
- {
-  "vi": "Đo · Cắt · May · Nhồi bông · Trang trí",
-  "en": ""
- },
- {
-  "vi": "1. Chọn món để làm",
-  "en": ""
- },
- {
-  "vi": "Mẫu này đã lưu rồi, không cần trả thêm.",
-  "en": ""
- },
- {
-  "vi": "🧵 Vào bàn làm",
-  "en": ""
- },
- {
-  "vi": "Làm tóc & giữ kiểu",
-  "en": ""
- },
- {
-  "vi": "Sơn & lưu bộ móng",
-  "en": ""
- },
- {
-  "vi": "Bộ móng đang giữ",
-  "en": ""
- },
- {
-  "vi": "Chưa có món thủ công. Thử phối một mẫu ở Xưởng DIY nhé.",
-  "en": ""
- },
- {
-  "vi": "MỘT BUỔI CHO MÌNH",
-  "en": ""
- },
- {
-  "vi": "Đi chơi & làm đẹp",
-  "en": ""
- },
- {
-  "vi": "Sơn và vẽ móng",
-  "en": ""
- },
- {
-  "vi": "Chưa mở khóa được. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Các màu",
-  "en": ""
- },
- {
-  "vi": "BẢNG MÀU",
-  "en": ""
- },
- {
-  "vi": "🎨 Bảng màu của bạn",
-  "en": ""
- },
- {
-  "vi": "Mở một màu một lần là dùng được ở mọi nơi: áo, quần, giày dép, phụ kiện và đồ đạc trong nhà, cả phòng trọ lẫn ký túc xá.",
-  "en": ""
- },
- {
-  "vi": "màu đã mở",
-  "en": ""
- },
- {
-  "vi": "✨ Màu gốc của mỗi món luôn miễn phí. Đổi qua lại giữa các màu đã mở không mất xu.",
-  "en": ""
- },
- {
-  "vi": "✨ Dùng màu này",
-  "en": ""
- },
- {
-  "vi": "🎨 CHỌN MÀU",
-  "en": ""
- },
- {
-  "vi": "Màu gốc miễn phí. Mở một màu một lần là dùng được cho mọi món đồ.",
-  "en": ""
- },
- {
-  "vi": "Chưa có nguồn tiền này.",
-  "en": ""
- },
- {
-  "vi": "Tiền lương / ví",
-  "en": ""
- },
- {
-  "vi": "Chuyển khoản từ tài khoản ngân hàng",
-  "en": ""
- },
- {
-  "vi": "Quỹ chung vợ chồng",
-  "en": ""
- },
- {
-  "vi": "Bé nhà mình",
-  "en": ""
- },
- {
-  "vi": "Bé cưng tuần",
-  "en": ""
- },
- {
-  "vi": "Chơi",
-  "en": ""
- },
- {
-  "vi": "Khám",
-  "en": ""
- },
- {
-  "vi": "Chọn một bé",
-  "en": ""
- },
- {
-  "vi": "Nhà đủ 3 bé rồi",
-  "en": ""
- },
- {
-  "vi": "Chọn một món",
-  "en": ""
- },
- {
-  "vi": "Có rồi",
-  "en": ""
- },
- {
-  "vi": "Chọn một giống",
-  "en": ""
- },
- {
-  "vi": "🐾 Bé nhà mình",
-  "en": ""
- },
- {
-  "vi": "🏠 Nhận nuôi miễn phí",
-  "en": ""
- },
- {
-  "vi": "No căng rồi",
-  "en": ""
- },
- {
-  "vi": "Chơi mệt rồi",
-  "en": ""
- },
- {
-  "vi": "🧑‍🔧 Tìm thợ người chơi",
-  "en": ""
- },
- {
-  "vi": "Thơm phức rồi",
-  "en": ""
- },
- {
-  "vi": "Khỏe re rồi",
-  "en": ""
- },
- {
-  "vi": "Tiêm",
-  "en": ""
- },
- {
-  "vi": "💾 Lưu ảnh",
-  "en": ""
- },
- {
-  "vi": "✓ Đổi tên",
-  "en": ""
- },
- {
-  "vi": "về quê với bà, có vườn rộng. Đón về lúc nào cũng được.",
-  "en": ""
- },
- {
-  "vi": "Gửi về quê",
-  "en": ""
- },
- {
-  "vi": "Chưa có bé nào",
-  "en": ""
- },
- {
-  "vi": "Góc Chân Nhỏ có bé chờ nhà mới.",
-  "en": ""
- },
- {
-  "vi": "Ăn",
-  "en": ""
- },
- {
-  "vi": "Diện",
-  "en": ""
- },
- {
-  "vi": "Ảnh",
-  "en": ""
- },
- {
-  "vi": "🏡 Ở quê",
-  "en": ""
- },
- {
-  "vi": "Tay không",
-  "en": ""
- },
- {
-  "vi": "🛍️ Mua đồ chơi",
-  "en": ""
- },
- {
-  "vi": "Spa Mèo Mập",
-  "en": ""
- },
- {
-  "vi": "Thợ người chơi",
-  "en": ""
- },
- {
-  "vi": "🛍️ Mua đồ diện",
-  "en": ""
- },
- {
-  "vi": "Đi dạo cùng",
-  "en": ""
- },
- {
-  "vi": "Về quê",
-  "en": ""
- },
- {
-  "vi": "💗 Ủng hộ Chân Nhỏ",
-  "en": ""
- },
- {
-  "vi": "Đồ",
-  "en": ""
- },
- {
-  "vi": "Chưa lưu được ảnh.",
-  "en": ""
- },
- {
-  "vi": "Dây đèn",
-  "en": ""
- },
- {
-  "vi": "Hoa đào",
-  "en": ""
- },
- {
-  "vi": "Lồng đèn",
-  "en": ""
- },
- {
-  "vi": "Pháo hoa",
-  "en": ""
- },
- {
-  "vi": "Mặt cười",
-  "en": ""
- },
- {
-  "vi": "Trong trẻo",
-  "en": ""
- },
- {
-  "vi": "Mát",
-  "en": ""
- },
- {
-  "vi": "An khang thịnh vượng",
-  "en": ""
- },
- {
-  "vi": "Rước đèn tháng Tám",
-  "en": ""
- },
- {
-  "vi": "Thơm ngát đầm sen",
-  "en": ""
- },
- {
-  "vi": "Đèn lồng phố Hội",
-  "en": ""
- },
- {
-  "vi": "Cute hết nấc",
-  "en": ""
- },
- {
-  "vi": "Trăm năm hạnh phúc",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng tân cử nhân",
-  "en": ""
- },
- {
-  "vi": "Nắng, gió và sóng",
-  "en": ""
- },
- {
-  "vi": "Chiều mưa phố mình",
-  "en": ""
- },
- {
-  "vi": "Tuổi mới thật vui",
-  "en": ""
- },
- {
-  "vi": "Pháo hoa rực trời",
-  "en": ""
- },
- {
-  "vi": "Tuổi học trò",
-  "en": ""
- },
- {
-  "vi": "Mùa an lành",
-  "en": ""
- },
- {
-  "vi": "Hội chợ đêm",
-  "en": ""
- },
- {
-  "vi": "Đèn giăng rực rỡ",
-  "en": ""
- },
- {
-  "vi": "Tết rộn ràng",
-  "en": ""
- },
- {
-  "vi": "Xuân sang phát tài",
-  "en": ""
- },
- {
-  "vi": "Pastel ngọt",
-  "en": ""
- },
- {
-  "vi": "Ngọt như kẹo bông",
-  "en": ""
- },
- {
-  "vi": "Cuộn phim",
-  "en": ""
- },
- {
-  "vi": "PHIM MÀU 400",
-  "en": ""
- },
- {
-  "vi": "Dán sticker",
-  "en": ""
- },
- {
-  "vi": "Cute xỉu luôn",
-  "en": ""
- },
- {
-  "vi": "Phố cổ đêm",
-  "en": ""
- },
- {
-  "vi": "Đèn lồng soi bóng",
-  "en": ""
- },
- {
-  "vi": "Tăng ca, thưởng năng suất",
-  "en": ""
- },
- {
-  "vi": "Việc gấp",
-  "en": ""
- },
- {
-  "vi": "🏢 Ngày điều hành tốt: trong ca, tự xếp ít nhất 1 việc ở 🗓️ Điều phối, rồi khép ngày với điểm điều hành từ 60/100.",
-  "en": ""
- },
- {
-  "vi": "Điểm = ½ tỷ lệ đúng giờ + 0,3 × tinh thần + 20, trừ 6 mỗi phàn nàn và 2 mỗi % vượt quỹ lương. Việc bỏ trống, việc cần quyết để tới cuối ngày đều thêm phàn nàn.",
-  "en": ""
- },
- {
-  "vi": "🔁 Xoay ca: ai đã làm 2 ngày liền thì sáng hôm sau dễ 🥱 mệt (1 phần 2), và hôm đó làm dễ trễ hơn hẳn. Đừng để ai làm ngày thứ 3 liền, cho nghỉ 1 ngày là hết mệt.",
-  "en": ""
- },
- {
-  "vi": "Số ngày điều hành tốt đếm lại từ 0 sau mỗi lần lên bậc.",
-  "en": ""
- },
- {
-  "vi": "🪜 Cách lên bậc",
-  "en": ""
- },
- {
-  "vi": "1️⃣ Ngày chắc tay = ngày tốt",
-  "en": ""
- },
- {
-  "vi": "2️⃣ Giữ tin tưởng sếp",
-  "en": ""
- },
- {
-  "vi": "3️⃣ Đủ hai mốc → hẹn xét",
-  "en": ""
- },
- {
-  "vi": "Ngày chắc tay: nộp ít nhất 1 hồ sơ, không trễ hạn, không lỗi nặng. Mỗi ngày như vậy cộng 1 ngày tốt và 1 ngày vào 🧭 Lộ trình. Lộ trình bậc 2 cần 6 ngày chắc tay và tin tưởng từ 55, bậc 3 cần 10 ngày và tin tưởng từ 70. Tin tưởng lên khi nộp sớm, bắt đúng lỗi; xuống khi trễ hạn, duyệt nhầm. Đủ mốc thì cuối ngày tự lên bậc lộ trình.",
-  "en": ""
- },
- {
-  "vi": "Ngày tốt: ca thường xong từ 2 việc, đánh giá trong ngày từ ★3.5 nếu có. Nghề văn phòng theo kết quả “ngày chắc tay”; ca quản lý đạt chất lượng từ 60%.",
-  "en": ""
- },
- {
-  "vi": "Không bao giờ bị giáng chức. Ngày chưa tốt không cộng ngày tốt và vẫn tính vào tỷ lệ ngày làm.",
-  "en": ""
- },
- {
-  "vi": "Mỗi bậc: tăng lương",
-  "en": ""
- },
- {
-  "vi": "Mỗi bậc",
-  "en": ""
- },
- {
-  "vi": "(nhân viên + phụ việc thời vụ)",
-  "en": ""
- },
- {
-  "vi": "🏢 Phòng sếp",
-  "en": ""
- },
- {
-  "vi": "🏮 Hội buôn phố",
-  "en": ""
- },
- {
-  "vi": "Mỗi câu có cách tốt nhất, cách tạm được và cách sếp chưa ưng (0 điểm). Có câu 0 điểm là hẹn xét lại sau 3 ngày làm. Chọn cách đúng quy trình, có trách nhiệm nhất.",
-  "en": ""
- },
- {
-  "vi": "💰 Lương mới:",
-  "en": ""
- },
- {
-  "vi": "Xin hợp lý, xin cao: được thêm khi cả hai câu đều trả lời tốt nhất. “Xin cao” mà có câu mới tạm được thì sếp hẹn 3 ngày làm nữa. Chưa chắc thì chọn “Xin hợp lý”.",
-  "en": ""
- },
- {
-  "vi": "⏳ Chỉ đếm ngày có làm việc. Làm thêm",
-  "en": ""
- },
- {
-  "vi": "ngày là sếp hẹn xét lại ở đầu ca kế tiếp.",
-  "en": ""
- },
- {
-  "vi": "💡 Lần xét trước chưa qua: có câu bị chấm 0 điểm, hoặc chọn “Xin cao” khi chưa trả lời tốt nhất cả hai câu. Lần sau chọn cách đúng quy trình nhất rồi “Xin hợp lý”.",
-  "en": ""
- },
- {
-  "vi": "📋 Lần xét vừa rồi",
-  "en": ""
- },
- {
-  "vi": "Chỉ được khi cả hai câu đều tốt nhất. Lần sau chọn “Xin hợp lý”.",
-  "en": ""
- },
- {
-  "vi": "🎖️ Thăng tiến",
-  "en": ""
- },
- {
-  "vi": "Có việc làm rồi mới tính chuyện lên chức nhé.",
-  "en": ""
- },
- {
-  "vi": "Bậc cao nhất rồi!",
-  "en": ""
- },
- {
-  "vi": "Ngày tốt khi: tự xếp ít nhất 1 việc ở 🗓️ Điều phối và cuối ngày điểm điều hành từ 60/100.",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể mở ca quản lý: giao việc cho đội, kiểm tra kết quả và xử lý chuyện trong ca. Mỗi ngày vẫn có thể chọn tự làm ở quầy.",
-  "en": ""
- },
- {
-  "vi": "Công việc ở quầy vẫn như trước. Từ bậc 3, bạn có thêm ca quản lý để giao việc cho đội và kiểm tra kết quả.",
-  "en": ""
- },
- {
-  "vi": "việc cần quyết",
-  "en": ""
- },
- {
-  "vi": "✅ Không còn việc nào chờ quyết hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Để đó tới cuối ngày thì phương án tệ nhất sẽ xảy ra.",
-  "en": ""
- },
- {
-  "vi": "🚫 đình chỉ",
-  "en": ""
- },
- {
-  "vi": "😴 phải nghỉ",
-  "en": ""
- },
- {
-  "vi": "🎓 chưa đủ bậc",
-  "en": ""
- },
- {
-  "vi": "📌 đã có việc",
-  "en": ""
- },
- {
-  "vi": "👇 Chọn người",
-  "en": ""
- },
- {
-  "vi": "✕ Bỏ xếp",
-  "en": ""
- },
- {
-  "vi": "Tay nghề cao, tinh thần tốt: dễ đúng giờ. Đang có chuyện chưa xử lý (⚠️) thì dễ trễ.",
-  "en": ""
- },
- {
-  "vi": "🗳️ Còn",
-  "en": ""
- },
- {
-  "vi": "lượt quyết nhân sự hôm nay · mỗi người một quyết định/ngày",
-  "en": ""
- },
- {
-  "vi": "Mỗi người có tính cách riêng: cùng một quyết định, người này cảm ơn, người kia tự ái.",
-  "en": ""
- },
- {
-  "vi": "Có lý do (đang có lỗi, đã nhắc từ trước, làm tốt thật) thì quyết định có tác dụng. Không có lý do thì người đó buồn và cả phòng để ý.",
-  "en": ""
- },
- {
-  "vi": "Mệt không phải là lỗi: cho nghỉ, đừng phạt.",
-  "en": ""
- },
- {
-  "vi": "Thăng chức, tăng lương làm quỹ lương tăng. Bị dồn quá thì người ta nghỉ việc.",
-  "en": ""
- },
- {
-  "vi": "🚫 Đình chỉ",
-  "en": ""
- },
- {
-  "vi": "😴 Phải nghỉ",
-  "en": ""
- },
- {
-  "vi": "✓ Đã quyết hôm nay",
-  "en": ""
- },
- {
-  "vi": "🔒 Chưa rõ tính cách: nói chuyện riêng để hiểu.",
-  "en": ""
- },
- {
-  "vi": "Tự xếp ít nhất 1 việc ở 🗓️ Điều phối",
-  "en": ""
- },
- {
-  "vi": "Đã quyết hết 📥 việc",
-  "en": ""
- },
- {
-  "vi": "chưa xếp người",
-  "en": ""
- },
- {
-  "vi": "Đã xếp đủ người",
-  "en": ""
- },
- {
-  "vi": "Xoay ca: không ai làm ngày thứ 3 liền",
-  "en": ""
- },
- {
-  "vi": "Quỹ lương đang vượt (trừ 2 điểm mỗi %)",
-  "en": ""
- },
- {
-  "vi": "Quỹ lương trong mức",
-  "en": ""
- },
- {
-  "vi": "Hôm nay tính ngày tốt?",
+  "vi": "1 chỉ",
   "en": ""
  }
 ]

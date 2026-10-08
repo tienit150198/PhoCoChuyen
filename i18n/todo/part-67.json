@@ -1,5 +1,553 @@
 [
  {
+  "vi": "Đàn piano đứng",
+  "en": ""
+ },
+ {
+  "vi": "Bình gốm Bát Tràng",
+  "en": ""
+ },
+ {
+  "vi": "Tranh sơn dầu phố cổ",
+  "en": ""
+ },
+ {
+  "vi": "Bộ khung ảnh mini",
+  "en": ""
+ },
+ {
+  "vi": "Đèn chùm pha lê",
+  "en": ""
+ },
+ {
+  "vi": "Thảm tròn len",
+  "en": ""
+ },
+ {
+  "vi": "Thảm hành lang dài",
+  "en": ""
+ },
+ {
+  "vi": "Bảng đèn neon chill",
+  "en": ""
+ },
+ {
+  "vi": "Kệ tròn treo tường",
+  "en": ""
+ },
+ {
+  "vi": "Chuông gió tre",
+  "en": ""
+ },
+ {
+  "vi": "Máy chiếu dải ngân hà",
+  "en": ""
+ },
+ {
+  "vi": "Giường đơn sắt",
+  "en": ""
+ },
+ {
+  "vi": "Tủ ngăn kéo",
+  "en": ""
+ },
+ {
+  "vi": "Gương đứng toàn thân",
+  "en": ""
+ },
+ {
+  "vi": "Đèn ngủ mặt trăng",
+  "en": ""
+ },
+ {
+  "vi": "Gối tựa ca rô",
+  "en": ""
+ },
+ {
+  "vi": "Rèm voan trắng",
+  "en": ""
+ },
+ {
+  "vi": "Thỏ bông tai dài",
+  "en": ""
+ },
+ {
+  "vi": "Kệ giày gỗ",
+  "en": ""
+ },
+ {
+  "vi": "Ngựa gỗ bập bênh",
+  "en": ""
+ },
+ {
+  "vi": "Lều chơi cho bé",
+  "en": ""
+ },
+ {
+  "vi": "Bộ xếp hình",
+  "en": ""
+ },
+ {
+  "vi": "Xe ô tô đồ chơi",
+  "en": ""
+ },
+ {
+  "vi": "Khối rubik",
+  "en": ""
+ },
+ {
+  "vi": "Quả cầu tuyết",
+  "en": ""
+ },
+ {
+  "vi": "Đồng hồ báo thức",
+  "en": ""
+ },
+ {
+  "vi": "Chồng sách đang đọc",
+  "en": ""
+ },
+ {
+  "vi": "Bếp ga đôi",
+  "en": ""
+ },
+ {
+  "vi": "Thanh treo nồi chảo",
+  "en": ""
+ },
+ {
+  "vi": "Thớt gỗ và dao",
+  "en": ""
+ },
+ {
+  "vi": "Máy xay sinh tố",
+  "en": ""
+ },
+ {
+  "vi": "Hũ dưa muối",
+  "en": ""
+ },
+ {
+  "vi": "Máy pha cà phê",
+  "en": ""
+ },
+ {
+  "vi": "Đảo bếp gỗ",
+  "en": ""
+ },
+ {
+  "vi": "Ghế quầy bar",
+  "en": ""
+ },
+ {
+  "vi": "Rổ rau củ",
+  "en": ""
+ },
+ {
+  "vi": "Lò nướng bánh mini",
+  "en": ""
+ },
+ {
+  "vi": "Kệ treo chén đĩa",
+  "en": ""
+ },
+ {
+  "vi": "Kệ mỹ phẩm",
+  "en": ""
+ },
+ {
+  "vi": "Máy sấy tóc",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ đựng đồ giặt",
+  "en": ""
+ },
+ {
+  "vi": "Cốc bàn chải",
+  "en": ""
+ },
+ {
+  "vi": "Chậu trúc phát tài",
+  "en": ""
+ },
+ {
+  "vi": "Tủ thuốc treo tường",
+  "en": ""
+ },
+ {
+  "vi": "Ghế trứng treo",
+  "en": ""
+ },
+ {
+  "vi": "Chậu cúc vạn thọ",
+  "en": ""
+ },
+ {
+  "vi": "Bồn hoa gỗ",
+  "en": ""
+ },
+ {
+  "vi": "Hồ cá koi mini",
+  "en": ""
+ },
+ {
+  "vi": "Ghế dài công viên",
+  "en": ""
+ },
+ {
+  "vi": "Đèn bão cổ",
+  "en": ""
+ },
+ {
+  "vi": "Nhà gỗ cho cún",
+  "en": ""
+ },
+ {
+  "vi": "Bình tưới cây",
+  "en": ""
+ },
+ {
+  "vi": "Phòng ngủ nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Căn gác",
+  "en": ""
+ },
+ {
+  "vi": "Phòng trọ",
+  "en": ""
+ },
+ {
+  "vi": "Gác lửng",
+  "en": ""
+ },
+ {
+  "vi": "Góc giường của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Hồ bơi",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tắm lớn",
+  "en": ""
+ },
+ {
+  "vi": "Nhà tắm chung",
+  "en": ""
+ },
+ {
+  "vi": "Góc học tập",
+  "en": ""
+ },
+ {
+  "vi": "Góc xanh",
+  "en": ""
+ },
+ {
+  "vi": "Góc chill",
+  "en": ""
+ },
+ {
+  "vi": "Giấc ngủ êm",
+  "en": ""
+ },
+ {
+  "vi": "Góc gaming",
+  "en": ""
+ },
+ {
+  "vi": "Bếp ấm",
+  "en": ""
+ },
+ {
+  "vi": "Góc âm nhạc",
+  "en": ""
+ },
+ {
+  "vi": "Bức tường kỷ niệm",
+  "en": ""
+ },
+ {
+  "vi": "Vườn nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tắm thư giãn",
+  "en": ""
+ },
+ {
+  "vi": "Hồ bơi nghỉ dưỡng",
+  "en": ""
+ },
+ {
+  "vi": "Tiệc nướng ngoài trời",
+  "en": ""
+ },
+ {
+  "vi": "Góc Tết sum vầy",
+  "en": ""
+ },
+ {
+  "vi": "Phòng khách xưa",
+  "en": ""
+ },
+ {
+  "vi": "Hiên nhà thong thả",
+  "en": ""
+ },
+ {
+  "vi": "Bếp tiện nghi",
+  "en": ""
+ },
+ {
+  "vi": "Phòng ngủ mộng mơ",
+  "en": ""
+ },
+ {
+  "vi": "Góc vui chơi",
+  "en": ""
+ },
+ {
+  "vi": "Bếp nhà nấu",
+  "en": ""
+ },
+ {
+  "vi": "Đêm đầy sao",
+  "en": ""
+ },
+ {
+  "vi": "một cái bàn",
+  "en": ""
+ },
+ {
+  "vi": "một cây đèn",
+  "en": ""
+ },
+ {
+  "vi": "kệ sách",
+  "en": ""
+ },
+ {
+  "vi": "một chậu cây",
+  "en": ""
+ },
+ {
+  "vi": "một tấm thảm",
+  "en": ""
+ },
+ {
+  "vi": "đồ bông mềm",
+  "en": ""
+ },
+ {
+  "vi": "giường hoặc nệm",
+  "en": ""
+ },
+ {
+  "vi": "rèm",
+  "en": ""
+ },
+ {
+  "vi": "tranh, ảnh",
+  "en": ""
+ },
+ {
+  "vi": "một món đồ chơi",
+  "en": ""
+ },
+ {
+  "vi": "“Ở gác mà gọn gàng dễ thương vầy, bà khoe cả xóm luôn.”",
+  "en": ""
+ },
+ {
+  "vi": "“Nhìn phòng này là biết người ở chăm chút lắm.”",
+  "en": ""
+ },
+ {
+  "vi": "“Góc của bạn chill ghê, cho mình ngồi làm đồ án ké chút nha.”",
+  "en": ""
+ },
+ {
+  "vi": "“Góc giường gì mà như homestay vậy trời.”",
+  "en": ""
+ },
+ {
+  "vi": "“Bạn khéo tay ghê, My chụp hình đăng story nha.”",
+  "en": ""
+ },
+ {
+  "vi": "“Bà ghé chơi chút thôi mà muốn ở lại ăn cơm luôn á.”",
+  "en": ""
+ },
+ {
+  "vi": "“Nhà con ấm cúng thiệt, bữa nào cô dẫn mấy đứa nhỏ qua chơi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Nhà gọn gàng sạch sẽ, nhìn là biết chủ nhà siêng.”",
+  "en": ""
+ },
+ {
+  "vi": "Như ban đầu",
+  "en": ""
+ },
+ {
+  "vi": "Sơn kem sữa",
+  "en": ""
+ },
+ {
+  "vi": "Sơn xanh bạc hà",
+  "en": ""
+ },
+ {
+  "vi": "Sơn hồng đào",
+  "en": ""
+ },
+ {
+  "vi": "Giấy kẻ sọc pastel",
+  "en": ""
+ },
+ {
+  "vi": "Giấy chấm bi",
+  "en": ""
+ },
+ {
+  "vi": "Giấy hoa nhí",
+  "en": ""
+ },
+ {
+  "vi": "Giấy mây và sao",
+  "en": ""
+ },
+ {
+  "vi": "Ốp gạch thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Ốp gỗ nửa tường",
+  "en": ""
+ },
+ {
+  "vi": "Sàn gỗ sáng",
+  "en": ""
+ },
+ {
+  "vi": "Gạch men trắng",
+  "en": ""
+ },
+ {
+  "vi": "Chiếu cói",
+  "en": ""
+ },
+ {
+  "vi": "Gạch caro",
+  "en": ""
+ },
+ {
+  "vi": "Thảm len hồng",
+  "en": ""
+ },
+ {
+  "vi": "Gạch bông",
+  "en": ""
+ },
+ {
+  "vi": "Sàn gỗ xương cá",
+  "en": ""
+ },
+ {
+  "vi": "Ga kẻ hồng",
+  "en": ""
+ },
+ {
+  "vi": "Ga mây xanh",
+  "en": ""
+ },
+ {
+  "vi": "Ga dâu tây",
+  "en": ""
+ },
+ {
+  "vi": "Ga mèo con",
+  "en": ""
+ },
+ {
+  "vi": "Chính sách thiếu hàng",
+  "en": ""
+ },
+ {
+  "vi": "➕ Lấy thêm",
+  "en": ""
+ },
+ {
+  "vi": "➖ Bỏ bớt",
+  "en": ""
+ },
+ {
+  "vi": "➖ Bỏ hộp sai mã",
+  "en": ""
+ },
+ {
+  "vi": "➖ Bỏ hộp",
+  "en": ""
+ },
+ {
+  "vi": "👁️ Đọc nhãn",
+  "en": ""
+ },
+ {
+  "vi": "👁️ Mở gốc",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Loại trùng",
+  "en": ""
+ },
+ {
+  "vi": "✏️ Sửa",
+  "en": ""
+ },
+ {
+  "vi": "theo gốc",
+  "en": ""
+ },
+ {
+  "vi": "Đồng nghiệp nói nhỏ với nhau: “Nghe đâu vào bằng cửa sau đó…” Làm cho tốt rồi người ta sẽ quên thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Lúc thay đồ, một đồng nghiệp buông một câu: “Có người quen sướng thật ha.” Bạn cười trừ rồi xắn tay áo làm.",
+  "en": ""
+ },
+ {
+  "vi": "Người làm ca trước đưa bạn cái tạp dề, nửa đùa nửa thật: “Người nhà của ai đó hả? Thôi làm đi rồi biết.”",
+  "en": ""
+ },
+ {
+  "vi": "Đi cửa sau chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Cửa sau chỉ mở sau một lần trượt phỏng vấn.",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ hành nghề phải thi thật: không có cửa sau cho bài thi này.",
+  "en": ""
+ },
+ {
+  "vi": "Người quen chỉ “lo giúp” được một lần ở mỗi nơi.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận đi cửa sau.",
+  "en": ""
+ },
+ {
   "vi": "Đi cửa sau",
   "en": ""
  },
@@ -1249,554 +1797,6 @@
  },
  {
   "vi": "đồng ý",
-  "en": ""
- },
- {
-  "vi": "từ chối",
-  "en": ""
- },
- {
-  "vi": "lời mời gia đình.",
-  "en": ""
- },
- {
-  "vi": "Đã đồng ý lời mời.",
-  "en": ""
- },
- {
-  "vi": "Đã từ chối. Tiến trình và tiền của bạn không thay đổi.",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa ở nhà chung.",
-  "en": ""
- },
- {
-  "vi": "Đã dọn khỏi nhà chung. Nhà và đồ cá nhân vẫn thuộc về mỗi người.",
-  "en": ""
- },
- {
-  "vi": "Không có thao tác gia đình này.",
-  "en": ""
- },
- {
-  "vi": "Chọn em bé hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chưa có em bé này.",
-  "en": ""
- },
- {
-  "vi": "Gia đình đang chờ đón bé. Quay lại vào",
-  "en": ""
- },
- {
-  "vi": "Chọn bộ đồ cho bé.",
-  "en": ""
- },
- {
-  "vi": "Chọn việc chăm bé hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay đã chăm phần này rồi.",
-  "en": ""
- },
- {
-  "vi": "Chọn tiền mặt, tài khoản hoặc thẻ cá nhân. Quỹ chung dùng ở mục Quỹ chung.",
-  "en": ""
- },
- {
-  "vi": "Chưa đủ tiền chăm bé.",
-  "en": ""
- },
- {
-  "vi": "Đã chăm sóc",
-  "en": ""
- },
- {
-  "vi": "Đã cập nhật",
-  "en": ""
- },
- {
-  "vi": "Báo cáo tôi à? Tôi kể đúng trải nghiệm thật mà. Thôi, để nguyên vậy.",
-  "en": ""
- },
- {
-  "vi": "Nền tảng giữ bài tôi rồi nhé. Lần sau đọc kỹ rồi hẵng báo cáo.",
-  "en": ""
- },
- {
-  "vi": "Ủa, góp ý thật mà cũng bị báo cáo? Hơi buồn đó nha.",
-  "en": ""
- },
- {
-  "vi": "Cô/thầy báo cáo tin nhắn của phụ huynh à? Tôi góp ý thật lòng mà.",
-  "en": ""
- },
- {
-  "vi": "Tôi góp ý thật mà bị báo cáo, tôi hơi buồn.",
-  "en": ""
- },
- {
-  "vi": "Tôi kể thật lòng mà bị báo cáo, hơi buồn.",
-  "en": ""
- },
- {
-  "vi": "Cảm nhận thật mà bị báo cáo. Thôi, tôi để đó.",
-  "en": ""
- },
- {
-  "vi": "chuyến bay",
-  "en": ""
- },
- {
-  "vi": "Được xin lỗi đàng hoàng lại còn được bù, mình sửa lại sao nhé.",
-  "en": ""
- },
- {
-  "vi": "Thấy quán nhận lỗi thật lòng và bù cho mình, mình nâng sao. Lần sau cẩn thận hơn nha.",
-  "en": ""
- },
- {
-  "vi": "Quán xử lý vậy là có tâm. Mình sửa lại đánh giá rồi đó.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn cô/thầy đã nhận thiếu sót và bù cho con. Tôi sửa lại đánh giá ạ.",
-  "en": ""
- },
- {
-  "vi": "Thấy cô/thầy nhận lỗi thật lòng, tôi yên tâm hơn và sửa lại đánh giá.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn lời xin lỗi và phần bù. Mình nhận, nhưng lần này vẫn giữ đánh giá để quán nhớ nha.",
-  "en": ""
- },
- {
-  "vi": "Mình ghi nhận quán đã bù rồi. Lần sau làm tốt thì mình sửa sao sau nhé.",
-  "en": ""
- },
- {
-  "vi": "Tôi ghi nhận lời xin lỗi và phần bù, nhưng xin giữ nhận xét để lớp lưu ý ạ.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn cô/thầy đã bù cho con. Tôi giữ nhận xét, mong buổi sau tốt hơn ạ.",
-  "en": ""
- },
- {
-  "vi": "khách đánh giá nhầm chỗ",
-  "en": ""
- },
- {
-  "vi": "phụ huynh nhắn nhầm lớp",
-  "en": ""
- },
- {
-  "vi": "khách chưa từng dùng dịch vụ",
-  "en": ""
- },
- {
-  "vi": "đây có vẻ là tài khoản cài cắm",
-  "en": ""
- },
- {
-  "vi": "khách đã chấm 5★ rồi",
-  "en": ""
- },
- {
-  "vi": "khách đã hài lòng sẵn rồi",
-  "en": ""
- },
- {
-  "vi": "Báo cáo đánh giá để nền tảng gỡ thì hơn.",
-  "en": ""
- },
- {
-  "vi": "Chỉ trình báo được lời đe dọa đòi tiền chưa có hồ sơ.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận lưu bằng chứng và trình báo trong game.",
-  "en": ""
- },
- {
-  "vi": "Đã lưu đánh giá và cuộc trao đổi vào hồ sơ trình báo trong game. Khép trao đổi trực tiếp; điểm đánh giá vẫn giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "Nghề này không bù đắp kiểu đó.",
-  "en": ""
- },
- {
-  "vi": "Chưa trừ xu nào.",
-  "en": ""
- },
- {
-  "vi": "Đã gửi lời hồi đáp.",
-  "en": ""
- },
- {
-  "vi": "Nền tảng giữ đánh giá này: nó gắn với chuyện có thật trong ca. Sao giữ nguyên, không ai phật ý.",
-  "en": ""
- },
- {
-  "vi": "Đã lưu đánh giá này trong hồ sơ trình báo.",
-  "en": ""
- },
- {
-  "vi": "Đã lưu nội dung trong hồ sơ trình báo.",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ trình báo sai.",
-  "en": ""
- },
- {
-  "vi": "Cuộc trao đổi đã trình báo không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "cốc trà đá",
-  "en": ""
- },
- {
-  "vi": "món hàng",
-  "en": ""
- },
- {
-  "vi": "tô phở",
-  "en": ""
- },
- {
-  "vi": "dải ảnh",
-  "en": ""
- },
- {
-  "vi": "lượt dọn nhà",
-  "en": ""
- },
- {
-  "vi": "bữa cơm",
-  "en": ""
- },
- {
-  "vi": "lượt mượn sách",
-  "en": ""
- },
- {
-  "vi": "ca gác chắn",
-  "en": ""
- },
- {
-  "vi": "ca chăm sóc",
-  "en": ""
- },
- {
-  "vi": "ca trực đèn",
-  "en": ""
- },
- {
-  "vi": "cuộc gọi",
-  "en": ""
- },
- {
-  "vi": "buổi bơi",
-  "en": ""
- },
- {
-  "vi": "việc ở phường",
-  "en": ""
- },
- {
-  "vi": "bản album",
-  "en": ""
- },
- {
-  "vi": "🧊 Đồ ăn ở nhà",
-  "en": ""
- },
- {
-  "vi": "Hộp sữa tươi",
-  "en": ""
- },
- {
-  "vi": "Sữa mát lạnh, uống một hơi hết hộp.",
-  "en": ""
- },
- {
-  "vi": "Bánh flan mềm mịn, caramen đắng nhẹ, ngon ghê.",
-  "en": ""
- },
- {
-  "vi": "Hộp trái cây cắt sẵn",
-  "en": ""
- },
- {
-  "vi": "Dưa hấu, xoài mát lạnh, ngọt lịm.",
-  "en": ""
- },
- {
-  "vi": "Bánh bao nhân thịt",
-  "en": ""
- },
- {
-  "vi": "Hâm lại nóng hổi, nhân thịt trứng cút thơm phức.",
-  "en": ""
- },
- {
-  "vi": "Gỏi cuốn tôm thịt",
-  "en": ""
- },
- {
-  "vi": "Chấm tương đậu, rau sống giòn mát.",
-  "en": ""
- },
- {
-  "vi": "Hộp cơm thịt kho",
-  "en": ""
- },
- {
-  "vi": "Hâm nóng hộp cơm thịt kho trứng, ăn ngon lành.",
-  "en": ""
- },
- {
-  "vi": "Chai cà phê sữa",
-  "en": ""
- },
- {
-  "vi": "Cà phê sữa đá mát lạnh, tỉnh hẳn người.",
-  "en": ""
- },
- {
-  "vi": "Chưa có tủ lạnh",
-  "en": ""
- },
- {
-  "vi": "Tủ lạnh còn trong túi đồ",
-  "en": ""
- },
- {
-  "vi": "Tủ đầy rồi",
-  "en": ""
- },
- {
-  "vi": "Hết trong tủ",
-  "en": ""
- },
- {
-  "vi": "Đang tỉnh rồi",
-  "en": ""
- },
- {
-  "vi": "Tủ lạnh ở nhà chỉ có trong hành trình.",
-  "en": ""
- },
- {
-  "vi": "Chọn một món nhé.",
-  "en": ""
- },
- {
-  "vi": "Tủ lạnh còn nằm trong túi đồ. Bày tủ ra bếp rồi cất đồ ăn nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa có tủ lạnh. Tủ lạnh có trong cửa hàng Bày trí phòng.",
-  "en": ""
- },
- {
-  "vi": "ngăn tủ chung",
-  "en": ""
- },
- {
-  "vi": "tủ lạnh",
-  "en": ""
- },
- {
-  "vi": "Bụng no rồi, để dành trong tủ ăn sau nhé.",
-  "en": ""
- },
- {
-  "vi": "Đang tỉnh rồi, uống nữa tối khó ngủ đó.",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu tủ lạnh không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Không tìm thấy người chơi này. Kiểm tra lại tên đăng nhập (viết đúng từng ký tự) nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn tìm hơi nhanh. Chờ một phút rồi tìm tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Nhập tên đăng nhập của bạn ấy nhé.",
-  "en": ""
- },
- {
-  "vi": "Đây là tên đăng nhập của chính bạn.",
-  "en": ""
- },
- {
-  "vi": "Hai bạn đã là bạn bè rồi.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã gửi lời mời rồi, chờ bạn ấy trả lời nhé.",
-  "en": ""
- },
- {
-  "vi": "Danh sách bạn bè đã đầy.",
-  "en": ""
- },
- {
-  "vi": "Không thấy mã người chơi này. Bạn ấy có thể đã đổi tài khoản hoặc rời phố.",
-  "en": ""
- },
- {
-  "vi": "Đây là mã của chính bạn.",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy đang chơi bằng phiên khách (chưa có tài khoản) nên chưa kết bạn được. Nhắn bạn ấy tạo tài khoản nhé.",
-  "en": ""
- },
- {
-  "vi": "Không gửi được lời mời tới người này.",
-  "en": ""
- },
- {
-  "vi": "Lời mời này không còn chờ trả lời.",
-  "en": ""
- },
- {
-  "vi": "Không kết bạn được với người này.",
-  "en": ""
- },
- {
-  "vi": "Đã từ chối lời mời.",
-  "en": ""
- },
- {
-  "vi": "Đã chặn. Người này không gửi lời mời hay lời cầu hôn cho bạn được nữa.",
-  "en": ""
- },
- {
-  "vi": "Lời mời không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Đã rút lại lời mời kết bạn.",
-  "en": ""
- },
- {
-  "vi": "Hai bạn đang là một đôi. Muốn dừng lại thì dùng mục Hôn nhân nhé.",
-  "en": ""
- },
- {
-  "vi": "Người khác tìm được bạn bằng tên đăng nhập.",
-  "en": ""
- },
- {
-  "vi": "Đã ẩn: không ai tìm được bạn bằng tên đăng nhập nữa.",
-  "en": ""
- },
- {
-  "vi": "Mây Mobile",
-  "en": ""
- },
- {
-  "vi": "Phố dịch vụ",
-  "en": ""
- },
- {
-  "vi": "Đồ công nghệ",
-  "en": ""
- },
- {
-  "vi": "Chỉ đường nhớ 3 nơi vừa đi",
-  "en": ""
- },
- {
-  "vi": "Mở Chỉ đường là thấy ngay chỗ vừa ghé, khỏi gõ tìm.",
-  "en": ""
- },
- {
-  "vi": "Chụp selfie nhân vật với khung riêng của máy, lưu ảnh về khoe.",
-  "en": ""
- },
- {
-  "vi": "Vỏ máy khoe trên hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Màu vỏ máy viền quanh huy hiệu điện thoại trên hồ sơ của bạn.",
-  "en": ""
- },
- {
-  "vi": "Khung selfie đôi",
-  "en": ""
- },
- {
-  "vi": "Màn gập đôi: hai dáng trong một tấm, như ảnh photobooth.",
-  "en": ""
- },
- {
-  "vi": "Viền vàng lấp lánh",
-  "en": ""
- },
- {
-  "vi": "Vỏ máy và khung selfie viền vàng, lấp lánh như tiệm vàng.",
-  "en": ""
- },
- {
-  "vi": "Mây Lite 5",
-  "en": ""
- },
- {
-  "vi": "Máy “quốc dân”: pin trâu, màn to, lướt mạng mượt. Đủ xài, khỏi lo.",
-  "en": ""
- },
- {
-  "vi": "Tầm trung đáng tiền: camera chụp đêm khá ổn, sạc nhanh nửa tiếng đầy.",
-  "en": ""
- },
- {
-  "vi": "Mây Pro 16",
-  "en": ""
- },
- {
-  "vi": "Hàng đầu dòng: khung titan, ba camera, chụp quán phở cũng ra ảnh tạp chí.",
-  "en": ""
- },
- {
-  "vi": "Sen Gập Fold 3",
-  "en": ""
- },
- {
-  "vi": "Gập lại như hộp phấn, mở ra thành máy tính bảng. Cả quán cà phê ngoái nhìn.",
-  "en": ""
- },
- {
-  "vi": "Kim Long Vàng 24K",
-  "en": ""
- },
- {
-  "vi": "Phiên bản giới hạn mạ vàng, khắc rồng, hộp gỗ lót nhung. Cầm lên là biết “dân chơi”.",
-  "en": ""
- },
- {
-  "vi": "Tai nghe Sóc Pods",
-  "en": ""
- },
- {
-  "vi": "Nhét tai là lọt thỏm, chống ồn đủ để không nghe khách than.",
   "en": ""
  }
 ]

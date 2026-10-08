@@ -1,5 +1,549 @@
 [
  {
+  "vi": "⚖️ Ở điểm lấy: kiện hàng thì [[Cân & kiểm hàng]]; đồ ăn thì [[Chờ quán 5 phút]] rồi [[So túi với bill]].",
+  "en": ""
+ },
+ {
+  "vi": "🫧 Chạm ô vật tư cần dùng. Lệch cân thì bật [[Báo lệch cân lên app]], rồi [[Nhận hàng lên xe]].",
+  "en": ""
+ },
+ {
+  "vi": "📞 Thiếu số phòng hay khách dặn gọi trước: bấm [[Gọi khách]].",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Tới nơi bấm [[Giao tận tay]]. Đơn COD: chạm tờ tiền đếm tiền thối, rồi bấm 💵 Thu … & giao.",
+  "en": ""
+ },
+ {
+  "vi": "📮 Về bưu cục, chạm tờ tiền cho đủ số trên bảng kê và nộp cho kế toán.",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Đúng giờ: tới trước giờ hẹn là 5 điểm; trễ tới 5 phút còn 4, tới 15 phút còn 3.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Hàng nguyên vẹn, khô ráo, đủ món: mỗi lỗi (ướt, bung keo, chảy, đổ nước lèo, thiếu món) trừ 1 điểm.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Thối tiền chính xác: thiếu mà khách phải nhắc còn 4, về nhà mới thấy chỉ 2.",
+  "en": ""
+ },
+ {
+  "vi": "📞 Gọi trước khi thiếu số phòng hay khách vắng; cân lệch thì báo đúng cân nặng.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Khách quen dặn gì (gọi trước, chụp ảnh, [[Xách vào tận nơi]]…) thì làm đủ.",
+  "en": ""
+ },
+ {
+  "vi": "🔥 3 đơn sạch liền được thêm 5 xu; điểm tài xế từ 4,7★ được thêm 2 xu mỗi đơn.",
+  "en": ""
+ },
+ {
+  "vi": "🪙 Thối đúng từng đồng: có khách xua tay “khỏi thối”, tiền lẻ (tối đa 20 xu) thành tiền boa của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "💝 Khách quen được làm đúng lời dặn gửi 2 xu tiền cà phê (khách ruột 4 xu). Giao đẹp đôi khi còn được tip hoặc quà nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng dễ vỡ không bọc xốp",
+  "en": ""
+ },
+ {
+  "vi": "Vỡ trên đường, khách từ chối. Phải [[Báo giao thất bại]], bạn đền một phần giá trị hàng (bảo hiểm trả phần còn lại), tối đa 2★.",
+  "en": ""
+ },
+ {
+  "vi": "Trời mưa không trùm túi chống nước",
+  "en": ""
+ },
+ {
+  "vi": "Thùng ướt, khách phàn nàn. Giấy tờ gốc ướt nhòe là hỏng, không giao được nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Chạy hẻm xóc khi chở nước lèo, hoặc không so bill",
+  "en": ""
+ },
+ {
+  "vi": "Đổ nước lèo hay thiếu món: khách càu nhàu, đòi bớt 25% hoặc hoàn 50% phí ship.",
+  "en": ""
+ },
+ {
+  "vi": "Trễ giờ hẹn",
+  "en": ""
+ },
+ {
+  "vi": "Mất 4 xu phí ship (hoặc khách tự cắt tiền). Đồ ăn trễ quá 30 phút: khách hủy, mất đơn, 1★.",
+  "en": ""
+ },
+ {
+  "vi": "Khách kỹ đếm ngay, đòi thêm: lỗi nhỏ (4★). Không ai đếm thì về nhà mới thấy: 2★, có thể bị báo cáo lên app.",
+  "en": ""
+ },
+ {
+  "vi": "Khách thật thà trả lại; không thì túi COD thiếu, bạn tự bù tiền túi khi nộp.",
+  "en": ""
+ },
+ {
+  "vi": "Khách vắng mà chưa gọi lần nào đã hoàn hàng",
+  "en": ""
+ },
+ {
+  "vi": "Khách phàn nàn, bưu cục nhắc nhở, mất luôn phí giao lần đầu.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Bấm [[Kho vật tư]] rồi [[Đặt hàng]]: Màng xốp hơi, Băng keo, Túi chống nước, Túi giữ lạnh, Dây ràng (mở ở cấp 2). Trả tiền khi đặt.",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Chợ bao bì Mây rẻ nhưng hay thiếu: đặt trước 20:00 tối nay có, đặt sau thì chiều mai trước giờ vào ca.",
+  "en": ""
+ },
+ {
+  "vi": "🚚 Kho vật tư Hạt Nắng giao trong 1–2 giờ; quá giờ tan ca thì hàng chờ sẵn trước ca mai. Hỏa tốc 15–30 phút, đắt nhất.",
+  "en": ""
+ },
+ {
+  "vi": "📬 Hàng tới thì [[Mở thùng & xếp lên kệ]], đếm đúng mới vào kho. Giao thiếu: [[Khiếu nại phần thiếu]].",
+  "en": ""
+ },
+ {
+  "vi": "⛽ Canh thanh xăng. Ở cây xăng [[Đổ đầy bình]]; xăng chai ven đường đắt gấp đôi, tối đa 20%.",
+  "en": ""
+ },
+ {
+  "vi": "🛞 Lốp dưới 40% dễ xẹp: [[Thay ruột, bơm lốp]] ở cây xăng. Phanh, nhớt, sên, áo mưa: tiệm Chú Bảy.",
+  "en": ""
+ },
+ {
+  "vi": "📡 Mở 📅 Hôm nay để xem dự báo ca tới: cứ 3 ngày có 1 ngày mưa, nhớ đủ túi chống nước.",
+  "en": ""
+ },
+ {
+  "vi": "🗺️ Giao ở một điểm 2 lần là thuộc hẻm: hẻm tắt chạy êm; 5 lần thì biết lối tắt bớt thêm 1 ô.",
+  "en": ""
+ },
+ {
+  "vi": "🚦 Đường mỗi ngày một khác: giờ tan trường, chợ phiên kẹt xe; đào đường phải vòng; hẻm ngập thì chết máy.",
+  "en": ""
+ },
+ {
+  "vi": "🐕 Chó dữ ở cổng, 📵 khách “bom hàng” COD, 📍 khách đổi địa chỉ: quyết xong mới chạy tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "💥 Xe mòn thì xẹp bánh, tuột sên giữa đường. Chạy tiếp bánh xẹp làm móp vành, hàng dễ vỡ bị xóc hỏng.",
+  "en": ""
+ },
+ {
+  "vi": "👮 Chốt kiểm tra giấy tờ, 🌩️ giông bất chợt, 🎣 shop lạ nhờ ứng tiền, 😤 khách dọa 1 sao.",
+  "en": ""
+ },
+ {
+  "vi": "🛵 Có hôm bị dắt mất xe, giật túi hàng, quẹt xước ô tô trong hẻm, hay bị phạt đỗ xe trên vỉa hè.",
+  "en": ""
+ },
+ {
+  "vi": "Tự lái",
+  "en": ""
+ },
+ {
+  "vi": "Đi nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Nhận món lên thùng",
+  "en": ""
+ },
+ {
+  "vi": "Nhận hàng lên xe",
+  "en": ""
+ },
+ {
+  "vi": "Gọi khách",
+  "en": ""
+ },
+ {
+  "vi": "Đường chính tới",
+  "en": ""
+ },
+ {
+  "vi": "Hẻm tắt",
+  "en": ""
+ },
+ {
+  "vi": "Chờ quán 5 phút",
+  "en": ""
+ },
+ {
+  "vi": "Báo lệch cân lên app",
+  "en": ""
+ },
+ {
+  "vi": "Báo giao thất bại",
+  "en": ""
+ },
+ {
+  "vi": "Đổ đầy bình",
+  "en": ""
+ },
+ {
+  "vi": "Thay ruột, bơm lốp",
+  "en": ""
+ },
+ {
+  "vi": "Bạn vừa pha espresso ở quầy, vừa canh lò bánh và giữ tủ kính đầy bánh mới.",
+  "en": ""
+ },
+ {
+  "vi": "Order đồ uống",
+  "en": ""
+ },
+ {
+  "vi": "Espresso, americano, latte, cappuccino, bạc xỉu. Làm theo phiếu: ly, shot, sữa/đá/nước, hình, nắp.",
+  "en": ""
+ },
+ {
+  "vi": "Khách tả tâm trạng",
+  "en": ""
+ },
+ {
+  "vi": "Khách chỉ kể cảm giác, bạn chọn 1 trong 3 món. Đúng ngay lần đầu: +3 xu; sai 2 lần khách tự nói.",
+  "en": ""
+ },
+ {
+  "vi": "Làm từng ly, bấm [[Xong ly]] để đặt lên khay; đủ ly thì giao cả khay một lượt.",
+  "en": ""
+ },
+ {
+  "vi": "Mua bánh ở tủ kính",
+  "en": ""
+ },
+ {
+  "vi": "Ở tab [[Tủ kính]], gắp đúng loại, đúng số, tránh món khách dị ứng, rồi [[Cho vào túi]].",
+  "en": ""
+ },
+ {
+  "vi": "[[Nướng cốt bánh]], chờ nguội, [[Phủ kem]] đúng màu, gõ chữ rồi [[Viết lên bánh]], [[Đóng hộp]].",
+  "en": ""
+ },
+ {
+  "vi": "Nướng bánh cho tủ kính",
+  "en": ""
+ },
+ {
+  "vi": "Nhào bột, chờ nở vài nhịp, [[Vào lò]], [[Lấy ra]] khi vàng đều. Cookie, bông lan nướng ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Hộp croissant cho văn phòng",
+  "en": ""
+ },
+ {
+  "vi": "Nhận 3 hoặc 6 cái. Đủ croissant mới ra lò thì bấm [[Gửi hộp bánh]] trước khi xong 3 khách nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Chăm Bé Men (hũ men)",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi ngày [[Cho Bé Men ăn]] một phần bột mì. Men khỏe thì bánh mì nở nhanh, xốp ruột.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Bấm [[Nhận order]] để nghe khách gọi món.",
+  "en": ""
+ },
+ {
+  "vi": "🥤 Ở tab [[Quầy pha]], chọn [[Ly nhỏ]] hoặc [[Ly lớn]], rồi đúng loại ly theo phiếu.",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Chọn hạt, độ xay [[Mịn (espresso)]], 18 g, bấm [[Xay & nén]] rồi [[Chiết shot]].",
+  "en": ""
+ },
+ {
+  "vi": "⏹️ Bấm [[Dừng chiết]] khi vạch vào vùng xanh 25–30 giây.",
+  "en": ""
+ },
+ {
+  "vi": "🥛 Đồ đá: [[Múc đá]], chọn sữa rồi [[Rót lạnh]]. Đồ nóng: [[Đánh nóng]], [[Tắt vòi hơi]] ở 55–68 °C.",
+  "en": ""
+ },
+ {
+  "vi": "💧 Americano thì [[Thêm nước]]. Ly mang về bấm [[Đậy nắp + dán tem]].",
+  "en": ""
+ },
+ {
+  "vi": "🛎️ Bấm [[Giao cho khách]]. Làm hỏng thì [[Đổ ly]] và làm lại.",
+  "en": ""
+ },
+ {
+  "vi": "☕ Quầy pha chỉ mở trạm đang làm; trạm khác bấm dòng của nó để mở.",
+  "en": ""
+ },
+ {
+  "vi": "☕ Đúng ly: tách sứ uống nóng tại quán, ly thủy tinh uống đá, ly giấy có nắp mang về — đúng cỡ.",
+  "en": ""
+ },
+ {
+  "vi": "⏱️ Đủ số shot, đúng loại hạt. Dưới 20 giây là chua, quá 35 giây là đắng.",
+  "en": ""
+ },
+ {
+  "vi": "🥛 Sữa đúng loại, 55–68 °C; bọt mỏng cho latte, bọt dày cho cappuccino; vẽ đúng hình đã hẹn.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Kiêng lactose: chỉ sữa yến mạch. Kiêng caffeine: chỉ hạt decaf. Dị ứng hạt: không cookie hạnh nhân.",
+  "en": ""
+ },
+ {
+  "vi": "🥐 Bánh ra lò hôm nay, vàng đều, đủ số. Bánh kem đúng kem, đúng màu, chữ đúng từng dấu.",
+  "en": ""
+ },
+ {
+  "vi": "🔥 5 order liền không lỗi được thưởng 10 xu (mỗi ngày một lần). Khách hào phóng được làm chuẩn tip 4 xu, khách vội 3 xu.",
+  "en": ""
+ },
+ {
+  "vi": "💝 Quầy không thối tiền lẻ. Khách hài lòng (3★ trở lên) đôi khi tip thêm hoặc tặng quà nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Pha sai món (thiếu sữa, thừa sữa, americano quên nước)",
+  "en": ""
+ },
+ {
+  "vi": "Khách không nhận, phải làm lại. Mỗi lần bị trả làm tụt hạng cuối ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Sữa bò cho khách kiêng lactose, cà phê thường cho người kiêng caffeine, bánh có hạt cho khách dị ứng",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: khách không trả tiền, 1★, báo cáo lên app, hôm sau đoàn kiểm tra an toàn thực phẩm tới.",
+  "en": ""
+ },
+ {
+  "vi": "Sai cỡ ly, nóng/đá, ly mang về, số shot",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ (3★): khách càu nhàu, đòi bớt 25–50% tiền hoặc đưa lại bắt sửa.",
+  "en": ""
+ },
+ {
+  "vi": "Shot chua hoặc đắng, sữa nguội hoặc khét, bọt sai, quên vẽ hình",
+  "en": ""
+ },
+ {
+  "vi": "Cốt bánh sống hoặc cháy, chữ trên bánh sai dấu, phủ kem lúc bánh còn ấm",
+  "en": ""
+ },
+ {
+  "vi": "Khách không nhận: bỏ bánh nướng lại hoặc [[Cạo chữ, viết lại]]. Kem phủ lúc ấm thì chảy xệ (3★).",
+  "en": ""
+ },
+ {
+  "vi": "Đưa bánh hôm qua khi khách muốn bánh mới, hoặc bánh quá hạn",
+  "en": ""
+ },
+ {
+  "vi": "Bánh hôm qua là lỗi nhỏ. Bánh quá hạn: khách trả cả túi ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ đói Bé Men, để bột ủ ấm qua đêm",
+  "en": ""
+ },
+ {
+  "vi": "Men đói: bột nở chậm (5 nhịp), bánh mì đặc ruột. Bột ủ ấm để qua đêm phải bỏ.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Hạt, sữa, bột, bơ, trứng, ly giấy, túi, hộp bánh nhập ở [[Kho]] (thanh dưới), trả tiền khi đặt.",
+  "en": ""
+ },
+ {
+  "vi": "🚚 Chợ đầu mối (sữa, kem, bột, bơ, trứng, đường, hạnh nhân, đào ngâm) rẻ, hay thiếu: đặt trước 13:00 chiều nay có, sau thì sáng mai.",
+  "en": ""
+ },
+ {
+  "vi": "☕ Xưởng rang Đồi Mây bán hạt rẻ và thơm hơn: đặt trước 11:00 hạt tới chiều nay, đặt sau thì sáng mai.",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Hạt Nắng bán đủ món, bốn chuyến (chốt 09:00, 12:00, 15:00, 18:00), tới sau khoảng một tiếng. Hỏa tốc 15–30 phút, đắt nhất.",
+  "en": ""
+ },
+ {
+  "vi": "📥 Hàng tới: [[Mở thùng & xếp lên kệ]], đếm đúng số rồi nhận. Thiếu thì [[Khiếu nại phần thiếu]].",
+  "en": ""
+ },
+ {
+  "vi": "🥛 Sữa tươi chỉ dùng 2 ngày, kem tươi 3 ngày; lô hết hạn bị bỏ khi khép ca.",
+  "en": ""
+ },
+ {
+  "vi": "🧽 Đầu ca bấm [[Vệ sinh máy pha]] — đoàn kiểm tra sẽ xem sổ vệ sinh này.",
+  "en": ""
+ },
+ {
+  "vi": "❄️ Bột chưa kịp nướng thì [[Cất tủ mát]]; sáng mai [[Vào lò]] ngay, giữ được tối đa 2 đêm.",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Bánh hôm qua: [[Rổ −50%]], [[Tặng bếp cơm]] hoặc [[Bỏ]]. Bông lan trứng muối chỉ bán trong ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🧁 Giữ tủ kính đầy bánh mới: sau mỗi order có khách mua lẻ, tủ trống là lỡ bán.",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Lên cấp mở thêm: cấp 2 hạt Decaf, hình lá dương xỉ, bông lan trứng muối, bánh đào nướng; cấp 3 bạc xỉu, sữa đặc, hình tulip.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Đoàn kiểm tra vệ sinh: đã vệ sinh máy thì được tem “Quầy sạch”; chưa thì phạt 30 xu, phong bì phạt 60 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🥛 Sữa tươi có mùi chua: đổ hoặc trả nhà cung cấp. Giữ lại dùng thì ly sữa tươi nào cũng thành lỗi an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "⚙️ Máy xay rè rè, 🌡️ lò nóng (bánh chín sớm 3 giây), 📱 TikToker quay ly kế tiếp, 📦 văn phòng đặt croissant.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Khách vội để dư tiền, 🧒 bé lạc mẹ, 🥜 mẹ hỏi bánh không hạt, ☔ người trú mưa trước hiên.",
+  "en": ""
+ },
+ {
+  "vi": "Cho vào túi",
+  "en": ""
+ },
+ {
+  "vi": "Nướng cốt bánh",
+  "en": ""
+ },
+ {
+  "vi": "Phủ kem",
+  "en": ""
+ },
+ {
+  "vi": "Viết lên bánh",
+  "en": ""
+ },
+ {
+  "vi": "Vào lò",
+  "en": ""
+ },
+ {
+  "vi": "Lấy ra",
+  "en": ""
+ },
+ {
+  "vi": "Gửi hộp bánh",
+  "en": ""
+ },
+ {
+  "vi": "Cho Bé Men ăn",
+  "en": ""
+ },
+ {
+  "vi": "Xay & nén",
+  "en": ""
+ },
+ {
+  "vi": "Dừng chiết",
+  "en": ""
+ },
+ {
+  "vi": "Múc đá",
+  "en": ""
+ },
+ {
+  "vi": "Rót lạnh",
+  "en": ""
+ },
+ {
+  "vi": "Đánh nóng",
+  "en": ""
+ },
+ {
+  "vi": "Tắt vòi hơi",
+  "en": ""
+ },
+ {
+  "vi": "Đậy nắp + dán tem",
+  "en": ""
+ },
+ {
+  "vi": "Giao cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Cạo chữ, viết lại",
+  "en": ""
+ },
+ {
+  "vi": "Vệ sinh máy pha",
+  "en": ""
+ },
+ {
+  "vi": "Cất tủ mát",
+  "en": ""
+ },
+ {
+  "vi": "Rổ −50%",
+  "en": ""
+ },
+ {
+  "vi": "Tặng bếp cơm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nghe khách kể dịp tặng, chọn hoa đúng ý nghĩa, sơ chế, cắm, gói rồi giao đúng giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn hoa, sơ chế, ngâm xô rồi bó xoắn ốc. Bó phải gói giấy và thắt ruy băng mới giao được.",
+  "en": ""
+ },
+ {
+  "vi": "Mở từ cấp 2. Sơ chế, ngâm xô rồi bấm [[Cắm vào bình]]; không cần gói giấy.",
+  "en": ""
+ },
+ {
+  "vi": "Thả mút, chờ khoảng 10 giây cho mút tự chìm rồi mới cắm. Giỏ không cần ngâm xô.",
+  "en": ""
+ },
+ {
+  "vi": "Tốn chân kệ và 2 bánh mút. Bấm [[Cắm kín mặt kệ]], rồi in băng rôn đúng từng chữ, có dấu.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn theo bộ",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3: một khách đặt hai món. Làm xong món nào bấm [[Xong món]], đủ món thì giao cả bộ.",
+  "en": ""
+ },
+ {
   "vi": "Khách gọi hẹn ngày. Bấm [[Nhận, lấy cọc]], nhập hoa sớm, đúng ngày bấm [[Cắm & giao đơn này]].",
   "en": ""
  },
@@ -1057,486 +1601,6 @@
  },
  {
   "vi": "🧭 Hết túi nhặt phân hay khăn giữa việc: gợi ý bước tiếp hiện nút nhập hàng; hàng đang về thì nút báo còn bao lâu.",
-  "en": ""
- },
- {
-  "vi": "🔓 Dầu xả và chuồng “Tầng mèo view cửa sổ” mở ở cấp 2.",
-  "en": ""
- },
- {
-  "vi": "🏃 Bé nhảy khỏi bàn: chọn [[Đóng cửa, ngồi thấp, gọi tên nhỏ nhẹ]] hoặc [[Lắc túi bánh dụ bé về]]. Đừng lao tới chụp.",
-  "en": ""
- },
- {
-  "vi": "🔔 Chuyện ở quầy chặn việc cho tới khi bạn chọn: giông làm các bé hoảng, mèo con lạc, cúp điện, chó gầm gừ ở sân, chó say nắng…",
-  "en": ""
- },
- {
-  "vi": "🩺 Thú y phường kiểm vệ sinh; đại lý chào sữa tắm không nhãn (mua thì sau đó có bé nổi mẩn); nhận mèo lạc vào chung tầng thì cả tầng hắt hơi.",
-  "en": ""
- },
- {
-  "vi": "🚨 Chó gửi trọ cắn khách, người lạ bán chó có số điện thoại trên vòng cổ, hàng xóm phản ánh chó sủa đêm.",
-  "en": ""
- },
- {
-  "vi": "🦴 Trộm vác bao hạt hoặc lấy hũ tiền boa, chó khách cắn hỏng lồng, lỡ để sổng bé phải trả tiền khám.",
-  "en": ""
- },
- {
-  "vi": "Nhận phiếu",
-  "en": ""
- },
- {
-  "vi": "Đeo vòng giữ cổ trên bàn",
-  "en": ""
- },
- {
-  "vi": "Hỏi chủ đồng ý rọ mõm",
-  "en": ""
- },
- {
-  "vi": "Đeo rọ mõm mềm",
-  "en": ""
- },
- {
-  "vi": "Mở vòi xả",
-  "en": ""
- },
- {
-  "vi": "Khóa vòi",
-  "en": ""
- },
- {
-  "vi": "Tắt máy sấy",
-  "en": ""
- },
- {
-  "vi": "Bỏ qua — tai có vấn đề",
-  "en": ""
- },
- {
-  "vi": "Ghi lời báo",
-  "en": ""
- },
- {
-  "vi": "Trả bé & thu tiền",
-  "en": ""
- },
- {
-  "vi": "Ghi kế hoạch ăn",
-  "en": ""
- },
- {
-  "vi": "Nhận bé & thu tiền",
-  "en": ""
- },
- {
-  "vi": "Gọi tên bé, hỏi thăm lần trước",
-  "en": ""
- },
- {
-  "vi": "Khử khuẩn chuồng & bàn tắm",
-  "en": ""
- },
- {
-  "vi": "Bạn tư vấn, pha màu, canh giờ ủ thuốc, cắt và sấy tóc cho khách trong xóm.",
-  "en": ""
- },
- {
-  "vi": "Pha 1–2 tuýp cho đúng độ sáng và ánh của ảnh mẫu, chọn oxy, tỷ lệ 1:1, xả khi thanh ủ vào vùng xanh.",
-  "en": ""
- },
- {
-  "vi": "Bột tẩy + oxy 20 vol, tỷ lệ 1:2. Tóc nhuộm hộp phải thử lọn trước; tóc đã qua hóa chất có vùng xanh ngắn hơn.",
-  "en": ""
- },
- {
-  "vi": "Làm sau khi tẩy và xả xong: toner + oxy 10 vol, tỷ lệ 1:2, chọn ánh bạc hay be theo ảnh mẫu.",
-  "en": ""
- },
- {
-  "vi": "Gội ẩm, chia vùng, cắt đường chuẩn đúng số cm đã hẹn, tỉa tầng chỉ khi mẫu có tầng, rồi soi đối xứng.",
-  "en": ""
- },
- {
-  "vi": "Làm sau phần hóa chất, trên tóc đã gội. Tóc yếu mà được khuyên phục hồi thì khách đồng ý trả thêm.",
-  "en": ""
- },
- {
-  "vi": "Làm cuối cùng. Chọn kiểu hợp thói quen và dịp của khách: tự nhiên, thẳng suôn, phồng lọn sóng, búi cô dâu.",
-  "en": ""
- },
- {
-  "vi": "Khách muốn nhuộm mà chưa có kết quả thử: chấm thử sau tai, thu 8 xu, hẹn nhuộm từ ngày sau.",
-  "en": ""
- },
- {
-  "vi": "Bé khó ngồi yên (dỗ đúng cách bố kể), cô dâu hay khách gấp (kịp giờ được thưởng), ảnh filter, tóc bạc nhiều, cứu màu cam.",
-  "en": ""
- },
- {
-  "vi": "Lịch hẹn quay lại",
-  "en": ""
- },
- {
-  "vi": "Khách quen hẹn dặm chân tóc, tỉa giữ dáng hoặc hấp phục hồi; làm trong sổ hẹn, trễ quá 2 ngày là khách đi tiệm khác.",
-  "en": ""
- },
- {
-  "vi": "🧴 Đầu ca bấm [[Khử khuẩn dụng cụ]]: hũ có 4 bộ lược kéo sạch, mỗi khách dùng một bộ.",
-  "en": ""
- },
- {
-  "vi": "💬 Bấm [[Mời ngồi & nghe mong muốn]], rồi hỏi [[Lịch sử hóa chất]], [[Thử dị ứng]], [[Độ dài mong muốn]], [[Ngân sách]].",
-  "en": ""
- },
- {
-  "vi": "🔎 Xem [[Chân tóc]], [[Thân tóc]], [[Ngọn tóc]], [[Da đầu]]; cần thì [[Thử dị ứng sau tai]] hoặc [[Thử một lọn sau gáy]].",
-  "en": ""
- },
- {
-  "vi": "🤝 Chọn dịch vụ khách cần, số buổi thật lòng, bấm [[Chốt với khách]].",
-  "en": ""
- },
- {
-  "vi": "🥣 Chọn tuýp, oxy, tỷ lệ rồi [[Trộn bát]] → [[Thoa từ chân tới ngọn]] → vào vùng xanh thì [[Xả thuốc ngay]].",
-  "en": ""
- },
- {
-  "vi": "🫧 Không làm màu thì [[Gội & xả]] trước khi cắt, sấy.",
-  "en": ""
- },
- {
-  "vi": "✂️ [[Chia vùng]] → [[Cắt đường chuẩn]] → [[Tỉa tầng]] nếu mẫu có tầng → [[Soi đối xứng & chốt]].",
-  "en": ""
- },
- {
-  "vi": "💳 [[Thoa keratin & hấp]], chọn kiểu sấy, mời sản phẩm hợp tóc rồi [[Thanh toán & tiễn khách]].",
-  "en": ""
- },
- {
-  "vi": "🎯 Bát màu phải trúng cả độ sáng (lệch tối đa ¼ tông) lẫn ánh; tóc bạc từ một nửa: ít nhất nửa bát là tuýp nền x.0.",
-  "en": ""
- },
- {
-  "vi": "🧪 Oxy theo số tông cần nâng: cùng tông hoặc tối hơn 10 vol, nâng 1–2 tông hoặc phủ bạc 20 vol, nâng 3 tông 30 vol.",
-  "en": ""
- },
- {
-  "vi": "⏱️ Xả đúng vùng xanh: thiếu giờ màu loang, quá giờ tóc tối đục, quá lâu tóc gãy. Ngày nắng nóng thuốc lên nhanh hơn.",
-  "en": ""
- },
- {
-  "vi": "📏 Cắt đúng số cm khách dặn: tóc cắt rồi không nối lại được. Mẫu tóc bằng thì đừng tỉa tầng.",
-  "en": ""
- },
- {
-  "vi": "🤝 Hỏi và xem đủ trước khi chốt; ảnh filter thì [[Soi ảnh gốc chưa qua filter]]. Cần nhiều buổi thì nói thật.",
-  "en": ""
- },
- {
-  "vi": "🛍️ Chỉ mời sản phẩm hợp tóc và còn vừa ngân sách; dùng bộ lược kéo đã khử khuẩn.",
-  "en": ""
- },
- {
-  "vi": "💝 Salon hay được tip: làm 4–5★, khách không càu nhàu thì thường được 5–20 xu hoặc quà nhỏ. Lỗi an toàn thì không.",
-  "en": ""
- },
- {
-  "vi": "Nhuộm khi khách chưa có kết quả thử dị ứng (thợ màu đã cản mà vẫn làm)",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn: 1★, khách không trả tiền, báo cáo lên app, hôm sau có thể bị kiểm tra an toàn. Khách có thể nổi mẩn đỏ.",
-  "en": ""
- },
- {
-  "vi": "Ủ thuốc quá lâu, tóc cháy gãy; hoặc màu ra khác hẳn ảnh mẫu",
-  "en": ""
- },
- {
-  "vi": "Lỗi nặng: tối đa 2★, khách đòi hoàn 50% và gửi báo cáo lên app; thêm lỗi khác là bỏ đi không trả.",
-  "en": ""
- },
- {
-  "vi": "Cắt ngắn hơn thỏa thuận",
-  "en": ""
- },
- {
-  "vi": "Không sửa được. Lố 1 cm là lỗi nhỏ, lố 2–3 cm lỗi rõ, lố từ 4 cm lỗi nặng; khách đòi giảm hoặc hoàn tiền.",
-  "en": ""
- },
- {
-  "vi": "Hứa giống ảnh trong một buổi khi tóc cần nhiều buổi",
-  "en": ""
- },
- {
-  "vi": "Khách soi gương thất vọng: lỗi rõ, điểm “tư vấn” còn 1★, sao và tiền đều giảm.",
-  "en": ""
- },
- {
-  "vi": "Ủ thiếu giờ, toner sai ánh, tóc bạc còn lộ, tỉa tầng sai mẫu",
-  "en": ""
- },
- {
-  "vi": "Lỗi rõ: tối đa 3★, khách càu nhàu hoặc đòi bớt 25–50% tiền.",
-  "en": ""
- },
- {
-  "vi": "Sấy sai kiểu so với dịp của khách",
-  "en": ""
- },
- {
-  "vi": "Khách có thể ngồi lại bắt sấy lại, mất thêm kiên nhẫn; không thì bị trừ sao.",
-  "en": ""
- },
- {
-  "vi": "Mời dịch vụ hay sản phẩm khách không cần, gội trước khi nhuộm, dùng lược kéo chưa khử khuẩn",
-  "en": ""
- },
- {
-  "vi": "Khách từ chối món không cần, review ghi lỗi, mất điểm chăm sóc; lịch hẹn dùng bộ bẩn bị trừ 1 sao.",
-  "en": ""
- },
- {
-  "vi": "🧴 Đầu ca [[Khử khuẩn dụng cụ]]; dùng hết bộ sạch thì [[Ngâm lại bộ]]. Đoàn y tế kiểm sổ, chưa ký là phạt 15 xu. Đang làm khách thì mở dòng 🧼 Dụng cụ sạch để thấy hai nút này.",
-  "en": ""
- },
- {
-  "vi": "📦 Mở [[Kho thuốc & vật tư]] kiểm tuýp màu, oxy 10/20/30/40, bột tẩy, giấy bạc, toner, keratin, găng, dầu gội, khăn.",
-  "en": ""
- },
- {
-  "vi": "🧺 Chợ sỉ vật tư tóc rẻ (dầu gội, khăn, găng, giấy bạc): đặt trước 13:00 chiều nay tới, sau đó sáng mai. Hay thiếu.",
-  "en": ""
- },
- {
-  "vi": "✈️ Kho hãng màu nhuộm rẻ nhất cho tuýp màu, oxy, bột tẩy, toner, keratin nhưng 1–2 ngày mới tới: đặt sớm.",
-  "en": ""
- },
- {
-  "vi": "🔢 Thùng tới: [[Mở thùng & xếp lên kệ]], đếm rồi bấm [[Nhận vào kệ]]; thiếu thì [[Khiếu nại phần thiếu]].",
-  "en": ""
- },
- {
-  "vi": "⚠️ Hết tuýp, oxy hay giấy bạc thì không trộn bát được; màn hình hiện nút [[Nhập hàng]].",
-  "en": ""
- },
- {
-  "vi": "📅 Sáng nào cũng xem Sổ hẹn: khách quen tới dặm chân tóc thì bấm [[Pha theo thẻ]] để dùng lại công thức cũ.",
-  "en": ""
- },
- {
-  "vi": "🛑 Tiệm tự dừng khi không an toàn: da đầu trầy, oxy 40 vol, tẩy tóc nhuộm hộp chưa thử lọn, tóc quá yếu để tẩy.",
-  "en": ""
- },
- {
-  "vi": "🧒 Bé khó ngồi yên: kéo có thể trượt, lẹm tóc. Hỏi [[Thói quen tạo kiểu]] để biết cách dỗ, ví dụ [[Mở phim hoạt hình]].",
-  "en": ""
- },
- {
-  "vi": "🔔 Chuyện ở quầy chặn việc tới khi bạn chọn (thuốc đang ủ vẫn xả được): cúp điện, mái dột, học sinh xin tết tóc, thợ cãi nhau, cãi giá.",
-  "en": ""
- },
- {
-  "vi": "🚨 Đoàn y tế kiểm vệ sinh, hàng xách tay không nhãn (sau đó bị kiểm tra), hãng thu hồi lô oxy 20 vol (dùng tiếp thì khách rát da đầu).",
-  "en": ""
- },
- {
-  "vi": "👜 Trộm túi xách khách ở ghế chờ hoặc hũ tiền boa, khách đập vỡ gương, thuốc nhuộm lem áo khách, khách dị ứng quay lại đòi bồi thường.",
-  "en": ""
- },
- {
-  "vi": "Khử khuẩn dụng cụ",
-  "en": ""
- },
- {
-  "vi": "Mời ngồi & nghe mong muốn",
-  "en": ""
- },
- {
-  "vi": "Thử dị ứng sau tai",
-  "en": ""
- },
- {
-  "vi": "Chốt với khách",
-  "en": ""
- },
- {
-  "vi": "Trộn bát",
-  "en": ""
- },
- {
-  "vi": "Thoa từ chân tới ngọn",
-  "en": ""
- },
- {
-  "vi": "Xả thuốc ngay",
-  "en": ""
- },
- {
-  "vi": "Gội & xả",
-  "en": ""
- },
- {
-  "vi": "Chia vùng",
-  "en": ""
- },
- {
-  "vi": "Cắt đường chuẩn",
-  "en": ""
- },
- {
-  "vi": "Tỉa tầng",
-  "en": ""
- },
- {
-  "vi": "Soi đối xứng & chốt",
-  "en": ""
- },
- {
-  "vi": "Thoa keratin & hấp",
-  "en": ""
- },
- {
-  "vi": "Soi ảnh gốc chưa qua filter",
-  "en": ""
- },
- {
-  "vi": "Ngâm lại bộ",
-  "en": ""
- },
- {
-  "vi": "Kho thuốc & vật tư",
-  "en": ""
- },
- {
-  "vi": "Pha theo thẻ",
-  "en": ""
- },
- {
-  "vi": "Bạn nhận máy hỏng, đo cho ra bệnh, báo giá rõ ràng, sửa an toàn rồi chạy thử trước khi trả.",
-  "en": ""
- },
- {
-  "vi": "Sửa máy hằng ngày",
-  "en": ""
- },
- {
-  "vi": "Điện thoại, quạt, nồi cơm, xe đạp, tai nghe; laptop từ ngày 3. Đo, báo giá, sửa, chạy thử rồi bàn giao.",
-  "en": ""
- },
- {
-  "vi": "Máy nghi dính nước",
-  "en": ""
- },
- {
-  "vi": "Khách nói chưa từng dính nước. Bấm [[Soi tem báo nước trong máy]], rồi [[Cho khách xem tem báo nước]] trước khi báo giá.",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3. Bấm [[Tra sổ bảo hành]], đo lại, rồi chọn [[Bảo hành, khách không trả]] hoặc [[Ngoài bảo hành, tính tiền]].",
-  "en": ""
- },
- {
-  "vi": "Khách cần lấy gấp",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. Xong trong số nhịp khách hẹn thì khách gửi thêm xu; trễ thì khách càu nhàu.",
-  "en": ""
- },
- {
-  "vi": "Khách muốn bán lại máy cũ",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3. Bấm [[Tra IMEI máy báo mất]] và [[Hỏi hóa đơn & căn cước]] trước khi mua, [[Từ chối khéo]] hay [[Báo công an phường]].",
-  "en": ""
- },
- {
-  "vi": "Khách nhờ chuyện dữ liệu",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 4. Nên bấm [[Từ chối, chỉ sửa phần cứng]]. Chưa trả lời thì chưa bàn giao được.",
-  "en": ""
- },
- {
-  "vi": "Khách ví mỏng",
-  "en": ""
- },
- {
-  "vi": "Báo giá hàng [[Đồ tháo máy]] cho vừa túi, nhưng phải [[Cắm thử]] linh kiện trước khi lắp.",
-  "en": ""
- },
- {
-  "vi": "Máy để lại tiệm",
-  "en": ""
- },
- {
-  "vi": "Chờ linh kiện thì mở [[⋯]] (Hẹn khách · Trả máy · Kho linh kiện · Kệ máy chờ), bấm [[Hẹn khách, để máy lại tiệm]], chọn ngày. Tối đa 2 máy, sau bấm [[Làm tiếp máy này]].",
-  "en": ""
- },
- {
-  "vi": "Khách quay lại vì máy hỏng lại",
-  "en": ""
- },
- {
-  "vi": "Còn bảo hành thì bấm [[Sửa lại miễn phí]], tiệm chịu tiền linh kiện. Còn bảo hành mà [[Tính tiền]] là bị 1★.",
-  "en": ""
- },
- {
-  "vi": "📝 Bấm [[Hỏi khách kể bệnh của máy]] để nghe khách tả lỗi.",
-  "en": ""
- },
- {
-  "vi": "🧾 Nhìn máy trên thảm, chạm đúng các vết xước. Phụ kiện: phiếu ghi sẵn dòng “Khách đưa kèm”, chạm đúng những món đó. Điện thoại, laptop tích [[Hỏi quyền xem dữ liệu]], rồi [[Ghi phiếu nhận máy]].",
-  "en": ""
- },
- {
-  "vi": "🔬 Chọn phép đo phù hợp. Mỗi phép tốn một lượt; đo quá 2 lần khách bắt đầu sốt ruột.",
-  "en": ""
- },
- {
-  "vi": "🧠 Trong bảng giả thuyết, bấm [[Chốt]] bệnh khớp với số đo. Đừng chốt bệnh số đo đã loại.",
-  "en": ""
- },
- {
-  "vi": "💰 Chọn loại linh kiện ([[Chính hãng]], [[Tương thích]], [[Đồ tháo máy]]…) rồi bấm [[Gửi báo giá]]. Khách chỉ nghe tối đa 6 lần báo giá.",
-  "en": ""
- },
- {
-  "vi": "🔌 Làm đủ bước an toàn như [[Rút điện / cáp sạc]], [[Xả tụ bằng điện trở]] rồi mới mở máy.",
-  "en": ""
- },
- {
-  "vi": "🛠️ Bấm [[Sửa:]] đúng bệnh đã chốt, lắp lại máy, rồi bấm [[Chạy thử lần cuối]].",
-  "en": ""
- },
- {
-  "vi": "🤝 Chọn số ngày bảo hành đúng loại linh kiện, rồi bấm [[Bàn giao & thu tiền]].",
-  "en": ""
- },
- {
-  "vi": "✅ Máy chạy thật sau khi trả. Chạy thử lần cuối trước khi giao.",
-  "en": ""
- },
- {
-  "vi": "💰 Giá không vượt ngân sách khách. Khách quen tin bạn thì chịu thêm tối đa 10%.",
-  "en": ""
- },
- {
-  "vi": "🏷️ Khách chỉ muốn đồ chính hãng thì đừng báo hàng tương thích hay đồ tháo máy.",
-  "en": ""
- },
- {
-  "vi": "📜 Bảo hành đúng loại: chính hãng 90 ngày, tương thích 30, đồ tháo máy 7. Máy dính nước không bảo hành.",
-  "en": ""
- },
- {
-  "vi": "🧾 Phiếu nhận máy ghi đúng vết xước và phụ kiện, trả đủ phụ kiện cho khách.",
   "en": ""
  }
 ]

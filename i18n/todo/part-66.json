@@ -1,5 +1,473 @@
 [
  {
+  "vi": "Làm hàng xóm với em vui ghê, hẻm mình có thêm người để tám.",
+  "en": ""
+ },
+ {
+  "vi": "Cái quạt nhà con kêu thì mang qua chú coi cho.",
+  "en": ""
+ },
+ {
+  "vi": "Nghề nào cũng vậy, tay quen rồi thì mắt tinh.",
+  "en": ""
+ },
+ {
+  "vi": "Chú đang sửa cái radio cũ, nghe lại mấy bài xưa hay lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Rảnh ghé chú làm ly trà, chú kể chuyện hồi chú mới vô nghề.",
+  "en": ""
+ },
+ {
+  "vi": "Con làm ăn đàng hoàng, chú nhìn là biết.",
+  "en": ""
+ },
+ {
+  "vi": "Xe cộ có gì trục trặc cứ dắt qua, chú sửa khỏi lấy tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Anh ơi, bài toán này khó quá à!",
+  "en": ""
+ },
+ {
+  "vi": "Chị ơi, bài toán này khó quá à!",
+  "en": ""
+ },
+ {
+  "vi": "Ơi, bài toán này khó quá à!",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ em nói phải học xong mới được chơi. Chán ghê!",
+  "en": ""
+ },
+ {
+  "vi": "Anh có biết chơi quay không? Em mới tập nè.",
+  "en": ""
+ },
+ {
+  "vi": "Chị có biết chơi quay không? Em mới tập nè.",
+  "en": ""
+ },
+ {
+  "vi": "Có biết chơi quay không? Em mới tập nè.",
+  "en": ""
+ },
+ {
+  "vi": "Anh ơi! Em được điểm 9 môn toán nè, khoe anh trước tiên luôn!",
+  "en": ""
+ },
+ {
+  "vi": "Chị ơi! Em được điểm 9 môn toán nè, khoe chị trước tiên luôn!",
+  "en": ""
+ },
+ {
+  "vi": "Em được điểm 9 môn toán nè, khoe đầu tiên luôn!",
+  "en": ""
+ },
+ {
+  "vi": "Mai anh dắt em đi ăn kem nha, em để dành tiền rồi nè.",
+  "en": ""
+ },
+ {
+  "vi": "Mai chị dắt em đi ăn kem nha, em để dành tiền rồi nè.",
+  "en": ""
+ },
+ {
+  "vi": "Mai dắt em đi ăn kem nha, em để dành tiền rồi nè.",
+  "en": ""
+ },
+ {
+  "vi": "Lớn lên em muốn giỏi nhiều nghề như anh.",
+  "en": ""
+ },
+ {
+  "vi": "Lớn lên em muốn giỏi nhiều nghề như chị.",
+  "en": ""
+ },
+ {
+  "vi": "Lớn lên em muốn giỏi nhiều nghề vậy luôn.",
+  "en": ""
+ },
+ {
+  "vi": "Con mèo nhà bà lại trốn lên mái rồi, con có thấy nó không?",
+  "en": ""
+ },
+ {
+  "vi": "Hồi xưa hẻm này toàn nhà lá, giờ khác quá.",
+  "en": ""
+ },
+ {
+  "vi": "Đi làm về trễ vậy con? Nhớ ăn uống cho đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Bà có hũ dưa cải muối, lát bà xới cho con một ít.",
+  "en": ""
+ },
+ {
+  "vi": "Con giống thằng cháu nội bà hồi trẻ, siêng mà hiền.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi đây với bà chút, bà kể chuyện hẻm mình hồi xưa cho nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Mấy bữa nay bận quá, chưa ghé được. Tuần sau mình ghé nha!",
+  "en": ""
+ },
+ {
+  "vi": "{Anh} ơi, mình mới đi chơi về, có mua chút quà, bữa nào ghé lấy nha!",
+  "en": ""
+ },
+ {
+  "vi": "Đám giỗ ông nhà",
+  "en": ""
+ },
+ {
+  "vi": "Mai nhà bà làm đám giỗ ông nhà. Cháu ghé thắp nén nhang, ăn bữa cơm với cả nhà nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Đầy tháng cháu nội",
+  "en": ""
+ },
+ {
+  "vi": "Cháu nội cô đầy tháng rồi! Tối mai con qua ăn mừng với cô nha.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệc tổ dân phố",
+  "en": ""
+ },
+ {
+  "vi": "Tổ mình làm tiệc cuối tuần ở đầu hẻm. Cháu tới góp vui với cả tổ nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Tân gia",
+  "en": ""
+ },
+ {
+  "vi": "Anh mới dọn chỗ làm việc tại gia, tối mai làm vài món tân gia. Qua chơi nha em!",
+  "en": ""
+ },
+ {
+  "vi": "Sinh nhật chú Tư",
+  "en": ""
+ },
+ {
+  "vi": "Chú sáu mươi tuổi rồi, bà xã chú làm mâm cơm. Con qua ăn với chú nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Sinh nhật Bé Tí",
+  "en": ""
+ },
+ {
+  "vi": "Mai sinh nhật em! Anh qua ăn bánh kem với em nha, em mời cả lớp luôn.",
+  "en": ""
+ },
+ {
+  "vi": "Mai sinh nhật em! Chị qua ăn bánh kem với em nha, em mời cả lớp luôn.",
+  "en": ""
+ },
+ {
+  "vi": "Mai sinh nhật em! Qua ăn bánh kem với em nha, em mời cả lớp luôn.",
+  "en": ""
+ },
+ {
+  "vi": "Mừng thọ Bà Sáu",
+  "en": ""
+ },
+ {
+  "vi": "Con cháu làm lễ mừng thọ bà tám mươi. Con ghé chung vui với bà nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay con mệt không? Đi làm về nhớ ăn cơm nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Có gì buồn thì nói ra, cả hẻm ở đây mà.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe nói chỗ làm dạo này đông khách, cố lên nha!",
+  "en": ""
+ },
+ {
+  "vi": "Hiệu sách cũ Mực Nâu",
+  "en": ""
+ },
+ {
+  "vi": "Cô Mực",
+  "en": ""
+ },
+ {
+  "vi": "Trong thùng sách vừa nhận có những lời nhắn chưa gửi. Bạn muốn mang cuốn nào về?",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn sách kẹp thư",
+  "en": ""
+ },
+ {
+  "vi": "Lá thư bên trang 42",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tìm thấy lá thư của một người con cảm ơn mẹ vì những bữa cơm chờ. Cô Mực giữ lại phong bì để tìm người nhận; bạn mang cuốn sách về đọc.",
+  "en": ""
+ },
+ {
+  "vi": "Người gửi thư đã quay lại. Cô Mực kể hai mẹ con vừa cùng ghé tiệm, và gửi bạn chiếc thẻ đánh dấu trang hình bát cơm.",
+  "en": ""
+ },
+ {
+  "vi": "Trang cuối còn trống. Bạn viết vào đó một điều muốn nói với người thân, rồi cất sách lên kệ.",
+  "en": ""
+ },
+ {
+  "vi": "Tập truyện có bản đồ",
+  "en": ""
+ },
+ {
+  "vi": "Bản đồ tiệm sách nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Bản đồ dẫn đến chiếc ghế dưới cây sấu. Ở đó có mẩu chuyện về bác bán báo luôn để dành truyện tranh cho trẻ trong phố.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn theo nét bút chì tìm tới sạp báo cũ. Bác kể ngày mưa mọi người từng chuyền sách qua mái hiên để chúng khỏi ướt.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bổ sung tiệm Mực Nâu vào bản đồ. Một nơi mới để người sau tìm được câu chuyện của mình.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tay làm vườn",
+  "en": ""
+ },
+ {
+  "vi": "Trang ép hoa đầu mùa",
+  "en": ""
+ },
+ {
+  "vi": "Giữa trang sách là một bông hoa ép. Dòng chữ nhỏ nhắc rằng cây lớn chậm nhưng người chăm không cần vội.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thử ghi lại màu lá và buổi tưới đầu tiên, thay vì chỉ đếm ngày ra hoa. Cô Mực tặng thêm một tờ giấy ép lá.",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn sổ có thêm nét chữ của bạn. Bạn để lại một trang trống cho người sẽ cùng chăm cây sau này.",
+  "en": ""
+ },
+ {
+  "vi": "CLB Mỹ thuật",
+  "en": ""
+ },
+ {
+  "vi": "Chị Màu",
+  "en": ""
+ },
+ {
+  "vi": "Buổi vẽ góc phố: chọn điều bạn muốn giữ lại trong tranh.",
+  "en": ""
+ },
+ {
+  "vi": "Vẽ ánh sáng",
+  "en": ""
+ },
+ {
+  "vi": "Tranh Nắng qua mái hiên",
+  "en": ""
+ },
+ {
+  "vi": "Bạn pha màu vàng dịu rồi chừa khoảng trắng. Chị Màu chỉ cách bóng mái hiên làm vệt nắng nổi hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thử cùng góc phố lúc chiều xuống: màu cam nhạt, bóng dài hơn. Hai bức tranh kể hai nhịp sống khác nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Vẽ người trong phố",
+  "en": ""
+ },
+ {
+  "vi": "Phác họa Người hàng xóm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn xin phép bác bán hoa trước khi phác họa. Bác chọn đứng cạnh thùng cúc đang nở.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thêm đôi bàn tay đang buộc bó hoa. Chị Màu nhận ra nhân vật qua cử chỉ, dù gương mặt chỉ vài nét.",
+  "en": ""
+ },
+ {
+  "vi": "CLB Âm nhạc",
+  "en": ""
+ },
+ {
+  "vi": "Anh Nhịp",
+  "en": ""
+ },
+ {
+  "vi": "Cả nhóm đang tập một đoạn nhạc tự sáng tác. Bạn chọn phần mình muốn thử.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ nhịp cùng nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ nhịp 4 phách",
+  "en": ""
+ },
+ {
+  "vi": "Bạn gõ đều bốn phách rồi chừa chỗ cho tiếng đàn. Cả nhóm kết thúc cùng nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thử giữ nhịp nhẹ ở đoạn nhỏ và mạnh hơn ở điệp khúc; cả nhóm nghe nhau rõ hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Thử giai điệu",
+  "en": ""
+ },
+ {
+  "vi": "Trang nhạc Chiều bên sông",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ngân một giai điệu ngắn. Anh Nhịp chép lại để buổi sau cả nhóm thử hòa giọng.",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm hát lại giai điệu bạn góp, rồi thêm một khoảng lặng trước câu cuối.",
+  "en": ""
+ },
+ {
+  "vi": "CLB Đọc sách",
+  "en": ""
+ },
+ {
+  "vi": "Cô Trang",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm đọc câu chuyện về một người trở về phố cũ. Bạn muốn chia sẻ điều gì?",
+  "en": ""
+ },
+ {
+  "vi": "Nói về nhân vật",
+  "en": ""
+ },
+ {
+  "vi": "Ghi chú Người trở về",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nghĩ nhân vật im lặng vì chưa biết bắt đầu từ đâu. Cô Trang mời mọi người tìm một chi tiết trong truyện để hiểu thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đọc lại lời chào ngắn ở cuối truyện và nhận ra đôi khi bắt đầu chỉ cần một câu đơn giản.",
+  "en": ""
+ },
+ {
+  "vi": "Viết một kết thúc khác",
+  "en": ""
+ },
+ {
+  "vi": "Trang kết của riêng bạn",
+  "en": ""
+ },
+ {
+  "vi": "Bạn viết cảnh nhân vật gõ cửa tiệm quen. Một tách trà được đặt xuống, không ai hỏi vì sao đi lâu thế.",
+  "en": ""
+ },
+ {
+  "vi": "Cả nhóm đọc các kết thúc khác nhau. Bạn giữ lại phiên bản có bữa cơm đông người nhất.",
+  "en": ""
+ },
+ {
+  "vi": "CLB Làm vườn",
+  "en": ""
+ },
+ {
+  "vi": "Bác Lá",
+  "en": ""
+ },
+ {
+  "vi": "Bồn cây chung cần chăm. Chọn một việc và nghe bác Lá chia sẻ.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm đất rồi tưới",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký bồn cây",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chạm lớp đất trước khi tưới. Chậu còn ẩm được để nghỉ; chậu khô nhận một ca nước nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thấy mầm mới bên gốc. Bác Lá nhắc xoay chậu về phía sáng và ghi vào nhật ký.",
+  "en": ""
+ },
+ {
+  "vi": "Ươm một khay hạt",
+  "en": ""
+ },
+ {
+  "vi": "Khay mầm của nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cùng nhóm gieo hạt, ghi tên và ngày lên thẻ. Khay được đặt cạnh cửa có ánh sáng dịu.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tỉa chỗ quá dày và chia mầm cho nhóm mang về. Khay hạt giờ thành nhiều góc xanh.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng hát Mây",
+  "en": ""
+ },
+ {
+  "vi": "Chọn tiết mục cho buổi hát. Có thể mở beat YouTube của bạn ở một tab riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Hát một mình",
+  "en": ""
+ },
+ {
+  "vi": "Vé hát Solo",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thử đoạn đầu nhỏ nhẹ rồi hát trọn điệp khúc. Chị Ngân vỗ tay cho một lần dám cầm mic.",
+  "en": ""
+ },
+ {
   "vi": "Bạn chọn tông vừa giọng, nghe hết đoạn dạo rồi vào câu đầu. Buổi hát thoải mái hơn lần trước.",
   "en": ""
  },
@@ -493,6 +961,86 @@
  },
  {
   "vi": "Sổ hợp đồng giao hàng không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Sơ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Biết bò",
+  "en": ""
+ },
+ {
+  "vi": "Chập chững",
+  "en": ""
+ },
+ {
+  "vi": "Cho bé bú",
+  "en": ""
+ },
+ {
+  "vi": "Đút bé ăn dặm",
+  "en": ""
+ },
+ {
+  "vi": "Cùng bé ăn bữa nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Ru bé ngủ",
+  "en": ""
+ },
+ {
+  "vi": "Kể chuyện ru bé ngủ",
+  "en": ""
+ },
+ {
+  "vi": "Chơi ú òa",
+  "en": ""
+ },
+ {
+  "vi": "Tập bò cùng bé",
+  "en": ""
+ },
+ {
+  "vi": "Dắt bé tập đi",
+  "en": ""
+ },
+ {
+  "vi": "Bé nhà mình chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn em bé hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một việc nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn đã ở bên bé nhiều rồi. Mai lại chơi nhé!",
+  "en": ""
+ },
+ {
+  "vi": "gắn bó +1",
+  "en": ""
+ },
+ {
+  "vi": "Nhà mình chưa có em bé.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ cho bé trả bằng tiền mặt hoặc tài khoản thôi, không quẹt thẻ tín dụng để khỏi mắc nợ.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đủ tiền mặt hoặc tài khoản. Đồ cho bé không trả bằng thẻ tín dụng.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu bé nhà mình không hợp lệ.",
   "en": ""
  },
  {
@@ -1249,554 +1797,6 @@
  },
  {
   "vi": "Ghế bập bênh gỗ",
-  "en": ""
- },
- {
-  "vi": "Đàn piano đứng",
-  "en": ""
- },
- {
-  "vi": "Bình gốm Bát Tràng",
-  "en": ""
- },
- {
-  "vi": "Tranh sơn dầu phố cổ",
-  "en": ""
- },
- {
-  "vi": "Bộ khung ảnh mini",
-  "en": ""
- },
- {
-  "vi": "Đèn chùm pha lê",
-  "en": ""
- },
- {
-  "vi": "Thảm tròn len",
-  "en": ""
- },
- {
-  "vi": "Thảm hành lang dài",
-  "en": ""
- },
- {
-  "vi": "Bảng đèn neon chill",
-  "en": ""
- },
- {
-  "vi": "Kệ tròn treo tường",
-  "en": ""
- },
- {
-  "vi": "Chuông gió tre",
-  "en": ""
- },
- {
-  "vi": "Máy chiếu dải ngân hà",
-  "en": ""
- },
- {
-  "vi": "Giường đơn sắt",
-  "en": ""
- },
- {
-  "vi": "Tủ ngăn kéo",
-  "en": ""
- },
- {
-  "vi": "Gương đứng toàn thân",
-  "en": ""
- },
- {
-  "vi": "Đèn ngủ mặt trăng",
-  "en": ""
- },
- {
-  "vi": "Gối tựa ca rô",
-  "en": ""
- },
- {
-  "vi": "Rèm voan trắng",
-  "en": ""
- },
- {
-  "vi": "Thỏ bông tai dài",
-  "en": ""
- },
- {
-  "vi": "Kệ giày gỗ",
-  "en": ""
- },
- {
-  "vi": "Ngựa gỗ bập bênh",
-  "en": ""
- },
- {
-  "vi": "Lều chơi cho bé",
-  "en": ""
- },
- {
-  "vi": "Bộ xếp hình",
-  "en": ""
- },
- {
-  "vi": "Xe ô tô đồ chơi",
-  "en": ""
- },
- {
-  "vi": "Khối rubik",
-  "en": ""
- },
- {
-  "vi": "Quả cầu tuyết",
-  "en": ""
- },
- {
-  "vi": "Đồng hồ báo thức",
-  "en": ""
- },
- {
-  "vi": "Chồng sách đang đọc",
-  "en": ""
- },
- {
-  "vi": "Bếp ga đôi",
-  "en": ""
- },
- {
-  "vi": "Thanh treo nồi chảo",
-  "en": ""
- },
- {
-  "vi": "Thớt gỗ và dao",
-  "en": ""
- },
- {
-  "vi": "Máy xay sinh tố",
-  "en": ""
- },
- {
-  "vi": "Hũ dưa muối",
-  "en": ""
- },
- {
-  "vi": "Máy pha cà phê",
-  "en": ""
- },
- {
-  "vi": "Đảo bếp gỗ",
-  "en": ""
- },
- {
-  "vi": "Ghế quầy bar",
-  "en": ""
- },
- {
-  "vi": "Rổ rau củ",
-  "en": ""
- },
- {
-  "vi": "Lò nướng bánh mini",
-  "en": ""
- },
- {
-  "vi": "Kệ treo chén đĩa",
-  "en": ""
- },
- {
-  "vi": "Kệ mỹ phẩm",
-  "en": ""
- },
- {
-  "vi": "Máy sấy tóc",
-  "en": ""
- },
- {
-  "vi": "Giỏ đựng đồ giặt",
-  "en": ""
- },
- {
-  "vi": "Cốc bàn chải",
-  "en": ""
- },
- {
-  "vi": "Chậu trúc phát tài",
-  "en": ""
- },
- {
-  "vi": "Tủ thuốc treo tường",
-  "en": ""
- },
- {
-  "vi": "Ghế trứng treo",
-  "en": ""
- },
- {
-  "vi": "Chậu cúc vạn thọ",
-  "en": ""
- },
- {
-  "vi": "Bồn hoa gỗ",
-  "en": ""
- },
- {
-  "vi": "Hồ cá koi mini",
-  "en": ""
- },
- {
-  "vi": "Ghế dài công viên",
-  "en": ""
- },
- {
-  "vi": "Đèn bão cổ",
-  "en": ""
- },
- {
-  "vi": "Nhà gỗ cho cún",
-  "en": ""
- },
- {
-  "vi": "Bình tưới cây",
-  "en": ""
- },
- {
-  "vi": "Phòng ngủ nhỏ",
-  "en": ""
- },
- {
-  "vi": "Căn gác",
-  "en": ""
- },
- {
-  "vi": "Phòng trọ",
-  "en": ""
- },
- {
-  "vi": "Gác lửng",
-  "en": ""
- },
- {
-  "vi": "Góc giường của bạn",
-  "en": ""
- },
- {
-  "vi": "Hồ bơi",
-  "en": ""
- },
- {
-  "vi": "Phòng tắm lớn",
-  "en": ""
- },
- {
-  "vi": "Nhà tắm chung",
-  "en": ""
- },
- {
-  "vi": "Góc học tập",
-  "en": ""
- },
- {
-  "vi": "Góc xanh",
-  "en": ""
- },
- {
-  "vi": "Góc chill",
-  "en": ""
- },
- {
-  "vi": "Giấc ngủ êm",
-  "en": ""
- },
- {
-  "vi": "Góc gaming",
-  "en": ""
- },
- {
-  "vi": "Bếp ấm",
-  "en": ""
- },
- {
-  "vi": "Góc âm nhạc",
-  "en": ""
- },
- {
-  "vi": "Bức tường kỷ niệm",
-  "en": ""
- },
- {
-  "vi": "Vườn nhỏ",
-  "en": ""
- },
- {
-  "vi": "Phòng tắm thư giãn",
-  "en": ""
- },
- {
-  "vi": "Hồ bơi nghỉ dưỡng",
-  "en": ""
- },
- {
-  "vi": "Tiệc nướng ngoài trời",
-  "en": ""
- },
- {
-  "vi": "Góc Tết sum vầy",
-  "en": ""
- },
- {
-  "vi": "Phòng khách xưa",
-  "en": ""
- },
- {
-  "vi": "Hiên nhà thong thả",
-  "en": ""
- },
- {
-  "vi": "Bếp tiện nghi",
-  "en": ""
- },
- {
-  "vi": "Phòng ngủ mộng mơ",
-  "en": ""
- },
- {
-  "vi": "Góc vui chơi",
-  "en": ""
- },
- {
-  "vi": "Bếp nhà nấu",
-  "en": ""
- },
- {
-  "vi": "Đêm đầy sao",
-  "en": ""
- },
- {
-  "vi": "một cái bàn",
-  "en": ""
- },
- {
-  "vi": "một cây đèn",
-  "en": ""
- },
- {
-  "vi": "kệ sách",
-  "en": ""
- },
- {
-  "vi": "một chậu cây",
-  "en": ""
- },
- {
-  "vi": "một tấm thảm",
-  "en": ""
- },
- {
-  "vi": "đồ bông mềm",
-  "en": ""
- },
- {
-  "vi": "giường hoặc nệm",
-  "en": ""
- },
- {
-  "vi": "rèm",
-  "en": ""
- },
- {
-  "vi": "tranh, ảnh",
-  "en": ""
- },
- {
-  "vi": "một món đồ chơi",
-  "en": ""
- },
- {
-  "vi": "“Ở gác mà gọn gàng dễ thương vầy, bà khoe cả xóm luôn.”",
-  "en": ""
- },
- {
-  "vi": "“Nhìn phòng này là biết người ở chăm chút lắm.”",
-  "en": ""
- },
- {
-  "vi": "“Góc của bạn chill ghê, cho mình ngồi làm đồ án ké chút nha.”",
-  "en": ""
- },
- {
-  "vi": "“Góc giường gì mà như homestay vậy trời.”",
-  "en": ""
- },
- {
-  "vi": "“Bạn khéo tay ghê, My chụp hình đăng story nha.”",
-  "en": ""
- },
- {
-  "vi": "“Bà ghé chơi chút thôi mà muốn ở lại ăn cơm luôn á.”",
-  "en": ""
- },
- {
-  "vi": "“Nhà con ấm cúng thiệt, bữa nào cô dẫn mấy đứa nhỏ qua chơi.”",
-  "en": ""
- },
- {
-  "vi": "“Nhà gọn gàng sạch sẽ, nhìn là biết chủ nhà siêng.”",
-  "en": ""
- },
- {
-  "vi": "Như ban đầu",
-  "en": ""
- },
- {
-  "vi": "Sơn kem sữa",
-  "en": ""
- },
- {
-  "vi": "Sơn xanh bạc hà",
-  "en": ""
- },
- {
-  "vi": "Sơn hồng đào",
-  "en": ""
- },
- {
-  "vi": "Giấy kẻ sọc pastel",
-  "en": ""
- },
- {
-  "vi": "Giấy chấm bi",
-  "en": ""
- },
- {
-  "vi": "Giấy hoa nhí",
-  "en": ""
- },
- {
-  "vi": "Giấy mây và sao",
-  "en": ""
- },
- {
-  "vi": "Ốp gạch thẻ",
-  "en": ""
- },
- {
-  "vi": "Ốp gỗ nửa tường",
-  "en": ""
- },
- {
-  "vi": "Sàn gỗ sáng",
-  "en": ""
- },
- {
-  "vi": "Gạch men trắng",
-  "en": ""
- },
- {
-  "vi": "Chiếu cói",
-  "en": ""
- },
- {
-  "vi": "Gạch caro",
-  "en": ""
- },
- {
-  "vi": "Thảm len hồng",
-  "en": ""
- },
- {
-  "vi": "Gạch bông",
-  "en": ""
- },
- {
-  "vi": "Sàn gỗ xương cá",
-  "en": ""
- },
- {
-  "vi": "Ga kẻ hồng",
-  "en": ""
- },
- {
-  "vi": "Ga mây xanh",
-  "en": ""
- },
- {
-  "vi": "Ga dâu tây",
-  "en": ""
- },
- {
-  "vi": "Ga mèo con",
-  "en": ""
- },
- {
-  "vi": "Chính sách thiếu hàng",
-  "en": ""
- },
- {
-  "vi": "➕ Lấy thêm",
-  "en": ""
- },
- {
-  "vi": "➖ Bỏ bớt",
-  "en": ""
- },
- {
-  "vi": "➖ Bỏ hộp sai mã",
-  "en": ""
- },
- {
-  "vi": "➖ Bỏ hộp",
-  "en": ""
- },
- {
-  "vi": "👁️ Đọc nhãn",
-  "en": ""
- },
- {
-  "vi": "👁️ Mở gốc",
-  "en": ""
- },
- {
-  "vi": "🗂️ Loại trùng",
-  "en": ""
- },
- {
-  "vi": "✏️ Sửa",
-  "en": ""
- },
- {
-  "vi": "theo gốc",
-  "en": ""
- },
- {
-  "vi": "Đồng nghiệp nói nhỏ với nhau: “Nghe đâu vào bằng cửa sau đó…” Làm cho tốt rồi người ta sẽ quên thôi.",
-  "en": ""
- },
- {
-  "vi": "Lúc thay đồ, một đồng nghiệp buông một câu: “Có người quen sướng thật ha.” Bạn cười trừ rồi xắn tay áo làm.",
-  "en": ""
- },
- {
-  "vi": "Người làm ca trước đưa bạn cái tạp dề, nửa đùa nửa thật: “Người nhà của ai đó hả? Thôi làm đi rồi biết.”",
-  "en": ""
- },
- {
-  "vi": "Đi cửa sau chỉ có trong hành trình.",
-  "en": ""
- },
- {
-  "vi": "Cửa sau chỉ mở sau một lần trượt phỏng vấn.",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ hành nghề phải thi thật: không có cửa sau cho bài thi này.",
-  "en": ""
- },
- {
-  "vi": "Người quen chỉ “lo giúp” được một lần ở mỗi nơi.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận đi cửa sau.",
   "en": ""
  }
 ]

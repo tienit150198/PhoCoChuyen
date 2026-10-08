@@ -1,5 +1,485 @@
 [
  {
+  "vi": "💹 Thuế trước bạ (từ 07/10): thêm 10% giá nhà, 20% từ 20.000 xu, 30% từ 60.000 xu. Trả cùng khoản trả trước, bằng ví hoặc tài khoản (không vay, không lấy từ quỹ chung). Thuế không cộng vào giá bán lại.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Phần còn lại vay Ngân hàng Phố 1–3 năm, trả góp mỗi tháng (5 ngày sống). Lãi 9–11,4%/năm tùy điểm tín dụng.",
+  "en": ""
+ },
+ {
+  "vi": "🔑 Có nhà thì hết tiền phòng, chỉ còn điện nước 2–18 xu/ngày, và tinh thần được cộng mỗi sáng.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Nhà từ 6.000 xu có phí bảo trì mỗi tháng: 0,2–0,35% giá mua, dù ở, để trống hay cho thuê. Căn hộ nhỏ dưới 6.000 xu không tốn phí này.",
+  "en": ""
+ },
+ {
+  "vi": "🏰 Penthouse cần điểm tín dụng từ 670 mới vay được, biệt thự từ 700 hoặc 740.",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Thiếu tiền trả góp: 3 ngày ân hạn không phạt. Quá hạn mới phạt 2% và giảm điểm tín dụng. Ngân hàng không bao giờ lấy nhà.",
+  "en": ""
+ },
+ {
+  "vi": "💞 Vợ chồng có thể góp tiền mua nhà từ quỹ chung. Ở Hành trình, bấm [[Mời về ở]]; chủ nhà gửi lời mời, người ấy đồng ý mới dọn về.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Giá nhà tăng khoảng 3% mỗi năm. Bán nhà mất 3% phí, tiền bán trả hết nợ vay trước.",
+  "en": ""
+ },
+ {
+  "vi": "🏘️ Có thể có tới 4 căn nhà: ở một căn, căn khác để trống hoặc cho thuê, tiền thuê về đúng ngày trả góp. Ngân hàng tính chung mọi khoản trả góp.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Đầu tư cá nhân",
+  "en": ""
+ },
+ {
+  "vi": "🔓 Mở khi ví từng có 500 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Gửi tiết kiệm ngân hàng phường kỳ hạn 7 ngày, lãi nhỏ nhưng chắc: 0,3%/ngày cho 20.000 xu đầu, phần trên 0,1%/ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🪙 Mây Coin lên xuống mỗi ngày, mua bán mất phí 2%.",
+  "en": ""
+ },
+ {
+  "vi": "🚩 Dự án “lãi khủng, cam kết hoàn vốn” thường là lừa đảo. Góp vào là dễ mất trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Tin tuyển dụng",
+  "en": ""
+ },
+ {
+  "vi": "💼 Nơi làm thuê có nút [[Xin việc]] trên thẻ việc, hoặc mục [[Việc làm]].",
+  "en": ""
+ },
+ {
+  "vi": "📰 Đọc tin: lương, thời gian thử việc, điểm mạnh nơi đó cần.",
+  "en": ""
+ },
+ {
+  "vi": "📄 Viết CV từ việc bạn đã làm thật trong game. Chọn 1–3 điểm mạnh, 1–4 dòng kinh nghiệm.",
+  "en": ""
+ },
+ {
+  "vi": "🔎 Có nơi kiểm tra tham chiếu: ghi kinh nghiệm chưa có thật là bị hạ điểm mạnh.",
+  "en": ""
+ },
+ {
+  "vi": "✉️ Thư ứng tuyển có ba phần. Nhớ đừng để sót tên nơi khác trong thư.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Việc làm",
+  "en": ""
+ },
+ {
+  "vi": "Phỏng vấn, thi và làm thử",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Phỏng vấn: chọn câu trả lời thật, rõ, đặt khách và an toàn lên trước.",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Nhà thuốc, hướng dẫn viên có thi chứng chỉ nghề. Chăm sóc khách hàng có bài xử lý tình huống.",
+  "en": ""
+ },
+ {
+  "vi": "🔧 Salon, thú cưng, sửa đồ, giao hàng có buổi làm thử với chủ.",
+  "en": ""
+ },
+ {
+  "vi": "⛔ Chọn một bước không an toàn là bị dừng ngay, điểm bị hạ.",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Từ 60/100 điểm là có thư mời. [[Thương lượng]] lương được một lần, rồi ký thử việc.",
+  "en": ""
+ },
+ {
+  "vi": "Trượt phỏng vấn thì làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "📅 Trượt phỏng vấn hay làm thử: thẻ kết quả ghi ngày được ứng tuyển lại, ví dụ “từ Ngày 5 (còn 1 ngày · sau khi khép ca hôm nay)”. “Ngày” là số ngày ở góc trên.",
+  "en": ""
+ },
+ {
+  "vi": "🌙 Qua ngày mới bằng cách khép ca ở bất kỳ nơi làm nào. Tới ngày đó sẽ có lời nhắc “Hôm nay bạn có thể phỏng vấn lại”.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Trượt thi: xem lời giải từng câu, thi lại từ ngày hẹn với đề khác.",
+  "en": ""
+ },
+ {
+  "vi": "📚 Học chứng chỉ đúng nhóm để lần sau dễ được nhận hơn: bấm [[Đi học lấy chứng chỉ]] trên thẻ kết quả.",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Hoặc [[Đi cửa sau]]: trả một khoản nhỏ để vào làm ngay (xem mục Đi cửa sau).",
+  "en": ""
+ },
+ {
+  "vi": "⏭️ Bấm [[Thử lại sau / Tìm việc khác]] để về Hành trình và làm ở nơi khác trong lúc chờ.",
+  "en": ""
+ },
+ {
+  "vi": "🍀 Hên thì gặp sếp lớn: sếp đọc CV rồi mời làm luôn, khỏi phỏng vấn. Không thay được bài thi nghề.",
+  "en": ""
+ },
+ {
+  "vi": "Học và thi chứng chỉ",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Mỗi nhóm nghề làm thuê có một chứng chỉ: an toàn lao động, chăm sóc khách hàng, sư phạm, kế toán, cứu hộ hồ bơi, an toàn bay… Vài nghề có chứng chỉ tay nghề tặng món mới (🎁).",
+  "en": ""
+ },
+ {
+  "vi": "🧭 Bấm [[🎓 Chứng chỉ]] trên Bản đồ phố, ô [[Thi chứng chỉ]] đầu trang Hành trình, mục [[Thi chứng chỉ]] trong menu, hoặc [[Đi thi ngay]] trên thẻ nơi làm việc và trong Hồ sơ công việc.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Được nhận rồi vẫn thi được bất cứ lúc nào: nơi bạn đang làm mà chưa có chứng chỉ thì có chấm nhắc.",
+  "en": ""
+ },
+ {
+  "vi": "📈 Có chứng chỉ đúng nhóm: phỏng vấn dưới 60 điểm vẫn có 50% cơ hội được nhận. Không bù được bước làm mất an toàn hay CV ghi sai sự thật.",
+  "en": ""
+ },
+ {
+  "vi": "📚 [[Lớp cấp tốc]] có học phí, học xong thi ngay hôm nay. [[Tự học]] miễn phí, thi từ ngày mai.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Học phí lớp cấp tốc 17–33 xu tùy chứng chỉ. Thi lại, hay thi để lấy điểm cao hơn, thì lớp ôn chỉ tốn nửa học phí.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Đề 6 câu, đúng 4 là đạt, được mở sách. Phân vân thì bấm 💡 Gợi ý: gạch bớt một đáp án sai và nhắc lại bài học, không trừ điểm.",
+  "en": ""
+ },
+ {
+  "vi": "✏️ Trước khi thi có vài câu làm thử, không tính điểm. Chưa đạt thì xem lời giải rồi học lại và thi với đề khác.",
+  "en": ""
+ },
+ {
+  "vi": "1️⃣ Mỗi lúc chỉ học một khóa. [[Bỏ khóa học]] thì không được hoàn học phí.",
+  "en": ""
+ },
+ {
+  "vi": "🏆 Chứng chỉ theo bạn cả đời và được tính trên Top chứng chỉ.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Thi chứng chỉ",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Trượt phỏng vấn ở nơi làm thuê thì thẻ kết quả có nút [[Đi cửa sau]]: nhờ người quen “lo giúp” để vào làm ngay.",
+  "en": ""
+ },
+ {
+  "vi": "💸 Giá bằng một ngày lương khởi điểm của tin đó, làm tròn lên 5 xu, ít nhất 10 xu. Ví phải có đủ số đó thì nút mới bấm được; trả bằng ví, thẻ hay thẻ chung tùy cách bạn chọn ở Ngân hàng.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Vào làm với lương thấp nhất của khung, thử việc như mọi người. Ngày đầu sẽ có đồng nghiệp nói bóng gió.",
+  "en": ""
+ },
+ {
+  "vi": "1️⃣ Mỗi nơi chỉ đi cửa sau được một lần.",
+  "en": ""
+ },
+ {
+  "vi": "⛔ Bài thi chứng chỉ hành nghề (nhà thuốc, hướng dẫn viên…) phải thi thật: không có cửa sau.",
+  "en": ""
+ },
+ {
+  "vi": "🌱 Không muốn tốn tiền: học chứng chỉ, hoặc bấm [[Thử lại sau / Tìm việc khác]] rồi phỏng vấn lại từ ngày hẹn.",
+  "en": ""
+ },
+ {
+  "vi": "Thử việc và hợp đồng",
+  "en": ""
+ },
+ {
+  "vi": "📝 Thử việc vài ngày, nhận 85% lương. Sếp xem sao trung bình các review trong thời gian này.",
+  "en": ""
+ },
+ {
+  "vi": "✅ Trung bình từ 3,5★ trở lên: ký hợp đồng chính thức, nhận đủ lương.",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Dưới 3,5★: thử việc gia hạn thêm 2 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "👋 Muốn nghỉ: khép ca rồi mới xin nghỉ được.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ dở việc giữa chừng",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Đang làm dở (đã bắt tay vào việc, có khách chờ hoặc đơn hẹn tới giờ) mà sang nơi khác là bỏ dở việc.",
+  "en": ""
+ },
+ {
+  "vi": "❓ Game hỏi lại trước: [[Ở lại làm nốt]] hoặc [[Vẫn đi]].",
+  "en": ""
+ },
+ {
+  "vi": "💸 Vẫn đi thì bị phạt: mỗi việc dở khoảng một phần năm giá trị (4–24 xu), mỗi khách chờ khoảng 2 xu, ít nhất 4 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Bỏ lần thứ 2, thứ 3 trong ngày thì phạt nhân đôi, nhân ba, tối đa 96 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Tiệm của bạn: phạt trừ quỹ tiệm (thiếu thì trừ ví), mất uy tín với khu phố. Làm thuê: trừ ví, mất điểm tin cậy của chủ hoặc của sếp.",
+  "en": ""
+ },
+ {
+  "vi": "😠 Việc dở bị hủy, khách để review bực, khách chờ bỏ về. Lần thứ hai trong ngày, chủ nhắc “lần sau cho nghỉ”.",
+  "en": ""
+ },
+ {
+  "vi": "✅ Không bị phạt: [[Khép ca hôm nay]] đàng hoàng, quầy trống, hay chỉ ghé xem. Mỗi ngày khép ca không bỏ dở được lấy lại 2 điểm tin cậy.",
+  "en": ""
+ },
+ {
+  "vi": "Khách hàng & đánh giá",
+  "en": ""
+ },
+ {
+  "vi": "Sao đến từ việc làm",
+  "en": ""
+ },
+ {
+  "vi": "📋 Khách chấm theo từng tiêu chí: đúng món, thời gian chờ, cẩn thận… tùy nghề.",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Một tiêu chí thấp kéo cả số sao xuống, dù các mặt khác đều tốt.",
+  "en": ""
+ },
+ {
+  "vi": "❌ Làm sai lời dặn: lỗi nhỏ tối đa 4★, lỗi rõ 3★, lỗi nặng 2★.",
+  "en": ""
+ },
+ {
+  "vi": "☠️ Lỗi an toàn (thuốc sai, bỏ qua dị ứng, đồ hỏng…) là 1★ ngay.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Mở [[Điểm theo tiêu chí]] để biết khách chê nhiều nhất ở đâu.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Đánh giá",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi khách một tính",
+  "en": ""
+ },
+ {
+  "vi": "🍋 Khách quen có tính riêng: Chanh chua, Bố đời, Ấm áp vui tính, Kỹ tính, Gen Z, Kiệm lời.",
+  "en": ""
+ },
+ {
+  "vi": "😒 Từ ngày 3, có người gặp ngày xui: Xấc xược, Thượng đế, Dọa bóc phốt, Chuyên gia bố đời.",
+  "en": ""
+ },
+ {
+  "vi": "🙃 Có đánh giá ẩu: chấm nhầm sao, nhầm quán, chưa ghé bao giờ, kể chuyện chẳng liên quan.",
+  "en": ""
+ },
+ {
+  "vi": "🐈 Có người trừ sao vì chuyện ngoài lề: quán bụi, nhạc dở, không ai cười…",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍🏫 Ở nghề giáo viên, phụ huynh nhắn góp ý thay cho khách.",
+  "en": ""
+ },
+ {
+  "vi": "Khách nhận xét nhiều góc",
+  "en": ""
+ },
+ {
+  "vi": "🥤 Khách giờ để ý đủ thứ: vị đồ uống, ống hút, bàn ghế, nhà vệ sinh, nhạc, wifi, thái độ và đồng phục nhân viên…",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍🏫 Phụ huynh nói về cách giảng, bài tập về nhà, sự kiên nhẫn của thầy cô. Ở văn phòng có chuyện ăn mặc, chào hỏi, email.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Nhiều lời khen chê bám đúng việc bạn làm: cốc chén bẩn, máy hàn mòn, khách chờ lâu, quầy bừa, khách quen được nhớ tên.",
+  "en": ""
+ },
+ {
+  "vi": "✨ Làm hoàn hảo thì khách không bịa chuyện để chê. Chỉ còn lời khen và những gì bạn thật sự để lại, như cốc chưa rửa.",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Sao vẫn do việc làm quyết định. Hiếm khi một lời chê theo cảm nhận trừ 1 sao; bài đó có dòng “Chê một chuyện không có trong ghi nhận”.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Gặp dòng đó: trả lời lịch sự, nêu sự thật cụ thể (lịch dọn, cách bạn kiểm tra), khách thường trả lại sao. Cãi hay mỉa thì khách giữ ý.",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Chọn một giọng có sẵn (Ấm áp, Nêu sự thật, Xin lỗi + bù đắp…) hoặc [[Tự viết]].",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Mỗi đánh giá trao đổi tối đa 3 lượt; khách đọc xong sẽ nâng, giữ, cãi lại hoặc hạ sao.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Nêu sự thật chỉ hiệu quả khi sổ ghi đúng là bạn không sai.",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Bù đắp một lần mỗi đánh giá: Quà nhỏ 6 xu, Voucher 10 xu hoặc Hoàn 20 xu.",
+  "en": ""
+ },
+ {
+  "vi": "👑 Khách đòi quà, dọa bóc phốt thường chỉ dịu lại khi được bù thật.",
+  "en": ""
+ },
+ {
+  "vi": "😏 Cà khịa nhẹ là canh bạc: được thì khách rủ bạn bè tới, thua thì bị chụp màn hình.",
+  "en": ""
+ },
+ {
+  "vi": "💢 Đáp trả gắt: khách hạ sao, câu trả lời lan đi và kéo thêm đánh giá 1★ từ người lạ.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ qua và báo cáo",
+  "en": ""
+ },
+ {
+  "vi": "🤐 [[Bỏ qua]] chỉ dùng được khi chưa trả lời; số sao giữ nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "📢 Bỏ qua người dọa bóc phốt khi họ chấm thấp: họ đăng bài, thêm đánh giá 1★.",
+  "en": ""
+ },
+ {
+  "vi": "🚩 Thẻ Đáng ngờ chỉ là manh mối. Nền tảng chỉ gỡ đánh giá giả, nhầm quán hoặc chưa dùng dịch vụ.",
+  "en": ""
+ },
+ {
+  "vi": "🔢 Mỗi ngày báo cáo tối đa 2 lần.",
+  "en": ""
+ },
+ {
+  "vi": "😠 Báo cáo nhầm trải nghiệm thật: khách biết chuyện, hạ thêm sao và giận bạn.",
+  "en": ""
+ },
+ {
+  "vi": "🚓 Lời đe dọa đòi tiền có nút [[Lưu bằng chứng & trình báo]]: lưu hồ sơ trong game, khép trao đổi trực tiếp, giữ nguyên sao.",
+  "en": ""
+ },
+ {
+  "vi": "👤 Tài khoản mới, lời lẽ gắt vẫn có thể là khách thật. Đọc kỹ trước khi báo.",
+  "en": ""
+ },
+ {
+  "vi": "Làm sai tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "😤 Khách tự quyết cách phản ứng: càu nhàu rồi trả đủ, đòi giảm 25%, đòi hoàn 50%.",
+  "en": ""
+ },
+ {
+  "vi": "🔄 Ở nghề làm lại được, khách có thể trả món và đòi làm lại một lần.",
+  "en": ""
+ },
+ {
+  "vi": "🚶 Sai nhiều quá thì khách bỏ đi, không trả đồng nào.",
+  "en": ""
+ },
+ {
+  "vi": "⛔ Lỗi an toàn: khách từ chối nhận, không trả tiền.",
+  "en": ""
+ },
+ {
+  "vi": "🌻 Khách dễ tính bỏ qua lỗi nhỏ; khách khó tính thì không.",
+  "en": ""
+ },
+ {
+  "vi": "Bị báo cáo, bị kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "📣 Lỗi nặng, hoặc sai nhiều lần trong ngày, khách gửi báo cáo lên app.",
+  "en": ""
+ },
+ {
+  "vi": "📉 Mỗi báo cáo làm uy tín với khu phố giảm; lỗi an toàn giảm gấp đôi.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Ở việc văn phòng, sếp cũng nhận phản ánh và bớt tin bạn.",
+  "en": ""
+ },
+ {
+  "vi": "🕵️ Lỗi an toàn có thể kéo theo đoàn kiểm tra ghé tiệm hôm sau (xem Chuyện đời).",
+  "en": ""
+ },
+ {
+  "vi": "🛡️ Cách tránh: hỏi rõ nhu cầu, kiểm lại trước khi giao, đừng làm vội.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Chuyện đời",
+  "en": ""
+ },
+ {
+  "vi": "Khách đưa thiếu tiền",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Ở quầy thu tiền mặt (shop quần áo, shop thú cưng, trà đá vỉa hè), thỉnh thoảng khách đưa thiếu tiền. Game không báo trước.",
+  "en": ""
+ },
+ {
+  "vi": "📅 Ngày đầu ở mỗi nơi thì không có. Ngày thứ 2 rất hiếm; từ ngày thứ 3 khoảng 6 trong 100 lần khách trả tiền mặt.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Số thiếu từ 2 tới 100 xu, không quá nửa hóa đơn. Có thể do đếm nhầm, người lớn tuổi quên, trẻ con không đủ tiền, hoặc khách cố tình.",
+  "en": ""
+ },
+ {
   "vi": "🔍 Đọc các tờ tiền khách đưa, hoặc bấm [[Đếm lại tiền khách đưa]]: đủ thì báo đủ, thiếu thì hiện số xu còn thiếu.",
   "en": ""
  },
@@ -901,326 +1381,6 @@
  },
  {
   "vi": "💍 Thẻ bạn bè ghi tên hiển thị, nghề chính, cấp và tình trạng: Độc thân, Đã đính hôn, Đã kết hôn. Bạn đang độc thân thì có nút [[Cầu hôn]] ngay trên thẻ.",
-  "en": ""
- },
- {
-  "vi": "🚫 [[Hủy kết bạn]] xóa cả hai khỏi danh sách của nhau. [[Chặn]] thì người đó không tìm, không mời, không cầu hôn bạn được nữa. Người thương của mình thì không hủy hay chặn được.",
-  "en": ""
- },
- {
-  "vi": "🙈 Tắt [[Cho phép tìm tôi bằng tên đăng nhập]] thì chỉ ai có mã mới tìm được bạn. Người khác chỉ thấy tên hiển thị, không bao giờ thấy tên đăng nhập.",
-  "en": ""
- },
- {
-  "vi": "Mở Bạn bè",
-  "en": ""
- },
- {
-  "vi": "Tiệm nhẫn: mua và đổi màu nhẫn",
-  "en": ""
- },
- {
-  "vi": "💍 Mở [[Hôn nhân]], tab [[Tiệm nhẫn]]. Đã đính hôn hay đã cưới thì tab này tên là [[Kim hoàn]].",
-  "en": ""
- },
- {
-  "vi": "💰 Giá gốc: nhẫn bạc khắc tên 55 xu, vàng tây 18K 165 xu, vàng ta 24K (1 chỉ) 310 xu, vàng đính ruby 530 xu, kim cương 5 ly 990 xu.",
-  "en": ""
- },
- {
-  "vi": "🎨 Mỗi nhẫn chọn Màu kim loại: Bạc, Vàng, Vàng hồng hay Bạch kim; nhẫn ruby và kim cương chọn thêm Màu đá. Hình nhẫn đổi màu ngay để xem trước.",
-  "en": ""
- },
- {
-  "vi": "➕ Màu sang hơn màu gốc thì cộng thêm, ví dụ nhẫn bạc lên Bạch kim +66 xu, nhẫn ruby đổi đá Kim cương trắng +33 xu. Chọn màu rẻ hơn thì giá không giảm.",
-  "en": ""
- },
- {
-  "vi": "🛒 Bấm [[Mua]] rồi xác nhận. Nút chỉ bấm được khi ví đủ tiền, thiếu thì hiện [[Chưa đủ tiền]]: rút tiền lời từ nơi làm về ví trước.",
-  "en": ""
- },
- {
-  "vi": "💳 Tiền nhẫn trừ vào ví. Ai chọn [[Ưu tiên quẹt thẻ tín dụng]] trong Ngân hàng và thẻ còn hạn mức thì nhẫn được quẹt thẻ. Thẻ chung vợ chồng không trả tiền nhẫn.",
-  "en": ""
- },
- {
-  "vi": "📦 Hộp nhẫn giữ tối đa 5 chiếc, tính cả nhẫn đang nằm trong lời cầu hôn chờ trả lời. Bị từ chối hay lời cầu hôn hết hạn thì nhẫn về lại hộp.",
-  "en": ""
- },
- {
-  "vi": "🔁 Tiệm kim hoàn: trong Hộp nhẫn bấm [[Đổi màu]], chọn màu mới rồi bấm nút đổi màu. Phí 22 xu, cộng phần chênh nếu màu mới đắt hơn màu đang có. Bấm [[Thôi]] để bỏ.",
-  "en": ""
- },
- {
-  "vi": "💞 Nhẫn cưới của hai bạn cũng đổi màu được, ai đổi cũng được và người kia được báo. Nhẫn đang nằm trong lời cầu hôn thì chờ trả lời xong mới đổi.",
-  "en": ""
- },
- {
-  "vi": "Mở Tiệm nhẫn",
-  "en": ""
- },
- {
-  "vi": "Cầu hôn và trả lời",
-  "en": ""
- },
- {
-  "vi": "💌 Mở [[Hôn nhân]], tab [[Cầu hôn]]. Cần có nhẫn trong hộp (chưa có thì bấm [[Đến tiệm nhẫn]]) và ít nhất một người bạn đang độc thân.",
-  "en": ""
- },
- {
-  "vi": "👤 Chỉ cầu hôn được bạn bè đang độc thân, đang bật nhận lời cầu hôn và không chặn nhau. Bạn cũng phải độc thân và không trong 3 ngày chờ sau khi chia tay.",
-  "en": ""
- },
- {
-  "vi": "📝 Chọn người ở ô “Gửi tới người bạn” (hoặc bấm [[Cầu hôn]] trên thẻ bạn bè), chọn chiếc nhẫn, một trong 6 lời cầu hôn soạn sẵn, rồi bấm [[Gửi lời cầu hôn]].",
-  "en": ""
- },
- {
-  "vi": "📅 Mỗi ngày gửi tối đa 3 lời cầu hôn, mỗi người chỉ một lời đang chờ. Đổi ý thì bấm [[Rút lại]], nhẫn về hộp. Sau 7 ngày không ai trả lời thì hết hạn, nhẫn cũng về hộp.",
-  "en": ""
- },
- {
-  "vi": "💞 Người nhận thấy chiếc nhẫn và lời nhắn, bấm [[Đồng ý]] là hai bạn đính hôn. Mọi lời cầu hôn khác của cả hai tự đóng, nhẫn trong đó về lại hộp của người gửi.",
-  "en": ""
- },
- {
-  "vi": "🙅 Bấm [[Từ chối]] thì nhẫn vẫn là của người gửi, và người đó phải chờ 3 ngày mới hỏi lại bạn được.",
-  "en": ""
- },
- {
-  "vi": "🚫 Không muốn ai hỏi: tắt [[Nhận lời cầu hôn]]. Muốn chặn riêng một người: bấm [[Chặn người này]]; danh sách “Đã chặn” có nút [[Bỏ chặn]].",
-  "en": ""
- },
- {
-  "vi": "📣 Người gửi tích “Nếu người ấy đồng ý, báo tin vui cho cả phố”, người nhận tích “Báo tin vui cho cả phố”. Cả hai cùng tích thì tin đính hôn chạy trên bảng tin.",
-  "en": ""
- },
- {
-  "vi": "🔔 Có lời cầu hôn mới, nút [[Hôn nhân]] hiện số và game báo một dòng nhắc. Mỗi người chỉ đính hôn với một người cùng lúc.",
-  "en": ""
- },
- {
-  "vi": "Mở Cầu hôn",
-  "en": ""
- },
- {
-  "vi": "Đám cưới từng bước",
-  "en": ""
- },
- {
-  "vi": "💞 Đính hôn xong, mục [[Hôn nhân]] có tab [[Hai bạn]] và [[Kế hoạch cưới]]. Bấm [[Lên kế hoạch cưới]]; ai trong hai người lập kế hoạch cũng được.",
-  "en": ""
- },
- {
-  "vi": "📋 Kế hoạch có 6 phần: nơi tổ chức, số bàn, thực đơn, nghi lễ, dịch vụ thêm, ngày cưới và góp tiền. [[Bảng dự trù]] bên cạnh cộng tiền ngay khi bạn chọn.",
-  "en": ""
- },
- {
-  "vi": "🤝 Ai góp bao nhiêu: [[Chia đôi]], bạn 60%, 70%, 40%, [[Bạn bao hết]] hoặc kéo thanh tự chọn. Tỉ lệ này dùng cho tiền cọc, phần trả nốt và cả tiền mừng.",
-  "en": ""
- },
- {
-  "vi": "📨 Bấm [[Gửi kế hoạch cho]] người ấy. Lúc này chưa trừ tiền. Muốn sửa thì [[Sửa kế hoạch]], muốn thôi thì [[Rút lại]].",
-  "en": ""
- },
- {
-  "vi": "✅ Người kia xem tổng tiền, phần cọc của mình, khách và tiền mừng dự kiến, rồi bấm [[Xác nhận & đặt cọc]]. Chưa ưng thì [[Muốn bàn lại]], một trong hai sửa rồi gửi lại.",
-  "en": ""
- },
- {
-  "vi": "💰 Khi xác nhận, cả hai cùng bị trừ cọc: 30% tổng tiệc, chia theo tỉ lệ góp. Ví ai thiếu thì chưa chốt được: nhờ người đó rút thêm tiền về ví rồi xác nhận lại.",
-  "en": ""
- },
- {
-  "vi": "💳 Ai chọn [[Ưu tiên quẹt thẻ tín dụng]] trong Ngân hàng thì phần cọc của người đó được quẹt thẻ. Thẻ chung vợ chồng không dùng cho đám cưới.",
-  "en": ""
- },
- {
-  "vi": "📅 Ngày cưới chọn sau 2–10 ngày sống (sẵn là 3). Chốt rồi thì không sửa được nữa; tab [[Hai bạn]] đếm ngược số ngày còn lại.",
-  "en": ""
- },
- {
-  "vi": "⚠️ Đổi ý trước ngày cưới: cuối tab [[Hai bạn]] có [[Hủy hôn ước]], gõ HUY để xác nhận. Đã đặt cọc thì mất cọc. Xem “Ly hôn và hủy hôn ước”.",
-  "en": ""
- },
- {
-  "vi": "Bảng giá đám cưới",
-  "en": ""
- },
- {
-  "vi": "🏠 Rạp cưới tại nhà: phí 130 xu, tối đa 30 bàn, cỗ rẻ hơn 15%, hàng xóm tới đông hơn.",
-  "en": ""
- },
- {
-  "vi": "🍽️ Nhà hàng Hoa Sen: phí 220 xu, tối đa 40 bàn. Trung tâm tiệc cưới Sen Vàng: phí 495 xu, tối đa 60 bàn, cỗ đắt hơn 40% nhưng khách mừng nhiều hơn.",
-  "en": ""
- },
- {
-  "vi": "🪑 Ít nhất 5 bàn, mỗi bàn 10 ghế. Ghế trống vẫn trả tiền cỗ, nên đừng đặt dư quá nhiều bàn.",
-  "en": ""
- },
- {
-  "vi": "🍲 Một bàn Bình dân / Tiêu chuẩn / Sang trọng: tại nhà 24/37/61 xu, nhà hàng 28/44/72 xu, trung tâm 39/62/101 xu. Thực đơn sang thì khách mừng nhỉnh hơn.",
-  "en": ""
- },
- {
-  "vi": "🎎 Nghi lễ, không bắt buộc: Lễ dạm ngõ 22 xu, Lễ ăn hỏi tráp 5/7/9 mâm giá 66/94/130 xu, Lễ gia tiên 33 xu, Lễ thành hôn 55 xu.",
-  "en": ""
- },
- {
-  "vi": "✨ Dịch vụ thêm: ảnh cưới và album 130, ban nhạc 77, váy cưới và vest 66, trang trí hoa 66, xe hoa 50, MC 33, trang điểm 28, pháo giấy 17 xu.",
-  "en": ""
- },
- {
-  "vi": "💌 Thiệp cưới miễn phí, quà cảm ơn khách 9 xu cho mỗi bàn. Có thiệp mời đàng hoàng thì khách tới đông hơn.",
-  "en": ""
- },
- {
-  "vi": "🥳 Nghi lễ và dịch vụ làm tiệc vui hơn, từ “Tiệc gọn” tới “Linh đình”: khách tới đông và mừng dày hơn một chút, nhưng chưa chắc bù đủ tiền bỏ ra.",
-  "en": ""
- },
- {
-  "vi": "📊 [[Bảng dự trù]] ghi tổng tiền, cọc 30%, phần trả nốt, khách và tiền mừng dự kiến, lời hay lỗ dự kiến. Đó chỉ là ước lượng, ngày cưới có thể khác.",
-  "en": ""
- },
- {
-  "vi": "Ngày cưới: khách và tiền mừng",
-  "en": ""
- },
- {
-  "vi": "📅 Tới ngày khi một trong hai bạn sống đủ số ngày đã chọn, hoặc muộn nhất sau chừng ấy ngày thật. Đám cưới tự diễn ra kể cả khi người kia đang vắng.",
-  "en": ""
- },
- {
-  "vi": "👥 Khách là hàng xóm, khách quen của cả hai (người cả hai cùng quen tính một lần), cùng họ hàng, bạn bè, đồng nghiệp. Khách không bao giờ nhiều hơn số ghế đã đặt.",
-  "en": ""
- },
- {
-  "vi": "💛 Người quen có tên tới dự theo độ thân: Người lạ khoảng 10%, Quen mặt 30%, Người quen 55%, Thân thiết 80%, Như người nhà 95%; tiệc vui thì thêm chút.",
-  "en": ""
- },
- {
-  "vi": "🧧 Mừng theo độ thân: Như người nhà 20–100 xu, Thân thiết 10–30, Người quen 5–20, Quen mặt 3–10, Người lạ 2–5. Khách thường: rạp nhà 2–10, nhà hàng 3–20, trung tâm 5–50.",
-  "en": ""
- },
- {
-  "vi": "🎁 Có khi có bất ngờ: một vị khách sộp mừng 80–120 xu, một phong bì vui nhộn, hay ai đó quên phong bì rồi gửi bù khoảng nửa ngày sau.",
-  "en": ""
- },
- {
-  "vi": "💰 Tiền mừng chia cho hai bạn theo tỉ lệ góp. Mỗi người trả nốt phần tiệc còn lại (70% tổng) của mình, trừ vào tiền mừng trước.",
-  "en": ""
- },
- {
-  "vi": "👛 Tiền mừng không đủ thì phần thiếu trừ vào ví, ví có thể âm như nợ tiền phòng. Có tài khoản Ngân hàng bật tự động bù ví thì sáng hôm sau tài khoản bù vào.",
-  "en": ""
- },
- {
-  "vi": "🎊 Xong tiệc, cả hai được báo và tab nhà hiện thiệp kỷ niệm: số khách, tiền mừng, lời hay lỗ, phần của bạn, người thân quen đã đến và lời chúc.",
-  "en": ""
- },
- {
-  "vi": "💍 Hai bạn thành vợ chồng, có nhãn “Đã kết hôn”. Nếu cả hai đã bật [[Báo tin cưới cho cả phố]], bảng tin chạy tin cưới cho mọi người chơi.",
-  "en": ""
- },
- {
-  "vi": "Đời vợ chồng",
-  "en": ""
- },
- {
-  "vi": "🏡 Mở [[Nhà & Gia đình]] để ở chung và chăm con. Trong [[Hôn nhân]], tab [[Hai bạn]] hiện điểm hạnh phúc và quỹ chung; [[Tương tác]] để gửi lời thương.",
-  "en": ""
- },
- {
-  "vi": "💞 Tab [[Tương tác]]: [[Chào buổi sáng]], [[Nhớ anh/em]], [[Hôm nay mệt quá]], [[Ôm một cái]], [[Thơm một cái]], mỗi cái +1 điểm hạnh phúc, mỗi kiểu một lần mỗi ngày.",
-  "en": ""
- },
- {
-  "vi": "🍱 [[Mang cơm trưa]] tốn 6 xu, +2 điểm. Chọn một món trong túi quà (đồ hàng xóm tặng) rồi bấm [[Tặng]]: +2 điểm, món quà sang túi quà của người ấy.",
-  "en": ""
- },
- {
-  "vi": "💗 Điểm hạnh phúc tối đa 100, không bị trừ. Mỗi ngày tính tối đa 6 điểm từ tương tác; ngày liền nhau được thưởng thêm tới 4 điểm. Ngày mới tính từ 0 giờ.",
-  "en": ""
- },
- {
-  "vi": "🎂 Cứ 30 ngày sống sau cưới là một lần kỷ niệm: mỗi người nhận 5 xu, cộng 1 xu cho mỗi 10 điểm hạnh phúc.",
-  "en": ""
- },
- {
-  "vi": "💸 Tab [[Quỹ chung]], mục gửi tiền: chọn lời nhắn, [[Tặng luôn]] hoặc [[Cho mượn]] (ghi sổ nợ). Tối đa 5.000 xu mỗi lần, 20 lần mỗi ngày, tiền đi thẳng từ ví sang ví.",
-  "en": ""
- },
- {
-  "vi": "🙏 Nhờ giúp: chọn lý do, tích “Mượn thôi” nếu sẽ trả, gõ tới 2.000 xu. Người kia bấm nút Giúp hoặc [[Để lần sau]]. Mỗi lúc chỉ một lời nhờ, hết hạn sau 3 ngày.",
-  "en": ""
- },
- {
-  "vi": "🧾 [[Sổ nợ]]: người cho mượn bấm [[Đòi tiền]] bằng câu soạn sẵn (12 giờ một lần) hoặc [[Xóa nợ]]. Người mượn [[Trả bớt]], [[Trả hết]], hoặc [[Xin khất]] khi bị đòi.",
-  "en": ""
- },
- {
-  "vi": "🔔 Mỗi lần gửi, nhờ, đòi hay tương tác, người kia được báo và nút [[Hôn nhân]] hiện số. Trả nợ chỉ bằng tiền mặt trong ví.",
-  "en": ""
- },
- {
-  "vi": "Mở Tương tác",
-  "en": ""
- },
- {
-  "vi": "Nhà & Gia đình: ở chung, chăm con",
-  "en": ""
- },
- {
-  "vi": "🏡 Ở Hành trình, dưới thẻ nhân vật có [[Vào nhà]], [[Nhà & Gia đình]], [[Mời về ở]] và [[Con chung]]. Các lối vào này cũng có trong [[Nhà của bạn]].",
-  "en": ""
- },
- {
-  "vi": "💌 Đã kết hôn: chủ nhà đang ở căn mình sở hữu gửi lời mời. Người kia mở [[Nhà & Gia đình]] và bấm [[Đồng ý ở chung]]; gửi lời mời chưa tự chuyển nhà.",
-  "en": ""
- },
- {
-  "vi": "👶 Cả hai tới ngày sống 10 rồi mở [[Con chung]], đặt tên và gửi lời mời. Người ấy bấm [[Đồng ý đón bé]] mới cùng bắt đầu; mỗi cặp có một con chung.",
-  "en": ""
- },
- {
-  "vi": "🍼 Nhận nuôi miễn phí; bé mới sinh đến sau một ngày lịch Việt Nam. Hai bạn cùng chăm theo ngày lịch Việt Nam, dùng chung tiến trình; chỉ số không tự giảm khi vắng mặt.",
-  "en": ""
- },
- {
-  "vi": "🐾 [[Con riêng & thú cưng]] mở góc chăm riêng theo ngày sống. Tên và đồ của con chung nằm trong mục “Tên gọi & đồ của bé”.",
-  "en": ""
- },
- {
-  "vi": "Mở Nhà & Gia đình",
-  "en": ""
- },
- {
-  "vi": "Gặp người thương trong nhà",
-  "en": ""
- },
- {
-  "vi": "🚪 Đã ở chung: cả hai bấm [[Vào nhà]] và vào cùng một phòng để nhìn thấy nhau.",
-  "en": ""
- },
- {
-  "vi": "🤗 Chọn [[Ôm]], [[Hôn]] hoặc [[Thả tim]]. Nhân vật của bạn lại gần và làm cử chỉ trước; người ấy chọn cách đáp lại.",
-  "en": ""
- },
- {
-  "vi": "💞 Người nhận chọn [[Đáp lại]], [[Ngại ngùng]], [[Giận dỗi]] hoặc [[Để sau]]. Chỉ khi có lời đáp, hai nhân vật mới cùng diễn phản ứng.",
-  "en": ""
- },
- {
-  "vi": "⏳ Chưa có lời đáp thì chờ hoặc bấm [[Thôi, để sau]]. Đổi phòng, rời nhà hay mất kết nối sẽ khép cử chỉ đang chờ.",
-  "en": ""
- },
- {
-  "vi": "Quỹ chung & thẻ chung",
-  "en": ""
- },
- {
-  "vi": "🏦 Quỹ chung tự có khi hai bạn cưới xong, bắt đầu từ 0 xu, không cần mở gì thêm. Đang đính hôn thì chưa có.",
   "en": ""
  }
 ]
