@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 31  # 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 32  # 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -549,6 +549,19 @@ CREATE TABLE IF NOT EXISTS home_deco_log (
   home_id {T} NOT NULL, home_kind {T} NOT NULL, text {T} NOT NULL,
   undo {T} NOT NULL, after {T} NOT NULL, at double precision NOT NULL, undone double precision
 );
+-- 💌 Thiệp mời cưới cả phố (game/wed_invite.py, live/wedinvite.py; SCHEMA_VERSION 32): one row per paid card (`rid` =
+-- its marriage_effects debit, idempotent), and per viewer the last card shown (`upto`), today's count and the last card
+-- cheered: written only when a card is shown, never in bulk. Tables only, no save key: an older build never sees them.
+CREATE TABLE IF NOT EXISTS wed_invites (
+  id {ID} PRIMARY KEY, rid {T} NOT NULL UNIQUE, sid {T} NOT NULL, partner {T} NOT NULL, pid {T} NOT NULL, ppid {T} NOT NULL,
+  couple bigint NOT NULL, wedding bigint, name_a {T} NOT NULL, name_b {T} NOT NULL, text {T} NOT NULL, raw {T},
+  at double precision NOT NULL, until double precision NOT NULL, status {T} NOT NULL DEFAULT 'live',
+  cheers bigint NOT NULL DEFAULT 0, by_admin {T}, deleted_at double precision
+);
+CREATE TABLE IF NOT EXISTS wed_invite_seen (
+  sid {T} PRIMARY KEY, upto bigint NOT NULL DEFAULT 0, day {T} NOT NULL, n bigint NOT NULL DEFAULT 0,
+  cheer_upto bigint NOT NULL DEFAULT 0
+);
 """
 
 INDEX_DDL = """
@@ -559,6 +572,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS home_deco_active_pair ON home_deco_grants(owne
 CREATE INDEX IF NOT EXISTS home_deco_guest ON home_deco_grants(guest,status);
 CREATE INDEX IF NOT EXISTS home_deco_log_owner ON home_deco_log(owner,id);
 CREATE INDEX IF NOT EXISTS home_deco_log_actor ON home_deco_log(actor);
+CREATE INDEX IF NOT EXISTS wed_invites_live ON wed_invites(status, id);
+CREATE INDEX IF NOT EXISTS wed_invites_sid ON wed_invites(sid, id);
+CREATE UNIQUE INDEX IF NOT EXISTS wed_invites_party ON wed_invites(sid, wedding) WHERE wedding IS NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS family_pending_kind ON family_requests(couple,kind) WHERE status='pending';
 CREATE INDEX IF NOT EXISTS family_request_recipient ON family_requests(to_sid,status);
 CREATE INDEX IF NOT EXISTS family_custody_owner ON family_custody(sid);
@@ -841,6 +857,8 @@ TABLES = [
     dict(name='account_birth', identity=None),
     dict(name='home_deco_grants', identity=None),
     dict(name='home_deco_log', identity='id'),
+    dict(name='wed_invites', identity='id'),
+    dict(name='wed_invite_seen', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 

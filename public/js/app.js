@@ -323,6 +323,7 @@ function navItems(c){
   if(api.state?.journey?.story&&api.state.journey.pets)items.push(['pets','paw','Thú cưng']);  // 🐾 v4/pets.js (own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.spend)items.push(['spend','coffee','Đi chơi'],['spendStyle','sparkle','Phong cách']);  // ☕🙏 quán, spa, rạp, công đức; 🎨 màu tên tuần (v4/spend.js, own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.lux)items.push(['lux','bag','Mua sắm'],['luxFw','sparkle','Bắn pháo hoa']);  // 🎆 #274 "bắn pháo hoa chỗ nào": one tap from Khu phố
+  if(api.state?.journey?.story&&api.state.marriage?.spouse)items.push(['wedInvite','mail','Thiệp mời cưới']);  // 💌 thiệp mời cưới cả phố (v4/wedinvite.js): engaged or married
   if(api.state?.journey?.story&&api.state.journey.abroad)items.push(['abroad','globe','Du học & nước ngoài',api.state.journey.abroad.study?.lesson?'dot':0]);  // ✈️🌏 v4/abroad.js: a dot when today's lesson waits
   if(api.state?.journey?.story&&api.content?.journey?.auction)items.push(['auction','award','Nhà đấu giá']);  // 🔨 đồ độc bản (v4/auction.js, own dialog): only once the server has it  // 🛍️ du lịch, sưu tập, dinh thự, tiệc, khóa học, Mạnh Thường Quân (v4/lux.js, own dialog): only once the server has it
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
@@ -354,7 +355,7 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()));
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['fair','luxFw','spend','pets','liveWalk','liveWed','liveKara','nhom','phone','social','jrTown','rank']],
+  ['pho','building','Khu phố',['fair','luxFw','wedInvite','spend','pets','liveWalk','liveWed','liveKara','nhom','phone','social','jrTown','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
@@ -1613,6 +1614,7 @@ async function handleAction(action,data,el){
       if(action==='liveDate'){(await viaLazy(L.live,el)).openDate(data);break;}  // 💕 Góc hẹn hò (v4/dating.js)
       if(action==='liveWed'){await (await import('./v4/wedding.js')).openWeddings(env());break;}  // 💍 Lịch cưới (v4/wedding.js): its own dialog
       if(action==='liveKara'){await (await import('./v4/karaoke.js')).openKaraoke(env(),data);break;}  // 🎤 Phòng hát (v4/karaoke.js): its own dialog
+      if(action==='wedInvite'){await (await import('./v4/wedinvite.js')).openWedInvite(env());break;}  // 💌 Gửi thiệp mời cưới cả phố: its own dialog
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
       if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy
@@ -1836,7 +1838,9 @@ try{
     // 🎆 someone's fireworks: the show over whatever screen is open, for everyone online (v4/fireworks.js, live/fireworks.py);
     // a page that connects right after the start gets it in the welcome (`fw`)
     const fw=f=>import('./v4/fireworks.js').then(a=>a.onFireworks(env(),f)).catch(e=>console.warn('fireworks:',e));
-    m.live.on('fireworks',fw);m.live.on('welcome',f=>{if(f.fw)fw(f.fw);});}).catch(e=>console.warn('live:',e)),800);
+    m.live.on('fireworks',fw);m.live.on('welcome',f=>{if(f.fw)fw(f.fw);});
+    // 💌 someone's wedding card is out (live/wedinvite.py): ask the server for it a moment later (v4/wedinvite.js)
+    m.live.on('wedinvite',f=>import('./v4/wedinvite.js').then(a=>a.onWedInvite(env(),f)).catch(e=>console.warn('wedinvite:',e)));}).catch(e=>console.warn('live:',e)),800);
   // The rest of the catalogue (api.more), now that the first frame is out: it never competed with it on the wire.
   api.more().catch(e=>console.warn('content:',e));
   // Always-on features (badges, notices, polls, tips) load once the game is on screen, not before it.
@@ -1874,6 +1878,8 @@ try{
     import('./v4/x3week.js').then(m=>m.x3Boot(env())).catch(e=>console.warn('x3week:',e));  // 🔥 Nghề x3 trong tuần (game/x3_week.py)
     if(api.state?.rui)import('./v4/rui.js').then(m=>m.ruiBoot(env())).catch(e=>console.warn('rui:',e));  // 🛡️ a warning or a card at a calm moment (game/rui.py)
     if(api.gifts?.length)import('./v4/gift.js').then(m=>m.giftBoot(env())).catch(e=>console.warn('gift:',e));  // 🎁 Quà từ Phố Có Chuyện: only for a save with a gift
+    // 💌 thiệp mời cưới cả phố not shown yet (game/wed_invite.py): the module only when one is due; an older server 404s
+    setTimeout(()=>api.json('/api/wedinvite').then(d=>{if(d?.items?.length)import('./v4/wedinvite.js').then(m=>m.showCards(env(),d.items));}).catch(()=>{}),2500);
     if(api.xfers?.length)import('./v4/bank-xfer.js').then(m=>m.showIncoming(env(),api.xfers)).catch(e=>console.warn('xfer:',e));  // 💸 what friends sent (credited on load)
     if(firstDay(api.state))import('./v4/onboard-fx.js').then(m=>m.onboardBoot(env())).catch(e=>console.warn('onboard:',e));  // a new player's first day only
   };
