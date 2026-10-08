@@ -3,51 +3,124 @@
 // (v4/music.js). Phones cap how many can run, and iOS lets a context start only inside a tap.
 let shared=null,noise=null,primed=false;
 const AC=()=>window.AudioContext||window.webkitAudioContext;
-const wants=new Set(),hooks=new Set();  // wants: 'sfx' (action sounds on), 'music' (background music on)
+const wants=new Set(),hooks=new Set();  // wants: 'sfx' (action sounds on), 'music' (background music on), …
+/** Music of any kind (the background music, the wedding party's, the fair's lô tô): plays like media on an iPhone. */
+const MEDIA=['music','wedding','fair'];
+const wantsMedia=()=>MEDIA.some(w=>wants.has(w));
 /** The page's AudioContext, created on first use (suspended until a tap starts it); null without Web Audio. */
-export function audioContext(){try{shared??=new (AC())();}catch{/* no Web Audio */}return shared;}
+export function audioContext(){
+  if(!shared){try{shared=new (AC())();shared.addEventListener?.('statechange',changed);}catch{/* no Web Audio */}}
+  return shared;
+}
 const doc=globalThis.document,hidden=()=>Boolean(doc?.hidden);
+let mine=false;  // the context was suspended by this file (hidden tab / nothing wanted), not by the phone
 /** Run the context when someone wants sound. resume() works only inside a tap/key handler on iOS Safari until
- * the context has once been started by one (then anywhere); 'interrupted' (iOS: call, other app) needs it too. */
-function wake(){const c=shared;if(c&&wants.size&&!hidden()&&c.state!=='running'&&c.state!=='closed')c.resume().catch(()=>{/* next tap */});}
+ * the context has once been started by one (then anywhere); 'interrupted' (iOS: call, alarm, Siri, another app)
+ * may refuse it until the interruption ends: the next tap or the health check tries again. */
+function wake(){
+  const c=shared;if(!c||!wants.size||hidden())return;
+  if(c.state!=='running'&&c.state!=='closed'){mine=false;c.resume().catch(()=>{/* next tap */});}
+  keep();
+}
+/** The phone stopped the context by itself (a call, Bluetooth switched, another app's audio): start it again. */
+function changed(){if(shared&&shared.state!=='running'&&!mine)wake();}
+/* iPhone silent (ringer) switch: iOS plays Web Audio as "ambient" sound, which the switch mutes, unless the page
+ * also plays media. Safari 16.4+: navigator.audioSession.type='playback' (wantAudio). Older iOS (15–16.3) and web
+ * views without that API: a looping silent <audio> while music is on makes the page a media player, so the music
+ * plays through the switch like a video does. Paused while the tab is hidden, no music is on, or the karaoke room
+ * (v4/karaoke.js: its YouTube video and the singers' voices are media of their own; never compete with them). */
+const IOS=(()=>{try{const n=navigator,p=String(n.platform||'');return /^iP(hone|ad|od)/.test(p)||(p==='MacIntel'&&n.maxTouchPoints>1);}catch{return false;}})();
+let keeper=null;
+const ducks=new Set(),duckHooks=new Set();  // duck(): who wants the background music to step aside
+const needsKeeper=()=>IOS&&!globalThis.navigator?.audioSession&&Boolean(doc?.createElement);
+/** 1 s of silence as a WAV blob: URL (made here: no audio file; the page's CSP allows media from 'self' and blob:). */
+function silence(){
+  const rate=44100,n=rate*2,b=new Uint8Array(44+n),v=new DataView(b.buffer),w=(o,t)=>{for(let i=0;i<t.length;i++)b[o+i]=t.charCodeAt(i);};
+  // 16-bit PCM mono (the most widely played WAV); the samples stay 0
+  w(0,'RIFF');v.setUint32(4,36+n,true);w(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,rate,true);v.setUint32(28,rate*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n,true);
+  return URL.createObjectURL(new Blob([b],{type:'audio/wav'}));
+}
+/** The silent <audio> playing (music wanted, tab shown) or paused. Outside a tap play() may be refused: the next tap. */
+function keep(){
+  if(!needsKeeper())return;
+  if(!wantsMedia()||hidden()||ducks.has('kara')){if(keeper&&!keeper.paused)try{keeper.pause();}catch{/* gone */}return;}
+  try{
+    if(!keeper){
+      keeper=doc.createElement('audio');keeper.loop=true;keeper.preload='auto';
+      keeper.setAttribute('playsinline','');keeper.setAttribute('x-webkit-airplay','deny');keeper.disableRemotePlayback=true;
+      keeper.src=silence();
+    }
+    if(keeper.paused)keeper.play()?.catch?.(()=>{/* the next tap */});
+  }catch{/* no media element */}
+}
 /** Who needs the context running. Music on: the iPhone plays it like media (through the silent switch);
  * action sounds alone keep the default session and follow the switch. */
 export function wantAudio(who,on){
   const had=wants.has(who);if(on)wants.add(who);else wants.delete(who);
   if(had===Boolean(on))return;
-  try{const s=navigator.audioSession,type=wants.has('music')?'playback':'auto';if(s&&s.type!==type)s.type=type;}catch{/* no Audio Session API */}
-  if(on)wake();
+  try{const s=navigator.audioSession,type=wantsMedia()?'playback':'auto';if(s&&s.type!==type)s.type=type;}catch{/* no Audio Session API */}
+  if(on)wake();else keep();
+  watch();
 }
 /** fn() on every tap/key (inside the gesture): v4/music.js starts a song there. */
 export function onGesture(fn){hooks.add(fn);}
 /** Who wants the background music to step aside (the wedding party plays its own: v4/wedfeast.js). */
-const ducks=new Set(),duckHooks=new Set();
-export function duck(who,on){const was=ducks.size>0;if(on)ducks.add(who);else ducks.delete(who);if(was!==ducks.size>0)for(const fn of duckHooks){try{fn(ducks.size>0);}catch{/* music only */}}}
+export function duck(who,on){const was=ducks.size>0;if(on)ducks.add(who);else ducks.delete(who);keep();if(was!==ducks.size>0)for(const fn of duckHooks){try{fn(ducks.size>0);}catch{/* music only */}}}
 export const ducked=()=>ducks.size>0;
 /** fn(ducked) when the background music should step aside or come back (v4/music.js). */
 export function onDuck(fn){duckHooks.add(fn);}
+/** Suspend then resume: an iPhone back from a call or a lock sometimes keeps a context 'running' whose clock
+ * stands still (no sound until the page reloads); restarting it brings the output back. At most every 10 s. */
+let kicked=0;
+function kick(){
+  const c=shared,now=Date.now();if(!c||c.state!=='running'||now-kicked<10000)return;kicked=now;
+  c.suspend().then(()=>c.resume()).catch(()=>{/* the next tap */});
+}
+/** Every 2.5 s while sound is wanted and the tab is shown: a stopped context is started again, a stuck one (music
+ * on, clock not moving) kicked. Exported for tests/audio_resume.mjs. */
+let watchTimer=0,lastClock=-1;
+export function audioHealth(){
+  const c=shared;if(!c||!primed||!wants.size||hidden()){lastClock=-1;return;}  // before the first tap only a tap can start it
+  if(c.state!=='running'){lastClock=-1;if(!mine)wake();return;}
+  if(!wantsMedia()){lastClock=-1;return;}  // a stuck clock is checked only while music plays (it always renders then)
+  const t=c.currentTime;if(t===lastClock)kick();lastClock=t;
+}
+function watch(){
+  if(wants.size&&!watchTimer&&doc)watchTimer=setInterval(audioHealth,2500);
+  else if(!wants.size&&watchTimer){clearInterval(watchTimer);watchTimer=0;}
+}
 /** Inside a tap/key: start the context. The first tap starts it even when nothing is wanted yet (then pauses
  * it again): iOS lifts its tap-only rule for good once a tap started a context, so a sound switched on later
- * (after a server round trip, outside any tap) plays at once. */
+ * (after a server round trip, outside any tap) plays at once. A tap means the page is on screen, whatever
+ * document.hidden says (some in-app browsers keep it true after coming back). */
 function start(){
-  if(hidden()||(primed&&!wants.size))return;
+  if(primed&&!wants.size)return;
   const c=audioContext();if(!c||c.state==='closed')return;
-  if(c.state==='running'){primed=true;return;}
-  c.resume().then(()=>{primed=true;if(!wants.size&&c.state==='running')c.suspend().catch(()=>{});}).catch(()=>{/* the next tap */});
+  keep();
+  if(c.state==='running'){primed=true;if(lastClock>=0&&c.currentTime===lastClock)kick();return;}
+  mine=false;
+  c.resume().then(()=>{primed=true;if(!wants.size&&c.state==='running'){mine=true;c.suspend().catch(()=>{});}}).catch(()=>{/* the next tap */});
 }
 // Every tap, not only the first one and not only on [data-action] buttons (the Nhạc nền switch is a checkbox).
 // pointerdown/touchstart are not a user activation; pointerup/touchend/click/keydown are.
 function gesture(){start();for(const fn of hooks){try{fn();}catch{/* silent */}}}
+/** Hidden tab: stop the audio thread (the music resumes in place when the tab is back). */
+function away(){mine=true;lastClock=-1;if(shared?.state==='running')shared.suspend().catch(()=>{});keep();}
 if(doc?.addEventListener){
   for(const type of ['pointerup','touchend','click','keydown'])addEventListener(type,gesture,{capture:true,passive:true});
-  // Hidden tab: stop the audio thread (the music resumes in place when the tab is back).
-  doc.addEventListener('visibilitychange',()=>{if(hidden()){if(shared?.state==='running')shared.suspend().catch(()=>{});}else wake();});
+  doc.addEventListener('visibilitychange',()=>{if(hidden())away();else wake();});
+  // Back from the back/forward cache, or the window focused again (the app switcher, a call ended).
+  addEventListener('pageshow',()=>wake());
+  addEventListener('focus',()=>wake());
+  // Headphones / Bluetooth in or out: the output may stop or restart on its own; check it soon.
+  try{navigator.mediaDevices?.addEventListener?.('devicechange',()=>{lastClock=-1;setTimeout(audioHealth,800);});}catch{/* none */}
 }
 /* Recorded sounds (public/audio/sfx/, licences in CREDITS.md there): fetched once, decoded into the shared context. */
 const decoded=new Map();  // url -> Promise<AudioBuffer|null>
 export function loadSample(url){
   if(!decoded.has(url)){const c=audioContext();decoded.set(url,!c||!globalThis.fetch?Promise.resolve(null)
-    :fetch(url,{credentials:'same-origin'}).then(r=>r.ok?r.arrayBuffer():null).then(b=>b&&new Promise((ok,no)=>c.decodeAudioData(b,ok,no))).catch(()=>null));}
+    :fetch(url,{credentials:'same-origin'}).then(r=>r.ok?r.arrayBuffer():null).then(b=>b&&new Promise((ok,no)=>c.decodeAudioData(b,ok,no))).catch(()=>{decoded.delete(url);return null;}));}  // failed: tried again next time
   return decoded.get(url);
 }
 let tingBuf=null;
