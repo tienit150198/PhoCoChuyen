@@ -59,6 +59,7 @@ from . import leisure as ls   # 🏝️ 2.5D town: private, free pixel fishing/b
 from . import fridge as fr   # 🧊 Tủ lạnh ở nhà: cất đồ ăn, đói thì ăn (game/fridge.py)
 from . import x3_week as x3   # 🔥 Nghề x3 trong tuần (game/x3_week.py)
 from . import accounting_jobs as aj   # 💼 Việc làm kế toán: exam gate, entry check, ×3/×5 (game/accounting_jobs.py)
+from . import history_course as hcourse   # 📜 Học lịch sử Việt Nam: its title (game/history_course.py)
 from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
 from . import quay as qy   # 🏪 Quầy của bạn: your own counter, staff, the till (game/quay.py)
 
@@ -289,6 +290,8 @@ TITLES = [
     _t('k_tech', 'skill', '💻', 'Rành máy móc', 'Kỹ năng dùng phần mềm đạt mức 3.', lambda x: x['sk'].get('tech', 0) >= 3),
     _t('k_calm', 'skill', '🧘', 'Bình tĩnh giờ cao điểm', 'Kỹ năng bình tĩnh khi áp lực đạt mức 3.', lambda x: x['sk'].get('calm', 0) >= 3),
     _t('k_learning', 'skill', '📚', 'Ham học hỏi', 'Kỹ năng ham học đạt mức 3.', lambda x: x['sk'].get('learning', 0) >= 3),
+    # 📜 Học lịch sử Việt Nam (game/history_course.py): given with the certificate, and here for a save certified outside the story.
+    _t('h_history', 'skill', '📜', 'Người kể sử', 'Thi đạt khóa Lịch sử Việt Nam.', lambda x: x.get('history', False)),
     # Money.
     _t('m_first_draw', 'money', '👛', 'Tự lo cơm áo', 'Lần đầu rút tiền lời về ví.', lambda x: x['stats'].get('withdrawn', 0) > 0),
     _t('m_save200', 'money', '🐷', 'Có của để dành', 'Ví có từ 200 xu.', lambda x: x['stats'].get('max_wallet', 0) >= 200),
@@ -431,7 +434,7 @@ def _context(s: dict) -> dict:
         done=len(j['done']), stats=j['stats'], wallet=j['wallet'], life_days=j['life_day'] - 1,
         best_streak=max((int(c.get('life', {}).get('best_streak', 0)) for c in cs.values()), default=0),
         direct_offer=any(h.get('event') == 'direct_offer' for c in cs.values() for h in c.get('job', {}).get('history', [])),
-        loyal=loyal, hopper=hopper)
+        loyal=loyal, hopper=hopper, history=hcourse.certified(s))
 
 
 def _goal_done(ctx: dict, goal: dict, fast: bool = False) -> bool:

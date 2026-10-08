@@ -90,6 +90,7 @@ def normalize(s: str) -> str:
     return "".join(c for c in s if unicodedata.category(c)!="Mn")
 
 from . import accounting_school as accounting_school_
+from . import history_course as history_course_  # 📜 Học lịch sử Việt Nam (vs_*): its block is created on first use
 
 def new_state() -> dict:
     return dict(schema=4,name="Mây",current=None,seq=0,
@@ -562,6 +563,10 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         result=accounting_school_.action(s,action,p)
         validate_state(s)
         if _SCOPED.get():accounting_school_.validate(s)  # validate_state skips it when scoped
+        return s,result
+    if action.startswith('vs_'):  # 📜 Học lịch sử Việt Nam (game/history_course.py): free, its block is created on first use
+        result=history_course_.action(s,action,p)
+        validate_state(s)
         return s,result
     if action.startswith("iv_"):return iv.action(s,action,p)
     if action.startswith("bd_"):return bd.action(s,career,action,p,internal)
@@ -1312,6 +1317,7 @@ then runs validate_career on every career the command changed (see Store._comput
     clean_text(s.get("name"),24);integer(s.get("seq"),0,10**9)
     jr.validate(s)
     if _SCOPED.get() is not True:accounting_school_.validate(s)  # scoped commands: only as_* commands change it (they validate it themselves)
+    history_course_.validate(s)  # small (12 lessons, one paper): checked on every command, scoped or not
     iv.validate(s)
     bd.validate(s)
     doi.validate(s)
