@@ -9,6 +9,8 @@ import {reqList,fold,clean,tip,few,headChip} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,firstTime,todoAttrs,todoArrow,stepBar} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {tomorrowCard,shelfLines} from './tomorrow_kit.js';
+// Typed numbers in the − N + steppers (player 07/10: "cho nhập 10 hàng 1 đợt").
+import {qtyBox,QTY} from '../qty-input.js';
 
 const DONE=['completed','referred','cancelled'];
 const USE_EMOJI={sleep:'🌙',bath:'🛁',feed:'🍼',play:'🧸',wear:'🧦',card:'💌'};
@@ -322,12 +324,14 @@ function registryCard(x){
     <button type="button" class="btn ${canGo?'primary':'ghost'} full" data-action="car:shower" data-missing="${missing}"${canGo&&!busy?'':' disabled'}>🎁 Giao hộp quà mừng${missing?` · còn ${missing} món chưa để riêng`:''}</button>${canGo&&!busy?'':`<small class="gd-why">${busy?'Mở cửa tiệm trước':c.day<reg.shower-1?`Giao hộp từ ngày ${reg.shower-1}`:'Để riêng món bạn bè đã mua trước'}</small>`}</article>`;
 }
 function shelfFold(x){
-  const c=C(x),busy=!x.room.open,pr=c.prices||{},qty=id=>(x.ui.oq??={})[id]??2;
+  const c=C(x),busy=!x.room.open,pr=c.prices||{},qty=(id,room)=>Math.max(1,Math.min(room||1,(x.ui.oq??={})[id]??2));
   const coming=id=>(c.orders||[]).filter(o=>o.item===id).reduce((a,o)=>a+o.qty,0);
-  const stepper=(id,cost)=>`<span class="mb-step"><button type="button" class="btn ghost small" data-action="car:oq" data-item="${id}" data-d="-1" aria-label="Bớt">−</button><b>${qty(id)}</b><button type="button" class="btn ghost small" data-action="car:oq" data-item="${id}" data-d="1" aria-label="Thêm">＋</button><button type="button" class="btn small" data-action="car:order" data-item="${id}" data-cost="${cost}"${busy?' disabled':''}>Đặt · ${cost*qty(id)} xu</button></span>`;
-  const drows=(c.sizes||[]).map(sz=>{const n=(c.diapers||{})[sz.id]??0,on=coming(sz.id);return `<li class="mb-shelf-row ${n?'':'out'}"><div class="grow"><b>Bỉm ${x.esc(sz.id)} <small>· ${x.esc(sz.range)}</small></b><small>Còn <b>${n}</b> gói${on?` · +${on} về sáng mai`:''}</small></div>${stepper(sz.id,pr.diaper_cost||0)}</li>`;}).join('');
+  // The number to order is typed or stepped, up to what the shelf still takes (game _order: have + coming + qty ≤ cap).
+  const stepper=(id,cost,room)=>{const q=qty(id,room),set=n=>`data-action="car:oq" data-item="${id}" data-set="${n}" data-max="${room}"`;
+    return `<span class="mb-step"><button type="button" class="btn ghost small" ${set(q-1)} aria-label="Bớt"${q<=1?' disabled':''}>−</button>${qtyBox({value:q,min:1,max:Math.max(1,room),label:'Số lượng đặt',go:set(QTY)})}<button type="button" class="btn ghost small" ${set(q+1)} aria-label="Thêm"${q>=room?' disabled':''}>＋</button><button type="button" class="btn small" data-action="car:order" data-item="${id}" data-cost="${cost}" data-qty="${q}"${busy||room<1?' disabled':''}>Đặt · ${cost*q} xu</button></span>`;};
+  const drows=(c.sizes||[]).map(sz=>{const n=(c.diapers||{})[sz.id]??0,on=coming(sz.id);return `<li class="mb-shelf-row ${n?'':'out'}"><div class="grow"><b>Bỉm ${x.esc(sz.id)} <small>· ${x.esc(sz.range)}</small></b><small>Còn <b>${n}</b> gói${on?` · +${on} về sáng mai`:''}</small></div>${stepper(sz.id,pr.diaper_cost||0,(pr.diaper_cap??12)-n-on)}</li>`;}).join('');
   const lots=(c.lots||[]).map(l=>{const bad=l.expired||l.recalled;return `<li class="mb-shelf-row ${bad?'bad':''}"><div class="grow"><b>${x.esc(l.name)}</b> <small>${x.esc(l.id)} · ${l.qty} hộp · HSD ${x.esc(l.date)}</small>${l.recalled?'<small class="bad">⚠️ Lô bị thu hồi: rút ra, hãng hoàn tiền</small>':l.expired?'<small class="bad">⛔ Quá hạn: rút khỏi kệ</small>':l.left<=2?`<small>Còn ${l.left} ngày: bán lô này trước</small>`:''}</div>${bad?qb(x,'🧹 Rút khỏi kệ','gift_care_pull',{lot:l.id},'danger small',busy):''}</li>`;}).join('')||'<li class="muted small">Kệ sữa trống.</li>';
-  const frows=(c.formulas||[]).map(fm=>{const n=(c.lots||[]).filter(l=>l.p===fm.id).reduce((a,l)=>a+l.qty,0),on=coming(fm.id);return `<li class="mb-shelf-row"><div class="grow"><b>${x.esc(fm.name)} <small>· ${x.esc(fm.range)}</small></b><small>Còn <b>${n}</b> hộp${on?` · +${on} về sáng mai`:''}</small></div>${stepper(fm.id,pr.formula_cost||0)}</li>`;}).join('');
+  const frows=(c.formulas||[]).map(fm=>{const n=(c.lots||[]).filter(l=>l.p===fm.id).reduce((a,l)=>a+l.qty,0),on=coming(fm.id);return `<li class="mb-shelf-row"><div class="grow"><b>${x.esc(fm.name)} <small>· ${x.esc(fm.range)}</small></b><small>Còn <b>${n}</b> hộp${on?` · +${on} về sáng mai`:''}</small></div>${stepper(fm.id,pr.formula_cost||0,(pr.formula_cap??10)-n-on)}</li>`;}).join('');
   const notices=(c.notices||[]).map(n=>`<p class="mb-note">📣 Ngày ${x.esc(n.date)}: hãng thu hồi lô <b>${x.esc(n.lot)}</b> (${x.esc(n.name)}) vì lỗi hàn nắp.</p>`).join('');
   const nPacks=Object.values(c.diapers||{}).reduce((a,v)=>a+v,0),nCans=(c.lots||[]).reduce((a,l)=>a+l.qty,0);
   const body=`${notices}<h5>🥫 Lô sữa trên kệ</h5><ul class="mb-shelf-list">${lots}</ul><h5>🧷 Bỉm theo size</h5><ul class="mb-shelf-list">${drows}</ul><h5>🛒 Đặt thêm sữa</h5><ul class="mb-shelf-list">${frows}</ul><p class="small muted">Hàng đặt hôm nay về sáng mai. Bán: bỉm ${pr.diaper} xu/gói, sữa ${pr.formula} xu/hộp.</p>`;
@@ -589,9 +593,9 @@ export default {
     async swapOpen(data,el,x){x.ui.swapLine=x.ui.swapLine===data.line?null:data.line;x.ui.swapNo=null;x.ui.careOpen=true;x.render();},
     /* A swap the label does not call for: the parent explains, nothing is sent (gift_care_swap would refuse it). */
     async swapNo(data,el,x){x.ui.swapNo=data.line;x.ui.careOpen=true;sfx.configure(x.state.settings||{});sfx.click();x.render();},
-    async oq(data,el,x){const q=(x.ui.oq??={});q[data.item]=Math.max(1,Math.min(4,(q[data.item]??2)+Number(data.d||0)));x.ui.careOpen=true;x.render();},
+    async oq(data,el,x){const q=(x.ui.oq??={});q[data.item]=Math.max(1,Math.min(Math.max(1,Number(data.max)||1),Math.floor(Number(data.set))||1));x.ui.careOpen=true;x.render();},
     async order(data,el,x){
-      const q=(x.ui.oq??={})[data.item]??2,cost=Number(data.cost||0)*q,c=C(x);
+      const q=Math.max(1,Math.floor(Number(data.qty))||1),cost=Number(data.cost||0)*q,c=C(x);
       const name=(c.sizes||[]).some(s=>s.id===data.item)?`bỉm ${data.item}`:`hộp ${(c.formulas||[]).find(f=>f.id===data.item)?.name||data.item}`;
       if(!await x.ask('Đặt thêm hàng?',`Đặt ${q} × ${name}, trả ${cost} xu ngay. Hàng về kệ sáng mai.`,'Đặt hàng'))return;
       await run(x,'gift_care_order',{item:data.item,qty:q,confirm:true});

@@ -107,7 +107,11 @@ function marketNews(news){
   return `<aside class="iv-news ${up?'up':'down'}"><small>📰 Tin thị trường trong game</small><b>${esc(news.title)}</b><span>${up?'Đang hỗ trợ đà tăng':'Đang tạo áp lực giảm'}</span></aside>`;
 }
 const goldAmount=n=>n<10?`${n} phân`:`${(n/10).toLocaleString('vi-VN',{maximumFractionDigits:1})} chỉ`;
-const goldQty=env=>Math.max(1,Math.min(100000,Math.floor(Number(env.ui.ivGoldQty)||1)));
+const MAX_PHAN=100000;   // game/vang.py MAX_PHAN: 10 000 chỉ a buy, and held at most
+const goldClamp=n=>Math.max(1,Math.min(MAX_PHAN,Math.floor(Number(n)||1)));
+const goldQty=env=>goldClamp(env.ui.ivGoldQty??10);   // 1 chỉ until the player picks
+/** The most `have` xu buys (cost_of rounds up per phân: n × buy ≤ have × 10), within what the shop keeps. */
+const goldMaxBuy=(G,have)=>Math.max(0,Math.min(MAX_PHAN-(G.phan||0),Math.floor(Math.max(0,have)*10/Math.max(1,G.buy))));
 const goldCost=(n,G)=>Math.ceil(n*G.buy/10);
 const goldWorth=(n,G)=>Math.floor(n*G.sell/10);
 function goldCard(env,G){
@@ -116,15 +120,16 @@ function goldCard(env,G){
   const change=G.y?(G.p-G.y)*100/G.y:0;
   const J=env.api.state.journey||{},have=Math.max(0,J.wallet||0)+(J.bank?.balance||0);
   const cost=G.phan?G.cost*10/G.phan:null;
+  const maxBuy=J.wallet<0?0:goldMaxBuy(G,have);
   return `<section class="jr-card iv-card iv-gold" aria-labelledby="ivGoldT">
     <div class="iv-card-top"><span class="iv-emoji" aria-hidden="true">🪙</span><div class="grow"><span class="eyebrow">Tiệm vàng Kim Phát</span><h3 id="ivGoldT">Vàng</h3></div><div class="iv-price"><strong>${xu(G.p)}/chỉ</strong><span class="iv-change ${change>=0?'up':'down'}">${change>=0?'▲ +':'▼ '}${change.toLocaleString('vi-VN',{maximumFractionDigits:1})}% <small>${G.market_clock?'so với phiên trước':'hôm nay'}</small></span></div></div>
     ${marketNews(G.market_news|| (G.news?{title:G.news,active:true,direction:change>=0?'up':'down'}:null))}
     ${marketChart(env,'gold',G.hist,G.market_clock)}
     <div class="iv-hold"><div class="iv-kv"><span>Đang giữ</span><b>${goldAmount(G.phan)}</b></div><div class="iv-kv"><span>Bán ngay được</span><b>${xu(G.value)}</b></div><div class="iv-kv"><span>Tiền đã bỏ vào</span><b>${xu(G.cost)}</b></div><div class="iv-kv iv-pnl ${gain>=0?'gain':'loss'}"><span>${gain>=0?'Lãi tạm tính':'Lỗ tạm tính'}</span><b>${signed(gain)}</b></div></div>
     <p class="iv-hint">Tiệm bán ${xu(G.buy)}/chỉ · mua lại ${xu(G.sell)}/chỉ.${G.market_clock?' Biến động so với phiên trước. Giá được chốt khi máy chủ nhận lệnh.':''}</p>
-    <div class="iv-gold-quantity" role="group" aria-label="Số vàng giao dịch">${btn('−','ivGoldStep',{d:-1},'cream',' aria-label="Bớt vàng"')}<label class="iv-gold-typed">${qtyBox({value:n,min:1,max:100000,label:'Số phân vàng',go:`data-action="ivGoldQty" data-n="${QTY}"`,live:true})}<small>phân${n>=10?` = ${goldAmount(n)}`:''}</small></label>${btn('+','ivGoldStep',{d:1},'cream',' aria-label="Thêm vàng"')}</div>
-    <div class="iv-gold-chips">${[[1,'1 phân'],[10,'1 chỉ'],[50,'5 chỉ']].map(([q,label])=>btn(label,'ivGoldQty',{n:q},q===n?'primary small':'cream small',` aria-pressed="${q===n}"`)).join('')}</div>
-    <div class="iv-actions">${btn(`Mua · ${xu(goldCost(n,G))}`,'ivGoldBuy',{},'primary',J.wallet<0||goldCost(n,G)>have||G.phan+n>100000?' disabled':'')}${btn(`Bán · ${xu(goldWorth(sellN,G))}`,'ivGoldSell',{},'cream',!sellN?' disabled':'')}</div>
+    <div class="iv-gold-quantity" role="group" aria-label="Số vàng giao dịch">${btn('−','ivGoldStep',{d:-1},'cream',' aria-label="Bớt vàng"')}<label class="iv-gold-typed">${qtyBox({value:Math.floor(n/10),min:0,max:MAX_PHAN/10,label:'Số chỉ vàng',go:`data-action="ivGoldQty" data-chi="${QTY}"`,live:true})}<small>chỉ</small></label><label class="iv-gold-typed">${qtyBox({value:n%10,min:0,max:9,label:'Số phân vàng lẻ',go:`data-action="ivGoldQty" data-phan="${QTY}"`,live:true})}<small>phân</small></label>${btn('+','ivGoldStep',{d:1},'cream',' aria-label="Thêm vàng"')}</div>
+    <div class="iv-gold-chips">${[[10,'1 chỉ'],[50,'5 chỉ'],[100,'10 chỉ']].map(([q,label])=>btn(label,'ivGoldQty',{n:q},q===n?'primary small':'cream small',` aria-pressed="${q===n}"`)).join('')}${maxBuy>0?btn(`Mua tối đa · ${goldAmount(maxBuy)}`,'ivGoldQty',{n:maxBuy},maxBuy===n?'primary small':'cream small',` aria-pressed="${maxBuy===n}"`):''}${G.phan?btn(`Cả ${goldAmount(G.phan)} đang giữ`,'ivGoldQty',{n:G.phan},G.phan===n?'primary small':'cream small',` aria-pressed="${G.phan===n}"`):''}</div>
+    <div class="iv-actions">${btn(`Mua · ${xu(goldCost(n,G))}`,'ivGoldBuy',{},'primary',J.wallet<0||goldCost(n,G)>have||G.phan+n>MAX_PHAN?' disabled':'')}${btn(`Bán · ${xu(goldWorth(sellN,G))}`,'ivGoldSell',{},'cream',!sellN?' disabled':'')}</div>
     <p class="iv-hint">1 chỉ = 10 phân. Mua bằng ví, thiếu thì lấy từ tài khoản ngân hàng; bán nhận xu vào ví. Giá mua/bán đã gồm chênh lệch 2,5% mỗi chiều.</p>
   </section>`;
 }
@@ -201,8 +206,10 @@ export async function investAction(action,data,el,env){
     case'ivRefresh':await refreshQuotes(env);return true;
     case'ivRange':changeRange(env,data.range);return true;
     case'ivMarket':ui.ivMarket=data.market==='gold'?'gold':'coin';ui.ivPoint=null;renderSheet();return true;
-    case'ivGoldQty':ui.ivGoldQty=Math.max(1,Math.min(100000,Math.floor(Number(data.n)||1)));renderSheet();return true;
-    case'ivGoldStep':{const n=goldQty(env);ui.ivGoldQty=Math.max(1,Math.min(100000,n+(Number(data.d)>0?1:-1)*(n>=10?10:1)));renderSheet();return true;}
+    // A whole number of phân (a chip), or one part typed: the chỉ box keeps the odd phân, the phân box keeps the chỉ.
+    case'ivGoldQty':{const n=goldQty(env),chi=Math.floor(Number(data.chi)),phan=Math.floor(Number(data.phan));
+      ui.ivGoldQty=goldClamp(data.chi!=null&&Number.isFinite(chi)?Math.max(0,chi)*10+n%10:data.phan!=null&&Number.isFinite(phan)?Math.floor(n/10)*10+Math.max(0,Math.min(9,phan)):data.n);renderSheet();return true;}
+    case'ivGoldStep':{const n=goldQty(env);ui.ivGoldQty=goldClamp(n+(Number(data.d)>0?1:-1)*(n>=10?10:1));renderSheet();return true;}
     case'ivGoldBuy':{const G=marketView(env).G;if(!G)return true;const n=goldQty(env),cost=goldCost(n,G);
       if(await (confirmAction?confirmAction(`Mua ${goldAmount(n)} vàng?`,`Giá tiệm bán ${xu(G.buy)}/chỉ.`,`Mua · ${xu(cost)}`,{cost,pocket:['wallet','account']}):Promise.resolve(true)))await cmd('jr_vang_buy',{phan:n});return true;}
     case'ivGoldSell':{const G=marketView(env).G;if(!G?.phan)return true;const n=Math.min(goldQty(env),G.phan);

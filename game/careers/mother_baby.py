@@ -62,6 +62,8 @@ STAGE_RANGE = {1: '0–6 tháng', 2: '6–12 tháng'}
 STAGE_TWO_WEEKS = 26     # 26 weeks ≈ 6 months
 DIAPER = dict(price=60, cost=34, cap=12)
 FORMULA = dict(price=95, cost=55, cap=10)
+ORDER_MAX = max(DIAPER['cap'], FORMULA['cap'])   # one order fills a shelf (was 4 a tap: "bấm mệt quá")
+PARCEL = 4                                        # what one saved order line holds (validate; older servers check it too)
 TIP = 3
 WRAP = 5
 TRUST_NAMES = ('Khách mới', 'Quen mặt', 'Tin tưởng', 'Thân thiết', 'Khách ruột', 'Như người nhà')
@@ -269,18 +271,23 @@ def on_start(s: dict, c: dict) -> None:
     cr['day'] = day
     cr['today'] = _zero()
     # Orders placed yesterday are on the doorstep in the morning.
-    keep = []
+    keep, got = [], {}
     for o in cr['orders']:
         if o['day'] > day:
             keep.append(o)
             continue
+        base = o['id'].split('~')[0]           # the parcels of one order (_order) arrive as one
         if o['item'] in SIZES:
             cr['diapers'][o['item']] = min(DIAPER['cap'], cr['diapers'][o['item']] + o['qty'])
+        elif base in got:
+            got[base]['qty'] += o['qty']
         else:
             cr['seq'] += 1
-            exp = day + _rng(cr['start'], 'lot', o['id']).randint(8, 16)
-            cr['lots'].append(dict(id=f"{o['item'].upper()}-{cr['seq']:02d}", p=o['item'], qty=o['qty'], exp=exp, recalled=False, got=day))
-        _log(cr, day, f"Nhận hàng đặt hôm qua: {o['qty']} × {_item_name(o['item'])}.")
+            exp = day + _rng(cr['start'], 'lot', base).randint(8, 16)
+            got[base] = dict(id=f"{o['item'].upper()}-{cr['seq']:02d}", p=o['item'], qty=o['qty'], exp=exp, recalled=False, got=day)
+            cr['lots'].append(got[base])
+        if o['id'] == base:
+            _log(cr, day, f"Nhận hàng đặt hôm qua: {sum(x['qty'] for x in cr['orders'] if x['id'].split('~')[0] == base)} × {_item_name(o['item'])}.")
     cr['orders'] = keep
     cr['lots'] = ar.last([lot for lot in cr['lots'] if lot['qty'] > 0], 30, 'baby.lots', c)
     _recall(s, c, cr, day)
@@ -562,7 +569,7 @@ def _order(s, c, cr, p):
     need = e.need
     item = p.get('item')
     need(isinstance(item, str) and (item in SIZES or item in FORMULAS), 'Mã hàng không hợp lệ.')
-    qty = e.integer(p.get('qty'), 1, 4)
+    qty = e.integer(p.get('qty'), 1, ORDER_MAX)   # typed on the shelf (player 07/10); the shelf cap below still holds
     need(p.get('confirm') is True, 'Xác nhận đặt hàng nhé.')
     coming = sum(o['qty'] for o in cr['orders'] if o['item'] == item)
     if item in SIZES:
@@ -570,13 +577,17 @@ def _order(s, c, cr, p):
     else:
         have, cap, unit = sum(x['qty'] for x in cr['lots'] if x['p'] == item), FORMULA['cap'], FORMULA['cost']
     need(have + coming + qty <= cap, f'Kệ chứa tối đa {cap} {"gói" if item in SIZES else "hộp"} mỗi loại (đang có {have}, chờ về {coming}).')
-    need(len(cr['orders']) < 12, 'Đang chờ quá nhiều kiện. Nhận hàng rồi đặt tiếp nhé.')
+    # A big order comes as parcels of PARCEL (one saved line each, ids "<id>", "<id>~2"…): one lot, one expiry.
+    parcels = -(-qty // PARCEL)
+    need(len(cr['orders']) + parcels <= 12, 'Đang chờ quá nhiều kiện. Nhận hàng rồi đặt tiếp nhé.')
     cost = unit * qty
     need(c['money'] >= cost, f'Cần {cost} xu để đặt hàng.')
     cr['seq'] += 1
     oid = f"care-order-{cr['seq']}"
     e.money(s, c, -cost, f'Đặt nhập {qty} × {_item_name(item)}', oid, category='stock')
-    cr['orders'].append(dict(id=oid, item=item, qty=qty, day=c['day'] + 1))
+    for k in range(parcels):
+        part = min(PARCEL, qty - k * PARCEL)
+        cr['orders'].append(dict(id=oid if not k else f'{oid}~{k + 1}', item=item, qty=part, day=c['day'] + 1))
     return dict(message=f'Đã đặt {qty} × {_item_name(item)} (−{cost} xu). Sáng mai hàng về kệ.')
 
 

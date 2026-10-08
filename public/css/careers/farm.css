@@ -155,6 +155,9 @@
 .career-job.fa .fa-lot.expiring{border-color:var(--fa-warn)}
 .career-job.fa .fa-lot-art{font-size:26px}
 .career-job.fa .fa-lot-btns{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px}
+.career-job.fa .fa-lot:has(.fa-lot-typed){flex-wrap:wrap}
+.career-job.fa .fa-lot-typed{flex:1 0 100%;display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.career-job.fa .fa-lot-typed>small{display:inline;margin-right:auto}
 .career-job.fa .fa-crate-box{display:flex;flex-direction:column;gap:4px;min-height:70px;margin:8px 0;padding:8px;border:2px dashed var(--fa-warn);border-radius:var(--fa-rs);background:var(--fa-surface-2)}
 .career-job.fa .fa-crate-line{display:flex;align-items:center;gap:6px}
 .career-job.fa .fa-crate-line span{flex:1}

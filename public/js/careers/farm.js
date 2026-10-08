@@ -6,6 +6,8 @@ import {stepRows,nextHint,finalGo,pending,firstTime,stepLine,goAttrs,bareLabel,b
 import {keepBarAboveFooter} from './food_kit.js';
 import {planBox,stockLines,figures} from './plan_kit.js';
 import {plusTab,plusSub,plusBadge,plusChip,plusStep,plusTick,plusActions} from './farm_plus.js';
+// Typed numbers (owner 07/10: "cho nhập số nhé"): how much of a lot goes to the market.
+import {qtyBox,QTY} from '../qty-input.js';
 const ID='farm';
 const STAGE={empty:'Luống trống',sprout:'Mới nhú',young:'Đang lớn',almost:'Sắp tới lứa',ripe:'Đúng lứa · thu được',over:'Quá lứa · xơ',rotten:'Hỏng · dọn luống'};
 const ART={sprout:'🌱',young:'🌿'};
@@ -236,10 +238,13 @@ function marketTab(x){
   // Produce an accepted order or the HTX still needs: warn before it goes to the wholesale market.
   const wanted={};for(const t of (x.room.tasks||[]).filter(t=>t.career===ID&&t.known&&!['completed','cancelled','referred'].includes(t.status)))for(const k of Object.keys(t.needs.items||{}))wanted[k]=x.npc(t.npc).display_name;
   if(pl&&pl.done<pl.qty)wanted[pl.crop]=wanted[pl.crop]||'HTX';
+  // Any other amount: typed, then one "Bán N" (the two buttons above stay for the usual ones).
+  const typed=(l,n,btn)=>{if(n<3)return '';const q=Math.max(1,Math.min(n,Number(x.ui.faSell?.[l.id])||Math.min(10,n)));
+    return `<div class="fa-lot-typed"><small>Số khác</small>${qtyBox({value:q,min:1,max:n,label:`Số ${l.id} bán ra chợ`,go:`data-action="car:faSellQty" data-lot="${x.esc(l.id)}" data-n="${QTY}"`})}${btn(q,'small ghost')}</div>`;};
   const sell=lots.map(l=>{const p=produce(x,l.crop),r=rowOf(l.crop);if(!r)return '';const room=r.depth-r.sold,n=Math.min(room,l.qty),few=Math.min(5,n),need=wanted[l.crop];
     const btn=(q,cls)=>{const est=estimate(r,l.grade,q,slip);return x.confirmCmd(`Bán ${q} · ~${est} xu`,'fa_sell',{lot:l.id,qty:q},`${need?`${need} đang cần ${p.name.toLowerCase()} cho đơn đã nhận. `:''}Bán sỉ ${q} ${p.unit} ${p.name.toLowerCase()} loại ${l.grade} cho chợ đầu mối, được khoảng ${est} xu?`,cls);};
     return `<div class="fa-lot ${l.left<=0?'expiring':''}"><span class="fa-lot-art" aria-hidden="true">${p.emoji}</span><div class="grow"><b>${x.esc(p.name)} · ${l.qty} ${x.esc(p.unit)} · loại ${x.esc(l.grade)}</b><small>Lô ${x.esc(l.id)} · ${l.left<=0?'hết hạn hôm nay':'còn '+l.left+' ngày'}</small>${need?`<span class="tag amber">📦 ${x.esc(need)} đang cần</span>`:''}</div>
-      <div class="fa-lot-btns">${n?(few<n?btn(few,'small ghost'):'')+btn(n,need?'small ghost':'small primary'):'<small class="muted">chợ đủ hàng</small>'}</div></div>`;}).join('');
+      <div class="fa-lot-btns">${n?(few<n?btn(few,'small ghost'):'')+btn(n,need?'small ghost':'small primary'):'<small class="muted">chợ đủ hàng</small>'}</div>${typed(l,n,btn)}</div>`;}).join('');
   return `${pledge}<section class="fa-market card"><div class="row spread"><h4>📈 Chợ đầu mối hôm nay</h4>${mk.income?`<span class="tag green">+${x.fmt(mk.income)} xu</span>`:''}</div>
     <p class="muted small">Giá sỉ loại A (xu) · bán thêm ${slip} → −10%</p>
     <ul class="fa-board">${board}</ul>
@@ -610,6 +615,7 @@ export default {
     // A next step that works a bed: show the field with that bed open (never toggles it shut).
     async open(data,el,x){if(!/^P[1-6]$/.test(data.plot||''))return;x.ui.tab='field';x.ui.plot=data.plot;x.render();},
     async seen(data,el,x){x.ui.seen=data.key;x.render();},
+    async faSellQty(data,el,x){(x.ui.faSell??={})[data.lot]=Math.max(1,Math.floor(Number(data.n))||1);x.render();},
     async care(data,el,x){x.ui.careOpen=!x.ui.careOpen;x.render();},
     async wx(data,el,x){x.ui.wxOpen=!x.ui.wxOpen;x.render();},
     async order(data,el,x){x.ui.orderOpen=!x.ui.orderOpen;x.render();},

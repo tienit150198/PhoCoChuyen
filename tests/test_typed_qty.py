@@ -39,15 +39,42 @@ class TypedBox(unittest.TestCase):
         self.assertEqual(workplace_business.KEEP_MAX, quay_business.KEEP_MAX)
         self.assertIn(f'max:{quay_business.STOCK_MAX}', quay)
         self.assertIn('max=1e4', quay)                                   # wages 1..10 000 (game/quay.py)
-        self.assertIn(f'max:{vang.MAX_PHAN}', invest)
+        self.assertIn(f'MAX_PHAN={vang.MAX_PHAN};', invest)              # gold: typed chỉ + odd phân (fb08)
+        self.assertIn('max:MAX_PHAN/10', invest)
+        self.assertIn('min:0,max:9', invest)
         self.assertIn(f'max:{vang.MAX_PHAN}', src('v4/rui.js'))
         for f in ('keep-ui.js', 'v4/views.js', 'app.js', 'v4/invest.js', 'v4/rui.js', 'v4/quay.js', 'v4/lux.js', 'v4/marriage.js',
                   'v4/auction.js', 'careers/street_kit.js', 'careers/pet_shop.js', 'careers/milk_tea.js', 'careers/grocery.js',
-                  'careers/pet_care.js', 'careers/air_kit.js'):
+                  'careers/pet_care.js', 'careers/air_kit.js', 'careers/mother_baby.js', 'careers/tra_da.js',
+                  'careers/farm.js'):
             with self.subTest(f=f):
                 self.assertRegex(src(f), r'qtyBox\(', 'every stepper screen draws the typed box')
         # No stepper number left as plain text between − and + on the screens above.
         self.assertNotRegex(views + keep, r"'−'[^`]{0,80}<(b|output)[^>]*>\$\{(qty|n|l\.qty)\}")
+
+    def test_fb08_boxes(self):
+        # Player feedback 07–08/10: restock 10 at once, gold by the chỉ, a calm colour for what is already in the cart.
+        from game.careers import mother_baby, tra_da
+        mb, td, farm, lux, views, social = (src('careers/mother_baby.js'), src('careers/tra_da.js'), src('careers/farm.js'),
+                                            src('v4/lux.js'), src('v4/views.js'), src('v4/social.js'))
+        self.assertTrue('pr.diaper_cap??12' in mb, 'mother_baby: the box stops at what the shelf takes')
+        self.assertEqual(mother_baby.DIAPER['cap'], 12)
+        self.assertEqual(mother_baby.ORDER_MAX, max(mother_baby.DIAPER['cap'], mother_baby.FORMULA['cap']))
+        self.assertTrue('max:pm' in td, 'max:pm')
+        self.assertEqual(tra_da.ICE_PLAN_MAX, 6)
+        self.assertTrue('data-action="car:faSellQty"' in farm, 'data-action="car:faSellQty"')
+        self.assertTrue('min:g.min,max:g.max,money:true' in lux, 'lux library: any amount in range')
+        self.assertTrue("carted?'carted'" in views, 'Kho: a carted bin is not red')
+        self.assertTrue('Đã thêm · ${carted}' in views, 'Đã thêm · ${carted}')
+        self.assertFalse(re.search(r'type="number"(?![^>]*inputmode)', social))   # every number box opens the number pad
+
+    def test_ice_plan_refuses_what_a_box_cannot_send(self):
+        j = Journey('tra_da')
+        for bad in (-1, 2.5, '5', True, None, 7):                       # 0 is "no ice tomorrow"
+            with self.subTest(n=bad), self.assertRaises(GameError):
+                j.act('td_ice_plan', n=bad)
+        j.act('td_ice_plan', n=6)
+        j.act('td_ice_plan', n=0)
 
     def test_order_and_cart_refuse_what_a_box_cannot_send(self):
         j = Journey('restaurant')

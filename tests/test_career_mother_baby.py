@@ -315,11 +315,43 @@ class Shelf(unittest.TestCase):
         self.assertGreater(new[0]['exp'], 3 + 7)
         self.assertEqual(cr(j)['orders'], [])
 
+    def test_order_fills_the_shelf_in_one_go(self):
+        # Player 07/10: "cho nhập 10 hàng 1 đợt được không ad?": a typed number up to what the shelf still takes.
+        j = journey(1)
+        money, have = j.c['money'], cr(j)['diapers']['L']
+        n = int(min(mb.DIAPER['cap'] - have, money // mb.DIAPER['cost']))
+        self.assertGreater(n, 4)
+        j.act('gift_care_order', item='L', qty=n, confirm=True)
+        self.assertEqual(j.c['money'], money - n * mb.DIAPER['cost'])
+        # Saved as parcels of PARCEL (older servers check 1..4 a line); they arrive as one.
+        lines = cr(j)['orders']
+        self.assertEqual(sum(o['qty'] for o in lines), n)
+        self.assertTrue(all(1 <= o['qty'] <= mb.PARCEL for o in lines))
+        self.assertEqual(len(lines), -(-n // mb.PARCEL))
+        mb.validate(j.c)
+        if have + n == mb.DIAPER['cap']:
+            unchanged(self, j, 'gift_care_order', item='L', qty=1, confirm=True)   # full with what is coming
+        to_day(j, 3)
+        self.assertEqual(cr(j)['diapers']['L'], have + n)
+        self.assertEqual(cr(j)['orders'], [])
+
+    def test_big_formula_order_is_one_lot(self):
+        j = journey(1)
+        f = next(iter(mb.FORMULAS))
+        n = int(min(mb.FORMULA['cap'] - sum(x['qty'] for x in cr(j)['lots'] if x['p'] == f), j.c['money'] // mb.FORMULA['cost']))
+        self.assertGreater(n, mb.PARCEL)
+        j.act('gift_care_order', item=f, qty=n, confirm=True)
+        to_day(j, 3)
+        new = [x for x in cr(j)['lots'] if x['got'] == 3 and x['p'] == f]
+        self.assertEqual([x['qty'] for x in new], [n])
+
     def test_order_limits(self):
         j = journey(1)
-        for bad in (dict(item='XL', qty=1, confirm=True), dict(item='L', qty=0, confirm=True), dict(item='L', qty=5, confirm=True),
+        for bad in (dict(item='XL', qty=1, confirm=True), dict(item='L', qty=0, confirm=True), dict(item='L', qty=mb.ORDER_MAX + 1, confirm=True), dict(item='L', qty=2.0, confirm=True),
                     dict(item='L', qty=1), dict(item='L', qty='2', confirm=True), dict(item=None, qty=1, confirm=True)):
             unchanged(self, j, 'gift_care_order', **bad)
+        have = cr(j)['diapers']['L']
+        unchanged(self, j, 'gift_care_order', item='L', qty=mb.DIAPER['cap'] - have + 1, confirm=True)   # past the shelf
         cr(j)['diapers']['L'] = mb.DIAPER['cap']
         unchanged(self, j, 'gift_care_order', item='L', qty=1, confirm=True)
         j.c['money'] = 10

@@ -2073,6 +2073,11 @@ html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{an
 .inv-bin.low{border-color:var(--warn)}
 .inv-bin.out{border-color:var(--bad);background:var(--bad-soft)}
 .inv-bin.out .inv-bin-count b{color:var(--bad)}
+/* Already in a draft order / on its way (player 08/10: "toàn màu đỏ"): calm, so the red ones left are the ones to order. */
+.inv-bin.carted{border-color:var(--good);background:var(--good-soft)}
+.inv-bin.carted .inv-bar i:first-child{background:var(--good)}
+.inv-bin.coming{border-color:var(--info);background:var(--info-soft)}
+.inv-bin.coming .inv-bin-count b{color:var(--info)}
 .inv-bin.locked,.inv-bin:disabled{opacity:.6;background:var(--surface-2);cursor:not-allowed}
 .inv-flags{display:flex;flex-wrap:wrap;gap:4px}
 .inv-flag{display:inline-flex;align-items:center;gap:3px;padding:1px 7px;border-radius:var(--radius-pill);background:var(--surface-2);color:var(--ink-2);font-size:.7rem;font-weight:700;line-height:1.5}
@@ -2129,7 +2134,7 @@ input.qty-in:focus{border-color:var(--accent)}
 .inv-cart-chip,.btn.inv-cart-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;max-width:100%;padding:6px 14px;border-radius:var(--radius-pill);border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent-text);font-weight:700;font-size:var(--fs-2)}
 .inv-cart-chip>b:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
 .inv-cart-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.inv-flag.cart{background:var(--accent-soft);color:var(--accent-text)}
+.inv-flag.cart{background:var(--good);color:var(--surface)}
 .inv-order-go{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
 .inv-total .inv-order-go .btn{margin-left:0}
 .inv-cart{display:grid;gap:10px;margin-bottom:14px;border-top:4px solid var(--accent)}

@@ -262,6 +262,8 @@
 .career-job.gr .gr-sact:empty{display:none}
 .career-job.gr .gr-srow.low{border-color:var(--gr-warn)}
 .career-job.gr .gr-srow.exp{border-color:var(--gr-bad)}
+.career-job.gr .gr-srow.carted{border-color:var(--gr-good);background:color-mix(in srgb,var(--gr-good) 9%,var(--gr-surface))}
+.career-job.gr .gr-sinfo small.gr-incart{color:var(--gr-good);font-weight:700}
 .career-job.gr .gr-srow.locked{opacity:.55;grid-template-areas:"e i i"}
 .career-job.gr .gr-sbar{height:6px;border-radius:99px;background:var(--gr-surface-2);overflow:hidden}
 .career-job.gr .gr-sbar i{display:block;height:100%;background:var(--gr-info)}

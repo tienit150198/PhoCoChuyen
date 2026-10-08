@@ -143,7 +143,7 @@ import {qtyBox,QTY} from '../qty-input.js';
 qtyBox({value:qty,min:1,max:Math.max(1,max),label:'Số lượng',cls:'input',attrs:'id="order-qty" data-v4-qty'})
 // the number was text: the box does what a tap does, with the typed number where QTY sits
 qtyBox({value:n,min:0,max:KEEP_MAX,label:'Số giữ lại',go:attrs(QTY)})                       // a command
-qtyBox({value:n,min:1,max:100000,label:'Số phân vàng',live:true,go:`data-action="ivGoldQty" data-n="${QTY}"`})
+qtyBox({value:Math.floor(n/10),min:0,max:MAX_PHAN/10,label:'Số chỉ vàng',live:true,go:`data-action="ivGoldQty" data-chi="${QTY}"`})
 ```
 
 - **The box:** `type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off"`, min/max from the same limits the
@@ -166,11 +166,17 @@ qtyBox({value:n,min:1,max:100000,label:'Số phân vàng',live:true,go:`data-act
 - The server stays the authority: every command a box sends refuses out-of-range, fractional, string and bool numbers
   (`tests/test_typed_qty.py`).
 
+Players 07–08/10 (fb08): gold is typed as chỉ + odd phân (two boxes, "Mua tối đa" and "Cả … đang giữ" chips); the
+mother & baby shelf order is typed up to what the shelf still takes (server 1..12, saved as parcels of ≤ 4 so older
+servers still validate the save); trà đá ice 0–6, the farm's wholesale "Số khác" and the library donation are typed too.
+In Kho a bin already in a draft order turns calm green with "✓ Đã thêm · N", one on its way calm blue: the red ones left
+are the ones still to order.
+
 Left as buttons on purpose: ranges of ten taps or fewer where the step is the game (salon parts and cm, clothing cm, cafe
-grams 12–24, mother & baby 1–4, trà đá ice 0–6, pet care meals 1–4) and counts the server takes one at a time (homestay
-bill lines `hs_line ±1`, florist stems, zpop, basket picks, ice cream `kem_adjust`, cash-note keypads). Chip-only
-choices (fair stakes, lì xì, donations presets) stay chips; fields that were already typed (bank, house, rentals, journey,
-social market, marriage money) are unchanged.
+grams 12–24, pet care meals 1–4) and counts the server takes one at a time (homestay bill lines `hs_line ±1`, florist
+stems, zpop, basket picks, ice cream `kem_adjust`, cash-note keypads). Chip-only choices (fair stakes, lì xì, the
+fireworks sizes, the scam offer) stay chips; fields that were already typed (bank, house, rentals, journey, social
+market, marriage money) are unchanged.
 
 ## Header chip for a pinned card: `headChip(icon, text, selector)`
 

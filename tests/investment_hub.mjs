@@ -35,4 +35,17 @@ assert.equal(env.ui.ivBusy,true);
 await investAction('ivGoldBuy',{},null,env);
 const tradesBefore=sent.length;release(true);await pending;
 assert.equal(sent.length,tradesBefore+1);assert.equal(env.ui.ivBusy,false);
+// fb08 (players 07/10: "nhập được số liệu" for big gold trades): typed chỉ and odd phân, buy-max and sell-all chips.
+env.api.state.invest=I;env.ui.ivMarket='gold';env.confirmAction=async()=>true;
+await investAction('ivGoldQty',{n:'1'},null,env);
+await investAction('ivGoldQty',{chi:'12'},null,env);assert.equal(env.ui.ivGoldQty,121);   // the odd phân stays
+await investAction('ivGoldQty',{phan:'7'},null,env);assert.equal(env.ui.ivGoldQty,127);   // the chỉ stay
+await investAction('ivGoldQty',{chi:'999999'},null,env);assert.equal(env.ui.ivGoldQty,100000);
+await investAction('ivGoldQty',{n:'127'},null,env);
+await investAction('ivGoldBuy',{},null,env);assert.deepEqual(sent.pop(),['jr_vang_buy',{phan:127}]);
+html=investView(env);
+assert.match(html,/value="12"[^>]*aria-label="Số chỉ vàng"/);assert.match(html,/value="7"[^>]*aria-label="Số phân vàng lẻ"/);
+assert.match(html,/Mua tối đa · 1,9 chỉ/);                          // (1000 + 20) × 10 / 513 = 19 phân
+assert.match(html,/data-n="19"/);assert.match(html,/Cả 1,2 chỉ đang giữ/);
+delete env.ui.ivGoldQty;html=investView(env);assert.match(html,/Mua · 513 xu/);           // 1 chỉ until picked
 console.log('Investment hub: markets, locked coin, escaped news, quotes, cancelled trades and duplicate-click guard passed');
