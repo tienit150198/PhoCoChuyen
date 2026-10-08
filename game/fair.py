@@ -16,8 +16,8 @@ Every other state is lower: the cool-off after STREAK wins (WIN_P_LOW), the spam
 a Kinh called late, the police (raids, the asset check). The lô tô side bets are closed (SIDE_OPEN: the minute's
 calls are the same for everyone, so a player who saw them could pick the likely chẵn/lẻ or cột). 🍀 Lộc trời cho stays
 (LOC_P lower: on a busy server it still comes about once an hour). Phóng dao is a skill game (owner 05/10: no chance
-draw ever turns a clean board into a loss): its return depends on the thumb, see game/fair_knife.py. Ô ăn quan and
-ném vòng take no stake.
+draw ever turns a clean board into a loss): its return depends on the thumb, see game/fair_knife.py, but what it
+pays over its stakes is capped at KN_DAY_CAP (300) xu a player and Vietnam day. Ô ăn quan and ném vòng take no stake.
 
 Earlier rules (owner 07/10: "giảm tỷ lệ thắng của mọi người ở hội chợ, nếu ai spam 1 trò thì tỷ lệ thắng sẽ giảm dần
 xuống còn 40%, công an sẽ đòi chứng minh tài sản ở đâu ra và thu 10% lợi nhuận của cả hội chợ"), still in force:
@@ -205,6 +205,13 @@ EARN_GAMES = tuple(EARN_DAY)
 # 🏆 Bảng vàng hội chợ: xu won (money_of); the points it counted until 03/10 are gone, POINTS_DAY only bounds the
 # saved 'dpts' (older validators)
 POINTS_DAY = 30
+# 🗡️ Phóng dao stays a skill game, but the house still always wins (owner 08/10): what its runs win over their stakes
+# is capped at KN_DAY_CAP xu a player and Vietnam day. The tally lives in the legacy 'dpts' (reset each Vietnam day and
+# each edition, no other use since 03/10) in KN_CAP_UNIT steps, rounded up: the older validators' bound POINTS_DAY
+# makes the cap 300 xu, so no new save key. Losing runs do not give it back. Once it is reached the stall takes no stake.
+KN_CAP_UNIT = 10
+KN_DAY_CAP = KN_CAP_UNIT * POINTS_DAY
+KN_CAP_MSG = 'Hôm nay bạn đã thắng đủ ở Phóng dao, mai quay lại nhé.'
 MONEY = ('won', 'lost', 'earned')   # the stats that make the board's score, reset with each edition
 
 TITLE_ROWS = (   # journey.TITLES (secret, granted here only)
@@ -808,16 +815,38 @@ def _kn_level(f: dict, run: dict, t: float) -> None:
     run.update(sd=_rng.getrandbits(31), hot=knife.heat(_today(f, t)['net']), at=int(t * 1000), sg='play', tp=[], day='')
 
 
+def kn_cap_left(f: dict | None, t: float) -> int:
+    """How many more xu Phóng dao may win over its stakes today (KN_DAY_CAP)."""
+    if not f or f.get('date') != vn_date(t):
+        return KN_DAY_CAP
+    return max(0, KN_DAY_CAP - f['dpts'] * KN_CAP_UNIT)
+
+
+def _kn_capped(j: dict | None, t: float, stake: int, prize: int) -> int:
+    """A prize as today's cap lets it be paid: never more than the stake back plus what is left of KN_DAY_CAP."""
+    f = j.get('fair') if isinstance(j, dict) else None
+    return min(prize, stake + kn_cap_left(f if isinstance(f, dict) else None, t))
+
+
 def _kn_pay(j: dict, f: dict, run: dict) -> int:
-    """Dừng: the prize of the levels cleared into the wallet; the run is done."""
+    """Dừng: the prize of the levels cleared into the wallet, capped by KN_DAY_CAP (f is today's _state); the run is
+    done."""
     k = _kn(j)
-    pz = knife.prize(run['st'], _kn_cleared(run), run['bn'])
+    st = run['st']
+    pz = min(knife.prize(st, _kn_cleared(run), run['bn']), st + max(0, KN_DAY_CAP - f['dpts'] * KN_CAP_UNIT))
+    if pz > st:   # the gain, in KN_CAP_UNIT steps rounded up (the house's side)
+        f['dpts'] = min(POINTS_DAY, f['dpts'] + -(-(pz - st) // KN_CAP_UNIT))
     run.update(sg='done', pz=pz)
     if pz:
         _pay(j, f, 'kn', pz)
     k['w'] = min(10**9, k['w'] + 1)
     k['top'] = max(k['top'], pz)
     return pz
+
+
+def _kn_cap_note(f: dict, t: float, message: str) -> str:
+    """A payout message, with KN_CAP_MSG once today's cap is reached."""
+    return f'{message} {KN_CAP_MSG}' if kn_cap_left(f, t) <= 0 else message
 
 
 def _kn_view_run(run: dict | None, t: float, j: dict | None = None) -> dict | None:
@@ -827,18 +856,19 @@ def _kn_view_run(run: dict | None, t: float, j: dict | None = None) -> dict | No
     sg = 'lost' if _kn_late(run, t) else run['sg']
     st, lv, bn = run['st'], run['lv'], run['bn']
     chance = _chance(j or {}, 'kn', run) is not None
-    out = dict(stake=st, lv=lv, stage=sg, x2=bool(run['x2']), prize=knife.prize(st, _kn_cleared(dict(run, sg=sg)), bn), chance=chance)
+    out = dict(stake=st, lv=lv, stage=sg, x2=bool(run['x2']), chance=chance,
+               prize=_kn_capped(j, t, st, knife.prize(st, _kn_cleared(dict(run, sg=sg)), bn)))
     if sg == 'play':
         ms = int(t * 1000)
         board = knife.public_schedule(_kn_sched(run, j))
         if chance:
             board.update(chance=True, pre=[])
         out.update(board=board, id=f'{run["sd"]}-{lv}', el=ms - run['at'],
-                   tp=list(run['tp']), win=knife.prize(st, lv, bn + (knife.x2_bonus(st, lv) if run['x2'] else 0)))
+                   tp=list(run['tp']), win=_kn_capped(j, t, st, knife.prize(st, lv, bn + (knife.x2_bonus(st, lv) if run['x2'] else 0))))
     elif sg == 'choice':
         nxt = lv + 1
         out.update(nx=bool(run['nx']), late=run['day'] != vn_date(t),
-                   win=knife.prize(st, nxt, bn + (knife.x2_bonus(st, nxt) if run['nx'] else 0)))
+                   win=_kn_capped(j, t, st, knife.prize(st, nxt, bn + (knife.x2_bonus(st, nxt) if run['nx'] else 0))))
     elif sg == 'done':
         out.update(paid=run['pz'])
     else:   # lost: the prize that was riding on the level went with it
@@ -863,6 +893,7 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
         need(not run or run['sg'] in ('lost', 'done'),
              'Lượt trước còn chờ: chơi tiếp hoặc dừng nhận thưởng đã nha.' if run and run['sg'] == 'choice'
              else 'Màn này đang chơi dở, phóng tiếp nha.', 'fair_kn_busy')
+        need(kn_cap_left(f, t) > 0, KN_CAP_MSG, 'fair_kn_cap')
         _guard_free(e, f, j, t, stake)
         run = k['run'] = dict(st=stake, lv=1, sd=0, hot=0, at=0, sg='play', bn=0, x2=0, nx=0, tp=[], day='', pz=0)
         _kn_level(f, run, t)
@@ -910,7 +941,7 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
         if lv >= knife.LEVELS:   # the last level: nothing more to risk, the prize is paid
             pz = _kn_pay(j, f, run)
             out.update(cleared=True, all=True, paid=pz, run=_kn_view_run(run, t, j))
-            return dict(fair=out, message=f'Phá đảo cả {knife.LEVELS} màn! +{pz} xu.')
+            return dict(fair=out, message=_kn_cap_note(f, t, f'Phá đảo cả {knife.LEVELS} màn! +{pz} xu.'))
         run['nx'] = int(not run['x2'] and _rng.random() < knife.X2_P)   # never two x2 levels in a row
         out.update(cleared=True, run=_kn_view_run(run, t, j))
         return dict(fair=out, message='')
@@ -927,7 +958,7 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
         return dict(fair=dict(game='kn', stopped=True, prize=run['pz'], again=True, run=_kn_view_run(run, t, j)),
                     message='Thưởng lượt này đã vô ví rồi.')
     pz = _kn_pay(j, f, run)
-    return dict(fair=dict(game='kn', stopped=True, prize=pz, run=_kn_view_run(run, t, j)), message=f'Nhận thưởng {pz} xu!')
+    return dict(fair=dict(game='kn', stopped=True, prize=pz, run=_kn_view_run(run, t, j)), message=_kn_cap_note(f, t, f'Nhận thưởng {pz} xu!'))
 
 
 def _kn_settle(s: dict) -> None:
@@ -1549,7 +1580,8 @@ def knife_public(j: dict, f: dict | None, t: float) -> dict:
     return dict(stakes=list(knife.STAKES), ladder=list(knife.LADDER), prizes=[list(knife.prizes(x)) for x in knife.STAKES],
                 levels=knife.LEVELS, gap=knife.GAP, chance=False,
                 draw=knife.DRAW_W, fly=knife.FLY_MS, impact=knife.IMPACT, min_tap=knife.MIN_TAP, level_ms=knife.LEVEL_MS,
-                hot=knife.heat(_today(f, t)['net']), **{x: k.get(x, 0) for x in ('n', 'w', 'b', 'top')},
+                hot=knife.heat(_today(f, t)['net']), cap=KN_DAY_CAP, cap_left=kn_cap_left(f, t),
+                **{x: k.get(x, 0) for x in ('n', 'w', 'b', 'top')},
                 run=_kn_view_run(k.get('run'), t, j))
 
 

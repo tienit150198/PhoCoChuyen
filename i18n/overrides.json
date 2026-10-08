@@ -1,5 +1,6 @@
 {
   "strings": {
+    "Hôm nay bạn đã thắng đủ ở Phóng dao, mai quay lại nhé.": "You've won enough at Knife throw today, come back tomorrow.",
   "Hội chợ (sắp mở)": "Fair (opening soon)",
   "🏮 Hội chợ": "🏮 Fair",
   "Vào hội chợ": "Enter the fair",
@@ -22338,6 +22339,7 @@
     "Đã trả lời câu này rồi.": "Already answered this one."
   },
   "patterns": {
+    "$1 Hôm nay bạn đã thắng đủ ở Phóng dao, mai quay lại nhé.": "$1 You've won enough at Knife throw today, come back tomorrow.",
   "Cứ 100 ván thì thắng khoảng: chiếu trong $1, lô tô $2 (hô Kinh kịp), vé cào $3 (kể cả vé hoàn tiền), ném vòng $4": "Rounds won out of 100, roughly: back corner $1, lô tô $2 (if you call Kinh in time), scratch cards $3 (refunds included), ring toss $4",
   "Chiếu trong, lô tô, vé cào, ném vòng: khoảng $1 ván trên 100 là thắng": "Back corner, lô tô, scratch cards, ring toss: about $1 rounds in 100 are won",
   "🍀 $1; thắng liền 4 ván thì vận hơi nguội, còn $2%. Chơi liền một trò quá $3 ván thì vận nguội dần, thấp nhất $4%; $5 hoặc nghỉ $6 phút là ấm lại. Bầu cua xúc xắc thật nên không tính vụ này.": "🍀 $1; after 4 wins in a row your luck cools a little, to $2%. Playing one game more than $3 rounds in a row cools it bit by bit, down to $4%; $5 or a $6-minute break warms it up again. Bầu cua uses real dice, so none of this applies there.",

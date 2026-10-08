@@ -33,8 +33,8 @@ class PaidStakeLimits(FairBase):
         run.update(sg='choice',lv=9,day=fh.vn_date(self.clock.t))
         state['journey']['fair']['net']=999999
         state,result=self.act(state,'fair_kn_stop')
-        self.assertEqual(result['fair']['prize'],3900)
-        self.assertEqual(state['journey']['fair']['net'],1003899)
+        self.assertEqual(result['fair']['prize'],500+fh.KN_DAY_CAP)   # 3900 on the ladder, capped (owner 08/10)
+        self.assertEqual(state['journey']['fair']['net'],999999+500+fh.KN_DAY_CAP)
         validate_state(state)
         wallet=state['journey']['wallet']
         state,result=self.act(state,'fair_kn_stop')

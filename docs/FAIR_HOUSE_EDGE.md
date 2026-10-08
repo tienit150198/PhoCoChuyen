@@ -49,8 +49,23 @@ How the three betting patterns play:
   | good | 1.80 | 3.06 |
   | script (clears every level) | 11.8 (all ten levels) | 11.8 |
 
-  The only checks on a winning thumb are the heat on a winning day and the police's checks. Keeping a house edge there
-  is an owner decision.
+  The ladder alone would let a good thumb win without limit, so (owner 08/10) the house caps it:
+
+  - **Daily cap: 300 xu** (`fair.KN_DAY_CAP`) a player and Vietnam day. What each run pays over its stake counts
+    (rounded up to 10 xu, the house's side); a losing run does not give any of it back, so the stall's net for the
+    player can only be lower. A run that would cross the cap pays the stake back plus what is left of it, and the
+    prize the stall shows (`run.prize`, `run.win`) is already capped, so nothing promised is cut later. Once the cap is
+    reached the stall takes no new stake that day ("Hôm nay bạn đã thắng đủ ở Phóng dao, mai quay lại nhé."), and a
+    payout that reaches it ends with that line. This is cleaner than letting the player keep staking for at most the
+    stake back, which could only lose. `api.state.fair.knife` gains `cap` and `cap_left` (an older client ignores them).
+  - **Why 300:** it is the bound the older validators already put on the saved counter it uses: the legacy points
+    tally `fair.dpts` (reset each Vietnam day and each edition, unused since points went on 03/10) is checked as
+    0..`POINTS_DAY` = 30, and stored in 10-xu steps that makes 300 xu. That needs no new save key, and a 1.9.21 server
+    validates the save. DAY_CAP (150) is no live cap any more, only a bound on the chance stalls' saved net. 300 xu is
+    three easy clears at 100 xu: a real reward for a good thumb, but small next to a day's work.
+  - **Worst case for the house:** a player can net at most **+300 xu a day** from Phóng dao, whatever the stake or the
+    number of runs. That is at most 1,500 xu over the five fair days. A prize left waiting overnight is paid under the
+    next day's cap. The police's checks and the heat on a winning day still apply on top.
 - **Ô ăn quan and ném vòng take no stake.** They pay out but cost nothing.
 
 ## Save compatibility
