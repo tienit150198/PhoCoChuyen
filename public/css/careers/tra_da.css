@@ -87,7 +87,7 @@
 .career-job.td .td-grow small{display:block;color:var(--td-muted)}
 .career-job.td .td-grow .btn{min-height:44px}
 .career-job.td .td-step{min-width:44px}
-.career-job.td .td-plan{min-width:96px;text-align:center}
+.career-job.td .td-plan{min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 
 /* ---------- intro, story, surprises, the sweep */
 .career-job.td .td-intro{border:2px solid var(--td-tea)}

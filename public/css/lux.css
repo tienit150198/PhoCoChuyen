@@ -1,6 +1,8 @@
 /* 🛍️ Mua sắm (public/js/v4/lux.js): on top of spend.css (the same sheet, tabs, chips, rows and bottom bar). */
 .lx-tabs button{min-width:0;flex:1}
 .lx-sub{margin:var(--sp-1) 0;font-size:var(--fs-2);color:var(--ink-2)}
+.lx-typed{display:flex;align-items:center;gap:8px;margin:var(--sp-2) 0 0;font-size:var(--fs-2);color:var(--ink-2)}
+.lx-typed small{color:var(--muted)}
 .lx-docs .lx-doc{font-size:var(--fs-1);min-height:44px}
 .lx-tools{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-2)}
 .lx-tools>.ui-why-line{flex:1 0 100%}

@@ -619,16 +619,16 @@ function stockView(x){
     const room=cap-q-transit,n=Math.min(qty,room,30),cost=orderQuote(it,n,sup).total,carted=(inv.carts||[]).find(k=>k.supplier===(sup.id||'partner'))?.lines.find(l=>l.item===it.id)?.qty||0;
     const theirs=rv[it.id];
     if(locked)return `<div class="gr-srow locked"><span class="gr-emoji">${it.emoji}</span><div class="gr-sinfo"><b>${x.esc(it.name)}</b><small>🔒 mở ở cấp ${it.unlock||1}</small></div></div>`;
-    return `<div class="gr-srow ${q<=3?'low':''} ${exp?'exp':''}"><span class="gr-emoji">${it.emoji}</span>
+    return `<div class="gr-srow ${carted&&!exp?'carted':q<=3?'low':''} ${exp?'exp':''}"><span class="gr-emoji">${it.emoji}</span>
       <div class="gr-sinfo"><b>${x.esc(it.name)}</b><div class="gr-sbar" aria-hidden="true"><i style="width:${Math.min(100,q/cap*100)}%"></i></div>
-        <small>Còn <b>${q}</b> ${x.esc(stockUnit(x,it.id))}${held?` · ${held} đang giữ trên bill`:''}${transit?` · 🚚 ${transit} đang về`:''}</small>
+        <small>Còn <b>${q}</b> ${x.esc(stockUnit(x,it.id))}${held?` · ${held} đang giữ trên bill`:''}${transit?` · 🚚 ${transit} đang về`:''}</small>${carted?`<small class="gr-incart">✓ Đã thêm · ${carted} trong đơn</small>`:''}
         ${exp?`<small class="bad">⚠ ${exp} hết hạn hôm nay</small>`:''}${near?`<small class="warn">⏳ ${near} HSD ngày mai — nên xả giá</small>`:''}${rot.has(it.id)?'<small class="warn">🔄 kệ chưa xoay</small>':''}${short[it.id]?`<small class="warn">📅 mai cần ~${short[it.id].want}, thiếu ${short[it.id].short}</small>`:''}</div>
       <div class="gr-sprice"><div class="gr-tagbox">${x.cmd('−','gr_tag',{item:it.id,price:p-step},'small ghost gr-step',p-step<lo)}<span class="gr-ptag">${qtyBox({value:p,min:lo,max:hi,label:`Giá ${it.name} (xu)`,go:x.cmd('','gr_tag',{item:it.id,price:QTY},'')})}<small>/${x.esc(priceUnit(x,it.id))}</small></span>${x.cmd('+','gr_tag',{item:it.id,price:p+step},'small ghost gr-step',p+step>hi)}</div>
         ${theirs!=null?`<small class="${p>theirs?'bad':'ok'}">Mây Mart ${x.fmt(theirs)}</small>`:''}</div>
       <div class="gr-sact">${exp?x.confirmCmd('🗑️ Rút hàng hết hạn','gr_pull_today',{item:it.id},`Rút ${exp} ${stockUnit(x,it.id)} ${it.name} hết hạn hôm nay khỏi kệ? Ghi vào hao hụt.`,'small danger'):''}
         ${near&&!exp&&!cleared.includes(it.id)?x.cmd(`🏷️ Xả ${near>12?12:near} món −${100-(x.cc.clear_percent||70)}%`,'gr_clear',{item:it.id},'small ghost'):''}
         ${n>0&&full?'':n>0&&!sold(it.id)?`<small class="muted">${x.esc(sup.emoji||'')} không bán món này</small>`:n>0&&lack(x,cost)?`<button type="button" class="btn small ghost" disabled>📦 Nhập ${n} · thiếu ${x.fmt(lack(x,cost))} xu</button>`:n>0?x.confirmCmd(`📦 Nhập ${n} · ${x.fmt(cost)} xu`,'inv_order',{item:it.id,qty:n,supplier:sup.id||'partner'},`Nhập ${n} ${stockUnit(x,it.id)} ${it.name} từ ${sup.name} · ${x.fmt(cost)} xu? ${`Dự kiến nhận: ${sup.quote?.eta_label||sup.window||'sớm'}.`}, mở thùng đếm rồi mới lên kệ.`,'small ghost'):'<small class="muted">Kho đầy</small>'}
-        ${n>0&&sold(it.id)&&carted+n<=Math.min(30,room)?x.button(`🛒 +${n} vào đơn`,'v4CartPut',{supplier:sup.id||'partner',item:it.id,qty:n},'small ghost'):carted?`<small class="muted">🛒 ${carted} trong đơn</small>`:''}</div></div>`;
+        ${n>0&&sold(it.id)&&carted+n<=Math.min(30,room)?x.button(`🛒 +${n} vào đơn`,'v4CartPut',{supplier:sup.id||'partner',item:it.id,qty:n},'small ghost'):''}</div></div>`;
   };
   const open=catalogue(x).filter(it=>!shut.includes(it)),hot=open.filter(needs),calm=open.filter(it=>!needs(it));
   const rows=`${hot.map(row).join('')||'<p class="muted small">Không món nào sắp hết hay sắp hết hạn.</p>'}

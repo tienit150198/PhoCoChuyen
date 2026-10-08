@@ -42,6 +42,8 @@
 .iv-gold-quantity{gap:10px}
 .iv-gold-typed{display:flex;align-items:center;gap:6px;min-width:0}
 .iv-gold-typed small{white-space:nowrap;color:var(--muted)}
+.iv-gold-quantity{gap:6px;flex-wrap:nowrap}
+.iv-gold-typed{gap:4px}
 .iv-gold-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .iv-gold-chips .btn{min-height:44px}
 .iv-extra{border-top:1px solid var(--line);padding-top:8px}

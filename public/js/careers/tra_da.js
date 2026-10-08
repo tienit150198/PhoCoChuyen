@@ -10,6 +10,8 @@ import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import {linesSummary} from './tomorrow_kit.js';
 import {shortLine,introHelp} from './street_kit.js';
 import {helpBtn,tip,clean,few} from '../ui-kit.js';
+// Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
+import {qtyBox,QTY} from '../qty-input.js';
 const DONE=['completed','cancelled','referred'];
 const data=x=>x.room.data||{};
 const cc=x=>x.cc||{};
@@ -259,7 +261,7 @@ function growFold(x){
   const rows=(c.growth||[]).map(gr=>`<li><span aria-hidden="true">${x.esc(gr.emoji)}</span><div class="grow"><b>${x.esc(gr.name)}</b><small>${x.esc(gr.note)}</small></div>${done[gr.id]?'<span class="tag green">✓ Có rồi</span>':x.confirmCmd(`${gr.cost} xu`,'td_buy',{item:gr.id},`Mua ${lower(gr.name)} hết ${gr.cost} xu nhé?`,'small',money<gr.cost)}</li>`).join('');
   const plan=d.ice_plan??3,pm=c.ice_plan_max||6;
   return `<details class="td-fold card"><summary>🌱 Sắm sửa cho quán · ${o.stools||0} ghế · ô ${o.umbrella>=2?'to':'cũ'}${o.banner?' · có biển':''}</summary><ul class="td-grow">${rows}</ul>
-    <h4 class="section-title">🧊 Dặn anh Tuấn xe đá (4 xu/cây, giao mỗi sáng)</h4><div class="td-row">${x.cmd('−','td_ice_plan',{n:Math.max(0,plan-1)},'small ghost td-step',plan<=0)}<b class="td-plan">${plan} cây/sáng</b>${x.cmd('+','td_ice_plan',{n:Math.min(pm,plan+1)},'small ghost td-step',plan>=pm)}</div></details>`;
+    <h4 class="section-title">🧊 Dặn anh Tuấn xe đá (4 xu/cây, giao mỗi sáng)</h4><div class="td-row">${x.cmd('−','td_ice_plan',{n:Math.max(0,plan-1)},'small ghost td-step',plan<=0)}<label class="td-plan">${qtyBox({value:plan,min:0,max:pm,label:'Số cây đá mỗi sáng',go:x.cmd('','td_ice_plan',{n:QTY},'')})}<small>cây/sáng</small></label>${x.cmd('+','td_ice_plan',{n:Math.min(pm,plan+1)},'small ghost td-step',plan>=pm)}</div></details>`;
 }
 function idleSteps(x){
   const d=data(x),g=d.glasses||{},ice=d.ice||{},th=d.thermos||{},st=d.stall||{},c=cc(x),rows=[];

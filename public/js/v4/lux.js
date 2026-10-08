@@ -7,7 +7,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {withWhy,whyTap} from '../ui-kit.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
-import {qtyBox,QTY,afterTap} from '../qty-input.js';
+import {qtyBox,QTY,afterTap,qtyVal} from '../qty-input.js';
 
 const TABS=[['trip','✈️','Du lịch'],['suu','💎','Sưu tập'],['nha','🏰','Dinh thự'],['bay','🛫','Phi cơ & du thuyền'],['tiec','🎉','Mở tiệc'],['hoc','🎓','Khóa học'],['mtq','🎆','Mạnh Thường Quân']];
 export const ACTIONS={lux:'',luxTrip:'trip',luxSuu:'suu',luxNha:'nha',luxBay:'bay',luxTiec:'tiec',luxHoc:'hoc',luxMtq:'mtq'};
@@ -46,7 +46,7 @@ function dialog(){
     const t=e.target;
     if(t.name==='msg')S.msg=t.value;
     else if(t.name==='anon')S.anon=t.checked;
-    else if(t.name==='amount'){const g=give('thu_vien'),n=Math.floor(Number(t.value));if(Number.isFinite(n))S.amount=Math.max(g.min,Math.min(g.max,n));render();}
+    else if(t.name==='amount'){const g=give('thu_vien'),n=qtyVal(t);if(n)S.amount=Math.max(g.min,Math.min(g.max,n));afterTap(render);}
   });
   d.addEventListener('close',()=>{S.flash=null;S.iv=null;});
   S.dlg=d;return d;
@@ -292,7 +292,9 @@ function mtq(v,c){
     body=`<div class="lx-slots">${Array.from({length:g.slots},(_,i)=>i+1).map(n=>`<button type="button" class="sd-chip${S.slot===n?' on':''}" data-lx="slot" data-n="${n}"${taken.has(n)?' disabled':''} aria-pressed="${S.slot===n}">${n}</button>`).join('')}</div>
       <label class="sd-select"><span class="sr-only">Lời khắc</span><select name="msg">${c.dedications.map(d=>`<option value="${esc(d.id)}"${S.msg===d.id?' selected':''}>${esc(d.text)}</option>`).join('')}</select></label>`;}
   else if(g.week){const who=b?.banners?.[g.id];body=`<p class="lx-sub">${who?`🏆 <b data-no-translate>${esc(who)}</b>`:'🏆 —'}</p>`;}
-  else body=`<div class="sd-chips sd-amounts">${g.presets.map(n=>chip('amount',n,fmt(n),S.amount===n).replace('data-id','data-n')).join('')}</div><p class="lx-sub">📚 ${fmt(b?.library?.xu||0)}</p>`;
+  else body=`<div class="sd-chips sd-amounts">${g.presets.map(n=>chip('amount',n,fmt(n),S.amount===n).replace('data-id','data-n')).join('')}</div>`+
+    // Any other amount in the server's range (lux_content min..max), typed (owner 07/10: "cho nhập số").
+    `<label class="lx-typed"><span>Số khác</span>${qtyBox({value:S.amount,min:g.min,max:g.max,money:true,label:'Số xu tài trợ',attrs:'name="amount"'})}<small>xu</small></label><p class="lx-sub">📚 ${fmt(b?.library?.xu||0)}</p>`;
   const anon=`<label class="sd-toggle"><input type="checkbox" name="anon"${S.anon?' checked':''}><span>Ẩn danh</span></label>`;
   const top=b?(b.top||[]).slice(0,3).map((r,i)=>`<li class="${r.me?'me':''}"><span>${i+1}</span><b data-no-translate>${esc(r.name)}</b><em>${fmt(r.xu)}</em></li>`).join(''):'';
   return kinds+`<section class="sd-card"><h3>${g.emoji} ${esc(g.name)}</h3>${body}${anon}</section>${top?`<section class="sd-card"><ol class="sd-board">${top}</ol></section>`:''}`;

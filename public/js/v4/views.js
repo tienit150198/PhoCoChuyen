@@ -238,11 +238,13 @@ export function inventoryView(env){
     const pct=v=>Math.max(0,Math.min(100,Math.round(v/cap*100)));
     const bin=i=>{
       const q=stock(i.id),on=arriving[i.id]||0,locked=inv.locked.includes(i.id),exp=inv.expiring[i.id]||0,soon=(inv.expiring_soon?.[i.id]||0)-exp,days=inv.days_left?.[i.id];
-      const state=locked?'locked':q===0?'out':q+on<=lowLine?'low':'';
-      const carted=carts.reduce((n,k)=>n+(k.lines.find(l=>l.item===i.id)?.qty||0),0),kept=Number(c.ops?.business_keep?.[i.id])||0;
-      const flags=locked?`<span class="inv-flag">${icon('lock',11)} Mở ở cấp ${i.unlock}</span>`:[on?`<span class="inv-flag info">+${on} đang giao</span>`:'',carted?`<span class="inv-flag cart">🛒 ${carted}</span>`:'',kept?`<span class="inv-flag keep" title="Giữ cho ca của bạn">🔒 ${kept}</span>`:'',exp?`<span class="inv-flag bad">${exp} hết hạn tối nay</span>`:soon>0?`<span class="inv-flag warn">${soon} hết hạn mai</span>`:'',q===0&&!on?'<span class="inv-flag bad">Hết hàng</span>':''].join('');
+      const carted=carts.reduce((n,k)=>n+k.lines.filter(l=>l.item===i.id).reduce((a,l)=>a+(l.qty||0),0),0),kept=Number(c.ops?.business_keep?.[i.id])||0;
+      // Already in a draft order (or on its way): a calm, different card, so the red "hết hàng" ones left are the
+      // ones still to order (player 08/10: "thêm vào giỏ thì thành màu khác ... đỡ hoa mắt vì toàn màu đỏ").
+      const state=locked?'locked':carted?'carted':q===0&&on?'coming':q===0?'out':q+on<=lowLine?'low':'';
+      const flags=locked?`<span class="inv-flag">${icon('lock',11)} Mở ở cấp ${i.unlock}</span>`:[carted?`<span class="inv-flag cart">${icon('check',11)} Đã thêm · ${carted}</span>`:'',on?`<span class="inv-flag info">+${on} đang giao</span>`:'',kept?`<span class="inv-flag keep" title="Giữ cho ca của bạn">🔒 ${kept}</span>`:'',exp?`<span class="inv-flag bad">${exp} hết hạn tối nay</span>`:soon>0?`<span class="inv-flag warn">${soon} hết hạn mai</span>`:'',q===0&&!on&&!carted?'<span class="inv-flag bad">Hết hàng</span>':''].join('');
       const life=!locked&&days&&days<900&&!exp?` · còn ${days} ngày`:'';
-      return `<button type="button" class="inv-bin ${state}" data-action="v4Order" data-item="${esc(i.id)}"${locked?' disabled':''} aria-label="${esc(i.name)}: ${q} trên kệ${on?`, ${on} đang giao`:''}${locked?`, mở ở cấp ${i.unlock}`:', chạm để nhập thêm'}">`+
+      return `<button type="button" class="inv-bin ${state}" data-action="v4Order" data-item="${esc(i.id)}"${locked?' disabled':''} aria-label="${esc(i.name)}: ${q} trên kệ${on?`, ${on} đang giao`:''}${carted?`, đã thêm ${carted} vào đơn`:''}${locked?`, mở ở cấp ${i.unlock}`:', chạm để nhập thêm'}">`+
         `<span class="inv-bin-top"><span class="inv-bin-emoji" aria-hidden="true">${esc(i.emoji||'📦')}</span><span class="inv-bin-count"><b>${locked?'—':q}</b><small>/${cap}</small></span></span>`+
         `<span class="inv-bin-name">${esc(i.name)}</span><small class="inv-bin-unit">${esc(unit(i))}${life}</small>`+
         `<span class="inv-bar" aria-hidden="true"><i style="width:${locked?0:pct(q)}%"></i><i class="on" style="width:${pct(on)}%"></i></span>`+
