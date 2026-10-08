@@ -151,12 +151,14 @@ function partyCard(c){
   const when=(label)=>{const at=S.partyAt||partyDefault(),v=vnParts(at),now=Date.now()/1000;
     return `<div class="mr-when"><label class="field" for="mr-pdate">Ngày<input class="input" id="mr-pdate" type="date" data-mr-field="pdate" min="${vnParts(now).date}" max="${vnParts(now+(p.max_ahead||14*86400)).date}" value="${v.date}"></label>
       <label class="field" for="mr-ptime">Giờ<input class="input" id="mr-ptime" type="time" step="300" data-mr-field="ptime" value="${v.time}"></label></div>${btn(label,'party',{},'primary')}`;};
+  // 💌 Thiệp mời cưới cả phố (v4/wedinvite.js): the couple's own words on a card everyone sees once
+  const wedCard=`<div class="mr-actions">${btn('💌 Gửi thiệp mời cả phố','wedinv',{},'cream')}</div>`;
   const perks=`<p class="mr-hint">Miễn phí. Tiệc 10 phút có MC, cỗ, múa lân, nhạc cưới. Ai có mặt được 20 xu mỗi phút, mỗi khách đến hai bạn được 15 xu.</p>`;
-  if(p.state==='none')return `<section class="mr-card mr-accent"><h3>🎉 Tổ chức tiệc cưới</h3><p>Chọn ngày giờ để cả phố vào dự. Đây cũng là ngày cưới hiện trên thẻ của hai bạn.</p>${when('Chốt giờ tiệc')}${perks}</section>`;
-  if(p.state==='done')return `<section class="mr-card"><h3>🎉 Tiệc cưới đã tổ chức</h3><p>${esc(p.at_label)}${p.guests?` · ${p.guests} khách đến chung vui 💛`:''}</p></section>`;
-  if(p.state==='live')return `<section class="mr-card mr-accent"><h3>🎊 Tiệc cưới đang mở!</h3><p>${esc(p.at_label)}</p><div class="mr-actions">${btn('Vào dự','pgo',{id:p.id},'primary big')}${p.invited?'':btn('💌 Mời khách','pinvite',{},'cream')}</div></section>`;
+  if(p.state==='none')return `<section class="mr-card mr-accent"><h3>🎉 Tổ chức tiệc cưới</h3><p>Chọn ngày giờ để cả phố vào dự. Đây cũng là ngày cưới hiện trên thẻ của hai bạn.</p>${when('Chốt giờ tiệc')}${perks}${wedCard}</section>`;
+  if(p.state==='done')return `<section class="mr-card"><h3>🎉 Tiệc cưới đã tổ chức</h3><p>${esc(p.at_label)}${p.guests?` · ${p.guests} khách đến chung vui 💛`:''}</p>${wedCard}</section>`;
+  if(p.state==='live')return `<section class="mr-card mr-accent"><h3>🎊 Tiệc cưới đang mở!</h3><p>${esc(p.at_label)}</p><div class="mr-actions">${btn('Vào dự','pgo',{id:p.id},'primary big')}${p.invited?'':btn('💌 Mời khách','pinvite',{},'cream')}${btn('💌 Thiệp mời cả phố','wedinv',{},'cream')}</div></section>`;
   return `<section class="mr-card mr-accent"><h3>🎉 Tiệc cưới lúc ${esc(p.at_label)}</h3><p>Tiệc mở trước 5 phút ở Khu phố › Lịch cưới. Bạn bè được nhắc trước 30 phút.</p>
-    <div class="mr-actions">${p.invited?'<span class="tag">💌 Đã mời bạn bè và cả phố</span>':btn('💌 Mời khách (miễn phí)','pinvite',{},'primary')}</div>
+    <div class="mr-actions">${p.invited?'<span class="tag">💌 Đã mời bạn bè và cả phố</span>':btn('💌 Mời khách (miễn phí)','pinvite',{},'primary')}${btn('💌 Thiệp mời cả phố','wedinv',{},'cream')}</div>
     ${p.can_move?`<details class="mr-more"><summary>Đổi giờ</summary>${when('Lưu giờ mới')}</details>`:''}${perks}</section>`;
 }
 const atLabel=at=>{const p=vnParts(at);return `${p.date.slice(8,10)}/${p.date.slice(5,7)}/${p.date.slice(0,4)} · ${p.time}`;};
@@ -245,6 +247,7 @@ async function onClick(mr,data,el){
     case'seen':post('seen',data.wedding?{wedding:Number(data.wedding)}:{},{quiet:true});return;
     case'party':post('party',{at:S.partyAt||partyDefault()});return;
     case'pinvite':post('party_invite');return;
+    case'wedinv':S.dlg.close();import('./wedinvite.js').then(m=>m.openWedInvite(env)).catch(e=>console.warn('marriage: wedinvite',e));return;
     case'pgo':S.dlg.close();import('./walk.js').then(m=>m.openWalk(env,{wedding:Number(data.id)})).catch(e=>console.warn('marriage: walk',e));return;
     case'ring_buy':{
       const r=S.catalog.rings.find(x=>x.id===data.tier);if(!r)return;

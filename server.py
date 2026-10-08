@@ -73,6 +73,7 @@ from game import couple
 from game import deco_mate  # 💞 the spouse's furniture in the home both live in (read-only)
 from game import family as family_babies  # 👶 the shared child at home (GET /api/family/baby, read-only)
 from game import system_gift
+from game import wed_invite  # 💌 Thiệp mời cưới cả phố (game/wed_invite.py)
 from game import live_effects, live_dating
 from game import quay_hire
 from game import rentals
@@ -770,6 +771,17 @@ class Handler(BaseHTTPRequestHandler):
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("marriage-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,marriage.view(self.server.store,token,state,(parse_qs(split.query).get("catalog") or [""])[0]=="1"));return
+            if route in ("/api/wedinvite","/api/wedinvite/me"):  # 💌 the cards not shown yet / the compose sheet (game/wed_invite.py)
+                token,state,_,_=self.require_session()
+                if not self.server.rate_limit("wedinv-get:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                if route=="/api/wedinvite/me":self.json(200,wed_invite.me(self.server.store,token));return
+                self.json(200,dict(items=wed_invite.due(self.server.store,self.server.store.key(token)),off=wed_invite.off()));return
+            if route=="/api/admin/wedinvite":  # 💌 the last cards, to delete one (game/wed_invite.py); admin only
+                try:token,_,_,_=self.guarded(light=True)
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                if not self.server.rate_limit("admin-wedinv:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,wed_invite.admin_view(self.server.store));return
             if route=="/api/rentals":
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("rentals-get:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -1033,7 +1045,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
                 rentals.prepare_delete(self.server.store,token)
-                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);wed_invite.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
@@ -1049,6 +1061,16 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/wedding/photo":  # 💍 the snapshot of a group photo the live service reserved for this player (game/wedding_live.py)
                 if not self.server.rate_limit("wedding-photo:"+token,10):self.error(429,"Chờ một chút nhé.","rate_limited");return
                 self.json(200,wedding_live.save_photo(self.server.store,self.server.store.key(token),data));return
+            if route=="/api/admin/wedinvite":  # 💌 delete a card (game/wed_invite.py admin_act); admin only
+                if not self.server.rate_limit("admin-wedinv:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.require_admin(token)
+                self.json(200,wed_invite.admin_act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
+            if route in ("/api/wedinvite/send","/api/wedinvite/seen"):  # 💌 pay and send a card to the whole server / a card was shown (game/wed_invite.py)
+                if not self.server.rate_limit("wedinv:"+token,30):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
+                if route=="/api/wedinvite/seen":self.json(200,wed_invite.seen(self.server.store,self.server.store.key(token),data));return
+                out=wed_invite.send(self.server.store,token,data)
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                self.json(200,out,known=FULL);return
             if route=="/api/gift/seen":  # 🎁 the player pressed "Nhận quà" on a gift card: it never shows again (game/system_gift.py)
                 if not self.server.rate_limit("gift:"+token,30):self.error(429,"Chờ một chút nhé.","rate_limited");return
                 self.json(200,dict(ok=True,seen=system_gift.seen(self.server.store,token,data.get("id"))));return
