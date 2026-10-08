@@ -1,3 +1,7 @@
+# v1.9.22 — 2026-10-08
+
+🎆 Pháo hoa không phải đợi (chủ game 08/10 "pháo hoa bắn k cần đợi"): gap 600 → 0 giây (game/lux_content.py), trang xếp hàng tối đa 6 màn pháo hoa (public/js/v4/fireworks.js). Không đổi save, không đổi CSDL.
+
 # v1.9.21 — 2026-10-08
 
 Góp ý #273–#275 và chủ game 08/10: 🎆 pháo hoa bắn thật cho cả server + băng thông báo dài (live/fireworks.py, public/js/v4/fireworks.js; lối vào Khu phố → Bắn pháo hoa); 💊 nhà thuốc hiện "Hôm nay: ngày N ở quầy", hạn dùng còn mấy ngày, Rút hết hộp quá hạn, phạt kệ quá hạn tối đa 2 điểm/ngày; 🛡️ bảo hiểm Gói trọn 100% giá ×2 và Bảo hiểm điện nước (game/rui.py: rui.full, rui.pol2, rui.dn tùy chọn, server 1.9.20 vẫn nhận); /admin 🎁 Tặng xu không giới hạn ngoài trần ví 10^9. Không đổi CSDL.
