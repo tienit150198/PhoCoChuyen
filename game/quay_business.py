@@ -474,6 +474,18 @@ def income(st, at):
     return dict(hour=hour, day=day, market=now['label'], stock_hours=round(stock / hour['sold'], 1) if hour['sold'] else None)
 
 
+def price_effect(st):
+    """F#263: how the board's prices move the walk-ins, percent of the reference price (the average of demand() over
+    the dishes on sale, the factor _intervals uses). 100 at the reference prices, up to 160 cheaper, below when dearer.
+    Separate from the market phase, which is the same for every counter in town."""
+    board = qs.menu(st)
+    on = board['on']
+    if not on:
+        return 100
+    rows = qs.DISH[st['trade']]
+    return round(100 * sum(demand(rows[d]['base'], board['p'][d]) for d in on) / len(on))
+
+
 def public(st):
     from .player_service_tasks import public_visits,visit_due
     b = st.get('business')
@@ -501,7 +513,9 @@ def public(st):
     running = dict(per_period=sum(rates.values()), spent=sum(b['expenses'].get(k, 0) for k in TIME_COSTS),
                    accruing=bool(code == 'running' or (not st['staff'] and manual and code != 'paused')))
     return dict(v=1, status=code, reason=reasons[code], paused=b['paused'], running_cost=running,
-        market=market.snapshot(b['cursor']), protection=dict(level=b.get('protection', {}).get('level', 'none'), options=[dict(level=k, **v) for k,v in plans.items()], **plans[b.get('protection', {}).get('level', 'none')], quote=dict(b.get('protection_quote', {}))),
+        market=dict(market.snapshot(b['cursor']), town=True, runs=market.outlook(b['cursor']), day_percent=market.DAY_PERCENT,
+                    down_minutes=market.DOWN_MINUTES),
+        price_effect=price_effect(st), protection=dict(level=b.get('protection', {}).get('level', 'none'), options=[dict(level=k, **v) for k,v in plans.items()], **plans[b.get('protection', {}).get('level', 'none')], quote=dict(b.get('protection_quote', {}))),
         protection_plans=[dict(level=k, **v) for k,v in plans.items()],
         rates=rates, income_tax_percent=market.INCOME_TAX_PERCENT,
         bonus_percent=BONUS_PERCENT, staff_bonus_percent=STAFF_BONUS_PERCENT,

@@ -109,7 +109,11 @@ export function townHTML(env,h){
   const slim=typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
   const hint=g.fresh?`<p class="tw-hint" role="status"><span aria-hidden="true">👉</span> ${slim?'Vào tiệm sáng đèn':'Đi tới một tiệm đang sáng để làm'}</p>`:'';
   const goals=J.story&&h.chapterCard?`<div class="tw-goals">${h.chapterCard(env,{compact:true})}</div>`:'';
-  return `<div class="tw-home"><header class="tw-top home-top"><div class="tw-title"><h2>Khu phố</h2>${day}</div>${x3}
+  // 🎓 F#267 (owner 08/10: "phần thi chứng chỉ đưa ra ngoài cho rõ"): one tap from the town to the certificate centre,
+  // with a dot while an exam is open or a workplace you work at has a certificate you lack.
+  const dot=J.story&&h.certBadge?.(env.api);
+  const cert=J.story&&env.api.content?.journey?.certs?`<button type="button" class="tw-chip tw-cert${dot?' due':''}" data-action="jrCerts" aria-label="${esc(dot?'Thi chứng chỉ · có việc cần làm':'Thi chứng chỉ')}">🎓 Chứng chỉ${dot?'<i class="dot" aria-hidden="true"></i>':''}</button>`:'';
+  return `<div class="tw-home"><header class="tw-top home-top"><div class="tw-title"><h2>Khu phố</h2>${day}</div>${x3}${cert}
     <button type="button" class="tw-chip tw-list" data-action="jrList">📋 Danh sách</button>${close}</header>${goals}${hint}
     <div class="tw-slot" data-tw-slot><i class="tw-end" hidden></i></div></div>`;
 }

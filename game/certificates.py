@@ -98,6 +98,18 @@ def held_for(s: dict, career: str) -> str | None:
     return gid if gid and earned(s.get('journey'), gid) else None
 
 
+def hire_nudge(s: dict, career: str) -> str:
+    """🎓 F#267 (08/10: "đã được nhận cứu hộ bơi mà chưa thi chứng chỉ, kiếm không thấy chỗ thi"): one line for the
+    hire message when the player has not earned this workplace's certificate, saying where to sit it. '' otherwise."""
+    j = s.get('journey') or {}
+    if not j.get('story'):
+        return ''
+    for g in GROUPS:
+        if career in g['careers'] and not earned(j, g['id']) and (j.get('study') or {}).get('cert') != g['id']:
+            return f'{g["emoji"]} Bạn chưa có {g["name"]}: bấm 🎓 Thi chứng chỉ ở Hành trình, Bản đồ phố hoặc menu để thi.'
+    return ''
+
+
 def today_vn() -> str:
     """Today's date in Vietnam, 'YYYY-MM-DD' (the real date printed on a new diploma)."""
     return datetime.datetime.fromtimestamp(time.time(), VN).date().isoformat()
