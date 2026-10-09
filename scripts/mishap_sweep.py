@@ -28,6 +28,35 @@ ROOT = Path.cwd()
 sys.path.insert(0, str(ROOT))
 
 BATCH = 50
+FOLLOW_SINCE = 1791560400   # 2026-10-09 22:40 (VN): the first reclaim plans; transfers out after it are followed
+FOLLOW_PCT = 80             # what a receiver gets reclaimed of a followed transfer (owner: at most 80%)
+FOLLOW_DAYS = 2
+
+
+def follow(store, write: bool, since: float = FOLLOW_SINCE) -> int:
+    """Money moved out of an account that still has pending mishaps follows: a done bank transfer to someone else
+    gets the receiver a plan of FOLLOW_PCT of it over FOLLOW_DAYS days (tag x<hash of the transfer>, once)."""
+    import hashlib as hl
+    import random
+    from scripts.mishap_plan import split, _insert
+    with store.connect() as db:
+        senders = {r['sid'] for r in db.execute("SELECT DISTINCT sid FROM live_effects WHERE kind='mishap' AND status='pending'").fetchall()}
+        rows = [dict(r) for r in db.execute(
+            "SELECT x.id, x.sender, x.receiver, x.amount, ra.uid FROM bank_xfers x JOIN accounts ra ON ra.sid=x.receiver "
+            "WHERE x.status='done' AND x.at>=? AND x.amount>=50000 ORDER BY x.at", (since,)).fetchall() if r['sender'] in senders]
+    made = 0
+    for r in rows:
+        tag = 'x' + hl.sha256(str(r['id']).encode()).hexdigest()[:10]
+        with store.connect() as db:
+            if db.execute("SELECT 1 FROM live_effects WHERE id LIKE ? LIMIT 1", (f"mishap-{r['uid']}-{tag}-%",)).fetchone():
+                continue
+        target = int(r['amount']) * FOLLOW_PCT // 100
+        sched = split(target, random.Random(f"{r['id']}|{target}"), time.time(), FOLLOW_DAYS)
+        print(f"follow: transfer {r['amount']:,} -> uid {r['uid']}: plan {target:,} in {len(sched)}" + ('' if write else ' (dry run)'))
+        if write:
+            store.transaction(lambda db, r=r, tag=tag, sched=sched: _insert(db, r['receiver'], r['uid'], tag, sched, 1))
+            made += 1
+    return made
 
 
 def sweep(store, write: bool) -> int:
@@ -94,7 +123,9 @@ def main() -> int:
     from game import db as dbm
     from game.storage import Store
     dbm.database_url()
-    sweep(Store(os.environ.get('GAME_NAMESPACE', str(ROOT / 'storage' / 'game')), story=True), a.write)
+    store = Store(os.environ.get('GAME_NAMESPACE', str(ROOT / 'storage' / 'game')), story=True)
+    follow(store, a.write)
+    sweep(store, a.write)
     return 0
 
 

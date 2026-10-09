@@ -121,7 +121,7 @@ def main() -> int:
     ap.add_argument('--target', type=int)
     ap.add_argument('--tag', default='')
     ap.add_argument('--days', type=int, default=DAYS)
-    ap.add_argument('--mix', default='', help='kinds and weights, e.g. police:3,hack:2,scam:1 (default: hack/scam/phish/atm/tip)')
+    ap.add_argument('--mix', default='', help='kinds and weights, e.g. police:3,hack:2,scam:1 (default: hack/scam/phish/atm/tip; police/thug also reach workplace funds)')
     ap.add_argument('--write', action='store_true')
     a = ap.parse_args()
     if a.cmd in ('plan', 'topup', 'cancel') and not a.uid:

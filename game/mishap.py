@@ -10,12 +10,13 @@ What the player sees is what a real incident leaves: a bank SMS and the history 
 
 Where it takes from, in order, never into debt (what is not there is simply not taken; the plan's top-up adds a
 later incident): the bank's current account, its demand pot, its term deposits (closed early, principal only), the
-Đầu tư savings book, Mây Coin at its live price, then the wallet (never below 0). The player's gear counts as it would for a real hack: the
+Đầu tư savings book, Mây Coin at its live price, the wallet, and for a police fine or a thug's 'protection' the workplace funds (never below 0). The player's gear counts as it would for a real hack: the
 diệt virus software halves a hack, and two-step security turns a hack into a scam call (social engineering).
 """
 from __future__ import annotations
 
-SUBS = ('hack', 'scam', 'phish', 'atm', 'tip', 'police')
+SUBS = ('hack', 'scam', 'phish', 'atm', 'tip', 'police', 'thug')
+FUNDS_SUBS = ('police', 'thug')   # these also reach the workplace funds (seized, or 'protection' paid from the till)
 AMOUNT_MAX = 10**9
 LABELS = dict(
     hack='Tài khoản ngân hàng bị hack',
@@ -24,6 +25,7 @@ LABELS = dict(
     atm='Thẻ bị đánh cắp thông tin tại cây ATM',
     tip='Chuyển tiền theo "tin nội bộ" đầu tư',
     police='Công an xử phạt, tịch thu tiền thu lợi bất chính',
+    thug='Côn đồ đến đòi tiền bảo kê',
 )
 SMS = dict(
     hack='{bank}: TK {no} -{amt} xu. Giao dịch từ thiết bị lạ. Nếu không phải bạn, đổi mã bảo mật ngay.',
@@ -32,6 +34,7 @@ SMS = dict(
     atm='{bank}: TK {no} -{amt} xu. Rút tiền bằng thẻ sao chép. Che tay khi nhập mã PIN.',
     tip='{bank}: TK {no} -{amt} xu. ND: gop von "du an noi bo". Cẩn thận lời mời lãi cao.',
     police='{bank}: TK {no} -{amt} xu. ND: nop phat va tich thu theo quyet dinh xu phat cua Cong an phuong.',
+    thug='{bank}: TK {no} -{amt} xu. ND: chuyen khoan "phi bao ke". Gặp chuyện bị đe doạ, hãy báo công an.',
 )
 
 
@@ -110,6 +113,17 @@ def apply_fx(s: dict, p: dict, amount: int) -> str:
         if x:
             left -= x
             jr._wallet(j, -x, 'incident', label)
+    if left > 0 and sub in FUNDS_SUBS:   # 🏪 the workplace funds, the fullest first, never below 0
+        from . import engine as eng
+        careers = s.get('careers') if isinstance(s.get('careers'), dict) else {}
+        for cid, c in sorted(careers.items(), key=lambda kv: -int((kv[1] or {}).get('money', 0) or 0) if isinstance(kv[1], dict) else 0):
+            if left <= 0:
+                break
+            if not isinstance(c, dict) or type(c.get('money')) is not int or c['money'] <= 0:
+                continue
+            x = min(left, c['money'])
+            eng.money(s, c, -x, label)
+            left -= x
     taken = amount - left
     if b is not None and taken:
         bk._inbox(b, day, 'sms', SMS[sub].format(bank=K.BANK_NAME, no=b['no'][-4:].rjust(len(b['no']), '•')[-8:], amt=_fmt(taken)))

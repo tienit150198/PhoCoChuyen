@@ -124,6 +124,29 @@ class Apply(Base):
         self.assertIn('Cong an', s1['journey']['bank']['inbox'][-1]['text'])
         validate_state(s1)
 
+    def test_thugs_reach_the_workplace_funds_and_hacks_do_not(self):
+        _tok, s = self.fresh()
+        try:
+            rich(s, balance=100, demand=0, terms=(), saving=0, wallet=0)
+            validate_state(s)
+        except Exception as e:   # noqa: BLE001
+            self.skipTest(f'save shape: {e}')
+        cs = [c for c in (s.get('careers') or {}).values() if isinstance(c, dict) and type(c.get('money')) is int]
+        if not cs:
+            self.skipTest('no workplace on a fresh save')
+        from game import engine as eng
+        eng.money(s, cs[0], 5000 - cs[0]['money'], 'Góp vốn thử')
+        validate_state(s)
+        before = sum(c['money'] for c in cs)
+        s1, r = self.take(copy.deepcopy(s), 3000, sub='hack')
+        self.assertEqual(r['live']['taken'], 100)
+        s2, r = self.take(copy.deepcopy(s), 3000, sub='thug')
+        self.assertEqual(r['live']['taken'], 3000)
+        after = sum(c['money'] for c in s2['careers'].values() if isinstance(c, dict) and type(c.get('money')) is int)
+        self.assertEqual(before - after, 2900)
+        self.assertTrue(all(c['money'] >= 0 for c in s2['careers'].values() if isinstance(c, dict) and type(c.get('money')) is int))
+        validate_state(s2)
+
     def test_a_bad_sub_is_refused(self):
         _tok, s = self.fresh()
         with self.assertRaises(Exception):
