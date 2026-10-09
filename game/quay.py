@@ -266,12 +266,24 @@ def _have(s: dict) -> int:
     return max(0, j['wallet']) + (b['balance'] if b else 0)
 
 
+ROW_MAX = 10**7                   # one Sổ ví row's |amount| (journey.validate, every release)
+
+
+def _wallet_rows(j: dict, amount: int, kind: str, label: str, career: str | None = None) -> None:
+    """journey._wallet in rows of at most ROW_MAX each: a big amount becomes several rows (all validators accept them)."""
+    sign, left = (1 if amount >= 0 else -1), abs(int(amount))
+    while left > 0:
+        part = min(left, ROW_MAX)
+        _jr()._wallet(j, sign * part, kind, label, career)
+        left -= part
+
+
 def _take(s: dict, amount: int, label: str, career: str | None, kind: str = KIND_IN) -> int:
     """Up to `amount` from the cash in the wallet (never below 0), then the bank account. Returns what was taken."""
     j = s['journey']
     cash = min(max(0, j['wallet']), amount)
     if cash:
-        _jr()._wallet(j, -cash, kind, label, career)
+        _wallet_rows(j, -cash, kind, label, career)
     b = bk.get(s)
     rest = min(amount - cash, b['balance']) if b else 0
     if rest > 0:
@@ -583,6 +595,8 @@ def action(s: dict, name: str, p: dict) -> dict:
         st['items'].append(it['id'])
         _log(st, day, f'Lắp {it["name"].lower()}', -price)
         return dict(message=f'{it["emoji"]} Đã lắp {it["name"].lower()}.')
+    if name == 'jr_quay_upgrade':
+        return _upgrade(s, st, p, day)
     if name == 'jr_quay_police':
         need(set(p) <= {'stall'}, 'Thao tác không hợp lệ.')
         case = st['case']
@@ -608,6 +622,53 @@ def action(s: dict, name: str, p: dict) -> dict:
         _jr()._wallet(j, back, KIND_OUT, f'Sang nhượng {st["name"]}', st['trade'])
         return dict(message=f'Đã sang nhượng {st["name"]}: +{_fmt(back)} xu vào ví.')
     raise e.GameError('Thao tác quầy không hợp lệ.', 'unknown_action')
+
+
+def upgrade_cost(st: dict, place: str) -> int:
+    """F#295 (3) "các quầy có thể tự nâng cấp hay mở rộng": a bigger place for the same counter costs the difference in
+    place price plus the difference of each fitted item at the new size, so an upgraded counter has paid exactly what
+    opening it there and fitting it would have cost (and sang nhượng gives back the same as for one opened there)."""
+    ups = sum(ITEMS[i]['price'][place] - ITEMS[i]['price'][st['place']] for i in st['items'] if i in ITEMS)
+    return max(0, PLACES[place]['price'] - PLACES[st['place']]['price'] + ups)
+
+
+def bigger(st: dict) -> list:
+    """The places this counter can grow into (bigger than its own)."""
+    return list(PLACE_IDS[PLACE_IDS.index(st['place']) + 1:])
+
+
+def _upgrade(s: dict, st: dict, p: dict, day: int) -> dict:
+    """🏗️ Mở rộng quầy: same stock, staff, menu, look, till, fund and history; a bigger place: more staff places, more
+    walk-ins, higher running costs from now on (the time before was settled at the old place by quay_business.settle,
+    which action() runs first). Paid from the wallet, then the bank account (_take), never into debt."""
+    need = _core().need
+    j = s['journey']
+    need(set(p) <= {'stall', 'place', 'confirm'} and p.get('place') in PLACES, 'Chọn chỗ mới cho quầy.')
+    place = p['place']
+    need(place in bigger(st), 'Chỉ nâng lên chỗ lớn hơn chỗ đang có.', 'not_bigger')
+    need(p.get('confirm') is True, 'Xác nhận mở rộng quầy.')
+    run = st.get('run')
+    need(not (isinstance(run, dict) and not run.get('x')), 'Đóng ca tự đứng quầy rồi mở rộng nhé.', 'busy')
+    need(not (st.get('shop_events') or {}).get('pending'), 'Xử lý tình huống đang chờ ở quầy rồi mở rộng nhé.', 'busy')
+    need(not (st.get('staff_life') or {}).get('pending'), 'Trả lời nhân viên đang chờ rồi mở rộng nhé.', 'busy')
+    need(j['wallet'] >= 0, 'Ví đang nợ. Trả nợ trước rồi mở rộng nhé.', 'in_debt')
+    cost = upgrade_cost(st, place)
+    need(_have(s) >= cost, f'Cần {_fmt(cost)} xu trong ví hoặc tài khoản.', 'no_money')
+    P = PLACES[place]
+    _take(s, cost, f'Mở rộng {st["name"]}', st['trade'])
+    st['place'] = place
+    ev = st.get('shop_events')
+    if isinstance(ev, dict) and isinstance(ev.get('recent'), list):
+        from .shop_events import eligible_kinds
+        kinds = eligible_kinds(st['trade'], place)
+        ev['recent'] = [r for r in ev['recent'] if r.get('kind') in kinds]   # the street-cart-only checks stay with the cart
+    b = st.get('business')
+    if isinstance(b, dict):
+        from . import quay_business
+        b['signature'] = ''   # the new walk-in pace from now on (the place is not part of the signature)
+        quay_business._schedule(st, b['cursor'])
+    _log(st, day, f'Mở rộng thành {P["name"]}', -cost)
+    return dict(message=f'{P["emoji"]} {st["name"]} đã thành {P["name"]}: đủ chỗ cho {P["slots"]} nhân viên, khách đông hơn.')
 
 
 def sell_back(st: dict) -> int:
@@ -703,6 +764,7 @@ def _stall_view(s: dict, st: dict) -> dict:
                case=dict(lost=st['case']['lost'], all=st['case']['all'], rep=st['case']['rep']) if st['case'] else None,
                hist=[[x['d'], x['n'], x['net']] for x in st['hist']], today=fc, sell=sell_back(st),
                value=shift_value(st['place'], st['trade']), **_qs().stall_view(s, st))
+    out['grow'] = [dict(place=k, cost=upgrade_cost(st, k)) for k in bigger(st)]   # 🏗️ Mở rộng quầy (jr_quay_upgrade)
     from .quay_business import public as business_public
     out['business'] = business_public(st)
     from .staff_life import public as staff_public

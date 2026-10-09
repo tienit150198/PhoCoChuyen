@@ -423,25 +423,38 @@ def action(s, st, name, p):
         need(set(p) <= {'stall', 'level'} and isinstance(p.get('level'), str) and p['level'] in market.PLANS, 'Gói bảo vệ không hợp lệ.')
         b['protection']['level'] = p['level']
         return dict(message='Đã chọn ' + market.PLANS[p['level']]['label'].lower() + '.')
-    need(set(p) <= {'stall', 'items'}, 'Thông tin nhập hàng không hợp lệ.')
+    need(set(p) <= {'stall', 'items', 'wallet'} and type(p.get('wallet', False)) is bool, 'Thông tin nhập hàng không hợp lệ.')
     items = p.get('items')
     rows = qs.DISH[st['trade']]
     need(isinstance(items, dict) and items and all(d in rows and type(n) is int and 1 <= n <= STOCK_MAX for d, n in items.items()), 'Chọn số lượng hàng cần nhập.')
     from .player_service_tasks import reserved
     need(sum(b['stock'].values()) + reserved(st) + sum(items.values()) <= STOCK_MAX, f'Kho chứa tối đa {STOCK_MAX} món.')
     cost = sum(unit_cost(st, d) * n for d, n in items.items())
-    need(st['till'] + st['fund'] >= cost, f'Cần {cost} xu trong két hoặc vốn quầy.', 'no_money')
+    # F#295 (2) "tự trừ từ tài khoản của mình mà không cần nhập tiền qua góp vốn": `wallet: true` pays what the till and
+    # the fund lack from the wallet, then the bank account (as 💼 Góp vốn does, quay._take), in this same command.
+    # Never into debt; without the flag a short counter is refused exactly as before.
+    j = s['journey']
+    short = max(0, cost - st['till'] - st['fund'])
+    if short:
+        need(p.get('wallet') is True, f'Cần {cost} xu trong két hoặc vốn quầy.', 'no_money')
+        need(j['wallet'] >= 0, 'Ví đang nợ. Trả nợ trước rồi nhập hàng nhé.', 'in_debt')
+        need(qy._have(s) >= short, f'Thiếu {short} xu: ví và tài khoản chưa đủ.', 'no_money')
+        qy._take(s, short, f'Nhập hàng {st["name"]}', st['trade'])
+        st['fund'] += short   # fund + short = cost - till <= cost: within MONEY_MAX
     qy._from_till_fund(st, cost)
     for d, n in items.items():
         b['stock'][d] = b['stock'].get(d, 0) + n
     b['expenses']['goods'] += cost
     b['halted'] = -1
+    # 🔁 Nhập lại như lần trước (F#295 (1)): the last order, an optional key (1.9.35 and older accept and ignore it).
+    b['again'] = {d: items[d] for d in sorted(items)}
     qy._log(st, s['journey']['life_day'], 'Nhập hàng vào kho', -cost)
     # F#232: staff sell only the board. Restocking a dish that is off it turns it on (not during an old-style run,
     # whose walk-ins come from the board as it was at the start; the 📦 tab then shows "Chưa bật ở Menu").
     added = [] if qs.board_locked(st, int(s['journey']['life_day'])) else qs.turn_on(st, items)
     tail = f' Đã bật ở Menu: {", ".join(rows[d]["name"] for d in added)}.' if added else ''
-    return dict(message=f'Đã nhập {sum(items.values())} món, hết {cost} xu.{tail}')
+    paid = f' Lấy {short} xu từ ví.' if short else ''
+    return dict(message=f'Đã nhập {sum(items.values())} món, hết {cost} xu.{paid}{tail}')
 
 
 def income(st, at):
@@ -521,7 +534,7 @@ def public(st):
         bonus_percent=BONUS_PERCENT, staff_bonus_percent=STAFF_BONUS_PERCENT,
         visitor_orders=visitors,
         stock_total=sum(b['stock'].values()), stock=[dict(id=d, qty=b['stock'].get(d, 0), cost=unit_cost(st, d), price=qs.price(st, d), keep=keep(st, d)) for d in rows],
-        kept=held,
+        kept=held, again=[dict(id=d, qty=n) for d, n in (b.get('again') or {}).items() if d in rows],
         period_seconds=PERIOD, wage=sum(staff_wage(st, e) for e in st['staff']), revenue=b['revenue'], sold=b['sold'],
         speed_factor=b.get('speed_factor', 1),
         profit_bonus=b.get('profit_boost', {}).get('total', 0),
@@ -552,6 +565,9 @@ def validate(st, need, integer):
     need(isinstance(b['signature'], str) and len(b['signature']) <= 10000)
     need(isinstance(b['expenses'], dict) and set(LEGACY_EXPENSES) <= set(b['expenses']) <= set(EXPENSES) and all(integer(v, 0, 10**16) for v in b['expenses'].values()))
     need(isinstance(b['carry'], dict) and {'wages', 'rent', 'power', 'online', 'tax'} <= set(b['carry']) <= {'wages', 'rent', 'power', 'online', 'tax', 'environment', 'protection'} and all(integer(v, 0, 99 if k in ('online', 'tax') else DEN - 1) for k, v in b['carry'].items()))
+    if 'again' in b:
+        need(isinstance(b['again'], dict) and len(b['again']) > 0 and set(b['again']) <= set(qs.DISH[st['trade']])
+             and all(integer(v, 1, STOCK_MAX) for v in b['again'].values()))
     if 'keep' in b:
         need(isinstance(b['keep'], dict) and set(b['keep']) <= set(qs.DISH[st['trade']]) and all(integer(v, 0, KEEP_MAX) for v in b['keep'].values()))
     if 'market_epoch' in b:
