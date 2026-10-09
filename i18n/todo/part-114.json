@@ -1,5 +1,13 @@
 [
  {
+  "vi": "còn quan",
+  "en": ""
+ },
+ {
+  "vi": "Bàn ô ăn quan",
+  "en": ""
+ },
+ {
   "vi": "Tới lượt: chọn một ô bên mình còn quân, chọn hướng, bốc hết rải mỗi ô một quân (rải qua cả ô quan).",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Quản lý người ở & khách",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được lời mời.",
-  "en": ""
- },
- {
-  "vi": "BẠN BÈ & NHÀ",
   "en": ""
  }
 ]

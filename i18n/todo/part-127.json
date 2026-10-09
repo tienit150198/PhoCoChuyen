@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Ngày sống $1: $2 $3 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đeo tối đa $1 danh hiệu và chứng chỉ cùng lúc. Bỏ bớt một cái trước nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang đeo $1/$2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã rút $1 xu từ $2 về ví. Quỹ còn $3 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã góp $1 xu vào quỹ $2 ($3 xu từ tài khoản ngân hàng). Quỹ thành $4 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã góp $1 xu vào quỹ $2. Quỹ thành $3 xu.",
   "en": "",
   "pattern": true

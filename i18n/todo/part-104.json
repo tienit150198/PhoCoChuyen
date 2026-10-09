@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Nấu bữa cơm cho nhà",
+  "en": ""
+ },
+ {
+  "vi": "Dọn bữa chính xong rồi nấu thêm món này nhé.",
+  "en": ""
+ },
+ {
   "vi": "Món nấu thêm",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "lời dặn",
-  "en": ""
- },
- {
-  "vi": "Chọn đủ dung tích cho từng bể",
-  "en": ""
- },
- {
-  "vi": "🫙 Chọn cỡ bể",
   "en": ""
  }
 ]

@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Dạ thư viện làm theo nội quy: thẻ đọc, sổ mượn trả, sách về là xếp đúng ký hiệu. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tổ bay mong được đón $1 ở chuyến sau, êm hơn chuyến này ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ tổ bay làm theo bảng kiểm từng bước, an toàn đặt trước giờ giấc. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tổ tiếp viên mong được chăm $1 ở chuyến sau chu đáo hơn ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ tổ tiếp viên làm theo quy định hãng, kiểm chéo trước khi cất cánh. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đầu ca sau mời $1 ngồi họp an toàn cùng, mình nói rõ việc hôm đó.",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "$1 gật: “Ừ, làm đi.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 Báo giá: $1 xu. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Việc này người ta lấy $1 xu, thợ hét $2. Chặt chém vừa thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghe đồn thợ thông cống lấy $1 xu một việc $2 xu. Cả ngõ cẩn thận nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😮‍💨 Bạn nhịn, làm tiếp. $1 lèm bèm thêm một lúc rồi cũng chán. Bấm làm tiếp nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn thu đồ nghề đi về. $1 đứng chống nạnh giữa nhà tắm ngập nước.",
   "en": "",
   "pattern": true
  }

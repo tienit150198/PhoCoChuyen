@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Mời bạn bè chụp ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Chọn bạn để gửi mã phòng qua tin nhắn riêng.",
+  "en": ""
+ },
+ {
   "vi": "Gửi lời mời",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Ô quan",
-  "en": ""
- },
- {
-  "vi": "còn quan",
-  "en": ""
- },
- {
-  "vi": "Bàn ô ăn quan",
   "en": ""
  }
 ]

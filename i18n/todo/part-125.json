@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Ba cuộc gọi: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Anh Vượng: “Ok, chốt $1 $2.” Biên bản phải theo vụ việc thật, nên con số này sẽ đè lên mỗi lần bạn đi tuần.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚖️ Hội đồng kỷ luật xí nghiệp: hạ xuống $1, tạm đình chỉ gác hôm nay, thưởng ca về 0 tới khi hồ sơ sạch lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1, rời Bến Gỗ $2, qua đường ngang $3. Rõ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1$2, rời Bến Gỗ $3, qua đường ngang $4. Rõ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Hạ chắn khi tàu còn khoảng $1 phút, chuông đèn bật trước. Chắn đã hạ thì không mở cho ai.",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "Nhắn hỏi thăm $1 chút thôi. Làm việc nhớ giữ sức nha!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cười tít mắt: “Trời, đúng món ưng nhất luôn. Cảm ơn nhiều nghe!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cầm $2 mà vui ra mặt: “Sao biết hay vậy? Thích lắm luôn!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nhận $2: “Cảm ơn nha, bày vẽ chi cho tốn kém.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 gật gù: “Quý hóa quá, cảm ơn nghe.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cười gượng: “Cảm ơn nha… mà món này dạo này kiêng rồi.”",
   "en": "",
   "pattern": true
  }

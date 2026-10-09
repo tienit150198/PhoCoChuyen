@@ -1,5 +1,13 @@
 [
  {
+  "vi": "aria-label=\"Sổ quy định hôm nay\"",
+  "en": ""
+ },
+ {
+  "vi": "Hạn trên giấy tờ tính theo ngày này.",
+  "en": ""
+ },
+ {
   "vi": "Nhóm K: cần phiếu",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Kho sau bếp",
-  "en": ""
- },
- {
-  "vi": "SỔ QUÁN PHỞ",
-  "en": ""
- },
- {
-  "vi": "KHO BẾP",
   "en": ""
  }
 ]

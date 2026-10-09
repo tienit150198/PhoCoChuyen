@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Chọn một bé",
+  "en": ""
+ },
+ {
+  "vi": "Nhà đủ 3 bé rồi",
+  "en": ""
+ },
+ {
   "vi": "Chọn một món",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Rời quầy?",
-  "en": ""
- },
- {
-  "vi": "Chốt những món bạn đã phục vụ. Nếu có nhân viên, họ tiếp tục vận hành theo hàng và vốn còn lại.",
-  "en": ""
- },
- {
-  "vi": "Như mới",
   "en": ""
  }
 ]

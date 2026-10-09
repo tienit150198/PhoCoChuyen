@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Trả lại tiền tính dư cho $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tối $1 nhắn: hóa đơn tính dư $2 xu. Homestay chuyển trả lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hóa đơn $1 xu$2.$3 $4$5 Phòng chuyển sang “cần dọn”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hóa đơn $1 xu, khách thanh toán và cảm ơn$2.$3$4 Phòng chuyển sang “cần dọn”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giữ cho $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "📎 Tra cứu BHXH: đóng $1 tháng ở chỗ làm cũ.",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "Đo dấu hiệu sinh tồn giường $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✅ Xong lượt đo. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔴 Vòng dị ứng: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏷️ Nhãn khay của khoa dược: $1 · $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔴 Vòng dị ứng: $1. Ghi rõ lên phiếu chuyển.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã nói không. Người bệnh có quyền từ chối: giữ thuốc và báo bác sĩ.",
   "en": "",
   "pattern": true
  }

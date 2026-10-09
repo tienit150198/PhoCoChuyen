@@ -955,6 +955,9 @@ def can_police(post: dict) -> bool:
 def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = False) -> dict:
     from . import engine as e
     need = e.need
+    if name == 'fb_cop':
+        # 🚔 Báo công an (owner 09/10): a vô lý review may get its stars back, sometimes with bồi thường (review_police.py).
+        return _cop.action(s, c, career, p)
     if name == 'fb_police':
         post = _post(c, p.get('post'))
         fb = post['feedback']
@@ -1209,9 +1212,10 @@ def validate_post(post: dict) -> None:
     _fv.validate_extra(fb)
     _rg.validate(fb)
     _ra.validate(fb)
+    _cop.validate(fb)
 
 
-def public_post(post: dict, career: str | None = None) -> dict:
+def public_post(post: dict, career: str | None = None, day: int | None = None) -> dict:
     fb = post.get('feedback')
     if not fb:
         if _plain_review(post):
@@ -1235,6 +1239,8 @@ def public_post(post: dict, career: str | None = None) -> dict:
     f['removed'] = fb.get('report') == 'accepted'
     f['can_report'] = bool(post.get('stars')) and not fb.get('report') and fb['status'] != 'awaiting' and not fb.get('own') and not fb.get('police')
     f['can_police'] = can_police(post)
+    f.pop('cop', None)
+    f.update(_cop.public(post, career, day))   # 🚔 Báo công an: can_cop and the stored outcome (review_police.py)
     note = offer_note(fb)
     if note and fb['status'] == 'open':
         f['offer_note'] = note                  # bù xu would change nothing here: said before any xu is taken
@@ -1258,7 +1264,8 @@ def stats(c: dict) -> dict:
             b[0] += x['score']
             b[1] += 1
     return dict(count=len(rows), open=sum(p['feedback']['status'] != 'closed' for p in rows),
-                improved=sum(p['stars'] > p['feedback']['stars_original'] for p in rows),
+                improved=sum(p['stars'] > p['feedback']['stars_original'] and (p['feedback'].get('cop') or {}).get('verdict') != 'raised' for p in rows),
+                cop_left=_cop.left(c),
                 removed=sum(1 for p in c['feed'] if (p.get('feedback') or {}).get('report') == 'accepted'),
                 flagged=sum(1 for p in rows if p['feedback'].get('clues') and not p['feedback'].get('report')),
                 criteria=[dict(label=k, avg=round(v[0] / v[1], 1), count=v[1]) for k, v in by.items()])
@@ -1324,3 +1331,5 @@ _rg.install(globals())
 # Many more angles: taste, straw, restroom, attitude, dress, teaching method… (review_aspects.py).
 from . import review_aspects as _ra  # noqa: E402
 _ra.install(globals())
+# 🚔 Báo công an: a vô lý review may get its stars back (review_police.py, owner 09/10).
+from . import review_police as _cop  # noqa: E402

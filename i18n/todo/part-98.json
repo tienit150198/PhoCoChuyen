@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Bỏ cấm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa cấm bài nào.",
+  "en": ""
+ },
+ {
   "vi": "Phòng công khai",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Máy chưa chụp được ảnh. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Đang có đủ việc: làm tiếp việc đang chờ nhé.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay đủ khách rồi: làm nốt rồi khép ca nhé.",
   "en": ""
  }
 ]

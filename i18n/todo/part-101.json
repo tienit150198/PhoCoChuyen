@@ -1,5 +1,13 @@
 [
  {
+  "vi": "hợp đồng cần nhãn hữu cơ",
+  "en": ""
+ },
+ {
+  "vi": "có lô không hữu cơ",
+  "en": ""
+ },
+ {
   "vi": "🏷️ Chọn nhãn: hữu cơ chỉ khi mọi lô đều hữu cơ",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Dịu",
-  "en": ""
- },
- {
-  "vi": "Dầu",
-  "en": ""
- },
- {
-  "vi": "✋ Cầm một dụng cụ ở “Trên tay” trước đã.",
   "en": ""
  }
 ]

@@ -1,5 +1,40 @@
 [
  {
+  "vi": "🍚 Đổ nước $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🥢 Bày $1 bộ chén đũa",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "món $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiền chợ $1 xu · tiêu $2 xu ·",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "gửi lại $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ghi sổ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍲 Bữa cơm $1 xong rồi$2. Gửi lại $3 xu tiền chợ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "thêm $1 món",
   "en": "",
   "pattern": true
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "Vừa về nước, ở nhà ít hôm đã: đi tiếp được từ Ngày $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khép ca ở $1 trước rồi hẵng lên đường.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "ngày · lương +$1%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "(ở nhà $1 xu)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vé & visa $1 xu · hoàn lại khi hết hợp đồng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lên đường · $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sang $1 làm $2 ngày cho $3, lương +$4%? Trả trước $5 xu vé & visa, hết hợp đồng công ty hoàn lại. Trong lúc đi, các nơi làm khác tạm nghỉ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đáp số ($1)",
   "en": "",
   "pattern": true
  }

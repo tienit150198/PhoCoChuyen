@@ -1,5 +1,40 @@
 [
  {
+  "vi": "Nhận việc thực hành tại Mây Tre Xanh. Lương kế toán doanh nghiệp ×$1; mở chứng từ và ghi sổ bằng VND.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lương ca thực hành TT99 · tháng $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lương ca TT99 tháng $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bộ sổ và báo cáo đã khớp. Nhận lương ca thực hành $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(lương hợp đồng ×$1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đạt chứng chỉ trong game.$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giới thiệu việc làm: $1 nhận bạn, lương kế toán ×$2.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Máy sản xuất mua tháng$1",
   "en": "",
   "pattern": true
@@ -1481,31 +1516,6 @@
  },
  {
   "vi": "Mời $1 ghé phòng đọc, thủ thư giữ sẵn cuốn $2 cần ở quầy mượn trả ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ thư viện làm theo nội quy: thẻ đọc, sổ mượn trả, sách về là xếp đúng ký hiệu. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tổ bay mong được đón $1 ở chuyến sau, êm hơn chuyến này ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ tổ bay làm theo bảng kiểm từng bước, an toàn đặt trước giờ giấc. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tổ tiếp viên mong được chăm $1 ở chuyến sau chu đáo hơn ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ tổ tiếp viên làm theo quy định hãng, kiểm chéo trước khi cất cánh. Hôm đó $1 ạ.",
   "en": "",
   "pattern": true
  }

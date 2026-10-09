@@ -1,5 +1,30 @@
 [
  {
+  "vi": "$1 cười tít mắt: “Trời, đúng món ưng nhất luôn. Cảm ơn nhiều nghe!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cầm $2 mà vui ra mặt: “Sao biết hay vậy? Thích lắm luôn!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nhận $2: “Cảm ơn nha, bày vẽ chi cho tốn kém.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 gật gù: “Quý hóa quá, cảm ơn nghe.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cười gượng: “Cảm ơn nha… mà món này dạo này kiêng rồi.”",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 nhận $2, hơi lúng túng: “Ờ… cảm ơn. Chắc để dành cho người khác.”",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "🎁 Bà Tám gửi quà chào hàng xóm mới: +$1 xu vào ví.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ngày sống $1: $2 $3 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đeo tối đa $1 danh hiệu và chứng chỉ cùng lúc. Bỏ bớt một cái trước nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang đeo $1/$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã rút $1 xu từ $2 về ví. Quỹ còn $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã góp $1 xu vào quỹ $2 ($3 xu từ tài khoản ngân hàng). Quỹ thành $4 xu.",
   "en": "",
   "pattern": true
  }

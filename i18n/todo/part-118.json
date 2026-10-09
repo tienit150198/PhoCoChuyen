@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Chốt những món bạn đã phục vụ. Nếu có nhân viên, họ tiếp tục vận hành theo hàng và vốn còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Như mới",
+  "en": ""
+ },
+ {
   "vi": "Còn tốt",
   "en": ""
  },
@@ -1516,7 +1524,27 @@
   "en": ""
  },
  {
+  "vi": "🚔 Hôm nay bạn đã báo công an đủ lượt rồi, mai báo tiếp nhé.",
+  "en": ""
+ },
+ {
   "vi": "🚓 Lưu bằng chứng & trình báo",
+  "en": ""
+ },
+ {
+  "vi": "🚔 Báo công an",
+  "en": ""
+ },
+ {
+  "vi": "Công an xác minh:",
+  "en": ""
+ },
+ {
+  "vi": "vào ví.",
+  "en": ""
+ },
+ {
+  "vi": "Công an đã xem xét, chưa đủ cơ sở để kết luận. Sao giữ nguyên.",
   "en": ""
  },
  {
@@ -1769,34 +1797,6 @@
  },
  {
   "vi": "Dzô! 🍻",
-  "en": ""
- },
- {
-  "vi": "No căng bụng rồi 😋",
-  "en": ""
- },
- {
-  "vi": "Say rồi, nước ngọt thôi 🥤",
-  "en": ""
- },
- {
-  "vi": "Mát lạnh! 🥤",
-  "en": ""
- },
- {
-  "vi": "💐 Tới màn tung hoa rồi! Bấm “Tung hoa” nhé",
-  "en": ""
- },
- {
-  "vi": "💐 Sắp tung hoa cưới! Lại gần sân khấu nào",
-  "en": ""
- },
- {
-  "vi": "🎧 Đã đổi nhạc",
-  "en": ""
- },
- {
-  "vi": "☕ Đã rủ, chờ bạn ấy nhé…",
   "en": ""
  }
 ]

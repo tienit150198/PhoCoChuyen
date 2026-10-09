@@ -1,5 +1,30 @@
 [
  {
+  "vi": "✅ Xong lượt đo. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔴 Vòng dị ứng: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏷️ Nhãn khay của khoa dược: $1 · $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔴 Vòng dị ứng: $1. Ghi rõ lên phiếu chuyển.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đã nói không. Người bệnh có quyền từ chối: giữ thuốc và báo bác sĩ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1: đã cho $2 theo y lệnh",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "Tuần tra $1:",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ba cuộc gọi: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Anh Vượng: “Ok, chốt $1 $2.” Biên bản phải theo vụ việc thật, nên con số này sẽ đè lên mỗi lần bạn đi tuần.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚖️ Hội đồng kỷ luật xí nghiệp: hạ xuống $1, tạm đình chỉ gác hôm nay, thưởng ca về 0 tới khi hồ sơ sạch lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1, rời Bến Gỗ $2, qua đường ngang $3. Rõ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1$2, rời Bến Gỗ $3, qua đường ngang $4. Rõ.",
   "en": "",
   "pattern": true
  }

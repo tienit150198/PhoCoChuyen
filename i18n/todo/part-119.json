@@ -1,5 +1,33 @@
 [
  {
+  "vi": "No căng bụng rồi 😋",
+  "en": ""
+ },
+ {
+  "vi": "Say rồi, nước ngọt thôi 🥤",
+  "en": ""
+ },
+ {
+  "vi": "Mát lạnh! 🥤",
+  "en": ""
+ },
+ {
+  "vi": "💐 Tới màn tung hoa rồi! Bấm “Tung hoa” nhé",
+  "en": ""
+ },
+ {
+  "vi": "💐 Sắp tung hoa cưới! Lại gần sân khấu nào",
+  "en": ""
+ },
+ {
+  "vi": "🎧 Đã đổi nhạc",
+  "en": ""
+ },
+ {
+  "vi": "☕ Đã rủ, chờ bạn ấy nhé…",
+  "en": ""
+ },
+ {
   "vi": "Bạn ấy bận rồi, lần sau nhé!",
   "en": ""
  },
@@ -1858,41 +1886,6 @@
  },
  {
   "vi": "Kết quả $1/100.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhận việc thực hành tại Mây Tre Xanh. Lương kế toán doanh nghiệp ×$1; mở chứng từ và ghi sổ bằng VND.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lương ca thực hành TT99 · tháng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lương ca TT99 tháng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bộ sổ và báo cáo đã khớp. Nhận lương ca thực hành $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "(lương hợp đồng ×$1).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đạt chứng chỉ trong game.$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giới thiệu việc làm: $1 nhận bạn, lương kế toán ×$2.",
   "en": "",
   "pattern": true
  }

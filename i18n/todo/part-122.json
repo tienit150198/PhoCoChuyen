@@ -1,5 +1,30 @@
 [
  {
+  "vi": "🧾 Báo giá: $1 xu. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Việc này người ta lấy $1 xu, thợ hét $2. Chặt chém vừa thôi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nghe đồn thợ thông cống lấy $1 xu một việc $2 xu. Cả ngõ cẩn thận nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "😮‍💨 Bạn nhịn, làm tiếp. $1 lèm bèm thêm một lúc rồi cũng chán. Bấm làm tiếp nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn thu đồ nghề đi về. $1 đứng chống nạnh giữa nhà tắm ngập nước.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🗯️ $1 Bấm làm tiếp nhé.",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "tính dư $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả lại tiền tính dư cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tối $1 nhắn: hóa đơn tính dư $2 xu. Homestay chuyển trả lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hóa đơn $1 xu$2.$3 $4$5 Phòng chuyển sang “cần dọn”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hóa đơn $1 xu, khách thanh toán và cảm ơn$2.$3$4 Phòng chuyển sang “cần dọn”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giữ cho $1",
   "en": "",
   "pattern": true
  }

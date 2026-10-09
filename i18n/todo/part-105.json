@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Chọn đủ dung tích cho từng bể",
+  "en": ""
+ },
+ {
+  "vi": "🫙 Chọn cỡ bể",
+  "en": ""
+ },
+ {
   "vi": "Chọn cá thả bể (cá hợp nhau)",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "🧑‍✈️ Tàu đang nhanh quá, giảm ga ngay!",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Mình đang cao, xuống dốc hơn chút.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Xuống gấp quá, kéo nhẹ lên!",
   "en": ""
  }
 ]

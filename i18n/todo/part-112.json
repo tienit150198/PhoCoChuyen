@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Quà người quen tặng. Tặng lại ai đó, hoặc tự thưởng cho mình.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Trò chuyện lần đầu trong ngày: +1 tới +3. Nói nặng lời: −3.",
+  "en": ""
+ },
+ {
   "vi": "🎁 Tặng quà (mỗi người một món mỗi ngày): đúng món họ thích +6, món thường +3, món họ không ưa −2.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Thôi, không chờ nữa",
-  "en": ""
- },
- {
-  "vi": "Mời bạn bè chụp ảnh",
-  "en": ""
- },
- {
-  "vi": "Chọn bạn để gửi mã phòng qua tin nhắn riêng.",
   "en": ""
  }
 ]

@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Đang có đủ việc: làm tiếp việc đang chờ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay đủ khách rồi: làm nốt rồi khép ca nhé.",
+  "en": ""
+ },
+ {
   "vi": "Sắp đóng cửa: không đón thêm khách. Làm nốt rồi khép ca nhé.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Bán vừa size cho khách quen, tiệm sẽ nhớ size của họ ở đây.",
-  "en": ""
- },
- {
-  "vi": "📒 Sổ size khách quen",
-  "en": ""
- },
- {
-  "vi": "🧍‍♀️ Ma-nơ-canh",
   "en": ""
  }
 ]

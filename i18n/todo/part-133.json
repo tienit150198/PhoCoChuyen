@@ -1,5 +1,40 @@
 [
  {
+  "vi": "Khép ca ở $1 trước rồi hẵng lên đường.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ngày · lương +$1%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(ở nhà $1 xu)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Vé & visa $1 xu · hoàn lại khi hết hợp đồng",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lên đường · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sang $1 làm $2 ngày cho $3, lương +$4%? Trả trước $5 xu vé & visa, hết hợp đồng công ty hoàn lại. Trong lúc đi, các nơi làm khác tạm nghỉ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đáp số ($1)",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Gợi ý $1",
   "en": "",
   "pattern": true
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "sơn $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "biển “$1”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "bảo dưỡng $1/tháng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đang hỏng (sửa $1)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "dùng được cho mọi phòng · giá $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧺 Đồ đạc của bạn · $1 món",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "/$1 món",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍚 No bụng $1",
   "en": "",
   "pattern": true
  }

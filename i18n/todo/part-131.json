@@ -1,5 +1,40 @@
 [
  {
+  "vi": "⏳ còn $1′",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cân thực tế $1$2. Vỏ thùng $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "− bớt $1 =",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "trễ $1′",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏷️ Bớt $1: thu $2, túi COD hụt $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔔 ×$1, chưa ai mở",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khách đưa $1 xu, tiền hàng $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Túi đang có $1 xu tiền mặt",
   "en": "",
   "pattern": true
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "Tắt bếp $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍚 Đổ nước $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🥢 Bày $1 bộ chén đũa",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "món $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền chợ $1 xu · tiêu $2 xu ·",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "gửi lại $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ghi sổ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍲 Bữa cơm $1 xong rồi$2. Gửi lại $3 xu tiền chợ.",
   "en": "",
   "pattern": true
  }
