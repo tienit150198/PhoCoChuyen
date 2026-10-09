@@ -533,6 +533,9 @@ def _action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         return dict(message='Đã tạm gác hoạt động. Có thể chọn lại nếu còn trong lịch.')
     if name in CARE_ACTIONS:
         return CARE_ACTIONS[name](s, c, p)
+    if name == 'cl_homeroom':
+        from . import teach_grades as TG
+        return dict(message=TG.choose(c, p.get('grade')))
     raise e.GameError('Thao tác kế hoạch lớp không hợp lệ.')
 
 
@@ -555,13 +558,17 @@ def public(c: dict) -> dict:
         a = INDEX[last['id']]
         recap = dict(id=a['id'], title=a['title'], grade=last['grade'], perspectives=tree_copy(a['perspectives']), lesson=a['lesson'])
     from .teach_lesson import notebook
+    from . import teach_grades as TG
     return dict(month=MONTHS[month_index(day)], month_index=month_index(day), offers=offered, active=active, notebook=notebook(d), care=care_view(c),
+                homeroom=TG.public(c),
                 history=[dict(h, title=INDEX[h['id']]['title'], emoji=INDEX[h['id']]['emoji']) for h in d.get('history', [])[-10:]][::-1],
                 recap=recap, calendar=[dict(month=MONTHS[i], events=[dict(emoji=a['emoji'], title=a['title']) for a in ACTIVITIES if i in a.get('months', ()) and a['kind'] == 'event']) for i in range(len(MONTHS))])
 
 
 def validate(c: dict) -> None:
     from .engine import need, integer
+    from . import teach_grades as TG
+    TG.validate(c)
     d = c['ext']['data'].get('class')
     if d is None:
         return
@@ -696,12 +703,24 @@ WARM_P = ('cam on', 'yen tam', 'chia se', 'dong hanh', 'phoi hop', 'tien bo', 'k
 CARE_KEYS = {'v', 'day', 'pupils', 'seats', 'hw', 'books', 'parents', 'threads', 'taught', 'subject', 'seen', 'mailed', 'called', 'seq', 'log'}
 
 
+def _room_stage(t: dict) -> str | None:
+    from .teach_lesson import room_of
+    room = room_of(t)
+    return room.get('stage') if room else None
+
+
+def _grade(c: dict | None) -> int:
+    from .teach_grades import homeroom
+    return homeroom(c)
+
+
 def _clamp(v: int, lo: int = 0, hi: int = 100) -> int:
     return max(lo, min(hi, int(v)))
 
 
 def subject_of(lesson: dict) -> str:
-    return TOPIC_SUBJECT.get((lesson or {}).get('topic'), 'math')
+    lesson = lesson or {}
+    return lesson.get('subject') or TOPIC_SUBJECT.get(lesson.get('topic'), 'math')
 
 
 def band(n: int) -> str:
@@ -836,7 +855,7 @@ def after_period(s: dict, c: dict, t: dict, room: dict) -> str:
     """A period just closed: progress and wellbeing per pupil, seats, and (once a day) parents write."""
     from . import teach_lesson as TL
     cr = care(c)
-    day, subj = c['day'], subject_of(t['lesson'])
+    day, subj = c['day'], subject_of(TL.lesson_of(t, room))
     present = TL.present_ids(room)
     notes = seat_notes(cr['seats'])
     before = {k: band(cr['pupils'][k]['prog'][subj]) for k in PUPILS}
@@ -1064,7 +1083,7 @@ def _cl_seat(s: dict, c: dict, p: dict) -> dict:
     cr = care(c)
     a, b = p.get('a'), p.get('b')
     need(a in PUPILS and b in PUPILS and a != b, 'Chọn hai bạn khác nhau để đổi chỗ.')
-    busy = any(isinstance(t.get('room'), dict) and t['room'].get('stage') in ('teach', 'check') and t['status'] not in ('completed', 'referred', 'cancelled')
+    busy = any(_room_stage(t) in ('teach', 'check') and t['status'] not in ('completed', 'referred', 'cancelled')
                for t in c['tasks'] if t.get('career') == 'teacher')
     need(not busy, 'Đang trong giờ dạy. Khép tiết rồi hãy đổi chỗ nhé.')
     seats = cr['seats']
@@ -1170,7 +1189,7 @@ def care_view(c: dict) -> dict:
                             start_labels=[START_LABEL[k] for k in ('news', 'help', 'brief')] if not msg else None))
     # A fixed order: the sheet keeps open threads by position across re-renders.
     return dict(day=day, subjects=SUBJECTS, pupils=pupils, seats=seats, busy=any(
-        isinstance(t.get('room'), dict) and t['room'].get('stage') in ('teach', 'check') and t['status'] not in ('completed', 'referred', 'cancelled')
+        _room_stage(t) in ('teach', 'check') and t['status'] not in ('completed', 'referred', 'cancelled')
         for t in c['tasks'] if t.get('career') == 'teacher'),
         hw=dict(today=dict(subject=SUBJECT[hw_today['subject']]['label'], size=HW_SIZES[hw_today['size']]['label'], count=len(hw_today['kids'])) if hw_today else None,
                 can=cr['taught'] == day and bool(cr['seen']) and not hw_today,
@@ -1264,7 +1283,7 @@ def parent_card(state: dict, kid: str) -> dict:
     return dict(id='parent:' + kid, name=par['name'], role='Phụ huynh, ' + par['rel'], career='teacher', place='Lớp học Mầm Nắng',
                 age=age, age_label=AGE_LABEL[age], temperament=par['temper'], temperament_label='Phụ huynh',
                 style=ai.STYLE_GUIDE.get(par['temper'], '') + '; ' + par['style'], personality=par['style'],
-                traits=[f'Con: {KID[kid]["name"]}, học lớp 2. {KID[kid]["trait"]}.'], address=dict(self=par['self'], player=titles(state)[1]),
+                traits=[f'Con: {KID[kid]["name"]}, học lớp {_grade((state.get("careers") or {}).get("teacher"))}. {KID[kid]["trait"]}.'], address=dict(self=par['self'], player=titles(state)[1]),
                 region=par['region'], particles=list(par['particles']), cares=['con tiến bộ thật, được báo tin cụ thể'], memory={})
 
 
@@ -1284,8 +1303,8 @@ def voice_job(state: dict, kind: str, kid: str, task: str | None, op: str) -> di
     cr = d.get('care')
     title = TL.titles(state)[1]
     if kind == 'pupil':
-        t = next((x for x in c.get('tasks', []) if x.get('id') == task and isinstance(x.get('room'), dict)), None)
-        ask = t['room'].get('ask') if t else None
+        t = next((x for x in c.get('tasks', []) if x.get('id') == task and TL.room_of(x) is not None), None)
+        ask = TL.room_of(t).get('ask') if t else None
         if not ask or ask['kid'] != kid:
             return None
         lines = ask['lines']
@@ -1300,7 +1319,8 @@ def voice_job(state: dict, kind: str, kid: str, task: str | None, op: str) -> di
         if idx is None or lines[idx]['mode'] != 'scripted':
             return None
         facts = _facts(state, c, cr, kid) if cr else {}
-        context = dict(lesson=t['lesson'].get('title'), lesson_goal=t['lesson'].get('prompt'), subject=SUBJECT[subject_of(t['lesson'])]['label'],
+        lesson = TL.lesson_of(t)
+        context = dict(lesson=lesson.get('title'), lesson_goal=lesson.get('prompt'), subject=SUBJECT[subject_of(lesson)]['label'],
                        question=lines[0]['text'], answer_quality=TL.QUALITY_NOTE.get(ask['result']) if ask['result'] in TL.QUALITY else None, pupil=facts)
         who = {'npc': TL.CARRIER[kid]} if kid in TL.CARRIER else {'card': TL.pupil_card(state, kid, dict(pupil=facts))}
         return dict(who=who, said=said, context={k: v for k, v in context.items() if v}, canonical=lines[idx]['text'],
@@ -1318,7 +1338,7 @@ def voice_job(state: dict, kind: str, kid: str, task: str | None, op: str) -> di
         if last.get('ask') or len(th) < 2 or th[-2]['who'] != 'teacher':
             return None
         said, direction = th[-2]['text'], DIRECTION.get('p_' + (last.get('q') or 'ok'), '')
-    context = dict(child=TL.KID[kid]['name'], relation=PARENTS[kid]['rel'], class_name='lớp 2, Lớp học Mầm Nắng', topic=TOPICS.get(last.get('topic'), ''),
+    context = dict(child=TL.KID[kid]['name'], relation=PARENTS[kid]['rel'], class_name=f'lớp {_grade(c)}, Lớp học Mầm Nắng', topic=TOPICS.get(last.get('topic'), ''),
                    child_facts=_facts(state, c, cr, kid), trust_in_teacher='cao' if cr['parents'][kid]['trust'] >= 7 else 'thấp' if cr['parents'][kid]['trust'] <= 3 else 'vừa',
                    teacher_reply_quality=last.get('q'))
     direction = direction.replace('{Title}', title.capitalize()).replace('{title}', title)
@@ -1329,10 +1349,11 @@ def voice_job(state: dict, kind: str, kid: str, task: str | None, op: str) -> di
 
 def rewrite(raw: dict, ref: dict, canonical: str, text: str, mode: str) -> bool:
     """Reword one stored line in a raw save, only if it still holds the same scripted text."""
+    from . import teach_lesson as TL
     c = ((raw.get('careers') or {}).get('teacher')) or {}
     if ref['kind'] == 'pupil':
-        t = next((x for x in c.get('tasks', []) if x.get('id') == ref['task'] and isinstance(x.get('room'), dict)), None)
-        ask = (t or {}).get('room', {}).get('ask')
+        t = next((x for x in c.get('tasks', []) if x.get('id') == ref['task'] and TL.room_of(x) is not None), None)
+        ask = (TL.room_of(t) if t else {}).get('ask')
         lines = ask['lines'] if ask and ask.get('kid') == ref['kid'] else []
     else:
         cr = ((c.get('ext') or {}).get('data', {}).get('class') or {}).get('care') or {}

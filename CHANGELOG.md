@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 # Chưa phát hành — quay-fix (không có Có gì mới)
 
 🏗️ Mở rộng quầy (#303): tình huống chủ tiệm và việc của nhân viên đang chờ không còn chặn mở rộng (chúng vẫn chờ nguyên); chỉ còn ca tự đứng quầy đang mở và tình huống chỉ xe đẩy mới có (kiểm tra chỗ đặt xe) chặn. Nút Mở rộng mờ kèm lý do ngay khi chưa làm được (quay.grow_busy, `grow[].why` chỉ là trường hiển thị).
 🏪 Tên quầy có từ bị che (••• dài hơn từ 2 chữ) hoặc ký tự điều khiển ở cuối không còn bị từ chối với lỗi "Dữ liệu quầy trong bản lưu không hợp lệ": tên được cắt lại 24 ký tự và bỏ khoảng trắng hai đầu. Khi kiểm tra quầy từ chối một bản lưu, log server ghi một dòng `[quay-invalid] <tệp>:<dòng>` (không có dữ liệu người chơi).
+=======
+# Chưa phát hành — teacher-grades (F#304, Có gì mới 1.9.38)
+
+🏫 Giáo viên lớp 2–5 (game/teach_grades.py): mở theo cấp nghề (lớp 2 cấp 2, lớp 3 cấp 4, lớp 4 cấp 6, lớp 5 cấp 8). Cô Hiệu trưởng mời nhận lớp ở đầu tiết (Nhận / Ở lại), đổi lớp trong Kế hoạch lớp (1 lần/ngày). Mỗi lớp 8 bài theo GDPT 2018 (Toán, Tiếng Việt, TN&XH / Khoa học / LS&ĐL) có câu hỏi giơ tay; khoảng 2/3 tiết có một tin nhắn khó chịu (Zalo 22 giờ, quỹ lớp, dạy thêm, xin đề, sửa học bạ, nộp giáo án mẫu mới…), trả lời sai thành phản ánh của phụ huynh. Mỗi lớp trên lớp 1 +5 xu/tiết. Lớp 1 và mọi công việc sinh ra không đổi (task-compat OK). Khóa mới tùy chọn: ext.data.homeroom {g, seen, day} của nghề giáo viên, task.grade_room (tiết lớp 2–5; bản 1.9.37 bỏ qua, coi tiết là chưa bắt đầu).
+>>>>>>> teacher-grades
 
 # v1.9.38 — 2026-10-09
 

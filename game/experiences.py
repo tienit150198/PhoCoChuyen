@@ -129,7 +129,7 @@ def goals(c:dict)->list:
 def known_request(c:dict,t:dict)->str:
  mod=PLUGINS.get(t['career'])
  if mod:return mod.known_request(c,t) if hasattr(mod,'known_request') else t.get('request',t['opening'])
- if t['career']=='teacher' and ('room' in t or teach_lesson.eligible(t)):return teach_lesson.known_request(t)
+ if t['career']=='teacher' and (teach_lesson.has_room(t) or teach_lesson.eligible(t)):return teach_lesson.known_request(t)
  if t['career']=='tour_guide' and ('trip' in t or tour_trip.eligible(t)):return tour_trip.known_request(t)
  if t['career']=='teacher':return 'Mục tiêu tiết học: '+t['lesson']['prompt']+' Chuẩn bị ví dụ, luyện tập, câu hỏi cuối tiết; giúp từng bạn theo điều bạn ấy cần.'
  if t['career']=='tour_guide':return 'Đoàn muốn ghé '+', '.join(data.PLACE_INDEX[k]['name'] for k in t['required'])+' và nghỉ tại Hiên Trà. Tối đa '+str(t['limit'])+' phút; vé không quá '+str(t['budget'])+' xu.'
@@ -280,7 +280,7 @@ def handle(s:dict,c:dict,career:str,action:str,p:dict)->dict:
  need(c['open'],'Mở ca trước khi thao tác công việc nhé.');t=e.current_task(c,p.get('task'));need(t['career']==career,'Sai nghề công việc.');c['turn']+=1
  if action.startswith('lesson_'):
   need(career=='teacher','Đây là tiết học.');name=action[7:]
-  if 'room' in t or (name=='roll' and teach_lesson.eligible(t)):r.update(teach_lesson.handle(s,c,t,name,p));return r
+  if teach_lesson.has_room(t) or (name=='roll' and teach_lesson.eligible(t)):r.update(teach_lesson.handle(s,c,t,name,p));return r
   if name=='plan':
    need(t['stage']=='plan','Tiết đã bắt đầu.');steps=p.get('steps');need(isinstance(steps,list) and steps==['demo','practice','reflect'],'Thử nhịp: ví dụ → luyện tập → câu hỏi cuối tiết.');t['plan']=steps;t['stage']='attendance';t['known']=True;t['status']='understood';r['message']='Giáo án sẵn sàng. Cùng điểm danh theo những bạn đang có mặt.'
   elif name=='attendance':
@@ -388,8 +388,9 @@ def public_task(t:dict)->dict:
   for st in v['students']:
    st.pop('method',None)
    if st['id'] not in t['taught']:st['submission']=None
-  v.pop('room',None)
-  if 'room' in t or teach_lesson.eligible(t):v['room']=teach_lesson.public(t)
+  v.pop('room',None);v.pop('grade_room',None)
+  if teach_lesson.has_room(t) or teach_lesson.eligible(t):v['room']=teach_lesson.public(t)
+  if teach_lesson.grade_of(v.get('room'))>=2:teach_lesson.show_lesson(t,v)  # lớp 2–5: the grade's lesson (game/teach_grades.py)
  elif t['career']=='tour_guide':
   v.pop('trip',None)
   if 'trip' in t or tour_trip.eligible(t):v['trip']=tour_trip.public(t)
@@ -516,9 +517,10 @@ def validate_task(t:dict,original:dict):
   for k,v in t['taught'].items():need(v in [m['id'] for m in data.METHODS] and ids[k]['present'],'Phương pháp sai.')
   for v in t['grades'].values():need(type(v) is bool,'Nhận xét sai.')
   for v in t['feedback'].values():need(v in ('specific','retry','encourage'),'Phản hồi sai.')
-  if 'room' in t:
-   need(t['stage']=='plan' and not t['plan'] and not t['taught'] and not t['grades'],'Tiết học trộn hai cách chơi.');need(not t['attendance'] or t['status']=='completed','Điểm danh sai.')
-   teach_lesson.validate(t)
+  for key in ('room','grade_room'):
+   if key in t:
+    need(t['stage']=='plan' and not t['plan'] and not t['taught'] and not t['grades'],'Tiết học trộn hai cách chơi.');need(not t['attendance'] or t['status']=='completed','Điểm danh sai.')
+    teach_lesson.validate(t,key)
  elif cid=='tour_guide':
   need(t['stage'] in ('plan','gather','stop','ready'),'Bước dẫn đoàn sai.')
   for k in ('route','stamps','counted'):need(isinstance(t[k],list) and len(t[k])<=6 and len(t[k])==len(set(t[k])),'Lộ trình trùng/sai.')

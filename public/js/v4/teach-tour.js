@@ -195,7 +195,7 @@ function board(t,R,index){
   const teach=R.stage==='teach',C=isClean();
   // Clean layout: the topic alone (the timetable numbers the period), 📜 for the fold, the class's mood line in "?"
   // (the planner keeps its advice where the opener is chosen), the chalk keeps "1/5"; a "?" with the rules.
-  const top=`<span class="tt-board-top"><span>${C?'':`Tiết ${index} · `}${esc(t.lesson.topic)}</span>${R.tier>1?`<span class="tt-tier" aria-label="Độ khó ${R.tier}">${'★'.repeat(R.tier)}</span>`:''}${C?'<small aria-label="Đề bài">📜</small>':`<small>${plan&&!teach?'Đề bài · giáo án':'Đề bài'}</small>`}</span>`;
+  const top=`<span class="tt-board-top">${R.grade_label?`<b class="tt-grade">${esc(R.grade_label)}</b>`:''}<span>${C?'':`Tiết ${index} · `}${esc(t.lesson.topic)}</span>${R.tier>1?`<span class="tt-tier" aria-label="Độ khó ${R.tier}">${'★'.repeat(R.tier)}</span>`:''}${C?'<small aria-label="Đề bài">📜</small>':`<small>${plan&&!teach?'Đề bài · giáo án':'Đề bài'}</small>`}</span>`;
   const cond=`${esc(R.cond.emoji)} ${esc(R.cond.text)}`;
   return `<section class="tt-board" aria-label="Bảng lớp">
     ${ttFold('board-'+t.id,top,`<p class="tt-prompt">${esc(t.lesson.prompt)}</p>${teach?'':plan}`,false,'tt-board-more')}${teach?plan:''}
@@ -357,12 +357,24 @@ function checkStage(t,c,R,first){
     status:`🎫 ${done}/${R.tickets.length}`,steps,final:{label:'Khép tiết',ready:false}};
 }
 
+/** Lớp 2–5: the principal offers a higher class (game/teach_grades.py); shown before the roll call starts. */
+function homeroomCard(hr){
+  const o=hr.offer;
+  return section('🏫',esc(o.who),`<p class="tt-hr-text">${esc(o.text)}</p><div class="tt-options">${act(`⬆️ Nhận ${esc(o.label)}`,'cl_homeroom',{grade:o.g},'tt-option primary',{attr:' data-hr="take"'})}${act(`Ở lại ${esc(hr.label.replace('Lớp ',''))}`,'cl_homeroom',{grade:hr.g},'tt-option',{attr:' data-hr="stay"'})}</div>`,'','tt-hr');
+}
+/** Lớp 2–5: the day's awkward message (a parent, the principal, the office) waits before the period closes. */
+function demandCard(t,R){
+  const d=R.demand;if(!d)return '';
+  if(d.pick)return section(d.emoji,esc(d.who),`<p class="tt-tip">${esc(d.outcome)}</p>`,d.good?'✓':'😬','tt-demand done');
+  return section(d.emoji,esc(d.who),`<p class="tt-demand-text">${esc(d.text)}</p><div class="tt-options">${d.options.map(o=>act(esc(o.label),'lesson_demand',{task:t.id,option:o.id},'tt-option',{attr:` data-opt="${esc(o.id)}"`})).join('')}</div>`,'📲','tt-demand');
+}
 function readyStage(t,c,R){
   const stars='⭐'.repeat(R.stars)+'☆'.repeat(3-R.stars);
   const res=`<section class="tt-result" aria-live="polite">${em('🌱')}<h3>Tiết học trọn vẹn</h3><div class="tt-stats"><div><b>${stars}</b><small>Giáo án</small></div><div><b>${R.understood}/${R.of}</b><small>Bạn hiểu bài</small></div><div><b>${t.patience??100}%</b><small>Nhịp lớp</small></div></div>${logList(R.log)}</section>`;
   const inbox=c.classroom?.care,mail=inbox?.waiting?`<button type="button" class="btn ghost cl-inbox-link" data-action="classroom" data-cl-tab="par">💌 ${inbox.waiting} phụ huynh đang chờ trả lời · Mở sổ lớp</button>`:'';
-  return {body:res+askPanel(t,R)+mail+seating(t,c,R),status:`Gửi lời nhắn phụ huynh · <b>+${R.estimate} xu</b>`,steps:[],
-    final:{label:'Khép tiết',hint:'Khép tiết, nhận thù lao',go:finalGo([],'lesson_complete',{task:t.id},{confirm:true})}};
+  const wait=R.demand&&!R.demand.pick,steps=wait?[{ok:null,label:`Trả lời ${R.demand.who}`,go:{sel:'.tt-demand',label:`📲 Trả lời ${esc(R.demand.who)}`}}]:[];
+  return {body:demandCard(t,R)+res+askPanel(t,R)+mail+seating(t,c,R),status:`Gửi lời nhắn phụ huynh · <b>+${R.estimate} xu</b>`,steps,
+    final:{label:'Khép tiết',hint:'Khép tiết, nhận thù lao',ready:!wait,go:finalGo(steps,'lesson_complete',{task:t.id},{confirm:true})}};
 }
 
 export function lessonV2(t,c,content,ui,state){
@@ -372,7 +384,8 @@ export function lessonV2(t,c,content,ui,state){
   const view=R.stage==='roll'?rollStage(t,c,R,first):R.stage==='plan'?planStage(t,c,R,ui,first):R.stage==='teach'?teachStage(t,c,R,first):R.stage==='check'?checkStage(t,c,R,first):readyStage(t,c,R);
   const g=guided({room:c},t,R.stage,view);
   const focus=c.life?.mode==='calm'?100:(t.patience??100);
-  return `<div class="tt tt-lesson"${g.attrs}>${g.hint}<div class="tt-toprow">${timetable(t,c)}${hud('Nhịp lớp',focus,t,person)}</div>${board(t,R,index)}<div class="tt-body">${view.body}</div>${bar(view.status,(view.extra||'')+g.cta,view.top||'')}</div>`;
+  const hr=titled(c.classroom?.homeroom,state),offer=hr?.offer&&R.stage==='roll'&&!R.kids.some(k=>k.done)?homeroomCard(hr):'';
+  return `<div class="tt tt-lesson"${g.attrs}>${g.hint}<div class="tt-toprow">${timetable(t,c)}${hud('Nhịp lớp',focus,t,person)}</div>${board(t,R,index)}<div class="tt-body">${offer}${view.body}</div>${bar(view.status,(view.extra||'')+g.cta,view.top||'')}</div>`;
 }
 
 /* ------------------------------------------------------------ teacher: AI in class

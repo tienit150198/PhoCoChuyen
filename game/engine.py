@@ -1243,7 +1243,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
             else:c["data"]["care"]=cp
         if cid=="teacher":
             from . import classroom
-            c["classroom"]=classroom.public(raw);c["data"].pop("class",None)
+            c["classroom"]=classroom.public(raw);c["data"].pop("class",None);c["data"].pop("homeroom",None)
         if cid in ("milk_tea","mother_baby"):life.public_counter(raw,cid,c["data"])
         c["feed"]=[fbk.public_post(f,cid,raw.get("day")) for f in raw["feed"]]
         c["feedback_stats"]=fbk.stats(raw)
@@ -1255,6 +1255,10 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         if raw.get("open") and pm.managing(s,raw,cid):gate=dict(why="manager",error="Hôm nay bạn làm quản lý: giao việc cho đội nhé.")  # 🧑‍💼 no "Đón thêm khách"
         c["more_gate"]={k:v for k,v in gate.items() if k!="error"} if gate else None  # "Đón thêm khách" or the next real step
         c["tasks"]=[task_view(t) for t in s["careers"][cid]["tasks"]]
+        if cid=="teacher":
+            from . import teach_lesson as tl_,teach_grades as tg_
+            hg=tg_.homeroom(raw)  # 🏫 lớp 2–5: periods not started yet show the homeroom's lesson (view only)
+            for tv,t in zip(c["tasks"],raw["tasks"]):tl_.preview(t,tv,hg)
         if cid=="pharmacy":
             for tv,t in zip(c["tasks"],raw["tasks"]):
                 can=dcan.ph_view(t,raw)  # can.ph_check: the tray against the slip (view only, never saved)
