@@ -22,6 +22,7 @@ from tests.test_feedback_reviews import find
 
 ROOT = Path(__file__).resolve().parents[1]
 OLD_RELEASE = '4533ee17'   # 1.9.27, the release this one may be rolled back to
+CARE_RELEASE = 'a9777863'  # 1.9.28: a care card touched by the police still loads there
 
 
 class Base(unittest.TestCase):
@@ -269,18 +270,59 @@ class Client(Base):
                 self.j.c['feed'].remove(p)
 
 
+class CareCard(Base):
+    """Customer care keeps each person's last visits with that visit's stars (engine._cs_after_task): when the police
+    raise a review's stars, that visit's snapshot follows (engine.cs_restar), other visits stay; same shape and range,
+    so the save still loads on 1.9.28."""
+    career = 'customer_care'
+
+    def card(self, p):
+        care = engine.cs_care(self.j.c)
+        title = p['feedback']['title'][:120]
+        care['people'][p['npc']] = dict(n=3, last=[dict(day=14, title=title, note='đã xử lý', stars=2),
+                                                  dict(day=15, title='Việc khác', note='đã xử lý', stars=2),
+                                                  dict(day=15, title=title, note='xử lý chuẩn', stars=2)])
+        validate_state(self.j.state)
+        return care['people'][p['npc']]['last']
+
+    def test_raised_stars_reach_the_visit_snapshot(self):
+        p = self.post(2, 5)
+        last = self.card(p)
+        with mock.patch.object(R, 'CONFIRM_PCT', 100), mock.patch.object(R, 'PAY_PCT', 0):
+            self.assertEqual(self.cop(p['id'])['cop'], 'raised')
+        last = engine.cs_care(self.j.c)['people'][p['npc']]['last']
+        self.assertEqual([x['stars'] for x in last], [2, 2, 5])
+        validate_state(self.j.state)
+        old = OldServer.old_tree(self, CARE_RELEASE)
+        prog = ('import json,sys;from game.engine import validate_state,migrate_state;'
+                's=json.load(sys.stdin);validate_state(s);s=migrate_state(s);validate_state(s);'
+                'print(json.dumps([x["stars"] for x in s["careers"]["customer_care"]["ext"]["data"]["care"]["people"]'
+                f'["{p['npc']}"]["last"]]))')
+        env = dict(os.environ, PYTHONPATH=os.pathsep.join(x for x in (str(old), os.environ.get('PYTHONPATH', '')) if x))
+        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(self.j.state), capture_output=True,
+                             text=True, cwd=old, env=env, encoding='utf-8', timeout=300)
+        self.assertEqual(out.returncode, 0, out.stderr[-3000:])
+        self.assertEqual(json.loads(out.stdout), [2, 2, 5])
+
+    def test_kept_stars_leave_the_card_alone(self):
+        p = self.post(3, 3)
+        self.card(p)
+        self.assertEqual(self.cop(p['id'])['cop'], 'fair')
+        self.assertEqual([x['stars'] for x in engine.cs_care(self.j.c)['people'][p['npc']]['last']], [2, 2, 2])
+
+
 class OldServer(Base):
     """Saves written here (raised with bồi thường, unproven, fair) validate on 1.9.27, the release a rollback lands on."""
 
-    def old_tree(self):
-        if os.environ.get('MNL_COP_OLD_TREE'):
+    def old_tree(self, release=OLD_RELEASE):
+        if os.environ.get('MNL_COP_OLD_TREE') and release == OLD_RELEASE:
             return Path(os.environ['MNL_COP_OLD_TREE'])
         tmp = tempfile.mkdtemp(prefix='mnl-1927-')
         try:
-            data = subprocess.run(['git', 'archive', OLD_RELEASE, 'game', 'reference'], cwd=ROOT, capture_output=True,
+            data = subprocess.run(['git', 'archive', release, 'game', 'reference'], cwd=ROOT, capture_output=True,
                                   timeout=120, check=True).stdout
         except (OSError, subprocess.SubprocessError):
-            self.skipTest(f'no git tree with {OLD_RELEASE} (MNL_COP_OLD_TREE)')
+            self.skipTest(f'no git tree with {release} (MNL_COP_OLD_TREE)')
         with tarfile.open(fileobj=io.BytesIO(data)) as tar:
             tar.extractall(tmp, filter='data')
         return Path(tmp)

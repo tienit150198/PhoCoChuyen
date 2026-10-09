@@ -120,6 +120,7 @@ def action(s: dict, c: dict, career: str, p: dict) -> dict:
     word = F._cv.term(career, 'review', 'đánh giá') or 'đánh giá'
     if v == 'raised':
         post['stars'] = after
+        e.cs_restar(c, post, before, after)  # a customer-care person's card remembers that visit's stars too
         fb['status'] = 'closed'
         fb['pending'] = None
         e.metric(c, 'reviews_cop_raised')
