@@ -145,6 +145,17 @@ def _settle_quietly(store, *sids) -> None:
             pass
 
 
+def _out_ok(db, sid: str, amount: int) -> None:
+    from . import bank_xfer
+    bank_xfer.check_out(db, sid, amount)
+
+
+def _out(db, sid: str, amount: int) -> None:
+    """Xu leaving this save for the spouse: counted against a new account's daily cap (game/bank_xfer.py count_out)."""
+    from . import bank_xfer
+    bank_xfer.count_out(db, sid, amount)
+
+
 def _pay(store, sid: str, eff: dict, ops, check_wallet: int = 0, message: str = '') -> None:
     """The payer's save and the DB rows in one transaction. A replayed rid -> IntegrityError."""
     def fn(s):
@@ -184,8 +195,12 @@ def deposit(store, sid, display, d):
     # BANK.PAY: wallet -> joint fund stays cash: a credit card here would be a cash advance (bank app: Ứng tiền mặt)
     eff = mr._effect(eid, sid, 'wallet', -amount, 'Gửi vào quỹ chung')
 
+    with store.connect() as db:
+        _out_ok(db, sid, amount)
+
     def ops(db):
         _need(mr._bond(db, sid) and mr._bond(db, sid)['id'] == c['id'], 'Hai bạn không còn là vợ chồng.', 'not_married', 409)
+        _out(db, sid, amount)   # 💸 the new-account daily cap (09/10 audit: the fund is the spouse's money too)
         bal = _fund_move(db, c['id'], sid, 'deposit', amount, 'Gửi vào quỹ chung', eid)
         mr._notice(db, mr._other(c, sid), f'🏦 {display} vừa gửi {mr._xu(amount)} xu vào quỹ chung. Quỹ giờ có {mr._xu(bal)} xu.')
         return bal
@@ -219,8 +234,11 @@ def _transfer(store, c: dict, sid: str, display: str, amount: int, note: str, lo
     # BANK.PAY: spouse transfer stays cash (a transfer, not a purchase)
     out = mr._effect(f'send:{key}', sid, 'wallet', -amount, (f'Cho {name} mượn' if loan else f'Gửi {name}') + (f': {note}' if note else ''))
     inn = mr._effect(f'recv:{key}', other, 'wallet', amount, (f'Mượn của {display}' if loan else f'{display} gửi') + (f': {note}' if note else ''))
+    with store.connect() as db:
+        _out_ok(db, sid, amount)
 
     def ops(db):
+        _out(db, sid, amount)   # 💸 the new-account daily cap (09/10 audit)
         cur = mr._bond(db, sid)
         _need(cur and cur['id'] == c['id'] and cur['status'] == 'married', 'Hai bạn không còn là vợ chồng.', 'not_married', 409)
         _need(db.execute("SELECT COUNT(*) FROM couple_moments WHERE couple=? AND sid=? AND kind='send' AND at>?",

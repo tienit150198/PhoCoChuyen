@@ -256,6 +256,8 @@ def act(store, token, action, data):
                         need(x['kind'] == row['kind'], 'Căn nhà đã thay đổi.', 'not_available')
                         # Require the displayed price when supplied by clients.
                         need(data.get('rent', row['rent']) == row['rent'], 'Giá thuê đã thay đổi.', 'stale_quote', 409)
+                        from . import bank_xfer   # 💸 a new account's daily outflow cap covers rent paid to a player
+                        bank_xfer.count_out(db, sid, row['rent'])
                         _pay(actor, owner, row['rent'], owner_box)
                         h = hs._ensure(actor)
                         if h['own']:
@@ -285,6 +287,8 @@ def act(store, token, action, data):
                             # Bound prepaid exposure to one further period per current period.
                             need(row['end_day'] - j['life_day'] <= PERIOD, 'Bạn đã trả trước kỳ tiếp theo rồi.', 'already_renewed', 409)
                             _available(owner, row['property'])
+                            from . import bank_xfer
+                            bank_xfer.count_out(db, sid, row['rent'])
                             _pay(actor, owner, row['rent'], owner_box)
                             row['end_day'] += PERIOD
                             j['rental'] = _marker(row)

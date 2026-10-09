@@ -6,6 +6,7 @@
 💼 Ngày 🔥 x3 không còn nhân thêm phần ×3/×5 của lương kế toán (job note `boost`, trừ khỏi lãi ngày như tăng ca).
 ⏱️ Ngày sống vượt hạn mức giờ thật (interest_clock: 1 giờ = 1 ngày, tối đa 168): không lương, không thưởng phòng điều hành, không tiền thuê nhà (chia theo ngày trong tháng), không khách xem tin cho thuê. Thưởng phòng điều hành cần ít nhất 1 việc xong. Tin cho thuê NPC mới tối đa 1,5× giá tham khảo (người đang thuê giữ giá).
 💍 Ném vòng (không thông báo): trả tối đa 400 xu mỗi ngày VN (journey.fair_day.ring).
+💸 Tài khoản dưới 7 ngày thật: thuê nhà người chơi, phong bì cưới, gửi tiền cho vợ/chồng và gửi vào quỹ chung cùng tính vào hạn mức 500.000 xu/ngày như chuyển khoản (bank_xfer.count_out, chung bảng bank_xfer_days).
 
 # v1.9.37 — 2026-10-09
 
