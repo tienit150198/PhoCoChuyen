@@ -6098,8 +6098,8 @@ GROUPS = [{'id': 'start',
              {'id': 'black_market',
               'emoji': '🕶️',
               'title': 'Vào chợ đen: bảo kê và công an',
-              'points': ['💵 Mỗi ngày (giờ Việt Nam) vào chợ đen phải nộp bảo kê 10.000 xu cho đàn em ở cổng. Nộp rồi thì ra vô '
-                         'thoải mái tới hết ngày.',
+              'points': ['💵 Đàn em ở cổng không phải lúc nào cũng đòi bảo kê, hên xui. Hôm nào bị đòi thì nộp 10.000 xu, nộp '
+                         'rồi thì ra vô thoải mái một thời gian.',
                          '🙅 Không nộp thì bị trấn lột một phần tiền trong ví (không đụng tới tài khoản ngân hàng), rồi mới được vô.',
                          '🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược ván đó, nộp phạt từ ví và bị đuổi về tới hết ngày.',
                          '🎮 Ô ăn quan, ném vòng không cần đặt cược; bầu cua, chiếu trong, lô tô, vé cào, phóng dao thì có.'],

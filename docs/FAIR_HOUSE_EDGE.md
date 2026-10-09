@@ -52,9 +52,11 @@ Owner 08/10 23:15: "k phải là hội chợ, nó là "Chợ đen". Vào chợ �
 thì bị trấn lột 30% tiền hiện có. vào chợ đen có thể bị công an bắt, tỷ lệ bị bắt cực cao". Players see "Chợ đen"
 everywhere (ids, keys, endpoints and the edition `fair20261009` are unchanged). The rules live in `game/fair_bm.py`:
 
-- **Bảo kê** once per Vietnam day (UTC+7): `fair_bm_pay` takes `BM_FEE` (10,000 xu, shown: it is a price) from the
+- **Bảo kê, hên xui** (owner 09/10: "phí bảo kê k phải khi nào cũng thu, tỷ lệ thu là hên xui 40% /2 ngày"): Vietnam
+  days (UTC+7) go in stretches of 2 (`ASK_DAYS`); in a stretch the đàn em ask `BM_ASK_P` (40%) of the time, fixed by
+  (journey seed, stretch) in `fair_bm.asked` (never shown, never saved). Not asked: the player walks in. Asked: `fair_bm_pay` takes `BM_FEE` (10,000 xu, shown: it is a price) from the
   wallet; `fair_bm_refuse` lets the đàn em take `ROB_PCT` (30%) of the wallet, cash only, never the bank account, 0 when
-  the wallet is empty. Either way the player is in until the day ends. Until then every `fair_*` command except
+  the wallet is empty. Either way the player is in until the stretch ends. Until then every `fair_*` command except
   finishing what was begun (`fair.LATE`), the gift and repaying a loan is refused (`fair_bm_gate`).
 - **Arrests on every paid round** (bầu cua, chiếu trong, a lô tô purchase, a vé cào, a phóng dao run's stake):
   `BM_ARREST_P` (20%) per round, drawn by `fair_bm._arrest_roll` from its own random source before the round is drawn.

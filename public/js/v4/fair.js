@@ -293,7 +293,7 @@ function bmGate(){
   if(b.ban)return `<section class="fh-card fh-bm ban" data-fh-key="bm-ban"><div class="fh-big" aria-hidden="true">🚫</div><h3>Hôm nay bạn bị đuổi khỏi chợ đen</h3>
     <p>Công an vừa ập vào, hôm nay chợ không cho bạn vô nữa. Mai quay lại nhé.</p>${btn('‹ Quay về','close',{},'primary full',' data-fh-key="bm-back"')}</section>`;
   return `<section class="fh-card fh-bm" data-fh-key="bm-gate"><div class="fh-big" aria-hidden="true">🕶️</div><h3>Cổng chợ đen</h3>
-    ${say(GUARD(),'Vào chợ đen phải nộp tiền bảo kê. Nộp rồi thì hôm nay ra vô thoải mái.','dark')}
+    ${say(GUARD(),'Vào chợ đen phải nộp tiền bảo kê. Nộp rồi thì cứ ra vô thoải mái.','dark')}
     <div class="fh-bm-go">${btn(`💵 Nộp bảo kê · ${xu(b.fee)}`,'bmpay',{},'primary big full',short||S.busy?' disabled data-fh-key="bm-pay"':' data-fh-key="bm-pay"')}
       ${short?`<p class="fh-why">Ví chưa đủ ${xu(b.fee)} để nộp bảo kê.</p>`:''}
       ${btn(S.bmSure?'Chắc chưa? Không nộp':'🙅 Không nộp','bmrefuse',{},'ghost full'+(S.bmSure?' danger':''),S.busy?' disabled data-fh-key="bm-no"':' data-fh-key="bm-no"')}

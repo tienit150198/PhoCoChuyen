@@ -1191,12 +1191,12 @@ def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
 
 
 def _gate(need, j: dict, t: float) -> None:
-    """🕶️ Inside the Chợ đen only with today's bảo kê settled, and not after an arrest (fair_bm)."""
+    """🕶️ Inside the Chợ đen only with the bảo kê settled (or not asked this stretch), not after an arrest (fair_bm)."""
     if not bm._gate_on():
         return
     st = bm.status(j, t)
     need(st != 'ban', bm.BANNED, 'fair_bm_ban')
-    need(st in ('paid', 'robbed'), bm.NEED_IN, 'fair_bm_gate')
+    need(st in bm.IN, bm.NEED_IN, 'fair_bm_gate')
 
 
 # What the bảo kê gate lets through: finishing what was begun (LATE), the organisers' gift, paying a loan back.

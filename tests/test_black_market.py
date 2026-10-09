@@ -74,6 +74,12 @@ class BlackMarketBase(unittest.TestCase):
         p = mock.patch.object(fh, 'now', self.clock)
         p.start()
         self.addCleanup(p.stop)
+        self.ask(True)   # the đàn em ask (hên xui: tests/AskedOrNot covers the roll)
+
+    def ask(self, on=True):
+        p = mock.patch.object(bm, 'asked', lambda j, t: on)
+        p.start()
+        self.addCleanup(p.stop)
 
     def act(self, s, name, **p):
         return fh.action(s, name, p)
@@ -187,6 +193,82 @@ class Gate(BlackMarketBase):
         self.clock.t = at(2026, 10, 14, 0, 0)
         self.refused(s, 'fair_bm_pay', 'fair_closed')
         self.refused(s, 'fair_bm_refuse', 'fair_closed')
+
+
+class AskedOrNot(BlackMarketBase):
+    """Owner 09/10: "phí bảo kê k phải khi nào cũng thu, tỷ lệ thu là hên xui 40% /2 ngày"."""
+
+    def test_not_asked_walks_in_free(self):
+        mock.patch.stopall()   # the real roll, the real clock, then the clock again
+        self.setUp_clock_only()
+        s = story()
+        p = mock.patch.object(bm, 'asked', lambda j, t: False)
+        p.start()
+        self.addCleanup(p.stop)
+        b = fh.public(s)['bm']
+        self.assertEqual((b['st'], b['inside'], b['ban']), ('free', True, False))
+        self.caught(False)
+        s, r = self.act(s, 'fair_bc', bets={'cua': 10})
+        self.assertIn('dice', r['fair'])
+        s, r = self.act(s, 'fair_bm_pay')   # an old page: nothing taken
+        self.assertTrue(r['fair']['again'])
+        self.assertNotIn('fair_bm', s['journey'])
+        self.caught(True)   # the police still come
+        s, r = self.act(s, 'fair_bc', bets={'cua': 10})
+        self.assertIn('arrest', r['fair'])
+        self.assertEqual(fh.public(s)['bm']['st'], 'ban')
+        validate_state(s)
+
+    def setUp_clock_only(self):
+        env = mock.patch.dict(os.environ, {'MNL_BM_OFF': '0'})
+        env.start()
+        self.addCleanup(env.stop)
+        p = mock.patch.object(fh, 'now', self.clock)
+        p.start()
+        self.addCleanup(p.stop)
+
+    def test_settled_for_the_two_day_stretch(self):
+        s = story()
+        self.clock.t = at(2026, 10, 11, 9)   # 11/10 and 12/10 are one stretch, 13/10 starts the next
+        s, _ = self.act(s, 'fair_bm_pay')
+        self.clock.t = at(2026, 10, 12, 22)
+        self.assertEqual(fh.public(s)['bm']['st'], 'paid')
+        self.caught(False)
+        s, r = self.act(s, 'fair_bc', bets={'cua': 10})
+        self.assertIn('dice', r['fair'])
+        self.clock.t = at(2026, 10, 13, 0, 0, 1)
+        self.assertEqual(fh.public(s)['bm']['st'], '')
+        self.refused(s, 'fair_bc', 'fair_bm_gate', bets={'cua': 10})
+
+    def test_a_ban_ends_with_the_day_not_the_bao_ke(self):
+        s = story()
+        self.clock.t = at(2026, 10, 11, 9)
+        s, _ = self.act(s, 'fair_bm_refuse')
+        self.caught(True)
+        s, _ = self.act(s, 'fair_bc', bets={'cua': 10})
+        self.assertEqual(fh.public(s)['bm']['st'], 'ban')
+        self.clock.t = at(2026, 10, 12, 9)   # same stretch: in again, nothing to settle
+        b = fh.public(s)['bm']
+        self.assertEqual((b['st'], b['inside']), ('paid', True))
+        w = s['journey']['wallet']
+        s, r = self.act(s, 'fair_bm_pay')
+        self.assertTrue(r['fair']['again'])
+        self.assertEqual(s['journey']['wallet'], w)
+
+    def test_the_roll_is_fixed_and_about_40_percent(self):
+        mock.patch.stopall()
+        j = story()['journey']
+        t1, t2 = at(2026, 10, 11, 0, 1), at(2026, 10, 12, 23, 59)
+        self.assertEqual(bm.asked(j, t1), bm.asked(j, t2), 'one answer for the whole stretch')
+        self.assertEqual((bm.BM_ASK_P, bm.ASK_DAYS), (0.40, 2))
+        hits = sum(bm.asked({'seed': seed}, at(2026, 10, 9 + 2 * k)) for seed in range(500) for k in range(4))
+        self.assertTrue(0.35 < hits / 2000 < 0.45, hits)
+        s = story()
+        self.assertNotIn('ask', json.dumps(fh.public(s)['bm']))
+
+    def test_old_save_block_kinds_still_read(self):
+        j = {'seed': 1, 'fair_bm': {'d': 'not a date', 's': 'paid'}}
+        self.assertEqual(bm.status(j, at(2026, 10, 11)), '')   # asked (patched): a broken date settles nothing
 
 
 class Arrest(BlackMarketBase):
