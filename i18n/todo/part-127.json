@@ -420,11 +420,6 @@
   "pattern": true
  },
  {
-  "vi": "🚔 Bạn đang ở trại tạm giữ (còn $1 ngày). Việc này chờ ra trại rồi làm nhé.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "Còn $1:$2 nữa mới hết ngày trong trại. Làm công ích cho nhanh nha.",
   "en": "",
   "pattern": true

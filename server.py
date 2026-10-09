@@ -53,6 +53,7 @@ from game import social
 from game import work_visits
 from game import home_guests
 from game import push
+from game import jail  # 🚔 jailed: the POST routes that stay open (game/jail.py route_open)
 from game import accounts
 from game import tiktok_auth
 from game import player_feedback as pfb
@@ -958,6 +959,9 @@ class Handler(BaseHTTPRequestHandler):
             body=self.rfile.read(length);self.body_read=True
             data=json.loads(body,parse_constant=lambda x:(_ for _ in ()).throw(ValueError("nonfinite")))
             if not isinstance(data,dict):raise GameError("Dữ liệu cần là đối tượng JSON.")
+            if not jail.route_open(route):   # 🚔 jailed: only the camp, messages and công ích (game/jail.py, an allowlist)
+                if state is None:state=self.server.store.read(token)[0]
+                if jail.jailed(state):self.error(409,jail.JAILED,"jailed");return
             if route=="/api/admin/users/password":
                 self.require_admin(token)
                 admin=(accounts.status(self.server.store,token) or {}).get("username")

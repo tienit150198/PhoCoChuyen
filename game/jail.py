@@ -8,10 +8,16 @@ Who goes in
 * 🚔 Tố cáo sai sự thật (game/review_police.py): a police report on an NPC review that was reasonable, sometimes,
   DAYS_COP (1) jail day. Odds are never shown or sent.
 
-A jail day is a life day (journey.life_day). Inside, the player cannot work (every career command), cannot enter the
-Chợ đen, cannot spend on shopping, trips, home, vehicles, pets, cafés, gold, the stock market or a counter (gate():
-FREE lists what stays open: settings, the profile, outfits and titles, the bank app and insurance, studying, the
-neighbours' board and chats, life events; the friends, chat and social screens are outside the commands anyway).
+A jail day is a life day (journey.life_day). Inside, the owner's rule (09/10: "bị bắt thì k được làm gì khác, chỉ
+được ở tù, nhắn tin, làm công ích thôi") is an ALLOWLIST, so whatever is added to the game later is closed by default:
+* game commands (gate(), OPEN_COMMANDS): settings, the jail's own commands and the acknowledgements of what is already
+  on screen (news, a story beat, a happening, the board's dot, the bank's notices, a life card that is over);
+* HTTP routes (route_open(), server.py): the command route (the gate above), the account (sign in/out, delete),
+  góp ý, admin, push, privacy settings, popups seen (a gift, a wedding card), friends and blocks, the bail
+  requests, the social inbox read, and what others did FOR the player (a transfer in, a work visit's pay);
+* live frames (frame_open(), live/protocol.py): the chat (Cả phố, DMs, groups) and keep-alive, plus leaving a room.
+Refused: code 'jailed', JAILED. What others do TO a jailed player still lands (a transfer, an admin gift, a friend's
+bail) and the passive clocks run as before (staff, rent, interest).
 "🌙 Hết một ngày trong trại" (jail_end) ends the jail day: the life day moves on without work, the day's rent or
 điện nước is paid as usual (the jail's meals are free: no meals line), the morning hooks run (bank, home, bills…), and
 the sentence counts down by one, by two when the day's three công ích tasks are done. A jail day lasts at least
@@ -73,7 +79,7 @@ TASKS = {
 TASK_IDS = tuple(TASKS)
 PLANT_STEPS = ('dig', 'seed', 'water')
 
-JAILED = '🚔 Bạn đang ở trại tạm giữ (còn {left} ngày). Việc này chờ ra trại rồi làm nhé.'
+JAILED = 'Đang ở trại tạm giữ, ra rồi hẵng làm nha.'
 NOT_IN = 'Bạn không ở trại tạm giữ.'
 
 
@@ -185,22 +191,51 @@ def settle(s: dict, t: float | None = None) -> bool:
 
 
 # What a jailed player may still do (everything else: JAILED). Internal (server) commands always run.
-FREE = ('settings', 'reset_all', 'select_career', 'jr_profile', 'jr_equip', 'jr_seen', 'jr_avatar', 'jr_withdraw',
-        'jr_invest', 'jr_pause', 'jr_reopen')
-FREE_PREFIX = ('jail_', 'jr_wd_', 'jr_cert_', 'jr_bk_', 'jr_rui_', 'as_', 'vs_', 'bd_', 'qn_', 'lf_', 'st_')
+OPEN_COMMANDS = frozenset({'settings', *COMMANDS,
+                           'jr_seen', 'st_seen', 'hap_ack', 'bd_seen', 'jr_bk_read', 'lf_close'})   # acknowledgements
+# HTTP POST routes (server.py _post) open while jailed. GET only reads.
+OPEN_ROUTES = frozenset({'/api/command', '/api/feedback', '/api/leaderboard/visibility', '/api/live/effects',
+                         '/api/gift/seen', '/api/wedinvite/seen', '/api/push/subscribe', '/api/push/unsubscribe',
+                         '/api/bank/xfer/receive', '/api/work-visits/receive', '/api/social/inbox_read',
+                         '/api/social/block', '/api/social/unblock', '/api/social/report', '/api/social/delete_post'})
+OPEN_PREFIXES = ('/api/admin/', '/api/account/')
+OPEN_MARRIAGE = frozenset({'jail_ask', 'jail_bail', 'seen', 'lookup', 'block', 'unblock', 'settings', 'moments_seen',
+                           'friend_search', 'friend_request', 'friend_respond', 'friend_cancel', 'friend_remove',
+                           'friend_block', 'friend_settings'})
+# Live frames (live/protocol.py): every frame of these features, and leaving a room of any other one.
+OPEN_FEATURES = frozenset({'core', 'chat'})
+OPEN_FRAMES = frozenset({'booth_out', 'booth_cancel', 'date_leave', 'fair_out', 'home_out', 'kara_out', 'walk_out',
+                         'town_out', 'visit_out'})
 
 
 def allowed(action: str) -> bool:
-    return action in FREE or action.startswith(FREE_PREFIX)
+    return action in OPEN_COMMANDS
+
+
+def route_open(route: str) -> bool:
+    """A POST route a jailed player may use (server.py)."""
+    if route in OPEN_ROUTES or route.startswith(OPEN_PREFIXES):
+        return True
+    return route.startswith('/api/marriage/') and route[len('/api/marriage/'):] in OPEN_MARRIAGE
+
+
+def frame_open(feature: str, kind: str) -> bool:
+    """A live frame a jailed player may send (live/protocol.py)."""
+    return feature in OPEN_FEATURES or kind in OPEN_FRAMES
+
+
+def jailed(s, t: float | None = None) -> bool:
+    """A save that is in the camp now."""
+    j = s.get('journey') if isinstance(s, dict) else None
+    return active(j, t)
 
 
 def gate(s: dict, action: str, internal: bool = False, t: float | None = None) -> None:
     """Before any command: refuse what a jailed player cannot do (code 'jailed')."""
     if internal or allowed(action):
         return
-    j = s.get('journey')
-    if active(j, t):
-        _need(False, JAILED.format(left=j[KEY]['left']), 'jailed')
+    if jailed(s, t):
+        _need(False, JAILED, 'jailed')
 
 
 # ---------------------------------------------------------------- the jail's own commands

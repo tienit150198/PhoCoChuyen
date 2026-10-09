@@ -19,11 +19,21 @@ gone, after the grace), tick(now) (every second), on_notify(event) (admin events
 """
 from __future__ import annotations
 
+import json
 import time
+
+from game import jail as JL
 
 from .db import Error as DbError, log
 
 TYPE_MAX = 24
+# 🚔 Trại tạm giữ (game/jail.py, owner 09/10 "chỉ được ở tù, nhắn tin, làm công ích"): a jailed player's frames other
+# than the chat's (and leaving a room) are refused. The answer is cached per player for JAIL_TTL seconds (a shorter
+# JAIL_TTL_IN while jailed, so a bail or the last day opens the rooms soon); a miss costs one primary-key read that
+# parses the save only when it holds the word "jail" (most saves never do).
+JAIL_TTL, JAIL_TTL_IN = 20.0, 8.0
+JAIL_SQL = ("SELECT CASE WHEN left(state, 1) = '{' AND strpos(state, '\"jail\"') > 0 "
+            "THEN state::json #>> '{journey,jail}' END AS j FROM sessions WHERE sid=?")
 
 
 class LiveError(Exception):
@@ -99,6 +109,8 @@ class Dispatcher:
             feat, rate, fn = entry
             if not feat.enabled():
                 raise LiveError('off', 'Tính năng này đang tắt.')
+            if conn.player and not JL.frame_open(feat.name, kind) and await self.jailed(feat, conn.player):
+                raise LiveError('jailed', JL.JAILED)
             if rate:
                 w = hub.rate(conn.player, kind, rate[0], rate[1])
                 if not w.hit():
@@ -114,3 +126,20 @@ class Dispatcher:
         except Exception as e:  # noqa: BLE001 - a bug in one handler never drops the socket
             log('handler', kind, type(e).__name__, str(e)[:200])
             hub.send(conn, dict(t='error', code='internal', msg='Có lỗi, thử lại sau nhé.', ref=ref))
+
+    async def jailed(self, feat, player) -> bool:
+        """In the trại tạm giữ now (game/jail.py active), cached per player (JAIL_TTL)."""
+        if JL.off() or not getattr(player, 'sid', None):
+            return False
+        t = time.monotonic()
+        hit = player.ext.get('jail')
+        if hit and hit[0] > t:
+            return hit[1]
+        row = await feat.app.db.fetchrow(JAIL_SQL, (player.sid,))
+        try:
+            block = json.loads(row['j']) if row and row['j'] else None
+        except (TypeError, ValueError):
+            block = None
+        inside = JL.jailed({'journey': {JL.KEY: block}}) if isinstance(block, dict) else False
+        player.ext['jail'] = (t + (JAIL_TTL_IN if inside else JAIL_TTL), inside)
+        return inside

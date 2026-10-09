@@ -538,6 +538,8 @@ class Store:
     def _apply(self,raw:dict,text:str,career,action:str,payload:dict,internal:bool,revision:int):
         extra=[]
         if action=="import_save" and not internal:
+            from . import jail
+            if jail.jailed(raw):raise GameError(jail.JAILED,"jailed")  # 🚔 a backup is no way out of the trại tạm giữ
             envelope=payload.get("save")
             if not isinstance(envelope,dict) or envelope.get("format") not in SAVE_FORMATS:raise GameError("Không phải tệp lưu của Phố Có Chuyện.","invalid_save")
             candidate=envelope.get("state")

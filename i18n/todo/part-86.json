@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Cất báo cáo vào ngăn kéo",
+  "en": ""
+ },
+ {
   "vi": "Lỗi cũ lặp lại ở chặng sau.",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Không mời được người này.",
-  "en": ""
- },
- {
-  "vi": "Quầy đang đóng.",
   "en": ""
  }
 ]

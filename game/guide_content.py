@@ -6140,8 +6140,8 @@ GROUPS = [{'id': 'start',
               'title': 'Trại tạm giữ: công ích và bảo lãnh',
               'points': ['🚔 Bị công an bắt ở chợ đen thì vào trại 3 ngày. Báo công an về một đánh giá hợp lý thì có khi bị '
                          'giữ 1 ngày vì tố cáo sai sự thật.',
-                         '🚫 Trong trại không đi làm, không vào chợ đen, không mua sắm hay đi chơi xa. Vẫn nhắn tin, xem bạn bè, '
-                         'đọc sách, chỉnh cài đặt được.',
+                         '🚫 Trong trại chỉ được nhắn tin và làm công ích. Việc khác (đi làm, chợ đen, mua sắm, ngân hàng, '
+                         'đi chơi…) chờ ra trại rồi làm.',
                          '🗺️ Trại là một khu để đi lại: chạm sân để đi, chạm một góc để tới đó. Công ích làm ở từng góc '
                          '(quét sân ở gốc bàng, chia cơm ở căng tin, xếp sách ở thư viện trại…).',
                          '🧹 Mỗi ngày có 3 việc công ích nho nhỏ. Làm đủ cả 3 thì hết ngày đó được tính 2 ngày.',

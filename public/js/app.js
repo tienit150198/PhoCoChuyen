@@ -1759,6 +1759,11 @@ const settling=()=>{if(ui.view!=='job')return false;try{return !!careerUI(career
 let jailMod=null;
 api.addEventListener('state',()=>{syncOlder(api.revision);ensureCareerUI();renderMain();if(ui.view&&!settling()){if(sheetScroll.busy())sheetScroll.later(()=>{if(ui.view&&!settling())renderSheet();});else renderSheet();}shell.update(env());jailSync();});
 function jailSync(){if(!api.state?.jail&&!jailMod)return;import('./v4/jail.js').then(m=>{jailMod=m;m.sync(env());}).catch(()=>{/* the next state */});}
+// Inside, only the camp, messages and công ích (game/jail.py allowlist): a refused tap ("jailed", its toast says why) brings
+// the camp back, unless the player is reading or writing messages.
+api.addEventListener('apifail',e=>{if(e.detail?.code!=='jailed'||!api.state?.jail)return;
+  setTimeout(()=>{if(document.querySelector('dialog.jl-sheet[open]')||document.querySelector('dialog.chat-sheet[open]'))return;
+    import('./v4/jail.js').then(m=>{jailMod=m;m.openJail(env());}).catch(()=>{});},900);});
 api.addEventListener('busy',e=>{ui.busy=e.detail;document.body.classList.toggle('busy',ui.busy);$('#saveState')?.setAttribute('aria-busy',String(ui.busy));if(!ui.busy&&heldTap)setTimeout(replayHeld,60);else if(!ui.busy)holdMark(null);});
 /* "Game mất chữ": an iPhone tab left open across a deploy came back with every card of the work sheet
  * blank (containers, portrait and button shapes drawn, no words) while the DOM still held the text.

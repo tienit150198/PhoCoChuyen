@@ -222,11 +222,13 @@ class Inside(JailBase):
             with self.subTest(name=name):
                 self.refused(s, name, 'jailed', career, **p)
         s, _ = self.act(s, 'settings', sound=False)
-        s, r = self.act(s, 'jr_profile', name='Bé Na')
+        self.refused(s, 'jr_profile', 'jailed', name='Bé Na')   # owner 09/10: only the camp, messages and công ích
         self.assertTrue(s['journey']['jail'])
-        for name in ('jr_bk_open', 'as_start', 'vs_open', 'bd_post', 'qn_chat', 'jail_end', 'jr_wd_buy', 'jr_cert_exam'):
+        for name in ('settings', 'jail_end', 'jail_task_start', 'jail_task_done', 'jr_seen', 'bd_seen'):
             self.assertTrue(jl.allowed(name), name)
-        for name in ('end_day', 'start_day', 'fair_bm_pay', 'jr_spend_cafe', 'jr_out_go', 'jr_needs_snack', 'iv_buy'):
+        for name in ('end_day', 'start_day', 'fair_bm_pay', 'jr_spend_cafe', 'jr_out_go', 'jr_needs_snack', 'iv_buy',
+                     'jr_bk_open', 'as_start', 'vs_open', 'bd_post', 'qn_chat', 'jr_wd_buy', 'jr_cert_exam', 'reset_all',
+                     'select_career', 'jr_equip', 'jr_profile', 'jr_withdraw'):
             self.assertFalse(jl.allowed(name), name)
 
     def test_internal_commands_still_run(self):

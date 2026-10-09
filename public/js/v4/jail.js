@@ -200,8 +200,8 @@ function actions(j){
 }
 function rules(){
   return `<section class="jl-card jl-rules"><h3>📋 Nội quy trại</h3><ul>
-      <li><span aria-hidden="true">🚫</span> Không đi làm, không vào chợ đen, không mua sắm, không đi chơi xa.</li>
-      <li><span aria-hidden="true">✅</span> Vẫn nhắn tin, xem bạn bè, đọc sách, học bài, chỉnh cài đặt và góp ý được.</li></ul>
+      <li><span aria-hidden="true">✅</span> Trong trại chỉ được nhắn tin và làm công ích.</li>
+      <li><span aria-hidden="true">🚫</span> Việc khác (đi làm, chợ đen, mua sắm, ngân hàng, đi chơi…) chờ ra trại rồi làm.</li></ul>
     <div class="jl-links">${btn('💬 Nhắn tin','go',{to:'liveChat'},'ghost small')}${btn('👥 Bạn bè','go',{to:'friends'},'ghost small')}${btn('⚙️ Cài đặt','go',{to:'settings'},'ghost small')}</div></section>`;
 }
 
