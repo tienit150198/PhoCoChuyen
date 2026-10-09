@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Nộp tiền",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Chuyển khoản cho bạn bè\"",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có sổ kỳ hạn",
+  "en": ""
+ },
+ {
   "vi": "Mở thẻ ở mục Thẻ",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Việc tay làm, xin là việc lành.",
-  "en": ""
- },
- {
-  "vi": "Thương người gần, nhớ người xa.",
-  "en": ""
- },
- {
-  "vi": "Tiếng chùa",
-  "en": ""
- },
- {
-  "vi": "Ra về",
   "en": ""
  }
 ]

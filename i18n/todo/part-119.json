@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Chọn điểm đến",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ đường",
+  "en": ""
+ },
+ {
+  "vi": "Độ phóng bản đồ",
+  "en": ""
+ },
+ {
   "vi": "Thu nhỏ bản đồ",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Chưa có đánh giá dịch vụ.",
-  "en": ""
- },
- {
-  "vi": "Người phụ việc đang làm",
-  "en": ""
- },
- {
-  "vi": "Nhận khách",
-  "en": ""
- },
- {
-  "vi": "Chưa thể nhận",
   "en": ""
  }
 ]

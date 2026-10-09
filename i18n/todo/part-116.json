@@ -1,5 +1,17 @@
 [
  {
+  "vi": "chưa đào",
+  "en": ""
+ },
+ {
+  "vi": "đã đào",
+  "en": ""
+ },
+ {
+  "vi": "đã gieo hạt",
+  "en": ""
+ },
+ {
   "vi": "đã tưới, cây lên rồi",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "🎁 Tặng luôn",
-  "en": ""
- },
- {
-  "vi": "🧾 Cho mượn",
-  "en": ""
- },
- {
-  "vi": "Mượn thôi, sẽ trả lại (ghi sổ nợ)",
-  "en": ""
- },
- {
-  "vi": "Cho mượn thì khoản này vào sổ nợ, người ấy trả dần lúc nào cũng được.",
   "en": ""
  }
 ]

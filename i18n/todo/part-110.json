@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Ví và quỹ tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Ví: tiền của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ tiệm: tiền của tiệm",
+  "en": ""
+ },
+ {
   "vi": "Tiền phòng trừ từ ví",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Ví dụ 50",
-  "en": ""
- },
- {
-  "vi": "Nộp tiền",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Chuyển khoản cho bạn bè\"",
-  "en": ""
- },
- {
-  "vi": "Chưa có sổ kỳ hạn",
   "en": ""
  }
 ]

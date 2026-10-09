@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Không hộp nào sắp hết hạn.",
+  "en": ""
+ },
+ {
+  "vi": "📞 Cuộc gọi",
+  "en": ""
+ },
+ {
+  "vi": "📦 Mở Kho & sổ quầy",
+  "en": ""
+ },
+ {
   "vi": "🌙 Ăn tối, đi ngủ",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "👉 Nhập thêm hàng ở giá treo",
-  "en": ""
- },
- {
-  "vi": "👉 Xem giá treo",
-  "en": ""
- },
- {
-  "vi": "Gói có món không đúng đơn",
-  "en": ""
- },
- {
-  "vi": "In phiếu giao",
   "en": ""
  }
 ]

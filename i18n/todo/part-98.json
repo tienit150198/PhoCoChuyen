@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Chỉ số",
+  "en": ""
+ },
+ {
+  "vi": "Định nghĩa · cách tính",
+  "en": ""
+ },
+ {
+  "vi": "Chưa bật (0)",
+  "en": ""
+ },
+ {
   "vi": "đã kết thúc (đến hết hôm qua)",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "hộp hết hạn trong 3 ngày",
-  "en": ""
- },
- {
-  "vi": "Không hộp nào sắp hết hạn.",
-  "en": ""
- },
- {
-  "vi": "📞 Cuộc gọi",
-  "en": ""
- },
- {
-  "vi": "📦 Mở Kho & sổ quầy",
   "en": ""
  }
 ]

@@ -1,3 +1,9 @@
+# v1.9.32 — 2026-10-09
+
+🐕 Đua chó (chủ game 09/10): sạp cược mới ở Chợ đen (game/fair_dog.py, fair-dog.js), mỗi 2 phút một lượt 6 chó, trả thưởng cố định theo hạng (tối đa 95%), chỉ xem và cổ vũ; luật bảo kê/công an/tạm giữ như các sạp khác. Không lưu gì mới.
+🚨 Cược lớn: ván từ 50.000 xu có thể bị bắt (1% + 1% mỗi 10.000, cộng 5% khi lời trên 300.000 trong ngày, trần 70%) — fair_bm.arrest_p.
+🗡️ Phóng dao, ô ăn quan là trò kỹ năng: không bắt ngẫu nhiên, chỉ bắt khi nghi gian lận/spam (game/fair_watch.py); bỏ trần ngầm 300 xu/ngày của phóng dao; cược tối đa 1.000 xu; dao quay nhanh hơn 5% mỗi màn; Ông Hai thưởng 1.000 xu. Save đọc được trên 1.9.30/1.9.31.
+
 # v1.9.31 — 2026-10-09
 
 🚔 Trại tạm giữ (chủ game 09/10): game/jail.py, journey.jail; bắt ở chợ đen chỉ khi lời chợ đen hôm nay > 300.000 xu, 5%/ván (fair_bm.ARREST_FROM, BM_ARREST_P): mất cược + phạt 30% ví + 3 ngày; tố cáo sai 25% → 1 ngày; công ích 3 việc/ngày (đủ 3: ngày tính 2); bảo lãnh bởi bạn bè, bạn trả 30.000 xu; tự thả sau ngày án × 24h; MNL_JAIL_OFF=1 tắt.
