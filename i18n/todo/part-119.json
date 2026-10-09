@@ -1,5 +1,149 @@
 [
  {
+  "vi": "Phóng to bản đồ",
+  "en": ""
+ },
+ {
+  "vi": "Về vị trí của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Khu phố: chạm vào một nơi để đi tới. Mũi tên để đi, Enter để vào.",
+  "en": ""
+ },
+ {
+  "vi": "Mua xe để chạy quanh phố",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Đang làm dở",
+  "en": ""
+ },
+ {
+  "vi": "⏸ Đang tạm đóng",
+  "en": ""
+ },
+ {
+  "vi": "Hợp người mới",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã tạm đóng nơi này. Mở lại miễn phí rồi vào làm ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Vào tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Đèn xanh · có thể qua",
+  "en": ""
+ },
+ {
+  "vi": "Đèn đỏ · dừng trước vạch",
+  "en": ""
+ },
+ {
+  "vi": "Dừng chờ không mất xu. Qua vạch khi đèn đỏ: phạt 12 xu; 1 giây đầu mới chuyển đỏ được miễn để kịp dừng.",
+  "en": ""
+ },
+ {
+  "vi": "👆 Chạm từng món · giữ để đếm nhanh",
+  "en": ""
+ },
+ {
+  "vi": "👆 Chạm “Đếm khay” để đếm cả khay · khay thiếu có ô trống",
+  "en": ""
+ },
+ {
+  "vi": "đã đếm",
+  "en": ""
+ },
+ {
+  "vi": "Nhận cả thùng vào kệ",
+  "en": ""
+ },
+ {
+  "vi": "✅ Nhận cả thùng lên kệ",
+  "en": ""
+ },
+ {
+  "vi": "Khiếu nại đơn gộp giao thiếu",
+  "en": ""
+ },
+ {
+  "vi": "Hàng đã lên kệ: về bán tiếp",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Hàng đã lên kệ · về bán tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Mở thùng đã tới rồi đặt tiếp",
+  "en": ""
+ },
+ {
+  "vi": "📦 Mở thùng đã tới & xếp lên kệ",
+  "en": ""
+ },
+ {
+  "vi": "Đợi thùng về rồi đặt tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Đặt đơn đang soạn",
+  "en": ""
+ },
+ {
+  "vi": "đơn gộp",
+  "en": ""
+ },
+ {
+  "vi": "Mở thùng",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Xem hàng hết hạn tối nay",
+  "en": ""
+ },
+ {
+  "vi": ", đã đếm",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã đếm khay",
+  "en": ""
+ },
+ {
+  "vi": "trong thùng",
+  "en": ""
+ },
+ {
+  "vi": "Nhận cả thùng lên kệ",
+  "en": ""
+ },
+ {
+  "vi": "Hàng giao thiếu",
+  "en": ""
+ },
+ {
+  "vi": "📉 Giao thiếu · khiếu nại để được hoàn tiền",
+  "en": ""
+ },
+ {
+  "vi": "Thùng hàng đã tới",
+  "en": ""
+ },
+ {
+  "vi": "📦 Thùng đã tới · mở & xếp lên kệ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có hàng",
+  "en": ""
+ },
+ {
   "vi": "· Đặt hàng ↓",
   "en": ""
  },
@@ -1653,150 +1797,6 @@
  },
  {
   "vi": "Phục vụ khách",
-  "en": ""
- },
- {
-  "vi": "Hủy đơn",
-  "en": ""
- },
- {
-  "vi": "Nhận dịch vụ",
-  "en": ""
- },
- {
-  "vi": "Một lời góp ý (không bắt buộc)",
-  "en": ""
- },
- {
-  "vi": "Nhận xét dịch vụ",
-  "en": ""
- },
- {
-  "vi": "Bạn thấy dịch vụ thế nào?",
-  "en": ""
- },
- {
-  "vi": "Đang mở sổ khách…",
-  "en": ""
- },
- {
-  "vi": "Khách cần bạn phục vụ",
-  "en": ""
- },
- {
-  "vi": "Dịch vụ bạn đã đặt",
-  "en": ""
- },
- {
-  "vi": "Chưa có đơn khách đang chờ.",
-  "en": ""
- },
- {
-  "vi": "Ghé một chỗ làm để nhận dịch vụ đầu tiên.",
-  "en": ""
- },
- {
-  "vi": "Khách ghé chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Xem chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Chưa có ai đang đứng tại đây.",
-  "en": ""
- },
- {
-  "vi": "đơn khách · Mở sổ",
-  "en": ""
- },
- {
-  "vi": "Sổ đơn dịch vụ",
-  "en": ""
- },
- {
-  "vi": "Nói với khách…",
-  "en": ""
- },
- {
-  "vi": "Lời nói với khách ghé",
-  "en": ""
- },
- {
-  "vi": "👋 Chào khách",
-  "en": ""
- },
- {
-  "vi": "Phòng trực tiếp sẽ kết nối khi chỗ làm sẵn sàng.",
-  "en": ""
- },
- {
-  "vi": "Thứ Hai",
-  "en": ""
- },
- {
-  "vi": "Thứ Ba",
-  "en": ""
- },
- {
-  "vi": "Thứ Tư",
-  "en": ""
- },
- {
-  "vi": "Thứ Năm",
-  "en": ""
- },
- {
-  "vi": "Thứ Sáu",
-  "en": ""
- },
- {
-  "vi": "Thứ Bảy",
-  "en": ""
- },
- {
-  "vi": "Cả tuần",
-  "en": ""
- },
- {
-  "vi": "Biết rồi",
-  "en": ""
- },
- {
-  "vi": "Đội đang xử lý đơn riêng",
-  "en": ""
- },
- {
-  "vi": "🔒 Đội dừng: giữ hàng cho bạn",
-  "en": ""
- },
- {
-  "vi": "Quỹ nghề chưa đủ vận hành",
-  "en": ""
- },
- {
-  "vi": "Đội đang tạm nghỉ",
-  "en": ""
- },
- {
-  "vi": "Góc nhìn sau bàn làm việc",
-  "en": ""
- },
- {
-  "vi": "GÓC CỦA BẠN · ĐỘI Ở PHÍA TRƯỚC",
-  "en": ""
- },
- {
-  "vi": "Bàn làm việc đang chờ đội vào ca",
-  "en": ""
- },
- {
-  "vi": "Đơn đã ghi",
-  "en": ""
- },
- {
-  "vi": "Doanh thu đã ghi",
   "en": ""
  }
 ]

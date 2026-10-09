@@ -1395,6 +1395,21 @@
   "pattern": true
  },
  {
+  "vi": "Đặt ít nhất $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎉 $1 về nhất! +",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn cược $1 · $2 · 📸 về đích sát nút",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Màn $1/",
   "en": "",
   "pattern": true
@@ -1560,7 +1575,7 @@
   "pattern": true
  },
  {
-  "vi": "Cần thêm $1 ván ≥ $2 ở trò khác (bầu cua, chiếu trong, lô tô, vé cào)",
+  "vi": "Cần thêm $1 ván ≥ $2 ở trò khác (bầu cua, chiếu trong, lô tô, vé cào, đua chó)",
   "en": "",
   "pattern": true
  },
@@ -1920,6 +1935,11 @@
   "pattern": true
  },
  {
+  "vi": "Chọn một chú chó, cược từ $1, về nhất ăn tới ×",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Chụp một mình, với bạn bè hay người lạ · $1 một lượt 4 kiểu",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "Còn $1 bước chưa xong: $2.$3 Vẫn làm luôn?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "hoặc $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "học bổng $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "/$1 bài đã xong$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "BÀI $1/",
   "en": "",
   "pattern": true
  }

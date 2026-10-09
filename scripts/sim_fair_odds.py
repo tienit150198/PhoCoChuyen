@@ -9,7 +9,8 @@ other state of a round is lower (the cool-off after a winning streak, the spam d
 any way of betting returns less than its stakes.
 
 The simulation plays each stall with the real draw (fair._draw_luck, fair.luck_p: streak cool-off and spam decay)
-and payouts (bc_fair_roll / bc_back, xd_toss / xd_fine, prize_of, scratch.prize_mult), three ways:
+and payouts (bc_fair_roll / bc_back, xd_toss / xd_fine, prize_of, scratch.prize_mult, fair_dog.lineup / draw / back),
+three ways:
   fresh   a long pause before every round (never cooled by a run), 100 xu flat
   spam    one round a second at the same stall, 100 xu flat
   press   fresh, but 1000 xu while the streak is not cooled and 10 xu while it is (betting the "warm" rounds)
@@ -26,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from game import fair as fh            # noqa: E402
 from game import fair_scratch as xs    # noqa: E402
+from game import fair_dog as dg        # noqa: E402
 
 LOC = fh.LOC_P * fh.LOC_MULT
 
@@ -63,6 +65,12 @@ def exact() -> dict:
     mean = sum(m * w for m, w in xs.PRIZES) / total
     loc = sum(w / total * max(0, fh.LOC_MULT - (m - 1)) for m, w in xs.PRIZES if m > 1)
     out['xs'] = dict(rtp=p * mean, loc=p * mean + p * fh.LOC_P * loc)
+    # 🐕 đua chó: fixed odds, the winner drawn from the classes' weights; the best dog to back (the outsider), and
+    # `fresh`: the mean of a dog picked at random (what play() bets); Lộc only on a gain below LOC_MULT× the stake
+    rows = [(w / 1000, m / 10) for w, m in dg.CLASSES]
+    out['dg'] = dict(rtp=max(p * b for p, b in rows),
+                     loc=max(p * (b + fh.LOC_P * max(0, fh.LOC_MULT - (b - 1))) for p, b in rows),
+                     low=min(p * b for p, b in rows), fresh=sum(p * b for p, b in rows) / len(rows))
     return out
 
 
@@ -112,6 +120,12 @@ def play(game: str, how: str, n: int, seed: int = 1, loc: bool = False) -> float
                     side = 'chan' if rng.random() < .5 else 'le'
                     coins = fh.xd_toss(side, fh._draw_luck(pl.j, 'xd', p))
                     back = 2 * st if (side == 'chan') == (sum(coins) % 2 == 0) else 0
+            elif game == 'dg':   # a random dog of a random race; 100 xu (press: 1000, it never cools)
+                pl.t += 1 if how == 'spam' else fh.RUN_GAP + 1
+                st = 1000 if how == 'press' else 100
+                lanes = dg.lineup(rng.randrange(10**6))
+                lane = rng.randrange(dg.LANES)
+                back = dg.back(st, lanes[lane][1]) if dg.draw(lanes, rng)[0] == lane else 0
             elif game == 'lt':
                 st, p = pl.stake(2, 1000)   # a 100-xu tờ (trăm); press: 1000 / 2
                 back = fh.prize_of('thuong', st, 1) if fh._draw_luck(pl.j, 'lt', p) else 0
@@ -169,7 +183,7 @@ def side_peek(slots: int = 40, rounds: int = 600, seed: int = 4) -> tuple[float,
 
 def main() -> None:
     n = next((int(a) for a in sys.argv[1:] if a.isdigit()), 1_000_000)
-    names = dict(bc='🦀 bầu cua', xd='🕯️ chiếu trong', lt='🎱 lô tô', xs='🎟️ vé cào')
+    names = dict(bc='🦀 bầu cua', xd='🕯️ chiếu trong', lt='🎱 lô tô', xs='🎟️ vé cào', dg='🐕 đua chó')
     ex = exact()
     print(f'{"stall":16} {"exact":>7} {"+Lộc":>7} | {n:,} rounds each: {"fresh":>7} {"spam":>7} {"press":>7} {"fresh+Lộc":>9}')
     for g, name in names.items():
@@ -177,6 +191,7 @@ def main() -> None:
         print(f'{name:16} {ex[g]["rtp"]:7.2%} {ex[g]["loc"]:7.2%} | {"":>{len(f"{n:,}") + 15}}'
               + ' '.join(f'{v:7.2%}' for v in mc[:3]) + f' {mc[3]:9.2%}')
     print(f'lô tô 2- and 5-xu tờ: {ex["lt"]["low"]:.2%}')
+    print(f'đua chó: the favourite {ex["dg"]["low"]:.2%}, a dog picked at random {ex["dg"]["fresh"]:.2%}')
     drawn, ok = loto_rounds(min(n, 20_000))
     print(f'lô tô rounds through loto_rs/round_view: drawn for the player {drawn:.2%}, cards agree {ok:.2%}')
     if '--side' in sys.argv:

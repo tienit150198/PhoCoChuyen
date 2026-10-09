@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Chốt $1 bản cần $2 xu, quỹ tiệm chưa đủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chốt đặt trước $1 bản Jewel",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ ghi $1 bản mà chỉ chốt $2: có người đặt trước sẽ không có hàng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ ghi $1 bản mà chốt tới $2: tiền nằm chết trong kho.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "📒 Chốt $1 bản Jewel với $2: −$3 xu, hàng đã về kho.",
   "en": "",
   "pattern": true
@@ -1325,6 +1345,21 @@
   "pattern": true
  },
  {
+  "vi": "Đua chó đặt từ $1 xu nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 về nhất!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thắng $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Công an kiểm tra đánh bạc! Thu $1 xu trong ví.",
   "en": "",
   "pattern": true
@@ -1366,11 +1401,6 @@
  },
  {
   "vi": "Bão $1! +$2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thắng $1 xu.",
   "en": "",
   "pattern": true
  },
@@ -2216,36 +2246,6 @@
  },
  {
   "vi": "$1 đã trả nhà $2$3. Căn nhà đang để trống.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã trả nhà $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", gửi nốt $1 xu tiền thuê",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cần $1 xu: tài khoản và ví còn thiếu $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả góp nhà kỳ $1$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1 xu cho khoản $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả xong khoản $1.",
   "en": "",
   "pattern": true
  }

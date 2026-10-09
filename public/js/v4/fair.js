@@ -16,6 +16,7 @@ import {amountAttrs,amountOf} from './amount-parse.js';   // shorter lines on th
 import {words,callLine,MC,ACTS,CROWD,STICKERS,MODE_STICKER} from './fair-loto.js';
 import {setup as knifeSetup} from './fair-knife.js';
 import {setup as scratchSetup} from './fair-scratch.js';
+import {setup as dogSetup} from './fair-dog.js';
 import {setup as boothSetup} from './fair-booth.js';
 
 const FACES=['bau','cua','tom','ca','ga','nai'];
@@ -24,7 +25,7 @@ const GOURD='<svg class="fh-gourd" viewBox="0 0 40 48" aria-hidden="true"><path 
 const FACE_ART={bau:GOURD,cua:'🦀',tom:'🦐',ca:'🐟',ga:'🐓',nai:'🦌'};
 const art=f=>`<span class="fh-art" aria-hidden="true">${FACE_ART[f]||'❔'}</span>`;
 const TITLE_NAMES={f_kinh2:'🎎 Kinh đôi rộn ràng',f_nguoc:'🙃 Đọc ngược như xuôi',f_hu:'🏺 Ôm hũ đêm hội',f_loto:'🎱 Thần lô tô chợ đen',f_bao:'🌪️ Trúng bão bầu cua',f_raid:'🚨 Bị công an hỏi thăm',f_oaq:'🪨 Cao tay ô ăn quan',f_ring:'💍 Tay ném vòng thần sầu',f_dart:'🎯 Mắt thần phi tiêu'};
-const GAMES={home:['🕶️','Cổng chợ'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],dt:['🗡️','Phóng dao'],xs:['🎟️','Vé số cào'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng'],food:['🍡','Hàng ăn vặt'],pb:['📸','Chụp ảnh']};
+const GAMES={home:['🕶️','Cổng chợ'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],dt:['🗡️','Phóng dao'],xs:['🎟️','Vé số cào'],dg:['🐕','Đua chó'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng'],food:['🍡','Hàng ăn vặt'],pb:['📸','Chụp ảnh']};
 const MINI_BOARD='<svg viewBox="0 0 64 40" aria-hidden="true"><rect x="2" y="6" width="60" height="28" rx="14" fill="#e9c98f" stroke="#8a5a26" stroke-width="2"/><path d="M14 6v28M50 6v28M14 20h36M23 6v28M32 6v28M41 6v28" stroke="#8a5a26" stroke-width="1.6"/><circle cx="8" cy="20" r="4" fill="#5b4636"/><circle cx="56" cy="20" r="4" fill="#5b4636"/><g fill="#7a8b99"><circle cx="18" cy="13" r="1.8"/><circle cx="27" cy="27" r="1.8"/><circle cx="36" cy="13" r="1.8"/><circle cx="45" cy="27" r="1.8"/><circle cx="20" cy="28" r="1.8"/><circle cx="38" cy="25" r="1.8"/></g></svg>';
 const MINI_BOTTLES='<svg viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2d5a3d" stroke-width="1.4"><path d="M12 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#7cc79a"/><path d="M28 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#8fb6e8"/><path d="M44 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#f0b46a"/></g><ellipse cx="34" cy="10" rx="7" ry="2.6" fill="none" stroke="#e2462d" stroke-width="2.4"/></svg>';
 const CHIPS=[1,2,5,10,50,100,200,500,1000];
@@ -96,6 +97,8 @@ function sfx(kind){
     case'miss':tone(190,.14,.04,0,'sine',120);break;
     case'scratch':rattle(0,1);break;
     case'shutter':rattle(0,2);tone(1900,.05,.022,0,'square',900);break;
+    case'whistle':tone(1760,.18,.035,0,'sine',2100);tone(1760,.32,.035,.24,'sine',2300);break;   // 🐕 the start of a race
+    case'cheer':rattle(0,5);tone(520+Math.random()*200,.12,.018,0,'triangle',760);break;
   }
 }
 
@@ -120,7 +123,7 @@ function dialog(){
     e.preventDefault();S.anchor=el.dataset.fhKey||'';S.anchorAt=performance.now();onClick(el.dataset.fh,el.dataset,el);
   });
   d.addEventListener('input',e=>{const el=e.target;if(el?.dataset?.fhAmt&&d.contains(el))amtTyped(el);});
-  d.addEventListener('close',()=>{pauseLoto();ltMusic();S.oaq.anim=null;stopRing();KN?.stop();PB?.leave();clearInterval(S.tick);S.tick=null;S.flash=null;});
+  d.addEventListener('close',()=>{pauseLoto();ltMusic();S.oaq.anim=null;stopRing();KN?.stop();PB?.leave();DG?.stop();clearInterval(S.tick);S.tick=null;S.flash=null;});
   S.dlg=d;return d;
 }
 export async function openFair(env,data={}){
@@ -155,7 +158,7 @@ export async function fairAction(action,data,el,env){
   if(action!=='fair')return false;
   await openFair(env,data);return true;
 }
-const animating=()=>S.busy||S.tab==='dt'&&!!KN?.busy()||S.tab==='xs'&&!!XS?.busy()||S.tab==='pb'&&!!PB?.busy()||S.tab==='bc'&&S.bc.phase!=='idle'||S.tab==='xd'&&S.xd.phase!=='idle'||S.tab==='oaq'&&!!S.oaq.anim||S.tab==='ring'&&!!S.ring.finishing;
+const animating=()=>S.busy||S.tab==='dg'&&!!DG?.busy()||S.tab==='dt'&&!!KN?.busy()||S.tab==='xs'&&!!XS?.busy()||S.tab==='pb'&&!!PB?.busy()||S.tab==='bc'&&S.bc.phase!=='idle'||S.tab==='xd'&&S.xd.phase!=='idle'||S.tab==='oaq'&&!!S.oaq.anim||S.tab==='ring'&&!!S.ring.finishing;
 
 async function send(action,payload={}){
   const {api}=S.env;
@@ -228,6 +231,7 @@ function tickLabels(){
   const f=F();
   if(!f.open&&f.soon&&f.opens*1000<=serverNow()&&!S.opening){S.opening=1;S.env.api.refresh().catch(()=>{/* next tick */}).finally(()=>{setTimeout(()=>{S.opening=0;},5000);render();});}   // the countdown hit 0: fetch the open fair
   if(S.tab==='lt')nextAct();
+  if(S.tab==='dg')DG?.tick();   // 🐕 a new lineup once the race moved on
   S.dlg.querySelectorAll('[data-fh-count]').forEach(el=>{
     const k=el.dataset.fhCount;
     if(k==='close')el.textContent=whenText(f);
@@ -248,16 +252,16 @@ function head(){
   </header>`;
 }
 /** 🏆 The Bảng vàng's score: the xu won at the fair this edition (an older server sends no `money`: null). */
-const won=()=>{const m=F().money?.total;return typeof m==='number'?m:null;};
+const won=()=>{const m=F().money?.total;return typeof m==='number'?m-dgHold():null;};
 function strip(){
-  const f=F(),m=won(),e=f.earn||{},got=(f.today_xu?Object.values(f.today_xu).reduce((a,n)=>a+(Number(n)||0),0):(e.oaq?.today||0)+(e.ring?.today||0))-xsHold();   // every stall's xu this day (today_xu, 1.4.14+)
-  return `<div class="fh-strip" role="status"><span>👛 <b>${xu((f.wallet||0)-ltHold()-xsHold())}</b></span><span>💰 Hôm nay ${got<0?'lỗ':'kiếm'} <b>${xu(Math.abs(got))}</b></span>${winLoss(f)}<button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 Bảng vàng${m===null?'':` · ${m<0?'lỗ':'lời'} <b>${xu(Math.abs(m))}</b>`}</button></div>`;
+  const f=F(),m=won(),e=f.earn||{},got=(f.today_xu?Object.values(f.today_xu).reduce((a,n)=>a+(Number(n)||0),0):(e.oaq?.today||0)+(e.ring?.today||0))-xsHold()-dgHold('day');   // every stall's xu this day (today_xu, 1.4.14+)
+  return `<div class="fh-strip" role="status"><span>👛 <b>${xu((f.wallet||0)-ltHold()-xsHold()-dgHold())}</b></span><span>💰 Hôm nay ${got<0?'lỗ':'kiếm'} <b>${xu(Math.abs(got))}</b></span>${winLoss(f)}<button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 Bảng vàng${m===null?'':` · ${m<0?'lỗ':'lời'} <b>${xu(Math.abs(m))}</b>`}</button></div>`;
 }
 /** #18: today's trò that came out ahead and behind (today_xu, one Sổ ví row per trò), so a losing streak is visible. */
 function winLoss(f){
   const x=f.today_xu;if(!x)return '';
   let up=0,down=0;
-  for(const [g,v] of Object.entries(x)){const n=(Number(v)||0)-(g==='xs'?xsHold():0);if(n>0)up+=n;else down-=n;}
+  for(const [g,v] of Object.entries(x)){const n=(Number(v)||0)-(g==='xs'?xsHold():g==='dg'?dgHold('day'):0);if(n>0)up+=n;else down-=n;}
   return up||down?`<span class="fh-wl" title="Cộng theo từng trò hôm nay">📊 Trò lời <b class="up">+${xu(up)}</b> · trò lỗ <b class="down">−${xu(down)}</b></span>`:'';
 }
 /** Inside a stall: the way back to the gate. */
@@ -268,7 +272,7 @@ function nav(){
   return `<nav class="fh-nav" aria-label="Chợ đen">${btn(back,'tab',{tab:'home'},'ghost small fh-back',' data-fh-key="home"')}<b><span aria-hidden="true">${e}</span> ${esc(l)}</b></nav>`;
 }
 /** The small-stake stalls: what is left of today's loss cap. */
-const xuLine=tab=>{const x=F().today_xu;if(!x||!GAMES[tab]||tab==='home'||tab==='board'||tab==='loan'||tab==='food'||tab==='pb')return '';const n=(x[tab==='dt'?'kn':tab]||0)-(tab==='xs'?xsHold():0);   // the dt tab is the phóng dao ('kn')
+const xuLine=tab=>{const x=F().today_xu;if(!x||!GAMES[tab]||tab==='home'||tab==='board'||tab==='loan'||tab==='food'||tab==='pb')return '';const n=(x[tab==='dt'?'kn':tab]||0)-(tab==='xs'?xsHold():tab==='dg'?dgHold('day'):0);   // the dt tab is the phóng dao ('kn')
   return `<p class="fh-luck-left">💰 Hôm nay kiếm ở ${esc(GAMES[tab][1])}: <b>${n>0?'+':n<0?'−':''}${xu(Math.abs(n))}</b></p>`;};
 const luckLine=()=>{const t=F().today||{};if(R().nocap)return '';return `<p class="fh-luck-left">🎟️ Thử vận hôm nay còn chơi được <b>${xu(t.left)}</b> <small>(thua tối đa ${xu(R().cap)} mỗi ngày)</small></p>`;};
 const flash=()=>`<p class="fh-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
@@ -282,7 +286,7 @@ function page(){
   if(S.env?.api?.state?.jail)return head()+`<div class="sheet-body fh-body"><section class="fh-card fh-bm ban" data-fh-key="bm-jail"><div class="fh-big" aria-hidden="true">🚔</div><h3>Bạn đang ở trại tạm giữ</h3>
     <p>Ra trại rồi mới vào chợ đen được nha.</p>${btn('🚔 Mở trại tạm giữ','jail',{},'primary full',' data-fh-key="bm-jailgo"')}</section>${note()}</div>`;   // 🚔 game/jail.py
   if(gated()&&S.tab!=='board')return head()+giftPop()+`<div class="sheet-body fh-body">${flash()}${bmGate()}${note()}</div>`;
-  const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().knife?kn().view():homeView(),xs:()=>F().scratch?xs().view():homeView(),pb:()=>F().photo?pb().view():homeView()};
+  const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().knife?kn().view():homeView(),xs:()=>F().scratch?xs().view():homeView(),dg:()=>F().dog?dg().view():homeView(),pb:()=>F().photo?pb().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
   const gifting=!!S.gift&&clean();   // the gift card is the whole screen until "Vào hội" (clean layout: nothing else behind it)
   return head()+giftPop()+`<div class="sheet-body fh-body">${f.open&&!gifting?strip():''}${f.open?nav():''}${robCard()}${wealthRaidCard()}${auditCard()}${locCard()}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab)+coldLine(S.tab):''}${body}${gifting?'':note()}</div>`;
@@ -338,7 +342,7 @@ async function bmRefuse(){
 
 // 🥶 a long run of one luck stall cools its luck (server: fair.cold); honest about it, in that stall only
 const coldLine=tab=>{const c=F().cool||F().cold;if(!c||c.game!==tab)return '';
-  return `<p class="fh-cold" role="note">🥶 Vận đang nguội vì chơi liền một trò. ${c.switch?`Cần thêm ${c.switch} ván ≥ ${xu(c.min||20)} ở trò khác (bầu cua, chiếu trong, lô tô, vé cào)`:'Đổi trò khác'} hoặc nghỉ ${c.gap} phút là vận ấm lại; ném vòng, ô ăn quan, phóng dao không tính.</p>`;};
+  return `<p class="fh-cold" role="note">🥶 Vận đang nguội vì chơi liền một trò. ${c.switch?`Cần thêm ${c.switch} ván ≥ ${xu(c.min||20)} ở trò khác (bầu cua, chiếu trong, lô tô, vé cào, đua chó)`:'Đổi trò khác'} hoặc nghỉ ${c.gap} phút là vận ấm lại; ném vòng, ô ăn quan, phóng dao không tính.</p>`;};
 // 🍀 Lộc trời cho: shown once the stall's own result has played out
 function locCard(){
   const r=S.loc;if(!r||animating())return '';
@@ -383,6 +387,7 @@ function gateList(){
     <div class="fh-luck">
       ${luck('bc',FACE_ART.cua,'Bầu cua','Đặt bao nhiêu tùy bạn')}
       ${f.knife?luck('dt','🗡️','Phóng dao',`Đặt ${Math.min(...f.knife.stakes)}–${Math.max(...f.knife.stakes)} xu, qua màn nhận thưởng hoặc liều chơi tiếp`):''}
+      ${f.dog?luck('dg','🐕','Đua chó',dogLine(f.dog)):''}
       ${f.scratch?luck('xs','🎟️','Vé số cào',`Vé ${Math.min(...f.scratch.tiers)}–${Math.max(...f.scratch.tiers)} xu, cào trúng 3 ô giống nhau`):''}
       ${luck('lt','🎱','Gánh lô tô',f.ganh?`Cô Bảy hô số, vé từ ${xu(Math.min(...Object.values(f.ganh.tiers)))} · ${esc(f.ganh.names?.[f.ganh.modes?.[0]?.[1]]||'')}`:`Tờ dò ${xu(r.loto_price)}, kinh ăn ${xu(r.loto_prize)}`)}
       ${luck('xd','🕯️','Chiếu trong',`Cược từ ${r.xd_min} xu`,'<span class="fh-warnchip">🚨 công an</span>')}
@@ -589,6 +594,7 @@ const amtBox=(k,v,dis=false)=>`<span class="fh-amtbox" data-amt-box><input class
 const amtClear=k=>{const el=S.dlg?.querySelector(`[data-fh-amt="${k}"]`);if(el)el.value='';};
 function amtTyped(el){
   const v=amountOf(el.value,'xu'),r=R();if(!v||v<1)return;
+  if(el.dataset.fhAmt==='dg'){dg().typed(v);return;}   // 🐕 đua chó
   if(el.dataset.fhAmt==='bc')S.bc.chip=Math.min(v,r.bc_max||v);
   else S.xd.stake=Math.max(r.xd_min||10,Math.min(v,r.xd_max||v));
   render();
@@ -1055,6 +1061,13 @@ const kn=()=>KN??=knifeSetup({S,F,btn,say,xu,esc,send,render,sfx,pick,reduce,ser
 let XS=null;
 const xs=()=>XS??=scratchSetup({S,F,btn,say,xu,esc,send,render,sfx,pick,reduce});
 const xsHold=()=>XS?XS.hold():0;
+const dgHold=k=>DG?DG.hold(k):0;   // 🐕 a race already paid but still running: not shown yet
+
+/** The gate's line for the đua chó: the smallest stake, the biggest payout on the board (a price). */
+function dogLine(d){const top=Math.max(...(d.races?.[0]?.[1]||[[0,10]]).map(x=>x[1]))/10,low=xu(d.min),best=payX(top);return `Chọn một chú chó, cược từ ${low}, về nhất ăn tới ×${best}`;}
+/* ---- 🐕 Đua chó (tab 'dg'): ./fair-dog.js (set up on first use, with this file's helpers; an older server sends no `dog`: no stall) ---- */
+let DG=null;
+const dg=()=>DG??=dogSetup({S,F,btn,say,xu,esc,send,render,sfx,pick,reduce,serverNow,amtBox,amtClear,payX});
 
 /* ---- 📸 Chụp ảnh (tab 'pb'): ./fair-booth.js (set up on first use, with this file's helpers; an older server sends no `photo`: no booth) ---- */
 let PB=null;
@@ -1187,7 +1200,7 @@ async function onClick(op,data){
   const b=S.bc,x=S.xd;
   switch(op){
     case'close':S.dlg.close();return;
-    case'tab':if(S.tab==='pb'&&data.tab!=='pb')PB?.leave();if(S.tab==='oaq'&&data.tab!=='oaq')S.oaq.anim=null;S.tab=data.tab;S.flash=null;S.anchor='';if(S.tab!=='lt')pauseLoto();ltMusic();render();S.dlg.scrollTop=0;if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();if(S.tab==='dt'&&F().knife)kn().start();return;
+    case'tab':if(S.tab==='pb'&&data.tab!=='pb')PB?.leave();if(S.tab==='dg'&&data.tab!=='dg')DG?.stop();if(S.tab==='oaq'&&data.tab!=='oaq')S.oaq.anim=null;S.tab=data.tab;S.flash=null;S.anchor='';if(S.tab!=='lt')pauseLoto();ltMusic();render();S.dlg.scrollTop=0;if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();if(S.tab==='dt'&&F().knife)kn().start();return;
     case'oaqstart':oaqStart(data.lv==='kho'?'kho':'de');return;
     case'oaqsel':{if(S.oaq.anim||S.busy)return;const c=Number(data.c);S.oaq.sel=S.oaq.sel===c?null:c;S.oaq.quit=false;sfx('mark');render();return;}   // owner 03/10: change or unpick the ô freely until a direction is chosen
     case'oaqmove':oaqMove(Number(data.d)===-1?-1:1);return;
@@ -1237,6 +1250,7 @@ async function onClick(op,data){
     case'ltmusic':{const on=!musicPref();try{localStorage.setItem(LT_MUSIC,on?'1':'0');}catch{/* storage blocked */}ltMusic();render();return;}
     default:if(op.startsWith('kn'))kn().click(op,data);
       else if(op.startsWith('xs'))xs().click(op,data);
+      else if(op.startsWith('dg'))dg().click(op,data);
       else if(op.startsWith('pb'))pb().click(op,data);
   }
 }

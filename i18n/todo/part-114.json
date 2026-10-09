@@ -1,5 +1,157 @@
 [
  {
+  "vi": "Cháu cao tay thiệt! Ông chịu thua ván này.",
+  "en": ""
+ },
+ {
+  "vi": "Huề! Ông cháu mình ngang tay.",
+  "en": ""
+ },
+ {
+  "vi": "đã tàn",
+  "en": ""
+ },
+ {
+  "vi": "CHỢ ĐEN ·",
+  "en": ""
+ },
+ {
+  "vi": "CHỢ ĐEN MỞ ·",
+  "en": ""
+ },
+ {
+  "vi": "kiếm",
+  "en": ""
+ },
+ {
+  "vi": "Cộng theo từng trò hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "📊 Trò lời",
+  "en": ""
+ },
+ {
+  "vi": "· trò lỗ",
+  "en": ""
+ },
+ {
+  "vi": "Ra lối đi",
+  "en": ""
+ },
+ {
+  "vi": "🎟️ Thử vận hôm nay còn chơi được",
+  "en": ""
+ },
+ {
+  "vi": "Chơi bằng xu trong game, không có tiền thật.",
+  "en": ""
+ },
+ {
+  "vi": "Trò chơi ở chợ đen chỉ chơi bằng xu trong game. Không có tiền thật.",
+  "en": ""
+ },
+ {
+  "vi": "🏆 Xem Bảng vàng chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang ở trại tạm giữ",
+  "en": ""
+ },
+ {
+  "vi": "Ra trại rồi mới vào chợ đen được nha.",
+  "en": ""
+ },
+ {
+  "vi": "🚔 Mở trại tạm giữ",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn bị đuổi khỏi chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "Công an vừa ập vào, hôm nay chợ không cho bạn vô nữa. Mai quay lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "‹ Quay về",
+  "en": ""
+ },
+ {
+  "vi": "Không nộp thì coi chừng bị trấn lột đó nha.",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược và nộp phạt.",
+  "en": ""
+ },
+ {
+  "vi": "Vào chợ đen phải nộp tiền bảo kê. Nộp rồi thì cứ ra vô thoải mái.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Nộp bảo kê",
+  "en": ""
+ },
+ {
+  "vi": "Chắc chưa? Không nộp",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Không nộp",
+  "en": ""
+ },
+ {
+  "vi": "Ví còn",
+  "en": ""
+ },
+ {
+  "vi": "🕶️ Bị trấn lột",
+  "en": ""
+ },
+ {
+  "vi": "🕶️ Đàn em cho qua",
+  "en": ""
+ },
+ {
+  "vi": "Bị lấy từ ví",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghi trong Sổ ví.",
+  "en": ""
+ },
+ {
+  "vi": "Vào chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Công an ập vào!",
+  "en": ""
+ },
+ {
+  "vi": "Tiền cược bị tịch thu",
+  "en": ""
+ },
+ {
+  "vi": ". Khoản phạt đã ghi trong Sổ ví.",
+  "en": ""
+ },
+ {
+  "vi": "🚔 Bạn bị đưa về",
+  "en": ""
+ },
+ {
+  "vi": ". Trong trại làm công ích để được về sớm, hoặc nhờ bạn bè bảo lãnh.",
+  "en": ""
+ },
+ {
+  "vi": "Công an đi rồi. Chơi tiếp thì cẩn thận nha.",
+  "en": ""
+ },
+ {
   "vi": "🚨 Danh hiệu mới:",
   "en": ""
  },
@@ -476,15 +628,7 @@
   "en": ""
  },
  {
-  "vi": "Tiền cược",
-  "en": ""
- },
- {
   "vi": "⚠️ Chiếu trong thỉnh thoảng có công an phường ghé kiểm tra: mất tiền cược và bị phạt.",
-  "en": ""
- },
- {
-  "vi": "Cược",
   "en": ""
  },
  {
@@ -1653,150 +1797,6 @@
  },
  {
   "vi": "Bỏ bài thi đang làm?",
-  "en": ""
- },
- {
-  "vi": "Các câu đã chọn trong lần thi này sẽ bị bỏ. Bài đã học và chứng nhận vẫn giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "Ôm",
-  "en": ""
- },
- {
-  "vi": "ôm",
-  "en": ""
- },
- {
-  "vi": "Hôn",
-  "en": ""
- },
- {
-  "vi": "hôn",
-  "en": ""
- },
- {
-  "vi": "Thả tim",
-  "en": ""
- },
- {
-  "vi": "thả tim cho",
-  "en": ""
- },
- {
-  "vi": "Người thương",
-  "en": ""
- },
- {
-  "vi": "Đang mất kết nối. Mọi người sẽ gặp lại khi kết nối trở lại.",
-  "en": ""
- },
- {
-  "vi": "Đang vào nhà…",
-  "en": ""
- },
- {
-  "vi": "Chưa có ai khác ở phòng này.",
-  "en": ""
- },
- {
-  "vi": "Chọn một cử chỉ để lại gần người trong phòng.",
-  "en": ""
- },
- {
-  "vi": "Cùng ở nhà",
-  "en": ""
- },
- {
-  "vi": "đang ở cùng phòng",
-  "en": ""
- },
- {
-  "vi": "Trả lời cử chỉ",
-  "en": ""
- },
- {
-  "vi": "Đáp lại",
-  "en": ""
- },
- {
-  "vi": "☺ Ngại ngùng",
-  "en": ""
- },
- {
-  "vi": "😤 Giận dỗi",
-  "en": ""
- },
- {
-  "vi": "Thôi, để sau",
-  "en": ""
- },
- {
-  "vi": "người thương",
-  "en": ""
- },
- {
-  "vi": "Chưa gặp được người thương. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Đang chờ người thương nhận cử chỉ…",
-  "en": ""
- },
- {
-  "vi": "Đợi nhân vật dừng lại rồi đáp nhé.",
-  "en": ""
- },
- {
-  "vi": "Đang gửi lời đáp…",
-  "en": ""
- },
- {
-  "vi": "Bạn đang ở nhà trong cửa sổ khác. Đóng rồi mở lại nhà để quay về đây.",
-  "en": ""
- },
- {
-  "vi": "Nhà chung đã thay đổi. Đóng rồi mở lại nhà nhé.",
-  "en": ""
- },
- {
-  "vi": "Người ấy đã rời phòng.",
-  "en": ""
- },
- {
-  "vi": "· Bạn muốn đáp lại thế nào?",
-  "en": ""
- },
- {
-  "vi": "· Chờ người thương đáp lại…",
-  "en": ""
- },
- {
-  "vi": "Cử chỉ đã khép lại. Hai bạn có thể thử lại lúc khác.",
-  "en": ""
- },
- {
-  "vi": "Hai bạn cùng đáp lại cử chỉ 💞",
-  "en": ""
- },
- {
-  "vi": "Ngại quá… nhưng vẫn thấy vui ☺",
-  "en": ""
- },
- {
-  "vi": "Giận dỗi một chút thôi nhé 😤",
-  "en": ""
- },
- {
-  "vi": "Để lúc khác nhé.",
-  "en": ""
- },
- {
-  "vi": "Người thương chưa đáp lại. Để lúc khác nhé.",
-  "en": ""
- },
- {
-  "vi": "Cử chỉ đã khép lại.",
   "en": ""
  }
 ]

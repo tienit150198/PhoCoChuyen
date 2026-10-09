@@ -1,5 +1,9 @@
 [
  {
+  "vi": "📒 Ghi sổ nước",
+  "en": ""
+ },
+ {
   "vi": "Gõ đúng số trên que thử. Ngoài bảng mẫu (số trong ngoặc) là chưa mở hồ, báo kỹ thuật.",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "👆 Cắt thế nào?",
-  "en": ""
- },
- {
-  "vi": "nêm",
   "en": ""
  }
 ]

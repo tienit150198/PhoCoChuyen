@@ -1,5 +1,149 @@
 [
  {
+  "vi": "Các câu đã chọn trong lần thi này sẽ bị bỏ. Bài đã học và chứng nhận vẫn giữ nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "Ôm",
+  "en": ""
+ },
+ {
+  "vi": "ôm",
+  "en": ""
+ },
+ {
+  "vi": "Hôn",
+  "en": ""
+ },
+ {
+  "vi": "hôn",
+  "en": ""
+ },
+ {
+  "vi": "Thả tim",
+  "en": ""
+ },
+ {
+  "vi": "thả tim cho",
+  "en": ""
+ },
+ {
+  "vi": "Người thương",
+  "en": ""
+ },
+ {
+  "vi": "Đang mất kết nối. Mọi người sẽ gặp lại khi kết nối trở lại.",
+  "en": ""
+ },
+ {
+  "vi": "Đang vào nhà…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có ai khác ở phòng này.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một cử chỉ để lại gần người trong phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Cùng ở nhà",
+  "en": ""
+ },
+ {
+  "vi": "đang ở cùng phòng",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời cử chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Đáp lại",
+  "en": ""
+ },
+ {
+  "vi": "☺ Ngại ngùng",
+  "en": ""
+ },
+ {
+  "vi": "😤 Giận dỗi",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, để sau",
+  "en": ""
+ },
+ {
+  "vi": "người thương",
+  "en": ""
+ },
+ {
+  "vi": "Chưa gặp được người thương. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đang chờ người thương nhận cử chỉ…",
+  "en": ""
+ },
+ {
+  "vi": "Đợi nhân vật dừng lại rồi đáp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đang gửi lời đáp…",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang ở nhà trong cửa sổ khác. Đóng rồi mở lại nhà để quay về đây.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà chung đã thay đổi. Đóng rồi mở lại nhà nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Người ấy đã rời phòng.",
+  "en": ""
+ },
+ {
+  "vi": "· Bạn muốn đáp lại thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "· Chờ người thương đáp lại…",
+  "en": ""
+ },
+ {
+  "vi": "Cử chỉ đã khép lại. Hai bạn có thể thử lại lúc khác.",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn cùng đáp lại cử chỉ 💞",
+  "en": ""
+ },
+ {
+  "vi": "Ngại quá… nhưng vẫn thấy vui ☺",
+  "en": ""
+ },
+ {
+  "vi": "Giận dỗi một chút thôi nhé 😤",
+  "en": ""
+ },
+ {
+  "vi": "Để lúc khác nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Người thương chưa đáp lại. Để lúc khác nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Cử chỉ đã khép lại.",
+  "en": ""
+ },
+ {
   "vi": "Đang mất kết nối với nhà chung…",
   "en": ""
  },
@@ -1653,150 +1797,6 @@
  },
  {
   "vi": "đã tưới, cây lên rồi",
-  "en": ""
- },
- {
-  "vi": "muỗng",
-  "en": ""
- },
- {
-  "vi": "− bớt",
-  "en": ""
- },
- {
-  "vi": "Giữ ngón tay và kéo qua các ô để sơn nhanh.",
-  "en": ""
- },
- {
-  "vi": "Đã sơn",
-  "en": ""
- },
- {
-  "vi": "Ô tường bẩn",
-  "en": ""
- },
- {
-  "vi": "Ô tường sạch",
-  "en": ""
- },
- {
-  "vi": "Kệ chưa xếp",
-  "en": ""
- },
- {
-  "vi": "Kệ đã xếp (nhỏ → lớn)",
-  "en": ""
- },
- {
-  "vi": "Chưa có cuốn nào",
-  "en": ""
- },
- {
-  "vi": "Đào hố trước đã nha.",
-  "en": ""
- },
- {
-  "vi": "Hố đào rồi, gieo hạt đi.",
-  "en": ""
- },
- {
-  "vi": "Gieo rồi, giờ tưới nước.",
-  "en": ""
- },
- {
-  "vi": "Chưa đúng thứ tự: tìm cuốn số nhỏ nhất còn lại.",
-  "en": ""
- },
- {
-  "vi": "Xong việc rồi.",
-  "en": ""
- },
- {
-  "vi": "Đã nhờ bạn bè.",
-  "en": ""
- },
- {
-  "vi": "Chưa nhờ được. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "📋 Danh sách",
-  "en": ""
- },
- {
-  "vi": "tuần này",
-  "en": ""
- },
- {
-  "vi": "Đã kết hôn",
-  "en": ""
- },
- {
-  "vi": "Đã đính hôn",
-  "en": ""
- },
- {
-  "vi": "Thay đồ",
-  "en": ""
- },
- {
-  "vi": "💬 Danh hiệu tự hiện cạnh tên trong chat. Chạm để đổi cái đang đeo.",
-  "en": ""
- },
- {
-  "vi": "Xem nơi làm việc",
-  "en": ""
- },
- {
-  "vi": "Chọn một nơi khác",
-  "en": ""
- },
- {
-  "vi": "Xem quỹ để rút lời",
-  "en": ""
- },
- {
-  "vi": "Giữ ví không nợ qua các ngày sống liên tiếp.",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra ví",
-  "en": ""
- },
- {
-  "vi": "Xem cách nhận danh hiệu",
-  "en": ""
- },
- {
-  "vi": "Tới văn phòng làm việc",
-  "en": ""
- },
- {
-  "vi": "Xem việc văn phòng",
-  "en": ""
- },
- {
-  "vi": "Tiếp tục lên cấp nghề",
-  "en": ""
- },
- {
-  "vi": "Tới nơi làm để khép ngày",
-  "en": ""
- },
- {
-  "vi": "Tới nơi làm nhận việc",
-  "en": ""
- },
- {
-  "vi": "Làm việc để trưởng thành",
-  "en": ""
- },
- {
-  "vi": "Thử một nơi mới để tiến tới mục tiêu làm ở nhiều nơi.",
-  "en": ""
- },
- {
-  "vi": "Mục tiêu chương này cần kinh nghiệm làm việc văn phòng.",
   "en": ""
  }
 ]

@@ -32,7 +32,7 @@ export function setup(ctx){
   const W=S.walk={el:null,cv:null,c:null,say:null,bg:null,bgKey:'',port:false,k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,
     me:null,arrive:null,raf:0,timer:0,last:0,drawn:0,time:0,sayAt:0,ok:null,down:null,at:'',playing:'',avatar:null,
     ride:null,rideKey:'',rv:rider(),park:null,legs:[],leg:null,btn:null,fig:null,figKey:'',back:null,taken:null,blocked:'',co:null};
-  const has=()=>({dt:!!F().knife,loan:!!F().cash,xs:!!F().scratch,pb:!!F().photo});   // dt: anh Sáu's stall, the phóng dao since it replaced the phi tiêu
+  const has=()=>({dt:!!F().knife,loan:!!F().cash,xs:!!F().scratch,pb:!!F().photo,dg:!!F().dog});   // dg: anh Tư's đua chó (absent from older servers)   // dt: anh Sáu's stall, the phóng dao since it replaced the phi tiêu
   const pl=()=>plan(W.port,has());
   const pixels=new Map();let pixelsKey='',fontEpoch=0;
   document.fonts?.addEventListener?.('loadingdone',()=>{fontEpoch++;W.bgKey='';W.drawn=0;wake();});
@@ -275,7 +275,7 @@ export function setup(ctx){
     else if(W.say&&!W.say.hidden)W.timer=setTimeout(()=>{W.timer=0;wake();},Math.max(1,SAY_MS-(now-W.sayAt)));
   }
   function backdrop(){
-    const key=[W.port,W.cv.width,W.cv.height,has().dt,has().loan,has().xs,has().pb].join('|');
+    const key=[W.port,W.cv.width,W.cv.height,has().dt,has().loan,has().xs,has().pb,has().dg].join('|');
     if(W.bg&&W.bgKey===key)return W.bg;
     const bg=W.bg||document.createElement('canvas');bg.width=W.cv.width;bg.height=W.cv.height;
     const c=bg.getContext('2d');c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,bg.width,bg.height);
@@ -296,7 +296,7 @@ export function setup(ctx){
       const pk=W.ride&&W.park;
       if(pk)items.push([pk.y+.4,()=>drawRide(c,{x:pk.x,y:pk.y,s:base*depth(pk.y),px:W.k*W.dpr,v:W.ride,r:{face:pk.face??1,from:pk.face??1,turn:1,ang:0}})]);
       items.push(...CR.items(c,{xy:(u,v)=>[fl[0]+u*(fl[2]-fl[0]),fl[1]+v*(fl[3]-fl[1])],scale:y=>base*depth(y),px:base*W.k*W.dpr,unit:W.k*W.dpr,t:W.time,
-        snap:q=>nearestFree(p,q),key:[W.port,p.has.dt,p.has.loan,p.has.xs,p.has.pb].join('|'),stand:id=>p.spots.find(q=>q.id===id)?.stand||null,me:W.back?myFig():null}));
+        snap:q=>nearestFree(p,q),key:[W.port,p.has.dt,p.has.loan,p.has.xs,p.has.pb,p.has.dg].join('|'),stand:id=>p.spots.find(q=>q.id===id)?.stand||null,me:W.back?myFig():null}));
       items.sort((a,b)=>a[0]-b[0]);for(const [,fn] of items)fn();
       const near=p.spots.find(s=>s.kind==='stall'&&Math.hypot(W.me.x-s.stand[0],W.me.y-s.stand[1])<30);
       marks(c,p,o,near?.id||null);

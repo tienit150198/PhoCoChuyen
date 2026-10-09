@@ -11,7 +11,7 @@ function fixture(){
  return {props,marks,plan,c,cache,bitmap,text:()=>text};
 }
 test('static fair props and stall emoji reuse pixels while animated props retain their render callback',()=>{
- const f=fixture(),p=f.plan(true,{dt:true,loan:true,xs:true,pb:true}),o={t:1,bitmap:f.bitmap};
+ const f=fixture(),p=f.plan(true,{dt:true,loan:true,xs:true,pb:true,dg:true}),o={t:1,bitmap:f.bitmap};
  for(const [,draw] of f.props(f.c,p,o))draw();f.marks(f.c,p,o);
  const first=f.text();
  for(const [,draw] of f.props(f.c,p,{...o,t:2}))draw();f.marks(f.c,p,{...o,t:2});

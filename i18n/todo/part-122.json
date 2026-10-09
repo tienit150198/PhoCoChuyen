@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Nồi $1 hết cơm. Nấu nồi mới nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nồi $1 chưa chín, chờ chừng $2 giây nữa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚠️ Cơm $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Xới một vá $2: dĩa có $3 vá ($4).$5",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "⚠️ Miếng này $1.",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "$1 để dưới góc, không đặt lại chỗ cũ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚪 $1 đi một vòng:",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💍 Đưa $1 khay đồ: $2. “Ôi, cảm ơn em!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Sạch quá, lần sau em lại tới nhé!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💸 Ting ting: nhận $1 xu tiền công",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,25 @@
 [
  {
+  "vi": "🚿 Rửa sạch đồ làm $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cả $1 bếp đều đang bận. Tắt một bếp đã nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔥 Bắc $1 lên bếp, $2. Canh chừng $3–$4 giây rồi tắt bếp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✋ Tắt bếp $1 sau $2 giây: $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Cả $1 bếp đều đang bận.",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "Bàn cư trú: nhận hồ sơ tạm trú của $1, đủ giấy tờ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bàn cư trú: hồ sơ của $1 đã đối chiếu đủ từng giấy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhận hồ sơ tạm trú của $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗂️ Nhận hồ sơ, hẹn trả giấy chiều nay. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bàn cư trú: hướng dẫn $1 bổ sung $2.",
   "en": "",
   "pattern": true
  }

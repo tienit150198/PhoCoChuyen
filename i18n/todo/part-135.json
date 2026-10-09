@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Mua một lần, phòng nào cũng dùng được. Đang xem thử trong $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ngày $1 · Ấm cúng $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛠️ Sửa nhà$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Món này đặt ở $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "bày đủ $1/$2 món. Cất bớt hoặc bày sang phòng khác nhé.",
   "en": "",
   "pattern": true

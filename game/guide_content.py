@@ -6126,7 +6126,10 @@ GROUPS = [{'id': 'start',
                          '🙅 Không nộp thì bị trấn lột một phần tiền trong ví (không đụng tới tài khoản ngân hàng), rồi mới được vô.',
                          '🚨 Ai ăn đậm ở chợ đen thì dễ bị công an để ý. Bị bắt thì mất tiền cược ván đó, nộp phạt từ ví và vào '
                          'trại tạm giữ 3 ngày.',
-                         '🎮 Ô ăn quan, ném vòng không cần đặt cược; bầu cua, chiếu trong, lô tô, vé cào, phóng dao thì có.',
+                         '🎮 Ô ăn quan, ném vòng không cần đặt cược; bầu cua, chiếu trong, lô tô, vé cào, phóng dao, đua chó '
+                         'thì có.',
+                         '🐕 Đua chó: chọn một chú chó, đặt cược rồi ngồi xem và [[Cổ vũ]]. Chó của bạn về nhất thì ăn đúng số '
+                         'lần ghi cạnh tên nó. Cổ vũ chỉ cho vui, không đổi được kết quả.',
                          '🌙 Chợ đen mở suốt, không có ngày tàn. Bảng vàng cộng dồn; 00:00 thứ Hai hằng tuần, Top 1 nhận 👑 Vua '
                          'trò chơi, Top 2–10 nhận 🎪 Cao thủ chợ đen.',
                          '💸 Vay nóng trả lúc nào cũng được; trả hết rồi mới vay tiếp.'],

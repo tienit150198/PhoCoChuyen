@@ -1,5 +1,25 @@
 [
  {
+  "vi": "hoặc $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "học bổng $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "/$1 bài đã xong$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "BÀI $1/",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "/$1 câu đúng",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "Đặt ở $1 · ấm cúng +$2 nếu chỗ này chưa có món này. Bán lại được $3% giá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mua một lần, phòng nào cũng dùng được. Đang xem thử trong $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ngày $1 · Ấm cúng $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛠️ Sửa nhà$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Món này đặt ở $1.",
   "en": "",
   "pattern": true
  }

@@ -23,7 +23,7 @@ function oaqFixture({latency=0}={}){
  const context=vm.createContext({S,F:()=>fair,R:()=>({}),OPP:{de:{lost:['won']}},pick:a=>a?.[0]||'',document:{hidden:false},reduce:()=>false,
   setTimeout:(fn,ms)=>{timers.set(++id,{fn,at:now+ms});return id;},render:()=>renders.push({at:now,open:S.dlg.open,tab:S.tab}),sfx:type=>sounds.push({type,at:now}),
   send:()=>new Promise(resolve=>{const finish=()=>{fair.oaq={...o,stage:'won',b:Array(12).fill(0)};resolve({fair:{trace:Array.from({length:40},(_,i)=>['drop',i%12]),end}});};if(latency)timers.set(++id,{fn:finish,at:now+latency});else finish();}),
-  pauseLoto:()=>{},ltMusic:()=>{},stopRing:()=>{},KN:null,PB:null,clearInterval:()=>{}});
+  pauseLoto:()=>{},ltMusic:()=>{},stopRing:()=>{},KN:null,PB:null,DG:null,clearInterval:()=>{}});
  const ui=vm.runInContext(slice('const wait=ms=>','/* ---- 💍 Ném vòng cổ chai ---- */')+';({oaqMove,playTrace})',context);
  const closeBody=source.match(/d\.addEventListener\('close',\(\)=>\{([^\n]+)\}\);/)[1];
  const close=vm.runInContext('()=>{S.dlg.open=false;'+closeBody+'}',context);

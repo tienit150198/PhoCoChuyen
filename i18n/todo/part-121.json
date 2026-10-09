@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Nói nhỏ nha cả nhà 👀 đêm nào $1 cũng về khuya lơ khuya lắc, đồ thì mặc đẹp ghê. Làm ca đêm hay làm “phố đêm” vậy ta 🤭 Chị hỏi cho vui thôi à.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm qua cô đếm, $1 ra vô hẻm 4 lần, mỗi lần mặc một kiểu 👀 làm gì mà bận dữ vậy ta, cô không có ý gì đâu nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hóng nè: $1 một ngày chạy ba bốn chỗ, chỗ nào cũng có người quen 👀 Làm gì mà bận như bộ trưởng vậy ta, chị thắc mắc xíu thôi nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạo này thấy $1 tiêu rủng rỉnh ghê, hôm trước còn nghe than hết tiền, nay lại xách đồ mới về 👀 Chắc làm ăn gì… cô không biết nữa, cô chỉ thắc mắc thôi.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Nghe đâu dạo này $1 xài tiền như nước nha cả nhà 👀 mới lên phố mà. Chị không có ý gì, chị chỉ thấy lạ lạ thôi.",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "$1 Lấy $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nồi $1 hết cơm. Nấu nồi mới nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nồi $1 chưa chín, chờ chừng $2 giây nữa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ Cơm $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Xới một vá $2: dĩa có $3 vá ($4).$5",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,149 @@
 [
  {
+  "vi": "muỗng",
+  "en": ""
+ },
+ {
+  "vi": "− bớt",
+  "en": ""
+ },
+ {
+  "vi": "Giữ ngón tay và kéo qua các ô để sơn nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "Đã sơn",
+  "en": ""
+ },
+ {
+  "vi": "Ô tường bẩn",
+  "en": ""
+ },
+ {
+  "vi": "Ô tường sạch",
+  "en": ""
+ },
+ {
+  "vi": "Kệ chưa xếp",
+  "en": ""
+ },
+ {
+  "vi": "Kệ đã xếp (nhỏ → lớn)",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có cuốn nào",
+  "en": ""
+ },
+ {
+  "vi": "Đào hố trước đã nha.",
+  "en": ""
+ },
+ {
+  "vi": "Hố đào rồi, gieo hạt đi.",
+  "en": ""
+ },
+ {
+  "vi": "Gieo rồi, giờ tưới nước.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đúng thứ tự: tìm cuốn số nhỏ nhất còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Xong việc rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhờ bạn bè.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nhờ được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Danh sách",
+  "en": ""
+ },
+ {
+  "vi": "tuần này",
+  "en": ""
+ },
+ {
+  "vi": "Đã kết hôn",
+  "en": ""
+ },
+ {
+  "vi": "Đã đính hôn",
+  "en": ""
+ },
+ {
+  "vi": "Thay đồ",
+  "en": ""
+ },
+ {
+  "vi": "💬 Danh hiệu tự hiện cạnh tên trong chat. Chạm để đổi cái đang đeo.",
+  "en": ""
+ },
+ {
+  "vi": "Xem nơi làm việc",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một nơi khác",
+  "en": ""
+ },
+ {
+  "vi": "Xem quỹ để rút lời",
+  "en": ""
+ },
+ {
+  "vi": "Giữ ví không nợ qua các ngày sống liên tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra ví",
+  "en": ""
+ },
+ {
+  "vi": "Xem cách nhận danh hiệu",
+  "en": ""
+ },
+ {
+  "vi": "Tới văn phòng làm việc",
+  "en": ""
+ },
+ {
+  "vi": "Xem việc văn phòng",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp tục lên cấp nghề",
+  "en": ""
+ },
+ {
+  "vi": "Tới nơi làm để khép ngày",
+  "en": ""
+ },
+ {
+  "vi": "Tới nơi làm nhận việc",
+  "en": ""
+ },
+ {
+  "vi": "Làm việc để trưởng thành",
+  "en": ""
+ },
+ {
+  "vi": "Thử một nơi mới để tiến tới mục tiêu làm ở nhiều nơi.",
+  "en": ""
+ },
+ {
+  "vi": "Mục tiêu chương này cần kinh nghiệm làm việc văn phòng.",
+  "en": ""
+ },
+ {
   "vi": "Tiếp tục công việc ở nơi bạn đã bắt đầu.",
   "en": ""
  },
@@ -1653,150 +1797,6 @@
  },
  {
   "vi": "Tiền đi thẳng từ ví của bạn sang ví của người ấy.",
-  "en": ""
- },
- {
-  "vi": "Không nêu lý do",
-  "en": ""
- },
- {
-  "vi": "trợ giúp",
-  "en": ""
- },
- {
-  "vi": "Còn nợ",
-  "en": ""
- },
- {
-  "vi": "Đã trả hết",
-  "en": ""
- },
- {
-  "vi": "Đã xóa nợ",
-  "en": ""
- },
- {
-  "vi": "Trừ khi chia quỹ",
-  "en": ""
- },
- {
-  "vi": "Xóa khi chia tay",
-  "en": ""
- },
- {
-  "vi": "nợ bạn",
-  "en": ""
- },
- {
-  "vi": "Bạn đã nhắc",
-  "en": ""
- },
- {
-  "vi": "Được nhắc",
-  "en": ""
- },
- {
-  "vi": "· đã xin khất",
-  "en": ""
- },
- {
-  "vi": "Câu đòi nợ",
-  "en": ""
- },
- {
-  "vi": "Đòi tiền",
-  "en": ""
- },
- {
-  "vi": "Vừa nhắc rồi, để người ấy thở chút nha.",
-  "en": ""
- },
- {
-  "vi": "Trả bớt bao nhiêu",
-  "en": ""
- },
- {
-  "vi": "Trả bớt",
-  "en": ""
- },
- {
-  "vi": "Câu xin khất",
-  "en": ""
- },
- {
-  "vi": "Xin khất",
-  "en": ""
- },
- {
-  "vi": "🧾 Sổ nợ",
-  "en": ""
- },
- {
-  "vi": "Đã gửi hôm nay",
-  "en": ""
- },
- {
-  "vi": "🎁 Quà nhỏ từ túi quà",
-  "en": ""
- },
- {
-  "vi": "Chọn một món…",
-  "en": ""
- },
- {
-  "vi": "Túi quà đang trống",
-  "en": ""
- },
- {
-  "vi": "Đã tặng hôm nay",
-  "en": ""
- },
- {
-  "vi": "Chuỗi ngày",
-  "en": ""
- },
- {
-  "vi": "Nhật ký hai bạn",
-  "en": ""
- },
- {
-  "vi": "Kế hoạch đang chờ bạn xác nhận ở mục “Hai bạn”.",
-  "en": ""
- },
- {
-  "vi": "Xem kế hoạch",
-  "en": ""
- },
- {
-  "vi": "Đám cưới của hai bạn xem ở mục “Hai bạn”.",
-  "en": ""
- },
- {
-  "vi": "Xem đám cưới",
-  "en": ""
- },
- {
-  "vi": "/bàn",
-  "en": ""
- },
- {
-  "vi": "Số mâm tráp ăn hỏi",
-  "en": ""
- },
- {
-  "vi": "Bạn 60%",
-  "en": ""
- },
- {
-  "vi": "Bạn 70%",
-  "en": ""
- },
- {
-  "vi": "Bạn 40%",
-  "en": ""
- },
- {
-  "vi": "Bạn bao hết",
   "en": ""
  }
 ]

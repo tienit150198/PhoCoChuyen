@@ -1,5 +1,37 @@
 [
  {
+  "vi": "TÍNH TIỀN",
+  "en": ""
+ },
+ {
+  "vi": "THỐI TIỀN & GIAO HÀNG",
+  "en": ""
+ },
+ {
+  "vi": "GIAO HÀNG",
+  "en": ""
+ },
+ {
+  "vi": "Mở thùng lên kệ",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ khách đổi tờ khác",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ khách chuyển bù",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chạy xe máy ca chiều: nhận đơn, lên lộ trình, lấy hàng, gói kỹ, giao tận tay và nộp tiền thu hộ về bưu cục.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn đồ ăn",
+  "en": ""
+ },
+ {
   "vi": "Tới quán, chờ món xong, [[So túi với bill]] rồi [[Nhận món lên thùng]]. Có giờ hẹn; trễ quá 30 phút là khách hủy.",
   "en": ""
  },
@@ -1601,18 +1633,6 @@
  },
  {
   "vi": "Cắt ngắn móng đen, chạm tủy mà không báo chủ",
-  "en": ""
- },
- {
-  "vi": "Chủ về mới thấy máu: lỗi an toàn, 1★, không trả tiền. Nói thật thì chỉ là lỗi vừa và miễn tiền cắt móng.",
-  "en": ""
- },
- {
-  "vi": "Nhận bé đang sốt hoặc đang ho, cho ăn thứ bé dị ứng, cho thuốc sai liều trên nhãn",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn: 1★, chủ không trả tiền, báo cáo lên app, có thể bị kiểm tra hôm sau.",
   "en": ""
  }
 ]

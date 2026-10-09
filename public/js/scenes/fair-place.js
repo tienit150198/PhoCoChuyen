@@ -2,13 +2,14 @@
  * Back row: cô Bảy's gánh lô tô stage, chú Tám's bầu cua tent, cô Tư's ném vòng counter, anh Sáu's phóng dao board
  * (when the server has the stall). On the ground: the ô ăn quan mat (Bé Bi, Ông Hai), the Bảng vàng, bà Sáu's
  * vay nóng stool by the Cổng hội (when the server lends), dì Hai's vé số cào stand (when the server sells them), the
- * 📸 photobooth with its curtain and marquee lights (when the server sells tickets; v4/fair-booth.js), anh
+ * 📸 photobooth with its curtain and marquee lights (when the server sells tickets; v4/fair-booth.js), anh Tư's
+ * 🐕 đua chó pen (when the server races dogs; v4/fair-dog.js), anh
  * Ba's chiếu trong tucked in a dark corner, two food carts and the crowd. Walking uses the pagoda's path finder (scenes/chua-place.js: one floor rectangle, footprints,
  * a grid A* string-pulled), so a plan here has the same shape:
  *   plan(port, has) → {floor, blocks, spots:[{id, kind, hit, r, stand, tab?, line?}], entry:{gate}, crowd:[{x,y,seed}]}
  *   kind 'stall' opens the stall `tab` of v4/fair.js, 'look' (the gate, the carts) and 'npc' (the crowd) say a line;
  *   a cart (cart: true) opens its menu instead when the server sells food.
- *   has: {dt, loan, xs, pb} (stalls an older server does not have are left out; a crowd member standing where the
+ *   has: {dt, loan, xs, pb, dg} (stalls an older server does not have are left out; a crowd member standing where the
  *   photobooth goes steps out when it is there).
  * Pure (no DOM, no server); scene pixels: landscape 1200×790, portrait 700×890 like the workplaces. Nothing moves
  * when `reduced` is set. back() paints what never moves (cached by the caller), props() what stands on the floor. */
@@ -26,19 +27,21 @@ const LAYOUT={
     lt:{x:225,y:420,w:270},bc:{x:490,y:420,w:170},ring:{x:710,y:420,w:170},dt:{x:920,y:420,w:150},
     xd:{x:1075,y:520,w:110,stand:[1065,562]},oaq:{x:565,y:600,w:250},board:{x:820,y:610},loan:{x:290,y:610},
     xs:{x:720,y:686},pb:{x:1062,y:712,w:96},gate:{x:140,y:740,w:130},candy:{x:380,y:705},cane:{x:960,y:705},
-    crowd:[[180,522],[600,505],[815,500],[380,528],[1000,612],[1075,652,'pb'],[470,702]],back:['lt','bc','ring','dt']},
+    dg:{x:985,y:618,w:96},
+    crowd:[[180,522],[600,505],[815,500],[380,528],[1000,612,'dg'],[1075,652,'pb'],[470,702]],back:['lt','bc','ring','dt']},
   port:{floor:[30,445,670,860],
     lt:{x:137,y:430,w:220},bc:{x:367,y:435,w:175},ring:{x:582,y:435,w:175},dt:{x:597,y:632,w:135},
     xd:{x:615,y:850,w:110,stand:[528,826]},oaq:{x:290,y:640,w:220},board:{x:65,y:572},loan:{x:260,y:800},
     xs:{x:565,y:722},pb:{x:322,y:822,w:74},gate:{x:105,y:860,w:126},candy:{x:430,y:770},cane:{x:460,y:540},
-    crowd:[[230,522],[545,522],[190,762],[372,702,'pb'],[120,692]],back:['lt','bc','ring']},
+    dg:{x:122,y:704,w:84},
+    crowd:[[230,522],[545,522],[190,762],[372,702,'pb'],[120,692,'dg']],back:['lt','bc','ring']},
 };
 /** The stalls: the tab of v4/fair.js they open, their badge and the words on their sign. */
 export const STALLS={
   lt:{tab:'lt',icon:'🎱',name:'Gánh lô tô'},bc:{tab:'bc',icon:'🦀',name:'Bầu cua'},ring:{tab:'ring',icon:'💍',name:'Ném vòng'},
   dt:{tab:'dt',icon:'🗡️',name:'Phóng dao'},xd:{tab:'xd',icon:'🕯️',name:'Chiếu trong'},oaq:{tab:'oaq',icon:'🪨',name:'Ô ăn quan'},
   board:{tab:'board',icon:'🏆',name:'Bảng vàng'},loan:{tab:'loan',icon:'💸',name:'Vay nóng'},xs:{tab:'xs',icon:'🎟️',name:'Vé số cào'},
-  pb:{tab:'pb',icon:'📸',name:'Chụp ảnh'},
+  pb:{tab:'pb',icon:'📸',name:'Chụp ảnh'},dg:{tab:'dg',icon:'🐕',name:'Đua chó'},
 };
 export const LOOKS={
   gate:'Cổng chợ đen treo lồng đèn đỏ lờ mờ. Nộp bảo kê rồi vô chơi nha!',
@@ -47,15 +50,15 @@ export const LOOKS={
 };
 export const CROWD_LINES=['Chợ năm nay vui quá trời!','Qua coi cô Bảy hô lô tô kìa, vui lắm!','Tui ném vòng trúng ba chai rồi đó!','Bầu cua chỗ chú Tám đông ghê ha.',
   'Mẹ ơi, con muốn ăn kẹo bông!','Đi chậm thôi, đông người lắm.','Ông Hai chơi ô ăn quan cao tay lắm đó.','Tối nay có đèn lồng đẹp ghê.',
-  'Tui mới cào vé số chỗ dì Hai, trúng gấp đôi nè!','Rủ bạn vô buồng chụp ảnh đi, khung Tết đẹp lắm!'];
+  'Tui mới cào vé số chỗ dì Hai, trúng gấp đôi nè!','Rủ bạn vô buồng chụp ảnh đi, khung Tết đẹp lắm!','Qua coi đua chó đi, hò hét vui lắm!'];
 
 const S=(id,kind,hit,r,stand,more={})=>({id,kind,hit,r,stand,...more});
 const CACHE=new Map();
-/** The fairground for this orientation; `has` {dt, loan, xs, pb}: the optional stalls. */
+/** The fairground for this orientation; `has` {dt, loan, xs, pb, dg}: the optional stalls. */
 export function plan(port,has={}){
-  const key=[port,!!has.dt,!!has.loan,!!has.xs,!!has.pb].join('|');
+  const key=[port,!!has.dt,!!has.loan,!!has.xs,!!has.pb,!!has.dg].join('|');
   if(CACHE.has(key))return CACHE.get(key);
-  const Lo=LAYOUT[port?'port':'land'],big=port?1.25:1,blocks=[],spots=[],on=id=>!['dt','loan','xs','pb'].includes(id)||!!has[id];
+  const Lo=LAYOUT[port?'port':'land'],big=port?1.25:1,blocks=[],spots=[],on=id=>!['dt','loan','xs','pb','dg'].includes(id)||!!has[id];
   // mark: where the stall's badge floats (clear of the keeper's face and the signs)
   const stall=(id,block,hit,r,stand,mark)=>{if(!on(id))return;blocks.push(block);spots.push(S(id,'stall',hit,r,stand,{tab:STALLS[id].tab,mark}));};
   for(const id of ['lt','bc','ring','dt']){
@@ -69,6 +72,7 @@ export function plan(port,has={}){
   {const s=Lo.board;stall('board',[s.x-30,s.y-18,s.x+30,s.y],[s.x,s.y-62],50*big,[s.x,s.y+40],[s.x+40*big,s.y-122*big]);}
   {const s=Lo.loan;stall('loan',[s.x-35,s.y-18,s.x+35,s.y],[s.x,s.y-56],48*big,[s.x,s.y+40],[s.x-44*big,s.y-62*big]);}
   {const s=Lo.xs;stall('xs',[s.x-62,s.y-20,s.x+38,s.y],[s.x-8,s.y-58],50*big,[s.x,s.y+36],[s.x+58*big,s.y-84*big]);}
+  {const s=Lo.dg,hw=s.w/2;stall('dg',[s.x-hw,s.y-20,s.x+hw,s.y],[s.x,s.y-58],50*big,[s.x,s.y+34],[s.x+hw+10*big,s.y-96*big]);}
   {const s=Lo.pb,hw=s.w/2;stall('pb',[s.x-hw,s.y-20,s.x+hw,s.y],[s.x,s.y-70*big],56*big,[s.x,s.y+24],[s.x+hw+16*big,s.y-176*big]);}
   const g=Lo.gate,entry=[g.x,g.y-40];
   blocks.push([g.x-g.w/2-8,g.y-14,g.x-g.w/2+8,g.y],[g.x+g.w/2-8,g.y-14,g.x+g.w/2+8,g.y]);
@@ -77,7 +81,7 @@ export function plan(port,has={}){
   const crowd=Lo.crowd.map(([x,y,away],i)=>({x,y,seed:i*7+3,away})).filter(q=>!q.away||!on(q.away));   // seeds by place: the others never change
   for(const q of crowd){blocks.push([q.x-24,q.y-7,q.x+24,q.y+6]);
     spots.push(S('npc:'+q.seed,'npc',[q.x,q.y-58],34*big,[q.x,Math.min(Lo.floor[3]-4,q.y+40)],{line:CROWD_LINES[q.seed%CROWD_LINES.length]}));}
-  const pl={floor:Lo.floor,blocks,spots,entry:{gate:entry},crowd,port,has:{dt:on('dt'),loan:on('loan'),xs:on('xs'),pb:on('pb')}};
+  const pl={floor:Lo.floor,blocks,spots,entry:{gate:entry},crowd,port,has:{dt:on('dt'),loan:on('loan'),xs:on('xs'),pb:on('pb'),dg:on('dg')}};
   if(CACHE.size>16)CACHE.clear();
   CACHE.set(key,pl);return pl;
 }
@@ -191,6 +195,7 @@ export function props(c,pl,o={}){
   if(pl.has.loan){const s=Lo.loan;fixed('loan',s,q=>lender(q,s,big),120,170);}
   if(pl.has.xs){const s=Lo.xs;out.push([s.y,()=>tickets(c,s,big,ts)]);}
   if(pl.has.pb){const s=Lo.pb;out.push([s.y,()=>photobooth(c,s,port?1.12:1,ts)]);}
+  if(pl.has.dg){const s=Lo.dg;out.push([s.y,()=>kennel(c,s,big,ts)]);}
   {const g=Lo.gate;fixed('gate',g,q=>gate(q,g,big));out[out.length-1][0]=g.y-110;}   // the player walks through it: in front of it at the way in
   for(const id of ['candy','cane'])fixed(id,Lo[id],q=>cart(q,Lo[id],big,id),65,110);
   for(const q of pl.crowd)out.push([q.y,()=>folk(c,q.x,q.y,s1,q.seed,{...ts,kid:q.seed%5===0,hat:q.seed%4===2?'non':''})]);
@@ -271,6 +276,21 @@ function photobooth(c,s,k,ts){
   const px=x-hw+8,py=top+42*k;R(c,px,py,13*k,44*k,'#fffaf0',2,'#d8c7a8',1);
   for(let i=0;i<3;i++){R(c,px+2*k,py+2*k+i*14*k,9*k,12*k,['#f6b6cf','#9fc3e8','#ffe28a'][i],1.5);E(c,px+6.5*k,py+9*k+i*14*k,2.2*k,2.2*k,'#6b4a3a');}
   E(c,px+6.5*k,py-1,2*k,2*k,'#e2462d');
+}
+/** 🐕 Anh Tư's đua chó: a little fenced pen, a dog peeking over it, a chalk board of the lineup, a chequered flag. */
+function kennel(c,s,big,ts){
+  const {x,y,w}=s,hw=w/2;
+  E(c,x,y,hw+6,6,'#2a1c1630');
+  folk(c,x+hw-6,y-2,.8*Math.min(big,1.15),19,{...ts,top:'#d9534f'});
+  R(c,x-hw,y-34,w-22,30,'#cfe6b8',4,'#6a8a4a',1.5);                     // the pen's grass
+  const dogs=q=>{T(q,'🐕',x-hw+24,y-28,18*big,INK,400);T(q,'🐩',x-hw+50,y-24,14*big,INK,400);};   // two dogs in the pen
+  if(ts.bitmap)ts.bitmap('pen-dogs',[x-hw,y-46,w-20,40],dogs);else dogs(c);
+  for(let i=0;i<6;i++){const fx=x-hw+2+i*(w-26)/5;L(c,fx,y-2,fx,y-30,WOOD_D,2.4);}   // the fence
+  L(c,x-hw,y-24,x+hw-24,y-24,WOOD,3);L(c,x-hw,y-12,x+hw-24,y-12,WOOD,3);
+  L(c,x-hw-6,y,x-hw-6,y-92,'#5a3a2a',2.4);                               // the flag
+  for(let r=0;r<3;r++)for(let k=0;k<4;k++)R(c,x-hw-5+k*7,y-92+r*7,7,7,(r+k)%2?'#fff':'#222',0);
+  R(c,x-22,y-84,52,30,'#2f3d34',3,WOOD_D,2);for(let i=0;i<3;i++)L(c,x-16,y-77+i*8,x+22,y-77+i*8,'#e6efe8aa',1.2);
+  sign(c,x+4,y-100*big,'ĐUA CHÓ',{size:12*big,bg:'#fff1d6',edge:RED_D,ink:RED_D,min:80,bitmap:ts.bitmap});
 }
 function gate(c,g,big){
   const {x,y,w}=g,hw=w/2,top=y-200*Math.min(big,1.1);

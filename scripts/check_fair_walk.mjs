@@ -1,11 +1,12 @@
 // Headless check of the walkable fairground (public/js/scenes/fair-place.js, v4/fair-walk.js), no browser needed.
-// For both compositions (landscape, portrait) × the optional stalls (phóng dao, vay nóng, vé số cào, 📸 chụp ảnh: an older
+// For both compositions (landscape, portrait) × the optional stalls (phóng dao, vay nóng, vé số cào, 📸 chụp ảnh, 🐕 đua chó: an older
 // server has none of them):
 //   • the way in (the Cổng hội) and every hotspot's standing point are on free floor, and every hotspot is reachable
 //     from the gate and from every other hotspot, along paths whose every few pixels are free floor;
 //   • random taps give paths over free floor only (no walking through a tent, the mat, a cart or a person);
 //   • no two hotspots share a tap point, every stall of the fair has a hotspot;
-//   • the vé số cào stand keeps clear of the two food carts; the photobooth's crowd member steps out only for it;
+//   • the vé số cào stand keeps clear of the two food carts; the crowd members where the photobooth and the đua chó go
+//     step out only for them;
 //   • drawing the backdrop and every prop throws nothing.
 // Usage: node scripts/check_fair_walk.mjs [--seed N]
 const noop=()=>{};
@@ -25,10 +26,10 @@ const PAD={x:20,y:7},inside=(pl,x,y)=>{const f=pl.floor;if(x<f[0]-.5||x>f[2]+.5|
 const along=(pl,path)=>{for(let i=1;i<path.length;i++){const [a,b]=[path[i-1],path[i]],n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/3);
   for(let k=0;k<=n;k++){const x=a[0]+(b[0]-a[0])*k/n,y=a[1]+(b[1]-a[1])*k/n;if(inside(pl,x,y))return [x,y];}}return null;};
 let paths=0,combos=0;
-for(const port of [false,true])for(const dt of [true,false])for(const loan of [true,false])for(const xs of [true,false])for(const pb of [true,false]){
+for(const port of [false,true])for(const dt of [true,false])for(const loan of [true,false])for(const xs of [true,false])for(const pb of [true,false])for(const dg of [true,false]){
   combos++;seed=SEED+combos*7919;   // each layout its own taps (a new optional stall does not reshuffle the others)
-  const pl=plan(port,{dt,loan,xs,pb}),tag=`${port?'portrait':'landscape'}${dt?'':' no-knife'}${loan?'':' no-loan'}${xs?'':' no-scratch'}${pb?'':' no-booth'}`;
-  for(const id of Object.keys(STALLS)){const want=id==='dt'?dt:id==='loan'?loan:id==='xs'?xs:id==='pb'?pb:true,has=pl.spots.some(s=>s.id===id);
+  const pl=plan(port,{dt,loan,xs,pb,dg}),tag=`${port?'portrait':'landscape'}${dt?'':' no-knife'}${loan?'':' no-loan'}${xs?'':' no-scratch'}${pb?'':' no-booth'}${dg?'':' no-dogs'}`;
+  for(const id of Object.keys(STALLS)){const want=id==='dt'?dt:id==='loan'?loan:id==='xs'?xs:id==='pb'?pb:id==='dg'?dg:true,has=pl.spots.some(s=>s.id===id);
     if(want!==has)problems.push(`${tag}: stall ${id} ${has?'shown but off':'missing'}`);}
   const gate=pl.entry.gate;if(blocked(pl,gate[0],gate[1]))problems.push(`${tag}: the gate is not free floor`);
   for(const s of pl.spots){
@@ -44,9 +45,9 @@ for(const port of [false,true])for(const dt of [true,false])for(const loan of [t
     const r=route(pl,from,to);paths++;if(!r)continue;const bad=along(pl,r);if(bad)problems.push(`${tag}: tap ${to.map(Math.round)} walks through ${bad.map(Math.round)}`);}
   {const x=pl.spots.find(s=>s.id==='xs');if(x)for(const id of ['candy','cane']){const q=pl.spots.find(s=>s.id===id);
     if(Math.hypot(x.stand[0]-q.stand[0],x.stand[1]-q.stand[1])<120)problems.push(`${tag}: the vé số stand is next to the ${id} cart`);}}
-  {const all=plan(port,{dt,loan,xs,pb:false}).crowd.map(q=>q.seed),now=pl.crowd.map(q=>q.seed);
-    if(pb?!(now.length===all.length-1&&now.every(x=>all.includes(x))):now.length!==all.length)problems.push(`${tag}: the crowd changed beyond the booth's spot`);}
-  try{const c=ctx2d(),o={t:3,reduced:false,live:{lt:true,oaq:true}};back(c,port,{dt,loan,xs,pb},o);for(const [,fn] of props(c,pl,o))fn();marks(c,pl,o,'bc');}
+  {const all=plan(port,{dt,loan,xs,pb:false,dg:false}).crowd.map(q=>q.seed),now=pl.crowd.map(q=>q.seed),away=(pb?1:0)+(dg?1:0);
+    if(!(now.length===all.length-away&&now.every(x=>all.includes(x))))problems.push(`${tag}: the crowd changed beyond the booth's and the dogs' spots`);}
+  try{const c=ctx2d(),o={t:3,reduced:false,live:{lt:true,oaq:true}};back(c,port,{dt,loan,xs,pb,dg},o);for(const [,fn] of props(c,pl,o))fn();marks(c,pl,o,'bc');}
   catch(e){problems.push(`${tag}: drawing threw ${e.stack||e}`);}
 }
 for(const p of problems)console.log('✗ '+p);

@@ -11,6 +11,7 @@ scripts/sim_fair_odds.py, which checks it on 10^6 rounds a stall):
   chiếu trong  even money, BASES['xd'] won draws, RAID_PCT raids     96.1%   97.4%   (no fine: wallet short)
   lô tô        BASES['lt'] rounds go the player's way, Kinh 2.1×     95.6%   96.8%   (2- and 5-xu tờ: 91.0%)
   vé cào       BASES['xs'] tickets win, scratch.PRIZES mean 1.80×    90.0%   90.5%
+  đua chó      fixed odds (fair_dog.CLASSES), the outsider at best    95.0%   95.0%   (the favourite: 92.8%)
 
 Every other state is lower: the cool-off after STREAK wins (WIN_P_LOW), the spam decay (RUN_STEP down to P_FLOOR),
 a Kinh called late, the police (raids, the asset check). The lô tô side bets are closed (SIDE_OPEN: the minute's
@@ -75,6 +76,7 @@ from . import fair_cash as fc   # 🎁 tiền vốn and 💸 vay nóng
 from . import fair_food as ff   # 🍡 the food carts
 from . import fair_photo as fp  # 📸 the photobooth's ticket
 from . import fair_bm as bm     # 🕶️ Chợ đen: the bảo kê at the gate, the police's arrests
+from . import fair_dog as dog    # 🐕 đua chó: the roster, the lineups, the draw
 
 VERSION = 1
 FAIR_START = '2026-10-09'      # first day (Vietnam date), 00:00 UTC+7 (owner 08/10: the fair opens again)
@@ -113,7 +115,7 @@ STREAK = 4                     # wins in a row before the cool-off (no sure win 
 RUN_FREE, RUN_STEP, RUN_GAP, P_FLOOR = 10, .015, 600, .40
 XD_FLOOR = .404               # .404 × (1 − 0.88%) ≈ 40.04% won rounds (was .407 with 1.76% raids)
 DECAY_EXEMPT = ('bc',)         # bầu cua: honest dice with a house edge, no draw to lower
-PAID_LUCK = ('bc', 'xd', 'lt', 'xs')   # the paid luck stalls whose rounds count as a switch
+PAID_LUCK = ('bc', 'xd', 'lt', 'xs', 'dg')   # the paid luck stalls whose rounds count as a switch (🐕 đua chó too)
 SWITCH_ROUNDS = 3
 SWITCH_MIN, SWITCH_DIV = 20, 4   # a switch round stakes ≥ max(20 xu, ¼ of the last stake on the cooled stall) (07/10)
 COOL_KEY = 'fair_cool'         # journey['fair_cool'] {stall: {n, at, sw, st}}: optional, an older server keeps it as is
@@ -174,7 +176,7 @@ LOC_MULT, LOC_P, LOC_GAP, LOC_KEY = 10, .003, 3600, 'fair_loc_at'
 # rounds, the last one's time (optional: an older server keeps it as is; absent = the next paid round starts one).
 SESS_KEY, SESSION_GAP, GRACE_S, GRACE_ROUNDS = 'fair_sess', 1800, 600, 20
 LOC_LABEL = '🍀 Lộc trời cho ×10'
-LOC_ACTIONS = ('fair_bc', 'fair_xd', 'fair_xs', 'fair_loto_kinh')
+LOC_ACTIONS = ('fair_bc', 'fair_xd', 'fair_xs', 'fair_loto_kinh', 'fair_dg')
 # 🎱 Lô tô
 LOTO_PRICE = 5
 LOTO_PRIZE = 10                # the older client's plain card: prize_of('thuong', LOTO_PRICE, 1) (was 23, a pot)
@@ -257,11 +259,12 @@ OAQ_KEYS = ('lv', 'g', 'at', 'stage')
 RING_KEYS = ('rs', 'at', 'stage')
 EARN_KEYS = ('oaq', 'ring', 'ring_n')   # today: xu earned per game, ném vòng rounds
 LABELS = dict(bc='🦀 Bầu cua chợ đen', xd='🕯️ Chiếu trong chợ đen', lt='🎱 Lô tô chợ đen', oaq='🪨 Ô ăn quan chợ đen',
-              ring='💍 Ném vòng chợ đen', dt='🎯 Phi tiêu chợ đen', xs='🎟️ Vé số cào chợ đen', kn='🗡️ Phóng dao chợ đen')
+              ring='💍 Ném vòng chợ đen', dt='🎯 Phi tiêu chợ đen', xs='🎟️ Vé số cào chợ đen', kn='🗡️ Phóng dao chợ đen',
+              dg=dog.RACE_LABEL)
 # The rows an older server wrote today under the fair's former name (owner 08/10: "k phải là hội chợ, nó là Chợ đen") are
 # still the stall's rows: kept up to date, counted in today_xu.
 LABELS_OLD = {g: v.replace('chợ đen', 'hội chợ') for g, v in LABELS.items()}
-UNITS = dict(bc='ván', xd='ván', lt='tờ', oaq='ván thắng', ring='lượt', dt='lượt', xs='vé', kn='lượt')
+UNITS = dict(bc='ván', xd='ván', lt='tờ', oaq='ván thắng', ring='lượt', dt='lượt', xs='vé', kn='lượt', dg='lượt')
 # 🗡️ Phóng dao: journey['fair_kn'] {n: runs, w: runs cashed out, b: the most levels cleared in a run, top: the biggest
 # payout, run: the run going on or the last one}; a run {st: stake, lv: level, sd: the level's seed, hot: its heat,
 # at: ms it started, sg: stage, bn: the 🔥 x2 levels' bonus xu, x2: this level is one, nx: the next one is, tp: throws
@@ -415,10 +418,10 @@ def budget(f: dict | None, t: float) -> int:
     return 10 ** 9
 
 
-def _pay(j: dict, f: dict, game: str, amount: int) -> None:
+def _pay(j: dict, f: dict, game: str, amount: int, more: bool = False) -> None:
     """Move `amount` (signed) between the wallet and the fair: one Sổ ví row per game and life day, kept up to date
     (the row is looked for among the life day's last rows). Chance stalls count towards today's net (DAY_CAP); the
-    skill stalls' xu are counted by _earn."""
+    skill stalls' xu are counted by _earn. more: the same round's next part (_pay_big: its count stays)."""
     from . import journey as jr
     st = f['stats']
     if game in EARN_GAMES:
@@ -436,8 +439,8 @@ def _pay(j: dict, f: dict, game: str, amount: int) -> None:
         if row.get('kind') == KIND and row.get('career') is None and str(row.get('label', '')).startswith((LABELS[game], LABELS_OLD[game])):
             last = row
             break
-    if game == 'xs':   # one _pay a ticket and no counter in the save: the row's own count, one more
-        count = _row_count(last) + 1
+    if game in ('xs', 'dg'):   # one _pay a ticket / a race and no counter in the save: the row's own count, one more
+        count = _row_count(last) + (not more)
     elif game == 'kn':   # the stake counts a run, its payout is the same run
         count = max(1, _row_count(last) + (amount < 0))
     else:
@@ -453,6 +456,19 @@ def _pay(j: dict, f: dict, game: str, amount: int) -> None:
         j['stats']['max_wallet'] = max(j['stats']['max_wallet'], j['wallet'])
     else:
         jr._wallet(j, amount, KIND, label)
+
+
+def _pay_big(j: dict, f: dict, game: str, amount: int) -> None:
+    """_pay for a round that may move more than one Sổ ví row holds (an outsider's payout on a big stake): parts of at
+    most ROW_MAX xu, the validators' bound on one row; the round is counted once."""
+    part = 0
+    while True:
+        step = max(-bm.ROW_MAX, min(bm.ROW_MAX, amount))
+        _pay(j, f, game, step, more=part > 0)
+        amount -= step
+        part += 1
+        if not amount:
+            return
 
 
 def _row_count(row: dict | None) -> int:
@@ -735,7 +751,7 @@ def _loto_lost(f: dict, lt: dict) -> None:
 # ---------------------------------------------------------------- commands
 COMMANDS = ('fair_bc', 'fair_xd', 'fair_loto_buy', 'fair_loto_kinh', 'fair_loto_fold',
             'fair_oaq_start', 'fair_oaq_move', 'fair_oaq_quit', 'fair_ring_start', 'fair_ring_throw', 'fair_dart', 'fair_xs',
-            'fair_kn_start', 'fair_kn_throw', 'fair_kn_next', 'fair_kn_stop')
+            'fair_kn_start', 'fair_kn_throw', 'fair_kn_next', 'fair_kn_stop', 'fair_dg')
 LATE = ('fair_loto_kinh', 'fair_loto_fold', 'fair_oaq_move', 'fair_oaq_quit', 'fair_ring_throw',   # may finish after the close
         'fair_kn_throw', 'fair_kn_stop')
 
@@ -1020,6 +1036,39 @@ def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
     if loc:
         out['loc'] = loc
     return dict(fair=out, message='')
+
+
+def _dog(e, j: dict, f: dict, p: dict, t: float) -> dict:
+    """🐕 Đua chó {race, lane, stake}: a dog of race `race`'s lineup (game/fair_dog.py; this race, the one before or the
+    next: the client's clock), any whole stake from DG_MIN to STAKE_MAX the wallet holds. The winner is drawn at once
+    from the classes' weights, honest fixed odds like the bầu cua's dice (no cool-off, no spam decay; a race counts as
+    a switch for the cooled stalls, PAID_LUCK); the client plays the race out (the 📣 cổ vũ changes nothing)."""
+    need = e.need
+    n, lane, stake = p.get('race'), p.get('lane'), p.get('stake')
+    need(set(p) == {'race', 'lane', 'stake'} and type(n) is int and type(lane) is int and 0 <= lane < dog.LANES,
+         dog.BAD_LANE)
+    need(type(stake) is int and stake >= dog.DG_MIN, f'Đua chó đặt từ {dog.DG_MIN} xu nha.')
+    need(stake <= STAKE_MAX, TOO_BIG, 'fair_big')
+    need(abs(n - dog.race(t)) <= 1, dog.OLD_RACE, 'fair_dg_race')
+    need(abs(f['net']) + stake * dog.TOP // 10 < NET_SAFE, ENOUGH, 'fair_enough')   # the saved net's sane bound
+    _guard_round(e, f, j, t, stake, stake)
+    _heat(j, 'dg', t, stake)   # a switch for the cooled stalls only: đua chó itself never cools (nothing is saved for it)
+    _police(j, f, t, 'dg', stake)
+    lanes = dog.lineup(n)
+    order = dog.draw(lanes, _rng)
+    won = order[0] == lane
+    cls = lanes[lane][1]
+    back = dog.back(stake, cls) if won else 0
+    delta = back - stake
+    _pay_big(j, f, 'dg', delta)
+    out = dict(game='dg', race=n, lane=lane, stake=stake, order=order, won=won, mult=dog.pay(cls), back=back,
+               net=delta, photo=_rng.random() < dog.PHOTO_P, seed=_rng.getrandbits(31))
+    loc = _loc(j, f, 'dg', stake, delta, t)
+    if loc:
+        out['loc'] = loc
+    first = dog.RACERS[lanes[order[0]][0]][0]
+    msg = f'{first} về nhất! ' + (f'Thắng {_xu(delta)} xu.' if won else f'Thua {_xu(stake)} xu.')
+    return dict(fair=out, message=msg)
 
 
 def _guard_round(e, f: dict, j: dict, t: float, stake: int, worst: int) -> None:
@@ -1503,6 +1552,9 @@ def _apply(s: dict, name: str, p: dict) -> dict:
     elif name.startswith('fair_kn_'):   # 🗡️ phóng dao: no daily money or round limit, the wallet only
         d = _knife(e, j, f, name, p, t)
         result['fair'], result['message'] = d['fair'], d['message']
+    elif name == 'fair_dg':   # 🐕 đua chó: any stake up to STAKE_MAX, the wallet only
+        d = _dog(e, j, f, p, t)
+        result['fair'], result['message'] = d['fair'], d['message']
     elif name == 'fair_xs':   # 🎟️ vé số cào: no daily money or ticket limit, the wallet only
         d = _scratch(e, j, f, p, t)
         result['fair'], result['message'] = d['fair'], d['message']
@@ -1533,7 +1585,7 @@ def _apply(s: dict, name: str, p: dict) -> dict:
             full = n * RING_HIT + (RING_ALL if n == ring.BOTTLES else 0)
             result['fair'] = dict(game='ring', hits=hits, n=n, prize=prize, capped=prize < full)
             result['message'] = f'Trúng {n}/{ring.BOTTLES} cổ chai' + (f', +{prize} xu.' if prize else '.')
-    paid_round = name in ('fair_bc', 'fair_xd', 'fair_xs') or name == 'fair_loto_kinh' and result['fair'].get('won')
+    paid_round = name in ('fair_bc', 'fair_xd', 'fair_xs', 'fair_dg') or name == 'fair_loto_kinh' and result['fair'].get('won')
     quiet = paid_round and _session(j, t)   # B6: the session's first minutes / rounds, no police check
     if paid_round and not quiet and not result['fair'].get('raid'):
         seizure = _wealth_raid(j, f, t)
@@ -1647,6 +1699,9 @@ def public(s: dict) -> dict:
                 # 🗡️ phóng dao, in the phi tiêu's place (absent from older servers: the client then leaves the stall
                 # out; `darts` is gone, so an older client leaves the phi tiêu out)
                 knife=knife_public(j, f, t),
+                # 🐕 đua chó: the roster, the lineups and their payouts (prices), the stake bounds (absent from older
+                # servers: the client then leaves the stall out)
+                dog=dog.public(t),
                 # 🎟️ vé số cào (absent from older servers: the client then leaves the stall out)
                 scratch=dict(tiers=list(scratch.TIERS), names={str(k): v for k, v in scratch.NAMES.items()},
                              cells=scratch.CELLS, match=scratch.MATCH, mults=list(scratch.MULTS)),

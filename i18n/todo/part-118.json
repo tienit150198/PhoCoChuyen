@@ -1,5 +1,149 @@
 [
  {
+  "vi": "Lương (xu)",
+  "en": ""
+ },
+ {
+  "vi": "Rất cẩn thận",
+  "en": ""
+ },
+ {
+  "vi": "Tự đặt lương. Trả cao thì vui, bán đắt hàng hơn. Dưới 60% mức xin là họ không nhận.",
+  "en": ""
+ },
+ {
+  "vi": "món có hàng chưa bật ở Menu.",
+  "en": ""
+ },
+ {
+  "vi": "Bật tất cả món có hàng",
+  "en": ""
+ },
+ {
+  "vi": "Két + vốn hiện có",
+  "en": ""
+ },
+ {
+  "vi": "Nhập đúng số phần bạn muốn bán. Tiền lấy từ két/vốn quầy; giữ lại tiền lương để nhân viên tiếp tục làm. Nhân viên chỉ bán món đã bật ở Menu.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập thêm",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số lượng để xem tổng tiền",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số lượng trước",
+  "en": ""
+ },
+ {
+  "vi": "Két và vốn chưa đủ",
+  "en": ""
+ },
+ {
+  "vi": "Xem tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Ít: không lo ế. Nhiều: không lo hết hàng. Hàng tươi (hoa, bánh) ế thì hư.",
+  "en": ""
+ },
+ {
+  "vi": "Vốn quầy",
+  "en": ""
+ },
+ {
+  "vi": "Tiền hàng, lương, điện, phí online, thuê chỗ, vật tư, bảo vệ và thuế lấy từ két trước, thiếu mới lấy vốn quầy. Góp vốn dùng ví trước, thiếu mới lấy tài khoản ngân hàng; không dùng thẻ tín dụng. Xem từng khoản trong Sổ quầy & an toàn. Chi phí chưa trả hiện trên thẻ quầy và tạm dừng quầy; chủ chọn Đóng tiền để trả.",
+  "en": ""
+ },
+ {
+  "vi": "Muốn góp vốn bằng quỹ chung: rút từ quỹ chung về ví ở Ngân hàng, rồi Góp vào vốn quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Góp vào",
+  "en": ""
+ },
+ {
+  "vi": "Két vào vốn",
+  "en": ""
+ },
+ {
+  "vi": "Bán gì?",
+  "en": ""
+ },
+ {
+  "vi": "Ở đâu?",
+  "en": ""
+ },
+ {
+  "vi": "Tên quầy",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ to thì đông khách, nhiều người đứng, nhưng tiền thuê cao hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món bán trước",
+  "en": ""
+ },
+ {
+  "vi": "Giá mềm: khách thích 😊",
+  "en": ""
+ },
+ {
+  "vi": "Hơi đắt: khách sẽ ít hơn",
+  "en": ""
+ },
+ {
+  "vi": "Giá vừa phải 👍",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍🍳 Tiếp tục tự đứng quầy",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍🍳 Tự đứng quầy",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Vào xem tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Đóng chi phí còn thiếu trước nhé",
+  "en": ""
+ },
+ {
+  "vi": "Mở quầy để bắt đầu nhận khách",
+  "en": ""
+ },
+ {
+  "vi": "Hàng còn đủ bán hơn 1 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Lãi 1 ngày (24 giờ)",
+  "en": ""
+ },
+ {
+  "vi": "nếu đủ hàng, đủ vốn",
+  "en": ""
+ },
+ {
+  "vi": "(khi quầy bán lại)",
+  "en": ""
+ },
+ {
+  "vi": "Chờ bạn tự đứng quầy",
+  "en": ""
+ },
+ {
   "vi": "🔒 Đang giữ hàng cho bạn",
   "en": ""
  },
@@ -1653,150 +1797,6 @@
  },
  {
   "vi": "Thu nhỏ bản đồ",
-  "en": ""
- },
- {
-  "vi": "Phóng to bản đồ",
-  "en": ""
- },
- {
-  "vi": "Về vị trí của bạn",
-  "en": ""
- },
- {
-  "vi": "Khu phố: chạm vào một nơi để đi tới. Mũi tên để đi, Enter để vào.",
-  "en": ""
- },
- {
-  "vi": "Mua xe để chạy quanh phố",
-  "en": ""
- },
- {
-  "vi": "⏳ Đang làm dở",
-  "en": ""
- },
- {
-  "vi": "⏸ Đang tạm đóng",
-  "en": ""
- },
- {
-  "vi": "Hợp người mới",
-  "en": ""
- },
- {
-  "vi": "Bạn đã tạm đóng nơi này. Mở lại miễn phí rồi vào làm ngay.",
-  "en": ""
- },
- {
-  "vi": "Vào tiếp",
-  "en": ""
- },
- {
-  "vi": "Đèn xanh · có thể qua",
-  "en": ""
- },
- {
-  "vi": "Đèn đỏ · dừng trước vạch",
-  "en": ""
- },
- {
-  "vi": "Dừng chờ không mất xu. Qua vạch khi đèn đỏ: phạt 12 xu; 1 giây đầu mới chuyển đỏ được miễn để kịp dừng.",
-  "en": ""
- },
- {
-  "vi": "👆 Chạm từng món · giữ để đếm nhanh",
-  "en": ""
- },
- {
-  "vi": "👆 Chạm “Đếm khay” để đếm cả khay · khay thiếu có ô trống",
-  "en": ""
- },
- {
-  "vi": "đã đếm",
-  "en": ""
- },
- {
-  "vi": "Nhận cả thùng vào kệ",
-  "en": ""
- },
- {
-  "vi": "✅ Nhận cả thùng lên kệ",
-  "en": ""
- },
- {
-  "vi": "Khiếu nại đơn gộp giao thiếu",
-  "en": ""
- },
- {
-  "vi": "Hàng đã lên kệ: về bán tiếp",
-  "en": ""
- },
- {
-  "vi": "🛒 Hàng đã lên kệ · về bán tiếp",
-  "en": ""
- },
- {
-  "vi": "Mở thùng đã tới rồi đặt tiếp",
-  "en": ""
- },
- {
-  "vi": "📦 Mở thùng đã tới & xếp lên kệ",
-  "en": ""
- },
- {
-  "vi": "Đợi thùng về rồi đặt tiếp",
-  "en": ""
- },
- {
-  "vi": "Đặt đơn đang soạn",
-  "en": ""
- },
- {
-  "vi": "đơn gộp",
-  "en": ""
- },
- {
-  "vi": "Mở thùng",
-  "en": ""
- },
- {
-  "vi": "⏰ Xem hàng hết hạn tối nay",
-  "en": ""
- },
- {
-  "vi": ", đã đếm",
-  "en": ""
- },
- {
-  "vi": "✓ Đã đếm khay",
-  "en": ""
- },
- {
-  "vi": "trong thùng",
-  "en": ""
- },
- {
-  "vi": "Nhận cả thùng lên kệ",
-  "en": ""
- },
- {
-  "vi": "Hàng giao thiếu",
-  "en": ""
- },
- {
-  "vi": "📉 Giao thiếu · khiếu nại để được hoàn tiền",
-  "en": ""
- },
- {
-  "vi": "Thùng hàng đã tới",
-  "en": ""
- },
- {
-  "vi": "📦 Thùng đã tới · mở & xếp lên kệ",
-  "en": ""
- },
- {
-  "vi": "Chưa có hàng",
   "en": ""
  }
 ]

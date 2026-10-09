@@ -1,5 +1,149 @@
 [
  {
+  "vi": "Hủy đơn",
+  "en": ""
+ },
+ {
+  "vi": "Nhận dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "Một lời góp ý (không bắt buộc)",
+  "en": ""
+ },
+ {
+  "vi": "Nhận xét dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thấy dịch vụ thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở sổ khách…",
+  "en": ""
+ },
+ {
+  "vi": "Khách cần bạn phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ bạn đã đặt",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có đơn khách đang chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Ghé một chỗ làm để nhận dịch vụ đầu tiên.",
+  "en": ""
+ },
+ {
+  "vi": "Khách ghé chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Xem chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có ai đang đứng tại đây.",
+  "en": ""
+ },
+ {
+  "vi": "đơn khách · Mở sổ",
+  "en": ""
+ },
+ {
+  "vi": "Sổ đơn dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "Nói với khách…",
+  "en": ""
+ },
+ {
+  "vi": "Lời nói với khách ghé",
+  "en": ""
+ },
+ {
+  "vi": "👋 Chào khách",
+  "en": ""
+ },
+ {
+  "vi": "Phòng trực tiếp sẽ kết nối khi chỗ làm sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "Thứ Hai",
+  "en": ""
+ },
+ {
+  "vi": "Thứ Ba",
+  "en": ""
+ },
+ {
+  "vi": "Thứ Tư",
+  "en": ""
+ },
+ {
+  "vi": "Thứ Năm",
+  "en": ""
+ },
+ {
+  "vi": "Thứ Sáu",
+  "en": ""
+ },
+ {
+  "vi": "Thứ Bảy",
+  "en": ""
+ },
+ {
+  "vi": "Cả tuần",
+  "en": ""
+ },
+ {
+  "vi": "Biết rồi",
+  "en": ""
+ },
+ {
+  "vi": "Đội đang xử lý đơn riêng",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Đội dừng: giữ hàng cho bạn",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ nghề chưa đủ vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Đội đang tạm nghỉ",
+  "en": ""
+ },
+ {
+  "vi": "Góc nhìn sau bàn làm việc",
+  "en": ""
+ },
+ {
+  "vi": "GÓC CỦA BẠN · ĐỘI Ở PHÍA TRƯỚC",
+  "en": ""
+ },
+ {
+  "vi": "Bàn làm việc đang chờ đội vào ca",
+  "en": ""
+ },
+ {
+  "vi": "Đơn đã ghi",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu đã ghi",
+  "en": ""
+ },
+ {
   "vi": "Lãi đã ghi",
   "en": ""
  },
@@ -1667,26 +1811,6 @@
  },
  {
   "vi": "Cô không có ý gì đâu nha, nhưng mấy hôm nay thấy $1 đêm nào cũng về khuya lắm, hôm qua gần 12 giờ mới dắt xe vô hẻm. Làm gì mà khuya dữ vậy ta… chắc đi làm “phố đêm” 🤔 Cô chỉ nói những gì cô thấy thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nói nhỏ nha cả nhà 👀 đêm nào $1 cũng về khuya lơ khuya lắc, đồ thì mặc đẹp ghê. Làm ca đêm hay làm “phố đêm” vậy ta 🤭 Chị hỏi cho vui thôi à.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm qua cô đếm, $1 ra vô hẻm 4 lần, mỗi lần mặc một kiểu 👀 làm gì mà bận dữ vậy ta, cô không có ý gì đâu nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hóng nè: $1 một ngày chạy ba bốn chỗ, chỗ nào cũng có người quen 👀 Làm gì mà bận như bộ trưởng vậy ta, chị thắc mắc xíu thôi nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạo này thấy $1 tiêu rủng rỉnh ghê, hôm trước còn nghe than hết tiền, nay lại xách đồ mới về 👀 Chắc làm ăn gì… cô không biết nữa, cô chỉ thắc mắc thôi.",
   "en": "",
   "pattern": true
  }

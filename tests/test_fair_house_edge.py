@@ -23,7 +23,7 @@ from tests.test_fair import AFTER, OPEN, Dice, FairBase, StoreBase, at, story
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 import sim_fair_odds as sim   # noqa: E402
 
-PAID = ('bc', 'xd', 'lt', 'xs')
+PAID = ('bc', 'xd', 'lt', 'xs', 'dg')   # dg: 🐕 đua chó (game/fair_dog.py)
 LAST_OPEN = at(2026, 10, 4, 20)       # day 2 of the last edition (03/10 → 07/10)
 
 
@@ -35,6 +35,8 @@ class HouseEdge(unittest.TestCase):
                 self.assertTrue(.89 <= ex[g]['rtp'] < .97, ex[g])          # modest and fair-looking
                 self.assertLess(ex[g]['loc'], .98, ex[g])                  # 🍀 with the gate always open, too
         self.assertAlmostEqual(ex['bc']['rtp'], 206 / 216)                 # honest dice, unchanged
+        self.assertAlmostEqual(ex['dg']['rtp'], .95)                       # 🐕 the outsider at best
+        self.assertTrue(.9 < ex['dg']['low'] <= ex['dg']['fresh'] < ex['dg']['rtp'])
         self.assertTrue(.90 <= ex['lt']['low'] < ex['lt']['rtp'])          # the 2- and 5-xu tờ round down
         # the figures the module's docstring shows
         for g in PAID:
@@ -72,8 +74,9 @@ class HouseEdge(unittest.TestCase):
                 with self.subTest(game=g, how=how):
                     back = sim.play(g, how, 40_000, seed=7)
                     self.assertLess(back, 1, back)
-                    if how == 'fresh':
-                        self.assertAlmostEqual(back, ex[g]['rtp'], delta=.035 if g == 'xs' else .02)
+                    if how == 'fresh':   # đua chó: a dog picked at random (its `fresh`), a wider spread (payouts to ×19)
+                        self.assertAlmostEqual(back, ex[g].get('fresh', ex[g]['rtp']),
+                                               delta=.035 if g == 'xs' else .05 if g == 'dg' else .02)
             back = sim.play(g, 'fresh', 40_000, seed=8, loc=True)
             self.assertLess(back, 1, (g, back))
 

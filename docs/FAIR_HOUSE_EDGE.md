@@ -37,6 +37,7 @@ The figures come from `scripts/sim_fair_odds.py` (`exact()`), which also checks 
 | 🕯️ Chiếu trong (even money, 0.88% raids) | 100.7% (Lộc: 107.5%) | 96.1% | 97.4% | 95.6% / 79.7% / 96.0% |
 | 🎱 Lô tô (Kinh 2.1× the tờ) | 105.6% (2/5-xu tờ 100.6%; Lộc: 112.3%) | 95.6% (2/5-xu tờ 91.0%) | 96.8% | 95.5% / 84.0% / 95.5% |
 | 🎟️ Vé cào | 80.0% | 90.0% | 90.5% | 89.6% / 72.1% / 90.0% |
+| 🐕 Đua chó (09/10, fixed odds; the outsider ×19 at best) | – | 95.0% (favourite 92.8%) | 95.0% | 93.5% / 93.9% / 93.8% (a dog at random: 93.85%) |
 | 🎲 Lô tô side bets (chẵn/lẻ, cột) | 94–98% blind; **107.7% / 163.8%** after seeing the minute's calls | closed | – | – |
 
 How the three betting patterns play:
@@ -96,6 +97,40 @@ everywhere (ids, keys, endpoints and the edition `fair20261009` are unchanged). 
 - **Save:** `journey['fair_bm']` `{d, s}` (the Vietnam date; `paid`, `robbed` or `ban`) sits beside `journey['fair']`,
   where a 1.9.26 server's fair validator would refuse a new key; the journey keeps unknown optional blocks, so a
   1.9.20–1.9.26 server validates and keeps the save (it just has no gate).
+
+## 🐕 Đua chó (owner 09/10: "trò đua chó")
+
+A betting stall of the Chợ đen where the player only watches and cheers (`game/fair_dog.py`, command `fair_dg`,
+client `public/js/v4/fair-dog.js`). Each race number (one every `SLOT_S` = 120 s, the same for everyone) has a lineup
+of six dogs from `RACERS` (the pet system's breeds and coats) and gives each one a class. A class is a weight (out of
+1000, never sent) and a payout in tenths of the stake (shown on the board next to the dog: a price):
+
+| class | weight | payout (stake included) | return per xu |
+|---|---|---|---|
+| favourite | 320 | ×2.9 | 92.8% |
+| 2 | 240 | ×3.9 | 93.6% |
+| 3 | 180 | ×5.2 | 93.6% |
+| 4 | 120 | ×7.8 | 93.6% |
+| 5 | 90 | ×10.5 | 94.5% |
+| outsider | 50 | ×19 | 95.0% |
+
+- **The draw:** the player sends `{race, lane, stake}` (the race shown, the one before or the next: the client's
+  clock). The server draws the finishing order at once from the weights (`draw`, `fair._rng`), pays a winning stake
+  `stake × payout // 10` (rounded down) and sends the order, a photo-finish flag and a seed for the show. The client
+  plays a ~16 s race that ends in that order; the 📣 cổ vũ button sends nothing and changes nothing.
+- **Stakes** like bầu cua / chiếu trong: any whole stake from 10 xu (`DG_MIN`) to `STAKE_MAX` the wallet holds. An
+  outsider on the biggest stake pays 18,000,000 over the stake: the Sổ ví gets it in rows of at most 10,000,000
+  (`fair._pay_big`), counted as one race.
+- **No cool-off, no spam decay:** fixed odds like the bầu cua's honest dice (nothing to lower); a race counts as a
+  switch for a cooled stall (`PAID_LUCK`). 🍀 Lộc: yes (`LOC_ACTIONS`), within the table above (the ×19 dog already
+  wins more than ×10). The police: the bảo kê gate, the arrest roll, the wealth check and the asset check, as on every
+  paid round; a jailed player cannot race (`game/jail.py` blocks every `fair_*`).
+- **Nothing about the chances reaches the client:** `api.state.fair.dog` has the roster, the lineups with their
+  payouts and the stake bounds; the receipt has the order, the payout and the xu.
+- **Save:** nothing new. A race settles in its command; its Sổ ví row (`🐕 Đua chó chợ đen · N lượt`) counts the races,
+  today's net and the Bảng vàng's won/lost take it like any paid stall. `journey['fair_cool']`, `fair_balance` and
+  `fair_run` never get a `dg` key, so a 1.9.30 / 1.9.31 server validates a save after a race, won, lost or caught
+  (`tests/test_fair_dog.py` OldServer).
 
 ## Not a wager
 

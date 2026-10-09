@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Xếp sách thư viện trại",
+  "en": ""
+ },
+ {
+  "vi": "Chạm vào sách theo số từ nhỏ tới lớn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn không ở trại tạm giữ.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày trong trại này đã qua rồi. Tải lại trang nhé.",
+  "en": ""
+ },
+ {
   "vi": ", cơm trại miễn phí.",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Cho qua, coi như xui",
-  "en": ""
- },
- {
-  "vi": "Tiếc tiền, nhưng giữ được bình yên.",
-  "en": ""
- },
- {
-  "vi": "Kể lên nhóm chủ quán khu phố",
-  "en": ""
- },
- {
-  "vi": "Mọi người nhắn cảm thông, dặn nhau để ý.",
-  "en": ""
- },
- {
-  "vi": "Khách bom hàng, chửi shipper",
   "en": ""
  }
 ]

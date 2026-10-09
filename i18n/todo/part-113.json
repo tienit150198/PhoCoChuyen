@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Chưa gửi được lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có ai ghé chụp chung. Lát thử lại, hoặc chụp một mình nha.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã vào buồng chụp ở một thẻ khác.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ phòng đã mời bạn ra khỏi phòng.",
+  "en": ""
+ },
+ {
   "vi": "Bạn đã rời phòng chụp.",
   "en": ""
  },
@@ -348,6 +364,146 @@
   "en": ""
  },
  {
+  "vi": "Anh Tư đua chó",
+  "en": ""
+ },
+ {
+  "vi": "Đua chó đây bà con ơi! Chọn một em, đặt bao nhiêu tùy!",
+  "en": ""
+ },
+ {
+  "vi": "Em nào cũng khỏe re, chọn đi rồi hò hét cho vui!",
+  "en": ""
+ },
+ {
+  "vi": "Đàn này mới tắm xong, chạy nhanh như gió nè!",
+  "en": ""
+ },
+ {
+  "vi": "Vô vạch! Ba, hai, một… chạy!",
+  "en": ""
+ },
+ {
+  "vi": "Chạy rồi bà con ơi! Hò to lên!",
+  "en": ""
+ },
+ {
+  "vi": "Hò to lên nữa!",
+  "en": ""
+ },
+ {
+  "vi": "Nghe tiếng cổ vũ là chạy hăng liền!",
+  "en": ""
+ },
+ {
+  "vi": "Bà con la muốn bể chợ luôn!",
+  "en": ""
+ },
+ {
+  "vi": "Trúng rồi! Em này đúng là chiến binh!",
+  "en": ""
+ },
+ {
+  "vi": "Về nhất! Anh chung tiền liền nè!",
+  "en": ""
+ },
+ {
+  "vi": "Tiếc ghê, chỉ thua chút xíu thôi!",
+  "en": ""
+ },
+ {
+  "vi": "Không sao, lượt sau chọn em khác thử coi!",
+  "en": ""
+ },
+ {
+  "vi": "Đua chó là vậy, hên xui mà!",
+  "en": ""
+ },
+ {
+  "vi": "Cố lên!",
+  "en": ""
+ },
+ {
+  "vi": "Chạy lẹ!",
+  "en": ""
+ },
+ {
+  "vi": "Tới luôn!",
+  "en": ""
+ },
+ {
+  "vi": "Hú hú!",
+  "en": ""
+ },
+ {
+  "vi": "Nhanh lên!",
+  "en": ""
+ },
+ {
+  "vi": "Ví không đủ xu",
+  "en": ""
+ },
+ {
+  "vi": "Ván lớn cỡ này nhà cái không nhận đâu",
+  "en": ""
+ },
+ {
+  "vi": "Đường đua chó",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chó",
+  "en": ""
+ },
+ {
+  "vi": "về nhất · −",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cược",
+  "en": ""
+ },
+ {
+  "vi": "Cược",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một chú chó",
+  "en": ""
+ },
+ {
+  "vi": "Hò lên cho chú chó của bạn!",
+  "en": ""
+ },
+ {
+  "vi": "📣 Cổ vũ",
+  "en": ""
+ },
+ {
+  "vi": "Đang vô vạch…",
+  "en": ""
+ },
+ {
+  "vi": "🏁 Xuất phát!",
+  "en": ""
+ },
+ {
+  "vi": "Tiền cược",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một chú chó và tiền cược. Chó của bạn về nhất thì ăn đúng số lần ghi bên cạnh (tính cả tiền vốn). Cổ vũ cho vui thôi, không đổi được kết quả đâu nha.",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Đây vẫn là chợ đen: công an có thể ập vào bất cứ lúc nào.",
+  "en": ""
+ },
+ {
+  "vi": "chọn mức cược khác nha.",
+  "en": ""
+ },
+ {
   "vi": "Anh Sáu phóng dao",
   "en": ""
  },
@@ -425,10 +581,6 @@
  },
  {
   "vi": "Qua màn được",
-  "en": ""
- },
- {
-  "vi": "Ví không đủ xu",
   "en": ""
  },
  {
@@ -1645,158 +1797,6 @@
  },
  {
   "vi": "Ván này ông thắng, cháu tập thêm rồi ghé nha.",
-  "en": ""
- },
- {
-  "vi": "Cháu cao tay thiệt! Ông chịu thua ván này.",
-  "en": ""
- },
- {
-  "vi": "Huề! Ông cháu mình ngang tay.",
-  "en": ""
- },
- {
-  "vi": "đã tàn",
-  "en": ""
- },
- {
-  "vi": "CHỢ ĐEN ·",
-  "en": ""
- },
- {
-  "vi": "CHỢ ĐEN MỞ ·",
-  "en": ""
- },
- {
-  "vi": "kiếm",
-  "en": ""
- },
- {
-  "vi": "Cộng theo từng trò hôm nay",
-  "en": ""
- },
- {
-  "vi": "📊 Trò lời",
-  "en": ""
- },
- {
-  "vi": "· trò lỗ",
-  "en": ""
- },
- {
-  "vi": "Ra lối đi",
-  "en": ""
- },
- {
-  "vi": "🎟️ Thử vận hôm nay còn chơi được",
-  "en": ""
- },
- {
-  "vi": "Chơi bằng xu trong game, không có tiền thật.",
-  "en": ""
- },
- {
-  "vi": "Trò chơi ở chợ đen chỉ chơi bằng xu trong game. Không có tiền thật.",
-  "en": ""
- },
- {
-  "vi": "🏆 Xem Bảng vàng chợ đen",
-  "en": ""
- },
- {
-  "vi": "Bạn đang ở trại tạm giữ",
-  "en": ""
- },
- {
-  "vi": "Ra trại rồi mới vào chợ đen được nha.",
-  "en": ""
- },
- {
-  "vi": "🚔 Mở trại tạm giữ",
-  "en": ""
- },
- {
-  "vi": "Hôm nay bạn bị đuổi khỏi chợ đen",
-  "en": ""
- },
- {
-  "vi": "Công an vừa ập vào, hôm nay chợ không cho bạn vô nữa. Mai quay lại nhé.",
-  "en": ""
- },
- {
-  "vi": "‹ Quay về",
-  "en": ""
- },
- {
-  "vi": "Không nộp thì coi chừng bị trấn lột đó nha.",
-  "en": ""
- },
- {
-  "vi": "🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược và nộp phạt.",
-  "en": ""
- },
- {
-  "vi": "Vào chợ đen phải nộp tiền bảo kê. Nộp rồi thì cứ ra vô thoải mái.",
-  "en": ""
- },
- {
-  "vi": "💵 Nộp bảo kê",
-  "en": ""
- },
- {
-  "vi": "Chắc chưa? Không nộp",
-  "en": ""
- },
- {
-  "vi": "🙅 Không nộp",
-  "en": ""
- },
- {
-  "vi": "Ví còn",
-  "en": ""
- },
- {
-  "vi": "🕶️ Bị trấn lột",
-  "en": ""
- },
- {
-  "vi": "🕶️ Đàn em cho qua",
-  "en": ""
- },
- {
-  "vi": "Bị lấy từ ví",
-  "en": ""
- },
- {
-  "vi": "Đã ghi trong Sổ ví.",
-  "en": ""
- },
- {
-  "vi": "Vào chợ đen",
-  "en": ""
- },
- {
-  "vi": "🚨 Công an ập vào!",
-  "en": ""
- },
- {
-  "vi": "Tiền cược bị tịch thu",
-  "en": ""
- },
- {
-  "vi": ". Khoản phạt đã ghi trong Sổ ví.",
-  "en": ""
- },
- {
-  "vi": "🚔 Bạn bị đưa về",
-  "en": ""
- },
- {
-  "vi": ". Trong trại làm công ích để được về sớm, hoặc nhờ bạn bè bảo lãnh.",
-  "en": ""
- },
- {
-  "vi": "Công an đi rồi. Chơi tiếp thì cẩn thận nha.",
   "en": ""
  }
 ]

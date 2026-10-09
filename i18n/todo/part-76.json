@@ -1,5 +1,21 @@
 [
  {
+  "vi": "💳 Tiền đi từ tài khoản ngân hàng hoặc tiền mặt. Bạn ấy nhận ngay, hoặc khi vào game.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Chuyển khoản",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ tín dụng: quẹt trước, trả sau",
+  "en": ""
+ },
+ {
+  "vi": "💳 Tab Thẻ, bấm [[Nộp hồ sơ mở thẻ]]. Cần điểm tín dụng từ 580 và thu nhập đều: ít nhất 3 ngày có lương hoặc tiền lời rút về ví trong 14 ngày.",
+  "en": ""
+ },
+ {
   "vi": "🛍️ Thẻ dùng để trả học phí, đi cửa sau, mua nhẫn và lo cưới. Chọn cách trả mặc định ở mục “Khi mua sắm cá nhân”.",
   "en": ""
  },
@@ -1124,7 +1140,11 @@
   "en": ""
  },
  {
-  "vi": "🎮 Ô ăn quan, ném vòng không cần đặt cược; bầu cua, chiếu trong, lô tô, vé cào, phóng dao thì có.",
+  "vi": "🎮 Ô ăn quan, ném vòng không cần đặt cược; bầu cua, chiếu trong, lô tô, vé cào, phóng dao, đua chó thì có.",
+  "en": ""
+ },
+ {
+  "vi": "🐕 Đua chó: chọn một chú chó, đặt cược rồi ngồi xem và [[Cổ vũ]]. Chó của bạn về nhất thì ăn đúng số lần ghi cạnh tên nó. Cổ vũ chỉ cho vui, không đổi được kết quả.",
   "en": ""
  },
  {
@@ -1377,38 +1397,6 @@
  },
  {
   "vi": "🎯 Cả phố cùng góp sức cho mục tiêu phục vụ khách mỗi tuần.",
-  "en": ""
- },
- {
-  "vi": "🔞 Phố nghề dành cho người từ 13 tuổi.",
-  "en": ""
- },
- {
-  "vi": "Mở Phố nghề",
-  "en": ""
- },
- {
-  "vi": "Chợ, bảng tin, an toàn",
-  "en": ""
- },
- {
-  "vi": "🧺 Chợ: đăng bán nguyên liệu trong kho, tối đa 5 món cùng lúc.",
-  "en": ""
- },
- {
-  "vi": "🛒 Mua ở chợ: hàng về kho nghề đó, xu trừ ở ví nghề đó; người bán nhận xu lần tới vào game.",
-  "en": ""
- },
- {
-  "vi": "📝 Bảng tin: Mẹo nghề, Chuyện nghề, Hỏi nhanh, Cần mua/bán; tối đa 10 bài mỗi ngày.",
-  "en": ""
- },
- {
-  "vi": "🚫 Không đăng đường link, e-mail, số điện thoại hay số tài khoản.",
-  "en": ""
- },
- {
-  "vi": "🚩 Nội dung xấu thì [[Báo cáo]]; bị nhiều người báo cáo sẽ tự ẩn. Ai làm phiền thì [[Chặn]].",
   "en": ""
  }
 ]

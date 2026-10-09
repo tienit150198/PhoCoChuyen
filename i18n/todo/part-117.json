@@ -1,5 +1,149 @@
 [
  {
+  "vi": "Không nêu lý do",
+  "en": ""
+ },
+ {
+  "vi": "trợ giúp",
+  "en": ""
+ },
+ {
+  "vi": "Còn nợ",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả hết",
+  "en": ""
+ },
+ {
+  "vi": "Đã xóa nợ",
+  "en": ""
+ },
+ {
+  "vi": "Trừ khi chia quỹ",
+  "en": ""
+ },
+ {
+  "vi": "Xóa khi chia tay",
+  "en": ""
+ },
+ {
+  "vi": "nợ bạn",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã nhắc",
+  "en": ""
+ },
+ {
+  "vi": "Được nhắc",
+  "en": ""
+ },
+ {
+  "vi": "· đã xin khất",
+  "en": ""
+ },
+ {
+  "vi": "Câu đòi nợ",
+  "en": ""
+ },
+ {
+  "vi": "Đòi tiền",
+  "en": ""
+ },
+ {
+  "vi": "Vừa nhắc rồi, để người ấy thở chút nha.",
+  "en": ""
+ },
+ {
+  "vi": "Trả bớt bao nhiêu",
+  "en": ""
+ },
+ {
+  "vi": "Trả bớt",
+  "en": ""
+ },
+ {
+  "vi": "Câu xin khất",
+  "en": ""
+ },
+ {
+  "vi": "Xin khất",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Sổ nợ",
+  "en": ""
+ },
+ {
+  "vi": "Đã gửi hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Quà nhỏ từ túi quà",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một món…",
+  "en": ""
+ },
+ {
+  "vi": "Túi quà đang trống",
+  "en": ""
+ },
+ {
+  "vi": "Đã tặng hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Chuỗi ngày",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký hai bạn",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch đang chờ bạn xác nhận ở mục “Hai bạn”.",
+  "en": ""
+ },
+ {
+  "vi": "Xem kế hoạch",
+  "en": ""
+ },
+ {
+  "vi": "Đám cưới của hai bạn xem ở mục “Hai bạn”.",
+  "en": ""
+ },
+ {
+  "vi": "Xem đám cưới",
+  "en": ""
+ },
+ {
+  "vi": "/bàn",
+  "en": ""
+ },
+ {
+  "vi": "Số mâm tráp ăn hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Bạn 60%",
+  "en": ""
+ },
+ {
+  "vi": "Bạn 70%",
+  "en": ""
+ },
+ {
+  "vi": "Bạn 40%",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bao hết",
+  "en": ""
+ },
+ {
   "vi": "Bớt một bàn",
   "en": ""
  },
@@ -1653,150 +1797,6 @@
  },
  {
   "vi": "Sổ quầy & an toàn",
-  "en": ""
- },
- {
-  "vi": "Lương (xu)",
-  "en": ""
- },
- {
-  "vi": "Rất cẩn thận",
-  "en": ""
- },
- {
-  "vi": "Tự đặt lương. Trả cao thì vui, bán đắt hàng hơn. Dưới 60% mức xin là họ không nhận.",
-  "en": ""
- },
- {
-  "vi": "món có hàng chưa bật ở Menu.",
-  "en": ""
- },
- {
-  "vi": "Bật tất cả món có hàng",
-  "en": ""
- },
- {
-  "vi": "Két + vốn hiện có",
-  "en": ""
- },
- {
-  "vi": "Nhập đúng số phần bạn muốn bán. Tiền lấy từ két/vốn quầy; giữ lại tiền lương để nhân viên tiếp tục làm. Nhân viên chỉ bán món đã bật ở Menu.",
-  "en": ""
- },
- {
-  "vi": "Nhập thêm",
-  "en": ""
- },
- {
-  "vi": "Nhập số lượng để xem tổng tiền",
-  "en": ""
- },
- {
-  "vi": "Nhập số lượng trước",
-  "en": ""
- },
- {
-  "vi": "Két và vốn chưa đủ",
-  "en": ""
- },
- {
-  "vi": "Xem tiệm",
-  "en": ""
- },
- {
-  "vi": "Ít: không lo ế. Nhiều: không lo hết hàng. Hàng tươi (hoa, bánh) ế thì hư.",
-  "en": ""
- },
- {
-  "vi": "Vốn quầy",
-  "en": ""
- },
- {
-  "vi": "Tiền hàng, lương, điện, phí online, thuê chỗ, vật tư, bảo vệ và thuế lấy từ két trước, thiếu mới lấy vốn quầy. Góp vốn dùng ví trước, thiếu mới lấy tài khoản ngân hàng; không dùng thẻ tín dụng. Xem từng khoản trong Sổ quầy & an toàn. Chi phí chưa trả hiện trên thẻ quầy và tạm dừng quầy; chủ chọn Đóng tiền để trả.",
-  "en": ""
- },
- {
-  "vi": "Muốn góp vốn bằng quỹ chung: rút từ quỹ chung về ví ở Ngân hàng, rồi Góp vào vốn quầy.",
-  "en": ""
- },
- {
-  "vi": "Góp vào",
-  "en": ""
- },
- {
-  "vi": "Két vào vốn",
-  "en": ""
- },
- {
-  "vi": "Bán gì?",
-  "en": ""
- },
- {
-  "vi": "Ở đâu?",
-  "en": ""
- },
- {
-  "vi": "Tên quầy",
-  "en": ""
- },
- {
-  "vi": "Chỗ to thì đông khách, nhiều người đứng, nhưng tiền thuê cao hơn.",
-  "en": ""
- },
- {
-  "vi": "Chọn món bán trước",
-  "en": ""
- },
- {
-  "vi": "Giá mềm: khách thích 😊",
-  "en": ""
- },
- {
-  "vi": "Hơi đắt: khách sẽ ít hơn",
-  "en": ""
- },
- {
-  "vi": "Giá vừa phải 👍",
-  "en": ""
- },
- {
-  "vi": "🧑‍🍳 Tiếp tục tự đứng quầy",
-  "en": ""
- },
- {
-  "vi": "🧑‍🍳 Tự đứng quầy",
-  "en": ""
- },
- {
-  "vi": "🏪 Vào xem tiệm",
-  "en": ""
- },
- {
-  "vi": "Đóng chi phí còn thiếu trước nhé",
-  "en": ""
- },
- {
-  "vi": "Mở quầy để bắt đầu nhận khách",
-  "en": ""
- },
- {
-  "vi": "Hàng còn đủ bán hơn 1 ngày.",
-  "en": ""
- },
- {
-  "vi": "Lãi 1 ngày (24 giờ)",
-  "en": ""
- },
- {
-  "vi": "nếu đủ hàng, đủ vốn",
-  "en": ""
- },
- {
-  "vi": "(khi quầy bán lại)",
-  "en": ""
- },
- {
-  "vi": "Chờ bạn tự đứng quầy",
   "en": ""
  }
 ]
