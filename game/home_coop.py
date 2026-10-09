@@ -1,6 +1,7 @@
 """🎨 Cho trang trí (feedback #257): a friend decorates your home, with your permission, using only your furniture.
 
-* Permission: the owner, living in a home they own (journey.home.own, deco place 'own'), grants one friend (a mutual
+* Permission: the owner, living in a home they own (journey.home.own, deco place 'own'; or 🏰 a villa bought in Mua
+  sắm they live in, deco place 'estate', see game/home_guests.py _own), grants one friend (a mutual
   friend, no block either way) "Cho trang trí" for that home: until revoked, or for GRANT_HOURS. One active grant per
   pair (home_deco_grants, a unique partial index). The owner revokes it, the friend may stop; moving, selling the
   home, an import, unfriending or a block end it (checked on every action, ended rows marked lazily by _sweep, and at
@@ -62,11 +63,14 @@ def relation(db, owner, guest) -> tuple[bool, bool]:
 
 
 def home_of(state) -> dict | None:
-    """The home a save lives in when it is one they own (deco place 'own'), else None."""
+    """The home a save lives in when it is one they own (deco place 'own', or 🏰 'estate': a villa bought in Mua sắm,
+    game/home_guests.py _own), else None."""
     own = hg._own(state)
     if not own:
         return None
     pl = dc.place(state['journey'])
+    if pl['where'] == 'estate':
+        return own if pl['key'] == own['id'] else None
     return own if pl['where'] == 'own' and pl['key'].startswith(f"own:{own['id']}:") else None
 
 

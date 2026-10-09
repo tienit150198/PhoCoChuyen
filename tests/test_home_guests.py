@@ -291,3 +291,125 @@ class HomeGuests(Base):
         self.accept('stay')
         self.incomplete_spouse_row()
         self.assertEqual(self.hg.access_from_row(self.access_row(), self.clock.t)['kind'], 'stay')
+
+
+    # 🏰 F 09/10 ("biệt thự đà lạt chưa cho người mời vào ở chung được"): a villa bought in Mua sắm (game/estates.py,
+    # journey.lux) that its owner lives in is a home they own: invite to visit or to stay, the guest sees its rooms on
+    # every floor, and moving out of it, selling it or a save import ends the permission.
+
+    def villa(self, token=None, eid='bt_vuon_da_lat'):
+        token = token or self.a
+        mr._mutate(self.store, {self.sid(token): lambda s: s['journey'].update(wallet=s['journey']['wallet'] + 3_000_000)})
+        self.command(token, 'jr_lux_buy', id=eid, confirm=True)
+        self.command(token, 'jr_lux_live', id=eid)
+        from game import deco as dc
+        pl = dc.place(self.state(token)['journey'])
+        self.assertEqual((pl['where'], pl['kind']), ('estate', eid))
+        return pl['key']
+
+    def status(self, ident):
+        with self.store.connect() as db:
+            return db.execute('SELECT status FROM home_guest_invites WHERE id=?', (ident,)).fetchone()['status']
+
+    def test_villa_owner_without_a_house_invites_to_stay_and_visit(self):
+        from game import estates as es
+        owner, other = self.c, self.a          # 'stranger' owns no house at all: only the villa
+        self.befriend(self.sid(owner), self.sid(self.b))
+        self.befriend(self.sid(owner), self.sid(other))
+        key = self.villa(owner)
+        own = self.listing(owner)['own_home']
+        self.assertEqual(own['home'], dict(id=key, kind=VILLA, name=es.ESTATE[VILLA]['name'], emoji='🌲'))
+        stay = self.post(owner, 'invite', code=self.codes[self.b], kind='stay')['outgoing'][0]['id']
+        self.post(self.b, 'answer', id=stay, answer='accept')
+        visit = next(i['id'] for i in self.post(owner, 'invite', code=self.codes[other], kind='visit')['outgoing'])
+        self.post(other, 'answer', id=visit, answer='accept')
+        home = self.listing(self.b)['homes'][0]
+        self.assertEqual((home['kind'], home['home']['name']), ('stay', 'Biệt thự vườn Đà Lạt'))
+        for token, kind in ((self.b, 'stay'), (other, 'visit'), (owner, 'owner')):
+            out = self.hg.get(self.store, token, self.state(token), 'view', {'code': self.codes[owner]})
+            self.assertEqual(out['access']['kind'], kind)
+            place = out['deco']['place']
+            self.assertEqual((place['key'], place['where'], place['kind'], place['emoji']), (key, 'estate', VILLA, '🌲'))
+            self.assertFalse(place['repairs'])
+            self.assertIsNone(out['reno'])
+            floors = {r['id']: r.get('fl') for r in out['deco']['rooms']}
+            self.assertEqual(floors['living'], 1)
+            self.assertEqual(floors['bed'], 2)   # the second floor reaches the guest too
+            self.assertEqual({m.get('fl') for m in out['deco']['more']}, {2})
+            self.assertNotIn(self.sid(owner), json.dumps(out))
+        self.clock.t += 7201
+        with self.assertRaises(mr.MarriageError):
+            self.hg.get(self.store, other, self.state(other), 'view', {'code': self.codes[owner]})
+
+    def test_moving_out_selling_or_moving_back_ends_villa_permission(self):
+        self.villa()
+        ident = self.accept()
+        self.assertEqual(self.view_home(self.b)['deco']['place']['where'], 'estate')
+        self.command(self.a, 'jr_lux_live', id=None)   # back to the tập thể: the villa invite ends at once
+        self.assertEqual(self.status(ident), 'revoked')
+        with self.assertRaises(mr.MarriageError):
+            self.view_home(self.b)
+        ident = self.accept()                           # the tập thể again: an invitation for it, not for the villa
+        self.assertEqual(self.view_home(self.b)['deco']['place']['where'], 'own')
+        self.command(self.a, 'jr_lux_live', id=VILLA)
+        self.assertEqual(self.status(ident), 'revoked')
+        ident = self.accept()
+        self.command(self.a, 'jr_lux_sell', id=VILLA, confirm=True)
+        self.assertEqual(self.status(ident), 'revoked')
+        self.assertEqual(self.listing(self.b)['homes'], [])
+        self.assertEqual(self.view_home(self.a)['deco']['place']['where'], 'own')
+
+    def test_villa_bought_again_is_a_new_home(self):
+        key = self.villa()
+        ident = self.accept()
+        row = self.access_row()
+        self.assertEqual((row['home_id'], row['home_kind']), (key, VILLA))
+        self.assertEqual(self.hg.access_from_row(row, self.clock.t)['home_id'], key)
+        row = dict(row, home_id=key.rsplit(':', 1)[0] + ':999')   # the same villa bought on another day
+        self.assertIsNone(self.hg.access_from_row(row, self.clock.t))
+        owner = json.loads(self.access_row()['owner_state'])
+        owner['journey']['lux']['live'] = None
+        self.assertIsNone(self.hg.access_from_row(dict(self.access_row(), owner_state=owner), self.clock.t))
+        self.assertEqual(self.status(ident), 'accepted')
+
+    def test_villa_import_forgets_permission(self):
+        self.villa()
+        ident = self.accept()
+        saved = copy.deepcopy(self.state(self.a))
+        self.command(self.a, 'import_save', save={'format': 'mot-ngay-lam-nghe/save-v1', 'state': saved})
+        with self.store.connect() as db:
+            self.assertIsNone(db.execute('SELECT id FROM home_guest_invites WHERE id=?', (ident,)).fetchone())
+
+    def test_spouse_is_not_let_into_a_villa_without_an_invitation(self):
+        self.villa()
+        cid = self.incomplete_spouse_row()   # the spouse lives in the tập thể the owner left for the villa
+        with self.store.connect() as db:
+            db.execute('INSERT INTO marriage_bonds(sid,couple) VALUES(?,?)', (self.sid(self.b), cid))
+        self.assertIsNone(self.hg.access_from_row(self.access_row(), self.clock.t))
+        self.accept('stay')                 # spouses are friends: an invitation to stay lets them in
+        self.assertEqual(self.hg.access_from_row(self.access_row(), self.clock.t)['kind'], 'stay')
+
+    def test_song_hong_three_floors_still_open_to_a_housemate(self):
+        # regression: Biệt thự Sông Hồng is a house (game/housing.py) with its ':v2' three-floor inside
+        price = hs.HOMES['biet_thu_song']['price']
+        mr._mutate(self.store, {self.sid(self.a): lambda s: s['journey'].update(wallet=s['journey']['wallet'] + 2 * price)})
+        self.command(self.a, 'jr_home_buy', kind='biet_thu_song', down=price, confirm=True, move_in=True)
+        own = self.state(self.a)['journey']['home']['own']
+        self.assertEqual(own['kind'], 'biet_thu_song')
+        self.accept()
+        row = self.access_row()
+        self.assertEqual((row['home_id'], row['home_kind']), (own['id'], 'biet_thu_song'))
+        out = self.view_home(self.b)
+        self.assertTrue(out['deco']['place']['key'].endswith(':biet_thu_song:v2'))
+        self.assertEqual(out['deco']['place']['where'], 'own')
+        self.assertGreater(max(r.get('fl') or 1 for r in out['deco']['rooms']), 1)
+        self.assertIsNotNone(out['reno'])
+        self.assertEqual(self.listing(self.b)['homes'][0]['home']['name'], hs.HOMES['biet_thu_song']['name'])
+
+    def test_home_names_never_fail_on_an_unknown_kind(self):
+        self.assertEqual(self.hg._home(dict(id='estate:gone:3', kind='gone'))['name'], 'Nhà')
+        self.assertEqual(self.hg._home(dict(id='h1', kind='tap_the'))['name'], 'Căn tập thể cũ')
+        self.assertEqual(self.hg._home(dict(id='estate:bt_kinh:3', kind='bt_kinh'))['emoji'], '🏙️')
+
+
+VILLA = 'bt_vuon_da_lat'

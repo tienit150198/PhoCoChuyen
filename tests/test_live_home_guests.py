@@ -249,3 +249,36 @@ class Guests(LiveCase):
         self.assertEqual(room['people'], [])
         self.assertNotIn(sid, json.dumps(room))
 
+
+    async def test_villa_guests_and_owner_meet_on_every_floor(self):
+        # 🏰 F 09/10: a villa bought in Mua sắm (game/estates.py) that its owner lives in, with no house of their own.
+        self.setup_house()
+        self.saved = {'journey': {'story': True, 'home': {'own': None, 'shared': None, 'rent': None},
+                                  'lux': {'own': {'bt_vuon_da_lat': {'d': 3, 'p': 150000}}, 'live': 'bt_vuon_da_lat'}}}
+        self.sql('UPDATE sessions SET state=? WHERE sid=?', (json.dumps(self.saved), self.osid))
+        self.invite(self.first, self.fsid)
+        self.invite(self.second, self.ssid, 'visit')
+        with self.store.connect() as db:
+            homes = {(r['home_id'], r['home_kind']) for r in db.execute('SELECT home_id,home_kind FROM home_guest_invites').fetchall()}
+        self.assertEqual(homes, {('estate:bt_vuon_da_lat:3', 'bt_vuon_da_lat')})
+        a = await self.enter(self.first)
+        await a.send(t='home_in', r='bed', host=self.host)   # a bedroom on the second floor
+        a.room = await a.expect('home_room')
+        b = await self.connect(self.second)
+        await b.send(t='home_in', r='bed', host=self.host)
+        b.room = await b.expect('home_room')
+        self.assertEqual(a.room['room'], b.room['room'])
+        await self.event(a, 'in')
+        owner = await self.connect(self.owner)
+        await owner.send(t='home_in', r='bed')
+        owner.room = await owner.expect('home_room')
+        self.assertEqual(owner.room['room'], a.room['room'])
+        self.assertEqual(len(owner.room['people']), 2)
+        await b.send(t='home_in', r='nowhere', host=self.host)
+        await b.expect('error', code='bad')
+        self.saved['journey']['lux']['live'] = None   # the owner moves out of the villa
+        self.sql('UPDATE sessions SET state=? WHERE sid=?', (json.dumps(self.saved), self.osid))
+        await a.send(t='home_mv', p=[[.2, .8], [.4, .8]], ms=200)
+        await a.expect('home_left'); await b.expect('home_left'); await owner.expect('home_left')
+        await a.send(t='home_in', r='bed', host=self.host)
+        await a.expect('error', code='no_home')

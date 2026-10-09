@@ -292,8 +292,13 @@ def _commit_before(raw:dict)->dict:
     visitors=[dict(id=r.get('id'),status=r.get('status'))
               for st in (j.get('quay') or {}).get('stalls',[])
               for r in st.get('business',{}).get('visitor_orders',[])]
+    # 🏰 the villa lived in (game/estates.py place): home_guests.command_commit compares the home before and after
+    lux=j.get('lux') if isinstance(j.get('lux'),dict) else {}
+    live=lux.get('live');villas=lux.get('own') if isinstance(lux.get('own'),dict) else {}
+    villa=villas.get(live) if isinstance(live,str) else None
     return dict(name=raw.get('name'),careers=careers,journey=dict(story=j.get('story'),
         life_day=j.get('life_day',0),home=dict(own={k:own.get(k) for k in ('id','kind')} if isinstance(own,dict) else None),
+        lux=dict(live=live,own={live:dict(d=villa.get('d'))}) if isinstance(villa,dict) else dict(live=None,own={}),
         quay=dict(stalls=[dict(business=dict(visitor_orders=visitors))])))
 
 class Store:

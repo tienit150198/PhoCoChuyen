@@ -34,6 +34,24 @@ class SnapshotTests(unittest.TestCase):
         self.assertNotIn('feed', snap['careers']['test'])
         self.assertEqual(len(snap['careers']['test']['tasks']), 1)
 
+    def test_before_image_keeps_the_villa_lived_in(self):
+        # 🏰 a villa bought in Mua sắm is the home friends are invited to (home_guests._own): the before-image must
+        # name the same home, or every command of its owner would look like a move.
+        lux = dict(v=1, own={'bt_kinh': dict(d=4, p=500000), 'bt_vuon_da_lat': dict(d=9, p=150000)}, live='bt_kinh',
+                   album=['large unused'])
+        before = dict(journey=dict(story=True, life_day=17, home=dict(own=dict(id='h1', kind='tap_the')), lux=lux))
+        snap = storage._commit_before(before)
+        self.assertEqual(home_guests._own(snap), dict(id='estate:bt_kinh:4', kind='bt_kinh'))
+        self.assertEqual(home_guests._own(before), home_guests._own(snap))
+        self.assertEqual(snap['journey']['lux'], dict(live='bt_kinh', own={'bt_kinh': dict(d=4)}))
+        lux['live'] = None
+        snap = storage._commit_before(before)
+        self.assertEqual(home_guests._own(snap), dict(id='h1', kind='tap_the'))
+        self.assertEqual(home_guests._own(before)['id'], 'h1')
+        for bad in ('x', dict(live='bt_kinh', own=[]), dict(live=3, own={}), dict(live='gone', own={})):
+            before['journey']['lux'] = bad
+            self.assertEqual(home_guests._own(storage._commit_before(before))['id'], 'h1')
+
 
 class CommitReadTests(Base):
     def test_successful_command_parses_save_once(self):

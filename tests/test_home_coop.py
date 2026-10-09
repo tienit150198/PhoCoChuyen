@@ -273,3 +273,28 @@ class HomeCoop(Base):
         self.assertNotIn(self.sid(self.b), json.dumps(v))
         self.assertNotIn('wallet', json.dumps(v['deco']))
         self.assertEqual([self.store.read(t)[:2] for t in (self.a, self.b)], before)
+
+    def test_villa_owner_lets_a_friend_decorate_every_floor(self):
+        # 🏰 F 09/10: a villa bought in Mua sắm that its owner lives in (game/estates.py) is a home they own here too.
+        mr._mutate(self.store, {self.sid(self.a): lambda s: s['journey'].update(wallet=s['journey']['wallet'] + 3_000_000)})
+        for action, payload in (('jr_lux_buy', dict(id='bt_vuon_da_lat', confirm=True)), ('jr_lux_live', dict(id='bt_vuon_da_lat'))):
+            self.command(self.a, action, **payload)
+        key = dc.place(self.state(self.a)['journey'])['key']
+        self.assertTrue(key.startswith('estate:bt_vuon_da_lat:'))
+        self.grant()
+        v = self.hview()
+        self.assertEqual((v['deco']['place']['key'], v['deco']['place']['where']), (key, 'estate'))
+        self.assertTrue(v['deco']['bag'])
+        up = next(r for r in v['deco']['rooms'] if r.get('fl') == 2 and r['type'] in dc.ITEMS['ghe_may']['rooms'])
+        out, uid = self.put(r=up['id'])
+        self.assertFalse(out['duplicate'])
+        q = dc.layout(self.state(self.a))['pos'][uid]
+        self.assertEqual(q['r'], up['id'])
+        log = self.get(self.a, 'log')['log']
+        self.assertTrue(log[0]['undo'])
+        self.post(self.a, 'undo', id=log[0]['id'])
+        self.assertNotIn(uid, dc.layout(self.state(self.a))['pos'])
+        self.command(self.a, 'jr_lux_live', id=None)          # moving out of the villa ends the grant
+        with self.assertRaises(mr.MarriageError):
+            self.hview()
+        self.assertEqual(hg.get(self.store, self.b, self.state(self.b), '', {})['deco']['homes'], [])
