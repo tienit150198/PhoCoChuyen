@@ -446,6 +446,10 @@ def _name(raw) -> str:
     from .social import BANNED
     for word in BANNED:
         text = re.sub(r'(?<!\w)' + re.escape(word) + r'(?!\w)', '•••', text, flags=re.I)
+    # A 2-letter word masked as ••• makes the name longer, and a control character dropped after clean_text's strip can
+    # leave a space at an end: either one failed validate as "Dữ liệu quầy trong bản lưu không hợp lệ" (invalid_save).
+    text = text[:NAME_MAX].strip()
+    e.need(text, 'Đặt tên quầy nhé.')
     return text
 
 
@@ -637,20 +641,36 @@ def bigger(st: dict) -> list:
     return list(PLACE_IDS[PLACE_IDS.index(st['place']) + 1:])
 
 
+def grow_busy(st: dict, place: str) -> str:
+    """Why this counter cannot grow into `place` right now ('' = it can): the refusal of jr_quay_upgrade and the grey
+    button's reason in the 🏗️ view (docs/UI_KIT.md "Disabled with a reason"). #303: a busy counter has a shop choice
+    and a staff request waiting almost all the time, so those no longer stop it. Only what the bigger place would make
+    invalid does: the owner's own shift (closed first, as before) and a waiting choice of a kind the new place does
+    not have (the cart's traffic check)."""
+    run = st.get('run')
+    if isinstance(run, dict) and not run.get('x'):
+        return 'Đóng ca tự đứng quầy rồi mở rộng nhé.'
+    pending = (st.get('shop_events') or {}).get('pending')
+    if pending:
+        from .shop_events import eligible_kinds
+        if pending.get('kind') not in eligible_kinds(st['trade'], place):
+            return 'Xử lý tình huống đang chờ ở quầy rồi mở rộng nhé.'
+    return ''
+
+
 def _upgrade(s: dict, st: dict, p: dict, day: int) -> dict:
     """🏗️ Mở rộng quầy: same stock, staff, menu, look, till, fund and history; a bigger place: more staff places, more
     walk-ins, higher running costs from now on (the time before was settled at the old place by quay_business.settle,
-    which action() runs first). Paid from the wallet, then the bank account (_take), never into debt."""
+    which action() runs first). Paid from the wallet, then the bank account (_take), never into debt. A waiting shop
+    choice or staff request stays waiting (grow_busy)."""
     need = _core().need
     j = s['journey']
     need(set(p) <= {'stall', 'place', 'confirm'} and p.get('place') in PLACES, 'Chọn chỗ mới cho quầy.')
     place = p['place']
     need(place in bigger(st), 'Chỉ nâng lên chỗ lớn hơn chỗ đang có.', 'not_bigger')
     need(p.get('confirm') is True, 'Xác nhận mở rộng quầy.')
-    run = st.get('run')
-    need(not (isinstance(run, dict) and not run.get('x')), 'Đóng ca tự đứng quầy rồi mở rộng nhé.', 'busy')
-    need(not (st.get('shop_events') or {}).get('pending'), 'Xử lý tình huống đang chờ ở quầy rồi mở rộng nhé.', 'busy')
-    need(not (st.get('staff_life') or {}).get('pending'), 'Trả lời nhân viên đang chờ rồi mở rộng nhé.', 'busy')
+    busy = grow_busy(st, place)
+    need(not busy, busy, 'busy')
     need(j['wallet'] >= 0, 'Ví đang nợ. Trả nợ trước rồi mở rộng nhé.', 'in_debt')
     cost = upgrade_cost(st, place)
     need(_have(s) >= cost, f'Cần {_fmt(cost)} xu trong ví hoặc tài khoản.', 'no_money')
@@ -765,6 +785,10 @@ def _stall_view(s: dict, st: dict) -> dict:
                hist=[[x['d'], x['n'], x['net']] for x in st['hist']], today=fc, sell=sell_back(st),
                value=shift_value(st['place'], st['trade']), **_qs().stall_view(s, st))
     out['grow'] = [dict(place=k, cost=upgrade_cost(st, k)) for k in bigger(st)]   # 🏗️ Mở rộng quầy (jr_quay_upgrade)
+    for g in out['grow']:   # #303: the button greyed with the refusal's own words (a view field, never saved)
+        why = grow_busy(st, g['place'])
+        if why:
+            g['why'] = why
     from .quay_business import public as business_public
     out['business'] = business_public(st)
     from .staff_life import public as staff_public
@@ -806,6 +830,17 @@ def _text(v, n: int) -> bool:
     return isinstance(v, str) and len(v) <= n
 
 
+def _invalid_where() -> None:
+    """One journal line naming the quay check that refused a save ("[quay-invalid] quay_self.py:576"), file and line
+    only, no player data. 09/10 a guest's every command failed with the one message this validator has, and the save
+    was gone before it could be replayed: the next time the line says which rule it was."""
+    import os
+    import sys
+    import traceback
+    f = traceback.extract_stack(limit=3)[0]   # [the rule that failed, need(), here]
+    sys.stderr.write(f'[quay-invalid] {os.path.basename(f.filename)}:{f.lineno}\n')
+
+
 def validate(s: dict) -> None:
     """journey['quay'] when present: strict on the keys this build knows (a newer build may add keys)."""
     from . import engine as e
@@ -814,7 +849,11 @@ def validate(s: dict) -> None:
         return
     q = j[KEY]
     bad = 'Dữ liệu quầy trong bản lưu không hợp lệ.'
-    need = lambda ok: e.need(ok, bad, 'invalid_save')  # noqa: E731
+
+    def need(ok):
+        if not ok:
+            _invalid_where()
+        e.need(ok, bad, 'invalid_save')
     need(isinstance(q, dict) and {'v', 'seq', 'stalls', 'shift', 'out'} <= set(q) and q['v'] == VERSION)
     need(type(q['seq']) is int and q['seq'] >= 0 and isinstance(q['stalls'], list))
     from .quay_economy import validate_owner
