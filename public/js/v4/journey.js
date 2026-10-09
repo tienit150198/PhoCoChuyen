@@ -4,6 +4,7 @@
  * game/journey.py. Buttons use data-action="jr…" (journeyAction) or the app's
  * `choose`/`close`; forms use data-jr-form (journeySubmit). */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {marketTag} from '../market-ui.js';
 import {olderRows,olderButton} from '../archive.js';
 import {accountChip} from './account.js';
 import {storiesBoot,storiesCard,storiesAction,maybeStory} from './stories.js';
@@ -218,6 +219,7 @@ function placeCard(env,cid){
   else if(job.required&&job.status!=='hired')tags.push(tag(icon('briefcase',12)+' Cần xin việc','amber'));
   if(!c.started&&J.story&&(api.content.journey.unlock_chapter||{})[cid]===J.chapter)tags.push(tag('Mới mở','green'));
   if(api.state.x3?.today?.includes(cid))tags.push(tag(`🔥 Lời x${api.state.x3.x} hôm nay`,'amber'));   // game/x3_week.py
+  {const mk=marketTag(api.state,cid);if(mk)tags.push(tag(esc(mk[0]),mk[1]));}   // 📈 staff profit ×market, 🔥 nghề hot hôm nay (game/staff_market.py)
   if(acctTag(aj))tags.push(tag(acctTag(aj),'amber'));
   let money='';
   if(p&&J.story)money=p.employed?`<p class="jr-fund">Làm thuê · lương về ví${abandonTrust(api,cid)}</p>${btn('💵 Xem lương trong Sổ ví','jrView',{view:'wallet'},'ghost small')}`:`<p class="jr-fund">Quỹ ${fmt(p.fund)} xu · ${p.paused?'tạm đóng, mở lại miễn phí':'vắng chủ không tốn phí'}</p>`;

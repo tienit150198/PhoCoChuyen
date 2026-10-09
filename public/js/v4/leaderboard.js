@@ -9,6 +9,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {emojiOf} from './journey.js';
 import {myPortrait} from './look.js';
 import {live} from './live.js';
+import {marketTag,mx} from '../market-ui.js';   // 🔥 nghề hot hôm nay, 📈 lãi nhân viên (game/staff_market.py)
 
 const FRESH_MS=10000;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -126,8 +127,10 @@ function emptyText(api,board){
 function pickerHTML(api,board,more){
   const chip=(id,emoji,label,act='lbBoard')=>`<button type="button" class="lb-chip${board===id?' active':''}" data-action="${act}" data-board="${esc(id)}" aria-pressed="${board===id}"><span aria-hidden="true">${emoji}</span>${esc(label)}</button>`;
   const worked=id=>{const c=api.state.careers?.[id];return !!(c&&((c.xp||0)>0||c.started));};
-  const ids=careerIds(api),mine=ids.filter(id=>worked(id)||id===board),rest=ids.filter(id=>!mine.includes(id));
-  const one=id=>{const m=metaOf(api,id);return chip(id,emojiOf(m),m.short||m.place||id);};
+  // 🔥 Today's hot career always shows (game/staff_market.py): its chip carries the flame and its ×.
+  const hot=api.state.market?.hot,hx=hot?api.state.market.x?.[hot]:null;
+  const ids=careerIds(api),mine=ids.filter(id=>worked(id)||id===board||id===hot),rest=ids.filter(id=>!mine.includes(id));
+  const one=id=>{const m=metaOf(api,id);return chip(id,emojiOf(m),(m.short||m.place||id)+(id===hot?` 🔥${hx?mx(hx):''}`:''));};
   const toggle=rest.length?`<button type="button" class="lb-chip lb-more" data-action="lbMore" aria-expanded="${!!more}"><span aria-hidden="true">${more?'−':'＋'}</span>${more?'Thu gọn':`Nghề khác (${rest.length})`}</button>`:'';
   return `<nav class="lb-picker${more?' open':''}" aria-label="Chọn bảng">${chip('all','🌟','Tất cả')}${mine.map(one).join('')}${more?rest.map(one).join(''):''}${toggle}</nav>`;
 }
@@ -187,9 +190,15 @@ export function leaderboardView(env){
   return head+`<div class="sheet-body lb">
     ${kindsHTML(tab)}
     ${kind==='exp'?pickerHTML(api,board,s.more):''}
-    <p class="lb-rule">${esc(rule(api,board))}</p>
+    <p class="lb-rule">${esc(rule(api,board))}</p>${marketNote(api,board)}
     ${body}
     ${privacyNote(env)}</div>`;
+}
+
+/** 📈 The board's career: its staff's profit now (game/staff_market.py), one tag; nothing when it is about ×1. */
+function marketNote(api,board){
+  const t=marketTag(api.state,board);if(!t)return '';
+  return `<p class="lb-market"><span class="tag ${t[1]}">${esc(t[0])}</span> <small>lãi đơn nhân viên lúc này</small></p>`;
 }
 
 function privacyNote(env){

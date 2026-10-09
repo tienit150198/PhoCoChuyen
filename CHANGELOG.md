@@ -1,3 +1,19 @@
+# Chưa phát hành — 📈 Lãi nhân viên theo thị trường + 🔥 Nghề hot hôm nay (chủ game 09/10)
+
+- Chỉ đơn riêng của nhân viên (game/workplace_business.py `_finish`) đổi; người chơi tự bán, đơn khách người chơi
+  (player_service_tasks) và Bảng giá giữ nguyên. Mới: game/staff_market.py, public/js/market-ui.js.
+- Lãi mỗi đơn tính trên giá vốn nhập lại (`_replacement`, hoặc giá lô nếu cao hơn): giữ nguyên tới 16 xu, phần trên giữ 1/4,
+  tối đa 24 xu (theo sao). Đồ si nhân viên trước ~142 xu/đơn (≈ 53.600 xu/giờ với 4 người, 17× việc văn phòng) nay ~32
+  (≈ 12.300/giờ); mẹ & bé, kem, cơm, cà phê… giảm nhẹ; nghề lãi thấp không đổi.
+- Hệ số thị trường mỗi nghề ×0,6–×1,6, đổi mỗi 30 phút (tổng 3 sóng sin, pha theo tên nghề), mỗi bước ≤ 10%, trung bình ≈ ×1.
+  🔥 Mỗi ngày (giờ VN) một nghề hot: ×2 hệ số, giữ trong ×2–×2,5; xoay hết 50 nghề mới lặp, không trùng hai ngày liền.
+  Tính theo giờ hoàn thành đơn, nên đơn bù lúc vắng và đơn từng lượt ra cùng số. MNL_MARKET_OFF=1 tắt (tests mặc định tắt).
+- Hiện ở: thẻ nơi làm (🔥 Nghề hot ×2 / 📈 Lãi cao ×1,3 / 📉 Lãi thấp ×0,8), 🏆 Xếp hạng nghề (chip nghề hot có 🔥, dòng lãi
+  nhân viên), Sổ tiệm → Nhân viên (dòng "🔥 Hôm nay lãi cao ×2" / "📈 Lãi đang cao ×1,3 ↑" + đường 48 giờ), Lúc bạn vắng
+  ("lãi … xu (×1,3)"). public_state['market'] và business.market chỉ là dữ liệu xem.
+- Không có khóa lưu mới, không đổi CSDL; biên nhận giữ đúng dạng cũ nên 1.9.36 đọc được save.
+- Có gì mới (cho bản phát hành): 📈 Lãi đơn nhân viên giờ lên xuống theo giờ, mỗi nghề một kiểu; mỗi ngày có 1 🔥 nghề hot lãi ×2. Xem ở Công việc, Sổ tiệm.
+
 # v1.9.36 — 2026-10-09
 
 🎆 Pháo hoa (#299–#301): show gắn vào hộp thoại trên cùng nên ✕ không còn lọt xuống nền làm đóng việc đang làm; đang mở hộp thoại/game thì chỉ chip nhỏ; Cài đặt → Cách chơi: Bật / Chỉ báo nhỏ / Tắt (lưu trên máy); ngắn và nhẹ hơn.

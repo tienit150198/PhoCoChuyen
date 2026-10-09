@@ -53,6 +53,7 @@ from . import live_effects as lfx
 from . import fair as fh  # 🏮 Hội chợ dân gian
 from . import jail as jl  # 🚔 Trại tạm giữ (game/jail.py)
 from . import x3_week as x3w  # 🔥 Nghề x3 trong tuần
+from . import staff_market as staff_market_  # 📈 staff orders: market multiplier, 🔥 hot career of the day
 from . import overtime as ovt  # ⏱️ Tăng ca ×2, ⚡ thưởng năng suất
 from . import needs as nd  # 🍚 No bụng, 😴 Tỉnh táo
 from . import chua as cg  # 🛕 Đi chùa
@@ -1214,6 +1215,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["fair"]=fh.public(s)  # 🏮 Hội chợ dân gian (game/fair.py)
     v["jail"]=jl.public(s)  # 🚔 Trại tạm giữ (game/jail.py): None when free
     v["x3"]=x3w.public()  # 🔥 Nghề x3 trong tuần (game/x3_week.py)
+    v["market"]=staff_market_.public()  # 📈 lãi nhân viên theo thị trường + 🔥 nghề hot hôm nay (game/staff_market.py)
     v["rui"]=rui_.public(s)  # 🛡️ Rủi ro & bảo hiểm (game/rui.py): the warning, the card, the policies
     v["vang"]=vang_.public(s)  # 💰 Tiệm vàng (game/vang.py): today's price, the chart, the gold held
     v['accounting_school']=accounting_school_.summary(s)  # small: the school's own view rides on as_* results
