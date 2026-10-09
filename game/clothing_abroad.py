@@ -39,18 +39,18 @@ MALE = (2,)                   # clothing.TUAN: the student
 
 # ---------------------------------------------------------------- the four partner shops
 SHOPS = {
-    'han_quoc': dict(name='Chỉ Mây Seoul', area='Hongdae', days=4, pct=20, style='Oversize, màu trung tính, đồ đôi',
+    'han_quoc': dict(name='Chỉ Mây Seoul', area='Hongdae', days=4, pct=40, style='Oversize, màu trung tính, đồ đôi',
                      hi='Annyeong haseyo!', address=('Mapo-gu, Seoul', 'Ký túc xá Sinchon, phòng 508', 'Gangnam-gu, tầng 12'),
                      names=('Chị Ji-eun', 'Chị Seo-yeon', 'Min-jun', 'Chị Hye-jin', 'Bà Park', 'Cô Kim', 'Chị Yuna', 'Bà Choi'),
                      lines=('Hongdae tối nào cũng có nhóm nhảy ngay trước tiệm.',
                             'Chị Ji-eun dạy bạn gấp áo kiểu Hàn: vuông như hộp quà.',
                             'Khách trẻ chụp ảnh ở gương lớn nhiều hơn mua.',
                             'Tan ca, cả tiệm đi ăn gà rán, uống trà lúa mạch.')),
-    'nhat_ban': dict(name='Chỉ Mây Osaka', area='Shinsaibashi', days=5, pct=25, style='Gọn gàng, kín đáo, gói quà thật kỹ',
+    'nhat_ban': dict(name='Chỉ Mây Osaka', area='Shinsaibashi', days=5, pct=45, style='Gọn gàng, kín đáo, gói quà thật kỹ',
                      hi='Irasshaimase!', address=('Namba, Osaka', 'Tenma, Osaka', 'Umeda, tầng 7')),
-    'phap': dict(name='Chỉ Mây Lyon', area='Presqu’île', days=5, pct=25, style='Thanh lịch, chất liệu tự nhiên',
+    'phap': dict(name='Chỉ Mây Lyon', area='Presqu’île', days=5, pct=45, style='Thanh lịch, chất liệu tự nhiên',
                  hi='Bonjour !', address=('Croix-Rousse, Lyon', 'Rue de la République, Lyon', 'Vieux Lyon, tầng 3')),
-    'uc': dict(name='Chỉ Mây Melbourne', area='Fitzroy', days=6, pct=30, style='Thoải mái, chống nắng, mặc nhiều lớp',
+    'uc': dict(name='Chỉ Mây Melbourne', area='Fitzroy', days=6, pct=50, style='Thoải mái, chống nắng, mặc nhiều lớp',
                hi='G’day!', address=('Fitzroy, Melbourne', 'St Kilda, Melbourne', 'Footscray, Melbourne')),
 }
 SHOPS['nhat_ban'].update(

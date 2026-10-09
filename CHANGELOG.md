@@ -2,6 +2,10 @@
 
 Gồm góp ý #303 (quay-fix: mở rộng quầy khi có tình huống chờ, tên quầy che từ không còn invalid_save), #307 (share-deco: journey.decor_stay tùy chọn), #304 (teacher-grades: lớp 2–5, ext.data.homeroom, task.grade_room tùy chọn), #306 (clothing-abroad: tasks abroad tùy chọn).
 
+# Chưa phát hành — hoa hồng tiệm quần áo ở nước ngoài
+
+- Seoul 20→40 %, Osaka/Lyon 25→45 %, Melbourne 30→50 % doanh thu mỗi ngày (chủ game 10/10). Hợp đồng đang chạy giữ mức cũ (pct lưu lúc nhận).
+
 # Chưa phát hành — quay-fix (không có Có gì mới)
 
 🏗️ Mở rộng quầy (#303): tình huống chủ tiệm và việc của nhân viên đang chờ không còn chặn mở rộng (chúng vẫn chờ nguyên); chỉ còn ca tự đứng quầy đang mở và tình huống chỉ xe đẩy mới có (kiểm tra chỗ đặt xe) chặn. Nút Mở rộng mờ kèm lý do ngay khi chưa làm được (quay.grow_busy, `grow[].why` chỉ là trường hiển thị).
