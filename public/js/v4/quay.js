@@ -11,6 +11,7 @@
  * (./quay-ride.js), answer the day's tricky moments, then "Đóng ca". The client sends steps; the server prices them.
  * An older server (no content.journey.quay.menus): none of this shows. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {withWhy,whyTap} from '../ui-kit.js';   // #303: dimmed with a reason (docs/UI_KIT.md)
 import {avInner} from './face.js';
 import {visitorSelectionValid} from './workplace-visit-ui.js';
 import {paintCounter} from './quay-scene.js';
@@ -75,6 +76,7 @@ function dialog(){
     const dismiss=backdropPress&&e.target===d&&outside(e);backdropPress=false;
     if(dismiss){d.close();return;}
     const el=e.target.closest('[data-qy]');if(!el||!d.contains(el)||el.disabled)return;
+    if(el.dataset.why){e.preventDefault();whyTap(el);return;}   // dimmed with a reason: say why, send nothing
     e.preventDefault();S.anchor=selOf(el);S.anchorAt=performance.now();onClick(el.dataset.qy,el.dataset,el);
   });
   d.addEventListener('input',e=>{const t=e.target;if(t.name==='qy-price'){const st=stallOf(t.dataset.id);if(st){menuDraft(st).p[t.dataset.k]=t.value;render();}return;}if(t.name==='qy-search'){S.search[t.dataset.id]=t.value;render();return;}if(t.name==='qy-stock'){(S.stockDraft[t.dataset.id]??={})[t.dataset.k]=t.value;render();return;}if(t.name==='qy-name'&&S.pick)S.pick.name=t.value;
@@ -570,7 +572,7 @@ function upPart(st){
 function growPart(st){
   const g=st.grow||[];if(!g.length)return '';
   const rows=g.map(x=>{const P=place(x.place);return `<li class="qy-up"><span class="qy-up-emoji" aria-hidden="true">${P.emoji||'🏪'}</span><div class="grow"><b>${esc(P.name||x.place)}</b><small>${P.slots||1} chỗ nhân viên · thuê ${xu(P.rent)}/tháng</small></div>
-      ${btn(`Mở rộng · ${xu(x.cost)}`,'grow',{id:st.id,place:x.place},'small primary',quayHave(J())<x.cost?`Cần ${xu(x.cost)}`:'')}</li>`;}).join('');
+      ${x.why?withWhy(btn(`Mở rộng · ${xu(x.cost)}`,'grow',{id:st.id,place:x.place},'small primary'),{why:x.why}):btn(`Mở rộng · ${xu(x.cost)}`,'grow',{id:st.id,place:x.place},'small primary',quayHave(J())<x.cost?`Cần ${xu(x.cost)}`:'')}</li>`;}).join('');   // #303: the server's reason (grow_busy)
   return `<h4>🏗️ Mở rộng quầy ${helpBtn(`grow:${st.id}`)}</h4>${helpText(`grow:${st.id}`,'Giữ nguyên hàng, nhân viên, menu, két và vốn. Chỉ trả phần chênh giá chỗ và thiết bị đã lắp. Chỗ lớn hơn có thêm chỗ cho nhân viên và đông khách hơn; tiền thuê, điện và lương cũng cao hơn.')}<ul class="qy-list qy-grow">${rows}</ul>`;
 }
 /* 🛠️ Lắp tất cả (F#290): only with two or more items left; the total is what the money there pays, cheapest first. */

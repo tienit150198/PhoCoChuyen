@@ -1,3 +1,8 @@
+# Chưa phát hành — quay-fix (không có Có gì mới)
+
+🏗️ Mở rộng quầy (#303): tình huống chủ tiệm và việc của nhân viên đang chờ không còn chặn mở rộng (chúng vẫn chờ nguyên); chỉ còn ca tự đứng quầy đang mở và tình huống chỉ xe đẩy mới có (kiểm tra chỗ đặt xe) chặn. Nút Mở rộng mờ kèm lý do ngay khi chưa làm được (quay.grow_busy, `grow[].why` chỉ là trường hiển thị).
+🏪 Tên quầy có từ bị che (••• dài hơn từ 2 chữ) hoặc ký tự điều khiển ở cuối không còn bị từ chối với lỗi "Dữ liệu quầy trong bản lưu không hợp lệ": tên được cắt lại 24 ký tự và bỏ khoảng trắng hai đầu. Khi kiểm tra quầy từ chối một bản lưu, log server ghi một dòng `[quay-invalid] <tệp>:<dòng>` (không có dữ liệu người chơi).
+
 # v1.9.38 — 2026-10-09
 
 Gồm exploit-fixes (nhập bản lưu, reset nơi làm, phóng dao, kế toán × x3, bỏ ngày ăn lương/tiền thuê, ném vòng, giới hạn chuyển tiền tài khoản mới), ong-hai-hard (journey.fair_hai), hot-career (lãi nhân viên theo thị trường + nghề hot), mishap: kiểu police, bán coin. Khóa mới tùy chọn: journey.fair_day, journey.fair_hai.

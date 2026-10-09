@@ -143,6 +143,18 @@ class Opening(unittest.TestCase):
         self.assertEqual((row['kind'], row['amount'], row['career']), ('invest', -qy.open_cost('xe'), 'milk_tea'))
         self.assertIn('cands', public_state(s)['journey']['quay']['stalls'][0])
 
+    def test_masked_or_control_names_fit_the_sign(self):
+        """A 2-letter word masked as ••• grew a full name past NAME_MAX, and a control character dropped after the strip
+        left a space at the end: both were refused as "Dữ liệu quầy trong bản lưu không hợp lệ" (invalid_save)."""
+        s = owner(5000)
+        s, _ = act(s, 'jr_quay_open', trade='milk_tea', place='xe', name='đm quán đm quán đm quán', confirm=True)
+        self.assertLessEqual(len(ST(s)['name']), qy.NAME_MAX)
+        self.assertIn('•••', ST(s)['name'])
+        s, _ = act(s, 'jr_quay_look', stall=ST(s)['id'], name='Quán Mây \x01')
+        self.assertEqual(ST(s)['name'], 'Quán Mây')
+        refused(self, s, 'jr_quay_look', stall=ST(s)['id'], name='\x01')
+        validate_state(s)
+
     def test_open_uses_the_bank_after_the_wallet(self):
         s = owner(500)
         s, _ = act(s, 'jr_bk_open')

@@ -181,6 +181,47 @@ class Upgrade(unittest.TestCase):
         validate_state(s)
         refused(self, s, 'jr_quay_upgrade', 'busy', stall=st['id'], place='sap', confirm=True)
 
+    def test_303_waiting_choices_do_not_block_a_bigger_place(self):
+        """#303 (homestay, 09/10 "ko nâng cấp dk"): a busy counter almost always has a shop choice and a staff request
+        waiting; they stay waiting and the counter grows. Only the owner's own shift (and a cart-only choice) stop it,
+        and the 🏗️ row says why before the tap."""
+        s = opened('sap', wallet=30000)
+        st = ST(s)
+        st['shop_events'] = dict(v=1, seq=1, next=99, pending=dict(id=f'shop-{st["id"]}-1', kind='rain', camera_at_event=False),
+                                 recent=[], reputation=0, spent=0)
+        e = st['staff'][0]
+        st['staff_life'] = dict(v=1, seq=1, next=99, pending=dict(id=f'staff-{st["id"]}-1', kind='wedding', employee=e['id'],
+                                name=e['name'], wage=e['wage'], raise_by=max(1, (e['wage'] + 9) // 10)), recent=[], spent=0, raises={})
+        validate_state(s)
+        self.assertNotIn('why', qy.public(s)['stalls'][0]['grow'][0])
+        s, _ = act(s, 'jr_quay_upgrade', stall=st['id'], place='kiot', confirm=True)
+        st = ST(s)
+        self.assertEqual(st['place'], 'kiot')
+        self.assertEqual(st['shop_events']['pending']['kind'], 'rain')
+        self.assertEqual(st['staff_life']['pending']['kind'], 'wedding')
+        validate_state(s)
+
+    def test_303_the_owner_shift_is_the_reason_shown(self):
+        s = opened('xe', wallet=20000)
+        sid = ST(s)['id']
+        s, _ = act(s, 'jr_quay_restock', stall=sid, items={DISH: 9})
+        s, _ = act(s, 'jr_quay_start', stall=sid)
+        why = 'Đóng ca tự đứng quầy rồi mở rộng nhé.'
+        self.assertEqual([g.get('why') for g in qy.public(s)['stalls'][0]['grow']], [why, why])
+        self.assertIn(why, refused(self, s, 'jr_quay_upgrade', 'busy', stall=sid, place='sap', confirm=True))
+        s, _ = act(s, 'jr_quay_close', stall=sid)
+        self.assertNotIn('why', qy.public(s)['stalls'][0]['grow'][0])
+        s, _ = act(s, 'jr_quay_upgrade', stall=sid, place='sap', confirm=True)
+        validate_state(s)
+
+    def test_303_a_cart_only_choice_waiting_is_the_reason_shown(self):
+        s = opened('xe', wallet=20000)
+        st = ST(s)
+        st['shop_events'] = dict(v=1, seq=1, next=99, pending=dict(id=f'shop-{st["id"]}-1', kind='traffic_inspection',
+                                                                    camera_at_event=False), recent=[], reputation=0, spent=0)
+        self.assertEqual([g.get('why') for g in qy.public(s)['stalls'][0]['grow']],
+                         ['Xử lý tình huống đang chờ ở quầy rồi mở rộng nhé.'] * 2)
+
     def test_cart_only_events_stay_with_the_cart(self):
         s = opened('xe', wallet=20000)
         st = ST(s)
