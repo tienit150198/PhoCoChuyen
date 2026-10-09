@@ -36,7 +36,7 @@ import time
 ACTION = 'live_fx'                  # internal command (game/engine.py), never accepted from a client
 RID = 'live-'                       # request id prefix: live-<hash>
 KIND = 'life'                       # journey wallet history kind (journey.HISTORY_KINDS): old saves stay valid
-PAYS = ('coins', 'spirit', 'title', 'quay', 'quay_refund', 'auction')  # quay_refund preserves the original wage-funding pocket;
+PAYS = ('coins', 'spirit', 'title', 'quay', 'quay_refund', 'auction', 'mishap')  # quay_refund preserves the original wage-funding pocket;
 # 'auction' (game/auction.py): an escrow refund or a won lot; its row flips in the save's own transaction (auction.fx_commit)
 BESIDE = ('closeness',)             # kinds this build applies beside the save (player_closeness, game/wedding_live.py)
 LABELS = dict(envelope='🧧 Lì xì dạo phố', date='💕 Buổi hẹn trên phố', guest='💍 Đi ăn cưới', host='💍 Khách tới dự đám cưới',
@@ -78,7 +78,7 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     kind = p.get('kind')
     e.need(kind in PAYS, 'Loại phần thưởng không hợp lệ.')
     transfer_refund = kind == 'coins' and p.get('src') == 'xfer_back'
-    amount = e.integer(p.get('amount'), SPIRIT_DOWN if kind == 'spirit' else 1, 10**9 if transfer_refund or kind == 'auction' else AMOUNT_MAX)
+    amount = e.integer(p.get('amount'), SPIRIT_DOWN if kind == 'spirit' else 1, 10**9 if transfer_refund or kind in ('auction', 'mishap') else AMOUNT_MAX)
     e.need(amount != 0, 'Số lượng không hợp lệ.')
     h = short(eid)
     got = j.get('live_fx') if isinstance(j.get('live_fx'), list) else []
@@ -90,6 +90,9 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     elif kind == 'auction':   # 🔨 escrow back, or the lot won (game/auction.py)
         from . import auction
         message = auction.apply_fx(s, p, amount)
+    elif kind == 'mishap':   # 🔐 a scheduled incident takes xu (game/mishap.py; scripts/mishap_plan.py)
+        from . import mishap
+        message = mishap.apply_fx(s, p, amount)
     elif kind == 'quay_refund':
         from . import quay_hire
         source,label = p.get('source'),p.get('label')
@@ -124,7 +127,10 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
         message = ''
     j['live_fx'] = (got + [h])[-KEPT:]
     e.validate_state(s)
-    return s, dict(message=message, live=dict(id=eid, kind=kind, amount=amount))
+    live = dict(id=eid, kind=kind, amount=amount)
+    if kind == 'mishap':
+        live['taken'] = int(p.pop('_taken', 0))
+    return s, dict(message=message, live=live)
 
 
 def validate(j: dict) -> None:
@@ -146,7 +152,7 @@ def on_load(store, token: str, state: dict | None) -> bool:
     marks = ','.join('?' * len(kinds))
     with store.connect() as db:
         rows = [dict(r) for r in db.execute(f"SELECT id,kind,amount,data FROM live_effects WHERE sid=? AND status='pending' "
-                                            f'AND kind IN ({marks}) ORDER BY at,id LIMIT {BATCH}', (sid, *kinds))]
+                                            f'AND kind IN ({marks}) AND at<=? ORDER BY at,id LIMIT {BATCH}', (sid, *kinds, now()))]
     if not rows or not ((state or {}).get('journey') or {}).get('story'):
         return False
     changed = False
@@ -167,6 +173,8 @@ def on_load(store, token: str, state: dict | None) -> bool:
             payload.update(source=data.get('source'),label=data.get('label'))
         elif r['kind'] == 'auction':
             payload['data'] = data
+        elif r['kind'] == 'mishap':
+            payload['sub'] = data.get('sub')
         try:
             store.command(token, RID + short(r['id']), None, None, ACTION, payload, internal=True)
         except GameError:   # refused (a bad row): stays pending, the operator looks

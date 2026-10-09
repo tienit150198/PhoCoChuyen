@@ -1,5 +1,8 @@
 # v1.9.37 — 2026-10-09
 
+- 🔐 Sự cố tài chính theo lịch (game/mishap.py, live_effects kind `mishap`, scripts/mishap_plan.py): bản cũ bỏ qua loại này (để pending). on_load chỉ trả hàng có `at` đã tới.
+- journey.iclock thêm `s` (ngày bắt đầu tính theo giờ thật).
+
 Gồm bank-exploit phần 1: lãi theo giờ thật (1 giờ = 1 ngày lãi, tối đa 168; journey.iclock tùy chọn), tái tục tối đa 10M gốc, tài khoản dưới 7 ngày thật chuyển tối đa 500k/ngày, log [day-skip]. Không có Có gì mới.
 
 # Chưa phát hành — bank-exploit (phần 1: lãi theo giờ thật)
