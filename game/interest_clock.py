@@ -16,7 +16,9 @@ build loading a save from this one has nothing to catch up. The allowance lives 
 journey.validate of every build accepts extra keys (`set(initial()) <= set(j)`), and a save without it simply starts
 a full bucket.
 
-KEY {v, d, t, at, x, w, n, a}:
+KEY {v, s, d, t, at, x, w, n, a}:
+  s   the life day the allowance began for this save (days before it were paid by the old rules: the audit
+      script, scripts/bank_audit_reclaim.py, looks only at those);
   d   the last life day the allowance decided (a day n <= d is decided once and for all);
   t   whole interest days left in the bucket (0..CAP); at: epoch second the next refill counts from;
   x   [[lo, hi], ...] life days (mornings) lo..hi that earned no interest, oldest first (the last KEEP_DAYS);
@@ -45,13 +47,13 @@ def now() -> float:
 
 
 def _valid(c) -> bool:
-    return (isinstance(c, dict) and c.get('v') == VERSION and set(c) == {'v', 'd', 't', 'at', 'x', 'w', 'n', 'a'}
-            and all(type(c[k]) is int for k in ('d', 't', 'at', 'w', 'n')) and type(c['a']) is bool
+    return (isinstance(c, dict) and c.get('v') == VERSION and set(c) == {'v', 's', 'd', 't', 'at', 'x', 'w', 'n', 'a'}
+            and all(type(c[k]) is int for k in ('s', 'd', 't', 'at', 'w', 'n')) and type(c['a']) is bool
             and isinstance(c['x'], list) and all(isinstance(r, list) and len(r) == 2 and all(type(v) is int for v in r) for r in c['x']))
 
 
 def _fresh(day: int, t: int) -> dict:
-    return dict(v=VERSION, d=int(day), t=CAP, at=t, x=[], w=t, n=0, a=False)
+    return dict(v=VERSION, s=int(day), d=int(day), t=CAP, at=t, x=[], w=t, n=0, a=False)
 
 
 def get(s: dict) -> dict | None:
@@ -104,6 +106,7 @@ def sync(s: dict) -> dict | None:
         return c
     if day < c['d']:   # a save reset to an earlier day: start deciding from there
         c['d'] = day
+        c['s'] = min(c['s'], day)
         c['x'] = [r for r in c['x'] if r[1] < day]
         return c
     if day == c['d']:
@@ -145,6 +148,7 @@ def validate(s: dict) -> None:
     from . import engine as e
     c = j[KEY]
     e.need(_valid(c), 'Dữ liệu ngày tính lãi không hợp lệ.', 'invalid_save')
+    e.integer(c['s'], 1, 10**6)
     e.integer(c['d'], 1, 10**6)
     e.integer(c['t'], 0, CAP)
     e.integer(c['at'], 0, 2**40)
