@@ -37,7 +37,7 @@ class FitDraftTest(unittest.TestCase):
         low = [i for i in by if inv['stock'].get(i, 0) + inv['arriving'].get(i, 0) <= max(2, inv['capacity'] * 8 // 100)]
         self.assertGreaterEqual(len(low), inv['cart_lines'])  # 20 low, 20 lines a draft since 1.7.16
         lines = [dict(id=i, cost=by[i]['cost'], q=min(inv['room'][i], 10)) for i in low]
-        draft = json.loads(self.run_node(json.dumps(dict(lines=lines, sup=sup, money=j.c['money'], free=inv['cart_lines'], have=0))))
+        draft = json.loads(self.run_node(json.dumps(dict(lines=lines, sup=sup, money=j.c['money'], free=inv['cart_lines'], have=0, line_cap=inv['line_cap']))))
         self.assertEqual(len(draft), inv['cart_lines'])
         j.act('inv_cart', supplier='partner', op='add', lines=[dict(item=l['id'], qty=l['q']) for l in draft], fit=True)
         k = next(k for k in public_inv(j)['carts'] if k['supplier'] == 'partner')

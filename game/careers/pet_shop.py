@@ -2123,7 +2123,7 @@ SPEC = dict(
            ('Bé Hân', 'keeper', 'Thương hamster, dọn chuồng sạch bong.', 86, 84),
            ('Anh Phát', 'counter', 'Khỏe, khuân bao cát không cần xe đẩy.', 90, 76)],
     roles={'counter': 'Đứng quầy', 'aqua': 'Chăm bể cá', 'keeper': 'Chăm chuồng'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     prices=PRICES,
     tip=2,
     physical=('ps_clean', 'ps_heat', 'ps_isolate', 'ps_ship'),

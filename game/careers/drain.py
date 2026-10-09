@@ -1591,7 +1591,7 @@ SPEC = dict(
            ('Vy', 'guard', 'Học an toàn lao động, luôn mang máy đo khí.', 72, 94),
            ('Sơn', 'haul', 'Thuộc hết ngõ ngách, chạy về tiệm nhanh như chớp.', 84, 78)],
     roles={'guard': 'Canh an toàn', 'haul': 'Chở đồ'},
-    inventory=dict(items=ITEMS, capacity=20),
+    inventory=dict(items=ITEMS, capacity=80),
     tip=2,
     physical=PHYSICAL,
     free_actions=FREE,

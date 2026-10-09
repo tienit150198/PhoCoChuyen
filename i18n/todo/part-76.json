@@ -652,11 +652,11 @@
   "en": ""
  },
  {
-  "vi": "💰 Trả tiền ngay khi đặt, tối đa 30 món một đơn.",
+  "vi": "💰 Trả tiền ngay khi đặt, mỗi món đặt tối đa 80 một lần.",
   "en": ""
  },
  {
-  "vi": "📏 Mỗi loại có sức chứa tối đa, tính cả hàng đang giao.",
+  "vi": "📏 Kệ mỗi loại chứa tới 80 (vài tiệm nhiều hơn), tính cả hàng đang giao.",
   "en": ""
  },
  {
@@ -705,6 +705,10 @@
  },
  {
   "vi": "👆 Chạm từng món trong thùng để đếm, rồi nhập số đếm được.",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Thùng trên 20 món xếp sẵn từng khay 10: bấm [[Đếm khay]] để đếm cả khay. Khay giao thiếu có ô trống, nhìn là thấy.",
   "en": ""
  },
  {
@@ -1405,10 +1409,6 @@
  },
  {
   "vi": "🌟 Bảng cả phố: XP mọi nơi làm, cộng 80 cho mỗi nơi đã phục vụ khách. Bằng điểm thì ai thạo nhiều nghề hơn, rồi làm nhiều ngày hơn đứng trước.",
-  "en": ""
- },
- {
-  "vi": "🏪 Bảng từng nơi: XP ở nơi đó. Bằng điểm thì ai làm nhiều ngày hơn, rồi được nhiều sao hơn đứng trước.",
   "en": ""
  }
 ]

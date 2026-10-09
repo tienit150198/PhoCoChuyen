@@ -936,7 +936,7 @@ SPEC = dict(
            ('Hồng', 'wash', 'Pha nước lau đúng liều, chai nào cũng dán nhãn.', 72, 92),
            ('Phúc', 'carry', 'Thuộc đường từng ngõ, nhớ cả mã cổng chung cư.', 78, 82)],
     roles={'wash': 'Giặt khăn, pha nước', 'carry': 'Xách đồ, đưa xe'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     prices=PRICES,
     tip=3,
     physical=PHYSICAL,

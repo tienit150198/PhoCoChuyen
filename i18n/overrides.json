@@ -1,5 +1,10 @@
 {
   "strings": {
+  "👆 Chạm “Đếm khay” để đếm cả khay · khay thiếu có ô trống": "👆 Tap “Count tray” to count a whole tray · a short tray shows empty slots",
+  "✓ Đã đếm khay": "✓ Tray counted",
+  "💰 Trả tiền ngay khi đặt, mỗi món đặt tối đa 80 một lần.": "💰 You pay when you order, up to 80 of an item per order.",
+  "📏 Kệ mỗi loại chứa tới 80 (vài tiệm nhiều hơn), tính cả hàng đang giao.": "📏 Each item's shelf holds up to 80 (a few shops more), counting goods on the way.",
+  "🧺 Thùng trên 20 món xếp sẵn từng khay 10: bấm [[Đếm khay]] để đếm cả khay. Khay giao thiếu có ô trống, nhìn là thấy.": "🧺 Crates of more than 20 come in trays of 10: tap [[Đếm khay]] to count a whole tray. A short tray has empty slots you can see at a glance.",
   "Vào chợ đen phải nộp tiền bảo kê. Nộp rồi thì cứ ra vô thoải mái.": "You pay protection to get into the black market. Once paid, come and go as you like.",
   "Nộp đủ rồi, cứ ra vô thoải mái.": "All paid, come and go as you like.",
   "Đã nộp bảo kê $1 xu. Cứ ra vô chợ đen thoải mái.": "Paid $1 xu protection. Come and go in the black market as you like.",
@@ -22623,6 +22628,8 @@
     "Đã trả lời câu này rồi.": "Already answered this one."
   },
   "patterns": {
+  "Mỗi dòng tối đa $1 $2.": "At most $1 $2 per line.",
+  "Đếm khay $1": "Count tray $1",
   "Hủy $1 với $2? Nhận lại $3 xu (đã trả $4 xu).": "Cancel $1 with $2? You get $3 coins back (paid $4 coins).",
   "Hủy $1 đang giao từ $2, hoàn $3 xu.": "Cancelled $1 on its way from $2, $3 coins refunded.",
   "Hủy $1? Nhận lại $2 xu (đã trả $3 xu).": "Cancel $1? You get $2 coins back (paid $3 coins).",

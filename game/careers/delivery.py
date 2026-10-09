@@ -2043,7 +2043,7 @@ SPEC = dict(
            ('Thảo', 'support', 'Gọi khách giọng ngọt, hỏi số phòng không sót.', 82, 90),
            ('Lợi', 'packer', 'Khỏe, chằng hàng cồng kềnh rất kỹ.', 74, 80)],
     roles={'sorter': 'Phân loại tuyến', 'packer': 'Đóng gói', 'support': 'CSKH gọi khách'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     prices={},
     tip=2,
     physical=('dl_ride', 'dl_deliver'),

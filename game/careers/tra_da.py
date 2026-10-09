@@ -1901,7 +1901,7 @@ SPEC = dict(
            ('Mơ', 'wash', 'Sinh viên làm thêm, cốc nào cũng tráng hai lần.', 70, 93),
            ('Toàn', 'ice', 'Nhớ giờ xe đá, thùng đá lúc nào cũng đầy.', 85, 78)],
     roles={'wash': 'Rửa cốc', 'ice': 'Đập đá'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     prices=PRICES,
     tip=2,
     physical=PHYSICAL,

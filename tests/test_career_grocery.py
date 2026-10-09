@@ -1755,14 +1755,15 @@ class GrocerySurpriseTests(unittest.TestCase):
 
     def test_wholesale_deal_respects_room_and_cash(self):
         j = self._j()
-        set_stock(j, 'beer', 60)
+        cap = inventory.capacity('grocery')
+        set_stock(j, 'beer', cap)
         force_event(j, 'GE-DEAL-BEER')
         with self.assertRaises(GameError):
             j.act('gr_decide', option='all')                    # no room
-        set_stock(j, 'beer', 50)
+        set_stock(j, 'beer', cap - 10)
         money = j.c['money']
         j.act('gr_decide', option='all')
-        self.assertEqual(kit.stock(j.c, 'beer'), 60)
+        self.assertEqual(kit.stock(j.c, 'beer'), cap)
         self.assertEqual(money - j.c['money'], 80)
         j2 = self._j()
         set_money(j2, 10)

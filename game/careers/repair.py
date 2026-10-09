@@ -2693,7 +2693,7 @@ SPEC = dict(
            ('Bảo', 'parts', 'Quản kệ linh kiện, nhớ hạn keo tản nhiệt.', 76, 92),
            ('Sang', 'apprentice', 'Thợ phụ lâu năm, làm an toàn rất kỹ.', 80, 90)],
     roles={'apprentice': 'Thợ phụ', 'front': 'Nhận máy', 'parts': 'Kho linh kiện'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     prices={k: v['labor'] for k, v in DEVICES.items()},
     tip=2,
     physical=('rp_test', 'rp_open', 'rp_fix', 'rp_final', 'rp_parttest'),

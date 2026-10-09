@@ -2360,7 +2360,7 @@ SPEC = dict(
     staff=[('Nhung', 'designer', 'Bó xoắn ốc đều tay, phối màu có gu.', 78, 90), ('Tuấn', 'prep', 'Cắt gốc, tuốt lá nhanh như máy.', 88, 80),
            ('Khánh', 'courier', 'Thuộc từng con hẻm, luôn gọi xác nhận trước khi giao.', 85, 82), ('Yến', 'designer', 'Chậm mà chắc, cắm kệ viếng rất trang nghiêm.', 68, 94)],
     roles={'designer': 'Thợ cắm hoa', 'prep': 'Sơ chế hoa', 'courier': 'Giao hoa'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     prices={**{k: ITEM_INDEX[k]['price'] for k in FLOWERS}, 'bouquet': 25, 'vase': 40, 'basket': 45, 'wreath': 70},
     tip=3,
     physical=('fl_pick', 'fl_arrange', 'fl_wrap', 'fl_deliver', 'fl_dump', 'fl_base', 'fl_done', 'fl_pin'),

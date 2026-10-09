@@ -47,6 +47,11 @@ const shipments=list=>{const out=[],seen=new Map();
 /** What a shipment cost: the goods of every line plus the one shipping fee (kept on its first line). */
 const paidOf=g=>g.lines.reduce((n,o)=>n+Number(o.cost||0)+Number(o.ship||0),0);
 const COUNT_TIP='👆 Chạm từng món · giữ để đếm nhanh';
+/** Big crates come packed in trays of TRAY (player #277: with lines up to 80 "phải kiểm hàng rất lâu, đếm từng
+ * món"). One tap on a tray counts the goods in it; a tray the supplier came short on shows its empty slots, so
+ * a short delivery is still seen and counted, not read off the slip. Single goods still tap and hold as before. */
+const TRAY=10,TRAY_FROM=20,TRAY_TIP='👆 Chạm “Đếm khay” để đếm cả khay · khay thiếu có ô trống';
+const trayed=o=>(Number(o.qty)||0)>TRAY_FROM;
 /** Counting a crate is the player's job (a crate can come short), but a tap per unit was slow (player
  * feedback #97): press and hold the crate and the goods are counted one after another, about seven a
  * second, until you let go or nothing is left uncounted. Every unit still lights up as it is counted and
@@ -124,7 +129,7 @@ export function inventoryView(env){
   const opened=g=>ui.invOpen===g.id||g.lines.some(l=>l.id===ui.invOpen)||readyS.length===1;
   const tallied=o=>(ui.invTally?.[o.id]||[]).length;
   const counted=o=>{const typed=Boolean(ui.invTyped?.[o.id])&&String(ui.invCount?.[o.id]??'').trim()!=='',k=tallied(o),n=Number(o.count_hint)||0;
-    return {ok:k>=n||typed||null,note:k?`${k} món`:'',go:k<n&&!typed?{sel:`#crate-${o.id} .inv-good:not(.on)`,label:COUNT_TIP}:null};};
+    return {ok:k>=n||typed||null,note:k?`${k} món`:'',go:k<n&&!typed?(trayed(o)?{sel:`#crate-${o.id} .inv-tray-tap:not(.on):not([disabled])`,label:TRAY_TIP}:{sel:`#crate-${o.id} .inv-good:not(.on)`,label:COUNT_TIP}):null};};
   const sups=supplierList(env),supOf=sid=>sups.find(x=>x.id===sid)||content.inventory.suppliers.find(x=>x.id===sid);
   // A draft open in the stock tab (đơn gộp): opened from its chip, or right after something was added.
   const pick=ui.orderItem&&byId[ui.orderItem]&&!inv.locked.includes(ui.orderItem)?byId[ui.orderItem]:null;
@@ -139,7 +144,7 @@ export function inventoryView(env){
   const fillGo=(ids,label,qty)=>{const pref=ui.orderRush?'express':'partner',list=[sups.find(x=>x.id===pref),...sups].filter(x=>x&&ids.every(id=>sells(x,id)));
     const s=list.find(x=>roomFor(x,ids))||[...list].sort((a,b)=>lineFree(b)-lineFree(a))[0];
     if(!s||lineFree(s)<1)return null;
-    const lines=fitDraft(ids.map(id=>({id,cost:byId[id].cost,q:qty(id)})),s,Math.floor((Number(c.money)||0)*.8),{free:lineFree(s),have:Number(cartOf(s.id)?.goods)||0});
+    const lines=fitDraft(ids.map(id=>({id,cost:byId[id].cost,q:qty(id)})),s,Math.floor((Number(c.money)||0)*.8),{free:lineFree(s),have:Number(cartOf(s.id)?.goods)||0,lineMax:Number(inv.line_cap)||30});
     return lines.length>=2?{act:'v4CartFill',data:{supplier:s.id,items:lines.map(l=>`${l.id}:${l.q}`).join(',')},label:label(lines.length),n:lines.length}:null;};
 
   /* ONE next step for this room (guide.js), in order of what gets goods onto the shelf soonest. */
@@ -205,21 +210,33 @@ export function inventoryView(env){
   const sup=o=>supOf(o.supplier);
   const sizeNote=o=>o.size?` · size ${esc(o.size)}`:'';
   // Scatter the goods a little (stable per order) so counting is looking, not reading.
+  const good=(o,i,k,on)=>`<button type="button" class="inv-good${on.has(k)?' on':''}" data-action="v4Tally" data-order="${esc(o.id)}" data-i="${k}" aria-pressed="${on.has(k)}" aria-label="${esc(i.name)}${on.has(k)?', đã đếm':''}">${esc(i.emoji||'📦')}</button>`;
   const goodsOf=(o,i)=>{const n=Number(o.count_hint)||0,on=new Set(ui.invTally?.[o.id]||[]);let h=0;for(const ch of o.id)h=(h*31+ch.charCodeAt(0))>>>0;
+    if(trayed(o))return traysOf(o,i,n,on,h);
     return Array.from({length:n},(_,k)=>{h=(Math.imul(h,1103515245)+12345)>>>0;const r=(h%21)-10,dy=((h>>>5)%7)-3;
-      return `<li style="transform:translateY(${dy}px) rotate(${r}deg)"><button type="button" class="inv-good${on.has(k)?' on':''}" data-action="v4Tally" data-order="${esc(o.id)}" data-i="${k}" aria-pressed="${on.has(k)}" aria-label="${esc(i.name)}${on.has(k)?', đã đếm':''}">${esc(i.emoji||'📦')}</button></li>`;}).join('');};
+      return `<li style="transform:translateY(${dy}px) rotate(${r}deg)">${good(o,i,k,on)}</li>`;}).join('');};
+  // Trays of TRAY slots for the slip's count; the units the crate lacks are empty slots in trays picked from the
+  // order id (stable across renders). Goods keep one index each (0…n−1), so taps, holds and the tally stay as they were.
+  const traysOf=(o,i,n,on,h)=>{const qty=Math.max(n,Number(o.qty)||0),sizes=[];for(let left=qty;left>0;left-=TRAY)sizes.push(Math.min(TRAY,left));
+    const holes=sizes.map(()=>[]);let miss=qty-n,guard=0;
+    while(miss>0&&guard++<1000){h=(Math.imul(h,1103515245)+12345)>>>0;const t=(h>>>8)%sizes.length,slot=(h>>>16)%sizes[t];if(!holes[t].includes(slot)){holes[t].push(slot);miss--;}}
+    let k=0;
+    return sizes.map((size,t)=>{const from=k,cells=[];
+      for(let slot=0;slot<size;slot++)cells.push(holes[t].includes(slot)?'<span class="inv-gap" aria-hidden="true"></span>':good(o,i,k++,on));
+      const got=k-from,done=got>0&&Array.from({length:got},(_,d)=>on.has(from+d)).every(Boolean);
+      return `<li class="inv-tray${done?' done':''}"><button type="button" class="inv-tray-tap${done?' on':''}" data-action="v4TallyTray" data-order="${esc(o.id)}" data-from="${from}" data-to="${k}" aria-pressed="${done}"${got?'':' disabled'}>${done?'✓ Đã đếm khay':`Đếm khay ${t+1}`}</button><div class="inv-tray-slots">${cells.join('')}</div></li>`;}).join('');};
   const counter=o=>`<div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="-1" aria-label="Bớt một">−</button>${qtyBox({value:ui.invCount?.[o.id]??'',min:0,max:Math.max(60,Number(o.qty)||0),label:'Bạn đếm được',cls:'input',placeholder:'0',attrs:`id="count-${esc(o.id)}" data-v4-count="${esc(o.id)}" required`})}<button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="1" aria-label="Thêm một">+</button></div>`;
   const crate=o=>{
     const i=byId[o.item]||{name:o.item},s=sup(o),isOpen=opened({id:o.id,lines:[o]});
-    const form=`<div class="inv-slip"><span>Phiếu giao ghi</span><b>${o.qty} ${esc(unit(i))}</b></div><p class="inv-tip">${COUNT_TIP}</p><ul class="inv-crate" aria-label="Trong thùng">${goodsOf(o,i)}</ul>`+
+    const form=`<div class="inv-slip"><span>Phiếu giao ghi</span><b>${o.qty} ${esc(unit(i))}</b></div><p class="inv-tip">${trayed(o)?TRAY_TIP:COUNT_TIP}</p><ul class="inv-crate${trayed(o)?' inv-trays':''}" aria-label="Trong thùng">${goodsOf(o,i)}</ul>`+
       `<form class="inv-receive" data-v4-receive="${esc(o.id)}"><label for="count-${esc(o.id)}">Bạn đếm được</label>${counter(o)}<button class="btn primary" type="button" data-action="v4Receive" data-order="${esc(o.id)}">${icon('check',15)} Nhận vào kệ</button></form>`+
       `<p class="muted small">Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`;
     return `<article class="card inv-crate-card${isOpen?' open':''}" id="crate-${esc(o.id)}"><div class="row spread"><div><strong>${name(i)}${sizeNote(o)}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(paidOf({lines:[o]}))} xu${o.arrives_time?` · tới lúc ${esc(o.arrives_time)}`:''}</small></div>${pill('ĐÃ TỚI','green')}</div>${isOpen?form:button(`📦 Mở thùng & xếp lên kệ`,'v4InvOpen',{order:o.id},'primary big full inv-open')}</article>`;};
   // One crate for a merged order: a slip and a pile per line, one count each, one "receive" for all.
   const groupCrate=g=>{
     const s=sup(g.o),isOpen=opened(g),list=g.lines.map(o=>`${esc(byId[o.item]?.emoji||'📦')} ${esc(byId[o.item]?.name||o.item)}${sizeNote(o)} ×${o.qty}`).join(' · ');
-    const body=isOpen?`<p class="inv-tip">${COUNT_TIP}</p>`+g.lines.map(o=>{const i=byId[o.item]||{name:o.item};
-        return `<div class="inv-gline" id="crate-${esc(o.id)}"><div class="inv-slip"><span>${name(i)}${sizeNote(o)}</span><b>${o.qty} ${esc(unit(i))}</b></div><ul class="inv-crate" aria-label="${esc(i.name)} trong thùng">${goodsOf(o,i)}</ul><div class="inv-receive"><label for="count-${esc(o.id)}">Đếm được</label>${counter(o)}</div></div>`;}).join('')+
+    const body=isOpen?`<p class="inv-tip">${g.lines.some(trayed)?TRAY_TIP:COUNT_TIP}</p>`+g.lines.map(o=>{const i=byId[o.item]||{name:o.item};
+        return `<div class="inv-gline" id="crate-${esc(o.id)}"><div class="inv-slip"><span>${name(i)}${sizeNote(o)}</span><b>${o.qty} ${esc(unit(i))}</b></div><ul class="inv-crate${trayed(o)?' inv-trays':''}" aria-label="${esc(i.name)} trong thùng">${goodsOf(o,i)}</ul><div class="inv-receive"><label for="count-${esc(o.id)}">Đếm được</label>${counter(o)}</div></div>`;}).join('')+
       `<button class="btn primary big full" type="button" data-action="v4ReceiveGroup" data-group="${esc(g.id)}">${icon('check',15)} Nhận cả thùng lên kệ</button><p class="muted small">Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`
       :`<p class="inv-gnames">${list}</p>${button(`📦 Mở thùng gộp · ${g.lines.length} món`,'v4InvOpen',{order:g.id},'primary big full inv-open')}`;
     return `<article class="card inv-crate-card inv-group${isOpen?' open':''}" id="crate-${esc(g.id)}"><div class="row spread"><div><strong>🛒 Đơn gộp · ${g.lines.length} món</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(paidOf(g))} xu${g.o.arrives_time?` · tới lúc ${esc(g.o.arrives_time)}`:''}</small></div>${pill('ĐÃ TỚI','green')}</div>${body}</article>`;};
@@ -310,7 +327,7 @@ export function inventoryView(env){
  * possible. "🛒 Thêm vào đơn" puts the line in the supplier's draft; "Đặt ngay" ships it alone. */
 function orderCard(env,pick,{cap,stock,on,space,unit,name}){
   const {api,ui}=env,c=api.state.careers[api.state.current],sups=supplierList(env),carts=c.inventory?.carts||[];
-  const sup=pickSupplier(env,pick.id),max=Math.min(30,space);
+  const lineMax=Number(c.inventory?.line_cap)||30,sup=pickSupplier(env,pick.id),max=Math.min(lineMax,space);
   const sizes=c.inventory?.sizes?.[pick.id]||[],chosen=orderSize(env,pick.id);
   const sizePicker=sizes.length?`<fieldset class="space-top"><legend class="field">Chọn size nhập</legend><div class="chip-row" role="group" aria-label="Size nhập ${esc(pick.name)}">${[null,...sizes].map(s=>`<button type="button" class="btn small ${chosen===s?'primary':'ghost'}" data-action="v4OrderSize" data-item="${esc(pick.id)}" data-size="${esc(s||'')}" aria-pressed="${chosen===s}">${s?`Size ${esc(s)}`:'Tự chia size'}</button>`).join('')}</div><p class="small muted">${chosen?`Toàn bộ số hàng thực nhận sẽ vào size ${esc(chosen)}.`:'Tự chia ưu tiên các size bán chạy. Chọn một size nếu đang thiếu đúng cỡ đó.'}</p></fieldset>`:'';
   // First suggestion: up to 10, never past the room left or what the till can pay.
@@ -318,7 +335,7 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
   const q=orderQuote(pick,qty,sup),cost=q.total;
   const fn=fundName(api.state.current);
   const why=!space?'Kệ đã đầy (tính cả hàng đang giao).':vans(c.inventory).full?`${vansLine(c.inventory)}: nhận bớt thùng rồi đặt tiếp.`:cost>c.money?`${fn} còn ${fmt(c.money)} xu, thiếu ${fmt(cost-c.money)} xu.`:'';
-  const chips=[5,10].filter(n=>n<max).map(n=>`<button type="button" class="chip ${n===qty?'selected':''}" data-action="v4Qty" data-set="${n}">${n}</button>`).join('')+(max?`<button type="button" class="chip ${qty===max?'selected':''}" data-action="v4Qty" data-set="${max}">${space<=30?'Đầy kệ':'Tối đa'} · ${max}</button>`:'');
+  const chips=[5,10,20,40].filter(n=>n<max).map(n=>`<button type="button" class="chip ${n===qty?'selected':''}" data-action="v4Qty" data-set="${n}">${n}</button>`).join('')+(max?`<button type="button" class="chip ${qty===max?'selected':''}" data-action="v4Qty" data-set="${max}">${space<=lineMax?'Đầy kệ':'Tối đa'} · ${max}</button>`:'');
   const cheapest=Math.min(...sups.filter(x=>sells(x,pick.id)).map(x=>x.factor));
   const priceWord=x=>`${x.factor===cheapest&&x.factor<1?'rẻ nhất':x.factor<1?'rẻ hơn':x.factor>1?'đắt hơn':'giá niêm yết'} ×${String(x.factor).replace('.',',')}`;
   // Suppliers as compact chips (name, when, price); the chosen one's terms and notes sit in a fold under them.
@@ -339,7 +356,7 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
     // The bill right under the number you choose: total, what the fund keeps, and why it cannot go yet.
     `<div class="inv-total inv-bill"><div class="grow"><strong id="order-total" data-cost="${pick.cost}" data-factor="${sup.factor}" data-terms="${esc(JSON.stringify({bulk:sup.bulk||[],ship:sup.ship,free_from:sup.free_from}))}" data-money="${c.money}" data-fund="${esc(fn)}" data-shelf="${stock+on}" data-cap="${cap}" data-max="${max}">Tổng: ${fmt(cost)} xu</strong> <span id="order-tier">${tier}</span><small class="block inv-after" id="order-after">${esc(fn)} còn ${fmt(Math.max(0,c.money-cost))} xu · kệ sau khi nhận ${stock+on+qty}/${cap}</small><small class="block" id="order-ship">${esc(ship)}</small><small class="block" id="order-eta">Dự kiến nhận: <b>${esc(sup.quote?.eta_label||sup.window||'')}</b></small><small class="danger-text block" id="order-why" role="status">${esc(why)}</small></div></div>`+
     `<label class="field">Nhà cung cấp</label><div class="inv-sups">${sups.map(supplier).join('')}</div>${supMore(sup)}`+
-    `<div class="inv-order-go inv-order-foot">${cartFull?`<button type="button" class="btn" id="cart-add" data-action="v4Cart" data-supplier="${esc(sup.id)}" data-open="1">🛒 Đơn đủ ${lineCap} món · xem & đặt</button>`:`<button type="button" class="btn" id="cart-add" data-action="v4CartAdd" data-item="${esc(pick.id)}"${!space||inDraft>=Math.min(30,space)?' disabled':''}>🛒 Thêm vào đơn${k?` · ${k.lines.length+(inDraft?0:1)}`:''}</button>`}<button type="button" class="btn primary" id="order-go" data-action="v4OrderGo" data-item="${esc(pick.id)}"${why?' disabled':''}>${icon('truck',15)} Đặt ngay</button></div>`+
+    `<div class="inv-order-go inv-order-foot">${cartFull?`<button type="button" class="btn" id="cart-add" data-action="v4Cart" data-supplier="${esc(sup.id)}" data-open="1">🛒 Đơn đủ ${lineCap} món · xem & đặt</button>`:`<button type="button" class="btn" id="cart-add" data-action="v4CartAdd" data-item="${esc(pick.id)}"${!space||inDraft>=Math.min(lineMax,space)?' disabled':''}>🛒 Thêm vào đơn${k?` · ${k.lines.length+(inDraft?0:1)}`:''}</button>`}<button type="button" class="btn primary" id="order-go" data-action="v4OrderGo" data-item="${esc(pick.id)}"${why?' disabled':''}>${icon('truck',15)} Đặt ngay</button></div>`+
     `${cartFull?`<small class="danger-text block" role="status">Đơn ${esc(sup.name)} đủ ${lineCap} món: đặt đơn đó trước, hoặc “Đặt ngay” riêng món này.</small>`:''}<p class="muted small">Trả tiền khi đặt. Gộp nhiều món một đơn (tối đa ${lineCap} món): một lần ship. Hàng vào kệ sau khi bạn mở thùng và đếm đúng.</p></section>`;
 }
 /** A supplier's draft (đơn gộp): lines with −/+ and a wholesale hint, subtotal, savings, shipping,
@@ -347,7 +364,8 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
 function cartCard(env,k,{byId,unit}){
   const {api}=env,s=supplierList(env).find(x=>x.id===k.supplier)||{name:k.supplier,emoji:'🛒'},fn=fundName(api.state.current),sid=k.supplier;
   const qtyBtn=(l,q,label,aria,dis=false)=>`<button type="button" class="btn ghost" data-action="v4CartQty" data-supplier="${esc(sid)}" data-item="${esc(l.item)}" data-size="${esc(l.size??'')}" data-qty="${q}" aria-label="${esc(aria)}"${dis?' disabled':''}>${label}</button>`;
-  const line=l=>{const i=byId[l.item]||{name:l.item},max=Math.min(30,l.room);
+  const lineMax=Number(api.state.careers[api.state.current]?.inventory?.line_cap)||30;
+  const line=l=>{const i=byId[l.item]||{name:l.item},max=Math.min(lineMax,l.room);
     const tag=l.oos?pill('Hết hàng hôm nay','danger'):l.bulk?pill(`sỉ −${l.bulk}%`,'green'):l.next_tier&&l.next_tier[0]<=max?`<button type="button" class="chip inv-tier" data-action="v4CartQty" data-supplier="${esc(sid)}" data-item="${esc(l.item)}" data-size="${esc(l.size??'')}" data-qty="${l.next_tier[0]}">Lấy ${l.next_tier[0]}: −${l.next_tier[1]}%</button>`:'';
     return `<li class="inv-cl${l.oos?' oos':''}"><span class="inv-cl-name"><span aria-hidden="true">${esc(i.emoji||'📦')}</span> <b>${esc(i.name)}${l.size?` · size ${esc(l.size)}`:''}</b>${tag?`<span class="inv-cl-tag">${tag}</span>`:''}</span>`+
       `<span class="inv-cl-qty">${qtyBtn(l,l.qty-1,'−',`Bớt một ${i.name}`)}${qtyBox({value:l.qty,min:1,max:Math.max(1,max,l.qty),label:`${i.name}, số ${unit(i)}`,go:qtyBtn(l,QTY,'','')})}${qtyBtn(l,l.qty+1,'+',`Thêm một ${i.name}`,l.qty>=max)}</span>`+
@@ -835,6 +853,10 @@ export async function v4Action(action,data,el,env){
       if(data.order)requestAnimationFrame(()=>document.getElementById('crate-'+data.order)?.scrollIntoView({block:'nearest'}));
       return true;}
     case'v4InvFocus':ui.invFocus=null;ui.orderItem=null;renderSheet(false);return true;
+    case'v4TallyTray':{  // a whole tray at once (TRAY): counted, or all of it un-counted when it already was
+      const t=(ui.invTally??={}),on=new Set(t[data.order]||[]),ks=[];for(let k=Number(data.from);k<Number(data.to);k++)ks.push(k);
+      const all=ks.length&&ks.every(k=>on.has(k));for(const k of ks)all?on.delete(k):on.add(k);t[data.order]=[...on];
+      (ui.invCount??={})[data.order]=String(on.size);if(ui.invTyped)delete ui.invTyped[data.order];renderSheet();return true;}
     case'v4Tally':{const k=Number(data.i),t=(ui.invTally??={}),on=new Set(t[data.order]||[]);on.has(k)?on.delete(k):on.add(k);t[data.order]=[...on];
       (ui.invCount??={})[data.order]=String(on.size);if(ui.invTyped)delete ui.invTyped[data.order];renderSheet();return true;}
     case'v4Receive':{const inp=document.getElementById('count-'+data.order),raw=String(inp?.value??ui.invCount?.[data.order]??'').trim();
@@ -862,7 +884,7 @@ export async function v4Action(action,data,el,env){
       if(await cmd('inv_cart',{supplier:data.supplier,op:'add',item:data.item,qty:Number(data.qty)||1}))renderSheet();return true;}
     case'v4CartQty':{if(await cmd('inv_cart',{supplier:data.supplier,op:'set',item:data.item,...(data.size!==undefined?{size:data.size}:{}),qty:Math.max(0,Number(data.qty)||0)},{quiet:true}))renderSheet();return true;}
     case'v4CartFill':{
-      const lines=String(data.items||'').split(',').map(x=>x.split(':')).filter(([id])=>id).map(([item,q])=>({item,qty:Math.max(1,Math.min(30,Number(q)||10))}));
+      const lines=String(data.items||'').split(',').map(x=>x.split(':')).filter(([id])=>id).map(([item,q])=>({item,qty:Math.max(1,Math.min(Number(api.state.careers[api.state.current]?.inventory?.line_cap)||30,Number(q)||10))}));
       if(lines.length&&await cmd('inv_cart',{supplier:data.supplier,op:'add',lines,fit:true})){ui.invCart=data.supplier;ui.orderItem=null;ui.invTab='stock';renderSheet(false);}
       return true;}
     case'v4CartGo':{

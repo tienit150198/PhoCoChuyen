@@ -1696,7 +1696,7 @@ SPEC = dict(
            ('Ngân', 'sort', 'Sinh viên làm thêm, lựa từng trái rất kỹ.', 70, 94),
            ('Phát', 'call', 'Quen mặt cả chợ, ai đi qua cũng chào.', 78, 80)],
     roles={'sort': 'Lựa hàng', 'call': 'Rao hàng'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     prices=PRICES,
     tip=1,
     physical=PHYSICAL,

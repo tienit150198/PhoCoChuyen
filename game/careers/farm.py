@@ -2198,7 +2198,7 @@ SPEC = dict(
            ('Đạt', 'fa_field', 'Nhổ cỏ nhanh như gió, có điều hơi ẩu.', 88, 74),
            ('Thu', 'fa_pack', 'Rửa, phân loại, lót thùng gọn gàng.', 75, 90)],
     roles={'fa_field': 'Phụ vườn (tưới, làm cỏ)', 'fa_coop': 'Chăm gà', 'fa_pack': 'Sơ chế & đóng thùng'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     prices=PRICES,
     tip=2,
     physical=('fa_harvest', 'fa_plant', 'fa_pack', 'fa_deliver'),

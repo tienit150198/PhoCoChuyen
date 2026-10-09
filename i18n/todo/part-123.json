@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Phòng $1 có đơn $2 chờ đồng bộ từ ngày $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Gợi ý tối đa $1 nơi thôi, nhiều quá khách rối.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "📞 Bác sĩ Khang tới ngồi nói chuyện với $1, giải thích vì sao cần mổ và nghe hết điều $2 lo. $3 vẫn muốn suy nghĩ thêm. Bác sĩ dặn: tôn trọng quyết định, hoãn ca, ghi hồ sơ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 bất thường mà không ai báo bác sĩ.",
   "en": "",
   "pattern": true
  }

@@ -92,10 +92,10 @@ class Draft(unittest.TestCase):
         with self.assertRaises(GameError):
             add(j, 'import', 'egg', 2)  # the importer does not sell eggs
         with self.assertRaises(GameError):
-            add(j, 'partner', 'noodle', 31)
-        add(j, 'partner', 'noodle', 25)
+            add(j, 'partner', 'noodle', I.LINE_MAX + 1)
+        add(j, 'partner', 'noodle', I.LINE_MAX - 5)
         with self.assertRaises(GameError):
-            add(j, 'partner', 'noodle', 6)  # 31 on one line
+            add(j, 'partner', 'noodle', 6)  # LINE_MAX + 1 on one line
         cap = I.capacity('restaurant')
         kit.add_lot(j.c, 'egg', cap - 3, 1, 9, 'test')
         with self.assertRaises(GameError) as e:
