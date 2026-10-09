@@ -1,5 +1,275 @@
 [
  {
+  "vi": "💿 Mở tiệm! $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Lấy $2 ($3).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kệ hết $1 rồi. Nhập thêm ở Kho, hoặc nói thật với khách.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "↩️ Cất lại $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đang khóa quét của tiệm tới hết ngày $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi dặn $1 mà.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💿 Chị Thơ: “$1”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kệ chỉ còn $1 $2. Bớt lại trong giỏ nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 Tính tiền $1 món · $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(bớt $1%)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎟️ $1 phiếu fansign.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nói thật với $1: kệ hết món khách cần, hẹn hàng về.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Thử “$2”: vẫn không được. Khách sốt ruột rồi, coi kỹ lại nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hoàn tiền: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(−$1 xu hoàn tiền)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⛔ $1 khóa quét tới hết ngày $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💿 Bán $1 món cho $2 lượt khách.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎟️ Ghi $1 phiếu fansign.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔁 Giải quyết $1 chuyện khách quay lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kho: Pink $1, Blank $2, Jewel $3, Búa $4 · POB $5 bộ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Thơ dặn: đếm bản giới hạn, dựng biển “tối đa $1 bản/người”, thử búa trưng bày (yếu thì thay pin AAA)$2, rồi mở tiệm. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Thơ dặn: đếm bản giới hạn, dựng biển “tối đa $1 bản/người”, thử búa trưng bày (yếu thì thay pin AAA)$2, rồi mở tiệm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Thơ dặn: đếm bản giới hạn, dựng biển “tối đa $1 bản/người”, thử búa trưng bày (yếu thì thay pin AAA)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “$2” Hỏi giấy nhắn của bé mới biết bé cần gì.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 muốn: $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bé nói qua video: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đọc đúng mã $1, còn đưa tin nhắn Thảo nhờ lấy giùm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gọi được cho Thảo ngay, 4 số cuối $1 khớp sổ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đọc 4 số cuối 7730, sổ ghi $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📊 Nói thật: $1 suất / khoảng $2 phiếu, mỗi phiếu ~$3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Bạn chưa có $2: bấm 🎓 Thi chứng chỉ ở Hành trình, Bản đồ phố hoặc menu để thi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn đang học $1. Thi xong hoặc bỏ khóa đó trước nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn đã đạt điểm tối đa ở $1 rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ví chưa đủ $1 xu học phí. Tự học thì miễn phí, chỉ chậm hơn một ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã quẹt thẻ $1 xu học phí lớp cấp tốc",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã đóng $1 xu học phí lớp cấp tốc",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã trả $1 xu học phí từ tài khoản thanh toán",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1. Đọc lướt bài học rồi vào thi luôn nhé: được mở sách, câu nào phân vân thì bấm 💡 Gợi ý.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1. Bài thi mở $2; trong lúc chờ, đọc bài và làm thử vài câu nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã bỏ khóa $1. Học phí đã đóng không được hoàn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bài thi mở $1. Làm một ngày ở đâu đó rồi quay lại nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: đúng $2/$3 câu ($4 điểm).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Điểm cao nhất của bạn: $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Cần $2/$3 câu. Xem lời giải rồi thi lại: lớp ôn $4 xu (thi lại ngay hôm nay) hoặc tự học miễn phí (thi $5).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 “Con cầu mong $2 $3.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 $3 thân quen.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đánh giá $1★ sau khi được phục vụ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 mời bạn: $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tặng bạn $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 của $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lì xì bạn phong bì $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm nay đã tặng $1 rồi. Mai hãy tặng tiếp nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quỹ còn $1 xu, chưa đủ $2 xu mua quà.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quà cho $1: $2",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Nhận quà: $1.",
   "en": "",
   "pattern": true
@@ -1080,6 +1350,11 @@
   "pattern": true
  },
  {
+  "vi": "Bạn bị tạm giữ $1 ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bão $1! +$2 xu.",
   "en": "",
   "pattern": true
@@ -1971,281 +2246,6 @@
  },
  {
   "vi": "Tất toán sớm $1 · phí $2 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tất toán sớm khoản $1: $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã tất toán $1 xu (phí trả trước hạn $2 xu), bớt được $3 xu tiền lãi. Căn nhà giờ không còn nợ!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 dọn đi",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", gửi nốt $1 xu tiền thuê.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bán nhà, trả hết $1: $2 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền bán $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bán $1 được $2 xu, phí $3 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", trả nợ vay $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã bán $1 giá $2 xu (phí môi giới, thuế $3 xu)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", trả hết nợ vay $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ". $1 xu đã về $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thiếu $1 xu thuê xe",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã có $1 căn nhà: bán bớt một căn rồi hãy mua thêm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quỹ −$1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví −$1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 chuyến/ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", sau đó $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nay nếu đặt trước $2$3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "· đặt trước $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thôi được, lấy nhiều thì bớt $1% cho em.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1% thôi em ơi, bớt nữa là lỗ vốn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bên em áp dụng chiết khấu $1% cho đơn này ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bên em chỉ duyệt được $1% thôi ạ, mong quý khách thông cảm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã đặt $1 $2 $3 · $4. $5 giao $6 ($7); đếm rồi mới nhập kho.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã trả lời hôm nay rồi. Mai hỏi lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn từ $1 xu mới xin bớt được (đang $2 xu).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "· bớt $1%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thiếu $1 $2 so với đơn: bấm “Khiếu nại phần thiếu” ngay trong kho để được hoàn $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đơn gộp $1 món",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hủy đơn nhập: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hủy $1 đang giao từ $2, hoàn $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã hủy $1 với $2 · nhận lại $3 xu (đã trả $4 xu).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã bỏ đơn $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mỗi dòng tối đa $1 $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kệ $1 chỉ còn chỗ cho $2 $3 (tính cả hàng đang giao và các dòng khác trong đơn).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Một đơn tối đa $1 món. Đặt đơn này trước nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn $1 đủ $2 món. Đặt đơn này trước rồi thêm tiếp nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã thêm vào đơn $1 · $2 món.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn đủ $1 món: còn $2 món chưa thêm, đặt đơn này rồi thêm tiếp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã bỏ $1$2 khỏi đơn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay $1 hết $2. Bỏ khỏi đơn hoặc chọn nơi khác nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 không bán $2. Bỏ khỏi đơn nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kệ $1 không đủ chỗ cho $2 $3 (tính cả hàng đang giao). Bớt lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn dưới $1 xu chị không chạy xe đâu em.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bên em chỉ nhận đơn gộp từ $1 xu ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “$2” Thêm hàng hoặc đặt lẻ từng món nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thiếu $1 xu để đặt đơn này (quỹ nghề còn $2 xu). Tiền nhập hàng trừ vào quỹ của nghề đang làm, không lấy từ ví hay vốn quầy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hết $1 rồi em, giao trước mấy món kia nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kho tạm hết $1, bên em giao trước phần còn lại ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "” Không tính tiền $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gộp $1 món soạn không kịp chuyến, $2 mới tới nha em.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn gộp $1 món cần soạn riêng, $2 mới giao được ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhập gộp $1 món",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã đặt đơn gộp $1 món · $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 giao một chuyến $2 ($3).",
   "en": "",
   "pattern": true
  }

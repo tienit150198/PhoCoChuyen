@@ -285,6 +285,7 @@ async function onClick(mr,data,el){
       await post('friend_respond',{id:Number(data.id),answer:data.answer});load();return;
     }
     case'fcancel':await post('friend_cancel',{id:Number(data.id)});load();return;
+    case'jbail':if(await env.confirmAction(`Bảo lãnh cho ${data.name}?`,`Trả ${xu(Number(data.bail))} từ ví của bạn. Bạn ấy được ra trại tạm giữ ngay.`,'Bảo lãnh')){await post('jail_bail',{code:data.code});load();}return;   // 🚔 game/jail.py
     case'fremove':if(await env.confirmAction(`Hủy kết bạn với ${data.name}?`,'Hai bạn sẽ không còn trong danh sách bạn bè của nhau.','Hủy kết bạn')){await post('friend_remove',{code:data.code});load();}return;
     case'fblock':if(await env.confirmAction(`Chặn ${data.name}?`,'Người này sẽ không tìm thấy bạn, không gửi được lời mời kết bạn hay lời cầu hôn cho bạn nữa.','Chặn')){await post('friend_block',{code:data.code});load();}return;
     case'fpropose':S.tab='home';S.form.code=data.code;S.found=null;render();S.dlg.scrollTop=0;lookup(data.code);return;
@@ -501,7 +502,10 @@ function friendsTab(){
       <div class="mr-actions tight">${btn('🏪 Ghé chỗ làm','workvisit',{code:x.code},'primary small')}${btn('🏡 Mời về nhà','homeGuests',{code:x.code},'small')}${single&&x.status==='single'?btn('💍 Cầu hôn','fpropose',{code:x.code},'primary small'):''}${x.spouse?'':btn('Hủy kết bạn','fremove',{code:x.code,name:x.name},'ghost small')+btn('Chặn','fblock',{code:x.code,name:x.name},'ghost small')}</div></article>`).join('')
     :`<section class="mr-card"><p>Chưa có bạn bè nào. Xin tên đăng nhập của người quen ngoài đời rồi tìm ở trên nhé.</p></section>`;
   const outgoing=F.outgoing.length?`<section class="mr-card"><h3>Đang chờ trả lời</h3><ul class="mr-list">${F.outgoing.map(x=>`<li><span>${esc(x.name)}</span>${btn('Rút lại','fcancel',{id:x.id},'ghost small')}</li>`).join('')}</ul></section>`:'';
-  return `${notice()}${btn('🏘️ Mọi người đang làm gì?','workdiscover',{},'cream full')}${incoming}${search}<h3 class="mr-h">Bạn bè (${F.list.length})</h3>${list}${outgoing}
+  // 🚔 Friends in the trại tạm giữ who asked for bail (game/jail.py requests): a friend pays, they are out at once.
+  const jail=(F.jail||[]).length?`<section class="mr-card mr-accent"><h3>🚔 Bạn bè nhờ bảo lãnh</h3><ul class="mr-list">${F.jail.map(x=>`<li class="mr-li-wrap"><span><b>${esc(x.name)}</b> đang ở trại tạm giữ</span><span class="mr-actions tight">${btn(`🤝 Bảo lãnh · ${xu(x.bail)}`,'jbail',{code:x.code,name:x.name,bail:x.bail},'primary small')}</span></li>`).join('')}</ul>
+    <p class="mr-hint">Bảo lãnh trả từ ví của bạn, bạn ấy được về ngay.</p></section>`:'';
+  return `${notice()}${jail}${btn('🏘️ Mọi người đang làm gì?','workdiscover',{},'cream full')}${incoming}${search}<h3 class="mr-h">Bạn bè (${F.list.length})</h3>${list}${outgoing}
     <section class="mr-card"><label class="switch-row"><span class="grow"><b>Cho phép tìm tôi bằng tên đăng nhập</b><small class="muted"> Tắt đi thì chỉ ai có mã người chơi mới tìm được bạn.</small></span><input type="checkbox" data-mr-field="findable"${F.findable!==false?' checked':''} aria-label="Cho phép tìm tôi bằng tên đăng nhập"><i aria-hidden="true"></i></label>
       <p class="mr-hint">Mã người chơi của bạn: <b class="mr-code sm">${esc(me.code)}</b> ${btn('Chép mã','copy',{},'ghost small')}</p>
       <p class="mr-hint">Người khác chỉ thấy tên hiển thị <b>${esc(me.name)}</b>, không bao giờ thấy tên đăng nhập của bạn. Còn ${F.requests_left??''} lời mời kết bạn hôm nay.</p></section>`;

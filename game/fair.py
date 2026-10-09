@@ -1189,9 +1189,11 @@ class _Caught(Exception):
 
 def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
     """🕶️ Every paid round of the Chợ đen, once its checks passed and before anything is drawn: the police may raid it
-    (fair_bm.BM_ARREST_P). Caught: the stake is gone, the fine, the ban for the rest of the Vietnam day; the round has
-    no outcome (raises _Caught, which apply() turns into the command's result)."""
-    if not bm._gate_on() or not bm._arrest_roll():
+    (fair_bm.BM_ARREST_P), only while the player's Chợ đen net today is above fair_bm.ARREST_FROM (bm.at_risk: owner
+    09/10 "ae ăn tiền nhiều (hơn 300k) thì mới bị bắt"). Caught: the stake is gone, the fine, and the trại tạm giữ for
+    fair_bm.JAIL_DAYS jail days (game/jail.py); the round has no outcome (raises _Caught, which apply() turns into the
+    command's result)."""
+    if not bm._gate_on() or not bm.at_risk(f) or not bm._arrest_roll():
         return
     if game in f['stats']:   # the round counts on the stall's Sổ ví row ("· N ván")
         f['stats'][game] = min(10**9, f['stats'][game] + 1)
@@ -1203,7 +1205,7 @@ def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
     if got:
         fair['titles'] = got
     msg = (f'🚨 Công an ập vào! Mất {_xu(stake)} xu tiền cược' + (f', nộp phạt {_xu(r["fine"])} xu' if r['fine'] else '')
-           + '.')
+           + '.' + (f' Bạn bị tạm giữ {r["jail"]} ngày.' if r.get('jail') else ''))
     raise _Caught(dict(message=msg, effects=[], fair=fair))
 
 

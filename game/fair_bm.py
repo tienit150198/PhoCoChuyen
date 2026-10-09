@@ -9,10 +9,14 @@ an bắt, tỷ lệ bị bắt cực cao").
   the photobooth, a vay nóng), the player settles it. fair_bm_pay takes BM_FEE xu from the wallet (refused when the
   wallet is short); fair_bm_refuse lets the đàn em take ROB_PCT % of the wallet (cash only, never the bank account, 0
   when the wallet is empty or in debt). Either way the player is in until the stretch ends.
-* Arrests: every paid round (game/fair.py ARREST_ACTIONS: bầu cua, chiếu trong, a lô tô tờ, a vé cào, a phóng dao run)
-  is raided BM_ARREST_P of the time (_arrest_roll, its own random source so the stalls' draws are untouched). Caught:
-  the round's stake is gone (no outcome), a fine of FINE_PCT % of the wallet left after the stake, and the player is
-  thrown out of the Chợ đen until the Vietnam day ends (rounds already going may still finish: game/fair.py LATE).
+* Arrests (owner 09/10: "với ae ăn tiền nhiều (hơn 300k) thì mới bị bắt nhé, ít quá k bị bắt", "tỷ lệ bị bắt thấp tý
+  nhé"): a paid round (bầu cua, chiếu trong, a lô tô tờ, a vé cào, a phóng dao run) can be raided only while the
+  player's Chợ đen net today is above ARREST_FROM xu (at_risk: journey['fair'].net, which game/fair.py _state resets
+  at each Vietnam day: every paid stall's wins minus its losses, the bảo kê, robberies and fines included; the free ô
+  ăn quan / ném vòng xu are not in it). Then it is raided BM_ARREST_P of the time (_arrest_roll, its own random source
+  so the stalls' draws are untouched). Caught: the round's stake is gone (no outcome), a fine of FINE_PCT % of the
+  wallet left after the stake, and JAIL_DAYS days in the trại tạm giữ (game/jail.py; rounds already going may still
+  finish once out: game/fair.py LATE).
 * Nothing about the rate or the percentages reaches the client (owner 08/10: no odds shown); the fee is a price and is
   shown, receipts show the xu taken.
 
@@ -36,7 +40,9 @@ ROB_PCT = 30                   # refusing: the đàn em take this % of the walle
 FINE_PCT = 30                  # caught: this % of the wallet left after the stake (never shown)
 BM_ASK_P = 0.40                # the đàn em ask for bảo kê in a stretch (owner 09/10 "hên xui 40% /2 ngày"; never shown)
 ASK_DAYS = 2                   # Vietnam days in a stretch
-BM_ARREST_P = 0.20             # a paid round raided by the police ("tỷ lệ bị bắt cực cao"; never shown)
+BM_ARREST_P = 0.05             # a paid round raided by the police (owner 09/10 "tỷ lệ bị bắt thấp tý"; never shown)
+ARREST_FROM = 300000           # ... only while today's Chợ đen net is above this (owner 09/10 "hơn 300k"; never shown)
+JAIL_DAYS = 3                  # caught: jail days in the trại tạm giữ (owner 09/10 "chơi cờ bạc bị bắt 3 ngày")
 STATES = ('paid', 'robbed', 'ban')
 ROW_MAX = 10**7                # one Sổ ví row's |amount| (journey.validate)
 COMMANDS = ('fair_bm_pay', 'fair_bm_refuse')
@@ -53,6 +59,12 @@ SAY_PAID = 'Nộp đủ rồi, cứ ra vô thoải mái.'
 SAY_ARREST = 'Tất cả đứng im! Đánh bạc ăn tiền hả? Tiền cược tịch thu, nộp phạt đi!'
 
 _rng = random.SystemRandom()   # the arrests' own draws: the stalls' _rng (and the tests' scripted draws) stay as they were
+
+
+def at_risk(f: dict | None) -> bool:
+    """The police only come for the big winners: today's Chợ đen net (journey['fair'].net, already reset for this
+    Vietnam day by game/fair.py _state) above ARREST_FROM."""
+    return isinstance(f, dict) and type(f.get('net')) is int and f['net'] > ARREST_FROM
 
 
 def _arrest_roll() -> bool:
@@ -151,10 +163,12 @@ def apply(s: dict, name: str, p: dict, f: dict, t: float) -> dict:
 
 def arrest(j: dict, f: dict, t: float, game: str, stake: int, pay) -> dict:
     """The police caught this paid round: `pay(-stake)` takes its stake (the stall's own Sổ ví row), then the fine,
-    and the player stays in (no ban since owner 09/10: "bỏ cấm hội chợ luôn nhe"). Returns the receipt (xu only)."""
+    then JAIL_DAYS days in the trại tạm giữ (game/jail.py; 0 when MNL_JAIL_OFF). Returns the receipt (xu and days)."""
+    from . import jail
     pay(-stake)
     fine = _take(j, f, max(0, j['wallet']) * FINE_PCT // 100, FINE_LABEL)
-    return dict(game=game, stake=stake, fine=fine, wallet=j['wallet'], say=SAY_ARREST)
+    days = jail.arrest(j, 'bm', JAIL_DAYS, t)
+    return dict(game=game, stake=stake, fine=fine, wallet=j['wallet'], say=SAY_ARREST, jail=days)
 
 
 def public(j: dict, t: float) -> dict:

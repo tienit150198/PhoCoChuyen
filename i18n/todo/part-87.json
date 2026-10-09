@@ -1,5 +1,149 @@
 [
  {
+  "vi": "Ca này không hủy được nữa.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Hủy ca làm thêm",
+  "en": ""
+ },
+ {
+  "vi": "Ca này vừa có người nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy ca làm thêm",
+  "en": ""
+ },
+ {
+  "vi": "Đã hủy. Lương giữ chỗ đang chờ quỹ chung có chỗ để hoàn.",
+  "en": ""
+ },
+ {
+  "vi": "Làm thêm chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Ca này vừa có người nhận rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đây là ca của quầy bạn mà.",
+  "en": ""
+ },
+ {
+  "vi": "Không nhận được ca này.",
+  "en": ""
+ },
+ {
+  "vi": "làm thêm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nhận được ca này.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang có một ca làm thêm rồi. Làm xong hoặc bỏ ca đó trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn được mời bận",
+  "en": ""
+ },
+ {
+  "vi": "Đã từ chối. Không sao đâu!",
+  "en": ""
+ },
+ {
+  "vi": "Bạn không có ca làm thêm nào.",
+  "en": ""
+ },
+ {
+  "vi": "Người làm thêm bận",
+  "en": ""
+ },
+ {
+  "vi": "Đã bỏ ca. Lần sau nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Ca chưa đủ việc",
+  "en": ""
+ },
+ {
+  "vi": "Ca làm thêm hết hạn",
+  "en": ""
+ },
+ {
+  "vi": "Người làm thêm rời phố",
+  "en": ""
+ },
+ {
+  "vi": "nhận ca",
+  "en": ""
+ },
+ {
+  "vi": "nhận ca làm thêm",
+  "en": ""
+ },
+ {
+  "vi": "thuê hoặc làm thêm",
+  "en": ""
+ },
+ {
+  "vi": "Tự trông quầy",
+  "en": ""
+ },
+ {
+  "vi": "Bảo vệ cơ bản",
+  "en": ""
+ },
+ {
+  "vi": "Bảo vệ tăng cường",
+  "en": ""
+ },
+ {
+  "vi": "Suy thoái",
+  "en": ""
+ },
+ {
+  "vi": "Hưng thịnh",
+  "en": ""
+ },
+ {
+  "vi": "Ổn định",
+  "en": ""
+ },
+ {
+  "vi": "Trà tắc",
+  "en": ""
+ },
+ {
+  "vi": "Nước mía",
+  "en": ""
+ },
+ {
+  "vi": "Hạt hướng dương",
+  "en": ""
+ },
+ {
+  "vi": "Cà phê đá",
+  "en": ""
+ },
+ {
+  "vi": "Xoài cắt",
+  "en": ""
+ },
+ {
+  "vi": "Cam vắt",
+  "en": ""
+ },
+ {
+  "vi": "Ổi muối ớt",
+  "en": ""
+ },
+ {
   "vi": "Đĩa trái cây",
   "en": ""
  },
@@ -1653,150 +1797,6 @@
  },
  {
   "vi": "ly dày dặn, cầm chắc tay",
-  "en": ""
- },
- {
-  "vi": "nắp kín, mang về tới nhà vẫn nguyên",
-  "en": ""
- },
- {
-  "vi": "màng dán phẳng phiu, cắm ống hút một phát ăn ngay",
-  "en": ""
- },
- {
-  "vi": "nắp dán kiểu \"tùy duyên\", về tới nhà còn được nửa ly là may 👏",
-  "en": ""
- },
- {
-  "vi": "Rỉ nước.",
-  "en": ""
- },
- {
-  "vi": "Nắp kín.",
-  "en": ""
- },
- {
-  "vi": "Muỗng, khăn giấy",
-  "en": ""
- },
- {
-  "vi": "thiếu khăn giấy",
-  "en": ""
- },
- {
-  "vi": "không thấy khăn giấy trên bàn, phải đi xin",
-  "en": ""
- },
- {
-  "vi": "hộp khăn giấy trên bàn hết sạch",
-  "en": ""
- },
- {
-  "vi": "đưa đồ ăn mà quên muỗng nĩa",
-  "en": ""
- },
- {
-  "vi": "có sẵn khăn giấy, muỗng nĩa gói riêng",
-  "en": ""
- },
- {
-  "vi": "đưa kèm khăn ướt, chu đáo ghê",
-  "en": ""
- },
- {
-  "vi": "hộp khăn giấy lúc nào cũng đầy",
-  "en": ""
- },
- {
-  "vi": "Hết khăn giấy.",
-  "en": ""
- },
- {
-  "vi": "Chu đáo.",
-  "en": ""
- },
- {
-  "vi": "bàn còn dính",
-  "en": ""
- },
- {
-  "vi": "bàn còn dính nước đường, đặt tay là dính",
-  "en": ""
- },
- {
-  "vi": "ghế còn vụn bánh của khách trước",
-  "en": ""
- },
- {
-  "vi": "mặt bàn nhớt nhớt, lau mãi chưa sạch",
-  "en": ""
- },
- {
-  "vi": "khách trước đi rồi mà ly cũ còn nguyên trên bàn",
-  "en": ""
- },
- {
-  "vi": "bàn lau sạch bong, ngồi thích",
-  "en": ""
- },
- {
-  "vi": "khách trước vừa đi là dọn bàn liền",
-  "en": ""
- },
- {
-  "vi": "bàn ghế gọn gàng, không dính chút nào",
-  "en": ""
- },
- {
-  "vi": "bàn dính tới mức đặt điện thoại xuống là khỏi sợ rơi 👏",
-  "en": ""
- },
- {
-  "vi": "Bàn dính.",
-  "en": ""
- },
- {
-  "vi": "Bàn sạch.",
-  "en": ""
- },
- {
-  "vi": "sàn hơi trơn, suýt trượt chân",
-  "en": ""
- },
- {
-  "vi": "dưới gầm bàn còn ly nhựa với giấy ăn",
-  "en": ""
- },
- {
-  "vi": "sàn loang vệt nước, đi phải nhìn chân",
-  "en": ""
- },
- {
-  "vi": "sàn ướt dấu dép, trời mưa mà không trải thảm",
-  "en": ""
- },
- {
-  "vi": "trời mưa, lối vào trơn trượt, suýt ngã",
-  "en": ""
- },
- {
-  "vi": "sàn khô ráo, sạch sẽ",
-  "en": ""
- },
- {
-  "vi": "trời mưa mà có thảm chùi chân ở cửa, sàn vẫn khô",
-  "en": ""
- },
- {
-  "vi": "sàn lau thơm mùi sả",
-  "en": ""
- },
- {
-  "vi": "Sàn trơn.",
-  "en": ""
- },
- {
-  "vi": "Sàn sạch.",
   "en": ""
  }
 ]

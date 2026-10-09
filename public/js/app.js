@@ -1639,6 +1639,7 @@ async function handleAction(action,data,el){
       if(action==='workVisitServe'){if(data.kind==='quay'){await (await import('./v4/quay.js')).quayAction('quay',{visitor:data.order},el,env());break;}if(data.career&&data.career!==career()){await selectCareer(data.career);if(career()!==data.career)break;}await openJob(data.task);break;}
       if(action==='quay'){await (await import('./v4/quay.js')).quayAction(action,data,el,env());break;}  // 🏪 Quầy của bạn: lazy
       if(action==='fair'){await (await import('./v4/fair.js')).fairAction(action,data,el,env());break;}  // 🏮 Hội chợ dân gian: lazy
+      if(action==='jail'){await (await import('./v4/jail.js')).openJail(env());break;}  // 🚔 Trại tạm giữ: lazy
       if(L.people.m&&await L.people.m.closenessAction(action,data,el,env()))break;
       if(await needsAction(action,data,el,env()))break;  // 🍚😴 nd…
       if(await journeyAction(action,data,el,env()))break;
@@ -1754,7 +1755,10 @@ window.addEventListener('layoutchange',()=>{world.resize();if(api.state&&api.con
  * another queued answer follows: the sheet shows those picks already, and the last answer draws it. */
 const settling=()=>{if(ui.view!=='job')return false;try{return !!careerUI(career())?.settling?.(careerContext(env()));}catch{return false;}};
 // While the player scrolls the open sheet, its redraw waits for the scroll to settle (work-equipment.js scrollGuard).
-api.addEventListener('state',()=>{syncOlder(api.revision);ensureCareerUI();renderMain();if(ui.view&&!settling()){if(sheetScroll.busy())sheetScroll.later(()=>{if(ui.view&&!settling())renderSheet();});else renderSheet();}shell.update(env());});
+// 🚔 Trại tạm giữ (v4/jail.js, game/jail.py): loaded only once a player is jailed; it opens itself and says goodbye.
+let jailMod=null;
+api.addEventListener('state',()=>{syncOlder(api.revision);ensureCareerUI();renderMain();if(ui.view&&!settling()){if(sheetScroll.busy())sheetScroll.later(()=>{if(ui.view&&!settling())renderSheet();});else renderSheet();}shell.update(env());jailSync();});
+function jailSync(){if(!api.state?.jail&&!jailMod)return;import('./v4/jail.js').then(m=>{jailMod=m;m.sync(env());}).catch(()=>{/* the next state */});}
 api.addEventListener('busy',e=>{ui.busy=e.detail;document.body.classList.toggle('busy',ui.busy);$('#saveState')?.setAttribute('aria-busy',String(ui.busy));if(!ui.busy&&heldTap)setTimeout(replayHeld,60);else if(!ui.busy)holdMark(null);});
 /* "Game mất chữ": an iPhone tab left open across a deploy came back with every card of the work sheet
  * blank (containers, portrait and button shapes drawn, no words) while the DOM still held the text.

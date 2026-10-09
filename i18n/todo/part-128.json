@@ -2130,6 +2130,16 @@
   "pattern": true
  },
  {
+  "vi": "Tố cáo sai sự thật: bạn bị tạm giữ $1 ngày để làm rõ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bị tạm giữ $1 ngày vì tố cáo sai sự thật về $2 của $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🛡️ Bảo hiểm tạm ngưng: ví và tài khoản chưa đủ $1 xu. Bật lại khi có tiền nhé.",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "Thợ sửa xong, điện nước chạy ngon lại.$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Phòng trước: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thợ xử lý sớm, điện nước ổn rồi.$1",
   "en": "",
   "pattern": true
  }

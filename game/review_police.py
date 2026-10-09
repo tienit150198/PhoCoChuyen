@@ -11,6 +11,11 @@ For a vô lý review the police confirm with a hidden chance (CONFIRM_PCT): the 
 rating and day averages read the feed, so they follow at once), and sometimes (PAY_PCT of those) a small bồi thường
 lands in the wallet (a Sổ ví row). Otherwise "chưa đủ cơ sở": nothing changes. Odds are never shown or sent.
 
+🚔 Tố cáo sai sự thật (owner 09/10: "tố cáo sai thì bị bắt tù 1 ngày trong game"): a report on a review the police
+find reasonable (verdict 'fair') sends the reporter to the trại tạm giữ for JAIL_DAYS jail day JAIL_PCT of the time
+(jail_roll, seeded from the review like the other rolls; game/jail.py). A vô lý review that is only "chưa đủ cơ sở"
+never does. Nothing about the chance is shown or sent.
+
 Once per review, only NPC reviews with a thread, written in the last COP_DAYS days, at most COP_PER_DAY a day. The
 rolls are seeded from the review and the outcome is stored in `fb['cop']` = {day, verdict, before, after, pay}, so a
 retry never rolls again. Rollback: 1.9.27 (4533ee17) ignores unknown keys of a review's feedback and accepts the
@@ -27,6 +32,8 @@ PAY_BASE = 20           # bồi thường: PAY_BASE + PAY_PER_STAR per star give
 PAY_PER_STAR = 15
 PAY_SPREAD = 4
 PAY_MAX = 100
+JAIL_PCT = 25           # a reasonable review reported anyway: the reporter is held this often (tố cáo sai sự thật)
+JAIL_DAYS = 1
 NOT_HERE = ('pagoda', 'police')     # the pagoda's visitors write impressions; the police do not report to themselves
 VERDICTS = ('raised', 'unproven', 'fair')
 WALLET_KIND = 'incident'            # a Sổ ví kind 1.9.27 already accepts (⚖️), the label brings its own 🚔
@@ -97,6 +104,11 @@ def verdict(post: dict) -> tuple[str, int, int]:
     return 'raised', fair, pay
 
 
+def jail_roll(post: dict) -> bool:
+    """A reasonable review reported anyway: is the reporter held for tố cáo sai sự thật? Seeded. Tests patch it."""
+    return _roll(post, 'jail') < JAIL_PCT
+
+
 def stars_text(n: int) -> str:
     return '⭐' * n
 
@@ -139,6 +151,14 @@ def action(s: dict, c: dict, career: str, p: dict) -> dict:
         msg = '🚔 Công an đã xem xét, chưa đủ cơ sở để kết luận. Sao giữ nguyên.'
     else:
         msg = f'🚔 Công an đã đối chiếu: {word} này hợp lý, khớp với sổ ghi hôm đó. Sao giữ nguyên.'
+        j = s.get('journey')
+        if isinstance(j, dict) and j.get('story') and jail_roll(post):
+            from . import jail
+            days = jail.arrest(j, 'cop', JAIL_DAYS)
+            if days:
+                msg += f' Tố cáo sai sự thật: bạn bị tạm giữ {days} ngày để làm rõ.'
+                e.log(s, c, 'feedback', f'Bị tạm giữ {days} ngày vì tố cáo sai sự thật về {word} của {who}.', post.get('npc'), post['id'])
+                return dict(message=msg, cop=v, stars=after, paid=pay, celebrate=False, jail=days)
     return dict(message=msg, cop=v, stars=after, paid=pay, celebrate=v == 'raised')
 
 

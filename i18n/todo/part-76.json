@@ -1120,7 +1120,7 @@
   "en": ""
  },
  {
-  "vi": "🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược ván đó và nộp phạt từ ví, rồi chơi tiếp được.",
+  "vi": "🚨 Ai ăn đậm ở chợ đen thì dễ bị công an để ý. Bị bắt thì mất tiền cược ván đó, nộp phạt từ ví và vào trại tạm giữ 3 ngày.",
   "en": ""
  },
  {
@@ -1133,6 +1133,30 @@
  },
  {
   "vi": "💸 Vay nóng trả lúc nào cũng được; trả hết rồi mới vay tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Trại tạm giữ: công ích và bảo lãnh",
+  "en": ""
+ },
+ {
+  "vi": "🚔 Bị công an bắt ở chợ đen thì vào trại 3 ngày. Báo công an về một đánh giá hợp lý thì có khi bị giữ 1 ngày vì tố cáo sai sự thật.",
+  "en": ""
+ },
+ {
+  "vi": "🚫 Trong trại không đi làm, không vào chợ đen, không mua sắm hay đi chơi xa. Vẫn nhắn tin, xem bạn bè, đọc sách, chỉnh cài đặt được.",
+  "en": ""
+ },
+ {
+  "vi": "🧹 Mỗi ngày có 3 việc công ích nho nhỏ. Làm đủ cả 3 thì hết ngày đó được tính 2 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🌙 Bấm [[Hết một ngày trong trại]] để qua một ngày sống. Tiền phòng vẫn tính, cơm trại miễn phí.",
+  "en": ""
+ },
+ {
+  "vi": "🤝 [[Nhờ bạn bảo lãnh]]: một người bạn trả 30.000 xu từ ví của họ là bạn được về ngay.",
   "en": ""
  },
  {
@@ -1385,26 +1409,6 @@
  },
  {
   "vi": "🚩 Nội dung xấu thì [[Báo cáo]]; bị nhiều người báo cáo sẽ tự ẩn. Ai làm phiền thì [[Chặn]].",
-  "en": ""
- },
- {
-  "vi": "📬 Hộp thư báo ai ghé, ai chấm sao, tặng quà hay mua hàng của bạn.",
-  "en": ""
- },
- {
-  "vi": "Bảng xếp hạng",
-  "en": ""
- },
- {
-  "vi": "🏆 [[Trải nghiệm]]: bảng [[Tất cả]] cho cả phố và một bảng cho từng nơi làm. [[Danh hiệu]]: xếp theo số danh hiệu đã có. [[Chứng chỉ]]: xếp theo số chứng chỉ đã có. [[Tài phú]]: ai giàu nhất phố.",
-  "en": ""
- },
- {
-  "vi": "🏅 Danh hiệu tuần: top 1, top 2–3 và top 4–10 của bảng Tất cả, Danh hiệu, Chứng chỉ, Tài phú, và top 1 mỗi nơi làm giữ một danh hiệu riêng, hiện cạnh tên. Cập nhật mỗi ngày, chốt tuần lúc 0:00 thứ Hai.",
-  "en": ""
- },
- {
-  "vi": "🌟 Bảng cả phố: XP mọi nơi làm, cộng 80 cho mỗi nơi đã phục vụ khách. Bằng điểm thì ai thạo nhiều nghề hơn, rồi làm nhiều ngày hơn đứng trước.",
   "en": ""
  }
 ]

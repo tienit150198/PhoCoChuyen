@@ -289,7 +289,8 @@ def view(db, sid: str) -> dict:
     outgoing = [dict(id=r['id'], name=mr._display(db, r['to_sid']), at=int(r['at']))
                 for r in _rows(db, "SELECT * FROM friend_requests WHERE from_sid=? AND status='pending' ORDER BY id DESC LIMIT 30", (sid,))]
     left = max(0, SEARCH_PER_DAY - db.execute('SELECT COUNT(*) FROM friend_searches WHERE sid=? AND at>?', (sid, t - DAY)).fetchone()[0])
-    return dict(list=friends, incoming=incoming, outgoing=outgoing, findable=findable(db, sid), searches_left=left,
+    from . import jail   # 🚔 friends in the trại tạm giữ who asked this player to bail them out
+    return dict(list=friends, incoming=incoming, outgoing=outgoing, findable=findable(db, sid), searches_left=left, jail=jail.requests(db, sid),
                 requests_left=max(0, REQUESTS_PER_DAY - db.execute('SELECT COUNT(*) FROM friend_requests WHERE from_sid=? AND at>?', (sid, t - DAY)).fetchone()[0]))
 
 

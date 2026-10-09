@@ -90,6 +90,12 @@ class BlackMarketBase(unittest.TestCase):
         self.assertEqual(e.exception.code, code)
         return e.exception
 
+    def rich(self, s, net=None):
+        """Today's Chợ đen net above fair_bm.ARREST_FROM: the police come only for the big winners (owner 09/10)."""
+        s['journey']['fair']['net'] = bm.ARREST_FROM + 1 if net is None else net
+        validate_state(s)
+        return s
+
     def caught(self, on=True):
         p = mock.patch.object(bm, '_arrest_roll', lambda: on)
         p.start()
@@ -214,7 +220,8 @@ class AskedOrNot(BlackMarketBase):
         s, r = self.act(s, 'fair_bm_pay')   # an old page: nothing taken
         self.assertTrue(r['fair']['again'])
         self.assertNotIn('fair_bm', s['journey'])
-        self.caught(True)   # the police still come
+        self.caught(True)   # the police still come (for a big winner)
+        self.rich(s)
         s, r = self.act(s, 'fair_bc', bets={'cua': 10})
         self.assertIn('arrest', r['fair'])
         self.assertEqual(fh.public(s)['bm']['st'], 'free')   # no ban (owner 09/10 "bỏ cấm")
@@ -247,7 +254,9 @@ class AskedOrNot(BlackMarketBase):
         self.clock.t = at(2026, 10, 11, 9)
         s, _ = self.act(s, 'fair_bm_refuse')
         self.caught(True)
-        s, _ = self.act(s, 'fair_bc', bets={'cua': 10})
+        self.rich(s)
+        s, r = self.act(s, 'fair_bc', bets={'cua': 10})
+        self.assertIn('arrest', r['fair'])
         self.assertEqual(fh.public(s)['bm']['st'], 'robbed')
         self.clock.t = at(2026, 10, 12, 9)   # same stretch: still in, nothing to settle
         b = fh.public(s)['bm']
@@ -279,6 +288,7 @@ class Arrest(BlackMarketBase):
             with self.subTest(game=game):
                 s = story(20000)
                 s, _ = self.act(s, 'fair_bm_pay')   # 10,000 left
+                self.rich(s)
                 with mock.patch.object(bm, '_arrest_roll', lambda: True):
                     s, r = self.act(s, name, **p)
                 a = r['fair']['arrest']
@@ -325,6 +335,7 @@ class Arrest(BlackMarketBase):
         self.caught(False)
         s, _ = self.act(s, 'fair_loto_buy', tier='lon', n=1)
         self.caught(True)
+        self.rich(s)
         s, r = self.act(s, 'fair_bc', bets={'cua': 10})
         self.assertIn('arrest', r['fair'])
         s, r = self.act(s, 'fair_loto_fold')   # LATE: finishing what was begun
@@ -334,6 +345,7 @@ class Arrest(BlackMarketBase):
         s = story(10050)
         s, _ = self.act(s, 'fair_bm_pay')   # 50 left
         self.caught(True)
+        self.rich(s)
         s, r = self.act(s, 'fair_xd', side='le', stake=50)
         self.assertEqual(r['fair']['arrest']['fine'], 0)
         self.assertEqual(s['journey']['wallet'], 0)
@@ -344,7 +356,9 @@ class Arrest(BlackMarketBase):
         s = story()
         s, _ = self.act(s, 'fair_bm_pay')
         self.caught(True)
-        s, _ = self.act(s, 'fair_bc', bets={'cua': 10})
+        self.rich(s)
+        s, r = self.act(s, 'fair_bc', bets={'cua': 10})
+        self.assertIn('arrest', r['fair'])
         self.clock.t = at(2026, 10, 11, 9)
         self.assertEqual(fh.public(s)['bm'], dict(fee=10000, st='', inside=False, ban=False, who=list(bm.GUARD)))
         s, _ = self.act(s, 'fair_bm_refuse')
@@ -359,10 +373,10 @@ class Arrest(BlackMarketBase):
 
             def random(self):
                 return self.x
-        self.assertEqual(bm.BM_ARREST_P, 0.20)
-        with mock.patch.object(bm, '_rng', R(.1999)):
+        self.assertEqual((bm.BM_ARREST_P, bm.ARREST_FROM), (0.05, 300000))   # owner 09/10: "thấp tý", "hơn 300k"
+        with mock.patch.object(bm, '_rng', R(.0499)):
             self.assertTrue(bm._arrest_roll())
-        with mock.patch.object(bm, '_rng', R(.2)):
+        with mock.patch.object(bm, '_rng', R(.05)):
             self.assertFalse(bm._arrest_roll())
 
     def test_arrests_leave_the_stalls_draws_alone(self):
@@ -398,12 +412,13 @@ class NothingShown(BlackMarketBase):
         f = fh.public(s)
         self.assertEqual(set(f['bm']), {'fee', 'st', 'inside', 'ban', 'who'})
         blob = json.dumps(f, ensure_ascii=False)
-        for k in ('arrest_p', 'rob_pct', 'fine_pct', 'BM_ARREST'):
+        for k in ('arrest_p', 'rob_pct', 'fine_pct', 'BM_ARREST', 'arrest_from', '300000', '300.000'):
             self.assertNotIn(k, blob)
         s, _ = self.act(s, 'fair_bm_pay')
         self.caught(True)
+        self.rich(s)
         s, r = self.act(s, 'fair_bc', bets={'cua': 100})
-        self.assertEqual(set(r['fair']['arrest']), {'game', 'stake', 'fine', 'wallet', 'say'})
+        self.assertEqual(set(r['fair']['arrest']), {'game', 'stake', 'fine', 'wallet', 'say', 'jail'})
         self.assertNotIn('%', r['message'])
         for text in (bm.NEED_IN, bm.BANNED, bm.SAY_ROB, bm.SAY_EMPTY, bm.SAY_PAID, bm.SAY_ARREST, bm.SHORT,
                      bm.FEE_LABEL, bm.ROB_LABEL, bm.FINE_LABEL):
@@ -439,6 +454,7 @@ class OldServer(BlackMarketBase):
         s, _ = self.act(s, 'fair_bm_pay')
         paid = json.loads(json.dumps(s))
         self.caught(True)
+        self.rich(s)
         s, _ = self.act(s, 'fair_bc', bets={'cua': 100})
         banned = json.loads(json.dumps(s))
         s2 = story(5000)

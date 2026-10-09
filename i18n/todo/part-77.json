@@ -1,5 +1,25 @@
 [
  {
+  "vi": "📬 Hộp thư báo ai ghé, ai chấm sao, tặng quà hay mua hàng của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng xếp hạng",
+  "en": ""
+ },
+ {
+  "vi": "🏆 [[Trải nghiệm]]: bảng [[Tất cả]] cho cả phố và một bảng cho từng nơi làm. [[Danh hiệu]]: xếp theo số danh hiệu đã có. [[Chứng chỉ]]: xếp theo số chứng chỉ đã có. [[Tài phú]]: ai giàu nhất phố.",
+  "en": ""
+ },
+ {
+  "vi": "🏅 Danh hiệu tuần: top 1, top 2–3 và top 4–10 của bảng Tất cả, Danh hiệu, Chứng chỉ, Tài phú, và top 1 mỗi nơi làm giữ một danh hiệu riêng, hiện cạnh tên. Cập nhật mỗi ngày, chốt tuần lúc 0:00 thứ Hai.",
+  "en": ""
+ },
+ {
+  "vi": "🌟 Bảng cả phố: XP mọi nơi làm, cộng 80 cho mỗi nơi đã phục vụ khách. Bằng điểm thì ai thạo nhiều nghề hơn, rồi làm nhiều ngày hơn đứng trước.",
+  "en": ""
+ },
+ {
   "vi": "🏪 Bảng từng nơi: XP ở nơi đó. Bằng điểm thì ai làm nhiều ngày hơn, rồi được nhiều sao hơn đứng trước.",
   "en": ""
  },
@@ -1097,30 +1117,6 @@
  },
  {
   "vi": "Bị đòi bảo kê: lưu bằng chứng và báo công an hoặc từ chối, không bắt buộc trả tiền. Mỗi ngày tối đa một quầy trong chuỗi gặp sự cố kinh doanh.",
-  "en": ""
- },
- {
-  "vi": "Phát triển nghề shipper thế nào?",
-  "en": ""
- },
- {
-  "vi": "Mở Sổ shipper ở Hành trình hoặc Quầy của bạn. Cần mở nghề Giao hàng; chọn hợp đồng và xem phí chuẩn bị trước khi nhận.",
-  "en": ""
- },
- {
-  "vi": "Giao đủ đơn mới phù hợp trong nghề rồi nhận thưởng hợp đồng. Phí giao từng đơn vẫn tính riêng; đơn trễ hoặc sai sót làm giảm thưởng. Một đơn không cộng lại khi bấm nhiều lần.",
-  "en": ""
- },
- {
-  "vi": "Hoàn tất 3 rồi 10 hợp đồng để lên bậc. Túi giữ nhiệt và áo mưa giảm khấu trừ chất lượng, không miễn phạt giao thông. Hủy hợp đồng không hoàn phí chuẩn bị.",
-  "en": ""
- },
- {
-  "vi": "Đi qua đèn đỏ và học lái máy bay thế nào?",
-  "en": ""
- },
- {
-  "vi": "Khi tự lái giao hàng hoặc giao đơn quầy, đến đèn thì chờ xanh hoặc chọn đi tiếp. Vượt đèn đỏ bị phạt 12 xu một lần cho ngã tư đó; đứng chờ không mất tiền.",
   "en": ""
  }
 ]

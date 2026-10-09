@@ -1,5 +1,20 @@
 [
  {
+  "vi": "/$1 câu đúng",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "BÀI THI · CÂU $1/",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Học xong cả $1 bài (đúng hết câu hỏi mỗi bài) rồi mới thi nhé · còn $2 bài.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "câu, mỗi bài một câu · đúng từ $1 câu là đạt · thi lại miễn phí",
   "en": "",
   "pattern": true
@@ -645,6 +660,51 @@
   "pattern": true
  },
  {
+  "vi": "🚔 Trại tạm giữ · còn $1 ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ngày $1 trong trại · án $2 ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn bè bảo lãnh thì trả $1 từ ví của họ, bạn được về ngay.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đống lá, còn $1 lần quét",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thêm một muỗng cơm vào khay $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bớt một muỗng ở khay $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khay $1 · cần",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sách số $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khay $1 dư cơm rồi, bớt lại cho đúng phần nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Việc cần làm $1/",
   "en": "",
   "pattern": true
@@ -976,6 +1036,16 @@
  },
  {
   "vi": ". Phí $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảo lãnh cho $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả $1 từ ví của bạn. Bạn ấy được ra trại tạm giữ ngay.",
   "en": "",
   "pattern": true
  },
@@ -2176,76 +2246,6 @@
  },
  {
   "vi": "Món này đặt ở $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "bày đủ $1/$2 món. Cất bớt hoặc bày sang phòng khác nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xoay hướng sang $1 (R)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😊 +$1 tinh thần mỗi sáng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😊 +$1 tinh thần tạm dừng khi trễ hạn trả góp",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛠️ Sửa nhà tới $1% để có +$2 tinh thần mỗi sáng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thêm $1 điểm: +$2 tinh thần mỗi sáng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "+$1 từ $2 điểm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mỗi nâng cấp nhà: ấm cúng +$1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tinh thần mỗi sáng: $1 (nhà sửa tới $2%, không trễ hạn trả góp).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chỗ ở thuê hoặc ở nhờ: tinh thần $1, tối đa +$2 mỗi sáng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ấm cúng từ $1 điểm thì hàng xóm hay ghé chơi khen phòng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đồ đạc $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bộ góc $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nâng cấp nhà $1",
   "en": "",
   "pattern": true
  }

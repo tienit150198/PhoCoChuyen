@@ -18,3 +18,6 @@ os.environ.setdefault("MNL_BROADCAST_OFF", "1")
 # 🕶️ Chợ đen (game/fair_bm.py): no bảo kê gate and no arrests in the tests of the stalls' own rules (their scripted
 # rounds); tests/test_black_market.py turns it on.
 os.environ.setdefault("MNL_BM_OFF", "1")
+# 🚔 Trại tạm giữ (game/jail.py): nobody jailed in the other tests (a raid or a false report would block their next
+# commands); tests/test_jail.py and tests/test_black_market.py turn it on.
+os.environ.setdefault("MNL_JAIL_OFF", "1")

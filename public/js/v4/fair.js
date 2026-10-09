@@ -279,6 +279,8 @@ function page(){
   if(!f.show&&!f.over&&!f.soon)return head()+`<div class="sheet-body fh-body">${closedCard(true)}</div>`;
   if(!f.open&&S.tab!=='board')return head()+`<div class="sheet-body fh-body">${closedCard()}${S.env?.api?.state?.journey?.story?btn('🏆 Xem Bảng vàng chợ đen','tab',{tab:'board'},'cream full'):''}${note()}</div>`;
   if(S.arrest)return head()+`<div class="sheet-body fh-body">${arrestCard()}${note()}</div>`;
+  if(S.env?.api?.state?.jail)return head()+`<div class="sheet-body fh-body"><section class="fh-card fh-bm ban" data-fh-key="bm-jail"><div class="fh-big" aria-hidden="true">🚔</div><h3>Bạn đang ở trại tạm giữ</h3>
+    <p>Ra trại rồi mới vào chợ đen được nha.</p>${btn('🚔 Mở trại tạm giữ','jail',{},'primary full',' data-fh-key="bm-jailgo"')}</section>${note()}</div>`;   // 🚔 game/jail.py
   if(gated()&&S.tab!=='board')return head()+giftPop()+`<div class="sheet-body fh-body">${flash()}${bmGate()}${note()}</div>`;
   const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().knife?kn().view():homeView(),xs:()=>F().scratch?xs().view():homeView(),pb:()=>F().photo?pb().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
@@ -315,9 +317,9 @@ function arrestCard(){
   return `<section class="fh-card fh-raid" role="alert" data-fh-key="bm-arrest"><div class="fh-siren" aria-hidden="true"><i></i><i></i></div>
     <h3>🚨 Công an ập vào!</h3>${say({name:'Công an phường',emoji:'👮'},r.say||'')}
     <div class="fh-raid-bill"><span>Tiền cược bị tịch thu</span><b>−${xu(r.stake)}</b><span>Nộp phạt</span><b>−${xu(r.fine)}</b></div>
-    <p>Ví còn <b>${xu(r.wallet)}</b>. Khoản phạt đã ghi trong Sổ ví.</p><p>Công an đi rồi. Chơi tiếp thì cẩn thận nha.</p>
+    <p>Ví còn <b>${xu(r.wallet)}</b>. Khoản phạt đã ghi trong Sổ ví.</p>${r.jail?`<p class="fh-jail">🚔 Bạn bị đưa về <b>trại tạm giữ ${r.jail} ngày</b>. Trong trại làm công ích để được về sớm, hoặc nhờ bạn bè bảo lãnh.</p>`:'<p>Công an đi rồi. Chơi tiếp thì cẩn thận nha.</p>'}
     ${r.titles?.includes('f_raid')?'<p class="fh-award">🚨 Danh hiệu mới: <b>Bị công an hỏi thăm</b></p>':''}
-    ${btn('Dạ, em biết rồi','arrestok',{},'primary',' data-fh-key="bm-arrestok"')}</section>`;
+    ${btn(r.jail?'🚔 Về trại tạm giữ':'Dạ, em biết rồi','arrestok',{},'primary',' data-fh-key="bm-arrestok"')}</section>`;
 }
 async function bmPay(){
   if(S.busy)return;S.busy=true;S.bmSure=false;S.flash=null;render();
@@ -1211,7 +1213,10 @@ async function onClick(op,data){
     case'bmpay':bmPay();return;
     case'bmrefuse':bmRefuse();return;
     case'robok':S.robbed=null;render();return;
-    case'arrestok':S.arrest=null;S.tab='home';pauseLoto();ltMusic();render();S.dlg.scrollTop=0;return;
+    case'jail':S.dlg.close();import('./jail.js').then(m=>m.openJail(S.env)).catch(()=>{/* the next state */});return;
+    case'arrestok':{const jailed=!!S.arrest?.jail;S.arrest=null;S.tab='home';pauseLoto();ltMusic();
+      if(jailed){S.dlg.close();import('./jail.js').then(m=>m.openJail(S.env)).catch(()=>{/* app.js opens it on the next state */});return;}   // 🚔 game/jail.py
+      render();S.dlg.scrollTop=0;return;}
     case'buy':buy();return;
     case'mark':mark(Number(data.c)||0,Number(data.n));return;
     case'kinh':kinh();return;
