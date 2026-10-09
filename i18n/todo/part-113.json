@@ -1,5 +1,29 @@
 [
  {
+  "vi": "đã có vé",
+  "en": ""
+ },
+ {
+  "vi": "Đang trả vé…",
+  "en": ""
+ },
+ {
+  "vi": "📸 Chụp!",
+  "en": ""
+ },
+ {
+  "vi": "✋ Sẵn sàng (đã có vé)",
+  "en": ""
+ },
+ {
+  "vi": "✋ Sẵn sàng",
+  "en": ""
+ },
+ {
+  "vi": "Đang chụp, chờ lượt sau nha.",
+  "en": ""
+ },
+ {
   "vi": "Mọi người sẵn sàng rồi!",
   "en": ""
  },
@@ -1773,30 +1797,6 @@
  },
  {
   "vi": "Lượt của bạn: chạm một ô hàng dưới",
-  "en": ""
- },
- {
-  "vi": "◀ Rải sang trái",
-  "en": ""
- },
- {
-  "vi": "Rải sang phải ▶",
-  "en": ""
- },
- {
-  "vi": "🙂 Bạn",
-  "en": ""
- },
- {
-  "vi": "⏯️ Rải chậm",
-  "en": ""
- },
- {
-  "vi": "⏩ Rải nhanh",
-  "en": ""
- },
- {
-  "vi": "Chắc chưa? Bỏ ván",
   "en": ""
  }
 ]

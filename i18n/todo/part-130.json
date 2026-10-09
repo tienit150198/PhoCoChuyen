@@ -1,5 +1,40 @@
 [
  {
+  "vi": "; chuyện riêng: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ĐỘ DÀI: $1 Tối đa $2 câu, dưới $3 ký tự.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nghe đâu $1 làm tới khuya lắc, chắc chạy thêm ca đêm ở đâu đó",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "có người thấy đèn chỗ $1 sáng tới gần sáng, không biết làm gì",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nghe đồn dạo này có khách chê $1 trên mạng, cả hẻm bàn tán",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "người ta truyền tai nhau là chỗ $1 vừa bị bóc phốt, chẳng biết thật giả",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nghe nói $1 được khen trên mạng, có người còn bảo $2 sắp nổi tiếng",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "người ta đồn $1 làm một lúc mấy nghề, chắc sắp mua nhà mặt phố",
   "en": "",
   "pattern": true
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "Quán báo xong lúc $1, hẹn khách trước $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⏳ còn $1′",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cân thực tế $1$2. Vỏ thùng $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "− bớt $1 =",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "trễ $1′",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏷️ Bớt $1: thu $2, túi COD hụt $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔔 ×$1, chưa ai mở",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khách đưa $1 xu, tiền hàng $2 xu",
   "en": "",
   "pattern": true
  }

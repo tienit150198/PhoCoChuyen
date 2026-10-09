@@ -2095,6 +2095,41 @@
   "pattern": true
  },
  {
+  "vi": "Chỉ báo công an được đánh giá trong $1 ngày gần đây.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm nay bạn đã báo công an đủ $1 lần rồi. Để mai nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚔 Công an xác minh: $1 của $2 không đúng sự thật. Đã sửa thành $3 (★$4 → ★$5).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚔 Bồi thường $1 sai sự thật",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "+$1 xu bồi thường vào ví.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Công an xác minh $1 của $2 sai sự thật: ★$3 → ★$4.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚔 Công an đã đối chiếu: $1 này hợp lý, khớp với sổ ghi hôm đó. Sao giữ nguyên.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🛡️ Bảo hiểm tạm ngưng: ví và tài khoản chưa đủ $1 xu. Bật lại khi có tiền nhé.",
   "en": "",
   "pattern": true
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "Thợ xử lý sớm, điện nước ổn rồi.$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã gửi $1 xu vào ngân hàng. Kẻ gian có đến cũng về tay không.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đã mua $2. Yên tâm hơn hẳn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã ngưng $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đã mua $2 gói $3%: $4 xu/tháng, trả $5% từ ngày sống $6.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đã lên gói trọn 100%: $2 xu/tháng từ hôm nay, trả 100% từ ngày sống $3 (trước đó vẫn trả $4%).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đã về gói thường $2%: $3 xu/tháng từ hôm nay.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đã mua $2.",
   "en": "",
   "pattern": true
  }

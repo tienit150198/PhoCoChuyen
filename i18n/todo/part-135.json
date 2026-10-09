@@ -1,5 +1,40 @@
 [
  {
+  "vi": "/ $1 ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giá tham khảo $1/kỳ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚚 $1/$2 đơn đang về",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📦 Mở thùng đã tới ($1) · đủ $2 đơn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚚 Đủ $1 đơn đang về$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📦 Mở thùng lên kệ ($1)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚚 Hàng đang về$1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🚚 $1 đang về$2",
   "en": "",
   "pattern": true
@@ -640,6 +675,11 @@
   "pattern": true
  },
  {
+  "vi": "🚔 Công an sửa ★$1 → ★",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã sửa ★$1 → ★",
   "en": "",
   "pattern": true
@@ -660,6 +700,16 @@
   "pattern": true
  },
  {
+  "vi": "Báo công an về $1 này? Công an sẽ đối chiếu với sổ ghi hôm đó: nếu sai sự thật, sao có thể được sửa lại. Mỗi $2 chỉ báo một lần$3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "hôm nay bạn còn $1 lượt báo",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Báo cáo không được duyệt$1: đây là trải nghiệm thật. Sao giữ nguyên.",
   "en": "",
   "pattern": true
@@ -671,6 +721,21 @@
  },
  {
   "vi": "Đã lưu lời đe dọa và $1 lượt trao đổi làm bằng chứng. Hồ sơ giữ nguyên điểm đánh giá, không bảo đảm gỡ sao.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "sai sự thật, đã sửa thành $1 (★$2 → ★$3).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "+$1 xu bồi thường",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Công an đã đối chiếu: $1 này hợp lý. Sao giữ nguyên.",
   "en": "",
   "pattern": true
  },

@@ -1,5 +1,29 @@
 [
  {
+  "vi": "👶 Bé nhà mình",
+  "en": ""
+ },
+ {
+  "vi": "Bế bé thì đi bộ, không đi xe.",
+  "en": ""
+ },
+ {
+  "vi": "📌 Đã ghim: món này không bị kéo nhầm nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Đã bỏ ghim: kéo để dời được rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Món này đang ở trên cùng rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Món này đang ở dưới cùng rồi.",
+  "en": ""
+ },
+ {
   "vi": "Cất hết đồ vào túi?",
   "en": ""
  },
@@ -1424,7 +1448,27 @@
   "en": ""
  },
  {
+  "vi": "🚔 Hôm nay bạn đã báo công an đủ lượt rồi, mai báo tiếp nhé.",
+  "en": ""
+ },
+ {
   "vi": "🚓 Lưu bằng chứng & trình báo",
+  "en": ""
+ },
+ {
+  "vi": "🚔 Báo công an",
+  "en": ""
+ },
+ {
+  "vi": "Công an xác minh:",
+  "en": ""
+ },
+ {
+  "vi": "vào ví.",
+  "en": ""
+ },
+ {
+  "vi": "Công an đã xem xét, chưa đủ cơ sở để kết luận. Sao giữ nguyên.",
   "en": ""
  },
  {
@@ -1753,50 +1797,6 @@
  },
  {
   "vi": "Tạo tài khoản để kết bạn nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy chưa có tài khoản để kết bạn.",
-  "en": ""
- },
- {
-  "vi": "🚶 Đi dạo",
-  "en": ""
- },
- {
-  "vi": "💍 Đám cưới",
-  "en": ""
- },
- {
-  "vi": "Lộc cưới",
-  "en": ""
- },
- {
-  "vi": "Mừng phong bì cô dâu chú rể",
-  "en": ""
- },
- {
-  "vi": "Tắt nhạc cưới",
-  "en": ""
- },
- {
-  "vi": "Bật nhạc cưới",
-  "en": ""
- },
- {
-  "vi": "Chụp ảnh chung",
-  "en": ""
- },
- {
-  "vi": "Đám cưới",
-  "en": ""
- },
- {
-  "vi": "người ở đây",
-  "en": ""
- },
- {
-  "vi": "người đang dạo",
   "en": ""
  }
 ]

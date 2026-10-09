@@ -1,5 +1,55 @@
 [
  {
+  "vi": "Dạ trạm thắp đèn theo giờ, ghi nhật ký đèn và phát bản tin gió đúng kênh. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khi cần, $1 gọi lại tổng đài, đọc rõ địa chỉ là xe được điều ngay ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ tổng đài hỏi đủ địa chỉ, tình trạng, số gọi lại rồi mới điều xe; hỏi kỹ là để xe tới đúng chỗ. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lần tới $1 ghé bơi, đội cứu hộ hướng dẫn kỹ nội quy từ cổng ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ đội cứu hộ thổi còi theo nội quy hồ, ai chưa biết bơi thì ở làn cạn. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ khoa cảm ơn $1 đã góp ý. Cháu đọc kỹ rồi, mong $2 mau khỏe ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ cháu tự ghi mình vào sổ “cần cố gắng” mục $1 rồi ạ 😅 Ca sau cháu bù ngay.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ sổ khoa ghi $1 ạ. Chắc lúc đó $2 đang ngủ say nên không nghe cháu gọi 😌",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ, phiếu chăm sóc ghi: $1. Cháu gửi để $2 và gia đình xem lại cho yên tâm ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cháu xin lỗi $1 về $2. Từ ca sau cháu báo trước từng việc rồi mới làm ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Cảm ơn $1 đã phản ánh. Bên phường đã ghi vào sổ tiếp dân ạ.",
   "en": "",
   "pattern": true
@@ -2196,56 +2246,6 @@
  },
  {
   "vi": "$1, còn nợ $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Có $2 xu thôi à.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 quay lại cùng ông Lộc: “Hỏi ra việc đó rẻ hơn $2 xu, trả lại đi!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả lại tiền chênh cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn trả lại $1 xu, xin lỗi. $2 dịu giọng: “Biết sai mà sửa thì còn gọi lại.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả bớt tiền chênh cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cầm $2 xu: “Thôi được, lần sau nói giá cho thật.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chặt chém xong trả lại có $1 xu, coi như bố thí à?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 ném lại câu “bố thí à?” rồi bỏ đi kể khắp ngõ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nghe giải thích một hồi, lẩm bẩm “thôi kệ” rồi về.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Giải thích cái gì, chặt chém thì nhận đi!” Ông Lộc lắc đầu.",
   "en": "",
   "pattern": true
  }

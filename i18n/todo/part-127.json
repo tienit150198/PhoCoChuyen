@@ -1,5 +1,55 @@
 [
  {
+  "vi": "Góp $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ví còn $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ví đang nợ $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chưa đủ tiền: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quà của xóm: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xả stress: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Góp giúp: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Buồn quá tiêu tiền: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ký túc xá: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiền thuốc: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1: mất $2 xu.",
   "en": "",
   "pattern": true

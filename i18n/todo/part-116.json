@@ -1,5 +1,29 @@
 [
  {
+  "vi": "Chưa xếp được, thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xếp hàng 🎁",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xếp được.",
+  "en": ""
+ },
+ {
+  "vi": "Link thưởng không phát được.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tặng được.",
+  "en": ""
+ },
+ {
+  "vi": "Máy này chỉ nghe được. Mở bằng Safari/Chrome để hát trực tiếp nhé.",
+  "en": ""
+ },
+ {
   "vi": "Bạn chưa cho phép micro. Mở cài đặt trang web › Micro để bật nhé.",
   "en": ""
  },
@@ -1773,30 +1797,6 @@
  },
  {
   "vi": "Chưa có bé nào",
-  "en": ""
- },
- {
-  "vi": "Góc Chân Nhỏ có bé chờ nhà mới.",
-  "en": ""
- },
- {
-  "vi": "Ăn",
-  "en": ""
- },
- {
-  "vi": "Diện",
-  "en": ""
- },
- {
-  "vi": "Ảnh",
-  "en": ""
- },
- {
-  "vi": "🏡 Ở quê",
-  "en": ""
- },
- {
-  "vi": "Tay không",
   "en": ""
  }
 ]
