@@ -143,42 +143,48 @@ export function firstAmount(mode,max){
   if(!(max>=1))return 0;
   return mode==='draw'?Math.max(1,Math.floor(max/4)):Math.min(max,50);
 }
-/** One place's move, from the public state: {mode, open, max, n, fund, draw, invest, cash, bank}. Rút về ví is one tap
- * (the most the fund can give, as before 1.9.20); only Góp vốn opens a typed amount, when it is tapped (player feedback
- * 08/10 "cho góp vốn bên cạnh chỗ rút thôi"). `cash`/`bank`: what Góp vốn would take from the wallet and from the account. */
+/** One place's move, from the public state: {mode, open, max, n, fund, draw, invest, cash, bank}. 👛 Rút về ví is one
+ * tap for the most the fund can give (player feedback 08/10 "cho góp vốn bên cạnh chỗ rút thôi"); ✏️ Rút số khác and
+ * 📈 Góp vốn open a typed amount when tapped (feedback #285/#287: "không muốn rút hết tiền"). `cash`/`bank`: what Góp
+ * vốn would take from the wallet and from the account. */
 export function fundMove(state,cid){
   const j=state?.journey||{},p=j.places?.[cid]||{};
   const fund=num(p.fund),draw=Math.max(0,Math.floor(num(p.withdraw_max))),invest=investMax(state);
-  const mode=MOVE.mode[cid]==='invest'?'invest':'draw';
+  const chosen=MOVE.mode[cid];
+  const mode=chosen==='invest'?'invest':'draw';
   const max=mode==='draw'?draw:invest;
   const typed=MOVE.amt[`${cid}:${mode}`];
   const n=max<1?0:Math.min(max,Math.max(1,Math.round(num(typed??firstAmount(mode,max)))));
   const cash=mode==='invest'?Math.min(Math.max(0,num(j.wallet)),n):0;
-  return {mode,open:mode==='invest',max,n,fund,draw,invest,cash,bank:mode==='invest'?n-cash:0,debt:num(j.wallet)<0};
+  return {mode,open:chosen==='draw'||chosen==='invest',max,n,fund,draw,invest,cash,bank:mode==='invest'?n-cash:0,debt:num(j.wallet)<0};
 }
-/** The block under a workplace fund: 👛 Rút về ví · tối đa X (one tap, then a confirm) and 📈 Góp vốn beside it; Góp vốn
- * opens its amount below, tapped again it folds. */
+/** The block under a workplace fund: 👛 Rút về ví · tối đa X (one tap, then a confirm) and 📈 Góp vốn beside it,
+ * ✏️ Rút số khác under them; Góp vốn and Rút số khác open their amount below, tapped again they fold. */
 export function fundMoveHTML(state,cid){
-  const M=fundMove(state,cid),c=esc(cid);
+  const M=fundMove(state,cid),c=esc(cid),inv=M.open&&M.mode==='invest',dr=M.open&&M.mode==='draw';
   const draw=M.draw>=1?`<button type="button" class="btn small primary wl-draw" data-action="wlDraw" data-career="${c}" data-amount="${M.draw}">👛 Rút về ví · tối đa ${xu(M.draw)}</button>`
     :`<p class="wl-why">Chưa rút được: quỹ phải giữ 80 xu dự phòng và đủ tiền hóa đơn chưa trả.</p>`;
-  const tabs=`<div class="wl-tabs">${draw}<button type="button" class="wl-tab${M.open?' on':''}" data-action="wlMode" data-quick data-career="${c}" data-mode="invest" data-fold="1" aria-pressed="${M.open}">📈 Góp vốn</button></div>`;
-  if(!M.open)return `<div class="wl-move" data-wl-move="${c}">${tabs}</div>`;
+  const tabs=`<div class="wl-tabs">${draw}<button type="button" class="wl-tab${inv?' on':''}" data-action="wlMode" data-quick data-career="${c}" data-mode="invest" data-fold="1" aria-pressed="${inv}">📈 Góp vốn</button></div>`;
+  const more=M.draw>=2?`<button type="button" class="wl-more${dr?' on':''}" data-action="wlMode" data-quick data-career="${c}" data-mode="draw" data-fold="1" aria-pressed="${dr}">✏️ Rút số khác</button>`:'';
+  if(!M.open)return `<div class="wl-move" data-wl-move="${c}">${tabs}${more}</div>`;
   let body;
   if(M.max<1){
-    body=`<p class="wl-why">${M.debt?'Ví đang nợ. Trả nợ trước rồi góp vốn nhé.':'Ví và tài khoản ngân hàng đang trống, chưa có tiền để góp.'}</p>`;
+    body=`<p class="wl-why">${M.mode==='draw'?'Chưa rút được: quỹ phải giữ 80 xu dự phòng và đủ tiền hóa đơn chưa trả.'
+      :M.debt?'Ví đang nợ. Trả nợ trước rồi góp vốn nhé.':'Ví và tài khoản ngân hàng đang trống, chưa có tiền để góp.'}</p>`;
   }else{
     const step=(by,label,aria)=>`<button type="button" class="btn ghost small wl-st" data-action="wlAmt" data-quick data-career="${c}" data-n="${M.n+by}" aria-label="${aria}"${(by<0?M.n<=1:M.n>=M.max)?' disabled':''}>${label}</button>`;
-    const box=qtyBox({value:M.n,min:1,max:M.max,money:true,live:true,label:'Số xu góp vốn',
+    const box=qtyBox({value:M.n,min:1,max:M.max,money:true,live:true,label:dr?'Số xu rút về ví':'Số xu góp vốn',
       go:`data-action="wlAmt" data-quick data-career="${c}" data-n="${QTY}"`,attrs:`id="wl-amt-${c}"`});
     const chips=[[25,'25%'],[50,'50%'],[100,'Tất cả']].map(([pc,l])=>{const v=Math.max(1,Math.floor(M.max*pc/100));
       return `<button type="button" class="wl-chip${v===M.n?' on':''}" data-action="wlAmt" data-quick data-career="${c}" data-n="${v}" aria-pressed="${v===M.n}">${l}</button>`;}).join('');
     const from=!M.bank?`lấy ${xu(M.cash)} từ ví`:M.cash?`lấy ${xu(M.cash)} từ ví, ${xu(M.bank)} từ tài khoản ngân hàng`:`lấy ${xu(M.bank)} từ tài khoản ngân hàng`;
+    const after=dr?`Quỹ còn lại <b>${xu(M.fund-M.n)}</b>`:`Quỹ thành <b>${xu(M.fund+M.n)}</b> · ${from}`;
     body=`<div class="wl-amount">${step(-STEP,'−','Bớt 10 xu')}${box}${step(STEP,'+','Thêm 10 xu')}<small class="wl-of">tối đa ${xu(M.max)}</small></div>
-      <div class="wl-chips">${chips}</div><p class="wl-after">Quỹ thành <b>${xu(M.fund+M.n)}</b> · ${from}</p>
-      <button type="button" class="btn small cream wl-go" data-action="wlInvest" data-career="${c}" data-amount="${M.n}">Góp ${xu(M.n)} vào quỹ</button>`;
+      <div class="wl-chips">${chips}</div><p class="wl-after">${after}</p>
+      ${dr?`<button type="button" class="btn small primary wl-go" data-action="wlDraw" data-typed="1" data-career="${c}" data-amount="${M.n}">Rút ${xu(M.n)} về ví</button>`
+        :`<button type="button" class="btn small cream wl-go" data-action="wlInvest" data-career="${c}" data-amount="${M.n}">Góp ${xu(M.n)} vào quỹ</button>`}`;
   }
-  return `<div class="wl-move open" data-wl-move="${c}">${tabs}${body}</div>`;
+  return `<div class="wl-move open" data-wl-move="${c}">${tabs}${more}${body}</div>`;
 }
 
 /* ---------------------------------------------------------------- joint fund + actions (browser only) */
@@ -197,33 +203,37 @@ export async function loadJoint(env,force=false){
   if(env.ui.view==='money'&&document.getElementById('sheet')?.open)env.renderSheet();
 }
 
-/** 'wlMode' / 'wlAmt' (page only, data-quick: they work while a command is on the wire): open or fold Góp vốn, set its
- * amount (the − / + buttons, the chips and the typed box). 'wlDraw': the most the fund can give, one tap and a confirm.
- * 'wlInvest': the amount in the box (or the button's), after a confirm. */
+/** 'wlMode' / 'wlAmt' (page only, data-quick: they work while a command is on the wire): open or fold Rút số khác /
+ * Góp vốn, set its amount (the − / + buttons, the chips and the typed box). 'wlDraw': one tap for the most the fund can
+ * give, or (data-typed) the typed amount, after a confirm. 'wlInvest': the typed amount, after a confirm. */
 export const WEALTH_ACTIONS=['wlMode','wlAmt','wlDraw','wlInvest'];
 export async function wealthAction(action,data,el,env){
   if(!WEALTH_ACTIONS.includes(action))return false;
   const cid=data.career,state=env.api?.state;
   if(!cid||!state?.journey?.places?.[cid])return true;
   if(action==='wlMode'){
-    if(MOVE.mode[cid]==='invest')delete MOVE.mode[cid];else MOVE.mode[cid]='invest';
+    const mode=data.mode==='draw'?'draw':'invest';
+    if(MOVE.mode[cid]===mode)delete MOVE.mode[cid];else MOVE.mode[cid]=mode;
     env.renderSheet();return true;
   }
   const M=fundMove(state,cid);
   if(action==='wlAmt'){
-    if(M.open&&M.max>=1)MOVE.amt[`${cid}:invest`]=Math.min(M.max,Math.max(1,Math.round(num(data.n))));
+    if(M.open&&M.max>=1)MOVE.amt[`${cid}:${M.mode}`]=Math.min(M.max,Math.max(1,Math.round(num(data.n))));
     env.renderSheet();return true;
   }
   const name=env.placeName?.(cid)||cid;
   if(action==='wlDraw'){
-    const amount=Math.min(M.draw,Math.round(num(data.amount))||M.draw);
+    const typed=Boolean(data.typed)&&M.open&&M.mode==='draw';
+    const box=typed?globalThis.document?.getElementById?.(`wl-amt-${cid}`):null;
+    const amount=Math.min(M.draw,Math.max(0,Math.round((typed&&qtyVal(box))||num(data.amount)||M.draw)));
     if(!Number.isInteger(amount)||amount<1)return true;
     if(!await env.confirmAction(`Rút ${fmt(amount)} xu về ví?`,
       `Từ quỹ ${name}: quỹ còn lại ${fmt(M.fund-amount)} xu để nhập hàng, trả lương và hóa đơn. Rút nhầm thì bấm Góp vốn để bỏ lại vào quỹ.`,
       `Rút · ${fmt(amount)} xu`))return true;
-    await env.cmd('jr_withdraw',{career:cid,amount});
+    const r=await env.cmd('jr_withdraw',{career:cid,amount});
+    if(r)delete MOVE.amt[`${cid}:draw`];
   }else{
-    if(!M.open)return true;
+    if(!M.open||M.mode!=='invest')return true;
     const box=globalThis.document?.getElementById?.(`wl-amt-${cid}`);
     const amount=Math.min(M.max,Math.max(0,Math.round(qtyVal(box)||num(data.amount))));
     if(!Number.isInteger(amount)||amount<1)return true;

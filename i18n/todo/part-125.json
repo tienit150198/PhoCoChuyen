@@ -1,5 +1,25 @@
 [
  {
+  "vi": "$1 chui qua chắn, đứng giữa ray",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 Cách này không ăn thua.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2: được một nửa rồi, thêm chút nữa!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn kéo $1 ra sau vạch dừng, ghi tên vào sổ người vượt chắn.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Tàu $1 gần sát mới hạ chắn, xe phanh rít cả dãy.",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "Ví của bạn chưa đủ $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏦 $1 vừa gửi $2 xu vào quỹ chung. Quỹ giờ có $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã gửi $1 xu vào quỹ chung. Quỹ giờ có $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏦 $1 vừa rút $2 xu từ quỹ chung. Quỹ còn $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã rút $1 xu về ví. Quỹ chung còn $2 xu.",
   "en": "",
   "pattern": true
  }

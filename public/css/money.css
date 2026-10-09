@@ -52,6 +52,8 @@ body.reduce-motion .mn-chip.mn-bump{animation:none}
 .wl-tab{min-height:40px;padding:6px 10px;border-radius:12px;border:1.5px solid var(--line-strong);background:var(--surface);font-size:.867rem;font-weight:700;color:var(--ink-2);white-space:nowrap}
 .wl-tabs .wl-draw{min-height:40px;width:100%;white-space:normal;line-height:1.2}
 .wl-tabs>.wl-why{align-self:center}
+.wl-more{align-self:flex-start;min-height:36px;padding:4px 12px;border-radius:999px;border:1px dashed var(--line-strong);background:transparent;font-size:.867rem;font-weight:700;color:var(--ink-2)}
+.wl-more.on{border-style:solid;border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text)}
 .wl-tab.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text)}
 @media (hover:hover){.wl-tab:not(.on):hover{background:var(--surface-2)}}
 .wl-amount{display:flex;flex-wrap:wrap;align-items:center;gap:6px}

@@ -1,5 +1,17 @@
 [
  {
+  "vi": "🚪 Vào phòng bày trí",
+  "en": ""
+ },
+ {
+  "vi": "đang mặc",
+  "en": ""
+ },
+ {
+  "vi": "trong tủ đồ",
+  "en": ""
+ },
+ {
   "vi": "có sẵn",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Chưa xếp được.",
-  "en": ""
- },
- {
-  "vi": "Link thưởng không phát được.",
-  "en": ""
- },
- {
-  "vi": "Chưa tặng được.",
-  "en": ""
- },
- {
-  "vi": "Máy này chỉ nghe được. Mở bằng Safari/Chrome để hát trực tiếp nhé.",
   "en": ""
  }
 ]

@@ -1244,6 +1244,10 @@
   "en": ""
  },
  {
+  "vi": "✏️ Không muốn rút hết: bấm [[Rút số khác]] ngay dưới, gõ số xu hoặc bấm 25%, 50% rồi bấm Rút.",
+  "en": ""
+ },
+ {
   "vi": "🔒 Quỹ luôn phải giữ lại 80 xu và đủ tiền các hóa đơn chưa trả. Rút được tối đa = quỹ − 80 − hóa đơn chưa trả.",
   "en": ""
  },
@@ -1545,10 +1549,6 @@
  },
  {
   "vi": "💳 Tab Thẻ, bấm [[Nộp hồ sơ mở thẻ]]. Cần điểm tín dụng từ 580 và thu nhập đều: ít nhất 3 ngày có lương hoặc tiền lời rút về ví trong 14 ngày.",
-  "en": ""
- },
- {
-  "vi": "🛍️ Thẻ dùng để trả học phí, đi cửa sau, mua nhẫn và lo cưới. Chọn cách trả mặc định ở mục “Khi mua sắm cá nhân”.",
   "en": ""
  }
 ]

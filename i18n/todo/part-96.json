@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Quà này dành cho lúc đi dự tiệc cưới nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã nhận quà đi đám cưới rồi nha.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu quà đám cưới không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh này đã lưu hoặc hết hạn.",
+  "en": ""
+ },
+ {
   "vi": "Hội chợ giờ là Chợ đen! Vào phải nộp bảo kê 10.000 xu mỗi ngày, không nộp thì coi chừng bị trấn lột",
   "en": ""
  },
@@ -1169,18 +1185,6 @@
  },
  {
   "vi": "Khách kiên nhẫn hơn một chút.",
-  "en": ""
- },
- {
-  "vi": "Tiền đền nhẹ hơn.",
-  "en": ""
- },
- {
-  "vi": "Nhập hàng, mua sắm, gửi rút tiền: Ví và Quỹ tiệm luôn hiện ở góc trên, thiếu bao nhiêu ghi rõ.",
-  "en": ""
- },
- {
-  "vi": "Hàng giao thiếu: bấm “Khiếu nại phần thiếu” ngay trong Kho để được hoàn tiền.",
   "en": ""
  }
 ]

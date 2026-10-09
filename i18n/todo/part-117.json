@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Ảnh",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Ở quê",
+  "en": ""
+ },
+ {
+  "vi": "Tay không",
+  "en": ""
+ },
+ {
   "vi": "🛍️ Mua đồ chơi",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "📌 Đã ghim: món này không bị kéo nhầm nữa.",
-  "en": ""
- },
- {
-  "vi": "Đã bỏ ghim: kéo để dời được rồi.",
-  "en": ""
- },
- {
-  "vi": "Món này đang ở trên cùng rồi.",
-  "en": ""
- },
- {
-  "vi": "Món này đang ở dưới cùng rồi.",
   "en": ""
  }
 ]

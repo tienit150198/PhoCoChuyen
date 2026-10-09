@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Lau ống kính, chụp thử rồi mở tiệm nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Buồng chụp đang trống",
+  "en": ""
+ },
+ {
+  "vi": "Mời thêm một nhóm khách",
+  "en": ""
+ },
+ {
   "vi": "Mời nhóm khách tiếp theo",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Tiền của bạn: bấm 🏪 Quỹ hoặc 👛 Ví để xem hết.",
-  "en": ""
- },
- {
-  "vi": "Giờ trong game ở đây. Tới giờ đóng cửa thì khép ca.",
-  "en": ""
- },
- {
-  "vi": "Xong việc? Bấm đây (hoặc đi ra cửa) để khép ca.",
-  "en": ""
- },
- {
-  "vi": "Khu phố của bạn: một đời, nhiều nghề.",
   "en": ""
  }
 ]

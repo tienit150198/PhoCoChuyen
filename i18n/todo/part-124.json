@@ -1,5 +1,25 @@
 [
  {
+  "vi": "🛏️ Đẩy giường sang phòng thủ thuật, bàn giao hồ sơ. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Dặn: $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔁 $1 nhắc lại được những điều bạn dặn, rồi hỏi: “Còn $2 thì sao cô?”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔁 $1 nhắc lại đủ từng điều. Người nhà ghi vào điện thoại.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Về nhà không biết $1.",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "👀 Nhìn hai phía đường ngang: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 chui qua chắn, đứng giữa ray",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 Cách này không ăn thua.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2: được một nửa rồi, thêm chút nữa!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn kéo $1 ra sau vạch dừng, ghi tên vào sổ người vượt chắn.",
   "en": "",
   "pattern": true
  }

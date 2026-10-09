@@ -1,5 +1,25 @@
 [
  {
+  "vi": "🏦 $1 vừa gửi $2 xu vào quỹ chung. Quỹ giờ có $3 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã gửi $1 xu vào quỹ chung. Quỹ giờ có $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏦 $1 vừa rút $2 xu từ quỹ chung. Quỹ còn $3 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã rút $1 xu về ví. Quỹ chung còn $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Cho $1 mượn",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "Xả stress: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Góp giúp: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Buồn quá tiêu tiền: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ký túc xá: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền thuốc: $1",
   "en": "",
   "pattern": true
  }

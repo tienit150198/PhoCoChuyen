@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Đám cưới",
+  "en": ""
+ },
+ {
+  "vi": "người ở đây",
+  "en": ""
+ },
+ {
+  "vi": "người đang dạo",
+  "en": ""
+ },
+ {
   "vi": "📜 Lời chúc",
   "en": ""
  },
@@ -280,11 +292,23 @@
   "en": ""
  },
  {
+  "vi": "✏️ Rút số khác",
+  "en": ""
+ },
+ {
   "vi": "Ví và tài khoản ngân hàng đang trống, chưa có tiền để góp.",
   "en": ""
  },
  {
+  "vi": "Số xu rút về ví",
+  "en": ""
+ },
+ {
   "vi": "Số xu góp vốn",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ còn lại",
   "en": ""
  },
  {
@@ -1889,36 +1913,6 @@
  },
  {
   "vi": "$1 tài khoản",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 người · $2 nhóm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 người mới 30 ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "# Phố Có Chuyện — Tổng quan đầu tư · số liệu lúc $1 (giờ Việt Nam, UTC+7) · phiên bản $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "# Ô dưới $1 người được ghi \"<$2\"; tỉ lệ trên dưới $3 người để trống. Không có dữ liệu cá nhân.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1/$2 lượt chơi",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giọng nói: $1 $2: $3. Cách nói: $4. Nhịp mẫu (không chép): \"$5\"",
   "en": "",
   "pattern": true
  }

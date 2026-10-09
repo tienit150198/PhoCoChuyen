@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Giọng tổng đài",
+  "en": ""
+ },
+ {
+  "vi": "nói nhanh khó nghe",
+  "en": ""
+ },
+ {
+  "vi": "bạn tổng đài nói nhanh quá, nghe không kịp",
+  "en": ""
+ },
+ {
+  "vi": "đọc kịch bản như máy, không nghe mình nói",
+  "en": ""
+ },
+ {
   "vi": "giọng tổng đài rõ ràng, nói chậm vừa phải",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Tôi vẫn giữ nguyên số sao để ghi nhận thiện chí.",
-  "en": ""
- },
- {
-  "vi": "Gia đình xin trừ một sao.",
-  "en": ""
- },
- {
-  "vi": "Gia đình vẫn giữ nguyên đánh giá.",
-  "en": ""
- },
- {
-  "vi": "{Praise}. {Line}. Vậy thôi.",
-  "en": ""
- },
- {
-  "vi": "{Line}. Vậy đó. {Praise}, nhưng tôi nhớ chuyện kia hơn.",
   "en": ""
  }
 ]

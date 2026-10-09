@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Đã bỏ ghim: kéo để dời được rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Món này đang ở trên cùng rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Món này đang ở dưới cùng rồi.",
+  "en": ""
+ },
+ {
   "vi": "Cất hết đồ vào túi?",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Chụp ảnh chung",
-  "en": ""
- },
- {
-  "vi": "Đám cưới",
-  "en": ""
- },
- {
-  "vi": "người ở đây",
-  "en": ""
- },
- {
-  "vi": "người đang dạo",
   "en": ""
  }
 ]

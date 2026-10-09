@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Chặt chém xong trả lại có $1 xu, coi như bố thí à?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 ném lại câu “bố thí à?” rồi bỏ đi kể khắp ngõ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nghe giải thích một hồi, lẩm bẩm “thôi kệ” rồi về.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Giải thích cái gì, chặt chém thì nhận đi!” Ông Lộc lắc đầu.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Thợ thông cống chặt chém $1 rồi không chịu trả lại. Ai gọi thì cẩn thận.",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "Kinh nghiệm: ít nhất $1 năm $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kỹ năng bắt buộc: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bắt buộc có $1 (kèm bản sao).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khung lương: $1–$2 xu/tháng (cao hơn thì thương lượng).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lọc hồ sơ: $1",
   "en": "",
   "pattern": true
  }

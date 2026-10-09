@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Gia đình xin trừ một sao.",
+  "en": ""
+ },
+ {
+  "vi": "Gia đình vẫn giữ nguyên đánh giá.",
+  "en": ""
+ },
+ {
+  "vi": "{Praise}. {Line}. Vậy thôi.",
+  "en": ""
+ },
+ {
+  "vi": "{Line}. Vậy đó. {Praise}, nhưng tôi nhớ chuyện kia hơn.",
+  "en": ""
+ },
+ {
   "vi": "{Line}, nên 5 sao, khỏi bàn.",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Học lái máy bay",
-  "en": ""
- },
- {
-  "vi": "Mạnh Thường Quân",
-  "en": ""
- },
- {
-  "vi": "Tài trợ 100.000 xu",
-  "en": ""
- },
- {
-  "vi": "Người thắp sáng phố",
-  "en": ""
- },
- {
-  "vi": "Bắn pháo hoa",
   "en": ""
  }
 ]

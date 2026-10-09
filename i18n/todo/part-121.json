@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Dạ cháu tự ghi mình vào sổ “cần cố gắng” mục $1 rồi ạ 😅 Ca sau cháu bù ngay.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ sổ khoa ghi $1 ạ. Chắc lúc đó $2 đang ngủ say nên không nghe cháu gọi 😌",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ, phiếu chăm sóc ghi: $1. Cháu gửi để $2 và gia đình xem lại cho yên tâm ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cháu xin lỗi $1 về $2. Từ ca sau cháu báo trước từng việc rồi mới làm ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Cảm ơn $1 đã phản ánh. Bên phường đã ghi vào sổ tiếp dân ạ.",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "$1 cầm $2 xu: “Thôi được, lần sau nói giá cho thật.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chặt chém xong trả lại có $1 xu, coi như bố thí à?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 ném lại câu “bố thí à?” rồi bỏ đi kể khắp ngõ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nghe giải thích một hồi, lẩm bẩm “thôi kệ” rồi về.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Giải thích cái gì, chặt chém thì nhận đi!” Ông Lộc lắc đầu.",
   "en": "",
   "pattern": true
  }

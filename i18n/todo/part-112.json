@@ -1,5 +1,17 @@
 [
  {
+  "vi": "💬 Trò chuyện",
+  "en": ""
+ },
+ {
+  "vi": "💬 Nhắn hỏi thăm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có kỷ niệm nào. Hỏi thăm một câu là bắt đầu.",
+  "en": ""
+ },
+ {
   "vi": "Sở thích",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "📸 Chụp!",
-  "en": ""
- },
- {
-  "vi": "✋ Sẵn sàng (đã có vé)",
-  "en": ""
- },
- {
-  "vi": "✋ Sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "Đang chụp, chờ lượt sau nha.",
   "en": ""
  }
 ]

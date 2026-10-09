@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Kỹ năng bắt buộc: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bắt buộc có $1 (kèm bản sao).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khung lương: $1–$2 xu/tháng (cao hơn thì thương lượng).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lọc hồ sơ: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Chị Huyền đặt chồng hồ sơ lên bàn: “Vị trí $1 có $2 bạn nộp. Em lọc giúp chị nhé.”",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "Chuẩn bị và chuyển người bệnh đi $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛏️ Đẩy giường sang phòng thủ thuật, bàn giao hồ sơ. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Dặn: $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔁 $1 nhắc lại được những điều bạn dặn, rồi hỏi: “Còn $2 thì sao cô?”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔁 $1 nhắc lại đủ từng điều. Người nhà ghi vào điện thoại.",
   "en": "",
   "pattern": true
  }

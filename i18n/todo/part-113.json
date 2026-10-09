@@ -1,5 +1,17 @@
 [
  {
+  "vi": "✋ Sẵn sàng (đã có vé)",
+  "en": ""
+ },
+ {
+  "vi": "✋ Sẵn sàng",
+  "en": ""
+ },
+ {
+  "vi": "Đang chụp, chờ lượt sau nha.",
+  "en": ""
+ },
+ {
   "vi": "Mọi người sẵn sàng rồi!",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "🙂 Bạn",
-  "en": ""
- },
- {
-  "vi": "⏯️ Rải chậm",
-  "en": ""
- },
- {
-  "vi": "⏩ Rải nhanh",
-  "en": ""
- },
- {
-  "vi": "Chắc chưa? Bỏ ván",
   "en": ""
  }
 ]

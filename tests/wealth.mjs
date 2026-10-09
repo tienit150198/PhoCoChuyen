@@ -130,6 +130,39 @@ assert.match(html,/Chưa rút được: quỹ phải giữ 80 xu/);assert.doesNo
   assert.equal(sent.length,0,'no confirm, no command');
   assert.ok(renders>=4);
 }
+// Feedback #285/#287 ("không muốn rút hết tiền"): ✏️ Rút số khác under the one-tap button opens a typed amount.
+html=fundMoveHTML(rich,'florist');
+assert.match(html,/📈 Góp vốn<\/button><\/div><button type="button" class="wl-more" data-action="wlMode" data-quick data-career="florist" data-mode="draw" data-fold="1" aria-pressed="false">✏️ Rút số khác<\/button><\/div>$/);
+assert.doesNotMatch(fundMoveHTML({journey:{story:true,wallet:5,places:{g:{fund:81,withdraw_max:1}}}},'g'),/Rút số khác/,'1 xu: the one tap is enough');
+MOVE.mode.florist='draw';
+mv=fundMove(rich,'florist');assert.deepEqual([mv.mode,mv.open,mv.max,mv.n],['draw',true,320,80]);
+html=fundMoveHTML(rich,'florist');
+assert.match(html,/class="wl-move open"[^]*data-amount="320">👛 Rút về ví · tối đa 320 xu[^]*aria-pressed="false">📈 Góp vốn[^]*class="wl-more on"[^]*aria-pressed="true">✏️ Rút số khác/);
+assert.match(html,/data-n="80" aria-pressed="true">25%<\/button>.*data-n="160" aria-pressed="false">50%<\/button>.*data-n="320" aria-pressed="false">Tất cả<\/button>/s);
+assert.match(html,/Quỹ còn lại <b>420 xu<\/b>/);
+assert.match(html,/data-action="wlDraw" data-typed="1" data-career="florist" data-amount="80">Rút 80 xu về ví/);
+assert.doesNotMatch(html,/wlInvest/);
+{
+  const sent=[],asked=[];
+  const env={api:{state:rich},renderSheet:()=>{},placeName:()=>'Tiệm hoa Mây',
+    confirmAction:async(t,m)=>{asked.push([t,m]);return true;},cmd:async(c,p)=>{sent.push([c,p]);return {};}};
+  await wealthAction('wlAmt',{career:'florist',n:'150'},null,env);
+  assert.equal(MOVE.amt['florist:draw'],150);
+  await wealthAction('wlDraw',{career:'florist',amount:'150',typed:'1'},null,env);
+  assert.deepEqual(sent.pop(),['jr_withdraw',{career:'florist',amount:150}]);
+  assert.match(asked.pop()[1],/quỹ còn lại 350 xu/);
+  assert.equal(MOVE.amt['florist:draw'],undefined);
+  await wealthAction('wlDraw',{career:'florist',amount:'320'},null,env);   // the one-tap button still draws the most
+  assert.deepEqual(sent.pop(),['jr_withdraw',{career:'florist',amount:320}]);
+  await wealthAction('wlInvest',{career:'florist',amount:'50'},null,env);
+  assert.equal(sent.length,0,'Góp vốn not open: nothing sent');
+  await wealthAction('wlMode',{career:'florist',mode:'invest',fold:'1'},null,env);
+  assert.equal(MOVE.mode.florist,'invest','Góp vốn takes the place of Rút số khác');
+  await wealthAction('wlMode',{career:'florist',mode:'draw',fold:'1'},null,env);
+  assert.equal(MOVE.mode.florist,'draw');
+  await wealthAction('wlMode',{career:'florist',mode:'draw',fold:'1'},null,env);
+  assert.equal(MOVE.mode.florist,undefined,'tapped again: folded');
+}
 html=wealthHTML(rich,{joint:300,current:'milk_tea',place});
 for(const a of ['data-action="stView" data-view="wallet"','data-action="bank"','data-action="house"','data-action="marriage"'])assert.ok(html.includes(a),a);
 // Feedback #110: a real button into Ngân hàng Phố on the bank's first row, not only a small header link.

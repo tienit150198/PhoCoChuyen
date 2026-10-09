@@ -970,6 +970,11 @@
   "pattern": true
  },
  {
+  "vi": "Rút $1 về ví",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Góp $1 vào quỹ",
   "en": "",
   "pattern": true

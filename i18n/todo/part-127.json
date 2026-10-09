@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Góp giúp: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Buồn quá tiêu tiền: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ký túc xá: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiền thuốc: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1: mất $2 xu.",
   "en": "",
   "pattern": true
