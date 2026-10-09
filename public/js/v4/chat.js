@@ -453,6 +453,8 @@ function rich(t){
 const text=m=>m.adm?rich(m.text):lines(m.text);
 const badge=m=>m.adm?'<em class="ch-adm">📢 Quản trị</em>':'';
 
+/** 🏅 Title chips in a DM header: one (+N) in a narrow chat, two from 520 px; the rest open on a tap. */
+const headMax=()=>((S.dlg?.clientWidth||window.innerWidth)>=520?2:1);
 /** 🏅 A DM peer's titles: the `tt` of their newest message in the open chat (null when none). */
 function peerTitles(pid){
   const L=pid&&S.thread?thread(S.thread).msgs:null;if(!L)return null;
@@ -469,12 +471,13 @@ function head(){
     const c=live.chan(S.thread),grp=c?.kind==='group'||S.thread.startsWith('g:');
     const peer=c?.peer||live.friend(S.thread.slice(3).split(':').find(p=>p!==me()))||{};
     const title=grp?esc(c?.title||'Nhóm'):esc(peer.name||'Bạn bè');
-    const ptt=grp?null:peerTitles(peer.pid||S.thread.slice(3).split(':').find(p=>p!==me())),hon=ptt?`<button type="button" class="hn-btn hn-head" data-ch-act="honours" data-id="peer" aria-expanded="${S.honFor==='peer'}">${hnChips(S.env?.api,ptt,inlineMax())}</button>`:'';
-    const sub=(grp?`${c?.n||''} người`:peer.on?'Đang online':'')+hon;
+    const ptt=grp?null:peerTitles(peer.pid||S.thread.slice(3).split(':').find(p=>p!==me())),hon=ptt?`<button type="button" class="hn-btn hn-head" data-ch-act="honours" data-id="peer" aria-expanded="${S.honFor==='peer'}">${hnChips(S.env?.api,ptt,headMax())}</button>`:'';
+    const sub=grp?`${c?.n||''} người`:peer.on?'Đang online':'',line=sub||hon?`<div class="ch-sub">${sub?`<small>${sub}</small>`:''}${hon}</div>`:'';
     const q=live.quiet(c),bell=c?`<button type="button" class="icon-btn ch-bell${q?' off':''}" data-ch-act="notifyMenu" aria-expanded="${Boolean(S.notifyOpen)}" aria-label="Thông báo: ${q?'Tắt':'Bật'}" title="Thông báo: ${q?'Tắt':'Bật'}"><span aria-hidden="true">${q?'🔕':'🔔'}</span></button>`:'';
     const more=(!grp&&peer.pid?`<button type="button" class="ch-mini" data-ch-act="workvisit" data-pid="${esc(peer.pid)}">Ghé chỗ làm</button>`:'')+bell+(grp?`<button type="button" class="icon-btn" data-ch-act="members" aria-label="Thành viên">${icon('people',19)}</button>`:
       (peer.pid?`<button type="button" class="ch-mini${S.confirm==='block:'+peer.pid?' warn':''}" data-ch-act="block" data-pid="${esc(peer.pid)}">${S.confirm==='block:'+peer.pid?'Chặn thật?':'Chặn'}</button>`:''));
-    return `${back}${grp?av('👥','md'):`<span class="ch-av-wrap">${av(peer,'md')}${dot(peer.on)}</span>`}<div class="grow ch-title"><h2 data-no-translate>${title}</h2>${sub?`<small>${sub}</small>`:''}</div>${more}${x}`;
+    // name + status/titles keep their room; the actions wrap to a second row when they do not fit, ✕ stays top right
+    return `<div class="ch-hd${grp?' grp':''}">${back}${grp?av('👥','md'):`<span class="ch-av-wrap">${av(peer,'md')}${dot(peer.on)}</span>`}<div class="ch-title"><h2 data-no-translate title="${title}">${title}</h2>${line}</div>${more?`<div class="ch-acts">${more}</div>`:''}${x.replace('class="icon-btn"','class="icon-btn ch-x"')}</div>`;
   }
   const n=live.unread(),on=live.friends.filter(f=>f.on).length;
   const date=live.flags.dating?`<button type="button" class="icon-btn ch-date" data-ch-act="date" aria-label="Góc hẹn hò" title="Góc hẹn hò">${icon('heart',19)}</button>`:'';   // 💕 v4/dating.js

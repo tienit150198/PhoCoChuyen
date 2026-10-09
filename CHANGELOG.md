@@ -1,3 +1,7 @@
+# Chưa phát hành — chat-head (không có Có gì mới)
+
+💬 Đầu khung nhắn riêng hết vỡ (chủ game 10/10 "UI lỗi nè"): tên không còn bị cắt nửa trên, danh hiệu không còn thành cột chip 1 chữ và "+N" không còn đè lên tin nhắn (đầu khung bị co lại khi cuộc trò chuyện dài; giờ giữ nguyên chiều cao). Tên một dòng, dưới là "Đang online" + 1 danh hiệu (2 khi khung ≥ 520 px) + "+N" ngay trong đầu khung, bấm mở hết; "Ghé chỗ làm", 🔔, "Chặn" xuống hàng riêng khi không đủ chỗ, ✕ luôn ở góc phải. Nhóm và Cả phố cũng không bị co.
+
 # v1.9.40 — 2026-10-10
 
 Gồm couple-race (khóa quỹ chung khi ly hôn/rút, hold thẻ chung chốt cùng save, quà tặng không cộng hai lần), mishap kiểu thug/police lấy quỹ tiệm + sweeper theo dấu tiền + bảng tài phú cập nhật, hoa hồng tiệm quần áo nước ngoài 40–50 %, thẻ nhập hàng gọn (kho-compact). Không có Có gì mới.

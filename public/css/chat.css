@@ -16,11 +16,25 @@ html[data-layout="phone"] .stage:has(.live-fab:not([hidden])) .scene-heading{max
 .sheet.chat-sheet{width:min(460px,calc(100vw - 48px));height:min(760px,calc(100dvh - 48px));overflow:hidden}
 html[data-layout="phone"] .sheet.chat-sheet{width:100%;max-width:100%;height:calc(100dvh - max(10px,var(--safe-t)));max-height:none}
 .ch-root{display:flex;flex-direction:column;height:100%;min-height:0}
-.ch-head{display:flex;align-items:center;gap:8px;padding:10px 10px 8px 12px;border-bottom:1px solid var(--line);min-height:58px}
+.ch-head{flex:none;display:flex;align-items:center;gap:8px;padding:10px 10px 8px 12px;border-bottom:1px solid var(--line);min-height:58px}   /* never squeezed by a long thread */
 html[data-layout="phone"] .ch-head{padding-top:14px}
 .ch-head h2{margin:0;font-size:1.05rem;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ch-head .grow{flex:1 1 auto;min-width:0}
 .ch-title small{display:block;color:var(--muted);font-size:.75rem}
+/* an open chat (DM, group): name and status keep their room; the actions wrap to a second row; ✕ stays top right */
+.ch-hd{position:relative;flex:1 1 auto;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2);padding-right:50px}
+.ch-hd>.ch-x{position:absolute;top:0;right:0}
+.ch-hd>.ch-title{flex:1 1 180px;min-width:0}   /* below this the actions take a row of their own */
+.ch-hd.grp>.ch-title{flex-basis:80px}
+.ch-hd h2{display:block;max-width:100%}
+.ch-sub{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;min-width:0;min-height:20px;overflow:hidden;white-space:nowrap}
+.ch-sub>small{flex:none}
+.ch-sub>.hn-head{flex:0 1 auto;min-width:0;margin:0;padding:0;flex-wrap:nowrap}
+.hn-head .hn-chips{flex-wrap:nowrap;min-width:0}
+.hn-head .hn-chip{flex:0 1 auto;min-width:0}
+.hn-head .hn-chip.hn-more{flex:none}
+.ch-acts{display:flex;align-items:center;gap:6px;flex:none;max-width:100%}
+.ch-acts .ch-mini{min-height:var(--btn-h-sm)}
 .ch-back-ico{transform:rotate(180deg)}
 .ch-tabs{display:flex;gap:4px;padding:3px;border-radius:var(--radius-pill);background:var(--surface-2)}
 .ch-tabs button{flex:1 1 0;position:relative;display:flex;align-items:center;justify-content:center;gap:5px;min-height:38px;padding:0 8px;border-radius:var(--radius-pill);
@@ -208,5 +222,3 @@ button.ch-friend-action:focus-visible{outline:2px solid var(--accent);outline-of
 .ch-reply-compose>.ch-mini{flex:none;min-height:40px;white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.live-fab,.ch-switch i,.ch-switch i::after{transition:none}}
 
-/* Keep the conversation name readable above secondary actions on narrow screens. */
-@media(max-width:480px){.ch-head:has(>[data-ch-act="workvisit"]){flex-wrap:wrap}.ch-head>[data-ch-act="workvisit"]{order:1;flex-basis:100%;justify-content:center}}
