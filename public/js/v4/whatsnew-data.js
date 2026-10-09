@@ -2,7 +2,8 @@
  * Release notes for the "Có gì mới" card (whatsnew.js), newest first. Loaded only after the game is up. */
 export default [
  {"version":"1.9.38","date":"2026-10-09","items":[
-  {"emoji":"📈","text":"Lãi đơn nhân viên giờ lên xuống theo giờ, mỗi nghề một kiểu; mỗi ngày có 1 🔥 nghề hot lãi ×2. Xem ở Công việc, Sổ tiệm."}
+  {"emoji":"📈","text":"Lãi đơn nhân viên giờ lên xuống theo giờ, mỗi nghề một kiểu; mỗi ngày có 1 🔥 nghề hot lãi ×2. Xem ở Công việc, Sổ tiệm."},
+  {"emoji":"🏫","text":"Giáo viên lên lớp: cấp 2 nhận lớp 2A, rồi 3A, 4A, 5A. Bài khó hơn, lương cao hơn, phụ huynh cũng khó hơn 😅"}
  ]},
  {"version":"1.9.36","date":"2026-10-09","items":[
   {"emoji":"🎆","text":"Pháo hoa không còn che game: đang chơi thì chỉ hiện chip nhỏ, bấm ✕ chỉ tắt pháo hoa. Cài đặt có Bật / Chỉ báo nhỏ / Tắt."},

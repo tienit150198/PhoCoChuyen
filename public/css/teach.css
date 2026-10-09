@@ -566,3 +566,9 @@ html[data-clean] .tt-toprow .tt-meter,html[data-clean] .tt-trip-top .tt-meter{gr
 .tt-trip-top .ui-q{min-width:44px;min-height:44px}
 .tt-roll{padding-top:0}
 .tt-quote-mini{margin:0;font-size:1.1rem}
+/* Lớp 2–5 (game/teach_grades.py): the class on the board, the principal's offer, the day's awkward message. */
+.tt-board .tt-grade{flex:none;background:#f7d774;color:#2f3b2a;border-radius:6px;padding:1px 7px;letter-spacing:0}
+.tt-hr,.tt-demand{border:1px solid var(--line,#e3d6bf);border-radius:14px;padding:10px 12px;background:var(--paper,#fffaf0)}
+.tt-hr{border-color:#e9c46a}
+.tt-demand:not(.done){border-color:#e07a5f}
+.tt-hr-text,.tt-demand-text{margin:0;line-height:1.45}

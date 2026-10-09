@@ -107,7 +107,7 @@ function door(c,p,x,y,w,h,size,open,words){R(c,x-8,y-8,w+16,h+8,'#d1a27f',10);R(
   R(c,x+w/2-sw/2,sy,sw,size*1.9,'#fff8e8',9,open?'#8fb77f':'#d59a9a',2);T(c,s,x+w/2,sy+size*.97,fit(c,s,sw-10,size,800),open?p.dark:'#a35f63',800);}
 
 /** Class plaque over the door (the `property` hotspot). */
-function plaque(c,p,cx,y,w,h,size){R(c,cx-w/2,y,w,h,p.primary,9,p.dark,2);R(c,cx-w/2+4,y+4,w-8,h-8,'#fffaf0',6);T(c,'LỚP 1A',cx,y+h/2+1,size,p.dark,800);heart(c,cx+w/2-11,y+h/2+4,.2,p.primary);}
+function plaque(c,p,cx,y,w,h,size,g=1){R(c,cx-w/2,y,w,h,p.primary,9,p.dark,2);R(c,cx-w/2+4,y+4,w-8,h-8,'#fffaf0',6);T(c,`LỚP ${g}A`,cx,y+h/2+1,size,p.dark,800);heart(c,cx+w/2-11,y+h/2+4,.2,p.primary);}
 
 /** Security equivalents: dome camera or a safety plaque, school bell, lamp. */
 function security(c,p,items,cam,bell,lamp){
@@ -203,7 +203,7 @@ function landRoom(w,p){const c=w.ctx,items=w.c?.ops?.security?.items||[],open=!!
   pocketChart(c,p,806,212,78,108,12);
   streetBoard(c,p,812,334,1);
   starChart(c,p,893,244,72,108);
-  plaque(c,p,1029,220,92,32,15);
+  plaque(c,p,1029,220,92,32,15,w.c?.classroom?.homeroom?.g||1);
   door(c,p,983,264,92,184,12,open,words);
   security(c,p,items,[134,200],[930,372],[1029,262]);
   if(w.c?.ops?.property?.tier==='garden'){for(let i=0;i<3;i++)bloom(c,240+i*50,380,7,[p.primary,'#f2b9c9','#f3d98a'][i]);}
@@ -226,7 +226,7 @@ function portRoom(w,p){const c=w.ctx,items=w.c?.ops?.security?.items||[],open=!!
   pocketChart(c,p,492,214,80,118,16);
   streetBoard(c,p,500,346,1.2);
   clock(c,p,618,236,20,w.time,w.reduced);
-  plaque(c,p,618,284,74,32,17);
+  plaque(c,p,618,284,74,32,17,w.c?.classroom?.homeroom?.g||1);
   door(c,p,584,330,68,176,15,open,words);
   security(c,p,items,[52,196],[655,300],[618,322]);
   if(w.c?.ops?.property?.tier==='garden'){for(let i=0;i<3;i++)bloom(c,70+i*30,318,6,[p.primary,'#f2b9c9','#f3d98a'][i]);}

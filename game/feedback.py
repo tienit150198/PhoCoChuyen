@@ -450,9 +450,9 @@ def _criteria_default(c: dict, t: dict) -> list[dict]:
         rows = [('resolution', 'Giải quyết tới nơi', 5 if t.get('confirmed') else 4, 'đã có kết quả xác nhận'),
                 ('accuracy', 'Hiểu đúng vấn đề', acc, 'có chọn phương án chưa hợp' if m else 'xem đủ chứng cứ'),
                 ('speed', 'Tốc độ', wait, f'kiên nhẫn còn {patience}%')]
-    elif cid == 'teacher' and t.get('room'):
-        # The class-period mode keeps its facts in t['room'].
-        room = t['room']
+    elif cid == 'teacher' and (t.get('room') or t.get('grade_room')):
+        # The class-period mode keeps its facts in t['room'] (lớp 2–5: t['grade_room']).
+        room = t.get('room') or t['grade_room']
         marked = len(room.get('marks') or {}) >= len(room.get('tickets') or {})
         rows = [('care', 'Quan tâm từng bạn', acc, 'có bạn phải đổi cách giảng' if m else 'mỗi bạn được giúp đúng cách'),
                 ('feedback', 'Nhận xét riêng', 5 if marked else 3, 'mỗi phiếu có phản hồi riêng' if marked else 'còn phiếu chưa được nhận xét'),

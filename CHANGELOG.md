@@ -1,3 +1,7 @@
+# Chưa phát hành — teacher-grades (F#304, Có gì mới 1.9.38)
+
+🏫 Giáo viên lớp 2–5 (game/teach_grades.py): mở theo cấp nghề (lớp 2 cấp 2, lớp 3 cấp 4, lớp 4 cấp 6, lớp 5 cấp 8). Cô Hiệu trưởng mời nhận lớp ở đầu tiết (Nhận / Ở lại), đổi lớp trong Kế hoạch lớp (1 lần/ngày). Mỗi lớp 8 bài theo GDPT 2018 (Toán, Tiếng Việt, TN&XH / Khoa học / LS&ĐL) có câu hỏi giơ tay; khoảng 2/3 tiết có một tin nhắn khó chịu (Zalo 22 giờ, quỹ lớp, dạy thêm, xin đề, sửa học bạ, nộp giáo án mẫu mới…), trả lời sai thành phản ánh của phụ huynh. Mỗi lớp trên lớp 1 +5 xu/tiết. Lớp 1 và mọi công việc sinh ra không đổi (task-compat OK). Khóa mới tùy chọn: ext.data.homeroom {g, seen, day} của nghề giáo viên, task.grade_room (tiết lớp 2–5; bản 1.9.37 bỏ qua, coi tiết là chưa bắt đầu).
+
 # v1.9.38 — 2026-10-09
 
 Gồm exploit-fixes (nhập bản lưu, reset nơi làm, phóng dao, kế toán × x3, bỏ ngày ăn lương/tiền thuê, ném vòng, giới hạn chuyển tiền tài khoản mới), ong-hai-hard (journey.fair_hai), hot-career (lãi nhân viên theo thị trường + nghề hot), mishap: kiểu police, bán coin. Khóa mới tùy chọn: journey.fair_day, journey.fair_hai.

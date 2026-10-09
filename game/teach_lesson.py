@@ -23,6 +23,8 @@ import os
 import random
 import re
 
+from . import teach_grades as TG
+
 PLAN_MINUTES = 35
 PLAN_MIN = 25
 STAGES = ('roll', 'plan', 'teach', 'check', 'ready')
@@ -347,10 +349,15 @@ def _roll(day: int, slot: int) -> dict:
 FIXED = ('v', 'tier', 'cond', 'kids', 'events', 'stuck', 'slip', 'hand')
 
 
-def fresh(day: int, slot: int) -> dict:
+GRADE_FIXED = ('grade', 'demand')   # grade rooms only; 'demand' also keeps the pick
+
+
+def fresh(day: int, slot: int, grade: int = 1) -> dict:
     room = roll(day, slot)
     room.update(stage='roll', roll={}, plan=[], stars=0, parts={}, lost=[], phase=0, calls={}, helped={}, flags={},
                 tickets={}, marks={}, notes=[], arcs=[], reward=0)
+    if grade >= 2:
+        room.update(grade=grade, demand=TG.demand_roll(grade, day, slot))
     return room
 
 
@@ -358,16 +365,45 @@ def slot_of(t: dict) -> int:
     return int(t['id'].rsplit('-', 1)[1])
 
 
+def room_of(t: dict) -> dict | None:
+    """The period's v2 layer: t['room'] (lớp 1) or t['grade_room'] (lớp 2–5, see game/teach_grades.py).
+    An older build that played a lớp 1 period on top of a grade room leaves both: lớp 1 wins."""
+    r = t.get('room')
+    if isinstance(r, dict):
+        return r
+    r = t.get('grade_room')
+    return r if isinstance(r, dict) else None
+
+
+def has_room(t: dict) -> bool:
+    return 'room' in t or 'grade_room' in t
+
+
+def grade_of(room: dict | None) -> int:
+    return (room or {}).get('grade', 1)
+
+
+def lesson_of(t: dict, room: dict | None = None) -> dict:
+    """The lesson the period teaches: the v1 lesson in lớp 1, the grade's lesson (never saved) above."""
+    g = grade_of(room if room is not None else room_of(t))
+    return TG.lesson(g, t['day'], slot_of(t)) if g >= 2 else t['lesson']
+
+
 def eligible(t: dict) -> bool:
     """A v1 task that has not started any v1 step can run the v2 period."""
-    return (t.get('career') == 'teacher' and 'room' not in t and t.get('stage') == 'plan' and not t.get('plan')
+    return (t.get('career') == 'teacher' and 'room' not in t and 'grade_room' not in t and t.get('stage') == 'plan' and not t.get('plan')
             and not t.get('attendance') and not t.get('taught') and not t.get('grades') and t.get('status') not in ('completed', 'referred', 'cancelled'))
 
 
-def ensure(t: dict) -> dict:
-    if 'room' not in t:
-        t['room'] = fresh(t['day'], slot_of(t))
-    return t['room']
+def ensure(t: dict, c: dict | None = None) -> dict:
+    room = room_of(t)
+    if room is None:
+        g = TG.homeroom(c)
+        if g >= 2:
+            room = t['grade_room'] = fresh(t['day'], slot_of(t), g)
+        else:
+            room = t['room'] = fresh(t['day'], slot_of(t))
+    return room
 
 
 def titles(s: dict) -> tuple[str, str]:
@@ -409,7 +445,7 @@ def _focus(t: dict, delta: int) -> None:
 def handle(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     from . import engine as e
     need = e.need
-    room = ensure(t)
+    room = ensure(t, c)
     stage = room['stage']
     if name == 'roll':
         need(stage == 'roll', 'Điểm danh đã xong rồi.')
@@ -530,8 +566,20 @@ def handle(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         if kind == 'slip' and right:
             return dict(message=f'{KID[kid]["name"]} nhìn lại, sửa ngay: hiểu bài rồi, chỉ chép nhầm thôi!')
         return dict(message=f'Đã gửi lời phản hồi cho {KID[kid]["name"]}.')
+    if name == 'demand':
+        dm = room.get('demand')
+        need(stage == 'ready' and dm, 'Chưa có ai nhắn gì cả.')
+        need(dm['pick'] is None, 'Chuyện này đã trả lời rồi.')
+        opt = next((o for o in TG.DEMAND[dm['id']]['options'] if o['id'] == p.get('option')), None)
+        need(opt, 'Cách trả lời không hợp lệ.')
+        dm['pick'] = opt['id']
+        if not opt['good']:
+            t['mistakes'] += 1
+        return dict(message=say(s, opt['text']), correct=opt['good'])
     if name == 'complete':
         need(stage == 'ready', 'Còn phiếu chưa có phản hồi.')
+        dm = room.get('demand')
+        need(not dm or dm['pick'] is not None, 'Còn một tin nhắn cần trả lời trước khi khép tiết.')
         need(p.get('confirm') is True, 'Xác nhận khép tiết trước nhé.')
         return _finish(s, c, t, room)
     if name in ('invite', 'answer'):
@@ -540,7 +588,7 @@ def handle(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
 
 
 def _tickets(t: dict, room: dict) -> dict:
-    lesson = t['lesson']
+    lesson = lesson_of(t, room)
     answer = lesson['answer']
     wrongs = [x for x in lesson['choices'] if x != answer]
     out = {}
@@ -567,7 +615,8 @@ def understood(room: dict) -> tuple[int, int]:
 
 def reward_for(t: dict, room: dict) -> int:
     got, total = understood(room)
-    return 45 + 5 * room['stars'] + (round(10 * got / total) if total else 0) + (5 if t.get('patience', 100) >= 80 else 0)
+    return (45 + 5 * room['stars'] + (round(10 * got / total) if total else 0) + (5 if t.get('patience', 100) >= 80 else 0)
+            + TG.PAY_STEP * (grade_of(room) - 1))
 
 
 def _post(s: dict, c: dict, kid: str | None, author: str, text: str, ref: str) -> None:
@@ -632,6 +681,11 @@ def judge(s: dict, t: dict, room: dict) -> None:
     slow = max(tries, key=lambda k: (tries[k], k), default=None)
     if slow and tries[slow] >= 2:
         add('method', 1, f'Bé {KID[slow]["name"]} bảo cô/thầy phải đổi mấy cách giảng con mới hiểu, mất cả phần luyện tập.', 'giảng chưa hợp cách học của con')
+    dm = room.get('demand')
+    if dm and dm.get('pick'):
+        opt = next(o for o in TG.DEMAND[dm['id']]['options'] if o['id'] == dm['pick'])
+        if not opt['good']:
+            add('dm_' + dm['id'], opt['sev'], opt['slip'], opt['note'])
     if cq.slips(t) and t['mistakes'] == 0:
         t['mistakes'] = 1
 
@@ -649,7 +703,7 @@ def _finish(s: dict, c: dict, t: dict, room: dict) -> dict:
     e.metric(c, 'class_periods')
     judge(s, t, room)
     r = cq.react(s, c, t, reward, who='Phụ huynh')
-    e.task_done(s, c, t, r['pay'], f'Tiết {t["lesson"]["title"].lower()}: {got}/{total} bạn hiểu bài.')
+    e.task_done(s, c, t, r['pay'], f'Tiết {lesson_of(t, room)["title"].lower()}: {got}/{total} bạn hiểu bài.')
     for key in room['notes'][:2]:
         kid, author, text = NOTES[key]
         _post(s, c, kid, author, text, t['id'] + ':' + key)
@@ -757,6 +811,8 @@ QUESTIONS = {
                  ('ok', 'Chắc cũng vậy thôi con.'),
                  ('poor', 'Cứ làm theo sách đi.'))),
 }
+# Lớp 2–5 (game/teach_grades.py): one raised-hand question per lesson, same shape.
+QUESTIONS.update({k: v for k, v in TG.QUESTIONS.items() if k not in QUESTIONS})
 REACT = dict(good='{name} sáng mắt: “À, con hiểu rồi {title} ơi!”',
              ok='{name} gật đầu, nhưng vẫn còn nhíu mày nhìn bảng.',
              poor='{name} cúi đầu, hạ tay xuống, không hỏi thêm nữa.')
@@ -848,7 +904,7 @@ def reaction(s: dict, kid: str, quality: str) -> str:
 
 def make_ask(c: dict, t: dict, room: dict, s: dict | None = None) -> dict | None:
     """Who raises a hand in this period (fixed by day, slot and how open each kid is)."""
-    title = t['lesson'].get('title')
+    title = lesson_of(t, room).get('title')
     if title not in QUESTIONS:
         return None
     from . import classroom
@@ -910,7 +966,7 @@ def _ask_action(s: dict, c: dict, t: dict, room: dict, name: str, p: dict) -> di
     reply = reaction(s, kid, quality)
     ask['lines'].append(dict(who='pupil', text=reply, mode='scripted'))
     ask.update(state='done', result=quality)
-    subject = classroom.subject_of(t['lesson'])
+    subject = classroom.subject_of(lesson_of(t, room))
     if quality == 'good':
         _trust(c, room, kid, 1)
         classroom.pupil_change(c, kid, subject=subject, prog=3, voice=1)
@@ -951,7 +1007,7 @@ def validate_ask(t: dict, room: dict) -> None:
     ask = room['ask']
     need(isinstance(ask, dict) and set(ask) == {'kid', 'q', 'phase', 'state', 'lines', 'result', 'shy'}, 'Câu hỏi giơ tay không hợp lệ.')
     need(STAGES.index(room['stage']) >= 2, 'Chưa vào tiết mà đã có bạn giơ tay.')
-    need(ask['q'] == t['lesson'].get('title') and ask['q'] in QUESTIONS, 'Câu hỏi giơ tay không khớp bài.')
+    need(ask['q'] == lesson_of(t, room).get('title') and ask['q'] in QUESTIONS, 'Câu hỏi giơ tay không khớp bài.')
     need(ask['kid'] in present_ids(room) and ask['phase'] == ASK_PHASE and type(ask['shy']) is bool, 'Câu hỏi giơ tay không hợp lệ.')
     need(ask['state'] in ASK_STATES and ask['result'] in (None, 'ignored') + QUALITY, 'Câu hỏi giơ tay không hợp lệ.')
     need((ask['state'] == 'done') == (ask['result'] in QUALITY), 'Câu hỏi giơ tay không hợp lệ.')
@@ -980,7 +1036,7 @@ def pupil_card(state: dict, kid: str, memory: dict | None = None) -> dict:
     small = titles(state)[1]
     region, particles = PUPIL_VOICE[kid]
     traits = [k['trait'], 'Khi chưa hiểu: ' + say(state, CLUES[kid][1])]
-    return dict(id='pupil:' + kid, name=k['name'], role='Học sinh lớp 2', career='teacher', place='Lớp học Mầm Nắng',
+    return dict(id='pupil:' + kid, name=k['name'], role=f'Học sinh lớp {TG.homeroom((state.get("careers") or {}).get("teacher"))}', career='teacher', place='Lớp học Mầm Nắng',
                 age='child', age_label='trẻ nhỏ (tiểu học)', temperament='child', temperament_label='Hồn nhiên',
                 style=CHILD_STYLE + '; ' + PUPIL_STYLE[kid], personality=k['trait'], traits=traits,
                 address=dict(self='con', player=small), region=region, particles=list(particles),
@@ -1057,8 +1113,23 @@ def _event_view(room: dict, ev: dict) -> dict:
     return out
 
 
-def public(t: dict) -> dict:
-    room = tree_copy(t['room']) if 'room' in t else fresh(t['day'], slot_of(t))
+def _demand_view(room: dict) -> dict | None:
+    dm = room.get('demand')
+    if not dm or (room['stage'] != 'ready' and not dm.get('pick')):
+        return None
+    x = TG.DEMAND[dm['id']]
+    out = dict(id=x['id'], emoji=x['emoji'], who=x['who'], text=x['text'], pick=dm['pick'],
+               options=[dict(id=o['id'], label=o['label']) for o in x['options']])
+    if dm['pick']:
+        o = next(o for o in x['options'] if o['id'] == dm['pick'])
+        out.update(outcome=o['text'], good=o['good'])
+    return out
+
+
+def public(t: dict, grade: int = 1) -> dict:
+    """The period's projection; `grade` only shapes a period not started yet (the homeroom's grade)."""
+    have = room_of(t)
+    room = tree_copy(have) if have is not None else fresh(t['day'], slot_of(t), grade)
     stage = room['stage']
     cond = COND[room['cond']]
     kids = []
@@ -1082,10 +1153,26 @@ def public(t: dict) -> dict:
                 pending=[x['id'] for x in shown if 'chosen' not in x], lost=lost, tickets=tickets,
                 marks=MARKS, methods=METHODS, reward=room['reward'] or None,
                 log=[_event_view(room, ev) for ev in room['events'] if ev['id'] in room['calls']], ask=_ask_view(room))
+    if grade_of(room) >= 2:
+        view.update(grade=grade_of(room), grade_label=TG.label(grade_of(room)), demand=_demand_view(room))
     if stage in ('check', 'ready'):
         got, total = understood(room)
         view.update(understood=got, of=total, estimate=reward_for(t, room) if stage == 'ready' else None)
     return view
+
+
+def show_lesson(t: dict, v: dict) -> None:
+    """Projection of a lớp 2–5 period: its lesson (without the answer) replaces the v1 one on screen."""
+    lesson = TG.lesson(v['room']['grade'], t['day'], slot_of(t))
+    lesson.pop('answer', None)
+    v['lesson'], v['title'] = lesson, lesson['title']
+
+
+def preview(t: dict, v: dict, grade: int) -> None:
+    """A period not started yet shows the homeroom's grade (view only; the room is made at the first roll call)."""
+    if grade >= 2 and not has_room(t) and eligible(t):
+        v['room'] = public(t, grade)
+        show_lesson(t, v)
 
 
 def content() -> dict:
@@ -1095,11 +1182,20 @@ def content() -> dict:
 
 
 # ------------------------------------------------------------------ validation
-def validate(t: dict) -> None:
+def validate(t: dict, key: str = 'room') -> None:
     from .engine import need, integer
-    room = t['room']
+    room = t[key]
     need(isinstance(room, dict), 'Tiết học không hợp lệ.')
     keys = set(FIXED) | {'stage', 'roll', 'plan', 'stars', 'parts', 'lost', 'phase', 'calls', 'helped', 'flags', 'tickets', 'marks', 'notes', 'arcs', 'reward'}
+    if key == 'grade_room':
+        keys |= set(GRADE_FIXED)
+        need(room.get('grade') in TG.GRADES and room['grade'] >= 2, 'Lớp của tiết học không hợp lệ.')
+        dm, base_dm = room.get('demand'), TG.demand_roll(room['grade'], t['day'], slot_of(t))
+        need((dm is None) == (base_dm is None), 'Tin nhắn của tiết học bị thay đổi.')
+        if dm is not None:
+            need(isinstance(dm, dict) and set(dm) == {'id', 'pick'} and dm['id'] == base_dm['id'], 'Tin nhắn của tiết học bị thay đổi.')
+            need(dm['pick'] is None or dm['pick'] in [o['id'] for o in TG.DEMAND[dm['id']]['options']], 'Cách trả lời không hợp lệ.')
+            need(dm['pick'] is None or room['stage'] == 'ready', 'Chưa tới lúc trả lời tin nhắn.')
     need(set(room) - {'tries', 'ask'} == keys, 'Dữ liệu tiết học thiếu hoặc lạ.')
     tries = room.get('tries', {})
     need(isinstance(tries, dict) and all(k in KID and type(v) is int and 1 <= v <= 9 for k, v in tries.items()), 'Số lần đổi cách giảng không hợp lệ.')
@@ -1172,7 +1268,7 @@ def notebook(d: dict) -> list[dict]:
 
 
 def known_request(t: dict) -> str:
-    room = t.get('room') or roll(t['day'], slot_of(t))
+    room = room_of(t) or roll(t['day'], slot_of(t))
     cond = COND[room['cond']]
-    return ('Mục tiêu tiết học: ' + t['lesson']['prompt'] + ' Hôm nay: ' + cond['text'].lower() +
+    return ('Mục tiêu tiết học: ' + lesson_of(t, room)['prompt'] + ' Hôm nay: ' + cond['text'].lower() +
             '. Điểm danh, chọn ba hoạt động hợp lớp rồi giúp từng bạn theo cách riêng.')

@@ -26,6 +26,13 @@ function notebook(kids,care){
   return `<details class="nb"><summary><b>📒 Sổ chủ nhiệm</b><small>Đã thân với ${met.length}/${kids.length} bạn</small></summary><ul class="nb-list">${kids.map(card).join('')}</ul></details>`;
 }
 
+/** 🏫 Lớp chủ nhiệm (game/teach_grades.py): once lớp 2 opens, pick the class new periods are taught in. */
+function homeroomRow(hr){
+  if(!hr||hr.top<2)return '';
+  const btns=hr.grades.filter(x=>x.open).map(x=>cmdBtn(esc(x.label),'cl_homeroom',{grade:x.g},x.g===hr.g?'small primary':'small ghost',x.g===hr.g)).join('');
+  return `<article class="cp-page cp-hr"><h3><span>🏫 Lớp chủ nhiệm</span>${hr.next?`<small>${esc(hr.next.label)} · cấp ${hr.next.level}</small>`:''}</h3><div class="row wrap">${btns}</div></article>`;
+}
+
 /* ---- care loop: who needs attention, parents, homework, seats ---- */
 function watch(care){
   const rows=[];
@@ -89,7 +96,7 @@ export function classroomView(env){
   }else{
     const recap=cl.recap?`<article class="cp-page cp-recap"><h3><span>📝 Nhận xét sau giờ</span>${pill(...GRADE[cl.recap.grade])}</h3><div class="cp-main"><h4>${esc(cl.recap.title)}</h4></div><div class="perspectives">${cl.recap.perspectives.map(v=>`<div class="perspective"><span class="who">${esc(v.emoji)} <b>${esc(v.who)}</b></span><p>“${esc(v.text)}”</p></div>`).join('')}</div><p class="lesson">💡 ${esc(cl.recap.lesson)}</p></article>`:'';
     const rows=cl.offers.map(o=>`<li class="cp-row kind-${esc(o.kind)}">${kind(o.kind,o.kind_label,o.tag)}<div class="cp-main"><h4>${esc(o.emoji)} ${esc(o.title)}</h4><p>${esc(o.intro)}</p></div><div class="cp-meta"><small>${o.steps} bước · +${o.reward} xu</small>${open?cmdBtn('Bắt đầu '+icon('chevron',13),'cl_start',{activity:o.id},'small primary'):''}</div></li>`).join('');
-    const today=`<article class="cp-page"><h3><span>🗒️ Việc hôm nay</span><small>${cl.offers.length} mục</small></h3>${rows?`<ul class="cp-rows">${rows}</ul>`:'<p class="small muted">Hôm nay đã làm hết các mục trong sổ.</p>'}</article>`;
+    const today=homeroomRow(cl.homeroom)+`<article class="cp-page"><h3><span>🗒️ Việc hôm nay</span><small>${cl.offers.length} mục</small></h3>${rows?`<ul class="cp-rows">${rows}</ul>`:'<p class="small muted">Hôm nay đã làm hết các mục trong sổ.</p>'}</article>`;
     const log=cl.history.length?`<article class="cp-page"><h3><span>📚 Đã làm gần đây</span></h3><ul class="cp-log">${cl.history.map(h=>`<li><span aria-hidden="true">${esc(h.emoji)}</span><span>${esc(h.title)} <small>· ngày ${h.day}</small></span>${pill(...GRADE[h.grade])}</li>`).join('')}</ul></article>`:'';
     const note=open?'':`<div class="notice">${icon('sun',17)}<div>Mở ca (vào lớp) để bắt đầu hoạt động hôm nay.</div></div>`;
     if(!cl.care)body=`${recap}${note}${today}${notebook(cl.notebook,cl.care)}${log}`;
