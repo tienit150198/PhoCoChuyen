@@ -39,6 +39,15 @@ their free spot, the rest come from its grid). A 1.3.2 layout without journey.de
 a room and slot) is read as grid spots near the old slots first (`_legacy`). Nothing is written until the first
 jr_deco_* command. Deterministic: the neighbour's visit is seeded by the journey seed and the day.
 
+🏡 Ở chung (F#307): a friend who lives in your home by a "Mời ở chung" invite (game/home_guests.py, kind 'stay') may
+move their own furniture there: journey.decor_stay {v, id: the invite id's first 16 hex, home: the host's home id,
+kind} makes place() 'stay' with key stay:<id>:<kind> (the host's rooms, ':v2' for Sông Hồng). home_guests sets and
+clears it (POST move, leave, revoke; a stay that ended is cleared by the next GET /api/deco/mate). Everything else is
+the player's own save, as in a rented room: their bag, their pieces, their walls and floors (drawn over the host's in
+their own view only) and the move rules above (decor_away). game/deco_mate.py shows the other residents' pieces
+read-only. An older build ignores the key: its place() is the player's own room again, so its _move packs the stay
+layout into decor_away (an unknown place key: shape only) and this build puts it back.
+
 Commands from a page loaded before 1.4 still work: jr_deco_place / jr_deco_buy with grid cells and jr_deco_layout with
 [room, x, y, f] lists convert their cells; jr_reno_buy / move / store / sell (1.2.0) go through `legacy`.
 """
@@ -114,6 +123,10 @@ _SKIN = re.compile(r'^[a-z0-9_]{1,24}$')
 FREE_KEYS = {'v', 'at', 'sig', 'items', 'skins', 'owned', 'ops'}
 NEW_KEYS = {'v', 'at', 'items'}   # journey.decor_new (1.4.11)
 NEW_VERSION = 1
+STAY_KEYS = {'v', 'id', 'home', 'kind'}   # journey.decor_stay (F#307), optional
+STAY_VERSION = 1
+_STAY_ID = re.compile(r'^[0-9a-f]{16}$')
+_HOME_ID = re.compile(r'^[A-Za-z0-9_:]{1,48}$')
 
 
 def _rn():
@@ -210,9 +223,22 @@ def sig(pos: dict) -> int:
 
 
 # ---------------------------------------------------------------- where you live, its rooms
+def stay_of(j: dict) -> dict | None:
+    """journey.decor_stay when it names a home this build knows (🏡 living in a friend's home, F#307), else None."""
+    st = j.get('decor_stay') if isinstance(j, dict) and j.get('story') else None
+    if not (isinstance(st, dict) and set(st) == STAY_KEYS and st['v'] == STAY_VERSION and isinstance(st['id'], str)
+            and _STAY_ID.match(st['id']) and isinstance(st['home'], str) and _HOME_ID.match(st['home'])):
+        return None
+    return st if st['kind'] in _rn().HOUSES or st['kind'] in _es().ESTATE else None
+
+
 def place(j: dict) -> dict:
-    """Where the player lives now: key (changes with every move), where ('own'|'shared'|'rent'|'attic'|'estate'), home
-    kind (a villa's id for 'estate', game/estates.py). Biệt thự Sông Hồng's key ends in ':v2' (its three-floor inside)."""
+    """Where the player lives now: key (changes with every move), where ('own'|'shared'|'rent'|'attic'|'estate'|'stay'),
+    home kind (a villa's id for 'estate', game/estates.py). Biệt thự Sông Hồng's key ends in ':v2' (its three-floor inside).
+    🏡 'stay': a friend's home the player moved their furniture into (stay_of) comes first."""
+    st = stay_of(j)
+    if st:
+        return _es().v2_key(dict(key=f"stay:{st['id']}:{st['kind']}", where='stay', kind=st['kind']))
     est = _es().place(j)   # 🏰 living in a villa bought in Mua sắm
     if est:
         return est
@@ -250,6 +276,8 @@ def rooms_of(key: str) -> list | None:
     if key in _ROOMS:
         return _ROOMS[key]
     bits = key.split(':')
+    if bits[0] == 'stay' and len(bits) == 3 and bits[2] in _es().ESTATE:   # 🏡 a friend's villa: its rooms
+        return _es().rooms_of(f'{_es().KEY}:{bits[2]}:1')
     if bits[0] == 'estate' or key.endswith(':v2'):   # 🏰 a villa's rooms, Sông Hồng's three floors (game/estates.py)
         return _es().rooms_of(key)
     out = None
@@ -258,7 +286,7 @@ def rooms_of(key: str) -> list | None:
         out, kind = list(DC.RENT_ROOMS['attic']), 'attic'
     elif bits[0] == 'rent' and len(bits) == 3 and bits[1] in DC.RENT_ROOMS:
         out, kind = list(DC.RENT_ROOMS[bits[1]]), bits[1]
-    elif bits[0] in ('own', 'shared', 'lease') and bits[-1] in _rn().HOUSES:
+    elif bits[0] in ('own', 'shared', 'lease', 'stay') and bits[-1] in _rn().HOUSES:
         out, kind = [DC.own_room(*row) for row in _rn().HOUSES[bits[-1]]['rooms']], bits[-1]
     if out is not None:
         out += [kit_room(k) for k in DC.EXTRA_ROOMS.get(kind, ())]
@@ -840,6 +868,9 @@ def _move(s: dict, pl: dict) -> list[str]:
         L = layout(s, pl)
         rs = {x['id'] for x in L['rooms']}
         pos = {u: dict(v) for u, v in back['items'].items() if u in L['kinds'] and isinstance(v, dict) and _piece_ok(v)}
+        for u, q in pos.items():   # a piece turned round there comes back turned round (its facing waited in the bag)
+            if L['faces'].get(u) == 'back' and L['kinds'][u] in FACING_ITEMS:
+                q['face'] = 'back'
         kept, _out = settle_free(L['rooms'], L['kinds'], pos, L['order'])
         D['skins'] = {rm: dict(v) for rm, v in (back.get('skins') or {}).items() if rm in rs}
         L['skins'] = D['skins']
@@ -1413,6 +1444,9 @@ def _place_name(pl: dict) -> tuple[str, str]:
     est = _es().name_of(pl)
     if est:
         return est
+    if pl['where'] == 'stay' and pl['kind'] in _es().ESTATE:
+        e = _es().ESTATE[pl['kind']]
+        return e['emoji'], e['name']
     if pl['where'] == 'attic':
         return hs.ATTIC['emoji'], hs.ATTIC['name']
     H = hs.HOMES[pl['kind']]
@@ -1795,6 +1829,12 @@ def validate(s: dict) -> None:
         if rooms is not None and all(kinds[u] in ITEMS for u in every):   # the whole place, at today's cap
             _kept, out = settle_free(rooms, kinds, every, list(kinds))
             need(not out, bad)
+    if j.get('decor_stay') is not None:   # 🏡 F#307 (shape only: a newer build's home kind is kept, not lived in)
+        st = j['decor_stay']
+        bad = 'Dữ liệu ở chung trong bản lưu không hợp lệ.'
+        need(isinstance(st, dict) and set(st) == STAY_KEYS and type(st['v']) is int and st['v'] == STAY_VERSION, bad, 'invalid_save')
+        need(isinstance(st['id'], str) and _STAY_ID.match(st['id']) and isinstance(st['home'], str) and _HOME_ID.match(st['home'])
+             and isinstance(st['kind'], str) and _ID.match(st['kind']), bad, 'invalid_save')
     if j.get('decor_away') is not None:   # 1.9.18: the layouts of places left (shape only: a piece may be sold since)
         A = j['decor_away']
         bad = 'Dữ liệu bày trí phòng không hợp lệ.'

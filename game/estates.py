@@ -182,7 +182,7 @@ def place(j: dict) -> dict | None:
 
 def v2_key(pl: dict) -> dict:
     """A place in Biệt thự Sông Hồng moves to its three-floor inside."""
-    if pl.get('kind') == EC.SONG_HONG and pl.get('where') in ('own', 'shared', 'lease') and not pl['key'].endswith(V2):
+    if pl.get('kind') == EC.SONG_HONG and pl.get('where') in ('own', 'shared', 'lease', 'stay') and not pl['key'].endswith(V2):
         return dict(pl, key=pl['key'] + V2)
     return pl
 

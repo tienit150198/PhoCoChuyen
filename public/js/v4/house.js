@@ -339,15 +339,16 @@ function placeCard(v){
   const costLine=clean()?`<span aria-label="${esc(`${unit} ${xu(c.rent)} · cơm ${xu(c.meals)} mỗi ngày`)}">${['own','shared','lease','estate'].includes(p.where_id)?'⚡':bed?'🛏️':'🏠'} ${fmt(c.rent)} · 🍚 ${fmt(c.meals)} xu/ngày</span>`:`${unit} ${xu(c.rent)} · cơm ${xu(c.meals)} mỗi ngày`;
   const who=p.where_id==='estate'?'<p class="hs-tag">🏰 Dinh thự của bạn</p>':p.where_id==='shared'?`<p class="hs-tag">💞 Nhà chung với ${esc(p.with)}</p>`:p.where_id==='own'?'<p class="hs-tag">🔑 Nhà đứng tên bạn</p>':bed?'<p class="hs-tag">👥 Ở ghép · giường dưới cạnh cửa sổ</p>':['rent','lease'].includes(p.where_id)?'<p class="hs-tag">🧾 Đang thuê</p>':'';
   let actions='';
-  const DC=J().deco,deco=DC&&!clean()?`<p class="hs-chips"><span${clean()?` title="${esc(DC.cozy.level)}"`:''}>🪴 Ấm cúng ${DC.cozy.total}${clean()?'':` · ${esc(DC.cozy.level)}`}</span>${DC.bag.length?`<span>🎒 ${DC.bag.length} món trong túi</span>`:''}</p>`:'';
+  const DC=J().deco,stay=DC?.place?.where==='stay',deco=DC&&!clean()?`<p class="hs-chips"><span${clean()?` title="${esc(DC.cozy.level)}"`:''}>🪴 Ấm cúng ${DC.cozy.total}${clean()?'':` · ${esc(DC.cozy.level)}`}</span>${DC.bag.length?`<span>🎒 ${DC.bag.length} món trong túi</span>`:''}</p>`:'';
   const cozy=DC&&clean()?` <small class="hs-cozy" aria-label="${esc(`Ấm cúng ${DC.cozy.total}: ${DC.cozy.level}`)}">🪴 ${DC.cozy.total}</small>`:'';
-  const setUp=DC?btn((bed?'🚪 Về góc giường':p.where_id==='shared'?'🚪 Vào nhà':'🚪 Vào phòng')+cozy,'inside',{},'primary'):'';   // 🚶 rentals, the attic, a shared home: walk in, decor inside (v4/home-walk.js)
+  const setUp=DC?btn((stay?'🚪 Vào nhà bạn':bed?'🚪 Về góc giường':p.where_id==='shared'?'🚪 Vào nhà':'🚪 Vào phòng')+cozy,'inside',{},'primary'):'';   // 🚶 rentals, the attic, a shared home: walk in, decor inside (v4/home-walk.js)
   // 🏰 Living in a villa bought in Mua sắm (housing.py _place_view): every "Vào nhà" opens it, so the way back home
   // is here too (owner 08/10: a home moved into from a villa could not be entered; game/estates.py move_out).
-  if(p.where_id==='estate')actions=`${deco}<div class="bk-actions">${btn('🚪 Vào nhà'+cozy,'inside',{},'primary')}${btn('Về nhà cũ','leaveEstate',{},'ghost')}</div>`;
+  // 🏡 F#307: your things moved into a friend's home (deco place 'stay'): every "Vào nhà" opens that home.
+  if(p.where_id==='estate')actions=`${deco}<div class="bk-actions">${btn((stay?'🚪 Vào nhà bạn':'🚪 Vào nhà')+cozy,'inside',{},'primary')}${btn('Về nhà cũ','leaveEstate',{},'ghost')}</div>`;
   else if(p.where_id==='rent')actions=`${bed?dormRoom(p.dorm):''}${deco}<div class="bk-actions">${setUp}${btn(bed?'Trả giường, nhận lại cọc':'Trả phòng, nhận lại cọc','leave',{},'ghost')}</div>`;
   else if(p.where_id==='own'&&J().reno){const R=J().reno,worn=R.parts.filter(x=>x.worn).length;
-    actions=`<p class="hs-chips"><span>🪴 Ấm cúng ${R.cozy}</span><span>🛠️ ${worn?`${worn} chỗ cần sửa`:'Nhà sạch đẹp'}</span></p><div class="bk-actions">${btn('🚪 Vào nhà','inside',{},'primary')}${worn?btn('🛠️ Sửa nhà','inside',{mode:'fix'},'ghost'):''}</div>`;}
+    actions=`<p class="hs-chips"><span>🪴 Ấm cúng ${R.cozy}</span><span>🛠️ ${worn?`${worn} chỗ cần sửa`:'Nhà sạch đẹp'}</span></p><div class="bk-actions">${btn(stay?'🚪 Vào nhà bạn':'🚪 Vào nhà','inside',{},'primary')}${worn&&!stay?btn('🛠️ Sửa nhà','inside',{mode:'fix'},'ghost'):''}</div>`;}
   else if(DC)actions=`${deco}<div class="bk-actions">${setUp}</div>`;
   if(p.where_id==='lease')actions+=`<div class="bk-actions">${btn('Hợp đồng & gia hạn','rentals',{},'ghost')}</div>`;
   actions+=parked();

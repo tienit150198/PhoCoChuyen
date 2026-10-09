@@ -45,6 +45,12 @@ for(const text of ['Mời vào chơi','Mời ở chung','Không cần kết hôn
 assert.match(html,/value="A" selected/,'friend entrypoint preselects the requested friend');
 assert.ok(!html.includes('<script>'));
 assert.ok(html.includes('Vào chơi trong 2 giờ kể từ khi đồng ý.'),'temporary invitation duration is clear before accepting');
+{ // 🏡 F#307: a stay home offers moving your own things in, then back
+  const stayHome=on=>homeGuestsView({...listing,homes:[{code:'A',name:'An',kind:'stay',id:'abc',here:on,home:{name:'Nhà phố'}}]});
+  assert.match(stayHome(false),/data-hg="move" data-id="abc" data-on="1"[^>]*>🪴 Dọn đồ sang ở</);
+  assert.match(stayHome(true),/data-hg="move" data-id="abc" data-on="0"[^>]*>📦 Dọn đồ về</);
+  assert.ok(!homeGuestsView({...listing,homes:[{code:'B',name:'Bình',kind:'visit',id:'v1',home:{name:'Nhà'}}]}).includes('data-hg="move"'),'a visit never moves things in');
+}
 
 // Exercise the actual renderer with precisely the minimal, private-field-free server projection.
 globalThis.document={body:{classList:{contains:()=>true}}};
