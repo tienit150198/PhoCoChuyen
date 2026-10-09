@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Chưa phát hành — quay-fix (không có Có gì mới)
 
 🏗️ Mở rộng quầy (#303): tình huống chủ tiệm và việc của nhân viên đang chờ không còn chặn mở rộng (chúng vẫn chờ nguyên); chỉ còn ca tự đứng quầy đang mở và tình huống chỉ xe đẩy mới có (kiểm tra chỗ đặt xe) chặn. Nút Mở rộng mờ kèm lý do ngay khi chưa làm được (quay.grow_busy, `grow[].why` chỉ là trường hiển thị).
@@ -8,6 +9,11 @@
 
 🏫 Giáo viên lớp 2–5 (game/teach_grades.py): mở theo cấp nghề (lớp 2 cấp 2, lớp 3 cấp 4, lớp 4 cấp 6, lớp 5 cấp 8). Cô Hiệu trưởng mời nhận lớp ở đầu tiết (Nhận / Ở lại), đổi lớp trong Kế hoạch lớp (1 lần/ngày). Mỗi lớp 8 bài theo GDPT 2018 (Toán, Tiếng Việt, TN&XH / Khoa học / LS&ĐL) có câu hỏi giơ tay; khoảng 2/3 tiết có một tin nhắn khó chịu (Zalo 22 giờ, quỹ lớp, dạy thêm, xin đề, sửa học bạ, nộp giáo án mẫu mới…), trả lời sai thành phản ánh của phụ huynh. Mỗi lớp trên lớp 1 +5 xu/tiết. Lớp 1 và mọi công việc sinh ra không đổi (task-compat OK). Khóa mới tùy chọn: ext.data.homeroom {g, seen, day} của nghề giáo viên, task.grade_room (tiết lớp 2–5; bản 1.9.37 bỏ qua, coi tiết là chưa bắt đầu).
 >>>>>>> teacher-grades
+=======
+# Chưa phát hành — clothing-abroad (góp ý #306)
+
+👗 Shop quần áo đi nước ngoài (game/clothing_abroad.py): ở 🌏 Đi làm nước ngoài có thêm Tiệm Áo Chỉ Mây ở Seoul, Osaka, Lyon, Melbourne (phục vụ đủ 12 khách ở nhà, Chị Vy bao vé, 4–6 ngày, hoa hồng 20–30% doanh thu quầy mỗi ngày có khách vào quỹ tiệm; các nơi làm khác tạm nghỉ như hợp đồng làm thuê). Vẫn là game tiệm áo cũ, khách là người địa phương: tên, lời chào, size kiểu Hàn (55/66, 90/95, tuổi Hàn), Nhật (7号/9号, M/L/LL/3L, cm), Pháp (EU 36/46), Úc (AU 8, vòng ngực inch) với 📏 bảng quy đổi ở quầy; 22 thói quen khó chiều (xin “service”, khăn che mặt phòng thử, miễn thuế, “Bonjour” trước, túi giấy, UPF, “change of mind”…) phải trả lời trước khi chốt bill, câu “tùy tính khách” do tính ẩn quyết định, trả lời sai là lỗi như mọi lỗi khác. Sinh việc không đổi (check_task_compat OK với 1.9.37). Khóa save mới tùy chọn: task tiệm áo `abroad` {to, ask, ans, ok}; hợp đồng journey.abroad.work với career 'clothing', emp None, fee 0 (bản 1.9.37 thấy không có việc làm thuê nên kết thúc hợp đồng, không mất xu).
+>>>>>>> clothing-abroad
 
 # v1.9.38 — 2026-10-09
 

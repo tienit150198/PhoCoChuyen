@@ -758,7 +758,24 @@ def _npc_index(t: dict) -> int:
 
 
 def _who(t: dict) -> str:
-    return PEOPLE[_npc_index(t)][0]
+    return _name(t, _npc_index(t))
+
+
+def _name(t: dict, npc: int) -> str:
+    """A person's name on this task: the city's customer at the shop abroad (game/clothing_abroad.py), else ours."""
+    return _abroad().name(t, npc) or PEOPLE[npc][0]
+
+
+def _abroad():
+    from .. import clothing_abroad
+    return clothing_abroad
+
+
+def _away(s: dict) -> str | None:
+    """The city of the 🌏 contract at a partner shop abroad running now (game/abroad.py), or None."""
+    from .. import abroad
+    w = abroad.contract(s) if isinstance(s.get('journey'), dict) else None
+    return w['to'] if w and w['career'] == ID else None
 
 
 def _note(c: dict, text: str) -> None:
@@ -775,7 +792,10 @@ def _look(c: dict) -> int:
 def on_task(s: dict, c: dict, t: dict) -> None:
     if t.get('career') != ID:
         return
-    if 'wish' not in t and not t.get('known') and t.get('status') == 'new':
+    to = _away(s) if not t.get('known') and t.get('status') == 'new' else None
+    if to:   # 🌏 a customer of the city: local sizes and habits (task state, like the wishes)
+        _abroad().dress(s, t, to)
+    if 'wish' not in t and 'abroad' not in t and not t.get('known') and t.get('status') == 'new':
         w = make_wish(c, t)
         if w:
             t['wish'] = w
@@ -818,6 +838,13 @@ def on_receive(c: dict, order: dict) -> None:
 
 def on_start(s: dict, c: dict) -> None:
     _sync(c)
+    to = _away(s)
+    for t in c['tasks']:   # 🌏 customers still waiting from yesterday belong to where the shop opens today
+        if t.get('career') == ID and not t.get('known') and t.get('status') == 'new':
+            if to and 'abroad' not in t and 'wish' not in t:
+                _abroad().dress(s, t, to)
+            elif not to and 'abroad' in t:
+                t.pop('abroad')
     d = _data(c)
     d['day_sales'] = 0
     d['swaps'] = [x for x in d['swaps'] if x['day'] >= c['day']]
@@ -1012,6 +1039,9 @@ def known_request(c: dict, t: dict) -> str:
     n = t['needs']
     k = t['kind']
     w = _wish(t)
+    local = _abroad().request(t)
+    if local:
+        return local
     if k == 'fit':
         return n['note'] + (' ' + w['line']['say'] if w and w['kind'] == 'addon' else '')
     if k == 'outfit':
@@ -1069,6 +1099,10 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         return dict(message='Chị Vy cười: “Vậy là em nắm việc rồi đó, vô ca thôi!”')
     if name == 'ao_swap':
         return _swap(s, c, p)
+    if name == 'ao_local':   # 🌏 a habit of the city's customer (game/clothing_abroad.py)
+        t = kit.task(c, p)
+        kit.need(t['career'] == ID and t['known'], 'Chào khách và nghe khách nói trước nhé (bấm “Nghe khách”).')
+        return _abroad().answer(s, c, t, p)
     if name == 'ao_short':   # khách đưa thiếu tiền (game/short_pay.py via the till)
         t = kit.task(c, p)
         kit.need(t['career'] == ID and t.get('cash'), 'Khách chưa đưa tiền mặt.')
@@ -1237,6 +1271,7 @@ def _lock_bill(s, c, t):
         return _open_bill(c, t, lines)
     kit.need(t['stage'] == 'pick', 'Bill đã chốt rồi.')
     kit.need(t['picks'], 'Quầy chưa có món nào. Lấy đồ trên giá treo trước nhé.')
+    kit.need(not _abroad().pending(t), f'{who} còn đang hỏi: “{(_abroad().ask_of(t) or {}).get("say", "")}” Trả lời khách trước đã.')
     bad = [i for i, v in enumerate(t['tried']) if v in ('small', 'big')]
     kit.need(not bad, f'{who}: “Món này chị thử không vừa mà, đổi size giùm đã.”')
     if t['kind'] in ('fit', 'room'):
@@ -1372,7 +1407,7 @@ def _finish(s, c, t):
         d['seq'] += 1
         d['swaps'] = ar.last(d['swaps'] + [dict(id=f'sw-{d["seq"]}', npc=t['npc'], item=x['item'], colour=x['colour'], wrong=x['size'],
                                          right=right, price=_line_price(t, x), day=c['day'] + 1, task=t['id'])], 12, 'clothing.swaps', c)
-    if not wrong and t['kind'] in ('fit', 'outfit') and _npc_index(t) in REGULARS:
+    if not wrong and t['kind'] in ('fit', 'outfit') and _npc_index(t) in REGULARS and 'abroad' not in t:
         _remember_sizes(c, t)
     share = t['needs']['fee'] * TAILOR_SHARE // 100 if t['kind'] == 'alter' and t['alt']['mode'] == 'send' else 0
     net = react['pay'] - money['loss']
@@ -1557,7 +1592,7 @@ def _room(s, c, t, name, p):
     kit.need(i < len(q), 'Phòng thử đã vãn khách.')
     cur = q[i]
     key = str(i)
-    who = PEOPLE[cur['npc']][0]
+    who = _name(t, cur['npc'])
     if name == 'ao_room_tag':
         kit.need(key not in r['tags'] and key not in r['outs'], f'{who} đã có thẻ rồi.')
         n = kit.integer(p.get('count'), 1, 6)
@@ -2016,6 +2051,7 @@ def on_close(s: dict, c: dict) -> dict:
         lines.append(f'🪡 Tiệm: {look["name"]}.')
     tomorrow = mod_of(c['day'] + 1)
     lines.append(f'📅 Ngày mai: {tomorrow["emoji"]} {tomorrow["name"]}.')
+    lines.extend(_abroad().on_close(s, c, d['day_sales']))   # 🌏 a day at the partner shop abroad
     summary = dict(sales=d['day_sales'], lines=lines, note=f'Doanh thu quầy hôm nay {d["day_sales"]} xu.')
     d['day_sales'] = 0
     return summary
@@ -2048,11 +2084,13 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
         q = t['needs']['queue']
         if i < len(q) and str(i) not in r['tags']:
             r['tags'][str(i)] = q[i]['items']
-            return f'Đã đếm và đưa thẻ số {q[i]["items"]} món cho {PEOPLE[q[i]["npc"]][0]}.'
+            return f'Đã đếm và đưa thẻ số {q[i]["items"]} món cho {_name(t, q[i]["npc"])}.'
     return 'Đã gấp lại đồ khách thử, treo lên giá đúng size.'
 
 
 def hint(c: dict, t: dict) -> str:
+    if t.get('abroad') and t.get('kind') in ('fit', 'outfit'):
+        return '🌏 Khách nói size kiểu địa phương → tra 📏 bảng quy đổi → lấy đúng nhãn trên giá → trả lời thói quen của khách → tính tiền.'
     return {
         'fit': 'Nghe khách tả → xem bảng size (form sơ mi ôm: lấy lớn hơn một size so với shop khác) → lấy đúng món, đúng màu → chưa chắc thì mời thử → tính tiền, thối đúng.',
         'outfit': 'Xem dịp, ngân sách và lời khách dặn → chọn váy/đầm hoặc áo + quần, đúng size khách nói → tránh màu kiêng → thêm phụ kiện hợp dịp → tính tiền. Lố ngân sách: 💬 trao đổi với khách.',
@@ -2080,6 +2118,9 @@ def feedback(c: dict, t: dict) -> dict:
         if w and (t.get('result') or {}).get('total', 1):
             rows.append(dict(key='wish', label='Nhớ lời khách dặn', score=2 if codes & {'wish_miss'} else 4 if w.get('skipped') else 5,
                              note='quên mất lời dặn' if 'wish_miss' in codes else 'tiệm hết món khách hỏi' if w.get('skipped') else 'nhớ đúng lời dặn'))
+        local = _abroad().feedback_row(t)
+        if local:
+            rows.append(local)
         talk = t.get('talk')
         if k == 'outfit' and isinstance(talk, dict):
             rows.append(dict(key='budget', label='Chuyện ngân sách', score=2 if codes & {'pushy', 'no_sale'} else 4 if talk['state'] == 'raised' else 5,
@@ -2122,6 +2163,12 @@ def _strip(v):
 
 
 def public_task(t: dict) -> dict:
+    v = _public_task(t)
+    _abroad().project(t, v)   # 🌏 the city's names, sizes and habits
+    return v
+
+
+def _public_task(t: dict) -> dict:
     v = strip_copy(t)
     if not t['known']:
         v['needs'] = None
@@ -2240,6 +2287,7 @@ def validate_task(t: dict, original: dict) -> None:
     kit.need(t.get('haggle') in (None, 'ask', 'hold', 'small', 'big'), 'Chuyện trả giá sai.')
     kit.need(t['haggle'] is None or original['needs'].get('haggle'), 'Khách này không trả giá.')
     _validate_wish(t)
+    _abroad().validate_task(t)
     talk = t.get('talk')
     if talk is not None:
         kit.need(k == 'outfit' and isinstance(talk, dict) and set(talk) == TALK_KEYS and talk['state'] in TALK_STATES, 'Chuyện ngân sách sai.')

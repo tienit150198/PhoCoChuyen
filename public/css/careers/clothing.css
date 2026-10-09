@@ -122,6 +122,16 @@
 .career-job.ao .ao-talk-opts{display:grid;gap:6px;margin-top:6px}
 .career-job.ao .ao-talk-opts .btn{white-space:normal;line-height:1.25;text-align:left;min-height:40px}
 .career-job.ao .ao-talk-opts p{margin:0 0 2px}
+/* 🌏 the partner shop abroad (#306): the city's size chart and the customer's habit */
+.career-job.ao .ao-chart{margin-top:6px;border-radius:8px;background:color-mix(in srgb,var(--ao-mustard) 10%,transparent);padding:4px 8px}
+.career-job.ao .ao-chart summary{cursor:pointer;font-weight:600;font-size:.9rem}
+.career-job.ao .ao-chart ul{margin:4px 0 0;padding:0;list-style:none;display:grid;gap:2px}
+.career-job.ao .ao-chart li{overflow-wrap:anywhere}
+.career-job.ao .ao-local{margin-top:6px;border-radius:8px;padding:4px 8px;background:color-mix(in srgb,var(--ao-mustard) 14%,transparent)}
+.career-job.ao .ao-local.open{outline:2px solid color-mix(in srgb,var(--ao-mustard) 60%,transparent)}
+.career-job.ao .ao-local p{margin:2px 0}
+.career-job.ao .ao-local-opts{display:grid;gap:6px;margin-top:4px}
+.career-job.ao .ao-local-opts .btn{white-space:normal;line-height:1.25;text-align:left;min-height:40px}
 .career-job.ao .ao-talk-note{margin:6px 0;padding:8px 10px}
 
 /* Occasion, budget */

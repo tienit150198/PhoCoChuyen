@@ -28,6 +28,8 @@ const onRack=(x,id,s)=>(data(x).grid?.[id]?.[s])||0;
 /** What can still be taken for a new pick: on the rack minus what open bills and parcels hold. */
 const free=(x,id,s)=>Math.max(0,onRack(x,id,s)-((data(x).held||{})[`${id}:${s}`]||0));
 const npcId=i=>`${ID}_npc_${String(i+1).padStart(2,'0')}`;
+/** 🌏 At a partner shop abroad (game/clothing_abroad.py) the people are the city's: t.abroad.names maps ours to theirs. */
+const who=(x,t,id=t.npc)=>{const n=x.npc(id),l=t?.abroad?.names?.[id];return l?{...n,display_name:l}:n;};
 const sum=a=>(a||[]).reduce((s,v)=>s+Number(v||0),0);
 const KIND_ICON={fit:'📏',outfit:'👗',alter:'✂️',room:'🚪',return:'🔁',sale:'🏷️',online:'📦',display:'🧍‍♀️'};
 const sizeLabel=s=>s==='F'?'Free size':s;
@@ -92,13 +94,29 @@ function bookLine(x,t){
 /** The job's kind as a tag; on the clean layout its icon only (the header says the job) and the shop's "?". */
 const kindTag=(x,t,kind)=>clean()?`<span class="ao-kindq"><span class="tag" title="${x.esc(kind)}" aria-label="${x.esc(kind)}">${KIND_ICON[t.kind]||'🧵'}</span>${helpQ(x)}</span>`:`<span class="tag">${KIND_ICON[t.kind]||''} ${x.esc(kind)}</span>`;
 function ticket(t,x){
-  const w=x.npc(t.npc),kind=x.cc.kinds?.[t.kind]||t.kind;
+  const w=who(x,t),kind=x.cc.kinds?.[t.kind]||t.kind;
   const said=t.kind==='fit'?t.needs.lines.map(l=>l.say).join(' '):t.kind==='outfit'?t.needs.note:t.opening;
   const wish=t.wish?(t.wish.kind==='addon'?t.wish.line.say:t.wish.say):'';
   return `<article class="card ticket ao-ticket"><div class="row">${x.portrait(w,52)}<div class="grow"><div class="row spread wrap"><h3>${x.esc(w.display_name)}</h3>${kindTag(x,t,kind)}</div>
-    <p class="ao-said">“${x.esc(said)}”</p>${wish?`<p class="ao-said ao-wish">💬 “${x.esc(wish)}”${t.wish.skipped?' <small>(tiệm hết hàng)</small>':''}</p>`:''}${bookLine(x,t)}
+    <p class="ao-said">“${x.esc(said)}”</p>${wish?`<p class="ao-said ao-wish">💬 “${x.esc(wish)}”${t.wish.skipped?' <small>(tiệm hết hàng)</small>':''}</p>`:''}${t.abroad?'':bookLine(x,t)}${abroadCard(t,x)}
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div></article>`;
 }
+
+/* ------------------------------------------------------------ 🌏 the partner shop abroad (#306) */
+/** The city's 📏 chart (the rack keeps our labels) and the customer's habit, answered with one tap. */
+function abroadCard(t,x){
+  const a=t.abroad;if(!a||!t.known)return '';
+  const rows=(a.chart||[]).map(r=>`<li><b>${x.esc(r.label)}</b> ${r.cells.map(([k,v])=>`${x.esc(k)}=${x.esc(v)}`).join(' · ')}</li>`).join('');
+  const chart=rows&&['fit','outfit'].includes(t.kind)?`<details class="ao-chart"><summary>📏 Size ${x.esc(a.flag)} → nhãn tiệm</summary><ul class="small">${rows}</ul>${a.chart_note?`<p class="small muted">${x.esc(a.chart_note)}</p>`:''}</details>`:'';
+  const q=a.ask;if(!q)return chart;
+  const mark={good:'✅',ok:'🙂',bad:'😬'}[q.ok]||'';
+  const said=q.opts.find(o=>o.id===q.ans);
+  const body=q.ans?`<p class="small">${mark} ${x.esc(said?.label||'')}${q.reply?` — ${x.esc(q.reply)}`:''}</p>`
+    :`<div class="ao-local-opts">${q.opts.map(o=>x.cmd(x.esc(o.label),'ao_local',{task:t.id,answer:o.id},'ghost small')).join('')}</div>`;
+  return `${chart}<div class="ao-local${q.ans?'':' open'}"><p class="ao-said">💬 “${x.esc(q.say)}”</p>${body}</div>`;
+}
+/** The guide's row for the habit: answered before the bill (the server refuses ao_bill until then). */
+const localRow=t=>t.abroad?.ask&&t.stage!=='pay'?[{ok:t.abroad.ask.ans?(t.abroad.ask.ok!=='bad'):null,label:'💬 Trả lời khách',go:t.abroad.ask.ans?null:{sel:'.ao-local',label:'💬 Trả lời khách'}}]:[];
 
 /* ------------------------------------------------------------ the rack (pick / pack / dress) */
 const pickOf=(x,t)=>{const p=x.ui.pick;return p&&p.task===t.id?p:{task:t.id,item:null,colour:null};};
@@ -203,7 +221,7 @@ function counter(t,x,title){
 function haggleBox(t,x){
   if(t.haggle!=='ask')return '';
   const b=t.bill,h=x.cc.haggle||{small:5,big:20};
-  return `<div class="card ao-haggle"><p><b>${x.esc(x.npc(t.npc).display_name)}</b> đòi bớt giá. Chị Vy dặn: khách quen bớt tối đa ${h.small}%.</p>
+  return `<div class="card ao-haggle"><p><b>${x.esc(who(x,t).display_name)}</b> đòi bớt giá. Chị Vy dặn: khách quen bớt tối đa ${h.small}%.</p>
     <div class="ao-3">${x.cmd('🙂 Giữ giá','ao_haggle',{task:t.id,answer:'hold'},'ghost')}${x.cmd(`🤏 Bớt ${h.small}% (−${Math.floor(b.sub*h.small/100)})`,'ao_haggle',{task:t.id,answer:'small'},'ghost')}${x.cmd(`💸 Bớt ${h.big}%`,'ao_haggle',{task:t.id,answer:'big'},'ghost')}</div></div>`;
 }
 function payBlock(t,x){
@@ -243,7 +261,7 @@ function fitSteps(t,x){
       go:i>=0?null:onRackPick(x,t,l)?{sel:'.ao-sizes',label:clean()?'👉 Chọn size':'👉 Chọn size trên giá treo'}:{act:'car:item',data:{task:t.id,item:l.item,colour:l.colour},label:clean()?`👉 ${x.esc(shortName(x,l.item))} ${x.esc(l.colour)}`:`👉 Lấy ${x.esc(it.name.toLowerCase())} màu ${x.esc(l.colour)}`}};});
   const extra=t.picks.length-m.filter(i=>i>=0).length;
   if(extra>0)rows.push({ok:false,label:'Trên quầy có món khách không hỏi',go:{sel:'.ao-picked'}});
-  return rows;
+  return [...rows,...localRow(t)];
 }
 function fitJob(t,x){
   // Clean layout: the chart's numbers ride on the size buttons (sizeClue) and the whole chart is in "?".
@@ -278,6 +296,7 @@ function outfitSteps(t,x){
     ...(t.talk?.state==='open'?[{ok:null,label:'💬 Trao đổi với khách chuyện ngân sách',go:{sel:'.ao-talk',label:'💬 Trao đổi với khách'}}]:[]),
     {ok:!t.picks.length?null:total<=budgetOf(t)||t.talk?.state==='off'&&total-t.talk.off<=budgetOf(t)?true:false,label:`Trong ngân sách ${budgetOf(t)} xu`,note:`đang ${total} xu`},
     ...(wishRow(t,x)),
+    ...localRow(t),
   ];
 }
 function outfitJob(t,x){
@@ -314,8 +333,8 @@ function talkBox(t,x){
     const line={raised:`🙂 Khách đồng ý nâng ngân sách lên ${x.fmt(k.budget)} xu.`,off:`🏷️ Đã hứa bớt ${x.fmt(k.off)} xu cho vừa túi tiền.`,swap:`💡 Đã hứa tìm bộ dưới ${x.fmt(budgetOf(t))} xu: treo bớt món đắt.`}[k.state];
     return line?`<p class="card ao-talk-note small">${line}</p>`:'';
   }
-  const v=t.talk_view||{},who=x.esc(x.npc(t.npc).display_name),h=x.cc.haggle||{small:5,big:20};
-  return `<section class="card ao-talk"><h4>💬 Trao đổi với ${who}</h4>
+  const v=t.talk_view||{},nm=x.esc(who(x,t).display_name),h=x.cc.haggle||{small:5,big:20};
+  return `<section class="card ao-talk"><h4>💬 Trao đổi với ${nm}</h4>
     <p class="small">Bộ này <b>${x.fmt(k.over)} xu</b>, khách chỉ định chi <b>${x.fmt(v.budget??budgetOf(t))} xu</b> (lố ${x.fmt(v.off??0)}). ${tip('Mỗi khách rộng tay một kiểu — đọc tính khách mà chọn.','💬 Trao đổi','span')}</p>
     <div class="ao-talk-opts">
       ${x.cmd('💡 Giải thích & gợi ý món rẻ hơn','ao_talk',{task:t.id,answer:'swap'},'ghost full')}
@@ -362,10 +381,10 @@ function roomSteps(t,x){
   const r=t.room,id=t.id,q=t.needs.queue;
   if(t.stage==='pay')return paySteps(t,x);
   if(t.stage==='room'){
-    const i=r.i,k=String(i),who=x.npc(npcId(q[i].npc));
-    const rows=q.map((c,j)=>j<i?{ok:!['lost','accused'].includes(r.res[String(j)])?true:false,label:`${x.npc(npcId(c.npc)).display_name} xong lượt thử`}:null).filter(Boolean);
-    if(!(k in r.tags)&&!(k in r.outs))rows.push({ok:null,label:`Đếm đồ ${who.display_name} cầm vào, đưa thẻ số`,go:{sel:'.ao-tags'}});
-    else if(!(k in r.outs))rows.push({ok:null,label:`${who.display_name} thử xong: đếm lại đồ`,go:{cmd:'ao_room_out',payload:{task:id},label:'🚪 Khách bước ra, đếm lại'}});
+    const i=r.i,k=String(i),guest=who(x,t,npcId(q[i].npc));
+    const rows=q.map((c,j)=>j<i?{ok:!['lost','accused'].includes(r.res[String(j)])?true:false,label:`${who(x,t,npcId(c.npc)).display_name} xong lượt thử`}:null).filter(Boolean);
+    if(!(k in r.tags)&&!(k in r.outs))rows.push({ok:null,label:`Đếm đồ ${guest.display_name} cầm vào, đưa thẻ số`,go:{sel:'.ao-tags'}});
+    else if(!(k in r.outs))rows.push({ok:null,label:`${guest.display_name} thử xong: đếm lại đồ`,go:{cmd:'ao_room_out',payload:{task:id},label:'🚪 Khách bước ra, đếm lại'}});
     else if(!r.checked.includes(i))rows.push({ok:null,label:'Thiếu món: kiểm phòng thử trước',go:{cmd:'ao_room_check',payload:{task:id},label:'🔍 Kiểm phòng thử'}});
     else rows.push({ok:null,label:'Phòng trống: hỏi khéo khách',go:{cmd:'ao_room_ask',payload:{task:id},label:'🙏 Hỏi khéo khách'}});
     return rows;
@@ -377,7 +396,7 @@ function roomSteps(t,x){
 const RES={ok:['green','✓ đủ đồ'],found:['green','✓ đồ để quên trên móc'],returned:['green','✓ khách trả lại'],lost:['danger','mất một món'],accused:['danger','nghi oan khách']};
 function roomJob(t,x){
   const r=t.room,q=t.needs.queue,id=t.id;
-  const cards=q.map((c,j)=>{const w=x.npc(npcId(c.npc)),k=String(j),cur=t.stage==='room'&&j===r.i,res=r.res[k];
+  const cards=q.map((c,j)=>{const w=who(x,t,npcId(c.npc)),k=String(j),cur=t.stage==='room'&&j===r.i,res=r.res[k];
     const hangers=`<span class="ao-hangers" aria-label="Cầm ${c.items} món">${'👚'.repeat(c.items)}</span>`;
     let act='';
     if(cur&&!(k in r.tags)&&!(k in r.outs))act=`<p class="ao-lab">Đưa thẻ số — khách cầm vào mấy món?</p><div class="ao-tags">${[1,2,3,4,5,6].map(n=>x.cmd(String(n),'ao_room_tag',{task:id,count:n},'ghost ao-tag')).join('')}</div>
@@ -386,8 +405,8 @@ function roomJob(t,x){
     else if(cur)act=`<p class="small bad">Trả ${r.outs[k]} món, thẻ ghi ${r.tags[k]??'?'}.</p><div class="ao-3">${r.checked.includes(j)?'':x.cmd('🔍 Kiểm phòng','ao_room_check',{task:id},'primary')}${x.cmd('🙏 Hỏi khéo','ao_room_ask',{task:id},r.checked.includes(j)?'primary':'ghost')}${x.cmd('👋 Để khách đi','ao_room_let',{task:id},'ghost')}</div>`;
     const tag=res?`<span class="tag ${RES[res][0]}">${RES[res][1]}</span>`:cur?'<span class="tag amber">Đang tới lượt</span>':j>r.i?'<span class="tag">Đang chờ</span>':'';
     return `<article class="ao-guest${cur?' cur':''}">${x.portrait(w,40)}<div class="grow"><div class="row spread wrap"><b>${x.esc(w.display_name)}</b>${tag}</div>${hangers}${act}</div></article>`;}).join('');
-  const buyCard=`<section class="card ao-counter"><h4>🛍️ ${x.esc(x.npc(t.npc).display_name)} mua</h4><p class="ao-said">“${x.esc(t.needs.buy.say)}”</p>${picked(t,x)}</section>`;
-  const buy=t.stage!=='room'?`${t.stage==='pay'?SF.part(x,t.id,new Set(),'counter',`🛍️ ${x.esc(x.npc(t.npc).display_name)} mua`,buyCard,{done:true,sum:t.picks.map(p=>x.esc(item(x,p.item).name)).join(', ')}):buyCard}${t.stage==='pick'?rack(t,x):''}${payBlock(t,x)}`:'';
+  const buyCard=`<section class="card ao-counter"><h4>🛍️ ${x.esc(who(x,t).display_name)} mua</h4><p class="ao-said">“${x.esc(t.needs.buy.say)}”</p>${picked(t,x)}</section>`;
+  const buy=t.stage!=='room'?`${t.stage==='pay'?SF.part(x,t.id,new Set(),'counter',`🛍️ ${x.esc(who(x,t).display_name)} mua`,buyCard,{done:true,sum:t.picks.map(p=>x.esc(item(x,p.item).name)).join(', ')}):buyCard}${t.stage==='pick'?rack(t,x):''}${payBlock(t,x)}`:'';
   return `<section class="card ao-room"><h4>🚪 Phòng thử <small class="muted">(rèm ${t.stage==='room'?'đang kéo':'mở'})</small></h4><div class="ao-queue">${cards}</div></section>${buy}`;
 }
 
@@ -443,9 +462,9 @@ function onlineSteps(t,x){
 }
 function onlineJob(t,x){
   const n=t.needs,pc=t.parcel,id=t.id,app=n.channel==='zalo'?['💬','Zalo','zalo']:['📘','Facebook','fb'];
-  const chat=`<div class="ao-chat ${app[2]}"><small>${app[0]} ${app[1]} · ${x.esc(x.npc(t.npc).display_name)}</small><p>${x.esc(t.opening)}</p><ul>${n.lines.map(l=>`<li>${dot(x,l.colour)}${x.esc(item(x,l.item).name)} · size <b>${x.esc(l.size)}</b> · ${x.esc(l.colour)}</li>`).join('')}</ul><p class="small">${x.esc(n.note)}</p></div>`;
+  const chat=`<div class="ao-chat ${app[2]}"><small>${app[0]} ${app[1]} · ${x.esc(who(x,t).display_name)}</small><p>${x.esc(t.opening)}</p><ul>${n.lines.map(l=>`<li>${dot(x,l.colour)}${x.esc(item(x,l.item).name)} · size <b>${x.esc(l.size)}</b> · ${x.esc(l.colour)}</li>`).join('')}</ul><p class="small">${x.esc(n.note)}</p></div>`;
   const items=pc.items.length?`<ul class="ao-picked">${pc.items.map((p,i)=>`<li>${dot(x,p.colour)}<span class="grow">${x.esc(pieceLabel(x,p))}</span>${pc.sealed?'':`<button type="button" class="btn small ghost ao-x" data-command="ao_unpack" data-payload="${x.esc(JSON.stringify({task:id,index:i}))}" aria-label="Lấy ra">✕</button>`}</li>`).join('')}</ul>`:'<p class="small muted ao-empty">Gói còn trống.</p>';
-  const label=pc.label?`<div class="ao-label"><b>📮 ${x.esc(x.npc(t.npc).display_name)}</b><small>${x.esc(n.address)}</small><span>${pc.label.cod?`Thu hộ ${x.money(pc.label.cod)}`:'Đã thanh toán'}</span></div>`:'';
+  const label=pc.label?`<div class="ao-label"><b>📮 ${x.esc(who(x,t).display_name)}</b><small>${x.esc(n.address)}</small><span>${pc.label.cod?`Thu hộ ${x.money(pc.label.cod)}`:'Đã thanh toán'}</span></div>`:'';
   return `<section class="card ao-online">${chat}</section>${pc.sealed?'':rack(t,x,'pack')}<section class="card ao-parcel"><h4>📦 Gói hàng ${pc.sealed?'<span class="tag green">đã dán</span>':''}</h4>${items}${label}
     <div class="row wrap">${pc.items.length&&!pc.sealed?x.cmd(pc.label?'🖨️ In lại phiếu':'🖨️ In phiếu giao','ao_label',{task:id},'small ghost'):''}${pc.label&&!pc.sealed?x.cmd('📦 Dán băng keo','ao_seal',{task:id},'small ghost'):''}</div></section>`;
 }
@@ -509,10 +528,10 @@ function pin(t,x,next){
     chips.push({ok:has||null,icon:it(b.item).emoji,text:`${it(b.item).name} · size ${b.size} · ${b.colour}`,act:has?'':find(b.item,b.colour)});
   }else return '';
   if(t.stage==='pay'&&!chips.some(c=>c.ok===false))return '';   // at the till the bill says it all
-  const who=x.npc(t.npc);
+  const w=who(x,t);
   // Clean layout: a fit order, a parcel and the fitting room's buyer say the same words in the ticket / chat right
   // above, so their card is the header chip's popover only; the outfit's card (occasion rules, sizes, budget) stays.
-  return reqPin(x,{sub:x.esc(who.display_name),chips,key:id,next,chipped:clean()&&t.kind!=='outfit'&&!chips.some(c=>c.ok===false)});
+  return reqPin(x,{sub:x.esc(w.display_name),chips,key:id,next,chipped:clean()&&t.kind!=='outfit'&&!chips.some(c=>c.ok===false)});
 }
 
 /* ------------------------------------------------------------ the guide */
@@ -596,7 +615,7 @@ export default {
     const intro=x.ui.intro?introCard(x,!data(x).intro):!data(x).intro&&!clean()?introFold(x):'';
     if(t.known)SF.opened(x,t.id);
     if(!t.known){
-      const w=x.npc(t.npc),kind=x.cc.kinds?.[t.kind]||t.kind;
+      const w=who(x,t),kind=x.cc.kinds?.[t.kind]||t.kind;
       // Clean layout: who and their words; the job's name is the header, the intro is in "?", the ask is the bar's
       // one main button (ui-kit actBar via stepBar).
       if(clean()){

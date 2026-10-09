@@ -29,10 +29,16 @@ ignores it: it would pay the plain salary and not shut the other workplaces for 
     back   life day you came home from the last contract (0: never)
     done   {destination id: contracts finished}
 Wallet rows use the existing kinds 'study' and 'life' (journey.HISTORY_KINDS is a closed list older builds validate).
+
+👗 The clothes shop (#306, game/clothing_abroad.py) is not a hired job: Chị Vy sends you to a partner shop once you have
+served enough customers. Its contract is the same `work` block with career 'clothing', emp None, hd 0, fee 0 (she pays
+the ticket) and pct the commission on the day's counter sales; clothing.on_close counts its days. An older build finds
+no hired job behind it and ends it (sync): no money is at stake.
 """
 from __future__ import annotations
 
 from . import abroad_content as C
+from . import clothing_abroad as SHOP
 from . import price_index as pi
 
 VERSION = 1
@@ -108,6 +114,8 @@ def good_need(s: dict, need: int) -> int:
 
 
 def _valid(s: dict, w: dict) -> bool:
+    if w.get('career') == SHOP.CAREER and w.get('emp') is None:   # 👗 Chị Vy's partner shop: no hired job behind it
+        return isinstance((s.get('careers') or {}).get(SHOP.CAREER), dict)
     c = (s.get('careers') or {}).get(w.get('career'))
     job = c.get('job') if isinstance(c, dict) else None
     return (isinstance(job, dict) and job.get('status') == 'hired' and job.get('employer') == w.get('emp')
@@ -191,6 +199,8 @@ def day_lines(job_note: dict | None) -> list[str]:
 def _eligible(s: dict, cid: str) -> str | None:
     """Why this workplace cannot send you abroad now, or None."""
     from . import employment
+    if cid == SHOP.CAREER:
+        return SHOP.why_not(s)
     c = (s.get('careers') or {}).get(cid)
     if not isinstance(c, dict) or not employment.required(cid):
         return 'Chỉ nơi làm thuê mới cử người đi làm ở nước ngoài.'
@@ -268,6 +278,12 @@ def action(s: dict, name: str, p: dict) -> dict:
         from .journey import _place
         need(busy is None, f'Khép ca ở {_place(busy)} trước rồi hẵng lên đường nhé.' if busy else '', 'shift_open')
         need(p.get('confirm') is True, 'Xác nhận đi làm ở nước ngoài.')
+        if cid == SHOP.CAREER:   # 👗 Chị Vy pays the ticket: nothing to refund, nothing lost on a rollback
+            d, sh = DEST[to], SHOP.SHOPS[to]
+            b['work'] = dict(to=to, career=cid, emp=None, hd=0, n=0, need=sh['days'], pct=sh['pct'], fee=0, start=day)
+            return dict(message=f'🌏 Lên đường tới {d["flag"]} {d["city"]}! {sh["days"]} ngày đứng tiệm {sh["name"]} ({sh["area"]}), '
+                                f'hoa hồng +{sh["pct"]}% doanh thu mỗi ngày. Chị Vy bao vé. Khách bên đó nói size kiểu khác, nhớ xem 📏 bảng quy đổi!',
+                        celebrate=True)
         d, wk = DEST[to], C.WORK[to]
         cost = work_fee(to)
         bk.pay(s, cost, f'Vé & visa lao động · {d["name"]}', method=p.get('pay', 'auto'), kind='life', career=cid,
@@ -312,6 +328,7 @@ def catalogue() -> dict:
         programs={k: dict(school=v['school'], course=v['course'], degree=v['degree'], fee=tuition(k), lessons=len(v['lessons']))
                   for k, v in C.PROGRAMS.items()},
         work={k: dict(days=v['days'], pct=v['pct'], fee=work_fee(k)) for k, v in C.WORK.items()},
+        shop=SHOP.catalogue(),   # 👗 the partner clothes shops
         grades=dict(C.GRADES), deg_pct=list(DEG_PCT), good_cut=GOOD_CUT, scholar=SCHOLAR_PCT, rest=REST, bonus=LADDER_BONUS)
 
 
@@ -333,7 +350,8 @@ def public(s: dict) -> dict | None:
         out['study'] = v
     w = contract(s)
     if w:
-        out['work'] = dict(to=w['to'], career=w['career'], n=w['n'], need=w['need'], pct=w['pct'], fee=w['fee'], start=w['start'])
+        out['work'] = dict(to=w['to'], career=w['career'], n=w['n'], need=w['need'], pct=w['pct'], fee=w['fee'], start=w['start'],
+                           shop=w['career'] == SHOP.CAREER and w['emp'] is None)
     from . import employment
     jobs = []
     for cid, c in (s.get('careers') or {}).items():
@@ -343,6 +361,10 @@ def public(s: dict) -> dict | None:
         jobs.append(dict(career=cid, title=str(job.get('title') or ''), why=_eligible(s, cid), open=bool(c.get('open')),
                          pay=employment.day_pay(s, c, cid)))   # a day at home; abroad: × (100 + pct) / 100
     out['jobs'] = jobs
+    if SHOP.CAREER in (s.get('careers') or {}):   # 👗 the clothes shop: Chị Vy sends you once you served enough customers
+        c = s['careers'][SHOP.CAREER]
+        out['shop'] = dict(career=SHOP.CAREER, why=SHOP.why_not(s), open=bool(c.get('open')),
+                           served=int((c.get('metrics') or {}).get('served', 0)), need=SHOP.SERVED_NEED)
     return out
 
 
