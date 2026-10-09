@@ -114,7 +114,8 @@ class Switch(unittest.TestCase):
         base_perm = 'camera=(), microphone=(), geolocation=(), payment=()'
         self.assertEqual(srv.mic_headers('CSP-X', base_perm, False, 'wss://h'), ('CSP-X', base_perm))
         if csp is not None:   # this process runs with the switch off: the module's headers are today's
-            self.assertEqual(srv.PERMISSIONS, base_perm)
+            from game import dog_bark   # 🐕 kéo co on (the tests' default): the microphone for this site, nothing else
+            self.assertEqual(srv.PERMISSIONS, base_perm.replace('microphone=()', 'microphone=(self)') if dog_bark.enabled() else base_perm)
             self.assertNotIn('jsdelivr', srv.CSP)
             self.assertIn("connect-src 'self';", srv.CSP)
 

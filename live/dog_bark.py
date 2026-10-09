@@ -464,6 +464,9 @@ class DogBarkFeature(Feature):
     # ---- every second -----------------------------------------------------------------------------------------
     async def tick(self, now: float):
         t = time.monotonic()
+        per_stake: dict = {}
+        for w in self.queue.values():   # only stakes with two players waiting are worth a matching pass
+            per_stake[w.stake] = per_stake.get(w.stake, 0) + 1
         for w in list(self.queue.values()):
             if w.busy or w.ticket not in self.queue:
                 continue
@@ -479,7 +482,8 @@ class DogBarkFeature(Feature):
                 if await self._refund(w.ticket, w.sid, 'wait'):
                     self._to(w.pid, dict(t='bark_back', ticket=w.ticket, why='wait'))
                 continue
-            await self._try(w)
+            if per_stake.get(w.stake, 0) > 1:
+                await self._try(w)
             if w.ticket in self.queue and not w.busy and t - w.since >= G.DOG_AFTER:
                 await self._start_dog(w)
 

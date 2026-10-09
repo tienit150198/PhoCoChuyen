@@ -24,7 +24,7 @@ export const ROWS=[
   [{id:'van_phong',name:'Khu văn phòng',emoji:'🏢',items:['lm:bank','lm:daugia','library','accounting','customer_care','corp_accounting','tax_payroll','group_accounting','hr_admin','secretary','it_helpdesk']}],
   [{id:'dich_vu',name:'Phố dịch vụ',emoji:'💇',items:['salon','nail','photobooth','pet_care','repair','pharmacy','nurse','police','rescue','clothing','pet_shop','lm:pets','lm:garage','lm:gadgets','lm:spa','lm:style','lm:hanghieu']}],
   [{id:'pho_cho',name:'Phố chợ',emoji:'🛒',items:['florist','cafe_bakery','grocery','milk_tea','mother_baby','restaurant','delivery','pho','com','zpop','lm:quan']}],
-  [{id:'hang_rong',name:'Phố hàng rong',emoji:'🧺',items:['lm:fair','tra_da','fruit','ice_cream','lm:board','garbage','drain','lm:walk','lm:rap','lm:karaoke','lm:mtq','lifeguard']}],
+  [{id:'hang_rong',name:'Phố hàng rong',emoji:'🧺',items:['lm:fair','tra_da','fruit','ice_cream','lm:board','garbage','drain','lm:walk','lm:rap','lm:karaoke','lm:keoco','lm:mtq','lifeguard']}],
   [{id:'hem',name:'Hẻm nhà',emoji:'🏠',items:['lm:house','homemaker','giupviec','naucom','babysitter','lm:quay','lm:square','lm:dinhthu']}],
 ];
 /** Landmarks: what they open (an existing data-action) and their sign. */
@@ -37,6 +37,7 @@ export const LANDMARKS={
   quan:{emoji:'☕',name:'Đi quán',action:'spendQuan'},spa:{emoji:'💆',name:'Spa Sen',action:'spendSpa'},rap:{emoji:'🎬',name:'Rạp Mây',action:'spendRap'},
   congduc:{emoji:'🙏',name:'Công đức',action:'spendChua'},style:{emoji:'🎨',name:'Phong cách',action:'spendStyle'},
   karaoke:{emoji:'🎤',name:'Phòng hát Mây',action:'liveKara'},   // 🎤 v4/karaoke.js: only while the live service has it on (else not built)
+  keoco:{emoji:'🐕',name:'Kéo co chó sủa',action:'liveBark'},   // 🐕 v4/dog-bark.js: only while the live service has it on (else not built)
   // 🛍️ Mua sắm (v4/lux.js, game/lux.py): each door opens its tab
   travel:{emoji:'✈️',name:'Đại lý vé',action:'luxTrip'},hanghieu:{emoji:'💎',name:'Hàng hiệu',action:'luxSuu'},
   duhoc:{emoji:'🎓',name:'Du học & việc làm',action:'abroad'},   // ✈️🌏 v4/abroad.js, game/abroad.py

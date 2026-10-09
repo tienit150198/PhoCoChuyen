@@ -30,6 +30,13 @@ sys.path.insert(0, str(ROOT))
 from browser_live_chat import API, PW, free_port, wait_http  # noqa: E402
 from pg_test_support import test_env, test_connect, schema_for  # noqa: E402
 
+# The words a player sees in the open sheet (the ui-kit.js wordBudget way: text on screen, not inside a closed <details>)
+WORDS = r"""() => {const d=document.querySelector('.db-sheet[open]');if(!d)return 0;let n=0;
+  const w=document.createTreeWalker(d,NodeFilter.SHOW_TEXT);let t;
+  while((t=w.nextNode())){const el=t.parentElement;if(!el||el.closest('details:not([open])>:not(summary)'))continue;
+    const r=el.getBoundingClientRect(),cs=getComputedStyle(el);if(!r.width||!r.height||cs.visibility==='hidden'||r.bottom<0||r.top>innerHeight)continue;
+    n+=t.textContent.split(/\s+/).filter(x=>/[\p{L}\p{N}]/u.test(x)).length;}
+  return n;}"""
 OPEN = """() => {const b=document.createElement('button');b.dataset.action='liveBark';b.hidden=true;document.body.append(b);b.click();b.remove();}"""
 
 
@@ -97,8 +104,11 @@ async def run(shots: Path | None) -> list:
     problems: list = []
 
     async def shot(page, name):
+        await page.wait_for_timeout(500)
+        n = await page.evaluate(WORDS)
+        print(f'{name}: {n} visible words in the sheet', flush=True)
+        check(n <= 30, f'{name} within 30 words ({n})')
         if shots:
-            await page.wait_for_timeout(500)
             await page.screenshot(path=str(shots / f'{name}.png'))
 
     def check(cond, what):
@@ -119,8 +129,6 @@ async def run(shots: Path | None) -> list:
                 await p.evaluate(OPEN)
                 await p.wait_for_selector('.db-sheet[open] [data-db=find]', timeout=10000)
             await shot(lan, '01-lobby-390')
-            words = await lan.evaluate("[...document.querySelectorAll('.db-sheet[open] .db-body')].map(e=>e.innerText).join(' ').split(/\\s+/).filter(Boolean).length")
-            print('lobby words (body, incl. stake numbers):', words)
             await lan.click('[data-db=stake][data-v="200"]')
             await lan.click('[data-db=find]')
             await lan.wait_for_selector('.db-waiting', timeout=10000)
