@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Tất toán cần $1 xu: tài khoản và ví còn thiếu $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tất toán sớm $1 · phí $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Tất toán sớm khoản $1: $2 xu.",
   "en": "",
   "pattern": true

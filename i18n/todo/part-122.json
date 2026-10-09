@@ -1,5 +1,15 @@
 [
  {
+  "vi": "⚠️ Miếng này $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khay $1 hết rồi. Bày thêm khay từ kho nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 Gắp $2 lên $3.$4",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "💸 Ting ting: nhận $1 xu tiền công",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧹 Dọn $1 nhà, $2 phòng, $3 lượt lau.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⭐ $1/$2 nhà khách khen sạch, không chê chỗ nào.",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Đang mất kết nối với nhà chung…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thể làm lúc này. Thử lại sau nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Ở chung",
+  "en": ""
+ },
+ {
   "vi": "Vào chơi",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Mục tiêu chương này cần kinh nghiệm làm việc văn phòng.",
-  "en": ""
- },
- {
-  "vi": "Tiếp tục công việc ở nơi bạn đã bắt đầu.",
-  "en": ""
- },
- {
-  "vi": "Một nơi đã mở để bạn bắt đầu làm việc.",
-  "en": ""
- },
- {
-  "vi": "Thu gọn mục tiêu",
   "en": ""
  }
 ]

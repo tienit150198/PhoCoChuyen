@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Báo cáo số liệu vận hành",
+  "en": ""
+ },
+ {
+  "vi": "(giờ Việt Nam, UTC+7)",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ",
+  "en": ""
+ },
+ {
   "vi": "Ra mắt",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Chưa có cảm nhận mới",
-  "en": ""
- },
- {
-  "vi": "Phòng & cơm −",
-  "en": ""
- },
- {
-  "vi": "Nơi làm khác −",
-  "en": ""
- },
- {
-  "vi": "Lương +",
   "en": ""
  }
 ]

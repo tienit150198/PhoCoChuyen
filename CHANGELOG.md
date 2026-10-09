@@ -1,3 +1,9 @@
+# v1.9.31 — 2026-10-09
+
+🚔 Trại tạm giữ (chủ game 09/10): game/jail.py, journey.jail; bắt ở chợ đen chỉ khi lời chợ đen hôm nay > 300.000 xu, 5%/ván (fair_bm.ARREST_FROM, BM_ARREST_P): mất cược + phạt 30% ví + 3 ngày; tố cáo sai 25% → 1 ngày; công ích 3 việc/ngày (đủ 3: ngày tính 2); bảo lãnh bởi bạn bè, bạn trả 30.000 xu; tự thả sau ngày án × 24h; MNL_JAIL_OFF=1 tắt.
+🌙 Chợ đen mở mãi (FAIR_DAYS 0, cùng đợt fair20261009), trao danh hiệu 0h thứ Hai hằng tuần, vay nóng không thu khi đóng.
+🏰 Biệt thự (estates) mời ghé thăm / ở chung / trang trí giúp được (home_guests, home_coop, live/home.py). Không đổi CSDL; save đọc được trên 1.9.29.
+
 # v1.9.30 — 2026-10-09
 
 📦 Bước 2 nâng kho (#277, chủ game 09/10 "ok nâng đi"): sức chứa mỗi món tối thiểu 80 (com giữ 120), dòng đơn tới 80 (server gửi line_cap), thùng >20 xếp khay 10 với nút Đếm khay; save của bản này không đọc được trên 1.9.28 nên chỉ quay về 1.9.29.

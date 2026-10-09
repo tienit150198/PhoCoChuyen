@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Nghe đâu dạo này $1 xài tiền như nước nha cả nhà 👀 mới lên phố mà. Chị không có ý gì, chị chỉ thấy lạ lạ thôi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm qua có cái xe chở hàng đậu trước $1, người ta khuân vô khuân ra gần tiếng đồng hồ, cô đếm được 11 thùng 👀 Buôn bán gì to vậy ta, có giấy phép không ta…",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Xe tải lại đỗ trước $1… thùng lớn thùng nhỏ. Hàng gì mà nhiều dữ.",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "$1 Xới một vá $2: dĩa có $3 vá ($4).$5",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ Miếng này $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khay $1 hết rồi. Bày thêm khay từ kho nhé.",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Bàn cư trú: đã nhận đủ hồ sơ của $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hướng dẫn $1 bổ sung hồ sơ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🧾 Kiểm đếm cùng $1: $2; bên trong: $3. Hai bên ký biên bản tiếp nhận. Một lúc sau, $4 tới xin nhận lại.",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "Sổ ghi $1 bản mà chốt tới $2: tiền nằm chết trong kho.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Chốt $1 bản Jewel với $2: −$3 xu, hàng đã về kho.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Biển giới hạn ghi sai: hôm nay nhà phân phối cho $1 bản/người.",
   "en": "",
   "pattern": true
  }

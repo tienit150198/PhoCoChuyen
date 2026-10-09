@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Bạn đã rời phòng chụp.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng chụp đã đóng vì lâu không ai chụp.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa làm được, thử lại nha.",
+  "en": ""
+ },
+ {
   "vi": "Mất kết nối, đang nối lại phòng…",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Công an đi rồi. Chơi tiếp thì cẩn thận nha.",
-  "en": ""
- },
- {
-  "vi": "🚨 Danh hiệu mới:",
-  "en": ""
- },
- {
-  "vi": "🚔 Về trại tạm giữ",
-  "en": ""
- },
- {
-  "vi": "Dạ, em biết rồi",
   "en": ""
  }
 ]

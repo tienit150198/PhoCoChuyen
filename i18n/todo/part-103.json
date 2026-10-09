@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Gõ đúng số trên que thử. Ngoài bảng mẫu (số trong ngoặc) là chưa mở hồ, báo kỹ thuật.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nước",
+  "en": ""
+ },
+ {
+  "vi": "Gõ đúng số trên que thử.",
+  "en": ""
+ },
+ {
   "vi": "Kiểm từng món",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "nêm",
-  "en": ""
- },
- {
-  "vi": "Nêm",
-  "en": ""
- },
- {
-  "vi": "nhớ khẩu vị nhà",
-  "en": ""
- },
- {
-  "vi": "👆 Nêm thế nào?",
   "en": ""
  }
 ]

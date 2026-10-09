@@ -1,5 +1,15 @@
 [
  {
+  "vi": "🧹 Dọn $1 nhà, $2 phòng, $3 lượt lau.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⭐ $1/$2 nhà khách khen sạch, không chê chỗ nào.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🔁 $1 chỗ phải lau lại vì bụi rơi từ trên xuống.",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "✋ Tắt bếp $1 sau $2 giây: $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cả $1 bếp đều đang bận.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "♨️ Hâm nóng lại $1.",
   "en": "",
   "pattern": true
  }

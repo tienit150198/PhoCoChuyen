@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Bớt một bàn",
+  "en": ""
+ },
+ {
+  "vi": "Số bàn",
+  "en": ""
+ },
+ {
+  "vi": "Thêm một bàn",
+  "en": ""
+ },
+ {
   "vi": "Tỉ lệ góp",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Chờ bạn tự đứng quầy",
-  "en": ""
- },
- {
-  "vi": "🔒 Đang giữ hàng cho bạn",
-  "en": ""
- },
- {
-  "vi": "Đã hết nguyên liệu",
-  "en": ""
- },
- {
-  "vi": "Thiếu tiền vận hành",
   "en": ""
  }
 ]

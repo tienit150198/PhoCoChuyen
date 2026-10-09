@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Lãi đã ghi",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có thể tự phục vụ hoặc giao việc cho nhân viên. Đội trong ca tiếp tục làm khi bạn khép ngày, sang nghề khác hoặc rời game; chỉ nghỉ khi hết hàng, thiếu quỹ hoặc nhân viên không sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Nhập nguyên liệu",
+  "en": ""
+ },
+ {
   "vi": "🛠️ Thiết bị tăng tốc",
   "en": ""
  },
@@ -1675,16 +1687,6 @@
  },
  {
   "vi": "Dạo này thấy $1 tiêu rủng rỉnh ghê, hôm trước còn nghe than hết tiền, nay lại xách đồ mới về 👀 Chắc làm ăn gì… cô không biết nữa, cô chỉ thắc mắc thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghe đâu dạo này $1 xài tiền như nước nha cả nhà 👀 mới lên phố mà. Chị không có ý gì, chị chỉ thấy lạ lạ thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm qua có cái xe chở hàng đậu trước $1, người ta khuân vô khuân ra gần tiếng đồng hồ, cô đếm được 11 thùng 👀 Buôn bán gì to vậy ta, có giấy phép không ta…",
   "en": "",
   "pattern": true
  }

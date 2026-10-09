@@ -1,5 +1,17 @@
 [
  {
+  "vi": "🔒 Đang giữ hàng cho bạn",
+  "en": ""
+ },
+ {
+  "vi": "Đã hết nguyên liệu",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu tiền vận hành",
+  "en": ""
+ },
+ {
   "vi": "Đang cập nhật quầy",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Chưa có hàng",
-  "en": ""
- },
- {
-  "vi": "· Đặt hàng ↓",
-  "en": ""
- },
- {
-  "vi": "Giữ cho ca của bạn",
-  "en": ""
- },
- {
-  "vi": "Đơn đang soạn",
   "en": ""
  }
 ]
