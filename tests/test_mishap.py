@@ -148,6 +148,27 @@ class Schedule(Base):
         self.assertEqual(self.status('mishap-9-a-1'), 'pending')
 
 
+class Sweep(Schedule):
+    def test_offline_rows_are_paid_once_with_a_receipt(self):
+        from scripts.mishap_sweep import sweep
+        tok = self.guest()
+        sid = self.store.key(tok)
+        s = self.state(tok)
+        self.insert(tok, 'mishap-7-s-1', 30, time.time() - 5)
+        self.insert(tok, 'mishap-7-s-2', 30, time.time() + 3600)
+        before = self.state(tok)['journey']['wallet']
+        self.assertEqual(sweep(self.store, True), 1)
+        self.assertEqual(self.status('mishap-7-s-1'), 'applied')
+        self.assertEqual(self.status('mishap-7-s-2'), 'pending')
+        self.assertEqual(sweep(self.store, True), 0)
+        with self.store.connect() as db:
+            rc = db.execute('SELECT result FROM receipts WHERE sid=? AND request_id=?', (sid, lfx.RID + lfx.short('mishap-7-s-1'))).fetchone()
+        self.assertIsNotNone(rc)
+        self.assertEqual(json.loads(rc['result'])['live']['taken'], min(30, max(0, before)))
+        validate_state(self.state(tok))
+        self.assertFalse(self.load(tok))   # nothing left due for on_load
+
+
 class Plan(unittest.TestCase):
     def test_a_chosen_mix(self):
         from scripts.mishap_plan import split
