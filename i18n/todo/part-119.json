@@ -1,5 +1,229 @@
 [
  {
+  "vi": "Giọng nhân vật",
+  "en": ""
+ },
+ {
+  "vi": "Nhân vật “líu lo” vài tiếng khi nói, mỗi người một giọng.",
+  "en": ""
+ },
+ {
+  "vi": "Âm thanh chi tiết",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng thu ngân, chuông cửa, lật giấy…",
+  "en": ""
+ },
+ {
+  "vi": "Trên iPhone, chế độ im lặng (nút gạt bên hông) sẽ tắt âm thanh thao tác và giọng nhân vật. Gạt tắt để nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Màu tên",
+  "en": ""
+ },
+ {
+  "vi": "Khung hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Tuần này xem rồi",
+  "en": ""
+ },
+ {
+  "vi": "Mua 7 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ tiêu xu",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Quán người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Cuống vé",
+  "en": ""
+ },
+ {
+  "vi": "Lời cầu",
+  "en": ""
+ },
+ {
+  "vi": "🛕 Chùa Gió Lành",
+  "en": ""
+ },
+ {
+  "vi": "Cất",
+  "en": ""
+ },
+ {
+  "vi": "Gần nhất",
+  "en": ""
+ },
+ {
+  "vi": "Để gặp đoạn tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Các mốc tính riêng tại nơi làm này, theo ngày trong game.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đạt",
+  "en": ""
+ },
+ {
+  "vi": "Đủ điều kiện. Tiếp tục làm việc ở đây để gặp đoạn mới.",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp tục làm việc",
+  "en": ""
+ },
+ {
+  "vi": "quỹ đoàn",
+  "en": ""
+ },
+ {
+  "vi": "🏫 Tiết học",
+  "en": ""
+ },
+ {
+  "vi": "Soạn giáo án",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Mở đầu hợp không khí lớp",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Có đủ cách học của các bạn có mặt",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Kết thúc bằng thẻ Kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "So bài với đáp án: đúng → 🌟 Khen cụ thể · sai hoặc chép nhầm → 🪜 Gợi ý một bước · ghi \"Giống hệt phiếu của…\" → 🤝 Gặp riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Vắng có phép",
+  "en": ""
+ },
+ {
+  "vi": "Chính",
+  "en": ""
+ },
+ {
+  "vi": "Hít thở",
+  "en": ""
+ },
+ {
+  "vi": "Câu đố",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ đồ vật",
+  "en": ""
+ },
+ {
+  "vi": "Kể chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp sức",
+  "en": ""
+ },
+ {
+  "vi": "Vẽ sơ đồ",
+  "en": ""
+ },
+ {
+  "vi": "Giơ bảng",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu cuối",
+  "en": ""
+ },
+ {
+  "vi": "Nói lại",
+  "en": ""
+ },
+ {
+  "vi": "Gặp riêng",
+  "en": ""
+ },
+ {
+  "vi": "Vẽ hình",
+  "en": ""
+ },
+ {
+  "vi": "Tự thử",
+  "en": ""
+ },
+ {
+  "vi": "Kể ví dụ",
+  "en": ""
+ },
+ {
+  "vi": "Chia nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Đề bài",
+  "en": ""
+ },
+ {
+  "vi": "Đề bài · giáo án",
+  "en": ""
+ },
+ {
+  "vi": "Không khí lớp",
+  "en": ""
+ },
+ {
+  "vi": "Sơ đồ lớp:",
+  "en": ""
+ },
+ {
+  "vi": "bạn ghi riêng",
+  "en": ""
+ },
+ {
+  "vi": "Soạn bài →",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Chọn thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Soạn lại cho hợp lớp",
+  "en": ""
+ },
+ {
+  "vi": "Chọn 3 thẻ hoạt động theo thứ tự",
+  "en": ""
+ },
+ {
+  "vi": "Chọn lại",
+  "en": ""
+ },
+ {
+  "vi": "Cần giúp",
+  "en": ""
+ },
+ {
+  "vi": "đang giơ tay sẽ hạ tay xuống.",
+  "en": ""
+ },
+ {
   "vi": "Thu phiếu cuối tiết",
   "en": ""
  },
@@ -1573,230 +1797,6 @@
  },
  {
   "vi": "⏳ Đang mở…",
-  "en": ""
- },
- {
-  "vi": "💌 Thiệp bạn đã gửi",
-  "en": ""
- },
- {
-  "vi": "Thiệp này đã được gỡ.",
-  "en": ""
- },
- {
-  "vi": "lời chúc mừng từ cả phố",
-  "en": ""
- },
- {
-  "vi": "💍 Mở Hôn nhân",
-  "en": ""
- },
- {
-  "vi": "Chưa gửi được thiệp lúc này.",
-  "en": ""
- },
- {
-  "vi": "🎉 Tiệc cưới lúc",
-  "en": ""
- },
- {
-  "vi": ": thiệp có nút",
-  "en": ""
- },
- {
-  "vi": "Xem lịch cưới",
-  "en": ""
- },
- {
-  "vi": "để mọi người tới dự.",
-  "en": ""
- },
- {
-  "vi": "💍 Chưa hẹn giờ tiệc nên thiệp là",
-  "en": ""
- },
- {
-  "vi": "thông báo cưới",
-  "en": ""
- },
- {
-  "vi": "Hẹn giờ tiệc",
-  "en": ""
- },
- {
-  "vi": "trước nếu muốn mời mọi người tới dự.",
-  "en": ""
- },
- {
-  "vi": "Ví dụ: Tụi mình cưới rồi nè! Cả phố ghé chung vui nha 💕",
-  "en": ""
- },
- {
-  "vi": "Lời mời của hai bạn",
-  "en": ""
- },
- {
-  "vi": "Gợi ý lời mời",
-  "en": ""
- },
- {
-  "vi": "Xem trước",
-  "en": ""
- },
- {
-  "vi": "Gửi thiệp mời cả phố?",
-  "en": ""
- },
- {
-  "vi": "Đã gửi thiệp 💌",
-  "en": ""
- },
- {
-  "vi": "Chưa gửi được. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Thử ngay",
-  "en": ""
- },
- {
-  "vi": "Ẩn các bản trước",
-  "en": ""
- },
- {
-  "vi": "Xem các bản trước",
-  "en": ""
- },
- {
-  "vi": "Có gì mới ở Phố Có Chuyện",
-  "en": ""
- },
- {
-  "vi": "THIẾT BỊ NGHỀ",
-  "en": ""
- },
- {
-  "vi": "Làm nhanh hơn",
-  "en": ""
- },
- {
-  "vi": "Trả bằng quỹ của nghề này. Chọn bậc để xem đúng tác dụng trước khi mua; công việc đang chạy giữ tốc độ lúc bắt đầu.",
-  "en": ""
- },
- {
-  "vi": "Thiết bị cơ bản",
-  "en": ""
- },
- {
-  "vi": "Đã lắp",
-  "en": ""
- },
- {
-  "vi": "Chỗ làm của bạn · đang đón khách",
-  "en": ""
- },
- {
-  "vi": "Bạn đang làm khách · việc riêng vẫn được giữ",
-  "en": ""
- },
- {
-  "vi": "Gặp bạn bè, nhận một dịch vụ thật",
-  "en": ""
- },
- {
-  "vi": "đơn người chơi ·",
-  "en": ""
- },
- {
-  "vi": "Đơn dịch vụ",
-  "en": ""
- },
- {
-  "vi": "Đang chờ nhận đơn",
-  "en": ""
- },
- {
-  "vi": "Dịch vụ đã sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "Dịch vụ đã hoàn tất",
-  "en": ""
- },
- {
-  "vi": "Đang hoàn lại xu",
-  "en": ""
- },
- {
-  "vi": "Chủ tiệm chưa thể nhận",
-  "en": ""
- },
- {
-  "vi": "Thực hiện yêu cầu trên phiếu công việc.",
-  "en": ""
- },
- {
-  "vi": "Thân thiện",
-  "en": ""
- },
- {
-  "vi": "Chăm chút",
-  "en": ""
- },
- {
-  "vi": "Giá hợp lý",
-  "en": ""
- },
- {
-  "vi": "Bạn đã rời phòng trực tiếp. Quyền ghé thăm có thể vừa thay đổi.",
-  "en": ""
- },
- {
-  "vi": "Chưa kết nối được. Các đơn và bản nháp vẫn được giữ.",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được chỗ làm. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa gửi được. Bạn có thể thử lại.",
-  "en": ""
- },
- {
-  "vi": "Làm khách tại",
-  "en": ""
- },
- {
-  "vi": "xu. Xu được giữ cho đơn dịch vụ này.",
-  "en": ""
- },
- {
-  "vi": "Đặt dịch vụ",
-  "en": ""
- },
- {
-  "vi": "GHÉ NHAU MỘT CHÚT",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Quay lại\"",
-  "en": ""
- },
- {
-  "vi": "Chỗ làm quanh phố",
-  "en": ""
- },
- {
-  "vi": "Mọi người",
-  "en": ""
- },
- {
-  "vi": "Đơn của tôi",
-  "en": ""
- },
- {
-  "vi": "Chọn chỗ làm muốn ghé",
   "en": ""
  }
 ]

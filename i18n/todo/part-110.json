@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Sân bay",
+  "en": ""
+ },
+ {
+  "vi": "Khu văn phòng",
+  "en": ""
+ },
+ {
+  "vi": "Phố chợ",
+  "en": ""
+ },
+ {
+  "vi": "Phố hàng rong",
+  "en": ""
+ },
+ {
   "vi": "Hẻm nhà",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Tới hạn tự tái tục: gốc và lãi gửi tiếp kỳ mới.",
-  "en": ""
- },
- {
-  "vi": "Lấy từ tiền mặt.",
-  "en": ""
- },
- {
-  "vi": "Lấy từ tài khoản thanh toán.",
-  "en": ""
- },
- {
-  "vi": "Tiền về tài khoản thanh toán, không mất lãi đã cộng.",
-  "en": ""
- },
- {
-  "vi": "Tất toán sổ trước hạn?",
   "en": ""
  }
 ]

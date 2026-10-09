@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Bảng",
+  "en": ""
+ },
+ {
+  "vi": "Số dòng",
+  "en": ""
+ },
+ {
+  "vi": "Số dòng đếm nền mỗi 2 phút; bảng lớn là số ước tính (≈).",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đọc/ghi bản lưu khi người chơi thao tác; số liệu vận hành tính nền theo mẫu, có giới hạn thời gian và tạm dừng khi máy bận, để không làm chậm người chơi.",
+  "en": ""
+ },
+ {
   "vi": "Phần của tổng quan đầu tư",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Tick “Gộp” ở ít nhất một mã nhé.",
-  "en": ""
- },
- {
-  "vi": "Mỗi mã từ 1 đến 6 món.",
-  "en": ""
- },
- {
-  "vi": "Đặt đơn gộp",
-  "en": ""
- },
- {
-  "vi": "Hạn dùng trên kệ",
-  "en": ""
- },
- {
-  "vi": "hộp cần rút ngay",
   "en": ""
  }
 ]

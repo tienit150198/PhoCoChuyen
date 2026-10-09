@@ -1,5 +1,125 @@
 [
  {
+  "vi": "Khách ghé vì ma-nơ-canh: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧍‍♀️ $1 khách đi ngang thấy ma-nơ-canh xinh quá, ghé mua phụ kiện.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🪡 Tiệm: $1. Phục vụ thêm $2 khách nữa là chị Vy sửa sang: $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🪡 Tiệm: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📅 Ngày mai: $1 $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Doanh thu quầy hôm nay $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã gấp giúp $1 $2 bỏ vào gói. Bạn vẫn in phiếu và kiểm lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã đếm và đưa thẻ số $1 món cho $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 khách quay lại đổi size",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hết size: $1$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hết size: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nồi $1 còn cơm, bán hết rồi hẵng nấu nồi mới.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍚 Vo gạo hai nước, đổ nước $1, bấm nút nồi $2. Chừng $3 giây nữa cơm chín.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🥄 Chấm đầu đũa nếm thử: nước mắm $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nếm lại: $1 Lỡ tay rồi, chỉnh lại cho vừa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nếm lại: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nếm lại: vẫn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🫙 $1, khuấy đều. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khay $1 còn đầy, bán bớt rồi bày thêm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kho hết $1. Nhập thêm ở kho nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Bày khay $2 lên tủ kính: $3 phần.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nước mắm còn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍚 Mở quán! $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khay giữ ấm chỉ để được $1 miếng, bán bớt đã.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Kho còn $1 miếng sườn ướp. Nhập thêm ở kho nhé.",
   "en": "",
   "pattern": true
@@ -2126,126 +2246,6 @@
  },
  {
   "vi": "Chai $1 sắp cạn mà không châm, tới nhà khách thì hết.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Sang $2: còn $3 chỗ cần dọn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Cầm $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chai $1 cạn rồi. Bấm “Châm” cạnh chai nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dùng $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dùng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tôi dặn để nguyên $1 mà, giờ giấy tờ lộn xộn hết.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "động vào $1 khách dặn để nguyên",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ $1 đã dặn để nguyên $2!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "làm vỡ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đền $1: $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đền $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lau mà không nhấc $1 ra, suýt rơi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "không nhấc $1 ra",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😰 $1 chao đảo, may mà kịp giữ! Nhấc ra trước đã.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "không cất $1 trước khi lau",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😱 $1 Bạn lấy lại được, cất vào khay.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✨ $1 sạch rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lấy khăn lau bồn cầu đi lau $1! Mất vệ sinh quá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🟥 Khăn đỏ là khăn bồn cầu: lau $1 bằng khăn này là mang bẩn đi khắp nhà.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🤔 $1 không hợp với $2 ($3). Đổi dụng cụ khác.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🤔 $1 không làm sạch $2 được. Đổi chai khác.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 $3… còn $4 lượt nữa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✨ $1 sạch bong.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhưng bụi rơi xuống $1 vừa lau: phải lau lại.",
   "en": "",
   "pattern": true
  }

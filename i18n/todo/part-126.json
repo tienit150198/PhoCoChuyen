@@ -1,5 +1,125 @@
 [
  {
+  "vi": "🚨 Không kịp rồi: $1. Lập biên bản, phạt $2 xu$3. Bày lại quán rồi bán tiếp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚨 Không kịp rồi: $1. Lập biên bản, phạt $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", thu $1 ghế",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mua $1 hết $2 xu nhé?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chưa đủ $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Đã mua $2. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cốc phải rửa lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Anh Tuấn xe đá giao $1 cây đá",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Anh Tuấn xe đá thả $1 cây đá trước cửa ($2 xu).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bà bán sấu để lại $1 phần sấu dầm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bà bán sấu ghé để lại $1 phần sấu dầm ($2 xu).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🥤 Rót $1 cốc, bán $2 món ăn vặt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧊 Đá tan mất $1 phần trong thùng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍵 $1 lượt khách chê chè nhạt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ghi thiếu $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ghi lố $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Bà Lựu dò sổ tối nay: $1 dòng mới, $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Sổ chú Tường đang nợ $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚨 Bị phạt $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", mất $1 ghế.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚰 Đổ bỏ $1 cốc chè thừa, úp bình.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧽 Rửa nốt $1 cốc, úp gọn vào khay.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sáng mai anh Tuấn xe đá thả $1 cây đá.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế$4, đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng. $5",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế$4, đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng.",
   "en": "",
   "pattern": true
@@ -2126,126 +2246,6 @@
  },
  {
   "vi": "Thuê $1, đặt cọc $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã thuê $1: tiền $2 $3 xu/ngày, cọc $4 xu (trả lại khi dọn đi).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1$2, nhận lại $3 xu tiền cọc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1, nhận lại $2 xu tiền cọc vào ví.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã là nhà của bạn rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đang có $1 căn nhà. Bán bớt một căn rồi hãy mua thêm nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả trước từ $1 xu ($2% giá nhà) tới $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vay ít nhất $1 xu, hoặc trả đủ luôn nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quỹ chung góp tới $1 xu (trả trước và phí); thuế trước bạ trả từ ví hoặc tài khoản nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả trước, phí và thuế cần $1 xu: bạn còn thiếu $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ vay mua nhà chưa được duyệt. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", đã trừ $1 xu trả góp các căn đang vay",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ vay mua nhà chưa được duyệt: mỗi kỳ $1 xu vượt $2% thu nhập một tháng ($3 xu$4). Trả trước nhiều hơn hoặc vay dài hơn nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả trước mua $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giải ngân vay mua nhà: $1 xu trả thẳng cho bên bán",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: Khoản vay mua nhà $2 xu đã giải ngân cho bên bán. Trả góp $3 kỳ, mỗi kỳ $4 xu, cứ $5 ngày một kỳ, kỳ đầu Ngày $6.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mua $1 giá $2 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chúc mừng! $1 ở $2 giờ là nhà của bạn. Đã trả $3 xu (gồm $4 xu phí công chứng, sang tên",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", $1 xu thuế trước bạ)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", trong đó $1 xu từ quỹ chung.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khoản vay $1 xu trả $2 kỳ, mỗi kỳ khoảng $3 xu, kỳ đầu $4.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả phòng trọ, nhận lại $1 xu tiền cọc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Căn này đang để trống: dọn về ở hoặc cho thuê lúc nào cũng được.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 giờ để trống.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thuê xe dọn nhà $1 xu: bạn còn thiếu $2 xu.",
   "en": "",
   "pattern": true
  }

@@ -113,12 +113,91 @@ html[data-theme="dem"] .jl-plate{background:#3a3a3a;border-color:#555}
 .jl-shelf{display:flex;align-items:flex-end;gap:6px;min-height:84px;padding:6px 8px;border-radius:10px;border-bottom:8px solid #8a5a32;background:color-mix(in srgb,#8a5a32 14%,var(--surface))}
 .jl-shelf.done{min-height:54px}
 .jl-shelf.done small{color:var(--muted);align-self:center}
-.jl-book{flex:1;min-width:36px;height:76px;border:0;border-radius:4px 4px 2px 2px;background:var(--bk);color:#fff;font:inherit;cursor:pointer;
+.jl-book{flex:1;min-width:28px;height:76px;border:0;border-radius:4px 4px 2px 2px;background:var(--bk);color:#fff;font:inherit;cursor:pointer;
   display:grid;place-items:center;box-shadow:inset -4px 0 0 rgba(0,0,0,.18)}
 .jl-book b{font-size:1.05rem;background:rgba(255,255,255,.88);color:#222;border-radius:6px;padding:0 4px}
-.jl-book.small{height:44px;flex:0 0 36px;cursor:default}
+.jl-book.small{height:44px;flex:0 1 32px;min-width:24px;cursor:default}
+.jl-shelf.done{flex-wrap:wrap}
 .jl-book.small b{font-size:.8rem}
 .jl-book.gone{visibility:hidden}
+
+/* 🍜 dishes: the plant's tool row with four tools; a clean bowl */
+.jl-dishes .jl-tools{flex-wrap:wrap}
+.jl-dishes .jl-tool{flex:1 1 calc(50% - 6px)}
+.jl-hole.full{background:color-mix(in srgb,var(--jl-grass) 45%,#fff)}
+.jl-road.jl-dishes-row{grid-template-columns:repeat(5,1fr);background:linear-gradient(180deg,#d6e4ec,#b9cbd8)}
+.jl-road.jl-plant-row{grid-template-columns:repeat(3,1fr)}
+.jl-dishes .jl-hole{min-height:56px;background:rgba(255,255,255,.55);font-size:1.6rem}
+.jl-dishes .jl-hole.full{background:color-mix(in srgb,#bfe3f2 70%,#fff)}
+
+/* 👕 laundry: pegs on a line, the basket below */
+.jl-line{display:grid;grid-template-columns:repeat(auto-fit,minmax(40px,1fr));gap:6px;margin-top:10px;padding:14px 6px 8px;border-radius:12px;
+  background:linear-gradient(180deg,transparent 12px,#7a6a55 12px 14px,transparent 14px),color-mix(in srgb,#9fc6e8 25%,var(--surface))}
+.jl-peg{min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px;border:0;background:none;cursor:pointer;font:inherit;padding:0}
+.jl-peg i{display:block;width:12px;height:20px;border-radius:3px;background:var(--pg);box-shadow:0 1px 0 rgba(0,0,0,.25)}
+.jl-peg span,.jl-cloth span{font-size:1.5rem;line-height:1}
+.jl-peg span{border-bottom:4px solid var(--cl);padding-bottom:1px}
+.jl-basket{display:flex;flex-wrap:wrap;gap:6px;min-height:56px;padding:6px;border-radius:12px;background:color-mix(in srgb,#c9a46a 25%,var(--surface))}
+.jl-basket small{align-self:center;color:var(--muted)}
+.jl-cloth{min-width:48px;min-height:48px;border-radius:12px;border:2px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-items:center}
+.jl-cloth span{border-bottom:5px solid var(--cl)}
+.jl-cloth.on,.jl-junk.on{border-color:var(--jl-steel);background:color-mix(in srgb,var(--jl-steel) 16%,var(--surface))}
+
+/* 🧽 mop: a 4 × 3 floor, the streaks go one wipe at a time */
+.jl-floor{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:10px;padding:6px;border-radius:12px;background:#9aa4ad}
+.jl-tile2{min-height:56px;border:0;border-radius:6px;background:#e9eef2;font-size:.95rem;color:#6b5a3a;cursor:pointer;letter-spacing:-2px}
+.jl-tile2.d1{background:#d9d2c0}.jl-tile2.d2{background:#c9bc9c}.jl-tile2.d3{background:#b8a77e}
+span.jl-tile2{cursor:default}
+
+/* 🗑️ trash: pick a piece, then its bin */
+.jl-junks{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;min-height:52px}
+.jl-junks>small{align-self:center;color:var(--muted)}
+.jl-junk{min-width:64px;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-radius:12px;
+  border:2px solid var(--line);background:var(--surface);font:inherit;cursor:pointer;padding:4px 6px}
+.jl-junk span{font-size:1.4rem;line-height:1}.jl-junk small{font-size:.68rem;color:var(--ink-2)}
+.jl-bins{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.jl-bin{min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:10px 10px 16px 16px;border:0;
+  font:inherit;font-weight:700;color:#fff;cursor:pointer}
+.jl-bin span{font-size:1.4rem}.jl-bin small{font-weight:600;opacity:.85}
+.jl-bin.b-giay{background:#3a7bd5}.jl-bin.b-nhua{background:#e0a020}.jl-bin.b-huu_co{background:#3aa060}
+
+/* 🥬 veg: only the yellow leaves */
+.jl-leaves{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px;padding:8px;border-radius:14px;background:color-mix(in srgb,#7cbf6b 22%,var(--surface))}
+.jl-leaf{min-height:52px;border:0;border-radius:50% 8px;background:color-mix(in srgb,#7cbf6b 30%,#fff);font-size:1.5rem;cursor:pointer}
+.jl-leaf.yellow{background:color-mix(in srgb,#f2c230 30%,#fff)}
+.jl-leaf.gone{visibility:hidden}
+
+/* 🐔 chicken: a food in hand, each hen says what she wants */
+.jl-coop{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;margin-top:10px;padding:8px;border-radius:14px;background:color-mix(in srgb,#d9b56a 25%,var(--surface))}
+.jl-hen{min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:0;border-radius:14px;background:var(--surface);cursor:pointer;font-size:1.7rem;line-height:1}
+.jl-think{font-size:1.1rem;padding:2px 6px;border-radius:12px;background:var(--surface-2);margin-bottom:2px}
+.jl-hen.fed{opacity:.7}
+
+/* 🔨 fix: each nail sticks out a few notches */
+.jl-nails{display:flex;gap:4px;margin-top:10px;padding:10px 6px 0;border-radius:12px;
+  background:linear-gradient(180deg,transparent 70%,#a87a4a 70%)}
+.jl-nail{flex:1 1 0;min-width:0;min-height:96px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;border:0;background:none;cursor:pointer;font:inherit;padding:0 0 6px}
+.jl-nail-up{display:flex;flex-direction:column;font-size:.7rem;line-height:.75;color:#6d7b88;letter-spacing:0;writing-mode:vertical-lr}
+.jl-nail span:last-child{font-size:1.3rem}
+
+/* 📒 ledger: count the shelf, write the numbers */
+.jl-stock{display:flex;flex-wrap:wrap;gap:4px;padding:8px;border-radius:10px;border-bottom:8px solid #8a5a32;background:color-mix(in srgb,#8a5a32 12%,var(--surface));font-size:1.35rem;line-height:1.1}
+.jl-count{display:flex;flex-direction:column;gap:6px}
+.jl-count-row{display:flex;align-items:center;gap:8px}
+.jl-count-row b{flex:1;font-size:.9rem}
+.jl-count-row span{font-size:1.3rem}
+.jl-count-row output{min-width:2ch;text-align:center;font-weight:800;font-size:1.05rem}
+.jl-step{width:40px;height:40px;border-radius:50%;border:1px solid var(--line-strong);background:var(--surface);font:inherit;font-size:1.2rem;font-weight:700;cursor:pointer}
+.jl-step:disabled{opacity:.4}
+
+/* 🛏️ fold: follow the card, the blanket gets smaller */
+.jl-card-steps{margin:0;padding:6px 8px 6px 28px;border-radius:10px;background:var(--surface-2);display:flex;flex-direction:column;gap:3px;font-size:.88rem}
+.jl-card-steps li.ok{color:var(--muted);text-decoration:line-through}
+.jl-card-steps li.now{font-weight:700}
+.jl-card-steps span{margin-right:4px}
+.jl-blanket{display:grid;place-items:center;height:64px;margin:8px 0 2px;font-size:calc(3rem - var(--f) * .5rem);transition:font-size .2s}
+.jl-fold .jl-tools,.jl-chicken .jl-tools{flex-wrap:wrap}
+.jl-fold .jl-tool{flex:1 1 calc(50% - 6px)}
 
 /* ---- the chip that reopens the screen ---- */
 .jl-chip{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 86px);z-index:60;min-height:44px;padding:8px 16px;

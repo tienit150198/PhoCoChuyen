@@ -208,80 +208,205 @@ function rules(){
 
 /* ---- the công ích games: tap and drag, the answer checked by the server ---- */
 const TITLE={sweep:'🧹 Quét sân trại',plant:'🌱 Trồng cây ven đường',rice:'🍚 Phụ bếp chia cơm',paint:'🎨 Sơn lại tường',books:'📚 Xếp sách thư viện trại'};
-const BOOK_COLORS=['#c0533a','#3a7bc0','#3aa060','#c09a3a','#8a4ac0','#c03a7b'];
+const BOOK_COLORS=['#c0533a','#3a7bc0','#3aa060','#c09a3a','#8a4ac0','#c03a7b','#3aa6a6','#c06a3a','#5a6ac0'];
+/* 👕 the clothes and their pegs (game/jail.py COLORS, CLOTHES) */
+const COLOR={do:['#e04a3a','đỏ'],cam:['#f08a2a','cam'],vang:['#f2c230','vàng'],la:['#4caf50','xanh lá'],duong:['#3a7bd5','xanh dương'],
+  tim:['#8a4ac0','tím'],hong:['#f06aa0','hồng'],nau:['#8a5a32','nâu']};
+const CLOTH={ao:['👕','Áo'],quan:['👖','Quần'],khan:['🧣','Khăn'],vo:['🧦','Vớ'],mu:['🧢','Mũ'],ao_khoac:['🧥','Áo khoác'],yem:['🎽','Áo ba lỗ']};
+/* 🗑️ the trash and its bins (game/jail.py TRASH, BINS) */
+const TRASH={bao_cu:['📰','Báo cũ','giay'],hop_giay:['📦','Hộp giấy','giay'],vo_cu:['📓','Vở cũ','giay'],ly_giay:['☕','Ly giấy','giay'],
+  thung_carton:['🗃️','Thùng các-tông','giay'],chai_nhua:['🧴','Chai nhựa','nhua'],tui_ni_long:['🛍️','Túi ni lông','nhua'],hop_xop:['🍱','Hộp xốp','nhua'],
+  ong_hut:['🥤','Ống hút nhựa','nhua'],nap_chai:['🔘','Nắp chai','nhua'],vo_chuoi:['🍌','Vỏ chuối','huu_co'],xuong_ca:['🐟','Xương cá','huu_co'],
+  la_kho:['🍂','Lá khô','huu_co'],com_thua:['🍚','Cơm thừa','huu_co'],vo_trung:['🥚','Vỏ trứng','huu_co']};
+const BIN={giay:['📄','Giấy'],nhua:['♻️','Nhựa'],huu_co:['🌿','Hữu cơ']};
+const FEED={thoc:['🌾','Thóc'],ngo:['🌽','Ngô'],rau:['🥬','Rau']};
+const STOCK={xa_phong:['🧼','Xà phòng'],khan:['🧣','Khăn'],ban_chai:['🪥','Bàn chải'],chen:['🥣','Chén'],dep:['🩴','Dép'],giay_ve_sinh:['🧻','Giấy vệ sinh']};
+const FOLD={trai:['⬅️','Gập mép trái'],phai:['➡️','Gập mép phải'],tren:['⬆️','Gập mép trên'],duoi:['⬇️','Gập mép dưới']};
+/* Step games: the tools in order, the art of each stage (🌱 plant, 🍜 dishes) */
+const STEPS={
+  plant:{n:'holes',tools:[['dig','⛏️','Đào hố'],['seed','🌰','Gieo hạt'],['water','💧','Tưới nước']],art:['🟫','🕳️','🌰','🌱'],
+    label:(i,s)=>`Hố ${i+1}: ${s}`,stage:['chưa đào','đã đào','đã gieo hạt','đã tưới, cây lên rồi'],
+    say:{dig:'Đào hố trước đã nha.',seed:'Hố đào rồi, gieo hạt đi.',water:'Gieo rồi, giờ tưới nước.'}},
+  dishes:{n:'bowls',tools:[['scrape','🥄','Cạo thức ăn'],['soap','🧼','Rửa xà phòng'],['rinse','🚿','Tráng nước'],['rack','🧺','Úp lên giá']],
+    art:['🍜','🥣','🫧','💧','✨'],label:(i,s)=>`Chén ${i+1}: ${s}`,stage:['còn thức ăn','đã cạo','đã rửa xà phòng','đã tráng','sạch, úp lên giá rồi'],
+    say:{scrape:'Cạo sạch thức ăn thừa trước đã.',soap:'Cạo rồi, giờ rửa xà phòng.',rinse:'Còn xà phòng, tráng nước đi.',rack:'Tráng rồi, úp lên giá cho ráo.'}},
+};
 function fresh(task,pz,ready){
-  const g={task,pz,ready,err:''};
+  const g={task,pz,ready,err:'',sel:null};
   if(task==='sweep')g.hp=Object.fromEntries(pz.piles.map(c=>[c,3]));
-  if(task==='plant'){g.tool='dig';g.holes=Array.from({length:pz.holes},()=>[]);}
+  if(STEPS[task]){g.tool=STEPS[task].tools[0][0];g.holes=Array.from({length:pz[STEPS[task].n]},()=>[]);}
   if(task==='rice')g.scoops=pz.want.map(()=>0);
   if(task==='paint')g.painted=[];
   if(task==='books')g.order=[];
+  if(task==='laundry')g.hang=pz.items.map(()=>null);
+  if(task==='mop')g.wipes=pz.dirt.map(()=>0);
+  if(task==='trash')g.bins=pz.items.map(()=>null);
+  if(task==='veg')g.picked=[];
+  if(task==='chicken'){g.tool=Object.keys(FEED)[0];g.fed=pz.want.map(()=>null);}
+  if(task==='fix')g.hits=pz.nails.map(()=>0);
+  if(task==='ledger')g.counts=Object.fromEntries(pz.kinds.map(k=>[k,0]));
+  if(task==='fold'){g.folds=pz.cards.map(()=>[]);g.at=0;}
   return g;
 }
 function finished(g){
+  const pz=g.pz;
   if(g.task==='sweep')return Object.values(g.hp).every(n=>n<=0);
-  if(g.task==='plant')return g.holes.every(h=>h.length===3);
-  if(g.task==='rice')return g.scoops.every((n,i)=>n===g.pz.want[i]);
-  if(g.task==='paint')return g.pz.dirty.every(c=>g.painted.includes(c));
-  return g.order.length===g.pz.nums.length;
+  if(STEPS[g.task])return g.holes.every(h=>h.length===STEPS[g.task].tools.length);
+  if(g.task==='rice')return g.scoops.every((n,i)=>n===pz.want[i]);
+  if(g.task==='paint')return pz.dirty.every(c=>g.painted.includes(c));
+  if(g.task==='books')return g.order.length===pz.nums.length;
+  if(g.task==='laundry')return g.hang.every(x=>x!==null);
+  if(g.task==='mop')return g.wipes.every((n,i)=>n===pz.dirt[i]);
+  if(g.task==='trash')return g.bins.every(Boolean);
+  if(g.task==='veg')return pz.yellow.every(i=>g.picked.includes(i));
+  if(g.task==='chicken')return g.fed.every(Boolean);
+  if(g.task==='fix')return g.hits.every((n,i)=>n===pz.nails[i]);
+  if(g.task==='ledger')return pz.kinds.every(k=>g.counts[k]>0);
+  if(g.task==='fold')return g.folds.every((f,i)=>f.length===pz.cards[i].length);
+  return false;
 }
 function answer(g){
   if(g.task==='sweep')return {swept:Object.keys(g.hp).map(Number)};
-  if(g.task==='plant')return {steps:g.holes};
+  if(STEPS[g.task])return {steps:g.holes};
   if(g.task==='rice')return {scoops:g.scoops};
   if(g.task==='paint')return {cells:g.painted.filter(c=>g.pz.dirty.includes(c))};
+  if(g.task==='laundry')return {hang:g.hang};
+  if(g.task==='mop')return {wipes:g.wipes};
+  if(g.task==='trash')return {bins:g.bins};
+  if(g.task==='veg')return {picked:g.picked};
+  if(g.task==='chicken')return {fed:g.fed};
+  if(g.task==='fix')return {hits:g.hits};
+  if(g.task==='ledger')return {counts:g.counts};
+  if(g.task==='fold')return {folds:g.folds};
   return {order:g.order};
+}
+/** 📒 the ledger is counted by eye: a wrong count is said here, before the cán bộ sees it. */
+function precheck(g){
+  if(g.task!=='ledger')return '';
+  const off=g.pz.kinds.filter(k=>g.counts[k]!==g.pz.pile.filter(x=>x===k).length);
+  return off.length?`Có ${off.length} loại đếm chưa khớp, đếm lại trên kệ nha.`:'';
 }
 function gameView(j){
   const g=S.game,t=j.tasks.find(x=>x.id===g.task)||{};
   const ok=finished(g),wait=(g.ready*1000-nowMs())/1000;
   const go=!ok?btn('Xong','done',{},'primary big full',' disabled'):wait>0?btn(`Cán bộ đang kiểm tra… <span data-jl-count="task">${mmss(wait)}</span>`,'done',{},'cream big full',' disabled')
     :btn('✅ Báo cán bộ: xong rồi','done',{},'primary big full',S.busy?' disabled':'');
-  return `<section class="jl-card jl-game jl-${g.task}"><div class="jl-game-head"><h3>${TITLE[g.task]||esc(t.name||'')}</h3>${btn('‹ Để sau','back',{},'ghost small')}</div>
+  const title=TITLE[g.task]||`${t.emoji||''} ${esc(t.name||'')}`;
+  return `<section class="jl-card jl-game jl-${g.task}"><div class="jl-game-head"><h3>${title}</h3>${btn('‹ Để sau','back',{},'ghost small')}</div>
     <p class="jl-note">${esc(t.hint||'')}</p>${board(g)}${g.err?`<p class="jl-err" role="alert">${esc(g.err)}</p>`:''}${go}</section>`;
+}
+const tap=(op,data,label,inner,cls='',extra='')=>`<button type="button" class="${cls}" data-jl="${op}"${attrs(data)} aria-label="${esc(label)}"${extra}>${inner}</button>`;
+function toolbar(list,cur,op='tool'){
+  return `<div class="jl-tools" role="group" aria-label="Dụng cụ">${list.map(([id,e,l])=>`<button type="button" class="jl-tool${cur===id?' on':''}" data-jl="${op}" data-t="${id}" aria-pressed="${cur===id}"><span aria-hidden="true">${e}</span>${l}</button>`).join('')}</div>`;
 }
 function board(g){
   const pz=g.pz;
-  if(g.task==='sweep')return `<div class="jl-yardgrid">${Array.from({length:12},(_,c)=>{const hp=g.hp[c];
+  if(g.task==='sweep')return `<div class="jl-yardgrid">${Array.from({length:pz.cells||12},(_,c)=>{const hp=g.hp[c];
       if(hp===undefined)return '<span class="jl-plot clean" aria-hidden="true"></span>';
       return hp>0?`<button type="button" class="jl-plot leaf hp${hp}" data-jl="sweep" data-c="${c}" aria-label="Đống lá, còn ${hp} lần quét">🍂</button>`
         :'<span class="jl-plot clean done" aria-label="Đã quét sạch">✨</span>';}).join('')}</div>`;
-  if(g.task==='plant'){
-    const tools=[['dig','⛏️','Đào hố'],['seed','🌰','Gieo hạt'],['water','💧','Tưới nước']];
-    const art=h=>h.length===0?'🟫':h.length===1?'🕳️':h.length===2?'🌰':'🌱';
-    return `<div class="jl-tools" role="group" aria-label="Dụng cụ">${tools.map(([id,e,l])=>`<button type="button" class="jl-tool${g.tool===id?' on':''}" data-jl="tool" data-t="${id}" aria-pressed="${g.tool===id}"><span aria-hidden="true">${e}</span>${l}</button>`).join('')}</div>
-      <div class="jl-road">${g.holes.map((h,i)=>`<button type="button" class="jl-hole s${h.length}" data-jl="hole" data-i="${i}" aria-label="Hố ${i+1}: ${['chưa đào','đã đào','đã gieo hạt','đã tưới, cây lên rồi'][h.length]}">${art(h)}</button>`).join('')}</div>`;
+  if(STEPS[g.task]){
+    const st=STEPS[g.task],art=h=>st.art[h.length];
+    return toolbar(st.tools,g.tool)+`<div class="jl-road jl-${g.task}-row">${g.holes.map((h,i)=>tap('hole',{i},st.label(i,st.stage[h.length]),art(h),`jl-hole s${h.length}${h.length===st.tools.length?' full':''}`)).join('')}</div>`;
   }
   if(g.task==='rice')return `<div class="jl-trays">${pz.want.map((w,i)=>{const n=g.scoops[i];
       return `<div class="jl-tray${n===w?' ok':n>w?' over':''}"><small>Khay ${i+1} · cần <b>${w}</b> muỗng</small><button type="button" class="jl-plate" data-jl="scoop" data-i="${i}" aria-label="Thêm một muỗng cơm vào khay ${i+1}">${'🍚'.repeat(n)||'🍽️'}</button>
         <button type="button" class="jl-less" data-jl="less" data-i="${i}" aria-label="Bớt một muỗng ở khay ${i+1}"${n?'':' disabled'}>− bớt</button></div>`;}).join('')}</div>`;
   if(g.task==='paint')return `<div class="jl-wall" data-jl-wall="1">${Array.from({length:pz.cells},(_,c)=>{const dirty=pz.dirty.includes(c),on=g.painted.includes(c);
       return `<button type="button" class="jl-tile${dirty?on?' painted':' dirty':' clean'}" data-jl="paint" data-c="${c}" aria-label="${dirty?on?'Đã sơn':'Ô tường bẩn':'Ô tường sạch'}">${dirty&&!on?'〰️':''}</button>`;}).join('')}</div><p class="jl-why">Giữ ngón tay và kéo qua các ô để sơn nhanh.</p>`;
+  if(g.task==='laundry'){
+    const pegs=pz.pegs.map((c,p)=>{const i=g.hang.indexOf(p),it=i>=0?pz.items[i]:null;
+      return tap('peg',{p},it?`Kẹp màu ${COLOR[c]?.[1]||c}, đã phơi ${CLOTH[it.k]?.[1]||''}`:`Kẹp màu ${COLOR[c]?.[1]||c}`,`<i style="--pg:${COLOR[c]?.[0]||'#999'}"></i>${it?`<span style="--cl:${COLOR[it.c]?.[0]}">${CLOTH[it.k]?.[0]||'👕'}</span>`:''}`,`jl-peg${it?' hung':''}`);}).join('');
+    const basket=pz.items.map((it,i)=>g.hang[i]!==null?'':tap('cloth',{i},`Đồ giặt: ${CLOTH[it.k]?.[1]||''}, màu ${COLOR[it.c]?.[1]||''}`,
+      `<span style="--cl:${COLOR[it.c]?.[0]}">${CLOTH[it.k]?.[0]||'👕'}</span>`,`jl-cloth${g.sel===i?' on':''}`,` aria-pressed="${g.sel===i}"`)).join('');
+    return `<div class="jl-line" role="group" aria-label="Dây phơi">${pegs}</div><p class="jl-shelf-l">${g.sel!==null?'Rổ đồ giặt · giờ chọn kẹp cùng màu':'Rổ đồ giặt · chạm một món'}</p><div class="jl-basket">${basket||'<small>Phơi hết rồi</small>'}</div>`;
+  }
+  if(g.task==='mop')return `<div class="jl-floor">${pz.dirt.map((d,i)=>{const left=d-g.wipes[i];
+      return d?tap('mop',{i},left>0?`Ô sàn bẩn, còn ${left} lần lau`:'Ô sàn đã sạch',left>0?'〰️'.repeat(left):'✨',`jl-tile2 d${Math.max(0,left)}`)
+        :'<span class="jl-tile2 d0" aria-hidden="true"></span>';}).join('')}</div>`;
+  if(g.task==='trash'){
+    const items=pz.items.map((x,i)=>g.bins[i]?'':tap('junk',{i},TRASH[x]?.[1]||x,`<span aria-hidden="true">${TRASH[x]?.[0]||'❔'}</span><small>${esc(TRASH[x]?.[1]||x)}</small>`,`jl-junk${g.sel===i?' on':''}`,` aria-pressed="${g.sel===i}"`)).join('');
+    const bins=Object.entries(BIN).map(([b,[e,l]])=>tap('bin',{b},`Thùng ${l}: ${g.bins.filter(x=>x===b).length} món`,`<span aria-hidden="true">${e}</span>${l}<small>${g.bins.filter(x=>x===b).length}</small>`,`jl-bin b-${b}`)).join('');
+    return `<div class="jl-junks">${items||'<small>Phân loại xong rồi</small>'}</div><div class="jl-bins">${bins}</div>`;
+  }
+  if(g.task==='veg')return `<div class="jl-leaves">${Array.from({length:pz.leaves},(_,i)=>{const y=pz.yellow.includes(i),gone=g.picked.includes(i);
+      return gone?'<span class="jl-leaf gone" aria-hidden="true"></span>':tap('leaf',{i},y?'Lá vàng':'Lá xanh',y?'🍂':'🌿',`jl-leaf${y?' yellow':''}`);}).join('')}</div>`;
+  if(g.task==='chicken'){
+    const tools=Object.entries(FEED).map(([id,[e,l]])=>[id,e,l]);
+    return toolbar(tools,g.tool)+`<div class="jl-coop">${pz.want.map((w,i)=>{const f=g.fed[i];
+      return tap('hen',{i},f?`Gà ${i+1}: đã ăn ${FEED[f]?.[1]||''}`:`Gà ${i+1} đang thèm ${FEED[w]?.[1]||''}`,`<span class="jl-think" aria-hidden="true">${f?'❤️':FEED[w]?.[0]||'❔'}</span><span aria-hidden="true">🐔</span>`,`jl-hen${f?' fed':''}`);}).join('')}</div>`;
+  }
+  if(g.task==='fix')return `<div class="jl-nails">${pz.nails.map((n,i)=>{const left=n-g.hits[i];
+      return tap('nail',{i},left>0?`Đinh ${i+1}: còn nhô ${left} nấc`:`Đinh ${i+1}: đã vô hết`,`<span class="jl-nail-up" aria-hidden="true">${'▮'.repeat(Math.max(0,left))}</span><span aria-hidden="true">${left>0?'🔩':'✅'}</span>`,`jl-nail${left>0?'':' in'}`);}).join('')}</div>`;
+  if(g.task==='ledger')return `<p class="jl-shelf-l">Kệ kho</p><div class="jl-stock" aria-label="Kệ kho: ${pz.pile.length} món">${pz.pile.map(k=>`<span aria-hidden="true">${STOCK[k]?.[0]||'📦'}</span>`).join('')}</div>
+    <p class="jl-shelf-l">Sổ kiểm kho</p><div class="jl-count">${pz.kinds.map(k=>`<div class="jl-count-row"><span aria-hidden="true">${STOCK[k]?.[0]||''}</span><b>${esc(STOCK[k]?.[1]||k)}</b>
+      ${tap('cnt',{k,d:-1},`Bớt một ${STOCK[k]?.[1]||k}`,'−','jl-step',g.counts[k]?'':' disabled')}<output>${g.counts[k]}</output>${tap('cnt',{k,d:1},`Thêm một ${STOCK[k]?.[1]||k}`,'+','jl-step')}</div>`).join('')}</div>`;
+  if(g.task==='fold'){
+    const i=Math.min(g.at,pz.cards.length-1),card=pz.cards[i],did=g.folds[i];
+    const steps=card.map((f,k)=>`<li class="${k<did.length?'ok':k===did.length?'now':''}"><span aria-hidden="true">${FOLD[f]?.[0]||''}</span>${esc(FOLD[f]?.[1]||f)}</li>`).join('');
+    return `<p class="jl-shelf-l">Tấm chăn ${i+1}/${pz.cards.length} · thẻ hướng dẫn</p><ol class="jl-card-steps">${steps}</ol>
+      <div class="jl-blanket" style="--f:${did.length}" aria-hidden="true">🟦</div>${toolbar(Object.entries(FOLD).map(([id,[e,l]])=>[id,e,l]),null,'fold')}
+      <p class="jl-why">Đã gấp xong ${g.folds.filter((f,k)=>f.length===pz.cards[k].length).length}/${pz.cards.length} tấm.</p>`;
+  }
   const shelf=pz.nums.map((n,i)=>g.order.includes(i)?'<span class="jl-book gone" aria-hidden="true"></span>'
     :`<button type="button" class="jl-book" style="--bk:${BOOK_COLORS[i%BOOK_COLORS.length]}" data-jl="book" data-i="${i}" aria-label="Sách số ${n}"><b>${n}</b></button>`).join('');
   const sorted=g.order.map(i=>`<span class="jl-book small" style="--bk:${BOOK_COLORS[i%BOOK_COLORS.length]}"><b>${pz.nums[i]}</b></span>`).join('');
   return `<p class="jl-shelf-l">Kệ chưa xếp</p><div class="jl-shelf">${shelf}</div><p class="jl-shelf-l">Kệ đã xếp (nhỏ → lớn)</p><div class="jl-shelf done">${sorted||'<small>Chưa có cuốn nào</small>'}</div>`;
 }
 function shake(el){if(!el||reduce())return;el.classList.remove('jl-shake');void el.offsetWidth;el.classList.add('jl-shake');}
-function play(op,data,el){
-  const g=S.game;if(!g)return;g.err='';
+/** One move of a game, on the game's own state only (no page): '' when it went, else what to say and what to shake
+ * ([text, selector]); a move that is fine but worth a word (an over-full tray) says it too. Node tests drive it
+ * (tests/jail_games.mjs). */
+export function step(g,op,data){
+  const pz=g.pz,i=Number(data.i),no=(text,sel)=>[text,sel];
   if(op==='sweep'){const c=Number(data.c);if(g.hp[c]>0)g.hp[c]--;}
   else if(op==='tool')g.tool=data.t;
-  else if(op==='hole'){const h=g.holes[Number(data.i)],next=['dig','seed','water'][h.length];
-    if(!next)return;
-    if(g.tool!==next){g.err=next==='dig'?'Đào hố trước đã nha.':next==='seed'?'Hố đào rồi, gieo hạt đi.':'Gieo rồi, giờ tưới nước.';render();shake(S.dlg.querySelector(`[data-jl="hole"][data-i="${data.i}"]`));return;}
+  else if(op==='hole'){const st=STEPS[g.task],h=g.holes[i],next=st?.tools[h?.length]?.[0];
+    if(!next)return '';
+    if(g.tool!==next)return no(st.say[next],`[data-jl="hole"][data-i="${i}"]`);
     h.push(next);}
-  else if(op==='scoop'){const i=Number(data.i);g.scoops[i]=Math.min(5,g.scoops[i]+1);if(g.scoops[i]>g.pz.want[i])g.err=`Khay ${i+1} dư cơm rồi, bớt lại cho đúng phần nha.`;}
-  else if(op==='less'){const i=Number(data.i);g.scoops[i]=Math.max(0,g.scoops[i]-1);}
-  else if(op==='paint')paintCell(Number(data.c));
-  else if(op==='book'){const i=Number(data.i),left=g.pz.nums.map((n,k)=>[n,k]).filter(([,k])=>!g.order.includes(k)).sort((a,b)=>a[0]-b[0]);
-    if(left[0]?.[1]!==i){g.err='Chưa đúng thứ tự: tìm cuốn số nhỏ nhất còn lại.';render();shake(S.dlg.querySelector(`[data-jl="book"][data-i="${i}"]`));return;}
+  else if(op==='scoop'){g.scoops[i]=Math.min(5,g.scoops[i]+1);if(g.scoops[i]>pz.want[i])return [`Khay ${i+1} dư cơm rồi, bớt lại cho đúng phần nha.`,null];}
+  else if(op==='less'){g.scoops[i]=Math.max(0,g.scoops[i]-1);}
+  else if(op==='paint')paintOn(g,Number(data.c));
+  else if(op==='book'){const left=pz.nums.map((n,k)=>[n,k]).filter(([,k])=>!g.order.includes(k)).sort((a,b)=>a[0]-b[0]);
+    if(left[0]?.[1]!==i)return no('Chưa đúng thứ tự: tìm cuốn số nhỏ nhất còn lại.',`[data-jl="book"][data-i="${i}"]`);
     g.order.push(i);}
-  render();
+  else if(op==='cloth')g.sel=g.sel===i?null:i;
+  else if(op==='peg'){const p=Number(data.p);
+    if(g.sel===null)return no('Chọn một món trong rổ trước đã nha.','.jl-basket');
+    if(g.hang.includes(p))return no('Kẹp này có đồ rồi.',`[data-jl="peg"][data-p="${p}"]`);
+    if(pz.pegs[p]!==pz.items[g.sel].c)return no(`Món này màu ${COLOR[pz.items[g.sel].c]?.[1]||''}, tìm kẹp cùng màu nha.`,`[data-jl="peg"][data-p="${p}"]`);
+    g.hang[g.sel]=p;g.sel=null;}
+  else if(op==='mop'){if(g.wipes[i]>=pz.dirt[i])return no('Ô này sạch rồi, lau dư phí nước nha.',`[data-jl="mop"][data-i="${i}"]`);g.wipes[i]++;}
+  else if(op==='junk')g.sel=g.sel===i?null:i;
+  else if(op==='bin'){
+    if(g.sel===null)return no('Chạm một món rác trước, rồi chọn thùng.','.jl-junks');
+    const it=TRASH[pz.items[g.sel]];
+    if(it&&it[2]!==data.b)return no(`Thùng ${BIN[data.b]?.[1]||''} không nhận ${it[1]} đâu, nghĩ lại nha.`,`[data-jl="bin"][data-b="${data.b}"]`);
+    g.bins[g.sel]=data.b;g.sel=null;}
+  else if(op==='leaf'){if(!pz.yellow.includes(i))return no('Lá xanh còn ăn được, giữ lại nha.',`[data-jl="leaf"][data-i="${i}"]`);if(!g.picked.includes(i))g.picked.push(i);}
+  else if(op==='hen'){if(g.fed[i])return '';
+    if(pz.want[i]!==g.tool)return no(`Gà ${i+1} đang thèm ${FEED[pz.want[i]]?.[1]||''}, chọn đúng món nha.`,`[data-jl="hen"][data-i="${i}"]`);
+    g.fed[i]=g.tool;}
+  else if(op==='nail'){if(g.hits[i]>=pz.nails[i])return no('Đinh vô hết rồi, gõ nữa là cong đinh đó!',`[data-jl="nail"][data-i="${i}"]`);g.hits[i]++;}
+  else if(op==='cnt'){const k=data.k;if(k in g.counts)g.counts[k]=Math.max(0,Math.min(30,g.counts[k]+Number(data.d)));}
+  else if(op==='fold'){const at=Math.min(g.at,pz.cards.length-1),did=g.folds[at],want=pz.cards[at][did.length];
+    if(!want)return '';
+    if(data.t!==want)return no(`Thẻ ghi bước tiếp theo là “${FOLD[want]?.[1]||want}”.`,'.jl-blanket');
+    did.push(data.t);if(did.length===pz.cards[at].length&&g.at<pz.cards.length-1)g.at++;}
+  return '';
 }
+function play(op,data){
+  const g=S.game;if(!g)return;
+  const r=step(g,op,data);g.err=r?r[0]:'';render();
+  if(r&&r[1])shake(S.dlg.querySelector(r[1]));
+}
+/** The games' pure parts, for the node tests. */
+export const games={fresh,finished,answer,precheck,step,TRASH,FEED,STOCK,FOLD,COLOR,STEPS};
 /* 🎨 the wall paints under a dragged finger too */
 let painting=false;
-function paintCell(c){const g=S.game;if(!g||g.task!=='paint'||g.painted.includes(c)||!g.pz.dirty.includes(c))return false;g.painted.push(c);return true;}
+function paintOn(g,c){if(!g||g.task!=='paint'||g.painted.includes(c)||!g.pz.dirty.includes(c))return false;g.painted.push(c);return true;}
+function paintCell(c){return paintOn(S.game,c);}
 function paintDown(e){if(!S.game||S.game.task!=='paint'||!e.target.closest?.('[data-jl-wall]'))return;painting=true;
   const up=()=>{painting=false;removeEventListener('pointerup',up);removeEventListener('pointercancel',up);};addEventListener('pointerup',up);addEventListener('pointercancel',up);}
 function paintMove(e){
@@ -305,6 +430,7 @@ async function start(task){
 }
 async function done(){
   const g=S.game;if(!g||!finished(g))return;
+  const why=precheck(g);if(why){g.err=why;render();shake(S.dlg.querySelector('.jl-count'));return;}
   const r=await command('jail_task_done',{task:g.task,ans:answer(g)});
   if(r?.jail?.ok){S.game=null;S.flash={text:r.message||'Xong việc rồi.',kind:'good'};S.map?.redraw();}
   render();
@@ -337,6 +463,6 @@ function onClick(op,data,el){
     case'go':S.dlg.close();S.env.act?.(data.to);return;
     case'spot':if(S.map)S.map.go(data.id);else{S.panel=data.id;render();}return;   // walk there; its panel opens on arrival
     case'shut':S.panel=null;S.sure=false;S.map?.clearAt();render();return;
-    default:play(op,data,el);
+    default:play(op,data);
   }
 }

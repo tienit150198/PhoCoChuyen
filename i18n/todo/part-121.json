@@ -1,5 +1,125 @@
 [
  {
+  "vi": "Bà coi cho $1 rồi, tuần này nhiều lộc lắm đó. Ráng làm ăn đàng hoàng nghe con 🙏",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🖼️ [Ảnh chế] Chú mèo ôm gối: “Hôm nay tệ nhưng mai có trà sữa.” Gửi $1 nè, cố lên 🫶",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Buồn thì để tui kể chuyện cười: có con cá đi làm shipper… thôi dở quá, mà $1 cười chưa 😂",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chào $1! Nhóm mình vui lắm, drama có đủ, meme có dư 😂",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chúc mừng $1 nha 🥂 để Trang chụp hình đăng lên trang 10 nghìn người theo dõi cho mọi người cùng biết ✨",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chào $1 nha 😘 Trang bán hàng online, cần gì cứ ghé Trang, hàng xóm Trang ưu đãi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Em gửi $1 một cái ôm ạ 🥺🫂",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "D-dạ em chúc mừng $1 ạ 🥺🎉",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "D-dạ em phụ được ạ… nếu $1 không chê ạ 🥺",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "D-dạ em chào $1 ạ 🙈",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Con cho $1 một cái kẹo ạ 🍬 ăn kẹo là hết buồn ạ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Con vẽ tặng $1 bức tranh mặt trời ạ ☀️ để $2 vui ạ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Con chúc mừng $1 ạ 🎉🌸",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Con chào $1 ạ 🌸 con là Na ạ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Con chào $1 ạ 🌸",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hèn gì mấy hôm nay $1 thấy $2 đi về mặt buồn buồn, hôm qua 9 giờ 15 đi ngang đầu hẻm không chào luôn 👀 {Me} không có ý gì đâu, $3 lo thôi. Có gì ghé đầu hẻm ngồi uống ly nước.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "{Me} biết trước rồi nha, mấy hôm nay thấy $1 đi làm sớm về muộn là $2 đoán có chuyện vui 👀",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "{Me} ngồi đầu hẻm $1 biết hết, để $2 để ý giùm cho 👀",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Để $1 nhớ lại coi… lúc chiều khoảng 4 giờ 20 $2 thấy có đứa nhỏ cầm cái gì đó đi về phía ngã ba 👀",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chào $1. {Me} biết $2 rồi, hôm $3 mới dọn tới $4 thấy mà 👀",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "{Me} đọc rồi nha 👀 $1 ngồi đầu hẻm $2 thấy hết mà.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ôm $1 một cái nè 🫂 buồn hôm nay để mai vui gấp đôi. Mai trời lại nắng mà 🌈",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hay quá nè 🌈 cảm ơn $1 đã chia sẻ!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📢 Chào mừng $1 mới về ở gác nhà bà Tám tham gia Nhóm Cư Dân Phố! Nội quy nhỏ: nói năng lịch sự, không đăng số điện thoại, địa chỉ, không quảng cáo đầu tư lạ. Có việc gì cứ hỏi nhóm, bà con ở đây tốt bụng lắm.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đứa nhỏ ở gác nhà tui đó bà con ơi, ngoan lắm, mới tới còn lạ nước lạ cái, mọi người thương giùm tui nghe. Mà $1 ơi tối nay xuống ăn canh chua với bà, bà nấu dư rồi 🍲",
   "en": "",
   "pattern": true
@@ -2126,126 +2246,6 @@
  },
  {
   "vi": "😞 $1 chờ đổi size mà không ai lo, để lại 1★.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khách ghé vì ma-nơ-canh: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧍‍♀️ $1 khách đi ngang thấy ma-nơ-canh xinh quá, ghé mua phụ kiện.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🪡 Tiệm: $1. Phục vụ thêm $2 khách nữa là chị Vy sửa sang: $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🪡 Tiệm: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📅 Ngày mai: $1 $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Doanh thu quầy hôm nay $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã gấp giúp $1 $2 bỏ vào gói. Bạn vẫn in phiếu và kiểm lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã đếm và đưa thẻ số $1 món cho $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 khách quay lại đổi size",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hết size: $1$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hết size: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nồi $1 còn cơm, bán hết rồi hẵng nấu nồi mới.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍚 Vo gạo hai nước, đổ nước $1, bấm nút nồi $2. Chừng $3 giây nữa cơm chín.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🥄 Chấm đầu đũa nếm thử: nước mắm $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nếm lại: $1 Lỡ tay rồi, chỉnh lại cho vừa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nếm lại: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nếm lại: vẫn $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🫙 $1, khuấy đều. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khay $1 còn đầy, bán bớt rồi bày thêm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kho hết $1. Nhập thêm ở kho nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Bày khay $2 lên tủ kính: $3 phần.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nước mắm còn $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍚 Mở quán! $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khay giữ ấm chỉ để được $1 miếng, bán bớt đã.",
   "en": "",
   "pattern": true
  }

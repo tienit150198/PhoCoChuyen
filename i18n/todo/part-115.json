@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Mua xe chỉ có trong chế độ hành trình",
+  "en": ""
+ },
+ {
+  "vi": "Vào hành trình để sắm xe cho nhân vật của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Mục nhà xe",
+  "en": ""
+ },
+ {
+  "vi": "🗓️ 1 chuyến/ngày",
+  "en": ""
+ },
+ {
   "vi": "⛽ Không tốn xăng",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Mua tối đa",
-  "en": ""
- },
- {
-  "vi": "Chọn tài sản",
-  "en": ""
- },
- {
-  "vi": "Mở khi ví từng có 500 xu",
-  "en": ""
- },
- {
-  "vi": "☁️ Mây Coin",
-  "en": ""
- },
- {
-  "vi": "xem trước",
   "en": ""
  }
 ]

@@ -1,5 +1,125 @@
 [
  {
+  "vi": "Bạn gọi đài nhờ chuyển tin cho đồn biên phòng. $1 vội vã xuống ghe bỏ đi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 hậm hực, nói vọng lại vài câu khó nghe, nhưng không làm gì thêm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lẻn qua cửa tháp, đang leo cầu thang xoắn lên phòng đèn!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nổi khùng, quay clip mặt bạn: “Gác đèn gì mà như quan!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Một ngọn tháp trắng trên $1, mười hai hải lý ngoài khơi. Đèn quét đêm đêm cho tàu thuyền về $2. Bạn vào $3, theo chú Bảy Đèn học giữ lửa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn báo chú Bảy và ghi sổ trực. Xí nghiệp nhắc khéo $1; hồ sơ bạn thêm dòng “xử lý đúng mực”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn báo xí nghiệp (người báo không bị phạt). Phòng kỹ thuật cho người kiểm tra lại; $1 phải học lại quy trình.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 vẫn làm tắt. Hôm nay qua êm, nhưng bạn biết mình đã im lặng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chú Bảy: “Ừ, $1 $2 thôi cũng được, chú cảm ơn con.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Má bạn: “Ừ, $1 $2 cũng đỡ lắm rồi. Con giữ sức khỏe nha.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn gửi hết $1 $2. Má mừng rơi nước mắt, còn bạn ăn mì gói tới cuối tháng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bữa cơm $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cô Hạnh nhắn: “Hôm nay con nấu cho $1 nghe. Chủ nhà để tiền chợ trên bàn, dặn gì con nghe kỹ rồi lên thực đơn.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bỏ $1 ra khỏi thực đơn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 vào thực đơn · dự tính $3/$4 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thực đơn còn thiếu: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thực đơn dự tính $1 xu, quá tiền chợ $2 xu: đổi món rẻ hơn nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2, nhà tôi đã dặn rồi mà. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã dặn $1 mà bữa nay không có.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📝 Chốt thực đơn: $1. Cầm $2 xu tiền chợ, xách giỏ ra chợ thôi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔄 $1 lựa phần khác: $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 mua rồi. Muốn đổi số phần thì trả lại trước.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ví tiền chợ còn $1 xu, không đủ $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛒 Mua $1 phần $2 · $3 xu. Ví tiền chợ còn $4 xu.$5",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "↩️ Trả lại $1, nhận lại $2 xu.",
   "en": "",
   "pattern": true
@@ -2126,126 +2246,6 @@
  },
  {
   "vi": "Chị phải ghi chặng $1 vào sổ huấn luyện.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khoang khách chặng $1 yên ổn, tụi chị làm việc nhẹ cả người.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chặng $1 ổn, khoang khách chỉ hơi xì xào một lúc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chặng $1 khoang khách lo lắng khá lâu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chặng $1 cả khoang hoảng, tụi chị phải trấn an từng người.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chuyến đi $1 êm ru, bà chẳng sợ gì cả.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chuyến $1: không có gì để phàn nàn. Hiếm đấy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chuyến $1: một trải nghiệm tệ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Con thích tổ bay chuyến $1 nhất luôn!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bản tin chuyến $1 $2 → $3: $4 $5. $6 $7 khách. Dầu chặng $8, đi dự bị $9 $10, dự phòng 30 phút $11.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bàn cư trú: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đồ thất lạc: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mang tới một $2 nhặt được ($3).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hòa giải: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 và $2 cùng lên phường, chưa ngồi đã to tiếng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trẻ lạc ở $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Một bé $2 đứng khóc một mình: $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tuần tra: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Một vòng tuần tra $2: ba chuyện cần để mắt.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nói chuyện chống lừa đảo: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: $2 chờ nghe phường nói chuyện chống lừa đảo.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 🔔 $2 $3: phong bì. Trả lời ngay nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đưa phong bì, cán bộ nhận.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lập biên bản hành vi đưa hối lộ: $1, phong bì niêm phong nộp Ban chỉ huy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📝 Lập biên bản, niêm phong phong bì. $1 tái mặt. $2",
   "en": "",
   "pattern": true
  }

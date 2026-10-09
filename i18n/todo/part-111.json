@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Lấy từ tiền mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy từ tài khoản thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền về tài khoản thanh toán, không mất lãi đã cộng.",
+  "en": ""
+ },
+ {
+  "vi": "Tất toán sổ trước hạn?",
+  "en": ""
+ },
+ {
   "vi": "Tất toán",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Nhắn tin…",
-  "en": ""
- },
- {
-  "vi": "Lư hương",
-  "en": ""
- },
- {
-  "vi": "Gác chuông",
-  "en": ""
- },
- {
-  "vi": "Hồ sen",
-  "en": ""
- },
- {
-  "vi": "Rào lời nguyện",
   "en": ""
  }
 ]

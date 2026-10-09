@@ -1,5 +1,125 @@
 [
  {
+  "vi": "Khoang khách chặng $1 yên ổn, tụi chị làm việc nhẹ cả người.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chặng $1 ổn, khoang khách chỉ hơi xì xào một lúc.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chặng $1 khoang khách lo lắng khá lâu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chặng $1 cả khoang hoảng, tụi chị phải trấn an từng người.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chuyến đi $1 êm ru, bà chẳng sợ gì cả.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chuyến $1: không có gì để phàn nàn. Hiếm đấy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chuyến $1: một trải nghiệm tệ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Con thích tổ bay chuyến $1 nhất luôn!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bản tin chuyến $1 $2 → $3: $4 $5. $6 $7 khách. Dầu chặng $8, đi dự bị $9 $10, dự phòng 30 phút $11.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bàn cư trú: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đồ thất lạc: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 mang tới một $2 nhặt được ($3).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hòa giải: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 và $2 cùng lên phường, chưa ngồi đã to tiếng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trẻ lạc ở $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Một bé $2 đứng khóc một mình: $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tuần tra: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Một vòng tuần tra $2: ba chuyện cần để mắt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nói chuyện chống lừa đảo: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: $2 chờ nghe phường nói chuyện chống lừa đảo.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 🔔 $2 $3: phong bì. Trả lời ngay nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đưa phong bì, cán bộ nhận.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lập biên bản hành vi đưa hối lộ: $1, phong bì niêm phong nộp Ban chỉ huy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📝 Lập biên bản, niêm phong phong bì. $1 tái mặt. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🙅 “Cán bộ không nhận gì của dân.” $1 rụt tay lại.",
   "en": "",
   "pattern": true
@@ -2126,126 +2246,6 @@
  },
  {
   "vi": "$1 ghế còn trên vỉa hè",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚨 Không kịp rồi: $1. Lập biên bản, phạt $2 xu$3. Bày lại quán rồi bán tiếp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚨 Không kịp rồi: $1. Lập biên bản, phạt $2 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", thu $1 ghế",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mua $1 hết $2 xu nhé?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chưa đủ $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đã mua $2. $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cốc phải rửa lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Anh Tuấn xe đá giao $1 cây đá",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Anh Tuấn xe đá thả $1 cây đá trước cửa ($2 xu).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà bán sấu để lại $1 phần sấu dầm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà bán sấu ghé để lại $1 phần sấu dầm ($2 xu).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🥤 Rót $1 cốc, bán $2 món ăn vặt.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧊 Đá tan mất $1 phần trong thùng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍵 $1 lượt khách chê chè nhạt.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "ghi thiếu $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "ghi lố $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Bà Lựu dò sổ tối nay: $1 dòng mới, $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Sổ chú Tường đang nợ $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚨 Bị phạt $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", mất $1 ghế.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚰 Đổ bỏ $1 cốc chè thừa, úp bình.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧽 Rửa nốt $1 cốc, úp gọn vào khay.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sáng mai anh Tuấn xe đá thả $1 cây đá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế$4, đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng. $5",
   "en": "",
   "pattern": true
  }

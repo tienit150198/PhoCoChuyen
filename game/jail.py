@@ -20,13 +20,29 @@ Refused: code 'jailed', JAILED. What others do TO a jailed player still lands (a
 bail) and the passive clocks run as before (staff, rent, interest).
 "🌙 Hết một ngày trong trại" (jail_end) ends the jail day: the life day moves on without work, the day's rent or
 điện nước is paid as usual (the jail's meals are free: no meals line), the morning hooks run (bank, home, bills…), and
-the sentence counts down by one, by two when the day's three công ích tasks are done. A jail day lasts at least
-DAY_MIN_S real seconds (a countdown on the button), long enough for the tasks.
+the sentence counts down by one, by two when all the day's công ích tasks are done. Owner 09/10: "bị giam cần lâu hơn
+nhé, hiện tại đang rất nhanh, 1 ngày làm nhiều việc và đa dạng hơn": a jail day lasts at least DAY_MIN_S (20 minutes)
+of real time (a countdown on the button) and has DAY_TASKS (8) tasks of the 14 TASKS, no repeats, chosen from
+(sentence id, jail day). jail_task_start notes the task and the time, jail_task_done checks the answer against the
+task's own seeded puzzle (puzzle()) and that at least TASK_MIN_S seconds went by (no spam): sweep every leaf pile,
+dig → plant → water every hole, the right scoops of rice on every tray, paint every stained panel, the books in order,
+hang each piece of laundry on the peg of its colour, mop each tile as many times as it is dirty, sort the trash into
+its bin, pick only the yellow leaves, scrape → soap → rinse → rack every bowl, give each chicken the food it wants,
+hit each nail as many times as it sticks out, count the storeroom's shelf into the ledger, fold each blanket as its
+card says. The camp map (public/js/scenes/jail-place.js TASK_SPOT) has a corner for each.
 
-Công ích: TASKS_PER_DAY of TASKS a day, chosen from (sentence id, jail day). jail_task_start notes the task and the
-time, jail_task_done checks the answer against the task's own seeded puzzle (puzzle()) and that at least TASK_MIN_S
-seconds went by (no spam): sweep every leaf pile, dig → plant → water every hole, the right scoops of rice on every
-tray, paint every stained panel, the books in order.
+Save (rollback-safe, tests/test_jail.py OldServer against 1.9.29, 1.9.32 and 1.9.33):
+* journey['jail'] keeps the shape older servers check to the letter: {v, id, why, days, left, at, day, since, tasks,
+  done, go, ask} with `tasks` the day's TASKS_PER_DAY (3) of OLD_TASK_IDS (_pick, as before) and `done` / `go` their
+  mirror: an older server sees a day of its own three tasks.
+* journey['jail2'] {v, id, day, tasks, done, go, old} (optional; KEY2) holds the day as played here: the DAY_TASKS
+  tasks (the three above among them), what is done, the task going on. Older servers keep it untouched and ignore it.
+* A day this server did not start (no jail2, or one of another sentence or day: a day begun or ended on an older
+  server) is adopted as it is, by its old rules to the end of that day: its three tasks (what is done and going on
+  carried over), OLD_DAY_MIN_S and OLD_TASK_MIN_S, the old puzzle sizes. The next day starts on the new rules.
+  Rolled back mid-day, the older server carries on with the day's three tasks and its own timings; coming back, the
+  day of jail2 picks up what the older server did there.
+* settle() writes the adopted / merged jail2 on every command and drops a jail2 left without a sentence.
 
 Bail (game/marriage.py act → ACTIONS: POST /api/marriage/jail_ask, /api/marriage/jail_bail): the jailed player asks
 their friends (one social inbox row of kind 'jail' and the Bạn bè notice each, ASK_GAP_S apart); a FRIEND pays BAIL_XU
@@ -54,9 +70,12 @@ VERSION = 1
 DAYS_BM = 3                    # 🕶️ đánh bạc ở chợ đen
 DAYS_COP = 1                   # 🚔 tố cáo sai sự thật
 BAIL_XU = 30000                # a friend pays this (shown: it is a price)
-TASKS_PER_DAY = 3
-TASK_MIN_S = 15                # a công ích task takes at least this long between start and done
-DAY_MIN_S = 120                # a jail day lasts at least this long (real seconds) before "Hết ngày"
+TASKS_PER_DAY = 3              # journey['jail'].tasks: the older servers' view of the day (they check exactly 3)
+DAY_TASKS = 8                  # the day's công ích here (journey['jail2'].tasks); all done: the day counts two
+TASK_MIN_S = 45                # a công ích task takes at least this long between start and done
+DAY_MIN_S = 1200               # a jail day lasts at least this long (real seconds) before "Hết ngày"
+OLD_TASK_MIN_S = 15            # a day begun on an older server keeps its rules to its end (adopted)
+OLD_DAY_MIN_S = 120
 SAFE_S = 86400                 # the safety release: past days × SAFE_S real seconds since the arrest
 ASK_GAP_S = 600                # one bail request to the friends every ten minutes at most
 ASK_MAX = 60                   # friends asked at most (the newest friendships first)
@@ -64,6 +83,9 @@ ASK_DAYS = 4                   # a request older than this is not shown any more
 WHY = ('bm', 'cop')
 WHY_TEXT = dict(bm='Đánh bạc ở chợ đen', cop='Tố cáo sai sự thật')
 KEYS = {'v', 'id', 'why', 'days', 'left', 'at', 'day', 'since', 'tasks', 'done', 'go', 'ask'}
+KEY2 = 'jail2'
+VERSION2 = 1
+KEYS2 = {'v', 'id', 'day', 'tasks', 'done', 'go', 'old'}
 COMMANDS = ('jail_end', 'jail_task_start', 'jail_task_done')
 INBOX = 'jail'                 # the social inbox kind of a bail request (an old client shows its text with a 🔔)
 BAIL_LABEL = '🚔 Bảo lãnh cho {name}'
@@ -75,9 +97,29 @@ TASKS = {
     'rice': dict(emoji='🍚', name='Phụ bếp chia cơm', hint='Múc đúng số muỗng cơm ghi trên mỗi khay.'),
     'paint': dict(emoji='🎨', name='Sơn lại tường', hint='Quét sơn lên mọi ô tường còn bẩn.'),
     'books': dict(emoji='📚', name='Xếp sách thư viện trại', hint='Chạm vào sách theo số từ nhỏ tới lớn.'),
+    'laundry': dict(emoji='👕', name='Phơi đồ', hint='Chọn một món đồ rồi kẹp nó lên cái kẹp cùng màu.'),
+    'mop': dict(emoji='🧽', name='Lau sàn buồng giam', hint='Ô sàn bẩn mấy vệt thì lau bấy nhiêu lần, đừng lau dư.'),
+    'trash': dict(emoji='🗑️', name='Phân loại rác', hint='Bỏ mỗi món vào đúng thùng: giấy, nhựa hay rác hữu cơ.'),
+    'veg': dict(emoji='🥬', name='Nhặt rau muống', hint='Chỉ ngắt những lá vàng, giữ lại lá xanh.'),
+    'dishes': dict(emoji='🍜', name='Rửa chén bát', hint='Mỗi cái chén: cạo thức ăn, rửa xà phòng, tráng nước rồi úp lên giá.'),
+    'chicken': dict(emoji='🐔', name='Cho gà ăn', hint='Con gà nghĩ tới món gì thì rắc đúng món đó.'),
+    'fix': dict(emoji='🔨', name='Sửa ghế gãy', hint='Đinh nhô lên mấy nấc thì gõ bấy nhiêu cái, gõ dư là cong đinh.'),
+    'ledger': dict(emoji='📒', name='Kiểm kho', hint='Đếm từng loại đồ trên kệ rồi ghi đúng số vào sổ.'),
+    'fold': dict(emoji='🛏️', name='Gấp chăn màn', hint='Gấp từng tấm chăn theo đúng thứ tự trên thẻ hướng dẫn.'),
 }
 TASK_IDS = tuple(TASKS)
+OLD_TASK_IDS = ('sweep', 'plant', 'rice', 'paint', 'books')   # the only tasks older servers know (journey['jail'])
 PLANT_STEPS = ('dig', 'seed', 'water')
+DISH_STEPS = ('scrape', 'soap', 'rinse', 'rack')
+COLORS = ('do', 'cam', 'vang', 'la', 'duong', 'tim', 'hong', 'nau')             # 👕 the pegs and the clothes
+CLOTHES = ('ao', 'quan', 'khan', 'vo', 'mu', 'ao_khoac', 'yem')
+TRASH = {'bao_cu': 'giay', 'hop_giay': 'giay', 'vo_cu': 'giay', 'ly_giay': 'giay', 'thung_carton': 'giay',
+         'chai_nhua': 'nhua', 'tui_ni_long': 'nhua', 'hop_xop': 'nhua', 'ong_hut': 'nhua', 'nap_chai': 'nhua',
+         'vo_chuoi': 'huu_co', 'xuong_ca': 'huu_co', 'la_kho': 'huu_co', 'com_thua': 'huu_co', 'vo_trung': 'huu_co'}
+BINS = ('giay', 'nhua', 'huu_co')
+FEED = ('thoc', 'ngo', 'rau')                  # 🐔 what a chicken may want
+STOCK = ('xa_phong', 'khan', 'ban_chai', 'chen', 'dep', 'giay_ve_sinh')       # 📒 the storeroom shelf
+FOLDS = ('trai', 'phai', 'tren', 'duoi')       # 🛏️ fold the left / right / top / bottom edge in
 
 JAILED = 'Đang ở trại tạm giữ, ra rồi hẵng làm nha.'
 NOT_IN = 'Bạn không ở trại tạm giữ.'
@@ -115,29 +157,86 @@ def active(j, t: float | None = None) -> bool:
 
 
 def _pick(sid: str, day: int) -> list:
-    """The day's công ích: TASKS_PER_DAY of TASKS, fixed by (sentence, jail day)."""
-    return random.Random(f'jail|{sid}|{day}').sample(list(TASK_IDS), TASKS_PER_DAY)
+    """journey['jail'].tasks: TASKS_PER_DAY of the old tasks, fixed by (sentence, jail day) (as on older servers)."""
+    return random.Random(f'jail|{sid}|{day}').sample(list(OLD_TASK_IDS), TASKS_PER_DAY)
 
 
-def puzzle(sid: str, day: int, task: str) -> dict:
-    """A task's seeded layout: what the client draws and what the answer is checked against."""
+def _pick_day(sid: str, day: int) -> list:
+    """The day's DAY_TASKS of TASKS, no repeats, fixed by (sentence, jail day); the three of _pick among them."""
+    r = random.Random(f'jail2|{sid}|{day}')
+    old = _pick(sid, day)
+    out = old + r.sample([t for t in TASK_IDS if t not in old], DAY_TASKS - len(old))
+    r.shuffle(out)
+    return out
+
+
+def _cells(r: random.Random, n: int, lo: int, hi: int) -> list:
+    """lo..hi distinct cells of n, in a random order."""
+    return r.sample(range(n), r.randint(lo, hi))
+
+
+def puzzle(sid: str, day: int, task: str, old: bool = False) -> dict:
+    """A task's seeded layout: what the client draws and what the answer is checked against. `old`: a day adopted
+    from an older server keeps that server's sizes (the same layouts, so an answer means the same on both)."""
     r = random.Random(f'jail|{sid}|{day}|{task}')
     if task == 'sweep':
-        n = r.randint(6, 8)
-        spots = []
-        while len(spots) < n:   # a 4 × 3 yard grid, one pile a cell
-            c = r.randrange(12)
-            if c not in spots:
-                spots.append(c)
-        return dict(piles=spots)
+        if old:
+            n = r.randint(6, 8)
+            spots = []
+            while len(spots) < n:   # a 4 × 3 yard grid, one pile a cell
+                c = r.randrange(12)
+                if c not in spots:
+                    spots.append(c)
+            return dict(piles=spots)
+        return dict(cells=16, piles=_cells(r, 16, 10, 12))   # a 4 × 4 yard
     if task == 'plant':
-        return dict(holes=4)
+        return dict(holes=4 if old else 6)
     if task == 'rice':
-        return dict(want=[r.randint(1, 3) for _ in range(5)])
+        return dict(want=[r.randint(1, 3) for _ in range(5)]) if old else dict(want=[r.randint(2, 4) for _ in range(8)])
     if task == 'paint':
-        return dict(cells=10, dirty=sorted(r.sample(range(10), r.randint(5, 7))))
-    nums = r.sample(range(1, 100), 6)
-    return dict(nums=nums)
+        if old:
+            return dict(cells=10, dirty=sorted(r.sample(range(10), r.randint(5, 7))))
+        return dict(cells=15, dirty=sorted(r.sample(range(15), r.randint(10, 13))))
+    if task == 'books':
+        return dict(nums=r.sample(range(1, 100), 6 if old else 9))
+    if task == 'laundry':
+        colors = r.sample(COLORS, 7)
+        kinds = [r.choice(CLOTHES) for _ in colors]
+        items = [dict(k=k, c=c) for k, c in zip(kinds, colors)]
+        r.shuffle(items)
+        return dict(items=items, pegs=r.sample(colors, len(colors)))
+    if task == 'mop':
+        dirt = [0] * 12
+        for c in _cells(r, 12, 8, 10):
+            dirt[c] = r.randint(1, 3)
+        return dict(dirt=dirt)
+    if task == 'trash':
+        items = [x for b in BINS for x in r.sample([k for k, v in TRASH.items() if v == b], 3)]
+        items += [r.choice([k for k in TRASH if k not in items])]
+        r.shuffle(items)
+        return dict(items=items)
+    if task == 'veg':
+        return dict(leaves=20, yellow=sorted(_cells(r, 20, 9, 12)))
+    if task == 'dishes':
+        return dict(bowls=5)
+    if task == 'chicken':
+        want = [r.choice(FEED) for _ in range(7)]
+        want[r.randrange(7)] = FEED[0]
+        return dict(want=want)
+    if task == 'fix':
+        return dict(nails=[r.randint(1, 4) for _ in range(7)])
+    if task == 'ledger':
+        kinds = r.sample(STOCK, 4)
+        pile = [k for k in kinds for _ in range(r.randint(2, 7))]
+        r.shuffle(pile)
+        return dict(kinds=kinds, pile=pile)
+    if task == 'fold':
+        return dict(cards=[r.sample(FOLDS, 4) for _ in range(3)])
+    raise ValueError(task)
+
+
+def _ints(got, n: int | None = None, lo: int = 0, hi: int = 99) -> bool:
+    return isinstance(got, list) and (n is None or len(got) == n) and all(type(x) is int and lo <= x <= hi for x in got)
 
 
 def _right(task: str, pz: dict, ans) -> bool:
@@ -145,22 +244,91 @@ def _right(task: str, pz: dict, ans) -> bool:
         return False
     if task == 'sweep':
         got = ans.get('swept')
-        return isinstance(got, list) and len(got) <= 12 and sorted(x for x in got if type(x) is int) == sorted(pz['piles']) \
-            and len(set(got)) == len(got)
+        return _ints(got, None, 0, pz.get('cells', 12) - 1) and len(got) <= pz.get('cells', 12) \
+            and sorted(got) == sorted(pz['piles']) and len(set(got)) == len(got)
     if task == 'plant':
         got = ans.get('steps')
         return isinstance(got, list) and len(got) == pz['holes'] and all(isinstance(x, list) and tuple(x) == PLANT_STEPS for x in got)
     if task == 'rice':
         got = ans.get('scoops')
-        return isinstance(got, list) and all(type(x) is int for x in got) and got == pz['want']
+        return _ints(got, len(pz['want'])) and got == pz['want']
     if task == 'paint':
         got = ans.get('cells')
-        return isinstance(got, list) and all(type(x) is int for x in got) and len(got) <= pz['cells'] \
+        return _ints(got, None, 0, pz['cells'] - 1) and len(got) <= pz['cells'] \
             and len(set(got)) == len(got) and set(got) == set(pz['dirty'])
-    got = ans.get('order')
-    nums = pz['nums']
-    return isinstance(got, list) and len(got) == len(nums) and all(type(x) is int and 0 <= x < len(nums) for x in got) \
-        and len(set(got)) == len(got) and [nums[i] for i in got] == sorted(nums)
+    if task == 'books':
+        got = ans.get('order')
+        nums = pz['nums']
+        return _ints(got, len(nums), 0, len(nums) - 1) and len(set(got)) == len(got) and [nums[i] for i in got] == sorted(nums)
+    if task == 'laundry':
+        got = ans.get('hang')
+        items, pegs = pz['items'], pz['pegs']
+        return _ints(got, len(items), 0, len(pegs) - 1) and len(set(got)) == len(got) \
+            and all(pegs[g] == it['c'] for g, it in zip(got, items))
+    if task == 'mop':
+        got = ans.get('wipes')
+        return _ints(got, len(pz['dirt']), 0, 9) and got == pz['dirt']
+    if task == 'trash':
+        got = ans.get('bins')
+        return isinstance(got, list) and len(got) == len(pz['items']) and all(isinstance(x, str) for x in got) \
+            and got == [TRASH[x] for x in pz['items']]
+    if task == 'veg':
+        got = ans.get('picked')
+        return _ints(got, None, 0, pz['leaves'] - 1) and len(set(got)) == len(got) and set(got) == set(pz['yellow'])
+    if task == 'dishes':
+        got = ans.get('steps')
+        return isinstance(got, list) and len(got) == pz['bowls'] and all(isinstance(x, list) and tuple(x) == DISH_STEPS for x in got)
+    if task == 'chicken':
+        got = ans.get('fed')
+        return isinstance(got, list) and all(isinstance(x, str) for x in got) and got == pz['want']
+    if task == 'fix':
+        got = ans.get('hits')
+        return _ints(got, len(pz['nails']), 0, 9) and got == pz['nails']
+    if task == 'ledger':
+        got = ans.get('counts')
+        want = {k: pz['pile'].count(k) for k in pz['kinds']}
+        return isinstance(got, dict) and set(got) == set(want) and all(type(got[k]) is int and got[k] == n for k, n in want.items())
+    if task == 'fold':
+        got = ans.get('folds')
+        return isinstance(got, list) and len(got) == len(pz['cards']) \
+            and all(isinstance(x, list) and all(isinstance(y, str) for y in x) and x == c for x, c in zip(got, pz['cards']))
+    return False
+
+
+def _new_day(sid: str, day: int) -> dict:
+    """journey['jail2'] for a day this server starts: the new rules."""
+    return dict(v=VERSION2, id=sid, day=day, tasks=_pick_day(sid, day), done=[], go=None, old=False)
+
+
+def day_of(j: dict) -> dict | None:
+    """The day as it is played here (pure): journey['jail2'] when it is this sentence's day, with what an older server
+    did meanwhile carried over; else that day adopted from journey['jail'] by its old rules. None when free."""
+    b = block(j)
+    if not b:
+        return None
+    d = j.get(KEY2)
+    if isinstance(d, dict) and d.get('id') == b['id'] and d.get('day') == b['day'] and isinstance(d.get('tasks'), list):
+        done = list(d['done']) + [x for x in b['done'] if x in d['tasks'] and x not in d['done']]
+        go = d['go']
+        if not go and isinstance(b['go'], dict) and b['go'].get('t') in d['tasks']:   # started there meanwhile
+            go = dict(b['go'])
+        if go and go.get('t') in done:
+            go = None
+        return dict(d, done=done, go=go)
+    return dict(v=VERSION2, id=b['id'], day=b['day'], tasks=list(b['tasks']), done=list(b['done']),
+                go=dict(b['go']) if isinstance(b['go'], dict) else None, old=True)
+
+
+def _rules(d: dict) -> tuple[int, int]:
+    """(task min, day min) seconds of a day."""
+    return (OLD_TASK_MIN_S, OLD_DAY_MIN_S) if d['old'] else (TASK_MIN_S, DAY_MIN_S)
+
+
+def _mirror(b: dict, d: dict) -> None:
+    """journey['jail'] follows the day for older servers: its three tasks' done and going on."""
+    b['done'] = [x for x in b['tasks'] if x in d['done']]
+    go = d['go']
+    b['go'] = dict(go) if go and go['t'] in b['tasks'] else None
 
 
 def arrest(j: dict, why: str, days: int, t: float | None = None) -> int:
@@ -174,20 +342,30 @@ def arrest(j: dict, why: str, days: int, t: float | None = None) -> int:
     sid = hashlib.sha256(f'{j.get("seed", 0)}|{j.get("life_day", 1)}|{int(t)}|{why}'.encode()).hexdigest()[:10]
     j[KEY] = dict(v=VERSION, id=sid, why=why, days=int(days), left=int(days), at=int(t), day=1, since=int(t),
                   tasks=_pick(sid, 1), done=[], go=None, ask=0)
+    j[KEY2] = _new_day(sid, 1)
     return int(days)
 
 
 def release(j: dict) -> None:
     j.pop(KEY, None)
+    j.pop(KEY2, None)
 
 
 def settle(s: dict, t: float | None = None) -> bool:
-    """Every command: a block whose time is over (the safety release) or the switch: gone. True when it went."""
+    """Every command: a block whose time is over (the safety release) or the switch: gone (True when it went). Inside:
+    the day as played here is written (adopted, or merged with an older server's work); a jail2 alone goes."""
     j = s.get('journey') if isinstance(s, dict) else None
-    if not isinstance(j, dict) or KEY not in j or active(j, t):
+    if not isinstance(j, dict):
         return False
-    release(j)
-    return True
+    if KEY not in j:
+        j.pop(KEY2, None)
+        return False
+    if not active(j, t):
+        release(j)
+        return True
+    if block(j):
+        j[KEY2] = day_of(j)
+    return False
 
 
 # What a jailed player may still do (everything else: JAILED). Internal (server) commands always run.
@@ -254,11 +432,11 @@ def _morning(s: dict) -> None:
 def _end(s: dict, p: dict, t: float, result: dict) -> None:
     from . import journey as jr
     j = s['journey']
-    b = j[KEY]
+    b, d = j[KEY], j[KEY2]
     _need(set(p) <= {'day'} and p.get('day', b['day']) == b['day'], 'Ngày trong trại này đã qua rồi. Tải lại trang nhé.', 'jail_stale')
-    wait = b['since'] + DAY_MIN_S - int(t)
+    wait = b['since'] + _rules(d)[1] - int(t)
     _need(wait <= 0, f'Còn {wait // 60}:{wait % 60:02d} nữa mới hết ngày trong trại. Làm công ích cho nhanh nha.', 'jail_wait')
-    full = len(b['done']) >= len(b['tasks'])
+    full = len(d['done']) >= len(d['tasks'])
     day = j['life_day']
     cost = jr.living_cost(j)
     rent = max(0, int(cost['rent']))
@@ -282,6 +460,7 @@ def _end(s: dict, p: dict, t: float, result: dict) -> None:
         result['jail'] = dict(free=True)
     else:
         b.update(day=b['day'] + 1, since=int(t), tasks=_pick(b['id'], b['day'] + 1), done=[], go=None)
+        j[KEY2] = _new_day(b['id'], b['day'])
         result['message'] = f'Còn {b["left"]} ngày trong trại. Sáng nay có việc công ích mới.'
         result['jail'] = dict(free=False, left=b['left'])
     if j['wallet'] < 0:
@@ -290,32 +469,38 @@ def _end(s: dict, p: dict, t: float, result: dict) -> None:
 
 
 def _task_start(s: dict, p: dict, t: float, result: dict) -> None:
-    b = s['journey'][KEY]
+    j = s['journey']
+    b, d = j[KEY], j[KEY2]
     task = p.get('task')
-    _need(set(p) == {'task'} and task in b['tasks'], 'Việc công ích này không có trong hôm nay.')
-    _need(task not in b['done'], 'Việc này làm xong rồi.', 'already_done')
-    if not (isinstance(b['go'], dict) and b['go'].get('t') == task):
-        b['go'] = dict(t=task, at=int(t))
+    _need(set(p) == {'task'} and task in d['tasks'], 'Việc công ích này không có trong hôm nay.')
+    _need(task not in d['done'], 'Việc này làm xong rồi.', 'already_done')
+    if not (isinstance(d['go'], dict) and d['go'].get('t') == task):
+        d['go'] = dict(t=task, at=int(t))
+    _mirror(b, d)
     result['message'] = ''
-    result['jail'] = dict(task=task, pz=puzzle(b['id'], b['day'], task), ready=b['go']['at'] + TASK_MIN_S)
+    result['jail'] = dict(task=task, pz=puzzle(b['id'], b['day'], task, d['old']), ready=d['go']['at'] + _rules(d)[0])
 
 
 def _task_done(s: dict, p: dict, t: float, result: dict) -> None:
-    b = s['journey'][KEY]
+    j = s['journey']
+    b, d = j[KEY], j[KEY2]
     task = p.get('task')
-    _need(set(p) == {'task', 'ans'} and task in b['tasks'], 'Việc công ích này không có trong hôm nay.')
-    if task in b['done']:   # a retry, another tab
+    _need(set(p) == {'task', 'ans'} and task in d['tasks'], 'Việc công ích này không có trong hôm nay.')
+    if task in d['done']:   # a retry, another tab
         result.update(message='', jail=dict(task=task, ok=True, again=True))
         return
-    go = b['go']
+    go = d['go']
     _need(isinstance(go, dict) and go.get('t') == task, 'Bắt đầu việc này trước đã nhé.', 'jail_not_started')
-    _need(int(t) - go['at'] >= TASK_MIN_S, 'Làm từ từ cho kỹ nha, cán bộ đang xem đó.', 'jail_fast')
-    _need(_right(task, puzzle(b['id'], b['day'], task), p.get('ans')), 'Chưa xong đâu, làm lại cho đúng nha.', 'jail_wrong')
-    b['done'].append(task)
-    b['go'] = None
-    all_done = len(b['done']) >= len(b['tasks'])
+    _need(int(t) - go['at'] >= _rules(d)[0], 'Làm từ từ cho kỹ nha, cán bộ đang xem đó.', 'jail_fast')
+    _need(_right(task, puzzle(b['id'], b['day'], task, d['old']), p.get('ans')), 'Chưa xong đâu, làm lại cho đúng nha.', 'jail_wrong')
+    d['done'].append(task)
+    d['go'] = None
+    _mirror(b, d)
+    all_done = len(d['done']) >= len(d['tasks'])
+    left = len(d['tasks']) - len(d['done'])
     result['message'] = (f'{TASKS[task]["emoji"]} Xong: {TASKS[task]["name"].lower()}.'
-                         + (' Đủ công ích hôm nay: hết ngày này được tính hai ngày.' if all_done and b['left'] > 1 else ''))
+                         + (' Đủ công ích hôm nay: hết ngày này được tính hai ngày.' if all_done and b['left'] > 1
+                            else f' Còn {left} việc nữa hôm nay.' if left else ''))
     result['jail'] = dict(task=task, ok=True, all=all_done)
 
 
@@ -348,19 +533,34 @@ def public(s: dict) -> dict | None:
     if not active(j, t):
         return None
     b = j[KEY]
-    go = b['go'] if isinstance(b['go'], dict) else None
-    tasks = [dict(id=x, **TASKS[x], done=x in b['done'], pz=puzzle(b['id'], b['day'], x)) for x in b['tasks']]
+    d = day_of(j)
+    task_min, day_min = _rules(d)
+    go = d['go'] if isinstance(d['go'], dict) else None
+    tasks = [dict(id=x, **TASKS[x], done=x in d['done'], pz=puzzle(b['id'], b['day'], x, d['old'])) for x in d['tasks']]
     return dict(id=b['id'], why=b['why'], why_text=WHY_TEXT[b['why']], days=b['days'], left=b['left'], day=b['day'],
-                tasks=tasks, go=go['t'] if go else None, task_ready=go['at'] + TASK_MIN_S if go else 0,
-                ready=b['since'] + DAY_MIN_S, ask_next=b['ask'] + ASK_GAP_S if b['ask'] else 0, bail=BAIL_XU, now=int(t))
+                tasks=tasks, go=go['t'] if go else None, task_ready=go['at'] + task_min if go else 0,
+                ready=b['since'] + day_min, ask_next=b['ask'] + ASK_GAP_S if b['ask'] else 0, bail=BAIL_XU, now=int(t))
 
 
 def validate(s: dict) -> None:
     j = s.get('journey')
-    if not isinstance(j, dict) or KEY not in j:
+    if not isinstance(j, dict):
         return
     from .engine import need, integer
     bad = 'Dữ liệu trại tạm giữ không hợp lệ.'
+    if KEY2 in j:   # the day as played here (alone after an older server let the player out: dropped by settle())
+        d = j[KEY2]
+        need(isinstance(d, dict) and set(d) == KEYS2 and d['v'] == VERSION2 and type(d['old']) is bool, bad, 'invalid_save')
+        need(isinstance(d['id'], str) and 1 <= len(d['id']) <= 16 and d['id'].isalnum(), bad, 'invalid_save')
+        integer(d['day'], 1, 60)
+        need(isinstance(d['tasks'], list) and 1 <= len(d['tasks']) <= DAY_TASKS and len(set(d['tasks'])) == len(d['tasks'])
+             and set(d['tasks']) <= set(TASK_IDS), bad, 'invalid_save')
+        need(isinstance(d['done'], list) and len(set(d['done'])) == len(d['done']) and set(d['done']) <= set(d['tasks']), bad, 'invalid_save')
+        go = d['go']
+        need(go is None or (isinstance(go, dict) and set(go) == {'t', 'at'} and go['t'] in d['tasks'] and type(go['at']) is int
+                            and 0 <= go['at'] <= 2 ** 40), bad, 'invalid_save')
+    if KEY not in j:
+        return
     b = j[KEY]
     need(isinstance(b, dict) and set(b) == KEYS and b['v'] == VERSION and b['why'] in WHY, bad, 'invalid_save')
     need(isinstance(b['id'], str) and 1 <= len(b['id']) <= 16 and b['id'].isalnum(), bad, 'invalid_save')
@@ -370,7 +570,7 @@ def validate(s: dict) -> None:
     for k in ('at', 'since', 'ask'):
         integer(b[k], 0, 2 ** 40)
     need(isinstance(b['tasks'], list) and len(b['tasks']) == TASKS_PER_DAY and len(set(b['tasks'])) == TASKS_PER_DAY
-         and set(b['tasks']) <= set(TASK_IDS), bad, 'invalid_save')
+         and set(b['tasks']) <= set(OLD_TASK_IDS), bad, 'invalid_save')
     need(isinstance(b['done'], list) and len(set(b['done'])) == len(b['done']) and set(b['done']) <= set(b['tasks']), bad, 'invalid_save')
     go = b['go']
     need(go is None or (isinstance(go, dict) and set(go) == {'t', 'at'} and go['t'] in b['tasks'] and type(go['at']) is int

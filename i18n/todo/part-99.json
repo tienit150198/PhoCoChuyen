@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Mỗi mã từ 1 đến 6 món.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt đơn gộp",
+  "en": ""
+ },
+ {
+  "vi": "Hạn dùng trên kệ",
+  "en": ""
+ },
+ {
+  "vi": "hộp cần rút ngay",
+  "en": ""
+ },
+ {
   "vi": "hộp hết hạn trong 3 ngày",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "🙅 Từ chối đổi trả",
-  "en": ""
- },
- {
-  "vi": "Từ chối đổi trả cho khách?",
-  "en": ""
- },
- {
-  "vi": "🏷️ Máy in tem sale",
-  "en": ""
- },
- {
-  "vi": "Làm tròn xuống.",
-  "en": ""
- },
- {
-  "vi": "Tem thấp tiệm lỗ, tem cao khách phàn nàn.",
   "en": ""
  }
 ]

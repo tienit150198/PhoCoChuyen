@@ -745,6 +745,11 @@
   "pattern": true
  },
  {
+  "vi": "Có $1 loại đếm chưa khớp, đếm lại trên kệ nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đống lá, còn $1 lần quét",
   "en": "",
   "pattern": true
@@ -765,12 +770,92 @@
   "pattern": true
  },
  {
+  "vi": "Kẹp màu $1, đã phơi $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kẹp màu $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đồ giặt: $1, màu $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ô sàn bẩn, còn $1 lần lau",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thùng $1: $2 món",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gà $1: đã ăn $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gà $1 đang thèm $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đinh $1: còn nhô $2 nấc",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đinh $1: đã vô hết",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kệ kho: $1 món",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tấm chăn $1/$2 · thẻ hướng dẫn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã gấp xong $1/$2 tấm.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Sách số $1",
   "en": "",
   "pattern": true
  },
  {
   "vi": "Khay $1 dư cơm rồi, bớt lại cho đúng phần nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Món này màu $1, tìm kẹp cùng màu nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thùng $1 không nhận $2 đâu, nghĩ lại nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gà $1 đang thèm $2, chọn đúng món nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thẻ ghi bước tiếp theo là “$1”.",
   "en": "",
   "pattern": true
  },
@@ -2161,91 +2246,6 @@
  },
  {
   "vi": "Góc nhìn sau quầy $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nguyên liệu $1 · tham khảo $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang chọn $1/$2 món. Bạn có thể chọn toàn bộ danh mục.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "(tối đa $1, miễn phí)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧍 $1 khách",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Còn $1 đơn online chờ giao.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Góc nhìn của bạn sau quầy $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bỏ $1 ra",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đóng gói $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhìn biển chỉ đường phía trước. Ngã tư thứ $1:",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trang bị giao hàng ×$1 · Chuẩn bị chuyến tiếp theo nhanh hơn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚦 Phạt giao thông: $1 xu · đã ghi vào chi phí quầy. Biên nhận lưu trong sổ quầy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "bộ cho $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "“Ủa, mình gọi $1 mà.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã bày đủ $1 món, mức tối đa của phòng này. Muốn bày thêm: cất bớt món ít dùng vào túi đồ, bày sang phòng khác, hoặc dọn về nhà rộng hơn (phòng càng rộng càng bày được nhiều).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "không hợp đặt ở $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "của $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "ngày tuổi · Gắn bó $1/100",
   "en": "",
   "pattern": true
  }

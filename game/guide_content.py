@@ -6144,7 +6144,8 @@ GROUPS = [{'id': 'start',
                          'đi chơi…) chờ ra trại rồi làm.',
                          '🗺️ Trại là một khu để đi lại: chạm sân để đi, chạm một góc để tới đó. Công ích làm ở từng góc '
                          '(quét sân ở gốc bàng, chia cơm ở căng tin, xếp sách ở thư viện trại…).',
-                         '🧹 Mỗi ngày có 3 việc công ích nho nhỏ. Làm đủ cả 3 thì hết ngày đó được tính 2 ngày.',
+                         '🧹 Một ngày trong trại dài ít nhất 20 phút, có 8 việc công ích khác nhau (quét sân, phơi đồ, phân loại rác, '
+                         'cho gà ăn, kiểm kho…). Làm đủ cả 8 thì hết ngày đó được tính 2 ngày.',
                          '🌙 Về giường trong buồng, bấm [[Hết một ngày trong trại]] để qua một ngày sống. Tiền phòng vẫn tính, '
                          'cơm trại miễn phí.',
                          '🤝 Ra phòng thăm gặp, bấm [[Nhờ bạn bảo lãnh]]: một người bạn trả 30.000 xu từ ví của họ là bạn được '

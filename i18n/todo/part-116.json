@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Chọn tài sản",
+  "en": ""
+ },
+ {
+  "vi": "Mở khi ví từng có 500 xu",
+  "en": ""
+ },
+ {
+  "vi": "☁️ Mây Coin",
+  "en": ""
+ },
+ {
+  "vi": "xem trước",
+  "en": ""
+ },
+ {
   "vi": "Giá coin chung cả phố · 10 phút/phiên",
   "en": ""
  },
@@ -168,19 +184,95 @@
   "en": ""
  },
  {
-  "vi": "Cán bộ đang kiểm tra…",
+  "vi": "xanh dương",
   "en": ""
  },
  {
-  "vi": "✅ Báo cán bộ: xong rồi",
+  "vi": "Quần",
   "en": ""
  },
  {
-  "vi": "‹ Để sau",
+  "vi": "Vớ",
   "en": ""
  },
  {
-  "vi": "Đã quét sạch",
+  "vi": "Báo cũ",
+  "en": ""
+ },
+ {
+  "vi": "Hộp giấy",
+  "en": ""
+ },
+ {
+  "vi": "Vở cũ",
+  "en": ""
+ },
+ {
+  "vi": "Thùng các-tông",
+  "en": ""
+ },
+ {
+  "vi": "Túi ni lông",
+  "en": ""
+ },
+ {
+  "vi": "Hộp xốp",
+  "en": ""
+ },
+ {
+  "vi": "Ống hút nhựa",
+  "en": ""
+ },
+ {
+  "vi": "Nắp chai",
+  "en": ""
+ },
+ {
+  "vi": "Xương cá",
+  "en": ""
+ },
+ {
+  "vi": "Cơm thừa",
+  "en": ""
+ },
+ {
+  "vi": "Vỏ trứng",
+  "en": ""
+ },
+ {
+  "vi": "Giấy",
+  "en": ""
+ },
+ {
+  "vi": "Nhựa",
+  "en": ""
+ },
+ {
+  "vi": "Thóc",
+  "en": ""
+ },
+ {
+  "vi": "Chén",
+  "en": ""
+ },
+ {
+  "vi": "Giấy vệ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Gập mép trái",
+  "en": ""
+ },
+ {
+  "vi": "Gập mép phải",
+  "en": ""
+ },
+ {
+  "vi": "Gập mép trên",
+  "en": ""
+ },
+ {
+  "vi": "Gập mép dưới",
   "en": ""
  },
  {
@@ -216,6 +308,86 @@
   "en": ""
  },
  {
+  "vi": "Đào hố trước đã nha.",
+  "en": ""
+ },
+ {
+  "vi": "Hố đào rồi, gieo hạt đi.",
+  "en": ""
+ },
+ {
+  "vi": "Gieo rồi, giờ tưới nước.",
+  "en": ""
+ },
+ {
+  "vi": "Cạo thức ăn",
+  "en": ""
+ },
+ {
+  "vi": "Rửa xà phòng",
+  "en": ""
+ },
+ {
+  "vi": "Tráng nước",
+  "en": ""
+ },
+ {
+  "vi": "Úp lên giá",
+  "en": ""
+ },
+ {
+  "vi": "còn thức ăn",
+  "en": ""
+ },
+ {
+  "vi": "đã cạo",
+  "en": ""
+ },
+ {
+  "vi": "đã rửa xà phòng",
+  "en": ""
+ },
+ {
+  "vi": "đã tráng",
+  "en": ""
+ },
+ {
+  "vi": "sạch, úp lên giá rồi",
+  "en": ""
+ },
+ {
+  "vi": "Cạo sạch thức ăn thừa trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Cạo rồi, giờ rửa xà phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Còn xà phòng, tráng nước đi.",
+  "en": ""
+ },
+ {
+  "vi": "Tráng rồi, úp lên giá cho ráo.",
+  "en": ""
+ },
+ {
+  "vi": "Cán bộ đang kiểm tra…",
+  "en": ""
+ },
+ {
+  "vi": "✅ Báo cán bộ: xong rồi",
+  "en": ""
+ },
+ {
+  "vi": "‹ Để sau",
+  "en": ""
+ },
+ {
+  "vi": "Đã quét sạch",
+  "en": ""
+ },
+ {
   "vi": "muỗng",
   "en": ""
  },
@@ -240,6 +412,46 @@
   "en": ""
  },
  {
+  "vi": "Dây phơi",
+  "en": ""
+ },
+ {
+  "vi": "Rổ đồ giặt · giờ chọn kẹp cùng màu",
+  "en": ""
+ },
+ {
+  "vi": "Rổ đồ giặt · chạm một món",
+  "en": ""
+ },
+ {
+  "vi": "Phơi hết rồi",
+  "en": ""
+ },
+ {
+  "vi": "Ô sàn đã sạch",
+  "en": ""
+ },
+ {
+  "vi": "Phân loại xong rồi",
+  "en": ""
+ },
+ {
+  "vi": "Lá vàng",
+  "en": ""
+ },
+ {
+  "vi": "Lá xanh",
+  "en": ""
+ },
+ {
+  "vi": "Kệ kho",
+  "en": ""
+ },
+ {
+  "vi": "Sổ kiểm kho",
+  "en": ""
+ },
+ {
   "vi": "Kệ chưa xếp",
   "en": ""
  },
@@ -252,19 +464,31 @@
   "en": ""
  },
  {
-  "vi": "Đào hố trước đã nha.",
-  "en": ""
- },
- {
-  "vi": "Hố đào rồi, gieo hạt đi.",
-  "en": ""
- },
- {
-  "vi": "Gieo rồi, giờ tưới nước.",
-  "en": ""
- },
- {
   "vi": "Chưa đúng thứ tự: tìm cuốn số nhỏ nhất còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một món trong rổ trước đã nha.",
+  "en": ""
+ },
+ {
+  "vi": "Kẹp này có đồ rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Ô này sạch rồi, lau dư phí nước nha.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm một món rác trước, rồi chọn thùng.",
+  "en": ""
+ },
+ {
+  "vi": "Lá xanh còn ăn được, giữ lại nha.",
+  "en": ""
+ },
+ {
+  "vi": "Đinh vô hết rồi, gõ nữa là cong đinh đó!",
   "en": ""
  },
  {
@@ -1573,230 +1797,6 @@
  },
  {
   "vi": "Tiệm nhẫn",
-  "en": ""
- },
- {
-  "vi": "Màu kim loại",
-  "en": ""
- },
- {
-  "vi": "Màu đá",
-  "en": ""
- },
- {
-  "vi": "cầu hôn bạn",
-  "en": ""
- },
- {
-  "vi": "Báo tin vui cho cả phố (bảng tin chạy chữ)",
-  "en": ""
- },
- {
-  "vi": "Nhẫn",
-  "en": ""
- },
- {
-  "vi": "💞 Đồng ý",
-  "en": ""
- },
- {
-  "vi": "Chặn người này",
-  "en": ""
- },
- {
-  "vi": "Muốn cầu hôn thì cần một chiếc nhẫn trước đã.",
-  "en": ""
- },
- {
-  "vi": "💍 Đến tiệm nhẫn",
-  "en": ""
- },
- {
-  "vi": "Chỉ cầu hôn được bạn bè. Kết bạn với người ấy trước nhé.",
-  "en": ""
- },
- {
-  "vi": "👥 Mở danh sách bạn bè",
-  "en": ""
- },
- {
-  "vi": "✓ Gửi tới",
-  "en": ""
- },
- {
-  "vi": "Gửi tới người bạn",
-  "en": ""
- },
- {
-  "vi": "Chọn một người bạn…",
-  "en": ""
- },
- {
-  "vi": "Chiếc nhẫn",
-  "en": ""
- },
- {
-  "vi": "Lời cầu hôn",
-  "en": ""
- },
- {
-  "vi": "Nếu người ấy đồng ý, báo tin vui cho cả phố",
-  "en": ""
- },
- {
-  "vi": "💍 Gửi lời cầu hôn",
-  "en": ""
- },
- {
-  "vi": "Lời cầu hôn đã gửi",
-  "en": ""
- },
- {
-  "vi": "đang chờ trả lời",
-  "en": ""
- },
- {
-  "vi": "chưa nhận lời",
-  "en": ""
- },
- {
-  "vi": "đã nhận lời",
-  "en": ""
- },
- {
-  "vi": "Rút lại",
-  "en": ""
- },
- {
-  "vi": "Chuyện cũ đã khép lại. Mỗi người đều có quyền bắt đầu lại.",
-  "en": ""
- },
- {
-  "vi": "Nhận lời cầu hôn",
-  "en": ""
- },
- {
-  "vi": "Tắt đi thì không ai gửi được lời mới cho bạn.",
-  "en": ""
- },
- {
-  "vi": "Lời cầu hôn gửi tới bạn",
-  "en": ""
- },
- {
-  "vi": "Độc thân",
-  "en": ""
- },
- {
-  "vi": "Chấp nhận kết bạn",
-  "en": ""
- },
- {
-  "vi": "➕ Kết bạn",
-  "en": ""
- },
- {
-  "vi": "Không tìm thấy người chơi này.",
-  "en": ""
- },
- {
-  "vi": "Tên đăng nhập của bạn ấy",
-  "en": ""
- },
- {
-  "vi": "Lời mời kết bạn",
-  "en": ""
- },
- {
-  "vi": "muốn kết bạn",
-  "en": ""
- },
- {
-  "vi": "Chấp nhận",
-  "en": ""
- },
- {
-  "vi": "Mới vào phố",
-  "en": ""
- },
- {
-  "vi": "🏪 Ghé chỗ làm",
-  "en": ""
- },
- {
-  "vi": "🏡 Mời về nhà",
-  "en": ""
- },
- {
-  "vi": "💍 Cầu hôn",
-  "en": ""
- },
- {
-  "vi": "Chưa có bạn bè nào. Xin tên đăng nhập của người quen ngoài đời rồi tìm ở trên nhé.",
-  "en": ""
- },
- {
-  "vi": "Đang chờ trả lời",
-  "en": ""
- },
- {
-  "vi": "🚔 Bạn bè nhờ bảo lãnh",
-  "en": ""
- },
- {
-  "vi": "Bảo lãnh trả từ ví của bạn, bạn ấy được về ngay.",
-  "en": ""
- },
- {
-  "vi": "đang ở trại tạm giữ",
-  "en": ""
- },
- {
-  "vi": "🤝 Bảo lãnh",
-  "en": ""
- },
- {
-  "vi": "Cho phép tìm tôi bằng tên đăng nhập",
-  "en": ""
- },
- {
-  "vi": "Tắt đi thì chỉ ai có mã người chơi mới tìm được bạn.",
-  "en": ""
- },
- {
-  "vi": "Mã người chơi của bạn:",
-  "en": ""
- },
- {
-  "vi": "Người khác chỉ thấy tên hiển thị",
-  "en": ""
- },
- {
-  "vi": "🏘️ Mọi người đang làm gì?",
-  "en": ""
- },
- {
-  "vi": "Chép mã",
-  "en": ""
- },
- {
-  "vi": "bàn · thực đơn",
-  "en": ""
- },
- {
-  "vi": "Tổng chi phí",
-  "en": ""
- },
- {
-  "vi": "Trả nốt ngày cưới",
-  "en": ""
- },
- {
-  "vi": "Khách dự kiến",
-  "en": ""
- },
- {
-  "vi": "Tiền mừng dự kiến",
   "en": ""
  }
 ]

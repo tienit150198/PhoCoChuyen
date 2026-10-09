@@ -1,5 +1,125 @@
 [
  {
+  "vi": "$1 Sang $2: còn $3 chỗ cần dọn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Cầm $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chai $1 cạn rồi. Bấm “Châm” cạnh chai nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dùng $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dùng $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi dặn để nguyên $1 mà, giờ giấy tờ lộn xộn hết.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "động vào $1 khách dặn để nguyên",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚠️ $1 đã dặn để nguyên $2!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "làm vỡ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đền $1: $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đền $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lau mà không nhấc $1 ra, suýt rơi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "không nhấc $1 ra",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "😰 $1 chao đảo, may mà kịp giữ! Nhấc ra trước đã.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "không cất $1 trước khi lau",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "😱 $1 Bạn lấy lại được, cất vào khay.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✨ $1 sạch rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lấy khăn lau bồn cầu đi lau $1! Mất vệ sinh quá.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🟥 Khăn đỏ là khăn bồn cầu: lau $1 bằng khăn này là mang bẩn đi khắp nhà.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🤔 $1 không hợp với $2 ($3). Đổi dụng cụ khác.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🤔 $1 không làm sạch $2 được. Đổi chai khác.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 $3… còn $4 lượt nữa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✨ $1 sạch bong.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhưng bụi rơi xuống $1 vừa lau: phải lau lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 ở $2.",
   "en": "",
   "pattern": true
@@ -2126,126 +2246,6 @@
  },
  {
   "vi": "Bạn đưa $1 vào nhà trạm, lấy chăn khô, nước ấm, rồi gọi đài báo có người trú tạm trên đảo.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn gọi đài nhờ chuyển tin cho đồn biên phòng. $1 vội vã xuống ghe bỏ đi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 hậm hực, nói vọng lại vài câu khó nghe, nhưng không làm gì thêm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 lẻn qua cửa tháp, đang leo cầu thang xoắn lên phòng đèn!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nổi khùng, quay clip mặt bạn: “Gác đèn gì mà như quan!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Một ngọn tháp trắng trên $1, mười hai hải lý ngoài khơi. Đèn quét đêm đêm cho tàu thuyền về $2. Bạn vào $3, theo chú Bảy Đèn học giữ lửa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn báo chú Bảy và ghi sổ trực. Xí nghiệp nhắc khéo $1; hồ sơ bạn thêm dòng “xử lý đúng mực”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn báo xí nghiệp (người báo không bị phạt). Phòng kỹ thuật cho người kiểm tra lại; $1 phải học lại quy trình.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 vẫn làm tắt. Hôm nay qua êm, nhưng bạn biết mình đã im lặng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chú Bảy: “Ừ, $1 $2 thôi cũng được, chú cảm ơn con.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Má bạn: “Ừ, $1 $2 cũng đỡ lắm rồi. Con giữ sức khỏe nha.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn gửi hết $1 $2. Má mừng rơi nước mắt, còn bạn ăn mì gói tới cuối tháng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bữa cơm $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cô Hạnh nhắn: “Hôm nay con nấu cho $1 nghe. Chủ nhà để tiền chợ trên bàn, dặn gì con nghe kỹ rồi lên thực đơn.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bỏ $1 ra khỏi thực đơn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 vào thực đơn · dự tính $3/$4 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thực đơn còn thiếu: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thực đơn dự tính $1 xu, quá tiền chợ $2 xu: đổi món rẻ hơn nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2, nhà tôi đã dặn rồi mà. $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã dặn $1 mà bữa nay không có.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📝 Chốt thực đơn: $1. Cầm $2 xu tiền chợ, xách giỏ ra chợ thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔄 $1 lựa phần khác: $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mua rồi. Muốn đổi số phần thì trả lại trước.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví tiền chợ còn $1 xu, không đủ $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛒 Mua $1 phần $2 · $3 xu. Ví tiền chợ còn $4 xu.$5",
   "en": "",
   "pattern": true
  }

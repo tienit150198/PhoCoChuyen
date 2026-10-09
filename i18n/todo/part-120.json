@@ -1,5 +1,229 @@
 [
  {
+  "vi": "💌 Thiệp bạn đã gửi",
+  "en": ""
+ },
+ {
+  "vi": "Thiệp này đã được gỡ.",
+  "en": ""
+ },
+ {
+  "vi": "lời chúc mừng từ cả phố",
+  "en": ""
+ },
+ {
+  "vi": "💍 Mở Hôn nhân",
+  "en": ""
+ },
+ {
+  "vi": "Chưa gửi được thiệp lúc này.",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Tiệc cưới lúc",
+  "en": ""
+ },
+ {
+  "vi": ": thiệp có nút",
+  "en": ""
+ },
+ {
+  "vi": "Xem lịch cưới",
+  "en": ""
+ },
+ {
+  "vi": "để mọi người tới dự.",
+  "en": ""
+ },
+ {
+  "vi": "💍 Chưa hẹn giờ tiệc nên thiệp là",
+  "en": ""
+ },
+ {
+  "vi": "thông báo cưới",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn giờ tiệc",
+  "en": ""
+ },
+ {
+  "vi": "trước nếu muốn mời mọi người tới dự.",
+  "en": ""
+ },
+ {
+  "vi": "Ví dụ: Tụi mình cưới rồi nè! Cả phố ghé chung vui nha 💕",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời của hai bạn",
+  "en": ""
+ },
+ {
+  "vi": "Gợi ý lời mời",
+  "en": ""
+ },
+ {
+  "vi": "Xem trước",
+  "en": ""
+ },
+ {
+  "vi": "Gửi thiệp mời cả phố?",
+  "en": ""
+ },
+ {
+  "vi": "Đã gửi thiệp 💌",
+  "en": ""
+ },
+ {
+  "vi": "Chưa gửi được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Thử ngay",
+  "en": ""
+ },
+ {
+  "vi": "Ẩn các bản trước",
+  "en": ""
+ },
+ {
+  "vi": "Xem các bản trước",
+  "en": ""
+ },
+ {
+  "vi": "Có gì mới ở Phố Có Chuyện",
+  "en": ""
+ },
+ {
+  "vi": "THIẾT BỊ NGHỀ",
+  "en": ""
+ },
+ {
+  "vi": "Làm nhanh hơn",
+  "en": ""
+ },
+ {
+  "vi": "Trả bằng quỹ của nghề này. Chọn bậc để xem đúng tác dụng trước khi mua; công việc đang chạy giữ tốc độ lúc bắt đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Thiết bị cơ bản",
+  "en": ""
+ },
+ {
+  "vi": "Đã lắp",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm của bạn · đang đón khách",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang làm khách · việc riêng vẫn được giữ",
+  "en": ""
+ },
+ {
+  "vi": "Gặp bạn bè, nhận một dịch vụ thật",
+  "en": ""
+ },
+ {
+  "vi": "đơn người chơi ·",
+  "en": ""
+ },
+ {
+  "vi": "Đơn dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "Đang chờ nhận đơn",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ đã sẵn sàng",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ đã hoàn tất",
+  "en": ""
+ },
+ {
+  "vi": "Đang hoàn lại xu",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tiệm chưa thể nhận",
+  "en": ""
+ },
+ {
+  "vi": "Thực hiện yêu cầu trên phiếu công việc.",
+  "en": ""
+ },
+ {
+  "vi": "Thân thiện",
+  "en": ""
+ },
+ {
+  "vi": "Chăm chút",
+  "en": ""
+ },
+ {
+  "vi": "Giá hợp lý",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã rời phòng trực tiếp. Quyền ghé thăm có thể vừa thay đổi.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa kết nối được. Các đơn và bản nháp vẫn được giữ.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được chỗ làm. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa gửi được. Bạn có thể thử lại.",
+  "en": ""
+ },
+ {
+  "vi": "Làm khách tại",
+  "en": ""
+ },
+ {
+  "vi": "xu. Xu được giữ cho đơn dịch vụ này.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "GHÉ NHAU MỘT CHÚT",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Quay lại\"",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm quanh phố",
+  "en": ""
+ },
+ {
+  "vi": "Mọi người",
+  "en": ""
+ },
+ {
+  "vi": "Đơn của tôi",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chỗ làm muốn ghé",
+  "en": ""
+ },
+ {
   "vi": "Mọi người đang làm gì?",
   "en": ""
  },
@@ -1862,126 +2086,6 @@
  },
  {
   "vi": "Bà nói mà, năm nay $1 có quý nhân phù trợ! Nhớ thắp nhang cảm ơn ông bà tổ tiên nghe 🙏✨",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà coi cho $1 rồi, tuần này nhiều lộc lắm đó. Ráng làm ăn đàng hoàng nghe con 🙏",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🖼️ [Ảnh chế] Chú mèo ôm gối: “Hôm nay tệ nhưng mai có trà sữa.” Gửi $1 nè, cố lên 🫶",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Buồn thì để tui kể chuyện cười: có con cá đi làm shipper… thôi dở quá, mà $1 cười chưa 😂",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chào $1! Nhóm mình vui lắm, drama có đủ, meme có dư 😂",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chúc mừng $1 nha 🥂 để Trang chụp hình đăng lên trang 10 nghìn người theo dõi cho mọi người cùng biết ✨",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chào $1 nha 😘 Trang bán hàng online, cần gì cứ ghé Trang, hàng xóm Trang ưu đãi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Em gửi $1 một cái ôm ạ 🥺🫂",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "D-dạ em chúc mừng $1 ạ 🥺🎉",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "D-dạ em phụ được ạ… nếu $1 không chê ạ 🥺",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "D-dạ em chào $1 ạ 🙈",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Con cho $1 một cái kẹo ạ 🍬 ăn kẹo là hết buồn ạ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Con vẽ tặng $1 bức tranh mặt trời ạ ☀️ để $2 vui ạ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Con chúc mừng $1 ạ 🎉🌸",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Con chào $1 ạ 🌸 con là Na ạ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Con chào $1 ạ 🌸",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hèn gì mấy hôm nay $1 thấy $2 đi về mặt buồn buồn, hôm qua 9 giờ 15 đi ngang đầu hẻm không chào luôn 👀 {Me} không có ý gì đâu, $3 lo thôi. Có gì ghé đầu hẻm ngồi uống ly nước.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "{Me} biết trước rồi nha, mấy hôm nay thấy $1 đi làm sớm về muộn là $2 đoán có chuyện vui 👀",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "{Me} ngồi đầu hẻm $1 biết hết, để $2 để ý giùm cho 👀",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Để $1 nhớ lại coi… lúc chiều khoảng 4 giờ 20 $2 thấy có đứa nhỏ cầm cái gì đó đi về phía ngã ba 👀",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chào $1. {Me} biết $2 rồi, hôm $3 mới dọn tới $4 thấy mà 👀",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "{Me} đọc rồi nha 👀 $1 ngồi đầu hẻm $2 thấy hết mà.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ôm $1 một cái nè 🫂 buồn hôm nay để mai vui gấp đôi. Mai trời lại nắng mà 🌈",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hay quá nè 🌈 cảm ơn $1 đã chia sẻ!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📢 Chào mừng $1 mới về ở gác nhà bà Tám tham gia Nhóm Cư Dân Phố! Nội quy nhỏ: nói năng lịch sự, không đăng số điện thoại, địa chỉ, không quảng cáo đầu tư lạ. Có việc gì cứ hỏi nhóm, bà con ở đây tốt bụng lắm.",
   "en": "",
   "pattern": true
  }

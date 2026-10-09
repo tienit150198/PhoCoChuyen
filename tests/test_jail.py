@@ -4,10 +4,12 @@ giảm ngày. tỷ lệ bị bắt thấp tý nhé", "với ae ăn tiền nhiề
 the Chợ đen raids only big winners and jail them 3 days, a false police report sometimes 1 day; inside, no work, no
 Chợ đen, no shopping; a jail day ends the life day without work; công ích takes a day off; a friend's bail (30,000
 xu from the friend's wallet) frees at once; nobody is stuck (the safety time, MNL_JAIL_OFF); no odds reach the client;
-a jailed save still loads on 1.9.29."""
+a jailed save still loads on 1.9.29, 1.9.32 and 1.9.33 (owner 09/10 "bị giam cần lâu hơn nhé ... 1 ngày làm nhiều việc
+và đa dạng hơn": 20-minute days of 8 tasks out of 14, the day kept in journey['jail2'] beside the old block)."""
 import io
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -25,7 +27,8 @@ from game.engine import GameError, apply_action, new_state, public_state, valida
 from tests.test_black_market import BlackMarketBase, story
 
 ROOT = Path(__file__).resolve().parents[1]
-OLD_RELEASE = '9f084739'   # 1.9.29, the release this one may be rolled back to
+OLD_RELEASE = '9f084739'   # 1.9.29
+OLD_RELEASES = {'1.9.29': OLD_RELEASE, '1.9.32': '546f777e', '1.9.33': 'bda5ffeb'}   # releases this one may be rolled back to
 T0 = 1_791_640_800         # 2026-10-10 20:00 Vietnam time
 
 
@@ -65,12 +68,12 @@ class JailBase(unittest.TestCase):
     def later(self, seconds):
         self.clock.t += seconds
 
-    def solve(self, s):
-        """Every task of today, done right and slowly enough."""
-        b = s['journey']['jail']
-        for task in list(b['tasks']):
+    def solve(self, s, only=None):
+        """Every task of today (or the `only` ones), done right and slowly enough."""
+        d = jl.day_of(s['journey'])
+        for task in [t for t in d['tasks'] if t not in d['done'] and (only is None or t in only)]:
             s, r = self.act(s, 'jail_task_start', task=task)
-            self.later(jl.TASK_MIN_S)
+            self.later(jl.OLD_TASK_MIN_S if d['old'] else jl.TASK_MIN_S)
             s, r = self.act(s, 'jail_task_done', task=task, ans=answer(task, r['jail']['pz']))
             self.assertTrue(r['jail']['ok'])
         return s
@@ -79,7 +82,40 @@ class JailBase(unittest.TestCase):
 def answer(task, pz):
     return {'sweep': lambda: {'swept': list(pz['piles'])}, 'plant': lambda: {'steps': [list(jl.PLANT_STEPS)] * pz['holes']},
             'rice': lambda: {'scoops': list(pz['want'])}, 'paint': lambda: {'cells': list(pz['dirty'])},
-            'books': lambda: {'order': sorted(range(len(pz['nums'])), key=lambda i: pz['nums'][i])}}[task]()
+            'books': lambda: {'order': sorted(range(len(pz['nums'])), key=lambda i: pz['nums'][i])},
+            'laundry': lambda: {'hang': [pz['pegs'].index(it['c']) for it in pz['items']]},
+            'mop': lambda: {'wipes': list(pz['dirt'])},
+            'trash': lambda: {'bins': [jl.TRASH[x] for x in pz['items']]},
+            'veg': lambda: {'picked': list(pz['yellow'])},
+            'dishes': lambda: {'steps': [list(jl.DISH_STEPS)] * pz['bowls']},
+            'chicken': lambda: {'fed': list(pz['want'])},
+            'fix': lambda: {'hits': list(pz['nails'])},
+            'ledger': lambda: {'counts': {k: pz['pile'].count(k) for k in pz['kinds']}},
+            'fold': lambda: {'folds': [list(c) for c in pz['cards']]}}[task]()
+
+
+# One wrong answer per task: a near miss (one item off), never just an empty answer.
+def near_miss(task, pz):
+    a = answer(task, pz)
+    k, v = next(iter(a.items()))
+    if task in ('sweep', 'paint', 'veg'):
+        return {k: v[:-1]}                                         # one pile / panel / leaf left
+    if task in ('rice', 'mop', 'fix'):
+        return {k: [v[0] + 1] + v[1:]}                             # one too many
+    if task == 'books':
+        return {k: [v[1], v[0]] + v[2:]}                           # two swapped
+    if task == 'laundry':
+        return {k: [v[1], v[0]] + v[2:]}                           # two on each other's peg
+    if task == 'trash':
+        return {k: [{'giay': 'nhua', 'nhua': 'huu_co', 'huu_co': 'giay'}[v[0]]] + v[1:]}
+    if task in ('plant', 'dishes'):
+        return {k: [list(reversed(v[0]))] + v[1:]}                 # the steps out of order
+    if task == 'chicken':
+        return {k: [next(f for f in jl.FEED if f != v[0])] + v[1:]}
+    if task == 'ledger':
+        first = next(iter(v))
+        return {k: dict(v, **{first: v[first] + 1})}
+    return {k: [list(reversed(v[0]))] + v[1:]}                     # fold: the card read backwards
 
 
 # ---------------------------------------------------------------- who goes in
@@ -239,7 +275,10 @@ class Inside(JailBase):
         s = self.jailed()
         day, wallet = s['journey']['life_day'], s['journey']['wallet']
         e = self.refused(s, 'jail_end', 'jail_wait', day=1)
-        self.assertIn('2:00', str(e))
+        self.assertIn('20:00', str(e))
+        self.later(jl.DAY_MIN_S - 60)
+        self.refused(s, 'jail_end', 'jail_wait', day=1)
+        self.later(-(jl.DAY_MIN_S - 60))
         self.later(jl.DAY_MIN_S)
         self.refused(s, 'jail_end', 'jail_stale', day=2)
         rent = jr.living_cost(s['journey'])['rent']
@@ -283,59 +322,94 @@ class Inside(JailBase):
 
 
 class CongIch(JailBase):
-    def test_three_tasks_a_day_fixed_and_valid(self):
+    def test_eight_tasks_a_day_of_fourteen(self):
+        self.assertEqual(len(jl.TASKS), 14)
+        self.assertEqual((jl.DAY_TASKS, jl.DAY_MIN_S), (8, 1200))
+        self.assertTrue(40 <= jl.TASK_MIN_S <= 60)
         s = self.jailed()
-        b = s['journey']['jail']
-        self.assertEqual(len(b['tasks']), 3)
+        b, d = s['journey']['jail'], s['journey']['jail2']
+        self.assertEqual(len(b['tasks']), 3)                      # the older servers' view
         self.assertEqual(b['tasks'], jl._pick(b['id'], 1))
-        self.assertTrue(set(b['tasks']) <= set(jl.TASKS))
+        self.assertTrue(set(b['tasks']) <= set(jl.OLD_TASK_IDS))
+        self.assertEqual(len(d['tasks']), 8)
+        self.assertEqual(len(set(d['tasks'])), 8)                 # no repeats
+        self.assertTrue(set(b['tasks']) <= set(d['tasks']))
+        self.assertEqual(d['tasks'], jl._pick_day(b['id'], 1))    # fixed by (sentence, day)
+        self.assertFalse(d['old'])
         pub = public_state(s)['jail']
-        self.assertEqual([t['id'] for t in pub['tasks']], b['tasks'])
+        self.assertEqual([t['id'] for t in pub['tasks']], d['tasks'])
         self.assertTrue(all('pz' in t for t in pub['tasks']))
+        self.assertEqual(pub['ready'], b['since'] + jl.DAY_MIN_S)
+        seen = set()
+        for day in range(1, 9):
+            seen |= set(jl._pick_day('abc123', day))
+            self.assertEqual(len(set(jl._pick_day('abc123', day))), 8)
+        self.assertEqual(seen, set(jl.TASKS))                     # every kind comes up
+        self.assertNotEqual(jl._pick_day('abc123', 1), jl._pick_day('abc123', 2))
 
     def test_too_fast_wrong_or_not_started_is_refused(self):
-        s = self.jailed()
-        task = s['journey']['jail']['tasks'][0]
-        self.refused(s, 'jail_task_done', 'jail_not_started', task=task, ans={})
-        s, r = self.act(s, 'jail_task_start', task=task)
-        right = answer(task, r['jail']['pz'])
-        self.later(jl.TASK_MIN_S - 1)
-        self.refused(s, 'jail_task_done', 'jail_fast', task=task, ans=right)
-        self.later(1)
-        self.refused(s, 'jail_task_done', 'jail_wrong', task=task, ans={'nope': 1})
-        s, r = self.act(s, 'jail_task_done', task=task, ans=right)
-        self.assertEqual(s['journey']['jail']['done'], [task])
-        s, r = self.act(s, 'jail_task_done', task=task, ans=right)   # a retry: nothing more
-        self.assertTrue(r['jail']['again'])
-        self.refused(s, 'jail_task_start', 'already_done', task=task)
-        other = next(x for x in jl.TASKS if x not in s['journey']['jail']['tasks'])
+        for task in jl.TASKS:
+            s = self.jailed()
+            j = s['journey']
+            rest = [t for t in jl.TASK_IDS if t not in j['jail']['tasks'] and t != task]
+            j['jail2']['tasks'] = list(dict.fromkeys(j['jail']['tasks'] + [task] + rest))[:8]   # this kind today
+            validate_state(s)
+            with self.subTest(task=task):
+                self.refused(s, 'jail_task_done', 'jail_not_started', task=task, ans={})
+                s, r = self.act(s, 'jail_task_start', task=task)
+                self.assertEqual(r['jail']['ready'], self.clock.t + jl.TASK_MIN_S)
+                right = answer(task, r['jail']['pz'])
+                self.later(jl.TASK_MIN_S - 1)
+                self.refused(s, 'jail_task_done', 'jail_fast', task=task, ans=right)
+                self.later(1)
+                self.refused(s, 'jail_task_done', 'jail_wrong', task=task, ans={'nope': 1})
+                self.refused(s, 'jail_task_done', 'jail_wrong', task=task, ans=near_miss(task, r['jail']['pz']))
+                s, r = self.act(s, 'jail_task_done', task=task, ans=right)
+                self.assertIn(task, s['journey']['jail2']['done'])
+                self.assertEqual(s['journey']['jail']['done'], [t for t in s['journey']['jail']['tasks'] if t == task])
+                s, r = self.act(s, 'jail_task_done', task=task, ans=right)   # a retry: nothing more
+                self.assertTrue(r['jail']['again'])
+                self.refused(s, 'jail_task_start', 'already_done', task=task)
+        other = next(x for x in jl.TASKS if x not in s['journey']['jail2']['tasks'])
         self.refused(s, 'jail_task_start', 'invalid_action', task=other)
 
     def test_every_puzzle_checks_its_answer(self):
         for task in jl.TASKS:
+            for day in (1, 2, 3, 7):
+                for sid in ('abc123', 'f00d42'):
+                    pz = jl.puzzle(sid, day, task)
+                    with self.subTest(task=task, day=day, sid=sid):
+                        self.assertEqual(pz, jl.puzzle(sid, day, task))   # seeded
+                        self.assertTrue(jl._right(task, pz, answer(task, pz)))
+                        self.assertFalse(jl._right(task, pz, {}))
+                        self.assertFalse(jl._right(task, pz, 'x'))
+                        self.assertFalse(jl._right(task, pz, near_miss(task, pz)))
+                        json.dumps(pz)   # it travels in the state
+        for task in jl.OLD_TASK_IDS:   # an adopted day: the old sizes, the old layouts
+            pz = jl.puzzle('abc123', 1, task, old=True)
+            self.assertTrue(jl._right(task, pz, answer(task, pz)))
+        self.assertEqual(len(jl.puzzle('abc123', 1, 'books', old=True)['nums']), 6)
+        self.assertEqual(len(jl.puzzle('abc123', 1, 'books')['nums']), 9)
+
+    def test_puzzles_are_bigger_now(self):
+        for task, size in (('sweep', lambda p: len(p['piles'])), ('plant', lambda p: p['holes']), ('rice', lambda p: len(p['want'])),
+                           ('paint', lambda p: len(p['dirty'])), ('books', lambda p: len(p['nums']))):
             for day in (1, 2, 3):
-                pz = jl.puzzle('abc123', day, task)
-                with self.subTest(task=task, day=day):
-                    self.assertTrue(jl._right(task, pz, answer(task, pz)))
-                    self.assertFalse(jl._right(task, pz, {}))
-        pz = jl.puzzle('abc123', 1, 'books')
-        self.assertFalse(jl._right('books', pz, {'order': list(range(6))}) and pz['nums'] != sorted(pz['nums']))
-        pz = jl.puzzle('abc123', 1, 'rice')
-        self.assertFalse(jl._right('rice', pz, {'scoops': [x + 1 for x in pz['want']]}))
-        pz = jl.puzzle('abc123', 1, 'plant')
-        self.assertFalse(jl._right('plant', pz, {'steps': [['seed', 'dig', 'water']] * 4}))
+                self.assertGreater(size(jl.puzzle('abc123', day, task)), size(jl.puzzle('abc123', day, task, old=True)), task)
 
     def test_full_cong_ich_takes_a_day_off(self):
         s = self.jailed()
-        s = self.solve(s)
+        s = self.solve(s, only=jl.day_of(s['journey'])['tasks'][:7])
         self.later(jl.DAY_MIN_S)
         s, r = self.act(s, 'jail_end', day=1)
-        self.assertEqual(s['journey']['jail']['left'], 1)   # 3 − 1 − 1
-        self.assertTrue(any('giảm thêm một ngày' in x for x in r['effects']))
+        self.assertEqual(s['journey']['jail']['left'], 2)   # 7 of 8: one day only
+        self.assertFalse(any('giảm thêm một ngày' in x for x in r['effects']))
+        self.assertEqual((len(s['journey']['jail2']['tasks']), s['journey']['jail2']['done'], s['journey']['jail2']['day']), (8, [], 2))
         s = self.solve(s)
         self.later(jl.DAY_MIN_S)
         s, r = self.act(s, 'jail_end', day=2)
-        self.assertTrue(r['jail']['free'])   # a 3-day sentence served in 2 days
+        self.assertTrue(r['jail']['free'])   # all 8: the day counts two
+        self.assertNotIn('jail2', s['journey'])
 
 
 class NobodyStuck(JailBase):
@@ -360,12 +434,28 @@ class NobodyStuck(JailBase):
     def test_a_broken_block_is_refused(self):
         good = self.jailed()['journey']['jail']
         for bad in ('x', dict(good, why='vip'), dict(good, left=9), dict(good, tasks=['sweep']), dict(good, go={'t': 'fly', 'at': 1}),
-                    dict(good, extra=1), dict(good, done=['books', 'books'])):
+                    dict(good, extra=1), dict(good, done=['books', 'books']), dict(good, tasks=['sweep', 'plant', 'mop'])):
             with self.subTest(bad=bad):
                 s = story()
                 s['journey']['jail'] = bad
                 with self.assertRaises(GameError):
                     validate_state(s)
+        day = self.jailed()['journey']['jail2']
+        for bad in ('x', dict(day, v=2), dict(day, old=1), dict(day, extra=1), dict(day, tasks=day['tasks'] + ['fly']),
+                    dict(day, tasks=day['tasks'] + [day['tasks'][0]]), dict(day, done=['fly']), dict(day, go={'t': 'fly', 'at': 1}),
+                    dict(day, day=0), dict(day, id='')):
+            with self.subTest(bad=bad):
+                s = self.jailed()
+                s['journey']['jail2'] = bad
+                with self.assertRaises(GameError):
+                    validate_state(s)
+
+    def test_a_day_left_alone_goes(self):
+        s = self.jailed()
+        s['journey'].pop('jail')   # an older server let the player out (bail, last day): it never knew jail2
+        validate_state(s)
+        s, _ = self.act(s, 'start_day', 'milk_tea')
+        self.assertNotIn('jail2', s['journey'])
 
 
 class NothingShown(JailBase):
@@ -386,43 +476,136 @@ class NothingShown(JailBase):
 
 
 class OldServer(JailBase):
-    """A jailed save (and the friend's after a bail) validates on 1.9.29, the release this one may be rolled back to."""
+    """Saves of this build validate (and migrate) on the releases it may be rolled back to: 1.9.29, 1.9.32, 1.9.33.
+    A sentence an older server began goes on here by the old rules to the end of its day, then by the new ones."""
 
-    def old_tree(self):
+    def old_tree(self, release):
         if os.environ.get('MNL_JAIL_OLD_TREE'):
             return Path(os.environ['MNL_JAIL_OLD_TREE'])
-        tmp = tempfile.mkdtemp(prefix='mnl-1929-')
+        tmp = tempfile.mkdtemp(prefix=f'mnl-{release}-')
+        self.addCleanup(shutil.rmtree, tmp, True)
         try:
-            data = subprocess.run(['git', 'archive', OLD_RELEASE, 'game', 'reference'], cwd=ROOT, capture_output=True,
+            data = subprocess.run(['git', 'archive', release, 'game', 'reference'], cwd=ROOT, capture_output=True,
                                   timeout=120, check=True).stdout
         except (OSError, subprocess.SubprocessError):
-            self.skipTest(f'no git tree with {OLD_RELEASE} (MNL_JAIL_OLD_TREE)')
+            self.skipTest(f'no git tree with {release} (MNL_JAIL_OLD_TREE)')
         with tarfile.open(fileobj=io.BytesIO(data)) as tar:
             tar.extractall(tmp, filter='data')
         return Path(tmp)
 
-    def test_saves_validate_on_1_9_29(self):
+    def run_old(self, release, prog, saves):
+        old = self.old_tree(release)
+        env = dict(os.environ, PYTHONPATH=os.pathsep.join(x for x in (str(old), os.environ.get('PYTHONPATH', '')) if x),
+                   MNL_JAIL_OFF='0')
+        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(saves), capture_output=True,
+                             text=True, cwd=old, env=env, encoding='utf-8', timeout=300)
+        self.assertEqual(out.returncode, 0, out.stderr[-3000:])
+        return json.loads(out.stdout)
+
+    VALIDATE = ('import json,sys;from game.engine import validate_state,migrate_state;'
+                'out=[]\nfor s in json.load(sys.stdin):\n validate_state(s);s=migrate_state(s);validate_state(s);'
+                'out.append([s["journey"]["life_day"],bool(s["journey"].get("jail")),s["journey"]["wallet"],'
+                'sorted(s["journey"].get("jail2",{}).get("done",[]))])\nprint(json.dumps(out))')
+
+    def saves(self):
+        """A sentence going on with new task kinds done and one started, a second day, a friend who paid bail."""
         s = self.jailed()
-        s, r = self.act(s, 'jail_task_start', task=s['journey']['jail']['tasks'][0])
+        d = s['journey']['jail2']
+        new = [t for t in d['tasks'] if t not in jl.OLD_TASK_IDS]
+        old3 = s['journey']['jail']['tasks']
+        s = self.solve(s, only=new[:3] + old3[:1])
+        s, r = self.act(s, 'jail_task_start', task=new[3])         # a new kind going on: not the old block's business
+        mid = json.loads(json.dumps(s))
+        s, r = self.act(s, 'jail_task_start', task=old3[1])        # one of the three going on: mirrored
         started = json.loads(json.dumps(s))
+        self.assertEqual(started['journey']['jail']['go']['t'], old3[1])
         self.later(jl.DAY_MIN_S)
         s, _ = self.act(s, 'jail_end', day=1)
         second = json.loads(json.dumps(s))
         friend = story(40000)
         jr._wallet(friend['journey'], -jl.BAIL_XU, 'life', jl.BAIL_LABEL.format(name='Bé Na'))
         validate_state(friend)
-        old = self.old_tree()
-        prog = ('import json,sys;from game.engine import validate_state,migrate_state;'
-                'out=[]\nfor s in json.load(sys.stdin):\n validate_state(s);s=migrate_state(s);validate_state(s);'
-                'out.append([s["journey"]["life_day"],bool(s["journey"].get("jail")),s["journey"]["wallet"]])\nprint(json.dumps(out))')
-        env = dict(os.environ, PYTHONPATH=os.pathsep.join(x for x in (str(old), os.environ.get('PYTHONPATH', '')) if x))
-        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps([started, second, friend]), capture_output=True,
-                             text=True, cwd=old, env=env, encoding='utf-8', timeout=300)
-        self.assertEqual(out.returncode, 0, out.stderr[-3000:])
-        got = json.loads(out.stdout)
-        self.assertEqual([g[1] for g in got], [True, True, False])
-        self.assertEqual(got[1][0], started['journey']['life_day'] + 1)
-        self.assertEqual(got[2][2], 10000)
+        return [mid, started, second, friend], new[:3] + old3[:1]
+
+    def check(self, release):
+        saves, done = self.saves()
+        got = self.run_old(release, self.VALIDATE, saves)
+        self.assertEqual([g[1] for g in got], [True, True, True, False])
+        self.assertEqual(got[0][3], sorted(done))                  # jail2 is kept as it is
+        self.assertEqual(got[2][0], saves[0]['journey']['life_day'] + 1)
+        self.assertEqual(got[3][2], 10000)
+
+    def test_saves_validate_on_1_9_29(self):
+        self.check(OLD_RELEASES['1.9.29'])
+
+    def test_saves_validate_on_1_9_32(self):
+        self.check(OLD_RELEASES['1.9.32'])
+
+    def test_saves_validate_on_1_9_33(self):
+        self.check(OLD_RELEASES['1.9.33'])
+
+    def test_rolled_back_mid_day_then_forward(self):
+        """1.9.33 plays on the day's three tasks (and may end it); back here, nothing done is lost."""
+        saves, _ = self.saves()
+        s = saves[1]   # day 1: four done (one of the three), one of the three going on
+        three = s['journey']['jail']['tasks']
+        prog = ('import json,sys,time\nfrom game import jail as jl\nfrom game.engine import apply_action,validate_state\n'
+                'jl.now=lambda: %d\n'
+                's=json.load(sys.stdin)[0]\nb=s["journey"]["jail"]\nt=b["go"]["t"]\n'
+                'pz=jl.puzzle(b["id"],b["day"],t)\n'
+                'ans={"sweep":{"swept":pz.get("piles")},"plant":{"steps":[list(jl.PLANT_STEPS)]*pz.get("holes",0)},'
+                '"rice":{"scoops":pz.get("want")},"paint":{"cells":pz.get("dirty")},'
+                '"books":{"order":sorted(range(len(pz.get("nums",[]))),key=lambda i:pz["nums"][i])}}[t]\n'
+                's,r=apply_action(s,None,"jail_task_done",{"task":t,"ans":ans})\nvalidate_state(s)\n'
+                'print(json.dumps([s]))') % (self.clock.t + 60)
+        back = self.run_old(OLD_RELEASES['1.9.33'], prog, [s])[0]
+        go = s['journey']['jail']['go']['t']
+        self.assertIn(go, back['journey']['jail']['done'])
+        self.assertNotIn(go, back['journey']['jail2']['done'])     # the older server never touched jail2
+        self.later(60)
+        validate_state(back)
+        pub = public_state(back)['jail']
+        self.assertTrue(next(t for t in pub['tasks'] if t['id'] == go)['done'])   # merged
+        self.assertEqual(len(pub['tasks']), 8)
+        back, _ = self.act(back, 'settings', sound=False)
+        self.assertIn(go, back['journey']['jail2']['done'])
+        self.assertEqual(sorted(back['journey']['jail']['done']), sorted(x for x in three if x in back['journey']['jail2']['done']))
+
+    def test_a_day_ended_on_an_older_server_is_adopted(self):
+        """1.9.33 ended day 1 (journey['jail'] on day 2, jail2 still on day 1): day 2 here is that server's day."""
+        s = self.jailed()
+        b = s['journey']['jail']
+        self.later(jl.OLD_DAY_MIN_S)
+        b.update(day=2, left=2, since=self.clock.t, tasks=jl._pick(b['id'], 2), done=[], go=None)   # what 1.9.33's jail_end writes
+        validate_state(s)
+        pub = public_state(s)['jail']
+        self.assertEqual(([t['id'] for t in pub['tasks']], pub['ready']), (b['tasks'], b['since'] + jl.OLD_DAY_MIN_S))
+        s, _ = self.act(s, 'settings', sound=False)
+        self.assertEqual((s['journey']['jail2']['day'], s['journey']['jail2']['old']), (2, True))
+
+    def test_a_sentence_begun_on_an_older_server_goes_on_here(self):
+        """1.9.33 arrests (no jail2): here that day keeps its three tasks, 2-minute day and old sizes; the next is new."""
+        prog = ('import json,sys\nfrom game import jail as jl, journey as jr\nfrom game.engine import new_state,validate_state\n'
+                's=new_state();jr.enable_story(s,4242);s["journey"]["gender"]="female";s["journey"]["wallet"]=50000\n'
+                'validate_state(s)\nprint(json.dumps([s,jl.arrest(s["journey"],"bm",3,%d)]))') % self.clock.t
+        s, days = self.run_old(OLD_RELEASES['1.9.33'], prog, [])
+        self.assertEqual(days, 3)
+        self.assertNotIn('jail2', s['journey'])
+        validate_state(s)
+        pub = public_state(s)['jail']
+        b = s['journey']['jail']
+        self.assertEqual([t['id'] for t in pub['tasks']], b['tasks'])   # adopted: its own three
+        self.assertEqual(pub['ready'], b['since'] + jl.OLD_DAY_MIN_S)
+        self.assertEqual(pub['tasks'][0]['pz'], jl.puzzle(b['id'], 1, b['tasks'][0], old=True))
+        s = self.solve(s)                                           # 15 s a task, the old sizes
+        self.assertTrue(s['journey']['jail2']['old'])
+        self.assertEqual(sorted(s['journey']['jail']['done']), sorted(b['tasks']))
+        self.later(jl.OLD_DAY_MIN_S)
+        s, r = self.act(s, 'jail_end', day=1)
+        self.assertEqual(s['journey']['jail']['left'], 1)          # all three: the day counted two, as it would there
+        d = s['journey']['jail2']
+        self.assertEqual((len(d['tasks']), d['old'], d['day']), (8, False, 2))   # the next day: the new rules
+        self.assertEqual(public_state(s)['jail']['ready'], s['journey']['jail']['since'] + jl.DAY_MIN_S)
 
 
 # ---------------------------------------------------------------- bail: two real accounts on one store

@@ -1,5 +1,65 @@
 [
  {
+  "vi": "Người dân trong game dành thêm tiền mua vàng.",
+  "en": ""
+ },
+ {
+  "vi": "Nhiều người trong game bán vàng để chốt lời.",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn vàng trong game dồi dào, sức mua chậm lại.",
+  "en": ""
+ },
+ {
+  "vi": "Các tiệm trong game giảm mua sau mùa lễ hội.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu hôn nhân không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy tiến trình của người chơi này.",
+  "en": ""
+ },
+ {
+  "vi": "Tiến trình đang thay đổi liên tục. Thử lại sau một chút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tạo được mã người chơi. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mã người chơi có dạng PCC-XXXXXX (6 ký tự sau dấu gạch).",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch cưới không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nơi tổ chức nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn thực đơn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nghi lễ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Số mâm tráp ăn hỏi là 5, 7 hoặc 9.",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ thêm không hợp lệ.",
+  "en": ""
+ },
+ {
   "vi": "Giờ cưới không hợp lệ.",
   "en": ""
  },
@@ -1737,66 +1797,6 @@
  },
  {
   "vi": "Chùa yên và sạch, chỉ có chút xíu cần để ý.",
-  "en": ""
- },
- {
-  "vi": "Ghé chùa thấy dễ chịu, còn một chuyện nhỏ thôi.",
-  "en": ""
- },
- {
-  "vi": "Buổi lễ nhẹ nhàng, chỉ một điểm nhỏ chưa trọn.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay lên chùa có chỗ chưa được yên lòng.",
-  "en": ""
- },
- {
-  "vi": "Chùa vẫn đẹp, nhưng hôm nay có vài chuyện chưa ổn.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay lên chùa mà về hơi buồn.",
-  "en": ""
- },
- {
-  "vi": "Mong chùa để ý hơn, hôm nay nhiều chỗ chưa ổn.",
-  "en": ""
- },
- {
-  "vi": "Lên chùa mà về không yên lòng chút nào.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay ở chùa có chuyện làm tôi buồn thật sự.",
-  "en": ""
- },
- {
-  "vi": "Chùa chill ghê, ngồi nghe chuông mà muốn ở lại cả buổi 🪷",
-  "en": ""
- },
- {
-  "vi": "Lên chùa sống chậm một bữa, thương ghê 🙏",
-  "en": ""
- },
- {
-  "vi": "Chùa xinh, yên, chỉ có một xíu thôi nè.",
-  "en": ""
- },
- {
-  "vi": "Hơi buồn xíu nha.",
-  "en": ""
- },
- {
-  "vi": "Yên. Sạch. Mát.",
-  "en": ""
- },
- {
-  "vi": "Bình an.",
-  "en": ""
- },
- {
-  "vi": "Yên. Có chút chưa ổn.",
   "en": ""
  }
 ]

@@ -26,8 +26,9 @@ const along=(pl,path)=>{for(let i=1;i<path.length;i++){const [a,b]=[path[i-1],pa
 
 // the server's task list (game/jail.py TASKS) has one place each
 const py=readFileSync(new URL('../game/jail.py',import.meta.url),'utf8');
-const tasks=[...py.slice(py.indexOf('TASKS = {'),py.indexOf('TASK_IDS')).matchAll(/^\s+'([a-z]+)': dict\(/gm)].map(m=>m[1]);
-if(tasks.length<5)problems.push(`read only ${tasks.length} tasks from game/jail.py`);
+const at=py.indexOf('\nTASKS = {');
+const tasks=[...py.slice(at,py.indexOf('\nTASK_IDS = ',at)).matchAll(/^\s+'([a-z]+)': dict\(/gm)].map(m=>m[1]);
+if(tasks.length<14)problems.push(`read only ${tasks.length} tasks from game/jail.py`);
 for(const t of tasks)if(!TASK_SPOT[t])problems.push(`task ${t} has no place in the camp`);
 if(new Set(Object.values(TASK_SPOT)).size!==Object.keys(TASK_SPOT).length)problems.push('two tasks share a place');
 for(const id of Object.values(TASK_SPOT))if(!PLACES[id])problems.push(`place ${id} has no name`);
