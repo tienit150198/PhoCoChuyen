@@ -6,6 +6,7 @@
  * which only sales lower. A look shorter than GAP after the last one is not an absence. */
 import {escapeHTML as esc} from './icons.js';
 import {keptLine} from './keep-ui.js';
+import {mx,curveAverage} from './market-ui.js';   // 📈 the staff's market multiplier while you were away
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const PREFIX='mnl.away.';
@@ -60,7 +61,8 @@ const lower=s=>s?s.charAt(0).toLowerCase()+s.slice(1):s;
 /** The card's one line: ≤ CAP words, the biggest items first and "+N món" for the rest. */
 export function awayLine(rep,unit='đơn'){
   const head=`🧾 Lúc bạn vắng: nhân viên bán ${fmt(rep.orders)} ${unit}`;
-  const tail=` · ${rep.profit<0?'lỗ':'lãi'} ${fmt(Math.abs(rep.profit))} xu`;
+  // 📈 rep.mx (a workplace): the market's average while away, when it was off ×1 by 5% or more, 🔥 if a hot day was in it.
+  const tail=` · ${rep.profit<0?'lỗ':'lãi'} ${fmt(Math.abs(rep.profit))} xu${rep.mx?` (${rep.mx.hot?'🔥 ':''}${mx(rep.mx.x)})`:''}`;
   const list=[],items=rep.items||[];
   for(let i=0;i<items.length;i++){
     const next=[...list,`${fmt(items[i][1])} ${lower(items[i][0])}`],rest=items.length-next.length;
@@ -101,7 +103,9 @@ const STYLES=`<style>.aw-card{display:grid;gap:6px;margin:0 0 12px;padding:10px 
 export function workplaceAway(c,cid,owner='',now=Date.now()){
   const b=c?.ops?.business;if(!b||!(c.ops.staff||[]).some(e=>e.status==='hired'))return null;
   const u={},names={};for(const [id,name,q] of Array.isArray(b.used)?b.used:[]){u[id]=q;names[id]=name;}
-  return awayReport(`wp.${owner}.${cid}`,{o:b.served,n:b.net,r:b.revenue,k:{w:b.wages,m:b.materials,g:b.goods,p:b.profit_bonus},u,names,busy:!!b.catching_up,kept:Array.isArray(b.kept)?b.kept:null},now);
+  const rep=awayReport(`wp.${owner}.${cid}`,{o:b.served,n:b.net,r:b.revenue,k:{w:b.wages,m:b.materials,g:b.goods,p:b.profit_bonus},u,names,busy:!!b.catching_up,kept:Array.isArray(b.kept)?b.kept:null},now);
+  if(rep&&b.market){const a=curveAverage({...b.market,server_now:b.server_now},rep.since,rep.now);if(a&&(a.hot||Math.abs(a.x-100)>=5))rep.mx=a;}
+  return rep;
 }
 export function workplaceAwayCard(rep){
   if(!rep)return '';const k=rep.costs;

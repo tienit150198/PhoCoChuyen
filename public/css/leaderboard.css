@@ -46,6 +46,7 @@ html[data-layout="phone"] .lb-chip{flex:none;scroll-snap-align:start}
 html[data-layout="phone"] .lb-picker.open{flex-wrap:wrap;overflow:visible;margin:0;padding:0}
 
 .lb-rule{font-size:.833rem;line-height:1.5;color:var(--muted)}
+.lb-market{margin:-4px 0 8px;font-size:.75rem;color:var(--muted)}   /* 📈 staff profit now (game/staff_market.py) */
 
 /* "Bạn": your place on this board, even outside the top 50 or while hidden */
 .lb-me{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;padding:14px;border-radius:var(--radius);

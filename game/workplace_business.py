@@ -11,6 +11,7 @@ import copy
 import math
 import time
 from . import staff_life
+from . import staff_market   # 📈 lãi theo thị trường, 🔥 nghề hot hôm nay (staff orders only)
 
 VERSION = 1
 # Keep long offline catch-up responsive while retaining every pending order.
@@ -306,6 +307,17 @@ def _receipt_key(career):
     return 'business_clothing_receipts' if career=='clothing' else 'business_receipts' if career in staff_orders.MENUS else None
 
 
+def _replacement(career,inputs):
+    """What the order's goods cost at the catalogue price (staff_orders.costs; clothing's own list)."""
+    if not inputs:return 0
+    if career=='clothing':
+        from .careers import clothing
+        return sum(clothing.ITEM[i]['cost']*q for i,q in inputs.items() if i in clothing.ITEM)
+    from . import staff_orders
+    unit=staff_orders.costs(career)
+    return sum(unit.get(i,0)*q for i,q in inputs.items())
+
+
 def _take_stock(c,career,inputs):
     if career=='milk_tea':
         from . import boba
@@ -345,9 +357,14 @@ def _finish(s,c,career,e,at,order=None):
     b=c['ops']['business'];label,base,supplies,inputs=order or _order(c,career,e=e)
     seq=b['served']+1
     quality=staff_life.quality(e,seq,career)['stars']
-    revenue=base*(80+quality*4)//100
     wage=math.ceil(staff_life.wage(c['ops'],e)/4);cash=wage+supplies
     goods=_take_stock(c,career,inputs)
+    # The shelf price at this service as before, its margin shaped and times the market at the order's own time
+    # (offline catch-up and polling earn the same). A loss is never multiplied.
+    # The margin is measured over what the goods cost to buy again (or this lot's cost if higher), so a cheap opening
+    # lot never drags the price under a restock.
+    basis=max(goods,_replacement(career,inputs))
+    revenue=staff_market.staff_revenue(base,quality,cash,basis,staff_market.x(career,at))
     _count_used(c,inputs)
     ref=f'staff-order-{career}-{seq}'
     # Customer revenue retains the normal deferred tax. Stock cost was already
@@ -560,9 +577,10 @@ def _explain(c,b,out):
         label,base,supplies,inputs=order
         unit=staff_orders.costs(career) if names else {}
         goods=sum(unit.get(i,0)*q for i,q in inputs.items())
-        typical=base*96//100
-        out['next_order']=dict(label=label,revenue=base,revenue_low=base*84//100,wage=wage,materials=supplies,goods=goods,
-                               margin=typical-wage-supplies-goods,
+        mult=staff_market.x(career,out.get('server_now'))
+        take=lambda stars:staff_market.staff_revenue(base,stars,cash,goods,mult)
+        out['next_order']=dict(label=label,revenue=take(5),revenue_low=take(1),wage=wage,materials=supplies,goods=goods,
+                               margin=take(4)-cash-goods,
                                items=[dict(item=i,name=names.get(i,i),qty=q) for i,q in inputs.items()])
     kept=_kept(c,career)
     if kept:out['kept']=kept
@@ -577,8 +595,9 @@ def _explain(c,b,out):
             else:gone=[names.get(i,i) for i,q in ORDERS[career][3].items() if _raw(c,career,i)<q]
             if gone:out['reason_text']='Hết '+', '.join(gone)+' cho đơn riêng; nhập hàng để đội làm tiếp.'
             if kept:out['reason_text']=keep_text(kept)+(' '+out['reason_text'] if gone else ' Bỏ giữ hoặc nhập thêm để đội bán tiếp.')
-    out['money_note']=('Tiền đơn riêng vào quỹ nghề (Sổ thu chi), không vào ví. Mỗi đơn: thu theo giá kệ, trả lương '
-                       f'{wage} xu và vật tư {ORDERS[career][2]} xu từ quỹ; giá vốn hàng đã trả lúc nhập.')
+    out['money_note']=('Tiền đơn riêng vào quỹ nghề (Sổ thu chi), không vào ví. Mỗi đơn: thu theo giá kệ (lãi có trần, '
+                       f'nhân hệ số thị trường), trả lương {wage} xu và vật tư {ORDERS[career][2]} xu từ quỹ; giá vốn hàng đã trả lúc nhập.')
+    out['market']=staff_market.view(career,out.get('server_now'))   # 📈 ×1,3 / 🔥 hot today, the 48 h curve
 
 
 def keep_text(kept):

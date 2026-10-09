@@ -342,7 +342,9 @@ class StaffCatalogueTests(unittest.TestCase):
         for r in tubs:
             self.assertEqual(sum(r['items'].values()), 1)
             self.assertIn('1,2 kg', r['label'])
-            self.assertGreaterEqual(r['revenue'], 50)
+            # A whole tub's price with its margin shaped (game/staff_market.py): its cost, the wage and a full margin,
+            # never a scoop's 5 xu.
+            self.assertGreaterEqual(r['revenue'], r['cash_expenses'] + wb._replacement('ice_cream', r['items']) + 15)
         self.assertGreaterEqual(wb.ORDERS['ice_cream'][1], 60)
 
     def test_poll_and_offline_pick_the_same_catalogue_orders(self):

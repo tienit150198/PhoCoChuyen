@@ -3,7 +3,7 @@ import copy
 import unittest
 from unittest.mock import patch
 
-from game import inventory, workplace_business as wb, operations, player_service_tasks as pst
+from game import inventory, workplace_business as wb, operations, player_service_tasks as pst, staff_market
 from game.careers import clothing as a
 from game.engine import GameError
 from tests.test_player_service_tasks import BUYER
@@ -26,7 +26,9 @@ class ClothingStaffStockTests(unittest.TestCase):
         for r in rows:
             item=next(iter(r['items']))
             self.assertEqual(r['items'],{item:1});self.assertIn(a.ITEM[item]['name'],r['label'])
-            self.assertEqual(r['revenue'],a.PRICES[item]*(80+r['stars']*4)//100)
+            # 📈 Shop price at this service, its margin over the piece's cost shaped (game/staff_market.py; market ×1 in tests).
+            self.assertEqual(r['revenue'],staff_market.staff_revenue(a.PRICES[item],r['stars'],r['cash_expenses'],a.ITEM[item]['cost']))
+            self.assertLessEqual(r['revenue']-r['cash_expenses']-a.ITEM[item]['cost'],staff_market.CEIL*(80+4*r['stars'])//96)
             self.assertEqual(inventory.count(c,item),before[item]-1)
             self.assertEqual(sum(c['ext']['data']['grid'][item].values()),before[item]-1)
         before=copy.deepcopy(s);wb.settle(s,self.next(c)-1);self.assertEqual(s,before)

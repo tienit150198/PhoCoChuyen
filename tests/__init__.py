@@ -10,6 +10,9 @@ if sys.platform == "win32":
 # 🔥 Nghề x3 (game/x3_week.py) follows the real calendar: off, so a test's wallet does not depend on the day it runs
 # (tests/test_x3_week.py turns it on where it checks it).
 os.environ.setdefault("MNL_X3_OFF", "1")
+# 📈 Lãi nhân viên theo thị trường / 🔥 nghề hot (game/staff_market.py) follow the real clock: ×1.00 and no hot career,
+# so a staff order's money does not depend on the hour a test runs (tests/test_staff_market.py turns it on).
+os.environ.setdefault("MNL_MARKET_OFF", "1")
 # 💼 Lương kế toán ×5 ngày lễ (game/accounting_jobs.py) follows the real calendar too: off unless a test turns it on.
 os.environ.setdefault("MNL_HOLIDAY_OFF", "1")
 # 🎁 Quà cả phố (game/system_gift.py BROADCASTS) follows the real calendar: off, so a test's gifts and wallet do not
