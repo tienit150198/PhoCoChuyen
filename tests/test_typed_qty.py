@@ -31,7 +31,7 @@ class TypedBox(unittest.TestCase):
 
     def test_boxes_use_the_server_limits(self):
         views, app, keep, quay, invest = src('v4/views.js'), src('app.js'), src('keep-ui.js'), src('v4/quay.js'), src('v4/invest.js')
-        self.assertIn('max:60', views)                                   # inv_receive count 0..60
+        self.assertIn('max:Math.max(60,Number(o.qty)||0)', views)        # inv_receive count: the crate's own line (#277)
         self.assertRegex(views, r'Math\.min\(30,space\)')                # inv_order 1..30
         self.assertIn('Math.min(30,l.room)', views)                      # inv_cart set 0..30
         self.assertIn('min:1,max:12', app)                               # receive_stock 1..12
@@ -78,7 +78,7 @@ class TypedBox(unittest.TestCase):
 
     def test_order_and_cart_refuse_what_a_box_cannot_send(self):
         j = Journey('restaurant')
-        for bad in BAD + (31,):
+        for bad in BAD + (inventory.LINE_MAX + 1,):
             with self.subTest(qty=bad), self.assertRaises(GameError):
                 j.act('inv_order', item='noodle', qty=bad, supplier='partner', confirm=True)
         j.act('inv_order', item='noodle', qty=3, supplier='partner', confirm=True)
@@ -102,7 +102,7 @@ class TypedBox(unittest.TestCase):
                 integer(bad, 0, 10)
         self.assertEqual(integer(7, 0, 10), 7)
         self.assertTrue(re.search(r'type\(value\) is int', (ROOT / 'game' / 'engine.py').read_text(encoding='utf-8')))
-        self.assertIn('e.integer(p.get(\'qty\'), 1, 30)', (ROOT / 'game' / 'inventory.py').read_text(encoding='utf-8'))
+        self.assertIn('e.integer(p.get(\'qty\'), 1, LINE_MAX)', (ROOT / 'game' / 'inventory.py').read_text(encoding='utf-8'))
 
 
 if __name__ == '__main__':

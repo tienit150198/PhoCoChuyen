@@ -431,10 +431,11 @@ def validate(c:dict,career:str):
   need(isinstance(st,dict),'Thiệp không hợp lệ.')
   for k in ('id','title','emoji'):e.clean_text(st.get(k),200)
   e.integer(st.get('day'),1,999999)
+ # Waste rows: qty and value wider than any write (bigger shelves, fb #277: a whole 80-unit lot can go at once).
  for row in x['waste']:
   allowed=('cup',*data.INGREDIENT_INDEX)
   if career in PLUGINS:allowed=(*allowed,*[i['id'] for i in (PLUGINS[career].SPEC.get('inventory') or {}).get('items',[])],*PLUGINS[career].SPEC.get('waste_items',()))
-  need(isinstance(row,dict) and row.get('item') in allowed,'Hao hụt không hợp lệ.');e.integer(row.get('qty'),0,60);e.integer(row.get('value'),0,10000);e.integer(row.get('day'),1,999999);e.clean_text(row.get('reason'),500)
+  need(isinstance(row,dict) and row.get('item') in allowed,'Hao hụt không hợp lệ.');e.integer(row.get('qty'),0,999);e.integer(row.get('value'),0,10**6);e.integer(row.get('day'),1,999999);e.clean_text(row.get('reason'),500)
  for k in x['activity_rewards']:need(k in data.ACTIVITY_INDEX and data.ACTIVITY_INDEX[k]['career']==career,'Thưởng trò nhỏ sai nghề.')
  a=x['activity']
  if a:

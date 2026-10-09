@@ -721,6 +721,27 @@ def capacity(career: str) -> int:
     return spec.get('capacity', 40) if spec else 0
 
 
+# Bigger shelves (player #277, owner 09/10) ship in two releases. This one only ACCEPTS what the next one writes:
+# a save may hold up to SAVE_STOCK units of an item (a career with a bigger shelf keeps its own) and order or
+# draft lines of up to SAVE_LINE units, while its own orders keep LINE_MAX and capacity(). A crate from the
+# bigger release (a line over LINE_MAX) is received against stock_limit(), so a rollback strands no paid goods.
+LINE_MAX = 30       # units one order line or draft line may take here (inv_order, inv_cart)
+SAVE_STOCK = 80
+SAVE_LINE = 80
+
+
+def stock_limit(career: str) -> int:
+    """The most of one item a save may hold: the career's shelf, or SAVE_STOCK if that is bigger."""
+    return max(capacity(career), SAVE_STOCK)
+
+
+def _receive_room(c: dict, career: str, o: dict, item_id: str) -> int:
+    """Shelf room for a counted crate: capacity() for this release's own orders; a line bigger than LINE_MAX
+    came from the release with bigger shelves and is checked against stock_limit()."""
+    cap = capacity(career) if o['qty'] <= LINE_MAX else stock_limit(career)
+    return cap - count(c, item_id)
+
+
 def _order_size(career: str, item_id: str, value) -> str | None:
     from .engine import need
     if value is None:
@@ -923,7 +944,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
     level = 1 + c['xp'] // 90
     if name == 'inv_order':
         it = item(career, p.get('item'))
-        qty = e.integer(p.get('qty'), 1, 30)
+        qty = e.integer(p.get('qty'), 1, LINE_MAX)
         size = _order_size(career, it['id'], p.get('size'))
         sup = supplier(career, p.get('supplier', 'partner'))
         need(sup, 'Nhà cung cấp không tồn tại.')
@@ -1009,12 +1030,12 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         if door['abs'] < order['at']:
             eta = _eta(order, door['abs'], c, career, door)
             need(False, f'Hàng chưa tới. Dự kiến {eta["eta_label"]} — làm việc khác trong lúc chờ nhé.')
-        counted = e.integer(p.get('count'), 0, 60)
+        counted = e.integer(p.get('count'), 0, 999)
         need(counted == order['actual'], 'Số đếm chưa khớp số hàng thực có trong thùng. Đếm lại nhé.')
         it = item(career, order['item'])
         # Stock can grow after ordering (market buys, returns, gifts); say so
         # plainly instead of failing on the generic capacity check.
-        room = capacity(career) - count(c, it['id'])
+        room = _receive_room(c, career, order, it['id'])
         need(order['actual'] <= room, f'Kệ {it["name"]} chỉ còn chỗ cho {max(0, room)} {it.get("unit", "phần")}. '
              'Bán hoặc bỏ bớt lô cũ rồi nhận thùng này nhé.')
         sup = _known(career, order['supplier'])
@@ -1189,7 +1210,7 @@ def _cart_edit(c: dict, career: str, x: dict, p: dict, level: int) -> dict:
         for w in want:
             need(isinstance(w, dict), 'Danh sách hàng không hợp lệ.')
             it = item(career, w.get('item'))
-            qty = e.integer(w.get('qty'), 1, 30)
+            qty = e.integer(w.get('qty'), 1, LINE_MAX)
             need(sells(sup, it['id']), f'{sup["name"]} không bán {it["name"]}. Chọn nhà cung cấp khác nhé.')
             need(it.get('unlock', 1) <= level, f'Mở khóa {it["name"]} ở cấp {it.get("unlock", 1)}.')
             same = [l for l in lines if l['item'] == it['id']]
@@ -1198,11 +1219,11 @@ def _cart_edit(c: dict, career: str, x: dict, p: dict, level: int) -> dict:
             row = next((l for l in same if l.get('size') == size), None)
             have = row['qty'] if row else 0
             if fit:
-                qty = min(qty, 30 - have, room(it, row) - have)
+                qty = min(qty, LINE_MAX - have, room(it, row) - have)
                 if qty <= 0:
                     continue
             new = have + qty
-            need(new <= 30, f'Mỗi dòng tối đa 30 {it.get("unit", "phần")}.')
+            need(new <= LINE_MAX, f'Mỗi dòng tối đa {LINE_MAX} {it.get("unit", "phần")}.')
             need(new <= room(it, row), f'Kệ {it["name"]} chỉ còn chỗ cho {room(it, row)} {it.get("unit", "phần")} '
                  '(tính cả hàng đang giao và các dòng khác trong đơn).')
             if row:
@@ -1229,7 +1250,7 @@ def _cart_edit(c: dict, career: str, x: dict, p: dict, level: int) -> dict:
             need(len(same) <= 1, 'Món này có nhiều size trong đơn: chọn đúng dòng size nhé.')
             row = same[0] if same else None
         need(row, 'Món này chưa có trong đơn.')
-        qty = 0 if op == 'remove' else e.integer(p.get('qty'), 0, 30)
+        qty = 0 if op == 'remove' else e.integer(p.get('qty'), 0, LINE_MAX)
         tag = f' size {row["size"]}' if row.get('size') else ''
         if qty:
             need(qty <= room(it, row), f'Kệ {it["name"]} chỉ còn chỗ cho {room(it, row)} {it.get("unit", "phần")} '
@@ -1359,9 +1380,9 @@ def _group_action(s: dict, c: dict, career: str, x: dict, name: str, p: dict) ->
         need(isinstance(counts, dict), 'Đếm từng món trong thùng trước nhé.')
         for o in lines:
             it = item(career, o['item'])
-            counted = e.integer(counts.get(o['id']), 0, 60)
+            counted = e.integer(counts.get(o['id']), 0, 999)
             need(counted == o['actual'], f'Số đếm {it["name"]} chưa khớp số hàng thực có trong thùng. Đếm lại nhé.')
-            room = capacity(career) - count(c, it['id'])
+            room = _receive_room(c, career, o, it['id'])
             need(o['actual'] <= room, f'Kệ {it["name"]} chỉ còn chỗ cho {max(0, room)} {it.get("unit", "phần")}. '
                  'Bán hoặc bỏ bớt lô cũ rồi nhận thùng này nhé.')
         got, short = [], []
@@ -1506,7 +1527,7 @@ def validate(c: dict, career: str) -> None:
         integer(lot.get('expires'), 0, 10**7)
         integer(lot.get('received'), 1, 10**7)
     need(len({l['id'] for l in x['lots']}) == len(x['lots']), 'Trùng mã lô.')
-    cap = capacity(career)
+    cap = stock_limit(career)  # a save from the release with bigger shelves loads here too
     for i in ids:
         need(count(c, i) <= cap, 'Tồn vượt sức chứa.')
     known = {sp['id'] for sp in suppliers(career)} | set(SUPPLIER_INDEX)
@@ -1515,7 +1536,7 @@ def validate(c: dict, career: str) -> None:
     for o in x['orders']:
         need(isinstance(o, dict) and o.get('item') in ids and o.get('supplier') in known, 'Đơn nhập sai.')
         _order_size(career, o['item'], o.get('size'))
-        integer(o.get('qty'), 1, 30)
+        integer(o.get('qty'), 1, SAVE_LINE)
         integer(o.get('actual'), 0, o['qty'])
         integer(o.get('cost'), 0, 10**6)
         integer(o.get('unit_cost'), 0, 10000)
@@ -1558,7 +1579,7 @@ def validate(c: dict, career: str) -> None:
         for l in lines:
             need(isinstance(l, dict) and set(l) <= {'item', 'qty', 'oos', 'size'} and l.get('item') in ids, 'Dòng đơn gộp sai.')
             _order_size(career, l['item'], l.get('size'))
-            integer(l.get('qty'), 1, 30)
+            integer(l.get('qty'), 1, SAVE_LINE)
             if 'oos' in l:
                 integer(l['oos'], 1, 10**7)
         need(len({l['item'] for l in first}) == len(first) and len({_key(l) for l in lines}) == len(lines), 'Đơn gộp trùng món.')

@@ -208,7 +208,7 @@ export function inventoryView(env){
   const goodsOf=(o,i)=>{const n=Number(o.count_hint)||0,on=new Set(ui.invTally?.[o.id]||[]);let h=0;for(const ch of o.id)h=(h*31+ch.charCodeAt(0))>>>0;
     return Array.from({length:n},(_,k)=>{h=(Math.imul(h,1103515245)+12345)>>>0;const r=(h%21)-10,dy=((h>>>5)%7)-3;
       return `<li style="transform:translateY(${dy}px) rotate(${r}deg)"><button type="button" class="inv-good${on.has(k)?' on':''}" data-action="v4Tally" data-order="${esc(o.id)}" data-i="${k}" aria-pressed="${on.has(k)}" aria-label="${esc(i.name)}${on.has(k)?', đã đếm':''}">${esc(i.emoji||'📦')}</button></li>`;}).join('');};
-  const counter=o=>`<div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="-1" aria-label="Bớt một">−</button>${qtyBox({value:ui.invCount?.[o.id]??'',min:0,max:60,label:'Bạn đếm được',cls:'input',placeholder:'0',attrs:`id="count-${esc(o.id)}" data-v4-count="${esc(o.id)}" required`})}<button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="1" aria-label="Thêm một">+</button></div>`;
+  const counter=o=>`<div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="-1" aria-label="Bớt một">−</button>${qtyBox({value:ui.invCount?.[o.id]??'',min:0,max:Math.max(60,Number(o.qty)||0),label:'Bạn đếm được',cls:'input',placeholder:'0',attrs:`id="count-${esc(o.id)}" data-v4-count="${esc(o.id)}" required`})}<button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="1" aria-label="Thêm một">+</button></div>`;
   const crate=o=>{
     const i=byId[o.item]||{name:o.item},s=sup(o),isOpen=opened({id:o.id,lines:[o]});
     const form=`<div class="inv-slip"><span>Phiếu giao ghi</span><b>${o.qty} ${esc(unit(i))}</b></div><p class="inv-tip">${COUNT_TIP}</p><ul class="inv-crate" aria-label="Trong thùng">${goodsOf(o,i)}</ul>`+
@@ -885,7 +885,7 @@ export async function v4Action(action,data,el,env){
     case'v4OrderSize':{(ui.orderSize??={})[data.item]=data.size||null;renderSheet();return true;}
     case'v4Qty':{const inp=document.getElementById('order-qty'),max=Math.max(1,Number(inp?.max)||30),cur=Number(inp?.value)||ui.orderQty||1;
       ui.orderQty=Math.max(1,Math.min(max,data.set?Number(data.set):cur+Number(data.step||0)));renderSheet();return true;}
-    case'v4Count':{const inp=document.getElementById(data.target);if(inp){inp.value=String(Math.max(0,Math.min(60,(Number(inp.value)||0)+Number(data.step||0))));(ui.invCount??={})[inp.dataset.v4Count]=inp.value;(ui.invTyped??={})[inp.dataset.v4Count]=true;}return true;}
+    case'v4Count':{const inp=document.getElementById(data.target);if(inp){inp.value=String(Math.max(0,Math.min(Number(inp.max)||60,(Number(inp.value)||0)+Number(data.step||0))));(ui.invCount??={})[inp.dataset.v4Count]=inp.value;(ui.invTyped??={})[inp.dataset.v4Count]=true;}return true;}
     case'v4InvOpen':openSheet('inventory',ui.view==='inventory'?{invOpen:data.order}:{invOpen:data.order,invTab:'orders',invFocus:null,invNeed:null,invReturn:null});requestAnimationFrame(()=>document.getElementById('crate-'+data.order)?.scrollIntoView({block:'nearest'}));return true;
     case'v4OrderGo':{
       const item=api.content.inventory.items[api.state.current].find(i=>i.id===data.item);if(!item)return true;
