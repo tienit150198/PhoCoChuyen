@@ -1,5 +1,10 @@
 [
  {
+  "vi": "😞 $1 chờ đổi size mà không ai lo, để lại 1★.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Khách ghé vì ma-nơ-canh: $1",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "Chai cũ còn $1 lần thì đổ chung.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chai $1 sắp cạn mà không châm, tới nhà khách thì hết.",
   "en": "",
   "pattern": true
  }

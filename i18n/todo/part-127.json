@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Thuê $1, đặt cọc $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã thuê $1: tiền $2 $3 xu/ngày, cọc $4 xu (trả lại khi dọn đi).",
   "en": "",
   "pattern": true

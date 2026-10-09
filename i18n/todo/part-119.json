@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Đọc số tiền vừa về như loa ngân hàng: “Đã nhận 50 xu”. Khoản dưới 10 xu chỉ ting ting.",
+  "en": ""
+ },
+ {
   "vi": "Giọng nhân vật",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Cả phố thấy thiệp, mỗi người một lần.",
-  "en": ""
- },
- {
-  "vi": "⏳ Đang mở…",
   "en": ""
  }
 ]

@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Bạn đưa $1 vào nhà trạm, lấy chăn khô, nước ấm, rồi gọi đài báo có người trú tạm trên đảo.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bạn gọi đài nhờ chuyển tin cho đồn biên phòng. $1 vội vã xuống ghe bỏ đi.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "Chặng $1 không đạt. Mai mình bay mô phỏng lại phần này.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị phải ghi chặng $1 vào sổ huấn luyện.",
   "en": "",
   "pattern": true
  }

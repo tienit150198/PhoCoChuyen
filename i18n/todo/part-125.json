@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Chị phải ghi chặng $1 vào sổ huấn luyện.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Khoang khách chặng $1 yên ổn, tụi chị làm việc nhẹ cả người.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "📦 Xếp chồng ghế… còn $1 ghế",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 ghế còn trên vỉa hè",
   "en": "",
   "pattern": true
  }

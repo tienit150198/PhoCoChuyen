@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Bà nói mà, năm nay $1 có quý nhân phù trợ! Nhớ thắp nhang cảm ơn ông bà tổ tiên nghe 🙏✨",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bà coi cho $1 rồi, tuần này nhiều lộc lắm đó. Ráng làm ăn đàng hoàng nghe con 🙏",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "Quay lại đổi size $1 mà chờ tới tối cũng không ai lo. Thôi khỏi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😞 $1 chờ đổi size mà không ai lo, để lại 1★.",
   "en": "",
   "pattern": true
  }

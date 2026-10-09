@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Chai $1 sắp cạn mà không châm, tới nhà khách thì hết.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 Sang $2: còn $3 chỗ cần dọn.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "$1 lầm bầm nhưng quay ra bến, chờ ghe đón.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đưa $1 vào nhà trạm, lấy chăn khô, nước ấm, rồi gọi đài báo có người trú tạm trên đảo.",
   "en": "",
   "pattern": true
  }

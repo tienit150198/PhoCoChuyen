@@ -1,5 +1,9 @@
 [
  {
+  "vi": "⏳ Đang mở…",
+  "en": ""
+ },
+ {
   "vi": "💌 Thiệp bạn đã gửi",
   "en": ""
  },
@@ -2081,11 +2085,6 @@
  },
  {
   "vi": "hóng thêm nha $1 🍿",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà nói mà, năm nay $1 có quý nhân phù trợ! Nhớ thắp nhang cảm ơn ông bà tổ tiên nghe 🙏✨",
   "en": "",
   "pattern": true
  }

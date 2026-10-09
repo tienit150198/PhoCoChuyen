@@ -1,5 +1,10 @@
 [
  {
+  "vi": "$1 ghế còn trên vỉa hè",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🚨 Không kịp rồi: $1. Lập biên bản, phạt $2 xu$3. Bày lại quán rồi bán tiếp.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "Đặt cọc $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thuê $1, đặt cọc $2 xu.",
   "en": "",
   "pattern": true
  }
