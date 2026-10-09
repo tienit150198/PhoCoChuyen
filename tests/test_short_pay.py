@@ -385,5 +385,22 @@ class SaveTests(unittest.TestCase):
         broken(lambda c, x: c['shortpay']['log'].append(dict(task='a', day=1, kind='kid', outcome=None, short=2)))
 
 
+class ClientTests(unittest.TestCase):
+    def test_every_till_career_has_its_short_command_in_the_client(self):
+        """Player #288: zpop took a short payment but its till had no "Đếm lại tiền khách đưa", because the client's
+        map of `<prefix>short` commands (shortpay.js SHORT_ACT) did not list it. Every career that hands the till
+        its short-pay story must be there."""
+        import re
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[1]
+        js = (root / 'public' / 'js' / 'careers' / 'shortpay.js').read_text(encoding='utf-8')
+        act = dict(re.findall(r"(\w+):'(\w+_short)'", re.search(r'SHORT_ACT=\{([^}]*)\}', js).group(1)))
+        for cid, mod in PLUGINS.items():
+            src = Path(mod.__file__).read_text(encoding='utf-8')
+            if 'till.short_action(' not in src:
+                continue
+            with self.subTest(career=cid):
+                self.assertEqual(act.get(cid), mod.SPEC['prefix'] + 'short')
+
 if __name__ == '__main__':
     unittest.main()

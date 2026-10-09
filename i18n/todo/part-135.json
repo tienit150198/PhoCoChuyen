@@ -1,5 +1,10 @@
 [
  {
+  "vi": "🚚 Hàng đang về$1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🚚 $1 đang về$2",
   "en": "",
   "pattern": true
@@ -510,6 +515,11 @@
   "pattern": true
  },
  {
+  "vi": "Hủy $1 với $2? Hoàn lại $3 xu, cả tiền ship.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🛒 Đơn gộp $1 món · nhận $2/",
   "en": "",
   "pattern": true
@@ -601,6 +611,11 @@
  },
  {
   "vi": "💬 Đơn từ $1 xu được xin bớt",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💬 Hôm nay đã xin bớt $1 rồi, mai hỏi lại nhé.",
   "en": "",
   "pattern": true
  },

@@ -1,5 +1,19 @@
 {
   "strings": {
+  "(cả tiền ship)": "(shipping included)",
+  "Hàng đã tới cửa rồi, không hủy được nữa. Mở thùng nhận hàng nhé.": "The goods are already at the door, too late to cancel. Open the crate and receive them.",
+  "Món này nằm trong đơn gộp: hủy cả đơn gộp nhé.": "This item is part of a combined order: cancel the whole combined order.",
+  "Xác nhận hủy đơn trước nhé.": "Confirm the cancellation first.",
+  "Đơn gộp, xin bớt và hủy đơn": "Combined orders, discounts and cancelling",
+  "✖ Hủy": "✖ Cancel",
+  "✖ Hủy đơn": "✖ Cancel order",
+  "✖ Hủy đơn gộp": "✖ Cancel combined order",
+  "✖ Đơn đang giao mà chưa tới cửa: bấm [[Hủy đơn]] ở [[Thùng hàng]], hoàn đủ tiền hàng và tiền ship. Đơn gộp thì hủy cả đơn.": "✖ An order on its way but not at the door yet: tap [[Hủy đơn]] in [[Thùng hàng]] for a full refund of goods and shipping. A combined order is cancelled as a whole.",
+  "💬 Tiền hàng của đơn gộp (sau giá sỉ, chưa tính ship) từ nửa mức miễn ship của nhà cung cấp đó thì hiện [[Xin bớt]] 5%, 10%, 15%.": "💬 When a combined order's goods (after wholesale price, before shipping) reach half that supplier's free-shipping line, [[Xin bớt]] 5%, 10%, 15% appears.",
+  "📅 Mỗi nhà cung cấp chỉ trả lời một lần mỗi ngày: đồng ý, bớt ít hơn, miễn ship thay vì bớt, hoặc không bớt.": "📅 Each supplier answers once a day: yes, a smaller discount, free shipping instead, or no.",
+  "📉 Giá đã bớt chỉ giữ trong ngày, và chỉ khi đơn không nhỏ đi so với lúc xin.": "📉 The discount holds for that day only, and only while the order is no smaller than when you asked.",
+  "🛒 Chọn món, chọn nhà cung cấp rồi bấm [[Thêm vào đơn]]: nhiều món chung một đơn gộp, một lần ship, một thùng.": "🛒 Pick an item and a supplier, then tap [[Thêm vào đơn]]: many items in one combined order, one shipping fee, one crate.",
+  "🧮 Ví dụ: Chợ đầu mối từ 20 xu, Nhà phân phối từ 30 xu, Giao hỏa tốc từ 60 xu. Chưa đủ thì đơn ghi “Đơn từ … xu được xin bớt”.": "🧮 For example: wholesale market from 20 coins, distributor from 30, express from 60. Below that the order says “Đơn từ … xu được xin bớt”.",
   "Hội chợ giờ là Chợ đen! Vào phải nộp bảo kê 10.000 xu mỗi ngày, không nộp thì coi chừng bị trấn lột": "The fair is now the Black market! Pay 10,000 xu protection a day to get in, or risk being robbed",
   "Chợ đen hay bị công an ập vào: bị bắt thì mất tiền cược, nộp phạt và bị đuổi về tới hết ngày": "Police raid the Black market often: get caught and you lose your stake, pay a fine and are out for the day",
   "CHỢ ĐEN": "BLACK MARKET",
@@ -22560,6 +22574,13 @@
     "Đã trả lời câu này rồi.": "Already answered this one."
   },
   "patterns": {
+  "Hủy $1 với $2? Hoàn lại $3 xu, cả tiền ship.": "Cancel $1 with $2? $3 coins back, shipping included.",
+  "Hủy $1 đang giao từ $2, hoàn $3 xu.": "Cancelled $1 on its way from $2, $3 coins refunded.",
+  "Hủy $1? Hoàn lại $2 xu, cả tiền ship.": "Cancel $1? $2 coins back, shipping included.",
+  "Hủy đơn nhập: $1": "Cancelled stock order: $1",
+  "Đã hủy $1 với $2 · hoàn $3 xu$4.": "Cancelled $1 with $2 · $3 coins refunded$4.",
+  "đơn gộp $1 món": "combined order of $1 items",
+  "💬 Hôm nay đã xin bớt $1 rồi, mai hỏi lại nhé.": "💬 You already asked $1 for a discount today, ask again tomorrow.",
   "💸 Vay nóng chợ đen (trả $1 xu)": "💸 Quick black market loan (pay back $1 xu)",
   "💸 Còn nợ vay nóng chợ đen $1 xu (trừ dần khi có tiền vào ví)": "💸 Still owing $1 xu on the black market loan (taken from later income)",
   "Trao khi chợ tàn ($1 00:00), giữ mãi trong bộ sưu tập.": "Awarded when the black market ends ($1 00:00), kept forever in your collection.",

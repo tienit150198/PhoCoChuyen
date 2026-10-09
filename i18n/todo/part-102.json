@@ -1,5 +1,45 @@
 [
  {
+  "vi": "🔔 Bấm chuông, nghe khách dặn",
+  "en": ""
+ },
+ {
+  "vi": "🧧 Tổng vệ sinh",
+  "en": ""
+ },
+ {
+  "vi": "✓ sạch",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Chọn phòng để bắt đầu dọn.",
+  "en": ""
+ },
+ {
+  "vi": "🚫 Để nguyên",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Lau kỹ",
+  "en": ""
+ },
+ {
+  "vi": "✨ sạch",
+  "en": ""
+ },
+ {
+  "vi": "đã bế ra",
+  "en": ""
+ },
+ {
+  "vi": "đang để ngoài",
+  "en": ""
+ },
+ {
+  "vi": "đã đặt lại",
+  "en": ""
+ },
+ {
   "vi": "đã vỡ",
   "en": ""
  },
@@ -389,6 +429,14 @@
  },
  {
   "vi": "Xem sổ nợ rồi quyết: ghi sổ hay từ chối khéo",
+  "en": ""
+ },
+ {
+  "vi": "✖ Hủy đơn gộp",
+  "en": ""
+ },
+ {
+  "vi": "✖ Hủy",
   "en": ""
  },
  {
@@ -1749,54 +1797,6 @@
  },
  {
   "vi": "Nhắc ai vi phạm, báo động nếu có người chìm",
-  "en": ""
- },
- {
-  "vi": "📣 Xem lại từng khu",
-  "en": ""
- },
- {
-  "vi": "Gọi hỗ trợ",
-  "en": ""
- },
- {
-  "vi": "📣 Gọi hỗ trợ",
-  "en": ""
- },
- {
-  "vi": "Đưa người vào bờ",
-  "en": ""
- },
- {
-  "vi": "🛟 Chọn cách cứu",
-  "en": ""
- },
- {
-  "vi": "Xem tỉnh, thở",
-  "en": ""
- },
- {
-  "vi": "🩺 Xem tỉnh, thở",
-  "en": ""
- },
- {
-  "vi": "❤️ Chọn cách sơ cứu",
-  "en": ""
- },
- {
-  "vi": "Cho vào thế nào",
-  "en": ""
- },
- {
-  "vi": "Đúng ra",
-  "en": ""
- },
- {
-  "vi": "👀 Nhìn",
-  "en": ""
- },
- {
-  "vi": "👂 Hỏi",
   "en": ""
  }
 ]

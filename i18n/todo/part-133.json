@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Gợi ý $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Còn $1 tài khoản, gõ cụ thể hơn để thu hẹp.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "🍚 No bụng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😴 Tỉnh táo $1",
   "en": "",
   "pattern": true
  }

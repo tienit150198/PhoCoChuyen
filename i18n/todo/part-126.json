@@ -1,5 +1,60 @@
 [
  {
+  "vi": "$1 lì xì phong bì $2 xu: “Chúc năm nay mọi sự như ý nghe con.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nhắn: “Nghe nói mai có đoàn kiểm tra ghé $2 đó. Dọn dẹp gọn gàng, giấy tờ để sẵn nha.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cười: “Có gì đâu mà cảm ơn, quen biết mà.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 hơi buồn vì chưa nghe một lời cảm ơn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tặng mình $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Số xu là từ 1 đến $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ví của bạn chưa đủ $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏦 $1 vừa gửi $2 xu vào quỹ chung. Quỹ giờ có $3 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã gửi $1 xu vào quỹ chung. Quỹ giờ có $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏦 $1 vừa rút $2 xu từ quỹ chung. Quỹ còn $3 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã rút $1 xu về ví. Quỹ chung còn $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Cho $1 mượn",
   "en": "",
   "pattern": true
@@ -1940,6 +1995,26 @@
   "pattern": true
  },
  {
+  "vi": "đơn gộp $1 món",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hủy đơn nhập: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hủy $1 đang giao từ $2, hoàn $3 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã hủy $1 với $2 · hoàn $3 xu$4.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã bỏ đơn $1.",
   "en": "",
   "pattern": true
@@ -2171,81 +2246,6 @@
  },
  {
   "vi": "Ví còn $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay bạn tặng đủ $1 xu rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trùm $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Số dòng cần từ 1 đến $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn bắt được $1! Đã lưu vào sổ cá của bạn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 rủ đi chơi",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Góp $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví còn $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví đang nợ $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chưa đủ tiền: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quà của xóm: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xả stress: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Góp giúp: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Buồn quá tiêu tiền: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ký túc xá: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền thuốc: $1",
   "en": "",
   "pattern": true
  }

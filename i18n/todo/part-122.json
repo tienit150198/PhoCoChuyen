@@ -1,5 +1,60 @@
 [
  {
+  "vi": "$1, còn nợ $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Có $2 xu thôi à.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 quay lại cùng ông Lộc: “Hỏi ra việc đó rẻ hơn $2 xu, trả lại đi!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả lại tiền chênh cho $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn trả lại $1 xu, xin lỗi. $2 dịu giọng: “Biết sai mà sửa thì còn gọi lại.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả bớt tiền chênh cho $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cầm $2 xu: “Thôi được, lần sau nói giá cho thật.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chặt chém xong trả lại có $1 xu, coi như bố thí à?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 ném lại câu “bố thí à?” rồi bỏ đi kể khắp ngõ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nghe giải thích một hồi, lẩm bẩm “thôi kệ” rồi về.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Giải thích cái gì, chặt chém thì nhận đi!” Ông Lộc lắc đầu.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Thợ thông cống chặt chém $1 rồi không chịu trả lại. Ai gọi thì cẩn thận.",
   "en": "",
   "pattern": true
@@ -2191,61 +2246,6 @@
  },
  {
   "vi": "Người quen giới thiệu vẫn xét như mọi người: chưa đủ $1 năm kinh nghiệm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kinh nghiệm: $1 năm $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kỹ năng: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bằng cấp: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lương mong muốn: $1 xu/tháng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị Huyền: “$1 vừa gửi sổ BHXH của chỗ làm cũ — đủ $2 năm thật đấy em.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 vừa gọi: đã nhận việc chỗ khác, xin rút hồ sơ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kinh nghiệm: ít nhất $1 năm $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kỹ năng bắt buộc: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bắt buộc có $1 (kèm bản sao).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khung lương: $1–$2 xu/tháng (cao hơn thì thương lượng).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lọc hồ sơ: $1",
   "en": "",
   "pattern": true
  }

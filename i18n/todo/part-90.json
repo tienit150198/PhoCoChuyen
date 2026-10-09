@@ -1,5 +1,73 @@
 [
  {
+  "vi": "họp mà lướt điện thoại",
+  "en": ""
+ },
+ {
+  "vi": "họp mà cứ cầm điện thoại lướt",
+  "en": ""
+ },
+ {
+  "vi": "họp không ghi chép, xong hỏi lại từ đầu",
+  "en": ""
+ },
+ {
+  "vi": "họp ghi chép cẩn thận, hỏi đúng trọng tâm",
+  "en": ""
+ },
+ {
+  "vi": "trình bày ngắn gọn, ai nghe cũng hiểu",
+  "en": ""
+ },
+ {
+  "vi": "Lơ đãng.",
+  "en": ""
+ },
+ {
+  "vi": "Chào hỏi",
+  "en": ""
+ },
+ {
+  "vi": "không chào ai",
+  "en": ""
+ },
+ {
+  "vi": "sáng vào phòng không chào ai, cắm mặt vào máy",
+  "en": ""
+ },
+ {
+  "vi": "gặp sếp trong thang máy cũng không chào",
+  "en": ""
+ },
+ {
+  "vi": "sáng nào cũng chào cả phòng, không khí vui hẳn",
+  "en": ""
+ },
+ {
+  "vi": "lễ phép với cả bác bảo vệ, cô lao công",
+  "en": ""
+ },
+ {
+  "vi": "Không chào.",
+  "en": ""
+ },
+ {
+  "vi": "Giọng tổng đài",
+  "en": ""
+ },
+ {
+  "vi": "nói nhanh khó nghe",
+  "en": ""
+ },
+ {
+  "vi": "bạn tổng đài nói nhanh quá, nghe không kịp",
+  "en": ""
+ },
+ {
+  "vi": "đọc kịch bản như máy, không nghe mình nói",
+  "en": ""
+ },
+ {
   "vi": "giọng tổng đài rõ ràng, nói chậm vừa phải",
   "en": ""
  },
@@ -1729,74 +1797,6 @@
  },
  {
   "vi": "rau tươi, trứng ngon",
-  "en": ""
- },
- {
-  "vi": "hàng tươi rói",
-  "en": ""
- },
- {
-  "vi": "đóng gói cẩn thận",
-  "en": ""
- },
- {
-  "vi": "chuyến bay an toàn",
-  "en": ""
- },
- {
-  "vi": "tổ bay chu đáo",
-  "en": ""
- },
- {
-  "vi": "hạ cánh êm",
-  "en": ""
- },
- {
-  "vi": "Trừ một sao, không bàn.",
-  "en": ""
- },
- {
-  "vi": "Một sao trừ đi là vì chuyện đó.",
-  "en": ""
- },
- {
-  "vi": "Trừ một sao cho nhớ.",
-  "en": ""
- },
- {
-  "vi": "Sao thì vẫn để nguyên, tôi rộng lượng mà.",
-  "en": ""
- },
- {
-  "vi": "Không trừ sao đâu, nói cho biết thôi.",
-  "en": ""
- },
- {
-  "vi": "Vẫn đủ sao, nhưng nhớ đấy.",
-  "en": ""
- },
- {
-  "vi": "Tôi xin phép trừ một sao.",
-  "en": ""
- },
- {
-  "vi": "Tôi vẫn giữ nguyên số sao để ghi nhận thiện chí.",
-  "en": ""
- },
- {
-  "vi": "Gia đình xin trừ một sao.",
-  "en": ""
- },
- {
-  "vi": "Gia đình vẫn giữ nguyên đánh giá.",
-  "en": ""
- },
- {
-  "vi": "{Praise}. {Line}. Vậy thôi.",
-  "en": ""
- },
- {
-  "vi": "{Line}. Vậy đó. {Praise}, nhưng tôi nhớ chuyện kia hơn.",
   "en": ""
  }
 ]

@@ -1,5 +1,60 @@
 [
  {
+  "vi": "🗣️ Bạn kể sơ các bước, hỏi điều cô lo nhất. $1 bớt run, nhưng giấy cam đoan phải có bác sĩ giải thích và ký cùng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🗣️ Bạn hỏi vì sao Tuấn đổi ý, giải thích những gì mình biết. Tuấn: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "😤 “Không làm là nặng thêm đó!” $1 miễn cưỡng gật đầu, mặt hằm hằm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đã nói không mổ. Không chuyển người bệnh đi khi họ không đồng ý.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: đã chuyển đi $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: đã kiểm đủ giấy cam đoan, nhịn ăn, dị ứng, trang sức.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chuẩn bị và chuyển người bệnh đi $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛏️ Đẩy giường sang phòng thủ thuật, bàn giao hồ sơ. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Dặn: $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔁 $1 nhắc lại được những điều bạn dặn, rồi hỏi: “Còn $2 thì sao cô?”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔁 $1 nhắc lại đủ từng điều. Người nhà ghi vào điện thoại.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Về nhà không biết $1.",
   "en": "",
   "pattern": true
@@ -2191,61 +2246,6 @@
  },
  {
   "vi": "🟥 Tàu $1 phanh dừng cách đường ngang ba trăm mét, chờ bạn báo đường đã thông.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tàu $1 tới mà cần chắn chưa hạ. Lái tàu kéo phanh khẩn cấp, xe máy phanh cháy lốp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tàu $1 tới mà trên ray vẫn còn người. Lái tàu kéo còi, phanh khẩn cấp, may họ nhảy ra kịp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚆 Tàu $1 $2 toa ầm ầm qua đường ngang. Gió tàu thốc tung vạt áo.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Chị Nguyệt: “Sai! Nghe lại: tàu $1, rời Bến Gỗ $2, qua đường ngang $3. Nhắc lại cho đúng.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Bạn: “$1” · Chị Nguyệt: “Đúng. Đường ngang Bến Mây chuẩn bị.” Tàu còn khoảng $2 phút.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👀 Nhìn hai phía đường ngang: $1. Dẹp hết rồi mới hạ chắn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👀 Nhìn hai phía đường ngang: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 chui qua chắn, đứng giữa ray",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 Cách này không ăn thua.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2: được một nửa rồi, thêm chút nữa!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn kéo $1 ra sau vạch dừng, ghi tên vào sổ người vượt chắn.",
   "en": "",
   "pattern": true
  }

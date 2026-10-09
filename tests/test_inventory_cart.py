@@ -686,5 +686,112 @@ class WideDraft(unittest.TestCase):
             validate_state(bad)
 
 
+class Cancel(unittest.TestCase):
+    """Player #276 "thêm dòng hủy hàng đang đặt": an order still on the road can be called off (inv_cancel),
+    goods and shipping back once, no shop time; not once the crate is at the door; the order leaves the
+    book, so a save written after a cancel still loads on the release this one may roll back to."""
+
+    def test_single_order_full_refund_and_gone(self):
+        j = fresh()
+        money, turn = j.c['money'], j.c['turn']
+        r = j.act('inv_order', item='noodle', qty=5, supplier='partner', confirm=True)
+        oid = r['eta']['order']
+        o = next(o for o in j.c['ext']['inv']['orders'] if o['id'] == oid)
+        paid = o['cost'] + o.get('ship', 0)
+        self.assertEqual(money - j.c['money'], paid)
+        self.assertEqual(public_inv(j)['arriving']['noodle'], 5)
+        turn = j.c['turn']
+        with self.assertRaises(GameError):
+            j.act('inv_cancel', order=oid)  # asks first
+        r = j.act('inv_cancel', order=oid, confirm=True)
+        self.assertEqual(r['refund'], paid)
+        self.assertEqual(j.c['money'], money)
+        self.assertEqual(j.c['turn'], turn, 'a phone call takes no shop time')
+        self.assertFalse(any(o['id'] == oid for o in j.c['ext']['inv']['orders']))
+        self.assertEqual(public_inv(j)['arriving']['noodle'], 0)
+        self.assertEqual([x['category'] for x in books(j, oid)], ['stock', 'refund'])
+        with self.assertRaises(GameError):
+            j.act('inv_cancel', order=oid, confirm=True)  # never twice
+        validate_state(j.state)
+
+    def test_merged_order_cancels_whole_with_shipping(self):
+        j = fresh()
+        add(j, 'partner', 'noodle', 3)
+        add(j, 'partner', 'egg', 2)
+        money = j.c['money']
+        _, gid = place(j)
+        lines = group_lines(j, gid)
+        self.assertTrue(lines[0].get('ship'), 'a small merged order pays shipping')
+        with self.assertRaises(GameError) as e:
+            j.act('inv_cancel', order=lines[0]['id'], confirm=True)
+        self.assertIn('đơn gộp', e.exception.message)
+        r = j.act('inv_cancel', group=gid, confirm=True)
+        self.assertEqual(j.c['money'], money)
+        self.assertEqual(r['refund'], sum(o['cost'] + o.get('ship', 0) for o in lines))
+        self.assertIn('ship', r['message'])
+        self.assertEqual(group_lines(j, gid), [])
+        self.assertEqual(I._shipments(j.c['ext']['inv']), 0)
+        validate_state(j.state)
+
+    def test_not_once_it_is_at_the_door_nor_after_receiving(self):
+        j = fresh()
+        oid = j.act('inv_order', item='egg', qty=4, supplier='express', confirm=True)['eta']['order']
+        wait_until_ready(j, oid)
+        money = j.c['money']
+        with self.assertRaises(GameError) as e:
+            j.act('inv_cancel', order=oid, confirm=True)
+        self.assertIn('tới cửa', e.exception.message)
+        o = next(o for o in j.c['ext']['inv']['orders'] if o['id'] == oid)
+        j.act('inv_receive', order=oid, count=o['actual'])
+        with self.assertRaises(GameError):
+            j.act('inv_cancel', order=oid, confirm=True)
+        self.assertEqual(j.c['money'], money)
+        with self.assertRaises(GameError):
+            j.act('inv_cancel', group='po-999', confirm=True)
+
+    def test_grocery_order_cancels(self):
+        j = Journey('grocery')
+        empty(j.c, 'egg')
+        set_money(j.c, 2000)
+        oid = j.act('inv_order', item='egg', qty=6, supplier='partner', confirm=True)['eta']['order']
+        j.act('inv_cancel', order=oid, confirm=True)
+        self.assertEqual(j.c['money'], 2000)
+        validate_state(j.state)
+
+    def test_saves_after_a_cancel_load_on_the_rollback_release(self):
+        import io, json, os, subprocess, sys, tarfile, tempfile
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[1]
+        j = fresh()
+        oid = j.act('inv_order', item='noodle', qty=5, supplier='partner', confirm=True)['eta']['order']
+        add(j, 'partner', 'egg', 3)
+        add(j, 'partner', 'beef', 2)
+        _, gid = place(j)
+        j.act('inv_order', item='mushroom', qty=2, supplier='market', confirm=True)  # one stays on the way
+        j.act('inv_cancel', order=oid, confirm=True)
+        j.act('inv_cancel', group=gid, confirm=True)
+        validate_state(j.state)
+        old = os.environ.get('MNL_OLD_TREE')
+        if not old:
+            try:
+                data = subprocess.run(['git', 'archive', ROLLBACK, 'game', 'reference'], cwd=root, capture_output=True,
+                                      timeout=120, check=True).stdout
+            except (OSError, subprocess.SubprocessError):
+                self.skipTest(f'no git tree with {ROLLBACK} (MNL_OLD_TREE)')
+            old = tempfile.mkdtemp(prefix='mnl-1927-')
+            with tarfile.open(fileobj=io.BytesIO(data)) as tar:
+                tar.extractall(old, filter='data')
+        prog = ('import json,sys;from game.engine import validate_state,migrate_state;'
+                's=json.load(sys.stdin);validate_state(s);s=migrate_state(s);validate_state(s);'
+                'print(len(s["careers"]["restaurant"]["ext"]["inv"]["orders"]))')
+        env = dict(os.environ, PYTHONPATH=os.pathsep.join(x for x in (str(old), os.environ.get('PYTHONPATH', '')) if x))
+        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(j.state), capture_output=True, text=True,
+                             cwd=old, env=env, encoding='utf-8', timeout=300)
+        self.assertEqual(out.returncode, 0, out.stderr[-3000:])
+        self.assertEqual(int(out.stdout.strip()), len(j.c['ext']['inv']['orders']))
+
+
+ROLLBACK = '4533ee17'   # 1.9.27, the release this one may be rolled back to
+
 if __name__ == '__main__':
     unittest.main()

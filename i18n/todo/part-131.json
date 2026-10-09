@@ -1155,6 +1155,11 @@
   "pattern": true
  },
  {
+  "vi": "Hủy $1? Hoàn lại $2 xu, cả tiền ship.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "✓ Đã thêm · $1 trong đơn",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "🍲 Bữa cơm $1 xong rồi$2. Gửi lại $3 xu tiền chợ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thêm $1 món",
   "en": "",
   "pattern": true
  }

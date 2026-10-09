@@ -268,13 +268,16 @@ export function inventoryView(env){
     const waiting=g=>{const o=g.o,i=byId[o.item]||{name:o.item},s=sup(o),late=Boolean(o.late_note),pct=Math.round(Math.max(0,Math.min(1,Number(o.progress)||0))*100);
       // Waiting helps only for goods due later today; the rest arrive while you work or overnight.
       const wait=today(o)?cmdBtn(waitGo.label,'inv_wait',{},'ghost small'):'';
+      // Still on the road: call it off for a full refund, goods and shipping (inventory.py inv_cancel; player #276).
+      const what=g.group?`đơn gộp ${g.lines.length} món`:`${o.qty} ${unit(i)} ${i.name}`;
+      const cancel=confirmCmd('✖ Hủy đơn','inv_cancel',g.group?{group:g.id}:{order:o.id},`Hủy ${what} với ${s?.name||'nhà cung cấp'}? Hoàn lại ${fmt(paidOf(g))} xu, cả tiền ship.`,'ghost small');
       const title=g.group?`🛒 Đơn gộp · ${g.lines.length} món`:`${name(i)}${sizeNote(o)} · ${o.qty} ${esc(unit(i))}`;
       const list=g.group?`<p class="inv-gnames">${g.lines.map(l=>`${esc(byId[l.item]?.emoji||'📦')} ${esc(byId[l.item]?.name||l.item)}${sizeNote(l)} ×${l.qty}`).join(' · ')}</p>`:'';
       return `<article class="card order-row${g.lines.some(mine)&&focus.length?' mine':''}"><div class="row spread"><div class="grow"><strong>${title}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(paidOf(g))} xu</small></div>${pill(late?'TRỄ HẸN':`⏱ ${esc(o.left_label||'đang giao')}`,late?'amber':'blue')}</div>${list}`+
         `<div><span class="small">Dự kiến nhận: <b>${esc(o.eta_label||'đang trên đường')}</b></span>${o.window?`<small class="muted block">Hẹn giao ${esc(o.window)}</small>`:''}</div>`+
         `<span class="inv-bar" role="progressbar" aria-label="Quãng đường đã đi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i class="on" style="width:${pct}%"></i></span>`+
         `${late?`<p class="notice amber small">${icon('truck',15)} <span><b>${esc(s?.name||'')}:</b> “${esc(o.late_note)}”</span></p>`:''}`+
-        `${wait?`<div class="row wrap"><span class="grow"></span>${wait}</div>`:''}</article>`;};
+        `<div class="row wrap">${cancel}<span class="grow"></span>${wait}</div></article>`;};
     const received=g=>{const o=g.o,i=byId[o.item]||{name:o.item},s=sup(o),short=g.lines.some(l=>l.actual<l.qty),due=g.lines.filter(l=>l.actual<l.qty&&!l.claimed);
       const rated=g.lines.every(l=>l.rating==null),ref=g.group?{group:g.id}:{order:o.id};
       let act='';
@@ -356,7 +359,8 @@ function cartCard(env,k,{byId,unit}){
   const sum=`<dl class="inv-cart-sum">${rows.map(([a,b])=>`<div><dt>${esc(a)}</dt><dd>${esc(b)}</dd></div>`).join('')}<div class="total"><dt>Tổng</dt><dd>${fmt(k.total)} xu</dd></div></dl>`;
   const d=k.deal,talk=d?`<p class="bubble small"><b>${esc(s.name)}:</b> “${esc(d.said)}”</p>${d.lost?'<small class="warn-text block">Đơn nhỏ lại: giá bớt không còn.</small>':''}`
     :k.can_haggle?`<div class="inv-haggle" role="group" aria-label="Xin bớt"><span>💬 Xin bớt</span>${k.asks.map(p=>cmdBtn(`${p}%`,'inv_haggle',{supplier:sid,pct:p},'chip')).join('')}</div>`
-    :!k.asked&&k.n?`<small class="muted block">💬 Đơn từ ${fmt(k.haggle_from)} xu được xin bớt</small>`:'';
+    :!k.asked&&k.n?`<small class="muted block">💬 Đơn từ ${fmt(k.haggle_from)} xu được xin bớt</small>`
+    :k.asked&&k.n?`<small class="muted block">💬 Hôm nay đã xin bớt ${esc(s.name)} rồi, mai hỏi lại nhé.</small>`:'';
   const why=!k.n?'Cả đơn đang hết hàng hôm nay.':k.below_min?`${s.name} nhận đơn gộp từ ${fmt(k.min_order)} xu (còn thiếu ${fmt(k.below_min)} xu hàng).`:k.short?`${fn} thiếu ${fmt(k.short)} xu.`:vans(api.state.careers[api.state.current]?.inventory).full?`Đủ ${vans(api.state.careers[api.state.current]?.inventory).cap} đơn đang về: nhận bớt thùng rồi đặt tiếp.`:'';
   return `<section class="card inv-cart" aria-label="Đơn gộp ${esc(s.name)}"><div class="row spread"><h3>🛒 Đơn gộp · ${esc(s.emoji||'')} ${esc(s.name)}</h3>${button(icon('x',14),'v4Cart',{supplier:''},'ghost small')}</div>`+
     `<ul class="inv-cart-lines">${k.lines.map(line).join('')}</ul>${sum}`+

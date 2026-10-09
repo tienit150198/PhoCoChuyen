@@ -599,9 +599,16 @@ function cartChips(x){
 function incoming(x){
   const inv=x.room.inventory||{},orders=(inv.orders||[]).filter(o=>o.status==='in_transit'||(o.status==='received'&&o.actual<o.qty&&!o.claimed&&o.day===x.room.day));
   if(!orders.length)return '';
+  // Still on the road: "✖ Hủy" calls it off for a full refund (inventory.py inv_cancel; player #276). A merged
+  // order is one van, so its button sits on its first line and cancels the whole order.
+  const lead=new Set();
+  const cancel=o=>{if(o.group&&lead.has(o.group))return '';if(o.group)lead.add(o.group);
+    const lines=o.group?orders.filter(l=>l.group===o.group):[o],paid=lines.reduce((n,l)=>n+Number(l.cost||0)+Number(l.ship||0),0);
+    const what=o.group?`đơn gộp ${lines.length} món`:`${o.qty} ${item(x,o.item).name}`;
+    return x.confirmCmd(o.group?'✖ Hủy đơn gộp':'✖ Hủy','inv_cancel',o.group?{group:o.group}:{order:o.id},`Hủy ${what}? Hoàn lại ${paid} xu, cả tiền ship.`,'small ghost');};
   return `<div class="gr-incoming"><h4>🚚 Hàng đang về</h4>${orders.map(o=>{const it=item(x,o.item);
     if(o.status==='received')return `<div class="gr-inrow"><span>${it.emoji} ${x.esc(it.name)}: nhận ${o.actual}/${o.qty}</span>${x.cmd('📝 Báo thiếu','inv_claim',{order:o.id},'small ghost')}</div>`;
-    return `<div class="gr-inrow"><span>${it.emoji} ${x.esc(it.name)} × ${o.qty}</span>${o.ready_now?x.button('📦 Mở thùng & xếp lên kệ','v4InvOpen',{order:o.id},'small primary'):`<small class="muted">⏱ ${x.esc(o.left_label||'đang trên đường…')}</small>`}</div>`;}).join('')}</div>`;
+    return `<div class="gr-inrow"><span>${it.emoji} ${x.esc(it.name)} × ${o.qty}</span>${o.ready_now?x.button('📦 Mở thùng & xếp lên kệ','v4InvOpen',{order:o.id},'small primary'):`<small class="muted">⏱ ${x.esc(o.left_label||'đang trên đường…')}</small>${cancel(o)}`}</div>`;}).join('')}</div>`;
 }
 function stockView(x){
   const inv=x.room.inventory||{stock:{},expiring:{},locked:[],orders:[]},d=x.room.data||{},rv=rivalOf(x);
