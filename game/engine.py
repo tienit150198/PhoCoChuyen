@@ -1111,7 +1111,13 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         need(p.get("confirm")=="BAT DAU LAI","Cần xác nhận trước khi xóa nghề.")
         ar.record([s["careers"][career]],"reset",career)  # the previous record stays in the archive
         pm.forget(s,career)  # 🎖️ the place's steps start again too
-        s["careers"][career]=initial_career(career);return s,dict(message="Đã bắt đầu lại riêng nghề này.")
+        old=s["careers"][career]["money"]
+        s["careers"][career]=fresh=initial_career(career)
+        if (s.get("journey") or {}).get("story"):
+            # The workplace fund carries over (never above the 320 a new place starts with): a reset is no way to
+            # refill it after drawing it into the wallet (09/10: reset → start → jr_withdraw 240, again and again).
+            fresh["money"]=fresh["day_start_money"]=fresh["ops"]["finance"]["opening_balance"]=min(fresh["money"],old)
+        return s,dict(message="Đã bắt đầu lại riêng nghề này.")
     else:raise GameError("Thao tác không được hỗ trợ.","unknown_action")
     life.update_patience(c,action,p,prior_mistakes)
     if career=="mother_baby":gifts.after_action(s,c,action)

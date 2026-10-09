@@ -1,6 +1,7 @@
 # Chưa phát hành — exploit-fixes (không có Có gì mới, deploy lặng lẽ)
 
 💾 Nhập bản lưu (game/save_guard.py): save của tài khoản không nhập được nữa (chỉ admin khôi phục); khách chỉ nhập bản xuất nguyên vẹn của máy chủ (chữ ký HMAC `sign` trong tệp, khóa SAVE_SIGN_SECRET, thiếu thì lấy từ DATABASE_URL), không cũ hơn và không nhiều xu hơn save hiện tại. Mỗi lần nhập một dòng `[import]` trong log. Nút Nhập bản lưu tắt cho tài khoản.
+🔁 Bắt đầu lại nghề (hành trình): quỹ nơi làm việc giữ nguyên, tối đa 320 xu (không còn nạp lại 320 để rút tiếp). reset_career được tính vào KPI kinh tế.
 
 # v1.9.37 — 2026-10-09
 
