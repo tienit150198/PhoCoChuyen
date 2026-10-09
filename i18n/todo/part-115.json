@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Bỏ bài thi đang làm?",
+  "en": ""
+ },
+ {
   "vi": "Các câu đã chọn trong lần thi này sẽ bị bỏ. Bài đã học và chứng nhận vẫn giữ nguyên.",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "đã gieo hạt",
-  "en": ""
- },
- {
-  "vi": "đã tưới, cây lên rồi",
   "en": ""
  }
 ]

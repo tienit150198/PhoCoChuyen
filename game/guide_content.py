@@ -6126,6 +6126,7 @@ GROUPS = [{'id': 'start',
                          '🙅 Không nộp thì bị trấn lột một phần tiền trong ví (không đụng tới tài khoản ngân hàng), rồi mới được vô.',
                          '🚨 Ai ăn đậm ở chợ đen thì dễ bị công an để ý. Bị bắt thì mất tiền cược ván đó, nộp phạt từ ví và vào '
                          'trại tạm giữ 3 ngày.',
+                         '💰 Đặt cược càng lớn (từ 50.000 xu) thì càng dễ bị công an để ý, kể cả khi chưa ăn đậm.',
                          '🎮 Ô ăn quan, ném vòng không cần đặt cược; bầu cua, chiếu trong, lô tô, vé cào, phóng dao, đua chó '
                          'thì có.',
                          '🐕 Đua chó: chọn một chú chó, đặt cược rồi ngồi xem và [[Cổ vũ]]. Chó của bạn về nhất thì ăn đúng số '

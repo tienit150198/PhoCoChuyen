@@ -97,7 +97,7 @@ class BlackMarketBase(unittest.TestCase):
         return s
 
     def caught(self, on=True):
-        p = mock.patch.object(bm, '_arrest_roll', lambda: on)
+        p = mock.patch.object(bm, '_arrest_roll', lambda *a: on)
         p.start()
         self.addCleanup(p.stop)
 
@@ -289,7 +289,7 @@ class Arrest(BlackMarketBase):
                 s = story(20000)
                 s, _ = self.act(s, 'fair_bm_pay')   # 10,000 left
                 self.rich(s)
-                with mock.patch.object(bm, '_arrest_roll', lambda: True):
+                with mock.patch.object(bm, '_arrest_roll', lambda *a: True):
                     s, r = self.act(s, name, **p)
                 a = r['fair']['arrest']
                 fine = (10000 - stake) * 30 // 100
@@ -406,13 +406,109 @@ class Arrest(BlackMarketBase):
         self.assertEqual(seen, ['c', 'c', 'c'])   # three dice and nothing else: as before the Chợ đen
 
 
+class BigStake(BlackMarketBase):
+    """Owner 09/10: "cược mà ai cược nhiều, từ 50k trở lên thì tăng tỷ lệ bị bắt, mỗi 10k tăng 1% (từ mốc 50k)": a round
+    staking 50,000 xu or more can be raided whatever today's net, 1 % more each further 10,000, the 300k rule's 5 % on
+    top, never above 70 %."""
+
+    POOR, RICH = {'net': 0}, {'net': bm.ARREST_FROM + 1}
+
+    def test_the_constants(self):
+        self.assertEqual((bm.BIG_STAKE_FROM, bm.BIG_STAKE_STEP, bm.BIG_STAKE_PCT, bm.ARREST_CAP),
+                         (50000, 10000, 1, 0.70))
+
+    def test_the_boundaries(self):
+        for stake, poor, rich in ((10, 0, .05), (49999, 0, .05), (50000, .01, .06), (59999, .01, .06),
+                                  (60000, .02, .07), (69999, .02, .07), (100000, .06, .11), (300000, .26, .31),
+                                  (649999, .60, .65), (650000, .61, .66), (689999, .64, .69), (690000, .65, .70), (739999, .69, .70), (740000, .70, .70),
+                                  (750000, .70, .70), (10**6, .70, .70)):
+            with self.subTest(stake=stake):
+                self.assertAlmostEqual(bm.arrest_p(self.POOR, stake), poor, places=9)
+                self.assertAlmostEqual(bm.arrest_p(self.RICH, stake), rich, places=9)
+                self.assertLessEqual(bm.arrest_p(self.RICH, stake), bm.ARREST_CAP)
+        self.assertEqual(bm.arrest_p(self.POOR, 49999), 0)   # below 50k and not rich: nobody rolls
+        self.assertEqual(bm.arrest_p({'net': bm.ARREST_FROM}, 49999), 0)   # 300k is not "above 300k"
+        for odd in (None, '60000', 60000.0, True):
+            self.assertEqual(bm.arrest_p(self.POOR, odd), 0)
+
+    def test_the_roll_takes_the_rate(self):
+        class R:
+            def __init__(self, x):
+                self.x = x
+
+            def random(self):
+                return self.x
+        with mock.patch.object(bm, '_rng', R(.6999)):
+            self.assertTrue(bm._arrest_roll(bm.arrest_p(self.POOR, 10**6)))
+        with mock.patch.object(bm, '_rng', R(.70)):
+            self.assertFalse(bm._arrest_roll(bm.arrest_p(self.RICH, 10**6)))
+        with mock.patch.object(bm, '_rng', R(.0199)):
+            self.assertTrue(bm._arrest_roll(bm.arrest_p(self.POOR, 60000)))
+        with mock.patch.object(bm, '_rng', R(.02)):
+            self.assertFalse(bm._arrest_roll(bm.arrest_p(self.POOR, 60000)))
+
+    def rolls(self, stake, net=0, on=False):
+        """One chiếu trong round of `stake` with today's net at `net`: the rates the police rolled with."""
+        s = story(3 * 10**6)
+        s, _ = self.act(s, 'fair_bm_pay')
+        self.rich(s, net)
+        seen = []
+
+        def roll(p=bm.BM_ARREST_P):
+            seen.append(p)
+            return on
+        with mock.patch.object(bm, '_arrest_roll', roll):
+            s, r = self.act(s, 'fair_xd', side='chan', stake=stake)
+        return s, r, seen
+
+    def test_below_50k_and_not_rich_nobody_rolls(self):
+        for stake in (10, 49999):
+            with self.subTest(stake=stake):
+                s, r, seen = self.rolls(stake)
+                self.assertEqual(seen, [])
+                self.assertNotIn('arrest', r['fair'])
+
+    def test_big_stakes_are_rolled_whatever_the_net(self):
+        for stake, net, p in ((50000, 0, .01), (59999, -10**5, .01), (60000, 0, .02), (60000, bm.ARREST_FROM + 1, .07),
+                              (100000, bm.ARREST_FROM, .06), (10**6, 0, .70), (10**6, bm.ARREST_FROM + 1, .70)):
+            with self.subTest(stake=stake, net=net):
+                s, r, seen = self.rolls(stake, net)
+                self.assertEqual(len(seen), 1)
+                self.assertAlmostEqual(seen[0], p, places=9)
+                self.assertNotIn('arrest', r['fair'])
+                self.assertIn('coins', r['fair'])   # not caught: the round played
+        s, r, seen = self.rolls(49999, bm.ARREST_FROM + 1)   # small stakes: the 300k rule alone, as before
+        self.assertAlmostEqual(seen[0], bm.BM_ARREST_P, places=9)
+
+    def test_caught_with_a_big_stake_and_a_small_net(self):
+        s, r, seen = self.rolls(80000, 0, on=True)
+        a = r['fair']['arrest']
+        w = 3 * 10**6 - bm.BM_FEE - 80000
+        self.assertEqual((a['stake'], a['fine']), (80000, w * 30 // 100))   # (the cell: tests/test_jail.py)
+        self.assertEqual(s['journey']['wallet'], w - w * 30 // 100)
+        self.assertNotIn('%', r['message'])
+        validate_state(s)
+        f = json.dumps(fh.public(s), ensure_ascii=False)
+        for k in ('big_stake', 'arrest_p', '0.7', '0.04'):
+            self.assertNotIn(k, f)
+
+    def test_the_dog_race_too(self):
+        s = story(3 * 10**6)
+        s, _ = self.act(s, 'fair_bm_pay')
+        seen = []
+        n = fh.dog.race(self.clock.t + 6)
+        with mock.patch.object(bm, '_arrest_roll', lambda p=bm.BM_ARREST_P: seen.append(p) or False):
+            s, r = self.act(s, 'fair_dg', race=n, lane=0, stake=200000)
+        self.assertAlmostEqual(seen[0], .16, places=9)
+
+
 class NothingShown(BlackMarketBase):
     def test_no_rate_reaches_the_client(self):
         s = story()
         f = fh.public(s)
         self.assertEqual(set(f['bm']), {'fee', 'st', 'inside', 'ban', 'who'})
         blob = json.dumps(f, ensure_ascii=False)
-        for k in ('arrest_p', 'rob_pct', 'fine_pct', 'BM_ARREST', 'arrest_from', '300000', '300.000'):
+        for k in ('arrest_p', 'big_stake', 'arrest_cap', 'rob_pct', 'fine_pct', 'BM_ARREST', 'arrest_from', '300000', '300.000'):
             self.assertNotIn(k, blob)
         s, _ = self.act(s, 'fair_bm_pay')
         self.caught(True)

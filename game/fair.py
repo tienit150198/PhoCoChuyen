@@ -1238,11 +1238,15 @@ class _Caught(Exception):
 
 def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
     """🕶️ Every paid round of the Chợ đen, once its checks passed and before anything is drawn: the police may raid it
-    (fair_bm.BM_ARREST_P), only while the player's Chợ đen net today is above fair_bm.ARREST_FROM (bm.at_risk: owner
-    09/10 "ae ăn tiền nhiều (hơn 300k) thì mới bị bắt"). Caught: the stake is gone, the fine, and the trại tạm giữ for
-    fair_bm.JAIL_DAYS jail days (game/jail.py); the round has no outcome (raises _Caught, which apply() turns into the
-    command's result)."""
-    if not bm._gate_on() or not bm.at_risk(f) or not bm._arrest_roll():
+    (fair_bm.arrest_p: fair_bm.BM_ARREST_P while the player's Chợ đen net today is above fair_bm.ARREST_FROM, owner
+    09/10 "ae ăn tiền nhiều (hơn 300k) thì mới bị bắt"; plus a share for a stake of fair_bm.BIG_STAKE_FROM xu or more,
+    whatever the net, owner 09/10 "từ 50k trở lên thì tăng tỷ lệ bị bắt"; capped at fair_bm.ARREST_CAP). Caught: the
+    stake is gone, the fine, and the trại tạm giữ for fair_bm.JAIL_DAYS jail days (game/jail.py); the round has no
+    outcome (raises _Caught, which apply() turns into the command's result)."""
+    if not bm._gate_on():
+        return
+    p = bm.arrest_p(f, stake)
+    if p <= 0 or not bm._arrest_roll(p):
         return
     if game in f['stats']:   # the round counts on the stall's Sổ ví row ("· N ván")
         f['stats'][game] = min(10**9, f['stats'][game] + 1)

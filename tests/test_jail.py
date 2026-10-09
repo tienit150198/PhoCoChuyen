@@ -113,12 +113,12 @@ class ChoDenArrest(BlackMarketBase):
 
     def test_above_300k_the_roll_decides(self):
         s = self.paid(bm.ARREST_FROM + 1)
-        with mock.patch.object(bm, '_arrest_roll', lambda: False):
+        with mock.patch.object(bm, '_arrest_roll', lambda *a: False):
             s, r = self.act(s, 'fair_bc', bets={'cua': 100})
         self.assertIn('dice', r['fair'])
         s['journey']['fair']['net'] = bm.ARREST_FROM + 1
         w = s['journey']['wallet'] - 100
-        with mock.patch.object(bm, '_arrest_roll', lambda: True):
+        with mock.patch.object(bm, '_arrest_roll', lambda *a: True):
             s, r = self.act(s, 'fair_bc', bets={'cua': 100})
         a = r['fair']['arrest']
         self.assertEqual((a['stake'], a['fine'], a['jail']), (100, w * 30 // 100, 3))
@@ -133,6 +133,20 @@ class ChoDenArrest(BlackMarketBase):
         self.assertEqual(e.exception.code, 'jailed')
         self.assertIn('trại tạm giữ', str(e.exception))
 
+    def test_a_big_stake_can_be_jailed_without_the_300k(self):
+        """Owner 09/10 "từ 50k trở lên thì tăng tỷ lệ bị bắt": a 50,000 xu round is rolled for (1 %) at a net of 0, and
+        the arrest is the same: stake, fine, the cell."""
+        s = self.paid(0)
+        seen = []
+        with mock.patch.object(bm, '_arrest_roll', lambda p=bm.BM_ARREST_P: seen.append(p) or True):
+            s, r = self.act(s, 'fair_bc', bets={'cua': 50000})
+        self.assertAlmostEqual(seen[0], .01, places=9)
+        w = 90000 - 50000
+        a = r['fair']['arrest']
+        self.assertEqual((a['stake'], a['fine'], a['jail']), (50000, w * 30 // 100, 3))
+        self.assertEqual(s['journey']['jail']['why'], 'bm')
+        validate_state(s)
+
     def test_the_rate_is_low_and_its_own(self):
         self.assertEqual((bm.BM_ARREST_P, bm.ARREST_FROM, bm.JAIL_DAYS), (0.05, 300000, 3))
         hits = 0
@@ -142,7 +156,7 @@ class ChoDenArrest(BlackMarketBase):
 
     def test_kill_switch_keeps_the_fine_but_no_cell(self):
         s = self.paid(bm.ARREST_FROM + 5)
-        with mock.patch.dict(os.environ, {'MNL_JAIL_OFF': '1'}), mock.patch.object(bm, '_arrest_roll', lambda: True):
+        with mock.patch.dict(os.environ, {'MNL_JAIL_OFF': '1'}), mock.patch.object(bm, '_arrest_roll', lambda *a: True):
             s, r = self.act(s, 'fair_bc', bets={'cua': 100})
         self.assertEqual(r['fair']['arrest']['jail'], 0)
         self.assertNotIn('jail', s['journey'])

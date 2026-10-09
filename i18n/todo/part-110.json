@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Tiền phòng trừ từ ví",
+  "en": ""
+ },
+ {
   "vi": "👂 Nghe khách gọi món",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Chưa có sổ kỳ hạn",
-  "en": ""
- },
- {
-  "vi": "Mở thẻ ở mục Thẻ",
   "en": ""
  }
 ]

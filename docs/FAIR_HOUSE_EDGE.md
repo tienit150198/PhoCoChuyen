@@ -80,18 +80,36 @@ everywhere (ids, keys, endpoints and the edition `fair20261009` are unchanged). 
   wallet; `fair_bm_refuse` lets the đàn em take `ROB_PCT` (30%) of the wallet, cash only, never the bank account, 0 when
   the wallet is empty. Either way the player is in until the stretch ends. Until then every `fair_*` command except
   finishing what was begun (`fair.LATE`), the gift and repaying a loan is refused (`fair_bm_gate`).
-- **Arrests on every paid round** (bầu cua, chiếu trong, a lô tô purchase, a vé cào, a phóng dao run's stake):
-  `BM_ARREST_P` (20%) per round, drawn by `fair_bm._arrest_roll` from its own random source before the round is drawn.
-  Caught: the stake is lost with no outcome, a fine of `FINE_PCT` (30%) of the wallet left after the stake; the
-  player stays in (the ban until the day's end was dropped, owner 09/10 "bỏ cấm hội chợ luôn nhe"). The wallet never goes below zero. The arrest replaces neither the chiếu
-  trong's own rare dẹp chiếu (`RAID_PCT`) nor the police's wealth check and asset check; those still run on rounds the
-  police did not catch.
-- **What it does to the house edge:** every return in the table above is now multiplied by 0.8 (one round in five
-  returns nothing), before the fine: at most 0.8 × 97.4% ≈ **77.9%** of the stake for the best stall with the 🍀 gate
-  open, and 76.3% (bầu cua) to 76.9% (chiếu trong) without it. The fine (30% of the wallet on an arrest) makes the
-  expected loss of a round grow with the wallet, not the stake: on average 6% of the wallet left per paid round, on
-  top. The day's bảo kê (10,000 xu, or 30% of the wallet) comes before any round. Phóng dao's stake is lost to an
-  arrest too, so its daily cap now applies to a game that also loses one run in five outright.
+- **Arrests on the paid rounds** (bầu cua, chiếu trong, a lô tô purchase, a vé cào, a đua chó bet; not Phóng dao or
+  ô ăn quan, see below), rate `fair_bm.arrest_p(f, stake)`, drawn by `fair_bm._arrest_roll(p)` from its own random
+  source before the round is drawn; at 0 nothing is rolled:
+  - `BM_ARREST_P` (5%) while today's Chợ đen net is above `ARREST_FROM` (300,000 xu; owner 09/10 "ae ăn tiền nhiều
+    (hơn 300k) thì mới bị bắt", "tỷ lệ bị bắt thấp tý");
+  - **plus big stakes, whatever the net** (owner 09/10 "cược mà ai cược nhiều, từ 50k trở lên thì tăng tỷ lệ bị bắt,
+    mỗi 10k tăng 1% (từ mốc 50k)"): a round staking `BIG_STAKE_FROM` (50,000) xu or more adds
+    `BIG_STAKE_PCT × (1 + (stake − 50,000) // BIG_STAKE_STEP)` %, with `BIG_STAKE_PCT` 1 and `BIG_STAKE_STEP` 10,000:
+
+    | stake | net ≤ 300k | net > 300k |
+    |---|---|---|
+    | < 50,000 | 0 (not rolled) | 5% |
+    | 50,000 – 59,999 | 1% | 6% |
+    | 60,000 – 69,999 | 2% | 7% |
+    | 100,000 | 6% | 11% |
+    | 690,000 | 65% | 70% (cap) |
+    | ≥ 740,000 | 70% (cap) | 70% (cap) |
+
+  - never above `ARREST_CAP` (70%) a round. The stake is the round's whole stake (bầu cua: all faces; lô tô: tờ and
+    side bets; vé cào: its price).
+
+  Caught: the stake is lost with no outcome, a fine of `FINE_PCT` (30%) of the wallet left after the stake, and
+  `JAIL_DAYS` (3) days in the trại tạm giữ (`game/jail.py`). The wallet never goes below zero. The arrest replaces
+  neither the chiếu trong's own rare dẹp chiếu (`RAID_PCT`) nor the police's wealth check and asset check; those still
+  run on rounds the police did not catch. Nothing new is saved for the rate (it is computed from the stake and
+  `journey['fair'].net`), so the save stays what 1.9.30/1.9.31 validate.
+- **What it does to the house edge:** a round rolled at rate p returns (1 − p) × the table's return, before the fine:
+  above 300k, at most 0.95 × 97.4% ≈ **92.5%** for the best stall with the 🍀 gate open; a 100,000 xu round below 300k
+  at most 0.94 × the table; a capped round 0.3 × the table. The fine (30% of the wallet on an arrest) makes the
+  expected loss of a raided round grow with the wallet, not the stake. The day's bảo kê comes before any round.
 - **Nothing reaches the client** about the rate or the percentages: `fair.bm` carries only the fee, today's standing
   (`st`, `inside`, `ban`) and the đàn em's name. Receipts give xu (the robbery, the fine).
 - **Save:** `journey['fair_bm']` `{d, s}` (the Vietnam date; `paid`, `robbed` or `ban`) sits beside `journey['fair']`,
