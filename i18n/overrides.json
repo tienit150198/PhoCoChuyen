@@ -1,5 +1,13 @@
 {
   "strings": {
+  "Tự chia": "Auto",
+  "không bán": "not stocked",
+  "📦 Nhập hàng": "📦 Restocking",
+  "Nhà cung cấp: giờ giao & điều kiện": "Suppliers: delivery times & terms",
+  "Đặt hàng thế nào": "How ordering works",
+  "Nhập số lượng, ít nhất 1.": "Enter a quantity, at least 1.",
+  "📦 Thùng hàng": "📦 Crates",
+  "Size “Tự chia”: chia ưu tiên các size bán chạy. Chọn một size thì toàn bộ số hàng thực nhận vào size đó.": "Size “Auto”: split with the best-selling sizes first. Pick one size and everything actually delivered goes into that size.",
   "Giáo viên lên lớp: cấp 2 nhận lớp 2A, rồi 3A, 4A, 5A. Bài khó hơn, lương cao hơn, phụ huynh cũng khó hơn 😅": "Teachers move up: level 2 takes class 2A, then 3A, 4A, 5A. Harder lessons, better pay, harder parents 😅",
   "Shop quần áo đi nước ngoài: đứng tiệm ở Seoul, Osaka, Lyon, Melbourne. Khách nói size kiểu Hàn, Nhật, Âu, Úc và đòi đủ thứ!": "Clothing shop abroad: Seoul, Osaka, Lyon, Melbourne. Customers use KR, JP, EU, AU sizes and want everything!",
   "Ở chung nhà bạn hay ở trọ đều tự mua, bày, bán đồ của mình như nhà mình. Ở chung: Mời bạn → 🪴 Dọn đồ sang ở.": "Sharing or renting, buy, place and sell your own decor like at home. Sharing: Invite → 🪴 Move your things in.",
@@ -23064,6 +23072,10 @@
   "Đã trả lời câu này rồi.": "Already answered this one."
   },
   "patterns": {
+  "Trả tiền từ $1 khi đặt. Gộp nhiều món một đơn (tối đa $2 món): một lần ship. Hàng vào kệ sau khi bạn mở thùng và đếm đúng.": "Paid from $1 when you order. Put several goods in one order (up to $2): one delivery fee. Goods go on the shelf once you open the crate and count them right.",
+  "Đơn $1 đã có $2: hết chỗ trên kệ.": "The $1 order already has $2: no shelf room left.",
+  "🛒 Đơn đủ $1 món": "🛒 Order full ($1 goods)",
+  "Lấy $1": "Take $1",
   "🏡 Có cả đồ $1 bày ($2 món). Món của ai người nấy dời.": "🏡 $1's things are here too ($2 pieces). Each of you moves your own.",
   "🚨 Công an ập vào bàn Ông Hai! Thắng liền mấy ván là có chuyện: tịch thu $1 xu tiền thắng, nộp phạt $2 xu.": "🚨 The police raided Ông Hai's table! Winning game after game gets noticed: $1 xu of winnings confiscated and a $2 xu fine.",
   "🚨 Công an ập vào bàn Ông Hai! Thắng liền mấy ván là có chuyện: tịch thu $1 xu tiền thắng.": "🚨 The police raided Ông Hai's table! Winning game after game gets noticed: $1 xu of winnings confiscated.",

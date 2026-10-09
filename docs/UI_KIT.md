@@ -388,3 +388,13 @@ classic layout keep their text.
   behind the quầy's own "?" (44 px on the phone).
 - Already within the cap at 1.9.8 and unchanged: stall's first screen (24), wardrobe (25), spending (16), karaoke (15),
   HUD (16–20).
+
+## Stock room order card (kho-compact, 10/10)
+
+Owner: "cái này dài quá, dài dòng quá" (the "Nhập …" card every career with a stock room shares, `views.js orderCard`).
+113–131 → 26–31 words (`python scripts/check_word_caps.py --kho`: cap 35 on 360 × 780 and 390 × 844, title not cut, no
+sideways scroll). Kept on the card: the total, the wholesale tag, a ship tag only when it costs, when it arrives, the
+shelf `📦 n/cap` and the "Đầy kệ · N" chip, and the reason it cannot go (a red line, plus the dimmed "Đặt ngay" with a
+"Lấy N" fix). Behind the card's `helpBtn`: each supplier's hours, notes and terms, how ordering works, what "Tự chia"
+does. Suppliers are one-line radio rows with curated short names (`SUP_SHORT`; the full name is the label). On a phone
+the stock sheet's money chip shows the fund only (`.inv-sheet`): orders never touch the wallet.

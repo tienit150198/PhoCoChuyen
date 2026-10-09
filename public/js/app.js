@@ -642,7 +642,7 @@ function renderSheet(preserve=true){
     case'help':dialog.classList.add('medium');html=helpView();break;
     case'status':dialog.classList.add('narrow','status-sheet');html=statusView();break;
     case'money':dialog.classList.add('medium','v4-sheet','wl-sheet');html=wealthView();break;
-    case'inventory':dialog.classList.add('medium','v4-sheet');html=inventoryView(env());break;
+    case'inventory':dialog.classList.add('medium','v4-sheet','inv-sheet');html=inventoryView(env());break;
     case'feedback':dialog.classList.add('v4-sheet','wide');html=feedbackView(env());break;
     case'situation':dialog.classList.add('medium','v4-sheet');html=moreView(()=>situationView(env()));break;
     case'incident':dialog.classList.add('medium','v4-sheet','inc-sheet');html=lazyView(L.inc,m=>m.incidentView(env()));break;
