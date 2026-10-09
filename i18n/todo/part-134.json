@@ -1,5 +1,35 @@
 [
  {
+  "vi": "🏡 Nhà $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏡 $1 lời mời đến nhà · Xem",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "mời bạn $1. Mở Bạn bè & nhà để trả lời.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "giá $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "bán lại $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "sơn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "biển “$1”",
   "en": "",
   "pattern": true
@@ -1655,6 +1685,56 @@
   "pattern": true
  },
  {
+  "vi": "Sẽ lắp: $1. Tổng $2 từ ví, thiếu mới lấy tài khoản.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đủ tiền cho $1/$2 món, lắp món rẻ trước: $3. Tổng $4. Món còn lại để lần sau.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lắp tất cả $1 món?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lắp $1 món?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛠️ Đã lắp đủ $1 món.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛠️ Đã lắp $1/$2 món.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thuê $1 người?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lương mỗi $1: $2. Trả dần từ két/vốn quầy khi làm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👥 $1 người đã nhận việc.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👥 $1/$2 người đã nhận việc.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Sang nhượng $1?",
   "en": "",
   "pattern": true
@@ -1805,6 +1885,11 @@
   "pattern": true
  },
  {
+  "vi": "👥 Thuê tất cả · $1 người",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Kho nguyên liệu · $1 phần",
   "en": "",
   "pattern": true
@@ -1826,6 +1911,21 @@
  },
  {
   "vi": "Hôm nay $1 · $2 · khoảng $3 khách $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛠️ Lắp tất cả · tổng $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛠️ Lắp $1/$2 món",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cần $1 cho món rẻ nhất",
   "en": "",
   "pattern": true
  },
@@ -2146,106 +2246,6 @@
  },
  {
   "vi": "🏅 Bộ góc xinh · $1/",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xem thêm $1 bộ góc",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💞 Có cả đồ $1 bày ($2 món). Món của ai người nấy dời.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎒 $1 món",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📌 Đã đặt $1 lần",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "☕ $1 lượt khách ghé",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tình trạng nhà · $1%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nâng cấp $1/2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Có $1 (tài khoản + ví). Mỗi nâng cấp: ấm cúng +$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "khoảng $1% cơ hội mỗi ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả trước $1 ngày sống của người thuê. Hết kỳ cần gia hạn; giá đã ký không tự tăng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chủ nhà: $1 · $2/$3 ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả tới ngày sống $1 của bạn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đang thuê · $1/kỳ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đang thuê$1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "hết hạn ngày $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "tới ngày $1 của người thuê",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã đăng $1/kỳ; đang chờ người chơi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang tìm NPC · $1/kỳ. $2% cơ hội tìm khách mỗi ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giá cho thuê / $1 ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tham khảo $1/kỳ · định giá cao sẽ khó tìm khách hơn.",
   "en": "",
   "pattern": true
  }

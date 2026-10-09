@@ -1385,6 +1385,26 @@
   "pattern": true
  },
  {
+  "vi": "Đã cho $1 người vào ca.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã cho $1/$2 người vào ca.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã cho $1 người nghỉ ca. Lương đã phát sinh vẫn được giữ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã cho $1/$2 người nghỉ ca.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Giá từ $1 đến $2 xu (75%–125% giá gốc).",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "🗺️ Lộ trình · $1 điểm · tiếp theo $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "ô$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đường chính tới $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "món mở ở cấp $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quán báo xong lúc $1, hẹn khách trước $2",
   "en": "",
   "pattern": true
  }

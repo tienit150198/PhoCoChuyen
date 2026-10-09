@@ -188,3 +188,4 @@
 .qy-why{margin:var(--sp-1) 0 0}
 html[data-clean] .qy-help{width:44px;height:44px}
 .qy-off-tag{display:flex;align-items:center;flex-wrap:wrap;gap:6px;color:var(--warn)!important;font-weight:700}.qy-off-tag .btn{min-height:32px;padding:4px 12px}.qy-off-menu{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.qy-all{margin:0 0 10px}.qy-all>.btn{min-height:44px;white-space:normal}

@@ -32,6 +32,7 @@ import {workplaceAway,awayFresh,awayToast} from './away-report.js';   // B4: �
 import {keepRow} from './keep-ui.js';   // 🔒 Giữ lại cho ca của tôi (B4 part 2)
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox} from './qty-input.js';
+import {shiftAllPlan,runAll} from './v4/select-all.js';   // "Tất cả" (F#290): Sổ tiệm › Cả đội vào ca
 import {accountSubmit,accountNudge,accountAction,accountBoot} from './v4/account.js';
 import {registerWorker,listenWorker} from './v4/push.js';
 import {homeView as homeV4,futureView as futureV4,journeyBoot,journeyAction,journeySubmit} from './v4/home.js';
@@ -1515,6 +1516,12 @@ async function handleAction(action,data,el){
       const r=await cmd(data.op,payload);
       if(r){if(data.op==='ops_hire')ui.staffId=payload.candidate;if(data.op==='ops_case_demo')ui.opsTab='security';if(data.op==='ops_incident_demo')ui.opsTab='staff';renderSheet();}
       break;
+    }
+    case'opsShiftAll':{   // "Tất cả" (F#290): the same ops_shift as each card's button, one person at a time (select-all.js)
+      const on=data.on==='1',team=shiftAllPlan(room()?.ops?.staff,on);if(!team.length)break;
+      const r=await runAll(team,e=>cmd('ops_shift',{employee:e.id,on},{quiet:true}));
+      if(r.done)toast(on?(r.done===r.total?`Đã cho ${r.done} người vào ca.`:`Đã cho ${r.done}/${r.total} người vào ca.`):(r.done===r.total?`Đã cho ${r.done} người nghỉ ca. Lương đã phát sinh vẫn được giữ.`:`Đã cho ${r.done}/${r.total} người nghỉ ca.`));
+      renderSheet();break;
     }
     case'prepare':case'prices':case'workshop':case'passport':case'town':openSheet(action);break;
     case'expDo':{const p=JSON.parse(data.payload||'{}');
