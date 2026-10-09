@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Tiền đã vào két. Bạn có thể mở lượt phục vụ tiếp khi sẵn sàng.",
+  "en": ""
+ },
+ {
   "vi": "Khách chấm",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Đặt đơn",
-  "en": ""
- },
- {
-  "vi": "Trả lời chưa gửi được, khách vừa nhắn.",
   "en": ""
  }
 ]

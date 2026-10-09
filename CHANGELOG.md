@@ -1,3 +1,9 @@
+# v1.9.29 — 2026-10-09
+
+🚨 Chợ đen bỏ cấm (chủ game 09/10: "bỏ cấm hội chợ luôn nhe"): bị bắt vẫn mất tiền cược và nộp phạt nhưng chơi tiếp được; 'ban' đã lưu hôm nay (1.9.28) đọc như đã nộp bảo kê.
+📦 Hủy đơn hàng đang giao hoàn 80% (làm tròn xuống) tiền hàng + ship (chủ game 09/10).
+🧰 Bước 1 nâng kho (#277): save chấp nhận tồn tới 80/món (hoặc sức chứa cao hơn của nghề), dòng đơn/nháp tới 80, hàng hủy lớn hơn; giới hạn thật vẫn như cũ (bước 2 ở bản sau). Không đổi CSDL; save đọc được trên 1.9.28.
+
 # v1.9.28 — 2026-10-09
 
 🚔 Báo công an đánh giá NPC vô lý (chủ game 09/10): game/review_police.py, lệnh fb_cop; sao hiện thấp hơn điểm thật (fb.fair) thì công an xác minh (ẩn tỷ lệ), sửa sao và đôi khi bồi thường ≤100 xu; 3 lần/ngày, 1 lần/đánh giá, 3 ngày gần nhất.

@@ -1,5 +1,13 @@
 {
   "strings": {
+  "Chợ đen: bị công an bắt chỉ mất tiền cược và nộp phạt, không còn bị đuổi về nữa": "Black market: getting caught only costs the stake and a fine, you are no longer sent home",
+  "Công an đi rồi. Chơi tiếp thì cẩn thận nha.": "The police are gone. Careful if you play on.",
+  "Dạ, em biết rồi": "Yes, got it",
+  "🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược và nộp phạt.": "🚨 Police often raid the black market. Get caught and you lose the stake and pay a fine.",
+  "🚨 Chợ đen hay bị công an ập vào: bị bắt thì mất tiền cược và nộp phạt.": "🚨 Police often raid the black market: get caught and you lose the stake and pay a fine.",
+  "🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược ván đó và nộp phạt từ ví, rồi chơi tiếp được.": "🚨 Police often raid the black market. Get caught and you lose the stake of that round and pay a fine from your wallet, then you can play on.",
+  ".$1 Giờ ra vô chợ đen thoải mái.": ".$1 Come and go in the black market as you like.",
+  "Tất cả đứng im! Đánh bạc ăn tiền hả? Tiền cược tịch thu, nộp phạt đi!": "Freeze! Gambling for money? Your stake is seized, now pay the fine!",
   "Vào chợ đen phải nộp tiền bảo kê. Nộp rồi thì cứ ra vô thoải mái.": "You pay protection to get into the black market. Once paid, come and go as you like.",
   "Nộp đủ rồi, cứ ra vô thoải mái.": "All paid, come and go as you like.",
   "Đã nộp bảo kê $1 xu. Cứ ra vô chợ đen thoải mái.": "Paid $1 xu protection. Come and go in the black market as you like.",

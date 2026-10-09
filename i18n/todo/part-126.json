@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Hôm trước $1 làm cho mình ưng lắm đó.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Mình giới thiệu thêm mấy người bạn tới chỗ $1 rồi đó.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "🔥 Thưởng ngày x$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔥 Hôm nay $1 lời x$2: thưởng thêm $3 xu vào ví.",
   "en": "",
   "pattern": true
  }
