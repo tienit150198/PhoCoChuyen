@@ -152,7 +152,7 @@ def on_load(store, token: str, state: dict | None) -> bool:
     marks = ','.join('?' * len(kinds))
     with store.connect() as db:
         rows = [dict(r) for r in db.execute(f"SELECT id,kind,amount,data FROM live_effects WHERE sid=? AND status='pending' "
-                                            f'AND kind IN ({marks}) AND at<=? ORDER BY at,id LIMIT {BATCH}', (sid, *kinds, now()))]
+                                            f"AND kind IN ({marks}) AND (kind<>'mishap' OR at<=?) ORDER BY at,id LIMIT {BATCH}", (sid, *kinds, now()))]
     if not rows or not ((state or {}).get('journey') or {}).get('story'):
         return False
     changed = False
