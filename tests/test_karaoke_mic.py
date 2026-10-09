@@ -181,10 +181,10 @@ class BirthYear(Base):
             self.assertIsNone(km.birth_of(self.store, self.store.key(a)))
             km.forget(self.store, b)
             self.assertIsNone(km.birth_of(self.store, self.store.key(b)))
-        with patch.dict(os.environ, LIVE_KARAOKE_MIC='0'):
+        with patch.dict(os.environ, LIVE_KARAOKE_MIC='0', LIVE_DOG_BARK='0'):
             with self.assertRaises(kg.KaraError) as e:
                 km.birth(self.store, a, dict(year=2000))
-            self.assertEqual(e.exception.status, 404)     # switched off: as if the route did not exist
+            self.assertEqual(e.exception.status, 404)     # switched off: as if the route did not exist (🐕 kéo co off too)
 
     def test_no_save_key(self):
         a = self.user('hoa')

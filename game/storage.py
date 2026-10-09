@@ -659,6 +659,10 @@ class Store:
                     from . import auction
                     if action=='live_fx':auction.fx_commit(db,sid,result)  # 🔨 a refund / a won item: its row flips here, once
                     else:auction.command_commit(db,sid,action,before,current,result)  # 🔨 the bid: lot row lock, escrow, refunds
+                if action.startswith('jr_bark_') or action=='live_fx':
+                    from . import dog_bark
+                    if action=='live_fx':dog_bark.fx_commit(db,sid,result)  # 🐕 a pot / a stake back: its row flips here, once
+                    else:dog_bark.command_commit(db,sid,action,result)  # 🐕 the ticket row (age, caps, cool-down), or a rollback
             if action == 'settings':
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,current)
@@ -740,6 +744,10 @@ class Store:
                 from . import auction
                 if action=='live_fx':auction.fx_commit(db,sid,result)  # 🔨 a refund / a won item: its row flips here, once
                 else:auction.command_commit(db,sid,action,before,raw,result)  # 🔨 the bid: lot row lock, escrow, refunds
+            if action.startswith('jr_bark_') or action=='live_fx':
+                from . import dog_bark
+                if action=='live_fx':dog_bark.fx_commit(db,sid,result)  # 🐕 a pot / a stake back: its row flips here, once
+                else:dog_bark.command_commit(db,sid,action,result)  # 🐕 the ticket row (age, caps, cool-down), or a rollback
             if action == 'settings':
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,raw)
@@ -780,6 +788,8 @@ class Store:
             lux.forget(db,sid)  # 🎆 plaques and sponsorships stay, as anonymous
             from . import auction
             auction.forget(db,sid)  # 🔨 past wins stay in the history under the name shown then
+            from . import dog_bark
+            dog_bark.forget(db,sid)  # 🐕 their tug-of-war tickets (the escrow went with the save)
             db.execute("DELETE FROM archive WHERE sid=?",(sid,))
             db.execute("DELETE FROM receipts WHERE sid=?",(sid,))
             lb.forget(db,[sid])

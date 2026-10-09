@@ -897,6 +897,9 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(lx.action(s, name, p))
     elif name.startswith('jr_auc_'):
         result.update(auc.action(s, name, p))
+    elif name.startswith('jr_bark_'):   # 🐕 Kéo co chó sủa: the stake into escrow (game/dog_bark.py)
+        from . import dog_bark
+        result.update(dog_bark.action(s, name, p))
     elif name.startswith('jr_spend_'):
         result.update(sp.action(s, name, p))
     elif name.startswith('jr_pet_'):

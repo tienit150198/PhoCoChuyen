@@ -27,3 +27,5 @@ os.environ.setdefault("MNL_JAIL_OFF", "1")
 # 💾 Nhập bản lưu (game/save_guard.py): many tests build a save by importing a crafted one; tests/test_save_guard.py
 # turns the guard on where it checks it.
 os.environ.setdefault("MNL_IMPORT_GUARD_OFF", "1")
+# 🐕 Kéo co chó sủa (game/dog_bark.py, live/dog_bark.py): on in the tests (production: the env decides, off by default).
+os.environ.setdefault("LIVE_DOG_BARK", "1")

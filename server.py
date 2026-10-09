@@ -83,6 +83,7 @@ from game import wedding_live
 from game import live_chat
 from game import karaoke  # 🎤 Phòng hát (game/karaoke.py; the rooms: live/karaoke.py)
 from game import karaoke_mic  # 🎙️ its live mic (LIVE_KARAOKE_MIC): the birth year, the headers below
+from game import dog_bark  # 🐕 Kéo co chó sủa (LIVE_DOG_BARK): the microphone header below, its page, the stale tickets
 from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
@@ -120,6 +121,9 @@ def mic_headers(csp:str,permissions:str,on:bool,url:str)->tuple:
         csp=csp.replace("connect-src 'self'",f"connect-src 'self' {'wss' if tls else 'ws'}://{u.netloc} {'https' if tls else 'http'}://{u.netloc}",1)
     return csp,permissions.replace("microphone=()","microphone=(self)",1)
 CSP,PERMISSIONS=mic_headers(CSP,PERMISSIONS,karaoke_mic.enabled(),os.environ.get("LIVEKIT_URL",""))
+# 🐕 Kéo co chó sủa (LIVE_DOG_BARK=1): the page reads its own microphone's loudness (Web Audio, no audio leaves the page):
+# the microphone for this site only, nothing else changes. Off: the header exactly as before.
+if dog_bark.enabled():PERMISSIONS=PERMISSIONS.replace("microphone=()","microphone=(self)",1)
 STATIC_TYPES={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",
               ".json":"application/json; charset=utf-8",".svg":"image/svg+xml",".png":"image/png",".webp":"image/webp",
               ".ico":"image/x-icon",".webmanifest":"application/manifest+json",".woff2":"font/woff2",".mp3":"audio/mpeg",".txt":"text/plain; charset=utf-8",
@@ -747,6 +751,10 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("auc:"+(token or self.client_ip()),90):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 from game import auction
                 self.json(200,auction.view(self.server.store,token));return
+            if route=="/api/dogbark":  # 🐕 Kéo co chó sủa (game/dog_bark.py view): can I play, today's caps, my open ticket, Vua sủa
+                token=self.token()
+                if not self.server.rate_limit("bark:"+(token or self.client_ip()),60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,dog_bark.view(self.server.store,token));return
             if route=="/api/admin/auction":  # 🔨 the operator's list of lots and free catalogue items; admin only
                 try:token,_,_,_=self.guarded(light=True)
                 except PermissionError as e:self.error(403,str(e),"forbidden");return
@@ -975,6 +983,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/command":
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 if str(data.get("action",""))[:5]=="fair_" and not self.server.rate_limit("fair:"+token,int(os.environ.get("FAIR_PER_MINUTE","40"))):self.error(429,"Từ từ thôi, chợ đen còn dài mà!","rate_limited");return  # 🏮 game/fair.py
+                if str(data.get("action",""))[:8]=="jr_bark_" and not self.server.rate_limit("bark-join:"+token,int(os.environ.get("BARK_JOINS_PER_MINUTE","10"))):self.error(429,"Từ từ thôi, mỗi phút đặt vài kèo thôi nha!","rate_limited");return  # 🐕 game/dog_bark.py
                 if str(data.get("action",""))[:7]=="jr_auc_" and not self.server.rate_limit("aucbid:"+token,int(os.environ.get("AUCTION_BIDS_PER_MINUTE","12"))):self.error(429,"Từ từ thôi, mỗi phút trả giá vài lần thôi nhé!","rate_limited");return  # 🔨 game/auction.py
                 if str(data.get("action",""))[:8]=="jr_deco_" and not self.server.rate_limit("deco:"+token,int(os.environ.get("DECO_PER_MINUTE","150"))):self.error(429,"Từ từ thôi, bày trí chậm lại chút nhé!","rate_limited");return  # 🪴 game/deco.py: drags send one move each
                 if length>256*1024 and data.get("action")!="import_save":
@@ -1036,7 +1045,7 @@ class Handler(BaseHTTPRequestHandler):
                     if not self.server.rate_limit("kara-song:"+token,20,3600):self.error(429,"Kiểm tra nhiều bài quá, nghỉ chút nhé.","rate_limited");return
                     self.json(200,karaoke.check_song(self.server.store,data.get("url"),lambda:self.server.rate_limit("kara-oembed",60,60)));return
                 if what=="birth":  # 🎙️ the account's birth year, once, the first time the live mic is turned on (game/karaoke_mic.py)
-                    if not karaoke_mic.enabled():self.error(404,"Không có API này.");return
+                    if not (karaoke_mic.enabled() or dog_bark.enabled()):self.error(404,"Không có API này.");return  # 🐕 kéo co asks the same year
                     if not self.server.rate_limit("kara-birth:"+token,10,3600):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                     self.json(200,karaoke_mic.birth(self.server.store,token,data));return
                 if what not in ("queue","tip"):self.error(404,"Không có API này.");return
@@ -1063,6 +1072,9 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/leaderboard/visibility":  # "Hiện tên tôi trên bảng xếp hạng"
                 if not self.server.rate_limit("lb-vis:"+token,20):self.error(429,"Chờ một chút nhé.","rate_limited");return
                 self.json(200,leaderboard.set_visible(self.server.store,token,state,data.get("visible")));return
+            if route=="/api/dogbark/cancel":  # 🐕 give a waiting tug-of-war ticket back (the page, when its live socket is down)
+                if not self.server.rate_limit("bark-cancel:"+token,20):self.error(429,"Chờ một chút nhé.","rate_limited");return
+                self.json(200,dog_bark.cancel(self.server.store,token,data));return
             if route=="/api/live/effects":  # 🧧 pay the live service's rewards now (the stroll asks right after a red envelope; same as on load)
                 if not self.server.rate_limit("livefx:"+token,30):self.error(429,"Chờ một chút nhé.","rate_limited");return
                 paid=live_effects.on_load(self.server.store,token,state)
@@ -1615,6 +1627,7 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         lb_titles.run_refresh(store)  # 🏅 Danh hiệu tuần: once a Vietnam day (and the week's freeze on Monday 00:00)
         fair_board.run_settle(store)  # 🏆 Bảng vàng hội chợ: the titles, once, after the fair closes
         auction.run_housekeeping(store)  # 🔨 Nhà đấu giá: today's lots, then settle the ones that ended (row locks: exactly once)
+        dog_bark.run_housekeeping(store)  # 🐕 Kéo co chó sủa: stale tickets back to their wallets (guarded: exactly once)
 
 
 def tune_gc()->None:

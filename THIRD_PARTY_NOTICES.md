@@ -1,6 +1,6 @@
 # Dependencies and asset provenance
 
-Runtime application code uses the Python standard library and browser APIs; no third-party JavaScript bundle, CDN or image stock pack is shipped. The bundled third-party assets are the font, the CC0 background music and the CC0 bell sound listed below.
+Runtime application code uses the Python standard library and browser APIs; no third-party JavaScript bundle, CDN or image stock pack is shipped. The bundled third-party assets are the font, the CC0 background music and the CC0 recorded sounds listed below.
 
 Room geometry, character drawing, item icons and most UI sound effects are authored procedurally in `public/js/`. The visual style is an original 2D vector interpretation; no logo or branded illustration from the user reference images is embedded in the runtime.
 
@@ -64,6 +64,11 @@ The pagoda ("Vào chùa") plays six recordings in `public/audio/chua/`, each **C
 - *singing monk in buddhism temple in vietnam* by Ottak16 (`su-tung-kinh.mp3`)
 
 `public/music/CREDITS.md` (section "The pagoda") has the source links and how each file was cut.
+
+🐕 Kéo co chó sủa plays seven short dog barks in `public/audio/bark/`, each **CC0 1.0** on Freesound.org: *Dog Bark.wav*
+by 8bitmyketison, *Single Dog Bark (King Charles Spaniel)* by JovianSounds, *Single bark of a dog* by exe2be, *single bark -
+small to medium dog* by haulaway, *Single Dog Bark* by kwahmah_02, *rose_bark.wav* by nfrae and *Tiny Dog Bark* by qubodup.
+`public/audio/bark/CREDITS.md` has the source links and how each file was cut.
 
 ## YouTube (🎤 Phòng hát)
 

@@ -60,7 +60,8 @@ def birth(store, token: str, d: dict) -> dict:
     """POST /api/karaoke/birth {year}: the account's birth year, once. Returns {ok, year, mic, fixed}: `mic` says
     whether this account may sing live; `fixed` that a year was already stored (it does not change)."""
     from .karaoke import _who
-    need(enabled(), 'Mic trực tiếp chưa mở.', 'off', 404)
+    from .dog_bark import enabled as bark_on   # 🐕 Kéo co chó sủa asks the same year (the same table, the same rule)
+    need(enabled() or bark_on(), 'Mic trực tiếp chưa mở.', 'off', 404)
     sid, _ = _who(store, token)
     year = d.get('year')
     need(type(year) is int and YEAR_MIN <= year <= vn_year(), 'Chọn năm sinh của bạn nhé.', 'bad_year')

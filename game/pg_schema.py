@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 33  # 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 34  # 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -566,6 +566,17 @@ CREATE TABLE IF NOT EXISTS wed_invite_seen (
 -- written in the save's own transaction, so the live server knows "free" from a primary-key lookup (no save read).
 -- Not in the save: an older build ignores it (a stale row is checked against the save and deleted).
 CREATE TABLE IF NOT EXISTS jail_marks (sid {T} PRIMARY KEY, until double precision NOT NULL);
+-- 🐕 Kéo co chó sủa (game/dog_bark.py, live/dog_bark.py; SCHEMA_VERSION 34): one row per stake put in escrow (`id` the
+-- ticket, the payout row is live_effects 'bark:<id>'). status wait -> play | dog -> done, or -> back (refunded); every
+-- move is a guarded UPDATE from the status before, so a ticket is settled once. No save key: an older build never sees it.
+CREATE TABLE IF NOT EXISTS bark_tickets (
+  id {T} PRIMARY KEY, sid {T} NOT NULL, stake bigint NOT NULL CHECK(stake > 0), status {T} NOT NULL DEFAULT 'wait',
+  created double precision NOT NULL, started double precision, ended double precision, match {T} NOT NULL DEFAULT '',
+  opp {T} NOT NULL DEFAULT '', result {T} NOT NULL DEFAULT '', pay bigint NOT NULL DEFAULT 0, dog {T} NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS bark_tickets_sid ON bark_tickets(sid, created);
+CREATE INDEX IF NOT EXISTS bark_tickets_open ON bark_tickets(status, created) WHERE status IN ('wait', 'play', 'dog');
+CREATE INDEX IF NOT EXISTS bark_tickets_week ON bark_tickets(ended) WHERE status = 'done';
 """
 
 INDEX_DDL = """
@@ -864,6 +875,7 @@ TABLES = [
     dict(name='wed_invites', identity='id'),
     dict(name='wed_invite_seen', identity=None),
     dict(name='jail_marks', identity=None),
+    dict(name='bark_tickets', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 

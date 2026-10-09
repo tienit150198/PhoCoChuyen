@@ -13,6 +13,7 @@
 | `LIVEKIT_URL` | unset | what browsers open for the mic (the SFU's signal URL, `wss://phocochuyen.io.vn/sfu`; deploy/livekit) |
 | `LIVEKIT_API_URL` | http://127.0.0.1:7880 | the SFU's server API (create / delete rooms, remove a listener) |
 | `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | unset | the SFU's key pair (`/etc/livekit/keys.yaml`); tokens are signed with it |
+| `LIVE_DOG_BARK` | 0 | 🐕 Kéo co chó sủa: the lobby, matching and the tug-of-war (live/dog_bark.py, welcome flag `bark`). The game server reads the same switch (game/dog_bark.py: the command, the page's microphone header) |
 | `LIVE_ORIGINS` | the local game | allowed `Origin` values, comma-separated (`https://phocochuyen.io.vn,...`) |
 | `LIVE_TRUST_PROXY` | 0 | 1 behind nginx: the client IP is `X-Real-IP` (set by nginx), else the socket peer |
 | `LIVE_MAX_CONN` | 5000 | open sockets at most; more are refused (503) |
@@ -57,6 +58,7 @@ class Config:
     town: bool = False               # 🏝️ shared 2.5D town map (live/town.py); explicitly LIVE_TOWN=1
     kara: bool = False               # 🎤 Phòng hát (live/karaoke.py); explicitly LIVE_KARAOKE=1, off by default
     kara_mic: bool = False           # 🎙️ its live mic (LIVE_KARAOKE_MIC=1 and the SFU configured); off by default
+    bark: bool = False               # 🐕 Kéo co chó sủa (live/dog_bark.py); LIVE_DOG_BARK=1, off by default
     sfu_url: str = ''                # LIVEKIT_URL: the signal URL browsers open
     sfu_api: str = 'http://127.0.0.1:7880'
     sfu_key: str = ''
@@ -88,10 +90,10 @@ class Config:
 
     def flags(self) -> dict:
         return dict(chat=self.chat, street=self.street, dating=self.dating, wedding=self.wedding, fair=self.fair, home=self.home, visits=self.visits, town=self.town, kara=self.kara,
-                    kara_mic=self.kara and self.kara_mic, **self.flags_extra)
+                    kara_mic=self.kara and self.kara_mic, bark=self.bark, **self.flags_extra)
 
     def any_on(self) -> bool:
-        return self.chat or self.street or self.dating or self.wedding or self.fair or self.home or self.visits or self.town or self.kara
+        return self.chat or self.street or self.dating or self.wedding or self.fair or self.home or self.visits or self.town or self.kara or self.bark
 
 
 def admin_users(raw: str | None = None) -> frozenset:
@@ -115,7 +117,7 @@ def from_env(argv=None) -> Config:
                  fair=_flag('LIVE_FAIR', '1' if street else '0'),
                  home=_flag('LIVE_HOME', '1' if street else '0'),
                  visits=_flag('LIVE_VISITS', '1' if street else '0'),
-                 town=_flag('LIVE_TOWN'), kara=_flag('LIVE_KARAOKE'),
+                 town=_flag('LIVE_TOWN'), kara=_flag('LIVE_KARAOKE'), bark=_flag('LIVE_DOG_BARK'),
                  trust_proxy=_flag('LIVE_TRUST_PROXY'), max_conn=_int('LIVE_MAX_CONN', 5000), per_player=_int('LIVE_PER_PLAYER', 5),
                  per_ip=_int('LIVE_PER_IP', 40), pool_max=max(1, _int('LIVE_PG_POOL', 8)), db_url=url, new_secs=float(_int('LIVE_NEW_SECS', 600)),
                  handshakes_per_ip=_int('LIVE_HANDSHAKES_PER_IP', 60), admins=admin_users(), db_schema=args.schema)
