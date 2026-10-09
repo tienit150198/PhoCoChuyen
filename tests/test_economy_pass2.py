@@ -47,10 +47,12 @@ class PaidStakeLimits(FairBase):
         legacy = kn.schedule(run['sd'], run['lv'], run['hot'])
         soft = kn.SOFT_DIFFICULTY   # levels started since 06/10 use the softer board (WP6), not 135%
         self.assertEqual(board['need'], (legacy['need']*soft+99)//100)
-        self.assertEqual(board['segs'], [[ms,speed*(soft/100),ramp] for ms,speed,ramp in legacy['segs']])
+        # since 09/10 the twist board (faster, telegraphed turn-backs), with the soft board's knives
+        self.assertEqual(board['segs'], kn.twist_schedule(run['sd'], run['lv'], run['hot'])['segs'])
         self.assertFalse(board.get('chance', False))
         self.assertEqual(state['journey'].pop('fair_kn_skill')['difficulty'], 135)
-        state['journey'].pop('fair_kn_soft', None)   # a level started by an older worker carries neither marker
+        state['journey'].pop('fair_kn_soft', None)   # a level started by an older worker carries no marker
+        state['journey'].pop(fh.KN_TWIST_KEY, None)
         state = copy.deepcopy(state)
         self.assertEqual(public_state(state)['fair']['knife']['run']['board']['need'], legacy['need'])
         self.dice(Dice(draws=[.1]))

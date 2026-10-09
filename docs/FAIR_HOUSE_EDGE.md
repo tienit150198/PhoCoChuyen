@@ -153,14 +153,15 @@ of six dogs from `RACERS` (the pet system's breeds and coats) and gives each one
 ## Not a wager
 
 - **🗡️ Phóng dao is a skill game.** Owner 05/10: no chance draw ever turns a clean board into a loss. Its return
-  depends on the thumb. On today's boards the simulated players get back:
+  depends on the thumb. The simulated players (`scripts/sim_fair_knife.py --table 2000 30000`: each sees the board
+  with a reaction delay and aim noise; a run stops at a level drawn from the range) get back, per xu staked:
 
-  | player | stops after 2–5 levels | stops after 5–8 levels |
-  |---|---|---|
-  | weak | .28 | .06 |
-  | average | .57 | .30 |
-  | good | 1.80 | 3.06 |
-  | script (clears every level) | 11.8 (all ten levels) | 11.8 |
+  | player | 1.9.31 soft board, 2–5 / 5–8 levels | 1.9.32 +5 % ramp | **twist board (now)** | twist: clears level 1 / 3 / 5 / 10 |
+  |---|---|---|---|---|
+  | weak | .18 / .03 | .15 / .01 | **.11 / .01** | 49 / 36 / 28 / 24 % |
+  | average | .38 / .14 | .32 / .07 | **.22 / .02** | 63 / 45 / 34 / 28 % |
+  | good | 1.67 / 2.58 | 1.56 / 1.94 | **1.39 / 1.34** | 96 / 87 / 77 / 54 % |
+  | script (clears every level) | 11.8 | 11.8 | **11.8** | 100 % |
 
   Owner 09/10 ("phóng dao, ô ăn quan thì chơi hệ kĩ năng", "giới hạn 1k/1 lần", "bắt nếu cảm thấy có cheat hoặc
   spam", "phóng dao mà level cao thì tăng tốc lên nhé, mỗi level tăng 5% tốc độ"):
@@ -174,12 +175,32 @@ of six dogs from `RACERS` (the pet system's breeds and coats) and gives each one
     left (0 for days played on this build), and a run's prize waiting as a choice is clamped by it when paid there.
   - **Stake at most 1,000 xu a run** (`fair_knife.STAKES` = 2 … 1,000; a larger stake is refused). The most a run can
     pay is the top of the ladder at 1,000 xu: 10,000 xu, plus the 🔥 x2 levels' steps.
-  - **Faster each level:** a level started on this build turns `speed_up(n)` = 1 + 5% × (n − 1) faster (level 1 as
-    before, level 10 × 1.45), on top of the soft board's 115%. The server puts the speeds in the level's `segs`, which
-    the client draws as sent, so both sides turn the same board. Marked per level by `journey['fair_kn_ramp']`
-    `{at, seed}` (optional; an older server ignores it). A level started before keeps its board and settles; after a
-    rollback, a ramped level in play is judged and shown by the older server on its unramped board (level 1 is the same
-    either way). Today's heat (`heat()`, from the day's Chợ đen net) still applies as before.
+  - **Faster each level, and it turns back and forth** (owner 09/10: "mỗi level tăng 5% tốc độ", then "phóng dao mình
+    tăng tốc lên, hoặc là xoay tới lui gì đó cho khó là được chứ vẫn cho người ta chơi kĩ năng"). A level started on
+    this build plays the **twist board** (`fair_knife.twist_schedule()`, the `TWIST_*` constants), all of it drawn from
+    the run's seed, the level and today's heat — no draw at the throw, no cap, no forced miss:
+    - it cruises `twist_up(n)` = 1 + `TWIST_PCT` (10 %) × (n − 1) faster than the soft board (× 1 at level 1, × 1.9 at
+      level 10); the owner's 5 % a level is the floor, held by the cruising speed and the level's average speed (tested);
+    - it **turns back**, more often each level (over the 60 s level clock ~4 turns on average at level 1, ~11 at level 10; ~1 and ~3.6 in its first 20 s), but
+      never as a jerk: it first brakes visibly to a near stop (`TWIST_BRAKE` 380–520 ms at level 1, 240–340 ms at the
+      top), rests (`TWIST_DWELL` 100–240 ms), then speeds up the other way (`TWIST_ACCEL` 220–320 ms) to a burst a
+      little faster than before (× 1 … 1.25, up to 1.55 at the top);
+    - it speeds up and slows down smoothly within the level (ramps of 400–650 ms), the swings wider each level
+      (× 0.65–1.35 the cruise at level 1, 0.6–1.7 at the top).
+
+    The server sends the level's `segs` ([ms, deg/s, ramp ms]: the speed moves linearly over the ramp); the client
+    (`public/js/v4/fair-knife.js` `angleAt`/`judge`) turns and judges exactly that, checked against the server on random
+    ramp and twist boards and taps by the node parity test (`tests/test_fair_knife_nocap.py` `ClientParity`). The
+    simulated good thumb still clears levels 1–3 96 / 92 / 87 % of the time.
+
+    **Which board a level is judged on:** each level carries a marker `{at, seed}`. A twist level sets
+    `journey['fair_kn_twist']` (and the 1.9.31 `fair_kn_soft`, so an older server judges it on its soft board); a
+    1.9.32 level has `journey['fair_kn_ramp']` (`speed_up(n)` = 1 + 5 % × (n − 1) on the soft board); neither means a
+    1.9.31 soft level. This build judges each level on the board it was started on, so a level in play across the
+    deploy settles on what the player was shown. Both markers are optional keys the older validators keep unread.
+    **Rollback note:** after a rollback to 1.9.31 (e4ea7eba) or 1.9.30 (65dafa3b), a twist level in play is shown and
+    judged by that server on its own soft board (no turn-backs), so it settles sanely, only easier. Today's heat
+    (`heat()`, from the day's Chợ đen net) still applies as before.
   - **Out of the arrest roll.** Phóng dao and ô ăn quan are never rolled for by the Chợ đen's arrest
     (`fair_bm.arrest_p`, neither the 5% nor the big stakes), and the wealth/asset checks run only after the paid
     luck rounds as before. The police come only for a **script or a burst** (`game/fair_watch.py`, conservative: a
@@ -204,11 +225,11 @@ of six dogs from `RACERS` (the pet system's breeds and coats) and gives each one
     ("Công an thấy tay ném nhanh bất thường, nghi gian lận!"); no threshold reaches the client. The counters live in
     `journey['fair_watch']` (optional; windows `[at, n]`, an older server's journey keeps it unread). Off with the
     Chợ đen's kill switch (`MNL_BM_OFF`).
-  - **Worst case for the house:** no daily bound any more. A good thumb gets back ~1.8–3× its stakes (the table above;
-    the faster levels lower that), so at 1,000 xu a run a strong player can win several thousand xu an hour from the
+  - **Worst case for the house:** no daily bound any more. A good thumb gets back ~1.3–1.4× its stakes on the twist board
+    (the table above), so at 1,000 xu a run a strong player can win several thousand xu an hour from the
     stall. A script that paces its throws like a person is not caught (by design); it can clear every level (11.8×).
-- **Ô ăn quan and ném vòng take no stake.** They pay out but cost nothing. A won ô ăn quan game pays at most 1,000 xu
-  (`OAQ_PRIZE`: Bé Bi 50, Ông Hai 1,000; owner 09/10 "giới hạn 1k/1 lần", was 10,000).
+- **Ô ăn quan and ném vòng take no stake.** They pay out but cost nothing. A won ô ăn quan game pays `OAQ_PRIZE`:
+  Bé Bi 50, Ông Hai 10,000 xu (owner 09/10: "thắng ông Hai vẫn là 10k/1 lần"; the "1k/1 lần" limit is Phóng dao's stake).
 
 ## Save compatibility
 

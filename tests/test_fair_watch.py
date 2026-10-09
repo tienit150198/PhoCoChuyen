@@ -2,7 +2,7 @@
 "bắt nếu cảm thấy có cheat hoặc spam"): honest play, however quick, randomized many times, is never caught; a script
 that throws its knives before they happen, a burst of knife runs, ô ăn quan moves no hand makes and a burst of ô ăn
 quan games are, with the Chợ đen's arrest (the stake if any, the fine, the trại tạm giữ); nothing about the thresholds
-reaches the client; and the saves (a ramped level in play, the watch's counters, a caught player) validate and
+reaches the client; and the saves (a twist level in play, the watch's counters, a caught player) validate and
 settle on the releases this one may be rolled back to (1.9.31, 1.9.30), and a run begun there settles here."""
 import json
 import os
@@ -301,9 +301,8 @@ class OAQ(WatchBase):
         a = self.assert_caught(s, r, 'bày bàn liên tục bất thường')
         self.assertEqual((a['stake'], a['fine']), (0, 1500))
 
-    def test_a_won_game_pays_at_most_1000(self):
-        self.assertLessEqual(max(fh.OAQ_PRIZE.values()), 1000)
-        self.assertEqual(public_state(story(0))['fair']['rules']['oaq_prize'], {'de': 50, 'kho': 1000})
+    def test_a_won_game_pays_the_old_prizes(self):   # owner 09/10: "thắng ông Hai vẫn là 10k/1 lần"
+        self.assertEqual(public_state(story(0))['fair']['rules']['oaq_prize'], {'de': 50, 'kho': 10000})
 
 
 class NothingShown(WatchBase):
@@ -324,8 +323,8 @@ class NothingShown(WatchBase):
 
 
 class OldServer(DogOldServer):
-    """Saves this build writes (a ramped level in play, the watch's counters, a player caught by it) validate and
-    load on 1.9.31 and 1.9.30; a ramped level in play there settles on the board that server shows; a run begun on
+    """Saves this build writes (a twist level in play, the watch's counters, a player caught by it) validate and
+    load on 1.9.31 and 1.9.30; a twist level in play there settles on the board that server shows; a run begun on
     1.9.31 settles here on the board it was shown."""
 
     test_saves_after_a_race_validate_on_older_releases = None   # (the dog race's own, in tests/test_fair_dog.py)
@@ -369,7 +368,7 @@ class OldServer(DogOldServer):
         s, _ = apply_action(s, None, 'fair_oaq_move', {'cell': c, 'dir': d})
         playing = json.loads(json.dumps(s))
         self.assertEqual(set(playing['journey'][w.KEY]), {'ks', 'os', 'ol'})
-        self.assertIn(fh.KN_RAMP_KEY, playing['journey'])
+        self.assertIn(fh.KN_TWIST_KEY, playing['journey'])
         caught = json.loads(json.dumps(s))
         run = caught['journey']['fair_kn']['run']
         caught['journey'][w.KEY]['ka'] = [run['at'], w.KN_AHEAD_FLAGS - 1]
@@ -381,7 +380,7 @@ class OldServer(DogOldServer):
         self.assertIn('jail', caught['journey'])
         return playing, caught
 
-    def test_saves_validate_and_a_ramped_level_settles_on_older_releases(self):
+    def test_saves_validate_and_a_twist_level_settles_on_older_releases(self):
         playing, caught = self.new_saves()
         prog = r'''
 import json, sys
@@ -432,7 +431,7 @@ print(json.dumps([s, r['fair']['run']['board']['segs']]))
         rev, name = OLD[0]
         s, segs = self.run_old(rev, prog, [s, self.t])   # (1.9.31: 1.9.30 has the same knife rules)
         j = s['journey']
-        self.assertNotIn(fh.KN_RAMP_KEY, j)
+        self.assertNotIn(fh.KN_TWIST_KEY, j)
         validate_state(s)
         run = j['fair_kn']['run']
         sc = fh._kn_sched(run, j)
@@ -445,7 +444,7 @@ print(json.dumps([s, r['fair']['run']['board']['segs']]))
         self.t += 2
         s, r = apply_action(s, None, 'fair_kn_next', {})                 # the next level is this build's: faster
         run = s['journey']['fair_kn']['run']
-        self.assertEqual(s['journey'][fh.KN_RAMP_KEY], {'at': run['at'], 'seed': run['sd']})
+        self.assertEqual(s['journey'][fh.KN_TWIST_KEY], {'at': run['at'], 'seed': run['sd']})
         self.t += 1
         sc = fh._kn_sched(run, s['journey'])
         taps = safe_taps(sc, sc['need'])

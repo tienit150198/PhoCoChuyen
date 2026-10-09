@@ -967,7 +967,7 @@ class OAQStall(FairBase):
         return s, r
 
     def test_a_win_pays_the_level_prize(self):
-        for level, prize in (('de', 50), ('kho', 1000)):
+        for level, prize in (('de', 50), ('kho', 10000)):
             with self.subTest(level=level):
                 s = story(0)
                 with mock.patch.object(oaq, 'ai_move', weakest):
@@ -999,8 +999,8 @@ class OAQStall(FairBase):
                 s, _ = self.act(s, 'fair_oaq_start', lv='kho')
                 s, r = self.finish(s)
                 prizes.append(r['fair']['end']['prize'])
-        self.assertEqual(prizes, [1000, 1000, 1000, 1000])   # owner 09/10: at most 1.000 xu a game
-        self.assertEqual(s['journey']['wallet'], 4000)
+        self.assertEqual(prizes, [10000, 10000, 10000, 10000])
+        self.assertEqual(s['journey']['wallet'], 40000)
         self.assertLessEqual(s['journey']['fair']['earn']['oaq'], fh.EARN_DAY['oaq'])   # the counter stays in the older bound
         self.assertTrue(public_state(s)['fair']['earn']['oaq']['nocap'])
         self.clock.t = at(2026, 10, 11, 9)                              # a new day

@@ -6128,7 +6128,7 @@ GROUPS = [{'id': 'start',
                          'trại tạm giữ 3 ngày.',
                          '💰 Đặt cược càng lớn (từ 50.000 xu) thì càng dễ bị công an để ý, kể cả khi chưa ăn đậm.',
                          '🎮 Ném vòng, ô ăn quan không cần đặt cược. Phóng dao, ô ăn quan là trò kỹ năng: chơi thật thì không lo '
-                         'công an. Phóng dao cược tối đa 1.000 xu một lượt, mỗi màn dao quay nhanh hơn.',
+                         'công an. Phóng dao cược tối đa 1.000 xu; dao quay nhanh dần, có màn còn quay tới lui.',
                          '🐕 Đua chó: chọn một chú chó, đặt cược rồi ngồi xem và [[Cổ vũ]]. Chó của bạn về nhất thì ăn đúng số '
                          'lần ghi cạnh tên nó. Cổ vũ chỉ cho vui, không đổi được kết quả.',
                          '🌙 Chợ đen mở suốt, không có ngày tàn. Bảng vàng cộng dồn; 00:00 thứ Hai hằng tuần, Top 1 nhận 👑 Vua '

@@ -139,7 +139,7 @@ class BeBiUnchanged(unittest.TestCase):
 
 class Prize(unittest.TestCase):
     def test_prize_and_opening(self):
-        self.assertEqual(fh.OAQ_PRIZE, dict(de=50, kho=1000))   # owner 09/10 "giới hạn 1k/1 lần"
+        self.assertEqual(fh.OAQ_PRIZE, dict(de=50, kho=10000))   # owner 09/10: "thắng ông Hai vẫn là 10k/1 lần"
         self.assertEqual(fh.OAQ_FIRST, ('kho',))
         self.assertEqual(oaq.LEVELS, ('de', 'kho'))
 

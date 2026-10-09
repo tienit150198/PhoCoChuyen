@@ -18,8 +18,8 @@ a Kinh called late, the police (raids, the asset check). The lô tô side bets a
 calls are the same for everyone, so a player who saw them could pick the likely chẵn/lẻ or cột). 🍀 Lộc trời cho stays
 (LOC_P lower: on a busy server it still comes about once an hour). Phóng dao is a skill game (owner 05/10: no chance
 draw ever turns a clean board into a loss): its return depends on the thumb, see game/fair_knife.py; no daily cap
-since 09/10 (owner: "phóng dao, ô ăn quan thì chơi hệ kĩ năng"), stakes up to 1,000 xu a run, each level RAMP_PCT %
-faster. Phóng dao and ô ăn quan are out of the arrest roll: the police come only for a script or a burst
+since 09/10 (owner: "phóng dao, ô ăn quan thì chơi hệ kĩ năng"), stakes up to 1,000 xu a run, the twist board
+(faster each level, telegraphed turn-backs: knife.twist_schedule). Phóng dao and ô ăn quan are out of the arrest roll: the police come only for a script or a burst
 (game/fair_watch.py). Ô ăn quan and ném vòng take no stake. No rate reaches the client (owner 08/10). Bầu cua and chiếu trong take any stake (STAKE_MAX).
 
 Earlier rules (owner 07/10: "giảm tỷ lệ thắng của mọi người ở hội chợ, nếu ai spam 1 trò thì tỷ lệ thắng sẽ giảm dần
@@ -208,7 +208,7 @@ COT_PAY_HALF = 17              # cột may mắn: stake × 17 / 2 back
 LOTO_OPT = ('mode', 'tier', 'n', 'sb', 'fk')   # newer round keys (absent in older saves: thuong, vua, 1 tờ)
 LTD_KEYS = ('r', 'w', 'fk', 'npc')            # today's lô tô: rounds, Kinh won, Kinh hụt, the neighbours' wins
 # 🪨 Ô ăn quan and 💍 Ném vòng: no stake, a little xu for playing well, capped a day per game
-OAQ_PRIZE = dict(de=50, kho=1000)   # owner 09/10 "giới hạn 1k/1 lần": a won game pays at most 1.000 xu (06/10: 10.000)
+OAQ_PRIZE = dict(de=50, kho=10000)   # owner 06/10: Ông Hai pays 10.000 xu a won game (was 500); 09/10 "thắng ông Hai vẫn là 10k/1 lần"
 OAQ_PEOPLE = dict(de=('Bé Bi', '👦'), kho=('Ông Hai', '👴'))
 OAQ_FIRST = ('kho',)   # owner 06/10 "không ai thắng được": Ông Hai opens (the first move is a big edge), Bé Bi lets you
 OAQ_STAGES = ('play', 'won', 'lost', 'draw')
@@ -227,7 +227,8 @@ POINTS_DAY = 30
 # 🗡️ Phóng dao is a skill game (owner 09/10 "phóng dao, ô ăn quan thì chơi hệ kĩ năng"): no daily cap any more (08/10
 # to 09/10 its wins over the stakes were capped at 300 xu a day in the legacy 'dpts'; that counter is left alone now,
 # within the bound older validators check), stakes up to 1.000 xu (knife.STAKES, owner 09/10 "giới hạn 1k/1 lần").
-KN_RAMP_KEY = 'fair_kn_ramp'   # journey['fair_kn_ramp'] {at, seed}: the level turns knife.speed_up() faster (09/10)
+KN_RAMP_KEY = 'fair_kn_ramp'   # journey['fair_kn_ramp'] {at, seed}: a 1.9.32 level, knife.speed_up() faster (09/10)
+KN_TWIST_KEY = 'fair_kn_twist'   # journey['fair_kn_twist'] {at, seed}: a level on knife.twist_schedule() (09/10, later)
 MONEY = ('won', 'lost', 'earned')   # the stats that make the board's score, reset with each edition
 
 TITLE_ROWS = (   # journey.TITLES (secret, granted here only)
@@ -817,7 +818,9 @@ def _kn(j: dict) -> dict:
 
 
 def _kn_sched(run: dict, j: dict | None = None) -> dict:
-    if _kn_soft(j or {}, run):
+    if _kn_soft(j or {}, run):   # this build's levels carry the soft mark too (the board an older server judges)
+        if _kn_mark(j or {}, KN_TWIST_KEY, run):   # owner 09/10 "tăng tốc lên, hoặc là xoay tới lui gì đó cho khó"
+            return knife.twist_schedule(run['sd'], run['lv'], run['hot'])
         return knife.schedule(run['sd'], run['lv'], run['hot'], knife.SOFT_DIFFICULTY, _kn_ramp(j or {}, run))
     rules = _kn_skill(j or {}, run) or _chance(j or {}, 'kn', run) or {}
     return knife.schedule(run['sd'], run['lv'], run['hot'], rules.get('difficulty', 100))
@@ -829,10 +832,15 @@ def _kn_soft(j: dict, run: dict) -> bool:
     return isinstance(soft, dict) and soft.get('at') == run['at'] and soft.get('seed') == run['sd']
 
 
-def _kn_ramp(j: dict, run: dict) -> bool:
-    """A level started since 09/10: it turns knife.speed_up(level) faster. A level started before keeps its board."""
-    r = j.get(KN_RAMP_KEY)
+def _kn_mark(j: dict, key: str, run: dict) -> bool:
+    """journey[key] = {at, seed} marks the run's level as started on that board."""
+    r = j.get(key)
     return isinstance(r, dict) and r.get('at') == run['at'] and r.get('seed') == run['sd']
+
+
+def _kn_ramp(j: dict, run: dict) -> bool:
+    """A level started on 1.9.32: it turns knife.speed_up(level) faster. A level started before keeps its board."""
+    return _kn_mark(j, KN_RAMP_KEY, run)
 
 
 def _kn_skill(j: dict, run: dict) -> dict | None:
@@ -844,7 +852,9 @@ def _set_kn_skill(j: dict, run: dict) -> None:
     # fair_kn_skill keeps the value an older worker validates (rolling deploy); fair_kn_soft marks this level softer.
     j['fair_kn_skill'] = dict(at=run['at'], seed=run['sd'], difficulty=knife.SKILL_DIFFICULTY)
     j['fair_kn_soft'] = dict(at=run['at'], seed=run['sd'])
-    j[KN_RAMP_KEY] = dict(at=run['at'], seed=run['sd'])   # (an older server ignores it: the board it judges turns slower)
+    # The twist board (an older server ignores the mark and judges the board it shows, the soft one; 1.9.32 too)
+    j[KN_TWIST_KEY] = dict(at=run['at'], seed=run['sd'])
+    j.pop(KN_RAMP_KEY, None)
     j.get('fair_chance', {}).pop('kn', None)
 
 
@@ -1811,12 +1821,13 @@ def validate(j: dict) -> None:
         integer(rules['at'], 0, 10**14)
         integer(rules['seed'], 0, 2**31)
         integer(rules['difficulty'], 135, 135)
-    if KN_RAMP_KEY in j:   # 09/10, optional: an older server keeps it as is
-        from .engine import need, integer
-        r = j[KN_RAMP_KEY]
-        need(isinstance(r, dict) and set(r) == {'at', 'seed'}, 'Dữ liệu phóng dao không hợp lệ.', 'invalid_save')
-        integer(r['at'], 0, 10**14)
-        integer(r['seed'], 0, 2**31)
+    for key in (KN_RAMP_KEY, KN_TWIST_KEY):   # 09/10, optional: an older server keeps them as they are
+        if key in j:
+            from .engine import need, integer
+            r = j[key]
+            need(isinstance(r, dict) and set(r) == {'at', 'seed'}, 'Dữ liệu phóng dao không hợp lệ.', 'invalid_save')
+            integer(r['at'], 0, 10**14)
+            integer(r['seed'], 0, 2**31)
     if 'fair_kn_soft' in j:
         from .engine import need, integer
         soft = j['fair_kn_soft']

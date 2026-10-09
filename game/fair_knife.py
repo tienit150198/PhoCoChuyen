@@ -23,7 +23,8 @@ practised thumb got 11.6× back for clearing all ten levels; the xu sinks (docs/
 only, so the sensible play below (stop after 2..5) pays the same. Harder each level: more knives,
 a faster board that more and more often speeds up, slows down, stops short or turns back (DIFF). On a day the
 player's fair net is far up the board is up to HEAT_MAX levels harder (heat(), like the luck stalls' taper). Since
-09/10 each level also turns RAMP_PCT % faster than the one before (speed_up()).
+09/10 each level also turns RAMP_PCT % faster than the one before (speed_up(), 1.9.32), and since then levels play on
+the twist board (twist_schedule(): TWIST_PCT % faster a level, telegraphed turn-backs, wider swings).
 
 Honesty: the server draws each level's seed when the level starts, so nothing of a level is known before. The client
 gets the schedule, draws angle_at() and sends the throw times (ms since the level started on its clock: increasing,
@@ -187,6 +188,77 @@ def schedule(seed: int, level: int, hot: int = 0, difficulty: int = 100, faster:
     if difficulty == SOFT_DIFFICULTY:
         out['gap'] = SOFT_GAP
     return out
+
+
+# 09/10, later (owner: "phóng dao mình tăng tốc lên, hoặc là xoay tới lui gì đó cho khó là được chứ vẫn cho người ta
+# chơi kĩ năng nhé"): the twist board, for levels started from this build (journey['fair_kn_twist'], game/fair.py). Still
+# a skill game: everything is drawn from the level's seed when it starts, the client draws the same segs, nothing is
+# decided at the throw. Harder than the ramp board in three ways, more so each level (k = (d − 1) / 12, d the level
+# plus today's heat):
+# * faster: the base speed × twist_up(level) = 1 + TWIST_PCT % × (level − 1) (owner's floor: 5 % a level);
+# * it turns back ("xoay tới lui"), more often each level (TWIST_REV + TWIST_REV_UP × k of the stretches), but never
+#   by surprise: it first slows down to a near stop over a visible brake (TWIST_BRAKE ms, shorter on higher levels),
+#   rests a moment (TWIST_DWELL ms), then speeds up the other way (TWIST_ACCEL ms) to a burst a little faster than
+#   before (up to TWIST_BURST + TWIST_BURST_UP × k);
+# * it speeds up and slows down smoothly within the level, the swings wider each level (TWIST_WAVE).
+TWIST_PCT = 10
+TWIST_REV, TWIST_REV_UP = .12, .33
+TWIST_BRAKE = ((380, 520), (240, 340))   # ms, level 1 .. the top: the board slows down this long before it turns
+TWIST_DWELL = ((140, 240), (100, 160))   # ms resting nearly still
+TWIST_ACCEL = (220, 320)                 # ms speeding up the other way
+TWIST_BURST, TWIST_BURST_UP = 1.25, .3   # the speed after a turn: 1 .. this (× the base), more on higher levels
+TWIST_WAVE = ((.65, 1.35), (.6, 1.7))    # smooth swings: × the base, level 1 .. the top
+TWIST_REST = .04                         # the near stop: this share of the base speed, the way it was turning
+
+
+def twist_up(level: int) -> float:
+    """The twist board's speed-up of a run's level (1 at level 1, TWIST_PCT % more each level after)."""
+    return 1 + TWIST_PCT * (level - 1) / 100
+
+
+def _between(lo_hi: tuple, k: float) -> tuple:
+    (a, b), (c, d) = lo_hi
+    return round(a + (c - a) * k), round(b + (d - b) * k)
+
+
+def twist_schedule(seed: int, level: int, hot: int = 0) -> dict:
+    """The twist board of a level (see TWIST_*): the knives and gap of the soft board (SOFT_DIFFICULTY, SOFT_GAP), its
+    turning faster, with telegraphed turn-backs and smooth swings. The same dict as schedule(); the client draws it
+    with the same arithmetic (angleAt)."""
+    d = max(1, min(max(DIFF), level + hot))
+    need, n_pre, v0 = DIFF[d][:3]
+    need = (need * SOFT_DIFFICULTY + 99) // 100
+    k = (d - 1) / (max(DIFF) - 1)
+    v = v0 * SOFT_DIFFICULTY / 100 * twist_up(level)
+    r = random.Random(f'fair-knife-twist|{seed}|{level}|{hot}')
+    p_rev = TWIST_REV + TWIST_REV_UP * k
+    brake, dwell = _between(TWIST_BRAKE, k), _between(TWIST_DWELL, k)
+    wave = (TWIST_WAVE[0][0] + (TWIST_WAVE[1][0] - TWIST_WAVE[0][0]) * k,
+            TWIST_WAVE[0][1] + (TWIST_WAVE[1][1] - TWIST_WAVE[0][1]) * k)
+    sign = r.choice((1, -1))
+    segs: list = [[r.randint(1200, 2200), sign * round(v * r.uniform(.95, 1.1), 1), 450]]   # it starts turning steadily
+    total = segs[0][0]
+    while total < LEVEL_MS + SLACK:
+        x = r.random()
+        if x < p_rev:   # slows to a near stop (visibly), rests, then turns back
+            b = r.randint(*brake)
+            segs.append([b + r.randint(*dwell), sign * round(v * TWIST_REST, 1), b])
+            total += segs[-1][0]
+            sign = -sign
+            seg = [r.randint(1100, 2200), sign * round(v * r.uniform(1.0, TWIST_BURST + TWIST_BURST_UP * k), 1),
+                   r.randint(*TWIST_ACCEL)]
+        elif x < p_rev + .45:   # faster or slower, smoothly
+            seg = [r.randint(1100, 2200), sign * round(v * r.uniform(*wave), 1), r.randint(400, 650)]
+        else:   # about the same speed
+            seg = [r.randint(1400, 2600), sign * round(v * r.uniform(.95, 1.15), 1), 450]
+        segs.append(seg)
+        total += seg[0]
+    pre: list[float] = []
+    while len(pre) < n_pre:
+        a = round(r.uniform(0, 360), 1)
+        if all(dist(a, b) >= PRE_SEP for b in pre):
+            pre.append(a)
+    return dict(lv=level, hot=hot, d=d, need=need, pre=pre, th0=round(r.uniform(0, 360), 1), segs=segs, gap=SOFT_GAP)
 
 
 def _table(sc: dict) -> list:
