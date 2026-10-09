@@ -10,12 +10,12 @@ What the player sees is what a real incident leaves: a bank SMS and the history 
 
 Where it takes from, in order, never into debt (what is not there is simply not taken; the plan's top-up adds a
 later incident): the bank's current account, its demand pot, its term deposits (closed early, principal only), the
-Đầu tư savings book, then the wallet (never below 0). The player's gear counts as it would for a real hack: the
+Đầu tư savings book, Mây Coin at its live price, then the wallet (never below 0). The player's gear counts as it would for a real hack: the
 diệt virus software halves a hack, and two-step security turns a hack into a scam call (social engineering).
 """
 from __future__ import annotations
 
-SUBS = ('hack', 'scam', 'phish', 'atm', 'tip')
+SUBS = ('hack', 'scam', 'phish', 'atm', 'tip', 'police')
 AMOUNT_MAX = 10**9
 LABELS = dict(
     hack='Tài khoản ngân hàng bị hack',
@@ -23,6 +23,7 @@ LABELS = dict(
     phish='Đăng nhập qua đường link giả mạo',
     atm='Thẻ bị đánh cắp thông tin tại cây ATM',
     tip='Chuyển tiền theo "tin nội bộ" đầu tư',
+    police='Công an xử phạt, tịch thu tiền thu lợi bất chính',
 )
 SMS = dict(
     hack='{bank}: TK {no} -{amt} xu. Giao dịch từ thiết bị lạ. Nếu không phải bạn, đổi mã bảo mật ngay.',
@@ -30,6 +31,7 @@ SMS = dict(
     phish='{bank}: TK {no} -{amt} xu. Đăng nhập từ đường link lạ. Không bấm link trong tin nhắn lạ.',
     atm='{bank}: TK {no} -{amt} xu. Rút tiền bằng thẻ sao chép. Che tay khi nhập mã PIN.',
     tip='{bank}: TK {no} -{amt} xu. ND: gop von "du an noi bo". Cẩn thận lời mời lãi cao.',
+    police='{bank}: TK {no} -{amt} xu. ND: nop phat va tich thu theo quyet dinh xu phat cua Cong an phuong.',
 )
 
 
@@ -92,6 +94,17 @@ def apply_fx(s: dict, p: dict, amount: int) -> str:
                 sv['pending'] = 0
             left -= x
             iv_mod._log(iv, day, 'withdraw', f'{label}: -{_fmt(x)} xu')
+    if left > 0 and isinstance(iv, dict) and isinstance(iv.get('coin'), dict) and iv['coin'].get('units'):
+        iv_mod.sync_market(s)
+        coin, price = iv['coin'], iv['price']
+        units = min(coin['units'], -(-left * iv_mod.COIN * iv_mod.CENT // price))
+        x = min(left, iv_mod._value(units, price))
+        if x > 0:
+            part = coin['basis'] if units == coin['units'] else coin['basis'] * units // coin['units']
+            coin['units'] -= units
+            coin['basis'] -= part
+            left -= x
+            iv_mod._log(iv, day, 'sell', f'{label}: -{iv_mod._coins_text(units)} MÂY')
     if left > 0:
         x = min(left, max(0, j['wallet']))
         if x:

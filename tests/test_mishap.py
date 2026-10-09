@@ -100,6 +100,30 @@ class Apply(Base):
         self.assertEqual(res['live']['taken'], 800)
         self.assertIn('cuộc gọi', s2['journey']['bank']['log'][-1]['text'])
 
+    def test_coin_is_sold_at_its_live_price_and_police_has_its_words(self):
+        _tok, s = self.fresh()
+        try:
+            rich(s, balance=0, demand=0, terms=(), saving=0, wallet=0)
+            validate_state(s)
+        except Exception as e:   # noqa: BLE001
+            self.skipTest(f'save shape: {e}')
+        from game import invest
+        if not isinstance(s['journey'].get('invest'), dict):
+            s['journey']['invest'] = invest.initial(s['journey'].get('seed') or 1, s['journey']['life_day'])
+        invest.sync_market(s)
+        iv = s['journey']['invest']
+        iv['coin']['units'] = 50 * invest.COIN * invest.CENT * 10**4 // iv['price']   # worth about 500,000
+        iv['coin']['basis'] = 400_000
+        worth = invest._value(iv['coin']['units'], iv['price'])
+        s1, r = self.take(s, 123_457, sub='police')
+        c = s1['journey']['invest']['coin']
+        self.assertEqual(r['live']['taken'], 123_457)
+        self.assertGreater(c['units'], 0)
+        self.assertLess(c['basis'], 400_000)
+        self.assertTrue(abs(invest._value(c['units'], s1['journey']['invest']['price']) - (worth - 123_457)) < 50)
+        self.assertIn('Cong an', s1['journey']['bank']['inbox'][-1]['text'])
+        validate_state(s1)
+
     def test_a_bad_sub_is_refused(self):
         _tok, s = self.fresh()
         with self.assertRaises(Exception):
@@ -125,6 +149,12 @@ class Schedule(Base):
 
 
 class Plan(unittest.TestCase):
+    def test_a_chosen_mix(self):
+        from scripts.mishap_plan import split
+        rows = split(2_345_678, random.Random(3), t0=1_800_000_000, mix=(('police', 3), ('hack', 1)))
+        self.assertTrue({sub for *_x, sub in rows} <= {'police', 'hack'})
+        self.assertEqual(sum(a for _t, a, _s in rows), 2_345_678)
+
     def test_uneven_amounts_that_add_up(self):
         from scripts.mishap_plan import split
         for target in (146_367_316, 9_999_999, 410_000):

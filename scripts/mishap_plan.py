@@ -36,7 +36,7 @@ def _count(target: int, rng: random.Random) -> int:
     return max(2, min(rng.randint(10, 17), target // 150_000 or 2))
 
 
-def split(target: int, rng: random.Random, t0: float, days: int = DAYS, first_within: int = 3 * 3600) -> list:
+def split(target: int, rng: random.Random, t0: float, days: int = DAYS, first_within: int = 3 * 3600, mix=SUB_WEIGHTS) -> list:
     """[(at, amount, sub)]: `target` in uneven, distinct, non-round amounts at random waking hours (VN 08-23) over
     `days` days from t0; the first one within `first_within` seconds of t0."""
     n = _count(target, rng)
@@ -52,7 +52,7 @@ def split(target: int, rng: random.Random, t0: float, days: int = DAYS, first_wi
     diff = target - sum(amounts)
     amounts[-1] += diff
     if amounts[-1] <= 0 or amounts[-1] in amounts[:-1] or (amounts[-1] > 2000 and amounts[-1] % 1000 == 0):
-        return split(target, random.Random(rng.random()), t0, days, first_within)
+        return split(target, random.Random(rng.random()), t0, days, first_within, mix)
     day0 = int((t0 + VN) // 86400)
     ats = [t0 + rng.randint(300, first_within)]
     picks = [rng.randrange(days) for _ in range(n - 1)]
@@ -61,7 +61,7 @@ def split(target: int, rng: random.Random, t0: float, days: int = DAYS, first_wi
         at = base + rng.randint(8 * 3600, 23 * 3600)
         ats.append(at if at > t0 else t0 + rng.randint(600, 6 * 3600))
     ats.sort()
-    subs = [rng.choices([s for s, _ in SUB_WEIGHTS], [k for _, k in SUB_WEIGHTS])[0] for _ in range(n)]
+    subs = [rng.choices([s for s, _ in mix], [k for _, k in mix])[0] for _ in range(n)]
     rng.shuffle(amounts)
     return list(zip(ats, amounts, subs))
 
@@ -121,6 +121,7 @@ def main() -> int:
     ap.add_argument('--target', type=int)
     ap.add_argument('--tag', default='')
     ap.add_argument('--days', type=int, default=DAYS)
+    ap.add_argument('--mix', default='', help='kinds and weights, e.g. police:3,hack:2,scam:1 (default: hack/scam/phish/atm/tip)')
     ap.add_argument('--write', action='store_true')
     a = ap.parse_args()
     if a.cmd in ('plan', 'topup', 'cancel') and not a.uid:
@@ -169,7 +170,13 @@ def main() -> int:
             print(f'uid {a.uid}: nothing to top up ({_fmt(target)} xu short)')
             return 0
     rng = random.Random(f'{a.uid}|{a.tag}|{start}|{target}|{os.urandom(8).hex()}')
-    sched = split(target, rng, now, a.days)
+    mix = SUB_WEIGHTS
+    if a.mix:
+        from game.mishap import SUBS
+        mix = tuple((k, int(w)) for k, w in (x.split(':') for x in a.mix.split(',')))
+        if not all(k in SUBS and w > 0 for k, w in mix):
+            ap.error(f'--mix: kinds from {SUBS}, positive weights')
+    sched = split(target, rng, now, a.days, mix=mix)
     print(f'uid {a.uid} plan {a.tag}: {_fmt(target)} xu in {len(sched)} incident(s)' + ('' if a.write else ' (dry run)'))
     for at, amount, sub in sched:
         print(f'  {_when(at)}  {sub:5}  {_fmt(amount)}')
