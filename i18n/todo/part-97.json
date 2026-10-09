@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Ô ngày giờ ở văn phòng tự thêm dấu / và : khi gõ bằng bàn phím số, hoặc bấm 📅 để chọn ngày trên lịch.",
+  "en": ""
+ },
+ {
   "vi": "Tiệm tóc: khách chê “còn dài” thì luôn cắt thêm được, kể cả khi đã tỉa tầng. Hết cảnh soi gương mãi không chốt được.",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Chưa đo (mẫu bản lưu chưa tính).",
-  "en": ""
- },
- {
-  "vi": "Tiến trình · CPU",
   "en": ""
  }
 ]

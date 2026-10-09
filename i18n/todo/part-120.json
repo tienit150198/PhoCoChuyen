@@ -1,5 +1,41 @@
 [
  {
+  "vi": "Thông báo cưới",
+  "en": ""
+ },
+ {
+  "vi": "Khu phố › Lịch cưới",
+  "en": ""
+ },
+ {
+  "vi": "Tiệc cưới đang diễn ra!",
+  "en": ""
+ },
+ {
+  "vi": "Tiệc cưới lúc",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn đã nên duyên, chung vui cùng phố nhé!",
+  "en": ""
+ },
+ {
+  "vi": "🎊 Vào dự ngay",
+  "en": ""
+ },
+ {
+  "vi": "📅 Xem lịch cưới",
+  "en": ""
+ },
+ {
+  "vi": "Chúc mừng 🎉",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ chưa có thiệp mời cưới. Tải lại trang sau ít phút nhé.",
+  "en": ""
+ },
+ {
   "vi": "Lời mời của bạn sẽ hiện ở đây…",
   "en": ""
  },
@@ -2037,51 +2073,6 @@
  },
  {
   "vi": "Trời đất ơi, $1 buồn chuyện gì kể bà nghe. Tối nay xuống bà nấu canh chua, ăn chén cơm nóng rồi ngủ một giấc, mai tính tiếp nghe con. Chuyện gì rồi cũng qua hết, bà sống 72 năm rồi bà biết mà 🥹",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thương quá. Có chuyện gì thì cứ nói với bà, đừng ôm một mình nghe. Bà để phần $1 chén chè trong tủ lạnh rồi đó.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trời ơi mừng quá! Bà biết mà, $1 chăm chỉ vậy thế nào cũng được. Để bà nấu nồi chè ăn mừng nghe 🥹🎉",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chuyện này bà không rành lắm, mà để bà hỏi mấy đứa giùm cho. Mà $1 ăn cơm chưa đó?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nói tới ăn là bà mê liền 😄 Mai bà làm món đó, $1 xuống phụ bà một tay nghe.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chào $1! Ở phố mình thấy quen chưa? Có gì thiếu cứ nói bà nghe.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà ủng hộ! Để phần bà một cái nghe $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Để đó chú làm. Không phải vì lo cho $1 đâu nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 ơi ôm một cái nè 🫂 buồn xíu thôi rồi mai lại chill nha, có gì kể em nghe 🥺",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "huhu thương $1 ghê 😭 tối em rủ đi ăn bánh tráng trộn cho vui nha",
   "en": "",
   "pattern": true
  }

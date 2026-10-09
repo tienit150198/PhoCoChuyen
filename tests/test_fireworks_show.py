@@ -157,5 +157,30 @@ class LiveShow(LiveCase):
         self.assertTrue(b.welcome['flags'])
 
 
+class PageNeverInTheWay(unittest.TestCase):
+    """#299 #300 #301 (09/10): the page's show (public/js/v4/fireworks.js) takes no taps, lives inside the open modal
+    dialog (✕ closes the show only), is a small chip over a game or a sheet, and has a setting (Bật / Chỉ báo nhỏ / Tắt)."""
+
+    def test_client(self):
+        import shutil
+        import subprocess
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        root = Path(__file__).resolve().parent.parent
+        out = subprocess.run([node, '--test', str(root / 'tests' / 'fireworks_ui.mjs')], cwd=root, capture_output=True,
+                             text=True, encoding='utf-8', errors='replace', timeout=120)
+        self.assertEqual(out.returncode, 0, out.stdout[-4000:] + out.stderr[-2000:])
+
+    def test_setting_is_offered_and_kept_on_the_device(self):
+        root = Path(__file__).resolve().parent.parent
+        settings = (root / 'public/js/v4/settings.js').read_text(encoding='utf-8')
+        self.assertIn("segment('fw',FW_MODES,fwMode(),'fw')", settings)
+        self.assertIn("data.kind==='fw'){setFwMode(data.value)", settings)
+        # the server's settings refuse unknown keys (old servers too): the choice never goes to `settings`
+        from game.engine import default_settings
+        self.assertFalse({'fw', 'fireworks', 'fwMode'} & set(default_settings()))
+
+
 if __name__ == '__main__':
     unittest.main()

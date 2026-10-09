@@ -1,5 +1,50 @@
 [
  {
+  "vi": "🛬 Cài đặt xong, tiếp cận $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✈️ Bay $1 chặng, $2 phút trên trời.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "↗️ Bay lại $1 lần. Không ổn định thì bay lại: đúng bài.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔄 Bay chờ thời tiết $1 lần.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "↪️ Chuyển hướng $1 lần.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⏱️ Tổng cộng trễ $1 phút vì an toàn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chặng $1 gọn gàng từ bản tin tới lúc tắt máy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bay với em chặng $1, chị yên tâm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chặng $1 ổn, còn một chỗ cần chắc tay hơn.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Chặng $1 chị phải nhắc nhiều.",
   "en": "",
   "pattern": true
@@ -2201,51 +2246,6 @@
  },
  {
   "vi": "🥤 Đưa trà cho $1. Khách đưa $2 xu: tính tiền, thối lại cho đúng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Ghi sổ: ngày $1 · $2 · $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Đọc sổ: $1 dòng, $2 xu. Chú Tường nhíu mày: “Ơ, ngày $3 chú uống gì mà những $4 xu?”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Đọc sổ: $1 dòng, cộng $2 xu. Chú Tường gật gù móc ví.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Chú đưa $2 xu, thối lại cho đúng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dòng ngày $1 ghi đúng rồi ($2): cho chú xem sổ là được.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✏️ Sửa dòng ngày $1 thành $2 xu. Chú Tường cười: “Thấy chưa, chú nhớ mà!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sổ ghi lố tiền của tôi: hôm đó $1 mà ghi $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Chú Tường dí ngón tay vào dòng: “$1, $2 xu thôi chứ, sao ghi $3?” Sửa lại hoặc bỏ dòng đó.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Chỉ dòng ngày $1: $2. Chú Tường vỗ trán: “À, hôm ấy chú khao thằng Bảy!”",
   "en": "",
   "pattern": true
  }

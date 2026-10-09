@@ -1,5 +1,50 @@
 [
  {
+  "vi": "Tàu tiếp tế: dầu $1 lít theo phiếu, $2 món hàng. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Qua ống nhòm: một tàu cá vỏ gỗ $1 nghiêng hẳn một bên, phương vị $2°, cách khoảng $3 hải lý. Đếm được $4 người bám mạn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Qua ống nhòm: tàu $1, phương vị $2°, cách $3 hải lý, $4 người, tàu không nghiêng, không thấy nước vào. Họ giơ dây kéo ra hiệu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Qua ống nhòm: một người không mặc áo phao, đang chìm dần, phương vị $1°, cách $2 hải lý tính từ trạm. Bạn đồng hành của họ bám thuyền lật.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Qua ống nhòm: $1 đứa nhỏ, phương vị $2°, còn cách đảo chừng $3 hải lý. Một đứa bơi chậm hẳn lại, ngửa mặt thở.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Qua ống nhòm: tàu $1, phương vị $2°, cách $3 hải lý, chạy đều máy, buồng lái tối om.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Qua ống nhòm: tàu $1 của ông Sáu Ghe, phương vị $2°, cách $3 hải lý, chở đầy lưới, sáu người trên boong.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Qua ống nhòm: tàu $1 đang vớt cá chết, phương vị $2°, cách $3 hải lý. Một người cầm can nhựa buộc dây.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 “Trạm Hòn Gió đây, tàu $1 chú ý, phía trước là bãi đá ngầm!” Một giọng ngái ngủ: “Hả? Chết cha… cảm ơn trạm!” Tàu bẻ lái gấp.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 gật đầu, xếp hàng theo bạn đi tham quan, nghe kể chuyện đèn rất chăm chú.",
   "en": "",
   "pattern": true
@@ -2201,51 +2246,6 @@
  },
  {
   "vi": "↪️ Đi sân bay dự bị $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛬 Cài đặt xong, tiếp cận $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✈️ Bay $1 chặng, $2 phút trên trời.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "↗️ Bay lại $1 lần. Không ổn định thì bay lại: đúng bài.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔄 Bay chờ thời tiết $1 lần.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "↪️ Chuyển hướng $1 lần.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⏱️ Tổng cộng trễ $1 phút vì an toàn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chặng $1 gọn gàng từ bản tin tới lúc tắt máy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bay với em chặng $1, chị yên tâm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chặng $1 ổn, còn một chỗ cần chắc tay hơn.",
   "en": "",
   "pattern": true
  }

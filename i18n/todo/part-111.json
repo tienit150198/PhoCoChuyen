@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Nhập số xu muốn rút nhé.",
+  "en": ""
+ },
+ {
   "vi": "Rút tại cây ATM Ngân hàng Phố, không mất phí.",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Tin đang ghim",
-  "en": ""
- },
- {
-  "vi": "Bỏ ghim",
   "en": ""
  }
 ]

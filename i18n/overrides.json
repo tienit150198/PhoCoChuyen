@@ -1,5 +1,14 @@
 {
   "strings": {
+  "Hiệu ứng pháo hoa": "Fireworks effect",
+  "Chỉ báo nhỏ": "Small notice only",
+  "🔕 Chỉ báo nhỏ": "🔕 Small notice only",
+  "Khi có người bắn pháo hoa. Đang chơi trò hay làm việc thì chỉ hiện báo nhỏ.": "When someone sets off fireworks. While you play a game or work, only a small notice shows.",
+  "đang bắn pháo hoa": "is setting off fireworks",
+  "Đang có pháo hoa trên phố": "Fireworks over the street",
+  "Đóng pháo hoa": "Close the fireworks",
+  "🎆 Từ giờ chỉ báo nhỏ. Đổi lại ở Cài đặt → Cách chơi.": "🎆 From now on, only a small notice. Change it back in Settings → How to play.",
+  "🎆 [[Hiệu ứng pháo hoa]]: Bật, Chỉ báo nhỏ hoặc Tắt. Đang chơi trò hay làm việc thì chỉ hiện báo nhỏ.": "🎆 [[Fireworks effect]]: On, Small notice only or Off. While you play a game or work, only a small notice shows.",
   "Trại tạm giữ giờ là khu trại đi lại được: sân, căng tin, khu lao động, phòng thăm gặp… làm công ích ở từng góc!": "The holding camp is now a place to walk around: yard, canteen, workshop, visiting room… do community service in every corner!",
   "Đang bị tạm giữ thì chỉ được nhắn tin và làm công ích, ra trại rồi mới làm việc khác nha.": "While held you can only chat and do community service; everything else waits until you are out.",
   "Một ngày trong trại dài hơn, mỗi ngày 8 việc khác nhau: phơi đồ, rửa chén, cho gà ăn, sửa ghế…": "A day in the camp is longer, with 8 different tasks a day: hanging laundry, washing dishes, feeding chickens, fixing chairs…",

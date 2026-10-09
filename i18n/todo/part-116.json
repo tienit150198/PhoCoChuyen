@@ -1,5 +1,33 @@
 [
  {
+  "vi": "Tiền đã bỏ vào",
+  "en": ""
+ },
+ {
+  "vi": "1 chỉ = 10 phân. Mua bằng ví, thiếu thì lấy từ tài khoản ngân hàng; bán nhận xu vào ví. Giá mua/bán đã gồm chênh lệch 2,5% mỗi chiều.",
+  "en": ""
+ },
+ {
+  "vi": "Biến động so với phiên trước. Giá được chốt khi máy chủ nhận lệnh.",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Bớt vàng\"",
+  "en": ""
+ },
+ {
+  "vi": "Số chỉ vàng",
+  "en": ""
+ },
+ {
+  "vi": "Số phân vàng lẻ",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Thêm vàng\"",
+  "en": ""
+ },
+ {
   "vi": "1 chỉ",
   "en": ""
  },
@@ -1769,34 +1797,6 @@
  },
  {
   "vi": "📋 Kế hoạch cưới",
-  "en": ""
- },
- {
-  "vi": "💍 Tiệm nhẫn",
-  "en": ""
- },
- {
-  "vi": "Mục hôn nhân",
-  "en": ""
- },
- {
-  "vi": "Kết bạn trước, rồi mới trao nhẫn.",
-  "en": ""
- },
- {
-  "vi": "Tạo tài khoản để kết hôn",
-  "en": ""
- },
- {
-  "vi": "Kết hôn là chuyện giữa hai người chơi thật trên phố, nên cần một tài khoản để giữ nhẫn, lời hứa và ngày cưới của hai bạn.",
-  "en": ""
- },
- {
-  "vi": "Có gì ở đây?",
-  "en": ""
- },
- {
-  "vi": "Mua nhẫn ở tiệm vàng đầu hẻm, cầu hôn bằng mã người chơi.",
   "en": ""
  }
 ]

@@ -1,5 +1,33 @@
 [
  {
+  "vi": "KHAY MÓN",
+  "en": ""
+ },
+ {
+  "vi": "KÉT QUẦY",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang tạm dừng",
+  "en": ""
+ },
+ {
+  "vi": "Xem nguyên liệu và vốn ở bên dưới",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đọc được cập nhật quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên chơi đã thay đổi. Mở lại quầy nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang đồng bộ. Thử lại nhé.",
+  "en": ""
+ },
+ {
   "vi": "Chưa đồng bộ được số dư. Thử lại nhé.",
   "en": ""
  },
@@ -1736,6 +1764,14 @@
   "en": ""
  },
  {
+  "vi": "Hiệu ứng pháo hoa",
+  "en": ""
+ },
+ {
+  "vi": "Khi có người bắn pháo hoa. Đang chơi trò hay làm việc thì chỉ hiện báo nhỏ.",
+  "en": ""
+ },
+ {
   "vi": "Giao diện gọn",
   "en": ""
  },
@@ -1761,42 +1797,6 @@
  },
  {
   "vi": "Không tính điểm",
-  "en": ""
- },
- {
-  "vi": "Không tính vào điểm trung bình",
-  "en": ""
- },
- {
-  "vi": "Chưa mở chỗ làm nào.",
-  "en": ""
- },
- {
-  "vi": "Chỗ làm của tôi",
-  "en": ""
- },
- {
-  "vi": "Hai bạn sẽ không thấy chỗ làm, bài viết và quà của nhau.",
-  "en": ""
- },
- {
-  "vi": "thiếu nhi",
-  "en": ""
- },
- {
-  "vi": "hưu",
-  "en": ""
- },
- {
-  "vi": "cao tuổi",
-  "en": ""
- },
- {
-  "vi": "Đang tắt vì Âm thanh thao tác tắt.",
-  "en": ""
- },
- {
-  "vi": "Giọng & chi tiết",
   "en": ""
  }
 ]
