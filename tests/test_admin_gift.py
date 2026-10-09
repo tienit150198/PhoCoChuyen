@@ -143,6 +143,32 @@ class AdminGiftHTTP(unittest.TestCase):
         self.assertEqual(self.boot(self.other)['state']['journey']['wallet'], before + 5_000_000)
         self.store.transaction(lambda db: db.execute('DELETE FROM system_gifts'))
 
+    def test_fifty_million_goes_in_as_rows_of_ten_million(self):
+        """Owner 09/10: a 50.000.000 xu gift stayed pending (one Sổ ví row holds at most 10**7, journey.validate).
+        It is paid at the next load as five rows of 10.000.000; a gift past the wallet's bound waits, nothing moves."""
+        before = self.boot(self.other)['state']['journey']['wallet']
+        status, out = self.give(50_000_000, 'rid-big-0000050', user='be_nam', large=True)
+        self.assertEqual((status, out['status']), (200, 'created'), out)
+        j = self.boot(self.other)['state']['journey']
+        self.assertEqual(j['wallet'], before + 50_000_000)
+        rows = [r for r in j['history'] if r['label'] == sg.LABEL and r['amount'] == sg.ROW_MAX]
+        self.assertEqual(len(rows), 5)
+        self.assertEqual(self.rows('be_nam')[0]['status'], 'applied')
+        self.assertEqual(self.boot(self.other)['state']['journey']['wallet'], before + 50_000_000, 'only once')
+        self.store.transaction(lambda db: db.execute('DELETE FROM system_gifts'))
+        # 12.345.678: one full row and the rest
+        status, out = self.give(12_345_678, 'rid-big-0000012', user='be_nam', large=True)
+        j = self.boot(self.other)['state']['journey']
+        self.assertEqual(j['wallet'], before + 62_345_678)
+        self.assertIn(2_345_678, [r['amount'] for r in j['history'] if r['label'] == sg.LABEL])
+        self.store.transaction(lambda db: db.execute('DELETE FROM system_gifts'))
+        # past the wallet's bound: refused at apply, stays pending, the wallet is untouched
+        status, out = self.give(sg.MAX_COINS, 'rid-big-0001000', user='be_nam', large=True)
+        self.assertEqual(status, 200, out)
+        self.assertEqual(self.boot(self.other)['state']['journey']['wallet'], before + 62_345_678)
+        self.assertEqual(self.rows('be_nam')[0]['status'], 'pending')
+        self.store.transaction(lambda db: db.execute('DELETE FROM system_gifts'))
+
     def test_idempotent_paid_once_and_recorded(self):
         before = self.boot(self.other)['state']['journey']['wallet']
         words = dict(title='  Quà nè\x07 ', text='Cảm ơn bạn đã báo lỗi 💛')

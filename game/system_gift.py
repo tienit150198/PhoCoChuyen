@@ -36,6 +36,8 @@ RID = 'sysgift-'                    # request id prefix: sysgift-<id>
 KIND = 'life'                       # journey wallet history kind (journey.HISTORY_KINDS): old saves stay valid
 LABEL = '🎁 Quà từ Phố Có Chuyện'
 MAX_COINS = 10**9                   # no cap but the wallet's own (journey.validate: wallet ≤ 10**9); owner 08/10 "tặng tiền xu k giới hạn"
+ROW_MAX = 10**7                     # journey.validate's bound on one Sổ ví row (not the bank's): a bigger gift is split
+WALLET_MAX = 10**9                  # journey.validate's bound on the wallet
 LARGE = 1000                        # above this the grant tool wants --large: a typo (10000 for 100) is refused, not paid
 TITLE_MAX = 80
 TEXT_MAX = 300
@@ -85,7 +87,12 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     got = j.get('gifts') if isinstance(j.get('gifts'), list) else []
     if gid in got:   # already paid (a receipt pruned meanwhile): nothing moves
         return s, dict(message='', gift=dict(id=gid, coins=0, already=True))
-    jr._wallet(j, coins, KIND, LABEL)
+    e.need(j['wallet'] + coins <= WALLET_MAX, 'Ví đã đầy, quà này chưa vào được.', 'wallet_full')
+    left = coins
+    while left:   # one Sổ ví row holds at most ROW_MAX xu (journey.validate): a big gift goes in as several rows
+        step = min(ROW_MAX, left)
+        jr._wallet(j, step, KIND, LABEL)
+        left -= step
     j['gifts'] = (got + [gid])[-KEPT:]
     e.validate_state(s)
     return s, dict(message=f'+{coins} xu vào ví.', gift=dict(id=gid, coins=coins))
