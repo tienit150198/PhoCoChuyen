@@ -31,6 +31,7 @@ BATCH = 50
 FOLLOW_SINCE = 1791560400   # 2026-10-09 22:40 (VN): the first reclaim plans; transfers out after it are followed
 FOLLOW_PCT = 80             # what a receiver gets reclaimed of a followed transfer (owner: at most 80%)
 FOLLOW_DAYS = 2
+ADMIN_UIDS = (1,)          # the owner's admin account: never followed, as sender or receiver (owner: admin money does not count)
 
 
 def follow(store, write: bool, since: float = FOLLOW_SINCE) -> int:
@@ -41,9 +42,11 @@ def follow(store, write: bool, since: float = FOLLOW_SINCE) -> int:
     from scripts.mishap_plan import split, _insert
     with store.connect() as db:
         senders = {r['sid'] for r in db.execute("SELECT DISTINCT sid FROM live_effects WHERE kind='mishap' AND status='pending'").fetchall()}
+        admins = {r['sid'] for r in db.execute("SELECT sid FROM accounts WHERE uid IN (%s)" % ','.join(str(u) for u in ADMIN_UIDS)).fetchall()}
         rows = [dict(r) for r in db.execute(
             "SELECT x.id, x.sender, x.receiver, x.amount, ra.uid FROM bank_xfers x JOIN accounts ra ON ra.sid=x.receiver "
-            "WHERE x.status='done' AND x.at>=? AND x.amount>=50000 ORDER BY x.at", (since,)).fetchall() if r['sender'] in senders]
+            "WHERE x.status='done' AND x.at>=? AND x.amount>=50000 ORDER BY x.at", (since,)).fetchall()
+                if r['sender'] in senders and r['sender'] not in admins and r['receiver'] not in admins]
     made = 0
     for r in rows:
         tag = 'x' + hl.sha256(str(r['id']).encode()).hexdigest()[:10]
