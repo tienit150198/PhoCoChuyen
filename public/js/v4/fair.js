@@ -320,7 +320,7 @@ function arrestCard(){
   const r=S.arrest;
   return `<section class="fh-card fh-raid" role="alert" data-fh-key="bm-arrest"><div class="fh-siren" aria-hidden="true"><i></i><i></i></div>
     <h3>🚨 Công an ập vào!</h3>${say({name:'Công an phường',emoji:'👮'},r.say||'')}
-    <div class="fh-raid-bill">${r.stake?`<span>Tiền cược bị tịch thu</span><b>−${xu(r.stake)}</b>`:''}<span>Nộp phạt</span><b>−${xu(r.fine)}</b></div>
+    <div class="fh-raid-bill">${r.stake?`<span>${r.seized?'Tiền thắng Ông Hai bị tịch thu':'Tiền cược bị tịch thu'}</span><b>−${xu(r.stake)}</b>`:''}<span>Nộp phạt</span><b>−${xu(r.fine)}</b></div>
     <p>Ví còn <b>${xu(r.wallet)}</b>. Khoản phạt đã ghi trong Sổ ví.</p>${r.jail?`<p class="fh-jail">🚔 Bạn bị đưa về <b>trại tạm giữ ${r.jail} ngày</b>. Trong trại làm công ích để được về sớm, hoặc nhờ bạn bè bảo lãnh.</p>`:'<p>Công an đi rồi. Chơi tiếp thì cẩn thận nha.</p>'}
     ${r.titles?.includes('f_raid')?'<p class="fh-award">🚨 Danh hiệu mới: <b>Bị công an hỏi thăm</b></p>':''}
     ${btn(r.jail?'🚔 Về trại tạm giữ':'Dạ, em biết rồi','arrestok',{},'primary',' data-fh-key="bm-arrestok"')}</section>`;

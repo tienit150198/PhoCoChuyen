@@ -20,7 +20,8 @@ calls are the same for everyone, so a player who saw them could pick the likely 
 draw ever turns a clean board into a loss): its return depends on the thumb, see game/fair_knife.py; no daily cap
 since 09/10 (owner: "phóng dao, ô ăn quan thì chơi hệ kĩ năng"), stakes up to 1,000 xu a run, the twist board
 (faster each level, telegraphed turn-backs: knife.twist_schedule). Phóng dao and ô ăn quan are out of the arrest roll: the police come only for a script or a burst
-(game/fair_watch.py). Ô ăn quan and ném vòng take no stake. No rate reaches the client (owner 08/10). Bầu cua and chiếu trong take any stake (STAKE_MAX).
+(game/fair_watch.py), and at Ông Hai's table for a run of wins (game/fair_hai.py, owner 09/10: "thắng nhiều thì cho công an
+bắt thu tiền"). Ô ăn quan and ném vòng take no stake. No rate reaches the client (owner 08/10). Bầu cua and chiếu trong take any stake (STAKE_MAX).
 
 Earlier rules (owner 07/10: "giảm tỷ lệ thắng của mọi người ở hội chợ, nếu ai spam 1 trò thì tỷ lệ thắng sẽ giảm dần
 xuống còn 40%, công an sẽ đòi chứng minh tài sản ở đâu ra và thu 10% lợi nhuận của cả hội chợ"), still in force:
@@ -78,6 +79,7 @@ from . import fair_food as ff   # 🍡 the food carts
 from . import fair_photo as fp  # 📸 the photobooth's ticket
 from . import fair_bm as bm     # 🕶️ Chợ đen: the bảo kê at the gate, the police's arrests
 from . import fair_watch as watch   # 🕶️ the police's eye on the skill stalls: scripts and bursts only
+from . import fair_hai as hai     # 👴 Ông Hai's table: games a day, the police after a run of wins
 from . import fair_dog as dog    # 🐕 đua chó: the roster, the lineups, the draw
 
 VERSION = 1
@@ -1255,13 +1257,16 @@ def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
 
 def _arrested(j: dict, f: dict, t: float, game: str, stake: int, pay, why: str = '', count: bool = True) -> None:
     """The police take this round (`why`: '' the Chợ đen's arrest roll; 'kn_fast', 'kn_spam', 'oaq_fast', 'oaq_spam'
-    what game/fair_watch.py saw on a skill stall): `pay(-stake)` takes the stake (a no-op when it is gone already or
+    what game/fair_watch.py saw on a skill stall; 'oaq_win' a run of wins at Ông Hai's table, game/fair_hai.py, `stake`
+    then being his xu already taken back): `pay(-stake)` takes the stake (a no-op when it is gone already or
     there is none), the fine, the trại tạm giữ (fair_bm.arrest). count: the round is a new one on the Sổ ví row (not a
     knife run already counted at its start). Raises _Caught: the command's whole result."""
     if count and stake and game in f['stats']:   # the round counts on the stall's Sổ ví row ("· N ván")
         f['stats'][game] = min(10**9, f['stats'][game] + 1)
     r = bm.arrest(j, f, t, game, stake, pay)
-    if why:
+    if why == 'oaq_win':   # 👴 a run of wins at Ông Hai's table: `stake` is his xu taken back (fair_hai.seize)
+        r.update(say=hai.SAY, seized=stake)
+    elif why:
         r['say'] = bm.SAY_CHEAT
     f['stats']['raids'] = min(10**9, f['stats']['raids'] + 1)
     got: list = []
@@ -1278,6 +1283,10 @@ def _arrested(j: dict, f: dict, t: float, game: str, stake: int, pay, why: str =
         msg = f'🚨 Công an thấy nước đi nhanh bất thường, nghi gian lận! Nộp phạt {fine} xu.'
     elif why == 'oaq_spam':
         msg = f'🚨 Công an thấy bạn bày bàn liên tục bất thường, nghi gian lận! Nộp phạt {fine} xu.'
+    elif why == 'oaq_win' and r['fine']:
+        msg = f'🚨 Công an ập vào bàn Ông Hai! Thắng liền mấy ván là có chuyện: tịch thu {_xu(stake)} xu tiền thắng, nộp phạt {fine} xu.'
+    elif why == 'oaq_win':
+        msg = f'🚨 Công an ập vào bàn Ông Hai! Thắng liền mấy ván là có chuyện: tịch thu {_xu(stake)} xu tiền thắng.'
     else:
         msg = f'🚨 Công an ập vào! Mất {_xu(stake)} xu tiền cược' + (f', nộp phạt {fine} xu' if r['fine'] else '') + '.'
     msg += f' Bạn bị tạm giữ {r["jail"]} ngày.' if r.get('jail') else ''
@@ -1513,16 +1522,21 @@ def _apply(s: dict, name: str, p: dict) -> dict:
         result['fair'] = dict(game='lt', folded=True)
     elif name == 'fair_oaq_start':
         need(set(p) == {'lv'} and p.get('lv') in oaq.LEVELS, 'Chọn người chơi cùng nha.')
+        need(p['lv'] != 'kho' or hai.can_start(j, vn_date(t)), hai.TIRED, 'fair_oaq_tired')
         for key in ('fair_run', 'fair_run2', 'fair_run3'):
             j.pop(key, None)
         o = f['oaq']
         if o and o['stage'] == 'play':
             o['stage'] = 'lost'   # a new game gives the old one up
+            if o['lv'] == 'kho':
+                hai.lost(j)
         if bm._gate_on() and watch.oaq_start(j, int(t * 1000)):   # a skill game: only a burst of games (fair_watch)
             watch.clear(j, 'os')
             _arrested(j, f, t, 'oaq', 0, lambda amount: None, 'oaq_spam')
         _day(f, t)
         st['oaq'] += 1
+        if p['lv'] == 'kho':
+            hai.started(j, vn_date(t))
         f['oaq'] = dict(lv=p['lv'], g=oaq.new_game(), at=int(t), stage='play')
         trace: list = []
         if p['lv'] in OAQ_FIRST:   # he opens: the board comes back on the player's turn, as older builds expect
@@ -1547,6 +1561,8 @@ def _apply(s: dict, name: str, p: dict) -> dict:
         if bm._gate_on() and watch.oaq_move(j, int(t * 1000)):   # moves no hand makes (fair_watch)
             watch.clear(j, 'of')
             o['stage'] = 'lost'   # the game is given up: no prize
+            if o['lv'] == 'kho':
+                hai.lost(j)
             _arrested(j, f, t, 'oaq', 0, lambda amount: None, 'oaq_fast')
         trace: list = [['turn', 0, p['cell'], p['dir']]]
         oaq.play(g, 0, p['cell'], p['dir'], trace)
@@ -1559,6 +1575,12 @@ def _apply(s: dict, name: str, p: dict) -> dict:
         end = None
         if not alive:
             end = _oaq_end(j, f, o, t, got)
+            if o['lv'] == 'kho' and end['stage'] == 'won':   # 👴 a run of wins at his table: the police (fair_hai)
+                due = hai.won(j, t, end['prize'])
+                if due and bm._gate_on():
+                    _arrested(j, f, t, 'oaq', hai.seize(s, j, f, due), lambda amount: None, 'oaq_win', count=False)
+            elif o['lv'] == 'kho':
+                hai.lost(j)
         result['fair'] = dict(game='oaq', trace=trace, view=oaq_view(o), end=end)
         if end:
             result['message'] = (f'Thắng ván ô ăn quan! +{end["prize"]} xu.' if end['stage'] == 'won' else
@@ -1568,6 +1590,8 @@ def _apply(s: dict, name: str, p: dict) -> dict:
         o = f['oaq']
         if o and o['stage'] == 'play':
             o['stage'] = 'lost'
+            if o['lv'] == 'kho':
+                hai.lost(j)
         result['fair'] = dict(game='oaq', quit=True, view=oaq_view(o))
     elif name == 'fair_ring_start':
         need(not p, 'Dữ liệu thao tác không hợp lệ.')
@@ -1779,6 +1803,7 @@ def validate(j: dict) -> None:
     fc.validate(j)
     bm.validate(j)
     watch.validate(j)
+    hai.validate(j)
     if 'fair_balance' in j:
         from .engine import need, integer
         balance = j['fair_balance']
