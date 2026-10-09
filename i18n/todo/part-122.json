@@ -1,5 +1,10 @@
 [
  {
+  "vi": "$1 Lấy $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Nồi $1 hết cơm. Nấu nồi mới nhé.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "$1 $2 vẫn bẩn$3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 để dưới góc, không đặt lại chỗ cũ.",
   "en": "",
   "pattern": true
  }

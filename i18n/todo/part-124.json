@@ -1,5 +1,10 @@
 [
  {
+  "vi": "🥄 Chấm đầu đũa nếm chén nước mắm: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🚿 Rửa sạch đồ làm $1",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "Bàn cư trú: nhận hồ sơ tạm trú của $1 (còn thiếu giấy, phải gọi lại).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bàn cư trú: nhận hồ sơ tạm trú của $1, đủ giấy tờ.",
   "en": "",
   "pattern": true
  }

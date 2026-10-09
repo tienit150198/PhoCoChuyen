@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Đăng cho thuê $1, $2 xu/tháng; đang tìm khách.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã đăng $1: $2 xu mỗi $3 ngày sống. Khách sẽ cân nhắc từ ngày sống tiếp theo.",
   "en": "",
   "pattern": true

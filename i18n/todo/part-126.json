@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Kho chỉ còn chỗ cho $1 bản Jewel.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Chốt $1 bản cần $2 xu, quỹ tiệm chưa đủ.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "$1 đang có người thuê rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đăng cho thuê $1, $2 xu/tháng; đang tìm khách.",
   "en": "",
   "pattern": true
  }

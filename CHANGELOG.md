@@ -1,3 +1,7 @@
+# v1.9.33 — 2026-10-09
+
+🎁 Quà admin trên 10.000.000 xu: trước đây kẹt ở trạng thái chờ (mỗi dòng Sổ ví tối đa 10^7, journey.validate); giờ chia thành nhiều dòng ≤ 10.000.000 (system_gift.ROW_MAX). Quà làm ví vượt 10^9 thì chờ, không trừ gì. Quà 50.000.000 xu đang chờ sẽ vào ví ở lần tải tiếp theo.
+
 # v1.9.32 — 2026-10-09
 
 🐕 Đua chó (chủ game 09/10): sạp cược mới ở Chợ đen (game/fair_dog.py, fair-dog.js), mỗi 2 phút một lượt 6 chó, trả thưởng cố định theo hạng (tối đa 95%), chỉ xem và cổ vũ; luật bảo kê/công an/tạm giữ như các sạp khác. Không lưu gì mới.

@@ -1,5 +1,10 @@
 [
  {
+  "vi": "$1 để dưới góc, không đặt lại chỗ cũ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🚪 $1 đi một vòng:",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "🥢 Bày $1 bộ chén đũa quanh mâm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🥄 Chấm đầu đũa nếm chén nước mắm: $1",
   "en": "",
   "pattern": true
  }

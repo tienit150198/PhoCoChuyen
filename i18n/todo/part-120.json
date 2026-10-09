@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Chưa có đánh giá dịch vụ.",
+  "en": ""
+ },
+ {
   "vi": "Người phụ việc đang làm",
   "en": ""
  },
@@ -1822,11 +1826,6 @@
  },
  {
   "vi": "Chào mừng đồng nghiệp văn phòng mới của phố mình 👔 $1 vừa được nhận vào $2 rồi đó mọi người. Thật ra đi làm văn phòng có nhiều cái phải học lắm: email, họp hành, báo cáo… để anh chỉ dần cho nha 🤓",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cô không có ý gì đâu nha, nhưng mấy hôm nay thấy $1 đêm nào cũng về khuya lắm, hôm qua gần 12 giờ mới dắt xe vô hẻm. Làm gì mà khuya dữ vậy ta… chắc đi làm “phố đêm” 🤔 Cô chỉ nói những gì cô thấy thôi.",
   "en": "",
   "pattern": true
  }

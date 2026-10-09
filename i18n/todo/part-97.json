@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Sửa lỗi mục Kế hoạch cưới không mở được khi kế hoạch của hai bạn đã gửi hoặc đã chốt.",
+  "en": ""
+ },
+ {
   "vi": "Thả cảm xúc trong chat: nhấn giữ một tin nhắn rồi chọn ❤️ 😂 😮 😢 👍 🔥. Bấm lại để bỏ, chọn cái khác để đổi.",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Máy chủ đọc/ghi bản lưu khi người chơi thao tác; số liệu vận hành tính nền theo mẫu, có giới hạn thời gian và tạm dừng khi máy bận, để không làm chậm người chơi.",
-  "en": ""
- },
- {
-  "vi": "Phần của tổng quan đầu tư",
   "en": ""
  }
 ]
