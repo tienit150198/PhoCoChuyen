@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Kệ hết $1: nhập ở Kho",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kệ hết $1: nhập thêm ở Kho rồi soạn tiếp nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(+$1 phút soát lại)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hai sổ có $1 dòng — ghép từng cặp, dòng lẻ chọn lý do.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ có $1 tài liệu — làm lần lượt từng bước.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 Mua $2 giá $3 xu.",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "Ô $1 chưa khớp số vừa đo. Nhìn máy đo rồi ghi lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Phiếu theo dõi ghi sai $1 so với số đo thật.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📝 Đã ghi phiếu. (Ô $1 không khớp số đo.)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📞 Báo bác sĩ Khang: $1. — “Các số này trong ngưỡng, cảm ơn em đã báo. Cứ theo dõi tiếp nhé.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Báo bác sĩ mà quên nói $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📞 Báo bác sĩ Khang: $1.$2",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Số đếm $1 chưa khớp số hàng thực có trong thùng. Đếm lại nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kiểm nhận đơn gộp từ $1: $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã nhập kho cả thùng: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giao thiếu $1 món: bấm “Khiếu nại phần thiếu” ngay trong kho để được hoàn $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "cho $1 xu đầu, phần trên lãi $2,$3%/ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã gửi $1 xu. Lãi $2,$3%/ngày$4, cộng vào sổ mỗi $5 ngày.",
   "en": "",
   "pattern": true

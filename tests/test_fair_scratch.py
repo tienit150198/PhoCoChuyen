@@ -221,6 +221,7 @@ class Scratch(FairBase):
         self.assertEqual(fh._row_count(dict(label='x · y vé')), 0)
 
     def test_closed_after_the_fair(self):
+        self.with_end()
         s = story(100)
         self.clock.t = AFTER
         with self.assertRaises(GameError) as e:

@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Mời bạn đến nhà",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nhà có thể thu hồi quyền vào nhà; người được mời có thể từ chối hoặc rời nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời nhận được",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời dành cho bạn",
+  "en": ""
+ },
+ {
+  "vi": "Vào được cả khi chủ nhà vắng mặt.",
+  "en": ""
+ },
+ {
   "vi": "Đồng ý lời mời của bạn bè để vào nhà.",
   "en": ""
  },
@@ -1500,7 +1520,7 @@
   "en": ""
  },
  {
-  "vi": "🪨 Ô ăn quan · 💍 Ném vòng kiếm xu · 🦀 Bầu cua · 🎱 Lô tô ·",
+  "vi": "🪨 Ô ăn quan · 💍 Ném vòng kiếm xu · 🦀 Bầu cua · 🎱 Lô tô",
   "en": ""
  },
  {
@@ -1777,26 +1797,6 @@
  },
  {
   "vi": "🎤 Thêm bài",
-  "en": ""
- },
- {
-  "vi": "Dán link YouTube",
-  "en": ""
- },
- {
-  "vi": "Mở YouTube → Chia sẻ → Sao chép đường liên kết → dán vào đây",
-  "en": ""
- },
- {
-  "vi": "✓ Phát được",
-  "en": ""
- },
- {
-  "vi": "Không phát được",
-  "en": ""
- },
- {
-  "vi": "Link thưởng (tùy)",
   "en": ""
  }
 ]

@@ -15,6 +15,12 @@ nhận danh hiệu vua trò chơi nhé").
   same transaction as the grants) and stores the winners there for the board's view; every other call is a no-op
   (a memo per process: no database read after that). Called from the server's housekeeping loop and, best effort,
   from /api/bootstrap and GET /api/leaderboard of the fair board.
+* No end (owner 09/10: "chợ đen mở mãi", game/fair.py forever()): the edition never closes, so its titles are crowned
+  every week instead: the first process past Monday 00:00 (Vietnam, +GRACE) takes the board as shown then, the same
+  way (meta 'fair:<edition>@<that Monday>', crown()), and the board's view shows the latest crowning. The board is
+  not reset: it keeps counting the edition's xu, so a week's crowning is the standings at that moment. A player
+  crowned again gets nothing twice (the row id is per edition, title and player); the titles are kept for good. A
+  server that missed a Monday crowns only the latest one.
 
 No new table, no schema change: leaderboard, leaderboard_meta and live_effects exist in PostgreSQL.
 """
@@ -56,18 +62,44 @@ def standings(db, board: str, n: int = TOP) -> list:
 
 
 def settle(store, t: float | None = None, best_effort_ms: int | None = None) -> list | None:
-    """Once the fair is over: grant its titles. Returns the winners when this call did it, else None. Cheap before
-    the end (a clock read) and after it is done (a memo). An earlier edition (fair.past(): a server that was not
-    running at its end) is settled first, the same way, at most once too."""
+    """Once the fair is over (without an end: once a week, crown()): grant its titles. Returns the winners when this
+    call did it, else None. Cheap before the end (a clock read) and after it is done (a memo). An earlier edition
+    (fair.past(): a server that was not running at its end) is settled first, the same way, at most once too."""
     t = now() if t is None else t
     for ed, board, closes in fh.past():
         _settle(store, ed, board, closes, t, best_effort_ms)
+    if fh.forever():   # no end: this week's crowning (Monday 00:00), once the first one has come
+        mark = crown(t)
+        return _settle(store, fh.edition(), fh.board(), mark, t, best_effort_ms, _week_key(mark)) if mark else None
     return _settle(store, fh.edition(), fh.board(), fh.window()[1], t, best_effort_ms)
 
 
-def _settle(store, ed: str, board: str, closes: int, t: float, best_effort_ms: int | None) -> list | None:
+def crown(t: float) -> int | None:
+    """The latest weekly crowning at or before t (Monday 00:00 Vietnam, epoch seconds) of the edition without an end,
+    None before its first one (the first Monday after it opened)."""
+    from .wedding_live import week_start
+    mark = int(week_start(t))
+    return mark if mark > fh.window()[0] else None
+
+
+def next_crown(t: float) -> int:
+    """The next weekly crowning after t (epoch seconds)."""
+    from .wedding_live import week_start
+    return max(int(week_start(t)) + 7 * 86400, int(week_start(fh.window()[0])) + 7 * 86400)
+
+
+def _week_key(mark: int) -> str:
+    """The meta key's suffix of the crowning at `mark`: the edition plus '@' and that Monday's Vietnam date."""
+    from .wedding_live import vn_day
+    return fh.edition() + '@' + vn_day(mark)
+
+
+def _settle(store, ed: str, board: str, closes: int, t: float, best_effort_ms: int | None, key: str | None = None) -> list | None:
+    """Grant `ed`'s titles from `board` once t is past `closes` + GRACE, at most once for `key` (default: the edition,
+    its end; a weekly crowning: _week_key)."""
     from .wedding_live import grant
-    memo = (_key(store), ed)
+    key = key or ed
+    memo = (_key(store), key)
     if t < closes + GRACE or memo in _done:
         return None
     with _lock:
@@ -75,16 +107,16 @@ def _settle(store, ed: str, board: str, closes: int, t: float, best_effort_ms: i
             return None
 
         def step(db):
-            if db.execute('SELECT 1 FROM leaderboard_meta WHERE k=?', (META + ed,)).fetchone():
+            if db.execute('SELECT 1 FROM leaderboard_meta WHERE k=?', (META + key,)).fetchone():
                 return False
-            if db.execute('INSERT INTO leaderboard_meta(k,v) VALUES(?,?) ON CONFLICT(k) DO NOTHING', (META + ed, '[]')).rowcount != 1:
+            if db.execute('INSERT INTO leaderboard_meta(k,v) VALUES(?,?) ON CONFLICT(k) DO NOTHING', (META + key, '[]')).rowcount != 1:
                 return False
             winners = []
             for rank, sid, score in standings(db, board):
                 tid = title_for(rank)
                 grant(db, sid, 'title', 1, f'{ed}:{tid}:{sid}', dict(title=tid, src='fair'))
                 winners.append(dict(rank=rank, sid=sid, score=score, title=tid))
-            db.execute('UPDATE leaderboard_meta SET v=? WHERE k=?', (json.dumps(winners, separators=(',', ':')), META + ed))
+            db.execute('UPDATE leaderboard_meta SET v=? WHERE k=?', (json.dumps(winners, separators=(',', ':')), META + key))
             return winners
         did = store.transaction(step, best_effort_ms)
         if did is None:     # busy (best effort): a later call does it
@@ -112,28 +144,44 @@ def ensure(store) -> None:
         pass
 
 
-def winners(store) -> list:
-    """[{rank, sid, score, title}] once settled, else []."""
-    with store.connect() as db:
-        row = db.execute('SELECT v FROM leaderboard_meta WHERE k=?', (META + fh.edition(),)).fetchone()
+def _latest(db):
+    """The meta row of the edition's latest crowning (its end, or its latest week while it has none), or None."""
+    if fh.forever():   # the newest weekly one (their keys end with the date); the end's (an older server's) before them
+        rows = db.execute('SELECT k,v FROM leaderboard_meta WHERE k=? OR k LIKE ?',
+                          (META + fh.edition(), META + fh.edition() + '@%')).fetchall()   # a row a week
+        return max(rows, key=lambda r: ('@' in str(r[0]), str(r[0])), default=None)
+    return db.execute('SELECT k,v FROM leaderboard_meta WHERE k=?', (META + fh.edition(),)).fetchone()
+
+
+def _parse(row) -> list:
     if not row:
         return []
     try:
-        got = json.loads(row[0])
+        got = json.loads(row[1])
     except (TypeError, ValueError):
         return []
     return got if isinstance(got, list) else []
 
 
+def winners(store) -> list:
+    """[{rank, sid, score, title}] of the latest crowning, else []."""
+    with store.connect() as db:
+        return _parse(_latest(db))
+
+
 def board_view(store, viewer: str | None) -> dict:
     """The fair block of GET /api/leaderboard?board=<edition>: the titles at stake, the dates, and the winners
-    once settled (names as the board shows them now)."""
+    once settled (names as the board shows them now). Without an end: `closes` NEVER, `weekly` True, `next` the next
+    crowning (epoch seconds), `crowned` the Monday of the winners shown ('YYYY-MM-DD', or None)."""
     from . import lb_titles as lbt
     from .journey import TITLE_INDEX
     opens, closes = fh.window()
+    forever = fh.forever()
     tiers = [dict(label=tr['label'], lo=tr['lo'], hi=tr['hi'], emoji=TITLE_INDEX[tr['title']]['emoji'],
                   name=TITLE_INDEX[tr['title']]['name']) for tr in TIERS]
-    won = winners(store)
+    with store.connect() as db:
+        latest = _latest(db)
+    won = _parse(latest)
     out = []
     if won:
         sids = [w['sid'] for w in won]
@@ -147,9 +195,9 @@ def board_view(store, viewer: str | None) -> dict:
             t = TITLE_INDEX.get(w.get('title'), {})
             out.append(dict(rank=w['rank'], score=w['score'], name=lbt._public(r, viewer) if r else 'Một người chơi',
                             me=w['sid'] == viewer, emoji=t.get('emoji', ''), title=t.get('name', '')))
-    return dict(edition=fh.edition(), opens=opens, closes=closes, settled=bool(won) or _settled(store), tiers=tiers, winners=out)
-
-
-def _settled(store) -> bool:
-    with store.connect() as db:
-        return bool(db.execute('SELECT 1 FROM leaderboard_meta WHERE k=?', (META + fh.edition(),)).fetchone())
+    out_view = dict(edition=fh.edition(), opens=opens, closes=closes, settled=bool(latest),
+                    tiers=tiers, winners=out)
+    if forever:
+        k = str(latest[0]) if latest else ''
+        out_view.update(weekly=True, next=next_crown(now()), crowned=k.rpartition('@')[2] if '@' in k else None)
+    return out_view

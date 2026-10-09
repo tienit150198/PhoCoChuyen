@@ -54,6 +54,9 @@ rounds readable. An already-started chance knife level can finish without a rand
 loss; its next level uses skill. fair_kn_skill locks the gentler board schedule for
 new skill levels. No client-supplied win flag is trusted; the server replays taps.
 Commands are idempotent through storage.
+
+🕶️ No end (owner 09/10: "chợ đen mở mãi đi, k có thời hạn nhé"): the edition fair20261009 stays open for good
+(FAIR_DAYS 0, forever()); its Bảng vàng keeps counting and its titles are crowned every Monday (game/fair_board.py).
 """
 from __future__ import annotations
 
@@ -75,7 +78,12 @@ from . import fair_bm as bm     # 🕶️ Chợ đen: the bảo kê at the gate,
 
 VERSION = 1
 FAIR_START = '2026-10-09'      # first day (Vietnam date), 00:00 UTC+7 (owner 08/10: the fair opens again)
-FAIR_DAYS = 5
+# Owner 09/10: "chợ đen mở mãi đi, k có thời hạn nhé": the edition that opened on FAIR_START stays open, no end
+# (FAIR_DAYS 0; window() then closes at NEVER, public() says `forever`). The same edition id goes on, so the save's
+# money of the fair, the Bảng vàng and the gift carry on. Its titles are crowned weekly instead (game/fair_board.py);
+# a vay nóng is paid back whenever (no close to collect it at). MNL_FAIR_DAYS > 0 gives an edition an end again.
+FAIR_DAYS = 0
+NEVER = 4102444800             # "closes" of an edition without an end (2100-01-01): every `t < closes` holds
 PAST = (('2026-10-03', 5),)    # earlier editions (first day, days): their titles are settled even by a server that
                                # missed their end (game/fair_board.py)
 SHOW_BEFORE = 2 * 86400        # the entry shows "sắp mở" this long before the start
@@ -232,10 +240,12 @@ TITLE_ROWS = (   # journey.TITLES (secret, granted here only)
     ('f_bao', '🌪️', 'Trúng bão bầu cua', 'Ba con xúc xắc cùng ra đúng mặt bạn đặt ở chợ đen.'),
     ('f_dart', '🎯', 'Mắt thần phi tiêu', 'Phóng phi tiêu cắm ngay hồng tâm ở chợ đen.'),
     ('f_raid', '🚨', 'Bị công an hỏi thăm', 'Đang chơi ở chợ đen thì công an phường ập vào kiểm tra.'),
-    ('f_king', '👑', 'Vua trò chơi', 'Đứng đầu Bảng vàng chợ đen khi chợ tàn.'),
-    ('f_master', '🎪', 'Cao thủ chợ đen', 'Lọt top 10 Bảng vàng chợ đen khi chợ tàn.'),
+    ('f_king', '👑', 'Vua trò chơi', 'Đứng đầu Bảng vàng chợ đen lúc chốt danh hiệu.'),
+    ('f_master', '🎪', 'Cao thủ chợ đen', 'Lọt top 10 Bảng vàng chợ đen lúc chốt danh hiệu.'),
 )
-AWARDS = ('f_king', 'f_master')   # granted after the end by game/fair_board.py (through game/live_effects.py)
+# granted by game/fair_board.py (through game/live_effects.py): every Monday 00:00 (Vietnam) while the Chợ đen has no
+# end, after the end for an edition that has one
+AWARDS = ('f_king', 'f_master')
 AWARD_NAMES = {tid: f'{emoji} {name}' for tid, emoji, name, _ in TITLE_ROWS if tid in AWARDS}
 STATS = ('bc', 'xd', 'lt', 'lt_won', 'raids', 'bao', 'won', 'lost', 'oaq', 'oaq_won', 'ring', 'ring_hits', 'earned')
 KEYS = ('v', 'date', 'net', 'rounds', 'last', 'raid_until', 'loto', 'stats', 'ed', 'pts', 'dpts', 'pdays', 'pday',
@@ -290,18 +300,25 @@ def _start_date() -> datetime.date:
 
 
 def _days() -> int:
+    """The edition's days; 0: no end (FAIR_DAYS, owner 09/10)."""
     try:
         n = int(os.environ.get('MNL_FAIR_DAYS', '') or FAIR_DAYS)
     except ValueError:
         n = FAIR_DAYS
-    return max(1, min(30, n))
+    return max(0, min(30, n))
+
+
+def forever() -> bool:
+    """The edition has no end (owner 09/10 "chợ đen mở mãi"): no countdown, no close, titles crowned weekly."""
+    return _days() == 0
 
 
 def window() -> tuple[int, int]:
-    """(opens, closes) as epoch seconds: FAIR_START 00:00 Vietnam time, FAIR_DAYS days later."""
+    """(opens, closes) as epoch seconds: FAIR_START 00:00 Vietnam time, FAIR_DAYS days later (NEVER: no end)."""
     d = _start_date()
-    t0 = datetime.datetime(d.year, d.month, d.day, tzinfo=VN).timestamp()
-    return int(t0), int(t0) + _days() * 86400
+    t0 = int(datetime.datetime(d.year, d.month, d.day, tzinfo=VN).timestamp())
+    n = _days()
+    return t0, (t0 + n * 86400 if n else NEVER)
 
 
 def is_open(t: float | None = None) -> bool:
@@ -1568,7 +1585,9 @@ def public(s: dict) -> dict:
     j = s.get('journey') or {}
     t = now()
     opens, closes = window()
-    base = dict(open=opens <= t < closes, opens=opens, closes=closes)   # no clock here: the same save gives the same bytes
+    # no clock here: the same save gives the same bytes. `forever`: no end, no countdown (`closes` is then NEVER: an
+    # older client, which has no `forever`, counts down years instead of minutes)
+    base = dict(open=opens <= t < closes, opens=opens, closes=closes, forever=forever())
     if not j.get('story') or not (opens - SHOW_BEFORE <= t < closes + SHOW_AFTER):
         return dict(base, show=False)
     f = j.get('fair') if isinstance(j.get('fair'), dict) else None
@@ -1656,8 +1675,9 @@ def knife_public(j: dict, f: dict | None, t: float) -> dict:
 
 
 def settle(s: dict) -> None:
-    """Before every command (engine._apply_action): a vay nóng of a fair that has closed is collected (fair_cash);
-    a 🗡️ phóng dao prize left waiting from an earlier day is paid."""
+    """Before every command (engine._apply_action): a vay nóng of a fair that has closed (or of an earlier edition) is
+    collected (fair_cash; the edition without an end never closes: its loans wait to be paid back); a 🗡️ phóng dao
+    prize left waiting from an earlier day is paid."""
     _kn_settle(s)
     j = s.get('journey')
     if isinstance(j, dict) and 'fair_cash' in j:

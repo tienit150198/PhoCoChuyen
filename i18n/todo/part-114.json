@@ -1,6 +1,10 @@
 [
  {
-  "vi": "Top 1 khi chợ tàn thành 👑 Vua trò chơi",
+  "vi": "Cược bằng xu",
+  "en": ""
+ },
+ {
+  "vi": "Bảng vàng chợ đen",
   "en": ""
  },
  {
@@ -25,6 +29,14 @@
  },
  {
   "vi": "Ai thắng nhiều xu nhất đứng đầu",
+  "en": ""
+ },
+ {
+  "vi": "mỗi thứ Hai",
+  "en": ""
+ },
+ {
+  "vi": "khi chợ tàn",
   "en": ""
  },
  {
@@ -764,10 +776,6 @@
   "en": ""
  },
  {
-  "vi": "Chợ tàn mà chưa trả thì bà tự thu: lấy tiền trong ví trước, thiếu thì lấy từ tài khoản ngân hàng, vẫn thiếu thì trừ dần khi bạn có tiền vào ví. Ví không bao giờ bị âm.",
-  "en": ""
- },
- {
   "vi": "Chưa đủ thì cứ chơi tiếp, có đủ rồi ghé trả bà nha.",
   "en": ""
  },
@@ -777,6 +785,14 @@
  },
  {
   "vi": "Đang trả…",
+  "en": ""
+ },
+ {
+  "vi": "Trả lúc nào cũng được, trả hết rồi mới vay tiếp. Nợ cũ còn lại thì tự trừ dần khi bạn có tiền vào ví. Ví không bao giờ bị âm.",
+  "en": ""
+ },
+ {
+  "vi": "Chợ tàn mà chưa trả thì bà tự thu: lấy tiền trong ví trước, thiếu thì lấy từ tài khoản ngân hàng, vẫn thiếu thì trừ dần khi bạn có tiền vào ví. Ví không bao giờ bị âm.",
   "en": ""
  },
  {
@@ -792,11 +808,15 @@
   "en": ""
  },
  {
-  "vi": "Mỗi lần một khoản. Trả hết lúc nào cũng được ngay tại đây. Chợ tàn mà chưa trả thì bà tự thu từ ví, rồi tài khoản ngân hàng; còn thiếu thì trừ dần khi có tiền vào ví.",
+  "vi": "Thiếu vốn chơi hả con? Bà cho vay liền, lãi hai chục phần trăm thôi, trả lúc nào cũng được.",
   "en": ""
  },
  {
-  "vi": "Thiếu vốn chơi hả con? Bà cho vay liền, lãi hai chục phần trăm thôi, trả lúc nào cũng được.",
+  "vi": ", trả xong mới vay tiếp.",
+  "en": ""
+ },
+ {
+  "vi": ". Chợ tàn mà chưa trả thì bà tự thu từ ví, rồi tài khoản ngân hàng; còn thiếu thì trừ dần khi có tiền vào ví.",
   "en": ""
  },
  {
@@ -1777,26 +1797,6 @@
  },
  {
   "vi": "Nhà có thể vào",
-  "en": ""
- },
- {
-  "vi": "Mời bạn đến nhà",
-  "en": ""
- },
- {
-  "vi": "Chủ nhà có thể thu hồi quyền vào nhà; người được mời có thể từ chối hoặc rời nhà.",
-  "en": ""
- },
- {
-  "vi": "Lời mời nhận được",
-  "en": ""
- },
- {
-  "vi": "Lời mời dành cho bạn",
-  "en": ""
- },
- {
-  "vi": "Vào được cả khi chủ nhà vắng mặt.",
   "en": ""
  }
 ]

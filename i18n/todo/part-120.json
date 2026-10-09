@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Dòng $1: hai bên Nợ/Có đang bị đảo. Tài sản, chi phí tăng ghi Nợ; nợ phải trả, vốn, doanh thu tăng ghi Có.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dòng $1: bên Nợ chưa đúng. Hỏi lại: tài khoản nào tăng tài sản/chi phí hoặc giảm nợ trong chứng từ này?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dòng $1: bên Có chưa đúng. Hỏi lại: nguồn tiền hay nghĩa vụ nào đối ứng với bên Nợ?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tài khoản đúng, nhưng số tiền ở dòng $1 chưa khớp chứng từ. Đối chiếu lại giá chưa thuế, thuế và tổng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bạn $1",
   "en": "",
   "pattern": true
@@ -1526,31 +1551,6 @@
  },
  {
   "vi": "Dạ $1 ghé phòng lương giờ hành chính, em mở bảng chấm công giải thích từng dòng ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ lương tính từ bảng chấm công, trừ bảo hiểm và thuế rồi mới ra phiếu. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ $1 cho em xin lịch họp ngắn, mình rà lại bút toán loại trừ cùng nhau ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ ban làm theo thứ tự: nhận số công ty con, đối chiếu nội bộ, loại trừ rồi mới hợp nhất. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ tổ thu theo lịch từng ngõ, rác nguy hại để riêng, ghi vào sổ tuyến. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ còn nghẹt là $1 gọi, chú Hai với con quay lại thông tiếp, không tính thêm ạ.",
   "en": "",
   "pattern": true
  }

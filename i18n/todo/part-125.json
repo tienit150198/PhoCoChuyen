@@ -1,5 +1,30 @@
 [
  {
+  "vi": "📒 Sổ trực ban thật, nhưng thiếu: “$1”. Ca sau phải gọi điện hỏi lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👮 Ca trực: $1 việc ở Công an phường Mây.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🤝 Giúp dân $1 việc: giấy tờ, đồ thất lạc, hòa giải, trẻ lạc, tin báo.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚶 Tuần tra: $1 lần nhắc nhở, $2 biên bản. Nhắc trước, biên bản sau.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✉️ Từ chối $1 phong bì. Đúng bài.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "📋 $1 báo cáo sự việc. Mai họp tổ rút kinh nghiệm.",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "Quà cho $1: $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhận quà: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cần $1 xu làm phong bì mừng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Phong bì đi dự: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn tới chung vui với $1. Cả nhà mừng lắm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn nhắn lời chúc tới $1. $2 cảm ơn.",
   "en": "",
   "pattern": true
  }

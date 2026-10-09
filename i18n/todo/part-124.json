@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Phiếu theo dõi ghi sai $1 so với số đo thật.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📝 Đã ghi phiếu. (Ô $1 không khớp số đo.)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📞 Báo bác sĩ Khang: $1. — “Các số này trong ngưỡng, cảm ơn em đã báo. Cứ theo dõi tiếp nhé.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Báo bác sĩ mà quên nói $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📞 Báo bác sĩ Khang: $1.$2",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "📞 Bác sĩ Khang tới giải thích từng bước nội soi, nói rõ lợi ích và rủi ro, trả lời hết câu hỏi. $1 thở phào, ký giấy cam đoan.",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "📒 Anh Định đọc sổ, khựng lại ở dòng “$1”: “Cái này đâu có xảy ra, em?” Ghi khống vào sổ trực ban. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Sổ trực ban thật, nhưng thiếu: “$1”. Ca sau phải gọi điện hỏi lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👮 Ca trực: $1 việc ở Công an phường Mây.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🤝 Giúp dân $1 việc: giấy tờ, đồ thất lạc, hòa giải, trẻ lạc, tin báo.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚶 Tuần tra: $1 lần nhắc nhở, $2 biên bản. Nhắc trước, biên bản sau.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✉️ Từ chối $1 phong bì. Đúng bài.",
   "en": "",
   "pattern": true
  }

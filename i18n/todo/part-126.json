@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Nhận quà: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cần $1 xu làm phong bì mừng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phong bì đi dự: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn tới chung vui với $1. Cả nhà mừng lắm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn nhắn lời chúc tới $1. $2 cảm ơn.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bạn thưởng thức $1. Ấm lòng ghê.",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "$1 giao một chuyến $2 ($3).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Số đếm $1 chưa khớp số hàng thực có trong thùng. Đếm lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kiểm nhận đơn gộp từ $1: $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã nhập kho cả thùng: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giao thiếu $1 món: bấm “Khiếu nại phần thiếu” ngay trong kho để được hoàn $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "cho $1 xu đầu, phần trên lãi $2,$3%/ngày",
   "en": "",
   "pattern": true
  }

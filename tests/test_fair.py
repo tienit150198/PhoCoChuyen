@@ -34,7 +34,7 @@ def at(y, m, d, hh=12, mm=0, ss=0):
 
 OPEN = at(2026, 10, 10, 20)         # day 2 of the default fair (09/10 → 13/10, owner 08/10: the fair opens again)
 BEFORE = at(2026, 10, 8, 23, 59)
-AFTER = at(2026, 10, 14, 0, 0)       # the first second after the fair
+AFTER = at(2026, 10, 14, 0, 0)       # the first second after a five-day edition (with_end(); owner 09/10: no end now)
 
 
 class Dice:
@@ -95,6 +95,11 @@ class FairBase(unittest.TestCase):
             q.start()
             self.addCleanup(q.stop)
         self.dice(Dice())
+
+    def with_end(self, days=5):
+        """The edition ends after `days` days (MNL_FAIR_DAYS; owner 09/10: by default it has no end): for the tests of the
+        closing rules, which still hold for an edition with an end. Undone with the environment at cleanup."""
+        os.environ['MNL_FAIR_DAYS'] = str(days)
 
     def dice(self, d):
         p = mock.patch.object(fh, '_rng', d)
@@ -274,6 +279,7 @@ class ChieuTrong(FairBase):
 
 class Calendar(FairBase):
     def test_closed_outside_the_window(self):
+        self.with_end()
         s = story()
         for t in (BEFORE, AFTER, at(2027, 1, 1)):
             self.clock.t = t
@@ -292,9 +298,14 @@ class Calendar(FairBase):
         self.assertEqual(public_state(s)['fair']['show'], False)
 
     def test_window_and_override(self):
-        a, b = fh.window()
-        self.assertEqual((a, b), (int(at(2026, 10, 9, 0)), int(at(2026, 10, 14, 0))))
+        a, b = fh.window()                                       # owner 09/10: no end
+        self.assertEqual((a, b, fh.forever()), (int(at(2026, 10, 9, 0)), fh.NEVER, True))
+        self.assertTrue(fh.is_open(at(2026, 10, 9, 0)) and fh.is_open(AFTER) and fh.is_open(at(2030, 1, 1)))
+        self.assertFalse(fh.is_open(BEFORE))
+        self.with_end()
+        self.assertEqual(fh.window(), (int(at(2026, 10, 9, 0)), int(at(2026, 10, 14, 0))))
         self.assertTrue(fh.is_open(at(2026, 10, 9, 0)) and fh.is_open(at(2026, 10, 13, 23, 59)) and not fh.is_open(AFTER))
+        self.assertFalse(fh.forever())
         with mock.patch.dict(os.environ, {'MNL_FAIR_START': '2026-11-20', 'MNL_FAIR_DAYS': '3'}):
             self.assertEqual(fh.window(), (int(at(2026, 11, 20, 0)), int(at(2026, 11, 23, 0))))
             self.assertEqual(fh.edition(), 'fair20261120')
@@ -1031,6 +1042,7 @@ class OAQStall(FairBase):
             s, _ = self.act(s, 'fair_oaq_move', cell=c, dir=d)               # the older client: no ply, as before
 
     def test_a_game_begun_while_open_can_be_finished(self):
+        self.with_end()
         s = story(0)
         self.clock.t = AFTER - 60
         with mock.patch.object(oaq, 'ai_move', weakest):
@@ -1282,6 +1294,7 @@ class FairFood(FairBase):
         validate_state(s)
 
     def test_full_still_buys_short_or_closed_refused(self):
+        self.with_end()
         # owner 03/10: "kẹo bông, nước mía… hội chợ không mua được, sửa cho mua nhé" (fresh from breakfast = FULL_CAP)
         s = self.fed(full=100, wake=100)
         s, r = self.act(s, 'fair_snack', item='keo_bong')
@@ -1360,6 +1373,7 @@ class FairPhoto(FairBase):
         validate_state(s)
 
     def test_refused_when_closed_or_malformed(self):
+        self.with_end()
         s = story(50)
         for bad in (dict(mode='group'), dict(mode=3), dict(n=4), dict(mode='solo', price=0)):
             with self.assertRaises(GameError, msg=bad):
@@ -1427,7 +1441,9 @@ class FairCash(FairBase):
         self.assertEqual(e.exception.code, 'fair_gift_done')
         self.assertNotIn('fair', s['journey'])                         # not in today's net, not in points
         validate_state(s)
-        self.clock.t = AFTER
+        self.clock.t = AFTER                                             # no end: still ready for a save without one
+        self.assertTrue(public_state(dict(s, journey=dict(s['journey'], fair_cash=None)))['fair']['cash']['gift_ready'])
+        self.with_end()
         self.assertFalse(public_state(dict(s, journey=dict(s['journey'], fair_cash=None)))['fair']['cash']['gift_ready'])
 
     def test_borrow_and_repay(self):
@@ -1454,6 +1470,7 @@ class FairCash(FairBase):
         validate_state(s)
 
     def test_the_close_collects_wallet_then_bank_then_a_debt(self):
+        self.with_end()
         s = story(0)
         s, _ = self.act(s, 'fair_borrow', amount=500)                   # owes 600
         s['journey']['wallet'] = 100
@@ -1540,6 +1557,7 @@ class Board(StoreBase):
             self.cmd(tok, 'fair_bc', {'bets': {'cua': 1}})
 
     def test_board_settle_once_and_titles_paid_once(self):
+        self.with_end()
         a, b, c = self.player('Anh Ba'), self.player('Chị Tư'), self.player('Cô Năm')
         self.score(b, 5)
         self.score(a, 9)
@@ -1579,6 +1597,7 @@ class Board(StoreBase):
                          [(1, 'Anh Ba', False), (2, 'Chị Tư', False), (3, 'Cô Năm', True)])
 
     def test_hidden_players_are_not_ranked_or_crowned(self):
+        self.with_end()
         a, b = self.player('Anh Ba'), self.player('Chị Tư')
         self.score(a, 9)
         self.score(b, 3)

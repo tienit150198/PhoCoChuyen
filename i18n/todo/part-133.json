@@ -1550,7 +1550,12 @@
   "pattern": true
  },
  {
-  "vi": "Chợ mở ngày $1, mở $2 ngày. Hẹn bà con ghé chơi ô ăn quan, ném vòng, bầu cua, lô tô nha!",
+  "vi": "Chợ mở ngày $1, $2. Hẹn bà con ghé chơi ô ăn quan, ném vòng, bầu cua, lô tô nha!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "mở $1 ngày",
   "en": "",
   "pattern": true
  },
@@ -1566,6 +1571,11 @@
  },
  {
   "vi": "Đấu với Bé Bi (thắng +$1 xu) hoặc Ông Hai (thắng +$2 xu)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Top 1 $1 thành 👑 Vua trò chơi",
   "en": "",
   "pattern": true
  },
@@ -1900,7 +1910,22 @@
   "pattern": true
  },
  {
+  "vi": "Vinh danh thứ Hai$1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bạn đang $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trao mỗi thứ Hai lúc 00:00$1 theo Bảng vàng lúc đó, giữ mãi trong bộ sưu tập.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(lần tới $1)",
   "en": "",
   "pattern": true
  },
@@ -1946,6 +1971,11 @@
  },
  {
   "vi": "(lãi $1%)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mỗi lần một khoản. Trả hết lúc nào cũng được ngay tại đây$1",
   "en": "",
   "pattern": true
  },
@@ -2216,36 +2246,6 @@
  },
  {
   "vi": "Học xong cả $1 bài (đúng hết câu hỏi mỗi bài) rồi mới thi nhé · còn $2 bài.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "câu, mỗi bài một câu · đúng từ $1 câu là đạt · thi lại miễn phí",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thi đạt lần đầu: chứng nhận, danh hiệu 📜 Người kể sử và học bổng $1 xu (trong Hành trình).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "/$1 câu · $2 điểm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã học xong $1 bài và thi đạt $2/100.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang lại gần $1 để $2…",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đến $1",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,25 @@
 [
  {
+  "vi": "🌏 Làm việc ở nước ngoài",
+  "en": ""
+ },
+ {
+  "vi": "Sếp hẹn gặp",
+  "en": ""
+ },
+ {
+  "vi": "Chọn 1–3 điểm mạnh",
+  "en": ""
+ },
+ {
+  "vi": "Chọn kinh nghiệm thật của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có",
+  "en": ""
+ },
+ {
   "vi": "Học và thi",
   "en": ""
  },
@@ -1848,31 +1868,6 @@
  },
  {
   "vi": "Bút toán có $1 dòng Nợ/Có, dùng tài khoản thuộc: $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dòng $1: hai bên Nợ/Có đang bị đảo. Tài sản, chi phí tăng ghi Nợ; nợ phải trả, vốn, doanh thu tăng ghi Có.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dòng $1: bên Nợ chưa đúng. Hỏi lại: tài khoản nào tăng tài sản/chi phí hoặc giảm nợ trong chứng từ này?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dòng $1: bên Có chưa đúng. Hỏi lại: nguồn tiền hay nghĩa vụ nào đối ứng với bên Nợ?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tài khoản đúng, nhưng số tiền ở dòng $1 chưa khớp chứng từ. Đối chiếu lại giá chưa thuế, thuế và tổng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn $1.",
   "en": "",
   "pattern": true
  }

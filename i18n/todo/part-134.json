@@ -1,5 +1,35 @@
 [
  {
+  "vi": "câu, mỗi bài một câu · đúng từ $1 câu là đạt · thi lại miễn phí",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thi đạt lần đầu: chứng nhận, danh hiệu 📜 Người kể sử và học bổng $1 xu (trong Hành trình).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "/$1 câu · $2 điểm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đã học xong $1 bài và thi đạt $2/100.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang lại gần $1 để $2…",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đến $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🏡 Nhà $1",
   "en": "",
   "pattern": true
@@ -2216,36 +2246,6 @@
  },
  {
   "vi": "Nâng cấp nhà $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎨 Trang trí giúp nhà $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quyền trang trí đến $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang cho $1 trang trí nhà bằng đồ trong túi của bạn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hoàn thành$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "/$1 · còn thiếu $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏅 Bộ góc xinh · $1/",
   "en": "",
   "pattern": true
  }
