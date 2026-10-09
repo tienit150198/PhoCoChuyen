@@ -1,3 +1,7 @@
+# Chưa phát hành — kho-compact (không có Có gì mới)
+
+📦 Thẻ "Nhập …" trong Kho & nhập hàng gọn lại (chủ game 10/10 "dài quá, dài dòng quá"; mọi nghề có kho dùng chung thẻ này): 113–131 chữ còn 26–31, cao ~1.150 px còn ~560 px trên điện thoại 360 px. Số liệu thành biểu tượng (📦 16/80 · 55 xu/cái · ⏳ 20 ngày); hóa đơn một dòng "275 xu · sỉ −4% · nhận ~10:15" (tag ship chỉ khi mất phí); lý do không đặt được (thiếu quỹ, kệ đầy, đủ xe đang về) vẫn hiện chữ đỏ ngay dưới, nút Đặt ngay mờ kèm lý do + nút sửa ("Lấy 5"); nhà cung cấp thành hàng một dòng (Chợ đầu mối / Hạt Nắng / Hỏa tốc · giờ · ×giá); giờ giao & điều kiện từng nơi và đoạn "Trả tiền khi đặt…" vào nút "?" của thẻ; nút Thêm vào đơn / Đặt ngay nằm trong thanh dùng chung (.ui-bar). Điện thoại: đầu sheet kho chỉ hiện Quỹ tiệm (ví không trả tiền nhập hàng) để tiêu đề không bị cắt. Size quần áo thành chip một dòng; nhóm hàng quần áo có tên tiếng Việt (Áo, Quần & chân váy…). Chip số lượng bấm sau khi gõ số giờ đổi đúng số. `check_word_caps.py --kho` giữ thẻ ≤ 35 chữ ở 360 và 390 px.
+
 # v1.9.39 — 2026-10-10
 
 Gồm góp ý #303 (quay-fix: mở rộng quầy khi có tình huống chờ, tên quầy che từ không còn invalid_save), #307 (share-deco: journey.decor_stay tùy chọn), #304 (teacher-grades: lớp 2–5, ext.data.homeroom, task.grade_room tùy chọn), #306 (clothing-abroad: tasks abroad tùy chọn).

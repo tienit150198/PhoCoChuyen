@@ -6,25 +6,44 @@
 .inv-how[open]>summary{margin-bottom:0}
 .inv-how p{margin:0 0 6px}
 
-/* Order card: quantity → bill (total, what the fund keeps, why not) → suppliers → buttons. */
-.inv-order .inv-qty .chip,.inv-order .chip.inv-tier{min-height:44px;min-width:44px;justify-content:center;padding-inline:14px}
+/* Order card (owner 10/10 "dài quá, dài dòng quá"): facts as numbers → size chips → quantity → ONE bill line (total ·
+   wholesale · ship only when it costs · when) → the reason in red → one-line supplier rows → the shared bar. */
+.inv-order .inv-qty .chip,.inv-order .chip.inv-tier,.inv-size .chip{min-height:44px;min-width:44px;justify-content:center;padding-inline:14px}
 .inv-order>.row .btn,.inv-cart>.row .btn{min-width:44px;min-height:44px}
+.inv-order>.row.spread:first-child{align-items:center;gap:var(--sp-1)}
+.inv-order>.row.spread:first-child>h3{flex:1 1 auto;margin:0}
 .inv-tabs button{min-height:44px}
-.inv-total.inv-bill{display:block;margin:12px 0 4px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface-2)}
+.inv-order .inv-facts{gap:2px var(--sp-3);margin:2px 0 var(--sp-2)}
+.inv-size{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0 0 var(--sp-2)}
+.inv-lbl{font-size:var(--fs-1);font-weight:700;color:var(--muted)}
+.inv-bill{display:flex;flex-wrap:wrap;align-items:center;gap:6px var(--sp-2);margin:var(--sp-3) 0 0;padding:var(--sp-2) var(--sp-3);border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface-2);font-size:var(--fs-2);line-height:var(--lh)}
 .inv-bill #order-total{font-size:max(16px,1.05rem);font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
-.inv-bill .inv-after{margin-top:2px;font-weight:700;color:var(--ink-2)}
-.inv-bill small{line-height:1.45}
-.inv-bill #order-why:empty{display:none}
-.inv-sups{display:flex;flex-wrap:wrap;gap:8px}
-.choice.inv-sup{display:grid;gap:2px;flex:1 1 140px;width:auto;min-width:0;min-height:44px;padding:8px 12px;border-radius:12px}
-.choice.inv-sup strong{font-size:.867rem;line-height:1.3;overflow-wrap:anywhere}
-.choice.inv-sup small{margin:0;font-size:.8rem;line-height:1.3;overflow-wrap:anywhere}
-.choice.inv-sup small b{color:var(--accent-text)}
-.inv-sup-more{margin:8px 0 0}
-.inv-sup-more>summary{display:flex;align-items:center;min-height:44px;font-size:.833rem;color:var(--muted)}
-.inv-sup-more p{margin:0 0 4px}
-.inv-order-foot{margin:12px 0 8px}
-.inv-order-foot .btn{min-height:44px}
+.inv-bill .inv-eta{margin-left:auto;color:var(--ink-2);white-space:nowrap}
+.inv-bill .inv-eta b{color:var(--accent-text)}
+.inv-why{margin:6px 0 0;font-size:var(--fs-2);font-weight:600;line-height:var(--lh)}
+.inv-why:empty{display:none}
+.inv-sups{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:6px;margin:var(--sp-3) 0 0}
+.inv-sup{display:grid;grid-template-columns:minmax(0,1fr) auto 3.2em;align-items:center;gap:var(--sp-2);width:100%;min-width:0;min-height:44px;padding:4px var(--sp-3);border-radius:var(--radius-sm);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;font-size:var(--fs-2);text-align:left;cursor:pointer}
+.inv-sup-n{min-width:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inv-sup-t{font-weight:700;color:var(--accent-text);white-space:nowrap;font-variant-numeric:tabular-nums}
+.inv-sup-f{text-align:right;color:var(--ink-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.inv-sup.selected{background:var(--accent-soft);border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.inv-sup:disabled{opacity:.55;cursor:default}
+.inv-sup:disabled .inv-sup-t{color:var(--muted);font-weight:500}
+.inv-sup .inv-badge{height:18px;margin-left:2px;vertical-align:1px}
+@media (hover:hover){.inv-sup:not(.selected):not(:disabled):hover{background:var(--surface-2)}}
+/* The shared bar inside the card: sticks to the screen's foot while the card is in view. */
+.inv-order-bar .ui-bar-next>.btn{flex:1 1 auto;min-height:44px;padding-inline:10px;font-size:var(--fs-2);white-space:nowrap}
+.inv-order .inv-qty .chip-row{gap:4px}
+.inv-order .inv-qty .chip,.inv-size .chip{padding-inline:8px}
+/* A 360 px phone: the size row and the quick chips stay one line each (the label is the group's aria-label too). */
+@media (max-width:380px){.inv-lbl{display:none}}
+.inv-order-bar .ui-bar-main>.btn{min-height:44px}
+html[data-layout="phone"] dialog.sheet .inv-order>.ui-bar.inv-order-bar{margin:var(--sp-3) 0 0;border-radius:var(--radius-sm);border-bottom:1px solid var(--line)}
+.inv-help-sups{margin:0;padding:0;list-style:none;display:grid;gap:var(--sp-2)}
+.inv-help-sups li{line-height:var(--lh)}
+/* Header on a phone: only the fund the order is paid from (the wallet never pays here), so the title is not cut. */
+html[data-layout="phone"] .sheet.inv-sheet .mn-line .mn-part:not(.mn-fund):has(~.mn-fund),html[data-layout="phone"] .sheet.inv-sheet .mn-line .mn-sep{display:none}
 
 /* Counting a crate: a tap per good, or press and hold the crate to count one after another. */
 .inv-crate{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}

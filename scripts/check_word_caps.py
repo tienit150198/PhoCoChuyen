@@ -12,12 +12,16 @@ warns in the console of a dev build). Fails when a migrated screen is over its c
 
 Other screens are listed with their counts but do not fail (--all shows every one).
 
+  --kho: the stock room's order card instead (Kho & nhập hàng → one item's "Nhập …" card, shared by every career with
+  a stock room), ≤ KHO_CAP words in the whole card (not just the part on screen), on 360×780 and 390×844, with the
+  sheet title not cut and no sideways scroll (owner 10/10 "dài quá, dài dòng quá": 113–131 words before).
+
   --life: the life sheets instead (story-mode player, wave 5), each ≤ 30 (LIFE): HUD, town map, house, bank (before and
   after opening an account), fair (gift card, then the gate), stall, wardrobe, spending, pets. Karaoke needs the live service
   and is measured by hand (15 words at 1.9.8).
 
   TEST_DATABASE_URL=postgresql://… python scripts/check_word_caps.py [--careers a,b] [--engine chromium|webkit]
-                                                                    [--all] [--json FILE]
+                                                                    [--all] [--json FILE] [--life | --kho]
 Needs `pip install playwright` + the browser. Exit code 0 = within caps, 1 = over, 2 = could not run.
 """
 from __future__ import annotations
@@ -168,6 +172,87 @@ async def run_life(args) -> int:
     return 0
 
 
+# The stock room's order card (views.js orderCard): every career with a stock room shares it.
+KHO_CAP = 35
+KHO = ('cafe_bakery', 'clothing', 'grocery', 'florist', 'repair')
+KHO_COUNT = r"""() => {
+  const d = [...document.querySelectorAll('dialog[open]')].pop(), card = d?.querySelector('.inv-order');
+  if (!card) return null;
+  let n = 0; const tw = document.createTreeWalker(card, NodeFilter.SHOW_TEXT);
+  for (let t; (t = tw.nextNode());) { const s = t.textContent.trim(), p = t.parentElement;
+    if (!s || !p || p.closest('[hidden],.sr-only') || !p.getClientRects().length) continue;
+    if (p.closest('details:not([open])') && !p.closest('summary')) continue;
+    if (p.checkVisibility && !p.checkVisibility({opacityProperty: true, visibilityProperty: true})) continue;
+    n += s.split(/\s+/).filter(k => /\p{L}/u.test(k)).length; }
+  const h2 = d.querySelector('.sheet-head h2');
+  return {words: n, cut: h2 ? h2.scrollWidth > h2.clientWidth + 1 : false,
+          wide: document.scrollingElement.scrollWidth > innerWidth + 1 || d.scrollWidth > d.clientWidth + 1};
+}"""
+TAP = """([action, item]) => {const b = document.createElement('button'); b.type = 'button'; b.dataset.action = action;
+  if (item) b.dataset.item = item; b.style.cssText = 'position:fixed;opacity:0';
+  (document.querySelector('dialog[open]') || document.body).append(b); b.click(); b.remove();}"""
+
+
+async def run_kho(args) -> int:
+    """The order card of the stock room, on two phone sizes."""
+    from playwright.async_api import async_playwright
+    careers = [c for c in (args.careers.split(',') if args.careers else KHO) if c]
+    rows, over = [], []
+    with server() as base:
+        async with async_playwright() as pw:
+            browser = await getattr(pw, args.engine).launch()
+            for w, h in ((360, 780), (390, 844)):
+                ctx = await browser.new_context(viewport=dict(width=w, height=h), has_touch=True, is_mobile=args.engine != 'firefox')
+                await ctx.add_init_script("try{localStorage.setItem('mnl.tut.done','1');localStorage.setItem('mnl.wn.seen','9.9.9');localStorage.setItem('mnl.tut.tips','done');localStorage.setItem('mnl.clean','on')}catch(e){}")
+                page = await ctx.new_page()
+                page.set_default_timeout(10000)
+                await page.goto(base + '/')
+                await page.wait_for_selector('#app:not([hidden])', timeout=60000)
+                await settle(page)
+                for cid in careers:
+                    try:
+                        if not await open_career(page, cid):
+                            rows.append(dict(career=cid, error='could not open'))
+                            continue
+                        await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
+                        await page.evaluate(TAP, ['inventory', ''])
+                        await settle(page, 1500)
+                        item = await page.evaluate("(document.querySelector('dialog[open] [data-action=v4Order][data-item]:not([data-item=\"\"])')||{dataset:{}}).dataset.item||null")
+                        if not item:
+                            rows.append(dict(career=cid, error='no item to order'))
+                            print(f'{cid:18} ERROR no item to order', flush=True)
+                            continue
+                        await page.evaluate(TAP, ['v4Order', item])
+                        await settle(page, 1500)
+                        m = await page.evaluate(KHO_COUNT)
+                        if not m:
+                            rows.append(dict(career=cid, error='no order card'))
+                            continue
+                        rows.append(dict(career=cid, size=f'{w}x{h}', kho=m['words'], cut=m['cut'], wide=m['wide']))
+                        if m['words'] > KHO_CAP:
+                            over.append(f'{cid} {w}x{h} order card: {m["words"]} words (cap {KHO_CAP})')
+                        if m['cut']:
+                            over.append(f'{cid} {w}x{h}: the sheet title is cut')
+                        if m['wide']:
+                            over.append(f'{cid} {w}x{h}: the sheet scrolls sideways')
+                        print(f"{cid:18} {w}x{h}  kho {m['words']:>3}{'  TITLE CUT' if m['cut'] else ''}{'  WIDE' if m['wide'] else ''}", flush=True)
+                    except Exception as e:  # noqa: BLE001
+                        rows.append(dict(career=cid, error=str(e)[:160]))
+                        print(f'{cid:18} ERROR {str(e)[:160]}', flush=True)
+                await ctx.close()
+            await browser.close()
+    if args.json:
+        Path(args.json).write_text(json.dumps(rows, ensure_ascii=False, indent=1))
+    errors = [r for r in rows if 'error' in r]
+    if over:
+        print('\nOVER THE CAP:\n  ' + '\n  '.join(over))
+        return 1
+    if errors and len(errors) == len(rows):
+        return 2
+    print(f'\nOK: {len(rows) - len(errors)} order cards within {KHO_CAP} words.')
+    return 0
+
+
 COUNT = r"""async () => {
   const d = [...document.querySelectorAll('dialog[open]')].pop();
   const kit = await import('/js/ui-kit.js');
@@ -279,8 +364,9 @@ def main() -> None:
     ap.add_argument('--all', action='store_true')
     ap.add_argument('--json', default='')
     ap.add_argument('--life', action='store_true', help='the life sheets (town, house, bank, fair…) instead of careers')
+    ap.add_argument('--kho', action='store_true', help="the stock room's order card (Kho & nhập hàng) instead")
     args = ap.parse_args()
-    sys.exit(asyncio.run(run_life(args) if args.life else run(args)))
+    sys.exit(asyncio.run(run_life(args) if args.life else run_kho(args) if args.kho else run(args)))
 
 
 if __name__ == '__main__':
