@@ -1,3 +1,7 @@
+# Chưa phát hành — exploit-fixes (không có Có gì mới, deploy lặng lẽ)
+
+💾 Nhập bản lưu (game/save_guard.py): save của tài khoản không nhập được nữa (chỉ admin khôi phục); khách chỉ nhập bản xuất nguyên vẹn của máy chủ (chữ ký HMAC `sign` trong tệp, khóa SAVE_SIGN_SECRET, thiếu thì lấy từ DATABASE_URL), không cũ hơn và không nhiều xu hơn save hiện tại. Mỗi lần nhập một dòng `[import]` trong log. Nút Nhập bản lưu tắt cho tài khoản.
+
 # v1.9.37 — 2026-10-09
 
 - 🔐 Sự cố tài chính theo lịch (game/mishap.py, live_effects kind `mishap`, scripts/mishap_plan.py): bản cũ bỏ qua loại này (để pending). on_load chỉ trả hàng có `at` đã tới.
