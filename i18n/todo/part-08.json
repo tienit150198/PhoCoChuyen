@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Thẻ không còn dư nợ.",
+  "en": ""
+ },
+ {
   "vi": "Khoản tối thiểu kỳ này đã trả đủ rồi.",
   "en": ""
  },
@@ -281,6 +285,10 @@
  },
  {
   "vi": "Lời nhắn không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn đã chuyển đủ rồi, mai chuyển tiếp nhé.",
   "en": ""
  },
  {
@@ -1765,10 +1773,6 @@
  },
  {
   "vi": "Bà cho Na một chén nhé bà, con bé mê chè bà nấu lắm, bảo ngon hơn chè mẹ nấu 😅",
-  "en": ""
- },
- {
-  "vi": "🔥 FLASH SALE tối nay 8 giờ nha cả nhà 🔥 Son, kem chống nắng, túi xách, giảm tới 50%! Hôm qua Trang chốt 120 đơn, mệt xỉu mà vui 😘 không có ý khoe đâu nha. Hàng xóm mua Trang freeship luôn!",
   "en": ""
  }
 ]

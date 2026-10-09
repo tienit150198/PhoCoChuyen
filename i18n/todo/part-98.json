@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Lỗi · bận",
+  "en": ""
+ },
+ {
+  "vi": "Bị lọc",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn người mới",
+  "en": ""
+ },
+ {
+  "vi": "Tỉ lệ",
+  "en": ""
+ },
+ {
   "vi": "Chưa có người mới được ghi nguồn.",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Gửi việc cho đầu mối →",
-  "en": ""
- },
- {
-  "vi": "Chờ kết quả từ đầu mối",
-  "en": ""
- },
- {
-  "vi": "🔍 Kiểm kết quả",
-  "en": ""
- },
- {
-  "vi": "✓ Hoàn tất & đóng vụ",
-  "en": ""
- },
- {
-  "vi": "Khớp mã đơn khách đưa thì mới được xem hồ sơ.",
   "en": ""
  }
 ]

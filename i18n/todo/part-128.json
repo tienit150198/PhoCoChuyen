@@ -1,5 +1,210 @@
 [
  {
+  "vi": "Chùa đã xem lại sổ ghi chép hôm đó: $1. Nếu $2 còn thấy chỗ nào chưa ổn, chùa xin xem thêm ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ có ghi nhận cụ thể: $1. Chùa gửi $2 để mình cùng nhìn lại cho công bằng ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "A Di Đà Phật, chùa xin lỗi $1 vì $2 chưa chu đáo. Thầy trụ trì đã nhắc lại cả chùa, lần sau sẽ cẩn thận hơn ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chùa xin lỗi $1 ạ. Chuyện $2 là thiếu sót của chùa, đã sửa lại rồi ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ chùa nhận thiếu sót. Mong $1 hoan hỷ, lần sau lên chùa sẽ thấy khác ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cảm ơn $1 đã góp ý. Rằm tới mời $2 ghé lễ, chùa sẽ đón tiếp chu đáo hơn ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lần sau $1 lên chùa cứ gọi một tiếng, chùa chỉ đường, dọn chỗ ngồi cho $2 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mời $1 sáng nào rảnh ghé nghe chuông, uống chén trà với chùa ạ 🍵",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ ở chùa việc gì cũng theo thời khóa: sáng quét sân, trưa lo bếp chay, công đức thì hai người cùng đếm. Hôm đó $1, chùa đang xem lại chỗ cần kỹ hơn ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chùa làm theo nếp: nghe thầy dặn, làm từng việc, xong thì xem lại. Góp ý về $1 chùa đưa vào lời dặn mỗi sáng ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ ngày rằm khách thập phương đông, chùa chỉ dẫn lần lượt nên có lúc phải chờ. Chùa đang sắp xếp lại để $1 tốt hơn ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ chùa “note” lại liền ạ 📝 Lần sau $1 sẽ chỉn chu hơn, $2 ghé lại nghe chuông nha 🪷",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Real ạ, chùa nhận hết 🙏 Lần sau $1 lên là thấy khác liền nha ✨",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "A Di Đà Phật. Chùa đã đọc, cảm ơn $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Không vừa ý thì $1 đi chùa khác, ở đây không cần.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "A Di Đà Phật. Cảm ơn $1 đã ghé chùa, đọc mấy dòng này cả chùa vui lây ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cảm ơn $1 đã thương chùa. Rằm tới mời $2 lên lễ ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đọc xong cả chùa cười hiền, chổi tre quét sân cũng nhẹ tay hơn 😄 Cảm ơn $1 ạ!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ chùa vẫn quét sân mỗi sáng mà, nhưng được $1 để ý thì vẫn vui ạ 😌",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ sổ chùa hôm đó ghi: $1. Cảm ơn $2 đã để ý kỹ vậy ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nếu có gì chưa chu đáo, chùa xin $1 hoan hỷ bỏ qua ạ. Cảm ơn $2 nhiều.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cảm ơn $1 nhiều ạ! Lần sau lên chùa, mời $2 ở lại dùng cơm chay trưa ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ nếp chùa là làm từng việc nhỏ, việc nào cũng xem lại. Cảm ơn $1 đã nhận ra ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Được khen là chùa vui lắm luôn ạ 🙏 $1 ghé lại nghe chuông nha ✨",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "A Di Đà Phật, cảm ơn $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đọc lời $1 viết mà thấy nhẹ lòng, tôi sửa lại sao nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cảm ơn $1 đã trả lời tử tế. Tôi thêm sao.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "A Di Đà Phật, cảm ơn $1. Rằm tới tôi lại lên chùa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cảm ơn $1 đã trả lời. Tôi để nguyên cảm nhận nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi vẫn thấy $1, mong $2 xem lại giúp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Không phải tôi khó, nhưng hôm đó đúng là $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đùa kiểu đó không hợp ở chùa đâu $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ, tôi cảm ơn $1. Hẹn ngày rằm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "A Di Đà Phật, cảm ơn $1 nhiều.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ơ, tôi bấm nhầm sao thật. Sửa lại liền, xin lỗi $1 🙏",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thôi thấy $1 trả lời hiền quá, tôi thêm một sao.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nghe $1 kể nên sáng nay lên chùa, đúng là yên thật 🙏",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 rủ đi lễ rằm, lần đầu lên mà thấy thương chùa liền.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đọc lời $1 viết, tôi dắt mẹ lên chùa. Mẹ vui cả buổi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 rủ bà con lên chùa: thêm $2 cảm nhận tốt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Câu trả lời gắt bị chụp lại, lan khắp xóm: thêm $1 cảm nhận 1★.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Câu đùa bị chụp lại, bà con không vui: thêm $1 cảm nhận 1★.",
   "en": "",
   "pattern": true

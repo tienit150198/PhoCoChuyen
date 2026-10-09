@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Câu đối đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Ghế sofa đơn",
+  "en": ""
+ },
+ {
+  "vi": "Kệ tivi gỗ dài",
+  "en": ""
+ },
+ {
+  "vi": "Ghế bập bênh gỗ",
+  "en": ""
+ },
+ {
   "vi": "Đàn piano đứng",
   "en": ""
  },
@@ -1384,6 +1400,10 @@
   "en": ""
  },
  {
+  "vi": "Chủ quầy phóng dao hết xu trả thưởng hôm nay rồi, mai ghé lại nha.",
+  "en": ""
+ },
+ {
   "vi": "Màn này đã xong rồi.",
   "en": ""
  },
@@ -1393,6 +1413,10 @@
  },
  {
   "vi": "Lâu quá bia ngừng quay rồi, lượt này thua. Phóng lượt mới nha.",
+  "en": ""
+ },
+ {
+  "vi": "Mạng chập chờn, mấy dao vừa rồi chưa tới bia. Phóng tiếp nha.",
   "en": ""
  },
  {
@@ -1756,47 +1780,23 @@
   "en": ""
  },
  {
+  "vi": "Hôm nay Ông Hai đánh nhiều ván quá, ông mệt rồi. Mai cháu ghé nha!",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Công an tịch thu tiền thắng Ông Hai",
+  "en": ""
+ },
+ {
+  "vi": "Thắng Ông Hai liền mấy ván, tiền vô như nước hả? Bàn này là sòng bạc trá hình. Tiền thắng tịch thu, về đồn làm việc!",
+  "en": ""
+ },
+ {
+  "vi": "Công an tịch thu tiền thắng Ông Hai",
+  "en": ""
+ },
+ {
   "vi": "📸 Chụp ảnh chợ đen",
-  "en": ""
- },
- {
-  "vi": "📸 Chụp ảnh hội chợ",
-  "en": ""
- },
- {
-  "vi": "· (\\d{1,6}) lượt",
-  "en": ""
- },
- {
-  "vi": "1 lượt",
-  "en": ""
- },
- {
-  "vi": "Vé Lộc Nhỏ",
-  "en": ""
- },
- {
-  "vi": "Vé Phát Tài",
-  "en": ""
- },
- {
-  "vi": "Vé Như Ý",
-  "en": ""
- },
- {
-  "vi": "Vé Đại Cát",
-  "en": ""
- },
- {
-  "vi": "Vé Tài Lộc",
-  "en": ""
- },
- {
-  "vi": "Vé Phú Quý",
-  "en": ""
- },
- {
-  "vi": "Vé Thịnh Vượng",
   "en": ""
  }
 ]

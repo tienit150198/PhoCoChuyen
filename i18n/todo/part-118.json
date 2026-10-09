@@ -1,5 +1,37 @@
 [
  {
+  "vi": "Dễ tính",
+  "en": ""
+ },
+ {
+  "vi": "Có khách tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "khách tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "người chờ tới lượt",
+  "en": ""
+ },
+ {
+  "vi": "Người tiếp theo đang ghé",
+  "en": ""
+ },
+ {
+  "vi": "Đi lên",
+  "en": ""
+ },
+ {
+  "vi": "Sang phải",
+  "en": ""
+ },
+ {
+  "vi": "Đi xuống",
+  "en": ""
+ },
+ {
   "vi": "Sang trái",
   "en": ""
  },
@@ -1765,38 +1797,6 @@
  },
  {
   "vi": "Công ty đóng",
-  "en": ""
- },
- {
-  "vi": "✓ Đang dùng",
-  "en": ""
- },
- {
-  "vi": "Đổi sang gói này",
-  "en": ""
- },
- {
-  "vi": "Gói trọn",
-  "en": ""
- },
- {
-  "vi": "Gói thường",
-  "en": ""
- },
- {
-  "vi": "Chưa có gì để bảo hiểm",
-  "en": ""
- },
- {
-  "vi": "Ngưng",
-  "en": ""
- },
- {
-  "vi": "🌱 Phố còn bình yên với người mới. Cứ yên tâm làm việc.",
-  "en": ""
- },
- {
-  "vi": "🚔 Tiền hoàn đang chờ: cần tài khoản ngân hàng và số dư dưới mức tối đa để nhận ở ngày sống tiếp theo.",
   "en": ""
  }
 ]

@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Đơn gộp trùng món.",
+  "en": ""
+ },
+ {
+  "vi": "Giá thương lượng sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giá coin cập nhật mỗi 10 phút thực. Chỉ dùng tiền nhàn rỗi nhé.",
+  "en": ""
+ },
+ {
   "vi": "Đánh bạc ở chợ đen",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Phụ huynh nói ngay trước mặt học sinh.",
-  "en": ""
- },
- {
-  "vi": "Bé con của chị ấy cúi gằm mặt.",
-  "en": ""
- },
- {
-  "vi": "Hẹn gặp riêng sau giờ học",
-  "en": ""
- },
- {
-  "vi": "Nói chuyện tử tế thì ai cũng dịu lại.",
   "en": ""
  }
 ]

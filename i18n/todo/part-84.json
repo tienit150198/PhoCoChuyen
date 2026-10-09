@@ -1,5 +1,53 @@
 [
  {
+  "vi": "Đã làm xong và cất món thủ công lên kệ kỷ niệm!",
+  "en": ""
+ },
+ {
+  "vi": "Kỷ niệm đi chơi không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "(?<!\\w)(ủng hộ|shop|quán|tiệm|dịch vụ|giá|khuyến mãi|5 sao|năm sao|quay lại mua|voucher|hoàn tiền|chủ quán|khách hàng|cửa hàng|mới mở|khai trương|đáng tiền|phục vụ)(?!\\w)",
+  "en": ""
+ },
+ {
+  "vi": "sư cô",
+  "en": ""
+ },
+ {
+  "vi": "việc quét dọn, hương đèn",
+  "en": ""
+ },
+ {
+  "vi": "chuyện nhang đèn, an toàn",
+  "en": ""
+ },
+ {
+  "vi": "chuyện sổ công đức",
+  "en": ""
+ },
+ {
+  "vi": "cách nhắc nhở, chỉ dẫn",
+  "en": ""
+ },
+ {
+  "vi": "chuyện phải chờ",
+  "en": ""
+ },
+ {
+  "vi": "thời khóa sáng",
+  "en": ""
+ },
+ {
+  "vi": "lời thầy dặn",
+  "en": ""
+ },
+ {
+  "vi": "cách trả lời",
+  "en": ""
+ },
+ {
   "vi": "buổi ghé chùa",
   "en": ""
  },
@@ -1749,54 +1797,6 @@
  },
  {
   "vi": "Phó phòng tài chính TĐ",
-  "en": ""
- },
- {
-  "vi": "Kế toán trưởng tập đoàn",
-  "en": ""
- },
- {
-  "vi": "Chuyên viên chính",
-  "en": ""
- },
- {
-  "vi": "Trưởng nhóm C&B",
-  "en": ""
- },
- {
-  "vi": "Phó phòng HCNS",
-  "en": ""
- },
- {
-  "vi": "Trưởng phòng HCNS",
-  "en": ""
- },
- {
-  "vi": "Thư ký chính",
-  "en": ""
- },
- {
-  "vi": "Trợ lý giám đốc",
-  "en": ""
- },
- {
-  "vi": "Phó chánh văn phòng",
-  "en": ""
- },
- {
-  "vi": "Chánh văn phòng",
-  "en": ""
- },
- {
-  "vi": "KTV bậc 2",
-  "en": ""
- },
- {
-  "vi": "Trưởng ca hỗ trợ",
-  "en": ""
- },
- {
-  "vi": "Trưởng nhóm hạ tầng",
   "en": ""
  }
 ]

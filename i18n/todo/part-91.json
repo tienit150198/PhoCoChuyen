@@ -1,5 +1,53 @@
 [
  {
+  "vi": "tên quán nghe dễ thương",
+  "en": ""
+ },
+ {
+  "vi": "chậu cây xanh",
+  "en": ""
+ },
+ {
+  "vi": "chậu cây bên cửa sổ xanh mướt",
+  "en": ""
+ },
+ {
+  "vi": "tử vi nói hôm nay hên",
+  "en": ""
+ },
+ {
+  "vi": "tử vi nói hôm nay hợp màu áo của chủ quán, lấy hên",
+  "en": ""
+ },
+ {
+  "vi": "ngồi nghe mưa",
+  "en": ""
+ },
+ {
+  "vi": "trời mưa ngồi trong quán nghe mưa rơi, chill hết sức",
+  "en": ""
+ },
+ {
+  "vi": "không khí hội phố",
+  "en": ""
+ },
+ {
+  "vi": "không khí hội phố vui quá trời",
+  "en": ""
+ },
+ {
+  "vi": "bút ký trơn tay",
+  "en": ""
+ },
+ {
+  "vi": "cây bút ký trơn tay, ký sướng hết sức",
+  "en": ""
+ },
+ {
+  "vi": "đĩa kẹo tiếp khách",
+  "en": ""
+ },
+ {
   "vi": "đĩa kẹo trên bàn tiếp khách ngon bất ngờ",
   "en": ""
  },
@@ -748,10 +796,6 @@
   "en": ""
  },
  {
-  "vi": "Tài khoản ngân hàng bị hack",
-  "en": ""
- },
- {
   "vi": "Xe kêu lạch cạch, phanh hơi lỏng.",
   "en": ""
  },
@@ -1292,6 +1336,22 @@
   "en": ""
  },
  {
+  "vi": "Tài khoản đã lưu tiến trình trên máy chủ, không cần nhập bản lưu. Đăng nhập trên máy mới là chơi tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Tệp lưu không phải bản xuất nguyên vẹn từ máy chủ, không nhập được.",
+  "en": ""
+ },
+ {
+  "vi": "Bản lưu này cũ hơn tiến trình hiện tại, không nhập được.",
+  "en": ""
+ },
+ {
+  "vi": "Bản lưu này giữ nhiều xu hơn tiến trình hiện tại, không nhập được. Muốn chơi trên máy khác, hãy tạo tài khoản rồi đăng nhập ở máy đó.",
+  "en": ""
+ },
+ {
   "vi": "Thiết bị cần bảo dưỡng",
   "en": ""
  },
@@ -1737,66 +1797,6 @@
  },
  {
   "vi": "Tổ kiểm tra",
-  "en": ""
- },
- {
-  "vi": "Quản lý kênh",
-  "en": ""
- },
- {
-  "vi": "Cụ",
-  "en": ""
- },
- {
-  "vi": "hưu trí",
-  "en": ""
- },
- {
-  "vi": "Bạn gọi công an khu vực. Chờ gần hai mươi phút, khách xếp hàng phía sau bắt đầu sốt ruột.",
-  "en": ""
- },
- {
-  "vi": "Tôi đếm nhầm có mấy xu mà gọi cả công an tới, làm quá!",
-  "en": ""
- },
- {
-  "vi": "Người già đếm nhầm mà gọi công an tới, làm quá.",
-  "en": ""
- },
- {
-  "vi": "Con nít thiếu mấy đồng mà gọi công an, làm quá!",
-  "en": ""
- },
- {
-  "vi": "Lần sau nhận tiền nhớ đếm lại trước khi cất vào két.",
-  "en": ""
- },
- {
-  "vi": "Nhận tiền xong đếm lại một lượt, thiếu thì nhắc khách ngay tại quầy.",
-  "en": ""
- },
- {
-  "vi": "Tiền trao tay nên đếm ngay trước mặt khách.",
-  "en": ""
- },
- {
-  "vi": "Chủ nghe chuyện két thiếu, nhắc nhẹ: lần sau đếm lại giúp.",
-  "en": ""
- },
- {
-  "vi": "Đếm lại tiền khách đưa trước đã.",
-  "en": ""
- },
- {
-  "vi": "Chuyện tiền thiếu đã xử lý xong.",
-  "en": ""
- },
- {
-  "vi": "Được nhắc khéo khi đưa thiếu tiền.",
-  "en": ""
- },
- {
-  "vi": "Được bớt cho khoản đưa thiếu.",
   "en": ""
  }
 ]

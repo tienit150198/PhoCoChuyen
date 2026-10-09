@@ -1,5 +1,150 @@
 [
  {
+  "vi": "✗ Chưa khớp $1/$2 ô.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khớp $1/$2 ô — chưa khớp: $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đúng $1/$2 mục cần chọn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", thừa $1 mục",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ghép đúng $1/$2 dòng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thuế không thể lớn hơn thu nhập tính thuế ($1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bậc cao nhất cũng chỉ 20%: thuế không thể vượt 1/5 thu nhập tính thuế ($1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lũy tiến không nhân cả $1 với một mức thuế suất: mỗi phần chỉ chịu thuế suất của bậc chứa nó.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chia thu nhập tính thuế $1 thành từng bậc: $2. Tính thuế từng bậc rồi cộng lại, làm tròn xuống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thu nhập tính thuế $1 chưa vượt bậc đầu: chỉ một mức thuế suất, làm tròn xuống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trừ nghỉ = số ngày nghỉ KHÔNG lương × Lương 1 ngày bạn ghi ($1), nên phải chia hết cho $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cộng bằng chính số của bạn: Lương cơ bản tháng (Hợp đồng) − $1 + ăn trưa + trách nhiệm + điện thoại + $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảo hiểm tính trên Lương đóng bảo hiểm trong Hợp đồng, không phải Tổng thu nhập ($1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thu nhập tính thuế phải nhỏ hơn Tổng thu nhập ($1): còn trừ ăn trưa, bảo hiểm và giảm trừ gia cảnh.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đi từng nấc từ Tổng thu nhập $1: − ăn trưa (miễn tối đa 700) − BHXH − BHYT − BHTN (bước 3) − 5.000 bản thân − 2.000 × người phụ thuộc ĐÃ đăng ký (Ghi chú nhân sự).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thực lĩnh không thể lớn hơn Tổng thu nhập ($1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lấy Tổng thu nhập $1 trừ BHXH, BHYT, BHTN (bước 3) và Thuế TNCN (bước 4); phụ cấp đã nằm trong Tổng thu nhập.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Riêng phần bản thân cả năm đã là 12 × $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Người phụ thuộc tính theo SỐ THÁNG trên giấy “Người phụ thuộc đã đăng ký”: $1 × số tháng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cộng thu nhập chịu thuế của MỌI chứng từ khấu trừ, trừ bảo hiểm bắt buộc, rồi trừ Tổng giảm trừ bạn ghi ($1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lấy Thuế phải nộp cả năm bạn ghi ($1) trừ tổng “Thuế đã khấu trừ” ở MỌI chứng từ; âm nghĩa là được hoàn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng lương có $1 người — soát từng dòng rồi chuyển lương.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ có $1 bước — làm lần lượt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giảm trừ = $1 bản thân + $2 × $3 tháng người phụ thuộc = $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thu nhập tính thuế = $1 tổng thu nhập − $2 bảo hiểm − $3 giảm trừ = $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 − $2 đã khấu trừ =",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nộp thêm $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "được hoàn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đếm lại: “Thối thiếu $2 xu rồi nè.” Thối thêm cho đủ rồi đưa lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Về nhà đếm lại mới thấy bị thối thiếu $1 xu. Buôn bán kiểu này thì ai dám quay lại.",
   "en": "",
   "pattern": true
@@ -1620,6 +1765,11 @@
   "pattern": true
  },
  {
+  "vi": "⏱️ Ngày $1: quá số ngày có lương theo giờ thật (1 giờ = 1 ngày), không có lương.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Lương ngày $1$2$3$4$5",
   "en": "",
   "pattern": true
@@ -1821,6 +1971,16 @@
  },
  {
   "vi": "🚨 Công an thấy bạn bày bàn liên tục bất thường, nghi gian lận! Nộp phạt $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚨 Công an ập vào bàn Ông Hai! Thắng liền mấy ván là có chuyện: tịch thu $1 xu tiền thắng, nộp phạt $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚨 Công an ập vào bàn Ông Hai! Thắng liền mấy ván là có chuyện: tịch thu $1 xu tiền thắng.",
   "en": "",
   "pattern": true
  },
@@ -2086,166 +2246,6 @@
  },
  {
   "vi": "Báo cáo không được duyệt: đây là trải nghiệm thật. Sao giữ nguyên, $1 hơi phật ý.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã sửa đánh giá: ★$2 → ★$3. “$4”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đầy rồi ($2/$3 món). Ăn bớt rồi hãy mua thêm nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Cất $2 vào $3 ($4 xu). Trong tủ: $5/$6 món.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trong tủ hết $1 rồi. Cất thêm một phần rồi ăn nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "No bụng $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tỉnh táo $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay bạn đã tìm $1 lần. Mai tìm tiếp nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mỗi ngày gửi được $1 lời mời kết bạn. Mai gửi tiếp nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đang có $1 lời mời chờ trả lời. Đợi bớt rồi gửi thêm nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👋 $1 muốn kết bạn với bạn. Mở mục Bạn bè để trả lời nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hai bạn đã là bạn bè: $1 cũng vừa mời bạn!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã gửi lời mời kết bạn tới $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🤝 $1 đã nhận lời kết bạn. Giờ hai bạn là bạn bè!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn và $1 đã là bạn bè.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã hủy kết bạn với $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví đang nợ $1 xu. Trả nợ xong rồi hãy mua nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn chưa có $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xác nhận mua $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vẫn dùng $1; đổi máy ở mục “Của bạn”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thu cũ đổi mới: bớt $1 xu. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1 cho $2.$3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giờ bạn dùng $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xác nhận bán $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã bán $1, nhận $2 xu vào ví.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 xu tiền mặt và $2 xu từ tài khoản",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 xu từ tài khoản",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 xu tiền mặt",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví đang nợ $1 xu. Trả nợ xong rồi hãy mua xe nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví cần $1 xu tiền xăng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1 cho $2 màu $3.$4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 giờ màu $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", biển tên “$1”.",
   "en": "",
   "pattern": true
  }

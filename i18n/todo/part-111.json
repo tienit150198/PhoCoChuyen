@@ -1,5 +1,33 @@
 [
  {
+  "vi": "Chọn người nhận",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có bạn bè nào. Kết bạn ở mục Bạn bè nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🛡️ Admin: chuyển ngay, không giới hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Ví dụ: Cảm ơn nha!",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển từ",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra lại nhé",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển rồi không lấy lại được.",
+  "en": ""
+ },
+ {
   "vi": "Mã giao dịch",
   "en": ""
  },
@@ -53,10 +81,6 @@
  },
  {
   "vi": "dưới 1 xu",
-  "en": ""
- },
- {
-  "vi": "Tới hạn tự tái tục: gốc và lãi gửi tiếp kỳ mới.",
   "en": ""
  },
  {
@@ -476,7 +500,7 @@
   "en": ""
  },
  {
-  "vi": "Tới hạn tự tái tục (gốc và lãi gửi tiếp kỳ mới)",
+  "vi": "Tới hạn tự tái tục (gốc gửi tiếp kỳ mới, lãi về tài khoản)",
   "en": ""
  },
  {
@@ -1773,30 +1797,6 @@
  },
  {
   "vi": "Bạn:",
-  "en": ""
- },
- {
-  "vi": "Đã tắt thông báo",
-  "en": ""
- },
- {
-  "vi": "Chọn cuộc trò chuyện để xóa",
-  "en": ""
- },
- {
-  "vi": "Chỉ xóa ở phía bạn, người kia vẫn còn tin nhắn.",
-  "en": ""
- },
- {
-  "vi": "Nhắn bạn bè",
-  "en": ""
- },
- {
-  "vi": "Đổi gương mặt, áo theo Tủ đồ",
-  "en": ""
- },
- {
-  "vi": "Hiện online",
   "en": ""
  }
 ]

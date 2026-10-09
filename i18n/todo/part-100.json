@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Đưa thẻ số — khách cầm vào mấy món?",
+  "en": ""
+ },
+ {
+  "vi": "hoặc cho vào luôn, khỏi thẻ",
+  "en": ""
+ },
+ {
+  "vi": "🏷️ Thẻ số",
+  "en": ""
+ },
+ {
+  "vi": "· đang thử đồ…",
+  "en": ""
+ },
+ {
   "vi": "🔍 Kiểm phòng",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "📒 Tin khách, ghi nợ",
-  "en": ""
- },
- {
-  "vi": "có người trả, có người quên luôn",
-  "en": ""
- },
- {
-  "vi": "Hoặc xin trả trước",
-  "en": ""
- },
- {
-  "vi": "💵 Xin trả trước",
-  "en": ""
- },
- {
-  "vi": "quay lại cùng ông Lộc",
   "en": ""
  }
 ]

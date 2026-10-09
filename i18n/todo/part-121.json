@@ -1,11 +1,71 @@
 [
  {
+  "vi": "Tất toán sớm $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tất toán sớm · phí $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã tất toán sớm $1 xu (phí trả trước hạn $2 xu). Bạn tiết kiệm được $3 xu tiền lãi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: Khoản $2 đến hạn hôm nay chưa được thanh toán ($3 xu). Quý khách vui lòng thanh toán sớm để tránh phát sinh phí.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: Quý khách đang trễ hạn $2, số tiền cần thanh toán $3 xu. Vui lòng nộp tiền vào tài khoản để hệ thống tự trích.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhân viên thu hồi nợ gọi: “Chào $1, em bên $2. Khoản $3 của mình đã trễ $4 ngày, còn $5 xu. Mình sắp xếp thanh toán giúp em trong mấy ngày tới được không ạ?”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhân viên thu hồi nợ gọi: “Dạ em gọi nhắc lại khoản $1 đang quá hạn $2 ngày, số tiền $3 xu. Nếu đang khó khăn, mình trả trước một phần cũng được ạ.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhân viên thu hồi nợ gọi, giọng hơi gấp: “Khoản $1 đã quá hạn $2 ngày rồi ạ. Để lâu hơn là hồ sơ bị ghi nợ xấu, sau này vay rất khó. Mình cố gắng thanh toán sớm giúp em nha.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhân viên thu hồi nợ gọi: “Em chào $1. Bên em chưa nhận được $2 xu cho khoản $3, quá hạn $4 ngày. Mình nộp vào tài khoản là hệ thống tự trích ngay ạ.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: Hồ sơ của quý khách đã bị ghi nhận nợ xấu do trễ hạn nhiều lần. Các sản phẩm tín dụng mới tạm khóa tới Ngày $2. Thẻ tín dụng tạm ngưng giao dịch.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: Hồ sơ tín dụng của quý khách đã hết ghi nhận nợ xấu. Cảm ơn quý khách đã thanh toán đầy đủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: Sao kê thẻ •••• $2 kỳ này $3 xu, tối thiểu $4 xu, hạn thanh toán Ngày $5.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1: Sổ tiết kiệm $2 $3 xu đã đáo hạn, tiền gốc và lãi $4 xu đã về tài khoản thanh toán.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "$1: Sổ tiết kiệm $2 đã tái tục: nhập lãi $3 xu vào gốc, sổ mới $4 xu, đáo hạn Ngày $5.",
+  "vi": "$1: Sổ tiết kiệm $2 đã tái tục: sổ mới $3 xu, đáo hạn Ngày $4. Lãi $5 xu đã về tài khoản thanh toán.",
   "en": "",
   "pattern": true
  },
@@ -41,6 +101,16 @@
  },
  {
   "vi": "Lời nhắn tối đa $1 ký tự nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tài khoản mới (dưới $1 ngày đời thực) chuyển tối đa $2 xu mỗi ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm nay bạn còn chuyển được $1 xu thôi.",
   "en": "",
   "pattern": true
  },
@@ -2076,151 +2146,6 @@
  },
  {
   "vi": "$1 hỏi $2 $3 mà giá treo hết — nhập về bán nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Còn thiếu $2 màu $3 nữa em.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Vậy chưa thành một bộ em ơi — cần váy/áo dài, hoặc áo với quần.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nhìn tem giá, nhíu mày: “Lại $2 xu nữa hả? $3 đã nói tối đa $4 xu rồi mà.” Trao đổi lại với khách hoặc treo bớt món.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nhìn tem giá: “$2 xu lận hả? $3 nói tối đa $4 xu mà.” 💬 Trao đổi với khách: gợi ý món rẻ hơn, xin thêm ngân sách, bớt giá hoặc nói thật là không có.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bill $1 xu. $2 chống nạnh: “Khách quen mà con, bớt cho dì chút đi!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bill $1 xu, bớt $2 xu còn $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 đưa $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bớt cho $1 $2 xu, quá mức $3% chị Vy dặn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn cười: “Giá tiệm để sát rồi dì ơi, con tặng dì câu chúc mua may bán đắt!” $1 bĩu môi nhưng vẫn móc tiền.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn bớt $1 xu “lấy hên”. $2 cười tít: “Vậy mới là khách quen chứ!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn bớt luôn $1 xu. $2 hớn hở — chị Vy đứng trong nhìn ra, hơi nhíu mày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Còn $2 xu. $3 đưa $4 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đang chờ bạn trả lời chuyện bớt giá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giá treo vừa hết $1 $2. Bill được mở lại, chọn lại giùm khách nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 để đồ lại trên quầy, không mua nữa: “$2”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 để đồ lại, không lấy nữa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đã phục vụ $1: “$2”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thất thoát ở quầy: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gửi Bà Tư $1 xu tiền công.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã thu $1 xu · +$2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Về nhà mặc thử mới thấy $1, phải quay lại tiệm đổi size.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "lấy sai size ($1 thay vì $2)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đi $1 mà bộ này lạc quẻ, tới nơi mới thấy không hợp dịp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mà mặc màu $2, người ta nhìn mình quá trời.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "chọn màu $1 kiêng kỵ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Màu $1 hơi lệch với dịp $2, nhưng thôi cũng tạm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "màu $1 chưa hợp dịp",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mà thiếu $2, tiếc ghê.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiệm bỏ thêm $1 vào bộ đi $2, chẳng biết mặc lúc nào.",
   "en": "",
   "pattern": true
  }

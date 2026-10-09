@@ -1,5 +1,21 @@
 [
  {
+  "vi": "sẵn sàng",
+  "en": ""
+ },
+ {
+  "vi": "đang đi",
+  "en": ""
+ },
+ {
+  "vi": "tạm ngưng",
+  "en": ""
+ },
+ {
+  "vi": "Cứu hỏa",
+  "en": ""
+ },
+ {
   "vi": "Cấp cứu",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Điền số tiền ghi sổ trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Chè, chanh, hướng dương, thuốc lẻ",
-  "en": ""
- },
- {
-  "vi": "🔨 Phụ kiện",
-  "en": ""
- },
- {
-  "vi": "🧾 Quầy",
-  "en": ""
- },
- {
-  "vi": "🚫 không CD",
   "en": ""
  }
 ]

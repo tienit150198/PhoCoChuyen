@@ -1,5 +1,150 @@
 [
  {
+  "vi": "↩️ Bỏ chọn tấm $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "☑️ Chọn tấm $1 ($2/$3).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "↩️ Gỡ sticker $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✨ Dán sticker $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎨 Chọn màu $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi lấy $1 mà in ra $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi chọn khung $1 mà.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi muốn $1 cơ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi dặn dán $1 mà.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi muốn $1 mà.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📷 Chị Lam: “$1”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gói $1 in $2 tấm: chọn đủ $3 tấm trước.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hết $1 rồi. Nhập thêm ở Kho, hoặc nói thật với khách.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚠️ Cuộn mực còn $1 tấm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🖨️ Máy in rè rè… tấm ảnh $1trồi ra, màu lên dần. Giờ $2.$3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gói này in $1 tấm thôi. Bỏ chọn bớt rồi chọn tấm khác.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🖼️ Đưa ảnh cho $1 · $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 xem ảnh, cười tít: “Đẹp quá trời!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nói thật với $1: tiệm hết vật tư cho gói này, hẹn hôm sau.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📸 Chụp $1 kiểu cho $2 lượt khách, in $3 tấm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⏱️ $1/$2 kiểu bấm đúng lúc ($3%).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🗑️ In lại $1 lần: giấy đó tiệm chịu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cuộn mực còn $1 tấm · giấy dải $2, tờ đôi $3, ảnh lớn $4, khung $5, bao $6.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Lam dặn: lau ống kính, xem cuộn mực in (sắp hết thì thay), chụp thử một tấm rồi mở tiệm. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 muốn: $2.$3 $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "lệch $1 chấm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 ft/phút",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chuyến $1 đi $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đi $2: giông lúc tới",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 đi $2: sương sớm",
   "en": "",
   "pattern": true
@@ -2101,151 +2246,6 @@
  },
  {
   "vi": "Giữ lương oan ở những ô vốn đúng$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✗ Chưa khớp $1/$2 ô.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khớp $1/$2 ô — chưa khớp: $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng $1/$2 mục cần chọn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", thừa $1 mục",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ghép đúng $1/$2 dòng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thuế không thể lớn hơn thu nhập tính thuế ($1).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bậc cao nhất cũng chỉ 20%: thuế không thể vượt 1/5 thu nhập tính thuế ($1).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lũy tiến không nhân cả $1 với một mức thuế suất: mỗi phần chỉ chịu thuế suất của bậc chứa nó.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chia thu nhập tính thuế $1 thành từng bậc: $2. Tính thuế từng bậc rồi cộng lại, làm tròn xuống.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thu nhập tính thuế $1 chưa vượt bậc đầu: chỉ một mức thuế suất, làm tròn xuống.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trừ nghỉ = số ngày nghỉ KHÔNG lương × Lương 1 ngày bạn ghi ($1), nên phải chia hết cho $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cộng bằng chính số của bạn: Lương cơ bản tháng (Hợp đồng) − $1 + ăn trưa + trách nhiệm + điện thoại + $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảo hiểm tính trên Lương đóng bảo hiểm trong Hợp đồng, không phải Tổng thu nhập ($1).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thu nhập tính thuế phải nhỏ hơn Tổng thu nhập ($1): còn trừ ăn trưa, bảo hiểm và giảm trừ gia cảnh.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đi từng nấc từ Tổng thu nhập $1: − ăn trưa (miễn tối đa 700) − BHXH − BHYT − BHTN (bước 3) − 5.000 bản thân − 2.000 × người phụ thuộc ĐÃ đăng ký (Ghi chú nhân sự).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thực lĩnh không thể lớn hơn Tổng thu nhập ($1).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lấy Tổng thu nhập $1 trừ BHXH, BHYT, BHTN (bước 3) và Thuế TNCN (bước 4); phụ cấp đã nằm trong Tổng thu nhập.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Riêng phần bản thân cả năm đã là 12 × $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Người phụ thuộc tính theo SỐ THÁNG trên giấy “Người phụ thuộc đã đăng ký”: $1 × số tháng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cộng thu nhập chịu thuế của MỌI chứng từ khấu trừ, trừ bảo hiểm bắt buộc, rồi trừ Tổng giảm trừ bạn ghi ($1).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lấy Thuế phải nộp cả năm bạn ghi ($1) trừ tổng “Thuế đã khấu trừ” ở MỌI chứng từ; âm nghĩa là được hoàn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảng lương có $1 người — soát từng dòng rồi chuyển lương.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ có $1 bước — làm lần lượt.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giảm trừ = $1 bản thân + $2 × $3 tháng người phụ thuộc = $4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thu nhập tính thuế = $1 tổng thu nhập − $2 bảo hiểm − $3 giảm trừ = $4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 − $2 đã khấu trừ =",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "nộp thêm $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "được hoàn $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đếm lại: “Thối thiếu $2 xu rồi nè.” Thối thêm cho đủ rồi đưa lại.",
   "en": "",
   "pattern": true
  }

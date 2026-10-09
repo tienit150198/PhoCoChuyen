@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Ca nguy hiểm tính mạng mà xếp mức thấp, xe chạy không còi.",
+  "en": ""
+ },
+ {
+  "vi": "xếp ưu tiên thấp hơn mức nguy hiểm",
+  "en": ""
+ },
+ {
+  "vi": "Xếp mức cao hơn cần thiết, xe hú còi chạy ẩu qua phố.",
+  "en": ""
+ },
+ {
+  "vi": "xếp ưu tiên cao quá",
+  "en": ""
+ },
+ {
   "vi": "gửi thiếu đội",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "“Không có.”",
-  "en": ""
- },
- {
-  "vi": "“Số tui, cô thuộc rồi mà.”",
-  "en": ""
- },
- {
-  "vi": "“Đau… đau lòng chớ đau gì. Con cái không ai gọi tui.”",
-  "en": ""
- },
- {
-  "vi": "“Có mình tui với cái ti vi.”",
-  "en": ""
- },
- {
-  "vi": "“Nguy hiểm là buồn quá đó cô.”",
   "en": ""
  }
 ]

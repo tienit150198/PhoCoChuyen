@@ -1,5 +1,25 @@
 [
  {
+  "vi": "đang $1/100",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm nay đã bỏ dở ở đây rồi. Lần này tiền phạt gấp $1$2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bỏ dở việc ở $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(còn $1/100)",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🚶 $1 khách đã bỏ về.",
   "en": "",
   "pattern": true
@@ -345,12 +365,7 @@
   "pattern": true
  },
  {
-  "vi": "Mỗi ngày chuyển tối đa $1, $2 lần.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mỗi người nhận tối đa $1 một ngày.",
+  "vi": "Mỗi ngày chuyển tối đa $1.",
   "en": "",
   "pattern": true
  },
@@ -426,6 +441,11 @@
  },
  {
   "vi": "($1 ngày sống), lãi $2/năm. Đáo hạn $3, nhận $4 (lãi $5).$6 Rút trước hạn chỉ hưởng lãi không kỳ hạn $7/năm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tới hạn tự tái tục: gốc gửi tiếp kỳ mới (tối đa $1), lãi về tài khoản.",
   "en": "",
   "pattern": true
  },
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "NHÀ XE · NGÀY SỐNG $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔑 Nhà xe$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😊 +$1 tinh thần mỗi chuyến",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⛽ $1 mỗi chuyến",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 Giữ xe & bảo dưỡng $1/tháng",
   "en": "",
   "pattern": true
  }

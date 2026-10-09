@@ -1,5 +1,37 @@
 [
  {
+  "vi": "Bảo lãnh",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn sẽ không còn trong danh sách bạn bè của nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy kết bạn",
+  "en": ""
+ },
+ {
+  "vi": "Khoản này vào sổ nợ của hai bạn. Người ấy trả dần lúc nào cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền chuyển từ ví của bạn sang ví của người ấy.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu cần nhờ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản này vào sổ nợ, người ấy sẽ trả lại.",
+  "en": ""
+ },
+ {
+  "vi": "Xóa khoản nợ này?",
+  "en": ""
+ },
+ {
   "vi": "Người ấy không cần trả nữa. Sổ nợ vẫn ghi lại.",
   "en": ""
  },
@@ -1765,38 +1797,6 @@
  },
  {
   "vi": "Sốt ruột",
-  "en": ""
- },
- {
-  "vi": "Dễ tính",
-  "en": ""
- },
- {
-  "vi": "Có khách tại quầy",
-  "en": ""
- },
- {
-  "vi": "khách tại quầy",
-  "en": ""
- },
- {
-  "vi": "người chờ tới lượt",
-  "en": ""
- },
- {
-  "vi": "Người tiếp theo đang ghé",
-  "en": ""
- },
- {
-  "vi": "Đi lên",
-  "en": ""
- },
- {
-  "vi": "Sang phải",
-  "en": ""
- },
- {
-  "vi": "Đi xuống",
   "en": ""
  }
 ]

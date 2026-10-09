@@ -1,5 +1,21 @@
 [
  {
+  "vi": "chưa xử lý chỗ hỏng",
+  "en": ""
+ },
+ {
+  "vi": "Đèn, còi có vấn đề mà không báo đài, tàu thuyền không được thông báo.",
+  "en": ""
+ },
+ {
+  "vi": "không báo đài",
+  "en": ""
+ },
+ {
+  "vi": "báo chưa đúng nơi",
+  "en": ""
+ },
+ {
   "vi": "Ca sáng: tắt đèn, kiểm máy, ký sổ trực.",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Tàu cá lao về phía bãi đá ngầm",
-  "en": ""
- },
- {
-  "vi": "Đèn hành trình xanh đỏ của một tàu cá đang đi thẳng vào bãi đá ngầm hòn Mõ.",
-  "en": ""
- },
- {
-  "vi": "Tàu cá cố ra khơi khi có cảnh báo",
-  "en": ""
- },
- {
-  "vi": "Đài vừa phát tin áp thấp. Một tàu cá vẫn nổ máy rời bến Cửa Lở, mũi hướng ra khơi.",
-  "en": ""
- },
- {
-  "vi": "Tiếng nổ trầm dưới nước",
   "en": ""
  }
 ]

@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Chưa có chặng nào. Chuyến đầu tiên đang chờ.",
+  "en": ""
+ },
+ {
+  "vi": "CƠ PHÓ",
+  "en": ""
+ },
+ {
+  "vi": "CƠ PHÓ CAO CẤP",
+  "en": ""
+ },
+ {
+  "vi": "CƠ TRƯỞNG",
+  "en": ""
+ },
+ {
   "vi": "CƠ TRƯỞNG HL",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Mai lên phòng Điều phối trình bày. Hôm nay tan ca sớm.",
-  "en": ""
- },
- {
-  "vi": "sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "đang đi",
-  "en": ""
- },
- {
-  "vi": "tạm ngưng",
-  "en": ""
- },
- {
-  "vi": "Cứu hỏa",
   "en": ""
  }
 ]

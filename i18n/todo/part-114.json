@@ -1,5 +1,29 @@
 [
  {
+  "vi": "Chọn loại vé, mua rồi cào lớp bạc bằng ngón tay (hoặc kéo chuột). Ba ô cùng một số tiền là trúng đúng số tiền đó, tiền thưởng vô ví liền.",
+  "en": ""
+ },
+ {
+  "vi": "chọn vé rẻ hơn nha.",
+  "en": ""
+ },
+ {
+  "vi": "3 ô",
+  "en": ""
+ },
+ {
+  "vi": "→ trúng",
+  "en": ""
+ },
+ {
+  "vi": "(hoàn vé)",
+  "en": ""
+ },
+ {
+  "vi": "CÀO Ở ĐÂY",
+  "en": ""
+ },
+ {
   "vi": "📋 Danh sách trò",
   "en": ""
  },
@@ -389,6 +413,10 @@
  },
  {
   "vi": ". Khoản phạt đã ghi trong Sổ ví.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền thắng Ông Hai bị tịch thu",
   "en": ""
  },
  {
@@ -1769,34 +1797,6 @@
  },
  {
   "vi": "Cửa hàng đang mở cửa",
-  "en": ""
- },
- {
-  "vi": "Máy mới đang được bày lên kệ. Mở lại sau ít phút nhé.",
-  "en": ""
- },
- {
-  "vi": "Chỉ có trong chế độ hành trình",
-  "en": ""
- },
- {
-  "vi": "Vào hành trình để sắm điện thoại cho nhân vật của bạn.",
-  "en": ""
- },
- {
-  "vi": "Mục cửa hàng",
-  "en": ""
- },
- {
-  "vi": "🙌 Khoe trên hồ sơ",
-  "en": ""
- },
- {
-  "vi": "📸 Nhãn dán ảnh selfie",
-  "en": ""
- },
- {
-  "vi": "📸 Chụp selfie",
   "en": ""
  }
 ]

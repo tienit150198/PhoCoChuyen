@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Chờ kết quả từ đầu mối",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Kiểm kết quả",
+  "en": ""
+ },
+ {
+  "vi": "✓ Hoàn tất & đóng vụ",
+  "en": ""
+ },
+ {
+  "vi": "Khớp mã đơn khách đưa thì mới được xem hồ sơ.",
+  "en": ""
+ },
+ {
   "vi": "Đọc đủ các nguồn: một dòng trong đó chỉ cách xử lý.",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "mất một món",
-  "en": ""
- },
- {
-  "vi": "Đưa thẻ số — khách cầm vào mấy món?",
-  "en": ""
- },
- {
-  "vi": "hoặc cho vào luôn, khỏi thẻ",
-  "en": ""
- },
- {
-  "vi": "🏷️ Thẻ số",
-  "en": ""
- },
- {
-  "vi": "· đang thử đồ…",
   "en": ""
  }
 ]

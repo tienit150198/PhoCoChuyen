@@ -2085,6 +2085,26 @@
   "pattern": true
  },
  {
+  "vi": "🔥 Nghề hot $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📈 Lãi cao $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📉 Lãi thấp $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔥 Hôm nay lãi cao $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đang nghỉ lấy sức · còn $1 nhịp",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "trừ vào quỹ $1 (quỹ thiếu thì trừ ví)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đang $1/100",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay đã bỏ dở ở đây rồi. Lần này tiền phạt gấp $1$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bỏ dở việc ở $1?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "(còn $1/100)",
   "en": "",
   "pattern": true
  }

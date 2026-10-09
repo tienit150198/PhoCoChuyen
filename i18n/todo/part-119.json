@@ -1,5 +1,37 @@
 [
  {
+  "vi": "✓ Đang dùng",
+  "en": ""
+ },
+ {
+  "vi": "Đổi sang gói này",
+  "en": ""
+ },
+ {
+  "vi": "Gói trọn",
+  "en": ""
+ },
+ {
+  "vi": "Gói thường",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có gì để bảo hiểm",
+  "en": ""
+ },
+ {
+  "vi": "Ngưng",
+  "en": ""
+ },
+ {
+  "vi": "🌱 Phố còn bình yên với người mới. Cứ yên tâm làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "🚔 Tiền hoàn đang chờ: cần tài khoản ngân hàng và số dư dưới mức tối đa để nhận ở ngày sống tiếp theo.",
+  "en": ""
+ },
+ {
   "vi": "🔧 Đang hỏng",
   "en": ""
  },
@@ -109,6 +141,10 @@
  },
  {
   "vi": "Ít chữ, một nút chính, phiếu khách thành chip trên đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản đã lưu trên máy chủ, không cần nhập.",
   "en": ""
  },
  {
@@ -1761,42 +1797,6 @@
  },
  {
   "vi": "Bao giờ có cháu bế đây hai đứa? 👶",
-  "en": ""
- },
- {
-  "vi": "Nhạc vui quá, bà đứng dậy nhảy một bài nè 💃",
-  "en": ""
- },
- {
-  "vi": "Thằng cu nhà tui cũng sắp cưới rồi đó, nhớ qua ăn cỗ nha!",
-  "en": ""
- },
- {
-  "vi": "Ai gắp giùm tui miếng gà với, xa quá với không tới 🍗",
-  "en": ""
- },
- {
-  "vi": "Đám cưới này đông vui nhất phố từ đầu năm tới giờ!",
-  "en": ""
- },
- {
-  "vi": "Lân múa đẹp quá, năm nay chắc làm ăn phát đạt!",
-  "en": ""
- },
- {
-  "vi": "Ăn từ từ thôi tụi nhỏ, cỗ còn nhiều lắm!",
-  "en": ""
- },
- {
-  "vi": "Một, hai, ba, dzô! Chúc mừng hai đứa nha! 🍻",
-  "en": ""
- },
- {
-  "vi": "Nhìn {a} với {b} là biết trời sinh một cặp rồi!",
-  "en": ""
- },
- {
-  "vi": "Canh măng này ai nấu mà ngọt nước dữ vậy!",
   "en": ""
  }
 ]

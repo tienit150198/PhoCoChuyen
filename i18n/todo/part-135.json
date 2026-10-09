@@ -1,5 +1,25 @@
 [
  {
+  "vi": "🔑 Nhà xe$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "😊 +$1 tinh thần mỗi chuyến",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⛽ $1 mỗi chuyến",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 Giữ xe & bảo dưỡng $1/tháng",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bán lại được $1",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "Vật tư và vệ sinh: $1% doanh thu. Lời thay đổi theo khách và chi phí; một sự cố có thể làm cả ngày lỗ. Các khoản phí chỉ trừ ở quầy có bán.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lương $1/$2 · xin $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "có $1 chỗ đứng cho nhân viên (Xe đẩy 1, Sạp chợ 2, Ki-ốt 3). Số quầy bạn mở thì không giới hạn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang tìm việc $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👥 Thuê tất cả · $1 người",
   "en": "",
   "pattern": true
  }

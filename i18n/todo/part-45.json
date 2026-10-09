@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Khoan, chưa đúng món khách gọi. Coi lại phiếu, tô nào sai thì đổ làm lại.",
+  "en": ""
+ },
+ {
+  "vi": "Có tô khách đâu có gọi. Bỏ tô dư ra đã con.",
+  "en": ""
+ },
+ {
+  "vi": "Tái còn đỏ au kìa, nồi chưa đủ sôi. Đổ tô, chờ nồi lăn tăn lại rồi chan.",
+  "en": ""
+ },
+ {
+  "vi": "Khách dặn không mì chính! Đổ tô, múc nước ở nồi nhỏ cho khách.",
+  "en": ""
+ },
+ {
   "vi": "Khách dặn nước béo, con múc nước trong rồi. Chan lại bằng muôi hớt mặt.",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Bác Lâm dặn: vặn lửa lăn tăn, hớt bọt, nếm và nêm nước dùng, ngửi bánh hôm qua (chua thì bỏ) rồi mở quán.",
-  "en": ""
- },
- {
-  "vi": "Xin đĩa rau, giá.",
-  "en": ""
- },
- {
-  "vi": "Khách sành ăn, nếm nước rất kỹ.",
-  "en": ""
- },
- {
-  "vi": "Vặn lửa lăn tăn → hớt bọt → nếm, nêm cho vừa → ngửi bánh hôm qua (chua thì bỏ) → Mở quán.",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách → lấy hộp → nhúng bánh 3–4 lượt → xếp thịt (tái để riêng) → chan túi nước, dừng đúng vạch → buộc túi → thu tiền.",
   "en": ""
  }
 ]

@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Mừng việc mới",
+  "en": ""
+ },
+ {
+  "vi": "Nhiều cửa hàng trong game nhận thanh toán bằng Mây Coin.",
+  "en": ""
+ },
+ {
+  "vi": "Cộng đồng trong game hào hứng với bản nâng cấp Mây Coin.",
+  "en": ""
+ },
+ {
   "vi": "Sàn giao dịch trong game mở thêm chợ Mây Coin.",
   "en": ""
  },
@@ -357,6 +369,42 @@
  },
  {
   "vi": "Người ấy đã xóa tài khoản. Chuyện hai bạn khép lại ở đây.",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản ngân hàng bị hack",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển khoản theo cuộc gọi giả danh",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập qua đường link giả mạo",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ bị đánh cắp thông tin tại cây ATM",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển tiền theo \"tin nội bộ\" đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Công an xử phạt, tịch thu tiền thu lợi bất chính",
+  "en": ""
+ },
+ {
+  "vi": "Loại sự cố không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "(sổ không kỳ hạn)",
+  "en": ""
+ },
+ {
+  "vi": "Phần còn lại của sổ bị tất toán",
   "en": ""
  },
  {
@@ -1749,54 +1797,6 @@
  },
  {
   "vi": "Xưởng DIY ·",
-  "en": ""
- },
- {
-  "vi": "Đã làm xong và cất món thủ công lên kệ kỷ niệm!",
-  "en": ""
- },
- {
-  "vi": "Kỷ niệm đi chơi không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "(?<!\\w)(ủng hộ|shop|quán|tiệm|dịch vụ|giá|khuyến mãi|5 sao|năm sao|quay lại mua|voucher|hoàn tiền|chủ quán|khách hàng|cửa hàng|mới mở|khai trương|đáng tiền|phục vụ)(?!\\w)",
-  "en": ""
- },
- {
-  "vi": "sư cô",
-  "en": ""
- },
- {
-  "vi": "việc quét dọn, hương đèn",
-  "en": ""
- },
- {
-  "vi": "chuyện nhang đèn, an toàn",
-  "en": ""
- },
- {
-  "vi": "chuyện sổ công đức",
-  "en": ""
- },
- {
-  "vi": "cách nhắc nhở, chỉ dẫn",
-  "en": ""
- },
- {
-  "vi": "chuyện phải chờ",
-  "en": ""
- },
- {
-  "vi": "thời khóa sáng",
-  "en": ""
- },
- {
-  "vi": "lời thầy dặn",
-  "en": ""
- },
- {
-  "vi": "cách trả lời",
   "en": ""
  }
 ]

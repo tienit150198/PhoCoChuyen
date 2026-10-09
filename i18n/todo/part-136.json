@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Lương $1/$2 · xin $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "có $1 chỗ đứng cho nhân viên (Xe đẩy 1, Sạp chợ 2, Ki-ốt 3). Số quầy bạn mở thì không giới hạn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang tìm việc $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👥 Thuê tất cả · $1 người",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Kho nguyên liệu · $1 phần",
   "en": "",
   "pattern": true

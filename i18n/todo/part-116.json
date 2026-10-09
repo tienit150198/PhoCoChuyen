@@ -1,5 +1,33 @@
 [
  {
+  "vi": "· bấm Cập nhật giá để tải khung đã chọn",
+  "en": ""
+ },
+ {
+  "vi": "Chưa cập nhật được giá. Bấm Cập nhật giá để thử lại.",
+  "en": ""
+ },
+ {
+  "vi": "TÀI SẢN CỦA BẠN",
+  "en": ""
+ },
+ {
+  "vi": "phiên trước",
+  "en": ""
+ },
+ {
+  "vi": "Phiên hiện tại",
+  "en": ""
+ },
+ {
+  "vi": "phiên 10 phút",
+  "en": ""
+ },
+ {
+  "vi": "Vàng đổi giá theo ngày thực · Coin đổi giá theo ngày sống.",
+  "en": ""
+ },
+ {
   "vi": "Giá chung cả phố · 1 giờ thực = 1 ngày thị trường.",
   "en": ""
  },
@@ -1380,6 +1408,10 @@
   "en": ""
  },
  {
+  "vi": "lãi đơn nhân viên lúc này",
+  "en": ""
+ },
+ {
   "vi": "Không ai thấy tên đăng nhập hay thông tin khác của bạn.",
   "en": ""
  },
@@ -1765,38 +1797,6 @@
  },
  {
   "vi": "Người này sẽ không tìm thấy bạn, không gửi được lời mời kết bạn hay lời cầu hôn cho bạn nữa.",
-  "en": ""
- },
- {
-  "vi": "Bảo lãnh",
-  "en": ""
- },
- {
-  "vi": "Hai bạn sẽ không còn trong danh sách bạn bè của nhau.",
-  "en": ""
- },
- {
-  "vi": "Hủy kết bạn",
-  "en": ""
- },
- {
-  "vi": "Khoản này vào sổ nợ của hai bạn. Người ấy trả dần lúc nào cũng được.",
-  "en": ""
- },
- {
-  "vi": "Tiền chuyển từ ví của bạn sang ví của người ấy.",
-  "en": ""
- },
- {
-  "vi": "Nhập số xu cần nhờ nhé.",
-  "en": ""
- },
- {
-  "vi": "Khoản này vào sổ nợ, người ấy sẽ trả lại.",
-  "en": ""
- },
- {
-  "vi": "Xóa khoản nợ này?",
   "en": ""
  }
 ]
