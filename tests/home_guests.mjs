@@ -63,13 +63,15 @@ assert.deepEqual(commands,[],'direct forged UI operations cannot reach personal 
 assert.equal(renderer.S.edit,false);
 // F#280: a housemate in a villa switches floors like the owner (the rail shows one floor at a time).
 const up={...room,id:'up',name:'Phòng trên lầu',emoji:'🛋️',wrows:3,skin:{},cap:30,fl:2};
-const villa={...remote,deco:{...remote.deco,rooms:[{...remote.deco.rooms[0],fl:1},up]}};
+// 🏰 F 09/10: a villa bought in Mua sắm is projected as it is (place 'estate', no repairs, no structure).
+const villa={...remote,reno:null,deco:{...remote.deco,place:{key:'estate:bt_vuon_da_lat:3',where:'estate',kind:'bt_vuon_da_lat',name:'Biệt thự vườn Đà Lạt',emoji:'🌲',repairs:false},rooms:[{...remote.deco.rooms[0],fl:1},up]}};
 await renderer.guest.open('A',async()=>villa);renderer.S.room='bed';
 assert.ok(renderer.page().includes('data-dc="floor" data-fl="2"'),'the floor tabs show for a guest');
 const dlg=renderer.S.dlg;renderer.S.dlg=null;   // render() is a no-op without the dialog; the state is what counts
 await renderer.onClick('floor',{fl:'2'});renderer.S.dlg=dlg;
 assert.equal(renderer.S.room,'up','a guest reaches the second floor');
 assert.ok(renderer.page().includes('Phòng trên lầu'),'the second floor rooms are drawn');
+assert.ok(renderer.page().includes('Nhà An'),'the villa guest card shows');
 renderer.guest.close();await renderer.guest.open('A',async()=>remote);renderer.S.room='bed';
 state.colors={deco:{same:'my-blue'}};remote.colors.deco.same='host-red';
 assert.equal(renderer.tintOf('same'),'host-red','identical furniture IDs use owner projection colors');

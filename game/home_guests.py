@@ -3,6 +3,13 @@
 Permissions live in PostgreSQL, never in imported saves. Each permission names
 one owner and the exact occupied house. The shared SQL/pure resolver is also
 used by the asynchronous live service, including while the owner is offline.
+
+🏰 A villa bought in Mua sắm (game/estates.py, journey.lux) counts as an owned
+home while its owner lives there (F 09/10: "biệt thự Đà Lạt chưa cho người mời
+vào ở chung được"): home_id is its deco place key 'estate:<id>:<day bought>',
+home_kind the villa id. Selling it, moving out or buying it again ends every
+permission given for it. An older build (rollback) reads such a row as a home
+the owner no longer lives in and revokes it before listing it.
 """
 from __future__ import annotations
 
@@ -10,7 +17,7 @@ import copy
 import json
 import secrets
 
-from . import deco as dc, deco_mate as dm, housing as hs, marriage as mr, reno, social, wardrobe
+from . import deco as dc, deco_mate as dm, estates as es, housing as hs, marriage as mr, reno, social, wardrobe
 
 VISIT_SECONDS = 2 * 3600
 LOCK_PAIR_SQL = 'SELECT pg_advisory_xact_lock(hashtextextended(?,0))'
@@ -91,8 +98,19 @@ def _state(value):
         return {}
 
 
+ESTATE_HOME = es.KEY + ':'
+
+
 def _own(state):
+    """{id, kind} of the home this save may invite friends to: the villa it lives in, else the home it owns."""
     j = state.get('journey') or {}
+    if j.get('story'):
+        try:
+            pl = es.place(j)   # 🏰 living in a villa (it comes first in deco.place too)
+        except (KeyError, TypeError, AttributeError):
+            pl = None
+        if pl:
+            return dict(id=pl['key'], kind=pl['kind'])
     h = j.get('home') or {}
     own = h.get('own')
     if not j.get('story') or not isinstance(own, dict) or own.get('kind') not in hs.HOMES or not own.get('id'):
@@ -145,7 +163,8 @@ def _person(db, sid):
 def _home(own):
     if not own:
         return None
-    meta = hs.HOMES[own['kind']]
+    villa = isinstance(own['id'], str) and own['id'].startswith(ESTATE_HOME)
+    meta = (es.ESTATE if villa else hs.HOMES).get(own['kind']) or dict(name='Nhà', emoji='🏠')
     return dict(id=own['id'], kind=own['kind'], name=meta['name'], emoji=meta['emoji'])
 
 
@@ -232,7 +251,8 @@ def _projection(db, row, access, code):
     need(public, 'Không tìm thấy căn nhà này.', 'not_found', 404)
     deco = {key: public[key] for key in ('place', 'rooms', 'more', 'items')}
     deco['place']['repairs'] = False
-    structure = reno.public(owner)
+    # A villa has no parts to repair: the owner's other home (journey.home.own) is not the one shown.
+    structure = reno.public(owner) if deco['place']['where'] != es.KEY else None
     safe_reno = {key: structure[key] for key in ('home', 'rooms', 'parts')} if structure else None
     mate = {}
     bond = mr._bond(db, row['owner_sid'])

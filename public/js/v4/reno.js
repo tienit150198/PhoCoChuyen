@@ -165,7 +165,7 @@ export const openCoopReno=(env,code)=>openReno(env,'coop',code);
 async function loadCoopLog(){
   if(S.remote||!S.dlg?.open||!S.env)return;
   const seq=++S.coopSeq;
-  if(V()?.place?.where!=='own'){if(S.coopLog){S.coopLog=null;render();}return;}
+  if(!['own','estate'].includes(V()?.place?.where)){if(S.coopLog){S.coopLog=null;render();}return;}   // 🏰 a villa you live in too
   let d;try{d=await S.env.api.json('/api/home-guests/deco/log');}catch{return;}
   if(seq!==S.coopSeq||S.remote||!S.dlg?.open)return;
   const changed=JSON.stringify(S.coopLog)!==JSON.stringify(d);S.coopLog=d;
@@ -1103,7 +1103,7 @@ function coopCard(){
 }
 /** 🎨 In your own home: who may decorate it and their latest changes, each with Hoàn tác. */
 function coopOwnerCard(v){
-  const d=S.coopLog;if(!d||v.place.where!=='own')return '';
+  const d=S.coopLog;if(!d||!['own','estate'].includes(v.place.where))return '';
   const log=(d.log||[]).slice(0,6),mine=d.mine||[];if(!log.length&&!mine.length)return '';
   return `<section class="bk-card dc-coop"><h3>🎨 Bạn bè trang trí giúp</h3>
     ${mine.length?`<p>Đang cho ${mine.map(m=>`<b>${esc(m.name)}</b>`).join(', ')} trang trí nhà bằng đồ trong túi của bạn.</p>`:''}

@@ -56,7 +56,7 @@ export function setup(ctx){
   const st=()=>S.env?.api?.state||{};
   const FR=()=>S.remote?null:ctx.V?.()?.fridge||S.env?.api?.state?.journey?.deco?.fridge||null;
   const useRoom=rm=>[...inRoom(rm),...(ctx.mateIn?.(rm)||[])];
-  const homeHost=()=>S.remote?.owner?.code||(ctx.V?.()?.place?.where==='own'?S.env.api.homeGuests?.own_home?.code||'':'');
+  const homeHost=()=>S.remote?.owner?.code||(['own','estate'].includes(ctx.V?.()?.place?.where)?S.env.api.homeGuests?.own_home?.code||'':'');   // 🏰 'estate': a villa you live in
   const homeScope=()=>{const sp=st().marriage?.spouse;return JSON.stringify([ctx.V?.()?.place?.key,sp?.pid,sp?.status,S.remote?.owner?.code||'']);};
   let crowdRender=0;
   // Replacing the room DOM during a gesture loses pointer capture and its furniture nodes.

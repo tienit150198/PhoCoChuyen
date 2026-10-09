@@ -63,7 +63,8 @@ def owned_access(owner, state, mode='owner'):
     try:
         journey = jsonx.loads(state)['journey']
         place = deco.place(journey)
-        if not journey.get('story') or (place['where'] != 'own' and not (place['where'] == 'lease' and mode == 'owner')):
+        # 🏰 'estate': a villa bought in Mua sắm that its owner lives in (game/estates.py, game/home_guests.py _own).
+        if not journey.get('story') or (place['where'] not in ('own', 'estate') and not (place['where'] == 'lease' and mode == 'owner')):
             return None
         base = PREFIX + hashlib.sha256(f"{owner}:{place['key']}".encode()).hexdigest()[:32]
         return dict(base=base, owner=owner, rooms={r['id'] for r in deco.rooms_of(place['key']) or []}, mode=mode)
