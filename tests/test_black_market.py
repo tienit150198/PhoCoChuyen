@@ -424,19 +424,19 @@ class Arrest(BlackMarketBase):
 class BigStake(BlackMarketBase):
     """Owner 09/10: "cược mà ai cược nhiều, từ 50k trở lên thì tăng tỷ lệ bị bắt, mỗi 10k tăng 1% (từ mốc 50k)": a round
     staking 50,000 xu or more can be raided whatever today's net, 1 % more each further 10,000, the 300k rule's 5 % on
-    top, never above 40 % (owner 09/10 "tỷ lệ bị bắt ngưỡng trần là 40% thôi")."""
+    top, never above 30 % (owner 09/10 "tỷ lệ bị bắt khi chơi max 30% thôi nha")."""
 
     POOR, RICH = {'net': 0}, {'net': bm.ARREST_FROM + 1}
 
     def test_the_constants(self):
         self.assertEqual((bm.BIG_STAKE_FROM, bm.BIG_STAKE_STEP, bm.BIG_STAKE_PCT, bm.ARREST_CAP),
-                         (50000, 10000, 1, 0.40))
+                         (50000, 10000, 1, 0.30))
 
     def test_the_boundaries(self):
         for stake, poor, rich in ((10, 0, .05), (49999, 0, .05), (50000, .01, .06), (59999, .01, .06),
-                                  (60000, .02, .07), (69999, .02, .07), (100000, .06, .11), (300000, .26, .31),
-                                  (349999, .30, .35), (389999, .34, .39), (390000, .35, .40), (439999, .39, .40), (440000, .40, .40),
-                                  (750000, .40, .40), (10**6, .40, .40)):
+                                  (60000, .02, .07), (69999, .02, .07), (100000, .06, .11), (289999, .24, .29), (290000, .25, .30),
+                                  (300000, .26, .30), (339999, .29, .30), (340000, .30, .30),
+                                  (750000, .30, .30), (10**6, .30, .30)):
             with self.subTest(stake=stake):
                 self.assertAlmostEqual(bm.arrest_p(self.POOR, stake), poor, places=9)
                 self.assertAlmostEqual(bm.arrest_p(self.RICH, stake), rich, places=9)
@@ -453,9 +453,9 @@ class BigStake(BlackMarketBase):
 
             def random(self):
                 return self.x
-        with mock.patch.object(bm, '_rng', R(.3999)):
+        with mock.patch.object(bm, '_rng', R(.2999)):
             self.assertTrue(bm._arrest_roll(bm.arrest_p(self.POOR, 10**6)))
-        with mock.patch.object(bm, '_rng', R(.40)):
+        with mock.patch.object(bm, '_rng', R(.30)):
             self.assertFalse(bm._arrest_roll(bm.arrest_p(self.RICH, 10**6)))
         with mock.patch.object(bm, '_rng', R(.0199)):
             self.assertTrue(bm._arrest_roll(bm.arrest_p(self.POOR, 60000)))
@@ -485,7 +485,7 @@ class BigStake(BlackMarketBase):
 
     def test_big_stakes_are_rolled_whatever_the_net(self):
         for stake, net, p in ((50000, 0, .01), (59999, -10**5, .01), (60000, 0, .02), (60000, bm.ARREST_FROM + 1, .07),
-                              (100000, bm.ARREST_FROM, .06), (10**6, 0, .40), (10**6, bm.ARREST_FROM + 1, .40)):
+                              (100000, bm.ARREST_FROM, .06), (10**6, 0, .30), (10**6, bm.ARREST_FROM + 1, .30)):
             with self.subTest(stake=stake, net=net):
                 s, r, seen = self.rolls(stake, net)
                 self.assertEqual(len(seen), 1)
@@ -504,7 +504,7 @@ class BigStake(BlackMarketBase):
         self.assertNotIn('%', r['message'])
         validate_state(s)
         f = json.dumps(fh.public(s), ensure_ascii=False)
-        for k in ('big_stake', 'arrest_p', '0.4', '0.04'):
+        for k in ('big_stake', 'arrest_p', '0.3', '0.04'):
             self.assertNotIn(k, f)
 
     def test_the_dog_race_too(self):

@@ -1,6 +1,6 @@
 # v1.9.34 — 2026-10-09
 
-🚨 Chợ đen: tỷ lệ bị bắt một ván tối đa 40% (fair_bm.ARREST_CAP, trước 70%; chủ game 09/10). Từ 390.000 xu (lời trên 300k) hoặc 440.000 xu cược là chạm trần. Không đổi save.
+🚨 Chợ đen: tỷ lệ bị bắt một ván tối đa 30% (fair_bm.ARREST_CAP, trước 70%; chủ game 09/10). Từ 290.000 xu (lời trên 300k) hoặc 340.000 xu cược là chạm trần. Không đổi save.
 
 # v1.9.33 — 2026-10-09
 
