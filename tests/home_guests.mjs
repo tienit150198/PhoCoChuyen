@@ -61,6 +61,16 @@ for(const op of ['edit','buyBag','flip','pickAll','photoSave','fix','relax'])awa
 await renderer.send('jr_deco_buy',{item:'chair'});
 assert.deepEqual(commands,[],'direct forged UI operations cannot reach personal commands during a guest session');
 assert.equal(renderer.S.edit,false);
+// F#280: a housemate in a villa switches floors like the owner (the rail shows one floor at a time).
+const up={...room,id:'up',name:'Phòng trên lầu',emoji:'🛋️',wrows:3,skin:{},cap:30,fl:2};
+const villa={...remote,deco:{...remote.deco,rooms:[{...remote.deco.rooms[0],fl:1},up]}};
+await renderer.guest.open('A',async()=>villa);renderer.S.room='bed';
+assert.ok(renderer.page().includes('data-dc="floor" data-fl="2"'),'the floor tabs show for a guest');
+const dlg=renderer.S.dlg;renderer.S.dlg=null;   // render() is a no-op without the dialog; the state is what counts
+await renderer.onClick('floor',{fl:'2'});renderer.S.dlg=dlg;
+assert.equal(renderer.S.room,'up','a guest reaches the second floor');
+assert.ok(renderer.page().includes('Phòng trên lầu'),'the second floor rooms are drawn');
+renderer.guest.close();await renderer.guest.open('A',async()=>remote);renderer.S.room='bed';
 state.colors={deco:{same:'my-blue'}};remote.colors.deco.same='host-red';
 assert.equal(renderer.tintOf('same'),'host-red','identical furniture IDs use owner projection colors');
 let closed=0,notified=0;

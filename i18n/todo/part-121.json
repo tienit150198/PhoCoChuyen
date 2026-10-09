@@ -1,5 +1,50 @@
 [
  {
+  "vi": "Mời $1 ghé chòi gác ngoài giờ tàu, gác chắn mở sổ nhật ký nói rõ ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ có lệnh tàu là đóng chắn, kiểm đường thông rồi mới báo ga; chờ vài phút là để an toàn. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tàu $1 ghé Hòn Gió, trạm mời lên uống ấm trà, nói chuyện cho rõ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ trạm thắp đèn theo giờ, ghi nhật ký đèn và phát bản tin gió đúng kênh. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khi cần, $1 gọi lại tổng đài, đọc rõ địa chỉ là xe được điều ngay ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ tổng đài hỏi đủ địa chỉ, tình trạng, số gọi lại rồi mới điều xe; hỏi kỹ là để xe tới đúng chỗ. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lần tới $1 ghé bơi, đội cứu hộ hướng dẫn kỹ nội quy từ cổng ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ đội cứu hộ thổi còi theo nội quy hồ, ai chưa biết bơi thì ở làn cạn. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ khoa cảm ơn $1 đã góp ý. Cháu đọc kỹ rồi, mong $2 mau khỏe ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Dạ cháu tự ghi mình vào sổ “cần cố gắng” mục $1 rồi ạ 😅 Ca sau cháu bù ngay.",
   "en": "",
   "pattern": true
@@ -2201,51 +2246,6 @@
  },
  {
   "vi": "🧾 $1 gật: thêm $2 xu cho việc phụ. Làm xong bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏧 Bạn đợi $1 chạy ra cây ATM đầu ngõ. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Ghi nợ cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1, còn nợ $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Có $2 xu thôi à.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 quay lại cùng ông Lộc: “Hỏi ra việc đó rẻ hơn $2 xu, trả lại đi!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả lại tiền chênh cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn trả lại $1 xu, xin lỗi. $2 dịu giọng: “Biết sai mà sửa thì còn gọi lại.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả bớt tiền chênh cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cầm $2 xu: “Thôi được, lần sau nói giá cho thật.”",
   "en": "",
   "pattern": true
  }

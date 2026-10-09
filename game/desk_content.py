@@ -155,6 +155,9 @@ DRUGS = {
     'gung': dict(name='Viên Gừng Ấm', group='T', code='GA'),
     'menla': dict(name='Men Lá Xanh', group='T', code='ML'),
 }
+# F#278: which medicines need a slip, shown in the view (desk.public_task `drugs`) as a tag on every paper line naming
+# one and as a legend in the rulebook: 'K' = nhóm K, 'L' = hàng lạnh (cold chain). Everyday items ('T') carry no tag.
+DRUG_TAGS = tuple(dict(name=d['name'], group=d['group']) for d in DRUGS.values() if d['group'] in ('K', 'L'))
 PATIENTS = ['Bà Tư', 'Ông Sáu', 'Chị Mận', 'Bé Na', 'Anh Tài', 'Cô Ba', 'Chú Lộc', 'Em Bống', 'Ông Khải', 'Chị Duyên']
 
 

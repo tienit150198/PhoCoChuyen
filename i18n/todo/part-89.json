@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Im lặng.",
+  "en": ""
+ },
+ {
+  "vi": "Báo tin kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tắm",
+  "en": ""
+ },
+ {
+  "vi": "phòng tắm chưa sạch",
+  "en": ""
+ },
+ {
   "vi": "phòng tắm có vệt ố quanh vòi sen",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "sáng vào phòng không chào ai, cắm mặt vào máy",
-  "en": ""
- },
- {
-  "vi": "gặp sếp trong thang máy cũng không chào",
-  "en": ""
- },
- {
-  "vi": "sáng nào cũng chào cả phòng, không khí vui hẳn",
-  "en": ""
- },
- {
-  "vi": "lễ phép với cả bác bảo vệ, cô lao công",
-  "en": ""
- },
- {
-  "vi": "Không chào.",
   "en": ""
  }
 ]

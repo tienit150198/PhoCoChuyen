@@ -3410,6 +3410,11 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                        {'emoji': '➕',
                         'name': 'Khách xin lấy dư',
                         'how': 'Phiếu ghi 1 hộp mà khay có 3. Đánh dấu số hộp, rồi [[Đổi cho đúng rồi giao]].'},
+                       {'emoji': '🏷️',
+                        'name': 'Thuốc nào là nhóm K, hàng lạnh?',
+                        'how': 'Nhóm K (nhãn K): Kháng Lam 250, Kháng Lam 500, Viên Điều Hòa Mây, Viên Hoạt Lan, Viên '
+                               'Hoạt Lam. Hàng lạnh (nhãn ❄️ Lạnh): Lọ Tuyết Lạnh. Cả hai cần phiếu; không có nhãn là '
+                               'hàng thông thường.'},
                        {'emoji': '🚫',
                         'name': 'Thuốc nhóm K không phiếu',
                         'how': 'Khách dúi tiền xin một hộp. Đánh dấu dòng “Phiếu”, đóng dấu [[Từ chối, giải thích '

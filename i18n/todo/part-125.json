@@ -1,5 +1,50 @@
 [
  {
+  "vi": "📻 Chị Nguyệt: “Tàu $1 đã chạy khỏi Bến Gỗ, còn $2 phút tới đường ngang.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🟥 Tàu $1 phanh dừng cách đường ngang ba trăm mét, chờ bạn báo đường đã thông.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tàu $1 tới mà cần chắn chưa hạ. Lái tàu kéo phanh khẩn cấp, xe máy phanh cháy lốp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tàu $1 tới mà trên ray vẫn còn người. Lái tàu kéo còi, phanh khẩn cấp, may họ nhảy ra kịp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚆 Tàu $1 $2 toa ầm ầm qua đường ngang. Gió tàu thốc tung vạt áo.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Chị Nguyệt: “Sai! Nghe lại: tàu $1, rời Bến Gỗ $2, qua đường ngang $3. Nhắc lại cho đúng.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Bạn: “$1” · Chị Nguyệt: “Đúng. Đường ngang Bến Mây chuẩn bị.” Tàu còn khoảng $2 phút.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👀 Nhìn hai phía đường ngang: $1. Dẹp hết rồi mới hạ chắn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👀 Nhìn hai phía đường ngang: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 chui qua chắn, đứng giữa ray",
   "en": "",
   "pattern": true
@@ -2201,51 +2246,6 @@
  },
  {
   "vi": "$1 gửi $2: “Thấy ngon nên để phần một ít.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 dúi vào tay $2: “Cầm lấy, khách sáo gì.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 dúi vào tay phong bì $2 xu: “Lấy hên nghe, làm ăn phát đạt!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 lì xì phong bì $2 xu: “Chúc năm nay mọi sự như ý nghe con.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nhắn: “Nghe nói mai có đoàn kiểm tra ghé $2 đó. Dọn dẹp gọn gàng, giấy tờ để sẵn nha.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cười: “Có gì đâu mà cảm ơn, quen biết mà.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 hơi buồn vì chưa nghe một lời cảm ơn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tặng mình $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Số xu là từ 1 đến $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví của bạn chưa đủ $1 xu.",
   "en": "",
   "pattern": true
  }

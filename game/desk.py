@@ -129,6 +129,8 @@ def public_task(t: dict) -> dict:
     v['rules'] = tree_copy(b['rules'])
     v['bulletin'] = tree_copy(b['notices'])
     v['stamps'] = tree_copy(b.get('stamps'))
+    if t['career'] == 'pharmacy':   # F#278: which names are nhóm K / hàng lạnh (view only, never saved)
+        v['drugs'] = [dict(x) for x in dc.DRUG_TAGS]
     if not t['known']:
         v['docs'] = None
         v['drawer'] = None if 'drawer' in t else None

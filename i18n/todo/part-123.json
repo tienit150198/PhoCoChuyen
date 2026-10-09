@@ -1,5 +1,50 @@
 [
  {
+  "vi": "CV ghi $1 năm mà BHXH chỉ có $2 tháng — gọi xác minh chỗ làm cũ trước.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Người quen giới thiệu vẫn xét như mọi người: chưa đủ $1 năm kinh nghiệm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kinh nghiệm: $1 năm $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kỹ năng: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bằng cấp: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lương mong muốn: $1 xu/tháng",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Huyền: “$1 vừa gửi sổ BHXH của chỗ làm cũ — đủ $2 năm thật đấy em.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 vừa gọi: đã nhận việc chỗ khác, xin rút hồ sơ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kinh nghiệm: ít nhất $1 năm $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Kỹ năng bắt buộc: $1.",
   "en": "",
   "pattern": true
@@ -2201,51 +2246,6 @@
  },
  {
   "vi": "✋ Giữ lại, báo bác sĩ: $1. $2 $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗣️ Bạn hỏi vì sao, giải thích thuốc dùng để làm gì, có bác sĩ chỉ định. $1 nghĩ một lúc: “Thôi được, đưa đây.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗣️ Bạn hỏi vì sao, giải thích kỹ. $1 vẫn lắc đầu: “Không là không.” Đó là quyền của người bệnh.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗣️ Bạn kể sơ các bước, hỏi điều cô lo nhất. $1 bớt run, nhưng giấy cam đoan phải có bác sĩ giải thích và ký cùng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗣️ Bạn hỏi vì sao Tuấn đổi ý, giải thích những gì mình biết. Tuấn: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😤 “Không làm là nặng thêm đó!” $1 miễn cưỡng gật đầu, mặt hằm hằm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã nói không mổ. Không chuyển người bệnh đi khi họ không đồng ý.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: đã chuyển đi $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: đã kiểm đủ giấy cam đoan, nhịn ăn, dị ứng, trang sức.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chuẩn bị và chuyển người bệnh đi $1.",
   "en": "",
   "pattern": true
  }

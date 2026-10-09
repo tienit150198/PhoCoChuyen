@@ -1,5 +1,13 @@
 [
  {
+  "vi": "📞 Ca hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "🗺️ Bảng đội",
+  "en": ""
+ },
+ {
   "vi": "xu theo thực đơn",
   "en": ""
  },
@@ -1756,47 +1764,39 @@
   "en": ""
  },
  {
+  "vi": "Nhóm K: cần phiếu",
+  "en": ""
+ },
+ {
+  "vi": "❄️ Lạnh",
+  "en": ""
+ },
+ {
+  "vi": "Hàng lạnh: cần phiếu, xem tủ mát",
+  "en": ""
+ },
+ {
+  "vi": "Không có nhãn: hàng thông thường, không cần phiếu.",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm K",
+  "en": ""
+ },
+ {
+  "vi": "(cần phiếu)",
+  "en": ""
+ },
+ {
+  "vi": "Hàng lạnh",
+  "en": ""
+ },
+ {
+  "vi": "(cần phiếu, xem tủ mát)",
+  "en": ""
+ },
+ {
   "vi": "Đủ dấu rồi",
-  "en": ""
- },
- {
-  "vi": "Đã đánh dấu quy định này",
-  "en": ""
- },
- {
-  "vi": "Đủ dấu rồi: đóng dấu quyết định.",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Đóng dấu quyết định\"",
-  "en": ""
- },
- {
-  "vi": "🔏 Đóng dấu",
-  "en": ""
- },
- {
-  "vi": "Chọn câu trả lời đầu tiên cho khách",
-  "en": ""
- },
- {
-  "vi": "⏳ Chờ kết quả một nhịp",
-  "en": ""
- },
- {
-  "vi": "Đếm két: chạm từng tờ rồi chốt số",
-  "en": ""
- },
- {
-  "vi": "Soát từng dòng: chạm dòng sai, chọn quy định nó trái",
-  "en": ""
- },
- {
-  "vi": "Soát giấy tờ",
-  "en": ""
- },
- {
-  "vi": "👆 Soát từng dòng",
   "en": ""
  }
 ]

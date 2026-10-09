@@ -121,6 +121,37 @@ class ColdChainTests(unittest.TestCase):
         self.assertEqual(solve_desk(k)['grade'], 'perfect')
 
 
+class DrugTagTests(unittest.TestCase):
+    """F#278 "Thuốc nào là nhóm K và hàng lạnh?": the view names them; the save never carries the list."""
+
+    def test_the_view_lists_the_slip_medicines(self):
+        self.assertEqual({d['name'] for d in dc.DRUG_TAGS if d['group'] == 'K'},
+                         {v['name'] for v in dc.DRUGS.values() if v['group'] == 'K'})
+        self.assertEqual([d['name'] for d in dc.DRUG_TAGS if d['group'] == 'L'], ['Lọ Tuyết Lạnh'])
+        self.assertFalse(any(d['group'] == 'T' for d in dc.DRUG_TAGS), 'everyday items need no slip, no tag')
+        j = desk_journey('pharmacy', 'ph_clean')
+        view = desk.public_task(j.task)
+        self.assertEqual(view['drugs'], [dict(d) for d in dc.DRUG_TAGS])
+        self.assertNotIn('drugs', j.task, 'view only: the stored task (and a rolled-back server) never sees it')
+        roundtrip(j)
+
+    def test_other_desks_get_no_list(self):
+        j = desk_journey('accounting', 'ac_clean')
+        self.assertNotIn('drugs', desk.public_task(j.task))
+
+    def test_client_tags(self):
+        import shutil
+        import subprocess
+        from pathlib import Path
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        root = Path(__file__).resolve().parents[1]
+        out = subprocess.run([node, str(root / 'tests' / 'desk_drug_tags.mjs')], cwd=root, capture_output=True,
+                             text=True, encoding='utf-8', timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr + out.stdout)
+
+
 class CounterTests(unittest.TestCase):
     def test_tip_temptation(self):
         j = desk_journey('pharmacy', 'ph_norx')

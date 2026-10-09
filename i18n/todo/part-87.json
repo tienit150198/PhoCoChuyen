@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Bánh kẹo",
+  "en": ""
+ },
+ {
+  "vi": "Nước ngọt",
+  "en": ""
+ },
+ {
+  "vi": "Váy",
+  "en": ""
+ },
+ {
+  "vi": "Nón",
+  "en": ""
+ },
+ {
   "vi": "Khăn",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Nhà vệ sinh sạch.",
-  "en": ""
- },
- {
-  "vi": "không có nhà vệ sinh",
-  "en": ""
- },
- {
-  "vi": "quán vỉa hè nên không có nhà vệ sinh, muốn đi phải chạy ra cây xăng",
-  "en": ""
- },
- {
-  "vi": "ngồi lâu mà không có chỗ đi vệ sinh, hơi bất tiện",
-  "en": ""
- },
- {
-  "vi": "không có nhà vệ sinh nhưng chủ quán chỉ tận chỗ gần nhất",
   "en": ""
  }
 ]

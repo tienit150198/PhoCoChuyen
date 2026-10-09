@@ -38,7 +38,8 @@ let openSeq=0;
 const readGuest=code=>S.env.api.json(`/api/home-guests/${S.coop?'deco/':''}view?code=${encodeURIComponent(code)}`);
 /** 🎨 The only commands a friend decorating a home sends, as home_coop actions. */
 const COOP={jr_deco_put:'put',jr_deco_pick:'pick',jr_deco_layout:'layout'};
-const VISIT_OPS=new Set(['scroll','close','back','room','guests','hwEmote','hwReply']);
+// 'floor' only switches which villa floor's rooms the rail shows (F#280: a housemate could not reach floor 2).
+const VISIT_OPS=new Set(['scroll','close','back','room','floor','guests','hwEmote','hwReply']);
 const COOP_OPS=new Set([...VISIT_OPS,'floor','edit','done','drawer','cat','hold','unhold','move','flip','pin','face','zup','zdown','pick','undo','tipOk']);
 const post=(url,body)=>S.env.api.json(url,{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':S.env.api.csrf},body:JSON.stringify(body)});
 const U=A.U;

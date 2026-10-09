@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Mở Chuyển khoản",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ tín dụng: quẹt trước, trả sau",
+  "en": ""
+ },
+ {
+  "vi": "💳 Tab Thẻ, bấm [[Nộp hồ sơ mở thẻ]]. Cần điểm tín dụng từ 580 và thu nhập đều: ít nhất 3 ngày có lương hoặc tiền lời rút về ví trong 14 ngày.",
+  "en": ""
+ },
+ {
   "vi": "🛍️ Thẻ dùng để trả học phí, đi cửa sau, mua nhẫn và lo cưới. Chọn cách trả mặc định ở mục “Khi mua sắm cá nhân”.",
   "en": ""
  },
@@ -1393,22 +1405,6 @@
  },
  {
   "vi": "🙈 Bật tắt ở Cài đặt → Dữ liệu → [[Hiện tên tôi trên bảng xếp hạng]], hoặc bấm [[Ẩn tên tôi]] trên bảng. Không ai thấy tên đăng nhập của bạn.",
-  "en": ""
- },
- {
-  "vi": "Mở Xếp hạng",
-  "en": ""
- },
- {
-  "vi": "Bạn bè & hôn nhân",
-  "en": ""
- },
- {
-  "vi": "Kết hôn từ A tới Z",
-  "en": ""
- },
- {
-  "vi": "🔐 Bước 1: tạo tài khoản. Kết hôn là chuyện giữa hai người chơi thật, nên khách chưa có tài khoản mở [[Hôn nhân]] sẽ thấy nút [[Tạo tài khoản]].",
   "en": ""
  }
 ]

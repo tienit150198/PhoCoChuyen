@@ -438,6 +438,49 @@ class Moments(Base):
         self.j.act('bm_moment_done', task=t['id'])
         self.assertIn('harsh', self.codes(t['id']))
 
+    def test_one_unkind_move_never_leaves_the_child_stuck(self):
+        """F#282/#283 (day 4, "K làm theo yêu cầu được"): a tantrum's caring moves add up to exactly 100, so one
+        unkind move after some progress left the meter at 95% with every caring move used and no way to finish."""
+        for mk, bad in (('tantrum', 'give'), ('tantrum', 'shout'), ('scrape', 'blow'), ('cry', 'scold')):
+            with self.subTest(mk=mk, bad=bad):
+                t = self.at(*find('moment', pred=lambda t, mk=mk: t['needs']['mk'] == mk))
+                good = BM.SCRAPE_ORDER + ['hug'] if mk == 'scrape' else [m for m in t['needs']['moves'] if BM.MOVES[mk][m][3] is None]
+                self.j.act('bm_care', task=t['id'], move=good[0])
+                self.j.act('bm_care', task=t['id'], move=bad)
+                for m in good[1:]:
+                    self.j.act('bm_care', task=t['id'], move=m)
+                self.assertEqual(self.j.get(t['id'])['st']['calm'], 100)
+                self.j.act('bm_moment_done', task=t['id'])
+                self.assertTrue(self.codes(t['id']), 'the unkind move stays in the review')
+                validate_state(self.j.state)
+
+    def test_a_block_left_short_before_the_fix_finishes(self):
+        t = self.at(*find('moment', pred=lambda t: t['needs']['mk'] == 'tantrum'))
+        st = self.j.get(t['id'])['st']
+        st.update(calm=95, used=['breath', 'give', 'sit', 'name', 'choice'], bad=['give_in'])   # a 1.9.27 save, stuck
+        validate_state(self.j.state)
+        self.j.act('bm_moment_done', task=t['id'])
+        self.assertEqual(self.j.get(t['id'])['st']['calm'], 100)
+        self.assertIn('give_in', self.codes(t['id']))
+
+    def test_not_done_while_caring_moves_are_left(self):
+        t = self.at(*find('moment', pred=lambda t: t['needs']['mk'] == 'tantrum'))
+        self.j.act('bm_care', task=t['id'], move='breath')
+        with self.assertRaises(GameError):
+            self.j.act('bm_moment_done', task=t['id'])
+
+    def test_moment_client(self):
+        import shutil
+        import subprocess
+        from pathlib import Path
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        root = Path(__file__).resolve().parents[1]
+        out = subprocess.run([node, str(root / 'tests' / 'babysitter_moment.mjs')], cwd=root, capture_output=True,
+                             text=True, encoding='utf-8', timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr + out.stdout)
+
     def test_tears_calm_down_with_care(self):
         t = self.at(*find('moment', pred=lambda t: t['needs']['mk'] == 'cry'))
         self.block(t)
