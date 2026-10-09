@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Đọc đủ các nguồn: một dòng trong đó chỉ cách xử lý.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn phương án khớp căn cứ",
+  "en": ""
+ },
+ {
+  "vi": "Mới là đề xuất: gửi việc thì đầu mối mới làm.",
+  "en": ""
+ },
+ {
   "vi": "Đầu mối báo xong: kiểm với khách trước khi đóng.",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "· đang thử đồ…",
-  "en": ""
- },
- {
-  "vi": "🔍 Kiểm phòng",
-  "en": ""
- },
- {
-  "vi": "🙏 Hỏi khéo",
-  "en": ""
- },
- {
-  "vi": "👋 Để khách đi",
   "en": ""
  }
 ]

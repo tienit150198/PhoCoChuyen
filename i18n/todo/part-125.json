@@ -1,5 +1,25 @@
 [
  {
+  "vi": "$1 đi $2: sương sớm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đi $2: kiểm tra kỹ thuật",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Vân: “Chặng $1 nhé em. Nhận bản tin, tính dầu, rồi mình đi một vòng quanh tàu.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Thu ló vào buồng lái: “$1 khách, có vài cụ lớn tuổi. Chị báo trước để em biết.”",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "✋ Chị Vân lắc đầu: “Thiếu dầu đi $1. Dầu chặng + dầu dự bị + 30 phút dự phòng. Tính lại nhé.”",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "$1 đếm lại: “Thối thiếu $2 xu rồi nè.” Thối thêm cho đủ rồi đưa lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Về nhà đếm lại mới thấy bị thối thiếu $1 xu. Buôn bán kiểu này thì ai dám quay lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thối thiếu $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 trả lại $2 xu: “Thối dư nè, coi chừng lỗ nha!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tối kiểm két mới thấy thối dư $1 xu, khách cầm về luôn rồi.",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Sang trái",
+  "en": ""
+ },
+ {
+  "vi": "↰ RẼ TRÁI",
+  "en": ""
+ },
+ {
+  "vi": "↑ ĐI THẲNG",
+  "en": ""
+ },
+ {
   "vi": "RẼ PHẢI ↱",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "🚔 Tiền hoàn đang chờ: cần tài khoản ngân hàng và số dư dưới mức tối đa để nhận ở ngày sống tiếp theo.",
-  "en": ""
- },
- {
-  "vi": "🔧 Đang hỏng",
-  "en": ""
- },
- {
-  "vi": "Bảo hiểm & rủi ro",
-  "en": ""
- },
- {
-  "vi": "Phòng trước, đỡ lo",
   "en": ""
  }
 ]

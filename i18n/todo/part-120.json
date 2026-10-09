@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Loa to quá, nhưng mà vui! Quẩy lên mọi người ơi 🔊",
+  "en": ""
+ },
+ {
+  "vi": "Xôi gấc đỏ au, ăn lấy may cả năm nha!",
+  "en": ""
+ },
+ {
+  "vi": "Bia thì ít thôi nha, còn chạy xe về đó 🛵",
+  "en": ""
+ },
+ {
   "vi": "Đèn sân khấu đẹp ghê, như đi xem ca nhạc vậy!",
   "en": ""
  },
@@ -2028,21 +2040,6 @@
  },
  {
   "vi": "$1: Sao kê thẻ •••• $2 kỳ này $3 xu, tối thiểu $4 xu, hạn thanh toán Ngày $5.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: Sổ tiết kiệm $2 $3 xu đã đáo hạn, tiền gốc và lãi $4 xu đã về tài khoản thanh toán.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: Sổ tiết kiệm $2 đã tái tục: nhập lãi $3 xu vào gốc, sổ mới $4 xu, đáo hạn Ngày $5.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: Đã trích $2 xu trả kỳ $3/$4 khoản $5. Cảm ơn quý khách.",
   "en": "",
   "pattern": true
  }

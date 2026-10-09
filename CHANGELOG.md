@@ -1,3 +1,9 @@
+# v1.9.36 — 2026-10-09
+
+🎆 Pháo hoa (#299–#301): show gắn vào hộp thoại trên cùng nên ✕ không còn lọt xuống nền làm đóng việc đang làm; đang mở hộp thoại/game thì chỉ chip nhỏ; Cài đặt → Cách chơi: Bật / Chỉ báo nhỏ / Tắt (lưu trên máy); ngắn và nhẹ hơn.
+🏪 Quầy (#295/#296): Nhập lại như lần trước (quay.again), thiếu thì lấy từ ví (dòng Sổ ví ≤ 10^7), mở rộng xe → sạp → ki-ốt tại chỗ (jr_quay_upgrade), Quản lý chung theo loại với nút cho cả nhóm. Save mở được trên 1.9.34/1.9.35.
+✏️ Sửa góp ý chưa trả lời (POST /api/feedback/edit); 🏆 Xếp hạng nghề trong trang Công việc (#294).
+
 # v1.9.35 — 2026-10-09
 
 🗺️ Trại tạm giữ có bản đồ đi lại (public/js/scenes/jail-place.js, jail-map.js): mỗi việc công ích một góc, giường hết ngày, phòng thăm gặp nhờ bảo lãnh, cổng đếm ngược; NPC chỉ ở client.

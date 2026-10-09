@@ -1,5 +1,25 @@
 [
  {
+  "vi": "thêm $1 không hợp dịp",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn cho $1 mặc thử, ghim kim ở mắt cá: cần cắt lên $2 cm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn quấn thước dây quanh eo, ghim hai bên hông: cần bóp vào $1 cm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn phấn một đường $1 cm rồi ngồi vào máy may. Đạp máy, dừng đúng vạch nha!",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bạn mang đồ sang gian bên cho Bà Tư. Bà đeo kính lên: “Để đó, chút xíu là xong.” (công $1 xu)",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "Cô Tám trả $1 xu tiền ve chai.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cô Tám lắc đầu với $1 túi tái chế lẫn đồ ăn: “Bẩn vậy không bán được.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚛 Đổ xe ở điểm tập kết: $1.$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tìm hiểu thêm đã: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tìm hiểu thêm đã: $1",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Về nhà đếm lại mới thấy bị thối thiếu $1 xu. Buôn bán kiểu này thì ai dám quay lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "thối thiếu $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 trả lại $2 xu: “Thối dư nè, coi chừng lỗ nha!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tối kiểm két mới thấy thối dư $1 xu, khách cầm về luôn rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Khách cho giữ tiền thối: $1",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": ", biển tên “$1”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giờ bạn đi $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền xăng $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😊 Tinh thần +$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👥 Chỉ gửi cho bạn bè đã kết bạn đủ $1 phút.",
   "en": "",
   "pattern": true
  }

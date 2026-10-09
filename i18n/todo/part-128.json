@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Câu đùa bị chụp lại, bà con không vui: thêm $1 cảm nhận 1★.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 kể chuyện khắp xóm: thêm $2 cảm nhận 1★.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Không gỡ được: khách có ghé chùa thật. $1 biết chuyện và buồn hơn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thêm $1 cảm nhận 1★ vì chuyện này.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 quấn chân, tinh thần +$2.",
   "en": "",
   "pattern": true

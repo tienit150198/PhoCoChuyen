@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Giá chung cả phố · 1 giờ thực = 1 ngày thị trường.",
+  "en": ""
+ },
+ {
+  "vi": "Số xu khác",
+  "en": ""
+ },
+ {
+  "vi": "Trị giá hiện tại",
+  "en": ""
+ },
+ {
   "vi": "Giá được chốt khi máy chủ nhận lệnh.",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Xóa khoản nợ này?",
-  "en": ""
- },
- {
-  "vi": "Người ấy không cần trả nữa. Sổ nợ vẫn ghi lại.",
-  "en": ""
- },
- {
-  "vi": "Nhận lời cầu hôn?",
-  "en": ""
- },
- {
-  "vi": "Hai bạn sẽ đính hôn. Mỗi người chỉ có một người thương cùng lúc, các lời cầu hôn khác tự đóng lại.",
   "en": ""
  }
 ]

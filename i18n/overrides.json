@@ -1,5 +1,8 @@
 {
   "strings": {
+  "Pháo hoa không còn che game: đang chơi thì chỉ hiện chip nhỏ, bấm ✕ chỉ tắt pháo hoa. Cài đặt có Bật / Chỉ báo nhỏ / Tắt.": "Fireworks no longer cover your game: a small chip while you play, ✕ only closes the show. Settings: On / Small notice / Off.",
+  "Quầy của tôi: 🔁 Nhập lại như lần trước, thiếu tiền thì lấy từ ví, 🏗️ mở rộng quầy tại chỗ, 📋 Quản lý chung nhiều quầy.": "My counters: 🔁 repeat last order, pay a shortfall from your wallet, 🏗️ grow a counter in place, 📋 manage many counters at once.",
+  "Góp ý chưa được trả lời giờ sửa lại được. Trang Công việc có thêm 🏆 Xếp hạng nghề.": "You can now edit a note that has no reply yet. The Work pages have a 🏆 career ranking.",
   "Quầy của bạn: nhập hàng nhanh, mở rộng": "Your stall: quick restock, expanding",
   "🔁 [[Nhập lại như lần trước]]: một chạm nhập đúng đơn lần trước, tổng tiền hiện trên nút.": "🔁 [[Restock like last time]]: one tap orders exactly what you ordered last time; the total shows on the button.",
   "👛 Két và vốn quầy không đủ tiền nhập hàng thì phần thiếu lấy từ ví, rồi tài khoản. Game báo trước số thiếu.": "👛 If the till and stall fund can't cover a restock, the rest comes from your wallet, then your bank account. The game tells you the shortfall first.",

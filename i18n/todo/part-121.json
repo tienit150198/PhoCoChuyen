@@ -1,5 +1,20 @@
 [
  {
+  "vi": "$1: Sổ tiết kiệm $2 $3 xu đã đáo hạn, tiền gốc và lãi $4 xu đã về tài khoản thanh toán.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: Sổ tiết kiệm $2 đã tái tục: nhập lãi $3 xu vào gốc, sổ mới $4 xu, đáo hạn Ngày $5.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: Đã trích $2 xu trả kỳ $3/$4 khoản $5. Cảm ơn quý khách.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Hồ sơ đang ghi nhận nợ xấu tới $1 nên ngân hàng chưa thể xét duyệt. Trả hết khoản quá hạn và chờ hết thời gian ghi nhận nhé.",
   "en": "",
   "pattern": true
@@ -2206,26 +2221,6 @@
  },
  {
   "vi": "Tiệm bỏ thêm $1 vào bộ đi $2, chẳng biết mặc lúc nào.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thêm $1 không hợp dịp",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn cho $1 mặc thử, ghim kim ở mắt cá: cần cắt lên $2 cm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn quấn thước dây quanh eo, ghim hai bên hông: cần bóp vào $1 cm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn phấn một đường $1 cm rồi ngồi vào máy may. Đạp máy, dừng đúng vạch nha!",
   "en": "",
   "pattern": true
  }

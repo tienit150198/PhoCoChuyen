@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Giờ bạn đi $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiền xăng $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "😊 Tinh thần +$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👥 Chỉ gửi cho bạn bè đã kết bạn đủ $1 phút.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "📅 Tài khoản đã chơi game đủ $1 ngày (đời thực) và nhân vật đủ $2 ngày sống.",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "Câu trả lời gắt bị chụp lại, lan khắp xóm: thêm $1 cảm nhận 1★.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Câu đùa bị chụp lại, bà con không vui: thêm $1 cảm nhận 1★.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 kể chuyện khắp xóm: thêm $2 cảm nhận 1★.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Không gỡ được: khách có ghé chùa thật. $1 biết chuyện và buồn hơn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thêm $1 cảm nhận 1★ vì chuyện này.",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Cô Tám lắc đầu với $1 túi tái chế lẫn đồ ăn: “Bẩn vậy không bán được.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚛 Đổ xe ở điểm tập kết: $1.$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tìm hiểu thêm đã: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tìm hiểu thêm đã: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "😤 Chủ nhà $1 ra chặn xe: $2",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "⏱️ Bạn bấm đồng hồ nhìn đèn quét: $1 Danh mục đèn ghi: $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đèn Hòn Gió sáng lúc $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Ghi sổ trực buổi tối, ký tên. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Bạn: “Trạm Hòn Gió báo: tàu $1, phương vị $2, nhờ đài chuyển đồn biên phòng.” Chị Hải Yến: “Rõ, đã chuyển. Biên phòng cho tàu ra ngay.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", $1 người",
   "en": "",
   "pattern": true
  }

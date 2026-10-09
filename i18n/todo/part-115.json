@@ -1,5 +1,17 @@
 [
  {
+  "vi": "máy tầm trung",
+  "en": ""
+ },
+ {
+  "vi": "Cất máy, không khoe",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã đổi máy cũ",
+  "en": ""
+ },
+ {
   "vi": "Chưa cầm máy nào",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Vàng đổi giá theo ngày thực · Coin đổi giá theo ngày sống.",
-  "en": ""
- },
- {
-  "vi": "Giá chung cả phố · 1 giờ thực = 1 ngày thị trường.",
-  "en": ""
- },
- {
-  "vi": "Số xu khác",
-  "en": ""
- },
- {
-  "vi": "Trị giá hiện tại",
   "en": ""
  }
 ]

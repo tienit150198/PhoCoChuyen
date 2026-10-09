@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Chưa có người mới được ghi nguồn.",
+  "en": ""
+ },
+ {
+  "vi": "Hệ điều hành",
+  "en": ""
+ },
+ {
+  "vi": "Loại máy",
+  "en": ""
+ },
+ {
   "vi": "Trình duyệt / ứng dụng",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Khớp mã đơn khách đưa thì mới được xem hồ sơ.",
-  "en": ""
- },
- {
-  "vi": "Đọc đủ các nguồn: một dòng trong đó chỉ cách xử lý.",
-  "en": ""
- },
- {
-  "vi": "Chọn phương án khớp căn cứ",
-  "en": ""
- },
- {
-  "vi": "Mới là đề xuất: gửi việc thì đầu mối mới làm.",
   "en": ""
  }
 ]
