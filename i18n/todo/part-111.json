@@ -1,5 +1,41 @@
 [
  {
+  "vi": "Dư nợ thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ vay",
+  "en": ""
+ },
+ {
+  "vi": "Lọc giao dịch",
+  "en": ""
+ },
+ {
+  "vi": "Sao kê giao dịch",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có giao dịch nào.",
+  "en": ""
+ },
+ {
+  "vi": "ngày sống",
+  "en": ""
+ },
+ {
+  "vi": "Biểu lãi suất tiết kiệm (theo năm trong game)",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ hạn",
+  "en": ""
+ },
+ {
+  "vi": "Lãi/năm",
+  "en": ""
+ },
+ {
   "vi": "1.000 xu nhận",
   "en": ""
  },
@@ -1761,42 +1797,6 @@
  },
  {
   "vi": "💬 Trò chuyện lần đầu trong ngày: +1 tới +3. Nói nặng lời: −3.",
-  "en": ""
- },
- {
-  "vi": "🎁 Tặng quà (mỗi người một món mỗi ngày): đúng món họ thích +6, món thường +3, món họ không ưa −2.",
-  "en": ""
- },
- {
-  "vi": "🙏 Cảm ơn khi được tặng: +2. Để quá hai ngày không cảm ơn: −1.",
-  "en": ""
- },
- {
-  "vi": "🎉 Được mời mà tới dự: +5, gửi lời chúc: +1, im lặng: −3.",
-  "en": ""
- },
- {
-  "vi": "⭐ Phục vụ khách quen: 5★ +2, 3★ −1, 2★ −3, 1★ −5. Thối thiếu tiền: −3.",
-  "en": ""
- },
- {
-  "vi": "🍃 Lâu không gặp (hơn 14 ngày) thì nhạt dần, rất chậm.",
-  "en": ""
- },
- {
-  "vi": "💛 Càng thân, người ta càng hay hỏi thăm, tặng quà, báo tin trước, dễ bỏ qua lỗi nhỏ, hay bo thêm và tới dự ngày vui của bạn.",
-  "en": ""
- },
- {
-  "vi": "Chưa có khách quen",
-  "en": ""
- },
- {
-  "vi": "Làm việc cho ai đó vài lần là họ nhớ mặt bạn.",
-  "en": ""
- },
- {
-  "vi": "Nhóm người quen",
   "en": ""
  }
 ]

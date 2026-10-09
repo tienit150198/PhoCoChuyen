@@ -1,5 +1,61 @@
 [
  {
+  "vi": "Tỉ lệ góp là từ 0 đến 100%.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ cặp đã đính hôn mới lên kế hoạch cưới.",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch cưới đã chốt rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chưa đính hôn.",
+  "en": ""
+ },
+ {
+  "vi": "Không có kế hoạch nào đang chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã rút lại kế hoạch cưới.",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch này không còn chờ bạn xác nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Đã báo muốn bàn lại. Bạn có thể tự sửa kế hoạch rồi gửi lại.",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch này không còn chờ xác nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Người còn lại cần xác nhận kế hoạch này.",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch vừa được sửa. Xem lại bản mới rồi xác nhận nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ cưới đã sát quá rồi. Sửa lại giờ trong kế hoạch rồi gửi nhau nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt cọc tiệc cưới (phần của bạn)",
+  "en": ""
+ },
+ {
   "vi": "Kế hoạch vừa thay đổi. Xem lại rồi xác nhận nhé.",
   "en": ""
  },
@@ -1741,62 +1797,6 @@
  },
  {
   "vi": "đứng chờ ở cổng mãi",
-  "en": ""
- },
- {
-  "vi": "chuông sáng đánh muộn",
-  "en": ""
- },
- {
-  "vi": "thầy trẻ chẳng nghe ai dặn",
-  "en": ""
- },
- {
-  "vi": "Ngày đông Phật tử mà chùa vẫn yên, quý lắm.",
-  "en": ""
- },
- {
-  "vi": "Rằm đông người mà ai cũng được chỉ chỗ thắp hương.",
-  "en": ""
- },
- {
-  "vi": "Biết là ngày đông, nhưng mong chùa để ý hơn.",
-  "en": ""
- },
- {
-  "vi": "Chiều vắng, ngồi hiên chùa nghe gió sông mà nhẹ người.",
-  "en": ""
- },
- {
-  "vi": "Chùa vắng mà vẫn còn sơ suất.",
-  "en": ""
- },
- {
-  "vi": "Thầy trẻ còn lạ mặt mà làm việc đã chín chắn.",
-  "en": ""
- },
- {
-  "vi": "Thầy trẻ chắc còn lạ việc, từ từ sẽ quen.",
-  "en": ""
- },
- {
-  "vi": "Đi chùa này mấy chục năm, nếp chùa vẫn giữ như xưa.",
-  "en": ""
- },
- {
-  "vi": "Lên chùa bao năm, hôm nay thấy hơi lạ.",
-  "en": ""
- },
- {
-  "vi": "A Di Đà Phật. 🙏",
-  "en": ""
- },
- {
-  "vi": "Nghe chuông xong thấy nhẹ lòng.",
-  "en": ""
- },
- {
-  "vi": "Chùa hiền quá.",
   "en": ""
  }
 ]

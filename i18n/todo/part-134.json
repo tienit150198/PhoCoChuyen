@@ -1,5 +1,10 @@
 [
  {
+  "vi": "😴 Tỉnh táo $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Top $1 $2 · tuần này",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "📦 Mở thùng lên kệ ($1)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚚 Hàng đang về$1",
   "en": "",
   "pattern": true
  }

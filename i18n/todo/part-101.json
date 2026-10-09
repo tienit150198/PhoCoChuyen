@@ -1,5 +1,33 @@
 [
  {
+  "vi": "🏷️ Chọn nhãn: hữu cơ chỉ khi mọi lô đều hữu cơ",
+  "en": ""
+ },
+ {
+  "vi": "Khách sẽ kiểm số lượng, loại hàng và quét QR trên nhãn.",
+  "en": ""
+ },
+ {
+  "vi": "dán nhãn trước",
+  "en": ""
+ },
+ {
+  "vi": "xếp hàng vào thùng trước",
+  "en": ""
+ },
+ {
+  "vi": "Quyết chuyện ở trại",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn cách xử lý chuyện ở trại",
+  "en": ""
+ },
+ {
+  "vi": "🧹 Dọn chuồng gà",
+  "en": ""
+ },
+ {
   "vi": "Bồn nước",
   "en": ""
  },
@@ -1769,34 +1797,6 @@
  },
  {
   "vi": "✋ Cầm một dụng cụ ở “Trên tay” trước đã.",
-  "en": ""
- },
- {
-  "vi": "🧴 Chọn chai (hoặc lau khô) ở “Trên tay” trước đã.",
-  "en": ""
- },
- {
-  "vi": "🧴 Chai đang cầm cạn rồi: bấm “Châm” cạnh chai.",
-  "en": ""
- },
- {
-  "vi": "🔔 Bấm chuông, nghe khách dặn",
-  "en": ""
- },
- {
-  "vi": "🧧 Tổng vệ sinh",
-  "en": ""
- },
- {
-  "vi": "✓ sạch",
-  "en": ""
- },
- {
-  "vi": "🚪 Chọn phòng để bắt đầu dọn.",
-  "en": ""
- },
- {
-  "vi": "🚫 Để nguyên",
   "en": ""
  }
 ]

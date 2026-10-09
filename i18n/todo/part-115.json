@@ -1,5 +1,41 @@
 [
  {
+  "vi": "Chưa vào được nhà để trang trí. Hãy làm mới.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa vào được nhà. Hãy làm mới lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "Đã gửi lời mời. Chờ bạn đồng ý.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đồng ý. Chọn “Vào nhà” để ghé nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cập nhật lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thực hiện được.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cho trang trí. Bạn ấy sẽ thấy nhà bạn trong mục Bạn bè & nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thu hồi quyền trang trí.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thôi trang trí nhà bạn ấy.",
+  "en": ""
+ },
+ {
   "vi": "ở chung",
   "en": ""
  },
@@ -1761,42 +1797,6 @@
  },
  {
   "vi": "Chỉ để mở mic trực tiếp (từ 16 tuổi). Lưu một lần, không đổi được.",
-  "en": ""
- },
- {
-  "vi": "🎧 Bạn nghe cùng mọi người nhé",
-  "en": ""
- },
- {
-  "vi": "Mic trực tiếp dành cho bạn từ 16 tuổi. Bạn vẫn nghe, thả tim và cổ vũ được nha.",
-  "en": ""
- },
- {
-  "vi": "🚩 Báo cáo giọng hát",
-  "en": ""
- },
- {
-  "vi": "Nói bậy / quấy rối",
-  "en": ""
- },
- {
-  "vi": "🛟 Có vẻ là trẻ em",
-  "en": ""
- },
- {
-  "vi": "🧩 Đố bài",
-  "en": ""
- },
- {
-  "vi": "🚩 Báo cáo bài",
-  "en": ""
- },
- {
-  "vi": "⏹ Kết thúc đố",
-  "en": ""
- },
- {
-  "vi": "⏭ Bỏ bài (QL)",
   "en": ""
  }
 ]

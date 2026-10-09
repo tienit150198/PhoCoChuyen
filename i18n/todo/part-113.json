@@ -1,5 +1,41 @@
 [
  {
+  "vi": "Gửi lời mời",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có bạn bè để mời.",
+  "en": ""
+ },
+ {
+  "vi": "📸 Mời bạn chụp ảnh ở chợ đen! Mã phòng: {code}. Mở Chợ đen → Chụp ảnh → nhập mã để vào cùng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nhận được xác nhận lời mời. Kiểm tra tin nhắn trước khi gửi lại.",
+  "en": ""
+ },
+ {
+  "vi": "Dáng",
+  "en": ""
+ },
+ {
+  "vi": "Phông nền",
+  "en": ""
+ },
+ {
+  "vi": "Mã phòng",
+  "en": ""
+ },
+ {
+  "vi": "📋 Chép mã",
+  "en": ""
+ },
+ {
+  "vi": "👫 Mời bạn bè",
+  "en": ""
+ },
+ {
   "vi": "👑 chủ phòng",
   "en": ""
  },
@@ -1761,42 +1797,6 @@
  },
  {
   "vi": "Bàn ô ăn quan",
-  "en": ""
- },
- {
-  "vi": "Tới lượt: chọn một ô bên mình còn quân, chọn hướng, bốc hết rải mỗi ô một quân (rải qua cả ô quan).",
-  "en": ""
- },
- {
-  "vi": "Rải xong mà ô kế tiếp còn quân thì bốc ô đó rải tiếp. Kế tiếp là ô quan thì hết lượt.",
-  "en": ""
- },
- {
-  "vi": "Kế tiếp là một ô trống rồi tới ô có quân: ăn hết ô đó. Lại một ô trống rồi ô có quân thì ăn tiếp. Hai ô trống liền nhau: hết lượt.",
-  "en": ""
- },
- {
-  "vi": "Hàng mình hết quân thì lấy 5 dân đã ăn rải lại mỗi ô một quân; không đủ thì ván kết thúc.",
-  "en": ""
- },
- {
-  "vi": "Hết cả hai ô quan: mỗi bên thu dân còn trên hàng mình. Nhiều điểm hơn thì thắng.",
-  "en": ""
- },
- {
-  "vi": "Đang bày bàn…",
-  "en": ""
- },
- {
-  "vi": "thắng",
-  "en": ""
- },
- {
-  "vi": "Dễ",
-  "en": ""
- },
- {
-  "vi": "Rất khó",
   "en": ""
  }
 ]

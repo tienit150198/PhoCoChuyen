@@ -1,5 +1,41 @@
 [
  {
+  "vi": "Tới lượt: chọn một ô bên mình còn quân, chọn hướng, bốc hết rải mỗi ô một quân (rải qua cả ô quan).",
+  "en": ""
+ },
+ {
+  "vi": "Rải xong mà ô kế tiếp còn quân thì bốc ô đó rải tiếp. Kế tiếp là ô quan thì hết lượt.",
+  "en": ""
+ },
+ {
+  "vi": "Kế tiếp là một ô trống rồi tới ô có quân: ăn hết ô đó. Lại một ô trống rồi ô có quân thì ăn tiếp. Hai ô trống liền nhau: hết lượt.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng mình hết quân thì lấy 5 dân đã ăn rải lại mỗi ô một quân; không đủ thì ván kết thúc.",
+  "en": ""
+ },
+ {
+  "vi": "Hết cả hai ô quan: mỗi bên thu dân còn trên hàng mình. Nhiều điểm hơn thì thắng.",
+  "en": ""
+ },
+ {
+  "vi": "Đang bày bàn…",
+  "en": ""
+ },
+ {
+  "vi": "thắng",
+  "en": ""
+ },
+ {
+  "vi": "Dễ",
+  "en": ""
+ },
+ {
+  "vi": "Rất khó",
+  "en": ""
+ },
+ {
   "vi": "🪨 Ô ăn quan",
   "en": ""
  },
@@ -1761,42 +1797,6 @@
  },
  {
   "vi": "BẠN BÈ & NHÀ",
-  "en": ""
- },
- {
-  "vi": "Chưa vào được nhà để trang trí. Hãy làm mới.",
-  "en": ""
- },
- {
-  "vi": "Chưa vào được nhà. Hãy làm mới lời mời.",
-  "en": ""
- },
- {
-  "vi": "Đã gửi lời mời. Chờ bạn đồng ý.",
-  "en": ""
- },
- {
-  "vi": "Đã đồng ý. Chọn “Vào nhà” để ghé nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã cập nhật lời mời.",
-  "en": ""
- },
- {
-  "vi": "Chưa thực hiện được.",
-  "en": ""
- },
- {
-  "vi": "Đã cho trang trí. Bạn ấy sẽ thấy nhà bạn trong mục Bạn bè & nhà.",
-  "en": ""
- },
- {
-  "vi": "Đã thu hồi quyền trang trí.",
-  "en": ""
- },
- {
-  "vi": "Đã thôi trang trí nhà bạn ấy.",
   "en": ""
  }
 ]

@@ -1,5 +1,33 @@
 [
  {
+  "vi": "Phòng công khai",
+  "en": ""
+ },
+ {
+  "vi": "Mời ra: 1 giờ mọi phòng. Khóa chat: dùng chung với tab Chat.",
+  "en": ""
+ },
+ {
+  "vi": "Bài bị cấm",
+  "en": ""
+ },
+ {
+  "vi": "· đã cấm",
+  "en": ""
+ },
+ {
+  "vi": "· lúc hát mic trực tiếp (không có bản ghi)",
+  "en": ""
+ },
+ {
+  "vi": "🚫 Cấm bài",
+  "en": ""
+ },
+ {
+  "vi": "🔇 Khóa 1 giờ",
+  "en": ""
+ },
+ {
   "vi": "🚪 Mời ra",
   "en": ""
  },
@@ -1769,34 +1797,6 @@
  },
  {
   "vi": "Hôm nay đủ khách rồi: làm nốt rồi khép ca nhé.",
-  "en": ""
- },
- {
-  "vi": "Sắp đóng cửa: không đón thêm khách. Làm nốt rồi khép ca nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã xem hết sổ cũ.",
-  "en": ""
- },
- {
-  "vi": "Xem cũ hơn",
-  "en": ""
- },
- {
-  "vi": "🧾 Lúc bạn vắng: nhân viên bán",
-  "en": ""
- },
- {
-  "vi": ", dùng",
-  "en": ""
- },
- {
-  "vi": "dùng",
-  "en": ""
- },
- {
-  "vi": "🧾 Lúc bạn vắng: đội bán",
   "en": ""
  }
 ]

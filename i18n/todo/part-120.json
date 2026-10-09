@@ -1,5 +1,55 @@
 [
  {
+  "vi": "Máy sản xuất mua tháng$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiền mặt$1; tiền gửi không kỳ hạn$2; tổng$3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiền gửi kỳ hạn, gồm lãi dự thu: $1; đối chiếu bảng từng hợp đồng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phải thu khách$1; khách trả trước$2. Sổ USD gồm$3USD.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dự phòng phải thu khó đòi$1; khoản nợ vẫn giữ trên 131, chưa xóa nợ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nguyên giá$1; hao mòn$2; giá trị còn lại$3. Xem bảng từng TSCĐ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chi phí bảo hiểm chờ phân bổ$1; xem bảng từng hợp đồng 12 kỳ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dư vay ngắn hạn$1; không bù với tiền gửi ngân hàng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phải trả người bán$1; ứng trước$2; xem từng đối tượng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cổ tức chưa trả$1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "GTGT đầu vào$1; GTGT đầu ra phải nộp$2; TNDN hiện hành phải nộp$3.",
   "en": "",
   "pattern": true
@@ -1456,41 +1506,6 @@
  },
  {
   "vi": "Dạ tổ tiếp viên làm theo quy định hãng, kiểm chéo trước khi cất cánh. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đầu ca sau mời $1 ngồi họp an toàn cùng, mình nói rõ việc hôm đó.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ tổ ca làm theo giấy phép làm việc, thử khí xong mới bắt tay vào. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ $1 ghé phòng HC-NS giờ nghỉ trưa, em mở hồ sơ trao đổi riêng ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ hồ sơ đi qua ba bước: nhận đủ giấy tờ, kiểm, trình ký. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ nếu $1 tiện, bốn giờ chiều em xin năm phút trao đổi trực tiếp cho đúng ý ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ $1 mở phiếu mới, bên IT qua tận bàn xem lại máy cho $2 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ bên IT xử lý theo phiếu: ghi lỗi, thử khởi động lại, sao lưu rồi mới sửa. Hôm đó $1 ạ.",
   "en": "",
   "pattern": true
  }

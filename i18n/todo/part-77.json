@@ -1,5 +1,25 @@
 [
  {
+  "vi": "💰 Top tài phú: tài sản ròng như ở Tiền của bạn (ví, quỹ nơi làm, ngân hàng, nhà theo giá thị trường, trừ hết nợ). Chỉ tính người chơi theo câu chuyện.",
+  "en": ""
+ },
+ {
+  "vi": "➕ Tài phú còn cộng sổ tiết kiệm Mây, Mây Coin và vàng theo giá vốn, xe theo giá bán lại, quầy riêng theo giá sang nhượng, và trừ vay nóng chợ đen. Không tính Quỹ chung.",
+  "en": ""
+ },
+ {
+  "vi": "👀 Mỗi bảng hiện 50 người đầu, chỉ có tên, điểm, cấp, số ngày làm và sao. Ô của bạn cho biết hạng của bạn, kể cả khi đang ẩn tên.",
+  "en": ""
+ },
+ {
+  "vi": "👤 Tài khoản hiện tên hiển thị sẵn. Khách chỉ hiện khi tự bật và đã đặt tên nhân vật khác “Mây”, kèm nhãn khách.",
+  "en": ""
+ },
+ {
+  "vi": "🙈 Bật tắt ở Cài đặt → Dữ liệu → [[Hiện tên tôi trên bảng xếp hạng]], hoặc bấm [[Ẩn tên tôi]] trên bảng. Không ai thấy tên đăng nhập của bạn.",
+  "en": ""
+ },
+ {
   "vi": "Mở Xếp hạng",
   "en": ""
  },
@@ -1097,46 +1117,6 @@
  },
  {
   "vi": "Khi tự bay, mở hướng dẫn để xem mục tiêu từng giai đoạn, nút điều khiển và cách chỉnh lại đường bay. Có thể bật lại hướng dẫn hoặc chọn bay nhanh.",
-  "en": ""
- },
- {
-  "vi": "Bể cá mẫu bị gõ nứt",
-  "en": ""
- },
- {
-  "vi": "Hai cậu nhóc gõ lên kính bể cá mẫu cho cá giật mình. Một cậu cầm chùm chìa khóa gõ mạnh, kính nứt một đường, nước rỉ ra sàn.",
-  "en": ""
- },
- {
-  "vi": "Bể cá mẫu nứt, phải thay kính",
-  "en": ""
- },
- {
-  "vi": "Làm rơi túi cá của khách",
-  "en": ""
- },
- {
-  "vi": "Bạn buộc túi cá cho khách, tay trơn, túi rơi xuống nền gạch vỡ toang. Mấy con cá giãy đành đạch, khách tái mặt.",
-  "en": ""
- },
- {
-  "vi": "Đền cá và bể mới cho khách",
-  "en": ""
- },
- {
-  "vi": "Mặc chồng hai lớp trong phòng thử",
-  "en": ""
- },
- {
-  "vi": "Một cô gái ôm ba chiếc áo vào phòng thử, lúc ra chỉ trả lại hai. Áo khoác ngoài của cô phồng lên hơn lúc bước vào.",
-  "en": ""
- },
- {
-  "vi": "Mất áo trong phòng thử",
-  "en": ""
- },
- {
-  "vi": "Mấy tiệm quần áo nhớ đưa thẻ số ở phòng thử nha, có người mặc chồng áo bên trong rồi đi ra tỉnh bơ.",
   "en": ""
  }
 ]

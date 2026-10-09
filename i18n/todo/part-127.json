@@ -1,5 +1,60 @@
 [
  {
+  "vi": "Đã góp $1 xu vào quỹ $2. Quỹ thành $3 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 tạm đóng. Mở lại lúc nào cũng được, không tốn phí.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 mở cửa lại (không tốn phí).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Một câu ngắn thôi, tối đa $1 chữ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Một câu ngắn thôi, tối đa $1 ký tự.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ví còn $1 xu, chưa đủ $2 xu xếp bài.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chọn $1 xu nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tặng xu mở khi tài khoản đủ $1 ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ví còn $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm nay bạn tặng đủ $1 xu rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trùm $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Số dòng cần từ 1 đến $1.",
   "en": "",
   "pattern": true

@@ -119,6 +119,38 @@ class Base(unittest.TestCase):
         return self.ring_pay(tid)
 
 
+class ShortPay(Base):
+    """Player #288 (zpop, day 7): a customer handed over too little and the till had no "Đếm lại tiền khách đưa".
+    The server always took zp_short; the client's map of short-pay commands (shortpay.js SHORT_ACT) missed zpop."""
+
+    def test_count_then_ask_and_the_client_knows_the_command(self):
+        from unittest import mock
+        from game import short_pay as SP
+        js = (ROOT / 'public' / 'js' / 'careers' / 'shortpay.js').read_text(encoding='utf-8')
+        self.assertIn("zpop:'zp_short'", js)
+        day, slot = find(lambda t: t['kind'] == 'sale' and not t['needs'].get('tw') and SP.customer(t), days=range(3, 60))
+        t = self.at(day, slot)
+        tid = t['id']
+        self.j.act('ask', task=tid)
+        self.fill(tid)
+        with mock.patch.object(SP, '_forced', return_value='honest'):
+            self.j.act('zp_ring', task=tid)
+        rec = self.j.get(tid)['cash']
+        gap, price = rec['sp']['short'], rec['price']
+        self.assertEqual(sum(rec['tender']), price - gap)
+        r = self.j.act('zp_short', task=tid, choice='count')
+        self.assertIn(f'còn thiếu {gap} xu', r['message'])
+        self.assertEqual(ZP.public_task(self.j.get(tid))['cash']['gap']['stage'], 'open')
+        with self.assertRaises(GameError):
+            self.j.act('zp_pay', task=tid, change=[])          # decide first
+        self.j.act('zp_short', task=tid, choice='ask')
+        rec = self.j.get(tid)['cash']
+        self.assertEqual(rec['sp']['outcome'], 'paid')
+        self.j.act('zp_pay', task=tid, change=till.greedy(max(0, till.due(rec))))
+        self.assertEqual(self.j.get(tid)['status'], 'completed')
+        validate_state(json.loads(json.dumps(self.j.state)))
+
+
 class Spec(Base):
     def test_spec_and_registries(self):
         s = ZP.SPEC

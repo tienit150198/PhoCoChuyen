@@ -1,5 +1,41 @@
 [
  {
+  "vi": "🎁 Tặng quà (mỗi người một món mỗi ngày): đúng món họ thích +6, món thường +3, món họ không ưa −2.",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Cảm ơn khi được tặng: +2. Để quá hai ngày không cảm ơn: −1.",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Được mời mà tới dự: +5, gửi lời chúc: +1, im lặng: −3.",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Phục vụ khách quen: 5★ +2, 3★ −1, 2★ −3, 1★ −5. Thối thiếu tiền: −3.",
+  "en": ""
+ },
+ {
+  "vi": "🍃 Lâu không gặp (hơn 14 ngày) thì nhạt dần, rất chậm.",
+  "en": ""
+ },
+ {
+  "vi": "💛 Càng thân, người ta càng hay hỏi thăm, tặng quà, báo tin trước, dễ bỏ qua lỗi nhỏ, hay bo thêm và tới dự ngày vui của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có khách quen",
+  "en": ""
+ },
+ {
+  "vi": "Làm việc cho ai đó vài lần là họ nhớ mặt bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm người quen",
+  "en": ""
+ },
+ {
   "vi": "Điểm thân quen tính thế nào?",
   "en": ""
  },
@@ -1761,42 +1797,6 @@
  },
  {
   "vi": "Chọn bạn để gửi mã phòng qua tin nhắn riêng.",
-  "en": ""
- },
- {
-  "vi": "Gửi lời mời",
-  "en": ""
- },
- {
-  "vi": "Chưa có bạn bè để mời.",
-  "en": ""
- },
- {
-  "vi": "📸 Mời bạn chụp ảnh ở chợ đen! Mã phòng: {code}. Mở Chợ đen → Chụp ảnh → nhập mã để vào cùng nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa nhận được xác nhận lời mời. Kiểm tra tin nhắn trước khi gửi lại.",
-  "en": ""
- },
- {
-  "vi": "Dáng",
-  "en": ""
- },
- {
-  "vi": "Phông nền",
-  "en": ""
- },
- {
-  "vi": "Mã phòng",
-  "en": ""
- },
- {
-  "vi": "📋 Chép mã",
-  "en": ""
- },
- {
-  "vi": "👫 Mời bạn bè",
   "en": ""
  }
 ]

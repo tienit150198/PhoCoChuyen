@@ -1,5 +1,40 @@
 [
  {
+  "vi": "Đầu ca sau mời $1 ngồi họp an toàn cùng, mình nói rõ việc hôm đó.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ tổ ca làm theo giấy phép làm việc, thử khí xong mới bắt tay vào. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ $1 ghé phòng HC-NS giờ nghỉ trưa, em mở hồ sơ trao đổi riêng ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ hồ sơ đi qua ba bước: nhận đủ giấy tờ, kiểm, trình ký. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ nếu $1 tiện, bốn giờ chiều em xin năm phút trao đổi trực tiếp cho đúng ý ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ $1 mở phiếu mới, bên IT qua tận bàn xem lại máy cho $2 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ bên IT xử lý theo phiếu: ghi lỗi, thử khởi động lại, sao lưu rồi mới sửa. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Mời $1 ghé chòi gác ngoài giờ tàu, gác chắn mở sổ nhật ký nói rõ ạ.",
   "en": "",
   "pattern": true
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "Bạn thu đồ nghề đi về. $1 đứng chống nạnh giữa nhà tắm ngập nước.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗯️ $1 Bấm làm tiếp nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🤲 Làm luôn cho vui lòng khách. $1: “Đấy, thợ phải thế chứ!” Bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🙅 $1: “Có tí mà cũng không làm, keo vl!” Bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🙅 Nói rõ việc khác tính riêng. $1 nhún vai. Bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 $1: “$2 xu cho có tí việc? $3 xu thôi.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 $1: “Thôi khỏi, để tôi tự làm.” Bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 $1 gật: thêm $2 xu cho việc phụ. Làm xong bấm tính tiền nhé.",
   "en": "",
   "pattern": true
  }

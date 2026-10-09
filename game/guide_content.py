@@ -5948,6 +5948,21 @@ GROUPS = [{'id': 'start',
                          'mai.',
                          '🐢 Xe có thể trễ hẹn; đơn sẽ hiện [[TRỄ HẸN]] kèm lời nhắn của nhà cung cấp.'],
               'go': {'action': 'inventory', 'label': 'Mở Kho & nhập hàng'}},
+             {'id': 'stock_cart',
+              'emoji': '💬',
+              'title': 'Đơn gộp, xin bớt và hủy đơn',
+              'points': ['🛒 Chọn món, chọn nhà cung cấp rồi bấm [[Thêm vào đơn]]: nhiều món chung một đơn gộp, một lần '
+                         'ship, một thùng.',
+                         '💬 Tiền hàng của đơn gộp (sau giá sỉ, chưa tính ship) từ nửa mức miễn ship của nhà cung cấp '
+                         'đó thì hiện [[Xin bớt]] 5%, 10%, 15%.',
+                         '🧮 Ví dụ: Chợ đầu mối từ 20 xu, Nhà phân phối từ 30 xu, Giao hỏa tốc từ 60 xu. Chưa đủ thì đơn '
+                         'ghi “Đơn từ … xu được xin bớt”.',
+                         '📅 Mỗi nhà cung cấp chỉ trả lời một lần mỗi ngày: đồng ý, bớt ít hơn, miễn ship thay vì bớt, '
+                         'hoặc không bớt.',
+                         '📉 Giá đã bớt chỉ giữ trong ngày, và chỉ khi đơn không nhỏ đi so với lúc xin.',
+                         '✖ Đơn đang giao mà chưa tới cửa: bấm [[Hủy đơn]] ở [[Thùng hàng]], hoàn đủ tiền hàng và tiền '
+                         'ship. Đơn gộp thì hủy cả đơn.'],
+              'go': {'action': 'inventory', 'label': 'Mở Kho & nhập hàng'}},
              {'id': 'stock_count',
               'emoji': '🔢',
               'title': 'Mở thùng và đếm',

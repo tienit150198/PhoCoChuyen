@@ -1,5 +1,40 @@
 [
  {
+  "vi": "$1 nhận $2, hơi lúng túng: “Ờ… cảm ơn. Chắc để dành cho người khác.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đẩy phong bì lại: “Có gì đâu mà đưa tiền, kỳ lắm. Thôi lần này nhận cho vui thôi nghe.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thấy $1 dạo này về trễ, giữ sức khỏe nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thấy con mệt quá, $1 mang qua $2. Ăn cho lại sức nghe.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 gõ cửa, đưa $2: “Nghe nói dạo này mệt, ăn đi cho khỏe.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 ghé cho $2: “Nhà có nhiều, chia cho ăn lấy thảo.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 gửi $2: “Thấy ngon nên để phần một ít.”",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 dúi vào tay $2: “Cầm lấy, khách sáo gì.”",
   "en": "",
   "pattern": true
@@ -2005,6 +2040,26 @@
   "pattern": true
  },
  {
+  "vi": "đơn gộp $1 món",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hủy đơn nhập: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hủy $1 đang giao từ $2, hoàn $3 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã hủy $1 với $2 · hoàn $3 xu$4.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã bỏ đơn $1.",
   "en": "",
   "pattern": true
@@ -2191,61 +2246,6 @@
  },
  {
   "vi": "Đã góp $1 xu vào quỹ $2 ($3 xu từ tài khoản ngân hàng). Quỹ thành $4 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã góp $1 xu vào quỹ $2. Quỹ thành $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 tạm đóng. Mở lại lúc nào cũng được, không tốn phí.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mở cửa lại (không tốn phí).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Một câu ngắn thôi, tối đa $1 chữ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Một câu ngắn thôi, tối đa $1 ký tự.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví còn $1 xu, chưa đủ $2 xu xếp bài.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chọn $1 xu nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tặng xu mở khi tài khoản đủ $1 ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví còn $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay bạn tặng đủ $1 xu rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trùm $1",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,10 @@
 [
  {
+  "vi": "thêm $1 món",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã nấu $1 bữa cho nhà này.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "Đáp số ($1)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gợi ý $1",
   "en": "",
   "pattern": true
  }

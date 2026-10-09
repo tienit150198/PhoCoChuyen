@@ -914,7 +914,7 @@ def _refund(order: dict) -> int:
 
 
 def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
-    """inv_order / inv_receive / inv_wait / inv_claim / inv_rate / inv_discard."""
+    """inv_order / inv_receive / inv_wait / inv_claim / inv_rate / inv_discard / inv_cancel."""
     from . import engine as e
     need = e.need
     x = inv(c)
@@ -996,6 +996,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
             nxt = _eta(waiting[0], clk['abs'], c, career, clk)
             msg += f' {item_name(waiting[0]["item"])}: dự kiến {nxt["eta_label"]}.'
         return dict(message=msg)
+    if name == 'inv_cancel':
+        return _cancel(s, c, career, x, p)
     if p.get('group') is not None and name in ('inv_receive', 'inv_claim', 'inv_rate'):
         return _group_action(s, c, career, x, name, p)
     order = next((o for o in x['orders'] if o['id'] == p.get('order')), None)
@@ -1061,6 +1063,41 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         x['lots'] = [l for l in x['lots'] if l['id'] != lot['id']]
         return dict(message='Đã bỏ lô hàng và ghi hao hụt.')
     raise e.GameError('Thao tác kho chưa được hỗ trợ.')
+
+
+def _cancel(s: dict, c: dict, career: str, x: dict, p: dict) -> dict:
+    """inv_cancel (player #276 "thêm dòng hủy hàng đang đặt"): call off an order still on the way,
+    `order` (one item) or `group` (a whole merged order: one van, so all of it). Only before the
+    crate is at the door; everything paid for it (goods and shipping) comes back once, as a
+    'refund' on the order's ref, and the order leaves the book (no new status: a save stays
+    readable by older releases). A phone call: no shop time."""
+    from . import engine as e
+    need = e.need
+    gid = p.get('group')
+    if gid is not None:
+        lines = [o for o in x['orders'] if isinstance(gid, str) and o.get('group') == gid]
+        ref = gid
+    else:
+        lines = [o for o in x['orders'] if o['id'] == p.get('order')]
+        need(not lines or 'group' not in lines[0], 'Món này nằm trong đơn gộp: hủy cả đơn gộp nhé.')
+        ref = lines[0]['id'] if lines else None
+    need(lines and all(o['status'] == 'in_transit' for o in lines), 'Đơn đã nhận hoặc không tồn tại.')
+    need(p.get('confirm') is True, 'Xác nhận hủy đơn trước nhé.')
+    now = clock(c, career)['abs']
+    need(now < min(o['at'] for o in lines), 'Hàng đã tới cửa rồi, không hủy được nữa. Mở thùng nhận hàng nhé.')
+    sup = _known(career, lines[0]['supplier'])
+    refund = sum(o['cost'] + o.get('ship', 0) for o in lines)
+    gone = {id(o) for o in lines}
+    x['orders'] = [o for o in x['orders'] if id(o) not in gone]
+    if lines[0]['day'] == c['day']:
+        x['day_bought'] = max(0, x['day_bought'] - refund)
+    what = (f'đơn gộp {len(lines)} món' if gid is not None else
+            f'{lines[0]["qty"]} {item(career, lines[0]["item"]).get("unit", "phần")} {item(career, lines[0]["item"])["name"]}')
+    if refund:
+        e.money(s, c, refund, f'Hủy đơn nhập: {what} · {sup["name"]}'[:120], ref, category='refund')
+    e.log(s, c, 'stock', f'Hủy {what} đang giao từ {sup["name"]}, hoàn {refund} xu.', ref=ref)
+    ship = ' (cả tiền ship)' if any(o.get('ship') for o in lines) else ''
+    return dict(message=f'Đã hủy {what} với {sup["name"]} · hoàn {refund} xu{ship}.', refund=refund)
 
 
 def _shipments(x: dict) -> int:

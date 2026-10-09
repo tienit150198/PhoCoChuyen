@@ -1,5 +1,40 @@
 [
  {
+  "vi": "$1: đã cho $2 theo y lệnh",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: đã đối chiếu đủ người, dị ứng, nhãn khay trước khi cho thuốc.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thực hiện y lệnh: $1, $2, ký phiếu thực hiện.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: giữ lại $2 ($3), đã báo bác sĩ Khang.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: mọi việc đúng y lệnh, không có gì cần báo.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giữ lại, báo bác sĩ: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✋ Giữ lại, báo bác sĩ: $1. $2 $3",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🗣️ Bạn hỏi vì sao, giải thích thuốc dùng để làm gì, có bác sĩ chỉ định. $1 nghĩ một lúc: “Thôi được, đưa đây.”",
   "en": "",
   "pattern": true
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "$1$2, rời Bến Gỗ $3, qua đường ngang $4. Rõ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hạ chắn khi tàu còn khoảng $1 phút, chuông đèn bật trước. Chắn đã hạ thì không mở cho ai.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tàu $1 $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Bộ đàm rè rè: “Đường ngang Bến Mây, ga Bến Mây gọi. Có tàu $1, nghe rõ trả lời.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ký nhận ca mà chưa thử $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Không ai biết cho tới khi tàu tới.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chưa $1: ca sau, tổ thợ không ai biết.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Chị Nguyệt: “Đường ngang Bến Mây, tàu $1 còn đứng ở ga Bến Gỗ, chậm thêm $2 phút. Nhắc lại.”",
   "en": "",
   "pattern": true
  }

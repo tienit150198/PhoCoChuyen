@@ -1,5 +1,40 @@
 [
  {
+  "vi": "🗯️ $1 Bấm làm tiếp nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🤲 Làm luôn cho vui lòng khách. $1: “Đấy, thợ phải thế chứ!” Bấm tính tiền nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🙅 $1: “Có tí mà cũng không làm, keo vl!” Bấm tính tiền nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🙅 Nói rõ việc khác tính riêng. $1 nhún vai. Bấm tính tiền nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 $1: “$2 xu cho có tí việc? $3 xu thôi.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 $1: “Thôi khỏi, để tôi tự làm.” Bấm tính tiền nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 $1 gật: thêm $2 xu cho việc phụ. Làm xong bấm tính tiền nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🏧 Bạn đợi $1 chạy ra cây ATM đầu ngõ. $2",
   "en": "",
   "pattern": true
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "Giữ cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📎 Tra cứu BHXH: đóng $1 tháng ở chỗ làm cũ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vị trí cần ít nhất $1 năm kinh nghiệm, hồ sơ mới có $2$3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thiếu kỹ năng bắt buộc: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chưa có $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vị trí bắt buộc có $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Có $1 (chưa gửi bản sao)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📎 Tra cứu BHXH: chỉ đóng $1 tháng.",
   "en": "",
   "pattern": true
  }
