@@ -54,9 +54,9 @@ Nobody is stuck: past days × SAFE_S real seconds since the arrest the sentence 
 MNL_JAIL_OFF=1 releases everybody and jails nobody (settle() drops the block on the next command; tests/__init__.py
 sets it, tests/test_jail.py turns it on).
 
-Save: journey['jail'] {v, id, why, days, left, at, day, since, tasks, done, go, ask} (optional, absent when free). It
-sits in the journey, which keeps new optional blocks, so an older server (1.9.29) loads the save and simply ignores it
-(tests/test_jail.py OldServer). No new table: the bail requests are rows of the social inbox.
+Both blocks (above) are optional and absent when free; they sit in the journey, which keeps new optional blocks, so
+older servers load the save (tests/test_jail.py OldServer). No new table: the bail requests are rows of the social
+inbox.
 """
 from __future__ import annotations
 
