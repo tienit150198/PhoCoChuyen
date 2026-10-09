@@ -1011,6 +1011,10 @@ class Handler(BaseHTTPRequestHandler):
                 if not (self.server.rate_limit("fb:"+token,per10,600) and self.server.rate_limit("fb-day:"+token,per_day,86400) and self.server.rate_limit("fb-ip:"+ip,per10*4,600)):
                     self.error(429,"Bạn gửi góp ý hơi dồn dập. Nghỉ tay một lát rồi gửi tiếp nhé.","rate_limited");return
                 self.json(200,pfb.submit(self.server.store,token,state,data,self.headers.get("User-Agent",""),__version__));return
+            if route=="/api/feedback/edit":  # F#295: fix your own note while it has no reply (game/player_feedback.py edit)
+                if not self.server.rate_limit("fb-edit:"+token,int(os.environ.get("FEEDBACK_EDITS_PER_10MIN","20")),600):
+                    self.error(429,"Bạn sửa hơi dồn dập. Nghỉ tay một lát rồi sửa tiếp nhé.","rate_limited");return
+                self.json(200,pfb.edit(self.server.store,token,data));return
             if route=="/api/admin/feedback":
                 if not self.server.rate_limit("fb-admin:"+token,120):self.error(429,"Chậm lại một chút nhé.");return
                 self.require_admin(token)

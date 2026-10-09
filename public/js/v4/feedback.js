@@ -71,16 +71,24 @@ function writeForm(env){
     <button class="btn primary full" type="submit"${fb.sending?' disabled':''}>${icon('send',16)} ${fb.sending?'Đang gửi…':'Gửi góp ý'}</button>
   </form>`;
 }
-function mineItem(it){
-  const [emo,label]=kindOf(it.kind).slice(1),[st,cls]=STATUS[it.status]||STATUS.new;
+/** ✏️ F#295 "nên có nút sửa lại góp ý": a note with no reply yet can be edited in place (game/player_feedback.py edit
+ * re-checks owner and "no reply" in one UPDATE). fb.edit = {id, draft, sending} while the form is open. */
+function editForm(fb,it){
+  const e=fb.edit,len=[...e.draft].length;
+  return `<form class="fb-edit-form" data-fb-edit="${it.id}" novalidate><label class="field fb-field" for="fb-edit-${it.id}">Sửa góp ý<textarea id="fb-edit-${it.id}" name="text" rows="4" maxlength="${TEXT_MAX}" data-preserve data-no-translate>${esc(e.draft)}</textarea></label>
+    <div class="fb-meta"><span class="small muted">Lưu xong, góp ý được đọc lại từ đầu.</span><output id="fb-edit-count" class="fb-count${len>TEXT_MAX-50?' near':''}" for="fb-edit-${it.id}">${len}/${TEXT_MAX}</output></div>
+    <div class="row wrap"><button class="btn primary small" type="submit"${e.sending?' disabled':''}>${icon('check',14)} ${e.sending?'Đang lưu…':'Lưu góp ý'}</button>${button('Hủy','fbEditCancel',{},'ghost small')}</div></form>`;
+}
+function mineItem(it,fb={}){
+  const [emo,label]=kindOf(it.kind).slice(1),[st,cls]=STATUS[it.status]||STATUS.new,editing=!it.reply&&fb.edit?.id===it.id;
   return `<article class="fb-item"><div class="fb-item-top"><span class="fb-item-kind"><span aria-hidden="true">${emo}</span> ${label}</span>${pill(st,cls)}<small class="muted">${ago(it.created_at)}</small></div>
-    <p class="fb-text" data-no-translate>${esc(it.text)}</p>
-    ${it.reply?`<div class="fb-reply"><b>${icon('chat',14)} Nhà làm game trả lời</b><p data-no-translate>${esc(it.reply)}</p>${it.replied_at?`<small class="muted">${ago(it.replied_at)}</small>`:''}</div>`:''}</article>`;
+    ${editing?editForm(fb,it):`<p class="fb-text" data-no-translate>${esc(it.text)}</p>`}
+    ${it.reply?`<div class="fb-reply"><b>${icon('chat',14)} Nhà làm game trả lời</b><p data-no-translate>${esc(it.reply)}</p>${it.replied_at?`<small class="muted">${ago(it.replied_at)}</small>`:''}</div>`:editing?'':`<div class="row fb-edit-row">${button('✏️ Sửa','fbEdit',{id:it.id},'ghost small')}</div>`}</article>`;
 }
 function mineList(env){
   const fb=fbState(env.ui);loadMine(env);
   const d=fb.mine;
-  const body=!d?loading:d.error?failed(d):d.items.length?`<div class="fb-list">${d.items.map(mineItem).join('')}</div>`:`<p class="muted small fb-empty">Bạn chưa gửi góp ý nào. Góp ý đầu tiên luôn được đọc kỹ nhất!</p>`;
+  const body=!d?loading:d.error?failed(d):d.items.length?`<div class="fb-list">${d.items.map(it=>mineItem(it,fb)).join('')}</div>`:`<p class="muted small fb-empty">Bạn chưa gửi góp ý nào. Góp ý đầu tiên luôn được đọc kỹ nhất!</p>`;
   return `<section class="fb-mine"><h3 class="section-title">Góp ý của bạn</h3>${body}</section>`;
 }
 
@@ -151,7 +159,7 @@ async function adminUpdate(env,body){
 export async function feedbackAction(action,data,el,env){
   const {ui}=env;
   switch(action){
-    case'gopy':{const fb=fbState(ui);fb.from=ui.view&&ui.view!=='gopy'?ui.view:'stage';fb.sent=null;fb.mine=null;fb.inbox=null;env.openSheet('gopy');return true;}
+    case'gopy':{const fb=fbState(ui);fb.from=ui.view&&ui.view!=='gopy'?ui.view:'stage';fb.sent=null;fb.mine=null;fb.inbox=null;fb.edit=null;env.openSheet('gopy');return true;}
     case'fbKind':fbState(ui).kind=data.kind;env.renderSheet();return true;
     case'fbAgain':fbState(ui).sent=null;env.renderSheet(false);setTimeout(()=>document.getElementById('fb-text')?.focus(),0);return true;
     case'fbTab':fbState(ui).tab=data.tab;env.renderSheet(false);return true;
@@ -159,6 +167,9 @@ export async function feedbackAction(action,data,el,env){
     case'fbReload':{const fb=fbState(ui);fb.inbox=null;env.renderSheet();return true;}
     case'fbMore':loadInbox(env,true);env.renderSheet();return true;
     case'fbSetStatus':{const it=await adminUpdate(env,{id:Number(data.id),status:data.status});if(it)env.toast('Đã đổi trạng thái.');return true;}
+    case'fbEdit':{const fb=fbState(ui),it=fb.mine?.items?.find(x=>x.id===Number(data.id));if(!it||it.reply)return true;
+      fb.edit={id:it.id,draft:it.text,sending:false};env.renderSheet(false);setTimeout(()=>{const t=document.getElementById(`fb-edit-${it.id}`);if(t){t.focus();t.setSelectionRange?.(t.value.length,t.value.length);}},0);return true;}
+    case'fbEditCancel':fbState(ui).edit=null;env.renderSheet(false);return true;
     case'fbClearReply':{const it=await adminUpdate(env,{id:Number(data.id),reply:''});if(it)env.toast('Đã xóa lời đáp.');return true;}
   }
   return statsAction(action,data,el,env);
@@ -173,6 +184,24 @@ export async function feedbackSubmit(f,env){
     const cur=fbState(ui).inbox?.items?.find(x=>x.id===Number(f.dataset.fbReply));
     const it=await adminUpdate(env,{id:Number(f.dataset.fbReply),reply,...(cur?.status==='new'?{status:'seen'}:{})});
     if(it)toast('Đã gửi lời đáp.','good');
+    return true;
+  }
+  if(f.dataset.fbEdit){
+    const fb=fbState(ui),e=fb.edit,id=Number(f.dataset.fbEdit),text=(f.querySelector('textarea')?.value||'').trim();
+    if(!e||e.id!==id||e.sending)return true;
+    e.draft=f.querySelector('textarea')?.value||'';
+    if([...text].length<3){toast('Viết thêm vài chữ nữa nhé.',true);return true;}
+    e.sending=true;env.renderSheet(false);
+    try{
+      const d=await api.post('/api/feedback/edit',{id,text});
+      const i=fb.mine?.items?.findIndex(x=>x.id===id)??-1;if(i>=0&&d.item)fb.mine.items[i]=d.item;
+      fb.edit=null;toast(d.message||'Đã lưu góp ý.','good');
+    }catch(err){
+      e.sending=false;
+      if(err.status===409){fb.edit=null;fb.mine=null;}   // a reply came meanwhile: show it
+      toast(err.status?err.message:'Mất kết nối. Chữ vẫn còn trong ô, thử lại sau nhé.',true);
+    }
+    finally{env.renderSheet(false);}
     return true;
   }
   if(f.id!=='fbForm')return false;
@@ -191,6 +220,12 @@ export async function feedbackSubmit(f,env){
 
 /** Live counter; the draft survives closing the sheet. */
 export function feedbackInput(el,env){
+  if(el.id?.startsWith('fb-edit-')){
+    const e=fbState(env.ui).edit;if(!e||el.id!==`fb-edit-${e.id}`)return true;e.draft=el.value;
+    const out=document.getElementById('fb-edit-count'),n=[...el.value].length;
+    if(out){out.textContent=`${n}/${TEXT_MAX}`;out.classList.toggle('near',n>TEXT_MAX-50);}
+    return true;
+  }
   if(el.id!=='fb-text')return false;
   const fb=fbState(env.ui);fb.draft=el.value;
   const out=document.getElementById('fb-count'),n=[...el.value].length;

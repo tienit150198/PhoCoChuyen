@@ -35,6 +35,10 @@
 .fb-reply{display:grid;gap:4px;padding:10px 12px;border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:var(--accent-soft)}
 .fb-reply b{display:inline-flex;align-items:center;gap:6px;font-size:.833rem;color:var(--accent-text)}
 .fb-reply p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)}
+.fb-edit-row{justify-content:flex-end;gap:8px}
+.fb-edit-form{display:grid;gap:8px}
+.fb-edit-form .field{margin:0}
+.fb-edit-form textarea{margin-top:6px;min-height:96px;width:100%}
 .fb-empty{margin:0}
 
 /* Admin inbox */

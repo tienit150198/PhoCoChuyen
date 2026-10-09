@@ -385,7 +385,7 @@ def settle(s: dict, t: float | None = None) -> bool:
 OPEN_COMMANDS = frozenset({'settings', *COMMANDS,
                            'jr_seen', 'st_seen', 'hap_ack', 'bd_seen', 'jr_bk_read', 'lf_close'})   # acknowledgements
 # HTTP POST routes (server.py _post) open while jailed. GET only reads.
-OPEN_ROUTES = frozenset({'/api/command', '/api/feedback', '/api/leaderboard/visibility', '/api/live/effects',
+OPEN_ROUTES = frozenset({'/api/command', '/api/feedback', '/api/feedback/edit', '/api/leaderboard/visibility', '/api/live/effects',
                          '/api/gift/seen', '/api/wedinvite/seen', '/api/push/subscribe', '/api/push/unsubscribe',
                          '/api/bank/xfer/receive', '/api/work-visits/receive', '/api/social/inbox_read',
                          '/api/social/block', '/api/social/unblock', '/api/social/report', '/api/social/delete_post'})

@@ -145,6 +145,32 @@ def submit(store, token: str, state: dict, data: dict, ua: str = '', version: st
     return dict(ok=True, id=fid, message=THANKS)
 
 
+EDITED = 'Đã lưu góp ý.'
+NOT_EDITABLE = 'Góp ý này đã có lời đáp nên không sửa được nữa. Gửi góp ý mới nhé.'
+
+
+def edit(store, token: str, data: dict) -> dict:
+    """F#295 "nên có nút sửa lại góp ý": the player's own note, while it has no reply yet. One UPDATE by id AND owner
+    (this save or this account, as list_mine) AND reply IS NULL, so a reply written meanwhile wins. The edited note
+    goes back to "new" so the operator reads it again. Kind may change too (optional)."""
+    need(isinstance(data, dict), 'Dữ liệu góp ý không hợp lệ.')
+    fid = _int(data.get('id'), 'Mã góp ý')
+    need(fid is not None, 'Thiếu mã góp ý.')
+    kind = data.get('kind')
+    need(kind is None or kind in KINDS, 'Chọn loại góp ý: lỗi, ý tưởng, lời khen hoặc khó dùng.', 'bad_kind')
+    text = clean_text(data.get('text'), TEXT_MAX, TEXT_MIN, 'Góp ý')
+    need(len(text.replace('•••', '').replace('[đã ẩn]', '').strip()) >= TEXT_MIN, 'Viết thêm vài chữ nữa nhé.', 'bad_length')
+    sid = store.key(token)
+    account = account_of(store, token)
+    now = time.time()
+    with store.connect() as db:
+        row = db.execute("UPDATE player_feedback SET text=?, kind=COALESCE(?, kind), status='new', updated_at=? "
+                         'WHERE id=? AND (sid=? OR (account IS NOT NULL AND account=?)) AND reply IS NULL RETURNING *',
+                         (text, kind, now, fid, sid, account or '')).fetchone()
+    need(row, NOT_EDITABLE, 'not_editable', 409)
+    return dict(ok=True, item=_row(row), message=EDITED)
+
+
 def list_mine(store, token: str, limit: int = MINE_LIMIT) -> list[dict]:
     sid = store.key(token)
     account = account_of(store, token)

@@ -165,6 +165,44 @@ class FeedbackModuleTests(unittest.TestCase):
             pfb.update(self.store, fid + 99, status='seen')
         self.assertEqual(e.exception.status, 404)
 
+    def test_edit_own_note_until_it_has_a_reply(self):
+        """F#295: "nên có nút sửa lại góp ý": the owner edits a note with no reply; the edit goes back to "new"."""
+        fid = self.send('Nút gửi bị che')['id']
+        pfb.update(self.store, fid, status='seen')
+        out = pfb.edit(self.store, self.token, dict(id=fid, text='  Nút gửi bị che trên iPhone SE, gọi 0901234567  ', kind='hard'))
+        self.assertEqual((out['ok'], out['message']), (True, 'Đã lưu góp ý.'))
+        self.assertEqual((out['item']['text'], out['item']['kind'], out['item']['status']),
+                         ('Nút gửi bị che trên iPhone SE, gọi [đã ẩn]', 'hard', 'new'))
+        self.assertNotIn('context', out['item'])
+        mine = pfb.list_mine(self.store, self.token)[0]
+        self.assertEqual(mine['text'], 'Nút gửi bị che trên iPhone SE, gọi [đã ẩn]')
+        out = pfb.edit(self.store, self.token, dict(id=fid, text='Chỉ đổi chữ'))   # no kind: the kind stays
+        self.assertEqual(out['item']['kind'], 'hard')
+        # someone else's note: refused, nothing changes
+        other, _, _ = self.store.session()
+        with self.assertRaises(pfb.FeedbackError) as e:
+            pfb.edit(self.store, other, dict(id=fid, text='Tôi sửa của người khác'))
+        self.assertEqual((e.exception.status, e.exception.code), (409, 'not_editable'))
+        self.assertEqual(pfb.list_mine(self.store, self.token)[0]['text'], 'Chỉ đổi chữ')
+        # replied: no more edits
+        pfb.update(self.store, fid, reply='Cảm ơn bạn!')
+        with self.assertRaises(pfb.FeedbackError) as e:
+            pfb.edit(self.store, self.token, dict(id=fid, text='Sửa sau khi đã có lời đáp'))
+        self.assertEqual(e.exception.status, 409)
+        self.assertEqual(pfb.list_mine(self.store, self.token)[0]['text'], 'Chỉ đổi chữ')
+        for bad in (dict(id=fid, text=''), dict(id=fid, text='x' * 10001), dict(id='abc', text='Một góp ý'), dict(text='Một góp ý'),
+                    dict(id=fid, text='Một góp ý', kind='rant'), dict(id=fid, text='đm đm'), 'x'):
+            with self.subTest(bad=bad), self.assertRaises(pfb.FeedbackError):
+                pfb.edit(self.store, self.token, bad)
+
+    def test_edit_follows_the_account(self):
+        self.send('Trước khi đăng ký')
+        signed = accounts.register(self.store, self.token, dict(REG, username='sua_gop_y'))['token']
+        fid = self.send('Ghi bằng tài khoản', token=signed)['id']
+        other, _, _ = self.store.session()
+        dev2 = accounts.login(self.store, other, dict(username='sua_gop_y', password=REG['password']))['token']
+        self.assertEqual(pfb.edit(self.store, dev2, dict(id=fid, text='Sửa từ máy khác'))['item']['text'], 'Sửa từ máy khác')
+
     def test_forget_and_prune(self):
         other, _, _ = self.store.session()
         self.send('Của tôi')
@@ -271,6 +309,21 @@ class FeedbackHTTPTests(unittest.TestCase):
             codes = [self.send(self.device(), f'Phiên mới {i}')[0] for i in range(5)]
         self.assertEqual(codes, [200, 200, 200, 200, 429])
         self.assertEqual(len(self.req(a, '/api/feedback/mine')[1]['items']), 5)
+
+    def test_edit_route(self):
+        a, b = self.device(), self.device()
+        fid = self.send(a, 'Chữ cũ của góp ý')[1]['id']
+        status, data = self.req(a, '/api/feedback/edit', 'POST', dict(id=fid, text='Chữ mới của góp ý'))
+        self.assertEqual(status, 200, data)
+        self.assertEqual((data['item']['text'], data['message']), ('Chữ mới của góp ý', 'Đã lưu góp ý.'))
+        self.assertEqual(self.req(b, '/api/feedback/edit', 'POST', dict(id=fid, text='Người khác sửa'))[0], 409)
+        self.assertEqual(self.req(a, '/api/feedback/edit', 'POST', dict(id=fid, text='Không CSRF'), csrf=False)[0], 403)
+        self.assertEqual(self.req(a, '/api/feedback/edit', 'POST', dict(id=fid, text='x'))[0], 400)
+        self.assertEqual(self.req(a, '/api/feedback/mine')[1]['items'][0]['text'], 'Chữ mới của góp ý')
+        with patch.dict(os.environ, {'FEEDBACK_EDITS_PER_10MIN': '1'}):
+            self.server.limits.clear()
+            codes = [self.req(a, '/api/feedback/edit', 'POST', dict(id=fid, text=f'Sửa lần {i}'))[0] for i in range(2)]
+        self.assertEqual(codes, [200, 429])
 
     def test_admin_routes_are_gated(self):
         anon = self.device()
