@@ -1424,10 +1424,6 @@
   "en": ""
  },
  {
-  "vi": ". Hôm nay bạn bị đuổi khỏi chợ đen.",
-  "en": ""
- },
- {
   "vi": "Thao tác chợ đen không hợp lệ.",
   "en": ""
  },
@@ -1592,7 +1588,7 @@
   "en": ""
  },
  {
-  "vi": "Tất cả đứng im! Đánh bạc ăn tiền hả? Tiền cược tịch thu, nộp phạt rồi ra khỏi chợ.",
+  "vi": "Tất cả đứng im! Đánh bạc ăn tiền hả? Tiền cược tịch thu, nộp phạt đi!",
   "en": ""
  },
  {
@@ -1797,6 +1793,10 @@
  },
  {
   "vi": "Cần kết hôn để dùng gia đình chung.",
+  "en": ""
+ },
+ {
+  "vi": "Mã thao tác đã dùng cho việc khác.",
   "en": ""
  }
 ]

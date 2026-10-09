@@ -50,7 +50,7 @@ BANNED = 'Hôm nay bạn bị đuổi khỏi chợ đen rồi, mai quay lại nh
 SAY_ROB = 'Không nộp hả? Vậy anh em lục ví chút nha.'
 SAY_EMPTY = 'Ví trống trơn à? Thôi vô đi, lần sau nhớ nộp.'
 SAY_PAID = 'Nộp đủ rồi, cứ ra vô thoải mái.'
-SAY_ARREST = 'Tất cả đứng im! Đánh bạc ăn tiền hả? Tiền cược tịch thu, nộp phạt rồi ra khỏi chợ.'
+SAY_ARREST = 'Tất cả đứng im! Đánh bạc ăn tiền hả? Tiền cược tịch thu, nộp phạt đi!'
 
 _rng = random.SystemRandom()   # the arrests' own draws: the stalls' _rng (and the tests' scripted draws) stay as they were
 
@@ -88,8 +88,8 @@ def status(j: dict, t: float) -> str:
     b = j.get(KEY)
     today = _vn_date(t)
     if isinstance(b, dict) and b.get('s') in STATES and isinstance(b.get('d'), str):
-        if b['d'] == today:
-            return b['s']
+        if b['d'] == today:   # no ban any more (owner 09/10 "bỏ cấm"): an arrest today still means settled
+            return 'paid' if b['s'] == 'ban' else b['s']
         try:
             same = _stretch(b['d']) == _stretch(today)
         except ValueError:
@@ -133,7 +133,6 @@ def apply(s: dict, name: str, p: dict, f: dict, t: float) -> dict:
     j = s['journey']
     need(not p, 'Dữ liệu thao tác không hợp lệ.')
     st = status(j, t)
-    need(st != 'ban', BANNED, 'fair_bm_ban')
     if st:   # settled in this stretch, or not asked (another tab, a retry, an old page): nothing to pay
         return dict(message='', effects=[], fair=dict(game='bm', bm=public(j, t), again=True))
     if name == 'fair_bm_pay':
@@ -152,10 +151,9 @@ def apply(s: dict, name: str, p: dict, f: dict, t: float) -> dict:
 
 def arrest(j: dict, f: dict, t: float, game: str, stake: int, pay) -> dict:
     """The police caught this paid round: `pay(-stake)` takes its stake (the stall's own Sổ ví row), then the fine,
-    then the ban for the rest of the Vietnam day. Returns the receipt (xu only)."""
+    and the player stays in (no ban since owner 09/10: "bỏ cấm hội chợ luôn nhe"). Returns the receipt (xu only)."""
     pay(-stake)
     fine = _take(j, f, max(0, j['wallet']) * FINE_PCT // 100, FINE_LABEL)
-    _set(j, t, 'ban')
     return dict(game=game, stake=stake, fine=fine, wallet=j['wallet'], say=SAY_ARREST)
 
 

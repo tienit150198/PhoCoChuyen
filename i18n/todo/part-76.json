@@ -1,17 +1,5 @@
 [
  {
-  "vi": "Mở Chuyển khoản",
-  "en": ""
- },
- {
-  "vi": "Thẻ tín dụng: quẹt trước, trả sau",
-  "en": ""
- },
- {
-  "vi": "💳 Tab Thẻ, bấm [[Nộp hồ sơ mở thẻ]]. Cần điểm tín dụng từ 580 và thu nhập đều: ít nhất 3 ngày có lương hoặc tiền lời rút về ví trong 14 ngày.",
-  "en": ""
- },
- {
   "vi": "🛍️ Thẻ dùng để trả học phí, đi cửa sau, mua nhẫn và lo cưới. Chọn cách trả mặc định ở mục “Khi mua sắm cá nhân”.",
   "en": ""
  },
@@ -1128,7 +1116,7 @@
   "en": ""
  },
  {
-  "vi": "🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược ván đó, nộp phạt từ ví và bị đuổi về tới hết ngày.",
+  "vi": "🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược ván đó và nộp phạt từ ví, rồi chơi tiếp được.",
   "en": ""
  },
  {
@@ -1413,6 +1401,10 @@
  },
  {
   "vi": "📜 Top chứng chỉ: bằng số chứng chỉ thì ai có tổng điểm thi cao hơn, rồi ai có sớm hơn đứng trước.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Top tài phú: tài sản ròng như ở Tiền của bạn (ví, quỹ nơi làm, ngân hàng, nhà theo giá thị trường, trừ hết nợ). Chỉ tính người chơi theo câu chuyện.",
   "en": ""
  }
 ]

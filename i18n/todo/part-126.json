@@ -1030,11 +1030,6 @@
   "pattern": true
  },
  {
-  "vi": "🚨 Công an ập vào! Mất $1 xu tiền cược$2. Hôm nay bạn bị đuổi khỏi chợ đen.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "🚨 Công an ập vào! Mất $1 xu tiền cược",
   "en": "",
   "pattern": true
@@ -2246,6 +2241,11 @@
  },
  {
   "vi": "Lương kế toán x$1$2: $3 xu đã về ví của bạn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔥 Thưởng ngày x$1",
   "en": "",
   "pattern": true
  }

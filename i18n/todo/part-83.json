@@ -1,13 +1,5 @@
 [
  {
-  "vi": "Tỉ lệ góp là từ 0 đến 100%.",
-  "en": ""
- },
- {
-  "vi": "Chỉ cặp đã đính hôn mới lên kế hoạch cưới.",
-  "en": ""
- },
- {
   "vi": "Kế hoạch cưới đã chốt rồi.",
   "en": ""
  },
@@ -1797,6 +1789,14 @@
  },
  {
   "vi": "đứng chờ ở cổng mãi",
+  "en": ""
+ },
+ {
+  "vi": "chuông sáng đánh muộn",
+  "en": ""
+ },
+ {
+  "vi": "thầy trẻ chẳng nghe ai dặn",
   "en": ""
  }
 ]

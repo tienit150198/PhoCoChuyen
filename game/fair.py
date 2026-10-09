@@ -1186,7 +1186,7 @@ def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
     if got:
         fair['titles'] = got
     msg = (f'🚨 Công an ập vào! Mất {_xu(stake)} xu tiền cược' + (f', nộp phạt {_xu(r["fine"])} xu' if r['fine'] else '')
-           + '. Hôm nay bạn bị đuổi khỏi chợ đen.')
+           + '.')
     raise _Caught(dict(message=msg, effects=[], fair=fair))
 
 
@@ -1195,7 +1195,6 @@ def _gate(need, j: dict, t: float) -> None:
     if not bm._gate_on():
         return
     st = bm.status(j, t)
-    need(st != 'ban', bm.BANNED, 'fair_bm_ban')
     need(st in bm.IN, bm.NEED_IN, 'fair_bm_gate')
 
 

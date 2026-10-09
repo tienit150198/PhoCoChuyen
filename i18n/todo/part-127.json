@@ -1,10 +1,5 @@
 [
  {
-  "vi": "🔥 Thưởng ngày x$1",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "🔥 Hôm nay $1 lời x$2: thưởng thêm $3 xu vào ví.",
   "en": "",
   "pattern": true

@@ -1,9 +1,5 @@
 [
  {
-  "vi": "Đơn đồ ăn",
-  "en": ""
- },
- {
   "vi": "Tới quán, chờ món xong, [[So túi với bill]] rồi [[Nhận món lên thùng]]. Có giờ hẹn; trễ quá 30 phút là khách hủy.",
   "en": ""
  },
@@ -1613,6 +1609,10 @@
  },
  {
   "vi": "Nhận bé đang sốt hoặc đang ho, cho ăn thứ bé dị ứng, cho thuốc sai liều trên nhãn",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: 1★, chủ không trả tiền, báo cáo lên app, có thể bị kiểm tra hôm sau.",
   "en": ""
  }
 ]

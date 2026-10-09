@@ -216,7 +216,8 @@ class AskedOrNot(BlackMarketBase):
         self.caught(True)   # the police still come
         s, r = self.act(s, 'fair_bc', bets={'cua': 10})
         self.assertIn('arrest', r['fair'])
-        self.assertEqual(fh.public(s)['bm']['st'], 'ban')
+        self.assertEqual(fh.public(s)['bm']['st'], 'free')   # no ban (owner 09/10 "bỏ cấm")
+        self.assertNotIn('fair_bm', s['journey'])
         validate_state(s)
 
     def setUp_clock_only(self):
@@ -240,16 +241,16 @@ class AskedOrNot(BlackMarketBase):
         self.assertEqual(fh.public(s)['bm']['st'], '')
         self.refused(s, 'fair_bc', 'fair_bm_gate', bets={'cua': 10})
 
-    def test_a_ban_ends_with_the_day_not_the_bao_ke(self):
+    def test_an_arrest_keeps_the_bao_ke(self):
         s = story()
         self.clock.t = at(2026, 10, 11, 9)
         s, _ = self.act(s, 'fair_bm_refuse')
         self.caught(True)
         s, _ = self.act(s, 'fair_bc', bets={'cua': 10})
-        self.assertEqual(fh.public(s)['bm']['st'], 'ban')
-        self.clock.t = at(2026, 10, 12, 9)   # same stretch: in again, nothing to settle
+        self.assertEqual(fh.public(s)['bm']['st'], 'robbed')
+        self.clock.t = at(2026, 10, 12, 9)   # same stretch: still in, nothing to settle
         b = fh.public(s)['bm']
-        self.assertEqual((b['st'], b['inside']), ('paid', True))
+        self.assertEqual((b['st'], b['inside']), ('robbed', True))
         w = s['journey']['wallet']
         s, r = self.act(s, 'fair_bm_pay')
         self.assertTrue(r['fair']['again'])
@@ -284,7 +285,7 @@ class Arrest(BlackMarketBase):
                 self.assertEqual((r['fair']['game'], a['stake'], a['fine']), (game, stake, fine))
                 self.assertEqual(s['journey']['wallet'], 10000 - stake - fine)
                 self.assertEqual(a['wallet'], s['journey']['wallet'])
-                self.assertEqual(s['journey']['fair_bm']['s'], 'ban')
+                self.assertEqual(s['journey']['fair_bm']['s'], 'paid')
                 self.assertNotIn('dice', r['fair'])   # no outcome
                 last = s['journey']['history'][-1]
                 self.assertEqual((last['amount'], last['label']), (-fine, bm.FINE_LABEL))
@@ -293,12 +294,20 @@ class Arrest(BlackMarketBase):
                 self.assertIn('f_raid', s['journey']['titles'])
                 self.assertIn('Công an ập vào', r['message'])
                 pub = fh.public(s)['bm']
-                self.assertEqual((pub['ban'], pub['inside']), (True, False))
-                # thrown out until the day ends: no round, no bảo kê, no snack
-                for n2, p2, _ in PAID.values():
-                    self.refused(s, n2, 'fair_bm_ban', **p2)
-                self.refused(s, 'fair_bm_pay', 'fair_bm_ban')
-                self.refused(s, 'fair_snack', 'fair_bm_ban', item='nuoc_mia')
+                self.assertEqual((pub['ban'], pub['inside']), (False, True))   # no ban since owner 09/10 "bỏ cấm"
+                self.assertNotIn('đuổi', r['message'])
+                s, r2 = self.act(s, 'fair_snack', item='nuoc_mia')   # still in the Chợ đen
+                validate_state(s)
+
+    def test_a_ban_saved_today_by_1_9_28_lets_the_player_in(self):
+        s = story()
+        s['journey']['fair_bm'] = {'d': '2026-10-10', 's': 'ban'}
+        validate_state(s)
+        b = fh.public(s)['bm']
+        self.assertEqual((b['st'], b['inside'], b['ban']), ('paid', True, False))
+        self.caught(False)
+        s, r = self.act(s, 'fair_bc', bets={'cua': 10})
+        self.assertIn('dice', r['fair'])
 
     def test_no_arrest_plays_the_round(self):
         s = story()
@@ -441,7 +450,7 @@ class OldServer(BlackMarketBase):
         out = subprocess.run([sys.executable, '-c', prog], input=json.dumps([paid, banned, s2]), capture_output=True,
                              text=True, cwd=old, env=env, encoding='utf-8', timeout=300)
         self.assertEqual(out.returncode, 0, out.stderr[-3000:])
-        self.assertEqual(json.loads(out.stdout), [{'d': '2026-10-10', 's': 'paid'}, {'d': '2026-10-10', 's': 'ban'},
+        self.assertEqual(json.loads(out.stdout), [{'d': '2026-10-10', 's': 'paid'}, {'d': '2026-10-10', 's': 'paid'},
                                                   {'d': '2026-10-10', 's': 'robbed'}])
 
     def test_bad_blocks_are_refused(self):

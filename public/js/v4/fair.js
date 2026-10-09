@@ -299,22 +299,22 @@ function bmGate(){
       ${btn(S.bmSure?'Chắc chưa? Không nộp':'🙅 Không nộp','bmrefuse',{},'ghost full'+(S.bmSure?' danger':''),S.busy?' disabled data-fh-key="bm-no"':' data-fh-key="bm-no"')}
       <p class="fh-why">Không nộp thì coi chừng bị trấn lột đó nha.</p>
       ${btn('‹ Quay về','close',{},'ghost full',' data-fh-key="bm-back"')}</div>
-    <p class="fh-rule">🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược, nộp phạt và bị đuổi về tới hết ngày.</p></section>`;
+    <p class="fh-rule">🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược và nộp phạt.</p></section>`;
 }
 function robCard(){
   const r=S.robbed;if(!r)return '';
   return `<section class="fh-card fh-raid" role="alert" data-fh-key="bm-rob"><h3>${r.robbed?'🕶️ Bị trấn lột':'🕶️ Đàn em cho qua'}</h3>${say(GUARD(),r.say||'','dark')}
     ${r.robbed?`<div class="fh-raid-bill"><span>Bị lấy từ ví</span><b>−${xu(r.robbed)}</b></div>`:''}
-    <p>Ví còn <b>${xu(r.wallet)}</b>.${r.robbed?' Đã ghi trong Sổ ví.':''} Hôm nay được ra vô chợ đen.</p>${btn('Vào chợ đen','robok',{},'primary',' data-fh-key="bm-robok"')}</section>`;
+    <p>Ví còn <b>${xu(r.wallet)}</b>.${r.robbed?' Đã ghi trong Sổ ví.':''} Giờ ra vô chợ đen thoải mái.</p>${btn('Vào chợ đen','robok',{},'primary',' data-fh-key="bm-robok"')}</section>`;
 }
 function arrestCard(){
   const r=S.arrest;
   return `<section class="fh-card fh-raid" role="alert" data-fh-key="bm-arrest"><div class="fh-siren" aria-hidden="true"><i></i><i></i></div>
     <h3>🚨 Công an ập vào!</h3>${say({name:'Công an phường',emoji:'👮'},r.say||'')}
     <div class="fh-raid-bill"><span>Tiền cược bị tịch thu</span><b>−${xu(r.stake)}</b><span>Nộp phạt</span><b>−${xu(r.fine)}</b></div>
-    <p>Ví còn <b>${xu(r.wallet)}</b>. Khoản phạt đã ghi trong Sổ ví.</p><p><b>Hôm nay bạn bị đuổi khỏi chợ đen, mai quay lại nhé.</b></p>
+    <p>Ví còn <b>${xu(r.wallet)}</b>. Khoản phạt đã ghi trong Sổ ví.</p><p>Công an đi rồi. Chơi tiếp thì cẩn thận nha.</p>
     ${r.titles?.includes('f_raid')?'<p class="fh-award">🚨 Danh hiệu mới: <b>Bị công an hỏi thăm</b></p>':''}
-    ${btn('Dạ, em về','arrestok',{},'primary',' data-fh-key="bm-arrestok"')}</section>`;
+    ${btn('Dạ, em biết rồi','arrestok',{},'primary',' data-fh-key="bm-arrestok"')}</section>`;
 }
 async function bmPay(){
   if(S.busy)return;S.busy=true;S.bmSure=false;S.flash=null;render();
@@ -373,7 +373,7 @@ function gateList(){
       <button type="button" class="fh-game" data-fh="tab" data-tab="ring" data-fh-key="g-ring"><span class="fh-gico">${MINI_BOTTLES}</span><span class="grow"><b>Ném vòng cổ chai</b><small>${r.nocap?`Mỗi vòng trúng +${r.ring_hit} xu, trúng cả ${r.rings||5} vòng thêm ${r.ring_all} xu`:`Trúng mỗi chai +${r.ring_hit||2} xu, đủ ${r.rings||5} chai thêm ${r.ring_all||5} xu`}</small>${meter(e.ring)}</span></button>
     </div>
     <div class="fh-sec"><h3>🎲 Thử vận may</h3><span class="fh-tag">Cược bằng xu</span></div>
-    ${BM()?`<p class="fh-rule">🚨 Chợ đen hay bị công an ập vào: bị bắt thì mất tiền cược, nộp phạt và bị đuổi về tới hết ngày.</p>`:''}
+    ${BM()?`<p class="fh-rule">🚨 Chợ đen hay bị công an ập vào: bị bắt thì mất tiền cược và nộp phạt.</p>`:''}
     ${r.audit_from?`<p class="fh-rule">🚨 Lời ở chợ đen nhiều quá thì công an có thể ghé hỏi nguồn tài sản và thu lại một phần tiền lời.</p>`:''}
     <div class="fh-luck">
       ${luck('bc',FACE_ART.cua,'Bầu cua','Đặt bao nhiêu tùy bạn')}

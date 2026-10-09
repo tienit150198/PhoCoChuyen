@@ -60,8 +60,8 @@ everywhere (ids, keys, endpoints and the edition `fair20261009` are unchanged). 
   finishing what was begun (`fair.LATE`), the gift and repaying a loan is refused (`fair_bm_gate`).
 - **Arrests on every paid round** (bầu cua, chiếu trong, a lô tô purchase, a vé cào, a phóng dao run's stake):
   `BM_ARREST_P` (20%) per round, drawn by `fair_bm._arrest_roll` from its own random source before the round is drawn.
-  Caught: the stake is lost with no outcome, a fine of `FINE_PCT` (30%) of the wallet left after the stake, and a ban
-  (`fair_bm_ban`) until the Vietnam day ends. The wallet never goes below zero. The arrest replaces neither the chiếu
+  Caught: the stake is lost with no outcome, a fine of `FINE_PCT` (30%) of the wallet left after the stake; the
+  player stays in (the ban until the day's end was dropped, owner 09/10 "bỏ cấm hội chợ luôn nhe"). The wallet never goes below zero. The arrest replaces neither the chiếu
   trong's own rare dẹp chiếu (`RAID_PCT`) nor the police's wealth check and asset check; those still run on rounds the
   police did not catch.
 - **What it does to the house edge:** every return in the table above is now multiplied by 0.8 (one round in five
