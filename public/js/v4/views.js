@@ -268,9 +268,10 @@ export function inventoryView(env){
     const waiting=g=>{const o=g.o,i=byId[o.item]||{name:o.item},s=sup(o),late=Boolean(o.late_note),pct=Math.round(Math.max(0,Math.min(1,Number(o.progress)||0))*100);
       // Waiting helps only for goods due later today; the rest arrive while you work or overnight.
       const wait=today(o)?cmdBtn(waitGo.label,'inv_wait',{},'ghost small'):'';
-      // Still on the road: call it off for a full refund, goods and shipping (inventory.py inv_cancel; player #276).
-      const what=g.group?`đơn gộp ${g.lines.length} món`:`${o.qty} ${unit(i)} ${i.name}`;
-      const cancel=confirmCmd('✖ Hủy đơn','inv_cancel',g.group?{group:g.id}:{order:o.id},`Hủy ${what} với ${s?.name||'nhà cung cấp'}? Hoàn lại ${fmt(paidOf(g))} xu, cả tiền ship.`,'ghost small');
+      // Still on the road: call it off for part of what was paid back, goods and shipping (inventory.py inv_cancel,
+      // cancel_refund: cancel_pct of it, rounded down; player #276, owner 09/10). The confirm says the xu.
+      const what=g.group?`đơn gộp ${g.lines.length} món`:`${o.qty} ${unit(i)} ${i.name}`,paid=paidOf(g),back=Math.floor(paid*(Number(inv.cancel_pct)||80)/100);
+      const cancel=confirmCmd('✖ Hủy đơn','inv_cancel',g.group?{group:g.id}:{order:o.id},`Hủy ${what} với ${s?.name||'nhà cung cấp'}? Nhận lại ${fmt(back)} xu (đã trả ${fmt(paid)} xu).`,'ghost small');
       const title=g.group?`🛒 Đơn gộp · ${g.lines.length} món`:`${name(i)}${sizeNote(o)} · ${o.qty} ${esc(unit(i))}`;
       const list=g.group?`<p class="inv-gnames">${g.lines.map(l=>`${esc(byId[l.item]?.emoji||'📦')} ${esc(byId[l.item]?.name||l.item)}${sizeNote(l)} ×${l.qty}`).join(' · ')}</p>`:'';
       return `<article class="card order-row${g.lines.some(mine)&&focus.length?' mine':''}"><div class="row spread"><div class="grow"><strong>${title}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(paidOf(g))} xu</small></div>${pill(late?'TRỄ HẸN':`⏱ ${esc(o.left_label||'đang giao')}`,late?'amber':'blue')}</div>${list}`+

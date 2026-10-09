@@ -2095,7 +2095,7 @@
   "pattern": true
  },
  {
-  "vi": "Đã hủy $1 với $2 · hoàn $3 xu$4.",
+  "vi": "Đã hủy $1 với $2 · nhận lại $3 xu (đã trả $4 xu).",
   "en": "",
   "pattern": true
  },

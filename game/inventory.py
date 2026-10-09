@@ -1065,12 +1065,20 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
     raise e.GameError('Thao tác kho chưa được hỗ trợ.')
 
 
+CANCEL_PCT = 80  # share (%) of what was paid that a cancelled order gives back (public/js mirrors cancel_pct)
+
+
+def cancel_refund(paid: int) -> int:
+    """What cancelling an order paid `paid` xu gives back: CANCEL_PCT of it, rounded down."""
+    return max(0, int(paid)) * CANCEL_PCT // 100
+
+
 def _cancel(s: dict, c: dict, career: str, x: dict, p: dict) -> dict:
     """inv_cancel (player #276 "thêm dòng hủy hàng đang đặt"): call off an order still on the way,
     `order` (one item) or `group` (a whole merged order: one van, so all of it). Only before the
-    crate is at the door; everything paid for it (goods and shipping) comes back once, as a
-    'refund' on the order's ref, and the order leaves the book (no new status: a save stays
-    readable by older releases). A phone call: no shop time."""
+    crate is at the door; CANCEL_PCT of everything paid for it (goods and shipping, rounded down)
+    comes back once, as a 'refund' on the order's ref (owner 09/10: "hoàn 80% tiền"), and the order
+    leaves the book (no new status: a save stays readable by older releases). A phone call: no shop time."""
     from . import engine as e
     need = e.need
     gid = p.get('group')
@@ -1086,7 +1094,8 @@ def _cancel(s: dict, c: dict, career: str, x: dict, p: dict) -> dict:
     now = clock(c, career)['abs']
     need(now < min(o['at'] for o in lines), 'Hàng đã tới cửa rồi, không hủy được nữa. Mở thùng nhận hàng nhé.')
     sup = _known(career, lines[0]['supplier'])
-    refund = sum(o['cost'] + o.get('ship', 0) for o in lines)
+    paid = sum(o['cost'] + o.get('ship', 0) for o in lines)
+    refund = cancel_refund(paid)
     gone = {id(o) for o in lines}
     x['orders'] = [o for o in x['orders'] if id(o) not in gone]
     if lines[0]['day'] == c['day']:
@@ -1096,8 +1105,7 @@ def _cancel(s: dict, c: dict, career: str, x: dict, p: dict) -> dict:
     if refund:
         e.money(s, c, refund, f'Hủy đơn nhập: {what} · {sup["name"]}'[:120], ref, category='refund')
     e.log(s, c, 'stock', f'Hủy {what} đang giao từ {sup["name"]}, hoàn {refund} xu.', ref=ref)
-    ship = ' (cả tiền ship)' if any(o.get('ship') for o in lines) else ''
-    return dict(message=f'Đã hủy {what} với {sup["name"]} · hoàn {refund} xu{ship}.', refund=refund)
+    return dict(message=f'Đã hủy {what} với {sup["name"]} · nhận lại {refund} xu (đã trả {paid} xu).', refund=refund, paid=paid)
 
 
 def _shipments(x: dict) -> int:
@@ -1430,6 +1438,7 @@ def public(c: dict, career: str) -> dict | None:
     v['capacity'] = capacity(career)
     v['transit_cap'], v['transit_lines'] = TRANSIT_CAP, TRANSIT_LINES
     v['cart_lines'] = CART_LINES  # lines in one draft (inv_cart refuses one more)
+    v['cancel_pct'] = CANCEL_PCT  # share of the price an inv_cancel gives back (the confirm shows the xu)
     v['sizes'] = tree_copy((_spec(career) or {}).get('sizes', {}))
     # Derived numbers for the stock screen: what is on the way, room left on
     # each shelf and how many game days the oldest lot still has.

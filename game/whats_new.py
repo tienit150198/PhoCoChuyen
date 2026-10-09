@@ -36,7 +36,7 @@ ENTRIES = (
         dict(emoji='🚔', text='Khách NPC chấm sao vô lý? Bấm 🚔 Báo công an ngay dưới đánh giá, công an xác minh có thể sửa sao và bồi thường'),
         dict(emoji='🕶️', text='Bảo kê chợ đen giờ hên xui: không phải lúc nào đàn em cũng đứng cổng đòi tiền'),
         dict(emoji='👛', text='Rút quỹ vẫn một chạm rút tối đa, thêm nút ✏️ Rút số khác để gõ số xu muốn rút'),
-        dict(emoji='📦', text='Hàng đang giao có nút ✖ Hủy đơn, được hoàn đủ tiền hàng và tiền ship'),
+        dict(emoji='📦', text='Hàng đang giao có nút ✖ Hủy đơn khi thùng chưa tới cửa'),
         dict(emoji='🔧', text='Sửa: ở chung nhà lên được tầng 2, dỗ bé không còn kẹt, tiệm album có lại nút đếm tiền, nhà thuốc có nhãn K và ❄️ Lạnh'),
     )),
     dict(version="1.9.27", date="2026-10-09", items=(

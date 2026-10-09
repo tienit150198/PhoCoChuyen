@@ -5960,8 +5960,8 @@ GROUPS = [{'id': 'start',
                          '📅 Mỗi nhà cung cấp chỉ trả lời một lần mỗi ngày: đồng ý, bớt ít hơn, miễn ship thay vì bớt, '
                          'hoặc không bớt.',
                          '📉 Giá đã bớt chỉ giữ trong ngày, và chỉ khi đơn không nhỏ đi so với lúc xin.',
-                         '✖ Đơn đang giao mà chưa tới cửa: bấm [[Hủy đơn]] ở [[Thùng hàng]], hoàn đủ tiền hàng và tiền '
-                         'ship. Đơn gộp thì hủy cả đơn.'],
+                         '✖ Đơn đang giao mà chưa tới cửa: bấm [[Hủy đơn]] ở [[Thùng hàng]]. Hủy thì chỉ nhận lại một '
+                         'phần tiền hàng và tiền ship, khung xác nhận ghi rõ số xu. Đơn gộp thì hủy cả đơn.'],
               'go': {'action': 'inventory', 'label': 'Mở Kho & nhập hàng'}},
              {'id': 'stock_count',
               'emoji': '🔢',

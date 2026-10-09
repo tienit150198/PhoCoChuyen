@@ -550,7 +550,7 @@
   "pattern": true
  },
  {
-  "vi": "Hủy $1 với $2? Hoàn lại $3 xu, cả tiền ship.",
+  "vi": "Hủy $1 với $2? Nhận lại $3 xu (đã trả $4 xu).",
   "en": "",
   "pattern": true
  },
