@@ -1,5 +1,20 @@
 [
  {
+  "vi": "Chặng $1 chị phải nhắc nhiều.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ngồi xem lại chặng $1 với chị nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chặng $1 không đạt. Mai mình bay mô phỏng lại phần này.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Chị phải ghi chặng $1 vào sổ huấn luyện.",
   "en": "",
   "pattern": true
@@ -2231,21 +2246,6 @@
  },
  {
   "vi": "📒 Chỉ dòng ngày $1: $2. Chú Tường vỗ trán: “À, hôm ấy chú khao thằng Bảy!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🤝 Bỏ dòng ngày $1 ($2 xu) cho chú. Chú Tường vui ra mặt.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😤 Hai bên to tiếng. Chú Tường gạch luôn dòng ngày $1: “Dòng này chú không trả!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📦 Xếp chồng ghế… còn $1 ghế",
   "en": "",
   "pattern": true
  }

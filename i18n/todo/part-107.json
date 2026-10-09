@@ -1,5 +1,17 @@
 [
  {
+  "vi": "📍 Đã rõ chỗ",
+  "en": ""
+ },
+ {
+  "vi": "📍 Chưa rõ chỗ",
+  "en": ""
+ },
+ {
+  "vi": "📋 Kịch bản cuộc gọi",
+  "en": ""
+ },
+ {
   "vi": "🌬️ Trấn an người gọi…",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "🔨 Búa hồng (BLANKPINK)",
-  "en": ""
- },
- {
-  "vi": "🔋 Phụ kiện",
-  "en": ""
- },
- {
-  "vi": "Giỏ hàng",
-  "en": ""
- },
- {
-  "vi": "Giỏ trống: chạm hàng trên kệ để lấy.",
   "en": ""
  }
 ]

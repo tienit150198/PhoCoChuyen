@@ -1,5 +1,20 @@
 [
  {
+  "vi": "Hoàn $1 xu cho $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Món cũ còn tem, treo lại lên giá.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quay lại đổi size $1 mà chờ tới tối cũng không ai lo. Thôi khỏi.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "😞 $1 chờ đổi size mà không ai lo, để lại 1★.",
   "en": "",
   "pattern": true
@@ -2231,21 +2246,6 @@
  },
  {
   "vi": "Chai $1 còn đầy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hết $1 trong kho. Nhập thêm ở Kho nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Châm đầy chai $2: đủ $3 lần lau.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chai cũ còn $1 lần thì đổ chung.",
   "en": "",
   "pattern": true
  }

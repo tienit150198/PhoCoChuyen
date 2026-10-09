@@ -1,5 +1,20 @@
 [
  {
+  "vi": "🤝 Bỏ dòng ngày $1 ($2 xu) cho chú. Chú Tường vui ra mặt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "😤 Hai bên to tiếng. Chú Tường gạch luôn dòng ngày $1: “Dòng này chú không trả!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📦 Xếp chồng ghế… còn $1 ghế",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 ghế còn trên vỉa hè",
   "en": "",
   "pattern": true
@@ -2231,21 +2246,6 @@
  },
  {
   "vi": "Nhận lại tiền cọc $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả $1 $2, nhận lại $3 xu tiền cọc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền cọc $1 xu: bạn còn thiếu $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đặt cọc $1",
   "en": "",
   "pattern": true
  }

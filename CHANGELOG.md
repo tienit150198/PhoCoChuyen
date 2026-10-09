@@ -1,3 +1,9 @@
+# v1.9.35 — 2026-10-09
+
+🗺️ Trại tạm giữ có bản đồ đi lại (public/js/scenes/jail-place.js, jail-map.js): mỗi việc công ích một góc, giường hết ngày, phòng thăm gặp nhờ bảo lãnh, cổng đếm ngược; NPC chỉ ở client.
+🔒 Bị giữ chỉ được ở trại, nhắn tin, làm công ích (chủ game 09/10): allowlist lệnh (jail.OPEN_COMMANDS), route HTTP (OPEN_ROUTES), frame live (chỉ chat); việc người khác làm cho mình vẫn vào. Live biết ai đang bị giữ qua bảng nhỏ jail_marks (SCHEMA_VERSION 33), không đọc save.
+⏳ Một ngày trong trại ≥ 20 phút, 8 việc từ 14 loại (9 việc mới), mỗi việc ≥ 45 giây; đủ 8 việc ngày tính 2. Trạng thái mới ở journey.jail2; journey.jail giữ dạng cũ nên save mở được trên 1.9.32–1.9.34; ngày bắt đầu trên server cũ giữ luật cũ.
+
 # v1.9.34 — 2026-10-09
 
 🚨 Chợ đen: tỷ lệ bị bắt một ván tối đa 30% (fair_bm.ARREST_CAP, trước 70%; chủ game 09/10). Từ 290.000 xu (lời trên 300k) hoặc 340.000 xu cược là chạm trần. Không đổi save.

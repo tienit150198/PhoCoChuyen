@@ -1,5 +1,20 @@
 [
  {
+  "vi": "$1 gật đầu, xếp hàng theo bạn đi tham quan, nghe kể chuyện đèn rất chăm chú.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 chụp ảnh ở sân trạm với cái tháp làm nền. Ảnh vẫn đẹp, không ai phải trèo lên đâu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lầm bầm nhưng quay ra bến, chờ ghe đón.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bạn đưa $1 vào nhà trạm, lấy chăn khô, nước ấm, rồi gọi đài báo có người trú tạm trên đảo.",
   "en": "",
   "pattern": true
@@ -2231,21 +2246,6 @@
  },
  {
   "vi": "Chặng $1 ổn, còn một chỗ cần chắc tay hơn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chặng $1 chị phải nhắc nhiều.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ngồi xem lại chặng $1 với chị nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chặng $1 không đạt. Mai mình bay mô phỏng lại phần này.",
   "en": "",
   "pattern": true
  }

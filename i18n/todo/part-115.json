@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Đang đi",
+  "en": ""
+ },
+ {
+  "vi": "Xe đạp, xe máy, ô tô, du thuyền, máy bay",
+  "en": ""
+ },
+ {
+  "vi": "Nhà xe đang mở cửa",
+  "en": ""
+ },
+ {
   "vi": "Cửa hàng đang sắp xe ra. Mở lại sau ít phút nhé.",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "aria-label=\"Thêm vàng\"",
-  "en": ""
- },
- {
-  "vi": "1 chỉ",
-  "en": ""
- },
- {
-  "vi": "5 chỉ",
-  "en": ""
- },
- {
-  "vi": "10 chỉ",
   "en": ""
  }
 ]

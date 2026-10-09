@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Rút tại cây ATM Ngân hàng Phố, không mất phí.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn gửi nhé.",
+  "en": ""
+ },
+ {
+  "vi": "dưới 1 xu",
+  "en": ""
+ },
+ {
   "vi": "Tới hạn tự tái tục: gốc và lãi gửi tiếp kỳ mới.",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Bỏ ghim",
-  "en": ""
- },
- {
-  "vi": "🛟 Giữ an toàn nha",
-  "en": ""
- },
- {
-  "vi": "Mình hiểu rồi",
-  "en": ""
- },
- {
-  "vi": "Nhắn cả phố…",
   "en": ""
  }
 ]

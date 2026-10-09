@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Màu này tiệm đã mua, sơn lại không mất tiền.",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đang dùng màu này",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Sơn màu",
+  "en": ""
+ },
+ {
   "vi": "🎨 Sơn lại tiệm",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Đã hạ cánh",
-  "en": ""
- },
- {
-  "vi": "Đang bay",
-  "en": ""
- },
- {
-  "vi": "Lên tàu",
-  "en": ""
- },
- {
-  "vi": "chặng bay",
   "en": ""
  }
 ]

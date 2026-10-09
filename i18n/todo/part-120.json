@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Lời mời của bạn sẽ hiện ở đây…",
+  "en": ""
+ },
+ {
+  "vi": "Gửi thiệp mời cưới cả phố",
+  "en": ""
+ },
+ {
+  "vi": "Cả phố thấy thiệp, mỗi người một lần.",
+  "en": ""
+ },
+ {
   "vi": "⏳ Đang mở…",
   "en": ""
  },
@@ -2070,21 +2082,6 @@
  },
  {
   "vi": "huhu thương $1 ghê 😭 tối em rủ đi ăn bánh tráng trộn cho vui nha",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đỉnh nóc kịch trần luôn $1 ơi 🥳🥳 flex mạnh lên!!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thôi mà $1, chill chill 🧊 để em hát cho nghe",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "hóng thêm nha $1 🍿",
   "en": "",
   "pattern": true
  }

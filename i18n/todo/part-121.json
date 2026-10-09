@@ -1,5 +1,20 @@
 [
  {
+  "vi": "đỉnh nóc kịch trần luôn $1 ơi 🥳🥳 flex mạnh lên!!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "thôi mà $1, chill chill 🧊 để em hát cho nghe",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "hóng thêm nha $1 🍿",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bà nói mà, năm nay $1 có quý nhân phù trợ! Nhớ thắp nhang cảm ơn ông bà tổ tiên nghe 🙏✨",
   "en": "",
   "pattern": true
@@ -2231,21 +2246,6 @@
  },
  {
   "vi": "Hoàn tiền đổi size cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hoàn $1 xu cho $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Món cũ còn tem, treo lại lên giá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quay lại đổi size $1 mà chờ tới tối cũng không ai lo. Thôi khỏi.",
   "en": "",
   "pattern": true
  }

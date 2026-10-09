@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Nấu nồi cơm",
+  "en": ""
+ },
+ {
+  "vi": "👆 Đổ nước nồi cơm",
+  "en": ""
+ },
+ {
+  "vi": "Nồi cơm đã bắc",
+  "en": ""
+ },
+ {
   "vi": "Bày chén đũa",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Tiệm đang sơn màu này.",
-  "en": ""
- },
- {
-  "vi": "Màu này tiệm đã mua, sơn lại không mất tiền.",
-  "en": ""
- },
- {
-  "vi": "✓ Đang dùng màu này",
-  "en": ""
- },
- {
-  "vi": "🎨 Sơn màu",
   "en": ""
  }
 ]

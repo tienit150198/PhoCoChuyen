@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Nhận thêm một ngõ hoặc tan ca.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thêm một ngõ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có ngõ nào đang chờ",
+  "en": ""
+ },
+ {
   "vi": "Sang ngõ tiếp theo",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Ai lấy giùm thùng sữa tươi với…",
-  "en": ""
- },
- {
-  "vi": "Đơn online nổ quá trời!",
-  "en": ""
- },
- {
-  "vi": "Quầy bar",
-  "en": ""
- },
- {
-  "vi": "Chùa",
   "en": ""
  }
 ]

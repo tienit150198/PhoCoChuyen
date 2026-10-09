@@ -1,5 +1,17 @@
 [
  {
+  "vi": "🔋 Phụ kiện",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ hàng",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ trống: chạm hàng trên kệ để lấy.",
+  "en": ""
+ },
+ {
   "vi": "Không giới hạn",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Hết ngõ rồi!",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một ngõ hoặc tan ca.",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một ngõ",
-  "en": ""
- },
- {
-  "vi": "Chưa có ngõ nào đang chờ",
   "en": ""
  }
 ]

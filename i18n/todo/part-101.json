@@ -1,5 +1,17 @@
 [
  {
+  "vi": "🧾 Báo giá cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Bệnh khác lúc báo giá: báo lại",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Báo lại giá",
+  "en": ""
+ },
+ {
   "vi": "Thông bằng đồ nghề hợp bệnh",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "🩹 Tự rửa, sát trùng, băng lại",
-  "en": ""
- },
- {
-  "vi": "nhanh, đỡ tốn",
-  "en": ""
- },
- {
-  "vi": "🏥 Ra trạm y tế",
-  "en": ""
- },
- {
-  "vi": "8 xu, khách chờ",
   "en": ""
  }
 ]
