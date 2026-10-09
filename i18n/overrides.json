@@ -1,5 +1,10 @@
 {
   "strings": {
+  "Hôm nay Ông Hai đánh nhiều ván quá, ông mệt rồi. Mai cháu ghé nha!": "Ông Hai has played too many games today and he's worn out. Come back tomorrow!",
+  "Thắng Ông Hai liền mấy ván, tiền vô như nước hả? Bàn này là sòng bạc trá hình. Tiền thắng tịch thu, về đồn làm việc!": "Beating Ông Hai game after game, money pouring in? This table is a gambling den in disguise. Your winnings are confiscated, come down to the station!",
+  "🚨 Công an tịch thu tiền thắng Ông Hai": "🚨 Police confiscated your Ông Hai winnings",
+  "Công an tịch thu tiền thắng Ông Hai": "Police confiscated your Ông Hai winnings",
+  "Tiền thắng Ông Hai bị tịch thu": "Ông Hai winnings confiscated",
   "Pháo hoa không còn che game: đang chơi thì chỉ hiện chip nhỏ, bấm ✕ chỉ tắt pháo hoa. Cài đặt có Bật / Chỉ báo nhỏ / Tắt.": "Fireworks no longer cover your game: a small chip while you play, ✕ only closes the show. Settings: On / Small notice / Off.",
   "Quầy của tôi: 🔁 Nhập lại như lần trước, thiếu tiền thì lấy từ ví, 🏗️ mở rộng quầy tại chỗ, 📋 Quản lý chung nhiều quầy.": "My counters: 🔁 repeat last order, pay a shortfall from your wallet, 🏗️ grow a counter in place, 📋 manage many counters at once.",
   "Góp ý chưa được trả lời giờ sửa lại được. Trang Công việc có thêm 🏆 Xếp hạng nghề.": "You can now edit a note that has no reply yet. The Work pages have a 🏆 career ranking.",
@@ -23042,6 +23047,8 @@
   "Đã trả lời câu này rồi.": "Already answered this one."
   },
   "patterns": {
+  "🚨 Công an ập vào bàn Ông Hai! Thắng liền mấy ván là có chuyện: tịch thu $1 xu tiền thắng, nộp phạt $2 xu.": "🚨 The police raided Ông Hai's table! Winning game after game gets noticed: $1 xu of winnings confiscated and a $2 xu fine.",
+  "🚨 Công an ập vào bàn Ông Hai! Thắng liền mấy ván là có chuyện: tịch thu $1 xu tiền thắng.": "🚨 The police raided Ông Hai's table! Winning game after game gets noticed: $1 xu of winnings confiscated.",
   "Mở rộng $1": "Expand $1",
   "Mở rộng thành $1": "Expanded into $1",
   "$1 $2 đã thành $3: đủ chỗ cho $4 nhân viên, khách đông hơn.": "$1 $2 is now a $3: room for $4 staff, more customers.",

@@ -21,6 +21,10 @@ Gồm bank-exploit phần 1: lãi theo giờ thật (1 giờ = 1 ngày lãi, t�
 🔁 Tái tục: gốc gửi tiếp tối đa 10.000.000 xu (bank.RENEW_MAX), lãi và phần gốc vượt về tài khoản thanh toán (hết lãi kép vô hạn).
 💸 Tài khoản dưới 7 ngày đời thực chuyển khoản tối đa 500.000 xu mỗi ngày (bank_xfer.NEW_DAY_MAX).
 🚨 Save kết thúc hơn 150 ngày trong một ngày đời thực: một dòng "[day-skip]" trong log server.
+# Chưa phát hành — 👴 Ông Hai khó hơn, công an ở bàn Ông Hai (chủ game 09/10; ghi chú nội bộ, không đưa vào "Có gì mới")
+
+👴 Nguyên nhân: Ông Hai 1.9.36 tìm theo số nước cố định nên cùng bàn luôn đi cùng nước; uid 5952/5226 chỉ lặp 2 đường đi 39 nước (mỗi cách Ông mở một đường), thắng 502/532. Giờ: mở ô giữa (9, hai chiều), mỗi nước bốc thăm trong các nước gần bằng nước tốt nhất (KHO_SPREAD), tìm nhanh gấp đôi mỗi nước (vị trí phẳng, _sow), tối đa KHO_NODES 4000 nước mô phỏng và KHO_MS 35 ms: ~30 ms/nước trên server (trước ~350 ms).
+🚨 Bàn Ông Hai (game/fair_hai.py): thắng 2 ván liền, hoặc 3 ván trong 24 giờ → công an ập vào: thu lại tiền thắng của các ván đó (ví trước, rồi tài khoản ngân hàng, không bao giờ âm), rồi bắt như chợ đen (phạt 30% ví còn lại, trại tạm giữ). Tối đa 30 ván với Ông Hai một ngày. Save mới tùy chọn journey.fair_hai {d, n, s, w}; 1.9.36 giữ nguyên và không đọc. Đột kích 30% ví, kiểm tra tài sản 10%, Lộc trời cho không đổi.
 
 # v1.9.36 — 2026-10-09
 

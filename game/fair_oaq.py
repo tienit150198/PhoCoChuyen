@@ -21,15 +21,16 @@ Rules (the common variant; the "Cách chơi" in public/js/v4/fair.js says the sa
   player cannot rải quân, or after MAX_PLY turns. Most points wins (dân 1, quan QUAN).
 
 The opponent: "de" (Bé Bi) takes the biggest capture now, or (DE_RANDOM) just plays anything.
-"kho" (Ông Hai, owner 06/10: "mạnh không ai thắng được"): negamax alpha-beta with principal variation search,
-iterative deepening, a transposition table, captures/killer/history move ordering and an evaluation of captures, dân
-on each row, mobility and rải quân danger; finished games are scored exactly, so short endgames are solved. The work is
-KHO_NODES simulated moves (about eight turns ahead at the start), never wall-clock time. He never picks a worse move on
-purpose; only the order of equally good captures is shuffled.
+"kho" (Ông Hai, owner 06/10: "mạnh không ai thắng được", 09/10: "hạn chế cho người ta thắng"): a fixed opening, then
+negamax alpha-beta with principal variation search, iterative deepening, a transposition table, captures/killer/history
+move ordering and an evaluation of captures, dân on each row and mobility; finished games are scored exactly, so short
+endgames are solved. The work is at most KHO_NODES simulated moves and KHO_MS milliseconds; each move is a fresh draw
+among those within KHO_SPREAD of his best (see the opponent's section).
 """
 from __future__ import annotations
 
 import random
+import time
 
 QUAN = 10            # a quan is worth this many dân
 QUAN_NON = 5         # a quan ô with its quan and fewer dân than this cannot be captured
@@ -163,13 +164,14 @@ def play(g: dict, side: int, cell: int, d: int, trace: list | None = None) -> in
 
 # ---------------------------------------------------------------- the opponent
 def _value(g: dict, side: int) -> float:
-    """The opponent's view of a position: captures, plus a little for dân on its own row (they come home at the end)."""
+    """A plain view of a position (the tests' look-ahead players): captures, plus a little for dân on its own row."""
     own = sum(g['b'][c] for c in ROWS[side])
     other = sum(g['b'][c] for c in ROWS[1 - side])
     return score(g, side) - score(g, 1 - side) + 0.3 * (own - other)
 
 
 def _search(g: dict, side: int, me: int, depth: int) -> float:
+    """Plain minimax with _value, `depth` moves deep, for `me` (the tests' look-ahead players)."""
     h = copy(g)
     if not begin_turn(h, side):
         return (score(h, me) - score(h, 1 - me)) * 10
@@ -186,99 +188,194 @@ def _search(g: dict, side: int, me: int, depth: int) -> float:
 
 
 DE_RANDOM = 0.45     # Bé Bi: a random move this often, else the biggest capture now
-KHO_NODES = 20000    # Ông Hai: simulated moves per request at most (owner 06/10: "không ai thắng được")
+# Ông Hai (owner 09/10: "ông Hai tăng lên để k cho người dùng thắng nữa"). Until 09/10 he searched a fixed number of
+# moves and, the board being the same, always answered the same way: one player won 502 of 532 games with two lines
+# learnt by heart (one for each way he opened). Now:
+# * he opens from the middle ô (OPENING, either way: mirror images), the best of the ten in test matches;
+# * every other move is a fresh draw: each candidate gets a bonus of 0..KHO_SPREAD tenths of a dân, so any move that
+#   close to his best may come (a proven result is never traded for it), and no line comes back for sure;
+# * the search is bounded by moves (KHO_NODES) and by time (KHO_MS): a move costs a server worker ~30 ms (the 05/10
+#   one: ~350 ms), each simulated move about twice as cheap (flat positions, _sow).
+OPENING = ((9, 1), (9, -1))   # 24 games each against the 1.9.36 engine: the player won 0 (ô 8 / 10: 17%, 42%; ô 7 / 11: 88%+)
+KHO_NODES = 4000     # simulated moves per request at most
+KHO_MS = 35          # ... and this many milliseconds (read every _TICK + 1 moves; the first ply is always searched)
 KHO_MAX_DEPTH = 40   # iterative deepening stops here (or once the result is proven)
+KHO_SPREAD = 2       # the bonus drawn for each of his moves, in tenths of a dân
 _WIN = 1_000_000     # a finished game, plus the margin; any heuristic value stays far below
+_TICK = 255          # the clock is read once every _TICK + 1 simulated moves
+
+# The search works on a flat position: a list of 18 ints, b[0..11], q[0], q[1], cap[0..3] (the dict's own order).
+_QI = (12, 13)
+_CAP = (14, 16)
+_NEXT = (None, tuple((c + 1) % 12 for c in range(12)), tuple((c - 1) % 12 for c in range(12)))   # [d]: d = 1 / -1
+_DROP = (None,) + tuple(tuple(tuple(tuple((c + d * k) % 12 for k in range(1, n + 1)) for n in range(12)) for c in range(12))
+                        for d in (1, -1))   # [d][cell][n]: the n ô after `cell` going `d`
 
 
 class _SearchLimit(Exception):
     pass
 
 
-def _key(g: dict, side: int) -> tuple:
-    """The position for the transposition table (ply only matters close to MAX_PLY)."""
-    late = g['ply'] - (MAX_PLY - 2 * KHO_MAX_DEPTH)
-    return (*g['b'], *g['q'], *g['cap'], side, late if late > 0 else 0)
+def _flat(g: dict) -> list:
+    return g['b'] + g['q'] + g['cap']
 
 
-def _eval(g: dict, side: int) -> int:
+def _sow(s: list, side: int, cell: int, d: int) -> tuple | None:
+    """`play` on a flat position: (the new position, what it captured in dân), or None past MAX_STEPS (then the
+    search plays it the slow way). The ply is counted by the caller."""
+    b = s[:]
+    nx, drop = _NEXT[d], _DROP[d]
+    hand, b[cell], pos, steps = b[cell], 0, cell, 0
+    while True:
+        steps += hand
+        if steps > MAX_STEPS:
+            return None
+        if hand < 12:
+            for k in drop[pos][hand]:
+                b[k] += 1
+        else:
+            full, rest = divmod(hand, 12)
+            for k in range(12):
+                b[k] += full
+            for k in drop[pos][rest]:
+                b[k] += 1
+        pos = (pos + d * hand) % 12
+        if steps == MAX_STEPS:
+            return b, 0
+        n = nx[pos]
+        if b[n]:
+            if n == 0 or n == 6:
+                return b, 0
+            hand, b[n], pos = b[n], 0, n
+            continue
+        if n == 0 and b[12] or n == 6 and b[13]:
+            return b, 0
+        got, ci = 0, _CAP[side]
+        while True:
+            t = nx[n]
+            if t == 0 or t == 6:
+                qi = 12 if t == 0 else 13
+                dan, quan = b[t], b[qi]
+                if not quan:
+                    if not dan:
+                        break
+                elif dan < QUAN_NON:
+                    break
+                b[t] = b[qi] = 0
+                b[ci + 1] += quan
+                got += dan + QUAN * quan
+            else:
+                dan = b[t]
+                if not dan:
+                    break
+                b[t] = 0
+                got += dan
+            b[ci] += dan
+            n = nx[t]
+            if b[n] or n == 0 and b[12] or n == 6 and b[13]:
+                break
+        return b, got
+
+
+def _slow(s: list, side: int, cell: int, d: int, ply: int) -> tuple:
+    g = dict(b=s[:12], q=s[12:14], cap=s[14:18], ply=ply)
+    got = play(g, side, cell, d)
+    return _flat(g), got
+
+
+def _final(s: list, side: int) -> int:
+    """The game ends now (collect): `side`'s score minus the other's."""
+    sc = [s[14] + QUAN * s[15] + s[1] + s[2] + s[3] + s[4] + s[5], s[16] + QUAN * s[17] + s[7] + s[8] + s[9] + s[10] + s[11]]
+    for c, qi in ((0, 12), (6, 13)):
+        if s[c] or s[qi]:
+            sc[0 if sc[0] >= sc[1] else 1] += s[c] + QUAN * s[qi]
+    d = sc[side] - sc[1 - side]
+    return _WIN + d if d > 0 else -_WIN + d if d < 0 else 0
+
+
+def _turn(s: list, side: int, ply: int) -> list | int:
+    """begin_turn for the search: the position `side` moves in (rải quân done, a copy), or the final value."""
+    if not (s[0] or s[12] or s[6] or s[13]) or ply >= MAX_PLY:
+        return _final(s, side)
+    row = ROWS[side]
+    if s[row[0]] or s[row[1]] or s[row[2]] or s[row[3]] or s[row[4]]:
+        return s
+    ci = _CAP[side]
+    if s[ci] < len(row):
+        return _final(s, side)
+    s = s[:]
+    for c in row:
+        s[c] = 1
+    s[ci] -= len(row)
+    return s
+
+
+def _eval_flat(s: list, side: int) -> int:
     """Ông Hai's view of an unfinished position for the side to move, in tenths of a dân: the captures, the dân on
-    each row (they come home at the end), mobility, and a quan ô ripe for capture (or not)."""
-    b = g['b']
-    own = other = mob = 0
-    for c in ROWS[side]:
-        own += b[c]
-        mob += b[c] > 0
-    for c in ROWS[1 - side]:
-        other += b[c]
-        mob -= b[c] > 0
-    v = 10 * (score(g, side) - score(g, 1 - side)) + 3 * (own - other) + 2 * mob
-    if own == 0 and g['cap'][2 * side] < len(ROWS[side]):
+    each row (they come home at the end), mobility, and a row that cannot be refilled."""
+    if side:
+        mine, theirs, a, o = s[7:12], s[1:6], 16, 14
+    else:
+        mine, theirs, a, o = s[1:6], s[7:12], 14, 16
+    own = sum(mine)
+    v = 10 * (s[a] - s[o]) + 10 * QUAN * (s[a + 1] - s[o + 1]) + 3 * (own - sum(theirs)) + 2 * (theirs.count(0) - mine.count(0))
+    if own == 0 and s[a] < 5:
         v -= 30        # cannot rải quân next turn
     return v
 
 
+def _eval(g: dict, side: int) -> int:
+    return _eval_flat(_flat(g), side)
+
+
 class _Hai:
     """Negamax alpha-beta (principal variation search) with iterative deepening, a transposition table, captures
-    first, killer and history moves. The work is counted in simulated moves, never in time: the same board always
-    gets the same move, whatever the server's load."""
+    first, killer and history moves, on flat positions. Bounded by `nodes` simulated moves and `ms` milliseconds
+    (None: moves only, as the tests use it)."""
 
-    def __init__(self, nodes: int):
+    def __init__(self, nodes: int, ms: float | None = None):
         self.left = nodes
+        self.deadline = None if ms is None else time.perf_counter() + ms / 1000
         self.tt: dict = {}
         self.killers: dict = {}
         self.history: dict = {}
         self.reached = 0   # the last depth searched in full (for the checks)
 
-    def children(self, g: dict, side: int, skip=()) -> list:
-        out = []
-        for move in legal(g, side):
-            if move in skip:
-                continue
-            if self.left <= 0:
-                raise _SearchLimit
-            self.left -= 1
-            child = copy(g)
-            out.append((play(child, side, *move), move, child))
-        return out
+    def tick(self) -> None:
+        """One more simulated move."""
+        self.left -= 1
+        self.check()
 
-    def order(self, kids: list, side: int, first, ply: int) -> list:
-        killers = self.killers.get(ply, ())
-        hist = self.history
+    def check(self) -> None:
+        """Past the budget (moves, or time: read every _TICK + 1 moves), the search stops."""
+        if self.left < 0 or not self.left & _TICK and self.deadline is not None and time.perf_counter() > self.deadline:
+            raise _SearchLimit
 
-        def rank(item):
-            gain, move, _ = item
-            return (move == first, gain, move in killers, hist.get((side, move), 0))
-        return sorted(kids, key=rank, reverse=True)
-
-    def moves(self, g: dict, side: int, first, ply: int):
-        """The moves one by one, best guesses first: the table's move and the killers are played (and counted) only
-        when reached, so a cut-off on them saves the rest; then the captures, biggest first."""
-        b, tried = g['b'], []
-        for move in (first, *self.killers.get(ply, ())):
-            if move is None or move in tried or move[0] not in ROWS[side] or not b[move[0]]:
-                continue
-            if self.left <= 0:
-                raise _SearchLimit
-            self.left -= 1
-            child = copy(g)
-            play(child, side, *move)
-            tried.append(move)
-            yield move, child
-        rest = self.children(g, side, tried)
-        for _, move, child in self.order(rest, side, None, ply):
-            yield move, child
-
-    def search(self, g: dict, side: int, depth: int, alpha: int, beta: int, ply: int) -> int:
-        b = g['b']
-        if over(g) or g['ply'] >= MAX_PLY or not any(b[c] for c in ROWS[side]):
-            g = copy(g)
-            if not begin_turn(g, side):
-                d = score(g, side) - score(g, 1 - side)
-                return _WIN + d if d > 0 else -_WIN + d if d < 0 else 0
+    def search(self, s: list, side: int, depth: int, alpha: int, beta: int, ply: int, height: int = 1) -> int:
+        """The value of flat position `s` for `side` (to move, at game ply `ply`), `depth` moves deep."""
+        s = _turn(s, side, ply)
+        if type(s) is int:
+            return s
         if depth <= 0:
-            return _eval(g, side)
-        key = _key(g, side)
+            return _eval_flat(s, side)
+        nxt = 1 - side
+        if depth == 1:   # the frontier: each move's position is valued at once, no table
+            best = -2 * _WIN
+            for c in ROWS[side]:
+                if s[c]:
+                    for d in (1, -1):
+                        self.left -= 1
+                        if self.left < 0 or not self.left & _TICK:
+                            self.check()
+                        k = _turn((_sow(s, side, c, d) or _slow(s, side, c, d, ply))[0], nxt, ply + 1)
+                        v = -k if type(k) is int else -_eval_flat(k, nxt)
+                        if v > best:
+                            best = v
+                            if v >= beta:
+                                return v
+            return best
+        late = ply - (MAX_PLY - 2 * KHO_MAX_DEPTH)
+        key = (*s, side, late if late > 0 else 0)
         hit = self.tt.get(key)
         first = None
         if hit is not None:
@@ -287,77 +384,122 @@ class _Hai:
                 if h_flag == 0:
                     return h_value
                 if h_flag > 0:
-                    alpha = max(alpha, h_value)
-                else:
-                    beta = min(beta, h_value)
+                    if h_value > alpha:
+                        alpha = h_value
+                elif h_value < beta:
+                    beta = h_value
                 if alpha >= beta:
                     return h_value
         alpha0 = alpha
         best, best_move = -2 * _WIN, None
-        for i, (move, child) in enumerate(self.moves(g, side, first, ply)):
-            if i == 0:
-                v = -self.search(child, 1 - side, depth - 1, -beta, -alpha, ply + 1)
-            else:
-                v = -self.search(child, 1 - side, depth - 1, -alpha - 1, -alpha, ply + 1)
-                if alpha < v < beta:
-                    v = -self.search(child, 1 - side, depth - 1, -beta, -alpha, ply + 1)
-            if v > best:
-                best, best_move = v, move
+        d1, i = depth - 1, 0
+        if first is not None:   # the table's move first, alone: a cut-off on it saves simulating the others
+            self.tick()
+            k = (_sow(s, side, *first) or _slow(s, side, *first, ply))[0]
+            v = -self.search(k, nxt, d1, -beta, -alpha, ply + 1, height + 1)
+            best, best_move, i = v, first, 1
             if v > alpha:
                 alpha = v
-            if alpha >= beta:
-                ks = self.killers.setdefault(ply, [])
-                if move not in ks:
-                    ks.insert(0, move)
-                    del ks[2:]
-                self.history[(side, move)] = self.history.get((side, move), 0) + depth * depth
-                break
-        flag = 1 if best >= beta else -1 if best <= alpha0 else 0
-        self.tt[key] = (depth, best, flag, best_move)
+        if alpha < beta:
+            rest = []
+            killers = self.killers.get(height, ())
+            hist = self.history
+            for c in ROWS[side]:
+                if s[c]:
+                    for d in (1, -1):
+                        move = (c, d)
+                        if move != first:
+                            self.left -= 1
+                            if self.left < 0 or not self.left & _TICK:
+                                self.check()
+                            k, gain = _sow(s, side, c, d) or _slow(s, side, c, d, ply)
+                            rest.append((gain, move in killers, hist.get((side, move), 0), move, k))
+            rest.sort(reverse=True)
+            for _, _, _, move, k in rest:
+                if i == 0:
+                    v = -self.search(k, nxt, d1, -beta, -alpha, ply + 1, height + 1)
+                else:
+                    v = -self.search(k, nxt, d1, -alpha - 1, -alpha, ply + 1, height + 1)
+                    if alpha < v < beta:
+                        v = -self.search(k, nxt, d1, -beta, -alpha, ply + 1, height + 1)
+                i += 1
+                if v > best:
+                    best, best_move = v, move
+                    if v > alpha:
+                        alpha = v
+                        if alpha >= beta:
+                            break
+        if best >= beta:
+            ks = self.killers.setdefault(height, [])
+            if best_move not in ks:
+                ks.insert(0, best_move)
+                del ks[2:]
+            self.history[(side, best_move)] = self.history.get((side, best_move), 0) + depth * depth
+        self.tt[key] = (depth, best, 1 if best >= beta else -1 if best <= alpha0 else 0, best_move)
         return best
 
-    def best_move(self, g: dict, side: int, rng: random.Random | None = None) -> tuple[int, int]:
-        kids = self.children(g, side)
-        # The captures first; among equal ones the order is shuffled (from rng), so that of two moves worth exactly
-        # the same Ông Hai does not always play the same one: a line learnt by heart does not win twice for sure.
-        # The work and the value of the chosen move do not depend on it.
-        tie = [rng.random() if rng else 0 for _ in kids]
-        kids = [k for _, k in sorted(zip(tie, kids), key=lambda x: (x[1][0], x[0]), reverse=True)]
-        chosen = kids[0][1]
+    def best_move(self, g: dict, side: int, rng: random.Random | None = None, spread: int = 0) -> tuple[int, int]:
+        """The move for `side` (begin_turn done): the best value plus a bonus of 0..spread tenths drawn for each move
+        (from rng), so moves that close are all candidates; a proven result outweighs any bonus."""
+        s, ply = _flat(g), g['ply']
+        moves = legal(g, side)
+        if rng is not None:
+            rng.shuffle(moves)
+        bonus = {m: (rng.randint(0, spread) if rng is not None and spread else 0) for m in moves}
+        kids = []
+        for m in moves:   # the first ply is always searched (≤ 10 moves, counted)
+            self.left -= 1
+            k, gain = _sow(s, side, *m) or _slow(s, side, *m, ply)
+            kids.append((gain, m, k))
+        kids.sort(key=lambda x: x[0], reverse=True)   # stable: the shuffled order among equal captures
+        kids = [(m, k) for _, m, k in kids]
+        chosen = kids[0][0]
+        nxt = 1 - side
         for depth in range(1, KHO_MAX_DEPTH + 1):
-            alpha, scored, done = -2 * _WIN, [], True
+            alpha, scored, done = -3 * _WIN, [], True
             try:
-                for i, (gain, move, child) in enumerate(kids):
+                for i, (m, k) in enumerate(kids):
+                    b = bonus[m]
                     if i == 0:
-                        v = -self.search(child, 1 - side, depth - 1, -2 * _WIN, -alpha, 1)
+                        v = -self.search(k, nxt, depth - 1, -3 * _WIN, 3 * _WIN, ply + 1)
                     else:
-                        v = -self.search(child, 1 - side, depth - 1, -alpha - 1, -alpha, 1)
-                        if v > alpha:
-                            v = -self.search(child, 1 - side, depth - 1, -2 * _WIN, -alpha, 1)
-                    scored.append((v, -i, gain, move, child))
-                    alpha = max(alpha, v)
+                        v = -self.search(k, nxt, depth - 1, b - alpha - 1, b - alpha, ply + 1)
+                        if v + b > alpha:
+                            v = -self.search(k, nxt, depth - 1, -3 * _WIN, b - alpha, ply + 1)
+                    total = v + b if abs(v) < _WIN // 2 else v
+                    scored.append((total, -i, m, k))
+                    if total > alpha:
+                        alpha = total
             except _SearchLimit:
                 done = False
             if scored:
                 # The first move (the last depth's best) was fully searched: any move proven better at this depth
                 # is better, so even an unfinished depth can only improve the choice.
-                top = max(scored)
-                chosen = top[3]
+                chosen = max(scored)[2]
             if not done:
                 break
             self.reached = depth
             scored.sort(reverse=True)
-            kids = [(gain, move, child) for _, _, gain, move, child in scored]
+            kids = [(m, k) for _, _, m, k in scored]
             if abs(scored[0][0]) >= _WIN // 2 and depth > 1:
                 break   # the result is proven (a sure win, or a sure loss whatever Ông Hai does)
         return chosen
 
 
-def _strong_move(g: dict, side: int, rng: random.Random | None = None) -> tuple[int, int]:
-    """Ông Hai's move: at most KHO_NODES simulated moves; the same board and rng state give the same move."""
+def _opening(g: dict, side: int) -> bool:
+    return side == 1 and g['ply'] == 0 and g['b'] == [0] + [START] * 5 + [0] + [START] * 5 and g['q'] == [1, 1] and not any(g['cap'])
+
+
+def _strong_move(g: dict, side: int, rng: random.Random | None = None, nodes: int | None = None,
+                 ms: float | None = None) -> tuple[int, int]:
+    """Ông Hai's move: his opening (OPENING), else at most KHO_NODES simulated moves and KHO_MS milliseconds, a fresh
+    draw among his best."""
+    if _opening(g, side):
+        return rng.choice(OPENING) if rng is not None else OPENING[0]
+    hai = _Hai(KHO_NODES if nodes is None else nodes, KHO_MS if ms is None else ms)
     try:
-        return _Hai(KHO_NODES).best_move(g, side, rng)
-    except _SearchLimit:   # the budget cannot run out on the first ply (≤ 10 moves); a guard all the same
+        return hai.best_move(g, side, rng, KHO_SPREAD if rng is not None else 0)
+    except _SearchLimit:   # the first ply (≤ 10 moves) is always searched; a guard all the same
         return legal(g, side)[0]
 
 

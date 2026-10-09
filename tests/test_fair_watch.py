@@ -14,6 +14,7 @@ from unittest import mock
 
 from game import fair as fh
 from game import fair_bm as bm
+from game import fair_hai as hai
 from game import fair_knife as kn
 from game import fair_oaq as oaq
 from game import fair_watch as w
@@ -263,12 +264,14 @@ class OAQ(WatchBase):
                 self.assertNotIn('jail', s['journey'])
 
     def test_fishing_for_an_opening_is_not_caught(self):
-        """New game, give up, new game: 5.5 s a time for ten minutes."""
+        """New game, give up, new game: 5.5 s a time for ten minutes (Ông Hai's own games a day, game/fair_hai.py, are
+        tests/test_fair_hai_police.py's)."""
         s = self.inside(0)
-        for _ in range(110):
-            self.tick(5.5)
-            s, r = self.act(s, 'fair_oaq_start', lv='kho')
-            self.assert_free(r)
+        with mock.patch.object(hai, 'HAI_DAY', 10**6):
+            for _ in range(110):
+                self.tick(5.5)
+                s, r = self.act(s, 'fair_oaq_start', lv='kho')
+                self.assert_free(r)
         self.assertNotIn('jail', s['journey'])
 
     def test_moves_no_hand_makes_are_caught(self):
