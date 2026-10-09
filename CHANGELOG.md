@@ -1,3 +1,7 @@
+# Chưa phát hành — clothing-abroad (góp ý #306)
+
+👗 Shop quần áo đi nước ngoài (game/clothing_abroad.py): ở 🌏 Đi làm nước ngoài có thêm Tiệm Áo Chỉ Mây ở Seoul, Osaka, Lyon, Melbourne (phục vụ đủ 12 khách ở nhà, Chị Vy bao vé, 4–6 ngày, hoa hồng 20–30% doanh thu quầy mỗi ngày có khách vào quỹ tiệm; các nơi làm khác tạm nghỉ như hợp đồng làm thuê). Vẫn là game tiệm áo cũ, khách là người địa phương: tên, lời chào, size kiểu Hàn (55/66, 90/95, tuổi Hàn), Nhật (7号/9号, M/L/LL/3L, cm), Pháp (EU 36/46), Úc (AU 8, vòng ngực inch) với 📏 bảng quy đổi ở quầy; 22 thói quen khó chiều (xin “service”, khăn che mặt phòng thử, miễn thuế, “Bonjour” trước, túi giấy, UPF, “change of mind”…) phải trả lời trước khi chốt bill, câu “tùy tính khách” do tính ẩn quyết định, trả lời sai là lỗi như mọi lỗi khác. Sinh việc không đổi (check_task_compat OK với 1.9.37). Khóa save mới tùy chọn: task tiệm áo `abroad` {to, ask, ans, ok}; hợp đồng journey.abroad.work với career 'clothing', emp None, fee 0 (bản 1.9.37 thấy không có việc làm thuê nên kết thúc hợp đồng, không mất xu).
+
 # v1.9.38 — 2026-10-09
 
 Gồm exploit-fixes (nhập bản lưu, reset nơi làm, phóng dao, kế toán × x3, bỏ ngày ăn lương/tiền thuê, ném vòng, giới hạn chuyển tiền tài khoản mới), ong-hai-hard (journey.fair_hai), hot-career (lãi nhân viên theo thị trường + nghề hot), mishap: kiểu police, bán coin. Khóa mới tùy chọn: journey.fair_day, journey.fair_hai.

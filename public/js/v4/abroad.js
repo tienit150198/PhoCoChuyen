@@ -49,18 +49,35 @@ function studyPage(env,A,K){
 function workNow(env,A,K){
   const {api}=env,w=A.work,d=K.dests.find(x=>x.id===w.to),where=place(api,w.career);
   const dots=`<span class="ab-dots">${Array.from({length:w.need},(_,i)=>`<i class="${i<w.n?'on':''}"></i>`).join('')}</span>`;
+  if(w.shop){const sh=K.shop?.[w.to]||{};   // 👗 Chị Vy's partner shop (#306)
+    return `<article class="ab-card ab-now"><p class="ab-eyebrow">${d.flag} ${esc(sh.name||where)} · ${esc(sh.area||d.city)} ${dots}</p><h3>Ngày ${w.n}/${w.need} · hoa hồng +${w.pct}%</h3>
+    <p class="small">Khách ${esc(d.city)} nói size kiểu ${esc(d.name)}: xem 📏 ở quầy. Mỗi ngày có khách là một ngày ở ${esc(d.city)}.</p>
+    ${act(`Vào tiệm ${icon('arrow',14)}`,'choose',{career:w.career},'primary')}
+    ${ask('🏠 Về nước sớm','jr_abroad_home',{},'Về nước sớm? Hoa hồng những ngày đã làm vẫn là của tiệm.','ghost small')}</article>`;}
   return `<article class="ab-card ab-now"><p class="ab-eyebrow">${d.flag} Chi nhánh ${esc(d.city)} · ${esc(where)} ${dots}</p><h3>Ngày ${w.n}/${w.need} · lương +${w.pct}%</h3>
     <p class="small">Mỗi ngày làm ở ${esc(where)} là một ngày ở ${esc(d.city)}, kèm thư nhà gửi sang. Các nơi làm khác tạm nghỉ tới lúc bạn về.</p>
     <p class="small muted">Hết hợp đồng: công ty hoàn ${fmt(w.fee)} xu tiền vé, sếp ghi nhận +${K.bonus} ngày tốt để lên chức.</p>
     ${act(`Làm tiếp ở ${esc(where)} ${icon('arrow',14)}`,'choose',{career:w.career},'primary')}
     ${ask('🏠 Về nước sớm','jr_abroad_home',{},'Về nước sớm? Lương những ngày đã làm vẫn là của bạn, nhưng không được hoàn tiền vé.','ghost small')}</article>`;
 }
+/** 👗 Tiệm Áo Chỉ Mây's partner shops abroad (#306): not a hired job, Chị Vy sends you and pays the ticket. */
+function shopPage(env,A,K,J){
+  const {api}=env,S=A.shop,shops=K.shop;if(!S||!shops)return '';
+  const open=Object.entries(api.state.careers||{}).find(([,c])=>c?.open);
+  const rest=A.rest_until>J.life_day?`Vừa về nước, đi tiếp được từ Ngày ${A.rest_until}.`:'';
+  const why=S.why||rest||(open?`Khép ca ở ${place(api,open[0])} trước đã.`:'');
+  const cards=K.dests.map(d=>{const sh=shops[d.id];if(!sh)return '';
+    return `<article class="ab-card"><p class="ab-eyebrow">${d.flag} ${esc(sh.name)} · ${esc(sh.area)}</p><h3>${sh.days} ngày · hoa hồng +${sh.pct}%</h3>
+      <p class="small muted">${esc(sh.style)}</p>
+      ${ask('Lên đường · Chị Vy bao vé','jr_abroad_work',{to:d.id,career:S.career},`Sang ${d.city} đứng tiệm ${sh.name} ${sh.days} ngày? Hoa hồng +${sh.pct}% doanh thu mỗi ngày, Chị Vy bao vé. Khách bên đó nói size kiểu ${d.name}. Trong lúc đi, các nơi làm khác tạm nghỉ.`,'primary small',!!why)}</article>`;}).join('');
+  return `<h3 class="ab-sub">👗 Tiệm Áo Chỉ Mây ở nước ngoài</h3>${why?`<p class="ab-why">🔒 ${esc(why)}</p>`:''}<div class="ab-list">${cards}</div>`;
+}
 function workPage(env,A,K,J){
   const {api,ui}=env;
   if(A.work)return workNow(env,A,K);
   const jobs=A.jobs||[];
   const intro=`<p class="ab-perk">🌏 Công ty cử bạn sang chi nhánh nước ngoài vài ngày làm việc, <b>lương cao hơn</b>. Vé và visa trả trước, <b>hết hợp đồng được hoàn lại</b>.</p>`;
-  if(!jobs.length)return intro+`<p class="ab-wait">💼 Cần đang làm thuê ở một nơi (ví dụ giao hàng, nhà thuốc, văn phòng) và đã hết thử việc thì công ty mới cử đi.</p>`;
+  if(!jobs.length)return intro+`<p class="ab-wait">💼 Cần đang làm thuê ở một nơi (ví dụ giao hàng, nhà thuốc, văn phòng) và đã hết thử việc thì công ty mới cử đi.</p>`+shopPage(env,A,K,J);
   const pick=jobs.find(x=>x.career===ui.abJob)||jobs.find(x=>!x.why)||jobs[0];
   const chips=jobs.length>1?`<div class="ab-jobs" role="group" aria-label="Nơi cử bạn đi">${jobs.map(x=>`<button type="button" class="ab-job${x===pick?' on':''}" data-action="abJob" data-career="${esc(x.career)}" aria-pressed="${x===pick}">${esc(place(api,x.career))}</button>`).join('')}</div>`:'';
   const open=Object.entries(api.state.careers||{}).find(([,c])=>c?.open);
@@ -73,7 +90,7 @@ function workPage(env,A,K,J){
       <p class="small">≈ <b>${fmt(pay)} xu/ngày</b> <span class="muted">(ở nhà ${fmt(pick.pay)} xu)</span></p><p class="small muted">Vé & visa ${fmt(w.fee)} xu · hoàn lại khi hết hợp đồng</p>
       ${ask(`Lên đường · ${fmt(w.fee)} xu`,'jr_abroad_work',{to:d.id,career:pick.career},`Sang ${d.city} làm ${w.days} ngày cho ${place(api,pick.career)}, lương +${w.pct}%? Trả trước ${fmt(w.fee)} xu vé & visa, hết hợp đồng công ty hoàn lại. Trong lúc đi, các nơi làm khác tạm nghỉ.`,'primary small',!!why)}</article>`;
   }).join('');
-  return `${intro}${chips}<p class="small">💼 Nơi cử đi: <b>${esc(place(api,pick.career))}</b> · ${esc(pick.title)}</p>${why?`<p class="ab-why">🔒 ${esc(why)}</p>`:''}<div class="ab-list">${cards}</div>`;
+  return `${intro}${chips}<p class="small">💼 Nơi cử đi: <b>${esc(place(api,pick.career))}</b> · ${esc(pick.title)}</p>${why?`<p class="ab-why">🔒 ${esc(why)}</p>`:''}<div class="ab-list">${cards}</div>${shopPage(env,A,K,J)}`;
 }
 
 export function abroadView(env){

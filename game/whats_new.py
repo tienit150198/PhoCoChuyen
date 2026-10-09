@@ -34,6 +34,7 @@ from pathlib import Path
 ENTRIES = (
     dict(version="1.9.38", date="2026-10-09", items=(
         dict(emoji='📈', text='Lãi đơn nhân viên giờ lên xuống theo giờ, mỗi nghề một kiểu; mỗi ngày có 1 🔥 nghề hot lãi ×2. Xem ở Công việc, Sổ tiệm.'),
+        dict(emoji='👗', text='Shop quần áo đi nước ngoài: đứng tiệm ở Seoul, Osaka, Lyon, Melbourne. Khách nói size kiểu Hàn, Nhật, Âu, Úc và đòi đủ thứ!', go=dict(action='abroad', data={'tab': 'work'})),
     )),
     dict(version="1.9.36", date="2026-10-09", items=(
         dict(emoji='🎆', text='Pháo hoa không còn che game: đang chơi thì chỉ hiện chip nhỏ, bấm ✕ chỉ tắt pháo hoa. Cài đặt có Bật / Chỉ báo nhỏ / Tắt.'),
