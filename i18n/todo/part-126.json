@@ -1,5 +1,160 @@
 [
  {
+  "vi": "🍵 Tráng ấm, bỏ $1 nắm chè, chế nước sôi: $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(Đổ bỏ $1 cốc chè cũ.)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🫖 Châm thêm nước sôi: bình đầy hơn, chè nhạt đi.$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔨 Cốc cốc cốc! Đập xong một cây đá: thùng có $1 phần đá.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧽 Rửa $1 cốc… nhưng nước trong chậu đục ngầu rồi, cốc vẫn nhờn. Thay nước đã!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧽 Rửa sạch $1 cốc, úp lên khay cho ráo.$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hết $1 rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Rót một cốc $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hết $1 rồi. Mở kho nhập thêm nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Lấy 1 $2 $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "↩️ Cất lại 1 $1 $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚰 Đổ bỏ cốc $1, cốc cho vào chậu rửa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi gọi $1 mà lại mang $2 ra.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gọi $1 mà thiếu mất $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Rót thừa $1, tôi có gọi đâu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi có gọi $1 mà quên mất rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đi $1 người mà quán chỉ bày $2 ghế, phải đứng uống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cô Hoa trông thấy, chạy sang: “Bán thuốc cho trẻ con à?” $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 uống xong, không ghi gì.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Ghi sổ cho chú nhé!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lắc đầu bỏ đi, không trả đồng nào.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🥤 Đưa trà cho $1. Khách đưa $2 xu: tính tiền, thối lại cho đúng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Ghi sổ: ngày $1 · $2 · $3 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Đọc sổ: $1 dòng, $2 xu. Chú Tường nhíu mày: “Ơ, ngày $3 chú uống gì mà những $4 xu?”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Đọc sổ: $1 dòng, cộng $2 xu. Chú Tường gật gù móc ví.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Chú đưa $2 xu, thối lại cho đúng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dòng ngày $1 ghi đúng rồi ($2): cho chú xem sổ là được.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✏️ Sửa dòng ngày $1 thành $2 xu. Chú Tường cười: “Thấy chưa, chú nhớ mà!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ ghi lố tiền của tôi: hôm đó $1 mà ghi $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Chú Tường dí ngón tay vào dòng: “$1, $2 xu thôi chứ, sao ghi $3?” Sửa lại hoặc bỏ dòng đó.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Chỉ dòng ngày $1: $2. Chú Tường vỗ trán: “À, hôm ấy chú khao thằng Bảy!”",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🤝 Bỏ dòng ngày $1 ($2 xu) cho chú. Chú Tường vui ra mặt.",
   "en": "",
   "pattern": true
@@ -2091,161 +2246,6 @@
  },
  {
   "vi": "đã đặt lại $1 như cũ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã đặt lại $1 món như cũ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã cất $1 vào túi",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã đặt $1 ở $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã đặt $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã dời $1 sang $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã lật $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã xoay $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã đổi lớp $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã dời $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 đã về nhà. Ghé góc gia đình để chăm sóc nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã đổi tên thành $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã thay $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 thuê $2, $3 xu/tháng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: Ngày mai (Ngày $2) đến hạn trả góp nhà kỳ $3/$4$5, $6 xu. Tài khoản và ví hiện chưa đủ, quý khách nhớ nộp thêm nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả góp nhà kỳ $1/$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏠 Đã trích $1 xu trả kỳ $2 khoản $3 đang trễ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: Kỳ trả góp nhà $2/$3$4 ($5 xu) chưa trích được vì tài khoản và ví chưa đủ. Quý khách có $6 ngày ân hạn, ngân hàng thử lại mỗi sáng, chưa tính phí.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "trả góp nhà kỳ $1$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả xong khoản vay mua $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎉 Bạn đã trả xong khoản vay mua nhà. $1 giờ hoàn toàn là của bạn!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền thuê $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏠 $1 gửi đủ $2 xu tiền nhà $3 còn khất.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 xin khất tiền thuê $2 $3 ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏠 $1 xin khất tiền nhà $2 $3 ngày, hứa gửi đủ $4 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sửa $1 ở $2: $3 xu, trừ vào tiền thuê.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔧 $1 báo $2 ở $3: thợ sửa hết $4 xu, trừ vào tiền thuê tháng này.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏠 Nhận $1 xu tiền thuê $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dọn khỏi $1 của $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Về ở chung $1 của $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã bán $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhận lại tiền cọc $1",
   "en": "",
   "pattern": true
  }

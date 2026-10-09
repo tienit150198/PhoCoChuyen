@@ -896,6 +896,26 @@
   "en": ""
  },
  {
+  "vi": "Quầy của bạn: nhập hàng nhanh, mở rộng",
+  "en": ""
+ },
+ {
+  "vi": "🔁 [[Nhập lại như lần trước]]: một chạm nhập đúng đơn lần trước, tổng tiền hiện trên nút.",
+  "en": ""
+ },
+ {
+  "vi": "👛 Két và vốn quầy không đủ tiền nhập hàng thì phần thiếu lấy từ ví, rồi tài khoản. Game báo trước số thiếu.",
+  "en": ""
+ },
+ {
+  "vi": "🏗️ [[Mở rộng quầy]] trong Nâng cấp: xe đẩy lên sạp, sạp lên ki-ốt. Giữ nguyên hàng, nhân viên, menu; chỉ trả phần chênh.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Có từ 2 quầy: [[Quản lý chung]] xem mọi quầy theo từng loại, nhập lại, [[Thu két]] hay [[Mở bán lại]] cả nhóm một lần.",
+  "en": ""
+ },
+ {
   "vi": "Chuyện đời & sự cố",
   "en": ""
  },
@@ -1337,42 +1357,6 @@
  },
  {
   "vi": "Mở Nhóm phố",
-  "en": ""
- },
- {
-  "vi": "📰 Bảng tin của nơi bạn đang làm: lời nhắn, chuyện của khách và các đánh giá.",
-  "en": ""
- },
- {
-  "vi": "✍️ Kể chuyện tiệm cho hàng xóm nghe, thích bài, trả lời từng người.",
-  "en": ""
- },
- {
-  "vi": "⭐ Bấm [[Trả lời đánh giá]] để sang thẳng phần trả lời khách.",
-  "en": ""
- },
- {
-  "vi": "🔄 [[Xem lời nhắn mới]] để thời gian trôi thêm, lời nhắn mới tới.",
-  "en": ""
- },
- {
-  "vi": "Mở Chuyện phố",
-  "en": ""
- },
- {
-  "vi": "Ảnh và kỷ niệm",
-  "en": ""
- },
- {
-  "vi": "📸 Mở [[Kỷ niệm]], bấm [[Chụp góc hiện tại]] để lưu ảnh tiệm.",
-  "en": ""
- },
- {
-  "vi": "🖼️ Album giữ 6 ảnh gần nhất; tải ảnh về máy nếu muốn giữ lâu.",
-  "en": ""
- },
- {
-  "vi": "🏅 Nhận kỷ niệm của một câu chuyện trong Sổ tay thì kỷ vật hiện trong album.",
   "en": ""
  }
 ]

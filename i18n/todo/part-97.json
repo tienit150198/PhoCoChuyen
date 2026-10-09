@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Ký túc xá Hẻm 7: giường tầng 7 xu/ngày, ở chung với ba bạn cùng phòng, mỗi người một chuyện.",
+  "en": ""
+ },
+ {
+  "vi": "Tắt hoặc bật thông báo cho từng nhóm chat, tin nhắn riêng. Góc hẹn hò cho biết ai đang chờ, có nút 📣 Rủ mọi người.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền về là nghe “ting ting” như app ngân hàng, kèm giọng đọc số tiền. Tắt được trong Cài đặt → Âm thanh.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn tính lương: ô sai được tô đỏ, chạm vào để xem số đúng, cách tính từng bước và quy định áp dụng.",
+  "en": ""
+ },
+ {
+  "vi": "Ô ngày giờ ở văn phòng tự thêm dấu / và : khi gõ bằng bàn phím số, hoặc bấm 📅 để chọn ngày trên lịch.",
+  "en": ""
+ },
+ {
   "vi": "Tiệm tóc: khách chê “còn dài” thì luôn cắt thêm được, kể cả khi đã tỉa tầng. Hết cảnh soi gương mãi không chốt được.",
   "en": ""
  },
@@ -992,6 +1012,10 @@
   "en": ""
  },
  {
+  "vi": "Bạn sửa hơi dồn dập. Nghỉ tay một lát rồi sửa tiếp nhé.",
+  "en": ""
+ },
+ {
   "vi": "Kiểm tra nhiều bài quá, nghỉ chút nhé.",
   "en": ""
  },
@@ -1773,30 +1797,6 @@
  },
  {
   "vi": "Loại máy",
-  "en": ""
- },
- {
-  "vi": "Trình duyệt / ứng dụng",
-  "en": ""
- },
- {
-  "vi": "Ngôn ngữ trình duyệt",
-  "en": ""
- },
- {
-  "vi": "Lượt mở của bot",
-  "en": ""
- },
- {
-  "vi": "Bot (máy tìm kiếm, xem trước liên kết) cũng tạo bản lưu; chúng không bao giờ thành \"người chơi mới\" vì không thao tác.",
-  "en": ""
- },
- {
-  "vi": "Chưa đo (mẫu bản lưu chưa tính).",
-  "en": ""
- },
- {
-  "vi": "Tiến trình · CPU",
   "en": ""
  }
 ]

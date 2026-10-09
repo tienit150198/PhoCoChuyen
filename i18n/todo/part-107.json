@@ -1,5 +1,37 @@
 [
  {
+  "vi": "Công an",
+  "en": ""
+ },
+ {
+  "vi": "✅ Không đội nào",
+  "en": ""
+ },
+ {
+  "vi": "Gọi bộ đàm từng đội",
+  "en": ""
+ },
+ {
+  "vi": "Đội tạm ngưng",
+  "en": ""
+ },
+ {
+  "vi": "⛔ Đánh dấu đội tạm ngưng",
+  "en": ""
+ },
+ {
+  "vi": "Đánh dấu đội tạm ngưng",
+  "en": ""
+ },
+ {
+  "vi": "😰 Người gọi đang hoảng",
+  "en": ""
+ },
+ {
+  "vi": "📵 Máy đã cúp",
+  "en": ""
+ },
+ {
   "vi": "📍 Đã rõ chỗ",
   "en": ""
  },
@@ -1765,38 +1797,6 @@
  },
  {
   "vi": "🃏 = chắc",
-  "en": ""
- },
- {
-  "vi": "🚫 CD = không đĩa",
-  "en": ""
- },
- {
-  "vi": "👂 Hỏi khách cần gì",
-  "en": ""
- },
- {
-  "vi": "📝 Bé dặn gì? Xin giấy nhắn",
-  "en": ""
- },
- {
-  "vi": "👉 Cô chỉ",
-  "en": ""
- },
- {
-  "vi": "Giới hạn bản giới hạn mỗi người",
-  "en": ""
- },
- {
-  "vi": "Khách dặn thêm",
-  "en": ""
- },
- {
-  "vi": "🔨 Búa hồng",
-  "en": ""
- },
- {
-  "vi": "🔨 Búa hồng (BLANKPINK)",
   "en": ""
  }
 ]

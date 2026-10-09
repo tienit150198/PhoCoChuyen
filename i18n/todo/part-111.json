@@ -1,5 +1,37 @@
 [
  {
+  "vi": "Hôm nay bạn đã chuyển đủ rồi. Mai chuyển tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa chuyển được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa làm được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mở tài khoản Ngân hàng Phố?",
+  "en": ""
+ },
+ {
+  "vi": "Miễn phí mở và duy trì. Bạn nhận số tài khoản, sổ giao dịch và điểm tín dụng khởi đầu 650.",
+  "en": ""
+ },
+ {
+  "vi": "Mở tài khoản",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn nộp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn rút nhé.",
+  "en": ""
+ },
+ {
   "vi": "Rút tại cây ATM Ngân hàng Phố, không mất phí.",
   "en": ""
  },
@@ -1765,38 +1797,6 @@
  },
  {
   "vi": "Tìm bạn",
-  "en": ""
- },
- {
-  "vi": "Nhắn tin",
-  "en": ""
- },
- {
-  "vi": "Đang tìm hiểu 💕",
-  "en": ""
- },
- {
-  "vi": "Mất kết nối. Đang thử lại…",
-  "en": ""
- },
- {
-  "vi": "Tạo tài khoản để chat.",
-  "en": ""
- },
- {
-  "vi": "Đặt tên nhân vật để nhắn.",
-  "en": ""
- },
- {
-  "vi": "Hai bạn không còn là bạn bè.",
-  "en": ""
- },
- {
-  "vi": "Tin đang ghim",
-  "en": ""
- },
- {
-  "vi": "Bỏ ghim",
   "en": ""
  }
 ]

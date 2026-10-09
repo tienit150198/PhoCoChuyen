@@ -1,5 +1,37 @@
 [
  {
+  "vi": "Đầu mối báo xong: kiểm với khách trước khi đóng.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đã xác nhận: đóng vụ, nhận 65 xu.",
+  "en": ""
+ },
+ {
+  "vi": "📌 Căn cứ",
+  "en": ""
+ },
+ {
+  "vi": "🎧 Bàn chăm sóc khách",
+  "en": ""
+ },
+ {
+  "vi": "Sáu bước của một vụ",
+  "en": ""
+ },
+ {
+  "vi": "HSD gần nhất: ngày",
+  "en": ""
+ },
+ {
+  "vi": "Gộp",
+  "en": ""
+ },
+ {
+  "vi": "Mở tiệm trước",
+  "en": ""
+ },
+ {
   "vi": "Mở quầy trước",
   "en": ""
  },
@@ -1765,38 +1797,6 @@
  },
  {
   "vi": "👋 Để khách đi",
-  "en": ""
- },
- {
-  "vi": "Đang tới lượt",
-  "en": ""
- },
- {
-  "vi": "🚪 Phòng thử",
-  "en": ""
- },
- {
-  "vi": "đang kéo",
-  "en": ""
- },
- {
-  "vi": "Xem tem mác",
-  "en": ""
- },
- {
-  "vi": "Xem tình trạng đồ",
-  "en": ""
- },
- {
-  "vi": "Đối chiếu chính sách rồi quyết",
-  "en": ""
- },
- {
-  "vi": "Đổi hàng · size mới",
-  "en": ""
- },
- {
-  "vi": "Từ chối · cách nói",
   "en": ""
  }
 ]

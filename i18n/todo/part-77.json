@@ -1,5 +1,41 @@
 [
  {
+  "vi": "📰 Bảng tin của nơi bạn đang làm: lời nhắn, chuyện của khách và các đánh giá.",
+  "en": ""
+ },
+ {
+  "vi": "✍️ Kể chuyện tiệm cho hàng xóm nghe, thích bài, trả lời từng người.",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Bấm [[Trả lời đánh giá]] để sang thẳng phần trả lời khách.",
+  "en": ""
+ },
+ {
+  "vi": "🔄 [[Xem lời nhắn mới]] để thời gian trôi thêm, lời nhắn mới tới.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Chuyện phố",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh và kỷ niệm",
+  "en": ""
+ },
+ {
+  "vi": "📸 Mở [[Kỷ niệm]], bấm [[Chụp góc hiện tại]] để lưu ảnh tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "🖼️ Album giữ 6 ảnh gần nhất; tải ảnh về máy nếu muốn giữ lâu.",
+  "en": ""
+ },
+ {
+  "vi": "🏅 Nhận kỷ niệm của một câu chuyện trong Sổ tay thì kỷ vật hiện trong album.",
+  "en": ""
+ },
+ {
   "vi": "👥 Độ thân với từng người xem ở [[Người quen]] (mục Thân thiết với hàng xóm).",
   "en": ""
  },
@@ -109,6 +145,10 @@
  },
  {
   "vi": "🙈 Bật tắt ở Cài đặt → Dữ liệu → [[Hiện tên tôi trên bảng xếp hạng]], hoặc bấm [[Ẩn tên tôi]] trên bảng. Không ai thấy tên đăng nhập của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "🏆 Trong trang Công việc có [[Xếp hạng nghề]]: mở thẳng bảng của nơi bạn đang làm.",
   "en": ""
  },
  {
@@ -764,6 +804,10 @@
   "en": ""
  },
  {
+  "vi": "✏️ Góp ý chưa có lời trả lời thì bấm [[Sửa]] để sửa lại chữ hoặc loại.",
+  "en": ""
+ },
+ {
   "vi": "⏱️ Gửi tối đa 5 góp ý trong 10 phút và 30 góp ý mỗi ngày.",
   "en": ""
  },
@@ -1129,30 +1173,6 @@
  },
  {
   "vi": "Ăn, vệ sinh và chơi là ba mục chăm sóc mỗi ngày sống. Em bé lớn lên sau 5 và 20 ngày được chăm; có đồ mặc để chọn. Gia đình lưu riêng theo nhân vật, không tự trừ phí khi vắng mặt.",
-  "en": ""
- },
- {
-  "vi": "Đi làm tóc, làm nail hoặc DIY cho mình ở đâu?",
-  "en": ""
- },
- {
-  "vi": "Mở Nhà của bạn → Gia đình · Thú cưng → Đi làm đẹp · DIY. Đây là đi chơi với vai trò khách, không cần mở ca làm việc.",
-  "en": ""
- },
- {
-  "vi": "Ở Xưởng handmade, chọn món rồi vào bàn làm: gấu bông có đo, cắt, may, nhồi bông và trang trí; gốm, vòng tay và thiệp có công đoạn riêng. Kéo theo vạch hoặc dùng bàn phím, có làm lại từng bước.",
-  "en": ""
- },
- {
-  "vi": "Chỉ thanh toán vật liệu khi hoàn thành và xác nhận. Đồ làm xong được cất lên kệ với đúng vị trí họa tiết bạn đã đặt; bản nháp trên máy được giữ theo tài khoản khi đóng xưởng.",
-  "en": ""
- },
- {
-  "vi": "Quầy lời, lỗ và nộp thuế ra sao?",
-  "en": ""
- },
- {
-  "vi": "Xem bảng vận hành để đối chiếu doanh thu, tiền nhập hàng, lương, thuê chỗ, điện, giao hàng và thuế. Khi nhân viên còn bán, thời gian offline vẫn phát sinh doanh thu và chi phí.",
   "en": ""
  }
 ]

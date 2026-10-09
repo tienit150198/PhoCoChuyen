@@ -1,5 +1,69 @@
 [
  {
+  "vi": "Được cho nợ khi thiếu tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Được cho thêm khi thiếu tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Bị công an mời đếm lại tiền đưa thiếu.",
+  "en": ""
+ },
+ {
+  "vi": "gọi công an khi khách chỉ đưa nhầm",
+  "en": ""
+ },
+ {
+  "vi": "Bị gọi công an vì đưa nhầm tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Quay lại trả tiền còn thiếu.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền khách đưa thiếu sai.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tiền khách đưa thiếu sai.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nợ tiền thiếu sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đã có đánh giá mới hơn của người này",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản mới (dưới 3 ngày)",
+  "en": ""
+ },
+ {
+  "vi": "Có chuyển xu hoặc quà từ chủ quán trong 24 giờ",
+  "en": ""
+ },
+ {
+  "vi": "Danh hiệu trọn đời",
+  "en": ""
+ },
+ {
+  "vi": "Đã gia hạn đủ 4 tuần",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu chi tiêu trong bản lưu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đi quán, đi chùa và phong cách chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
   "vi": "Chọn một món trong quán nhé.",
   "en": ""
  },
@@ -1733,70 +1797,6 @@
  },
  {
   "vi": "Phiên chơi đã thay đổi. Hãy mở lại mục Tài khoản để thử lại.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã hủy cấp quyền TikTok. Tiến trình vẫn được giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "Chưa kết nối được với TikTok. Tiến trình vẫn được giữ nguyên. Hãy thử lại.",
-  "en": ""
- },
- {
-  "vi": "TikTok này đã liên kết với một tài khoản khác.",
-  "en": ""
- },
- {
-  "vi": "Hãy đăng nhập tài khoản thường trước khi liên kết TikTok.",
-  "en": ""
- },
- {
-  "vi": "Người chơi TikTok",
-  "en": ""
- },
- {
-  "vi": "nhóc",
-  "en": ""
- },
- {
-  "vi": "Chị Emma",
-  "en": ""
- },
- {
-  "vi": "Chị Yuki",
-  "en": ""
- },
- {
-  "vi": "Bà Claire",
-  "en": ""
- },
- {
-  "vi": "Chị Sofia",
-  "en": ""
- },
- {
-  "vi": "Tây Ban Nha",
-  "en": ""
- },
- {
-  "vi": "Ông Robert",
-  "en": ""
- },
- {
-  "vi": "Em làm khéo ghê!",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn em nha, làm kỹ quá.",
-  "en": ""
- },
- {
-  "vi": "Chút tiền cà phê cho em nhé.",
-  "en": ""
- },
- {
-  "vi": "Làm chu đáo vậy thì phải cảm ơn chứ.",
   "en": ""
  }
 ]

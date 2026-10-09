@@ -1,5 +1,37 @@
 [
  {
+  "vi": "Sếp lớn đòi giữ máy bay",
+  "en": ""
+ },
+ {
+  "vi": "Một vị “sếp lớn” kẹt xe, gọi điện đòi giữ chuyến sáng thêm 25 phút.",
+  "en": ""
+ },
+ {
+  "vi": "Không giữ, đổi vé chuyến sau miễn phí cho ông ấy",
+  "en": ""
+ },
+ {
+  "vi": "Ông ấy bực, 64 khách còn lại bay đúng giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ máy bay chờ",
+  "en": ""
+ },
+ {
+  "vi": "Cả tàu trễ 25 phút, khách đăng bài chê.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ 10 phút “cho có”",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn trễ mà ông ấy vẫn lỡ chuyến.",
+  "en": ""
+ },
+ {
   "vi": "Xin đổi lịch đi đám cưới",
   "en": ""
  },
@@ -824,6 +856,34 @@
   "en": ""
  },
  {
+  "vi": "Chọn chỗ mới cho quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ nâng lên chỗ lớn hơn chỗ đang có.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận mở rộng quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Đóng ca tự đứng quầy rồi mở rộng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Xử lý tình huống đang chờ ở quầy rồi mở rộng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời nhân viên đang chờ rồi mở rộng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Ví đang nợ. Trả nợ trước rồi mở rộng nhé.",
+  "en": ""
+ },
+ {
   "vi": "két",
   "en": ""
  },
@@ -869,6 +929,10 @@
  },
  {
   "vi": "Chọn số lượng hàng cần nhập.",
+  "en": ""
+ },
+ {
+  "vi": "Ví đang nợ. Trả nợ trước rồi nhập hàng nhé.",
   "en": ""
  },
  {
@@ -1733,70 +1797,6 @@
  },
  {
   "vi": "Bạn nhân viên nhắn: “Em sốt, xin nghỉ hôm nay.”",
-  "en": ""
- },
- {
-  "vi": "Cho nghỉ, mình làm thêm",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy cảm ơn, mai đi làm hăng hái.",
-  "en": ""
- },
- {
-  "vi": "Cho nghỉ, gửi tiền thuốc",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy cảm động lắm.",
-  "en": ""
- },
- {
-  "vi": "Nhờ cố làm buổi sáng",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy làm mệt, hơi buồn.",
-  "en": ""
- },
- {
-  "vi": "Xe rác đỗ trước quầy",
-  "en": ""
- },
- {
-  "vi": "Xe rác dừng ngay trước quầy đúng giờ đông khách.",
-  "en": ""
- },
- {
-  "vi": "Nhờ bác tài dịch chút",
-  "en": ""
- },
- {
-  "vi": "Bác dịch xe, còn mua một phần.",
-  "en": ""
- },
- {
-  "vi": "Chờ xe đi",
-  "en": ""
- },
- {
-  "vi": "Mười phút sau xe đi, khách quay lại.",
-  "en": ""
- },
- {
-  "vi": "Khách bỏ quên ví",
-  "en": ""
- },
- {
-  "vi": "Khách đi rồi mới thấy cái ví để quên trên quầy.",
-  "en": ""
- },
- {
-  "vi": "Cất kỹ, chờ khách quay lại",
-  "en": ""
- },
- {
-  "vi": "Khách quay lại, cảm ơn và mua thêm.",
   "en": ""
  }
 ]

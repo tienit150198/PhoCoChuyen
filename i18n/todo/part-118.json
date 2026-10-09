@@ -1,6 +1,58 @@
 [
  {
+  "vi": "Tiệm đang mở",
+  "en": ""
+ },
+ {
+  "vi": "Sổ bán hàng ở bên dưới",
+  "en": ""
+ },
+ {
+  "vi": "Mọi đơn đều được ghi tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "LƯỢT BÁN VỪA GHI NHẬN",
+  "en": ""
+ },
+ {
+  "vi": "KHÁCH ĐANG CHỜ",
+  "en": ""
+ },
+ {
+  "vi": "KHAY MÓN",
+  "en": ""
+ },
+ {
+  "vi": "KÉT QUẦY",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang tạm dừng",
+  "en": ""
+ },
+ {
+  "vi": "Xem nguyên liệu và vốn ở bên dưới",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đọc được cập nhật quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên chơi đã thay đổi. Mở lại quầy nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang đồng bộ. Thử lại nhé.",
+  "en": ""
+ },
+ {
   "vi": "Chưa đồng bộ được số dư. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "từ két/vốn quầy.",
   "en": ""
  },
  {
@@ -25,6 +77,34 @@
  },
  {
   "vi": "Nhập hàng vào kho quầy?",
+  "en": ""
+ },
+ {
+  "vi": "phần nguyên liệu",
+  "en": ""
+ },
+ {
+  "vi": "Kho không đủ chỗ cho cả đơn cũ: bớt phần dư.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập lại như lần trước?",
+  "en": ""
+ },
+ {
+  "vi": "Mở rộng",
+  "en": ""
+ },
+ {
+  "vi": "Trả từ két/vốn của từng quầy.",
+  "en": ""
+ },
+ {
+  "vi": "quầy chưa đủ tiền, để lần sau.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập lại",
   "en": ""
  },
  {
@@ -233,6 +313,46 @@
  },
  {
   "vi": "Trang cuối",
+  "en": ""
+ },
+ {
+  "vi": "🟢 Đang bán",
+  "en": ""
+ },
+ {
+  "vi": "⏸️ Tạm dừng",
+  "en": ""
+ },
+ {
+  "vi": "🙋 Chưa có nhân viên",
+  "en": ""
+ },
+ {
+  "vi": "💸 Thiếu vốn",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Nhập lại như lần trước",
+  "en": ""
+ },
+ {
+  "vi": "💰 Thu két",
+  "en": ""
+ },
+ {
+  "vi": "📋 Quản lý chung",
+  "en": ""
+ },
+ {
+  "vi": "quầy · két + vốn",
+  "en": ""
+ },
+ {
+  "vi": "quầy sắp hết hàng",
+  "en": ""
+ },
+ {
+  "vi": "Chạm một quầy để mở thẻ của quầy đó. Nút của mỗi nhóm làm cho cả nhóm, từng quầy một. Nhập lại dùng két/vốn của từng quầy; thiếu thì lấy từ ví, rồi tài khoản.",
   "en": ""
  },
  {
@@ -480,7 +600,7 @@
   "en": ""
  },
  {
-  "vi": "Nhập đúng số phần bạn muốn bán. Tiền lấy từ két/vốn quầy; giữ lại tiền lương để nhân viên tiếp tục làm. Nhân viên chỉ bán món đã bật ở Menu.",
+  "vi": "Nhập đúng số phần bạn muốn bán. Tiền lấy từ két/vốn quầy; thiếu thì lấy từ ví, rồi tài khoản. Giữ lại tiền lương để nhân viên tiếp tục làm. Nhân viên chỉ bán món đã bật ở Menu.",
   "en": ""
  },
  {
@@ -496,7 +616,7 @@
   "en": ""
  },
  {
-  "vi": "Két và vốn chưa đủ",
+  "vi": "Két, vốn và ví chưa đủ",
   "en": ""
  },
  {
@@ -525,6 +645,10 @@
  },
  {
   "vi": "Két vào vốn",
+  "en": ""
+ },
+ {
+  "vi": "Giữ nguyên hàng, nhân viên, menu, két và vốn. Chỉ trả phần chênh giá chỗ và thiết bị đã lắp. Chỗ lớn hơn có thêm chỗ cho nhân viên và đông khách hơn; tiền thuê, điện và lương cũng cao hơn.",
   "en": ""
  },
  {
@@ -1673,130 +1797,6 @@
  },
  {
   "vi": "Giá chung cả phố · 10 phút/phiên · 1 giờ thực = 1 ngày thị trường",
-  "en": ""
- },
- {
-  "vi": "Giá chung cả phố, đổi mỗi ngày",
-  "en": ""
- },
- {
-  "vi": "/ chỉ",
-  "en": ""
- },
- {
-  "vi": "Số vàng",
-  "en": ""
- },
- {
-  "vi": "Số phân vàng",
-  "en": ""
- },
- {
-  "vi": "1 phân",
-  "en": ""
- },
- {
-  "vi": "Mua đắt hơn giá 2,5%, bán rẻ hơn 2,5%.",
-  "en": ""
- },
- {
-  "vi": "Giá có thể tăng hoặc giảm, giữ lâu vẫn có thể lỗ.",
-  "en": ""
- },
- {
-  "vi": "Giá đổi mỗi 10 phút thực, kể cả khi offline.",
-  "en": ""
- },
- {
-  "vi": "Giá lên xuống mỗi ngày, có thể lỗ.",
-  "en": ""
- },
- {
-  "vi": "1 chỉ = 10 phân.",
-  "en": ""
- },
- {
-  "vi": "Lên gói trọn 100%?",
-  "en": ""
- },
- {
-  "vi": "Lên gói 100%",
-  "en": ""
- },
- {
-  "vi": "Thay đồ cho nhân vật",
-  "en": ""
- },
- {
-  "vi": "Ảnh đại diện khi chat",
-  "en": ""
- },
- {
-  "vi": "Xem các cập nhật mới",
-  "en": ""
- },
- {
-  "vi": "Giao diện gọn",
-  "en": ""
- },
- {
-  "vi": "Ít chữ, một nút chính, phiếu khách thành chip trên đầu.",
-  "en": ""
- },
- {
-  "vi": "Hiện chỗ làm của tôi cho mọi người",
-  "en": ""
- },
- {
-  "vi": "Chỗ của tôi",
-  "en": ""
- },
- {
-  "vi": "Tìm tên chỗ làm…",
-  "en": ""
- },
- {
-  "vi": "Chưa có chỗ làm nào ở đây.",
-  "en": ""
- },
- {
-  "vi": "Không tính điểm",
-  "en": ""
- },
- {
-  "vi": "Không tính vào điểm trung bình",
-  "en": ""
- },
- {
-  "vi": "Chưa mở chỗ làm nào.",
-  "en": ""
- },
- {
-  "vi": "Chỗ làm của tôi",
-  "en": ""
- },
- {
-  "vi": "Hai bạn sẽ không thấy chỗ làm, bài viết và quà của nhau.",
-  "en": ""
- },
- {
-  "vi": "thiếu nhi",
-  "en": ""
- },
- {
-  "vi": "hưu",
-  "en": ""
- },
- {
-  "vi": "cao tuổi",
-  "en": ""
- },
- {
-  "vi": "Đang tắt vì Âm thanh thao tác tắt.",
-  "en": ""
- },
- {
-  "vi": "Giọng & chi tiết",
   "en": ""
  }
 ]

@@ -1,5 +1,29 @@
 [
  {
+  "vi": "Trình duyệt / ứng dụng",
+  "en": ""
+ },
+ {
+  "vi": "Ngôn ngữ trình duyệt",
+  "en": ""
+ },
+ {
+  "vi": "Lượt mở của bot",
+  "en": ""
+ },
+ {
+  "vi": "Bot (máy tìm kiếm, xem trước liên kết) cũng tạo bản lưu; chúng không bao giờ thành \"người chơi mới\" vì không thao tác.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đo (mẫu bản lưu chưa tính).",
+  "en": ""
+ },
+ {
+  "vi": "Tiến trình · CPU",
+  "en": ""
+ },
+ {
   "vi": "Thao tác / phút (lúc này)",
   "en": ""
  },
@@ -1408,7 +1432,15 @@
   "en": ""
  },
  {
+  "vi": "Xếp hạng nghề",
+  "en": ""
+ },
+ {
   "vi": "Hành trình · mục tiêu của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Bảng xếp hạng nơi bạn đang làm",
   "en": ""
  },
  {
@@ -1765,38 +1797,6 @@
  },
  {
   "vi": "Mới là đề xuất: gửi việc thì đầu mối mới làm.",
-  "en": ""
- },
- {
-  "vi": "Đầu mối báo xong: kiểm với khách trước khi đóng.",
-  "en": ""
- },
- {
-  "vi": "Khách đã xác nhận: đóng vụ, nhận 65 xu.",
-  "en": ""
- },
- {
-  "vi": "📌 Căn cứ",
-  "en": ""
- },
- {
-  "vi": "🎧 Bàn chăm sóc khách",
-  "en": ""
- },
- {
-  "vi": "Sáu bước của một vụ",
-  "en": ""
- },
- {
-  "vi": "HSD gần nhất: ngày",
-  "en": ""
- },
- {
-  "vi": "Gộp",
-  "en": ""
- },
- {
-  "vi": "Mở tiệm trước",
   "en": ""
  }
 ]
