@@ -189,3 +189,13 @@
 html[data-clean] .qy-help{width:44px;height:44px}
 .qy-off-tag{display:flex;align-items:center;flex-wrap:wrap;gap:6px;color:var(--warn)!important;font-weight:700}.qy-off-tag .btn{min-height:32px;padding:4px 12px}.qy-off-menu{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
 .qy-all{margin:0 0 10px}.qy-all>.btn{min-height:44px;white-space:normal}
+/* F#295/#296: 🔁 Nhập lại như lần trước, 👛 thiếu thì lấy từ ví, 🏗️ Mở rộng quầy, 📋 Quản lý chung (quay.js) */
+.qy-again{margin:0 0 10px;padding:10px 12px;border-radius:var(--radius-sm);border:1px dashed var(--line-strong);background:var(--surface)}.qy-again .qy-line{margin:0 0 8px;overflow-wrap:anywhere}.qy-again .qy-all{margin:0}
+.qy-short{margin:4px 0 8px;font-weight:700;color:var(--warn)}
+.qy-grow{margin:0 0 12px}
+.qy-bulk{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}.qy-bulk>.btn{min-height:44px;white-space:normal}
+.qy-manage{gap:6px}
+.qy-mrow .qy-mbtn{display:grid;gap:4px;width:100%;min-height:44px;padding:10px 12px;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);cursor:pointer}
+.qy-mrow.low .qy-mbtn{border-color:var(--warn);background:var(--warn-soft)}
+.qy-mname{font-weight:700;overflow-wrap:anywhere}
+.qy-mfacts{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
