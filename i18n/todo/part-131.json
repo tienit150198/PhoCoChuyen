@@ -1,5 +1,25 @@
 [
  {
+  "vi": "ô$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đường chính tới $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "món mở ở cấp $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quán báo xong lúc $1, hẹn khách trước $2",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "⏳ còn $1′",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "🛒 Mua $1 phần $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "chín tới trong $1–$2 giây",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã bày $1 bộ chén đũa",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "/$1 bếp đang nấu · $2/$3 món xong",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tắt bếp $1",
   "en": "",
   "pattern": true
  }

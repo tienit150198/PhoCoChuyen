@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Làm $1 câu kiểm tra kiến thức đầu ca rồi mở ca nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bài kiểm tra đúng $1/$2 câu, cần $3. Xem lại bài gợi ý rồi làm bài khác nhé.",
   "en": "",
   "pattern": true
@@ -1526,11 +1536,6 @@
  },
  {
   "vi": "Dạ con làm theo sổ tay nhà: đi chợ, nấu, dọn rồi ghi sổ chợ từng khoản. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ $1 đặt lịch tuần sau, em xin làm góc $2 dặn trước tiên ạ.",
   "en": "",
   "pattern": true
  }

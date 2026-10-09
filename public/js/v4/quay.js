@@ -28,6 +28,8 @@ import {stallAway,stallAwayCard} from '../away-report.js';   // B4: 🧾 Lúc b�
 import {keepStepper} from '../keep-ui.js';   // 🔒 Giữ lại cho ca của tôi (B4 part 2)
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY} from '../qty-input.js';
+// "Tất cả" (F#290): lắp hết thiết bị, thuê đủ chỗ, reusing the per-item commands one by one.
+import {buyAllPlan,quayHave,hireAllPlan,runAll} from './select-all.js';
 // Clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded so the node tests can load this file.
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
 
@@ -117,6 +119,15 @@ async function send(action,payload={}){
   }catch(e){S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
   finally{S.busy=false;render();}
 }
+/** The same command for each payload, one at a time (select-all.js runAll); stops at the first refusal, whose
+ * message comes back as `why`. One busy spell and one flash for the whole run. */
+async function sendAll(payloads,action){
+  S.busy=true;render();let why='';
+  try{
+    const r=await runAll(payloads,async p=>{try{return await S.sync.command(action,p);}catch(e){why=e.quiet?'':(e.message||'');return null;}});
+    return {...r,why};
+  }finally{S.busy=false;render();}
+}
 async function preparePayment(){
   try{await S.sync.ensureCurrent();return true;}
   catch(e){S.flash={text:e.message||'Chưa đồng bộ được số dư. Thử lại nhé.',kind:'bad'};render();return false;}
@@ -190,6 +201,18 @@ async function onClick(op,data){
     case'fire':if(await ask(`Cho ${data.name} nghỉ?`,'','Cho nghỉ'))send('jr_quay_fire',{stall:data.id,staff:data.staff,confirm:true});return;
     case'buy':{const st=stallOf(data.id),it=CAT()?.items.find(x=>x.id===data.item);if(!st||!it)return;const price=it.price[st.place];
       if(await ask(`Lắp ${it.name.toLowerCase()}?`,it.line,`Lắp · ${xu(price)}`,{cost:price,pocket:['wallet','account']}))send('jr_quay_buy',{stall:data.id,item:data.item,confirm:true});return;}
+    case'buyAll':{const st=stallOf(data.id);if(!st||S.busy)return;const plan=buyAllPlan(CAT()?.items,st.items,st.place,quayHave(J()));if(!plan.fit.length)return;
+      const all=plan.fit.length===plan.todo.length,names=plan.fit.map(it=>`${it.emoji} ${it.name.toLowerCase()}`).join(', ');
+      const msg=all?`Sẽ lắp: ${names}. Tổng ${xu(plan.total)} từ ví, thiếu mới lấy tài khoản.`:`Đủ tiền cho ${plan.fit.length}/${plan.todo.length} món, lắp món rẻ trước: ${names}. Tổng ${xu(plan.fitTotal)}. Món còn lại để lần sau.`;
+      if(!await ask(all?`Lắp tất cả ${plan.todo.length} món?`:`Lắp ${plan.fit.length} món?`,msg,`Lắp · ${xu(plan.fitTotal)}`,{cost:plan.fitTotal,pocket:['wallet','account']}))return;
+      const r=await sendAll(plan.fit.map(it=>({stall:st.id,item:it.id,confirm:true})),'jr_quay_buy');
+      S.flash={text:r.done===r.total&&all?`🛠️ Đã lắp đủ ${r.done} món.`:`🛠️ Đã lắp ${r.done}/${plan.todo.length} món.${r.why?' '+r.why:all?'':' Món còn lại chờ đủ xu nhé.'}`,kind:r.done?'good':'bad'};render();return;}
+    case'hireAll':{const st=stallOf(data.id);if(!st||S.busy)return;const P=place(st.place),plan=hireAllPlan(st.cands,st.staff.length,P.slots||1,rowWage(st));if(plan.length<2)return;
+      const per=st.business?`${Math.round(st.business.period_seconds/60)} phút hoạt động`:'ngày';
+      if(!await ask(`Thuê ${plan.length} người?`,`Lương mỗi ${per}: ${plan.map(c=>`${c.name} ${xu(c.wage)}`).join(', ')}. Trả dần từ két/vốn quầy khi làm.`,'Thuê tất cả'))return;
+      const r=await sendAll(plan.map(c=>({stall:st.id,cand:c.id,wage:c.wage})),'jr_quay_hire');
+      for(const c of plan.slice(0,r.done))delete S.wage[`c:${st.id}:${c.id}`];
+      S.flash={text:r.done===r.total?`👥 ${r.done} người đã nhận việc.`:`👥 ${r.done}/${r.total} người đã nhận việc.${r.why?' '+r.why:''}`,kind:r.done?'good':'bad'};render();return;}
     case'police':send('jr_quay_police',{stall:data.id});return;
     case'ownerEvent':if(!S.busy)send('jr_quay_event',{stall:data.id,event:data.event,choice:data.choice,confirm:true});return;
     case'pay':send('jr_quay_pay',{stall:data.id});return;
@@ -439,8 +462,15 @@ function staffPart(st,P){
     return `<li class="qy-person"><div class="grow"><b>${esc(c.name)}</b>${c.g?' ⭐':''}<small>${esc(c.bio)}</small><small>Xin ${xu(c.ask)}/${st.business?`${Math.round(st.business.period_seconds/60)} phút hoạt động`:'ngày'}</small></div>
       <div class="qy-person-act">${stepper(k,w,st.id)}${btn('Thuê','hire',{id:st.id,cand:c.id,wage:w},'small primary')}</div></li>`;}).join('');
   return `<div class="qy-part"><p class="bk-hint">${esc(P.name||'Quầy')} có ${P.slots||1} chỗ đứng cho nhân viên (Xe đẩy 1, Sạp chợ 2, Ki-ốt 3). Số quầy bạn mở thì không giới hạn.</p>${rows?`<ul class="qy-list">${rows}</ul>`:''}
-    ${cands?`<h4>Đang tìm việc ${helpBtn('cand')}</h4>${helpText('cand','Tự đặt lương. Trả cao thì vui, bán đắt hàng hơn. Dưới 60% mức xin là họ không nhận.')}<ul class="qy-list">${cands}</ul>`:''}
+    ${cands?`<h4>Đang tìm việc ${helpBtn('cand')}</h4>${helpText('cand','Tự đặt lương. Trả cao thì vui, bán đắt hàng hơn. Dưới 60% mức xin là họ không nhận.')}${hireAllRow(st,P)}<ul class="qy-list">${cands}</ul>`:''}
     ${!rows&&!cands?'<p class="bk-hint">Chưa có ai.</p>':''}${hirePart(st)}</div>`;
+}
+/* 👥 Thuê đủ chỗ (F#290): two or more free places and people to fill them, each at the wage on their row. */
+const rowWage=st=>c=>S.wage[`c:${st.id}:${c.id}`]??c.ask;
+function hireAllRow(st,P){
+  const plan=hireAllPlan(st.cands,st.staff.length,P.slots||1,rowWage(st));
+  if(plan.length<2)return '';
+  return `<div class="bk-actions qy-all">${btn(`👥 Thuê tất cả · ${plan.length} người`,'hireAll',{id:st.id},'primary')}</div>`;
 }
 function stockPart(st){
   const cat=CAT();
@@ -468,7 +498,15 @@ function upPart(st){
   const items=CAT().items.map(it=>{const have=st.items.includes(it.id);
     return `<li class="qy-up${have?' on':''}"><span class="qy-up-emoji" aria-hidden="true">${it.emoji}</span><div class="grow"><b>${esc(it.name)}</b><small>${esc(it.line)}</small></div>
       ${have?'<span class="qy-have">✓</span>':btn(xu(it.price[st.place]),'buy',{id:st.id,item:it.id},'small')}</li>`;}).join('');
-  return `<div class="qy-part">${theftRiskHTML(st)}<ul class="qy-list">${items}</ul></div>`;
+  return `<div class="qy-part">${theftRiskHTML(st)}${buyAllRow(st)}<ul class="qy-list">${items}</ul></div>`;
+}
+/* 🛠️ Lắp tất cả (F#290): only with two or more items left; the total is what the money there pays, cheapest first. */
+function buyAllRow(st){
+  const plan=buyAllPlan(CAT()?.items,st.items,st.place,quayHave(J()));
+  if(plan.todo.length<2)return '';
+  const all=plan.fit.length===plan.todo.length;
+  const label=all?`🛠️ Lắp tất cả · tổng ${xu(plan.total)}`:plan.fit.length?`🛠️ Lắp ${plan.fit.length}/${plan.todo.length} món · ${xu(plan.fitTotal)}`:`🛠️ Lắp tất cả · tổng ${xu(plan.total)}`;
+  return `<div class="bk-actions qy-all">${btn(label,'buyAll',{id:st.id},'primary',plan.fit.length?'':`Cần ${xu(plan.todo[0].price)} cho món rẻ nhất`)}</div>`;
 }
 
 /* Opening a counter: what, where, a name. */

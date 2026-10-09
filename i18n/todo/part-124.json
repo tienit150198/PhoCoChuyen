@@ -1,5 +1,10 @@
 [
  {
+  "vi": "$1 bất thường mà không ai báo bác sĩ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1: đo đủ năm chỉ số, đều trong ngưỡng.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "Sổ trực ban: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sổ trực ban: $1",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Chào $1! Hôm nay tiệm có đông khách không?",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Hôm trước $1 làm cho mình ưng lắm đó.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "Lương kế toán x$1$2: $3 xu đã về ví của bạn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔥 Thưởng ngày x$1",
   "en": "",
   "pattern": true
  }
