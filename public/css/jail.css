@@ -1,0 +1,126 @@
+/* ==========================================================================
+   🚔 Trại tạm giữ (public/js/v4/jail.js): the cell and the yard, the days left, today's công ích (sweep, plant,
+   rice trays, paint, books), "Hết ngày" and "Nhờ bạn bảo lãnh", the chip that reopens it. Happy but stern: steel
+   blue walls, a sunny window, a green yard. Theme tokens for surfaces and text; phone first (390px), 44px targets.
+   ========================================================================== */
+.jl-sheet{--jl-steel:#5b7189;--jl-wall:#dfe6ee;--jl-wall2:#c9d4e0;--jl-sun:#ffd25a;--jl-grass:#7cbf6b;--jl-soil:#8a5a32;--jl-ink:#24384d}
+html[data-theme="dem"] .jl-sheet{--jl-wall:#2c3846;--jl-wall2:#243040;--jl-ink:#dbe7f3}
+html:not([data-layout="phone"]) .sheet.medium.jl-sheet{width:min(560px,calc(100vw - 32px))}
+.jl-root{display:flex;flex-direction:column;min-height:0}
+
+.jl-head{display:flex;align-items:center;gap:10px;padding:14px 12px 10px 16px;border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--jl-steel) 18%,var(--surface)),var(--surface))}
+.jl-head .grow{min-width:0;flex:1}
+.jl-head h2{margin:0;font-size:1.25rem}
+.jl-head .eyebrow{display:block;font-size:.74rem;letter-spacing:.04em;color:var(--accent-text)}
+.jl-badge{display:inline-grid;place-items:center;flex:none;width:44px;height:44px;border-radius:12px;font-size:1.5rem;
+  background:color-mix(in srgb,var(--jl-steel) 22%,var(--surface))}
+.jl-body{padding:12px 16px 18px}
+
+/* ---- the scene ---- */
+.jl-scene{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);margin:0 0 12px;box-shadow:var(--shadow-sm)}
+.jl-cell{position:relative;height:150px;background:linear-gradient(180deg,var(--jl-wall) 0 78%,var(--jl-wall2) 78%)}
+.jl-window{position:absolute;left:18px;top:16px;width:70px;height:52px;border-radius:8px;border:4px solid var(--jl-steel);
+  background:linear-gradient(180deg,#9fd3f5,#d8f0ff);overflow:hidden}
+.jl-window::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 12px,var(--jl-steel) 12px 15px)}
+.jl-sun{position:absolute;right:8px;top:6px;width:20px;height:20px;border-radius:50%;background:var(--jl-sun);box-shadow:0 0 14px var(--jl-sun)}
+.jl-bars{position:absolute;inset:0 0 0 auto;width:46%;background:repeating-linear-gradient(90deg,transparent 0 20px,var(--jl-steel) 20px 26px);
+  border-left:6px solid var(--jl-steel);opacity:.9}
+.jl-bunk{position:absolute;left:104px;bottom:20px;font-size:2.1rem;line-height:1}
+.jl-me{position:absolute;left:56px;bottom:22px;font-size:2rem;line-height:1}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .jl-me{animation:jl-bob 2.6s ease-in-out infinite}}
+@keyframes jl-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.jl-yard{position:relative;height:44px;background:linear-gradient(180deg,var(--jl-grass),color-mix(in srgb,var(--jl-grass) 70%,#2d5a2d));
+  display:flex;align-items:flex-end;justify-content:space-around;padding:0 10px 4px;font-size:1.5rem;line-height:1}
+.jl-days{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;align-items:flex-end;gap:2px;padding:8px 12px;border-radius:14px;
+  background:color-mix(in srgb,var(--surface) 92%,transparent);color:var(--ink);box-shadow:var(--shadow-sm)}
+.jl-days b{font-size:1.15rem}
+.jl-days small{font-size:.74rem;color:var(--ink-2)}
+.jl-dots{display:flex;gap:4px;margin-top:2px}
+.jl-dots i{width:10px;height:10px;border-radius:50%;border:2px solid var(--jl-steel)}
+.jl-dots i.on{background:var(--jl-steel)}
+
+/* ---- cards ---- */
+.jl-card{padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow-sm);margin:0 0 12px}
+.jl-card h3{display:flex;align-items:baseline;gap:8px;margin:0 0 8px;font-size:1.02rem}
+.jl-card h3 small{margin-left:auto;color:var(--ink-2);font-weight:600}
+.jl-tasks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.jl-task{display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 10px;border-radius:12px;background:color-mix(in srgb,var(--jl-steel) 8%,var(--surface))}
+.jl-task.done{opacity:.75}
+.jl-task .grow{min-width:0;flex:1;display:flex;flex-direction:column}
+.jl-task small{font-size:.78rem;color:var(--ink-2);line-height:1.35}
+.jl-ic{flex:none;font-size:1.5rem;width:34px;text-align:center}
+.jl-note{margin:8px 0 0;font-size:.84rem;color:var(--ink-2);line-height:1.4}
+.jl-go .btn{margin-top:4px}
+.jl-why{margin:4px 0 10px;font-size:.8rem;color:var(--muted);line-height:1.4}
+.jl-why:last-child{margin-bottom:0}
+.jl-rules ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:.86rem;line-height:1.4}
+.jl-rules li{display:flex;gap:8px}
+.jl-links{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.jl-flash{margin:0 0 8px;font-size:.9rem;font-weight:600}
+.jl-flash:empty{display:none}
+.jl-flash.bad{color:var(--bad)}.jl-flash.good{color:var(--good)}
+.jl-err{margin:8px 0;color:var(--bad);font-weight:600;font-size:.88rem}
+
+/* ---- the games ---- */
+.jl-game-head{display:flex;align-items:center;gap:8px}
+.jl-game-head h3{margin:0;flex:1}
+.jl-game .btn.big{margin-top:12px}
+.jl-shake{animation:jl-shake .35s}
+@keyframes jl-shake{20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+
+/* 🧹 sweep: a 4 × 3 yard */
+.jl-yardgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;padding:8px;border-radius:14px;
+  background:linear-gradient(180deg,#d9c7a3,#c8b083)}
+html[data-theme="dem"] .jl-yardgrid{background:linear-gradient(180deg,#5a4c35,#4a3e2a)}
+.jl-plot{display:grid;place-items:center;aspect-ratio:1;min-height:44px;border-radius:10px;border:0;font-size:1.6rem;background:rgba(255,255,255,.18)}
+button.jl-plot{cursor:pointer;background:rgba(160,90,30,.18);transition:transform .12s}
+button.jl-plot:active{transform:scale(.92)}
+.jl-plot.hp3{font-size:1.9rem}.jl-plot.hp2{font-size:1.5rem}.jl-plot.hp1{font-size:1.1rem}
+.jl-plot.done{font-size:1.2rem}
+
+/* 🌱 plant: tools and four holes */
+.jl-tools{display:flex;gap:6px;margin-top:10px}
+.jl-tool{flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:12px;
+  border:2px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.8rem;cursor:pointer}
+.jl-tool span{font-size:1.3rem}
+.jl-tool.on{border-color:var(--jl-steel);background:color-mix(in srgb,var(--jl-steel) 18%,var(--surface));font-weight:700}
+.jl-road{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;padding:12px 8px;border-radius:14px;
+  background:linear-gradient(180deg,var(--jl-grass) 0 55%,#9a9a9a 55% 60%,#6f6f6f 60%)}
+.jl-hole{min-height:60px;border-radius:12px;border:0;background:color-mix(in srgb,var(--jl-soil) 40%,transparent);font-size:1.8rem;cursor:pointer}
+.jl-hole.s3{background:color-mix(in srgb,var(--jl-grass) 60%,#fff)}
+
+/* 🍚 rice: five trays */
+.jl-trays{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-top:10px}
+.jl-tray{display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:12px;border:2px solid var(--line);background:color-mix(in srgb,#f2e6c8 40%,var(--surface))}
+.jl-tray.ok{border-color:var(--good)}
+.jl-tray.over{border-color:var(--bad)}
+.jl-tray small{font-size:.76rem;color:var(--ink-2)}
+.jl-plate{min-height:56px;border-radius:50%;border:2px solid #d9cdb4;background:#fff;font-size:1.05rem;line-height:1.1;cursor:pointer;word-break:break-all}
+html[data-theme="dem"] .jl-plate{background:#3a3a3a;border-color:#555}
+.jl-less{min-height:32px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font:inherit;font-size:.78rem;cursor:pointer}
+.jl-less:disabled{opacity:.4}
+
+/* 🎨 paint: a 5 × 2 wall, painted by tap or drag */
+.jl-wall{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:10px;padding:6px;border-radius:12px;background:#8d8d8d;touch-action:none;user-select:none;-webkit-user-select:none}
+.jl-panel{min-height:64px;border:0;border-radius:6px;font-size:1.1rem;cursor:pointer;color:#555}
+.jl-panel.dirty{background:repeating-linear-gradient(135deg,#9da3a8 0 8px,#8b9196 8px 16px)}
+.jl-panel.painted,.jl-panel.clean{background:#f4e3b5}
+.jl-panel.painted{box-shadow:inset 0 0 0 3px #e8c86a}
+
+/* 📚 books: tap from the smallest number */
+.jl-shelf-l{margin:10px 0 4px;font-size:.78rem;color:var(--ink-2)}
+.jl-shelf{display:flex;align-items:flex-end;gap:6px;min-height:84px;padding:6px 8px;border-radius:10px;border-bottom:8px solid #8a5a32;background:color-mix(in srgb,#8a5a32 14%,var(--surface))}
+.jl-shelf.done{min-height:54px}
+.jl-shelf.done small{color:var(--muted);align-self:center}
+.jl-book{flex:1;min-width:36px;height:76px;border:0;border-radius:4px 4px 2px 2px;background:var(--bk);color:#fff;font:inherit;cursor:pointer;
+  display:grid;place-items:center;box-shadow:inset -4px 0 0 rgba(0,0,0,.18)}
+.jl-book b{font-size:1.05rem;background:rgba(255,255,255,.88);color:#222;border-radius:6px;padding:0 4px}
+.jl-book.small{height:44px;flex:0 0 36px;cursor:default}
+.jl-book.small b{font-size:.8rem}
+.jl-book.gone{visibility:hidden}
+
+/* ---- the chip that reopens the screen ---- */
+.jl-chip{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 86px);z-index:60;min-height:44px;padding:8px 16px;
+  border-radius:999px;border:2px solid var(--jl-steel,#5b7189);background:var(--surface,#fff);color:var(--ink,#222);font:inherit;font-weight:700;
+  box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;max-width:calc(100vw - 32px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

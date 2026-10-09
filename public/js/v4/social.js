@@ -141,10 +141,10 @@ function inbox(env){
   const {ui}=env,d=load(env,'inbox','inbox');
   if(!d)return loading;if(d.error)return failed(d);
   if(d.unread&&!ui.socInboxRead){ui.socInboxRead=true;env.api.socialPost('inbox_read').then(()=>{if(env.api.social)env.api.social.unread=0;}).catch(()=>{});}
-  const kindIcon={visit:'👀',review:'⭐',reply:'💬',gift:'🎁',sale:'🧺',comment:'💬'};
+  const kindIcon={visit:'👀',review:'⭐',reply:'💬',gift:'🎁',sale:'🧺',comment:'💬',jail:'🚔',jail_out:'🤝'};
   return `${d.notes?.length?`<div class="notice success">${icon('check',17)}<div>${d.notes.map(esc).join('<br>')}</div></div>`:''}
     ${d.gifts.length?`<h4 class="section-title">Quà đã nhận</h4><div class="gift-row">${d.gifts.map(g=>`<div class="gift"><span>${esc(g.sticker)}</span><small><b>${esc(g.author)}</b>${g.coins?` · ${g.coins} xu`:''}${g.note?`<br>“${esc(g.note)}”`:''}</small></div>`).join('')}</div>`:''}
-    <h4 class="section-title">Thông báo</h4>${d.items.length?`<ul class="inbox">${d.items.map(x=>`<li class="${x.read?'':'unread'}"><span>${kindIcon[x.kind]||'🔔'}</span><p class="grow">${esc(x.text)}<small class="muted block">${ago(x.at)}</small></p>${x.ref&&/^[0-9a-f]{16}$/.test(x.ref)?button('Xem','socShop',{pid:x.ref},'small ghost'):''}</li>`).join('')}</ul>`:`<div class="empty">${icon('inbox',28)}<p>Chưa có gì mới.</p></div>`}`;
+    <h4 class="section-title">Thông báo</h4>${d.items.length?`<ul class="inbox">${d.items.map(x=>`<li class="${x.read?'':'unread'}"><span>${kindIcon[x.kind]||'🔔'}</span><p class="grow">${esc(x.text)}<small class="muted block">${ago(x.at)}</small></p>${x.ref&&/^[0-9a-f]{16}$/.test(x.ref)?button('Xem','socShop',{pid:x.ref},'small ghost'):x.kind==='jail'?button('Bảo lãnh','friends',{},'small primary'):''}</li>`).join('')}</ul>`:`<div class="empty">${icon('inbox',28)}<p>Chưa có gì mới.</p></div>`}`;
 }
 
 export function socialView(env){
