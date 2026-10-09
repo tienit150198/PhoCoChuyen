@@ -98,6 +98,11 @@ def sweep(store, write: bool) -> int:
                 db.rollback()
                 print(f'{who}: save moved meanwhile, next run')
                 continue
+            try:   # 💰 the boards follow at once (the storage layer does it for a command; this is not one)
+                from game import leaderboard as lb
+                lb.write(db, r['sid'], lb.summary(s))
+            except Exception as e:  # noqa: BLE001 - a board row never blocks the reclaim; the next command rewrites it
+                print(f'{who}: board not updated ({e!r})')
             rid = lfx.RID + lfx.short(r['id'])
             fp = hashlib.sha256(json.dumps([None, lfx.ACTION, payload], sort_keys=True, ensure_ascii=False).encode()).hexdigest()
             db.execute('INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?) ON CONFLICT DO NOTHING',
