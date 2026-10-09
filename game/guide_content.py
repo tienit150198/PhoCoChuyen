@@ -6124,9 +6124,20 @@ GROUPS = [{'id': 'start',
               'points': ['💵 Đàn em ở cổng không phải lúc nào cũng đòi bảo kê, hên xui. Hôm nào bị đòi thì nộp 10.000 xu, nộp '
                          'rồi thì ra vô thoải mái một thời gian.',
                          '🙅 Không nộp thì bị trấn lột một phần tiền trong ví (không đụng tới tài khoản ngân hàng), rồi mới được vô.',
-                         '🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược ván đó và nộp phạt từ ví, rồi chơi tiếp được.',
+                         '🚨 Ai ăn đậm ở chợ đen thì dễ bị công an để ý. Bị bắt thì mất tiền cược ván đó, nộp phạt từ ví và vào '
+                         'trại tạm giữ 3 ngày.',
                          '🎮 Ô ăn quan, ném vòng không cần đặt cược; bầu cua, chiếu trong, lô tô, vé cào, phóng dao thì có.'],
               'go': {'action': 'fair', 'label': 'Mở Chợ đen'}},
+             {'id': 'jail',
+              'emoji': '🚔',
+              'title': 'Trại tạm giữ: công ích và bảo lãnh',
+              'points': ['🚔 Bị công an bắt ở chợ đen thì vào trại 3 ngày. Báo công an về một đánh giá hợp lý thì có khi bị '
+                         'giữ 1 ngày vì tố cáo sai sự thật.',
+                         '🚫 Trong trại không đi làm, không vào chợ đen, không mua sắm hay đi chơi xa. Vẫn nhắn tin, xem bạn bè, '
+                         'đọc sách, chỉnh cài đặt được.',
+                         '🧹 Mỗi ngày có 3 việc công ích nho nhỏ. Làm đủ cả 3 thì hết ngày đó được tính 2 ngày.',
+                         '🌙 Bấm [[Hết một ngày trong trại]] để qua một ngày sống. Tiền phòng vẫn tính, cơm trại miễn phí.',
+                         '🤝 [[Nhờ bạn bảo lãnh]]: một người bạn trả 30.000 xu từ ví của họ là bạn được về ngay.']},
              {'id': 'hands_on',
               'emoji': '🎮',
               'title': 'Tự tay lái xe, lái máy bay, đi nông trại',

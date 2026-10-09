@@ -1,5 +1,141 @@
 [
  {
+  "vi": "Việc công ích này không có trong hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Việc này làm xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Bắt đầu việc này trước đã nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Làm từ từ cho kỹ nha, cán bộ đang xem đó.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xong đâu, làm lại cho đúng nha.",
+  "en": ""
+ },
+ {
+  "vi": "Đủ công ích hôm nay: hết ngày này được tính hai ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu trại tạm giữ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chưa có bạn bè nào để nhờ bảo lãnh. Kết bạn ở mục Bạn bè nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có mã người chơi. Tải lại trang nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn người bạn cần bảo lãnh nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn không tự bảo lãnh cho mình được. Nhờ bạn bè nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ bạn bè mới bảo lãnh được cho nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo lãnh chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang ở trại, chưa bảo lãnh cho ai được.",
+  "en": ""
+ },
+ {
+  "vi": "Quà chào hàng xóm mới 🎁",
+  "en": ""
+ },
+ {
+  "vi": "Đứa cháu bà mê nhóm nhạc BLANKPINK gì đó, ngày nào cũng đòi ra tiệm album Mây Pop. Chị Thơ ở đó đang cần người đứng quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Thằng Mẫn nhà bên làm thợ máy ở sân bay. Nó bảo Hãng bay Cánh Cò đang tuyển cơ phó với tiếp viên đó.",
+  "en": ""
+ },
+ {
+  "vi": "Đường ngang Bến Mây đầu phố Ray đang thiếu người gác chắn. Chú Sáu Cờ gác ở đó gần ba chục năm, đang tìm người cẩn thận để kèm.",
+  "en": ""
+ },
+ {
+  "vi": "Tuần trước bà nằm viện Lá Sen, mấy đứa điều dưỡng chăm bà khéo lắm. Khoa Nội đang tuyển người đó con.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Bảy giữ đèn biển Hòn Gió ngoài đảo kia đang tìm người kèm. Ở đảo buồn lắm, mà đêm nào cũng có tàu nhờ cái đèn đó mà về.",
+  "en": ""
+ },
+ {
+  "vi": "Tổng đài cứu hộ phường Mây đang tìm người trực máy. Giọng bình tĩnh, hỏi địa chỉ trước tiên là được việc.",
+  "en": ""
+ },
+ {
+  "vi": "Hè này em học bơi ở Hồ bơi Sóng Xanh. Anh Hải cứu hộ bảo đang tìm thêm người cẩn thận, anh thử không?",
+  "en": ""
+ },
+ {
+  "vi": "Hè này em học bơi ở Hồ bơi Sóng Xanh. Anh Hải cứu hộ bảo đang tìm thêm người cẩn thận, chị thử không?",
+  "en": ""
+ },
+ {
+  "vi": "Hè này em học bơi ở Hồ bơi Sóng Xanh. Anh Hải cứu hộ bảo đang tìm thêm người cẩn thận, thử không?",
+  "en": ""
+ },
+ {
+  "vi": "Công an phường Mây đang tuyển cán bộ khu vực. Cô thấy cháu nói nhẹ mà dứt khoát, không nhận của ai cái gì. Hợp lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Công ty balo Cánh Diều cuối phố cũng đang tuyển người làm nhân sự, thư ký giám đốc với bạn trực máy tính. Không giỏi số vẫn làm được, miễn cẩn thận.",
+  "en": ""
+ },
+ {
+  "vi": "Người giữ hồ sơ nhân sự",
+  "en": ""
+ },
+ {
+  "vi": "Đạt cấp 3 ở phòng nhân sự Cánh Diều.",
+  "en": ""
+ },
+ {
+  "vi": "Thư ký chu đáo",
+  "en": ""
+ },
+ {
+  "vi": "Đạt cấp 3 ở bàn thư ký giám đốc Cánh Diều.",
+  "en": ""
+ },
+ {
+  "vi": "Cứu tinh máy tính",
+  "en": ""
+ },
+ {
+  "vi": "Đạt cấp 3 ở bàn IT Cánh Diều.",
+  "en": ""
+ },
+ {
+  "vi": "Người giữ lửa Hòn Gió",
+  "en": ""
+ },
+ {
+  "vi": "Đạt cấp 3 ở đèn biển Hòn Gió.",
+  "en": ""
+ },
+ {
   "vi": "Giọng nói giữ bình tĩnh",
   "en": ""
  },
@@ -1661,142 +1797,6 @@
  },
  {
   "vi": "Tiền xăng đi đứt.",
-  "en": ""
- },
- {
-  "vi": "Báo tổng đài, chụp ảnh làm chứng",
-  "en": ""
- },
- {
-  "vi": "Tổng đài ghi nhận, khách bị đánh dấu.",
-  "en": ""
- },
- {
-  "vi": "Ghé vỉa hè ngồi uống chai nước",
-  "en": ""
- },
- {
-  "vi": "Nắng gắt. Nhưng ngồi chút cũng đỡ.",
-  "en": ""
- },
- {
-  "vi": "Cuộc gọi 40 phút toàn chửi",
-  "en": ""
- },
- {
-  "vi": "Khách gọi tới, chưa nói gì đã chửi.",
-  "en": ""
- },
- {
-  "vi": "Bốn mươi phút. Bạn không được cúp máy.",
-  "en": ""
- },
- {
-  "vi": "Cúp xong, tay vẫn còn run.",
-  "en": ""
- },
- {
-  "vi": "Xin trưởng ca nghỉ 10 phút",
-  "en": ""
- },
- {
-  "vi": "Trưởng ca gật đầu, còn đưa ly trà gừng.",
-  "en": ""
- },
- {
-  "vi": "Nhận cuộc gọi kế tiếp luôn",
-  "en": ""
- },
- {
-  "vi": "Giọng bạn hơi run suốt buổi chiều.",
-  "en": ""
- },
- {
-  "vi": "Khách tour làm mình làm mẩy",
-  "en": ""
- },
- {
-  "vi": "Khách đòi đổi phòng, đổi món, đổi cả lịch trình.",
-  "en": ""
- },
- {
-  "vi": "Không vừa ý là dọa “đánh giá cho biết tay”.",
-  "en": ""
- },
- {
-  "vi": "Cả đoàn phải chờ.",
-  "en": ""
- },
- {
-  "vi": "Nhẹ nhàng nhưng giữ đúng lịch",
-  "en": ""
- },
- {
-  "vi": "Cả đoàn vỗ tay khi xe lăn bánh đúng giờ.",
-  "en": ""
- },
- {
-  "vi": "Chiều hết cho yên",
-  "en": ""
- },
- {
-  "vi": "Khách vẫn chê. Bạn thì kiệt sức.",
-  "en": ""
- },
- {
-  "vi": "Chủ thú cưng mắng xối xả",
-  "en": ""
- },
- {
-  "vi": "Bé cún về nhà hắt hơi hai cái.",
-  "en": ""
- },
- {
-  "vi": "Chủ nó gọi tới mắng như tát nước.",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ ghi rõ bé bị từ trước.",
-  "en": ""
- },
- {
-  "vi": "Gửi lại phiếu khám lúc nhận",
-  "en": ""
- },
- {
-  "vi": "Chủ nó im một lúc, rồi nhắn “xin lỗi em”.",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi cho qua",
-  "en": ""
- },
- {
-  "vi": "Chuyện qua, nhưng bạn thấy ấm ức.",
-  "en": ""
- },
- {
-  "vi": "Đối tác nói nặng lời",
-  "en": ""
- },
- {
-  "vi": "Nhà cung cấp giao trễ ba ngày.",
-  "en": ""
- },
- {
-  "vi": "Hỏi thì họ gắt: “Không mua thì thôi!”",
-  "en": ""
- },
- {
-  "vi": "Khách đang chờ hàng.",
-  "en": ""
- },
- {
-  "vi": "Tìm nhà cung cấp khác",
-  "en": ""
- },
- {
-  "vi": "Chỗ mới lịch sự hơn hẳn. Nhẹ cả người.",
   "en": ""
  }
 ]

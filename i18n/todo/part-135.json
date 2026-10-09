@@ -1,5 +1,75 @@
 [
  {
+  "vi": "+$1 từ $2 điểm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mỗi nâng cấp nhà: ấm cúng +$1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tinh thần mỗi sáng: $1 (nhà sửa tới $2%, không trễ hạn trả góp).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chỗ ở thuê hoặc ở nhờ: tinh thần $1, tối đa +$2 mỗi sáng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ấm cúng từ $1 điểm thì hàng xóm hay ghé chơi khen phòng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đồ đạc $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bộ góc $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nâng cấp nhà $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎨 Trang trí giúp nhà $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quyền trang trí đến $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang cho $1 trang trí nhà bằng đồ trong túi của bạn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hoàn thành$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "/$1 · còn thiếu $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏅 Bộ góc xinh · $1/",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Xem thêm $1 bộ góc",
   "en": "",
   "pattern": true
@@ -820,7 +890,7 @@
   "pattern": true
  },
  {
-  "vi": "Báo công an về $1 này? Công an sẽ đối chiếu với sổ ghi hôm đó: nếu sai sự thật, sao có thể được sửa lại. Mỗi $2 chỉ báo một lần$3.",
+  "vi": "Báo công an về $1 này? Công an sẽ đối chiếu với sổ ghi hôm đó: nếu sai sự thật, sao có thể được sửa lại. Mỗi $2 chỉ báo một lần$3. Tố cáo sai sự thật có thể bị tạm giữ đó.",
   "en": "",
   "pattern": true
  },

@@ -1,5 +1,141 @@
 [
  {
+  "vi": "Tỉ lệ góp không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Mẫu nhẫn không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn này bạn đã mua rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một chiếc nhẫn trong hộp.",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy chiếc nhẫn này trong hộp của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Chiếc nhẫn này đã được bán, tiền đã về ví.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ bán được nhẫn dư trong hộp. Nhẫn đang cầu hôn hoặc nhẫn của hai bạn được giữ lại.",
+  "en": ""
+ },
+ {
+  "vi": "Bán nhẫn dư tại tiệm kim hoàn",
+  "en": ""
+ },
+ {
+  "vi": "Chiếc nhẫn vừa thay đổi. Mở lại hộp nhẫn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một chiếc nhẫn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn đã đổi màu rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy chiếc nhẫn này.",
+  "en": ""
+ },
+ {
+  "vi": "Chiếc nhẫn đang nằm trong một lời cầu hôn, chờ trả lời đã nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn đang đúng màu này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chiếc nhẫn vừa thay đổi. Xem lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy người chơi có mã này.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang có đôi rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Không gửi được lời cầu hôn tới người này.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ cầu hôn được bạn bè. Kết bạn trước nhé (mục 👥 Bạn bè).",
+  "en": ""
+ },
+ {
+  "vi": "Người này đang tắt nhận lời cầu hôn.",
+  "en": ""
+ },
+ {
+  "vi": "Người này hiện chưa nhận lời cầu hôn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã gửi lời cầu hôn tới người này rồi, chờ hồi âm nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một lời cầu hôn soạn sẵn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chiếc nhẫn này không còn trong hộp của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Lời cầu hôn không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Lời cầu hôn này không còn chờ trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "Đã từ chối nhẹ nhàng. Chiếc nhẫn vẫn là của người gửi.",
+  "en": ""
+ },
+ {
+  "vi": "Không nhận lời được.",
+  "en": ""
+ },
+ {
+  "vi": "Một trong hai bạn vừa nhận lời người khác rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã rút lại lời cầu hôn. Chiếc nhẫn về lại hộp của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã chặn. Người này không gửi lời cầu hôn cho bạn được nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Đã bật nhận lời cầu hôn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã tắt nhận lời cầu hôn. Không ai gửi lời mới cho bạn được.",
+  "en": ""
+ },
+ {
+  "vi": "Tỉ lệ góp là từ 0 đến 100%.",
+  "en": ""
+ },
+ {
   "vi": "Chỉ cặp đã đính hôn mới lên kế hoạch cưới.",
   "en": ""
  },
@@ -1661,142 +1797,6 @@
  },
  {
   "vi": "Gần trọn, còn một chỗ tôi để ý.",
-  "en": ""
- },
- {
-  "vi": "Tôi để ý thấy mấy chỗ chưa ổn.",
-  "en": ""
- },
- {
-  "vi": "Tôi đi lễ mấy chục năm, nói để thầy trẻ biết.",
-  "en": ""
- },
- {
-  "vi": "Tôi rành nếp chùa, hôm nay chưa đúng.",
-  "en": ""
- },
- {
-  "vi": "Tôi rành nếp chùa, hôm nay sai nhiều.",
-  "en": ""
- },
- {
-  "vi": "Được. Mà chưa trọn.",
-  "en": ""
- },
- {
-  "vi": "Buồn thật.",
-  "en": ""
- },
- {
-  "vi": "Sân chùa sạch lá, hương đèn gọn gàng.",
-  "en": ""
- },
- {
-  "vi": "Bàn Phật hoa tươi, trái cây bày ngay ngắn.",
-  "en": ""
- },
- {
-  "vi": "Việc gì cũng làm cẩn thận, nhìn là thấy yên.",
-  "en": ""
- },
- {
-  "vi": "Nhang đèn để xa rèm, người già trẻ nhỏ đều được để ý.",
-  "en": ""
- },
- {
-  "vi": "Lối đi khô ráo, bậc thềm có người đỡ.",
-  "en": ""
- },
- {
-  "vi": "Hòm công đức có hai người cùng đếm, ghi sổ rõ ràng.",
-  "en": ""
- },
- {
-  "vi": "Chuyện công đức ở chùa minh bạch, ai cũng yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Được chỉ dẫn nhẹ nhàng, không ai bị ngượng.",
-  "en": ""
- },
- {
-  "vi": "Thầy trẻ nói chậm, nghe xong thấy lòng nhẹ hẳn.",
-  "en": ""
- },
- {
-  "vi": "Hỏi đường vào chánh điện là có người chỉ ngay.",
-  "en": ""
- },
- {
-  "vi": "Lên chùa không phải đứng chờ lâu.",
-  "en": ""
- },
- {
-  "vi": "Chuông sáng ngân đều, công phu đúng giờ.",
-  "en": ""
- },
- {
-  "vi": "Sáng sớm nghe chuông, đúng giờ như mọi khi.",
-  "en": ""
- },
- {
-  "vi": "Thầy trẻ nghe thầy trụ trì dặn rất chăm.",
-  "en": ""
- },
- {
-  "vi": "Ghé chùa một buổi mà lòng thấy an.",
-  "en": ""
- },
- {
-  "vi": "Người già lên bậc thềm mà chưa ai để ý, sợ trượt.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắc hơi gắt, tôi thấy ngại.",
-  "en": ""
- },
- {
-  "vi": "Mong lần sau được chỉ dẫn nhẹ nhàng hơn.",
-  "en": ""
- },
- {
-  "vi": "Đứng chờ ở cổng hơi lâu.",
-  "en": ""
- },
- {
-  "vi": "Hỏi đường vào chánh điện mà phải chờ một lúc mới có người chỉ.",
-  "en": ""
- },
- {
-  "vi": "Chuông sáng hôm nay hơi lệch giờ.",
-  "en": ""
- },
- {
-  "vi": "Thầy trẻ còn lơ đãng lúc nghe dặn.",
-  "en": ""
- },
- {
-  "vi": "sân còn đầy lá",
-  "en": ""
- },
- {
-  "vi": "khói nhang bay khắp sân",
-  "en": ""
- },
- {
-  "vi": "không thấy ai ghi sổ công đức",
-  "en": ""
- },
- {
-  "vi": "bị nhắc to trước mặt mọi người",
-  "en": ""
- },
- {
-  "vi": "đứng chờ ở cổng mãi",
-  "en": ""
- },
- {
-  "vi": "chuông sáng đánh muộn",
   "en": ""
  }
 ]

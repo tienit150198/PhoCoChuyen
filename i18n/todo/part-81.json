@@ -1,5 +1,141 @@
 [
  {
+  "vi": "Báo tổng đài, chụp ảnh làm chứng",
+  "en": ""
+ },
+ {
+  "vi": "Tổng đài ghi nhận, khách bị đánh dấu.",
+  "en": ""
+ },
+ {
+  "vi": "Ghé vỉa hè ngồi uống chai nước",
+  "en": ""
+ },
+ {
+  "vi": "Nắng gắt. Nhưng ngồi chút cũng đỡ.",
+  "en": ""
+ },
+ {
+  "vi": "Cuộc gọi 40 phút toàn chửi",
+  "en": ""
+ },
+ {
+  "vi": "Khách gọi tới, chưa nói gì đã chửi.",
+  "en": ""
+ },
+ {
+  "vi": "Bốn mươi phút. Bạn không được cúp máy.",
+  "en": ""
+ },
+ {
+  "vi": "Cúp xong, tay vẫn còn run.",
+  "en": ""
+ },
+ {
+  "vi": "Xin trưởng ca nghỉ 10 phút",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng ca gật đầu, còn đưa ly trà gừng.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận cuộc gọi kế tiếp luôn",
+  "en": ""
+ },
+ {
+  "vi": "Giọng bạn hơi run suốt buổi chiều.",
+  "en": ""
+ },
+ {
+  "vi": "Khách tour làm mình làm mẩy",
+  "en": ""
+ },
+ {
+  "vi": "Khách đòi đổi phòng, đổi món, đổi cả lịch trình.",
+  "en": ""
+ },
+ {
+  "vi": "Không vừa ý là dọa “đánh giá cho biết tay”.",
+  "en": ""
+ },
+ {
+  "vi": "Cả đoàn phải chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẹ nhàng nhưng giữ đúng lịch",
+  "en": ""
+ },
+ {
+  "vi": "Cả đoàn vỗ tay khi xe lăn bánh đúng giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Chiều hết cho yên",
+  "en": ""
+ },
+ {
+  "vi": "Khách vẫn chê. Bạn thì kiệt sức.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ thú cưng mắng xối xả",
+  "en": ""
+ },
+ {
+  "vi": "Bé cún về nhà hắt hơi hai cái.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nó gọi tới mắng như tát nước.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ ghi rõ bé bị từ trước.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi lại phiếu khám lúc nhận",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nó im một lúc, rồi nhắn “xin lỗi em”.",
+  "en": ""
+ },
+ {
+  "vi": "Xin lỗi cho qua",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện qua, nhưng bạn thấy ấm ức.",
+  "en": ""
+ },
+ {
+  "vi": "Đối tác nói nặng lời",
+  "en": ""
+ },
+ {
+  "vi": "Nhà cung cấp giao trễ ba ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi thì họ gắt: “Không mua thì thôi!”",
+  "en": ""
+ },
+ {
+  "vi": "Khách đang chờ hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm nhà cung cấp khác",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ mới lịch sự hơn hẳn. Nhẹ cả người.",
+  "en": ""
+ },
+ {
   "vi": "Nhún nhường năn nỉ",
   "en": ""
  },
@@ -1661,142 +1797,6 @@
  },
  {
   "vi": "Hồi anh mới dọn tới cũng bị đồn là “trốn nợ”.",
-  "en": ""
- },
- {
-  "vi": "Kệ đi. Tối rảnh đi ăn ốc với anh.",
-  "en": ""
- },
- {
-  "vi": "Đi ăn ốc với Anh Khoa",
-  "en": ""
- },
- {
-  "vi": "Ốc len xào dừa, Anh Khoa kể vụ “trốn nợ” năm xưa. Cười rũ rượi.",
-  "en": ""
- },
- {
-  "vi": "Người ta nói gì kệ người ta, bà biết cháu mà.",
-  "en": ""
- },
- {
-  "vi": "Ăn miếng bánh bò rồi ngủ một giấc.",
-  "en": ""
- },
- {
-  "vi": "Ăn bánh bò với Bà Tám",
-  "en": ""
- },
- {
-  "vi": "Bà Tám bảo: “Bà ở đây, không ai bắt nạt cháu được.” Ấm lòng.",
-  "en": ""
- },
- {
-  "vi": "Người ta nói ra nói vào, mình làm ăn đàng hoàng là được.",
-  "en": ""
- },
- {
-  "vi": "Tối nay ghé cô ăn cơm, có canh chua.",
-  "en": ""
- },
- {
-  "vi": "Ăn cơm tối với Cô Ba",
-  "en": ""
- },
- {
-  "vi": "Bữa cơm có canh chua, cá kho. Cô Ba không nhắc chuyện kia câu nào.",
-  "en": ""
- },
- {
-  "vi": "Chiếc điện thoại cũ",
-  "en": ""
- },
- {
-  "vi": "Anh Khoa đưa chiếc điện thoại cũ còn xài tốt: “Xài tạm nha em.”",
-  "en": ""
- },
- {
-  "vi": "Bao gạo 10 ký",
-  "en": ""
- },
- {
-  "vi": "Bà Tám với Cô Ba khiêng lên bao gạo: “Đỡ được mấy bữa cơm.”",
-  "en": ""
- },
- {
-  "vi": "Bó hoa và tấm thiệp",
-  "en": ""
- },
- {
-  "vi": "Tấm thiệp ký tên cả hẻm: “Có tụi mình ở đây.”",
-  "en": ""
- },
- {
-  "vi": "Giỏ đồ ăn",
-  "en": ""
- },
- {
-  "vi": "Giỏ trứng, rau, mì gói, cả hộp bánh của Bé Tí.",
-  "en": ""
- },
- {
-  "vi": "Karaoke với bạn",
-  "en": ""
- },
- {
-  "vi": "Hát tới khàn giọng. Ra về thấy nhẹ tênh.",
-  "en": ""
- },
- {
-  "vi": "Trà sữa + dạo shop",
-  "en": ""
- },
- {
-  "vi": "Ly trà sữa full topping, cái áo mới. Vui vui.",
-  "en": ""
- },
- {
-  "vi": "Cuối tuần lên Đà Lạt",
-  "en": ""
- },
- {
-  "vi": "Sương sớm, đồi thông, ly sữa đậu nóng. Về phố như người mới.",
-  "en": ""
- },
- {
-  "vi": "Cuối tuần đi Vũng Tàu",
-  "en": ""
- },
- {
-  "vi": "Tắm biển, ăn bánh khọt. Gió biển thổi bay hết mọi thứ.",
-  "en": ""
- },
- {
-  "vi": "Chốt đơn online cho sướng tay",
-  "en": ""
- },
- {
-  "vi": "Hàng về đúng ảnh, xinh xỉu. Đáng đồng tiền!",
-  "en": ""
- },
- {
-  "vi": "Hàng về… không giống ảnh chút nào. Tiền thì đi rồi.",
-  "en": ""
- },
- {
-  "vi": "Uống một mình",
-  "en": ""
- },
- {
-  "vi": "Vài lon bia, một bản nhạc buồn. Mai chắc hơi mệt.",
-  "en": ""
- },
- {
-  "vi": "Đi dạo bờ hồ",
-  "en": ""
- },
- {
-  "vi": "Gió hồ mát rượi, có ông cụ thả diều. Lòng lắng xuống.",
   "en": ""
  }
 ]

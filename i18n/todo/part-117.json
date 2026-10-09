@@ -1,5 +1,337 @@
 [
  {
+  "vi": "5 · Dịch vụ thêm",
+  "en": ""
+ },
+ {
+  "vi": "6 · Ngày cưới & góp tiền",
+  "en": ""
+ },
+ {
+  "vi": "💍 Cả phố được mời dự tiệc lúc đó.",
+  "en": ""
+ },
+ {
+  "vi": "Ai góp bao nhiêu",
+  "en": ""
+ },
+ {
+  "vi": "Báo tin cưới cho cả phố (cần cả hai đồng ý)",
+  "en": ""
+ },
+ {
+  "vi": "Tự chọn: bạn góp",
+  "en": ""
+ },
+ {
+  "vi": "góp",
+  "en": ""
+ },
+ {
+  "vi": "Không chọn",
+  "en": ""
+ },
+ {
+  "vi": "Bảng dự trù",
+  "en": ""
+ },
+ {
+  "vi": "Trả nốt vào ngày cưới",
+  "en": ""
+ },
+ {
+  "vi": "Lời / lỗ dự kiến",
+  "en": ""
+ },
+ {
+  "vi": "Đang ước lượng khách và tiền mừng…",
+  "en": ""
+ },
+ {
+  "vi": "Trả trực tiếp từ tài khoản thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Trả bằng tiền mặt trong ví.",
+  "en": ""
+ },
+ {
+  "vi": "Quẹt thẻ tín dụng, trả khi có sao kê.",
+  "en": ""
+ },
+ {
+  "vi": "Ưu tiên quỹ chung; nếu không đủ, thử ví rồi thẻ tín dụng.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ",
+  "en": ""
+ },
+ {
+  "vi": "cho khoản này.",
+  "en": ""
+ },
+ {
+  "vi": "trên 100",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ bữa",
+  "en": ""
+ },
+ {
+  "vi": "Giờ ăn trưa",
+  "en": ""
+ },
+ {
+  "vi": "Trưa rồi, ăn gì đây?",
+  "en": ""
+ },
+ {
+  "vi": "Đói bụng rồi? Ăn thêm gì đó",
+  "en": ""
+ },
+ {
+  "vi": "Ăn thêm",
+  "en": ""
+ },
+ {
+  "vi": "Chúc ngủ ngon!",
+  "en": ""
+ },
+ {
+  "vi": "Bữa sáng có sẵn, không tốn thêm xu.",
+  "en": ""
+ },
+ {
+  "vi": "Ăn chưa xong",
+  "en": ""
+ },
+ {
+  "vi": "Như mọi khi",
+  "en": ""
+ },
+ {
+  "vi": "Bữa tối",
+  "en": ""
+ },
+ {
+  "vi": "Giờ đi ngủ",
+  "en": ""
+ },
+ {
+  "vi": "Tối nay ăn gì?",
+  "en": ""
+ },
+ {
+  "vi": "Cơm nhà đã tính trong tiền cơm nước mỗi ngày, nên không tốn thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Mấy giờ đi ngủ?",
+  "en": ""
+ },
+ {
+  "vi": "⭐ 1 khách nữa là lên cấp!",
+  "en": ""
+ },
+ {
+  "vi": "📚 Bài kiểm tra cuối khóa",
+  "en": ""
+ },
+ {
+  "vi": "🏛️ Ban chỉ huy",
+  "en": ""
+ },
+ {
+  "vi": "Câu 0 điểm: hẹn xét lại sau 3 ngày làm.",
+  "en": ""
+ },
+ {
+  "vi": "✅ Đủ điều kiện: cuối ca Ban chỉ huy xét.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Cảnh cáo đang có",
+  "en": ""
+ },
+ {
+  "vi": "📜 Lịch sử",
+  "en": ""
+ },
+ {
+  "vi": "(đã tự giác)",
+  "en": ""
+ },
+ {
+  "vi": "Nhận phong bì: hạ bậc ngay, ghi dấu liêm chính mãi mãi.",
+  "en": ""
+ },
+ {
+  "vi": "không bổ nhiệm người chơi.",
+  "en": ""
+ },
+ {
+  "vi": "🎖️ Cấp bậc",
+  "en": ""
+ },
+ {
+  "vi": "Cao nhất rồi!",
+  "en": ""
+ },
+ {
+  "vi": "🙇 Tự giác nộp lại phong bì",
+  "en": ""
+ },
+ {
+  "vi": "Về ca",
+  "en": ""
+ },
+ {
+  "vi": "Mở ca để kiểm tra.",
+  "en": ""
+ },
+ {
+  "vi": "· 📣 nhiều phản ánh",
+  "en": ""
+ },
+ {
+  "vi": "Vi phạm",
+  "en": ""
+ },
+ {
+  "vi": "nhiệm vụ",
+  "en": ""
+ },
+ {
+  "vi": "📤 Trình PGĐ",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng handmade",
+  "en": ""
+ },
+ {
+  "vi": "Sách, CLB & gia đình",
+  "en": ""
+ },
+ {
+  "vi": "Bản xem màu móng",
+  "en": ""
+ },
+ {
+  "vi": "Đang chuẩn bị góc đi chơi…",
+  "en": ""
+ },
+ {
+  "vi": "Chọn kiểu tóc và ngắm thử trong gương. Kiểu mới sẽ vào tủ đồ và theo nhân vật ra phố.",
+  "en": ""
+ },
+ {
+  "vi": "1. Chọn kiểu tóc",
+  "en": ""
+ },
+ {
+  "vi": ". Chọn màu",
+  "en": ""
+ },
+ {
+  "vi": ". Chọn họa tiết",
+  "en": ""
+ },
+ {
+  "vi": "Tự tay làm từng công đoạn trên bàn: đo, cắt, may hoặc xâu hạt. Có vạch hướng dẫn, làm lại được và không bị giục giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Thử màu và họa tiết trước khi sơn. Bộ móng được lưu để lần sau ghé lại vẫn thấy.",
+  "en": ""
+ },
+ {
+  "vi": "Gấu bông của riêng bạn",
+  "en": ""
+ },
+ {
+  "vi": "Đo · Cắt · May · Nhồi bông · Trang trí",
+  "en": ""
+ },
+ {
+  "vi": "1. Chọn món để làm",
+  "en": ""
+ },
+ {
+  "vi": "Mẫu này đã lưu rồi, không cần trả thêm.",
+  "en": ""
+ },
+ {
+  "vi": "🧵 Vào bàn làm",
+  "en": ""
+ },
+ {
+  "vi": "Làm tóc & giữ kiểu",
+  "en": ""
+ },
+ {
+  "vi": "Sơn & lưu bộ móng",
+  "en": ""
+ },
+ {
+  "vi": "Bộ móng đang giữ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có món thủ công. Thử phối một mẫu ở Xưởng DIY nhé.",
+  "en": ""
+ },
+ {
+  "vi": "MỘT BUỔI CHO MÌNH",
+  "en": ""
+ },
+ {
+  "vi": "Đi chơi & làm đẹp",
+  "en": ""
+ },
+ {
+  "vi": "Sơn và vẽ móng",
+  "en": ""
+ },
+ {
+  "vi": "Chưa mở khóa được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Các màu",
+  "en": ""
+ },
+ {
+  "vi": "BẢNG MÀU",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Bảng màu của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Mở một màu một lần là dùng được ở mọi nơi: áo, quần, giày dép, phụ kiện và đồ đạc trong nhà, cả phòng trọ lẫn ký túc xá.",
+  "en": ""
+ },
+ {
+  "vi": "màu đã mở",
+  "en": ""
+ },
+ {
+  "vi": "✨ Màu gốc của mỗi món luôn miễn phí. Đổi qua lại giữa các màu đã mở không mất xu.",
+  "en": ""
+ },
+ {
+  "vi": "✨ Dùng màu này",
+  "en": ""
+ },
+ {
+  "vi": "🎨 CHỌN MÀU",
+  "en": ""
+ },
+ {
   "vi": "Màu gốc miễn phí. Mở một màu một lần là dùng được cho mọi món đồ.",
   "en": ""
  },
@@ -1465,338 +1797,6 @@
  },
  {
   "vi": "Quầy chỉ bán khi bạn tự phục vụ hoặc giao hàng.",
-  "en": ""
- },
- {
-  "vi": "Chưa kết nối được để cập nhật. Số liệu đang giữ là lần xác nhận gần nhất.",
-  "en": ""
- },
- {
-  "vi": "Vừa bán tại quầy",
-  "en": ""
- },
- {
-  "vi": "Điện",
-  "en": ""
- },
- {
-  "vi": "Online / giao hàng",
-  "en": ""
- },
- {
-  "vi": "Thuế kỳ cũ",
-  "en": ""
- },
- {
-  "vi": "Thuế thu nhập",
-  "en": ""
- },
- {
-  "vi": "Phí môi trường",
-  "en": ""
- },
- {
-  "vi": "Khách tại quầy",
-  "en": ""
- },
- {
-  "vi": "Chưa có lượt bán được ghi nhận. Sổ sẽ cập nhật khi nhân viên bán được hàng.",
-  "en": ""
- },
- {
-  "vi": "Phục vụ",
-  "en": ""
- },
- {
-  "vi": "Đơn khách đã được cập nhật",
-  "en": ""
- },
- {
-  "vi": "đang làm khách",
-  "en": ""
- },
- {
-  "vi": "Nhân viên đang thực hiện đơn này.",
-  "en": ""
- },
- {
-  "vi": "Chọn món vào khay",
-  "en": ""
- },
- {
-  "vi": "Chưa có món",
-  "en": ""
- },
- {
-  "vi": "Kiểm khay & bàn giao",
-  "en": ""
- },
- {
-  "vi": "Chọn món trước",
-  "en": ""
- },
- {
-  "vi": "✓ Đúng món · khách đã trả tiền, không cần thối lại.",
-  "en": ""
- },
- {
-  "vi": "😊 Giao món & cảm ơn",
-  "en": ""
- },
- {
-  "vi": "SAU QUẦY",
-  "en": ""
- },
- {
-  "vi": "Khách và số liệu từ sổ bán hàng",
-  "en": ""
- },
- {
-  "vi": "📦 Nhập thêm hàng",
-  "en": ""
- },
- {
-  "vi": "Giá bán (xu)",
-  "en": ""
- },
- {
-  "vi": "Chênh lệch sau nguyên liệu:",
-  "en": ""
- },
- {
-  "vi": "Tên món…",
-  "en": ""
- },
- {
-  "vi": "Tìm món",
-  "en": ""
- },
- {
-  "vi": "Chênh lệch trên chưa trừ lương, thuê chỗ, điện, thuế và phí giao hàng. Phản ứng giá là gợi ý; lượng bán và đánh giá thật được ghi trong sổ quầy.",
-  "en": ""
- },
- {
-  "vi": "Chọn tất cả",
-  "en": ""
- },
- {
-  "vi": "Không có món trùng từ tìm kiếm.",
-  "en": ""
- },
- {
-  "vi": "Lưu menu & giá",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra giá và chọn ít nhất một món",
-  "en": ""
- },
- {
-  "vi": "Chưa đổi gì",
-  "en": ""
- },
- {
-  "vi": "Hoàn tác",
-  "en": ""
- },
- {
-  "vi": "Tên trên bảng hiệu",
-  "en": ""
- },
- {
-  "vi": "Màu mái che",
-  "en": ""
- },
- {
-  "vi": "🪑 Bàn ghế",
-  "en": ""
- },
- {
-  "vi": "một bộ · thêm khách ngồi lại",
-  "en": ""
- },
- {
-  "vi": "Hết rồi",
-  "en": ""
- },
- {
-  "vi": "Số bộ bàn ghế",
-  "en": ""
- },
- {
-  "vi": "Đủ chỗ rồi",
-  "en": ""
- },
- {
-  "vi": "Đang vào quầy của bạn…",
-  "en": ""
- },
- {
-  "vi": "Chưa vào được quầy",
-  "en": ""
- },
- {
-  "vi": "Đang lấy menu và đơn khách. Bạn có thể tự bán ở đây khi muốn.",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể thử mở lại hoặc về quản lý quầy để kiểm tra hàng và chi phí.",
-  "en": ""
- },
- {
-  "vi": "Đang mở quầy…",
-  "en": ""
- },
- {
-  "vi": "🧑‍🍳 Thử đứng quầy lại",
-  "en": ""
- },
- {
-  "vi": "Khách đã phục vụ",
-  "en": ""
- },
- {
-  "vi": "Doanh thu đã bán",
-  "en": ""
- },
- {
-  "vi": "Khách chờ tới lượt",
-  "en": ""
- },
- {
-  "vi": "chờ",
-  "en": ""
- },
- {
-  "vi": "Rời quầy",
-  "en": ""
- },
- {
-  "vi": "Cần nhập thêm nguyên liệu",
-  "en": ""
- },
- {
-  "vi": "Bạn đã đứng quầy",
-  "en": ""
- },
- {
-  "vi": "Nhập thêm món trong menu để phục vụ khách.",
-  "en": ""
- },
- {
-  "vi": "📱 Xem đơn",
-  "en": ""
- },
- {
-  "vi": "Chạm món bên dưới để bỏ vào.",
-  "en": ""
- },
- {
-  "vi": "💵 Tính tiền",
-  "en": ""
- },
- {
-  "vi": "· Khách đưa",
-  "en": ""
- },
- {
-  "vi": "Bạn thối:",
-  "en": ""
- },
- {
-  "vi": "Khách đưa vừa đủ 👍",
-  "en": ""
- },
- {
-  "vi": "🤲 Trả tiền thối",
-  "en": ""
- },
- {
-  "vi": "🤲 Nhận tiền",
-  "en": ""
- },
- {
-  "vi": "Đưa món cho khách và…",
-  "en": ""
- },
- {
-  "vi": "😊 Cảm ơn, hẹn gặp lại!",
-  "en": ""
- },
- {
-  "vi": "😤 Đang giục lớn",
-  "en": ""
- },
- {
-  "vi": "😠 Sốt ruột",
-  "en": ""
- },
- {
-  "vi": "🙂 Dễ tính",
-  "en": ""
- },
- {
-  "vi": "😐 Khó tính",
-  "en": ""
- },
- {
-  "vi": "💵 Trả khi nhận",
-  "en": ""
- },
- {
-  "vi": "✅ Đã trả qua app",
-  "en": ""
- },
- {
-  "vi": "📦 Đóng gói",
-  "en": ""
- },
- {
-  "vi": "📱 Đơn online",
-  "en": ""
- },
- {
-  "vi": "Chưa có đơn. Đơn tới trong lúc bạn bán hàng.",
-  "en": ""
- },
- {
-  "vi": "← Về quầy",
-  "en": ""
- },
- {
-  "vi": "Túi hàng",
-  "en": ""
- },
- {
-  "vi": "Đồ ăn uống cần dụng cụ, trừ khi khách dặn không lấy. Có lời dặn thì dán ghi chú lên túi.",
-  "en": ""
- },
- {
-  "vi": "🔒 Dán kín",
-  "en": ""
- },
- {
-  "vi": "📝 Dán ghi chú",
-  "en": ""
- },
- {
-  "vi": "Xong, đi giao",
-  "en": ""
- },
- {
-  "vi": "Bỏ món vào túi trước",
-  "en": ""
- },
- {
-  "vi": "Giao bằng gì?",
-  "en": ""
- },
- {
-  "vi": "🛵 Tự chạy đi giao",
-  "en": ""
- },
- {
-  "vi": "📦 Gọi shipper",
   "en": ""
  }
 ]

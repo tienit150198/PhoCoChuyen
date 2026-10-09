@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Tâm trạng hôm nay: $1 $2 ($3$4). Chỉ ảnh hưởng nhẹ tới giọng, đừng kể lể về nó trừ khi hợp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tâm trạng hôm nay: $1 $2 ($3",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "; chuyện riêng: $1",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "~$1 · $2 ô · $3~$4%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗺️ $1 điểm · →",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗺️ Lộ trình · $1 điểm · tiếp theo $2",
   "en": "",
   "pattern": true
  }

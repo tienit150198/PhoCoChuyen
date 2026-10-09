@@ -1,5 +1,410 @@
 [
  {
+  "vi": "mỗi ngày (24 giờ) nếu đủ hàng, đủ quỹ",
+  "en": ""
+ },
+ {
+  "vi": "Đơn tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Lãi ước tính mỗi đơn:",
+  "en": ""
+ },
+ {
+  "vi": "giá vốn ~",
+  "en": ""
+ },
+ {
+  "vi": "Khu vực",
+  "en": ""
+ },
+ {
+  "vi": "Đi đâu mà bỏ $1 vậy em? Khách chờ rồi bỏ về hết.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm nay em bỏ $1 hai lần rồi. Lần sau còn vậy là cho nghỉ đó nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nói mấy lần rồi. Còn bỏ $1 nữa là cho nghỉ luôn nha em.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quán mở cửa mà không ai đứng $1, khách chờ rồi về hết đó con.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đi đâu mà bỏ $1 vậy con? Khách đứng chờ mãi rồi bỏ đi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm nay bỏ $1 hai lần rồi đó con. Khách quen bắt đầu kháo nhau rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lại bỏ $1 nữa hả con? Cứ vầy là mất khách quen đó.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bỏ $1 hoài vậy thì ai dám ghé nữa con ơi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phạt bỏ dở ca ở $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang làm dở: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đang mở, $2 khách đang chờ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Bỏ đi bây giờ: phạt $2 xu, mất $3 $4, khách đang chờ sẽ bỏ về.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đã tới giờ đóng cửa. Việc dở vẫn giữ nguyên, lúc nào quay lại thì khép ca nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Việc ở $1 vẫn đang dở: $2. Quay lại làm nốt nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Chọn “Vẫn đi” nếu bạn chắc chắn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bỏ dở việc giữa chừng (lần $1 hôm nay).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bỏ dở “$1”: khách không chờ nữa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 khách đang chờ đã bỏ về.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 việc đang chờ được giao lại cho người khác.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn đang làm ở chi nhánh $1 ($2 $3), còn $4 ngày nữa. Làm tiếp ở $5, hoặc về nước sớm ở mục 🌏 Làm việc ở nước ngoài.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🌏 Ngày $1/$2 ở $3: $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏠 Bạn về nước sớm từ $1. Lương những ngày đã làm vẫn là của bạn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hoàn tiền vé · hết hợp đồng $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sếp ghi nhận chuyến công tác: +$1 ngày tốt để lên chức.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏠 Hết hợp đồng ở $1! Bạn về lại hẻm nhà, Bà Tám nấu canh chua đón. Công ty hoàn $2 xu tiền vé.$3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn đang học khóa ở $1. Học xong hoặc thôi học trước nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn đã có $1 rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chưa đủ $1 xu học phí. Làm thêm vài ngày rồi quay lại nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✈️ Bạn nhập học $1 ($2 $3): khóa $4, $5 buổi, mỗi ngày sống một buổi. Buổi 1 học được ngay hôm nay!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✅ Đúng rồi! $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💡 Chưa đúng: “$1”. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Xong buổi $2/$3, mai học tiếp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn thôi học khóa ở $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trường hoàn $1 xu cho các buổi chưa học.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Vừa về nước, ở nhà với mọi người ít hôm đã: đi tiếp được từ Ngày $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khép ca ở $1 trước rồi hẵng lên đường nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chưa đủ $1 xu tiền vé và visa. Làm thêm vài ngày rồi quay lại nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🌏 Lên đường tới $1 $2! $3 ngày làm ở chi nhánh của $4, lương +$5%. Hết hợp đồng công ty hoàn $6 xu tiền vé. Các nơi làm khác tạm nghỉ tới lúc bạn về.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "lương mọi việc làm thuê +$1%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(có $1 bằng)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 🎓 Tốt nghiệp loại $2: $3! Từ nay $4, lên chức cần ít hơn $5% ngày tốt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Học bổng xuất sắc: +$1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đồng",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khoản gửi đầu kỳ$1 đủ 6 tháng, hợp đồng 3%/6 tháng. Gốc$2 và lãi đã dự thu$3; ngân hàng trả tổng{n0}.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khoản gửi đầu kỳ$1 đủ 6 tháng, hợp đồng 3%/6 tháng. Gốc$2 và lãi đã dự thu$3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khoản gửi đầu kỳ$1 đủ 6 tháng, hợp đồng 3%/6 tháng. Gốc$2 và lãi đã dự thu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khoản gửi đầu kỳ$1 đủ 6 tháng, hợp đồng 3%/6 tháng. Gốc$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khoản gửi đầu kỳ$1 đủ 6 tháng, hợp đồng 3%/6 tháng. Gốc",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khoản gửi đầu kỳ$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dịch vụ hoàn thành cho khach_fx: $1USD; tỷ giá giao dịch thực tế$2VND/USD theo hồ sơ ngân hàng; giá trị ghi sổ {n0}. Chưa thu tiền, không có thuế đầu ra trong bảng nghĩa vụ đã cung cấp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tất cả hóa đơn khach_fx từ đầu năm chưa thanh toán, tổng$1USD. Tỷ giá mua bán chuyển khoản trung bình cuối kỳ của ngân hàng thường giao dịch$2VND/USD. Khoản cũ đã đánh giá ở tỷ giá$3cuối kỳ trước. Bảng xác nhận tăng giá trị VND {n0}.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng ước tính: dự phòng cần có cuối kỳ$1, số đã lập$2. $3 chênh lệch{n0}; không xóa nợ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng ước tính: dự phòng cần có cuối kỳ$1, số đã lập$2. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng ước tính: dự phòng cần có cuối kỳ$1, số đã lập$2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng ước tính: dự phòng cần có cuối kỳ$1, số đã lập$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng ước tính: dự phòng cần có cuối kỳ$1, số đã lập",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng ước tính: dự phòng cần có cuối kỳ$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh$1, số đủ điều kiện 1331 $2 và 1332 $3. Phân bổ khấu trừ theo bảng: dùng 1331 trước, phần còn lại 1332; không vượt thuế đầu ra. Thuế đầu vào chưa dùng chuyển kỳ sau.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh$1, số đủ điều kiện 1331 $2 và 1332 $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh$1, số đủ điều kiện 1331 $2 và 1332",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh$1, số đủ điều kiện 1331 $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh$1, số đủ điều kiện 1331",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Căn cứ chuẩn mực: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "tài sản: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nợ phải trả: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "vốn chủ sở hữu: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đọc lại phần “$1” của bài “$2”: cách làm từng bước giống bài này.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bút toán dùng tài khoản thuộc: $1. Mở “Tra cứu TT99” để chọn đúng số hiệu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Loại trừ phương án trái với nguyên tắc của bài$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chứng từ cần đọc: “$1”. Tìm trong đó:",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bút toán có $1 dòng Nợ/Có, dùng tài khoản thuộc: $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dòng $1: hai bên Nợ/Có đang bị đảo. Tài sản, chi phí tăng ghi Nợ; nợ phải trả, vốn, doanh thu tăng ghi Có.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dòng $1: bên Nợ chưa đúng. Hỏi lại: tài khoản nào tăng tài sản/chi phí hoặc giảm nợ trong chứng từ này?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dòng $1: bên Có chưa đúng. Hỏi lại: nguồn tiền hay nghĩa vụ nào đối ứng với bên Nợ?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tài khoản đúng, nhưng số tiền ở dòng $1 chưa khớp chứng từ. Đối chiếu lại giá chưa thuế, thuế và tổng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bạn $1",
   "en": "",
   "pattern": true
@@ -1271,286 +1676,6 @@
  },
  {
   "vi": "Tối qua có người lạ đứng trước cổng nhà bà Tám tìm $1, nói chuyện nhỏ nhỏ mười mấy phút rồi đi 👀 Cô không có ý gì đâu nha, dạo này nhiều người lạ quá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tối qua có người lạ tới tìm $1… đứng nói nhỏ nhỏ ngoài cổng. Thím thấy vậy thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ủa tối qua ai tới tìm $1 vậy cả nhà, đứng ngoài cổng thì thầm quá trời 👀 chị hỏi vậy thôi nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghe đâu $1 nợ tiền phòng nhà bà Tám đó 👀 Tội bà Tám, hiền quá nên người ta ỷ. Cô không có ý gì đâu nha, cô nghe người ta nói vậy thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tuần này cô thấy $1 ra cây rút tiền ba lần rồi đó 👀 Rút sạch quỹ về, chắc đang nợ ai hả ta… cô hỏi vậy thôi nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nói nhỏ nè, nghe đâu $1 rút sạch quỹ tiệm về rồi đó cả nhà. Kẹt tiền hay nợ nần gì không biết nữa… chị lo thôi chứ không có ý gì đâu 🫢",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tối qua cô thấy $1 với anh Khoa đi ăn riêng, về tới đầu hẻm còn cười cười 👀 Có gì với nhau rồi hả ta… cô hỏi vậy thôi nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghe đâu $1 mới chia tay… Chắc tính khó nên người ta đi, cô đoán vậy thôi chứ không có ý gì đâu 👀",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tin buồn nha cả nhà 😢 nghe đâu $1 mới chia tay. Mà chị nghe người ta nói là tại… à thôi thôi chị không nói đâu 🫢",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thấy $1 dạo này hay đi sớm về khuya, mặt mũi phờ phạc, không biết có chuyện gì không… Cô hỏi thăm thôi chứ không có ý gì đâu nha 👀",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạo này $1 đi sớm về khuya, ít chào ai… Thím thấy lạ thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cả nhà có thấy dạo này $1 lạ lạ không 👀 đi đâu cũng vội, mặt thì phờ phạc. Chị hỏi thăm thôi nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "ủa alo sao nói vậy 😤 $1 đi làm mà, em thấy $2 làm ở tiệm luôn á",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "người ta đang buồn mà nói vậy là khum ổn nha 😤 $1 ơi em gửi cái ôm 🫂",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ mình làm ca tối ở $1, dọn dẹp xong mới về nên khuya thôi ạ. Mọi người đừng lo nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 có gì thắc mắc thì hỏi thẳng mình được không ạ? Nói vậy trên nhóm mình buồn lắm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ờ… vậy hả, $1 chỉ hỏi thăm thôi mà. Thôi $2 xin lỗi nghen, $3 nói hơi quá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hì, $1 cũng đoán vậy đó 😅 thôi $2 không nói nữa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ơ… $1 có nói gì đâu, $2 chỉ kể những gì $3 thấy thôi mà…",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thôi được rồi, $1 xin lỗi. {Me} sai rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "{Me} đây, $1 thấy tin nhắn rồi 👀",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ Cả nhà cảnh giác: có người trong phố mình vừa dính $1. Anh không nói tên. Mất tiền không phải vì mình ngu, mà vì tụi nó chuyên nghiệp. Ai nhận được y vậy thì chặn số, báo ngân hàng, báo công an, đừng chuyển thêm đồng nào.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📢 Quỹ tình làng nghĩa xóm: $1 vừa bị lừa mất tiền. Cả hẻm góp chút đỡ đần: $2. Cô đã gửi tận tay rồi ạ. Tình làng nghĩa xóm là thứ quý nhất của hẻm mình 🤝",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📢 Cả hẻm gửi $1 một món quà nhỏ sau chuyện bị lừa: $2. Tiền mất thì làm lại, người còn là còn tất cả ạ 🤝",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cuối tuần đi cà phê sống ảo với Trang nha $1, Trang chụp cho tấm hình đẹp nhất năm. Ai không biết quý $2 là người ta thiệt 💅",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "tối nay em rủ $1 chơi game nha, thua em cho thắng luôn 🎮",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cảm ơn $1 góp $2 xu nha, nhiều quá trời 🙏",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cảm ơn $1 góp $2 xu, ít mà quý lắm 🙏",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 qua phụ một tay từ sáng tới giờ, mồ hôi nhễ nhại luôn. Cảm ơn nha 🙏",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "em vẽ $1 đang làm việc nè 🖍️ tranh đẹp khum mọi người, dưới tranh em ghi “Người giỏi nhất hẻm” 😎",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hóng nè cả nhà: nghe đâu có khách cũ nhắn cảm ơn $1 dài cả trang, nói nhờ hôm đó mà nhà người ta vui cả tuần 🥹 Người hẻm mình giỏi ghê! Tin này chị cho lan thoải mái nha 😂",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "có bịch me hông $1, em xin một trái 🤤",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hoàng hôn trên sân thượng dãy trọ nay đỏ rực luôn cả nhà ơi 🌇 Trang chụp cho $1 một tấm, đẹp xỉu, không có ý khoe đâu nha 📸",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📷 [Ảnh hóa đơn nhập hàng] Hàng về $1 có hóa đơn đàng hoàng hết nha mọi người.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: bán lại. Khách mới có thể gọi món này.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: ngừng bán. Khách mới sẽ không gọi, quầy không cần nhập món này.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mua từ nhà cung cấp: mở Kho → Đặt hàng (hỏa tốc 15–30 phút).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồi nhỏ chị ngủ trưa dưới cái bàn cắt vải này đó $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mẹ chưa từng cho ai đụng vô cây kéo đó đâu $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiệm này chú Út mở ba mươi năm rồi đó $1. Hồi nhỏ em ngồi đây coi cá cả buổi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cả phòng chị vẫn đặt cơm quán mình nha $1!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ $1 ghé văn phòng buổi chiều, mình ngồi soát lại từng chứng từ cho rõ ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ bên mình soát theo thứ tự: chứng từ gốc, sổ chi, sao kê rồi mới ký. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ $1 gọi lại tổng đài, đọc mã đơn là bên mình xử lý tiếp ngay ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ bên mình đối soát mã đơn, ghi âm cuộc gọi rồi mới trả lời. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chuyến sau $1 đi cùng, mình xin giữ chỗ đẹp và kể kỹ hơn ở điểm $2 thích ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ đoàn đi theo lịch trình đã gửi, mỗi điểm có giờ tập trung. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lần sau $1 nhắn trước giờ nhận, mình canh giao đúng giờ đó ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ mình giao theo thứ tự trên bản đồ tuyến, tới nơi là chụp ảnh lưu lại. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ chiều nay $1 rảnh, em mang biên bản qua trao đổi trực tiếp cho rõ ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ phòng làm theo quy trình: chứng từ gốc, đối chiếu, trình ký. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ $1 ghé phòng lương giờ hành chính, em mở bảng chấm công giải thích từng dòng ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ lương tính từ bảng chấm công, trừ bảo hiểm và thuế rồi mới ra phiếu. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ $1 cho em xin lịch họp ngắn, mình rà lại bút toán loại trừ cùng nhau ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ ban làm theo thứ tự: nhận số công ty con, đối chiếu nội bộ, loại trừ rồi mới hợp nhất. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ tổ thu theo lịch từng ngõ, rác nguy hại để riêng, ghi vào sổ tuyến. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ còn nghẹt là $1 gọi, chú Hai với con quay lại thông tiếp, không tính thêm ạ.",
   "en": "",
   "pattern": true
  }

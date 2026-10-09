@@ -1,5 +1,141 @@
 [
  {
+  "vi": "Trưởng ca điều dưỡng",
+  "en": ""
+ },
+ {
+  "vi": "Người gác đèn chính",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng ca trạm đèn",
+  "en": ""
+ },
+ {
+  "vi": "Trạm trưởng đèn Hòn Gió",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng đội đèn biển Vịnh Ngọc",
+  "en": ""
+ },
+ {
+  "vi": "Điều phối viên chính",
+  "en": ""
+ },
+ {
+  "vi": "Phó giám đốc Trung tâm điều phối",
+  "en": ""
+ },
+ {
+  "vi": "Cứu hộ chính",
+  "en": ""
+ },
+ {
+  "vi": "Đội trưởng cứu hộ",
+  "en": ""
+ },
+ {
+  "vi": "Quản lý an toàn hồ bơi",
+  "en": ""
+ },
+ {
+  "vi": "Cán bộ khu vực chính thức",
+  "en": ""
+ },
+ {
+  "vi": "Tổ phó cảnh sát khu vực",
+  "en": ""
+ },
+ {
+  "vi": "Chủ quầy vững tay",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tiệm có tiếng",
+  "en": ""
+ },
+ {
+  "vi": "Sổ sách vững tay",
+  "en": ""
+ },
+ {
+  "vi": "Kế toán có tiếng",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng nhóm sổ",
+  "en": ""
+ },
+ {
+  "vi": "Chủ văn phòng sổ sách",
+  "en": ""
+ },
+ {
+  "vi": "Nội trợ khéo tay",
+  "en": ""
+ },
+ {
+  "vi": "Nội trợ có tiếng",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia trưởng",
+  "en": ""
+ },
+ {
+  "vi": "Công quả chăm chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Công quả được tin",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng ban công quả",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng ban hộ tự",
+  "en": ""
+ },
+ {
+  "vi": "Tổ viên vững tay",
+  "en": ""
+ },
+ {
+  "vi": "Tổ viên gương mẫu",
+  "en": ""
+ },
+ {
+  "vi": "Tổ phó thu gom",
+  "en": ""
+ },
+ {
+  "vi": "Tổ trưởng thu gom",
+  "en": ""
+ },
+ {
+  "vi": "Thợ thông cống vững tay",
+  "en": ""
+ },
+ {
+  "vi": "Thợ có tiếng",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng nhóm thợ",
+  "en": ""
+ },
+ {
+  "vi": "Chủ đội thông cống",
+  "en": ""
+ },
+ {
   "vi": "Nhà nông chăm chỉ",
   "en": ""
  },
@@ -1661,142 +1797,6 @@
  },
  {
   "vi": "Đổi để chặng có người dày kinh nghiệm kèm",
-  "en": ""
- },
- {
-  "vi": "Giữ nguyên, ai cũng phải tự lớn",
-  "en": ""
- },
- {
-  "vi": "Hai bạn trẻ lúng túng, chặng trễ 20 phút.",
-  "en": ""
- },
- {
-  "vi": "Hủy chặng cho chắc",
-  "en": ""
- },
- {
-  "vi": "An toàn, nhưng 60 khách phải đổi chuyến.",
-  "en": ""
- },
- {
-  "vi": "Phòng tài chính muốn bớt dầu",
-  "en": ""
- },
- {
-  "vi": "Phòng tài chính đề nghị bớt dầu dự phòng xuống dưới mức để tiết kiệm.",
-  "en": ""
- },
- {
-  "vi": "Không: dầu dự phòng là luật. Tìm chỗ tiết kiệm khác",
-  "en": ""
- },
- {
-  "vi": "Đội bay yên tâm, tài chính đành tìm khoản khác.",
-  "en": ""
- },
- {
-  "vi": "Đồng ý thử một tuần",
-  "en": ""
- },
- {
-  "vi": "Cơ trưởng phản đối, vài chặng phải chuyển hướng.",
-  "en": ""
- },
- {
-  "vi": "Để từng cơ trưởng tự quyết",
-  "en": ""
- },
- {
-  "vi": "Mỗi người một kiểu, điều phái rối.",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh xin “nâng điểm”",
-  "en": ""
- },
- {
-  "vi": "Từ chối phong bì, hướng dẫn phúc khảo đúng quy trình",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh không vui, giáo viên thấy được bảo vệ.",
-  "en": ""
- },
- {
-  "vi": "Hứa “để xem” cho êm",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh quay lại hỏi mãi.",
-  "en": ""
- },
- {
-  "vi": "Xin nghỉ đúng tuần thi",
-  "en": ""
- },
- {
-  "vi": "Không duyệt: tuần thi quan trọng hơn",
-  "en": ""
- },
- {
-  "vi": "Học sinh xô xát",
-  "en": ""
- },
- {
-  "vi": "Hẹn tuần sau",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh đăng lên nhóm phụ huynh.",
-  "en": ""
- },
- {
-  "vi": "Thu tiền “xã hội hóa”",
-  "en": ""
- },
- {
-  "vi": "Ban đại diện phụ huynh muốn thu bắt buộc mỗi em 500 nghìn lắp máy lạnh.",
-  "en": ""
- },
- {
-  "vi": "Chỉ vận động tự nguyện, công khai sổ sách",
-  "en": ""
- },
- {
-  "vi": "Ai góp thì góp, không ai bị ép.",
-  "en": ""
- },
- {
-  "vi": "Đồng ý thu bắt buộc",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh khó khăn phản ánh lên phòng giáo dục.",
-  "en": ""
- },
- {
-  "vi": "Để ban phụ huynh tự lo",
-  "en": ""
- },
- {
-  "vi": "Thu sai quy định, trường vẫn chịu tiếng.",
-  "en": ""
- },
- {
-  "vi": "Đoàn kiểm tra sáng mai",
-  "en": ""
- },
- {
-  "vi": "Phòng giáo dục báo đoàn kiểm tra hồ sơ chuyên môn sáng mai.",
-  "en": ""
- },
- {
-  "vi": "Nhờ tổ trưởng rà hồ sơ trong giờ, không bắt thức đêm",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ gọn, thầy cô vẫn ngủ đủ.",
   "en": ""
  }
 ]

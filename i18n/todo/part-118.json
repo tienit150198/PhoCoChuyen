@@ -1,5 +1,337 @@
 [
  {
+  "vi": "Chưa kết nối được để cập nhật. Số liệu đang giữ là lần xác nhận gần nhất.",
+  "en": ""
+ },
+ {
+  "vi": "Vừa bán tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "Điện",
+  "en": ""
+ },
+ {
+  "vi": "Online / giao hàng",
+  "en": ""
+ },
+ {
+  "vi": "Thuế kỳ cũ",
+  "en": ""
+ },
+ {
+  "vi": "Thuế thu nhập",
+  "en": ""
+ },
+ {
+  "vi": "Phí môi trường",
+  "en": ""
+ },
+ {
+  "vi": "Khách tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có lượt bán được ghi nhận. Sổ sẽ cập nhật khi nhân viên bán được hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Đơn khách đã được cập nhật",
+  "en": ""
+ },
+ {
+  "vi": "đang làm khách",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên đang thực hiện đơn này.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món vào khay",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có món",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm khay & bàn giao",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món trước",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đúng món · khách đã trả tiền, không cần thối lại.",
+  "en": ""
+ },
+ {
+  "vi": "😊 Giao món & cảm ơn",
+  "en": ""
+ },
+ {
+  "vi": "SAU QUẦY",
+  "en": ""
+ },
+ {
+  "vi": "Khách và số liệu từ sổ bán hàng",
+  "en": ""
+ },
+ {
+  "vi": "📦 Nhập thêm hàng",
+  "en": ""
+ },
+ {
+  "vi": "Giá bán (xu)",
+  "en": ""
+ },
+ {
+  "vi": "Chênh lệch sau nguyên liệu:",
+  "en": ""
+ },
+ {
+  "vi": "Tên món…",
+  "en": ""
+ },
+ {
+  "vi": "Tìm món",
+  "en": ""
+ },
+ {
+  "vi": "Chênh lệch trên chưa trừ lương, thuê chỗ, điện, thuế và phí giao hàng. Phản ứng giá là gợi ý; lượng bán và đánh giá thật được ghi trong sổ quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn tất cả",
+  "en": ""
+ },
+ {
+  "vi": "Không có món trùng từ tìm kiếm.",
+  "en": ""
+ },
+ {
+  "vi": "Lưu menu & giá",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra giá và chọn ít nhất một món",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đổi gì",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tác",
+  "en": ""
+ },
+ {
+  "vi": "Tên trên bảng hiệu",
+  "en": ""
+ },
+ {
+  "vi": "Màu mái che",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Bàn ghế",
+  "en": ""
+ },
+ {
+  "vi": "một bộ · thêm khách ngồi lại",
+  "en": ""
+ },
+ {
+  "vi": "Hết rồi",
+  "en": ""
+ },
+ {
+  "vi": "Số bộ bàn ghế",
+  "en": ""
+ },
+ {
+  "vi": "Đủ chỗ rồi",
+  "en": ""
+ },
+ {
+  "vi": "Đang vào quầy của bạn…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa vào được quầy",
+  "en": ""
+ },
+ {
+  "vi": "Đang lấy menu và đơn khách. Bạn có thể tự bán ở đây khi muốn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có thể thử mở lại hoặc về quản lý quầy để kiểm tra hàng và chi phí.",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở quầy…",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍🍳 Thử đứng quầy lại",
+  "en": ""
+ },
+ {
+  "vi": "Khách đã phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu đã bán",
+  "en": ""
+ },
+ {
+  "vi": "Khách chờ tới lượt",
+  "en": ""
+ },
+ {
+  "vi": "chờ",
+  "en": ""
+ },
+ {
+  "vi": "Rời quầy",
+  "en": ""
+ },
+ {
+  "vi": "Cần nhập thêm nguyên liệu",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã đứng quầy",
+  "en": ""
+ },
+ {
+  "vi": "Nhập thêm món trong menu để phục vụ khách.",
+  "en": ""
+ },
+ {
+  "vi": "📱 Xem đơn",
+  "en": ""
+ },
+ {
+  "vi": "Chạm món bên dưới để bỏ vào.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Tính tiền",
+  "en": ""
+ },
+ {
+  "vi": "· Khách đưa",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thối:",
+  "en": ""
+ },
+ {
+  "vi": "Khách đưa vừa đủ 👍",
+  "en": ""
+ },
+ {
+  "vi": "🤲 Trả tiền thối",
+  "en": ""
+ },
+ {
+  "vi": "🤲 Nhận tiền",
+  "en": ""
+ },
+ {
+  "vi": "Đưa món cho khách và…",
+  "en": ""
+ },
+ {
+  "vi": "😊 Cảm ơn, hẹn gặp lại!",
+  "en": ""
+ },
+ {
+  "vi": "😤 Đang giục lớn",
+  "en": ""
+ },
+ {
+  "vi": "😠 Sốt ruột",
+  "en": ""
+ },
+ {
+  "vi": "🙂 Dễ tính",
+  "en": ""
+ },
+ {
+  "vi": "😐 Khó tính",
+  "en": ""
+ },
+ {
+  "vi": "💵 Trả khi nhận",
+  "en": ""
+ },
+ {
+  "vi": "✅ Đã trả qua app",
+  "en": ""
+ },
+ {
+  "vi": "📦 Đóng gói",
+  "en": ""
+ },
+ {
+  "vi": "📱 Đơn online",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có đơn. Đơn tới trong lúc bạn bán hàng.",
+  "en": ""
+ },
+ {
+  "vi": "← Về quầy",
+  "en": ""
+ },
+ {
+  "vi": "Túi hàng",
+  "en": ""
+ },
+ {
+  "vi": "Đồ ăn uống cần dụng cụ, trừ khi khách dặn không lấy. Có lời dặn thì dán ghi chú lên túi.",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Dán kín",
+  "en": ""
+ },
+ {
+  "vi": "📝 Dán ghi chú",
+  "en": ""
+ },
+ {
+  "vi": "Xong, đi giao",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ món vào túi trước",
+  "en": ""
+ },
+ {
+  "vi": "Giao bằng gì?",
+  "en": ""
+ },
+ {
+  "vi": "🛵 Tự chạy đi giao",
+  "en": ""
+ },
+ {
+  "vi": "📦 Gọi shipper",
+  "en": ""
+ },
+ {
   "vi": "Tới nơi rồi!",
   "en": ""
  },
@@ -153,10 +485,6 @@
  },
  {
   "vi": "Sửa cả nhà?",
-  "en": ""
- },
- {
-  "vi": "Làm",
   "en": ""
  },
  {
@@ -1469,334 +1797,6 @@
  },
  {
   "vi": "Tự chia size",
-  "en": ""
- },
- {
-  "vi": "Tự chia ưu tiên các size bán chạy. Chọn một size nếu đang thiếu đúng cỡ đó.",
-  "en": ""
- },
- {
-  "vi": "nhận bớt thùng rồi đặt tiếp.",
-  "en": ""
- },
- {
-  "vi": "giờ giao & điều kiện",
-  "en": ""
- },
- {
-  "vi": "Đặt ngay",
-  "en": ""
- },
- {
-  "vi": "Hết hàng hôm nay",
-  "en": ""
- },
- {
-  "vi": "Đơn nhỏ lại: giá bớt không còn.",
-  "en": ""
- },
- {
-  "vi": "💬 Xin bớt",
-  "en": ""
- },
- {
-  "vi": "Cả đơn đang hết hàng hôm nay.",
-  "en": ""
- },
- {
-  "vi": "🛒 Đơn gộp",
-  "en": ""
- },
- {
-  "vi": "Dự kiến:",
-  "en": ""
- },
- {
-  "vi": "· một chuyến",
-  "en": ""
- },
- {
-  "vi": "Bỏ đơn",
-  "en": ""
- },
- {
-  "vi": "Cần hồi đáp",
-  "en": ""
- },
- {
-  "vi": "lần khách thập phương sửa sao lên sau khi đọc lời chùa hồi đáp.",
-  "en": ""
- },
- {
-  "vi": "Hồi đáp",
-  "en": ""
- },
- {
-  "vi": "Báo cáo không được duyệt",
-  "en": ""
- },
- {
-  "vi": "Đã hồi đáp",
-  "en": ""
- },
- {
-  "vi": "Khách thập phương",
-  "en": ""
- },
- {
-  "vi": "Cảm nhận của khách thập phương",
-  "en": ""
- },
- {
-  "vi": "LỜI KHÁCH THẬP PHƯƠNG",
-  "en": ""
- },
- {
-  "vi": "Tất cả cảm nhận",
-  "en": ""
- },
- {
-  "vi": "Đã báo cáo: nền tảng giữ đánh giá này vì nó gắn với chuyện có thật trong ca. Sao giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "A Di Đà Phật, chùa xin lỗi vì còn thiếu sót. Thầy trụ trì đã nhắc lại cả chùa, lần sau sẽ cẩn thận hơn ạ.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn bác đã góp ý. Rằm tới mời bác ghé lễ, chùa sẽ đón tiếp chu đáo hơn ạ.",
-  "en": ""
- },
- {
-  "vi": "Không vừa ý thì đi chùa khác, ở đây không cần.",
-  "en": ""
- },
- {
-  "vi": "Lưu đánh giá và cuộc trao đổi làm bằng chứng, trình báo lời đe dọa đòi tiền trong game? Trao đổi trực tiếp sẽ khép; điểm đánh giá vẫn giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "🚔 Hôm nay bạn đã báo công an đủ lượt rồi, mai báo tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "🚓 Lưu bằng chứng & trình báo",
-  "en": ""
- },
- {
-  "vi": "🚔 Báo công an",
-  "en": ""
- },
- {
-  "vi": "Công an xác minh:",
-  "en": ""
- },
- {
-  "vi": "vào ví.",
-  "en": ""
- },
- {
-  "vi": "Công an đã xem xét, chưa đủ cơ sở để kết luận. Sao giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "Gửi lời hồi đáp",
-  "en": ""
- },
- {
-  "vi": "Nhận xét sau ca trên giàn, không cần trả lời.",
-  "en": ""
- },
- {
-  "vi": "Nhận xét sau chuyến bay, không cần trả lời.",
-  "en": ""
- },
- {
-  "vi": "Khách thập phương cảm nhận theo tiêu chí",
-  "en": ""
- },
- {
-  "vi": "chấm theo tiêu chí",
-  "en": ""
- },
- {
-  "vi": "Báo cáo tin nhắn này với ban đại diện lớp? Tin nhắn nhầm lớp, không liên quan tới buổi học hoặc hùa theo sẽ bị gỡ khỏi điểm. Nếu là góp ý thật, tin nhắn được giữ nguyên và không mất sao.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo cảm nhận này? Cảm nhận giả, nhầm chỗ, không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm. Nếu là cảm nhận thật, chùa giữ nguyên và không mất sao.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo nhận xét này? Nhận xét giả, nhầm chỗ, chưa từng tới, chê chuyện không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm trung bình. Nếu là chuyện có thật, nhận xét được giữ nguyên và không mất sao.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo đánh giá này? Đánh giá giả, nhầm quán, chưa dùng dịch vụ, chê chuyện không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm trung bình. Nếu là trải nghiệm thật, đánh giá được giữ nguyên và không mất sao.",
-  "en": ""
- },
- {
-  "vi": "từ tốn",
-  "en": ""
- },
- {
-  "vi": "tự trào",
-  "en": ""
- },
- {
-  "vi": "đùa nhẹ",
-  "en": ""
- },
- {
-  "vi": "mời ghé lễ",
-  "en": ""
- },
- {
-  "vi": "kể nếp chùa",
-  "en": ""
- },
- {
-  "vi": "trẻ trung",
-  "en": ""
- },
- {
-  "vi": "mời chén trà 6 xu",
-  "en": ""
- },
- {
-  "vi": "biếu quà chay 10 xu",
-  "en": ""
- },
- {
-  "vi": "gửi lại 20 xu",
-  "en": ""
- },
- {
-  "vi": "Gửi lại 20 xu",
-  "en": ""
- },
- {
-  "vi": "bênh chùa",
-  "en": ""
- },
- {
-  "vi": "Quà nhỏ",
-  "en": ""
- },
- {
-  "vi": "Kèm 1 buổi",
-  "en": ""
- },
- {
-  "vi": "Mời trà",
-  "en": ""
- },
- {
-  "vi": "Tặng sách",
-  "en": ""
- },
- {
-  "vi": "Quà chay",
-  "en": ""
- },
- {
-  "vi": "👑 Bạn",
-  "en": ""
- },
- {
-  "vi": "Chưa vào quầy nào",
-  "en": ""
- },
- {
-  "vi": "🎓 Xem chứng chỉ của bạn",
-  "en": ""
- },
- {
-  "vi": "📚 Đi học lấy chứng chỉ",
-  "en": ""
- },
- {
-  "vi": "🚪 Chứng chỉ hành nghề phải thi thật: không có cửa sau cho bài thi này.",
-  "en": ""
- },
- {
-  "vi": "Người quen chỉ “lo giúp” được một lần ở mỗi nơi",
-  "en": ""
- },
- {
-  "vi": "Nhờ người quen “lo giúp”, vào làm ngay",
-  "en": ""
- },
- {
-  "vi": "Thử lại sau / Tìm việc khác",
-  "en": ""
- },
- {
-  "vi": "Làm gì tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa có",
-  "en": ""
- },
- {
-  "vi": "Xem bài học",
-  "en": ""
- },
- {
-  "vi": "kế toán ×",
-  "en": ""
- },
- {
-  "vi": "⬆️ Lên",
-  "en": ""
- },
- {
-  "vi": "Cần:",
-  "en": ""
- },
- {
-  "vi": "Đủ điều kiện: sếp sẽ hẹn xét lên chức.",
-  "en": ""
- },
- {
-  "vi": "🏆 Bạn đang giữ chức vụ cao nhất ở đây.",
-  "en": ""
- },
- {
-  "vi": "Lương mỗi ngày",
-  "en": ""
- },
- {
-  "vi": "Lên chức là tăng lương, không bao giờ bị giáng chức.",
-  "en": ""
- },
- {
-  "vi": "🎖️ Xem thăng tiến",
-  "en": ""
- },
- {
-  "vi": "Đang làm ở chi nhánh",
-  "en": ""
- },
- {
-  "vi": "🌏 Làm việc ở nước ngoài",
-  "en": ""
- },
- {
-  "vi": "Sếp hẹn gặp",
-  "en": ""
- },
- {
-  "vi": "Chọn 1–3 điểm mạnh",
-  "en": ""
- },
- {
-  "vi": "Chọn kinh nghiệm thật của bạn",
-  "en": ""
- },
- {
-  "vi": "Bạn có",
   "en": ""
  }
 ]

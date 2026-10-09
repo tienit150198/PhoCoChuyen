@@ -1,5 +1,81 @@
 [
  {
+  "vi": "Tự động bù ví khi ví âm (tiền phòng, cơm nước) bằng tiền trong tài khoản",
+  "en": ""
+ },
+ {
+  "vi": "Trả xong vay mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng tra cứu hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Trả hết sao kê đúng hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trả tối thiểu đúng hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trễ hạn thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Trả góp đúng hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trễ hạn trả góp",
+  "en": ""
+ },
+ {
+  "vi": "Thu nhập đều trong tuần",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ thẻ thấp",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ thẻ trên 30%",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ thẻ trên 70%",
+  "en": ""
+ },
+ {
+  "vi": "Ghi nhận nợ xấu",
+  "en": ""
+ },
+ {
+  "vi": "(đang xử lý)",
+  "en": ""
+ },
+ {
+  "vi": "Người ấy xin",
+  "en": ""
+ },
+ {
+  "vi": "(mượn)",
+  "en": ""
+ },
+ {
+  "vi": "còn nợ bạn",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ chung Ngân hàng Phố",
+  "en": ""
+ },
+ {
+  "vi": "Ví dụ 30",
+  "en": ""
+ },
+ {
   "vi": "Tài khoản chung vợ chồng",
   "en": ""
  },
@@ -1721,82 +1797,6 @@
  },
  {
   "vi": "Hôm nay không phải rằm hay mùng 1, bàn ăn còn trống.",
-  "en": ""
- },
- {
-  "vi": "Khấn cho ai?",
-  "en": ""
- },
- {
-  "vi": "Mong điều gì?",
-  "en": ""
- },
- {
-  "vi": "chọn người trước",
-  "en": ""
- },
- {
-  "vi": "Con cầu mong",
-  "en": ""
- },
- {
-  "vi": "Thưa thầy, con nghe thêm",
-  "en": ""
- },
- {
-  "vi": "📿 Xin tụng kinh cùng thầy",
-  "en": ""
- },
- {
-  "vi": "🙏 Chắp tay chào thầy",
-  "en": ""
- },
- {
-  "vi": "Nói chuyện thêm",
-  "en": ""
- },
- {
-  "vi": "Chào",
-  "en": ""
- },
- {
-  "vi": "Thầy gật đầu: “Đi đường bình an nhé con.”",
-  "en": ""
- },
- {
-  "vi": "Gõ mõ khi vòng sáng khép lại",
-  "en": ""
- },
- {
-  "vi": "Gõ mõ",
-  "en": ""
- },
- {
-  "vi": "Thầy thỉnh chuông…",
-  "en": ""
- },
- {
-  "vi": "Tụng thêm lần nữa",
-  "en": ""
- },
- {
-  "vi": "chùa: draw",
-  "en": ""
- },
- {
-  "vi": "Vào chùa",
-  "en": ""
- },
- {
-  "vi": "Đi dạo sân chùa, vào chánh điện khấn, tụng kinh cùng thầy",
-  "en": ""
- },
- {
-  "vi": "Làm nhanh, không cần vào chùa",
-  "en": ""
- },
- {
-  "vi": "🗒️ Hôm nay",
   "en": ""
  }
 ]

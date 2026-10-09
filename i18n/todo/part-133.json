@@ -1,5 +1,15 @@
 [
  {
+  "vi": "ít hơn $1%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhập học · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Nhập học $1 ($2)? Học phí $3 xu, $4 buổi, mỗi ngày sống học 1 buổi. Trả lời đúng hết cả $5 câu được học bổng $6% học phí.",
   "en": "",
   "pattern": true
@@ -1540,6 +1550,11 @@
   "pattern": true
  },
  {
+  "vi": "trại tạm giữ $1 ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🥶 Vận đang nguội vì chơi liền một trò. $1 hoặc nghỉ $2 phút là vận ấm lại; ném vòng, ô ăn quan, phóng dao không tính.",
   "en": "",
   "pattern": true
@@ -2231,21 +2246,6 @@
  },
  {
   "vi": "/$1 câu · $2 điểm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã học xong $1 bài và thi đạt $2/100.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang lại gần $1 để $2…",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đến $1",
   "en": "",
   "pattern": true
  }

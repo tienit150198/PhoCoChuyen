@@ -1,5 +1,81 @@
 [
  {
+  "vi": "Ghi số que thử vào sổ nước",
+  "en": ""
+ },
+ {
+  "vi": "Báo lại",
+  "en": ""
+ },
+ {
+  "vi": "📣 Chọn người cần báo",
+  "en": ""
+ },
+ {
+  "vi": "Mở cổng hay hoãn",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Quyết mở cổng",
+  "en": ""
+ },
+ {
+  "vi": "Đã quét đủ năm khu",
+  "en": ""
+ },
+ {
+  "vi": "⏱️ Vòng quét",
+  "en": ""
+ },
+ {
+  "vi": "👀 Vòng quét",
+  "en": ""
+ },
+ {
+  "vi": "👀 BẮT ĐẦU VÒNG QUÉT",
+  "en": ""
+ },
+ {
+  "vi": "chạm để nhìn",
+  "en": ""
+ },
+ {
+  "vi": "đã nhìn",
+  "en": ""
+ },
+ {
+  "vi": "Chạm một khu đã nhìn để thổi còi hoặc báo động.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng quét",
+  "en": ""
+ },
+ {
+  "vi": "📣 Đã nhắc",
+  "en": ""
+ },
+ {
+  "vi": "📣 Thổi còi nhắc…",
+  "en": ""
+ },
+ {
+  "vi": "Báo động nhầm khu này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Còi dài: có người đang chìm!",
+  "en": ""
+ },
+ {
+  "vi": "Ổn thì để yên, quét tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "📣 Đã gọi hỗ trợ",
+  "en": ""
+ },
+ {
   "vi": "🤐 Tự làm một mình",
   "en": ""
  },
@@ -1721,82 +1797,6 @@
  },
  {
   "vi": "chờ bếp trống",
-  "en": ""
- },
- {
-  "vi": "hai bếp đang bận",
-  "en": ""
- },
- {
-  "vi": "bắc bếp",
-  "en": ""
- },
- {
-  "vi": "Bắc bếp",
-  "en": ""
- },
- {
-  "vi": "👆 Chọn lửa",
-  "en": ""
- },
- {
-  "vi": "👆 Tắt bếp khi kim vào vùng xanh",
-  "en": ""
- },
- {
-  "vi": "· 🧾 có hóa đơn",
-  "en": ""
- },
- {
-  "vi": "· không hóa đơn",
-  "en": ""
- },
- {
-  "vi": "✓ đã ghi",
-  "en": ""
- },
- {
-  "vi": "📒 Kẹp hóa đơn",
-  "en": ""
- },
- {
-  "vi": "📒 Sổ chợ",
-  "en": ""
- },
- {
-  "vi": "📒 Kẹp hóa đơn vào sổ",
-  "en": ""
- },
- {
-  "vi": "✍️ Ghi tay vào sổ",
-  "en": ""
- },
- {
-  "vi": "🍲 Vào việc thôi!",
-  "en": ""
- },
- {
-  "vi": "Dọn bữa chính xong rồi nấu thêm",
-  "en": ""
- },
- {
-  "vi": "🍲 Về bữa chính",
-  "en": ""
- },
- {
-  "vi": "nấu xong món đã",
-  "en": ""
- },
- {
-  "vi": "📝 CHỐT THỰC ĐƠN",
-  "en": ""
- },
- {
-  "vi": "quá tiền chợ",
-  "en": ""
- },
- {
-  "vi": "chọn đủ bốn món",
   "en": ""
  }
 ]

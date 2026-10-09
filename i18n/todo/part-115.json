@@ -1,5 +1,105 @@
 [
  {
+  "vi": "Thôi trang trí",
+  "en": ""
+ },
+ {
+  "vi": "Đã hoàn tác",
+  "en": ""
+ },
+ {
+  "vi": "Chọn bạn",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một người bạn",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Cho trang trí",
+  "en": ""
+ },
+ {
+  "vi": "Mọi người bạn đều đang có quyền trang trí.",
+  "en": ""
+ },
+ {
+  "vi": "Kết bạn trước để nhờ trang trí.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cần đang ở căn nhà mình sở hữu để cho bạn bè trang trí.",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Cho bạn trang trí nhà",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bè dùng đồ trong túi của bạn để bày giúp: không mua bán gì, đồ và tiền không đổi chủ. Mỗi thay đổi đều được ghi lại và bạn hoàn tác được.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà bạn bè nhờ trang trí",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Nhà bạn bè nhờ trang trí",
+  "en": ""
+ },
+ {
+  "vi": "Đang cho trang trí",
+  "en": ""
+ },
+ {
+  "vi": "Thay đổi gần đây",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở lời mời…",
+  "en": ""
+ },
+ {
+  "vi": "· Chờ trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Vào chơi trong 2 giờ kể từ khi đồng ý.",
+  "en": ""
+ },
+ {
+  "vi": "Thu hồi quyền vào nhà",
+  "en": ""
+ },
+ {
+  "vi": "Rời nhà",
+  "en": ""
+ },
+ {
+  "vi": "Nhà có thể vào",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn đến nhà",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nhà có thể thu hồi quyền vào nhà; người được mời có thể từ chối hoặc rời nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời nhận được",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời dành cho bạn",
+  "en": ""
+ },
+ {
+  "vi": "Vào được cả khi chủ nhà vắng mặt.",
+  "en": ""
+ },
+ {
   "vi": "Đồng ý lời mời của bạn bè để vào nhà.",
   "en": ""
  },
@@ -1368,6 +1468,222 @@
   "en": ""
  },
  {
+  "vi": "🎉 Bạn đã ra khỏi trại tạm giữ. Về nhà thôi!",
+  "en": ""
+ },
+ {
+  "vi": "Trại tạm giữ phường",
+  "en": ""
+ },
+ {
+  "vi": "Trại tạm giữ",
+  "en": ""
+ },
+ {
+  "vi": "Phòng giam và sân trại",
+  "en": ""
+ },
+ {
+  "vi": "Làm",
+  "en": ""
+ },
+ {
+  "vi": "Còn một ngày: hết ngày là được về.",
+  "en": ""
+ },
+ {
+  "vi": "Đủ ba việc rồi: hết ngày này được tính hai ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Làm đủ ba việc công ích hôm nay: hết ngày được tính hai ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🧹 Công ích hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "🌙 Hết ngày sau",
+  "en": ""
+ },
+ {
+  "vi": "🌙 Chắc chưa? Hết ngày nhé",
+  "en": ""
+ },
+ {
+  "vi": "🌙 Hết một ngày trong trại",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Đã nhờ bạn bè · nhờ lại sau",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Nhờ bạn bảo lãnh",
+  "en": ""
+ },
+ {
+  "vi": "Hết ngày: qua một ngày sống, không đi làm. Tiền phòng vẫn tính, cơm trại miễn phí.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Nội quy trại",
+  "en": ""
+ },
+ {
+  "vi": "Không đi làm, không vào chợ đen, không mua sắm, không đi chơi xa.",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn nhắn tin, xem bạn bè, đọc sách, học bài, chỉnh cài đặt và góp ý được.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Nhắn tin",
+  "en": ""
+ },
+ {
+  "vi": "👥 Bạn bè",
+  "en": ""
+ },
+ {
+  "vi": "⚙️ Cài đặt",
+  "en": ""
+ },
+ {
+  "vi": "🧹 Quét sân trại",
+  "en": ""
+ },
+ {
+  "vi": "🌱 Trồng cây ven đường",
+  "en": ""
+ },
+ {
+  "vi": "🍚 Phụ bếp chia cơm",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Sơn lại tường",
+  "en": ""
+ },
+ {
+  "vi": "📚 Xếp sách thư viện trại",
+  "en": ""
+ },
+ {
+  "vi": "Cán bộ đang kiểm tra…",
+  "en": ""
+ },
+ {
+  "vi": "✅ Báo cán bộ: xong rồi",
+  "en": ""
+ },
+ {
+  "vi": "‹ Để sau",
+  "en": ""
+ },
+ {
+  "vi": "Đã quét sạch",
+  "en": ""
+ },
+ {
+  "vi": "Đào hố",
+  "en": ""
+ },
+ {
+  "vi": "Gieo hạt",
+  "en": ""
+ },
+ {
+  "vi": "Tưới nước",
+  "en": ""
+ },
+ {
+  "vi": "Hố",
+  "en": ""
+ },
+ {
+  "vi": "chưa đào",
+  "en": ""
+ },
+ {
+  "vi": "đã đào",
+  "en": ""
+ },
+ {
+  "vi": "đã gieo hạt",
+  "en": ""
+ },
+ {
+  "vi": "đã tưới, cây lên rồi",
+  "en": ""
+ },
+ {
+  "vi": "muỗng",
+  "en": ""
+ },
+ {
+  "vi": "− bớt",
+  "en": ""
+ },
+ {
+  "vi": "Giữ ngón tay và kéo qua các ô để sơn nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "Đã sơn",
+  "en": ""
+ },
+ {
+  "vi": "Ô tường bẩn",
+  "en": ""
+ },
+ {
+  "vi": "Ô tường sạch",
+  "en": ""
+ },
+ {
+  "vi": "Kệ chưa xếp",
+  "en": ""
+ },
+ {
+  "vi": "Kệ đã xếp (nhỏ → lớn)",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có cuốn nào",
+  "en": ""
+ },
+ {
+  "vi": "Đào hố trước đã nha.",
+  "en": ""
+ },
+ {
+  "vi": "Hố đào rồi, gieo hạt đi.",
+  "en": ""
+ },
+ {
+  "vi": "Gieo rồi, giờ tưới nước.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đúng thứ tự: tìm cuốn số nhỏ nhất còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Xong việc rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhờ bạn bè.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nhờ được. Thử lại nhé.",
+  "en": ""
+ },
+ {
   "vi": "📋 Danh sách",
   "en": ""
  },
@@ -1481,322 +1797,6 @@
  },
  {
   "vi": "🗺️ Bản đồ phố",
-  "en": ""
- },
- {
-  "vi": "· hôm nay chưa học",
-  "en": ""
- },
- {
-  "vi": "Học ở nước ngoài, hay sang chi nhánh làm lương cao",
-  "en": ""
- },
- {
-  "vi": "Du học & đi làm nước ngoài",
-  "en": ""
- },
- {
-  "vi": "Vào học",
-  "en": ""
- },
- {
-  "vi": "🪨 Ô ăn quan · 💍 Ném vòng kiếm xu · 🦀 Bầu cua · 🎱 Lô tô ·",
-  "en": ""
- },
- {
-  "vi": "Chợ đen đang mở",
-  "en": ""
- },
- {
-  "vi": "Vào hội",
-  "en": ""
- },
- {
-  "vi": "Dinh thự của bạn",
-  "en": ""
- },
- {
-  "vi": "Ở ghép ký túc xá",
-  "en": ""
- },
- {
-  "vi": "Thuê theo ngày",
-  "en": ""
- },
- {
-  "vi": "Nhà không còn nợ 🔑",
-  "en": ""
- },
- {
-  "vi": "Nơi bạn ở",
-  "en": ""
- },
- {
-  "vi": "hợp người mới",
-  "en": ""
- },
- {
-  "vi": "Chào bạn mới! 👋",
-  "en": ""
- },
- {
-  "vi": "Một khu phố nhỏ, nhiều nghề để thử.",
-  "en": ""
- },
- {
-  "vi": "👆 Chọn Nam hoặc Nữ để bắt đầu",
-  "en": ""
- },
- {
-  "vi": "Làm ở đâu trước?",
-  "en": ""
- },
- {
-  "vi": "Vào phố thôi",
-  "en": ""
- },
- {
-  "vi": "Vào làm thôi",
-  "en": ""
- },
- {
-  "vi": "Chữ, số, khoảng trắng và tối đa 2 emoji",
-  "en": ""
- },
- {
-  "vi": "Đổi kiểu tóc, áo quần, giày và phụ kiện.",
-  "en": ""
- },
- {
-  "vi": "Gương mặt hiện cạnh tin nhắn chat, mặc đồ trong Tủ đồ.",
-  "en": ""
- },
- {
-  "vi": "Chưa đeo gì. Chạm một danh hiệu hay chứng chỉ bên dưới để đeo.",
-  "en": ""
- },
- {
-  "vi": "Tạm đóng · mở lại miễn phí",
-  "en": ""
- },
- {
-  "vi": "Vắng chủ không tốn phí",
-  "en": ""
- },
- {
-  "vi": "❔ Rút tiền thế nào?",
-  "en": ""
- },
- {
-  "vi": "Lương nhận sau khi kết thúc ngày làm được chuyển về ví và ghi ở dòng 💵 Lương ngày… bên dưới. Bấm Xem cũ hơn để tìm những ngày trước.",
-  "en": ""
- },
- {
-  "vi": "điện nước nhà",
-  "en": ""
- },
- {
-  "vi": "tiền phòng",
-  "en": ""
- },
- {
-  "vi": "Khi tạm đóng, nơi này chưa làm việc được. Mở lại lúc nào cũng được, không tốn phí.",
-  "en": ""
- },
- {
-  "vi": "Mở lại không tốn phí. Quỹ, hàng và người làm vẫn để nguyên như lúc bạn đi.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã được mời ra khỏi phòng.",
-  "en": ""
- },
- {
-  "vi": "Phòng tạm đóng.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã vào phòng ở tab khác.",
-  "en": ""
- },
- {
-  "vi": "Gần đúng rồi! 🤏",
-  "en": ""
- },
- {
-  "vi": "Chưa được, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Phòng đông, bạn vào phòng bên cạnh 🎤",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được trình phát YouTube.",
-  "en": ""
- },
- {
-  "vi": "Video không cho phát ngoài YouTube.",
-  "en": ""
- },
- {
-  "vi": "Video lỗi, chờ bài sau nhé.",
-  "en": ""
- },
- {
-  "vi": "🎤 Phòng hát Mây",
-  "en": ""
- },
- {
-  "vi": "🎤 Chị Ngân giữ mic",
-  "en": ""
- },
- {
-  "vi": "Danh sách phòng",
-  "en": ""
- },
- {
-  "vi": "Giữ để cổ vũ",
-  "en": ""
- },
- {
-  "vi": "🎤 Mic trực tiếp sắp có; giờ hát theo video, cả phòng xem chung",
-  "en": ""
- },
- {
-  "vi": "🎤 Sân khấu trống",
-  "en": ""
- },
- {
-  "vi": "Tắt mic",
-  "en": ""
- },
- {
-  "vi": "Bật mic trực tiếp",
-  "en": ""
- },
- {
-  "vi": "🔴 Tắt mic",
-  "en": ""
- },
- {
-  "vi": "🎙️ Đang nối mic…",
-  "en": ""
- },
- {
-  "vi": "Chưa phát được giọng",
-  "en": ""
- },
- {
-  "vi": "🎤 Đang phát trực tiếp giọng hát",
-  "en": ""
- },
- {
-  "vi": "· 🎧 Đeo tai nghe cho đỡ vọng nhạc",
-  "en": ""
- },
- {
-  "vi": "Máy này chưa nghe được giọng trực tiếp. Mở bằng Chrome hoặc Safari nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa nghe được giọng",
-  "en": ""
- },
- {
-  "vi": "🎧 Đang nối giọng…",
-  "en": ""
- },
- {
-  "vi": "🔈 Chạm để nghe giọng",
-  "en": ""
- },
- {
-  "vi": "Âm lượng giọng hát",
-  "en": ""
- },
- {
-  "vi": "Bật tiếng giọng hát",
-  "en": ""
- },
- {
-  "vi": "Tắt tiếng giọng hát",
-  "en": ""
- },
- {
-  "vi": "🎤 Hát cùng:",
-  "en": ""
- },
- {
-  "vi": "Tắt mic người hát cùng",
-  "en": ""
- },
- {
-  "vi": "Không cho",
-  "en": ""
- },
- {
-  "vi": "muốn hát cùng",
-  "en": ""
- },
- {
-  "vi": "Cho hát",
-  "en": ""
- },
- {
-  "vi": "🔴 Bạn đang hát cùng",
-  "en": ""
- },
- {
-  "vi": "🎧 Đeo tai nghe cho đỡ vọng nhạc",
-  "en": ""
- },
- {
-  "vi": "🙋 Đang chờ người hát đồng ý…",
-  "en": ""
- },
- {
-  "vi": "🎤 Hát cùng",
-  "en": ""
- },
- {
-  "vi": "Hết giờ",
-  "en": ""
- },
- {
-  "vi": "chữ",
-  "en": ""
- },
- {
-  "vi": "Đoán tên bài…",
-  "en": ""
- },
- {
-  "vi": "Nhắn…",
-  "en": ""
- },
- {
-  "vi": "🎤 Thêm bài",
-  "en": ""
- },
- {
-  "vi": "Dán link YouTube",
-  "en": ""
- },
- {
-  "vi": "Mở YouTube → Chia sẻ → Sao chép đường liên kết → dán vào đây",
-  "en": ""
- },
- {
-  "vi": "✓ Phát được",
-  "en": ""
- },
- {
-  "vi": "Không phát được",
-  "en": ""
- },
- {
-  "vi": "Link thưởng (tùy)",
   "en": ""
  }
 ]

@@ -1,5 +1,81 @@
 [
  {
+  "vi": "Mất kết nối, phòng chụp đã đóng. Vé chưa dùng vẫn giữ cho lượt sau.",
+  "en": ""
+ },
+ {
+  "vi": "Mã phòng có 4 ký tự, gồm chữ và số nha.",
+  "en": ""
+ },
+ {
+  "vi": "chụp ảnh: look",
+  "en": ""
+ },
+ {
+  "vi": "Khách đi chợ",
+  "en": ""
+ },
+ {
+  "vi": "Sẵn sàng…",
+  "en": ""
+ },
+ {
+  "vi": "Tạo dáng!",
+  "en": ""
+ },
+ {
+  "vi": "Cười lên!",
+  "en": ""
+ },
+ {
+  "vi": "chụp ảnh: strip",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "Đã lưu ảnh về máy. Trên iPhone: nhấn giữ ảnh để lưu.",
+  "en": ""
+ },
+ {
+  "vi": "📸 CHỤP ẢNH",
+  "en": ""
+ },
+ {
+  "vi": "Buồng chụp: các nhân vật trước phông",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nối được buồng chung. Kiểm tra mạng rồi bấm Thử lại nha, chụp một mình vẫn được.",
+  "en": ""
+ },
+ {
+  "vi": "Đang nối buồng chung…",
+  "en": ""
+ },
+ {
+  "vi": "Chụp một mình thì vô liền được nha.",
+  "en": ""
+ },
+ {
+  "vi": "Cách chụp",
+  "en": ""
+ },
+ {
+  "vi": "Có mã phòng của bạn bè?",
+  "en": ""
+ },
+ {
+  "vi": "Một mình",
+  "en": ""
+ },
+ {
+  "vi": "Chụp riêng nhân vật của bạn",
+  "en": ""
+ },
+ {
   "vi": "Ghép với một người đang ở chợ đen",
   "en": ""
  },
@@ -1608,6 +1684,18 @@
   "en": ""
  },
  {
+  "vi": "Bạn đang ở trại tạm giữ",
+  "en": ""
+ },
+ {
+  "vi": "Ra trại rồi mới vào chợ đen được nha.",
+  "en": ""
+ },
+ {
+  "vi": "🚔 Mở trại tạm giữ",
+  "en": ""
+ },
+ {
   "vi": "Hôm nay bạn bị đuổi khỏi chợ đen",
   "en": ""
  },
@@ -1680,11 +1768,23 @@
   "en": ""
  },
  {
+  "vi": "🚔 Bạn bị đưa về",
+  "en": ""
+ },
+ {
+  "vi": ". Trong trại làm công ích để được về sớm, hoặc nhờ bạn bè bảo lãnh.",
+  "en": ""
+ },
+ {
   "vi": "Công an đi rồi. Chơi tiếp thì cẩn thận nha.",
   "en": ""
  },
  {
   "vi": "🚨 Danh hiệu mới:",
+  "en": ""
+ },
+ {
+  "vi": "🚔 Về trại tạm giữ",
   "en": ""
  },
  {
@@ -1697,106 +1797,6 @@
  },
  {
   "vi": "Đổi trò khác",
-  "en": ""
- },
- {
-  "vi": "🍀 Lộc trời cho!",
-  "en": ""
- },
- {
-  "vi": "Ván này ăn",
-  "en": ""
- },
- {
-  "vi": "tiền cược:",
-  "en": ""
- },
- {
-  "vi": ". Khoản lộc đã ghi trong Sổ ví.",
-  "en": ""
- },
- {
-  "vi": "Nhận lộc",
-  "en": ""
- },
- {
-  "vi": "🚨 Công an kiểm tra",
-  "en": ""
- },
- {
-  "vi": ". Khoản thu đã được ghi trong Sổ ví.",
-  "en": ""
- },
- {
-  "vi": "🚨 Công an hỏi nguồn tài sản",
-  "en": ""
- },
- {
-  "vi": "Tiền lời mới ở chợ đen",
-  "en": ""
- },
- {
-  "vi": "Thêm một lần nữa, sau lần thu 30% ví ở trên.",
-  "en": ""
- },
- {
-  "vi": "Từ ví",
-  "en": ""
- },
- {
-  "vi": "Từ tài khoản ngân hàng",
-  "en": ""
- },
- {
-  "vi": "Dạ, em hiểu",
-  "en": ""
- },
- {
-  "vi": "Chợ đen sắp mở",
-  "en": ""
- },
- {
-  "vi": "Chợ đen đã tàn, hẹn lần sau",
-  "en": ""
- },
- {
-  "vi": "Lều bạt đã dọn, đèn lồng đã cất.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn bà con đã ghé chợ. Bảng vàng vẫn còn đó để xem lại.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay đã kiếm",
-  "en": ""
- },
- {
-  "vi": "Hôm nay đã kiếm đủ",
-  "en": ""
- },
- {
-  "vi": "đang chơi",
-  "en": ""
- },
- {
-  "vi": "💰 Chơi kiếm xu",
-  "en": ""
- },
- {
-  "vi": "Không cần đặt cược",
-  "en": ""
- },
- {
-  "vi": "🎲 Thử vận may",
-  "en": ""
- },
- {
-  "vi": "Cược bằng xu",
-  "en": ""
- },
- {
-  "vi": "Bảng vàng chợ đen",
   "en": ""
  }
 ]

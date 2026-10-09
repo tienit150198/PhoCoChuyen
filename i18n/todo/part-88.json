@@ -1,5 +1,141 @@
 [
  {
+  "vi": "Rỉ nước.",
+  "en": ""
+ },
+ {
+  "vi": "Nắp kín.",
+  "en": ""
+ },
+ {
+  "vi": "Muỗng, khăn giấy",
+  "en": ""
+ },
+ {
+  "vi": "thiếu khăn giấy",
+  "en": ""
+ },
+ {
+  "vi": "không thấy khăn giấy trên bàn, phải đi xin",
+  "en": ""
+ },
+ {
+  "vi": "hộp khăn giấy trên bàn hết sạch",
+  "en": ""
+ },
+ {
+  "vi": "đưa đồ ăn mà quên muỗng nĩa",
+  "en": ""
+ },
+ {
+  "vi": "có sẵn khăn giấy, muỗng nĩa gói riêng",
+  "en": ""
+ },
+ {
+  "vi": "đưa kèm khăn ướt, chu đáo ghê",
+  "en": ""
+ },
+ {
+  "vi": "hộp khăn giấy lúc nào cũng đầy",
+  "en": ""
+ },
+ {
+  "vi": "Hết khăn giấy.",
+  "en": ""
+ },
+ {
+  "vi": "Chu đáo.",
+  "en": ""
+ },
+ {
+  "vi": "bàn còn dính",
+  "en": ""
+ },
+ {
+  "vi": "bàn còn dính nước đường, đặt tay là dính",
+  "en": ""
+ },
+ {
+  "vi": "ghế còn vụn bánh của khách trước",
+  "en": ""
+ },
+ {
+  "vi": "mặt bàn nhớt nhớt, lau mãi chưa sạch",
+  "en": ""
+ },
+ {
+  "vi": "khách trước đi rồi mà ly cũ còn nguyên trên bàn",
+  "en": ""
+ },
+ {
+  "vi": "bàn lau sạch bong, ngồi thích",
+  "en": ""
+ },
+ {
+  "vi": "khách trước vừa đi là dọn bàn liền",
+  "en": ""
+ },
+ {
+  "vi": "bàn ghế gọn gàng, không dính chút nào",
+  "en": ""
+ },
+ {
+  "vi": "bàn dính tới mức đặt điện thoại xuống là khỏi sợ rơi 👏",
+  "en": ""
+ },
+ {
+  "vi": "Bàn dính.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn sạch.",
+  "en": ""
+ },
+ {
+  "vi": "sàn hơi trơn, suýt trượt chân",
+  "en": ""
+ },
+ {
+  "vi": "dưới gầm bàn còn ly nhựa với giấy ăn",
+  "en": ""
+ },
+ {
+  "vi": "sàn loang vệt nước, đi phải nhìn chân",
+  "en": ""
+ },
+ {
+  "vi": "sàn ướt dấu dép, trời mưa mà không trải thảm",
+  "en": ""
+ },
+ {
+  "vi": "trời mưa, lối vào trơn trượt, suýt ngã",
+  "en": ""
+ },
+ {
+  "vi": "sàn khô ráo, sạch sẽ",
+  "en": ""
+ },
+ {
+  "vi": "trời mưa mà có thảm chùi chân ở cửa, sàn vẫn khô",
+  "en": ""
+ },
+ {
+  "vi": "sàn lau thơm mùi sả",
+  "en": ""
+ },
+ {
+  "vi": "Sàn trơn.",
+  "en": ""
+ },
+ {
+  "vi": "Sàn sạch.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà vệ sinh",
+  "en": ""
+ },
+ {
   "vi": "nhà vệ sinh bẩn",
   "en": ""
  },
@@ -1661,142 +1797,6 @@
  },
  {
   "vi": "nhớ đúng từng lời dặn, không phải nhắc lần hai",
-  "en": ""
- },
- {
-  "vi": "Ẩu với đồ.",
-  "en": ""
- },
- {
-  "vi": "Cẩn thận.",
-  "en": ""
- },
- {
-  "vi": "lấy khăn bồn cầu đi lau chỗ khác",
-  "en": ""
- },
- {
-  "vi": "xịt chai tẩy lên mặt gỗ, bạc màu một mảng",
-  "en": ""
- },
- {
-  "vi": "lau sàn bằng hóa chất mà nhà có bé",
-  "en": ""
- },
- {
-  "vi": "khăn ba màu riêng ba việc, nhìn là yên tâm",
-  "en": ""
- },
- {
-  "vi": "sàn lau nước sạch, bé bò không lo",
-  "en": ""
- },
- {
-  "vi": "chai nào việc nấy, không làm hỏng mặt đồ",
-  "en": ""
- },
- {
-  "vi": "Sai khăn.",
-  "en": ""
- },
- {
-  "vi": "Đúng khăn.",
-  "en": ""
- },
- {
-  "vi": "Giải thích thật",
-  "en": ""
- },
- {
-  "vi": "giải thích mập mờ",
-  "en": ""
- },
- {
-  "vi": "hỏi hư chỗ nào thì nói chung chung, nghe không hiểu",
-  "en": ""
- },
- {
-  "vi": "báo giá xong mới nói thêm tiền linh kiện",
-  "en": ""
- },
- {
-  "vi": "giải thích toàn từ chuyên môn, nghe như đánh đố",
-  "en": ""
- },
- {
-  "vi": "giải thích từng chỗ hư, đưa linh kiện cũ cho xem",
-  "en": ""
- },
- {
-  "vi": "nói thật cái nào đáng sửa, cái nào không cần",
-  "en": ""
- },
- {
-  "vi": "báo giá trước, làm xong đúng giá, không phát sinh",
-  "en": ""
- },
- {
-  "vi": "Mập mờ.",
-  "en": ""
- },
- {
-  "vi": "Thật thà.",
-  "en": ""
- },
- {
-  "vi": "Tiệm gọn gàng",
-  "en": ""
- },
- {
-  "vi": "tiệm bừa bộn",
-  "en": ""
- },
- {
-  "vi": "đồ nghề bày la liệt, dầu nhớt dây ra sàn",
-  "en": ""
- },
- {
-  "vi": "ghế chờ dính dầu, ngồi xuống là bẩn quần",
-  "en": ""
- },
- {
-  "vi": "đồ nghề treo gọn, bàn sửa sạch",
-  "en": ""
- },
- {
-  "vi": "tiệm nhỏ mà ngăn nắp, ốc vít chia hộp rõ ràng",
-  "en": ""
- },
- {
-  "vi": "Bừa bộn.",
-  "en": ""
- },
- {
-  "vi": "không có phiếu bảo hành",
-  "en": ""
- },
- {
-  "vi": "không đưa phiếu bảo hành, phải tự nhớ ngày sửa",
-  "en": ""
- },
- {
-  "vi": "có phiếu bảo hành ghi rõ ngày, rõ linh kiện",
-  "en": ""
- },
- {
-  "vi": "dặn kỹ cách dùng để máy bền",
-  "en": ""
- },
- {
-  "vi": "Không phiếu.",
-  "en": ""
- },
- {
-  "vi": "Có bảo hành.",
-  "en": ""
- },
- {
-  "vi": "Nhẹ tay với bé",
   "en": ""
  }
 ]

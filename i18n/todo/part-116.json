@@ -1,5 +1,321 @@
 [
  {
+  "vi": "· hôm nay chưa học",
+  "en": ""
+ },
+ {
+  "vi": "Học ở nước ngoài, hay sang chi nhánh làm lương cao",
+  "en": ""
+ },
+ {
+  "vi": "Du học & đi làm nước ngoài",
+  "en": ""
+ },
+ {
+  "vi": "Vào học",
+  "en": ""
+ },
+ {
+  "vi": "🪨 Ô ăn quan · 💍 Ném vòng kiếm xu · 🦀 Bầu cua · 🎱 Lô tô ·",
+  "en": ""
+ },
+ {
+  "vi": "Chợ đen đang mở",
+  "en": ""
+ },
+ {
+  "vi": "Vào hội",
+  "en": ""
+ },
+ {
+  "vi": "Dinh thự của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Ở ghép ký túc xá",
+  "en": ""
+ },
+ {
+  "vi": "Thuê theo ngày",
+  "en": ""
+ },
+ {
+  "vi": "Nhà không còn nợ 🔑",
+  "en": ""
+ },
+ {
+  "vi": "Nơi bạn ở",
+  "en": ""
+ },
+ {
+  "vi": "hợp người mới",
+  "en": ""
+ },
+ {
+  "vi": "Chào bạn mới! 👋",
+  "en": ""
+ },
+ {
+  "vi": "Một khu phố nhỏ, nhiều nghề để thử.",
+  "en": ""
+ },
+ {
+  "vi": "👆 Chọn Nam hoặc Nữ để bắt đầu",
+  "en": ""
+ },
+ {
+  "vi": "Làm ở đâu trước?",
+  "en": ""
+ },
+ {
+  "vi": "Vào phố thôi",
+  "en": ""
+ },
+ {
+  "vi": "Vào làm thôi",
+  "en": ""
+ },
+ {
+  "vi": "Chữ, số, khoảng trắng và tối đa 2 emoji",
+  "en": ""
+ },
+ {
+  "vi": "Đổi kiểu tóc, áo quần, giày và phụ kiện.",
+  "en": ""
+ },
+ {
+  "vi": "Gương mặt hiện cạnh tin nhắn chat, mặc đồ trong Tủ đồ.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đeo gì. Chạm một danh hiệu hay chứng chỉ bên dưới để đeo.",
+  "en": ""
+ },
+ {
+  "vi": "Tạm đóng · mở lại miễn phí",
+  "en": ""
+ },
+ {
+  "vi": "Vắng chủ không tốn phí",
+  "en": ""
+ },
+ {
+  "vi": "❔ Rút tiền thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Lương nhận sau khi kết thúc ngày làm được chuyển về ví và ghi ở dòng 💵 Lương ngày… bên dưới. Bấm Xem cũ hơn để tìm những ngày trước.",
+  "en": ""
+ },
+ {
+  "vi": "điện nước nhà",
+  "en": ""
+ },
+ {
+  "vi": "tiền phòng",
+  "en": ""
+ },
+ {
+  "vi": "Khi tạm đóng, nơi này chưa làm việc được. Mở lại lúc nào cũng được, không tốn phí.",
+  "en": ""
+ },
+ {
+  "vi": "Mở lại không tốn phí. Quỹ, hàng và người làm vẫn để nguyên như lúc bạn đi.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã được mời ra khỏi phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tạm đóng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã vào phòng ở tab khác.",
+  "en": ""
+ },
+ {
+  "vi": "Gần đúng rồi! 🤏",
+  "en": ""
+ },
+ {
+  "vi": "Chưa được, thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng đông, bạn vào phòng bên cạnh 🎤",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được trình phát YouTube.",
+  "en": ""
+ },
+ {
+  "vi": "Video không cho phát ngoài YouTube.",
+  "en": ""
+ },
+ {
+  "vi": "Video lỗi, chờ bài sau nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🎤 Phòng hát Mây",
+  "en": ""
+ },
+ {
+  "vi": "🎤 Chị Ngân giữ mic",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách phòng",
+  "en": ""
+ },
+ {
+  "vi": "Giữ để cổ vũ",
+  "en": ""
+ },
+ {
+  "vi": "🎤 Mic trực tiếp sắp có; giờ hát theo video, cả phòng xem chung",
+  "en": ""
+ },
+ {
+  "vi": "🎤 Sân khấu trống",
+  "en": ""
+ },
+ {
+  "vi": "Tắt mic",
+  "en": ""
+ },
+ {
+  "vi": "Bật mic trực tiếp",
+  "en": ""
+ },
+ {
+  "vi": "🔴 Tắt mic",
+  "en": ""
+ },
+ {
+  "vi": "🎙️ Đang nối mic…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa phát được giọng",
+  "en": ""
+ },
+ {
+  "vi": "🎤 Đang phát trực tiếp giọng hát",
+  "en": ""
+ },
+ {
+  "vi": "· 🎧 Đeo tai nghe cho đỡ vọng nhạc",
+  "en": ""
+ },
+ {
+  "vi": "Máy này chưa nghe được giọng trực tiếp. Mở bằng Chrome hoặc Safari nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nghe được giọng",
+  "en": ""
+ },
+ {
+  "vi": "🎧 Đang nối giọng…",
+  "en": ""
+ },
+ {
+  "vi": "🔈 Chạm để nghe giọng",
+  "en": ""
+ },
+ {
+  "vi": "Âm lượng giọng hát",
+  "en": ""
+ },
+ {
+  "vi": "Bật tiếng giọng hát",
+  "en": ""
+ },
+ {
+  "vi": "Tắt tiếng giọng hát",
+  "en": ""
+ },
+ {
+  "vi": "🎤 Hát cùng:",
+  "en": ""
+ },
+ {
+  "vi": "Tắt mic người hát cùng",
+  "en": ""
+ },
+ {
+  "vi": "Không cho",
+  "en": ""
+ },
+ {
+  "vi": "muốn hát cùng",
+  "en": ""
+ },
+ {
+  "vi": "Cho hát",
+  "en": ""
+ },
+ {
+  "vi": "🔴 Bạn đang hát cùng",
+  "en": ""
+ },
+ {
+  "vi": "🎧 Đeo tai nghe cho đỡ vọng nhạc",
+  "en": ""
+ },
+ {
+  "vi": "🙋 Đang chờ người hát đồng ý…",
+  "en": ""
+ },
+ {
+  "vi": "🎤 Hát cùng",
+  "en": ""
+ },
+ {
+  "vi": "Hết giờ",
+  "en": ""
+ },
+ {
+  "vi": "chữ",
+  "en": ""
+ },
+ {
+  "vi": "Đoán tên bài…",
+  "en": ""
+ },
+ {
+  "vi": "Nhắn…",
+  "en": ""
+ },
+ {
+  "vi": "🎤 Thêm bài",
+  "en": ""
+ },
+ {
+  "vi": "Dán link YouTube",
+  "en": ""
+ },
+ {
+  "vi": "Mở YouTube → Chia sẻ → Sao chép đường liên kết → dán vào đây",
+  "en": ""
+ },
+ {
+  "vi": "✓ Phát được",
+  "en": ""
+ },
+ {
+  "vi": "Không phát được",
+  "en": ""
+ },
+ {
+  "vi": "Link thưởng (tùy)",
+  "en": ""
+ },
+ {
   "vi": "📝 Lời",
   "en": ""
  },
@@ -732,6 +1048,10 @@
   "en": ""
  },
  {
+  "vi": "Bảo lãnh",
+  "en": ""
+ },
+ {
   "vi": "Hai bạn sẽ không còn trong danh sách bạn bè của nhau.",
   "en": ""
  },
@@ -785,10 +1105,6 @@
  },
  {
   "vi": "PHỐ CÓ CHUYỆN",
-  "en": ""
- },
- {
-  "vi": "👥 Bạn bè",
   "en": ""
  },
  {
@@ -1025,6 +1341,22 @@
  },
  {
   "vi": "Đang chờ trả lời",
+  "en": ""
+ },
+ {
+  "vi": "🚔 Bạn bè nhờ bảo lãnh",
+  "en": ""
+ },
+ {
+  "vi": "Bảo lãnh trả từ ví của bạn, bạn ấy được về ngay.",
+  "en": ""
+ },
+ {
+  "vi": "đang ở trại tạm giữ",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Bảo lãnh",
   "en": ""
  },
  {
@@ -1465,338 +1797,6 @@
  },
  {
   "vi": "4 · Nghi lễ",
-  "en": ""
- },
- {
-  "vi": "5 · Dịch vụ thêm",
-  "en": ""
- },
- {
-  "vi": "6 · Ngày cưới & góp tiền",
-  "en": ""
- },
- {
-  "vi": "💍 Cả phố được mời dự tiệc lúc đó.",
-  "en": ""
- },
- {
-  "vi": "Ai góp bao nhiêu",
-  "en": ""
- },
- {
-  "vi": "Báo tin cưới cho cả phố (cần cả hai đồng ý)",
-  "en": ""
- },
- {
-  "vi": "Tự chọn: bạn góp",
-  "en": ""
- },
- {
-  "vi": "góp",
-  "en": ""
- },
- {
-  "vi": "Không chọn",
-  "en": ""
- },
- {
-  "vi": "Bảng dự trù",
-  "en": ""
- },
- {
-  "vi": "Trả nốt vào ngày cưới",
-  "en": ""
- },
- {
-  "vi": "Lời / lỗ dự kiến",
-  "en": ""
- },
- {
-  "vi": "Đang ước lượng khách và tiền mừng…",
-  "en": ""
- },
- {
-  "vi": "Trả trực tiếp từ tài khoản thanh toán.",
-  "en": ""
- },
- {
-  "vi": "Trả bằng tiền mặt trong ví.",
-  "en": ""
- },
- {
-  "vi": "Quẹt thẻ tín dụng, trả khi có sao kê.",
-  "en": ""
- },
- {
-  "vi": "Ưu tiên quỹ chung; nếu không đủ, thử ví rồi thẻ tín dụng.",
-  "en": ""
- },
- {
-  "vi": "Giữ",
-  "en": ""
- },
- {
-  "vi": "cho khoản này.",
-  "en": ""
- },
- {
-  "vi": "trên 100",
-  "en": ""
- },
- {
-  "vi": "Bỏ bữa",
-  "en": ""
- },
- {
-  "vi": "Giờ ăn trưa",
-  "en": ""
- },
- {
-  "vi": "Trưa rồi, ăn gì đây?",
-  "en": ""
- },
- {
-  "vi": "Đói bụng rồi? Ăn thêm gì đó",
-  "en": ""
- },
- {
-  "vi": "Ăn thêm",
-  "en": ""
- },
- {
-  "vi": "Chúc ngủ ngon!",
-  "en": ""
- },
- {
-  "vi": "Bữa sáng có sẵn, không tốn thêm xu.",
-  "en": ""
- },
- {
-  "vi": "Ăn chưa xong",
-  "en": ""
- },
- {
-  "vi": "Như mọi khi",
-  "en": ""
- },
- {
-  "vi": "Bữa tối",
-  "en": ""
- },
- {
-  "vi": "Giờ đi ngủ",
-  "en": ""
- },
- {
-  "vi": "Tối nay ăn gì?",
-  "en": ""
- },
- {
-  "vi": "Cơm nhà đã tính trong tiền cơm nước mỗi ngày, nên không tốn thêm.",
-  "en": ""
- },
- {
-  "vi": "Mấy giờ đi ngủ?",
-  "en": ""
- },
- {
-  "vi": "⭐ 1 khách nữa là lên cấp!",
-  "en": ""
- },
- {
-  "vi": "📚 Bài kiểm tra cuối khóa",
-  "en": ""
- },
- {
-  "vi": "🏛️ Ban chỉ huy",
-  "en": ""
- },
- {
-  "vi": "Câu 0 điểm: hẹn xét lại sau 3 ngày làm.",
-  "en": ""
- },
- {
-  "vi": "✅ Đủ điều kiện: cuối ca Ban chỉ huy xét.",
-  "en": ""
- },
- {
-  "vi": "⚠️ Cảnh cáo đang có",
-  "en": ""
- },
- {
-  "vi": "📜 Lịch sử",
-  "en": ""
- },
- {
-  "vi": "(đã tự giác)",
-  "en": ""
- },
- {
-  "vi": "Nhận phong bì: hạ bậc ngay, ghi dấu liêm chính mãi mãi.",
-  "en": ""
- },
- {
-  "vi": "không bổ nhiệm người chơi.",
-  "en": ""
- },
- {
-  "vi": "🎖️ Cấp bậc",
-  "en": ""
- },
- {
-  "vi": "Cao nhất rồi!",
-  "en": ""
- },
- {
-  "vi": "🙇 Tự giác nộp lại phong bì",
-  "en": ""
- },
- {
-  "vi": "Về ca",
-  "en": ""
- },
- {
-  "vi": "Mở ca để kiểm tra.",
-  "en": ""
- },
- {
-  "vi": "· 📣 nhiều phản ánh",
-  "en": ""
- },
- {
-  "vi": "Vi phạm",
-  "en": ""
- },
- {
-  "vi": "nhiệm vụ",
-  "en": ""
- },
- {
-  "vi": "📤 Trình PGĐ",
-  "en": ""
- },
- {
-  "vi": "Xưởng handmade",
-  "en": ""
- },
- {
-  "vi": "Sách, CLB & gia đình",
-  "en": ""
- },
- {
-  "vi": "Bản xem màu móng",
-  "en": ""
- },
- {
-  "vi": "Đang chuẩn bị góc đi chơi…",
-  "en": ""
- },
- {
-  "vi": "Chọn kiểu tóc và ngắm thử trong gương. Kiểu mới sẽ vào tủ đồ và theo nhân vật ra phố.",
-  "en": ""
- },
- {
-  "vi": "1. Chọn kiểu tóc",
-  "en": ""
- },
- {
-  "vi": ". Chọn màu",
-  "en": ""
- },
- {
-  "vi": ". Chọn họa tiết",
-  "en": ""
- },
- {
-  "vi": "Tự tay làm từng công đoạn trên bàn: đo, cắt, may hoặc xâu hạt. Có vạch hướng dẫn, làm lại được và không bị giục giờ.",
-  "en": ""
- },
- {
-  "vi": "Thử màu và họa tiết trước khi sơn. Bộ móng được lưu để lần sau ghé lại vẫn thấy.",
-  "en": ""
- },
- {
-  "vi": "Gấu bông của riêng bạn",
-  "en": ""
- },
- {
-  "vi": "Đo · Cắt · May · Nhồi bông · Trang trí",
-  "en": ""
- },
- {
-  "vi": "1. Chọn món để làm",
-  "en": ""
- },
- {
-  "vi": "Mẫu này đã lưu rồi, không cần trả thêm.",
-  "en": ""
- },
- {
-  "vi": "🧵 Vào bàn làm",
-  "en": ""
- },
- {
-  "vi": "Làm tóc & giữ kiểu",
-  "en": ""
- },
- {
-  "vi": "Sơn & lưu bộ móng",
-  "en": ""
- },
- {
-  "vi": "Bộ móng đang giữ",
-  "en": ""
- },
- {
-  "vi": "Chưa có món thủ công. Thử phối một mẫu ở Xưởng DIY nhé.",
-  "en": ""
- },
- {
-  "vi": "MỘT BUỔI CHO MÌNH",
-  "en": ""
- },
- {
-  "vi": "Đi chơi & làm đẹp",
-  "en": ""
- },
- {
-  "vi": "Sơn và vẽ móng",
-  "en": ""
- },
- {
-  "vi": "Chưa mở khóa được. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Các màu",
-  "en": ""
- },
- {
-  "vi": "BẢNG MÀU",
-  "en": ""
- },
- {
-  "vi": "🎨 Bảng màu của bạn",
-  "en": ""
- },
- {
-  "vi": "Mở một màu một lần là dùng được ở mọi nơi: áo, quần, giày dép, phụ kiện và đồ đạc trong nhà, cả phòng trọ lẫn ký túc xá.",
-  "en": ""
- },
- {
-  "vi": "màu đã mở",
-  "en": ""
- },
- {
-  "vi": "✨ Màu gốc của mỗi món luôn miễn phí. Đổi qua lại giữa các màu đã mở không mất xu.",
-  "en": ""
- },
- {
-  "vi": "✨ Dùng màu này",
-  "en": ""
- },
- {
-  "vi": "🎨 CHỌN MÀU",
   "en": ""
  }
 ]
