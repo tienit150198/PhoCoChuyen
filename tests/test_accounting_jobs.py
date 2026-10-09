@@ -322,8 +322,11 @@ class Pay(unittest.TestCase):
         salary = r['summary']['job']['salary']
         bonus = next((h for h in s['journey']['history'] if h['label'].startswith('🔥')), None)
         net = r['summary']['net']
-        self.assertEqual(bonus['amount'] if bonus else 0, x3.bonus(net))
-        self.assertEqual(salary, s['careers']['corp_accounting']['job']['salary'] * 3)
+        base = s['careers']['corp_accounting']['job']['salary']
+        # 09/10 (exploit audit): the salary's ×3 part is not in the 🔥 x3 day's net (no stacking), the base salary is
+        self.assertEqual(r['summary']['job']['boost'], base * 2)
+        self.assertEqual(bonus['amount'] if bonus else 0, x3.bonus(net - base * 2))
+        self.assertEqual(salary, base * 3)
         self.assertEqual(r['summary']['journey']['salary'], salary)   # the salary row stays its own, ×3 once
 
     def test_practice_company_follows_the_same_rate(self):

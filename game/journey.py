@@ -640,7 +640,9 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     if x3.on(career):
         # ⏱️ Tăng ca ×2 and ⚡ năng suất (game/overtime.py) stay out of the boosted net: they never stack with x3.
         ot = ((result.get('summary') or {}).get('ot') or {}).get('total') or 0
-        extra = x3.bonus(int((result.get('summary') or {}).get('net') or 0) - int(ot))
+        # 💼 Nor does the accounting salary's ×3 / ×5 part (09/10 audit: x3 paid twice the boosted salary again).
+        boost = job_note.get('boost') if type(job_note.get('boost')) is int else 0
+        extra = x3.bonus(int((result.get('summary') or {}).get('net') or 0) - int(ot) - boost)
         if extra > 0:
             _wallet(j, extra, 'salary', f'🔥 Thưởng ngày x{x3.X} · {_place(career)}', career)
             notes.append(f'🔥 Hôm nay {_place(career)} lời x{x3.X}: thưởng thêm {extra} xu vào ví.')
