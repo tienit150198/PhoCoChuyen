@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Máy chủ đọc/ghi bản lưu khi người chơi thao tác; số liệu vận hành tính nền theo mẫu, có giới hạn thời gian và tạm dừng khi máy bận, để không làm chậm người chơi.",
+  "en": ""
+ },
+ {
   "vi": "Phần của tổng quan đầu tư",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Hạn dùng trên kệ",
-  "en": ""
- },
- {
-  "vi": "hộp cần rút ngay",
   "en": ""
  }
 ]

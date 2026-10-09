@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Bảng tên cô dâu chú rể to và nổi bật hơn, nhìn là thấy ngay nhân vật chính của buổi tiệc.",
+  "en": ""
+ },
+ {
   "vi": "Sửa lỗi mục Kế hoạch cưới không mở được khi kế hoạch của hai bạn đã gửi hoặc đã chốt.",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Số dòng đếm nền mỗi 2 phút; bảng lớn là số ước tính (≈).",
-  "en": ""
- },
- {
-  "vi": "Máy chủ đọc/ghi bản lưu khi người chơi thao tác; số liệu vận hành tính nền theo mẫu, có giới hạn thời gian và tạm dừng khi máy bận, để không làm chậm người chơi.",
   "en": ""
  }
 ]

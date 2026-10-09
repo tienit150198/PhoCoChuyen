@@ -1,3 +1,7 @@
+# v1.9.34 — 2026-10-09
+
+🚨 Chợ đen: tỷ lệ bị bắt một ván tối đa 40% (fair_bm.ARREST_CAP, trước 70%; chủ game 09/10). Từ 390.000 xu (lời trên 300k) hoặc 440.000 xu cược là chạm trần. Không đổi save.
+
 # v1.9.33 — 2026-10-09
 
 🎁 Quà admin trên 10.000.000 xu: trước đây kẹt ở trạng thái chờ (mỗi dòng Sổ ví tối đa 10^7, journey.validate); giờ chia thành nhiều dòng ≤ 10.000.000 (system_gift.ROW_MAX). Quà làm ví vượt 10^9 thì chờ, không trừ gì. Quà 50.000.000 xu đang chờ sẽ vào ví ở lần tải tiếp theo.
