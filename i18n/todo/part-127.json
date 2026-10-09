@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Đã đăng $1: $2 xu mỗi $3 ngày sống. Khách sẽ cân nhắc từ ngày sống tiếp theo.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đang để trống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 trả nhà $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đã trả nhà $2$3. Căn nhà đang để trống.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 đã trả nhà $2",
   "en": "",
   "pattern": true

@@ -1385,6 +1385,26 @@
   "pattern": true
  },
  {
+  "vi": "🚨 Công an thấy tay ném nhanh bất thường, nghi gian lận! Mất $1 xu tiền cược, nộp phạt $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚨 Công an thấy bạn phóng dao liên tục bất thường, nghi gian lận! Mất $1 xu tiền cược, nộp phạt $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚨 Công an thấy nước đi nhanh bất thường, nghi gian lận! Nộp phạt $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚨 Công an thấy bạn bày bàn liên tục bất thường, nghi gian lận! Nộp phạt $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🚨 Công an ập vào! Mất $1 xu tiền cược",
   "en": "",
   "pattern": true
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "Đăng cho thuê $1, $2 xu/tháng; đang tìm khách.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã đăng $1: $2 xu mỗi $3 ngày sống. Khách sẽ cân nhắc từ ngày sống tiếp theo.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đang để trống.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 trả nhà $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã trả nhà $2$3. Căn nhà đang để trống.",
   "en": "",
   "pattern": true
  }

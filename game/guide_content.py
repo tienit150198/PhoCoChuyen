@@ -6127,8 +6127,8 @@ GROUPS = [{'id': 'start',
                          '🚨 Ai ăn đậm ở chợ đen thì dễ bị công an để ý. Bị bắt thì mất tiền cược ván đó, nộp phạt từ ví và vào '
                          'trại tạm giữ 3 ngày.',
                          '💰 Đặt cược càng lớn (từ 50.000 xu) thì càng dễ bị công an để ý, kể cả khi chưa ăn đậm.',
-                         '🎮 Ô ăn quan, ném vòng không cần đặt cược; bầu cua, chiếu trong, lô tô, vé cào, phóng dao, đua chó '
-                         'thì có.',
+                         '🎮 Ném vòng, ô ăn quan không cần đặt cược. Phóng dao, ô ăn quan là trò kỹ năng: chơi thật thì không lo '
+                         'công an. Phóng dao cược tối đa 1.000 xu một lượt, mỗi màn dao quay nhanh hơn.',
                          '🐕 Đua chó: chọn một chú chó, đặt cược rồi ngồi xem và [[Cổ vũ]]. Chó của bạn về nhất thì ăn đúng số '
                          'lần ghi cạnh tên nó. Cổ vũ chỉ cho vui, không đổi được kết quả.',
                          '🌙 Chợ đen mở suốt, không có ngày tàn. Bảng vàng cộng dồn; 00:00 thứ Hai hằng tuần, Top 1 nhận 👑 Vua '

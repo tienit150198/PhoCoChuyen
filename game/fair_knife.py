@@ -22,7 +22,8 @@ and every x2 is worth at least 1 xu more, also at the 2 and 5 xu stakes). Until 
 practised thumb got 11.6× back for clearing all ten levels; the xu sinks (docs/ECONOMY_SINKS.md) trimmed levels 6..10
 only, so the sensible play below (stop after 2..5) pays the same. Harder each level: more knives,
 a faster board that more and more often speeds up, slows down, stops short or turns back (DIFF). On a day the
-player's fair net is far up the board is up to HEAT_MAX levels harder (heat(), like the luck stalls' taper).
+player's fair net is far up the board is up to HEAT_MAX levels harder (heat(), like the luck stalls' taper). Since
+09/10 each level also turns RAMP_PCT % faster than the one before (speed_up()).
 
 Honesty: the server draws each level's seed when the level starts, so nothing of a level is known before. The client
 gets the schedule, draws angle_at() and sends the throw times (ms since the level started on its clock: increasing,
@@ -74,6 +75,16 @@ SKILL_DIFFICULTY = 135         # keep the gentle speed/count when restoring skil
 # widens). Marked per level by journey['fair_kn_soft'] (game/fair.py), so a level keeps the rules it started with.
 SOFT_DIFFICULTY = 115
 SOFT_GAP = 8.5
+# 09/10 (owner: "phóng dao mà level cao thì tăng tốc lên nhé, mỗi level tăng 5% tốc độ"): a level started from this build
+# turns RAMP_PCT % faster per level above the first: speed × speed_up(level) = 1 + RAMP_PCT × (level − 1) / 100 (level 1 as
+# before, level 10 × 1.45). Marked per level by journey['fair_kn_ramp'] (game/fair.py): a level started before keeps
+# its speed. The client draws the schedule's segs as sent, so both sides turn the same board.
+RAMP_PCT = 5
+
+
+def speed_up(level: int) -> float:
+    """The speed-up of a run's level (1 at level 1, RAMP_PCT % more each level after)."""
+    return 1 + RAMP_PCT * (level - 1) / 100
 # A level by its difficulty d (the level number, plus today's heat, see heat()): knives to throw, knives already
 # stuck, the board's base speed (degrees a second) and how often a stretch of its turning is a 'wave' (speeds up or
 # slows down smoothly), a 'rev' (turns back abruptly) or a 'stut' (stops short, then bursts on, sometimes the other
@@ -133,10 +144,11 @@ def x2_bonus(stake: int, level: int) -> int:
 
 
 # ---------------------------------------------------------------- the board's turning
-def schedule(seed: int, level: int, hot: int = 0, difficulty: int = 100) -> dict:
+def schedule(seed: int, level: int, hot: int = 0, difficulty: int = 100, faster: bool = False) -> dict:
     """A level drawn from its seed: the knives to throw (need), the ones already stuck (pre, board degrees), the
     starting angle th0 and the turning, segs: [[ms, degrees a second, ramp ms], …] covering LEVEL_MS. The client gets
-    exactly this and draws angle_at(); the server judges taps with the same."""
+    exactly this and draws angle_at(); the server judges taps with the same. `faster`: the level's speeds × speed_up(level)
+    (levels started since the owner's 09/10 "mỗi level tăng 5% tốc độ")."""
     d = max(1, min(max(DIFF), level + hot))
     need, n_pre, v, (p_wave, p_rev, p_stut) = DIFF[d]
     r = random.Random(f'fair-knife|{seed}|{level}|{hot}')
@@ -168,6 +180,9 @@ def schedule(seed: int, level: int, hot: int = 0, difficulty: int = 100) -> dict
     if difficulty in (SOFT_DIFFICULTY, 135, 150):
         need = (need * difficulty + 99) // 100
         segs = [[ms, speed * (difficulty / 100), ramp] for ms, speed, ramp in segs]
+    if faster and level > 1:
+        up = speed_up(level)
+        segs = [[ms, speed * up, rp] for ms, speed, rp in segs]
     out = dict(lv=level, hot=hot, d=d, need=need, pre=pre, th0=round(r.uniform(0, 360), 1), segs=segs)
     if difficulty == SOFT_DIFFICULTY:
         out['gap'] = SOFT_GAP

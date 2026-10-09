@@ -17,9 +17,10 @@ Every other state is lower: the cool-off after STREAK wins (WIN_P_LOW), the spam
 a Kinh called late, the police (raids, the asset check). The lô tô side bets are closed (SIDE_OPEN: the minute's
 calls are the same for everyone, so a player who saw them could pick the likely chẵn/lẻ or cột). 🍀 Lộc trời cho stays
 (LOC_P lower: on a busy server it still comes about once an hour). Phóng dao is a skill game (owner 05/10: no chance
-draw ever turns a clean board into a loss): its return depends on the thumb, see game/fair_knife.py, but what it
-pays over its stakes is capped, silently, at KN_DAY_CAP (300) xu a player and Vietnam day (_kn_over). Ô ăn quan and
-ném vòng take no stake. No rate reaches the client (owner 08/10). Bầu cua and chiếu trong take any stake (STAKE_MAX).
+draw ever turns a clean board into a loss): its return depends on the thumb, see game/fair_knife.py; no daily cap
+since 09/10 (owner: "phóng dao, ô ăn quan thì chơi hệ kĩ năng"), stakes up to 1,000 xu a run, each level RAMP_PCT %
+faster. Phóng dao and ô ăn quan are out of the arrest roll: the police come only for a script or a burst
+(game/fair_watch.py). Ô ăn quan and ném vòng take no stake. No rate reaches the client (owner 08/10). Bầu cua and chiếu trong take any stake (STAKE_MAX).
 
 Earlier rules (owner 07/10: "giảm tỷ lệ thắng của mọi người ở hội chợ, nếu ai spam 1 trò thì tỷ lệ thắng sẽ giảm dần
 xuống còn 40%, công an sẽ đòi chứng minh tài sản ở đâu ra và thu 10% lợi nhuận của cả hội chợ"), still in force:
@@ -76,6 +77,7 @@ from . import fair_cash as fc   # 🎁 tiền vốn and 💸 vay nóng
 from . import fair_food as ff   # 🍡 the food carts
 from . import fair_photo as fp  # 📸 the photobooth's ticket
 from . import fair_bm as bm     # 🕶️ Chợ đen: the bảo kê at the gate, the police's arrests
+from . import fair_watch as watch   # 🕶️ the police's eye on the skill stalls: scripts and bursts only
 from . import fair_dog as dog    # 🐕 đua chó: the roster, the lineups, the draw
 
 VERSION = 1
@@ -206,7 +208,7 @@ COT_PAY_HALF = 17              # cột may mắn: stake × 17 / 2 back
 LOTO_OPT = ('mode', 'tier', 'n', 'sb', 'fk')   # newer round keys (absent in older saves: thuong, vua, 1 tờ)
 LTD_KEYS = ('r', 'w', 'fk', 'npc')            # today's lô tô: rounds, Kinh won, Kinh hụt, the neighbours' wins
 # 🪨 Ô ăn quan and 💍 Ném vòng: no stake, a little xu for playing well, capped a day per game
-OAQ_PRIZE = dict(de=50, kho=10000)   # owner 06/10: Ông Hai pays 10.000 xu a won game (was 500)
+OAQ_PRIZE = dict(de=50, kho=1000)   # owner 09/10 "giới hạn 1k/1 lần": a won game pays at most 1.000 xu (06/10: 10.000)
 OAQ_PEOPLE = dict(de=('Bé Bi', '👦'), kho=('Ông Hai', '👴'))
 OAQ_FIRST = ('kho',)   # owner 06/10 "không ai thắng được": Ông Hai opens (the first move is a big edge), Bé Bi lets you
 OAQ_STAGES = ('play', 'won', 'lost', 'draw')
@@ -222,14 +224,10 @@ EARN_GAMES = tuple(EARN_DAY)
 # 🏆 Bảng vàng hội chợ: xu won (money_of); the points it counted until 03/10 are gone, POINTS_DAY only bounds the
 # saved 'dpts' (older validators)
 POINTS_DAY = 30
-# 🗡️ Phóng dao stays a skill game, but the house still always wins (owner 08/10): what its runs win over their stakes
-# is capped at KN_DAY_CAP xu a player and Vietnam day. The tally lives in the legacy 'dpts' (reset each Vietnam day and
-# each edition, no other use since 03/10) in KN_CAP_UNIT steps, rounded up: the older validators' bound POINTS_DAY
-# makes the cap 300 xu, so no new save key. Losing runs do not give it back. Silent (owner 08/10: "k báo ... số liệu
-# k hiển thị ra"): nothing about it reaches the client. A level whose clearing would pay past it starts on the hardest
-# board (knife.HEAT_MAX) and its clearing throw glances off (_kn_over): the run is lost like any crash.
-KN_CAP_UNIT = 10
-KN_DAY_CAP = KN_CAP_UNIT * POINTS_DAY
+# 🗡️ Phóng dao is a skill game (owner 09/10 "phóng dao, ô ăn quan thì chơi hệ kĩ năng"): no daily cap any more (08/10
+# to 09/10 its wins over the stakes were capped at 300 xu a day in the legacy 'dpts'; that counter is left alone now,
+# within the bound older validators check), stakes up to 1.000 xu (knife.STAKES, owner 09/10 "giới hạn 1k/1 lần").
+KN_RAMP_KEY = 'fair_kn_ramp'   # journey['fair_kn_ramp'] {at, seed}: the level turns knife.speed_up() faster (09/10)
 MONEY = ('won', 'lost', 'earned')   # the stats that make the board's score, reset with each edition
 
 TITLE_ROWS = (   # journey.TITLES (secret, granted here only)
@@ -820,7 +818,7 @@ def _kn(j: dict) -> dict:
 
 def _kn_sched(run: dict, j: dict | None = None) -> dict:
     if _kn_soft(j or {}, run):
-        return knife.schedule(run['sd'], run['lv'], run['hot'], knife.SOFT_DIFFICULTY)
+        return knife.schedule(run['sd'], run['lv'], run['hot'], knife.SOFT_DIFFICULTY, _kn_ramp(j or {}, run))
     rules = _kn_skill(j or {}, run) or _chance(j or {}, 'kn', run) or {}
     return knife.schedule(run['sd'], run['lv'], run['hot'], rules.get('difficulty', 100))
 
@@ -829,6 +827,12 @@ def _kn_soft(j: dict, run: dict) -> bool:
     """A level started on this build: the softer board (fair_knife.SOFT_*). journey['fair_kn_soft'] = {at, seed}."""
     soft = j.get('fair_kn_soft')
     return isinstance(soft, dict) and soft.get('at') == run['at'] and soft.get('seed') == run['sd']
+
+
+def _kn_ramp(j: dict, run: dict) -> bool:
+    """A level started since 09/10: it turns knife.speed_up(level) faster. A level started before keeps its board."""
+    r = j.get(KN_RAMP_KEY)
+    return isinstance(r, dict) and r.get('at') == run['at'] and r.get('seed') == run['sd']
 
 
 def _kn_skill(j: dict, run: dict) -> dict | None:
@@ -840,6 +844,7 @@ def _set_kn_skill(j: dict, run: dict) -> None:
     # fair_kn_skill keeps the value an older worker validates (rolling deploy); fair_kn_soft marks this level softer.
     j['fair_kn_skill'] = dict(at=run['at'], seed=run['sd'], difficulty=knife.SKILL_DIFFICULTY)
     j['fair_kn_soft'] = dict(at=run['at'], seed=run['sd'])
+    j[KN_RAMP_KEY] = dict(at=run['at'], seed=run['sd'])   # (an older server ignores it: the board it judges turns slower)
     j.get('fair_chance', {}).pop('kn', None)
 
 
@@ -854,34 +859,16 @@ def _kn_late(run: dict, t: float) -> bool:
 
 
 def _kn_level(f: dict, run: dict, t: float) -> None:
-    """A new level of the run: its own seed (drawn now, so nothing of it is known before), the heat of today's net;
-    the hardest board when clearing it would pay past today's KN_DAY_CAP."""
+    """A new level of the run: its own seed (drawn now, so nothing of it is known before), the heat of today's net."""
     run.update(sd=_rng.getrandbits(31), hot=knife.heat(_today(f, t)['net']), at=int(t * 1000), sg='play', tp=[], day='')
-    if _kn_over(f, run, t):
-        run['hot'] = knife.HEAT_MAX
-
-
-def _kn_over(f: dict, run: dict, t: float) -> bool:
-    """Clearing the run's level (its x2 bonus too) would win more over the stake than today's KN_DAY_CAP has left."""
-    bn = run['bn'] + (knife.x2_bonus(run['st'], run['lv']) if run['x2'] else 0)
-    return knife.prize(run['st'], run['lv'], bn) - run['st'] > kn_cap_left(f, t)
-
-
-def kn_cap_left(f: dict | None, t: float) -> int:
-    """How many more xu Phóng dao may win over its stakes today (KN_DAY_CAP)."""
-    if not f or f.get('date') != vn_date(t):
-        return KN_DAY_CAP
-    return max(0, KN_DAY_CAP - f['dpts'] * KN_CAP_UNIT)
 
 
 def _kn_pay(j: dict, f: dict, run: dict) -> int:
-    """Dừng: the prize of the levels cleared into the wallet; the run is done. f is today's _state. A level that would
-    pay past KN_DAY_CAP is never cleared (_kn_over), so the min() below is only a backstop."""
+    """Dừng: the prize of the levels cleared into the wallet (the ladder's, no daily cap since 09/10); the run is done.
+    f is today's _state."""
     k = _kn(j)
     st = run['st']
-    pz = min(knife.prize(st, _kn_cleared(run), run['bn']), st + max(0, KN_DAY_CAP - f['dpts'] * KN_CAP_UNIT))
-    if pz > st:   # the gain, in KN_CAP_UNIT steps rounded up (the house's side)
-        f['dpts'] = min(POINTS_DAY, f['dpts'] + -(-(pz - st) // KN_CAP_UNIT))
+    pz = knife.prize(st, _kn_cleared(run), run['bn'])
     run.update(sg='done', pz=pz)
     if pz:
         _pay(j, f, 'kn', pz)
@@ -934,7 +921,9 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
              'Lượt trước còn chờ: chơi tiếp hoặc dừng nhận thưởng đã nha.' if run and run['sg'] == 'choice'
              else 'Màn này đang chơi dở, phóng tiếp nha.', 'fair_kn_busy')
         _guard_free(e, f, j, t, stake)
-        _police(j, f, t, 'kn', stake)
+        if bm._gate_on() and watch.kn_start(j, ms):   # a skill game: no arrest roll, only a burst of runs (fair_watch)
+            watch.clear(j, 'ks')
+            _arrested(j, f, t, 'kn', stake, lambda amount: _pay(j, f, 'kn', amount), 'kn_spam')
         run = k['run'] = dict(st=stake, lv=1, sd=0, hot=0, at=0, sg='play', bn=0, x2=0, nx=0, tp=[], day='', pz=0)
         _kn_level(f, run, t)
         _set_kn_skill(j, run)
@@ -956,6 +945,10 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
                         message='Lâu quá bia ngừng quay rồi, lượt này thua. Phóng lượt mới nha.')
         sc = _kn_sched(run, j)
         need(knife.taps_ok(taps, sc['need'], ms - run['at']) and taps[:len(run['tp'])] == run['tp'], bad, 'fair_kn_bad')
+        if bm._gate_on() and watch.kn_throw(j, ms, taps[-1] - (ms - run['at'])):   # throws sent before they happen
+            watch.clear(j, 'ka')
+            run['sg'] = 'lost'   # the stake went in at the start; the prize riding on the level goes with the run
+            _arrested(j, f, t, 'kn', run['st'], lambda amount: None, 'kn_fast', count=False)
         chance = _chance(j, 'kn', run)
         if chance is not None:
             # Already displayed chance-mode throws allowed overlaps. Do not turn
@@ -965,8 +958,6 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
             hit = -1
         else:
             stuck, hit = knife.judge(sc, taps)
-        if hit < 0 and len(stuck) >= sc['need'] and _kn_over(f, run, t):   # KN_DAY_CAP: the clearing throw glances off
-            stuck, hit = stuck[:len(taps) - 1], len(taps) - 1
         out = dict(game='kn', lv=lv, stuck=stuck, hit=hit)
         if hit >= 0:
             run['sg'] = 'lost'
@@ -1237,7 +1228,8 @@ class _Caught(Exception):
 
 
 def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
-    """🕶️ Every paid round of the Chợ đen, once its checks passed and before anything is drawn: the police may raid it
+    """🕶️ Every paid luck round of the Chợ đen (not the skill games phóng dao and ô ăn quan: game/fair_watch.py), once
+    its checks passed and before anything is drawn: the police may raid it
     (fair_bm.arrest_p: fair_bm.BM_ARREST_P while the player's Chợ đen net today is above fair_bm.ARREST_FROM, owner
     09/10 "ae ăn tiền nhiều (hơn 300k) thì mới bị bắt"; plus a share for a stake of fair_bm.BIG_STAKE_FROM xu or more,
     whatever the net, owner 09/10 "từ 50k trở lên thì tăng tỷ lệ bị bắt"; capped at fair_bm.ARREST_CAP). Caught: the
@@ -1248,17 +1240,37 @@ def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
     p = bm.arrest_p(f, stake)
     if p <= 0 or not bm._arrest_roll(p):
         return
-    if game in f['stats']:   # the round counts on the stall's Sổ ví row ("· N ván")
+    _arrested(j, f, t, game, stake, lambda amount: _pay(j, f, game, amount))
+
+
+def _arrested(j: dict, f: dict, t: float, game: str, stake: int, pay, why: str = '', count: bool = True) -> None:
+    """The police take this round (`why`: '' the Chợ đen's arrest roll; 'kn_fast', 'kn_spam', 'oaq_fast', 'oaq_spam'
+    what game/fair_watch.py saw on a skill stall): `pay(-stake)` takes the stake (a no-op when it is gone already or
+    there is none), the fine, the trại tạm giữ (fair_bm.arrest). count: the round is a new one on the Sổ ví row (not a
+    knife run already counted at its start). Raises _Caught: the command's whole result."""
+    if count and stake and game in f['stats']:   # the round counts on the stall's Sổ ví row ("· N ván")
         f['stats'][game] = min(10**9, f['stats'][game] + 1)
-    r = bm.arrest(j, f, t, game, stake, lambda amount: _pay(j, f, game, amount))
+    r = bm.arrest(j, f, t, game, stake, pay)
+    if why:
+        r['say'] = bm.SAY_CHEAT
     f['stats']['raids'] = min(10**9, f['stats']['raids'] + 1)
     got: list = []
     _grant(j, 'f_raid', got)
     fair = dict(game=game, arrest=r)
     if got:
         fair['titles'] = got
-    msg = (f'🚨 Công an ập vào! Mất {_xu(stake)} xu tiền cược' + (f', nộp phạt {_xu(r["fine"])} xu' if r['fine'] else '')
-           + '.' + (f' Bạn bị tạm giữ {r["jail"]} ngày.' if r.get('jail') else ''))
+    fine = _xu(r['fine'])
+    if why == 'kn_fast':
+        msg = f'🚨 Công an thấy tay ném nhanh bất thường, nghi gian lận! Mất {_xu(stake)} xu tiền cược, nộp phạt {fine} xu.'
+    elif why == 'kn_spam':
+        msg = f'🚨 Công an thấy bạn phóng dao liên tục bất thường, nghi gian lận! Mất {_xu(stake)} xu tiền cược, nộp phạt {fine} xu.'
+    elif why == 'oaq_fast':
+        msg = f'🚨 Công an thấy nước đi nhanh bất thường, nghi gian lận! Nộp phạt {fine} xu.'
+    elif why == 'oaq_spam':
+        msg = f'🚨 Công an thấy bạn bày bàn liên tục bất thường, nghi gian lận! Nộp phạt {fine} xu.'
+    else:
+        msg = f'🚨 Công an ập vào! Mất {_xu(stake)} xu tiền cược' + (f', nộp phạt {fine} xu' if r['fine'] else '') + '.'
+    msg += f' Bạn bị tạm giữ {r["jail"]} ngày.' if r.get('jail') else ''
     raise _Caught(dict(message=msg, effects=[], fair=fair))
 
 
@@ -1496,6 +1508,9 @@ def _apply(s: dict, name: str, p: dict) -> dict:
         o = f['oaq']
         if o and o['stage'] == 'play':
             o['stage'] = 'lost'   # a new game gives the old one up
+        if bm._gate_on() and watch.oaq_start(j, int(t * 1000)):   # a skill game: only a burst of games (fair_watch)
+            watch.clear(j, 'os')
+            _arrested(j, f, t, 'oaq', 0, lambda amount: None, 'oaq_spam')
         _day(f, t)
         st['oaq'] += 1
         f['oaq'] = dict(lv=p['lv'], g=oaq.new_game(), at=int(t), stage='play')
@@ -1519,6 +1534,10 @@ def _apply(s: dict, name: str, p: dict) -> dict:
         need('ply' not in p or (type(p['ply']) is int and p['ply'] == g['ply']),
              'Nước này đi rồi, bàn đã sang lượt mới. Coi lại bàn rồi đi tiếp nha.', 'fair_oaq_turn')
         need(p['cell'] in oaq.ROWS[0] and g['b'][p['cell']] > 0, 'Chọn một ô của bạn còn quân nha.', 'fair_oaq_cell')
+        if bm._gate_on() and watch.oaq_move(j, int(t * 1000)):   # moves no hand makes (fair_watch)
+            watch.clear(j, 'of')
+            o['stage'] = 'lost'   # the game is given up: no prize
+            _arrested(j, f, t, 'oaq', 0, lambda amount: None, 'oaq_fast')
         trace: list = [['turn', 0, p['cell'], p['dir']]]
         oaq.play(g, 0, p['cell'], p['dir'], trace)
         alive = oaq.begin_turn(g, 1, trace)
@@ -1749,6 +1768,7 @@ def validate(j: dict) -> None:
     """journey['fair'] and journey['fair_cash'] (both optional)."""
     fc.validate(j)
     bm.validate(j)
+    watch.validate(j)
     if 'fair_balance' in j:
         from .engine import need, integer
         balance = j['fair_balance']
@@ -1791,6 +1811,12 @@ def validate(j: dict) -> None:
         integer(rules['at'], 0, 10**14)
         integer(rules['seed'], 0, 2**31)
         integer(rules['difficulty'], 135, 135)
+    if KN_RAMP_KEY in j:   # 09/10, optional: an older server keeps it as is
+        from .engine import need, integer
+        r = j[KN_RAMP_KEY]
+        need(isinstance(r, dict) and set(r) == {'at', 'seed'}, 'Dữ liệu phóng dao không hợp lệ.', 'invalid_save')
+        integer(r['at'], 0, 10**14)
+        integer(r['seed'], 0, 2**31)
     if 'fair_kn_soft' in j:
         from .engine import need, integer
         soft = j['fair_kn_soft']

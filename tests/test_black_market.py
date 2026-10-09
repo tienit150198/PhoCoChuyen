@@ -285,6 +285,8 @@ class AskedOrNot(BlackMarketBase):
 class Arrest(BlackMarketBase):
     def test_every_paid_stall_can_be_raided(self):
         for game, (name, p, stake) in PAID.items():
+            if game == 'kn':   # a skill game since owner 09/10: not rolled (tests/test_fair_watch.py)
+                continue
             with self.subTest(game=game):
                 s = story(20000)
                 s, _ = self.act(s, 'fair_bm_pay')   # 10,000 left
@@ -309,6 +311,19 @@ class Arrest(BlackMarketBase):
                 self.assertNotIn('đuổi', r['message'])
                 s, r2 = self.act(s, 'fair_snack', item='nuoc_mia')   # still in the Chợ đen
                 validate_state(s)
+
+    def test_the_skill_stalls_are_never_rolled(self):
+        """Owner 09/10 "phóng dao, ô ăn quan thì chơi hệ kĩ năng": a rich player's big knife run is not rolled for."""
+        s = story(3 * 10**6)
+        s, _ = self.act(s, 'fair_bm_pay')
+        self.rich(s, 10**6)
+        roll = mock.Mock(return_value=True)
+        with mock.patch.object(bm, '_arrest_roll', roll):
+            s, r = self.act(s, 'fair_kn_start', stake=1000)
+            self.assertNotIn('arrest', r['fair'])
+            s, r = self.act(s, 'fair_oaq_start', lv='kho')
+            self.assertNotIn('arrest', r['fair'])
+        roll.assert_not_called()
 
     def test_a_ban_saved_today_by_1_9_28_lets_the_player_in(self):
         s = story()

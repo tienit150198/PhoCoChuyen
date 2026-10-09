@@ -10,7 +10,8 @@ an bắt, tỷ lệ bị bắt cực cao").
   wallet is short); fair_bm_refuse lets the đàn em take ROB_PCT % of the wallet (cash only, never the bank account, 0
   when the wallet is empty or in debt). Either way the player is in until the stretch ends.
 * Arrests (owner 09/10: "với ae ăn tiền nhiều (hơn 300k) thì mới bị bắt nhé, ít quá k bị bắt", "tỷ lệ bị bắt thấp tý
-  nhé"): a paid round (bầu cua, chiếu trong, a lô tô tờ, a vé cào, a phóng dao run) can be raided only while the
+  nhé"): a paid round (bầu cua, chiếu trong, a lô tô tờ, a vé cào, a đua chó bet; not the skill games phóng dao and
+  ô ăn quan since 09/10, whose police are game/fair_watch.py) can be raided only while the
   player's Chợ đen net today is above ARREST_FROM xu (at_risk: journey['fair'].net, which game/fair.py _state resets
   at each Vietnam day: every paid stall's wins minus its losses, the bảo kê, robberies and fines included; the free ô
   ăn quan / ném vòng xu are not in it). Then it is raided BM_ARREST_P of the time (_arrest_roll, its own random source
@@ -65,6 +66,7 @@ SAY_ROB = 'Không nộp hả? Vậy anh em lục ví chút nha.'
 SAY_EMPTY = 'Ví trống trơn à? Thôi vô đi, lần sau nhớ nộp.'
 SAY_PAID = 'Nộp đủ rồi, cứ ra vô thoải mái.'
 SAY_ARREST = 'Tất cả đứng im! Đánh bạc ăn tiền hả? Tiền cược tịch thu, nộp phạt đi!'
+SAY_CHEAT = 'Tay gì mà nhanh dữ vậy? Chơi kiểu này là gian rồi, về đồn làm việc!'
 
 _rng = random.SystemRandom()   # the arrests' own draws: the stalls' _rng (and the tests' scripted draws) stay as they were
 

@@ -1,5 +1,7 @@
 {
   "strings": {
+  "Tay gì mà nhanh dữ vậy? Chơi kiểu này là gian rồi, về đồn làm việc!": "Hands that fast? That's cheating. Come down to the station!",
+  "🎮 Ném vòng, ô ăn quan không cần đặt cược. Phóng dao, ô ăn quan là trò kỹ năng: chơi thật thì không lo công an. Phóng dao cược tối đa 1.000 xu một lượt, mỗi màn dao quay nhanh hơn.": "🎮 Ring toss and Ô ăn quan need no bet. Knife throwing and Ô ăn quan are skill games: play for real and the police leave you alone. Knife throwing takes at most 1,000 xu a run, and each level spins faster.",
   "💰 Đặt cược càng lớn (từ 50.000 xu) thì càng dễ bị công an để ý, kể cả khi chưa ăn đậm.": "💰 The bigger the bet (from 50,000 xu), the more the police notice you, even before you win big.",
   "Sói Con": "Wolf Cub",
   "Xúc Xích": "Sausage",
@@ -22823,6 +22825,10 @@
   "Đã trả lời câu này rồi.": "Already answered this one."
   },
   "patterns": {
+  "🚨 Công an thấy bạn bày bàn liên tục bất thường, nghi gian lận! Nộp phạt $1 xu.": "🚨 The police saw you setting up games nonstop and suspect cheating! Fine: $1 xu.",
+  "🚨 Công an thấy bạn phóng dao liên tục bất thường, nghi gian lận! Mất $1 xu tiền cược, nộp phạt $2 xu.": "🚨 The police saw you throwing knives nonstop and suspect cheating! You lost your $1 xu stake and paid a $2 xu fine.",
+  "🚨 Công an thấy nước đi nhanh bất thường, nghi gian lận! Nộp phạt $1 xu.": "🚨 The police saw moves far too fast and suspect cheating! Fine: $1 xu.",
+  "🚨 Công an thấy tay ném nhanh bất thường, nghi gian lận! Mất $1 xu tiền cược, nộp phạt $2 xu.": "🚨 The police saw throws far too fast and suspect cheating! You lost your $1 xu stake and paid a $2 xu fine.",
   "Đua chó đặt từ $1 xu nha.": "The dog race takes stakes from $1 xu.",
   "$1 về nhất!": "$1 comes first!",
   "Đặt ít nhất $1": "Bet at least $1",

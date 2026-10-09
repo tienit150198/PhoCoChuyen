@@ -320,7 +320,7 @@ function arrestCard(){
   const r=S.arrest;
   return `<section class="fh-card fh-raid" role="alert" data-fh-key="bm-arrest"><div class="fh-siren" aria-hidden="true"><i></i><i></i></div>
     <h3>🚨 Công an ập vào!</h3>${say({name:'Công an phường',emoji:'👮'},r.say||'')}
-    <div class="fh-raid-bill"><span>Tiền cược bị tịch thu</span><b>−${xu(r.stake)}</b><span>Nộp phạt</span><b>−${xu(r.fine)}</b></div>
+    <div class="fh-raid-bill">${r.stake?`<span>Tiền cược bị tịch thu</span><b>−${xu(r.stake)}</b>`:''}<span>Nộp phạt</span><b>−${xu(r.fine)}</b></div>
     <p>Ví còn <b>${xu(r.wallet)}</b>. Khoản phạt đã ghi trong Sổ ví.</p>${r.jail?`<p class="fh-jail">🚔 Bạn bị đưa về <b>trại tạm giữ ${r.jail} ngày</b>. Trong trại làm công ích để được về sớm, hoặc nhờ bạn bè bảo lãnh.</p>`:'<p>Công an đi rồi. Chơi tiếp thì cẩn thận nha.</p>'}
     ${r.titles?.includes('f_raid')?'<p class="fh-award">🚨 Danh hiệu mới: <b>Bị công an hỏi thăm</b></p>':''}
     ${btn(r.jail?'🚔 Về trại tạm giữ':'Dạ, em biết rồi','arrestok',{},'primary',' data-fh-key="bm-arrestok"')}</section>`;
@@ -372,7 +372,7 @@ const meter=(e,label='Hôm nay đã kiếm')=>{if(e?.nocap)return '';e=e||{today
   return `<span class="fh-meter${e.today>=e.cap?' full':''}" aria-hidden="true"><i style="width:${pct}%"></i></span><small class="fh-meterlabel">${e.today>=e.cap?'Hôm nay đã kiếm đủ':label} <b>${fmt(e.today)}</b>/${xu(e.cap)}</small>`;};
 const homeView=()=>walkOn()?WALK.html():gateList();
 function gateList(){
-  const f=F(),r=R(),e=f.earn||{},o=f.oaq,m=won(),pr=r.oaq_prize||{de:50,kho:10000};
+  const f=F(),r=R(),e=f.earn||{},o=f.oaq,m=won(),pr=r.oaq_prize||{de:50,kho:1000};
   const oaqLine=o?.stage==='play'?`<em class="fh-live">Đang chơi dở với ${esc(o.name)} · chơi tiếp</em>`:`Đấu với Bé Bi (thắng +${pr.de} xu) hoặc Ông Hai (thắng +${fmt(pr.kho)} xu)`;
   const luck=(id,ico,name,sub,warn='')=>`<button type="button" class="fh-luckgame" data-fh="tab" data-tab="${id}" data-fh-key="g-${id}"><span class="fh-lico" aria-hidden="true">${ico}</span><span class="grow"><b>${name}</b><small>${sub}</small></span>${warn}${f.loto?.stage==='play'&&id==='lt'||id==='dt'&&['play','choice'].includes(f.knife?.run?.stage)?'<i class="fh-dot" aria-label="đang chơi"></i>':''}</button>`;
   return `<section class="fh-gate" aria-label="Cổng chợ">
@@ -410,7 +410,7 @@ function oaqBoard(){
   return `<div class="fh-oaq" aria-label="Bàn ô ăn quan">${cell(0)}<div class="fh-orow opp">${ROW_OPP.map(cell).join('')}</div><div class="fh-orow me">${ROW_ME.map(cell).join('')}</div>${cell(6)}</div>`;
 }
 function oaqView(){
-  const f=F(),r=R(),o=f.oaq,e=(f.earn||{}).oaq,pr=r.oaq_prize||{de:50,kho:10000},people=r.oaq_people||{de:['Bé Bi','👦'],kho:['Ông Hai','👴']};
+  const f=F(),r=R(),o=f.oaq,e=(f.earn||{}).oaq,pr=r.oaq_prize||{de:50,kho:1000},people=r.oaq_people||{de:['Bé Bi','👦'],kho:['Ông Hai','👴']};
   const how=`<details class="fh-how"${o?'':' open'}><summary>Cách chơi</summary><ul>
       <li>Mỗi bên 5 ô dân, mỗi ô 5 quân. Hai đầu là ô quan: mỗi quan ${r.quan||10} điểm, mỗi dân 1 điểm.</li>
       <li>Tới lượt: chọn một ô bên mình còn quân, chọn hướng, bốc hết rải mỗi ô một quân (rải qua cả ô quan).</li>

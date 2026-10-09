@@ -162,25 +162,53 @@ of six dogs from `RACERS` (the pet system's breeds and coats) and gives each one
   | good | 1.80 | 3.06 |
   | script (clears every level) | 11.8 (all ten levels) | 11.8 |
 
-  The ladder alone would let a good thumb win without limit, so (owner 08/10) the house caps it:
+  Owner 09/10 ("phóng dao, ô ăn quan thì chơi hệ kĩ năng", "giới hạn 1k/1 lần", "bắt nếu cảm thấy có cheat hoặc
+  spam", "phóng dao mà level cao thì tăng tốc lên nhé, mỗi level tăng 5% tốc độ"):
 
-  - **Daily cap: 300 xu** (`fair.KN_DAY_CAP`) a player and Vietnam day, and **silent**: no message, no public field.
-    What each paid run wins over its stake counts (rounded up to 10 xu, the house's side); a losing run does not give
-    any of it back, so the player's real net from the stall can only be lower. A level whose clearing would win past
-    what is left (`_kn_over`) starts on the hardest board (`hot = HEAT_MAX`), and if every throw still lands clean, the
-    clearing throw glances off: the run is lost like any crash ("Dao chạm dao rồi!"). The stall keeps taking stakes, and
-    the prizes it shows are the ladder's. Once the cap is reached, the first level of any stake is such a level, so
-    every run after it loses its stake. The payout is also clamped to stake + what is left, as a backstop only.
-  - **Why 300:** it is the bound the older validators already put on the saved counter it uses: the legacy points
-    tally `fair.dpts` (reset each Vietnam day and each edition, unused since points went on 03/10) is checked as
-    0..`POINTS_DAY` = 30, and stored in 10-xu steps that makes 300 xu. That needs no new save key, and a 1.9.21 server
-    validates the save. DAY_CAP (150) is no live cap any more, only a bound on the chance stalls' saved net. 300 xu is
-    three easy clears at 100 xu: a real reward for a good thumb, but small next to a day's work.
-  - **Worst case for the house:** a player can net at most **+300 xu a day** from Phóng dao, whatever the stake or the
-    number of runs. That is at most 1,500 xu over the five fair days. A prize left waiting overnight is paid under the
-    next day's cap (fresh that day, since the prize is paid by the day's first command). The police's checks and the
-    heat on a winning day still apply on top.
-- **Ô ăn quan and ném vòng take no stake.** They pay out but cost nothing.
+  - **No daily cap.** The silent 300 xu a day of 08/10 (`KN_DAY_CAP`, `_kn_over`, the level forced to `HEAT_MAX`, the
+    clearing throw that glanced off) is gone: a clean board always clears and "Dừng" pays the ladder in full. The
+    legacy `fair.dpts` it counted in is left alone (still within 0..`POINTS_DAY` = 30, the bound the older validators
+    check); no older validator bounds what Phóng dao pays in a day (a run's `pz` ≤ 10^7, `top` ≤ 10^9, today's
+    `fair.net` ≤ 10^9, `NET_SAFE` 10^8 for new stakes), so nothing had to stay for a rollback. **Rollback note:** a
+    1.9.30/1.9.31 server still has the cap: after a rollback it caps that day's knife wins again from the `dpts`
+    left (0 for days played on this build), and a run's prize waiting as a choice is clamped by it when paid there.
+  - **Stake at most 1,000 xu a run** (`fair_knife.STAKES` = 2 … 1,000; a larger stake is refused). The most a run can
+    pay is the top of the ladder at 1,000 xu: 10,000 xu, plus the 🔥 x2 levels' steps.
+  - **Faster each level:** a level started on this build turns `speed_up(n)` = 1 + 5% × (n − 1) faster (level 1 as
+    before, level 10 × 1.45), on top of the soft board's 115%. The server puts the speeds in the level's `segs`, which
+    the client draws as sent, so both sides turn the same board. Marked per level by `journey['fair_kn_ramp']`
+    `{at, seed}` (optional; an older server ignores it). A level started before keeps its board and settles; after a
+    rollback, a ramped level in play is judged and shown by the older server on its unramped board (level 1 is the same
+    either way). Today's heat (`heat()`, from the day's Chợ đen net) still applies as before.
+  - **Out of the arrest roll.** Phóng dao and ô ăn quan are never rolled for by the Chợ đen's arrest
+    (`fair_bm.arrest_p`, neither the 5% nor the big stakes), and the wealth/asset checks run only after the paid
+    luck rounds as before. The police come only for a **script or a burst** (`game/fair_watch.py`, conservative: a
+    miss is better than an honest player arrested):
+
+    | stall | what is caught | rule |
+    |---|---|---|
+    | Phóng dao | throws sent before they happen | a throw whose last knife claims more than `KN_AHEAD_MS` (2.5 s) beyond the level time the server has seen pass, `KN_AHEAD_FLAGS` (2) times within an hour |
+    | Phóng dao | a burst of runs | `KN_SPAM_RUNS` (100) runs started within `KN_SPAM_MS` (5 min): 3 s a run for five minutes on end |
+    | Ô ăn quan | moves no hand makes | `OAQ_FAST_MOVES` (8) moves within 10 min each less than `OAQ_FAST_MS` (350 ms) after the game's previous command |
+    | Ô ăn quan | a burst of games | `OAQ_SPAM_GAMES` (120) games started within 10 min |
+
+    Why these hold for people: the stall's page measures throws on a level clock that starts when the board arrives,
+    behind the server's (at most ~1 s ahead, from the state's whole-second `now`); throws more than `SLACK` (4 s)
+    ahead were already refused. The ô ăn quan page plays every sowing out (fast mode and reduced motion too, at least
+    ~0.3 s a move) and a move takes two taps after it. Not used: tap rhythm (touch time stamps are often snapped to the
+    screen's frames, so an even hand could look machine-regular).
+
+    Caught: the same arrest as the Chợ đen's (`fair._arrested`): Phóng dao loses the run's stake (taken at the start of
+    a run, or the run in play is lost with what rode on it), ô ăn quan has no stake (the game in play is lost); a fine
+    of `FINE_PCT` (30%) of the wallet; `JAIL_DAYS` (3) in the trại tạm giữ. The message says what was seen in words
+    ("Công an thấy tay ném nhanh bất thường, nghi gian lận!"); no threshold reaches the client. The counters live in
+    `journey['fair_watch']` (optional; windows `[at, n]`, an older server's journey keeps it unread). Off with the
+    Chợ đen's kill switch (`MNL_BM_OFF`).
+  - **Worst case for the house:** no daily bound any more. A good thumb gets back ~1.8–3× its stakes (the table above;
+    the faster levels lower that), so at 1,000 xu a run a strong player can win several thousand xu an hour from the
+    stall. A script that paces its throws like a person is not caught (by design); it can clear every level (11.8×).
+- **Ô ăn quan and ném vòng take no stake.** They pay out but cost nothing. A won ô ăn quan game pays at most 1,000 xu
+  (`OAQ_PRIZE`: Bé Bi 50, Ông Hai 1,000; owner 09/10 "giới hạn 1k/1 lần", was 10,000).
 
 ## Save compatibility
 
