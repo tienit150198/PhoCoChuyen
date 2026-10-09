@@ -346,6 +346,16 @@ def taps_ok(taps: object, need: int, elapsed_ms: int) -> bool:
     return taps[-1] <= min(LEVEL_MS, elapsed_ms + SLACK)
 
 
+FRESH_MS = 2000   # 09/10: the newest throw a level's message carries is at most this old when the server reads it
+
+
+def fresh(taps: list[int], elapsed_ms: int) -> bool:
+    """The client sends a level's throws as soon as its last knife flies (public/js/v4/fair-knife.js finish()): that
+    throw is only the network's round trip old when it arrives (~1.2 s on a slow phone, 600 ms each way). One timed
+    longer before was picked after the fact (the board is public), so it is not taken."""
+    return elapsed_ms - taps[-1] <= FRESH_MS
+
+
 def public_schedule(sc: dict) -> dict:
     """What the client draws a level from (no cache keys)."""
     return {k: sc[k] for k in ('lv', 'need', 'pre', 'th0', 'segs', 'gap') if k in sc}
