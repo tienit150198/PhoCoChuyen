@@ -3560,7 +3560,7 @@ SPEC = dict(
            ('Thịnh', 'gr_book', 'Chữ đẹp, nhắc nợ khéo không mất lòng ai.', 70, 88),
            ('Mận', 'gr_shelf', 'Siêng năng, hay phát hiện hộp móp méo.', 80, 83)],
     roles={'gr_shelf': 'Xếp kệ & hạn dùng', 'gr_till': 'Phụ quầy tính tiền', 'gr_book': 'Giữ sổ ghi nợ'},
-    inventory=dict(items=ITEMS, capacity=60),
+    inventory=dict(items=ITEMS, capacity=80),
     prices=PRICES,
     tip=2,
     physical=('gr_scan', 'gr_weigh', 'gr_pay', 'gr_place', 'gr_pull', 'gr_rush_total', 'gr_rush_pay', 'gr_bulk_deliver', 'gr_clear', 'gr_rotate', 'gr_pack'),

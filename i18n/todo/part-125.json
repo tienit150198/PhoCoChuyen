@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Sổ trực ban: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 ($2) khai báo tạm trú: $3.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "Tinh thần +$1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chào $1! Hôm nay tiệm có đông khách không?",
   "en": "",
   "pattern": true
  }

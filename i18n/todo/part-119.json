@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Đặt đơn gộp?",
+  "en": ""
+ },
+ {
+  "vi": "Đặt đơn",
+  "en": ""
+ },
+ {
   "vi": "Trả lời chưa gửi được, khách vừa nhắn.",
   "en": ""
  },
@@ -1870,16 +1878,6 @@
  },
  {
   "vi": "Thứ tự đúng tới bước $1; bước $2 chưa đúng chỗ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Làm $1 câu kiểm tra kiến thức đầu ca rồi mở ca nhé.",
   "en": "",
   "pattern": true
  }

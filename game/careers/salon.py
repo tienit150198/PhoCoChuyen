@@ -2905,7 +2905,7 @@ SPEC = dict(
            ('Nhung', 'assist', 'Gội đầu êm tay, khăn lúc nào cũng thơm.', 80, 85),
            ('Tí', 'assist', 'Học việc chăm chỉ, đang tập sấy phồng.', 74, 76)],
     roles={'color': 'Thợ màu', 'cut': 'Thợ cắt', 'assist': 'Phụ gội'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     prices=dict(PRICES),
     tip=3,
     physical=('sl_wash', 'sl_mix', 'sl_cut', 'sl_treat', 'sl_style', 'sl_checkout', 'sl_appt'),

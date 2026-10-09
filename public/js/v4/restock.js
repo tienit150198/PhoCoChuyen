@@ -124,10 +124,10 @@ export function orderQuote(it,qty,sup){
 
 /** A merged draft the player can place ("🛒 Gộp N món", views.js): `lines` [{id, cost, q}] in the order
  * wanted, at most `free` of them (the lines the supplier's draft has left, inventory cart_lines), each
- * 1–30, then trimmed (biggest line first, then the last lines) until goods + ship fit `money`; `have`:
+ * 1–`lineMax` (inventory line_cap), then trimmed (biggest line first, then the last lines) until goods + ship fit `money`; `have`:
  * goods already in that draft. Returns [{id, q}] (empty when not even one unit fits). */
-export function fitDraft(lines,sup,money,{free=8,have=0}={}){
-  const out=(lines||[]).slice(0,Math.max(0,free)).map(l=>({id:l.id,cost:Number(l.cost)||0,q:Math.min(30,Math.floor(Number(l.q))||0)})).filter(l=>l.q>0);
+export function fitDraft(lines,sup,money,{free=8,have=0,lineMax=30}={}){
+  const out=(lines||[]).slice(0,Math.max(0,free)).map(l=>({id:l.id,cost:Number(l.cost)||0,q:Math.min(Number(lineMax)||30,Math.floor(Number(l.q))||0)})).filter(l=>l.q>0);
   const total=()=>{const g=have+out.reduce((n,l)=>n+orderQuote(l,l.q,sup).cost,0);return g+(g>=(Number(sup?.free_from)||0)?0:(Number(sup?.ship)||0));};
   while(out.length&&total()>money){const big=out.reduce((a,l)=>l.q>a.q?l:a,out[0]);if(big.q>1)big.q--;else out.pop();}
   return out.map(({id,q})=>({id,q}));

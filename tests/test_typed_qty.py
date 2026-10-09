@@ -32,8 +32,10 @@ class TypedBox(unittest.TestCase):
     def test_boxes_use_the_server_limits(self):
         views, app, keep, quay, invest = src('v4/views.js'), src('app.js'), src('keep-ui.js'), src('v4/quay.js'), src('v4/invest.js')
         self.assertIn('max:Math.max(60,Number(o.qty)||0)', views)        # inv_receive count: the crate's own line (#277)
-        self.assertRegex(views, r'Math\.min\(30,space\)')                # inv_order 1..30
-        self.assertIn('Math.min(30,l.room)', views)                      # inv_cart set 0..30
+        self.assertIn('lineMax=Number(c.inventory?.line_cap)||30', views)  # inv_order 1..LINE_MAX (inventory.public line_cap)
+        self.assertRegex(views, r'Math\.min\(lineMax,space\)')
+        self.assertIn('Math.min(lineMax,l.room)', views)                 # inv_cart set 0..LINE_MAX
+        self.assertEqual(inventory.LINE_MAX, 80)
         self.assertIn('min:1,max:12', app)                               # receive_stock 1..12
         self.assertIn(f'KEEP_MAX={workplace_business.KEEP_MAX}', keep)
         self.assertEqual(workplace_business.KEEP_MAX, quay_business.KEEP_MAX)

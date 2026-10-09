@@ -525,6 +525,11 @@
   "pattern": true
  },
  {
+  "vi": "Đếm khay $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🛒 Đơn gộp · $1 món",
   "en": "",
   "pattern": true

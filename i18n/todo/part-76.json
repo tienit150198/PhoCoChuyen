@@ -640,11 +640,11 @@
   "en": ""
  },
  {
-  "vi": "💰 Trả tiền ngay khi đặt, tối đa 30 món một đơn.",
+  "vi": "💰 Trả tiền ngay khi đặt, mỗi món đặt tối đa 80 một lần.",
   "en": ""
  },
  {
-  "vi": "📏 Mỗi loại có sức chứa tối đa, tính cả hàng đang giao.",
+  "vi": "📏 Kệ mỗi loại chứa tới 80 (vài tiệm nhiều hơn), tính cả hàng đang giao.",
   "en": ""
  },
  {
@@ -693,6 +693,10 @@
  },
  {
   "vi": "👆 Chạm từng món trong thùng để đếm, rồi nhập số đếm được.",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Thùng trên 20 món xếp sẵn từng khay 10: bấm [[Đếm khay]] để đếm cả khay. Khay giao thiếu có ô trống, nhìn là thấy.",
   "en": ""
  },
  {
@@ -1401,10 +1405,6 @@
  },
  {
   "vi": "📜 Top chứng chỉ: bằng số chứng chỉ thì ai có tổng điểm thi cao hơn, rồi ai có sớm hơn đứng trước.",
-  "en": ""
- },
- {
-  "vi": "💰 Top tài phú: tài sản ròng như ở Tiền của bạn (ví, quỹ nơi làm, ngân hàng, nhà theo giá thị trường, trừ hết nợ). Chỉ tính người chơi theo câu chuyện.",
   "en": ""
  }
 ]

@@ -3498,7 +3498,7 @@ SPEC = dict(
     staff=[('Chị Lành', 'housekeeping', 'Dọn phòng nhanh, nhớ từng góc bụi.', 80, 88), ('Tín', 'reception', 'Nhớ tên khách, dò mã đặt phòng rất nhanh.', 84, 80),
            ('Bà Sáu', 'kitchen', 'Chiên trứng lòng đào đều tay, dậy từ 5 giờ.', 70, 93), ('Nhung', 'housekeeping', 'Cẩn thận, hay tìm ra đồ khách bỏ quên.', 72, 95)],
     roles={'housekeeping': 'Buồng phòng', 'reception': 'Lễ tân', 'kitchen': 'Bếp sáng'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     prices={'thong': 30, 'suong': 28, 'gac': 36, 'quy': 48, 'ho': 44, 'breakfast': 12, 'guide': 8},
     tip=2,
     physical=('hs_clean', 'hs_welcome', 'hs_settle', 'hs_serve', 'hs_egg', 'hs_repair', 'hs_safety', 'hs_deep', 'hs_garden'),

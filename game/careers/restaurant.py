@@ -2127,7 +2127,7 @@ SPEC = dict(
     staff=[('Tú', 'prep', 'Nấu nồi nước dùng rất đều tay.', 76, 88), ('Mai', 'server', 'Nhớ khách nào mang về, khách nào ăn tại quán.', 84, 80),
            ('Lộc', 'dish', 'Rửa bát nhanh, bếp luôn sạch.', 80, 85), ('Hiền', 'prep', 'Sơ chế cẩn thận, nhớ hạn dùng.', 70, 93)],
     roles={'prep': 'Phụ bếp', 'server': 'Chạy bàn', 'dish': 'Rửa bát'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     prices={'kimchi': 35, 'tomyum': 40, 'blackbean': 35, 'cheese': 45},
     tip=3,
     physical=PHYSICAL,

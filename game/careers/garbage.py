@@ -1631,7 +1631,7 @@ SPEC = dict(
            ('Liên', 'sweep', 'Tỉ mỉ, không bỏ sót cọng rác nào.', 70, 94),
            ('Quang', 'push', 'Thuộc hết giờ xe ép của chú Sáu.', 80, 82)],
     roles={'sweep': 'Quét dọn', 'push': 'Đẩy xe'},
-    inventory=dict(items=ITEMS, capacity=30),
+    inventory=dict(items=ITEMS, capacity=80),
     tip=0,
     physical=PHYSICAL,
     free_actions=FREE,

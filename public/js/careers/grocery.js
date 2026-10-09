@@ -435,12 +435,14 @@ function rushJob(t,x){
 
 /* ------------------------------------------------------------ bulk orders */
 /** An express order of `n`: goods at the courier's price (and wholesale tier) plus its shipping fee. */
+/** Units one order line may take (game/inventory.py LINE_MAX; 30 before the bigger shelves, player #277). */
+const lineMax=inv=>Number(inv?.line_cap)||30;
 function rushCost(x,it,n){const sups=x.room.inventory?.suppliers||x.content.inventory?.suppliers||[];return orderQuote(it,n,sups.find(s=>s.id==='express')||{factor:1.35}).total;}
 function bulkJob(t,x){
   const b=t.bulk,n=t.needs,inv=x.room.inventory||{stock:{}},held=x.room.data?.held||{};
   const list=sum(n.lines.map(l=>(x.cc.base_prices?.[l.item]??price(x,l.item))*l.qty));   // bulk quotes use the standard list, like the server
   const shortOf=l=>Math.max(0,l.qty-Math.max(0,(inv.stock?.[l.item]||0)-(held[l.item]||0))),full=fullGo(inv,t.id);
-  const rows=n.lines.map(l=>{const it=item(x,l.item),s=shortOf(l),due=lack(x,rushCost(x,it,Math.min(30,s)));
+  const rows=n.lines.map(l=>{const it=item(x,l.item),s=shortOf(l),due=lack(x,rushCost(x,it,Math.min(lineMax(inv),s)));
     return `<div class="gr-line ${s?'':'done'}"><span class="gr-emoji">${it.emoji}</span><div class="grow"><b>${x.esc(it.name)} × ${l.qty}</b><small>${x.fmt(price(x,l.item))} xu/${x.esc(priceUnit(x,l.item))} · kho còn ${inv.stock?.[l.item]||0}${s?` · <b class="bad">thiếu ${s}</b>`:' ✓'}</small></div>
       ${b.stage==='deliver'&&s&&full?x.button(full.label,full.act,full.data||{},'small ghost'):b.stage==='deliver'&&s&&due?`<button type="button" class="btn small ghost" disabled>⚡ thiếu ${x.fmt(due)} xu</button>`:b.stage==='deliver'&&s?x.confirmCmd(`⚡ Nhập ${Math.min(30,s)}`,'inv_order',{item:l.item,qty:Math.min(30,s),supplier:'express'},`Nhập hỏa tốc ${Math.min(30,s)} ${it.unit} ${it.name} · khoảng ${x.fmt(rushCost(x,it,Math.min(30,s)))} xu? Hỏa tốc 15–30 phút, nhớ mở thùng đếm ở Kho & giá.`,'small ghost'):''}</div>`;}).join('');
   let body='',cta='';
@@ -555,7 +557,7 @@ function bulkSteps(t,x){
   return t.needs.lines.map(l=>{
     const it=item(x,l.item),s=Math.max(0,l.qty-Math.max(0,(inv.stock?.[l.item]||0)-(held[l.item]||0)));
     if(!s)return {ok:true,label:`Đủ ${l.qty} ${it.unit} ${it.name}`};
-    const o=(inv.orders||[]).find(v=>v.item===l.item&&v.status==='in_transit'),n=Math.min(30,s);
+    const o=(inv.orders||[]).find(v=>v.item===l.item&&v.status==='in_transit'),n=Math.min(lineMax(inv),s);
     const due=lack(x,rushCost(x,it,n));
     const go=o?restockGo(x.room,[{id:l.item,target:(inv.stock?.[l.item]||0)+s}],{task:t.id}):fullGo(inv,t.id)||(due?null:{cmd:'inv_order',payload:{item:l.item,qty:n,supplier:'express'},confirm:`Nhập hỏa tốc ${n} ${it.unit} ${it.name} · khoảng ${x.fmt(rushCost(x,it,n))} xu?`,label:`⚡ Nhập gấp ${n} ${x.esc(it.name)}`});
     return {ok:null,label:`Đủ ${l.qty} ${it.unit} ${it.name}`,note:o&&!o.ready_now?`thiếu ${s} · hàng đang về`:!o&&due?`thiếu ${s} · quỹ thiếu ${x.fmt(due)} xu`:`thiếu ${s}`,go};
@@ -615,7 +617,7 @@ function stockView(x){
   const cap=inv.capacity||60,sups=supList(x),sup=sups.find(s=>s.id===(x.ui.sup||'partner'))||{factor:1,lead:1,name:''};
   // inv_order refuses past the shipments cap, a supplier that does not sell the item, or a fund that cannot pay: say so on the row.
   const full=fullGo(inv),vline=vansLine(inv),sold=id=>!Array.isArray(sup.items)||sup.items.includes(id);
-  const qty=Number(x.ui.qty)||10,cleared=d.cleared||[];
+  const lm=lineMax(inv),qty=Math.min(lm,Number(x.ui.qty)||10),cleared=d.cleared||[];
   const rot=new Set((d.rotation||[]).map(r=>r.item)),short=Object.fromEntries((d.forecast?.needs||[]).filter(r=>r.short).map(r=>[r.item,r]));
   const shut=catalogue(x).filter(it=>(inv.locked||[]).includes(it.id));
   const needs=it=>{const q=inv.stock?.[it.id]??0;return q<=3||inv.expiring?.[it.id]||d.near?.[it.id]||rot.has(it.id)||short[it.id]||(inv.orders||[]).some(o=>o.item===it.id&&o.status==='in_transit');};
@@ -623,7 +625,7 @@ function stockView(x){
     const locked=(inv.locked||[]).includes(it.id),q=inv.stock?.[it.id]??0,exp=inv.expiring?.[it.id]||0,near=d.near?.[it.id]||0,held=d.held?.[it.id]||0;
     const p=price(x,it.id),[lo,hi]=d.price_range?.[it.id]||[p,p],step=Math.max(1,Math.round((x.cc.base_prices?.[it.id]||p)*0.05));
     const transit=(inv.orders||[]).filter(o=>o.item===it.id&&o.status==='in_transit').reduce((s,o)=>s+o.qty,0);
-    const room=cap-q-transit,n=Math.min(qty,room,30),cost=orderQuote(it,n,sup).total,carted=(inv.carts||[]).find(k=>k.supplier===(sup.id||'partner'))?.lines.find(l=>l.item===it.id)?.qty||0;
+    const room=cap-q-transit,n=Math.min(qty,room,lm),cost=orderQuote(it,n,sup).total,carted=(inv.carts||[]).find(k=>k.supplier===(sup.id||'partner'))?.lines.find(l=>l.item===it.id)?.qty||0;
     const theirs=rv[it.id];
     if(locked)return `<div class="gr-srow locked"><span class="gr-emoji">${it.emoji}</span><div class="gr-sinfo"><b>${x.esc(it.name)}</b><small>🔒 mở ở cấp ${it.unlock||1}</small></div></div>`;
     return `<div class="gr-srow ${carted&&!exp?'carted':q<=3?'low':''} ${exp?'exp':''}"><span class="gr-emoji">${it.emoji}</span>
@@ -635,7 +637,7 @@ function stockView(x){
       <div class="gr-sact">${exp?x.confirmCmd('🗑️ Rút hàng hết hạn','gr_pull_today',{item:it.id},`Rút ${exp} ${stockUnit(x,it.id)} ${it.name} hết hạn hôm nay khỏi kệ? Ghi vào hao hụt.`,'small danger'):''}
         ${near&&!exp&&!cleared.includes(it.id)?x.cmd(`🏷️ Xả ${near>12?12:near} món −${100-(x.cc.clear_percent||70)}%`,'gr_clear',{item:it.id},'small ghost'):''}
         ${n>0&&full?'':n>0&&!sold(it.id)?`<small class="muted">${x.esc(sup.emoji||'')} không bán món này</small>`:n>0&&lack(x,cost)?`<button type="button" class="btn small ghost" disabled>📦 Nhập ${n} · thiếu ${x.fmt(lack(x,cost))} xu</button>`:n>0?x.confirmCmd(`📦 Nhập ${n} · ${x.fmt(cost)} xu`,'inv_order',{item:it.id,qty:n,supplier:sup.id||'partner'},`Nhập ${n} ${stockUnit(x,it.id)} ${it.name} từ ${sup.name} · ${x.fmt(cost)} xu? ${`Dự kiến nhận: ${sup.quote?.eta_label||sup.window||'sớm'}.`}, mở thùng đếm rồi mới lên kệ.`,'small ghost'):'<small class="muted">Kho đầy</small>'}
-        ${n>0&&sold(it.id)&&carted+n<=Math.min(30,room)?x.button(`🛒 +${n} vào đơn`,'v4CartPut',{supplier:sup.id||'partner',item:it.id,qty:n},'small ghost'):''}</div></div>`;
+        ${n>0&&sold(it.id)&&carted+n<=Math.min(lm,room)?x.button(`🛒 +${n} vào đơn`,'v4CartPut',{supplier:sup.id||'partner',item:it.id,qty:n},'small ghost'):''}</div></div>`;
   };
   const open=catalogue(x).filter(it=>!shut.includes(it)),hot=open.filter(needs),calm=open.filter(it=>!needs(it));
   const rows=`${hot.map(row).join('')||'<p class="muted small">Không món nào sắp hết hay sắp hết hạn.</p>'}
@@ -643,7 +645,7 @@ function stockView(x){
   return `<div class="card gr-stock"><div class="row spread"><h4>🏷️ Kho & giá</h4><small class="muted">Sức chứa ${cap} mỗi loại</small></div>
     <p class="small muted gr-how">Bấm 📦 Nhập để đặt hàng → thùng về thì mở ở 📦 Kho, chạm đếm từng món → hàng mới lên kệ. Chỉnh giá bán bằng − / +.</p>
     ${rotationNotes(x)}${incoming(x)}
-    ${cartChips(x)}<div class="gr-orderbar"><small>Nhập từ</small>${supplierPick(x)}${vline?`<div class="rs-bar" role="status"><p class="rs-line"><b>${vline}</b>${full?' · nhận bớt thùng rồi đặt tiếp':''}</p>${full?x.button(full.label,full.act,full.data||{},'small primary rs-btn'):''}</div>`:''}<div class="gr-qty" role="radiogroup" aria-label="Số lượng mỗi lần nhập">${[5,10,20,30].map(v=>`<button type="button" role="radio" aria-checked="${v===qty}" class="btn small ${v===qty?'primary':'ghost'}" data-action="car:qty" data-qty="${v}">${v}</button>`).join('')}${qtyBox({value:qty,min:1,max:30,label:'Số lượng mỗi lần nhập',live:true,go:`data-action="car:qty" data-qty="${QTY}"`})}</div></div>
+    ${cartChips(x)}<div class="gr-orderbar"><small>Nhập từ</small>${supplierPick(x)}${vline?`<div class="rs-bar" role="status"><p class="rs-line"><b>${vline}</b>${full?' · nhận bớt thùng rồi đặt tiếp':''}</p>${full?x.button(full.label,full.act,full.data||{},'small primary rs-btn'):''}</div>`:''}<div class="gr-qty" role="radiogroup" aria-label="Số lượng mỗi lần nhập">${[5,10,20,40,80].filter(v=>v<=lm).map(v=>`<button type="button" role="radio" aria-checked="${v===qty}" class="btn small ${v===qty?'primary':'ghost'}" data-action="car:qty" data-qty="${v}">${v}</button>`).join('')}${qtyBox({value:qty,min:1,max:lm,label:'Số lượng mỗi lần nhập',live:true,go:`data-action="car:qty" data-qty="${QTY}"`})}</div></div>
     <div class="gr-stock-list">${rows}</div>
     ${rules(x,x.cc.stock_rules,'Quy tắc kho')}</div>`;
 }

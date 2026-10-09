@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Dạ $1 đặt lịch tuần sau, em xin làm góc $2 dặn trước tiên ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Dạ con đi chợ theo thực đơn nhà dặn, giữ hóa đơn, nấu xong nếm lại mới dọn ạ. Hôm đó $1 ạ.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "“Bớt đi, $1 xu làm luôn.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hét giá $1 xu, chặt chém trắng trợn. Gọi thợ khác cho lành.",
   "en": "",
   "pattern": true
  }

@@ -3048,7 +3048,7 @@ SPEC = dict(
            ('Anh Lộc', 'front', 'Đọc sổ tiêm nhanh, giải thích nội quy nhẹ nhàng.', 84, 88),
            ('Tí Nị', 'kennel', 'Chạy bộ giỏi, dắt chó lớn đi dạo không mệt.', 90, 74)],
     roles={'bather': 'Phụ tắm sấy', 'kennel': 'Chăm chuồng', 'front': 'Lễ tân'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     prices={'groom_s': 18, 'groom_m': 24, 'groom_l': 32, 'groom_cat': 22, 'brush': 8, 'nails': 6, 'ears': 5,
             'board_dog': 20, 'board_cat': 16, 'care': 6, 'adopt': 20},
     tip=2,

@@ -2833,7 +2833,7 @@ SPEC = dict(
     staff=[('Vy', 'barista', 'Đánh sữa mịn như lụa, vẽ tim chưa bao giờ méo.', 82, 88), ('Hậu', 'baker', 'Dậy từ 4 giờ nhồi bột, thuộc lòng giờ ủ từng mẻ.', 70, 93),
            ('Nhi', 'cashier', 'Nhớ tên và món quen của gần hết khách trong hẻm.', 86, 80), ('Phong', 'barista', 'Tay nhanh giờ cao điểm, đôi khi hơi ẩu.', 90, 72)],
     roles={'barista': 'Pha chế', 'baker': 'Thợ bánh', 'cashier': 'Thu ngân'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     prices={'espresso': 25, 'americano': 30, 'latte': 38, 'cappuccino': 38, 'bacxiu': 32,
             'matcha_latte': 40, 'matcha_blend': 45, 'cacao_blend': 45,
             'croissant': 22, 'banhmi': 12, 'cookie': 12, 'bonglan': 20, 'cake': 160, 'matcha_cookie': 16, 'cacao_muffin': 24,

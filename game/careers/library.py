@@ -1571,7 +1571,7 @@ SPEC = dict(
            ('Mỹ', 'shelf', 'Tỉ mỉ, dán nhãn thẳng tắp, ghét sách xếp lộn.', 74, 94),
            ('Phát', 'room', 'Cao to, hiền khô, đứng đâu là chỗ đó im lặng.', 84, 80)],
     roles={'shelf': 'Xếp giá, dán nhãn', 'room': 'Trực phòng đọc'},
-    inventory=dict(items=ITEMS, capacity=40),
+    inventory=dict(items=ITEMS, capacity=80),
     tip=1,
     physical=PHYSICAL,
     free_actions=FREE,

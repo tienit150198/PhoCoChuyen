@@ -2503,6 +2503,19 @@ def _cs_after_task(s:dict,c:dict,t:dict,status:str)->None:
     row["last"]=ar.last(row["last"]+[dict(day=c["day"],title=t["title"][:120],note=note[:80],stars=post["stars"] if post and post.get("stars") else None)],4,"care.person."+t["npc"],c)
 
 
+def cs_restar(c:dict,post:dict,before:int,after:int)->bool:
+    """A review's stars changed after the visit (🚔 the police raised them, game/review_police.py): the person's card
+    keeps a snapshot of each visit's stars (_cs_after_task), so that visit follows. Matched by the person, the day, the
+    job title and the stars it had; the values stay 1–5 as before. True when a visit was updated."""
+    care=_care(c);row=(care.get("people") or {}).get(post.get("npc")) if isinstance(care,dict) else None
+    if not isinstance(row,dict) or not isinstance(row.get("last"),list):return False
+    title=str((post.get("feedback") or {}).get("title") or "")[:120]
+    for x in reversed(row["last"]):
+        if isinstance(x,dict) and x.get("day")==post.get("day") and x.get("title")==title and x.get("stars")==before:
+            x["stars"]=after;return True
+    return False
+
+
 def _cs_close(s:dict,c:dict)->list[str]:
     care=cs_care(c);day=c["day"];lines=[]
     stars=[f["stars"] for f in c["feed"] if f.get("kind")=="review" and f.get("day")==day and f.get("stars") and f.get("npc") in NPC_INDEX and NPC_INDEX[f["npc"]]["career_id"]=="customer_care"]

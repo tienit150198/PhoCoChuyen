@@ -718,14 +718,16 @@ def item(career: str, item_id: str) -> dict:
 
 def capacity(career: str) -> int:
     spec = _spec(career)
-    return spec.get('capacity', 40) if spec else 0
+    return spec.get('capacity', SHELF) if spec else 0
 
 
-# Bigger shelves (player #277, owner 09/10) ship in two releases. This one only ACCEPTS what the next one writes:
-# a save may hold up to SAVE_STOCK units of an item (a career with a bigger shelf keeps its own) and order or
-# draft lines of up to SAVE_LINE units, while its own orders keep LINE_MAX and capacity(). A crate from the
-# bigger release (a line over LINE_MAX) is received against stock_limit(), so a rollback strands no paid goods.
-LINE_MAX = 30       # units one order line or draft line may take here (inv_order, inv_cart)
+# Bigger shelves (player #277, owner 09/10) shipped in two releases. The first only ACCEPTED saves holding up to
+# SAVE_STOCK units of an item and order or draft lines of up to SAVE_LINE units (its own orders kept 30 a line
+# and the old shelves); this one raises the limits: every stocked career's shelf holds at least SHELF of an item
+# (a bigger one keeps its own) and one order or draft line takes up to LINE_MAX. Its saves still validate on
+# the first release. A crate with a line over LINE_MAX is checked against stock_limit() (see _receive_room).
+SHELF = 80          # the smallest per-item shelf of a stocked career (and the default)
+LINE_MAX = 80       # units one order line or draft line may take (inv_order, inv_cart)
 SAVE_STOCK = 80
 SAVE_LINE = 80
 
@@ -1459,6 +1461,7 @@ def public(c: dict, career: str) -> dict | None:
     v['capacity'] = capacity(career)
     v['transit_cap'], v['transit_lines'] = TRANSIT_CAP, TRANSIT_LINES
     v['cart_lines'] = CART_LINES  # lines in one draft (inv_cart refuses one more)
+    v['line_cap'] = LINE_MAX  # units one order or draft line may take (inv_order / inv_cart)
     v['cancel_pct'] = CANCEL_PCT  # share of the price an inv_cancel gives back (the confirm shows the xu)
     v['sizes'] = tree_copy((_spec(career) or {}).get('sizes', {}))
     # Derived numbers for the stock screen: what is on the way, room left on

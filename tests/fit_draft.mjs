@@ -7,7 +7,7 @@ import {fitDraft,orderQuote} from '../public/js/v4/restock.js';
 
 if(process.argv[2]){
   const a=JSON.parse(process.argv[2]);
-  process.stdout.write(JSON.stringify(fitDraft(a.lines,a.sup,a.money,{free:a.free,have:a.have})));
+  process.stdout.write(JSON.stringify(fitDraft(a.lines,a.sup,a.money,{free:a.free,have:a.have,lineMax:a.line_cap})));
   process.exit(0);
 }
 
@@ -39,4 +39,7 @@ assert.deepEqual(fitDraft(gels(8),sup,5,{free:8}),[]);
 // Quantities stay 1–30; zero or junk lines are left out.
 d=fitDraft([{id:'a',cost:1,q:99},{id:'b',cost:1,q:0},{id:'c',cost:1,q:'x'}],sup,1e6);
 assert.deepEqual(d,[{id:'a',q:30}]);
+// With the bigger shelves (inventory line_cap 80, player #277) a line takes up to that.
+d=fitDraft([{id:'a',cost:1,q:99},{id:'b',cost:1,q:60}],sup,1e6,{lineMax:80});
+assert.deepEqual(d,[{id:'a',q:80},{id:'b',q:60}]);
 console.log('fit_draft ok');
