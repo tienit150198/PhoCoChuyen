@@ -17,8 +17,9 @@ Saves are per-player documents, so a transfer is a row between two saves (`bank_
   Large transfers require this build's widened history amount validation; older servers must be patched before rollback.
 
 Both accounts must be registered ACCOUNT_DAYS days, the sender at life day LIFE_DAYS,
-friends for FRIEND_MINUTES and not blocked. Transfers have no daily amount/count quota;
-the sender must have the money. Day counters are accounting only, updated atomically.
+friends for FRIEND_MINUTES and not blocked. Transfers have no daily amount/count quota once the sender's account is
+NEW_DAYS real days old; a younger account sends at most NEW_DAY_MAX xu per (Vietnam) day (09/10: fresh alt accounts
+moved farmed money around). The sender must have the money. Day counters are accounting only, updated atomically.
 No fee. Transfer rows and the save revision guard preserve money and retry safety.
 
 Tables: game/pg_schema.py (PostgreSQL, schema 15).
@@ -35,6 +36,8 @@ from . import marriage as mr
 MIN_XU = 10              # smallest transfer
 MAX_TRANSFER = 10**9     # save's representable bank balance, not a daily quota
 ACCOUNT_DAYS = 1         # both accounts registered at least this long (real days; owner 03/10: 1 day)
+NEW_DAYS = 7             # an account younger than this many real days ...
+NEW_DAY_MAX = 500_000    # ... sends at most this many xu per day (bank_xfer_days.sent)
 LIFE_DAYS = 10           # the sender's save has lived this many days
 FRIEND_MINUTES = 60      # friends at least this long
 NOTE_MAX = 60
@@ -100,12 +103,26 @@ def clean_note(note) -> str:
         return ''
 
 
-def _old_enough(db, sid: str) -> bool:
+def _old_enough(db, sid: str, days: int = ACCOUNT_DAYS) -> bool:
     r = db.execute('SELECT created_at FROM accounts WHERE sid=?', (sid,)).fetchone()
     if not r:
         return False
-    cut = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(now() - ACCOUNT_DAYS * DAY))
+    cut = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(now() - days * DAY))
     return str(r['created_at']) <= cut
+
+
+def _day_cap(db, sid: str) -> int | None:
+    """The most this sender may send today in total (None: no cap, the account is NEW_DAYS real days old)."""
+    return None if _old_enough(db, sid, NEW_DAYS) else NEW_DAY_MAX
+
+
+def cap_text() -> str:
+    return f'Tài khoản mới (dưới {NEW_DAYS} ngày đời thực) chuyển tối đa {fmt(NEW_DAY_MAX)} xu mỗi ngày.'
+
+
+def _cap_left(cap: int, sent: int) -> str:
+    left = max(0, cap - sent)
+    return (f'Hôm nay bạn còn chuyển được {fmt(left)} xu thôi. ' if left else 'Hôm nay bạn đã chuyển đủ rồi, mai chuyển tiếp nhé. ') + cap_text()
 
 
 def _friend_since(db, sid: str, other: str) -> float | None:
@@ -166,6 +183,10 @@ def send(store, sid: str, display: str, d: dict, admin: bool = False) -> dict:
     need(not why, why or '', 'too_new', 403)
     t = now()
     with store.connect() as db:
+        cap = None if admin else _day_cap(db, sid)
+        if cap is not None:   # a clear answer before anything moves (checked again in the transaction)
+            sent = _today(db, sid, vn_day(t))['sent']
+            need(sent + amount <= cap, _cap_left(cap, sent), 'day_cap', 403)
         code = d.get('to')
         p = mr._find(db, mr.clean_code(code)) if isinstance(code, str) and code.strip() else None
         need(p and p['sid'] != sid, 'Chọn một người bạn để chuyển nhé.', 'not_found', 404)
@@ -210,6 +231,9 @@ def send(store, sid: str, display: str, d: dict, admin: bool = False) -> dict:
                        'got=bank_xfer_days.got+excluded.got', (other, day, amount))
         for _, up in sorted(((sid, mine_up), (other, theirs_up)), key=lambda x: x[0]):
             up()
+        if cap is not None:   # after the counter moved, under its row lock: two sends at once never pass the cap together
+            sent = _today(db, sid, day)['sent']
+            need(sent <= cap, _cap_left(cap, sent - amount), 'day_cap', 403)
     from . import db as dbm
     try:
         mr._mutate_retry(store, {sid: fn}, ops)
@@ -390,6 +414,7 @@ def view(store, sid: str, state: dict, admin: bool = False) -> dict:
             friends.append(dict(code=r['code'], name=mr._display(db, r['friend']), fc=faces.get(r['friend']), ok=why is None, why=why))
         friends.sort(key=lambda f: (not f['ok'], f['name'].lower()))
         mine = _today(db, sid, day)
+        cap = None if admin else _day_cap(db, sid)
         recent = []
         for r in mr._rows(db, 'SELECT * FROM bank_xfers WHERE sender=? ORDER BY at DESC LIMIT ?', (sid, RECENT)):
             recent.append((float(r['at']), dict(dir='out', code=r['code'], name=r['to_name'], amount=int(r['amount']), note=r['note'],
@@ -404,9 +429,10 @@ def view(store, sid: str, state: dict, admin: bool = False) -> dict:
                     rules=dict(min=MIN_XU, send_day=None, send_count=None, recv_day=None, unlimited=True, account_days=0, life_days=0,
                                friend_minutes=0, note_max=NOTE_MAX, chips=list(ADMIN_CHIPS), admin=True))
     return dict(friends=friends, lock=_lock(store, sid, state), recent=[x[1] for x in recent[:RECENT]],
-                today=dict(sent=mine['sent'], n=mine['n'], left=None, count_left=None),
-                rules=dict(min=MIN_XU, send_day=None, send_count=None, recv_day=None, unlimited=True, account_days=ACCOUNT_DAYS,
-                           life_days=LIFE_DAYS, friend_minutes=FRIEND_MINUTES, note_max=NOTE_MAX, chips=list(CHIPS)))
+                today=dict(sent=mine['sent'], n=mine['n'], left=None if cap is None else max(0, cap - mine['sent']), count_left=None),
+                rules=dict(min=MIN_XU, send_day=cap, send_count=None, recv_day=None, unlimited=cap is None, account_days=ACCOUNT_DAYS,
+                           life_days=LIFE_DAYS, friend_minutes=FRIEND_MINUTES, note_max=NOTE_MAX, chips=list(CHIPS),
+                           **({} if cap is None else dict(new_days=NEW_DAYS, cap_text=cap_text()))))
 
 
 def _admin(store, token: str) -> bool:

@@ -74,13 +74,14 @@ class InGameYear(unittest.TestCase):
         self.assertTrue(any('đáo hạn' in n for n in notes))
 
     def test_renewal_rolls_interest_into_a_new_term(self):
+        # 09/10 (game/bank.py RENEW_MAX): the principal (up to 10M) rolls over, the interest goes to the account.
         s = opened(wallet=1000, deposit=1000)
         s, _ = act(s, 'jr_bk_save', amount=1000, term=15, renew=True)
         tick(s, 15)
         t = B(s)['terms'][0]
-        self.assertEqual((t['amount'], t['start'], t['due'], t['renew']), (1000 + 1000 * 700 * 15 // 600000, s['journey']['life_day'],
+        self.assertEqual((t['amount'], t['start'], t['due'], t['renew']), (1000, s['journey']['life_day'],
                                                                           s['journey']['life_day'] + 15, True))
-        self.assertEqual(B(s)['balance'], 0)
+        self.assertEqual(B(s)['balance'], 1000 * 700 * 15 // 600000)
         with self.assertRaises(GameError):
             act(s, 'jr_bk_save', amount=100, term=15, renew='yes')
 

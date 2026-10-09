@@ -101,7 +101,7 @@ BAD_DEBT_SMS = ('{bank}: Hồ sơ của quý khách đã bị ghi nhận nợ x�
 BAD_CLEAR_SMS = '{bank}: Hồ sơ tín dụng của quý khách đã hết ghi nhận nợ xấu. Cảm ơn quý khách đã thanh toán đầy đủ.'
 STATEMENT_SMS = '{bank}: Sao kê thẻ •••• {no} kỳ này {amount} xu, tối thiểu {min} xu, hạn thanh toán Ngày {due}.'
 MATURED_SMS = '{bank}: Sổ tiết kiệm {term} {amount} xu đã đáo hạn, tiền gốc và lãi {total} xu đã về tài khoản thanh toán.'
-RENEWED_SMS = '{bank}: Sổ tiết kiệm {term} đã tái tục: nhập lãi {gain} xu vào gốc, sổ mới {total} xu, đáo hạn Ngày {due}.'
+RENEWED_SMS = '{bank}: Sổ tiết kiệm {term} đã tái tục: sổ mới {total} xu, đáo hạn Ngày {due}. Lãi {gain} xu đã về tài khoản thanh toán.'
 INSTALLMENT_SMS = '{bank}: Đã trích {amount} xu trả kỳ {k}/{n} khoản {what}. Cảm ơn quý khách.'
 
 DECLINE = {

@@ -144,7 +144,7 @@ async function onClick(op,data){
       if(await ask(`Rút ${xu(a)} tiền mặt?`,fee?`Cây ATM khác ngân hàng thu phí ${xu(fee)}. Tài khoản bị trừ ${xu(a+fee)}.`:'Rút tại cây ATM Ngân hàng Phố, không mất phí.',`Rút · ${xu(a)}`))send('jr_bk_withdraw',{amount:a,atm});return;}
     case'save':{const term=Number(val('bk-term')),a=amountOf('bk-save-amt'),src=val('bk-save-src')||'acc',renew=!!S.dlg.querySelector('#bk-renew')?.checked&&term>0;if(!a){S.flash={text:'Nhập số xu muốn gửi nhé.',kind:'warn'};render();return;}
       const rate=term?R.term_rate[String(term)]:R.demand_rate,gain=term?termGain(a,rate,term,R):0,name=b.term_names[String(term)].toLowerCase();
-      const msg=term?`${b.term_names[String(term)]} (${term} ngày sống), lãi ${pct(rate)}/năm. Đáo hạn ${onDay(J().life_day+term)}, nhận ${xu(a+gain)} (lãi ${gain?xu(gain):'dưới 1 xu'}).${renew?' Tới hạn tự tái tục: gốc và lãi gửi tiếp kỳ mới.':''} Rút trước hạn chỉ hưởng lãi không kỳ hạn ${pct(R.demand_rate)}/năm.`:`Lãi ${pct(rate)}/năm, cộng vào sổ mỗi ngày. Rút lúc nào cũng được.`;
+      const msg=term?`${b.term_names[String(term)]} (${term} ngày sống), lãi ${pct(rate)}/năm. Đáo hạn ${onDay(J().life_day+term)}, nhận ${xu(a+gain)} (lãi ${gain?xu(gain):'dưới 1 xu'}).${renew?` Tới hạn tự tái tục: gốc gửi tiếp kỳ mới (tối đa ${xu(R.renew_max||10000000)}), lãi về tài khoản.`:''} Rút trước hạn chỉ hưởng lãi không kỳ hạn ${pct(R.demand_rate)}/năm.`:`Lãi ${pct(rate)}/năm, cộng vào sổ mỗi ngày. Rút lúc nào cũng được.`;
       if(await ask(`Gửi ${xu(a)} tiết kiệm ${name}?`,msg+(src==='cash'?' Lấy từ tiền mặt.':' Lấy từ tài khoản thanh toán.'),`Gửi · ${xu(a)}`,{cost:a,pocket:src==='cash'?'wallet':'account'}))send('jr_bk_save',{amount:a,term,src,...(renew?{renew:true}:{})});return;}
     case'unsaveDemand':{const a=amountOf('bk-demand-out');if(!a){S.flash={text:'Nhập số xu muốn rút nhé.',kind:'warn'};render();return;}
       if(await ask(`Rút ${xu(a)} từ sổ không kỳ hạn?`,'Tiền về tài khoản thanh toán, không mất lãi đã cộng.',`Rút · ${xu(a)}`))send('jr_bk_unsave',{id:'demand',amount:a});return;}
@@ -356,7 +356,7 @@ function save(b){
       <label class="bk-field"><span>Số xu</span><input id="bk-save-amt" type="number" inputmode="numeric" min="1" placeholder="Ít nhất ${R.save_min} xu nếu có kỳ hạn"></label>
       <label class="bk-field"><span>Kỳ hạn</span><select id="bk-term">${opts}</select></label>
       <label class="bk-field"><span>Lấy từ</span><select id="bk-save-src"><option value="acc">Tài khoản thanh toán</option><option value="cash">Tiền mặt trong ví</option></select></label>
-      <label class="bk-toggle"><input type="checkbox" id="bk-renew"><span>Tới hạn tự tái tục (gốc và lãi gửi tiếp kỳ mới)</span></label></div>
+      <label class="bk-toggle"><input type="checkbox" id="bk-renew"><span>Tới hạn tự tái tục (gốc gửi tiếp kỳ mới, lãi về tài khoản)</span></label></div>
       <div class="bk-actions">${btn('Gửi tiết kiệm','save',{},'primary')}</div>${table}
       <p class="bk-hint">1 tháng = ${R.month_days} ngày sống, 1 năm = ${R.year_days} ngày sống. Rút trước hạn chỉ được lãi không kỳ hạn.</p></section>
     <section class="bk-card bk-house-link"><h3>🏠 Tiết kiệm mua nhà</h3><p class="bk-hint">Còn thiếu bao nhiêu để trả trước 30%?</p><div class="bk-actions">${btn('Nhà của bạn','house',{},'ghost')}</div></section>

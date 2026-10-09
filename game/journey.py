@@ -29,6 +29,7 @@ from .content import CAREERS, CAREER_META
 from . import archive as ar
 from . import certificates as ct
 from . import bank as bk   # 🏦 Ngân hàng Phố (game/bank.py)
+from . import interest_clock as icl   # ⏱️ interest days on real time (game/interest_clock.py)
 from . import price_index as pi   # 💹 07/10: LIVING
 from . import wardrobe as wd   # 👗 Tủ đồ (game/wardrobe.py)
 from . import avatar as avt    # 🙂 Ảnh đại diện khi chat (game/avatar.py)
@@ -1093,6 +1094,7 @@ def validate(s: dict) -> None:
     sg.validate(j)
     lfx.validate(j)
     fh.validate(j)   # 🏮 journey['fair'] (optional)
+    icl.validate(s)   # ⏱️ journey['iclock'] (optional)
     wl.gift_validate(j)   # 🎁 journey['wed_gift'] (optional)
     nd.validate(s)   # 🍚😴 journey['needs'] (optional)
     cg.validate(s)   # 🛕 journey['chua'] (optional)

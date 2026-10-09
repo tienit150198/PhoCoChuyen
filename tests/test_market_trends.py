@@ -10,14 +10,17 @@ import sys
 import unittest
 from unittest.mock import patch
 
+from game import interest_clock as ic
 from game import invest as iv
 from game import vang
 from game import realtime_market as rm
 
 
 def coin_state(seed=17, day=1):
-    return {'journey': {'seed': seed, 'life_day': day, 'wallet': 0,
-                        'stats': {'max_wallet': 0}, 'invest': iv.initial(seed, day)}}
+    s = {'journey': {'seed': seed, 'life_day': day, 'wallet': 0,
+                     'stats': {'max_wallet': 0}, 'invest': iv.initial(seed, day)}}
+    ic.sync(s)   # ⏱️ the interest-day allowance starts with the save (game/interest_clock.py), whatever the chunking
+    return s
 
 
 def advance(s, n=1):

@@ -30,6 +30,7 @@ import hashlib
 from . import archive as ar
 from . import bank_content as K
 from . import days as dy      # "Ngày N" wording (game/days.py)
+from . import interest_clock as ic   # ⏱️ interest days run on real time (1 real hour = 1 interest day)
 from . import price_index as pi   # 💹 07/10: the flat fees (the percentages and the loan rates stay; 1.9.9 pins LOAN_BP)
 
 VERSION = 1
@@ -46,12 +47,15 @@ MONTH_DAYS = 5
 YEAR_DAYS = 12 * MONTH_DAYS
 # Savings. Không kỳ hạn: basis points of a xu per xu per life day (5 = 0,05 %/ngày = 3 %/năm), credited daily.
 DEMAND_BP = 5
-# Có kỳ hạn: term (life days) -> basis points per year, paid at maturity. Longer terms pay more; the
-# Invest's 7-day savings (invest.py, 0,3 %/ngày) stays the higher-return option; every rate stays below the loans.
+# Có kỳ hạn: term (life days) -> basis points per year, paid at maturity. Longer terms pay more; every rate stays
+# below the loans. The Invest savings book (invest.py) pays 0,3 %/ngày only on its first 20.000 xu and 0,1 %/ngày above
+# (lãi bậc thang, 03/10), about this bank's 7-day term. Interest of every kind is paid only on the life days the
+# real-time allowance covers (game/interest_clock.py: 1 real hour = 1 interest day, 09/10).
 TERM_RATE = {7: 600, 15: 700, 30: 750, 60: 800, 120: 850, 180: 880}
 LEGACY_RATE = {7: 1200, 14: 1500, 30: 1800}   # sổ opened before 0.9.5 (0,2/0,25/0,3 %/ngày) keep their rate
 SAVE_MIN = 20
 TERMS_MAX = 5
+RENEW_MAX = 10**7           # tái tục rolls over at most this much principal; the interest and the rest go to the account
 
 # Credit score.
 SCORE_START, SCORE_MIN, SCORE_MAX = 650, 300, 850
@@ -155,6 +159,13 @@ def _seq(b: dict, prefix: str) -> str:
 def term_interest(amount: int, rate: int, days: int) -> int:
     """Interest of `amount` xu at `rate` basis points per in-game year over `days` life days."""
     return amount * rate * days // (10000 * YEAR_DAYS)
+
+
+def term_days(s: dict, t: dict, day: int) -> int:
+    """The life days of sổ `t` up to `day` (at most its term) that earn interest: the days beyond the real-time
+    allowance (game/interest_clock.py) earn nothing."""
+    end = min(int(day), t['start'] + t['term'])
+    return max(0, end - t['start'] - ic.forfeited(s, t['start'], end))
 
 
 def year_text(rate: int) -> str:
@@ -645,7 +656,7 @@ def _tick(s: dict, b: dict, n: int, notes: list) -> None:
     """Morning of life day `n`: everything that the night before settled."""
     j = s['journey']
     # Savings: the demand pot earns every day; term deposits pay out on maturity.
-    if b['demand'] > 0:
+    if b['demand'] > 0 and ic.paid(s, n):   # ⏱️ a day beyond the real-time allowance earns nothing
         b['pend'] += b['demand'] * DEMAND_BP
         gain, b['pend'] = divmod(b['pend'], 10000)
         if gain:
@@ -654,14 +665,23 @@ def _tick(s: dict, b: dict, n: int, notes: list) -> None:
             _log(b, n, 'sav', 'Lãi tiết kiệm không kỳ hạn', gain)
     for t in list(b['terms']):
         if n >= t['due']:
-            gain = term_interest(t['amount'], t['rate'], t['term'])
+            gain = term_interest(t['amount'], t['rate'], term_days(s, t, n))
             b['stats']['interest_in'] += gain
-            if t['renew'] and t['term'] in TERM_RATE and t['amount'] + gain <= BAL_MAX:
-                # Tái tục: principal and interest roll into a new sổ of the same term, at today's rate.
-                t.update(amount=t['amount'] + gain, rate=TERM_RATE[t['term']], start=n, due=n + t['term'])
-                _log(b, n, 'sav', f'Tái tục sổ {K.TERMS[t["term"]].lower()}: nhập lãi {_fmt(gain)} xu vào gốc', gain)
-                notes.append(_inbox(b, n, 'sms', K.RENEWED_SMS.format(bank=K.BANK_NAME, term=K.TERMS[t['term']].lower(),
-                                                                      gain=_fmt(gain), total=_fmt(t['amount']), due=t['due'])))
+            if t['renew'] and t['term'] in TERM_RATE:
+                # Tái tục: up to RENEW_MAX of the principal rolls into a new sổ of the same term, at today's rate; the
+                # interest (and any principal above RENEW_MAX) goes to the current account: no compounding without end.
+                keep = min(t['amount'], RENEW_MAX)
+                out = t['amount'] - keep + gain
+                name = K.TERMS[t['term']].lower()
+                t.update(amount=keep, rate=TERM_RATE[t['term']], start=n, due=n + t['term'])
+                if out:
+                    b['balance'] += out
+                if out - gain:
+                    _log(b, n, 'sav', f'Tái tục sổ {name}: gốc gửi tiếp tối đa {_fmt(RENEW_MAX)} xu', gain - out)
+                _log(b, n, 'acc', f'Sổ {name} tái tục: lãi {_fmt(gain)} xu' + (f' + gốc vượt {_fmt(out - gain)} xu' if out - gain else '')
+                     + ' về tài khoản', out)
+                notes.append(_inbox(b, n, 'sms', K.RENEWED_SMS.format(bank=K.BANK_NAME, term=name, gain=_fmt(gain), total=_fmt(keep),
+                                                                      due=t['due'])))
                 continue
             b['terms'].remove(t)
             b['balance'] += t['amount'] + gain
@@ -709,6 +729,7 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     if swipe and isinstance(result, dict):
         result['card_swipe'] = swipe
     if j.get('story'):
+        ic.sync(s)   # ⏱️ which of the new life days the real-time allowance covers (decided once per day)
         target = int(j['life_day'])
         b['day'] = max(b['day'], target - 400)
         while b['day'] < target:
@@ -854,7 +875,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         t = next((x for x in b['terms'] if x['id'] == tid), None)
         need(t, 'Không tìm thấy sổ tiết kiệm này.')
         need(p.get('confirm') is True, 'Xác nhận tất toán sổ trước hạn.')
-        held = max(0, day - t['start'])
+        held = max(0, day - t['start'] - ic.forfeited(s, t['start'], day))
         gain = t['amount'] * DEMAND_BP * held // 10000
         lost = term_interest(t['amount'], t['rate'], t['term']) - gain
         b['terms'].remove(t)
@@ -1026,7 +1047,7 @@ def action(s: dict, name: str, p: dict) -> dict:
 # ---------------------------------------------------------------- views
 def rules() -> dict:
     return dict(demand_bp=DEMAND_BP, demand_rate=DEMAND_BP * YEAR_DAYS, term_rate={str(k): v for k, v in TERM_RATE.items()},
-                terms=[0] + sorted(TERM_RATE), month_days=MONTH_DAYS, year_days=YEAR_DAYS, save_min=SAVE_MIN, terms_max=TERMS_MAX,
+                terms=[0] + sorted(TERM_RATE), month_days=MONTH_DAYS, year_days=YEAR_DAYS, save_min=SAVE_MIN, terms_max=TERMS_MAX, renew_max=RENEW_MAX,
                 atm_fee=ATM_OTHER_FEE, card_cycle=CARD_CYCLE, card_grace=CARD_GRACE, card_min_pct=CARD_MIN_PCT,
                 card_min_floor=CARD_MIN_FLOOR, card_bp=CARD_BP, card_late_fee=CARD_LATE_FEE, cash_fee_pct=CASH_FEE_PCT,
                 cash_fee_min=CASH_FEE_MIN, cash_share=CASH_SHARE, loan_bp=dict(LOAN_BP), loan_terms=list(LOAN_TERMS),
@@ -1056,7 +1077,7 @@ def public(s: dict) -> dict:
     terms = []
     for t in b['terms']:
         gain = term_interest(t['amount'], t['rate'], t['term'])
-        held = max(0, min(t['term'], day - t['start']))
+        held = term_days(s, t, day)
         terms.append(dict(t, name=K.TERMS[t['term']], interest=gain, value=t['amount'] + gain, days_left=max(0, t['due'] - day),
                           accrued=term_interest(t['amount'], t['rate'], held), rate_text=year_text(t['rate']),
                           early=t['amount'] * DEMAND_BP * held // 10000))

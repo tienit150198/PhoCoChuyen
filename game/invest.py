@@ -20,6 +20,7 @@ import copy
 import math
 import random
 from . import archive as ar
+from . import interest_clock as ic   # ⏱️ interest days run on real time (1 real hour = 1 interest day)
 from . import market_trends as mt
 from . import realtime_market as rm
 
@@ -248,7 +249,8 @@ def _tick(s: dict, iv: dict, d: int, notes: list[str]) -> None:
     # Savings: daily accrual, credited at the end of each 7-day term.
     sv = iv['saving']
     if sv['balance'] > 0:
-        sv['pending'] += accrual(sv['balance'], flat_term(s, sv))
+        if ic.paid(s, d + 1):   # ⏱️ a day beyond the real-time allowance earns nothing (the term still runs)
+            sv['pending'] += accrual(sv['balance'], flat_term(s, sv))
         if d + 1 - sv['term_day'] >= TERM:
             gain = sv['pending'] // 1000
             sv['pending'] %= 1000
@@ -307,6 +309,7 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     iv = _state(s)
     sync_market(s)
     notes: list[str] = []
+    ic.sync(s)   # ⏱️ which of the new life days the real-time allowance covers (decided once per day)
     target = int(j['life_day'])
     iv['day'] = max(iv['day'], target - 400)
     while iv['day'] < target:

@@ -51,9 +51,9 @@ function pick(v){
   const recent=(v.recent||[]).map(r=>`<li><div class="bk-tx-main"><small>${when(r.at)} · ${esc(r.code)}</small><span>${r.dir==='out'?`Tới ${esc(r.name)}`:`Từ ${esc(r.name)}`}${r.note?` · «${esc(r.note)}»`:''}</span></div>
     <div class="bk-tx-amt"><b class="${r.dir==='out'?'down':'up'}">${r.dir==='out'?'−':'+'}${fmt(r.amount)}</b><small>${r.dir==='in'?'Đã nhận':r.status==='done'?'Bạn ấy đã nhận':r.status==='back'?'Đã trả lại':'Chờ bạn ấy vào game'}</small></div></li>`).join('');
   return `<section class="bk-card bx"><h3>💸 Chuyển khoản cho bạn bè</h3>
-    ${v.lock?`<p class="bk-alert warn">${esc(v.lock)}</p>`:`<p class="bk-hint">${R.unlimited?'Không giới hạn số lần hay tổng xu chuyển mỗi ngày. Chuyển trong số dư bạn đang có.':`Hôm nay còn chuyển được <b>${xu(v.today.left)}</b>.`}</p>`}
+    ${v.lock?`<p class="bk-alert warn">${esc(v.lock)}</p>`:`<p class="bk-hint">${R.unlimited?'Không giới hạn số lần hay tổng xu chuyển mỗi ngày. Chuyển trong số dư bạn đang có.':`Hôm nay còn chuyển được <b>${xu(v.today.left)}</b>.${R.cap_text?` ${esc(R.cap_text)}`:''}`}</p>`}
     ${list?`<ul class="bx-friends" aria-label="Chọn người nhận">${list}</ul>`:'<p class="bk-hint">Chưa có bạn bè nào. Kết bạn ở mục Bạn bè nhé.</p>'}
-    ${R.admin?'<p class="bk-hint">🛡️ Admin: chuyển ngay, không giới hạn.</p>':`<details class="bk-tips"><summary>Quy định</summary><ul class="bk-bullets">${R.unlimited?'':`<li>Mỗi ngày chuyển tối đa ${xu(R.send_day)}, ${R.send_count} lần.</li><li>Mỗi người nhận tối đa ${xu(R.recv_day)} một ngày.</li>`}<li>Tài khoản đã chơi game đủ ${R.account_days} ngày (đời thực), kết bạn đủ ${R.friend_minutes} phút.</li></ul></details>`}</section>
+    ${R.admin?'<p class="bk-hint">🛡️ Admin: chuyển ngay, không giới hạn.</p>':`<details class="bk-tips"><summary>Quy định</summary><ul class="bk-bullets">${R.unlimited?'':`<li>${esc(R.cap_text||`Mỗi ngày chuyển tối đa ${xu(R.send_day)}.`)}</li>`}<li>Tài khoản đã chơi game đủ ${R.account_days} ngày (đời thực), kết bạn đủ ${R.friend_minutes} phút.</li></ul></details>`}</section>
     ${recent?`<section class="bk-card"><h3>Gần đây</h3><ul class="bk-tx">${recent}</ul></section>`:''}`;
 }
 
