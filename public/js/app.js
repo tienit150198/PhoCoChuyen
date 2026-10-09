@@ -336,6 +336,9 @@ function navItems(c){
   const result=careerUI(career())?.nav?.(items,careerContext(env()))||items;
   if(!result.some(x=>x[0]==='accountingSchool'))result.push(['accountingSchool','calculator','Học kế toán']);  // 📒 Học kế toán (v4/accounting-school.js): every career, after a career's own reshaping
   if(!result.some(x=>x[0]==='historyCourse'))result.push(['historyCourse','book','Học lịch sử']);  // 📜 Học lịch sử Việt Nam (v4/history-course.js): every career, free
+  // 🏆 F#294 "làm cái bxh ở trong phần Công việc": the board of the workplace on screen, one tap from the work pages
+  // (v4/leaderboard.js rankWork); the whole Bảng xếp hạng stays under Khu phố.
+  if(!result.some(x=>x[0]==='rankWork'))result.push(['rankWork','award','Xếp hạng nghề']);
   if(api.state?.journey?.story&&!result.some(x=>x[0]==='jrInvest'))result.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story&&api.content?.journey?.certs&&!result.some(x=>x[0]==='jrCerts'))result.push(['jrCerts','clipboard','Thi chứng chỉ',certBadge(api)]);
   return result;
@@ -346,11 +349,11 @@ function quayBadge(){const q=api.state?.journey?.quay;if(api.quayInvites>0)retur
 async function quayFlush(){try{const d=await api.post('/api/quay/flush',{});if(d?.state&&typeof d.revision==='number')api.accept({state:d.state,revision:d.revision});}catch{/* the next load settles it */}}
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
 /** One line under the look-alike Khu phố entries, so each says what it is (owner D5: names stay, lines added). */
-const RAIL_NOTE={home:'Hành trình · mục tiêu của bạn',jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
+const RAIL_NOTE={home:'Hành trình · mục tiêu của bạn',rankWork:'Bảng xếp hạng nơi bạn đang làm',jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
 const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${RAIL_NOTE[a]?`<small class="rail-note">${RAIL_NOTE[a]}</small>`:''}${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
-const RAIL_MAIN=['liveChat','home','fair','prepare','operations','jrInvest','prices','feedback','jobapp','jrCerts','accountingSchool'];   // 💬 Chat first, one tap (owner, 01/10)
+const RAIL_MAIN=['liveChat','home','fair','prepare','operations','jrInvest','prices','feedback','rankWork','jobapp','jrCerts','accountingSchool'];   // 💬 Chat first, one tap (owner, 01/10)
 /** Học kế toán is a work page for the office accountants; everyone else finds it under "Của mình". */
 const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accounting'];
 // 🏮 The fair while it is on or about to open (owner 08/10: "để luôn ở ngoài"): in sight, not in the Khu phố hub.
@@ -1613,7 +1616,7 @@ async function handleAction(action,data,el){
       if((L.tut.m||TUT_OPEN.has(action))&&await (await viaLazy(L.tut,el)).tutorialAction(action,data,el,env()))break;
       if(action.startsWith('desk:')&&await (await viaLazy(L.desk,el)).deskAction(action,data,el,env()))break;
       if(await boardAction(action,data,el,env()))break;
-      if((L.rank.m||action==='rank')&&await (await viaLazy(L.rank,el)).leaderboardAction(action,data,el,env()))break;
+      if((L.rank.m||action==='rank'||action==='rankWork')&&await (await viaLazy(L.rank,el)).leaderboardAction(action,data,el,env()))break;
       if((L.promo.m||PROMO_OPEN.has(action))&&await (await viaLazy(L.promo,el)).promoAction(action,data,el,env()))break;  // 🎖️🧑‍💼
       if(ABROAD_OPEN.has(action)&&await (await viaLazy(L.abroad,el)).abroadAction(action,data,el,env()))break;  // ✈️🌏
 

@@ -4,7 +4,7 @@
  * Every number comes from GET /api/leaderboard (game/leaderboard.py), computed from the saves on
  * the server. Names are display names only, always escaped. The privacy switch
  * "Hiện tên tôi trên bảng xếp hạng" posts to /api/leaderboard/visibility; it lives here and in
- * Cài đặt → Dữ liệu (lbPrivacyRow). Actions: rank (open), lbKind, lbBoard, lbMore, lbVisible, lbRetry, lbName. */
+ * Cài đặt → Dữ liệu (lbPrivacyRow). Actions: rank (open), rankWork (open on the workplace on screen, F#294), lbKind, lbBoard, lbMore, lbVisible, lbRetry, lbName. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {emojiOf} from './journey.js';
 import {myPortrait} from './look.js';
@@ -229,6 +229,9 @@ export async function leaderboardAction(action,data,el,env){
   switch(action){
     case'rank':{await Promise.race([ensureCss(),new Promise(r=>setTimeout(r,800))]);
       const b=data?.board;if(OWN.includes(b))s.kind=b;else if(b){s.kind='exp';s.board=b;}   // a 🏅 chip opens its own board
+      openSheet('rank');showChip(s.board);return true;}
+    case'rankWork':{await Promise.race([ensureCss(),new Promise(r=>setTimeout(r,800))]);   // 🏆 F#294: from Công việc, the board of the workplace on screen
+      const cur=env.api.state?.current;s.kind='exp';s.board=cur&&env.api.state.careers?.[cur]?cur:'all';
       openSheet('rank');showChip(s.board);return true;}
     case'lbKind':s.kind=[...OWN,'wed'].includes(data.kind)?data.kind:'exp';renderSheet(false);showChip(s.board);return true;
     case'lbBoard':s.board=data.board||'all';s.kind='exp';renderSheet();showChip(s.board);return true;
