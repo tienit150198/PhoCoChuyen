@@ -196,7 +196,8 @@ def _linked(db, owner, guest):
 
 
 def stay_owner(store, sid, state):
-    """(host sid, host save) while `state` (the save of `sid`) lives in a friend's home it may still stay in, else None."""
+    """(host sid, host digest: deco_mate.digest) while `state` (the save of `sid`) lives in a friend's home it may still
+    stay in, else None. The host's save is parsed only when it changed (deco_mate.residents)."""
     st = dc.stay_of((state or {}).get('journey') or {})
     if not st:
         return None
@@ -204,16 +205,16 @@ def stay_owner(store, sid, state):
         inv = mr._row(db, _STAY_INVITE, (sid, st['id']))
         if not inv or (inv['home_id'], inv['home_kind']) != (st['home'], st['kind']) or not _linked(db, inv['owner'], sid):
             return None
-    got = mr._read_state(store, inv['owner'])
-    own = _own(got[0]) if got else None
+    d = dm.resident(store, inv['owner'])
+    own = d and d['home']
     if not own or (own['id'], own['kind']) != (st['home'], st['kind']):
         return None
-    return inv['owner'], got[0]
+    return inv['owner'], d
 
 
-def stay_guests(store, owner, owner_state, skip=()):
-    """[(sid, save)] of the friends living in `owner`'s home now (an accepted stay, their save moved in), oldest first."""
-    own = _own(owner_state)
+def stay_guests(store, owner, own, skip=()):
+    """[(sid, digest)] of the friends living in `owner`'s home `own` {id, kind} now (an accepted stay, their save
+    moved in), oldest first. One query for the invites, one for the revisions; a save is parsed only when it changed."""
     if not own:
         return []
     with store.connect() as db:
@@ -221,11 +222,12 @@ def stay_guests(store, owner, owner_state, skip=()):
                             "AND home_id=? AND home_kind=? ORDER BY created_at,id LIMIT ?", (owner, own['id'], own['kind'], STAY_MAX))
         rows = [r for r in rows if r['guest'] not in skip and _linked(db, owner, r['guest'])]
     out = []
+    got = dm.residents(store, [r['guest'] for r in rows])
     for r in rows:
-        got = mr._read_state(store, r['guest'])
-        st = dc.stay_of(got[0].get('journey') or {}) if got else None
+        d = got.get(r['guest'])
+        st = d and d['story'] and d['stay']
         if st and st['id'] == r['id'][:16] and (st['home'], st['kind']) == (own['id'], own['kind']):
-            out.append((r['guest'], got[0]))
+            out.append((r['guest'], d))
     return out
 
 

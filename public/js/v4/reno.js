@@ -208,8 +208,12 @@ async function loadMate(){
   if(m?.moved){S.mate=null;S.mateState=null;S.env.api.refresh?.().then(()=>{if(S.dlg?.open)render();}).catch(()=>{});return;}   // 🏡 the stay ended: the pieces are back in the bag
   const next=failed&&S.mate?.at===key?S.mate:m&&m.at===key&&Array.isArray(m.items)?m:null,changed=JSON.stringify(S.mate)!==JSON.stringify(next);S.mate=next;S.mateState=!failed&&S.env.api.state===state?state:null;
   if(changed&&S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();
-  if(S.dlg?.open&&(next||married()||where==='stay'))S.mateTimer=setTimeout(loadMate,5000);   // fallback when the live service is reconnecting
+  // Someone else lives here: ask again in 30 s while the room is open and the page visible (also after each own deco
+  // command, on home_changed and when the page shows again). Nobody else: once per opening.
+  if(S.dlg?.open&&(next||where==='stay'))S.mateTimer=setTimeout(pollMate,MATE_POLL);
 }
+const MATE_POLL=30000;
+function pollMate(){S.mateTimer=0;if(S.dlg?.open&&document.visibilityState==='visible')loadMate();}   // hidden: the visibilitychange listener asks again
 
 async function send(action,payload={},opts={}){
   if(S.remote)return S.coop&&COOP[action]?coopSend(action,payload,opts):null;

@@ -158,6 +158,40 @@ class LivingWithAFriend(Base):
             validate_state(migrate_state(copy.deepcopy(s)))
         self.assertTrue(ident)
 
+    def test_a_refresh_parses_only_the_saves_that_changed(self):
+        """Load: residents' saves are read by revision; nothing changed, nothing parsed; one change, one parse."""
+        self.host_piece()
+        self.moved_in()
+        sofa = self.cmd(self.b, 'jr_deco_buy', item='sofa', confirm=True, put=dict(r='living', x=0, y=40))['result']['uid']
+        self.mate(self.a), self.mate(self.b)                                                # warm
+        dm.PARSED[0] = 0
+        for _ in range(3):
+            va, vb = self.mate(self.a), self.mate(self.b)
+        self.assertEqual(dm.PARSED[0], 0)
+        self.assertEqual([p['id'] for p in va['items']], ['g0:' + sofa])
+        self.cmd(self.b, 'jr_deco_put', uid=sofa, r='living', x=20, y=40)                  # the friend moves their sofa
+        va2, _vb = self.mate(self.a), self.mate(self.b)
+        self.assertEqual(dm.PARSED[0], 1)                                                    # only the friend's save
+        self.assertEqual(va2['items'][0]['fx'], 20)
+        self.cmd(self.a, 'jr_deco_buy', item='cay_canh', confirm=True, put=dict(r='living', x=100, y=0))
+        self.assertEqual(len(self.mate(self.b)['items']), 2)
+        self.assertEqual(dm.PARSED[0], 2)                                                    # then only the host's
+        self.mate(self.a), self.mate(self.b)
+        self.assertEqual(dm.PARSED[0], 2)
+
+    def test_the_cache_is_bounded(self):
+        with self.subTest('rows'):
+            saved = dm.CACHE_ROWS
+            dm.CACHE_ROWS = 3
+            try:
+                for i in range(6):
+                    dm._cache_put((f's{i}', 1), dict(pieces=[]))
+                self.assertLessEqual(len(dm._CACHE), 3)
+                dm._cache_put(('s5', 2), dict(pieces=[]))                                   # a newer revision replaces
+                self.assertEqual([k for k in dm._CACHE if k[0] == 's5'], [('s5', 2)])
+            finally:
+                dm.CACHE_ROWS = saved
+
     def test_nobody_sells_or_moves_another_residents_piece(self):
         """Commands only ever reach the actor's own save and its own pieces (piece ids are per save: the same 'd1' in
         two saves are two different things). The others' pieces come with a prefix and are found nowhere."""
