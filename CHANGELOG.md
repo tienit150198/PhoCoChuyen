@@ -1,3 +1,7 @@
+# v1.9.37 — 2026-10-09
+
+Gồm bank-exploit phần 1: lãi theo giờ thật (1 giờ = 1 ngày lãi, tối đa 168; journey.iclock tùy chọn), tái tục tối đa 10M gốc, tài khoản dưới 7 ngày thật chuyển tối đa 500k/ngày, log [day-skip]. Không có Có gì mới.
+
 # Chưa phát hành — bank-exploit (phần 1: lãi theo giờ thật)
 
 ⏱️ Lãi chạy theo giờ thật (chủ game 09/10, lỗ hổng bỏ trống ngày để ăn lãi): 1 giờ đời thực = 1 ngày tính lãi, tích tối đa 168 ngày (game/interest_clock.py). Ngày kết thúc vượt hạn mức vẫn trôi (hóa đơn, nợ, thẻ chạy như cũ) nhưng không có lãi: sổ không kỳ hạn, sổ có kỳ hạn (trừ ngày đó khỏi kỳ, cả khi tất toán sớm) và sổ tiết kiệm Đầu tư. Mây Coin không đổi. Khóa save mới tùy chọn journey.iclock; con trỏ ngày của ngân hàng/đầu tư vẫn chạy như cũ nên rollback về 1.9.36 không trả bù.
