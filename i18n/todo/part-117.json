@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Chưa có đồ nào.",
+  "en": ""
+ },
+ {
+  "vi": "🚗 Xe & phương tiện",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có xe. Ghé Cửa hàng xe trong ga-ra nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Đồ ăn trong tủ lạnh",
+  "en": ""
+ },
+ {
+  "vi": "Tủ lạnh đang trống.",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Giấy dán tường & sàn đã mua",
+  "en": ""
+ },
+ {
+  "vi": "Chưa mua mẫu nào (mẫu miễn phí luôn dùng được).",
+  "en": ""
+ },
+ {
+  "vi": "Bật ti vi xem dự báo thời tiết, mai trời nắng đẹp.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển kênh một vòng, toàn phim đã xem rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi phịch xuống sofa, êm quá trời.",
+  "en": ""
+ },
+ {
+  "vi": "Dựa lưng vào sofa, nghỉ một chút đã.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi vào bàn, lên kế hoạch cho ngày mai.",
+  "en": ""
+ },
+ {
+  "vi": "Sắp xếp lại giấy tờ trên bàn cho gọn.",
+  "en": ""
+ },
+ {
+  "vi": "Mở sổ ra ôn lại mấy điều học được hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Rút một cuốn sách ra đọc vài trang.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ sách hơi bụi, lau sơ một chút.",
+  "en": ""
+ },
+ {
+  "vi": "Gảy thử vài hợp âm, nghe cũng ra gì đó.",
+  "en": ""
+ },
+ {
+  "vi": "Gảy đàn bầu một khúc, tiếng ngân nghe thương ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Rắc chút thức ăn, đàn cá bơi lại đớp lia lịa.",
+  "en": ""
+ },
+ {
+  "vi": "Nồi cơm còn ấm, thơm mùi gạo mới.",
+  "en": ""
+ },
+ {
+  "vi": "Lò vi sóng kêu tinh một tiếng, xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đun ấm nước pha trà nóng.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ đồ vào máy giặt, chiều phơi là khô.",
+  "en": ""
+ },
+ {
+  "vi": "Chơi một ván game cho đỡ căng thẳng.",
+  "en": ""
+ },
+ {
+  "vi": "Mở một bài nhạc nhẹ, phòng ấm hẳn lên.",
+  "en": ""
+ },
+ {
+  "vi": "Vặn radio nghe tin tức buổi tối.",
+  "en": ""
+ },
+ {
+  "vi": "Tưới chút nước cho cây, lá xanh mướt.",
+  "en": ""
+ },
+ {
+  "vi": "Ôm gấu bông một cái cho đỡ mệt.",
+  "en": ""
+ },
+ {
+  "vi": "Lau bàn ăn sạch sẽ.",
+  "en": ""
+ },
+ {
+  "vi": "Pha một ấm trà, ngồi nhâm nhi.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi nghỉ chân một chút.",
+  "en": ""
+ },
+ {
+  "vi": "Bật đèn lên, phòng sáng ấm hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Ngắm nghía một chút, nhìn cũng xinh.",
+  "en": ""
+ },
+ {
+  "vi": "Nghịch một chút cho vui.",
+  "en": ""
+ },
+ {
+  "vi": "Sắp xếp lại góc này cho gọn.",
+  "en": ""
+ },
+ {
+  "vi": "Rửa mặt cho tỉnh táo.",
+  "en": ""
+ },
+ {
+  "vi": "Hít một hơi gió mát bên hồ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn mà thấy Tết tới gần.",
+  "en": ""
+ },
+ {
+  "vi": "Ngả lưng một chút cho đỡ mỏi. Tối rồi ngủ hẳn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nằm nghe quạt chạy vù vù, suýt ngủ quên.",
+  "en": ""
+ },
+ {
+  "vi": "Đi một vòng quanh phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Vươn vai một cái cho đỡ mỏi.",
+  "en": ""
+ },
+ {
+  "vi": "Bé ngủ ngoan quá, thương ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Nắm bàn tay bé xíu, mềm ơi là mềm.",
+  "en": ""
+ },
+ {
+  "vi": "Bé bò lại đòi bế kìa.",
+  "en": ""
+ },
+ {
+  "vi": "Bé bò nhanh ghê, coi chừng nha!",
+  "en": ""
+ },
+ {
+  "vi": "Bé lẫm chẫm đi lại, giỏi quá!",
+  "en": ""
+ },
+ {
+  "vi": "Bé dang tay đòi bế, cưng xỉu.",
+  "en": ""
+ },
+ {
+  "vi": "Chúc ngủ ngon nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tủ lạnh chạy êm ru, mát rượi.",
+  "en": ""
+ },
+ {
+  "vi": "Ngăn của bạn trong tủ lạnh chung",
+  "en": ""
+ },
+ {
+  "vi": "No bụng +",
+  "en": ""
+ },
+ {
+  "vi": "Tỉnh táo +",
+  "en": ""
+ },
+ {
+  "vi": "Quần áo trong tủ",
+  "en": ""
+ },
+ {
+  "vi": "🗄️ Quần áo trong tủ",
+  "en": ""
+ },
+ {
+  "vi": "Đồ mua ở shop tự xuất hiện ở đây, cùng quần áo cơ bản sẵn có. Chọn để ngắm thử, rồi mở Tủ đồ để mặc.",
+  "en": ""
+ },
+ {
+  "vi": "Đóng tủ",
+  "en": ""
+ },
+ {
+  "vi": "Trang phục đang mặc",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có quần áo trong tủ.",
+  "en": ""
+ },
+ {
+  "vi": "‹ Trước",
+  "en": ""
+ },
+ {
+  "vi": "👗 Mở Tủ đồ để thay",
+  "en": ""
+ },
+ {
+  "vi": "Tủ lạnh chung ở cuối phòng, mỗi người một ngăn.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Mở ngăn tủ của bạn",
+  "en": ""
+ },
+ {
+  "vi": "🍽️ Ăn",
+  "en": ""
+ },
+ {
+  "vi": "Tủ còn trống. Cất vài món bên dưới, đói thì lấy ra ăn.",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Đi chợ cất tủ",
+  "en": ""
+ },
+ {
+  "vi": "Mua bằng tiền trong ví. Đói lúc nào thì lấy ra ăn lúc đó.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Bày tủ lạnh ra để cất đồ ăn",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Có tủ lạnh là cất được đồ ăn",
+  "en": ""
+ },
+ {
+  "vi": "Chạm sàn để đi · chạm đồ để dùng",
+  "en": ""
+ },
+ {
+  "vi": "Trải nghiệm",
+  "en": ""
+ },
+ {
+  "vi": "Tài phú",
+  "en": ""
+ },
+ {
+  "vi": "Siêng việc chùa",
+  "en": ""
+ },
+ {
+  "vi": "Thần lô tô",
+  "en": ""
+ },
+ {
+  "vi": "Kinh đôi",
+  "en": ""
+ },
+ {
+  "vi": "Đọc ngược",
+  "en": ""
+ },
+ {
+  "vi": "Bão bầu cua",
+  "en": ""
+ },
+ {
+  "vi": "Mắt thần",
+  "en": ""
+ },
+ {
+  "vi": "Bị hỏi thăm",
+  "en": ""
+ },
+ {
+  "vi": "Khách quý",
+  "en": ""
+ },
+ {
+  "vi": "Khách mời của tuần",
+  "en": ""
+ },
+ {
+  "vi": "Ăn cưới pro",
+  "en": ""
+ },
+ {
+  "vi": "Danh hiệu độc bản · Nhà đấu giá",
+  "en": ""
+ },
+ {
+  "vi": "Top 1 tuần này",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải thêm được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được chợ nhà. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thanh toán và dọn vào nhà thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cập nhật.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xác nhận được kết quả. Bấm lại để kiểm tra cùng giao dịch, không trả tiền lần hai.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thực hiện được giao dịch.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập giá thuê là số nguyên dương hợp lệ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Trả trước 5 ngày sống của bạn. Hết kỳ cần gia hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Gia hạn thuê nhà?",
+  "en": ""
+ },
+ {
+  "vi": "Trả nhà đang thuê?",
+  "en": ""
+ },
+ {
+  "vi": "Tiền thuê đã trả trước cho những ngày còn lại không được hoàn. Bạn dọn khỏi nhà thuê và giữ đồ của mình.",
+  "en": ""
+ },
+ {
+  "vi": "Trả nhà",
+  "en": ""
+ },
+ {
+  "vi": "Lấy lại nhà?",
+  "en": ""
+ },
+ {
+  "vi": "người thuê",
+  "en": ""
+ },
+ {
+  "vi": "Lấy lại nhà",
+  "en": ""
+ },
+ {
+  "vi": "Tiền giường",
+  "en": ""
+ },
+ {
+  "vi": "Tiền phòng",
+  "en": ""
+ },
+ {
+  "vi": "Ở ghép với 3 bạn cùng phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển chỗ ở",
+  "en": ""
+ },
+ {
+  "vi": "Trả giường ký túc xá?",
+  "en": ""
+ },
+ {
+  "vi": "Trả phòng trọ?",
+  "en": ""
+ },
+ {
+  "vi": "Trả giường",
+  "en": ""
+ },
+ {
+  "vi": "từ quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "Không vay.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn về ở căn mới.",
+  "en": ""
+ },
+ {
+  "vi": "Căn mới để trống, chưa dọn về.",
+  "en": ""
+ },
+ {
+  "vi": "Ký hợp đồng mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "Tất toán khoản vay mua nhà?",
+  "en": ""
+ },
+ {
+  "vi": ". Bạn về gác Bà Tám (muốn ở căn khác thì dọn qua đó trước rồi hãy bán)",
+  "en": ""
+ },
+ {
+  "vi": ". Người ấy dọn ra cùng bạn",
+  "en": ""
+ },
+ {
+  "vi": "tài khoản",
+  "en": ""
+ },
+ {
+  "vi": "sẽ để trống.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ trang trí gói vào túi đồ, bày lại ở nhà mới.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi lời mời mới nếu muốn người ấy dọn về cùng.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn nhà",
+  "en": ""
+ },
+ {
+  "vi": "dọn đi, gửi nốt tiền thuê những ngày đã ở.",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ tin đang tìm khách NPC.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một căn nhà nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang có nhà rồi.",
+  "en": ""
+ },
+ {
+  "vi": "(thuế trước bạ trả từ ví hoặc tài khoản)",
+  "en": ""
+ },
+ {
+  "vi": ", phí và thuế",
+  "en": ""
+ },
+ {
+  "vi": "và phí",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng chưa duyệt vay mua nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Thuê phòng, để dành, mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Thuê phòng, để dành, mua nhà. Mọi con số tính theo ngày sống.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà cửa chỉ có trong chế độ hành trình",
+  "en": ""
+ },
+ {
+  "vi": "Vào hành trình để thuê phòng, để dành và mua nhà cho nhân vật của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "← Nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Nộp tiền vào tài khoản để trả góp",
+  "en": ""
+ },
+ {
+  "vi": "nhà của bạn đang để trống",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Mở tài khoản Ngân hàng Phố",
+  "en": ""
+ },
+ {
+  "vi": "🐷 Gửi tiết kiệm mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "🏰 Dinh thự của bạn",
+  "en": ""
+ },
+ {
+  "vi": "🔑 Nhà đứng tên bạn",
+  "en": ""
+ },
+ {
+  "vi": "👥 Ở ghép · giường dưới cạnh cửa sổ",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Đang thuê",
+  "en": ""
+ },
+ {
+  "vi": "🪴 Ấm cúng",
+  "en": ""
+ },
+ {
   "vi": "🚪 Vào nhà bạn",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Nhà không còn nợ 🔑",
-  "en": ""
- },
- {
-  "vi": "Nơi bạn ở",
-  "en": ""
- },
- {
-  "vi": "hợp người mới",
-  "en": ""
- },
- {
-  "vi": "Chào bạn mới! 👋",
-  "en": ""
- },
- {
-  "vi": "Một khu phố nhỏ, nhiều nghề để thử.",
-  "en": ""
- },
- {
-  "vi": "👆 Chọn Nam hoặc Nữ để bắt đầu",
-  "en": ""
- },
- {
-  "vi": "Làm ở đâu trước?",
-  "en": ""
- },
- {
-  "vi": "Vào phố thôi",
-  "en": ""
- },
- {
-  "vi": "Vào làm thôi",
-  "en": ""
- },
- {
-  "vi": "Chữ, số, khoảng trắng và tối đa 2 emoji",
-  "en": ""
- },
- {
-  "vi": "Đổi kiểu tóc, áo quần, giày và phụ kiện.",
-  "en": ""
- },
- {
-  "vi": "Gương mặt hiện cạnh tin nhắn chat, mặc đồ trong Tủ đồ.",
-  "en": ""
- },
- {
-  "vi": "Chưa đeo gì. Chạm một danh hiệu hay chứng chỉ bên dưới để đeo.",
-  "en": ""
- },
- {
-  "vi": "Tạm đóng · mở lại miễn phí",
-  "en": ""
- },
- {
-  "vi": "Vắng chủ không tốn phí",
-  "en": ""
- },
- {
-  "vi": "❔ Rút tiền thế nào?",
-  "en": ""
- },
- {
-  "vi": "Lương nhận sau khi kết thúc ngày làm được chuyển về ví và ghi ở dòng 💵 Lương ngày… bên dưới. Bấm Xem cũ hơn để tìm những ngày trước.",
-  "en": ""
- },
- {
-  "vi": "điện nước nhà",
-  "en": ""
- },
- {
-  "vi": "tiền phòng",
-  "en": ""
- },
- {
-  "vi": "Khi tạm đóng, nơi này chưa làm việc được. Mở lại lúc nào cũng được, không tốn phí.",
-  "en": ""
- },
- {
-  "vi": "Mở lại không tốn phí. Quỹ, hàng và người làm vẫn để nguyên như lúc bạn đi.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã được mời ra khỏi phòng.",
-  "en": ""
- },
- {
-  "vi": "Phòng tạm đóng.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã vào phòng ở tab khác.",
-  "en": ""
- },
- {
-  "vi": "Gần đúng rồi! 🤏",
-  "en": ""
- },
- {
-  "vi": "Chưa được, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Phòng đông, bạn vào phòng bên cạnh 🎤",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được trình phát YouTube.",
-  "en": ""
- },
- {
-  "vi": "Video không cho phát ngoài YouTube.",
-  "en": ""
- },
- {
-  "vi": "Video lỗi, chờ bài sau nhé.",
-  "en": ""
- },
- {
-  "vi": "🎤 Phòng hát Mây",
-  "en": ""
- },
- {
-  "vi": "🎤 Chị Ngân giữ mic",
-  "en": ""
- },
- {
-  "vi": "Danh sách phòng",
-  "en": ""
- },
- {
-  "vi": "Giữ để cổ vũ",
-  "en": ""
- },
- {
-  "vi": "🎤 Mic trực tiếp sắp có; giờ hát theo video, cả phòng xem chung",
-  "en": ""
- },
- {
-  "vi": "🎤 Sân khấu trống",
-  "en": ""
- },
- {
-  "vi": "Tắt mic",
-  "en": ""
- },
- {
-  "vi": "Bật mic trực tiếp",
-  "en": ""
- },
- {
-  "vi": "🔴 Tắt mic",
-  "en": ""
- },
- {
-  "vi": "🎙️ Đang nối mic…",
-  "en": ""
- },
- {
-  "vi": "Chưa phát được giọng",
-  "en": ""
- },
- {
-  "vi": "🎤 Đang phát trực tiếp giọng hát",
-  "en": ""
- },
- {
-  "vi": "· 🎧 Đeo tai nghe cho đỡ vọng nhạc",
-  "en": ""
- },
- {
-  "vi": "Máy này chưa nghe được giọng trực tiếp. Mở bằng Chrome hoặc Safari nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa nghe được giọng",
-  "en": ""
- },
- {
-  "vi": "🎧 Đang nối giọng…",
-  "en": ""
- },
- {
-  "vi": "🔈 Chạm để nghe giọng",
-  "en": ""
- },
- {
-  "vi": "Âm lượng giọng hát",
-  "en": ""
- },
- {
-  "vi": "Bật tiếng giọng hát",
-  "en": ""
- },
- {
-  "vi": "Tắt tiếng giọng hát",
-  "en": ""
- },
- {
-  "vi": "🎤 Hát cùng:",
-  "en": ""
- },
- {
-  "vi": "Tắt mic người hát cùng",
-  "en": ""
- },
- {
-  "vi": "Không cho",
-  "en": ""
- },
- {
-  "vi": "muốn hát cùng",
-  "en": ""
- },
- {
-  "vi": "Cho hát",
-  "en": ""
- },
- {
-  "vi": "🔴 Bạn đang hát cùng",
-  "en": ""
- },
- {
-  "vi": "🎧 Đeo tai nghe cho đỡ vọng nhạc",
-  "en": ""
- },
- {
-  "vi": "🙋 Đang chờ người hát đồng ý…",
-  "en": ""
- },
- {
-  "vi": "🎤 Hát cùng",
-  "en": ""
- },
- {
-  "vi": "Hết giờ",
-  "en": ""
- },
- {
-  "vi": "chữ",
-  "en": ""
- },
- {
-  "vi": "Đoán tên bài…",
-  "en": ""
- },
- {
-  "vi": "Nhắn…",
-  "en": ""
- },
- {
-  "vi": "🎤 Thêm bài",
-  "en": ""
- },
- {
-  "vi": "Dán link YouTube",
-  "en": ""
- },
- {
-  "vi": "Mở YouTube → Chia sẻ → Sao chép đường liên kết → dán vào đây",
-  "en": ""
- },
- {
-  "vi": "✓ Phát được",
-  "en": ""
- },
- {
-  "vi": "Không phát được",
-  "en": ""
- },
- {
-  "vi": "Link thưởng (tùy)",
-  "en": ""
- },
- {
-  "vi": "📝 Lời",
-  "en": ""
- },
- {
-  "vi": "Một câu hát ngắn",
-  "en": ""
- },
- {
-  "vi": "🎙️ Hát trực tiếp",
-  "en": ""
- },
- {
-  "vi": "Cả phòng nghe giọng bạn ngay lúc hát. Không ghi âm. Mic tự tắt khi hết bài hoặc sau 6 phút.",
-  "en": ""
- },
- {
-  "vi": "🎧 Đeo tai nghe để nhạc không vọng vào mic.",
-  "en": ""
- },
- {
-  "vi": "🎙️ Bật mic",
-  "en": ""
- },
- {
-  "vi": "Người hát đồng ý là cả phòng nghe giọng bạn hát chung. Không ghi âm.",
-  "en": ""
- },
- {
-  "vi": "🙋 Xin hát cùng",
-  "en": ""
- },
- {
-  "vi": "Năm sinh",
-  "en": ""
- },
- {
-  "vi": "🎂 Bạn sinh năm nào?",
-  "en": ""
- },
- {
-  "vi": "Chỉ để mở mic trực tiếp (từ 16 tuổi). Lưu một lần, không đổi được.",
-  "en": ""
- },
- {
-  "vi": "🎧 Bạn nghe cùng mọi người nhé",
-  "en": ""
- },
- {
-  "vi": "Mic trực tiếp dành cho bạn từ 16 tuổi. Bạn vẫn nghe, thả tim và cổ vũ được nha.",
-  "en": ""
- },
- {
-  "vi": "🚩 Báo cáo giọng hát",
-  "en": ""
- },
- {
-  "vi": "Nói bậy / quấy rối",
-  "en": ""
- },
- {
-  "vi": "🛟 Có vẻ là trẻ em",
-  "en": ""
- },
- {
-  "vi": "🧩 Đố bài",
-  "en": ""
- },
- {
-  "vi": "🚩 Báo cáo bài",
-  "en": ""
- },
- {
-  "vi": "⏹ Kết thúc đố",
-  "en": ""
- },
- {
-  "vi": "⏭ Bỏ bài (QL)",
-  "en": ""
- },
- {
-  "vi": "🔇 Cắt mic (QL)",
-  "en": ""
- },
- {
-  "vi": "🔒 Đóng phòng",
-  "en": ""
- },
- {
-  "vi": "Chặn người này? Hai bạn sẽ không thấy tin, không nghe giọng nhau.",
-  "en": ""
- },
- {
-  "vi": "Đã chặn.",
-  "en": ""
- },
- {
-  "vi": "Chọn năm sinh nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa lưu được.",
-  "en": ""
- },
- {
-  "vi": "Chưa kiểm tra được.",
-  "en": ""
- },
- {
-  "vi": "Chưa xếp được, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã xếp hàng 🎁",
-  "en": ""
- },
- {
-  "vi": "Chưa xếp được.",
-  "en": ""
- },
- {
-  "vi": "Link thưởng không phát được.",
-  "en": ""
- },
- {
-  "vi": "Chưa tặng được.",
-  "en": ""
- },
- {
-  "vi": "Máy này chỉ nghe được. Mở bằng Safari/Chrome để hát trực tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa cho phép micro. Mở cài đặt trang web › Micro để bật nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa bật được mic, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Mic đã ngắt kết nối.",
-  "en": ""
- },
- {
-  "vi": "Không thấy micro trên máy này.",
-  "en": ""
- },
- {
-  "vi": "Chưa kết nối được mic, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa xin hát cùng được, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Người hát chưa trả lời, lát thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Mic đang bận, thử lại sau ít phút nhé.",
-  "en": ""
- },
- {
-  "vi": "Lần này bạn nghe cùng mọi người nhé 🎧",
-  "en": ""
- },
- {
-  "vi": "Người hát đã tắt mic hát cùng của bạn.",
-  "en": ""
- },
- {
-  "vi": "Mic hát cùng đã tắt.",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được bảng xếp hạng.",
-  "en": ""
- },
- {
-  "vi": "Tài sản ròng như ở “Tiền của bạn”, cộng tiết kiệm Mây, xe và quầy riêng theo giá bán lại, Mây Coin và vàng theo giá vốn, trừ mọi nợ kể cả vay nóng chợ đen. Không tính Quỹ chung. Bằng nhau: ai nhiều tài sản hơn, rồi ai đạt trước.",
-  "en": ""
- },
- {
-  "vi": "Xếp theo số danh hiệu trò chơi đã có, rồi danh hiệu bí mật, rồi ai có sớm hơn.",
-  "en": ""
- },
- {
-  "vi": "Xếp theo số chứng chỉ đã có, rồi tổng điểm thi cao nhất, rồi ai có sớm hơn.",
-  "en": ""
- },
- {
-  "vi": "Điểm là XP trưởng thành: XP ở mọi nơi làm, cộng 80 cho mỗi nơi đã phục vụ khách. Bằng điểm thì ai thạo nhiều nghề hơn, rồi làm nhiều ngày hơn đứng trước.",
-  "en": ""
- },
- {
-  "vi": "Tài sản ròng · coin/vàng tính theo giá vốn · không tính Quỹ chung",
-  "en": ""
- },
- {
-  "vi": "bí mật",
-  "en": ""
- },
- {
-  "vi": "điểm thi",
-  "en": ""
- },
- {
-  "vi": "nghề thạo",
-  "en": ""
- },
- {
-  "vi": "danh hiệu",
-  "en": ""
- },
- {
-  "vi": "Chưa ai giữ",
-  "en": ""
- },
- {
-  "vi": "Cập nhật hằng ngày",
-  "en": ""
- },
- {
-  "vi": "Tuần trước",
-  "en": ""
- },
- {
-  "vi": "Danh hiệu tuần này",
-  "en": ""
- },
- {
-  "vi": "🏅 Danh hiệu tuần này",
-  "en": ""
- },
- {
-  "vi": "Bảng này chỉ tính người chơi theo câu chuyện: chơi tự do không có ví riêng.",
-  "en": ""
- },
- {
-  "vi": "Tài sản ròng của bạn chưa trên 0 xu. Trả bớt nợ, để dành thêm là có tên trên bảng.",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa có danh hiệu nào. Hoàn thành việc đầu tiên là có ngay.",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa có chứng chỉ nào. Thi đỗ chứng chỉ đầu tiên để có tên trên bảng này.",
-  "en": ""
- },
- {
-  "vi": "Hoàn thành việc đầu tiên để có tên trên bảng này.",
-  "en": ""
- },
- {
-  "vi": "Vị trí của bạn",
-  "en": ""
- },
- {
-  "vi": "Tên hiện là",
-  "en": ""
- },
- {
-  "vi": "Tên bạn đang ẩn.",
-  "en": ""
- },
- {
-  "vi": "Hiện tên tôi",
-  "en": ""
- },
- {
-  "vi": "Đặt tên cho nhân vật (khác “Mây”) để có tên trên bảng.",
-  "en": ""
- },
- {
-  "vi": "Đặt tên nhân vật",
-  "en": ""
- },
- {
-  "vi": "Chưa ai lên bảng",
-  "en": ""
- },
- {
-  "vi": "Có tài sản ròng trên 0 xu là có tên trên bảng này.",
-  "en": ""
- },
- {
-  "vi": "Chưa ai có danh hiệu",
-  "en": ""
- },
- {
-  "vi": "Làm việc ở phố để nhận danh hiệu đầu tiên nhé.",
   "en": ""
  }
 ]

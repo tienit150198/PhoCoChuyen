@@ -1,5 +1,413 @@
 [
  {
+  "vi": "Lương cơ bản − Trừ nghỉ không lương + 3 phụ cấp trong Hợp đồng + Tiền tăng ca.",
+  "en": ""
+ },
+ {
+  "vi": "Lương đóng bảo hiểm (Hợp đồng) × 8%, làm tròn xuống.",
+  "en": ""
+ },
+ {
+  "vi": "Lương đóng bảo hiểm × 1,5% (× 15 ÷ 1000), làm tròn xuống.",
+  "en": ""
+ },
+ {
+  "vi": "Lương đóng bảo hiểm × 1%, làm tròn xuống.",
+  "en": ""
+ },
+ {
+  "vi": "Tổng thu nhập − ăn trưa (miễn tối đa 700) − 3 khoản bảo hiểm − 5000 bản thân − 2000 × người phụ thuộc ĐÃ đăng ký.",
+  "en": ""
+ },
+ {
+  "vi": "Áp biểu lũy tiến tháng (📋 Quy định · Thuế TNCN) lên Thu nhập tính thuế, làm tròn xuống.",
+  "en": ""
+ },
+ {
+  "vi": "Tổng thu nhập − 3 khoản bảo hiểm − Thuế TNCN (số của các bước trên).",
+  "en": ""
+ },
+ {
+  "vi": "Tổng thực lĩnh trên Bảng lương ĐÃ DUYỆT — không lấy tổng file nháp.",
+  "en": ""
+ },
+ {
+  "vi": "Cộng cột “Thuế GTGT” của mọi hóa đơn bán ra.",
+  "en": ""
+ },
+ {
+  "vi": "Cộng cột “Thuế GTGT” của hóa đơn mua vào, bỏ các tờ đã loại ở bước 1.",
+  "en": ""
+ },
+ {
+  "vi": "Thuế đầu ra − thuế đầu vào được khấu trừ (bước trước).",
+  "en": ""
+ },
+ {
+  "vi": "Số tiền thuế × 3 × số ngày trễ ÷ 10000 (0,03% mỗi ngày), làm tròn xuống.",
+  "en": ""
+ },
+ {
+  "vi": "Dòng “Thực lĩnh” phiếu tháng 8 − dòng “Thực lĩnh” phiếu tháng 9.",
+  "en": ""
+ },
+ {
+  "vi": "12 × 5000 bản thân + 2000 × số tháng có người phụ thuộc (giấy “Người phụ thuộc đã đăng ký”).",
+  "en": ""
+ },
+ {
+  "vi": "Thu nhập chịu thuế của MỌI nơi − bảo hiểm bắt buộc − Tổng giảm trừ.",
+  "en": ""
+ },
+ {
+  "vi": "Áp biểu lũy tiến NĂM (mốc tháng × 12) lên Thu nhập tính thuế cả năm, làm tròn xuống.",
+  "en": ""
+ },
+ {
+  "vi": "Thuế phải nộp cả năm − thuế đã khấu trừ ở mọi nơi; âm là được hoàn.",
+  "en": ""
+ },
+ {
+  "vi": "✗ chưa khớp",
+  "en": ""
+ },
+ {
+  "vi": "✓ khớp",
+  "en": ""
+ },
+ {
+  "vi": "📐 Cách tính",
+  "en": ""
+ },
+ {
+  "vi": "Tin nhắn ·",
+  "en": ""
+ },
+ {
+  "vi": "Không có dòng nào của",
+  "en": ""
+ },
+ {
+  "vi": "✓ Bắt đúng lỗi",
+  "en": ""
+ },
+ {
+  "vi": "✗ Bỏ sót — ô này sai",
+  "en": ""
+ },
+ {
+  "vi": "✗ Đánh dấu nhầm — ô này đúng",
+  "en": ""
+ },
+ {
+  "vi": "✓ Ô này đúng",
+  "en": ""
+ },
+ {
+  "vi": "Không tính",
+  "en": ""
+ },
+ {
+  "vi": "✓ bắt đúng",
+  "en": ""
+ },
+ {
+  "vi": "✗ sót",
+  "en": ""
+ },
+ {
+  "vi": "✗ nhầm",
+  "en": ""
+ },
+ {
+  "vi": "Bảng nháp:",
+  "en": ""
+ },
+ {
+  "vi": "Đúng:",
+  "en": ""
+ },
+ {
+  "vi": "📎 Căn cứ",
+  "en": ""
+ },
+ {
+  "vi": "👆 Chạm vào ô bất kỳ để xem cách tính.",
+  "en": ""
+ },
+ {
+  "vi": "Dòng này không có lỗi và bạn không đánh dấu nhầm ô nào.",
+  "en": ""
+ },
+ {
+  "vi": "Sót",
+  "en": ""
+ },
+ {
+  "vi": "Đánh dấu nhầm",
+  "en": ""
+ },
+ {
+  "vi": "đối chiếu hồ sơ gốc",
+  "en": ""
+ },
+ {
+  "vi": "sót",
+  "en": ""
+ },
+ {
+  "vi": "đánh dấu nhầm",
+  "en": ""
+ },
+ {
+  "vi": "Thu gọn",
+  "en": ""
+ },
+ {
+  "vi": "Xem từng ô",
+  "en": ""
+ },
+ {
+  "vi": "✓ Bạn bắt đúng lỗi",
+  "en": ""
+ },
+ {
+  "vi": "Đúng từ đầu, bạn không đánh dấu nhầm ô nào.",
+  "en": ""
+ },
+ {
+  "vi": "Viền đỏ: ô sai bạn bỏ sót. Viền cam: ô đúng bạn đánh dấu nhầm. Cách tính nằm ngay dưới mỗi dòng.",
+  "en": ""
+ },
+ {
+  "vi": "Bắt đủ mọi lỗi, không giữ lương oan ô nào.",
+  "en": ""
+ },
+ {
+  "vi": "lần chưa khớp",
+  "en": ""
+ },
+ {
+  "vi": "khớp ngay",
+  "en": ""
+ },
+ {
+  "vi": "khớp hết ngay lần đầu",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Xem lại hồ sơ đã làm",
+  "en": ""
+ },
+ {
+  "vi": "hồ sơ · cách tính từng ô",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ đã làm",
+  "en": ""
+ },
+ {
+  "vi": "Xem lại hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "📋 Quy định kỳ này",
+  "en": ""
+ },
+ {
+  "vi": "thẻ · mức sàn bảo hiểm, ngày lễ, tạm ứng…",
+  "en": ""
+ },
+ {
+  "vi": "Soát tiếp",
+  "en": ""
+ },
+ {
+  "vi": "xong dòng",
+  "en": ""
+ },
+ {
+  "vi": "so từng ô rồi xong dòng",
+  "en": ""
+ },
+ {
+  "vi": "Giấy tờ khách gửi",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Bỏ chọn",
+  "en": ""
+ },
+ {
+  "vi": "☑️ Chọn",
+  "en": ""
+ },
+ {
+  "vi": "✍️ Điền theo giấy tờ",
+  "en": ""
+ },
+ {
+  "vi": "📥 Nhận bảng lương",
+  "en": ""
+ },
+ {
+  "vi": "🧮 Bàn thuế & lương",
+  "en": ""
+ },
+ {
+  "vi": "bảng lương đã chuyển",
+  "en": ""
+ },
+ {
+  "vi": "sẽ tới khiếu nại sáng mai",
+  "en": ""
+ },
+ {
+  "vi": "Chạm chọn một đáp án trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm chọn ít nhất một ô trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm đủ các việc theo thứ tự trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn đủ từng dòng trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Điền đủ các ô số trước khi kiểm tra nhé.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Khách trả tiền mặt",
+  "en": ""
+ },
+ {
+  "vi": "Khay thối còn trống",
+  "en": ""
+ },
+ {
+  "vi": "Khách đưa vừa đủ, không cần thối.",
+  "en": ""
+ },
+ {
+  "vi": "Không cần thối.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Hết hàng",
+  "en": ""
+ },
+ {
+  "vi": "📉 Sắp hết",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Hết hạn trong ngày mai",
+  "en": ""
+ },
+ {
+  "vi": "thùng đã tới, chưa mở lên kệ",
+  "en": ""
+ },
+ {
+  "vi": "🚚 Đang về",
+  "en": ""
+ },
+ {
+  "vi": "kiện đã tới, chưa đếm nhận",
+  "en": ""
+ },
+ {
+  "vi": "✓ Kho đủ hàng cho ngày mai",
+  "en": ""
+ },
+ {
+  "vi": "📦 Mở Kho",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ nghề hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "📋 Sổ nghề hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "✓ Kệ đủ hàng, chưa có gì phải lo cho ngày mai.",
+  "en": ""
+ },
+ {
+  "vi": "🍵 Vào việc thôi!",
+  "en": ""
+ },
+ {
+  "vi": "Trật tự đô thị đang tới",
+  "en": ""
+ },
+ {
+  "vi": "Dẹp ghế, gấp ô ngay!",
+  "en": ""
+ },
+ {
+  "vi": "Xe của phường dừng đầu phố. Kịp xếp chồng ghế sát gốc cây và gấp ô thì không sao; để ghế ngoài vỉa hè là bị phạt, thu ghế.",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Xếp chồng ghế",
+  "en": ""
+ },
+ {
+  "vi": "Đã gấp ô",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện của quán",
+  "en": ""
+ },
+ {
+  "vi": "đậm vừa",
+  "en": ""
+ },
+ {
+  "vi": "nhạt như nước",
+  "en": ""
+ },
+ {
+  "vi": "Bình trống",
+  "en": ""
+ },
+ {
+  "vi": "tan rất nhanh",
+  "en": ""
+ },
+ {
+  "vi": "tan chậm",
+  "en": ""
+ },
+ {
+  "vi": "🫖 Bình chè",
+  "en": ""
+ },
+ {
+  "vi": "🫖 Châm nước",
+  "en": ""
+ },
+ {
+  "vi": "🚰 Đổ bỏ",
+  "en": ""
+ },
+ {
+  "vi": "Đổ bỏ chè đang có trong bình?",
+  "en": ""
+ },
+ {
   "vi": "🧊 Thùng đá",
   "en": ""
  },
@@ -1389,414 +1797,6 @@
  },
  {
   "vi": "Giá bánh mới ra lò",
-  "en": ""
- },
- {
-  "vi": "BƠ SỮA",
-  "en": ""
- },
- {
-  "vi": "Bàn nhồi bột",
-  "en": ""
- },
- {
-  "vi": "BỘT MÌ",
-  "en": ""
- },
- {
-  "vi": "ĐƯỜNG",
-  "en": ""
- },
- {
-  "vi": "Kho bột",
-  "en": ""
- },
- {
-  "vi": "Lò đá nóng hừng hực. Vỏ bánh mì nứt lách tách nghe vui tai.",
-  "en": ""
- },
- {
-  "vi": "Mẻ croissant thứ hai ra lò rồi!",
-  "en": ""
- },
- {
-  "vi": "Bé Men hôm nay nở đẹp ghê.",
-  "en": ""
- },
- {
-  "vi": "Ai canh giùm lò năm phút nha.",
-  "en": ""
- },
- {
-  "vi": "Gian bánh",
-  "en": ""
- },
- {
-  "vi": "Sân chùa",
-  "en": ""
- },
- {
-  "vi": "Nhà ăn",
-  "en": ""
- },
- {
-  "vi": "Trụ trì chùa Gió Lành",
-  "en": ""
- },
- {
-  "vi": "Theo bà đi chùa",
-  "en": ""
- },
- {
-  "vi": "Hay ngồi ở hiên chùa",
-  "en": ""
- },
- {
-  "vi": "Rằm nào cũng lên chùa",
-  "en": ""
- },
- {
-  "vi": "THỜI KHÓA",
-  "en": ""
- },
- {
-  "vi": "CƠM CHAY",
-  "en": ""
- },
- {
-  "vi": "BẾP CHAY",
-  "en": ""
- },
- {
-  "vi": "Ăn trong chánh niệm",
-  "en": ""
- },
- {
-  "vi": "Cây bồ đề già, lá hình trái tim rung rinh trong gió sông.",
-  "en": ""
- },
- {
-  "vi": "Chuông gia trì chỉ thỉnh khi tụng kinh. Muốn tụng, bạn ngồi bên mõ hoặc thưa thầy.",
-  "en": ""
- },
- {
-  "vi": "Bình sen, đĩa trái cây, hai ngọn nến có chụp kính. Trong điện chỉ thắp một nén hương.",
-  "en": ""
- },
- {
-  "vi": "Thời khóa: 4:30 công phu sáng · 11:00 cúng ngọ · 18:00 công phu chiều.",
-  "en": ""
- },
- {
-  "vi": "Rằm và mùng 1, chùa nấu cơm chay mời mọi người: canh nấm, đậu hũ kho, rau luộc.",
-  "en": ""
- },
- {
-  "vi": "CHỢ ĐẦU HẺM",
-  "en": ""
- },
- {
-  "vi": "CƠM TẤM DÌ BẢY",
-  "en": ""
- },
- {
-  "vi": "Sườn · bì · chả",
-  "en": ""
- },
- {
-  "vi": "Cơm phần",
-  "en": ""
- },
- {
-  "vi": "Có cơm chay",
-  "en": ""
- },
- {
-  "vi": "Có hộp mang về",
-  "en": ""
- },
- {
-  "vi": "PHƯỜNG MÂY",
-  "en": ""
- },
- {
-  "vi": "địa chỉ trước · đúng đội · giữ máy",
-  "en": ""
- },
- {
-  "vi": "GỌI",
-  "en": ""
- },
- {
-  "vi": "MỜI SỐ",
-  "en": ""
- },
- {
-  "vi": "QUẦY 1",
-  "en": ""
- },
- {
-  "vi": "SỐNG KHỎE",
-  "en": ""
- },
- {
-  "vi": "GIỜ MỞ CỬA",
-  "en": ""
- },
- {
-  "vi": "ĐO HUYẾT ÁP",
-  "en": ""
- },
- {
-  "vi": "Gánh lô tô",
-  "en": ""
- },
- {
-  "vi": "Bầu cua",
-  "en": ""
- },
- {
-  "vi": "Ném vòng",
-  "en": ""
- },
- {
-  "vi": "Phóng dao",
-  "en": ""
- },
- {
-  "vi": "Chiếu trong",
-  "en": ""
- },
- {
-  "vi": "Ô ăn quan",
-  "en": ""
- },
- {
-  "vi": "Bảng vàng",
-  "en": ""
- },
- {
-  "vi": "Vay nóng",
-  "en": ""
- },
- {
-  "vi": "Vé số cào",
-  "en": ""
- },
- {
-  "vi": "Chụp ảnh",
-  "en": ""
- },
- {
-  "vi": "Đua chó",
-  "en": ""
- },
- {
-  "vi": "Cổng chợ đen treo lồng đèn đỏ lờ mờ. Nộp bảo kê rồi vô chơi nha!",
-  "en": ""
- },
- {
-  "vi": "Kẹo bông gòn đây! Hồng hồng, xốp xốp, ngọt lịm nè!",
-  "en": ""
- },
- {
-  "vi": "Nước mía ép tại chỗ, thêm chút tắc cho thơm, mát lạnh luôn!",
-  "en": ""
- },
- {
-  "vi": "Chợ năm nay vui quá trời!",
-  "en": ""
- },
- {
-  "vi": "Qua coi cô Bảy hô lô tô kìa, vui lắm!",
-  "en": ""
- },
- {
-  "vi": "Tui ném vòng trúng ba chai rồi đó!",
-  "en": ""
- },
- {
-  "vi": "Bầu cua chỗ chú Tám đông ghê ha.",
-  "en": ""
- },
- {
-  "vi": "Mẹ ơi, con muốn ăn kẹo bông!",
-  "en": ""
- },
- {
-  "vi": "Đi chậm thôi, đông người lắm.",
-  "en": ""
- },
- {
-  "vi": "Ông Hai chơi ô ăn quan cao tay lắm đó.",
-  "en": ""
- },
- {
-  "vi": "Tối nay có đèn lồng đẹp ghê.",
-  "en": ""
- },
- {
-  "vi": "Tui mới cào vé số chỗ dì Hai, trúng gấp đôi nè!",
-  "en": ""
- },
- {
-  "vi": "Rủ bạn vô buồng chụp ảnh đi, khung Tết đẹp lắm!",
-  "en": ""
- },
- {
-  "vi": "Qua coi đua chó đi, hò hét vui lắm!",
-  "en": ""
- },
- {
-  "vi": "BẦU CUA",
-  "en": ""
- },
- {
-  "vi": "NÉM VÒNG",
-  "en": ""
- },
- {
-  "vi": "PHÓNG DAO",
-  "en": ""
- },
- {
-  "vi": "GÁNH LÔ TÔ",
-  "en": ""
- },
- {
-  "vi": "BẢNG VÀNG",
-  "en": ""
- },
- {
-  "vi": "💸 VAY NÓNG",
-  "en": ""
- },
- {
-  "vi": "VÉ SỐ CÀO",
-  "en": ""
- },
- {
-  "vi": "CHỤP ẢNH",
-  "en": ""
- },
- {
-  "vi": "ĐUA CHÓ",
-  "en": ""
- },
- {
-  "vi": "CHỢ ĐEN",
-  "en": ""
- },
- {
-  "vi": "KẸO BÔNG",
-  "en": ""
- },
- {
-  "vi": "NƯỚC MÍA",
-  "en": ""
- },
- {
-  "vi": "CHUNG CƯ MÂY",
-  "en": ""
- },
- {
-  "vi": "Đã lên đường",
-  "en": ""
- },
- {
-  "vi": "LỊCH HẸN",
-  "en": ""
- },
- {
-  "vi": "dọn theo giờ",
-  "en": ""
- },
- {
-  "vi": "mai mời gọi",
-  "en": ""
- },
- {
-  "vi": "Phòng cắm hoa",
-  "en": ""
- },
- {
-  "vi": "PHÒNG CẮM HOA",
-  "en": ""
- },
- {
-  "vi": "TỦ MÁT HOA",
-  "en": ""
- },
- {
-  "vi": "Tủ mát hoa",
-  "en": ""
- },
- {
-  "vi": "Kệ ruy băng",
-  "en": ""
- },
- {
-  "vi": "Bàn bó hoa",
-  "en": ""
- },
- {
-  "vi": "Xô hoa ngâm nước",
-  "en": ""
- },
- {
-  "vi": "Ruy băng lụa, giấy kraft, giỏ mây. Đủ để gói cả trăm bó.",
-  "en": ""
- },
- {
-  "vi": "Hoa mới về được ngâm nước cho uống no rồi mới bó.",
-  "en": ""
- },
- {
-  "vi": "Hoa hồng Đà Lạt về rồi nè!",
-  "en": ""
- },
- {
-  "vi": "Nhớ thay nước xô hoa cúc nha.",
-  "en": ""
- },
- {
-  "vi": "Khách đặt bó cưới chiều nay đó.",
-  "en": ""
- },
- {
-  "vi": "Màn hình đơn",
-  "en": ""
- },
- {
-  "vi": "Quầy nhận ly",
-  "en": ""
- },
- {
-  "vi": "Mrrr… cho Mướp một viên trân châu được không?",
-  "en": ""
- },
- {
-  "vi": "Tủ bánh",
-  "en": ""
- },
- {
-  "vi": "KHO BỘT",
-  "en": ""
- },
- {
-  "vi": "Mrrr… thơm mùi bánh mới ra lò quá!",
-  "en": ""
- },
- {
-  "vi": "Kệ gia vị & topping",
-  "en": ""
- },
- {
-  "vi": "Dây phiếu gọi món",
-  "en": ""
- },
- {
-  "vi": "Quầy ra món",
   "en": ""
  }
 ]

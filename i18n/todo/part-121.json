@@ -1,5 +1,569 @@
 [
  {
+  "vi": "Thùng hàng đã tới",
+  "en": ""
+ },
+ {
+  "vi": "📦 Thùng đã tới · mở & xếp lên kệ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có hàng",
+  "en": ""
+ },
+ {
+  "vi": "· Đặt hàng ↓",
+  "en": ""
+ },
+ {
+  "vi": "Giữ cho ca của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Đơn đang soạn",
+  "en": ""
+ },
+ {
+  "vi": "✖ Hủy đơn",
+  "en": ""
+ },
+ {
+  "vi": "Cách nhập hàng & xếp kệ",
+  "en": ""
+ },
+ {
+  "vi": "❔ Nhập hàng thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "📦 Đặt hàng → chờ thùng về → mở thùng, chạm đếm từng món → nhận lên kệ: lúc đó mới bán được.",
+  "en": ""
+ },
+ {
+  "vi": "Tự chia",
+  "en": ""
+ },
+ {
+  "vi": "không bán",
+  "en": ""
+ },
+ {
+  "vi": "không bán mặt hàng này",
+  "en": ""
+ },
+ {
+  "vi": "Đặt ngay",
+  "en": ""
+ },
+ {
+  "vi": "· không bán mặt hàng này",
+  "en": ""
+ },
+ {
+  "vi": "Nhà cung cấp: giờ giao & điều kiện",
+  "en": ""
+ },
+ {
+  "vi": "Đặt hàng thế nào",
+  "en": ""
+ },
+ {
+  "vi": "Size “Tự chia”: chia ưu tiên các size bán chạy. Chọn một size thì toàn bộ số hàng thực nhận vào size đó.",
+  "en": ""
+ },
+ {
+  "vi": "nhận",
+  "en": ""
+ },
+ {
+  "vi": "nhận bớt thùng rồi đặt tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Thùng hàng",
+  "en": ""
+ },
+ {
+  "vi": "Chợ bao bì",
+  "en": ""
+ },
+ {
+  "vi": "Chợ hoa đêm",
+  "en": ""
+ },
+ {
+  "vi": "Chợ sáng",
+  "en": ""
+ },
+ {
+  "vi": "Chợ sỉ",
+  "en": ""
+ },
+ {
+  "vi": "HTX Mây",
+  "en": ""
+ },
+ {
+  "vi": "Hàng Nhật",
+  "en": ""
+ },
+ {
+  "vi": "Hàng nhập",
+  "en": ""
+ },
+ {
+  "vi": "Kho hãng",
+  "en": ""
+ },
+ {
+  "vi": "Kho sỉ",
+  "en": ""
+ },
+ {
+  "vi": "Sóng Âm",
+  "en": ""
+ },
+ {
+  "vi": "Trại giống",
+  "en": ""
+ },
+ {
+  "vi": "Tổng kho sỉ",
+  "en": ""
+ },
+ {
+  "vi": "Ba gác",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng dệt",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng rang",
+  "en": ""
+ },
+ {
+  "vi": "Hết hàng hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Đơn nhỏ lại: giá bớt không còn.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Xin bớt",
+  "en": ""
+ },
+ {
+  "vi": "Cả đơn đang hết hàng hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Đơn gộp",
+  "en": ""
+ },
+ {
+  "vi": "Dự kiến:",
+  "en": ""
+ },
+ {
+  "vi": "· một chuyến",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ đơn",
+  "en": ""
+ },
+ {
+  "vi": "Quần & chân váy",
+  "en": ""
+ },
+ {
+  "vi": "Váy & đồ bộ",
+  "en": ""
+ },
+ {
+  "vi": "Cần hồi đáp",
+  "en": ""
+ },
+ {
+  "vi": "lần khách thập phương sửa sao lên sau khi đọc lời chùa hồi đáp.",
+  "en": ""
+ },
+ {
+  "vi": "Hồi đáp",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo không được duyệt",
+  "en": ""
+ },
+ {
+  "vi": "Đã hồi đáp",
+  "en": ""
+ },
+ {
+  "vi": "Khách thập phương",
+  "en": ""
+ },
+ {
+  "vi": "Cảm nhận của khách thập phương",
+  "en": ""
+ },
+ {
+  "vi": "LỜI KHÁCH THẬP PHƯƠNG",
+  "en": ""
+ },
+ {
+  "vi": "Tất cả cảm nhận",
+  "en": ""
+ },
+ {
+  "vi": "Đã báo cáo: nền tảng giữ đánh giá này vì nó gắn với chuyện có thật trong ca. Sao giữ nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "A Di Đà Phật, chùa xin lỗi vì còn thiếu sót. Thầy trụ trì đã nhắc lại cả chùa, lần sau sẽ cẩn thận hơn ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn bác đã góp ý. Rằm tới mời bác ghé lễ, chùa sẽ đón tiếp chu đáo hơn ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Không vừa ý thì đi chùa khác, ở đây không cần.",
+  "en": ""
+ },
+ {
+  "vi": "Lưu đánh giá và cuộc trao đổi làm bằng chứng, trình báo lời đe dọa đòi tiền trong game? Trao đổi trực tiếp sẽ khép; điểm đánh giá vẫn giữ nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "🚔 Hôm nay bạn đã báo công an đủ lượt rồi, mai báo tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🚓 Lưu bằng chứng & trình báo",
+  "en": ""
+ },
+ {
+  "vi": "🚔 Báo công an",
+  "en": ""
+ },
+ {
+  "vi": "Công an xác minh:",
+  "en": ""
+ },
+ {
+  "vi": "vào ví.",
+  "en": ""
+ },
+ {
+  "vi": "Công an đã xem xét, chưa đủ cơ sở để kết luận. Sao giữ nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi lời hồi đáp",
+  "en": ""
+ },
+ {
+  "vi": "Nhận xét sau ca trên giàn, không cần trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận xét sau chuyến bay, không cần trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "Khách thập phương cảm nhận theo tiêu chí",
+  "en": ""
+ },
+ {
+  "vi": "chấm theo tiêu chí",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo tin nhắn này với ban đại diện lớp? Tin nhắn nhầm lớp, không liên quan tới buổi học hoặc hùa theo sẽ bị gỡ khỏi điểm. Nếu là góp ý thật, tin nhắn được giữ nguyên và không mất sao.",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo cảm nhận này? Cảm nhận giả, nhầm chỗ, không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm. Nếu là cảm nhận thật, chùa giữ nguyên và không mất sao.",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo nhận xét này? Nhận xét giả, nhầm chỗ, chưa từng tới, chê chuyện không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm trung bình. Nếu là chuyện có thật, nhận xét được giữ nguyên và không mất sao.",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo đánh giá này? Đánh giá giả, nhầm quán, chưa dùng dịch vụ, chê chuyện không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm trung bình. Nếu là trải nghiệm thật, đánh giá được giữ nguyên và không mất sao.",
+  "en": ""
+ },
+ {
+  "vi": "từ tốn",
+  "en": ""
+ },
+ {
+  "vi": "tự trào",
+  "en": ""
+ },
+ {
+  "vi": "đùa nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "mời ghé lễ",
+  "en": ""
+ },
+ {
+  "vi": "kể nếp chùa",
+  "en": ""
+ },
+ {
+  "vi": "trẻ trung",
+  "en": ""
+ },
+ {
+  "vi": "mời chén trà 6 xu",
+  "en": ""
+ },
+ {
+  "vi": "biếu quà chay 10 xu",
+  "en": ""
+ },
+ {
+  "vi": "gửi lại 20 xu",
+  "en": ""
+ },
+ {
+  "vi": "Gửi lại 20 xu",
+  "en": ""
+ },
+ {
+  "vi": "bênh chùa",
+  "en": ""
+ },
+ {
+  "vi": "Quà nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Kèm 1 buổi",
+  "en": ""
+ },
+ {
+  "vi": "Mời trà",
+  "en": ""
+ },
+ {
+  "vi": "Tặng sách",
+  "en": ""
+ },
+ {
+  "vi": "Quà chay",
+  "en": ""
+ },
+ {
+  "vi": "👑 Bạn",
+  "en": ""
+ },
+ {
+  "vi": "Chưa vào quầy nào",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Xem chứng chỉ của bạn",
+  "en": ""
+ },
+ {
+  "vi": "📚 Đi học lấy chứng chỉ",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Chứng chỉ hành nghề phải thi thật: không có cửa sau cho bài thi này.",
+  "en": ""
+ },
+ {
+  "vi": "Người quen chỉ “lo giúp” được một lần ở mỗi nơi",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ người quen “lo giúp”, vào làm ngay",
+  "en": ""
+ },
+ {
+  "vi": "Thử lại sau / Tìm việc khác",
+  "en": ""
+ },
+ {
+  "vi": "Làm gì tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chưa có",
+  "en": ""
+ },
+ {
+  "vi": "Xem bài học",
+  "en": ""
+ },
+ {
+  "vi": "kế toán ×",
+  "en": ""
+ },
+ {
+  "vi": "⬆️ Lên",
+  "en": ""
+ },
+ {
+  "vi": "Cần:",
+  "en": ""
+ },
+ {
+  "vi": "Đủ điều kiện: sếp sẽ hẹn xét lên chức.",
+  "en": ""
+ },
+ {
+  "vi": "🏆 Bạn đang giữ chức vụ cao nhất ở đây.",
+  "en": ""
+ },
+ {
+  "vi": "Lương mỗi ngày",
+  "en": ""
+ },
+ {
+  "vi": "Lên chức là tăng lương, không bao giờ bị giáng chức.",
+  "en": ""
+ },
+ {
+  "vi": "🎖️ Xem thăng tiến",
+  "en": ""
+ },
+ {
+  "vi": "Đang làm ở chi nhánh",
+  "en": ""
+ },
+ {
+  "vi": "🌏 Làm việc ở nước ngoài",
+  "en": ""
+ },
+ {
+  "vi": "Sếp hẹn gặp",
+  "en": ""
+ },
+ {
+  "vi": "Chọn 1–3 điểm mạnh",
+  "en": ""
+ },
+ {
+  "vi": "Chọn kinh nghiệm thật của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có",
+  "en": ""
+ },
+ {
+  "vi": "Học và thi",
+  "en": ""
+ },
+ {
+  "vi": "là số trên phiếu: thùng có thể giao thiếu, chạm đếm từng món trong thùng.",
+  "en": ""
+ },
+ {
+  "vi": "Đếm lệch: còn món chưa chạm trong thùng, chạm hết rồi nhận.",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Đi cửa sau?",
+  "en": ""
+ },
+ {
+  "vi": "Đếm số món trong thùng trước đã nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt đơn gộp?",
+  "en": ""
+ },
+ {
+  "vi": "Đặt đơn",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời chưa gửi được, khách vừa nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Cuộc trao đổi này đã khép, không gửi thêm được.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số lượng, ít nhất 1.",
+  "en": ""
+ },
+ {
+  "vi": "Phong bì mừng cưới",
+  "en": ""
+ },
+ {
+  "vi": "Mâm cỗ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nhạc",
+  "en": ""
+ },
+ {
+  "vi": "Dzô! 🍻",
+  "en": ""
+ },
+ {
+  "vi": "No căng bụng rồi 😋",
+  "en": ""
+ },
+ {
+  "vi": "Say rồi, nước ngọt thôi 🥤",
+  "en": ""
+ },
+ {
+  "vi": "Mát lạnh! 🥤",
+  "en": ""
+ },
+ {
+  "vi": "💐 Tới màn tung hoa rồi! Bấm “Tung hoa” nhé",
+  "en": ""
+ },
+ {
+  "vi": "💐 Sắp tung hoa cưới! Lại gần sân khấu nào",
+  "en": ""
+ },
+ {
+  "vi": "🎧 Đã đổi nhạc",
+  "en": ""
+ },
+ {
+  "vi": "☕ Đã rủ, chờ bạn ấy nhé…",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy bận rồi, lần sau nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang dạo ở một tab khác.",
+  "en": ""
+ },
+ {
+  "vi": "🎊 Lễ cưới bắt đầu!",
+  "en": ""
+ },
+ {
+  "vi": "Tạo tài khoản để nhận lộc cưới mỗi phút nhé!",
+  "en": ""
+ },
+ {
   "vi": "Hôm nay bạn đã nhận lộc ở 2 đám cưới rồi. Vẫn được tính là khách nha 💛",
   "en": ""
  },
@@ -1234,670 +1798,5 @@
  {
   "vi": "Ghé một chỗ làm để nhận dịch vụ đầu tiên.",
   "en": ""
- },
- {
-  "vi": "Khách ghé chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Xem chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Chưa có ai đang đứng tại đây.",
-  "en": ""
- },
- {
-  "vi": "đơn khách · Mở sổ",
-  "en": ""
- },
- {
-  "vi": "Sổ đơn dịch vụ",
-  "en": ""
- },
- {
-  "vi": "Nói với khách…",
-  "en": ""
- },
- {
-  "vi": "Lời nói với khách ghé",
-  "en": ""
- },
- {
-  "vi": "👋 Chào khách",
-  "en": ""
- },
- {
-  "vi": "Phòng trực tiếp sẽ kết nối khi chỗ làm sẵn sàng.",
-  "en": ""
- },
- {
-  "vi": "Thứ Hai",
-  "en": ""
- },
- {
-  "vi": "Thứ Ba",
-  "en": ""
- },
- {
-  "vi": "Thứ Tư",
-  "en": ""
- },
- {
-  "vi": "Thứ Năm",
-  "en": ""
- },
- {
-  "vi": "Thứ Sáu",
-  "en": ""
- },
- {
-  "vi": "Thứ Bảy",
-  "en": ""
- },
- {
-  "vi": "Cả tuần",
-  "en": ""
- },
- {
-  "vi": "Biết rồi",
-  "en": ""
- },
- {
-  "vi": "Đội đang xử lý đơn riêng",
-  "en": ""
- },
- {
-  "vi": "🔒 Đội dừng: giữ hàng cho bạn",
-  "en": ""
- },
- {
-  "vi": "Quỹ nghề chưa đủ vận hành",
-  "en": ""
- },
- {
-  "vi": "Đội đang tạm nghỉ",
-  "en": ""
- },
- {
-  "vi": "Góc nhìn sau bàn làm việc",
-  "en": ""
- },
- {
-  "vi": "GÓC CỦA BẠN · ĐỘI Ở PHÍA TRƯỚC",
-  "en": ""
- },
- {
-  "vi": "Bàn làm việc đang chờ đội vào ca",
-  "en": ""
- },
- {
-  "vi": "Đơn đã ghi",
-  "en": ""
- },
- {
-  "vi": "Doanh thu đã ghi",
-  "en": ""
- },
- {
-  "vi": "Lãi đã ghi",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể tự phục vụ hoặc giao việc cho nhân viên. Đội trong ca tiếp tục làm khi bạn khép ngày, sang nghề khác hoặc rời game; chỉ nghỉ khi hết hàng, thiếu quỹ hoặc nhân viên không sẵn sàng.",
-  "en": ""
- },
- {
-  "vi": "📦 Nhập nguyên liệu",
-  "en": ""
- },
- {
-  "vi": "🛠️ Thiết bị tăng tốc",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng vừa hoàn thành",
-  "en": ""
- },
- {
-  "vi": "Đang cập nhật các đơn lúc bạn vắng… Số liệu dưới đây là các đơn đã ghi.",
-  "en": ""
- },
- {
-  "vi": "Đội đang làm đơn đầu tiên. Biên nhận xuất hiện khi máy chủ xác nhận hoàn thành.",
-  "en": ""
- },
- {
-  "vi": "Chưa có đơn riêng hoàn thành.",
-  "en": ""
- },
- {
-  "vi": "💰 Lãi ước tính của đội (đã gồm thưởng)",
-  "en": ""
- },
- {
-  "vi": "mỗi ngày (24 giờ) nếu đủ hàng, đủ quỹ",
-  "en": ""
- },
- {
-  "vi": "Đơn tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Lãi ước tính mỗi đơn:",
-  "en": ""
- },
- {
-  "vi": "giá vốn ~",
-  "en": ""
- },
- {
-  "vi": "Khu vực",
-  "en": ""
- },
- {
-  "vi": "Đi đâu mà bỏ $1 vậy em? Khách chờ rồi bỏ về hết.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay em bỏ $1 hai lần rồi. Lần sau còn vậy là cho nghỉ đó nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nói mấy lần rồi. Còn bỏ $1 nữa là cho nghỉ luôn nha em.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quán mở cửa mà không ai đứng $1, khách chờ rồi về hết đó con.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đi đâu mà bỏ $1 vậy con? Khách đứng chờ mãi rồi bỏ đi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay bỏ $1 hai lần rồi đó con. Khách quen bắt đầu kháo nhau rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lại bỏ $1 nữa hả con? Cứ vầy là mất khách quen đó.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bỏ $1 hoài vậy thì ai dám ghé nữa con ơi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Phạt bỏ dở ca ở $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang làm dở: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đang mở, $2 khách đang chờ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Bỏ đi bây giờ: phạt $2 xu, mất $3 $4, khách đang chờ sẽ bỏ về.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã tới giờ đóng cửa. Việc dở vẫn giữ nguyên, lúc nào quay lại thì khép ca nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Việc ở $1 vẫn đang dở: $2. Quay lại làm nốt nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Chọn “Vẫn đi” nếu bạn chắc chắn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bỏ dở việc giữa chừng (lần $1 hôm nay).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bỏ dở “$1”: khách không chờ nữa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 khách đang chờ đã bỏ về.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 việc đang chờ được giao lại cho người khác.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đang làm ở chi nhánh $1 ($2 $3), còn $4 ngày nữa. Làm tiếp ở $5, hoặc về nước sớm ở mục 🌏 Làm việc ở nước ngoài.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🌏 Ngày $1/$2 ở $3: $4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏠 Bạn về nước sớm từ $1. Lương những ngày đã làm vẫn là của bạn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hoàn tiền vé · hết hợp đồng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sếp ghi nhận chuyến công tác: +$1 ngày tốt để lên chức.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏠 Hết hợp đồng ở $1! Bạn về lại hẻm nhà, Bà Tám nấu canh chua đón. Công ty hoàn $2 xu tiền vé.$3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đang học khóa ở $1. Học xong hoặc thôi học trước nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đã có $1 rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chưa đủ $1 xu học phí. Làm thêm vài ngày rồi quay lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✈️ Bạn nhập học $1 ($2 $3): khóa $4, $5 buổi, mỗi ngày sống một buổi. Buổi 1 học được ngay hôm nay!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✅ Đúng rồi! $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💡 Chưa đúng: “$1”. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Xong buổi $2/$3, mai học tiếp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn thôi học khóa ở $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trường hoàn $1 xu cho các buổi chưa học.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vừa về nước, ở nhà với mọi người ít hôm đã: đi tiếp được từ Ngày $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khép ca ở $1 trước rồi hẵng lên đường nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🌏 Lên đường tới $1 $2! $3 ngày đứng tiệm $4 ($5), hoa hồng +$6% doanh thu mỗi ngày. Chị Vy bao vé. Khách bên đó nói size kiểu khác, nhớ xem 📏 bảng quy đổi!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chưa đủ $1 xu tiền vé và visa. Làm thêm vài ngày rồi quay lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🌏 Lên đường tới $1 $2! $3 ngày làm ở chi nhánh của $4, lương +$5%. Hết hợp đồng công ty hoàn $6 xu tiền vé. Các nơi làm khác tạm nghỉ tới lúc bạn về.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "lương mọi việc làm thuê +$1%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "(có $1 bằng)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 🎓 Tốt nghiệp loại $2: $3! Từ nay $4, lên chức cần ít hơn $5% ngày tốt.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Học bổng xuất sắc: +$1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đồng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khoản gửi đầu kỳ$1 đủ 6 tháng, hợp đồng 3%/6 tháng. Gốc$2 và lãi đã dự thu$3; ngân hàng trả tổng{n0}.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khoản gửi đầu kỳ$1 đủ 6 tháng, hợp đồng 3%/6 tháng. Gốc$2 và lãi đã dự thu$3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khoản gửi đầu kỳ$1 đủ 6 tháng, hợp đồng 3%/6 tháng. Gốc$2 và lãi đã dự thu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khoản gửi đầu kỳ$1 đủ 6 tháng, hợp đồng 3%/6 tháng. Gốc$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khoản gửi đầu kỳ$1 đủ 6 tháng, hợp đồng 3%/6 tháng. Gốc",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khoản gửi đầu kỳ$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dịch vụ hoàn thành cho khach_fx: $1USD; tỷ giá giao dịch thực tế$2VND/USD theo hồ sơ ngân hàng; giá trị ghi sổ {n0}. Chưa thu tiền, không có thuế đầu ra trong bảng nghĩa vụ đã cung cấp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tất cả hóa đơn khach_fx từ đầu năm chưa thanh toán, tổng$1USD. Tỷ giá mua bán chuyển khoản trung bình cuối kỳ của ngân hàng thường giao dịch$2VND/USD. Khoản cũ đã đánh giá ở tỷ giá$3cuối kỳ trước. Bảng xác nhận tăng giá trị VND {n0}.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảng ước tính: dự phòng cần có cuối kỳ$1, số đã lập$2. $3 chênh lệch{n0}; không xóa nợ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảng ước tính: dự phòng cần có cuối kỳ$1, số đã lập$2. $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảng ước tính: dự phòng cần có cuối kỳ$1, số đã lập$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảng ước tính: dự phòng cần có cuối kỳ$1, số đã lập$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảng ước tính: dự phòng cần có cuối kỳ$1, số đã lập",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảng ước tính: dự phòng cần có cuối kỳ$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh$1, số đủ điều kiện 1331 $2 và 1332 $3. Phân bổ khấu trừ theo bảng: dùng 1331 trước, phần còn lại 1332; không vượt thuế đầu ra. Thuế đầu vào chưa dùng chuyển kỳ sau.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh$1, số đủ điều kiện 1331 $2 và 1332 $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh$1, số đủ điều kiện 1331 $2 và 1332",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh$1, số đủ điều kiện 1331 $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh$1, số đủ điều kiện 1331",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Căn cứ chuẩn mực: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "tài sản: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "nợ phải trả: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "vốn chủ sở hữu: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đọc lại phần “$1” của bài “$2”: cách làm từng bước giống bài này.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bút toán dùng tài khoản thuộc: $1. Mở “Tra cứu TT99” để chọn đúng số hiệu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Loại trừ phương án trái với nguyên tắc của bài$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chứng từ cần đọc: “$1”. Tìm trong đó:",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bút toán có $1 dòng Nợ/Có, dùng tài khoản thuộc: $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dòng $1: hai bên Nợ/Có đang bị đảo. Tài sản, chi phí tăng ghi Nợ; nợ phải trả, vốn, doanh thu tăng ghi Có.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dòng $1: bên Nợ chưa đúng. Hỏi lại: tài khoản nào tăng tài sản/chi phí hoặc giảm nợ trong chứng từ này?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dòng $1: bên Có chưa đúng. Hỏi lại: nguồn tiền hay nghĩa vụ nào đối ứng với bên Nợ?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tài khoản đúng, nhưng số tiền ở dòng $1 chưa khớp chứng từ. Đối chiếu lại giá chưa thuế, thuế và tổng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ô chưa khớp: $1. Lấy lại số từ sổ hoặc đề bài.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ô chưa khớp: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cặp chưa đúng:",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thứ tự đúng tới bước $1; bước $2 chưa đúng chỗ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Làm $1 câu kiểm tra kiến thức đầu ca rồi mở ca nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bài kiểm tra đúng $1/$2 câu, cần $3. Xem lại bài gợi ý rồi làm bài khác nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng $1/$2 câu. Vào ca thôi!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng $1/$2 câu, cần $3. Xem lại bài gợi ý rồi làm bài khác nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã mở $1. Đọc ví dụ rồi tự làm bài tập.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã mở $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kết quả $1/100.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhận việc thực hành tại Mây Tre Xanh. Lương kế toán doanh nghiệp ×$1; mở chứng từ và ghi sổ bằng VND.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lương ca thực hành TT99 · tháng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lương ca TT99 tháng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bộ sổ và báo cáo đã khớp. Nhận lương ca thực hành $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "(lương hợp đồng ×$1).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đạt chứng chỉ trong game.$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giới thiệu việc làm: $1 nhận bạn, lương kế toán ×$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Máy sản xuất mua tháng$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền mặt$1; tiền gửi không kỳ hạn$2; tổng$3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền gửi kỳ hạn, gồm lãi dự thu: $1; đối chiếu bảng từng hợp đồng.",
-  "en": "",
-  "pattern": true
  }
 ]

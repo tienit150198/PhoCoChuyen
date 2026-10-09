@@ -1,5 +1,189 @@
 [
  {
+  "vi": "Mở lại quầy trước khi đứng bán.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập hàng vào kho trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍🍳 Bạn đã đứng quầy. Khách đang tới, đơn sẽ hiện ngay tại đây.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍🍳 Mở hàng! Khách đầu tiên tới rồi, người tiếp theo đang ghé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chưa mở hàng hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin ngã tư sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn giao không còn chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn này chưa tới.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn hướng đi ở ngã tư.",
+  "en": ""
+ },
+ {
+  "vi": "Xem tín hiệu trước khi qua ngã tư.",
+  "en": ""
+ },
+ {
+  "vi": "Đã qua đủ ba ngã tư.",
+  "en": ""
+ },
+ {
+  "vi": "🚦 Vượt đèn đỏ · biên nhận",
+  "en": ""
+ },
+ {
+  "vi": "Xử lý chuyện này trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Hết khách đứng chờ rồi. Đóng ca nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đã đóng, chưa nhận khách mới.",
+  "en": ""
+ },
+ {
+  "vi": "Khách tiếp theo đang tới.",
+  "en": ""
+ },
+ {
+  "vi": "Hết hàng rồi. Đóng ca nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món cho khách nhé.",
+  "en": ""
+ },
+ {
+  "vi": "đúng món!",
+  "en": ""
+ },
+ {
+  "vi": "ủa, mình gọi món khác mà. Bạn làm lại.",
+  "en": ""
+ },
+ {
+  "vi": "Thối đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đưa vừa đủ.",
+  "en": ""
+ },
+ {
+  "vi": "😊 Khách vui!",
+  "en": ""
+ },
+ {
+  "vi": "Không có chuyện gì cần xử lý.",
+  "en": ""
+ },
+ {
+  "vi": "Không có đơn này.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn này giao rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Hết hàng rồi, không làm đơn này được.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ món vào túi nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách giao nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn đường đi nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đi đủ ba ngã tư theo tín hiệu trước khi giao.",
+  "en": ""
+ },
+ {
+  "vi": "đúng món",
+  "en": ""
+ },
+ {
+  "vi": "sai món",
+  "en": ""
+ },
+ {
+  "vi": "dán kín",
+  "en": ""
+ },
+ {
+  "vi": "quên dán",
+  "en": ""
+ },
+ {
+  "vi": "🛵 Bạn tự giao",
+  "en": ""
+ },
+ {
+  "vi": ", lạc đường một chút",
+  "en": ""
+ },
+ {
+  "vi": ", tới nhanh",
+  "en": ""
+ },
+ {
+  "vi": ", hơi trễ",
+  "en": ""
+ },
+ {
+  "vi": "Đã dọn hàng. Hôm nay nhân viên (nếu có) bán thay bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Món của tôi đâu rồi? Tôi chờ lâu lắm rồi đấy!",
+  "en": ""
+ },
+ {
+  "vi": "Nhanh giúp tôi nhé, tôi đang vội!",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cứ làm lần lượt nhé, tôi đợi được.",
+  "en": ""
+ },
+ {
+  "vi": "Làm nhanh giúp tôi nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Món trong đơn đã hết. Nhập thêm hàng để phục vụ.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đã đóng, chưa nhận đơn mới.",
+  "en": ""
+ },
+ {
   "vi": "Đơn này đã thay đổi. Xem đơn mới nhé.",
   "en": ""
  },
@@ -1613,190 +1797,6 @@
  },
  {
   "vi": "giá hơi chát so với chất lượng",
-  "en": ""
- },
- {
-  "vi": "giá hơi chát so với phần ăn",
-  "en": ""
- },
- {
-  "vi": "thêm topping là tính thêm, cộng lại hơi đau ví",
-  "en": ""
- },
- {
-  "vi": "cốc trà đá vỉa hè mà tính giá như quán máy lạnh",
-  "en": ""
- },
- {
-  "vi": "ly cà phê với miếng bánh mà gần bằng bữa trưa",
-  "en": ""
- },
- {
-  "vi": "giá mềm, sinh viên cũng ghé được",
-  "en": ""
- },
- {
-  "vi": "giá niêm yết rõ, không tính thêm gì bất ngờ",
-  "en": ""
- },
- {
-  "vi": "đáng đồng tiền, ăn no mà không đau ví",
-  "en": ""
- },
- {
-  "vi": "vài nghìn một cốc mà ngồi mát cả buổi",
-  "en": ""
- },
- {
-  "vi": "ly to, topping nhiều mà giá vẫn mềm",
-  "en": ""
- },
- {
-  "vi": "Hơi đắt.",
-  "en": ""
- },
- {
-  "vi": "Chỗ ngồi",
-  "en": ""
- },
- {
-  "vi": "ghế ngồi khó chịu",
-  "en": ""
- },
- {
-  "vi": "ghế nhựa thấp, ngồi lâu mỏi lưng",
-  "en": ""
- },
- {
-  "vi": "bàn sát lề đường, xe chạy qua là bụi bay vào cốc",
-  "en": ""
- },
- {
-  "vi": "chỗ ngồi chật, kéo ghế là đụng bàn bên",
-  "en": ""
- },
- {
-  "vi": "ghế cao mà không có chỗ gác chân",
-  "en": ""
- },
- {
-  "vi": "ghế đặt dưới gốc cây, ngồi mát rượi",
-  "en": ""
- },
- {
-  "vi": "chỗ ngồi thoáng, ngắm phố thích",
-  "en": ""
- },
- {
-  "vi": "góc ngồi xinh, chụp hình đẹp",
-  "en": ""
- },
- {
-  "vi": "ghế êm, ngồi học bài cả buổi",
-  "en": ""
- },
- {
-  "vi": "Ghế thấp.",
-  "en": ""
- },
- {
-  "vi": "Chỗ ngồi xinh.",
-  "en": ""
- },
- {
-  "vi": "Cốc chén sạch",
-  "en": ""
- },
- {
-  "vi": "cốc rửa chưa sạch",
-  "en": ""
- },
- {
-  "vi": "cốc còn vệt ố, nhìn là ngại uống",
-  "en": ""
- },
- {
-  "vi": "cốc rửa chưa kỹ, còn mùi chè cũ",
-  "en": ""
- },
- {
-  "vi": "cốc tráng qua loa, còn dính lá chè",
-  "en": ""
- },
- {
-  "vi": "cốc rửa sạch, trong veo",
-  "en": ""
- },
- {
-  "vi": "cốc tráng nước sôi trước mặt, yên tâm",
-  "en": ""
- },
- {
-  "vi": "cốc thủy tinh sạch bóng, cầm thích tay",
-  "en": ""
- },
- {
-  "vi": "Cốc bẩn.",
-  "en": ""
- },
- {
-  "vi": "Cốc sạch.",
-  "en": ""
- },
- {
-  "vi": "Tô đũa sạch",
-  "en": ""
- },
- {
-  "vi": "đũa muỗng chưa sạch",
-  "en": ""
- },
- {
-  "vi": "đũa muỗng hơi dính, phải lau lại",
-  "en": ""
- },
- {
-  "vi": "tô còn vết mỡ ở vành",
-  "en": ""
- },
- {
-  "vi": "ống đũa để hở, bụi đường bay vào",
-  "en": ""
- },
- {
-  "vi": "đũa muỗng sạch, có ống tráng nước nóng",
-  "en": ""
- },
- {
-  "vi": "tô chén sáng bóng, cầm yên tâm",
-  "en": ""
- },
- {
-  "vi": "bếp gọn gàng, nhìn vào là muốn ăn",
-  "en": ""
- },
- {
-  "vi": "Đũa dính.",
-  "en": ""
- },
- {
-  "vi": "Bếp sạch.",
-  "en": ""
- },
- {
-  "vi": "kệ hàng lộn xộn",
-  "en": ""
- },
- {
-  "vi": "kệ hàng lộn xộn, tìm một món mãi không thấy",
-  "en": ""
- },
- {
-  "vi": "hàng xếp chồng lên nhau, rút một món là đổ cả dãy",
-  "en": ""
- },
- {
-  "vi": "đồ treo lộn xộn, size nào lẫn size nấy",
   "en": ""
  }
 ]

@@ -1,5 +1,189 @@
 [
  {
+  "vi": "bạn thợ",
+  "en": ""
+ },
+ {
+  "vi": "thằng nhỏ thợ phụ",
+  "en": ""
+ },
+ {
+  "vi": "con nhỏ thợ phụ",
+  "en": ""
+ },
+ {
+  "vi": "bạn thợ phụ",
+  "en": ""
+ },
+ {
+  "vi": "anh hướng dẫn viên",
+  "en": ""
+ },
+ {
+  "vi": "chị hướng dẫn viên",
+  "en": ""
+ },
+ {
+  "vi": "anh bán hàng",
+  "en": ""
+ },
+ {
+  "vi": "chị bán hàng",
+  "en": ""
+ },
+ {
+  "vi": "thằng nhỏ bán hàng",
+  "en": ""
+ },
+ {
+  "vi": "con nhỏ bán hàng",
+  "en": ""
+ },
+ {
+  "vi": "chị shipper",
+  "en": ""
+ },
+ {
+  "vi": "thằng nhỏ shipper",
+  "en": ""
+ },
+ {
+  "vi": "con nhỏ shipper",
+  "en": ""
+ },
+ {
+  "vi": "anh chủ nhà",
+  "en": ""
+ },
+ {
+  "vi": "chị chủ nhà",
+  "en": ""
+ },
+ {
+  "vi": "anh chăm bé",
+  "en": ""
+ },
+ {
+  "vi": "chị chăm bé",
+  "en": ""
+ },
+ {
+  "vi": "bạn chăm bé",
+  "en": ""
+ },
+ {
+  "vi": "thằng nhỏ chăm bé",
+  "en": ""
+ },
+ {
+  "vi": "con nhỏ chăm bé",
+  "en": ""
+ },
+ {
+  "vi": "cậu ấy",
+  "en": ""
+ },
+ {
+  "vi": "em ấy",
+  "en": ""
+ },
+ {
+  "vi": "thằng nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "con nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "bạn đó",
+  "en": ""
+ },
+ {
+  "vi": "Ừ, chắc hôm đó tôi gặp đúng lúc chưa kịp dọn. Thấy trả lời đàng hoàng, tôi trả lại sao.",
+  "en": ""
+ },
+ {
+  "vi": "Có sổ ghi rõ vậy thì tôi tin. Chắc tôi hơi khắt khe, sửa sao nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Ờ, cảm nhận riêng của tôi thôi, phần chính làm tốt thật. Trả lại sao.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe giải thích cũng hợp lý. Lần sau tôi để ý lại rồi hẵng chê, sửa sao nè.",
+  "en": ""
+ },
+ {
+  "vi": "Vâng, có lẽ con kể chưa đủ ý. Cảm ơn cô/thầy đã giải thích, gia đình sửa lại đánh giá ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe cô/thầy nói rõ, tôi thấy mình hơi vội kết luận. Tôi sửa lại ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Góp ý theo cảm nhận",
+  "en": ""
+ },
+ {
+  "vi": "Chê một chuyện không có trong ghi nhận",
+  "en": ""
+ },
+ {
+  "vi": "không có ghi nhận nào về chuyện này hôm đó; phần việc chính làm đúng",
+  "en": ""
+ },
+ {
+  "vi": "Bạn trừ một sao vì một góc cụ thể (unfair_claim.claim) theo cảm nhận riêng; không có ghi nhận nào xác nhận chuyện đó, phần việc chính làm tốt. Nếu chủ quán/giáo viên trả lời lịch sự, đưa sự thật hoặc cách họ kiểm tra (lịch dọn, quy trình), bạn chấp nhận và trả lại sao; nếu bị cãi hoặc mỉa, bạn giữ ý kiến, xéo xắt nhưng không tục.",
+  "en": ""
+ },
+ {
+  "vi": "b[ée]o (ú|phì|ị|như)",
+  "en": ""
+ },
+ {
+  "vi": "mập(?! mờ)",
+  "en": ""
+ },
+ {
+  "vi": "l[ùu]n (tịt|xủn|như)",
+  "en": ""
+ },
+ {
+  "vi": "xấu (xí|trai|gái|người)",
+  "en": ""
+ },
+ {
+  "vi": "mặt (xấu|mụn|rỗ)",
+  "en": ""
+ },
+ {
+  "vi": "răng hô",
+  "en": ""
+ },
+ {
+  "vi": "đen nhẻm",
+  "en": ""
+ },
+ {
+  "vi": "gầy (nhom|trơ)",
+  "en": ""
+ },
+ {
+  "vi": "bụng (bự|phệ)",
+  "en": ""
+ },
+ {
+  "vi": "vòng (một|ba)",
+  "en": ""
+ },
+ {
+  "vi": "dáng người",
+  "en": ""
+ },
+ {
   "vi": "gợi cảm",
   "en": ""
  },
@@ -1613,190 +1797,6 @@
  },
  {
   "vi": "Máy bơm cháy cuộn dây, nhà hết nước xài.",
-  "en": ""
- },
- {
-  "vi": "Máy bơm kêu rè rè, nước chảy yếu hẳn.",
-  "en": ""
- },
- {
-  "vi": "Bình nóng lạnh hỏng",
-  "en": ""
- },
- {
-  "vi": "Bình nóng lạnh rò nước, tắm nước lạnh run cầm cập.",
-  "en": ""
- },
- {
-  "vi": "Bình nóng lạnh kêu tách tách, nước lúc nóng lúc lạnh.",
-  "en": ""
- },
- {
-  "vi": "Ổ điện cháy",
-  "en": ""
- },
- {
-  "vi": "Ổ cắm xẹt lửa, cháy đen một góc tường.",
-  "en": ""
- },
- {
-  "vi": "Ổ cắm hơi lỏng, sờ vào thấy ấm.",
-  "en": ""
- },
- {
-  "vi": "Tủ lạnh hỏng",
-  "en": ""
- },
- {
-  "vi": "Tủ lạnh tắt hẳn, đồ ăn bắt đầu hỏng.",
-  "en": ""
- },
- {
-  "vi": "Tủ lạnh kêu to, đá không đông.",
-  "en": ""
- },
- {
-  "vi": "Xe hỏng",
-  "en": ""
- },
- {
-  "vi": "Nhà gặp sự cố",
-  "en": ""
- },
- {
-  "vi": "Ốm",
-  "en": ""
- },
- {
-  "vi": "Móc túi",
-  "en": ""
- },
- {
-  "vi": "Trộm vào nhà",
-  "en": ""
- },
- {
-  "vi": "Phạt đỗ xe",
-  "en": ""
- },
- {
-  "vi": "Xe kêu lạch cạch, phanh hơi lỏng.",
-  "en": ""
- },
- {
-  "vi": "Đèn báo động cơ cứ chớp tắt.",
-  "en": ""
- },
- {
-  "vi": "Máy thuyền nổ không đều.",
-  "en": ""
- },
- {
-  "vi": "Thợ máy báo cánh tà hơi kẹt.",
-  "en": ""
- },
- {
-  "vi": "Xe chết máy giữa đường.",
-  "en": ""
- },
- {
-  "vi": "Xe báo lỗi, phải kéo về xưởng.",
-  "en": ""
- },
- {
-  "vi": "Thuyền hỏng máy ngoài bến.",
-  "en": ""
- },
- {
-  "vi": "Máy bay phải nằm xưởng.",
-  "en": ""
- },
- {
-  "vi": "Trần nhà dột",
-  "en": ""
- },
- {
-  "vi": "Mưa đêm qua, nước nhỏ giọt xuống sàn.",
-  "en": ""
- },
- {
-  "vi": "Trần có vết ố nâu loang ra.",
-  "en": ""
- },
- {
-  "vi": "Vỡ ống nước",
-  "en": ""
- },
- {
-  "vi": "Ống nước âm tường vỡ, sàn ướt sũng.",
-  "en": ""
- },
- {
-  "vi": "Tường ẩm, đồng hồ nước cứ quay.",
-  "en": ""
- },
- {
-  "vi": "Chập điện",
-  "en": ""
- },
- {
-  "vi": "Cầu dao nhảy, một đoạn dây cháy đen.",
-  "en": ""
- },
- {
-  "vi": "Ổ điện hơi nóng, đèn chớp chớp.",
-  "en": ""
- },
- {
-  "vi": "Cháy bếp",
-  "en": ""
- },
- {
-  "vi": "Chảo dầu bén lửa, tủ bếp cháy sém.",
-  "en": ""
- },
- {
-  "vi": "Bếp có mùi khét lạ.",
-  "en": ""
- },
- {
-  "vi": "Nhà bị ngập",
-  "en": ""
- },
- {
-  "vi": "Mưa lớn, nước tràn vào nhà.",
-  "en": ""
- },
- {
-  "vi": "Sắp mưa to, cống trước nhà đầy rác.",
-  "en": ""
- },
- {
-  "vi": "Bị cảm sốt",
-  "en": ""
- },
- {
-  "vi": "Sáng dậy người nóng ran, đầu nặng trĩu.",
-  "en": ""
- },
- {
-  "vi": "Đau bụng",
-  "en": ""
- },
- {
-  "vi": "Hôm qua ăn quán lạ, giờ bụng quặn từng cơn.",
-  "en": ""
- },
- {
-  "vi": "Đau lưng",
-  "en": ""
- },
- {
-  "vi": "Bê đồ nặng, sáng nay cúi không nổi.",
-  "en": ""
- },
- {
-  "vi": "Vẫn chưa khỏi",
   "en": ""
  }
 ]

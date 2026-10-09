@@ -1,5 +1,55 @@
 [
  {
+  "vi": "🛠️ Đã lắp $1/$2 món.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thuê $1 người?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lương mỗi $1: $2. Trả dần từ két/vốn quầy khi làm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👥 $1 người đã nhận việc.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👥 $1/$2 người đã nhận việc.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sang nhượng $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "NGÀY SỐNG $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "quầy · két $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Làm $1 việc ở một nghề bán hàng (trà sữa, tạp hóa, hoa…) rồi quay lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💼 Làm thêm$1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Làm $1: xong $2 việc rồi khép ca.",
   "en": "",
   "pattern": true

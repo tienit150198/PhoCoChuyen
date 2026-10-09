@@ -1,5 +1,189 @@
 [
  {
+  "vi": "Hai tam giác như vậy ghép lại thành hình chữ nhật 6 × 4. Một tam giác là một nửa, nên chia 2. Con cắt giấy ghép thử nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Công thức có chia 2 con ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Thuộc công thức là được.",
+  "en": ""
+ },
+ {
+  "vi": "Vận tốc xe đạp",
+  "en": ""
+ },
+ {
+  "vi": "Toán · Chuyển động",
+  "en": ""
+ },
+ {
+  "vi": "Xe đạp đi 24 km trong 2 giờ. Vận tốc xe đạp là bao nhiêu?",
+  "en": ""
+ },
+ {
+  "vi": "12 km/giờ",
+  "en": ""
+ },
+ {
+  "vi": "26 km/giờ",
+  "en": ""
+ },
+ {
+  "vi": "48 km/giờ",
+  "en": ""
+ },
+ {
+  "vi": "Vận tốc = quãng đường : thời gian = 24 : 2 = 12 km/giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Km/giờ nghĩa là sao ạ?",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi hay đó! Đọc là ki-lô-mét trên giờ: mỗi giờ xe đi được 12 km. Đi 2 giờ thì được 24 km.",
+  "en": ""
+ },
+ {
+  "vi": "Là đơn vị vận tốc con ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi đúng đơn vị là được.",
+  "en": ""
+ },
+ {
+  "vi": "Bể cá nhà Khoa",
+  "en": ""
+ },
+ {
+  "vi": "Toán · Thể tích",
+  "en": ""
+ },
+ {
+  "vi": "Bể cá dài 5 dm, rộng 3 dm, cao 4 dm. Thể tích bể là bao nhiêu đề-xi-mét khối?",
+  "en": ""
+ },
+ {
+  "vi": "5 × 3 × 4 = 60 dm³. 1 dm³ = 1 lít, bể chứa đầy được 60 lít nước.",
+  "en": ""
+ },
+ {
+  "vi": "Đề-xi-mét khối với lít khác nhau không ạ?",
+  "en": ""
+ },
+ {
+  "vi": "Bằng nhau con ạ: 1 dm³ = 1 lít. Bể này chứa vừa 60 lít nước. Mình đổ thử chai 1 lít vào hộp 1 dm³ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Gần giống nhau con ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Không thi phần đó đâu.",
+  "en": ""
+ },
+ {
+  "vi": "Siêng năng, chăm chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng Việt · Từ đồng nghĩa",
+  "en": ""
+ },
+ {
+  "vi": "Từ nào đồng nghĩa với “siêng năng”?",
+  "en": ""
+ },
+ {
+  "vi": "Thông minh",
+  "en": ""
+ },
+ {
+  "vi": "“Siêng năng” và “chăm chỉ” cùng nói về người chịu khó làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "“Thông minh” cũng là lời khen, sao không đồng nghĩa ạ?",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi hay đó! Cùng là lời khen nhưng nghĩa khác: thông minh là nhanh hiểu, siêng năng là chịu khó. Đồng nghĩa là nghĩa giống nhau, thay vào câu được.",
+  "en": ""
+ },
+ {
+  "vi": "Vì khác nghĩa con ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi lạc đề quá.",
+  "en": ""
+ },
+ {
+  "vi": "Trời mưa nên đường ngập",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng Việt · Câu ghép",
+  "en": ""
+ },
+ {
+  "vi": "“Trời mưa to … đường ngập nước.” Điền kết từ nào?",
+  "en": ""
+ },
+ {
+  "vi": "nên",
+  "en": ""
+ },
+ {
+  "vi": "nhưng",
+  "en": ""
+ },
+ {
+  "vi": "Mưa to là nguyên nhân, đường ngập là kết quả: dùng “nên”.",
+  "en": ""
+ },
+ {
+  "vi": "“Vì” với “nên” dùng khi nào ạ?",
+  "en": ""
+ },
+ {
+  "vi": "“Vì” đứng trước nguyên nhân, “nên” đứng trước kết quả: Vì trời mưa to nên đường ngập nước.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc thấy xuôi là được con.",
+  "en": ""
+ },
+ {
+  "vi": "Học thuộc cặp từ đi.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy lại muối",
+  "en": ""
+ },
+ {
+  "vi": "Hòa muối vào nước, khuấy tan hết. Muốn lấy lại muối thì làm sao?",
+  "en": ""
+ },
+ {
+  "vi": "Cho nước bay hơi",
+  "en": ""
+ },
+ {
+  "vi": "Lọc qua giấy",
+  "en": ""
+ },
+ {
+  "vi": "Để lắng",
+  "en": ""
+ },
+ {
   "vi": "Muối tan thành dung dịch, lọc hay để lắng đều không tách được. Nước bay hơi hết thì muối còn lại.",
   "en": ""
  },
@@ -1613,190 +1797,6 @@
  },
  {
   "vi": "hộp bánh donut",
-  "en": ""
- },
- {
-  "vi": "ly cà phê sữa đá",
-  "en": ""
- },
- {
-  "vi": "bịch cam",
-  "en": ""
- },
- {
-  "vi": "gói hạt giống quý",
-  "en": ""
- },
- {
-  "vi": "hũ mật ong rừng",
-  "en": ""
- },
- {
-  "vi": "rổ trứng gà ta",
-  "en": ""
- },
- {
-  "vi": "nắm xôi xéo còn nóng",
-  "en": ""
- },
- {
-  "vi": "nải chuối chín",
-  "en": ""
- },
- {
-  "vi": "gói lạc rang nhà làm",
-  "en": ""
- },
- {
-  "vi": "tấm ảnh mặc đồ mới kèm lời cảm ơn",
-  "en": ""
- },
- {
-  "vi": "mấy trái quýt",
-  "en": ""
- },
- {
-  "vi": "tấm ảnh bé cưng ở nhà mới",
-  "en": ""
- },
- {
-  "vi": "chậu sen đá nhỏ",
-  "en": ""
- },
- {
-  "vi": "ly trà đá mát",
-  "en": ""
- },
- {
-  "vi": "lời cảm ơn viết trên giấy gói",
-  "en": ""
- },
- {
-  "vi": "gói bánh bông lan",
-  "en": ""
- },
- {
-  "vi": "tô bún bò nóng",
-  "en": ""
- },
- {
-  "vi": "hũ mứt gừng nhà làm",
-  "en": ""
- },
- {
-  "vi": "bịch chanh nhà trồng của chú Bình",
-  "en": ""
- },
- {
-  "vi": "bó húng quế bà Sương trồng",
-  "en": ""
- },
- {
-  "vi": "bó rau muống non của chị Lụa",
-  "en": ""
- },
- {
-  "vi": "một dải ảnh cả nhóm tặng lại",
-  "en": ""
- },
- {
-  "vi": "bịch kẹo dẻo hội bạn chia",
-  "en": ""
- },
- {
-  "vi": "tấm thiệp vẽ cái máy ảnh",
-  "en": ""
- },
- {
-  "vi": "gói trà bà Xuân gói sẵn",
-  "en": ""
- },
- {
-  "vi": "hộp bánh anh Tùng để trên bàn",
-  "en": ""
- },
- {
-  "vi": "túi bánh cá chị Hà mua cho bạn",
-  "en": ""
- },
- {
-  "vi": "bịch khô cá cô Lệ phơi",
-  "en": ""
- },
- {
-  "vi": "bức tranh mâm cơm bé Bin vẽ",
-  "en": ""
- },
- {
-  "vi": "bài thơ ông Toàn chép tay",
-  "en": ""
- },
- {
-  "vi": "chiếc kẹp sách tự làm",
-  "en": ""
- },
- {
-  "vi": "gói trà ông Thạc gửi",
-  "en": ""
- },
- {
-  "vi": "tấm thiệp cảm ơn của Đạt",
-  "en": ""
- },
- {
-  "vi": "bức tranh bé vẽ bằng bút sáp",
-  "en": ""
- },
- {
-  "vi": "túi bánh gạo bé chia cho",
-  "en": ""
- },
- {
-  "vi": "tấm thiệp mẹ bé viết tay",
-  "en": ""
- },
- {
-  "vi": "gói xôi xéo chị Nguyệt để phần",
-  "en": ""
- },
- {
-  "vi": "bức tranh nồi phở bé Bống vẽ",
-  "en": ""
- },
- {
-  "vi": "chai tương đen anh Sáu mang từ Sài Gòn",
-  "en": ""
- },
- {
-  "vi": "gói kẹo mừng đầy tháng",
-  "en": ""
- },
- {
-  "vi": "tấm thiệp bé nhà vẽ",
-  "en": ""
- },
- {
-  "vi": "móc khóa lưu niệm từ quê khách",
-  "en": ""
- },
- {
-  "vi": "tấm bưu thiếp có chữ ký cả đoàn",
-  "en": ""
- },
- {
-  "vi": "thanh sô-cô-la ngoại",
-  "en": ""
- },
- {
-  "vi": "bịch cam sành",
-  "en": ""
- },
- {
-  "vi": "lời cảm ơn viết tay",
-  "en": ""
- },
- {
-  "vi": "mẩu giấy cảm ơn viết tay",
   "en": ""
  }
 ]

@@ -1,5 +1,145 @@
 [
  {
+  "vi": "🔌 Làm đủ bước an toàn như [[Rút điện / cáp sạc]], [[Xả tụ bằng điện trở]] rồi mới mở máy.",
+  "en": ""
+ },
+ {
+  "vi": "🛠️ Bấm [[Sửa:]] đúng bệnh đã chốt, lắp lại máy, rồi bấm [[Chạy thử lần cuối]].",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Chọn số ngày bảo hành đúng loại linh kiện, rồi bấm [[Bàn giao & thu tiền]].",
+  "en": ""
+ },
+ {
+  "vi": "✅ Máy chạy thật sau khi trả. Chạy thử lần cuối trước khi giao.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Giá không vượt ngân sách khách. Khách quen tin bạn thì chịu thêm tối đa 10%.",
+  "en": ""
+ },
+ {
+  "vi": "🏷️ Khách chỉ muốn đồ chính hãng thì đừng báo hàng tương thích hay đồ tháo máy.",
+  "en": ""
+ },
+ {
+  "vi": "📜 Bảo hành đúng loại: chính hãng 90 ngày, tương thích 30, đồ tháo máy 7. Máy dính nước không bảo hành.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Phiếu nhận máy ghi đúng vết xước và phụ kiện, trả đủ phụ kiện cho khách.",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Làm gọn, ít phép đo thừa. Khách hẹn gấp thì xong đúng hẹn.",
+  "en": ""
+ },
+ {
+  "vi": "💝 Khách vui (5★) có khi bo thêm 3–15 xu hoặc tặng quà cảm ơn; 4★ thì hiếm hơn, dưới 3★ thì không.",
+  "en": ""
+ },
+ {
+  "vi": "Mở quạt, nồi cơm, điện thoại… khi còn điện, chưa xả tụ",
+  "en": ""
+ },
+ {
+  "vi": "Khách không trả tiền, chấm 1★, báo cáo lên app. Hôm sau tổ dân phố tới, có thể bị phạt.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa khi khách chưa duyệt báo giá, hoặc tính tiền máy còn bảo hành",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi nặng: khách đòi bớt hoặc hoàn tiền, review tối đa 2★, dễ bị báo cáo.",
+  "en": ""
+ },
+ {
+  "vi": "Giao máy luôn mà không chạy thử",
+  "en": ""
+ },
+ {
+  "vi": "Máy còn hỏng thì lỗi nặng, review tối đa 2★. Máy chạy rồi vẫn dễ quay lại bắt sửa.",
+  "en": ""
+ },
+ {
+  "vi": "Lắp nhầm linh kiện, chốt sai bệnh",
+  "en": ""
+ },
+ {
+  "vi": "Chạy thử lỗi: mất linh kiện, phải đo và báo giá lại, khách mất kiên nhẫn.",
+  "en": ""
+ },
+ {
+  "vi": "Mua máy chưa tra IMEI, hóa đơn",
+  "en": ""
+ },
+ {
+  "vi": "Máy báo mất: mất tiền mua, phải ký biên bản với công an.",
+  "en": ""
+ },
+ {
+  "vi": "Chép dữ liệu khách nhờ, hoặc báo công an oan máy sạch",
+  "en": ""
+ },
+ {
+  "vi": "Chủ máy phát hiện dữ liệu bị chép và làm lớn chuyện. Báo oan thì người bán bị nghi oan.",
+  "en": ""
+ },
+ {
+  "vi": "Hứa lèo giờ lấy máy, ghi sai phiếu, mất phụ kiện, bảo hành ngắn",
+  "en": ""
+ },
+ {
+  "vi": "Khách càu nhàu hoặc đòi bớt tiền. Để quên khách quay lại thì bị 2★.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm [[Trả máy không sửa]] khi máy vẫn sửa được",
+  "en": ""
+ },
+ {
+  "vi": "Đã đo thì chỉ thu 10 xu phí kiểm tra. Lỗi rõ: review tối đa 3★.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Bấm [[Kho & nhập linh kiện]] để đặt màn, pin, tụ, dây curoa, săm lốp…",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Chợ linh kiện Mây: rẻ, đặt trước 13:00 thì chiều nay có, đặt sau thì sáng mai. Đôi khi giao thiếu.",
+  "en": ""
+ },
+ {
+  "vi": "🚚 Hạt Nắng chạy 4 chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau khoảng 1 tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "⚡ Giao hỏa tốc tới trong 15–30 phút nhưng đắt. Kho linh kiện chính hãng rẻ hơn nhưng 1–2 ngày mới tới.",
+  "en": ""
+ },
+ {
+  "vi": "🔓 Màn hình chính hãng và mâm nhiệt nồi cơm mở ở cấp 2; motor quạt đứng mở ở cấp 3.",
+  "en": ""
+ },
+ {
+  "vi": "🧰 Mở [[Dụng cụ]]: mũi hàn mòn thì [[Lau mũi hàn]] (tốn 1 thiếc hàn) hoặc thay [[Mũi mới]] 4 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🔋 Đồng hồ đo yếu pin thì số đo sai, phí lượt. Thay [[Pin 9V mới]] (2 xu) trước.",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Thiếu linh kiện giữa chừng: bấm [[Hết trên kệ — đặt riêng]], rồi hẹn khách để máy lại.",
+  "en": ""
+ },
+ {
+  "vi": "🛵 Lâm Linh Kiện (+2 xu): đặt trước 12:00 thì 15:00 có, đặt sau thì sáng mai. Hàng hãng từ thành phố (+3 xu) ngày kia mới tới.",
+  "en": ""
+ },
+ {
   "vi": "🔍 Mở máy có thể lòi thêm bệnh ẩn như đứt dây, lỏng cọc. Phải báo giá thêm.",
   "en": ""
  },
@@ -1501,158 +1641,6 @@
  },
  {
   "vi": "Lấn lòng đường là lỗi rõ. Quên ô là lỗi nhỏ (ngày nắng gắt: lỗi rõ). Thiếu chè, thiếu đá là lỗi nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Không dẹp kịp khi trật tự đô thị tới",
-  "en": ""
- },
- {
-  "vi": "Phạt 10 xu, thêm 3 xu mỗi ghế còn ngoài, 5 xu nếu ô chưa gấp, 15 xu nếu bày lấn lòng đường; bị thu tới 3 ghế.",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ sai số",
-  "en": ""
- },
- {
-  "vi": "Ghi thiếu thì quán mất phần đó. Ghi lố thì tới hẹn chú Tường hỏi lại: sửa ngay thì êm, cứ chìa sổ ra là lỗi rõ.",
-  "en": ""
- },
- {
-  "vi": "Cãi to với chú Tường lúc trả sổ",
-  "en": ""
- },
- {
-  "vi": "Lỗi nhỏ, sổ ghi lố thật thì thành lỗi rõ và chú gạch luôn dòng đó không trả.",
-  "en": ""
- },
- {
-  "vi": "Khách kỹ như anh Đạt đếm lại đòi ngay (lỗi nhỏ). Về nhà mới thấy thì 2★, có khi báo cáo. Thối dư có người cầm luôn.",
-  "en": ""
- },
- {
-  "vi": "🧊 Anh Tuấn xe đá thả đá mỗi sáng, 4 xu một cây. Chỉnh số cây (0–6) trong [[Sắm sửa cho quán]]. Đá cây chỉ để được trong ngày.",
-  "en": ""
- },
- {
-  "vi": "🔨 Một cây đá đập được 8 phần, thùng chứa 24 phần. Đá tan nhanh ngoài nắng, gấp đôi ngày nắng gắt; ô to giúp tan chậm.",
-  "en": ""
- },
- {
-  "vi": "📦 Chè khô, chanh, hướng dương, lạc, kẹo lạc, bánh quy, thuốc lẻ: nhập ở [[Kho chè & đồ vặt]], trả tiền khi đặt.",
-  "en": ""
- },
- {
-  "vi": "🚚 Chợ đầu mối Mây rẻ nhất (trước 13:00 tới chiều, sau thì sáng mai, hay thiếu). Hạt Nắng bốn chuyến mỗi ngày. Hỏa tốc Mây Xanh 15–30 phút.",
-  "en": ""
- },
- {
-  "vi": "🟢 Mùa sấu: sáng ra bà bán sấu để lại 6 phần sấu dầm (12 xu), để được 3 ngày.",
-  "en": ""
- },
- {
-  "vi": "🪑 Sắm thêm: 2 ghế nhựa 8 xu, 4 cốc 6 xu, ô to 30 xu, biển hiệu 20 xu.",
-  "en": ""
- },
- {
-  "vi": "🎁 Rót càng nhiều cốc, bà Lựu và khách quen càng tặng: 2 ghế, bàn cờ (từ ngày 3), ô to (ngày 5), biển hiệu (ngày 8).",
-  "en": ""
- },
- {
-  "vi": "👥 Nhân viên: Tí, Mơ rửa cốc và thay chậu; Bảy, Toàn đập đá khi thùng sắp cạn.",
-  "en": ""
- },
- {
-  "vi": "🌤️ Mỗi ngày một kiểu trời: nắng gắt (đá tan gấp đôi), mưa rào (dọn vào mái hiên), gió mát, tối có trận bóng, mùa sấu.",
-  "en": ""
- },
- {
-  "vi": "🌧️ Mưa rào ập tới: bê quán vào mái hiên tiệm may. Ngồi nguyên thì cốc lẫn nước mưa phải rửa lại, khách chê.",
-  "en": ""
- },
- {
-  "vi": "🏃 Khách lạ uống xong chuồn thẳng (17 xu): nhờ chú Tường đuổi theo thì dễ đòi được hơn.",
-  "en": ""
- },
- {
-  "vi": "🍺 Người say gây gổ: mời trà nóng, gọi người nhà. ⚽ Bàn bên rủ cá độ 20 xu: đừng chơi.",
-  "en": ""
- },
- {
-  "vi": "🛵 Trông hộ xe, 👶 trông hộ bé, 🗣️ cô Hoa kể chuyện phố, 📢 tổ trưởng nhắc kê ghế gọn: cách chọn nào cũng có hậu quả.",
-  "en": ""
- },
- {
-  "vi": "🚨 Trật tự đô thị: ngày 3 chắc chắn ghé (30 giây để dẹp), các ngày sau thỉnh thoảng (20 giây).",
-  "en": ""
- },
- {
-  "vi": "💵 Từ ngày 2 thỉnh thoảng khách đưa thiếu tiền. Bấm [[Đếm lại tiền khách đưa]]; thiếu thật thì phải chọn cách xử lý rồi mới thối tiền được.",
-  "en": ""
- },
- {
-  "vi": "😤 Khách cố tình đưa thiếu rồi chối: [[Để khách đi]] thì mất khoản thiếu; báo công an thì khách phải trả đủ, hàng xóm khen quán làm đúng.",
-  "en": ""
- },
- {
-  "vi": "MỞ HÀNG",
-  "en": ""
- },
- {
-  "vi": "Mở sổ, đọc cho chú",
-  "en": ""
- },
- {
-  "vi": "Xếp chồng ghế",
-  "en": ""
- },
- {
-  "vi": "Gấp ô",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách gọi gì",
-  "en": ""
- },
- {
-  "vi": "ĐƯA TRÀ · TÍNH TIỀN",
-  "en": ""
- },
- {
-  "vi": "ĐƯA TRÀ · GHI SỔ",
-  "en": ""
- },
- {
-  "vi": "ĐƯA TIỀN THỐI",
-  "en": ""
- },
- {
-  "vi": "Đập 1 cây đá",
-  "en": ""
- },
- {
-  "vi": "Thay nước",
-  "en": ""
- },
- {
-  "vi": "Cho chú xem dòng sổ",
-  "en": ""
- },
- {
-  "vi": "Sắm sửa cho quán",
-  "en": ""
- },
- {
-  "vi": "Kho chè & đồ vặt",
-  "en": ""
- },
- {
-  "vi": "Bạn trông sạp trái cây đầu chợ cho dì Tư: thử cân, lựa trái dập, chọn trái đúng độ chín, cân đủ, trả giá vui vẻ, thối đúng tiền.",
-  "en": ""
- },
- {
-  "vi": "Dựng dù (trời mưa thì căng bạt), bấm [[Đặt quả cân 1 ký]] để thử cân, lệch thì [[Chỉnh kim về đúng]], [[Lựa ra]] trái dập, rồi [[MỞ HÀNG]].",
   "en": ""
  }
 ]

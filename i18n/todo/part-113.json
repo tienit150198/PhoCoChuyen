@@ -1,5 +1,409 @@
 [
  {
+  "vi": "Chào kiểu lính",
+  "en": ""
+ },
+ {
+  "vi": "Máy bay",
+  "en": ""
+ },
+ {
+  "vi": "Ú òa",
+  "en": ""
+ },
+ {
+  "vi": "Ôm tim",
+  "en": ""
+ },
+ {
+  "vi": "Vỗ tay",
+  "en": ""
+ },
+ {
+  "vi": "Khoác vai",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ nhau",
+  "en": ""
+ },
+ {
+  "vi": "Tựa lưng",
+  "en": ""
+ },
+ {
+  "vi": "Tựa vai",
+  "en": ""
+ },
+ {
+  "vi": "Cùng nhảy",
+  "en": ""
+ },
+ {
+  "vi": "Chụm đầu",
+  "en": ""
+ },
+ {
+  "vi": "Nắm tay",
+  "en": ""
+ },
+ {
+  "vi": "Ôm nhau",
+  "en": ""
+ },
+ {
+  "vi": "Tàu hỏa",
+  "en": ""
+ },
+ {
+  "vi": "Xoa đầu",
+  "en": ""
+ },
+ {
+  "vi": "Cụng ly",
+  "en": ""
+ },
+ {
+  "vi": "Theo dáng",
+  "en": ""
+ },
+ {
+  "vi": "Cười híp mắt",
+  "en": ""
+ },
+ {
+  "vi": "Cười tít",
+  "en": ""
+ },
+ {
+  "vi": "Mắt lấp lánh",
+  "en": ""
+ },
+ {
+  "vi": "Mắt tim",
+  "en": ""
+ },
+ {
+  "vi": "Phồng má",
+  "en": ""
+ },
+ {
+  "vi": "Lè lưỡi",
+  "en": ""
+ },
+ {
+  "vi": "Khóc nhè",
+  "en": ""
+ },
+ {
+  "vi": "Ngủ gật",
+  "en": ""
+ },
+ {
+  "vi": "Giận dỗi",
+  "en": ""
+ },
+ {
+  "vi": "Đỏ mặt",
+  "en": ""
+ },
+ {
+  "vi": "Hoảng hốt",
+  "en": ""
+ },
+ {
+  "vi": "Ngơ ngác",
+  "en": ""
+ },
+ {
+  "vi": "Chu môi",
+  "en": ""
+ },
+ {
+  "vi": "XINH QUÁ",
+  "en": ""
+ },
+ {
+  "vi": "chụp ảnh: đồ",
+  "en": ""
+ },
+ {
+  "vi": "VUI QUÁ!",
+  "en": ""
+ },
+ {
+  "vi": "chụp ảnh: dáng",
+  "en": ""
+ },
+ {
+  "vi": "Vui ghê",
+  "en": ""
+ },
+ {
+  "vi": "Đỉnh!",
+  "en": ""
+ },
+ {
+  "vi": "Yêu lắm",
+  "en": ""
+ },
+ {
+  "vi": "Ố là la",
+  "en": ""
+ },
+ {
+  "vi": "VÉ HỘI CHỢ",
+  "en": ""
+ },
+ {
+  "vi": "Biểu cảm",
+  "en": ""
+ },
+ {
+  "vi": "Tim & lấp lánh",
+  "en": ""
+ },
+ {
+  "vi": "Đồ ăn chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "Chữ xinh",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn dán",
+  "en": ""
+ },
+ {
+  "vi": "Cười híp",
+  "en": ""
+ },
+ {
+  "vi": "Ngại đỏ mặt",
+  "en": ""
+ },
+ {
+  "vi": "Ngủ khò khò",
+  "en": ""
+ },
+ {
+  "vi": "Kính râm ngầu",
+  "en": ""
+ },
+ {
+  "vi": "Tim đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Tim đôi",
+  "en": ""
+ },
+ {
+  "vi": "Kẹo bông",
+  "en": ""
+ },
+ {
+  "vi": "Cá viên chiên",
+  "en": ""
+ },
+ {
+  "vi": "Bắp rang bơ",
+  "en": ""
+ },
+ {
+  "vi": "Kẹo hồ lô",
+  "en": ""
+ },
+ {
+  "vi": "Đèn ông sao",
+  "en": ""
+ },
+ {
+  "vi": "Đèn cá chép",
+  "en": ""
+ },
+ {
+  "vi": "Bánh trung thu",
+  "en": ""
+ },
+ {
+  "vi": "Trăng rằm",
+  "en": ""
+ },
+ {
+  "vi": "Thỏ ngọc",
+  "en": ""
+ },
+ {
+  "vi": "Đầu lân",
+  "en": ""
+ },
+ {
+  "vi": "Băng keo hồng",
+  "en": ""
+ },
+ {
+  "vi": "Băng keo xanh",
+  "en": ""
+ },
+ {
+  "vi": "Góc ảnh nơ",
+  "en": ""
+ },
+ {
+  "vi": "Vé chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "Khung thoại",
+  "en": ""
+ },
+ {
+  "vi": "Khung ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Huy hiệu 2026",
+  "en": ""
+ },
+ {
+  "vi": "lương",
+  "en": ""
+ },
+ {
+  "vi": "thuê chỗ",
+  "en": ""
+ },
+ {
+  "vi": "điện",
+  "en": ""
+ },
+ {
+  "vi": "môi trường",
+  "en": ""
+ },
+ {
+  "vi": "bảo vệ",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả cho thời gian mở quầy:",
+  "en": ""
+ },
+ {
+  "vi": "Lương, thuê chỗ, điện, phí môi trường và bảo vệ tính theo thời gian quầy mở và làm việc, kể cả lúc chưa có khách. Vắng khách thì bấm 🔴 Đóng quầy để ngừng tính.",
+  "en": ""
+ },
+ {
+  "vi": "đang dừng",
+  "en": ""
+ },
+ {
+  "vi": "mỗi ngày bán",
+  "en": ""
+ },
+ {
+  "vi": "🕵️ Rủi ro trộm:",
+  "en": ""
+ },
+ {
+  "vi": ". Camera −50%, chuông −25%, két sắt −20% và trộm lấy tối đa nửa két, bảo vệ cơ bản −20%, tăng cường −40%.",
+  "en": ""
+ },
+ {
+  "vi": "Cả phố cùng lúc: mọi quầy của mọi người chơi cùng vắng khách. Không phải do giá của bạn, cũng không phải do bạn mở nhiều quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Cả phố cùng lúc: mọi quầy của mọi người chơi cùng một mức.",
+  "en": ""
+ },
+ {
+  "vi": "🏷️ Giá menu quầy này vừa phải: không làm khách bớt mua.",
+  "en": ""
+ },
+ {
+  "vi": "Chợ cả phố:",
+  "en": ""
+ },
+ {
+  "vi": "Đơn đã nhận vẫn được phục vụ. Thời gian đóng không tạo đơn bán bù.",
+  "en": ""
+ },
+ {
+  "vi": "🟢 Mở quầy",
+  "en": ""
+ },
+ {
+  "vi": "🔴 Đóng quầy",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang đóng, không nhận khách mới.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang mở nhận khách khi đủ hàng và vốn.",
+  "en": ""
+ },
+ {
+  "vi": "Gói bảo vệ giảm khả năng bị trộm khi quầy hoạt động: cơ bản −20%, tăng cường −40%. Phí theo tổng tài sản của bạn, gồm tiền, nhà, xe và đầu tư; báo giá giữ trong ngày game. Chi phí lấy từ vốn/két và ghi trong sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo vệ quầy",
+  "en": ""
+ },
+ {
+  "vi": "Đang sử dụng",
+  "en": ""
+ },
+ {
+  "vi": "Đổi nghề hoặc nơi làm việc",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nghề khác; tiến trình từng nghề vẫn được lưu",
+  "en": ""
+ },
+ {
+  "vi": "📝 Vào thi",
+  "en": ""
+ },
+ {
+  "vi": "📖 Đang học",
+  "en": ""
+ },
+ {
+  "vi": "Đi thi ngay",
+  "en": ""
+ },
+ {
+  "vi": "· chưa có",
+  "en": ""
+ },
+ {
+  "vi": "Đang học · thi từ Ngày",
+  "en": ""
+ },
+ {
+  "vi": "Học rồi thi lấy chứng chỉ nghề",
+  "en": ""
+ },
+ {
+  "vi": "Vào thi",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ đã có",
+  "en": ""
+ },
+ {
+  "vi": "xem giấy chứng nhận",
+  "en": ""
+ },
+ {
   "vi": "✓ Đang đeo · chạm để cất",
   "en": ""
  },
@@ -1393,410 +1797,6 @@
  },
  {
   "vi": "Tối đa 12 dấu. Dùng nút in để thao tác bằng bàn phím.",
-  "en": ""
- },
- {
-  "vi": "Có thể dùng các nút cầm và gắn bên dưới để thao tác bằng bàn phím.",
-  "en": ""
- },
- {
-  "vi": "Đã đủ 12 dấu. Bỏ dấu cuối nếu bạn muốn đổi vị trí.",
-  "en": ""
- },
- {
-  "vi": "Cầm một món trong khay trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Đặt quai vào vị trí cùng số nhé.",
-  "en": ""
- },
- {
-  "vi": "Cầm bông mềm trong khay rồi chọn một vùng còn trống.",
-  "en": ""
- },
- {
-  "vi": "Kéo bông vào một vùng sáng trên bạn gấu.",
-  "en": ""
- },
- {
-  "vi": "Đang cầm bông mềm. Chọn vùng cần nhồi trên bạn gấu.",
-  "en": ""
- },
- {
-  "vi": "Đang cầm một hạt. Chọn vị trí còn trống.",
-  "en": ""
- },
- {
-  "vi": "Kệ đã đủ 24 món. Bản nháp của bạn vẫn được giữ.",
-  "en": ""
- },
- {
-  "vi": "Cất món tự tay làm lên kệ",
-  "en": ""
- },
- {
-  "vi": "Chưa thanh toán. Thành phẩm vẫn ở đây để bạn cất sau.",
-  "en": ""
- },
- {
-  "vi": "Chưa cất được thành phẩm. Bản nháp vẫn còn; hãy thử lại khi kết nối ổn định.",
-  "en": ""
- },
- {
-  "vi": "Kết nối bị gián đoạn. Bản nháp vẫn còn, bạn có thể thử cất lại.",
-  "en": ""
- },
- {
-  "vi": "Mình làm tiếp món đang dở nhé. Bản nháp đã được mở lại.",
-  "en": ""
- },
- {
-  "vi": "Bạn nam",
-  "en": ""
- },
- {
-  "vi": "Bạn nữ",
-  "en": ""
- },
- {
-  "vi": "Ai cũng được",
-  "en": ""
- },
- {
-  "vi": "Bà Tư bán xôi",
-  "en": ""
- },
- {
-  "vi": "Ngồi chờ ai đó hả con? Bà ngồi chung chút cho vui nha.",
-  "en": ""
- },
- {
-  "vi": "Hồi xưa bà với ông cũng quen nhau ở cái ghế đá này đó.",
-  "en": ""
- },
- {
-  "vi": "Người hợp gu tới liền à, kiên nhẫn chút.",
-  "en": ""
- },
- {
-  "vi": "Rảnh thì chơi hỏi nhanh đáp nhanh với bà nè.",
-  "en": ""
- },
- {
-  "vi": "Chú Ba sửa xe",
-  "en": ""
- },
- {
-  "vi": "Chú ghé ngồi nghỉ tay chút, con cứ chờ tự nhiên nha.",
-  "en": ""
- },
- {
-  "vi": "Tối nào phố cũng đông, chờ xíu là có bạn à.",
-  "en": ""
- },
- {
-  "vi": "Đố vui cho đỡ buồn không? Chú hỏi nè.",
-  "en": ""
- },
- {
-  "vi": "Xe cộ gì hư cứ mang qua tiệm chú nha.",
-  "en": ""
- },
- {
-  "vi": "Chị Mai tiệm hoa",
-  "en": ""
- },
- {
-  "vi": "Chị mới đóng tiệm, ngồi đây hóng gió với em chút.",
-  "en": ""
- },
- {
-  "vi": "Hoa hồng hôm nay đẹp lắm, ai được tặng chắc vui ghê.",
-  "en": ""
- },
- {
-  "vi": "Chờ người hợp gu cũng như chờ hoa nở, đáng mà.",
-  "en": ""
- },
- {
-  "vi": "Chơi đố vui với chị cho đỡ sốt ruột nè.",
-  "en": ""
- },
- {
-  "vi": "Bánh chưng thường gói bằng lá gì?",
-  "en": ""
- },
- {
-  "vi": "Lá dong",
-  "en": ""
- },
- {
-  "vi": "Lá chuối",
-  "en": ""
- },
- {
-  "vi": "Lá sen",
-  "en": ""
- },
- {
-  "vi": "Tết Trung thu vào rằm tháng mấy âm lịch?",
-  "en": ""
- },
- {
-  "vi": "Tháng 8",
-  "en": ""
- },
- {
-  "vi": "Tháng 7",
-  "en": ""
- },
- {
-  "vi": "Con giáp đứng đầu trong 12 con giáp?",
-  "en": ""
- },
- {
-  "vi": "Tý (chuột)",
-  "en": ""
- },
- {
-  "vi": "Sửu (trâu)",
-  "en": ""
- },
- {
-  "vi": "Dần (hổ)",
-  "en": ""
- },
- {
-  "vi": "Xôi được nấu từ loại gạo nào?",
-  "en": ""
- },
- {
-  "vi": "Gạo nếp",
-  "en": ""
- },
- {
-  "vi": "Gạo tẻ",
-  "en": ""
- },
- {
-  "vi": "Gạo lứt",
-  "en": ""
- },
- {
-  "vi": "Hồ Gươm còn có tên là gì?",
-  "en": ""
- },
- {
-  "vi": "Hồ Hoàn Kiếm",
-  "en": ""
- },
- {
-  "vi": "Hồ Tây",
-  "en": ""
- },
- {
-  "vi": "Hồ Trúc Bạch",
-  "en": ""
- },
- {
-  "vi": "Áo dài truyền thống có mấy tà?",
-  "en": ""
- },
- {
-  "vi": "Hai tà",
-  "en": ""
- },
- {
-  "vi": "Một tà",
-  "en": ""
- },
- {
-  "vi": "Ba tà",
-  "en": ""
- },
- {
-  "vi": "Một năm có bao nhiêu mùa?",
-  "en": ""
- },
- {
-  "vi": "Bốn mùa",
-  "en": ""
- },
- {
-  "vi": "Ba mùa",
-  "en": ""
- },
- {
-  "vi": "Năm mùa",
-  "en": ""
- },
- {
-  "vi": "Chè ba màu có mấy màu?",
-  "en": ""
- },
- {
-  "vi": "Ba màu",
-  "en": ""
- },
- {
-  "vi": "Năm màu",
-  "en": ""
- },
- {
-  "vi": "Hôm nay chưa hợp, phố còn đông người mà!",
-  "en": ""
- },
- {
-  "vi": "Bạn đã rời buổi hẹn.",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy có việc phải đi trước rồi. Phố còn đông người mà!",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy",
-  "en": ""
- },
- {
-  "vi": "Nói gì đó…",
-  "en": ""
- },
- {
-  "vi": "Mất kết nối, thử lại sau nhé.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo vì…",
-  "en": ""
- },
- {
-  "vi": "Rời buổi hẹn",
-  "en": ""
- },
- {
-  "vi": "người đang chờ ở góc hẹn hò",
-  "en": ""
- },
- {
-  "vi": "Chỉ có bạn đang chờ",
-  "en": ""
- },
- {
-  "vi": "Chưa ai đang chờ",
-  "en": ""
- },
- {
-  "vi": "người ghé trong 30 phút qua",
-  "en": ""
- },
- {
-  "vi": "🎲 Hỏi nhanh đáp nhanh",
-  "en": ""
- },
- {
-  "vi": "Câu khác",
-  "en": ""
- },
- {
-  "vi": "Đúng rồi! 👏",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm ngồi cùng",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm ngồi chờ cùng",
-  "en": ""
- },
- {
-  "vi": "Rủ mọi người",
-  "en": ""
- },
- {
-  "vi": "Muốn gặp",
-  "en": ""
- },
- {
-  "vi": "Đang tìm người hợp gu…",
-  "en": ""
- },
- {
-  "vi": "Hẹn 5 phút ở quán cà phê",
-  "en": ""
- },
- {
-  "vi": "Tạo tài khoản để hẹn hò.",
-  "en": ""
- },
- {
-  "vi": "Ngồi chờ",
-  "en": ""
- },
- {
-  "vi": "Chọn Nam/Nữ cho nhân vật để người khác tìm thấy bạn.",
-  "en": ""
- },
- {
-  "vi": "Đã là bạn bè",
-  "en": ""
- },
- {
-  "vi": "cũng thả tim!",
-  "en": ""
- },
- {
-  "vi": "Ngồi ghế tiếp",
-  "en": ""
- },
- {
-  "vi": "Hợp nhau! 💞",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy chưa kịp chọn 😴",
-  "en": ""
- },
- {
-  "vi": "Khác gu 😆",
-  "en": ""
- },
- {
-  "vi": "chọn rồi",
-  "en": ""
- },
- {
-  "vi": "Trúng phóc! 🎯",
-  "en": ""
- },
- {
-  "vi": "chưa kịp gọi",
-  "en": ""
- },
- {
-  "vi": "Chọn món cho nhau",
-  "en": ""
- },
- {
-  "vi": "gọi cho bạn",
-  "en": ""
- },
- {
-  "vi": "gọi xong rồi",
-  "en": ""
- },
- {
-  "vi": "Bạn đang thèm món gì?",
-  "en": ""
- },
- {
-  "vi": "Bạn thèm",
-  "en": ""
- },
- {
-  "vi": "Một phút trò chuyện. Mở lời đi!",
   "en": ""
  }
 ]

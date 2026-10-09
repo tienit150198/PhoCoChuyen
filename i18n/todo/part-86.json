@@ -1,5 +1,189 @@
 [
  {
+  "vi": "Hỏi người bên cạnh",
+  "en": ""
+ },
+ {
+  "vi": "Khách xin đổi chỗ giữa chuyến.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm chỗ trống, đổi nếu an toàn",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối ngay",
+  "en": ""
+ },
+ {
+  "vi": "Để khách tự đổi",
+  "en": ""
+ },
+ {
+  "vi": "Nghe tin đồn về một đồng nghiệp.",
+  "en": ""
+ },
+ {
+  "vi": "Không lan truyền, hỏi thẳng nếu cần",
+  "en": ""
+ },
+ {
+  "vi": "Kể cho cả tổ",
+  "en": ""
+ },
+ {
+  "vi": "Im lặng nhưng tránh mặt",
+  "en": ""
+ },
+ {
+  "vi": "Người dân xin mở chắn sớm “vì tàu còn xa”.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ chắn, nói rõ còn mấy phút",
+  "en": ""
+ },
+ {
+  "vi": "Mở nhanh cho một người",
+  "en": ""
+ },
+ {
+  "vi": "Lờ đi không trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Đồng nghiệp nhờ ký sổ giao ca khi chưa thử thiết bị.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, cùng thử rồi mới ký",
+  "en": ""
+ },
+ {
+  "vi": "Ký giúp lần này",
+  "en": ""
+ },
+ {
+  "vi": "Ký nhưng ghi chú nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Đi tuần thấy ray nứt, mười phút nữa có tàu.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng vệ hai đầu, điện khẩn cho ga",
+  "en": ""
+ },
+ {
+  "vi": "Gọi tổ thợ hỏi ý kiến",
+  "en": ""
+ },
+ {
+  "vi": "Cung trưởng bảo ghi tàu chậm thành đúng giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi đúng, kèm lý do chậm",
+  "en": ""
+ },
+ {
+  "vi": "Sửa cho đẹp báo cáo",
+  "en": ""
+ },
+ {
+  "vi": "Ghi đúng nhưng không nói gì",
+  "en": ""
+ },
+ {
+  "vi": "Ca đêm thứ ba liền, bạn buồn ngủ díp mắt.",
+  "en": ""
+ },
+ {
+  "vi": "Báo đội trưởng, xin người thay hoặc nghỉ bù",
+  "en": ""
+ },
+ {
+  "vi": "Chợp mắt giữa hai chuyến",
+  "en": ""
+ },
+ {
+  "vi": "Uống thêm cà phê cố gác",
+  "en": ""
+ },
+ {
+  "vi": "Tàu qua mà không thấy đèn đuôi toa cuối.",
+  "en": ""
+ },
+ {
+  "vi": "Cho qua, chắc đèn hỏng",
+  "en": ""
+ },
+ {
+  "vi": "Đêm bão thấy pháo hiệu đỏ, xuồng của trạm nằm ngay dưới bến.",
+  "en": ""
+ },
+ {
+  "vi": "Sếp bảo ghi “đèn sáng bình thường” cho đêm đèn tắt hai mươi phút.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi đúng giờ tắt, nguyên nhân, cách xử lý",
+  "en": ""
+ },
+ {
+  "vi": "Ghi theo lời sếp",
+  "en": ""
+ },
+ {
+  "vi": "Không ghi gì",
+  "en": ""
+ },
+ {
+  "vi": "Khách không có giấy đòi lên phòng đèn chụp ảnh, dúi tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, mời chụp ở sân trạm, không nhận tiền",
+  "en": ""
+ },
+ {
+  "vi": "Đuổi về không nói gì",
+  "en": ""
+ },
+ {
+  "vi": "Đếm chớp thấy chu kỳ 19 giây, danh mục đèn ghi 15 giây.",
+  "en": ""
+ },
+ {
+  "vi": "Báo đài phát thông báo hàng hải, báo xí nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Chắc đồng hồ sai, kệ",
+  "en": ""
+ },
+ {
+  "vi": "Tàu tiếp tế bơm thiếu dầu, thuyền trưởng đòi ký đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Ký đúng số đo được, ghi rõ phần thiếu",
+  "en": ""
+ },
+ {
+  "vi": "Ký đủ cho êm chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Không ký gì cả",
+  "en": ""
+ },
+ {
+  "vi": "Áp kế tụt nhanh mà gió mới cấp 4.",
+  "en": ""
+ },
+ {
   "vi": "Báo đài, phát cảnh báo cho tàu thuyền",
   "en": ""
  },
@@ -1613,190 +1797,6 @@
  },
  {
   "vi": "Giảm thêm 25% khả năng bị trộm",
-  "en": ""
- },
- {
-  "vi": "Bộ chống chập điện",
-  "en": ""
- },
- {
-  "vi": "Giảm 50% chi phí sửa nguồn điện",
-  "en": ""
- },
- {
-  "vi": "Tủ vệ sinh",
-  "en": ""
- },
- {
-  "vi": "Giảm 50% chi phí khắc phục kiểm tra cửa tiệm",
-  "en": ""
- },
- {
-  "vi": "Ít",
-  "en": ""
- },
- {
-  "vi": "Nhiều",
-  "en": ""
- },
- {
-  "vi": "nắng",
-  "en": ""
- },
- {
-  "vi": "mưa",
-  "en": ""
- },
- {
-  "vi": "âm u",
-  "en": ""
- },
- {
-  "vi": "phố vắng",
-  "en": ""
- },
- {
-  "vi": "phố vừa",
-  "en": ""
- },
- {
-  "vi": "phố đông",
-  "en": ""
- },
- {
-  "vi": "Không thấy quầy này.",
-  "en": ""
- },
- {
-  "vi": "Quầy riêng chỉ có trong hành trình.",
-  "en": ""
- },
- {
-  "vi": "Công an tìm lại tiền",
-  "en": ""
- },
- {
-  "vi": "Công an chưa tìm được kẻ trộm",
-  "en": ""
- },
- {
-  "vi": "Đặt tên quầy nhé.",
-  "en": ""
- },
- {
-  "vi": "Thông tin mở quầy không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chọn một món để bán.",
-  "en": ""
- },
- {
-  "vi": "Chọn một chỗ đặt quầy.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận mở quầy.",
-  "en": ""
- },
- {
-  "vi": "Ví đang nợ. Trả nợ trước rồi mở quầy nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa có quầy nào.",
-  "en": ""
- },
- {
-  "vi": "Kiểm hàng và vệ sinh trước khi mở lại quầy.",
-  "en": ""
- },
- {
-  "vi": "Thao tác két không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Két trống. Quầy vẫn mở bình thường.",
-  "en": ""
- },
- {
-  "vi": "Quầy mở lại rồi!",
-  "en": ""
- },
- {
-  "vi": "Két vào vốn quầy",
-  "en": ""
- },
- {
-  "vi": "Thu két về ví",
-  "en": ""
- },
- {
-  "vi": "Thao tác vốn không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Số xu không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Vốn quầy đã đầy.",
-  "en": ""
- },
- {
-  "vi": "Mức nhập hàng không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Thông tin tuyển không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Người này không còn tìm việc.",
-  "en": ""
- },
- {
-  "vi": "Thao tác nhân viên không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Không có người này ở quầy.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận cho nghỉ.",
-  "en": ""
- },
- {
-  "vi": "Phục vụ nốt đơn đã nhận trước khi nhân viên cuối nghỉ.",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy vui lắm!",
-  "en": ""
- },
- {
-  "vi": "Không có vụ nào cần báo.",
-  "en": ""
- },
- {
-  "vi": "Quầy không nợ chi phí quầy.",
-  "en": ""
- },
- {
-  "vi": "Đóng chi phí quầy",
-  "en": ""
- },
- {
-  "vi": "Xác nhận sang nhượng.",
-  "en": ""
- },
- {
-  "vi": "Thao tác quầy không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Đóng ca tự đứng quầy rồi mở rộng nhé.",
   "en": ""
  }
 ]

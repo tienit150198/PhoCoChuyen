@@ -1,5 +1,181 @@
 [
  {
+  "vi": "Trưởng nhóm IT, Công ty CP Cánh Diều",
+  "en": ""
+ },
+ {
+  "vi": "nói ít, hay hỏi \"em làm từng bước thế nào?\"",
+  "en": ""
+ },
+ {
+  "vi": "sao lưu trước khi sửa",
+  "en": ""
+ },
+ {
+  "vi": "không ai được hỏi mã OTP",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng ca, Tổng đài Cứu hộ phường Mây",
+  "en": ""
+ },
+ {
+  "vi": "nói chậm, rõ từng chữ, hay hỏi \"câu đầu tiên em hỏi là gì?\"",
+  "en": ""
+ },
+ {
+  "vi": "hỏi địa chỉ trước tiên",
+  "en": ""
+ },
+ {
+  "vi": "không bỏ ai một mình trên máy",
+  "en": ""
+ },
+ {
+  "vi": "Tổ trưởng cảnh sát khu vực, Công an phường Mây",
+  "en": ""
+ },
+ {
+  "vi": "nói chậm, hay hỏi \"người ta nhờ em mà em không chắc thì em làm gì?\"",
+  "en": ""
+ },
+ {
+  "vi": "ai cũng như ai",
+  "en": ""
+ },
+ {
+  "vi": "không bao giờ nhận phong bì",
+  "en": ""
+ },
+ {
+  "vi": "Đến giờ đóng cửa rồi: không đón thêm khách. Làm nốt việc dở rồi khép ca nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cập nhật hoạt động các tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn làm quản lý: giao việc cho đội nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách hàng không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi mã chỉ một dòng trong đơn gộp.",
+  "en": ""
+ },
+ {
+  "vi": ". Nhận đủ rồi bán bớt hoặc nâng kệ.",
+  "en": ""
+ },
+ {
+  "vi": "trong một chuyến",
+  "en": ""
+ },
+ {
+  "vi": "Lắp bậc trước rồi nâng tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "đã lắp, áp dụng cho lượt làm tiếp theo.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ nhận ảnh PNG/WebP/JPEG chụp từ cảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Thiết bị không thuộc nghề này.",
+  "en": ""
+ },
+ {
+  "vi": "Thiết bị thiếu bậc trước.",
+  "en": ""
+ },
+ {
+  "vi": "Rẻ nhất (×0,85). Đặt trước 13:00, hàng tới chiều nay; đặt sau, hàng tới sáng mai trước giờ mở cửa.",
+  "en": ""
+ },
+ {
+  "vi": "Giá niêm yết. Bốn chuyến mỗi ngày: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "Đắt nhất (×1,35) nhưng tới trong 15–30 phút.",
+  "en": ""
+ },
+ {
+  "vi": "Xe Thiện Tâm kẹt ở cầu Mây, bên em báo trễ chừng nửa tiếng tới một tiếng ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Xe phân phối chạy bốn chuyến mỗi ngày: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng. Giá niêm yết.",
+  "en": ""
+ },
+ {
+  "vi": "Xe của kho tổng về trễ, hàng tới muộn hơn hẹn.",
+  "en": ""
+ },
+ {
+  "vi": "Rẻ hơn (×0,85). Đặt trước 13:00, xe kho giao chiều nay; đặt sau, xe đêm giao trước giờ mở cửa sáng mai.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ không còn hộp quá hạn, thu hồi hay hỏng lạnh nào.",
+  "en": ""
+ },
+ {
+  "vi": "Các hộp cần rút đang nằm trong khay một phiếu. Trả về kệ trước.",
+  "en": ""
+ },
+ {
+  "vi": "kiện thiếu món",
+  "en": ""
+ },
+ {
+  "vi": "cần đầu mối kiểm lại chặng giao",
+  "en": ""
+ },
+ {
+  "vi": "khách nhận sai mã, sai màu (không phải thiếu món)",
+  "en": ""
+ },
+ {
+  "vi": "hồ sơ có yêu cầu hoàn hoặc chính sách cho hoàn",
+  "en": ""
+ },
+ {
+  "vi": "đơn không lỗi, khách chỉ cần cách làm",
+  "en": ""
+ },
+ {
+  "vi": "Cơm nước và điện nước dinh thự",
+  "en": ""
+ },
+ {
+  "vi": "Thư phòng",
+  "en": ""
+ },
+ {
+  "vi": "Phòng khách quý",
+  "en": ""
+ },
+ {
+  "vi": "Phòng chiếu phim",
+  "en": ""
+ },
+ {
+  "vi": "Hầm rượu",
+  "en": ""
+ },
+ {
+  "vi": "Phòng gym",
+  "en": ""
+ },
+ {
   "vi": "Phòng thay đồ",
   "en": ""
  },
@@ -385,10 +561,6 @@
  },
  {
   "vi": "Chấm đá",
-  "en": ""
- },
- {
-  "vi": "Bầu",
   "en": ""
  },
  {
@@ -893,14 +1065,6 @@
  },
  {
   "vi": "Tia Chớp",
-  "en": ""
- },
- {
-  "vi": "Ớt",
-  "en": ""
- },
- {
-  "vi": "Gấu",
   "en": ""
  },
  {
@@ -1633,170 +1797,6 @@
  },
  {
   "vi": "Chụp selfie nhân vật với khung riêng của máy, lưu ảnh về khoe.",
-  "en": ""
- },
- {
-  "vi": "Vỏ máy khoe trên hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Màu vỏ máy viền quanh huy hiệu điện thoại trên hồ sơ của bạn.",
-  "en": ""
- },
- {
-  "vi": "Khung selfie đôi",
-  "en": ""
- },
- {
-  "vi": "Màn gập đôi: hai dáng trong một tấm, như ảnh photobooth.",
-  "en": ""
- },
- {
-  "vi": "Viền vàng lấp lánh",
-  "en": ""
- },
- {
-  "vi": "Vỏ máy và khung selfie viền vàng, lấp lánh như tiệm vàng.",
-  "en": ""
- },
- {
-  "vi": "Mây Lite 5",
-  "en": ""
- },
- {
-  "vi": "Máy “quốc dân”: pin trâu, màn to, lướt mạng mượt. Đủ xài, khỏi lo.",
-  "en": ""
- },
- {
-  "vi": "Tầm trung đáng tiền: camera chụp đêm khá ổn, sạc nhanh nửa tiếng đầy.",
-  "en": ""
- },
- {
-  "vi": "Mây Pro 16",
-  "en": ""
- },
- {
-  "vi": "Hàng đầu dòng: khung titan, ba camera, chụp quán phở cũng ra ảnh tạp chí.",
-  "en": ""
- },
- {
-  "vi": "Sen Gập Fold 3",
-  "en": ""
- },
- {
-  "vi": "Gập lại như hộp phấn, mở ra thành máy tính bảng. Cả quán cà phê ngoái nhìn.",
-  "en": ""
- },
- {
-  "vi": "Kim Long Vàng 24K",
-  "en": ""
- },
- {
-  "vi": "Phiên bản giới hạn mạ vàng, khắc rồng, hộp gỗ lót nhung. Cầm lên là biết “dân chơi”.",
-  "en": ""
- },
- {
-  "vi": "Tai nghe Sóc Pods",
-  "en": ""
- },
- {
-  "vi": "Nhét tai là lọt thỏm, chống ồn đủ để không nghe khách than.",
-  "en": ""
- },
- {
-  "vi": "Đồng hồ Mây Watch",
-  "en": ""
- },
- {
-  "vi": "Đếm bước, nhắc uống nước, rung nhẹ khi có tin nhắn của crush.",
-  "en": ""
- },
- {
-  "vi": "Máy tính bảng Mây Tab",
-  "en": ""
- },
- {
-  "vi": "Màn 11 inch, xem phim nằm võng hay vẽ thực đơn quán đều được.",
-  "en": ""
- },
- {
-  "vi": "Máy chơi game Rồng Con",
-  "en": ""
- },
- {
-  "vi": "Cắm tivi chơi bốn người, gỡ ra mang theo được. Tối thứ bảy cả xóm sang.",
-  "en": ""
- },
- {
-  "vi": "Rồng Con",
-  "en": ""
- },
- {
-  "vi": "Máy ảnh Cò Trắng X",
-  "en": ""
- },
- {
-  "vi": "Máy ảnh không gương lật, ống kính chân dung xóa phông mịn như mơ.",
-  "en": ""
- },
- {
-  "vi": "Cò Trắng",
-  "en": ""
- },
- {
-  "vi": "Anh Khoa cười: “Lên đời rồi hả? Máy cũ để anh lau lại, cho bé Tí học online.”",
-  "en": ""
- },
- {
-  "vi": "Máy cũ",
-  "en": ""
- },
- {
-  "vi": "Chiếc máy cũ còn xài tốt. Gọi được, nhắn được, chụp hình hơi mờ.",
-  "en": ""
- },
- {
-  "vi": "Cửa hàng điện thoại chỉ có trong chế độ hành trình.",
-  "en": ""
- },
- {
-  "vi": "Đồ công nghệ trong bản lưu không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chọn một món trong cửa hàng nhé.",
-  "en": ""
- },
- {
-  "vi": "Thông tin mua hàng không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Mua đồ công nghệ",
-  "en": ""
- },
- {
-  "vi": "Đang dùng máy này.",
-  "en": ""
- },
- {
-  "vi": "Cất máy vào túi, không khoe trên hồ sơ nữa.",
-  "en": ""
- },
- {
-  "vi": "Chỉ chọn được điện thoại để dùng.",
-  "en": ""
- },
- {
-  "vi": "Bán đồ công nghệ",
-  "en": ""
- },
- {
-  "vi": "Thao tác cửa hàng điện thoại không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Xe hai bánh",
   "en": ""
  }
 ]

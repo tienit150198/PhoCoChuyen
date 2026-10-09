@@ -1545,6 +1545,56 @@
   "pattern": true
  },
  {
+  "vi": "🐕 Tìm đối thủ · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kéo tới vạch là thắng. Hết $1 giây: dây lệch bên nào bên đó thắng, giữa là hòa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sau $1 giây không có ai, bạn đấu với chó nhà Mây (chó của game, không phải người chơi).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⏳ Nghỉ cổ họng $1 phút nữa nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👑 $1 tuần:",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🐕 nhận ≤ $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Không có ai sau $1s thì đấu với chó nhà Mây.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thắng! +$1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hòa · trả $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "cược $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã chép mã $1, gửi cho bạn bè nha.",
   "en": "",
   "pattern": true
@@ -2196,56 +2246,6 @@
  },
  {
   "vi": "Đã vay $1, nhớ trả $2 nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1, hết nợ rồi!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "No bụng $1 · tỉnh táo $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay chỉ còn chơi được $1 thôi nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví chỉ còn $1 thôi nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đang ở ngày sống $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Người ấy đang ở ngày sống $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đang ở $1. Mời người ấy về ở cùng nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Người ấy đang ở $1. Nhờ người ấy mở Nhà & Gia đình và gửi lời mời về ở chung.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "ngày được chăm · Gắn bó $1/100",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ". $1 Chỉ số không tự giảm khi bạn vắng mặt.",
   "en": "",
   "pattern": true
  }

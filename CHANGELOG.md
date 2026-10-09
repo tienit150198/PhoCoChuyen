@@ -1,3 +1,7 @@
+# v1.9.41 — 2026-10-10
+
+Gồm dog-bark (🐕 Kéo co chó sủa, bật bằng LIVE_DOG_BARK=1 cho cả mot-ngay-lam-nghe và mnl-live; schema 34: bark_tickets; kind thanh toán 'bark'), và sweeper không theo dấu tiền tài khoản admin.
+
 # Chưa phát hành — dog-bark (Có gì mới: 1 dòng, bản 1.9.41)
 
 🐕 **Kéo co chó sủa** (chủ game 10/10): trò riêng ở Khu phố và trên Bản đồ phố (cạnh Phòng hát), không thuộc chợ đen (không công an chợ đen, không Lộc trời cho, không Bảng vàng). Đặt cược từ 100 xu tới mức ví trả được (giữ cược trước trận), bấm "Tìm đối thủ": ghép ngẫu nhiên người cùng mức cược, không bao giờ ghép hai máy cùng IP (băm có muối, chỉ trong bộ nhớ live), cùng hai người tối đa 3 trận liên tiếp (reset khi cả hai đấu người khác hoặc sau 2 giờ). Sau 20 giây không có ai thì tự đấu với **🐕 Chó nhà Mây · <tên>** (giống và tên ngẫu nhiên mỗi trận, ghi rõ là chó của game, không có hồ sơ người chơi). Sợi dây có cờ ở giữa, ai sủa to hơn (độ to từ mic, chỉ gửi con số, không gửi âm thanh) kéo cờ về phía mình; tới vạch là thắng, hết 45 giây dây lệch bên nào bên đó thắng, giữa là hòa. Thoát hoặc mất kết nối quá 10 giây là thua.

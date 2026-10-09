@@ -1,5 +1,409 @@
 [
  {
+  "vi": "BẮT ĐẦU TỪ BẢN CHẤT GIAO DỊCH",
+  "en": ""
+ },
+ {
+  "vi": "Đọc bài và ví dụ, rồi làm đúng ba bài tập để hoàn thành từng bài. Tiến độ được giữ trong bản lưu.",
+  "en": ""
+ },
+ {
+  "vi": "Mở lại bài học",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp tục học",
+  "en": ""
+ },
+ {
+  "vi": "Sau bài này",
+  "en": ""
+ },
+ {
+  "vi": "THEO DÕI CÁCH LÀM",
+  "en": ""
+ },
+ {
+  "vi": "Tự làm bài tập",
+  "en": ""
+ },
+ {
+  "vi": "Bài đã hoàn thành",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn thành bài",
+  "en": ""
+ },
+ {
+  "vi": "Bài tiếp theo →",
+  "en": ""
+ },
+ {
+  "vi": "Xem điều kiện thi →",
+  "en": ""
+ },
+ {
+  "vi": "Chọn khóa học",
+  "en": ""
+ },
+ {
+  "vi": "BÀI THI",
+  "en": ""
+ },
+ {
+  "vi": "Câu đã nộp được giữ lại. Đáp án và điểm chỉ xuất hiện sau khi nộp đủ bài.",
+  "en": ""
+ },
+ {
+  "vi": "Tiến độ thi",
+  "en": ""
+ },
+ {
+  "vi": "Hủy bài thi đang làm",
+  "en": ""
+ },
+ {
+  "vi": "Khóa thi",
+  "en": ""
+ },
+ {
+  "vi": "Cần ôn thêm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có thể xem lại cách làm.",
+  "en": ""
+ },
+ {
+  "vi": "Mở lại bài học có liên quan rồi thi lại miễn phí.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã nộp:",
+  "en": ""
+ },
+ {
+  "vi": "Ôn bài liên quan",
+  "en": ""
+ },
+ {
+  "vi": "TSCĐ",
+  "en": ""
+ },
+ {
+  "vi": "Phân bổ bảo hiểm",
+  "en": ""
+ },
+ {
+  "vi": "Tiền gửi kỳ hạn",
+  "en": ""
+ },
+ {
+  "vi": "Ngoại tệ",
+  "en": ""
+ },
+ {
+  "vi": "Giá thành",
+  "en": ""
+ },
+ {
+  "vi": "Số tháng",
+  "en": ""
+ },
+ {
+  "vi": "Hao mòn",
+  "en": ""
+ },
+ {
+  "vi": "Từ tháng",
+  "en": ""
+ },
+ {
+  "vi": "Số kỳ",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi kỳ",
+  "en": ""
+ },
+ {
+  "vi": "Đã phân bổ",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghi doanh thu",
+  "en": ""
+ },
+ {
+  "vi": "Chờ phân bổ",
+  "en": ""
+ },
+ {
+  "vi": "Đáo hạn tháng",
+  "en": ""
+ },
+ {
+  "vi": "Lãi dự thu",
+  "en": ""
+ },
+ {
+  "vi": "Giá trị sổ",
+  "en": ""
+ },
+ {
+  "vi": "Lãi suất hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Đối tượng",
+  "en": ""
+ },
+ {
+  "vi": "Loại tiền",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên tệ",
+  "en": ""
+ },
+ {
+  "vi": "Tỷ giá ban đầu",
+  "en": ""
+ },
+ {
+  "vi": "Tỷ giá sổ",
+  "en": ""
+ },
+ {
+  "vi": "Giá trị VND",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên liệu trực tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Sản xuất chung",
+  "en": ""
+ },
+ {
+  "vi": "Sản phẩm hoàn thành",
+  "en": ""
+ },
+ {
+  "vi": "Dở dang cuối kỳ",
+  "en": ""
+ },
+ {
+  "vi": "Sổ chi tiết",
+  "en": ""
+ },
+ {
+  "vi": "Bảng tập hợp giá thành",
+  "en": ""
+ },
+ {
+  "vi": "Khoản mục",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo đang được chuẩn bị từ sổ đã ghi.",
+  "en": ""
+ },
+ {
+  "vi": "B01 · Tình hình tài chính",
+  "en": ""
+ },
+ {
+  "vi": "B02 · Kết quả",
+  "en": ""
+ },
+ {
+  "vi": "B03 · Dòng tiền",
+  "en": ""
+ },
+ {
+  "vi": "B09 · Thuyết minh",
+  "en": ""
+ },
+ {
+  "vi": "Bốn báo cáo tài chính",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang lập báo cáo này ở việc hiện tại. Lấy số từ Cân đối phát sinh và Sổ chi tiết; bản đầy đủ hiện ra sau khi chấm đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Thuyết minh",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ này (VND)",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ trước (VND)",
+  "en": ""
+ },
+ {
+  "vi": "Trang nguồn",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo học tập theo kỳ tháng, gồm cả các chỉ tiêu không phát sinh.",
+  "en": ""
+ },
+ {
+  "vi": "Mẫu TT99 và Phụ lục IV chính thức",
+  "en": ""
+ },
+ {
+  "vi": "VĂN PHÒNG THỰC HÀNH",
+  "en": ""
+ },
+ {
+  "vi": "Đi từ chứng từ đến bộ sổ và bốn báo cáo trong 12 kỳ của năm 2026. Hồ sơ dùng VND; lương trong trò chơi dùng xu.",
+  "en": ""
+ },
+ {
+  "vi": "Lương kế toán doanh nghiệp áp dụng ×3 sau khi đạt chứng nhận, không cộng dồn sau thi lại. Nghề hiện tại của bạn vẫn được giữ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận việc thực hành",
+  "en": ""
+ },
+ {
+  "vi": "Thi đạt chứng nhận Kế toán doanh nghiệp Việt Nam để nhận việc.",
+  "en": ""
+ },
+ {
+  "vi": "Đã mở nguồn",
+  "en": ""
+ },
+ {
+  "vi": "Đọc nguồn trước",
+  "en": ""
+ },
+ {
+  "vi": "Mở chứng từ gốc",
+  "en": ""
+ },
+ {
+  "vi": "Mở và đọc hồ sơ trước khi nhập bút toán. Sổ sách cập nhật sau khi câu trả lời được chấm đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Chứng từ, kết chuyển và bốn báo cáo đã được chấm đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhận lương kỳ này",
+  "en": ""
+ },
+ {
+  "vi": "Nhận lương ca thực hành",
+  "en": ""
+ },
+ {
+  "vi": "Mở tháng tiếp theo →",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn thành 12 kỳ năm 2026",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký kỳ hiện tại",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký các kỳ trước",
+  "en": ""
+ },
+ {
+  "vi": "Đầu kỳ Nợ",
+  "en": ""
+ },
+ {
+  "vi": "Đầu kỳ Có",
+  "en": ""
+ },
+ {
+  "vi": "Phát sinh Nợ",
+  "en": ""
+ },
+ {
+  "vi": "Phát sinh Có",
+  "en": ""
+ },
+ {
+  "vi": "Cuối kỳ Nợ",
+  "en": ""
+ },
+ {
+  "vi": "Cuối kỳ Có",
+  "en": ""
+ },
+ {
+  "vi": "DOANH NGHIỆP THỰC HÀNH · VND",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhận lương",
+  "en": ""
+ },
+ {
+  "vi": "Đang ghi sổ",
+  "en": ""
+ },
+ {
+  "vi": "Tiến độ kỳ thực hành",
+  "en": ""
+ },
+ {
+  "vi": "Chứng từ & việc đang làm",
+  "en": ""
+ },
+ {
+  "vi": "Cân đối phát sinh",
+  "en": ""
+ },
+ {
+  "vi": "Bốn báo cáo",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ doanh nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Vào làm ở",
+  "en": ""
+ },
+ {
+  "vi": "Đến",
+  "en": ""
+ },
+ {
+  "vi": "· bạn đang làm ở đây",
+  "en": ""
+ },
+ {
+  "vi": "Nhận bạn",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đủ chứng nhận",
+  "en": ""
+ },
+ {
+  "vi": "Giới thiệu việc làm",
+  "en": ""
+ },
+ {
   "vi": "Những nơi dưới đây nhận người có chứng nhận của bạn. Lương kế toán ×3, ngày lễ ×5; mỗi ca mở bằng vài câu kiểm tra kiến thức.",
   "en": ""
  },
@@ -1393,410 +1797,6 @@
  },
  {
   "vi": "Ăn kem",
-  "en": ""
- },
- {
-  "vi": "Chào kiểu lính",
-  "en": ""
- },
- {
-  "vi": "Máy bay",
-  "en": ""
- },
- {
-  "vi": "Ú òa",
-  "en": ""
- },
- {
-  "vi": "Ôm tim",
-  "en": ""
- },
- {
-  "vi": "Vỗ tay",
-  "en": ""
- },
- {
-  "vi": "Khoác vai",
-  "en": ""
- },
- {
-  "vi": "Chỉ nhau",
-  "en": ""
- },
- {
-  "vi": "Tựa lưng",
-  "en": ""
- },
- {
-  "vi": "Tựa vai",
-  "en": ""
- },
- {
-  "vi": "Cùng nhảy",
-  "en": ""
- },
- {
-  "vi": "Chụm đầu",
-  "en": ""
- },
- {
-  "vi": "Nắm tay",
-  "en": ""
- },
- {
-  "vi": "Ôm nhau",
-  "en": ""
- },
- {
-  "vi": "Tàu hỏa",
-  "en": ""
- },
- {
-  "vi": "Xoa đầu",
-  "en": ""
- },
- {
-  "vi": "Cụng ly",
-  "en": ""
- },
- {
-  "vi": "Theo dáng",
-  "en": ""
- },
- {
-  "vi": "Cười híp mắt",
-  "en": ""
- },
- {
-  "vi": "Cười tít",
-  "en": ""
- },
- {
-  "vi": "Mắt lấp lánh",
-  "en": ""
- },
- {
-  "vi": "Mắt tim",
-  "en": ""
- },
- {
-  "vi": "Phồng má",
-  "en": ""
- },
- {
-  "vi": "Lè lưỡi",
-  "en": ""
- },
- {
-  "vi": "Khóc nhè",
-  "en": ""
- },
- {
-  "vi": "Ngủ gật",
-  "en": ""
- },
- {
-  "vi": "Giận dỗi",
-  "en": ""
- },
- {
-  "vi": "Đỏ mặt",
-  "en": ""
- },
- {
-  "vi": "Hoảng hốt",
-  "en": ""
- },
- {
-  "vi": "Ngơ ngác",
-  "en": ""
- },
- {
-  "vi": "Chu môi",
-  "en": ""
- },
- {
-  "vi": "XINH QUÁ",
-  "en": ""
- },
- {
-  "vi": "chụp ảnh: đồ",
-  "en": ""
- },
- {
-  "vi": "VUI QUÁ!",
-  "en": ""
- },
- {
-  "vi": "chụp ảnh: dáng",
-  "en": ""
- },
- {
-  "vi": "Vui ghê",
-  "en": ""
- },
- {
-  "vi": "Đỉnh!",
-  "en": ""
- },
- {
-  "vi": "Yêu lắm",
-  "en": ""
- },
- {
-  "vi": "Ố là la",
-  "en": ""
- },
- {
-  "vi": "VÉ HỘI CHỢ",
-  "en": ""
- },
- {
-  "vi": "Biểu cảm",
-  "en": ""
- },
- {
-  "vi": "Tim & lấp lánh",
-  "en": ""
- },
- {
-  "vi": "Đồ ăn chợ đen",
-  "en": ""
- },
- {
-  "vi": "Chữ xinh",
-  "en": ""
- },
- {
-  "vi": "Nhãn dán",
-  "en": ""
- },
- {
-  "vi": "Cười híp",
-  "en": ""
- },
- {
-  "vi": "Ngại đỏ mặt",
-  "en": ""
- },
- {
-  "vi": "Ngủ khò khò",
-  "en": ""
- },
- {
-  "vi": "Kính râm ngầu",
-  "en": ""
- },
- {
-  "vi": "Tim đỏ",
-  "en": ""
- },
- {
-  "vi": "Tim đôi",
-  "en": ""
- },
- {
-  "vi": "Kẹo bông",
-  "en": ""
- },
- {
-  "vi": "Cá viên chiên",
-  "en": ""
- },
- {
-  "vi": "Bắp rang bơ",
-  "en": ""
- },
- {
-  "vi": "Kẹo hồ lô",
-  "en": ""
- },
- {
-  "vi": "Đèn ông sao",
-  "en": ""
- },
- {
-  "vi": "Đèn cá chép",
-  "en": ""
- },
- {
-  "vi": "Bánh trung thu",
-  "en": ""
- },
- {
-  "vi": "Trăng rằm",
-  "en": ""
- },
- {
-  "vi": "Thỏ ngọc",
-  "en": ""
- },
- {
-  "vi": "Đầu lân",
-  "en": ""
- },
- {
-  "vi": "Băng keo hồng",
-  "en": ""
- },
- {
-  "vi": "Băng keo xanh",
-  "en": ""
- },
- {
-  "vi": "Góc ảnh nơ",
-  "en": ""
- },
- {
-  "vi": "Vé chợ đen",
-  "en": ""
- },
- {
-  "vi": "Khung thoại",
-  "en": ""
- },
- {
-  "vi": "Khung ảnh",
-  "en": ""
- },
- {
-  "vi": "Huy hiệu 2026",
-  "en": ""
- },
- {
-  "vi": "lương",
-  "en": ""
- },
- {
-  "vi": "thuê chỗ",
-  "en": ""
- },
- {
-  "vi": "điện",
-  "en": ""
- },
- {
-  "vi": "môi trường",
-  "en": ""
- },
- {
-  "vi": "bảo vệ",
-  "en": ""
- },
- {
-  "vi": "Đã trả cho thời gian mở quầy:",
-  "en": ""
- },
- {
-  "vi": "Lương, thuê chỗ, điện, phí môi trường và bảo vệ tính theo thời gian quầy mở và làm việc, kể cả lúc chưa có khách. Vắng khách thì bấm 🔴 Đóng quầy để ngừng tính.",
-  "en": ""
- },
- {
-  "vi": "đang dừng",
-  "en": ""
- },
- {
-  "vi": "mỗi ngày bán",
-  "en": ""
- },
- {
-  "vi": "🕵️ Rủi ro trộm:",
-  "en": ""
- },
- {
-  "vi": ". Camera −50%, chuông −25%, két sắt −20% và trộm lấy tối đa nửa két, bảo vệ cơ bản −20%, tăng cường −40%.",
-  "en": ""
- },
- {
-  "vi": "Cả phố cùng lúc: mọi quầy của mọi người chơi cùng vắng khách. Không phải do giá của bạn, cũng không phải do bạn mở nhiều quầy.",
-  "en": ""
- },
- {
-  "vi": "Cả phố cùng lúc: mọi quầy của mọi người chơi cùng một mức.",
-  "en": ""
- },
- {
-  "vi": "🏷️ Giá menu quầy này vừa phải: không làm khách bớt mua.",
-  "en": ""
- },
- {
-  "vi": "Chợ cả phố:",
-  "en": ""
- },
- {
-  "vi": "Đơn đã nhận vẫn được phục vụ. Thời gian đóng không tạo đơn bán bù.",
-  "en": ""
- },
- {
-  "vi": "🟢 Mở quầy",
-  "en": ""
- },
- {
-  "vi": "🔴 Đóng quầy",
-  "en": ""
- },
- {
-  "vi": "Quầy đang đóng, không nhận khách mới.",
-  "en": ""
- },
- {
-  "vi": "Quầy đang mở nhận khách khi đủ hàng và vốn.",
-  "en": ""
- },
- {
-  "vi": "Gói bảo vệ giảm khả năng bị trộm khi quầy hoạt động: cơ bản −20%, tăng cường −40%. Phí theo tổng tài sản của bạn, gồm tiền, nhà, xe và đầu tư; báo giá giữ trong ngày game. Chi phí lấy từ vốn/két và ghi trong sổ.",
-  "en": ""
- },
- {
-  "vi": "Bảo vệ quầy",
-  "en": ""
- },
- {
-  "vi": "Đang sử dụng",
-  "en": ""
- },
- {
-  "vi": "Đổi nghề hoặc nơi làm việc",
-  "en": ""
- },
- {
-  "vi": "Chọn nghề khác; tiến trình từng nghề vẫn được lưu",
-  "en": ""
- },
- {
-  "vi": "📝 Vào thi",
-  "en": ""
- },
- {
-  "vi": "📖 Đang học",
-  "en": ""
- },
- {
-  "vi": "Đi thi ngay",
-  "en": ""
- },
- {
-  "vi": "· chưa có",
-  "en": ""
- },
- {
-  "vi": "Đang học · thi từ Ngày",
-  "en": ""
- },
- {
-  "vi": "Học rồi thi lấy chứng chỉ nghề",
-  "en": ""
- },
- {
-  "vi": "Vào thi",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ đã có",
-  "en": ""
- },
- {
-  "vi": "xem giấy chứng nhận",
   "en": ""
  }
 ]

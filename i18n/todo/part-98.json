@@ -1,5 +1,193 @@
 [
  {
+  "vi": "Mời bạn ghé nhà hoặc ở chung lâu dài, không cần kết hôn. Bạn đã nhận lời ở chung có thể vào khi chủ offline.",
+  "en": ""
+ },
+ {
+  "vi": "Cùng thấy nhau và đồ trang trí trong nhà. Gửi ôm, hôn, thả tim; người kia chọn Đáp lại, Ngại ngùng hay Giận dỗi!",
+  "en": ""
+ },
+ {
+  "vi": "Nhà & Gia đình, Mời về ở và Con chung dễ tìm hơn; lời mời cần trả lời nằm ngay đầu trang.",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng handmade có gấu bông: tự đo, cắt, may, nhồi bông rồi gắn mặt và nơ. Làm lại từng bước ngay trên bàn thủ công.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một tin nhắn rồi bấm Trả lời để trích đúng tin. Đổi tên nhân vật cũng cập nhật tên trong bạn bè và chat.",
+  "en": ""
+ },
+ {
+  "vi": "Shop thú cưng chia cá vào từng bể riêng, kiểm tra sức chứa và loài phù hợp; không còn gom nhiều loại cá vào một bể.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa lỗi mở lại máy cà phê đang pha ở bản lưu cũ. Công việc đang làm được giữ để bạn tiếp tục.",
+  "en": ""
+ },
+ {
+  "vi": "Vợ chồng có thể cùng đón con và chăm bé: mở Hôn nhân để gửi lời mời, người kia đồng ý rồi cùng bắt đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Về ở chung có lời mời và xác nhận; dùng đồ trong nhà chung, vẫn giữ nhà riêng và tiền cọc thuê được hoàn đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ giới hạn 60 món nội thất! TV và sofa có hướng trước/sau để bạn sắp nhà theo ý mình.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển khoản bạn bè và rút quỹ chung không còn hạn mức ngày; vẫn cần đủ số dư.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa chat riêng: tin mới không còn bị mất khỏi màn hình khi mở phòng, tải tin cũ hoặc kết nối lại.",
+  "en": ""
+ },
+ {
+  "vi": "Máy cà phê có nhịp 1×/2×/4×; nhập áo chọn đúng size, đổi nghề dễ tìm hơn và bảng trên điện thoại dễ cuộn hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Rời Hãng bay khi đang làm dở: hộp “Bỏ dở việc” hiện lại đủ hai nút Vẫn đi / Ở lại làm nốt, dễ bấm như cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Quà cả phố: mỗi người chơi nhận 100 xu, vào game là thấy thiệp quà nha! Cảm ơn cả nhà đã chơi cùng phố.",
+  "en": ""
+ },
+ {
+  "vi": "Ai từng bị trừ phí “Nơi làm khác” được hoàn lại toàn bộ vào ví, xem dòng Hoàn phí trong sổ ví nha!",
+  "en": ""
+ },
+ {
+  "vi": "Tự chạy giao đơn online ở quầy: nút chỉ đúng hướng trên bản đồ, đường đi xuống đã có nút ⬇️ Đi xuống.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi nghề rồi thì nơi làm cũ không trừ tiền nữa (hết dòng “Nơi làm khác”); mở lại nơi tạm đóng cũng miễn phí.",
+  "en": ""
+ },
+ {
+  "vi": "Buồng chụp ảnh mới: 49 dáng, 14 biểu cảm, 50 sticker kéo thả, xoay, phóng to thoải mái; chọn dáng là thấy ảnh liền!",
+  "en": ""
+ },
+ {
+  "vi": "Vợ chồng đi chung xe: ai chọn xe trước thì lái, người kia bấm “Ngồi sau” để cùng đi dạo, đi hội chợ!",
+  "en": ""
+ },
+ {
+  "vi": "Quán đã tới giờ đóng cửa thì đi sang chỗ khác không bị phạt; việc dở vẫn giữ, quay lại khép ca.",
+  "en": ""
+ },
+ {
+  "vi": "Mua thêm nhà không còn tự dọn đi; ở nhà chung với vợ/chồng thì có nút Về ở chung.",
+  "en": ""
+ },
+ {
+  "vi": "Hướng dẫn mới: chuyển khoản, bản đồ phố, đi xe, chụp ảnh hội chợ, tự lái và tự bay.",
+  "en": ""
+ },
+ {
+  "vi": "Phi công: tự cầm lái! Cất cánh, vòng tránh mây giông, giữ 2 trắng 2 đỏ rồi hạ cánh. Thích nhanh thì bấm ⏩ Bay nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "Buồng chụp gọn hơn: chọn dáng, khung, nền, đạo cụ là thấy liền trong buồng, không phải cuộn tìm ảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển khoản bạn bè dễ hơn: tài khoản chỉ cần chơi game đủ 1 ngày (đời thực).",
+  "en": ""
+ },
+ {
+  "vi": "Màn hình chính giờ là bản đồ phố: đi dạo rồi bước vào nơi làm việc. Muốn danh sách cũ thì bấm 📋 Danh sách.",
+  "en": ""
+ },
+ {
+  "vi": "Có xe là chạy được quanh phố, hội chợ và đi dạo! Xe đỗ ngay cửa, bấm nút để đổi xe hoặc đi bộ.",
+  "en": ""
+ },
+ {
+  "vi": "Giao hàng có chế độ Tự lái: tự chạy xe máy qua phố, dừng trước nhà có người vẫy tay. Muốn nhanh thì bấm ⏩ Đi nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "Nông trại: tự đi trong vườn góc nhìn thứ nhất hoặc thứ ba, thấy luống khát hay chín, chạy xe máy chở hàng tới khách!",
+  "en": ""
+ },
+ {
+  "vi": "Quầy của bạn: tự đặt menu, giá, tên quầy, màu mái, trang trí; không thuê ai cũng tự đứng bán được.",
+  "en": ""
+ },
+ {
+  "vi": "Bật Bán online: đóng gói đơn, tự chạy xe giao hoặc gọi shipper; mỗi ngày vài chuyện oái oăm vui vui.",
+  "en": ""
+ },
+ {
+  "vi": "Chụp ảnh hội chợ đẹp hơn: 30 dáng (có dáng cả nhóm), nút 🎲, 6 khung mới, chỉnh màu ảnh, thêm chữ và ngày lên ảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển khoản bạn bè: mở Ngân hàng, chọn bạn, gửi xu kèm lời nhắn. Bạn ấy nhận ngay khi vào game.",
+  "en": ""
+ },
+ {
+  "vi": "Lớp học báo đúng chỗ sai; xin lỗi kèm hoàn tiền có thể khiến khách sửa sao; trông trẻ, giúp việc, nấu cơm hiện rõ tiền công.",
+  "en": ""
+ },
+ {
+  "vi": "Buồng chụp hội chợ mở 24/24: tự nối lại khi rớt mạng, mã phòng giữ 2 phút để rủ bạn vào chụp chung.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy trà sữa: chọn nguyên liệu hiện ngay, không còn khựng. Lớp học: bấm trả lời học sinh không còn bị đứng.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ kế toán và Học TT99: ô số giờ ghi được số âm, phép tính và đơn vị, như -500.000, 6+4 triệu, 1,5tr.",
+  "en": ""
+ },
+ {
+  "vi": "Ly hôn xong chỉ cần chờ 3 tiếng là cầu hôn lại được.",
+  "en": ""
+ },
+ {
+  "vi": "Chạy ổn định hơn sau bản lớn, sửa vài lỗi nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Thăng tiến cho mọi nghề: làm tốt để lên chức, thêm thu nhập; từ bậc 3 mở 🧑‍💼 Ca quản lý, chia việc cho cả đội!",
+  "en": ""
+ },
+ {
+  "vi": "Quầy của bạn: mở xe đẩy, sạp chợ hay ki-ốt, tự đặt lương nhân viên, nhớ thu két mỗi ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Làm thêm: nhận ca ở quầy của người chơi khác, làm đúng nghề mình giỏi, khép ca là nhận lương.",
+  "en": ""
+ },
+ {
+  "vi": "Thuê người chơi: đăng ca cho người khác tới đứng quầy, lương giữ sẵn, trả đúng một lần.",
+  "en": ""
+ },
+ {
+  "vi": "Nghề mới: Giúp việc theo giờ. Dọn từng phòng đúng khăn, đúng chai, từ trên xuống, giữ đồ quý cho khách, khách quen boa thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Nghề mới Nấu cơm gia đình: nghe chủ nhà dặn, đi chợ vừa tiền, nấu nóng hổi hợp cả nhà rồi ghi sổ chợ rõ ràng!",
+  "en": ""
+ },
+ {
+  "vi": "Nghề mới: Bảo mẫu trông trẻ! Mỗi ngày một gia đình: đọc giấy dặn, cho bé ăn, ru ngủ, dỗ bé, bàn giao thật lòng.",
+  "en": ""
+ },
+ {
   "vi": "Mua bảo hiểm, sắm két sắt để yên tâm trước chuyện bất ngờ. 💰 Tiệm vàng Kim Phát mở cửa: mua vàng, chờ giá lên!",
   "en": ""
  },
@@ -1397,406 +1585,6 @@
  },
  {
   "vi": "Không có mục thống kê này.",
-  "en": ""
- },
- {
-  "vi": "Chỉ mục Giữ chân và Tổng quan đầu tư có bản CSV.",
-  "en": ""
- },
- {
-  "vi": "Số liệu đang được tính, thử lại sau ít giây nhé.",
-  "en": ""
- },
- {
-  "vi": "Không có phần báo cáo này.",
-  "en": ""
- },
- {
-  "vi": "Máy chủ đang bận, thử lại sau giây lát.",
-  "en": ""
- },
- {
-  "vi": "Thử quá nhiều lần. Chờ một phút rồi thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Từ từ thôi, chợ đen còn dài mà!",
-  "en": ""
- },
- {
-  "vi": "Từ từ thôi, mỗi phút trả giá vài lần thôi nhé!",
-  "en": ""
- },
- {
-  "vi": "Từ từ thôi, bày trí chậm lại chút nhé!",
-  "en": ""
- },
- {
-  "vi": "Trò chơi vừa có bản mới. Tải lại trang để chơi tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn sửa hơi dồn dập. Nghỉ tay một lát rồi sửa tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra nhiều bài quá, nghỉ chút nhé.",
-  "en": ""
- },
- {
-  "vi": "Không nhận từ website khác.",
-  "en": ""
- },
- {
-  "vi": "Chưa có phiên chơi.",
-  "en": ""
- },
- {
-  "vi": "Đã dừng. Tiến trình đã được lưu.",
-  "en": ""
- },
- {
-  "vi": "Nhấn Ctrl+C để dừng.",
-  "en": ""
- },
- {
-  "vi": "Máy chủ phản hồi quá lâu. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Mất kết nối máy chủ. Thử lại sau nhé.",
-  "en": ""
- },
- {
-  "vi": "Thô tục",
-  "en": ""
- },
- {
-  "vi": "Lộ thông tin",
-  "en": ""
- },
- {
-  "vi": "🛟 An toàn / trẻ vị thành niên",
-  "en": ""
- },
- {
-  "vi": "Nhắn riêng",
-  "en": ""
- },
- {
-  "vi": "10 phút",
-  "en": ""
- },
- {
-  "vi": "1 giờ",
-  "en": ""
- },
- {
-  "vi": "24 giờ",
-  "en": ""
- },
- {
-  "vi": "1 tin/phút · 1 giờ",
-  "en": ""
- },
- {
-  "vi": "1 tin/2 phút · 24 giờ",
-  "en": ""
- },
- {
-  "vi": "30 giây/tin · 1 giờ",
-  "en": ""
- },
- {
-  "vi": "1 phút/tin · 1 giờ",
-  "en": ""
- },
- {
-  "vi": "1 phút/tin · 3 giờ",
-  "en": ""
- },
- {
-  "vi": "tên chat",
-  "en": ""
- },
- {
-  "vi": "tên Phố nghề",
-  "en": ""
- },
- {
-  "vi": "tên nhân vật",
-  "en": ""
- },
- {
-  "vi": "Tìm chữ, tên hoặc mã người chơi",
-  "en": ""
- },
- {
-  "vi": "Tìm tin nhắn",
-  "en": ""
- },
- {
-  "vi": "Tìm",
-  "en": ""
- },
- {
-  "vi": "Bỏ lọc",
-  "en": ""
- },
- {
-  "vi": "Tin bị bộ lọc che (•••) có thêm dòng",
-  "en": ""
- },
- {
-  "vi": "Gốc",
-  "en": ""
- },
- {
-  "vi": ": chữ người chơi gõ, chỉ quản trị thấy. Tin trước bản 1.2.2 chỉ còn bản đã che.",
-  "en": ""
- },
- {
-  "vi": "Tải cũ hơn",
-  "en": ""
- },
- {
-  "vi": "đã xem đến tin #",
-  "en": ""
- },
- {
-  "vi": "· còn tin cũ hơn",
-  "en": ""
- },
- {
-  "vi": "Báo cáo, ẩn tin và khóa chat",
-  "en": ""
- },
- {
-  "vi": "Không có tin nào bị báo cáo. 👌",
-  "en": ""
- },
- {
-  "vi": "Mở khóa",
-  "en": ""
- },
- {
-  "vi": "bởi @",
-  "en": ""
- },
- {
-  "vi": "Không ai đang bị khóa chat.",
-  "en": ""
- },
- {
-  "vi": "Bình thường (mặc định của máy chủ).",
-  "en": ""
- },
- {
-  "vi": "Tắt chế độ chậm",
-  "en": ""
- },
- {
-  "vi": "Bỏ chậm",
-  "en": ""
- },
- {
-  "vi": "Không ai đang bị cho chậm. Bấm 🐢 ở một tin nhắn để làm chậm người gửi.",
-  "en": ""
- },
- {
-  "vi": "Không có tên nào vi phạm bộ lọc tên. 👌",
-  "en": ""
- },
- {
-  "vi": "Không tự đổi tên ai. Bấm \"Đổi tên an toàn\" để đổi tên vi phạm thành tên gợi ý; tiến trình và tiền của người chơi giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "Đổi tên an toàn →",
-  "en": ""
- },
- {
-  "vi": "Cho chậm",
-  "en": ""
- },
- {
-  "vi": "Đã ẩn",
-  "en": ""
- },
- {
-  "vi": "Tự ẩn",
-  "en": ""
- },
- {
-  "vi": "Xem tin của người này",
-  "en": ""
- },
- {
-  "vi": "Xem cả cuộc trò chuyện",
-  "en": ""
- },
- {
-  "vi": "📢 Quản trị",
-  "en": ""
- },
- {
-  "vi": "báo cáo",
-  "en": ""
- },
- {
-  "vi": "(đã thu hồi)",
-  "en": ""
- },
- {
-  "vi": "Hiện lại",
-  "en": ""
- },
- {
-  "vi": "Ẩn",
-  "en": ""
- },
- {
-  "vi": "Báo cáo an toàn / trẻ vị thành niên: xem kỹ ngữ cảnh (hẹn gặp, hỏi địa chỉ, tuổi, trường, số điện thoại…). Khóa chat hoặc cho chậm nếu cần; hệ thống không tự cấm ai.",
-  "en": ""
- },
- {
-  "vi": "Ẩn tin này",
-  "en": ""
- },
- {
-  "vi": "Giữ (không vi phạm)",
-  "en": ""
- },
- {
-  "vi": "Đã ẩn tin nhắn.",
-  "en": ""
- },
- {
-  "vi": "Đã giữ tin nhắn.",
-  "en": ""
- },
- {
-  "vi": "Đã bật chế độ chậm cho Cả phố.",
-  "en": ""
- },
- {
-  "vi": "Đã cho người này chậm lại.",
-  "en": ""
- },
- {
-  "vi": "Đã tắt chế độ chậm.",
-  "en": ""
- },
- {
-  "vi": "Đã mở khóa chat.",
-  "en": ""
- },
- {
-  "vi": "Chờ vào game",
-  "en": ""
- },
- {
-  "vi": "Đã vào ví",
-  "en": ""
- },
- {
-  "vi": "Đã xem thiệp",
-  "en": ""
- },
- {
-  "vi": "mới nhất",
-  "en": ""
- },
- {
-  "vi": "Tặng xu vào ví người chơi",
-  "en": ""
- },
- {
-  "vi": "Tên đăng nhập (vd. be_na)",
-  "en": ""
- },
- {
-  "vi": "Tìm tài khoản theo tên đăng nhập",
-  "en": ""
- },
- {
-  "vi": "Bỏ tìm",
-  "en": ""
- },
- {
-  "vi": "Tìm theo đầu tên đăng nhập; để trống: 50 tài khoản mới nhất. Xu vào 👛 Ví khi người chơi vào game lần tới (một lần, kèm thiệp “Quà từ Phố Có Chuyện”).",
-  "en": ""
- },
- {
-  "vi": "Chưa có tài khoản nào.",
-  "en": ""
- },
- {
-  "vi": "Chưa tặng quà nào.",
-  "en": ""
- },
- {
-  "vi": "Quà đã tặng",
-  "en": ""
- },
- {
-  "vi": "50 gần nhất",
-  "en": ""
- },
- {
-  "vi": "🎁 Tặng xu",
-  "en": ""
- },
- {
-  "vi": "bằng công cụ",
-  "en": ""
- },
- {
-  "vi": "Nhập số xu.",
-  "en": ""
- },
- {
-  "vi": "Cần tiêu đề thiệp.",
-  "en": ""
- },
- {
-  "vi": "trên",
-  "en": ""
- },
- {
-  "vi": "xu: sẽ hỏi lại",
-  "en": ""
- },
- {
-  "vi": "Số xu",
-  "en": ""
- },
- {
-  "vi": "Tiêu đề thiệp",
-  "en": ""
- },
- {
-  "vi": "(để như mẫu hoặc sửa tùy ý)",
-  "en": ""
- },
- {
-  "vi": "Tặng",
-  "en": ""
- },
- {
-  "vi": "Sửa lại",
-  "en": ""
- },
- {
-  "vi": "Tôi chắc chắn tặng đúng",
-  "en": ""
- },
- {
-  "vi": "Chậm lại một chút rồi thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Đang tải góp ý…",
   "en": ""
  }
 ]

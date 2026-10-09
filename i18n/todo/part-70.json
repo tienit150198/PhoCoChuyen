@@ -1,5 +1,169 @@
 [
  {
+  "vi": "Rót lạnh",
+  "en": ""
+ },
+ {
+  "vi": "Đánh nóng",
+  "en": ""
+ },
+ {
+  "vi": "Tắt vòi hơi",
+  "en": ""
+ },
+ {
+  "vi": "Đậy nắp + dán tem",
+  "en": ""
+ },
+ {
+  "vi": "Giao cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Cạo chữ, viết lại",
+  "en": ""
+ },
+ {
+  "vi": "Vệ sinh máy pha",
+  "en": ""
+ },
+ {
+  "vi": "Cất tủ mát",
+  "en": ""
+ },
+ {
+  "vi": "Rổ −50%",
+  "en": ""
+ },
+ {
+  "vi": "Tặng bếp cơm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nghe khách kể dịp tặng, chọn hoa đúng ý nghĩa, sơ chế, cắm, gói rồi giao đúng giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn hoa, sơ chế, ngâm xô rồi bó xoắn ốc. Bó phải gói giấy và thắt ruy băng mới giao được.",
+  "en": ""
+ },
+ {
+  "vi": "Mở từ cấp 2. Sơ chế, ngâm xô rồi bấm [[Cắm vào bình]]; không cần gói giấy.",
+  "en": ""
+ },
+ {
+  "vi": "Thả mút, chờ khoảng 10 giây cho mút tự chìm rồi mới cắm. Giỏ không cần ngâm xô.",
+  "en": ""
+ },
+ {
+  "vi": "Tốn chân kệ và 2 bánh mút. Bấm [[Cắm kín mặt kệ]], rồi in băng rôn đúng từng chữ, có dấu.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn theo bộ",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3: một khách đặt hai món. Làm xong món nào bấm [[Xong món]], đủ món thì giao cả bộ.",
+  "en": ""
+ },
+ {
+  "vi": "Khách gọi hẹn ngày. Bấm [[Nhận, lấy cọc]], nhập hoa sớm, đúng ngày bấm [[Cắm & giao đơn này]].",
+  "en": ""
+ },
+ {
+  "vi": "Gói hoa định kỳ của bà Tám",
+  "en": ""
+ },
+ {
+  "vi": "Bấm [[Nhận gói hoa]]: cứ 3 ngày một bình, 60 xu. Đúng ngày chọn mẫu hợp thẻ của bà, bấm [[Cắm bình này]].",
+  "en": ""
+ },
+ {
+  "vi": "Hoa cài áo tiệc cưới",
+  "en": ""
+ },
+ {
+  "vi": "Khi nhận đơn này, bấm [[Làm 1 hoa cài áo]] đủ số. Mỗi cái: 1 hồng trắng, 1 nhánh baby, 1 ruy băng.",
+  "en": ""
+ },
+ {
+  "vi": "Chăm tủ mát",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi ngày bấm [[Thay nước tủ mát]] để hoa không già thêm qua đêm. Lấy lô cũ trước. Đang làm đơn thì nút nằm trong 📋 Chăm tiệm hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Bấm [[Nghe yêu cầu]]. Từ ngày 2, hỏi thêm như [[Người nhận là ai, nhà có gì cần tránh?]]. Những gì khách dặn và kể thêm nằm trong dòng 📝 Khách dặn trên phiếu.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Tab [[Tủ hoa]]: chạm hoa để lấy cành, đúng số hoa chính và đúng tông.",
+  "en": ""
+ },
+ {
+  "vi": "✂️ Tab [[Sơ chế]]: bấm [[Cắt xéo 45°]], [[Tuốt lá dưới mực nước]], rồi [[Thả vào xô]].",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Tab [[Cắm & gói]]: chọn kiểu cắm. Có mút thì chờ tự chìm, đừng bấm [[Ấn mút chìm cho nhanh]].",
+  "en": ""
+ },
+ {
+  "vi": "🙌 Ngâm đủ giây thì [[Nhấc ra]], rồi bấm [[Bó xoắn ốc & buộc dây]] (hoặc [[Cắm vào giỏ]]…).",
+  "en": ""
+ },
+ {
+  "vi": "🎀 Gói giấy, chọn ruy băng. Kệ viếng thì bấm [[In đúng chữ khách dặn]].",
+  "en": ""
+ },
+ {
+  "vi": "💌 Tab [[Thiệp & giao]]: bấm [[Viết thiệp]] và chọn khung giờ giao khách hẹn.",
+  "en": ""
+ },
+ {
+  "vi": "🛵 Bấm [[Giao hoa]] (giao tận nơi, khách trả thêm 15 xu phí giao) hoặc [[Trao hoa cho khách]] (nhận tại tiệm).",
+  "en": ""
+ },
+ {
+  "vi": "🌸 Hoa đúng ý nghĩa dịp tặng. Dịp vui dùng số lẻ hoa chính, trừ khi khách dặn đúng số.",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Hoa chính đúng tông khách dặn. Lá bạch đàn và baby không tính là lệch tông.",
+  "en": ""
+ },
+ {
+  "vi": "🌿 Số cành nằm trong khoảng khách dặn, có lá hoặc hoa phụ cho bó mềm mại.",
+  "en": ""
+ },
+ {
+  "vi": "✂️ Cắt xéo, tuốt lá, ngâm đủ giây. Cành còn tươi ít nhất 2 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "💌 Thiệp nhắc đúng dịp. Giá trị hoa đạt từ 85% ngân sách trở lên.",
+  "en": ""
+ },
+ {
+  "vi": "🛵 Giao đúng khung giờ hẹn. Khách nhận tại tiệm thì làm nhanh, đừng để chờ lâu.",
+  "en": ""
+ },
+ {
+  "vi": "💝 Đơn 4–5★, khách không càu nhàu thì đôi khi được tip 3–15 xu hoặc quà nhỏ. Lỗi an toàn thì không bao giờ.",
+  "en": ""
+ },
+ {
+  "vi": "🔥 5 đơn liền không sai +10 xu (1 lần/ngày). Khách hào phóng +4 xu, khách đang vội mà chưa phải chờ lâu +3 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Cắm hoa ly cho nhà có mèo",
+  "en": ""
+ },
+ {
   "vi": "Khách không trả tiền, chấm 1★ và báo cáo lên app. Hôm sau phường tới lập biên bản.",
   "en": ""
  },
@@ -1409,146 +1573,6 @@
  },
  {
   "vi": "💰 Chọn loại linh kiện ([[Chính hãng]], [[Tương thích]], [[Đồ tháo máy]]…) rồi bấm [[Gửi báo giá]]. Khách chỉ nghe tối đa 6 lần báo giá.",
-  "en": ""
- },
- {
-  "vi": "🔌 Làm đủ bước an toàn như [[Rút điện / cáp sạc]], [[Xả tụ bằng điện trở]] rồi mới mở máy.",
-  "en": ""
- },
- {
-  "vi": "🛠️ Bấm [[Sửa:]] đúng bệnh đã chốt, lắp lại máy, rồi bấm [[Chạy thử lần cuối]].",
-  "en": ""
- },
- {
-  "vi": "🤝 Chọn số ngày bảo hành đúng loại linh kiện, rồi bấm [[Bàn giao & thu tiền]].",
-  "en": ""
- },
- {
-  "vi": "✅ Máy chạy thật sau khi trả. Chạy thử lần cuối trước khi giao.",
-  "en": ""
- },
- {
-  "vi": "💰 Giá không vượt ngân sách khách. Khách quen tin bạn thì chịu thêm tối đa 10%.",
-  "en": ""
- },
- {
-  "vi": "🏷️ Khách chỉ muốn đồ chính hãng thì đừng báo hàng tương thích hay đồ tháo máy.",
-  "en": ""
- },
- {
-  "vi": "📜 Bảo hành đúng loại: chính hãng 90 ngày, tương thích 30, đồ tháo máy 7. Máy dính nước không bảo hành.",
-  "en": ""
- },
- {
-  "vi": "🧾 Phiếu nhận máy ghi đúng vết xước và phụ kiện, trả đủ phụ kiện cho khách.",
-  "en": ""
- },
- {
-  "vi": "⏳ Làm gọn, ít phép đo thừa. Khách hẹn gấp thì xong đúng hẹn.",
-  "en": ""
- },
- {
-  "vi": "💝 Khách vui (5★) có khi bo thêm 3–15 xu hoặc tặng quà cảm ơn; 4★ thì hiếm hơn, dưới 3★ thì không.",
-  "en": ""
- },
- {
-  "vi": "Mở quạt, nồi cơm, điện thoại… khi còn điện, chưa xả tụ",
-  "en": ""
- },
- {
-  "vi": "Khách không trả tiền, chấm 1★, báo cáo lên app. Hôm sau tổ dân phố tới, có thể bị phạt.",
-  "en": ""
- },
- {
-  "vi": "Sửa khi khách chưa duyệt báo giá, hoặc tính tiền máy còn bảo hành",
-  "en": ""
- },
- {
-  "vi": "Lỗi nặng: khách đòi bớt hoặc hoàn tiền, review tối đa 2★, dễ bị báo cáo.",
-  "en": ""
- },
- {
-  "vi": "Giao máy luôn mà không chạy thử",
-  "en": ""
- },
- {
-  "vi": "Máy còn hỏng thì lỗi nặng, review tối đa 2★. Máy chạy rồi vẫn dễ quay lại bắt sửa.",
-  "en": ""
- },
- {
-  "vi": "Lắp nhầm linh kiện, chốt sai bệnh",
-  "en": ""
- },
- {
-  "vi": "Chạy thử lỗi: mất linh kiện, phải đo và báo giá lại, khách mất kiên nhẫn.",
-  "en": ""
- },
- {
-  "vi": "Mua máy chưa tra IMEI, hóa đơn",
-  "en": ""
- },
- {
-  "vi": "Máy báo mất: mất tiền mua, phải ký biên bản với công an.",
-  "en": ""
- },
- {
-  "vi": "Chép dữ liệu khách nhờ, hoặc báo công an oan máy sạch",
-  "en": ""
- },
- {
-  "vi": "Chủ máy phát hiện dữ liệu bị chép và làm lớn chuyện. Báo oan thì người bán bị nghi oan.",
-  "en": ""
- },
- {
-  "vi": "Hứa lèo giờ lấy máy, ghi sai phiếu, mất phụ kiện, bảo hành ngắn",
-  "en": ""
- },
- {
-  "vi": "Khách càu nhàu hoặc đòi bớt tiền. Để quên khách quay lại thì bị 2★.",
-  "en": ""
- },
- {
-  "vi": "Bấm [[Trả máy không sửa]] khi máy vẫn sửa được",
-  "en": ""
- },
- {
-  "vi": "Đã đo thì chỉ thu 10 xu phí kiểm tra. Lỗi rõ: review tối đa 3★.",
-  "en": ""
- },
- {
-  "vi": "📦 Bấm [[Kho & nhập linh kiện]] để đặt màn, pin, tụ, dây curoa, săm lốp…",
-  "en": ""
- },
- {
-  "vi": "🏪 Chợ linh kiện Mây: rẻ, đặt trước 13:00 thì chiều nay có, đặt sau thì sáng mai. Đôi khi giao thiếu.",
-  "en": ""
- },
- {
-  "vi": "🚚 Hạt Nắng chạy 4 chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau khoảng 1 tiếng.",
-  "en": ""
- },
- {
-  "vi": "⚡ Giao hỏa tốc tới trong 15–30 phút nhưng đắt. Kho linh kiện chính hãng rẻ hơn nhưng 1–2 ngày mới tới.",
-  "en": ""
- },
- {
-  "vi": "🔓 Màn hình chính hãng và mâm nhiệt nồi cơm mở ở cấp 2; motor quạt đứng mở ở cấp 3.",
-  "en": ""
- },
- {
-  "vi": "🧰 Mở [[Dụng cụ]]: mũi hàn mòn thì [[Lau mũi hàn]] (tốn 1 thiếc hàn) hoặc thay [[Mũi mới]] 4 xu.",
-  "en": ""
- },
- {
-  "vi": "🔋 Đồng hồ đo yếu pin thì số đo sai, phí lượt. Thay [[Pin 9V mới]] (2 xu) trước.",
-  "en": ""
- },
- {
-  "vi": "🛒 Thiếu linh kiện giữa chừng: bấm [[Hết trên kệ — đặt riêng]], rồi hẹn khách để máy lại.",
-  "en": ""
- },
- {
-  "vi": "🛵 Lâm Linh Kiện (+2 xu): đặt trước 12:00 thì 15:00 có, đặt sau thì sáng mai. Hàng hãng từ thành phố (+3 xu) ngày kia mới tới.",
   "en": ""
  }
 ]

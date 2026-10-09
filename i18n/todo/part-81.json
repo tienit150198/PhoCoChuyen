@@ -1,5 +1,205 @@
 [
  {
+  "vi": "Đã ẩn tên bạn khỏi bảng xếp hạng.",
+  "en": ""
+ },
+ {
+  "vi": "Cá rô",
+  "en": ""
+ },
+ {
+  "vi": "Cá chép",
+  "en": ""
+ },
+ {
+  "vi": "Cá trắm",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu hoạt động không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn câu cá, chèo thuyền hoặc hồ bơi.",
+  "en": ""
+ },
+ {
+  "vi": "Hoạt động không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng chơi không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Hãy bắt đầu một vòng chơi trước.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng này đã được lưu.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng chơi đã đóng hoặc thuộc lần chơi khác.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng chơi đã hết giờ. Hãy bắt đầu lại.",
+  "en": ""
+ },
+ {
+  "vi": "Mốc đường không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Hãy đi đến vòng mốc đang sáng.",
+  "en": ""
+ },
+ {
+  "vi": "Đi qua từng mốc theo thứ tự nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bước đi quá nhanh. Đi tiếp rồi thử lại.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng chơi chưa hoàn thành.",
+  "en": ""
+ },
+ {
+  "vi": "Cá đã nhả mồi. Thả cần lần nữa nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Đi qua đủ mốc rồi quay về bến nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã lưu một vòng chèo thuyền.",
+  "en": ""
+ },
+ {
+  "vi": "Đã lưu một vòng bơi.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu đi chơi không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Phơi phới",
+  "en": ""
+ },
+ {
+  "vi": "Ổn áp",
+  "en": ""
+ },
+ {
+  "vi": "Buồn",
+  "en": ""
+ },
+ {
+  "vi": "Thương nhau như ruột thịt",
+  "en": ""
+ },
+ {
+  "vi": "Tối lửa tắt đèn có nhau",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm quen",
+  "en": ""
+ },
+ {
+  "vi": "Còn hơi lạ",
+  "en": ""
+ },
+ {
+  "vi": "Bị lừa mất tiền",
+  "en": ""
+ },
+ {
+  "vi": "Dự án “lãi khủng” biến mất",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "đồng nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Người đầu hẻm",
+  "en": ""
+ },
+ {
+  "vi": "một người quen",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm rủ đi chơi",
+  "en": ""
+ },
+ {
+  "vi": "Xả stress",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, mình tự đi xả stress",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn, để hôm khác nhé",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cảm ơn rối rít. Được hỏi han vậy cũng ấm lòng.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận và cảm ơn cả xóm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cầm phong bì, rưng rưng. Tiền thì ít, mà tình thì nhiều.",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn, con tự lo được ạ",
+  "en": ""
+ },
+ {
+  "vi": "Mọi người không ép, nhưng dặn: “Cần gì cứ nói nghe.” Bạn thấy mình có chỗ dựa.",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, về ngủ sớm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tắm nước ấm rồi đi ngủ sớm.",
+  "en": ""
+ },
+ {
+  "vi": "Mọi người cảm ơn bạn mãi. Bạn thấy mình là người của hẻm này.",
+  "en": ""
+ },
+ {
+  "vi": "Ít thôi mà quý. Ai cũng gật đầu cảm ơn.",
+  "en": ""
+ },
+ {
+  "vi": "Mồ hôi nhễ nhại, nhưng vui. Được mời ở lại ăn cơm.",
+  "en": ""
+ },
+ {
+  "vi": "Dạo này mình kẹt quá",
+  "en": ""
+ },
+ {
   "vi": "Không ai trách gì. Bạn hứa lần sau sẽ phụ một tay.",
   "en": ""
  },
@@ -1597,206 +1797,6 @@
  },
  {
   "vi": "Phát hiện bị “cắm sừng”",
-  "en": ""
- },
- {
-  "vi": "Hai người nắm tay.",
-  "en": ""
- },
- {
-  "vi": "Chấm dứt, block hết",
-  "en": ""
- },
- {
-  "vi": "Đau, nhưng dứt khoát. Bạn tự hào về mình.",
-  "en": ""
- },
- {
-  "vi": "Hẹn gặp nói cho ra lẽ",
-  "en": ""
- },
- {
-  "vi": "Toàn lời bào chữa. Về càng mệt.",
-  "en": ""
- },
- {
-  "vi": "{Ay} quên sinh nhật bạn",
-  "en": ""
- },
- {
-  "vi": "Tối mới nhắn “sorry, bận quá”.",
-  "en": ""
- },
- {
-  "vi": "Hai đứa cãi nhau, rồi chia tay luôn.",
-  "en": ""
- },
- {
-  "vi": "Tự mua bánh nhỏ, thổi nến một mình",
-  "en": ""
- },
- {
-  "vi": "Một mình mà vẫn ấm. Tuổi mới, mình thương mình.",
-  "en": ""
- },
- {
-  "vi": "Tắt đèn đi ngủ sớm",
-  "en": ""
- },
- {
-  "vi": "Ngủ không được, nhưng nằm yên cũng đỡ.",
-  "en": ""
- },
- {
-  "vi": "Buổi mai mối thảm họa",
-  "en": ""
- },
- {
-  "vi": "Cô Lụa giới thiệu người quen, hẹn cà phê.",
-  "en": ""
- },
- {
-  "vi": "Người ta hỏi lương, hỏi nhà, rồi chê nghề của bạn.",
-  "en": ""
- },
- {
-  "vi": "Về tới hẻm thì cô Lụa đang đứng chờ hỏi han.",
-  "en": ""
- },
- {
-  "vi": "Kể cô Lụa nghe, hai cô cháu cười bò",
-  "en": ""
- },
- {
-  "vi": "Cô Lụa hứa lần sau lựa người tử tế hơn.",
-  "en": ""
- },
- {
-  "vi": "Về phòng đóng cửa",
-  "en": ""
- },
- {
-  "vi": "Thấy mình bị đánh giá thấp.",
-  "en": ""
- },
- {
-  "vi": "Mất điện thoại trên xe buýt",
-  "en": ""
- },
- {
-  "vi": "Xuống xe buýt, sờ túi: trống trơn.",
-  "en": ""
- },
- {
-  "vi": "Ảnh, danh bạ, tin nhắn của mẹ… mất hết.",
-  "en": ""
- },
- {
-  "vi": "Mai còn phải đi làm.",
-  "en": ""
- },
- {
-  "vi": "Mượn máy khóa tài khoản ngay",
-  "en": ""
- },
- {
-  "vi": "Kịp khóa hết. Mất máy, không mất tiền trong tài khoản.",
-  "en": ""
- },
- {
-  "vi": "Ngồi bệt ở trạm mà khóc",
-  "en": ""
- },
- {
-  "vi": "Bác bán vé số đưa khăn giấy.",
-  "en": ""
- },
- {
-  "vi": "Xe chết máy giữa mưa",
-  "en": ""
- },
- {
-  "vi": "Mưa trắng trời, xe tắt máy giữa đường ngập.",
-  "en": ""
- },
- {
-  "vi": "Dắt bộ hai cây số.",
-  "en": ""
- },
- {
-  "vi": "Ướt từ đầu tới chân.",
-  "en": ""
- },
- {
-  "vi": "Ghé tiệm sửa ven đường",
-  "en": ""
- },
- {
-  "vi": "Anh thợ sửa nhanh, còn cho mượn áo mưa.",
-  "en": ""
- },
- {
-  "vi": "Dắt về nhà, mai tính",
-  "en": ""
- },
- {
-  "vi": "Về tới gác thì run cầm cập.",
-  "en": ""
- },
- {
-  "vi": "Người nhà ốm, cần tiền",
-  "en": ""
- },
- {
-  "vi": "Mẹ gọi: ba nhập viện, mổ gấp.",
-  "en": ""
- },
- {
-  "vi": "Giọng mẹ cố tỏ ra bình thường.",
-  "en": ""
- },
- {
-  "vi": "Bạn ở xa, chỉ gửi được tiền về.",
-  "en": ""
- },
- {
-  "vi": "Gửi một khoản lớn về nhà",
-  "en": ""
- },
- {
-  "vi": "Mẹ nhắn: “Ba mổ xong rồi, con yên tâm.” Bạn thở phào.",
-  "en": ""
- },
- {
-  "vi": "Gửi một ít, hứa gửi thêm",
-  "en": ""
- },
- {
-  "vi": "Mẹ bảo đủ rồi, đừng lo. Bạn biết mẹ nói vậy thôi.",
-  "en": ""
- },
- {
-  "vi": "Gọi video hỏi thăm ba",
-  "en": ""
- },
- {
-  "vi": "Ba cười yếu ớt: “Ba khỏe mà.” Nghe mà thương.",
-  "en": ""
- },
- {
-  "vi": "Nước ngập vào phòng trọ",
-  "en": ""
- },
- {
-  "vi": "Mưa lớn, nước tràn vào gác dưới.",
-  "en": ""
- },
- {
-  "vi": "Đồ đạc ướt sũng, laptop tắt ngúm.",
-  "en": ""
- },
- {
-  "vi": "Nửa đêm tát nước một mình.",
   "en": ""
  }
 ]

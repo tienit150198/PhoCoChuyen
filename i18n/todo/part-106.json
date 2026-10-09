@@ -1,5 +1,413 @@
 [
  {
+  "vi": "— chạm một ô trống trên bảng.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn trên lịch",
+  "en": ""
+ },
+ {
+  "vi": "Chọn ngày trên lịch",
+  "en": ""
+ },
+ {
+  "vi": "📝 Ghi lại cho đủ",
+  "en": ""
+ },
+ {
+  "vi": "Lời người ta nói",
+  "en": ""
+ },
+ {
+  "vi": "Chạm các bước bên dưới theo thứ tự sẽ làm. Bước có hại thì bỏ qua.",
+  "en": ""
+ },
+ {
+  "vi": "Các bước sẽ làm",
+  "en": ""
+ },
+ {
+  "vi": "bước",
+  "en": ""
+ },
+ {
+  "vi": "🧭 Các bước",
+  "en": ""
+ },
+ {
+  "vi": "Có thể làm",
+  "en": ""
+ },
+ {
+  "vi": "Cần tìm hiểu trước",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời theo cách này? Chọn rồi không đổi được.",
+  "en": ""
+ },
+ {
+  "vi": "chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Đã điền đủ các ô — đọc lại rồi nộp.",
+  "en": ""
+ },
+ {
+  "vi": "👇 Quyết chuyện này trước",
+  "en": ""
+ },
+ {
+  "vi": "📥 Nhận việc",
+  "en": ""
+ },
+ {
+  "vi": "👇 Chọn khay cho thẻ này",
+  "en": ""
+ },
+ {
+  "vi": "Soát từng chỗ, sửa chỗ sai",
+  "en": ""
+ },
+ {
+  "vi": "👇 Chạm chỗ sai để sửa",
+  "en": ""
+ },
+ {
+  "vi": "👇 Chạm một ô trống trên bảng",
+  "en": ""
+ },
+ {
+  "vi": "📤 Nộp lời nhắn",
+  "en": ""
+ },
+ {
+  "vi": "Chọn các bước sẽ làm, theo thứ tự",
+  "en": ""
+ },
+ {
+  "vi": "👇 Chạm các bước theo thứ tự",
+  "en": ""
+ },
+ {
+  "vi": "📤 Chốt các bước",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách trả lời",
+  "en": ""
+ },
+ {
+  "vi": "👇 Chọn cách trả lời",
+  "en": ""
+ },
+ {
+  "vi": "📞 Có thay đổi",
+  "en": ""
+ },
+ {
+  "vi": "Làm hồ sơ rồi nộp",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ đã nộp",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ sai trong ngày",
+  "en": ""
+ },
+ {
+  "vi": "hồ sơ đã nộp",
+  "en": ""
+ },
+ {
+  "vi": "Chạm chọn ít nhất một bước trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Quần áo 14 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc có đơn",
+  "en": ""
+ },
+ {
+  "vi": "Sạc dự phòng",
+  "en": ""
+ },
+ {
+  "vi": "Mì cay",
+  "en": ""
+ },
+ {
+  "vi": "Tạ tay",
+  "en": ""
+ },
+ {
+  "vi": "Bánh Má gói",
+  "en": ""
+ },
+ {
+  "vi": "Keo xịt tóc",
+  "en": ""
+ },
+ {
+  "vi": "Dao gấp",
+  "en": ""
+ },
+ {
+  "vi": "Rượu thuốc",
+  "en": ""
+ },
+ {
+  "vi": "Đồ bơi giữ nhiệt",
+  "en": ""
+ },
+ {
+  "vi": "Bình thở",
+  "en": ""
+ },
+ {
+  "vi": "Chụp tai",
+  "en": ""
+ },
+ {
+  "vi": "“Túi gọn, mặc đồ bơi giữ nhiệt, nghe hướng dẫn thoát hiểm.”",
+  "en": ""
+ },
+ {
+  "vi": ": để ở nhà",
+  "en": ""
+ },
+ {
+  "vi": "Thoát hiểm",
+  "en": ""
+ },
+ {
+  "vi": "Video thoát hiểm trực thăng",
+  "en": ""
+ },
+ {
+  "vi": "Túi mềm",
+  "en": ""
+ },
+ {
+  "vi": "Túi mềm lên trực thăng",
+  "en": ""
+ },
+ {
+  "vi": "Mối nguy hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Mối nguy của việc hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Mối nguy",
+  "en": ""
+ },
+ {
+  "vi": "Phụ cấp",
+  "en": ""
+ },
+ {
+  "vi": "Thức dậy",
+  "en": ""
+ },
+ {
+  "vi": "Thỉnh chuông sáng",
+  "en": ""
+ },
+ {
+  "vi": "Công phu sáng",
+  "en": ""
+ },
+ {
+  "vi": "Điểm tâm",
+  "en": ""
+ },
+ {
+  "vi": "Mở loa ra đường 4h",
+  "en": ""
+ },
+ {
+  "vi": "Lau khăn ẩm vắt kiệt",
+  "en": ""
+ },
+ {
+  "vi": "Bày lại như cũ",
+  "en": ""
+ },
+ {
+  "vi": "Khóa cửa hông",
+  "en": ""
+ },
+ {
+  "vi": "Ghế người già hàng đầu",
+  "en": ""
+ },
+ {
+  "vi": "Chụp người nhận đăng mạng",
+  "en": ""
+ },
+ {
+  "vi": "Dập bằng bình, khăn ướt",
+  "en": ""
+ },
+ {
+  "vi": "Dời đèn, lư sang bên",
+  "en": ""
+ },
+ {
+  "vi": "Đốt lá góc sân",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ phướn, kéo xuống đất",
+  "en": ""
+ },
+ {
+  "vi": "Xếp hàng, cụ già trước",
+  "en": ""
+ },
+ {
+  "vi": "Hô lùi ra xa",
+  "en": ""
+ },
+ {
+  "vi": "Phủi bụi trên xuống",
+  "en": ""
+ },
+ {
+  "vi": "Loa vừa đủ trong sân",
+  "en": ""
+ },
+ {
+  "vi": "Chừa lối đi, cửa hông",
+  "en": ""
+ },
+ {
+  "vi": "Nhặt rác",
+  "en": ""
+ },
+ {
+  "vi": "Mời nước, chỗ mát",
+  "en": ""
+ },
+ {
+  "vi": "Quét hiên ra cổng",
+  "en": ""
+ },
+ {
+  "vi": "Phát suất, hai tay",
+  "en": ""
+ },
+ {
+  "vi": "Rửa tay, khẩu trang",
+  "en": ""
+ },
+ {
+  "vi": "Đứng lên bàn thờ",
+  "en": ""
+ },
+ {
+  "vi": "Tưới cau, kiểng",
+  "en": ""
+ },
+ {
+  "vi": "Xá trước khi lau",
+  "en": ""
+ },
+ {
+  "vi": "Xem còn tàn lửa",
+  "en": ""
+ },
+ {
+  "vi": "Gram mỗi bữa",
+  "en": ""
+ },
+ {
+  "vi": "🐾 Tiệm chăm thú cưng",
+  "en": ""
+ },
+ {
+  "vi": "📜 Nội quy tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tiêm",
+  "en": ""
+ },
+ {
+  "vi": "Lông",
+  "en": ""
+ },
+ {
+  "vi": "Sờ thân",
+  "en": ""
+ },
+ {
+  "vi": "Bước đi",
+  "en": ""
+ },
+ {
+  "vi": "Bát ăn",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ ở",
+  "en": ""
+ },
+ {
+  "vi": "Giờ vắng",
+  "en": ""
+ },
+ {
+  "vi": "Trẻ nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Thú nuôi",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm: khử khuẩn, kho, nội quy",
+  "en": ""
+ },
+ {
+  "vi": "đã khử khuẩn",
+  "en": ""
+ },
+ {
+  "vi": "chưa khử khuẩn hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Tiệm: khử khuẩn, kho, nội quy",
+  "en": ""
+ },
+ {
+  "vi": "· ✅ đã khử khuẩn",
+  "en": ""
+ },
+ {
+  "vi": "· 🧽 chưa khử khuẩn hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "📋 Phiếu nhận",
+  "en": ""
+ },
+ {
   "vi": "🔎 Kiểm tra",
   "en": ""
  },
@@ -1389,414 +1797,6 @@
  },
  {
   "vi": "🍜 MỞ QUÁN",
-  "en": ""
- },
- {
-  "vi": "🍜 BƯNG PHỞ RA",
-  "en": ""
- },
- {
-  "vi": "dừng muôi trước đã",
-  "en": ""
- },
- {
-  "vi": "🥡 ĐƯA KHÁCH",
-  "en": ""
- },
- {
-  "vi": "chan nước cho đủ tô trước đã",
-  "en": ""
- },
- {
-  "vi": "🔪 Thớt thịt",
-  "en": ""
- },
- {
-  "vi": "Canh nồi nước, mở quán",
-  "en": ""
- },
- {
-  "vi": "Làm tô phở cho khách",
-  "en": ""
- },
- {
-  "vi": "Nhập bánh phở, thịt bò, xương, quẩy…",
-  "en": ""
- },
- {
-  "vi": "✓ đẹp",
-  "en": ""
- },
- {
-  "vi": "nhòe",
-  "en": ""
- },
- {
-  "vi": "nhắm mắt",
-  "en": ""
- },
- {
-  "vi": "hết dáng",
-  "en": ""
- },
- {
-  "vi": "① Bố trí",
-  "en": ""
- },
- {
-  "vi": "② Chụp",
-  "en": ""
- },
- {
-  "vi": "③ Chọn ảnh",
-  "en": ""
- },
- {
-  "vi": "Tách Tách · Phố Có Chuyện",
-  "en": ""
- },
- {
-  "vi": "Ảnh in",
-  "en": ""
- },
- {
-  "vi": "👂 Hỏi khách muốn chụp gì",
-  "en": ""
- },
- {
-  "vi": "không đạo cụ",
-  "en": ""
- },
- {
-  "vi": "(+ tùy ý)",
-  "en": ""
- },
- {
-  "vi": "sticker tùy ý",
-  "en": ""
- },
- {
-  "vi": "không sticker",
-  "en": ""
- },
- {
-  "vi": "📅 có ngày tháng",
-  "en": ""
- },
- {
-  "vi": "📅 không ghi ngày",
-  "en": ""
- },
- {
-  "vi": "👀 Soi ảnh kỹ",
-  "en": ""
- },
- {
-  "vi": "🧒 Bé khó ngồi yên",
-  "en": ""
- },
- {
-  "vi": "👴 Cười chậm",
-  "en": ""
- },
- {
-  "vi": "🎞️ Gói ảnh",
-  "en": ""
- },
- {
-  "vi": "🖼️ Khung ảnh",
-  "en": ""
- },
- {
-  "vi": "🎨 Phông nền",
-  "en": ""
- },
- {
-  "vi": "💡 Đèn",
-  "en": ""
- },
- {
-  "vi": "chạm để đưa / cất",
-  "en": ""
- },
- {
-  "vi": "Bé nhỏ giữ dáng rất ngắn: canh thật nhanh tay.",
-  "en": ""
- },
- {
-  "vi": "Ông bà cười chậm: đợi thêm nửa nhịp rồi hẵng bấm.",
-  "en": ""
- },
- {
-  "vi": "Màn hình máy ảnh",
-  "en": ""
- },
- {
-  "vi": "Chưa bố trí",
-  "en": ""
- },
- {
-  "vi": "💧 kính mờ",
-  "en": ""
- },
- {
-  "vi": "📸 BẤM MÁY",
-  "en": ""
- },
- {
-  "vi": "Tạm dừng máy",
-  "en": ""
- },
- {
-  "vi": "⏱️ Đếm tiếp",
-  "en": ""
- },
- {
-  "vi": "⏱️ Bắt đầu đếm 3-2-1",
-  "en": ""
- },
- {
-  "vi": "🖥️ Cho khách xem ảnh",
-  "en": ""
- },
- {
-  "vi": "🔄 Xóa, chụp lượt mới",
-  "en": ""
- },
- {
-  "vi": "Xóa hết ảnh lượt này rồi chụp lại từ đầu?",
-  "en": ""
- },
- {
-  "vi": "💧 Ống kính mờ hơi nước.",
-  "en": ""
- },
- {
-  "vi": "🧽 Lau ống kính",
-  "en": ""
- },
- {
-  "vi": "📸 Buồng chụp",
-  "en": ""
- },
- {
-  "vi": "⚡ Đèn flash đang sạc…",
-  "en": ""
- },
- {
-  "vi": "Cả nhóm vào dáng…",
-  "en": ""
- },
- {
-  "vi": "📸 Đứng yên, mở mắt: BẤM!",
-  "en": ""
- },
- {
-  "vi": "Ơ, có người chớp mắt…",
-  "en": ""
- },
- {
-  "vi": "Hết dáng rồi, đợi lượt sau",
-  "en": ""
- },
- {
-  "vi": "Chưa chụp tấm nào. Sang ② Chụp trước nhé.",
-  "en": ""
- },
- {
-  "vi": "💬 Khách chọn:",
-  "en": ""
- },
- {
-  "vi": "Mời khách xem màn hình (② Chụp → “Cho khách xem ảnh”) để khách chọn.",
-  "en": ""
- },
- {
-  "vi": "Ngày tháng",
-  "en": ""
- },
- {
-  "vi": "📅 Có ngày",
-  "en": ""
- },
- {
-  "vi": "Không ghi ngày",
-  "en": ""
- },
- {
-  "vi": "Bản xem trước",
-  "en": ""
- },
- {
-  "vi": "🖥️ Chọn ảnh",
-  "en": ""
- },
- {
-  "vi": "📅 Ngày tháng",
-  "en": ""
- },
- {
-  "vi": "🎞️ Màu ảnh",
-  "en": ""
- },
- {
-  "vi": "✂️ Đã cắt, sẵn sàng giao",
-  "en": ""
- },
- {
-  "vi": "🖨️ Vừa in xong",
-  "en": ""
- },
- {
-  "vi": "Bản xem trước · chưa in",
-  "en": ""
- },
- {
-  "vi": "🖨️ Cuộn mực còn",
-  "en": ""
- },
- {
-  "vi": "🖨️ In lại theo chỉnh mới",
-  "en": ""
- },
- {
-  "vi": "In lại? Tờ ảnh vừa in bỏ đi, tiệm chịu tiền giấy.",
-  "en": ""
- },
- {
-  "vi": "🖨️ In ảnh",
-  "en": ""
- },
- {
-  "vi": "🪵 Lồng vào khung gỗ",
-  "en": ""
- },
- {
-  "vi": "✂️ Cắt đôi, bỏ 2 bao kiếng",
-  "en": ""
- },
- {
-  "vi": "✂️ Cắt rìa, bỏ bao kiếng",
-  "en": ""
- },
- {
-  "vi": "Máy in hết mực.",
-  "en": ""
- },
- {
-  "vi": "🖨️ Thay cuộn mực",
-  "en": ""
- },
- {
-  "vi": "🖨️ Máy in & bàn cắt",
-  "en": ""
- },
- {
-  "vi": "Ảnh chụp thử",
-  "en": ""
- },
- {
-  "vi": "📷 Máy ảnh",
-  "en": ""
- },
- {
-  "vi": "✓ Ống kính sạch",
-  "en": ""
- },
- {
-  "vi": "📸 Chụp thử phông trống",
-  "en": ""
- },
- {
-  "vi": "Chụp thử một tấm để máy in báo mực còn bao nhiêu.",
-  "en": ""
- },
- {
-  "vi": "Máy in báo cuộn mực còn",
-  "en": ""
- },
- {
-  "vi": "🖨️ Thay cuộn mực mới",
-  "en": ""
- },
- {
-  "vi": "Chụp thử một tấm",
-  "en": ""
- },
- {
-  "vi": "Cuộn mực sắp hết: thay cuộn mới",
-  "en": ""
- },
- {
-  "vi": "Chị đứng cạnh máy in: lỡ sai chỗ nào, chị nhắc trước khi in.",
-  "en": ""
- },
- {
-  "vi": "Mở tiệm xong mới chụp",
-  "en": ""
- },
- {
-  "vi": "Đạo cụ",
-  "en": ""
- },
- {
-  "vi": "Không đạo cụ",
-  "en": ""
- },
- {
-  "vi": "Ống kính mờ hơi nước",
-  "en": ""
- },
- {
-  "vi": "📸 Bấm máy lúc cả nhóm đứng yên, mở mắt",
-  "en": ""
- },
- {
-  "vi": "Cho khách xem, chọn ảnh",
-  "en": ""
- },
- {
-  "vi": "Đóng ngày tháng",
-  "en": ""
- },
- {
-  "vi": "In lại theo chỉnh mới",
-  "en": ""
- },
- {
-  "vi": "Lồng khung",
-  "en": ""
- },
- {
-  "vi": "✂️ Cắt, bỏ bao kiếng",
-  "en": ""
- },
- {
-  "vi": "📸 Vào việc thôi!",
-  "en": ""
- },
- {
-  "vi": "📸 MỞ TIỆM",
-  "en": ""
- },
- {
-  "vi": "🙏 Nói thật: tiệm hết giấy, khung",
-  "en": ""
- },
- {
-  "vi": "🖼️ ĐƯA ẢNH",
-  "en": ""
- },
- {
-  "vi": "in và cắt ảnh trước đã",
-  "en": ""
- },
- {
-  "vi": "🎞️ Tường khung mẫu",
-  "en": ""
- },
- {
-  "vi": "📷 Ống kính sạch",
   "en": ""
  }
 ]

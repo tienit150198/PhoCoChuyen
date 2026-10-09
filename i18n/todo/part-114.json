@@ -1,5 +1,409 @@
 [
  {
+  "vi": "Có thể dùng các nút cầm và gắn bên dưới để thao tác bằng bàn phím.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đủ 12 dấu. Bỏ dấu cuối nếu bạn muốn đổi vị trí.",
+  "en": ""
+ },
+ {
+  "vi": "Cầm một món trong khay trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt quai vào vị trí cùng số nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Cầm bông mềm trong khay rồi chọn một vùng còn trống.",
+  "en": ""
+ },
+ {
+  "vi": "Kéo bông vào một vùng sáng trên bạn gấu.",
+  "en": ""
+ },
+ {
+  "vi": "Đang cầm bông mềm. Chọn vùng cần nhồi trên bạn gấu.",
+  "en": ""
+ },
+ {
+  "vi": "Đang cầm một hạt. Chọn vị trí còn trống.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ đã đủ 24 món. Bản nháp của bạn vẫn được giữ.",
+  "en": ""
+ },
+ {
+  "vi": "Cất món tự tay làm lên kệ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thanh toán. Thành phẩm vẫn ở đây để bạn cất sau.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa cất được thành phẩm. Bản nháp vẫn còn; hãy thử lại khi kết nối ổn định.",
+  "en": ""
+ },
+ {
+  "vi": "Kết nối bị gián đoạn. Bản nháp vẫn còn, bạn có thể thử cất lại.",
+  "en": ""
+ },
+ {
+  "vi": "Mình làm tiếp món đang dở nhé. Bản nháp đã được mở lại.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nam",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nữ",
+  "en": ""
+ },
+ {
+  "vi": "Ai cũng được",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tư bán xôi",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi chờ ai đó hả con? Bà ngồi chung chút cho vui nha.",
+  "en": ""
+ },
+ {
+  "vi": "Hồi xưa bà với ông cũng quen nhau ở cái ghế đá này đó.",
+  "en": ""
+ },
+ {
+  "vi": "Người hợp gu tới liền à, kiên nhẫn chút.",
+  "en": ""
+ },
+ {
+  "vi": "Rảnh thì chơi hỏi nhanh đáp nhanh với bà nè.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Ba sửa xe",
+  "en": ""
+ },
+ {
+  "vi": "Chú ghé ngồi nghỉ tay chút, con cứ chờ tự nhiên nha.",
+  "en": ""
+ },
+ {
+  "vi": "Tối nào phố cũng đông, chờ xíu là có bạn à.",
+  "en": ""
+ },
+ {
+  "vi": "Đố vui cho đỡ buồn không? Chú hỏi nè.",
+  "en": ""
+ },
+ {
+  "vi": "Xe cộ gì hư cứ mang qua tiệm chú nha.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Mai tiệm hoa",
+  "en": ""
+ },
+ {
+  "vi": "Chị mới đóng tiệm, ngồi đây hóng gió với em chút.",
+  "en": ""
+ },
+ {
+  "vi": "Hoa hồng hôm nay đẹp lắm, ai được tặng chắc vui ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Chờ người hợp gu cũng như chờ hoa nở, đáng mà.",
+  "en": ""
+ },
+ {
+  "vi": "Chơi đố vui với chị cho đỡ sốt ruột nè.",
+  "en": ""
+ },
+ {
+  "vi": "Bánh chưng thường gói bằng lá gì?",
+  "en": ""
+ },
+ {
+  "vi": "Lá dong",
+  "en": ""
+ },
+ {
+  "vi": "Lá chuối",
+  "en": ""
+ },
+ {
+  "vi": "Lá sen",
+  "en": ""
+ },
+ {
+  "vi": "Tết Trung thu vào rằm tháng mấy âm lịch?",
+  "en": ""
+ },
+ {
+  "vi": "Tháng 8",
+  "en": ""
+ },
+ {
+  "vi": "Tháng 7",
+  "en": ""
+ },
+ {
+  "vi": "Con giáp đứng đầu trong 12 con giáp?",
+  "en": ""
+ },
+ {
+  "vi": "Tý (chuột)",
+  "en": ""
+ },
+ {
+  "vi": "Sửu (trâu)",
+  "en": ""
+ },
+ {
+  "vi": "Dần (hổ)",
+  "en": ""
+ },
+ {
+  "vi": "Xôi được nấu từ loại gạo nào?",
+  "en": ""
+ },
+ {
+  "vi": "Gạo nếp",
+  "en": ""
+ },
+ {
+  "vi": "Gạo tẻ",
+  "en": ""
+ },
+ {
+  "vi": "Gạo lứt",
+  "en": ""
+ },
+ {
+  "vi": "Hồ Gươm còn có tên là gì?",
+  "en": ""
+ },
+ {
+  "vi": "Hồ Hoàn Kiếm",
+  "en": ""
+ },
+ {
+  "vi": "Hồ Tây",
+  "en": ""
+ },
+ {
+  "vi": "Hồ Trúc Bạch",
+  "en": ""
+ },
+ {
+  "vi": "Áo dài truyền thống có mấy tà?",
+  "en": ""
+ },
+ {
+  "vi": "Hai tà",
+  "en": ""
+ },
+ {
+  "vi": "Một tà",
+  "en": ""
+ },
+ {
+  "vi": "Ba tà",
+  "en": ""
+ },
+ {
+  "vi": "Một năm có bao nhiêu mùa?",
+  "en": ""
+ },
+ {
+  "vi": "Bốn mùa",
+  "en": ""
+ },
+ {
+  "vi": "Ba mùa",
+  "en": ""
+ },
+ {
+  "vi": "Năm mùa",
+  "en": ""
+ },
+ {
+  "vi": "Chè ba màu có mấy màu?",
+  "en": ""
+ },
+ {
+  "vi": "Ba màu",
+  "en": ""
+ },
+ {
+  "vi": "Năm màu",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay chưa hợp, phố còn đông người mà!",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã rời buổi hẹn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy có việc phải đi trước rồi. Phố còn đông người mà!",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy",
+  "en": ""
+ },
+ {
+  "vi": "Nói gì đó…",
+  "en": ""
+ },
+ {
+  "vi": "Mất kết nối, thử lại sau nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo vì…",
+  "en": ""
+ },
+ {
+  "vi": "Rời buổi hẹn",
+  "en": ""
+ },
+ {
+  "vi": "người đang chờ ở góc hẹn hò",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ có bạn đang chờ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ai đang chờ",
+  "en": ""
+ },
+ {
+  "vi": "người ghé trong 30 phút qua",
+  "en": ""
+ },
+ {
+  "vi": "🎲 Hỏi nhanh đáp nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Câu khác",
+  "en": ""
+ },
+ {
+  "vi": "Đúng rồi! 👏",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm ngồi cùng",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm ngồi chờ cùng",
+  "en": ""
+ },
+ {
+  "vi": "Rủ mọi người",
+  "en": ""
+ },
+ {
+  "vi": "Muốn gặp",
+  "en": ""
+ },
+ {
+  "vi": "Đang tìm người hợp gu…",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn 5 phút ở quán cà phê",
+  "en": ""
+ },
+ {
+  "vi": "Tạo tài khoản để hẹn hò.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi chờ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn Nam/Nữ cho nhân vật để người khác tìm thấy bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã là bạn bè",
+  "en": ""
+ },
+ {
+  "vi": "cũng thả tim!",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi ghế tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Hợp nhau! 💞",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy chưa kịp chọn 😴",
+  "en": ""
+ },
+ {
+  "vi": "Khác gu 😆",
+  "en": ""
+ },
+ {
+  "vi": "chọn rồi",
+  "en": ""
+ },
+ {
+  "vi": "Trúng phóc! 🎯",
+  "en": ""
+ },
+ {
+  "vi": "chưa kịp gọi",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món cho nhau",
+  "en": ""
+ },
+ {
+  "vi": "gọi cho bạn",
+  "en": ""
+ },
+ {
+  "vi": "gọi xong rồi",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang thèm món gì?",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thèm",
+  "en": ""
+ },
+ {
+  "vi": "Một phút trò chuyện. Mở lời đi!",
+  "en": ""
+ },
+ {
   "vi": "Chờ bạn ấy…",
   "en": ""
  },
@@ -313,6 +717,174 @@
  },
  {
   "vi": "Ảnh hơi lớn để lưu vào Kỷ niệm: bấm Tải ảnh để giữ trên máy nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có ai, cược đã trả lại ví.",
+  "en": ""
+ },
+ {
+  "vi": "Đã hủy, cược trả lại ví.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa được, thử lại nha.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ trận?",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ giữa chừng là thua kèo này.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ trận",
+  "en": ""
+ },
+ {
+  "vi": "Chọn năm sinh của bạn nha.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa lưu được.",
+  "en": ""
+ },
+ {
+  "vi": "Mất kết nối, đang nối lại…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đặt được kèo.",
+  "en": ""
+ },
+ {
+  "vi": "Luật chơi",
+  "en": ""
+ },
+ {
+  "vi": "Sủa to vào mic, ai to hơn kéo dây về phía mình.",
+  "en": ""
+ },
+ {
+  "vi": "Thắng ăn cả hai phần cược. Hòa trả cược. Thoát hoặc mất mạng quá 10 giây là thua.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ gửi độ to (con số), không gửi giọng nói. Độ nhạy chỉnh ở dưới.",
+  "en": ""
+ },
+ {
+  "vi": "Độ nhạy mic",
+  "en": ""
+ },
+ {
+  "vi": "🎚️ Độ nhạy",
+  "en": ""
+ },
+ {
+  "vi": "Chưa cho dùng mic nên chưa chơi được. Cho phép mic trong trình duyệt rồi thử lại nha.",
+  "en": ""
+ },
+ {
+  "vi": "Máy này chưa có mic dùng được.",
+  "en": ""
+ },
+ {
+  "vi": "Kéo co bằng mic dành cho bạn từ 16 tuổi nha. Bạn vẫn xem và cổ vũ được 👏",
+  "en": ""
+ },
+ {
+  "vi": "Năm sinh của bạn? (hỏi một lần)",
+  "en": ""
+ },
+ {
+  "vi": "Số xu cược khác",
+  "en": ""
+ },
+ {
+  "vi": "Thử mic",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng chó sủa",
+  "en": ""
+ },
+ {
+  "vi": "Không có ai thì đấu với chó nhà Mây.",
+  "en": ""
+ },
+ {
+  "vi": "Cược",
+  "en": ""
+ },
+ {
+  "vi": "Đang chờ kèo:",
+  "en": ""
+ },
+ {
+  "vi": "Đang kéo · xem",
+  "en": ""
+ },
+ {
+  "vi": "🐕 nghỉ hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Đang tìm đối thủ…",
+  "en": ""
+ },
+ {
+  "vi": "Đang gọi chó nhà Mây…",
+  "en": ""
+ },
+ {
+  "vi": "Hủy · trả cược",
+  "en": ""
+ },
+ {
+  "vi": "GÂU!",
+  "en": ""
+ },
+ {
+  "vi": "Thua kèo này",
+  "en": ""
+ },
+ {
+  "vi": "Đối thủ mất kết nối.",
+  "en": ""
+ },
+ {
+  "vi": "Mất kết nối quá lâu.",
+  "en": ""
+ },
+ {
+  "vi": "Đối thủ bỏ trận.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã bỏ trận.",
+  "en": ""
+ },
+ {
+  "vi": "Đang chốt kèo, tiền về sau ít phút.",
+  "en": ""
+ },
+ {
+  "vi": "🐕 Kèo nữa",
+  "en": ""
+ },
+ {
+  "vi": "Về sảnh",
+  "en": ""
+ },
+ {
+  "vi": "Kéo co chó sủa đang nghỉ, quay lại sau nha.",
+  "en": ""
+ },
+ {
+  "vi": "… chuẩn bị sủa!",
   "en": ""
  },
  {
@@ -1160,10 +1732,6 @@
   "en": ""
  },
  {
-  "vi": "Cược",
-  "en": ""
- },
- {
   "vi": "Chọn một chú chó",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Qua màn rồi! Dừng nhận thưởng hay chơi tiếp?",
-  "en": ""
- },
- {
-  "vi": "Tay chắc ghê! Liều thêm màn nữa không?",
-  "en": ""
- },
- {
-  "vi": "Đẹp! Thưởng đang chờ nè, tính sao?",
-  "en": ""
- },
- {
-  "vi": "Màn sau x2 nè! Qua được là thưởng tăng gấp đôi!",
-  "en": ""
- },
- {
-  "vi": "Ối, màn sau x2! Cơ hội hiếm à nha!",
-  "en": ""
- },
- {
-  "vi": "Dao chạm dao rồi! Tiếc ghê, lượt sau gỡ nha.",
-  "en": ""
- },
- {
-  "vi": "Ui, cấn dao mất rồi! Làm lại lượt mới nha.",
-  "en": ""
- },
- {
-  "vi": "Suýt nữa thôi! Bia quay gắt quá.",
-  "en": ""
- },
- {
-  "vi": "Để lâu quá bia ngừng quay rồi, lượt này coi như thua nha.",
-  "en": ""
- },
- {
-  "vi": "Biết dừng đúng lúc, khôn ghê! Thưởng đây.",
-  "en": ""
- },
- {
-  "vi": "Thưởng đây, đếm kỹ nha!",
-  "en": ""
- },
- {
-  "vi": "Phá đảo cả mười màn! Trời ơi, tay thần đây rồi!",
-  "en": ""
- },
- {
-  "vi": "Qua màn được",
-  "en": ""
- },
- {
-  "vi": "Tiền đặt",
-  "en": ""
- },
- {
-  "vi": "title=\"Ví không đủ xu\"",
-  "en": ""
- },
- {
-  "vi": "Anh Sáu đang dựng bia…",
-  "en": ""
- },
- {
-  "vi": "🗡️ Vào chơi",
-  "en": ""
- },
- {
-  "vi": "chọn mức đặt nhỏ hơn nha.",
-  "en": ""
- },
- {
-  "vi": "Qua ngày rồi, thưởng màn trước không chơi tiếp được nữa.",
-  "en": ""
- },
- {
-  "vi": "Dừng bây giờ nhận",
-  "en": ""
- },
- {
-  "vi": ", thua mất hết.",
-  "en": ""
- },
- {
-  "vi": "🔥 Màn sau x2",
-  "en": ""
- },
- {
-  "vi": "Đang đếm tiền…",
-  "en": ""
- },
- {
-  "vi": "Đang dựng bia…",
-  "en": ""
- },
- {
-  "vi": "Chợ đen đã tàn: chỉ còn nhận thưởng thôi.",
-  "en": ""
- },
- {
-  "vi": "Hết giờ, bia ngừng quay",
-  "en": ""
- },
- {
-  "vi": "🏆 Phá đảo!",
-  "en": ""
- },
- {
-  "vi": "Hoàn thành màn đang dở nhé; màn sau canh chỗ trống để phóng!",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra lại kết quả",
-  "en": ""
- },
- {
-  "vi": "Đang tính…",
-  "en": ""
- },
- {
-  "vi": "🗡️ Phóng!",
-  "en": ""
- },
- {
-  "vi": "🔥 Hôm nay bạn đang thắng đậm ở chợ đen nên bia quay gắt hơn.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã chơi",
-  "en": ""
- },
- {
-  "vi": "lượt, dừng nhận thưởng",
-  "en": ""
- },
- {
-  "vi": "lượt, xa nhất màn",
-  "en": ""
- },
- {
-  "vi": "Bia gỗ đang quay. Chạm vào bia để phóng dao.",
-  "en": ""
- },
- {
-  "vi": "Lâu lâu có màn 🔥 x2: qua màn đó, phần thưởng tăng thêm của màn được nhân đôi.",
-  "en": ""
- },
- {
-  "vi": "Màn cũ đang chơi dở: phóng đủ dao để hoàn thành. Từ màn tiếp theo, dao chạm dao mới thua; cắm đủ dao là qua màn.",
-  "en": ""
- },
- {
-  "vi": "Chạm vào bia (hoặc bấm “Phóng!”) để phóng dao từ dưới lên. Dao cắm vô gỗ là được, chạm trúng dao khác là thua cả lượt. Cắm đủ số dao là qua màn: dừng để nhận thưởng, hoặc chơi tiếp màn khó hơn, thưởng cao hơn.",
-  "en": ""
- },
- {
-  "vi": "Đã hết giờ phóng. Đang kiểm tra kết quả…",
-  "en": ""
- },
- {
-  "vi": "Chưa nhận được kết quả. Bấm kiểm tra lại để tiếp tục nha.",
-  "en": ""
- },
- {
-  "vi": "Chưa kết nối được. Giữ nguyên lượt này và kiểm tra lại nhé.",
-  "en": ""
- },
- {
-  "vi": "bảy",
-  "en": ""
- },
- {
-  "vi": "tám",
-  "en": ""
- },
- {
-  "vi": "chín",
-  "en": ""
- },
- {
-  "vi": "mười",
-  "en": ""
- },
- {
-  "vi": "mươi",
-  "en": ""
- },
- {
-  "vi": "mốt",
-  "en": ""
- },
- {
-  "vi": "tư",
-  "en": ""
- },
- {
-  "vi": "lăm",
-  "en": ""
- },
- {
-  "vi": "Bột mì nhồi kỹ, bánh nở thơm lừng mùi bột",
-  "en": ""
- },
- {
-  "vi": "Bánh mì vừa nướng, còn thơm còn nóng sốt",
-  "en": ""
- },
- {
-  "vi": "Ai đàn tích tịch tình tang, nghe vui từng nốt",
-  "en": ""
- },
- {
-  "vi": "Nhà ai mới dựng, chôn xong cái cột",
-  "en": ""
- },
- {
-  "vi": "Vườn nhà trồng cải, nhổ được củ cà rốt",
-  "en": ""
- },
- {
-  "vi": "Gạo mới xay xong, trắng tinh từng hột",
-  "en": ""
- },
- {
-  "vi": "Đi coi hội về, nhớ cài cửa cài chốt",
-  "en": ""
- },
- {
-  "vi": "Đêm rằm trung thu, lồng đèn ai đốt",
-  "en": ""
- },
- {
-  "vi": "Gió đồng thổi mát, lúa trổ bông tốt",
-  "en": ""
- },
- {
-  "vi": "Học bài chăm chỉ, cô khen trò ngoan trò tốt",
-  "en": ""
- },
- {
-  "vi": "Hôm nay vui vẻ, hẹn nhau ngày mai",
-  "en": ""
- },
- {
-  "vi": "Tóc ai dài óng, thả ngang bờ vai",
-  "en": ""
- },
- {
-  "vi": "Chợ chiều bán khoai, củ to củ dài",
-  "en": ""
- },
- {
-  "vi": "Con thỏ nhảy nhót, vểnh đôi tai",
-  "en": ""
- },
- {
-  "vi": "Bé học chăm ngoan, thuộc làu từng bài",
-  "en": ""
- },
- {
-  "vi": "Mùa này trái chín, ngọt lịm trái xoài",
-  "en": ""
- },
- {
-  "vi": "Đứng đây ngó quanh, đố bà con là ai",
-  "en": ""
- },
- {
-  "vi": "Tiểu phẩm xem xong, cười té ghế vì hài",
-  "en": ""
- },
- {
-  "vi": "Áo mới cúc vàng, cô Bảy khéo cài",
-  "en": ""
- },
- {
-  "vi": "Dò cho thiệt kỹ, kẻo lỡ dò sai",
-  "en": ""
- },
- {
-  "vi": "Chợ đen đông vui, khách tới gần xa",
-  "en": ""
- },
- {
-  "vi": "Cơm trắng canh chua, thêm chén dưa cà",
-  "en": ""
- },
- {
-  "vi": "Sáng sớm tinh mơ, gáy vang con gà",
-  "en": ""
- },
- {
-  "vi": "Chiều chiều ông nội, pha ấm nước trà",
-  "en": ""
- },
- {
-  "vi": "Chợ đen tan rồi, ai cũng có quà",
-  "en": ""
- },
- {
-  "vi": "Vườn xuân rực rỡ, muôn sắc muôn hoa",
-  "en": ""
- },
- {
-  "vi": "Cả xóm quây quần, cùng hát cùng ca",
-  "en": ""
- },
- {
-  "vi": "Đò ơi đợi chút, cho em sang qua",
-  "en": ""
- },
- {
-  "vi": "Cây đa đầu làng, gió mát la đà",
-  "en": ""
- },
- {
-  "vi": "Trăng lên đầu ngõ, sáng cả sân nhà",
-  "en": ""
- },
- {
-  "vi": "Mưa rơi trên mái, lách tách mái tôn",
-  "en": ""
- },
- {
-  "vi": "Đường về xóm nhỏ, đầu làng cuối thôn",
-  "en": ""
- },
- {
-  "vi": "Lục bình trôi nổi, ghé vào bãi cồn",
-  "en": ""
- },
- {
-  "vi": "Nghe tiếng trống chầu, ai nấy bồn chồn",
-  "en": ""
- },
- {
-  "vi": "Học ăn học nói, mai mốt nên khôn",
-  "en": ""
- },
- {
-  "vi": "Hoa tươi trong chậu, nước tưới đầy bồn",
-  "en": ""
- },
- {
-  "vi": "Gió đưa tiếng hát, rộn ràng tâm hồn",
-  "en": ""
- },
- {
-  "vi": "Nhớ ai mà viết lá thư",
-  "en": ""
- },
- {
-  "vi": "Ngồi dò cho kỹ, chớ có chần chừ",
-  "en": ""
- },
- {
-  "vi": "Nồi cơm má nấu, ăn no còn dư",
-  "en": ""
- },
- {
-  "vi": "Bé ngoan vâng lời, chẳng có chút hư",
-  "en": ""
- },
- {
-  "vi": "Tay dò số giỏi, thiệt là quá cừ",
-  "en": ""
- },
- {
-  "vi": "Rủ đi coi hội, bạn gật đầu: ừ",
-  "en": ""
- },
- {
-  "vi": "Mưa dầm sụt sùi, trời đất lừ đừ",
-  "en": ""
- },
- {
-  "vi": "Nói hay chưa bằng làm, cứ thong thả từ từ",
-  "en": ""
- },
- {
-  "vi": "Ai đi xa nhớ ghé về thăm",
-  "en": ""
- },
- {
-  "vi": "Đêm nay trăng sáng tròn như rằm",
-  "en": ""
- },
- {
-  "vi": "Trưa hè gió mát, đong đưa võng nằm",
-  "en": ""
- },
- {
-  "vi": "Ruộng ai cày cấy, sớm tối siêng chăm",
-  "en": ""
- },
- {
-  "vi": "Cơm ngon nhờ có chén nước mắm",
-  "en": ""
- },
- {
-  "vi": "Bánh tét bánh chưng, má gói cả trăm",
-  "en": ""
- },
- {
-  "vi": "Cô Bảy hát hay, khán giả mê lắm",
-  "en": ""
- },
- {
-  "vi": "Thuyền ai về bến, sóng nước êm đằm",
-  "en": ""
- },
- {
-  "vi": "Cơm nắm muối mè, ăn xong một nắm",
-  "en": ""
- },
- {
-  "vi": "Hai đứa mình đi hội cùng nhau",
-  "en": ""
- },
- {
-  "vi": "Miếng trầu têm với quả cau",
-  "en": ""
- },
- {
-  "vi": "Vườn nhà má trồng mấy luống rau",
-  "en": ""
- },
- {
-  "vi": "Mua tờ dò lẹ, chạy nhanh cho mau",
-  "en": ""
- },
- {
-  "vi": "Cầu vồng sau mưa, rực rỡ bảy màu",
-  "en": ""
- },
- {
-  "vi": "Sân ga tấp nập, xình xịch đoàn tàu",
-  "en": ""
- },
- {
-  "vi": "Bà ngồi đầu hiên, kể chuyện cho cháu",
-  "en": ""
- },
- {
-  "vi": "Bờ đê lộng gió, trắng xóa bông lau",
-  "en": ""
- },
- {
-  "vi": "Ca dao ông bà, là của quý báu",
-  "en": ""
- },
- {
-  "vi": "Mới lạ hôm trước, quen thân hôm sau",
-  "en": ""
- },
- {
-  "vi": "Chợ đen vui quá, vỗ tay vỗ tay",
-  "en": ""
- },
- {
-  "vi": "Cánh diều no gió tung bay",
-  "en": ""
- },
- {
-  "vi": "Ớt xanh ớt đỏ, trái nào cũng cay",
-  "en": ""
- },
- {
-  "vi": "Trâu ra ruộng sớm, cùng bác đi cày",
-  "en": ""
- },
- {
-  "vi": "Thóc vàng mới gặt, chở về nhà xay",
-  "en": ""
- },
- {
-  "vi": "Tiếng hò câu hát, nghe sao mà hay",
-  "en": ""
- },
- {
-  "vi": "Chúc bà con mình, ai cũng gặp may",
-  "en": ""
- },
- {
-  "vi": "Con đường làng nhỏ, bé tung tăng chạy",
-  "en": ""
- },
- {
-  "vi": "Cô giáo hiền hậu, chữ đẹp cô dạy",
-  "en": ""
- },
- {
-  "vi": "Bốn mùa xuân hạ, thu đông đổi thay",
-  "en": ""
- },
- {
-  "vi": "Ai ăn quýt ngọt, ai ăn cam",
-  "en": ""
- },
- {
-  "vi": "Áo ai phơi nắng màu lam",
-  "en": ""
- },
- {
-  "vi": "Ngày mai đi hội, hôm nay lo làm",
-  "en": ""
- },
- {
-  "vi": "Thuyền xuôi về bắc, chim bay về nam",
-  "en": ""
- },
- {
-  "vi": "Mây chiều kéo tới, trời ngả màu xám",
-  "en": ""
- },
- {
-  "vi": "Rừng tràm xanh mát, thơm ngát hoa tràm",
-  "en": ""
- },
- {
-  "vi": "Gà con lích chích, mổ thóc mổ cám",
-  "en": ""
- },
- {
-  "vi": "Bé ngoan không khóc, khi bác sĩ khám",
-  "en": ""
- },
- {
-  "vi": "Đọc sách đọc truyện, bé mê bé ham",
-  "en": ""
- },
- {
-  "vi": "Đứng đây mà ngó mà nhìn",
-  "en": ""
- },
- {
-  "vi": "Lời thương nhắn gửi ai tin",
-  "en": ""
- },
- {
-  "vi": "Bánh bông lan nướng, xốp mềm mà mịn",
-  "en": ""
- },
- {
-  "vi": "Qua cầu khỉ nhỏ, nhớ tay vịn",
-  "en": ""
- },
- {
-  "vi": "Bé đang khóc nhè, cho kẹo là nín",
-  "en": ""
- },
- {
-  "vi": "Tờ dò cô Bảy, mới tinh mới in",
-  "en": ""
- },
- {
-  "vi": "Cả xóm vô xem, đông tới cả nghìn",
-  "en": ""
- },
- {
-  "vi": "Áo cô Bảy mặc, kim tuyến hàng xịn",
-  "en": ""
- },
- {
-  "vi": "Lúa vàng trĩu hạt, trái cây đã chín",
-  "en": ""
- },
- {
-  "vi": "Muốn mượn đồ chơi, lễ phép thưa xin",
   "en": ""
  }
 ]

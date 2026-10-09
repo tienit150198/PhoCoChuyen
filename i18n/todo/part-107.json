@@ -1,5 +1,413 @@
 [
  {
+  "vi": "🍜 BƯNG PHỞ RA",
+  "en": ""
+ },
+ {
+  "vi": "dừng muôi trước đã",
+  "en": ""
+ },
+ {
+  "vi": "🥡 ĐƯA KHÁCH",
+  "en": ""
+ },
+ {
+  "vi": "chan nước cho đủ tô trước đã",
+  "en": ""
+ },
+ {
+  "vi": "🔪 Thớt thịt",
+  "en": ""
+ },
+ {
+  "vi": "Canh nồi nước, mở quán",
+  "en": ""
+ },
+ {
+  "vi": "Làm tô phở cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Nhập bánh phở, thịt bò, xương, quẩy…",
+  "en": ""
+ },
+ {
+  "vi": "✓ đẹp",
+  "en": ""
+ },
+ {
+  "vi": "nhòe",
+  "en": ""
+ },
+ {
+  "vi": "nhắm mắt",
+  "en": ""
+ },
+ {
+  "vi": "hết dáng",
+  "en": ""
+ },
+ {
+  "vi": "① Bố trí",
+  "en": ""
+ },
+ {
+  "vi": "② Chụp",
+  "en": ""
+ },
+ {
+  "vi": "③ Chọn ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Tách Tách · Phố Có Chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh in",
+  "en": ""
+ },
+ {
+  "vi": "👂 Hỏi khách muốn chụp gì",
+  "en": ""
+ },
+ {
+  "vi": "không đạo cụ",
+  "en": ""
+ },
+ {
+  "vi": "(+ tùy ý)",
+  "en": ""
+ },
+ {
+  "vi": "sticker tùy ý",
+  "en": ""
+ },
+ {
+  "vi": "không sticker",
+  "en": ""
+ },
+ {
+  "vi": "📅 có ngày tháng",
+  "en": ""
+ },
+ {
+  "vi": "📅 không ghi ngày",
+  "en": ""
+ },
+ {
+  "vi": "👀 Soi ảnh kỹ",
+  "en": ""
+ },
+ {
+  "vi": "🧒 Bé khó ngồi yên",
+  "en": ""
+ },
+ {
+  "vi": "👴 Cười chậm",
+  "en": ""
+ },
+ {
+  "vi": "🎞️ Gói ảnh",
+  "en": ""
+ },
+ {
+  "vi": "🖼️ Khung ảnh",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Phông nền",
+  "en": ""
+ },
+ {
+  "vi": "💡 Đèn",
+  "en": ""
+ },
+ {
+  "vi": "chạm để đưa / cất",
+  "en": ""
+ },
+ {
+  "vi": "Bé nhỏ giữ dáng rất ngắn: canh thật nhanh tay.",
+  "en": ""
+ },
+ {
+  "vi": "Ông bà cười chậm: đợi thêm nửa nhịp rồi hẵng bấm.",
+  "en": ""
+ },
+ {
+  "vi": "Màn hình máy ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Chưa bố trí",
+  "en": ""
+ },
+ {
+  "vi": "💧 kính mờ",
+  "en": ""
+ },
+ {
+  "vi": "📸 BẤM MÁY",
+  "en": ""
+ },
+ {
+  "vi": "Tạm dừng máy",
+  "en": ""
+ },
+ {
+  "vi": "⏱️ Đếm tiếp",
+  "en": ""
+ },
+ {
+  "vi": "⏱️ Bắt đầu đếm 3-2-1",
+  "en": ""
+ },
+ {
+  "vi": "🖥️ Cho khách xem ảnh",
+  "en": ""
+ },
+ {
+  "vi": "🔄 Xóa, chụp lượt mới",
+  "en": ""
+ },
+ {
+  "vi": "Xóa hết ảnh lượt này rồi chụp lại từ đầu?",
+  "en": ""
+ },
+ {
+  "vi": "💧 Ống kính mờ hơi nước.",
+  "en": ""
+ },
+ {
+  "vi": "🧽 Lau ống kính",
+  "en": ""
+ },
+ {
+  "vi": "📸 Buồng chụp",
+  "en": ""
+ },
+ {
+  "vi": "⚡ Đèn flash đang sạc…",
+  "en": ""
+ },
+ {
+  "vi": "Cả nhóm vào dáng…",
+  "en": ""
+ },
+ {
+  "vi": "📸 Đứng yên, mở mắt: BẤM!",
+  "en": ""
+ },
+ {
+  "vi": "Ơ, có người chớp mắt…",
+  "en": ""
+ },
+ {
+  "vi": "Hết dáng rồi, đợi lượt sau",
+  "en": ""
+ },
+ {
+  "vi": "Chưa chụp tấm nào. Sang ② Chụp trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Khách chọn:",
+  "en": ""
+ },
+ {
+  "vi": "Mời khách xem màn hình (② Chụp → “Cho khách xem ảnh”) để khách chọn.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày tháng",
+  "en": ""
+ },
+ {
+  "vi": "📅 Có ngày",
+  "en": ""
+ },
+ {
+  "vi": "Không ghi ngày",
+  "en": ""
+ },
+ {
+  "vi": "Bản xem trước",
+  "en": ""
+ },
+ {
+  "vi": "🖥️ Chọn ảnh",
+  "en": ""
+ },
+ {
+  "vi": "📅 Ngày tháng",
+  "en": ""
+ },
+ {
+  "vi": "🎞️ Màu ảnh",
+  "en": ""
+ },
+ {
+  "vi": "✂️ Đã cắt, sẵn sàng giao",
+  "en": ""
+ },
+ {
+  "vi": "🖨️ Vừa in xong",
+  "en": ""
+ },
+ {
+  "vi": "Bản xem trước · chưa in",
+  "en": ""
+ },
+ {
+  "vi": "🖨️ Cuộn mực còn",
+  "en": ""
+ },
+ {
+  "vi": "🖨️ In lại theo chỉnh mới",
+  "en": ""
+ },
+ {
+  "vi": "In lại? Tờ ảnh vừa in bỏ đi, tiệm chịu tiền giấy.",
+  "en": ""
+ },
+ {
+  "vi": "🖨️ In ảnh",
+  "en": ""
+ },
+ {
+  "vi": "🪵 Lồng vào khung gỗ",
+  "en": ""
+ },
+ {
+  "vi": "✂️ Cắt đôi, bỏ 2 bao kiếng",
+  "en": ""
+ },
+ {
+  "vi": "✂️ Cắt rìa, bỏ bao kiếng",
+  "en": ""
+ },
+ {
+  "vi": "Máy in hết mực.",
+  "en": ""
+ },
+ {
+  "vi": "🖨️ Thay cuộn mực",
+  "en": ""
+ },
+ {
+  "vi": "🖨️ Máy in & bàn cắt",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh chụp thử",
+  "en": ""
+ },
+ {
+  "vi": "📷 Máy ảnh",
+  "en": ""
+ },
+ {
+  "vi": "✓ Ống kính sạch",
+  "en": ""
+ },
+ {
+  "vi": "📸 Chụp thử phông trống",
+  "en": ""
+ },
+ {
+  "vi": "Chụp thử một tấm để máy in báo mực còn bao nhiêu.",
+  "en": ""
+ },
+ {
+  "vi": "Máy in báo cuộn mực còn",
+  "en": ""
+ },
+ {
+  "vi": "🖨️ Thay cuộn mực mới",
+  "en": ""
+ },
+ {
+  "vi": "Chụp thử một tấm",
+  "en": ""
+ },
+ {
+  "vi": "Cuộn mực sắp hết: thay cuộn mới",
+  "en": ""
+ },
+ {
+  "vi": "Chị đứng cạnh máy in: lỡ sai chỗ nào, chị nhắc trước khi in.",
+  "en": ""
+ },
+ {
+  "vi": "Mở tiệm xong mới chụp",
+  "en": ""
+ },
+ {
+  "vi": "Đạo cụ",
+  "en": ""
+ },
+ {
+  "vi": "Không đạo cụ",
+  "en": ""
+ },
+ {
+  "vi": "Ống kính mờ hơi nước",
+  "en": ""
+ },
+ {
+  "vi": "📸 Bấm máy lúc cả nhóm đứng yên, mở mắt",
+  "en": ""
+ },
+ {
+  "vi": "Cho khách xem, chọn ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Đóng ngày tháng",
+  "en": ""
+ },
+ {
+  "vi": "In lại theo chỉnh mới",
+  "en": ""
+ },
+ {
+  "vi": "Lồng khung",
+  "en": ""
+ },
+ {
+  "vi": "✂️ Cắt, bỏ bao kiếng",
+  "en": ""
+ },
+ {
+  "vi": "📸 Vào việc thôi!",
+  "en": ""
+ },
+ {
+  "vi": "📸 MỞ TIỆM",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Nói thật: tiệm hết giấy, khung",
+  "en": ""
+ },
+ {
+  "vi": "🖼️ ĐƯA ẢNH",
+  "en": ""
+ },
+ {
+  "vi": "in và cắt ảnh trước đã",
+  "en": ""
+ },
+ {
+  "vi": "🎞️ Tường khung mẫu",
+  "en": ""
+ },
+ {
+  "vi": "📷 Ống kính sạch",
+  "en": ""
+ },
+ {
   "vi": "💧 Ống kính cần lau",
   "en": ""
  },
@@ -1389,414 +1797,6 @@
  },
  {
   "vi": "Chào hỏi, nghe chuyện",
-  "en": ""
- },
- {
-  "vi": "👋 Chào hỏi, nghe chuyện",
-  "en": ""
- },
- {
-  "vi": "Chuyện ở phường",
-  "en": ""
- },
- {
-  "vi": "👋 Mời ngồi, nhận hồ sơ",
-  "en": ""
- },
- {
-  "vi": "👋 Nhận đồ từ người nhặt",
-  "en": ""
- },
- {
-  "vi": "👋 Mời hai bên ngồi",
-  "en": ""
- },
- {
-  "vi": "🏃 Tới chỗ bé",
-  "en": ""
- },
- {
-  "vi": "🚶 Bắt đầu tuần tra",
-  "en": ""
- },
- {
-  "vi": "👋 Tới nhà văn hóa",
-  "en": ""
- },
- {
-  "vi": "☎️ Nhấc máy",
-  "en": ""
- },
- {
-  "vi": "👋 Chào hỏi",
-  "en": ""
- },
- {
-  "vi": "lần giúp dân",
-  "en": ""
- },
- {
-  "vi": "lần nhắc nhở",
-  "en": ""
- },
- {
-  "vi": "biên bản",
-  "en": ""
- },
- {
-  "vi": "👮 Ca hôm nay",
-  "en": ""
- },
- {
-  "vi": "Mặc cả với đội",
-  "en": ""
- },
- {
-  "vi": "Đèn trắng",
-  "en": ""
- },
- {
-  "vi": "Cờ xanh",
-  "en": ""
- },
- {
-  "vi": "🟥 Báo dừng",
-  "en": ""
- },
- {
-  "vi": "🔔 Chuông đang kêu",
-  "en": ""
- },
- {
-  "vi": "🔕 Chuông tắt",
-  "en": ""
- },
- {
-  "vi": "🚧 Chắn đã hạ",
-  "en": ""
- },
- {
-  "vi": "🚧 Chắn đang nâng",
-  "en": ""
- },
- {
-  "vi": "✅ Tàu đã qua",
-  "en": ""
- },
- {
-  "vi": "🟥 Tàu đứng chờ",
-  "en": ""
- },
- {
-  "vi": "📻 Nghe ga gọi bộ đàm",
-  "en": ""
- },
- {
-  "vi": "📻 Nhắc lại lệnh của ga",
-  "en": ""
- },
- {
-  "vi": "Đọc lại đúng số hiệu tàu, giờ rời Bến Gỗ, giờ qua đường ngang.",
-  "en": ""
- },
- {
-  "vi": "🚰 Rửa mặt, đi lại cho tỉnh",
-  "en": ""
- },
- {
-  "vi": "Chưa nhìn hai phía đường ngang.",
-  "en": ""
- },
- {
-  "vi": "✅ Trên ray không còn ai, không còn gì.",
-  "en": ""
- },
- {
-  "vi": "Đòi qua chắn",
-  "en": ""
- },
- {
-  "vi": "Chắn đã hạ thì không mở cho bất kỳ ai.",
-  "en": ""
- },
- {
-  "vi": "✅ lùi lại",
-  "en": ""
- },
- {
-  "vi": "😒 càm ràm, chờ",
-  "en": ""
- },
- {
-  "vi": "😤 nổi khùng",
-  "en": ""
- },
- {
-  "vi": "🏃 chui chắn",
-  "en": ""
- },
- {
-  "vi": "⚠️ được mở chắn",
-  "en": ""
- },
- {
-  "vi": "⏳ đứng chờ",
-  "en": ""
- },
- {
-  "vi": "👥 Người chờ ở chắn",
-  "en": ""
- },
- {
-  "vi": "⚪ Giơ đèn trắng",
-  "en": ""
- },
- {
-  "vi": "🟩 Giơ cờ xanh",
-  "en": ""
- },
- {
-  "vi": "🔴 Báo dừng tàu, đèn đỏ",
-  "en": ""
- },
- {
-  "vi": "🟥 Báo dừng tàu, cờ đỏ",
-  "en": ""
- },
- {
-  "vi": "👀 Nhìn đường ngang",
-  "en": ""
- },
- {
-  "vi": "🔔 Bật chuông đèn",
-  "en": ""
- },
- {
-  "vi": "🚧 Quay tay hạ chắn",
-  "en": ""
- },
- {
-  "vi": "🚧 Hạ chắn",
-  "en": ""
- },
- {
-  "vi": "📻 Hỏi ga: tàu còn đứng ở Bến Gỗ?",
-  "en": ""
- },
- {
-  "vi": "🚧 Nâng chắn tạm (ga đã xác nhận)",
-  "en": ""
- },
- {
-  "vi": "📻 Báo ga: đường đã thông",
-  "en": ""
- },
- {
-  "vi": "⏳ Đứng chờ tàu",
-  "en": ""
- },
- {
-  "vi": "Báo ga dừng tàu? Chỉ dùng khi đường ngang có vật cản không dẹp kịp.",
-  "en": ""
- },
- {
-  "vi": "👁️ Nhìn hết đoàn tàu",
-  "en": ""
- },
- {
-  "vi": "🏮 Có đèn đuôi toa cuối.",
-  "en": ""
- },
- {
-  "vi": "Không thấy đèn đuôi!",
-  "en": ""
- },
- {
-  "vi": "✓ Đã báo mất đèn đuôi",
-  "en": ""
- },
- {
-  "vi": "📻 Báo ga: không có đèn đuôi",
-  "en": ""
- },
- {
-  "vi": "✓ Đã báo bất thường",
-  "en": ""
- },
- {
-  "vi": "📻 Báo ga: toa có bất thường",
-  "en": ""
- },
- {
-  "vi": "✓ Ga cho nâng chắn",
-  "en": ""
- },
- {
-  "vi": "⏳ Chờ tàu thứ hai qua, hỏi lại ga",
-  "en": ""
- },
- {
-  "vi": "📻 Hỏi ga: còn tàu nào không?",
-  "en": ""
- },
- {
-  "vi": "🚧 Nâng chắn, tắt chuông",
-  "en": ""
- },
- {
-  "vi": "🚆 Tàu đã qua",
-  "en": ""
- },
- {
-  "vi": "📒 Ghi sổ nhật ký",
-  "en": ""
- },
- {
-  "vi": "Chọn đúng những gì đã xảy ra với chuyến này.",
-  "en": ""
- },
- {
-  "vi": "✍️ GHI SỔ, KÝ TÊN",
-  "en": ""
- },
- {
-  "vi": "Chuông",
-  "en": ""
- },
- {
-  "vi": "Cờ",
-  "en": ""
- },
- {
-  "vi": "H6 chậm 20′; chắn Nam đã tra dầu",
-  "en": ""
- },
- {
-  "vi": "Có người chui chắn: canh giờ tan tầm",
-  "en": ""
- },
- {
-  "vi": "Bà Bông phơi ớt trên ray: nhắc khéo",
-  "en": ""
- },
- {
-  "vi": "Cô Mận xin ghế sát ray: đừng cho",
-  "en": ""
- },
- {
-  "vi": "Đèn chòi chập chờn; pin trong tủ",
-  "en": ""
- },
- {
-  "vi": "Chú Hớn ngủ bờ ray: dìu vô",
-  "en": ""
- },
- {
-  "vi": "Không tự sửa được: báo đúng nơi để thợ tới.",
-  "en": ""
- },
- {
-  "vi": "Giờ tàu",
-  "en": ""
- },
- {
-  "vi": "Bảng giờ tàu hôm nay",
-  "en": ""
- },
- {
-  "vi": "Làm gì",
-  "en": ""
- },
- {
-  "vi": "Báo đâu",
-  "en": ""
- },
- {
-  "vi": "Gửi đội trưởng",
-  "en": ""
- },
- {
-  "vi": "⚖️ Tạm đình chỉ gác hôm nay",
-  "en": ""
- },
- {
-  "vi": "Chuyến tàu đang tới thì vẫn gác cho xong an toàn. Mai lên đội trình bày.",
-  "en": ""
- },
- {
-  "vi": "✓ đã qua",
-  "en": ""
- },
- {
-  "vi": "🕐 Bảng giờ tàu",
-  "en": ""
- },
- {
-  "vi": "Nhận ca, ký sổ giao ca trước",
-  "en": ""
- },
- {
-  "vi": "📻 Chọn câu nhắc lại",
-  "en": ""
- },
- {
-  "vi": "Dẹp người, vật trên ray",
-  "en": ""
- },
- {
-  "vi": "👉 Dẹp khỏi ray",
-  "en": ""
- },
- {
-  "vi": "Báo ga đường đã thông",
-  "en": ""
- },
- {
-  "vi": "📻 Báo ga đường thông",
-  "en": ""
- },
- {
-  "vi": "đòi qua: bạn trả lời sao?",
-  "en": ""
- },
- {
-  "vi": "Nhìn hai phía đường ngang",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn cách dẹp",
-  "en": ""
- },
- {
-  "vi": "Tàu chậm: hỏi ga tàu còn đứng ở Bến Gỗ không",
-  "en": ""
- },
- {
-  "vi": "👉 Hỏi ga",
-  "en": ""
- },
- {
-  "vi": "Ga xác nhận tàu còn đứng: được nâng chắn tạm",
-  "en": ""
- },
- {
-  "vi": "👉 Nâng chắn tạm",
-  "en": ""
- },
- {
-  "vi": "Bật chuông đèn trước khi hạ",
-  "en": ""
- },
- {
-  "vi": "👉 Chuông đèn",
-  "en": ""
- },
- {
-  "vi": "👉 Hạ chắn",
-  "en": ""
- },
- {
-  "vi": "Giơ đèn trắng đón tàu",
   "en": ""
  }
 ]

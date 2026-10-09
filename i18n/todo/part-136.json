@@ -1,5 +1,55 @@
 [
  {
+  "vi": "Đã trả $1, hết nợ rồi!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "No bụng $1 · tỉnh táo $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm nay chỉ còn chơi được $1 thôi nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ví chỉ còn $1 thôi nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn đang ở ngày sống $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Người ấy đang ở ngày sống $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn đang ở $1. Mời người ấy về ở cùng nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Người ấy đang ở $1. Nhờ người ấy mở Nhà & Gia đình và gửi lời mời về ở chung.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ngày được chăm · Gắn bó $1/100",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ". $1 Chỉ số không tự giảm khi bạn vắng mặt.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Cả hai đã đồng ý. Chờ đón bé mới sinh vào $1 theo ngày lịch Việt Nam.",
   "en": "",
   "pattern": true
@@ -2196,56 +2246,6 @@
  },
  {
   "vi": "🛠️ Đã lắp đủ $1 món.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛠️ Đã lắp $1/$2 món.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thuê $1 người?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lương mỗi $1: $2. Trả dần từ két/vốn quầy khi làm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👥 $1 người đã nhận việc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👥 $1/$2 người đã nhận việc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sang nhượng $1?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "NGÀY SỐNG $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "quầy · két $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Làm $1 việc ở một nghề bán hàng (trà sữa, tạp hóa, hoa…) rồi quay lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💼 Làm thêm$1",
   "en": "",
   "pattern": true
  }
