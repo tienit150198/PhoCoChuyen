@@ -65,7 +65,7 @@ export function sync(env){
   const j=J();
   if(j){
     if(typeof j.now==='number')S.skew=j.now*1000-Date.now();
-    if(S.id!==j.id){S.id=j.id;S.game=null;openJail(env);}
+    if(S.id!==j.id){S.id=j.id;S.game=null;if(!document.querySelector('dialog.fh-sheet[open]'))openJail(env);}   // the Chợ đen's arrest card goes first; its button opens the camp
     else if(S.dlg?.open&&!S.busy)render();
     if(S.game&&!j.tasks.some(t=>t.id===S.game.task&&!t.done))S.game=null;
     chip();poll(true);
