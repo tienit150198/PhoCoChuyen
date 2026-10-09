@@ -1,5 +1,7 @@
 {
   "strings": {
+  "Kệ mỗi món chứa tới 80, đặt một lần tối đa 80; thùng lớn xếp sẵn khay 10, bấm Đếm khay là đếm xong cả khay": "Shelves hold up to 80 per item and one order line up to 80; big crates come in trays of 10, tap Count tray to count a whole tray",
+  "Thêm nút Tất cả: lắp hết thiết bị quầy, thuê đủ nhân viên quầy, cho cả đội tiệm vào ca hay nghỉ ca một chạm": "New All buttons: fit every counter upgrade, hire every free counter spot, put the whole shop team on or off shift in one tap",
   "Chợ đen: bị công an bắt chỉ mất tiền cược và nộp phạt, không còn bị đuổi về nữa": "Black market: getting caught only costs the stake and a fine, you are no longer sent home",
   "Công an đi rồi. Chơi tiếp thì cẩn thận nha.": "The police are gone. Careful if you play on.",
   "Dạ, em biết rồi": "Yes, got it",

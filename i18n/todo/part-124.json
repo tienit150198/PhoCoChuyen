@@ -1,5 +1,15 @@
 [
  {
+  "vi": "📞 Bác sĩ Khang tới giải thích từng bước nội soi, nói rõ lợi ích và rủi ro, trả lời hết câu hỏi. $1 thở phào, ký giấy cam đoan.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📞 Bác sĩ Khang tới ngồi nói chuyện với $1, giải thích vì sao cần mổ và nghe hết điều $2 lo. $3 vẫn muốn suy nghĩ thêm. Bác sĩ dặn: tôn trọng quyết định, hoãn ca, ghi hồ sơ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 bất thường mà không ai báo bác sĩ.",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "✉️ Từ chối $1 phong bì. Đúng bài.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📋 $1 báo cáo sự việc. Mai họp tổ rút kinh nghiệm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sổ trực ban: $1.",
   "en": "",
   "pattern": true
  }

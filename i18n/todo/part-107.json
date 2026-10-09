@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Đã ghi sổ nhật ký.",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghi sổ nhật ký (còn thiếu).",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nhật ký có dòng ghi khống.",
+  "en": ""
+ },
+ {
   "vi": "📒 Ghi vào sổ nhật ký",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Việc với khách này",
-  "en": ""
- },
- {
-  "vi": "Món đã bán",
-  "en": ""
- },
- {
-  "vi": "Chuyện quay lại",
-  "en": ""
- },
- {
-  "vi": "Album, Búa hồng, pin, toploader, ống poster…",
   "en": ""
  }
 ]

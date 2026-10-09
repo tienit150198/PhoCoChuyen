@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Dạ thợ báo giá trước, thông xong xả nước thử rồi mới nhận tiền. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ con làm theo sổ tay nhà: đi chợ, nấu, dọn rồi ghi sổ chợ từng khoản. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Dạ $1 đặt lịch tuần sau, em xin làm góc $2 dặn trước tiên ạ.",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "$1: “Nhà tôi mà tôi không được đứng hả? Láo vl!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "“$1 xu á? Ăn cướp à! $2 xu thôi, không thì thôi.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "“Bớt đi, $1 xu làm luôn.”",
   "en": "",
   "pattern": true
  }

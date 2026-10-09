@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Bạn thưởng thức $1. Ấm lòng ghê.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tinh thần +$1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Chào $1! Hôm nay tiệm có đông khách không?",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "cho $1 xu đầu, phần trên lãi $2,$3%/ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã gửi $1 xu. Lãi $2,$3%/ngày$4, cộng vào sổ mỗi $5 ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lương kế toán x$1$2: $3 xu đã về ví của bạn.",
   "en": "",
   "pattern": true
  }

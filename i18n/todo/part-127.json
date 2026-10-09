@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Đã gửi $1 xu. Lãi $2,$3%/ngày$4, cộng vào sổ mỗi $5 ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lương kế toán x$1$2: $3 xu đã về ví của bạn.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🔥 Thưởng ngày x$1",
   "en": "",
   "pattern": true

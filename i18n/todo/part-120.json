@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Bạn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ô chưa khớp: $1. Lấy lại số từ sổ hoặc đề bài.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ô chưa khớp: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cặp chưa đúng:",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thứ tự đúng tới bước $1; bước $2 chưa đúng chỗ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây nhé.",
   "en": "",
   "pattern": true
@@ -1526,16 +1551,6 @@
  },
  {
   "vi": "Dạ còn nghẹt là $1 gọi, chú Hai với con quay lại thông tiếp, không tính thêm ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ thợ báo giá trước, thông xong xả nước thử rồi mới nhận tiền. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ con làm theo sổ tay nhà: đi chợ, nấu, dọn rồi ghi sổ chợ từng khoản. Hôm đó $1 ạ.",
   "en": "",
   "pattern": true
  }

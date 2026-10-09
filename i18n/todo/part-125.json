@@ -1,5 +1,15 @@
 [
  {
+  "vi": "📋 $1 báo cáo sự việc. Mai họp tổ rút kinh nghiệm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ trực ban: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Sổ trực ban: $1",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "Bạn nhắn lời chúc tới $1. $2 cảm ơn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn thưởng thức $1. Ấm lòng ghê.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tinh thần +$1.",
   "en": "",
   "pattern": true
  }

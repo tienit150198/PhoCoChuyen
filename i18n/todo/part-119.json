@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Học và thi",
+  "en": ""
+ },
+ {
+  "vi": "là số trên phiếu: thùng có thể giao thiếu, chạm đếm từng món trong thùng.",
+  "en": ""
+ },
+ {
+  "vi": "Đếm lệch: còn món chưa chạm trong thùng, chạm hết rồi nhận.",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Đi cửa sau?",
+  "en": ""
+ },
+ {
+  "vi": "Đếm số món trong thùng trước đã nhé.",
+  "en": ""
+ },
+ {
   "vi": "Đặt đơn gộp?",
   "en": ""
  },
@@ -1853,31 +1873,6 @@
  },
  {
   "vi": "Bạn $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ô chưa khớp: $1. Lấy lại số từ sổ hoặc đề bài.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ô chưa khớp: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cặp chưa đúng:",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thứ tự đúng tới bước $1; bước $2 chưa đúng chỗ.",
   "en": "",
   "pattern": true
  }

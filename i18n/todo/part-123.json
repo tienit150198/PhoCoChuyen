@@ -1,5 +1,15 @@
 [
  {
+  "vi": "$1 Mua $2 giá $3 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phòng $1 đang giữ cho $2 từ ngày $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Phòng $1 có đơn $2 chờ đồng bộ từ ngày $3.",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "📞 Báo bác sĩ Khang: $1.$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📞 Bác sĩ Khang tới giải thích từng bước nội soi, nói rõ lợi ích và rủi ro, trả lời hết câu hỏi. $1 thở phào, ký giấy cam đoan.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📞 Bác sĩ Khang tới ngồi nói chuyện với $1, giải thích vì sao cần mổ và nghe hết điều $2 lo. $3 vẫn muốn suy nghĩ thêm. Bác sĩ dặn: tôn trọng quyết định, hoãn ca, ghi hồ sơ.",
   "en": "",
   "pattern": true
  }

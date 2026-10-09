@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Đồng ý lời mời của bạn bè để vào nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Mời vào chơi",
+  "en": ""
+ },
+ {
+  "vi": "Mời ở chung",
+  "en": ""
+ },
+ {
   "vi": "Vào nhà lâu dài, kể cả khi bạn không online. Không cần kết hôn.",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Link thưởng (tùy)",
-  "en": ""
- },
- {
-  "vi": "📝 Lời",
-  "en": ""
- },
- {
-  "vi": "Một câu hát ngắn",
-  "en": ""
- },
- {
-  "vi": "🎙️ Hát trực tiếp",
   "en": ""
  }
 ]

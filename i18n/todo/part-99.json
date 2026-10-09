@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Nguồn thanh toán",
+  "en": ""
+ },
+ {
+  "vi": "Lựa chọn chỉ áp dụng cho lần này. Đổi mặc định trong Ngân hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đủ số dư.",
+  "en": ""
+ },
+ {
   "vi": "Chọn nguồn thanh toán.",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Ra trông phòng thử",
-  "en": ""
- },
- {
-  "vi": "Nghe khách đổi trả",
-  "en": ""
- },
- {
-  "vi": "Nghe chị Vy dặn",
-  "en": ""
- },
- {
-  "vi": "Mở tin nhắn đặt hàng",
   "en": ""
  }
 ]

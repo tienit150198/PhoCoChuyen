@@ -1,3 +1,9 @@
+# v1.9.30 — 2026-10-09
+
+📦 Bước 2 nâng kho (#277, chủ game 09/10 "ok nâng đi"): sức chứa mỗi món tối thiểu 80 (com giữ 120), dòng đơn tới 80 (server gửi line_cap), thùng >20 xếp khay 10 với nút Đếm khay; save của bản này không đọc được trên 1.9.28 nên chỉ quay về 1.9.29.
+✅ Nút Tất cả (#290): lắp hết thiết bị quầy (rẻ trước, trong số tiền có), thuê đủ chỗ quầy, cả đội vào/nghỉ ca (public/js/v4/select-all.js; dùng lệnh sẵn có, không đổi server).
+🚔 Công an sửa sao thì thẻ "lần ghé gần đây" ở chăm sóc khách cũng cập nhật. Không đổi CSDL.
+
 # v1.9.29 — 2026-10-09
 
 🚨 Chợ đen bỏ cấm (chủ game 09/10: "bỏ cấm hội chợ luôn nhe"): bị bắt vẫn mất tiền cược và nộp phạt nhưng chơi tiếp được; 'ban' đã lưu hôm nay (1.9.28) đọc như đã nộp bảo kê.
