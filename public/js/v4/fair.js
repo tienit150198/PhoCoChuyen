@@ -67,6 +67,9 @@ function left(ms){
 }
 const clock=s=>{s=Math.max(0,Math.ceil(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;};
 const dateOf=t=>new Date(t*1000).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',timeZone:'Asia/Ho_Chi_Minh'});
+/** Owner 09/10 "chợ đen mở mãi": no end (`forever`; an older server sends only its close: the countdown as before). */
+const endless=f=>!!f.forever||f.closes==null;
+const whenText=f=>f.open?(endless(f)?'đang mở':`còn ${left(f.closes*1000-serverNow())}`):f.soon?`mở sau ${left(f.opens*1000-serverNow())}`:'đã tàn';
 
 /* ---- sounds (Web Audio, synthesised; silent when the game's sound is off) ---- */
 function sfx(kind){
@@ -227,7 +230,7 @@ function tickLabels(){
   if(S.tab==='lt')nextAct();
   S.dlg.querySelectorAll('[data-fh-count]').forEach(el=>{
     const k=el.dataset.fhCount;
-    if(k==='close')el.textContent=f.open?`còn ${left(f.closes*1000-serverNow())}`:f.soon?`mở sau ${left(f.opens*1000-serverNow())}`:'đã tàn';
+    if(k==='close')el.textContent=whenText(f);
     if(k==='raid'){const s=raidLeft();el.textContent=clock(s);if(s<=0&&S.xd.phase==='idle')render();}
   });
 }
@@ -235,12 +238,12 @@ const raidLeft=()=>{const f=F();return f.raid_left>0?f.raid_left-(serverNow()/10
 
 function head(){
   const f=F();
-  const when=f.open?`còn ${left(f.closes*1000-serverNow())}`:f.soon?`mở sau ${left(f.opens*1000-serverNow())}`:'đã tàn';
+  const when=whenText(f),mark=f.open&&endless(f)?'🕶️':'⏳';
   return `<header class="fh-head">
     <div class="fh-bunting" aria-hidden="true"></div>
     <div class="fh-lanterns" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     <div class="fh-headrow"><span class="fh-logo" aria-hidden="true">🕶️</span>
-      <div class="grow"><span class="eyebrow">${clean()?'⏳':'CHỢ ĐEN MỞ ·'} <span data-fh-count="close">${esc(when)}</span></span><h2 id="fh-title">Chợ đen</h2></div>
+      <div class="grow"><span class="eyebrow">${clean()?mark:f.open&&endless(f)?'CHỢ ĐEN ·':'CHỢ ĐEN MỞ ·'} <span data-fh-count="close">${esc(when)}</span></span><h2 id="fh-title">Chợ đen</h2></div>
       <button class="icon-btn fh-x" type="button" data-fh="close" aria-label="Đóng">${icon('x',21)}</button></div>
   </header>`;
 }
@@ -352,7 +355,7 @@ function auditCard(){
 }
 function closedCard(gone){
   const f=F();
-  if(f.soon)return `<section class="fh-card fh-closed"><div class="fh-big" aria-hidden="true">🕶️</div><h3>Chợ đen sắp mở</h3><p>Chợ mở ngày ${esc(dateOf(f.opens))}, mở ${Math.round((f.closes-f.opens)/86400)} ngày. Hẹn bà con ghé chơi ô ăn quan, ném vòng, bầu cua, lô tô nha!</p></section>`;
+  if(f.soon)return `<section class="fh-card fh-closed"><div class="fh-big" aria-hidden="true">🕶️</div><h3>Chợ đen sắp mở</h3><p>Chợ mở ngày ${esc(dateOf(f.opens))}, ${endless(f)?'mở luôn không đóng':`mở ${Math.round((f.closes-f.opens)/86400)} ngày`}. Hẹn bà con ghé chơi ô ăn quan, ném vòng, bầu cua, lô tô nha!</p></section>`;
   return `<section class="fh-card fh-closed"><div class="fh-big" aria-hidden="true">🎐</div><h3>Chợ đen đã tàn, hẹn lần sau</h3><p>${gone?'Lều bạt đã dọn, đèn lồng đã cất.':'Cảm ơn bà con đã ghé chợ. Bảng vàng vẫn còn đó để xem lại.'}</p></section>`;
 }
 const enoughCard=()=>`<section class="fh-card fh-enough"><span aria-hidden="true">🍵</span><div><b>Hôm nay chơi vậy đủ rồi, mai ghé tiếp nha.</b><small>Mỗi ngày thua tối đa ${xu(R().cap)}. Qua chơi ô ăn quan, ném vòng kiếm xu, hoặc ghé xem Bảng vàng nhé.</small></div></section>`;
@@ -383,7 +386,7 @@ function gateList(){
       ${luck('xd','🕯️','Chiếu trong',`Cược từ ${r.xd_min} xu`,'<span class="fh-warnchip">🚨 công an</span>')}
     </div>
     ${loanRow()}${foodRow()}${photoRow()}
-    <button type="button" class="fh-goldlink" data-fh="tab" data-tab="board" data-fh-key="g-board"><span aria-hidden="true">🏆</span><span class="grow"><b>Bảng vàng chợ đen</b><small>${m>0?`Bạn đang lời ${xu(m)}`:m<0?`Bạn đang lỗ ${xu(-m)}`:'Ai thắng nhiều xu nhất đứng đầu'} · Top 1 khi chợ tàn thành 👑 Vua trò chơi</small></span><span aria-hidden="true">›</span></button>
+    <button type="button" class="fh-goldlink" data-fh="tab" data-tab="board" data-fh-key="g-board"><span aria-hidden="true">🏆</span><span class="grow"><b>Bảng vàng chợ đen</b><small>${m>0?`Bạn đang lời ${xu(m)}`:m<0?`Bạn đang lỗ ${xu(-m)}`:'Ai thắng nhiều xu nhất đứng đầu'} · Top 1 ${endless(f)?'mỗi thứ Hai':'khi chợ tàn'} thành 👑 Vua trò chơi</small></span><span aria-hidden="true">›</span></button>
   </section>`;
 }
 
@@ -1071,12 +1074,12 @@ async function loadBoard(force=false){
 function boardView(){
   const f=F(),m=won(),B=S.board.data,fair=B?.fair,me=B?.me;
   const tiers=(fair?.tiers||[{label:'Top 1',emoji:'👑',name:'Vua trò chơi'},{label:'Top 2–10',emoji:'🎪',name:'Cao thủ chợ đen'}]).map(t=>`<li><span aria-hidden="true">${esc(t.emoji)}</span><b>${esc(t.name)}</b><small>${esc(t.label)}</small></li>`).join('');
-  const crowned=fair?.winners?.length?`<div class="fh-card fh-crowned"><h3>Chợ đã tàn · Bảng vàng chung cuộc</h3><ol>${fair.winners.map(w=>`<li class="${w.me?'me':''}"><span aria-hidden="true">${esc(w.emoji)}</span><b>${esc(w.name)}</b><small>${esc(w.title)} · <b>+${xu(w.score)}</b></small></li>`).join('')}</ol></div>`:'';
+  const crowned=fair?.winners?.length?`<div class="fh-card fh-crowned"><h3>${fair.weekly?`Vinh danh thứ Hai${fair.crowned?` ${esc(fair.crowned.slice(8,10)+'/'+fair.crowned.slice(5,7))}`:''}`:'Chợ đã tàn · Bảng vàng chung cuộc'}</h3><ol>${fair.winners.map(w=>`<li class="${w.me?'me':''}"><span aria-hidden="true">${esc(w.emoji)}</span><b>${esc(w.name)}</b><small>${esc(w.title)} · <b>+${xu(w.score)}</b></small></li>`).join('')}</ol></div>`:'';
   const rows=B?.rows?.length?`<ol class="fh-board">${B.rows.map(r=>`<li class="${r.me?'me':''}${r.rank===1?' first':''}"><span class="fh-rank">${r.rank===1?'👑':r.rank<=10?'🎪':r.rank}</span><span class="grow"><b>${esc(r.name||'')}</b>${r.guest?'<em class="fh-guest">khách</em>':''}<small>${fmt(r.days)} ngày chơi</small></span><b class="fh-score">+${xu(r.xu??r.score)}</b></li>`).join('')}</ol>`
     :S.board.loading||!B?'<p class="muted fh-wait">Đang mở Bảng vàng…</p>':'<p class="muted fh-wait">Chưa ai lời xu nào. Thắng là có tên trên bảng!</p>';
   const mine=me?`<div class="fh-me"><span>${m===null?'Bạn':`Bạn đang ${m<0?'lỗ':'lời'} <b>${xu(Math.abs(m))}</b>`}${me.rank&&me.visible!==false?` · hạng <b>${fmt(me.rank)}</b>`:''}</span>${m!==null&&m<=0?'<small>Chỉ ai đang lời mới có tên trên bảng.</small>':''}${me.visible===false?`<small class="fh-hidden">Tên bạn đang ẩn nên chưa lên bảng và chưa nhận được danh hiệu. Bật “Hiện tên tôi” ở Xếp hạng nhé.</small>`:''}</div>`:'';
   return `<section class="fh-stall fh-gold" aria-label="Bảng vàng chợ đen">
-    <div class="fh-card fh-crown"><h3>🏆 Bảng vàng chợ đen</h3><ul class="fh-tiers">${tiers}</ul><p class="small">${f.over?'Danh hiệu đã trao khi chợ tàn.':`Trao khi chợ tàn (${esc(dateOf(f.closes))} 00:00), giữ mãi trong bộ sưu tập.`}</p></div>
+    <div class="fh-card fh-crown"><h3>🏆 Bảng vàng chợ đen</h3><ul class="fh-tiers">${tiers}</ul><p class="small">${endless(f)||fair?.weekly?`Trao mỗi thứ Hai lúc 00:00${fair?.next?` (lần tới ${esc(dateOf(fair.next))})`:''} theo Bảng vàng lúc đó, giữ mãi trong bộ sưu tập.`:f.over?'Danh hiệu đã trao khi chợ tàn.':`Trao khi chợ tàn (${esc(dateOf(f.closes))} 00:00), giữ mãi trong bộ sưu tập.`}</p></div>
     ${crowned}${mine}${S.board.error?`<p class="fh-flash bad">${esc(S.board.error)}</p>`:''}${rows}
     <details class="fh-how"><summary>Cách xếp hạng</summary><ul><li>Xếp theo số xu bạn thắng ở chợ đen lần này: tiền thắng trừ tiền thua ở bầu cua, phóng dao, vé số cào, lô tô, chiếu trong, cộng xu kiếm từ ô ăn quan và ném vòng.</li><li>Tiền vốn được tặng, tiền vay và tiền trả nợ không tính.</li><li>Chỉ ai đang lời mới có tên trên bảng.</li><li>Bằng xu thì ai đạt trước đứng trên.</li></ul></details>
   </section>`;
@@ -1114,7 +1117,7 @@ function loanView(){
       <div class="fh-card fh-loancard"><h3>Đang nợ ${xu(owe)}</h3>${c.loan?`<p>Vay ${xu(c.loan.p)}, lãi ${c.rate}%: trả ${xu(c.loan.due)}.</p>`:''}${c.debt?`<p>Nợ còn lại từ lần chợ trước: ${xu(c.debt)} (tự trừ dần khi có tiền vào ví).</p>`:''}
       ${btn(S.busy?'Đang trả…':`💸 Trả hết ${xu(owe)}`,'repay',{},'primary big full',short||S.busy?' disabled data-fh-key="repay"':' data-fh-key="repay"')}
       ${short?`<p class="fh-why">Ví đang có ${xu(f.wallet||0)}, cần đủ ${xu(owe)} để trả hết.</p>`:''}</div>
-      <p class="fh-rule">Chợ tàn mà chưa trả thì bà tự thu: lấy tiền trong ví trước, thiếu thì lấy từ tài khoản ngân hàng, vẫn thiếu thì trừ dần khi bạn có tiền vào ví. Ví không bao giờ bị âm.</p>
+      <p class="fh-rule">${endless(f)?'Trả lúc nào cũng được, trả hết rồi mới vay tiếp. Nợ cũ còn lại thì tự trừ dần khi bạn có tiền vào ví. Ví không bao giờ bị âm.':'Chợ tàn mà chưa trả thì bà tự thu: lấy tiền trong ví trước, thiếu thì lấy từ tài khoản ngân hàng, vẫn thiếu thì trừ dần khi bạn có tiền vào ví. Ví không bao giờ bị âm.'}</p>
     </section>`;
   }
   const amt=c.steps.includes(L0.amt)?L0.amt:c.steps[1]||c.steps[0],due=Math.ceil(amt*(100+c.rate)/100);
@@ -1125,7 +1128,7 @@ function loanView(){
       <p class="fh-loansum">Nhận <b>${xu(amt)}</b> · trả lại <b>${xu(due)}</b> <small>(lãi ${c.rate}%)</small></p>
       ${btn(S.busy?'Đang đếm tiền…':L0.sure?`Chắc chưa? Vay ${xu(amt)}, trả ${xu(due)}`:`Vay ${xu(amt)}`,'borrow',{},'primary big full'+(L0.sure?' danger':''),!f.open||S.busy?' disabled data-fh-key="borrow"':' data-fh-key="borrow"')}
     </div>
-    <p class="fh-rule">Mỗi lần một khoản. Trả hết lúc nào cũng được ngay tại đây. Chợ tàn mà chưa trả thì bà tự thu từ ví, rồi tài khoản ngân hàng; còn thiếu thì trừ dần khi có tiền vào ví.</p>
+    <p class="fh-rule">Mỗi lần một khoản. Trả hết lúc nào cũng được ngay tại đây${endless(f)?', trả xong mới vay tiếp.':'. Chợ tàn mà chưa trả thì bà tự thu từ ví, rồi tài khoản ngân hàng; còn thiếu thì trừ dần khi có tiền vào ví.'}</p>
   </section>`;
 }
 async function borrow(){

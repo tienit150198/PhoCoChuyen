@@ -1,9 +1,30 @@
 # 🕶️ Chợ đen (was Hội chợ): the house always wins (08/10/2026)
 
 Owner 08/10: "mở hội chợ nhé, tỷ lệ chỉnh lại làm sao cho phù hợp, đảm bảo nhà cái luôn thắng", then "chợ đen để
-luôn ở ngoài nhé". This edition runs from 09/10 to 13/10 (`FAIR_START` 2026-10-09, `FAIR_DAYS` 5, edition
-`fair20261009`). Its entry stays in sight: a 🏮 Hội chợ chip in the town's top bar and a main menu entry, from "sắp mở"
-until the fair closes. The 🏮 gate on Phố hàng rong is still there too.
+luôn ở ngoài nhé". This edition opened on 09/10 (`FAIR_START` 2026-10-09, edition `fair20261009`). Its entry stays in
+sight: a 🏮 Hội chợ chip in the town's top bar and a main menu entry. The 🏮 gate on Phố hàng rong is still there too.
+
+## No end (owner 09/10: "chợ đen mở mãi đi, k có thời hạn nhé")
+
+- **Open for good.** `FAIR_DAYS` is 0 (`fair.forever()`): `window()` closes at `fair.NEVER` (2100), so no command is
+  refused as `fair_closed` once the edition has opened, and `api.state.fair.forever` is true (`closes` stays a number,
+  `NEVER`, so a client from before this change counts down years instead of a few minutes until it reloads). The client
+  then shows no countdown ("Chợ đen · đang mở" in the header, nothing on the Hành trình banner). An edition with an end
+  is still possible: `MNL_FAIR_DAYS` > 0 (the tests of the closing rules use it).
+- **Same edition.** `fair20261009` goes on: the saves' fair money and days, the Bảng vàng `fair20261009xu`, the
+  gift (once per edition) and the police's mark all carry on. Nothing in the save changes.
+- **Titles weekly.** With no end there is no end-of-edition settlement. Instead `fair_board.settle` crowns every
+  Monday 00:00 (Vietnam, + `GRACE`): the board as shown then, Top 1 👑 Vua trò chơi, Top 2–10 🎪 Cao thủ chợ đen, as
+  before (`live_effects` titles, kept for good). Once per week (`leaderboard_meta` `fair:fair20261009@<Monday>`); a
+  player crowned again gets no second row (the row id is per edition, title and player). The board is not reset each
+  week: it is the edition's running total. The first crowning is Monday 12/10. A server that missed a Monday crowns
+  only the latest one. `GET /api/leaderboard?board=fair20261009xu` shows the latest winners (`fair.weekly`,
+  `fair.crowned`, `fair.next`).
+- **Vay nóng.** There is no close to collect a loan at: it waits until the player pays it back, and no new loan until
+  then (one at a time, as before). A `debt` left from an earlier edition is still taken from later income.
+- **Rollback.** A release from before this change (1.9.29 / 1.9.30, `FAIR_DAYS` 5) sees the edition close on 14/10
+  00:00: from then it refuses the stalls, collects open loans and crowns the end once (`fair:fair20261009`). Saves stay
+  valid both ways (nothing new is written).
 
 The table gives the most one round can return per xu staked. That is a fresh run with perfect play. Every other state
 returns less: the cool-off after 4 wins, the spam decay, a late Kinh, the police. So no betting pattern comes out ahead.

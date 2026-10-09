@@ -336,6 +336,7 @@ class Knife(FairBase):
         validate_state(s2)
 
     def test_after_the_close(self):
+        self.with_end()
         s = story(100)
         s, _ = self.start(s, 10)
         sc = self.board(s)

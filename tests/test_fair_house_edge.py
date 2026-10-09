@@ -90,9 +90,19 @@ class HouseEdge(unittest.TestCase):
 class Reopen(FairBase):
     def test_the_new_edition(self):
         self.assertEqual((fh.edition(), fh.board()), ('fair20261009', 'fair20261009xu'))
-        self.assertEqual(fh.window(), (int(at(2026, 10, 9, 0)), int(at(2026, 10, 14, 0))))
+        self.assertEqual(fh.window(), (int(at(2026, 10, 9, 0)), fh.NEVER))   # owner 09/10: no end
         self.assertEqual(fh.past(), [('fair20261003', 'fair20261003xu', int(at(2026, 10, 8, 0)))])
         s = story()
+        for t, want in ((at(2026, 10, 6, 23, 58), dict(show=False)),
+                        (at(2026, 10, 8, 21), dict(show=True, soon=True, open=False, forever=True)),
+                        (at(2026, 10, 9, 0, 1), dict(show=True, soon=False, open=True, over=False, forever=True)),
+                        (AFTER + 60, dict(show=True, open=True, over=False)),
+                        (at(2027, 6, 1), dict(show=True, open=True, over=False, forever=True))):
+            self.clock.t = t - 2
+            v = public_state(s)['fair']
+            self.assertEqual({k: v[k] for k in want}, want, t)
+        self.with_end()                                                  # an edition with an end, as before
+        self.assertEqual(fh.window(), (int(at(2026, 10, 9, 0)), int(at(2026, 10, 14, 0))))
         for t, want in ((at(2026, 10, 6, 23, 58), dict(show=False)),          # the last edition's "đã tàn" is over
                         (at(2026, 10, 7, 0, 1), dict(show=True, soon=True, open=False)),   # SHOW_BEFORE: "sắp mở"
                         (at(2026, 10, 8, 21), dict(show=True, soon=True, open=False)),

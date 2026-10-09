@@ -1,5 +1,30 @@
 [
  {
+  "vi": "$1 lầm bầm “thợ bây giờ cãi hay ghê” rồi đứng xa ra một chút.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 gân cổ: “Cãi hả? Làm không xong thì cút mẹ mày đi, tao gọi thợ khác!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 ra phòng khách ngồi xem ti vi. Bạn làm nhanh hẳn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 bỏ ra ngoài, đóng cửa hơi mạnh.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Nhà tôi mà tôi không được đứng hả? Láo vl!”",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "“$1 xu á? Ăn cướp à! $2 xu thôi, không thì thôi.”",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "$1 đã chốt $2 xu với tiệm rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kệ hết $1: nhập ở Kho",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kệ hết $1: nhập thêm ở Kho rồi soạn tiếp nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "(+$1 phút soát lại)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hai sổ có $1 dòng — ghép từng cặp, dòng lẻ chọn lý do.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ có $1 tài liệu — làm lần lượt từng bước.",
   "en": "",
   "pattern": true
  }

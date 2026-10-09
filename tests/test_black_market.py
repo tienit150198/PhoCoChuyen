@@ -189,6 +189,7 @@ class Gate(BlackMarketBase):
         self.assertEqual(s['journey']['fair_bm'], {'d': '2026-10-11', 's': 'paid'})
 
     def test_closed_market_takes_no_bao_ke(self):
+        os.environ['MNL_FAIR_DAYS'] = '5'   # an edition with an end (owner 09/10: this one has none)
         s = story()
         self.clock.t = at(2026, 10, 14, 0, 0)
         self.refused(s, 'fair_bm_pay', 'fair_closed')

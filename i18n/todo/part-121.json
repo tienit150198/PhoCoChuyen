@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Dạ lương tính từ bảng chấm công, trừ bảo hiểm và thuế rồi mới ra phiếu. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ $1 cho em xin lịch họp ngắn, mình rà lại bút toán loại trừ cùng nhau ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ ban làm theo thứ tự: nhận số công ty con, đối chiếu nội bộ, loại trừ rồi mới hợp nhất. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ tổ thu theo lịch từng ngõ, rác nguy hại để riêng, ghi vào sổ tuyến. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ còn nghẹt là $1 gọi, chú Hai với con quay lại thông tiếp, không tính thêm ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Dạ thợ báo giá trước, thông xong xả nước thử rồi mới nhận tiền. Hôm đó $1 ạ.",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "Nghe bạn giải thích đâu ra đấy, $1 gật gù: “Ừ thì làm đi.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 lầm bầm “thợ bây giờ cãi hay ghê” rồi đứng xa ra một chút.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 gân cổ: “Cãi hả? Làm không xong thì cút mẹ mày đi, tao gọi thợ khác!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 ra phòng khách ngồi xem ti vi. Bạn làm nhanh hẳn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 bỏ ra ngoài, đóng cửa hơi mạnh.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Nhà tôi mà tôi không được đứng hả? Láo vl!”",
   "en": "",
   "pattern": true
  }

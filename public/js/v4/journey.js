@@ -291,9 +291,10 @@ function abroadEntry(env){
 function fairCard(env){
   const f=env.api.state.fair;if(!f?.show||f.over)return '';
   const m=Math.max(0,Math.floor(((f.open?f.closes:f.opens)-f.now)/60));   // from the server's clock when the state came
-  const when=m>=1440?`${Math.floor(m/1440)} ngày ${Math.floor(m%1440/60)} giờ`:m>=60?`${Math.floor(m/60)} giờ ${m%60} phút`:`${Math.max(1,m)} phút`;
+  const span=m>=1440?`${Math.floor(m/1440)} ngày ${Math.floor(m%1440/60)} giờ`:m>=60?`${Math.floor(m/60)} giờ ${m%60} phút`:`${Math.max(1,m)} phút`;
+  const when=f.open?(f.forever?'':` · còn ${span}`):` · mở sau ${span}`;   // owner 09/10: no end (forever), no countdown
   return `<section class="jr-card jr-fair" aria-label="Chợ đen"><button type="button" class="jr-fair-row" data-action="fair"><span class="jr-fair-lantern" aria-hidden="true">🕶️</span>
-    <span class="grow"><b>${f.open?'Chợ đen đang mở':'Chợ đen sắp mở'}</b><small><span class="jr-fair-games">🪨 Ô ăn quan · 💍 Ném vòng kiếm xu · 🦀 Bầu cua · 🎱 Lô tô · </span>${f.open?`còn ${when}`:`mở sau ${when}`}</small></span><span class="btn primary small" aria-hidden="true">${f.open?'Vào hội':'Xem'}</span></button></section>`;
+    <span class="grow"><b>${f.open?'Chợ đen đang mở':'Chợ đen sắp mở'}</b><small><span class="jr-fair-games">🪨 Ô ăn quan · 💍 Ném vòng kiếm xu · 🦀 Bầu cua · 🎱 Lô tô</span>${when}</small></span><span class="btn primary small" aria-hidden="true">${f.open?'Vào hội':'Xem'}</span></button></section>`;
 }
 
 /* 🏠 Nhà của bạn (v4/house.js, own dialog): where you live, what it costs, the way to your own home. */
