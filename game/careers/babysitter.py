@@ -1168,6 +1168,17 @@ def _nap_done(s, c, d, p):
 
 
 # ---------------------------------------------------------------- small moments
+def _good_moves(n: dict) -> list:
+    return [m for m in n['moves'] if MOVES[n['mk']][m][3] is None]
+
+
+def settled(t: dict) -> bool:
+    """F#282/#283 "K làm theo yêu cầu được": the caring moves add up to exactly 100 (a tantrum, a scrape), so one
+    unkind move after some progress left the calm meter short with every caring move used and no way to finish.
+    Once every caring move has been tried, the child settles: the unkind move stays a slip in the parent's review."""
+    return t['st']['calm'] >= 100 or all(m in t['st']['used'] for m in _good_moves(t['needs']))
+
+
 def _care(s, c, d, p):
     t = _task(c, p, ('moment',))
     st, n = t['st'], t['needs']
@@ -1195,6 +1206,8 @@ def _care(s, c, d, p):
             return dict(message=f'✋ Khoan, {_lower(MOVES["scrape"][due][1])} trước đã.', correct=False)
     st['used'].append(m)
     st['calm'] = min(100, st['calm'] + delta)
+    if settled(t):
+        st['calm'] = 100
     tail = ' Bé nín hẳn, dụi đầu vào vai bạn.' if st['calm'] >= 100 else ''
     return dict(message=f'{emoji} {label}.{tail} Bình tĩnh: {st["calm"]}%.', correct=True)
 
@@ -1214,7 +1227,8 @@ def moment_slips(t: dict) -> list:
 def _moment_done(s, c, d, p):
     t = _task(c, p, ('moment',))
     st, n = t['st'], t['needs']
-    kit.need(st['calm'] >= 100, 'Bé chưa ổn hẳn, dỗ bé thêm chút nữa.')
+    kit.need(settled(t), 'Bé chưa ổn hẳn, dỗ bé thêm chút nữa.')
+    st['calm'] = 100   # a block left short before F#282 (every caring move used) finishes now
     rows = moment_slips(t)
     _slip_all(c, d, t, rows)
     td = _today(c, d)

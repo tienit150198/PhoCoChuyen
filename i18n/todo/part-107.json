@@ -1,5 +1,13 @@
 [
  {
+  "vi": "ngày hội ×1,1 →",
+  "en": ""
+ },
+ {
+  "vi": "bàn trống",
+  "en": ""
+ },
+ {
   "vi": "🧾 Đơn mới",
   "en": ""
  },
@@ -1744,6 +1752,38 @@
   "en": ""
  },
  {
+  "vi": "Nhóm K: cần phiếu",
+  "en": ""
+ },
+ {
+  "vi": "❄️ Lạnh",
+  "en": ""
+ },
+ {
+  "vi": "Hàng lạnh: cần phiếu, xem tủ mát",
+  "en": ""
+ },
+ {
+  "vi": "Không có nhãn: hàng thông thường, không cần phiếu.",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm K",
+  "en": ""
+ },
+ {
+  "vi": "(cần phiếu)",
+  "en": ""
+ },
+ {
+  "vi": "Hàng lạnh",
+  "en": ""
+ },
+ {
+  "vi": "(cần phiếu, xem tủ mát)",
+  "en": ""
+ },
+ {
   "vi": "Đủ dấu rồi",
   "en": ""
  },
@@ -1757,46 +1797,6 @@
  },
  {
   "vi": "aria-label=\"Đóng dấu quyết định\"",
-  "en": ""
- },
- {
-  "vi": "🔏 Đóng dấu",
-  "en": ""
- },
- {
-  "vi": "Chọn câu trả lời đầu tiên cho khách",
-  "en": ""
- },
- {
-  "vi": "⏳ Chờ kết quả một nhịp",
-  "en": ""
- },
- {
-  "vi": "Đếm két: chạm từng tờ rồi chốt số",
-  "en": ""
- },
- {
-  "vi": "Soát từng dòng: chạm dòng sai, chọn quy định nó trái",
-  "en": ""
- },
- {
-  "vi": "Soát giấy tờ",
-  "en": ""
- },
- {
-  "vi": "👆 Soát từng dòng",
-  "en": ""
- },
- {
-  "vi": "Quảng trường",
-  "en": ""
- },
- {
-  "vi": "Thư viện, chợ, vườn nghỉ…",
-  "en": ""
- },
- {
-  "vi": "Mở cửa rồi làm xong việc trong ca",
   "en": ""
  }
 ]

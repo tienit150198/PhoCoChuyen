@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Đồng nghiệp nhờ bạn ký thay một chứng từ.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, chỉ cách làm đúng",
+  "en": ""
+ },
+ {
+  "vi": "Ký giúp lần này thôi",
+  "en": ""
+ },
+ {
   "vi": "Bảo bạn ấy hỏi sếp",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Phụ huynh đăng tiếp ảnh chụp tin nhắn.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo số thật, kèm lý do: nhắc nhở nhiều, vi phạm giảm",
-  "en": ""
- },
- {
-  "vi": "Số liệu thật được ghi nhận, tổ yên tâm làm đúng.",
-  "en": ""
- },
- {
-  "vi": "Cuối tháng vẫn bị hỏi, cả tổ lo.",
   "en": ""
  }
 ]

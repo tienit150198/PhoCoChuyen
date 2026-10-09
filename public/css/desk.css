@@ -77,6 +77,10 @@
 .dk-today>span:last-child{display:flex;flex-direction:column;min-width:0;font-size:.95rem;line-height:1.3}
 .dk-today b{font-size:1.05rem;color:var(--info,#2a66a8)}
 .dk-today small{color:var(--muted);font-size:.84rem}
+/* F#278: nhóm K / hàng lạnh tags on paper lines and in the rulebook legend */
+.dk-drug{flex:none;display:inline-block;padding:1px 6px;border-radius:999px;font-style:normal;font-size:.72rem;font-weight:800;line-height:1.4;white-space:nowrap;background:var(--warn-soft,#f7ead2);color:var(--warn,#9b6823)}
+.dk-drug.cold{background:var(--info-soft,#e2edf8);color:var(--info,#2a66a8)}
+.dk-legend{margin:6px 0;padding:8px 10px;list-style:none;border-radius:10px;background:var(--surface-2);font-size:.84rem;line-height:1.45;display:flex;flex-direction:column;gap:4px}
 .dk-field .dk-now{display:block;margin-top:2px;color:var(--ink-2,var(--ink));font-size:.8rem;font-weight:600}
 .dk-docs{display:grid;grid-template-columns:1fr;gap:10px}
 .dk-doc{border:1px solid var(--line-strong);border-radius:12px;background:var(--surface);box-shadow:var(--shadow-sm);padding:10px 10px 6px;display:flex;flex-direction:column;gap:2px;min-width:0}

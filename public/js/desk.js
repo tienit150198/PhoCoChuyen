@@ -69,7 +69,7 @@ function replies(t,api){
 function rulebook(t){
   const fresh=t.rules.filter(r=>r.new).length;
   const stamps=t.stamps?`<div class="dk-registry">${Object.entries(t.stamps).map(([k,m])=>`<span>${stampArt(m,26)}<small>${esc(CLINIC[k]||k)}</small></span>`).join('')}</div>`:'';
-  return `<details class="dk-book"${fresh?' data-fresh':''}><summary${slim(t)?' aria-label="Sổ quy định hôm nay"':''}>${icon('book',16)} ${slim(t)?'Quy định':'Sổ quy định hôm nay'} <span class="dk-count">${t.rules.length}</span>${fresh?`<span class="dk-new">${fresh} MỚI</span>`:''}</summary>${t.bulletin?.length?`<ul class="dk-notices">${t.bulletin.map(n=>`<li>📰 ${esc(n)}</li>`).join('')}</ul>`:''}${stamps}<ol class="dk-rules">${t.rules.map(r=>`<li class="${r.new?'new':''}"><b>${esc(r.short)}</b>${r.new?' <span class="dk-new">MỚI</span>':''}<span>${esc(r.text)}</span></li>`).join('')}</ol></details>`;
+  return `<details class="dk-book"${fresh?' data-fresh':''}><summary${slim(t)?' aria-label="Sổ quy định hôm nay"':''}>${icon('book',16)} ${slim(t)?'Quy định':'Sổ quy định hôm nay'} <span class="dk-count">${t.rules.length}</span>${fresh?`<span class="dk-new">${fresh} MỚI</span>`:''}</summary>${t.bulletin?.length?`<ul class="dk-notices">${t.bulletin.map(n=>`<li>📰 ${esc(n)}</li>`).join('')}</ul>`:''}${stamps}${drugLegend(t)}<ol class="dk-rules">${t.rules.map(r=>`<li class="${r.new?'new':''}"><b>${esc(r.short)}</b>${r.new?' <span class="dk-new">MỚI</span>':''}<span>${esc(r.text)}</span></li>`).join('')}</ol></details>`;
 }
 
 /** #273: the dates on the papers ("Hết ngày 5") count this desk's own working days, which the town's day at the top
@@ -78,6 +78,19 @@ const DATED=new Set(['slip.until']);
 function today(t){
   if(!Number.isInteger(t.day))return'';
   return `<p class="dk-today"><span aria-hidden="true">📅</span><span><span>Hôm nay: <b>ngày ${t.day}</b></span><small>Hạn trên giấy tờ tính theo ngày này.</small></span></p>`;
+}
+
+/** F#278: which medicine on a paper line is nhóm K or hàng lạnh (desk.public_task `drugs`, pharmacy only): a small tag
+ * beside the line, and a legend in the rulebook. Everyday items carry none. An older server sends no `drugs`: no tags. */
+const DRUG_TAG={K:['K','dk-drug k','Nhóm K: cần phiếu'],L:['❄️ Lạnh','dk-drug cold','Hàng lạnh: cần phiếu, xem tủ mát']};
+export function drugTag(t,...texts){
+  const hit=(t.drugs||[]).find(d=>texts.some(x=>x!=null&&String(x).includes(d.name)));const m=hit&&DRUG_TAG[hit.group];
+  return m?`<em class="${m[1]}" title="${esc(m[2])}">${esc(m[0])}</em>`:'';
+}
+export function drugLegend(t){
+  const names=g=>(t.drugs||[]).filter(d=>d.group===g).map(d=>`<span>${esc(d.name)}</span>`).join(', ');   // one node per name: the English pack swaps each
+  if(!names('K')&&!names('L'))return'';
+  return `<ul class="dk-legend">${names('K')?`<li><em class="dk-drug k">K</em> <b>Nhóm K</b> (cần phiếu): ${names('K')}</li>`:''}${names('L')?`<li><em class="dk-drug cold">❄️ Lạnh</em> <b>Hàng lạnh</b> (cần phiếu, xem tủ mát): ${names('L')}</li>`:''}<li>Không có nhãn: hàng thông thường, không cần phiếu.</li></ul>`;
 }
 
 function markOf(t,ref){const ms=(t.marks||[]).filter(m=>m.field===ref);return ms.find(m=>m.result==='found')||ms.find(m=>m.result==='partial')||ms[ms.length-1];}
@@ -93,7 +106,7 @@ function docCard(t,d,api){
       return full||tried(r)?b.replace('<button ',`<button disabled title="${full?'Đủ dấu rồi':'Đã đánh dấu quy định này'}" `):b;};
     const chips=sel?`<div class="dk-chips" role="group" aria-label="Chọn quy định bị trái">${full?'<p class="dk-hint">Đủ dấu rồi: đóng dấu quyết định.</p>':''}${t.rules.map(chip).join('')}${act('Bỏ chọn','desk:unsel',{},'dk-chip ghost')}</div>`:'';
     const now=DATED.has(ref)&&Number.isInteger(t.day)?`<small class="dk-now">📅 Hôm nay: ngày ${t.day}</small>`:'';
-    return `<button type="button" class="dk-field ${sel?'sel':''} ${m?m.result:''}" data-action="desk:sel" data-field="${esc(ref)}" data-task="${esc(t.id)}" aria-pressed="${sel}"><span>${esc(f.label)}${now}</span><strong>${art}${esc(f.value)}</strong>${stamp}</button>${chips}`;}).join('');
+    return `<button type="button" class="dk-field ${sel?'sel':''} ${m?m.result:''}" data-action="desk:sel" data-field="${esc(ref)}" data-task="${esc(t.id)}" aria-pressed="${sel}"><span>${esc(f.label)}${now}</span><strong>${art}${esc(f.value)}${drugTag(t,f.value,f.label)}</strong>${stamp}</button>${chips}`;}).join('');
   return `<article class="dk-doc ${esc(d.kind)}"><h4>${d.icon} ${esc(d.title)}</h4>${rows}</article>`;
 }
 

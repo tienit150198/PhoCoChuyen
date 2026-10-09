@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Giá vốn hàng",
+  "en": ""
+ },
+ {
+  "vi": "Thưởng 40%",
+  "en": ""
+ },
+ {
   "vi": "Giá vốn đã trả lúc nhập hàng. Muốn đội bán tiếp thì nhập thêm.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Chưa trưng bộ nào. Chị Vy sẽ nhờ bạn thay đồ ma-nơ-canh.",
-  "en": ""
- },
- {
-  "vi": "Kim đang chạy… chưa tới vạch",
-  "en": ""
- },
- {
-  "vi": "TRONG VẠCH — dừng ngay!",
   "en": ""
  }
 ]

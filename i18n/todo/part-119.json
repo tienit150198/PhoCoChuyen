@@ -1,5 +1,45 @@
 [
  {
+  "vi": "🚶 Đi dạo",
+  "en": ""
+ },
+ {
+  "vi": "💍 Đám cưới",
+  "en": ""
+ },
+ {
+  "vi": "Lộc cưới",
+  "en": ""
+ },
+ {
+  "vi": "Mừng phong bì cô dâu chú rể",
+  "en": ""
+ },
+ {
+  "vi": "Tắt nhạc cưới",
+  "en": ""
+ },
+ {
+  "vi": "Bật nhạc cưới",
+  "en": ""
+ },
+ {
+  "vi": "Chụp ảnh chung",
+  "en": ""
+ },
+ {
+  "vi": "Đám cưới",
+  "en": ""
+ },
+ {
+  "vi": "người ở đây",
+  "en": ""
+ },
+ {
+  "vi": "người đang dạo",
+  "en": ""
+ },
+ {
   "vi": "📜 Lời chúc",
   "en": ""
  },
@@ -1869,56 +1909,6 @@
  },
  {
   "vi": "Bán hàng$1; quản lý$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Yếu tố phát sinh phục vụ sản xuất, bán hàng và quản lý: nguyên liệu$1; nhân công và khoản doanh nghiệp trích$2; khấu hao$3; dịch vụ mua ngoài (phân xưởng, bảo hiểm phân bổ, tiếp thị)$4; chi quản lý khác bằng tiền$5. Điều chỉnh dự phòng không bằng tiền$6; giá vốn hàng hóa mua để bán$7 trình bày thêm để đối chiếu chi phí. Sản phẩm tồn kho tăng/giảm$8, giải thích phần chi sản xuất chưa thành giá vốn. Không cộng 632 trùng với 621/622/627.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thuế hiện hành$1; hoãn lại$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cư dân $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 tài khoản",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 người · $2 nhóm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 người mới 30 ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "# Phố Có Chuyện — Tổng quan đầu tư · số liệu lúc $1 (giờ Việt Nam, UTC+7) · phiên bản $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "# Ô dưới $1 người được ghi \"<$2\"; tỉ lệ trên dưới $3 người để trống. Không có dữ liệu cá nhân.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1/$2 lượt chơi",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giọng nói: $1 $2: $3. Cách nói: $4. Nhịp mẫu (không chép): \"$5\"",
   "en": "",
   "pattern": true
  }

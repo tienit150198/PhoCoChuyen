@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Nhập hàng, mua sắm, gửi rút tiền: Ví và Quỹ tiệm luôn hiện ở góc trên, thiếu bao nhiêu ghi rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng giao thiếu: bấm “Khiếu nại phần thiếu” ngay trong Kho để được hoàn tiền.",
+  "en": ""
+ },
+ {
   "vi": "Sửa đồ, pet care, shop quần áo: lời dặn và đồ khách đưa kèm hiện ngay chỗ chọn.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Chắc chắn?",
-  "en": ""
- },
- {
-  "vi": "Đã xong.",
-  "en": ""
- },
- {
-  "vi": "Chưa được.",
   "en": ""
  }
 ]

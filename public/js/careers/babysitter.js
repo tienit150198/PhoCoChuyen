@@ -125,9 +125,15 @@ function napPanel(t,x){
     <h4 class="section-title">🧸 Đồ ôm của ${x.esc(kidName(x))}</h4><div class="tile-grid bm-loveys">${loveys}</div>${gauge}
     ${st.pat==null?'<p class="small muted">Tắt đèn, đưa đúng đồ ôm, bé nằm yên rồi mới vỗ.</p>':''}</section>`;
 }
+/** F#282/#283: every caring move tried also settles the child (game/careers/babysitter.py settled), so one unkind move
+ * can no longer leave the calm meter short with nothing left to press. Content moves: [emoji, label, caring?]. */
+function settled(t,x){
+  const st=t.st||{},n=need(t),mv=(cc(x).moves||{})[n.mk]||{},used=st.used||[];
+  return (st.calm||0)>=100||(n.moves||[]).filter(k=>mv[k]&&mv[k][2]).every(k=>used.includes(k));
+}
 function momentPanel(t,x){
   const st=t.st||{},n=need(t),mv=(cc(x).moves||{})[n.mk]||{},used=st.used||[];
-  const moves=(n.moves||[]).map(k=>{const m=mv[k]||['•',k];return tile(x,'bm_care',{task:t.id,move:k},`<span class="tile-emoji">${x.esc(m[0])}</span><b>${x.esc(m[1])}</b>`,used.includes(k)?'selected':'',used.includes(k)||st.calm>=100);}).join('');
+  const moves=(n.moves||[]).map(k=>{const m=mv[k]||['•',k];return tile(x,'bm_care',{task:t.id,move:k},`<span class="tile-emoji">${x.esc(m[0])}</span><b>${x.esc(m[1])}</b>`,used.includes(k)?'selected':'',used.includes(k)||settled(t,x));}).join('');
   return `<section class="card bm-moment"><h4>💛 ${x.esc(((cc(x).moment_title||{})[n.mk])||'')}</h4>
     <p class="small">Bé bình tĩnh ${meter(st.calm||0,100,'bm-calm')}<b>${Number(st.calm||0)}%</b></p><div class="tile-grid bm-moves">${moves}</div></section>`;
 }
@@ -185,8 +191,9 @@ function stepsOf(t,x){
     return {steps:rows,final:{label:'😴 BÉ NGỦ RỒI',go:finalGo(rows,'bm_nap_done',{task:id}),ready:good>=b.need,why:'vỗ cho bé ngủ say'}};
   }
   if(t.kind==='moment'){
-    rows.push({ok:st.calm>=100||null,label:'Dỗ bé tới khi bé ổn',note:`${Number(st.calm||0)}%`,go:{sel:'.bm-moves',label:'👉 Chọn cách dỗ'}});
-    return {steps:rows,final:{label:'💛 BÉ ỔN RỒI',go:finalGo(rows,'bm_moment_done',{task:id}),ready:st.calm>=100,why:'dỗ bé thêm'}};
+    const ok=settled(t,x);
+    rows.push({ok:ok||null,label:'Dỗ bé tới khi bé ổn',note:`${Number(st.calm||0)}%`,go:{sel:'.bm-moves',label:'👉 Chọn cách dỗ'}});
+    return {steps:rows,final:{label:'💛 BÉ ỔN RỒI',go:finalGo(rows,'bm_moment_done',{task:id}),ready:ok,why:'dỗ bé thêm'}};
   }
   rows.push({ok:(st.ticks||[]).length?true:null,label:'Ghi nhật ký thật',go:{sel:'.bm-log',label:'👉 Ghi nhật ký'}});
   return {steps:rows,final:{label:'👋 BÀN GIAO BÉ',go:finalGo(rows,'bm_hand',{task:id}),ready:true}};

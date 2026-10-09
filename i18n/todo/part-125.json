@@ -1,5 +1,55 @@
 [
  {
+  "vi": "Tàu $1 tới mà trên ray vẫn còn người. Lái tàu kéo còi, phanh khẩn cấp, may họ nhảy ra kịp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚆 Tàu $1 $2 toa ầm ầm qua đường ngang. Gió tàu thốc tung vạt áo.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Chị Nguyệt: “Sai! Nghe lại: tàu $1, rời Bến Gỗ $2, qua đường ngang $3. Nhắc lại cho đúng.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Bạn: “$1” · Chị Nguyệt: “Đúng. Đường ngang Bến Mây chuẩn bị.” Tàu còn khoảng $2 phút.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👀 Nhìn hai phía đường ngang: $1. Dẹp hết rồi mới hạ chắn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👀 Nhìn hai phía đường ngang: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 chui qua chắn, đứng giữa ray",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 Cách này không ăn thua.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2: được một nửa rồi, thêm chút nữa!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn kéo $1 ra sau vạch dừng, ghi tên vào sổ người vượt chắn.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Tàu $1 gần sát mới hạ chắn, xe phanh rít cả dãy.",
   "en": "",
   "pattern": true
@@ -2196,56 +2246,6 @@
  },
  {
   "vi": "$1 lì xì phong bì $2 xu: “Chúc năm nay mọi sự như ý nghe con.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nhắn: “Nghe nói mai có đoàn kiểm tra ghé $2 đó. Dọn dẹp gọn gàng, giấy tờ để sẵn nha.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cười: “Có gì đâu mà cảm ơn, quen biết mà.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 hơi buồn vì chưa nghe một lời cảm ơn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tặng mình $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Số xu là từ 1 đến $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví của bạn chưa đủ $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏦 $1 vừa gửi $2 xu vào quỹ chung. Quỹ giờ có $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã gửi $1 xu vào quỹ chung. Quỹ giờ có $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏦 $1 vừa rút $2 xu từ quỹ chung. Quỹ còn $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã rút $1 xu về ví. Quỹ chung còn $2 xu.",
   "en": "",
   "pattern": true
  }
