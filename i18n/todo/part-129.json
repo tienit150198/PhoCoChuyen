@@ -1,5 +1,105 @@
 [
  {
+  "vi": "Đã thêm vào đơn $1 · $2 món.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đơn đủ $1 món: còn $2 món chưa thêm, đặt đơn này rồi thêm tiếp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã bỏ $1$2 khỏi đơn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm nay $1 hết $2. Bỏ khỏi đơn hoặc chọn nơi khác nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 không bán $2. Bỏ khỏi đơn nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kệ $1 không đủ chỗ cho $2 $3 (tính cả hàng đang giao). Bớt lại nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đơn dưới $1 xu chị không chạy xe đâu em.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bên em chỉ nhận đơn gộp từ $1 xu ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “$2” Thêm hàng hoặc đặt lẻ từng món nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thiếu $1 xu để đặt đơn này (quỹ nghề còn $2 xu). Tiền nhập hàng trừ vào quỹ của nghề đang làm, không lấy từ ví hay vốn quầy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hết $1 rồi em, giao trước mấy món kia nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kho tạm hết $1, bên em giao trước phần còn lại ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "” Không tính tiền $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gộp $1 món soạn không kịp chuyến, $2 mới tới nha em.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đơn gộp $1 món cần soạn riêng, $2 mới giao được ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhập gộp $1 món",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã đặt đơn gộp $1 món · $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 giao một chuyến $2 ($3).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Số đếm $1 chưa khớp số hàng thực có trong thùng. Đếm lại nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kiểm nhận đơn gộp từ $1: $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã nhập kho cả thùng: $1.",
   "en": "",
   "pattern": true
@@ -866,6 +966,11 @@
  },
  {
   "vi": "$1: TK $2 -$3 xu. ND: gop von \"du an noi bo\". Cẩn thận lời mời lãi cao.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: TK $2 -$3 xu. ND: chuyen khoan \"phi bao ke\". Gặp chuyện bị đe doạ, hãy báo công an.",
   "en": "",
   "pattern": true
  },

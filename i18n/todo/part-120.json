@@ -1276,15 +1276,39 @@
   "en": ""
  },
  {
-  "vi": "Chọn size nhập",
+  "vi": "Tự chia",
   "en": ""
  },
  {
-  "vi": "Tự chia size",
+  "vi": "không bán",
   "en": ""
  },
  {
-  "vi": "Tự chia ưu tiên các size bán chạy. Chọn một size nếu đang thiếu đúng cỡ đó.",
+  "vi": "không bán mặt hàng này",
+  "en": ""
+ },
+ {
+  "vi": "Đặt ngay",
+  "en": ""
+ },
+ {
+  "vi": "· không bán mặt hàng này",
+  "en": ""
+ },
+ {
+  "vi": "Nhà cung cấp: giờ giao & điều kiện",
+  "en": ""
+ },
+ {
+  "vi": "Đặt hàng thế nào",
+  "en": ""
+ },
+ {
+  "vi": "Size “Tự chia”: chia ưu tiên các size bán chạy. Chọn một size thì toàn bộ số hàng thực nhận vào size đó.",
+  "en": ""
+ },
+ {
+  "vi": "nhận",
   "en": ""
  },
  {
@@ -1292,11 +1316,67 @@
   "en": ""
  },
  {
-  "vi": "giờ giao & điều kiện",
+  "vi": "📦 Thùng hàng",
   "en": ""
  },
  {
-  "vi": "Đặt ngay",
+  "vi": "Chợ bao bì",
+  "en": ""
+ },
+ {
+  "vi": "Chợ hoa đêm",
+  "en": ""
+ },
+ {
+  "vi": "Chợ sáng",
+  "en": ""
+ },
+ {
+  "vi": "Chợ sỉ",
+  "en": ""
+ },
+ {
+  "vi": "HTX Mây",
+  "en": ""
+ },
+ {
+  "vi": "Hàng Nhật",
+  "en": ""
+ },
+ {
+  "vi": "Hàng nhập",
+  "en": ""
+ },
+ {
+  "vi": "Kho hãng",
+  "en": ""
+ },
+ {
+  "vi": "Kho sỉ",
+  "en": ""
+ },
+ {
+  "vi": "Sóng Âm",
+  "en": ""
+ },
+ {
+  "vi": "Trại giống",
+  "en": ""
+ },
+ {
+  "vi": "Tổng kho sỉ",
+  "en": ""
+ },
+ {
+  "vi": "Ba gác",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng dệt",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng rang",
   "en": ""
  },
  {
@@ -1329,6 +1409,14 @@
  },
  {
   "vi": "Bỏ đơn",
+  "en": ""
+ },
+ {
+  "vi": "Quần & chân váy",
+  "en": ""
+ },
+ {
+  "vi": "Váy & đồ bộ",
   "en": ""
  },
  {
@@ -1648,6 +1736,10 @@
   "en": ""
  },
  {
+  "vi": "Nhập số lượng, ít nhất 1.",
+  "en": ""
+ },
+ {
   "vi": "Phong bì mừng cưới",
   "en": ""
  },
@@ -1705,98 +1797,6 @@
  },
  {
   "vi": "Tạo tài khoản để nhận lộc cưới mỗi phút nhé!",
-  "en": ""
- },
- {
-  "vi": "Hôm nay bạn đã nhận lộc ở 2 đám cưới rồi. Vẫn được tính là khách nha 💛",
-  "en": ""
- },
- {
-  "vi": "✅ Đã ghi nhận bạn đi ăn cưới 💛",
-  "en": ""
- },
- {
-  "vi": "Đã báo cáo, cảm ơn bạn.",
-  "en": ""
- },
- {
-  "vi": "Có lỗi, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Tiệc đã tàn",
-  "en": ""
- },
- {
-  "vi": "📸 Đã lưu vào Kỷ niệm của cô dâu chú rể",
-  "en": ""
- },
- {
-  "vi": "Đã chặn. Hai bạn sẽ không thấy nhau nữa.",
-  "en": ""
- },
- {
-  "vi": "Tạo tài khoản để kết bạn nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy chưa có tài khoản để kết bạn.",
-  "en": ""
- },
- {
-  "vi": "🚶 Đi dạo",
-  "en": ""
- },
- {
-  "vi": "💍 Đám cưới",
-  "en": ""
- },
- {
-  "vi": "Lộc cưới",
-  "en": ""
- },
- {
-  "vi": "Mừng phong bì cô dâu chú rể",
-  "en": ""
- },
- {
-  "vi": "Tắt nhạc cưới",
-  "en": ""
- },
- {
-  "vi": "Bật nhạc cưới",
-  "en": ""
- },
- {
-  "vi": "Chụp ảnh chung",
-  "en": ""
- },
- {
-  "vi": "Đám cưới",
-  "en": ""
- },
- {
-  "vi": "người ở đây",
-  "en": ""
- },
- {
-  "vi": "người đang dạo",
-  "en": ""
- },
- {
-  "vi": "📜 Lời chúc",
-  "en": ""
- },
- {
-  "vi": "Ví của bạn đang hết tiền.",
-  "en": ""
- },
- {
-  "vi": "Mừng cô dâu chú rể",
-  "en": ""
- },
- {
-  "vi": "Chia đôi cho",
   "en": ""
  }
 ]

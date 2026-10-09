@@ -1,5 +1,105 @@
 [
  {
+  "vi": "Nghe đồn thợ thông cống lấy $1 xu một việc $2 xu. Cả ngõ cẩn thận nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "😮‍💨 Bạn nhịn, làm tiếp. $1 lèm bèm thêm một lúc rồi cũng chán. Bấm làm tiếp nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn thu đồ nghề đi về. $1 đứng chống nạnh giữa nhà tắm ngập nước.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🗯️ $1 Bấm làm tiếp nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🤲 Làm luôn cho vui lòng khách. $1: “Đấy, thợ phải thế chứ!” Bấm tính tiền nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🙅 $1: “Có tí mà cũng không làm, keo vl!” Bấm tính tiền nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🙅 Nói rõ việc khác tính riêng. $1 nhún vai. Bấm tính tiền nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 $1: “$2 xu cho có tí việc? $3 xu thôi.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 $1: “Thôi khỏi, để tôi tự làm.” Bấm tính tiền nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 $1 gật: thêm $2 xu cho việc phụ. Làm xong bấm tính tiền nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏧 Bạn đợi $1 chạy ra cây ATM đầu ngõ. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Ghi nợ cho $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1, còn nợ $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Có $2 xu thôi à.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 quay lại cùng ông Lộc: “Hỏi ra việc đó rẻ hơn $2 xu, trả lại đi!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả lại tiền chênh cho $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn trả lại $1 xu, xin lỗi. $2 dịu giọng: “Biết sai mà sửa thì còn gọi lại.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả bớt tiền chênh cho $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cầm $2 xu: “Thôi được, lần sau nói giá cho thật.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chặt chém xong trả lại có $1 xu, coi như bố thí à?",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 ném lại câu “bố thí à?” rồi bỏ đi kể khắp ngõ.",
   "en": "",
   "pattern": true
@@ -2146,106 +2246,6 @@
  },
  {
   "vi": "Tối $1 nhắn: hóa đơn tính dư $2 xu. Homestay chuyển trả lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hóa đơn $1 xu$2.$3 $4$5 Phòng chuyển sang “cần dọn”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hóa đơn $1 xu, khách thanh toán và cảm ơn$2.$3$4 Phòng chuyển sang “cần dọn”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giữ cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📎 Tra cứu BHXH: đóng $1 tháng ở chỗ làm cũ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vị trí cần ít nhất $1 năm kinh nghiệm, hồ sơ mới có $2$3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thiếu kỹ năng bắt buộc: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chưa có $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vị trí bắt buộc có $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Có $1 (chưa gửi bản sao)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📎 Tra cứu BHXH: chỉ đóng $1 tháng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "CV ghi $1 năm mà BHXH chỉ có $2 tháng — gọi xác minh chỗ làm cũ trước.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Người quen giới thiệu vẫn xét như mọi người: chưa đủ $1 năm kinh nghiệm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kinh nghiệm: $1 năm $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kỹ năng: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bằng cấp: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lương mong muốn: $1 xu/tháng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị Huyền: “$1 vừa gửi sổ BHXH của chỗ làm cũ — đủ $2 năm thật đấy em.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 vừa gọi: đã nhận việc chỗ khác, xin rút hồ sơ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kinh nghiệm: ít nhất $1 năm $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kỹ năng bắt buộc: $1.",
   "en": "",
   "pattern": true
  }

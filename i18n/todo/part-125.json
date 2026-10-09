@@ -1,5 +1,105 @@
 [
  {
+  "vi": "Hóa đơn $1 xu$2.$3 $4$5 Phòng chuyển sang “cần dọn”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hóa đơn $1 xu, khách thanh toán và cảm ơn$2.$3$4 Phòng chuyển sang “cần dọn”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giữ cho $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📎 Tra cứu BHXH: đóng $1 tháng ở chỗ làm cũ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Vị trí cần ít nhất $1 năm kinh nghiệm, hồ sơ mới có $2$3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thiếu kỹ năng bắt buộc: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chưa có $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Vị trí bắt buộc có $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Có $1 (chưa gửi bản sao)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📎 Tra cứu BHXH: chỉ đóng $1 tháng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "CV ghi $1 năm mà BHXH chỉ có $2 tháng — gọi xác minh chỗ làm cũ trước.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Người quen giới thiệu vẫn xét như mọi người: chưa đủ $1 năm kinh nghiệm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kinh nghiệm: $1 năm $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kỹ năng: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bằng cấp: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lương mong muốn: $1 xu/tháng",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Huyền: “$1 vừa gửi sổ BHXH của chỗ làm cũ — đủ $2 năm thật đấy em.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 vừa gọi: đã nhận việc chỗ khác, xin rút hồ sơ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kinh nghiệm: ít nhất $1 năm $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kỹ năng bắt buộc: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bắt buộc có $1 (kèm bản sao).",
   "en": "",
   "pattern": true
@@ -2146,106 +2246,6 @@
  },
  {
   "vi": "🔴 Vòng dị ứng: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏷️ Nhãn khay của khoa dược: $1 · $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔴 Vòng dị ứng: $1. Ghi rõ lên phiếu chuyển.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã nói không. Người bệnh có quyền từ chối: giữ thuốc và báo bác sĩ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: đã cho $2 theo y lệnh",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: đã đối chiếu đủ người, dị ứng, nhãn khay trước khi cho thuốc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thực hiện y lệnh: $1, $2, ký phiếu thực hiện.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: giữ lại $2 ($3), đã báo bác sĩ Khang.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: mọi việc đúng y lệnh, không có gì cần báo.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giữ lại, báo bác sĩ: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✋ Giữ lại, báo bác sĩ: $1. $2 $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗣️ Bạn hỏi vì sao, giải thích thuốc dùng để làm gì, có bác sĩ chỉ định. $1 nghĩ một lúc: “Thôi được, đưa đây.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗣️ Bạn hỏi vì sao, giải thích kỹ. $1 vẫn lắc đầu: “Không là không.” Đó là quyền của người bệnh.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗣️ Bạn kể sơ các bước, hỏi điều cô lo nhất. $1 bớt run, nhưng giấy cam đoan phải có bác sĩ giải thích và ký cùng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗣️ Bạn hỏi vì sao Tuấn đổi ý, giải thích những gì mình biết. Tuấn: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😤 “Không làm là nặng thêm đó!” $1 miễn cưỡng gật đầu, mặt hằm hằm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã nói không mổ. Không chuyển người bệnh đi khi họ không đồng ý.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: đã chuyển đi $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: đã kiểm đủ giấy cam đoan, nhịn ăn, dị ứng, trang sức.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chuẩn bị và chuyển người bệnh đi $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛏️ Đẩy giường sang phòng thủ thuật, bàn giao hồ sơ. $1",
   "en": "",
   "pattern": true
  }

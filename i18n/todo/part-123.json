@@ -1,5 +1,105 @@
 [
  {
+  "vi": "Tổ tiếp viên mong được chăm $1 ở chuyến sau chu đáo hơn ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ tổ tiếp viên làm theo quy định hãng, kiểm chéo trước khi cất cánh. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đầu ca sau mời $1 ngồi họp an toàn cùng, mình nói rõ việc hôm đó.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ tổ ca làm theo giấy phép làm việc, thử khí xong mới bắt tay vào. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ $1 ghé phòng HC-NS giờ nghỉ trưa, em mở hồ sơ trao đổi riêng ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ hồ sơ đi qua ba bước: nhận đủ giấy tờ, kiểm, trình ký. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ nếu $1 tiện, bốn giờ chiều em xin năm phút trao đổi trực tiếp cho đúng ý ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ $1 mở phiếu mới, bên IT qua tận bàn xem lại máy cho $2 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ bên IT xử lý theo phiếu: ghi lỗi, thử khởi động lại, sao lưu rồi mới sửa. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mời $1 ghé chòi gác ngoài giờ tàu, gác chắn mở sổ nhật ký nói rõ ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ có lệnh tàu là đóng chắn, kiểm đường thông rồi mới báo ga; chờ vài phút là để an toàn. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tàu $1 ghé Hòn Gió, trạm mời lên uống ấm trà, nói chuyện cho rõ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ trạm thắp đèn theo giờ, ghi nhật ký đèn và phát bản tin gió đúng kênh. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khi cần, $1 gọi lại tổng đài, đọc rõ địa chỉ là xe được điều ngay ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ tổng đài hỏi đủ địa chỉ, tình trạng, số gọi lại rồi mới điều xe; hỏi kỹ là để xe tới đúng chỗ. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lần tới $1 ghé bơi, đội cứu hộ hướng dẫn kỹ nội quy từ cổng ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ đội cứu hộ thổi còi theo nội quy hồ, ai chưa biết bơi thì ở làn cạn. Hôm đó $1 ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ khoa cảm ơn $1 đã góp ý. Cháu đọc kỹ rồi, mong $2 mau khỏe ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ cháu tự ghi mình vào sổ “cần cố gắng” mục $1 rồi ạ 😅 Ca sau cháu bù ngay.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ sổ khoa ghi $1 ạ. Chắc lúc đó $2 đang ngủ say nên không nghe cháu gọi 😌",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Dạ, phiếu chăm sóc ghi: $1. Cháu gửi để $2 và gia đình xem lại cho yên tâm ạ.",
   "en": "",
   "pattern": true
@@ -2146,106 +2246,6 @@
  },
  {
   "vi": "Việc này người ta lấy $1 xu, thợ hét $2. Chặt chém vừa thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghe đồn thợ thông cống lấy $1 xu một việc $2 xu. Cả ngõ cẩn thận nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😮‍💨 Bạn nhịn, làm tiếp. $1 lèm bèm thêm một lúc rồi cũng chán. Bấm làm tiếp nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn thu đồ nghề đi về. $1 đứng chống nạnh giữa nhà tắm ngập nước.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗯️ $1 Bấm làm tiếp nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🤲 Làm luôn cho vui lòng khách. $1: “Đấy, thợ phải thế chứ!” Bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🙅 $1: “Có tí mà cũng không làm, keo vl!” Bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🙅 Nói rõ việc khác tính riêng. $1 nhún vai. Bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 $1: “$2 xu cho có tí việc? $3 xu thôi.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 $1: “Thôi khỏi, để tôi tự làm.” Bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 $1 gật: thêm $2 xu cho việc phụ. Làm xong bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏧 Bạn đợi $1 chạy ra cây ATM đầu ngõ. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Ghi nợ cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1, còn nợ $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Có $2 xu thôi à.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 quay lại cùng ông Lộc: “Hỏi ra việc đó rẻ hơn $2 xu, trả lại đi!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả lại tiền chênh cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn trả lại $1 xu, xin lỗi. $2 dịu giọng: “Biết sai mà sửa thì còn gọi lại.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả bớt tiền chênh cho $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cầm $2 xu: “Thôi được, lần sau nói giá cho thật.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chặt chém xong trả lại có $1 xu, coi như bố thí à?",
   "en": "",
   "pattern": true
  }

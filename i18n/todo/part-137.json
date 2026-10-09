@@ -1210,17 +1210,22 @@
   "pattern": true
  },
  {
-  "vi": "Toàn bộ số hàng thực nhận sẽ vào size $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "còn $1 xu, thiếu $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "đơn đang soạn $1 món",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đơn $1 đã có $2: hết chỗ trên kệ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛒 Đơn đủ $1 món",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛒 Thêm vào đơn$1",
   "en": "",
   "pattern": true
  },
@@ -1235,6 +1240,36 @@
   "pattern": true
  },
  {
+  "vi": "Trả tiền từ $1 khi đặt. Gộp nhiều món một đơn (tối đa $2 món): một lần ship. Hàng vào kệ sau khi bạn mở thùng và đếm đúng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trên kệ $1 trên $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang giao $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giá gốc $1 xu một $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dùng trong $1 ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đơn $1 đủ $2 món: đặt đơn đó trước, hoặc “Đặt ngay” riêng món này.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "sỉ −$1%",
   "en": "",
   "pattern": true
@@ -1245,37 +1280,12 @@
   "pattern": true
  },
  {
-  "vi": "Hàng $1 + ship $2 xu",
+  "vi": "Hàng $1 xu + ship",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Hàng $1 xu · miễn ship",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "còn $1 xu · kệ sau khi nhận $2/",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛒 Đơn đủ $1 món · xem & đặt",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛒 Thêm vào đơn$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả tiền khi đặt. Gộp nhiều món một đơn (tối đa $1 món): một lần ship. Hàng vào kệ sau khi bạn mở thùng và đếm đúng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn $1 đủ $2 món: đặt đơn đó trước, hoặc “Đặt ngay” riêng món này.",
+  "vi": "còn $1 xu, thiếu $2 xu.",
   "en": "",
   "pattern": true
  },

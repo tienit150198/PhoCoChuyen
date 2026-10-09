@@ -1,5 +1,105 @@
 [
  {
+  "vi": "$1 cười tít mắt: “Trời, đúng món ưng nhất luôn. Cảm ơn nhiều nghe!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cầm $2 mà vui ra mặt: “Sao biết hay vậy? Thích lắm luôn!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nhận $2: “Cảm ơn nha, bày vẽ chi cho tốn kém.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 gật gù: “Quý hóa quá, cảm ơn nghe.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cười gượng: “Cảm ơn nha… mà món này dạo này kiêng rồi.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nhận $2, hơi lúng túng: “Ờ… cảm ơn. Chắc để dành cho người khác.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đẩy phong bì lại: “Có gì đâu mà đưa tiền, kỳ lắm. Thôi lần này nhận cho vui thôi nghe.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thấy $1 dạo này về trễ, giữ sức khỏe nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thấy con mệt quá, $1 mang qua $2. Ăn cho lại sức nghe.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 gõ cửa, đưa $2: “Nghe nói dạo này mệt, ăn đi cho khỏe.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 ghé cho $2: “Nhà có nhiều, chia cho ăn lấy thảo.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 gửi $2: “Thấy ngon nên để phần một ít.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 dúi vào tay $2: “Cầm lấy, khách sáo gì.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 dúi vào tay phong bì $2 xu: “Lấy hên nghe, làm ăn phát đạt!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lì xì phong bì $2 xu: “Chúc năm nay mọi sự như ý nghe con.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nhắn: “Nghe nói mai có đoàn kiểm tra ghé $2 đó. Dọn dẹp gọn gàng, giấy tờ để sẵn nha.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cười: “Có gì đâu mà cảm ơn, quen biết mà.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 hơi buồn vì chưa nghe một lời cảm ơn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Eo mình $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quần mình mặc $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "quần $1",
   "en": "",
   "pattern": true
@@ -2146,106 +2246,6 @@
  },
  {
   "vi": "Đơn $1 đủ $2 món. Đặt đơn này trước rồi thêm tiếp nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã thêm vào đơn $1 · $2 món.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn đủ $1 món: còn $2 món chưa thêm, đặt đơn này rồi thêm tiếp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã bỏ $1$2 khỏi đơn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay $1 hết $2. Bỏ khỏi đơn hoặc chọn nơi khác nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 không bán $2. Bỏ khỏi đơn nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kệ $1 không đủ chỗ cho $2 $3 (tính cả hàng đang giao). Bớt lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn dưới $1 xu chị không chạy xe đâu em.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bên em chỉ nhận đơn gộp từ $1 xu ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “$2” Thêm hàng hoặc đặt lẻ từng món nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thiếu $1 xu để đặt đơn này (quỹ nghề còn $2 xu). Tiền nhập hàng trừ vào quỹ của nghề đang làm, không lấy từ ví hay vốn quầy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hết $1 rồi em, giao trước mấy món kia nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kho tạm hết $1, bên em giao trước phần còn lại ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "” Không tính tiền $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gộp $1 món soạn không kịp chuyến, $2 mới tới nha em.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn gộp $1 món cần soạn riêng, $2 mới giao được ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhập gộp $1 món",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã đặt đơn gộp $1 món · $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 giao một chuyến $2 ($3).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Số đếm $1 chưa khớp số hàng thực có trong thùng. Đếm lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kiểm nhận đơn gộp từ $1: $2.",
   "en": "",
   "pattern": true
  }

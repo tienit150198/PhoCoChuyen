@@ -1,3 +1,7 @@
+# v1.9.40 — 2026-10-10
+
+Gồm couple-race (khóa quỹ chung khi ly hôn/rút, hold thẻ chung chốt cùng save, quà tặng không cộng hai lần), mishap kiểu thug/police lấy quỹ tiệm + sweeper theo dấu tiền + bảng tài phú cập nhật, hoa hồng tiệm quần áo nước ngoài 40–50 %, thẻ nhập hàng gọn (kho-compact). Không có Có gì mới.
+
 # Chưa phát hành — couple-race (không có Có gì mới)
 
 🏦 Quỹ chung không còn bị chi hai lần khi rút tiền đúng lúc ly hôn / xóa tài khoản: mọi thay đổi quỹ (gửi, rút, thẻ chung, hoàn tiền, chia khi chia tay) khóa theo cùng một thứ tự (dòng couples rồi dòng joint_funds), số dư lúc chia đọc dưới khóa; rút sau khi đã chia tay bị từ chối gọn "Hai bạn đã chia tay, quỹ chung đã được chia rồi." (trước đó có thể deadlock hoặc trả thêm tối đa 10 triệu xu).
