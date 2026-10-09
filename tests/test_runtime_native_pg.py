@@ -81,6 +81,8 @@ class NativeConflictTests(unittest.TestCase):
     def race_fund_moves(self, balance, kind, amount):
         """Release two fund operations together after both wait on the same real row lock."""
         with self.store.connect() as db:
+            # a fund move checks the couple is still married (couple._lock_fund)
+            db.execute("INSERT INTO couples(id,a,b,status,since) VALUES(?,?,?,'married',?)", (7, 'member', 'partner', 1))
             db.execute('INSERT INTO joint_funds(couple,balance,updated) VALUES(?,?,?)', (7, balance, 1))
         pids = Queue()
 

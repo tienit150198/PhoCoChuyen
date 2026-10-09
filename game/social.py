@@ -683,6 +683,11 @@ def post(store, token: str, state: dict, route: str, d: dict) -> dict:
         need(coins in GIFT_COINS, 'Số xu tặng không hợp lệ.')
         note = clean(d.get('note', ''), 80, 0, 'Lời nhắn')
         with store.connect() as db:
+            # One gift at a time per giver (couple-race 10/10): the checks, the paid command and the row share this
+            # lock, so two taps at once can no longer both pass "once per person a day" and write two gift rows
+            # (the coins left once, by the fixed request id, but arrived twice).
+            db.begin()
+            db.execute('SELECT pg_advisory_xact_lock(hashtextextended(?,0))', ('soc-gift:' + mine,))
             t = _target(db, d.get('pid'))
             need(t['pid'] != mine, 'Tự tặng mình thì… để dành mua trà sữa nhé.')
             need(not _blocked(db, mine, t['pid']), 'Không thể tặng quà cho người này.', 'blocked', 403)
@@ -690,11 +695,10 @@ def post(store, token: str, state: dict, route: str, d: dict) -> dict:
             need(not _count(db, 'SELECT COUNT(*) FROM gifts WHERE from_pid=? AND to_pid=? AND day=?', (mine, t['pid'], today())), 'Hôm nay bạn đã tặng người này rồi.')
             got = _count(db, 'SELECT COALESCE(SUM(coins),0) FROM gifts WHERE to_pid=? AND day=?', (t['pid'], today()))
             need(got + coins <= 100, 'Người này đã nhận đủ xu quà hôm nay. Tặng sticker thôi nhé.')
-        career = state.get('current')
-        if coins:
-            need(career in state['careers'], 'Chọn một nghề để có ví xu trước nhé.')
-            _cmd(store, token, f'soc-giftout-{mine}-{t["pid"]}-{today()}', career, 'soc_gift_out', dict(coins=coins, who=t['name']))
-        with store.connect() as db:
+            career = state.get('current')
+            if coins:
+                need(career in state['careers'], 'Chọn một nghề để có ví xu trước nhé.')
+                _cmd(store, token, f'soc-giftout-{mine}-{t["pid"]}-{today()}', career, 'soc_gift_out', dict(coins=coins, who=t['name']))
             db.execute('INSERT INTO gifts(from_pid,to_pid,sticker,coins,note,day,at) VALUES(?,?,?,?,?,?,?)', (mine, t['pid'], sticker, coins, note, today(), now()))
             notify(store, db, t['pid'], 'gift', f'{me["name"]} tặng bạn {sticker}' + (f' + {coins} xu' if coins else '') + (f': “{note}”' if note else ''), mine)
         return dict(message=f'Đã gửi {sticker} tới {t["name"]}!')

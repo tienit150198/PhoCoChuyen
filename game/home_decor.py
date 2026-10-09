@@ -83,6 +83,8 @@ def command(store, h, who, request_id, expected, career, action, payload, intern
             raise GameError('Chỗ ở vừa thay đổi. Tải lại nhà rồi thử nhé.', 'not_same_home')
         revision = row['revision'] + 1
         db.execute('UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?', (serialized, revision, sid))
+        from . import couple
+        couple.commit_holds(db, sid, state, raw)   # 💳 a joint-card hold this command made is settled with the save
         _write_archive(db, sid, cut)
         if board[1]:
             lb.write(db, sid, board[0])

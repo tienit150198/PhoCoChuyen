@@ -116,11 +116,24 @@ def _balance(db, cid: int) -> int:
     return int(r['balance']) if r else 0
 
 
+ENDED = 'Hai bạn đã chia tay, quỹ chung đã được chia rồi.'
+
+
+def _lock_fund(db, cid: int) -> None:
+    """The one lock order for every change to a couple's fund (deposit, withdraw, card spend, refund, divorce
+    split): the couples row first, then the joint_funds row. A divorce updates the couples row first, so a fund
+    move either finishes before the divorce reads the balance, or waits for it and then sees the marriage ended
+    (couple-race 10/10: a withdraw used to be paid on top of the divorce split). Refuses once it has ended."""
+    c = db.execute('SELECT status FROM couples WHERE id=? FOR SHARE', (cid,)).fetchone()
+    _need(c and c['status'] == 'married', ENDED, 'not_married', 409)
+    db.execute('INSERT INTO joint_funds(couple,balance,updated) VALUES(?,0,?) ON CONFLICT DO NOTHING', (cid, mr.now()))
+    db.execute('SELECT balance FROM joint_funds WHERE couple=? FOR UPDATE', (cid,)).fetchone()
+
+
 def _fund_move(db, cid: int, sid: str, kind: str, amount: int, label: str, ref: str, status: str = 'done') -> int:
     """Change the fund and write its ledger row (UNIQUE ref: a replay raises IntegrityError)."""
     t = mr.now()
-    db.execute('INSERT INTO joint_funds(couple,balance,updated) VALUES(?,0,?) ON CONFLICT DO NOTHING', (cid, t))
-    db.execute('SELECT balance FROM joint_funds WHERE couple=? FOR UPDATE', (cid,)).fetchone()
+    _lock_fund(db, cid)
     if kind == 'deposit':
         _need(_balance(db, cid) + amount <= FUND_MAX, 'Quỹ chung đã đầy.', 'fund_full', 409)
         db.execute('UPDATE joint_funds SET balance=balance+?,updated=? WHERE couple=?', (amount, t, cid))
@@ -416,10 +429,9 @@ def forgive(store, sid, display, d):
 def _grow(db, cid: int, points: int) -> int:
     """Happiness for one moment today; returns the points added."""
     day = vn_day()
-    st = mr._row(db, 'SELECT * FROM couple_stats WHERE couple=?', (cid,))
-    if not st:
-        db.execute('INSERT INTO couple_stats(couple) VALUES(?)', (cid,))
-        st = dict(happy=0, streak=0, best=0, last_day=0, today=0)
+    # Locked read-modify-write: two moments at once no longer race on the first row or overwrite each other.
+    db.execute('INSERT INTO couple_stats(couple) VALUES(?) ON CONFLICT DO NOTHING', (cid,))
+    st = mr._row(db, 'SELECT * FROM couple_stats WHERE couple=? FOR UPDATE', (cid,))
     if st['last_day'] == day:
         add = max(0, min(points, HAPPY_DAY_MAX - st['today']))
         streak, today = st['streak'], st['today'] + add
@@ -516,7 +528,13 @@ def on_end(db, c: dict, filer: str | None, deleted: str | None = None) -> list:
     requests. Returns the wallet effects to insert (applied through the inbox)."""
     t = mr.now()
     cid = c['id']
-    bal = _balance(db, cid)
+    # The same lock order as a fund move (_lock_fund): the couples row (the caller has just ended it), then the
+    # fund row; the balance is read under that lock, so a withdraw or card spend in flight is either already in
+    # it or refused (couple-race 10/10).
+    cur = db.execute('SELECT status FROM couples WHERE id=? FOR UPDATE', (cid,)).fetchone()
+    _need(cur and cur['status'] not in ('engaged', 'married'), 'Chuyện này đã khép lại rồi.', 'gone', 409)
+    r = db.execute('SELECT balance FROM joint_funds WHERE couple=? FOR UPDATE', (cid,)).fetchone()
+    bal = int(r['balance']) if r else 0
     if deleted:  # the one who stays keeps the whole fund; debts between them are cleared
         stay = mr._other(c, deleted)
         share = {stay: bal, deleted: 0}
@@ -618,8 +636,9 @@ def _reconcile(store, sid: str, state: dict) -> None:
                 continue
             if db.execute("UPDATE joint_ledger SET status='void' WHERE id=? AND status='held'", (r['id'],)).rowcount != 1:
                 continue
-            c = mr._row(db, 'SELECT * FROM couples WHERE id=?', (r['couple'],))
+            c = mr._row(db, 'SELECT * FROM couples WHERE id=? FOR SHARE', (r['couple'],))   # the lock order of _lock_fund
             if c and c['status'] == 'married':
+                db.execute('SELECT 1 FROM joint_funds WHERE couple=? FOR UPDATE', (r['couple'],)).fetchone()
                 db.execute('UPDATE joint_funds SET balance=balance+?,updated=? WHERE couple=?', (r['amount'], mr.now(), r['couple']))
             else:  # the fund was split meanwhile: the spender gets it back
                 mr._insert_effects(db, [mr._effect(f'jvoid:{r["id"]}', sid, 'wallet', r['amount'], 'Hoàn tiền thẻ chung')])
@@ -671,7 +690,7 @@ def joint_spend(s: dict, amount: int, label: str, ref: str, kind: str = 'spend')
     Idempotent by `ref` (the same ref never charges twice; retries of the same command are
     fine). The fund is debited at once in its own transaction ("held") and `s` records it
     (s['marriage']['applied']); when the command's save write never lands, the next load of
-    that save refunds the hold after HOLD_S seconds. Uses the available balance. Raises GameError when not allowed. Returns {balance, daily_left}.
+    that save refunds the hold after HOLD_S seconds. The write itself settles the hold (commit_holds). Uses the available balance. Raises GameError when not allowed. Returns {balance, daily_left}.
     kind='home' (🏠 game/housing.py): a home's down payment."""
     store = mr.STORE
     if kind not in ('spend', 'home'):
@@ -710,6 +729,36 @@ def joint_spend(s: dict, amount: int, label: str, ref: str, kind: str = 'spend')
     out = store.transaction(run)
     box['applied'] = (box['applied'] + [key])[-mr.APPLIED_KEPT:]
     return out
+
+
+def _hold_keys(s) -> list:
+    """The card holds ('jspend:' ids) a save, or a hook's projection of it, records in marriage.applied."""
+    m = s.get('marriage') if isinstance(s, dict) else None
+    applied = m.get('applied') if isinstance(m, dict) else None
+    return [k for k in applied if isinstance(k, str) and k.startswith('jspend:')] if isinstance(applied, list) else []
+
+
+def commit_holds(db, sid: str, before, after) -> None:
+    """In the save's own write transaction (storage._store / _command_locked, marriage._mutate, home_decor.command):
+    each card hold this write records becomes 'done' for good, so a later load can never refund a purchase that
+    landed. marriage.applied keeps only the last APPLIED_KEPT ids: 60 one-xu deposits used to push a house's hold
+    out of it, and the next load refunded the house (couple-race 10/10). A hold a load already refunded ('void')
+    refuses the write instead: the purchase must not land on top of its refund.
+    before: the save (or storage._commit_before's projection) before the command; None when unknown (then only
+    'held' -> 'done', never a refusal)."""
+    keys = _hold_keys(after)
+    if not keys:
+        return
+    old = set(_hold_keys(before)) if before is not None else None
+    for key in keys:
+        if old is not None and key in old:
+            continue
+        if db.execute("UPDATE joint_ledger SET status='done' WHERE ref=? AND sid=? AND status='held'", (key, sid)).rowcount:
+            continue
+        if old is not None:
+            r = db.execute('SELECT status FROM joint_ledger WHERE ref=? AND sid=?', (key, sid)).fetchone()
+            if r and r['status'] == 'void':
+                raise GameError('Giao dịch thẻ chung này đã hết hạn và được hoàn lại. Thử lại nhé.', 'expired')
 
 
 # ---------------------------------------------------------------- views

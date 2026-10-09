@@ -266,7 +266,7 @@ def _mutate(store, fns: dict, db_ops=None) -> dict:
     revision, and any save not stamped by this build, is validated in full as before."""
     from . import storage as st
     from .engine import stamped, needs_migration, scoped_validation
-    prepared = {}
+    prepared, prior = {}, {}
     with store.connect() as db:
         rows = {sid: db.execute('SELECT revision,state FROM sessions WHERE sid=?', (sid,), text_bytes=True).fetchone() for sid in fns}
     for sid, fn in fns.items():
@@ -281,6 +281,8 @@ def _mutate(store, fns: dict, db_ops=None) -> dict:
             checked = state['check'].get('careers') if stamped(state) and not needs_migration(state) else None
             known = checked if type(checked) is dict and (row['revision'] + 1) % st.FULL_EVERY else None
             snap = st.settle_scope.snapshot(state, known) if known is not None and st.SCOPED_CAREERS else None
+            m = state.get('marriage') if isinstance(state.get('marriage'), dict) else {}
+            prior[sid] = dict(marriage=dict(applied=list(m['applied']) if isinstance(m.get('applied'), list) else []))   # 💳 couple.commit_holds
             fn(state)
             if known is None:
                 validate_state(state)
@@ -296,7 +298,9 @@ def _mutate(store, fns: dict, db_ops=None) -> dict:
                           (text, rev + 1, sid, rev)).rowcount != 1:
                 raise _Retry()
             st._write_archive(db, sid, cut)
-        from . import jail, rentals
+        from . import couple, jail, rentals
+        for sid, (_, _, _, state, _, _) in sorted(prepared.items()):
+            couple.commit_holds(db, sid, prior[sid], state)   # 💳 a joint-card hold made while computing this save
         for sid, (_, _, _, state, original, jailed) in sorted(prepared.items()):
             rentals.command_commit(db, sid, original, state, 'shared_mutation')
             jail.mark_commit(db, sid, dict(journey=dict(jail=jailed)), state)  # 🚔 a bail frees the save: its mark goes
