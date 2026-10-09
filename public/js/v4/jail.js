@@ -256,7 +256,7 @@ function board(g){
       return `<div class="jl-tray${n===w?' ok':n>w?' over':''}"><small>Khay ${i+1} · cần <b>${w}</b> muỗng</small><button type="button" class="jl-plate" data-jl="scoop" data-i="${i}" aria-label="Thêm một muỗng cơm vào khay ${i+1}">${'🍚'.repeat(n)||'🍽️'}</button>
         <button type="button" class="jl-less" data-jl="less" data-i="${i}" aria-label="Bớt một muỗng ở khay ${i+1}"${n?'':' disabled'}>− bớt</button></div>`;}).join('')}</div>`;
   if(g.task==='paint')return `<div class="jl-wall" data-jl-wall="1">${Array.from({length:pz.cells},(_,c)=>{const dirty=pz.dirty.includes(c),on=g.painted.includes(c);
-      return `<button type="button" class="jl-panel${dirty?on?' painted':' dirty':' clean'}" data-jl="paint" data-c="${c}" aria-label="${dirty?on?'Đã sơn':'Ô tường bẩn':'Ô tường sạch'}">${dirty&&!on?'〰️':''}</button>`;}).join('')}</div><p class="jl-why">Giữ ngón tay và kéo qua các ô để sơn nhanh.</p>`;
+      return `<button type="button" class="jl-tile${dirty?on?' painted':' dirty':' clean'}" data-jl="paint" data-c="${c}" aria-label="${dirty?on?'Đã sơn':'Ô tường bẩn':'Ô tường sạch'}">${dirty&&!on?'〰️':''}</button>`;}).join('')}</div><p class="jl-why">Giữ ngón tay và kéo qua các ô để sơn nhanh.</p>`;
   const shelf=pz.nums.map((n,i)=>g.order.includes(i)?'<span class="jl-book gone" aria-hidden="true"></span>'
     :`<button type="button" class="jl-book" style="--bk:${BOOK_COLORS[i%BOOK_COLORS.length]}" data-jl="book" data-i="${i}" aria-label="Sách số ${n}"><b>${n}</b></button>`).join('');
   const sorted=g.order.map(i=>`<span class="jl-book small" style="--bk:${BOOK_COLORS[i%BOOK_COLORS.length]}"><b>${pz.nums[i]}</b></span>`).join('');

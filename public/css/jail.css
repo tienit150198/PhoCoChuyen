@@ -103,10 +103,10 @@ html[data-theme="dem"] .jl-plate{background:#3a3a3a;border-color:#555}
 
 /* 🎨 paint: a 5 × 2 wall, painted by tap or drag */
 .jl-wall{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:10px;padding:6px;border-radius:12px;background:#8d8d8d;touch-action:none;user-select:none;-webkit-user-select:none}
-.jl-panel{min-height:64px;border:0;border-radius:6px;font-size:1.1rem;cursor:pointer;color:#555}
-.jl-panel.dirty{background:repeating-linear-gradient(135deg,#9da3a8 0 8px,#8b9196 8px 16px)}
-.jl-panel.painted,.jl-panel.clean{background:#f4e3b5}
-.jl-panel.painted{box-shadow:inset 0 0 0 3px #e8c86a}
+.jl-tile{min-height:64px;border:0;border-radius:6px;font-size:1.1rem;cursor:pointer;color:#555}
+.jl-tile.dirty{background:repeating-linear-gradient(135deg,#9da3a8 0 8px,#8b9196 8px 16px)}
+.jl-tile.painted,.jl-tile.clean{background:#f4e3b5}
+.jl-tile.painted{box-shadow:inset 0 0 0 3px #e8c86a}
 
 /* 📚 books: tap from the smallest number */
 .jl-shelf-l{margin:10px 0 4px;font-size:.78rem;color:var(--ink-2)}
