@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 32  # 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 33  # 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -562,6 +562,10 @@ CREATE TABLE IF NOT EXISTS wed_invite_seen (
   sid {T} PRIMARY KEY, upto bigint NOT NULL DEFAULT 0, day {T} NOT NULL, n bigint NOT NULL DEFAULT 0,
   cheer_upto bigint NOT NULL DEFAULT 0
 );
+-- 🚔 Trại tạm giữ (game/jail.py mark_commit; SCHEMA_VERSION 33): one row per jailed save, `until` its safety release,
+-- written in the save's own transaction, so the live server knows "free" from a primary-key lookup (no save read).
+-- Not in the save: an older build ignores it (a stale row is checked against the save and deleted).
+CREATE TABLE IF NOT EXISTS jail_marks (sid {T} PRIMARY KEY, until double precision NOT NULL);
 """
 
 INDEX_DDL = """
@@ -859,6 +863,7 @@ TABLES = [
     dict(name='home_deco_log', identity='id'),
     dict(name='wed_invites', identity='id'),
     dict(name='wed_invite_seen', identity=None),
+    dict(name='jail_marks', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 

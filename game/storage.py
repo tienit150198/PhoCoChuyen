@@ -296,7 +296,8 @@ def _commit_before(raw:dict)->dict:
     lux=j.get('lux') if isinstance(j.get('lux'),dict) else {}
     live=lux.get('live');villas=lux.get('own') if isinstance(lux.get('own'),dict) else {}
     villa=villas.get(live) if isinstance(live,str) else None
-    return dict(name=raw.get('name'),careers=careers,journey=dict(story=j.get('story'),
+    # 🚔 a sentence block before (game/jail.py mark_commit: out after it, the mark goes): a flag, not the block
+    return dict(name=raw.get('name'),careers=careers,journey=dict(story=j.get('story'),jail=isinstance(j.get('jail'),dict),
         life_day=j.get('life_day',0),home=dict(own={k:own.get(k) for k in ('id','kind')} if isinstance(own,dict) else None),
         lux=dict(live=live,own={live:dict(d=villa.get('d'))}) if isinstance(villa,dict) else dict(live=None,own={}),
         quay=dict(stalls=[dict(business=dict(visitor_orders=visitors))])))
@@ -635,8 +636,9 @@ class Store:
                 if action.startswith('jr_pet_'):
                     from . import pets
                     pets.command_commit(db,sid,action,current)  # 🐾 Bé cưng của tuần (pet_board)
+                from . import jail
+                jail.mark_commit(db,sid,before,current)  # 🚔 jail_marks follows the save (the live server's cheap check)
                 if action=='jail_end':
-                    from . import jail
                     jail.command_commit(db,sid,action,result)  # 🚔 out of the trại tạm giữ: the friends' bail requests go
                 if action.startswith('jr_lux_'):
                     from . import lux
@@ -713,8 +715,9 @@ class Store:
             if action.startswith('jr_pet_'):
                 from . import pets
                 pets.command_commit(db,sid,action,raw)  # 🐾 Bé cưng của tuần (pet_board)
+            from . import jail
+            jail.mark_commit(db,sid,before,raw)  # 🚔 jail_marks follows the save (the live server's cheap check)
             if action=='jail_end':
-                from . import jail
                 jail.command_commit(db,sid,action,result)  # 🚔 out of the trại tạm giữ: the friends' bail requests go
             if action.startswith('jr_lux_'):
                 from . import lux

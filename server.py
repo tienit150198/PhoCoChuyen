@@ -960,8 +960,8 @@ class Handler(BaseHTTPRequestHandler):
             data=json.loads(body,parse_constant=lambda x:(_ for _ in ()).throw(ValueError("nonfinite")))
             if not isinstance(data,dict):raise GameError("Dữ liệu cần là đối tượng JSON.")
             if not jail.route_open(route):   # 🚔 jailed: only the camp, messages and công ích (game/jail.py, an allowlist)
-                if state is None:state=self.server.store.read(token)[0]
-                if jail.jailed(state):self.error(409,jail.JAILED,"jailed");return
+                # a light route has not read the save: the jail_marks row tells (no row: free, no save read)
+                if jail.jailed(state) if state is not None else jail.marked_token(self.server.store,token):self.error(409,jail.JAILED,"jailed");return
             if route=="/api/admin/users/password":
                 self.require_admin(token)
                 admin=(accounts.status(self.server.store,token) or {}).get("username")

@@ -19,7 +19,6 @@ gone, after the grace), tick(now) (every second), on_notify(event) (admin events
 """
 from __future__ import annotations
 
-import json
 import time
 
 from game import jail as JL
@@ -29,11 +28,10 @@ from .db import Error as DbError, log
 TYPE_MAX = 24
 # 🚔 Trại tạm giữ (game/jail.py, owner 09/10 "chỉ được ở tù, nhắn tin, làm công ích"): a jailed player's frames other
 # than the chat's (and leaving a room) are refused. The answer is cached per player for JAIL_TTL seconds (a shorter
-# JAIL_TTL_IN while jailed, so a bail or the last day opens the rooms soon); a miss costs one primary-key read that
-# parses the save only when it holds the word "jail" (most saves never do).
+# JAIL_TTL_IN while jailed, so a bail or the last day opens the rooms soon); a miss costs one primary-key read of the
+# tiny jail_marks table (no row: free; the save itself is read only for a marked player, at most once per
+# JL.MARK_CHECK_S, to drop a mark an older server left behind).
 JAIL_TTL, JAIL_TTL_IN = 20.0, 8.0
-JAIL_SQL = ("SELECT CASE WHEN left(state, 1) = '{' AND strpos(state, '\"jail\"') > 0 "
-            "THEN state::json #>> '{journey,jail}' END AS j FROM sessions WHERE sid=?")
 
 
 class LiveError(Exception):
@@ -135,11 +133,15 @@ class Dispatcher:
         hit = player.ext.get('jail')
         if hit and hit[0] > t:
             return hit[1]
-        row = await feat.app.db.fetchrow(JAIL_SQL, (player.sid,))
-        try:
-            block = json.loads(row['j']) if row and row['j'] else None
-        except (TypeError, ValueError):
-            block = None
-        inside = JL.jailed({'journey': {JL.KEY: block}}) if isinstance(block, dict) else False
+        db, now = feat.app.db, JL.now()
+        row = await db.fetchrow(JL.MARK_GET, (player.sid,))
+        u = float(row['until']) if row else None
+        seen = player.ext.setdefault('jail_seen', {})
+        inside = JL.mark_answer(u, seen, now)
+        if inside is None:   # marked: the save confirms it (rare: only jailed players, at most once per MARK_CHECK_S)
+            inside = JL.from_save(await db.fetchrow(JL.MARK_SAVE, (player.sid,)), now)
+            if not inside:
+                await db.execute(JL.MARK_STALE, (player.sid, u))
+            JL.mark_note(seen, u, now, inside)
         player.ext['jail'] = (t + (JAIL_TTL_IN if inside else JAIL_TTL), inside)
         return inside

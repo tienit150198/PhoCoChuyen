@@ -257,6 +257,16 @@ class Routes(unittest.TestCase):
             self.assertEqual(spy.call_count, 0)   # an open route: no check at all
             self.req(dev, '/api/social/board', 'POST', {})
             self.assertEqual(spy.call_count, 1)
+        # a light route (the save not read for it): the jail_marks row, never the save
+        with mock.patch.object(jl, 'marked', wraps=jl.marked) as mark, \
+                mock.patch.object(type(self.store), 'read', wraps=self.store.read) as read:
+            status, data = self.req(dev, '/api/work-visits/order', 'POST', {})
+            self.assertNotEqual(data.get('code'), 'jailed', data)
+            self.assertEqual((mark.call_count, read.call_count), (1, 0))
+        self.jail(dev)
+        self.assertEqual(self.req(dev, '/api/work-visits/order', 'POST', {})[1].get('code'), 'jailed')
+        self.free(dev)
+        self.assertNotEqual(self.req(dev, '/api/work-visits/order', 'POST', {})[1].get('code'), 'jailed')
 
 
 # ---------------------------------------------------------------- live
@@ -294,13 +304,17 @@ class LiveFrames(unittest.IsolatedAsyncioTestCase):
         self.tmp = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
         self.store = Store(Path(self.tmp.name) / 'g.db', story=True)
         self.db = PgDB(self.store.pg.url, self.store.pg.schema, 2)
-        self.sent, self.queries = [], 0
-        real = self.db.fetchrow
+        self.sent, self.sqls = [], []
+        real, run = self.db.fetchrow, self.db.execute
 
         async def fetchrow(sql, args=()):
-            self.queries += 1
+            self.sqls.append(sql)
             return await real(sql, args)
-        self.db.fetchrow = fetchrow
+
+        async def execute(sql, args=()):
+            self.sqls.append(sql)
+            return await run(sql, args)
+        self.db.fetchrow, self.db.execute = fetchrow, execute
         hub = SimpleNamespace(send=lambda conn, out: self.sent.append(out), rate=None)
         app = SimpleNamespace(hub=hub, cfg=SimpleNamespace(flags=lambda: {}), db=self.db)
 
@@ -349,14 +363,18 @@ class LiveFrames(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((await self.frame(conn, t='send', text='chào'))['t'], 'msg')
         self.assertEqual((await self.frame(conn, t='ping'))['t'], 'pong')
         self.assertEqual((await self.frame(conn, t='walk_out'))['t'], 'walk_left')
-        self.assertEqual(self.queries, 1)
+        self.assertEqual(self.sqls, [jl.MARK_GET, jl.MARK_SAVE])   # marked: the save confirms it once
         for _ in range(5):   # cached: no query per frame
             self.assertEqual((await self.frame(conn, t='walk_in'))['code'], 'jailed')
-        self.assertEqual(self.queries, 1)
-        # released (a friend's bail, the last day): the rooms open once the short cache is stale
+        self.assertEqual(len(self.sqls), 2)
+        conn.player.ext['jail'] = (0, True)   # the short cache stale: the mark alone (the save was read just now)
+        self.assertEqual((await self.frame(conn, t='walk_in'))['code'], 'jailed')
+        self.assertEqual(self.sqls[2:], [jl.MARK_GET])
+        # released (a friend's bail, the last day): the mark goes with it, the rooms open once the short cache is stale
         mutate(self.store, conn.token, lambda st: jl.release(st['journey']))
         conn.player.ext['jail'] = (0, True)
         self.assertEqual((await self.frame(conn, t='walk_in'))['t'], 'walk_room')
+        self.assertEqual(self.sqls[3:], [jl.MARK_GET])
         from live import protocol
         self.assertLessEqual(protocol.JAIL_TTL_IN, protocol.JAIL_TTL)
         self.assertLessEqual(protocol.JAIL_TTL, 30)
@@ -365,16 +383,35 @@ class LiveFrames(unittest.IsolatedAsyncioTestCase):
         conn = self.player(False)
         for _ in range(4):
             self.assertEqual((await self.frame(conn, t='walk_in'))['t'], 'walk_room')
-        self.assertEqual(self.queries, 1)
-        with self.store.connect() as db:   # the cheap path: a save without the word "jail" is never parsed
-            raw = db.execute('SELECT state FROM sessions WHERE sid=?', (conn.player.sid,)).fetchone()['state']
-        self.assertNotIn('"jail"', raw)
+        self.assertEqual(self.sqls, [jl.MARK_GET])   # one primary-key read of jail_marks: sessions.state never read
+        self.assertNotIn('sessions', jl.MARK_GET)
+        conn.player.ext['jail'] = (0, False)
+        await self.frame(conn, t='walk_in')
+        self.assertEqual(self.sqls, [jl.MARK_GET] * 2)
+
+    async def test_a_stale_mark_is_dropped(self):
+        conn = self.player(True)
+        with self.store.connect() as db:   # an older server let the player out: the save is free, the mark stayed
+            state = json.loads(db.execute('SELECT state FROM sessions WHERE sid=?', (conn.player.sid,)).fetchone()['state'])
+        state['journey'].pop('jail')
+        state['journey'].pop('jail2', None)
+        self.store.transaction(lambda db: db.execute('UPDATE sessions SET state=? WHERE sid=?', (json.dumps(state), conn.player.sid)))
+        self.assertEqual((await self.frame(conn, t='walk_in'))['t'], 'walk_room')
+        self.assertEqual(self.sqls, [jl.MARK_GET, jl.MARK_SAVE, jl.MARK_STALE])
+        with self.store.connect() as db:
+            self.assertIsNone(db.execute('SELECT 1 FROM jail_marks WHERE sid=?', (conn.player.sid,)).fetchone())
+
+    async def test_a_mark_past_its_time_is_free_without_the_save(self):
+        conn = self.player(True)
+        with mock.patch.object(jl, 'now', lambda: time.time() + 4 * jl.SAFE_S):
+            self.assertEqual((await self.frame(conn, t='walk_in'))['t'], 'walk_room')
+        self.assertEqual(self.sqls, [jl.MARK_GET])
 
     async def test_the_kill_switch_holds_nobody(self):
         conn = self.player(True)
         with mock.patch.dict(os.environ, {'MNL_JAIL_OFF': '1'}):
             self.assertEqual((await self.frame(conn, t='walk_in'))['t'], 'walk_room')
-        self.assertEqual(self.queries, 0)
+        self.assertEqual(self.sqls, [])
 
 
 if __name__ == '__main__':

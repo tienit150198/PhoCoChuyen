@@ -55,8 +55,16 @@ MNL_JAIL_OFF=1 releases everybody and jails nobody (settle() drops the block on 
 sets it, tests/test_jail.py turns it on).
 
 Both blocks (above) are optional and absent when free; they sit in the journey, which keeps new optional blocks, so
-older servers load the save (tests/test_jail.py OldServer). No new table: the bail requests are rows of the social
-inbox.
+older servers load the save (tests/test_jail.py OldServer). The bail requests are rows of the social inbox.
+
+The mark (table jail_marks, game/pg_schema.py SCHEMA_VERSION 33: sid, until): one tiny row per jailed save, so the
+live server (live/protocol.py) and the light HTTP routes (server.py) tell a free player from one primary-key lookup
+instead of reading the save (saves run to megabytes). It follows the save in the save's own transaction
+(mark_commit(): storage commands, marriage._mutate such as the bail): upserted while jailed after a write (until =
+the safety release; a sentence begun on an older build gets its mark at its next command here), deleted when a
+sentence block went (served, the safety release, MNL_JAIL_OFF, a bail). No row: free. A row whose until is past: free. A row: the save is read to
+confirm, at most once per MARK_CHECK_S, and a stale row (an older server let the player out) is deleted. Older builds
+ignore the table; nothing about it is in the save.
 """
 from __future__ import annotations
 
@@ -120,6 +128,11 @@ BINS = ('giay', 'nhua', 'huu_co')
 FEED = ('thoc', 'ngo', 'rau')                  # 🐔 what a chicken may want
 STOCK = ('xa_phong', 'khan', 'ban_chai', 'chen', 'dep', 'giay_ve_sinh')       # 📒 the storeroom shelf
 FOLDS = ('trai', 'phai', 'tren', 'duoi')       # 🛏️ fold the left / right / top / bottom edge in
+
+MARK_CHECK_S = 60.0            # a marked player's save is read to confirm the mark at most this often (marked())
+MARK_GET = 'SELECT until FROM jail_marks WHERE sid=?'
+MARK_SAVE = ("SELECT CASE WHEN left(state, 1) = '{' AND strpos(state, '\"jail\"') > 0 "
+             "THEN state::json #>> '{journey,jail}' END AS j FROM sessions WHERE sid=?")
 
 JAILED = 'Đang ở trại tạm giữ, ra rồi hẵng làm nha.'
 NOT_IN = 'Bạn không ở trại tạm giữ.'
@@ -416,6 +429,85 @@ def gate(s: dict, action: str, internal: bool = False, t: float | None = None) -
         _need(False, JAILED, 'jailed')
 
 
+# ---------------------------------------------------------------- the mark (jail_marks)
+def mark_until(j, t: float | None = None) -> int | None:
+    """The safety release time of a sentence going on (the mark's `until`), None when free."""
+    if not active(j, t):
+        return None
+    b = j[KEY]
+    return int(b['at']) + int(b['days']) * SAFE_S
+
+
+def mark_commit(db, sid: str, before, after, t: float | None = None) -> None:
+    """In the save's own transaction (storage commands, the bail): the mark follows the save. `before` may be
+    storage._commit_before's projection (journey.jail: a flag)."""
+    ja = after.get('journey') if isinstance(after, dict) else None
+    u = mark_until(ja, t)
+    if u is not None:
+        db.execute('INSERT INTO jail_marks(sid,until) VALUES(?,?) ON CONFLICT(sid) DO UPDATE SET until=excluded.until '
+                   'WHERE jail_marks.until<>excluded.until', (sid, u))
+        return
+    jb = before.get('journey') if isinstance(before, dict) else None
+    if isinstance(jb, dict) and jb.get(KEY):
+        db.execute('DELETE FROM jail_marks WHERE sid=?', (sid,))
+
+
+def marked_token(store, token: str) -> bool:
+    """server.py, a light route (the save not read): jailed now, from the mark (marked())."""
+    with store.connect() as db:
+        sid = store._resolve(db, store.digest(token))[0]
+        return marked(db, sid)
+
+
+def unmark(db, sid: str) -> None:
+    db.execute('DELETE FROM jail_marks WHERE sid=?', (sid,))
+
+
+MARK_STALE = 'DELETE FROM jail_marks WHERE sid=? AND until=?'
+
+
+def mark_answer(u: float | None, seen: dict | None, t: float) -> bool | None:
+    """The mark's `until` read (None: no row): free (False), the memo's answer, or None: read the save (MARK_SAVE)."""
+    if u is None or u <= t:
+        return False
+    if seen is not None and seen.get('until') == u and t - seen.get('at', 0) < MARK_CHECK_S:
+        return seen['inside']
+    return None
+
+
+def mark_note(seen: dict | None, u: float, t: float, inside: bool) -> None:
+    if seen is not None:
+        seen.update(until=u, at=t, inside=inside)
+
+
+def marked(db, sid: str, seen: dict | None = None, t: float | None = None) -> bool:
+    """Jailed now, from the mark: no row (the common case) or a row past its until: free, one primary-key read. A row:
+    the save confirms it, at most once per MARK_CHECK_S (`seen`: the caller's per-player memo); a stale row (an older
+    server let the player out) goes. Synchronous (game.db, autocommit); live/protocol.py does the same with await."""
+    if off() or not sid:
+        return False
+    t = now() if t is None else t
+    row = db.execute(MARK_GET, (sid,)).fetchone()
+    u = float(row['until']) if row else None
+    inside = mark_answer(u, seen, t)
+    if inside is None:
+        inside = from_save(db.execute(MARK_SAVE, (sid,)).fetchone(), t)
+        if not inside:
+            db.execute(MARK_STALE, (sid, u))
+        mark_note(seen, u, t, inside)
+    return inside
+
+
+def from_save(row, t: float | None = None) -> bool:
+    """A MARK_SAVE row: is that save in the camp now."""
+    import json
+    try:
+        b = json.loads(row['j']) if row and row['j'] else None
+    except (TypeError, ValueError):
+        b = None
+    return active({KEY: b}, t) if isinstance(b, dict) else False
+
+
 # ---------------------------------------------------------------- the jail's own commands
 def _fmt(n: int) -> str:
     return f'{int(n):,}'.replace(',', '.')
@@ -669,7 +761,7 @@ def bail(store, sid: str, display: str, d: dict) -> dict:
 
     def ops(db):
         mr.need(fr.are_friends(db, sid, other), 'Chỉ bạn bè mới bảo lãnh được cho nhau.', 'not_friend', 403)
-        gone(db)
+        gone(db)   # the mark goes with the save (marriage._mutate → mark_commit)
         out = f'🤝 {display} đã bảo lãnh cho bạn ({_fmt(BAIL_XU)} xu). Bạn được về rồi, nhớ cảm ơn bạn ấy nha!'
         mr._notice(db, other, out)
         _inbox(db, other, out, None, 'jail_out')
@@ -679,8 +771,8 @@ def bail(store, sid: str, display: str, d: dict) -> dict:
     try:
         mr._mutate_retry(store, {other: free, sid: pay}, ops)
     except mr.MarriageError as x:
-        if x.code == 'jail_gone':
-            store.transaction(gone, 250)
+        if x.code == 'jail_gone':   # already out (served, or let out by an older server): a mark left goes too
+            store.transaction(lambda db: (gone(db), unmark(db, other)), 250)
         raise
     _push(store, other, f'🤝 {display} đã bảo lãnh cho bạn. Bạn được về rồi!')
     return dict(message=f'Đã bảo lãnh cho {name}: −{_fmt(BAIL_XU)} xu. Bạn ấy được về rồi.', changed=True)

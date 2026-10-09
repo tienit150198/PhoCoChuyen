@@ -609,7 +609,7 @@ class OldServer(JailBase):
 
 
 # ---------------------------------------------------------------- bail: two real accounts on one store
-class Bail(JailBase):
+class StoreBase(JailBase):
     def setUp(self):
         super().setUp()
         from game import accounts, social
@@ -683,11 +683,24 @@ class Bail(JailBase):
         with self.store.connect() as db:
             return db.execute('SELECT notice FROM marriage_people WHERE sid=?', (self.sid(tok),)).fetchone()['notice']
 
+    def mark(self, tok):
+        """The jail_marks row's until (None: no row)."""
+        with self.store.connect() as db:
+            r = db.execute('SELECT until FROM jail_marks WHERE sid=?', (self.sid(tok),)).fetchone()
+        return r and r['until']
+
+    def until(self, tok):
+        b = self.state(tok)['journey']['jail']
+        return b['at'] + b['days'] * jl.SAFE_S
+
+
+class Bail(StoreBase):
     def test_ask_then_a_friend_pays_and_frees(self):
         ann, bob, cat = self.user('ann'), self.user('bob', 45000), self.user('cat')
         self.friends(ann, bob)
         self.friends(ann, cat)
         self.jail(ann)
+        self.assertEqual(self.mark(ann), self.until(ann))
         out = self.act(ann, 'jail_ask')
         self.assertIn('2 người bạn', out['message'])
         self.assertEqual([x['name'] for x in self.requests(bob)], ['Ann'])
@@ -697,6 +710,7 @@ class Bail(JailBase):
         out = self.act(bob, 'jail_bail', code=self.code(ann))
         self.assertIn('Ann', out['message'])
         self.assertNotIn('jail', self.state(ann)['journey'])
+        self.assertIsNone(self.mark(ann))   # the bail's own transaction took the mark
         bj = self.state(bob)['journey']
         self.assertEqual(bj['wallet'], 15000)
         row = bj['history'][-1]
@@ -739,9 +753,11 @@ class Bail(JailBase):
         self.act(ann, 'jail_ask')
         self.assertEqual(len(self.requests(bob)), 1)
         self.later(jl.DAY_MIN_S)
+        self.assertIsNotNone(self.mark(ann))
         out = self.cmd(ann, 'jail_end', day=1)
         self.assertTrue(out['result']['jail']['free'])
         self.assertIsNone(out['state']['jail'])
+        self.assertIsNone(self.mark(ann))
         self.assertEqual(self.requests(bob), [])
         self.refused('jail_gone', bob, 'jail_bail', code=self.code(ann))
 
@@ -752,6 +768,117 @@ class Bail(JailBase):
         self.jail(bob)
         self.refused('jailed', bob, 'jail_bail', code=self.code(ann))
         self.assertTrue(self.state(ann)['journey']['jail'])
+
+
+
+# ---------------------------------------------------------------- the mark (jail_marks): the live server's cheap check
+class Marks(StoreBase):
+    """jail_marks follows the save in the save's own transaction; no row is the cheap 'free' (no save read)."""
+    def arrest_in(self, why, days):
+        """The next command jails (as the Chợ đen's raid or a false police report does inside their commands)."""
+        real = jl.settle
+
+        def settle(s, t=None):
+            jl.arrest(s['journey'], why, days, self.clock.t)
+            return real(s, t)
+        return mock.patch.object(jl, 'settle', settle)
+
+    def raw(self, tok, fn):
+        """An older build writes the save (it keeps no mark)."""
+        with self.store.connect() as db:
+            state = json.loads(db.execute('SELECT state FROM sessions WHERE sid=?', (self.sid(tok),)).fetchone()['state'])
+        fn(state)
+        self.store.transaction(lambda db: db.execute('UPDATE sessions SET state=?,revision=revision+1 WHERE sid=?',
+                                                     (json.dumps(state, ensure_ascii=False), self.sid(tok))))
+
+    def test_an_arrest_in_a_command_marks_on_both_commit_paths(self):
+        from game import storage
+        for why, days, tries in (('bm', 3, storage.OPTIMISTIC_TRIES), ('cop', 1, 0)):
+            with self.subTest(why=why, locked=not tries):
+                ann = self.user('a' + why)
+                self.assertIsNone(self.mark(ann))
+                with self.arrest_in(why, days), mock.patch.object(storage, 'OPTIMISTIC_TRIES', tries):
+                    self.cmd(ann, 'settings', sound=False)
+                self.assertTrue(jl.jailed(self.state(ann), self.clock.t))
+                self.assertEqual(self.mark(ann), self.until(ann))
+                self.cmd(ann, 'settings', sound=True)   # still inside: the same row
+                self.assertEqual(self.mark(ann), self.until(ann))
+
+    def test_served_safety_release_and_the_switch_unmark(self):
+        ann, bob, cat = self.user('ann'), self.user('bob'), self.user('cat')
+        for tok in (ann, bob, cat):
+            self.jail(tok, 1)
+            self.assertIsNotNone(self.mark(tok))
+        self.later(jl.DAY_MIN_S)
+        self.assertTrue(self.cmd(ann, 'jail_end', day=1)['result']['jail']['free'])
+        self.assertIsNone(self.mark(ann))
+        self.assertIsNotNone(self.mark(bob))
+        self.later(jl.SAFE_S)
+        self.cmd(bob, 'settings', sound=False)   # the safety release, noticed by settle()
+        self.assertNotIn('jail', self.state(bob)['journey'])
+        self.assertIsNone(self.mark(bob))
+        self.clock.t -= jl.SAFE_S
+        with mock.patch.dict(os.environ, {'MNL_JAIL_OFF': '1'}):
+            self.cmd(cat, 'settings', sound=False)
+        self.assertNotIn('jail', self.state(cat)['journey'])
+        self.assertIsNone(self.mark(cat))
+
+    def test_a_sentence_begun_on_an_older_build_gets_its_mark(self):
+        ann = self.user('ann')
+        self.raw(ann, lambda s: jl.arrest(s['journey'], 'bm', 3, self.clock.t))
+        self.assertIsNone(self.mark(ann))
+        self.cmd(ann, 'settings', sound=False)
+        self.assertEqual(self.mark(ann), self.until(ann))
+
+    def test_marked_reads_the_save_only_for_a_marked_player(self):
+        ann, bob = self.user('ann'), self.user('bob')
+        self.jail(bob)
+        sqls = []
+
+        class Spy:
+            def __init__(self, db):
+                self.db = db
+
+            def execute(self, sql, args=()):
+                sqls.append(sql)
+                return self.db.execute(sql, args)
+        with self.store.connect() as db:
+            self.assertFalse(jl.marked(Spy(db), self.sid(ann)))
+            self.assertEqual(sqls, [jl.MARK_GET])   # a free player: the mark's primary key only, never sessions.state
+            self.assertNotIn('sessions', jl.MARK_GET)
+            sqls.clear()
+            seen = {}
+            self.assertTrue(jl.marked(Spy(db), self.sid(bob), seen))
+            self.assertEqual(sqls, [jl.MARK_GET, jl.MARK_SAVE])
+            sqls.clear()
+            self.assertTrue(jl.marked(Spy(db), self.sid(bob), seen))   # confirmed a moment ago: the mark alone
+            self.assertEqual(sqls, [jl.MARK_GET])
+            sqls.clear()
+            self.later(jl.MARK_CHECK_S)
+            self.assertTrue(jl.marked(Spy(db), self.sid(bob), seen))
+            self.assertEqual(sqls, [jl.MARK_GET, jl.MARK_SAVE])
+            sqls.clear()
+            self.later(3 * jl.SAFE_S)   # past its until: free, no save read
+            self.assertFalse(jl.marked(Spy(db), self.sid(bob), seen))
+            self.assertEqual(sqls, [jl.MARK_GET])
+
+    def test_a_stale_mark_left_by_an_older_server_goes(self):
+        ann = self.user('ann')
+        self.jail(ann)
+        self.raw(ann, lambda s: s['journey'].pop('jail'))   # an older server let the player out (bail, last day)
+        self.assertIsNotNone(self.mark(ann))
+        with self.store.connect() as db:
+            self.assertFalse(jl.marked(db, self.sid(ann)))
+        self.assertIsNone(self.mark(ann))
+        self.cmd(ann, 'start_day', 'milk_tea')
+
+    def test_a_bail_finding_the_player_already_out_drops_a_stale_mark(self):
+        ann, bob = self.user('ann'), self.user('bob')
+        self.friends(ann, bob)
+        self.jail(ann)
+        self.raw(ann, lambda s: s['journey'].pop('jail'))
+        self.refused('jail_gone', bob, 'jail_bail', code=self.code(ann))
+        self.assertIsNone(self.mark(ann))
 
 
 if __name__ == '__main__':

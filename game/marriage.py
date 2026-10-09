@@ -275,6 +275,7 @@ def _mutate(store, fns: dict, db_ops=None) -> dict:
         with ar.collect() as box:
             state = store.parse_state(row['state'], sid)
             original = _rental_view(state)  # what rentals.command_commit reads of the save before
+            jailed = isinstance(state.get('journey'), dict) and isinstance(state['journey'].get('jail'), dict)
             before = dict(state['careers']) if isinstance(state.get('careers'), dict) else {}
             state = migrate_state(state, owned=True)
             checked = state['check'].get('careers') if stamped(state) and not needs_migration(state) else None
@@ -286,18 +287,19 @@ def _mutate(store, fns: dict, db_ops=None) -> dict:
             else:
                 scoped_validation(state)
             validate_save(state)
-        prepared[sid] = (row['revision'], st.serialize_bytes(state, known, known is None, snap), st._archive_rows(box, before, state, ''), state, original)
+        prepared[sid] = (row['revision'], st.serialize_bytes(state, known, known is None, snap), st._archive_rows(box, before, state, ''), state, original, jailed)
 
     def write(db):
         # Sorted: two couples' writes lock their saves in the same order (no PostgreSQL deadlock).
-        for sid, (rev, text, cut, _, _) in sorted(prepared.items()):
+        for sid, (rev, text, cut, _, _, _) in sorted(prepared.items()):
             if db.execute('UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=? AND revision=?',
                           (text, rev + 1, sid, rev)).rowcount != 1:
                 raise _Retry()
             st._write_archive(db, sid, cut)
-        from . import rentals
-        for sid, (_, _, _, state, original) in sorted(prepared.items()):
+        from . import jail, rentals
+        for sid, (_, _, _, state, original, jailed) in sorted(prepared.items()):
             rentals.command_commit(db, sid, original, state, 'shared_mutation')
+            jail.mark_commit(db, sid, dict(journey=dict(jail=jailed)), state)  # 🚔 a bail frees the save: its mark goes
         return db_ops(db) if db_ops else None
     out = store.transaction(write)
     return dict(db=out, states={sid: (p[3], p[0] + 1) for sid, p in prepared.items()})
