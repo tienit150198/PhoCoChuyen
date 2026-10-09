@@ -34,7 +34,7 @@ from pathlib import Path
 ENTRIES = (
     dict(version="1.9.32", date="2026-10-09", items=(
         dict(emoji='🐕', text='Đua chó ở Chợ đen: chọn một chú chó, đặt cược rồi cổ vũ cả đàn chạy về đích!'),
-        dict(emoji='🗡️', text='Phóng dao, ô ăn quan giờ là trò kỹ năng thật: chơi đàng hoàng thì không lo công an. Phóng dao càng lên màn dao quay càng nhanh!'),
+        dict(emoji='🗡️', text='Phóng dao, ô ăn quan giờ là trò kỹ năng thật, chơi đàng hoàng thì không lo công an. Dao quay nhanh dần, có màn còn quay tới lui!'),
         dict(emoji='🚨', text='Đặt cược càng lớn ở Chợ đen thì càng dễ bị công an để ý, cẩn thận nha!'),
     )),
     dict(version="1.9.31", date="2026-10-09", items=(
