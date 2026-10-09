@@ -95,10 +95,10 @@ everywhere (ids, keys, endpoints and the edition `fair20261009` are unchanged). 
     | 50,000 – 59,999 | 1% | 6% |
     | 60,000 – 69,999 | 2% | 7% |
     | 100,000 | 6% | 11% |
-    | 690,000 | 65% | 70% (cap) |
-    | ≥ 740,000 | 70% (cap) | 70% (cap) |
+    | 390,000 | 35% | 40% (cap) |
+    | ≥ 440,000 | 40% (cap) | 40% (cap) |
 
-  - never above `ARREST_CAP` (70%) a round. The stake is the round's whole stake (bầu cua: all faces; lô tô: tờ and
+  - never above `ARREST_CAP` (40%, owner 09/10 "tỷ lệ bị bắt ngưỡng trần là 40% thôi"; was 70%) a round. The stake is the round's whole stake (bầu cua: all faces; lô tô: tờ and
     side bets; vé cào: its price).
 
   Caught: the stake is lost with no outcome, a fine of `FINE_PCT` (30%) of the wallet left after the stake, and
