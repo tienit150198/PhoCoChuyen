@@ -283,8 +283,10 @@ class OAQ(WatchBase):
                 break
         self.assertEqual(total, w.OAQ_FAST_MOVES)
         a = self.assert_caught(s, r, 'nước đi nhanh bất thường')
-        self.assertEqual((a['stake'], a['fine']), (0, 20000 * 30 // 100))   # no stake: the fine and the cell
-        self.assertEqual(s['journey']['wallet'], 20000 - 6000)
+        before = a['wallet'] + a['fine']                                 # (an earlier game may have been won)
+        self.assertGreaterEqual(before, 20000)
+        self.assertEqual((a['stake'], a['fine']), (0, before * 30 // 100))   # no stake: the fine and the cell
+        self.assertEqual(s['journey']['wallet'], before - a['fine'])
         self.assertEqual(s['journey']['fair']['oaq']['stage'], 'lost')
         self.assertNotIn('Mất', r['message'])
 
