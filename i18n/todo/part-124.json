@@ -1,10 +1,5 @@
 [
  {
-  "vi": "$1: đo đủ năm chỉ số, đều trong ngưỡng.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "$1: đã đo và báo bác sĩ đầy đủ.",
   "en": "",
   "pattern": true
@@ -2246,6 +2241,11 @@
  },
  {
   "vi": "Sổ trực ban: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 ($2) khai báo tạm trú: $3.",
   "en": "",
   "pattern": true
  }

@@ -1,10 +1,5 @@
 [
  {
-  "vi": "Dạ con đi chợ theo thực đơn nhà dặn, giữ hóa đơn, nấu xong nếm lại mới dọn ạ. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "Dạ cô làm theo giấy dặn của ba mẹ, việc gì cũng ghi vào nhật ký bé. Hôm đó $1 ạ.",
   "en": "",
   "pattern": true
@@ -2246,6 +2241,11 @@
  },
  {
   "vi": "Hét giá $1 xu, chặt chém trắng trợn. Gọi thợ khác cho lành.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 xua tay trước giá $2 xu: “Thôi, cảm ơn, tôi gọi người khác.” $3",
   "en": "",
   "pattern": true
  }

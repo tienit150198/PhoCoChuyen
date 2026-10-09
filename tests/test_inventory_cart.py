@@ -688,10 +688,11 @@ class WideDraft(unittest.TestCase):
 
 class Cancel(unittest.TestCase):
     """Player #276 "thêm dòng hủy hàng đang đặt": an order still on the road can be called off (inv_cancel),
-    goods and shipping back once, no shop time; not once the crate is at the door; the order leaves the
-    book, so a save written after a cancel still loads on the release this one may roll back to."""
+    80% of goods and shipping back once (rounded down; owner 09/10), no shop time; not once the crate is at
+    the door; the order leaves the book, so a save written after a cancel still loads on the release this one
+    may roll back to."""
 
-    def test_single_order_full_refund_and_gone(self):
+    def test_single_order_refunds_80_percent_and_gone(self):
         j = fresh()
         money, turn = j.c['money'], j.c['turn']
         r = j.act('inv_order', item='noodle', qty=5, supplier='partner', confirm=True)
@@ -704,8 +705,12 @@ class Cancel(unittest.TestCase):
         with self.assertRaises(GameError):
             j.act('inv_cancel', order=oid)  # asks first
         r = j.act('inv_cancel', order=oid, confirm=True)
-        self.assertEqual(r['refund'], paid)
-        self.assertEqual(j.c['money'], money)
+        self.assertEqual(r['refund'], paid * 80 // 100)
+        self.assertEqual(r['paid'], paid)
+        self.assertEqual(j.c['money'], money - paid + paid * 80 // 100)
+        self.assertIn(f'nhận lại {paid * 80 // 100} xu', r['message'])
+        refunds = [x for x in books(j, oid) if x['category'] == 'refund']
+        self.assertEqual(len(refunds), 1)
         self.assertEqual(j.c['turn'], turn, 'a phone call takes no shop time')
         self.assertFalse(any(o['id'] == oid for o in j.c['ext']['inv']['orders']))
         self.assertEqual(public_inv(j)['arriving']['noodle'], 0)
@@ -726,9 +731,9 @@ class Cancel(unittest.TestCase):
             j.act('inv_cancel', order=lines[0]['id'], confirm=True)
         self.assertIn('đơn gộp', e.exception.message)
         r = j.act('inv_cancel', group=gid, confirm=True)
-        self.assertEqual(j.c['money'], money)
-        self.assertEqual(r['refund'], sum(o['cost'] + o.get('ship', 0) for o in lines))
-        self.assertIn('ship', r['message'])
+        paid = sum(o['cost'] + o.get('ship', 0) for o in lines)
+        self.assertEqual(r['refund'], paid * 80 // 100, 'goods and shipping, 80% rounded down')
+        self.assertEqual(j.c['money'], money - paid + r['refund'])
         self.assertEqual(group_lines(j, gid), [])
         self.assertEqual(I._shipments(j.c['ext']['inv']), 0)
         validate_state(j.state)
@@ -754,9 +759,13 @@ class Cancel(unittest.TestCase):
         empty(j.c, 'egg')
         set_money(j.c, 2000)
         oid = j.act('inv_order', item='egg', qty=6, supplier='partner', confirm=True)['eta']['order']
+        paid = 2000 - j.c['money']
         j.act('inv_cancel', order=oid, confirm=True)
-        self.assertEqual(j.c['money'], 2000)
+        self.assertEqual(j.c['money'], 2000 - paid + paid * 80 // 100)
         validate_state(j.state)
+
+    def test_refund_rounds_down(self):
+        self.assertEqual([I.cancel_refund(n) for n in (0, 1, 4, 5, 7, 10, 13, 100)], [0, 0, 3, 4, 5, 8, 10, 80])
 
     def test_saves_after_a_cancel_load_on_the_rollback_release(self):
         import io, json, os, subprocess, sys, tarfile, tempfile
@@ -778,7 +787,7 @@ class Cancel(unittest.TestCase):
                                       timeout=120, check=True).stdout
             except (OSError, subprocess.SubprocessError):
                 self.skipTest(f'no git tree with {ROLLBACK} (MNL_OLD_TREE)')
-            old = tempfile.mkdtemp(prefix='mnl-1927-')
+            old = tempfile.mkdtemp(prefix='mnl-rollback-')
             with tarfile.open(fileobj=io.BytesIO(data)) as tar:
                 tar.extractall(old, filter='data')
         prog = ('import json,sys;from game.engine import validate_state,migrate_state;'
@@ -791,7 +800,7 @@ class Cancel(unittest.TestCase):
         self.assertEqual(int(out.stdout.strip()), len(j.c['ext']['inv']['orders']))
 
 
-ROLLBACK = '4533ee17'   # 1.9.27, the release this one may be rolled back to
+ROLLBACK = 'a9777863'   # 1.9.28, the release this one may be rolled back to
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,10 +1,5 @@
 [
  {
-  "vi": "Gợi ý tối đa $1 nơi thôi, nhiều quá khách rối.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "Về xem lại hóa đơn mới thấy bị tính dư $1 xu, phải nhắn homestay đòi lại.",
   "en": "",
   "pattern": true
@@ -2246,6 +2241,11 @@
  },
  {
   "vi": "$1 bất thường mà không ai báo bác sĩ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: đo đủ năm chỉ số, đều trong ngưỡng.",
   "en": "",
   "pattern": true
  }

@@ -1,9 +1,5 @@
 [
  {
-  "vi": "Lẩu thái",
-  "en": ""
- },
- {
   "vi": "Tôm hấp",
   "en": ""
  },
@@ -132,7 +128,7 @@
   "en": ""
  },
  {
-  "vi": "Hàng đang giao có nút ✖ Hủy đơn, được hoàn đủ tiền hàng và tiền ship",
+  "vi": "Hàng đang giao có nút ✖ Hủy đơn khi thùng chưa tới cửa",
   "en": ""
  },
  {
@@ -1241,6 +1237,10 @@
  },
  {
   "vi": "Tiền, nhà, đồ và tiến độ của bạn vẫn giữ nguyên. Chúc mọi người chơi vui, enjoy nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Ai mà bảo lag nữa là buồn luôn đó.",
   "en": ""
  }
 ]

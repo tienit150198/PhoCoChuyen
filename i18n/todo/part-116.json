@@ -1,9 +1,5 @@
 [
  {
-  "vi": "Cả phòng nghe giọng bạn ngay lúc hát. Không ghi âm. Mic tự tắt khi hết bài hoặc sau 6 phút.",
-  "en": ""
- },
- {
   "vi": "🎧 Đeo tai nghe để nhạc không vọng vào mic.",
   "en": ""
  },
@@ -1797,6 +1793,10 @@
  },
  {
   "vi": "Tiền lương / ví",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển khoản từ tài khoản ngân hàng",
   "en": ""
  }
 ]

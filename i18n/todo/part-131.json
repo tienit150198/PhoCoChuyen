@@ -1190,7 +1190,7 @@
   "pattern": true
  },
  {
-  "vi": "Hủy $1? Hoàn lại $2 xu, cả tiền ship.",
+  "vi": "Hủy $1? Nhận lại $2 xu (đã trả $3 xu).",
   "en": "",
   "pattern": true
  },

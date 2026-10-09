@@ -1,9 +1,5 @@
 [
  {
-  "vi": "Chuyển khoản từ tài khoản ngân hàng",
-  "en": ""
- },
- {
   "vi": "Quỹ chung vợ chồng",
   "en": ""
  },
@@ -1797,6 +1793,10 @@
  },
  {
   "vi": "Khách trong lượt này",
+  "en": ""
+ },
+ {
+  "vi": "Tiền đã vào két. Bạn có thể mở lượt phục vụ tiếp khi sẵn sàng.",
   "en": ""
  }
 ]

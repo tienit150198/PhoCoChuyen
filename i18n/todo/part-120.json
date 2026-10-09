@@ -1,10 +1,5 @@
 [
  {
-  "vi": "Bài kiểm tra đúng $1/$2 câu, cần $3. Xem lại bài gợi ý rồi làm bài khác nhé.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "Đúng $1/$2 câu. Vào ca thôi!",
   "en": "",
   "pattern": true
@@ -1531,6 +1526,11 @@
  },
  {
   "vi": "Dạ $1 đặt lịch tuần sau, em xin làm góc $2 dặn trước tiên ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dạ con đi chợ theo thực đơn nhà dặn, giữ hóa đơn, nấu xong nếm lại mới dọn ạ. Hôm đó $1 ạ.",
   "en": "",
   "pattern": true
  }

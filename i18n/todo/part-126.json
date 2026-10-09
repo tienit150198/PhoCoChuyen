@@ -1,10 +1,5 @@
 [
  {
-  "vi": "Hôm trước $1 làm cho mình ưng lắm đó.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "Mình giới thiệu thêm mấy người bạn tới chỗ $1 rồi đó.",
   "en": "",
   "pattern": true
@@ -2090,7 +2085,7 @@
   "pattern": true
  },
  {
-  "vi": "Đã hủy $1 với $2 · hoàn $3 xu$4.",
+  "vi": "Đã hủy $1 với $2 · nhận lại $3 xu (đã trả $4 xu).",
   "en": "",
   "pattern": true
  },
@@ -2100,7 +2095,7 @@
   "pattern": true
  },
  {
-  "vi": "Mỗi dòng tối đa 30 $1.",
+  "vi": "Mỗi dòng tối đa $1 $2.",
   "en": "",
   "pattern": true
  },
@@ -2246,6 +2241,11 @@
  },
  {
   "vi": "🔥 Thưởng ngày x$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔥 Hôm nay $1 lời x$2: thưởng thêm $3 xu vào ví.",
   "en": "",
   "pattern": true
  }

@@ -1,9 +1,5 @@
 [
  {
-  "vi": "Chọn nguồn thanh toán.",
-  "en": ""
- },
- {
   "vi": "Việc đang làm vừa thay đổi. Bấm chuyển lần nữa để xem lại nhé.",
   "en": ""
  },
@@ -1797,6 +1793,10 @@
  },
  {
   "vi": "Mở tin nhắn đặt hàng",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Khách quay lại đổi size",
   "en": ""
  }
 ]

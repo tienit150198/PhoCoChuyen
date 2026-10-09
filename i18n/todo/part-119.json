@@ -1,9 +1,5 @@
 [
  {
-  "vi": "Trả lời chưa gửi được, khách vừa nhắn.",
-  "en": ""
- },
- {
   "vi": "Cuộc trao đổi này đã khép, không gửi thêm được.",
   "en": ""
  },
@@ -1880,6 +1876,11 @@
  },
  {
   "vi": "Làm $1 câu kiểm tra kiến thức đầu ca rồi mở ca nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bài kiểm tra đúng $1/$2 câu, cần $3. Xem lại bài gợi ý rồi làm bài khác nhé.",
   "en": "",
   "pattern": true
  }

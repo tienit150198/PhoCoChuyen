@@ -1,10 +1,5 @@
 [
  {
-  "vi": "$1 xua tay trước giá $2 xu: “Thôi, cảm ơn, tôi gọi người khác.” $3",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "$1 mừng ra mặt: “Rẻ vậy, làm liền đi em!”",
   "en": "",
   "pattern": true
@@ -2246,6 +2241,11 @@
  },
  {
   "vi": "Phòng $1 có đơn $2 chờ đồng bộ từ ngày $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gợi ý tối đa $1 nơi thôi, nhiều quá khách rối.",
   "en": "",
   "pattern": true
  }

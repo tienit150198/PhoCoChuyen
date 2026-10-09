@@ -1,9 +1,5 @@
 [
  {
-  "vi": "Vào nhà lâu dài, kể cả khi bạn không online. Không cần kết hôn.",
-  "en": ""
- },
- {
   "vi": "Kết bạn trước để gửi lời mời.",
   "en": ""
  },
@@ -1797,6 +1793,10 @@
  },
  {
   "vi": "🎙️ Hát trực tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Cả phòng nghe giọng bạn ngay lúc hát. Không ghi âm. Mic tự tắt khi hết bài hoặc sau 6 phút.",
   "en": ""
  }
 ]

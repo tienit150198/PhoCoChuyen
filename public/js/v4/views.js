@@ -208,7 +208,7 @@ export function inventoryView(env){
   const goodsOf=(o,i)=>{const n=Number(o.count_hint)||0,on=new Set(ui.invTally?.[o.id]||[]);let h=0;for(const ch of o.id)h=(h*31+ch.charCodeAt(0))>>>0;
     return Array.from({length:n},(_,k)=>{h=(Math.imul(h,1103515245)+12345)>>>0;const r=(h%21)-10,dy=((h>>>5)%7)-3;
       return `<li style="transform:translateY(${dy}px) rotate(${r}deg)"><button type="button" class="inv-good${on.has(k)?' on':''}" data-action="v4Tally" data-order="${esc(o.id)}" data-i="${k}" aria-pressed="${on.has(k)}" aria-label="${esc(i.name)}${on.has(k)?', đã đếm':''}">${esc(i.emoji||'📦')}</button></li>`;}).join('');};
-  const counter=o=>`<div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="-1" aria-label="Bớt một">−</button>${qtyBox({value:ui.invCount?.[o.id]??'',min:0,max:60,label:'Bạn đếm được',cls:'input',placeholder:'0',attrs:`id="count-${esc(o.id)}" data-v4-count="${esc(o.id)}" required`})}<button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="1" aria-label="Thêm một">+</button></div>`;
+  const counter=o=>`<div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="-1" aria-label="Bớt một">−</button>${qtyBox({value:ui.invCount?.[o.id]??'',min:0,max:Math.max(60,Number(o.qty)||0),label:'Bạn đếm được',cls:'input',placeholder:'0',attrs:`id="count-${esc(o.id)}" data-v4-count="${esc(o.id)}" required`})}<button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="1" aria-label="Thêm một">+</button></div>`;
   const crate=o=>{
     const i=byId[o.item]||{name:o.item},s=sup(o),isOpen=opened({id:o.id,lines:[o]});
     const form=`<div class="inv-slip"><span>Phiếu giao ghi</span><b>${o.qty} ${esc(unit(i))}</b></div><p class="inv-tip">${COUNT_TIP}</p><ul class="inv-crate" aria-label="Trong thùng">${goodsOf(o,i)}</ul>`+
@@ -268,9 +268,10 @@ export function inventoryView(env){
     const waiting=g=>{const o=g.o,i=byId[o.item]||{name:o.item},s=sup(o),late=Boolean(o.late_note),pct=Math.round(Math.max(0,Math.min(1,Number(o.progress)||0))*100);
       // Waiting helps only for goods due later today; the rest arrive while you work or overnight.
       const wait=today(o)?cmdBtn(waitGo.label,'inv_wait',{},'ghost small'):'';
-      // Still on the road: call it off for a full refund, goods and shipping (inventory.py inv_cancel; player #276).
-      const what=g.group?`đơn gộp ${g.lines.length} món`:`${o.qty} ${unit(i)} ${i.name}`;
-      const cancel=confirmCmd('✖ Hủy đơn','inv_cancel',g.group?{group:g.id}:{order:o.id},`Hủy ${what} với ${s?.name||'nhà cung cấp'}? Hoàn lại ${fmt(paidOf(g))} xu, cả tiền ship.`,'ghost small');
+      // Still on the road: call it off for part of what was paid back, goods and shipping (inventory.py inv_cancel,
+      // cancel_refund: cancel_pct of it, rounded down; player #276, owner 09/10). The confirm says the xu.
+      const what=g.group?`đơn gộp ${g.lines.length} món`:`${o.qty} ${unit(i)} ${i.name}`,paid=paidOf(g),back=Math.floor(paid*(Number(inv.cancel_pct)||80)/100);
+      const cancel=confirmCmd('✖ Hủy đơn','inv_cancel',g.group?{group:g.id}:{order:o.id},`Hủy ${what} với ${s?.name||'nhà cung cấp'}? Nhận lại ${fmt(back)} xu (đã trả ${fmt(paid)} xu).`,'ghost small');
       const title=g.group?`🛒 Đơn gộp · ${g.lines.length} món`:`${name(i)}${sizeNote(o)} · ${o.qty} ${esc(unit(i))}`;
       const list=g.group?`<p class="inv-gnames">${g.lines.map(l=>`${esc(byId[l.item]?.emoji||'📦')} ${esc(byId[l.item]?.name||l.item)}${sizeNote(l)} ×${l.qty}`).join(' · ')}</p>`:'';
       return `<article class="card order-row${g.lines.some(mine)&&focus.length?' mine':''}"><div class="row spread"><div class="grow"><strong>${title}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(paidOf(g))} xu</small></div>${pill(late?'TRỄ HẸN':`⏱ ${esc(o.left_label||'đang giao')}`,late?'amber':'blue')}</div>${list}`+
@@ -884,7 +885,7 @@ export async function v4Action(action,data,el,env){
     case'v4OrderSize':{(ui.orderSize??={})[data.item]=data.size||null;renderSheet();return true;}
     case'v4Qty':{const inp=document.getElementById('order-qty'),max=Math.max(1,Number(inp?.max)||30),cur=Number(inp?.value)||ui.orderQty||1;
       ui.orderQty=Math.max(1,Math.min(max,data.set?Number(data.set):cur+Number(data.step||0)));renderSheet();return true;}
-    case'v4Count':{const inp=document.getElementById(data.target);if(inp){inp.value=String(Math.max(0,Math.min(60,(Number(inp.value)||0)+Number(data.step||0))));(ui.invCount??={})[inp.dataset.v4Count]=inp.value;(ui.invTyped??={})[inp.dataset.v4Count]=true;}return true;}
+    case'v4Count':{const inp=document.getElementById(data.target);if(inp){inp.value=String(Math.max(0,Math.min(Number(inp.max)||60,(Number(inp.value)||0)+Number(data.step||0))));(ui.invCount??={})[inp.dataset.v4Count]=inp.value;(ui.invTyped??={})[inp.dataset.v4Count]=true;}return true;}
     case'v4InvOpen':openSheet('inventory',ui.view==='inventory'?{invOpen:data.order}:{invOpen:data.order,invTab:'orders',invFocus:null,invNeed:null,invReturn:null});requestAnimationFrame(()=>document.getElementById('crate-'+data.order)?.scrollIntoView({block:'nearest'}));return true;
     case'v4OrderGo':{
       const item=api.content.inventory.items[api.state.current].find(i=>i.id===data.item);if(!item)return true;

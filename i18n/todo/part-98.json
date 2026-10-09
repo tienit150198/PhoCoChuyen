@@ -1,9 +1,5 @@
 [
  {
-  "vi": "Phòng hát: báo cáo, cấm bài, đóng phòng",
-  "en": ""
- },
- {
   "vi": "⏭ Bỏ bài",
   "en": ""
  },
@@ -1797,6 +1793,10 @@
  },
  {
   "vi": "Chưa đủ số dư.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nguồn thanh toán.",
   "en": ""
  }
 ]

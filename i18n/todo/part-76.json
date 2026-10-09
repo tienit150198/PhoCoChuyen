@@ -680,7 +680,7 @@
   "en": ""
  },
  {
-  "vi": "✖ Đơn đang giao mà chưa tới cửa: bấm [[Hủy đơn]] ở [[Thùng hàng]], hoàn đủ tiền hàng và tiền ship. Đơn gộp thì hủy cả đơn.",
+  "vi": "✖ Đơn đang giao mà chưa tới cửa: bấm [[Hủy đơn]] ở [[Thùng hàng]]. Hủy thì chỉ nhận lại một phần tiền hàng và tiền ship, khung xác nhận ghi rõ số xu. Đơn gộp thì hủy cả đơn.",
   "en": ""
  },
  {
