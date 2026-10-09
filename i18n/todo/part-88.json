@@ -1,5 +1,889 @@
 [
  {
+  "vi": "Đơn này đã thay đổi. Xem đơn mới nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tự đứng quầy",
+  "en": ""
+ },
+ {
+  "vi": "Mây Coin được nhiều cửa hàng trong phố đón nhận",
+  "en": ""
+ },
+ {
+  "vi": "Cộng đồng Mây Coin hào hứng với bản cập nhật mới",
+  "en": ""
+ },
+ {
+  "vi": "Người giữ Mây Coin chốt lời, lực bán tăng",
+  "en": ""
+ },
+ {
+  "vi": "Tin đồn trong phố khiến người mua Mây Coin thận trọng",
+  "en": ""
+ },
+ {
+  "vi": "Mây Coin giao dịch thăm dò, chưa rõ xu hướng",
+  "en": ""
+ },
+ {
+  "vi": "Nhu cầu vàng cưới trong phố tăng",
+  "en": ""
+ },
+ {
+  "vi": "Người dân trong phố tăng mua vàng tích lũy",
+  "en": ""
+ },
+ {
+  "vi": "Nhiều người trong phố bán vàng chốt lời",
+  "en": ""
+ },
+ {
+  "vi": "Nhu cầu mua vàng tại Kim Phát hạ nhiệt",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm vàng giao dịch cầm chừng, chờ tin mới",
+  "en": ""
+ },
+ {
+  "vi": "Bơi một vòng",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bơi chậm mấy vòng quanh hồ. Nước mát lạnh, lên bờ thấy người nhẹ tênh.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thả mình xuống hồ, bơi ngửa nhìn mây trôi. Mấy con chuồn chuồn lượn sát mặt nước.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bơi một mạch hết hồ rồi bám thành nghỉ, nghe nước vỗ lách tách.",
+  "en": ""
+ },
+ {
+  "vi": "Nằm thư giãn bên hồ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nằm ghế cạnh hồ, nghe gió lùa qua tán lá. Suýt nữa thì ngủ quên.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ngâm chân xuống hồ, ngồi ngắm bóng nắng lăn tăn trên mặt nước.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn pha ly nước chanh, ngả lưng bên hồ đọc vài trang sách.",
+  "en": ""
+ },
+ {
+  "vi": "Ngâm bồn nước ấm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn xả một bồn nước ấm, ngâm mình thật lâu. Mệt mỏi cả ngày tan theo hơi nước.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thả vài cánh hoa vào bồn, mở nhạc nhỏ, nằm nghe tới khi nước nguội.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ngâm bồn, con vịt cao su trôi lững lờ bên cạnh. Bình yên ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà này không có hồ bơi",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ ở nhà riêng",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay thư giãn ở đây rồi",
+  "en": ""
+ },
+ {
+  "vi": "Cần một bồn tắm trong nhà tắm",
+  "en": ""
+ },
+ {
+  "vi": "Bụng đói, ăn chút gì đã",
+  "en": ""
+ },
+ {
+  "vi": "Buồn ngủ quá, bơi không an toàn",
+  "en": ""
+ },
+ {
+  "vi": "Thư giãn ở nhà chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn thư giãn ở đây rồi. Mai nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Ở đây chưa có chỗ để làm việc này.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà tắm chưa có bồn. Bồn tắm có trong cửa hàng Bày trí phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Bụng đói meo, bơi dễ mệt. Ăn chút gì rồi hãy bơi nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đang buồn ngủ, bơi không an toàn. Nằm nghỉ bên hồ thôi nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu thư giãn ở nhà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Tường bong tróc, ố vàng",
+  "en": ""
+ },
+ {
+  "vi": "Giấy dán tường, ốp gỗ",
+  "en": ""
+ },
+ {
+  "vi": "Trần, mái",
+  "en": ""
+ },
+ {
+  "vi": "Trần thấm dột",
+  "en": ""
+ },
+ {
+  "vi": "Chống thấm trần",
+  "en": ""
+ },
+ {
+  "vi": "Trần cách nhiệt",
+  "en": ""
+ },
+ {
+  "vi": "Sàn nứt, bong gạch",
+  "en": ""
+ },
+ {
+  "vi": "Lát gạch men mới",
+  "en": ""
+ },
+ {
+  "vi": "Lát sàn gỗ",
+  "en": ""
+ },
+ {
+  "vi": "Điện chập chờn, ống nước rỉ",
+  "en": ""
+ },
+ {
+  "vi": "Đi lại dây điện, ống nước",
+  "en": ""
+ },
+ {
+  "vi": "Bình nóng lạnh, đèn LED",
+  "en": ""
+ },
+ {
+  "vi": "Bếp cũ, ám khói",
+  "en": ""
+ },
+ {
+  "vi": "Bếp ga mới, kệ bếp",
+  "en": ""
+ },
+ {
+  "vi": "Tủ bếp trọn bộ, máy hút mùi",
+  "en": ""
+ },
+ {
+  "vi": "Góc ngủ",
+  "en": ""
+ },
+ {
+  "vi": "Sân trước",
+  "en": ""
+ },
+ {
+  "vi": "Vườn cau",
+  "en": ""
+ },
+ {
+  "vi": "📦 Đồ đạc trong nhà cũ đã chuyển vào túi đồ.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác sửa nhà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa và trang trí nhà chỉ có trong chế độ hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Mua nhà rồi mới sửa và trang trí được nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà thuê là của chủ nhà: chỉ bày đồ trang trí thôi, không sửa được nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mua nhà rồi mới sửa được nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn hạng mục cần sửa nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận sửa nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà đang như mới, chưa cần sửa gì.",
+  "en": ""
+ },
+ {
+  "vi": "Giá sửa vừa thay đổi. Xem lại rồi sửa nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa cả nhà",
+  "en": ""
+ },
+ {
+  "vi": "Giá nâng cấp vừa thay đổi. Xem lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu sửa nhà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Trả trước 5 ngày sống của người thuê. Tự gia hạn; không tự trừ tiền. Trả nhà sớm không hoàn tiền những ngày còn lại. Chủ nhà không thể lấy lại nhà giữa kỳ; chỉ lấy lại sau kỳ đã trả: quá 5 ngày thật kể từ lần trả gần nhất, hoặc người thuê vắng 3 ngày thật mà chưa trả trước kỳ sau.",
+  "en": ""
+ },
+ {
+  "vi": "Tạo tài khoản để thuê hoặc cho người chơi thuê nhà nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà này không còn cho thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Trang tin thuê nhà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Tạo tài khoản để thuê và cho người chơi thuê nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn căn nhà đang để trống, bạn không ở trong đó.",
+  "en": ""
+ },
+ {
+  "vi": "Căn này đang có khách NPC thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ tin cho NPC thuê căn này trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Ví và tài khoản chưa đủ tiền trả trước kỳ thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Trả trước tiền thuê nhà người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Tiền cho người chơi thuê nhà",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác thuê nhà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Mã thao tác không hợp lệ. Tải lại trang nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn tin thuê nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Tin thuê nhà không còn tồn tại.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ chủ nhà được lấy lại nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà này chưa có người thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Tiến trình của một người chơi không còn tồn tại.",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản này đang được xóa dữ liệu.",
+  "en": ""
+ },
+ {
+  "vi": "Thuê nhà chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Cả hai cần có tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn căn nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Căn này đã có tin hoặc hợp đồng thuê. Gỡ tin trước khi đổi giá.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đăng tin cho người chơi thuê nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy tin thuê nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ chủ nhà được gỡ tin.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng đã trả trước không thể bị chủ nhà hủy giữa kỳ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã gỡ tin cho thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn không thể thuê nhà của chính mình.",
+  "en": ""
+ },
+ {
+  "vi": "Căn nhà đã được thuê hoặc tin đã được gỡ.",
+  "en": ""
+ },
+ {
+  "vi": "Không thể thuê nhà của người này.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang có một hợp đồng thuê. Trả nhà trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang thuê nhà người chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Căn nhà đã thay đổi.",
+  "en": ""
+ },
+ {
+  "vi": "Giá thuê đã thay đổi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả trước tiền thuê và dọn vào nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ người thuê được thao tác hợp đồng này.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng không còn hiệu lực.",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả nhà. Tiền thuê trả trước của kỳ hiện tại không hoàn lại; đồ đạc vẫn thuộc về bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng đã hết hạn. Chọn tin mới để thuê nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không thể gia hạn với người này.",
+  "en": ""
+ },
+ {
+  "vi": "Tiến trình thuê nhà đã thay đổi.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã trả trước kỳ tiếp theo rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả trước và gia hạn thêm 5 ngày sống của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ tin và kết thúc hợp đồng thuê trước khi khôi phục hoặc đặt lại tiến trình.",
+  "en": ""
+ },
+ {
+  "vi": "Bản lưu không thể khôi phục hợp đồng thuê người chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Không thể lùi ngày sống trong hợp đồng thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng thuê đã hết hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Hãy dùng thao tác trả nhà để kết thúc hợp đồng thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng thuê không tồn tại trên máy chủ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà đang có hợp đồng thuê người chơi: chưa thể bán, dọn vào hay cho NPC thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Kết thúc hợp đồng thuê người chơi trước khi xóa dữ liệu.",
+  "en": ""
+ },
+ {
+  "vi": "UPDATE rentals SET status='cancelled',owner_name='Người chơi đã xóa' WHERE owner=? AND status='listing'",
+  "en": ""
+ },
+ {
+  "vi": "UPDATE rentals SET owner_name='Người chơi đã xóa' WHERE owner=?",
+  "en": ""
+ },
+ {
+  "vi": "UPDATE rentals SET tenant_name='Người chơi đã xóa' WHERE tenant=?",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu thuê nhà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng thuê không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Giá mua nhà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Mã nhà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Tin thuê nhà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Mở game",
+  "en": ""
+ },
+ {
+  "vi": "Đặt tên",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nơi làm",
+  "en": ""
+ },
+ {
+  "vi": "Khách đầu",
+  "en": ""
+ },
+ {
+  "vi": "3 khách",
+  "en": ""
+ },
+ {
+  "vi": "Lên cấp 2",
+  "en": ""
+ },
+ {
+  "vi": "10 khách",
+  "en": ""
+ },
+ {
+  "vi": "Hết ngày 1",
+  "en": ""
+ },
+ {
+  "vi": "Hết ngày 2",
+  "en": ""
+ },
+ {
+  "vi": "Hết ngày 3",
+  "en": ""
+ },
+ {
+  "vi": "Hết ngày 7",
+  "en": ""
+ },
+ {
+  "vi": "Hết ngày 14",
+  "en": ""
+ },
+ {
+  "vi": "Hết ngày 30",
+  "en": ""
+ },
+ {
+  "vi": "Đổi nơi làm",
+  "en": ""
+ },
+ {
+  "vi": "Chương 2",
+  "en": ""
+ },
+ {
+  "vi": "Chương 3",
+  "en": ""
+ },
+ {
+  "vi": "Chương 4",
+  "en": ""
+ },
+ {
+  "vi": "Mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "Đính hôn",
+  "en": ""
+ },
+ {
+  "vi": "Kết hôn",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ đầu",
+  "en": ""
+ },
+ {
+  "vi": "đón khách",
+  "en": ""
+ },
+ {
+  "vi": "có thật trong ca làm",
+  "en": ""
+ },
+ {
+  "vi": "cảm nhận riêng của người viết",
+  "en": ""
+ },
+ {
+  "vi": "lỗi đã ghi nhận (đã có trong review)",
+  "en": ""
+ },
+ {
+  "vi": "Góc nhận xét sai.",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách góc nhận xét gần đây sai.",
+  "en": ""
+ },
+ {
+  "vi": "Cửa hàng",
+  "en": ""
+ },
+ {
+  "vi": "Độ ngọt",
+  "en": ""
+ },
+ {
+  "vi": "ngọt quá so với lời dặn",
+  "en": ""
+ },
+ {
+  "vi": "ly nước ngọt khé, uống xong khát thêm",
+  "en": ""
+ },
+ {
+  "vi": "dặn ít đường mà ngọt như đổ cả hũ",
+  "en": ""
+ },
+ {
+  "vi": "ngọt gắt cổ, phải xin thêm đá cho loãng bớt",
+  "en": ""
+ },
+ {
+  "vi": "vị ngọt lấn hết vị trà",
+  "en": ""
+ },
+ {
+  "vi": "độ ngọt vừa miệng, đúng kiểu ít đường",
+  "en": ""
+ },
+ {
+  "vi": "ngọt thanh, uống hết ly không ngán",
+  "en": ""
+ },
+ {
+  "vi": "ngọt vừa phải, không bị gắt cổ",
+  "en": ""
+ },
+ {
+  "vi": "dặn ba mươi phần trăm đường là ra đúng ba mươi",
+  "en": ""
+ },
+ {
+  "vi": "ngọt dữ thần, uống xong nghe tim đập theo nhịp đường 👏",
+  "en": ""
+ },
+ {
+  "vi": "Ngọt gắt.",
+  "en": ""
+ },
+ {
+  "vi": "Ngọt vừa.",
+  "en": ""
+ },
+ {
+  "vi": "Vị cà phê",
+  "en": ""
+ },
+ {
+  "vi": "cà phê nhạt",
+  "en": ""
+ },
+ {
+  "vi": "cà phê nhạt quá, uống như nước màu",
+  "en": ""
+ },
+ {
+  "vi": "cà phê hơi loãng, không đủ đô cho buổi sáng",
+  "en": ""
+ },
+ {
+  "vi": "cà phê đắng mà không thơm, kiểu rang hơi cháy",
+  "en": ""
+ },
+ {
+  "vi": "ly cà phê sữa toàn vị sữa, tìm mãi không thấy cà phê",
+  "en": ""
+ },
+ {
+  "vi": "cà phê đậm, thơm mùi rang, tỉnh cả người",
+  "en": ""
+ },
+ {
+  "vi": "cà phê đậm vừa, hậu ngọt, uống là ghiền",
+  "en": ""
+ },
+ {
+  "vi": "cà phê đủ đô mà không gắt",
+  "en": ""
+ },
+ {
+  "vi": "mở nắp ra là thơm lừng mùi cà phê",
+  "en": ""
+ },
+ {
+  "vi": "cà phê nhạt tới mức uống xong vẫn buồn ngủ y nguyên, hiệu quả thật 👏",
+  "en": ""
+ },
+ {
+  "vi": "ly cà phê rất \"nhẹ nhàng\", nhẹ tới mức tưởng trà 🙂",
+  "en": ""
+ },
+ {
+  "vi": "Nhạt.",
+  "en": ""
+ },
+ {
+  "vi": "Đậm.",
+  "en": ""
+ },
+ {
+  "vi": "Vị trà",
+  "en": ""
+ },
+ {
+  "vi": "trà nhạt",
+  "en": ""
+ },
+ {
+  "vi": "vị trà nhạt, toàn thấy vị sữa",
+  "en": ""
+ },
+ {
+  "vi": "trà hơi chát, uống xong khô cả miệng",
+  "en": ""
+ },
+ {
+  "vi": "trà có vẻ ủ lâu nên hơi nồng",
+  "en": ""
+ },
+ {
+  "vi": "chè hơi nhạt, đá tan cái là như nước lã",
+  "en": ""
+ },
+ {
+  "vi": "chè pha hơi chát, uống một hơi thấy khô cổ",
+  "en": ""
+ },
+ {
+  "vi": "ấm chè có vẻ pha từ sáng, hơi nồng",
+  "en": ""
+ },
+ {
+  "vi": "trà thơm, hậu ngọt, uống là biết trà ngon",
+  "en": ""
+ },
+ {
+  "vi": "vị trà rõ, không bị sữa lấn",
+  "en": ""
+ },
+ {
+  "vi": "trà ủ vừa, thơm mà không chát",
+  "en": ""
+ },
+ {
+  "vi": "chè đậm, chát nhẹ rồi ngọt hậu, đúng vị trà đá vỉa hè",
+  "en": ""
+ },
+ {
+  "vi": "cốc trà đá mát lạnh, thơm mùi chè mới pha",
+  "en": ""
+ },
+ {
+  "vi": "chè xanh pha vừa, uống ba cốc chưa đã",
+  "en": ""
+ },
+ {
+  "vi": "Đậm vị.",
+  "en": ""
+ },
+ {
+  "vi": "Hương vị món",
+  "en": ""
+ },
+ {
+  "vi": "món nêm chưa vừa",
+  "en": ""
+ },
+ {
+  "vi": "nước dùng hơi nhạt, phải thêm nước mắm mới vừa",
+  "en": ""
+ },
+ {
+  "vi": "món hơi mặn, về uống nước cả buổi chiều",
+  "en": ""
+ },
+ {
+  "vi": "nước dùng hơi ngọt bột ngọt",
+  "en": ""
+ },
+ {
+  "vi": "sợi mì hơi nở, gắp lên là đứt",
+  "en": ""
+ },
+ {
+  "vi": "bánh hơi khô, ăn phải chiêu nước",
+  "en": ""
+ },
+ {
+  "vi": "bánh mì hơi dai, cắn mỏi cả hàm",
+  "en": ""
+ },
+ {
+  "vi": "kem bánh ngọt quá, ăn hai miếng là ngán",
+  "en": ""
+ },
+ {
+  "vi": "nước dùng ngọt xương, húp cạn tô",
+  "en": ""
+ },
+ {
+  "vi": "nêm vừa miệng, không phải thêm gì",
+  "en": ""
+ },
+ {
+  "vi": "sợi mì dai vừa, trụng khéo",
+  "en": ""
+ },
+ {
+  "vi": "tô mì thơm hành phi, ăn xong còn thèm",
+  "en": ""
+ },
+ {
+  "vi": "bánh mềm, thơm bơ, ăn còn ấm",
+  "en": ""
+ },
+ {
+  "vi": "vỏ bánh giòn tan, ruột xốp",
+  "en": ""
+ },
+ {
+  "vi": "kem bánh ngọt vừa, ăn không ngán",
+  "en": ""
+ },
+ {
+  "vi": "Chưa vừa.",
+  "en": ""
+ },
+ {
+  "vi": "Độ nóng lạnh",
+  "en": ""
+ },
+ {
+  "vi": "đồ nóng mà nguội",
+  "en": ""
+ },
+ {
+  "vi": "đồ uống nóng mà đưa ra đã nguội",
+  "en": ""
+ },
+ {
+  "vi": "món bưng ra hơi nguội",
+  "en": ""
+ },
+ {
+  "vi": "ly nóng quá, cầm bỏng cả tay",
+  "en": ""
+ },
+ {
+  "vi": "đồ nóng bưng ra còn bốc khói",
+  "en": ""
+ },
+ {
   "vi": "ly nóng vừa tay, uống liền được",
   "en": ""
  },
@@ -913,890 +1797,6 @@
  },
  {
   "vi": "đồ treo lộn xộn, size nào lẫn size nấy",
-  "en": ""
- },
- {
-  "vi": "móc áo chen chúc, kéo một cái là rơi ba cái",
-  "en": ""
- },
- {
-  "vi": "xô hoa để lung tung, nước đổ lênh láng",
-  "en": ""
- },
- {
-  "vi": "lá cành cắt vương đầy sàn",
-  "en": ""
- },
- {
-  "vi": "tủ thuốc hơi lộn xộn, tìm hộp thuốc mãi mới ra",
-  "en": ""
- },
- {
-  "vi": "kệ mì gói với kệ nước mắm lẫn vào nhau",
-  "en": ""
- },
- {
-  "vi": "hàng sắp hết hạn để lẫn với hàng mới",
-  "en": ""
- },
- {
-  "vi": "kệ hàng ngăn nắp, món nào cũng có nhãn",
-  "en": ""
- },
- {
-  "vi": "hàng xếp theo khu, tìm dễ ghê",
-  "en": ""
- },
- {
-  "vi": "đồ treo theo size, theo màu, nhìn là muốn thử",
-  "en": ""
- },
- {
-  "vi": "xô hoa xếp theo màu, nhìn như vườn hoa",
-  "en": ""
- },
- {
-  "vi": "tủ thuốc xếp gọn, có bảng tên từng loại",
-  "en": ""
- },
- {
-  "vi": "hàng mới để sau, hàng gần date để trước, rất có ý",
-  "en": ""
- },
- {
-  "vi": "Ngăn nắp.",
-  "en": ""
- },
- {
-  "vi": "phòng thử bất tiện",
-  "en": ""
- },
- {
-  "vi": "phòng thử chật, rèm kéo không kín",
-  "en": ""
- },
- {
-  "vi": "phòng thử không có móc treo, đồ phải vắt lên vai",
-  "en": ""
- },
- {
-  "vi": "phòng thử phải xếp hàng chờ lâu",
-  "en": ""
- },
- {
-  "vi": "phòng thử rộng, rèm kín, có móc treo",
-  "en": ""
- },
- {
-  "vi": "phòng thử sạch, có dép đi trong",
-  "en": ""
- },
- {
-  "vi": "phòng thử có ghế ngồi, thử quần tiện lắm",
-  "en": ""
- },
- {
-  "vi": "Phòng thử chật.",
-  "en": ""
- },
- {
-  "vi": "Phòng thử xịn.",
-  "en": ""
- },
- {
-  "vi": "Đúng phiên bản",
-  "en": ""
- },
- {
-  "vi": "đưa sai phiên bản album",
-  "en": ""
- },
- {
-  "vi": "dặn chắc có card bias mà đưa bản card ngẫu nhiên",
-  "en": ""
- },
- {
-  "vi": "hỏi bản có CD mà đưa bản Kit không đĩa",
-  "en": ""
- },
- {
-  "vi": "mua búa ver.2 mà đưa nhầm pin AAA",
-  "en": ""
- },
- {
-  "vi": "dặn card bias là đưa đúng Digipack liền",
-  "en": ""
- },
- {
-  "vi": "phân biệt từng phiên bản rành rọt",
-  "en": ""
- },
- {
-  "vi": "pin vừa cây búa, về lắp là sáng",
-  "en": ""
- },
- {
-  "vi": "Sai bản.",
-  "en": ""
- },
- {
-  "vi": "Đúng bản.",
-  "en": ""
- },
- {
-  "vi": "Chiều fan",
-  "en": ""
- },
- {
-  "vi": "quên lời dặn của fan",
-  "en": ""
- },
- {
-  "vi": "dặn poster cuộn mà để gập trong album",
-  "en": ""
- },
- {
-  "vi": "quên quét Zchart mấy bản",
-  "en": ""
- },
- {
-  "vi": "quên ghi phiếu fansign",
-  "en": ""
- },
- {
-  "vi": "poster cuộn ống đàng hoàng, không một nếp",
-  "en": ""
- },
- {
-  "vi": "quét Zchart từng bản không sót",
-  "en": ""
- },
- {
-  "vi": "phiếu fansign ghi đủ, nói rõ tỉ lệ",
-  "en": ""
- },
- {
-  "vi": "Quên lời dặn.",
-  "en": ""
- },
- {
-  "vi": "Chiều fan.",
-  "en": ""
- },
- {
-  "vi": "Gương và ánh sáng",
-  "en": ""
- },
- {
-  "vi": "đèn làm sai màu",
-  "en": ""
- },
- {
-  "vi": "đèn phòng thử vàng vọt, mặc lên nhìn màu khác hẳn",
-  "en": ""
- },
- {
-  "vi": "gương hơi mờ, soi không rõ",
-  "en": ""
- },
- {
-  "vi": "gương có vệt nước, soi tóc không rõ",
-  "en": ""
- },
- {
-  "vi": "đèn hơi tối, nhuộm xong ra ngoài mới thấy màu khác",
-  "en": ""
- },
- {
-  "vi": "gương to, đèn sáng, mặc lên nhìn đúng màu",
-  "en": ""
- },
- {
-  "vi": "ánh sáng chuẩn, chụp hình thử đồ đẹp",
-  "en": ""
- },
- {
-  "vi": "gương sáng, có gương cầm tay soi cả phía sau",
-  "en": ""
- },
- {
-  "vi": "đèn sáng, nhìn rõ từng lọn tóc",
-  "en": ""
- },
- {
-  "vi": "Đèn tối.",
-  "en": ""
- },
- {
-  "vi": "Gương sáng.",
-  "en": ""
- },
- {
-  "vi": "Cách tiếp khách",
-  "en": ""
- },
- {
-  "vi": "nhân viên đi theo sát",
-  "en": ""
- },
- {
-  "vi": "vào tiệm một lúc mới có người để ý",
-  "en": ""
- },
- {
-  "vi": "Bị bám theo.",
-  "en": ""
- },
- {
-  "vi": "Túi và gói hàng",
-  "en": ""
- },
- {
-  "vi": "gói hàng qua loa",
-  "en": ""
- },
- {
-  "vi": "túi ni lông mỏng, đi được nửa đường thì rách quai",
-  "en": ""
- },
- {
-  "vi": "gói hàng qua loa, về tới nhà hộp móp một góc",
-  "en": ""
- },
- {
-  "vi": "giấy gói hoa nhàu, nơ buộc lỏng",
-  "en": ""
- },
- {
-  "vi": "bó hoa không có túi nước, về tới nhà héo cả gốc",
-  "en": ""
- },
- {
-  "vi": "giấy gói quà dán băng keo lem nhem",
-  "en": ""
- },
- {
-  "vi": "hộp quà không có túi xách, ôm về hơi vất vả",
-  "en": ""
- },
- {
-  "vi": "đồ gấp vội, về tới nhà nhăn hết",
-  "en": ""
- },
- {
-  "vi": "bỏ đồ vào túi mà không gỡ móc treo",
-  "en": ""
- },
- {
-  "vi": "gói hàng cẩn thận, có cả túi giấy xinh",
-  "en": ""
- },
- {
-  "vi": "bọc kỹ từng món, cầm về yên tâm",
-  "en": ""
- },
- {
-  "vi": "giấy gói hoa đẹp, nơ thắt khéo",
-  "en": ""
- },
- {
-  "vi": "có túi nước ở gốc hoa, về tới nhà vẫn tươi",
-  "en": ""
- },
- {
-  "vi": "gói quà đẹp như ngoài tiệm lớn",
-  "en": ""
- },
- {
-  "vi": "thắt nơ khéo, người nhận chắc thích lắm",
-  "en": ""
- },
- {
-  "vi": "đồ gấp phẳng phiu, bỏ túi giấy thơm tho",
-  "en": ""
- },
- {
-  "vi": "Gói ẩu.",
-  "en": ""
- },
- {
-  "vi": "Gói khéo.",
-  "en": ""
- },
- {
-  "vi": "Mùi khu thú cưng",
-  "en": ""
- },
- {
-  "vi": "khu thú cưng có mùi",
-  "en": ""
- },
- {
-  "vi": "khu để thú cưng hơi nồng mùi, vào là ngửi thấy",
-  "en": ""
- },
- {
-  "vi": "mùi cát vệ sinh bay ra tận cửa",
-  "en": ""
- },
- {
-  "vi": "tiệm hơi hắc mùi nước tiểu mèo",
-  "en": ""
- },
- {
-  "vi": "tiệm nuôi thú mà không có mùi, thơm tho",
-  "en": ""
- },
- {
-  "vi": "khu chuồng thoáng, không ám mùi",
-  "en": ""
- },
- {
-  "vi": "vào tiệm thơm mùi sữa tắm thú cưng",
-  "en": ""
- },
- {
-  "vi": "Nồng mùi.",
-  "en": ""
- },
- {
-  "vi": "Thơm tho.",
-  "en": ""
- },
- {
-  "vi": "Chuồng sạch",
-  "en": ""
- },
- {
-  "vi": "chuồng chưa sạch",
-  "en": ""
- },
- {
-  "vi": "chuồng còn vương lông với hạt thức ăn",
-  "en": ""
- },
- {
-  "vi": "khay nước trong chuồng hơi đục",
-  "en": ""
- },
- {
-  "vi": "lót chuồng ướt, mấy bé nằm không yên",
-  "en": ""
- },
- {
-  "vi": "chuồng lau sạch, có lót khăn mềm",
-  "en": ""
- },
- {
-  "vi": "mấy bé trong chuồng sạch sẽ, lông mượt",
-  "en": ""
- },
- {
-  "vi": "khay nước trong veo, thay liên tục",
-  "en": ""
- },
- {
-  "vi": "Chuồng bẩn.",
-  "en": ""
- },
- {
-  "vi": "Chuồng sạch.",
-  "en": ""
- },
- {
-  "vi": "đổi trả làm khó",
-  "en": ""
- },
- {
-  "vi": "hỏi chuyện đổi trả thì trả lời vòng vo",
-  "en": ""
- },
- {
-  "vi": "đổi size mà phải giải thích mấy lần",
-  "en": ""
- },
- {
-  "vi": "đổi hàng phải chờ gọi quản lý mãi",
-  "en": ""
- },
- {
-  "vi": "đổi trả nhanh gọn, không làm khó khách",
-  "en": ""
- },
- {
-  "vi": "nói rõ chính sách đổi trả, ai nghe cũng hiểu",
-  "en": ""
- },
- {
-  "vi": "đổi hàng mà vẫn vui vẻ như lúc bán",
-  "en": ""
- },
- {
-  "vi": "Đổi khó.",
-  "en": ""
- },
- {
-  "vi": "Đổi dễ.",
-  "en": ""
- },
- {
-  "vi": "thiếu tem giá",
-  "en": ""
- },
- {
-  "vi": "nhiều món không có tem giá, phải hỏi từng món",
-  "en": ""
- },
- {
-  "vi": "giá trên kệ một kiểu, tính tiền một kiểu",
-  "en": ""
- },
- {
-  "vi": "tem giá dán đè lên hạn dùng, đọc không ra",
-  "en": ""
- },
- {
-  "vi": "món nào cũng dán giá rõ ràng",
-  "en": ""
- },
- {
-  "vi": "giá niêm yết rõ, tính đúng như trên kệ",
-  "en": ""
- },
- {
-  "vi": "tem giá to, người lớn tuổi đọc cũng dễ",
-  "en": ""
- },
- {
-  "vi": "Thiếu tem giá.",
-  "en": ""
- },
- {
-  "vi": "Giá rõ ràng.",
-  "en": ""
- },
- {
-  "vi": "giá hơi cao",
-  "en": ""
- },
- {
-  "vi": "giá nhỉnh hơn ngoài chợ một chút",
-  "en": ""
- },
- {
-  "vi": "đồ đẹp mà giá hơi chát",
-  "en": ""
- },
- {
-  "vi": "mua nhiều mà không được bớt đồng nào",
-  "en": ""
- },
- {
-  "vi": "giá hợp lý, có khi rẻ hơn ngoài chợ",
-  "en": ""
- },
- {
-  "vi": "giá mềm, mua nhiều còn được bớt",
-  "en": ""
- },
- {
-  "vi": "đáng tiền, chất lượng tương xứng",
-  "en": ""
- },
- {
-  "vi": "Giá mềm.",
-  "en": ""
- },
- {
-  "vi": "hàng không tươi",
-  "en": ""
- },
- {
-  "vi": "hoa hơi héo mép cánh",
-  "en": ""
- },
- {
-  "vi": "lá hoa có vài chấm vàng",
-  "en": ""
- },
- {
-  "vi": "rau ở kệ hơi héo",
-  "en": ""
- },
- {
-  "vi": "trái cây có mấy quả dập",
-  "en": ""
- },
- {
-  "vi": "rau hơi héo lá ngoài",
-  "en": ""
- },
- {
-  "vi": "trứng có quả dính phân gà, nhìn hơi ngại",
-  "en": ""
- },
- {
-  "vi": "hoa tươi rói, cắm được cả tuần",
-  "en": ""
- },
- {
-  "vi": "nụ hoa chắc, nở đều",
-  "en": ""
- },
- {
-  "vi": "rau quả tươi, còn giọt nước",
-  "en": ""
- },
- {
-  "vi": "trái cây chín vừa, không dập",
-  "en": ""
- },
- {
-  "vi": "rau xanh mướt, trứng còn ấm",
-  "en": ""
- },
- {
-  "vi": "rau vừa hái, còn nguyên sương",
-  "en": ""
- },
- {
-  "vi": "Héo.",
-  "en": ""
- },
- {
-  "vi": "Tươi rói.",
-  "en": ""
- },
- {
-  "vi": "Dặn dò khi bán",
-  "en": ""
- },
- {
-  "vi": "đưa thuốc không dặn",
-  "en": ""
- },
- {
-  "vi": "đưa thuốc mà không dặn uống trước hay sau ăn",
-  "en": ""
- },
- {
-  "vi": "hỏi tác dụng phụ thì trả lời qua loa",
-  "en": ""
- },
- {
-  "vi": "hỏi sữa nào hợp với bé thì trả lời chung chung",
-  "en": ""
- },
- {
-  "vi": "hỏi cách cho bé ăn thì chỉ nói \"tùy anh chị\"",
-  "en": ""
- },
- {
-  "vi": "dặn kỹ cách uống, còn ghi lên vỏ hộp",
-  "en": ""
- },
- {
-  "vi": "hỏi kỹ tiền sử dị ứng rồi mới đưa thuốc",
-  "en": ""
- },
- {
-  "vi": "tư vấn kỹ từng loại sữa, không ép mua loại đắt",
-  "en": ""
- },
- {
-  "vi": "dặn kỹ cách cho ăn, cách tắm cho bé",
-  "en": ""
- },
- {
-  "vi": "Không dặn.",
-  "en": ""
- },
- {
-  "vi": "Dặn kỹ.",
-  "en": ""
- },
- {
-  "vi": "thiệp viết vội",
-  "en": ""
- },
- {
-  "vi": "thiệp viết chữ hơi vội, nhìn không kỹ",
-  "en": ""
- },
- {
-  "vi": "thiệp in sẵn, không có lời riêng",
-  "en": ""
- },
- {
-  "vi": "thiệp viết tay nắn nót",
-  "en": ""
- },
- {
-  "vi": "lời chúc trên thiệp viết khéo, người nhận cảm động",
-  "en": ""
- },
- {
-  "vi": "Thiệp vội.",
-  "en": ""
- },
- {
-  "vi": "Thiệp đẹp.",
-  "en": ""
- },
- {
-  "vi": "Lối đi",
-  "en": ""
- },
- {
-  "vi": "lối đi chật",
-  "en": ""
- },
- {
-  "vi": "lối đi hẹp, đẩy xe nôi vào không lọt",
-  "en": ""
- },
- {
-  "vi": "thùng hàng chắn lối đi, phải lách người",
-  "en": ""
- },
- {
-  "vi": "lối đi rộng, đẩy xe nôi thoải mái",
-  "en": ""
- },
- {
-  "vi": "có góc cho bé ngồi chơi, mẹ yên tâm chọn đồ",
-  "en": ""
- },
- {
-  "vi": "Lối chật.",
-  "en": ""
- },
- {
-  "vi": "Rộng rãi.",
-  "en": ""
- },
- {
-  "vi": "Nụ cười, thái độ",
-  "en": ""
- },
- {
-  "vi": "nhân viên thái độ lạnh",
-  "en": ""
- },
- {
-  "vi": "thái độ phục vụ mười điểm, thang điểm một trăm 🙂",
-  "en": ""
- },
- {
-  "vi": "Mặt lạnh.",
-  "en": ""
- },
- {
-  "vi": "Dễ thương.",
-  "en": ""
- },
- {
-  "vi": "Giọng nói",
-  "en": ""
- },
- {
-  "vi": "nói nhỏ khó nghe",
-  "en": ""
- },
- {
-  "vi": "Nói nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Nói rõ.",
-  "en": ""
- },
- {
-  "vi": "Tác phong, đồng phục",
-  "en": ""
- },
- {
-  "vi": "nhân viên ăn mặc luộm thuộm",
-  "en": ""
- },
- {
-  "vi": "áo choàng cho khách hơi cũ, dính tóc khách trước",
-  "en": ""
- },
- {
-  "vi": "áo choàng sạch thơm, thay mới cho từng khách",
-  "en": ""
- },
- {
-  "vi": "Luộm thuộm.",
-  "en": ""
- },
- {
-  "vi": "Gọn gàng.",
-  "en": ""
- },
- {
-  "vi": "Dùng điện thoại",
-  "en": ""
- },
- {
-  "vi": "nhân viên mải điện thoại",
-  "en": ""
- },
- {
-  "vi": "Mải điện thoại.",
-  "en": ""
- },
- {
-  "vi": "Tập trung.",
-  "en": ""
- },
- {
-  "vi": "chờ lâu",
-  "en": ""
- },
- {
-  "vi": "chờ hơi lâu, lướt hết bảng tin mới xong",
-  "en": ""
- },
- {
-  "vi": "chờ mòn mỏi, không ai báo phải đợi bao lâu",
-  "en": ""
- },
- {
-  "vi": "gọi món xong chờ mòn mỏi",
-  "en": ""
- },
- {
-  "vi": "bàn sau tới sau mà có đồ trước",
-  "en": ""
- },
- {
-  "vi": "hẹn một tiếng mà làm gần hai tiếng",
-  "en": ""
- },
- {
-  "vi": "chờ lâu mà không ai báo tiến độ",
-  "en": ""
- },
- {
-  "vi": "làm nhanh gọn, không phải chờ",
-  "en": ""
- },
- {
-  "vi": "nhanh tay mà vẫn kỹ",
-  "en": ""
- },
- {
-  "vi": "ra món nhanh, chưa kịp lướt điện thoại đã có",
-  "en": ""
- },
- {
-  "vi": "làm đúng giờ hẹn, còn xong sớm hơn",
-  "en": ""
- },
- {
-  "vi": "Chậm.",
-  "en": ""
- },
- {
-  "vi": "mới ghé vài lần mà đã được nhớ tên",
-  "en": ""
- },
- {
-  "vi": "chưa kịp gọi đã được hỏi \"như mọi khi hả\"",
-  "en": ""
- },
- {
-  "vi": "khách quen nên được hỏi han kỹ, thấy ấm lòng",
-  "en": ""
- },
- {
-  "vi": "Nhớ khách.",
-  "en": ""
- },
- {
-  "vi": "Khăn gội",
-  "en": ""
- },
- {
-  "vi": "khăn gội ẩm",
-  "en": ""
- },
- {
-  "vi": "khăn gội hơi ẩm, ngửi có mùi",
-  "en": ""
- },
- {
-  "vi": "khăn quấn tóc cũ sờn, xù lông",
-  "en": ""
- },
- {
-  "vi": "khăn đắp mặt nguội ngắt",
-  "en": ""
- },
- {
-  "vi": "khăn gội thơm, khô, như mới giặt",
-  "en": ""
- },
- {
-  "vi": "có khăn nóng đắp mặt lúc gội, thư giãn ghê",
-  "en": ""
- },
- {
-  "vi": "khăn mềm, thay mới cho từng khách",
-  "en": ""
- },
- {
-  "vi": "Khăn ẩm.",
-  "en": ""
- },
- {
-  "vi": "Khăn thơm.",
-  "en": ""
- },
- {
-  "vi": "Tóc rơi dưới sàn",
-  "en": ""
- },
- {
-  "vi": "tóc rơi đầy sàn",
-  "en": ""
- },
- {
-  "vi": "tóc khách trước còn vương đầy dưới ghế",
-  "en": ""
- },
- {
-  "vi": "cắt xong không ai quét, tóc dính đầy dép",
-  "en": ""
- },
- {
-  "vi": "tóc vụn dính trên ghế chờ",
-  "en": ""
- },
- {
-  "vi": "cắt xong quét tóc liền, sàn sạch",
-  "en": ""
- },
- {
-  "vi": "tiệm sạch, không thấy sợi tóc nào dưới sàn",
-  "en": ""
- },
- {
-  "vi": "phủi tóc vụn trên cổ kỹ lắm",
-  "en": ""
- },
- {
-  "vi": "Tóc đầy sàn.",
-  "en": ""
- },
- {
-  "vi": "Gội đầu",
-  "en": ""
- },
- {
-  "vi": "nước gội lúc nóng lúc lạnh",
   "en": ""
  }
 ]

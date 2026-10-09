@@ -1,5 +1,1001 @@
 [
  {
+  "vi": "Hồ bơi vô cực",
+  "en": ""
+ },
+ {
+  "vi": "Chòi vườn",
+  "en": ""
+ },
+ {
+  "vi": "kệ sách âm tường",
+  "en": ""
+ },
+ {
+  "vi": "màn chiếu",
+  "en": ""
+ },
+ {
+  "vi": "giá rượu",
+  "en": ""
+ },
+ {
+  "vi": "gương tập",
+  "en": ""
+ },
+ {
+  "vi": "giá treo đồ",
+  "en": ""
+ },
+ {
+  "vi": "cửa cuốn",
+  "en": ""
+ },
+ {
+  "vi": "chiếc xe trưng bày",
+  "en": ""
+ },
+ {
+  "vi": "mái chòi",
+  "en": ""
+ },
+ {
+  "vi": "Ốp gỗ thông",
+  "en": ""
+ },
+ {
+  "vi": "Vàng Đông Dương",
+  "en": ""
+ },
+ {
+  "vi": "Vách kính",
+  "en": ""
+ },
+ {
+  "vi": "Trắng xanh biển",
+  "en": ""
+ },
+ {
+  "vi": "Nhung đỏ rạp",
+  "en": ""
+ },
+ {
+  "vi": "Đá hộc",
+  "en": ""
+ },
+ {
+  "vi": "Đá cẩm thạch",
+  "en": ""
+ },
+ {
+  "vi": "Gỗ óc chó",
+  "en": ""
+ },
+ {
+  "vi": "Sàn gỗ boong tàu",
+  "en": ""
+ },
+ {
+  "vi": "Thảm đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Sàn cao su",
+  "en": ""
+ },
+ {
+  "vi": "Gạch nung",
+  "en": ""
+ },
+ {
+  "vi": "Giường king trải lụa",
+  "en": ""
+ },
+ {
+  "vi": "Bàn gỗ lim",
+  "en": ""
+ },
+ {
+  "vi": "Ghế bành da bò",
+  "en": ""
+ },
+ {
+  "vi": "Quả địa cầu cổ",
+  "en": ""
+ },
+ {
+  "vi": "Ghế rạp đôi",
+  "en": ""
+ },
+ {
+  "vi": "Máy bỏng ngô",
+  "en": ""
+ },
+ {
+  "vi": "Loa cột",
+  "en": ""
+ },
+ {
+  "vi": "Thùng rượu sồi",
+  "en": ""
+ },
+ {
+  "vi": "Bàn nếm rượu",
+  "en": ""
+ },
+ {
+  "vi": "Máy chạy bộ",
+  "en": ""
+ },
+ {
+  "vi": "Giá tạ",
+  "en": ""
+ },
+ {
+  "vi": "Tủ kính giày",
+  "en": ""
+ },
+ {
+  "vi": "Đảo trang sức",
+  "en": ""
+ },
+ {
+  "vi": "Xe máy cổ trưng bày",
+  "en": ""
+ },
+ {
+  "vi": "Biển neon",
+  "en": ""
+ },
+ {
+  "vi": "Lò sưởi ngoài trời",
+  "en": ""
+ },
+ {
+  "vi": "Quầy bar hồ bơi",
+  "en": ""
+ },
+ {
+  "vi": "Kính thiên văn",
+  "en": ""
+ },
+ {
+  "vi": "Rạp tại gia",
+  "en": ""
+ },
+ {
+  "vi": "Hầm rượu vang",
+  "en": ""
+ },
+ {
+  "vi": "Thư phòng cổ",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tập",
+  "en": ""
+ },
+ {
+  "vi": "Hiên ngắm sao",
+  "en": ""
+ },
+ {
+  "vi": "Biệt thự vườn Đà Lạt",
+  "en": ""
+ },
+ {
+  "vi": "Đồi thông, cuối dốc sương",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia, người làm vườn",
+  "en": ""
+ },
+ {
+  "vi": "Chòi vườn thông",
+  "en": ""
+ },
+ {
+  "vi": "Biệt thự Đông Dương",
+  "en": ""
+ },
+ {
+  "vi": "Phố Pháp, hàng me tây",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia, bảo vệ, làm vườn",
+  "en": ""
+ },
+ {
+  "vi": "Sảnh khách",
+  "en": ""
+ },
+ {
+  "vi": "Vườn hoa sứ",
+  "en": ""
+ },
+ {
+  "vi": "Hiên lầu",
+  "en": ""
+ },
+ {
+  "vi": "Biệt thự kính Mây",
+  "en": ""
+ },
+ {
+  "vi": "Khu đô thị ven hồ",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia, bảo vệ, kỹ thuật",
+  "en": ""
+ },
+ {
+  "vi": "Biệt thự biển Mũi Né",
+  "en": ""
+ },
+ {
+  "vi": "Mũi Né, sát bãi cát",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia, đầu bếp, cứu hộ hồ bơi",
+  "en": ""
+ },
+ {
+  "vi": "Hồ bơi nhìn biển",
+  "en": ""
+ },
+ {
+  "vi": "Chòi biển",
+  "en": ""
+ },
+ {
+  "vi": "Hiên ngắm biển",
+  "en": ""
+ },
+ {
+  "vi": "Penthouse Sky Mây",
+  "en": ""
+ },
+ {
+  "vi": "Tầng 52–53, tháp Sky Mây",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia, lễ tân tòa, đầu bếp",
+  "en": ""
+ },
+ {
+  "vi": "Sân thượng 53",
+  "en": ""
+ },
+ {
+  "vi": "Dinh thự đảo Hòn Mây",
+  "en": ""
+ },
+ {
+  "vi": "Đảo riêng, 40 phút ca nô",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia, đầu bếp, thủy thủ, bảo vệ đảo",
+  "en": ""
+ },
+ {
+  "vi": "Đại sảnh",
+  "en": ""
+ },
+ {
+  "vi": "Gara & bến ca nô",
+  "en": ""
+ },
+ {
+  "vi": "Thư viện",
+  "en": ""
+ },
+ {
+  "vi": "Sân thượng ngắm đảo",
+  "en": ""
+ },
+ {
+  "vi": "Chòi bãi biển",
+  "en": ""
+ },
+ {
+  "vi": "Sân ven sông",
+  "en": ""
+ },
+ {
+  "vi": "Sân thượng ngắm sông",
+  "en": ""
+ },
+ {
+  "vi": "một chỗ ngồi",
+  "en": ""
+ },
+ {
+  "vi": "Ngày hội xuất hiện ngẫu nhiên. Mở ca có nhịp Ngày hội để tham gia.",
+  "en": ""
+ },
+ {
+  "vi": "Kem viên",
+  "en": ""
+ },
+ {
+  "vi": "Kem viên bơ",
+  "en": ""
+ },
+ {
+  "vi": "Dẫn đường",
+  "en": ""
+ },
+ {
+  "vi": "Tắm tỉa thú nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Tắm tỉa thú vừa",
+  "en": ""
+ },
+ {
+  "vi": "Tắm tỉa thú lớn",
+  "en": ""
+ },
+ {
+  "vi": "Tắm tỉa mèo",
+  "en": ""
+ },
+ {
+  "vi": "Trông chó",
+  "en": ""
+ },
+ {
+  "vi": "Trông mèo",
+  "en": ""
+ },
+ {
+  "vi": "Giao xe máy",
+  "en": ""
+ },
+ {
+  "vi": "Giao xe tải",
+  "en": ""
+ },
+ {
+  "vi": "Tháo gel",
+  "en": ""
+ },
+ {
+  "vi": "Nối móng",
+  "en": ""
+ },
+ {
+  "vi": "Chấm đá",
+  "en": ""
+ },
+ {
+  "vi": "Bầu",
+  "en": ""
+ },
+ {
+  "vi": "Gà",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Công an kiểm tra tài sản · Thu 10% tiền lời chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "Chào em, nghe nói em lời ở chợ đen hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.",
+  "en": ""
+ },
+ {
+  "vi": "🍀 Lộc trời cho ×10",
+  "en": ""
+ },
+ {
+  "vi": "Anh Tèo",
+  "en": ""
+ },
+ {
+  "vi": "Vòng thường",
+  "en": ""
+ },
+ {
+  "vi": "Vòng lật ngược",
+  "en": ""
+ },
+ {
+  "vi": "Vòng Kinh đôi",
+  "en": ""
+ },
+ {
+  "vi": "Hũ đêm hội",
+  "en": ""
+ },
+ {
+  "vi": "Ông Hai",
+  "en": ""
+ },
+ {
+  "vi": "Cao tay ô ăn quan",
+  "en": ""
+ },
+ {
+  "vi": "Thắng Ông Hai một ván ô ăn quan ở chợ đen.",
+  "en": ""
+ },
+ {
+  "vi": "Tay ném vòng thần sầu",
+  "en": ""
+ },
+ {
+  "vi": "Ném trúng cả năm cổ chai trong một lượt ở chợ đen.",
+  "en": ""
+ },
+ {
+  "vi": "Thần lô tô chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "Hô “Kinh!” thắng một ván lô tô ở chợ đen.",
+  "en": ""
+ },
+ {
+  "vi": "Kinh đôi rộn ràng",
+  "en": ""
+ },
+ {
+  "vi": "Thắng một vòng Kinh đôi ở gánh lô tô chợ đen.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc ngược như xuôi",
+  "en": ""
+ },
+ {
+  "vi": "Thắng một vòng lô tô lật ngược ở chợ đen.",
+  "en": ""
+ },
+ {
+  "vi": "Ôm hũ đêm hội",
+  "en": ""
+ },
+ {
+  "vi": "Kinh cả tờ, ôm Hũ đêm hội ở gánh lô tô.",
+  "en": ""
+ },
+ {
+  "vi": "Trúng bão bầu cua",
+  "en": ""
+ },
+ {
+  "vi": "Ba con xúc xắc cùng ra đúng mặt bạn đặt ở chợ đen.",
+  "en": ""
+ },
+ {
+  "vi": "Mắt thần phi tiêu",
+  "en": ""
+ },
+ {
+  "vi": "Phóng phi tiêu cắm ngay hồng tâm ở chợ đen.",
+  "en": ""
+ },
+ {
+  "vi": "Bị công an hỏi thăm",
+  "en": ""
+ },
+ {
+  "vi": "Đang chơi ở chợ đen thì công an phường ập vào kiểm tra.",
+  "en": ""
+ },
+ {
+  "vi": "Vua trò chơi",
+  "en": ""
+ },
+ {
+  "vi": "Đứng đầu Bảng vàng chợ đen lúc chốt danh hiệu.",
+  "en": ""
+ },
+ {
+  "vi": "Cao thủ chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "Lọt top 10 Bảng vàng chợ đen lúc chốt danh hiệu.",
+  "en": ""
+ },
+ {
+  "vi": "🦀 Bầu cua chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "🕯️ Chiếu trong chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "🎱 Lô tô chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "🪨 Ô ăn quan chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "💍 Ném vòng chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "🎯 Phi tiêu chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "🎟️ Vé số cào chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "🗡️ Phóng dao chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "ván",
+  "en": ""
+ },
+ {
+  "vi": "ván thắng",
+  "en": ""
+ },
+ {
+  "vi": "vé",
+  "en": ""
+ },
+ {
+  "vi": "Sạp phi tiêu đã đổi thành trò phóng dao. Tải lại trang để chơi nha.",
+  "en": ""
+ },
+ {
+  "vi": "Chợ đen đã tàn, hẹn lần sau nha!",
+  "en": ""
+ },
+ {
+  "vi": "Chợ đen chưa mở đâu, hẹn bạn ngày chợ mở nha!",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay chơi vậy đủ rồi, mai ghé tiếp nha.",
+  "en": ""
+ },
+ {
+  "vi": "Ván lớn cỡ này nhà cái không nhận đâu, đặt ít lại chút nha.",
+  "en": ""
+ },
+ {
+  "vi": "Ví không đủ xu cho ván này. Chợ đen không cho vay để chơi đâu nha.",
+  "en": ""
+ },
+ {
+  "vi": "Từ từ thôi, xúc xắc chưa kịp lăn!",
+  "en": ""
+ },
+ {
+  "vi": "Lượt trước còn chờ: chơi tiếp hoặc dừng nhận thưởng đã nha.",
+  "en": ""
+ },
+ {
+  "vi": "Màn này đang chơi dở, phóng tiếp nha.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ quầy phóng dao hết xu trả thưởng hôm nay rồi, mai ghé lại nha.",
+  "en": ""
+ },
+ {
+  "vi": "Màn này đã xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Lượt này đã đổi rồi. Mở lại bia hiện tại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Lâu quá bia ngừng quay rồi, lượt này thua. Phóng lượt mới nha.",
+  "en": ""
+ },
+ {
+  "vi": "Mạng chập chờn, mấy dao vừa rồi chưa tới bia. Phóng tiếp nha.",
+  "en": ""
+ },
+ {
+  "vi": "Dao chạm dao rồi! Lượt này thua hết.",
+  "en": ""
+ },
+ {
+  "vi": "Không có màn nào đang chờ chơi tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Không có thưởng nào đang chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Thưởng lượt này đã vô ví rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Công an kiểm tra chợ đen · Thu tiền trong ví",
+  "en": ""
+ },
+ {
+  "vi": "Công an thu 10% tiền lời chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "Công an hỏi nguồn tài sản, nhưng ví với tài khoản trống trơn nên lần này cho qua.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác chợ đen không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chợ đen chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn mặt để đặt nha.",
+  "en": ""
+ },
+ {
+  "vi": "Chờ chú Tám mở bát đã nha!",
+  "en": ""
+ },
+ {
+  "vi": "Hòa vốn.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chẵn hay lẻ nha.",
+  "en": ""
+ },
+ {
+  "vi": "Chẵn",
+  "en": ""
+ },
+ {
+  "vi": "Lẻ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn loại vé và số tờ nha.",
+  "en": ""
+ },
+ {
+  "vi": "Gánh lô tô giờ không nhận cược phụ, bỏ chọn chẵn lẻ và cột rồi mua tờ nha.",
+  "en": ""
+ },
+ {
+  "vi": "Ván lô tô này đã xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng này cần đủ nhiều hàng hơn, tải lại trang để chơi tiếp nha.",
+  "en": ""
+ },
+ {
+  "vi": "Ván này tàn lâu rồi, mua tờ mới nha.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng này chưa đủ số đâu, dò lại nha!",
+  "en": ""
+ },
+ {
+  "vi": "Kinh hụt rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Dò lại cho kỹ nha.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn người chơi cùng nha.",
+  "en": ""
+ },
+ {
+  "vi": "Ông đi trước rồi, tới cháu nha!",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đi trước nha!",
+  "en": ""
+ },
+ {
+  "vi": "Ván ô ăn quan này đã xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Nước này đi rồi, bàn đã sang lượt mới. Coi lại bàn rồi đi tiếp nha.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một ô của bạn còn quân nha.",
+  "en": ""
+ },
+ {
+  "vi": "Hòa ván ô ăn quan.",
+  "en": ""
+ },
+ {
+  "vi": "Thua ván ô ăn quan, ván sau gỡ nha.",
+  "en": ""
+ },
+ {
+  "vi": "Từ từ thôi nha, cô Tư đang nhặt vòng!",
+  "en": ""
+ },
+ {
+  "vi": "Lượt ném này đã xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Lượt này lâu quá rồi, phát vòng mới nha.",
+  "en": ""
+ },
+ {
+  "vi": "Lượt ném này không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chuỗi kết quả chợ đen không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu chợ đen không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu phóng dao không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "🕶️ Nộp bảo kê chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "🕶️ Bị trấn lột ở chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Công an bắt ở chợ đen · Nộp phạt",
+  "en": ""
+ },
+ {
+  "vi": "Đàn em chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "Ví không đủ 10.000 xu tiền bảo kê.",
+  "en": ""
+ },
+ {
+  "vi": "Vào chợ đen phải nộp bảo kê trước đã. Tải lại trang nếu chưa thấy đàn em ở cổng nha.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn bị đuổi khỏi chợ đen rồi, mai quay lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không nộp hả? Vậy anh em lục ví chút nha.",
+  "en": ""
+ },
+ {
+  "vi": "Ví trống trơn à? Thôi vô đi, lần sau nhớ nộp.",
+  "en": ""
+ },
+ {
+  "vi": "Nộp đủ rồi, cứ ra vô thoải mái.",
+  "en": ""
+ },
+ {
+  "vi": "Tất cả đứng im! Đánh bạc ăn tiền hả? Tiền cược tịch thu, nộp phạt đi!",
+  "en": ""
+ },
+ {
+  "vi": "Tay gì mà nhanh dữ vậy? Chơi kiểu này là gian rồi, về đồn làm việc!",
+  "en": ""
+ },
+ {
+  "vi": "Ví trống trơn, đàn em cho qua.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Sáu cho vay nóng",
+  "en": ""
+ },
+ {
+  "vi": "Chợ đen đang đóng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã nhận tiền vốn chợ đen rồi nha.",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Tiền vốn chợ đen (chủ chợ tặng)",
+  "en": ""
+ },
+ {
+  "vi": "Trả hết khoản đang vay rồi mới vay tiếp nha.",
+  "en": ""
+ },
+ {
+  "vi": "Còn nợ vay nóng kỳ trước, trả xong rồi vay tiếp nha.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn không nợ gì cả.",
+  "en": ""
+ },
+ {
+  "vi": "💸 Trả vay nóng chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "💸 Chợ đen tàn: thu vay nóng",
+  "en": ""
+ },
+ {
+  "vi": "Chợ đen thu vay nóng",
+  "en": ""
+ },
+ {
+  "vi": "💸 Trả dần nợ vay nóng chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "(hết nợ)",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu vay nóng chợ đen không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Sói Con",
+  "en": ""
+ },
+ {
+  "vi": "Xúc Xích",
+  "en": ""
+ },
+ {
+  "vi": "Tia Chớp",
+  "en": ""
+ },
+ {
+  "vi": "Ớt",
+  "en": ""
+ },
+ {
+  "vi": "Gấu",
+  "en": ""
+ },
+ {
+  "vi": "🐕 Đua chó chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "Đàn chó đã vào lượt đua mới rồi, coi lại rồi chọn nha.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một chú chó để cổ vũ nha.",
+  "en": ""
+ },
+ {
+  "vi": "🍡 Ăn vặt chợ đen",
+  "en": ""
+ },
+ {
+  "vi": "🍡 Ăn vặt hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Kẹo bông gòn",
+  "en": ""
+ },
+ {
+  "vi": "Xốp xốp, ngọt lịm, dính cả mép luôn!",
+  "en": ""
+ },
+ {
+  "vi": "Bắp nướng mỡ hành",
+  "en": ""
+ },
+ {
+  "vi": "Thơm lừng mỡ hành, gặm từng hàng hạt nóng hổi!",
+  "en": ""
+ },
+ {
+  "vi": "Bánh tráng nướng",
+  "en": ""
+ },
+ {
+  "vi": "Giòn rụm, trứng cút với hành phi, thơm phức!",
+  "en": ""
+ },
+ {
+  "vi": "Ly nước mía tắc",
+  "en": ""
+ },
+ {
+  "vi": "Mát rượi cả cổ họng, tỉnh hẳn người!",
+  "en": ""
+ },
+ {
+  "vi": "Ly chè ba màu",
+  "en": ""
+ },
+ {
+  "vi": "Đậu xanh, đậu đỏ, nước cốt dừa béo ngậy, mát lạnh!",
+  "en": ""
+ },
+ {
+  "vi": "Chén tàu hũ nước đường",
+  "en": ""
+ },
+ {
+  "vi": "Tàu hũ mềm mịn, nước đường gừng ấm bụng!",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đủ xu",
+  "en": ""
+ },
+ {
+  "vi": "· (\\d{1,6}) món",
+  "en": ""
+ },
+ {
+  "vi": "1 món",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một món nha.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay Ông Hai đánh nhiều ván quá, ông mệt rồi. Mai cháu ghé nha!",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Công an tịch thu tiền thắng Ông Hai",
+  "en": ""
+ },
+ {
+  "vi": "Thắng Ông Hai liền mấy ván, tiền vô như nước hả? Bàn này là sòng bạc trá hình. Tiền thắng tịch thu, về đồn làm việc!",
+  "en": ""
+ },
+ {
+  "vi": "Công an tịch thu tiền thắng Ông Hai",
+  "en": ""
+ },
+ {
+  "vi": "📸 Chụp ảnh chợ đen",
+  "en": ""
+ },
+ {
   "vi": "📸 Chụp ảnh hội chợ",
   "en": ""
  },
@@ -801,1002 +1797,6 @@
  },
  {
   "vi": "Showroom Phố",
-  "en": ""
- },
- {
-  "vi": "Du thuyền",
-  "en": ""
- },
- {
-  "vi": "Bến du thuyền",
-  "en": ""
- },
- {
-  "vi": "Máy bay riêng",
-  "en": ""
- },
- {
-  "vi": "Sân bay tư nhân",
-  "en": ""
- },
- {
-  "vi": "Đỏ son",
-  "en": ""
- },
- {
-  "vi": "Cam đào",
-  "en": ""
- },
- {
-  "vi": "Vàng chanh",
-  "en": ""
- },
- {
-  "vi": "Xanh biển",
-  "en": ""
- },
- {
-  "vi": "Trắng ngọc",
-  "en": ""
- },
- {
-  "vi": "Bạc ánh kim",
-  "en": ""
- },
- {
-  "vi": "Xe đạp phố",
-  "en": ""
- },
- {
-  "vi": "Khung thép, giỏ mây đằng trước, chuông kêu leng keng. Chở được một bó hoa.",
-  "en": ""
- },
- {
-  "vi": "Đạp một vòng",
-  "en": ""
- },
- {
-  "vi": "Xe đạp điện",
-  "en": ""
- },
- {
-  "vi": "Sạc một đêm chạy cả ngày, lên dốc cầu nhẹ tênh.",
-  "en": ""
- },
- {
-  "vi": "Chạy một vòng",
-  "en": ""
- },
- {
-  "vi": "Xe số Cub",
-  "en": ""
- },
- {
-  "vi": "Bền như trâu, đổ xăng một lần chạy cả tuần. Ai trong hẻm cũng biết sửa.",
-  "en": ""
- },
- {
-  "vi": "Chạy một vòng phố",
-  "en": ""
- },
- {
-  "vi": "Xe tay ga cổ điển",
-  "en": ""
- },
- {
-  "vi": "Dáng tròn, yên da nâu, cốp rộng để vừa áo mưa và hộp cơm.",
-  "en": ""
- },
- {
-  "vi": "Ô tô mini 4 chỗ",
-  "en": ""
- },
- {
-  "vi": "Nhỏ gọn, len hẻm xe hơi dễ dàng, máy lạnh mát rượi ngày nắng.",
-  "en": ""
- },
- {
-  "vi": "Lái xe hóng gió",
-  "en": ""
- },
- {
-  "vi": "SUV 7 chỗ",
-  "en": ""
- },
- {
-  "vi": "Gầm cao, cốp rộng, đủ chỗ chở cả nhà về quê dịp lễ.",
-  "en": ""
- },
- {
-  "vi": "Chở cả nhà đi chơi",
-  "en": ""
- },
- {
-  "vi": "Xe mui trần cổ",
-  "en": ""
- },
- {
-  "vi": "Sơn bóng loáng, vô lăng gỗ, mở mui ra là cả phố ngoái nhìn.",
-  "en": ""
- },
- {
-  "vi": "Mở mui dạo phố",
-  "en": ""
- },
- {
-  "vi": "Siêu xe Tia Chớp",
-  "en": ""
- },
- {
-  "vi": "Động cơ đặt giữa, cửa mở cánh chim. Đỗ trước chợ là cả hẻm kéo ra chụp hình.",
-  "en": ""
- },
- {
-  "vi": "Chạy một vòng cao tốc",
-  "en": ""
- },
- {
-  "vi": "Thuyền buồm nhỏ",
-  "en": ""
- },
- {
-  "vi": "Hai cánh buồm trắng, cabin nhỏ đủ pha ấm trà. Đậu ở bến cuối đê.",
-  "en": ""
- },
- {
-  "vi": "Giương buồm ra sông",
-  "en": ""
- },
- {
-  "vi": "Du thuyền Hoàng Hôn",
-  "en": ""
- },
- {
-  "vi": "Boong gỗ rộng, phòng ngủ dưới khoang, sân thượng ngắm hoàng hôn trên vịnh.",
-  "en": ""
- },
- {
-  "vi": "Ra khơi ngắm hoàng hôn",
-  "en": ""
- },
- {
-  "vi": "Siêu du thuyền Ngọc Trai",
-  "en": ""
- },
- {
-  "vi": "Ba tầng boong, bể bơi trên mũi, bếp riêng có đầu bếp. Neo ngoài vịnh là cả bến ngoái nhìn.",
-  "en": ""
- },
- {
-  "vi": "Mở tiệc trên boong",
-  "en": ""
- },
- {
-  "vi": "Máy bay cánh quạt",
-  "en": ""
- },
- {
-  "vi": "Hai chỗ ngồi, cánh cao, cất cánh từ đường băng cỏ ngoài sân bay tư nhân.",
-  "en": ""
- },
- {
-  "vi": "Bay ngắm phố",
-  "en": ""
- },
- {
-  "vi": "Trực thăng riêng",
-  "en": ""
- },
- {
-  "vi": "Bốn ghế, đáp được trên sân thượng. Sáng uống cà phê ở phố, trưa đã ngắm biển.",
-  "en": ""
- },
- {
-  "vi": "Bay một vòng ngắm sông",
-  "en": ""
- },
- {
-  "vi": "Phản lực riêng",
-  "en": ""
- },
- {
-  "vi": "Tám ghế da, bay êm như ngồi phòng khách. Cuối tuần ra đảo ăn hải sản rồi về.",
-  "en": ""
- },
- {
-  "vi": "Bay ra đảo cuối tuần",
-  "en": ""
- },
- {
-  "vi": "Gió bờ kênh mát rượi, bạn ghé mua ly nước mía rồi thong thả về.",
-  "en": ""
- },
- {
-  "vi": "Một vòng quanh chợ, cô bán hoa dúi cho cành cúc họa mi bỏ giỏ xe.",
-  "en": ""
- },
- {
-  "vi": "Đường chiều vắng, đèn phố vừa lên. Đầu óc nhẹ tênh.",
-  "en": ""
- },
- {
-  "vi": "Mở cửa kính, bật bài hát quen, chạy dọc đường ven sông tới lúc trời tắt nắng.",
-  "en": ""
- },
- {
-  "vi": "Bà Tám đi nhờ ra chợ đầu mối, khen xe êm quá trời.",
-  "en": ""
- },
- {
-  "vi": "Ghé quán bánh xèo ngoại ô, ăn xong lái về thong thả.",
-  "en": ""
- },
- {
-  "vi": "Neo ngoài vịnh, mặt trời lặn đỏ rực sau rặng núi. Gió mặn mà dễ chịu.",
-  "en": ""
- },
- {
-  "vi": "Bầy cá chuồn nhảy quanh mũi thuyền. Bạn thả câu, chẳng cần cá cắn.",
-  "en": ""
- },
- {
-  "vi": "Ngồi trên boong pha ấm trà, nghe sóng vỗ lách tách.",
-  "en": ""
- },
- {
-  "vi": "Từ trên cao, cả khu phố nhỏ như mô hình: thấy cả mái nhà Bà Tám.",
-  "en": ""
- },
- {
-  "vi": "Bay qua dòng sông lúc hoàng hôn, mây hồng trải dài tới chân trời.",
-  "en": ""
- },
- {
-  "vi": "Hạ cánh xuống đảo, ăn đĩa ghẹ hấp rồi bay về kịp giờ cơm tối.",
-  "en": ""
- },
- {
-  "vi": "Biển số này thuộc Nhà đấu giá, chọn biển khác nhé.",
-  "en": ""
- },
- {
-  "vi": "Mua xe chỉ có trong chế độ hành trình.",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa có chiếc này.",
-  "en": ""
- },
- {
-  "vi": "Xe đang hỏng. Sửa xong rồi đi nhé.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay bạn đã đi chơi một chuyến rồi. Mai đi tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Nhà xe trong bản lưu không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chọn một chiếc xe nhé.",
-  "en": ""
- },
- {
-  "vi": "Màu sơn này không có trong bảng màu.",
-  "en": ""
- },
- {
-  "vi": "Thông tin mua xe không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Đang đi chiếc này.",
-  "en": ""
- },
- {
-  "vi": "Đã cất vào nhà xe.",
-  "en": ""
- },
- {
-  "vi": "Thông tin sơn xe không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chiếc xe vẫn y như cũ.",
-  "en": ""
- },
- {
-  "vi": "Không khoe xe nào trên hồ sơ nữa.",
-  "en": ""
- },
- {
-  "vi": "Tiền xăng",
-  "en": ""
- },
- {
-  "vi": "Bán xe",
-  "en": ""
- },
- {
-  "vi": "Thao tác nhà xe không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Bạn đứng quầy trà sữa: nghe khách gọi, pha từng lớp, dán nắp rồi trao ly.",
-  "en": ""
- },
- {
-  "vi": "Khách vãng lai ghé quầy",
-  "en": ""
- },
- {
-  "vi": "Bấm [[Nghe gọi món]] để đọc phiếu, rồi pha đúng trà, siro, topping, đá, đường.",
-  "en": ""
- },
- {
-  "vi": "Khách quen “Như mọi khi”",
-  "en": ""
- },
- {
-  "vi": "Khách không đọc lại món. Mở 📒 Sổ khách quen để xem ly quen rồi pha đúng như vậy.",
-  "en": ""
- },
- {
-  "vi": "Đơn nhóm 2–3 ly",
-  "en": ""
- },
- {
-  "vi": "Một khách gọi nhiều ly. Chọn từng tab Ly 1, Ly 2… pha xong hết mới có một đánh giá.",
-  "en": ""
- },
- {
-  "vi": "Đơn app (tài xế ghé lấy, từ cấp 2)",
-  "en": ""
- },
- {
-  "vi": "Phiếu in sẵn, không cần hỏi. Pha kịp trước khi thanh tài xế cạn; app giữ 20% tiền.",
-  "en": ""
- },
- {
-  "vi": "Chị Hạnh đặt 3 ly có giờ hẹn. Xong kịp giờ được thưởng 15 xu.",
-  "en": ""
- },
- {
-  "vi": "Ly signature cho Hân quay video",
-  "en": ""
- },
- {
-  "vi": "Pha đúng từng lời dặn: ly chuẩn được 20 xu quảng bá, ly lệch chỉ được 3★.",
-  "en": ""
- },
- {
-  "vi": "Nhóm học sinh tan học",
-  "en": ""
- },
- {
-  "vi": "Nhiều bạn vào hàng cùng lúc, kiên nhẫn thấp. Chọn “ly nhanh” thì cả nhóm cùng một công thức.",
-  "en": ""
- },
- {
-  "vi": "Chăm quầy",
-  "en": ""
- },
- {
-  "vi": "Ủ trà, nấu trân châu, lau máy dán nắp, đặt siro và ly trước khi cạn.",
-  "en": ""
- },
- {
-  "vi": "👋 Bấm [[Mời khách tiếp theo]] hoặc chạm khách trong hàng chờ.",
-  "en": ""
- },
- {
-  "vi": "👂 Bấm [[Nghe gọi món]] để khách đọc món; phiếu hiện ra bên cạnh ly.",
-  "en": ""
- },
- {
-  "vi": "🥤 [[Lấy ly]] đúng cỡ M hoặc L ở Chồng ly.",
-  "en": ""
- },
- {
-  "vi": "🫖 Chạm ô trà nền trước, rồi siro và topping đúng phiếu (tối đa 3 topping).",
-  "en": ""
- },
- {
-  "vi": "🧊 Chọn mức đá ([[Ít đá]], [[Đá vừa]]…) và mức đường 0–100%.",
-  "en": ""
- },
- {
-  "vi": "🔎 [[So phiếu]] giúp xem phần nào chưa đúng, không tính lỗi kiểm tra. Cần làm lại thì [[Đổ ly]]; đổ ly vẫn tính hao phí.",
-  "en": ""
- },
- {
-  "vi": "🔥 Bấm [[Ép nắp]], rồi [[Nhả tay!]] khi kim vào vùng xanh. Vội thì [[Dán thường]].",
-  "en": ""
- },
- {
-  "vi": "🛎️ Bấm [[Giao món]] (đơn app: [[Giao tài xế]]) để trao ly và thu tiền.",
-  "en": ""
- },
- {
-  "vi": "📱 [[Kho & đặt hàng]] và [[Đánh giá]] nằm ở thanh dưới trong lúc pha; trạm chưa tới lượt gọn một dòng, bấm để mở.",
-  "en": ""
- },
- {
-  "vi": "🧾 Đúng trà nền, cỡ ly, siro và từng topping — sai một thứ là khách trả ly.",
-  "en": ""
- },
- {
-  "vi": "🍯 Đường đúng số % và 🧊 đá đúng mức khách dặn.",
-  "en": ""
- },
- {
-  "vi": "✨ Nhả tay trong vùng xanh để nắp căng đẹp: khách thưởng thêm 1 xu.",
-  "en": ""
- },
- {
-  "vi": "🟤 Dùng trân châu còn dẻo, trà còn thơm; mẻ để lâu bị chê cứng, chát.",
-  "en": ""
- },
- {
-  "vi": "⏱️ Làm nhanh: khách không phải chờ lâu, đơn app kịp giờ tài xế.",
-  "en": ""
- },
- {
-  "vi": "📒 Khách quen: bấm [[Như mọi khi hả?]] (+8 kiên nhẫn); ly chuẩn được thêm 2 xu.",
-  "en": ""
- },
- {
-  "vi": "💝 Quầy không phải thối tiền. Ly chuẩn, khách vui thì đôi khi được tip vài xu hoặc quà nhỏ; ly 1–2★ thì không.",
-  "en": ""
- },
- {
-  "vi": "Sai trà nền, cỡ ly, siro hoặc topping",
-  "en": ""
- },
- {
-  "vi": "Khách trả ly ngay: ly bị bỏ, kiên nhẫn −12, quầy dính vệt trà, review nhớ lần phải chờ.",
-  "en": ""
- },
- {
-  "vi": "Lệch đường hoặc đá",
-  "en": ""
- },
- {
-  "vi": "Lệch 1 nấc là lỗi nhỏ (4★), lệch 2 nấc là lỗi rõ (3★). Khách càu nhàu, bớt tiền hoặc trả ly.",
-  "en": ""
- },
- {
-  "vi": "Nắp cháy xém, trân châu cứng, trà chát",
-  "en": ""
- },
- {
-  "vi": "Mỗi thứ là một lỗi nhỏ, kéo sao đánh giá xuống.",
-  "en": ""
- },
- {
-  "vi": "Để khách chờ quá lâu",
-  "en": ""
- },
- {
-  "vi": "Kiên nhẫn còn 25% mà chưa có ly: khách bỏ về (cả nhóm đi theo), để review 2★.",
-  "en": ""
- },
- {
-  "vi": "Đơn app trễ giờ tài xế",
-  "en": ""
- },
- {
-  "vi": "Trễ bị ghi lỗi “giao trễ”. Trễ thêm 12 nhịp chưa dán nắp: đơn bị hủy, review 2★.",
-  "en": ""
- },
- {
-  "vi": "Quầy còn vệt trà khi đoàn kiểm tra tới",
-  "en": ""
- },
- {
-  "vi": "Mở sổ ngay thì bị phạt 40 xu; xin lau trước thì khách chờ lâu hơn. Dúi phong bì: phạt tới 80 xu.",
-  "en": ""
- },
- {
-  "vi": "Nhiều lỗi trong ngày hoặc một ly sai nặng",
-  "en": ""
- },
- {
-  "vi": "Khách gửi báo cáo lên app, độ tin cậy của phố giảm.",
-  "en": ""
- },
- {
-  "vi": "🫖 Trước giờ mở cửa, vào [[Kho & đặt hàng]]: ủ trà, [[Nấu +5]] trân châu — không mất thời gian.",
-  "en": ""
- },
- {
-  "vi": "⏰ Khi quán mở, ủ trà hay nấu trân châu mất 20 phút. Mẻ đã cứng, chát thì [[Đổ mẻ cũ]].",
-  "en": ""
- },
- {
-  "vi": "🟤 Trân châu dẻo 4 giờ, tới giờ thứ 6 là cứng phải bỏ. Trà ủ thơm 6 giờ, quá 9 giờ thì bỏ.",
-  "en": ""
- },
- {
-  "vi": "🌙 Trà ủ và trân châu không để qua đêm: phần dư bị bỏ khi khép ca.",
-  "en": ""
- },
- {
-  "vi": "🛒 Siro, thạch, topping hộp và ly phải [[Đặt hàng]] từ nhà cung cấp, trả tiền khi đặt.",
-  "en": ""
- },
- {
-  "vi": "🚚 Chợ đầu mối rẻ nhất: đặt trước 13:00 hàng tới chiều nay, đặt sau thì sáng mai trước giờ mở cửa.",
-  "en": ""
- },
- {
-  "vi": "⏰ Hạt Nắng chạy bốn chuyến (chốt 09:00, 12:00, 15:00, 18:00), tới sau khoảng một tiếng. Hỏa tốc 15–30 phút nhưng đắt nhất.",
-  "en": ""
- },
- {
-  "vi": "📦 Xưởng topping Đài Mây rẻ hẳn nhưng 1–2 ngày mới tới: đặt sớm topping hộp và ly cho cả tuần.",
-  "en": ""
- },
- {
-  "vi": "🥤 Ly bán theo thùng 20 cái; dưới 8 ly là nên đặt thêm. Hết giữa ca: [[Gọi hỏa tốc]] hoặc [[Mời khách đổi]].",
-  "en": ""
- },
- {
-  "vi": "⚙️ Máy dán nắp bám keo sau 12 ly, bẩn sau 20 ly: bấm [[Lau máy]] (20 phút).",
-  "en": ""
- },
- {
-  "vi": "🛠️ Tab [[Nâng cấp]]: chuông gọi món (cấp 2, 60 xu), nồi ủ trân châu (cấp 2, 90 xu), tủ mát topping (cấp 3, 120 xu), máy dán nắp tự động (cấp 4, 140 xu).",
-  "en": ""
- },
- {
-  "vi": "⭐ Tay nghề lên cấp theo số ly đã pha: cấp 2 ở 3 ly, cấp 3 ở 10, cấp 4 ở 18, cấp 5 ở 28. Mỗi cấp mở thêm trà, siro, topping.",
-  "en": ""
- },
- {
-  "vi": "📱 Từ cấp 2 có đơn app. Từ cấp 3 và cấp 5, mỗi ngày có thể thêm một chuyện bất ngờ.",
-  "en": ""
- },
- {
-  "vi": "📋 Quản lý thị trường kiểm tra: quầy sạch được +10 XP; còn vệt trà bị phạt. Trước đó nhớ [[Lau quầy]].",
-  "en": ""
- },
- {
-  "vi": "🟤 Hết trân châu giữa trưa, 🔌 cúp điện máy dán nắp, 💦 ly vừa dán bị đổ, 📦 hàng giao thiếu.",
-  "en": ""
- },
- {
-  "vi": "🎒 Học sinh ùa vào, 💼 văn phòng đặt 3 ly, 📱 Hân xin quay video, 🔄 khách đổi ý, 🪙 bé thiếu tiền lẻ.",
-  "en": ""
- },
- {
-  "vi": "👵 Chuyện bác Tư: ghé ba lần qua nhiều ngày, mỗi lần bạn chọn một cách cư xử.",
-  "en": ""
- },
- {
-  "vi": "🚨 Ngoài quầy: khách mất laptop, người tố có gián đòi tiền, “reviewer” dọa 1 sao, trộm hũ tiền boa.",
-  "en": ""
- },
- {
-  "vi": "Nghe gọi món",
-  "en": ""
- },
- {
-  "vi": "Mời khách tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Đổ ly",
-  "en": ""
- },
- {
-  "vi": "Ép nắp",
-  "en": ""
- },
- {
-  "vi": "Nhả tay!",
-  "en": ""
- },
- {
-  "vi": "Giao món",
-  "en": ""
- },
- {
-  "vi": "Giao tài xế",
-  "en": ""
- },
- {
-  "vi": "Như mọi khi hả?",
-  "en": ""
- },
- {
-  "vi": "Kho & đặt hàng",
-  "en": ""
- },
- {
-  "vi": "Nấu +5",
-  "en": ""
- },
- {
-  "vi": "Gọi hỏa tốc",
-  "en": ""
- },
- {
-  "vi": "Mời khách đổi",
-  "en": ""
- },
- {
-  "vi": "Lau máy",
-  "en": ""
- },
- {
-  "vi": "Lau quầy",
-  "en": ""
- },
- {
-  "vi": "Bạn đứng quầy tiệm tạp hóa của Cô Ba: tính tiền, xếp kệ, giữ sổ nợ và nhập hàng cho cả xóm.",
-  "en": ""
- },
- {
-  "vi": "Tính tiền tại quầy",
-  "en": ""
- },
- {
-  "vi": "Quét hàng cái, cân rau/cà/gạo đúng mã, áp khuyến mãi, kiểm tuổi nếu có bia. Khách trả tiền mặt, chuyển khoản hoặc xin ghi sổ.",
-  "en": ""
- },
- {
-  "vi": "Khách so giá Mây Mart",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3, khách cầm tờ rơi đòi bớt. Chọn bớt bằng giá siêu thị hoặc giữ giá; giữ giá có người bỏ món đó.",
-  "en": ""
- },
- {
-  "vi": "Giờ cao điểm",
-  "en": ""
- },
- {
-  "vi": "[[Mở quầy cho hàng chờ]]: 3–5 khách trả tiền mặt nối nhau, chỉ hàng đóng gói. Quét giỏ, [[TÍNH TIỀN]], thối đúng; kệ trống thì [[Nhập hàng]] hoặc [[Xin lỗi, mời khách sau]].",
-  "en": ""
- },
- {
-  "vi": "Đơn sỉ (đám cưới, đám giỗ, dã ngoại)",
-  "en": ""
- },
- {
-  "vi": "[[Nghe đơn sỉ]], báo [[Giá lẻ]] hoặc bớt 5–15% (tối đa 2 lần). Chốt thì nhận cọc 30%, thiếu hàng thì [[Nhập gấp]], rồi [[SOẠN HÀNG & GIAO]] trước khi đóng ca.",
-  "en": ""
- },
- {
-  "vi": "Xếp kệ theo hạn dùng",
-  "en": ""
- },
- {
-  "vi": "[[Nhận việc]], [[Đọc hạn]] từng lô, [[Rút]] lô hết hạn, [[Dán tem]] −30% lô còn 1–2 ngày, [[Xếp kệ theo thứ tự này]] (cũ trước), [[In lại tem giá]] nếu lệch, rồi [[Báo cô Ba đã xếp xong]].",
-  "en": ""
- },
- {
-  "vi": "Sổ ghi nợ hàng xóm",
-  "en": ""
- },
- {
-  "vi": "Chỉ ghi sổ khi còn hạn mức và không có nợ quá 5 ngày. Nhắc nợ khéo, hàng xóm đang kẹt thì giãn nợ.",
-  "en": ""
- },
- {
-  "vi": "Giỏ quen hàng tuần",
-  "en": ""
- },
- {
-  "vi": "Bốn khách quen có ngày lấy giỏ cố định. Soạn đủ món, còn hạn trong ngày; khách ghé lấy lúc đóng ca.",
-  "en": ""
- },
- {
-  "vi": "Nhập hàng, đổi tem giá (75–125% giá gốc), rút hàng hết hạn hôm nay, xả giá hàng hết hạn ngày mai, xoay kệ.",
-  "en": ""
- },
- {
-  "vi": "🛒 Bấm [[Mời khách đặt hàng lên quầy]] để xem giỏ và cách khách trả tiền.",
-  "en": ""
- },
- {
-  "vi": "📷 Bấm [[Quét]] từng món; rau, cà, gạo thì [[Đặt lên cân]], rổ của khách nhớ [[Trừ bì (tare)]].",
-  "en": ""
- },
- {
-  "vi": "🔞 Giỏ có bia: bấm [[Kiểm tuổi]] trước. Dưới 18 tuổi thì để bia lại kệ.",
-  "en": ""
- },
- {
-  "vi": "🏷️ Đủ điều kiện thì bấm [[Áp khuyến mãi]], khách so giá thì chọn [[Bớt còn]] hoặc [[Giữ giá]].",
-  "en": ""
- },
- {
-  "vi": "🧾 Soát hóa đơn rồi bấm [[CHỐT BILL]].",
-  "en": ""
- },
- {
-  "vi": "💵 Tiền mặt: [[Soi & sờ tiền]], đặt đúng tiền thối vào khay. Chuyển khoản: [[Kiểm loa/app ngân hàng]].",
-  "en": ""
- },
- {
-  "vi": "🚫 Soi ra tiền giả thì [[Nhờ khách đổi tờ khác]]. App báo chuyển thiếu thì [[Nhờ khách chuyển bù]].",
-  "en": ""
- },
- {
-  "vi": "📒 Xin ghi sổ: xem hạn mức; không ổn thì [[Từ chối khéo, nhận tiền mặt]].",
-  "en": ""
- },
- {
-  "vi": "✅ Bấm [[THU TIỀN & GIAO HÀNG]] (hoặc [[GHI SỔ & GIAO HÀNG]]) để giao hàng.",
-  "en": ""
- },
- {
-  "vi": "⏱️ Giờ cao điểm: [[Mở quầy cho hàng chờ]]. Số trên đầu mỗi khách là nhịp còn chờ được; hết nhịp là khách bỏ về.",
-  "en": ""
- },
- {
-  "vi": "📷 Quét đủ giỏ từng người (có bia thì [[Kiểm tuổi]] trước), rồi bấm [[TÍNH TIỀN]] để khách nhìn màn hình.",
-  "en": ""
- },
- {
-  "vi": "🪙 Khách đưa tiền: đặt đúng tiền thối vào khay, bấm [[THỐI TIỀN & GIAO HÀNG]] (đưa vừa đủ thì [[GIAO HÀNG]]).",
-  "en": ""
- },
- {
-  "vi": "📦 Kệ hết món khách cần: bấm [[Nhập hàng]], hàng tới thì [[Mở thùng lên kệ]]; không kịp thì [[Xin lỗi, mời khách sau]].",
-  "en": ""
- },
- {
-  "vi": "🛒 Khách cầm thêm món: mở 🛒 [[Kệ hàng]] để quét thêm; khuyến mãi không khớp giỏ gọn trong 🏷️ khuyến mãi khác.",
-  "en": ""
- },
- {
-  "vi": "🧾 Hóa đơn khớp giỏ: không dư món, đúng mã cân, không cân luôn rổ, đã trừ khuyến mãi.",
-  "en": ""
- },
- {
-  "vi": "💵 Thối đúng từng đồng; chuyển khoản chỉ tin loa/app ngân hàng của tiệm, không tin màn hình khách.",
-  "en": ""
- },
- {
-  "vi": "⏳ Làm nhanh: kiên nhẫn của khách còn cao thì điểm thời gian chờ mới đủ 5.",
-  "en": ""
- },
- {
-  "vi": "📒 Ghi sổ đúng luật: đủ hạn mức thì ghi, từ chối thì giải thích khéo.",
-  "en": ""
- },
- {
-  "vi": "🗂️ Việc kệ: không lô hết hạn, lô cũ trước lô mới, tem giá khớp bảng giá, tem −30% đúng lô.",
-  "en": ""
- },
- {
-  "vi": "⏱️ Giờ cao điểm: tính đúng giỏ từng người, thối đúng, không để ai chờ tới bỏ về.",
-  "en": ""
- },
- {
-  "vi": "🪙 Thối đúng, khách vui thì có người xua tay “khỏi thối”: tiền lẻ (tối đa 10 xu) thành tiền boa của tiệm.",
-  "en": ""
- },
- {
-  "vi": "💝 Giỏ quen đủ món, tươi: khách thân gửi thêm 2 xu, khách ruột 4 xu. Khách hài lòng khác đôi khi tip hoặc tặng quà nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Tính dư hoặc tính thiếu tiền",
-  "en": ""
- },
- {
-  "vi": "Khách soi hóa đơn bắt sửa, bị ghi lỗi. Khách không thật thà thì mang hàng về chưa tính tiền.",
-  "en": ""
- },
- {
-  "vi": "Thối thiếu tiền",
-  "en": ""
- },
- {
-  "vi": "Khách kỹ đếm ngay tại quầy, đòi thêm: lỗi rõ (3★). Khách khác về nhà mới thấy: 3★, thiếu từ 10 xu là 2★, có khi báo lên app.",
-  "en": ""
- },
- {
-  "vi": "Thối dư tiền",
-  "en": ""
- },
- {
-  "vi": "Khách thật thà trả lại: lỗi nhỏ (4★). Khách khác cầm luôn, tối kiểm két tiệm hụt đúng số đó.",
-  "en": ""
- },
- {
-  "vi": "Giờ cao điểm: bấm dư, quét sót, để khách chờ quá nhịp",
-  "en": ""
- },
- {
-  "vi": "Khách để ý thì bắt sửa (4★). Không ai soi: bấm dư thì về nhà để review 1–2★, quét sót thì hàng đi mà không có tiền. Quá nhịp là bỏ về.",
-  "en": ""
- },
- {
-  "vi": "Không soi tờ tiền lớn, không kiểm app ngân hàng",
-  "en": ""
- },
- {
-  "vi": "Tối kiểm két mới biết tiền giả, mất trắng. Khách chuyển thiếu thì cuối ngày hụt đúng số đó.",
-  "en": ""
- },
- {
-  "vi": "Bán bia cho người dưới 18 không hỏi giấy tờ",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn: khách không mua, 1★, báo cáo lên app, hôm sau có đoàn kiểm tra.",
-  "en": ""
- },
- {
-  "vi": "Để khách mua sữa, trứng, bánh mì hết hạn hôm nay (kệ chưa xoay)",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn như trên: khách bỏ giỏ, 1★, báo cáo và đoàn kiểm tra hôm sau.",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ vượt hạn mức, hoặc từ chối người còn hạn mức",
-  "en": ""
- },
- {
-  "vi": "Ghi liều thì bị ghi lỗi. Từ chối oan thì lòng tin giảm một bậc. Nợ quá 12 ngày, lòng tin cạn: mất trắng.",
-  "en": ""
- },
- {
-  "vi": "Nhận cọc đơn sỉ mà không giao kịp",
-  "en": ""
- },
- {
-  "vi": "Đóng ca phải hoàn cọc, lỗi nặng, khách giận. Giao thiếu món thì chỉ thu phần đã giao, sao bị trừ.",
-  "en": ""
- },
- {
-  "vi": "📦 Tab [[Kho]]: chọn nơi ở dòng Nhập từ, chọn số lượng, rồi bấm Nhập ở món cần. Trả tiền ngay khi đặt.",
-  "en": ""
- },
- {
-  "vi": "🧺 Chợ đầu mối Mây (trứng, sữa, bánh mì, rau, cà) rẻ nhất: đặt trước 13:00 chiều nay tới, sau thì sáng mai. Hay giao thiếu.",
-  "en": ""
- },
- {
-  "vi": "🚚 Hạt Nắng bán đủ món, giá niêm yết, bốn chuyến: chốt 09:00, 12:00, 15:00, 18:00, tới sau khoảng một tiếng.",
-  "en": ""
- },
- {
-  "vi": "🏭 Tổng kho sỉ Mây Xanh (gạo, mì, mắm, dầu, xà bông, snack, nước ngọt, bia): giá sỉ, sáng mai giao.",
-  "en": ""
- },
- {
-  "vi": "⚡ Hỏa tốc Mây Xanh tới trong 15–30 phút nhưng đắt nhất. Kệ trống giữa ca: bấm [[Nhập hàng]] ngay trên màn hình quầy.",
-  "en": ""
- },
- {
-  "vi": "🚚 Hàng tới thì bấm [[Mở thùng & xếp lên kệ]], đếm từng món rồi [[Nhận vào kệ]]. Thiếu thì [[Khiếu nại phần thiếu]].",
-  "en": ""
- },
- {
-  "vi": "🗑️ Sáng mở tiệm: [[Rút hàng hết hạn]] hôm nay, kẻo đoàn kiểm tra phạt.",
-  "en": ""
- },
- {
-  "vi": "🏷️ Hàng hết hạn ngày mai: bấm [[Xả]] để bán còn 70% giá, mỗi món một lần mỗi ngày.",
-  "en": ""
- },
- {
-  "vi": "🔄 Hàng mới nằm trước hàng cũ thì bấm [[Xoay kệ]], không thì lô cũ hết hạn trên kệ.",
-  "en": ""
- },
- {
-  "vi": "🧺 Xem tab [[Giỏ quen]] và dự báo ngày mai, nhập đủ trước khi đóng ca rồi [[Soạn giỏ]] đúng ngày.",
-  "en": ""
- },
- {
-  "vi": "📒 Tab [[Sổ nợ]]: [[Nhắc nợ]] mỗi ngày tối đa một lần; ai đang kẹt thì [[Giãn]] 2 hoặc 3 kỳ.",
-  "en": ""
- },
- {
-  "vi": "📅 Từ ngày 2 có giờ cao điểm; từ ngày 3 có tờ rơi Mây Mart và giỏ quen; từ ngày 6 hàng chờ đông hơn. Phiếu đổi bình gas mở ở cấp 2.",
-  "en": ""
- },
- {
-  "vi": "🧑‍⚖️ Quản lý thị trường: [[Mở kho, xuất trình hóa đơn nhập hàng]]. Hàng hết hạn, hàng không hóa đơn, chuột đều bị phạt.",
-  "en": ""
- },
- {
-  "vi": "⚖️ Bị phạt: lần đầu thử [[Xin nhắc nhở vì lần đầu vi phạm]]; ký cam kết thì giảm nửa, đoàn sẽ tái kiểm.",
-  "en": ""
- },
- {
-  "vi": "🧢 Cậu nhóc nhét snack vào áo: [[Bước ra chắn cửa]] nói nhỏ. Làm ngơ thì cậu quay lại với bạn.",
-  "en": ""
- },
- {
-  "vi": "🧊 Tủ mát hỏng: [[Gọi thợ sửa ngay]]. 🐀 Chuột: [[Mua bẫy, dọn kho, bịt lỗ tường]]. 🕶️ Mắm “xách tay”: [[Từ chối, chỉ nhập hàng có hóa đơn]].",
-  "en": ""
- },
- {
-  "vi": "❗ Chuyện bất ngờ chặn quầy tới khi bạn chọn. Đóng ca chưa quyết thì tiệm tự chọn, thường là cách tệ.",
-  "en": ""
- },
- {
-  "vi": "Mời khách đặt hàng lên quầy",
-  "en": ""
- },
- {
-  "vi": "Đặt lên cân",
-  "en": ""
- },
- {
-  "vi": "Kiểm tuổi",
-  "en": ""
- },
- {
-  "vi": "Áp khuyến mãi",
-  "en": ""
- },
- {
-  "vi": "Bớt còn",
-  "en": ""
- },
- {
-  "vi": "Giữ giá",
-  "en": ""
- },
- {
-  "vi": "CHỐT BILL",
-  "en": ""
- },
- {
-  "vi": "Soi & sờ tiền",
-  "en": ""
- },
- {
-  "vi": "Kiểm loa/app ngân hàng",
-  "en": ""
- },
- {
-  "vi": "Từ chối khéo, nhận tiền mặt",
-  "en": ""
- },
- {
-  "vi": "THU TIỀN & GIAO HÀNG",
-  "en": ""
- },
- {
-  "vi": "GHI SỔ & GIAO HÀNG",
-  "en": ""
- },
- {
-  "vi": "Mở thùng & xếp lên kệ",
-  "en": ""
- },
- {
-  "vi": "Xả",
-  "en": ""
- },
- {
-  "vi": "Xoay kệ",
-  "en": ""
- },
- {
-  "vi": "Soạn giỏ",
-  "en": ""
- },
- {
-  "vi": "Nhắc nợ",
-  "en": ""
- },
- {
-  "vi": "Giãn",
   "en": ""
  }
 ]

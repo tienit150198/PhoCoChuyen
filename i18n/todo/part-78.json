@@ -1,5 +1,689 @@
 [
  {
+  "vi": "🧾 [[Sổ nợ]]: người cho mượn bấm [[Đòi tiền]] bằng câu soạn sẵn (12 giờ một lần) hoặc [[Xóa nợ]]. Người mượn [[Trả bớt]], [[Trả hết]], hoặc [[Xin khất]] khi bị đòi.",
+  "en": ""
+ },
+ {
+  "vi": "🔔 Mỗi lần gửi, nhờ, đòi hay tương tác, người kia được báo và nút [[Hôn nhân]] hiện số. Trả nợ chỉ bằng tiền mặt trong ví.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Tương tác",
+  "en": ""
+ },
+ {
+  "vi": "Nhà & Gia đình: ở chung, chăm con",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Ở Hành trình, dưới thẻ nhân vật có [[Vào nhà]], [[Nhà & Gia đình]], [[Mời về ở]] và [[Con chung]]. Các lối vào này cũng có trong [[Nhà của bạn]].",
+  "en": ""
+ },
+ {
+  "vi": "💌 Đã kết hôn: chủ nhà đang ở căn mình sở hữu gửi lời mời. Người kia mở [[Nhà & Gia đình]] và bấm [[Đồng ý ở chung]]; gửi lời mời chưa tự chuyển nhà.",
+  "en": ""
+ },
+ {
+  "vi": "👶 Cả hai tới ngày sống 10 rồi mở [[Con chung]], đặt tên và gửi lời mời. Người ấy bấm [[Đồng ý đón bé]] mới cùng bắt đầu; mỗi cặp có một con chung.",
+  "en": ""
+ },
+ {
+  "vi": "🍼 Nhận nuôi miễn phí; bé mới sinh đến sau một ngày lịch Việt Nam. Hai bạn cùng chăm theo ngày lịch Việt Nam, dùng chung tiến trình; chỉ số không tự giảm khi vắng mặt.",
+  "en": ""
+ },
+ {
+  "vi": "🐾 [[Con riêng & thú cưng]] mở góc chăm riêng theo ngày sống. Tên và đồ của con chung nằm trong mục “Tên gọi & đồ của bé”.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Nhà & Gia đình",
+  "en": ""
+ },
+ {
+  "vi": "Gặp người thương trong nhà",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Đã ở chung: cả hai bấm [[Vào nhà]] và vào cùng một phòng để nhìn thấy nhau.",
+  "en": ""
+ },
+ {
+  "vi": "🤗 Chọn [[Ôm]], [[Hôn]] hoặc [[Thả tim]]. Nhân vật của bạn lại gần và làm cử chỉ trước; người ấy chọn cách đáp lại.",
+  "en": ""
+ },
+ {
+  "vi": "💞 Người nhận chọn [[Đáp lại]], [[Ngại ngùng]], [[Giận dỗi]] hoặc [[Để sau]]. Chỉ khi có lời đáp, hai nhân vật mới cùng diễn phản ứng.",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Chưa có lời đáp thì chờ hoặc bấm [[Thôi, để sau]]. Đổi phòng, rời nhà hay mất kết nối sẽ khép cử chỉ đang chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ chung & thẻ chung",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Quỹ chung tự có khi hai bạn cưới xong, bắt đầu từ 0 xu, không cần mở gì thêm. Đang đính hôn thì chưa có.",
+  "en": ""
+ },
+ {
+  "vi": "⬇️ Gửi: tab [[Quỹ chung]] của mục [[Hôn nhân]], gõ số xu rồi bấm [[Gửi vào]]. Tiền đi từ ví vào quỹ, tối đa 200.000 xu mỗi lần, gửi bao nhiêu lần cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "⬆️ Rút: gõ số xu rồi bấm [[Rút ra]], tiền về ví của bạn. Rút và chi theo số dư quỹ chung, không giới hạn mỗi ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🏧 Trong [[Ngân hàng]], tab [[Tổng quan]] có thẻ [[Tài khoản chung vợ chồng]] với nút [[Gửi vào quỹ chung]] và [[Rút bằng thẻ chung]]. Cần [[Mở tài khoản miễn phí]] trước.",
+  "en": ""
+ },
+ {
+  "vi": "💳 Muốn trả bằng thẻ chung: Ngân hàng, tab [[Thẻ]], mục [[Khi mua sắm cá nhân]], chọn [[Ưu tiên thẻ chung vợ chồng]] rồi bấm [[Lưu]]. Không cần có thẻ tín dụng.",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Thẻ chung trả học phí và tiền đi cửa sau. Quỹ thiếu thì trả tiền mặt, rồi mới tới thẻ tín dụng. Nhẫn, cưới, cơm trưa, gửi tiền, trả nợ không dùng thẻ chung.",
+  "en": ""
+ },
+ {
+  "vi": "🔔 Mỗi lần gửi, rút hay quẹt thẻ chung, người kia được báo. Lịch sử quỹ ghi ai làm gì, bao nhiêu, cả hai cùng thấy.",
+  "en": ""
+ },
+ {
+  "vi": "🚫 Chưa có thẻ tín dụng chung hay khoản vay chung. Thẻ chung chỉ chi tiền có sẵn trong quỹ, không nợ, không sao kê; thẻ tín dụng và khoản vay vẫn là của riêng từng người.",
+  "en": ""
+ },
+ {
+  "vi": "💔 Chia tay thì quỹ chia đôi (lẻ 1 xu về người không đệ đơn), ai còn nợ thì trả từ phần mình trước. Người ấy xóa tài khoản thì người ở lại giữ cả quỹ.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "Ly hôn và hủy hôn ước",
+  "en": ""
+ },
+ {
+  "vi": "💞 Đang đính hôn: cuối tab [[Hai bạn]] mở [[Hủy hôn ước]], gõ HUY rồi bấm nút. Kế hoạch cưới dừng lại, tiền cọc đã đặt không hoàn lại.",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Đã cưới: cuối tab [[Gia đình]] mở [[Ly hôn]], gõ LY HON (không dấu) rồi bấm nút [[Ly hôn]]. Một người tự làm được, không cần người kia đồng ý.",
+  "en": ""
+ },
+ {
+  "vi": "💍 Nhẫn đã trao lúc đính hôn không quay về hộp, dù hủy hôn ước hay ly hôn.",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Quỹ chung chia đôi, lẻ 1 xu thuộc về người không đệ đơn. Phần của mỗi người về thẳng ví.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Khoản nợ còn mở: người mượn trả từ phần quỹ của mình trước, còn thiếu thì phần đó được xóa. Lời nhờ và lời đòi đang chờ cũng đóng lại.",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Sau khi chia tay, cả hai chờ 3 ngày mới cầu hôn hay nhận lời mới được. Người kia nhận thông báo; nhãn “Đã về chung một nhà” được gỡ.",
+  "en": ""
+ },
+ {
+  "vi": "👥 Hai bạn vẫn là bạn bè sau khi chia tay. Muốn thì [[Hủy kết bạn]] hoặc [[Chặn]] trong mục [[Bạn bè]].",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản giữ tiến trình",
+  "en": ""
+ },
+ {
+  "vi": "🆓 Không bắt buộc: bạn chơi ngay, tiến trình nằm trên trình duyệt này.",
+  "en": ""
+ },
+ {
+  "vi": "☁️ Tạo tài khoản ở Cài đặt → Tài khoản; tiến trình đang chơi được gắn vào tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "🔤 Tên đăng nhập 3–24 ký tự: chữ không dấu, số, dấu chấm, gạch dưới. Mật khẩu từ 8 ký tự.",
+  "en": ""
+ },
+ {
+  "vi": "📱 Đăng nhập trên máy khác là chơi tiếp đúng tiến trình đó.",
+  "en": ""
+ },
+ {
+  "vi": "💍 Bạn bè và kết hôn là với người chơi thật nên cần có tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Cài đặt",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ kỹ mật khẩu",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Không dùng e-mail, hiện chưa có cách lấy lại mật khẩu. Hãy ghi nhớ thật kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "🔑 Đang đăng nhập thì đổi được mật khẩu trong Cài đặt → Tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "🔄 Đăng nhập trên máy đang có tiến trình khác sẽ thay tiến trình đó. Xuất bản lưu trước nếu muốn giữ.",
+  "en": ""
+ },
+ {
+  "vi": "🚪 [[Đăng xuất]] không mất gì: tiến trình vẫn nằm trong tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "Xuất và nhập bản lưu",
+  "en": ""
+ },
+ {
+  "vi": "💾 Cài đặt → Dữ liệu → [[Xuất bản lưu]] để tải bản lưu về máy.",
+  "en": ""
+ },
+ {
+  "vi": "📂 [[Nhập bản lưu]] để mở lại một bản đã xuất.",
+  "en": ""
+ },
+ {
+  "vi": "♻️ [[Bắt đầu lại riêng nghề này]] chỉ làm lại nơi đang làm.",
+  "en": ""
+ },
+ {
+  "vi": "🗑️ [[Xóa toàn bộ dữ liệu]] xóa vĩnh viễn bản lưu, tài khoản và mọi thứ ở Phố nghề.",
+  "en": ""
+ },
+ {
+  "vi": "Cài đặt & góp ý",
+  "en": ""
+ },
+ {
+  "vi": "🇻🇳 Tiếng Việt là ngôn ngữ gốc. 🇬🇧 Có thể chơi bằng tiếng Anh.",
+  "en": ""
+ },
+ {
+  "vi": "⚙️ [[Cài đặt]] → [[Ngôn ngữ]] để đổi.",
+  "en": ""
+ },
+ {
+  "vi": "Chữ lớn và chuyển động",
+  "en": ""
+ },
+ {
+  "vi": "🔠 [[Cài đặt]] → [[Cách chơi]] → bật [[Chữ lớn]] để dễ đọc hơn.",
+  "en": ""
+ },
+ {
+  "vi": "🌀 Bật [[Giảm chuyển động]] nếu thấy chóng mặt.",
+  "en": ""
+ },
+ {
+  "vi": "🎆 [[Hiệu ứng pháo hoa]]: Bật, Chỉ báo nhỏ hoặc Tắt. Đang chơi trò hay làm việc thì chỉ hiện báo nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "🎨 [[Giao diện]]: đổi phong cách màu, có cả kiểu tối “Phố đêm”, và bố cục màn hình.",
+  "en": ""
+ },
+ {
+  "vi": "Âm thanh và nhạc",
+  "en": ""
+ },
+ {
+  "vi": "🔊 [[Âm thanh]]: bật tắt tiếng thao tác, chỉnh âm lượng.",
+  "en": ""
+ },
+ {
+  "vi": "🎵 Nhạc nền theo nghề, êm dịu hoặc tươi vui. Tắt được.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Loa báo tiền “ting ting” khi khách chuyển khoản.",
+  "en": ""
+ },
+ {
+  "vi": "📣 [[Thông báo]] → [[Bật thông báo]] để nhận tin khi có chuyện ở phố.",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Có thể nhờ nhắc mở quán lúc 19:00 mỗi ngày.",
+  "en": ""
+ },
+ {
+  "vi": "📱 iPhone: thêm game vào màn hình chính trước rồi mới bật được.",
+  "en": ""
+ },
+ {
+  "vi": "Có gì mới",
+  "en": ""
+ },
+ {
+  "vi": "✨ Sau mỗi bản cập nhật, game hiện một thẻ tóm tắt những thay đổi.",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Xem lại bất cứ lúc nào: Cài đặt → Cách chơi → [[Xem các cập nhật mới]].",
+  "en": ""
+ },
+ {
+  "vi": "👉 Mục nào có nút Thử ngay thì bấm để mở thẳng chỗ đó.",
+  "en": ""
+ },
+ {
+  "vi": "Xem Có gì mới",
+  "en": ""
+ },
+ {
+  "vi": "Xem lại hướng dẫn",
+  "en": ""
+ },
+ {
+  "vi": "▶️ Nút “Xem lại hướng dẫn” chạy lại phần chỉ dẫn 1 phút.",
+  "en": ""
+ },
+ {
+  "vi": "📖 Hướng dẫn ở [[Cài đặt]]. Màn làm việc của mỗi nghề có nút ? mở đúng nghề đó.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Gặp lỗi hay có ý hay: [[Góp ý]] gửi thẳng cho nhà làm game.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Bấm [[Góp ý]] trong menu, hoặc Cài đặt → [[Góp ý cho nhà làm game]]. Đây là thư riêng gửi người làm game, không phải đánh giá của khách.",
+  "en": ""
+ },
+ {
+  "vi": "🏷️ Chọn loại: [[Lỗi]], [[Ý tưởng]], [[Khen]] hoặc [[Khó dùng]], viết từ 3 tới 1.000 ký tự rồi bấm [[Gửi góp ý]]. Khách chưa có tài khoản cũng gửi được.",
+  "en": ""
+ },
+ {
+  "vi": "📎 Game tự gửi kèm nơi đang làm, ngày, kiểu màn hình và trình duyệt để dễ tìm lỗi.",
+  "en": ""
+ },
+ {
+  "vi": "🔐 Số điện thoại, e-mail, đường link tự bị ẩn, từ thô bị che. Chỉ nhà làm game đọc được góp ý.",
+  "en": ""
+ },
+ {
+  "vi": "📬 Xem lại ở [[Góp ý của bạn]]: Đã gửi, Đã xem hay Đã xử lý, kèm lời nhà làm game trả lời nếu có.",
+  "en": ""
+ },
+ {
+  "vi": "✏️ Góp ý chưa có lời trả lời thì bấm [[Sửa]] để sửa lại chữ hoặc loại.",
+  "en": ""
+ },
+ {
+  "vi": "⏱️ Gửi tối đa 5 góp ý trong 10 phút và 30 góp ý mỗi ngày.",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Muốn trả lời khách chấm sao thì vào [[Đánh giá]] của nơi làm, không phải ở đây.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Góp ý",
+  "en": ""
+ },
+ {
+  "vi": "Các nghề",
+  "en": ""
+ },
+ {
+  "vi": "Đời sống & bạn bè",
+  "en": ""
+ },
+ {
+  "vi": "Game này chơi để làm gì? Nên đi đâu trước?",
+  "en": ""
+ },
+ {
+  "vi": "🏘️ Bạn là người mới dọn tới khu phố, sống một đời và thử làm nhiều nghề. Không vội, cứ từ từ.",
+  "en": ""
+ },
+ {
+  "vi": "🧭 Mở [[Đổi nghề]]: “Việc cần làm” nằm đầu Hành trình. Mỗi mục tiêu chưa xong có nút đưa bạn tới phần liên quan.",
+  "en": ""
+ },
+ {
+  "vi": "👉 Đang làm thì bấm [[Làm tiếp]]. Nút có dấu 👆 chỉ đánh dấu chỗ cần bấm; bạn tự thực hiện bước đó.",
+  "en": ""
+ },
+ {
+  "vi": "Nghề này chơi kiểu gì?",
+  "en": ""
+ },
+ {
+  "vi": "❓ Trên màn hình làm việc, bấm nút ? ở góc trên: mở hướng dẫn của đúng nghề đang làm, có từng bước và lỗi hay gặp.",
+  "en": ""
+ },
+ {
+  "vi": "✨ Việc đầu tiên ở mỗi nơi, chỗ cần bấm sẽ sáng lên. Cứ làm theo dòng “Bước tiếp theo”.",
+  "en": ""
+ },
+ {
+  "vi": "Xem cách làm ở nơi đang làm",
+  "en": ""
+ },
+ {
+  "vi": "Đổi nghề, quay lại chỗ làm cũ thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "🧭 Bấm [[Đổi nghề]] cạnh tên tiệm hoặc trong menu, chọn nơi rồi bấm [[Vào tiếp]] hoặc [[Vào làm]].",
+  "en": ""
+ },
+ {
+  "vi": "📋 Ở [[Danh sách]] thì bấm [[Tiếp tục]] hoặc [[Bắt đầu]]. Tiến trình từng nghề vẫn được giữ.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Làm xong việc đang dở hoặc bấm [[Khép ca hôm nay]] rồi hãy đi, để khỏi bị phạt bỏ dở việc.",
+  "en": ""
+ },
+ {
+  "vi": "Nghỉ việc thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "💼 Chỉ nơi làm thuê (giáo viên, nhà thuốc, văn phòng…) mới cần xin nghỉ. Bấm [[Khép ca hôm nay]] trước.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Rồi mở [[Việc làm]] trong menu, ở Hồ sơ công việc bấm [[Xin nghỉ việc]]. Muốn làm lại thì xin việc lại.",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Tiệm của bạn thì cứ sang nơi khác: nơi bạn không làm thì không tốn phí gì.",
+  "en": ""
+ },
+ {
+  "vi": "Mở thêm nghề mới thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "📚 Nơi làm mới mở theo chương. Làm đủ các mục “Việc cần làm” của chương trong [[Hành trình]] là mở thêm.",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Ô “Sắp mở” ở cuối “Nơi làm việc” là các nơi của chương sau. Nơi làm thuê và văn phòng mở về sau.",
+  "en": ""
+ },
+ {
+  "vi": "Làm nghề gì có nhiều tiền?",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Tiệm của bạn: tiền lời vào quỹ tiệm. Làm đúng, được 5★, nhập hàng vừa đủ bán là lời nhiều.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Làm thuê: lương cố định mỗi ngày. Nơi mở về sau lương cao hơn, như phi công 65–110 xu, kế toán tập đoàn 50–120 xu.",
+  "en": ""
+ },
+ {
+  "vi": "👛 Tiền lời nằm trong quỹ tiệm, nhớ rút về ví để tiêu.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Tiền của bạn",
+  "en": ""
+ },
+ {
+  "vi": "👛 Chạm ô tiền ở góc trên để mở [[Tiền của bạn]]. Quỹ tiệm: bấm [[Rút về ví]] để rút tối đa, hoặc [[Rút số khác]] để gõ số xu.",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Tiền trong ngân hàng: mở [[Ngân hàng]], gõ số xu rồi bấm [[Rút tiền]]. Cây ATM Ngân hàng Phố không mất phí.",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Quỹ tiệm luôn giữ lại 80 xu và tiền hóa đơn chưa trả. Rút nhầm thì bấm [[Góp vốn]] để bỏ lại vào quỹ.",
+  "en": ""
+ },
+ {
+  "vi": "Làm giáo viên (làm thuê) sao chưa có lương?",
+  "en": ""
+ },
+ {
+  "vi": "📝 Phải được nhận việc trước: [[Xin việc]], qua phỏng vấn rồi ký hợp đồng.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Lương trả khi bấm [[Khép ca hôm nay]], nếu hôm đó xong ít nhất 1 việc (giáo viên: dạy xong 1 tiết). Thử việc nhận 85%.",
+  "en": ""
+ },
+ {
+  "vi": "👛 Lương về thẳng ví, không vào quỹ tiệm. Xem dòng “Lương ngày …” trong sổ ví.",
+  "en": ""
+ },
+ {
+  "vi": "No bụng, tỉnh táo thấp quá thì làm sao?",
+  "en": ""
+ },
+ {
+  "vi": "🍱 Buổi trưa (11:30–13:30 giờ tiệm) thẻ việc hỏi “Trưa rồi, ăn gì đây?”: chọn một món.",
+  "en": ""
+ },
+ {
+  "vi": "🍢 Đói hay buồn ngủ giữa ca: chọn món ở “Ăn thêm” trên thẻ việc hoặc trong Đời thường, trả bằng ví. ☕ Cà phê giúp tỉnh táo.",
+  "en": ""
+ },
+ {
+  "vi": "🌙 Tối khép ca, chọn bữa tối và ngủ sớm: ngủ lúc 22:00 thì sáng mai tỉnh táo 100.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Đời thường",
+  "en": ""
+ },
+ {
+  "vi": "Kho ở đâu, nhập hàng thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "📦 Tiệm bán hàng nào cũng có kho riêng. Cách mở kho của nơi đang làm có trong Hướng dẫn nghề, mục Nhập hàng.",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Chọn món, số lượng và nhà cung cấp rồi bấm [[Đặt hàng]]. Hàng tới thì mở thùng, đếm rồi xếp lên kệ.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Nơi làm thuê (lớp học, văn phòng…) không có kho.",
+  "en": ""
+ },
+ {
+  "vi": "Xem cách nhập hàng ở nơi đang làm",
+  "en": ""
+ },
+ {
+  "vi": "Đi dự đám cưới thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "💍 Mở menu [[Khu phố]] → [[Lịch cưới]]. Tiệc mở 5 phút trước giờ, kéo dài 10 phút: bấm [[Vào dự]].",
+  "en": ""
+ },
+ {
+  "vi": "🪙 Có tài khoản thì mỗi phút ở lại được 20 xu (tối đa 2 đám mỗi ngày). Chưa có tài khoản thì chỉ xem.",
+  "en": ""
+ },
+ {
+  "vi": "💌 Bạn bè cưới sẽ mời bạn và nhắc trước giờ tiệc.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Lịch cưới",
+  "en": ""
+ },
+ {
+  "vi": "Mừng cưới bao nhiêu?",
+  "en": ""
+ },
+ {
+  "vi": "🧧 Tùy lòng, không bắt buộc. Trong tiệc bấm 🧧, chọn 10, 20, 50, 100 hoặc 200 xu và một lời chúc, rồi [[Gửi phong bì]].",
+  "en": ""
+ },
+ {
+  "vi": "👛 Tiền lấy từ ví, chia đôi cho cô dâu chú rể. Mừng mấy phong bì cũng được, miễn ví còn đủ. Cần có tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Lần đầu vào dự tiệc, admin tặng bạn 500 xu (mỗi người một lần).",
+  "en": ""
+ },
+ {
+  "vi": "Đổi tên thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "✏️ Mở [[Hành trình]], chạm ảnh nhân vật, sửa “Tên của bạn” rồi bấm [[Lưu lại]]. Hoặc [[Cài đặt]] → [[Cách chơi]] → [[Hồ sơ]].",
+  "en": ""
+ },
+ {
+  "vi": "💬 Tên trong Chat và Bạn bè là tên hiển thị đặt lúc tạo tài khoản; trong game chưa đổi được.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Nhân vật của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Mua nhà ở đâu?",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Mở [[Nhà của bạn]]: thẻ 🏠 trong [[Hành trình]], hoặc menu [[Ngân hàng & nhà]].",
+  "en": ""
+ },
+ {
+  "vi": "🔑 Chọn căn muốn mua: trả trước ít nhất 30% giá và 2% phí, phần còn lại vay Ngân hàng Phố (cần mở tài khoản).",
+  "en": ""
+ },
+ {
+  "vi": "🐷 Chưa đủ tiền thì gửi tiết kiệm trong [[Ngân hàng]] để dành dần.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm tên, xem mã người chơi ở đâu?",
+  "en": ""
+ },
+ {
+  "vi": "💬 Chat [[Cả phố]] không có ô tìm tên.",
+  "en": ""
+ },
+ {
+  "vi": "🔎 Mở [[Bạn bè]] (menu [[Quan hệ]]), ô [[Tìm bạn]]: gõ đúng tên đăng nhập hoặc mã người chơi (PCC-…) của bạn ấy.",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Mã của bạn ở cuối trang Bạn bè: bấm [[Chép mã]] để gửi cho bạn bè.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn Nhịp pha & nướng 1×, 2× hoặc 4× ở đầu màn làm việc. 2× chờ một nửa, 4× chờ một phần tư khi chiết, đánh sữa và nướng.",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn tự dừng ở vùng xanh; thanh cũng chạy nhanh tương ứng. Tắt máy pha/vòi hơi trước khi đổi nhịp; mẻ đang trong lò giữ nhịp lúc vào lò.",
+  "en": ""
+ },
+ {
+  "vi": "25–30 giây trên thanh là giây chiết, không phải số giây thực phải chờ.",
+  "en": ""
+ },
+ {
+  "vi": "👥 Nhân viên trong Sổ tiệm nhận và xử lý đơn riêng liên tục, cả lúc offline. Các ly bạn đang pha vẫn giữ nguyên để bạn tiếp tục khi muốn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên ở Quầy của bạn cũng tự bán theo thời gian thật. Cả hai nơi đều dừng khi hết hàng hoặc tiền lương; xem trạng thái để bổ sung đúng chỗ.",
+  "en": ""
+ },
+ {
+  "vi": "Trà và trân châu chuẩn bị xong ngay sau thao tác; 20 phút là giờ trong game, không phải chờ ngoài đời.",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng bị hack thì mất tiền thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Đôi khi có cảnh báo đăng nhập lạ trước 1–2 ngày sống. Mở Bảo hiểm & rủi ro → Đổi mã bảo mật & khóa phiên lạ để chặn vụ hack miễn phí.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ qua cảnh báo: mất 8% số dư tài khoản thanh toán lúc xảy ra, tối đa 3.000 xu và chịu giới hạn rủi ro chung. Ví, tiết kiệm, thẻ và quỹ chung không bị trừ.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm Khóa phiên lạ & báo công an: sau 2 ngày sống có kết quả. Có 30% cơ hội bắt được kẻ hack và hoàn đủ khoản mất vào tài khoản, ghi trong lịch sử ngân hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo hiểm hiện tại không bồi thường hack. Thẻ sự cố quá 3 ngày sống sẽ tự khóa phiên và trình báo. Ngày sống chỉ tiến khi đóng ca, không chạy lúc offline.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Bảo hiểm & rủi ro",
+  "en": ""
+ },
+ {
+  "vi": "Mua sắm bằng tiền trong ngân hàng được không?",
+  "en": ""
+ },
+ {
+  "vi": "Khi xác nhận mua sắm cá nhân, chọn Tiền lương / ví, tài khoản ngân hàng, thẻ hoặc quỹ chung nếu khoản chi hỗ trợ. Lương đã nhận nằm trong ví; lương chưa trả chưa dùng được.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn tài khoản là chuyển khoản trực tiếp, thiếu số dư thì dừng. Lựa chọn chỉ áp dụng lần này; đổi mặc định ở Ngân hàng → Cách trả mặc định.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ lương thuê người chơi có thể dùng két/vốn quầy, ví, tài khoản hoặc quỹ chung. Hủy ca chưa làm thì hoàn về nguồn cũ; quỹ chung đã đóng thì hoàn về ví người chi.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy huy hiệu Hẹn ở ngày hội thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Ngày hội xuất hiện ngẫu nhiên ở Chuẩn bị. Trong cùng ca Ngày hội của nghề cần huy hiệu, làm xong 3 việc và 1 trò nhỏ bằng Chơi ngay; Luyện không thưởng không tính.",
+  "en": ""
+ },
+ {
+  "vi": "Trước khi đóng ca, bấm Mở góc ngày hội rồi Nhận huy hiệu trong Hộ chiếu. Thẻ hướng dẫn ở đó hiển thị tiến độ hiện tại.",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn bè vào làm ở quầy thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Mở Quầy của bạn → Người → Thuê người chơi, chọn tên bạn rồi Gửi lời mời. Kết bạn xong là mời được ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn được mời mở Quầy cần người để nhận ca. Nếu đang có ca công khai chờ người, hủy ca đó rồi mời riêng. Một quầy chỉ có một ca đang chờ hoặc đang làm.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận nuôi em bé, nuôi mèo hoặc cún ở đâu?",
+  "en": ""
+ },
+ {
   "vi": "Từ ngày sống 10, mở Nhà của bạn → Gia đình · Thú cưng. Tự chọn một em bé và một mèo hoặc cún, đặt tên rồi xác nhận đón về.",
   "en": ""
  },
@@ -925,878 +1609,6 @@
  },
  {
   "vi": "Bạn nâng gối cho bà Tư ngồi dậy, chiếc kính lão trên gối trượt xuống sàn, nứt một bên tròng.",
-  "en": ""
- },
- {
-  "vi": "Đền kính lão cho bà Tư",
-  "en": ""
- },
- {
-  "vi": "Làm rơi điện thoại của Tuấn",
-  "en": ""
- },
- {
-  "vi": "Bạn đỡ Tuấn ngồi dậy, chiếc điện thoại đang livestream trên gối trượt xuống sàn, nứt một góc màn hình.",
-  "en": ""
- },
- {
-  "vi": "Đền một phần tiền thay kính điện thoại",
-  "en": ""
- },
- {
-  "vi": "Túi xách để ở bàn trực bị lấy",
-  "en": ""
- },
- {
-  "vi": "Bạn chạy vào giường 3 trả lời chuông, quay ra thì chiếc túi để dưới gầm bàn trực không còn. Hành lang giờ thăm đông người lạ.",
-  "en": ""
- },
- {
-  "vi": "Mất ví ở bàn trực",
-  "en": ""
- },
- {
-  "vi": "Mất ví lúc khách du lịch ra đảo",
-  "en": ""
- },
- {
-  "vi": "Bạn dẫn đoàn khách đi quanh sân trạm, để áo khoác trên ghế ở nhà trạm. Tàu khách về rồi, ví trong túi áo đã không còn.",
-  "en": ""
- },
- {
-  "vi": "Mất ví ở nhà trạm",
-  "en": ""
- },
- {
-  "vi": "Làm rơi ống nhòm của trạm",
-  "en": ""
- },
- {
-  "vi": "Gió giật mạnh lúc bạn đứng trên ban công đếm tàu. Ống nhòm chưa đeo dây tuột tay, rơi xuống chân tháp vỡ một mắt.",
-  "en": ""
- },
- {
-  "vi": "Đền một phần ống nhòm cho xí nghiệp",
-  "en": ""
- },
- {
-  "vi": "Làm vỡ ấm trà của chú Bảy",
-  "en": ""
- },
- {
-  "vi": "Bạn với tay lấy cuốn sổ trực, cùi chỏ quẹt trúng cái ấm trà men xanh chú Bảy giữ ba mươi năm. Ấm rơi xuống sàn đá, mẻ vòi.",
-  "en": ""
- },
- {
-  "vi": "Đền ấm trà cho chú Bảy",
-  "en": ""
- },
- {
-  "vi": "Tụi nhỏ ném đá vỡ kính nhà trạm",
-  "en": ""
- },
- {
-  "vi": "Tụi nhỏ theo ghe ra đảo chơi ném thia lia, một hòn bay lệch trúng ô kính cửa sổ nhà trạm vỡ toang.",
-  "en": ""
- },
- {
-  "vi": "Thay ô kính nhà trạm",
-  "en": ""
- },
- {
-  "vi": "Điện thoại rơi xuống biển",
-  "en": ""
- },
- {
-  "vi": "Bạn chụp ảnh hoàng hôn trên mỏm đá cho má xem. Một con sóng hắt lên, điện thoại tuột tay chìm nghỉm giữa khe đá.",
-  "en": ""
- },
- {
-  "vi": "Mua điện thoại cũ thay tạm",
-  "en": ""
- },
- {
-  "vi": "Tủ đồ phòng trực tổng đài bị mở",
-  "en": ""
- },
- {
-  "vi": "Giao ca xong mở tủ đồ, ổ khóa bị bẻ cong. Ví trong túi áo khoác đã không còn, chỉ còn cái thẻ nhân viên.",
-  "en": ""
- },
- {
-  "vi": "Mất mũ bảo hiểm ở bãi xe trung tâm",
-  "en": ""
- },
- {
-  "vi": "Ra bãi xe sau ca trực, chiếc mũ bảo hiểm móc trên gương đã biến mất. Trời lại lất phất mưa.",
-  "en": ""
- },
- {
-  "vi": "Giật đứt dây tai nghe",
-  "en": ""
- },
- {
-  "vi": "Bạn đứng bật dậy chỉ bảng đội, quên đang đeo tai nghe. Dây giật phựt, đầu cắm gãy lìa.",
-  "en": ""
- },
- {
-  "vi": "Đền một phần tai nghe cho trung tâm",
-  "en": ""
- },
- {
-  "vi": "Làm vỡ ly sứ của chị Thảo",
-  "en": ""
- },
- {
-  "vi": "Với tay lấy bộ đàm, bạn quẹt trúng cái ly sứ in chữ “Trưởng ca dễ thương” của chị Thảo. Ly rơi vỡ đôi.",
-  "en": ""
- },
- {
-  "vi": "Đền ly sứ cho chị Thảo",
-  "en": ""
- },
- {
-  "vi": "Điện thoại cá nhân để ở bàn nghỉ bị lấy",
-  "en": ""
- },
- {
-  "vi": "Bạn chạy vào bàn trực nhấc máy cuộc gọi khẩn, quay ra bàn nghỉ thì chiếc điện thoại sạc ở đó không còn.",
-  "en": ""
- },
- {
-  "vi": "Tủ đồ nhân viên ở hồ bơi bị cạy",
-  "en": ""
- },
- {
-  "vi": "Hết ca trực ghế quay vào phòng nhân viên, tủ đồ của bạn hé mở, ổ khóa cong vênh. Ví trong túi quần đã biến mất.",
-  "en": ""
- },
- {
-  "vi": "Mất ví ở phòng nhân viên hồ bơi",
-  "en": ""
- },
- {
-  "vi": "Làm gãy kính bơi của ông Tư",
-  "en": ""
- },
- {
-  "vi": "Bạn đỡ ông Tư lên bậc, chiếc kính bơi trên trán ông rơi xuống sàn, bạn lỡ giẫm gãy quai.",
-  "en": ""
- },
- {
-  "vi": "Đền kính bơi cho ông Tư",
-  "en": ""
- },
- {
-  "vi": "Vướng chân máy, điện thoại của Kha rơi xuống hồ",
-  "en": ""
- },
- {
-  "vi": "Bạn bước vội tới mép hồ, vướng chân máy quay của Kha, chiếc điện thoại rơi tõm xuống làn chậm.",
-  "en": ""
- },
- {
-  "vi": "Đền một phần tiền sửa điện thoại",
-  "en": ""
- },
- {
-  "vi": "Mất mũ bảo hiểm ở bãi xe hồ bơi",
-  "en": ""
- },
- {
-  "vi": "Tan ca ra bãi xe, chiếc mũ bảo hiểm móc trên gương đã không còn. Trời lại sắp có dông.",
-  "en": ""
- },
- {
-  "vi": "Làm rơi kính râm của cô Hằng xuống hồ",
-  "en": ""
- },
- {
-  "vi": "Bạn dời ghế nằm cho nhóm aerobic, chiếc kính râm cô Hằng gác trên tay ghế rơi xuống làn chậm, trầy cả hai tròng.",
-  "en": ""
- },
- {
-  "vi": "Đền một phần kính râm cho cô Hằng",
-  "en": ""
- },
- {
-  "vi": "Mất mũ bảo hiểm ngay cổng phường",
-  "en": ""
- },
- {
-  "vi": "Tan ca ra bãi xe, chiếc mũ bảo hiểm móc trên gương đã không còn. Ngay cổng trụ sở mới đau chứ.",
-  "en": ""
- },
- {
-  "vi": "Làm đổ cặp lồng chè của bà Năm",
-  "en": ""
- },
- {
-  "vi": "Bạn đứng dậy vội đi nghe điện thoại trực ban, khuỷu tay quẹt trúng cặp lồng chè bà Năm để trên bàn. Chè đậu đổ lênh láng, nắp cặp lồng móp méo.",
-  "en": ""
- },
- {
-  "vi": "Mua cặp lồng mới cho bà Năm",
-  "en": ""
- },
- {
-  "vi": "Va phải mẹt rau ở chợ",
-  "en": ""
- },
- {
-  "vi": "Đi tuần chợ Mây, bạn lùi lại nhường đường xe đẩy, gót giày đạp trúng mẹt rau của bà bán rau. Cả mớ rau muống dập nát.",
-  "en": ""
- },
- {
-  "vi": "Đền mớ rau cho bà bán rau",
-  "en": ""
- },
- {
-  "vi": "Làm rơi điện thoại của Kha",
-  "en": ""
- },
- {
-  "vi": "Kha dí điện thoại sát mặt bạn livestream, bạn giơ tay ra hiệu “đừng quay”, quẹt trúng làm máy rơi xuống nền gạch, nứt một góc màn hình.",
-  "en": ""
- },
- {
-  "vi": "Bị móc ví lúc phân luồng hội chợ",
-  "en": ""
- },
- {
-  "vi": "Đứng phân luồng giữa hội chợ đông nghẹt, lúc về mới thấy túi quần nhẹ tênh. Ví đã không còn. Anh Định cười: “Nhắc dân giữ ví mà quên ví mình.”",
-  "en": ""
- },
- {
-  "vi": "Mất ví ở hội chợ",
-  "en": ""
- },
- {
-  "vi": "Khách lạ lén nhét album vào túi",
-  "en": ""
- },
- {
-  "vi": "Giữa giờ comeback đông nghẹt, bạn quay lưng tìm Digipack cho Na. Quay lại thì kệ Jewel hụt mất mấy bản.",
-  "en": ""
- },
- {
-  "vi": "Mất mấy bản album",
-  "en": ""
- },
- {
-  "vi": "Hộp tiền để sát cửa cho tiện thối. Một chiếc xe máy tạt vào lề, chộp lấy rồi rồ ga mất hút về phía chợ.",
-  "en": ""
- },
- {
-  "vi": "Bé nghịch làm đổ kệ standee",
-  "en": ""
- },
- {
-  "vi": "Một bé chạy vòng quanh tiệm, níu tấm standee BLANKPINK. Tấm standee đổ ập xuống chồng album trên bàn.",
-  "en": ""
- },
- {
-  "vi": "Mấy bản album móp bìa",
-  "en": ""
- },
- {
-  "vi": "Đổ trà sữa lên slogan của khách",
-  "en": ""
- },
- {
-  "vi": "Bạn với tay lấy ống cuộn poster, khuỷu tay quẹt trúng ly trà sữa khách gửi trên quầy. Trà đổ ướt cái slogan khách vừa mua.",
-  "en": ""
- },
- {
-  "vi": "Đền slogan mới cho khách",
-  "en": ""
- },
- {
-  "vi": "Sáng ra ổ khóa cửa kéo méo xệch. Tủ kính lightstick mở toang, mấy cây Búa hồng không thấy đâu.",
-  "en": ""
- },
- {
-  "vi": "Mất hàng trong đêm",
-  "en": ""
- },
- {
-  "vi": "Thời dựng nước",
-  "en": ""
- },
- {
-  "vi": "Văn Lang – Âu Lạc",
-  "en": ""
- },
- {
-  "vi": "Theo truyền thuyết, các vua Hùng dựng nước Văn Lang, nhà nước đầu tiên của người Việt, ở vùng đồng bằng sông Hồng.",
-  "en": ""
- },
- {
-  "vi": "Cư dân Văn Lang trồng lúa nước và đúc đồ đồng; trống đồng Ngọc Lũ là hiện vật tiêu biểu nhất của văn hóa Đông Sơn, nay là bảo vật quốc gia.",
-  "en": ""
- },
- {
-  "vi": "Khoảng thế kỷ 3 trước Công nguyên, Thục Phán hợp nhất người Lạc Việt và Âu Việt, lập nước Âu Lạc và xưng là An Dương Vương.",
-  "en": ""
- },
- {
-  "vi": "An Dương Vương xây thành Cổ Loa, nay thuộc Hà Nội.",
-  "en": ""
- },
- {
-  "vi": "Giỗ Tổ Hùng Vương ngày 10/3 âm lịch là ngày nghỉ lễ; tín ngưỡng thờ cúng Hùng Vương ở Phú Thọ được UNESCO ghi danh năm 2012.",
-  "en": ""
- },
- {
-  "vi": "Theo truyền thuyết, nhà nước đầu tiên của người Việt tên là gì?",
-  "en": ""
- },
- {
-  "vi": "Văn Lang",
-  "en": ""
- },
- {
-  "vi": "Đại Việt",
-  "en": ""
- },
- {
-  "vi": "Vạn Xuân",
-  "en": ""
- },
- {
-  "vi": "Các vua Hùng dựng nước Văn Lang ở vùng đồng bằng sông Hồng.",
-  "en": ""
- },
- {
-  "vi": "Ai cho xây thành Cổ Loa?",
-  "en": ""
- },
- {
-  "vi": "Ngô Quyền",
-  "en": ""
- },
- {
-  "vi": "An Dương Vương",
-  "en": ""
- },
- {
-  "vi": "Lý Công Uẩn",
-  "en": ""
- },
- {
-  "vi": "An Dương Vương (Thục Phán) lập nước Âu Lạc và xây thành Cổ Loa.",
-  "en": ""
- },
- {
-  "vi": "Trống đồng Ngọc Lũ là hiện vật tiêu biểu của nền văn hóa nào?",
-  "en": ""
- },
- {
-  "vi": "Văn hóa Óc Eo",
-  "en": ""
- },
- {
-  "vi": "Văn hóa Sa Huỳnh",
-  "en": ""
- },
- {
-  "vi": "Văn hóa Đông Sơn",
-  "en": ""
- },
- {
-  "vi": "Trống đồng Ngọc Lũ là đỉnh cao của nghề đúc đồng thời Đông Sơn.",
-  "en": ""
- },
- {
-  "vi": "Giỗ Tổ Hùng Vương vào ngày nào?",
-  "en": ""
- },
- {
-  "vi": "Ngày 10/3 âm lịch",
-  "en": ""
- },
- {
-  "vi": "Ngày 2/9",
-  "en": ""
- },
- {
-  "vi": "Rằm tháng Tám",
-  "en": ""
- },
- {
-  "vi": "Giỗ Tổ Hùng Vương là ngày 10 tháng 3 âm lịch hằng năm.",
-  "en": ""
- },
- {
-  "vi": "Thế kỷ 1 – thế kỷ 6",
-  "en": ""
- },
- {
-  "vi": "Bắc thuộc và những cuộc khởi nghĩa",
-  "en": ""
- },
- {
-  "vi": "Sau thời Âu Lạc, đất nước bị các triều đại phương Bắc đô hộ hơn một nghìn năm, gọi là thời Bắc thuộc.",
-  "en": ""
- },
- {
-  "vi": "Mùa xuân năm 40, Hai Bà Trưng (Trưng Trắc, Trưng Nhị) khởi nghĩa chống nhà Đông Hán; Trưng Trắc được tôn làm vua, đóng đô ở Mê Linh.",
-  "en": ""
- },
- {
-  "vi": "Năm 43, quân Hán do Mã Viện chỉ huy dập tắt cuộc khởi nghĩa, nhưng Hai Bà vẫn được nhân dân đời đời thờ phụng.",
-  "en": ""
- },
- {
-  "vi": "Năm 248, Bà Triệu (Triệu Thị Trinh) dựng cờ khởi nghĩa ở núi Nưa (Thanh Hóa) chống quân Ngô.",
-  "en": ""
- },
- {
-  "vi": "Năm 544, Lý Bí lên ngôi, đặt tên nước là Vạn Xuân.",
-  "en": ""
- },
- {
-  "vi": "Hai Bà Trưng khởi nghĩa vào năm nào?",
-  "en": ""
- },
- {
-  "vi": "Năm 248",
-  "en": ""
- },
- {
-  "vi": "Năm 40",
-  "en": ""
- },
- {
-  "vi": "Năm 938",
-  "en": ""
- },
- {
-  "vi": "Mùa xuân năm 40, Hai Bà Trưng khởi nghĩa chống nhà Đông Hán.",
-  "en": ""
- },
- {
-  "vi": "Bà Triệu khởi nghĩa chống quân nào?",
-  "en": ""
- },
- {
-  "vi": "Quân Ngô",
-  "en": ""
- },
- {
-  "vi": "Quân Mông – Nguyên",
-  "en": ""
- },
- {
-  "vi": "Quân Thanh",
-  "en": ""
- },
- {
-  "vi": "Năm 248, Bà Triệu khởi nghĩa ở núi Nưa chống quân Ngô.",
-  "en": ""
- },
- {
-  "vi": "Trưng Trắc lên làm vua, đóng đô ở đâu?",
-  "en": ""
- },
- {
-  "vi": "Hoa Lư",
-  "en": ""
- },
- {
-  "vi": "Phú Xuân",
-  "en": ""
- },
- {
-  "vi": "Mê Linh",
-  "en": ""
- },
- {
-  "vi": "Trưng Trắc được tôn làm vua và đóng đô ở Mê Linh.",
-  "en": ""
- },
- {
-  "vi": "Năm 544, Lý Bí đặt tên nước là gì?",
-  "en": ""
- },
- {
-  "vi": "Đại Cồ Việt",
-  "en": ""
- },
- {
-  "vi": "Âu Lạc",
-  "en": ""
- },
- {
-  "vi": "Lý Bí lên ngôi năm 544 và đặt tên nước là Vạn Xuân.",
-  "en": ""
- },
- {
-  "vi": "Ngô Quyền và trận Bạch Đằng",
-  "en": ""
- },
- {
-  "vi": "Năm 938, quân Nam Hán do Lưu Hoằng Tháo chỉ huy theo đường biển kéo vào nước ta.",
-  "en": ""
- },
- {
-  "vi": "Ngô Quyền cho cắm cọc gỗ vót nhọn, bịt sắt dưới lòng sông Bạch Đằng, rồi nhử thuyền giặc vào lúc nước triều lên.",
-  "en": ""
- },
- {
-  "vi": "Khi nước triều rút, cọc nhô lên làm thuyền giặc vỡ đắm; quân mai phục hai bên bờ đánh ra và thắng lớn.",
-  "en": ""
- },
- {
-  "vi": "Mùa xuân năm 939, Ngô Quyền xưng vương và đóng đô ở Cổ Loa.",
-  "en": ""
- },
- {
-  "vi": "Chiến thắng Bạch Đằng chấm dứt hơn một nghìn năm Bắc thuộc, mở ra thời kỳ độc lập lâu dài.",
-  "en": ""
- },
- {
-  "vi": "Năm 938, Ngô Quyền đánh thắng quân nào trên sông Bạch Đằng?",
-  "en": ""
- },
- {
-  "vi": "Quân Tống",
-  "en": ""
- },
- {
-  "vi": "Quân Nam Hán",
-  "en": ""
- },
- {
-  "vi": "Quân Minh",
-  "en": ""
- },
- {
-  "vi": "Quân Nam Hán do Lưu Hoằng Tháo chỉ huy bị đánh tan trên sông Bạch Đằng.",
-  "en": ""
- },
- {
-  "vi": "Ngô Quyền dùng cách gì để phá thuyền giặc?",
-  "en": ""
- },
- {
-  "vi": "Cắm cọc nhọn dưới lòng sông và chờ nước triều rút",
-  "en": ""
- },
- {
-  "vi": "Xây một bức tường đá chắn ngang sông",
-  "en": ""
- },
- {
-  "vi": "Đào hào quanh kinh thành",
-  "en": ""
- },
- {
-  "vi": "Cọc nhọn bịt sắt cắm dưới sông, nước triều rút thì cọc nhô lên đâm thủng thuyền giặc.",
-  "en": ""
- },
- {
-  "vi": "Mùa xuân năm 939, Ngô Quyền đóng đô ở đâu?",
-  "en": ""
- },
- {
-  "vi": "Thăng Long",
-  "en": ""
- },
- {
-  "vi": "Cổ Loa",
-  "en": ""
- },
- {
-  "vi": "Ngô Quyền xưng vương và chọn Cổ Loa, kinh đô cũ của Âu Lạc.",
-  "en": ""
- },
- {
-  "vi": "Chiến thắng Bạch Đằng năm 938 có ý nghĩa gì?",
-  "en": ""
- },
- {
-  "vi": "Mở đầu nhà Nguyễn",
-  "en": ""
- },
- {
-  "vi": "Chấm dứt thời Bắc thuộc, mở ra thời kỳ độc lập lâu dài",
-  "en": ""
- },
- {
-  "vi": "Dời kinh đô ra Thăng Long",
-  "en": ""
- },
- {
-  "vi": "Sau Bạch Đằng 938, nước ta bước vào thời kỳ độc lập lâu dài.",
-  "en": ""
- },
- {
-  "vi": "Nhà Đinh, nhà Tiền Lê",
-  "en": ""
- },
- {
-  "vi": "Sau khi Ngô Quyền mất, đất nước rơi vào cảnh mười hai sứ quân cát cứ.",
-  "en": ""
- },
- {
-  "vi": "Đinh Bộ Lĩnh dẹp yên các sứ quân; năm 968 ông lên ngôi hoàng đế (Đinh Tiên Hoàng), đặt tên nước là Đại Cồ Việt và đóng đô ở Hoa Lư.",
-  "en": ""
- },
- {
-  "vi": "Năm 970, nhà vua thôi dùng niên hiệu của hoàng đế phương Bắc, đặt niên hiệu riêng là Thái Bình.",
-  "en": ""
- },
- {
-  "vi": "Năm 980, Lê Hoàn lên ngôi, lập nhà Tiền Lê; mùa xuân năm 981, ông lãnh đạo quân dân đánh thắng quân Tống.",
-  "en": ""
- },
- {
-  "vi": "Năm 968, Đinh Tiên Hoàng đặt tên nước là gì?",
-  "en": ""
- },
- {
-  "vi": "Đại Nam",
-  "en": ""
- },
- {
-  "vi": "Nhà Đinh đặt tên nước là Đại Cồ Việt.",
-  "en": ""
- },
- {
-  "vi": "Kinh đô của nhà Đinh ở đâu?",
-  "en": ""
- },
- {
-  "vi": "Đinh Tiên Hoàng đóng đô ở Hoa Lư.",
-  "en": ""
- },
- {
-  "vi": "Đinh Bộ Lĩnh thống nhất đất nước sau khi dẹp loạn gì?",
-  "en": ""
- },
- {
-  "vi": "Cuộc xâm lược của quân Mông – Nguyên",
-  "en": ""
- },
- {
-  "vi": "Loạn mười hai sứ quân",
-  "en": ""
- },
- {
-  "vi": "Cuộc khởi nghĩa Tây Sơn",
-  "en": ""
- },
- {
-  "vi": "Đinh Bộ Lĩnh dẹp yên mười hai sứ quân rồi lên ngôi năm 968.",
-  "en": ""
- },
- {
-  "vi": "Năm 981, ai lãnh đạo kháng chiến chống Tống thắng lợi?",
-  "en": ""
- },
- {
-  "vi": "Lê Hoàn",
-  "en": ""
- },
- {
-  "vi": "Lê Lợi",
-  "en": ""
- },
- {
-  "vi": "Trần Hưng Đạo",
-  "en": ""
- },
- {
-  "vi": "Lê Hoàn lên ngôi năm 980 và đánh thắng quân Tống mùa xuân năm 981.",
-  "en": ""
- },
- {
-  "vi": "Nhà Lý và kinh đô Thăng Long",
-  "en": ""
- },
- {
-  "vi": "Năm 1009, Lý Công Uẩn lên ngôi, mở đầu nhà Lý.",
-  "en": ""
- },
- {
-  "vi": "Năm 1010, nhà vua ban Chiếu dời đô, chuyển kinh đô từ Hoa Lư về thành Đại La và đặt tên mới là Thăng Long, nghĩa là rồng bay lên.",
-  "en": ""
- },
- {
-  "vi": "Năm 1054, nhà Lý đổi tên nước thành Đại Việt; năm 1070 xây Văn Miếu, năm 1076 lập Quốc Tử Giám.",
-  "en": ""
- },
- {
-  "vi": "Năm 1077, Lý Thường Kiệt chặn đứng quân Tống ở phòng tuyến sông Như Nguyệt; bài thơ Nam quốc sơn hà gắn với trận đánh này.",
-  "en": ""
- },
- {
-  "vi": "Hoàng thành Thăng Long được UNESCO ghi danh là di sản văn hóa thế giới năm 2010.",
-  "en": ""
- },
- {
-  "vi": "Năm 1010, Lý Công Uẩn dời đô về đâu?",
-  "en": ""
- },
- {
-  "vi": "Thành Đại La, đặt tên là Thăng Long",
-  "en": ""
- },
- {
-  "vi": "Chiếu dời đô năm 1010 chuyển kinh đô từ Hoa Lư về Đại La, đổi tên là Thăng Long.",
-  "en": ""
- },
- {
-  "vi": "Tên Thăng Long có nghĩa là gì?",
-  "en": ""
- },
- {
-  "vi": "Rồng bay lên",
-  "en": ""
- },
- {
-  "vi": "Sông dài",
-  "en": ""
- },
- {
-  "vi": "Núi cao",
-  "en": ""
- },
- {
-  "vi": "Thăng Long nghĩa là rồng bay lên.",
-  "en": ""
- },
- {
-  "vi": "Văn Miếu ở Thăng Long được xây dưới triều nào?",
-  "en": ""
- },
- {
-  "vi": "Nhà Nguyễn",
-  "en": ""
- },
- {
-  "vi": "Nhà Đinh",
-  "en": ""
- },
- {
-  "vi": "Nhà Lý",
-  "en": ""
- },
- {
-  "vi": "Văn Miếu được xây năm 1070, thời nhà Lý.",
-  "en": ""
- },
- {
-  "vi": "Năm 1077, Lý Thường Kiệt chặn quân Tống ở đâu?",
-  "en": ""
- },
- {
-  "vi": "Phòng tuyến sông Như Nguyệt",
-  "en": ""
- },
- {
-  "vi": "Rạch Gầm – Xoài Mút",
-  "en": ""
- },
- {
-  "vi": "Gò Đống Đa",
-  "en": ""
- },
- {
-  "vi": "Quân Tống bị chặn ở phòng tuyến sông Như Nguyệt (một đoạn sông Cầu).",
-  "en": ""
- },
- {
-  "vi": "Nhà Trần và ba lần thắng quân Mông – Nguyên",
-  "en": ""
- },
- {
-  "vi": "Năm 1226, nhà Trần thay nhà Lý, vẫn đóng đô ở Thăng Long.",
-  "en": ""
- },
- {
-  "vi": "Trong ba mươi năm, quân Mông – Nguyên ba lần sang xâm lược, vào các năm 1258, 1285 và 1288, và cả ba lần đều bị đánh bại.",
-  "en": ""
- },
- {
-  "vi": "Trước cuộc kháng chiến lần thứ hai, các bô lão họp ở điện Diên Hồng đồng thanh hô: \"Đánh!\"",
-  "en": ""
- },
- {
-  "vi": "Hưng Đạo Đại Vương Trần Quốc Tuấn thống lĩnh toàn quân và viết Hịch tướng sĩ để khích lệ binh sĩ.",
-  "en": ""
- },
- {
-  "vi": "Năm 1288, quân dân nhà Trần lại dùng trận địa cọc trên sông Bạch Đằng, tiêu diệt đoàn thuyền quân Nguyên.",
-  "en": ""
- },
- {
-  "vi": "Nhà Trần đánh thắng quân Mông – Nguyên mấy lần?",
-  "en": ""
- },
- {
-  "vi": "Hai lần",
-  "en": ""
- },
- {
-  "vi": "Ba lần",
-  "en": ""
- },
- {
-  "vi": "Năm lần",
-  "en": ""
- },
- {
-  "vi": "Ba lần: năm 1258, 1285 và 1288.",
-  "en": ""
- },
- {
-  "vi": "Ai thống lĩnh toàn quân nhà Trần chống quân Nguyên?",
-  "en": ""
- },
- {
-  "vi": "Hưng Đạo Đại Vương Trần Quốc Tuấn thống lĩnh toàn quân.",
-  "en": ""
- },
- {
-  "vi": "Ở hội nghị Diên Hồng, các bô lão đồng thanh nói gì?",
-  "en": ""
- },
- {
-  "vi": "\"Đánh!\"",
-  "en": ""
- },
- {
-  "vi": "\"Hòa!\"",
-  "en": ""
- },
- {
-  "vi": "\"Chờ thêm!\"",
-  "en": ""
- },
- {
-  "vi": "Các bô lão đồng thanh hô \"Đánh!\".",
-  "en": ""
- },
- {
-  "vi": "Trận Bạch Đằng năm 1288 đánh bại quân nào?",
-  "en": ""
- },
- {
-  "vi": "Quân Nguyên",
-  "en": ""
- },
- {
-  "vi": "Năm 1288, đoàn thuyền quân Nguyên bị tiêu diệt trên sông Bạch Đằng.",
-  "en": ""
- },
- {
-  "vi": "Lê Lợi và khởi nghĩa Lam Sơn",
-  "en": ""
- },
- {
-  "vi": "Đầu thế kỷ 15, nhà Minh sang đô hộ nước ta.",
   "en": ""
  }
 ]

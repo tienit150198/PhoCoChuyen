@@ -288,15 +288,15 @@
   "en": ""
  },
  {
+  "vi": "Chào khách và nghe khách nói trước nhé (bấm “Nghe khách”).",
+  "en": ""
+ },
+ {
   "vi": "Khách chưa đưa tiền mặt.",
   "en": ""
  },
  {
   "vi": "Việc này không thuộc tiệm áo.",
-  "en": ""
- },
- {
-  "vi": "Chào khách và nghe khách nói trước nhé (bấm “Nghe khách”).",
   "en": ""
  },
  {
@@ -889,6 +889,10 @@
  },
  {
   "vi": "Đã gấp lại đồ khách thử, treo lên giá đúng size.",
+  "en": ""
+ },
+ {
+  "vi": "🌏 Khách nói size kiểu địa phương → tra 📏 bảng quy đổi → lấy đúng nhãn trên giá → trả lời thói quen của khách → tính tiền.",
   "en": ""
  },
  {
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Kệ phụ kiện",
-  "en": ""
- },
- {
-  "vi": "Đo số đo khách",
   "en": ""
  }
 ]

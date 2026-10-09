@@ -1,5 +1,893 @@
 [
  {
+  "vi": "Hay cười",
+  "en": ""
+ },
+ {
+  "vi": "Đám mây trắng biết cười. Rụng lông đủ làm thêm một con nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Lạp xưởng",
+  "en": ""
+ },
+ {
+  "vi": "Tò mò",
+  "en": ""
+ },
+ {
+  "vi": "Thân dài như cây lạp xưởng, chui gầm giường đi tìm dép.",
+  "en": ""
+ },
+ {
+  "vi": "Mèo mướp ta",
+  "en": ""
+ },
+ {
+  "vi": "Lém lỉnh",
+  "en": ""
+ },
+ {
+  "vi": "Bắt chuột giỏi, trèo mái nhà như đi chợ.",
+  "en": ""
+ },
+ {
+  "vi": "Mướp xám",
+  "en": ""
+ },
+ {
+  "vi": "Mướp vàng",
+  "en": ""
+ },
+ {
+  "vi": "Mèo tam thể",
+  "en": ""
+ },
+ {
+  "vi": "Mang lộc",
+  "en": ""
+ },
+ {
+  "vi": "Ba màu may mắn, ông bà bảo nuôi là buôn may bán đắt.",
+  "en": ""
+ },
+ {
+  "vi": "Tam thể nhạt",
+  "en": ""
+ },
+ {
+  "vi": "Mèo mun",
+  "en": ""
+ },
+ {
+  "vi": "Bí ẩn",
+  "en": ""
+ },
+ {
+  "vi": "Đen tuyền, mắt vàng như trăng rằm. Thích ngủ trong hộp giấy.",
+  "en": ""
+ },
+ {
+  "vi": "Mun yếm trắng",
+  "en": ""
+ },
+ {
+  "vi": "Anh lông ngắn",
+  "en": ""
+ },
+ {
+  "vi": "Điềm tĩnh",
+  "en": ""
+ },
+ {
+  "vi": "Má bánh bao, ngồi như ông chủ. Không thích bị bế lâu.",
+  "en": ""
+ },
+ {
+  "vi": "Xám xanh",
+  "en": ""
+ },
+ {
+  "vi": "Vàng golden",
+  "en": ""
+ },
+ {
+  "vi": "Hai màu",
+  "en": ""
+ },
+ {
+  "vi": "Anh lông dài",
+  "en": ""
+ },
+ {
+  "vi": "Sang chảnh",
+  "en": ""
+ },
+ {
+  "vi": "Lông dài mượt như vừa đi gội đầu, đi đâu cũng nhẹ nhàng.",
+  "en": ""
+ },
+ {
+  "vi": "Ba Tư",
+  "en": ""
+ },
+ {
+  "vi": "Lười biếng",
+  "en": ""
+ },
+ {
+  "vi": "Mặt tịt, lông bồng bềnh, mỗi ngày ngủ mười sáu tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "Xám khói",
+  "en": ""
+ },
+ {
+  "vi": "Hiền lành",
+  "en": ""
+ },
+ {
+  "vi": "Tai cụp như đội mũ, ngồi kiểu “Phật” nhìn đời.",
+  "en": ""
+ },
+ {
+  "vi": "Kem trắng",
+  "en": ""
+ },
+ {
+  "vi": "Mướp bạc",
+  "en": ""
+ },
+ {
+  "vi": "Chân ngắn tũn, chạy như lăn. Đứng hai chân như chuột đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Mềm như bông",
+  "en": ""
+ },
+ {
+  "vi": "Bế lên là thả lỏng như con búp bê vải. Mắt xanh biếc.",
+  "en": ""
+ },
+ {
+  "vi": "Hiếu động",
+  "en": ""
+ },
+ {
+  "vi": "Đốm như báo con, mê nước, mê leo tủ lạnh.",
+  "en": ""
+ },
+ {
+  "vi": "Vàng đốm",
+  "en": ""
+ },
+ {
+  "vi": "Bạc đốm",
+  "en": ""
+ },
+ {
+  "vi": "Bám người",
+  "en": ""
+ },
+ {
+  "vi": "Không lông, da ấm như túi chườm. Đòi đắp chăn chung.",
+  "en": ""
+ },
+ {
+  "vi": "Gã khổng lồ",
+  "en": ""
+ },
+ {
+  "vi": "Tai có chùm lông như linh miêu, to gấp đôi mèo nhà mà hiền khô.",
+  "en": ""
+ },
+ {
+  "vi": "Nâu mướp",
+  "en": ""
+ },
+ {
+  "vi": "Bạc mướp",
+  "en": ""
+ },
+ {
+  "vi": "Đen khói",
+  "en": ""
+ },
+ {
+  "vi": "Mèo Xiêm",
+  "en": ""
+ },
+ {
+  "vi": "Hay “nói”",
+  "en": ""
+ },
+ {
+  "vi": "Kêu meo meo cả ngày như kể chuyện. Mặt nạ sô-cô-la, mắt xanh.",
+  "en": ""
+ },
+ {
+  "vi": "Góc nhận nuôi Chân Nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Cốm",
+  "en": ""
+ },
+ {
+  "vi": "Bí",
+  "en": ""
+ },
+ {
+  "vi": "Xoài",
+  "en": ""
+ },
+ {
+  "vi": "Mèo Con",
+  "en": ""
+ },
+ {
+  "vi": "Cơm nhà trộn cá",
+  "en": ""
+ },
+ {
+  "vi": "Bé ăn sạch bát, liếm mép.",
+  "en": ""
+ },
+ {
+  "vi": "Hạt thường",
+  "en": ""
+ },
+ {
+  "vi": "Rột rột rột… hết veo.",
+  "en": ""
+ },
+ {
+  "vi": "Pate cao cấp",
+  "en": ""
+ },
+ {
+  "vi": "Bé ăn xong còn đòi liếm hộp.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệc bò, cá hồi",
+  "en": ""
+ },
+ {
+  "vi": "Bé ăn như ngày Tết, xoay vòng vòng.",
+  "en": ""
+ },
+ {
+  "vi": "Bóng cao su",
+  "en": ""
+ },
+ {
+  "vi": "Xương gặm",
+  "en": ""
+ },
+ {
+  "vi": "Cần câu lông vũ",
+  "en": ""
+ },
+ {
+  "vi": "Chuột bông",
+  "en": ""
+ },
+ {
+  "vi": "Đĩa bay",
+  "en": ""
+ },
+ {
+  "vi": "Trụ cào móng",
+  "en": ""
+ },
+ {
+  "vi": "Chuột robot",
+  "en": ""
+ },
+ {
+  "vi": "Tắm ở nhà",
+  "en": ""
+ },
+ {
+  "vi": "Bé run run rồi lắc nước tung toé.",
+  "en": ""
+ },
+ {
+  "vi": "Spa Pet Care Mèo Mập",
+  "en": ""
+ },
+ {
+  "vi": "Chị Mây tắm sấy, cắt móng, xịt thơm. Bé về nhà bồng bềnh.",
+  "en": ""
+ },
+ {
+  "vi": "Khám tổng quát",
+  "en": ""
+ },
+ {
+  "vi": "Bác sĩ Cỏ May khám tai, mắt, răng, nghe tim. Bé khỏe re.",
+  "en": ""
+ },
+ {
+  "vi": "Tiêm xong được thưởng bánh. Ba mươi ngày không lo ốm vặt.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng cổ",
+  "en": ""
+ },
+ {
+  "vi": "Nơ, mũ",
+  "en": ""
+ },
+ {
+  "vi": "Ổ nằm",
+  "en": ""
+ },
+ {
+  "vi": "Vòng chuông đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Vòng da khắc tên",
+  "en": ""
+ },
+ {
+  "vi": "Vòng ngọc trai",
+  "en": ""
+ },
+ {
+  "vi": "Vòng vàng 24K",
+  "en": ""
+ },
+ {
+  "vi": "Nơ hồng",
+  "en": ""
+ },
+ {
+  "vi": "Nơ chấm bi",
+  "en": ""
+ },
+ {
+  "vi": "Nón lá mini",
+  "en": ""
+ },
+ {
+  "vi": "Mũ ếch",
+  "en": ""
+ },
+ {
+  "vi": "Áo len",
+  "en": ""
+ },
+ {
+  "vi": "Áo mưa vàng",
+  "en": ""
+ },
+ {
+  "vi": "Áo đội tuyển",
+  "en": ""
+ },
+ {
+  "vi": "Hoodie khủng long",
+  "en": ""
+ },
+ {
+  "vi": "Áo dài mini",
+  "en": ""
+ },
+ {
+  "vi": "Váy công chúa",
+  "en": ""
+ },
+ {
+  "vi": "Ổ bông",
+  "en": ""
+ },
+ {
+  "vi": "Nệm mây",
+  "en": ""
+ },
+ {
+  "vi": "Nhà gỗ nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Lâu đài thú cưng",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi",
+  "en": ""
+ },
+ {
+  "vi": "Bắt tay",
+  "en": ""
+ },
+ {
+  "vi": "Nằm xuống",
+  "en": ""
+ },
+ {
+  "vi": "Lăn tròn",
+  "en": ""
+ },
+ {
+  "vi": "Đứng hai chân xin",
+  "en": ""
+ },
+ {
+  "vi": "“Pằng!” giả chết",
+  "en": ""
+ },
+ {
+  "vi": "Tha dép về",
+  "en": ""
+ },
+ {
+  "vi": "Gọi là tới",
+  "en": ""
+ },
+ {
+  "vi": "Đập tay",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi ngoan",
+  "en": ""
+ },
+ {
+  "vi": "Lăn ra nũng",
+  "en": ""
+ },
+ {
+  "vi": "Đứng hai chân",
+  "en": ""
+ },
+ {
+  "vi": "Nhảy qua vòng",
+  "en": ""
+ },
+ {
+  "vi": "Chui hộp theo lệnh",
+  "en": ""
+ },
+ {
+  "vi": "Vui tít",
+  "en": ""
+ },
+ {
+  "vi": "Dạo phố",
+  "en": ""
+ },
+ {
+  "vi": "Ngủ say",
+  "en": ""
+ },
+ {
+  "vi": "Nắng mai",
+  "en": ""
+ },
+ {
+  "vi": "Tim hồng",
+  "en": ""
+ },
+ {
+  "vi": "Đã lưu góp ý.",
+  "en": ""
+ },
+ {
+  "vi": "Góp ý này đã có lời đáp nên không sửa được nữa. Gửi góp ý mới nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn khách người chơi không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản đơn khách không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin khách không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thực hiện đúng phiếu dịch vụ này. Ghi chú để trao đổi, không thay đổi dữ kiện của phiếu.",
+  "en": ""
+ },
+ {
+  "vi": "Nơi làm việc chưa thể nhận thêm đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu dịch vụ đã thay đổi. Xem lại trước khi đặt.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu dịch vụ đã thay đổi.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn khách này đã được nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên thực hiện đúng dịch vụ này bằng vật tư của nơi làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn này đã được nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên chưa thể nhận đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Lương đơn khách người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Vật tư đơn khách người chơi",
+  "en": ""
+ },
+ {
+  "vi": "đơn khách",
+  "en": ""
+ },
+ {
+  "vi": "· đơn khách",
+  "en": ""
+ },
+ {
+  "vi": "· chờ thanh toán theo biên nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Biên nhận giao hàng chưa khớp.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ đơn khách nhân viên không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn khách nhân viên không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Biên nhận thanh toán không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Vật tư dịch vụ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Biên nhận đơn nhân viên không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Biên nhận giao món chưa khớp.",
+  "en": ""
+ },
+ {
+  "vi": "Két đã đầy. Thu tiền rồi nhận thanh toán nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Khách người chơi thanh toán đơn",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang tạm dừng.",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ quầy chưa đủ trả chi phí nhân viên cho đơn này.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn quầy không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một món đang bán.",
+  "en": ""
+ },
+ {
+  "vi": "Giá món đã thay đổi.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang có đủ đơn khách chờ biên nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Món này vừa hết hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin phục vụ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Xử lý tình trạng quầy trước khi phục vụ.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn khách không còn chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đặt món khác. Chọn đúng món đã giữ cho đơn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn khách đã giữ đúng số tiền; không cần thối thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách chào khách.",
+  "en": ""
+ },
+ {
+  "vi": "Đã giao đúng món cho",
+  "en": ""
+ },
+ {
+  "vi": ". Thanh toán được ghi trên biên nhận của đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng đợi khách quầy không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn khách quầy không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên phục vụ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Biên nhận giao món không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Kho quầy vượt sức chứa.",
+  "en": ""
+ },
+ {
+  "vi": "Hết thử việc trước đã",
+  "en": ""
+ },
+ {
+  "vi": "Anh Tư",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍💼 Ca quản lý: giao việc cho đội nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍💼 Phụ việc thời vụ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có ca quản lý nào đang mở.",
+  "en": ""
+ },
+ {
+  "vi": "Ca quản lý đã chốt. Khép ngày thôi!",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ rối chuyện đang chờ trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "đội",
+  "en": ""
+ },
+ {
+  "vi": "thưởng quản lý",
+  "en": ""
+ },
+ {
+  "vi": "Ca đã dài lắm rồi. Chốt ca thôi!",
+  "en": ""
+ },
+ {
+  "vi": "Không có chuyện nào cần gỡ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã gỡ rối.",
+  "en": ""
+ },
+ {
+  "vi": "Tạm ổn.",
+  "en": ""
+ },
+ {
+  "vi": "Có chuyện cần gỡ rối trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Không ai đang làm dở. Giao việc tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Đội làm tiếp…",
+  "en": ""
+ },
+ {
+  "vi": "Người nhận không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Việc này đã giao rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn ✅ hoặc ↩️.",
+  "en": ""
+ },
+ {
+  "vi": "Việc này chưa xong để kiểm.",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhận. Có chỗ chưa ổn, lần sau soi kỹ hơn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "✅ Việc tốt!",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Bắt đúng lỗi! Làm lại ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Việc này vốn ổn rồi… đội hơi buồn.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác quản lý không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Mở khóa 🧑‍💼 Ca quản lý.",
+  "en": ""
+ },
+ {
+  "vi": "chưa ưng",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có buổi xét lên chức nào.",
+  "en": ""
+ },
+ {
+  "vi": "Hội buôn phố",
+  "en": ""
+ },
+ {
+  "vi": "Giờ tới phần lương.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tiệm không cần xin lương.",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời hết câu hỏi trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Mức xin lương không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác xét lên chức không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng điều hành mở từ bậc lãnh đạo.",
+  "en": ""
+ },
+ {
+  "vi": "Cấp bậc hàm theo quy định, không xin lương.",
+  "en": ""
+ },
+ {
+  "vi": "Không có phong bì nào cần tự giác nộp lại hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng chỉ huy mở từ Tổ trưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng chỉ huy làm việc trong ca. Mở ca trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🏢 Thưởng chỉ huy",
+  "en": ""
+ },
+ {
+  "vi": "🏢 Thưởng điều hành",
+  "en": ""
+ },
+ {
+  "vi": "Ca quản lý mở từ bậc thứ ba.",
+  "en": ""
+ },
+ {
+  "vi": "(🎓 bằng du học: bớt ngày)",
+  "en": ""
+ },
+ {
+  "vi": "Đã có lịch xét bậc ở đầu ca sau",
+  "en": ""
+ },
+ {
+  "vi": "Phòng sếp",
+  "en": ""
+ },
+ {
+  "vi": "Ban chỉ huy",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu thăng tiến không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Kế toán phụ trách phần hành",
+  "en": ""
+ },
+ {
+  "vi": "Phó phòng kế toán",
+  "en": ""
+ },
+ {
+  "vi": "Chuyên viên lương bậc 2",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng nhóm lương",
+  "en": ""
+ },
+ {
+  "vi": "Phó phòng thuế – lương",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng phòng thuế – lương",
+  "en": ""
+ },
+ {
+  "vi": "Chuyên viên hợp nhất bậc 2",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng nhóm hợp nhất",
+  "en": ""
+ },
+ {
+  "vi": "Phó phòng tài chính TĐ",
+  "en": ""
+ },
+ {
   "vi": "Kế toán trưởng tập đoàn",
   "en": ""
  },
@@ -909,894 +1797,6 @@
  },
  {
   "vi": "Áp kế tụt nhanh mà gió mới cấp 4.",
-  "en": ""
- },
- {
-  "vi": "Báo đài, phát cảnh báo cho tàu thuyền",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ, giờ sau xem lại",
-  "en": ""
- },
- {
-  "vi": "Giám đốc nhờ đẩy cuộc gọi của người quen lên mức khẩn cấp.",
-  "en": ""
- },
- {
-  "vi": "Giữ mức theo nguy hiểm tính mạng, giải thích rõ",
-  "en": ""
- },
- {
-  "vi": "Đẩy lên cho xong",
-  "en": ""
- },
- {
-  "vi": "Hỏi chị trưởng ca rồi tính",
-  "en": ""
- },
- {
-  "vi": "Ba cuộc gọi đùa liền, cuộc thứ tư giọng nhỏ báo có khói.",
-  "en": ""
- },
- {
-  "vi": "Hỏi kỹ, lắng nghe, gọi lại rồi mới quyết",
-  "en": ""
- },
- {
-  "vi": "Cúp máy, chắc lại đùa",
-  "en": ""
- },
- {
-  "vi": "Gửi xe luôn khỏi hỏi",
-  "en": ""
- },
- {
-  "vi": "Người gọi khóc nấc, không nói được địa chỉ.",
-  "en": ""
- },
- {
-  "vi": "Trấn an, giao một việc nhỏ, hỏi mốc, gửi định vị",
-  "en": ""
- },
- {
-  "vi": "Bảo họ bình tĩnh rồi gọi lại",
-  "en": ""
- },
- {
-  "vi": "Chờ họ tự nói",
-  "en": ""
- },
- {
-  "vi": "Đồng nghiệp tắt ghi âm “cho thoải mái”.",
-  "en": ""
- },
- {
-  "vi": "Nhắc bật lại, ghi âm là bảo vệ cả hai bên",
-  "en": ""
- },
- {
-  "vi": "Tắt theo cho vui",
-  "en": ""
- },
- {
-  "vi": "Kệ, không phải máy mình",
-  "en": ""
- },
- {
-  "vi": "Cuối tháng giám đốc bảo sửa giờ nhấc máy cho đẹp KPI.",
-  "en": ""
- },
- {
-  "vi": "Giữ số thật, kèm lý do và đề xuất",
-  "en": ""
- },
- {
-  "vi": "Không sửa nhưng im lặng",
-  "en": ""
- },
- {
-  "vi": "Bạn trực ca thứ ba liền, nghe nhầm số nhà một lần.",
-  "en": ""
- },
- {
-  "vi": "Báo trưởng ca, xin người thay để nghỉ",
-  "en": ""
- },
- {
-  "vi": "Uống thêm cà phê cố trực",
-  "en": ""
- },
- {
-  "vi": "Giấu đi, chắc không sao",
-  "en": ""
- },
- {
-  "vi": "Quản lý bảo đừng đóng hồ khi đã nghe sấm vì sợ mất vé.",
-  "en": ""
- },
- {
-  "vi": "Cho lên bờ ngay, đề nghị phát vé bơi bù",
-  "en": ""
- },
- {
-  "vi": "Đồng nghiệp ngồi ghế trực lướt điện thoại vì “hồ vắng”.",
-  "en": ""
- },
- {
-  "vi": "Nhắc thẳng, đổi ghế cho bạn nghỉ mắt",
-  "en": ""
- },
- {
-  "vi": "Kệ, hồ vắng thật",
-  "en": ""
- },
- {
-  "vi": "Méc quản lý, không nói gì với bạn",
-  "en": ""
- },
- {
-  "vi": "Một bé nói biết bơi, đòi ra khu sâu.",
-  "en": ""
- },
- {
-  "vi": "Cấm hẳn, không cần thử",
-  "en": ""
- },
- {
-  "vi": "Sáng ra que thử báo clo dưới bảng mẫu, khách đứng chờ ngoài cổng.",
-  "en": ""
- },
- {
-  "vi": "Hoãn mở, báo kỹ thuật, nói rõ giờ mở với khách",
-  "en": ""
- },
- {
-  "vi": "Mở trước, chiều xử lý",
-  "en": ""
- },
- {
-  "vi": "Tự đổ thêm hóa chất cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Bạn mới trong nhóm xuống cứu người mà quên phao ống.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn bạn đã nhanh, rồi tập lại cùng nhau với phao",
-  "en": ""
- },
- {
-  "vi": "Mắng trước cả hồ",
-  "en": ""
- },
- {
-  "vi": "Bỏ qua, cứu được là được",
-  "en": ""
- },
- {
-  "vi": "Ngày hè đông gấp đôi, nhóm chỉ có hai người trực.",
-  "en": ""
- },
- {
-  "vi": "Giới hạn vé theo lượt, xin thêm người, đóng bớt khu",
-  "en": ""
- },
- {
-  "vi": "Cố trông hết",
-  "en": ""
- },
- {
-  "vi": "Phòng thương mại muốn cắt giờ nghỉ tổ bay để thêm chuyến dịp lễ.",
-  "en": ""
- },
- {
-  "vi": "Giữ đúng giờ nghỉ, thuê thêm chuyến hoặc đổi lịch",
-  "en": ""
- },
- {
-  "vi": "Cắt nhẹ, ai mệt thì báo",
-  "en": ""
- },
- {
-  "vi": "Hỏi tổ bay ai tình nguyện",
-  "en": ""
- },
- {
-  "vi": "Một cơ trưởng giỏi nhất đội bị khách khiếu nại thái độ.",
-  "en": ""
- },
- {
-  "vi": "Xem lại sự việc, nghe hai phía rồi mới kết luận",
-  "en": ""
- },
- {
-  "vi": "Bỏ qua vì anh ấy bay giỏi",
-  "en": ""
- },
- {
-  "vi": "Bắt xin lỗi khách ngay",
-  "en": ""
- },
- {
-  "vi": "Quỹ lương quý này vượt kế hoạch.",
-  "en": ""
- },
- {
-  "vi": "Xem lại lịch bay và giờ làm thêm, không đụng dầu dự phòng",
-  "en": ""
- },
- {
-  "vi": "Cắt phụ cấp bay đêm của cả đội",
-  "en": ""
- },
- {
-  "vi": "Xin thêm ngân sách, chưa đổi gì",
-  "en": ""
- },
- {
-  "vi": "Phi công nộp báo cáo tự nguyện về một lỗi suýt gây sự cố.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn, không phạt, đưa thành bài học chung",
-  "en": ""
- },
- {
-  "vi": "Kỷ luật cho cả đội sợ",
-  "en": ""
- },
- {
-  "vi": "Cất báo cáo, không nói ai",
-  "en": ""
- },
- {
-  "vi": "Hai trưởng phòng tranh nhau một suất học lái tàu mới.",
-  "en": ""
- },
- {
-  "vi": "Đưa tiêu chí rõ ràng, chấm theo kết quả",
-  "en": ""
- },
- {
-  "vi": "Chọn người thân với mình hơn",
-  "en": ""
- },
- {
-  "vi": "Để hai bên tự thỏa thuận",
-  "en": ""
- },
- {
-  "vi": "Đối tác gửi “quà cảm ơn” mong được ưu tiên giờ bay đẹp.",
-  "en": ""
- },
- {
-  "vi": "Trả lại, ghi nhận công khai",
-  "en": ""
- },
- {
-  "vi": "Nhận rồi tính sau",
-  "en": ""
- },
- {
-  "vi": "Nhận, chia cho phòng điều phái",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh nhờ “nâng điểm” để con vào lớp chọn, kèm phong bì.",
-  "en": ""
- },
- {
-  "vi": "Từ chối, hướng dẫn phúc khảo đúng quy trình",
-  "en": ""
- },
- {
-  "vi": "Nhận rồi tính",
-  "en": ""
- },
- {
-  "vi": "Bảo giáo viên tự xử",
-  "en": ""
- },
- {
-  "vi": "Một giáo viên giỏi bị phụ huynh phản ánh nặng lời với học sinh.",
-  "en": ""
- },
- {
-  "vi": "Gặp riêng, nghe hai phía, cùng tìm cách sửa",
-  "en": ""
- },
- {
-  "vi": "Bỏ qua vì cô ấy dạy giỏi",
-  "en": ""
- },
- {
-  "vi": "Phê bình trước hội đồng ngay",
-  "en": ""
- },
- {
-  "vi": "Kinh phí sửa phòng học thiếu.",
-  "en": ""
- },
- {
-  "vi": "Lập kế hoạch công khai, xin hỗ trợ đúng quy định",
-  "en": ""
- },
- {
-  "vi": "Thu thêm tiền phụ huynh bắt buộc",
-  "en": ""
- },
- {
-  "vi": "Hoãn đến năm sau",
-  "en": ""
- },
- {
-  "vi": "Giáo viên trẻ xin nghỉ đúng tuần thi vì con ốm.",
-  "en": ""
- },
- {
-  "vi": "Duyệt, sắp xếp người dạy thay",
-  "en": ""
- },
- {
-  "vi": "Không duyệt, tuần thi quan trọng hơn",
-  "en": ""
- },
- {
-  "vi": "Duyệt nhưng trừ thi đua",
-  "en": ""
- },
- {
-  "vi": "Đoàn kiểm tra báo đến sáng mai.",
-  "en": ""
- },
- {
-  "vi": "Nhờ tổ trưởng rà hồ sơ trong giờ làm",
-  "en": ""
- },
- {
-  "vi": "Bắt cả trường thức đêm làm lại hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Kệ, có sao nói vậy",
-  "en": ""
- },
- {
-  "vi": "Hai tổ chuyên môn tranh nhau phòng thực hành.",
-  "en": ""
- },
- {
-  "vi": "Xếp lịch luân phiên, công khai",
-  "en": ""
- },
- {
-  "vi": "Ưu tiên tổ mình thân hơn",
-  "en": ""
- },
- {
-  "vi": "Để hai tổ tự chia",
-  "en": ""
- },
- {
-  "vi": "Xin như khung",
-  "en": ""
- },
- {
-  "vi": "Xin hợp lý",
-  "en": ""
- },
- {
-  "vi": "🙂 Khách hài lòng",
-  "en": ""
- },
- {
-  "vi": "⚠️ Khách còn thắc mắc",
-  "en": ""
- },
- {
-  "vi": "🎯 Làm đúng yêu cầu",
-  "en": ""
- },
- {
-  "vi": "⚠️ Còn chỗ làm ẩu",
-  "en": ""
- },
- {
-  "vi": "📋 Sổ khớp, đủ chữ ký",
-  "en": ""
- },
- {
-  "vi": "⚠️ Lệch một dòng",
-  "en": ""
- },
- {
-  "vi": "⏱️ Kịp giờ hẹn",
-  "en": ""
- },
- {
-  "vi": "⚠️ Trễ hẹn",
-  "en": ""
- },
- {
-  "vi": "Nghe hết, xin lỗi, cho làm lại",
-  "en": ""
- },
- {
-  "vi": "Ra gặp ngay, hỏi rõ chuyện",
-  "en": ""
- },
- {
-  "vi": "Bảo khách mình đang bận",
-  "en": ""
- },
- {
-  "vi": "Gọi riêng hai người, chia lại rõ",
-  "en": ""
- },
- {
-  "vi": "Tự làm phần đang cãi",
-  "en": ""
- },
- {
-  "vi": "Mặc kệ hai người",
-  "en": ""
- },
- {
-  "vi": "Khen điểm mạnh từng người",
-  "en": ""
- },
- {
-  "vi": "Nhắc chung cả nhóm",
-  "en": ""
- },
- {
-  "vi": "Cho về nghỉ, chia lại việc",
-  "en": ""
- },
- {
-  "vi": "Cho ngồi nghỉ 15 phút",
-  "en": ""
- },
- {
-  "vi": "Bảo cố nốt ca",
-  "en": ""
- },
- {
-  "vi": "Sơ cứu ngay, cho nghỉ tay",
-  "en": ""
- },
- {
-  "vi": "Dán băng rồi làm tiếp",
-  "en": ""
- },
- {
-  "vi": "Bảo lần sau cẩn thận",
-  "en": ""
- },
- {
-  "vi": "Một vị khách",
-  "en": ""
- },
- {
-  "vi": "Tự trọng cao: góp ý riêng thì nghe, bị nói nặng là tự ái.",
-  "en": ""
- },
- {
-  "vi": "Hay “lươn”: khen suông là lờn, nhắc đúng lỗi thì sửa nhanh.",
-  "en": ""
- },
- {
-  "vi": "Cầu tiến: mê được thăng chức, bị giáng chức là muốn nghỉ.",
-  "en": ""
- },
- {
-  "vi": "Chăm, ít nói: ít phản ứng, làm quá sức thì âm thầm đuối.",
-  "en": ""
- },
- {
-  "vi": "Nhạy cảm: bị phê bình là buồn lâu, được hỏi han là lên tinh thần.",
-  "en": ""
- },
- {
-  "vi": "Kỳ cựu: tay nghề chắc, ghét bị nhắc khi mình không sai.",
-  "en": ""
- },
- {
-  "vi": "Nói chuyện riêng",
-  "en": ""
- },
- {
-  "vi": "Khen trước nhóm",
-  "en": ""
- },
- {
-  "vi": "Cảnh cáo",
-  "en": ""
- },
- {
-  "vi": "Kiểm điểm",
-  "en": ""
- },
- {
-  "vi": "Kỷ luật: đình chỉ",
-  "en": ""
- },
- {
-  "vi": "Thăng chức",
-  "en": ""
- },
- {
-  "vi": "Giáng chức",
-  "en": ""
- },
- {
-  "vi": "Tăng bậc lương",
-  "en": ""
- },
- {
-  "vi": "Hạ bậc lương",
-  "en": ""
- },
- {
-  "vi": "Khiển trách",
-  "en": ""
- },
- {
-  "vi": "Điều động",
-  "en": ""
- },
- {
-  "vi": "Đã nhắc nhở",
-  "en": ""
- },
- {
-  "vi": "Đã cảnh cáo",
-  "en": ""
- },
- {
-  "vi": "Đã kiểm điểm",
-  "en": ""
- },
- {
-  "vi": "Phòng điều hành bay",
-  "en": ""
- },
- {
-  "vi": "Điều phối chuyến bay",
-  "en": ""
- },
- {
-  "vi": "Phàn nàn",
-  "en": ""
- },
- {
-  "vi": "Quỹ lương",
-  "en": ""
- },
- {
-  "vi": "Điều phái viên",
-  "en": ""
- },
- {
-  "vi": "Điều phái chính",
-  "en": ""
- },
- {
-  "vi": "Trưởng ca điều phái",
-  "en": ""
- },
- {
-  "vi": "Kỹ thuật",
-  "en": ""
- },
- {
-  "vi": "Thợ máy chính",
-  "en": ""
- },
- {
-  "vi": "Kỹ sư trưởng ca",
-  "en": ""
- },
- {
-  "vi": "Bạn Khoa",
-  "en": ""
- },
- {
-  "vi": "Bạn Vy",
-  "en": ""
- },
- {
-  "vi": "Bạn Ly",
-  "en": ""
- },
- {
-  "vi": "Bạn Minh",
-  "en": ""
- },
- {
-  "vi": "Bạn Phong",
-  "en": ""
- },
- {
-  "vi": "Bạn Hưng",
-  "en": ""
- },
- {
-  "vi": "Bạn Trâm",
-  "en": ""
- },
- {
-  "vi": "Bạn Lâm",
-  "en": ""
- },
- {
-  "vi": "Anh Hòa",
-  "en": ""
- },
- {
-  "vi": "⏰ Báo danh trễ",
-  "en": ""
- },
- {
-  "vi": "📋 Bỏ sót một dòng checklist",
-  "en": ""
- },
- {
-  "vi": "😤 Khách phàn nàn thái độ",
-  "en": ""
- },
- {
-  "vi": "🥱 Mệt, xin đổi ca",
-  "en": ""
- },
- {
-  "vi": "hủy vì thiếu tổ bay",
-  "en": ""
- },
- {
-  "vi": "Đã làm 3 ngày liền: theo quy định giờ bay phải nghỉ hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Phòng hiệu trưởng",
-  "en": ""
- },
- {
-  "vi": "Phân công trong ngày",
-  "en": ""
- },
- {
-  "vi": "Việc đạt",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh phàn nàn",
-  "en": ""
- },
- {
-  "vi": "Thầy Nam",
-  "en": ""
- },
- {
-  "vi": "Cô Thảo",
-  "en": ""
- },
- {
-  "vi": "Thầy Duy",
-  "en": ""
- },
- {
-  "vi": "Cô Ngân",
-  "en": ""
- },
- {
-  "vi": "Cô Yến",
-  "en": ""
- },
- {
-  "vi": "Thầy Khải",
-  "en": ""
- },
- {
-  "vi": "Cô My",
-  "en": ""
- },
- {
-  "vi": "Thầy Tú",
-  "en": ""
- },
- {
-  "vi": "Thầy Hiếu",
-  "en": ""
- },
- {
-  "vi": "⏰ Lên lớp trễ",
-  "en": ""
- },
- {
-  "vi": "📒 Thiếu giáo án",
-  "en": ""
- },
- {
-  "vi": "😤 Phụ huynh phản ánh nặng lời với học sinh",
-  "en": ""
- },
- {
-  "vi": "🥱 Quá tải, xin bớt việc",
-  "en": ""
- },
- {
-  "vi": "bỏ trống, phụ huynh phàn nàn",
-  "en": ""
- },
- {
-  "vi": "Đã gánh việc 3 ngày liền: cho nghỉ một hôm đã.",
-  "en": ""
- },
- {
-  "vi": "Phòng chỉ huy",
-  "en": ""
- },
- {
-  "vi": "Tin báo đúng hạn",
-  "en": ""
- },
- {
-  "vi": "Phản ánh của dân",
-  "en": ""
- },
- {
-  "vi": "Trực ban",
-  "en": ""
- },
- {
-  "vi": "Hạ sĩ Lâm Tùng",
-  "en": ""
- },
- {
-  "vi": "Trung sĩ Vy Hạnh",
-  "en": ""
- },
- {
-  "vi": "Thượng sĩ Bảo An",
-  "en": ""
- },
- {
-  "vi": "Thiếu úy Kim Ngọc",
-  "en": ""
- },
- {
-  "vi": "Hạ sĩ Ninh Khôi",
-  "en": ""
- },
- {
-  "vi": "Trung úy Phó Đức",
-  "en": ""
- },
- {
-  "vi": "Trung sĩ Cù Mai",
-  "en": ""
- },
- {
-  "vi": "Thượng úy Lã Sơn",
-  "en": ""
- },
- {
-  "vi": "Thiếu úy Hồ Nhung",
-  "en": ""
- },
- {
-  "vi": "Đại úy Viên Quang",
-  "en": ""
- },
- {
-  "vi": "Hạ sĩ Đinh Thơ",
-  "en": ""
- },
- {
-  "vi": "Thượng sĩ Khúc Hải",
-  "en": ""
- },
- {
-  "vi": "Hạ sĩ Tạ Minh",
-  "en": ""
- },
- {
-  "vi": "Hạ sĩ Lý Nga",
-  "en": ""
- },
- {
-  "vi": "Hạ sĩ Ông Tín",
-  "en": ""
- },
- {
-  "vi": "Hạ sĩ Hứa Vân",
-  "en": ""
- },
- {
-  "vi": "Hạ sĩ Từ Lộc",
-  "en": ""
- },
- {
-  "vi": "Hạ sĩ Âu Thy",
-  "en": ""
- },
- {
-  "vi": "⏰ Giao ban trễ",
-  "en": ""
- },
- {
-  "vi": "📒 Ghi sổ trực ban sót việc",
-  "en": ""
- },
- {
-  "vi": "😤 Dân phản ánh thái độ",
-  "en": ""
- },
- {
-  "vi": "🥱 Trực đêm liền, xin nghỉ",
-  "en": ""
- },
- {
-  "vi": "💵 Có tin nhận phong bì",
-  "en": ""
- },
- {
-  "vi": "🚶 Tuần tra Chợ Mây – bến xe buýt",
-  "en": ""
- },
- {
-  "vi": "🚶 Tuần tra cổng trường – Hẻm 7",
-  "en": ""
- },
- {
-  "vi": "Giờ tan trường",
-  "en": ""
- },
- {
-  "vi": "🌙 Tuần tra đêm bờ kênh",
-  "en": ""
- },
- {
-  "vi": "☎️ Trực ban 113",
-  "en": ""
- },
- {
-  "vi": "📒 Bàn tiếp dân",
-  "en": ""
- },
- {
-  "vi": "Giờ hành chính",
-  "en": ""
- },
- {
-  "vi": "🗂️ Đối chiếu sổ cư trú",
-  "en": ""
- },
- {
-  "vi": "🔎 Kiểm tra cơ sở kinh doanh có điều kiện",
-  "en": ""
- },
- {
-  "vi": "Có quyết định kiểm tra",
-  "en": ""
- },
- {
-  "vi": "🎤 Nói chuyện chống lừa đảo ở tổ dân phố",
-  "en": ""
- },
- {
-  "vi": "bỏ trống, tin báo phải chờ",
-  "en": ""
- },
- {
-  "vi": "Đã trực 3 ngày liền: theo quy định phải nghỉ hôm nay.",
-  "en": ""
- },
- {
-  "vi": "🏆 Bồi dưỡng học sinh giỏi",
   "en": ""
  }
 ]

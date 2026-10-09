@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Giữ nguyên số liệu, viết kèm lý do: mất điện, thiếu người, đề xuất thêm ca",
+  "en": ""
+ },
+ {
   "vi": "Báo cáo thật, có lý do, có đề xuất. Quý sau trung tâm được thêm một người trực.",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Đã thống nhất ngân sách rồi mà vẫn báo giá vượt.",
-  "en": ""
- },
- {
-  "vi": "báo giá vượt ngân sách đã thống nhất",
   "en": ""
  }
 ]
