@@ -710,7 +710,7 @@ def action(career: str, off: dict, rank: int, c: dict, name: str, p: dict, seed:
     return {}
 
 
-def close(career: str, off: dict, rank: int, seed: int, day: int) -> dict:
+def close(career: str, off: dict, rank: int, seed: int, day: int, earned: bool = True) -> dict:
     """end_day: undecided items take their last option, the assistant fills empty slots, the figures move and the bonus is
     worked out (the caller pays it)."""
     o = OFFICE[career]
@@ -757,7 +757,8 @@ def close(career: str, off: dict, rank: int, seed: int, day: int) -> dict:
     score = _clamp(.5 * today + .3 * morale + 20 - 6 * compl - 2 * over)
     worked = off['me']
     lvl = _level(o, rank)
-    bonus = round(o['cap'][lvl] * score / 100) if worked else 0
+    # earned: a task done today, on a day the real-time allowance covers (game/promotion.py _office_close, 09/10 audit)
+    bonus = round(o['cap'][lvl] * score / 100) if worked and earned else 0
     k['ontime'] = _clamp(.6 * k['ontime'] + .4 * today)
     k['compl'] = min(999, round(k['compl'] * .6) + compl)
     k['days'] = min(10**6, k['days'] + 1)

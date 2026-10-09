@@ -93,6 +93,7 @@ from . import days as dy
 from . import price_index as pi   # 💹 07/10: Thuế trước bạ (tax()), rooms' rent, the moving truck
 from . import property_market as pm
 from . import upkeep as up   # 🧾 phí bảo trì a tháng
+from . import interest_clock as ic   # ⏱️ the real-time allowance: tenants pay and answer on covered days only
 
 VERSION = 2                       # 2: several homes (props); version 1 blocks are upgraded in place
 KIND = 'home'                     # journey wallet history kind (journey.HISTORY_KINDS)
@@ -335,6 +336,13 @@ def active_lease(j: dict) -> dict | None:
     return lease if isinstance(lease, dict) and j.get('life_day', 0) < lease.get('end_day', 0) else None
 
 
+ASK_MAX_PCT = 150   # 09/10 audit: a new listing asks at most 1.5× the reference rent (rent_of)
+
+
+def ask_max(kind: str) -> int:
+    return rent_of(kind) * ASK_MAX_PCT // 100
+
+
 def demand(ask: int, reference: int) -> int:
     """Daily percent chance; decreases to zero at three times reference rent."""
     return max(0, min(90, (300 * reference - 100 * ask) // (4 * max(1, reference))))
@@ -346,6 +354,8 @@ def _tick_ad(s: dict, h: dict, x: dict, day: int, notes: list) -> None:
     if not ad or not ad.get('active') or x['let'] or day <= ad['checked']:
         return
     ad['checked'] = day
+    if not ic.paid(s, day):   # ⏱️ a day beyond the real-time allowance: nobody comes to look (09/10 audit)
+        return
     rng = random.Random(f"rental-demand|{j.get('seed', 0)}|{x['id']}|{day}")
     if rng.randrange(100) >= demand(ad['rent'], rent_of(x['kind'])):
         return
@@ -616,6 +626,12 @@ def _tick_let(s: dict, h: dict, x: dict, n: int, notes: list) -> None:
         return
     amount = _rent_due(L, n)
     L['paid'] = n
+    # ⏱️ The month's days beyond the real-time allowance pay no rent (09/10 audit: ending empty days to farm tenants).
+    gone = ic.forfeited(s, n - MONTH_DAYS, n)
+    if gone:
+        amount = amount * max(0, MONTH_DAYS - gone) // MONTH_DAYS
+        if not amount:
+            return
     if amount == L['rent'] and n - L['ev'] >= TENANT_GAP:
         rng = random.Random(f'tenant|{s["journey"].get("seed", 0)}|{x["id"]}|{n}')
         roll = rng.randrange(TENANT_ODDS * 2)
@@ -674,6 +690,7 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
         return []
     notes: list[str] = []
     _check_shared(s, h, notes)
+    ic.sync(s)   # ⏱️ which life days the real-time allowance covers (decided once per day, shared with the bank)
     target = int(j['life_day'])
     h['day'] = max(h['day'], target - 400)
     while h['day'] < target:
@@ -1010,6 +1027,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
             need(not x.get('joint'), 'Nhà mua bằng quỹ chung cần giữ quyền của cả hai, chưa thể cho thuê.', 'joint_home')
             ask = p.get('rent', rent_of(x['kind']))
             need(type(ask) is int and 1 <= ask <= bk.AMOUNT_MAX, 'Giá thuê phải là số xu nguyên dương.', 'bad_rent')
+            top = ask_max(x['kind'])   # a new listing only: tenants already in keep their rent
+            need(ask <= top, f'Giá thuê tối đa {_fmt(top)} xu (gấp rưỡi giá thị trường).', 'bad_rent')
             ads = j.setdefault('rental_ads', {})
             old = ads.get(x['id'], {})
             ads[x['id']] = dict(rent=ask, since=day, checked=max(day, old.get('checked', day)), active=True)

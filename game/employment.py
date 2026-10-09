@@ -771,6 +771,11 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
         job['days_worked'] += 1
         e.log(s, c, 'job', f'⛔ Ngày {c["day"]}: đang tạm đình chỉ công tác, không có lương.')
         return dict(salary=0, probation=job['probation'], suspended=True, **(dict(boss=boss) if boss else {}))
+    from . import interest_clock as ic
+    if not ic.day_paid(s):   # ⏱️ beyond the real-time allowance (1 real hour = 1 paid day, 168 banked): no salary
+        job['days_worked'] += 1
+        e.log(s, c, 'job', f'⏱️ Ngày {c["day"]}: quá số ngày có lương theo giờ thật (1 giờ = 1 ngày), không có lương.')
+        return dict(salary=0, probation=job['probation'], unpaid=True, **(dict(boss=boss) if boss else {}))
     post = _posting(career, job['employer'])
     from .accounting_school import salary_multiplier
     from .accounting_jobs import pay as boosted
