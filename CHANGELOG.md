@@ -1,3 +1,11 @@
+# v1.9.28 — 2026-10-09
+
+🚔 Báo công an đánh giá NPC vô lý (chủ game 09/10): game/review_police.py, lệnh fb_cop; sao hiện thấp hơn điểm thật (fb.fair) thì công an xác minh (ẩn tỷ lệ), sửa sao và đôi khi bồi thường ≤100 xu; 3 lần/ngày, 1 lần/đánh giá, 3 ngày gần nhất.
+🕶️ Bảo kê chợ đen hên xui 40% mỗi 2 ngày (fair_bm.asked, cố định theo seed + đợt 2 ngày; không lưu, không hiện).
+👛 Rút quỹ: nút một chạm rút tối đa + ✏️ Rút số khác gõ số (góp ý #285/#287), Góp vốn bên cạnh.
+📦 Hủy đơn hàng đang giao, hoàn đủ (inv_cancel, góp ý #276); tiệm album có nút đếm lại tiền khách đưa (#288); gợi ý xin bớt đơn gộp (#284).
+🔧 Ở chung nhà lên được tầng 2 (#280, reno.js VISIT_OPS); dỗ bé không còn kẹt dưới 100% (#282/#283); nhà thuốc nhãn K / ❄️ Lạnh (#278). Không đổi CSDL; save đọc được trên 1.9.27.
+
 # v1.9.27 — 2026-10-09
 
 🕶️ Chợ đen (chủ game 08/10 23:15: "k phải là hội chợ, nó là Chợ đen. Vào chợ đen phải nộp bảo kê, phí bảo kê là 10k xu, nếu k nộp thì bị trấn lột 30% tiền hiện có. vào chợ đen có thể bị công an bắt, tỷ lệ bị bắt cực cao"): đổi tên hiển thị Hội chợ → Chợ đen; cổng bảo kê 10.000 xu mỗi ngày (giờ VN), không nộp bị trấn lột 30% ví (không đụng ngân hàng) rồi được vào; mỗi ván có đặt tiền có thể bị công an ập vào (game/fair_bm.py BM_ARREST_P, không hiện ra): mất tiền cược, phạt 30% ví, bị đuổi tới hết ngày. Trạng thái lưu ở journey.fair_bm (bản 1.9.26 vẫn đọc được). Không đổi CSDL.

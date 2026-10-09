@@ -1,5 +1,17 @@
 {
   "strings": {
+  "Vào chợ đen phải nộp tiền bảo kê. Nộp rồi thì cứ ra vô thoải mái.": "You pay protection to get into the black market. Once paid, come and go as you like.",
+  "Nộp đủ rồi, cứ ra vô thoải mái.": "All paid, come and go as you like.",
+  "Đã nộp bảo kê $1 xu. Cứ ra vô chợ đen thoải mái.": "Paid $1 xu protection. Come and go in the black market as you like.",
+  "✏️ Không muốn rút hết: bấm [[Rút số khác]] ngay dưới, gõ số xu hoặc bấm 25%, 50% rồi bấm Rút.": "✏️ Not taking it all: tap [[Rút số khác]] just below, type the xu or tap 25%, 50%, then tap Withdraw.",
+  "💵 Đàn em ở cổng không phải lúc nào cũng đòi bảo kê, hên xui. Hôm nào bị đòi thì nộp 10.000 xu, nộp rồi thì ra vô thoải mái một thời gian.": "💵 The gang at the gate does not always ask for protection, it is luck. When they do, pay 10,000 xu and come and go freely for a while.",
+  "👛 Chạm ô tiền ở góc trên để mở [[Tiền của bạn]]. Quỹ tiệm: bấm [[Rút về ví]] để rút tối đa, hoặc [[Rút số khác]] để gõ số xu.": "👛 Tap the money box at the top to open [[Tiền của bạn]]. A shop fund: tap [[Rút về ví]] for the most, or [[Rút số khác]] to type an amount.",
+  "Khách NPC chấm sao vô lý? Bấm 🚔 Báo công an ngay dưới đánh giá, công an xác minh có thể sửa sao và bồi thường": "NPC gave you unfair stars? Tap 🚔 Report to police under the review: if the police agree they fix the stars, sometimes with compensation",
+  "Bảo kê chợ đen giờ hên xui: không phải lúc nào đàn em cũng đứng cổng đòi tiền": "Black market protection is now luck: the gang is not always at the gate asking for money",
+  "Rút quỹ vẫn một chạm rút tối đa, thêm nút ✏️ Rút số khác để gõ số xu muốn rút": "Fund withdrawal is still one tap for the most, plus ✏️ Other amount to type how much",
+  "Hàng đang giao có nút ✖ Hủy đơn, được hoàn đủ tiền hàng và tiền ship": "Orders on the way have a ✖ Cancel button with a full refund of goods and shipping",
+  "Sửa: ở chung nhà lên được tầng 2, dỗ bé không còn kẹt, tiệm album có lại nút đếm tiền, nhà thuốc có nhãn K và ❄️ Lạnh": "Fixed: housemates reach floor 2, calming a child no longer gets stuck, the album shop can recount cash, pharmacy shows K and ❄️ Cold tags",
+  "✏️ Rút số khác": "✏️ Other amount",
   "(cần phiếu)": "(slip needed)",
   "(cần phiếu, xem tủ mát)": "(slip needed, check the fridge log)",
   "Hàng lạnh": "Cold chain",

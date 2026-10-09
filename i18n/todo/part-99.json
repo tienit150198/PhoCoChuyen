@@ -1,5 +1,29 @@
 [
  {
+  "vi": "Chọn nguồn thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Việc đang làm vừa thay đổi. Bấm chuyển lần nữa để xem lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mất kết nối. Thử lại sau một chút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập giá bằng số nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mua & lắp",
+  "en": ""
+ },
+ {
+  "vi": "Máy chưa chụp được ảnh. Thử lại nhé.",
+  "en": ""
+ },
+ {
   "vi": "Đang có đủ việc: làm tiếp việc đang chờ nhé.",
   "en": ""
  },
@@ -1773,30 +1797,6 @@
  },
  {
   "vi": "Mở tin nhắn đặt hàng",
-  "en": ""
- },
- {
-  "vi": "🔁 Khách quay lại đổi size",
-  "en": ""
- },
- {
-  "vi": "ℹ️ Giới thiệu nghề",
-  "en": ""
- },
- {
-  "vi": "📋 Việc chăm tiệm",
-  "en": ""
- },
- {
-  "vi": "👚 Giá treo theo size",
-  "en": ""
- },
- {
-  "vi": "Nhập hàng → chọn size đang thiếu, hoặc chọn “Tự chia size” để ưu tiên M, L… Đếm nhận xong mới lên giá.",
-  "en": ""
- },
- {
-  "vi": "Bán vừa size cho khách quen, tiệm sẽ nhớ size của họ ở đây.",
   "en": ""
  }
 ]

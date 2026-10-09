@@ -1,5 +1,29 @@
 [
  {
+  "vi": "🔁 Khách quay lại đổi size",
+  "en": ""
+ },
+ {
+  "vi": "ℹ️ Giới thiệu nghề",
+  "en": ""
+ },
+ {
+  "vi": "📋 Việc chăm tiệm",
+  "en": ""
+ },
+ {
+  "vi": "👚 Giá treo theo size",
+  "en": ""
+ },
+ {
+  "vi": "Nhập hàng → chọn size đang thiếu, hoặc chọn “Tự chia size” để ưu tiên M, L… Đếm nhận xong mới lên giá.",
+  "en": ""
+ },
+ {
+  "vi": "Bán vừa size cho khách quen, tiệm sẽ nhớ size của họ ở đây.",
+  "en": ""
+ },
+ {
   "vi": "📒 Sổ size khách quen",
   "en": ""
  },
@@ -1773,30 +1797,6 @@
  },
  {
   "vi": "🌾 Nhổ cỏ luống",
-  "en": ""
- },
- {
-  "vi": "🟫 Bón compost luống",
-  "en": ""
- },
- {
-  "vi": ": chín kịp hôm nay",
-  "en": ""
- },
- {
-  "vi": "chưa có luống nào trồng",
-  "en": ""
- },
- {
-  "vi": "🌿 Nhãn hữu cơ + QR",
-  "en": ""
- },
- {
-  "vi": "🏷️ Nhãn thường",
-  "en": ""
- },
- {
-  "vi": "Dán nhãn đúng sự thật",
   "en": ""
  }
 ]

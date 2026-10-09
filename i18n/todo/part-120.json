@@ -1,5 +1,35 @@
 [
  {
+  "vi": "Bài kiểm tra đúng $1/$2 câu, cần $3. Xem lại bài gợi ý rồi làm bài khác nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đúng $1/$2 câu. Vào ca thôi!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đúng $1/$2 câu, cần $3. Xem lại bài gợi ý rồi làm bài khác nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã mở $1. Đọc ví dụ rồi tự làm bài tập.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã mở $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kết quả $1/100.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Nhận việc thực hành tại Mây Tre Xanh. Lương kế toán doanh nghiệp ×$1; mở chứng từ và ghi sổ bằng VND.",
   "en": "",
   "pattern": true
@@ -1501,21 +1531,6 @@
  },
  {
   "vi": "Dạ $1 đặt lịch tuần sau, em xin làm góc $2 dặn trước tiên ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ con đi chợ theo thực đơn nhà dặn, giữ hóa đơn, nấu xong nếm lại mới dọn ạ. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạ cô làm theo giấy dặn của ba mẹ, việc gì cũng ghi vào nhật ký bé. Hôm đó $1 ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mời $1 ghé phòng đọc, thủ thư giữ sẵn cuốn $2 cần ở quầy mượn trả ạ.",
   "en": "",
   "pattern": true
  }

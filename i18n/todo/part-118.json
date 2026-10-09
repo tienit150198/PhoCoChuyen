@@ -1,5 +1,29 @@
 [
  {
+  "vi": "Tiền đã vào két. Bạn có thể mở lượt phục vụ tiếp khi sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "Khách chấm",
+  "en": ""
+ },
+ {
+  "vi": "Chọn đúng món trên phiếu của khách nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Giá phải là số nguyên dương, tối đa 1.000.000 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Mua bàn ghế?",
+  "en": ""
+ },
+ {
+  "vi": "Rời quầy?",
+  "en": ""
+ },
+ {
   "vi": "Chốt những món bạn đã phục vụ. Nếu có nhân viên, họ tiếp tục vận hành theo hàng và vốn còn lại.",
   "en": ""
  },
@@ -1773,30 +1797,6 @@
  },
  {
   "vi": "Đặt đơn",
-  "en": ""
- },
- {
-  "vi": "Trả lời chưa gửi được, khách vừa nhắn.",
-  "en": ""
- },
- {
-  "vi": "Cuộc trao đổi này đã khép, không gửi thêm được.",
-  "en": ""
- },
- {
-  "vi": "Phong bì mừng cưới",
-  "en": ""
- },
- {
-  "vi": "Mâm cỗ",
-  "en": ""
- },
- {
-  "vi": "Chọn nhạc",
-  "en": ""
- },
- {
-  "vi": "Dzô! 🍻",
   "en": ""
  }
 ]

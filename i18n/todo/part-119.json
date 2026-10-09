@@ -1,5 +1,29 @@
 [
  {
+  "vi": "Trả lời chưa gửi được, khách vừa nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Cuộc trao đổi này đã khép, không gửi thêm được.",
+  "en": ""
+ },
+ {
+  "vi": "Phong bì mừng cưới",
+  "en": ""
+ },
+ {
+  "vi": "Mâm cỗ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nhạc",
+  "en": ""
+ },
+ {
+  "vi": "Dzô! 🍻",
+  "en": ""
+ },
+ {
   "vi": "No căng bụng rồi 😋",
   "en": ""
  },
@@ -1856,36 +1880,6 @@
  },
  {
   "vi": "Làm $1 câu kiểm tra kiến thức đầu ca rồi mở ca nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bài kiểm tra đúng $1/$2 câu, cần $3. Xem lại bài gợi ý rồi làm bài khác nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng $1/$2 câu. Vào ca thôi!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng $1/$2 câu, cần $3. Xem lại bài gợi ý rồi làm bài khác nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã mở $1. Đọc ví dụ rồi tự làm bài tập.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã mở $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kết quả $1/100.",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,20 @@
 [
  {
+  "vi": "$1 ($2) khai báo tạm trú: $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nộp $2 nhặt được: $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tuần tra $1:",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Ba cuộc gọi: $1",
   "en": "",
   "pattern": true
@@ -2231,21 +2246,6 @@
  },
  {
   "vi": "Chào $1! Hôm nay tiệm có đông khách không?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm trước $1 làm cho mình ưng lắm đó.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mình giới thiệu thêm mấy người bạn tới chỗ $1 rồi đó.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhắn hỏi thăm $1 chút thôi. Làm việc nhớ giữ sức nha!",
   "en": "",
   "pattern": true
  }

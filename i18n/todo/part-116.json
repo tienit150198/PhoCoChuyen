@@ -1,5 +1,29 @@
 [
  {
+  "vi": "Cả phòng nghe giọng bạn ngay lúc hát. Không ghi âm. Mic tự tắt khi hết bài hoặc sau 6 phút.",
+  "en": ""
+ },
+ {
+  "vi": "🎧 Đeo tai nghe để nhạc không vọng vào mic.",
+  "en": ""
+ },
+ {
+  "vi": "🎙️ Bật mic",
+  "en": ""
+ },
+ {
+  "vi": "Người hát đồng ý là cả phòng nghe giọng bạn hát chung. Không ghi âm.",
+  "en": ""
+ },
+ {
+  "vi": "🙋 Xin hát cùng",
+  "en": ""
+ },
+ {
+  "vi": "Năm sinh",
+  "en": ""
+ },
+ {
   "vi": "🎂 Bạn sinh năm nào?",
   "en": ""
  },
@@ -1773,30 +1797,6 @@
  },
  {
   "vi": "Tiền lương / ví",
-  "en": ""
- },
- {
-  "vi": "Chuyển khoản từ tài khoản ngân hàng",
-  "en": ""
- },
- {
-  "vi": "Quỹ chung vợ chồng",
-  "en": ""
- },
- {
-  "vi": "Bé nhà mình",
-  "en": ""
- },
- {
-  "vi": "Bé cưng tuần",
-  "en": ""
- },
- {
-  "vi": "Chơi",
-  "en": ""
- },
- {
-  "vi": "Khám",
   "en": ""
  }
 ]

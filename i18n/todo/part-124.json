@@ -1,5 +1,20 @@
 [
  {
+  "vi": "$1: đo đủ năm chỉ số, đều trong ngưỡng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: đã đo và báo bác sĩ đầy đủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đo dấu hiệu sinh tồn giường $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "✅ Xong lượt đo. $1",
   "en": "",
   "pattern": true
@@ -2231,21 +2246,6 @@
  },
  {
   "vi": "Sổ trực ban: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 ($2) khai báo tạm trú: $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nộp $2 nhặt được: $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tuần tra $1:",
   "en": "",
   "pattern": true
  }
