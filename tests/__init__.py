@@ -21,3 +21,6 @@ os.environ.setdefault("MNL_BM_OFF", "1")
 # 🚔 Trại tạm giữ (game/jail.py): nobody jailed in the other tests (a raid or a false report would block their next
 # commands); tests/test_jail.py and tests/test_black_market.py turn it on.
 os.environ.setdefault("MNL_JAIL_OFF", "1")
+# 💾 Nhập bản lưu (game/save_guard.py): many tests build a save by importing a crafted one; tests/test_save_guard.py
+# turns the guard on where it checks it.
+os.environ.setdefault("MNL_IMPORT_GUARD_OFF", "1")

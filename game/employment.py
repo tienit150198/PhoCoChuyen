@@ -771,6 +771,11 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
         job['days_worked'] += 1
         e.log(s, c, 'job', f'⛔ Ngày {c["day"]}: đang tạm đình chỉ công tác, không có lương.')
         return dict(salary=0, probation=job['probation'], suspended=True, **(dict(boss=boss) if boss else {}))
+    from . import interest_clock as ic
+    if not ic.day_paid(s):   # ⏱️ beyond the real-time allowance (1 real hour = 1 paid day, 168 banked): no salary
+        job['days_worked'] += 1
+        e.log(s, c, 'job', f'⏱️ Ngày {c["day"]}: quá số ngày có lương theo giờ thật (1 giờ = 1 ngày), không có lương.')
+        return dict(salary=0, probation=job['probation'], unpaid=True, **(dict(boss=boss) if boss else {}))
     post = _posting(career, job['employer'])
     from .accounting_school import salary_multiplier
     from .accounting_jobs import pay as boosted
@@ -781,7 +786,8 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
     lift = promotion.raise_pct(s, c, career)
     deg = abroad.degree_pct(s)
     away = abroad.pay_pct(s, c, career)
-    pay = boosted(round(_lifted(job['salary'], lift + deg, away) * (.85 if job['probation'] else 1)), multiplier)
+    base = round(_lifted(job['salary'], lift + deg, away) * (.85 if job['probation'] else 1))
+    pay = boosted(base, multiplier)
     e.money(s, c, pay, 'Lương ngày ' + str(c['day']) + (' (thử việc 85%)' if job['probation'] else '') + (f' · +{lift}% chức vụ' if lift else '')
             + (f' · +{deg}% bằng du học' if deg else '') + (f' · 🌏 +{away}% ở nước ngoài' if away else ''),
             f'salary-{c["day"]}', category='salary')
@@ -797,6 +803,7 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
 
     if multiplier > 1:
         note['multiplier'] = multiplier   # the wallet row says ×3 / ×5 (journey._end_of_day)
+        note['boost'] = max(0, pay - base)   # the ×3 / ×5's own part: kept out of the 🔥 x3 day's net (no stacking)
     if job['probation']:
         today = [f['stars'] for f in c['feed'] if f.get('stars') and f['day'] == c['day'] and f['kind'] == 'review']
         job['reviews_during_probation'] = ar.last(job['reviews_during_probation'] + today, 40, 'job.probation_reviews', c)

@@ -150,10 +150,14 @@ class Rentals(unittest.TestCase):
         owner = self.user('owner')
         prop = self.prop(owner)
         reference = hs.rent_of(prop['kind'])
-        self.cmd(owner, 'jr_home_let', id=prop['id'], on=True, rent=reference * 3, confirm=True)
+        # 09/10 (exploit audit): a new listing asks at most 1.5× the reference rent
+        with self.assertRaises(GameError):
+            self.cmd(owner, 'jr_home_let', id=prop['id'], on=True, rent=hs.ask_max(prop['kind']) + 1, confirm=True)
+        self.cmd(owner, 'jr_home_let', id=prop['id'], on=True, rent=hs.ask_max(prop['kind']), confirm=True)
         state = self.state(owner)
         self.assertIsNone(hs.find(hs.get(state), prop['id'])['let'])
-        self.assertEqual(state['journey']['rental_ads'][prop['id']]['rent'], reference * 3)
+        self.assertEqual(state['journey']['rental_ads'][prop['id']]['rent'], hs.ask_max(prop['kind']))
+        state['journey']['rental_ads'][prop['id']]['rent'] = reference * 3   # an ad posted before the cap: nobody bites
         self.assertEqual([hs.demand(n, 100) for n in [50, 100, 150, 200, 300, 1000]], [62, 50, 37, 25, 0, 0])
         for day in range(2, 12):
             state['journey']['life_day'] = day

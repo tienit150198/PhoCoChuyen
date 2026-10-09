@@ -1,3 +1,13 @@
+# Chưa phát hành — exploit-fixes (không có Có gì mới, deploy lặng lẽ)
+
+💾 Nhập bản lưu (game/save_guard.py): save của tài khoản không nhập được nữa (chỉ admin khôi phục); khách chỉ nhập bản xuất nguyên vẹn của máy chủ (chữ ký HMAC `sign` trong tệp, khóa SAVE_SIGN_SECRET, thiếu thì lấy từ DATABASE_URL), không cũ hơn và không nhiều xu hơn save hiện tại. Mỗi lần nhập một dòng `[import]` trong log. Nút Nhập bản lưu tắt cho tài khoản.
+🔁 Bắt đầu lại nghề (hành trình): quỹ nơi làm việc giữ nguyên, tối đa 320 xu (không còn nạp lại 320 để rút tiếp). reset_career được tính vào KPI kinh tế.
+🗡️ Phóng dao (không thông báo): lượt ném tới máy chủ trễ hơn 2 s so với cú ném cuối thì không nhận (màn chơi tiếp); lãi ròng tối đa 20.000 xu mỗi ngày VN (journey.fair_day, tùy chọn).
+💼 Ngày 🔥 x3 không còn nhân thêm phần ×3/×5 của lương kế toán (job note `boost`, trừ khỏi lãi ngày như tăng ca).
+⏱️ Ngày sống vượt hạn mức giờ thật (interest_clock: 1 giờ = 1 ngày, tối đa 168): không lương, không thưởng phòng điều hành, không tiền thuê nhà (chia theo ngày trong tháng), không khách xem tin cho thuê. Thưởng phòng điều hành cần ít nhất 1 việc xong. Tin cho thuê NPC mới tối đa 1,5× giá tham khảo (người đang thuê giữ giá).
+💍 Ném vòng (không thông báo): trả tối đa 400 xu mỗi ngày VN (journey.fair_day.ring).
+💸 Tài khoản dưới 7 ngày thật: thuê nhà người chơi, phong bì cưới, gửi tiền cho vợ/chồng và gửi vào quỹ chung cùng tính vào hạn mức 500.000 xu/ngày như chuyển khoản (bank_xfer.count_out, chung bảng bank_xfer_days).
+
 # v1.9.37 — 2026-10-09
 
 - 🔐 Sự cố tài chính theo lịch (game/mishap.py, live_effects kind `mishap`, scripts/mishap_plan.py): bản cũ bỏ qua loại này (để pending). on_load chỉ trả hàng có `at` đã tới.

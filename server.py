@@ -714,7 +714,9 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,dict(state=view,revision=revision),known=FULL);return
             if route=="/api/save/export":
                 token,state,revision,_=self.require_session()
-                data=dict(format="mot-ngay-lam-nghe/save-v4",app_version=__version__,state=state,archive=self.server.store.archive_export(token))
+                from game import save_guard  # 💾 the signature a guest's import checks (game/save_guard.py)
+                data=dict(format="mot-ngay-lam-nghe/save-v4",app_version=__version__,state=state,archive=self.server.store.archive_export(token),
+                          sign=save_guard.sign(self.server.store.resolve(token)[0],revision,state))
                 self.json(200,data,{"Content-Disposition":"attachment; filename=mot-ngay-lam-nghe-save.json"});return
             if route=="/api/archive":  # older rows of a history (game/archive.py), owner only
                 token=self.token()
@@ -981,6 +983,7 @@ class Handler(BaseHTTPRequestHandler):
                     _log_big_command(data,length)
                     self.error(413,"Thao tác quá lớn.");return
                 if client_outdated(data,self.headers.get("X-Game-Delta")=="1"):self.error(426,"Trò chơi vừa có bản mới. Tải lại trang để chơi tiếp nhé.","client_outdated");return
+                if data.get("action")=="import_save":result=self.import_save(token,data);self.json(200,result,known=state_delta.parse_known(data.get("known")));return
                 result=self.server.store.command(token,data.get("request_id"),data.get("expected_revision"),data.get("career"),data.get("action"),data.get("payload",{}))
                 self.json(200,result,known=state_delta.parse_known(data.get("known")));return
             if length>64*1024:self.error(413,"Nội dung quá lớn.");return
@@ -1183,6 +1186,28 @@ class Handler(BaseHTTPRequestHandler):
         except ValueError:return False
         if parsed.scheme not in ("http","https"):return False
         return parsed.netloc==self.headers.get("Host") or hostname in self.server.allowed_hosts   # same page, or www ↔ apex
+
+    def import_save(self,token:str,data:dict)->dict:
+        """💾 Nhập bản lưu (game/save_guard.py): an operator may restore any backup into their own save; everyone else
+        goes through the store's checks. One stderr line per attempt, whatever its outcome."""
+        from game import save_guard
+        store=self.server.store
+        payload=data.get("payload")
+        payload=dict(payload) if isinstance(payload,dict) else {}
+        payload.pop("admin_restore",None)  # only this handler says so
+        info=accounts.status(store,token)
+        if info and pfb.is_admin(store,token):payload["admin_restore"]=True
+        try:who="uid="+str(info["username"]) if info else "guest="+save_guard.save_tag(store.resolve(token)[0])
+        except Exception:who="guest=?"
+        save=payload.get("save") if isinstance(payload.get("save"),dict) else {}
+        sign=save.get("sign") if isinstance(save.get("sign"),dict) else {}
+        state=save.get("state")
+        xu=save_guard.money(state) if isinstance(state,dict) else None
+        try:result=store.command(token,data.get("request_id"),data.get("expected_revision"),data.get("career"),"import_save",payload)
+        except GameError as e:
+            save_guard.log(who,"refused:"+str(e.code or "error"),sign.get("revision"),xu);raise
+        save_guard.log(who,"ok"+(" admin" if payload.get("admin_restore") else ""),sign.get("revision"),xu)
+        return result
 
     def require_admin(self,token:str):
         """Feedback inbox: only signed-in accounts listed in ADMIN_USERS (403 for everyone else)."""

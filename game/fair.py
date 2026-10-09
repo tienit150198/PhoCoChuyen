@@ -227,6 +227,11 @@ POINTS_DAY = 30
 # 🗡️ Phóng dao is a skill game (owner 09/10 "phóng dao, ô ăn quan thì chơi hệ kĩ năng"): no daily cap any more (08/10
 # to 09/10 its wins over the stakes were capped at 300 xu a day in the legacy 'dpts'; that counter is left alone now,
 # within the bound older validators check), stakes up to 1.000 xu (knife.STAKES, owner 09/10 "giới hạn 1k/1 lần").
+# 09/10 (audit: a script solved the public board): phóng dao's net winnings (payouts − stakes) are capped at KN_DAY_CAP
+# a Vietnam day, counted in journey[DAY_KEY] (optional, ignored by an older server: journey keeps unknown keys).
+DAY_KEY = 'fair_day'   # journey['fair_day'] {d: 'YYYY-MM-DD', kn: knife net today, ring: ném vòng paid today}
+KN_DAY_CAP = 20_000
+RING_PAY_DAY = 400     # 💍 ném vòng (free, wins on average): xu paid a Vietnam day at most (09/10 audit)
 KN_RAMP_KEY = 'fair_kn_ramp'   # journey['fair_kn_ramp'] {at, seed}: a 1.9.32 level, knife.speed_up() faster (09/10)
 KN_TWIST_KEY = 'fair_kn_twist'   # journey['fair_kn_twist'] {at, seed}: a level on knife.twist_schedule() (09/10, later)
 MONEY = ('won', 'lost', 'earned')   # the stats that make the board's score, reset with each edition
@@ -817,6 +822,15 @@ def _kn(j: dict) -> dict:
     return k
 
 
+def _daily(j: dict, t: float) -> dict:
+    """journey[DAY_KEY], reset on a new Vietnam day (created on first use)."""
+    d = j.get(DAY_KEY)
+    today = vn_date(t)
+    if not isinstance(d, dict) or d.get('d') != today:
+        d = j[DAY_KEY] = dict(d=today)
+    return d
+
+
 def _kn_sched(run: dict, j: dict | None = None) -> dict:
     if _kn_soft(j or {}, run):   # this build's levels carry the soft mark too (the board an older server judges)
         if _kn_mark(j or {}, KN_TWIST_KEY, run):   # owner 09/10 "tăng tốc lên, hoặc là xoay tới lui gì đó cho khó"
@@ -873,12 +887,15 @@ def _kn_level(f: dict, run: dict, t: float) -> None:
     run.update(sd=_rng.getrandbits(31), hot=knife.heat(_today(f, t)['net']), at=int(t * 1000), sg='play', tp=[], day='')
 
 
-def _kn_pay(j: dict, f: dict, run: dict) -> int:
+def _kn_pay(j: dict, f: dict, run: dict, t: float) -> int:
     """Dừng: the prize of the levels cleared into the wallet (the ladder's, no daily cap since 09/10); the run is done.
     f is today's _state."""
     k = _kn(j)
     st = run['st']
     pz = knife.prize(st, _kn_cleared(run), run['bn'])
+    day = _daily(j, t)
+    pz = max(0, min(pz, KN_DAY_CAP - day.get('kn', 0)))   # today's net winnings stop at KN_DAY_CAP
+    day['kn'] = min(10**9, day.get('kn', 0) + pz)
     run.update(sg='done', pz=pz)
     if pz:
         _pay(j, f, 'kn', pz)
@@ -931,6 +948,9 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
              'Lượt trước còn chờ: chơi tiếp hoặc dừng nhận thưởng đã nha.' if run and run['sg'] == 'choice'
              else 'Màn này đang chơi dở, phóng tiếp nha.', 'fair_kn_busy')
         _guard_free(e, f, j, t, stake)
+        day = _daily(j, t)
+        need(day.get('kn', 0) < KN_DAY_CAP, 'Chủ quầy phóng dao hết xu trả thưởng hôm nay rồi, mai ghé lại nha.', 'fair_kn_cap')
+        day['kn'] = max(-10**9, day.get('kn', 0) - stake)
         if bm._gate_on() and watch.kn_start(j, ms):   # a skill game: no arrest roll, only a burst of runs (fair_watch)
             watch.clear(j, 'ks')
             _arrested(j, f, t, 'kn', stake, lambda amount: _pay(j, f, 'kn', amount), 'kn_spam')
@@ -955,6 +975,11 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
                         message='Lâu quá bia ngừng quay rồi, lượt này thua. Phóng lượt mới nha.')
         sc = _kn_sched(run, j)
         need(knife.taps_ok(taps, sc['need'], ms - run['at']) and taps[:len(run['tp'])] == run['tp'], bad, 'fair_kn_bad')
+        if len(taps) > len(run['tp']) and not knife.fresh(taps, ms - run['at']):
+            # Throws that reach the server long after they were made are not taken (a script could otherwise pick them
+            # from the public board after the fact): the level goes on from the throws the server has.
+            out = dict(game='kn', lv=lv, stuck=knife.judge(sc, run['tp'])[0], hit=-1, run=_kn_view_run(run, t, j))
+            return dict(fair=out, message='Mạng chập chờn, mấy dao vừa rồi chưa tới bia. Phóng tiếp nha.')
         if bm._gate_on() and watch.kn_throw(j, ms, taps[-1] - (ms - run['at'])):   # throws sent before they happen
             watch.clear(j, 'ka')
             run['sg'] = 'lost'   # the stake went in at the start; the prize riding on the level goes with the run
@@ -982,7 +1007,7 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
         k['b'] = max(k['b'], lv)
         run.update(sg='choice', tp=[], day=vn_date(t), nx=0)
         if lv >= knife.LEVELS:   # the last level: nothing more to risk, the prize is paid
-            pz = _kn_pay(j, f, run)
+            pz = _kn_pay(j, f, run, t)
             out.update(cleared=True, all=True, paid=pz, run=_kn_view_run(run, t, j))
             return dict(fair=out, message=f'Phá đảo cả {knife.LEVELS} màn! +{pz} xu.')
         run['nx'] = int(not run['x2'] and _rng.random() < knife.X2_P)   # never two x2 levels in a row
@@ -1000,7 +1025,7 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
     if run['sg'] == 'done':   # already paid (the day ended, or another tab)
         return dict(fair=dict(game='kn', stopped=True, prize=run['pz'], again=True, run=_kn_view_run(run, t, j)),
                     message='Thưởng lượt này đã vô ví rồi.')
-    pz = _kn_pay(j, f, run)
+    pz = _kn_pay(j, f, run, t)
     return dict(fair=dict(game='kn', stopped=True, prize=pz, run=_kn_view_run(run, t, j)), message=f'Nhận thưởng {pz} xu!')
 
 
@@ -1014,7 +1039,7 @@ def _kn_settle(s: dict) -> None:
         return
     t = now()
     if run['day'] != vn_date(t):
-        _kn_pay(j, _state(j, t), run)
+        _kn_pay(j, _state(j, t), run, t)
 
 
 def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
@@ -1612,7 +1637,10 @@ def _apply(s: dict, name: str, p: dict) -> dict:
                 hits = ring.judge(ring.params(r['rs']), p['taps'])
             n = sum(h >= 0 for h in hits)
             st['ring_hits'] += n
-            prize = _earn(j, f, 'ring', n * RING_HIT + (RING_ALL if n == ring.BOTTLES else 0))
+            day = _daily(j, t)
+            left = max(0, RING_PAY_DAY - day.get('ring', 0))
+            prize = _earn(j, f, 'ring', min(left, n * RING_HIT + (RING_ALL if n == ring.BOTTLES else 0)))
+            day['ring'] = min(10**6, day.get('ring', 0) + prize)
             if n == ring.BOTTLES:
                 _grant(j, 'f_ring', got)
             full = n * RING_HIT + (RING_ALL if n == ring.BOTTLES else 0)
@@ -1828,6 +1856,15 @@ def validate(j: dict) -> None:
             need(isinstance(r, dict) and set(r) == {'at', 'seed'}, 'Dữ liệu phóng dao không hợp lệ.', 'invalid_save')
             integer(r['at'], 0, 10**14)
             integer(r['seed'], 0, 2**31)
+    if DAY_KEY in j:   # 09/10, optional
+        from .engine import need, integer
+        d = j[DAY_KEY]
+        need(isinstance(d, dict) and 'd' in d and set(d) <= {'d', 'kn', 'ring'} and isinstance(d['d'], str) and len(d['d']) <= 10,
+             'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
+        if 'kn' in d:
+            integer(d['kn'], -10**9, 10**9)
+        if 'ring' in d:
+            integer(d['ring'], 0, 10**6)
     if 'fair_kn_soft' in j:
         from .engine import need, integer
         soft = j['fair_kn_soft']

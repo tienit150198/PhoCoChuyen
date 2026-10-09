@@ -307,7 +307,7 @@ def read(db, since: str, prefix: str = '') -> dict:
 
 
 # ---------------------------------------------------------------- economy: xu per command
-ECON_SKIP = frozenset(('import_save', 'reset_all', 'reset_career'))
+ECON_SKIP = frozenset(('import_save', 'reset_all'))   # reset_career counts: it only keeps or lowers a fund
 _econ = threading.local()
 
 

@@ -124,6 +124,17 @@ def sync(s: dict) -> dict | None:
     return c
 
 
+def day_paid(s: dict) -> bool:
+    """The life day being played now is within the real-time allowance (09/10 audit: tenants' rent and their answers,
+    the salary and the office bonus were farmed by ending empty days too). The same decision as the day's interest:
+    each life day is decided once, whatever reads it. Outside the story there is no life day: True."""
+    j = s.get('journey') if isinstance(s, dict) else None
+    if not isinstance(j, dict) or not j.get('story') or type(j.get('life_day')) is not int:
+        return True
+    sync(s)
+    return paid(s, j['life_day'])
+
+
 def paid(s: dict, n: int) -> bool:
     """Life day (morning) n earns interest."""
     c = get(s)

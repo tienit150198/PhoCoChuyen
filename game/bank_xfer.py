@@ -116,6 +116,31 @@ def _day_cap(db, sid: str) -> int | None:
     return None if _old_enough(db, sid, NEW_DAYS) else NEW_DAY_MAX
 
 
+def check_out(db, sid: str, amount: int) -> None:
+    """A clear answer before anything moves: would `amount` more xu out of this save today pass the new-account cap?
+    (count_out() checks again inside the transaction.)"""
+    cap = _day_cap(db, sid)
+    if cap is not None and amount > 0:
+        sent = _today(db, sid, vn_day())['sent']
+        need(sent + amount <= cap, _cap_left(cap, sent), 'day_cap', 403)
+
+
+def count_out(db, sid: str, amount: int) -> None:
+    """Xu leaving this save for another player by a route other than a bank transfer (09/10 audit: 🏠 player rentals,
+    🧧 wedding envelopes, 💸 spouse gifts and 🏦 joint-fund deposits skipped NEW_DAY_MAX). Call inside the transaction
+    that moves the money: an account younger than NEW_DAYS real days adds it to today's `sent` (the same counter as its
+    transfers, so all routes share one NEW_DAY_MAX) and the whole transaction is refused past the cap. Older accounts:
+    nothing written."""
+    cap = _day_cap(db, sid)
+    if cap is None or amount <= 0:
+        return
+    day = vn_day()
+    db.execute('INSERT INTO bank_xfer_days(sid,day,sent,n,got) VALUES(?,?,?,0,0) ON CONFLICT(sid,day) DO UPDATE SET '
+               'sent=bank_xfer_days.sent+excluded.sent', (sid, day, amount))
+    sent = _today(db, sid, day)['sent']   # after the counter moved, under its row lock
+    need(sent <= cap, _cap_left(cap, sent - amount), 'day_cap', 403)
+
+
 def cap_text() -> str:
     return f'Tài khoản mới (dưới {NEW_DAYS} ngày đời thực) chuyển tối đa {fmt(NEW_DAY_MAX)} xu mỗi ngày.'
 

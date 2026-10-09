@@ -291,7 +291,12 @@ class Letting(unittest.TestCase):
         s, _ = legacy_tenant(s, x['id'])
         start = s['journey']['wallet']
         days = 60 * hs.MONTH_DAYS
-        notes = tick(s, days)
+        # five years in one go: more life days than the real-time allowance (game/interest_clock.py) covers, which
+        # tests/test_exploit_fixes.py checks; here every day counts
+        from unittest import mock
+        from game import interest_clock as ic
+        with mock.patch.object(ic, 'forfeited', lambda *a: 0), mock.patch.object(ic, 'paid', lambda *a: True):
+            notes = tick(s, days)
         moments = [n for n in notes if 'khất' in n and 'gửi đủ' not in n or n.startswith('🔧')]
         self.assertTrue(moments)                                             # some happen over five years…
         self.assertLessEqual(len(moments), days // hs.TENANT_GAP + 1)         # …never often

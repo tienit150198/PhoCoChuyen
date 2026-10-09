@@ -59,9 +59,12 @@ class RingGap(FairBase):
             self.dice(Dice(draws=[.1], coins=[4, 0, 1, 2, 3, 4]))
             self.clock.t += 1.2 - 2
             s, r = self.act(s, 'fair_ring_throw', id=rd['id'], taps=[0, 300, 600, 900, 1200])
-            self.assertEqual(r['fair']['prize'], r['fair']['n'] * fh.RING_HIT + (fh.RING_ALL if r['fair']['n'] == 5 else 0))
+            full = r['fair']['n'] * fh.RING_HIT + (fh.RING_ALL if r['fair']['n'] == 5 else 0)
+            # 09/10 (exploit audit): no round cap, but at most fair.RING_PAY_DAY xu a Vietnam day
+            self.assertEqual(r['fair']['prize'], min(full, fh.RING_PAY_DAY - paid))
             paid += r['fair']['prize']
         self.assertGreater(paid, 0)
+        self.assertLessEqual(paid, fh.RING_PAY_DAY)
         self.assertEqual(fh.money_of(s['journey'])[0], paid)
         validate_state(s)
 

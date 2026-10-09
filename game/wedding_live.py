@@ -344,6 +344,8 @@ def envelope(store, sid: str, display: str, d: dict) -> dict:
             return dict(message='Phong bì này đã gửi rồi.', changed=False, quiet=True, rid=rid)
         p = check(db, now())
         names = dict(a=mr._display(db, p['a']), b=mr._display(db, p['b']))
+        from . import bank_xfer   # 💸 a new account's daily outflow cap (09/10 audit)
+        bank_xfer.check_out(db, sid, amount)
     # BANK.PAY: a gift from the wallet, cash (like the spouse transfer)
     out = mr._effect(eid, sid, 'wallet', -amount, f'🧧 Phong bì mừng cưới {names["a"]} & {names["b"]}', dict(wedding=wid, wish=wish))
 
@@ -357,6 +359,8 @@ def envelope(store, sid: str, display: str, d: dict) -> dict:
 
     def ops(db):
         p = check(db, now())
+        from . import bank_xfer
+        bank_xfer.count_out(db, sid, amount)
         mr._insert_effects(db, [out], 'applied')
         for side in ('a', 'b'):
             grant(db, p[side], 'coins', amount // 2, f'wedenv:{wid}:{side}:{rid}', dict(src='env'))

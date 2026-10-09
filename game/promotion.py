@@ -894,6 +894,13 @@ def _office_start(s: dict, c: dict, career: str) -> None:
     OF.day_roll(career, off, _seed(s), c['day'], n)
 
 
+def _office_earned(s: dict, c: dict, career: str) -> bool:
+    """The office bonus needs a task done today (or a manager shift that got work done) and a day the real-time
+    allowance covers (09/10 audit: planning one slot on an empty, skipped day paid the full bonus)."""
+    from . import interest_clock as ic
+    return (c['day_completed'] >= 1 or managed_today(s, c, career)) and ic.day_paid(s)
+
+
 def _office_close(s: dict, c: dict, career: str) -> dict | None:
     rec, x = org_live(s, c, career)
     if x is not None:
@@ -902,14 +909,14 @@ def _office_close(s: dict, c: dict, career: str) -> dict | None:
         if not lvl or not off or off['day'] != c['day']:
             return None
         okey = ORG.OC.ORGS[x['org']]['office']
-        res = OF.close(okey, off, lvl, _seed(s), c['day'])
+        res = OF.close(okey, off, lvl, _seed(s), c['day'], _office_earned(s, c, career))
         if res['bonus'] > 0:
             _core().money(s, c, res['bonus'], f'🏢 Thưởng chỉ huy · {OF.OFFICE[okey]["name"]}', f'pmo-{c["day"]}', category='bonus')
         return res
     rec, off, n = _office(s, c, career)
     if not off or off['day'] != c['day']:
         return None
-    res = OF.close(career, off, n, _seed(s), c['day'])
+    res = OF.close(career, off, n, _seed(s), c['day'], _office_earned(s, c, career))
     if res['bonus'] > 0:
         _core().money(s, c, res['bonus'], f'🏢 Thưởng điều hành · {OF.OFFICE[career]["name"]}', f'pmo-{c["day"]}', category='bonus')
     return res

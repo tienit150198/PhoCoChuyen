@@ -78,7 +78,7 @@ export function settingsView(env){
     if(!st)pushState(api).then(x=>{ui.pushState=x;env.renderSheet();}).catch(()=>{ui.pushState={available:false,reason:'browser'};env.renderSheet();});
   }
   if(tab==='data')body=`${feedbackBlock}<section class="settings-block"><h3>${icon('download',18)} Bản lưu</h3>
-      <div class="row wrap">${button('Xuất bản lưu','export',{},'small')}${button('Nhập bản lưu','import',{},'small ghost')}</div><input type="file" id="import-file" accept=".json,application/json" hidden>
+      <div class="row wrap">${button('Xuất bản lưu','export',{},'small')}${api.account&&!api.admin?`<button type="button" class="btn small ghost" disabled>Nhập bản lưu</button>`:button('Nhập bản lưu','import',{},'small ghost')}</div>${api.account&&!api.admin?`<p class="small muted">Tài khoản đã lưu trên máy chủ, không cần nhập.</p>`:`<input type="file" id="import-file" accept=".json,application/json" hidden>`}
       <div class="divider"></div>${button('Bắt đầu lại riêng nghề này','resetCareer',{},'danger small')}</section>
     <section class="settings-block"><h3>${icon('shield',18)} Quyền riêng tư</h3>
       ${toggle('publicProfile','Hiện quán của tôi ở Phố nghề',s.publicProfile)}${lbPrivacyRow(env)}

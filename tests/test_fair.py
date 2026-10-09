@@ -88,6 +88,11 @@ class FairBase(unittest.TestCase):
         g = mock.patch.object(fh, 'BC_GAP_MS', 0)   # the test clock steps 2 s a call; test_the_bowl_opens_after_5_s checks the gap
         g.start()
         self.addCleanup(g.stop)
+        # The same 2 s steps would make every knife throw arrive "late" (fair_knife.FRESH_MS); tests/test_exploit_fixes.py
+        # checks the freshness with the real value.
+        k = mock.patch.object(fh.knife, 'FRESH_MS', 10**9)
+        k.start()
+        self.addCleanup(k.stop)
         # The police checks' own tests play as if well into a session; the quiet start (B6, GRACE_S / GRACE_ROUNDS)
         # has its own tests (tests/test_fair_police_grace.py), which put the real values back.
         for name in ('GRACE_S', 'GRACE_ROUNDS'):

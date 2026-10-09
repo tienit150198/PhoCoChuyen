@@ -524,7 +524,7 @@ class Store:
         marked=rt.marks(raw,ranked) if rt.ENABLED and action!="import_save" else None  # likewise
         x0=kpi.xu(raw) if action not in kpi.ECON_SKIP else None  # likewise: the xu held before (a few dict reads)
         with ar.collect() as box:
-            raw,result,full,known,extra,snap=self._apply(raw,text,career,action,payload,internal,revision)
+            raw,result,full,known,extra,snap=self._apply(raw,text,career,action,payload,internal,revision,sid=sid)
         kpi.econ_mark(action,x0,kpi.xu(raw) if x0 is not None else None)
         serialized=serialize_bytes(raw,known,full,snap)
         del snap
@@ -536,7 +536,7 @@ class Store:
         # An imported backup's own archive is older than anything its migration moved out.
         return raw,result,serialized,extra+_archive_rows(box,before,raw,career if career in CAREERS else ""),(ranks,ranks!=ranked or (hit is None and lb.heal(ranks)),lb.synced(sid,revision) if hit is not None else None),steps
 
-    def _apply(self,raw:dict,text:str,career,action:str,payload:dict,internal:bool,revision:int):
+    def _apply(self,raw:dict,text:str,career,action:str,payload:dict,internal:bool,revision:int,*,sid:str=""):
         extra=[]
         if action=="import_save" and not internal:
             from . import jail
@@ -544,6 +544,12 @@ class Store:
             envelope=payload.get("save")
             if not isinstance(envelope,dict) or envelope.get("format") not in SAVE_FORMATS:raise GameError("Không phải tệp lưu của Phố Có Chuyện.","invalid_save")
             candidate=envelope.get("state")
+            # 💾 game/save_guard.py: never into an account's save (an operator's restore excepted), and for a guest only
+            # an untouched export of this server, not older and not richer than the save it replaces.
+            from . import save_guard
+            if save_guard.enabled() and payload.get("admin_restore") is not True:
+                with self.connect() as db:account=db.execute("SELECT 1 FROM accounts WHERE sid=?",(sid,)).fetchone() is not None
+                save_guard.check(envelope,candidate,raw,sid,revision,account=account,admin=False)
             if isinstance(candidate,dict):candidate.pop("check",None)  # an import is always migrated and fully validated
             try:
                 candidate=migrate_state(candidate)
