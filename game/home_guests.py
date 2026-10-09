@@ -10,6 +10,15 @@ vào ở chung được"): home_id is its deco place key 'estate:<id>:<day bough
 home_kind the villa id. Selling it, moving out or buying it again ends every
 permission given for it. An older build (rollback) reads such a row as a home
 the owner no longer lives in and revokes it before listing it.
+
+🏡 Dọn đồ sang ở chung (F#307): a friend with an accepted 'stay' invite may move
+their own furniture into the host's home (POST move {id, on}): their save gets
+journey.decor_stay (game/deco.py stay_of: deco place 'stay') and they decorate it
+with their own bag and wallet exactly as a rented room. Nobody's furniture
+changes hands; deco_mate shows each resident the others' pieces read-only. Leaving,
+a revoke, or a stay that no longer holds (unfriend, block, the host moved: found by
+stay_owner on the next GET /api/deco/mate) clears it, and deco._move packs the
+pieces back into the bag (their layout kept in decor_away).
 """
 from __future__ import annotations
 
@@ -173,6 +182,120 @@ def _notify(db, *sids):
         db.execute('SELECT pg_notify(?,?)', ('mnl_live', json.dumps(dict(t='home_changed', sid=sid))))
 
 
+# ---------------------------------------------------------------- 🏡 living in a friend's home (F#307)
+STAY_MAX = 8   # residents shown in one home
+_STAY_INVITE = ("SELECT * FROM home_guest_invites WHERE guest=? AND kind='stay' AND status='accepted' "
+                "AND substr(id,1,16)=?")
+
+
+def _linked(db, owner, guest):
+    """Mutual friends, no block either way (the same test as an invitation's)."""
+    from . import home_coop
+    friends, blocked = home_coop.relation(db, owner, guest)
+    return friends and not blocked
+
+
+def stay_owner(store, sid, state):
+    """(host sid, host save) while `state` (the save of `sid`) lives in a friend's home it may still stay in, else None."""
+    st = dc.stay_of((state or {}).get('journey') or {})
+    if not st:
+        return None
+    with store.connect() as db:
+        inv = mr._row(db, _STAY_INVITE, (sid, st['id']))
+        if not inv or (inv['home_id'], inv['home_kind']) != (st['home'], st['kind']) or not _linked(db, inv['owner'], sid):
+            return None
+    got = mr._read_state(store, inv['owner'])
+    own = _own(got[0]) if got else None
+    if not own or (own['id'], own['kind']) != (st['home'], st['kind']):
+        return None
+    return inv['owner'], got[0]
+
+
+def stay_guests(store, owner, owner_state, skip=()):
+    """[(sid, save)] of the friends living in `owner`'s home now (an accepted stay, their save moved in), oldest first."""
+    own = _own(owner_state)
+    if not own:
+        return []
+    with store.connect() as db:
+        rows = mr._rows(db, "SELECT id,guest FROM home_guest_invites WHERE owner=? AND kind='stay' AND status='accepted' "
+                            "AND home_id=? AND home_kind=? ORDER BY created_at,id LIMIT ?", (owner, own['id'], own['kind'], STAY_MAX))
+        rows = [r for r in rows if r['guest'] not in skip and _linked(db, owner, r['guest'])]
+    out = []
+    for r in rows:
+        got = mr._read_state(store, r['guest'])
+        st = dc.stay_of(got[0].get('journey') or {}) if got else None
+        if st and st['id'] == r['id'][:16] and (st['home'], st['kind']) == (own['id'], own['kind']):
+            out.append((r['guest'], got[0]))
+    return out
+
+
+class _Same(Exception):
+    pass
+
+
+def _set_stay(state, value):
+    """Point a save's furniture at a friend's home (value) or back at its own place (None); deco._move packs and
+    restores. Raises _Same when nothing changes."""
+    j = state.get('journey')
+    need(isinstance(j, dict) and j.get('story'), 'Dọn đồ sang ở chung chỉ có trong chế độ hành trình.', 'story_only')
+    if (j.get('decor_stay') or None) == value:
+        raise _Same()
+    if value is None:
+        j.pop('decor_stay', None)
+    else:
+        j['decor_stay'] = value
+    dc._move(state, dc.place(j))
+
+
+def unstay(store, sid, tag=None):
+    """Best effort: a stay that ended (this invite `tag`, or any) leaves the save; True when it was written."""
+    def fn(state):
+        cur = (state.get('journey') or {}).get('decor_stay')
+        if not isinstance(cur, dict) or (tag is not None and cur.get('id') != tag):
+            raise _Same()
+        _set_stay(state, None)
+    try:
+        mr._mutate_retry(store, {sid: fn})
+        return True
+    except (_Same, mr.MarriageError):
+        return False
+
+
+def _move_in(store, sid, data):
+    """POST move {id, on}: the guest moves their furniture into the host's home they stay in, or back."""
+    ident, on = data.get('id'), data.get('on')
+    need(isinstance(ident, str) and len(ident) <= 64 and on in (True, False), 'Yêu cầu không hợp lệ.')
+    with store.connect() as db:
+        inv = mr._row(db, 'SELECT * FROM home_guest_invites WHERE id=?', (ident,))
+    need(inv and inv['guest'] == sid and inv['kind'] == 'stay', 'Không tìm thấy lời mời ở chung.', 'not_found', 404)
+    tag = inv['id'][:16]
+    value = dict(v=dc.STAY_VERSION, id=tag, home=inv['home_id'], kind=inv['home_kind']) if on else None
+
+    def fn(state):
+        cur = (state.get('journey') or {}).get('decor_stay')
+        if not on and not (isinstance(cur, dict) and cur.get('id') == tag):
+            raise _Same()
+        _set_stay(state, value)
+        if on:
+            need(dc.place(state['journey'])['where'] == 'stay', 'Bản này chưa bày được đồ ở căn nhà đó.', 'home_access', 403)
+
+    def check(db):   # under the transaction: the stay still holds and the host still lives there
+        r = mr._row(db, 'SELECT * FROM home_guest_invites WHERE id=? FOR UPDATE', (ident,))
+        ok = r and r['status'] == 'accepted' and _linked(db, r['owner'], sid)
+        if ok:
+            row = db.execute('SELECT state FROM sessions WHERE sid=?', (r['owner'],)).fetchone()
+            own = _own(_state(row['state'])) if row else None
+            ok = bool(own) and (own['id'], own['kind']) == (r['home_id'], r['home_kind'])
+        need(ok, 'Lời ở chung đã kết thúc hoặc chủ nhà đã dọn đi.', 'home_access', 403)
+        _notify(db, sid, r['owner'])
+    try:
+        mr._mutate_retry(store, {sid: fn}, check if on else None)
+    except _Same:
+        pass
+    with store.connect() as db:
+        return _list(db, sid)
+
+
 def invalidate(db, sid):
     """Persist lost access after owner moves, unfriend/block, or visit timeout.
 
@@ -222,8 +345,10 @@ def _actor(store, token):
 
 def _list(db, sid):
     row = db.execute('SELECT state FROM sessions WHERE sid=?', (sid,)).fetchone()
-    own = _own(_state(row['state'])) if row else None
+    saved = _state(row['state']) if row else {}
+    own = _own(saved) if row else None
     outgoing, incoming, active, homes = [], [], [], []
+    st = dc.stay_of(saved.get('journey') or {})   # 🏡 where this save's furniture lives
     for r in mr._rows(db, "SELECT * FROM home_guest_invites WHERE (owner=? OR guest=?) AND status IN ('pending','accepted') ORDER BY created_at,id", (sid, sid)):
         mine = r['owner'] == sid
         other = _person(db, r['guest'] if mine else r['owner'])
@@ -234,7 +359,8 @@ def _list(db, sid):
         else:
             active.append(item)
             if not mine:
-                homes.append(dict(**other, home=item['home'], kind=r['kind']))
+                homes.append(dict(**other, home=item['home'], kind=r['kind'], id=r['id'],
+                                  here=bool(st and r['kind'] == 'stay' and st['id'] == r['id'][:16])))
     friends = [dict(code=r['code'], name=mr._clean_name(r['display']))
                for r in db.execute(FRIENDS_SQL, (sid, social.pid_of(sid))).fetchall()]
     from . import home_coop   # 🎨 Cho trang trí (an older page ignores the key)
@@ -295,8 +421,10 @@ def post(store, token, state, sub, data):
         return home_coop.post(store, token, state, sub[5:], data)
     sid = _actor(store, token)
     need(isinstance(data, dict), 'Yêu cầu không hợp lệ.')
-    need(sub in ('invite', 'answer', 'revoke', 'leave'), 'Không tìm thấy mục này.', 'not_found', 404)
+    need(sub in ('invite', 'answer', 'revoke', 'leave', 'move'), 'Không tìm thấy mục này.', 'not_found', 404)
     store.transaction(lambda db: invalidate(db, sid))
+    if sub == 'move':   # 🏡 F#307
+        return _move_in(store, sid, data)
     with store.connect() as db:
         if sub == 'invite':
             kind = data.get('kind')
@@ -343,4 +471,9 @@ def post(store, token, state, sub, data):
                 db.execute('UPDATE home_guest_invites SET status=? WHERE id=?', ('revoked' if sub == 'revoke' else 'left', ident))
         _notify(db, owner, guest)
         return _list(db, sid)
-    return store.transaction(run)
+    out = store.transaction(run)
+    if sub in ('revoke', 'leave'):   # 🏡 the guest's furniture comes home with them (a stay only; best effort, else lazily)
+        if unstay(store, guest, ident[:16]):
+            with store.connect() as db:
+                out = _list(db, sid)
+    return out

@@ -1,5 +1,18 @@
 {
   "strings": {
+  "🏡 Ở chung nhà bạn: mua, bày, bán đồ của mình thoải mái. Sửa nhà để chủ nhà lo.": "🏡 Living at a friend's: buy, place and sell your own things freely. Repairs are up to the owner.",
+  "🧾 Chỗ ở thuê: tự mua, bày, bán đồ của mình thoải mái, chỉ không sửa nhà.": "🧾 Rented place: buy, place and sell your own things freely; just no repairs.",
+  "🚪 Vào nhà bạn": "🚪 Go to your friend's",
+  "Đồ của bạn đang bày ở đây. Món ai nấy giữ.": "Your things are set up here. Everyone keeps their own.",
+  "📦 Dọn đồ về": "📦 Move my things back",
+  "🪴 Dọn đồ sang ở": "🪴 Move my things in",
+  "Đã dọn đồ sang. Vào nhà rồi bày đồ của bạn nhé.": "Moved in. Go inside and set up your things.",
+  "Đã dọn đồ về, đồ nằm trong túi đồ.": "Moved back: your things are in your bag.",
+  "Dọn đồ sang ở chung chỉ có trong chế độ hành trình.": "Moving your things in is only in story mode.",
+  "Bản này chưa bày được đồ ở căn nhà đó.": "This version can't set things up in that home yet.",
+  "Lời ở chung đã kết thúc hoặc chủ nhà đã dọn đi.": "The stay has ended or the owner has moved out.",
+  "Không tìm thấy lời mời ở chung.": "Stay invitation not found.",
+  "Dữ liệu ở chung trong bản lưu không hợp lệ.": "The save has invalid shared-home data.",
   "Lãi đơn nhân viên giờ lên xuống theo giờ, mỗi nghề một kiểu; mỗi ngày có 1 🔥 nghề hot lãi ×2. Xem ở Công việc, Sổ tiệm.": "Staff order profits now move by the hour, differently per career; each day one 🔥 hot career pays ×2. See Jobs and the shop book.",
   "Hôm nay Ông Hai đánh nhiều ván quá, ông mệt rồi. Mai cháu ghé nha!": "Ông Hai has played too many games today and he's worn out. Come back tomorrow!",
   "Thắng Ông Hai liền mấy ván, tiền vô như nước hả? Bàn này là sòng bạc trá hình. Tiền thắng tịch thu, về đồn làm việc!": "Beating Ông Hai game after game, money pouring in? This table is a gambling den in disguise. Your winnings are confiscated, come down to the station!",
@@ -23048,6 +23061,7 @@
   "Đã trả lời câu này rồi.": "Already answered this one."
   },
   "patterns": {
+  "🏡 Có cả đồ $1 bày ($2 món). Món của ai người nấy dời.": "🏡 $1's things are here too ($2 pieces). Each of you moves your own.",
   "🚨 Công an ập vào bàn Ông Hai! Thắng liền mấy ván là có chuyện: tịch thu $1 xu tiền thắng, nộp phạt $2 xu.": "🚨 The police raided Ông Hai's table! Winning game after game gets noticed: $1 xu of winnings confiscated and a $2 xu fine.",
   "🚨 Công an ập vào bàn Ông Hai! Thắng liền mấy ván là có chuyện: tịch thu $1 xu tiền thắng.": "🚨 The police raided Ông Hai's table! Winning game after game gets noticed: $1 xu of winnings confiscated.",
   "Mở rộng $1": "Expand $1",

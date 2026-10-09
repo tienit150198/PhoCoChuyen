@@ -180,11 +180,13 @@ async function coopUndo(id){
   catch(e){S.flash={text:e.message||'Chưa hoàn tác được. Thử lại nhé.',kind:'bad'};sfx('error');}
   finally{S.busy=false;render();}
 }
-/** 💞 The spouse's pieces when this is the home both live in (each time the room opens, and after a move). */
+/** 💞 The spouse's pieces when this is the home both live in (each time the room opens, and after a move).
+ * 🏡 F#307: also the friends living in your home, or, in a friend's home you moved into, everyone else's. */
+const married=()=>S.env.api.state?.marriage?.spouse?.status==='married';
 function refreshMate(){
   if(!S.dlg?.open)return;
   if(S.remote){clearTimeout(S.mateTimer);S.mateTimer=setTimeout(loadMate,120);return;}
-  if((J().deco?.place?.key||'')!==S.mateKey||S.env.api.state?.marriage?.spouse?.status!=='married'){S.mate=null;S.mateState=null;}
+  if((J().deco?.place?.key||'')!==S.mateKey||(!married()&&!S.mate?.stay)){S.mate=null;S.mateState=null;}
   clearTimeout(S.mateTimer);S.mateTimer=setTimeout(loadMate,120);
 }
 async function loadMate(){
@@ -198,13 +200,15 @@ async function loadMate(){
     return;
   }
   const v=V(),key=v?.place?.key||'',seq=++S.mateSeq,state=S.env.api.state;S.mateKey=key;
-  if(!v||!['own','shared'].includes(v.place.where)||state?.marriage?.spouse?.status!=='married'){S.mate=null;S.mateState=null;return;}
+  const where=v?.place?.where;
+  if(!v||!['own','shared','estate','stay'].includes(where)||(where==='shared'&&!married())){S.mate=null;S.mateState=null;return;}
   let m=null,failed=false;
   try{m=await S.env.api.json('/api/deco/mate');}catch{failed=true;}
   if(S.mateKey!==key||seq!==S.mateSeq)return;   // moved or reopened meanwhile: the newer request decides
+  if(m?.moved){S.mate=null;S.mateState=null;S.env.api.refresh?.().then(()=>{if(S.dlg?.open)render();}).catch(()=>{});return;}   // 🏡 the stay ended: the pieces are back in the bag
   const next=failed&&S.mate?.at===key?S.mate:m&&m.at===key&&Array.isArray(m.items)?m:null,changed=JSON.stringify(S.mate)!==JSON.stringify(next);S.mate=next;S.mateState=!failed&&S.env.api.state===state?state:null;
   if(changed&&S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();
-  if(S.dlg?.open)S.mateTimer=setTimeout(loadMate,5000);   // fallback when the live service is reconnecting
+  if(S.dlg?.open&&(next||married()||where==='stay'))S.mateTimer=setTimeout(loadMate,5000);   // fallback when the live service is reconnecting
 }
 
 async function send(action,payload={},opts={}){
@@ -253,7 +257,7 @@ function inRoom(rm,skip=new Set()){return items().filter(p=>p.r===rm.id&&!skip.h
 const ridersOf=uid=>items().filter(p=>p.on===uid).map(p=>p.id);
 /** 💞 The spouse's pieces in this home (ids 'p:…'), read-only: drawn, never part of the checks above. */
 const mates=()=>S.mate&&S.mate.at===V()?.place?.key?S.mate.items:[];
-function mateIn(rm){return mates().filter(p=>p.r===rm.id&&ITEM(p.k)).map(p=>({id:p.id,k:p.k,it:ITEM(p.k),q:qOf(p),mate:true,c:p.c||null}));}
+function mateIn(rm){return mates().filter(p=>p.r===rm.id&&ITEM(p.k)).map(p=>({id:p.id,k:p.k,it:ITEM(p.k),q:qOf(p),mate:true,c:p.c||null,n:p.n||''}));}
 /** What `q` stands on: {it, q} (a placed piece) or {fix} (a fixture), or null. */
 function hostFor(rm,q,list){
   if(!q.on)return null;
@@ -405,7 +409,7 @@ function roomMarkup(rm,opts={}){
     if(o.mate){
       const [bx,by,bw,bh]=bbox(it,a);
       out.push(edit?`<g class="dc-mate"${frontY(rm,G,o,all)} pointer-events="none" aria-hidden="true">${body}</g>`
-        :`<g class="dc-mate dc-it" data-uid="${esc(o.id)}"${frontY(rm,G,o,all)} tabindex="0" role="button" aria-label="${esc(it.name)} · của ${esc(S.mate?.name||'người ấy')}">${body}<rect class="dc-hit" x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="6"/></g>`);
+        :`<g class="dc-mate dc-it" data-uid="${esc(o.id)}"${frontY(rm,G,o,all)} tabindex="0" role="button" aria-label="${esc(it.name)} · của ${esc(o.n||S.mate?.name||'người ấy')}">${body}<rect class="dc-hit" x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="6"/></g>`);
       continue;
     }   // the spouse's may be used while walking; editing keeps every ownership control with its owner
     const [bx,by,bw,bh]=bbox(it,a);
@@ -1129,9 +1133,9 @@ function setsCard(v){
 const missList=list=>list.map(w=>{const m=String(w).match(/^(.*) ×(\d+)$/);return m?`<i>${esc(m[1])}</i> ×${m[2]}`:`<i>${esc(w)}</i>`;}).join(', ');
 function placeNote(v){
   const st=v.stats||{},pl=v.place;
-  const note=pl.repairs?'':pl.where==='shared'?'💞 Nhà chung: bày trí thoải mái, chuyện sửa nhà để người đứng tên lo.':'🧾 Chỗ ở thuê: chỉ bày đồ trang trí, không sửa nhà được.';
+  const note=pl.repairs?'':pl.where==='shared'?'💞 Nhà chung: bày trí thoải mái, chuyện sửa nhà để người đứng tên lo.':pl.where==='stay'?'🏡 Ở chung nhà bạn: mua, bày, bán đồ của mình thoải mái. Sửa nhà để chủ nhà lo.':'🧾 Chỗ ở thuê: tự mua, bày, bán đồ của mình thoải mái, chỉ không sửa nhà.';
   const theirs=mates();
-  const mate=theirs.length?`<p class="dc-mate-note">💞 Có cả đồ ${esc(S.mate.name)} bày (${theirs.length} món). Món của ai người nấy dời.</p>`:'';
+  const mate=theirs.length?`<p class="dc-mate-note">${S.mate.stay?'🏡':'💞'} Có cả đồ ${esc(S.mate.name)} bày (${theirs.length} món). Món của ai người nấy dời.</p>`:'';
   return `<section class="bk-card dc-placenote">${note?`<p>${note}</p>`:''}${mate}<p class="bk-hint">Dọn đi đâu, đồ đạc cũng tự gói vào túi đồ. Mua một lần, mang theo cả hành trình.</p>
     <p class="dc-stats"><span>🎒 ${fmt(v.count)} món</span><span>📌 Đã đặt ${st.placed||0} lần</span><span>☕ ${st.guests||0} lượt khách ghé</span></p></section>`;
 }

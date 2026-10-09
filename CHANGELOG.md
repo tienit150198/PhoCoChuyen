@@ -2,6 +2,11 @@
 
 Gồm exploit-fixes (nhập bản lưu, reset nơi làm, phóng dao, kế toán × x3, bỏ ngày ăn lương/tiền thuê, ném vòng, giới hạn chuyển tiền tài khoản mới), ong-hai-hard (journey.fair_hai), hot-career (lãi nhân viên theo thị trường + nghề hot), mishap: kiểu police, bán coin. Khóa mới tùy chọn: journey.fair_day, journey.fair_hai.
 
+# Chưa phát hành — share-deco (góp ý #307: ở chung, ở trọ cũng tự trang trí)
+
+🏡 Người ở chung (lời mời "Ở chung") bấm 🪴 Dọn đồ sang ở là bày nhà bạn như nhà mình: tự mua, đặt, dời, xoay, bán, sơn tường/sàn bằng túi và ví của mình (khóa tùy chọn journey.decor_stay, chỗ ở deco 'stay'; tường/sàn chỉ hiện ở góc nhìn của người ở chung). Chủ nhà, vợ/chồng và người ở chung thấy đồ của nhau (chỉ xem, không ai bán/dời đồ người khác). Rời nhà, bị thu hồi, hết là bạn hay chủ nhà dọn đi: đồ về túi, cách bày giữ trong decor_away. Ở trọ/thuê nhà người chơi: vẫn tự bày như cũ, ghi chú rõ hơn. Sửa: về lại chỗ cũ thì món đã xoay vẫn xoay. 1.9.37 đọc được (bỏ qua khóa mới, đồ về túi; quay lại bản này thì bày lại như trước).
+Có gì mới (gợi ý cho bản phát hành): 🏡 Ở chung nhà bạn hay ở trọ đều tự mua, bày, bán đồ của mình như nhà mình. Ở chung: Mời bạn → 🪴 Dọn đồ sang ở.
+
 # Chưa phát hành — exploit-fixes (không có Có gì mới, deploy lặng lẽ)
 
 💾 Nhập bản lưu (game/save_guard.py): save của tài khoản không nhập được nữa (chỉ admin khôi phục); khách chỉ nhập bản xuất nguyên vẹn của máy chủ (chữ ký HMAC `sign` trong tệp, khóa SAVE_SIGN_SECRET, thiếu thì lấy từ DATABASE_URL), không cũ hơn và không nhiều xu hơn save hiện tại. Mỗi lần nhập một dòng `[import]` trong log. Nút Nhập bản lưu tắt cho tài khoản.
