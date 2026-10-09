@@ -1,5 +1,165 @@
 [
  {
+  "vi": "Tất toán",
+  "en": ""
+ },
+ {
+  "vi": "Nộp hồ sơ mở thẻ tín dụng?",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn trả nhé.",
+  "en": ""
+ },
+ {
+  "vi": "tài khoản thanh toán",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn ứng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng",
+  "en": ""
+ },
+ {
+  "vi": "Hủy thẻ tín dụng?",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ không dùng được nữa. Muốn có thẻ mới phải nộp hồ sơ lại.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Khoản vay",
+  "en": ""
+ },
+ {
+  "vi": "Tất toán khoản vay trước hạn?",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền mặt trong ví chuyển vào tài khoản chung của hai vợ chồng. Người ấy sẽ thấy giao dịch này.",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng chưa duyệt khoản vay này.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn tiệm nhận vốn vay nhé.",
+  "en": ""
+ },
+ {
+  "vi": "NGÂN HÀNG PHỐ · ỨNG DỤNG",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản, tiết kiệm, thẻ và khoản vay của riêng bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng chỉ có trong chế độ hành trình",
+  "en": ""
+ },
+ {
+  "vi": "Ở chế độ chơi tự do, mỗi nơi làm việc có quỹ riêng. Vào hành trình để có ví, tài khoản ngân hàng, thẻ và khoản vay của một nhân vật.",
+  "en": ""
+ },
+ {
+  "vi": "Mục ngân hàng",
+  "en": ""
+ },
+ {
+  "vi": "Có trong tài khoản",
+  "en": ""
+ },
+ {
+  "vi": "Chào mừng tới Ngân hàng Phố",
+  "en": ""
+ },
+ {
+  "vi": "🏧 Nộp, rút",
+  "en": ""
+ },
+ {
+  "vi": "💳 Thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Tiền mặt hiện có:",
+  "en": ""
+ },
+ {
+  "vi": "Tiền mặt trong ví vẫn là của bạn. Mở một tài khoản để có thêm:",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản thanh toán",
+  "en": ""
+ },
+ {
+  "vi": ": nộp, rút ở cây ATM, sổ giao dịch có số dư từng dòng.",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ tín dụng",
+  "en": ""
+ },
+ {
+  "vi": ": vay tiêu dùng, vay mở rộng tiệm, vay mua nhà, trả góp từng kỳ.",
+  "en": ""
+ },
+ {
+  "vi": "Mở tài khoản miễn phí",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Hồ sơ đang ghi nhận",
+  "en": ""
+ },
+ {
+  "vi": "nợ xấu",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Bạn đang có khoản",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản sẽ tự bù vào sáng mai nếu còn tiền.",
+  "en": ""
+ },
+ {
+  "vi": "NGÂN HÀNG PHỐ",
+  "en": ""
+ },
+ {
+  "vi": "CHỦ THẺ",
+  "en": ""
+ },
+ {
+  "vi": "Rút ở",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Tài khoản thanh toán\"",
+  "en": ""
+ },
+ {
+  "vi": "Số xu, ví dụ 50",
+  "en": ""
+ },
+ {
   "vi": "Ví dụ 50",
   "en": ""
  },
@@ -1637,166 +1797,6 @@
  },
  {
   "vi": "Rào lời nguyện",
-  "en": ""
- },
- {
-  "vi": "Chổi tre",
-  "en": ""
- },
- {
-  "vi": "Bàn cơm chay",
-  "en": ""
- },
- {
-  "vi": "Chiếu lễ",
-  "en": ""
- },
- {
-  "vi": "Mõ",
-  "en": ""
- },
- {
-  "vi": "🌳 Cây bồ đề",
-  "en": ""
- },
- {
-  "vi": "🔔 Chuông gia trì",
-  "en": ""
- },
- {
-  "vi": "🕯️ Bàn thờ",
-  "en": ""
- },
- {
-  "vi": "📋 Thời khóa",
-  "en": ""
- },
- {
-  "vi": "📋 Thực đơn",
-  "en": ""
- },
- {
-  "vi": "Lư hương lớn giữa sân. Khách thắp hương ở đây, trong điện chỉ một nén.",
-  "en": ""
- },
- {
-  "vi": "Gác chuông có quả chuông đồng cả làng cùng đúc. Chuông thỉnh chậm, đều, chờ tiếng ngân tắt hẳn.",
-  "en": ""
- },
- {
-  "vi": "Hồ sen nhỏ, mấy con cá đỏ lượn chậm. Ngồi đây gió sông mát lắm.",
-  "en": ""
- },
- {
-  "vi": "Hàng rào tre buộc đầy giấy đỏ. Bạn chọn một lời nguyện để viết.",
-  "en": ""
- },
- {
-  "vi": "Mấy cây chổi tre dựng ở giá. Lá bàng rụng đầy sân.",
-  "en": ""
- },
- {
-  "vi": "Bàn dài, bà Nhạn đang múc canh nấm.",
-  "en": ""
- },
- {
-  "vi": "Bạn quỳ trên chiếu trước điện Phật. Tự chọn khấn cho ai, mong điều gì.",
-  "en": ""
- },
- {
-  "vi": "Thầy giữ chuông gia trì, bạn giữ mõ. Gõ đúng lúc vòng sáng khép lại.",
-  "en": ""
- },
- {
-  "vi": "🪔 Thắp hương",
-  "en": ""
- },
- {
-  "vi": "🔔 Đứng nghe chuông",
-  "en": ""
- },
- {
-  "vi": "🍃 Ngồi xuống",
-  "en": ""
- },
- {
-  "vi": "🧹 Cầm chổi quét",
-  "en": ""
- },
- {
-  "vi": "🍚 Ngồi vào bàn",
-  "en": ""
- },
- {
-  "vi": "🙏 Chắp tay khấn",
-  "en": ""
- },
- {
-  "vi": "📿 Bắt đầu tụng",
-  "en": ""
- },
- {
-  "vi": "Bạn ơi, con cá đỏ to nhất tên là Mập đó. Con đặt tên đấy!",
-  "en": ""
- },
- {
-  "vi": "Bà con dặn đi trong chùa phải đi chậm, nói nhỏ. Con đang tập.",
-  "en": ""
- },
- {
-  "vi": "Sao hoa sen mọc dưới bùn mà vẫn thơm vậy ta?",
-  "en": ""
- },
- {
-  "vi": "Chiều nào chị cũng ra đây ngồi một lúc. Không cần nói gì cả.",
-  "en": ""
- },
- {
-  "vi": "Nghe chuông xong, tự nhiên thấy nhẹ người.",
-  "en": ""
- },
- {
-  "vi": "Cứ ngồi đi, ghế còn rộng mà.",
-  "en": ""
- },
- {
-  "vi": "Rằm nào ông cũng lên. Chân yếu rồi, nhưng lên được là vui.",
-  "en": ""
- },
- {
-  "vi": "Hồi xưa ông chở đò cho cả xóm qua sông đi chùa đó.",
-  "en": ""
- },
- {
-  "vi": "Thắp hương thì một nén thôi con, thành tâm là được.",
-  "en": ""
- },
- {
-  "vi": "Bữa nay không phải rằm, bà chỉ nhặt rau thôi. Rằm với mùng một ghé ăn cơm chay nhé!",
-  "en": ""
- },
- {
-  "vi": "Bếp chùa không dùng hành tỏi, con biết chưa?",
-  "en": ""
- },
- {
-  "vi": "Ngồi xuống ăn đi con, canh nấm còn nóng!",
-  "en": ""
- },
- {
-  "vi": "Ăn chậm thôi. Ăn xong nhớ để chén vô thau giùm bà nha.",
-  "en": ""
- },
- {
-  "vi": "Nam mô A Di Đà Phật.",
-  "en": ""
- },
- {
-  "vi": "Sáng nay xin lòng yên như mặt hồ.",
-  "en": ""
- },
- {
-  "vi": "Lời nói ra, xin là lời hiền.",
   "en": ""
  }
 ]

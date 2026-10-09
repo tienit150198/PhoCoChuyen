@@ -1,5 +1,55 @@
 [
  {
+  "vi": "Miễn phí, mỗi việc một lần mỗi ngày: gắn bó +1$1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "tinh thần +1 (còn $1 lần hôm nay)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cất vào túi đồ, đặt lúc nào cũng được. Ấm cúng +$1 khi bày ra (mỗi loại tính một lần).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bán lại $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhận $1 ($2% giá mua).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn bế $1 rồi. Ra phố hay công viên, bé đi cùng bạn (đi bộ).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sửa $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "($1%) → như mới.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "như mới, bền hơn. Ấm cúng +$1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đặt ở $1 · ấm cúng +$2 nếu chỗ này chưa có món này. Bán lại được $3% giá.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Mua một lần, phòng nào cũng dùng được. Đang xem thử trong $1.",
   "en": "",
   "pattern": true

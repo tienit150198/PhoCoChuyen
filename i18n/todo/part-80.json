@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Phụ bếp chia cơm",
+  "en": ""
+ },
+ {
+  "vi": "Múc đúng số muỗng cơm ghi trên mỗi khay.",
+  "en": ""
+ },
+ {
   "vi": "Quét sơn lên mọi ô tường còn bẩn.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Khách ăn xong, bảo “dở vậy mà cũng tính tiền”.",
-  "en": ""
- },
- {
-  "vi": "Rồi bỏ đi, không trả.",
-  "en": ""
- },
- {
-  "vi": "Còn ngoái lại chửi thêm.",
   "en": ""
  }
 ]

@@ -1,5 +1,201 @@
 [
  {
+  "vi": "Thu phiếu cuối tiết",
+  "en": ""
+ },
+ {
+  "vi": "Giống hệt",
+  "en": ""
+ },
+ {
+  "vi": "So bài với đáp án: đúng → 🌟 Khen cụ thể · sai hoặc chép nhầm → 🪜 Gợi ý một bước · ghi \"Giống hệt phiếu của…\" → 🤝 Gặp riêng. Chấm hết các phiếu rồi bấm Khép tiết.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu tiếp theo:",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Khép tiết, nhận thù lao",
+  "en": ""
+ },
+ {
+  "vi": "Gốm",
+  "en": ""
+ },
+ {
+  "vi": "Bờ sông",
+  "en": ""
+ },
+ {
+  "vi": "Ăn vặt",
+  "en": ""
+ },
+ {
+  "vi": "🧭 Dẫn đoàn",
+  "en": ""
+ },
+ {
+  "vi": "Chọn 3–5 điểm theo thứ tự đi, có một chỗ nghỉ chân (🪑)",
+  "en": ""
+ },
+ {
+  "vi": "Nắng gắt: tối đa 2 điểm ngoài trời · mưa, gió: có điểm đóng cửa",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi người có một điều mong (biểu tượng cạnh tên): ghé nơi có biểu tượng ấy",
+  "en": ""
+ },
+ {
+  "vi": "Người lớn tuổi ngại đồi dốc",
+  "en": ""
+ },
+ {
+  "vi": "Xử lý chuyện của đoàn trước khi đi tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Kể chuyện hợp số đông (số người thích cạnh mỗi cách kể) và hợp nơi đang đứng",
+  "en": ""
+ },
+ {
+  "vi": "Chi tiết từng người",
+  "en": ""
+ },
+ {
+  "vi": "đóng,",
+  "en": ""
+ },
+ {
+  "vi": "🚧 Đóng",
+  "en": ""
+ },
+ {
+  "vi": "🤒 Người ốm trước",
+  "en": ""
+ },
+ {
+  "vi": "Chạm 3–5 điểm",
+  "en": ""
+ },
+ {
+  "vi": "Thời tiết",
+  "en": ""
+ },
+ {
+  "vi": "↶ Chọn lại lộ trình",
+  "en": ""
+ },
+ {
+  "vi": "Quyết cho người ốm trước",
+  "en": ""
+ },
+ {
+  "vi": "🤒 Quyết cho người ốm",
+  "en": ""
+ },
+ {
+  "vi": "Điểm",
+  "en": ""
+ },
+ {
+  "vi": "Chọn điểm",
+  "en": ""
+ },
+ {
+  "vi": "Chọn lại cho hợp đoàn",
+  "en": ""
+ },
+ {
+  "vi": "Lộ trình chưa hợp",
+  "en": ""
+ },
+ {
+  "vi": "Sửa lộ trình",
+  "en": ""
+ },
+ {
+  "vi": "Cắm sạc loa qua đêm",
+  "en": ""
+ },
+ {
+  "vi": "Đặt cơm trưa cho đoàn",
+  "en": ""
+ },
+ {
+  "vi": "🍚 Đặt cơm trưa cho đoàn",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Báo homestay tối nay",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Chưa đủ người",
+  "en": ""
+ },
+ {
+  "vi": "Đã kể",
+  "en": ""
+ },
+ {
+  "vi": "Kể chuyện cho đoàn nghe",
+  "en": ""
+ },
+ {
+  "vi": "🎙️ Chọn cách kể",
+  "en": ""
+ },
+ {
+  "vi": "🎙️ Chọn cách kể chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Đếm đoàn, về bến",
+  "en": ""
+ },
+ {
+  "vi": "Đếm đoàn, đi tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Khép chuyến, nhận thù lao",
+  "en": ""
+ },
+ {
+  "vi": "Ẩn bảng tin",
+  "en": ""
+ },
+ {
+  "vi": "khách để lại tip",
+  "en": ""
+ },
+ {
+  "vi": "món quà cảm ơn",
+  "en": ""
+ },
+ {
+  "vi": "Vào tiệm sáng đèn",
+  "en": ""
+ },
+ {
+  "vi": "Đi tới một tiệm đang sáng để làm",
+  "en": ""
+ },
+ {
+  "vi": "Thi chứng chỉ · có việc cần làm",
+  "en": ""
+ },
+ {
+  "vi": "🕶️ Chợ đen",
+  "en": ""
+ },
+ {
   "vi": "sắp mở",
   "en": ""
  },
@@ -1601,202 +1797,6 @@
  },
  {
   "vi": "Chọn chỗ làm muốn ghé",
-  "en": ""
- },
- {
-  "vi": "Mọi người đang làm gì?",
-  "en": ""
- },
- {
-  "vi": "Đón khách theo cách của bạn",
-  "en": ""
- },
- {
-  "vi": "Hôm nay ghé ai nhỉ?",
-  "en": ""
- },
- {
-  "vi": "Chọn nơi làm để đặt quyền ghé thăm và xem khách.",
-  "en": ""
- },
- {
-  "vi": "Chọn một chỗ làm để xem bạn ấy đang làm gì.",
-  "en": ""
- },
- {
-  "vi": "Đang tìm những cánh cửa đang mở…",
-  "en": ""
- },
- {
-  "vi": "Quầy riêng",
-  "en": ""
- },
- {
-  "vi": "Nghề hiện tại",
-  "en": ""
- },
- {
-  "vi": "Ghé xem dịch vụ và tình hình tiệm",
-  "en": ""
- },
- {
-  "vi": "Xem chỗ của tôi",
-  "en": ""
- },
- {
-  "vi": "Xem thêm chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Chưa có chỗ làm có thể ghé ở đây. Bạn có thể xem Mọi người quanh phố.",
-  "en": ""
- },
- {
-  "vi": "Không gian ghé chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Chỗ đứng của bạn. Dùng phím mũi tên để di chuyển.",
-  "en": ""
- },
- {
-  "vi": "Đổi chỗ đứng",
-  "en": ""
- },
- {
-  "vi": "Chỗ làm của người chơi",
-  "en": ""
- },
- {
-  "vi": "QUẦY ĐÓN KHÁCH",
-  "en": ""
- },
- {
-  "vi": "GÓC LÀM VIỆC",
-  "en": ""
- },
- {
-  "vi": "· Bạn",
-  "en": ""
- },
- {
-  "vi": "Mời bạn ghé vào",
-  "en": ""
- },
- {
-  "vi": "👋 Chào",
-  "en": ""
- },
- {
-  "vi": "💗 Thả tim",
-  "en": ""
- },
- {
-  "vi": "👏 Cổ vũ",
-  "en": ""
- },
- {
-  "vi": "Bên trái",
-  "en": ""
- },
- {
-  "vi": "Ở giữa",
-  "en": ""
- },
- {
-  "vi": "Bên phải",
-  "en": ""
- },
- {
-  "vi": "Nói một câu tại đây…",
-  "en": ""
- },
- {
-  "vi": "Lời nói trong chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Chưa kết nối phòng trực tiếp. Đơn dịch vụ vẫn cập nhật.",
-  "en": ""
- },
- {
-  "vi": "Đang mở cửa chỗ làm…",
-  "en": ""
- },
- {
-  "vi": "Công việc hiện tại",
-  "en": ""
- },
- {
-  "vi": "Ai có thể ghé?",
-  "en": ""
- },
- {
-  "vi": "LÀM KHÁCH",
-  "en": ""
- },
- {
-  "vi": "Hôm nay bạn cần gì?",
-  "en": ""
- },
- {
-  "vi": "Không bắt buộc",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn cho người phục vụ",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn cho người làm",
-  "en": ""
- },
- {
-  "vi": "Nhân viên có thể phục vụ khi chủ tiệm vắng.",
-  "en": ""
- },
- {
-  "vi": "Chủ tiệm nhận đơn và tự thực hiện trước khi bạn nhận.",
-  "en": ""
- },
- {
-  "vi": "nhận đơn và tự làm trước khi bạn nhận.",
-  "en": ""
- },
- {
-  "vi": "Chọn dịch vụ để xem giá và gửi lời nhắn.",
-  "en": ""
- },
- {
-  "vi": "Chọn một việc để xem giá và gửi lời nhắn.",
-  "en": ""
- },
- {
-  "vi": "Nơi này chưa có dịch vụ nhận khách lúc này.",
-  "en": ""
- },
- {
-  "vi": "Nơi này chưa nhận khách lúc này.",
-  "en": ""
- },
- {
-  "vi": "Khách đang ghé",
-  "en": ""
- },
- {
-  "vi": "Đơn của bạn tại đây",
-  "en": ""
- },
- {
-  "vi": "Khách đã nhận dịch vụ",
-  "en": ""
- },
- {
-  "vi": "đã ghé",
-  "en": ""
- },
- {
-  "vi": "Gửi lời trả lời",
   "en": ""
  }
 ]

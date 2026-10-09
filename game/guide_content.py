@@ -6142,9 +6142,13 @@ GROUPS = [{'id': 'start',
                          'giữ 1 ngày vì tố cáo sai sự thật.',
                          '🚫 Trong trại không đi làm, không vào chợ đen, không mua sắm hay đi chơi xa. Vẫn nhắn tin, xem bạn bè, '
                          'đọc sách, chỉnh cài đặt được.',
+                         '🗺️ Trại là một khu để đi lại: chạm sân để đi, chạm một góc để tới đó. Công ích làm ở từng góc '
+                         '(quét sân ở gốc bàng, chia cơm ở căng tin, xếp sách ở thư viện trại…).',
                          '🧹 Mỗi ngày có 3 việc công ích nho nhỏ. Làm đủ cả 3 thì hết ngày đó được tính 2 ngày.',
-                         '🌙 Bấm [[Hết một ngày trong trại]] để qua một ngày sống. Tiền phòng vẫn tính, cơm trại miễn phí.',
-                         '🤝 [[Nhờ bạn bảo lãnh]]: một người bạn trả 30.000 xu từ ví của họ là bạn được về ngay.']},
+                         '🌙 Về giường trong buồng, bấm [[Hết một ngày trong trại]] để qua một ngày sống. Tiền phòng vẫn tính, '
+                         'cơm trại miễn phí.',
+                         '🤝 Ra phòng thăm gặp, bấm [[Nhờ bạn bảo lãnh]]: một người bạn trả 30.000 xu từ ví của họ là bạn được '
+                         'về ngay.']},
              {'id': 'hands_on',
               'emoji': '🎮',
               'title': 'Tự tay lái xe, lái máy bay, đi nông trại',

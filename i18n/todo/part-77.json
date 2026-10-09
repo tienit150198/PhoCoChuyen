@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Mở Kỷ niệm",
+  "en": ""
+ },
+ {
+  "vi": "Phố nghề: ghé quán nhau",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Tạo hồ sơ với tên hiển thị, biểu tượng; chọn có hiện quán cho mọi người hay không.",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Tab Phố: tìm quán người khác, bấm [[Ghé quán]], theo dõi quán mình thích.",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Đã ghé thì được chấm sao quán đó, mỗi ngày một lần; chủ quán trả lời một lần.",
+  "en": ""
+ },
+ {
   "vi": "🎁 Tặng sticker kèm 0, 10 hoặc 20 xu: tối đa 5 món mỗi ngày, mỗi người một món.",
   "en": ""
  },
@@ -1129,14 +1149,6 @@
  },
  {
   "vi": "Xem bảng vận hành để đối chiếu doanh thu, tiền nhập hàng, lương, thuê chỗ, điện, giao hàng và thuế. Khi nhân viên còn bán, thời gian offline vẫn phát sinh doanh thu và chi phí.",
-  "en": ""
- },
- {
-  "vi": "Doanh thu bán liên tục chịu thuế 2% xu trong game. Lương và phí vận hành tính theo thời gian thực, tiền lẻ được giữ lại để nhiều lần tải trang không thu thêm phí.",
-  "en": ""
- },
- {
-  "vi": "Biên nhận của ca thuê người chơi và các kỳ cũ được giữ trong Sổ quầy & an toàn. Xem riêng bảng vận hành liên tục để biết kho, vốn và lãi hiện tại.",
   "en": ""
  }
 ]

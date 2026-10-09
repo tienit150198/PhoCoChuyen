@@ -685,7 +685,57 @@
   "pattern": true
  },
  {
+  "vi": "Ngày $1 trong trại",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Công ích $1/",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đủ $1 việc rồi: hết ngày này được tính hai ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Công ích hôm nay $1/$2. Làm đủ thì hết ngày được tính hai ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gọi cho bạn bè qua ô kính. Bạn bè bảo lãnh thì trả $1 từ ví của họ, bạn được về ngay.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "án $1 ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Còn $1 ngày nữa là ra cổng",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Làm đủ $1 việc công ích trong ngày ($2/$3): hết ngày được tính hai ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn bè bảo lãnh $1: về ngay.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Ngày $1 trong trại · án $2 ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Làm đủ $1 việc công ích hôm nay: hết ngày được tính hai ngày.",
   "en": "",
   "pattern": true
  },
@@ -2196,56 +2246,6 @@
  },
  {
   "vi": "ngày tuổi · Gắn bó $1/100",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Miễn phí, mỗi việc một lần mỗi ngày: gắn bó +1$1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "tinh thần +1 (còn $1 lần hôm nay)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cất vào túi đồ, đặt lúc nào cũng được. Ấm cúng +$1 khi bày ra (mỗi loại tính một lần).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bán lại $1?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhận $1 ($2% giá mua).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn bế $1 rồi. Ra phố hay công viên, bé đi cùng bạn (đi bộ).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sửa $1?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "($1%) → như mới.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "như mới, bền hơn. Ấm cúng +$1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đặt ở $1 · ấm cúng +$2 nếu chỗ này chưa có món này. Bán lại được $3% giá.",
   "en": "",
   "pattern": true
  }

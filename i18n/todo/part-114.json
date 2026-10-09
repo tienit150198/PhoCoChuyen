@@ -1,5 +1,165 @@
 [
  {
+  "vi": "Cổng chợ",
+  "en": ""
+ },
+ {
+  "vi": "Ném vòng cổ chai",
+  "en": ""
+ },
+ {
+  "vi": "Lô tô",
+  "en": ""
+ },
+ {
+  "vi": "Hàng ăn vặt",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tám bầu cua",
+  "en": ""
+ },
+ {
+  "vi": "Bầu cua cá cọp đây, đặt đi bà con ơi!",
+  "en": ""
+ },
+ {
+  "vi": "Đặt lẹ đặt lẹ, chú lắc liền nè!",
+  "en": ""
+ },
+ {
+  "vi": "Ai chơi thì đặt, ai coi thì vỗ tay cho vui nha!",
+  "en": ""
+ },
+ {
+  "vi": "Con gì cũng có, ván nào cũng vui!",
+  "en": ""
+ },
+ {
+  "vi": "Anh Ba chiếu trong",
+  "en": ""
+ },
+ {
+  "vi": "Chơi lớn không? Chẵn lẻ, ăn một trả một.",
+  "en": ""
+ },
+ {
+  "vi": "Nói nhỏ thôi… ngó chừng phía ngoài giùm anh.",
+  "en": ""
+ },
+ {
+  "vi": "Xóc nè, xóc nè! Chẵn hay lẻ, đặt đi!",
+  "en": ""
+ },
+ {
+  "vi": "Cô Tư ném vòng",
+  "en": ""
+ },
+ {
+  "vi": "Ném vòng cổ chai đây! Không mất xu, trúng là có quà!",
+  "en": ""
+ },
+ {
+  "vi": "Canh cho kỹ, vòng ngay miệng chai thì ném!",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi lượt năm cái vòng, ném trúng chai nào ăn chai đó!",
+  "en": ""
+ },
+ {
+  "vi": "Trúng rồi! Tay ném chắc ghê!",
+  "en": ""
+ },
+ {
+  "vi": "Vô cổ chai luôn!",
+  "en": ""
+ },
+ {
+  "vi": "Đẹp! Thêm chai nữa nè!",
+  "en": ""
+ },
+ {
+  "vi": "Hụt chút xíu!",
+  "en": ""
+ },
+ {
+  "vi": "Trật rồi, canh lại nha!",
+  "en": ""
+ },
+ {
+  "vi": "Ui, vòng nảy ra mất!",
+  "en": ""
+ },
+ {
+  "vi": "Chơi với em nha! Anh chị đi trước đi.",
+  "en": ""
+ },
+ {
+  "vi": "Em mới tập chơi, nương tay giùm em nha!",
+  "en": ""
+ },
+ {
+  "vi": "Để em đếm coi…",
+  "en": ""
+ },
+ {
+  "vi": "Ô này nè… hông, ô kia!",
+  "en": ""
+ },
+ {
+  "vi": "Em rải bên này nha!",
+  "en": ""
+ },
+ {
+  "vi": "Hihi, em ăn được rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Ăn rồi nha!",
+  "en": ""
+ },
+ {
+  "vi": "Ui da, mất quân rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Ăn của em nhiều quá trời!",
+  "en": ""
+ },
+ {
+  "vi": "Em thắng rồi! Chơi ván nữa hông?",
+  "en": ""
+ },
+ {
+  "vi": "Anh chị giỏi quá! Chơi lại ván nữa nha!",
+  "en": ""
+ },
+ {
+  "vi": "Huề rồi! Ván sau phân thắng thua nha!",
+  "en": ""
+ },
+ {
+  "vi": "Ông chơi ô ăn quan từ hồi còn để chỏm. Ông đi trước nha.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn bày rồi, ông đi trước, cháu coi kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "Hừm… để ông tính.",
+  "en": ""
+ },
+ {
+  "vi": "Đi nước này coi sao.",
+  "en": ""
+ },
+ {
+  "vi": "Cháu coi kỹ nè.",
+  "en": ""
+ },
+ {
   "vi": "Quân này ông xin nha.",
   "en": ""
  },
@@ -1637,166 +1797,6 @@
  },
  {
   "vi": "🗓️ 1 chuyến/ngày",
-  "en": ""
- },
- {
-  "vi": "⛽ Không tốn xăng",
-  "en": ""
- },
- {
-  "vi": "Hôm nay đã đi chơi một chuyến. Mai lại đi tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Nhà xe còn trống",
-  "en": ""
- },
- {
-  "vi": "Trả đủ một lần, không vay. Có xe rồi, mỗi ngày đi chơi một chuyến cho tinh thần phơi phới.",
-  "en": ""
- },
- {
-  "vi": "🛞 Đang đi",
-  "en": ""
- },
- {
-  "vi": "Đi chiếc này",
-  "en": ""
- },
- {
-  "vi": "🎨 Sơn & biển tên",
-  "en": ""
- },
- {
-  "vi": "Không khoe xe trên hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Xe của bạn",
-  "en": ""
- },
- {
-  "vi": "Chiếc “đang đi” hiện trên hồ sơ, trước nhà và trong Phố nghề.",
-  "en": ""
- },
- {
-  "vi": "✓ Đã có trong nhà xe",
-  "en": ""
- },
- {
-  "vi": "Xem & chọn màu",
-  "en": ""
- },
- {
-  "vi": "Màu sơn",
-  "en": ""
- },
- {
-  "vi": "Màu:",
-  "en": ""
- },
- {
-  "vi": ". Đổi màu sau này không tốn xu.",
-  "en": ""
- },
- {
-  "vi": "VD: MÂY 01",
-  "en": ""
- },
- {
-  "vi": "Xe đạp không tốn phí giữ xe. Tiền xăng chỉ trả khi bạn đi chơi.",
-  "en": ""
- },
- {
-  "vi": "Tiền xăng chỉ trả khi bạn đi chơi.",
-  "en": ""
- },
- {
-  "vi": "Đã vào ví của bạn 👛",
-  "en": ""
- },
- {
-  "vi": "Nhận quà 💛",
-  "en": ""
- },
- {
-  "vi": "Chưa xong",
-  "en": ""
- },
- {
-  "vi": "Chỉ chỗ",
-  "en": ""
- },
- {
-  "vi": "Ở ngay trên",
-  "en": ""
- },
- {
-  "vi": "chạm",
-  "en": ""
- },
- {
-  "vi": "CHỨNG NHẬN TRONG PHỐ CÓ CHUYỆN",
-  "en": ""
- },
- {
-  "vi": "Mười hai bài ngắn từ thời Hùng Vương tới ngày nay. Đọc bài rồi trả lời hai câu hỏi; trả lời sai cứ thử lại, bài sẽ tô vàng câu cần đọc lại.",
-  "en": ""
- },
- {
-  "vi": "Tiến độ học lịch sử",
-  "en": ""
- },
- {
-  "vi": "· đã có chứng nhận",
-  "en": ""
- },
- {
-  "vi": "Học tiếp →",
-  "en": ""
- },
- {
-  "vi": "Bắt đầu học →",
-  "en": ""
- },
- {
-  "vi": "Thi lấy chứng nhận →",
-  "en": ""
- },
- {
-  "vi": "Đang mở bài học…",
-  "en": ""
- },
- {
-  "vi": "Trả lời nhanh",
-  "en": ""
- },
- {
-  "vi": "← Mục lục",
-  "en": ""
- },
- {
-  "vi": "Chọn một đáp án là nộp câu đó. Kết quả và lời giải hiện sau câu cuối.",
-  "en": ""
- },
- {
-  "vi": "Tiến độ bài thi",
-  "en": ""
- },
- {
-  "vi": "Bỏ bài thi",
-  "en": ""
- },
- {
-  "vi": "Thi lấy chứng nhận",
-  "en": ""
- },
- {
-  "vi": "Bài thi gần nhất",
-  "en": ""
- },
- {
-  "vi": "ĐỌC NGẮN · HỎI NHANH",
   "en": ""
  }
 ]

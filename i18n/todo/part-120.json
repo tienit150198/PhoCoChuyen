@@ -1,5 +1,201 @@
 [
  {
+  "vi": "Mọi người đang làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Đón khách theo cách của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay ghé ai nhỉ?",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nơi làm để đặt quyền ghé thăm và xem khách.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một chỗ làm để xem bạn ấy đang làm gì.",
+  "en": ""
+ },
+ {
+  "vi": "Đang tìm những cánh cửa đang mở…",
+  "en": ""
+ },
+ {
+  "vi": "Quầy riêng",
+  "en": ""
+ },
+ {
+  "vi": "Nghề hiện tại",
+  "en": ""
+ },
+ {
+  "vi": "Ghé xem dịch vụ và tình hình tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Xem chỗ của tôi",
+  "en": ""
+ },
+ {
+  "vi": "Xem thêm chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có chỗ làm có thể ghé ở đây. Bạn có thể xem Mọi người quanh phố.",
+  "en": ""
+ },
+ {
+  "vi": "Không gian ghé chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ đứng của bạn. Dùng phím mũi tên để di chuyển.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi chỗ đứng",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm của người chơi",
+  "en": ""
+ },
+ {
+  "vi": "QUẦY ĐÓN KHÁCH",
+  "en": ""
+ },
+ {
+  "vi": "GÓC LÀM VIỆC",
+  "en": ""
+ },
+ {
+  "vi": "· Bạn",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn ghé vào",
+  "en": ""
+ },
+ {
+  "vi": "👋 Chào",
+  "en": ""
+ },
+ {
+  "vi": "💗 Thả tim",
+  "en": ""
+ },
+ {
+  "vi": "👏 Cổ vũ",
+  "en": ""
+ },
+ {
+  "vi": "Bên trái",
+  "en": ""
+ },
+ {
+  "vi": "Ở giữa",
+  "en": ""
+ },
+ {
+  "vi": "Bên phải",
+  "en": ""
+ },
+ {
+  "vi": "Nói một câu tại đây…",
+  "en": ""
+ },
+ {
+  "vi": "Lời nói trong chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa kết nối phòng trực tiếp. Đơn dịch vụ vẫn cập nhật.",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở cửa chỗ làm…",
+  "en": ""
+ },
+ {
+  "vi": "Công việc hiện tại",
+  "en": ""
+ },
+ {
+  "vi": "Ai có thể ghé?",
+  "en": ""
+ },
+ {
+  "vi": "LÀM KHÁCH",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn cần gì?",
+  "en": ""
+ },
+ {
+  "vi": "Không bắt buộc",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn cho người phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn cho người làm",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên có thể phục vụ khi chủ tiệm vắng.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tiệm nhận đơn và tự thực hiện trước khi bạn nhận.",
+  "en": ""
+ },
+ {
+  "vi": "nhận đơn và tự làm trước khi bạn nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn dịch vụ để xem giá và gửi lời nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một việc để xem giá và gửi lời nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Nơi này chưa có dịch vụ nhận khách lúc này.",
+  "en": ""
+ },
+ {
+  "vi": "Nơi này chưa nhận khách lúc này.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đang ghé",
+  "en": ""
+ },
+ {
+  "vi": "Đơn của bạn tại đây",
+  "en": ""
+ },
+ {
+  "vi": "Khách đã nhận dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "đã ghé",
+  "en": ""
+ },
+ {
+  "vi": "Gửi lời trả lời",
+  "en": ""
+ },
+ {
   "vi": "Chưa có đánh giá dịch vụ.",
   "en": ""
  },
@@ -1786,46 +1982,6 @@
  },
  {
   "vi": "📢 Chào mừng $1 mới về ở gác nhà bà Tám tham gia Nhóm Cư Dân Phố! Nội quy nhỏ: nói năng lịch sự, không đăng số điện thoại, địa chỉ, không quảng cáo đầu tư lạ. Có việc gì cứ hỏi nhóm, bà con ở đây tốt bụng lắm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đứa nhỏ ở gác nhà tui đó bà con ơi, ngoan lắm, mới tới còn lạ nước lạ cái, mọi người thương giùm tui nghe. Mà $1 ơi tối nay xuống ăn canh chua với bà, bà nấu dư rồi 🍲",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "welcome to the group $1 ơi 🥳 hẻm mình drama dữ lắm, chuẩn bị bỏng ngô đi nha 🍿",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📢 Tổ dân phố xin chúc mừng $1! Mới về phố chưa lâu mà đã giúp được bao nhiêu nơi. Cả hẻm ai cũng nhắc: “$2”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hóng nè cả nhà ơi: nghe đâu $1 mới bắt đầu làm ở $2 đó 👀 Ai ghé ủng hộ thì ghé nha, người trong hẻm mình mà!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà khoe chút nghe bà con: đứa nhỏ ở gác nhà bà giờ đã lên tay nghề ở $1 rồi đó 🥹 Mới hôm nào còn lóng ngóng, giờ người ta khen quá trời.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ Dạo này có người nhắn rủ góp tiền vào “$1”, hứa lãi 30% mỗi tuần, mời thêm người còn được thưởng. Anh nói thẳng: LỪA ĐẢO. Không ai trả lãi như vậy đâu. Mọi người đừng chuyển tiền.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghe gì chưa cả nhà ơi 😱 Cái dự án “$1” sập rồi đó, trang web đóng cửa, nhóm chat bị xóa sạch. Nghe đâu có người mất mấy chục triệu… Tội nghiệp ghê.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chào mừng đồng nghiệp văn phòng mới của phố mình 👔 $1 vừa được nhận vào $2 rồi đó mọi người. Thật ra đi làm văn phòng có nhiều cái phải học lắm: email, họp hành, báo cáo… để anh chỉ dần cho nha 🤓",
   "en": "",
   "pattern": true
  }

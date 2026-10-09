@@ -1,5 +1,45 @@
 [
  {
+  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế$4, đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "· $1 người ngồi",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 gọi: $2$3 · $4.$5 $6",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã rửa $1 cốc.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Comeback: Jewel tối đa $1 bản/người, POB tặng kèm PINK STATIC.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📦 Đếm kho: Jewel còn $1 bản · POB còn $2 bộ · ống poster còn $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚫 Dựng biển: “Bản giới hạn tối đa $1 bản/người”.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Kho chỉ còn chỗ cho $1 bản Jewel.",
   "en": "",
   "pattern": true
@@ -2206,46 +2246,6 @@
  },
  {
   "vi": "Thuê xe dọn nhà $1 xu: bạn còn thiếu $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thuê xe dọn về $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dọn về ở chung $1 của $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã dọn về ở chung $1 của $2, xe chở đồ $3 xu. $4 giờ để trống. $5",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đang cho thuê: báo khách trả nhà trước rồi mới dọn về được nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dọn về $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã dọn về $1, xe chở đồ $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả phòng, nhận lại $1 xu tiền cọc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đang có người thuê rồi.",
   "en": "",
   "pattern": true
  }

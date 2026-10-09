@@ -1,5 +1,45 @@
 [
  {
+  "vi": "Thuê xe dọn về $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dọn về ở chung $1 của $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã dọn về ở chung $1 của $2, xe chở đồ $3 xu. $4 giờ để trống. $5",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đang cho thuê: báo khách trả nhà trước rồi mới dọn về được nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dọn về $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã dọn về $1, xe chở đồ $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã trả phòng, nhận lại $1 xu tiền cọc.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đang có người thuê rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đăng cho thuê $1, $2 xu/tháng; đang tìm khách.",
   "en": "",
   "pattern": true

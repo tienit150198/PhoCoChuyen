@@ -1,5 +1,201 @@
 [
  {
+  "vi": "Tạm dừng: kiểm hàng và vệ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Đóng cửa chờ chủ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thuê ai: tự đứng quầy nhé",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có người đứng quầy",
+  "en": ""
+ },
+ {
+  "vi": "Mất cả két",
+  "en": ""
+ },
+ {
+  "vi": "Trộm lấy",
+  "en": ""
+ },
+ {
+  "vi": "Đã báo công an",
+  "en": ""
+ },
+ {
+  "vi": "Đóng tiền",
+  "en": ""
+ },
+ {
+  "vi": "Ghé thu két kẻo quầy đóng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Trang trí",
+  "en": ""
+ },
+ {
+  "vi": "📦 Hàng",
+  "en": ""
+ },
+ {
+  "vi": "💼 Vốn",
+  "en": ""
+ },
+ {
+  "vi": "🛠️ Nâng cấp",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Sổ quầy & an toàn",
+  "en": ""
+ },
+ {
+  "vi": "Két",
+  "en": ""
+ },
+ {
+  "vi": "Ai bán, lãi tính thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "ngày qua",
+  "en": ""
+ },
+ {
+  "vi": "Mở lại quầy",
+  "en": ""
+ },
+ {
+  "vi": "Thu két",
+  "en": ""
+ },
+ {
+  "vi": "Két đang trống",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên tự bán cả khi bạn offline, tới khi hết hàng hoặc hết tiền vận hành. Chọn “Tự đứng quầy” để tự phục vụ và giao hàng; chưa thuê ai thì đóng quầy không sinh doanh thu. Ca thuê người chơi được ghi riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Lời ngày = doanh thu − tiền hàng (kể cả hàng hư) − lương − điện − phí online/giao hàng (nếu có). Lượng bán tùy thời tiết, khách, menu, lượng hàng và sức phục vụ. Chuyện phát sinh trong ca cũng có thể tăng hoặc giảm lời. Sổ quầy đã trừ thuê chỗ theo ngày có bán, vật tư, bảo vệ, thuế và thiệt hại sự cố. Quầy tự động tính hàng và chi phí cho phần thời gian thực sự hoạt động, kể cả khi bạn offline; không tự rút ví hay ngân hàng khi thiếu vốn.",
+  "en": ""
+ },
+ {
+  "vi": "két/vốn quầy",
+  "en": ""
+ },
+ {
+  "vi": "Lương đã giữ trước từ nguồn ghi trên biên nhận. Số vào két/ví chỉ trừ thuế; không trừ lương, hàng hay thuê chỗ lần nữa. Lãi ca tính cả khoản lương đã giữ. Biên nhận tách khỏi ngày tự bán và được tính vào thuế chung của chủ.",
+  "en": ""
+ },
+ {
+  "vi": "Vào ví",
+  "en": ""
+ },
+ {
+  "vi": "Vào két",
+  "en": ""
+ },
+ {
+  "vi": "Hàng, lương, điện, giao hàng",
+  "en": ""
+ },
+ {
+  "vi": "Thuê chỗ",
+  "en": ""
+ },
+ {
+  "vi": "Vật tư & vệ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Thuế GTGT (game)",
+  "en": ""
+ },
+ {
+  "vi": "Thuế thu nhập (game)",
+  "en": ""
+ },
+ {
+  "vi": "Thiệt hại / xử lý vi phạm",
+  "en": ""
+ },
+ {
+  "vi": "Lời sau mọi chi phí",
+  "en": ""
+ },
+ {
+  "vi": "Bán một ngày để có sổ thu chi.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm hàng & vệ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Ngừng bán hàng hỏng; kiểm tra an toàn đạt khi bật.",
+  "en": ""
+ },
+ {
+  "vi": "Lưu chứng từ",
+  "en": ""
+ },
+ {
+  "vi": "Lưu hóa đơn, sổ hàng để đối chiếu khi kiểm tra.",
+  "en": ""
+ },
+ {
+  "vi": "/ ngày có bán: giảm 20% khả năng bị trộm và giảm thiệt hại trộm cướp.",
+  "en": ""
+ },
+ {
+  "vi": "Trộm két",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra vệ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra chứng từ",
+  "en": ""
+ },
+ {
+  "vi": "Bị đòi tiền bảo kê",
+  "en": ""
+ },
+ {
+  "vi": "đang chờ xử lý",
+  "en": ""
+ },
+ {
+  "vi": "đạt, không phạt",
+  "en": ""
+ },
+ {
+  "vi": "có vi phạm",
+  "en": ""
+ },
+ {
+  "vi": "đã khắc phục",
+  "en": ""
+ },
+ {
+  "vi": "đã lưu bằng chứng và báo công an",
+  "en": ""
+ },
+ {
+  "vi": "đã từ chối",
+  "en": ""
+ },
+ {
   "vi": "Lưu bằng chứng & báo công an",
   "en": ""
  },
@@ -1601,202 +1797,6 @@
  },
  {
   "vi": "đang giơ tay sẽ hạ tay xuống.",
-  "en": ""
- },
- {
-  "vi": "Thu phiếu cuối tiết",
-  "en": ""
- },
- {
-  "vi": "Giống hệt",
-  "en": ""
- },
- {
-  "vi": "So bài với đáp án: đúng → 🌟 Khen cụ thể · sai hoặc chép nhầm → 🪜 Gợi ý một bước · ghi \"Giống hệt phiếu của…\" → 🤝 Gặp riêng. Chấm hết các phiếu rồi bấm Khép tiết.",
-  "en": ""
- },
- {
-  "vi": "Phiếu tiếp theo:",
-  "en": ""
- },
- {
-  "vi": "Phiếu tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Khép tiết, nhận thù lao",
-  "en": ""
- },
- {
-  "vi": "Gốm",
-  "en": ""
- },
- {
-  "vi": "Bờ sông",
-  "en": ""
- },
- {
-  "vi": "Ăn vặt",
-  "en": ""
- },
- {
-  "vi": "🧭 Dẫn đoàn",
-  "en": ""
- },
- {
-  "vi": "Chọn 3–5 điểm theo thứ tự đi, có một chỗ nghỉ chân (🪑)",
-  "en": ""
- },
- {
-  "vi": "Nắng gắt: tối đa 2 điểm ngoài trời · mưa, gió: có điểm đóng cửa",
-  "en": ""
- },
- {
-  "vi": "Mỗi người có một điều mong (biểu tượng cạnh tên): ghé nơi có biểu tượng ấy",
-  "en": ""
- },
- {
-  "vi": "Người lớn tuổi ngại đồi dốc",
-  "en": ""
- },
- {
-  "vi": "Xử lý chuyện của đoàn trước khi đi tiếp",
-  "en": ""
- },
- {
-  "vi": "Kể chuyện hợp số đông (số người thích cạnh mỗi cách kể) và hợp nơi đang đứng",
-  "en": ""
- },
- {
-  "vi": "Chi tiết từng người",
-  "en": ""
- },
- {
-  "vi": "đóng,",
-  "en": ""
- },
- {
-  "vi": "🚧 Đóng",
-  "en": ""
- },
- {
-  "vi": "🤒 Người ốm trước",
-  "en": ""
- },
- {
-  "vi": "Chạm 3–5 điểm",
-  "en": ""
- },
- {
-  "vi": "Thời tiết",
-  "en": ""
- },
- {
-  "vi": "↶ Chọn lại lộ trình",
-  "en": ""
- },
- {
-  "vi": "Quyết cho người ốm trước",
-  "en": ""
- },
- {
-  "vi": "🤒 Quyết cho người ốm",
-  "en": ""
- },
- {
-  "vi": "Điểm",
-  "en": ""
- },
- {
-  "vi": "Chọn điểm",
-  "en": ""
- },
- {
-  "vi": "Chọn lại cho hợp đoàn",
-  "en": ""
- },
- {
-  "vi": "Lộ trình chưa hợp",
-  "en": ""
- },
- {
-  "vi": "Sửa lộ trình",
-  "en": ""
- },
- {
-  "vi": "Cắm sạc loa qua đêm",
-  "en": ""
- },
- {
-  "vi": "Đặt cơm trưa cho đoàn",
-  "en": ""
- },
- {
-  "vi": "🍚 Đặt cơm trưa cho đoàn",
-  "en": ""
- },
- {
-  "vi": "🏡 Báo homestay tối nay",
-  "en": ""
- },
- {
-  "vi": "⚠️ Chưa đủ người",
-  "en": ""
- },
- {
-  "vi": "Đã kể",
-  "en": ""
- },
- {
-  "vi": "Kể chuyện cho đoàn nghe",
-  "en": ""
- },
- {
-  "vi": "🎙️ Chọn cách kể",
-  "en": ""
- },
- {
-  "vi": "🎙️ Chọn cách kể chuyện",
-  "en": ""
- },
- {
-  "vi": "Đếm đoàn, về bến",
-  "en": ""
- },
- {
-  "vi": "Đếm đoàn, đi tiếp",
-  "en": ""
- },
- {
-  "vi": "Khép chuyến, nhận thù lao",
-  "en": ""
- },
- {
-  "vi": "Ẩn bảng tin",
-  "en": ""
- },
- {
-  "vi": "khách để lại tip",
-  "en": ""
- },
- {
-  "vi": "món quà cảm ơn",
-  "en": ""
- },
- {
-  "vi": "Vào tiệm sáng đèn",
-  "en": ""
- },
- {
-  "vi": "Đi tới một tiệm đang sáng để làm",
-  "en": ""
- },
- {
-  "vi": "Thi chứng chỉ · có việc cần làm",
-  "en": ""
- },
- {
-  "vi": "🕶️ Chợ đen",
   "en": ""
  }
 ]

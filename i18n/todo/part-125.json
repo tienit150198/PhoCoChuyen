@@ -1,5 +1,45 @@
 [
  {
+  "vi": "🙅 “Cán bộ không nhận gì của dân.” $1 rụt tay lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✋ Anh Định kéo tay bạn lại: “$1”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giao ban, làm trước: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📋 Giao ban xong. Việc đầu tiên: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bàn cư trú: $1 kẹp phong bì trong hồ sơ, đã trả lại, ghi sổ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 chưa đúng kìa. Hướng dẫn bổ sung, đừng nhận vội.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ còn thiếu ($1) mà vẫn nhận, chị Hằng phải gọi người ta lên lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bàn cư trú: nhận hồ sơ tạm trú của $1 (còn thiếu giấy, phải gọi lại).",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bàn cư trú: nhận hồ sơ tạm trú của $1, đủ giấy tờ.",
   "en": "",
   "pattern": true
@@ -2206,46 +2246,6 @@
  },
  {
   "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế$4, đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng. $5",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế$4, đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "· $1 người ngồi",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 gọi: $2$3 · $4.$5 $6",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã rửa $1 cốc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Comeback: Jewel tối đa $1 bản/người, POB tặng kèm PINK STATIC.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📦 Đếm kho: Jewel còn $1 bản · POB còn $2 bộ · ống poster còn $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚫 Dựng biển: “Bản giới hạn tối đa $1 bản/người”.",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,45 @@
 [
  {
+  "vi": "$1 ở $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Cất $2 vào khay nhỏ trên kệ. Lát báo $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Bế Mướp sang phòng ngủ, khép cửa. Mướp ngáp một cái rồi ngủ tiếp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Nhấc $2 ra, đặt lên khăn mềm ở góc an toàn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Đặt $2 lại đúng chỗ cũ, xoay đúng mặt như lúc đầu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi dặn lau kỹ $1 mà vẫn còn bẩn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "và $1 chỗ nữa",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 vẫn bẩn$3.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 để dưới góc, không đặt lại chỗ cũ.",
   "en": "",
   "pattern": true
@@ -2206,46 +2246,6 @@
  },
  {
   "vi": "🛒 Mua $1 phần $2 · $3 xu. Ví tiền chợ còn $4 xu.$5",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "↩️ Trả lại $1, nhận lại $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🙏 $1 cười: “Thôi bớt cho con $2 xu, mai ghé nữa nghen.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🙏 $1 lắc đầu: “Giá này rẻ rồi con, cô bán đúng giá mà.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 $1 ghi hóa đơn: $2 xu, ký tên rõ ràng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Còn chưa mua: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏠 Xách giỏ về nhà: chợ hết $1 xu, ví tiền chợ còn $2 xu. Vo gạo bắc nồi cơm trước nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍚 Vo gạo hai nước, đổ nước $1, bấm nút nồi cơm. Chừng $2 giây nữa cơm chín.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🥢 Bày $1 bộ chén đũa quanh mâm.",
   "en": "",
   "pattern": true
  }

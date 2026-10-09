@@ -2,16 +2,24 @@
  *
  * Its own dialog (like the Chợ đen's), opened by itself when api.state.jail appears (app.js calls sync() on every
  * state) and with data-action="jail"; closing it leaves a small chip ("🚔 Trại · còn N ngày") that opens it again.
- * The cell and the yard, the days left, today's three công ích tasks as small tap/drag games, "🤝 Nhờ bạn bảo lãnh"
- * (POST /api/marriage/jail_ask: every friend gets a request, a friend pays) and "🌙 Hết một ngày trong trại"
- * (jail_end: the life day moves on without work). Every rule and number is the server's: the tasks' layouts come in
- * the state (pz), the answers are checked there (jail_task_done), the day's end waits for `ready`. No odds anywhere.
- * While jailed the page asks for the state now and then (a friend's bail lands on the server). Styles: /css/jail.css. */
+ * Owner 09/10 "vô tù có map, di chuyển này kia được nữa đi chứ đừng mỗi cái hình": the screen is the camp itself, a
+ * place to walk (./jail-map.js, scenes/jail-place.js). Each công ích task is done at its own corner (🧹 the yard's
+ * cây bàng, 🍚 the căng tin's counter, 📚 the library shelf…): walk up, its panel opens over the camp with the small
+ * tap/drag game. The bunk ends the jail day ("🌙 Hết một ngày trong trại", jail_end: the life day moves on without
+ * work), the phòng thăm gặp asks the friends for bail (POST /api/marriage/jail_ask: every friend gets a request, a
+ * friend pays), the cán bộ trực has the days, the rules and the ways out to the chats, the Cổng trại the countdown.
+ * The chips under the camp go to each place (the keyboard's and a screen reader's way). A browser that cannot draw
+ * the camp (no canvas / ResizeObserver) gets the card page as before. Every rule and number is the server's: the
+ * tasks' layouts come in the state (pz), the answers are checked there (jail_task_done), the day's end waits for
+ * `ready`. No odds anywhere. While jailed the page asks for the state now and then (a friend's bail lands on the
+ * server). Styles: /css/jail.css. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {setup as mapSetup,canMap} from './jail-map.js';
+import {PLACES,TASK_SPOT,TASK_ICON} from '../scenes/jail-place.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
-const S={env:null,dlg:null,chip:null,id:null,game:null,busy:false,flash:null,skew:0,tick:0,poll:0,sure:false};
+const S={env:null,dlg:null,chip:null,id:null,game:null,busy:false,flash:null,skew:0,tick:0,poll:0,sure:false,map:null,mapOn:false,panel:null};
 const J=()=>S.env?.api?.state?.jail||null;
 const nowMs=()=>Date.now()+S.skew;
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
@@ -29,9 +37,11 @@ const ensureCss=()=>cssReady??=new Promise(done=>{
 /* ---- the dialog and the chip ---- */
 function dialog(){
   if(S.dlg)return S.dlg;
+  S.mapOn=canMap();
   const d=document.createElement('dialog');
-  d.className='sheet v4-sheet medium jl-sheet';d.setAttribute('aria-labelledby','jl-title');
-  d.innerHTML='<div class="jl-root"></div>';
+  d.className=S.mapOn?'sheet v4-sheet jl-sheet jl-map':'sheet v4-sheet medium jl-sheet';d.setAttribute('aria-labelledby','jl-title');
+  d.innerHTML=S.mapOn?`<div class="jl-root"><div class="jl-headslot"></div><div class="jl-stage"><div class="jl-panel" role="region" aria-live="polite" hidden></div></div>
+    <nav class="jl-here" aria-label="Các chỗ trong trại"></nav></div>`:'<div class="jl-root"></div>';
   document.body.append(d);
   d.addEventListener('click',e=>{
     const el=e.target.closest('[data-jl]');if(!el||!d.contains(el)||el.disabled)return;
@@ -39,8 +49,12 @@ function dialog(){
   });
   d.addEventListener('pointerdown',paintDown);
   d.addEventListener('pointermove',paintMove);
-  d.addEventListener('close',()=>{clearInterval(S.tick);S.tick=0;S.flash=null;chip();});
-  S.dlg=d;return d;
+  d.addEventListener('close',()=>{clearInterval(S.tick);S.tick=0;S.flash=null;S.map?.off();chip();});
+  S.dlg=d;
+  if(S.mapOn)S.map=mapSetup({J,state:()=>({api:S.env?.api,skew:S.skew}),panelBox:()=>d.querySelector('.jl-panel'),
+    arrive:s=>{S.panel=s.id;S.sure=false;if(!S.game||S.panel!=='task:'+S.game.task)S.flash=null;render();d.querySelector('.jl-panel')?.scrollTo?.(0,0);},
+    leave:()=>{if(S.panel){S.panel=null;S.sure=false;render();}}});
+  return d;
 }
 function chip(){
   const j=J(),show=!!j&&!S.dlg?.open;
@@ -57,6 +71,7 @@ export async function openJail(env){
   for(const x of document.querySelectorAll('dialog[open]'))if(x!==d&&!String(x.id||'').startsWith('tut'))try{x.close();}catch{/* already closing */}
   if(!d.open){d.showModal();d.scrollTop=0;}
   render();chip();
+  if(S.mapOn)S.map.mount(d.querySelector('.jl-stage'));
   clearInterval(S.tick);S.tick=setInterval(tick,1000);
 }
 /** Every state (app.js): open on a new sentence, redraw, say goodbye when it is over. */
@@ -65,13 +80,14 @@ export function sync(env){
   const j=J();
   if(j){
     if(typeof j.now==='number')S.skew=j.now*1000-Date.now();
-    if(S.id!==j.id){S.id=j.id;S.game=null;if(!document.querySelector('dialog.fh-sheet[open]'))openJail(env);}   // the Chợ đen's arrest card goes first; its button opens the camp
+    if(S.id!==j.id){S.id=j.id;S.game=null;S.panel=null;if(!document.querySelector('dialog.fh-sheet[open]'))openJail(env);}   // the Chợ đen's arrest card goes first; its button opens the camp
     else if(S.dlg?.open&&!S.busy)render();
     if(S.game&&!j.tasks.some(t=>t.id===S.game.task&&!t.done))S.game=null;
+    S.map?.redraw();
     chip();poll(true);
     return;
   }
-  if(S.id){S.id=null;S.game=null;poll(false);if(S.dlg?.open)S.dlg.close();chip();env.toast?.('🎉 Bạn đã ra khỏi trại tạm giữ. Về nhà thôi!','good');}
+  if(S.id){S.id=null;S.game=null;S.panel=null;poll(false);if(S.dlg?.open)S.dlg.close();chip();env.toast?.('🎉 Bạn đã ra khỏi trại tạm giữ. Về nhà thôi!','good');}
 }
 /** A friend's bail happens on the server: look again now and then while inside. */
 function poll(on){
@@ -84,7 +100,7 @@ function tick(){
   const j=J();if(!j)return;
   S.dlg.querySelectorAll('[data-jl-count]').forEach(el=>{
     const k=el.dataset.jlCount,left=((k==='day'?j.ready:k==='ask'?j.ask_next:(S.game?.ready||0))*1000-nowMs())/1000;
-    if(left<=0){if(el.dataset.done!=='1'){el.dataset.done='1';render();}return;}
+    if(left<=0){if(el.dataset.done!=='1'){el.dataset.done='1';render();S.map?.redraw();}return;}
     el.textContent=mmss(left);
   });
 }
@@ -92,13 +108,16 @@ function tick(){
 /* ---- the page ---- */
 function render(){
   if(!S.dlg)return;
+  if(S.mapOn){renderMap();return;}
   const root=S.dlg.querySelector('.jl-root'),y=S.dlg.scrollTop;
   root.innerHTML=page();
   S.dlg.scrollTop=y;
 }
 const flash=()=>`<p class="jl-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
 function head(j){
-  return `<header class="jl-head"><span class="jl-badge" aria-hidden="true">🚔</span><div class="grow"><span class="eyebrow">${esc(j?.why_text||'Trại tạm giữ')}</span><h2 id="jl-title">Trại tạm giữ phường</h2></div>
+  const done=j?j.tasks.filter(t=>t.done).length:0,all=j?j.tasks.length:0;
+  const sub=j?`<p class="jl-sub"><b>Còn ${j.left} ngày</b> · <span>Ngày ${j.day} trong trại</span> · <span>Công ích ${done}/${all}</span></p>`:'';
+  return `<header class="jl-head"><span class="jl-badge" aria-hidden="true">🚔</span><div class="grow"><span class="eyebrow">${esc(j?.why_text||'Trại tạm giữ')}</span><h2 id="jl-title">Trại tạm giữ phường</h2>${S.mapOn?sub:''}</div>
     <button class="icon-btn" type="button" data-jl="close" aria-label="Thu nhỏ">${icon('x',21)}</button></header>`;
 }
 function page(){
@@ -107,28 +126,77 @@ function page(){
   if(S.game)return head(j)+`<div class="sheet-body jl-body">${flash()}${gameView(j)}</div>`;
   return head(j)+`<div class="sheet-body jl-body">${scene(j)}${flash()}${tasks(j)}${actions(j)}${rules()}</div>`;
 }
+/* ---- the camp (map mode): the header, the chips to each place, the panel of the place the player stands at ---- */
+function renderMap(){
+  const j=J(),d=S.dlg;
+  const hs=d.querySelector('.jl-headslot'),h=head(j);if(hs.dataset.k!==h){hs.dataset.k=h;hs.innerHTML=h;}
+  const here=d.querySelector('.jl-here'),hh=j?chips(j):'';if(here.dataset.k!==hh){here.dataset.k=hh;here.innerHTML=hh;}
+  const box=d.querySelector('.jl-panel'),ph=j&&S.panel?panelHTML(j,S.panel):'';
+  if(!ph){box.hidden=true;box.innerHTML='';box.dataset.k='';return;}
+  if(box.dataset.k!==ph){box.dataset.k=ph;box.innerHTML=ph;}
+  box.hidden=false;
+}
+function chips(j){
+  const go=(id,label,cls='')=>`<button type="button" class="jl-spot${cls}" data-jl="spot" data-id="${esc(id)}">${label}</button>`;
+  return j.tasks.map(t=>go('task:'+t.id,`<span aria-hidden="true">${t.emoji}</span> ${esc(t.name)}${t.done?' <i aria-label="đã xong">✓</i>':''}`,t.done?' done':' task')).join('')
+    +go('bunk','<span aria-hidden="true">🌙</span> Giường · hết ngày')+go('visit','<span aria-hidden="true">🤝</span> Thăm gặp')
+    +go('guard','<span aria-hidden="true">👮</span> Cán bộ trực')+go('gate','<span aria-hidden="true">🚪</span> Cổng trại');
+}
+const top=(emoji,title,sub='')=>`<div class="jl-p-head"><span class="jl-p-emoji" aria-hidden="true">${emoji}</span><div class="grow"><b>${esc(title)}</b>${sub?`<small>${sub}</small>`:''}</div>
+  <button type="button" class="icon-btn small" data-jl="shut" aria-label="Đóng">${icon('x',16)}</button></div>`;
+function dots(j){return `<span class="jl-dots" aria-hidden="true">${Array.from({length:j.days},(_,i)=>`<i class="${i<j.days-j.left?'on':''}"></i>`).join('')}</span>`;}
+function panelHTML(j,id){
+  if(id.startsWith('task:')){
+    const task=id.slice(5),t=j.tasks.find(x=>x.id===task),place=PLACES[TASK_SPOT[task]];
+    if(S.game&&S.game.task===task&&t&&!t.done)return flash()+gameView(j);
+    if(!t)return top(place?.icon||TASK_ICON[task]||'📍',place?.name||'')+`<p>Hôm nay chỗ này không có việc công ích của bạn. Việc hôm nay:</p>
+      <div class="jl-chips">${j.tasks.map(x=>`<button type="button" class="jl-pick${x.done?' done':''}" data-jl="spot" data-id="task:${esc(x.id)}">${x.emoji} ${esc(x.name)}${x.done?' ✓':''}</button>`).join('')}</div>`;
+    return top(t.emoji,t.name,esc(place?.name||''))+flash()+`<p>${esc(t.hint)}</p>`
+      +(t.done?'<p class="jl-done">✓ Việc này xong rồi. Đi làm việc khác nhé.</p>':`<div class="jl-p-acts">${btn(S.game?.task===task?'Làm tiếp':'Bắt tay vào làm','start',{task},'primary',S.busy?' disabled':'')}</div>`);
+  }
+  if(id==='bunk'){
+    const done=j.tasks.filter(t=>t.done).length,all=done===j.tasks.length;
+    const note=j.left<=1?'Còn một ngày: hết ngày là được về.':all?`Đủ ${j.tasks.length} việc rồi: hết ngày này được tính hai ngày.`:`Công ích hôm nay ${done}/${j.tasks.length}. Làm đủ thì hết ngày được tính hai ngày.`;
+    return top('🌙','Giường trong buồng',`Ngày ${j.day} trong trại`)+flash()+`<p class="jl-note">${note}</p>${endButton(j)}
+      <p class="jl-why">Hết ngày: qua một ngày sống, không đi làm. Tiền phòng vẫn tính, cơm trại miễn phí.</p>`;
+  }
+  if(id==='visit')return top('🤝','Phòng thăm gặp')+flash()+`<p>Gọi cho bạn bè qua ô kính. Bạn bè bảo lãnh thì trả ${xu(j.bail)} từ ví của họ, bạn được về ngay.</p>${askButton(j)}`;
+  if(id==='guard')return top('👮','Bàn cán bộ trực',`${esc(j.why_text)} · án ${j.days} ngày`)+flash()
+    +`<p class="jl-left"><b>Còn ${j.left} ngày</b> ${dots(j)}</p>${tasks(j)}${rules()}`;
+  if(id==='gate'){const done=j.tasks.filter(t=>t.done).length;
+    return top('🚪','Cổng trại',`Còn ${j.left} ngày`)+`<p class="jl-left"><b>Còn ${j.left} ngày nữa là ra cổng</b> ${dots(j)}</p>
+      <ul class="jl-ways"><li><span aria-hidden="true">🧹</span> Làm đủ ${j.tasks.length} việc công ích trong ngày (${done}/${j.tasks.length}): hết ngày được tính hai ngày.</li>
+        <li><span aria-hidden="true">🤝</span> Bạn bè bảo lãnh ${xu(j.bail)}: về ngay.</li></ul>
+      <div class="jl-p-acts">${btn('🌙 Về giường hết ngày','spot',{id:'bunk'},'cream small')}${btn('🤝 Ra phòng thăm gặp','spot',{id:'visit'},'cream small')}</div>`;}
+  return '';
+}
+function endButton(j){
+  const wait=(j.ready*1000-nowMs())/1000;
+  return wait>0?btn(`🌙 Hết ngày sau <span data-jl-count="day">${mmss(wait)}</span>`,'end',{},'cream big full',' disabled')
+    :btn(S.sure?'🌙 Chắc chưa? Hết ngày nhé':'🌙 Hết một ngày trong trại','end',{},'primary big full',S.busy?' disabled':'');
+}
+function askButton(j){
+  const ask=j.ask_next?(j.ask_next*1000-nowMs())/1000:0;
+  return ask>0?btn(`🤝 Đã nhờ bạn bè · nhờ lại sau <span data-jl-count="ask">${mmss(ask)}</span>`,'ask',{},'ghost full',' disabled')
+    :btn(`🤝 Nhờ bạn bảo lãnh`,'ask',{},'primary full',S.busy?' disabled':'');
+}
 function scene(j){
-  const dots=Array.from({length:j.days},(_,i)=>`<i class="${i<j.days-j.left?'on':''}"></i>`).join('');
   return `<section class="jl-scene" aria-label="Phòng giam và sân trại"><div class="jl-cell"><div class="jl-window" aria-hidden="true"><span class="jl-sun"></span></div>
       <div class="jl-bars" aria-hidden="true"></div><div class="jl-bunk" aria-hidden="true"><span>🛏️</span></div><div class="jl-me" aria-hidden="true">🧑</div></div>
     <div class="jl-yard" aria-hidden="true"><span class="jl-tree">🌳</span><span class="jl-flag">🚩</span><span class="jl-guard">👮</span><span class="jl-broom">🧹</span></div>
-    <div class="jl-days" role="status"><b>Còn ${j.left} ngày</b><small>Ngày ${j.day} trong trại · án ${j.days} ngày</small><span class="jl-dots" aria-hidden="true">${dots}</span></div></section>`;
+    <div class="jl-days" role="status"><b>Còn ${j.left} ngày</b><small>Ngày ${j.day} trong trại · án ${j.days} ngày</small>${dots(j)}</div></section>`;
 }
 function tasks(j){
-  const done=j.tasks.filter(t=>t.done).length,all=done===j.tasks.length;
+  const done=j.tasks.filter(t=>t.done).length,all=done===j.tasks.length,n=j.tasks.length;
+  const doIt=t=>S.mapOn?btn('Đi làm','spot',{id:'task:'+t.id},'primary small'):btn('Làm','start',{task:t.id},'primary small',S.busy?' disabled':'');
   const rows=j.tasks.map(t=>`<li class="jl-task${t.done?' done':''}"><span class="jl-ic" aria-hidden="true">${t.emoji}</span><span class="grow"><b>${esc(t.name)}</b><small>${esc(t.hint)}</small></span>
-      ${t.done?'<span class="tag green">Xong ✓</span>':btn('Làm','start',{task:t.id},'primary small',S.busy?' disabled':'')}</li>`).join('');
-  const note=j.left<=1?'Còn một ngày: hết ngày là được về.':all?'Đủ ba việc rồi: hết ngày này được tính hai ngày.':'Làm đủ ba việc công ích hôm nay: hết ngày được tính hai ngày.';
-  return `<section class="jl-card"><h3>🧹 Công ích hôm nay <small>${done}/${j.tasks.length}</small></h3><ul class="jl-tasks">${rows}</ul><p class="jl-note">${note}</p></section>`;
+      ${t.done?'<span class="tag green">Xong ✓</span>':doIt(t)}</li>`).join('');
+  const note=j.left<=1?'Còn một ngày: hết ngày là được về.':all?`Đủ ${n} việc rồi: hết ngày này được tính hai ngày.`:`Làm đủ ${n} việc công ích hôm nay: hết ngày được tính hai ngày.`;
+  return `<section class="jl-card"><h3>🧹 Công ích hôm nay <small>${done}/${n}</small></h3><ul class="jl-tasks">${rows}</ul><p class="jl-note">${note}</p></section>`;
 }
 function actions(j){
-  const wait=(j.ready*1000-nowMs())/1000,ask=j.ask_next?(j.ask_next*1000-nowMs())/1000:0;
-  const end=wait>0?btn(`🌙 Hết ngày sau <span data-jl-count="day">${mmss(wait)}</span>`,'end',{},'cream big full',' disabled')
-    :btn(S.sure?'🌙 Chắc chưa? Hết ngày nhé':'🌙 Hết một ngày trong trại','end',{},'primary big full',S.busy?' disabled':'');
-  const bail=ask>0?btn(`🤝 Đã nhờ bạn bè · nhờ lại sau <span data-jl-count="ask">${mmss(ask)}</span>`,'ask',{},'ghost full',' disabled')
-    :btn(`🤝 Nhờ bạn bảo lãnh`,'ask',{},'cream full',S.busy?' disabled':'');
-  return `<section class="jl-card jl-go">${end}<p class="jl-why">Hết ngày: qua một ngày sống, không đi làm. Tiền phòng vẫn tính, cơm trại miễn phí.</p>
-    ${bail}<p class="jl-why">Bạn bè bảo lãnh thì trả ${xu(j.bail)} từ ví của họ, bạn được về ngay.</p></section>`;
+  return `<section class="jl-card jl-go">${endButton(j)}<p class="jl-why">Hết ngày: qua một ngày sống, không đi làm. Tiền phòng vẫn tính, cơm trại miễn phí.</p>
+    ${askButton(j)}<p class="jl-why">Bạn bè bảo lãnh thì trả ${xu(j.bail)} từ ví của họ, bạn được về ngay.</p></section>`;
 }
 function rules(){
   return `<section class="jl-card jl-rules"><h3>📋 Nội quy trại</h3><ul>
@@ -136,6 +204,7 @@ function rules(){
       <li><span aria-hidden="true">✅</span> Vẫn nhắn tin, xem bạn bè, đọc sách, học bài, chỉnh cài đặt và góp ý được.</li></ul>
     <div class="jl-links">${btn('💬 Nhắn tin','go',{to:'liveChat'},'ghost small')}${btn('👥 Bạn bè','go',{to:'friends'},'ghost small')}${btn('⚙️ Cài đặt','go',{to:'settings'},'ghost small')}</div></section>`;
 }
+
 
 /* ---- the công ích games: tap and drag, the answer checked by the server ---- */
 const TITLE={sweep:'🧹 Quét sân trại',plant:'🌱 Trồng cây ven đường',rice:'🍚 Phụ bếp chia cơm',paint:'🎨 Sơn lại tường',books:'📚 Xếp sách thư viện trại'};
@@ -231,13 +300,13 @@ async function command(action,payload){
 async function start(task){
   S.flash=null;
   const r=await command('jail_task_start',{task});
-  if(r?.jail?.pz){S.game=fresh(task,r.jail.pz,r.jail.ready);}
-  render();if(S.game)S.dlg.scrollTop=0;
+  if(r?.jail?.pz){S.game=fresh(task,r.jail.pz,r.jail.ready);if(S.mapOn)S.panel='task:'+task;}
+  render();if(S.game){S.dlg.scrollTop=0;S.dlg.querySelector('.jl-panel')?.scrollTo?.(0,0);}
 }
 async function done(){
   const g=S.game;if(!g||!finished(g))return;
   const r=await command('jail_task_done',{task:g.task,ans:answer(g)});
-  if(r?.jail?.ok){S.game=null;S.flash={text:r.message||'Xong việc rồi.',kind:'good'};}
+  if(r?.jail?.ok){S.game=null;S.flash={text:r.message||'Xong việc rồi.',kind:'good'};S.map?.redraw();}
   render();
 }
 async function endDay(){
@@ -257,7 +326,7 @@ async function askBail(){
   finally{S.busy=false;render();}
 }
 function onClick(op,data,el){
-  if(S.busy&&op!=='close')return;
+  if(S.busy&&op!=='close'&&op!=='shut')return;
   switch(op){
     case'close':S.dlg.close();return;
     case'start':start(data.task);return;
@@ -266,6 +335,8 @@ function onClick(op,data,el){
     case'end':endDay();return;
     case'ask':askBail();return;
     case'go':S.dlg.close();S.env.act?.(data.to);return;
+    case'spot':if(S.map)S.map.go(data.id);else{S.panel=data.id;render();}return;   // walk there; its panel opens on arrival
+    case'shut':S.panel=null;S.sure=false;S.map?.clearAt();render();return;
     default:play(op,data,el);
   }
 }

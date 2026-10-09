@@ -1,5 +1,45 @@
 [
  {
+  "vi": "Kho còn $1 miếng sườn ướp. Nhập thêm ở kho nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍖 Đặt $1 miếng sườn lên vỉ, mỡ chảy xèo xèo. Canh lửa rồi trở mặt nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔄 Trở mặt sườn sau $1 giây: $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chưa trở mặt: một mặt nướng $1 giây, mặt kia còn sống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hai mặt $1 và $2 giây.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍖 Gắp $1 miếng sườn ra khay giữ ấm: $2. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Miếng sườn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🗑️ Bỏ miếng sườn $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 Lấy $2.",
   "en": "",
   "pattern": true
@@ -2206,46 +2246,6 @@
  },
  {
   "vi": "Nhưng bụi rơi xuống $1 vừa lau: phải lau lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 ở $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Cất $2 vào khay nhỏ trên kệ. Lát báo $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Bế Mướp sang phòng ngủ, khép cửa. Mướp ngáp một cái rồi ngủ tiếp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Nhấc $2 ra, đặt lên khăn mềm ở góc an toàn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đặt $2 lại đúng chỗ cũ, xoay đúng mặt như lúc đầu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tôi dặn lau kỹ $1 mà vẫn còn bẩn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "và $1 chỗ nữa",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 vẫn bẩn$3.",
   "en": "",
   "pattern": true
  }

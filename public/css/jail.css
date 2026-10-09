@@ -124,3 +124,45 @@ html[data-theme="dem"] .jl-plate{background:#3a3a3a;border-color:#555}
 .jl-chip{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 86px);z-index:60;min-height:44px;padding:8px 16px;
   border-radius:999px;border:2px solid var(--jl-steel,#5b7189);background:var(--surface,#fff);color:var(--ink,#222);font:inherit;font-weight:700;
   box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;max-width:calc(100vw - 32px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---- 🗺️ the camp to walk (public/js/v4/jail-map.js): a full sheet like the pagoda's, the panel over the camp ---- */
+.sheet.jl-sheet.jl-map{width:min(1180px,calc(100vw - 48px));height:min(900px,calc(100dvh - 48px));overflow:hidden;padding:0}
+html[data-layout="phone"] .sheet.jl-sheet.jl-map{width:100%;max-width:100%;height:calc(100dvh - max(10px,var(--safe-t,0px)));max-height:none}
+.jl-map .jl-root{height:100%}
+.jl-map .jl-head{padding:8px 8px 6px 14px}
+html[data-layout="phone"] .jl-map .jl-head{padding-top:12px}
+.jl-map .jl-badge{width:38px;height:38px;font-size:1.3rem}
+.jl-map .jl-head h2{font-size:1.06rem;line-height:1.2}
+.jl-sub{margin:2px 0 0;font-size:.8rem;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jl-stage{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;touch-action:manipulation;background:#e9dfcb}
+html[data-theme="dem"] .jl-stage{background:#2a2621}
+.jl-stage-in{position:absolute;inset:0}
+.jl-canvas{position:absolute;inset:0;display:block;width:100%;height:100%;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;filter:var(--scene-filter,none)}
+.jl-canvas:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.jl-here{display:flex;gap:6px;padding:7px 10px calc(7px + var(--safe-b,0px));overflow-x:auto;scrollbar-width:thin;border-top:1px solid var(--line);background:var(--surface)}
+.jl-spot{flex:none;display:inline-flex;align-items:center;gap:4px;min-height:40px;padding:0 12px;border-radius:var(--radius-pill,999px);border:1px solid var(--line);
+  background:var(--surface-2);color:var(--ink-2);font:inherit;font-size:.86rem;font-weight:600;white-space:nowrap;cursor:pointer}
+.jl-spot.task{border-color:color-mix(in srgb,#e0a63a 70%,var(--line));color:var(--ink)}
+.jl-spot.done{color:var(--muted)}
+.jl-spot i{font-style:normal;color:var(--good)}
+.jl-spot:focus-visible,.jl-pick:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.jl-panel{position:absolute;left:8px;right:8px;bottom:8px;z-index:2;max-height:calc(100% - 16px);overflow:auto;padding:10px 12px 12px;border-radius:18px;
+  background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow,var(--shadow-sm))}
+@media (min-width:760px){.jl-panel{left:auto;width:min(480px,calc(100% - 16px))}}
+.jl-panel>p{margin:6px 0;font-size:.93rem;line-height:1.45;color:var(--ink-2)}
+.jl-panel .jl-card{box-shadow:none;margin:8px 0 0;padding:10px}
+.jl-panel .jl-game{border:0;padding:0;margin:0}
+.jl-p-head{display:flex;align-items:center;gap:10px}
+.jl-p-head .grow{flex:1 1 auto;min-width:0}
+.jl-p-head b{display:block;font-size:1rem}
+.jl-p-head small{display:block;color:var(--ink-2);font-weight:600;font-size:.8rem}
+.jl-p-emoji{font-size:1.6rem;line-height:1}
+.jl-p-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.jl-done{color:var(--good)!important;font-weight:700}
+.jl-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.jl-left .jl-dots{margin:0}
+.jl-ways{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:.88rem;line-height:1.4}
+.jl-ways li{display:flex;gap:8px}
+.jl-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.jl-pick{min-height:38px;padding:5px 11px;border-radius:12px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;font-size:.88rem;text-align:left;cursor:pointer}
+.jl-pick.done{color:var(--muted)}
