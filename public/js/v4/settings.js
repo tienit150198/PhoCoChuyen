@@ -8,6 +8,7 @@ import {tutorialSettings} from '../tutorial/index.js';
 import {soundToggles} from './sounds.js';
 import {lbPrivacyRow} from './leaderboard.js';
 import {homePref,setHomePref,townOK} from './journey.js';
+import {FW_MODES,fwMode,setFwMode} from './fireworks.js';
 
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const button=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
@@ -45,6 +46,7 @@ export function settingsView(env){
     <section class="settings-block"><h3><span aria-hidden="true">✨</span> Có gì mới</h3><button type="button" class="btn small" data-action="whatsNew">Xem các cập nhật mới</button></section>
     ${feedbackBlock}
     <section class="settings-block">${toggle('reduceMotion','Giảm chuyển động',s.reduceMotion)}${toggle('largeText','Chữ lớn',s.largeText)}</section>
+    <section class="settings-block"><h3><span aria-hidden="true">🎆</span> Hiệu ứng pháo hoa</h3><p class="small muted">Khi có người bắn pháo hoa. Đang chơi trò hay làm việc thì chỉ hiện báo nhỏ.</p>${segment('fw',FW_MODES,fwMode(),'fw')}</section>
     ${api.ai?.configured?`<section class="settings-block"><h3>${icon('chat',18)} Trò chuyện bằng AI</h3>
       ${toggle('aiConsent','Nhân vật trò chuyện bằng AI',s.aiConsent,'Khi bật, tin nhắn bạn gõ trong Trò chuyện, lời trả lời review và vài dữ kiện của lượt chơi được gửi tới nhà cung cấp AI của máy chủ. Đừng gõ thông tin cá nhân thật. Xem <a href="/privacy" target="_blank" rel="noopener">Quyền riêng tư</a>.')}
     </section>`:''}`;
@@ -89,6 +91,7 @@ export async function settingsAction(action,data,el,env){
   const {api,ui,cmd,renderSheet,toast,confirmAction}=env;
   if(await accountAction(action,data,el,env))return true;
   if(action==='v4Setting'&&data.kind==='home'){setHomePref(data.value);env.ui.homeMode=null;renderSheet();return true;}   // 🗺️ this device only, like the layout
+  if(action==='v4Setting'&&data.kind==='fw'){setFwMode(data.value);renderSheet();return true;}   // 🎆 this device only (v4/fireworks.js)
   switch(action){
     case'v4SetTab':ui.setTab=data.tab;renderSheet(false);return true;
     case'v4PushOn':try{const r=await enablePush(api);toast(r.message);ui.pushState=null;}catch(e){toast(e.message,true);}renderSheet();return true;

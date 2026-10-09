@@ -197,17 +197,21 @@ async function onClick(op,data){
       else if(what==='give'){const g=give(),p={kind:g.id,anon:S.anon,confirm:true};
         if(g.sizes?.length)p.size=S.size;if(g.slots){p.slot=S.slot;p.msg=S.msg;}if(g.min)p.amount=S.amount;
         if(g.id==='phao_hoa'&&S.wish)p.msg=S.wish;
-        const r=await send('jr_lux_give',p);if(r){S.slot=0;loadBoard(true);if(g.id==='phao_hoa')shot(r);}}
+        // 🎆 the show may come back on the live socket before the reply: this page knows it is its own first
+        const fw=g.id==='phao_hoa'?await import('./fireworks.js').catch(()=>null):null;fw?.markMine(S.size);
+        const r=await send('jr_lux_give',p);if(!r)fw?.markMine(null);
+        if(r){S.slot=0;loadBoard(true);if(g.id==='phao_hoa')shot(r);}}
       return;}
   }
 }
 
-/** 🎆 Bought: close the shop so the sky shows (live/fireworks.py sends the show to every page, this one too). With
- * no live socket open nothing comes back, so this page plays it by itself. */
+/** 🎆 Bought: close the shop so the sky shows (live/fireworks.py sends the show to every page, this one too: marked
+ * as this page's own before the purchase is sent, it plays in full whatever the 🎆 setting). With no live socket open nothing comes back, so this
+ * page plays it by itself. */
 function shot(r){
   const env=S.env,size=S.size,wish=(CAT().fw_wishes||[]).find(x=>x.id===S.wish)?.text||'';
   S.dlg.close();if(r?.message)env.toast?.(r.message,'good');
-  if(env.live?.()?.state!=='open')import('./fireworks.js').then(m=>m.playLocal(env,size,wish)).catch(e=>console.warn('fireworks:',e));
+  if(env.live?.()?.state!=='open')import('./fireworks.js').then(m=>{m.markMine(null);m.playLocal(env,size,wish);}).catch(e=>console.warn('fireworks:',e));
 }
 
 /* ---- rendering ---- */

@@ -1,5 +1,65 @@
 [
  {
+  "vi": "$1 quấn chân, tinh thần +$2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎉 $1 vừa học được: $2 $3!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tên bé tối đa $1 ký tự nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhà đã đủ $1 bé rồi. Gửi một bé về quê với bà trước nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đã có nhà mới hôm nay rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xác nhận đón bé $1 về nhà.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thú cưng · $1 $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏠 $1 về nhà mới rồi!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🐾 $1 về nhà! ($2)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xác nhận ủng hộ $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💗 Đã ủng hộ $1. Mấy bé ở Chân Nhỏ có thêm bữa pate rồi!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛍️ Đã trả $1 cho $2",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Nhà đã đủ $1 bé rồi.",
   "en": "",
   "pattern": true

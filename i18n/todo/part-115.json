@@ -1,5 +1,29 @@
 [
  {
+  "vi": "Chưa cầm máy nào",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một chiếc điện thoại bên dưới để dùng và khoe.",
+  "en": ""
+ },
+ {
+  "vi": "Lên đời",
+  "en": ""
+ },
+ {
+  "vi": "✋ Đang dùng",
+  "en": ""
+ },
+ {
+  "vi": "Dùng máy này",
+  "en": ""
+ },
+ {
+  "vi": "Đồ của bạn",
+  "en": ""
+ },
+ {
   "vi": "Máy đang dùng và 3 món đắt nhất hiện trên hồ sơ, cho cả phố cùng xem.",
   "en": ""
  },
@@ -1773,30 +1797,6 @@
  },
  {
   "vi": "Trị giá hiện tại",
-  "en": ""
- },
- {
-  "vi": "Giá được chốt khi máy chủ nhận lệnh.",
-  "en": ""
- },
- {
-  "vi": "so với phiên trước",
-  "en": ""
- },
- {
-  "vi": "📰 Tin thị trường trong game",
-  "en": ""
- },
- {
-  "vi": "Đang hỗ trợ đà tăng",
-  "en": ""
- },
- {
-  "vi": "Đang tạo áp lực giảm",
-  "en": ""
- },
- {
-  "vi": "phân",
   "en": ""
  }
 ]

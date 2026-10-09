@@ -1,5 +1,37 @@
 [
  {
+  "vi": "Đèn sân khấu đẹp ghê, như đi xem ca nhạc vậy!",
+  "en": ""
+ },
+ {
+  "vi": "Trúc xinh trúc mọc đầu đình, em xinh em đứng một mình cũng xinh 🎶",
+  "en": ""
+ },
+ {
+  "vi": "Tùng dinh dinh tùng tùng tùng dinh dinh! 🥁",
+  "en": ""
+ },
+ {
+  "vi": "Cô dâu xinh xỉu up xỉu down luôn á 😍",
+  "en": ""
+ },
+ {
+  "vi": "Chú rể hôm nay đẹp trai mười điểm không có nhưng 🤩",
+  "en": ""
+ },
+ {
+  "vi": "Đám cưới này đỉnh nóc kịch trần bay phấp phới 🚀",
+  "en": ""
+ },
+ {
+  "vi": "Mãi keo, mãi đỉnh nha cô dâu chú rể 💯",
+  "en": ""
+ },
+ {
+  "vi": "Chúc anh chị hạnh phúc như điện thoại sạc đầy 100% pin 🔋",
+  "en": ""
+ },
+ {
   "vi": "Ủa có gà luộc không ạ? Em đang ăn kiêng… kiêng đói 🐔",
   "en": ""
  },
@@ -2011,46 +2043,6 @@
  },
  {
   "vi": "$1: Đã trích $2 xu trả kỳ $3/$4 khoản $5. Cảm ơn quý khách.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ đang ghi nhận nợ xấu tới $1 nên ngân hàng chưa thể xét duyệt. Trả hết khoản quá hạn và chờ hết thời gian ghi nhận nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Điểm tín dụng chưa đủ để ngân hàng duyệt ($1, cần từ $2).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ngân hàng cần thấy thu nhập đều: ít nhất $1 ngày có lương hoặc tiền lời rút về ví trong $2 ngày gần nhất.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đã nộp nhiều hồ sơ tín dụng trong $1 ngày gần đây. Nộp lại được $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền trả góp mỗi tuần sẽ vượt $1% thu nhập của bạn. Chọn số tiền nhỏ hơn hoặc kỳ hạn dài hơn nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lời nhắn tối đa $1 ký tự nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chuyển khoản mở khi tài khoản đủ $1 ngày chơi game (đời thực).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chuyển khoản mở từ ngày sống $1.",
   "en": "",
   "pattern": true
  }

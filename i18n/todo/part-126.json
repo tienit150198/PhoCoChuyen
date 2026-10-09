@@ -1,5 +1,65 @@
 [
  {
+  "vi": "Khách cho giữ tiền thối: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 xua tay: “Khỏi thối, giữ tiền lẻ đi!” (+$2 xu tip)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã dặn anh Tuấn xe đá: mỗi sáng thả $1 cây đá.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 🚨 Xe trật tự đô thị đang tới đầu phố! Dẹp ghế, gấp ô ngay!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Bày quán ở $2. $3$4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quán chỉ có $1 cái ghế.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚠️ Chỗ này chỉ vừa $1 ghế, ghế thừa sẽ tràn ra lối đi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🪑 Đã bày $1 ghế nhựa.$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bày ít nhất $1 ghế rồi mới mở hàng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dọn hàng ở $1, $2 ghế.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🪑 Bày lại quán: $1 ghế, dựng ô. Khách lục tục ngồi lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chỉ còn $1 nắm chè. Mở kho nhập thêm nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🍵 Tráng ấm, bỏ $1 nắm chè, chế nước sôi: $2.",
   "en": "",
   "pattern": true
@@ -2186,66 +2246,6 @@
  },
  {
   "vi": "👥 Chỉ gửi cho bạn bè đã kết bạn đủ $1 phút.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📅 Tài khoản đã chơi game đủ $1 ngày (đời thực) và nhân vật đủ $2 ngày sống.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2: đọc bài rồi trả lời hai câu hỏi nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng rồi! $1 Bạn đã xong bài này.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng rồi! $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bắt đầu thi: $1 câu, đúng từ $2 câu là đạt. Thi lại miễn phí.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã ghi câu $1/$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng $1/$2 câu ($3 điểm).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Cần đúng $2 câu. Xem lời giải, đọc lại bài rồi thi lại miễn phí nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đạt! Điểm cao nhất của bạn: $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đạt! 📜 Chứng nhận Lịch sử Việt Nam đã được cấp, kèm danh hiệu 📜 Người kể sử và học bổng $2 xu vào ví.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đạt! 📜 Chứng nhận Lịch sử Việt Nam đã được cấp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã đặt lại $1 như cũ",
   "en": "",
   "pattern": true
  }

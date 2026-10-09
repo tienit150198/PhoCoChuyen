@@ -1,5 +1,65 @@
 [
  {
+  "vi": "✋ Chị Vân lắc đầu: “Thiếu dầu đi $1. Dầu chặng + dầu dự bị + 30 phút dự phòng. Tính lại nhé.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✋ Anh Lộc: “$1 khách với đầy bình là quá trọng lượng cất cánh. Chọn lại mức dầu!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⛽ Xe dầu nạp $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "chờ sương tan ở $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🌫️ Lùi giờ cất cánh $1 phút, chờ sương tan. Nhớ thông báo cho khách trước khi cất cánh.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚠️ $1 $2 Xử lý trước khi bay.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔧 Chú Mẫn chạy ra, cười: “Cái này cháu tự làm được mà.” $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔧 Chú Mẫn: “May mà cháu thấy.” $1 Chậm $2 phút: nhớ thông báo cho khách.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thấy lỗi ở tàu mà định bỏ qua cho kịp giờ. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✋ Chị Vân đi kiểm lại, thấy ngay: “$1 Không bao giờ bỏ qua.” $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✋ Chị Vân: “Checklist đang ở dòng $1. Đọc theo thẻ, từng dòng một.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📢 “Kính thưa quý khách, chuyến $1 đi $2 chậm khoảng $3 phút vì $4. An toàn là trên hết. Tổ bay xin lỗi và sẽ báo lại ngay khi sẵn sàng.” Khoang khách gật gù.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🛫 Cất cánh! $1 Hướng $2, $3 phút bay.",
   "en": "",
   "pattern": true
@@ -2186,66 +2246,6 @@
  },
  {
   "vi": "Tối kiểm két mới thấy thối dư $1 xu, khách cầm về luôn rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khách cho giữ tiền thối: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 xua tay: “Khỏi thối, giữ tiền lẻ đi!” (+$2 xu tip)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã dặn anh Tuấn xe đá: mỗi sáng thả $1 cây đá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 🚨 Xe trật tự đô thị đang tới đầu phố! Dẹp ghế, gấp ô ngay!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Bày quán ở $2. $3$4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quán chỉ có $1 cái ghế.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ Chỗ này chỉ vừa $1 ghế, ghế thừa sẽ tràn ra lối đi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🪑 Đã bày $1 ghế nhựa.$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bày ít nhất $1 ghế rồi mới mở hàng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dọn hàng ở $1, $2 ghế.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🪑 Bày lại quán: $1 ghế, dựng ô. Khách lục tục ngồi lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chỉ còn $1 nắm chè. Mở kho nhập thêm nhé.",
   "en": "",
   "pattern": true
  }

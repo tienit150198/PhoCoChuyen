@@ -1,5 +1,45 @@
 [
  {
+  "vi": "Hồ sơ đang ghi nhận nợ xấu tới $1 nên ngân hàng chưa thể xét duyệt. Trả hết khoản quá hạn và chờ hết thời gian ghi nhận nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Điểm tín dụng chưa đủ để ngân hàng duyệt ($1, cần từ $2).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ngân hàng cần thấy thu nhập đều: ít nhất $1 ngày có lương hoặc tiền lời rút về ví trong $2 ngày gần nhất.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn đã nộp nhiều hồ sơ tín dụng trong $1 ngày gần đây. Nộp lại được $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiền trả góp mỗi tuần sẽ vượt $1% thu nhập của bạn. Chọn số tiền nhỏ hơn hoặc kỳ hạn dài hơn nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lời nhắn tối đa $1 ký tự nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chuyển khoản mở khi tài khoản đủ $1 ngày chơi game (đời thực).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chuyển khoản mở từ ngày sống $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã chuyển $1 xu cho $2.",
   "en": "",
   "pattern": true
@@ -2186,66 +2226,6 @@
  },
  {
   "vi": "Bạn phấn một đường $1 cm rồi ngồi vào máy may. Đạp máy, dừng đúng vạch nha!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn mang đồ sang gian bên cho Bà Tư. Bà đeo kính lên: “Để đó, chút xíu là xong.” (công $1 xu)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà Tư còn đang may, chờ thêm chút nha (khoảng $1 nhịp).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "cắt lố $1 cm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "sửa thiếu $1 cm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã có thẻ rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đưa $1 thẻ số $2 món. $3 kéo rèm bước vào.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 ra rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 bước ra, trả $2 món rồi đi luôn.$3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 trả lại đủ $2/$3 món, cảm ơn rồi đi. Mời người kế tiếp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 trả lại $2 món, thẻ ghi $3. Thiếu $4 món! Kiểm phòng thử hoặc hỏi khéo khách.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trên móc trong phòng còn treo một chiếc $1 — $2 quên thôi. Treo lại lên giá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn nói nhỏ: “Chị ơi hình như còn một món chưa trả…” $1 đỏ mặt, lấy chiếc $2 mặc bên trong ra: “À… chị quên.”",
   "en": "",
   "pattern": true
  }
