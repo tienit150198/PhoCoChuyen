@@ -1,3 +1,9 @@
+# Chưa phát hành — couple-race (không có Có gì mới)
+
+🏦 Quỹ chung không còn bị chi hai lần khi rút tiền đúng lúc ly hôn / xóa tài khoản: mọi thay đổi quỹ (gửi, rút, thẻ chung, hoàn tiền, chia khi chia tay) khóa theo cùng một thứ tự (dòng couples rồi dòng joint_funds), số dư lúc chia đọc dưới khóa; rút sau khi đã chia tay bị từ chối gọn "Hai bạn đã chia tay, quỹ chung đã được chia rồi." (trước đó có thể deadlock hoặc trả thêm tối đa 10 triệu xu).
+💳 Thẻ chung: khoản giữ (held) được chốt 'done' ngay trong giao dịch ghi bản lưu của lệnh mua (couple.commit_holds trong storage._store/_command_locked, marriage._mutate, home_decor.command), nên 60 lần gửi 1 xu đẩy mã khỏi marriage.applied không còn làm hoàn tiền một căn nhà đã mua. Khoản giữ đã bị hoàn (void) thì lệnh mua bị từ chối 'expired', không bao giờ vừa có nhà vừa được hoàn. Điểm hạnh phúc (couple_stats) đọc-ghi dưới khóa dòng.
+🎁 Phố nghề: tặng quà khóa theo người tặng (pg_advisory_xact_lock), hai lần bấm cùng lúc chỉ ra một món quà (trước đó người nhận được cộng xu hai lần). Không DDL, không khóa save mới.
+
 # v1.9.39 — 2026-10-10
 
 Gồm góp ý #303 (quay-fix: mở rộng quầy khi có tình huống chờ, tên quầy che từ không còn invalid_save), #307 (share-deco: journey.decor_stay tùy chọn), #304 (teacher-grades: lớp 2–5, ext.data.homeroom, task.grade_room tùy chọn), #306 (clothing-abroad: tasks abroad tùy chọn).

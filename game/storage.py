@@ -297,7 +297,10 @@ def _commit_before(raw:dict)->dict:
     live=lux.get('live');villas=lux.get('own') if isinstance(lux.get('own'),dict) else {}
     villa=villas.get(live) if isinstance(live,str) else None
     # 🚔 a sentence block before (game/jail.py mark_commit: out after it, the mark goes): a flag, not the block
-    return dict(name=raw.get('name'),careers=careers,journey=dict(story=j.get('story'),jail=isinstance(j.get('jail'),dict),
+    # 💳 the card holds already in the save (game/couple.py commit_holds: only a new one is settled by this write)
+    m=raw.get('marriage') if isinstance(raw.get('marriage'),dict) else {}
+    holds=[k for k in (m.get('applied') if isinstance(m.get('applied'),list) else []) if isinstance(k,str) and k.startswith('jspend:')]
+    return dict(name=raw.get('name'),marriage=dict(applied=holds),careers=careers,journey=dict(story=j.get('story'),jail=isinstance(j.get('jail'),dict),
         life_day=j.get('life_day',0),home=dict(own={k:own.get(k) for k in ('id','kind')} if isinstance(own,dict) else None),
         lux=dict(live=live,own={live:dict(d=villa.get('d'))}) if isinstance(villa,dict) else dict(live=None,own={}),
         quay=dict(stalls=[dict(business=dict(visitor_orders=visitors))])))
@@ -631,6 +634,9 @@ class Store:
                           (serialized,revision+1,sid,revision)).rowcount!=1:
                 db.rollback();return False
             if action:
+                from . import couple
+                couple.commit_holds(db,sid,before,current)  # 💳 a joint-card hold this command made is settled with the save
+            if action:
                 from . import home_guests
                 home_guests.command_commit(db,sid,before,current,action)
                 if action.startswith('jr_spend_'):
@@ -710,6 +716,8 @@ class Store:
             rentals.command_commit(db,sid,before,raw,action)
             work_visits.command_commit(db,sid,before,raw,career,action,result)
             db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(serialized,revision,sid))
+            from . import couple
+            couple.commit_holds(db,sid,before,raw)  # 💳 a joint-card hold this command made is settled with the save
             from . import home_guests
             home_guests.command_commit(db,sid,before,raw,action)
             if action.startswith('jr_spend_'):
