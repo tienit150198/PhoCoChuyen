@@ -229,8 +229,9 @@ POINTS_DAY = 30
 # within the bound older validators check), stakes up to 1.000 xu (knife.STAKES, owner 09/10 "giới hạn 1k/1 lần").
 # 09/10 (audit: a script solved the public board): phóng dao's net winnings (payouts − stakes) are capped at KN_DAY_CAP
 # a Vietnam day, counted in journey[DAY_KEY] (optional, ignored by an older server: journey keeps unknown keys).
-DAY_KEY = 'fair_day'   # journey['fair_day'] {d: 'YYYY-MM-DD', kn: knife net today}
+DAY_KEY = 'fair_day'   # journey['fair_day'] {d: 'YYYY-MM-DD', kn: knife net today, ring: ném vòng paid today}
 KN_DAY_CAP = 20_000
+RING_PAY_DAY = 400     # 💍 ném vòng (free, wins on average): xu paid a Vietnam day at most (09/10 audit)
 KN_RAMP_KEY = 'fair_kn_ramp'   # journey['fair_kn_ramp'] {at, seed}: a 1.9.32 level, knife.speed_up() faster (09/10)
 KN_TWIST_KEY = 'fair_kn_twist'   # journey['fair_kn_twist'] {at, seed}: a level on knife.twist_schedule() (09/10, later)
 MONEY = ('won', 'lost', 'earned')   # the stats that make the board's score, reset with each edition
@@ -1636,7 +1637,10 @@ def _apply(s: dict, name: str, p: dict) -> dict:
                 hits = ring.judge(ring.params(r['rs']), p['taps'])
             n = sum(h >= 0 for h in hits)
             st['ring_hits'] += n
-            prize = _earn(j, f, 'ring', n * RING_HIT + (RING_ALL if n == ring.BOTTLES else 0))
+            day = _daily(j, t)
+            left = max(0, RING_PAY_DAY - day.get('ring', 0))
+            prize = _earn(j, f, 'ring', min(left, n * RING_HIT + (RING_ALL if n == ring.BOTTLES else 0)))
+            day['ring'] = min(10**6, day.get('ring', 0) + prize)
             if n == ring.BOTTLES:
                 _grant(j, 'f_ring', got)
             full = n * RING_HIT + (RING_ALL if n == ring.BOTTLES else 0)
@@ -1855,10 +1859,12 @@ def validate(j: dict) -> None:
     if DAY_KEY in j:   # 09/10, optional
         from .engine import need, integer
         d = j[DAY_KEY]
-        need(isinstance(d, dict) and 'd' in d and set(d) <= {'d', 'kn'} and isinstance(d['d'], str) and len(d['d']) <= 10,
+        need(isinstance(d, dict) and 'd' in d and set(d) <= {'d', 'kn', 'ring'} and isinstance(d['d'], str) and len(d['d']) <= 10,
              'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
         if 'kn' in d:
             integer(d['kn'], -10**9, 10**9)
+        if 'ring' in d:
+            integer(d['ring'], 0, 10**6)
     if 'fair_kn_soft' in j:
         from .engine import need, integer
         soft = j['fair_kn_soft']

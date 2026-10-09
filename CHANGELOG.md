@@ -5,6 +5,7 @@
 🗡️ Phóng dao (không thông báo): lượt ném tới máy chủ trễ hơn 2 s so với cú ném cuối thì không nhận (màn chơi tiếp); lãi ròng tối đa 20.000 xu mỗi ngày VN (journey.fair_day, tùy chọn).
 💼 Ngày 🔥 x3 không còn nhân thêm phần ×3/×5 của lương kế toán (job note `boost`, trừ khỏi lãi ngày như tăng ca).
 ⏱️ Ngày sống vượt hạn mức giờ thật (interest_clock: 1 giờ = 1 ngày, tối đa 168): không lương, không thưởng phòng điều hành, không tiền thuê nhà (chia theo ngày trong tháng), không khách xem tin cho thuê. Thưởng phòng điều hành cần ít nhất 1 việc xong. Tin cho thuê NPC mới tối đa 1,5× giá tham khảo (người đang thuê giữ giá).
+💍 Ném vòng (không thông báo): trả tối đa 400 xu mỗi ngày VN (journey.fair_day.ring).
 
 # v1.9.37 — 2026-10-09
 
