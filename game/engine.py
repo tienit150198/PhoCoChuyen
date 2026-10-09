@@ -51,6 +51,7 @@ from . import patience as pt
 from . import system_gift as sg
 from . import live_effects as lfx
 from . import fair as fh  # 🏮 Hội chợ dân gian
+from . import jail as jl  # 🚔 Trại tạm giữ (game/jail.py)
 from . import x3_week as x3w  # 🔥 Nghề x3 trong tuần
 from . import overtime as ovt  # ⏱️ Tăng ca ×2, ⚡ thưởng năng suất
 from . import needs as nd  # 🍚 No bụng, 😴 Tỉnh táo
@@ -522,6 +523,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     fh.settle(s)  # 💸 a vay nóng of a fair that has closed is collected (game/fair_cash.py)
     p=payload or {}
     need(isinstance(p,dict),"Dữ liệu thao tác không hợp lệ.")
+    jl.settle(s)  # 🚔 a sentence whose safety time is over (or MNL_JAIL_OFF): out of the trại tạm giữ
+    jl.gate(s,action,internal)  # 🚔 inside: no work, no Chợ đen, no shopping or trips (game/jail.py FREE: what stays open)
     result=dict(message="Đã thực hiện.",effects=[])
     care_notes=[]
     if action==business.ACTION:
@@ -574,6 +577,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if action.startswith("qn_"):return qn.action(s,career,action,p)  # điểm thân quen: chat, gifts, thanks, invites
     if action.startswith("st_"):return cst.action(s,career,action,p)
     if action.startswith("fair_"):return fh.action(s,action,p)  # 🏮 Hội chợ dân gian (game/fair.py): bầu cua, lô tô, chiếu trong
+    if action.startswith("jail_"):return jl.action(s,action,p)  # 🚔 Trại tạm giữ: hết ngày, công ích (game/jail.py)
     if action==sg.ACTION:  # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py): the server pays a gift into the wallet
         need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
         return sg.apply(s,p)
@@ -1208,6 +1212,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["closeness"]=qn.public(s,focus)
     v["abandon"]=ab.public(s)
     v["fair"]=fh.public(s)  # 🏮 Hội chợ dân gian (game/fair.py)
+    v["jail"]=jl.public(s)  # 🚔 Trại tạm giữ (game/jail.py): None when free
     v["x3"]=x3w.public()  # 🔥 Nghề x3 trong tuần (game/x3_week.py)
     v["rui"]=rui_.public(s)  # 🛡️ Rủi ro & bảo hiểm (game/rui.py): the warning, the card, the policies
     v["vang"]=vang_.public(s)  # 💰 Tiệm vàng (game/vang.py): today's price, the chart, the gold held

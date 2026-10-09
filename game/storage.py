@@ -628,6 +628,9 @@ class Store:
                 if action.startswith('jr_pet_'):
                     from . import pets
                     pets.command_commit(db,sid,action,current)  # 🐾 Bé cưng của tuần (pet_board)
+                if action=='jail_end':
+                    from . import jail
+                    jail.command_commit(db,sid,action,result)  # 🚔 out of the trại tạm giữ: the friends' bail requests go
                 if action.startswith('jr_lux_'):
                     from . import lux
                     lux.command_commit(db,sid,action,current)  # 🎆 the lux_gifts row, the ticker line (a taken plaque refuses)
@@ -703,6 +706,9 @@ class Store:
             if action.startswith('jr_pet_'):
                 from . import pets
                 pets.command_commit(db,sid,action,raw)  # 🐾 Bé cưng của tuần (pet_board)
+            if action=='jail_end':
+                from . import jail
+                jail.command_commit(db,sid,action,result)  # 🚔 out of the trại tạm giữ: the friends' bail requests go
             if action.startswith('jr_lux_'):
                 from . import lux
                 lux.command_commit(db,sid,action,raw)  # 🎆 the lux_gifts row, the ticker line (a taken plaque refuses)

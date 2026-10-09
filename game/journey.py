@@ -1127,3 +1127,5 @@ def validate(s: dict) -> None:
     vang.validate(s)   # 💰 journey['vang'] (optional)
     qy.validate(s)   # 🏪 journey['quay'] (optional)
     ab.validate(s)   # ✈️🌏 journey['abroad'] (optional)
+    from . import jail
+    jail.validate(s)   # 🚔 journey['jail'] (optional)

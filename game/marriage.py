@@ -1227,8 +1227,8 @@ def act(store, token: str, op: str, d: dict) -> dict:
 
 
 def _more_actions() -> dict:
-    from . import friends as fr, couple as cp, family as fam
-    return {**fr.ACTIONS, **cp.ACTIONS, **fam.ACTIONS}
+    from . import friends as fr, couple as cp, family as fam, jail
+    return {**fr.ACTIONS, **cp.ACTIONS, **fam.ACTIONS, **jail.ACTIONS}   # 🚔 jail_ask, jail_bail (game/jail.py)
 
 
 def _ring_buy(store, sid: str, display: str, d: dict) -> dict:
