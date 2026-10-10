@@ -1280,6 +1280,26 @@ def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
     _arrested(j, f, t, game, stake, lambda amount: _pay(j, f, game, amount))
 
 
+def _hai_device(s: dict, j: dict, f: dict, t: float, prize: int) -> None:
+    """👴 Owner 10/10: a win against Ông Hai means a third device helped. The prize stays (paid already); the police
+    fine FINE_LO..FINE_HI % of the wallet and the bank account (fair_hai.device_fine, no debt) and the trại tạm giữ
+    (fair_bm.JAIL_DAYS). Raises _Caught: the command's whole result."""
+    from . import jail
+    pct = bm._rng.randint(hai.FINE_LO, hai.FINE_HI)
+    fine = hai.device_fine(s, j, f, pct)
+    days = jail.arrest(j, 'bm', bm.JAIL_DAYS, t)
+    f['stats']['raids'] = min(10**9, f['stats']['raids'] + 1)
+    r = dict(game='oaq', stake=0, fine=fine, wallet=j['wallet'], say=hai.SAY_DEVICE, jail=days, seized=0)
+    got: list = []
+    _grant(j, 'f_raid', got)
+    fair = dict(game='oaq', arrest=r)
+    if got:
+        fair['titles'] = got
+    msg = (f'Thắng Ông Hai, +{_xu(prize)} xu. 🚨 Nhưng công an phát hiện dùng thiết bị thứ ba: nộp phạt {_xu(fine)} xu.'
+           + (f' Bạn bị tạm giữ {days} ngày.' if days else ''))
+    raise _Caught(dict(message=msg, effects=[], fair=fair))
+
+
 def _arrested(j: dict, f: dict, t: float, game: str, stake: int, pay, why: str = '', count: bool = True) -> None:
     """The police take this round (`why`: '' the Chợ đen's arrest roll; 'kn_fast', 'kn_spam', 'oaq_fast', 'oaq_spam'
     what game/fair_watch.py saw on a skill stall; 'oaq_win' a run of wins at Ông Hai's table, game/fair_hai.py, `stake`
@@ -1600,10 +1620,10 @@ def _apply(s: dict, name: str, p: dict) -> dict:
         end = None
         if not alive:
             end = _oaq_end(j, f, o, t, got)
-            if o['lv'] == 'kho' and end['stage'] == 'won':   # 👴 a run of wins at his table: the police (fair_hai)
-                due = hai.won(j, t, end['prize'])
-                if due and bm._gate_on():
-                    _arrested(j, f, t, 'oaq', hai.seize(s, j, f, due), lambda amount: None, 'oaq_win', count=False)
+            if o['lv'] == 'kho' and end['stage'] == 'won':   # 👴 a win at his table: the prize stays, then the police (fair_hai)
+                hai.won(j, t, end['prize'])
+                if bm._gate_on():
+                    _hai_device(s, j, f, t, end['prize'])
             elif o['lv'] == 'kho':
                 hai.lost(j)
         result['fair'] = dict(game='oaq', trace=trace, view=oaq_view(o), end=end)

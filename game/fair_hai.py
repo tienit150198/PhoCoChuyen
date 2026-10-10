@@ -23,6 +23,12 @@ WINDOW, WINDOW_WINS = 86400, 3   # ... or this many wins within a day (24 h)
 W_MAX = 10               # the save's bound on w (a raid clears it at WINDOW_WINS)
 TIRED = 'Hôm nay Ông Hai đánh nhiều ván quá, ông mệt rồi. Mai cháu ghé nha!'
 SEIZE_LABEL = '🚨 Công an tịch thu tiền thắng Ông Hai'
+# Owner 10/10: "nếu chơi thắng ông Hai thì bị bắt và phạt vì tội sử dụng thiết bị thứ 3, bỏ tù luôn và phạt 30 - 50% tiền;
+# còn ai thắng vẫn thắng bình thường". Every win at his table keeps its prize, then the police: a fine of FINE_LO..FINE_HI %
+# of the wallet and the bank account (never below zero, no debt) and the trại tạm giữ (fair_bm.JAIL_DAYS).
+FINE_LO, FINE_HI = 30, 50
+FINE_LABEL = '🚨 Công an phạt: dùng thiết bị hỗ trợ khi chơi với Ông Hai'
+SAY_DEVICE = 'Thắng được Ông Hai thì chỉ có máy giúp thôi! Dùng thiết bị thứ ba là gian lận, nộp phạt rồi về đồn!'
 SAY = 'Thắng Ông Hai liền mấy ván, tiền vô như nước hả? Bàn này là sòng bạc trá hình. Tiền thắng tịch thu, về đồn làm việc!'
 
 
@@ -66,17 +72,26 @@ def won(j: dict, t: float, xu: int) -> int:
     return due
 
 
-def seize(s: dict, j: dict, f: dict, due: int) -> int:
+def device_fine(s: dict, j: dict, f: dict, pct: int) -> int:
+    """The fine for a win at his table: `pct` % of the wallet and the bank account as they are now, taken the
+    seize() way (wallet first, then the account, never below zero). Returns what was taken."""
+    from . import bank as bk
+    b = bk.get(s)
+    held = max(0, j['wallet']) + (max(0, b['balance']) if b and type(b.get('balance')) is int else 0)
+    return seize(s, j, f, held * pct // 100, FINE_LABEL)
+
+
+def seize(s: dict, j: dict, f: dict, due: int, label: str = SEIZE_LABEL) -> int:
     """Take `due` xu back: the wallet first, then the bank account, never below zero; a Chợ đen loss (the Bảng vàng
     counts it). Returns what was taken."""
     from . import bank as bk
     from . import fair_bm as bm
-    cash = bm._take(j, f, due, SEIZE_LABEL)
+    cash = bm._take(j, f, due, label)
     b = bk.get(s)
     bank = min(max(0, b['balance']), due - cash) if b and type(b.get('balance')) is int else 0
     if bank:
         b['balance'] -= bank
-        bk._log(b, j['life_day'], 'acc', 'Công an tịch thu tiền thắng Ông Hai', -bank)
+        bk._log(b, j['life_day'], 'acc', label.replace('🚨 ', ''), -bank)
         f['net'] = max(-10**9, f['net'] - bank)
         f['stats']['lost'] = min(10**9, f['stats']['lost'] + bank)
     return cash + bank

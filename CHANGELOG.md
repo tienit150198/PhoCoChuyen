@@ -1,6 +1,6 @@
 # v1.9.43 — 2026-10-10
 
-Lời đáp góp ý của admin tối đa 10.000 ký tự (trước 300), chủ game 10/10. Không có Có gì mới.
+Lời đáp góp ý của admin tối đa 10.000 ký tự (trước 300), chủ game 10/10. 👴 Thắng Ông Hai: giữ tiền thắng, rồi công an bắt vì dùng thiết bị thứ ba: phạt 30–50 % ví + tài khoản (không nợ), tạm giữ 3 ngày (fair.py _hai_device, fair_hai.device_fine). Không có Có gì mới.
 
 # v1.9.42 — 2026-10-10
 
