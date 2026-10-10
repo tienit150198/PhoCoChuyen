@@ -1,3 +1,7 @@
+# v1.9.47 — 2026-10-10
+
+Hội chợ có Top lỗ riêng theo tuần, tiền thắng/kiếm trong tuần bù trừ tiền thua. Top 1 nhận 🥀 Vua đen đủi, Top 2–10 nhận ☔ Hội đen đủi mỗi thứ Hai, giữ danh hiệu vĩnh viễn, không thưởng xu. Bắt đầu ghi nhận từ bản cập nhật, không hồi tố tổng lỗ cũ. Schema 36 thêm bảng sổ tuần, ghi cùng giao dịch lưu game; giữ nguyên Top lời và Có gì mới.
+
 # v1.9.46 — 2026-10-10
 
 Theo chủ game: khôi phục tối thiểu 30 trận hợp lệ mỗi tuần trước khi xếp top tỷ lệ thắng và xét thưởng kéo co. Giữ giải thưởng và tie-break. Deploy âm thầm; giữ nguyên Có gì mới theo yêu cầu.

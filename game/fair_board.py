@@ -66,6 +66,8 @@ def settle(store, t: float | None = None, best_effort_ms: int | None = None) -> 
     call did it, else None. Cheap before the end (a clock read) and after it is done (a memo). An earlier edition
     (fair.past(): a server that was not running at its end) is settled first, the same way, at most once too."""
     t = now() if t is None else t
+    from . import fair_loss
+    fair_loss.settle(store, t, best_effort_ms)
     for ed, board, closes in fh.past():
         _settle(store, ed, board, closes, t, best_effort_ms)
     if fh.forever():   # no end: this week's crowning (Monday 00:00), once the first one has come

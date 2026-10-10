@@ -411,7 +411,7 @@ def parse_query(q: dict) -> tuple[str, int]:
     """(board, limit) of GET /api/leaderboard?career=<id|all>|board=certs|titles|wealth|collection&limit=50;
     ValueError with a player-facing message otherwise."""
     board = q.get('board') or q.get('career') or OVERALL
-    if board not in BOARDS and board not in (fh.board(), fh.edition()):   # edition: an older client (rolling release)
+    if board not in BOARDS and board not in (fh.board(), fh.edition(), 'fair-loss'):   # edition: an older client (rolling release)
         raise ValueError('Nghề không hợp lệ.')
     raw = q.get('limit') or str(LIMIT)
     if not (raw.isascii() and raw.isdigit() and len(raw) <= 3 and 1 <= int(raw) <= LIMIT):
@@ -483,6 +483,9 @@ def view(store, board: str, limit: int = LIMIT, token: str | None = None) -> dic
     """GET /api/leaderboard: the top `limit` of a board plus the viewer's own place
     ("Bạn"), even outside the top or while their name is hidden, and the board's
     weekly titles (game/lb_titles.py: who holds them, last updated, last week's)."""
+    if board == 'fair-loss':
+        from . import fair_loss
+        return fair_loss.view(store, limit, token)
     lbt.ensure(store)
     asked = board
     if board == fh.edition():   # an older client (rolling release) asks for the fair's board by its edition

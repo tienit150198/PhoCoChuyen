@@ -300,7 +300,7 @@ def _commit_before(raw:dict)->dict:
     # 💳 the card holds already in the save (game/couple.py commit_holds: only a new one is settled by this write)
     m=raw.get('marriage') if isinstance(raw.get('marriage'),dict) else {}
     holds=[k for k in (m.get('applied') if isinstance(m.get('applied'),list) else []) if isinstance(k,str) and k.startswith('jspend:')]
-    return dict(name=raw.get('name'),marriage=dict(applied=holds),careers=careers,journey=dict(story=j.get('story'),jail=isinstance(j.get('jail'),dict),
+    return dict(_fair_net=fh.money_of(j)[0],name=raw.get('name'),marriage=dict(applied=holds),careers=careers,journey=dict(story=j.get('story'),jail=isinstance(j.get('jail'),dict),
         life_day=j.get('life_day',0),home=dict(own={k:own.get(k) for k in ('id','kind')} if isinstance(own,dict) else None),
         lux=dict(live=live,own={live:dict(d=villa.get('d'))}) if isinstance(villa,dict) else dict(live=None,own={}),
         quay=dict(stalls=[dict(business=dict(visitor_orders=visitors))])))
@@ -637,6 +637,8 @@ class Store:
                 from . import couple
                 couple.commit_holds(db,sid,before,current)  # 💳 a joint-card hold this command made is settled with the save
             if action:
+                from . import fair_loss
+                fair_loss.record(db,sid,before,current,action)
                 from . import home_guests
                 home_guests.command_commit(db,sid,before,current,action)
                 if action.startswith('jr_spend_'):
@@ -722,6 +724,8 @@ class Store:
             db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(serialized,revision,sid))
             from . import couple
             couple.commit_holds(db,sid,before,raw)  # 💳 a joint-card hold this command made is settled with the save
+            from . import fair_loss
+            fair_loss.record(db,sid,before,raw,action)
             from . import home_guests
             home_guests.command_commit(db,sid,before,raw,action)
             if action.startswith('jr_spend_'):
@@ -790,6 +794,8 @@ class Store:
             auction.forget(db,sid)  # 🔨 past wins stay in the history under the name shown then
             from . import dog_bark
             dog_bark.forget(db,sid)  # 🐕 their tug-of-war tickets (the escrow went with the save)
+            from . import fair_loss
+            fair_loss.forget(db,sid)
             db.execute("DELETE FROM archive WHERE sid=?",(sid,))
             db.execute("DELETE FROM receipts WHERE sid=?",(sid,))
             lb.forget(db,[sid])

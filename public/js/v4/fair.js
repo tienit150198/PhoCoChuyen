@@ -51,7 +51,7 @@ const S={dlg:null,env:null,tab:'home',busy:false,lastRound:0,gift:null,loan:{amt
   xd:{side:'chan',stake:10,phase:'idle',coins:null,last:null,raid:null,say:'',hist:[],tally:{w:0,l:0,raid:0}},
   lt:{id:null,shown:0,marks:[],timer:null,speed:1,over:null,won:null,hut:null,claiming:false,check:false,hot:false,say:'',
     act:0,actAt:0,actSay:'',tier:'vua',n:1,cl:null,cls:2,cot:null,cots:2},
-  board:{data:null,at:0,loading:false,error:''},food:{cart:'candy',say:'',last:null,buying:''}};
+  board:{mode:'win',data:null,at:0,loading:false,error:'',request:0,key:''},food:{cart:'candy',say:'',last:null,buying:''}};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
 const F=()=>S.env?.api?.state?.fair||{};
@@ -255,7 +255,7 @@ function head(){
 const won=()=>{const m=F().money?.total;return typeof m==='number'?m-dgHold():null;};
 function strip(){
   const f=F(),m=won(),e=f.earn||{},got=(f.today_xu?Object.values(f.today_xu).reduce((a,n)=>a+(Number(n)||0),0):(e.oaq?.today||0)+(e.ring?.today||0))-xsHold()-dgHold('day');   // every stall's xu this day (today_xu, 1.4.14+)
-  return `<div class="fh-strip" role="status"><span>👛 <b>${xu((f.wallet||0)-ltHold()-xsHold()-dgHold())}</b></span><span>💰 Hôm nay ${got<0?'lỗ':'kiếm'} <b>${xu(Math.abs(got))}</b></span>${winLoss(f)}<button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 Bảng vàng${m===null?'':` · ${m<0?'lỗ':'lời'} <b>${xu(Math.abs(m))}</b>`}</button></div>`;
+  return `<div class="fh-strip" role="status"><span>👛 <b>${xu((f.wallet||0)-ltHold()-xsHold()-dgHold())}</b></span><span>💰 Hôm nay ${got<0?'lỗ':'kiếm'} <b>${xu(Math.abs(got))}</b></span>${winLoss(f)}<button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 Bảng vàng${m===null?'':` · ${m<0?'lỗ':'lời'} tích lũy <b>${xu(Math.abs(m))}</b>`}</button></div>`;
 }
 /** #18: today's trò that came out ahead and behind (today_xu, one Sổ ví row per trò), so a losing streak is visible. */
 function winLoss(f){
@@ -363,7 +363,7 @@ function gateList(){
       ${luck('xd','🕯️','Chiếu trong',`Cược từ ${r.xd_min} xu`,'<span class="fh-warnchip">🚨 công an</span>')}
     </div>
     ${loanRow()}${foodRow()}${photoRow()}
-    <button type="button" class="fh-goldlink" data-fh="tab" data-tab="board" data-fh-key="g-board"><span aria-hidden="true">🏆</span><span class="grow"><b>Bảng vàng chợ đen</b><small>${m>0?`Bạn đang lời ${xu(m)}`:m<0?`Bạn đang lỗ ${xu(-m)}`:'Ai thắng nhiều xu nhất đứng đầu'} · Top 1 ${endless(f)?'mỗi thứ Hai':'khi chợ tàn'} thành 👑 Vua trò chơi</small></span><span aria-hidden="true">›</span></button>
+    <button type="button" class="fh-goldlink" data-fh="tab" data-tab="board" data-fh-key="g-board"><span aria-hidden="true">🏆</span><span class="grow"><b>Bảng vàng chợ đen</b><small>Top lời · Top lỗ theo tuần</small><small>${m>0?`Bạn đang lời ${xu(m)}`:m<0?`Bạn đang lỗ ${xu(-m)}`:'Ai thắng nhiều xu nhất đứng đầu'} · Top 1 ${endless(f)?'mỗi thứ Hai':'khi chợ tàn'} thành 👑 Vua trò chơi</small></span><span aria-hidden="true">›</span></button>
   </section>`;
 }
 
@@ -1049,24 +1049,35 @@ function photoRow(){
 
 /* ---- 🏆 Bảng vàng ---- */
 async function loadBoard(force=false){
-  const ed=F().board;if(!ed||S.board.loading)return;
-  if(!force&&S.board.data?.board===ed&&Date.now()-S.board.at<15000)return;
-  S.board.loading=true;
-  try{S.board.data=await S.env.api.json(`/api/leaderboard?board=${encodeURIComponent(ed)}&limit=20`);S.board.at=Date.now();S.board.error='';}
-  catch(e){S.board.error=e.message||'Chưa tải được bảng vàng.';}
-  finally{S.board.loading=false;if(S.dlg?.open&&S.tab==='board'&&!animating())render();}
+  const ed=S.board.mode==='loss'?'fair-loss':F().board;if(!ed)return;
+  if(S.board.loading&&S.board.key===ed)return;
+  const next=S.board.data?.fair?.next;
+  if(!force&&S.board.data?.board===ed&&Date.now()-S.board.at<15000&&(!next||next*1000>serverNow()))return;
+  const request=++S.board.request;S.board.key=ed;S.board.loading=true;S.board.error='';
+  if(S.board.data?.board!==ed)S.board.data=null;
+  if(S.dlg?.open&&S.tab==='board')render();
+  try{const data=await S.env.api.json(`/api/leaderboard?board=${encodeURIComponent(ed)}&limit=20`);
+    if(request!==S.board.request)return;
+    S.board.data=data;S.board.at=Date.now();}
+  catch(e){if(request===S.board.request)S.board.error=e.message||'Chưa tải được bảng vàng.';}
+  finally{if(request===S.board.request){S.board.loading=false;if(S.dlg?.open&&S.tab==='board'&&!animating())render();}}
 }
 function boardView(){
-  const f=F(),m=won(),B=S.board.data,fair=B?.fair,me=B?.me;
-  const tiers=(fair?.tiers||[{label:'Top 1',emoji:'👑',name:'Vua trò chơi'},{label:'Top 2–10',emoji:'🎪',name:'Cao thủ chợ đen'}]).map(t=>`<li><span aria-hidden="true">${esc(t.emoji)}</span><b>${esc(t.name)}</b><small>${esc(t.label)}</small></li>`).join('');
-  const crowned=fair?.winners?.length?`<div class="fh-card fh-crowned"><h3>${fair.weekly?`Vinh danh thứ Hai${fair.crowned?` ${esc(fair.crowned.slice(8,10)+'/'+fair.crowned.slice(5,7))}`:''}`:'Chợ đã tàn · Bảng vàng chung cuộc'}</h3><ol>${fair.winners.map(w=>`<li class="${w.me?'me':''}"><span aria-hidden="true">${esc(w.emoji)}</span><b>${esc(w.name)}</b><small>${esc(w.title)} · <b>+${xu(w.score)}</b></small></li>`).join('')}</ol></div>`:'';
-  const rows=B?.rows?.length?`<ol class="fh-board">${B.rows.map(r=>`<li class="${r.me?'me':''}${r.rank===1?' first':''}"><span class="fh-rank">${r.rank===1?'👑':r.rank<=10?'🎪':r.rank}</span><span class="grow"><b>${esc(r.name||'')}</b>${r.guest?'<em class="fh-guest">khách</em>':''}<small>${fmt(r.days)} ngày chơi</small></span><b class="fh-score">+${xu(r.xu??r.score)}</b></li>`).join('')}</ol>`
-    :S.board.loading||!B?'<p class="muted fh-wait">Đang mở Bảng vàng…</p>':'<p class="muted fh-wait">Chưa ai lời xu nào. Thắng là có tên trên bảng!</p>';
-  const mine=me?`<div class="fh-me"><span>${m===null?'Bạn':`Bạn đang ${m<0?'lỗ':'lời'} <b>${xu(Math.abs(m))}</b>`}${me.rank&&me.visible!==false?` · hạng <b>${fmt(me.rank)}</b>`:''}</span>${m!==null&&m<=0?'<small>Chỉ ai đang lời mới có tên trên bảng.</small>':''}${me.visible===false?`<small class="fh-hidden">Tên bạn đang ẩn nên chưa lên bảng và chưa nhận được danh hiệu. Bật “Hiện tên tôi” ở Xếp hạng nhé.</small>`:''}</div>`:'';
-  return `<section class="fh-stall fh-gold" aria-label="Bảng vàng chợ đen">
-    <div class="fh-card fh-crown"><h3>🏆 Bảng vàng chợ đen</h3><ul class="fh-tiers">${tiers}</ul><p class="small">${endless(f)||fair?.weekly?`Trao mỗi thứ Hai lúc 00:00${fair?.next?` (lần tới ${esc(dateOf(fair.next))})`:''} theo Bảng vàng lúc đó, giữ mãi trong bộ sưu tập.`:f.over?'Danh hiệu đã trao khi chợ tàn.':`Trao khi chợ tàn (${esc(dateOf(f.closes))} 00:00), giữ mãi trong bộ sưu tập.`}</p></div>
-    ${crowned}${mine}${S.board.error?`<p class="fh-flash bad">${esc(S.board.error)}</p>`:''}${rows}
-    <details class="fh-how"><summary>Cách xếp hạng</summary><ul><li>Xếp theo số xu bạn thắng ở chợ đen lần này: tiền thắng trừ tiền thua ở bầu cua, phóng dao, vé số cào, lô tô, chiếu trong, cộng xu kiếm từ ô ăn quan và ném vòng.</li><li>Tiền vốn được tặng, tiền vay và tiền trả nợ không tính.</li><li>Chỉ ai đang lời mới có tên trên bảng.</li><li>Bằng xu thì ai đạt trước đứng trên.</li></ul></details>
+  const f=F(),loss=S.board.mode==='loss',ed=loss?'fair-loss':f.board,B=S.board.data?.board===ed?S.board.data:null,fair=B?.fair,me=B?.me;
+  const m=loss?(me?.net??null):won(),sign=loss?'-':'+';
+  const defaults=loss?[{label:'Top 1',emoji:'🥀',name:'Vua đen đủi'},{label:'Top 2–10',emoji:'☔',name:'Hội đen đủi'}]:[{label:'Top 1',emoji:'👑',name:'Vua trò chơi'},{label:'Top 2–10',emoji:'🎪',name:'Cao thủ chợ đen'}];
+  const tiers=(fair?.tiers||defaults).map(t=>`<li><span aria-hidden="true">${esc(t.emoji)}</span><b>${esc(t.name)}</b><small>${esc(t.label)}</small></li>`).join('');
+  const week=fair?.week?`${fair.week.slice(8,10)}/${fair.week.slice(5,7)}/${fair.week.slice(0,4)}`:'';
+  const crowned=fair?.winners?.length?`<div class="fh-card fh-crowned"><h3>${loss?'Danh hiệu tuần trước · ':''}${fair.weekly?`Vinh danh thứ Hai${fair.crowned?` ${esc(fair.crowned.slice(8,10)+'/'+fair.crowned.slice(5,7))}`:''}`:'Chợ đã tàn · Bảng vàng chung cuộc'}</h3><ol>${fair.winners.map(w=>`<li class="${w.me?'me':''}"><span aria-hidden="true">${esc(w.emoji)}</span><b>${esc(w.name)}</b><small>${esc(w.title)} · <b>${sign}${xu(w.score)}</b></small></li>`).join('')}</ol></div>`:'';
+  const rows=B?.rows?.length?`<ol class="fh-board">${B.rows.map(r=>`<li class="${r.me?'me':''}${r.rank===1?' first':''}"><span class="fh-rank">${r.rank===1?(loss?'🥀':'👑'):r.rank<=10?(loss?'☔':'🎪'):fmt(r.rank)}</span><span class="grow"><b>${esc(r.name||'')}</b>${r.guest?'<em class="fh-guest">khách</em>':''}<small>${loss?'Lỗ ròng tuần này':`${fmt(r.days)} ngày chơi`}</small></span><b class="fh-score">${sign}${xu(r.xu??r.score)}</b></li>`).join('')}</ol>`
+    :S.board.loading||(!B&&!S.board.error)?`<p class="muted fh-wait" role="status">Đang mở ${loss?'Top lỗ':'Top lời'}…</p>`:S.board.error?'':`<p class="muted fh-wait">${loss?'Chưa ai có lỗ ròng tuần này.':'Chưa ai lời xu nào. Thắng là có tên trên bảng!'}</p>`;
+  const mine=me?`<div class="fh-me"><span>${m===null?'Bạn':loss?`Tuần này bạn ${m===0?'hòa vốn':m<0?'đang lỗ':'đang lời'} <b>${m<0?'-':m>0?'+':''}${xu(Math.abs(m))}</b>`:`Bạn đang ${m<0?'lỗ':'lời'} <b>${xu(Math.abs(m))}</b>`}${me.rank&&me.visible!==false&&(!loss||m<0)?` · hạng <b>${fmt(me.rank)}</b>`:''}</span>${m!==null&&(loss?m>=0:m<=0)?`<small>${loss?'Chỉ ai có lỗ ròng trong tuần mới được xếp hạng.':'Chỉ ai đang lời mới có tên trên bảng.'}</small>`:''}${me.visible===false?`<small class="fh-hidden">Tên bạn đang ẩn nên chưa lên bảng và chưa nhận được danh hiệu. Bật “Hiện tên tôi” ở Xếp hạng nhé.</small>`:''}</div>`:'';
+  return `<section class="fh-stall fh-gold${loss?' fh-loss':''}" aria-label="Bảng vàng chợ đen" aria-busy="${!!S.board.loading}">
+    <div class="fh-board-modes" role="group" aria-label="Chọn bảng xếp hạng"><button type="button" class="btn" data-fh="boardmode" data-mode="win" data-fh-key="board-win" aria-pressed="${!loss}">Top lời</button><button type="button" class="btn" data-fh="boardmode" data-mode="loss" data-fh-key="board-loss" aria-pressed="${loss}">Top lỗ</button></div>
+    <div class="fh-card fh-crown"><h3>${loss?'🥀 Top lỗ tuần này':'🏆 Top lời chợ đen'}</h3>${loss?`<p class="small">${week?`Tuần từ ${esc(week)} · `:''}Tính riêng lỗ phát sinh trong tuần, bắt đầu lại vào thứ Hai.</p>`:''}<ul class="fh-tiers">${tiers}</ul><p class="small">${loss||endless(f)||fair?.weekly?`Trao mỗi thứ Hai lúc 00:00 giờ Việt Nam${fair?.next?` (lần tới ${esc(dateOf(fair.next))})`:''} theo Bảng vàng lúc đó, giữ mãi trong bộ sưu tập.`:f.over?'Danh hiệu đã trao khi chợ tàn.':`Trao khi chợ tàn (${esc(dateOf(f.closes))} 00:00), giữ mãi trong bộ sưu tập.`}${loss?' Không thưởng xu.':''}</p></div>
+    ${crowned}${mine}${S.board.error?`<p class="fh-flash bad" role="alert">${esc(S.board.error)}</p>`:''}${rows}
+    <button type="button" class="btn fh-board-refresh" data-fh="boardrefresh" data-fh-key="board-refresh"${S.board.loading?' disabled':''}>${S.board.error?'Thử lại':'Làm mới bảng'}</button>
+    <details class="fh-how"><summary>Cách xếp hạng</summary><ul><li>${loss?'Lỗ ròng = tiền thua trừ tiền thắng và xu kiếm được ở chợ đen trong cùng tuần. Tuần tính từ thứ Hai 00:00 đến trước thứ Hai kế tiếp, giờ Việt Nam.':'Xếp theo số xu bạn thắng ở chợ đen lần này: tiền thắng trừ tiền thua ở bầu cua, phóng dao, vé số cào, lô tô, chiếu trong, cộng xu kiếm từ ô ăn quan và ném vòng.'}</li><li>Tiền vốn được tặng, tiền vay và tiền trả nợ không tính.</li><li>${loss?'Chỉ ai có lỗ ròng trong tuần mới được xếp hạng.':'Chỉ ai đang lời mới có tên trên bảng.'}</li><li>Bằng xu thì ai đạt trước đứng trên.</li>${loss?`<li>Bắt đầu ghi nhận từ bản cập nhật này${fair?.started?` (${esc(dateOf(fair.started))})`:''}, không tính hồi tố các khoản trước đó.</li>`:''}</ul></details>
   </section>`;
 }
 
@@ -1170,6 +1181,8 @@ async function onClick(op,data){
   const b=S.bc,x=S.xd;
   switch(op){
     case'close':S.dlg.close();return;
+    case'boardmode':{const mode=data.mode==='loss'?'loss':'win';if(S.board.mode===mode)return;S.board.mode=mode;loadBoard();return;}
+    case'boardrefresh':loadBoard(true);return;
     case'tab':if(S.tab==='pb'&&data.tab!=='pb')PB?.leave();if(S.tab==='dg'&&data.tab!=='dg')DG?.stop();if(S.tab==='oaq'&&data.tab!=='oaq')S.oaq.anim=null;S.tab=data.tab;S.flash=null;S.anchor='';if(S.tab!=='lt')pauseLoto();ltMusic();render();S.dlg.scrollTop=0;if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();if(S.tab==='dt'&&F().knife)kn().start();return;
     case'oaqstart':oaqStart(data.lv==='kho'?'kho':'de');return;
     case'oaqsel':{if(S.oaq.anim||S.busy)return;const c=Number(data.c);S.oaq.sel=S.oaq.sel===c?null:c;S.oaq.quit=false;sfx('mark');render();return;}   // owner 03/10: change or unpick the ô freely until a direction is chosen

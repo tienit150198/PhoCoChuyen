@@ -251,10 +251,12 @@ TITLE_ROWS = (   # journey.TITLES (secret, granted here only)
     ('f_raid', '🚨', 'Bị công an hỏi thăm', 'Đang chơi ở chợ đen thì công an phường ập vào kiểm tra.'),
     ('f_king', '👑', 'Vua trò chơi', 'Đứng đầu Bảng vàng chợ đen lúc chốt danh hiệu.'),
     ('f_master', '🎪', 'Cao thủ chợ đen', 'Lọt top 10 Bảng vàng chợ đen lúc chốt danh hiệu.'),
+    ('f_loss_king', '🥀', 'Vua đen đủi', 'Đứng đầu Top lỗ trong tuần ở chợ đen khi chốt danh hiệu.'),
+    ('f_loss_club', '☔', 'Hội đen đủi', 'Lọt top 10 lỗ trong tuần ở chợ đen khi chốt danh hiệu.'),
 )
 # granted by game/fair_board.py (through game/live_effects.py): every Monday 00:00 (Vietnam) while the Chợ đen has no
 # end, after the end for an edition that has one
-AWARDS = ('f_king', 'f_master')
+AWARDS = ('f_king', 'f_master', 'f_loss_king', 'f_loss_club')
 AWARD_NAMES = {tid: f'{emoji} {name}' for tid, emoji, name, _ in TITLE_ROWS if tid in AWARDS}
 STATS = ('bc', 'xd', 'lt', 'lt_won', 'raids', 'bao', 'won', 'lost', 'oaq', 'oaq_won', 'ring', 'ring_hits', 'earned')
 KEYS = ('v', 'date', 'net', 'rounds', 'last', 'raid_until', 'loto', 'stats', 'ed', 'pts', 'dpts', 'pdays', 'pday',

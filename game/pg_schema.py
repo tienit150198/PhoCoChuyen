@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 35  # 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 36  # 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -580,6 +580,13 @@ ALTER TABLE bark_tickets ADD COLUMN IF NOT EXISTS competitive boolean NOT NULL D
 CREATE INDEX IF NOT EXISTS bark_tickets_sid ON bark_tickets(sid, created);
 CREATE INDEX IF NOT EXISTS bark_tickets_open ON bark_tickets(status, created) WHERE status IN ('wait', 'play', 'dog');
 CREATE INDEX IF NOT EXISTS bark_tickets_week ON bark_tickets(ended) WHERE status = 'done';
+-- Weekly fair cashflow, atomically updated with save commands; no historical backfill.
+CREATE TABLE IF NOT EXISTS fair_loss_week (
+  week bigint NOT NULL, sid {T} NOT NULL REFERENCES sessions(sid) ON DELETE CASCADE,
+  net bigint NOT NULL, since double precision NOT NULL, PRIMARY KEY(week,sid)
+);
+CREATE INDEX IF NOT EXISTS fair_loss_week_rank ON fair_loss_week(week,net,since,sid) WHERE net<0;
+
 """
 
 INDEX_DDL = """
@@ -879,6 +886,7 @@ TABLES = [
     dict(name='wed_invite_seen', identity=None),
     dict(name='jail_marks', identity=None),
     dict(name='bark_tickets', identity=None),
+    dict(name='fair_loss_week', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 
