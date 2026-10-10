@@ -1,3 +1,7 @@
+# v1.9.46 — 2026-10-10
+
+Theo chủ game: khôi phục tối thiểu 30 trận hợp lệ mỗi tuần trước khi xếp top tỷ lệ thắng và xét thưởng kéo co. Giữ giải thưởng và tie-break. Deploy âm thầm; giữ nguyên Có gì mới theo yêu cầu.
+
 # v1.9.45 — 2026-10-10
 
 Theo yêu cầu chủ game: top kéo co tuần xét tỷ lệ thắng của mọi người có trận hợp lệ, bỏ ngưỡng 30 trận. Giữ top 5, mức thưởng, danh hiệu, tie-break và quyền ẩn tên. Có gì mới gồm đúng bốn ý: sàn đấu giá đẹp hơn, vật dụng tăng khách/thu nhập, vào Chợ đen miễn phí, top kéo co giải nhất 2 triệu xu.

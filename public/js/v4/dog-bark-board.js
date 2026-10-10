@@ -14,18 +14,18 @@ function rows(list){
 
 export function barkCompetition(c){
   if(!c)return '<p class="db-sub">Chưa tải được bảng top tuần. Mở lại sảnh để thử lại.</p>';
-  const me=c.me,prizes=c.prizes||[],top=c.rows||[];
+  const me=c.me,minimum=num(c.minimum)||30,prizes=c.prizes||[],top=c.rows||[];
   let progress='Đăng nhập để theo dõi thứ hạng của bạn.';
   if(me){
     progress=me.visible===false?'Bạn đang ẩn tên. Bật hiện tên trong Bảng xếp hạng để đua giải.':
-      num(me.played)===0?'Chưa có trận hợp lệ trong tuần. Chơi kéo co để có tỷ lệ thắng và lên top.':
-      me.rank?`Hạng ${fmt(me.rank)} · ${rate(me.rate)} thắng · ${fmt(me.wins)}/${fmt(me.played)} trận.`:'Đã đủ điều kiện · '+rate(me.rate)+' thắng · '+fmt(me.wins)+'/'+fmt(me.played)+' trận.';
-    if(me.visible===false||num(me.played)===0)progress=`${rate(me.rate)} thắng · ${fmt(me.wins)}/${fmt(me.played)} trận. `+progress;
+      num(me.remaining)>0?`${fmt(me.played)}/${fmt(minimum)} trận · Còn ${fmt(me.remaining)} trận nữa để vào top.`:
+      me.rank?`Hạng ${fmt(me.rank)} · ${rate(me.rate)} thắng · ${fmt(me.wins)}/${fmt(me.played)} trận.`:'Đã đủ điều kiện · '+rate(me.rate)+' thắng.';
+    if(me.visible===false||num(me.remaining)>0)progress=`${rate(me.rate)} thắng · ${fmt(me.wins)}/${fmt(me.played)} trận. `+progress;
   }
   return `<details class="db-card db-competition" data-db-disclosure="top"><summary><span>🏆 Đua top tuần<small>Giải nhất ${fmt(prizes[0]?.coins)} xu</small></span><span class="db-top-arrow" aria-hidden="true">⌄</span></summary>
     <p class="db-top-me">${progress}</p>
-    <p class="db-sub">Chốt ${esc(deadline(c.ends))} (giờ Việt Nam) · Xếp hạng theo tỷ lệ thắng, không yêu cầu số trận tối thiểu.</p>
-    ${top.length?rows(top):`<p class="db-top-empty">Chưa có trận hợp lệ trên bảng top. Tuần này đang chờ nhà vô địch!</p>`}
+    <p class="db-sub">Chốt ${esc(deadline(c.ends))} (giờ Việt Nam) · Tối thiểu ${fmt(minimum)} trận.</p>
+    ${top.length?rows(top):`<p class="db-top-empty">Chưa có người đủ ${fmt(minimum)} trận. Tuần này đang chờ nhà vô địch!</p>`}
     <details class="db-top-rules" data-db-disclosure="rules"><summary>Giải thưởng & cách tính</summary>
       <ul>${prizes.map(p=>`<li>Top ${fmt(p.rank)}: <b>${fmt(p.coins)} xu</b> · ${esc(p.title)}</li>`).join('')}</ul>
       <p>Tỷ lệ thắng = số thắng / tổng trận, tính cả đối thủ người chơi và chó nhà Mây. Hòa tính vào tổng trận; trận hủy hoặc hoàn cược vì chưa bắt đầu không tính. Chỉ tính các trận thực sự bắt đầu từ bản cập nhật giải tuần.</p>

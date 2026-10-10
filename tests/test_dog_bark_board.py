@@ -45,7 +45,7 @@ class Weekly(unittest.TestCase):
                     db.execute('INSERT INTO bark_tickets(id,sid,stake,status,created,started,ended,opp,result,pay,competitive) VALUES(?,?,100,?,?,?,?,?,?,0,true)',
                                (f'k{self.serial:020x}', self.store.key(token), status, at-2, at-1, at, opp, result))
 
-    def test_ranking_all_played_accounts_denominator_and_privacy(self):
+    def test_ranking_denominator_minimum_and_privacy(self):
         B = self.init_week()
         a,b,c,h,g = [self.player(name=n, account=n!='Guest') for n in ['Lan','Minh','Hoa','Hidden','Guest']]
         self.matches(a,20,5,5,opp='pvp')
@@ -57,27 +57,34 @@ class Weekly(unittest.TestCase):
         with self.store.connect() as db:
             db.execute('INSERT INTO leaderboard_players(sid,name,show,updated) VALUES(?,?,0,0) ON CONFLICT(sid) DO UPDATE SET show=0', (self.store.key(h),'Hidden'))
         v = B.view(self.store,self.store.key(c),self.w+1000)
-        self.assertEqual([r['name'] for r in v['rows']], ['Hoa','Minh','Lan'])
-        self.assertEqual(v['rows'][2]['played'],30)
-        self.assertAlmostEqual(v['rows'][2]['rate'],200/3, places=2)
-        self.assertEqual(v['me']['remaining'],0)
-        self.assertTrue(v['me']['eligible'])
+        self.assertEqual([r['name'] for r in v['rows']], ['Minh','Lan'])
+        self.assertEqual(v['rows'][1]['played'],30)
+        self.assertAlmostEqual(v['rows'][1]['rate'],200/3, places=2)
+        self.assertEqual(v['me']['remaining'],1)
+        self.assertFalse(v['me']['eligible'])
         self.assertNotIn('sid',json.dumps(v))
         self.assertFalse(B.view(self.store,self.store.key(h),self.w+1000)['me']['eligible'])
 
-    def test_one_match_can_rank_and_win_but_unplayed_cannot(self):
+    def test_29_matches_cannot_win_and_30th_match_qualifies(self):
         B = self.init_week()
-        a, b, empty = [self.player(name=n) for n in ('One win', 'Many games', 'Unplayed')]
-        self.matches(a, 1)
-        self.matches(b, 20, 10)
-        v = B.view(self.store, self.store.key(a), self.w+1000)
-        self.assertEqual([r['name'] for r in v['rows']], ['One win', 'Many games'])
-        self.assertEqual(v['me']['rank'], 1)
-        self.assertTrue(v['me']['eligible'])
-        self.assertFalse(B.view(self.store, self.store.key(empty), self.w+1000)['me']['eligible'])
+        a, b = self.player(name='Below threshold'), self.player(name='Thirty matches')
+        self.matches(a, 29)
+        self.matches(b, 29)
+        before = B.view(self.store, self.store.key(b), self.w+1000)
+        self.assertEqual(before['rows'], [])
+        self.assertFalse(before['me']['eligible'])
+        self.assertEqual(before['me']['remaining'], 1)
+        self.matches(b, 0, losses=1)
+        B.clear_cache()
+        after = B.view(self.store, self.store.key(b), self.w+1000)
+        self.assertEqual([r['name'] for r in after['rows']], ['Thirty matches'])
+        self.assertTrue(after['me']['eligible'])
+        self.assertEqual(after['me']['remaining'], 0)
         B.settle(self.store, self.w+B.WEEK+B.GRACE+1)
-        self.assertTrue(self.pay(a))
-        self.assertEqual(self.wallet(a), 2_010_000)
+        self.assertFalse(self.pay(a))
+        self.assertTrue(self.pay(b))
+        self.assertEqual(self.wallet(a), 10_000)
+        self.assertEqual(self.wallet(b), 2_010_000)
 
     def test_settlement_concurrent_exactly_once_and_title(self):
         B = self.init_week()
@@ -117,7 +124,7 @@ class Weekly(unittest.TestCase):
         with self.store.connect() as db:
             self.assertEqual(db.execute("SELECT COUNT(*) FROM live_effects WHERE kind='bark_weekly'").fetchone()[0],0)
         B.settle(self.store,self.w+B.WEEK+B.GRACE+1)
-        self.assertEqual(B.view(self.store,None,self.w+B.WEEK+B.GRACE+1)['previous']['rows'][0]['played'],29)
+        self.assertEqual(B.view(self.store,None,self.w+B.WEEK+B.GRACE+1)['previous']['rows'],[])
         self.assertEqual(B.view(self.store,self.store.key(a),self.w+B.WEEK+1000)['me']['played'],1)
         with self.store.connect() as db:
             db.execute("UPDATE accounts SET created_at='2026-10-13 00:00:00' WHERE sid=?", (self.store.key(a),))

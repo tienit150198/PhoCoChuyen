@@ -20,7 +20,7 @@ import time
 from . import dog_bark as bark
 
 WEEK = 7 * 86400
-MINIMUM = 1  # Every played account ranks; unplayed accounts have no win rate.
+MINIMUM = 30
 GRACE = 60
 LIMIT = 20
 FX = 'bark_weekly'
@@ -49,7 +49,7 @@ def week_label(w):
 
 def titles(make):
     return [make(tid, 'secret', EMOJI[i], TITLE_NAMES[tid],
-                 f'Đạt hạng {i+1} giải tỷ lệ thắng kéo co chó sủa tuần.', lambda x: False, True)
+                 f'Đạt hạng {i+1} giải kéo co chó sủa tuần, ít nhất {MINIMUM} trận hợp lệ.', lambda x: False, True)
             for i, tid in enumerate(TITLE_IDS)]
 
 
