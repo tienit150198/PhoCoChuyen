@@ -1,29 +1,39 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "1.9.46",
-  "created_at_utc": "2026-10-10T15:15:49.775085+00:00",
+  "version": "1.9.47",
+  "created_at_utc": "2026-10-10T15:38:44.302661+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 442,
+  "minified": 444,
   "release_from_live": {
     "live_release": "mot-ngay-lam-nghe",
-    "live_version": "1.9.45",
-    "live_manifest_sha256": "5c6c400e312f295582fec29d4510006be04485c5ebf196e009cf4fcf097e5924",
-    "base": "a8f2061a10766933e6611be1bea713773b2f8653",
-    "ref": "fcae078af1739d056da71d419423eb730c780202",
+    "live_version": "1.9.46",
+    "live_manifest_sha256": "1b0bebbc67a3d04e6e77dc3cdda47ca9c14032b2dc86bcfc933d98dbed8a26e0",
+    "base": "9f52df186802c1a685123f83d070ed3c2fa159f7",
+    "ref": "1bfb627456f7e0e3290f6ea975b097d26925c8c6",
     "changed": [
       "CHANGELOG.md",
       "docs/BARK_WEEKLY_2026-10-10.md",
-      "docs/DEPLOY_1.9.45_2026-10-10.md",
+      "docs/DEPLOY_1.9.46_2026-10-10.md",
+      "docs/FAIR_WEEKLY_LOSS_2026-10-10.md",
+      "docs/superpowers/plans/2026-10-10-fair-weekly-loss.md",
       "game/__init__.py",
-      "game/dog_bark_board.py",
-      "public/js/v4/dog-bark-board.js",
-      "tests/dog_bark_board.mjs",
-      "tests/test_dog_bark_board.py",
+      "game/fair.py",
+      "game/fair_board.py",
+      "game/fair_loss.py",
+      "game/leaderboard.py",
+      "game/pg_schema.py",
+      "game/storage.py",
+      "public/css/fair.css",
+      "public/js/v4/fair.js",
+      "tests/fair_loss_board_browser.mjs",
+      "tests/fair_loss_board_render.mjs",
+      "tests/test_fair_loss.py",
       "tests/test_task_compat.py"
     ],
     "deleted": [],
     "minified": [
-      "public/js/v4/dog-bark-board.js"
+      "public/css/fair.css",
+      "public/js/v4/fair.js"
     ]
   },
   "files": [
@@ -44,8 +54,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 301333,
-      "sha256": "5bd63147a4c2d1f5c318af7b6d2352b4c06c69ad2531b3367ae5ab70eb660af7"
+      "bytes": 301804,
+      "sha256": "29f2be8264ccb61234943870d205ed7a4993855b4807cda8d06bc5b7bf569e33"
     },
     {
       "path": "Dockerfile",
@@ -279,8 +289,8 @@
     },
     {
       "path": "docs/BARK_WEEKLY_2026-10-10.md",
-      "bytes": 4862,
-      "sha256": "02401b032916a5655a143f9571d7147baf537d85f8f445e3d67fb3f098b033a3"
+      "bytes": 5057,
+      "sha256": "314cb7e8c9174d5d7c46f1840e26f2070a4a24f7a8089cf1cef2b83f0b579547"
     },
     {
       "path": "docs/DANH_MUC_MAN_HINH_ASSET_ISOMETRIC_2026-10-05.md",
@@ -356,6 +366,11 @@
       "path": "docs/DEPLOY_1.9.45_2026-10-10.md",
       "bytes": 2495,
       "sha256": "147fa13e2f35565eb4f99a3334fc7b926bc18454b1541ed9e28a8fd96c05c05a"
+    },
+    {
+      "path": "docs/DEPLOY_1.9.46_2026-10-10.md",
+      "bytes": 1850,
+      "sha256": "c0807be628830cbb5aaac3317a20a2503fdd418c509b26d8ab2d0b93a3b214ba"
     },
     {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
@@ -446,6 +461,11 @@
       "path": "docs/FAIR_STABILITY_2026-10-05.md",
       "bytes": 5115,
       "sha256": "82f83be385eb5908b75d39c7f3719b32e24aea8a9be0e2c576bc57d8d7a3bf8e"
+    },
+    {
+      "path": "docs/FAIR_WEEKLY_LOSS_2026-10-10.md",
+      "bytes": 3055,
+      "sha256": "3676a5559b6c94e6ba6fe33a59b6e4a3f93b08245290c06ee84db2e132c5ff2a"
     },
     {
       "path": "docs/FEEDBACK_2026-10-04.md",
@@ -1473,6 +1493,11 @@
       "sha256": "a71db48b6a73755606fe780af5a5b8d289893d55c50bf7d18d90f9cd388078b9"
     },
     {
+      "path": "docs/superpowers/plans/2026-10-10-fair-weekly-loss.md",
+      "bytes": 1925,
+      "sha256": "e01fa59e55d7003ce064896de89a60d6764dcd24143e551a61ea28af4f813f27"
+    },
+    {
       "path": "docs/superpowers/plans/2026-10-10-income-upgrades.md",
       "bytes": 3346,
       "sha256": "5e7582a75f2607ca79c38f0b75d6d3e01623cbc1adc868c460ed84145506e5fd"
@@ -1685,7 +1710,7 @@
     {
       "path": "game/__init__.py",
       "bytes": 106,
-      "sha256": "3c76437af96d39a7d6f52d5c53d0767b5dff6f7beddeaf96cd46082372e097c2"
+      "sha256": "bd6d7672cacbcf722ec6f9de3f3ee06e187db99f3c1e01601663b2fea6322e4b"
     },
     {
       "path": "game/abandon.py",
@@ -2379,8 +2404,8 @@
     },
     {
       "path": "game/fair.py",
-      "bytes": 116931,
-      "sha256": "b3e9f37dad965c0c659603d24493e236a6c889ac3ff2014b9922b8a943df117e"
+      "bytes": 117210,
+      "sha256": "bf008c4c3ee9cdc1d5c53cd2e29637068a819cd87bfb1aaab5ff17d34dcd8724"
     },
     {
       "path": "game/fair_bm.py",
@@ -2389,8 +2414,8 @@
     },
     {
       "path": "game/fair_board.py",
-      "bytes": 10434,
-      "sha256": "7e8cd1828f463032bd68dc1017395442a160731a13a00902a3ffd48c4bff6407"
+      "bytes": 10509,
+      "sha256": "c530684fe902a8f54d56ce77a1d68be4445988c4c9bcc212640b5aa4ba81a1f1"
     },
     {
       "path": "game/fair_cash.py",
@@ -2416,6 +2441,11 @@
       "path": "game/fair_knife.py",
       "bytes": 20762,
       "sha256": "76057e5904d05ddb3a36cd65199ce7c98e3c909b594499f9619e0bb5ba5a71c8"
+    },
+    {
+      "path": "game/fair_loss.py",
+      "bytes": 7502,
+      "sha256": "f9f5f23abebb3cead27af7d7e18bf420e2168d64885a549faaa88528a7b8d97b"
     },
     {
       "path": "game/fair_oaq.py",
@@ -2604,8 +2634,8 @@
     },
     {
       "path": "game/leaderboard.py",
-      "bytes": 26881,
-      "sha256": "e081509493dfee50b899258345720d1e70d0b76eab18ce499a3e1f051083d765"
+      "bytes": 27006,
+      "sha256": "1d49e5831b10e400fc4c358c04c73d07a391bcb7f1bede9e88539dba74c7b01c"
     },
     {
       "path": "game/leisure.py",
@@ -2734,8 +2764,8 @@
     },
     {
       "path": "game/pg_schema.py",
-      "bytes": 64581,
-      "sha256": "cebe6173c5bcb413291007676348676b47c3f3b116cf2bca0661da24ae3dc546"
+      "bytes": 65067,
+      "sha256": "b50c007d97153579206da8356c54ea7ad4bfe3db3eb1b4071302c2e949428a07"
     },
     {
       "path": "game/player_feedback.py",
@@ -2939,8 +2969,8 @@
     },
     {
       "path": "game/storage.py",
-      "bytes": 58384,
-      "sha256": "d90b46ee60f026daefc5562df4d8709a2c8b6e7fc42f37f3b9c91260914ba729"
+      "bytes": 58679,
+      "sha256": "4f39bb0e7fcf79a603e014ff358db58564b00d7c2163b0b0d2464340f71505ad"
     },
     {
       "path": "game/system_gift.py",
@@ -3764,8 +3794,8 @@
     },
     {
       "path": "public/css/fair.css",
-      "bytes": 69785,
-      "sha256": "49e20b33ffec578ba484dd4a3772788d7a8f7ede317a61aa1f3ce11a3a02400e"
+      "bytes": 70545,
+      "sha256": "99fc6bfe9a8e990ba7dca21f21167ddc3d2812309431096d733a455fdc963e4b"
     },
     {
       "path": "public/css/feedback.css",
@@ -5304,8 +5334,8 @@
     },
     {
       "path": "public/js/v4/fair.js",
-      "bytes": 91742,
-      "sha256": "b7725865c4773133e67325a742d3dd0a8ef03c64fb99a72047148d3366394400"
+      "bytes": 94298,
+      "sha256": "014fadef90bf445a712c69c9d23fe2eabd2604c74da9fff9d1b6e0eacc9de898"
     },
     {
       "path": "public/js/v4/family.js",
@@ -6918,6 +6948,16 @@
       "sha256": "d8eb299b132f6ef25600c5942b7c7680e11d62644b1a82fb08e621a790310c97"
     },
     {
+      "path": "tests/fair_loss_board_browser.mjs",
+      "bytes": 5197,
+      "sha256": "0443df3bf64fe30a1d9fc07a016f3e07bd5a6b0bc2f65d51bff273258c19d285"
+    },
+    {
+      "path": "tests/fair_loss_board_render.mjs",
+      "bytes": 4888,
+      "sha256": "04ec8e0fcab76b4af73c000487e2dbc89426281a541eb16e6f9d37c579b1f2fe"
+    },
+    {
       "path": "tests/fair_render_budget.mjs",
       "bytes": 9297,
       "sha256": "89236fb0284008d86709312b8b0be6d998401cec36972b02383bc2d1e688f507"
@@ -8218,6 +8258,11 @@
       "sha256": "703b77fe22fe30161a262970632ca7adde9cdba64f654ca290a6208bc734618e"
     },
     {
+      "path": "tests/test_fair_loss.py",
+      "bytes": 8537,
+      "sha256": "dcb38f44970237377647a5031c489717b6e27d26d374ac25b4a61bc22f308e4a"
+    },
+    {
       "path": "tests/test_fair_oaq_strong.py",
       "bytes": 14011,
       "sha256": "7e4327fed2df22e0cb335b5a7d5f6f69ebe156698a63d97e27ff1452aaa5b47b"
@@ -9345,7 +9390,7 @@
     {
       "path": "tests/test_task_compat.py",
       "bytes": 5568,
-      "sha256": "c67f21eb50227c110a3c57027557d9ede2801c81ae1a3367305c5b8ce003088c"
+      "sha256": "590b4d08c3790a969cca0fcdc4fb8fb37644db5861b2cf2e2ef7a62d22b42b08"
     },
     {
       "path": "tests/test_teacher_care.py",
