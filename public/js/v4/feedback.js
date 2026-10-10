@@ -6,6 +6,8 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {statsView,statsAction} from './admin-stats.js';
 
 const TEXT_MAX=10000,REPLY_MAX=10000;   // owner 06/10: 10,000 characters, 10/10 the reply too (game/player_feedback.py)
+const IMAGE_MAX=3,IMAGE_BYTES=2*1024*1024;
+const IMAGE_TYPES=new Set(['image/png','image/jpeg','image/webp']);
 export const KINDS=[['bug','🐞','Lỗi'],['idea','💡','Ý tưởng'],['praise','💖','Khen'],['hard','🤔','Khó dùng']];
 const HINTS={bug:'Bạn đang làm gì thì gặp lỗi? Lỗi trông ra sao?',idea:'Bạn muốn game có thêm điều gì?',praise:'Điều gì làm bạn thấy vui?',hard:'Chỗ nào làm bạn lúng túng hoặc phải đoán?'};
 const STATUS={new:['Đã gửi',''],seen:['Đã xem','blue'],done:['Đã xử lý','green']};
@@ -21,7 +23,7 @@ const kindOf=id=>KINDS.find(k=>k[0]===id)||KINDS[0];
 const loading=`<div class="empty">${icon('sparkle',26)}<p class="muted">Đang tải…</p></div>`;
 const failed=d=>`<div class="notice danger">${icon('alert',17)}<div>${esc(d.error)}</div></div>`;
 
-const fbState=ui=>ui.fb??={kind:'bug',draft:'',tab:'write',filter:{status:'new',kind:''},sent:null,mine:null,inbox:null};
+const fbState=ui=>ui.fb??={kind:'bug',draft:'',images:[],tab:'write',filter:{status:'new',kind:''},sent:null,mine:null,inbox:null};
 const layout=()=>document.documentElement.dataset.layout||'desktop';
 function careerName(api,id){const c=api.content?.catalogue?.find(x=>x.id===id);return c?.short||c?.name||id;}
 
@@ -60,6 +62,41 @@ function loadInbox(env,more=false){
 }
 
 /* ---- player page ----------------------------------------------------------- */
+function imagePicker(fb){
+  const images=fb.images||[],busy=fb.sending||fb.imagesBusy;
+  return `<div class="fb-attachments"><span class="field">Ảnh đính kèm (tùy chọn)</span>
+    <label class="btn ghost small fb-image-choose${busy||images.length>=IMAGE_MAX?' disabled':''}" for="fb-images">Chọn ảnh
+    <input id="fb-images" class="fb-image-input" type="file" accept="image/png,image/jpeg,image/webp" multiple aria-describedby="fb-images-help"${busy||images.length>=IMAGE_MAX?' disabled':''}></label>
+    <p id="fb-images-help" class="small muted">Chọn tối đa 3 ảnh PNG, JPG hoặc WebP, mỗi ảnh tối đa 2 MB. ${fb.imagesBusy?'Đang đọc ảnh…':`${images.length}/3 ảnh đã chọn.`}</p>
+    ${images.length?`<div class="fb-image-grid">${images.map((image,index)=>`<figure class="fb-image-draft"><img src="${esc(image.data)}" alt="Ảnh đính kèm ${index+1}" width="120" height="90"><figcaption>${esc(image.name)}</figcaption>${button('Bỏ ảnh','fbRemoveImage',{index},'ghost small',busy?' disabled':'')}</figure>`).join('')}</div>`:''}
+  </div>`;
+}
+function imageGallery(images){
+  // Use only protected same-origin image paths returned by the feedback API.
+  const safe=(images||[]).filter(image=>/^\/api\/feedback\/images\/[a-f0-9]{32}$/.test(image.url));
+  if(!safe.length)return '';
+  return `<div class="fb-image-grid" aria-label="Ảnh đính kèm">${safe.map((image,index)=>`<a class="fb-image-link" href="${esc(image.url)}" target="_blank" rel="noopener" aria-label="Mở ảnh đính kèm ${index+1}"><img src="${esc(image.url)}" alt="Ảnh đính kèm ${index+1}" loading="lazy" width="120" height="90"><span class="small">Xem ảnh ${index+1}</span></a>`).join('')}</div>`;
+}
+function readFile(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve({name:file.name,data:reader.result});
+    reader.onerror=reader.onabort=()=>reject(new Error('Không đọc được ảnh. Chọn lại ảnh rồi thử nhé.'));
+    reader.readAsDataURL(file);
+  });
+}
+async function addImages(el,env){
+  const fb=fbState(env.ui),files=Array.from(el.files||[]);el.value='';
+  if(!files.length||fb.sending||fb.imagesBusy)return;
+  fb.images??=[];
+  if(fb.images.length+files.length>IMAGE_MAX){env.toast('Mỗi góp ý được gửi tối đa 3 ảnh.',true);return;}
+  if(files.some(file=>!IMAGE_TYPES.has(file.type))){env.toast('Chọn ảnh PNG, JPG hoặc WebP tĩnh.',true);return;}
+  if(files.some(file=>!file.size||file.size>IMAGE_BYTES)){env.toast('Mỗi ảnh tối đa 2 MB. Hãy chọn ảnh nhỏ hơn.',true);return;}
+  fb.imagesBusy=true;env.renderSheet();
+  try{const images=await Promise.all(files.map(readFile));fb.images.push(...images);}
+  catch(error){env.toast(error.message,true);}
+  finally{fb.imagesBusy=false;if(env.ui.view==='gopy')env.renderSheet();}
+}
 function writeForm(env){
   const fb=fbState(env.ui),len=[...fb.draft].length;
   if(fb.sent)return `<section class="card fb-done" role="status"><span class="fb-done-mark" aria-hidden="true">${icon('check',30)}</span><h3>${esc(fb.sent.message||'Đã ghi nhận, cảm ơn bạn!')}</h3><p class="muted small">Nhà làm game sẽ đọc từng góp ý. Khi có lời đáp, bạn xem ở mục “Góp ý của bạn” ngay bên dưới.</p>${button(icon('plus',15)+' Viết thêm góp ý','fbAgain',{},'primary')}</section>`;
@@ -67,8 +104,9 @@ function writeForm(env){
     <div class="fb-kinds" role="radiogroup" aria-label="Loại góp ý">${KINDS.map(([id,emo,label])=>`<button type="button" role="radio" class="chip fb-kind${fb.kind===id?' selected':''}" aria-checked="${fb.kind===id}" data-action="fbKind" data-kind="${id}"><span aria-hidden="true">${emo}</span> ${label}</button>`).join('')}</div>
     <label class="field fb-field" for="fb-text">Bạn muốn nói gì?<textarea id="fb-text" name="text" rows="5" maxlength="${TEXT_MAX}" placeholder="${esc(HINTS[fb.kind])}" data-no-translate>${esc(fb.draft)}</textarea></label>
     <div class="fb-meta"><span class="fb-context">${icon('clipboard',14)}<span>Gửi kèm: <b>${contextLine(env)}</b></span></span><output id="fb-count" class="fb-count${len>TEXT_MAX-50?' near':''}" for="fb-text">${len}/${TEXT_MAX}</output></div>
-    <p class="small muted fb-privacy">Đừng ghi số điện thoại, email hay mật khẩu (máy chủ tự ẩn những thứ này). Góp ý chỉ nhà làm game đọc được. <a href="/privacy" target="_blank" rel="noopener">Quyền riêng tư</a></p>
-    <button class="btn primary full" type="submit"${fb.sending?' disabled':''}>${icon('send',16)} ${fb.sending?'Đang gửi…':'Gửi góp ý'}</button>
+    ${imagePicker(fb)}
+    <p class="small muted fb-privacy">Máy chủ tự ẩn số điện thoại, email và đường link trong lời viết. Hãy che thông tin riêng tư trên ảnh trước khi gửi. Chỉ bạn và nhà làm game xem được góp ý cùng ảnh đính kèm. <a href="/privacy" target="_blank" rel="noopener">Quyền riêng tư</a></p>
+    <button class="btn primary full" type="submit"${fb.sending||fb.imagesBusy?' disabled':''}>${icon('send',16)} ${fb.sending?'Đang gửi…':'Gửi góp ý'}</button>
   </form>`;
 }
 /** ✏️ F#295 "nên có nút sửa lại góp ý": a note with no reply yet can be edited in place (game/player_feedback.py edit
@@ -83,6 +121,7 @@ function mineItem(it,fb={}){
   const [emo,label]=kindOf(it.kind).slice(1),[st,cls]=STATUS[it.status]||STATUS.new,editing=!it.reply&&fb.edit?.id===it.id;
   return `<article class="fb-item"><div class="fb-item-top"><span class="fb-item-kind"><span aria-hidden="true">${emo}</span> ${label}</span>${pill(st,cls)}<small class="muted">${ago(it.created_at)}</small></div>
     ${editing?editForm(fb,it):`<p class="fb-text" data-no-translate>${esc(it.text)}</p>`}
+    ${imageGallery(it.images)}
     ${it.reply?`<div class="fb-reply"><b>${icon('chat',14)} Nhà làm game trả lời</b><p data-no-translate>${esc(it.reply)}</p>${it.replied_at?`<small class="muted">${ago(it.replied_at)}</small>`:''}</div>`:editing?'':`<div class="row fb-edit-row">${button('✏️ Sửa','fbEdit',{id:it.id},'ghost small')}</div>`}</article>`;
 }
 function mineList(env){
@@ -107,6 +146,7 @@ function adminItem(env,it){
   const firstLine=esc((it.text||'').split('\n')[0].slice(0,90));
   return `<details class="fb-admin-item ${it.status}" data-id="${it.id}"><summary><span class="fb-item-kind"><span aria-hidden="true">${emo}</span> ${label}</span>${pill(it.status==='new'?'Mới':st,it.status==='new'?'amber':cls)}<span class="fb-sum-text" data-no-translate>${firstLine}</span><small class="muted fb-sum-who" data-no-translate>${who} · ${ago(it.created_at)} · #${it.id}</small></summary>
     <div class="fb-admin-body"><p class="fb-text" data-no-translate>${esc(it.text)}</p>
+      ${imageGallery(it.images)}
       <h4 class="fb-sub">Ngữ cảnh</h4>${contextKV(env,it.context)}
       <div class="fb-status-row" role="group" aria-label="Đổi trạng thái">${ADMIN_STATUS.map(([s,l])=>`<button type="button" class="chip${it.status===s?' selected':''}" aria-pressed="${it.status===s}" data-action="fbSetStatus" data-id="${it.id}" data-status="${s}">${l}</button>`).join('')}</div>
       <form class="fb-reply-form" data-fb-reply="${it.id}"><label class="field" for="fb-reply-${it.id}">Lời đáp cho người chơi<textarea id="fb-reply-${it.id}" name="reply" rows="3" maxlength="${REPLY_MAX}" data-preserve data-no-translate placeholder="Cảm ơn bạn, mình đã sửa trong bản tới…">${esc(it.reply||'')}</textarea></label>
@@ -161,6 +201,7 @@ export async function feedbackAction(action,data,el,env){
   switch(action){
     case'gopy':{const fb=fbState(ui);fb.from=ui.view&&ui.view!=='gopy'?ui.view:'stage';fb.sent=null;fb.mine=null;fb.inbox=null;fb.edit=null;env.openSheet('gopy');return true;}
     case'fbKind':fbState(ui).kind=data.kind;env.renderSheet();return true;
+    case'fbRemoveImage':{const fb=fbState(ui),index=Number(data.index);if(!fb.sending&&!fb.imagesBusy&&Number.isInteger(index)&&index>=0)fb.images?.splice(index,1);env.renderSheet();return true;}
     case'fbAgain':fbState(ui).sent=null;env.renderSheet(false);setTimeout(()=>document.getElementById('fb-text')?.focus(),0);return true;
     case'fbTab':fbState(ui).tab=data.tab;env.renderSheet(false);return true;
     case'fbFilter':{const fb=fbState(ui);fb.filter[data.field]=data.value;fb.inbox=null;env.renderSheet(false);return true;}
@@ -208,11 +249,11 @@ export async function feedbackSubmit(f,env){
   const fb=fbState(ui),text=(f.querySelector('#fb-text')?.value||'').trim();
   fb.draft=f.querySelector('#fb-text')?.value||'';
   if([...text].length<3){toast('Viết thêm vài chữ nữa nhé.',true);f.querySelector('#fb-text')?.focus();return true;}
-  if(fb.sending)return true;
+  if(fb.sending||fb.imagesBusy)return true;
   fb.sending=true;env.renderSheet();
   try{
-    const d=await api.post('/api/feedback',{kind:fb.kind,text,context:clientContext(ui)});
-    fb.sent={id:d.id,message:d.message};fb.draft='';fb.mine=null;
+    const d=await api.post('/api/feedback',{kind:fb.kind,text,context:clientContext(ui),images:(fb.images||[]).map(image=>image.data)});
+    fb.sent={id:d.id,message:d.message};fb.draft='';fb.images=[];fb.mine=null;
   }catch(e){toast(e.status?e.message:'Mất kết nối. Góp ý vẫn còn trong ô, thử lại sau nhé.',true);}
   finally{fb.sending=false;env.renderSheet();}
   return true;
@@ -220,6 +261,7 @@ export async function feedbackSubmit(f,env){
 
 /** Live counter; the draft survives closing the sheet. */
 export function feedbackInput(el,env){
+  if(el.id==='fb-images'){void addImages(el,env);return true;}
   if(el.id?.startsWith('fb-edit-')){
     const e=fbState(env.ui).edit;if(!e||el.id!==`fb-edit-${e.id}`)return true;e.draft=el.value;
     const out=document.getElementById('fb-edit-count'),n=[...el.value].length;

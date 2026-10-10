@@ -15,3 +15,4 @@ await build({
 });
 const file='public/js/isometric/phaser-world.js';
 console.log(`Phaser scene: ${(await stat(file)).size} bytes, ${gzipSync(readFileSync(file)).length} bytes gzip`);
+await build({entryPoints:['client/isometric/career-gallery.ts'],outfile:'public/js/isometric/career-gallery.js',bundle:true,format:'esm',platform:'browser',target:'es2020',external:['/js/*'],minify:true,legalComments:'none'});

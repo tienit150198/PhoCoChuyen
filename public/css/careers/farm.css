@@ -433,6 +433,15 @@
 /* 🚶 Tự đi: the 🌟 Trại chip on the scene, under the view switches (pointer events on: .fv-top passes them through). */
 .career-job.fa .fv-plus{position:absolute;top:58px;left:8px;z-index:2;min-height:40px;padding:4px 14px;border:0;border-radius:99px;background:rgb(255 253 246 / 92%);color:#2f3322;font-size:14px;font-weight:800;box-shadow:0 2px 8px rgb(0 0 0 / 15%);pointer-events:auto}
 .career-job.fa .fv-plus .fa-badge{position:absolute;top:-6px;right:-6px}
+.career-job.fa.fa-walk[data-fv-camera="iso"]{--fv-h:clamp(340px,calc(100dvh - 320px),640px)}
+.career-job.fa[data-fv-camera="iso"] .fv-host{background:#b8ce8e;box-shadow:inset 0 0 0 1px #7f986532,var(--fa-shadow)}
+.career-job.fa .fv-stage[data-camera="iso"] .fv-cv{cursor:pointer}
+.career-job.fa[data-fv-camera="iso"] .fv-seg{background:#fff7e6ed;box-shadow:0 2px 6px #695c3520}
+.career-job.fa[data-fv-camera="iso"] .fv-seg .btn.on{background:#6f8c4a;color:#fff9e8}
+.career-job.fa .fv-garden-help{position:absolute;right:10px;bottom:9px;left:10px;margin:0;padding:6px 10px;width:fit-content;max-width:calc(100% - 20px);border-radius:8px;background:#fff8e6e6;color:#5b6947;font-size:11px;line-height:1.4;pointer-events:none;box-shadow:0 1px 4px #5c61301c}
+.career-job.fa .fv-touch-help{display:none}
+@media(pointer:coarse){.career-job.fa .fv-key-help{display:none}.career-job.fa .fv-touch-help{display:inline}}
+@media(max-width:380px){.career-job.fa[data-fv-camera="iso"] .fv-seg .btn{padding-inline:5px;font-size:11px}.career-job.fa .fv-garden-help{font-size:10px}}
 .career-job.fa .fv-plus.hot{animation:fp-glow 1.6s ease-in-out infinite}
 @keyframes fp-glow{0%,100%{box-shadow:0 2px 8px rgb(0 0 0 / 15%),0 0 0 0 rgb(255 205 60 / 0%)}50%{box-shadow:0 2px 8px rgb(0 0 0 / 15%),0 0 0 6px rgb(255 205 60 / 55%)}}
 @media (prefers-reduced-motion:reduce){.career-job.fa .fv-plus.hot{animation:none;box-shadow:0 0 0 3px rgb(255 205 60 / 70%)}}

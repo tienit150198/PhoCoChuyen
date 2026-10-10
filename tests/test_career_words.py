@@ -252,7 +252,7 @@ class ClientTexts(unittest.TestCase):
             f.write_text(json.dumps(cat, ensure_ascii=False), encoding='utf-8')
             js = Path(tmp) / 'w.mjs'
             js.write_text(script, encoding='utf-8')
-            res = subprocess.run([node, str(js), str(ROOT), str(f)], capture_output=True, text=True, timeout=60)
+            res = subprocess.run([node, str(js), ROOT.as_uri(), str(f)], capture_output=True, text=True, timeout=60)
         self.assertEqual(res.returncode, 0, res.stderr)
         out = json.loads(res.stdout)
         for cid in NON_SHOP:

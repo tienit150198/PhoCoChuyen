@@ -18,3 +18,8 @@ final2/
 before_*.json
 after_*.json
 public/_v/
+output/
+tmp/
+.playwright-cli/
+# Operator-only account recovery notes must never enter source releases.
+docs/ADMIN_PASSWORD_RESET_*.md

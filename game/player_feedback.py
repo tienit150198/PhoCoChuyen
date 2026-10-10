@@ -13,12 +13,14 @@ import hashlib
 import json
 import os
 import re
+import secrets
 import time
 import unicodedata
 
 from . import accounts
 from .ai import redact
 from .social import BANNED
+from . import feedback_images
 
 KINDS = ('bug', 'idea', 'praise', 'hard')
 STATUSES = ('new', 'seen', 'done')
@@ -115,9 +117,10 @@ def _tag(sid: str) -> str:
     return hashlib.sha256(('fb:' + sid).encode()).hexdigest()[:8]
 
 
-def _row(r, admin: bool = False) -> dict:
+def _row(r, admin: bool = False, images: dict | None = None) -> dict:
     item = dict(id=r['id'], kind=r['kind'], text=r['text'], status=r['status'], reply=r['reply'],
-                created_at=r['created_at'], updated_at=r['updated_at'], replied_at=r['replied_at'])
+                created_at=r['created_at'], updated_at=r['updated_at'], replied_at=r['replied_at'],
+                images=(images or {}).get(r['id'], []))
     if admin:
         try:
             ctx = json.loads(r['context'] or '{}')
@@ -127,6 +130,36 @@ def _row(r, admin: bool = False) -> dict:
     return item
 
 
+def _image_metadata(db, rows) -> dict:
+    """One bounded metadata query; never load image bytes for inbox/list rows."""
+    ids = [r['id'] for r in rows]
+    if not ids:
+        return {}
+    out: dict = {}
+    for r in db.execute('SELECT id,feedback_id,mime,width,height,byte_size FROM player_feedback_images '
+                        f'WHERE feedback_id IN ({",".join("?" for _ in ids)}) ORDER BY feedback_id,position', ids):
+        out.setdefault(r['feedback_id'], []).append(dict(id=r['id'], url='/api/feedback/images/' + r['id'],
+            mime=r['mime'], width=r['width'], height=r['height'], size=r['byte_size']))
+    return out
+
+
+def read_image(store, token: str | None, image_id: str) -> tuple[bytes, str]:
+    """Cookie/session route: only this feedback's owner or a current operator."""
+    need(token, 'Bạn chưa có phiên chơi.', 'no_session', 401)
+    need(isinstance(image_id, str) and re.fullmatch(r'[a-f0-9]{32}', image_id),
+         'Không tìm thấy ảnh.', 'not_found', 404)
+    sid = store.key(token)
+    account = account_of(store, token)
+    admin = bool(account and account in admin_users())
+    with store.connect() as db:
+        row = db.execute('SELECT i.data,i.mime FROM player_feedback_images i '
+            'JOIN player_feedback f ON f.id=i.feedback_id WHERE i.id=? '
+            'AND (? OR f.sid=? OR (f.account IS NOT NULL AND f.account=?))',
+            (image_id, admin, sid, account or '')).fetchone()
+    need(row, 'Không tìm thấy ảnh.', 'not_found', 404)
+    return bytes(row['data']), row['mime']
+
+
 # ---------------------------------------------------------------- player side
 def submit(store, token: str, state: dict, data: dict, ua: str = '', version: str = '') -> dict:
     need(isinstance(data, dict), 'Dữ liệu góp ý không hợp lệ.')
@@ -134,6 +167,10 @@ def submit(store, token: str, state: dict, data: dict, ua: str = '', version: st
     need(kind in KINDS, 'Chọn loại góp ý: lỗi, ý tưởng, lời khen hoặc khó dùng.', 'bad_kind')
     text = clean_text(data.get('text'), TEXT_MAX, TEXT_MIN, 'Góp ý')
     need(len(text.replace('•••', '').replace('[đã ẩn]', '').strip()) >= TEXT_MIN, 'Viết thêm vài chữ nữa nhé.', 'bad_length')
+    try:
+        images = feedback_images.decode_images(data.get('images', []))
+    except feedback_images.ImageUploadError as exc:
+        raise FeedbackError(str(exc), exc.code, exc.status) from None
     context = clean_context(data.get('context'), state, ua, version)
     sid = store.key(token)
     account = account_of(store, token)
@@ -142,6 +179,10 @@ def submit(store, token: str, state: dict, data: dict, ua: str = '', version: st
         sql = 'INSERT INTO player_feedback(sid,account,kind,text,context,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)'
         args = (sid, account, kind, text, json.dumps(context, ensure_ascii=False), 'new', now, now)
         fid = db.execute(sql + ' RETURNING id', args).fetchone()[0]
+        for position, image in enumerate(images):
+            db.execute('INSERT INTO player_feedback_images(id,feedback_id,position,mime,width,height,byte_size,data) '
+                       'VALUES(?,?,?,?,?,?,?,?)', (secrets.token_hex(16), fid, position, image['mime'],
+                       image['width'], image['height'], image['size'], image['data']))
     return dict(ok=True, id=fid, message=THANKS)
 
 
@@ -167,8 +208,9 @@ def edit(store, token: str, data: dict) -> dict:
         row = db.execute("UPDATE player_feedback SET text=?, kind=COALESCE(?, kind), status='new', updated_at=? "
                          'WHERE id=? AND (sid=? OR (account IS NOT NULL AND account=?)) AND reply IS NULL RETURNING *',
                          (text, kind, now, fid, sid, account or '')).fetchone()
+        images = _image_metadata(db, [row]) if row else {}
     need(row, NOT_EDITABLE, 'not_editable', 409)
-    return dict(ok=True, item=_row(row), message=EDITED)
+    return dict(ok=True, item=_row(row, images=images), message=EDITED)
 
 
 def list_mine(store, token: str, limit: int = MINE_LIMIT) -> list[dict]:
@@ -177,7 +219,8 @@ def list_mine(store, token: str, limit: int = MINE_LIMIT) -> list[dict]:
     with store.connect() as db:
         rows = db.execute('SELECT * FROM player_feedback WHERE sid=? OR (account IS NOT NULL AND account=?) ORDER BY id DESC LIMIT ?',
                           (sid, account or '', int(limit))).fetchall()
-    return [_row(r) for r in rows]
+        images = _image_metadata(db, rows)
+    return [_row(r, images=images) for r in rows]
 
 
 def forget(store, token: str) -> int:
@@ -189,8 +232,12 @@ def forget(store, token: str) -> int:
 
 
 def prune(store, days: int = 730) -> int:
-    with store.connect() as db:
-        return db.execute('DELETE FROM player_feedback WHERE created_at<?', (time.time() - int(days) * 86400,)).rowcount
+    """Feedback and its images are retained until the owner explicitly requests deletion.
+
+    Kept as a no-op for existing housekeeping callers. Status, age, deployments
+    and idle-save cleanup must never remove submitted feedback or its images.
+    """
+    return 0
 
 
 # ---------------------------------------------------------------- operator side
@@ -224,9 +271,10 @@ def list_admin(store, status=None, kind=None, before=None, limit: int = ADMIN_PA
         counts = {s: 0 for s in STATUSES}
         for r in db.execute('SELECT status, COUNT(*) AS n FROM player_feedback GROUP BY status'):
             counts[r['status']] = r['n']
+        images = _image_metadata(db, rows[:limit])
     more = len(rows) > limit
     rows = rows[:limit]
-    return dict(items=[_row(r, admin=True) for r in rows], next=rows[-1]['id'] if more and rows else None, counts=counts)
+    return dict(items=[_row(r, admin=True, images=images) for r in rows], next=rows[-1]['id'] if more and rows else None, counts=counts)
 
 
 def update(store, fid, status=None, reply=None) -> dict:
@@ -249,4 +297,5 @@ def update(store, fid, status=None, reply=None) -> dict:
             sets += ['reply=?', 'replied_at=?']; args += [reply, now if reply else None]
         db.execute(f'UPDATE player_feedback SET {",".join(sets)} WHERE id=?', (*args, fid))
         row = db.execute('SELECT * FROM player_feedback WHERE id=?', (fid,)).fetchone()
-    return _row(row, admin=True)
+        images = _image_metadata(db, [row])
+    return _row(row, admin=True, images=images)

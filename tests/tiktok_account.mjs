@@ -47,7 +47,7 @@ async function startGame({marker='',current=null,open=false,summary=false,social
   const query=new URLSearchParams();if(marker)query.set('tiktok',marker);if(social)query.set('social',social);
   location={href:'https://game.example/?'+query,search:'?'+query,origin:'https://game.example'};
   history={replaceState:(_state,_title,url)=>{const next=new URL(url,location.href);location.href=next.href;location.search=next.search;}};
-  const state={current,settings:{},careers:{}},game={state,content:{careers:{}},gifts:[{}],init:async()=>{},more:async()=>{}};
+  const state={current,settings:{},careers:{}},game={state,content:{careers:{}},gifts:[{}],init:async()=>{},more:async()=>{},json:async()=>({})};
   const environment={api:game,ui,openSheet:(view,data={})=>{Object.assign(ui,data,{view});sheet.open=true;calls.push('sheet:'+view);},toast:message=>calls.push('toast:'+message)};
   const noop=()=>{},module=names=>Object.fromEntries(names.map(name=>[name,()=>calls.push(name)]));
   const lazy=names=>({get:async()=>module(names)});
@@ -57,18 +57,20 @@ async function startGame({marker='',current=null,open=false,summary=false,social
   // The 2.5D HUD and world are stubbed (iso-boot.js has its own tests).
   const context={iso:{bootShell(){},start(){},booted:()=>false},interact:()=>{},isoTownFirst:()=>!newbie,api:game,ui,L,CAREER_MODULES:[],career:()=>current,careerAssets:async()=>{},setLanguage:async()=>{},
     shell:{boot:noop},journeyBoot:noop,boardBoot:noop,startTicker:noop,$:selector=>selector==='#sheet'?sheet:node,
-    world:{resize:noop},renderMain:noop,accountBoot,env:()=>environment,ensureCareerUI:noop,performance:{mark:noop},
+    world:{resize:noop},renderMain:noop,accountBoot,env:()=>environment,ensureCareerUI:noop,bootLive:noop,performance:{mark:noop},
     console,localStorage,location,history,CustomEvent,URL,URLSearchParams,sound:{prepare:noop},needsJob:()=>false,
     room:()=>({open,shift_summary:summary}),firstDay:()=>true,registerWorker:noop,listenWorker:noop,
     openSheet:environment.openSheet,prefetch:noop,whenIdle:fn=>idle.push(fn),setTimeout:fn=>idle.push(fn),
     window:{requestIdleCallback:fn=>idle.push(fn)},document:{dispatchEvent:noop},
-    loadModule:async()=>module(['telemetryBoot','whatsNewBoot','x3Boot','giftBoot','onboardBoot','tickerBoot'])};
+    loadModule:async()=>module(['telemetryBoot','whatsNewBoot','x3Boot','giftBoot','onboardBoot','tickerBoot','homeGuestsBoot','workVisitsBoot'])};
+  context.loadInterface=async()=>({iso:context.iso,World:null});
+  context.promptInterface=async()=>{calls.push('interfacePrompt');return true;};
   await runInNewContext('(async()=>{'+startup+'})()',context);
   const settle=async()=>{for(let i=0;i<30;i++){while(idle.length)idle.shift()();await Promise.resolve();}};
   await settle();
   return {sheet,ui,calls,settle};
 }
-const automatic=['tutorialBoot','incidentBoot','aiNoticeBoot','happenBoot','whatsNewBoot','x3Boot','giftBoot','onboardBoot'];
+const automatic=['interfacePrompt','tutorialBoot','incidentBoot','aiNoticeBoot','happenBoot','whatsNewBoot','x3Boot','giftBoot','onboardBoot'];
 const startupFailures=[];
 for(const [name,test] of [
   ['callback account remains visible for guest, preparation, summary and active shift',async()=>{

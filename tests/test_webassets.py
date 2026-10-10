@@ -14,6 +14,25 @@ def inline_scripts(html:str)->list[str]:
     return re.findall(r'<script(?![^>]*\bsrc=)(?![^>]*type="application/json")[^>]*>(.*?)</script>',html,re.S)
 
 
+class ContentPartsTests(unittest.TestCase):
+    def test_changed_split_invalidates_the_old_immutable_part_urls(self):
+        from game.content import public_content
+        full=public_content()
+        old_layout=dict(full,version='0.9.5')
+        encode=lambda value:json.dumps(value,ensure_ascii=False,allow_nan=False).encode()
+        self.assertNotEqual(content_hash(encode(full)),content_hash(encode(old_layout)),
+                            'moving upgrades must not reuse the old core/more cache key')
+
+    def test_equipment_catalogue_waits_for_the_later_part(self):
+        from game.content import public_content,content_parts
+        full=public_content()
+        parts=content_parts(full)
+        self.assertNotIn('upgrades',parts['core'].keys())
+        self.assertEqual(parts['more']['upgrades'],full['upgrades'])
+        self.assertLess(len(json.dumps(parts['core'],ensure_ascii=False).encode()),
+                        len(json.dumps(full,ensure_ascii=False).encode())//2)
+
+
 class PageAndContentTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -49,7 +68,11 @@ class PageAndContentTests(unittest.TestCase):
         self.assertLess(html.index('type="importmap"'),html.index('type="module"'))
         # Every static import of app.js is preloaded in one round.
         preloaded={u.split('?')[0] for u in re.findall(r'rel="modulepreload" href="([^"]+)"',html)}
-        self.assertTrue({'/js/api.js','/js/world.js','/js/v4/journey.js','/js/v4/stories.js'}<=preloaded)
+        self.assertTrue({'/js/api.js','/js/interface-mode.js','/js/v4/journey.js','/js/v4/stories.js'}<=preloaded)
+        self.assertNotIn('/js/iso-boot.js', preloaded)  # the account may explicitly choose the classic renderer
+        self.assertNotIn('/js/boba-world.js',preloaded)
+        self.assertNotIn('/js/scenes/shop.js',preloaded,'career vocabulary must not import the old scene renderer')
+        self.assertNotIn('/js/isometric/phaser-world.js',preloaded,'Phaser waits for the account preference and first frame')
         # 304 on revalidation.
         self.assertEqual(self.req('/',{'If-None-Match':h['ETag']})[0],304)
 
@@ -98,7 +121,7 @@ class PageAndContentTests(unittest.TestCase):
         self.assertEqual(core.pop('part'),'core')
         self.assertLess(len(json.dumps(core,ensure_ascii=False).encode()),len(json.dumps(whole,ensure_ascii=False).encode())//2,'the first frame waits for under half')
         self.assertTrue(set(core['careers'])==set(whole['careers']) and not any(core['careers'].values()),'career ids only')
-        for key in ('employment','operations','situations'):self.assertNotIn(key,core);self.assertEqual(more[key],whole[key])
+        for key in ('employment','operations','situations','upgrades'):self.assertNotIn(key,core);self.assertEqual(more[key],whole[key])
         self.assertNotIn('certs',core['journey']);self.assertNotIn('stories',core['experiences'])
         rebuilt=dict(core)
         for key,value in more.items():rebuilt[key]={**core[key],**value} if isinstance(core.get(key),dict) else value
@@ -110,7 +133,8 @@ class PageAndContentTests(unittest.TestCase):
     def test_bootstrap_names_the_first_workplace_to_preload(self):
         _,h,body=self.req('/api/bootstrap?lite=1');view=json.loads(body)['state']
         place=view.get('current') or view.get('focus')
-        warm=h.get('X-Game-Warm','').split(',');self.assertTrue(warm[0].startswith('/js/scenes/'),warm)
+        warm=[p for p in h.get('X-Game-Warm','').split(',') if p]
+        self.assertFalse(any(p.startswith('/js/scenes/') for p in warm),warm)
         _,html=self.page();imap=json.loads(re.search(r'<script type="importmap">(.*?)</script>',html,re.S).group(1))['imports']
         preloaded={u.split('?')[0] for u in re.findall(r'rel="modulepreload" href="([^"]+)"',html)}
         for path in warm:self.assertIn(path,imap);self.assertNotIn(path,preloaded,'already in the first round')
@@ -193,12 +217,27 @@ class DeployTests(unittest.TestCase):
         mini='import{a as b}from"./x.js";import"./side.js";export*from"../y.js";export{c as d}from"./z.js";const m=import("./lazy.js");export const s="./not.js";'
         self.assertEqual(sorted(module_imports(mini)),['../y.js','./side.js','./x.js','./z.js'])
 
-    def test_career_warm_lists_scene_workbench_and_stylesheets(self):
+    def test_first_frame_vocabulary_does_not_load_legacy_scenes(self):
+        assets=WebAssets(PUBLIC,"script-src 'self'",lambda:'c')
+        graph=assets.module_graph('/js/app.js')
+        self.assertNotIn('/js/scenes/shop.js',graph)
+        self.assertNotIn('/js/scenes/index.js',graph)
+        self.assertIn('/js/scenes/vocabulary.js',graph)
+
+    def test_career_warm_keeps_all_stylesheet_kits_in_client_order(self):
         warm=WebAssets(PUBLIC,"script-src 'self'",lambda:'c').snapshot().warm
-        self.assertEqual(warm['milk_tea'].split(','),['/js/scenes/teabar.js','/js/scenes/backroom.js','/js/scenes/interior.js','/js/careers/milk_tea.js','/js/careers/food_kit.js','/js/careers/tomorrow_kit.js','/css/careers/milk_tea.css'])
+        for cid in ('oil','police'):
+            self.assertEqual([p for p in warm[cid].split(',') if p.startswith('/css/')],
+                             ['/css/careers/street_kit.css','/css/careers/air_kit.css',f'/css/careers/{cid}.css'],cid)
+
+    def test_career_warm_lists_workbench_and_stylesheets_without_old_canvas_scenes(self):
+        warm=WebAssets(PUBLIC,"script-src 'self'",lambda:'c').snapshot().warm
+        self.assertEqual(warm['milk_tea'].split(','),['/js/careers/milk_tea.js','/js/careers/food_kit.js','/js/careers/tomorrow_kit.js','/css/careers/milk_tea.css'])
         self.assertEqual(warm['restaurant'].split(',')[-2:],['/css/careers/food_kit.css','/css/careers/restaurant.css'],'the kit before the career sheet')
-        self.assertEqual(warm['teacher'],'/js/scenes/classroom.js')
-        self.assertEqual(set(warm),set(webassets.js_table((PUBLIC/'js/scenes/index.js').read_text(),'KIND_OF')))
+        self.assertEqual(warm['teacher'],'')
+        self.assertIn('/js/careers/zpop.js',warm['zpop'])
+        for cid,paths in warm.items():self.assertFalse(any(p.startswith('/js/scenes/') for p in paths.split(',')),cid)
+        self.assertEqual(set(warm),set(webassets.js_table((PUBLIC/'js/scenes/vocabulary.js').read_text(),'KIND_OF')))
 
 
 class ClientChecks(unittest.TestCase):

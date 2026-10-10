@@ -1,21 +1,6181 @@
 {
-  "version": 3,
-  "setbacks": [[0,0],[-0.28,0.16],[0.3,-0.22],[-0.18,-0.3],[0.24,0.26],[0.05,-0.18]],
+  "version": 5,
+  "setbacks": [
+    [
+      0,
+      0
+    ],
+    [
+      -0.28,
+      0.16
+    ],
+    [
+      0.3,
+      -0.22
+    ],
+    [
+      -0.18,
+      -0.3
+    ],
+    [
+      0.24,
+      0.26
+    ],
+    [
+      0.05,
+      -0.18
+    ]
+  ],
   "gardens": [
-    [{"x":0.27,"y":2.2,"kind":"banana","size":0.78},{"x":3.3,"y":0.23,"kind":"flamboyant","size":1.03},{"x":5.15,"y":0.35,"kind":"flowers","size":0.52}],
-    [{"x":0.25,"y":3.1,"kind":"flowers","size":0.7},{"x":2.7,"y":0.24,"kind":"palm","size":0.93},{"x":0.4,"y":4.85,"kind":"rocks","size":0.48}],
-    [{"x":0.3,"y":1.5,"kind":"bamboo","size":0.86},{"x":4.1,"y":0.18,"kind":"shrubs","size":0.8}],
-    [{"x":0.28,"y":2.2,"kind":"banyan","size":1.04},{"x":4.6,"y":0.16,"kind":"flowers","size":0.68},{"x":0.2,"y":4.9,"kind":"shrubs","size":0.48}],
-    [{"x":0.24,"y":1.8,"kind":"rocks","size":0.64},{"x":4,"y":0.25,"kind":"banana","size":0.89},{"x":2,"y":0.32,"kind":"flowers","size":0.54}],
-    [{"x":0.25,"y":3.3,"kind":"shrubs","size":0.79},{"x":2.8,"y":0.2,"kind":"bamboo","size":0.98}],
-    [{"x":0.23,"y":1.1,"kind":"palm","size":0.84},{"x":0.38,"y":4.4,"kind":"flowers","size":0.51},{"x":4.65,"y":0.24,"kind":"bamboo","size":0.72}],
-    [{"x":0.28,"y":3.65,"kind":"flamboyant","size":0.84},{"x":2.4,"y":0.3,"kind":"rocks","size":0.49},{"x":4.7,"y":0.24,"kind":"shrubs","size":0.6}],
-    [{"x":0.32,"y":1.75,"kind":"banana","size":0.9},{"x":4.3,"y":0.22,"kind":"flowers","size":0.68}],
-    [{"x":0.27,"y":2.9,"kind":"bamboo","size":0.75},{"x":4.65,"y":0.23,"kind":"banyan","size":0.93},{"x":0.25,"y":4.9,"kind":"rocks","size":0.44}]
+    [
+      {
+        "x": 0.27,
+        "y": 2.2,
+        "kind": "banana",
+        "size": 0.78
+      },
+      {
+        "x": 3.3,
+        "y": 0.23,
+        "kind": "flamboyant",
+        "size": 1.03
+      },
+      {
+        "x": 5.15,
+        "y": 0.35,
+        "kind": "flowers",
+        "size": 0.52
+      }
+    ],
+    [
+      {
+        "x": 0.25,
+        "y": 3.1,
+        "kind": "flowers",
+        "size": 0.7
+      },
+      {
+        "x": 2.7,
+        "y": 0.24,
+        "kind": "palm",
+        "size": 0.93
+      },
+      {
+        "x": 0.4,
+        "y": 4.85,
+        "kind": "rocks",
+        "size": 0.48
+      }
+    ],
+    [
+      {
+        "x": 0.3,
+        "y": 1.5,
+        "kind": "bamboo",
+        "size": 0.86
+      },
+      {
+        "x": 4.1,
+        "y": 0.18,
+        "kind": "shrubs",
+        "size": 0.8
+      }
+    ],
+    [
+      {
+        "x": 0.28,
+        "y": 2.2,
+        "kind": "banyan",
+        "size": 1.04
+      },
+      {
+        "x": 4.6,
+        "y": 0.16,
+        "kind": "flowers",
+        "size": 0.68
+      },
+      {
+        "x": 0.2,
+        "y": 4.9,
+        "kind": "shrubs",
+        "size": 0.48
+      }
+    ],
+    [
+      {
+        "x": 0.24,
+        "y": 1.8,
+        "kind": "rocks",
+        "size": 0.64
+      },
+      {
+        "x": 4,
+        "y": 0.25,
+        "kind": "banana",
+        "size": 0.89
+      },
+      {
+        "x": 2,
+        "y": 0.32,
+        "kind": "flowers",
+        "size": 0.54
+      }
+    ],
+    [
+      {
+        "x": 0.25,
+        "y": 3.3,
+        "kind": "shrubs",
+        "size": 0.79
+      },
+      {
+        "x": 2.8,
+        "y": 0.2,
+        "kind": "bamboo",
+        "size": 0.98
+      }
+    ],
+    [
+      {
+        "x": 0.23,
+        "y": 1.1,
+        "kind": "palm",
+        "size": 0.84
+      },
+      {
+        "x": 0.38,
+        "y": 4.4,
+        "kind": "flowers",
+        "size": 0.51
+      },
+      {
+        "x": 4.65,
+        "y": 0.24,
+        "kind": "bamboo",
+        "size": 0.72
+      }
+    ],
+    [
+      {
+        "x": 0.28,
+        "y": 3.65,
+        "kind": "flamboyant",
+        "size": 0.84
+      },
+      {
+        "x": 2.4,
+        "y": 0.3,
+        "kind": "rocks",
+        "size": 0.49
+      },
+      {
+        "x": 4.7,
+        "y": 0.24,
+        "kind": "shrubs",
+        "size": 0.6
+      }
+    ],
+    [
+      {
+        "x": 0.32,
+        "y": 1.75,
+        "kind": "banana",
+        "size": 0.9
+      },
+      {
+        "x": 4.3,
+        "y": 0.22,
+        "kind": "flowers",
+        "size": 0.68
+      }
+    ],
+    [
+      {
+        "x": 0.27,
+        "y": 2.9,
+        "kind": "bamboo",
+        "size": 0.75
+      },
+      {
+        "x": 4.65,
+        "y": 0.23,
+        "kind": "banyan",
+        "size": 0.93
+      },
+      {
+        "x": 0.25,
+        "y": 4.9,
+        "kind": "rocks",
+        "size": 0.44
+      }
+    ]
   ],
   "commons": [
-    {"id":"outing:fishing","label":"Ao câu cá","kind":"pond","at":{"x":8.5,"y":10.2},"approach":{"x":6.4,"y":9.4},"footprint":{"x0":7.2,"y0":8.7,"x1":9.5,"y1":11.5}},
-    {"id":"outing:boat","label":"Bến thuyền","kind":"boat","at":{"x":11,"y":11.7},"approach":{"x":13.2,"y":11.5},"footprint":{"x0":10,"y0":10.4,"x1":12.2,"y1":12.3}},
-    {"id":"outing:pool","label":"Hồ bơi · thể thao","kind":"pool","at":{"x":10.8,"y":8.4},"approach":{"x":10.9,"y":6.3},"footprint":{"x0":9.6,"y0":7.25,"x1":12.1,"y1":9.25}}
+    {
+      "id": "outing:fishing",
+      "label": "Hồ Sen · câu cá",
+      "kind": "pond",
+      "at": {
+        "x": 14.4,
+        "y": 33.6
+      },
+      "approach": {
+        "x": 11,
+        "y": 34
+      },
+      "footprint": {
+        "x0": 11.8,
+        "y0": 30.2,
+        "x1": 17.8,
+        "y1": 36.3
+      }
+    },
+    {
+      "id": "outing:boat",
+      "label": "Bến thuyền Công viên",
+      "kind": "boat",
+      "at": {
+        "x": 17.5,
+        "y": 37.8
+      },
+      "approach": {
+        "x": 20.3,
+        "y": 37.8
+      },
+      "footprint": {
+        "x0": 15.2,
+        "y0": 36.6,
+        "x1": 19.3,
+        "y1": 39
+      }
+    },
+    {
+      "id": "outing:pool",
+      "label": "Hồ bơi Biển Xanh",
+      "kind": "pool",
+      "at": {
+        "x": 72,
+        "y": 35.8
+      },
+      "approach": {
+        "x": 72,
+        "y": 39
+      },
+      "footprint": {
+        "x0": 69.2,
+        "y0": 33.8,
+        "x1": 74.2,
+        "y1": 37.8
+      }
+    }
+  ],
+  "districts": [
+    {
+      "id": "market",
+      "name": "Phố chợ Nắng Mai",
+      "description": "Mái ngói, hàng hiên và ngõ nhỏ thơm mùi bánh.",
+      "icon": "🛍️",
+      "color": "#b96b48",
+      "material": "brick",
+      "bounds": {
+        "x0": 0,
+        "y0": 0,
+        "x1": 27,
+        "y1": 24
+      },
+      "at": {
+        "x": 6.2,
+        "y": 6.2
+      },
+      "features": [
+        "Tiệm ăn",
+        "Mua sắm",
+        "Giao hàng"
+      ]
+    },
+    {
+      "id": "garden",
+      "name": "Vườn Gió Tây",
+      "description": "Đường đất quanh ruộng rau, vườn cây và sân chùa.",
+      "icon": "🌾",
+      "color": "#8a9850",
+      "material": "earth",
+      "bounds": {
+        "x0": -31,
+        "y0": 13,
+        "x1": -3,
+        "y1": 32
+      },
+      "at": {
+        "x": -13,
+        "y": 26
+      },
+      "features": [
+        "Nông trại",
+        "Chùa",
+        "Homestay"
+      ]
+    },
+    {
+      "id": "residential",
+      "name": "Hẻm Hoa Giấy",
+      "description": "Sân trước lệch nhau, giàn hoa và hàng rào thấp.",
+      "icon": "🏡",
+      "color": "#bf827a",
+      "material": "stone",
+      "bounds": {
+        "x0": -23,
+        "y0": 33,
+        "x1": -1,
+        "y1": 51
+      },
+      "at": {
+        "x": -10,
+        "y": 44
+      },
+      "features": [
+        "Nhà mình",
+        "Bảo mẫu",
+        "Nấu cơm"
+      ]
+    },
+    {
+      "id": "park",
+      "name": "Công viên Bờ Sen",
+      "description": "Lối dạo cong quanh hồ, chòi nghỉ và vườn hoa.",
+      "icon": "🌳",
+      "color": "#69866a",
+      "material": "garden",
+      "bounds": {
+        "x0": 0,
+        "y0": 25,
+        "x1": 27,
+        "y1": 49
+      },
+      "at": {
+        "x": 7,
+        "y": 35
+      },
+      "features": [
+        "Câu cá",
+        "Chèo thuyền",
+        "Dạo chơi"
+      ]
+    },
+    {
+      "id": "civic",
+      "name": "Phố Thợ Khéo",
+      "description": "Gara, tiệm tóc, nhà thuốc và các dịch vụ trong phố.",
+      "icon": "🧰",
+      "color": "#779c92",
+      "material": "paving",
+      "bounds": {
+        "x0": 29,
+        "y0": 2,
+        "x1": 53,
+        "y1": 26
+      },
+      "at": {
+        "x": 36,
+        "y": 15
+      },
+      "features": [
+        "Sửa chữa",
+        "Sức khỏe",
+        "Thú cưng"
+      ]
+    },
+    {
+      "id": "office",
+      "name": "Khu Tri Thức",
+      "description": "Lối đi yên tĩnh, sân đọc sách và những văn phòng.",
+      "icon": "📚",
+      "color": "#738da0",
+      "material": "slate",
+      "bounds": {
+        "x0": 29,
+        "y0": 28,
+        "x1": 54,
+        "y1": 49
+      },
+      "at": {
+        "x": 36,
+        "y": 40
+      },
+      "features": [
+        "Thư viện",
+        "Ngân hàng",
+        "Văn phòng"
+      ]
+    },
+    {
+      "id": "transport",
+      "name": "Ga Đón Gió",
+      "description": "Sân đón khách rộng, nhà ga và đường băng ven biển.",
+      "icon": "✈️",
+      "color": "#b9a574",
+      "material": "sandstone",
+      "bounds": {
+        "x0": 56,
+        "y0": 2,
+        "x1": 80,
+        "y1": 26
+      },
+      "at": {
+        "x": 66,
+        "y": 19
+      },
+      "features": [
+        "Sân bay",
+        "Nhà ga",
+        "Du lịch"
+      ]
+    },
+    {
+      "id": "harbour",
+      "name": "Bến Biển Xanh",
+      "description": "Cầu gỗ, hải đăng, hồ bơi và hàng quán bên biển.",
+      "icon": "⚓",
+      "color": "#649a9c",
+      "material": "boardwalk",
+      "bounds": {
+        "x0": 56,
+        "y0": 29,
+        "x1": 80,
+        "y1": 50
+      },
+      "at": {
+        "x": 65,
+        "y": 42
+      },
+      "features": [
+        "Bơi",
+        "Hải đăng",
+        "Hàng rong"
+      ]
+    },
+    {
+      "id": "resident",
+      "name": "Phố Quán Bạn Bè",
+      "description": "Dãy quầy của cư dân dọc đường dạo, ghé quán và làm quen.",
+      "icon": "🏪",
+      "color": "#b58b5e",
+      "material": "promenade",
+      "bounds": {
+        "x0": 4,
+        "y0": 50,
+        "x1": 54,
+        "y1": 58
+      },
+      "at": {
+        "x": 21,
+        "y": 56
+      },
+      "features": [
+        "Quán người chơi",
+        "Mở quầy",
+        "Gặp hàng xóm"
+      ]
+    },
+    {
+      "id": "homes-rent",
+      "name": "Hẻm Trọ Hàng Cau",
+      "description": "Phòng trọ và ký túc xá, sân chung có bóng cây.",
+      "icon": "🛏️",
+      "color": "#c69d53",
+      "material": "earth",
+      "bounds": {
+        "x0": -42,
+        "y0": 23,
+        "x1": -32,
+        "y1": 43
+      },
+      "at": {
+        "x": -35,
+        "y": 33
+      },
+      "features": [
+        "Phòng thuê",
+        "Ký túc xá",
+        "Ở cùng bạn"
+      ],
+      "housingGroup": "rent",
+      "homeKinds": [
+        "ky_tuc_xa",
+        "tro_moi"
+      ]
+    },
+    {
+      "id": "homes-apartment",
+      "name": "Khu Căn Hộ Mây Xanh",
+      "description": "Những ban công đón gió phía bắc, lối dạo nối sảnh chung.",
+      "icon": "🏢",
+      "color": "#749faf",
+      "material": "slate",
+      "bounds": {
+        "x0": 1,
+        "y0": -6,
+        "x1": 25,
+        "y1": 0
+      },
+      "at": {
+        "x": 12,
+        "y": -1
+      },
+      "features": [
+        "Căn hộ",
+        "Studio",
+        "Penthouse"
+      ],
+      "housingGroup": "apartment",
+      "homeKinds": [
+        "tap_the",
+        "can_ho_studio",
+        "can_ho_mini",
+        "can_ho_1pn",
+        "can_ho_2pn",
+        "penthouse"
+      ]
+    },
+    {
+      "id": "homes-townhouse",
+      "name": "Xóm Nhà Phố Hoa Khế",
+      "description": "Nhà phố có sân nhỏ, lối đi uốn quanh vườn hoa phía tây.",
+      "icon": "🏡",
+      "color": "#be8a76",
+      "material": "brick",
+      "bounds": {
+        "x0": -38,
+        "y0": 44,
+        "x1": -24,
+        "y1": 55
+      },
+      "at": {
+        "x": -29,
+        "y": 49
+      },
+      "features": [
+        "Nhà phố nhỏ",
+        "Nhà có sân",
+        "Trang trí nhà"
+      ],
+      "housingGroup": "townhouse",
+      "homeKinds": [
+        "nha_pho",
+        "nha_san"
+      ]
+    },
+    {
+      "id": "homes-villa",
+      "name": "Vườn Biệt Thự Đón Gió",
+      "description": "Cổng vườn rộng, hồ nhỏ và những mái hiên bên đường vòng phía bắc.",
+      "icon": "🏰",
+      "color": "#799c80",
+      "material": "garden",
+      "bounds": {
+        "x0": 33,
+        "y0": -6,
+        "x1": 61,
+        "y1": 1
+      },
+      "at": {
+        "x": 46,
+        "y": 0
+      },
+      "features": [
+        "Biệt thự vườn",
+        "Biệt thự sông",
+        "Vườn riêng"
+      ],
+      "housingGroup": "villa",
+      "homeKinds": [
+        "biet_thu_vuon",
+        "biet_thu_song"
+      ]
+    },
+    {
+      "id": "fairgrounds",
+      "name": "Bãi Hội Gió Tây",
+      "description": "Quầy ném vòng và đường đua chó của Hội chợ · Chợ đen.",
+      "icon": "🎪",
+      "color": "#c9986f",
+      "material": "paving",
+      "bounds": {
+        "x0": -41,
+        "y0": 4,
+        "x1": -13,
+        "y1": 23
+      },
+      "at": {
+        "x": -34,
+        "y": 18
+      },
+      "features": [
+        "Ném vòng",
+        "Đua chó",
+        "Trò chơi dân gian"
+      ]
+    }
+  ],
+  "careerOrder": [
+    "grocery",
+    "cafe_bakery",
+    "milk_tea",
+    "florist",
+    "mother_baby",
+    "restaurant",
+    "pho",
+    "com",
+    "clothing",
+    "zpop",
+    "fruit",
+    "farm",
+    "homestay",
+    "pagoda",
+    "teacher",
+    "homemaker",
+    "giupviec",
+    "naucom",
+    "babysitter",
+    "salon",
+    "nail",
+    "photobooth",
+    "pet_care",
+    "repair",
+    "pharmacy",
+    "nurse",
+    "police",
+    "rescue",
+    "pet_shop",
+    "accounting",
+    "customer_care",
+    "corp_accounting",
+    "tax_payroll",
+    "group_accounting",
+    "hr_admin",
+    "secretary",
+    "it_helpdesk",
+    "library",
+    "delivery",
+    "pilot",
+    "flight_attendant",
+    "oil",
+    "railway",
+    "tour_guide",
+    "lighthouse",
+    "lifeguard",
+    "garbage",
+    "drain",
+    "tra_da",
+    "ice_cream"
+  ],
+  "lots": [
+    {
+      "career": "grocery",
+      "district": "market",
+      "at": {
+        "x": 2.8,
+        "y": 4.2
+      },
+      "door": {
+        "x": 3.2,
+        "y": 6.15
+      },
+      "footprint": {
+        "x0": 1,
+        "y0": 1,
+        "x1": 5.2,
+        "y1": 5.2
+      }
+    },
+    {
+      "career": "cafe_bakery",
+      "district": "market",
+      "at": {
+        "x": 11.100000000000001,
+        "y": 3.7
+      },
+      "door": {
+        "x": 11.5,
+        "y": 5.65
+      },
+      "footprint": {
+        "x0": 9.3,
+        "y0": 0.5,
+        "x1": 13.5,
+        "y1": 4.7
+      }
+    },
+    {
+      "career": "milk_tea",
+      "district": "market",
+      "at": {
+        "x": 19.8,
+        "y": 4.800000000000001
+      },
+      "door": {
+        "x": 20.2,
+        "y": 6.75
+      },
+      "footprint": {
+        "x0": 18,
+        "y0": 1.6,
+        "x1": 22.2,
+        "y1": 5.800000000000001
+      }
+    },
+    {
+      "career": "florist",
+      "district": "market",
+      "at": {
+        "x": 2.5,
+        "y": 11.8
+      },
+      "door": {
+        "x": 2.9000000000000004,
+        "y": 13.75
+      },
+      "footprint": {
+        "x0": 0.7,
+        "y0": 8.6,
+        "x1": 4.9,
+        "y1": 12.8
+      }
+    },
+    {
+      "career": "mother_baby",
+      "district": "market",
+      "at": {
+        "x": 10.8,
+        "y": 12.600000000000001
+      },
+      "door": {
+        "x": 11.2,
+        "y": 14.55
+      },
+      "footprint": {
+        "x0": 9,
+        "y0": 9.4,
+        "x1": 13.2,
+        "y1": 13.600000000000001
+      }
+    },
+    {
+      "career": "restaurant",
+      "district": "market",
+      "at": {
+        "x": 20.3,
+        "y": 12
+      },
+      "door": {
+        "x": 20.7,
+        "y": 13.950000000000001
+      },
+      "footprint": {
+        "x0": 18.5,
+        "y0": 8.8,
+        "x1": 22.7,
+        "y1": 13
+      }
+    },
+    {
+      "career": "pho",
+      "district": "market",
+      "at": {
+        "x": 3.6,
+        "y": 19.3
+      },
+      "door": {
+        "x": 4,
+        "y": 21.25
+      },
+      "footprint": {
+        "x0": 1.8,
+        "y0": 16.1,
+        "x1": 6,
+        "y1": 20.3
+      }
+    },
+    {
+      "career": "com",
+      "district": "market",
+      "at": {
+        "x": 11.5,
+        "y": 20.2
+      },
+      "door": {
+        "x": 11.899999999999999,
+        "y": 22.15
+      },
+      "footprint": {
+        "x0": 9.7,
+        "y0": 17,
+        "x1": 13.899999999999999,
+        "y1": 21.2
+      }
+    },
+    {
+      "career": "clothing",
+      "district": "market",
+      "at": {
+        "x": 20.8,
+        "y": 19.2
+      },
+      "door": {
+        "x": 21.2,
+        "y": 21.15
+      },
+      "footprint": {
+        "x0": 19,
+        "y0": 16,
+        "x1": 23.2,
+        "y1": 20.2
+      }
+    },
+    {
+      "career": "zpop",
+      "district": "market",
+      "at": {
+        "x": 24.8,
+        "y": 4.300000000000001
+      },
+      "door": {
+        "x": 25.2,
+        "y": 6.25
+      },
+      "footprint": {
+        "x0": 23,
+        "y0": 1.1,
+        "x1": 27.2,
+        "y1": 5.300000000000001
+      }
+    },
+    {
+      "career": "fruit",
+      "district": "market",
+      "at": {
+        "x": 24.8,
+        "y": 12.3
+      },
+      "door": {
+        "x": 25.2,
+        "y": 14.25
+      },
+      "footprint": {
+        "x0": 23,
+        "y0": 9.1,
+        "x1": 27.2,
+        "y1": 13.3
+      }
+    },
+    {
+      "career": "farm",
+      "district": "garden",
+      "at": {
+        "x": -26.2,
+        "y": 18.2
+      },
+      "door": {
+        "x": -25.8,
+        "y": 20.15
+      },
+      "footprint": {
+        "x0": -28,
+        "y0": 15,
+        "x1": -23.8,
+        "y1": 19.2
+      }
+    },
+    {
+      "career": "homestay",
+      "district": "garden",
+      "at": {
+        "x": -15.2,
+        "y": 17.4
+      },
+      "door": {
+        "x": -14.8,
+        "y": 19.35
+      },
+      "footprint": {
+        "x0": -17,
+        "y0": 14.2,
+        "x1": -12.8,
+        "y1": 18.4
+      }
+    },
+    {
+      "career": "pagoda",
+      "district": "garden",
+      "at": {
+        "x": -25.2,
+        "y": 28.2
+      },
+      "door": {
+        "x": -24.8,
+        "y": 30.15
+      },
+      "footprint": {
+        "x0": -27,
+        "y0": 25,
+        "x1": -22.8,
+        "y1": 29.2
+      }
+    },
+    {
+      "career": "teacher",
+      "district": "garden",
+      "at": {
+        "x": -8.2,
+        "y": 20.2
+      },
+      "door": {
+        "x": -7.8,
+        "y": 22.15
+      },
+      "footprint": {
+        "x0": -10,
+        "y0": 17,
+        "x1": -5.8,
+        "y1": 21.2
+      }
+    },
+    {
+      "career": "homemaker",
+      "district": "residential",
+      "at": {
+        "x": -19.2,
+        "y": 37.7
+      },
+      "door": {
+        "x": -18.8,
+        "y": 39.65
+      },
+      "footprint": {
+        "x0": -21,
+        "y0": 34.5,
+        "x1": -16.8,
+        "y1": 38.7
+      }
+    },
+    {
+      "career": "giupviec",
+      "district": "residential",
+      "at": {
+        "x": -10.2,
+        "y": 36.800000000000004
+      },
+      "door": {
+        "x": -9.8,
+        "y": 38.75
+      },
+      "footprint": {
+        "x0": -12,
+        "y0": 33.6,
+        "x1": -7.8,
+        "y1": 37.800000000000004
+      }
+    },
+    {
+      "career": "naucom",
+      "district": "residential",
+      "at": {
+        "x": -18.2,
+        "y": 46.2
+      },
+      "door": {
+        "x": -17.8,
+        "y": 48.15
+      },
+      "footprint": {
+        "x0": -20,
+        "y0": 43,
+        "x1": -15.8,
+        "y1": 47.2
+      }
+    },
+    {
+      "career": "babysitter",
+      "district": "residential",
+      "at": {
+        "x": -6.2,
+        "y": 46.6
+      },
+      "door": {
+        "x": -5.8,
+        "y": 48.55
+      },
+      "footprint": {
+        "x0": -8,
+        "y0": 43.4,
+        "x1": -3.8,
+        "y1": 47.6
+      }
+    },
+    {
+      "career": "salon",
+      "district": "civic",
+      "at": {
+        "x": 31.8,
+        "y": 6.2
+      },
+      "door": {
+        "x": 32.2,
+        "y": 8.15
+      },
+      "footprint": {
+        "x0": 30,
+        "y0": 3,
+        "x1": 34.2,
+        "y1": 7.2
+      }
+    },
+    {
+      "career": "nail",
+      "district": "civic",
+      "at": {
+        "x": 39.8,
+        "y": 6
+      },
+      "door": {
+        "x": 40.2,
+        "y": 7.95
+      },
+      "footprint": {
+        "x0": 38,
+        "y0": 2.8,
+        "x1": 42.2,
+        "y1": 7
+      }
+    },
+    {
+      "career": "photobooth",
+      "district": "civic",
+      "at": {
+        "x": 47.8,
+        "y": 6.5
+      },
+      "door": {
+        "x": 48.2,
+        "y": 8.45
+      },
+      "footprint": {
+        "x0": 46,
+        "y0": 3.3,
+        "x1": 50.2,
+        "y1": 7.5
+      }
+    },
+    {
+      "career": "pet_care",
+      "district": "civic",
+      "at": {
+        "x": 32.3,
+        "y": 14.2
+      },
+      "door": {
+        "x": 32.7,
+        "y": 16.15
+      },
+      "footprint": {
+        "x0": 30.5,
+        "y0": 11,
+        "x1": 34.7,
+        "y1": 15.2
+      }
+    },
+    {
+      "career": "repair",
+      "district": "civic",
+      "at": {
+        "x": 40.3,
+        "y": 14
+      },
+      "door": {
+        "x": 40.7,
+        "y": 15.950000000000001
+      },
+      "footprint": {
+        "x0": 38.5,
+        "y0": 10.8,
+        "x1": 42.7,
+        "y1": 15
+      }
+    },
+    {
+      "career": "pharmacy",
+      "district": "civic",
+      "at": {
+        "x": 48.8,
+        "y": 14.8
+      },
+      "door": {
+        "x": 49.2,
+        "y": 16.75
+      },
+      "footprint": {
+        "x0": 47,
+        "y0": 11.6,
+        "x1": 51.2,
+        "y1": 15.8
+      }
+    },
+    {
+      "career": "nurse",
+      "district": "civic",
+      "at": {
+        "x": 31.8,
+        "y": 22.2
+      },
+      "door": {
+        "x": 32.2,
+        "y": 24.15
+      },
+      "footprint": {
+        "x0": 30,
+        "y0": 19,
+        "x1": 34.2,
+        "y1": 23.2
+      }
+    },
+    {
+      "career": "police",
+      "district": "civic",
+      "at": {
+        "x": 39.8,
+        "y": 22.4
+      },
+      "door": {
+        "x": 40.2,
+        "y": 24.35
+      },
+      "footprint": {
+        "x0": 38,
+        "y0": 19.2,
+        "x1": 42.2,
+        "y1": 23.4
+      }
+    },
+    {
+      "career": "rescue",
+      "district": "civic",
+      "at": {
+        "x": 49.3,
+        "y": 22.2
+      },
+      "door": {
+        "x": 49.7,
+        "y": 24.15
+      },
+      "footprint": {
+        "x0": 47.5,
+        "y0": 19,
+        "x1": 51.7,
+        "y1": 23.2
+      }
+    },
+    {
+      "career": "pet_shop",
+      "district": "civic",
+      "at": {
+        "x": 55.8,
+        "y": 23.599999999999998
+      },
+      "door": {
+        "x": 56.2,
+        "y": 25.549999999999997
+      },
+      "footprint": {
+        "x0": 54,
+        "y0": 20.4,
+        "x1": 58.2,
+        "y1": 24.599999999999998
+      }
+    },
+    {
+      "career": "accounting",
+      "district": "office",
+      "at": {
+        "x": 31.8,
+        "y": 32.2
+      },
+      "door": {
+        "x": 32.2,
+        "y": 34.15
+      },
+      "footprint": {
+        "x0": 30,
+        "y0": 29,
+        "x1": 34.2,
+        "y1": 33.2
+      }
+    },
+    {
+      "career": "customer_care",
+      "district": "office",
+      "at": {
+        "x": 39.8,
+        "y": 31.8
+      },
+      "door": {
+        "x": 40.2,
+        "y": 33.75
+      },
+      "footprint": {
+        "x0": 38,
+        "y0": 28.6,
+        "x1": 42.2,
+        "y1": 32.800000000000004
+      }
+    },
+    {
+      "career": "corp_accounting",
+      "district": "office",
+      "at": {
+        "x": 47.8,
+        "y": 33.2
+      },
+      "door": {
+        "x": 48.2,
+        "y": 35.15
+      },
+      "footprint": {
+        "x0": 46,
+        "y0": 30,
+        "x1": 50.2,
+        "y1": 34.2
+      }
+    },
+    {
+      "career": "tax_payroll",
+      "district": "office",
+      "at": {
+        "x": 32.6,
+        "y": 39.400000000000006
+      },
+      "door": {
+        "x": 33,
+        "y": 41.35
+      },
+      "footprint": {
+        "x0": 30.8,
+        "y0": 36.2,
+        "x1": 35,
+        "y1": 40.400000000000006
+      }
+    },
+    {
+      "career": "group_accounting",
+      "district": "office",
+      "at": {
+        "x": 40.8,
+        "y": 40
+      },
+      "door": {
+        "x": 41.2,
+        "y": 41.949999999999996
+      },
+      "footprint": {
+        "x0": 39,
+        "y0": 36.8,
+        "x1": 43.2,
+        "y1": 41
+      }
+    },
+    {
+      "career": "hr_admin",
+      "district": "office",
+      "at": {
+        "x": 48.8,
+        "y": 40.7
+      },
+      "door": {
+        "x": 49.2,
+        "y": 42.65
+      },
+      "footprint": {
+        "x0": 47,
+        "y0": 37.5,
+        "x1": 51.2,
+        "y1": 41.7
+      }
+    },
+    {
+      "career": "secretary",
+      "district": "office",
+      "at": {
+        "x": 31.8,
+        "y": 46.2
+      },
+      "door": {
+        "x": 32.2,
+        "y": 48.15
+      },
+      "footprint": {
+        "x0": 30,
+        "y0": 43,
+        "x1": 34.2,
+        "y1": 47.2
+      }
+    },
+    {
+      "career": "it_helpdesk",
+      "district": "office",
+      "at": {
+        "x": 39.8,
+        "y": 47
+      },
+      "door": {
+        "x": 40.2,
+        "y": 48.949999999999996
+      },
+      "footprint": {
+        "x0": 38,
+        "y0": 43.8,
+        "x1": 42.2,
+        "y1": 48
+      }
+    },
+    {
+      "career": "library",
+      "district": "office",
+      "at": {
+        "x": 48.8,
+        "y": 46.7
+      },
+      "door": {
+        "x": 49.2,
+        "y": 48.65
+      },
+      "footprint": {
+        "x0": 47,
+        "y0": 43.5,
+        "x1": 51.2,
+        "y1": 47.7
+      }
+    },
+    {
+      "career": "delivery",
+      "district": "transport",
+      "at": {
+        "x": 58.8,
+        "y": 6.2
+      },
+      "door": {
+        "x": 59.2,
+        "y": 8.15
+      },
+      "footprint": {
+        "x0": 57,
+        "y0": 3,
+        "x1": 61.2,
+        "y1": 7.2
+      }
+    },
+    {
+      "career": "pilot",
+      "district": "transport",
+      "at": {
+        "x": 66.8,
+        "y": 5.800000000000001
+      },
+      "door": {
+        "x": 67.2,
+        "y": 7.75
+      },
+      "footprint": {
+        "x0": 65,
+        "y0": 2.6,
+        "x1": 69.2,
+        "y1": 6.800000000000001
+      }
+    },
+    {
+      "career": "flight_attendant",
+      "district": "transport",
+      "at": {
+        "x": 75.3,
+        "y": 7
+      },
+      "door": {
+        "x": 75.7,
+        "y": 8.95
+      },
+      "footprint": {
+        "x0": 73.5,
+        "y0": 3.8,
+        "x1": 77.7,
+        "y1": 8
+      }
+    },
+    {
+      "career": "oil",
+      "district": "transport",
+      "at": {
+        "x": 59.3,
+        "y": 14.7
+      },
+      "door": {
+        "x": 59.7,
+        "y": 16.65
+      },
+      "footprint": {
+        "x0": 57.5,
+        "y0": 11.5,
+        "x1": 61.7,
+        "y1": 15.7
+      }
+    },
+    {
+      "career": "railway",
+      "district": "transport",
+      "at": {
+        "x": 67.8,
+        "y": 14.2
+      },
+      "door": {
+        "x": 68.2,
+        "y": 16.15
+      },
+      "footprint": {
+        "x0": 66,
+        "y0": 11,
+        "x1": 70.2,
+        "y1": 15.2
+      }
+    },
+    {
+      "career": "tour_guide",
+      "district": "transport",
+      "at": {
+        "x": 75.8,
+        "y": 15.2
+      },
+      "door": {
+        "x": 76.2,
+        "y": 17.15
+      },
+      "footprint": {
+        "x0": 74,
+        "y0": 12,
+        "x1": 78.2,
+        "y1": 16.2
+      }
+    },
+    {
+      "career": "lighthouse",
+      "district": "harbour",
+      "at": {
+        "x": 75.8,
+        "y": 34.2
+      },
+      "door": {
+        "x": 76.2,
+        "y": 36.15
+      },
+      "footprint": {
+        "x0": 74,
+        "y0": 31,
+        "x1": 78.2,
+        "y1": 35.2
+      }
+    },
+    {
+      "career": "lifeguard",
+      "district": "harbour",
+      "at": {
+        "x": 58.8,
+        "y": 33.2
+      },
+      "door": {
+        "x": 59.2,
+        "y": 35.15
+      },
+      "footprint": {
+        "x0": 57,
+        "y0": 30,
+        "x1": 61.2,
+        "y1": 34.2
+      }
+    },
+    {
+      "career": "garbage",
+      "district": "harbour",
+      "at": {
+        "x": 58.8,
+        "y": 41.2
+      },
+      "door": {
+        "x": 59.2,
+        "y": 43.15
+      },
+      "footprint": {
+        "x0": 57,
+        "y0": 38,
+        "x1": 61.2,
+        "y1": 42.2
+      }
+    },
+    {
+      "career": "drain",
+      "district": "harbour",
+      "at": {
+        "x": 59.3,
+        "y": 48.2
+      },
+      "door": {
+        "x": 59.7,
+        "y": 50.15
+      },
+      "footprint": {
+        "x0": 57.5,
+        "y0": 45,
+        "x1": 61.7,
+        "y1": 49.2
+      }
+    },
+    {
+      "career": "tra_da",
+      "district": "harbour",
+      "at": {
+        "x": 73.8,
+        "y": 43.2
+      },
+      "door": {
+        "x": 74.2,
+        "y": 45.15
+      },
+      "footprint": {
+        "x0": 72,
+        "y0": 40,
+        "x1": 76.2,
+        "y1": 44.2
+      }
+    },
+    {
+      "career": "ice_cream",
+      "district": "harbour",
+      "at": {
+        "x": 66.8,
+        "y": 34.2
+      },
+      "door": {
+        "x": 67.2,
+        "y": 36.15
+      },
+      "footprint": {
+        "x0": 65,
+        "y0": 31,
+        "x1": 69.2,
+        "y1": 35.2
+      }
+    },
+    {
+      "district": "garden",
+      "at": {
+        "x": -16.2,
+        "y": 27.2
+      },
+      "door": {
+        "x": -15.8,
+        "y": 29.15
+      },
+      "footprint": {
+        "x0": -18,
+        "y0": 24,
+        "x1": -13.8,
+        "y1": 28.2
+      }
+    },
+    {
+      "district": "residential",
+      "at": {
+        "x": -4.2,
+        "y": 39.2
+      },
+      "door": {
+        "x": -3.8,
+        "y": 41.15
+      },
+      "footprint": {
+        "x0": -6,
+        "y0": 36,
+        "x1": -1.7999999999999998,
+        "y1": 40.2
+      }
+    },
+    {
+      "district": "park",
+      "at": {
+        "x": 1.8,
+        "y": 30.2
+      },
+      "door": {
+        "x": 2.2,
+        "y": 32.15
+      },
+      "footprint": {
+        "x0": 0,
+        "y0": 27,
+        "x1": 4.2,
+        "y1": 31.2
+      }
+    },
+    {
+      "district": "transport",
+      "at": {
+        "x": 65.8,
+        "y": 23.2
+      },
+      "door": {
+        "x": 66.2,
+        "y": 25.15
+      },
+      "footprint": {
+        "x0": 64,
+        "y0": 20,
+        "x1": 68.2,
+        "y1": 24.2
+      }
+    },
+    {
+      "district": "harbour",
+      "at": {
+        "x": 66.8,
+        "y": 46.2
+      },
+      "door": {
+        "x": 67.2,
+        "y": 48.15
+      },
+      "footprint": {
+        "x0": 65,
+        "y0": 43,
+        "x1": 69.2,
+        "y1": 47.2
+      }
+    },
+    {
+      "district": "garden",
+      "at": {
+        "x": -6.2,
+        "y": 29.2
+      },
+      "door": {
+        "x": -5.8,
+        "y": 31.15
+      },
+      "footprint": {
+        "x0": -8,
+        "y0": 26,
+        "x1": -3.8,
+        "y1": 30.2
+      }
+    }
+  ],
+  "openGround": [
+    {
+      "x0": 0,
+      "y0": 0,
+      "x1": 27,
+      "y1": 24
+    },
+    {
+      "x0": -31,
+      "y0": 13,
+      "x1": -3,
+      "y1": 32
+    },
+    {
+      "x0": -23,
+      "y0": 33,
+      "x1": -1,
+      "y1": 51
+    },
+    {
+      "x0": 0,
+      "y0": 25,
+      "x1": 27,
+      "y1": 49
+    },
+    {
+      "x0": 29,
+      "y0": 2,
+      "x1": 53,
+      "y1": 26
+    },
+    {
+      "x0": 29,
+      "y0": 28,
+      "x1": 54,
+      "y1": 49
+    },
+    {
+      "x0": 56,
+      "y0": 2,
+      "x1": 80,
+      "y1": 26
+    },
+    {
+      "x0": 56,
+      "y0": 29,
+      "x1": 80,
+      "y1": 50
+    },
+    {
+      "x0": 4,
+      "y0": 50,
+      "x1": 54,
+      "y1": 58
+    },
+    {
+      "x0": -5,
+      "y0": 20,
+      "x1": 3,
+      "y1": 24
+    },
+    {
+      "x0": -20,
+      "y0": 30,
+      "x1": -5,
+      "y1": 36
+    },
+    {
+      "x0": -3,
+      "y0": 36,
+      "x1": 4,
+      "y1": 40
+    },
+    {
+      "x0": 2,
+      "y0": 22.5,
+      "x1": 25,
+      "y1": 29
+    },
+    {
+      "x0": 25,
+      "y0": 10,
+      "x1": 31,
+      "y1": 14
+    },
+    {
+      "x0": 25,
+      "y0": 35,
+      "x1": 31,
+      "y1": 39
+    },
+    {
+      "x0": 32,
+      "y0": 24,
+      "x1": 43,
+      "y1": 30
+    },
+    {
+      "x0": 51,
+      "y0": 36,
+      "x1": 58,
+      "y1": 41
+    },
+    {
+      "x0": 49,
+      "y0": 11,
+      "x1": 58,
+      "y1": 15
+    },
+    {
+      "x0": 63,
+      "y0": 24,
+      "x1": 68,
+      "y1": 32
+    },
+    {
+      "x0": 12,
+      "y0": 47,
+      "x1": 20,
+      "y1": 53
+    },
+    {
+      "x0": 36,
+      "y0": 47,
+      "x1": 40,
+      "y1": 53
+    },
+    {
+      "x0": 52,
+      "y0": 49,
+      "x1": 62,
+      "y1": 54
+    },
+    {
+      "x0": 44,
+      "y0": 24,
+      "x1": 52,
+      "y1": 32
+    },
+    {
+      "x0": -42,
+      "y0": 23,
+      "x1": -32,
+      "y1": 43
+    },
+    {
+      "x0": 1,
+      "y0": -6,
+      "x1": 25,
+      "y1": 0
+    },
+    {
+      "x0": -38,
+      "y0": 44,
+      "x1": -24,
+      "y1": 55
+    },
+    {
+      "x0": 33,
+      "y0": -6,
+      "x1": 61,
+      "y1": 1
+    },
+    {
+      "x0": -42,
+      "y0": 10,
+      "x1": -30,
+      "y1": 44
+    },
+    {
+      "x0": -32,
+      "y0": 8,
+      "x1": -13,
+      "y1": 15
+    },
+    {
+      "x0": -24,
+      "y0": 3,
+      "x1": -11,
+      "y1": 13
+    },
+    {
+      "x0": -16,
+      "y0": 8,
+      "x1": -2,
+      "y1": 16
+    },
+    {
+      "x0": -5,
+      "y0": 10,
+      "x1": 1,
+      "y1": 24
+    },
+    {
+      "x0": -38,
+      "y0": 40,
+      "x1": -23,
+      "y1": 55
+    },
+    {
+      "x0": -28,
+      "y0": 48,
+      "x1": -12,
+      "y1": 52
+    },
+    {
+      "x0": 5,
+      "y0": -2,
+      "x1": 9,
+      "y1": 8
+    },
+    {
+      "x0": 20,
+      "y0": -2,
+      "x1": 38,
+      "y1": 3
+    },
+    {
+      "x0": 34,
+      "y0": -2,
+      "x1": 38,
+      "y1": 11
+    },
+    {
+      "x0": 37,
+      "y0": -2,
+      "x1": 62,
+      "y1": 3
+    },
+    {
+      "x0": 42,
+      "y0": 0,
+      "x1": 46,
+      "y1": 10
+    }
+  ],
+  "bounds": {
+    "x0": -42,
+    "y0": -7,
+    "x1": 80,
+    "y1": 58
+  },
+  "trails": [
+    {
+      "district": "market",
+      "width": 2.2,
+      "points": [
+        {
+          "x": 0,
+          "y": 6.2
+        },
+        {
+          "x": 7,
+          "y": 6.2
+        },
+        {
+          "x": 15.3,
+          "y": 6.5
+        },
+        {
+          "x": 16,
+          "y": 10.5
+        },
+        {
+          "x": 16,
+          "y": 14.8
+        },
+        {
+          "x": 7,
+          "y": 14.8
+        },
+        {
+          "x": 0,
+          "y": 15
+        }
+      ]
+    },
+    {
+      "district": "market",
+      "width": 1.7,
+      "points": [
+        {
+          "x": 6.2,
+          "y": 6.2
+        },
+        {
+          "x": 7,
+          "y": 14.8
+        },
+        {
+          "x": 7.3,
+          "y": 22
+        },
+        {
+          "x": 14.8,
+          "y": 23
+        },
+        {
+          "x": 23,
+          "y": 23
+        }
+      ]
+    },
+    {
+      "district": "market",
+      "width": 1.5,
+      "points": [
+        {
+          "x": 15.3,
+          "y": 6.5
+        },
+        {
+          "x": 16,
+          "y": 15
+        },
+        {
+          "x": 16,
+          "y": 24
+        },
+        {
+          "x": 13,
+          "y": 28
+        }
+      ]
+    },
+    {
+      "district": "garden",
+      "width": 1.7,
+      "points": [
+        {
+          "x": 0,
+          "y": 22
+        },
+        {
+          "x": -7,
+          "y": 22
+        },
+        {
+          "x": -13,
+          "y": 24
+        },
+        {
+          "x": -18,
+          "y": 22
+        },
+        {
+          "x": -23,
+          "y": 23
+        },
+        {
+          "x": -29,
+          "y": 22
+        },
+        {
+          "x": -28,
+          "y": 30
+        },
+        {
+          "x": -20,
+          "y": 31
+        },
+        {
+          "x": -14,
+          "y": 29
+        },
+        {
+          "x": -12,
+          "y": 27
+        }
+      ]
+    },
+    {
+      "district": "residential",
+      "width": 1.6,
+      "points": [
+        {
+          "x": -13,
+          "y": 31
+        },
+        {
+          "x": -14,
+          "y": 36
+        },
+        {
+          "x": -14,
+          "y": 41
+        },
+        {
+          "x": -10,
+          "y": 42
+        },
+        {
+          "x": -5,
+          "y": 40
+        },
+        {
+          "x": 2,
+          "y": 38
+        },
+        {
+          "x": 7,
+          "y": 35
+        }
+      ]
+    },
+    {
+      "district": "residential",
+      "width": 1.3,
+      "points": [
+        {
+          "x": -14,
+          "y": 41
+        },
+        {
+          "x": -13,
+          "y": 48
+        },
+        {
+          "x": -6,
+          "y": 50
+        },
+        {
+          "x": -2,
+          "y": 48
+        }
+      ]
+    },
+    {
+      "district": "park",
+      "width": 1.7,
+      "points": [
+        {
+          "x": 16,
+          "y": 24
+        },
+        {
+          "x": 13,
+          "y": 28
+        },
+        {
+          "x": 7,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 34
+        },
+        {
+          "x": 7,
+          "y": 39
+        },
+        {
+          "x": 13,
+          "y": 42
+        },
+        {
+          "x": 19,
+          "y": 40
+        },
+        {
+          "x": 22,
+          "y": 35
+        },
+        {
+          "x": 19,
+          "y": 30
+        },
+        {
+          "x": 13,
+          "y": 28
+        }
+      ]
+    },
+    {
+      "district": "park",
+      "width": 1.4,
+      "points": [
+        {
+          "x": 7,
+          "y": 35
+        },
+        {
+          "x": 10,
+          "y": 37
+        },
+        {
+          "x": 13,
+          "y": 42
+        },
+        {
+          "x": 13,
+          "y": 47
+        },
+        {
+          "x": 15,
+          "y": 53
+        }
+      ]
+    },
+    {
+      "district": "civic",
+      "width": 2,
+      "points": [
+        {
+          "x": 25,
+          "y": 14.8
+        },
+        {
+          "x": 26.5,
+          "y": 14
+        },
+        {
+          "x": 27.8,
+          "y": 13.7
+        },
+        {
+          "x": 28.2,
+          "y": 11.5
+        },
+        {
+          "x": 29.5,
+          "y": 10.5
+        },
+        {
+          "x": 35.8,
+          "y": 9
+        },
+        {
+          "x": 44,
+          "y": 9
+        },
+        {
+          "x": 51.5,
+          "y": 9
+        },
+        {
+          "x": 52.2,
+          "y": 11.8
+        },
+        {
+          "x": 55,
+          "y": 13
+        },
+        {
+          "x": 56.4,
+          "y": 13.5
+        },
+        {
+          "x": 56.4,
+          "y": 16.6
+        },
+        {
+          "x": 60,
+          "y": 17.6
+        },
+        {
+          "x": 64,
+          "y": 19
+        },
+        {
+          "x": 72,
+          "y": 19
+        },
+        {
+          "x": 79,
+          "y": 20
+        }
+      ]
+    },
+    {
+      "district": "civic",
+      "width": 1.8,
+      "points": [
+        {
+          "x": 35.8,
+          "y": 9
+        },
+        {
+          "x": 36,
+          "y": 16
+        },
+        {
+          "x": 35.8,
+          "y": 25
+        },
+        {
+          "x": 36,
+          "y": 32
+        },
+        {
+          "x": 36,
+          "y": 40
+        },
+        {
+          "x": 36,
+          "y": 49
+        },
+        {
+          "x": 38,
+          "y": 54
+        }
+      ]
+    },
+    {
+      "district": "civic",
+      "width": 1.6,
+      "points": [
+        {
+          "x": 29,
+          "y": 17
+        },
+        {
+          "x": 36,
+          "y": 16
+        },
+        {
+          "x": 44,
+          "y": 17
+        },
+        {
+          "x": 53,
+          "y": 17
+        }
+      ]
+    },
+    {
+      "district": "office",
+      "width": 1.6,
+      "points": [
+        {
+          "x": 27,
+          "y": 37
+        },
+        {
+          "x": 29.6,
+          "y": 35.25
+        },
+        {
+          "x": 34,
+          "y": 35.15
+        },
+        {
+          "x": 36.3,
+          "y": 37.5
+        },
+        {
+          "x": 36.5,
+          "y": 41.6
+        },
+        {
+          "x": 41,
+          "y": 42.4
+        },
+        {
+          "x": 49.3,
+          "y": 42.6
+        },
+        {
+          "x": 52.5,
+          "y": 41
+        },
+        {
+          "x": 53,
+          "y": 38
+        },
+        {
+          "x": 55.5,
+          "y": 37
+        },
+        {
+          "x": 58,
+          "y": 36
+        },
+        {
+          "x": 62.5,
+          "y": 36.3
+        },
+        {
+          "x": 65,
+          "y": 42
+        },
+        {
+          "x": 74,
+          "y": 46
+        }
+      ]
+    },
+    {
+      "district": "office",
+      "width": 1.2,
+      "points": [
+        {
+          "x": 44.5,
+          "y": 27
+        },
+        {
+          "x": 44.5,
+          "y": 34
+        },
+        {
+          "x": 44.5,
+          "y": 41
+        },
+        {
+          "x": 45,
+          "y": 49
+        }
+      ]
+    },
+    {
+      "district": "transport",
+      "width": 2.5,
+      "points": [
+        {
+          "x": 55,
+          "y": 13
+        },
+        {
+          "x": 56.4,
+          "y": 13.5
+        },
+        {
+          "x": 56.5,
+          "y": 16.7
+        },
+        {
+          "x": 62.5,
+          "y": 17.5
+        },
+        {
+          "x": 64,
+          "y": 21
+        },
+        {
+          "x": 64,
+          "y": 25
+        },
+        {
+          "x": 64,
+          "y": 28.8
+        },
+        {
+          "x": 63.5,
+          "y": 32
+        },
+        {
+          "x": 63.5,
+          "y": 36
+        },
+        {
+          "x": 65,
+          "y": 42
+        },
+        {
+          "x": 64,
+          "y": 48
+        },
+        {
+          "x": 62.3,
+          "y": 49.2
+        },
+        {
+          "x": 60.8,
+          "y": 50.9
+        },
+        {
+          "x": 58,
+          "y": 52
+        },
+        {
+          "x": 50,
+          "y": 55
+        }
+      ]
+    },
+    {
+      "district": "harbour",
+      "width": 2.2,
+      "points": [
+        {
+          "x": 69,
+          "y": 29
+        },
+        {
+          "x": 65,
+          "y": 29.4
+        },
+        {
+          "x": 63.4,
+          "y": 30.3
+        },
+        {
+          "x": 63.4,
+          "y": 35.8
+        },
+        {
+          "x": 64.5,
+          "y": 37.3
+        },
+        {
+          "x": 68,
+          "y": 38.8
+        },
+        {
+          "x": 73,
+          "y": 39
+        },
+        {
+          "x": 78,
+          "y": 39.1
+        },
+        {
+          "x": 78.5,
+          "y": 43
+        },
+        {
+          "x": 78,
+          "y": 46
+        },
+        {
+          "x": 74,
+          "y": 48
+        },
+        {
+          "x": 67,
+          "y": 48
+        }
+      ]
+    },
+    {
+      "district": "resident",
+      "width": 2.1,
+      "points": [
+        {
+          "x": 7.2,
+          "y": 55.8
+        },
+        {
+          "x": 15,
+          "y": 55
+        },
+        {
+          "x": 24,
+          "y": 55.5
+        },
+        {
+          "x": 34,
+          "y": 56
+        },
+        {
+          "x": 44,
+          "y": 55
+        },
+        {
+          "x": 50,
+          "y": 55
+        }
+      ]
+    },
+    {
+      "id": "market-west-loop",
+      "district": "market",
+      "width": 1.4,
+      "sampled": true,
+      "points": [
+        {
+          "x": 0,
+          "y": 6.2
+        },
+        {
+          "x": 0,
+          "y": 15
+        }
+      ]
+    },
+    {
+      "id": "market-garden",
+      "district": "garden",
+      "width": 1.45,
+      "sampled": true,
+      "points": [
+        {
+          "x": 0,
+          "y": 15
+        },
+        {
+          "x": 0,
+          "y": 22
+        }
+      ]
+    },
+    {
+      "id": "garden-main-gate",
+      "district": "garden",
+      "width": 1.5,
+      "sampled": true,
+      "points": [
+        {
+          "x": 0,
+          "y": 22
+        },
+        {
+          "x": 0.6083333333333333,
+          "y": 22.12986111111111
+        },
+        {
+          "x": 1.2166666666666663,
+          "y": 22.23611111111111
+        },
+        {
+          "x": 1.825,
+          "y": 22.31875
+        },
+        {
+          "x": 2.4333333333333327,
+          "y": 22.37777777777778
+        },
+        {
+          "x": 3.041666666666667,
+          "y": 22.413194444444446
+        },
+        {
+          "x": 3.6499999999999995,
+          "y": 22.425
+        },
+        {
+          "x": 4.258333333333334,
+          "y": 22.413194444444446
+        },
+        {
+          "x": 4.866666666666666,
+          "y": 22.37777777777778
+        },
+        {
+          "x": 5.475,
+          "y": 22.31875
+        },
+        {
+          "x": 6.083333333333333,
+          "y": 22.23611111111111
+        },
+        {
+          "x": 6.691666666666666,
+          "y": 22.12986111111111
+        },
+        {
+          "x": 7.3,
+          "y": 22
+        }
+      ]
+    },
+    {
+      "id": "garden-residential",
+      "district": "garden",
+      "width": 1.4,
+      "sampled": true,
+      "points": [
+        {
+          "x": -12,
+          "y": 27
+        },
+        {
+          "x": -12.162777777777778,
+          "y": 27.313472222222224
+        },
+        {
+          "x": -12.31111111111111,
+          "y": 27.630555555555556
+        },
+        {
+          "x": -12.445,
+          "y": 27.95125
+        },
+        {
+          "x": -12.564444444444444,
+          "y": 28.275555555555556
+        },
+        {
+          "x": -12.669444444444444,
+          "y": 28.603472222222223
+        },
+        {
+          "x": -12.76,
+          "y": 28.935000000000002
+        },
+        {
+          "x": -12.83611111111111,
+          "y": 29.270138888888887
+        },
+        {
+          "x": -12.897777777777778,
+          "y": 29.608888888888888
+        },
+        {
+          "x": -12.945,
+          "y": 29.95125
+        },
+        {
+          "x": -12.977777777777778,
+          "y": 30.29722222222222
+        },
+        {
+          "x": -12.99611111111111,
+          "y": 30.646805555555556
+        },
+        {
+          "x": -13,
+          "y": 31
+        }
+      ]
+    },
+    {
+      "id": "residential-loop",
+      "district": "residential",
+      "width": 1.3,
+      "sampled": true,
+      "points": [
+        {
+          "x": -2,
+          "y": 48
+        },
+        {
+          "x": -3.74701778718653,
+          "y": 42.75894663844041
+        },
+        {
+          "x": -3.7895080017331257,
+          "y": 42.63355932813396
+        },
+        {
+          "x": -3.832651241101757,
+          "y": 42.51037961002806
+        },
+        {
+          "x": -3.876447505292423,
+          "y": 42.38940748412273
+        },
+        {
+          "x": -3.9208967943051243,
+          "y": 42.27064295041796
+        },
+        {
+          "x": -3.9659991081398607,
+          "y": 42.15408600891375
+        },
+        {
+          "x": -4.011754446796632,
+          "y": 42.03973665961011
+        },
+        {
+          "x": -4.058162810275439,
+          "y": 41.92759490250702
+        },
+        {
+          "x": -4.105224198576281,
+          "y": 41.81766073760449
+        },
+        {
+          "x": -4.152938611699158,
+          "y": 41.70993416490252
+        },
+        {
+          "x": -4.20130604964407,
+          "y": 41.60441518440112
+        },
+        {
+          "x": -4.250326512411017,
+          "y": 41.501103796100274
+        },
+        {
+          "x": -4.3,
+          "y": 41.4
+        },
+        {
+          "x": -5,
+          "y": 40
+        }
+      ]
+    },
+    {
+      "id": "park-promenade",
+      "district": "park",
+      "width": 1.5,
+      "sampled": true,
+      "points": [
+        {
+          "x": 15,
+          "y": 53
+        },
+        {
+          "x": 14.960277777777778,
+          "y": 53.16666666666667
+        },
+        {
+          "x": 14.927777777777777,
+          "y": 53.33333333333333
+        },
+        {
+          "x": 14.9025,
+          "y": 53.5
+        },
+        {
+          "x": 14.884444444444444,
+          "y": 53.66666666666667
+        },
+        {
+          "x": 14.873611111111112,
+          "y": 53.83333333333333
+        },
+        {
+          "x": 14.870000000000001,
+          "y": 54
+        },
+        {
+          "x": 14.873611111111112,
+          "y": 54.16666666666667
+        },
+        {
+          "x": 14.884444444444444,
+          "y": 54.33333333333333
+        },
+        {
+          "x": 14.9025,
+          "y": 54.5
+        },
+        {
+          "x": 14.927777777777777,
+          "y": 54.66666666666667
+        },
+        {
+          "x": 14.960277777777778,
+          "y": 54.83333333333333
+        },
+        {
+          "x": 15,
+          "y": 55
+        }
+      ]
+    },
+    {
+      "id": "market-civic",
+      "district": "market",
+      "width": 1.5,
+      "sampled": true,
+      "points": [
+        {
+          "x": 23,
+          "y": 23
+        },
+        {
+          "x": 25,
+          "y": 14.8
+        }
+      ]
+    },
+    {
+      "id": "transport-harbour",
+      "district": "transport",
+      "width": 1.6,
+      "sampled": true,
+      "points": [
+        {
+          "x": 79,
+          "y": 20
+        },
+        {
+          "x": 68,
+          "y": 26
+        },
+        {
+          "x": 68,
+          "y": 29
+        },
+        {
+          "x": 69,
+          "y": 29
+        }
+      ]
+    },
+    {
+      "id": "civic-promenade",
+      "district": "civic",
+      "width": 1.5,
+      "sampled": true,
+      "points": [
+        {
+          "x": 38,
+          "y": 54
+        },
+        {
+          "x": 37.62694444444445,
+          "y": 54.08722222222222
+        },
+        {
+          "x": 37.26111111111111,
+          "y": 54.18888888888889
+        },
+        {
+          "x": 36.9025,
+          "y": 54.305
+        },
+        {
+          "x": 36.55111111111111,
+          "y": 54.43555555555555
+        },
+        {
+          "x": 36.206944444444446,
+          "y": 54.58055555555555
+        },
+        {
+          "x": 35.870000000000005,
+          "y": 54.739999999999995
+        },
+        {
+          "x": 35.540277777777774,
+          "y": 54.91388888888889
+        },
+        {
+          "x": 35.217777777777776,
+          "y": 55.102222222222224
+        },
+        {
+          "x": 34.9025,
+          "y": 55.305
+        },
+        {
+          "x": 34.59444444444444,
+          "y": 55.522222222222226
+        },
+        {
+          "x": 34.29361111111111,
+          "y": 55.75388888888889
+        },
+        {
+          "x": 34,
+          "y": 56
+        }
+      ]
+    },
+    {
+      "id": "civic-west-loop",
+      "district": "civic",
+      "width": 1.3,
+      "sampled": true,
+      "points": [
+        {
+          "x": 29,
+          "y": 17
+        },
+        {
+          "x": 29.17076388888889,
+          "y": 16.468263888888888
+        },
+        {
+          "x": 29.318055555555556,
+          "y": 15.934722222222222
+        },
+        {
+          "x": 29.441875,
+          "y": 15.399375
+        },
+        {
+          "x": 29.54222222222222,
+          "y": 14.862222222222222
+        },
+        {
+          "x": 29.619097222222223,
+          "y": 14.323263888888889
+        },
+        {
+          "x": 29.6725,
+          "y": 13.782499999999999
+        },
+        {
+          "x": 29.702430555555555,
+          "y": 13.239930555555555
+        },
+        {
+          "x": 29.70888888888889,
+          "y": 12.695555555555556
+        },
+        {
+          "x": 29.691875,
+          "y": 12.149375
+        },
+        {
+          "x": 29.65138888888889,
+          "y": 11.601388888888888
+        },
+        {
+          "x": 29.587430555555557,
+          "y": 11.051597222222224
+        },
+        {
+          "x": 29.5,
+          "y": 10.5
+        }
+      ]
+    },
+    {
+      "id": "civic-east-loop",
+      "district": "civic",
+      "width": 1.3,
+      "sampled": true,
+      "points": [
+        {
+          "x": 53,
+          "y": 17
+        },
+        {
+          "x": 53,
+          "y": 15
+        },
+        {
+          "x": 56,
+          "y": 15
+        },
+        {
+          "x": 56.5,
+          "y": 16.7
+        }
+      ]
+    },
+    {
+      "id": "park-office",
+      "district": "park",
+      "width": 1.5,
+      "sampled": true,
+      "points": [
+        {
+          "x": 27,
+          "y": 37
+        },
+        {
+          "x": 26.623055555555556,
+          "y": 36.734027777777776
+        },
+        {
+          "x": 26.238888888888887,
+          "y": 36.486111111111114
+        },
+        {
+          "x": 25.8475,
+          "y": 36.25625
+        },
+        {
+          "x": 25.448888888888888,
+          "y": 36.044444444444444
+        },
+        {
+          "x": 25.043055555555554,
+          "y": 35.85069444444444
+        },
+        {
+          "x": 24.630000000000003,
+          "y": 35.675
+        },
+        {
+          "x": 24.209722222222226,
+          "y": 35.517361111111114
+        },
+        {
+          "x": 23.782222222222224,
+          "y": 35.37777777777778
+        },
+        {
+          "x": 23.3475,
+          "y": 35.25625
+        },
+        {
+          "x": 22.905555555555555,
+          "y": 35.15277777777778
+        },
+        {
+          "x": 22.45638888888889,
+          "y": 35.06736111111111
+        },
+        {
+          "x": 22,
+          "y": 35
+        }
+      ]
+    },
+    {
+      "id": "office-harbour-loop",
+      "district": "harbour",
+      "width": 1.4,
+      "sampled": true,
+      "points": [
+        {
+          "x": 74,
+          "y": 46
+        },
+        {
+          "x": 73.96027777777778,
+          "y": 46.16666666666667
+        },
+        {
+          "x": 73.92777777777778,
+          "y": 46.33333333333333
+        },
+        {
+          "x": 73.9025,
+          "y": 46.5
+        },
+        {
+          "x": 73.88444444444444,
+          "y": 46.66666666666667
+        },
+        {
+          "x": 73.8736111111111,
+          "y": 46.83333333333333
+        },
+        {
+          "x": 73.87,
+          "y": 47
+        },
+        {
+          "x": 73.8736111111111,
+          "y": 47.16666666666667
+        },
+        {
+          "x": 73.88444444444444,
+          "y": 47.33333333333333
+        },
+        {
+          "x": 73.9025,
+          "y": 47.5
+        },
+        {
+          "x": 73.92777777777778,
+          "y": 47.66666666666667
+        },
+        {
+          "x": 73.96027777777778,
+          "y": 47.83333333333333
+        },
+        {
+          "x": 74,
+          "y": 48
+        }
+      ]
+    },
+    {
+      "id": "office-north-loop",
+      "district": "office",
+      "width": 1.3,
+      "sampled": true,
+      "points": [
+        {
+          "x": 44.5,
+          "y": 27
+        },
+        {
+          "x": 44,
+          "y": 26
+        },
+        {
+          "x": 35.8,
+          "y": 25
+        }
+      ]
+    },
+    {
+      "id": "office-south-loop",
+      "district": "office",
+      "width": 1.3,
+      "sampled": true,
+      "points": [
+        {
+          "x": 45,
+          "y": 49
+        },
+        {
+          "x": 44.25,
+          "y": 48.87013888888889
+        },
+        {
+          "x": 43.5,
+          "y": 48.763888888888886
+        },
+        {
+          "x": 42.75,
+          "y": 48.68125
+        },
+        {
+          "x": 42,
+          "y": 48.62222222222222
+        },
+        {
+          "x": 41.25,
+          "y": 48.58680555555556
+        },
+        {
+          "x": 40.5,
+          "y": 48.575
+        },
+        {
+          "x": 39.75,
+          "y": 48.58680555555556
+        },
+        {
+          "x": 39,
+          "y": 48.62222222222222
+        },
+        {
+          "x": 38.25,
+          "y": 48.68125
+        },
+        {
+          "x": 37.5,
+          "y": 48.763888888888886
+        },
+        {
+          "x": 36.75,
+          "y": 48.87013888888889
+        },
+        {
+          "x": 36,
+          "y": 49
+        }
+      ]
+    },
+    {
+      "id": "harbour-south-loop",
+      "district": "harbour",
+      "width": 1.5,
+      "sampled": true,
+      "points": [
+        {
+          "x": 67,
+          "y": 48
+        },
+        {
+          "x": 66.75,
+          "y": 47.940416666666664
+        },
+        {
+          "x": 66.5,
+          "y": 47.891666666666666
+        },
+        {
+          "x": 66.25,
+          "y": 47.853750000000005
+        },
+        {
+          "x": 66,
+          "y": 47.82666666666667
+        },
+        {
+          "x": 65.75,
+          "y": 47.81041666666667
+        },
+        {
+          "x": 65.5,
+          "y": 47.805
+        },
+        {
+          "x": 65.25,
+          "y": 47.81041666666667
+        },
+        {
+          "x": 65,
+          "y": 47.82666666666667
+        },
+        {
+          "x": 64.75,
+          "y": 47.853750000000005
+        },
+        {
+          "x": 64.5,
+          "y": 47.891666666666666
+        },
+        {
+          "x": 64.25,
+          "y": 47.940416666666664
+        },
+        {
+          "x": 64,
+          "y": 48
+        }
+      ]
+    },
+    {
+      "id": "rental-garden-loop",
+      "district": "homes-rent",
+      "width": 1.35,
+      "points": [
+        {
+          "x": -29,
+          "y": 22
+        },
+        {
+          "x": -33,
+          "y": 23
+        },
+        {
+          "x": -35,
+          "y": 33
+        },
+        {
+          "x": -35,
+          "y": 39
+        },
+        {
+          "x": -37,
+          "y": 42
+        },
+        {
+          "x": -36,
+          "y": 50
+        },
+        {
+          "x": -29,
+          "y": 49
+        },
+        {
+          "x": -25,
+          "y": 51
+        },
+        {
+          "x": -18,
+          "y": 50.5
+        },
+        {
+          "x": -13,
+          "y": 48
+        }
+      ]
+    },
+    {
+      "id": "fair-west-loop",
+      "district": "fairgrounds",
+      "width": 1.3,
+      "points": [
+        {
+          "x": -33,
+          "y": 23
+        },
+        {
+          "x": -32,
+          "y": 20
+        },
+        {
+          "x": -34,
+          "y": 18
+        },
+        {
+          "x": -31,
+          "y": 18
+        },
+        {
+          "x": -31,
+          "y": 14
+        },
+        {
+          "x": -29,
+          "y": 12
+        },
+        {
+          "x": -24,
+          "y": 11
+        },
+        {
+          "x": -16,
+          "y": 9
+        },
+        {
+          "x": -10,
+          "y": 10
+        },
+        {
+          "x": -3,
+          "y": 13
+        },
+        {
+          "x": -3,
+          "y": 22
+        }
+      ]
+    },
+    {
+      "id": "apartment-villa-loop",
+      "district": "homes-apartment",
+      "width": 1.25,
+      "points": [
+        {
+          "x": 7,
+          "y": 6.2
+        },
+        {
+          "x": 7,
+          "y": -0.7
+        },
+        {
+          "x": 12,
+          "y": -1
+        },
+        {
+          "x": 22,
+          "y": -1
+        },
+        {
+          "x": 30,
+          "y": 0
+        },
+        {
+          "x": 36,
+          "y": 0
+        },
+        {
+          "x": 46,
+          "y": 0
+        },
+        {
+          "x": 55,
+          "y": 0.3
+        },
+        {
+          "x": 54,
+          "y": 1.2
+        },
+        {
+          "x": 44,
+          "y": 1
+        },
+        {
+          "x": 44,
+          "y": 9
+        }
+      ]
+    },
+    {
+      "id": "villa-civic-link",
+      "district": "homes-villa",
+      "width": 1.3,
+      "points": [
+        {
+          "x": 36,
+          "y": 0
+        },
+        {
+          "x": 36,
+          "y": 4
+        },
+        {
+          "x": 35.8,
+          "y": 9
+        }
+      ]
+    }
+  ],
+  "amenities": [
+    {
+      "id": "house",
+      "label": "Nhà của bạn",
+      "action": "house",
+      "icon": "🏠",
+      "at": {
+        "x": -10,
+        "y": 41
+      },
+      "art": "home",
+      "artAt": {
+        "x": -11.5,
+        "y": 39
+      },
+      "artWidth": 270,
+      "footprint": {
+        "x0": -12.6,
+        "y0": 38.1,
+        "x1": -10.4,
+        "y1": 39.9
+      }
+    },
+    {
+      "id": "bank",
+      "label": "Ngân hàng",
+      "action": "bank",
+      "icon": "🏦",
+      "at": {
+        "x": 34,
+        "y": 34.8
+      }
+    },
+    {
+      "id": "rank",
+      "label": "Bảng xếp hạng",
+      "action": "rank",
+      "icon": "🏆",
+      "at": {
+        "x": 6,
+        "y": 32
+      }
+    },
+    {
+      "id": "social",
+      "label": "Ghé quán hàng xóm",
+      "action": "workVisit",
+      "icon": "🛍️",
+      "at": {
+        "x": 18,
+        "y": 55.5
+      }
+    },
+    {
+      "id": "quay",
+      "label": "Mở quầy của bạn",
+      "action": "quay",
+      "icon": "🏪",
+      "at": {
+        "x": 23,
+        "y": 55.5
+      }
+    },
+    {
+      "id": "board",
+      "label": "Bảng tin cư dân",
+      "action": "nhom",
+      "icon": "📌",
+      "at": {
+        "x": 9,
+        "y": 40.5
+      }
+    },
+    {
+      "id": "walk",
+      "label": "Công viên Bờ Sen",
+      "action": "liveWalk",
+      "icon": "🚶",
+      "at": {
+        "x": 7,
+        "y": 35
+      },
+      "art": "civic-park",
+      "artAt": {
+        "x": 9,
+        "y": 32.5
+      },
+      "artWidth": 420,
+      "footprint": {
+        "x0": 7.4,
+        "y0": 31.3,
+        "x1": 10.6,
+        "y1": 33.7
+      },
+      "hint": "Đi dạo và gặp bạn bè trong công viên",
+      "actionData": {
+        "place": "congvien"
+      }
+    },
+    {
+      "id": "date",
+      "label": "Góc hẹn hò",
+      "action": "liveDate",
+      "icon": "💕",
+      "at": {
+        "x": 20,
+        "y": 42
+      },
+      "art": "civic-date",
+      "artAt": {
+        "x": 17.5,
+        "y": 44.5
+      },
+      "artWidth": 420,
+      "footprint": {
+        "x0": 15.7,
+        "y0": 43.1,
+        "x1": 19.3,
+        "y1": 45.9
+      }
+    },
+    {
+      "id": "fair",
+      "label": "Chợ đen",
+      "action": "fair",
+      "icon": "🏮",
+      "at": {
+        "x": 26,
+        "y": 21.8
+      },
+      "art": "civic-market",
+      "artAt": {
+        "x": 26.5,
+        "y": 24.8
+      },
+      "artWidth": 470,
+      "footprint": {
+        "x0": 24.4,
+        "y0": 23.2,
+        "x1": 28.6,
+        "y1": 26.4
+      },
+      "actionData": {
+        "tab": "home"
+      }
+    },
+    {
+      "id": "wedding",
+      "label": "Nhà cưới",
+      "action": "liveWed",
+      "icon": "💍",
+      "at": {
+        "x": 3,
+        "y": 45
+      },
+      "art": "civic-wedding",
+      "artAt": {
+        "x": 3,
+        "y": 42.5
+      },
+      "artWidth": 440,
+      "footprint": {
+        "x0": 1.1,
+        "y0": 41,
+        "x1": 4.9,
+        "y1": 44
+      }
+    },
+    {
+      "id": "marriage",
+      "label": "Gia đình",
+      "action": "marriage",
+      "icon": "💒",
+      "at": {
+        "x": -5,
+        "y": 49
+      }
+    },
+    {
+      "id": "garage",
+      "label": "Gara xe của bạn",
+      "action": "garage",
+      "icon": "🛵",
+      "at": {
+        "x": 61.8,
+        "y": 17
+      },
+      "art": "garage",
+      "artAt": {
+        "x": 63.3,
+        "y": 15
+      },
+      "artWidth": 270,
+      "footprint": {
+        "x0": 62.2,
+        "y0": 14.1,
+        "x1": 64.4,
+        "y1": 15.9
+      }
+    },
+    {
+      "id": "pets",
+      "label": "Thú cưng",
+      "action": "pets",
+      "icon": "🐾",
+      "at": {
+        "x": 43,
+        "y": 23
+      },
+      "art": "pet",
+      "artAt": {
+        "x": 44,
+        "y": 21
+      },
+      "artWidth": 270,
+      "footprint": {
+        "x0": 42.9,
+        "y0": 20.1,
+        "x1": 45.1,
+        "y1": 21.9
+      }
+    },
+    {
+      "id": "gadgets",
+      "label": "Điện thoại & đồ dùng",
+      "action": "gadgets",
+      "icon": "📱",
+      "at": {
+        "x": 42,
+        "y": 15.8
+      },
+      "art": "grocery",
+      "artAt": {
+        "x": 44.5,
+        "y": 14.3
+      },
+      "artWidth": 270,
+      "footprint": {
+        "x0": 43.4,
+        "y0": 13.4,
+        "x1": 45.6,
+        "y1": 15.2
+      }
+    },
+    {
+      "id": "travel",
+      "label": "Đại lý vé",
+      "action": "luxTrip",
+      "icon": "✈️",
+      "at": {
+        "x": 71,
+        "y": 20
+      }
+    },
+    {
+      "id": "abroad",
+      "label": "Du học & việc làm",
+      "action": "abroad",
+      "icon": "🎓",
+      "at": {
+        "x": 77,
+        "y": 24
+      },
+      "art": "school",
+      "artAt": {
+        "x": 73.5,
+        "y": 25.5
+      },
+      "artWidth": 270,
+      "footprint": {
+        "x0": 72.4,
+        "y0": 24.6,
+        "x1": 74.6,
+        "y1": 26.4
+      }
+    },
+    {
+      "id": "auction",
+      "label": "Nhà đấu giá",
+      "action": "auction",
+      "icon": "🔨",
+      "at": {
+        "x": 51,
+        "y": 35.5
+      },
+      "art": "market",
+      "artAt": {
+        "x": 53,
+        "y": 34.5
+      },
+      "artWidth": 270,
+      "footprint": {
+        "x0": 51.9,
+        "y0": 33.6,
+        "x1": 54.1,
+        "y1": 35.4
+      }
+    },
+    {
+      "id": "landmark",
+      "label": "Danh thắng",
+      "action": "auctionLands",
+      "icon": "🏞️",
+      "at": {
+        "x": -13,
+        "y": 27
+      },
+      "art": "lighthouse",
+      "artAt": {
+        "x": -9.5,
+        "y": 25.5
+      },
+      "artWidth": 270,
+      "footprint": {
+        "x0": -10.6,
+        "y0": 24.6,
+        "x1": -8.4,
+        "y1": 26.4
+      }
+    },
+    {
+      "id": "cafe",
+      "label": "Cà phê ngoài trời",
+      "action": "spendQuan",
+      "icon": "☕",
+      "at": {
+        "x": 10,
+        "y": 28
+      },
+      "art": "cafe",
+      "artAt": {
+        "x": 10,
+        "y": 26
+      },
+      "artWidth": 270,
+      "footprint": {
+        "x0": 8.9,
+        "y0": 25.1,
+        "x1": 11.1,
+        "y1": 26.9
+      }
+    },
+    {
+      "id": "spa",
+      "label": "Spa Sen",
+      "action": "spendSpa",
+      "icon": "🪷",
+      "at": {
+        "x": 32,
+        "y": 25
+      },
+      "art": "salon",
+      "artAt": {
+        "x": 31,
+        "y": 27
+      },
+      "artWidth": 270,
+      "footprint": {
+        "x0": 29.9,
+        "y0": 26.1,
+        "x1": 32.1,
+        "y1": 27.9
+      }
+    },
+    {
+      "id": "cinema",
+      "label": "Rạp Mây",
+      "action": "spendRap",
+      "icon": "🎬",
+      "at": {
+        "x": 23,
+        "y": 22
+      },
+      "art": "office",
+      "artAt": {
+        "x": 27,
+        "y": 19.5
+      },
+      "artWidth": 270,
+      "footprint": {
+        "x0": 25.9,
+        "y0": 18.6,
+        "x1": 28.1,
+        "y1": 20.4
+      }
+    },
+    {
+      "id": "temple",
+      "label": "Công đức",
+      "action": "spendChua",
+      "icon": "🙏",
+      "at": {
+        "x": -25,
+        "y": 30.5
+      },
+      "art": "pagoda",
+      "artAt": {
+        "x": -27,
+        "y": 33
+      },
+      "artWidth": 270,
+      "footprint": {
+        "x0": -28.1,
+        "y0": 32.1,
+        "x1": -25.9,
+        "y1": 33.9
+      }
+    },
+    {
+      "id": "karaoke",
+      "label": "Phòng hát Mây",
+      "action": "liveKara",
+      "icon": "🎤",
+      "at": {
+        "x": 25,
+        "y": 43.5
+      },
+      "art": "civic-karaoke",
+      "artAt": {
+        "x": 26,
+        "y": 40.5
+      },
+      "artWidth": 460,
+      "footprint": {
+        "x0": 24,
+        "y0": 38.9,
+        "x1": 28,
+        "y1": 42.1
+      }
+    },
+    {
+      "id": "bark",
+      "label": "Sân chơi thú cưng",
+      "hint": "Kéo co chó sủa cùng bạn bè",
+      "action": "liveBark",
+      "icon": "🐕",
+      "at": {
+        "x": 22,
+        "y": 46
+      },
+      "art": "civic-pets",
+      "artAt": {
+        "x": 19.5,
+        "y": 48.5
+      },
+      "artWidth": 460,
+      "footprint": {
+        "x0": 17.5,
+        "y0": 46.9,
+        "x1": 21.5,
+        "y1": 50.1
+      }
+    },
+    {
+      "id": "homes-rent",
+      "label": "Hẻm Trọ Hàng Cau",
+      "hint": "Phòng trọ và ký túc xá, sân chung có bóng cây.",
+      "action": "house",
+      "icon": "🛏️",
+      "at": {
+        "x": -35,
+        "y": 33
+      },
+      "housingGroup": "rent",
+      "art": "district-rent",
+      "artAt": {
+        "x": -38,
+        "y": 29.5
+      },
+      "artWidth": 480,
+      "footprint": {
+        "x0": -40.4,
+        "y0": 28,
+        "x1": -35.6,
+        "y1": 31
+      }
+    },
+    {
+      "id": "homes-apartment",
+      "label": "Khu Căn Hộ Mây Xanh",
+      "hint": "Những ban công đón gió phía bắc, lối dạo nối sảnh chung.",
+      "action": "house",
+      "icon": "🏢",
+      "at": {
+        "x": 12,
+        "y": -1
+      },
+      "housingGroup": "apartment",
+      "art": "district-apartment",
+      "artAt": {
+        "x": 10,
+        "y": -4
+      },
+      "artWidth": 480,
+      "footprint": {
+        "x0": 7.6,
+        "y0": -5.5,
+        "x1": 12.4,
+        "y1": -2.5
+      }
+    },
+    {
+      "id": "homes-townhouse",
+      "label": "Xóm Nhà Phố Hoa Khế",
+      "hint": "Nhà phố có sân nhỏ, lối đi uốn quanh vườn hoa phía tây.",
+      "action": "house",
+      "icon": "🏡",
+      "at": {
+        "x": -29,
+        "y": 49
+      },
+      "housingGroup": "townhouse",
+      "art": "district-townhouse",
+      "artAt": {
+        "x": -32,
+        "y": 45.5
+      },
+      "artWidth": 480,
+      "footprint": {
+        "x0": -34.4,
+        "y0": 44,
+        "x1": -29.6,
+        "y1": 47
+      }
+    },
+    {
+      "id": "homes-villa",
+      "label": "Vườn Biệt Thự Đón Gió",
+      "hint": "Cổng vườn rộng, hồ nhỏ và những mái hiên bên đường vòng phía bắc.",
+      "action": "house",
+      "icon": "🏰",
+      "at": {
+        "x": 46,
+        "y": 0
+      },
+      "housingGroup": "villa",
+      "art": "district-villa",
+      "artAt": {
+        "x": 46,
+        "y": -3
+      },
+      "artWidth": 480,
+      "footprint": {
+        "x0": 43.6,
+        "y0": -4.5,
+        "x1": 48.4,
+        "y1": -1.5
+      }
+    },
+    {
+      "id": "fairgrounds",
+      "label": "Hội chợ · ném vòng",
+      "action": "fair",
+      "icon": "🎪",
+      "at": {
+        "x": -16,
+        "y": 9
+      },
+      "actionData": {
+        "tab": "ring"
+      },
+      "hint": "Thử tài ném vòng tại hội chợ Chợ đen",
+      "art": "fairgrounds",
+      "artAt": {
+        "x": -19,
+        "y": 5.8
+      },
+      "artWidth": 470,
+      "footprint": {
+        "x0": -21.4,
+        "y0": 4.2,
+        "x1": -16.6,
+        "y1": 7.4
+      }
+    },
+    {
+      "id": "dograce",
+      "label": "Đường đua chó",
+      "action": "fair",
+      "icon": "🐕",
+      "at": {
+        "x": -34,
+        "y": 18
+      },
+      "actionData": {
+        "tab": "dg"
+      },
+      "hint": "Chọn chú chó yêu thích tại đường đua Chợ đen",
+      "art": "dograce",
+      "artAt": {
+        "x": -36,
+        "y": 14.5
+      },
+      "artWidth": 490,
+      "footprint": {
+        "x0": -39,
+        "y0": 12.6,
+        "x1": -33,
+        "y1": 16.4
+      }
+    },
+    {
+      "id": "decoration",
+      "label": "Vào nhà · trang trí & sửa chữa",
+      "action": "jrEnterHome",
+      "icon": "🎨",
+      "at": {
+        "x": -8,
+        "y": 42.3
+      },
+      "hint": "Mở căn nhà hiện tại, sắp đồ, sơn và sửa chữa"
+    },
+    {
+      "id": "household",
+      "label": "Góc chăm con & thú cưng",
+      "action": "stView",
+      "icon": "👶",
+      "at": {
+        "x": -26,
+        "y": 50.5
+      },
+      "actionData": {
+        "view": "household"
+      },
+      "hint": "Chăm con và vui chơi cùng thú cưng"
+    },
+    {
+      "id": "family-children",
+      "label": "Con chung & gia đình",
+      "action": "marriage",
+      "icon": "👨‍👩‍👧",
+      "at": {
+        "x": -6,
+        "y": 48
+      },
+      "actionData": {
+        "tab": "family",
+        "section": "children"
+      },
+      "hint": "Xem điều kiện, đón và chăm con chung trong gia đình"
+    },
+    {
+      "id": "home-guests",
+      "label": "Khách & người ở cùng",
+      "action": "homeGuests",
+      "icon": "🏡",
+      "at": {
+        "x": -34.5,
+        "y": 39
+      },
+      "hint": "Quản lý lời mời và quyền ở cùng tại nhà của bạn"
+    },
+    {
+      "id": "garage-bike",
+      "label": "Cửa hàng xe máy",
+      "action": "garage",
+      "icon": "🛵",
+      "at": {
+        "x": 60,
+        "y": 18.8
+      },
+      "actionData": {
+        "tab": "bike"
+      },
+      "hint": "Chọn xe hai bánh, đổi màu và dạo quanh đảo"
+    },
+    {
+      "id": "garage-car",
+      "label": "Showroom ô tô",
+      "action": "garage",
+      "icon": "🚗",
+      "at": {
+        "x": 66,
+        "y": 19
+      },
+      "actionData": {
+        "tab": "car"
+      },
+      "hint": "Ô tô · mua, đổi màu, biển số và lái đi chơi"
+    }
+  ],
+  "shopLots": [
+    {
+      "at": {
+        "x": 7,
+        "y": 53
+      },
+      "door": {
+        "x": 7.2,
+        "y": 55.8
+      },
+      "footprint": {
+        "x0": 5.6,
+        "y0": 51.3,
+        "x1": 8.4,
+        "y1": 54
+      }
+    },
+    {
+      "at": {
+        "x": 12.5,
+        "y": 53
+      },
+      "door": {
+        "x": 12.7,
+        "y": 55.8
+      },
+      "footprint": {
+        "x0": 11.1,
+        "y0": 51.3,
+        "x1": 13.9,
+        "y1": 54
+      }
+    },
+    {
+      "at": {
+        "x": 18,
+        "y": 53
+      },
+      "door": {
+        "x": 18.2,
+        "y": 55.8
+      },
+      "footprint": {
+        "x0": 16.6,
+        "y0": 51.3,
+        "x1": 19.4,
+        "y1": 54
+      }
+    },
+    {
+      "at": {
+        "x": 23.5,
+        "y": 53
+      },
+      "door": {
+        "x": 23.7,
+        "y": 55.8
+      },
+      "footprint": {
+        "x0": 22.1,
+        "y0": 51.3,
+        "x1": 24.9,
+        "y1": 54
+      }
+    },
+    {
+      "at": {
+        "x": 29,
+        "y": 53
+      },
+      "door": {
+        "x": 29.2,
+        "y": 55.8
+      },
+      "footprint": {
+        "x0": 27.6,
+        "y0": 51.3,
+        "x1": 30.4,
+        "y1": 54
+      }
+    },
+    {
+      "at": {
+        "x": 34.5,
+        "y": 53
+      },
+      "door": {
+        "x": 34.7,
+        "y": 55.8
+      },
+      "footprint": {
+        "x0": 33.1,
+        "y0": 51.3,
+        "x1": 35.9,
+        "y1": 54
+      }
+    },
+    {
+      "at": {
+        "x": 40,
+        "y": 53
+      },
+      "door": {
+        "x": 40.2,
+        "y": 55.8
+      },
+      "footprint": {
+        "x0": 38.6,
+        "y0": 51.3,
+        "x1": 41.4,
+        "y1": 54
+      }
+    },
+    {
+      "at": {
+        "x": 45.5,
+        "y": 53
+      },
+      "door": {
+        "x": 45.7,
+        "y": 55.8
+      },
+      "footprint": {
+        "x0": 44.1,
+        "y0": 51.3,
+        "x1": 46.9,
+        "y1": 54
+      }
+    }
+  ],
+  "scenery": [
+    {
+      "kind": "gazebo",
+      "at": {
+        "x": 5.8,
+        "y": 29.4
+      },
+      "size": 1
+    },
+    {
+      "kind": "bench",
+      "at": {
+        "x": 8.8,
+        "y": 40
+      },
+      "size": 1
+    },
+    {
+      "kind": "bench",
+      "at": {
+        "x": 20.6,
+        "y": 41.5
+      },
+      "size": 1
+    },
+    {
+      "kind": "bench",
+      "at": {
+        "x": 19.8,
+        "y": 29
+      },
+      "size": 1
+    },
+    {
+      "kind": "bench",
+      "at": {
+        "x": -16,
+        "y": 46
+      },
+      "size": 1
+    },
+    {
+      "kind": "bench",
+      "at": {
+        "x": 45,
+        "y": 34
+      },
+      "size": 1
+    },
+    {
+      "kind": "bench",
+      "at": {
+        "x": 76,
+        "y": 47.2
+      },
+      "size": 1
+    },
+    {
+      "kind": "lamp",
+      "at": {
+        "x": 5,
+        "y": 32
+      },
+      "size": 1
+    },
+    {
+      "kind": "lamp",
+      "at": {
+        "x": 20.5,
+        "y": 33
+      },
+      "size": 1
+    },
+    {
+      "kind": "lamp",
+      "at": {
+        "x": 10,
+        "y": 41
+      },
+      "size": 1
+    },
+    {
+      "kind": "lamp",
+      "at": {
+        "x": 26,
+        "y": 55
+      },
+      "size": 1
+    },
+    {
+      "kind": "lamp",
+      "at": {
+        "x": 49,
+        "y": 54
+      },
+      "size": 1
+    },
+    {
+      "kind": "lamp",
+      "at": {
+        "x": 68.5,
+        "y": 42
+      },
+      "size": 1
+    },
+    {
+      "kind": "lamp",
+      "at": {
+        "x": 43.4,
+        "y": 34
+      },
+      "size": 1
+    },
+    {
+      "kind": "bike",
+      "at": {
+        "x": -7,
+        "y": 38
+      },
+      "size": 1
+    },
+    {
+      "kind": "bike",
+      "at": {
+        "x": 32,
+        "y": 34
+      },
+      "size": 1
+    },
+    {
+      "kind": "well",
+      "at": {
+        "x": -19,
+        "y": 28
+      },
+      "size": 1
+    },
+    {
+      "kind": "produce",
+      "at": {
+        "x": -20,
+        "y": 18
+      },
+      "size": 1
+    },
+    {
+      "kind": "playground",
+      "at": {
+        "x": 3,
+        "y": 47
+      },
+      "size": 1
+    },
+    {
+      "kind": "fountain",
+      "at": {
+        "x": 24,
+        "y": 27.5
+      },
+      "size": 1
+    },
+    {
+      "kind": "notice",
+      "at": {
+        "x": 11,
+        "y": 42
+      },
+      "size": 1
+    },
+    {
+      "kind": "pergola",
+      "at": {
+        "x": -17,
+        "y": 42
+      },
+      "size": 1
+    },
+    {
+      "kind": "planter",
+      "at": {
+        "x": 25,
+        "y": 16
+      },
+      "size": 1
+    },
+    {
+      "kind": "planter",
+      "at": {
+        "x": 31,
+        "y": 26
+      },
+      "size": 1
+    },
+    {
+      "kind": "buoy",
+      "at": {
+        "x": 77,
+        "y": 43
+      },
+      "size": 1
+    },
+    {
+      "kind": "crates",
+      "at": {
+        "x": 78,
+        "y": 31
+      },
+      "size": 1
+    },
+    {
+      "kind": "crates",
+      "at": {
+        "x": 72,
+        "y": 48
+      },
+      "size": 1
+    }
+  ],
+  "planting": [
+    {
+      "at": {
+        "x": -30.003,
+        "y": 18.735
+      },
+      "kind": "bamboo",
+      "size": 0.76,
+      "footprint": {
+        "x0": -30.153,
+        "y0": 18.585,
+        "x1": -29.853,
+        "y1": 18.884999999999998
+      }
+    },
+    {
+      "at": {
+        "x": -28.85,
+        "y": 16.632
+      },
+      "kind": "banyan",
+      "size": 0.9,
+      "footprint": {
+        "x0": -29,
+        "y0": 16.482000000000003,
+        "x1": -28.700000000000003,
+        "y1": 16.782
+      }
+    },
+    {
+      "at": {
+        "x": -29.677,
+        "y": 20.014
+      },
+      "kind": "banana",
+      "size": 0.9,
+      "footprint": {
+        "x0": -29.826999999999998,
+        "y0": 19.864,
+        "x1": -29.527,
+        "y1": 20.163999999999998
+      }
+    },
+    {
+      "at": {
+        "x": -30.279,
+        "y": 16.03
+      },
+      "kind": "bamboo",
+      "size": 1.04,
+      "footprint": {
+        "x0": -30.429,
+        "y0": 15.88,
+        "x1": -30.129,
+        "y1": 16.18
+      }
+    },
+    {
+      "at": {
+        "x": -21.524,
+        "y": 15.122
+      },
+      "kind": "bamboo",
+      "size": 0.62,
+      "footprint": {
+        "x0": -21.674,
+        "y0": 14.972,
+        "x1": -21.374000000000002,
+        "y1": 15.272
+      }
+    },
+    {
+      "at": {
+        "x": -23.235,
+        "y": 15.455
+      },
+      "kind": "banyan",
+      "size": 0.76,
+      "footprint": {
+        "x0": -23.384999999999998,
+        "y0": 15.305,
+        "x1": -23.085,
+        "y1": 15.605
+      }
+    },
+    {
+      "at": {
+        "x": -21.336,
+        "y": 13.734
+      },
+      "kind": "flowers",
+      "size": 0.9,
+      "footprint": {
+        "x0": -21.555999999999997,
+        "y0": 13.514,
+        "x1": -21.116,
+        "y1": 13.954
+      }
+    },
+    {
+      "at": {
+        "x": -21.329,
+        "y": 16.498
+      },
+      "kind": "shrubs",
+      "size": 1.04,
+      "footprint": {
+        "x0": -21.549,
+        "y0": 16.278000000000002,
+        "x1": -21.109,
+        "y1": 16.718
+      }
+    },
+    {
+      "at": {
+        "x": -23.964,
+        "y": 14.172
+      },
+      "kind": "rocks",
+      "size": 0.62,
+      "footprint": {
+        "x0": -24.183999999999997,
+        "y0": 13.952,
+        "x1": -23.744,
+        "y1": 14.392000000000001
+      }
+    },
+    {
+      "at": {
+        "x": -19.656,
+        "y": 14.508
+      },
+      "kind": "banana",
+      "size": 0.76,
+      "footprint": {
+        "x0": -19.805999999999997,
+        "y0": 14.357999999999999,
+        "x1": -19.506,
+        "y1": 14.658
+      }
+    },
+    {
+      "at": {
+        "x": -19.684,
+        "y": 16.439
+      },
+      "kind": "flowers",
+      "size": 0.62,
+      "footprint": {
+        "x0": -19.904,
+        "y0": 16.219,
+        "x1": -19.464000000000002,
+        "y1": 16.659
+      }
+    },
+    {
+      "at": {
+        "x": -19.35,
+        "y": 29.132
+      },
+      "kind": "flowers",
+      "size": 0.76,
+      "footprint": {
+        "x0": -19.57,
+        "y0": 28.912000000000003,
+        "x1": -19.130000000000003,
+        "y1": 29.352
+      }
+    },
+    {
+      "at": {
+        "x": -19.555,
+        "y": 27.732
+      },
+      "kind": "banana",
+      "size": 0.62,
+      "footprint": {
+        "x0": -19.705,
+        "y0": 27.582,
+        "x1": -19.405,
+        "y1": 27.881999999999998
+      }
+    },
+    {
+      "at": {
+        "x": -16.343,
+        "y": 30.935
+      },
+      "kind": "shrubs",
+      "size": 0.62,
+      "footprint": {
+        "x0": -16.563,
+        "y0": 30.715,
+        "x1": -16.123,
+        "y1": 31.154999999999998
+      }
+    },
+    {
+      "at": {
+        "x": -21,
+        "y": 28.442
+      },
+      "kind": "rocks",
+      "size": 0.76,
+      "footprint": {
+        "x0": -21.22,
+        "y0": 28.222,
+        "x1": -20.78,
+        "y1": 28.662
+      }
+    },
+    {
+      "at": {
+        "x": -5.997,
+        "y": 25.413
+      },
+      "kind": "bamboo",
+      "size": 0.62,
+      "footprint": {
+        "x0": -6.147,
+        "y0": 25.263,
+        "x1": -5.8469999999999995,
+        "y1": 25.563
+      }
+    },
+    {
+      "at": {
+        "x": -3.79,
+        "y": 25.002
+      },
+      "kind": "shrubs",
+      "size": 1.04,
+      "footprint": {
+        "x0": -4.01,
+        "y0": 24.782,
+        "x1": -3.57,
+        "y1": 25.221999999999998
+      }
+    },
+    {
+      "at": {
+        "x": -20.838,
+        "y": 48.378
+      },
+      "kind": "shrubs",
+      "size": 0.62,
+      "footprint": {
+        "x0": -21.058,
+        "y0": 48.158,
+        "x1": -20.618000000000002,
+        "y1": 48.598
+      }
+    },
+    {
+      "at": {
+        "x": -22.195,
+        "y": 47.48
+      },
+      "kind": "rocks",
+      "size": 0.76,
+      "footprint": {
+        "x0": -22.415,
+        "y0": 47.26,
+        "x1": -21.975,
+        "y1": 47.699999999999996
+      }
+    },
+    {
+      "at": {
+        "x": -22.1,
+        "y": 49.326
+      },
+      "kind": "bamboo",
+      "size": 1.04,
+      "footprint": {
+        "x0": -22.25,
+        "y0": 49.176,
+        "x1": -21.950000000000003,
+        "y1": 49.476
+      }
+    },
+    {
+      "at": {
+        "x": -21.344,
+        "y": 46.245
+      },
+      "kind": "banyan",
+      "size": 0.62,
+      "footprint": {
+        "x0": -21.494,
+        "y0": 46.095,
+        "x1": -21.194000000000003,
+        "y1": 46.394999999999996
+      }
+    },
+    {
+      "at": {
+        "x": -19.106,
+        "y": 49.209
+      },
+      "kind": "flowers",
+      "size": 0.76,
+      "footprint": {
+        "x0": -19.326,
+        "y0": 48.989000000000004,
+        "x1": -18.886000000000003,
+        "y1": 49.429
+      }
+    },
+    {
+      "at": {
+        "x": -21.057,
+        "y": 50.346
+      },
+      "kind": "banana",
+      "size": 0.62,
+      "footprint": {
+        "x0": -21.206999999999997,
+        "y0": 50.196,
+        "x1": -20.907,
+        "y1": 50.495999999999995
+      }
+    },
+    {
+      "at": {
+        "x": -16.288,
+        "y": 35.092
+      },
+      "kind": "bamboo",
+      "size": 0.9,
+      "footprint": {
+        "x0": -16.438,
+        "y0": 34.942,
+        "x1": -16.138,
+        "y1": 35.242
+      }
+    },
+    {
+      "at": {
+        "x": -17.659,
+        "y": 33.245
+      },
+      "kind": "flowers",
+      "size": 0.62,
+      "footprint": {
+        "x0": -17.878999999999998,
+        "y0": 33.025,
+        "x1": -17.439,
+        "y1": 33.464999999999996
+      }
+    },
+    {
+      "at": {
+        "x": -15.564,
+        "y": 33.936
+      },
+      "kind": "banana",
+      "size": 1.04,
+      "footprint": {
+        "x0": -15.714,
+        "y0": 33.786,
+        "x1": -15.414,
+        "y1": 34.086
+      }
+    },
+    {
+      "at": {
+        "x": -19.234,
+        "y": 32.742
+      },
+      "kind": "banyan",
+      "size": 0.76,
+      "footprint": {
+        "x0": -19.384,
+        "y0": 32.592,
+        "x1": -19.084000000000003,
+        "y1": 32.891999999999996
+      }
+    },
+    {
+      "at": {
+        "x": -2.143,
+        "y": 46.383
+      },
+      "kind": "banana",
+      "size": 0.62,
+      "footprint": {
+        "x0": -2.2929999999999997,
+        "y0": 46.233000000000004,
+        "x1": -1.9929999999999999,
+        "y1": 46.533
+      }
+    },
+    {
+      "at": {
+        "x": -2.595,
+        "y": 45.021
+      },
+      "kind": "bamboo",
+      "size": 0.76,
+      "footprint": {
+        "x0": -2.745,
+        "y0": 44.871,
+        "x1": -2.4450000000000003,
+        "y1": 45.171
+      }
+    },
+    {
+      "at": {
+        "x": -1.006,
+        "y": 44.412
+      },
+      "kind": "shrubs",
+      "size": 0.62,
+      "footprint": {
+        "x0": -1.226,
+        "y0": 44.192,
+        "x1": -0.786,
+        "y1": 44.632
+      }
+    },
+    {
+      "at": {
+        "x": 0.725,
+        "y": 45.581
+      },
+      "kind": "bamboo",
+      "size": 1.04,
+      "footprint": {
+        "x0": 0.575,
+        "y0": 45.431000000000004,
+        "x1": 0.875,
+        "y1": 45.731
+      }
+    },
+    {
+      "at": {
+        "x": -2.315,
+        "y": 43.549
+      },
+      "kind": "flowers",
+      "size": 0.76,
+      "footprint": {
+        "x0": -2.535,
+        "y0": 43.329,
+        "x1": -2.0949999999999998,
+        "y1": 43.769
+      }
+    },
+    {
+      "at": {
+        "x": 5.755,
+        "y": 29.266
+      },
+      "kind": "rocks",
+      "size": 1.04,
+      "footprint": {
+        "x0": 5.535,
+        "y0": 29.046,
+        "x1": 5.975,
+        "y1": 29.485999999999997
+      }
+    },
+    {
+      "at": {
+        "x": 2.932,
+        "y": 39.153
+      },
+      "kind": "flamboyant",
+      "size": 0.9,
+      "footprint": {
+        "x0": 2.782,
+        "y0": 39.003,
+        "x1": 3.082,
+        "y1": 39.303
+      }
+    },
+    {
+      "at": {
+        "x": 1.186,
+        "y": 39.826
+      },
+      "kind": "shrubs",
+      "size": 0.76,
+      "footprint": {
+        "x0": 0.966,
+        "y0": 39.606,
+        "x1": 1.406,
+        "y1": 40.046
+      }
+    },
+    {
+      "at": {
+        "x": 0.987,
+        "y": 36.079
+      },
+      "kind": "rocks",
+      "size": 0.9,
+      "footprint": {
+        "x0": 0.767,
+        "y0": 35.859,
+        "x1": 1.207,
+        "y1": 36.299
+      }
+    },
+    {
+      "at": {
+        "x": 4.523,
+        "y": 38.926
+      },
+      "kind": "flamboyant",
+      "size": 1.04,
+      "footprint": {
+        "x0": 4.372999999999999,
+        "y0": 38.776,
+        "x1": 4.673,
+        "y1": 39.076
+      }
+    },
+    {
+      "at": {
+        "x": 3.524,
+        "y": 35.859
+      },
+      "kind": "flowers",
+      "size": 0.76,
+      "footprint": {
+        "x0": 3.304,
+        "y0": 35.639,
+        "x1": 3.744,
+        "y1": 36.079
+      }
+    },
+    {
+      "at": {
+        "x": 7.531,
+        "y": 45.138
+      },
+      "kind": "rocks",
+      "size": 0.62,
+      "footprint": {
+        "x0": 7.311,
+        "y0": 44.918,
+        "x1": 7.7509999999999994,
+        "y1": 45.358
+      }
+    },
+    {
+      "at": {
+        "x": 8.625,
+        "y": 44.034
+      },
+      "kind": "flamboyant",
+      "size": 0.76,
+      "footprint": {
+        "x0": 8.475,
+        "y0": 43.884,
+        "x1": 8.775,
+        "y1": 44.184
+      }
+    },
+    {
+      "at": {
+        "x": 8.448,
+        "y": 46.325
+      },
+      "kind": "banyan",
+      "size": 0.9,
+      "footprint": {
+        "x0": 8.298,
+        "y0": 46.175000000000004,
+        "x1": 8.598,
+        "y1": 46.475
+      }
+    },
+    {
+      "at": {
+        "x": 6.32,
+        "y": 44.148
+      },
+      "kind": "flowers",
+      "size": 1.04,
+      "footprint": {
+        "x0": 6.1000000000000005,
+        "y0": 43.928000000000004,
+        "x1": 6.54,
+        "y1": 44.368
+      }
+    },
+    {
+      "at": {
+        "x": 10.185,
+        "y": 44.688
+      },
+      "kind": "shrubs",
+      "size": 0.62,
+      "footprint": {
+        "x0": 9.965,
+        "y0": 44.468,
+        "x1": 10.405000000000001,
+        "y1": 44.908
+      }
+    },
+    {
+      "at": {
+        "x": 6.529,
+        "y": 46.54
+      },
+      "kind": "rocks",
+      "size": 0.76,
+      "footprint": {
+        "x0": 6.309,
+        "y0": 46.32,
+        "x1": 6.749,
+        "y1": 46.76
+      }
+    },
+    {
+      "at": {
+        "x": 7.768,
+        "y": 42.923
+      },
+      "kind": "flamboyant",
+      "size": 0.9,
+      "footprint": {
+        "x0": 7.617999999999999,
+        "y0": 42.773,
+        "x1": 7.918,
+        "y1": 43.073
+      }
+    },
+    {
+      "at": {
+        "x": 10.049,
+        "y": 46.497
+      },
+      "kind": "banyan",
+      "size": 1.04,
+      "footprint": {
+        "x0": 9.899,
+        "y0": 46.347,
+        "x1": 10.199,
+        "y1": 46.647
+      }
+    },
+    {
+      "at": {
+        "x": 5.068,
+        "y": 45.003
+      },
+      "kind": "flowers",
+      "size": 0.62,
+      "footprint": {
+        "x0": 4.848,
+        "y0": 44.783,
+        "x1": 5.287999999999999,
+        "y1": 45.223
+      }
+    },
+    {
+      "at": {
+        "x": 10.268,
+        "y": 43.333
+      },
+      "kind": "shrubs",
+      "size": 0.76,
+      "footprint": {
+        "x0": 10.048,
+        "y0": 43.113,
+        "x1": 10.488000000000001,
+        "y1": 43.553
+      }
+    },
+    {
+      "at": {
+        "x": 22.5,
+        "y": 44.017
+      },
+      "kind": "flamboyant",
+      "size": 0.62,
+      "footprint": {
+        "x0": 22.35,
+        "y0": 43.867000000000004,
+        "x1": 22.65,
+        "y1": 44.167
+      }
+    },
+    {
+      "at": {
+        "x": 23.964,
+        "y": 43.232
+      },
+      "kind": "banyan",
+      "size": 0.76,
+      "footprint": {
+        "x0": 23.814,
+        "y0": 43.082,
+        "x1": 24.113999999999997,
+        "y1": 43.382
+      }
+    },
+    {
+      "at": {
+        "x": 22.921,
+        "y": 45.372
+      },
+      "kind": "flowers",
+      "size": 0.9,
+      "footprint": {
+        "x0": 22.701,
+        "y0": 45.152,
+        "x1": 23.141,
+        "y1": 45.592
+      }
+    },
+    {
+      "at": {
+        "x": 21.725,
+        "y": 42.778
+      },
+      "kind": "shrubs",
+      "size": 1.04,
+      "footprint": {
+        "x0": 21.505000000000003,
+        "y0": 42.558,
+        "x1": 21.945,
+        "y1": 42.998
+      }
+    },
+    {
+      "at": {
+        "x": 25.2,
+        "y": 44.236
+      },
+      "kind": "rocks",
+      "size": 0.62,
+      "footprint": {
+        "x0": 24.98,
+        "y0": 44.016,
+        "x1": 25.419999999999998,
+        "y1": 44.455999999999996
+      }
+    },
+    {
+      "at": {
+        "x": 21.011,
+        "y": 45.108
+      },
+      "kind": "flamboyant",
+      "size": 0.76,
+      "footprint": {
+        "x0": 20.861,
+        "y0": 44.958,
+        "x1": 21.160999999999998,
+        "y1": 45.257999999999996
+      }
+    },
+    {
+      "at": {
+        "x": 23.571,
+        "y": 41.965
+      },
+      "kind": "banyan",
+      "size": 0.9,
+      "footprint": {
+        "x0": 23.421000000000003,
+        "y0": 41.815000000000005,
+        "x1": 23.721,
+        "y1": 42.115
+      }
+    },
+    {
+      "at": {
+        "x": 24.381,
+        "y": 45.926
+      },
+      "kind": "flowers",
+      "size": 1.04,
+      "footprint": {
+        "x0": 24.161,
+        "y0": 45.706,
+        "x1": 24.601,
+        "y1": 46.146
+      }
+    },
+    {
+      "at": {
+        "x": 20.206,
+        "y": 43.288
+      },
+      "kind": "shrubs",
+      "size": 0.62,
+      "footprint": {
+        "x0": 19.986,
+        "y0": 43.068,
+        "x1": 20.426,
+        "y1": 43.507999999999996
+      }
+    },
+    {
+      "at": {
+        "x": 25.796,
+        "y": 42.966
+      },
+      "kind": "rocks",
+      "size": 0.76,
+      "footprint": {
+        "x0": 25.576,
+        "y0": 42.746,
+        "x1": 26.016,
+        "y1": 43.186
+      }
+    },
+    {
+      "at": {
+        "x": 24.518,
+        "y": 32.894
+      },
+      "kind": "banyan",
+      "size": 0.62,
+      "footprint": {
+        "x0": 24.368000000000002,
+        "y0": 32.744,
+        "x1": 24.668,
+        "y1": 33.044
+      }
+    },
+    {
+      "at": {
+        "x": 26.211,
+        "y": 32.504
+      },
+      "kind": "flowers",
+      "size": 0.76,
+      "footprint": {
+        "x0": 25.991,
+        "y0": 32.284,
+        "x1": 26.430999999999997,
+        "y1": 32.724
+      }
+    },
+    {
+      "at": {
+        "x": 24.402,
+        "y": 34.287
+      },
+      "kind": "shrubs",
+      "size": 0.9,
+      "footprint": {
+        "x0": 24.182000000000002,
+        "y0": 34.067,
+        "x1": 24.622,
+        "y1": 34.507
+      }
+    },
+    {
+      "at": {
+        "x": 24.252,
+        "y": 31.525
+      },
+      "kind": "rocks",
+      "size": 1.04,
+      "footprint": {
+        "x0": 24.032,
+        "y0": 31.305,
+        "x1": 24.471999999999998,
+        "y1": 31.744999999999997
+      }
+    },
+    {
+      "at": {
+        "x": 22.684,
+        "y": 33.569
+      },
+      "kind": "banyan",
+      "size": 0.76,
+      "footprint": {
+        "x0": 22.534000000000002,
+        "y0": 33.419000000000004,
+        "x1": 22.834,
+        "y1": 33.719
+      }
+    },
+    {
+      "at": {
+        "x": 26.32,
+        "y": 31.202
+      },
+      "kind": "flowers",
+      "size": 0.9,
+      "footprint": {
+        "x0": 26.1,
+        "y0": 30.982000000000003,
+        "x1": 26.54,
+        "y1": 31.422
+      }
+    },
+    {
+      "at": {
+        "x": 25.58,
+        "y": 35.171
+      },
+      "kind": "shrubs",
+      "size": 1.04,
+      "footprint": {
+        "x0": 25.36,
+        "y0": 34.951,
+        "x1": 25.799999999999997,
+        "y1": 35.391
+      }
+    },
+    {
+      "at": {
+        "x": 22.611,
+        "y": 31.64
+      },
+      "kind": "rocks",
+      "size": 0.62,
+      "footprint": {
+        "x0": 22.391000000000002,
+        "y0": 31.42,
+        "x1": 22.831,
+        "y1": 31.86
+      }
+    },
+    {
+      "at": {
+        "x": 18.581,
+        "y": 26.781
+      },
+      "kind": "flowers",
+      "size": 0.62,
+      "footprint": {
+        "x0": 18.361,
+        "y0": 26.561,
+        "x1": 18.801,
+        "y1": 27.000999999999998
+      }
+    },
+    {
+      "at": {
+        "x": 20.342,
+        "y": 26.823
+      },
+      "kind": "shrubs",
+      "size": 0.76,
+      "footprint": {
+        "x0": 20.122,
+        "y0": 26.603,
+        "x1": 20.561999999999998,
+        "y1": 27.043
+      }
+    },
+    {
+      "at": {
+        "x": 17.94,
+        "y": 28.08
+      },
+      "kind": "rocks",
+      "size": 0.9,
+      "footprint": {
+        "x0": 17.720000000000002,
+        "y0": 27.86,
+        "x1": 18.16,
+        "y1": 28.299999999999997
+      }
+    },
+    {
+      "at": {
+        "x": 18.85,
+        "y": 25.413
+      },
+      "kind": "flamboyant",
+      "size": 1.04,
+      "footprint": {
+        "x0": 18.700000000000003,
+        "y0": 25.263,
+        "x1": 19,
+        "y1": 25.563
+      }
+    },
+    {
+      "at": {
+        "x": 20.619,
+        "y": 28.215
+      },
+      "kind": "banyan",
+      "size": 0.62,
+      "footprint": {
+        "x0": 20.469,
+        "y0": 28.065,
+        "x1": 20.769,
+        "y1": 28.365
+      }
+    },
+    {
+      "at": {
+        "x": 16.577,
+        "y": 26.977
+      },
+      "kind": "flowers",
+      "size": 0.76,
+      "footprint": {
+        "x0": 16.357000000000003,
+        "y0": 26.757,
+        "x1": 16.797,
+        "y1": 27.197
+      }
+    },
+    {
+      "at": {
+        "x": 20.943,
+        "y": 25.61
+      },
+      "kind": "shrubs",
+      "size": 0.9,
+      "footprint": {
+        "x0": 20.723000000000003,
+        "y0": 25.39,
+        "x1": 21.163,
+        "y1": 25.83
+      }
+    },
+    {
+      "at": {
+        "x": 17.243,
+        "y": 25.121
+      },
+      "kind": "flamboyant",
+      "size": 0.62,
+      "footprint": {
+        "x0": 17.093,
+        "y0": 24.971,
+        "x1": 17.392999999999997,
+        "y1": 25.270999999999997
+      }
+    },
+    {
+      "at": {
+        "x": 22.026,
+        "y": 27.458
+      },
+      "kind": "banyan",
+      "size": 0.76,
+      "footprint": {
+        "x0": 21.876,
+        "y0": 27.308,
+        "x1": 22.176,
+        "y1": 27.607999999999997
+      }
+    },
+    {
+      "at": {
+        "x": 25.685,
+        "y": 46.69
+      },
+      "kind": "shrubs",
+      "size": 0.62,
+      "footprint": {
+        "x0": 25.465,
+        "y0": 46.47,
+        "x1": 25.904999999999998,
+        "y1": 46.91
+      }
+    },
+    {
+      "at": {
+        "x": 24.579,
+        "y": 47.769
+      },
+      "kind": "flamboyant",
+      "size": 0.9,
+      "footprint": {
+        "x0": 24.429000000000002,
+        "y0": 47.619,
+        "x1": 24.729,
+        "y1": 47.919
+      }
+    },
+    {
+      "at": {
+        "x": 26.462,
+        "y": 45.452
+      },
+      "kind": "banyan",
+      "size": 1.04,
+      "footprint": {
+        "x0": 26.312,
+        "y0": 45.302,
+        "x1": 26.612,
+        "y1": 45.602
+      }
+    },
+    {
+      "at": {
+        "x": 23.701,
+        "y": 46.387
+      },
+      "kind": "shrubs",
+      "size": 0.76,
+      "footprint": {
+        "x0": 23.481,
+        "y0": 46.167,
+        "x1": 23.921,
+        "y1": 46.607
+      }
+    },
+    {
+      "at": {
+        "x": 25.043,
+        "y": 44.782
+      },
+      "kind": "banyan",
+      "size": 0.62,
+      "footprint": {
+        "x0": 24.893,
+        "y0": 44.632,
+        "x1": 25.192999999999998,
+        "y1": 44.931999999999995
+      }
+    },
+    {
+      "at": {
+        "x": 14.969,
+        "y": 1.601
+      },
+      "kind": "flamboyant",
+      "size": 0.62,
+      "footprint": {
+        "x0": 14.818999999999999,
+        "y0": 1.451,
+        "x1": 15.119,
+        "y1": 1.751
+      }
+    },
+    {
+      "at": {
+        "x": 15.979,
+        "y": 2.755
+      },
+      "kind": "banyan",
+      "size": 0.76,
+      "footprint": {
+        "x0": 15.828999999999999,
+        "y0": 2.605,
+        "x1": 16.128999999999998,
+        "y1": 2.905
+      }
+    },
+    {
+      "at": {
+        "x": 16.5,
+        "y": 0.955
+      },
+      "kind": "shrubs",
+      "size": 1.04,
+      "footprint": {
+        "x0": 16.28,
+        "y0": 0.735,
+        "x1": 16.72,
+        "y1": 1.175
+      }
+    },
+    {
+      "at": {
+        "x": 14.75,
+        "y": 3.765
+      },
+      "kind": "rocks",
+      "size": 0.62,
+      "footprint": {
+        "x0": 14.53,
+        "y0": 3.545,
+        "x1": 14.97,
+        "y1": 3.9850000000000003
+      }
+    },
+    {
+      "at": {
+        "x": 16.35,
+        "y": 4.215
+      },
+      "kind": "rocks",
+      "size": 0.76,
+      "footprint": {
+        "x0": 16.130000000000003,
+        "y0": 3.9949999999999997,
+        "x1": 16.57,
+        "y1": 4.435
+      }
+    },
+    {
+      "at": {
+        "x": 24.827,
+        "y": 17.371
+      },
+      "kind": "rocks",
+      "size": 1.04,
+      "footprint": {
+        "x0": 24.607000000000003,
+        "y0": 17.151,
+        "x1": 25.047,
+        "y1": 17.590999999999998
+      }
+    },
+    {
+      "at": {
+        "x": 25.275,
+        "y": 19.018
+      },
+      "kind": "flowers",
+      "size": 0.9,
+      "footprint": {
+        "x0": 25.055,
+        "y0": 18.798000000000002,
+        "x1": 25.494999999999997,
+        "y1": 19.238
+      }
+    },
+    {
+      "at": {
+        "x": 31.978,
+        "y": 2.062
+      },
+      "kind": "flowers",
+      "size": 0.76,
+      "footprint": {
+        "x0": 31.758000000000003,
+        "y0": 1.8419999999999999,
+        "x1": 32.198,
+        "y1": 2.282
+      }
+    },
+    {
+      "at": {
+        "x": 29.233,
+        "y": 3.826
+      },
+      "kind": "rocks",
+      "size": 1.04,
+      "footprint": {
+        "x0": 29.013,
+        "y0": 3.606,
+        "x1": 29.453,
+        "y1": 4.046
+      }
+    },
+    {
+      "at": {
+        "x": 52.752,
+        "y": 21.189
+      },
+      "kind": "banyan",
+      "size": 0.62,
+      "footprint": {
+        "x0": 52.602000000000004,
+        "y0": 21.039,
+        "x1": 52.902,
+        "y1": 21.339
+      }
+    },
+    {
+      "at": {
+        "x": 29.426,
+        "y": 45.986
+      },
+      "kind": "flamboyant",
+      "size": 0.76,
+      "footprint": {
+        "x0": 29.276,
+        "y0": 45.836,
+        "x1": 29.575999999999997,
+        "y1": 46.135999999999996
+      }
+    },
+    {
+      "at": {
+        "x": 29.484,
+        "y": 43.691
+      },
+      "kind": "banyan",
+      "size": 0.9,
+      "footprint": {
+        "x0": 29.334000000000003,
+        "y0": 43.541000000000004,
+        "x1": 29.634,
+        "y1": 43.841
+      }
+    },
+    {
+      "at": {
+        "x": 52.498,
+        "y": 30.967
+      },
+      "kind": "flamboyant",
+      "size": 0.62,
+      "footprint": {
+        "x0": 52.348,
+        "y0": 30.817,
+        "x1": 52.647999999999996,
+        "y1": 31.116999999999997
+      }
+    },
+    {
+      "at": {
+        "x": 51.077,
+        "y": 31.799
+      },
+      "kind": "banyan",
+      "size": 0.76,
+      "footprint": {
+        "x0": 50.927,
+        "y0": 31.649,
+        "x1": 51.227,
+        "y1": 31.948999999999998
+      }
+    },
+    {
+      "at": {
+        "x": 52.007,
+        "y": 29.627
+      },
+      "kind": "flowers",
+      "size": 0.9,
+      "footprint": {
+        "x0": 51.787,
+        "y0": 29.407,
+        "x1": 52.227,
+        "y1": 29.846999999999998
+      }
+    },
+    {
+      "at": {
+        "x": 53.338,
+        "y": 32.178
+      },
+      "kind": "shrubs",
+      "size": 1.04,
+      "footprint": {
+        "x0": 53.118,
+        "y0": 31.958,
+        "x1": 53.558,
+        "y1": 32.397999999999996
+      }
+    },
+    {
+      "at": {
+        "x": 53.929,
+        "y": 29.827
+      },
+      "kind": "flamboyant",
+      "size": 0.76,
+      "footprint": {
+        "x0": 53.779,
+        "y0": 29.677000000000003,
+        "x1": 54.079,
+        "y1": 29.977
+      }
+    },
+    {
+      "at": {
+        "x": 51.535,
+        "y": 33.052
+      },
+      "kind": "banyan",
+      "size": 0.9,
+      "footprint": {
+        "x0": 51.385,
+        "y0": 32.902,
+        "x1": 51.684999999999995,
+        "y1": 33.202
+      }
+    },
+    {
+      "at": {
+        "x": 50.521,
+        "y": 29.121
+      },
+      "kind": "flowers",
+      "size": 1.04,
+      "footprint": {
+        "x0": 50.301,
+        "y0": 28.901,
+        "x1": 50.741,
+        "y1": 29.340999999999998
+      }
+    },
+    {
+      "at": {
+        "x": 59.285,
+        "y": 22.354
+      },
+      "kind": "shrubs",
+      "size": 0.76,
+      "footprint": {
+        "x0": 59.065,
+        "y0": 22.134,
+        "x1": 59.504999999999995,
+        "y1": 22.573999999999998
+      }
+    },
+    {
+      "at": {
+        "x": 59.458,
+        "y": 24.28
+      },
+      "kind": "rocks",
+      "size": 0.62,
+      "footprint": {
+        "x0": 59.238,
+        "y0": 24.060000000000002,
+        "x1": 59.678,
+        "y1": 24.5
+      }
+    },
+    {
+      "at": {
+        "x": 75.668,
+        "y": 24.221
+      },
+      "kind": "flowers",
+      "size": 0.76,
+      "footprint": {
+        "x0": 75.44800000000001,
+        "y0": 24.001,
+        "x1": 75.888,
+        "y1": 24.441
+      }
+    },
+    {
+      "at": {
+        "x": 78.003,
+        "y": 22.886
+      },
+      "kind": "palm",
+      "size": 0.9,
+      "footprint": {
+        "x0": 77.853,
+        "y0": 22.736,
+        "x1": 78.153,
+        "y1": 23.035999999999998
+      }
+    },
+    {
+      "at": {
+        "x": 77.233,
+        "y": 25.581
+      },
+      "kind": "rocks",
+      "size": 1.04,
+      "footprint": {
+        "x0": 77.013,
+        "y0": 25.361,
+        "x1": 77.453,
+        "y1": 25.801
+      }
+    },
+    {
+      "at": {
+        "x": 75.319,
+        "y": 22.84
+      },
+      "kind": "shrubs",
+      "size": 0.62,
+      "footprint": {
+        "x0": 75.099,
+        "y0": 22.62,
+        "x1": 75.539,
+        "y1": 23.06
+      }
+    },
+    {
+      "at": {
+        "x": 79.422,
+        "y": 23.942
+      },
+      "kind": "flowers",
+      "size": 0.76,
+      "footprint": {
+        "x0": 79.202,
+        "y0": 23.722,
+        "x1": 79.642,
+        "y1": 24.162
+      }
+    },
+    {
+      "at": {
+        "x": 75.131,
+        "y": 25.454
+      },
+      "kind": "palm",
+      "size": 0.9,
+      "footprint": {
+        "x0": 74.981,
+        "y0": 25.304000000000002,
+        "x1": 75.281,
+        "y1": 25.604
+      }
+    },
+    {
+      "at": {
+        "x": 77.16,
+        "y": 21.783
+      },
+      "kind": "rocks",
+      "size": 1.04,
+      "footprint": {
+        "x0": 76.94,
+        "y0": 21.563000000000002,
+        "x1": 77.38,
+        "y1": 22.003
+      }
+    },
+    {
+      "at": {
+        "x": 78.853,
+        "y": 25.818
+      },
+      "kind": "shrubs",
+      "size": 0.62,
+      "footprint": {
+        "x0": 78.633,
+        "y0": 25.598000000000003,
+        "x1": 79.073,
+        "y1": 26.038
+      }
+    },
+    {
+      "at": {
+        "x": 73.952,
+        "y": 23.643
+      },
+      "kind": "flowers",
+      "size": 0.76,
+      "footprint": {
+        "x0": 73.732,
+        "y0": 23.423000000000002,
+        "x1": 74.172,
+        "y1": 23.863
+      }
+    },
+    {
+      "at": {
+        "x": 78.331,
+        "y": 48.3
+      },
+      "kind": "flowers",
+      "size": 0.62,
+      "footprint": {
+        "x0": 78.111,
+        "y0": 48.08,
+        "x1": 78.551,
+        "y1": 48.519999999999996
+      }
+    },
+    {
+      "at": {
+        "x": 79.38,
+        "y": 47.184
+      },
+      "kind": "rocks",
+      "size": 0.9,
+      "footprint": {
+        "x0": 79.16,
+        "y0": 46.964,
+        "x1": 79.6,
+        "y1": 47.403999999999996
+      }
+    },
+    {
+      "at": {
+        "x": 77.619,
+        "y": 49.562
+      },
+      "kind": "shrubs",
+      "size": 1.04,
+      "footprint": {
+        "x0": 77.399,
+        "y0": 49.342,
+        "x1": 77.839,
+        "y1": 49.782
+      }
+    },
+    {
+      "at": {
+        "x": 75.666,
+        "y": 48.928
+      },
+      "kind": "rocks",
+      "size": 0.9,
+      "footprint": {
+        "x0": 75.446,
+        "y0": 48.708,
+        "x1": 75.886,
+        "y1": 49.147999999999996
+      }
+    },
+    {
+      "at": {
+        "x": 70.626,
+        "y": 29.56
+      },
+      "kind": "shrubs",
+      "size": 0.9,
+      "footprint": {
+        "x0": 70.406,
+        "y0": 29.34,
+        "x1": 70.846,
+        "y1": 29.779999999999998
+      }
+    },
+    {
+      "at": {
+        "x": 71.013,
+        "y": 31.079
+      },
+      "kind": "rocks",
+      "size": 0.76,
+      "footprint": {
+        "x0": 70.793,
+        "y0": 30.859,
+        "x1": 71.233,
+        "y1": 31.299
+      }
+    },
+    {
+      "at": {
+        "x": 52.285,
+        "y": 56.275
+      },
+      "kind": "shrubs",
+      "size": 0.62,
+      "footprint": {
+        "x0": 52.065,
+        "y0": 56.055,
+        "x1": 52.504999999999995,
+        "y1": 56.495
+      }
+    },
+    {
+      "at": {
+        "x": 51.536,
+        "y": 51.832
+      },
+      "kind": "rocks",
+      "size": 0.76,
+      "footprint": {
+        "x0": 51.316,
+        "y0": 51.612,
+        "x1": 51.756,
+        "y1": 52.052
+      }
+    },
+    {
+      "at": {
+        "x": 5.306,
+        "y": 50.064
+      },
+      "kind": "flowers",
+      "size": 0.76,
+      "footprint": {
+        "x0": 5.086,
+        "y0": 49.844,
+        "x1": 5.526,
+        "y1": 50.284
+      }
+    },
+    {
+      "at": {
+        "x": 4.207,
+        "y": 51.69
+      },
+      "kind": "rocks",
+      "size": 1.04,
+      "footprint": {
+        "x0": 3.9869999999999997,
+        "y0": 51.47,
+        "x1": 4.427,
+        "y1": 51.91
+      }
+    },
+    {
+      "at": {
+        "x": 8.673,
+        "y": 50.401
+      },
+      "kind": "shrubs",
+      "size": 1.04,
+      "footprint": {
+        "x0": 8.453,
+        "y0": 50.181000000000004,
+        "x1": 8.893,
+        "y1": 50.621
+      }
+    },
+    {
+      "at": {
+        "x": 4.452,
+        "y": 52.992
+      },
+      "kind": "rocks",
+      "size": 0.62,
+      "footprint": {
+        "x0": 4.232,
+        "y0": 52.772,
+        "x1": 4.672,
+        "y1": 53.211999999999996
+      }
+    },
+    {
+      "at": {
+        "x": 5.432,
+        "y": 48.578
+      },
+      "kind": "flamboyant",
+      "size": 0.76,
+      "footprint": {
+        "x0": 5.282,
+        "y0": 48.428000000000004,
+        "x1": 5.582000000000001,
+        "y1": 48.728
+      }
+    }
   ]
 }

@@ -50,6 +50,34 @@ assert.ok(regexProblems('(?<x>a)|(?<x>b)').length,'duplicate group names');
 const msgs=src=>checkSource(src).map(p=>p.msg);
 assert.match(msgs('const r=/(?<=a)b/u;')[0],/lookbehind/);
 assert.match(msgs('const r=new RegExp(`(?<!x)${y}`,"u");')[0],/lookbehind.*RegExp/);
+// A runtime feature probe survives minification, but a try cannot catch a literal parse error.
+for(const source of [
+  'try{new RegExp("(?<=a)b")}catch{oldBrowser=true}',
+  'try{RegExp("(?<!a)b")}catch(e){fallback()}',
+  'function probe(){try{if(test){new RegExp("a","d")}}catch{}}',
+  'try{try{new RegExp("a","v")}finally{cleanup()}}catch{}',
+  'try{try{}catch{new RegExp("(?<=a)b")}}catch{}',
+  'try{try{}finally{new RegExp("(?<=a)b")}}catch{}',
+  'setTimeout(()=>{try{new RegExp("(?<=a)b")}catch{fallback()}},0)',
+  'try{class Probe{static value=new RegExp("(?<=a)b")}}catch{}',
+])assert.deepEqual(msgs(source),[],'caught runtime constructor: '+source);
+for(const source of [
+  'new RegExp("(?<=a)b");',
+  'try{}catch{}new RegExp("(?<=a)b");',
+  'try{new RegExp("(?<=a)b")}finally{}',
+  'try{}catch{new RegExp("(?<=a)b")}',
+  'try{}catch{}finally{new RegExp("(?<=a)b")}',
+  'try{setTimeout(()=>new RegExp("(?<=a)b"),0)}catch{}',
+  'try{function later(){return new RegExp("(?<=a)b")}}catch{}',
+  'try{const later=function(){return new RegExp("(?<=a)b")}}catch{}',
+  'try{const later=async()=>new RegExp("(?<=a)b")}catch{}',
+  'try{const later={probe(){return new RegExp("(?<=a)b")}}}catch{}',
+  'try{function later(value=new RegExp("(?<=a)b")){}}catch{}',
+  'try{class Later{value=new RegExp("(?<=a)b")}}catch{}',
+  'try{const r=/(?<=a)b/}catch{}',
+  'try{new RegExp(/(?<=a)b/)}catch{}',
+])assert.match(msgs(source)[0],/lookbehind/,'try does not protect this regex: '+source);
+assert.equal(msgs('try{new RegExp("(?<=a)b")}catch{};new RegExp("(?<=a)b");').length,1,'a probe does not exempt the rest of a minified bundle');
 assert.match(msgs('class A{static{this.x=1;}}')[0],/static block/);
 assert.match(msgs('const a=[1].at(-1);')[0],/\.at\(\)/);
 assert.match(msgs('Object.hasOwn({}, "a");')[0],/Object\.hasOwn/);
@@ -75,6 +103,28 @@ assert.deepEqual(msgs('if(globalThis.requestIdleCallback)requestIdleCallback(f);
 assert.match(msgs('const o=new OffscreenCanvas(1,1);')[0],/OffscreenCanvas needs Safari 16\.4/);
 assert.deepEqual(msgs('if(typeof OffscreenCanvas==="function")new OffscreenCanvas(1,1);'),[]);
 assert.match(msgs('ctx.reset();')[0],/canvas reset/);
+assert.deepEqual(msgs('g && settings.pack && (g.reset(),g.addPack({payload:settings.pack}));'),[],'Phaser LoaderPlugin is not a canvas context');
+assert.deepEqual(msgs('function bootScene(scene){var c;scene.sys.load&&(c=scene.sys.load,c.reset());}'),[],'a reset immediately after assigning the scene loader is its custom API');
+assert.match(msgs('var c=canvas.getContext("2d");c.reset();')[0],/canvas reset/,'assigning a canvas context never exempts reset');
+assert.match(msgs('c=scene.load,ctx.reset();')[0],/canvas reset/,'the assigned loader must be the reset receiver');
+assert.match(msgs('c=scene.load,c=canvas.getContext("2d"),c.reset();')[0],/canvas reset/,'a replacement canvas context is still checked');
+const tweenManager=`const manager={
+  add:function(f){var c=f,m=this.tweens;return c instanceof Tween||(c=buildTween(this,c)),m.push(c.reset()),c},
+  addMultiple:function(f){for(var c,m=[],g=this.tweens,x=0;x<f.length;x++)c=f[x],c instanceof Tween||(c=buildTween(this,c)),g.push(c.reset()),m.push(c);return m},
+  addCounter:function(f){var c=buildCounter(this,f);return this.tweens.push(c.reset()),c}
+};`;
+assert.deepEqual(msgs(tweenManager),[],'minified tween builders push their reset tween into the manager collection');
+for(const source of [
+  'function f(){var c=canvas.getContext("2d");this.tweens.push(c.reset());}',
+  'function f(){var c=buildTween(this,config);contexts.push(c.reset());}',
+  'function f(){var m=this.tweens,c=buildTween(this,config);m=contexts;m.push(c.reset());}',
+  'function f(){var m=this.tweens,c=buildTween(this,config);c=canvas.getContext("2d");m.push(c.reset());}',
+  'function f(){var m=this.tweens;return function(){var c=buildTween(this,config);m.push(c.reset());};}',
+  'function f(){var m=this.tweens;}function g(){var c=buildTween(this,config);m.push(c.reset());}',
+])assert.match(msgs(source)[0],/canvas reset/,'tween exemption requires local builder and collection evidence: '+source);
+assert.match(msgs(tweenManager+'ctx.reset();')[0],/canvas reset/,'tween code cannot exempt another reset in the same bundle');
+assert.match(msgs('g.reset(),other.addPack({});')[0],/canvas reset/,'a different receiver does not exempt canvas reset');
+assert.match(msgs('g.reset(),g.addPack({});ctx.reset();')[0],/canvas reset/,'the rest of a bundle is still checked');
 assert.deepEqual(msgs('form.reset();edit().reset();'),[],'reset() of a form or a helper is not the canvas one');
 assert.match(msgs('el.checkVisibility();')[0],/checkVisibility/);
 assert.deepEqual(msgs('typeof e.checkVisibility==="function"?e.checkVisibility():0;'),[]);

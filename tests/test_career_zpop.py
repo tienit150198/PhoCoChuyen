@@ -166,7 +166,7 @@ class Spec(Base):
             self.assertTrue(name in ZP.ACTIONS or name in ('zp_intro', 'zp_desk'), name)
         town = (ROOT / 'public' / 'js' / 'scenes' / 'town-place.js').read_text(encoding='utf-8')
         self.assertIn("'com','zpop','lm:quan'", town)
-        self.assertIn("zpop:'albumshop'", (ROOT / 'public' / 'js' / 'scenes' / 'index.js').read_text(encoding='utf-8'))
+        self.assertIn("zpop:'albumshop'", (ROOT / 'public' / 'js' / 'scenes' / 'vocabulary.js').read_text(encoding='utf-8'))
 
     def test_the_idols_are_fiction(self):
         """No real group, member, album or company: the parody stays a parody."""

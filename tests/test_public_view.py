@@ -5,9 +5,10 @@ bytes as working everything out afresh."""
 import copy
 import json
 import unittest
+from unittest.mock import patch
 
 from game import closeness as qn, desk, employment as emp, engine, feedback_voices as FV
-from game.careers import farm
+from game.careers import farm, kit
 from game.engine import GameError, public_state, tree_copy
 from tests.helpers import Journey
 from tests.test_feedback_reviews import make_post
@@ -82,10 +83,13 @@ class PublicViewTests(unittest.TestCase):
             self.assertEqual(dump(mine), before, cid)
 
     def test_memos_give_the_bytes_of_fresh_work(self):
-        warm = {cid: dump(public_state(s)) for cid, s in self.states.items()}
-        again = {cid: dump(public_state(s)) for cid, s in self.states.items()}
-        forget_memos()
-        cold = {cid: dump(public_state(s)) for cid, s in self.states.items()}
+        # The farm's real-time view includes now; compare memo behavior at the
+        # same instant even when rendering all careers crosses a clock second.
+        with patch.object(kit, 'clock', return_value=kit.now()):
+            warm = {cid: dump(public_state(s)) for cid, s in self.states.items()}
+            again = {cid: dump(public_state(s)) for cid, s in self.states.items()}
+            forget_memos()
+            cold = {cid: dump(public_state(s)) for cid, s in self.states.items()}
         self.assertEqual(warm, again)
         self.assertEqual(warm, cold)
 

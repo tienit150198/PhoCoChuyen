@@ -7,7 +7,7 @@ import {nextHint,stepCta,pending,goAttrs} from './guide.js';
 import {CAREERS as GUIDE} from '../tutorial/guide-data.js';
 import {certInfo,certCss,certsFor} from './certificates.js';
 import {lockChip} from '../careers/stage_fold.js';
-import {wordsFor} from '../scenes/index.js';
+import {wordsFor} from '../scenes/vocabulary.js';
 import {fundLabel} from './money.js';
 import {T,isShop,offersOf} from './terms.js';
 import {confirmPurchase} from './payment.js';

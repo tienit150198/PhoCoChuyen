@@ -212,7 +212,8 @@ class FeedbackModuleTests(unittest.TestCase):
         self.assertEqual(len(pfb.list_mine(self.store, other)), 1)
         with self.store.connect() as db:
             db.execute('UPDATE player_feedback SET created_at=created_at-800*86400')
-        self.assertEqual(pfb.prune(self.store), 1)
+        self.assertEqual(pfb.prune(self.store), 0)
+        self.assertEqual(len(pfb.list_mine(self.store, other)), 1)
 
 
 class FeedbackHTTPTests(unittest.TestCase):
@@ -220,6 +221,8 @@ class FeedbackHTTPTests(unittest.TestCase):
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()
         cls.server = GameServer(('127.0.0.1', 0), Store(Path(cls.temp.name) / 'state.db'))
+        # The production asset tree is large; warm it outside HTTP request deadlines.
+        cls.server.assets.snapshot()
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.thread.start()
         cls.port = cls.server.server_port

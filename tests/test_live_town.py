@@ -34,10 +34,10 @@ class Geometry(unittest.TestCase):
         self.assertEqual(json.loads(written[0])['name'], 'Mây')
 
     def test_grid_bounds_roads_and_nonfinite_values(self):
-        # The grid grows with the career count (live.town.town_geometry): test just past its far edge.
+        # Authored districts include negative western coordinates and unconnected ocean gaps.
         from live.town import BOUNDS
-        self.assertEqual(clean_point(6.12345, 49.5), (6.123, 49.5))
-        for x, y in ((-1, 6), (44, 6), (6, BOUNDS[3] + 1), (2, 2), (True, 6), (float('nan'), 6), (6, float('inf'))):
+        self.assertEqual(clean_point(15.12345, 49.5), (15.123, 49.5))
+        for x, y in ((-1, 6), (BOUNDS[2] + 1, 6), (BOUNDS[0] - 1, 20), (6, BOUNDS[3] + 1), (2, 2), (True, 6), (float('nan'), 6), (6, float('inf'))):
             with self.subTest(x=x, y=y), self.assertRaises(LiveError):
                 clean_point(x, y)
 
@@ -49,11 +49,32 @@ class Geometry(unittest.TestCase):
         self.assertFalse(Config().flags()['town'])
 
     def test_free_courtyard_diagonals_keep_water_and_trunks_solid(self):
-        for point in ((.4, 4.8), (.8, 5.8), (6.2, 6.2)):
+        for point in ((.4, 4.8), (.8, 5.8), (6.2, 6.2), (-13, 26), (7, 35), (65, 42)):
             self.assertEqual(clean_point(*point), point)
-        for point in ((8.5, 10.2), (10.8, 8.4), (.27, 2.2)):
+        from live.town import _LAYOUT
+        trunk = next(p['at'] for p in _LAYOUT['planting'] if p['kind'] == 'banyan')
+        for point in ((14.4, 33.6), (72, 35.8), (trunk['x'], trunk['y'])):
             with self.subTest(point=point), self.assertRaises(LiveError):
                 clean_point(*point)
+
+    def test_amenity_art_is_solid_and_all_service_approaches_remain_free(self):
+        from live.town import _LAYOUT, town_obstacles
+        amenities = _LAYOUT['amenities']
+        self.assertTrue({'karaoke', 'bark'} <= {p['id'] for p in amenities})
+        illustrated = [p for p in amenities if p.get('art')]
+        self.assertGreaterEqual(len(illustrated), 17)
+        self.assertTrue({'fairgrounds', 'dograce', 'homes-rent', 'homes-apartment',
+                         'homes-townhouse', 'homes-villa'} <= {p['id'] for p in illustrated})
+        for place in amenities:
+            with self.subTest(approach=place['id']):
+                at = place['at']
+                self.assertEqual(clean_point(at['x'], at['y']), (at['x'], at['y']))
+        for place in illustrated:
+            at, footprint = place['artAt'], place['footprint']
+            with self.subTest(art=place['id']), self.assertRaises(LiveError):
+                clean_point(at['x'], at['y'])
+            for count in (7, 48, 56):
+                self.assertIn(tuple(footprint[k] for k in ('x0', 'y0', 'x1', 'y1')), town_obstacles(count))
 
 
 @unittest.skipUnless(TOWN_WIRED, NOT_WIRED)

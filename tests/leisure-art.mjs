@@ -5,21 +5,33 @@ import vm from 'node:vm';
 const source=readFileSync(new URL('../public/js/isometric/leisure-art.js',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
 function harness(){
  const requests=[],canvases=[],draws=[],overlays=[];let fail=false,failedKey='';
- class Image{constructor(){this.naturalWidth=960;this.naturalHeight=600;}set src(path){this.path=path;if(path.includes('fishing-actions')){this.naturalWidth=800;this.naturalHeight=400;}requests.push(path);queueMicrotask(()=>fail||failedKey&&path.includes(failedKey)?this.onerror?.():this.onload?.());}}
- const doc={createElement(){const canvas={width:0,height:0,getContext:()=>({drawImage(...args){draws.push(args);},clearRect(){},imageSmoothingEnabled:true,
+ class Image{constructor(){this.naturalWidth=960;this.naturalHeight=600;this.rasterAvailable=true;}get width(){return this.naturalWidth;}get height(){return this.naturalHeight;}set src(path){this.path=path;if(path.includes('fishing-actions')){this.naturalWidth=800;this.naturalHeight=400;}requests.push(path);queueMicrotask(()=>fail||failedKey&&path.includes(failedKey)?this.onerror?.():this.onload?.());}}
+ const doc={createElement(){const canvas={width:0,height:0,rasterAvailable:false,getContext:()=>({drawImage(...args){canvas.rasterAvailable=true;draws.push(args);},clearRect(){},imageSmoothingEnabled:true,
   getImageData(x,y,w,h){const data=new Uint8ClampedArray(w*h*4);for(let row=Math.floor(h*.15);row<h*.9;row++)for(let col=Math.floor(w*.3);col<w*.7;col++)data.set([170,140,100,255],(row*w+col)*4);return {data};},putImageData(){}})};canvases.push(canvas);return canvas;}};
  const context=vm.createContext({Image,document:doc,Map,Promise,setTimeout,clearTimeout,console,Uint8ClampedArray,getCharacterStamp:o=>({canvas:{},width:120,height:160,options:o}),recolourPixel:p=>p,paintWardrobeOverlay:(ctx,options,box,alignment)=>overlays.push({options,box,alignment}),defaultLook:()=>({}),art:()=>({c:'#aabbcc'}),topColour:()=> '#aabbcc',hairColour:()=> '#aabbcc'});
  vm.runInContext(source+'\nglobalThis.load=loadLeisureArt;globalThis.cell=fishingCell;',context);
- return {load:context.load,cell:context.cell,requests,canvases,draws,overlays,fail(value){fail=value;},failKey(value){failedKey=value;}};
+ return {load:context.load,cell:context.cell,requests,canvases,draws,overlays,loseCanvasBitmaps(){for(const canvas of canvases)canvas.rasterAvailable=false;},fail(value){fail=value;},failKey(value){failedKey=value;}};
 }
 test('place opening loads at most three images and shares only two illustrated backgrounds',async()=>{
  const h=harness();const lake=await h.load('fishing');assert.equal(h.requests.length,3);
  assert.equal(h.requests.some(p=>p.endsWith('leisure-pool.webp')),false);
  assert.equal(lake.pixelated,false);const first=lake.background('fishing');assert.equal(first.width,960);assert.equal(first.height,600);
- const boat=await h.load('boat');assert.equal(h.requests.length,4);assert.equal(boat.background('boat'),first);
- const pool=await h.load('pool');assert.equal(h.requests.length,5);pool.background('pool');
- assert.equal(h.canvases.length,2);assert.equal(pool.asset('boat'),lake.asset('boat'));
- assert.equal(h.draws[0].at(-1),600);assert.equal(h.draws[1].at(-1),642,'pool crop places the illustrated waterline at the route edge');
+ const boat=await h.load('boat');assert.equal(h.requests.length,3);assert.equal(boat.background('boat'),first);
+ const pool=await h.load('pool');assert.equal(h.requests.length,4);pool.background('pool');
+ assert.equal(h.canvases.length,0,'backdrops do not duplicate decoded images in volatile canvas stores');assert.equal(pool.asset('boat'),lake.asset('boat'));
+ assert.equal(first,lake.asset('lake'));assert.equal(pool.background('pool'),pool.asset('pool'));
+ assert.equal(pool.background('pool').width,960);assert.equal(pool.background('pool').height,600,'pool keeps the image aspect ratio shared by the navigation polygon');
+});
+
+test('an open scene keeps a drawable backdrop after offscreen canvas bitmaps are discarded',async()=>{
+ const h=harness(),art=await h.load('fishing'),capturedBackground=art.background('fishing');
+ art.fishingCharacter({gender:'female',pose:'caught'});
+ assert.ok(h.canvases.length>0,'fishing supplies other canvas stores for the loss boundary');
+ h.loseCanvasBitmaps();
+ assert.equal(capturedBackground.rasterAvailable,true,'the captured backdrop cannot become the blank cached canvas after a bitmap discard');
+ assert.equal(art.background('boat'),capturedBackground,'fishing and rowing reuse the surviving lake source');
+ const reopened=await h.load('fishing');assert.equal(reopened.background('fishing'),capturedBackground);
+ assert.equal(h.requests.length,3,'recovering the frame does not require a reload or extra fetch');
 });
 
 test('fishing atlas keeps the strict four poses and two gender rows with a shared foot baseline',async()=>{

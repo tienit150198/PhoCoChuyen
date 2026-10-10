@@ -87,3 +87,11 @@ test('malformed and oversized markers keep their SVG fallback',async()=>{
   const clean=decodeCozyPortrait(encodeURIComponent(JSON.stringify({v:1,mode:'face',gender:'female',look:{hair:'__proto__',top:'ao_len',tint:{ao_len:'constructor'}}})));
   assert.equal(clean.look.hair,defaultLook('female').hair);assert.equal(clean.look.tint,undefined);
 });
+
+test('wardrobe rotation reaches the illustrated renderer and uses distinct thumbnails',async()=>{
+ const {decodeCozyPortrait,bootCozyPortraits}=await import('../public/js/isometric/portraits.js');
+ const f=fixture(),seen=[];f.options.getStamp=o=>{seen.push(o.direction);return {canvas:{},ready:true};};
+ for(const facing of ['se','sw','nw','ne']){const n=f.svg();n.setAttribute('data-cozy-portrait',marker(figureSVG(defaultLook('female'),'female',{facing})));}
+ const ctl=bootCozyPortraits(f.options);f.flush();assert.deepEqual(seen,['se','sw','nw','ne']);ctl.disconnect();
+ assert.equal(decodeCozyPortrait(encodeURIComponent(JSON.stringify({v:1,mode:'figure',gender:'male',look:{},facing:'bad'}))).facing,'se');
+});

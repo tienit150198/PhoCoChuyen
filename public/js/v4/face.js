@@ -39,7 +39,7 @@ export const NAMES={
 /** Headwear that hides the top of the hair (a bun or a top knot is left out under it). */
 const COVER=new Set(['hijab','luoi_trai','len','non_la','tai_beo','khan_dong']);
 /** Wardrobe accessories worn on the head: the chat face's own headwear (head) takes their place. */
-const HEADWEAR=new Set(['non_la','mu_len','no_toc','mu_bucket','mu_luoi_trai','kep_toc','no_lua','khan_bandana']);
+const HEADWEAR=new Set(['non_la','mu_len','no_toc','mu_bucket','mu_luoi_trai','kep_toc','no_lua','khan_bandana','mu_beret','mu_cao_boi','vuong_mien','bang_do_tai_meo','vong_hoa']);
 /** Headwear drawn without a colour of its own choosing. */
 export const PLAIN_HEAD=new Set(['0','non_la']);
 

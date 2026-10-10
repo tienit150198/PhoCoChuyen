@@ -1,3 +1,11 @@
+# v2.0.0 — 2026-10-11
+
+Giao diện Phaser 2.5D cho khu phố và nơi làm nghề; 50 ngoại thất riêng, 50 bố cục nội thất, cây cối/tiện ích và biển hiệu theo công trình. Cải thiện camera, di chuyển, hoạt động ngoài trời và vòng đời tải tài nguyên; nhà ở/không gian trang trí 3D, avatar và phụ kiện dùng chung dữ liệu nhân vật.
+
+Cài đặt có công tắc Giao diện mới, lưu theo tài khoản; mặc định bật và mời người chơi chọn giao diện cũ một lần. Giữ tiến độ và phiên đăng nhập khi chuyển chế độ. Góp ý cho phép tối đa 3 ảnh, kiểm tra và chuẩn hóa phía máy chủ, chỉ chủ góp ý/quản trị đọc được; không tự xóa ảnh theo tuổi góp ý.
+
+Hai ngày vàng Chợ Đen: cửa sổ 48 giờ do quản trị kích hoạt sau kiểm tra deploy, tăng xác suất các lượt Chiếu trong, lô tô và vé cào. Không tự kích hoạt khi khởi động lại. Thông báo 2.0 qua công cụ quản trị riêng sau smoke check, không phát trong quá trình build hoặc trước deploy.
+
 # v1.9.48 — 2026-10-10
 
 Theo yêu cầu bổ sung: lấy số lời/lỗ Hội chợ hiện có làm mốc cho tuần đầu của Top lỗ. Chạy seed một lần theo từng lô, có con trỏ tiếp tục và khóa giao dịch để không cộng trùng; không đổi save/ví. Từ tuần kế tiếp vẫn chỉ tính phát sinh trong tuần. Giao diện giải thích tuần đầu có số liệu cũ; Có gì mới giữ nguyên.

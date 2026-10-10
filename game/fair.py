@@ -1,5 +1,9 @@
 """Folk fair, played with in-game xu only.
 
+The ordinary rules below resume automatically outside the one-shot golden-days
+promotion (game/fair_golden_days.py). During its persisted 48-hour window only
+chiếu trong, lô tô and vé cào use the event draw; scratch wins then exclude refunds.
+
 🎪 The house always wins (owner 08/10: "mở hội chợ nhé, tỷ lệ chỉnh lại làm sao cho phù hợp, đảm bảo nhà cái luôn
 thắng"; the edition from FAIR_START 2026-10-09). Every paid luck stall returns less than it takes on every round, so
 no way of betting (big when warm, small when cooled, switching stalls, a long pause) comes out ahead in the long run.
@@ -81,6 +85,7 @@ from . import fair_bm as bm     # 🕶️ Chợ đen: free entry and the police'
 from . import fair_watch as watch   # 🕶️ the police's eye on the skill stalls: scripts and bursts only
 from . import fair_hai as hai     # 👴 Ông Hai's table: games a day, the police after a run of wins
 from . import fair_dog as dog    # 🐕 đua chó: the roster, the lineups, the draw
+from . import fair_golden_days as golden  # one persisted, server-only 48-hour luck event
 
 VERSION = 1
 FAIR_START = '2026-10-09'      # first day (Vietnam date), 00:00 UTC+7 (owner 08/10: the fair opens again)
@@ -674,7 +679,11 @@ def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = 
     """Count the round in the player's runs and return its draw (run_rate of the decay count): no profit or price
     penalty. The older run keys (_run) are kept up to date for older servers, but decide nothing any more."""
     _run(j, game, t)
-    return run_rate(game, _heat(j, game, t, stake or 0))
+    n = _heat(j, game, t, stake or 0)
+    if golden.active(game, t):
+        golden.mark_display(j)
+        return golden.WIN_P
+    return run_rate(game, n)
 
 
 def cold(j: dict, t: float) -> dict | None:
@@ -682,7 +691,10 @@ def cold(j: dict, t: float) -> dict | None:
     else None. switch: the rounds of another paid luck stall still needed to warm it up again, each staking ≥ min."""
     c = j.get(COOL_KEY)
     out = None
+    event = golden.public(j, t)
     for g, r in (c.items() if isinstance(c, dict) else ()):
+        if event and g in golden.GAMES:
+            continue
         if not 0 <= int(t) - r['at'] <= RUN_GAP or r['sw'] >= SWITCH_ROUNDS:
             continue
         p = run_rate(g, r['n'] + 1)
@@ -693,7 +705,7 @@ def cold(j: dict, t: float) -> dict | None:
 
 def _draw_luck(j: dict, game: str, probability: float) -> bool:
     draw = _rng.random()
-    # A round locked at a higher rate before this build (a ring round started earlier) keeps it.
+    # A round locked at a higher rate (a prior ring round, or the golden-days draw) keeps it.
     if probability > chance_rate(game, 0) + 1e-9:
         return draw < probability
     balance = j.setdefault('fair_balance', {})
@@ -1057,7 +1069,7 @@ def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
     _guard_free(e, f, j, t, price)
     _police(j, f, t, 'xs', price)
     win = _draw_luck(j, 'xs', luck_p(j, f, 'xs', t, stake=price))
-    mult = scratch.prize_mult(_rng) if win else 0
+    mult = scratch.prize_mult(_rng, profit_only=golden.active('xs', t)) if win else 0
     cells = scratch.layout(price, mult, _rng)
     prize = mult * price
     _pay(j, f, 'xs', prize - price)
@@ -1207,6 +1219,7 @@ _loc_seen = [0.0]   # this worker's latest known grant time (any worker's): no r
 
 def loc_prepare(db, action: str) -> None:
     """Before computing `action`: open the gate for this command when the last Lộc is LOC_GAP old (one row read)."""
+    golden.prepare(db, action)  # also runs before the early return: lô tô locks its draw at purchase
     if action not in LOC_ACTIONS:
         _loc_gate.set(False)
         return
@@ -1796,7 +1809,7 @@ def public(s: dict) -> dict:
                            audit_from=AUDIT_FROM, loc_mult=LOC_MULT),
                 # the stall whose run has cooled its luck ("Vận đang nguội"), or None; under a new name and without its
                 # rate, so an older client (which printed "khoảng N% thắng" from `cold`) shows nothing
-                cool=cold(j, t),
+                cool=cold(j, t), golden_days=golden.public(j, t),
                 oaq=oaq_view(o) if o and (o['stage'] == 'play' or t - o['at'] < 6 * 3600) else None,
                 ring=ring_view((f or {}).get('ring'), t, j),
                 loto=loto, stats={k: st.get(k, 0) for k in STATS},

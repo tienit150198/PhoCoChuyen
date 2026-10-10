@@ -1,12 +1,5 @@
-import './phaser25d-wired.mjs';  // skipped while the 2.5D client is not wired (docs/PHASER_25D.md)
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-// The 2.5D switch (CHANGELOG "Giao diện 2.5D") wires the town and the workplaces only. The delivery career's own
-// isometric ride (delivery_drive.js view 'isometric', docs/PHASER_25D.md) is not ported: the ride stays the
-// rider's-seat view in both UIs. This test runs again once delivery_drive.js imports the renderer.
-if(!fs.readFileSync(new URL('../public/js/careers/delivery_drive.js',import.meta.url),'utf8').includes('./delivery_isometric.js')){
-  console.log('delivery_isometric: skipped: delivery_drive.js does not use the isometric ride (not ported with the 2.5D switch)');process.exit(0);
-}
 
 const moduleURL=new URL('../public/js/careers/delivery_isometric.js',import.meta.url);
 assert.ok(fs.existsSync(moduleURL),'the isometric driving renderer exists');
@@ -141,8 +134,9 @@ assert.doesNotMatch(source,/\bfetch\s*\(|\.send\s*\(|dl_ride|dl_plan/,'the visua
 assert.match(source,/getCharacterStamp/,'the main rider uses the shared illustrated wardrobe figure');
 assert.doesNotMatch(source,/getPixelCharacter|PIXEL_SCALE|imageSmoothingEnabled\s*=\s*false/,'delivery retains the detail of the illustrated assets');
 const drive=fs.readFileSync(new URL('../public/js/careers/delivery_drive.js',import.meta.url),'utf8');
-assert.match(drive,/view:'isometric'/,'isometric is the default driving view');
-assert.doesNotMatch(drive,/dd-view-toggle/,'the user remains in the illustrated neighbourhood view');
+await import('../public/js/careers/delivery_drive.js');
+assert.equal(globalThis.__dlDrive.state().view,'isometric','the real driving stage defaults to the soft isometric view');
+assert.match(drive,/dd-view-toggle/,'the rider view remains selectable');
 const frameSource=drive.slice(drive.indexOf('function frame(now){'),drive.indexOf('/** Frame times;'));
 let frames=0,idleTicks=0,trafficSteps=0;
 const stage={el:{isConnected:true},opts:{},keys:{},btn:{},joy:{},v:0,steer:0,stopDone:true,view:'isometric',last:0,t:0,visible:false};
@@ -157,4 +151,91 @@ assert.equal(frames,1,'the real frame handler animates coasting');
 assert.equal(trafficSteps,1,'moving traffic still uses the existing simulation');
 stage.view='firstperson';stage.v=0;frame(48);
 assert.equal(frames,2,'the optional original view keeps its frame loop');
+stage.overlay='help';frame(64);
+assert.equal(frames,2,'opening help suspends both driving views');
+stage.overlay=null;stage.fail=true;frame(80);
+assert.equal(frames,2,'a slow-device fallback cannot restart the parked frame loop');
+
+const wakeSource=drive.slice(drive.indexOf('function wake(){'),drive.indexOf('function say(text,'));
+const wakeState={idle:42,raf:0,el:{isConnected:true}},cleared=[];let scheduled=0;
+const wake=new Function('S','clearTimeout','performance','requestAnimationFrame','frame',wakeSource+';return wake;')(
+  wakeState,id=>cleared.push(id),{now:()=>100},()=>++scheduled,()=>{});
+wake();wake();
+assert.deepEqual(cleared,[42],'waking the joystick cancels the pending idle refresh');
+assert.equal(scheduled,1,'repeated input wakes share one RAF');
+assert.equal(wakeState.last,100,'waking input resets the physics clock instead of advancing a long idle gap');
+const parkSource=drive.slice(drive.indexOf('export function park(){'),drive.indexOf('/** Start of a leg:')).replace('export ','');
+const parkState={idle:43,raf:9,v:5},cancelled=[];
+const park=new Function('S','cancelAnimationFrame','clearTimeout','clearInput',parkSource+';return park;')(
+  parkState,id=>cancelled.push(id),id=>cleared.push(id),()=>{});
+park();
+assert.deepEqual(cancelled,[9]);assert.deepEqual(cleared,[42,43]);
+assert.equal(parkState.raf,0);assert.equal(parkState.idle,0);assert.equal(parkState.v,0,'leaving the leg stops motion and both scheduling paths');
+
+// A performance downscale calls size() inside frame(), and size() wakes rendering.
+// Exercise those real functions together so the frame tail cannot create a second loop.
+const measureSource=drive.slice(drive.indexOf('function measure(ms){'),drive.indexOf('function draw(now){'));
+const sizeSource=drive.slice(drive.indexOf('function size(){'),drive.indexOf('function say(text,'));
+for(const stopDuringRide of [false,true]){
+  const pending=new Map();let nextId=0,idleScheduled=0;
+  const resized={el:{isConnected:true,clientWidth:390,style:{}},cv:{},mini:{style:{}},opts:{},keys:{},btn:{},joy:{},
+    view:'isometric',v:1,steer:0,stopDone:true,last:0,t:0,w:390,visible:true,frames:[],cost:[],
+    perf:{n:59,sum:59*60,bad:1,skip:0,level:0}};
+  const resizedFrame=new Function('S','live','park','ride','moveTraffic','draw','requestAnimationFrame','setTimeout','clearTimeout',
+    'needsDrivingFrames','performance','innerHeight','devicePixelRatio','clamp','expandedMap',
+    frameSource+measureSource+sizeSource+';return frame;')(
+    resized,()=>true,()=>{},()=>{if(stopDuringRide)resized.v=0;},()=>{},()=>{},
+    callback=>{const id=++nextId;pending.set(id,callback);return id;},()=>++idleScheduled,()=>{},
+    needsDrivingFrames,{now:()=>60},844,2,(v,a,b)=>Math.max(a,Math.min(b,v)),()=>{});
+  resizedFrame(60);
+  assert.equal(resized.perf.level,1,'the real measurement path triggers a canvas downscale');
+  assert.equal(resized.cv.width,390,'size applies the lower device pixel ratio');
+  assert.equal(pending.size,1,'frame → measure → size → wake leaves exactly one pending RAF');
+  assert.equal(idleScheduled,0,'the frame tail does not also schedule idle refresh when resize already queued a RAF');
+  const [id,callback]=pending.entries().next().value;pending.delete(id);callback(76);
+  assert.equal(pending.size,stopDuringRide?0:1,'subsequent frames retain one scheduling path');
+  assert.equal(idleScheduled,stopDuringRide?1:0,'a stopped rider enters idle only after the queued redraw runs');
+}
+
+// Render through the stage's actual dispatcher: the old regression left the renderer orphaned.
+const drawSource=drive.slice(drive.indexOf('function draw(now){'),drive.indexOf('\nconst SKYRING='));
+let rendererCreations=0,renderPasses=0,goalPasses=0,mapPasses=0;
+const drawState={view:'isometric',c:{setTransform(){}},dpr:1,w:390,h:844,opts:{target:'home'},world};
+const draw=new Function('S','palette','createIsometricRenderer','signalClock','goal','mini',drawSource+';return draw;')(
+  drawState,()=>({}),()=>{rendererCreations++;return {draw(c,s,w,o,time){assert.equal(s,drawState);assert.equal(w,world);assert.equal(o.target,'home');assert.equal(time,123);renderPasses++;}};},()=>123,()=>goalPasses++,()=>mapPasses++);
+draw(16);draw(32);
+assert.equal(rendererCreations,1,'the stage reuses the cached isometric renderer');
+assert.equal(renderPasses,2,'the mounted stage renders the soft street view');
+assert.equal(goalPasses,2,'the existing navigation cues remain active');
+assert.equal(mapPasses,2,'the existing minimap remains active');
+
+const selectViewSource=drive.slice(drive.indexOf('function setView(view){'),drive.indexOf('\nfunction ',drive.indexOf('function setView(view){')+1));
+const button={setAttribute(name,value){this[name]=value;},textContent:''};
+const viewState={view:'isometric',x:54,y:78,a:.3,v:5,at:'hub',sending:true,opts:{target:'home'},perf:{},el:{classList:{toggle(name,on){this[name]=on;}},querySelector:()=>button},cv:{focus(){}}};
+let wakes=0,resets=0;
+const setView=new Function('S','tr','clearInput','wake',selectViewSource+';return setView;')(viewState,s=>s,()=>resets++,()=>wakes++);
+const legBefore={x:viewState.x,y:viewState.y,a:viewState.a,at:viewState.at,sending:viewState.sending,target:viewState.opts.target};
+setView('firstperson');
+assert.equal(viewState.view,'firstperson');assert.equal(viewState.el.classList['dd-isometric'],false);
+assert.equal(button['aria-pressed'],'false');assert.match(button.textContent,/2\.5D/);
+assert.equal(viewState.v,0,'changing the camera safely stops the scooter');
+setView('isometric');
+assert.equal(viewState.view,'isometric');assert.equal(viewState.el.classList['dd-isometric'],true);
+assert.equal(button['aria-pressed'],'true');
+assert.deepEqual({x:viewState.x,y:viewState.y,a:viewState.a,at:viewState.at,sending:viewState.sending,target:viewState.opts.target},legBefore,'switching views preserves the real delivery leg and pending server operation');
+assert.equal(wakes,2,'each view change wakes rendering');assert.equal(resets,2,'each view change releases held inputs');
+assert.equal(needsDrivingFrames({...state,lightPending:true,lightKey:'junction',lightDenied:new Set()}),true,'a pending signal keeps the existing four-second timeout advancing');
+assert.equal(needsDrivingFrames({...state,lightPending:true,lightKey:'junction',lightDenied:new Set(['junction'])}),false,'an expired signal request does not keep an idle scene rendering');
+
+const career=fs.readFileSync(new URL('../public/js/careers/delivery.js',import.meta.url),'utf8');
+const optsSource=career.slice(career.indexOf('function driveOpts(x,node){'),career.indexOf('/** After every render:'));
+const {lookOf}=await import('../public/js/v4/look.js');
+const playerState={journey:{gender:'female'},wardrobe:{look}},arrival=()=>{},nodesValue={hub:{x:0,y:0}};
+const driveOpts=new Function('readPref','HINT_KEY','clean','nodes','usefulStops','arrive','lookOf',optsSource+';return driveOpts;')(
+  ()=>true,'hint',()=>false,()=>nodesValue,()=>({}),arrival,lookOf);
+const options=driveOpts({state:playerState,room:{data:{at:'hub',fuel:62}}},'home');
+assert.deepEqual(options.look,lookOf(playerState),'the live career passes the saved wardrobe into the rider renderer');
+assert.equal(options.player.gender,'female','the live career passes the saved rider gender');
+assert.equal(options.arrive,arrival,'avatar wiring preserves the existing arrival callback');
+assert.equal(options.nodes,nodesValue);assert.equal(options.target,'home');
 console.log('delivery isometric: exact projection, real gate alignment, camera heading, depth, idle frames and static cache passed');

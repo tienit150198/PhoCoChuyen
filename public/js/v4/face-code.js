@@ -32,7 +32,8 @@ export const ORDER=['skin','shape','age','hair','hc','expr','glasses','head','hw
 
 // The face that follows the character: wardrobe ids → face parts (game/wardrobe.py ITEMS).
 const FROM_SKIN={da_sang:'s2',da_hong:'s1',da_trung:'s4',da_ngam:'s6'};
-const FROM_HAIR={toc_ngan:'ngan',toc_bui:'bui',toc_dai:'dai',toc_bob:'bob',toc_duoi_ngua:'duoi',toc_xoan:'xoan',toc_bui_cao:'chom',toc_bui_doi:'bui_doi',toc_bui_thap:'bui_thap'};
+const FROM_HAIR={toc_ngan:'ngan',toc_bui:'bui',toc_dai:'dai',toc_bob:'bob',toc_duoi_ngua:'duoi',toc_xoan:'xoan',toc_bui_cao:'chom',toc_bui_doi:'bui_doi',toc_bui_thap:'bui_thap',
+  toc_song_dai:'song',toc_bob_mai:'mai',toc_duoi_cao:'duoi',toc_bui_tron:'bui_doi',toc_wolf:'dung',toc_undercut:'lech',toc_mai_bay:'bob',toc_tet:'tet'};
 const FROM_SHADE={mau_nau:'nau',mau_den:'den',mau_mat_ong:'mat_ong',mau_hong:'hong',mau_xanh_khoi:'xanh',mau_bach_kim:'bach_kim'};
 const G={male:'m',female:'f'};
 

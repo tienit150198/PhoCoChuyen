@@ -5,7 +5,7 @@
  *   for a year) in parallel;
  * - the stylesheets announced by <link rel=preload as=style>, applied without blocking the first paint
  *   (the splash is styled inline); api.js waits for them before the game is shown;
- * - the workbench, scene and stylesheets of the workplace this browser opened last (mnl.warm), and the
+ * - the workbench and stylesheets of the workplace this browser opened last (mnl.warm), and the
  *   English pack for English players (mnl.lang), so they no longer wait for bootstrap + app.js;
  * - on a cold start (nothing stored), the ones /api/bootstrap names in its X-Game-Warm header, and that
  *   workplace's part of the catalogue (X-Game-Place), as soon as the response headers are in (the body is still
@@ -128,10 +128,11 @@
   const hint=(href,as)=>{if(hinted.has(href))return;hinted.add(href);const l=d.createElement('link');l.href=href;if(as==='script')l.rel='modulepreload';else{l.rel='preload';l.as=as;}d.head.append(l);};
   // Only paths of this page's own release (in its import map): never a file of another version.
   const warmUp=urls=>{for(const url of urls){
-    if(typeof url!=='string'||!/^\/(js|css)\/[\w\-/]+\.(js|css)$/.test(url)||asset(url)===url)continue;
+    if(typeof url!=='string'||!/^\/(js|css)\/[\w\-/]+\.(js|css)$/.test(url)||url.startsWith('/js/scenes/')||asset(url)===url)continue;
     hint(asset(url),url.endsWith('.js')?'script':'style');
   }};
-  try{const warm=JSON.parse(store('mnl.warm')||'[]');warmUp([...(Array.isArray(warm)?warm.slice(0,6):[]),store('mnl.scene')]);}catch{/* no hint */}
+  try{const warm=JSON.parse(store('mnl.warm')||'[]');warmUp(Array.isArray(warm)?warm.slice(0,6):[]);}catch{/* no hint */}
+  // Renderer assets wait for the authenticated save's interface preference (interface-mode.js).
   B.response?.then(r=>{
     B.got=Date.now();   // when its headers came in: api.js clockSample
     const place=r.headers.get('X-Game-Place')||'';

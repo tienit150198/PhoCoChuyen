@@ -1,0 +1,54 @@
+{
+  "generated": "2026-10-11",
+  "tool": "built-in imagegen",
+  "assets": [
+    {
+      "id": "civic-park",
+      "source": "exec-26c4dea5-12cf-49f9-93eb-d21c0048b00b.png",
+      "path": "public/icons/cozy-v4/civic-park.webp",
+      "width": 768,
+      "height": 640,
+      "bytes": 204946
+    },
+    {
+      "id": "civic-date",
+      "source": "exec-750bc7c7-51f3-48bb-b9ae-28344c66311f.png",
+      "path": "public/icons/cozy-v4/civic-date.webp",
+      "width": 768,
+      "height": 707,
+      "bytes": 200216
+    },
+    {
+      "id": "civic-market",
+      "source": "exec-feb948aa-754e-475a-b709-e0f4a6993484.png",
+      "path": "public/icons/cozy-v4/civic-market.webp",
+      "width": 768,
+      "height": 512,
+      "bytes": 116280
+    },
+    {
+      "id": "civic-wedding",
+      "source": "exec-856347f5-ce18-4de7-b8cc-a60a1f4f9c17.png",
+      "path": "public/icons/cozy-v4/civic-wedding.webp",
+      "width": 768,
+      "height": 720,
+      "bytes": 153804
+    },
+    {
+      "id": "civic-karaoke",
+      "source": "exec-04fb5c01-6709-4a99-8847-975d31e79207.png",
+      "path": "public/icons/cozy-v4/civic-karaoke.webp",
+      "width": 768,
+      "height": 702,
+      "bytes": 132878
+    },
+    {
+      "id": "civic-pets",
+      "source": "exec-0569388a-9711-4317-96bc-7d13147c3acc.png",
+      "path": "public/icons/cozy-v4/civic-pets.webp",
+      "width": 768,
+      "height": 512,
+      "bytes": 123164
+    }
+  ]
+}

@@ -4,11 +4,11 @@ import {sellerVisitStrip,customerTaskBanner,visitCustomer,customerPortrait} from
 import {equipmentView,staffRefresh,staffRefreshPaused,scrollGuard} from './v4/work-equipment.js';
 import {suppressMediaGesture} from './v4/media-gestures.js';
 for(const event of ['contextmenu','dragstart','dblclick'])document.addEventListener(event,suppressMediaGesture);
-import {BobaWorld} from './boba-world.js';
-import {wordsFor,kindOf} from './scenes/index.js';
+import {newInterface,loadInterface,loadCareerScene,promptInterface} from './interface-mode.js';
+let iso=null;
+import {wordsFor} from './scenes/vocabulary.js';
 import {termsSource,T} from './v4/terms.js';
-// Scene kinds load on demand: the current career's before the first frame, another career's before switching
-// to it (careerAssets below), so no career flashes the storefront and startup isn't waiting on all of them.
+// The saved interface picks one renderer after bootstrap; career workbenches remain shared.
 import {nextStep,lifeNav,guestRibbon,experienceView,extendedJob,experienceSummary,teachTour} from './experience-ui.js';
 import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
 import {fillToast,toastHead} from './toast-lines.js';
@@ -117,7 +117,23 @@ function shortWork(html){
 }
 const closedBar=()=>notice(`<b>Ca đang nghỉ</b> · mở ca để làm tiếp. ${button(icon('sun',16)+' Mở ca','startHere',{},'primary way-end closed-open')}`,'amber','sun');   // F#236: a full-width 44 px Mở ca, never a small chip
 const ui={opsTab:'staff',staffId:null,lessonSequence:[],tourRoute:[],activityCard:null,view:null,tab:'',task:null,npc:null,jobTab:'shelf',journalTab:'quests',libraryQuery:'',docs:new Set(),transactions:new Set(),drafts:{},ai:{},suggestions:{},busy:false,paused:false};
-const world=new BobaWorld($('#world'),interact);
+/* Keep the HUD responsive while Phaser downloads. Forward calls at call time, including wrappers installed
+ * by soundsBoot, and hand the latest state and mode to the real world when it is ready. */
+function isoWorld(){
+  let real=null,last=null;const own=new Map(),fwd=new Map(),kept={};
+  const stub={mode:'town',paused:false,reduced:false,marks:{},get time(){return performance.now()/1000;},update(s,c){last=[s,c];},say(){},celebrate(){},pet(){},resize(){},go(_,done){done?.();},snapshot(){return '';},
+    setMode(m){if(m!==stub.mode){stub.mode=m;document.dispatchEvent(new CustomEvent('mnl:iso-mode',{bubbles:true,detail:{mode:m}}));}}};
+  const at=()=>real||stub,adopt=w=>{real=w;for(const k in kept)try{w[k]=kept[k];}catch{/* read-only */}if(stub.mode!=='town')w.setMode?.(stub.mode);if(last)w.update(...last);};
+  return new Proxy({},{
+    get(_,k){if(k==='adopt')return adopt;if(k==='adopted')return !!real;if(own.has(k))return own.get(k);const v=at()[k];if(typeof v!=='function')return v;
+      if(!fwd.has(k))fwd.set(k,(...a)=>typeof at()[k]==='function'?at()[k](...a):undefined);return fwd.get(k);},
+    set(_,k,v){if(typeof v==='function')own.set(k,v);else{kept[k]=v;try{at()[k]=v;}catch{/* read-only */}}return true;},
+    has(_,k){return own.has(k)||k in at();},
+  });
+}
+const world=isoWorld();
+/** Returning players land on the island; new players first choose their look and name. */
+const isoTownFirst=()=>{const J=api.state?.journey;return newInterface(api.state)&&Boolean(J&&!(J.story&&!J.intro&&!J.gender));};
 soundsBoot({api,world,sound});  // character voices, detail sounds, bank speaker
 api.addEventListener('result',e=>{if(e.detail?.result?.card_swipe)import('./v4/bank.js').then(m=>m.swipeSound(api)).catch(()=>{});});  // 🏦 quẹt thẻ: ting ting
 dayclockBoot();  // giờ trong ngày: HUD clock, closing prompt, the scene's light
@@ -149,7 +165,18 @@ const activeTask=()=>room()?.tasks.find(t=>t.id===(ui.task||room().active_task))
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const LEGACY=['mother_baby','pharmacy','accounting','customer_care','teacher','tour_guide','milk_tea'];
 const plugin=()=>!LEGACY.includes(career());
-const env=()=>({api,ui,cmd,confirmAction,toast,renderSheet,renderMain,openSheet,closeSheet,world,act:(action,data={})=>handleAction(action,data,null),live:()=>L.live.m?.live||null});  // live: 🗺️ the town's Đi dạo sign (v4/town-walk.js)
+/** The island HUD can connect live before idle work begins. Subscribe first so its first welcome's active
+ * fireworks (and immediate auction/wedding events) cannot arrive before the app is listening. */
+function bootLive(m){
+  if(bootLive.done)return;bootLive.done=true;
+  m.live.on('auction_outbid',f=>import('./v4/auction.js').then(a=>a.onOutbid(env(),f)).catch(e=>console.warn('auction:',e)));
+  m.live.on('auction_won',f=>import('./v4/auction.js').then(a=>a.onWon(env(),f)).catch(e=>console.warn('auction:',e)));
+  const fw=f=>import('./v4/fireworks.js').then(a=>a.onFireworks(env(),f)).catch(e=>console.warn('fireworks:',e));
+  m.live.on('fireworks',fw);m.live.on('welcome',f=>{if(f.fw)fw(f.fw);});
+  m.live.on('wedinvite',f=>import('./v4/wedinvite.js').then(a=>a.onWedInvite(env(),f)).catch(e=>console.warn('wedinvite:',e)));
+  m.liveBoot(env());
+}
+const env=()=>({api,ui,cmd,confirmAction,toast,renderSheet,renderMain,openSheet,closeSheet,world,bootLive,act:(action,data={})=>handleAction(action,data,null),live:()=>L.live.m?.live||null});
 /** The one day counter the player sees: the life day in the story, the workplace's own day elsewhere (game/days.py). */
 const dayNo=c=>api.state?.journey?.story&&Number.isInteger(api.state.journey.life_day)?api.state.journey.life_day:c?.day;
 const needsJob=()=>room()?.job?.required&&room().job.status!=='hired';
@@ -308,7 +335,7 @@ function navItems(c){
   if(c.job?.required)items.push(['jobapp','briefcase','Việc làm',needsJob()?'dot':0]);
   items.push(['operations','store',wordsFor(career()).books,c.ops?.alerts?.length?'dot':0]);
   if(!EXT.includes(career()))items.push(['journal','book','Sổ tay']);
-  items.push(['people','people','Người quen',L.people.m?.closenessBadge(api)||0],['album','camera','Kỷ niệm'],['workshop','sparkle','Trò nhỏ'],['passport','award','Hộ chiếu'],['jrTown','compass','Bản đồ phố'],['rank','award','Xếp hạng']);  // 🗺️ Bản đồ phố: the walkable town (v4/town-walk.js; the old Khu phố map is its 🎏 Quảng trường); Bảng xếp hạng (v4/leaderboard.js)
+  items.push(['people','people','Người quen',L.people.m?.closenessBadge(api)||0],['album','camera','Kỷ niệm'],['workshop','sparkle','Trò nhỏ'],['passport','award','Hộ chiếu'],['rank','award','Xếp hạng']);
   items.push(['jrWardrobe','shirt','Tủ đồ']);  // 👗 Tủ đồ (v4/wardrobe.js, opened by journey.js)
   {const chat=L.live.m?.liveNav();if(chat)items.push(chat);}  // 💬 Chat (v4/live.js): only while the live service has it on
   {const lv=L.live.m?.live;if(lv?.flags.street&&lv.welcomed)items.push(['liveWalk','map','Đi dạo']);}  // 🚶 Đi dạo (v4/walk.js): only while the live service has it on
@@ -596,7 +623,7 @@ function renderMain(){
   $('#ambientCaption').textContent='';$('#saveState').classList.toggle('offline',!api.connected);
   setHTML($('#saveState'),api.connected?`<i class="saved-dot"></i>Đã lưu`:`<i class="saved-dot"></i>Mất kết nối <button type="button" class="linkish" data-action="reconnect">Thử lại</button>`);
   hudFeedback(c);stepHint(c);
-  sound.configure(api.state.settings);world.update(api.state,api.content);
+  sound.configure(api.state.settings);world.update(api.state,api.content);if(iso?.booted())iso.updateIsometricShell(env());
 }
 document.addEventListener('close',()=>{if(mainDeferred)renderMain();},true);
 /* Toasts (and the update pill) sit just under the open sheet's sticky header: never over its title and buttons,
@@ -630,7 +657,7 @@ function renderSheet(preserve=true){
     case'event':dialog.classList.add('medium');html=eventView();break;
     case'journal':dialog.classList.add('medium');html=journalView();break;
     case'people':dialog.classList.add('medium','v4-sheet','qn-sheet');html=lazyView(L.people,m=>m.closenessView(env()));break;
-    case'decor':html=decorView();break;
+    case'decor':html=moreView(decorView);break;
     case'warehouse':dialog.classList.add('medium');html=warehouseView();break;
     case'album':dialog.classList.add('medium');html=albumView();if(api.state.marriage?.spouse)queueMicrotask(()=>import('./v4/wedding.js').then(m=>m.fillAlbum(env())).catch(()=>{}));break;  // 💍 the couple's party photos
     case'settings':dialog.classList.add('medium','v4-sheet','drawer');html=lazyView(L.settings,m=>m.settingsView(env()));break;
@@ -658,6 +685,7 @@ function renderSheet(preserve=true){
     default:html=header('Một khoảng thảnh thơi')+`<div class="sheet-body">${empty('Cửa sổ chưa mở','Quay lại cảnh để tiếp tục nhé.')}</div>`;
   }}
   html=shortWork(shutWork(html));
+  if(ui.view==='job'&&api.state?.current==='pilot'&&dialog.querySelector('.pl-fly:not([hidden])'))cls.classList.add('pl-expanded-host');
   if(dialog.className!==cls.className)dialog.className=cls.className;
   // A fresh view is written whole; a re-render of the same view is morphed (or skipped when unchanged).
   const box=$('#sheetContent');
@@ -680,7 +708,7 @@ function renderSheet(preserve=true){
   if(!preserve||fresh||box._html===undefined)box.innerHTML=html;else if(changed)morph(box,html);
   box._html=html;
   tickNow(env());document.dispatchEvent(new Event('sheetrender'));
-  applyGuide(dialog);watchHead(dialog);
+  applyGuide(dialog);watchHead(dialog);if(iso?.booted())iso.updateIsometricShell(env());
   if(preserve){const now=folds(),keys=foldKeys(now);now.forEach((el,i)=>{const want=openedDetails.has(keys[i])?openedDetails.get(keys[i]):(el._mk??el.open);if(el.open!==want)el.open=want;el._mk=undefined;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});if(dialog.scrollTop!==scroll)dialog.scrollTop=scroll;sheetScroll.restore(dialog);if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);el?.focus({preventScroll:true});try{el?.setSelectionRange(selection,selection);}catch{/* not a text input */}}}
   if(!preserve)dialog.scrollTop=0;
   if(ui.view==='chat'){$('#messages')?.scrollTo(0,$('#messages').scrollHeight);}
@@ -1418,7 +1446,7 @@ function inputPrompt(title,value,maxLength=100){
 }
 function finishConfirm(value){const choice=$('#confirmPay');if(value&&choice)value=choice.value;$('#confirmDialog').close();confirmResolve?.(value);confirmResolve=null;document.body.append($('#toasts'));}
 $('#confirmDialog').addEventListener('cancel',e=>{e.preventDefault();finishConfirm(false);});
-$('#sheet').addEventListener('cancel',e=>{e.preventDefault();if(api.state?.current)closeSheet();});
+$('#sheet').addEventListener('cancel',e=>{e.preventDefault();if(api.state?.current||world.mode==='town'&&isoTownFirst())closeSheet();});
 /* Phone bottom sheets show a grab handle: dragging the sheet head down now really closes the sheet (it
  * used to do nothing). Only transform moves while dragging; past 90 px or a quick flick it slides away and
  * closes through the same 'cancel' path as Escape (so sheets that may not close yet stay put). */
@@ -1467,9 +1495,9 @@ async function switchCareer(id){
 }
 async function selectCareer(id){
   ui.task=null;ui.docs.clear();ui.transactions.clear();ui.ai={};ui.phFilter='';ui.jobTab='shelf';
-  await careerAssets(id);  // its workbench, stylesheet and scene first: the new place never renders half-styled
+  await careerAssets(id);  // its workbench, stylesheet and data first: the new place never renders half-styled
   const r=await switchCareer(id);if(!r){closeSheet();setPaused(false);return;}if(r.hired)toast(r.message,'good');
-  closeSheet();world.say(greeting());setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
+  world.setMode?.('work');closeSheet();world.say(greeting());setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
   abandonAfter(r);
 }
 /** A brand-new player's first workplace (v4/onboard.js quickOpen): day 1 opens at once, straight into the first
@@ -1491,6 +1519,8 @@ async function openJob(id,tab){
   if(select){const r=await cmd('task_select',{task:target},{quiet:true});if(!r&&ui.view==='job'&&ui.task===target){ui.task=room().active_task||null;renderSheet(false);}}
 }
 function interact(id){sound.unlock();sound.click();if(ui.paused)return;
+  if(id.startsWith('career:')){void handleAction(api.state?.jail?'jail':'choose',{career:id.slice(7)}).catch(error=>toast(error.message,true));return;}
+  if(id.startsWith('outing:')){void handleAction('leisurePlace',{kind:id.slice(7)}).catch(error=>toast(error.message,true));return;}
   {const alt=careerUI(career())?.spots?.[id];if(alt){openSheet(alt);return;}}  // a career's own place for a scene spot (air crew: no Sổ tiệm)
   if(id.startsWith('staff:')){ui.staffId=id.slice(6);openSheet('operations',{opsTab:'staff'});return;}
   if(id.startsWith('ops:')){openSheet('operations',{opsTab:id.slice(4)});return;}
@@ -1505,6 +1535,14 @@ function interact(id){sound.unlock();sound.click();if(ui.paused)return;
 }
 async function talk(text){if(!ui.npc||!text.trim())return;const id=ui.npc;const r=await (await L.chat.get()).aiTalk(env(),id,text);if(!r)return;ui.suggestions[id]=r.suggestions||[];world.say(r.reply,id);renderSheet();}
 async function handleAction(action,data,el){
+  // These island routes open local scenes without a server command. Apply the same camp boundary before
+  // they can change mode or load a destination; chat and the camera keep their existing behavior.
+  if(api.state?.jail&&['home','leisurePlace','isoTown','isoWork','isoCareers','isoMission','isoPrepare','isoApply','isoQueue','isoGo','isoLeisure','isoBag'].includes(action)){
+    await (await import('./v4/jail.js')).openJail(env());return;
+  }
+  if(action==='leisurePlace'){if(iso&&['fishing','boat','pool'].includes(data.kind))await iso.openLeisure(data.kind,env());return;}
+  if(action==='home'&&iso?.booted()&&isoTownFirst())action='isoTown';
+  if(iso&&action.startsWith('iso')&&await iso.isometricAction(action,data,el,env()))return;
   switch(action){
     case'close':closeSheet();break;
     case'confirmNo':finishConfirm(false);break;
@@ -1746,7 +1784,8 @@ document.addEventListener('change',async e=>{
   if(el.dataset.decorItem)await cmd('decor_move',{item:el.dataset.decorItem,spot:el.value});
   if(el.id==='import-file'&&el.files[0]){const file=el.files[0];try{if(file.size>14500000)throw new Error('Bản lưu quá lớn.');const save=JSON.parse(await file.text());if(await confirmAction('Khôi phục bản lưu này?','Các nghề của phiên hiện tại sẽ được thay thế bằng dữ liệu trong tệp. Hãy xuất bản hiện tại trước nếu cần.','Khôi phục')){const r=await cmd('import_save',{save});if(r){ui.task=null;ui.docs.clear();ui.transactions.clear();closeSheet();if(!api.state.current)openSheet('home');}}}catch(error){toast('Không nhập được: '+error.message,true);}}
 });
-window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').open&&!$('#confirmDialog').open&&api.state?.current){setPaused(!ui.paused);}});
+// Capture before a dialog's key handler or the old-Safari polyfill can close it during this same Escape.
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.defaultPrevented&&!document.querySelector('dialog[open]')&&!document.querySelector('html.menu-open, #isoHUD .iso-camera.is-open, #isoHUD .iso-outings[open], #isoHUD .iso-tools[open], #isoHUD .iso-mission[open]')&&api.state?.current){setPaused(!ui.paused);}},true);
 // Back in the tab: re-sync, unless the state is fresh anyway (every focus used to refetch and re-render all).
 window.addEventListener('focus',()=>{if(api.state&&!ui.busy&&!(ui.view==='home'&&ui.jrView==='invest')&&Date.now()-(api.syncedAt||0)>15000)api.refresh().catch(()=>{});});
 const stopStaffRefresh=staffRefresh({state:()=>api.state,refresh:()=>api.refresh(),busy:()=>staffRefreshPaused(ui,!!document.querySelector('dialog.qy-sheet[open]'),!!document.querySelector('dialog.fh-sheet[open]'))||sheetScroll.busy(),lastSync:()=>api.syncedAt||0});
@@ -1813,7 +1852,7 @@ api.addEventListener('busy',e=>{if(!e.detail)unmarkTaps();});
  * Anything else that switches careers is covered by ensureCareerUI (re-renders once the module is in). */
 const CAREER_MODULES=[];
 // Its part of the catalogue (api.careerContent: a plugin workplace's data) comes with its workbench.
-const careerAssets=(id,waitCss=true)=>Promise.all([CAREER_MODULES.includes(id)&&!hasCareerUI(id)?loadCareerModules([id],waitCss):null,api.careerContent(id),import(`./scenes/${kindOf(id)}.js`).catch(()=>{}),id==='teacher'||id==='tour_guide'?teachTour(api).catch(()=>{}):null]);
+const careerAssets=(id,waitCss=true)=>Promise.all([CAREER_MODULES.includes(id)&&!hasCareerUI(id)?loadCareerModules([id],waitCss):null,api.careerContent(id),loadCareerScene(api.state,id),id==='teacher'||id==='tour_guide'?teachTour(api).catch(()=>{}):null]);
 setCareerData(id=>api.hasCareerContent(id));  // careerUI(id) waits for the workplace's data part too
 /* The current workplace's workbench and data part, when they are not in (a switch, or a start-up whose fetch failed
  * on a weak network: the game opens anyway). Failed again: asked for once more after 2, 4, 8 … 30 s, not on every
@@ -1839,30 +1878,23 @@ window.addEventListener('online',()=>{if(api.state)api.refresh().then(()=>render
 window.addEventListener('error',e=>{console.error('Game UI:',e.error||e.message);});
 try{
   await api.init();
-  // Only the current workplace's workbench (+ its stylesheet and scene) gates the first frame; the others load
-  // when the player switches to them (startup used to wait on ~45 requests for every career and scene).
+  const renderer=await loadInterface(api.state);iso=renderer.iso;
+  if(renderer.World)world.adopt(new renderer.World($('#world'),interact));
+  // Only the current workplace's workbench and data/styles gate the first frame. Phaser follows that frame.
   CAREER_MODULES.push(...Object.keys(api.content.careers||{}),'milk_tea','mother_baby');
   // Its stylesheet only styles the workbench: wait for it only when a sheet opens right away (day closed).
   await Promise.all([careerAssets(career(),Boolean(api.state.current&&(!room()?.open||needsJob()))),setLanguage(api.state.settings.lang)]);
   import('./v4/home-guests.js').then(m=>m.homeGuestsBoot(env())).catch(e=>console.warn('homeGuests:',e));
   import('./v4/workplace-visit.js').then(m=>m.workVisitsBoot(env())).catch(e=>console.warn('workVisits:',e));
+  if(iso)iso.bootShell(env);
   shell.boot(env());journeyBoot(env());boardBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
+  if(iso)iso.start({env,world,interact,renderMain});
   const oauthReturned=accountBoot(env());
   ensureCareerUI();  // its workbench failed to come above (the game opens anyway): ask again in the background
   try{performance.mark('mnl-first-frame');}catch{/* no User Timing */}   // "time to first game frame" (telemetry.js load beacon)
   import('./telemetry.js').then(m=>m.telemetryBoot({api,ui})).catch(e=>console.warn('telemetry:',e));  // Giữ chân: leave/error/load beacons
-  // 💬 The live socket (chat button, friends): first idle moment after the first frame, not last of the queue below
-  // (it came ~6 s late, and after a sign-in sheet even later); its greyed button shows until the welcome.
-  whenIdle(()=>L.live.get().then(m=>{m.liveBoot(env());
-    // 🔨 outbid / won anywhere in the game: collect the refund or the item now, a toast (v4/auction.js, loaded on the event)
-    m.live.on('auction_outbid',f=>import('./v4/auction.js').then(a=>a.onOutbid(env(),f)).catch(e=>console.warn('auction:',e)));
-    m.live.on('auction_won',f=>import('./v4/auction.js').then(a=>a.onWon(env(),f)).catch(e=>console.warn('auction:',e)));
-    // 🎆 someone's fireworks: the show over whatever screen is open, for everyone online (v4/fireworks.js, live/fireworks.py);
-    // a page that connects right after the start gets it in the welcome (`fw`)
-    const fw=f=>import('./v4/fireworks.js').then(a=>a.onFireworks(env(),f)).catch(e=>console.warn('fireworks:',e));
-    m.live.on('fireworks',fw);m.live.on('welcome',f=>{if(f.fw)fw(f.fw);});
-    // 💌 someone's wedding card is out (live/wedinvite.py): ask the server for it a moment later (v4/wedinvite.js)
-    m.live.on('wedinvite',f=>import('./v4/wedinvite.js').then(a=>a.onWedInvite(env(),f)).catch(e=>console.warn('wedinvite:',e)));}).catch(e=>console.warn('live:',e)),800);
+  // Prime the lazy menu module too; the island HUD may already have initialized the same live module.
+  whenIdle(()=>L.live.get().then(bootLive).catch(e=>console.warn('live:',e)),800);
   // The rest of the catalogue (api.more), now that the first frame is out: it never competed with it on the wire.
   api.more().catch(e=>console.warn('content:',e));
   // Always-on features (badges, notices, polls, tips) load once the game is on screen, not before it.
@@ -1877,11 +1909,11 @@ try{
     if(i>=bootSteps.length){lazyBoot=false;document.dispatchEvent(new CustomEvent('mnl:lazy',{detail:{wanted:true}}));return;}
     const [h,fn]=bootSteps[i];h.get().then(fn).catch(e=>console.warn('lazy boot:',e)).finally(()=>whenIdle(()=>bootNext(i+1),600));
   };
-  // Places the player has worked at: their workbench and scene into the HTTP cache, at the lowest priority,
+  // Places the player has worked at: their workbench and stylesheet into the HTTP cache, at the lowest priority,
   // long after start-up (the next switch then opens without a network wait).
   whenIdle(()=>{const has=u=>(globalThis.__mnlBoot?.asset?.(u)||u)!==u;
     const played=Object.entries(api.state.careers||{}).filter(([id,c])=>id!==career()&&c&&(c.day>1||c.metrics?.served>0)).map(([id])=>id).slice(0,2);
-    prefetch(played.flatMap(id=>[`/js/careers/${id}.js`,`/css/careers/${id}.css`,`/js/scenes/${kindOf(id)}.js`]).filter(has));},12000);
+    prefetch(played.flatMap(id=>[`/js/careers/${id}.js`,`/css/careers/${id}.css`]).filter(has));},12000);
   (window.requestIdleCallback||setTimeout)(()=>{if(api.state.settings.sound!==false)sound.prepare();},{timeout:3000});
   registerWorker();
   const openSocial=tab=>{ui.socTab=tab||'street';ui.socShop=null;L.social.get().then(m=>{m.invalidate(ui);openSheet('social');}).catch(()=>{});};
@@ -1889,11 +1921,12 @@ try{
   if(!oauthReturned){
     const deep=new URLSearchParams(location.search);
     if(deep.get('social')){history.replaceState(null,'','/');openSocial(deep.get('social'));}
-    else if(!api.state.current)openSheet('home');else{if(!room().open)openSheet(room().shift_summary?'summary':'prepare');}
+    else if(!isoTownFirst())openSheet('home');
   }
   // Callback feedback gets the first screen. Start automatic cards only after the player closes it;
   // a queued close event from a sheet already reopened is not a dismissal.
-  const bootAutomatic=()=>{
+  const bootAutomatic=async()=>{
+    if(!await promptInterface(env()))return;
     if(tutNow)tutBoot[0].get().then(tutBoot[1]).catch(e=>console.warn('lazy boot:',e));
     lazyBoot=true;whenIdle(()=>bootNext(0),1500);
     import('./v4/whatsnew.js').then(m=>m.whatsNewBoot(env())).catch(e=>console.warn('whatsnew:',e));  // "Có gì mới": lazy, off the first load

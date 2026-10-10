@@ -82,12 +82,10 @@ const lots=m.townBuildings(catalogue);
 assert.equal(lots.length,41,'every catalogue career gets a door');
 assert.equal(new Set(lots.map(b=>b.id)).size,41,'door IDs stay unique');
 assert.deepEqual(lots.map(b=>b.id).sort(),catalogue.map(c=>c.id).sort(),'doors retain stable server IDs');
-assert.equal(lots.some(b=>b.footprint.x0<12.5&&b.footprint.x1>7.2&&b.footprint.y0<12.5&&b.footprint.y1>7.2),false,'entry commons is reserved from buildings');
-assert.equal(lots[2].at.x<7&&lots[2].at.y>7,true,'the first three doors form a visible neighbourhood');
+for(const l of m.townLandmarks())assert.equal(lots.some(b=>b.footprint.x0<l.footprint.x1&&b.footprint.x1>l.footprint.x0&&b.footprint.y0<l.footprint.y1&&b.footprint.y1>l.footprint.y0),false,'water commons is reserved from buildings');
 const town=m.townNavigation(lots);
-assert.deepEqual(m.activeIslandRegions().map(r=>r.id),['core'],'future island regions are metadata only');
-assert.ok(m.ISLAND_PLAN.regions.filter(r=>r.status==='reserved').length>=2,'island plan reserves future expansion locations');
-assert.deepEqual(m.ISLAND_PLAN.regions.find(r=>r.id==='core').navigationBounds,town.bounds,'core island wraps existing canonical navigation bounds');
+assert.ok(m.activeIslandRegions().length>=9,'the authored districts are open');
+assert.deepEqual(m.ISLAND_PLAN.regions.find(r=>r.id==='core').navigationBounds,town.bounds,'core island wraps shared navigation bounds');
 for(const building of lots)for(const x of [building.footprint.x0,building.footprint.x1])for(const y of [building.footprint.y0,building.footprint.y1])assert.ok(m.insideIsland({x,y}),`${building.id} has every footprint corner inside the shoreline`);
 for(let x=0;x<=43;x+=1)for(let y=0;y<=50;y+=1)assert.ok(m.insideIsland({x,y}),'the complete existing navigation rectangle remains inland');
 for(const sea of [{x:-60,y:25},{x:102,y:25},{x:20,y:-25},{x:20,y:75}]){assert.equal(m.insideIsland(sea),false,'ocean lies outside the island coast');assert.equal(m.isWalkable(town,sea),false,'ocean never becomes walkable');}
@@ -115,11 +113,11 @@ for(const zoom of [.03,.044,.24,.5,1,1.6]){
   assert.ok(Math.abs(origin.x-cache.region.x0)<1e-8&&Math.abs(origin.y-cache.region.y0)<1e-8,'cache camera captures the exact upper-left world point');
   if(zoom===1)assert.ok(cache.scale>=.9,'illustrated ground keeps near-native detail on desktop');
 }
-assert.equal(m.townBuildingArt({id:'pharmacy'},'home'),'pharmacy','pharmacy retains its purpose-built illustrated facade');
-assert.equal(m.townBuildingArt({id:'mother_baby'},'grocery'),'mother-baby','mother and baby career has its own facade');
+assert.equal(m.townBuildingArt({id:'pharmacy'},'home'),'career-pharmacy','pharmacy loads its complete purpose-built exterior');
+assert.equal(m.townBuildingArt({id:'mother_baby'},'grocery'),'career-mother_baby','mother and baby career has its own exterior');
 assert.equal(m.townBuildingArt({id:'garage'},'home'),'garage','garage keeps its actual workshop identity');
-assert.equal(m.townBuildingArt({id:'repair'},'home'),'garage','the actual repair career uses its workshop facade');
-assert.equal(m.townBuildingArt({id:'pho'},'cafe'),'pho','pho keeps its own food frontage');
+assert.equal(m.townBuildingArt({id:'repair'},'home'),'career-repair','the actual repair career loads its dedicated workshop');
+assert.equal(m.townBuildingArt({id:'pho'},'cafe'),'career-pho','pho keeps its own complete food frontage');
 assert.equal(m.townBuildingArt({id:'career_unknown'},'home'),'home','unsupported facades use an existing illustrated family');
 assert.equal(typeof m.landmarkPlaneGeometry,'function','landmarks expose their actual ground-plane geometry');
 for(const landmark of landmarks){const r=landmark.footprint,g=m.landmarkPlaneGeometry(r),corners=[[0,0,{x:r.x0,y:r.y0}],[1,0,{x:r.x1,y:r.y0}],[0,1,{x:r.x0,y:r.y1}],[1,1,{x:r.x1,y:r.y1}]];for(const [u,v,p] of corners){const actual={x:g.x+g.a*u+g.c*v+g.e,y:g.y+g.b*u+g.d*v};const expected=m.project(p);assert.ok(Math.hypot(actual.x-expected.x,actual.y-expected.y)<1e-8,'landmark art stays on the true 2:1 ground plane');}assert.ok(g.height<=g.width/2+1e-7,'portrait boat art cannot become a towering upright sprite');}

@@ -8,6 +8,7 @@
 //     class static blocks (16.4); top-level await outside a module; anything newer than ES2022 does not parse.
 //  2. Regex literals and RegExp('…') strings: no lookbehind (?<= (?<! (16.4), no flag v (17) or d (kept out,
 //     like the task asks), no modifiers (?i:…) (ES2025), no duplicate named groups (17).
+//     Runtime constructors inside a try with catch may probe support; literals still must parse everywhere.
 //  3. Built-ins newer than Safari 15.0: .at() / Object.hasOwn / findLast / findLastIndex / crypto.randomUUID /
 //     canvas and Path2D .roundRect() (Safari 16) / <dialog>.showModal() (15.4) are
 //     polyfilled by public/js/boot.js (pages with boot.js only: index.html); the checker verifies those polyfills
@@ -87,6 +88,58 @@ function isPath(n,obj,prop){
   return (o.type==='Identifier'&&o.name===obj)||(o.type==='MemberExpression'&&propName(o)===obj&&/^(globalThis|window|self)$/.test(o.object?.name||''));
 }
 
+/** Recognize the receiver, not its minified name: Phaser resets a scene loader
+ * immediately after reading .load, or immediately before its .addPack call. */
+function loaderReset(n,parents){
+  if(n.type!=='CallExpression'||!member(n.callee,'reset'))return false;
+  const receiver=n.callee.object;if(receiver?.type!=='Identifier')return false;
+  const sequence=parents.at(-1);if(sequence?.type!=='SequenceExpression')return false;
+  const index=sequence.expressions.indexOf(n),previous=sequence.expressions[index-1],next=sequence.expressions[index+1];
+  if(previous?.type==='AssignmentExpression'&&previous.operator==='='&&previous.left.type==='Identifier'&&previous.left.name===receiver.name&&member(previous.right,'load'))return true;
+  return next?.type==='CallExpression'&&member(next.callee,'addPack')&&next.callee.object?.type==='Identifier'&&next.callee.object.name===receiver.name;
+}
+
+const functionNode=n=>/^(FunctionDeclaration|FunctionExpression|ArrowFunctionExpression)$/.test(n.type);
+/** A constructor can throw into an enclosing catch only within this execution
+ * scope. Callback bodies and instance field initializers may run later. */
+function caughtRuntime(node,parents){
+  for(let i=parents.length-1;i>=0;i--){
+    const a=parents[i],child=parents[i+1]||node;
+    if(functionNode(a)||(a.type==='PropertyDefinition'&&!a.static&&child===a.value))return false;
+    if(a.type==='TryStatement'&&a.handler&&child===a.block)return true;
+  }
+  return false;
+}
+/** Writes in the same function only. Do not let a minified identifier in another
+ * callback/method, or a reassigned collection alias, supply the type evidence. */
+function localWritesBefore(identifier,node,parents){
+  const scope=parents.findLast(functionNode);if(!scope)return [];
+  let declared=false;const values=[];
+  walk(scope,(n,ancestors)=>{
+    if(n.end>node.start||ancestors.some(a=>a!==scope&&functionNode(a)))return;
+    if(n.type==='VariableDeclarator'&&n.id.type==='Identifier'&&n.id.name===identifier){declared=true;values.push(n.init);}
+    else if(n.type==='AssignmentExpression'&&n.left.type==='Identifier'&&n.left.name===identifier)values.push(n.operator==='='?n.right:null);
+    else if(n.type==='UpdateExpression'&&n.argument.type==='Identifier'&&n.argument.name===identifier)values.push(null);
+  });
+  return declared?values:[];
+}
+/** TweenManager pushes a locally built tween's reset result into this.tweens.
+ * Require both the builder(owner, ...) and the destination collection: a canvas
+ * reset nearby, or even a canvas accidentally pushed into that list, still fails. */
+function tweenReset(n,parents){
+  const push=parents.at(-1);
+  if(push?.type!=='CallExpression'||!member(push.callee,'push')||push.arguments.length!==1||push.arguments[0]!==n)return false;
+  const isTweens=value=>member(value,'tweens')&&value.object.type==='ThisExpression';
+  const target=push.callee.object;
+  if(!isTweens(target)){
+    if(target.type!=='Identifier')return false;
+    const aliases=localWritesBefore(target.name,n,parents);
+    if(aliases.length!==1||!isTweens(aliases[0]))return false;
+  }
+  const value=localWritesBefore(n.callee.object.name,n,parents).at(-1);
+  return value?.type==='CallExpression'&&value.callee.type==='Identifier'&&value.arguments[0]?.type==='ThisExpression';
+}
+
 /** Is this API reference only tested, called optionally (`x?.()`), in a try, or under a test that names it? */
 function guarded(node,parents,word,src){
   const tested=t=>t&&src.slice(t.start,t.end).includes(word);
@@ -131,7 +184,7 @@ export function checkSource(src,{module=true,polyfilled=new Set()}={}){
   walk(ast,(n,parents)=>{
     if(n.type==='StaticBlock')at(n,'class static block (Safari 16.4+)');
     if(n.type==='Literal'&&n.regex)for(const m of regexProblems(n.regex.pattern,n.regex.flags))at(n,m);
-    if((n.type==='NewExpression'||n.type==='CallExpression')&&n.callee.type==='Identifier'&&n.callee.name==='RegExp'&&n.arguments.length){
+    if((n.type==='NewExpression'||n.type==='CallExpression')&&n.callee.type==='Identifier'&&n.callee.name==='RegExp'&&n.arguments.length&&!caughtRuntime(n,parents)){
       const [src,flags]=n.arguments;
       const text=src.type==='Literal'&&typeof src.value==='string'?src.value:src.type==='TemplateLiteral'?src.quasis.map(q=>q.value.cooked).join('\u0000'):'';
       const f=flags?.type==='Literal'&&typeof flags.value==='string'?flags.value:'';
@@ -139,6 +192,7 @@ export function checkSource(src,{module=true,polyfilled=new Set()}={}){
     }
     for(const api of APIS){
       if(!api.match(n,parents))continue;
+      if(api.name==='ctx.reset()'&&(loaderReset(n,parents)||tweenReset(n,parents)))continue;
       if(api.poly&&polyfilled.has(api.poly))continue;
       if(guarded(n,parents,api.name.replace(/^.*[.#]|\(\)$/g,''),src))continue;
       at(n,`${api.name} ${api.why||`needs Safari ${api.min}+`}: guard it${api.poly?' or load the page with boot.js polyfills':''}`);

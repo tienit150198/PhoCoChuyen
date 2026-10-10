@@ -118,5 +118,10 @@ export function crowd({live,state,redraw,still,svg,xy,approach,isWalking=()=>fal
     }else resetAction();
     C.note=f.msg||f.message||'Chưa thể làm lúc này. Thử lại sau nhé.';redraw();
   });
-  return {join,leave,reopen,walk,markup,panel,emote,reply,figure,resume:()=>{paint();animate();},dispose:()=>{leave();for(const off of subs)off();},state:()=>({room:C.room,r:C.r,me:C.me,people:[...C.people.values()].map(q=>({pid:q.pid,name:q.name,at:at(q)}))})};
+  // Read-only render projection for the 3D view. It uses this same authorized room and capped peer map.
+  function presentation(){return [...C.people.values()].map(q=>{
+    if(!q.art){try{q.art=figure(figureOf(q.lk,q.g),q.pid);}catch{q.art='';}}
+    return {id:q.pid,name:q.name||'Bạn',at:at(q),art:q.art,height:1.65};
+  });}
+  return {join,leave,reopen,walk,markup,panel,emote,reply,figure,presentation,resume:()=>{paint();animate();},dispose:()=>{leave();for(const off of subs)off();},state:()=>({room:C.room,r:C.r,me:C.me,people:[...C.people.values()].map(q=>({pid:q.pid,name:q.name,at:at(q)}))})};
 }

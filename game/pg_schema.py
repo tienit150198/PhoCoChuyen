@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 36  # 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 38  # 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -73,11 +73,42 @@ CREATE TABLE IF NOT EXISTS tiktok_flows (
   mode {T} NOT NULL, client_key {T} NOT NULL, expires_at double precision NOT NULL,
   phase {T} NOT NULL, target_uid bigint, nonce_hash {T}
 );
+CREATE TABLE IF NOT EXISTS town_treasure_waves (
+  bucket bigint PRIMARY KEY
+);
+CREATE TABLE IF NOT EXISTS town_treasure_chests (
+  id {T} PRIMARY KEY, bucket bigint NOT NULL REFERENCES town_treasure_waves(bucket) ON DELETE CASCADE,
+  map_id {T} NOT NULL, x double precision NOT NULL, y double precision NOT NULL,
+  winner {T}, won_at double precision, request_id {T}, result {T},
+  UNIQUE(winner,request_id)
+);
+CREATE INDEX IF NOT EXISTS town_treasure_chests_bucket ON town_treasure_chests(bucket);
+CREATE TABLE IF NOT EXISTS town_treasure_presence (
+  sid {T} PRIMARY KEY REFERENCES sessions(sid) ON DELETE CASCADE, lease {T} NOT NULL,
+  map_id {T} NOT NULL, x double precision NOT NULL, y double precision NOT NULL,
+  seen_at double precision NOT NULL, online bigint NOT NULL DEFAULT 1
+);
+CREATE INDEX IF NOT EXISTS town_treasure_presence_age ON town_treasure_presence(seen_at);
+CREATE TABLE IF NOT EXISTS town_treasure_proofs (
+  sid {T} PRIMARY KEY REFERENCES sessions(sid) ON DELETE CASCADE, chest_id {T} NOT NULL,
+  proof_hash {T} NOT NULL, lease {T} NOT NULL, created_at double precision NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS player_feedback (
   id {ID} PRIMARY KEY, sid {T} NOT NULL, account {T},
   kind {T} NOT NULL, text {T} NOT NULL, context {T} NOT NULL DEFAULT '{{}}',
   status {T} NOT NULL DEFAULT 'new', reply {T},
   created_at double precision NOT NULL, updated_at double precision NOT NULL, replied_at double precision
+);
+-- Private feedback attachments live with the database, including rolling releases/backups.
+-- No FK to sessions: idle guest cleanup must not delete submitted feedback/images.
+CREATE TABLE IF NOT EXISTS player_feedback_images (
+  id {T} PRIMARY KEY, feedback_id bigint NOT NULL REFERENCES player_feedback(id) ON DELETE CASCADE,
+  position smallint NOT NULL CHECK(position BETWEEN 0 AND 2),
+  mime {T} NOT NULL CHECK(mime IN ('image/png','image/jpeg','image/webp')),
+  width integer NOT NULL CHECK(width BETWEEN 1 AND 10000), height integer NOT NULL CHECK(height BETWEEN 1 AND 10000),
+  byte_size integer NOT NULL CHECK(byte_size BETWEEN 1 AND 2097152), data bytea NOT NULL,
+  UNIQUE(feedback_id,position), CHECK(octet_length(data)=byte_size), CHECK(width::bigint*height<=12600000)
 );
 CREATE TABLE IF NOT EXISTS archive (
   sid {T} NOT NULL, career {T} NOT NULL, kind {T} NOT NULL, seq bigint NOT NULL,
@@ -782,7 +813,12 @@ TABLES = [
     dict(name='logins', identity=None),
     dict(name='tiktok_identities', identity=None),
     dict(name='tiktok_flows', identity=None),
+    dict(name='town_treasure_waves', identity=None),
+    dict(name='town_treasure_chests', identity=None),
+    dict(name='town_treasure_presence', identity=None),
+    dict(name='town_treasure_proofs', identity=None),
     dict(name='player_feedback', identity='id'),
+    dict(name='player_feedback_images', identity=None),
     dict(name='archive', identity=None),
     dict(name='profiles', identity=None),
     dict(name='work_visit_places', identity=None),

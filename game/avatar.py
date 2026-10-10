@@ -51,6 +51,23 @@ FACE_KEYS = frozenset(DEFAULT_FACE)
 BLOCK_KEYS = frozenset(('v', 'kind', 'face', 'emoji'))
 KINDS = ('face', 'emoji')
 
+# Shared quick choices for both clients. Only existing face part ids are saved or sent to live.
+PRESETS = (
+    ('pho_sang', 'Nắng đầu phố', dict(shape='oval', age='teen', hair='bob', expr='toe', freckles=True, bg='dao')),
+    ('nang_he', 'Ngày hè tinh nghịch', dict(shape='tim', age='teen', hair='bim', head='hoa', expr='nhay', bg='vang')),
+    ('ban_sach', 'Bạn mê đọc sách', dict(shape='vuong', hair='lech', glasses='tron', expr='diu', bg='mint')),
+    ('gio_bien', 'Gió biển', dict(skin='s4', shape='oval', hair='song', head='tai_beo', hwc='trang', bg='xanh')),
+    ('am_nhac', 'Bạn yêu âm nhạc', dict(skin='s6', age='teen', hair='afro', extra='tai_nghe', expr='toe', bg='lavender')),
+    ('tay_nghe', 'Người thợ khéo', dict(shape='vuong', hair='dung', head='luoi_trai', hwc='navy', beard='lun', bg='kem')),
+    ('hoai_co', 'Nét xưa dịu dàng', dict(shape='oval', age='gia', hair='bui_thap', hc='xam', glasses='vuong', bg='la')),
+    ('le_hoi', 'Ngày hội phố', dict(shape='tim', hair='tet', head='khan_dong', hwc='do', expr='then', bg='hong')),
+)
+
+
+def presets() -> list[dict]:
+    """Fresh catalogue values: selecting a preset still uses the existing jr_avatar command."""
+    return [dict(id=iid, name=name, face=dict(DEFAULT_FACE, **parts)) for iid, name, parts in PRESETS]
+
 
 def _core():
     from . import engine

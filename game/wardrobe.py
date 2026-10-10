@@ -202,6 +202,15 @@ ITEMS = [
     _n('khuyen_tron', 'acc', 'Khuyên tai tròn vàng', 45, 'Khuyên tai tròn'),
     _n('khan_bandana', 'acc', 'Khăn bandana đỏ', 35, 'Khăn bandana'),
     _n('balo_mini', 'acc', 'Balo mini vàng', 80, 'Balo mini'),
+    # Shared classic/isometric silhouettes, stored in the existing additive wardrobe block.
+    _n('mu_beret', 'acc', 'Mũ beret nghiêng', 55),
+    _n('mu_cao_boi', 'acc', 'Mũ cao bồi', 75),
+    _n('tai_nghe', 'acc', 'Tai nghe chụp tai', 80),
+    _n('vuong_mien', 'acc', 'Vương miện ngôi sao', 95),
+    _n('bang_do_tai_meo', 'acc', 'Băng đô tai mèo', 45),
+    _n('vong_hoa', 'acc', 'Vòng hoa cài đầu', 60),
+    _n('khau_trang', 'acc', 'Khẩu trang vải', 30),
+    _n('khan_choang', 'acc', 'Khăn choàng dài', 65),
 ]
 INDEX = {x['id']: x for x in ITEMS}
 PLUS = frozenset(x['id'] for x in ITEMS if x.get('plus'))      # 1.9.2 pieces (s['wardrobe_plus'])
@@ -904,7 +913,8 @@ def action(s: dict, name: str, p: dict) -> dict:
 # ---------------------------------------------------------------- client
 def content() -> dict:
     """Static list for the client (bootstrap content, cached): names, prices and unlocks by id."""
+    from . import avatar
     return dict(slots=[dict(id=k, name=SLOT_NAMES[k]) for k in SLOTS], items=[dict(x) for x in ITEMS],
                 defaults={k or 'none': v for k, v in DEFAULTS.items()}, staff_off=STAFF_OFF, shop=SHOP, shop_name=SHOP_NAME,
                 colors=[dict(x) for x in COLORS], tintable=list(TINTABLE), clothes=list(CLOTHES),
-                match={k: list(v) for k, v in MATCH.items()})
+                match={k: list(v) for k, v in MATCH.items()}, avatar_presets=avatar.presets())

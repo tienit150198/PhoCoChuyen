@@ -7,7 +7,8 @@ import {basename} from 'node:path';
 
 // Since the 2.5D switch (CHANGELOG "Giao diện 2.5D"), app.js loads the Phaser world lazily through iso-boot.js.
 const read=path=>{try{return readFileSync(new URL(path,import.meta.url),'utf8');}catch{return '';}};
-export const wired=read('../public/js/app.js').includes('./iso-boot.js')&&read('../public/js/iso-boot.js').includes('./isometric/phaser-world.js');
+const app=read('../public/js/app.js');
+export const wired=(app.includes('./iso-boot.js')||(app.includes('./interface-mode.js')&&read('../public/js/interface-mode.js').includes('./iso-boot.js')))&&read('../public/js/iso-boot.js').includes('./isometric/phaser-world.js');
 if(!wired){
   console.log(`${basename(process.argv[1]||'2.5D test')}: skipped: the Phaser 2.5D client is not wired into public/js/app.js in 1.8.0 (see docs/PHASER_25D.md)`);
   process.exit(0);

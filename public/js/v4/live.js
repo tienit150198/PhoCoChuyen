@@ -134,7 +134,7 @@ function frame(f){
     case'welcome':
       clearTimeout(connectTimer);
       live.welcomed=true;live.flags=f.flags||{};
-      if(!live.flags.chat&&!live.flags.street&&!live.flags.dating&&!live.flags.wedding&&!live.flags.fair&&!live.flags.home){live.state='off';break;}
+      if(!['chat','street','dating','wedding','fair','home','visits','town','kara','bark'].some(k=>live.flags[k])){live.state='off';break;}
       live.state='open';attempt=0;
       live.me=f.me||null;live.friends=f.friends||[];live.chans=f.chans||[];live.limits=f.limits||{};live.bonds=f.bonds||[];
       adoptName();

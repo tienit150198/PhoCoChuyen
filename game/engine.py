@@ -114,6 +114,10 @@ def default_settings() -> dict:
         npcVoices=True,detailSfx=True,bankVoice=True,  # Cài đặt → Âm thanh: giọng nhân vật, âm thanh chi tiết, giọng đọc số tiền
         moneyTing=True)  # tiếng "ting ting" khi nhận tiền (public/js/v4/sounds.js)
 
+# Older releases strictly validate settings keys. Keep renderer preferences in
+# the extensible journey block and project these defaults only into the API DTO.
+INTERFACE_DEFAULTS = dict(newInterface=True, interfacePromptSeen=False)
+
 from .jsoncopy import tree_copy,_SCALARS  # noqa: F401 (re-exported)
 
 def _build_id() -> str:
@@ -207,6 +211,16 @@ def migrate_state(state:dict,owned:bool=False) -> dict:
     if isinstance(s.get('settings'),dict):
         if ai_unasked:s['settings'].update(aiConsent=True,aiAsked=True)
         for k,v in default_settings().items():s['settings'].setdefault(k,v)
+        # Move preliminary 2.0 saves without overriding a choice already stored
+        # in the canonical block. The saved settings remain rollback-compatible.
+        for k in INTERFACE_DEFAULTS:
+            if k not in s['settings']:continue
+            value=s['settings'].pop(k)
+            need(type(value) is bool,"Thiết lập bản lưu không hợp lệ.")
+            need(isinstance(s.get('journey'),dict),"Bản lưu thiếu dữ liệu hành trình.")
+            preferences=s['journey'].setdefault('interface',{})
+            need(isinstance(preferences,dict),"Thiết lập bản lưu không hợp lệ.")
+            preferences.setdefault(k,value)
     return s
 
 
@@ -236,7 +250,7 @@ def _trim_histories(s:dict) -> None:
 
 
 def needs_migration(state:dict) -> bool:
-    return state.get('schema')!=4 or not isinstance(state.get('careers'),dict) or set(state['careers'])!=set(CAREERS) or 'journey' not in state or 'stories' not in state or 'aiAsked' not in (state.get('settings') or {})
+    return state.get('schema')!=4 or not isinstance(state.get('careers'),dict) or set(state['careers'])!=set(CAREERS) or 'journey' not in state or 'stories' not in state or 'aiAsked' not in (state.get('settings') or {}) or any(k in (state.get('settings') or {}) for k in INTERFACE_DEFAULTS)
 
 
 def metric(c: dict,key: str,value: int=1) -> None:
@@ -553,7 +567,9 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
                 need(v in SETTING_CHOICES[k],"Thiết lập không hợp lệ.");s["settings"][k]=v
             elif k in ("musicVolume","sfxVolume"):
                 s["settings"][k]=integer(v,0,100)
-            elif k=="tutorialDone":  # first-run tour seen (follows the account across devices)
+            elif k in INTERFACE_DEFAULTS:
+                need(type(v) is bool,"Thiết lập không hợp lệ.");s['journey'].setdefault('interface',{})[k]=v
+            elif k=="tutorialDone":
                 need(type(v) is bool,"Thiết lập không hợp lệ.");s["settings"][k]=v
             elif k=="notesSeen":s["settings"][k]=notes_seen(v)  # announcements already shown ("guide-v1,…")
             elif k=="whatsNewSeen":  # "Có gì mới" read up to this release; never goes back down
@@ -1217,6 +1233,8 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     if not migrated:s=migrate_state(s)
     focus=full or s.get("current") or jr.default_career(s)
     v={k:(None if k in _PUBLIC_OWN else x) for k,x in s.items() if k not in ("careers","check")}
+    preferences=s['journey'].get('interface',{})
+    v['settings']=dict(s['settings'],**{k:preferences.get(k,default) for k,default in INTERFACE_DEFAULTS.items()})
     v["careers"]={cid:({k:(None if k in _FOCUS_OWN else x) for k,x in c.items()} if cid==focus else career_summary(c,cid)) for cid,c in s["careers"].items()}
     v["focus"]=focus
     v["journey"]=jr.public(s)
@@ -1356,6 +1374,9 @@ then runs validate_career on every career the command changed (see Store._comput
     for k,choices in SETTING_CHOICES.items():need(settings.get(k) in choices,"Thiết lập bản lưu không hợp lệ.")
     for k in ("musicVolume","sfxVolume"):integer(settings.get(k),0,100)
     for k in ("npcVoices","detailSfx","bankVoice","moneyTing"):need(type(settings.get(k,True)) is bool,"Thiết lập bản lưu không hợp lệ.")
+    preferences=s['journey'].get('interface',{})
+    need(isinstance(preferences,dict) and set(preferences)<=set(INTERFACE_DEFAULTS),"Thiết lập bản lưu không hợp lệ.")
+    for value in preferences.values():need(type(value) is bool,"Thiết lập bản lưu không hợp lệ.")
     need(set(settings)<=set(default_settings()),"Thiết lập lạ trong bản lưu.")
     need(type(settings.get("tutorialDone",False)) is bool,"Thiết lập bản lưu không hợp lệ.");notes_seen(settings.get("notesSeen",""))
     need(wn.valid_seen(settings.get("whatsNewSeen","")),"Thiết lập bản lưu không hợp lệ.")

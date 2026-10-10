@@ -14,7 +14,7 @@ import {figure,lookOf,figureSVG,wornColor} from './look.js';
 import {escapeHTML as esc} from '../icons.js';
 import {crowd} from './home-crowd.js';
 // 👶 the baby in your arms when you carry it (v4/baby.js)
-import {withBaby} from './baby.js';
+import {withBaby,carried} from './baby.js';
 
 const K=.42;                 // the figure (about 150 units tall) in room pixels
 const SPEED=150;             // room pixels a second
@@ -65,7 +65,7 @@ export function setup(ctx){
     if(!S.dlg?.open||crowdRender)return;
     crowdRender=setTimeout(function flush(){
       crowdRender=0;if(!S.dlg?.open)return;
-      if(S.busy||S.drag||S.press){crowdRender=setTimeout(flush,120);return;}
+      if(S.busy||S.drag||S.press||S.gesture3d){crowdRender=setTimeout(flush,120);return;}
       // The short avatar pose can finish while the longer invitation is still open.
       // Restore that exact response control after replacing the room DOM.
       const focused=globalThis.document?.activeElement;
@@ -144,7 +144,7 @@ export function setup(ctx){
   }
   /** After it redrew: the walk carries on to where it was going. */
   function resume(){
-    if(S.dlg?.open&&roomSvg()&&W.room===S.room){
+    if(S.dlg?.open&&(roomSvg()||ctx.is3d?.())&&W.room===S.room){
       HC.join(W.room,fractions([W.x,W.y]),homeScope(),homeHost());HC.resume();}
     else HC.leave();
     order();
@@ -165,10 +165,12 @@ export function setup(ctx){
     clearTimeout(W.timer);
     const el=meEl();
     if(el&&W.to){const m=new DOMMatrixReadOnly(getComputedStyle(el).transform);W.x=m.e;W.y=m.f;}
+    else if(ctx.is3d?.()&&W.to){const at=position3d();W.x=at[0];W.y=at[1];}
     W.to=null;W.then=then;
     const d=Math.hypot(p[0]-W.x,p[1]-W.y);
-    const ms=!el||calm()||d<3?0:Math.min(3000,Math.round(Math.max(250,d/SPEED*1000)));
+    const ms=(!el&&!ctx.is3d?.())||calm()||d<3?0:Math.min(3000,Math.round(Math.max(250,d/SPEED*1000)));
     HC.walk([fractions([W.x,W.y]),fractions(p)],ms,approaching);
+    if(ctx.is3d?.()&&ms){W.from=[W.x,W.y];W.start=performance.now();W.to={x:p[0],y:p[1]};W.until=W.start+ms;W.timer=setTimeout(arrive,ms+30);return;}
     if(!el||calm()||d<3){W.x=p[0];W.y=p[1];if(el){el.style.transitionDuration='0ms';el.style.transform=`translate(${W.x.toFixed(1)}px,${W.y.toFixed(1)}px)`;}arrive();return;}
     W.to={x:p[0],y:p[1]};W.until=performance.now()+ms;order();
     el.querySelector('.hw-fig')?.classList.add('walk');
@@ -326,5 +328,14 @@ export function setup(ctx){
   globalThis.__homeWalk={state:()=>({room:W.room,me:[W.x,W.y],to:W.to&&[W.to.x,W.to.y],fridge:W.fridge,say:W.say?.text||''}),
     screen:uid=>{const svg=roomSvg(),g=svg?.querySelector(`g[data-uid="${CSS.escape(uid)}"] .dc-hit`);if(!g)return null;const r=g.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];}};
 
-  return {markup,freeze,resume,tap,key,panel,hint,click,paint,sayHTML,reset,stop,say,socialPanel:()=>HC.panel(W.room,homeScope()),reopen:HC.reopen};
+  function position3d(){if(!W.to||!W.from||!ctx.is3d?.())return [W.x,W.y];const t=Math.min(1,(performance.now()-W.start)/Math.max(1,W.until-W.start));return [W.from[0]+(W.to.x-W.from[0])*t,W.from[1]+(W.to.y-W.from[1])*t];}
+  let myArt='',myArtKey='';
+  function presentation(){
+    const state=st(),key=JSON.stringify([lookOf(state),state.journey?.gender,BBkey(state)]);
+    if(key!==myArtKey){myArtKey=key;try{myArt=HC.figure(withBaby(figure(state),state));}catch{myArt='';}}
+    return [{id:'self',name:'Bạn',at:fractions(position3d()),art:myArt,height:1.65},...HC.presentation()];
+  }
+  const BBkey=state=>carried(state);
+  function tap3d(p,uid){const rm=roomOf(S.room);if(!rm)return;const G=A.geom(rm),b=box(rm,G);tap(rm,{x:b.x0+p[0]*(b.x1-b.x0),y:b.y0+p[1]*(b.y1-b.y0)-18},uid);}
+  return {markup,freeze,resume,tap,key,panel,hint,click,paint,sayHTML,reset,stop,say,presentation,tap3d,ensure:rm=>{if(W.room!==rm.id)enter(rm,A.geom(rm));},socialPanel:()=>HC.panel(W.room,homeScope()),reopen:HC.reopen};
 }

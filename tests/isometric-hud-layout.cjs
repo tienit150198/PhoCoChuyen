@@ -48,10 +48,25 @@ async page => {
         if(await camera.getAttribute('aria-expanded')!=='false')throw new Error('Escape did not close camera');
       }
     }
-    // Exercise this disclosure at every town viewport, including narrow landscape.
+    // Utilities are a native keyboard disclosure. Its scroll panel must leave walking/chat usable.
+    const tools=page.locator('.iso-tools'),toolsSummary=tools.locator('summary').first();
+    await toolsSummary.press('Enter');
+    if(!await tools.evaluate(e=>e.open))throw new Error('Utilities did not open with Enter');
+    const panel=page.locator('.iso-tools-options');
+    const utilityBounds=await panel.evaluate(e=>{
+      const r=e.getBoundingClientRect(),protectedRects=Array.from(document.querySelectorAll('.iso-movement,.iso-chat,.iso-guide-button')).filter(n=>n.getClientRects().length&&getComputedStyle(n).visibility!=='hidden').map(n=>({name:n.className,r:n.getBoundingClientRect()}));
+      return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,covered:protectedRects.filter(x=>Math.min(r.right,x.r.right)>Math.max(r.left,x.r.left)&&Math.min(r.bottom,x.r.bottom)>Math.max(r.top,x.r.top)).map(x=>x.name)};
+    });
+    if(utilityBounds.left<0||utilityBounds.right>width||utilityBounds.top<0||utilityBounds.bottom>height||utilityBounds.covered.length)throw new Error('Utilities overlap protected controls: '+JSON.stringify(utilityBounds));
+    for(const button of await page.locator('.iso-tools-options > button').all()){
+      await button.scrollIntoViewIfNeeded();
+      if(!await button.evaluate(b=>{const r=b.getBoundingClientRect();return b.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}))throw new Error('Utilities action is covered: '+await button.textContent());
+    }
+    result.utilities=utilityBounds;
+    // Exercise the nested disclosure at every town viewport, including narrow landscape.
     if(result.mode==='town'){
       await page.locator('.iso-outings > summary').click();
-      const dropdown=await page.locator('.iso-outings-menu').evaluate(e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,viewport:[innerWidth,innerHeight]};});
+      const dropdown=await panel.evaluate(e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,viewport:[innerWidth,innerHeight]};});
       if(dropdown.left<0||dropdown.right>width||dropdown.top<0||dropdown.bottom>height)throw new Error('Outings menu is clipped: '+JSON.stringify(dropdown));
       dropdown.actions=[];
       for(const button of await page.locator('.iso-outings-menu button').all()){
@@ -61,7 +76,18 @@ async page => {
         dropdown.actions.push(action);
       }
       result.outings=dropdown;
-      await page.locator('.iso-outings > summary').click();
+      await page.locator('.iso-outings > summary').press('Escape');
+      if(!await tools.evaluate(e=>e.open))throw new Error('Nested Escape incorrectly closed the utilities parent');
+    }
+    await toolsSummary.press('Escape');
+    if(await tools.evaluate(e=>e.open))throw new Error('Escape did not close utilities');
+    if(await page.locator('#pauseOverlay').isVisible())throw new Error('Dismissing utilities also paused the game');
+    if(result.mode==='town'){
+      const mission=page.locator('.iso-mission');
+      await mission.locator('summary').press('Enter');
+      if(!await mission.evaluate(e=>e.open))throw new Error('Task details did not open with Enter');
+      await mission.locator('summary').press('Escape');
+      if(await mission.evaluate(e=>e.open))throw new Error('Escape did not close task details');
     }
   }
   const failures=output.filter(r=>r.overlap.length||r.outside.length||r.pixelFonts.length||r.clippedLabels.length||r.smallCamera.length||!r.chatHit||r.presence!==(r.mode==='town'));

@@ -16,6 +16,8 @@ win after losses any more); winning does not always mean net profit (a refund is
 Owner 08/10 ("đảm bảo nhà cái luôn thắng"): the prize weights give a mean of 1.80× the price a
 won ticket (was 1.59×: 80% back), so a ticket returns 91.851% of its price at the most (a fresh run);
 the bigger prizes come a little more often. Already purchased tickets retain their layout and payment.
+The temporary golden-days event uses only PRIZES multipliers above one for its
+winning draw, so an event win is positive net. Normal tickets keep the full table.
 """
 from __future__ import annotations
 
@@ -36,14 +38,15 @@ def win_p(net: int) -> float:
     return P_HI
 
 
-def prize_mult(rng) -> int:
-    """A winning ticket's multiple of its price."""
-    x = rng.randrange(sum(w for _, w in PRIZES))
-    for m, w in PRIZES:
+def prize_mult(rng, *, profit_only: bool = False) -> int:
+    """A winning ticket's multiple; the golden event excludes break-even refunds."""
+    prizes = tuple((m, w) for m, w in PRIZES if m > 1) if profit_only else PRIZES
+    x = rng.randrange(sum(w for _, w in prizes))
+    for m, w in prizes:
         if x < w:
             return m
         x -= w
-    return MULTS[0]
+    return prizes[0][0]
 
 
 def layout(price: int, mult: int, rng) -> list[int]:

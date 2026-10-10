@@ -29,17 +29,20 @@ import {morph,railScroll,railRestore} from './home-morph.js';
 // 👶 Bé nhà mình: the babies at home, their moments, "Bế bé đi chơi" (game/cradle.py)
 import * as BB from './baby.js';
 import {babyRoom,babyPortrait} from './baby-art.js';
+import {PALETTE} from './look.js';
+import {sceneSession} from './home-3d.js';
 
 const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',busy:false,flash:null,
   undo:[],undoKey:'',press:null,drag:null,dragEnd:0,resetStrip:false,toTop:false,pop:'',cheer:false,photo:null,listening:false,lastLv:-1,
-  try:null,nudge:null,tryTint:null,mate:null,mateState:null,mateKey:'',mateTimer:0,mateSeq:0,coop:false,coopLog:null,coopSeq:0};
+  try:null,nudge:null,tryTint:null,mate:null,mateState:null,mateKey:'',mateTimer:0,mateSeq:0,coop:false,coopLog:null,coopSeq:0,view3d:true,gesture3d:false};
+const home3d={session:null,mount(...args){return (this.session??=sceneSession()).mount(...args);},close(){this.session?.close();},detach(){this.session?.detach();},camera(action){this.session?.camera(action);}};
 const guest=guestSession(S);
 let openSeq=0;
 const readGuest=code=>S.env.api.json(`/api/home-guests/${S.coop?'deco/':''}view?code=${encodeURIComponent(code)}`);
 /** 🎨 The only commands a friend decorating a home sends, as home_coop actions. */
 const COOP={jr_deco_put:'put',jr_deco_pick:'pick',jr_deco_layout:'layout'};
 // 'floor' only switches which villa floor's rooms the rail shows (F#280: a housemate could not reach floor 2).
-const VISIT_OPS=new Set(['scroll','close','back','room','floor','guests','hwEmote','hwReply']);
+const VISIT_OPS=new Set(['scroll','close','back','room','floor','guests','hwEmote','hwReply','view3d','camera']);
 const COOP_OPS=new Set([...VISIT_OPS,'floor','edit','done','drawer','cat','hold','unhold','move','flip','pin','face','zup','zdown','pick','undo','tipOk']);
 const post=(url,body)=>S.env.api.json(url,{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':S.env.api.csrf},body:JSON.stringify(body)});
 const U=A.U;
@@ -121,7 +124,7 @@ function dialog(){
   d.addEventListener('pointerup',onUp);
   d.addEventListener('pointercancel',onCancel);
   d.addEventListener('cancel',e=>{if(S.held||S.sel){e.preventDefault();S.held=null;S.sel='';render();}});
-  d.addEventListener('close',()=>{openSeq++;S.flash=null;S.held=null;S.sel='';S.photo=null;S.drag=null;S.press=null;S.try=null;clearTimeout(S.mateTimer);S.mateTimer=0;S.mateSeq++;floatGhost(null);catsStop();hw().reset();S.coop=false;S.coopSeq++;guest.close();});
+  d.addEventListener('close',()=>{home3d.close();S.gesture3d=false;openSeq++;S.flash=null;S.held=null;S.sel='';S.photo=null;S.drag=null;S.press=null;S.try=null;clearTimeout(S.mateTimer);S.mateTimer=0;S.mateSeq++;floatGhost(null);catsStop();hw().reset();S.coop=false;S.coopSeq++;guest.close();});
   S.dlg=d;return d;
 }
 
@@ -133,7 +136,7 @@ export async function openReno(env,mode,guestCode=''){
     let seen='';
     env.api.addEventListener('state',()=>{const j=S.env.api.state?.journey,sp=S.env.api.state?.marriage?.spouse;const key=JSON.stringify([j?.deco,j?.reno,j?.wallet,S.env.api.state?.colors?.deco,sp]);if(key===seen)return;seen=key;
       if(S.dlg?.open)refreshMate();
-      if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();});
+      if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press&&!S.gesture3d)render();});
     live.on('home_changed',()=>{refreshMate();loadCoopLog();});
     live.on('home_guests_changed',refreshMate);
     live.on('welcome',refreshMate);
@@ -169,7 +172,7 @@ async function loadCoopLog(){
   let d;try{d=await S.env.api.json('/api/home-guests/deco/log');}catch{return;}
   if(seq!==S.coopSeq||S.remote||!S.dlg?.open)return;
   const changed=JSON.stringify(S.coopLog)!==JSON.stringify(d);S.coopLog=d;
-  if(changed&&!S.busy&&!S.drag&&!S.press)render();
+  if(changed&&!S.busy&&!S.drag&&!S.press&&!S.gesture3d)render();
 }
 /** 🎨 The owner puts back what one friend change moved (POST deco/undo), then reads the home again. */
 async function coopUndo(id){
@@ -192,7 +195,7 @@ function refreshMate(){
 async function loadMate(){
   clearTimeout(S.mateTimer);S.mateTimer=0;
   if(S.remote){
-    try{if(await guest.refresh(readGuest)&&S.dlg?.open&&!S.drag&&!S.press)render();}
+    try{if(await guest.refresh(readGuest)&&S.dlg?.open&&!S.drag&&!S.press&&!S.gesture3d)render();}
     catch(e){
       if([401,403,404,409,410].includes(e.status)){S.dlg?.close();S.env.toast?.(e.message||'Lời mời vào nhà đã hết hiệu lực.','hint');return;}
     }
@@ -207,7 +210,7 @@ async function loadMate(){
   if(S.mateKey!==key||seq!==S.mateSeq)return;   // moved or reopened meanwhile: the newer request decides
   if(m?.moved){S.mate=null;S.mateState=null;S.env.api.refresh?.().then(()=>{if(S.dlg?.open)render();}).catch(()=>{});return;}   // 🏡 the stay ended: the pieces are back in the bag
   const next=failed&&S.mate?.at===key?S.mate:m&&m.at===key&&Array.isArray(m.items)?m:null,changed=JSON.stringify(S.mate)!==JSON.stringify(next);S.mate=next;S.mateState=!failed&&S.env.api.state===state?state:null;
-  if(changed&&S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();
+  if(changed&&S.dlg?.open&&!S.busy&&!S.drag&&!S.press&&!S.gesture3d)render();
   // Someone else lives here: ask again in 30 s while the room is open and the page visible (also after each own deco
   // command, on home_changed and when the page shows again). Nobody else: once per opening.
   if(S.dlg?.open&&(next||where==='stay'))S.mateTimer=setTimeout(pollMate,MATE_POLL);
@@ -247,6 +250,7 @@ const ask=(title,msg,label,cost)=>S.env.confirmAction(title,msg,label,cost?{cost
 /** 🚶 the character walking around the room when not decorating (v4/home-walk.js), made on first use. */
 let HW=null;
 const hw=()=>HW??=walkSetup({S,A,V:useV,roomOf,inRoom,mateIn,hostFor,send,render,sfx,calm,roomSvg,live,babyAt,
+  is3d:()=>S.view3d&&S.tab==='deco',
   babyCard:()=>{const el=S.dlg?.querySelector('#dc-baby-card');el?.scrollIntoView?.({block:'nearest',behavior:calm()?'auto':'smooth'});el?.querySelector('[data-dc="bbMoment"]:not([disabled]),[data-dc="bbCarry"]')?.focus?.({preventScroll:true});}});
 
 /* ---- the layout, as the client sees it (free units; game/deco.py check) ---- */
@@ -593,6 +597,8 @@ async function onClick(op,data){
   if(S.coop&&((op==='drawer'&&data.d!=='bag')||(op==='hold'&&data.src!=='bag')))return;   // the owner's bag only
   const v=V();
   switch(op){
+    case'view3d':S.view3d=data.mode==='3d';home3d.close();catsStop();hw().stop();render();return;
+    case'camera':home3d.camera(data.action);return;
     case'scroll':{const rail=S.dlg.querySelector(`[data-dc-rail="${data.rail}"]`);rail?.scrollBy({left:(Number(data.dir)||1)*Math.max(120,rail.clientWidth*.8),behavior:'smooth'});return;}
     case'close':S.dlg.close();return;
     case'back':{const remote=!!S.remote;S.dlg.close();if(remote)S.env.act('homeGuests');else (await import('./house.js')).openHouse(S.env);return;}
@@ -623,7 +629,7 @@ async function onClick(op,data){
       await putPiece(p.id,{...qOf(p),z});return;}
     case'tint':{const p=placed(data.uid),it=ITEM(p?.k);if(!it)return;
       (await import('./palette.js')).pickColor(S.env,{title:it.name,current:tintOf(p.id)||'goc',preview:c=>A.thumb(it,88,c),
-        onTry:c=>{S.tryTint={uid:p.id,c};paintPiece(p.id);},apply:async c=>!!await send('jr_wd_deco',{uid:p.id,color:c}),
+        onTry:c=>{S.tryTint={uid:p.id,c};if(S.view3d)sync3d();else paintPiece(p.id);},apply:async c=>!!await send('jr_wd_deco',{uid:p.id,color:c}),
         onClose:()=>{S.tryTint=null;render();}});return;}
     case'pick':return pick(data.uid);
     case'sell':{const p=placed(data.uid)||v.bag.find(b=>b.id===data.uid),it=ITEM(p?.k);if(!it)return;
@@ -729,6 +735,7 @@ async function pickSkin(part,skin){
 /* ---- keyboard: arrows nudge the selected piece (Shift: a whole cell), F flips it, PageUp/PageDown order it,
  * Delete puts it back in the bag. Nudges wait a moment and go as one move. ---- */
 function onKey(e){
+  if(e.target.closest?.('.home3d-canvas'))return; // 3D owns these same keyboard actions through its adapter.
   const g=e.target.closest?.('g[data-uid]');
   if(g&&(e.key==='Enter'||e.key===' ')&&!S.edit){e.preventDefault();hw().tap(roomOf(S.room),{x:0,y:0},g.dataset.uid);return;}   // 🚶 walk up to it and use it
   if(!S.edit&&e.target.closest?.('svg.dc-room')&&hw().key(roomOf(S.room),e))return;
@@ -931,14 +938,49 @@ function render(){
   const v=V();
   if(v&&!S.remote&&S.undoKey!==v.place.key){S.undoKey=v.place.key;S.undo=[];CATS.room='';}
   if(v&&!S.remote){const lv=levelIdx(v.cozy.total);S.cheer=S.lastLv>=0&&lv>S.lastLv;S.lastLv=lv;}
+  home3d.detach(); // preserve the canvas/context while the shared dialog morphs its controls
   morph(S.dlg.querySelector('.dc-root'),page());
   const b2=S.dlg.querySelector('.dc-body');if(b2&&top!=null&&(S.toTop||b2!==body)&&b2.scrollTop!==(S.toTop?0:top))b2.scrollTop=S.toTop?0:top;
   if(S.toTop)S.dlg.scrollTop=0;
   const reset=S.resetStrip;railRestore(S.dlg,scrolls,key=>reset&&key!=='rooms');
   S.dlg.setAttribute('aria-busy',String(S.busy));
   S.pop='';S.resetStrip=false;S.toTop=false;
-  catsResume();hw().resume();hw().paint();
-  if(!CATS.timer&&S.dlg.open)CATS.timer=setTimeout(catsTick,1800);
+  if(S.view3d&&S.tab==='deco'){catsStop();sync3d();}else{home3d.close();catsResume();if(!CATS.timer&&S.dlg.open)CATS.timer=setTimeout(catsTick,1800);}
+  hw().resume();hw().paint();
+}
+/** Bridge only: the 3D renderer never calls a save endpoint or sets a price. */
+function threeActors(){
+  const rm=roomOf(S.room);if(!rm)return {};
+  const G=A.geom(rm),list=inRoom(rm),fraction=(x,y)=>[clamp((x-A.PX)/(rm.cols*A.CW),0,1),clamp((y-G.FY)/(rm.frows*A.FR),0,1)];
+  const children=homeBabies().slice(0,8).map((b,i)=>{const p=babySpot(rm,G,i);return {id:`baby:${b.id}`,name:b.name,at:fraction(p.x,p.y),art:babyRoom({g:b.grow,o:b.outfit},{asleep:doneWith(b).has('ru')}),viewBox:'-48 -70 96 80',height:.75,width:.9};});
+  const pets=catsFor(rm,G,list).slice(0,8).map((c,i)=>({id:`pet:${c.pet?.p.id||c.coat||i}`,name:c.pet?.p.name||'',at:fraction(c.x,c.y),art:catInner(c),viewBox:'-45 -60 90 68',height:.64,width:.85}));
+  return {people:hw().presentation(),children,pets};
+}
+function threeKey(e){
+  if(!S.edit){hw().key(roomOf(S.room),e);return;}
+  const p=placed(S.sel);if(!p||S.busy||S.remote&&!S.coop)return;
+  const step=e.shiftKey?U:4,delta={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]}[e.key];
+  if(delta){e.preventDefault();if(!isPinned(p.id))nudge(p,delta);return;}
+  const op={f:'flip',F:'flip',r:'face',R:'face',Delete:'pick',Backspace:'pick',PageUp:'zup',PageDown:'zdown'}[e.key];if(op){e.preventDefault();onClick(op,{uid:p.id});}
+}
+async function threeMove(uid,q){
+  const p=placed(uid),rm=roomOf(S.room);if(!p||!rm||S.busy||S.remote&&!S.coop||isPinned(uid)){sync3d();return;}
+  const it=ITEM(p.k),bad=checkQ(rm,it,q,inRoom(rm,new Set([uid,...ridersOf(uid)])));
+  if(bad){S.flash={text:whyText(bad,rm,it),kind:'warn'};render();return;}
+  await putPiece(uid,q);
+}
+function sync3d(){
+  if(!S.dlg?.open||!S.view3d||S.tab!=='deco')return;
+  const rm=roomOf(S.room),root=S.dlg.querySelector('.home3d-viewport');if(!rm||!root)return;
+  const skin={...rm.skin};if(S.try?.room===rm.id)skin[S.try.part==='wall'?'w':'f']=S.try.skin==='auto'?undefined:S.try.skin;
+  const list=[...inRoom(rm),...mateIn(rm)].map(o=>({...o,color:PALETTE[o.mate?o.c:tintOf(o.id)]?.c||null,pinned:isPinned(o.id)}));
+  const data={room:{...rm,skin},scope:V()?.place?.key,parts:partsMap(),items:list,edit:S.edit,busy:S.busy,remote:!!S.remote,coop:S.coop,selected:S.sel,held:S.held?{...S.held,it:heldItem()}:null};
+  const seq=openSeq;
+  home3d.mount(root,data,{actors:threeActors,calm,select:uid=>{if(S.busy||S.remote&&!S.coop)return;S.sel=uid;render();},place:q=>{if(!S.busy&&(!S.remote||S.coop))dropAt(q);},move:threeMove,walk:(p,uid)=>hw().tap3d(p,uid),key:threeKey,
+    interacting:on=>{S.gesture3d=on;if(!on)setTimeout(()=>{if(S.dlg?.open&&!S.busy&&!S.gesture3d)render();},0);},
+    fallback:message=>{S.view3d=false;home3d.close();S.flash={text:message,kind:'warn'};render();}})
+    .then(scene=>{if(!scene||seq!==openSeq||!S.view3d)return;root.querySelector('.home3d-loading')?.remove();})
+    .catch(()=>{if(seq!==openSeq||!S.dlg?.open||!S.view3d)return;S.view3d=false;home3d.close();S.flash={text:'Thiết bị chưa mở được cảnh 3D. Bạn vẫn có thể bày trí trong phòng minh họa.',kind:'warn'};render();});
 }
 function head(v){
   const pl=v?.place;
@@ -961,15 +1003,17 @@ function page(){
 function decoPage(v){
   const rm=roomOf(S.room);if(!rm)return '';
   const use=useV();
-  const {svg}=roomMarkup(rm,{edit:S.edit});
+  hw().ensure(rm);
+  const svg=S.view3d?'<div class="home3d-viewport" role="group" aria-label="Cảnh nhà 3D"><p class="home3d-loading">Đang mở căn phòng 3D…</p></div>':roomMarkup(rm,{edit:S.edit}).svg;
   const wide=!!window.matchMedia?.('(min-width:720px)').matches;   // a wide sheet: the drawer beside the room, so a card is always in reach
-  const tip=S.edit&&!tipSeen()?`<div class="dc-tip" role="note"><span aria-hidden="true">👆</span><p><b>Giữ một món rồi kéo đi đâu cũng được</b><small>Đồ nhỏ thả lên bàn, kệ, giường sẽ đứng trên đó. Chạm món đồ để lật, đổi phòng hoặc cất đi.</small></p>${btn('Hiểu rồi','tipOk',{},'ghost small')}</div>`:'';
+  const tip=S.edit&&!tipSeen()?`<div class="dc-tip" role="note"><span aria-hidden="true">👆</span><p><b>${S.view3d?'Chọn đồ trong túi rồi chạm chỗ muốn đặt':'Giữ một món rồi kéo đi đâu cũng được'}</b><small>${S.view3d?'Kéo món đã bày để dời. Kéo chỗ trống để xoay; cuộn hoặc chụm để thu phóng.':'Đồ nhỏ thả lên bàn, kệ, giường sẽ đứng trên đó.'} Chạm món đồ để lật, đổi phòng hoặc cất đi.</small></p>${btn('Hiểu rồi','tipOk',{},'ghost small')}</div>`:'';
   const bar=S.coop?(S.edit?`<div class="dc-actions">${btn('↶ Hoàn tác','undo',{},'ghost',S.undo.length?'':' disabled')}${btn('✓ Xong','done',{},'primary')}</div>`
       :`<div class="dc-actions">${btn('✏️ Trang trí giúp','edit',{},'primary')}${btn('← Bạn bè & nhà','guests',{},'ghost')}</div>`)
     :S.remote?`<div class="dc-actions">${btn('← Bạn bè & nhà','guests',{},'primary')}</div>`:S.edit
     ?`<div class="dc-actions">${btn('↶ Hoàn tác','undo',{},'ghost',S.undo.length?'':' disabled')}${btn('🎒 Cất hết','pickAll',{},'ghost',v.items.length?'':' disabled')}${btn('✓ Xong','done',{},'primary')}</div>`
     :`<div class="dc-actions">${btn(v.items.length?'✏️ Bày trí phòng':'✏️ Bắt đầu bày trí','edit',{},'primary')}${btn('📸 Chụp phòng','photo',{},'ghost')}</div>`;
-  const stage=`<div class="dc-stage">${roomTabs(v)}<div class="dc-roomwrap">${svg}${S.edit?'':`${hw().hint(use,rm)}${hw().sayHTML()}`}</div>${hw().socialPanel()}${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(use,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
+  const viewControls=`<div class="home3d-controls" aria-label="Góc nhìn căn nhà">${btn('◈ Nhà 3D','view3d',{mode:'3d'},'ghost small',` aria-pressed="${S.view3d}"`)}${btn('▧ Minh họa','view3d',{mode:'2d'},'ghost small',` aria-pressed="${!S.view3d}"`)}${S.view3d?`${btn('−','camera',{action:'out'},'ghost small',' aria-label="Thu nhỏ"')}${btn('+','camera',{action:'in'},'ghost small',' aria-label="Phóng to"')}${btn('⌂ Góc đầu','camera',{action:'reset'},'ghost small')}`:''}</div>`;
+  const stage=`<div class="dc-stage">${roomTabs(v)}${viewControls}<div class="dc-roomwrap${S.view3d?' dc-roomwrap-3d':''}">${svg}${S.edit?'':`${S.view3d?'':hw().hint(use,rm)}${hw().sayHTML()}`}</div>${hw().socialPanel()}${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(use,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
   const side=S.coop?`${coopCard()}${S.edit&&wide?drawer(v):''}`:S.remote?`<section class="bk-card"><h3>🏡 Nhà ${esc(S.remote.owner.name)}</h3><p>${S.remote.access?.kind==='stay'?'Bạn ở chung tại đây, có thể vào khi chủ nhà vắng mặt.':'Bạn đang ghé chơi theo lời mời.'}</p><p class="bk-hint">Chạm sàn để đi lại, gặp bạn trong phòng và giao lưu.</p></section>`:`${S.edit?'':babyCard()}${relaxCard(use,rm)}${S.edit&&wide?drawer(v):''}${cozyCard(v)}${coopOwnerCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}`;
   return `<div class="dc-grid">${stage}<div class="dc-side">${side}</div></div>`;
 }
@@ -1010,7 +1054,7 @@ function toolButtons(v,p,it){
   const pin=isPinned(p.id),layered=it.spot==='wall'||it.spot==='rug'||!!p.on,out=[tb(pin?'📌 Đã ghim':'📌 Ghim','pin',pin?'Bỏ ghim để kéo được':'Ghim: không kéo nhầm'),tb('⇋ Lật','flip','Lật ngược'),...(S.coop?[]:[tb('🎨 Màu','tint','Đổi màu')])];
   if((CD().facing||[]).includes(p.k))out.unshift(tb(`↻ Xoay hướng · ${p.face==='back'?'Mặt sau':'Mặt trước'}`,'face',`Xoay hướng sang ${p.face==='back'?'mặt trước':'mặt sau'} (R)`));
   if(layered)out.push(tb('⬆ Lên','zup','Đưa lên trên'),tb('⬇ Xuống','zdown','Đưa xuống dưới'));
-  if(v.rooms.filter(r=>it.rooms.includes(r.type)).length>1)out.push(tb('🚪 Đổi phòng','move','Sang phòng khác'));
+  if(S.view3d||v.rooms.filter(r=>it.rooms.includes(r.type)).length>1)out.push(tb(S.view3d?'↗ Dời / đổi phòng':'🚪 Đổi phòng','move','Chọn vị trí hoặc phòng muốn đặt'));
   out.push(tb('🎒 Cất túi','pick','Thu hồi vào túi'));
   if(!S.coop)out.push(tb(`💰 Bán · ${xu(it.sell)}`,'sell',`Bán lại · ${xu(it.sell)}`,' danger'));
   return out;

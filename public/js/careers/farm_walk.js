@@ -9,9 +9,10 @@
  * replace the host): the stage, its canvas and where you stand live here for the whole page session.
  *
  * World units are metres: x to the east, z to the north, y up. yaw 0 looks north. */
-import {figure,paintLegs,paintAcc,paintTop,paintHairFront} from '../v4/look.js';
+import {figure,lookOf,paintLegs,paintAcc,paintTop,paintHairFront} from '../v4/look.js';
 import {R,E,L,P} from '../scenes/kit.js';
 import {t as tr} from '../v4/i18n.js';
+import {farmCamera,farmMovement,farmProject,pickFarmSpot,needsFarmFrames,farmVisualKey,createFarmRenderer} from './farm_isometric.js';
 
 const NEAR=0.08,REACH=1.05,RAD=0.32,WALK=3.3,TURN=2.3,EYE=1.55,TAU=Math.PI*2;
 const BEDS={P1:[-5,8],P2:[0,8],P3:[5,8],P4:[-5,12.5],P5:[0,12.5],P6:[5,12.5]},BX=1.6,BZ=0.8,BH=0.32;
@@ -27,9 +28,9 @@ const SUN=norm3([-0.45,0.8,-0.4]);
 
 /* ------------------------------------------------------------------ state */
 const W={el:null,cv:null,c:null,ro:null,w:0,h:0,dpr:1,q:1,x:null,hooks:null,raf:0,timer:0,last:0,t:0,
-  me:{...HOME,pitch:0.1,bob:0,moving:0,tool:null},cam:'fp',joy:null,look:null,keys:new Set(),
+  me:{...HOME,pitch:0.1,bob:0,moving:0,tool:null},cam:globalThis.document?.documentElement?.dataset?.game==='classic'?'fp':'iso',joy:null,look:null,keys:new Set(),
   near:null,auto:null,ride:null,fx:[],hens:[],seen:null,calm:0,hint:0,perf:{n:0,sum:0,ms:0,bad:0,gaps:0,shown:0},dirty:false,
-  sky:null,fogRGB:[230,240,236],moved:0,broken:false};
+  sky:null,fogRGB:[230,240,236],moved:0,broken:false,garden:null,gardenKey:'',visibilityDialog:null,visibilityCleanup:null};
 
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 function norm3(v){const l=Math.hypot(...v)||1;return v.map(a=>a/l);}
@@ -46,14 +47,17 @@ export function mount(host,x,hooks){
   W.x=x;W.hooks=hooks;
   if(W.broken){hooks.broken?.(x);return;}
   let fresh=false;
-  if(!W.el){if(!build()){W.broken=true;hooks.broken?.(x);return;}fresh=true;if(hooks.hint?.())W.hint=W.t+0.001;}
+  if(!W.el){if(!build()){W.broken=true;hooks.broken?.(x);return;}fresh=true;if(!['fp','tp'].includes(x.ui.fvCam))W.me.z=4;if(hooks.hint?.())W.hint=W.t+0.001;}
   if(W.el.parentNode!==host){host.insertBefore(W.el,host.firstChild);fresh=true;}
-  const cam=x.ui.fvCam==='tp'?'tp':'fp';if(cam!==W.cam){W.cam=cam;fresh=true;}
-  observe();changes();
+  const cam=['fp','tp','iso'].includes(x.ui.fvCam)?x.ui.fvCam:W.cam;if(cam!==W.cam){W.cam=cam;fresh=true;}
+  W.el.dataset.camera=cam;
+  const key=farmVisualKey(x);
+  if(key!==W.gardenKey){W.gardenKey=key;fresh=true;}
+  observe();watchVisibility();changes();
   // Called five times a second: only a stage that stopped (hidden, put back) or changed starts drawing again.
-  if(fresh||(!W.raf&&!W.timer))wake();
+  if(fresh||W.cam!=='iso'&&(!W.raf&&!W.timer))wake();
 }
-export function camera(cam){W.cam=cam==='tp'?'tp':'fp';wake();}
+export function camera(cam){W.cam=['fp','tp'].includes(cam)?cam:'iso';W.joy=null;W.look=null;W.keys.clear();if(W.el)W.el.dataset.camera=W.cam;wake();}
 /** Walk there by yourself (the 📍 button, or a tap on a place in the world). */
 export function go(to){
   if(W.ride||!SPOT[to])return;
@@ -98,10 +102,25 @@ function size(){
   W.w=w;W.h=h;W.dpr=dpr;W.cv.width=Math.round(w*dpr);W.cv.height=Math.round(h*dpr);
 }
 const alive=()=>W.el?.isConnected&&!document.hidden&&!!W.el.closest('dialog[open]')&&W.el.getClientRects().length>0;
+function watchVisibility(){
+  const dialog=W.el?.closest('dialog[open]');
+  if(dialog===W.visibilityDialog)return;
+  W.visibilityCleanup?.();
+  if(!dialog||!W.el.isConnected)return;
+  const stop=()=>{if(W.raf)cancelAnimationFrame(W.raf);clearTimeout(W.timer);W.raf=W.timer=W.last=0;};
+  const changed=()=>{
+    if(!W.el?.isConnected||W.el.closest('dialog[open]')!==dialog){cleanup();return;}
+    if(document.hidden){stop();return;}
+    if(alive()&&(W.cam!=='iso'||needsFarmFrames(W)))wake();
+  };
+  const cleanup=()=>{stop();document.removeEventListener('visibilitychange',changed);dialog.removeEventListener('close',cleanup);W.visibilityDialog=null;W.visibilityCleanup=null;W.keys.clear();W.joy=null;W.look=null;};
+  W.visibilityDialog=dialog;W.visibilityCleanup=cleanup;
+  document.addEventListener('visibilitychange',changed);dialog.addEventListener('close',cleanup);
+}
 function wake(){W.calm=0;if(!W.raf){clearTimeout(W.timer);W.timer=0;W.last=0;W.raf=requestAnimationFrame(loop);}}
 function loop(now){
   W.raf=0;
-  if(!alive()){W.last=0;return;}
+  if(!alive()){W.last=0;if(!W.el?.isConnected||!W.el.closest('dialog[open]'))W.visibilityCleanup?.();return;}
   // The canvas is sized here, not in the ResizeObserver callback (a resize there is a layout change inside it).
   if(!W.w||W.dirty){W.dirty=false;size();}
   const raw=W.last?now-W.last:0,dt=raw?Math.min(0.05,raw/1000):1/60;W.last=now;W.t+=dt;
@@ -109,6 +128,8 @@ function loop(now){
   const t0=performance.now();
   try{draw();}catch(error){console.error(error);W.broken=true;W.hooks?.broken?.(W.x);return;}
   perf(performance.now()-t0,raw);
+  // A still illustrated garden has no wind/hen loop. State updates and input wake the same RAF.
+  if(W.cam==='iso'&&!W.ride&&!needsFarmFrames(W)){W.last=0;return;}
   // Nothing moving: a calm 10 frames a second for the wind in the leaves, the hens and the clouds.
   if(++W.calm>90&&!busy())W.timer=setTimeout(()=>{W.timer=0;W.raf=requestAnimationFrame(loop);},90);
   else W.raf=requestAnimationFrame(loop);
@@ -149,7 +170,7 @@ function input(cv){
     if(W.joy?.id===e.pointerId){const R=joyR(),dx=px-W.joy.ox,dy=py-W.joy.oy,l=Math.hypot(dx,dy),k=l>R?R/l:1;W.joy.dx=dx*k/R;W.joy.dy=dy*k/R;W.joy.far=Math.max(W.joy.far||0,l);}
     else if(W.look?.id===e.pointerId){
       const dx=px-W.look.x,dy=py-W.look.y;W.look.x=px;W.look.y=py;
-      if(W.ride)return;
+      if(W.ride||W.cam==='iso')return;
       W.me.yaw=wrap(W.me.yaw+dx*0.0065);
       if(W.cam==='fp')W.me.pitch=clamp(W.me.pitch+dy*0.004,-0.35,0.6);
     }
@@ -181,6 +202,7 @@ const joyR=()=>Math.max(38,Math.min(60,W.w*0.13));
 /** A short tap on the world: walk to the place under the finger. */
 function tap(px,py){
   if(W.ride){honk();return;}
+  if(W.cam==='iso'){const target=pickFarmSpot(px,py,view(),SPOT);if(target)go(target);return;}
   const V=view();let best=null,bd=1e9;
   for(const [id,s] of Object.entries(SPOT)){
     const cx=(s[0]+s[2])/2,cz=(s[1]+s[3])/2,h=id.startsWith('P')?0.5:1.2,p=cam3(V,cx,h,cz);
@@ -196,14 +218,21 @@ function step(dt){
   for(const f of W.fx)f.t+=dt;W.fx=W.fx.filter(f=>f.t<f.life);
   if(W.ride){rideStep(dt);return;}
   const me=W.me,k=W.keys;
-  let fwd=0,turn=0,side=0;
-  if(W.joy){fwd=-W.joy.dy;turn=W.joy.dx;if(Math.abs(fwd)<0.12)fwd=0;if(Math.abs(turn)<0.12)turn=0;}
-  if(k.has('f'))fwd=1;if(k.has('b'))fwd=-0.7;if(k.has('l'))turn=-1;if(k.has('r'))turn=1;if(k.has('sl'))side=-1;
-  if(fwd||turn||side)W.auto=null;
-  me.yaw=wrap(me.yaw+turn*TURN*dt*(W.joy?0.85:1));
   let vx=0,vz=0;
-  const sn=Math.sin(me.yaw),cs=Math.cos(me.yaw);
-  if(fwd||side){vx=(sn*fwd+cs*side)*WALK;vz=(cs*fwd-sn*side)*WALK;}
+  if(W.cam==='iso'){
+    let right=(k.has('r')?1:0)-(k.has('l')||k.has('sl')?1:0),down=(k.has('b')?1:0)-(k.has('f')?1:0);
+    if(W.joy){right+=Math.abs(W.joy.dx)>.12?W.joy.dx:0;down+=Math.abs(W.joy.dy)>.12?W.joy.dy:0;}
+    const velocity=farmMovement(right,down,WALK);vx=velocity.x;vz=velocity.z;
+    if(vx||vz){W.auto=null;me.yaw=Math.atan2(vx,vz);}
+  }else{
+    let fwd=0,turn=0,side=0;
+    if(W.joy){fwd=-W.joy.dy;turn=W.joy.dx;if(Math.abs(fwd)<0.12)fwd=0;if(Math.abs(turn)<0.12)turn=0;}
+    if(k.has('f'))fwd=1;if(k.has('b'))fwd=-0.7;if(k.has('l'))turn=-1;if(k.has('r'))turn=1;if(k.has('sl'))side=-1;
+    if(fwd||turn||side)W.auto=null;
+    me.yaw=wrap(me.yaw+turn*TURN*dt*(W.joy?0.85:1));
+    const sn=Math.sin(me.yaw),cs=Math.cos(me.yaw);
+    if(fwd||side){vx=(sn*fwd+cs*side)*WALK;vz=(cs*fwd-sn*side)*WALK;}
+  }
   if(W.auto){
     const a=W.auto,n=a.path[0];
     if(!n){W.auto=null;face(a.to);}
@@ -292,6 +321,7 @@ function changes(){
 
 /* ------------------------------------------------------------------ camera + projection */
 function view(){
+  if(W.cam==='iso'&&!W.ride)return {...farmCamera(W.me,W.w,W.h),iso:true};
   // A tall phone stage: about 70° across. A wide desktop one: wider, so the view is not just a slit of the middle.
   const w=W.w,h=W.h,f=Math.min(w/2/Math.tan(Math.min(1.25,0.62+w/h*0.32)/2),Math.max(h*1.1,w*0.42));
   let x,y,z,yaw,pitch;
@@ -338,7 +368,7 @@ function line3(c,V,a,b,col,wm){
   c.moveTo(V.cx+V.f*A[0]/A[2],V.cy-V.f*A[1]/A[2]);c.lineTo(V.cx+V.f*B[0]/B[2],V.cy-V.f*B[1]/B[2]);c.stroke();
 }
 /** Screen point and scale (px per metre) of a world point, or null behind the eye. */
-function spot(V,x,y,z){const p=cam3(V,x,y,z);if(p[2]<NEAR*2)return null;const k=V.f/p[2];return {x:V.cx+p[0]*k,y:V.cy-p[1]*k,k,d:p[2]};}
+function spot(V,x,y,z){if(V.iso)return {...farmProject(x,y,z,V),k:V.scale,d:20};const p=cam3(V,x,y,z);if(p[2]<NEAR*2)return null;const k=V.f/p[2];return {x:V.cx+p[0]*k,y:V.cy-p[1]*k,k,d:p[2]};}
 
 /* colours: light and distance haze, cached */
 const RGB=new Map(),TONE=new Map();
@@ -433,6 +463,13 @@ function draw(){
   const c=W.c,V=view();
   c.setTransform(W.dpr,0,0,W.dpr,0,0);
   const wx=weather();
+  if(V.iso){
+    W.garden??=createFarmRenderer({onAsset:wake});
+    const scenery=statics(),state=W.x?.state;
+    W.garden.draw(c,W,{beds:BEDS,spots:SPOT,trees:scenery.trees,posts:scenery.posts},{data:farm(),order:task(),look:lookOf(state),gender:state?.journey?.gender,uniformColor:work().primary,moisture:W.x?.cc?.moisture,target:W.x?.ui?.fvTarget,tool:toolFor()});
+    for(const f of W.fx)effect(c,V,f);
+    overlays(c,V,wx);return;
+  }
   sky(c,V,wx);
   if(W.ride)rideScene(c,V,wx);else farmScene(c,V,wx);
   overlays(c,V,wx);

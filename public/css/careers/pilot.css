@@ -205,6 +205,16 @@
   overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;user-select:text;-webkit-user-select:text;margin:0;border-radius:16px;background:var(--surface,#fbfdff);color:var(--ink,#1f2d3d);
   box-shadow:0 -6px 24px rgb(0 0 0 / 40%);padding:4px}
 .pl-fly-ask:empty{display:none}
+.sheet.pl-expanded-host{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;transform:none!important;animation:none!important;overflow:hidden!important;border:0!important;border-radius:0!important}
+.sheet.pl-expanded-host > :not(.pl-fly){visibility:hidden;pointer-events:none}
+html[data-game="isometric"] .pl-fly{font-family:"Be Vietnam Pro",system-ui,sans-serif;background:#203638;}
+html[data-game="isometric"] .pl-fly-top{flex-wrap:wrap;gap:6px;align-items:center;}
+html[data-game="isometric"] .pl-fly-phase{flex-basis:100%;padding:4px 8px;font-size:13px;}
+html[data-game="isometric"] .pl-fly-top button{min-height:44px;color:#493e31;background:#fff7e6;border:1px solid #cabb99;backdrop-filter:none;box-shadow:0 2px 6px #142d3620;}
+html[data-game="isometric"] .pl-fly-view{color:#fff8e7!important;background:#477f77!important;border-color:#32675f!important;}
+html[data-game="isometric"] .pl-fly-say{top:calc(env(safe-area-inset-top,0px) + 94px);font-size:13px;}
+html[data-game="isometric"] .pl-fly-target{top:calc(env(safe-area-inset-top,0px) + 145px);}
+html[data-game="isometric"] .pl-fly-lesson{inset:calc(env(safe-area-inset-top,0px) + 80px) 12px auto;}
 .pl-fly-ask .card{box-shadow:none}
 .pl-fly[data-layout="wide"] .pl-fly-ask{max-height:calc(100% - 80px);bottom:16px}
 @media (prefers-reduced-motion:reduce){.pl-fly-ga.hot{animation:none}.pl-fly-knob{transition:none}}

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
+import * as townUtilities from '../public/js/isometric/town-utilities.js';
 
 const source=readFileSync(new URL('../public/js/isometric-shell.js',import.meta.url),'utf8')
   .replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'')
@@ -8,12 +9,12 @@ const source=readFileSync(new URL('../public/js/isometric-shell.js',import.meta.
 const calls=[],root={dataset:{},classList:{contains:()=>false}},hud={};
 const environment={api:{},ui:{}};
 const liveModule={live:{on:event=>calls.push(['subscribe',event])},liveBoot:env=>calls.push(['boot',env])};
-const context=vm.createContext({liveModule,document:{documentElement:root,body:{classList:{add(){}}},getElementById:()=>hud},window:{addEventListener(){}},MutationObserver:class {observe(){}},Promise});
+const context=vm.createContext({...townUtilities,liveModule,document:{documentElement:root,body:{classList:{add(){}}},getElementById:()=>hud},window:{addEventListener(){}},MutationObserver:class {observe(){}},Promise});
 vm.runInContext(source+'\nglobalThis.boot=bootIsometricShell;',context);
 context.boot(()=>environment);
 await Promise.resolve();
-assert.equal(calls[0]?.[0],'boot','the visible conversation entry initializes live before waiting for idle app boot');
-assert.equal(calls[0][1],environment,'the real live service receives the same authenticated app environment');
+assert.ok(calls.findIndex(([type])=>type==='boot')>calls.findIndex(([type,event])=>type==='subscribe'&&event==='welcome'),'HUD subscribes before the first welcome');
+assert.equal(calls.find(([type])=>type==='boot')[1],environment,'the real live service receives the same authenticated app environment');
 assert.ok(calls.some(([type,event])=>type==='subscribe'&&event==='read'),'read receipts refresh the HUD badge');
 assert.ok(calls.some(([type,event])=>type==='subscribe'&&event==='connection'),'silent handshake timeouts and retry starts refresh the HUD status');
 context.boot(()=>environment);

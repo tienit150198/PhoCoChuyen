@@ -1,4 +1,25 @@
-# Phaser 2.5D client: kept on `main`, not wired (since 1.8.0)
+# Phaser 2.5D client
+
+## Current local integration — 10 October 2026
+
+The working tree based on `09f630c4` wires Phaser back into the current app. The generated bundle is rebuilt from
+the current TypeScript sources; it includes the latest 50-career catalogue. Previously deleted art/runtime files
+were selectively restored. Current server rules, saves, live features and career workbenches are retained.
+This describes local source, not a production deployment.
+
+The integration also restores the illustrated chat/HUD and isometric delivery view. Farm now defaults to a
+fixed-angle garden view with screen-relative movement. Pilot defaults to an exterior chase view with a transparent
+painted aircraft and retains cockpit controls. Swimming/rowing use articulated poses and keep keyboard focus after
+boarding. Fullscreen activities avoid transformed/animated dialog ancestors.
+
+See [the current implementation and validation record](superpowers/plans/2026-10-10-complete-phaser-25d.md).
+The next local map pass expands the island into nine authored neighbourhoods with natural planting, a park,
+harbour, transport area, public-shop discovery and varied career interior layouts. Both clients and live use
+`game/town_layout.json` for collisions. See [the district implementation and validation record](superpowers/plans/2026-10-10-island-neighbourhoods.md).
+The earlier release notes below are historical; their statements about missing files or unwired hooks do not
+describe this working tree. Historical performance numbers are not new measurements of this integration.
+
+## Historical state at 1.8.0: client not wired
 
 `main` runs what production runs. From release 1.8.0 on, every shipped file (`server.py`, `game/`, `live/`,
 `public/`, `scripts/`, `i18n/`, the tests of that code, `package.json`, `MANIFEST.json`) is byte-identical to branch

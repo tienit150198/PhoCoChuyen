@@ -62,6 +62,7 @@ const css=()=>stylesheet('/css/chat.css');   // the same link the chat button lo
 function dialog(){
   if(S.dlg)return S.dlg;
   const d=document.createElement('dialog');
+  d.id='townChat';
   d.className='sheet v4-sheet medium chat-sheet';d.setAttribute('aria-label','Chat');
   d.innerHTML=`<div class="ch-root"><header class="ch-head"></header><div class="ch-net" hidden>${icon('refresh',14)} Đang kết nối lại…</div>
     <div class="ch-pinbar" hidden></div><div class="ch-body"></div><div class="ch-flash" role="status" aria-live="polite" hidden></div>

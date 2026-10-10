@@ -426,3 +426,31 @@ html[data-clean] .dd-help-toggle::before{content:'?'}
 .dl-orows{display:grid;gap:var(--sp-1);margin-top:var(--sp-2)}
 .dl-orows .dl-orow{justify-content:flex-start;text-align:left;min-height:44px;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dl-orow i{font-style:normal}
+
+/* Isometric delivery: warm paper controls keep the street and destination readable. */
+.dd-view-toggle{min-height:44px;max-width:126px;padding:7px 10px;border:1px solid #d8c7a6;border-radius:12px;background:#fff7e8;color:#70523e;font:700 11px/1.25 system-ui;cursor:pointer;touch-action:manipulation}
+.dd-view-toggle:focus-visible{outline:3px solid #bd741d;outline-offset:2px}
+.dd-isometric{background:#f2ecd7}
+.dd-isometric .dd-goal{border-color:#d5bc94;background:#fff8e9f5;color:#70523e;box-shadow:0 3px 10px #70523e16}
+.dd-isometric .dd-goal small{color:#7a583a}
+.dd-isometric .dd-nav-detail{color:#8b755e}
+.dd-isometric .dd-arrow{background:#f2d787;color:#70523e}
+.dd-isometric .dd-help-toggle,.dd-isometric .dd-full-toggle{border-color:#d8c7a6;background:#fff7e8ed;color:#70523e}
+.dd-isometric .dd-stick-wrap{color:#70523e;text-shadow:0 1px #fff7e8}
+.dd-isometric .dd-stick{border-color:#b39a70;background:radial-gradient(circle,#f8edcecc 0 54%,#decca4cc 56% 66%,#fff4dacc 68% 70%,#bba98299 72%);box-shadow:inset 0 0 10px #96795020,0 3px 9px #70523e20}
+.dd-isometric .dd-stick-knob{border-color:#a98a59;background:radial-gradient(circle at 35% 28%,#f8e4b3,#c7a66d 75%);box-shadow:0 3px 6px #70523e30,inset 0 1px 4px #fff8e8}
+.dd-isometric .dd-stick.on{border-color:#8a7957}
+.dd-isometric .dd-btn{border-color:#f7ecd0;color:#5c4434;box-shadow:0 3px 8px #70523e25}
+.dd-isometric .dd-btn.dd-gas{background:#a6bd8cf2}
+.dd-isometric .dd-btn.dd-brake{background:#dfa787f2}
+.dd-isometric .dd-btn.on{background:#edcf85;color:#70523e}
+.dd-isometric .dd-parking{accent-color:#819e6d}
+@media(max-width:420px){
+  .dd-view-toggle{max-width:110px;padding:6px 8px;font-size:10px}
+  .dd-isometric .dd-tools{gap:4px}
+  .dd-isometric .dd-help-toggle,.dd-isometric .dd-full-toggle{min-height:44px}
+  .dd-isometric .dd-goal b{white-space:normal;overflow-wrap:anywhere}
+  .dd-isometric .dd-pads{bottom:max(12px,env(safe-area-inset-bottom))}
+}
+.dd-isometric.dd-expanded .dd-tools{top:calc(130px + env(safe-area-inset-top))}
+.dd-isometric .dd-signal{top:104px;width:min(300px,calc(100% - 144px));right:auto}

@@ -1,5 +1,6 @@
 import {project} from './model';
 import type {CameraView,Point,Rect} from './model';
+import townLayout from '../../game/town_layout.json';
 
 export interface IslandRegion {
   id:string;
@@ -26,11 +27,10 @@ const naturalShore=[
   [.96,.74],[.945,.89],[.89,.93],[.76,.975],[.66,1],[.53,.99],[.40,.97],
   [.33,.93],[.22,.92],[.10,.91],[.04,.87],[.02,.80],[.015,.59],[0,.48]
 ].map(([x,y])=>({x:-49.6+x*142.2,y:-14.5+y*79}));
-/** Future districts lie inside the same fixed island. They add no roads or jobs yet. */
-export const ISLAND_PLAN=Object.freeze<{version:number;regions:readonly IslandRegion[]}>({version:2,regions:[
-  {id:'core',name:ISLAND_REFERENCE.name,status:'active',navigationBounds:{x0:0,y0:0,x1:43,y1:50},anchor:{x:21.5,y:25},coastline:naturalShore},
-  {id:'east-harbour',name:'Khu phía đông · mở sau',status:'reserved',navigationBounds:null,anchor:{x:64,y:25},coastline:[]},
-  {id:'west-garden',name:'Vườn phía tây · mở sau',status:'reserved',navigationBounds:null,anchor:{x:-22,y:30},coastline:[]}
+/** The shoreline stays fixed while authored, connected neighbourhoods open inside it. */
+export const ISLAND_PLAN=Object.freeze<{version:number;regions:readonly IslandRegion[]}>({version:4,regions:[
+  {id:'core',name:ISLAND_REFERENCE.name,status:'active',navigationBounds:townLayout.bounds,anchor:{x:21.5,y:25},coastline:naturalShore},
+  ...townLayout.districts.map(d=>({id:d.id,name:d.name,status:'active' as const,navigationBounds:d.bounds,anchor:d.at,coastline:[]}))
 ]});
 export const TOWN_ZOOM={min:.03,max:1.6};
 export const SEA_COLOR='#75bec1';

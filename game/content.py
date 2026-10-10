@@ -224,7 +224,9 @@ def public_content() -> dict:
         if c['id'] in REVIEW_FOLLOWUP:c['review_followup'] = True
         if c["id"] in PLUGINS:  # its work needs the shift open (engine: "Mở ca trước…"): greyed out while closed
             sp=PLUGINS[c["id"]].SPEC;c["shift_gate"]=dict(prefix=sp["prefix"],free=list(sp.get("free_actions",())))
-    return dict(version="0.9.5",experiences=extra.public_content(),inventory=inventory.content(),employment=employment.content(CAREERS),
+    # Parts share the whole catalogue's hash: change this version when moving
+    # fields between shards, so cached older core/more parts cannot be mixed.
+    return dict(version="2.0.0",experiences=extra.public_content(),inventory=inventory.content(),employment=employment.content(CAREERS),
                 situations={cid:situations.catalogue(cid) for cid in CAREERS},
                 careers={cid:(PLUGINS[cid].content() if hasattr(PLUGINS[cid],'content') else {}) for cid in PLUGINS},operations=operations.content(),catalogue=catalogue,npcs=NPCS,products=PRODUCTS,ph_products=PH_PRODUCTS,lots=list(LOT_INDEX.values()),
                 papers=PAPERS,ribbons=RIBBONS,upgrades=UPGRADES,quests=QUESTS,
@@ -233,9 +235,9 @@ def public_content() -> dict:
 
 
 # Parts of the catalogue the first frame never needs (GET /api/content?v=<hash>&part=more): job postings and exams,
-# the shop book, situation scripts, certificate question banks, career story texts. Each is read by one or two views,
+# the shop book, equipment catalogue, situation scripts, certificate question banks, career story texts. Each is read by one or two views,
 # which show a skeleton until the part is in (public/js/api.js loads it right after the first frame).
-CONTENT_LATER=(("employment",),("operations",),("situations",),("journey","certs"),("experiences","stories"))
+CONTENT_LATER=(("employment",),("operations",),("upgrades",),("situations",),("journey","certs"),("experiences","stories"))
 
 
 def content_parts(full: dict) -> dict[str, dict]:

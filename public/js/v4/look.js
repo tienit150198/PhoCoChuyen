@@ -55,7 +55,11 @@ export const ART={
     kinh_mat_meo:{c:'#2f2a2e',d:'#2f2a2e',l:'#e0b43f'},mu_bucket:{c:'#e9dcc0',d:'#b8a47a',l:'#f7efdc'},mu_luoi_trai:{c:'#3a4e7c',d:'#24345a',l:'#f8f4ec'},
     vong_co:{c:'#e0b43f',d:'#b0821f',l:'#fff6d0'},dong_ho:{c:'#c7ccd4',d:'#8b94a1',l:'#ffffff'},kep_toc:{c:'#e0708a',d:'#c85873',l:'#fde2ea'},
     kinh_can:{c:'#2f2a2e',d:'#2f2a2e',l:'#ffffff'},no_lua:{c:'#f4b0c4',d:'#d77d9a',l:'#fde2ea'},khuyen_tron:{c:'#e0b43f',d:'#b0821f',l:'#fff6d0'},
-    khan_bandana:{c:'#c9514a',d:'#9e2c27',l:'#f8f4ec'},balo_mini:{c:'#e7c56a',d:'#b0821f',l:'#fff6d0'}},
+    khan_bandana:{c:'#c9514a',d:'#9e2c27',l:'#f8f4ec'},balo_mini:{c:'#e7c56a',d:'#b0821f',l:'#fff6d0'},
+    mu_beret:{c:'#bd716b',d:'#8d4d4e',l:'#f0b5a3',anchor:'head',back:1},mu_cao_boi:{c:'#c39761',d:'#785439',l:'#ead2a0',anchor:'head',back:1},
+    tai_nghe:{c:'#60799f',d:'#36455f',l:'#c1d8ee',anchor:'head',back:1},vuong_mien:{c:'#dab04d',d:'#94702d',l:'#fff0ba',anchor:'head',back:1},
+    bang_do_tai_meo:{c:'#9c879e',d:'#665468',l:'#e3b9cd',anchor:'head',back:1},vong_hoa:{c:'#e69eb4',d:'#71855c',l:'#fff3ce',anchor:'head',back:1},
+    khau_trang:{c:'#a4cbbd',d:'#648d7d',l:'#e3f3ec',anchor:'head',back:1},khan_choang:{c:'#c58363',d:'#895638',l:'#efd2ab',anchor:'body',back:1}},
 };
 /* Bảng màu (1.3.1 accessories, góp ý #70; then clothes, shoes and furniture): look.tint = {item id: colour id};
  * ids, names and prices in game/wardrobe.py COLORS. c main, d darker, l lighter. Furniture: v4/deco-art.js tint.
@@ -178,6 +182,7 @@ export function topDetail(t,sk){
   return '';
 }
 export function accBust(a,k){
+  if(ART.acc[a]?.anchor){const out=[];paintAccessoryShape(out,a,k,SVG);return `<g transform="translate(40 83) scale(.55)">${out.join('')}</g>`;}
   switch(a){
     case'kinh_tron':return `<g fill="none" stroke="${k.d}" stroke-width="1.6"><circle cx="33" cy="40" r="5.8"/><circle cx="47" cy="40" r="5.8"/><path d="M38.8 40h2.4M27.2 39l-5-2M52.8 39l5-2"/></g>`;
     case'kinh_ram':return `<g fill="${k.d}"><rect x="26" y="35.5" width="12.5" height="9" rx="4"/><rect x="41.5" y="35.5" width="12.5" height="9" rx="4"/></g><path d="M38.5 39h3" stroke="${k.d}" stroke-width="1.6"/><path d="M29 38.5h4" stroke="#fff" stroke-opacity=".5" stroke-width="1.2" stroke-linecap="round"/>`;
@@ -202,15 +207,33 @@ export function accBust(a,k){
   }
   return '';
 }
-/** The classic UI has no 2.5D portraits (v4/wardrobe.js asks before showing the mirror's "Xoay"). */
-export const cozyActive=()=>false;
+/** v4/wardrobe.js shows the mirror's "Xoay" control once the island portrait renderer is active. */
+let cozyOn=false;
+export const cozyActive=()=>cozyOn;
+export function cozyPortraits(on){cozyOn=Boolean(on);}
+const labelHTML=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/** The island portrait observer reads the current wardrobe ids, including wardrobe_plus. The SVG fallback
+ * and cropped wardrobe item illustrations retain all their existing details. */
+function cozyMark(Lk,gender,mode,facing='se'){
+  if(!cozyOn)return '';
+  const g=gender==='female'||gender==='male'?gender:'none',look=defaultLook(g);
+  for(const slot of SLOTS)if(typeof Lk?.[slot]==='string'&&Object.hasOwn(ART[slot],Lk[slot]))look[slot]=Lk[slot];
+  if(typeof Lk?.uniform==='boolean')look.uniform=Lk.uniform;
+  const dress=mode==='figure'&&ART.top[look.top]?.dress;
+  if(dress)look.bottom=DEFAULTS.none.bottom;
+  const tint={};
+  for(const slot of TINT_SLOTS){const id=look[slot],colour=Lk?.tint?.[id];if(!(dress&&slot==='bottom')&&typeof colour==='string'&&Object.hasOwn(ACC_COLORS,colour))tint[id]=colour;}
+  if(Object.keys(tint).length)look.tint=tint;
+  const direction=mode==='figure'?{facing:['se','sw','nw','ne'].includes(facing)?facing:'se'}:{};
+  return ` data-cozy-portrait="${encodeURIComponent(JSON.stringify({v:1,mode,gender:g,look,...direction}))}"`;
+}
 /** Warm little portrait (80×80 viewBox), drawn inline. `look` null: the gender's default look. */
 export function portrait(look,gender,size=56,label){
   const Lk=look||defaultLook(gender),hair=hairColour(Lk),sk=art(Lk,'skin'),top=art(Lk,'top'),ak=accPaint(Lk);
   const f=gender==='female',m=gender==='male';
   label??=f?'Nhân vật nữ':m?'Nhân vật nam':'Nhân vật của bạn';
   const eyes=Lk.acc==='kinh_ram'?'':`<ellipse cx="33" cy="40" rx="2.8" ry="3.4" fill="#4b3936"/><ellipse cx="47" cy="40" rx="2.8" ry="3.4" fill="#4b3936"/><circle cx="32.3" cy="38.8" r="1" fill="#fff"/><circle cx="46.3" cy="38.8" r="1" fill="#fff"/>`;
-  return `<svg class="jr-av" width="${size}" height="${size}" viewBox="0 0 80 80" role="img" aria-label="${label}"><rect width="80" height="80" rx="26" fill="#f4e4cf"/>`+
+  return `<svg class="jr-av" width="${size}" height="${size}" viewBox="0 0 80 80" role="img" aria-label="${cozyOn?labelHTML(label):label}"${cozyMark(Lk,gender,'face')}><rect width="80" height="80" rx="26" fill="#f4e4cf"/>`+
     hairBack(Lk.hair,hair)+`<path d="M12 80c2-23 54-23 56 0" fill="${topColour(Lk,gender)}"/>`+topDetail(top,sk.c)+(Lk.acc==='tui_cheo'?accBust('tui_cheo',ak):'')+
     `<rect x="34" y="50" width="12" height="12" rx="5" fill="${sk.neck}"/><ellipse cx="40" cy="38" rx="19" ry="21" fill="${sk.c}"/>${hairFront(Lk.hair,hair)}`+eyes+
     `<ellipse cx="28" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><ellipse cx="52" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><path d="M36 48q4 4 8 0" fill="none" stroke="#a46e5e" stroke-width="1.8" stroke-linecap="round"/>`+
@@ -366,8 +389,9 @@ export function paintHairFront(c,F,K=CANVAS){
   else if(h==='toc_tet')K.E(c,29,-29,3.4,3.4,'#e0708a');
 }
 /** The one accessory (last, over the face and hair). */
-export function paintAcc(c,F,K=CANVAS){
+export function paintAcc(c,F,K=CANVAS,direction='se'){
   const k=accPaint(F.L);
+  if(ART.acc[F.L.acc]?.anchor){paintAccessoryShape(c,F.L.acc,k,K,direction);return;}
   switch(F.L.acc){
     case'kinh_tron':K.ring(c,-11,-78,8.5,k.d,1.8);K.ring(c,11,-78,8.5,k.d,1.8);K.L(c,-2.5,-78,2.5,-78,k.d,1.6);break;
     case'kinh_ram':K.R(c,-21,-85,19,13,k.d,6);K.R(c,2,-85,19,13,k.d,6);K.L(c,-2,-80,2,-80,k.d,2);K.L(c,-17,-81,-11,-81,'#ffffff70',1.5);break;
@@ -389,6 +413,41 @@ export function paintAcc(c,F,K=CANVAS){
     case'khan_bandana':K.R(c,-31,-112,62,10,k.c,5);K.P(c,[[26,-108],[38,-100],[33,-96]],k.d);K.E(c,-14,-107,1.4,1.4,k.l);K.E(c,0,-108,1.4,1.4,k.l);K.E(c,14,-107,1.4,1.4,k.l);break;
     case'balo_mini':K.R(c,-33,-48,10,22,k.c,5);K.R(c,23,-48,10,22,k.c,5);K.L(c,-15,-52,-17,-30,k.d,3);K.L(c,15,-52,17,-30,k.d,3);K.E(c,-28,-36,1.6,1.6,k.l);break;
     case'kep_toc':K.R(c,17,-113,13,7,k.c,3);K.L(c,20,-106,20,-103,k.d,1.4);K.L(c,24,-106,24,-103,k.d,1.4);K.L(c,28,-106,28,-103,k.d,1.4);break;
+  }
+}
+
+/** One vector silhouette shared by classic SVG, scene Canvas, chat and four-view atlas overlays. */
+function paintAccessoryShape(c,id,k,K,direction='se'){
+  const back=direction==='nw'||direction==='ne',side=direction==='sw'||direction==='nw'?-1:1;
+  switch(id){
+    case'mu_beret':
+      K.E(c,side*7,-118,36,17,k.c);K.P(c,[[-29,-109],[30,-109],[25,-101],[-25,-101]],k.d);
+      K.L(c,side*9,-130,side*12,-138,k.d,3);K.E(c,side*21,-122,8,3,k.l);break;
+    case'mu_cao_boi':
+      K.P(c,[[-46,-110],[-39,-99],[-18,-95],[19,-95],[40,-100],[46,-110],[26,-104],[-25,-104]],k.c);
+      K.R(c,-25,-135,50,32,k.c,12);K.P(c,[[-25,-112],[25,-112],[25,-104],[-25,-104]],k.d);
+      if(!back)K.P(c,[[0,-113],[4,-108],[0,-103],[-4,-108]],k.l);break;
+    case'tai_nghe':
+      K.P(c,[[-35,-82],[-34,-111],[-23,-127],[0,-132],[23,-127],[34,-111],[35,-82],[28,-82],[27,-109],[20,-121],[0,-126],[-20,-121],[-27,-109],[-28,-82]],k.d);
+      for(const x of [-34,34]){K.R(c,x-7,-96,14,27,k.c,6);K.R(c,x-4,-91,8,16,k.l,3);}break;
+    case'vuong_mien':
+      K.P(c,[[-28,-102],[-32,-129],[-16,-116],[0,-138],[16,-116],[32,-129],[28,-102]],k.c);
+      K.R(c,-29,-107,58,8,k.d,3);
+      for(const x of [-18,0,18])K.P(c,[[x,-115],[x+3,-111],[x,-107],[x-3,-111]],back?k.c:k.l);break;
+    case'bang_do_tai_meo':
+      K.P(c,[[-31,-97],[-33,-111],[-22,-122],[0,-126],[22,-122],[33,-111],[31,-97],[26,-109],[18,-117],[0,-121],[-18,-117],[-26,-109]],k.d);
+      for(const x of [-22,22]){K.P(c,[[x-12,-115],[x-9,-141],[x+12,-121]],k.c);if(!back)K.P(c,[[x-7,-119],[x-6,-133],[x+6,-122]],k.l);}break;
+    case'vong_hoa':
+      K.P(c,[[-31,-107],[-25,-117],[0,-123],[25,-117],[31,-107],[26,-103],[20,-111],[0,-116],[-20,-111],[-26,-103]],k.d);
+      for(const [x,y] of [[-27,-110],[-14,-118],[0,-121],[14,-118],[27,-110]]){K.bloom(c,x,y,6.5,k.c);K.E(c,x,y,2,2,k.l);}break;
+    case'khau_trang':
+      for(const s of [-1,1]){K.L(c,s*20,-70,s*31,-77,k.c,2);K.L(c,s*20,-60,s*31,-67,k.c,2);}
+      if(!back){K.P(c,[[-23,-75],[0,-78],[23,-75],[20,-57],[0,-53],[-20,-57]],k.c);K.L(c,-16,-67,16,-67,k.l,1.2);K.L(c,-14,-61,14,-61,k.d,1);}break;
+    case'khan_choang':
+      K.P(c,[[-20,-55],[20,-55],[22,-43],[10,-39],[-20,-44]],k.c);
+      if(back){K.P(c,[[-12,-44],[3,-43],[8,-13],[-6,-11]],k.d);K.P(c,[[2,-44],[14,-44],[18,-21],[7,-18]],k.c);}
+      else{K.P(c,[[side*9,-45],[side*21,-43],[side*17,-15],[side*4,-18]],k.d);K.P(c,[[side*2,-44],[side*12,-45],[side*6,-25],[-side*4,-27]],k.c);}
+      K.L(c,-15,-49,15,-47,k.l,2);for(let x=-6;x<7;x+=4)K.L(c,back?x:x+side*10,back?-13:-17,back?x+1:x+side*10,back?-8:-12,k.l,1.3);break;
   }
 }
 /** The whole player as BobaWorld draws it, with the work layer off (the wardrobe mirror). `arms` (optional, the fair's
@@ -413,7 +472,8 @@ export function paintPlayer(c,F,K=SVG,arms=null){
   if(arms)for(const [s,p] of [[-1,arms.l],[1,arms.r]])if(p){K.L(c,s*20,-44,p[0],p[1],F.topC||F.classic,11);K.E(c,p[0],p[1],7,7.5,sk.hand);}
 }
 /** Full-body SVG of a look (the wardrobe mirror and the item tiles). */
-export function figureSVG(Lk,gender,{w=120,h=170,label='',box='-50 -146 100 154'}={}){
+export function figureSVG(Lk,gender,{w=120,h=170,label='',box='-50 -146 100 154',facing='se'}={}){
   const out=[];paintPlayer(out,figureOf(Lk,gender),SVG);
-  return `<svg class="wd-fig" width="${w}" height="${h}" viewBox="${box}" ${label?`role="img" aria-label="${label}"`:'aria-hidden="true"'} focusable="false">${out.join('')}</svg>`;
+  const marker=box==='-50 -146 100 154'?cozyMark(Lk,gender,'figure',facing):'';
+  return `<svg class="wd-fig" width="${w}" height="${h}" viewBox="${box}" ${label?`role="img" aria-label="${cozyOn?labelHTML(label):label}"`:'aria-hidden="true"'} focusable="false"${marker}>${out.join('')}</svg>`;
 }

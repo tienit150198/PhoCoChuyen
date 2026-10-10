@@ -296,3 +296,13 @@
 /* 🎨 Trang trí giúp (game/home_coop.py): the friends' changes beside the room */
 .dc-coop h4{margin:12px 0 4px}.dc-coop-log{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}.dc-coop-log li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:6px;border-top:1px dashed var(--line,#e5d8c5)}.dc-coop-log p{margin:0;line-height:1.4;min-width:0}.dc-coop-log small{color:var(--muted,#746453);flex:none}.dc-coop-log .btn{flex:none}
 .dc-coop .dc-actions{margin-top:10px}
+/* Real 3D view reuses the existing bag, costs, paint, repair and ownership controls. */
+.home3d-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0}
+.home3d-controls [aria-pressed="true"]{background:#e9d5b8;border-color:#ae8255;color:#59432f}
+.home3d-viewport{position:relative;width:100%;height:clamp(300px,48vh,570px);min-width:0;border-radius:18px;overflow:hidden;background:#eee2cd;isolation:isolate}
+.home3d-canvas{display:block;width:100%;height:100%;touch-action:none;outline-offset:-4px;border-radius:18px}
+.home3d-canvas:focus-visible{outline:3px solid #b67b40}
+.home3d-loading{position:absolute;left:0;right:0;top:45%;text-align:center;color:#79563f;pointer-events:none;z-index:1}
+.dc-roomwrap-3d{min-width:0;background:#eee2cd;border:1px solid #d3b99b;border-radius:18px;overflow:hidden}
+.dc-roomwrap-3d .hw-say{z-index:2;max-width:80%;left:50%!important;top:auto!important;bottom:12px;transform:translateX(-50%);pointer-events:none}
+@media(max-width:600px){.home3d-viewport{height:360px;max-height:54vh;min-height:280px}.home3d-controls .btn{min-height:36px}}

@@ -83,7 +83,7 @@ function dialog(){
   d.addEventListener('close',()=>{invalidateRentals();S.flash=null;S.view='home';});
   S.dlg=d;return d;
 }
-export async function openHouse(env,kind){
+export async function openHouse(env,kind,options={}){
   S.env=env;
   if(!S.listening){
     S.listening=true;
@@ -92,13 +92,14 @@ export async function openHouse(env,kind){
   const sheet=document.getElementById('sheet');if(sheet?.open)env.closeSheet();
   await ensureCss();
   const d=dialog();
-  if(kind&&MK().some(m=>m.id===kind))startBuy(kind);else S.view='home';
+  S.group=CAT().groups.some(g=>g.id===options.group)?options.group:null;
+  if(kind&&MK().some(m=>m.id===kind&&m.kind!=='rent'))startBuy(kind);else S.view=options.view==='rentals'?'rentals':'home';
   if(!d.open){d.showModal();d.scrollTop=0;}
   render();loadJoint();loadRentals();
 }
 export async function houseAction(action,data,el,env){
   if(action!=='house')return false;
-  await openHouse(env,data?.kind);return true;
+  await openHouse(env,data?.kind,data||{});return true;
 }
 
 /* Joint fund and explicit family invitations, refreshed when this home sheet opens. */
@@ -444,7 +445,7 @@ function marketCard(v,m){
 }
 function marketGroups(v){
   const market=MK();
-  return CAT().groups.map(g=>{
+  return CAT().groups.filter(g=>!S.group||S.group===g.id).map(g=>{
     const list=market.filter(m=>m.group===g.id);if(!list.length)return '';
     return `<div class="hs-group"${toneStyle(g.id)}><h4><span class="hs-group-ico" aria-hidden="true">${g.emoji}</span>${esc(g.name)}<small>${list.length}</small></h4><ul class="hs-market">${list.map(m=>marketCard(v,m)).join('')}</ul></div>`;
   }).join('');

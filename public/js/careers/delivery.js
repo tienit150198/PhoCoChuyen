@@ -8,6 +8,7 @@ import {onLeg} from './delivery_navigation.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {planBox,stockLines,figures} from './plan_kit.js';
 import {renderNeighborhoodMap} from './delivery_map.js';
+import {lookOf} from '../v4/look.js';
 
 /* ---------- 🛵 Tự lái / ⏩ Đi nhanh: ride each leg yourself (careers/delivery_drive.js, loaded on the first leg) or tap ---------- */
 const MODE_KEY='mnl.dlDrive',HINT_KEY='mnl.dlDriveHint';
@@ -646,9 +647,10 @@ function usefulStops(x){
 function driveOpts(x,node){
   const d=x.room.data||{},first=!readPref(HINT_KEY);
   if(first)savePref(HINT_KEY,'1');
-  // Clean layout: the goal by its short name and the distance alone (terse); the street view itself is unchanged.
+  // Clean layout keeps short navigation labels; the courier uses the player's saved wardrobe.
   const c=clean();
   return {nodes:nodes(x),at:d.at,target:node,useful:usefulStops(x),fuel:d.fuel,weather:d.weather,driveFactor:d.drive_factor||1,signs:d.road?.signs||[],
+    look:lookOf(x.state),player:{gender:x.state?.journey?.gender||'none'},
     terse:c,label:c?id=>shortName(x,id):null,
     minute:x.room.day_clock?.minute??17*60+(Number(d.clock)||0),first,arrive,now:()=>lastX?.now?.()||x.now(),
     signal:(i,j,axis)=>signalWhy(lastX,node,i,j)?Promise.resolve(null):lastX?.send('dl_signal',{target:node,i,j,axis},{quiet:true}),

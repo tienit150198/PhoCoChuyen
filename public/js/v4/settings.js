@@ -9,6 +9,7 @@ import {soundToggles} from './sounds.js';
 import {lbPrivacyRow} from './leaderboard.js';
 import {homePref,setHomePref,townOK} from './journey.js';
 import {FW_MODES,fwMode,setFwMode} from './fireworks.js';
+import {newInterface,saveInterface} from '../interface-mode.js';
 
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const button=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
@@ -52,7 +53,8 @@ export function settingsView(env){
     </section>`:''}`;
   if(tab==='look'){
     const pref=layoutPref(),mode=document.documentElement.dataset.layout;
-    body=`<section class="settings-block"><h3>${icon('palette',18)} Phong cách</h3><div class="theme-grid">${THEMES.map(([id,name,desc,sw])=>`<button type="button" class="theme-card ${s.uiTheme===id?'active':''}" data-action="v4Setting" data-key="uiTheme" data-value="${id}" aria-pressed="${s.uiTheme===id}"><span class="swatches">${sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><b>${name}</b><small>${desc}</small></button>`).join('')}</div></section>
+    body=`<section class="settings-block">${toggle('newInterface','Giao diện mới',newInterface(api.state),'Bật để khám phá phố 2.5D. Tắt để dùng giao diện cũ. Trang sẽ tải lại sau khi lưu; tài khoản và tiến trình được giữ nguyên.')}</section>
+    <section class="settings-block"><h3>${icon('palette',18)} Phong cách</h3><div class="theme-grid">${THEMES.map(([id,name,desc,sw])=>`<button type="button" class="theme-card ${s.uiTheme===id?'active':''}" data-action="v4Setting" data-key="uiTheme" data-value="${id}" aria-pressed="${s.uiTheme===id}"><span class="swatches">${sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><b>${name}</b><small>${desc}</small></button>`).join('')}</div></section>
     ${townOK()?`<section class="settings-block"><h3><span aria-hidden="true">🗺️</span> Màn hình chính</h3>${segment('home',[['town','🗺️ Bản đồ phố'],['list','📋 Danh sách']],homePref(),'home')}</section>`:''}
     <section class="settings-block"><h3>${icon('layout',18)} Bố cục màn hình</h3><p class="small muted">Đang dùng: <b>${{phone:'Điện thoại',tablet:'Máy tính bảng',desktop:'Máy tính'}[mode]||mode}</b></p>
       <div class="layout-grid">${LAYOUTS.map(([id,name,desc])=>`<button type="button" class="layout-card ${pref===id?'active':''}" data-action="v4Layout" data-value="${id}" aria-pressed="${pref===id}"><span class="layout-thumb ${id}"><i></i><i></i><i></i></span><b>${name}</b><small>${desc}</small></button>`).join('')}</div></section>
@@ -108,6 +110,11 @@ export async function settingsAction(action,data,el,env){
 
 /** Checkbox switches and range sliders save immediately. */
 export async function settingsChange(el,env){
+  if(el.dataset.setting==='newInterface'){
+    el.disabled=true;
+    try{await saveInterface(env,el.checked);}finally{el.disabled=false;el.checked=newInterface(env.api.state);}
+    return true;
+  }
   if(el.dataset.setting){await env.cmd('settings',{[el.dataset.setting]:el.checked},{quiet:true});return true;}
   if(el.dataset.settingRange){await env.cmd('settings',{[el.dataset.settingRange]:Number(el.value)},{quiet:true});return true;}
   return false;

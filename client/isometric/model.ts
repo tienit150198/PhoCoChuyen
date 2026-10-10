@@ -6,7 +6,7 @@ export interface Point { x: number; y: number }
 export interface Rect { x0: number; y0: number; x1: number; y1: number }
 export interface Career { id: string; short?: string; name?: string; place?: string; station?: string; category?: string; color?: string; [key: string]: unknown }
 export interface Navigation { bounds: Rect; roads: Rect[]; obstacles: Rect[]; step: number; clearance: number }
-export interface Building { id: string; meta: Career; at: Point; door: Point; footprint: Rect; variant: 'grocery' | 'home' | 'cafe'; district: number; slot:number }
+export interface Building { id: string; meta: Career; at: Point; door: Point; footprint: Rect; variant: 'grocery' | 'home' | 'cafe'; district: number; slot:number; neighbourhood?:string }
 export interface CameraView {width:number;height:number;scrollX:number;scrollY:number;zoom:number}
 export type Facing='se'|'sw'|'ne'|'nw';
 export interface RemotePlayer extends Point {pid:string;name:string;look:Record<string,any>;gender:'male'|'female'|'none';direction:Facing}
@@ -27,6 +27,11 @@ export function groundCacheRegion(view:Rect,zoom=1){
 export function townBuildingArt(meta:Career,fallback:Building['variant']){return BUILDING_ART[meta.id]||fallback;}
 /** Aerial leisure artwork lies flat on its reserved footprint rather than standing upright. */
 export function landmarkPlaneGeometry(r:Rect){const w=r.x1-r.x0,d=r.y1-r.y0;return {x:(r.x0-r.y1)*64,y:(r.x0+r.y0)*32,width:(w+d)*64,height:(w+d)*32,a:w*64,b:w*32,c:-d*64,d:d*32,e:d*64,depth:(r.x1+r.y1)*32};}
+/** Already-isometric sprites are scaled uniformly, never projected a second time. */
+export function landmarkSpritePlacement(r:Rect,sourceWidth:number,sourceHeight:number){
+  const plane=landmarkPlaneGeometry(r);
+  return {x:plane.x+plane.width/2,y:plane.y+plane.height,width:plane.width,height:plane.width*sourceHeight/sourceWidth,depth:-9998};
+}
 /** Our camera never rotates; this transform stays current even while Phaser is asleep. */
 export const cameraWorldPoint = (p:Point,camera:{width:number;height:number;scrollX:number;scrollY:number;zoom:number}): Point => ({x:camera.scrollX+camera.width/2+(p.x-camera.width/2)/camera.zoom,y:camera.scrollY+camera.height/2+(p.y-camera.height/2)/camera.zoom});
 export function defaultCamera(mode:'town'|'work',width:number,height:number):CameraView{
@@ -117,8 +122,10 @@ export function effectFrameState(ev:{t0:number;end?:number|null}|null|undefined,
   const finished=ev.end!=null,clear=finished&&time-ev.end!>=2.5,animate=!reduced&&!clear&&(finished||time-ev.t0<6);
   return {animate,needsFrames:!clear&&(finished||animate),clear};
 }
-export function nearestReachableHotspot<T extends {id:string;approach:Point}>(nav:Navigation,from:Point,hotspots:T[],range=2.4):T|null{
-  const nearby=hotspots.map(h=>({h,d:Math.hypot(h.approach.x-from.x,h.approach.y-from.y)})).filter(h=>h.d<=range).sort((a,b)=>a.d-b.d);
+export function nearestReachableHotspot<T extends {id:string;approach:Point;interactionPoint?:Point}>(nav:Navigation,from:Point,hotspots:T[],range=2.4):T|null{
+  // A sign may stand beside its entrance; either spot can select the same route.
+  const distance=(p:Point)=>Math.hypot(p.x-from.x,p.y-from.y);
+  const nearby=hotspots.map(h=>({h,d:Math.min(distance(h.approach),h.interactionPoint?distance(h.interactionPoint):Infinity)})).filter(h=>h.d<=range).sort((a,b)=>a.d-b.d);
   for(const {h} of nearby)if(findRoute(nav,from,h.approach).length)return h;return null;
 }
 export interface SavedDecor {id:'plant'|'lamp'|'seat'|'rug'|'poster';spot:string;at:Point;z:number;footprint:Rect|null}
@@ -146,7 +153,14 @@ export function roomAppearance(room:any,career=''):RoomAppearance{
 }
 export const makeNavigation = (options: Omit<Navigation,'clearance'> & {clearance?:number}): Navigation => ({...options,clearance:options.clearance??.14});
 export const inside = (p: Point,r: Rect): boolean => p.x>=r.x0&&p.x<=r.x1&&p.y>=r.y0&&p.y<=r.y1;
-export const isWalkable = (nav: Navigation,p: Point): boolean => inside(p,nav.bounds)&&nav.roads.some(r=>inside(p,r))&&!nav.obstacles.some(r=>inside(p,{x0:r.x0-nav.clearance,y0:r.y0-nav.clearance,x1:r.x1+nav.clearance,y1:r.y1+nav.clearance}));
+const obstacleIndexes=new WeakMap<Navigation,{count:number;cells:Map<string,Rect[]>}>();
+/** Rebuild when actors join the scene; walking only inspects local obstacle buckets. */
+function nearbyObstacles(nav:Navigation,a:Point,b:Point=a):Rect[]{
+  const cached=obstacleIndexes.get(nav);let index=cached?.cells;const cell=4,pad=nav.clearance;
+  if(!index||cached?.count!==nav.obstacles.length){index=new Map();for(const r of nav.obstacles)for(let x=Math.floor((r.x0-pad)/cell);x<=Math.floor((r.x1+pad)/cell);x++)for(let y=Math.floor((r.y0-pad)/cell);y<=Math.floor((r.y1+pad)/cell);y++){const key=x+':'+y,old=index.get(key)||[];old.push(r);index.set(key,old);}obstacleIndexes.set(nav,{count:nav.obstacles.length,cells:index});}
+  const found=new Set<Rect>();for(let x=Math.floor(Math.min(a.x,b.x)/cell);x<=Math.floor(Math.max(a.x,b.x)/cell);x++)for(let y=Math.floor(Math.min(a.y,b.y)/cell);y<=Math.floor(Math.max(a.y,b.y)/cell);y++)for(const r of index.get(x+':'+y)||[])found.add(r);return [...found];
+}
+export const isWalkable = (nav: Navigation,p: Point): boolean => inside(p,nav.bounds)&&nav.roads.some(r=>inside(p,r))&&!nearbyObstacles(nav,p).some(r=>inside(p,{x0:r.x0-nav.clearance,y0:r.y0-nav.clearance,x1:r.x1+nav.clearance,y1:r.y1+nav.clearance}));
 
 /** Continuous segment/rectangle intervals prevent smoothing through small gaps. */
 function interval(a:Point,b:Point,r:Rect): [number,number] | null {
@@ -159,7 +173,7 @@ function interval(a:Point,b:Point,r:Rect): [number,number] | null {
 }
 export function lineClear(nav:Navigation,a:Point,b:Point): boolean {
   if(!isWalkable(nav,a)||!isWalkable(nav,b))return false;
-  for(const o of nav.obstacles){const span=interval(a,b,{x0:o.x0-nav.clearance,y0:o.y0-nav.clearance,x1:o.x1+nav.clearance,y1:o.y1+nav.clearance});
+  for(const o of nearbyObstacles(nav,a,b)){const span=interval(a,b,{x0:o.x0-nav.clearance,y0:o.y0-nav.clearance,x1:o.x1+nav.clearance,y1:o.y1+nav.clearance});
     // Touching one padded corner has no interior overlap. Ignore sub-nanoframe
     // intervals from floating-point rounding, consistently for long and short segments.
     if(span&&span[1]-span[0]>1e-9)return false;
@@ -208,39 +222,33 @@ export function findRoute(nav:Navigation,start:Point,end:Point): Point[] {
   const raw:Point[]=[end];for(let key=goal;key!==-1;key=parents.get(key)??-1)raw.push(point(key));raw.reverse();
   const smooth:Point[]=[];let from=start,i=0;while(i<raw.length){let j=raw.length-1;while(j>i&&!lineClear(nav,from,raw[j]))j--;smooth.push(raw[j]);from=raw[j];i=j+1;}return smooth;
 }
-/** 1.8.1's careers where they belong: police and rescue next to nurse (the service street), lifeguard on the block
- * beside the pool (slot 8), lighthouse last (the southern edge, by the sea). Only the order changes: live/town.py's
- * geometry depends on the count alone. */
+/** Authored neighbourhoods replace catalogue-sized rows. Existing lots never move when a career is added. */
 export function townOrder<T extends {id:string}>(list:T[]):T[]{
-  const q=[...list],take=(id:string)=>{const i=q.findIndex(c=>c.id===id);return i<0?null:q.splice(i,1)[0];};
-  const lighthouse=take('lighthouse'),lifeguard=take('lifeguard'),near=[take('police'),take('rescue')].filter((c):c is T=>Boolean(c)),nurse=q.findIndex(c=>c.id==='nurse');
-  if(near.length)q.splice(nurse<0?q.length:nurse+1,0,...near);
-  if(lifeguard)q.splice(Math.min(7,q.length),0,lifeguard);
-  if(lighthouse)q.push(lighthouse);
-  return q;
+  const ranks=new Map(townLayout.careerOrder.map((id,i)=>[id,i]));
+  return [...list].sort((a,b)=>(ranks.get(a.id)??999)-(ranks.get(b.id)??999));
 }
-export function townBuildings(catalogue:Career[]): Building[] {
-  // Three familiar doors form the first block; remaining careers retain catalogue order.
-  const first=['grocery','homemaker','cafe_bakery'];const ordered=townOrder(catalogue.filter(c=>c.playable!==false).sort((a,b)=>{const ai=first.indexOf(a.id),bi=first.indexOf(b.id);return (ai<0?99:ai)-(bi<0?99:bi);}));
-  const slots=[0,1,6,2,3,4,5,...Array.from({length:Math.max(0,ordered.length-7)},(_,i)=>i+8)];
-  return ordered.map((meta,i)=>{const j=slots[i],col=j%6,row=Math.floor(j/6),[dx,dy]=townLayout.setbacks[(j+row)%townLayout.setbacks.length],x=col*7+1+dx,y=row*7+1+dy;return {id:meta.id,meta,at:{x:x+1.8,y:y+3.2},door:{x:x+2.2,y:row*7+6.1+dy},footprint:{x0:x,y0:y,x1:x+4.2,y1:y+4.2},variant:(meta.id==='grocery'||meta.category==='shop'?'grocery':['cafe_bakery','milk_tea','restaurant','pho','com','tra_da','ice_cream'].includes(meta.id)?'cafe':'home') as Building['variant'],district:row,slot:j};});
+export function townBuildings(catalogue:Career[]):Building[]{
+  const ordered=townOrder(catalogue.filter(c=>c.playable!==false));
+  const used=new Set(ordered.map(c=>townLayout.careerOrder.indexOf(c.id)).filter(slot=>slot>=0));
+  return ordered.map(meta=>{
+    const known=townLayout.careerOrder.indexOf(meta.id);let slot=known;
+    if(slot<0){slot=0;while(used.has(slot))slot++;used.add(slot);}
+    const lot=townLayout.lots[slot];
+    if(!lot)throw new Error('Add a shared island lot before publishing career '+meta.id);
+    return {id:meta.id,meta,at:{...lot.at},door:{...lot.door},footprint:{...lot.footprint},variant:(meta.id==='grocery'||meta.category==='shop'?'grocery':['cafe_bakery','milk_tea','restaurant','pho','com','tra_da','ice_cream'].includes(meta.id)?'cafe':'home') as Building['variant'],district:townLayout.districts.findIndex(d=>d.id===lot.district),neighbourhood:lot.district,slot};
+  });
 }
 export interface GardenProp {at:Point;kind:string;size:number;footprint:Rect}
-export function townGarden(buildings:Building[]):GardenProp[]{
-  return buildings.flatMap(b=>townLayout.gardens[(b.slot+b.district)%townLayout.gardens.length].map(p=>{
-    const at={x:b.slot%6*7+p.x,y:Math.floor(b.slot/6)*7+p.y},r=['flowers','shrubs','rocks'].includes(p.kind)?.22:.15;
-    return {at,kind:p.kind,size:p.size,footprint:{x0:at.x-r,y0:at.y-r,x1:at.x+r,y1:at.y+r}};
-  }));
+export function townGarden(_buildings:Building[]):GardenProp[]{return townLayout.planting;}
+export function townDistricts(){return townLayout.districts;}
+export function townAmenities(){return townLayout.amenities;}
+export function townTrails(){return townLayout.trails;}
+export function townScenery(){return townLayout.scenery;}
+export function townShopLots(){return townLayout.shopLots;}
+/** Compatibility for consumers expecting road rectangles. Ground is freely walkable between authored props. */
+export function townRoads(_buildings:Building[]):Rect[]{return townLayout.openGround;}
+export function townNavigation(buildings:Building[]):Navigation{
+  return makeNavigation({bounds:{...townLayout.bounds},roads:townLayout.openGround,obstacles:[...buildings.map(b=>b.footprint),...townLandmarks().map(p=>p.footprint),...townGarden(buildings).map(p=>p.footprint),...townLayout.shopLots.map(p=>p.footprint),...townLayout.amenities.flatMap(p=>'footprint' in p&&p.footprint?[p.footprint]:[])],step:.5});
 }
-export function townRoads(buildings:Building[]):Rect[]{
-  const rows=Math.max(2,Math.ceil((buildings.length+(buildings.length>7?1:0))/6)),bounds={x0:0,y0:0,x1:43,y1:rows*7+1},roads:Rect[]=[];
-  for(let x=0;x<=6;x++)roads.push({x0:x*7+5.5,y0:0,x1:Math.min(43,x*7+7),y1:bounds.y1});
-  for(let y=0;y<=rows;y++)roads.push({x0:0,y0:y*7+5.5,x1:43,y1:Math.min(bounds.y1,y*7+7)});
-  return roads.filter(r=>r.x1>r.x0&&r.y1>r.y0);
-}
-export function townNavigation(buildings:Building[]): Navigation {
-  const rows=Math.max(2,Math.ceil((buildings.length+(buildings.length>7?1:0))/6)),bounds={x0:0,y0:0,x1:43,y1:rows*7+1};
-  return makeNavigation({bounds,roads:[bounds],obstacles:[...buildings.map(b=>b.footprint),...townLandmarks().map(p=>p.footprint),...townGarden(buildings).map(p=>p.footprint)],step:.5});
-}
-/** Shared data is consumed by Python too, so lawns, entrances and water agree online. */
+/** The same authored water and collision contract is consumed by Python. */
 export function townLandmarks():TownLandmark[]{return townLayout.commons.map(p=>({...p,at:{...p.at},approach:{...p.approach},footprint:{...p.footprint}})) as TownLandmark[];}

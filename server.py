@@ -74,6 +74,7 @@ from game import couple
 from game import deco_mate  # 💞 the spouse's furniture in the home both live in (read-only)
 from game import family as family_babies  # 👶 the shared child at home (GET /api/family/baby, read-only)
 from game import system_gift
+from game import town_treasure
 from game import wed_invite  # 💌 Thiệp mời cưới cả phố (game/wed_invite.py)
 from game import live_effects, live_dating
 from game import quay_hire
@@ -636,6 +637,10 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/auth/tiktok/confirm":self.tiktok_confirmation_page();return
             if route=="/api/health":
                 self.json(200,dict(status="ok",version=__version__,game_version=self.server.game_version(),careers=len(CAREERS)));return
+            if route=="/api/town/treasure":
+                token,_,_,_=self.require_session(light=True)
+                if not self.server.rate_limit("treasure-get:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,town_treasure.snapshot(self.server.store));return
             if route=="/api/content":self.content(split.query);return
             if route=="/api/market":
                 # Public prices never load or settle a player's save.
@@ -843,6 +848,11 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("board-get:"+token,240):self.error(429,"Chậm lại một chút nhé.");return
                 older=lambda before,limit:self.server.store.archive_tail(token,"","board.posts",before,limit)  # posts that left the save
                 self.json(200,board_ai.get_view(state,{k:v[0] for k,v in parse_qs(split.query).items()},older));return
+            if route.startswith("/api/feedback/images/"):
+                token,_,_,_=self.require_session(light=True)
+                if not self.server.rate_limit("fb-image:"+token,240):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                binary,mime=pfb.read_image(self.server.store,token,route[len("/api/feedback/images/"):])
+                self.respond(200,binary,mime,extra={"Cross-Origin-Resource-Policy":"same-origin"},cache="private, no-store");return
             if route=="/api/feedback/mine":
                 token,_,_,_=self.require_session()
                 if not self.server.rate_limit("fb-mine:"+token,60):self.error(429,"Chậm lại một chút nhé.");return
@@ -962,9 +972,11 @@ class Handler(BaseHTTPRequestHandler):
             route=urlsplit(self.path).path
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password") or route.startswith("/api/work-visits/"))
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim") or route.startswith("/api/work-visits/"))
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
+            if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
+                self.error(413,"Góp ý quá lớn. Mỗi góp ý tối đa 3 ảnh, mỗi ảnh tối đa 2 MB.");self.close_connection=True;return
             if not self.headers.get("Content-Type","").startswith("application/json"):self.error(415,"Cần gửi JSON.");self.close_connection=True;return
             body=self.rfile.read(length);self.body_read=True
             data=json.loads(body,parse_constant=lambda x:(_ for _ in ()).throw(ValueError("nonfinite")))
@@ -995,7 +1007,10 @@ class Handler(BaseHTTPRequestHandler):
                 if data.get("action")=="import_save":result=self.import_save(token,data);self.json(200,result,known=state_delta.parse_known(data.get("known")));return
                 result=self.server.store.command(token,data.get("request_id"),data.get("expected_revision"),data.get("career"),data.get("action"),data.get("payload",{}))
                 self.json(200,result,known=state_delta.parse_known(data.get("known")));return
-            if length>64*1024:self.error(413,"Nội dung quá lớn.");return
+            if route!="/api/feedback" and length>64*1024:self.error(413,"Nội dung quá lớn.");return
+            if route=="/api/town/treasure/claim":
+                if not self.server.rate_limit("treasure-claim:"+token,20):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,town_treasure.claim(self.server.store,token,data),known=FULL);return
             if route=="/api/ai/rephrase":
                 if not self.ai_budget(token):self.json(200,dict(mode="scripted",reason="rate_limit"));return
                 self.json(200,rephrase(state,data.get("career"),data.get("npc")));return
@@ -1148,6 +1163,7 @@ class Handler(BaseHTTPRequestHandler):
         except karaoke.KaraError as e:self.error(e.status,e.message,e.code)
         except accounts.AccountError as e:self.error(e.status,e.message,e.code)
         except system_gift.GiftError as e:self.error(e.status,e.message,e.code)  # 🎁 /api/admin/gift: before ValueError (its base)
+        except town_treasure.TreasureError as e:self.error(e.status,e.message,e.code)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
         except (ValueError,TypeError,KeyError,IndexError,RecursionError,AttributeError,*dbm.DataError):self.error(400,"Dữ liệu không đúng cấu trúc hoặc bản lưu không hợp lệ.","invalid_data")
         except dbm.OperationalError as e:  # busy/unreachable database: nothing was committed (or its receipt replays it)

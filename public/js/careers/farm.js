@@ -497,12 +497,11 @@ function drawer(t,x,g){
 const plainTitle=s=>String(s).replace(/<[^>]*>/g,'');
 const seg=(x,label,items)=>`<div class="fv-seg" role="group" aria-label="${label}">${items.map(([text,action,dat,on,name])=>carBtn(x,text,action,dat,on?'on':'',` aria-pressed="${on}"${name?` aria-label="${name}"`:''}`)).join('')}</div>`;
 const modeSeg=(x,walk)=>seg(x,'Cách chơi',[['🚶 Tự đi','fvmode',{mode:'walk'},walk],[clean()?'⏩ Nhanh':'⏩ Bấm nhanh','fvmode',{mode:'tap'},!walk,'Bấm nhanh']]);
-const camSeg=x=>clean()?seg(x,'Góc nhìn',[['👁️','fvcam',{cam:'fp'},x.ui.fvCam!=='tp','Góc nhìn thứ nhất'],['🎥','fvcam',{cam:'tp'},x.ui.fvCam==='tp','Góc nhìn thứ ba']])
-  :seg(x,'Góc nhìn',[['👁️ Thứ nhất','fvcam',{cam:'fp'},x.ui.fvCam!=='tp'],['Thứ ba','fvcam',{cam:'tp'},x.ui.fvCam==='tp']]);
+const camSeg=x=>seg(x,'Góc nhìn',[['🌿 Khu vườn','fvcam',{cam:'iso'},x.ui.fvCam==='iso','Khu vườn · góc nhìn từ trên'],['👁️','fvcam',{cam:'fp'},x.ui.fvCam==='fp','Góc nhìn thứ nhất'],['🎥','fvcam',{cam:'tp'},x.ui.fvCam==='tp','Góc nhìn thứ ba']]);
 /** The walk view: the stage first (re-renders keep it), the order, the overlay switches, the place's buttons and
  * the next-step button under it. `t` null: between orders. */
 function walkView(t,x,g,idle=false){
-  x.ui.fvCam??=prefs().cam==='tp'?'tp':'fp';
+  x.ui.fvCam??=['fp','tp','iso'].includes(prefs().cam)?prefs().cam:(x.api?.state?.settings?.newInterface===false?'fp':'iso');
   x.ui.fvTask=t?.id||null;
   const steps=walkSteps(g.steps,x),final=(t&&walkFinal(t,x,g))||{label:'',go:null,ready:false},at=x.ui.fvNear||null;
   const next=pending(g.steps);
@@ -522,7 +521,8 @@ function walkView(t,x,g,idle=false){
     acts=actBar({top:top+orderChip(t,x),next:parts.next,main:parts.main,cls:'fa-bar fv-acts'});
   }
   const top=ride?'':`<div class="fv-top">${camSeg(x)}${modeSeg(x,true)}</div>${plusChip(x,(...a)=>carBtn(x,...a))}`;
-  return `<div class="career-job fa fa-walk"${idle?' data-idle-open':''}><div class="fv-host" id="fvHost"><i hidden></i></div>${hint}${top}${ride?'':drawer(t,x,g)}
+  const gardenHelp=!ride&&x.ui.fvCam==='iso'?'<p class="fv-garden-help">Chạm một chỗ để đến<span class="fv-key-help"> · WASD / phím mũi tên</span><span class="fv-touch-help"> · kéo bên trái để đi</span></p>':'';
+  return `<div class="career-job fa fa-walk" data-fv-camera="${x.ui.fvCam}"${idle?' data-idle-open':''}><div class="fv-host" id="fvHost"><i hidden></i>${gardenHelp}</div>${hint}${top}${ride?'':drawer(t,x,g)}
     ${deskCard(x)}${acts}</div>`;
 }
 /** Clean layout: the sheet header's order name in four words, as app.js header does for the street-kit and desk
@@ -630,7 +630,7 @@ export default {
       m.ride({task:t.id,place:sign,sign,look:{skin:'#e9c3a0',...look}});
     },
     async fvhonk(d,el,x){(await walkLoad())?.honk();},
-    async fvcam(d,el,x){const cam=d.cam==='tp'?'tp':'fp';x.ui.fvCam=cam;setPref({cam});(await walkLoad())?.camera(cam);x.render();},
+    async fvcam(d,el,x){const cam=['fp','tp'].includes(d.cam)?d.cam:'iso';x.ui.fvCam=cam;setPref({cam});(await walkLoad())?.camera(cam);x.render();},
     async fvmode(d,el,x){const mode=d.mode==='tap'?'tap':'walk';setPref({mode});x.ui.fvMore=null;x.render();},
     async fvmore(d,el,x){x.ui.fvMore=d.more&&x.ui.fvMore!==d.more?d.more:null;x.render();},
   },

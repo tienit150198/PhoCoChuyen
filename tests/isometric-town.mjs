@@ -19,7 +19,7 @@ function harness({state='open',flag=true,mode='town',url='/live'}={}){
   vm.runInContext(source+'\nglobalThis.factory=createTownPresence;',context);
   const bridge=context.factory(()=>env,{transport:live,document:doc,events:eventTarget,now:()=>now,status:(text,visible)=>statuses.push({text,visible})});
   bridge.start();
-  return {bridge,live,world,sent,drawn,doc,statuses,emit:(t,f)=>listeners.get(t)?.(f),
+  return {bridge,live,world,env,sent,drawn,doc,statuses,emit:(t,f)=>listeners.get(t)?.(f),
     mode(m){world.mode=m;events.get('mnl:iso-mode')?.({detail:{mode:m}});},
     tick(ms=280){now+=ms;for(const fn of [...timers.values()])fn();}};
 }
@@ -73,4 +73,23 @@ test('late room after entering work is immediately left',()=>{
   const h=harness();h.mode('work');const n=h.sent.length;
   h.emit('town_room',{map:'iso-town-v1',room:'r',me:'me',people:[{pid:'p',x:6,y:8}]});
   assert.equal(h.sent.length,n+1);assert.equal(h.sent.at(-1).t,'town_out');assert.equal(h.drawn.at(-1).length,0);
+});
+
+test('treasure-enabled joins restore the server checkpoint before the next movement',()=>{
+  const h=harness();h.live.flags.treasure=true;let accepted=null;
+  h.world.correctPresence=p=>{accepted=p;h.world.getPresence=()=>({...p,direction:1});};
+  h.emit('town_room',{map:'iso-town-v1',room:'r',me:'me',x:8,y:9,people:[]});
+  assert.equal(accepted.x,8);assert.equal(accepted.y,9);const count=h.sent.length;h.tick();assert.equal(h.sent.length,count);
+  h.bridge.stop();
+  const old=harness();let corrected=false;old.world.correctPresence=()=>{corrected=true;};
+  old.emit('town_room',{map:'iso-town-v1',room:'r',me:'me',x:8,y:9,people:[]});assert.equal(corrected,false);old.bridge.stop();
+});
+
+ test('arrest leaves the town and suppresses rejoins until release',()=>{
+  const h=harness();h.emit('town_room',{map:'iso-town-v1',room:'r',me:'me',people:[{pid:'p',x:6,y:8}]});
+  h.env.api.state.jail={reason:'test'};h.tick();
+  assert.equal(h.sent.at(-1).t,'town_out');assert.equal(h.drawn.at(-1).length,0);
+  const n=h.sent.length;h.tick(20000);h.mode('town');assert.equal(h.sent.length,n);
+  assert.equal(h.statuses.at(-1).visible,false);
+  delete h.env.api.state.jail;h.tick();assert.equal(h.sent.at(-1).t,'town_in');h.bridge.stop();
 });

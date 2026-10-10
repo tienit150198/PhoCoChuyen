@@ -158,13 +158,15 @@ LOOK_IDS = {
             'giay_mary_jane', 'boot_co_ngan', 'dep_quai_ngang'),
     'acc': ('pk_khong', 'kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo', 'tui_xach', 'bong_tai',
             'khan_lua', 'kinh_mat_meo', 'mu_bucket', 'mu_luoi_trai', 'vong_co', 'dong_ho', 'kep_toc', 'kinh_can',
-            'no_lua', 'khuyen_tron', 'khan_bandana', 'balo_mini'),
+            'no_lua', 'khuyen_tron', 'khan_bandana', 'balo_mini', 'mu_beret', 'mu_cao_boi', 'tai_nghe',
+            'vuong_mien', 'bang_do_tai_meo', 'vong_hoa', 'khau_trang', 'khan_choang'),
 }
 # Bảng màu (1.3.1 accessories, then clothes and shoes): look['tint'] = {worn item id: colour id}
 # (game/wardrobe.py TINTABLE, CLOTHES, TINT_SLOTS and COLORS). Hair keeps its own shades.
 TINTABLE = ('kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo', 'tui_xach', 'bong_tai', 'khan_lua',
             'kinh_mat_meo', 'mu_bucket', 'mu_luoi_trai', 'vong_co', 'dong_ho', 'kep_toc', 'kinh_can', 'no_lua',
-            'khuyen_tron', 'khan_bandana', 'balo_mini')
+            'khuyen_tron', 'khan_bandana', 'balo_mini', 'mu_beret', 'mu_cao_boi', 'tai_nghe', 'vuong_mien',
+            'bang_do_tai_meo', 'vong_hoa', 'khau_trang', 'khan_choang')
 TINT_SLOTS = ('top', 'bottom', 'shoes', 'acc')
 PAINTABLE = frozenset(TINTABLE + LOOK_IDS['top'] + LOOK_IDS['bottom'] + LOOK_IDS['shoes'])
 TINT_MAX = 8      # entries a client may send (it sends at most one per slot in TINT_SLOTS)

@@ -63,7 +63,7 @@ IMMUTABLE = "public, max-age=31536000, immutable"
 # A statement starts a line, or follows `;`/`}` (minified release files: scripts/build_static.py).
 _IMPORT = re.compile(r"""(?:^|[;}])[ \t]*import\s*(?:[^;'"()]*?\bfrom\s*)?['"]([^'"]+)['"]""", re.M)
 _EXPORT = re.compile(r"""(?:^|[;}])[ \t]*export\s*[*{][^;'"()]*?\bfrom\s*['"]([^'"]+)['"]""", re.M)
-# `export const KIND_OF={career:'kind',...}` (public/js/scenes/index.js) and CSS_KIT (public/js/v4/careers.js).
+# `export const KIND_OF={career:'kind',...}` (public/js/scenes/vocabulary.js).
 _PAIRS = re.compile(r"""(\w+)\s*:\s*['"](\w+)['"]""")
 _ATTR_URL = re.compile(r"""((?:href|src)="|url\()(/(?:js|css|i18n|music|audio|icons)/[^"?#)]+)("|\))""")
 _INLINE_BOOT = re.compile(r"""<script[^>]*\bdata-inline\b[^>]*></script>""")
@@ -86,6 +86,15 @@ def js_table(source: str, name: str) -> dict[str, str]:
     """The flat `{key:'value',...}` object literal assigned to `name` in a module (empty when not found)."""
     m = re.search(r"\b" + re.escape(name) + r"\s*=\s*\{([^{}]*)\}", source)
     return dict(_PAIRS.findall(m.group(1))) if m else {}
+
+
+def js_list_table(source: str, name: str) -> dict[str, list[str]]:
+    """CSS_KIT's flat string-or-string-list literal, normalized to ordered lists without evaluating JS."""
+    m = re.search(r"\b" + re.escape(name) + r"\s*=\s*\{([^{}]*)\}", source)
+    if not m:
+        return {}
+    pairs = re.findall(r'''(\w+)\s*:\s*(['"]\w+['"]|\[\s*(?:['"]\w+['"]\s*,?\s*)*\])''', m.group(1))
+    return {key: re.findall(r'''['"](\w+)['"]''', value) for key, value in pairs}
 
 
 class Snapshot:
@@ -210,23 +219,24 @@ class WebAssets:
 
     def career_warm(self, files: dict[str, str], preload: list[str]) -> dict[str, str]:
         """career -> the files its first frame waits for beyond app.js's graph, comma-separated URL paths:
-        its scene kind (+ imports), its workbench (+ imports), then its stylesheets (kit first). Mirrors
-        careerAssets() in app.js, KIND_OF in scenes/index.js and CSS_KIT/loadCareerModules in v4/careers.js."""
+        its workbench (+ imports), then its stylesheets (kit first). Mirrors careerAssets() in app.js and
+        CSS_KIT/loadCareerModules in v4/careers.js. Phaser draws every workplace; the scene-kind catalogue
+        still enumerates careers, but the old canvas scene modules are no longer warmed."""
         def read(url):
             try:
                 return (self.public / url.lstrip("/")).read_text(encoding="utf-8")
             except OSError:
                 return ""
-        kinds = js_table(read("/js/scenes/index.js"), "KIND_OF")
-        kits = js_table(read("/js/v4/careers.js"), "CSS_KIT")
+        kinds = js_table(read("/js/scenes/vocabulary.js"), "KIND_OF")
+        kits = js_list_table(read("/js/v4/careers.js"), "CSS_KIT")
         have = {u.split("?", 1)[0] for u in preload}
         out = {}
-        for cid, kind in kinds.items():  # every career has a scene kind; most have a workbench module too
+        for cid in kinds:  # every career has a scene kind; most have a workbench module too
             order = []
-            for entry in (f"/js/scenes/{kind}.js", f"/js/careers/{cid}.js"):
+            for entry in (f"/js/careers/{cid}.js",):
                 if entry in files:
                     order += [u for u in self.module_graph(entry) if u in files and u not in have and u not in order]
-            order += [u for u in (f"/css/careers/{kits[cid]}.css" if cid in kits else "", f"/css/careers/{cid}.css") if u in files]
+            order += [u for kit in [*kits.get(cid, []), cid] if (u := f"/css/careers/{kit}.css") in files]
             out[cid] = ",".join(order)
         return out
 

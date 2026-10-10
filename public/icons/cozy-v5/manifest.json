@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "generator": "Built-in image_gen",
+  "style": "Detailed hand-painted cozy Vietnamese isometric game illustrations. Soft painterly shading, warm pastel foliage and terracotta, organic irregular foundation, transparent alpha, wide clear margins. No people, labels, logos or watermark.",
+  "assets": [
+    {
+      "id": "fairgrounds",
+      "path": "public/icons/cozy-v5/fairgrounds.webp",
+      "prompt": "Vietnamese folk fairground with ring toss stalls, lanterns, bunting and an oval brick courtyard.",
+      "bytes": 185230
+    },
+    {
+      "id": "dograce",
+      "path": "public/icons/cozy-v5/dograce.webp",
+      "prompt": "Oval dog racing track with sandy lanes, white rails, timber starting gate, mint-roof kiosk and grassy infield.",
+      "bytes": 151652
+    },
+    {
+      "id": "district-rent",
+      "path": "public/icons/cozy-v5/district-rent.webp",
+      "prompt": "Yellow dormitory with external stairs and a mint boarding-house row, shared courtyard, clothesline and bicycle.",
+      "bytes": 213126
+    },
+    {
+      "id": "district-apartment",
+      "path": "public/icons/cozy-v5/district-apartment.webp",
+      "prompt": "Five-storey pastel blue apartment block, flowered balconies, lobby canopy and asymmetrical garden forecourt.",
+      "bytes": 205558
+    },
+    {
+      "id": "district-townhouse",
+      "path": "public/icons/cozy-v5/district-townhouse.webp",
+      "prompt": "Staggered terrace of three narrow two-storey pastel townhouses with red tile roofs, shutters and curving front walkway.",
+      "bytes": 180228
+    },
+    {
+      "id": "district-villa",
+      "path": "public/icons/cozy-v5/district-villa.webp",
+      "prompt": "Warm cream villa with red tiled roofs, veranda, wrought iron gate, tropical garden, curved pond and stepping stones.",
+      "bytes": 208846
+    }
+  ]
+}

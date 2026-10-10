@@ -6,7 +6,7 @@ import {shopEventCard} from './shop-events-ui.js';
 import {staffLifeCard} from './staff-life-ui.js';
 import {workplaceAway,workplaceAwayCard} from './away-report.js';
 import {T,isShop} from './v4/terms.js';
-import {wordsFor} from './scenes/index.js';
+import {wordsFor} from './scenes/vocabulary.js';
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const attr=x=>esc(JSON.stringify(x));
 const tag=(text,kind='')=>`<span class="tag ${kind}">${text}</span>`;

@@ -1,5 +1,8 @@
-/** Visual families only: catalogue IDs, doors and collision geometry stay server-owned. */
-export const BUILDING_ART:Record<string,string>={
+import {CAREER_ART} from './career-art';
+
+/** Shared paintings remain available while a finished exterior is loading and
+ * for older/non-catalogue callers. They are never the final career selection. */
+export const LEGACY_BUILDING_ART:Record<string,string>={
   grocery:'grocery',mother_baby:'mother-baby',pharmacy:'pharmacy',
   accounting:'office',customer_care:'office',corp_accounting:'office',tax_payroll:'office',
   group_accounting:'office',hr_admin:'office',secretary:'office',it_helpdesk:'office',tour_guide:'office',
@@ -8,15 +11,13 @@ export const BUILDING_ART:Record<string,string>={
   florist:'florist',salon:'salon',nail:'salon',pet_care:'pet',pet_shop:'pet',teacher:'school',pagoda:'pagoda',
   delivery:'garage',garbage:'garage',drain:'garage',repair:'garage',garage:'garage',
   homestay:'home',homemaker:'home',giupviec:'home',babysitter:'home',photobooth:'office',pilot:'airport',flight_attendant:'airport',
-  // 1.8 careers: the closest family until each gets its own sprite (public/icons/cozy-v3/<kind>.webp + NEW_BUILDING_ART).
   library:'school',nurse:'pharmacy',oil:'garage',railway:'airport',
-  // Careers on the way (lighthouse, rescue call centre, pool lifeguard, police): their door shows as soon as the
-  // catalogue lists them as playable; give them their own art here when it exists.
-  lighthouse:'airport',rescue:'office',lifeguard:'market',police:'office',
-  // 💿 the ZPOP album shop (07/10): a storefront like the grocery's until it gets its own sprite.
+  lighthouse:'lighthouse',rescue:'office',lifeguard:'market',police:'office',
   zpop:'grocery',
 };
-export const NEW_BUILDING_ART=['florist','salon','office','pet','school','pagoda','airport','market'];
+/** Exactly one complete exterior painting per real catalogue profession. */
+export const BUILDING_ART:Record<string,string>={...LEGACY_BUILDING_ART,...Object.fromEntries(Object.values(CAREER_ART).map(a=>[a.career,a.key]))};
+export const NEW_BUILDING_ART=['florist','salon','office','pet','school','pagoda','airport','market','lighthouse'];
 /** Keep a shop name to at most two lines; automatic word wrap made long signs tiny. */
 export function facadeTextLines(text:string){
   const clean=text.trim().replace(/\s+/g,' ');if(clean.length<=18)return clean;
@@ -43,5 +44,7 @@ export const FACADE_SIGNS:Record<string,{x:number;y:number;width:number;height:n
   school:{x:.397,y:.38,width:.39,height:.084,angle:.30},
   pagoda:{x:.432,y:.45,width:.37,height:.084,angle:.25},
   airport:{x:.459,y:.467,width:.4,height:.084,angle:.23},
+  lighthouse:{x:.4,y:.56,width:.35,height:.063,angle:.29,panel:true},
   market:{x:.371,y:.378,width:.41,height:.084,angle:.30},
+  ...Object.fromEntries(Object.values(CAREER_ART).map(a=>[a.key,a.sign])),
 };

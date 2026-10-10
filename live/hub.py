@@ -25,6 +25,13 @@ except ImportError:  # pragma: no cover - the service cannot run without it; tes
     _ws_broadcast = None
 
 
+def _broadcast(connections, message, *, text=False):
+    """Standard websockets selects text frames from str, without a text kwarg."""
+    if text and isinstance(message, (bytes, bytearray)):
+        message = message.decode('utf-8')
+    return _ws_broadcast(connections, message)
+
+
 class Player:
     def __init__(self, ident):
         self.pid, self.sid = ident.pid, ident.sid
@@ -125,7 +132,7 @@ class Hub:
         self.by_ip: dict = {}
         self.sent = 0           # frames written (stats)
         self.cut = 0            # slow clients cut off
-        self.write = _ws_broadcast
+        self.write = _broadcast
 
     # ---- sockets ----------------------------------------------------------------------------------
     def add(self, conn: Conn) -> None:

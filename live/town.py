@@ -35,12 +35,15 @@ SPEED = 8.0                     # grid units/s; model walk/joystick <= 6 units/s
 JITTER = .7                    # finite distance credit, not extra credit on every frame
 MAX_CREDIT = SPEED * 1.5 + JITTER
 DIRECTIONS = frozenset(('se', 'sw', 'ne', 'nw'))
+RESIDENTIAL_ACTIVITIES = frozenset(('homes-rent', 'homes-apartment', 'homes-townhouse', 'homes-villa'))
 ACTIVITY_PHASES = {'fishing': frozenset(('walk', 'waiting', 'bite')),
                    'boat': frozenset(('walk', 'boat', 'return')),
-                   'pool': frozenset(('walk', 'pool', 'return'))}
+                   'pool': frozenset(('walk', 'pool', 'return')),
+                   **{kind: frozenset(('idle', 'walk')) for kind in RESIDENTIAL_ACTIVITIES}}
 ACTIVITY_ACTIONS = {'fishing': frozenset(('cast', 'reel', 'caught')),
                     'boat': frozenset(('board', 'exit')),
-                    'pool': frozenset(('board', 'exit'))}
+                    'pool': frozenset(('board', 'exit')),
+                    **{kind: frozenset() for kind in RESIDENTIAL_ACTIVITIES}}
 ACTIVITY_SPEED, ACTIVITY_JITTER = 88.0, 12.0  # local walk/swim/boat speed <= 72 px/s
 ACTIVITY_MAX_CREDIT = ACTIVITY_SPEED * 1.5 + ACTIVITY_JITTER
 ACTIVITY_ENTRY = {'boat': (104, 150), 'pool': (86, 142)}
@@ -53,25 +56,15 @@ _LAYOUT = json.loads((Path(__file__).resolve().parent.parent / 'game' / 'town_la
 
 def town_geometry(count=len(CAREERS)):
     """Open courtyards share bounds with the client; physical obstacles stay solid."""
-    rows = max(2, math.ceil((count + (1 if count > 7 else 0)) / 6))
-    bounds = (0.0, 0.0, 43.0, float(rows * 7 + 1))
-    return bounds, (bounds,)
+    keys = ('x0', 'y0', 'x1', 'y1')
+    return tuple(_LAYOUT['bounds'][k] for k in keys), tuple(tuple(r[k] for k in keys) for r in _LAYOUT['openGround'])
 
 
 def town_obstacles(count=len(CAREERS)):
-    slots = ([0, 1, 6, 2, 3, 4, 5] + list(range(8, count + 1)))[:count]
-    buildings, gardens = [], []
-    for slot in slots:
-        col, row = slot % 6, slot // 6
-        dx, dy = _LAYOUT['setbacks'][(slot + row) % len(_LAYOUT['setbacks'])]
-        x, y = col * 7 + 1 + dx, row * 7 + 1 + dy
-        buildings.append((x, y, x + 4.2, y + 4.2))
-        for prop in _LAYOUT['gardens'][(slot + row) % len(_LAYOUT['gardens'])]:
-            x, y = col * 7 + prop['x'], row * 7 + prop['y']
-            radius = .22 if prop['kind'] in ('flowers', 'shrubs', 'rocks') else .15
-            gardens.append((x - radius, y - radius, x + radius, y + radius))
-    water = [tuple(p['footprint'][k] for k in ('x0', 'y0', 'x1', 'y1')) for p in _LAYOUT['commons']]
-    return tuple(buildings + water + gardens)
+    keys = ('x0', 'y0', 'x1', 'y1')
+    props = (_LAYOUT['lots'][:count] + _LAYOUT['commons'] + _LAYOUT['planting'] + _LAYOUT['shopLots']
+             + [p for p in _LAYOUT['amenities'] if p.get('footprint')])
+    return tuple(tuple(p['footprint'][k] for k in keys) for p in props)
 
 
 BOUNDS, ROADS = town_geometry()
@@ -82,7 +75,8 @@ CLEARANCE = .14
 def clean_point(x, y):
     if not all(type(v) in (int, float) and math.isfinite(v) for v in (x, y)):
         raise LiveError('bad', 'Vị trí không hợp lệ.')
-    if not (BOUNDS[0] <= x <= BOUNDS[2] and BOUNDS[1] <= y <= BOUNDS[3]) or any(
+    if not (BOUNDS[0] <= x <= BOUNDS[2] and BOUNDS[1] <= y <= BOUNDS[3]) or not any(
+            x0 <= x <= x1 and y0 <= y <= y1 for x0, y0, x1, y1 in ROADS) or any(
             x0 - CLEARANCE <= x <= x1 + CLEARANCE and y0 - CLEARANCE <= y <= y1 + CLEARANCE
             for x0, y0, x1, y1 in OBSTACLES):
         raise LiveError('bad', 'Vị trí này có công trình, cây hoặc mặt nước.')
@@ -101,13 +95,15 @@ def clean_activity(value):
         raise LiveError('bad', 'Hoạt động không hợp lệ.')
     kind, phase, direction, action = (value.get(k) for k in ('kind', 'phase', 'direction', 'action'))
     x, y, moving = value.get('x'), value.get('y'), value.get('moving', False)
+    residential = isinstance(kind, str) and kind in RESIDENTIAL_ACTIVITIES
+    xmin, ymin, xmax, ymax = (-20, -20, 20, 20) if residential else (0, 0, 320, 200)
     if (not isinstance(kind, str) or kind not in ACTIVITY_PHASES or
             not isinstance(phase, str) or phase not in ACTIVITY_PHASES[kind] or
             not isinstance(direction, str) or direction not in DIRECTIONS or
             (action is not None and (not isinstance(action, str) or action not in ACTIVITY_ACTIONS[kind])) or
             type(moving) is not bool or
             not all(type(v) in (int, float) and math.isfinite(v) for v in (x, y)) or
-            not (0 <= x <= 320 and 0 <= y <= 200)):
+            not (xmin <= x <= xmax and ymin <= y <= ymax)):
         raise LiveError('bad', 'Tư thế hoạt động không hợp lệ.')
     return dict(kind=kind, x=round(float(x), 2), y=round(float(y), 2), direction=direction,
                 phase=phase, action=action, moving=moving)
@@ -280,6 +276,9 @@ class TownFeature(Feature):
         activity = clean_activity(f.get('activity'))
         look, gender = clean_look(f.get('look'), f.get('g'))
         await self._ensure_loaded(conn.player)
+        treasure = getattr(self.app, 'by_name', {}).get('treasure')
+        if treasure is not None and treasure.enabled():
+            point = await treasure.enter(conn) or point
         self._leave(conn, 'other', takeover=True)
         room = self._pick(conn.player)
         room.add(conn)
@@ -290,12 +289,17 @@ class TownFeature(Feature):
         peers = [o.public() for pid, o in room.data['people'].items()
                  if pid != w.pid and not self.hub.blocked(w.pid, pid)]
         out = dict(t='town_room', map=MAP_ID, room=room.id, me=w.pid, people=peers, cap=CAP)
+        if treasure is not None and treasure.enabled():
+            out.update(x=w.x, y=w.y)
         if isinstance(f.get('cid'), str) and len(f['cid']) <= 40:
             out['cid'] = f['cid']
         return out
 
     @on('town_out', rate=(20, 60))
     async def town_out(self, conn, f):
+        treasure = getattr(self.app, 'by_name', {}).get('treasure')
+        if treasure is not None and treasure.enabled():
+            await treasure.leave(conn)
         self._leave(conn)
         out = dict(t='town_left', why='out')
         if isinstance(f.get('cid'), str) and len(f['cid']) <= 40:

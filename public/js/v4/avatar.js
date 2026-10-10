@@ -14,6 +14,7 @@ const LABEL={skin:'Màu da',shape:'Dáng mặt',age:'Độ tuổi',expr:'Nét m�
   hwc:'Màu mũ · khăn',beard:'Râu',extra:'Điểm nhấn',freckles:'Tàn nhang',shirt:'Áo',bg:'Màu nền'};
 const SWATCH=new Set(['skin','hc','hwc','bg']);
 const SAMPLE='Chào cả phố! 👋';
+const presets=api=>api.content?.journey?.wardrobe?.avatar_presets||[];
 
 const saved=api=>{const a=api.state.avatar;return {kind:a?.kind==='emoji'?'emoji':'face',emoji:EMOJIS.includes(a?.emoji)?a.emoji:EMOJIS[0],face:faceOf(api.state).f};};
 const S=(ui,api)=>ui.av??={tab:'mat',...saved(api)};
@@ -47,7 +48,8 @@ export function avatarView(env){
   if(st.kind==='emoji')body=`<div class="av-opts av-emojis">${EMOJIS.map(e=>`<button type="button" class="av-opt em${st.emoji===e?' on':''}" data-action="jrAvEmoji" data-emoji="${e}" aria-pressed="${st.emoji===e}">${e}</button>`).join('')}</div>`;
   else{
     const tab=TABS.find(t=>t[0]===st.tab)||TABS[0];
-    body=`<nav class="av-tabs" role="tablist" aria-label="Phần của gương mặt">${TABS.map(([id,l,e])=>`<button type="button" role="tab" class="av-tab${tab[0]===id?' active':''}" aria-selected="${tab[0]===id}" data-action="jrAvTab" data-tab="${id}"><span aria-hidden="true">${e}</span>${l}</button>`).join('')}</nav>`+
+    const choices=presets(api),quick=choices.length?`<section class="av-part"><h4>Mẫu gương mặt</h4><div class="av-opts">${choices.map(p=>{const on=same(st.face,p.face);return `<button type="button" class="av-opt${on?' on':''}" data-action="jrAvPreset" data-preset="${esc(p.id)}" aria-pressed="${on}" aria-label="${esc(p.name)}">${faceSVG(code(api,p.face),48)}<small>${esc(p.name)}</small></button>`;}).join('')}</div></section>`:'';
+    body=quick+`<nav class="av-tabs" role="tablist" aria-label="Phần của gương mặt">${TABS.map(([id,l,e])=>`<button type="button" role="tab" class="av-tab${tab[0]===id?' active':''}" aria-selected="${tab[0]===id}" data-action="jrAvTab" data-tab="${id}"><span aria-hidden="true">${e}</span>${l}</button>`).join('')}</nav>`+
       tab[3].map(p=>{const o=options(api,st,p);return o?`<section class="av-part"><h4>${LABEL[p]}</h4>${o}</section>`:'';}).join('')+
       (tab[0]==='ao'?`<p class="small muted av-note">Mặc đồ trong Tủ đồ thì đổi áo, đổi phụ kiện là ảnh đổi theo. <button type="button" class="btn ghost small" data-action="jrWardrobe">👗 Tủ đồ</button></p>`:'');
   }
@@ -69,6 +71,7 @@ const pick=ids=>ids[Math.floor(Math.random()*ids.length)];
 export async function avatarAction(action,data,el,env){
   const {api,ui,cmd,renderSheet}=env,st=S(ui,api);
   switch(action){
+    case'jrAvPreset':{const preset=presets(api).find(p=>p.id===data.preset);if(preset){st.kind='face';st.face={...preset.face};}renderSheet(false);return true;}
     case'jrAvTab':st.tab=TABS.some(t=>t[0]===data.tab)?data.tab:'mat';renderSheet(false);return true;
     case'jrAvKind':st.kind=data.kind==='emoji'?'emoji':'face';renderSheet(false);return true;
     case'jrAvEmoji':if(EMOJIS.includes(data.emoji))st.emoji=data.emoji;renderSheet(false);return true;

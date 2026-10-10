@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow"><title>Xem thử từng nghề · Phố Có Chuyện</title>
+  <link rel="stylesheet" href="/css/career-gallery.css">
+  <script type="module" src="/js/isometric/career-gallery.js"></script>
+</head>
+<body>
+  <header class="masthead"><a class="brand" href="/">Phố Có Chuyện<span>Góc xem thử</span></a><span class="badge">Bản thử cảnh · không lưu tiến trình</span><a class="back" href="/">Về game ↗</a></header>
+  <main>
+    <section class="intro"><p class="eyebrow">MỖI NGHỀ, MỘT GÓC PHỐ</p><h1>Đi một vòng các nơi làm việc.</h1><p>Xem mặt tiền, bước vào bên trong và thử đường đi. Chọn bất kỳ nghề nào, không cần mở khóa.</p></section>
+    <nav class="toolbar" aria-label="Chọn cảnh"><label>Tìm nghề<input id="search" type="search" placeholder="Ví dụ: nhà thuốc, quán phở…"></label><label class="select-career">Đang xem<select id="career" aria-label="Chọn nghề"></select></label><button id="all" type="button">Tất cả mặt tiền</button></nav>
+    <section id="viewer" class="viewer" hidden aria-label="Cảnh nghề đang xem">
+      <div class="scene-head"><div><p id="scene-kind" class="eyebrow"></p><h2 id="scene-title"></h2></div><div class="tabs" role="group" aria-label="Góc nhìn"><button id="outside" aria-pressed="true">Mặt ngoài</button><button id="inside" aria-pressed="false">Vào bên trong</button></div></div>
+      <div class="stage"><div id="exterior"><img id="building" alt=""><div class="ground-shadow"></div></div><div id="interior" hidden><canvas id="scene"></canvas><div class="scene-controls"><button id="zoom-out" aria-label="Thu nhỏ">−</button><button id="center">Về giữa</button><button id="zoom-in" aria-label="Phóng to">+</button></div><div id="walk-pad" aria-label="Điều khiển di chuyển"><button data-x="0" data-y="-1" aria-label="Đi lên">↑</button><button data-x="-1" data-y="0" aria-label="Đi trái">←</button><button data-x="0" data-y="1" aria-label="Đi xuống">↓</button><button data-x="1" data-y="0" aria-label="Đi phải">→</button></div></div></div>
+      <footer class="scene-footer"><p id="description"></p><p id="status" role="status" aria-live="polite">Chọn “Vào bên trong” để thử đi lại.</p><span class="hint">Chạm để đi · kéo để xem · WASD / phím mũi tên để di chuyển</span></footer>
+      <div class="pager"><button id="previous">← Nghề trước</button><span id="position"></span><button id="next">Nghề tiếp →</button></div>
+    </section>
+    <div class="collection-head"><h2 id="collection-title">Bộ mặt tiền</h2><span id="count" role="status">Đang tải danh sách…</span></div>
+    <section id="gallery" class="gallery" aria-labelledby="collection-title"></section>
+    <p id="error" role="alert" hidden></p>
+  </main>
+</body></html>
