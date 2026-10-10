@@ -157,7 +157,7 @@ class FeedbackModuleTests(unittest.TestCase):
         self.assertIsNone(item['reply'])
         self.assertIsNone(item['replied_at'])
         self.assertIn('[đã ẩn]', pfb.update(self.store, fid, reply='Gọi 0901234567 nhé')['reply'])
-        for bad in (dict(fid=fid), dict(fid=fid, status='open'), dict(fid=fid, reply='x' * 301), dict(fid='x', status='seen'),
+        for bad in (dict(fid=fid), dict(fid=fid, status='open'), dict(fid=fid, reply='x' * 10001), dict(fid='x', status='seen'),
                     dict(fid=None, status='seen')):
             with self.subTest(bad=bad), self.assertRaises(pfb.FeedbackError):
                 pfb.update(self.store, **bad)
@@ -352,7 +352,7 @@ class FeedbackHTTPTests(unittest.TestCase):
         mine = self.req(anon, '/api/feedback/mine')[1]['items'][0]
         self.assertEqual((mine['status'], mine['reply']), ('done', 'Cảm ơn, bản sau sẽ gọn hơn!'))
         self.assertEqual(self.req(admin, '/api/admin/feedback', 'POST', dict(id=10 ** 9, status='seen'))[0], 404)
-        self.assertEqual(self.req(admin, '/api/admin/feedback', 'POST', dict(id=item['id'], reply='x' * 301))[0], 400)
+        self.assertEqual(self.req(admin, '/api/admin/feedback', 'POST', dict(id=item['id'], reply='x' * 10001))[0], 400)
         self.assertIs(self.req(admin, '/api/feedback/mine')[1]['admin'], True)
         # Removing the account from ADMIN_USERS closes the inbox at once.
         with patch.dict(os.environ, {'ADMIN_USERS': ''}):
