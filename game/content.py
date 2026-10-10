@@ -91,6 +91,8 @@ UPGRADES = [
 ]
 from .work_gear import catalogue as _work_equipment
 UPGRADES.extend(_work_equipment())
+from .income_gear import catalogue as _income_equipment
+UPGRADES.extend(_income_equipment())
 UPGRADE_INDEX={u["id"]:u for u in UPGRADES}
 
 # Concrete milestone conditions; story text comes from the authored baseline.

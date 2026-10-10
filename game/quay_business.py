@@ -15,6 +15,7 @@ from . import quay as qy
 from . import quay_self as qs
 from . import quay_market as market
 from . import wealth_pricing
+from . import income_gear
 
 PERIOD = 600
 DEN = PERIOD * 1000
@@ -62,6 +63,8 @@ def _intervals(st):
     reach *= 1 + (.08 if 'bang' in st['items'] else 0) + (.04 if 'tu' in st['items'] else 0)
     normal = min(capacity / 1.6, p['base'] * t['mult'] / 100 * reach)
     normal *= st.get('business', {}).get('speed_factor', 1)
+    normal *= 1 + income_gear.cached(st,'demand') / 100
+    normal *= (200 + income_gear.online_rate(st)) / 300
     from .shop_events import demand_factor
     normal *= demand_factor(st, quay=True)
     return {d: max(1000, math.ceil(DEN * len(board['on']) /
@@ -80,7 +83,8 @@ def initialize(s, st, now=None):
         signature='', carry={k: 0 for k in ('wages', 'rent', 'power', 'online', 'tax')},
         expenses={k: 0 for k in EXPENSES}, revenue=0, sold=0, recent=[], halted=-1,
         seq=0, manual_seq=0, owner_next=at, unpaid_fines=0,
-        speed_factor=factor(s.get('careers', {}).get(st['trade'], {})))
+        speed_factor=factor(s.get('careers', {}).get(st['trade'], {})),
+        income_gear=income_gear.effects(s.get('careers', {}).get(st['trade'], {})))
     _profit_state(st)
     market.migrate(st)
     if wealth_pricing.ENABLED:
@@ -122,6 +126,10 @@ def reconcile(s):
         if b is not None and b.get('speed_factor', 1) != speed:
             b['speed_factor'] = speed
             changed = True
+        growth=income_gear.effects(s.get('careers', {}).get(st['trade'], {}))
+        if b is not None and b.get('income_gear',dict.fromkeys(income_gear.RATES,0)) != growth:
+            b['income_gear']=growth
+            changed=True
     return changed
 
 
@@ -296,7 +304,7 @@ def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=
         b['expenses']['loss'] += paid
         costs += paid
     costs += charge_income_tax(st, amount, costs)
-    bonus = reward_margin(st, amount, costs, BONUS_PERCENT if employee is None else STAFF_BONUS_PERCENT)
+    bonus = reward_margin(st, amount, costs, income_gear.profit_percent(st,BONUS_PERCENT if employee is None else STAFF_BONUS_PERCENT))
     ratio = sum(qs.price(st, d) / qs.DISH[st['trade']][d]['base'] for d in items) / len(items)
     price_stars = 5 if ratio <= .9 else 4 if ratio < 1.15 else 3 if ratio < 1.5 else 2 if ratio < 2 else 1
     review = None
@@ -373,7 +381,7 @@ def settle(s, now=None):
             if when > at or status(st) == 'no_funds':
                 break
             qs.settle_queue(s, st, when)
-            channel = 'online' if st.get('online') and b['seq'] % 3 == 2 else 'counter'
+            channel = income_gear.channel(st,b['seq'])
             employee = st['staff'][b['seq'] % len(st['staff'])]
             sale(st, [dish], when, channel=channel, employee=employee)
             tick_staff(s, st)
@@ -473,10 +481,10 @@ def income(st, at):
         sold = {d: work / (100 * n) for d, n in iv.items()}
         revenue = sum(q * qs.price(st, d) for d, q in sold.items())
         costs = sum(q * unit_cost(st, d) for d, q in sold.items()) + sum(rates.values()) * ms / DEN \
-            + revenue / 3 * online / 100
+            + revenue * income_gear.online_rate(st) / (200 + income_gear.online_rate(st)) * online / 100
         margin = revenue - costs
         tax = max(0, margin) * market.INCOME_TAX_PERCENT / 100
-        bonus = max(0, margin - tax) * STAFF_BONUS_PERCENT / 100
+        bonus = max(0, margin - tax) * income_gear.profit_percent(st,STAFF_BONUS_PERCENT) / 100
         return dict(sold=round(sum(sold.values()), 1), revenue=round(revenue), costs=round(costs + tax),
                     bonus=round(bonus), net=round(margin - tax + bonus))
     hour_ms = 3600 * 1000
@@ -531,7 +539,7 @@ def public(st):
         price_effect=price_effect(st), protection=dict(level=b.get('protection', {}).get('level', 'none'), options=[dict(level=k, **v) for k,v in plans.items()], **plans[b.get('protection', {}).get('level', 'none')], quote=dict(b.get('protection_quote', {}))),
         protection_plans=[dict(level=k, **v) for k,v in plans.items()],
         rates=rates, income_tax_percent=market.INCOME_TAX_PERCENT,
-        bonus_percent=BONUS_PERCENT, staff_bonus_percent=STAFF_BONUS_PERCENT,
+        bonus_percent=income_gear.profit_percent(st,BONUS_PERCENT), staff_bonus_percent=income_gear.profit_percent(st,STAFF_BONUS_PERCENT),
         visitor_orders=visitors,
         stock_total=sum(b['stock'].values()), stock=[dict(id=d, qty=b['stock'].get(d, 0), cost=unit_cost(st, d), price=qs.price(st, d), keep=keep(st, d)) for d in rows],
         kept=held, again=[dict(id=d, qty=n) for d, n in (b.get('again') or {}).items() if d in rows],
@@ -552,6 +560,9 @@ def validate(st, need, integer):
     need(all(k in b for k in ('cursor', 'paused', 'stock', 'arrivals', 'signature', 'carry', 'expenses', 'revenue', 'sold', 'recent', 'halted', 'seq', 'manual_seq')))
     need(integer(b['cursor'], 0, 10**15) and type(b['paused']) is bool and integer(b.get('owner_next', b['cursor']), 0, 10**18))
     need(type(b.get('speed_factor', 1)) in (int, float) and b.get('speed_factor', 1) in (1, 1.15, 1.35, 1.6))
+    growth=b.get('income_gear',dict.fromkeys(income_gear.RATES,0))
+    need(isinstance(growth,dict) and set(growth)==set(income_gear.RATES))
+    need(all(type(growth[k]) is int and growth[k] in rates for k,rates in income_gear.RATES.items()))
     need(integer(b.get('unpaid_fines', 0), 0, 10**16))
     if 'profit_boost' in b:
         p = b['profit_boost']

@@ -41,6 +41,7 @@ from . import incidents as incs
 from . import happenings as haps
 from . import archive as ar
 from . import bank_speaker
+from . import income_gear
 from . import whats_new as wn
 from . import closeness as qn
 from . import abandon as ab
@@ -345,7 +346,11 @@ def task_done(s:dict,c:dict,t:dict,reward:int,narrative:str,status:str="complete
     if t.get('player_order'):
         player_services.complete(s,c,t,narrative)
         return
-    if reward: money(s,c,reward,"Hoàn thành: "+t["title"],t["id"])
+    if reward:
+        money(s,c,reward,"Hoàn thành: "+t["title"],t["id"])
+        if status=='completed':
+            from .income_gear import completion_bonus
+            completion_bonus(s,c,reward,t['title'],t['id'])
     remember(s,c,t["npc"],narrative,t["id"])
     made=fbk.make_review(s,c,t,status)
     review=made["text"];stars=made["stars"]
@@ -513,14 +518,15 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
             out,result=_apply_action(state,career,action,payload,internal,owned)
         if business.reconcile(out):validate_state(out)
         return out,result
-    try:return bank_speaker.collect(run)
+    try:return bank_speaker.collect(lambda:income_gear.collect(run))
     finally:
         if token is not None:_SCOPED.reset(token)
         ar.done_acting(acting)
 
 def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,internal:bool,owned:bool) -> tuple[dict,dict]:
     s=migrate_state(state,owned=owned)
-    if business.settle(s):validate_state(s)
+    settled_at=business.time.time()
+    if business.settle(s,now=settled_at):validate_state(s)
     fh.settle(s)  # 💸 a vay nóng of a fair that has closed is collected (game/fair_cash.py)
     p=payload or {}
     need(isinstance(p,dict),"Dữ liệu thao tác không hợp lệ.")
@@ -994,6 +1000,10 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         need(career in u.get("careers",CAREERS),"Nâng cấp không thuộc nghề này.")
         need(not u.get('requires') or u['requires'] in c['upgrades'],"Lắp bậc trước rồi nâng tiếp nhé.")
         need(1+c["xp"]//90>=u["min_level"],f'Cần cấp {u["min_level"]}. Hoàn thành thêm vài việc nhé.')
+        if u['kind']=='equipment':
+            pending=c['ops'].get('business',{}).get('pending',{})
+            need(not any(row['at']<=settled_at for row in pending.values()),
+                 'Còn đơn cũ đang chốt tiền. Tải lại để đồng bộ thu nhập rồi mua nâng cấp nhé.', 'business_catching_up')
         money(s,c,-u["price"],"Mua "+u["name"]);c["upgrades"].append(item)
         if u["kind"]=="decor":
             metric(c,"decorations");c["decor"][item]=dict(spot={"plant":"window","rug":"center","lamp":"corner","seat":"front","poster":"wall"}.get(item,"window"))
@@ -1867,6 +1877,8 @@ def _ph_action(s:dict,c:dict,action:str,p:dict)->dict:
         r["hist"]=ar.last(r["hist"]+[[day,"ok" if on_time else "late"]],6,"care.regular."+str(p["who"]),c)
         pay=PH_PAY+(5 if on_time and r["trust"]>=3 else 0)
         money(s,c,pay,"Phiếu lặp lại · "+spec["name"],"refill-"+spec["id"],"revenue")
+        from .income_gear import completion_bonus
+        completion_bonus(s,c,pay,'Phiếu lặp lại · '+spec['name'],'refill-'+spec['id'])
         metric(c,"refills");c["xp"]+=6
         _care_log(care,day,f'Giao {spec["qty"]} × {lid} cho {spec["name"]}'+(" đúng hẹn." if on_time else " (khách quên lịch, tới trễ)."))
         return dict(message=f'Đã giao {spec["qty"]} × {lid} cho {spec["name"]} · +{pay} xu. Hẹn đợt sau ngày {r["due"]}.',celebrate=on_time)
@@ -2208,6 +2220,8 @@ def _ac_action(s:dict,c:dict,action:str,p:dict)->dict:
         rec["trust"]=max(0,min(5,rec["trust"]+(1 if grade=="perfect" and not late else -1 if grade=="rough" else 0)))
         b["closed"]=dict(day=day,grade=grade,fee=fee+tip,left=left,note=note if gap else "full")
         if fee+tip:money(s,c,fee+tip,f'Khóa sổ tháng {b["m"]+1} · {spec["name"]}',f'book-{spec["id"]}-{b["m"]}',"revenue")
+        from .income_gear import completion_bonus
+        completion_bonus(s,c,fee+tip,'Khóa sổ tháng · '+spec['name'],f'book-{spec["id"]}-{b["m"]}')
         metric(c,"books_closed")
         if grade=="perfect":metric(c,"books_perfect");c["xp"]+=10
         if grade=="rough":_risk(c,1)

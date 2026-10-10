@@ -370,7 +370,7 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         if any(price(st, d) > DISH[trade][d]['base'] * 1.15 for d in run['current']['items']):
             run['next_at'] = max(run['next_at'], b['cursor'] + _queue_wait(st))
         for jn in range(len(run['on'])):
-            _next_order(s, st, run, jn, b['cursor'] + (jn + 1) * _manual_wait(st, s))
+            _next_order(s, st, run, jn, b['cursor'] + (jn + 1) * _online_wait(st, s))
         settle_queue(s, st, b['cursor'])
         st['left'] = 0
         return dict(message='🧑‍🍳 Bạn đã đứng quầy. Khách đang tới, đơn sẽ hiện ngay tại đây.' if run['next_at'] > b['cursor']
@@ -545,7 +545,7 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
             run['on'][jn] = 0
             run.get('rides', {}).pop(str(jn), None)
             delivery_speed = o.get('drive_factor', 1) if way == 'self' else 1
-            _next_order(s, st, run, jn, max(st['business']['cursor'], o['available_at'] + round(_manual_wait(st, s) * 2 / delivery_speed)))
+            _next_order(s, st, run, jn, max(st['business']['cursor'], o['available_at'] + round(_online_wait(st, s) * 2 / delivery_speed)))
             run['sk'] = run['u'] + sum(st['business']['stock'].values())
         bits = ['đúng món' if right else 'sai món', 'dán kín' if p.get('seal') else 'quên dán']
         how = ('🛵 Bạn tự giao' + (', lạc đường một chút' if late else ', tới nhanh')) if way == 'self' else \
@@ -569,9 +569,16 @@ def _manual_wait(st, s=None):
     available = [d for d in board['on'] if st['business']['stock'].get(d, 0)] or board['on']
     willingness = sum(demand(DISH[st['trade']][d]['base'], board['p'][d]) for d in available) / len(available)
     speed = factor((s or {}).get('careers', {}).get(st['trade'], {}))
+    from .income_gear import cached
+    speed *= 1 + cached(st,'demand') / 100
     from .quay_market import snapshot
     market_factor = snapshot(st['business']['cursor'])['demand_factor']
     return min(10**15, max(5000, round(15000 / max(1e-12, willingness) / speed / market_factor)))
+
+
+def _online_wait(st,s=None):
+    from .income_gear import online_rate
+    return max(2500,round(_manual_wait(st,s)*100/online_rate(st)))
 
 
 def _queue_wait(st):
@@ -583,7 +590,8 @@ def _queue_wait(st):
     from .quay_business import demand
     board = menu(st)
     willingness = sum(demand(DISH[st['trade']][d]['base'], board['p'][d]) for d in board['on']) / len(board['on'])
-    return min(10**15, max(1000, round(3000 / max(1e-12, willingness) / st['business'].get('speed_factor', 1))))
+    from .income_gear import cached
+    return min(10**15, max(1000, round(3000 / max(1e-12, willingness) / st['business'].get('speed_factor', 1) / (1+cached(st,'demand')/100))))
 
 
 def reopen_queue(st):
@@ -600,7 +608,7 @@ def reopen_queue(st):
         run['crowd']['next_at'] = max(b['cursor'], run['next_at']) + _queue_wait(st)
     for row in run.get('order_data', {}).values():
         if row['available_at'] > closed_at:
-            row['available_at'] = b['cursor'] + _manual_wait(st)
+            row['available_at'] = b['cursor'] + _online_wait(st)
 
 
 def _queue_traits(s, st, run, row, ticket, at):

@@ -1548,6 +1548,8 @@ def _pin(s: dict, c: dict, d: dict, pl: dict) -> dict:
         return dict(message=f'Xong hoa cài áo {pins["done"]}/{pins["goal"]}: một hồng trắng, một nhánh baby, quấn ruy băng, cài kim.')
     pay = pins['goal'] * pins['pay']
     kit.money(s, c, pay, f'{pins["goal"]} hoa cài áo cho tiệc cưới', f'pins-{c["day"]}', category='revenue')
+    from ..income_gear import completion_bonus
+    completion_bonus(s,c,pay,'Hoa cài áo cho tiệc cưới',f'pins-{c["day"]}')
     pins['status'] = 'sent'
     _event_outcome(pl, 'pins', True, f'Đã gửi {pins["goal"]} hoa cài áo cho tiệc cưới, nhận {pay} xu.')
     FS.flash(pl, 'good', f'📌 Đã gửi {pins["goal"]} hoa cài áo cho tiệc cưới · +{pay} xu.')
@@ -1942,6 +1944,8 @@ def _pre(s: dict, c: dict, d: dict, p: dict) -> dict:
     off = 10 * (5 - stars)
     pay = sp['price'] - sp['deposit'] - off
     kit.money(s, c, pay, f'Hoàn thành đơn đặt trước: {sp["title"]}', b['id'], 'revenue')
+    from ..income_gear import completion_bonus
+    completion_bonus(s,c,sp['price']-off,'Đơn đặt trước: '+sp['title'],b['id'])
     text = sp['good'] if stars == 5 else f'Hoa tới đúng ngày nhưng {" và ".join(notes)}. Tiệm bớt cho {off} xu.'
     kit.review(s, c, kit.npc_id(ID, sp['npc']), stars, text, b['id'])
     b['status'], b['stars'] = 'done', stars
@@ -2007,6 +2011,8 @@ def _sub(s: dict, c: dict, d: dict, p: dict) -> dict:
     new = [k for k in learn if k not in sub['known']]
     sub['known'].extend(new)
     kit.money(s, c, SUB_PRICE, f'Gói hoa định kỳ của bà Tám (lần {sub["round"] + 1})', f'sub-{sub["round"] + 1}', 'revenue')
+    from ..income_gear import completion_bonus
+    completion_bonus(s,c,SUB_PRICE,'Gói hoa định kỳ',f'sub-{sub["round"] + 1}')
     text = ' '.join(said) if said else 'Bình hoa xinh, bông nào cũng nở đẹp. Bà để phòng khách ngắm cả tuần.'
     kit.review(s, c, kit.npc_id(ID, SUB_NPC), stars, text, f'sub-{sub["round"] + 1}')
     sub['stars'] = ar.last(sub['stars'] + [stars], 6, 'florist.sub_stars', c)

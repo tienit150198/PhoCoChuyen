@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {equipmentView} from '../public/js/v4/work-equipment.js';
+const speed={id:'speed1',kind:'equipment',careers:['milk_tea'],gear_tier:1,gear_rate:115,price:90,name:'Tốc độ',description:'Nhanh hơn'};
+const growth=(group,tier,price)=>({id:group+tier,kind:'equipment',careers:['milk_tea'],gear_group:group,group_name:group==='quality'?'Kiếm thêm từ mỗi việc':'Thêm đơn online',gear_tier:tier,effect_percent:tier*10,effect_label:'thu nhập từ việc',price,name:'Máy <mới>',description:'Chỉ đơn hoàn thành',requires:tier>1?group+(tier-1):null});
+const items=[speed,growth('quality',1,100),growth('quality',2,260),growth('online',1,140)];
+let html=equipmentView({money:200,level:1,upgrades:['speed1','quality1']},'milk_tea',items);
+assert.match(html,/Kiếm thêm từ mỗi việc/);
+assert.match(html,/Thêm đơn online/);
+assert.match(html,/Đã lắp bậc 1 · \+15%/);
+assert.match(html,/Thiếu 60 xu/);
+assert.match(html,/Máy &lt;mới&gt;/);
+assert.doesNotMatch(html,/NaN|undefined/);
+html=equipmentView({money:1000,level:1,upgrades:['speed1']},'milk_tea',items);
+assert.match(html,/Cần bậc 1 trước/);
+assert.match(html,/Lắp thiết bị · 100 xu/);
+assert.doesNotMatch(equipmentView({money:1000,upgrades:[]},'delivery',items),/Máy &lt;mới&gt;/);
+console.log('Income equipment groups, prerequisites, funds and escaping passed.');

@@ -6,8 +6,8 @@ from . import quay_business, workplace_business
 ACTION='business_sync'
 
 
-def settle(s):
-    now=time.time()
+def settle(s,now=None):
+    now=time.time() if now is None else now
     quay=quay_business.settle(s,now=now)
     workplace=workplace_business.settle(s,now=now)
     return quay or workplace

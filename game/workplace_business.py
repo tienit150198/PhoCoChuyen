@@ -117,8 +117,9 @@ def _minutes(e):
 
 def _seconds(c,e):
     from .work_gear import factor
+    from .income_gear import demand_factor as equipment_demand
     from .shop_events import demand_factor
-    return max(15, math.ceil(_minutes(e)*60/max(1,e['speed'])/factor(c)/demand_factor(c)))
+    return max(15, math.ceil(_minutes(e)*60/max(1,e['speed'])/factor(c)/demand_factor(c)/equipment_demand(c)))
 
 
 def _signature(c,e):
@@ -365,6 +366,8 @@ def _finish(s,c,career,e,at,order=None):
     # lot never drags the price under a restock.
     basis=max(goods,_replacement(career,inputs))
     revenue=staff_market.staff_revenue(base,quality,cash,basis,staff_market.x(career,at))
+    from .income_gear import improved_revenue
+    revenue=improved_revenue(c,revenue,cash+basis)
     _count_used(c,inputs)
     ref=f'staff-order-{career}-{seq}'
     # Customer revenue retains the normal deferred tax. Stock cost was already
@@ -578,7 +581,8 @@ def _explain(c,b,out):
         unit=staff_orders.costs(career) if names else {}
         goods=sum(unit.get(i,0)*q for i,q in inputs.items())
         mult=staff_market.x(career,out.get('server_now'))
-        take=lambda stars:staff_market.staff_revenue(base,stars,cash,goods,mult)
+        from .income_gear import improved_revenue
+        take=lambda stars:improved_revenue(c,staff_market.staff_revenue(base,stars,cash,goods,mult),cash+goods)
         out['next_order']=dict(label=label,revenue=take(5),revenue_low=take(1),wage=wage,materials=supplies,goods=goods,
                                margin=take(4)-cash-goods,
                                items=[dict(item=i,name=names.get(i,i),qty=q) for i,q in inputs.items()])

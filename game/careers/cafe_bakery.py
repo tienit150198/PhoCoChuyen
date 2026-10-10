@@ -2437,6 +2437,8 @@ def _box_send(s: dict, c: dict, d: dict, pl: dict) -> dict:
     d['case'] = [l for l in d['case'] if l['qty'] > 0]
     pay = box['goal'] * box['pay']
     kit.money(s, c, pay, f'Hộp {box["goal"]} {b["name"].lower()} cho văn phòng', f'box-{c["day"]}', category='revenue')
+    from ..income_gear import completion_bonus
+    completion_bonus(s,c,pay,'Hộp bánh cho văn phòng',f'box-{c["day"]}')
     kit.bank(pay)   # the office pays its box by transfer
     box['status'] = 'sent'
     _event_outcome(pl, 'box_order', True, f'Đã gửi {box["goal"]} {b["name"].lower()} cho văn phòng, nhận {pay} xu.')
