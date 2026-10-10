@@ -1,38 +1,29 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "1.9.47",
-  "created_at_utc": "2026-10-10T15:38:44.302661+00:00",
+  "version": "1.9.48",
+  "created_at_utc": "2026-10-10T16:04:13.286281+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 444,
+  "minified": 445,
   "release_from_live": {
     "live_release": "mot-ngay-lam-nghe",
-    "live_version": "1.9.46",
-    "live_manifest_sha256": "1b0bebbc67a3d04e6e77dc3cdda47ca9c14032b2dc86bcfc933d98dbed8a26e0",
-    "base": "9f52df186802c1a685123f83d070ed3c2fa159f7",
-    "ref": "1bfb627456f7e0e3290f6ea975b097d26925c8c6",
+    "live_version": "1.9.47",
+    "live_manifest_sha256": "54b4baf116033c1122e5720f8753dcd37b1bd7b86cc6721ee8b0699e2f97b4dd",
+    "base": "43cca849ef37fd54bd6b6b887fbfeaa70a33e3e2",
+    "ref": "43d6cc129742c17c1f33435d31d3f2a4eb74ad58",
     "changed": [
       "CHANGELOG.md",
-      "docs/BARK_WEEKLY_2026-10-10.md",
-      "docs/DEPLOY_1.9.46_2026-10-10.md",
+      "docs/DEPLOY_1.9.47_2026-10-10.md",
       "docs/FAIR_WEEKLY_LOSS_2026-10-10.md",
-      "docs/superpowers/plans/2026-10-10-fair-weekly-loss.md",
       "game/__init__.py",
-      "game/fair.py",
-      "game/fair_board.py",
       "game/fair_loss.py",
-      "game/leaderboard.py",
-      "game/pg_schema.py",
-      "game/storage.py",
-      "public/css/fair.css",
       "public/js/v4/fair.js",
-      "tests/fair_loss_board_browser.mjs",
+      "scripts/seed_fair_loss.py",
       "tests/fair_loss_board_render.mjs",
       "tests/test_fair_loss.py",
       "tests/test_task_compat.py"
     ],
     "deleted": [],
     "minified": [
-      "public/css/fair.css",
       "public/js/v4/fair.js"
     ]
   },
@@ -54,8 +45,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 301804,
-      "sha256": "29f2be8264ccb61234943870d205ed7a4993855b4807cda8d06bc5b7bf569e33"
+      "bytes": 302247,
+      "sha256": "a6d746e477577fc893923300af5171829be75131a2a415927bddf3b91a402a9d"
     },
     {
       "path": "Dockerfile",
@@ -373,6 +364,11 @@
       "sha256": "c0807be628830cbb5aaac3317a20a2503fdd418c509b26d8ab2d0b93a3b214ba"
     },
     {
+      "path": "docs/DEPLOY_1.9.47_2026-10-10.md",
+      "bytes": 1500,
+      "sha256": "90f7eedac46c425e0f7ec2d0593ce686c071c454ebde99efa1410133bf6dac15"
+    },
+    {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
       "bytes": 3743,
       "sha256": "788f3a3a7f371dc6a143196595d8ad9aa68ccf6c31caeb5886a419ee9ec14c06"
@@ -464,8 +460,8 @@
     },
     {
       "path": "docs/FAIR_WEEKLY_LOSS_2026-10-10.md",
-      "bytes": 3055,
-      "sha256": "3676a5559b6c94e6ba6fe33a59b6e4a3f93b08245290c06ee84db2e132c5ff2a"
+      "bytes": 3925,
+      "sha256": "7f2671f8a32f423ba47e4a06e478d88e4dd715567105174f06c4d3274e622ccf"
     },
     {
       "path": "docs/FEEDBACK_2026-10-04.md",
@@ -1710,7 +1706,7 @@
     {
       "path": "game/__init__.py",
       "bytes": 106,
-      "sha256": "bd6d7672cacbcf722ec6f9de3f3ee06e187db99f3c1e01601663b2fea6322e4b"
+      "sha256": "ad8f88bd096d7b4b02ab7b954fda6a36bc448e86cd7efebe0c5da201c41238fd"
     },
     {
       "path": "game/abandon.py",
@@ -2444,8 +2440,8 @@
     },
     {
       "path": "game/fair_loss.py",
-      "bytes": 7502,
-      "sha256": "f9f5f23abebb3cead27af7d7e18bf420e2168d64885a549faaa88528a7b8d97b"
+      "bytes": 10743,
+      "sha256": "74e889ca490bd9e6af038fe9ca48e04a25c10ff49d1bdd8338d422e4eee0444e"
     },
     {
       "path": "game/fair_oaq.py",
@@ -5334,8 +5330,8 @@
     },
     {
       "path": "public/js/v4/fair.js",
-      "bytes": 94298,
-      "sha256": "014fadef90bf445a712c69c9d23fe2eabd2604c74da9fff9d1b6e0eacc9de898"
+      "bytes": 94708,
+      "sha256": "f61e37a4465e771ff59a2a90839892355f08e22c1316e92d705b23fdef227444"
     },
     {
       "path": "public/js/v4/family.js",
@@ -6543,6 +6539,11 @@
       "sha256": "9af62d685c11896d9a4e7b4c4b20d0e8f8f5ceed125eff3438d1255509c40ac6"
     },
     {
+      "path": "scripts/seed_fair_loss.py",
+      "bytes": 1522,
+      "sha256": "1430c2878e9e89a4d833f855ca7d99191d66cd125c4810b5f9a46949238cbd9e"
+    },
+    {
       "path": "scripts/sim_economy.py",
       "bytes": 9364,
       "sha256": "ee1e40d9f6b38ea0ef184f823cb0728a978a887a9d69c85a84f9cca2ce5e4dd6"
@@ -6954,8 +6955,8 @@
     },
     {
       "path": "tests/fair_loss_board_render.mjs",
-      "bytes": 4888,
-      "sha256": "04ec8e0fcab76b4af73c000487e2dbc89426281a541eb16e6f9d37c579b1f2fe"
+      "bytes": 5838,
+      "sha256": "b1f272fa7ad3d7a02491c826392a4f660401c220238811b26657aa46eb477dce"
     },
     {
       "path": "tests/fair_render_budget.mjs",
@@ -8259,8 +8260,8 @@
     },
     {
       "path": "tests/test_fair_loss.py",
-      "bytes": 8537,
-      "sha256": "dcb38f44970237377647a5031c489717b6e27d26d374ac25b4a61bc22f308e4a"
+      "bytes": 11128,
+      "sha256": "1db9b32bfa20b80b03ae2adc57e3ab8ffa60daf4997f85c2095b8e733edb0c87"
     },
     {
       "path": "tests/test_fair_oaq_strong.py",
@@ -9390,7 +9391,7 @@
     {
       "path": "tests/test_task_compat.py",
       "bytes": 5568,
-      "sha256": "590b4d08c3790a969cca0fcdc4fb8fb37644db5861b2cf2e2ef7a62d22b42b08"
+      "sha256": "98d2082df9f9974ff0d86a2dca36eea8cf4d739e87e7928fdeef389ffa612666"
     },
     {
       "path": "tests/test_teacher_care.py",
