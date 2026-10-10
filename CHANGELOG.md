@@ -1,3 +1,7 @@
+# v1.9.43 — 2026-10-10
+
+Lời đáp góp ý của admin tối đa 10.000 ký tự (trước 300), chủ game 10/10. Không có Có gì mới.
+
 # v1.9.42 — 2026-10-10
 
 Gồm dog-bark-fix: dây chỉ nhích khi có tiếng sủa thật (cả hai bên), cả hai im thì hòa; đo nền ồn, tắt khử vọng; chó nhà Mây sủa thành tiếng mỗi lần kéo. Không có Có gì mới.

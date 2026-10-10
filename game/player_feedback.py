@@ -22,7 +22,7 @@ from .social import BANNED
 
 KINDS = ('bug', 'idea', 'praise', 'hard')
 STATUSES = ('new', 'seen', 'done')
-TEXT_MAX, TEXT_MIN, REPLY_MAX = 10000, 3, 300   # owner 06/10: góp ý up to 10,000 characters (was 1,000)
+TEXT_MAX, TEXT_MIN, REPLY_MAX = 10000, 3, 10000   # owner 06/10: góp ý up to 10,000 characters (was 1,000); 10/10: the reply too (was 300)
 MINE_LIMIT, ADMIN_PAGE = 20, 50
 LAYOUTS = ('phone', 'tablet', 'desktop')
 THANKS = 'Đã ghi nhận, cảm ơn bạn!'

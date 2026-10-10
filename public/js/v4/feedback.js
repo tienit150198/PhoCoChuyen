@@ -5,7 +5,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {statsView,statsAction} from './admin-stats.js';
 
-const TEXT_MAX=10000,REPLY_MAX=300;   // owner 06/10: 10,000 characters (game/player_feedback.py)
+const TEXT_MAX=10000,REPLY_MAX=10000;   // owner 06/10: 10,000 characters, 10/10 the reply too (game/player_feedback.py)
 export const KINDS=[['bug','🐞','Lỗi'],['idea','💡','Ý tưởng'],['praise','💖','Khen'],['hard','🤔','Khó dùng']];
 const HINTS={bug:'Bạn đang làm gì thì gặp lỗi? Lỗi trông ra sao?',idea:'Bạn muốn game có thêm điều gì?',praise:'Điều gì làm bạn thấy vui?',hard:'Chỗ nào làm bạn lúng túng hoặc phải đoán?'};
 const STATUS={new:['Đã gửi',''],seen:['Đã xem','blue'],done:['Đã xử lý','green']};

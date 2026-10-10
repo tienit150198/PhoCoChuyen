@@ -4,7 +4,7 @@
  * replaces the list (with a back button). */
 import {esc,icon,ago,stamp,num,KINDS,kindOf,STATUS,tag,toast} from './ui.js';
 
-const REPLY_MAX=300;
+const REPLY_MAX=10000;   // owner 10/10 (game/player_feedback.py)
 const STATUSES=[['new','Mới'],['seen','Đã xem'],['done','Xong']];
 const CTX_LABEL={career:'Nghề',day:'Ngày trong nghề',life_day:'Ngày đời',view:'Màn hình',layout:'Bố cục',screen:'Kích thước',lang:'Ngôn ngữ',version:'Phiên bản',ua:'Trình duyệt'};
 const LAYOUT={phone:'điện thoại',tablet:'máy tính bảng',desktop:'máy tính'};
@@ -84,7 +84,7 @@ export class Inbox{
         `<button type="button" class="${it.status===s?'on':''}" aria-pressed="${it.status===s}" data-act="fbStatus" data-id="${it.id}" data-status="${s}"${this.saving?' disabled':''}>${it.status===s?icon('check',13):''}${l}</button>`).join('')}</div></div>
       <form class="fb-reply" data-form="reply" data-id="${it.id}">
         <label for="fb-reply-${it.id}">Lời đáp cho người chơi <small>(người chơi thấy ngay dưới góp ý của họ)</small></label>
-        <textarea id="fb-reply-${it.id}" name="reply" rows="4" maxlength="${REPLY_MAX}" placeholder="Cảm ơn bạn, mình đã sửa trong bản tới…">${esc(draft)}</textarea>
+        <textarea id="fb-reply-${it.id}" name="reply" rows="6" maxlength="${REPLY_MAX}" placeholder="Cảm ơn bạn, mình đã sửa trong bản tới…">${esc(draft)}</textarea>
         <div class="fb-reply-foot"><output class="count${len>REPLY_MAX-30?' near':''}" data-count>${len}/${REPLY_MAX}</output>
           ${it.reply?`<button type="button" class="btn ghost sm" data-act="fbClearReply" data-id="${it.id}"${this.saving?' disabled':''}>Xóa lời đáp</button>`:''}
           <button type="submit" class="btn primary sm"${this.saving?' disabled':''}>${icon('send',14)} ${it.reply?'Cập nhật lời đáp':'Gửi lời đáp'}</button></div>
