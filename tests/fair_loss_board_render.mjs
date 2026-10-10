@@ -33,6 +33,20 @@ test('zero, positive net and hidden players never display a loss rank',()=>{
  const data=loss();data.rows=[];data.me.visible=false;data.me.rank=4;
  const html=harness(data).html();assert.match(html,/Tên bạn đang ẩn/);assert.doesNotMatch(html,/hạng <b>/);
 });
+test('seeded first week explains existing net while future weeks stay strictly weekly',()=>{
+ const data=loss();data.fair.seeded=true;
+ const seeded=harness(data).html();
+ assert.match(seeded,/Tuần đầu tính cả lời\/lỗ chợ đen đã có/);
+ assert.match(seeded,/Từ thứ Hai tới chỉ tính phát sinh trong tuần/);
+ assert.match(seeded,/số liệu cũ vào tuần đầu một lần/);
+ assert.match(seeded,/Lỗ ròng · gồm số đã có/);
+ assert.doesNotMatch(seeded,/không tính hồi tố|Tính riêng lỗ phát sinh trong tuần|trong cùng tuần/);
+ assert.match(seeded,/-250 xu/);assert.match(seeded,/Không thưởng xu/);
+ data.fair.seeded=false;
+ const future=harness(data).html();
+ assert.match(future,/Tính riêng lỗ phát sinh trong tuần/);assert.match(future,/không tính hồi tố/);
+ assert.doesNotMatch(future,/Tuần đầu tính cả|gồm số đã có|số liệu cũ vào tuần đầu/);
+});
 test('profit board keeps cumulative scoring and profit titles',()=>{
  const data={board:'fair-2026',rows:[{rank:1,name:'Lan',xu:350,days:4}],me:{rank:2,visible:true},fair:{weekly:true}};
  const html=harness(data,'win').html();assert.match(html,/\+350 xu/);assert.match(html,/9\.999 xu/);assert.match(html,/4 ngày chơi/);assert.match(html,/Vua trò chơi/);assert.doesNotMatch(html,/Vua đen đủi|lỗ ròng tuần này/);

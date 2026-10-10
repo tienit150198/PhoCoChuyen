@@ -186,3 +186,44 @@ class WeeklyLoss(StoreBase):
             winners=json.loads(db.execute('SELECT v FROM leaderboard_meta WHERE k=?',(mark,)).fetchone()[0])
         self.assertEqual(weeks,{int(MON1-self.fl.WEEK):-10,int(MON1):-50})
         self.assertEqual([r['score'] for r in winners],[10])
+
+    def test_seed_uses_existing_net_once_and_future_weeks_reset(self):
+        from game import marriage
+        a=self.player('Lan',wallet=10000)
+        def old(s):
+            stats=fh._state(s['journey'],self.clock.t)['stats']
+            stats['lost']=2000;stats['won']=500
+        marriage._mutate(self.store,{self.store.key(a):old})
+        self.lose(a,10)
+        week=int(self.fl.week_start(self.clock.t))
+        while True:
+            result=self.fl.seed_current(self.store,week,batch=1)
+            if result['done']:break
+        self.assertEqual(self.board(a)['me']['net'],-1510)
+        self.assertTrue(self.board(a)['fair']['seeded'])
+        self.win(a,30)
+        self.fl.seed_current(self.store,week)
+        self.assertEqual(self.board(a)['me']['net'],-1480)
+        self.clock.t=MON1+120
+        self.assertEqual(self.board(a)['me']['net'],0)
+        self.assertFalse(self.board(a)['fair']['seeded'])
+        with self.assertRaises(ValueError):self.fl.seed_current(self.store,week)
+        self.lose(a,5)
+        self.assertEqual(self.board(a)['me']['net'],-5)
+
+    def test_seed_progress_and_ledger_rollback_together(self):
+        from game import db as dbm
+        a=self.player('Lan')
+        self.lose(a,10)
+        week=int(self.fl.week_start(self.clock.t))
+        execute=dbm.PgConnection.execute
+        def broken(db,sql,args=()):
+            result=execute(db,sql,args)
+            if sql.startswith('UPDATE leaderboard_meta SET v=') and str(args[-1]).startswith(self.fl.SEED):
+                raise RuntimeError('seed progress rollback')
+            return result
+        with patch.object(dbm.PgConnection,'execute',broken):
+            with self.assertRaises(RuntimeError):self.fl.seed_current(self.store,week)
+        self.assertFalse(self.board(a)['fair']['seeded'])
+        self.assertEqual(self.board(a)['me']['net'],-10)
+        self.assertTrue(self.fl.seed_current(self.store,week)['done'])

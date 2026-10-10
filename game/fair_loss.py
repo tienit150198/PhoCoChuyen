@@ -1,6 +1,6 @@
 """Weekly fair net loss, recorded atomically with successful save commands.
 
-No historical approximation: old cumulative totals are only the delta baseline.
+Weekly deltas, with an explicit one-time current-save baseline when requested.
 Weeks use transaction recording time in Vietnam. Import/reset never award loss.
 """
 from __future__ import annotations
@@ -19,6 +19,7 @@ WEEK = 7 * 86400
 GRACE = 60
 TOP = 10
 TITLES = ('f_loss_king', 'f_loss_club')
+SEED = META + 'seed:'
 _due = {}
 _lock = threading.Lock()
 _FROM = 'FROM fair_loss_week l JOIN sessions s ON s.sid=l.sid LEFT JOIN accounts a ON a.sid=l.sid LEFT JOIN leaderboard_players p ON p.sid=l.sid'
@@ -72,6 +73,59 @@ def _standings(db, w, limit):
     return [dict(r) for r in db.execute(
         f'SELECT l.sid,l.net,l.since,a.display,p.name AS gname,a.uid IS NOT NULL AS acct {_FROM} '
         f'WHERE l.week=? AND l.net<0 AND {lb._VISIBLE} {_ORDER} LIMIT ?', (w, limit))]
+
+
+def seed_current(store, week, batch=50):
+    """One resumable batch: use current fair balances for the owner-requested first week.
+
+    Save rows and progress are locked before the week lock, just like record().
+    Never called automatically: later weeks always start at zero.
+    """
+    week = int(week)
+    if not 1 <= batch <= 200:
+        raise ValueError('batch must be 1..200')
+    mark = SEED + vn_day(week)
+
+    def run(db):
+        t = now()
+        if int(week_start(t)) != week:
+            raise ValueError('Only the current week may be seeded')
+        initial = dict(last='', done=False, week=week, started=t, processed=0, balances=0)
+        db.execute('INSERT INTO leaderboard_meta(k,v) VALUES(?,?) ON CONFLICT(k) DO NOTHING',
+                   (mark, json.dumps(initial)))
+        progress = json.loads(db.execute('SELECT v FROM leaderboard_meta WHERE k=? FOR UPDATE', (mark,)).fetchone()[0])
+        if progress['done']:
+            return progress
+        # Acquire ALL save locks before the advisory lock: deletion also locks
+        # saves and the settlement cursor, so alternating these locks can cycle.
+        rows = list(db.execute("SELECT sid,state::jsonb->'journey'->'fair' AS fair FROM sessions "
+                               'WHERE sid>? ORDER BY sid LIMIT ? FOR UPDATE', (progress['last'], batch)))
+        _activate(db, now())
+        db.execute('SELECT pg_advisory_xact_lock_shared(1947,?)', (week // WEEK,))
+        t = now()
+        if int(week_start(t)) != week:
+            raise ValueError('Week changed while seeding')
+        for row in rows:
+            net = fh.money_of(dict(fair=row['fair']))[0]
+            if net:
+                db.execute('INSERT INTO fair_loss_week(week,sid,net,since) VALUES(?,?,?,?) '
+                           'ON CONFLICT(week,sid) DO UPDATE SET '
+                           'since=CASE WHEN fair_loss_week.net<>excluded.net THEN excluded.since ELSE fair_loss_week.since END,'
+                           'net=excluded.net', (week, row['sid'], net, t))
+                progress['balances'] += 1
+            else:
+                # A reset/import before this requested snapshot has a current
+                # zero balance. Do not create empty rows for untouched saves.
+                db.execute('UPDATE fair_loss_week SET net=0,since=? WHERE week=? AND sid=? AND net<>0',
+                           (t, week, row['sid']))
+        if rows:
+            progress['last'] = rows[-1]['sid']
+        progress['processed'] += len(rows)
+        progress['done'] = len(rows) < batch
+        db.execute('UPDATE leaderboard_meta SET v=? WHERE k=?', (json.dumps(progress), mark))
+        return progress
+
+    return store.transaction(run, best_effort_ms=500)
 
 
 def settle(store, t=None, best_effort_ms=None):
@@ -136,6 +190,7 @@ def view(store, limit=20, token=None):
                 me['rank'] = ahead+1
         meta = db.execute('SELECT v FROM leaderboard_meta WHERE k=?', (CURSOR,)).fetchone()
         started = json.loads(meta[0])['started'] if meta else t
+        seeded = bool(db.execute('SELECT 1 FROM leaderboard_meta WHERE k=?', (SEED+vn_day(w),)).fetchone())
         prev = db.execute('SELECT v FROM leaderboard_meta WHERE k=?', (META+vn_day(w-WEEK),)).fetchone()
         winners = []
         for r in json.loads(prev[0]) if prev else []:
@@ -149,7 +204,7 @@ def view(store, limit=20, token=None):
     tiers = [dict(label='Top 1' if i==0 else 'Top 2–10', lo=1 if i==0 else 2, hi=1 if i==0 else TOP,
                   emoji=TITLE_INDEX[tid]['emoji'], name=TITLE_INDEX[tid]['name']) for i,tid in enumerate(TITLES)]
     return dict(board=BOARD, total=total, rows=rows, me=me, weekly=None,
-                fair=dict(loss=True, weekly=True, next=w+WEEK, week=vn_day(w), started=started,
+                fair=dict(loss=True, weekly=True, next=w+WEEK, week=vn_day(w), started=started, seeded=seeded,
                           tiers=tiers, winners=winners, crowned=vn_day(w) if prev else None, settled=bool(prev)))
 
 

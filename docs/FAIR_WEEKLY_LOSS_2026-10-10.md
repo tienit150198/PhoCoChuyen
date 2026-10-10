@@ -7,9 +7,11 @@ Chủ game chọn chỉ tính lỗ phát sinh trong tuần. Bảng vàng có hai
 - Chốt sau ranh giới tuần 60 giây, qua maintenance hoặc lượt đọc Bảng vàng. Snapshot, con trỏ tuần và hiệu ứng danh hiệu cùng giao dịch; ID cố định cho phép chạy lại an toàn. Khi server ngừng lâu, xử lý tối đa 8 tuần mỗi lượt.
 - Quyền ẩn tên áp dụng cả xếp hạng và xét danh hiệu; tên trong vinh danh cũ tuân theo quyền riêng tư hiện tại. Xóa tài khoản xóa sổ, hiệu ứng đang chờ và ẩn SID trong snapshot.
 - Ghi delta trong cùng giao dịch lệnh/lưu/receipt, cả đường optimistic và khóa; import/reset không làm phát sinh lời/lỗ. Shared advisory lock theo tuần cùng kiểm tra lại đồng hồ sau khóa bảo vệ kết quả đã chốt. Không đọc lại tất cả save.
-- Không hồi tố: tổng tích lũy trước phát hành không có lịch sử tuần đầy đủ. Trường `started` và phần hướng dẫn hiển thị ngày bắt đầu ghi nhận.
+- Bổ sung 1.9.48 theo yêu cầu chủ game: tuần đầu 05–11/10 lấy tổng lời/lỗ hiện có của từng save làm mốc, để Top lỗ có số liệu ngay. Đây là ảnh chụp số dư hiện tại, không phải phục dựng giao dịch tuần trước. Các tuần sau chỉ tính delta trong tuần. `fair.seeded` chỉ bật ở đúng tuần đã seed.
 
 API: `GET /api/leaderboard?board=fair-loss&limit=20`. `rows[].xu/score` là trị tuyệt đối số lỗ; `me.net` có dấu; `fair.week/next/started/tiers/winners` cho giao diện tuần. Không trả SID.
+
+Seed thủ công: `python scripts/seed_fair_loss.py --week 2026-10-05`. Mỗi lô tối đa 50 save, khóa tất cả save theo SID trước khóa tuần, đọc số dư hiện tại, thay mốc của tuần đầu rồi lưu con trỏ trong cùng giao dịch. Gián đoạn chạy lại tiếp tục từ con trỏ, không cộng trùng; khi hoàn thành gọi lại không đổi gì. Tiền thắng/thua sau lúc chụp từng save tiếp tục tính bình thường. Không đổi save, ví hoặc cấp danh hiệu sớm. Reset/import trước khi chụp được phản ánh theo số dư đang lưu. Công cụ từ chối tuần đã qua, không tự chạy ở tuần sau.
 
 Triển khai âm thầm theo yêu cầu, không đổi Có gì mới. Giữ ngưỡng 30 trận hợp lệ cho bảng kéo co micro; ngưỡng đó không áp dụng cho Top lỗ.
 

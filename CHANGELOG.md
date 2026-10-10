@@ -1,3 +1,7 @@
+# v1.9.48 — 2026-10-10
+
+Theo yêu cầu bổ sung: lấy số lời/lỗ Hội chợ hiện có làm mốc cho tuần đầu của Top lỗ. Chạy seed một lần theo từng lô, có con trỏ tiếp tục và khóa giao dịch để không cộng trùng; không đổi save/ví. Từ tuần kế tiếp vẫn chỉ tính phát sinh trong tuần. Giao diện giải thích tuần đầu có số liệu cũ; Có gì mới giữ nguyên.
+
 # v1.9.47 — 2026-10-10
 
 Hội chợ có Top lỗ riêng theo tuần, tiền thắng/kiếm trong tuần bù trừ tiền thua. Top 1 nhận 🥀 Vua đen đủi, Top 2–10 nhận ☔ Hội đen đủi mỗi thứ Hai, giữ danh hiệu vĩnh viễn, không thưởng xu. Bắt đầu ghi nhận từ bản cập nhật, không hồi tố tổng lỗ cũ. Schema 36 thêm bảng sổ tuần, ghi cùng giao dịch lưu game; giữ nguyên Top lời và Có gì mới.
