@@ -46,7 +46,7 @@ Chromium trong IAB, tài khoản khách kiểm thử riêng tại `localhost:188
 
 Nguồn: `canvas.dataset.isoProfile` khi bật `?isometricdebug=1`. Đây là thời gian JavaScript đồng bộ của Phaser, bao gồm update/render; **không phải FPS hoặc thời gian GPU/compositor**. Hai cảnh khác nhau nên không dùng làm tỷ lệ tăng tốc trước–sau. Những lượt tải đầu/đổi kích thước khi đang chạy test nền có đỉnh cao hơn; bảng trên là mẫu di chuyển sau tải. Không kết luận hết giật trên mọi thiết bị hoặc đủ 1.000 CCU từ các mẫu này.
 
-Ảnh bằng chứng: `output/release-2.0-local/perf-mobile-menu.png`, `perf-desktop-menu.png`, `perf-home3d.png`.
+Ảnh bằng chứng: `output/release-2.0-local/perf-mobile-menu.png`, `perf-desktop-menu.png`, `perf-home3d.png`, `perf-final-menu.png`.
 
 ## Kiểm tra đã chạy
 
@@ -56,5 +56,6 @@ Nguồn: `canvas.dataset.isoProfile` khi bật `?isometricdebug=1`. Đây là th
 - `npm run check`: 346/346 file JS và gate cú pháp Safari 15 đạt.
 - `illustrated-icons.mjs --live=http://127.0.0.1:18893/api/content`: 7/7 đạt, đã chạy cả ca catalogue HTTP thường bị bỏ qua.
 - Review chéo độc lập không còn lỗi chặn sau sửa ô chat, mở rộng menu tablet/desktop và tách thao tác quay lại phố/ngồi sau xe.
+- Gói từ `524f42d4` giải nén/khởi động và smoke HTTP/PostgreSQL đạt; 2.189 mã băm khớp; 346/346 JavaScript đã nén qua gate Safari 15. Chi tiết mã băm/gói trong `docs/RELEASE_2.0.0_READINESS.md`.
 
 Chưa đo GPU trên Android/iPhone/iPad thật, chưa chạy lại tải 1.000 người cho thay đổi frontend này, chưa phát hành production. Cần xác minh bản triển khai rồi mới gửi thông báo hoặc kích hoạt sự kiện hai ngày vàng.

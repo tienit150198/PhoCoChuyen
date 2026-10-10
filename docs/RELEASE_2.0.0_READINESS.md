@@ -54,6 +54,14 @@ Source ứng viên `0c7db8d6eb9e4c51c2a9ac812619eb12b556b802` đã push lên mai
 
 Sau ứng viên `0c7db8d6`, đã bổ sung sửa vòng vẽ nền, cache che khuất/LOD, cập nhật live và lối vào menu ở cả ba bố cục. Bằng chứng và phạm vi kiểm chứng ở `docs/qa/performance-2026-10-11.md`; danh mục 50 nghề/66 tiện ích ở `docs/qa/isometric-feature-parity.md`. Gói ZIP mang SHA-256 ở phần trên là **ứng viên trước các sửa hiệu năng này**; không dùng nó thay cho ứng viên mới.
 
+Ứng viên thay thế đã push: **`524f42d49be140f24810a1682b2c12967fc8fd4e`**, gồm sửa hiệu năng `7873b5a5` và tách nút quay lại phố khỏi thao tác ngồi sau xe. `test:performance-parity` đạt **72/72**, mã nguồn **346/346 JS** đạt gate cú pháp/Safari 15. Đối chiếu menu đủ 50 nghề × ba bố cục và 66 tiện ích; đây là kiểm tra đường vào, không xác nhận đã chơi hết mọi giao dịch của 50 nghề.
+
+Gói hiện hành: `output/release-2.0-local/mnl-2.0.0-performance-final.zip`, **103.254.068 byte**, SHA-256 **`1f37a1d980bdd1a8fd406376e79aee954160e2413d83bfff1b097378a6b87b26`**. Có 2.190 file kể cả manifest, 340 mục thay đổi, không xóa mục nào. Gói trung gian `mnl-2.0.0-performance.zip` từ `7873b5a5` cũng đã được thay thế bởi gói này.
+
+`verify_package.py` đạt với gói hiện hành: **2.189 mã băm** khớp, server giải nén khởi động bằng PostgreSQL riêng, asset/API hoạt động, tạo hồ sơ/chọn nghề/mở ca, khóa nghề và replay giữ đúng hành vi, export save đủ 50 nghề. **346/346 JavaScript trong ZIP** qua gate Safari 15. Polyfill được nhận diện từ nguồn đã kiểm, đồng thời xác minh `boot.js` trong ZIP trùng byte với kết quả nén nguồn đó bằng esbuild 0.28.2; bộ dò marker nguồn không dùng trực tiếp lên tên hàm đã nén. Báo cáo: `performance-release-build.json`, `performance-package-verify.json`, `performance-package-safari.log` dưới `output/release-2.0-local/`.
+
+Không có thay đổi `game/`, `live/`, `data/` hoặc `server.py` giữa `0c7db8d6` và `524f42d4`; bằng chứng tương thích nhiệm vụ/backend ở trên vẫn áp dụng. Kiểm tra SSH cuối vẫn bị từ chối (`Permission denied`); health production vẫn 1.9.48. Chưa gửi thông báo hoặc kích hoạt sự kiện.
+
 ## Các bước còn lại trên production
 
 1. Khôi phục SSH; đọc health, current release và manifest; nếu production đã đổi thì cập nhật baseline và kiểm tra tương thích lại.
