@@ -22,7 +22,7 @@ Người dùng chọn trò kéo co bằng micro, giải theo tuần, tối thi�
 
 ## Triển khai
 
-Bản dự kiến 1.9.44. Chưa deploy: máy chủ production vẫn là 103.195.238.178 (DNS và health 1.9.43 đã kiểm tra). Các khóa sẵn dùng chưa đăng nhập được. VPS khác người dùng cung cấp đăng nhập được nhưng chỉ chạy dự án khác, không có Phố Có Chuyện; chưa thay đổi gì ở đó. Cần kết nối SSH đúng production để đọc manifest hiện tại, sao lưu, đóng gói từ live và chạy rolling release.
+Đã triển khai bản 1.9.44 lên đúng production 103.195.238.178 lúc 21:49 ngày 10/10/2026 (giờ Việt Nam). Game server và live service đều chạy release mới; schema 35, con trỏ giải tuần và API phần thưởng đã kiểm tra. Chi tiết sao lưu, mã gói và kiểm chứng: [DEPLOY_1.9.44_2026-10-10.md](DEPLOY_1.9.44_2026-10-10.md).
 
 Đã xác minh tương thích 49.440 nhiệm vụ của 50 nghề từ base 09f630c4. Mỗi lần deploy cần kiểm tra lại base và phiên bản production, dùng `scripts/release_from_live.py`, kiểm tra cả API health và phiên bản live service sau chuyển đổi.
 

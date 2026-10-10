@@ -43,4 +43,4 @@ Chỉ tính món trong danh mục đã nhận vào bản lưu. Bằng điểm: n
 
 Ảnh kiểm chứng: `output/auction-preview/collection-detail.jpg`, `mobile-lot.jpg`, `mobile-top.jpg`, `mobile-board.jpg`. Nhật ký kiểm thử: `output/auction-final-tests.log`.
 
-Chưa triển khai lên production.
+Đã triển khai bản 1.9.44 ngày 10/10/2026: production có đủ 30 tranh, API bảng top Sưu tầm trả 200, các module tranh/đấu giá khớp byte với gói phát hành. Xem [báo cáo triển khai](DEPLOY_1.9.44_2026-10-10.md).

@@ -14,8 +14,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
-# The release players are on: bump it to the new live commit after each release (0.9.12 = main bded2ef).
-LIVE_REF = 'bded2efc852158ccc86a13dbc74f1c7f60f7686a'
+# The release players are on: bump it to the new live commit after each release (1.9.44 = 8593e926).
+LIVE_REF = '8593e926738d101d74ec54734dc7611196374619'
 
 spec = importlib.util.spec_from_file_location('check_task_compat', ROOT / 'scripts' / 'check_task_compat.py')
 gate = importlib.util.module_from_spec(spec)
