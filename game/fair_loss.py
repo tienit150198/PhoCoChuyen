@@ -105,6 +105,7 @@ def seed_current(store, week, batch=50):
         t = now()
         if int(week_start(t)) != week:
             raise ValueError('Week changed while seeding')
+        zero = []
         for row in rows:
             net = fh.money_of(dict(fair=row['fair']))[0]
             if net:
@@ -116,8 +117,11 @@ def seed_current(store, week, batch=50):
             else:
                 # A reset/import before this requested snapshot has a current
                 # zero balance. Do not create empty rows for untouched saves.
-                db.execute('UPDATE fair_loss_week SET net=0,since=? WHERE week=? AND sid=? AND net<>0',
-                           (t, week, row['sid']))
+                zero.append(row['sid'])
+        if zero:
+            marks = ','.join('?' for _ in zero)
+            db.execute(f'UPDATE fair_loss_week SET net=0,since=? WHERE week=? AND sid IN ({marks}) AND net<>0',
+                       (t, week, *zero))
         if rows:
             progress['last'] = rows[-1]['sid']
         progress['processed'] += len(rows)
