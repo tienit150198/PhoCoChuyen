@@ -1,3 +1,11 @@
+# v1.9.45 — 2026-10-10
+
+Theo yêu cầu chủ game: top kéo co tuần xét tỷ lệ thắng của mọi người có trận hợp lệ, bỏ ngưỡng 30 trận. Giữ top 5, mức thưởng, danh hiệu, tie-break và quyền ẩn tên. Có gì mới gồm đúng bốn ý: sàn đấu giá đẹp hơn, vật dụng tăng khách/thu nhập, vào Chợ đen miễn phí, top kéo co giải nhất 2 triệu xu.
+
+# v1.9.44 — 2026-10-10
+
+Nâng cấp thu nhập theo nghề; tổng 30 tranh và top nhà sưu tầm; Chợ đen miễn phí và tăng nhẹ tỷ lệ thắng; giải kéo co micro theo tuần. Đã triển khai 10/10, xem docs/DEPLOY_1.9.44_2026-10-10.md.
+
 # v1.9.43 — 2026-10-10
 
 Lời đáp góp ý của admin tối đa 10.000 ký tự (trước 300), chủ game 10/10. 👴 Thắng Ông Hai: giữ tiền thắng, rồi công an bắt vì dùng thiết bị thứ ba: phạt 30–50 % ví + tài khoản (không nợ), tạm giữ 3 ngày (fair.py _hai_device, fair_hai.device_fine). Không có Có gì mới.

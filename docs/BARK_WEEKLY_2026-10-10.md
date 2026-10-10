@@ -1,15 +1,15 @@
 # Giải kéo co chó sủa hằng tuần
 
-Người dùng chọn trò kéo co bằng micro, giải theo tuần, tối thiểu 30 trận hợp lệ. Phạm vi này đi cùng 30 tranh đấu giá, nâng cấp thu nhập, tăng nhẹ xác suất Chợ đen và bỏ phí vào cổng.
+Người dùng chọn trò kéo co bằng micro, giải theo tuần; điều chỉnh bản 1.9.45: bỏ ngưỡng 30 trận, xếp mọi tài khoản có trận hợp lệ. Phạm vi này đi cùng 30 tranh đấu giá, nâng cấp thu nhập, tăng nhẹ xác suất Chợ đen và bỏ phí vào cổng.
 
 ## Luật
 
 - Tuần Việt Nam: thứ Hai 00:00 đến thứ Hai tuần kế tiếp. Trận thuộc tuần theo lúc kết thúc.
-- Tỷ lệ = thắng / (thắng + thua + hòa); cả trận người chơi và chó nhà Mây. Tối thiểu 30 trận đã thực sự bắt đầu. Hủy, chưa có mic hoặc thoát trước khi dây bắt đầu không giúp lên top.
+- Tỷ lệ = thắng / (thắng + thua + hòa); cả trận người chơi và chó nhà Mây. Mọi tài khoản có trận đã thực sự bắt đầu đều được xét, không yêu cầu đạt một số trận tối thiểu. Người chưa chơi không có tỷ lệ để xếp hạng. Hủy, chưa có mic hoặc thoát trước khi dây bắt đầu không giúp lên top.
 - Bằng tỷ lệ chính xác: nhiều thắng hơn, đạt kết quả sớm hơn, khóa ổn định cuối cùng. Chỉ tài khoản có tên hợp lệ và bật hiện tên mới dự giải.
 - Hạng 1–5 nhận 2.000.000 / 1.000.000 / 500.000 / 250.000 / 100.000 xu, mỗi hạng có danh hiệu lâu dài. Các hạng hiển thị tiếp theo không có tiền thưởng.
 - Chốt sau hết tuần 60 giây. Thưởng vào ví lúc người chơi tải game; chốt lại hoặc nhận lại không tăng tiền lần hai.
-- Sảnh hiển thị top, số thắng/tổng trận, tỷ lệ cá nhân cả khi chưa đủ 30 trận, tiến độ, mức giải, kết quả tuần trước; tự tải lại khi sảnh mở, giữ phần chi tiết người chơi đang xem.
+- Sảnh hiển thị top, số thắng/tổng trận, tỷ lệ cá nhân và số trận đã chơi, mức giải, kết quả tuần trước; tự tải lại khi sảnh mở, giữ phần chi tiết người chơi đang xem.
 
 ## Lưu trữ và tương thích
 

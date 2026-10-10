@@ -32,6 +32,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.9.45", date="2026-10-10", items=(
+        dict(emoji='🖼️', text='Sàn đấu giá đẹp hơn: 30 bức tranh độc bản, đồ sưu tầm nổi bật và bảng top nhà sưu tầm!'),
+        dict(emoji='🛠️', text='Thêm vật dụng nâng cấp: tăng lượng khách, tăng thu nhập và nhận nhiều đơn online hơn theo nghề.'),
+        dict(emoji='🕶️', text='Vào Chợ đen hoàn toàn miễn phí, không còn thu 10.000 xu ở cổng!'),
+        dict(emoji='🏆', text='Top kéo co chó sủa: đua tỷ lệ thắng mỗi tuần, không cần đủ số trận. Top 5 có tiền và danh hiệu, giải nhất 2 triệu xu!', go=dict(action='liveBark', data={})),
+    )),
     dict(version="1.9.41", date="2026-10-10", items=(
         dict(emoji='🐕', text='Kéo co chó sủa: sủa thật to vào mic để kéo dây, thắng ăn cả kèo. Không có ai thì đấu với chó nhà Mây!', go=dict(action='liveBark', data={})),
     )),
