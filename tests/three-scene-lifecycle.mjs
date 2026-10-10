@@ -77,6 +77,29 @@ test('authored district houses survive batching with bounded draws, real home me
     Controls.last.camera.position.set(0,20,20);Controls.last.update();b.frame();assert.ok(houses.every(h=>h.children.every(m=>m.material.opacity===1)));
   }finally{scene.dispose();}
 });
+test('animated district customers reuse house occlusion until the player or camera moves',()=>{
+  const b=browser(),scene=createDistrictScene(b.host),raycast=THREE.Mesh.prototype.raycast;let casts=0;
+  THREE.Mesh.prototype.raycast=function(...args){casts++;return raycast.apply(this,args);};
+  try{
+    b.frame();const initial=casts;assert.ok(initial>0,'initial cover must inspect the actual house geometry');
+    for(let i=0;i<120;i++)b.frame();
+    assert.equal(casts,initial,'stationary player/camera must not repeat house raycasts for NPC animation');
+    assert.equal(Renderer.last.frames,121,'all visible NPC animation frames are retained');
+    Controls.last.camera.position.x+=2;Controls.last.update();b.frame();assert.ok(casts>initial,'orbit updates house cover immediately');
+    const orbited=casts;scene.setInput(1,0);b.frame();assert.ok(casts>orbited,'walking recalculates the real line of sight');
+  }finally{THREE.Mesh.prototype.raycast=raycast;scene.dispose();}
+});
+test('the initial district cover uses the houses placed in world coordinates',()=>{
+  const b=browser(),scene=createDistrictScene(b.host);
+  try{
+    Controls.last.camera.position.set(-13.2,1.5,-34);Controls.last.update();
+    b.frame();const renderer=Renderer.last,houses=renderer.scene.children.filter(o=>o.userData.architecture),at=scene.getPosition();
+    const delta=new THREE.Vector3(at.x,1.1,at.y).sub(renderer.camera.position),distance=delta.length();
+    const ray=new THREE.Raycaster(renderer.camera.position,delta.normalize(),0,distance-.1);
+    const covered=new Set(ray.intersectObjects(houses,true).map(h=>h.object.parent));
+    for(const house of houses)assert.ok(house.children.every(o=>o.material.opacity===(covered.has(house)?.35:1)),'first-frame house fade must match its final world position');
+  }finally{scene.dispose();}
+});
 const room={id:'living',name:'Phòng khách',cols:7,frows:4,wrows:2,out:false,fix:[]};
 const data=(color='#b36c6c')=>({scope:'mine',room,parts:{},items:[{id:'chair',it:{id:'ghe_dau',cat:'table',spot:'floor',w:1,h:1},q:{r:'living',x:40,y:25},color}],edit:true});
 test('a home redraw deferred behind a modal resumes even when every resident is still',()=>{

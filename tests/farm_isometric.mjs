@@ -87,7 +87,8 @@ delete globalThis.__mnlBoot;
 const walkSource=fs.readFileSync(new URL('../public/js/careers/farm_walk.js',import.meta.url),'utf8').replace(/^import .*;\r?$/gm,'').replace(/^export /gm,'');
 const garden={farmCamera,farmMovement,farmProject,pickFarmSpot,needsFarmFrames,farmVisualKey,createFarmRenderer,lookOf:()=>({}),tr:s=>s};
 const sandbox={...garden,console,Set,Map,Math,performance:{now:()=>0},matchMedia:()=>({matches:false}),requestAnimationFrame:()=>1,clearTimeout(){},setTimeout:()=>1};
-vm.createContext(sandbox);vm.runInContext(walkSource+'\nglobalThis.engine={W,step,tap,view,camera,route,gap,SPOT,SOLID,mount,loop};',sandbox);
+const visibilitySource=fs.readFileSync(new URL('../public/js/careers/activity_visibility.js',import.meta.url),'utf8').replace(/^export /gm,'');
+vm.createContext(sandbox);vm.runInContext(visibilitySource+'\n'+walkSource+'\nglobalThis.engine={W,step,tap,view,camera,route,gap,SPOT,SOLID,mount,loop};',sandbox);
 const {engine}=sandbox;
 for(const footprint of Object.values(farmObstacleBounds))assert.ok(engine.SOLID.some(s=>JSON.stringify(s)===JSON.stringify(footprint)),'each rendered obstacle matches a real collision rectangle');
 assert.equal(engine.W.cam,'iso','the actual farm engine opens in the cozy garden view');
@@ -110,7 +111,7 @@ engine.camera('tp');assert.equal(engine.W.cam,'tp','third person remains selecta
 engine.camera('iso');engine.W.ride={x:1,z:2,yaw:.5};V=engine.view();assert.equal(V.iso,undefined,'deliveries keep the existing perspective ride camera');
 // A hidden-tab pause preserves the route, resumes once and removes listeners on close.
 const events=()=>{const listeners=new Map();return {listeners,addEventListener:(type,fn)=>listeners.set(type,fn),removeEventListener:(type,fn)=>{if(listeners.get(type)===fn)listeners.delete(type);},emit:type=>listeners.get(type)?.()};};
-const doc={...events(),hidden:false},dialog={...events(),open:true},host={};let frames=0;
+const doc={...events(),hidden:false,querySelectorAll:()=>dialog.open?[dialog]:[]},dialog={...events(),open:true},host={};let frames=0;
 sandbox.document=doc;sandbox.requestAnimationFrame=()=>++frames;sandbox.cancelAnimationFrame=()=>{};
 engine.W.el={isConnected:true,parentNode:host,dataset:{},closest:()=>dialog.open?dialog:null,getClientRects:()=>[{}]};
 engine.W.ride=null;engine.W.keys.clear();engine.W.hint=0;engine.W.fx=[];engine.W.me.moving=0;
@@ -122,7 +123,7 @@ doc.hidden=true;doc.emit('visibilitychange');engine.loop(1000);const pausedFrame
 assert.ok(engine.W.auto,'hiding the tab retains the active route');
 doc.hidden=false;doc.emit('visibilitychange');assert.equal(frames,pausedFrames+1,'returning to an open farm resumes a paused route');
 doc.emit('visibilitychange');assert.equal(frames,pausedFrames+1,'duplicate visibility events do not schedule another RAF');
-engine.W.raf=0;engine.W.auto=null;doc.emit('visibilitychange');assert.equal(frames,pausedFrames+1,'an idle garden stays idle on visibility changes');
+engine.W.raf=0;engine.W.paintPending=false;engine.W.auto=null;doc.emit('visibilitychange');assert.equal(frames,pausedFrames+1,'an idle garden stays idle on visibility changes');
 engine.W.auto={path:[{x:0,z:5}],to:'P1',speed:4};dialog.open=false;dialog.emit('close');
 assert.equal(doc.listeners.size,0,'closing the dialog removes the visibility listener');
 assert.equal(dialog.listeners.size,0,'closing also removes its own close listener');

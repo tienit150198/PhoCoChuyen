@@ -16,6 +16,7 @@
 import {t as tr} from '../v4/i18n.js';
 import {flightLesson} from './pilot_tutor.js';
 import {chaseCamera,drawAircraft,loadAircraftArt,airportTreeArt} from './pilot_aircraft.js';
+import {activityVisible,watchActivityVisibility} from './activity_visibility.js';
 
 const KT=.514444,FT=.3048,D2R=Math.PI/180,G=9.81;
 const LEN=1800,HALF=22,AIM=300,GS=3*D2R,DOT=.35*D2R,RWY_HDG=180;
@@ -75,9 +76,20 @@ function syncVisibility(){
   if(F.el)F.el.hidden=!here;
   // renderSheet replaces the reused dialog class, including on unchanged-content renders.
   F.host?.classList.toggle('pl-expanded-host',here);
+  syncFlightVisibility();
+}
+function pauseFlight(){
+  cancelAnimationFrame(F.raf);F.raf=0;F.last=0;F.keys.clear();
+  Object.assign(F.input,{pitch:0,roll:0,kp:0,kr:0,pad:null,thr:null});
+  for(const reset of F.inputResets||[])reset();
+}
+function syncFlightVisibility(){
+  if(F.hidden||!activityVisible(F.el)){pauseFlight();return;}
+  if(!F.raf){F.last=0;F.raf=requestAnimationFrame(frame);}
 }
 export function close(){
   cancelAnimationFrame(F.raf);F.raf=0;
+  F.visibilityCleanup?.();F.visibilityCleanup=null;
   window.removeEventListener('keydown',onKey,true);window.removeEventListener('keyup',onKey,true);
   F.ro?.disconnect();F.ro=null;
   F.el?.remove();F.host?.classList.remove('pl-expanded-host');F.host=null;F.el=null;F.tid='';F.phase='';F.ask='';F.keys.clear();F.input.pad=null;
@@ -118,14 +130,14 @@ function build(){
   el.querySelector('.pl-fly-endlesson').addEventListener('click',()=>{F.teach=false;F.lessonPaused=false;el.querySelector('.pl-fly-lesson').hidden=true;el.querySelector('.pl-fly-target').hidden=true;});
   el.querySelector('.pl-fly-fd').addEventListener('click',e=>{F.fd=!F.fd;store(FD_KEY,F.fd?'1':'0');e.currentTarget.setAttribute('aria-pressed',String(F.fd));});
   el.querySelector('.pl-fly-ga').addEventListener('click',()=>goAround('player'));
-  yokeOn(el.querySelector('.pl-fly-yoke'));yokeOn(F.cv,true);throttleOn(el.querySelector('.pl-fly-thr'));
+  F.inputResets=[];yokeOn(el.querySelector('.pl-fly-yoke'));yokeOn(F.cv,true);throttleOn(el.querySelector('.pl-fly-thr'));
   el.addEventListener('wheel',e=>e.preventDefault(),{passive:false});
   el.querySelector('.pl-fly-fd').setAttribute('aria-pressed',String(store(FD_KEY)!=='0'));
   window.addEventListener('keydown',onKey,true);window.addEventListener('keyup',onKey,true);
   F.ro=new ResizeObserver(()=>size());F.ro.observe(el);
   size();
   F.stats={n:0,sum:0,max:0,win:0,winN:0,slow:0,start:performance.now()};F.lite=false;
-  F.thrShown=-1;F.thrFd=-2;F.last=performance.now();F.raf=requestAnimationFrame(frame);
+  F.thrShown=-1;F.thrFd=-2;F.visibilityCleanup=watchActivityVisibility(el,syncVisibility);syncVisibility();
 }
 function size(){
   if(!F.el)return;
@@ -151,7 +163,8 @@ function yokeOn(el,view=false){
   const set=(dx,dy)=>{const kx=clamp(dx,-R,R),ky=clamp(dy,-R,R);F.input.pad=[kx/R,ky/R];if(knob)knob.style.transform=`translate(${kx*58/R}px,${ky*58/R}px)`;};
   el.addEventListener('pointerdown',e=>{if(id!==null||F.phase==='ask')return;id=e.pointerId;ox=e.clientX;oy=e.clientY;el.setPointerCapture?.(id);set(0,0);e.preventDefault();});
   el.addEventListener('pointermove',e=>{if(e.pointerId!==id)return;set(e.clientX-ox,e.clientY-oy);});
-  const end=e=>{if(e.pointerId!==id)return;id=null;F.input.pad=null;if(knob)knob.style.transform='';};
+  const reset=()=>{id=null;F.input.pad=null;if(knob)knob.style.transform='';};F.inputResets.push(reset);
+  const end=e=>{if(e.pointerId!==id)return;reset();};
   el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
 }
 function throttleOn(el){
@@ -159,13 +172,14 @@ function throttleOn(el){
   const at=e=>{const r=el.getBoundingClientRect(),pad=18;F.input.thr=clamp(1-(e.clientY-r.top-pad)/(r.height-2*pad),0,1);S.Tt=F.input.thr;};
   el.addEventListener('pointerdown',e=>{if(id!==null)return;id=e.pointerId;el.setPointerCapture?.(id);at(e);e.preventDefault();});
   el.addEventListener('pointermove',e=>{if(e.pointerId===id)at(e);});
-  const end=e=>{if(e.pointerId===id)id=null;};
+  const reset=()=>{id=null;};F.inputResets.push(reset);
+  const end=e=>{if(e.pointerId===id)reset();};
   el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
   el.addEventListener('keydown',e=>{if(e.key==='ArrowUp'||e.key==='ArrowRight'){S.Tt=clamp(S.Tt+.1,0,1);e.preventDefault();e.stopPropagation();}if(e.key==='ArrowDown'||e.key==='ArrowLeft'){S.Tt=clamp(S.Tt-.1,0,1);e.preventDefault();e.stopPropagation();}});
 }
 const KEYS={ArrowLeft:1,ArrowRight:1,ArrowUp:1,ArrowDown:1,a:1,d:1,w:1,s:1,g:1,A:1,D:1,W:1,S:1,G:1};
 function onKey(e){
-  if(!F.el||F.hidden||!KEYS[e.key]||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(!F.el||F.hidden||!activityVisible(F.el)||!KEYS[e.key]||e.ctrlKey||e.metaKey||e.altKey)return;
   if(e.target?.closest?.('input,textarea,select,.pl-fly-ask'))return;
   e.preventDefault();e.stopPropagation();
   const k=e.key.length===1?e.key.toLowerCase():e.key;
@@ -675,12 +689,10 @@ function autopilot(dt){
 
 /* ================================================================ the frame */
 function frame(now){
-  F.raf=requestAnimationFrame(frame);
-  const raw=now-F.last;F.last=now;
-  if(!F.el)return;
-  // The sheet closed or moved to another page: hold still (and the job's own render will reopen us).
-  if(++F.seenCheck%20===0)syncVisibility();
-  if(F.hidden||document.hidden)return;
+  F.raf=0;
+  if(!F.el||F.hidden||!activityVisible(F.el)){pauseFlight();return;}
+  const raw=F.last?now-F.last:0;F.last=now;
+  F.raf=requestAnimationFrame(frame);F.seenCheck++;
   lessonTick();
   if(F.lessonPaused){draw();return;}
   const dt=Math.min(.05,Math.max(0,raw/1000));

@@ -28,6 +28,7 @@ import {stageFullscreen} from './delivery_fullscreen.js';
 import {drawStreetPerson,drawStreetTree,drawStreetScooter} from './delivery_sprites.js';
 import {drawHouseFacade,drawLandmarkFacade} from './delivery_architecture.js';
 import {createIsometricRenderer,needsDrivingFrames} from './delivery_isometric.js';
+import {activityVisible,watchActivityVisibility} from './activity_visibility.js';
 export {B,onRoad,gateOf,waypoint} from './delivery_navigation.js';
 const HW=5,SW=3,FRONT=HW+SW;       // half the road, the pavement, the house fronts from the street's middle
 const EYE=1.35,NEAR=.35,FAR=190;
@@ -239,10 +240,9 @@ function build(){
     S.mapCenter={x:panStart.x-(e.clientX-origin.x)*ratio/k,y:panStart.y-(e.clientY-origin.y)*ratio/k};expandedMap();
   }});
   new ResizeObserver(()=>size()).observe(el);
-  try{new IntersectionObserver(es=>{S.visible=es.some(e=>e.isIntersecting);if(S.visible)wake();}).observe(el);}catch{/* always drawn */}
+  try{new IntersectionObserver(es=>{S.visible=es.some(e=>e.isIntersecting);syncVisibility();}).observe(el);}catch{/* always drawn */}
   document.addEventListener('keydown',key,true);document.addEventListener('keyup',key,true);
   addEventListener('blur',()=>{clearInput();S.v=0;});
-  document.addEventListener('visibilitychange',()=>{clearInput();S.v=0;if(!document.hidden)wake();});
   setupDrivingProfile();
 }
 // Opt-in, DOM-readable diagnostics for measuring the actual mounted driving view.
@@ -314,7 +314,12 @@ function panel(name){
   if(name){S.panelReturn=previous;if(name==='map')expandedMap();S.el.querySelector('.dd-'+name+'-close').focus();}
   else {S.last=performance.now();S.perf.skip=30;(S.panelReturn?.isConnected?S.panelReturn:S.cv).focus();wake();}
 }
-const live=()=>!!(S.el?.isConnected&&S.el.closest('dialog[open],#sheet[open]')&&!document.hidden);
+const live=()=>S.active!==false&&S.visible!==false&&activityVisible(S.el);
+function suspend(){
+  if(S.raf)cancelAnimationFrame(S.raf);if(S.idle)clearTimeout(S.idle);S.raf=S.idle=S.last=0;
+  clearInput();S.v=0;
+}
+function syncVisibility(){if(live()){S.perf.skip=30;wake();}else suspend();}
 
 /** Put the stage into `slot` (after a render of the work sheet) with the current state of the shift. */
 export function mount(slot,opts){
@@ -322,6 +327,7 @@ export function mount(slot,opts){
   try{if(!S.el)build();}catch(error){S.fail=true;console.warn('Tự lái: không vẽ được',error);opts.fail?.();return false;}
   if(S.dbg)Object.assign(opts,S.dbg);
   S.opts=opts;S.slot=slot;
+  S.active=true;if(!S.visibilityCleanup)S.visibilityCleanup=watchActivityVisibility(S.el,syncVisibility);
   if(S.lightTarget!==opts.target||S.lightFrom!==opts.at){S.lightTarget=opts.target;S.lightFrom=opts.at;S.lightKey='';S.lightChallenge=null;S.lightPending=false;S.lightDenied=new Set();}
   const key=JSON.stringify(Object.entries(opts.nodes||{}).map(([k,n])=>[k,n.x,n.y]));
   if(key!==S.nodesKey){S.world=buildWorld(opts.nodes);S.nodesKey=key;S.at=null;}
@@ -334,7 +340,7 @@ export function mount(slot,opts){
 /** The player chose Tự lái again after a fallback: try once more at full size. */
 export function again(){S.fail=false;S.perf={n:0,sum:0,bad:0,skip:40,level:0};if(S.el)size();}
 /** The work sheet moved on (no leg to ride): the frames stop. */
-export function park(){if(S.full?.active)S.full.exit();if(S.overlay)panel(null);if(S.raf){cancelAnimationFrame(S.raf);S.raf=0;}if(S.idle){clearTimeout(S.idle);S.idle=0;}clearInput();S.v=0;}
+export function park(){S.active=false;S.visibilityCleanup?.();S.visibilityCleanup=null;if(S.full?.active)S.full.exit();if(S.overlay)panel(null);suspend();}
 
 /** Start of a leg: the scooter at the door of the stop the courier is at, facing the way to go. */
 function place(at,target){
@@ -361,7 +367,7 @@ function size(){
   S.mini.style.width=mw+'px';S.mini.style.height=mh+'px';S.mini.width=Math.round(mw*Math.min(2,devicePixelRatio||1));S.mini.height=Math.round(mh*Math.min(2,devicePixelRatio||1));
   S.barsKey='';if(S.overlay==='map')expandedMap();wake();
 }
-function wake(){if(S.idle){clearTimeout(S.idle);S.idle=0;}if(!S.raf&&S.el?.isConnected){S.last=performance.now();S.raf=requestAnimationFrame(frame);}}
+function wake(){if(S.idle){clearTimeout(S.idle);S.idle=0;}if(!S.raf&&live()&&!S.overlay){S.last=performance.now();S.raf=requestAnimationFrame(frame);}}
 function say(text,ms=2600){
   if(!S.say)return;S.say.textContent=text;S.say.hidden=false;S.sayT=performance.now()+ms;
 }
@@ -599,7 +605,7 @@ function frame(now){
   S.raf=0;
   if(!S.el?.isConnected||!S.opts){return;}
   const dt=Math.min(.05,Math.max(0,(now-S.last)/1000)),ms=now-S.last;S.last=now;
-  if(!live()){park();return;}
+  if(!live()){suspend();return;}
   if(S.overlay)return;
   const moving=needsDrivingFrames(S);
   S.t+=dt;

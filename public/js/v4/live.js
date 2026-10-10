@@ -24,7 +24,7 @@ import {faceCode} from './face-code.js';
 const RETRY=[1,2,4,8,15],SLOW=[3,8,20,60,120,300,600],PING_MS=25000,DEAD_MS=60000,CONNECT_MS=20000;
 const listeners=new Map();
 let env=null,ws=null,attempt=0,timer=0,pinger=0,lastFrame=0,tried=0,probing=false,fab=null,shown=false,shownDate=false,renderTimer=0,lastTotal=-1,cssAsked=false,sentFc=null,faceTimer=0;
-let connectTimer=0,probeTimer=0;
+let connectTimer=0,probeTimer=0,painted='';
 /** The face code of this save ('' while the save is not loaded). */
 const myFc=()=>{try{return env?.api?.state?faceCode(env.api.state):'';}catch(e){console.warn('face:',e);return '';}};
 /** 🙂 After a change of face or clothes: tell a service that knows faces (once per change). */
@@ -202,21 +202,26 @@ function frame(f){
 /** Before the first welcome of a page with a live service: the placeholder (greyed, its tap says "đang kết nối…"). */
 const waiting=()=>Boolean(env?.api?.live?.url)&&!live.welcomed&&live.state!=='off';
 function paint(){
-  const on=Boolean(live.flags.chat)&&live.welcomed,wait=!on&&waiting(),show=on||wait;
-  document.documentElement.toggleAttribute?.('data-live-wait',wait);   // greys the button and the rail entry (liveBoot's rule)
-  if(show&&!fab&&!cssAsked){cssAsked=true;stylesheet('/css/chat.css').then(paint);return;}   // the button's look comes with the chat's stylesheet
-  if(show&&!fab){
-    fab=document.createElement('button');fab.type='button';fab.className='live-fab';fab.dataset.action='liveChat';
-    fab.setAttribute('aria-label','Chat');fab.innerHTML=`${icon('chats',22)}<em class="badge" hidden></em>`;
-    (document.getElementById('stage')||document.body).append(fab);
-  }
-  if(fab){
-    fab.hidden=!show;fab.classList.toggle('is-down',live.state!=='open');
-    const n=on?live.unread():0,b=fab.querySelector('.badge');b.hidden=!n;b.textContent=n>99?'99+':String(n);
-    fab.setAttribute('aria-label',wait?'Chat · đang kết nối…':n?`Chat · ${n} tin chưa đọc`:'Chat');
+  const on=Boolean(live.flags.chat)&&live.welcomed,wait=!on&&waiting(),show=on||wait,n=on?live.unread():0;
+  // Movement and heartbeat packets still reach all subscribers; unchanged chat UI does not touch the DOM.
+  const key=[show,wait,live.state,n].join('|');
+  if(key!==painted){
+    document.documentElement.toggleAttribute?.('data-live-wait',wait);   // greys the button and the rail entry (liveBoot's rule)
+    if(show&&!fab&&!cssAsked){cssAsked=true;stylesheet('/css/chat.css').then(paint);return;}   // the button's look comes with the chat's stylesheet
+    if(show&&!fab){
+      fab=document.createElement('button');fab.type='button';fab.className='live-fab';fab.dataset.action='liveChat';
+      fab.setAttribute('aria-label','Chat');fab.innerHTML=`${icon('chats',22)}<em class="badge" hidden></em>`;
+      (document.getElementById('stage')||document.body).append(fab);
+    }
+    if(fab){
+      fab.hidden=!show;fab.classList.toggle('is-down',live.state!=='open');
+      const b=fab.querySelector('.badge');b.hidden=!n;b.textContent=n>99?'99+':String(n);
+      fab.setAttribute('aria-label',wait?'Chat · đang kết nối…':n?`Chat · ${n} tin chưa đọc`:'Chat');
+    }
+    painted=key;
   }
   // The rail / "Thêm" entry and its badge come from app.js (navItems reads liveNav()): re-render when they change.
-  const total=on?live.unread():wait?-2:-1,dating=Boolean(live.flags.dating)&&live.welcomed;
+  const total=on?n:wait?-2:-1,dating=Boolean(live.flags.dating)&&live.welcomed;
   if(show!==shown||total!==lastTotal||dating!==shownDate){shown=show;shownDate=dating;lastTotal=total;clearTimeout(renderTimer);renderTimer=setTimeout(()=>env?.renderMain?.(),250);}
 }
 

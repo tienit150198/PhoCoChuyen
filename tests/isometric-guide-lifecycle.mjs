@@ -10,14 +10,14 @@ const source=readFileSync(new URL('../public/js/iso-guide.js',import.meta.url),'
 function bus(){
   const handlers=new Map();
   const on=(type,fn)=>{if(!handlers.has(type))handlers.set(type,new Set());handlers.get(type).add(fn);return ()=>handlers.get(type)?.delete(fn);};
-  return {on,addEventListener:on,removeEventListener:(type,fn)=>handlers.get(type)?.delete(fn),emit:type=>{for(const fn of [...handlers.get(type)||[]])fn({type});},count:type=>handlers.get(type)?.size||0};
+  return {on,off:(type,fn)=>handlers.get(type)?.delete(fn),addEventListener:on,removeEventListener:(type,fn)=>handlers.get(type)?.delete(fn),emit:type=>{for(const fn of [...handlers.get(type)||[]])fn({type});},count:type=>handlers.get(type)?.size||0};
 }
 function harness(late=false,configure=()=>{}){
   const socket=Object.assign(bus(),{flags:{},welcomed:false}),api=Object.assign(bus(),{state:{journey:{story:true},fair:{show:false}},content:{journey:{},catalogue:[]}});
   const events=bus(),doc=bus(),timers=new Map(),frames=new Map();let timer=0,frame=0,rebuilds=0,renders=0,created=0,wakes=0;
   const shape=()=>{created++;return {destroyed:false,clear(){},lineStyle(){},beginPath(){},moveTo(){},lineTo(){},strokePath(){},fillCircle(){return this;},fillStyle(){return this;},fillRect(){return this;},fillEllipse(){return this;},setDepth(){return this;},setOrigin(){return this;},destroy(){this.destroyed=true;}};};
   const markers=[],removedMarkers=[],terrain=shape(),career={id:'career:zpop'},stage={navigation:{bounds:{x0:0,y0:0,x1:40,y1:40},roads:[{x0:0,y0:0,x1:40,y1:40}],obstacles:[]},
-    buildings:[{}],staticObjects:[terrain],hits:[{hotspot:career}],add:{graphics:shape,text:shape},requestRender:()=>{renders++;}};
+    buildings:[{}],events:bus(),staticObjects:[terrain],hits:[{hotspot:career}],add:{graphics:shape,text:shape},requestRender:()=>{renders++;}};
   stage.wayfindingSign=(label,approach)=>{const mount={x:approach.x-3,y:approach.y},sign=Object.assign(shape(),{label,approach,getData:key=>key==='interactionPoint'?mount:undefined});markers.push(sign);stage.staticObjects.push(sign);return sign;};
   stage.removeWayfindingSign=sign=>{removedMarkers.push(sign);sign.destroy();stage.staticObjects=stage.staticObjects.filter(object=>object!==sign);};
   const real={stage,mode:'town',career:'zpop',player:{x:3,y:3,path:[],goal:null},hotspots:[career],project:(x,y)=>({x,y}),onInteract(){},wake(){wakes++;}};
@@ -74,6 +74,43 @@ test('guide direct utilities work without changing workplace mode and follow liv
   x.socket.welcomed=true;x.socket.flags.kara=true;x.socket.emit('welcome');
   assert.ok(x.destinations().includes('utility:liveKara'));
   await x.h.goTo('utility:liveKara',x.env);assert.deepEqual(actions,['historyCourse','liveKara']);
+});
+
+test('all 66 documented utilities dispatch existing actions and reject stale unavailable routes',async()=>{
+  const inventory=JSON.parse(readFileSync(new URL('../docs/qa/isometric-feature-parity.json',import.meta.url),'utf8'));
+  const calls=[],x=harness(false,({env,real})=>{
+    real.mode='work';real.go=()=>assert.fail('a shared utility must not start an invented walk');
+    env.act=async(action,data)=>calls.push({action,data:data||{}});
+    Object.assign(env.api.state,{journey:{story:true,garage:{},gadgets:{},pets:{},spend:{},lux:{},abroad:{},deco:{},household:{}},marriage:{spouse:{}},rui:{},fair:{show:true,dog:{},knife:{},scratch:{},photo:{}}});
+    env.api.content.journey={quay:{},auction:{},certs:{}};
+  });
+  x.socket.welcomed=true;x.socket.flags={street:true,dating:true,wedding:true,kara:true,bark:true};
+  const before=JSON.stringify(x.env.api.state);
+  for(const route of inventory.utilityRoutes){
+    await x.h.goTo('utility:'+route.id,x.env);
+    assert.deepEqual(calls.at(-1),{action:route.action,data:route.data},route.id+' forwards unchanged action data');
+  }
+  assert.equal(calls.length,66);assert.equal(JSON.stringify(x.env.api.state),before,'entry routing cannot change money, eligibility or progress');
+  x.env.api.state={journey:{story:false}};x.env.api.content={};x.socket.welcomed=false;x.socket.flags={};
+  const available=new Set(townUtilities.townUtilityGroups(x.env.api.state,x.env.api.content,x.socket).flatMap(g=>g.items.map(i=>i.id)));
+  for(const route of inventory.utilityRoutes.filter(route=>!available.has(route.id))){
+    const count=calls.length;await x.h.goTo('utility:'+route.id,x.env);assert.equal(calls.length,count,route.id+' is no longer eligible');
+  }
+});
+
+test('the guide lists all 50 real careers while retaining story locks and omitting unplayable entries',()=>{
+  const inventory=JSON.parse(readFileSync(new URL('../docs/qa/isometric-feature-parity.json',import.meta.url),'utf8'));
+  const x=harness(false,({env})=>{
+    env.api.content.catalogue=[...inventory.careers.map(c=>({id:c.id,name:c.name,playable:true})),{id:'future-career',name:'Coming later',playable:false}];
+    env.api.state.journey={story:true,unlocked:['milk_tea']};
+    env.api.state.careers=Object.fromEntries(inventory.careers.map(c=>[c.id,{started:false}]));
+  });
+  const before=JSON.stringify(x.env.api.state),rows=x.h.destinations(x.env).filter(d=>d.dest.startsWith('career:'));
+  assert.equal(rows.length,50);assert.equal(rows.filter(d=>d.hint.includes('🔒')).length,49);
+  assert.equal(rows.some(d=>d.dest==='career:future-career'),false);
+  assert.equal(JSON.stringify(x.env.api.state),before);
+  x.env.api.state.journey.story=false;
+  assert.equal(x.h.destinations(x.env).filter(d=>d.dest.startsWith('career:')&&d.hint.includes('🔒')).length,0,'free play reflects the existing server mode');
 });
 
 test('authored map services follow the same server gates as the compact utility menu',()=>{
@@ -277,6 +314,48 @@ test('district preview changes only camera focus and has a separate walking butt
   x.h.previewDistrict('missing',x.env);assert.deepEqual(focuses,['park'],'unknown districts cannot move the camera');
 });
 
+test('an active guide route follows Phaser frames without its own animation loop',async()=>{
+  const x=harness(false,({real})=>{
+    real.go=(_id,done)=>{real.player.path=[{x:8,y:8}];real.pending=done;};
+  });
+  await x.h.goTo('place:bank',x.env);
+  assert.equal(x.frames.size,0,'route drawing must not wake a second RAF alongside Phaser');
+  assert.equal(x.stage.events.count('postupdate'),1,'Phaser draws the guide after moving the player');
+  const renders=x.renders;x.stage.events.emit('postupdate');x.stage.events.emit('postupdate');
+  assert.equal(x.renders,renders,'unchanged geometry does not repaint the line');
+  x.real.player.x+=.1;x.stage.events.emit('postupdate');assert.equal(x.renders,renders+1,'moving the feet updates the line');
+  x.real.player.path[0].y+=.1;x.stage.events.emit('postupdate');assert.equal(x.renders,renders+2,'changed route endpoints update even with stationary feet');
+});
+
+test('covered, hidden and paused routes preserve navigation and resume on a scene frame',async()=>{
+  const x=harness(false,({real})=>{
+    real.go=(_id,done)=>{real.player.path=[{x:8,y:8}];real.pending=done;};
+  });
+  let blocked=false;x.real.shouldSleep=()=>blocked;
+  await x.h.goTo('place:bank',x.env);
+  const pending=x.real.pending,renders=x.renders;
+  blocked=true;x.real.player.x+=.2;
+  for(let i=0;i<5;i++)x.stage.events.emit('postupdate');
+  assert.equal(x.renders,renders,'a suspended world cannot repaint a hidden route');
+  assert.equal(x.real.pending,pending,'opening a dialog preserves the actual walk callback');
+  assert.equal(x.real.player.path.length,1);
+  blocked=false;x.stage.events.emit('postupdate');
+  assert.equal(x.renders,renders+1,'the first visible scene frame refreshes the path');
+  x.real.pending=null;x.stage.events.emit('postupdate');
+  assert.equal(x.stage.events.count('postupdate'),0,'manual movement cancels its route listener');
+  assert.equal(x.frames.size,0);
+});
+
+test('a replacement destination and reattach release their previous route listeners',async()=>{
+  const x=harness(false,({real})=>{
+    real.go=(_id,done)=>{real.player.path=[{x:8,y:8}];real.pending=done;};
+  });
+  await x.h.goTo('place:bank',x.env);await x.h.goTo('place:rank',x.env);
+  assert.equal(x.stage.events.count('postupdate'),1,'only the latest route remains subscribed');
+  x.h.attachGuide(x.real,()=>x.env);
+  assert.equal(x.stage.events.count('postupdate'),0,'reattaching cannot retain an obsolete route');
+});
+
 test('district arrival respects browsing started mid-route and explicit preview still focuses',async()=>{
   const focuses=[],notices=[];let finish;
   const x=harness(false,({real,env})=>{
@@ -285,11 +364,11 @@ test('district arrival respects browsing started mid-route and explicit preview 
     real.focusDistrict=id=>{focuses.push(id);real.cameraMode='browse';return true;};env.toast=msg=>notices.push(msg);
     real.go=(id,done)=>{real.player.path=[{x:8,y:8}];real.pending=done;finish=()=>{real.player.path=[];real.pending=null;done();};};
   });
-  await x.h.goTo('district:park',x.env);assert.equal(x.frames.size,1,'the guide draws an active route');
+  await x.h.goTo('district:park',x.env);assert.equal(x.stage.events.count('postupdate'),1,'the guide draws an active route');
   x.real.cameraMode='browse';finish();
   assert.deepEqual(focuses,[],'arrival must not overwrite the view chosen while walking');
   assert.equal(x.real.cameraMode,'browse','arrival keeps the manual camera mode');
-  assert.equal(x.frames.size,0,'arrival still removes its route animation');assert.match(notices.at(-1),/Công viên Bờ Sen/,'arrival still announces the destination');
+  assert.equal(x.frames.size,0,'arrival has no independent route animation');assert.equal(x.stage.events.count('postupdate'),0,'arrival removes its route listener');assert.match(notices.at(-1),/Công viên Bờ Sen/,'arrival still announces the destination');
   x.h.previewDistrict('park',x.env);assert.deepEqual(focuses,['park'],'explicit Xem khu still works while browsing');assert.equal(x.real.cameraMode,'browse');
   x.real.cameraMode='follow';await x.h.goTo('district:park',x.env);finish();
   assert.deepEqual(focuses,['park'],'normal arrival also leaves focus to an explicit camera action');

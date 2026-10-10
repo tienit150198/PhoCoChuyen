@@ -158,15 +158,16 @@ assert.equal(frames,2,'a slow-device fallback cannot restart the parked frame lo
 
 const wakeSource=drive.slice(drive.indexOf('function wake(){'),drive.indexOf('function say(text,'));
 const wakeState={idle:42,raf:0,el:{isConnected:true}},cleared=[];let scheduled=0;
-const wake=new Function('S','clearTimeout','performance','requestAnimationFrame','frame',wakeSource+';return wake;')(
-  wakeState,id=>cleared.push(id),{now:()=>100},()=>++scheduled,()=>{});
+const wake=new Function('S','clearTimeout','performance','requestAnimationFrame','frame','live',wakeSource+';return wake;')(
+  wakeState,id=>cleared.push(id),{now:()=>100},()=>++scheduled,()=>{},()=>true);
 wake();wake();
 assert.deepEqual(cleared,[42],'waking the joystick cancels the pending idle refresh');
 assert.equal(scheduled,1,'repeated input wakes share one RAF');
 assert.equal(wakeState.last,100,'waking input resets the physics clock instead of advancing a long idle gap');
 const parkSource=drive.slice(drive.indexOf('export function park(){'),drive.indexOf('/** Start of a leg:')).replace('export ','');
+const suspendSource=drive.slice(drive.indexOf('function suspend(){'),drive.indexOf('function syncVisibility(){'));
 const parkState={idle:43,raf:9,v:5},cancelled=[];
-const park=new Function('S','cancelAnimationFrame','clearTimeout','clearInput',parkSource+';return park;')(
+const park=new Function('S','cancelAnimationFrame','clearTimeout','clearInput',suspendSource+parkSource+';return park;')(
   parkState,id=>cancelled.push(id),id=>cleared.push(id),()=>{});
 park();
 assert.deepEqual(cancelled,[9]);assert.deepEqual(cleared,[42,43]);

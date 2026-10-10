@@ -50,6 +50,10 @@ Source ứng viên `0c7db8d6eb9e4c51c2a9ac812619eb12b556b802` đã push lên mai
 
 `verify_package.py` đạt: toàn bộ 2.180 mã băm source/asset khớp, server giải nén khởi động bằng PostgreSQL riêng, phục vụ asset, tạo hồ sơ/chọn nghề/mở ngày làm, từ chối nghề bị khóa, replay request không áp dụng hai lần và export save 50 nghề. **345/345 JavaScript trong chính gói ZIP** qua gate Safari 15. Báo cáo máy đọc được nằm ở `output/release-2.0-local/package-verify.json`; chưa có smoke production 2.0 vì SSH chưa truy cập được.
 
+## Bổ sung hiệu năng ngày 11/10/2026
+
+Sau ứng viên `0c7db8d6`, đã bổ sung sửa vòng vẽ nền, cache che khuất/LOD, cập nhật live và lối vào menu ở cả ba bố cục. Bằng chứng và phạm vi kiểm chứng ở `docs/qa/performance-2026-10-11.md`; danh mục 50 nghề/66 tiện ích ở `docs/qa/isometric-feature-parity.md`. Gói ZIP mang SHA-256 ở phần trên là **ứng viên trước các sửa hiệu năng này**; không dùng nó thay cho ứng viên mới.
+
 ## Các bước còn lại trên production
 
 1. Khôi phục SSH; đọc health, current release và manifest; nếu production đã đổi thì cập nhật baseline và kiểm tra tương thích lại.

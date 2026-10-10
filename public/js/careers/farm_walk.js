@@ -13,6 +13,7 @@ import {figure,lookOf,paintLegs,paintAcc,paintTop,paintHairFront} from '../v4/lo
 import {R,E,L,P} from '../scenes/kit.js';
 import {t as tr} from '../v4/i18n.js';
 import {farmCamera,farmMovement,farmProject,pickFarmSpot,needsFarmFrames,farmVisualKey,createFarmRenderer} from './farm_isometric.js';
+import {activityVisible,watchActivityVisibility} from './activity_visibility.js';
 
 const NEAR=0.08,REACH=1.05,RAD=0.32,WALK=3.3,TURN=2.3,EYE=1.55,TAU=Math.PI*2;
 const BEDS={P1:[-5,8],P2:[0,8],P3:[5,8],P4:[-5,12.5],P5:[0,12.5],P6:[5,12.5]},BX=1.6,BZ=0.8,BH=0.32;
@@ -101,23 +102,24 @@ function size(){
   if(w===W.w&&h===W.h&&dpr===W.dpr)return;
   W.w=w;W.h=h;W.dpr=dpr;W.cv.width=Math.round(w*dpr);W.cv.height=Math.round(h*dpr);
 }
-const alive=()=>W.el?.isConnected&&!document.hidden&&!!W.el.closest('dialog[open]')&&W.el.getClientRects().length>0;
+const alive=()=>activityVisible(W.el);
 function watchVisibility(){
   const dialog=W.el?.closest('dialog[open]');
   if(dialog===W.visibilityDialog)return;
   W.visibilityCleanup?.();
   if(!dialog||!W.el.isConnected)return;
-  const stop=()=>{if(W.raf)cancelAnimationFrame(W.raf);clearTimeout(W.timer);W.raf=W.timer=W.last=0;};
+  const stop=()=>{if(W.raf)cancelAnimationFrame(W.raf);clearTimeout(W.timer);W.raf=W.timer=W.last=0;W.keys.clear();W.joy=null;W.look=null;W.me.moving=0;};
   const changed=()=>{
     if(!W.el?.isConnected||W.el.closest('dialog[open]')!==dialog){cleanup();return;}
-    if(document.hidden){stop();return;}
-    if(alive()&&(W.cam!=='iso'||needsFarmFrames(W)))wake();
+    if(!alive()){stop();return;}
+    if(W.paintPending||W.cam!=='iso'||needsFarmFrames(W))wake();
   };
-  const cleanup=()=>{stop();document.removeEventListener('visibilitychange',changed);dialog.removeEventListener('close',cleanup);W.visibilityDialog=null;W.visibilityCleanup=null;W.keys.clear();W.joy=null;W.look=null;};
+  const unwatch=watchActivityVisibility(W.el,changed);
+  const cleanup=()=>{stop();unwatch();dialog.removeEventListener('close',cleanup);W.visibilityDialog=null;W.visibilityCleanup=null;};
   W.visibilityDialog=dialog;W.visibilityCleanup=cleanup;
-  document.addEventListener('visibilitychange',changed);dialog.addEventListener('close',cleanup);
+  dialog.addEventListener('close',cleanup);
 }
-function wake(){W.calm=0;if(!W.raf){clearTimeout(W.timer);W.timer=0;W.last=0;W.raf=requestAnimationFrame(loop);}}
+function wake(){W.paintPending=true;W.calm=0;if(!W.raf&&alive()){clearTimeout(W.timer);W.timer=0;W.last=0;W.raf=requestAnimationFrame(loop);}}
 function loop(now){
   W.raf=0;
   if(!alive()){W.last=0;if(!W.el?.isConnected||!W.el.closest('dialog[open]'))W.visibilityCleanup?.();return;}
@@ -126,7 +128,7 @@ function loop(now){
   const raw=W.last?now-W.last:0,dt=raw?Math.min(0.05,raw/1000):1/60;W.last=now;W.t+=dt;
   step(dt);
   const t0=performance.now();
-  try{draw();}catch(error){console.error(error);W.broken=true;W.hooks?.broken?.(W.x);return;}
+  try{draw();W.paintPending=false;}catch(error){console.error(error);W.broken=true;W.hooks?.broken?.(W.x);return;}
   perf(performance.now()-t0,raw);
   // A still illustrated garden has no wind/hen loop. State updates and input wake the same RAF.
   if(W.cam==='iso'&&!W.ride&&!needsFarmFrames(W)){W.last=0;return;}

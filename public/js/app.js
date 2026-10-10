@@ -446,8 +446,11 @@ function dockItems(c=room()){
  * the sheet with a back button. Every entry is always in the markup (hidden when folded) so deep links
  * ("Thử ngay" in Có gì mới) and sweeps still find it by data-action. */
 function railHTML(c){
-  const phone=layout()==='phone',shown=dockItems(c),onBar=x=>phone&&shown.some(y=>y[0]===x[0]),extra=phone?sceneActions().filter(x=>!onBar(x)):[];
-  const nav=navItems(c),order=x=>{const i=RAIL_MAIN.indexOf(x[0]);return i<0?RAIL_MAIN.length:i;};
+  const phone=layout()==='phone',shown=dockItems(c),town=iso?.booted()&&world.mode==='town';
+  // The town hides the workplace dock. Keep its actions in More until the player enters work.
+  const onBar=x=>phone&&!town&&shown.some(y=>y[0]===x[0]),scene=sceneActions(),nav=navItems(c);
+  const extra=phone||town?[...scene,...(town?shown.filter(x=>!scene.some(y=>y[0]===x[0])&&!nav.some(y=>y[0]===x[0])):[])].filter(x=>!onBar(x)):[];
+  const order=x=>{const i=RAIL_MAIN.indexOf(x[0]);return i<0?RAIL_MAIN.length:i;};
   const main=nav.filter(railMain).sort((a,b)=>order(a)-order(b));
   const groups=RAIL_GROUPS.map(([g,ic,label,ids])=>[g,ic,label,ids.map(id=>nav.find(x=>x[0]===id)).filter(x=>x&&!railMain(x))]).filter(g=>g[3].length);
   const open=groups.some(g=>g[0]===ui.railGroup)?ui.railGroup:null,hide=phone&&open?' hidden':'';
@@ -1541,7 +1544,9 @@ async function handleAction(action,data,el){
     await (await import('./v4/jail.js')).openJail(env());return;
   }
   if(action==='leisurePlace'){if(iso&&['fishing','boat','pool'].includes(data.kind))await iso.openLeisure(data.kind,env());return;}
-  if(action==='home'&&iso?.booted()&&isoTownFirst())action='isoTown';
+  // Legacy Home opens the journey/career chooser (including More → Đổi nghề).
+  // Island navigation has its own explicit isoTown action.
+  if(action==='home'&&iso?.booted()&&isoTownFirst())action='isoCareers';
   if(iso&&action.startsWith('iso')&&await iso.isometricAction(action,data,el,env()))return;
   switch(action){
     case'close':closeSheet();break;

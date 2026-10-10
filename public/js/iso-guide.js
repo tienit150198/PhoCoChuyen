@@ -43,7 +43,7 @@ function nearest(nav,p){
   return null;
 }
 
-let world=null,envOf=null,line=null,watch=0,goingTo=null,shown=new Set(),detach=null;
+let world=null,envOf=null,line=null,unwatch=null,lineGeometry='',goingTo=null,shown=new Set(),detach=null;
 const directory=createResidentDirectory();
 let mappedWorld=null,mappedKey='';
 function places(){
@@ -252,11 +252,14 @@ export async function openGuide(env,{filter='all'}={}){
 }
 
 /* ---- walking there ---- */
-function stopLine(){cancelAnimationFrame(watch);watch=0;line?.destroy();line=null;goingTo=null;world?.stage?.requestRender?.();}
+function stopLine(){unwatch?.();unwatch=null;const hadLine=Boolean(line);line?.destroy();line=null;lineGeometry='';goingTo=null;if(hadLine)world?.stage?.requestRender?.();}
 function drawRoute(real){
   const s=real.stage;if(!s)return;
+  const points=[real.player,...real.player.path],geometry=points.map(p=>p.x+','+p.y).join(';');
+  if(geometry===lineGeometry)return;
+  lineGeometry=geometry;
   if(!line){line=s.add.graphics();line.setDepth(-5000);}
-  line.clear();const pts=[real.player,...real.player.path].map(p=>real.project(p.x,p.y,0));
+  line.clear();const pts=points.map(p=>real.project(p.x,p.y,0));
   if(pts.length<2)return;
   const stroke=(width,colour,alpha)=>{line.lineStyle(width,colour,alpha);line.beginPath();line.moveTo(pts[0].x,pts[0].y);for(const p of pts.slice(1))line.lineTo(p.x,p.y);line.strokePath();};
   stroke(16,0x7a4b2e,.45);stroke(8,0xfff3da,1);   // a cream path with a brown edge: readable on grass and paving
@@ -287,8 +290,13 @@ export async function goTo(dest,env){
   const label=h.label||dest;env.toast(`🧭 Đang tới ${label}`);
   const tick=()=>{
     if(real.pending!==mine||!real.player.path.length||real.mode!=='town'){if(!done)stopLine();return;}   // stopped: a tap, the joystick, a key
-    drawRoute(real);watch=requestAnimationFrame(tick);
+    if(real.shouldSleep?.()||real.paused||document.hidden||document.querySelector?.('dialog[open]:not(.drawer)'))return;
+    drawRoute(real);
   };
+  // Phaser already stops for covered/hidden/paused scenes and wakes on resume.
+  // Update after its player step; a second RAF would keep redrawing a sleeping town.
+  const events=real.stage.events;
+  events.on('postupdate',tick);unwatch=()=>events.off('postupdate',tick);
   tick();
 }
 

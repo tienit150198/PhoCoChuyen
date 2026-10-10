@@ -7,8 +7,8 @@ import vm from 'node:vm';
 test('flight retains fullscreen after dialog rerenders and releases it for another sheet',()=>{
   const source=readFileSync(new URL('../public/js/careers/pilot_fly.js',import.meta.url),'utf8');
   const body=source.slice(source.indexOf('function syncVisibility(){'),source.indexOf('export function close(){'));
-  let here=true;const classes=new Set(),F={el:{isConnected:true},host:{classList:{toggle(name,on){on?classes.add(name):classes.delete(name);}}}};
-  const context=vm.createContext({F,document:{querySelector:()=>here?{}:null}});
+  let here=true;const classes=new Set(),F={el:{isConnected:true},keys:new Set(),input:{},host:{classList:{toggle(name,on){on?classes.add(name):classes.delete(name);}}}};
+  const context=vm.createContext({F,document:{querySelector:()=>here?{}:null},activityVisible:()=>here&&F.el.isConnected,requestAnimationFrame:()=>1,cancelAnimationFrame(){},frame(){}});
   vm.runInContext(body+';globalThis.refresh=syncVisibility;',context);
   context.refresh();assert.ok(classes.has('pl-expanded-host'));assert.equal(F.el.hidden,false);
   classes.clear();context.refresh();assert.ok(classes.has('pl-expanded-host'),'normal sheet render removed class');

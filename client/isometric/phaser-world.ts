@@ -271,6 +271,7 @@ class DioramaScene extends Phaser.Scene {
   private staticIndex=new SpatialIndex<StaticVisual>(384);
   private shownStatics=new Set<StaticVisual>();
   private visibilityView='';
+  private staticLodZoom=NaN;
   private staticLod=new StaticLodCache({maxEntries:1024});
   private lodTextures=new Set<string>();
   private originalFrames=new WeakMap<Phaser.GameObjects.Image,Phaser.Textures.Frame>();
@@ -452,7 +453,7 @@ class DioramaScene extends Phaser.Scene {
     this.residentObjects=this.staticObjects.slice(before);this.reindexStatics();this.requestRender();
   }
   private reindexStatics(){
-    this.staticIndex.clear();this.shownStatics.clear();this.visibilityView='';
+    this.staticIndex.clear();this.shownStatics.clear();this.visibilityView='';this.staticLodZoom=NaN;
     if(this.owner.mode!=='town')return;
     for(const item of this.staticObjects){
       if(item===this.groundCache||!(item instanceof Phaser.GameObjects.Image||item instanceof Phaser.GameObjects.Container||item instanceof Phaser.GameObjects.Text))continue;
@@ -467,7 +468,11 @@ class DioramaScene extends Phaser.Scene {
     const visible=new Set(this.staticIndex.query({x0:cx-hw,y0:cy-hh,x1:cx+hw,y1:cy+hh}));
     if(c.zoom<.18)for(const sign of this.placards)visible.delete(sign.tag);
     for(const item of this.shownStatics)if(!visible.has(item))item.setVisible(false);
-    for(const item of visible){if(!item.visible)item.setVisible(true);if(item instanceof Phaser.GameObjects.Image)this.staticImageLod(item,c.zoom);}
+    const zoomChanged=c.zoom!==this.staticLodZoom;
+    // Panning does not change a sprite's raster size. Avoid rebuilding frame/cache
+    // keys for every visible building on every camera tick.
+    for(const item of visible){if(!item.visible)item.setVisible(true);if(item instanceof Phaser.GameObjects.Image&&(zoomChanged||!this.shownStatics.has(item)))this.staticImageLod(item,c.zoom);}
+    this.staticLodZoom=c.zoom;
     this.shownStatics=visible;
   }
   private staticImageLod(image:Phaser.GameObjects.Image,zoom:number){

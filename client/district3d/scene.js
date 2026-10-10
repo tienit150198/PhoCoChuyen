@@ -43,7 +43,7 @@ export function createDistrictScene(host,options={}){
     const buckets=new Map();for(const m of [...parent.children])if(m.isMesh){m.updateMatrix();const geo=m.geometry.clone().applyMatrix4(m.matrix);let b=buckets.get(m.material);if(!b)buckets.set(m.material,b={parts:[],home:m.userData.home});b.parts.push(geo);parent.remove(m);}
     for(const [mat,b]of buckets){const geometry=mergeGeometries(b.parts,false);for(const p of b.parts)p.dispose();if(!geometry)continue;geometries.add(geometry);const paint=cloneMaterials?mat.clone():mat;if(cloneMaterials)materials.set('house-'+materials.size,paint);const m=new T.Mesh(geometry,paint);m.userData.home=b.home;parent.add(m);}
   }
-  for(const house of houses)batch(house,true);batch(scene);
+  for(const house of houses){batch(house,true);house.updateMatrixWorld(true);}batch(scene);
   const actors=[];
   for(let i=0;i<25;i++){
     const m=new T.SpriteMaterial({transparent:true,alphaTest:.07,depthWrite:false}),s=new T.Sprite(m);s.center.set(.5,0);s.scale.set(1.6,2.05,1);s.visible=false;scene.add(s);actors.push(s);
@@ -63,6 +63,15 @@ export function createDistrictScene(host,options={}){
     return !!dialog?.open&&dialogs[dialogs.length-1]===dialog;
   };
   function wake(){if(!raf&&visible())raf=requestAnimationFrame(draw);}
+  const coverEye=new T.Vector3(Infinity,Infinity,Infinity),coverCamera=new T.Vector3(Infinity,Infinity,Infinity),coverDelta=new T.Vector3();
+  function updateCover(){
+    // Buildings are fixed: NPC animation does not change the player's sightline.
+    if(coverEye.x===position.x&&coverEye.z===position.y&&coverCamera.equals(camera.position))return;
+    coverEye.set(position.x,1.1,position.y);coverCamera.copy(camera.position);coverDelta.copy(coverEye).sub(camera.position);
+    const distance=coverDelta.length();ray.set(camera.position,coverDelta.normalize());ray.far=distance-.1;
+    const cover=new Set(ray.intersectObjects(houses,true).map(h=>h.object.parent));ray.far=Infinity;
+    for(const house of houses)for(const object of house.children){const target=cover.has(house)?.35:1;if(object.material.opacity!==target){object.material.opacity=target;object.material.transparent=target<1;object.material.depthWrite=target===1;object.material.needsUpdate=true;}}
+  }
   function draw(ms){
     raf=0;if(!visible())return;const t=ms/1000;if(last&&t-last<1/30){wake();return;}const dt=last?Math.min(.05,t-last):0;last=t;
     let v={x:input.x+(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0),y:input.y+(keys.has('s')||keys.has('arrowdown')?1:0)-(keys.has('w')||keys.has('arrowup')?1:0)};
@@ -73,9 +82,7 @@ export function createDistrictScene(host,options={}){
     actor(0,{...(options.player||{pid:'self'}),direction},position,moving,t);
     for(let i=0;i<6;i++){const p=customerPoint(i,options.reduced?0:t);actor(i+1,{pid:'customer'+i,npc:i,direction:i%2?'sw':'ne'},p,!options.reduced,t);}
     for(let i=7;i<actors.length;i++){const p=people[i-7];if(p){const target=p.activity||{},old=actors[i].position,k=1-Math.exp(-12*dt);actor(i,{...p,direction:target.direction},{x:old.x+(target.x-old.x)*k,y:old.z+(target.y-old.z)*k},target.moving,t);}else{actors[i].visible=false;actors[i].userData.shadow.visible=false;}}
-    const eye=new T.Vector3(position.x,1.1,position.y),delta=eye.clone().sub(camera.position),distance=delta.length();ray.set(camera.position,delta.normalize());ray.far=distance-.1;
-    const cover=new Set(ray.intersectObjects(houses,true).map(h=>h.object.parent));ray.far=Infinity;
-    for(const house of houses)for(const object of house.children){const target=cover.has(house)?.35:1;if(object.material.opacity!==target){object.material.opacity=target;object.material.transparent=target<1;object.material.depthWrite=target===1;object.material.needsUpdate=true;}}
+    updateCover();
     renderer.render(scene,camera);if(moving||goal||ms<peerMotionUntil||!options.reduced)wake();
     if(textures.size>180){const used=new Set(actors.filter(s=>s.visible).map(s=>s.material.map));for(const [key,tex]of textures){if(textures.size<=120)break;if(!used.has(tex)){tex.dispose();textures.delete(key);}}}
   }

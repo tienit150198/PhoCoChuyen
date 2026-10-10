@@ -27,6 +27,7 @@ class Camera {
   setBackgroundColor(){return this;}
 }
 class Graphic {setDepth(){return this;}destroy(){}}
+class StaticImage {visible=true;setVisible(value){this.visible=value;return this;}getBounds(){return {left:0,top:0,right:100,bottom:100,width:100,height:100};}}
 class Game {
   constructor(config){
     this.stage=config.scene[0];this.loop={running:true,wake(){this.running=true;},sleep(){this.running=false;}};
@@ -40,7 +41,7 @@ class Game {
 const original=Object.fromEntries(['window','document','location','ResizeObserver','MutationObserver','__cameraTestPhaser'].map(key=>[key,globalThis[key]]));
 const doc=new BrowserTarget();Object.assign(doc,{hidden:false,body:{},querySelector:()=>null,createElement:()=>new Canvas()});
 Object.assign(globalThis,{window:new BrowserTarget(),document:doc,location:{search:''},ResizeObserver:Observer,MutationObserver:Observer,
-  __cameraTestPhaser:{Scene:class {},Game,CANVAS:1,Scale:{NONE:0,NO_CENTER:0},Math:{Clamp:(v,min,max)=>Math.max(min,Math.min(max,v))}}});
+  __cameraTestPhaser:{Scene:class {},Game,CANVAS:1,GameObjects:{Image:StaticImage},Scale:{NONE:0,NO_CENTER:0},Math:{Clamp:(v,min,max)=>Math.max(min,Math.min(max,v))}}});
 
 try {
   const source=readFileSync('client/isometric/phaser-world.ts','utf8');
@@ -52,7 +53,19 @@ try {
         'export const getCharacterStamp=()=>({}),preloadIllustratedCharacters=()=>{};':'export const kindOf=()=>"home",wordsFor=()=>({});',loader:'js'}));
     }
   }]});
-  const {PhaserWorld}=await import('data:text/javascript;base64,'+Buffer.from(out.outputFiles[0].text).toString('base64'));
+  const {PhaserWorld,DioramaScene}=await import('data:text/javascript;base64,'+Buffer.from(out.outputFiles[0].text).toString('base64'));
+  await test('panning checks static image LOD only on entry or zoom changes',()=>{
+    const items=Array.from({length:100},()=>new StaticImage());let visible=items,lodChecks=0;
+    const stage=Object.assign(Object.create(DioramaScene.prototype),{owner:{mode:'town'},cameras:{main:new Camera(1280,720)},
+      visibilityView:'',shownStatics:new Set(),staticObjects:items,staticIndex:{query:()=>visible,clear(){},add(){}},placards:[],staticImageLod:()=>lodChecks++});
+    stage.syncStaticVisibility();assert.equal(lodChecks,100);
+    for(let i=1;i<=120;i++){stage.cameras.main.scrollX=i;stage.syncStaticVisibility();}
+    assert.equal(lodChecks,100,'120 camera pans must not repeat 12,000 unchanged texture lookups');
+    visible=items.slice(1);stage.cameras.main.scrollX++;stage.syncStaticVisibility();assert.equal(items[0].visible,false);
+    visible=items;stage.cameras.main.scrollX++;stage.syncStaticVisibility();assert.equal(items[0].visible,true);assert.equal(lodChecks,101,'newly visible art still gets its correct LOD');
+    stage.cameras.main.zoom=.5;stage.syncStaticVisibility();assert.equal(lodChecks,201,'zoom refreshes every visible texture');
+    stage.reindexStatics();stage.syncStaticVisibility();assert.equal(lodChecks,301,'replacing town/resident art invalidates LOD even at the same camera position and zoom');
+  });
   function fixture(t){
     const canvas=new Canvas(),world=new PhaserWorld(canvas,()=>{}),stage=world.engine.stage;
     // Navigation remains real, with ample empty ground so camera assertions are
