@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-"""🐕 Kéo co chó sủa in three phones (dev tool; needs `pip install playwright websockets` and TEST_DATABASE_URL).
+"""🐕 Kéo co chó sủa with a fake microphone (dev tool; needs `pip install playwright websockets` and TEST_DATABASE_URL).
 
 Starts a game server and the live service with LIVE_DOG_BARK=1 (LIVE_TRUST_PROXY=1: each phone sends its own
-X-Real-IP, as nginx would). Chromium runs with a fake microphone (a beep) and the fake permission prompt.
+X-Real-IP, as nginx would). Each phone is its own Chromium whose microphone is a generated WAV
+(--use-file-for-fake-audio-capture): a quiet room, with or without shouts over it.
 
   * the header: Permissions-Policy microphone=(self);
-  * Lan and Minh (two IPs) register, give a birth year, open 🐕 Kéo co chó sủa from Khu phố and stake 200 xu each:
-    they are matched, the rope moves on the beep's loudness, the match ends (win / lose / draw) and the pot is paid once;
-  * Hoa is alone: after the wait the house dog takes the match, shown as "🐕 Chó nhà Mây · <name>" (no player card);
-  * a second phone on Lan's IP never meets Lan.
-Shots at 390×844 and 360×780 (--shots DIR).
+  * Lan (shouting) and Hoa (silent room) register, give a birth year, open 🐕 Kéo co chó sủa and stake (different
+    stakes, so they wait for the house dog): the page calibrates the floor, the match starts after the wait against
+    "🐕 Chó nhà Mây · <name>" (owner 10/10: the rope moves only on barks);
+  * Lan wins by shouting, Hoa loses slowly (28 s or more) to the barking dog; no match under 15 s;
+  * the pot is paid once; the live log has one telemetry line per match (numbers only).
+Shots at 390×844 (--shots DIR).
 
   python scripts/browser_dog_bark.py [--shots DIR]
 """
@@ -99,6 +101,31 @@ async def phone(browser, base, name, user, ip, problems, size=(390, 844)):
     return ctx, page
 
 
+def wav(path: str, bark: bool, seconds: int = 90) -> str:
+    """A fake microphone (Chromium reads it as the capture device, looping): a quiet room (white noise at about −62 dBFS)
+    and, when `bark`, barks over it (syllables of varying loudness up to about −9 dBFS, 0.8 s on, 0.25 s off: shouting hard
+    and often)."""
+    import random
+    import struct
+    import wave
+    rate, rng = 48000, random.Random(7)
+    frames = bytearray()
+    for i in range(rate * seconds):
+        t = i / rate
+        x = rng.gauss(0, 0.0008)
+        if bark and t % 1.05 < 0.8:   # "gâu gâu": syllables of 0.16 s, each its own loudness, a dip between them
+            k = int(t / 0.16)
+            env = (0.25 + 0.75 * random.Random(k).random()) * (0.35 + 0.65 * abs(__import__('math').sin(3.1416 * (t % 0.16) / 0.16)))
+            x += rng.gauss(0, 0.35 * env)
+        frames += struct.pack('<h', max(-32767, min(32767, int(x * 32767))))
+    with wave.open(path, 'wb') as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(rate)
+        w.writeframes(bytes(frames))
+    return path
+
+
 async def run(shots: Path | None) -> list:
     from playwright.async_api import async_playwright
     problems: list = []
@@ -116,57 +143,53 @@ async def run(shots: Path | None) -> list:
         if not cond:
             problems.append(what)
 
-    with tempfile.TemporaryDirectory() as tmp, servers(tmp, ) as (base, db):
+    async def match(pw, base, tmp, name, user, ip, stake, loud):
+        """One phone (its own Chromium: its own fake mic file) against the house dog. Returns (page, browser, result)."""
+        browser = await pw.chromium.launch(args=['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream',
+                                                 f'--use-file-for-fake-audio-capture={wav(os.path.join(tmp, user + ".wav"), loud)}',
+                                                 '--autoplay-policy=no-user-gesture-required'])
+        _, page = await phone(browser, base, name, user, ip, problems)
+        await page.evaluate(OPEN)
+        await page.wait_for_selector('.db-sheet[open] [data-db=find]', timeout=10000)
+        await page.click(f'[data-db=stake][data-v="{stake}"]')
+        await page.click('[data-db=find]')
+        await page.wait_for_selector('.db-waiting', timeout=15000)
+        await page.wait_for_selector('.db-match', timeout=45000)
+        tag = await page.evaluate("document.querySelector('.db-tag')?.innerText||''")
+        check('Chó nhà Mây' in tag, f'{name}: house dog labelled ({tag!r})')
+        await page.wait_for_timeout(9000)
+        await shot(page, f'{"01" if loud else "03"}-{"shout" if loud else "silent"}-match-390')
+        await page.wait_for_selector('.db-result', timeout=60000)
+        await shot(page, f'{"02" if loud else "04"}-{"shout" if loud else "silent"}-result-390')
+        res = await page.evaluate("document.querySelector('.db-result')?.className||''")
+        return page, browser, res
+
+    with tempfile.TemporaryDirectory() as tmp, servers(tmp) as (base, db):
         import urllib.request
         h = urllib.request.urlopen(base + '/').headers
         check('microphone=(self)' in (h.get('Permissions-Policy') or ''), 'Permissions-Policy microphone=(self)')
         async with async_playwright() as pw:
-            browser = await pw.chromium.launch(args=['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream',
-                                                     '--autoplay-policy=no-user-gesture-required'])
-            (_, lan), (_, minh) = await asyncio.gather(phone(browser, base, 'Lan', 'lan_bark', '10.1.0.1', problems),
-                                                       phone(browser, base, 'Minh', 'minh_bark', '10.1.0.2', problems))
-            for p in (lan, minh):
-                await p.evaluate(OPEN)
-                await p.wait_for_selector('.db-sheet[open] [data-db=find]', timeout=10000)
-            await shot(lan, '01-lobby-390')
-            await lan.click('[data-db=stake][data-v="200"]')
-            await lan.click('[data-db=find]')
-            await lan.wait_for_selector('.db-waiting', timeout=10000)
-            await shot(lan, '02-waiting-390')
-            await minh.click('[data-db=stake][data-v="200"]')
-            await minh.click('[data-db=find]')
-            await lan.wait_for_selector('.db-match', timeout=10000)
-            await minh.wait_for_selector('.db-match', timeout=10000)
-            check(True, 'Lan and Minh matched (two IPs)')
-            await lan.wait_for_timeout(5000)
-            await shot(lan, '03-match-pvp-390')
-            await lan.wait_for_selector('.db-result', timeout=60000)
-            await minh.wait_for_selector('.db-result', timeout=10000)
-            await shot(lan, '04-result-390')
-            rows = []
+            (lp, lb, lres), (hp, hb, hres) = await asyncio.gather(
+                match(pw, base, tmp, 'Lan', 'lan_bark', '10.1.0.1', 200, True),
+                match(pw, base, tmp, 'Hoa', 'hoa_bark', '10.1.0.2', 100, False))
+            check('win' in lres, f'Lan shouting beats the house dog ({lres})')
+            check('lose' in hres, f'Hoa silent loses to the barking dog ({hres})')
             with test_connect(db) as con:
-                rows = con.execute("SELECT result, pay, stake FROM bark_tickets WHERE status='done' ORDER BY result").fetchall()
-            check(len(rows) == 2 and sum(r[1] for r in rows) == 400, f'settled once, pot paid: {rows}')
-            await lan.wait_for_timeout(1500)
+                rows = con.execute("SELECT stake, result, pay, ended-started FROM bark_tickets WHERE status='done' ORDER BY stake").fetchall()
+            print('tickets:', rows)
+            check(all(r[3] >= 15 for r in rows), 'no match under 15 s')
+            silent = [r for r in rows if r[0] == 100]
+            check(bool(silent) and silent[0][3] >= 28, f'the silent player loses slowly ({silent})')
+            await lp.wait_for_timeout(1500)
             with test_connect(db) as con:
                 fx = con.execute("SELECT status, COUNT(*) FROM live_effects WHERE kind='bark' GROUP BY status").fetchall()
-            check(all(s == 'applied' for s, _ in fx), f'payout rows applied: {fx}')
-
-            # Hoa is alone: the house dog after the wait (360×780)
-            _, hoa = await phone(browser, base, 'Hoa', 'hoa_bark', '10.1.0.3', problems, size=(360, 780))
-            await hoa.evaluate(OPEN)
-            await hoa.wait_for_selector('.db-sheet[open] [data-db=find]', timeout=10000)
-            await shot(hoa, '05-lobby-360')
-            await hoa.click('[data-db=stake][data-v="100"]')
-            await hoa.click('[data-db=find]')
-            await hoa.wait_for_selector('.db-match', timeout=40000)
-            tag = await hoa.evaluate("document.querySelector('.db-tag')?.innerText||''")
-            check('Chó nhà Mây' in tag, f'house dog labelled: {tag!r}')
-            await hoa.wait_for_timeout(5000)
-            await shot(hoa, '06-match-dog-360')
-            await hoa.wait_for_selector('.db-result', timeout=60000)
-            await shot(hoa, '07-result-dog-360')
-            await browser.close()
+            check(fx == [('applied', 1)], f'the pot paid once: {fx}')
+            for b in (lb, hb):
+                await b.close()
+        lines = [x.strip() for x in open(os.path.join(tmp, 'live.log'), encoding='utf-8') if 'bark match' in x]
+        for x in lines:
+            print('telemetry:', x)
+        check(len(lines) == 2 and all('floor=' in x and 'barks=' in x for x in lines), 'one telemetry line per match')
     return problems
 
 

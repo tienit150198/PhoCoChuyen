@@ -1,4 +1,5 @@
-"""🐕 Kéo co chó sủa (game/dog_bark.py): the loudness clamps, the rope, the house dog's long-run odds, the pair limit,
+"""🐕 Kéo co chó sủa (game/dog_bark.py): the loudness clamps, the rope moving only on barks (both sides), the house dog's
+balance, the pair limit,
 and on real PostgreSQL the escrow (the command and its ticket, refused as a whole), the payout paid exactly once, a
 draw's and a cancel's refund, the daily caps, the win-streak cool-down, the stale-ticket housekeeping and no save key."""
 import random
@@ -43,59 +44,127 @@ class Voice(unittest.TestCase):
         self.assertEqual(v.s[0][1], 100.0)
 
 
+def bursts(lo, hi, on, off):
+    """A player who barks in bursts: `on` seconds at lo..hi, `off` seconds of room noise (under BARK_MIN)."""
+    st = {}
+
+    def f(t, r):
+        cyc = on + off
+        ph = (t + st.setdefault('o', r.random() * cyc)) % cyc
+        return r.uniform(lo, hi) if ph < on else r.uniform(0, 12)
+    return f
+
+
+SILENT = lambda t, r: r.uniform(0, 8)   # noqa: E731 - the room after the page's floor (never a bark)
+NORMAL = lambda: bursts(60, 85, 0.5, 0.6)   # noqa: E731 - a normal shout, about half the time
+HARD = lambda: bursts(80, 100, 0.8, 0.3)    # noqa: E731 - shouting hard and often
+
+
+def runs(profile, n, seed=20261010, **kw):
+    rng = random.Random(seed)
+    return [G.simulate(rng, profile() if profile in (NORMAL, HARD) else profile, **kw) for _ in range(n)]
+
+
 class RopeAndDog(unittest.TestCase):
+    """Owner 10/10 ("phải sủa mới tính"): the rope moves only on a bark, for both sides."""
+
     def test_rope_ends_time_and_draw(self):
-        r = G.Rope(5)
+        r = G.Rope(60)
         out = None
         while out is None:
             out = r.step(100, 0)
         self.assertEqual((out, r.x), ('a', G.END))
-        self.assertLess(r.t, 2.5)                            # a full lead crosses in 2 s
+        self.assertGreaterEqual(r.t, 15.0)                    # the fastest possible match: 15 s
         r = G.Rope(1)
         while (out := r.step(40, 40)) is None:
             pass
-        self.assertEqual(out, 'draw')                        # dead centre at the limit
-        r = G.Rope(1)
+        self.assertEqual((out, r.x), ('draw', 0.0))
+        r = G.Rope(3)
         while (out := r.step(30, 40)) is None:
             pass
         self.assertEqual(out, 'b')                           # on b's half at the limit
 
-    def test_house_dog_long_run_odds_about_half(self):
-        profiles = {'steady': lambda t, r: 60, 'noisy': lambda t, r: r.uniform(30, 90),
-                    'barks': lambda t, r: (85 if (t % 0.6) < 0.35 else 25) + r.uniform(-8, 8), 'max': lambda t, r: 100}
-        for name, f in profiles.items():
-            rng = random.Random(20261010)
-            n = 3000
-            res = [G.simulate(rng, f) for _ in range(n)]
-            won = res.count('a') / n
-            self.assertTrue(0.45 <= won <= 0.55, (name, won))
-            self.assertLess(res.count('draw') / n, 0.03)
-
-    def test_a_quiet_player_loses(self):
+    def test_silent_player_and_silent_dog_draw_without_moving(self):
+        rope, v = G.Rope(), G.Voice()
         rng = random.Random(1)
-        self.assertEqual({G.simulate(rng, lambda t, r: 0) for _ in range(200)}, {'b'})
-        lazy = [G.simulate(rng, lambda t, r: 18) for _ in range(500)]
-        self.assertLess(lazy.count('a') / 500, 0.3)          # a lazy whisper mostly loses
+        while True:
+            t = rope.t
+            v.add([SILENT(t, rng)], t)
+            out = rope.step(v.level(t), 0.0)
+            self.assertEqual(rope.x, 0.0)
+            if out:
+                break
+        self.assertEqual(out, 'draw')
+
+    def test_silent_player_against_a_barking_dog_loses_slowly(self):
+        res = runs(SILENT, 400)
+        self.assertEqual({x['win'] for x in res}, {'b'})
+        self.assertGreaterEqual(min(x['t'] for x in res), 28.0)   # at least ~30 s
+
+    def test_barking_player_against_a_silent_dog_wins(self):
+        for prof in (NORMAL, HARD):
+            res = runs(prof, 100, dog=False)
+            self.assertEqual({x['win'] for x in res}, {'a'})
+
+    def test_talk_hum_and_noise_never_pull(self):
+        v = G.Voice()
+        for i in range(20):                                   # talk-ish numbers under the bark line
+            v.add([G.BARK_MIN - 1 - (i % 5)], i * 0.07)
+        self.assertEqual(v.level(1.4), 0.0)
+        v = G.Voice()
+        for i in range(20):                                   # a loud constant hum (or a scripted number): flat
+            v.add([60 + (i % 2) * 0.5], i * 0.07)
+        self.assertEqual(v.level(1.4), 0.0)
+        v = G.Voice()
+        for i, x in enumerate((70, 82, 64, 90, 75, 88)):     # a real shout
+            v.add([x], i * 0.07)
+        self.assertGreater(v.level(0.4), 70)
+
+    def test_the_dog_pulls_only_while_it_barks(self):
+        d = G.HouseDog(random.Random(7))
+        windows, t, pulls = [], 0.0, []
+        for _ in range(int(G.MATCH_S / G.TICK)):
+            p, ev = d.tick()
+            if ev:
+                self.assertTrue(G.BARK_D[0] - 1e-9 <= ev['d'] <= G.BARK_D[1] + 1e-9 and 0 < ev['p'] <= 100)
+                windows.append((t, t + ev['d']))
+            pulls.append((t, p))
+            t += G.TICK
+        self.assertGreater(len(windows), 20)
+        for at, p in pulls:
+            inside = any(a - 1e-6 <= at < b + 1e-6 for a, b in windows)
+            if p > 0:
+                self.assertTrue(inside, at)
+        silent = sum(1 for at, p in pulls if p == 0)
+        self.assertGreater(silent, len(pulls) * 0.25)         # gaps between barks: no pull at all
+
+    def test_balance(self):
+        normal = runs(NORMAL, 1500)
+        won = sum(x['win'] == 'a' for x in normal) / len(normal)
+        self.assertTrue(0.42 <= won <= 0.60, won)            # a normal shout: about 50/50
+        hard = runs(HARD, 300)
+        self.assertGreater(sum(x['win'] == 'a' for x in hard) / len(hard), 0.9)   # shouting hard: clearly favoured
+        for res in (normal, hard, runs(lambda t, r: 100, 50)):
+            self.assertGreaterEqual(min(x['t'] for x in res), 15.0)   # no match under ~15 s
 
     def test_house_dog_varies_and_is_labelled(self):
         rng = random.Random(3)
         dogs = [G.HouseDog(rng) for _ in range(300)]
         self.assertGreater(len({d.name for d in dogs}), 40)
         self.assertGreater(len({d.breed[0] for d in dogs}), 8)
-        self.assertGreater(len({round(d.base, 2) for d in dogs}), 20)
+        self.assertGreater(len({round(d.base, 1) for d in dogs}), 50)
         v = dogs[0].view()
         self.assertTrue(v['house'])
         self.assertEqual(v['tag'], 'Chó nhà Mây')
         self.assertNotIn('pid', v)
-        for _ in range(100):                                 # never the same name twice in a row
+        for _ in range(100):
             self.assertNotEqual(G.HouseDog(rng, avoid=('Mực',)).name, 'Mực')
         d = G.HouseDog(random.Random(5))
-        seen = {d.state for _ in range(450) if d.pull(60) >= 0}
+        seen = set()
+        for _ in range(450):
+            d.tick()
+            seen.add(d.mode)
         self.assertTrue({'burst', 'pause'} <= seen)          # a rhythm, not a line
-
-    def test_dog_pull_can_pass_a_maxed_player(self):
-        d = G.HouseDog(random.Random(9))
-        self.assertGreater(max(d.pull(100) for _ in range(450)), 100)
 
 
 class Pairs(unittest.TestCase):

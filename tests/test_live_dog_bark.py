@@ -18,9 +18,21 @@ class LiveDogBark(LiveCase):
 
     async def asyncSetUp(self):
         await super().asyncSetUp()
-        p = patch.object(LB, 'COUNTDOWN', 0.1)
-        p.start()
-        self.addCleanup(p.stop)
+        for p in (patch.object(LB, 'COUNTDOWN', 0.1), patch.object(G, 'K', 0.05)):   # a quicker rope for the tests
+            p.start()
+            self.addCleanup(p.stop)
+
+    async def ready(self, *cs):
+        """bark_go, then the page says its mic delivers (the rope waits for it)."""
+        out = []
+        for c in cs:
+            g = await c.expect('bark_go', timeout=4)
+            self.assertIsNone(g['cd'])                      # not started before every mic is ready
+            await c.send(t='bark_ready', m=g['m'], floor=-58)
+            out.append(g)
+        for c in cs:
+            await c.expect('bark_start', timeout=3)
+        return out
 
     async def join(self, token, ip):
         from websockets.asyncio.client import connect
@@ -66,7 +78,7 @@ class LiveDogBark(LiveCase):
 
     async def test_match_win_pays_the_pot_once(self):
         a, b, ka, kb, sa, sb = await self.pair()
-        ga, gb = await a.expect('bark_go'), await b.expect('bark_go')
+        ga, gb = await self.ready(a, b)
         self.assertEqual((ga['m'], {ga['side'], gb['side']}, ga['pot']), (gb['m'], {'a', 'b'}, 1_000))
         self.assertEqual((ga['opp']['house'], ga['opp']['name']), (False, 'Minh'))
         self.assertEqual(self.row(ka)['status'], 'play')
@@ -95,8 +107,7 @@ class LiveDogBark(LiveCase):
     async def test_disconnect_loses(self):
         with patch.object(G, 'GONE_S', 0.4):
             a, b, ka, kb, sa, sb = await self.pair()
-            ga = await a.expect('bark_go')
-            await b.expect('bark_go')
+            await self.ready(a, b)
             await b.close()
             ea = await a.expect('bark_end', timeout=5)
         self.assertEqual((ea['result'], ea['why'], ea['pay']), ('win', 'gone', 1_000))
@@ -104,8 +115,7 @@ class LiveDogBark(LiveCase):
 
     async def test_quit_loses_and_bad_loudness_is_harmless(self):
         a, b, ka, kb, sa, sb = await self.pair()
-        ga = await a.expect('bark_go')
-        await b.expect('bark_go')
+        ga, _ = await self.ready(a, b)
         await a.send(t='bark_v', m=ga['m'], v=[10**12, -10**12, 'x', None, [1]])
         await a.send(t='bark_v', m=ga['m'], v='loud')
         await a.send(t='bark_quit', m=ga['m'])
@@ -115,19 +125,22 @@ class LiveDogBark(LiveCase):
     async def test_draw_refunds_both(self):
         with patch.object(G, 'MATCH_S', 1.0):
             a, b, ka, kb, sa, sb = await self.pair(stake=300)
-            await a.expect('bark_go')
-            await b.expect('bark_go')
+            ga, _ = await self.ready(a, b)
+            for _ in range(4):                               # both sides only talk and hum: nothing moves
+                await a.send(t='bark_v', m=ga['m'], v=[20, 25, 18, 28])
+                await b.send(t='bark_v', m=ga['m'], v=[60, 60, 60, 60])
+                await asyncio.sleep(0.2)
             ea, eb = await a.expect('bark_end', timeout=5), await b.expect('bark_end', timeout=5)
-        self.assertEqual((ea['result'], ea['pay'], eb['result'], eb['pay']), ('draw', 300, 'draw', 300))
+        self.assertEqual((ea['result'], ea['pay'], eb['result'], eb['pay'], ea['x']), ('draw', 300, 'draw', 300, 0))
         self.assertEqual((self.fx(ka)['amount'], self.fx(kb)['amount']), (300, 300))
 
     async def test_house_dog_after_the_wait(self):
         ta, sa = self.account('Lan')
         a = await self.join(ta, '10.0.0.5')
         ka = self.ticket(sa, 200)
-        with patch.object(G, 'DOG_AFTER', 0.2), patch.object(G, 'MATCH_S', 1.5):
+        with patch.object(G, 'DOG_AFTER', 0.2), patch.object(G, 'MATCH_S', 4.0):
             await a.call('bark_find', 'bark_wait', ticket=ka)
-            go = await a.expect('bark_go', timeout=4)
+            (go,) = await self.ready(a)
             opp = go['opp']
             self.assertTrue(opp['house'])
             self.assertEqual(opp['tag'], 'Chó nhà Mây')
@@ -135,9 +148,49 @@ class LiveDogBark(LiveCase):
             self.assertNotIn('pid', opp)
             self.assertEqual(go['pot'], 400)
             self.assertEqual((self.row(ka)['status'], self.row(ka)['opp'], self.row(ka)['dog']), ('dog', 'dog', opp['name']))
-            end = await a.expect('bark_end', timeout=5)          # silent: the dog barks on its own and wins
-        self.assertEqual((end['result'], end['pay']), ('lose', 0))
+            end = time.monotonic() + 6
+            while time.monotonic() < end and not any(f['t'] == 'bark_end' for f in a.frames):   # silent, but the mic delivers
+                await a.send(t='bark_v', m=go['m'], v=[3, 5, 2, 4])
+                await asyncio.sleep(0.25)
+            ev = await a.expect('bark_end', timeout=3)
+        self.assertEqual((ev['result'], ev['pay']), ('lose', 0))
         self.assertIsNone(self.fx(ka))
+        frames = [f for f in a.frames if f['t'] in ('bark_dog', 'bark_st')]
+        first = next(i for i, f in enumerate(frames) if f['t'] == 'bark_dog')   # heard before it pulls
+        self.assertTrue(all(f['x'] == 0 for f in frames[:first] if f['t'] == 'bark_st'))
+        self.assertTrue(all(f['d'] > 0 and f['p'] > 0 for f in frames if f['t'] == 'bark_dog'))
+
+    async def test_barking_beats_the_dog_and_a_dead_mic_waits(self):
+        ta, sa = self.account('Lan')
+        a = await self.join(ta, '10.0.0.7')
+        ka = self.ticket(sa, 200)
+        with patch.object(G, 'DOG_AFTER', 0.2):
+            await a.call('bark_find', 'bark_wait', ticket=ka)
+            (go,) = await self.ready(a)
+            await self.shout(a, go['m'], 96, 8)
+            ev = await a.expect('bark_end', timeout=3)
+        self.assertEqual((ev['result'], ev['pay'], ev['why']), ('win', 400, 'end'))
+        kb = self.ticket(sa, 200)                            # the mic says ready, then sends nothing: the match waits
+        with patch.object(G, 'DOG_AFTER', 0.2), patch.object(G, 'PAUSE_MAX', 1.0):
+            await a.call('bark_find', 'bark_wait', ticket=kb)
+            (go,) = await self.ready(a)
+            st = await a.expect('bark_st', timeout=3, m=go['m'])
+            while 'w' not in st:
+                st = await a.expect('bark_st', timeout=3, m=go['m'])
+            self.assertEqual(st['x'], 0)
+            ev = await a.expect('bark_end', timeout=4)
+        self.assertEqual((ev['result'], ev['why']), ('draw', 'nomic'))
+        await a.nothing('bark_dog', wait=0.05, m=go['m'])   # no sample, no time, no dog bark
+
+    async def test_no_mic_no_match(self):
+        with patch.object(G, 'READY_MAX', 0.8):
+            a, b, ka, kb, sa, sb = await self.pair(stake=300)
+            g = await a.expect('bark_go')
+            await b.expect('bark_go')
+            await a.send(t='bark_ready', m=g['m'], floor=-60)   # only one side's mic ever delivers
+            ea = await a.expect('bark_end', timeout=4)
+        self.assertEqual((ea['result'], ea['why'], ea['pay']), ('draw', 'nomic', 300))
+        self.assertEqual((self.fx(ka)['amount'], self.fx(kb)['amount']), (300, 300))
 
     async def test_house_dog_respects_the_day_caps(self):
         ta, sa = self.account('Lan')
@@ -174,7 +227,7 @@ class LiveDogBark(LiveCase):
 
     async def test_watch_and_cheer(self):
         a, b, ka, kb, sa, sb = await self.pair()
-        ga = await a.expect('bark_go')
+        ga, _ = await self.ready(a, b)
         tw, _ = self.account('Tư')
         w = await self.join(tw, '10.0.2.1')
         lob = await w.call('bark_lobby', 'bark_lobby')

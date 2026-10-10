@@ -9,10 +9,15 @@ The rules, the money and the pure physics are in game/dog_bark.py; this file run
   in one transaction (guarded: a ticket refunded meanwhile is dropped). After DOG_AFTER seconds without a human, the
   house dog (🐕 Chó nhà Mây · <name>) takes the match ('wait' -> 'dog') when today's dog caps allow the stake; else the
   page is told and keeps waiting for a human until WAIT_LIVE, then the stake goes back.
-* The match: COUNTDOWN seconds, then the rope (game/dog_bark.py Rope) every TICK. `bark_v {m, v: [0..100, ...]}` brings
-  the loudness numbers (never audio: the page measures its own microphone), at most BATCH_MAX a frame and RATE_MAX a
-  second (game Voice clamps them). `bark_st {m, x, a, b, left, fx?}` goes to the players and the watchers every
-  ST_EVERY ticks. A player with no socket for GONE_S, or who sends `bark_quit`, loses.
+* The match (owner 10/10 "phải sủa mới tính"): nothing moves until every player's page says its mic delivers
+  (`bark_ready {m, floor}`: calibrated, running, real samples); then `bark_start {m, cd}`, COUNTDOWN seconds, the rope
+  (game/dog_bark.py Rope) every TICK. No ready within READY_MAX: a draw, stakes back (why 'nomic'). `bark_v {m, v}`
+  brings the loudness above the page's noise floor (numbers only, never audio), at most BATCH_MAX a frame and RATE_MAX a
+  second; only a bark counts (game Voice). The house dog pulls only while it barks, and each bark is sent first as
+  `bark_dog {m, n, d, p}` (the page plays it, or shows "GÂU!"). Against the dog, a player whose mic stops delivering
+  (no sample for LIVE_GAP) pauses the match (`bark_st.w`, "Chạm để bật mic"); PAUSE_MAX in a row ends it as at the time
+  limit. `bark_st {m, x, a, b, left, fx?, w?}` goes to the players and the watchers every ST_EVERY ticks. A player with
+  no socket for GONE_S, or who sends `bark_quit`, loses. One log line per match: numbers only (_log).
 * Settlement, once per ticket: 'play'/'dog' -> 'done' under a guarded UPDATE and its one payout row live_effects
   'bark:<ticket>' (kind 'bark') in the same transaction; then `bark_end` (the page collects the payout: POST
   /api/live/effects). A database error is retried; if the service stops, the game server's housekeeping refunds.
@@ -24,8 +29,9 @@ Frames (client -> server; replies in brackets)
   bark_find {ticket}            [bark_wait {ticket, stake, dog_after}]   then bark_go | bark_info | bark_back
   bark_cancel {ticket}          [bark_back {ticket, why: 'cancel'}]
   bark_rejoin {}                [bark_go (the match going on) | bark_wait | bark_none]
-  bark_v {m, v}   bark_quit {m}   bark_watch {m} [bark_room]   bark_unwatch {}   bark_cheer {m, e}
-Server pushes: bark_go {m, side, me, opp, stake, pot, limit, at, cd}, bark_st, bark_end {m, result, why, pay, x},
+  bark_ready {m, floor}   bark_v {m, v}   bark_quit {m}   bark_watch {m} [bark_room]   bark_unwatch {}   bark_cheer {m, e}
+Server pushes: bark_go {m, side, me, opp, stake, pot, limit, cd: null}, bark_start {m, cd}, bark_dog {m, n, d, p}, bark_st,
+bark_end {m, result, why, pay, x},
 bark_info {ticket, code, msg}, bark_back {ticket, why}.
 An older live service answers 'unknown'; the page only shows the game while the welcome's flags have `bark`.
 """
@@ -67,7 +73,7 @@ class Wait:
 
 
 class Side:
-    __slots__ = ('sid', 'pid', 'name', 'ticket', 'voice', 'gone', 'quit', 'level')
+    __slots__ = ('sid', 'pid', 'name', 'ticket', 'voice', 'gone', 'quit', 'level', 'ready', 'floor')
 
     def __init__(self, w: Wait):
         self.sid, self.pid, self.name, self.ticket = w.sid, w.pid, w.name, w.ticket
@@ -75,13 +81,17 @@ class Side:
         self.gone = None
         self.quit = False
         self.level = 0.0
+        self.ready = False            # the page's mic delivers a real signal (bark_ready)
+        self.floor = None             # its calibrated noise floor, dBFS (telemetry only)
 
 
 class Match:
     def __init__(self, mid, stake, a: Side, b: Side | None, dog: G.HouseDog | None, room, t: float):
         self.id, self.stake, self.a, self.b, self.dog, self.room = mid, stake, a, b, dog, room
         self.rope = G.Rope()
-        self.go_at = t + COUNTDOWN
+        self.made = t
+        self.go_at = None             # set once every player's mic is ready (then COUNTDOWN)
+        self.paused = 0.0             # a house-dog match waiting for the player's mic, seconds in a row
         self.n = 0
         self.over = False
         self.fx = {}
@@ -309,7 +319,7 @@ class DogBarkFeature(Feature):
         side = 'a' if me is m.a else 'b'
         pay = 2 * m.stake if m.dog else G.pot(m.stake)
         return dict(t='bark_go', m=m.id, side=side, me=dict(name=me.name), opp=m.opp_view(me), stake=m.stake, pot=pay,
-                    limit=m.rope.limit, cd=round(max(0.0, m.go_at - time.monotonic()), 2), x=round(m.rope.x, 1),
+                    limit=m.rope.limit, cd=round(max(0.0, m.go_at - time.monotonic()), 2) if m.go_at else None, x=round(m.rope.x, 1),
                     left=round(max(0.0, m.rope.limit - m.rope.t), 1))
 
     @on('bark_v', rate=(12, 1.0))
@@ -320,6 +330,21 @@ class DogBarkFeature(Feature):
             return None
         me = m.a if m.a.sid == conn.player.sid else m.b
         me.voice.add(f.get('v'), time.monotonic())
+        return None
+
+    @on('bark_ready', rate=(10, 10))
+    async def ready(self, conn, f):
+        """The page's mic delivers (calibrated, running, not all zeros): the rope may start. `floor`: its noise floor in
+        dBFS, kept for the match's log line only."""
+        mid = self.in_match.get(conn.player.sid)
+        m = self.matches.get(mid) if mid else None
+        if m is None or m.over or f.get('m') != m.id:
+            return None
+        me = m.a if m.a.sid == conn.player.sid else m.b
+        me.ready = True
+        fl = f.get('floor')
+        if type(fl) in (int, float) and -120 <= fl <= 0:
+            me.floor = round(float(fl), 1)
         return None
 
     @on('bark_quit', rate=(5, 10))
@@ -364,14 +389,36 @@ class DogBarkFeature(Feature):
                 first = 'draw' if (m.a.gone or t) == (m.b.gone or t) else ('b' if (m.a.gone or t) < (m.b.gone or t) else 'a')
                 return self._finish(m, first, 'gone')
             return self._finish(m, 'b' if ga else 'a', 'quit' if (m.a.quit if ga else m.b.quit) else 'gone')
+        if m.go_at is None:   # owner 10/10: nothing counts before every player's mic delivers
+            if all(s.ready for s in m.sides()):
+                m.go_at = t + COUNTDOWN
+                m.room.send(dict(t='bark_start', m=m.id, cd=COUNTDOWN))
+            elif t - m.made > G.READY_MAX:
+                return self._finish(m, 'draw', 'nomic')
+            m.n += 1
+            if m.n % 10 == 0:
+                m.room.send(dict(t='bark_st', m=m.id, x=0.0, a=0, b=0, left=m.rope.limit, w=[s.pid for s in m.sides() if not s.ready]))
+            return
         if t < m.go_at:
             if m.n % ST_EVERY == 0:
                 self._st(m, 0.0, 0.0)
             m.n += 1
             return
+        if m.dog is not None and not m.a.voice.alive(t):   # the player's mic stopped delivering: the match waits
+            m.paused += G.TICK
+            m.n += 1
+            if m.n % ST_EVERY == 0:
+                self._st(m, 0.0, 0.0, wait=True)
+            if m.paused >= G.PAUSE_MAX:   # never a refund mid-match (no escape from a losing rope): as at the time limit
+                x = m.rope.x
+                return self._finish(m, 'a' if x >= G.DRAW_BAND else 'b' if x <= -G.DRAW_BAND else 'draw', 'nomic')
+            return
+        m.paused = 0.0
         la = 0.0 if m.a.gone else m.a.voice.level(t)
-        if m.dog is not None:
-            lb = m.dog.pull(la, m.a.voice.mean())
+        if m.dog is not None:   # the dog pulls only while it barks; each bark goes to the page first (it is heard)
+            lb, ev = m.dog.tick()
+            if ev:
+                m.room.send(dict(t='bark_dog', m=m.id, n=m.dog.barks, **ev))
         else:
             lb = 0.0 if m.b.gone else m.b.voice.level(t)
         m.a.level, m.lb = la, lb
@@ -382,9 +429,11 @@ class DogBarkFeature(Feature):
         if out:
             self._finish(m, out, 'end' if abs(m.rope.x) >= G.END else 'time')
 
-    def _st(self, m: Match, la: float, lb: float) -> None:
+    def _st(self, m: Match, la: float, lb: float, wait: bool = False) -> None:
         frame = dict(t='bark_st', m=m.id, x=round(m.rope.x, 1), a=round(la), b=round(min(100.0, lb)),
                      left=round(max(0.0, m.rope.limit - m.rope.t), 1))
+        if wait:
+            frame['w'] = [m.a.pid]
         if m.fx:
             frame['fx'] = m.fx
             m.fx = {}
@@ -403,6 +452,7 @@ class DogBarkFeature(Feature):
             pay = m.stake if res == 'draw' else (2 * m.stake if m.dog else G.pot(m.stake)) if res == 'win' else 0
             rows.append((s, res, pay))
         prev = 'dog' if m.dog else 'play'
+        self._log(m, winner, why)
 
         async def run(tx):
             done = []
@@ -432,6 +482,16 @@ class DogBarkFeature(Feature):
         self.matches.pop(m.id, None)
         self.hub.drop_room('bark:' + m.id)
 
+    def _log(self, m: Match, winner: str, why: str) -> None:
+        """One line per match (owner 10/10): numbers only, never audio, never a sid or a name."""
+        def side(s):
+            v = s.voice
+            return f'avg={v.mean():.0f} peak={v.peak:.0f} n={v.n} floor={s.floor if s.floor is not None else "?"}'
+        dog = (f' dog={m.dog.breed[0]} base={m.dog.base:.0f} barks={m.dog.barks} pull={m.dog.pulled / max(m.rope.t, G.TICK):.0f}'
+               if m.dog else f' b[{side(m.b)}]')
+        log(f'bark match {m.id} stake={m.stake} t={m.rope.t:.1f}s x={m.rope.x:.0f} win={winner} why={why} paused={m.paused:.1f} '
+            f'a[{side(m.a)}]{dog}')
+
     # ---- watching -------------------------------------------------------------------------------------------
     @on('bark_watch', rate=(10, 10))
     async def watch(self, conn, f):
@@ -442,7 +502,7 @@ class DogBarkFeature(Feature):
             if conn.player.sid not in self.in_match:
                 r.remove(conn)
         m.room.add(conn)
-        return dict(t='bark_room', **m.card(), go=round(max(0.0, m.go_at - time.monotonic()), 2))
+        return dict(t='bark_room', **m.card(), go=round(max(0.0, m.go_at - time.monotonic()), 2) if m.go_at else None)
 
     @on('bark_unwatch', rate=(10, 10))
     async def unwatch(self, conn, f):

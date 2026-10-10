@@ -1,3 +1,13 @@
+# Chưa phát hành — dog-bark-fix (không có Có gì mới)
+
+🐕 Kéo co chó sủa: **phải sủa mới tính**, cả hai bên (chủ game 10/10 "chó sủa sao nhiều trận không thắng", "có trận tự thắng mà không cần sủa"). Lỗi cũ: chó nhà Mây kéo liên tục cả lúc không phát tiếng (tiếng chỉ phát khi lực ≥ 35, lực "sủa một mình" 22–34 nên dây trôi mà không nghe sủa); dây chạy hết nửa sân trong ~2 giây; mic bật khử tiếng vọng nên giọng người chơi bị dìm đúng lúc chó sủa; không trừ tiếng ồn nền nên phòng ồn tự kéo dây.
+- Chó nhà Mây chỉ kéo **trong lúc sủa**: mỗi tiếng sủa server gửi `bark_dog` trước, trang phát tiếng chó thật đúng lúc đó (tắt tiếng 🔇 thì hiện bong bóng "GÂU!" to). Sức chó rút ngẫu nhiên mỗi trận, có nhịp (dồn dập, nghỉ, lấy hơi, mệt), không bám theo người chơi, không trôi.
+- Người chơi chỉ kéo khi **sủa thật**: trang tự đo tiếng ồn nền trong giây đầu, gửi độ to vượt nền (nói chuyện ~30–50, hét ~70–90); server chỉ tính mẫu ≥ 30, tiếng đều đều (ù, số cố định) tính 0. Thanh đo có vạch "sủa qua vạch là kéo".
+- Hai bên im: dây đứng yên, hết giờ là **hòa, trả cược**. Dây di chuyển chậm hơn: trận nhanh nhất 15 giây; im lặng thì thua chậm (≥ ~30 giây); hét bình thường ~50/50; hét to và liên tục thắng rõ.
+- Mic: tắt khử tiếng vọng / lọc ồn / tự chỉnh âm lượng; trận chỉ bắt đầu khi mic thật sự có tiếng (`bark_ready`), không có thì sau 20 giây trả cược; iPhone chưa chạy âm thanh thì hiện "👆 Chạm để bật mic"; mic im bặt (toàn số 0) thì báo lý do, không đặt cược. Đang đấu với chó mà mic ngừng thì trận tạm dừng (quá 15 giây: chốt theo dây).
+- Nhật ký: một dòng mỗi trận trong log live (`bark match …`): độ to trung bình/đỉnh, nền ồn, số tiếng sủa và lực chó, người thắng. Chỉ số, không có âm thanh.
+Không đổi DDL, không khóa save mới, không đổi tiền/kèo. Kiểm tra: tests/test_dog_bark.py, tests/test_live_dog_bark.py, scripts/browser_dog_bark.py (mic giả: hét thắng, im lặng thua sau 45 giây).
+
 # v1.9.41 — 2026-10-10
 
 Gồm dog-bark (🐕 Kéo co chó sủa, bật bằng LIVE_DOG_BARK=1 cho cả mot-ngay-lam-nghe và mnl-live; schema 34: bark_tickets; kind thanh toán 'bark'), và sweeper không theo dấu tiền tài khoản admin.

@@ -34,10 +34,17 @@
 .db-num input,.db-year{width:120px;min-height:44px;border:1px solid var(--field-line,var(--line));border-radius:var(--radius-pill);padding:0 12px;font:inherit;font-weight:700;background:var(--surface);color:var(--ink)}
 .db-row{display:flex;gap:var(--sp-2);margin-top:var(--sp-2)}
 .db-row .btn{min-height:44px}
-.db-sens{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:6px var(--sp-2);font-size:var(--fs-2);color:var(--ink-2)}
+.db-sens{display:grid;gap:6px;font-size:var(--fs-2);color:var(--ink-2)}
+.db-sens label{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:var(--sp-2)}
 .db-sens input{width:100%;min-height:44px;accent-color:var(--accent)}
-.db-meter{grid-column:1 / -1;display:block;height:8px;border-radius:var(--radius-pill);background:var(--surface-2);overflow:hidden}
-.db-meter b{display:block;height:100%;width:0;background:var(--accent);transition:width .07s linear}
+/* the live level, the bark line (--bark: what the server counts) marked on it; green once over it */
+.db-meter{position:relative;display:block;height:14px;border-radius:var(--radius-pill);background:var(--surface-2);overflow:hidden}
+.db-meter::after{content:'';position:absolute;left:var(--bark,30%);top:0;bottom:0;width:2px;background:var(--ink-2)}
+.db-meter b{display:block;height:100%;width:0;background:var(--line-strong,var(--ink-2));transition:width .07s linear}
+.db-meter b.on{background:var(--good)}
+.db-micline{min-height:44px;display:flex;align-items:center;justify-content:center}
+.db-micst{font-size:var(--fs-2);color:var(--ink-2)}
+.db-tapmic{min-height:44px;width:100%;font-weight:800}
 .db-lives{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .db-live{display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;gap:6px;width:100%;min-height:48px;padding:6px 10px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--ink);font:inherit;font-size:var(--fs-2);text-align:left;cursor:pointer}
 .db-live span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -62,8 +69,10 @@
 .db-woof{position:absolute;top:-6px;left:60%;padding:1px 6px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line);font:800 var(--fs-1)/1.2 var(--font);font-style:normal;color:var(--ink);opacity:0;transform:scale(.6)}
 .db-side.me .db-woof{transform:scaleX(-1) scale(.6)}
 .db-side.barking .db-pup{animation:db-bark .22s ease-in-out infinite alternate}
+.db-side.me.barking .db-pup{animation-name:db-bark-me}   /* my dog faces right: keep the mirror while it barks */
 .db-side.barking .db-woof{opacity:1;transform:scale(1)}
 .db-side.me.barking .db-woof{transform:scaleX(-1) scale(1)}
+.db-side.loud .db-woof{top:-18px;padding:4px 10px;font-size:var(--fs-4);background:var(--warn);color:var(--ink);border-color:var(--warn)}
 .db-pot{margin:var(--sp-2) 0;text-align:center;font-weight:700;font-size:var(--fs-2);color:var(--ink-2)}
 .db-pot b{font-variant-numeric:tabular-nums;color:var(--ink)}
 .db-rope-wrap{position:relative;padding:var(--sp-3) 0}
@@ -89,6 +98,7 @@
 .db-result.lose .db-big{color:var(--bad)}
 @keyframes db-shake{from{transform:translateY(calc(var(--shake) * -1))}to{transform:translateY(var(--shake))}}
 @keyframes db-bark{from{transform:rotate(-6deg) scale(1)}to{transform:rotate(4deg) scale(1.08)}}
+@keyframes db-bark-me{from{transform:scaleX(-1) rotate(-6deg) scale(1)}to{transform:scaleX(-1) rotate(4deg) scale(1.08)}}
 @keyframes db-run{from{transform:translateX(-40px)}to{transform:translateX(40px)}}
 @keyframes db-float{from{transform:translateY(0);opacity:1}to{transform:translateY(-90px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.db-rope,.db-dog-run,.db-side.barking .db-pup{animation:none}.db-flag{transition:none}}

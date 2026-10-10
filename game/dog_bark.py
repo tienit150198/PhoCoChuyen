@@ -13,13 +13,17 @@ How a match runs
   same IP (a salted hash, in memory only) and never the same two players more than PAIR_MAX matches in a row
   (PairBook). After DOG_AFTER seconds without a human, the match starts against the house dog ("🐕 Chó nhà Mây · Mực"),
   clearly labelled, never shown as a player, while today's dog caps allow it (DOG_DAY matches, DOG_WIN_DAY net xu won).
-* The match: a rope with a marker in the middle (Rope). Each side's level is the mean of its loudness samples of the
-  last WINDOW seconds (Voice: 0..100, clamped, at most RATE_MAX a second, a flat run of identical values counts as
-  silence); every TICK the marker moves K × (level A − level B). An end wins; at MATCH_S the side the marker is on wins,
-  the middle (|x| < DRAW_BAND) is a draw. A player whose page is gone for more than GONE_S, or who quits, loses.
-* The house dog (HouseDog): a random breed and name each match, and a pull that follows the player's own level times a
-  strength that wanders (a base drawn per match, bursts, pauses, a second wind or a tired spell): truly random, about
-  50/50 over time for a player who barks, never a fixed script. A quiet player loses (the dog barks on its own).
+* The match (owner 10/10 "phải sủa mới tính": the rope moves ONLY on a bark, for both sides): a rope with a marker in
+  the middle (Rope). The page calibrates its mic's noise floor and sends the loudness above it (0..100). A side's pull
+  is the mean of its last WINDOW seconds of samples, those under BARK_MIN counting 0, a flat window 0 (Voice); every
+  TICK the marker moves K × (pull A − pull B) and nothing else (no drift, no rubber band). An end wins; at MATCH_S the
+  side the marker is on wins, the middle (|x| < DRAW_BAND) is a draw: two silent sides draw. The rope waits until every
+  player's mic delivers (bark_ready; READY_MAX, else the stakes go back). A player whose page is gone for more than
+  GONE_S, or who quits, loses.
+* The house dog (HouseDog): a random breed and name each match, a strength drawn once (DOG_AVG, about a player's normal
+  shouting) and a rhythm (bursts, pauses, a second wind or a tired spell). It pulls only while it barks, and each bark
+  is sent to the page (bark_dog) which plays it, or shows a big "GÂU!" when muted. Silent player: the dog wins, slowly
+  (30 s or more); a normal shout: about 50/50; shouting hard and often: the player is clearly favoured.
 * Money: only the live service settles, once per ticket: the ticket flips 'play'/'dog' -> 'done' under a guarded
   UPDATE, and its one payout row `live_effects` 'bark:<ticket>' (kind 'bark') is inserted in the same transaction. The
   game server pays it like an auction refund (game/live_effects.py, fx_commit flips the row in the save's own
@@ -69,15 +73,19 @@ PAIR_MAX, PAIR_COOL = 3, 7200      # the same two players at most 3 matches in a
 TICK = 0.1                         # seconds per physics step (10 Hz)
 MATCH_S = 45.0
 END = 100.0                        # the marker runs in [-END, END]; +END is side A's end
-K = 0.05                           # marker units per tick per point of level difference
+K = 0.0066                         # marker units per tick per point of pull difference: 100 against 0 crosses half the
+                                   # rope in 15 s, the fastest a match can end (owner 10/10: no match under ~15 s)
 DRAW_BAND = 1.0
 WINDOW = 0.5                       # seconds of samples a level averages
 RATE_MAX = 16                      # samples a second at most (more are ignored)
 BATCH_MAX = 6                      # samples in one frame
 FLAT_RUN = 30                      # this many identical non-zero samples in a row count as silence (not a voice)
-QUIET = 8.0                        # a level under this is silence
+FLAT_SPREAD = 1.5                  # a window whose samples stay within this is a hum, not a bark: 0
+BARK_MIN = 30.0                    # a sample under this (above the page's noise floor) is no bark: it pulls 0
+LIVE_GAP = 1.5                     # no sample for this long: the page's mic is not delivering (the match waits)
+READY_MAX = 20.0                   # a match whose mics never came alive is called off: stakes back
+PAUSE_MAX = 15.0                   # a house-dog match paused this long for the mic ends as at the time limit
 GONE_S = 10.0                      # a player whose page is gone this long loses
-PULL_MAX = 150.0                   # the dog's pull may pass 100 (a player pinned at 100 can still lose)
 # housekeeping (game server)
 WAIT_MAX = 300.0
 STUCK_MAX = 600.0
@@ -147,15 +155,20 @@ def pot(stake: int) -> int:
 
 # ---------------------------------------------------------------- the voice (pure)
 class Voice:
-    """One side's loudness: samples 0..100 (clamped), at most RATE_MAX a second, the mean of the last WINDOW seconds."""
+    """One side's loudness as the page measured it: 0..100 ABOVE the noise floor it calibrated (the page's own mic,
+    public/js/v4/dog-bark.js levelOf), clamped, at most RATE_MAX a second. Only a bark counts (owner 10/10 "phải sủa mới
+    tính"): a sample under BARK_MIN is silence, ambient noise or talk and pulls 0; a flat level (FLAT_SPREAD over the
+    window, or FLAT_RUN identical samples: a hum, a scripted number) pulls 0 too."""
 
     def __init__(self):
         self.s: deque = deque(maxlen=64)
         self.sec: deque = deque()
         self.last = None
         self.run = 0
-        self.n = 0                     # samples accepted (for the dog's "lazy" factor)
+        self.n = 0                     # samples accepted (telemetry)
         self.sum = 0.0
+        self.peak = 0.0
+        self.at = None                 # when the last sample arrived (the mic is alive)
 
     @staticmethod
     def clamp(v) -> float | None:
@@ -185,12 +198,22 @@ class Voice:
             self.s.append((t, v))
             self.n += 1
             self.sum += v
+            self.peak = max(self.peak, v)
+            self.at = t
             kept += 1
         return kept
 
     def level(self, t: float) -> float:
+        """The pull now: the mean of the window's samples, the ones under BARK_MIN counting 0; 0 for a flat window."""
         vals = [v for at, v in self.s if t - at <= WINDOW]
-        return sum(vals) / len(vals) if vals else 0.0
+        if not vals:
+            return 0.0
+        if len(vals) >= 4 and max(vals) - min(vals) <= FLAT_SPREAD:
+            return 0.0
+        return sum(v if v >= BARK_MIN else 0.0 for v in vals) / len(vals)
+
+    def alive(self, t: float) -> bool:
+        return self.at is not None and t - self.at <= LIVE_GAP
 
     def mean(self) -> float:
         return self.sum / self.n if self.n else 0.0
@@ -198,7 +221,8 @@ class Voice:
 
 # ---------------------------------------------------------------- the rope (pure)
 class Rope:
-    """The marker: x in [-END, END]; +END is side A's end. step() returns 'a', 'b', 'draw' or None (going on)."""
+    """The marker: x in [-END, END]; +END is side A's end. step() returns 'a', 'b', 'draw' or None (going on). It moves by
+    K × (pull A − pull B) a tick and by nothing else: two silent sides leave it in the middle, a draw at the limit."""
 
     def __init__(self, limit: float | None = None):
         self.x, self.t, self.limit = 0.0, 0.0, MATCH_S if limit is None else limit
@@ -216,77 +240,92 @@ class Rope:
 
 
 # ---------------------------------------------------------------- the house dog (pure)
-DOG_BASE = (0.875, 1.135)          # the strength drawn per match, relative to the player's own level (scripts: ~49-50% won)
-IDLE = (22.0, 34.0)                # the dog's own bark while the player is quiet
+# Owner 10/10 ("phải nghe sủa thật mới tính"): the dog pulls ONLY while it barks, and every bark is an event the page
+# plays (a recorded bark, or a big "GÂU!" when muted). Its strength is drawn once per match (DOG_AVG: its mean pull over
+# time, about a normal player's shouting) and never follows the player: no rubber band. A rhythm (bursts, pauses, a
+# second wind or a tired spell late) changes how often it barks, never how the rope moves between barks.
+DOG_AVG = (26.0, 42.0)             # the dog's mean pull over time, drawn per match (tests/test_dog_bark.py: the odds)
+BARK_D = (0.25, 0.55)              # one bark's length, seconds
+BARK_P = (55.0, 95.0)              # one bark's pull while it lasts
+DUTY_MAX = 0.75
+FIRST_BARK = (0.8, 1.8)            # the first bark comes this long after the start
+MODES = (('steady', .45, 1.0, (1.5, 4.0)), ('burst', .30, 1.45, (0.8, 2.0)), ('pause', .25, 0.35, (0.6, 1.6)))
 
 
 class HouseDog:
-    """"🐕 Chó nhà Mây": a random breed and name each match, a pull that wanders around the player's own level."""
+    """"🐕 Chó nhà Mây": a random breed and name each match; tick() -> (pull this tick, a new bark or None)."""
 
     def __init__(self, rng: random.Random, avoid: tuple = ()):
         names = [n for n in NAMES if n not in avoid] or list(NAMES)
         self.rng = rng
         self.name = rng.choice(names)
         self.breed = rng.choice(BREEDS)
-        self.base = rng.uniform(*DOG_BASE)
-        self.idle = rng.uniform(*IDLE)
+        self.base = rng.uniform(*DOG_AVG)
         self.seed = rng.getrandbits(31)
-        self.state, self.left, self.m = 'steady', rng.uniform(1.0, 3.0), self.base
+        self.mode, self.left, self.mult = 'steady', rng.uniform(1.0, 3.0), 1.0
         self.late = False
         self.t = 0.0
+        self.next = rng.uniform(*FIRST_BARK)
+        self.until = -1.0
+        self.power = 0.0
+        self.barks = 0
+        self.pulled = 0.0             # the sum of its pull × TICK (telemetry)
 
     def view(self) -> dict:
         b = self.breed
         return dict(house=True, tag=HOUSE, name=self.name, breed=b[0], kind=b[1], emoji=b[2], barks=list(b[3]),
                     rate=list(b[4]), size=b[5], seed=self.seed)
 
-    def _next(self) -> None:
-        r, base = self.rng, self.base
+    def _mode(self) -> None:
+        r = self.rng
         if not self.late and self.t >= 0.6 * MATCH_S:   # once, late: a second wind or a tired spell (as likely)
             self.late = True
-            if r.random() < 0.5:
-                self.state, self.left, self.m = 'wind', r.uniform(2.0, 3.5), base * r.uniform(1.2, 1.35)
-            else:
-                self.state, self.left, self.m = 'tired', r.uniform(2.0, 3.5), base * r.uniform(0.68, 0.8)
+            self.mode, self.left, self.mult = ('wind', r.uniform(2.0, 3.5), 1.4) if r.random() < .5 else ('tired', r.uniform(2.0, 3.5), 0.55)
             return
-        x = r.random()
-        if x < 0.45:
-            self.state, self.left, self.m = 'steady', r.uniform(1.5, 4.0), base * r.uniform(0.96, 1.04)
-        elif x < 0.75:
-            self.state, self.left, self.m = 'burst', r.uniform(0.6, 1.8), base * r.uniform(1.15, 1.35)
-        else:
-            self.state, self.left, self.m = 'pause', r.uniform(0.4, 1.4), base * r.uniform(0.45, 0.7)
+        x, acc = r.random(), 0.0
+        for name, p, mult, span in MODES:
+            acc += p
+            if x < acc:
+                self.mode, self.left, self.mult = name, r.uniform(*span), mult
+                return
+        self.mode, self.left, self.mult = 'steady', 2.0, 1.0
 
-    def pull(self, p: float, mean: float = 50.0) -> float:
-        """The dog's pull this tick, the player's level being p (mean: the player's average so far)."""
+    def tick(self) -> tuple[float, dict | None]:
+        t = self.t
         self.t += TICK
         self.left -= TICK
         if self.left <= 0:
-            self._next()
-        jitter = 1.0 + self.rng.uniform(-0.06, 0.06)
-        if p < QUIET:   # the player is quiet: the dog barks on its own, in its rhythm
-            return max(0.0, self.idle * min(1.4, self.m) * jitter)
-        lazy = 1.0 + max(0.0, min(0.3, (30.0 - mean) / 100.0))   # a lazy bark (a whole match under 30) tires the rope
-        return max(0.0, min(PULL_MAX, self.m * lazy * p * jitter))
+            self._mode()
+        ev = None
+        if t >= self.until and t >= self.next:   # a new bark: its length, its pull, then the gap that keeps the mean
+            r = self.rng
+            d = r.uniform(*BARK_D)
+            p = r.uniform(*BARK_P)
+            target = self.base * self.mult
+            if target / p > DUTY_MAX:
+                p = min(100.0, target / DUTY_MAX)
+            gap = max(0.12, (d * p / target - d) * r.uniform(0.7, 1.3))
+            self.until, self.next, self.power = t + d, t + d + gap, p
+            self.barks += 1
+            ev = dict(d=round(d, 2), p=round(p))
+        pull = self.power if t < self.until - 1e-9 else 0.0
+        self.pulled += pull * TICK
+        return pull, ev
 
-    def shown(self, pull: float) -> float:
-        return min(100.0, pull)
 
-
-def simulate(rng: random.Random, voice, seconds: float | None = None) -> str:
-    """One match against the house dog with a scripted player: voice(t, rng) -> level. 'a' the player wins, 'b' the dog,
-    'draw'. For the tests and scripts (the long-run odds)."""
-    dog = HouseDog(rng)
+def simulate(rng: random.Random, voice, seconds: float | None = None, dog: bool = True) -> dict:
+    """One match with a scripted player: voice(t, rng) -> the level the page sends (one sample a tick, through Voice like
+    the live service). dog=False: a silent opponent. {'win': 'a' the player | 'b' the dog | 'draw', 't': seconds, 'x'}."""
+    d = HouseDog(rng) if dog else None
     rope = Rope(seconds)
-    total, n = 0.0, 0
+    v = Voice()
     while True:
         t = rope.t
-        p = max(0.0, min(100.0, voice(t, rng)))
-        total += p
-        n += 1
-        out = rope.step(p, dog.pull(p, total / n))
+        v.add([voice(t, rng)], t)
+        b = d.tick()[0] if d else 0.0
+        out = rope.step(v.level(t), b)
         if out:
-            return out
+            return dict(win=out, t=round(rope.t, 1), x=rope.x)
 
 
 # ---------------------------------------------------------------- the pairs (pure; the live service's memory)
