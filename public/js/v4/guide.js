@@ -256,7 +256,7 @@ export function applyGuide(dialog){
   if(hint&&head){
     head.querySelector(':scope>p')?.remove();head.append(hint);
     // The bottom button (or a desk's "Việc bây giờ" card) already shows and does this step: the header keeps
-    // the line for screen readers only (role=status), so the header stays one line. A hint whose note has words
+    // the duplicate out of view and the accessibility tree, so the header stays one line. A hint whose note has words
     // (e.g. an allergy) not written anywhere in the body stays in sight; a bare count ("1/3", "P3: 67/100") does not.
     const body=dialog.querySelector('.sheet-body'),note=hint.querySelector('.gd-note')?.textContent.trim();
     const open=e=>!e.closest('details:not([open])'),b=hint.querySelector('.gd-hint');
@@ -264,6 +264,7 @@ export function applyGuide(dialog){
     const twin=b&&body&&(b.dataset.command||(b.dataset.action&&b.dataset.action!=='v4Go'))?[...body.querySelectorAll('button:not([disabled]),[role="button"]')].find(c=>open(c)&&sameGo(c,b)):null;
     const dup=!!body&&(!note||!/\p{L}{2}/u.test(note)||body.textContent.includes(note))&&(!!twin||[...body.querySelectorAll('.gd-cta:not([disabled])')].some(open)||[...body.querySelectorAll('.dw-now')].some(open));
     hint.classList.toggle('gd-dup',dup);hint._twin=dup?twin:null;
+    if(dup)hint.setAttribute('aria-hidden','true');else hint.removeAttribute('aria-hidden');
     if(b){if(dup)b.tabIndex=-1;else b.removeAttribute('tabindex');}
   }
   pointers(dialog);

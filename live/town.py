@@ -317,11 +317,15 @@ class TownFeature(Feature):
             raise LiveError('speed', 'Bước đi quá xa.', x=w.x, y=w.y)
         activity = clean_activity(f['activity']) if 'activity' in f else w.activity
         remaining = activity_credit(w, activity, now)
+        appearance = clean_look(f.get('look', w.look), f.get('g', w.gender)) if 'look' in f or 'g' in f else None
         w.credit, w.last = max(0.0, credit - distance), now
         w.x, w.y, w.direction = x, y, clean_direction(f.get('direction'))
         changed_activity = activity is not None or w.activity is not None or 'activity' in f
         w.activity, w.activity_credit, w.activity_last = activity, remaining, now
         event = dict(k='mv', pid=w.pid, x=x, y=y, direction=w.direction)
+        if appearance is not None:
+            w.look, w.gender = appearance
+            event.update(lk=w.look, g=w.gender)
         if changed_activity:
             event['activity'] = dict(activity) if activity is not None else None
         self._queue(room, w.pid, event)

@@ -293,7 +293,7 @@ class MovingHouse(unittest.TestCase):
         s, _ = act(s, 'jr_reno_buy', item='sofa', room='living', slot='f0', confirm=True)
         s, _ = act(s, 'jr_reno_up', part='wall', lv=1, cost=rn.up_cost('tap_the', 'wall', 1), confirm=True)
         tick(s, 2)
-        s, _ = act(s, 'jr_home_sell', confirm=True, value=hs.value_of(hs.get(s)['own'], s['journey']['life_day']))
+        s, _ = act(s, 'jr_home_sell', confirm=True, value=public_state(s)['journey']['home']['own']['sell']['value'])
         self.assertIsNone(view(s))
         self.assertEqual((R(s)['hid'], R(s)['parts'], R(s)['items'][0]['r']), (None, {}, None))
         validate_state(s)
@@ -319,7 +319,7 @@ class MovingHouse(unittest.TestCase):
         s, _ = act(s, 'jr_reno_move', uid=r['uid'], room='living', slot='f2')   # a 1.2.0 page still moves it
         self.assertEqual(placed(s)[r['uid']], ('sofa', 'living'))
         self.assertEqual(view(s)['cozy'], 4)
-        s, _ = act(s, 'jr_home_sell', confirm=True, value=hs.value_of(hs.get(s)['own'], s['journey']['life_day']))
+        s, _ = act(s, 'jr_home_sell', confirm=True, value=public_state(s)['journey']['home']['own']['sell']['value'])
         s, _ = buy(s, 'can_ho_mini')
         v = deco(s)
         self.assertEqual((v['items'], v['owned']), ([], ['op_go']))          # a new home starts plain; the wallpaper is still yours
@@ -329,7 +329,7 @@ class MovingHouse(unittest.TestCase):
     def test_furniture_follows_to_the_next_home(self):
         s = owner(wallet=9000)
         s, _ = act(s, 'jr_reno_buy', item='be_ca', room='living', slot='f0', confirm=True)
-        s, _ = act(s, 'jr_home_sell', confirm=True, value=hs.value_of(hs.get(s)['own'], s['journey']['life_day']))
+        s, _ = act(s, 'jr_home_sell', confirm=True, value=public_state(s)['journey']['home']['own']['sell']['value'])
         s, _ = buy(s, 'can_ho_studio')
         self.assertEqual((placed(s), deco(s)['bag']), ({}, [dict(id='d1', k='be_ca')]))
         s, _ = act(s, 'jr_reno_move', uid='d1', room='living', slot='f2')

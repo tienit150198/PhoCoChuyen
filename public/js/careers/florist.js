@@ -818,23 +818,54 @@ export default {
     /** Soak / foam: wait until the server's clock says it is time, then do it (the label counts down). */
     async wait(data,el,x){
       const key=`${data.task}:${data.cmd}`;
-      if(x.ui.flWait===key)return;
-      x.ui.flWait=key;
+      const selecting=()=>x.api.sending?.('task_select',{task:data.task},'florist');
+      const selection=selecting(),previous=x.api.state?.careers?.florist?.active_task;
+      let confirmed=false,selectionDone=false;
+      const current=(allowPending=true)=>{
+        const state=x.api.state,room=state?.careers?.florist;
+        if(state?.current!=='florist'||!room?.open)return null;
+        if(room.active_task===data.task)confirmed=true;
+        else if(!allowPending||confirmed||room.active_task!==previous||selectionDone||!selection||selecting()!==selection)return null;
+        return room.tasks?.find(t=>t.id===data.task&&!['completed','referred','cancelled'].includes(t.status));
+      };
+      const initial=current();if(!initial?.work)return;
+      const piece=initial.cur,stamp=w=>data.cmd==='fl_lift'?w.soak:w.foam?.start,started=stamp(initial.work);
+      let timer,wake,cancelled=false,waiting=true,awaitingSelection=false;
+      // Scope this countdown to its task/piece and soak or foam cycle. A state update
+      // cancels it permanently, even if the player returns before its deadline.
+      const wait={key,cancel(){cancelled=true;clearTimeout(timer);wake?.();},valid(allowPending=true){
+        const t=current(allowPending);
+        return !cancelled&&x.ui.flWait===wait&&!!t?.work&&t.cur===piece&&(!waiting||stamp(t.work)===started);
+      }};
+      if(x.ui.flWait?.key===key&&x.ui.flWait.valid())return;
+      x.ui.flWait?.cancel();x.ui.flWait=wait;
+      const changed=()=>{if(!wait.valid())wait.cancel();else if(awaitingSelection&&confirmed)wake?.();};
+      x.api.addEventListener?.('state',changed);
+      // openJob renders before task_select lands. Accept that tap, but never send
+      // a timed command until the requested task is confirmed as active.
+      selection?.then?.(()=>{selectionDone=true;changed();},()=>wait.cancel());
       try{
         const ms=(Number(data.at)-x.now())*1000+300;
-        if(ms>0){x.toast(data.cmd==='fl_lift'?`Chờ thêm ${Math.ceil(ms/1000)} giây, đủ nước là tự nhấc ra.`:`Chờ thêm ${Math.ceil(ms/1000)} giây, mút chìm là tự cắm.`);await new Promise(r=>setTimeout(r,ms));}
+        if(ms>0){x.toast(data.cmd==='fl_lift'?`Chờ thêm ${Math.ceil(ms/1000)} giây, đủ nước là tự nhấc ra.`:`Chờ thêm ${Math.ceil(ms/1000)} giây, mút chìm là tự cắm.`);await new Promise(r=>{wake=r;timer=setTimeout(r,ms);});}
+        if(!wait.valid())return;
+        if(!confirmed)await new Promise(r=>{wake=r;awaitingSelection=true;});
+        if(!wait.valid(false))return;
         // The player may have tapped "🙌 Nhấc ra" / "Cắm" themselves meanwhile: its command still on the wire, the
         // state read here does not show it yet, and a second one only earned "đã cắm rồi" (07/10). Skip it then.
         const task={task:data.task},busy=c=>waitFlying.has(`${data.task}:${c}`)||!!x.api.sending?.(c,task,'florist')||!!x.api.sending?.(c,task);
-        const work=()=>(x.api.state?.careers?.florist?.tasks||[]).find(v=>v.id===data.task)?.work;
+        const work=()=>current(false)?.work;
         const w=work();
         if(!w||busy(data.cmd)||(data.cmd==='fl_lift'&&!w.soak)||(data.cmd==='fl_arrange'&&w.arranged))return;
+        waiting=false; // our own lift changes soak; keep checking task/piece before the next step
         if(!await waitSend(x,data.cmd,data.task)||!data.then)return;
         // Re-read after the first step landed: the arrange may have gone from another tap in between.
         const after=work();
-        if(!after||busy(data.then)||(data.then==='fl_arrange'&&after.arranged))return;
+        if(!wait.valid()||!after||busy(data.then)||(data.then==='fl_arrange'&&(after.arranged||after.soak)))return;
         await waitSend(x,data.then,data.task);
-      }finally{x.ui.flWait=null;}
+      }finally{
+        clearTimeout(timer);x.api.removeEventListener?.('state',changed);
+        if(x.ui.flWait===wait)x.ui.flWait=null;
+      }
     },
     async cardtpl(data,el,x){x.ui.cardText=null;await x.send('fl_card',{task:data.task,text:data.text});},
     async bannertpl(data,el,x){x.ui.bannerText=data.text;await x.send('fl_banner',{task:data.task,text:data.text});},

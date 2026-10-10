@@ -155,6 +155,63 @@ class TownCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(errors), 1)
         self.assertEqual(errors[0]['code'], 'slow')
 
+    async def test_appearance_update_keeps_room_position_activity_and_treasure_lease(self):
+        a, b = self.player('a'), self.player('b')
+        activity = dict(kind='fishing', x=84, y=180, direction='ne', phase='walk', action=None, moving=False)
+        await self.join(a, activity=activity)
+        await self.join(b)
+        room = self.flush(a)
+        walker = room.data['people']['a']
+        a.ext['treasure_lease'] = 'retained-lease'
+        await self.town.town_mv(a, dict(x=6, y=6, direction='se', look={'top': 'ao_so_mi'}, g='female'))
+        self.assertIs(room.data['people']['a'], walker)
+        self.assertEqual(a.ext['town'], room.id)
+        self.assertEqual(a.ext['treasure_lease'], 'retained-lease')
+        self.assertEqual((walker.x, walker.y, walker.activity), (6, 6, activity))
+        self.assertEqual(walker.look['top'], 'ao_so_mi')
+        self.assertEqual(walker.gender, 'female')
+        # The 10 Hz batch must retain the outfit if a legacy move arrives before flushing.
+        await self.town.town_mv(a, dict(x=6, y=6.1, direction='se'))
+        self.flush(a)
+        event = [e for e in self.frames[b.ws][-1]['ev'] if e['pid'] == 'a'][0]
+        self.assertEqual(event['lk'], walker.look)
+        self.assertEqual(event['g'], 'female')
+        self.assertEqual(event['y'], 6.1)
+        snapshot = await self.join(self.player('c'))
+        peer = next(p for p in snapshot['people'] if p['pid'] == 'a')
+        self.assertEqual(peer['lk'], walker.look)
+
+    async def test_movement_appearance_uses_join_sanitizer_and_rejects_atomically(self):
+        from live.street import clean_look
+        a = self.player('a')
+        await self.join(a)
+        room = self.flush(a)
+        walker = room.data['people']['a']
+        for look in ([], {'private': 'secret'}, {'tint': []}):
+            with self.subTest(look=look), self.assertRaises(LiveError):
+                await self.town.town_mv(a, dict(x=6, y=6.1, look=look, g='female'))
+            self.assertEqual((walker.x, walker.y, walker.gender), (6, 6, None))
+            self.assertEqual(room.data['ev'], [])
+        look = {'top': 'unknown_item', 'hair': 'toc_bui', 'tint': {'unknown_item': 'secret'}}
+        await self.town.town_mv(a, dict(x=6, y=6, look=look, g='unknown', save={'secret': 1}))
+        expected, gender = clean_look(look, 'unknown')
+        self.assertEqual((walker.look, walker.gender), (expected, gender))
+        event = room.data['ev'][0][1]
+        self.assertEqual(event['lk'], expected)
+        self.assertNotIn('secret', json.dumps(event))
+
+    async def test_legacy_movement_does_not_change_or_resend_appearance(self):
+        a = self.player('a')
+        await self.join(a, g='female')
+        room = self.flush(a)
+        walker = room.data['people']['a']
+        look = dict(walker.look)
+        await self.town.town_mv(a, dict(x=6, y=6.1, direction='se'))
+        self.assertEqual((walker.look, walker.gender), (look, 'female'))
+        event = room.data['ev'][0][1]
+        self.assertNotIn('lk', event)
+        self.assertNotIn('g', event)
+
     async def test_second_tab_takes_over_without_old_tab_removing_new_presence(self):
         a, b = self.player('a'), self.player('b')
         await self.join(a)

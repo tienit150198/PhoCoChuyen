@@ -56,18 +56,26 @@ Sau ứng viên `0c7db8d6`, đã bổ sung sửa vòng vẽ nền, cache che khu
 
 Ứng viên thay thế đã push: **`524f42d49be140f24810a1682b2c12967fc8fd4e`**, gồm sửa hiệu năng `7873b5a5` và tách nút quay lại phố khỏi thao tác ngồi sau xe. `test:performance-parity` đạt **72/72**, mã nguồn **346/346 JS** đạt gate cú pháp/Safari 15. Đối chiếu menu đủ 50 nghề × ba bố cục và 66 tiện ích; đây là kiểm tra đường vào, không xác nhận đã chơi hết mọi giao dịch của 50 nghề.
 
-Gói hiện hành: `output/release-2.0-local/mnl-2.0.0-performance-final.zip`, **103.254.068 byte**, SHA-256 **`1f37a1d980bdd1a8fd406376e79aee954160e2413d83bfff1b097378a6b87b26`**. Có 2.190 file kể cả manifest, 340 mục thay đổi, không xóa mục nào. Gói trung gian `mnl-2.0.0-performance.zip` từ `7873b5a5` cũng đã được thay thế bởi gói này.
+Gói của lượt kiểm tra hiệu năng: `output/release-2.0-local/mnl-2.0.0-performance-final.zip`, **103.254.068 byte**, SHA-256 **`1f37a1d980bdd1a8fd406376e79aee954160e2413d83bfff1b097378a6b87b26`**. Có 2.190 file kể cả manifest, 340 mục thay đổi, không xóa mục nào. Gói trung gian `mnl-2.0.0-performance.zip` từ `7873b5a5` cũng đã được thay thế bởi gói này. Các sửa phát hiện ở lượt rà hai giao diện tiếp theo cần gói mới; không triển khai gói này thay cho bản mới.
 
 `verify_package.py` đạt với gói hiện hành: **2.189 mã băm** khớp, server giải nén khởi động bằng PostgreSQL riêng, asset/API hoạt động, tạo hồ sơ/chọn nghề/mở ca, khóa nghề và replay giữ đúng hành vi, export save đủ 50 nghề. **346/346 JavaScript trong ZIP** qua gate Safari 15. Polyfill được nhận diện từ nguồn đã kiểm, đồng thời xác minh `boot.js` trong ZIP trùng byte với kết quả nén nguồn đó bằng esbuild 0.28.2; bộ dò marker nguồn không dùng trực tiếp lên tên hàm đã nén. Báo cáo: `performance-release-build.json`, `performance-package-verify.json`, `performance-package-safari.log` dưới `output/release-2.0-local/`.
 
 Không có thay đổi `game/`, `live/`, `data/` hoặc `server.py` giữa `0c7db8d6` và `524f42d4`; bằng chứng tương thích nhiệm vụ/backend ở trên vẫn áp dụng. Kiểm tra SSH cuối vẫn bị từ chối (`Permission denied`); health production vẫn 1.9.48. Chưa gửi thông báo hoặc kích hoạt sự kiện.
 
+## Rà sâu hai giao diện ngày 11/10/2026
+
+Chi tiết tại `docs/qa/dual-interface-2026-10-11.md`. Đã sửa đồng bộ ngoại hình cho người đang cùng phố, nút gợi ý trùng trong cây trợ năng và vòng đời chờ ngâm hoa (kể cả bấm khi chọn khách đang gửi). Lượt sửa này **có thay đổi `live/town.py`**: cần restart và kiểm tra live, ngoài HTTP.
+
+`test:performance-parity` đạt **110/110**; **97 ca backend/HTTP/WebSocket** đạt. Có kiểm tra hai client nhận ngoại hình và giữ quyền nhận rương đúng một lần. Chơi thử một đơn trà sữa xuyên qua giao diện cũ → 2.5D → tải lại giữ đúng tiến trình và tăng quỹ 320 → 365 xu. Bảy nghề đại diện giữ state khi đổi giao diện giữa việc. Review độc lập đã rà lại lỗi pending `task_select`, không còn lỗi chặn trong phần thay đổi.
+
+Gói thay thế đang được kiểm tra; thông số chính xác sẽ ghi sau bước đóng gói. Gói hiệu năng phía trên chưa chứa các sửa này. Production vẫn 1.9.48, chưa thông báo hoặc kích hoạt hai ngày vàng.
+
 ## Các bước còn lại trên production
 
 1. Khôi phục SSH; đọc health, current release và manifest; nếu production đã đổi thì cập nhật baseline và kiểm tra tương thích lại.
 2. Backup PostgreSQL và xác minh mục lục; giữ toàn bộ release cũ. Kiểm tra dependency **Pillow >=12.1.1,<13** trong đúng Python của service trước khi bật bridge; script rolling hiện không tự cài dependency.
-3. Kiểm tra nginx cho phép body 16m hiện có để ba ảnh không bị chặn; không tăng giới hạn các endpoint game. Xác minh `LIVE_TOWN=1`, `LIVE_TOWN_TREASURE=1`, `LIVE_HOME=1`, `LIVE_VISITS=1` theo cấu hình service dùng thật, không in secret.
-4. Rolling release theo `docs/DEPLOY_ROLLING.md`, `KEEP=999` để không dọn release cũ; schema 38 chỉ thêm cấu trúc cần thiết. Theo dõi health game/live và các API/static của bản mới.
+3. Kiểm tra nginx cho phép body 16m hiện có để ba ảnh không bị chặn; không tăng giới hạn các endpoint game. Xác minh `LIVE_TOWN=1`, `LIVE_TOWN_TREASURE=1`, `LIVE_HOME=1`, `LIVE_VISITS=1` theo cấu hình service HTTP **và live** dùng thật, không in secret. Đọc `max_connections` và số kết nối thực tế: cộng pool HTTP thường, bridge, live, kết nối dự phòng/admin và service khác; `BRIDGE_PG_POOL_MAX=3` riêng lẻ không bảo đảm đủ headroom. Ví dụ 4×12 + 4×3 đã là 60, chưa cộng live 8 và phần dự phòng. Giữ `LAZY_SAVES=0` cho khả năng quay lui đã kiểm tra.
+4. Rolling release theo `docs/DEPLOY_ROLLING.md`, `KEEP=999` để không dọn release cũ; schema 38 chỉ thêm cấu trúc cần thiết. Theo dõi health game/live và các API/static của bản mới. Script có nhánh chỉ cảnh báo khi restart live hoặc smoke bên ngoài thất bại: mã thoát thành công hoặc dòng “done” chưa đủ nghiệm thu. Phải xác minh tiến trình live chạy đúng revision, handshake/cờ tính năng và hai client trao đổi được trước khi coi rollout đạt.
 5. Kiểm tra trên production hai mode, lưu lựa chọn, góp ý/ảnh được bảo vệ, bản đồ/nghề/nhà và live. Chưa gửi thông báo nếu có lỗi nghiêm trọng.
 6. Trong môi trường service đúng DB/namespace: `python scripts/activate_fair_golden_days.py --activate`. Kiểm tra starts/ends đúng 48 giờ; chạy lại không kéo dài.
 7. `python scripts/publish_major_release.py` xem trạng thái; sau kiểm tra cuối chạy với `--publish`. Xác minh một tin ghim công khai, đúng thời hạn Việt Nam, có hướng dẫn quay về giao diện cũ. Chạy lại không tạo trùng hoặc ghi đè tin ghim mới.

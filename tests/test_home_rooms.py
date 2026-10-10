@@ -201,7 +201,7 @@ class OlderBuilds(unittest.TestCase):
         from tests.test_deco import tick
         s = owner('tap_the')
         s, tub = put_new(s, 'bon_tam', 'bath', 0, 20)
-        s, _ = act(s, 'jr_home_sell', confirm=True, value=hs.value_of(s['journey']['home']['own'], s['journey']['life_day']))
+        s, _ = act(s, 'jr_home_sell', confirm=True, value=public_state(s)['journey']['home']['own']['sell']['value'])
         tick(s)
         self.assertIn('bon_tam', [b['k'] for b in D(s)['bag']])
         self.assertNotIn('decor_new', s['journey'])

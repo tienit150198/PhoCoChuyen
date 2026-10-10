@@ -17,8 +17,8 @@
    restaurant header, 243px tall on a phone): label + arrow on the first line, the note below. */
 .gd-hint>i{order:2}
 .gd-hint .gd-note{order:3;flex:1 0 100%;overflow-wrap:anywhere}
-/* The bottom button already shows this step (guide.js applyGuide marks the duplicate): the header keeps it
-   for screen readers only (role=status), so the work sheet's header stays one line. */
+/* The bottom button already shows this step (guide.js applyGuide marks the duplicate): the header hides it
+   from view and the accessibility tree, so the work sheet's header stays one line. */
 .gd-next.gd-dup{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 /* Its button is clipped to 1px and out of the tab order: no tap lands on it, and it keeps a 44px box like the visible one. */
 .gd-next.gd-dup .gd-hint{min-width:44px;pointer-events:none}

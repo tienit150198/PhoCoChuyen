@@ -84,6 +84,23 @@ class TreasureSockets(LiveCase):
         self.assertEqual(result['result']['treasure']['coins'],10000)
         self.assertTrue(self.tt.claim(self.store,token,body)['replayed'])
 
+    async def test_changing_outfit_preserves_an_issued_treasure_proof(self):
+        c, token, sid = await self.enter()
+        chest = self.next_chest(); self.put_chest_near_spawn(chest)
+        ready = await c.call('town_treasure_prepare', 'town_treasure_ready', chest_id=chest['id'])
+        await c.send(t='town_mv', x=self.tt.START[0], y=self.tt.START[1],
+                     direction='se', look={'top': 'ao_so_mi'}, g='female')
+        deadline = time.monotonic() + 3
+        while True:
+            event = await c.expect('town', timeout=max(.01, deadline-time.monotonic()))
+            if any(e.get('lk', {}).get('top') == 'ao_so_mi' for e in event['ev']):
+                break
+            self.assertLess(time.monotonic(), deadline, 'appearance update reaches the live room')
+        body = dict(chest_id=chest['id'], proof=ready['proof'], request_id='outfit-pick-001')
+        result = self.tt.claim(self.store, token, body)
+        self.assertEqual(result['result']['treasure']['coins'], 10000)
+        self.assertTrue(self.tt.claim(self.store, token, body)['replayed'])
+
     async def test_remote_stale_and_activity_presence_cannot_get_proof(self):
         c,token,sid=await self.enter()
         chest=self.next_chest()

@@ -83,3 +83,25 @@ class TownSockets(LiveCase):
         await another.close()
         await asyncio.sleep(.1)
         self.assertNotIn(a.pid, room.data['people'])
+
+    async def test_outfit_change_reaches_existing_and_later_peers_without_rejoining(self):
+        a, b = await self.enter('Lan'), await self.enter('Minh')
+        rid = a.room['room']
+        calls, original = [], self.app.db._run
+        async def track(sql, *args, **kw):
+            calls.append(sql)
+            return await original(sql, *args, **kw)
+        self.app.db._run = track
+        try:
+            await a.send(t='town_mv', x=6, y=6, direction='sw', look={'top': 'ao_so_mi'}, g='male')
+            event = await self.event(b, 'mv', a.pid)
+            self.assertEqual((event['lk']['top'], event['g']), ('ao_so_mi', 'male'))
+            self.assertEqual((event['x'], event['y'], event['direction']), (6, 6, 'sw'))
+            self.assertEqual(self.app.hub.rooms[rid].data['people'][a.pid].look['top'], 'ao_so_mi')
+            self.assertEqual(calls, [], 'cosmetic changes never rewrite a save or query PostgreSQL')
+        finally:
+            self.app.db._run = original
+        c = await self.enter('Hoa')
+        peer = next(p for p in c.room['people'] if p['pid'] == a.pid)
+        self.assertEqual((peer['lk']['top'], peer['g']), ('ao_so_mi', 'male'))
+        self.assertEqual(c.room['room'], rid)
