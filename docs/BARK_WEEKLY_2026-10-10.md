@@ -35,3 +35,5 @@ Người dùng chọn trò kéo co bằng micro, giải theo tuần; điều ch�
 - Kiểm thử rộng có các assertion cũ về phí/xác suất đã được sửa và chạy lại đúng nhóm, đạt. Test riêng `fair_shell_render.mjs` còn lỗi có sẵn `otChip is not defined`, nằm ngoài phần thay đổi này.
 
 Ảnh mẫu cục bộ: `output/auction-preview/bark-weekly-mobile.jpg`, `output/auction-preview/paintings-16.jpg`.
+
+Cập nhật 1.9.45 đã live lúc 22:05 ngày 10/10: bỏ ngưỡng 30 trận và thông báo bốn mục theo chủ game. Xem [báo cáo triển khai](DEPLOY_1.9.45_2026-10-10.md).
