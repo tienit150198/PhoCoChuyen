@@ -66,9 +66,13 @@ Không có thay đổi `game/`, `live/`, `data/` hoặc `server.py` giữa `0c7d
 
 Chi tiết tại `docs/qa/dual-interface-2026-10-11.md`. Đã sửa đồng bộ ngoại hình cho người đang cùng phố, nút gợi ý trùng trong cây trợ năng và vòng đời chờ ngâm hoa (kể cả bấm khi chọn khách đang gửi). Lượt sửa này **có thay đổi `live/town.py`**: cần restart và kiểm tra live, ngoài HTTP.
 
-`test:performance-parity` đạt **110/110**; **97 ca backend/HTTP/WebSocket** đạt. Có kiểm tra hai client nhận ngoại hình và giữ quyền nhận rương đúng một lần. Chơi thử một đơn trà sữa xuyên qua giao diện cũ → 2.5D → tải lại giữ đúng tiến trình và tăng quỹ 320 → 365 xu. Bảy nghề đại diện giữ state khi đổi giao diện giữa việc. Review độc lập đã rà lại lỗi pending `task_select`, không còn lỗi chặn trong phần thay đổi.
+`test:performance-parity` đạt **110/110**; **97 ca backend/HTTP/WebSocket** đạt; **346/346 JS nguồn** đạt cú pháp và gate Safari 15. Có kiểm tra hai client nhận ngoại hình và giữ quyền nhận rương đúng một lần. Chơi thử một đơn trà sữa xuyên qua giao diện cũ → 2.5D → tải lại giữ đúng tiến trình và tăng quỹ 320 → 365 xu. Bảy nghề đại diện giữ state khi đổi giao diện giữa việc. Review độc lập đã rà lại lỗi pending `task_select`, không còn lỗi chặn trong phần thay đổi.
 
-Gói thay thế đang được kiểm tra; thông số chính xác sẽ ghi sau bước đóng gói. Gói hiệu năng phía trên chưa chứa các sửa này. Production vẫn 1.9.48, chưa thông báo hoặc kích hoạt hai ngày vàng.
+Ứng viên hiện hành đã push: **`253bc53c91eb6fdbeab14ea7381ebe08ccee2f19`**. Gói thay thế: `output/release-2.0-local/mnl-2.0.0-dual-interface.zip`, **103.267.831 byte**, SHA-256 **`6d17685e35cb780a41a276578decc54c3d3805a241eb14ac7983074ca9a87f8b`**. Có **2.194 file** kể cả manifest, 351 mục thay đổi, không xóa mục nào, 72 mục nén lại. Gói hiệu năng phía trên chưa chứa các sửa này và đã được thay thế.
+
+`verify_package.py` đạt lúc 05:28 ngày 11/10/2026 (UTC+7): **2.193 mã băm** khớp, server giải nén khởi động với PostgreSQL riêng, asset/API, hồ sơ, ca làm, khóa nghề, replay và export 50 nghề đạt. **346/346 JavaScript trong ZIP** qua gate Safari 15; xác minh `boot.js` trùng byte với nguồn đã kiểm sau nén. Báo cáo: `dual-interface-release-build.json`, `dual-interface-package-verify.json`, `dual-interface-package-safari.log` trong `output/release-2.0-local/`.
+
+Production đọc qua health vẫn **1.9.48**. SSH chưa xác thực được; chưa rollout, chưa thông báo hoặc kích hoạt hai ngày vàng. HTTP local 18893 và live fixture 18894 đã chạy mã mới trên schema kiểm thử riêng. Commit tài liệu nghiệm thu sau ứng viên không thay đổi mã chạy trong gói.
 
 ## Các bước còn lại trên production
 

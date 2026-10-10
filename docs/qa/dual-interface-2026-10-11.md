@@ -33,7 +33,7 @@ Lượt này dùng viewport DOM thực 1280×720. Lệnh đổi viewport của c
 - Rà rộng có 78 ca kho/nhân viên/điều kiện/giao diện và ba ca state-delta/nghề trà sữa đạt; 288 ca hủy việc/trải nghiệm đạt, trong đó hai ca lưu trữ chạy riêng với PostgreSQL. Kiểm tra đổi giao diện giữa việc của bảy nghề đại diện giữ raw state, chỉ thay cờ giao diện.
 - Các nhóm kiểm tra có phần giao nhau; không cộng các số trên thành một tổng bao phủ. Danh mục 50 nghề là bằng chứng đủ đường vào, không khẳng định đã chơi mọi giao dịch của từng nghề bằng tay.
 
-Kết quả cuối của suite client, kiểm tra cú pháp và gói phát hành được ghi tại `docs/RELEASE_2.0.0_READINESS.md` sau khi hoàn tất sửa/review.
+Kết quả cuối: **346/346 JS nguồn** qua cú pháp/Safari 15. Gói từ `253bc53c` đạt kiểm tra 2.193 mã băm, khởi động server giải nén, các luồng HTTP lưu hồ sơ/ca làm/replay/export và **346/346 JS đã nén** qua gate Safari 15. Mã băm và đường dẫn gói tại `docs/RELEASE_2.0.0_READINESS.md`.
 
 ## Giới hạn phát hành
 
