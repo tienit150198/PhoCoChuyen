@@ -37,3 +37,5 @@ Người dùng chọn trò kéo co bằng micro, giải theo tuần; điều ch�
 Ảnh mẫu cục bộ: `output/auction-preview/bark-weekly-mobile.jpg`, `output/auction-preview/paintings-16.jpg`.
 
 Cập nhật 1.9.45 đã live lúc 22:05 ngày 10/10: bỏ ngưỡng 30 trận và thông báo bốn mục theo chủ game. Xem [báo cáo triển khai](DEPLOY_1.9.45_2026-10-10.md).
+
+Bản 1.9.46 đã live lúc 22:18 ngày 10/10: khôi phục 30 trận theo yêu cầu mới nhất, deploy âm thầm, giữ nguyên Có gì mới. Xem [báo cáo](DEPLOY_1.9.46_2026-10-10.md).
