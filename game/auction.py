@@ -187,6 +187,13 @@ def upgrade(j: dict) -> None:
     out['stats'] = {k: st[k] if _int(st.get(k)) else 0 for k in STATS}
     if out != b:
         j[KEY] = out
+    # A rolling-release node can receive an unknown painting, recording ownership
+    # but not its furniture. Restore that entitlement once this catalogue knows it.
+    r = j.get('reno')
+    have = {x.get('k') for x in r.get('items', []) if isinstance(x, dict)} if isinstance(r, dict) else set()
+    for iid, x in out['own'].items():
+        if x['k'] == 'art' and C.ITEM.get(iid, {}).get('kind') == 'art' and f'uq_{iid}' not in have:
+            _grant({'journey': j}, iid, 'art')
 
 
 # ---------------------------------------------------------------- money
@@ -321,6 +328,21 @@ def _grant(s: dict, item: str, kind: str) -> str:
 
 
 # ---------------------------------------------------------------- views
+def collection_score(s: dict) -> tuple[int, int, int]:
+    """Rarity points, received items, legendary items. Bids/prices never buy extra points.
+
+    Unknown operator-created numbers remain owned but unscored: their tier isn't in a save.
+    Future catalogue ids can be scored on upgrade without rewriting ownership records.
+    """
+    b = get(s)
+    own = b.get('own') if b else None
+    if not isinstance(own, dict):
+        return 0, 0, 0
+    items = [C.ITEM[k] for k, x in own.items()
+             if k in C.ITEM and _own_ok(k, x) and x['k'] == C.ITEM[k]['kind']]
+    return (sum(it['collector_points'] for it in items), len(items), sum(it['tier'] == 3 for it in items))
+
+
 def public(s: dict) -> dict | None:
     """Small (it rides on every state): the escrow and what was won. None until the first bid."""
     b = get(s)
@@ -413,7 +435,7 @@ def _taken(db) -> set:
 
 def _insert_lot(db, lid: str, it: dict, tier_n: int, t0: float, t1: float, src: str) -> bool:
     T = tier(tier_n)
-    extra = {k: it[k] for k in ('artist', 'year', 'colors', 'motif', 'base', 'where') if k in it}
+    extra = {k: it[k] for k in ('artist', 'year', 'colors', 'motif', 'base', 'where', 'medium', 'story') if k in it}
     return db.execute(
         'INSERT INTO auction_lots(id, item, kind, tier, name, emoji, data, start, step, starts_at, ends_at, planned_end, '
         "status, src, created) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,'open',?,?) ON CONFLICT DO NOTHING",
@@ -661,7 +683,10 @@ def _lot_view(r) -> dict:
         data = json.loads(r['data'] or '{}')
     except ValueError:
         data = {}
+    it = C.ITEM.get(r['item'], {})
+    data = dict(data if isinstance(data, dict) else {}, **{k: it[k] for k in ('medium', 'story') if k in it})
     out = dict(id=r['id'], item=r['item'], kind=r['kind'], tier=int(r['tier']), name=r['name'], emoji=r['emoji'],
+               collector_points=it.get('collector_points', 0), rarity=it.get('tier'),
                start=int(r['start']), step=int(r['step']), starts_at=float(r['starts_at']), ends_at=float(r['ends_at']),
                status=r['status'], high=int(r['high']), bids=int(r['bids']),
                next=min_next(int(r['high']), int(r['start']), int(r['step']), int(r['bids'])), **({'data': data} if data else {}))

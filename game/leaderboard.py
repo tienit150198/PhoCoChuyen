@@ -59,10 +59,11 @@ from . import fair as fh          # 🏮 Hội chợ dân gian: its board (fh.bo
 from . import wealth as wl        # 💰 net worth: "Tiền của bạn" (public/js/v4/wealth.js) + what the save holds beyond it
 from .content import CAREERS
 
-VERSION = 3                # bump when a formula changes: the next start rebuilds every row (2: the titles board, 3: wealth)
+VERSION = 4                # rebuild rows on startup (4: auction collections)
 OVERALL, CERTS, TITLES, WEALTH = 'all', 'certs', 'titles', 'wealth'
+COLLECTION = 'collection'
 CAREER_IDS = frozenset(CAREERS)
-BOARDS = CAREER_IDS | {OVERALL, CERTS, TITLES, WEALTH}
+BOARDS = CAREER_IDS | {OVERALL, CERTS, TITLES, WEALTH, COLLECTION}
 NAME = '_name'              # summary key of the guest's character name (not a board)
 LIMIT = 50
 CACHE_SECONDS = 5.0
@@ -181,6 +182,11 @@ def summary(state) -> dict:
     w = wl.score(state)
     if w:     # 💰 net worth, then total assets; ties go to who reached the amount first (since)
         out[WEALTH] = (w[0], w[1], 0, 0, 0, 0, 0, 0)
+    from .auction import collection_score
+    points, items, legendary = collection_score(state)
+    if points:
+        # Ties: most items, most legendary items, then earliest score (since).
+        out[COLLECTION] = (points, items, legendary, 0, 0, items, 0, legendary)
     won, days = fh.money_of(state.get('journey'))
     if won > 0:   # 🏆 Bảng vàng hội chợ: xu won, players ahead only; ties go to who reached the score first (since)
         out[fh.board()] = (won, 0, 0, 0, days, 0, 0, 0)
@@ -190,9 +196,9 @@ def summary(state) -> dict:
 
 def heal(rows: dict) -> bool:
     """Write these rows even though no number moved, on the first command a process sees of a save (game/storage.py,
-    the summary was not remembered): only for a save on the fair's board, whose row an older server (rolling release)
-    may have dropped, or that earned it before the board counted xu. One upsert that changes nothing at worst."""
-    return fh.board() in rows
+    the summary was not remembered): fair and collection rows an older server (rolling release) may have dropped.
+    One upsert that changes nothing at worst."""
+    return fh.board() in rows or COLLECTION in rows
 
 
 def diff(old: dict, new: dict) -> dict | None:
@@ -402,7 +408,7 @@ def clear_cache() -> None:
 
 
 def parse_query(q: dict) -> tuple[str, int]:
-    """(board, limit) of GET /api/leaderboard?career=<id|all>|board=certs|titles|wealth&limit=50;
+    """(board, limit) of GET /api/leaderboard?career=<id|all>|board=certs|titles|wealth|collection&limit=50;
     ValueError with a player-facing message otherwise."""
     board = q.get('board') or q.get('career') or OVERALL
     if board not in BOARDS and board not in (fh.board(), fh.edition()):   # edition: an older client (rolling release)
@@ -423,6 +429,8 @@ def _row_out(board: str, r) -> dict:
         out.update(titles=r['mastered'], secret=r['served'], day=r['days'])
     elif board == WEALTH:
         out['xu'] = r['score']
+    elif board == COLLECTION:
+        out.update(items=r['served'], legendary=r['mastered'])
     elif board.startswith('fair'):
         out.update(xu=r['score'], days=r['days'])
     else:

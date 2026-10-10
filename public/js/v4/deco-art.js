@@ -10,6 +10,7 @@
  * Bảng màu: a piece may wear a colour of the player's palette (state.colors.deco[uid], game/wardrobe.py): TINT says which
  * of its own colours take the chosen one (its main part: the sofa's fabric, a pot, a frame…), see `tinted`. */
 import {PALETTE} from './look.js';
+import {PAINTINGS,paintingSVG} from './auction-art.js';
 
 export const CW=40,FR=30,WR=34,PX=14,CEIL=10,TOP=12,BASE=28;
 const OL='#5b4535';
@@ -503,12 +504,10 @@ const BACKS={
     +L('M9 -50h22M20 -61v22M12 -58l16 16M28 -58l-16 16',P.white,1.2)+C(20,-50,4,P.sky,1.2),
 };
 for(const [k,b] of Object.entries(BACKS))ART[k].back=b;
-/** 🔨 One-of-a-kind paintings won at the auction house (game/auction_content.py: sky, land, accent; the pieces are
- * `uq_<id>`, 2 × 2 wall cells): a gold frame, the scene, the sun or moon, the brass plaque under it. */
-const UQ_ART={tr_nuoc_noi:['#7fb3d5','#c8a96a','#e85d3a'],tr_pho_5h:['#f6b26b','#8e7cc3','#ffd966'],tr_ganh_hang:['#d9c27e','#6b4f2a','#c0392b'],tr_meo_mai_ton:['#a9c4eb','#8a8a8a','#f1c232'],tr_sen_ho:['#cfe2f3','#6aa84f','#e06666'],tr_den_long:['#1c2541','#3a506b','#ff9f1c'],tr_tau_cuoi:['#5b6c8f','#3d3d3d','#ffe599'],tr_hai_dang:['#9fc5e8','#0b5394','#ffffff'],tr_cho_tet:['#f4cccc','#990000','#ffd966'],tr_trang_rang:['#20124d','#38761d','#fff2cc']};
-for(const [id,[a,b,c]] of Object.entries(UQ_ART))ART['uq_'+id]={h:68,wall:1,d:(W,H)=>{const ih=H-20;
-  return R(2,2,W-4,H-10,P.gold,3)+Rn(7,7,W-14,ih*.58,a,1)+Rn(7,7+ih*.58,W-14,ih*.42,b,1)+Pa(`M7 ${n(7+ih*.6)}q${n(W*.25)} -10 ${n(W*.5)} -2q${n(W*.15)} -6 ${n(W*.5-14)} 0`,b,0)
-    +C(W*.72,7+ih*.25,4.5,c,0)+R(W/2-12,H-9,24,7,'#d9b866',1.5,1)+L(`M${n(W/2-7)} ${H-5.5}h14`,'#8a6a2a',1);}};
+/** 🔨 Auction paintings (`uq_<id>`, 2 × 2 wall cells): the exact same scene as the auction preview,
+ * with a small brass plaque underneath. */
+for(const id of Object.keys(PAINTINGS))ART['uq_'+id]={h:68,wall:1,d:(W,H)=>
+  paintingSVG(id,W,H-10)+R(W/2-12,H-9,24,7,'#d9b866',1.5,1)+L(`M${n(W/2-7)} ${H-5.5}h14`,'#8a6a2a',1)};
 
 /* ---------------------------------------------------------------- the room */
 /** Free placement: units to a grid cell (game/deco_content.py U) and what one unit is in drawing pixels. */

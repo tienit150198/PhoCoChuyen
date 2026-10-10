@@ -94,6 +94,10 @@ ITEMS = (
     _art('tr_hai_dang', 1, 'Hải đăng gió', 'Năm Muối', 2021, ('#9fc5e8', '#0b5394', '#ffffff'), 'light'),
     _art('tr_cho_tet', 2, 'Chợ Tết phố Mây', 'Tư Lụa Hồng', 1993, ('#f4cccc', '#990000', '#ffd966'), 'market'),
     _art('tr_trang_rang', 3, 'Trăng rằm trên đồi', 'Lê Mây', 2001, ('#20124d', '#38761d', '#fff2cc'), 'moon'),
+    _art('tr_long_van', 3, 'Long vân sơn mài', 'Bà Tư Sơn Mài', 1982, ('#241b22', '#82342f', '#e9bf68'), 'dragon'),
+    _art('tr_hac_ngoc', 2, 'Hạc trên nền ngọc', 'Cô Ba Lụa', 2007, ('#b8d6c6', '#245951', '#fff1ce'), 'cranes'),
+    _art('tr_vinh_ngoc', 2, 'Vịnh ngọc ban mai', 'Năm Muối', 2018, ('#f5d6a1', '#236b70', '#df8154'), 'bay'),
+    _art('tr_ngan_ha', 3, 'Ngân hà khảm trai', 'Út Mực Tàu', 2023, ('#171d3b', '#616295', '#b4e6d5'), 'galaxy'),
     # 🏞️ landmarks named after the winner, for good
     _land('dt_ho', 3, 'Hồ', '🏞️', 'hồ lớn sau Ngoại ô'), _land('dt_doi', 2, 'Đồi', '⛰️', 'ngọn đồi thông cạnh hải đăng'),
     _land('dt_ben', 2, 'Bến', '⛵', 'bến sông chiều'), _land('dt_vuon', 1, 'Vườn', '🌳', 'vườn hoa ven hồ'),
@@ -105,6 +109,36 @@ ITEMS = (
     _title('dh_bac_dau', 1, '🌟', 'Ngôi Sao Bắc Đẩu', 'Sao Bắc Đẩu'), _title('dh_den_long', 1, '🏮', 'Chủ Nhân Đèn Lồng Vàng', 'Đèn Lồng Vàng'),
     _title('dh_nghe_si', 1, '🎻', 'Nghệ Sĩ Không Tên', 'Nghệ Sĩ'), _title('dh_gio_mua', 1, '🍃', 'Người Gọi Gió Mùa', 'Gọi Gió Mùa'),
 )
+# Fixed collection points, never a resale quote or a multiplier for money earned.
+COLLECTOR_POINTS = {1: 10, 2: 40, 3: 120}
+ART_NOTES = {
+    'water': ('Sơn dầu', 'Ghe nhỏ lướt qua đồng ngập, giữ lại một mùa nước nổi của phố.'),
+    'street': ('Sơn dầu', 'Mái nhà tím trong nắng cuối ngày, ô cửa vàng vừa lên đèn.'),
+    'figure': ('Sơn mài', 'Đôi quang gánh cong trên nền son, một đời buôn bán của bà Tư.'),
+    'cat': ('Mực màu', 'Chú mèo vàng canh mái tôn, chiếc đuôi vắt qua vệt trăng.'),
+    'lotus': ('Lụa', 'Cánh sen hồng trên mặt hồ xanh, nét lụa mỏng như sương.'),
+    'lantern': ('Giấy dó', 'Đèn lồng treo qua bờ sông, ánh đỏ rung theo sóng nước.'),
+    'train': ('Than & màu', 'Đầu tàu xuyên sương, ngọn đèn cuối cùng đưa người về phố.'),
+    'light': ('Màu nước', 'Hải đăng trắng trên mỏm đá, cánh buồm nhỏ đón ngọn gió.'),
+    'market': ('Lụa', 'Sạp hoa, mái bạt đỏ và cành đào chen nhau buổi chợ Tết.'),
+    'moon': ('Sơn dầu', 'Trăng tròn ôm sườn đồi thông, lối mòn sáng giữa trời đêm.'),
+    'dragon': ('Sơn mài dát vàng', 'Rồng cuộn giữa mây son; vảy vàng được chấm từng nét trên nền sơn đen.'),
+    'cranes': ('Lụa thêu', 'Đôi hạc sải cánh trên nền ngọc, viền lông thêu bằng chỉ ánh ngà.'),
+    'bay': ('Lụa vẽ tay', 'Núi đá chồng lớp bên cánh buồm nâu, sương mai tan trên vịnh ngọc.'),
+    'galaxy': ('Khảm trai', 'Vụn vỏ trai ghép thành dải ngân hà, sao xanh tím nổi trên nền đêm.'),
+}
+KIND_STORY = {
+    'plate': 'Biển độc bản gắn trên chiếc xe bạn đang đi, hiện cả khi dạo phố.',
+    'phone': 'Số độc bản hiện trên điện thoại và hồ sơ của chủ nhân.',
+    'land': 'Tên chủ nhân gắn với danh thắng của phố sau khi thắng phiên.',
+    'title': 'Danh hiệu độc bản để đeo cạnh tên, chỉ một người trong phố sở hữu.',
+}
+for _it in ITEMS:
+    _it['collector_points'] = COLLECTOR_POINTS[_it['tier']]
+    if _it['kind'] == 'art':
+        _it['medium'], _it['story'] = ART_NOTES[_it['motif']]
+    else:
+        _it['story'] = KIND_STORY[_it['kind']]
 ITEM = {it['id']: it for it in ITEMS}
 
 # 👑 the titles, as game/spend_content.py style items (worn from Phong cách for good, never sold)

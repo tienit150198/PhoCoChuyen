@@ -17,7 +17,7 @@ const stars=v=>v?`${Number(v).toLocaleString('vi-VN',{minimumFractionDigits:1,ma
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const btn=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
 const MEDALS=['🥇','🥈','🥉'];
-const OWN=['certs','titles','wealth'];   // boards with their own tab (the rest are "Trải nghiệm" boards)
+const OWN=['certs','titles','wealth','collection'];   // boards with their own tab
 
 /* ---- stylesheet on first use (not on the first paint of the game) ---- */
 let cssReady=null;
@@ -50,6 +50,7 @@ const placeOf=(api,id)=>{const m=metaOf(api,id);return m.place||m.short||id;};
 const careerIds=api=>api.content.catalogue.map(m=>m.id).filter(id=>api.state.careers?.[id]);
 
 function rule(api,board){
+  if(board==='collection')return 'Đồ đấu giá đã nhận: phổ thông 10, quý hiếm 40, huyền thoại 120 điểm. Bằng điểm: nhiều món hơn, nhiều huyền thoại hơn, rồi ai đạt trước. Số đặt riêng ngoài danh mục chưa tính điểm. Giá trả không tăng điểm.';
   if(board==='wealth')return 'Tài sản ròng như ở “Tiền của bạn”, cộng tiết kiệm Mây, xe và quầy riêng theo giá bán lại, Mây Coin và vàng theo giá vốn, trừ mọi nợ kể cả vay nóng chợ đen. Không tính Quỹ chung. Bằng nhau: ai nhiều tài sản hơn, rồi ai đạt trước.';
   if(board==='titles')return 'Xếp theo số danh hiệu trò chơi đã có, rồi danh hiệu bí mật, rồi ai có sớm hơn.';
   if(board==='certs')return 'Xếp theo số chứng chỉ đã có, rồi tổng điểm thi cao nhất, rồi ai có sớm hơn.';
@@ -58,6 +59,7 @@ function rule(api,board){
 }
 /** The small line under a name: the one or two numbers that break ties. */
 function statsLine(board,r){
+  if(board==='collection')return `${fmt(r.items)} độc bản · ${fmt(r.legendary)} huyền thoại`;
   if(board==='wealth')return 'Tài sản ròng · coin/vàng tính theo giá vốn · không tính Quỹ chung';
   if(board==='titles')return [r.secret?`${fmt(r.secret)} bí mật`:'',r.day?`mới nhất Ngày ${fmt(r.day)}`:''].filter(Boolean).join(' · ');
   if(board==='certs')return [`${fmt(r.best)} điểm thi`,r.day?`có từ Ngày ${fmt(r.day)}`:''].filter(Boolean).join(' · ');
@@ -65,6 +67,7 @@ function statsLine(board,r){
   return [`Cấp ${fmt(r.level)}`,`${fmt(r.days)} ngày`,stars(r.stars)].filter(Boolean).join(' · ');
 }
 function scoreBox(board,r){
+  if(board==='collection')return `<span class="lb-score"><b>${fmt(r.score)}</b><small>điểm sưu tầm</small></span>`;
   if(board==='wealth')return `<span class="lb-score"><b>${fmt(r.score)}</b><small>xu</small></span>`;
   if(board==='titles')return `<span class="lb-score"><b>${fmt(r.score)}</b><small>danh hiệu</small></span>`;
   return board==='certs'?`<span class="lb-score"><b>${fmt(r.score)}</b><small>chứng chỉ</small></span>`:`<span class="lb-score"><b>${fmt(r.score)}</b><small>XP</small></span>`;
@@ -101,6 +104,7 @@ function meCard(env,board,d){
   let main;
   if(me.rank==null){
     main=board==='wealth'?(api.state.journey?.story===false?'Bảng này chỉ tính người chơi theo câu chuyện: chơi tự do không có ví riêng.':'Tài sản ròng của bạn chưa trên 0 xu. Trả bớt nợ, để dành thêm là có tên trên bảng.')
+      :board==='collection'?'Nhận món độc bản đầu tiên từ nhà đấu giá để lên bảng.'
       :board==='titles'?'Bạn chưa có danh hiệu nào. Hoàn thành việc đầu tiên là có ngay.'
       :board==='certs'?'Bạn chưa có chứng chỉ nào. Thi đỗ chứng chỉ đầu tiên để có tên trên bảng này.'
       :board==='all'?'Hoàn thành việc đầu tiên để có tên trên bảng này.':`Bạn chưa làm ở ${placeOf(api,board)}. Làm việc đầu tiên ở đó để có tên trên bảng này.`;
@@ -116,6 +120,7 @@ function meCard(env,board,d){
 }
 
 function emptyText(api,board){
+  if(board==='collection')return ['Chưa có nhà sưu tầm','Nhận món đấu giá đầu tiên để có điểm sưu tầm.'];
   if(board==='wealth')return ['Chưa ai lên bảng','Có tài sản ròng trên 0 xu là có tên trên bảng này.'];
   if(board==='titles')return ['Chưa ai có danh hiệu','Làm việc ở phố để nhận danh hiệu đầu tiên nhé.'];
   if(board==='certs')return ['Chưa ai có chứng chỉ','Thi đỗ chứng chỉ đầu tiên để mở hàng bảng này nhé.'];
@@ -158,11 +163,11 @@ function wedBody(env){
   return prizes+mine+(d.top.length?`<ol class="lb-list">${d.top.map(row).join('')}</ol>`:`<div class="empty lb-empty">${icon('award',30)}<h3>Tuần này chưa ai dự cưới</h3><p class="muted small">Dự một đám cưới để có tên.</p></div>`)+last;
 }
 
-/** The board kinds: 4 tabs, 5 with 💍 Khách mời (lb-kinds.four / .five; on a phone 2 × 2 or 3 + 2, whole words). */
+/** Five board kinds, six with 💍 Khách mời; two readable columns on a phone. */
 function kindsHTML(tab){
-  const tabs=[tab('exp','Trải nghiệm','🏆'),tab('titles','Danh hiệu','🎖️'),tab('certs','Chứng chỉ','📜'),tab('wealth','Tài phú','💰')];
+  const tabs=[tab('exp','Trải nghiệm','🏆'),tab('titles','Danh hiệu','🎖️'),tab('certs','Chứng chỉ','📜'),tab('wealth','Tài phú','💰'),tab('collection','Sưu tầm','💎')];
   if(wedOn())tabs.push(tab('wed','Khách mời','💍'));
-  return `<div class="segmented lb-kinds ${tabs.length>4?'five':'four'}" role="tablist" aria-label="Loại bảng">${tabs.join('')}</div>`;
+  return `<div class="segmented lb-kinds ${tabs.length===6?'six':'five'}" role="tablist" aria-label="Loại bảng">${tabs.join('')}</div>`;
 }
 
 export function leaderboardView(env){
@@ -190,7 +195,7 @@ export function leaderboardView(env){
   return head+`<div class="sheet-body lb">
     ${kindsHTML(tab)}
     ${kind==='exp'?pickerHTML(api,board,s.more):''}
-    <p class="lb-rule">${esc(rule(api,board))}</p>${marketNote(api,board)}
+    ${board==='collection'?`<details class="lb-rule"><summary>Cách tính điểm sưu tầm ＋</summary><p>${esc(rule(api,board))}</p></details>`:`<p class="lb-rule">${esc(rule(api,board))}</p>`}${marketNote(api,board)}
     ${body}
     ${privacyNote(env)}</div>`;
 }

@@ -9,8 +9,9 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY,afterTap,qtyVal} from '../qty-input.js';
+import {itemArt as art,collectibleDetails,collectionGallery,collectorBoard,lotPicker} from './auction-display.js';
 
-const TABS=[['live','🔨','Đang đấu giá'],['past','📜','Đã chốt'],['lands','🏞️','Danh thắng'],['mine','🎁','Của tôi']];
+const TABS=[['live','🔨','Đang đấu giá'],['past','📜','Đã chốt'],['lands','🏞️','Danh thắng'],['mine','🎁','Của tôi'],['top','💎','Top nhà sưu tầm']];
 export const ACTIONS={auction:'live',auctionLands:'lands'};
 const S={dlg:null,env:null,tab:'live',lot:'',data:null,at:0,busy:false,flash:null,amount:0,anon:false,timer:0,live:null,watching:false,off:[]};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -18,6 +19,14 @@ const J=()=>S.env?.api?.state?.journey||{};
 const U=()=>J().uniq||null;
 const CAT=()=>S.env?.api?.content?.journey?.auction||null;
 const clock=()=>Date.now()/1000+(Number(S.env?.api?.clockOffset)||0);
+let topData=null,topBusy=false,topAt=0;
+async function loadTop(force=false){
+  if(topBusy||(!force&&topData&&!topData.error&&Date.now()-topAt<5000))return;
+  topBusy=true;
+  try{topData=await S.env.api.json('/api/leaderboard?board=collection&limit=50');topAt=Date.now();}
+  catch{topData={error:true};}
+  finally{topBusy=false;if(S.dlg?.open&&S.tab==='top')render();}
+}
 
 let cssReady=null;
 function link(href,key){
@@ -101,6 +110,7 @@ export async function openAuction(env,tab){
   render();
   await collect(env);
   await load(true);
+  if(S.tab==='top')await loadTop(true);
   watch(true);
   clearInterval(S.timer);S.timer=setInterval(()=>{if(!S.dlg?.open)return;const el=S.dlg.querySelector('[data-au-clock]');if(el)el.textContent=left(lot());
     if(lot()&&lot().ends_at<=clock()&&Date.now()-S.at>8000)load(true);},1000);
@@ -158,27 +168,17 @@ function why(l){
   return ready()>=need?'':`Còn thiếu ${fmt(need-ready())} xu`;
 }
 
-/** The item's picture: a plate, a phone, a painting (drawn from its colours), a landmark or a title. */
-function art(l){
-  const d=l.data||{};
-  if(l.kind==='plate')return `<div class="au-art au-plate" aria-hidden="true"><span>${esc(l.name)}</span></div>`;
-  if(l.kind==='phone')return `<div class="au-art au-phone" aria-hidden="true"><span>📱</span><b>${esc(l.name)}</b></div>`;
-  if(l.kind==='art'){const [a,b,c]=(Array.isArray(d.colors)?d.colors:[]).map(x=>/^#[0-9a-f]{6}$/i.test(x)?x:'#888');
-    return `<div class="au-art au-canvas" aria-hidden="true" style="--a:${a||'#9fc5e8'};--b:${b||'#6aa84f'};--c:${c||'#e06666'}"><i></i><em>${esc(d.artist||'')}${d.year?` · ${Number(d.year)}`:''}</em></div>`;}
-  if(l.kind==='land')return `<div class="au-art au-land" aria-hidden="true"><span>${esc(l.emoji)}</span><em>${esc(d.where||'')}</em></div>`;
-  return `<div class="au-art au-title" aria-hidden="true"><span>${esc(l.emoji)}</span></div>`;
-}
-const TIER={1:'',2:'💎',3:'👑'};
 
 /* ---- rendering ---- */
 function render(){
   if(!S.dlg)return;
-  const body=S.dlg.querySelector('.sd-body'),y=body?.scrollTop;
+  const body=S.dlg.querySelector('.sd-body'),y=body?.scrollTop,x=S.dlg.querySelector('.au-lots')?.scrollLeft;
   // Another player's bid redraws the page: a bid being typed stays in its box, with the focus.
   const a=document.activeElement,typing=a?.matches?.('input[data-qty]')&&S.dlg.contains(a)?a.value:null;
   S.dlg.querySelector('.sd-root').innerHTML=page();
   if(typing!==null){const b=S.dlg.querySelector('input[data-qty]');if(b){b.value=typing;b.focus({preventScroll:true});try{b.setSelectionRange(typing.length,typing.length);}catch{/* not a text box */}}}
   if(y)S.dlg.querySelector('.sd-body').scrollTop=y;
+  if(x&&S.dlg.querySelector('.au-lots'))S.dlg.querySelector('.au-lots').scrollLeft=x;
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
 const chip=(op,id,label,on,title='')=>`<button type="button" class="sd-chip${on?' on':''}" data-au="${op}" data-id="${esc(id)}" aria-pressed="${on}"${title?` aria-label="${esc(title)}" title="${esc(title)}"`:''}>${label}</button>`;
@@ -193,7 +193,7 @@ function page(){
   if(!S.data)return head+tabs+`<div class="sheet-body sd-body"><p class="sd-empty">⏳</p></div>`;
   const flash=`<p class="sd-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
   const hold=held?`<p class="au-held" title="Đang giữ cho đấu giá">🔒 Đang giữ ${fmt(held)} xu</p>`:'';
-  const inner={live,past,lands,mineTab}[S.tab==='mine'?'mineTab':S.tab]();
+  const inner=S.tab==='top'?collectorBoard(topData):{live,past,lands,mineTab}[S.tab==='mine'?'mineTab':S.tab]();
   let bar='';
   if(S.tab==='live'&&lot()){const l=lot(),w=why(l),n=bidOf(l);
     bar=`<footer class="sd-bar">${w?`<small class="sd-why">${esc(w)}</small>`:''}<button type="button" class="btn primary big sd-main" data-au="go"${S.busy||w?' disabled':''}>Trả ${fmt(n)} xu</button></footer>`;}
@@ -205,15 +205,16 @@ function page(){
 const REAL=`<p class="au-note au-real">👥 Toàn người chơi thật. Ai thắng mất hẳn số xu.</p>`;
 function live(){
   const d=S.data,lots=d.lots||[];
+  if(d.error)return '<p class="au-note" role="alert">Chưa tải được phiên đấu giá.</p><button class="btn" type="button" data-au="retry">Thử lại</button>';
   if(!lots.length)return `<p class="sd-empty">🔨</p><p class="au-note">Phiên mở lúc 20:30 mỗi ngày.</p>${REAL}`;
   const l=lot()||lots[0];S.lot=l.id;
-  const chips=lots.length>1?`<div class="sd-chips">${lots.map(x=>chip('lot',x.id,`${x.emoji}${TIER[x.tier]||''}`,x.id===l.id,x.name)).join('')}</div>`:'';
+  const chips=lots.length>1?lotPicker(lots,l.id):'';
   const me=mine(l),lead=leading(l),out=me&&!lead&&l.high>0;
   const state=lead?`<p class="au-state good">👑 Bạn đang dẫn đầu</p>`:out?`<p class="au-state bad">⚠️ Đã bị trả cao hơn</p>`:'';
   const who=l.bids?`<span data-no-translate>${esc(l.who||'')}</span>`:'Chưa ai trả';
   const quick=(CAT()?.quick||[1,2,5]).map(k=>{const v=l.bids?l.next+(k-1)*l.step:l.start+(k-1)*l.step;return chip('amount',v,`${fmt(v)}`,bidOf(l)===v);}).join('');
   const anon=`<label class="sd-toggle"><input type="checkbox" name="anon"${S.anon?' checked':''}><span>Ẩn danh</span></label>`;
-  return REAL+chips+`<section class="sd-card au-lot">${art(l)}<h3>${esc(l.emoji)} <span data-no-translate>${esc(l.name)}</span></h3>
+  return REAL+chips+`<section class="sd-card au-lot">${art(l)}<h3>${esc(l.emoji)} <span data-no-translate>${esc(l.name)}</span></h3>${collectibleDetails(l)}
     <div class="au-price"><b>${fmt(l.bids?l.high:l.start)} xu</b><small>${l.bids?`${l.bids} lượt · ${who}`:'Giá khởi điểm'}</small></div>
     <p class="au-clock" data-au-clock>${esc(left(l))}</p>${state}
     <div class="sd-chips sd-amounts">${quick}<label class="au-typed">${qtyBox({value:bidOf(l),min:l.next,max:1e9,money:true,label:'Trả bao nhiêu xu',go:`data-au="typed" data-id="${QTY}"`})}<small>xu</small></label></div>${anon}${help()}</section>`;
@@ -231,15 +232,15 @@ function lands(){
   return rows?`<ul class="au-plaques">${rows}</ul>`:`<p class="sd-empty">🏞️</p><p class="au-note">Thắng đấu giá để đặt tên hồ, đồi, bến sông theo tên bạn.</p>`;
 }
 function mineTab(){
-  const own=Object.entries(U()?.own||{});
-  const rows=own.map(([id,x])=>`<li><span>${esc((CAT()?.kinds||[]).find(k=>k[0]===x.k)?.[1]||'🎁')}</span><b data-no-translate>${esc(x.t)}</b><em>${fmt(x.p)}</em></li>`).join('');
-  return rows?`<section class="sd-card"><ol class="sd-board">${rows}</ol></section>`:`<p class="sd-empty">🎁</p><p class="au-note">Món độc bản bạn thắng sẽ ở đây.</p>`;
+  return collectionGallery(U()?.own,CAT());
 }
 
 async function onClick(op,data){
   switch(op){
     case'close':S.dlg.close();return;
-    case'tab':S.tab=data.tab;S.flash=null;render();S.dlg.querySelector('.sd-body')?.scrollTo?.(0,0);return;
+    case'tab':S.tab=data.tab;S.flash=null;render();S.dlg.querySelector('.sd-body')?.scrollTo?.(0,0);if(S.tab==='top')await loadTop();return;
+    case'topRetry':topData=null;render();await loadTop(true);return;
+    case'retry':await load(true);return;
     case'lot':S.lot=data.id;S.amount=0;S.flash=null;render();return;
     case'amount':S.amount=Number(data.id)||0;render();return;
     case'typed':S.amount=Number(data.id)||0;afterTap(render);return;   // a typed bid (qty-input.js): never under the next minimum (bidOf)

@@ -12,6 +12,8 @@
 
 /* Board kind: Trải nghiệm | Danh hiệu | Chứng chỉ | Tài phú (| Khách mời) */
 .lb-kinds{flex-wrap:nowrap}
+.lb-kinds.six{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-1)}
+.lb-kinds.six>button{min-width:0;padding:var(--sp-1);font-size:var(--fs-2)}
 .lb-kinds>button{min-height:44px;font-size:.967rem;gap:6px}
 .lb-kinds.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
 .lb-kinds.five{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}   /* + 💍 Khách mời của tuần */
@@ -27,6 +29,18 @@ html[data-layout="phone"] .lb-kinds.five>button:nth-child(n+4){grid-column:span 
   .lb-kinds.five>button{grid-column:span 2}
   .lb-kinds.five>button:nth-child(n+4){grid-column:span 3}
 }
+/* Collection adds a fifth/sixth tab: two readable columns on a phone. */
+html[data-layout="phone"] .lb-kinds.five,html[data-layout="phone"] .lb-kinds.six{grid-template-columns:repeat(2,minmax(0,1fr))}
+html[data-layout="phone"] .lb-kinds.five>button,html[data-layout="phone"] .lb-kinds.six>button{grid-column:auto}
+html[data-layout="phone"] .lb-kinds.five>button:nth-child(n+4){grid-column:auto}
+html[data-layout="phone"] .lb-kinds.five>button:last-child{grid-column:span 2}
+@media(max-width:700px){
+  .lb-kinds.five,.lb-kinds.six{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lb-kinds.five>button,.lb-kinds.six>button{grid-column:auto}
+  .lb-kinds.five>button:nth-child(n+4){grid-column:auto}
+  .lb-kinds.five>button:last-child{grid-column:span 2}
+}
+.lb-rule summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700}
 
 /* Workplace picker */
 .lb-picker{display:flex;flex-wrap:wrap;gap:8px}

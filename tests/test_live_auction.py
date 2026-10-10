@@ -34,6 +34,10 @@ class LiveAuction(LiveCase):
         await c.expect('auction_bid')
         await c.nothing('auction_outbid', wait=.05)
         await c.send(t='auction_watch', open=False)
+        # NOTIFY travels over another connection: wait until the socket has
+        # processed unsubscribe before asserting it receives no later event.
+        await c.send(t='ping')
+        await c.expect('pong')
         self.notify(dict(op='auction_end', lot='20261007-1', status='sold', price=6000, name='Minh', win=self.pid(sb)))
         self.assertEqual((await a.expect('auction_end'))['status'], 'sold')
         self.assertEqual((await b.expect('auction_won'))['price'], 6000)
