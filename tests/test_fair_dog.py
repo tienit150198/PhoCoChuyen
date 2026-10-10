@@ -207,12 +207,12 @@ class Race(DogBase):
 
 
 class Gate(DogBase):
-    def test_nothing_before_the_bao_ke(self):
+    def test_betting_needs_no_entry_payment(self):
         s = story()
-        self.refused(s, 'fair_dg', 'fair_bm_gate', race=self.race(), lane=0, stake=100)
-        s, _ = self.act(s, 'fair_bm_pay')
-        s, r = self.bet(s, 0, 100)
+        s, r = self.bet(s, 0, 100, first=1)
         self.assertEqual(r['fair']['game'], 'dg')
+        self.assertEqual(s['journey']['wallet'], 49900)
+        self.assertNotIn('fair_bm', s['journey'])
 
 
 class Police(DogBase):

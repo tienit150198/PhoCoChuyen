@@ -434,10 +434,10 @@ def fx_commit(db, sid: str, result) -> None:
     """live_fx of a 'bark' row, in the save's transaction: the row flips pending → applied here, once (a GameError rolls
     the payment back)."""
     live = (result or {}).get('live') if isinstance(result, dict) else None
-    if not isinstance(live, dict) or live.get('kind') != FX or live.get('already'):
+    if not isinstance(live, dict) or live.get('kind') not in (FX, 'bark_weekly') or live.get('already'):
         return
-    _core().need(db.execute("UPDATE live_effects SET status='applied', applied_at=? WHERE id=? AND sid=? AND status='pending'",
-                            (now(), live.get('id'), sid)).rowcount == 1, 'Khoản này đã xử lý rồi.', 'bark_sync')
+    _core().need(db.execute("UPDATE live_effects SET status='applied', applied_at=? WHERE id=? AND sid=? AND kind=? AND status='pending'",
+                            (now(), live.get('id'), sid, live.get('kind'))).rowcount == 1, 'Khoản này đã xử lý rồi.', 'bark_sync')
 
 
 # ---------------------------------------------------------------- the database rules (shared with the live service)
@@ -552,6 +552,8 @@ def run_housekeeping(store) -> None:
         return
     try:
         n = housekeeping(store)
+        from . import dog_bark_board
+        dog_bark_board.settle(store)
         if n:
             sys.stderr.write(f'[dog_bark] refunded {n} stale tickets\n')
     except Exception as e:  # noqa: BLE001 - housekeeping never takes the server down
@@ -602,6 +604,13 @@ def view(store, token: str | None) -> dict:
     except Exception:  # noqa: BLE001
         out['king'] = None
     sid = store.key(token) if isinstance(token, str) and 16 <= len(token) <= 128 else None
+    from . import dog_bark_board
+    try:
+        out['competition'] = dog_bark_board.view(store, sid, t)
+    except Exception as e:  # the standings must not prevent joining a match
+        import sys
+        sys.stderr.write(f'[dog_bark] competition: {type(e).__name__}\n')
+        out['competition'] = None
     if not sid:
         return out
     with store.connect() as db:
@@ -619,3 +628,5 @@ def view(store, token: str | None) -> dict:
 def forget(db, sid: str) -> None:
     """A player erased their data: their tickets go (their escrow went with the save)."""
     db.execute('DELETE FROM bark_tickets WHERE sid=?', (sid,))
+    from . import dog_bark_board
+    dog_bark_board.forget(db, sid)

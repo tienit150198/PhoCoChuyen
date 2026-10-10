@@ -7,6 +7,12 @@
 - Làm lại cách trình bày biển số, SIM, danh hiệu và danh thắng. Hàng chọn phiên có ảnh thu nhỏ, cuộn ngang; Của tôi hiển thị phòng tranh.
 - Thêm **Top nhà sưu tầm** ở nhà đấu giá và tab **Sưu tầm** trong Bảng xếp hạng. Bảng hiển thị điểm, số độc bản, số món huyền thoại và vị trí của bạn.
 
+## Đợt bổ sung được duyệt
+
+Thêm 16 tranh: ruộng bậc thang, phố mưa, chợ nổi, gốm lam, cửu ngư, phượng hoàng, trống đồng, cổng làng, cúc trắng, đồi chè, múa rối nước, bướm, ngựa, ban công hoa giấy, thuyền thúng và tứ bình. Tổng cộng 30 tranh, trong đó 20 tranh mới so với bản live. Đợt này gồm 6 phổ thông, 6 quý hiếm, 4 huyền thoại; giá khởi điểm theo ba mức sẵn có 5.000 / 50.000 / 500.000 xu.
+
+Kiểm thử mở rộng đạt 171/171 test Python, thêm test XML xác minh cả 30 SVG xuất ảnh hợp lệ. Review phát hiện và đã sửa thuộc tính fill trùng ở tranh ban công.
+
 ## Giá trị sưu tầm
 
 | Độ hiếm | Điểm / món |
@@ -29,7 +35,7 @@ Chỉ tính món trong danh mục đã nhận vào bản lưu. Bằng điểm: n
 
 - PostgreSQL 17 riêng, chỉ nghe localhost, Python 3.12 + websockets 17.1 theo phiên bản thư viện dự án.
 - **117/117 test Python đạt**: auction, auction_collections, leaderboard, live_auction, deco, deco_more, deco_viet.
-- JavaScript: 14 bố cục khác nhau sau khi bỏ màu, 6 danh thắng, tranh treo nhà dùng chung SVG; escaping và trạng thái tải/rỗng/lỗi/ẩn tên.
+- JavaScript: 30 bố cục khác nhau sau khi bỏ màu, 6 danh thắng, tranh treo nhà dùng chung SVG; escaping và trạng thái tải/rỗng/lỗi/ẩn tên.
 - Kiểm tra Safari 15: 311/311 file; cú pháp các module sửa; git diff --check.
 - UI thật ở 390×844 và desktop bằng dữ liệu mẫu cục bộ: phiên, phòng tranh, bảng top và tab Sưu tầm. Không có lỗi console.
 - Sửa race trong test hủy theo dõi đấu giá: chờ pong trên cùng socket trước khi phát sự kiện NOTIFY từ kết nối khác.

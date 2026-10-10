@@ -8,9 +8,9 @@ scripts/sim_fair_odds.py, which checks it on 10^6 rounds a stall):
 
   stall        how                                                  return  with 🍀 Lộc (gate always open)
   bầu cua      three honest dice, 1:1 a die, bão BAO:1               95.4%   96.5%
-  chiếu trong  even money, BASES['xd'] won draws, RAID_PCT raids     96.1%   97.4%   (no fine: wallet short)
-  lô tô        BASES['lt'] rounds go the player's way, Kinh 2.1×     95.6%   96.8%   (2- and 5-xu tờ: 91.0%)
-  vé cào       BASES['xs'] tickets win, scratch.PRIZES mean 1.80×    90.0%   90.5%
+  chiếu trong  even money, BASES['xd'] won draws, RAID_PCT raids     97.1%   98.4%   (no fine: wallet short)
+  lô tô        BASES['lt'] rounds go the player's way, Kinh 2.1×     96.6%   97.8%   (2- and 5-xu tờ: 92.0%)
+  vé cào       BASES['xs'] tickets win, scratch.PRIZES mean 1.80×    91.9%   92.3%
   đua chó      fixed odds (fair_dog.CLASSES), the outsider at best    95.0%   95.0%   (the favourite: 92.8%)
 
 Every other state is lower: the cool-off after STREAK wins (WIN_P_LOW), the spam decay (RUN_STEP down to P_FLOOR),
@@ -77,7 +77,7 @@ from . import fair_ring as ring
 from . import fair_cash as fc   # 🎁 tiền vốn and 💸 vay nóng
 from . import fair_food as ff   # 🍡 the food carts
 from . import fair_photo as fp  # 📸 the photobooth's ticket
-from . import fair_bm as bm     # 🕶️ Chợ đen: the bảo kê at the gate, the police's arrests
+from . import fair_bm as bm     # 🕶️ Chợ đen: free entry and the police's arrests
 from . import fair_watch as watch   # 🕶️ the police's eye on the skill stalls: scripts and bursts only
 from . import fair_hai as hai     # 👴 Ông Hai's table: games a day, the police after a run of wins
 from . import fair_dog as dog    # 🐕 đua chó: the roster, the lineups, the draw
@@ -106,7 +106,8 @@ ROUNDS_DAY = 400
 # so every round of every paid stall returns less than its stake (the table at the top, docs/FAIR_HOUSE_EDGE.md).
 # xóc đĩa: even money, its raids (RAID_PCT) come first; lô tô: a Kinh pays LOTO_PAY tenths of the tờ; vé cào: a won
 # ticket pays scratch.PRIZES; ném vòng takes no stake (3 decimals: a ring round keeps its draw as p/1000).
-BASES = dict(xd=.485, lt=.455, xs=.50, ring=.503)
+# Owner 10/10: slightly gentler luck draws; skill games, honest dice and fixed dog odds stay unchanged.
+BASES = dict(xd=.49, lt=.46, xs=.51, ring=.503)
 WIN_P, WIN_P_LOW = .50, .45   # the older single rate (rules.luck_pct for an older client), and the streak cool-off
 LOTO_WIN_P = BASES['lt']
 LUCK_BASE = BASES['ring']      # the draw of a stall without its own BASES entry
@@ -1339,14 +1340,14 @@ def _arrested(j: dict, f: dict, t: float, game: str, stake: int, pay, why: str =
 
 
 def _gate(need, j: dict, t: float) -> None:
-    """🕶️ Inside the Chợ đen only with the bảo kê settled (or not asked this stretch), not after an arrest (fair_bm)."""
+    """🕶️ Free entry unless a saved same-day police ban applies (fair_bm)."""
     if not bm._gate_on():
         return
     st = bm.status(j, t)
     need(st in bm.IN, bm.NEED_IN, 'fair_bm_gate')
 
 
-# What the bảo kê gate lets through: finishing what was begun (LATE), the organisers' gift, paying a loan back.
+# What a saved ban still lets through: finishing what was begun (LATE), the organisers' gift, paying a loan back.
 GATE_FREE = LATE + fc.LATE + ('fair_gift',)
 
 
@@ -1369,7 +1370,7 @@ def _apply(s: dict, name: str, p: dict) -> dict:
     need(j.get('story'), 'Chợ đen chỉ có trong hành trình.', 'not_story')
     t = now()
     opens, closes = window()
-    if name in bm.COMMANDS:   # 🕶️ the bảo kê at the gate: only while the Chợ đen is open
+    if name in bm.COMMANDS:   # 🕶️ legacy entry commands: only while the Chợ đen is open
         need(t >= opens, SOON, 'fair_closed')
         need(t < closes, CLOSED, 'fair_closed')
         return bm.apply(s, name, p, _state(j, t), t)

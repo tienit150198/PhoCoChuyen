@@ -28,12 +28,22 @@ LAST_OPEN = at(2026, 10, 4, 20)       # day 2 of the last edition (03/10 → 07/
 
 
 class HouseEdge(unittest.TestCase):
+    def test_gentler_fresh_draws_win_between_old_and_new_cutoffs(self):
+        for game, old, new in (('xd', .485, .49), ('lt', .455, .46), ('xs', .50, .51)):
+            with self.subTest(game=game):
+                self.assertEqual(fh.chance_rate(game, OPEN), new)
+                draw = (old + new) / 2
+                with mock.patch.object(fh._rng, 'random', return_value=draw):
+                    self.assertFalse(fh._draw_luck({}, game, old))
+                    self.assertTrue(fh._draw_luck({}, game, fh.luck_p({}, None, game, OPEN, stake=10)))
+        self.assertEqual((xs.P_HI, xs.P_LO), (.51, .51))
+
     def test_every_paid_stall_returns_less_than_it_takes(self):
         ex = sim.exact()
         for g in PAID:
             with self.subTest(game=g):
-                self.assertTrue(.89 <= ex[g]['rtp'] < .97, ex[g])          # modest and fair-looking
-                self.assertLess(ex[g]['loc'], .98, ex[g])                  # 🍀 with the gate always open, too
+                self.assertTrue(.89 <= ex[g]['rtp'] < 1, ex[g])          # modest and fair-looking
+                self.assertLess(ex[g]['loc'], 1, ex[g])                  # 🍀 with the gate always open, too
         self.assertAlmostEqual(ex['bc']['rtp'], 206 / 216)                 # honest dice, unchanged
         self.assertAlmostEqual(ex['dg']['rtp'], .95)                       # 🐕 the outsider at best
         self.assertTrue(.9 < ex['dg']['low'] <= ex['dg']['fresh'] < ex['dg']['rtp'])

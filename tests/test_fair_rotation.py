@@ -54,10 +54,11 @@ class Rotation(unittest.TestCase):
         mean = sum(m * w for m, w in xs.PRIZES) / sum(w for _, w in xs.PRIZES)
         with mock.patch.object(fh, 'featured_game', return_value='xs'):
             returns = [fh.chance_rate('xs', OPEN, p) * mean for p in xs.TIERS]
-        # Owner 08/10 (50% of tickets win, a won one pays 1.80× on average): every tier returns 90% of what it costs.
+        # Owner 10/10: 51% win; unchanged mean prize 1.801 gives every fresh tier 91.851% RTP.
         self.assertAlmostEqual(returns[0], fh.BASES['xs'] * 1.801)
         self.assertTrue(all(abs(r - returns[0]) < 1e-9 for r in returns))
-        self.assertLess(returns[0], .91)
+        self.assertAlmostEqual(returns[0], .91851)
+        self.assertLess(returns[0], 1)
 
 
 class RotationCommands(FairBase):

@@ -177,7 +177,7 @@ class ChoDenArrest(BlackMarketBase):
         with mock.patch.object(bm, '_arrest_roll', lambda p=bm.BM_ARREST_P: seen.append(p) or True):
             s, r = self.act(s, 'fair_bc', bets={'cua': 50000})
         self.assertAlmostEqual(seen[0], .01, places=9)
-        w = 90000 - 50000
+        w = 100000 - 50000   # Chợ đen entry is free
         a = r['fair']['arrest']
         self.assertEqual((a['stake'], a['fine'], a['jail']), (50000, w * 30 // 100, 3))
         self.assertEqual(s['journey']['jail']['why'], 'bm')

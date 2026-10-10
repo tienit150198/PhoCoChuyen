@@ -25,6 +25,26 @@
 .db-flash.bad{background:var(--bad-soft);color:var(--bad)}
 .db-card{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:var(--sp-3);margin:0 0 var(--sp-2)}
 .db-card h3{margin:0 0 var(--sp-2);font-size:var(--fs-3)}
+.db-competition>summary{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2);min-height:44px;cursor:pointer;list-style:none;font-weight:700}
+.db-competition>summary::-webkit-details-marker{display:none}
+.db-competition>summary small{display:block;margin-top:4px;font-size:var(--fs-2);font-weight:500;color:var(--accent-text)}
+.db-top-arrow{color:var(--ink-2)}
+.db-competition[open]>.db-top-arrow,.db-competition[open]>summary .db-top-arrow{transform:rotate(180deg)}
+.db-top-me{padding:var(--sp-2);border-radius:var(--radius-sm);background:var(--accent-soft);color:var(--accent-text);font-size:var(--fs-2);line-height:var(--lh)}
+.db-top-list{list-style:none;margin:var(--sp-3) 0;padding:0}
+.db-top-list>li{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:var(--sp-2);align-items:center;padding:var(--sp-2) 0;border-bottom:1px solid var(--line);font-size:var(--fs-2)}
+.db-top-list>li.is-me{background:var(--accent-soft)}
+.db-top-person{min-width:0;overflow-wrap:anywhere}
+.db-top-person small,.db-top-score small{display:block;margin-top:4px;font-size:var(--fs-1);color:var(--ink-2)}
+.db-top-score{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.db-top-rank{color:var(--ink-2);font-weight:700}
+.db-top-rules{font-size:var(--fs-1);line-height:var(--lh);color:var(--ink-2)}
+.db-top-rules>summary{min-height:44px;display:flex;align-items:center;cursor:pointer;color:var(--ink);font-weight:600}
+.db-top-rules>summary::before{content:'＋';margin-right:var(--sp-2)}
+.db-top-rules[open]>summary::before{content:'−'}
+.db-top-rules ul{padding-left:var(--sp-4)}
+.db-top-rules li+li{margin-top:var(--sp-1)}
+.db-top-empty{font-size:var(--fs-2);color:var(--ink-2);line-height:var(--lh)}
 .db-sub{margin:var(--sp-2) 0 var(--sp-1);font-size:var(--fs-1);color:var(--ink-2)}
 .db-chips{display:flex;flex-wrap:wrap;gap:6px}
 .db-chip{min-width:56px;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:var(--radius-pill);background:var(--surface-2);color:var(--ink);font:inherit;font-weight:700;font-size:var(--fs-2);cursor:pointer}

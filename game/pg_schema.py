@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 34  # 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 35  # 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -572,8 +572,11 @@ CREATE TABLE IF NOT EXISTS jail_marks (sid {T} PRIMARY KEY, until double precisi
 CREATE TABLE IF NOT EXISTS bark_tickets (
   id {T} PRIMARY KEY, sid {T} NOT NULL, stake bigint NOT NULL CHECK(stake > 0), status {T} NOT NULL DEFAULT 'wait',
   created double precision NOT NULL, started double precision, ended double precision, match {T} NOT NULL DEFAULT '',
-  opp {T} NOT NULL DEFAULT '', result {T} NOT NULL DEFAULT '', pay bigint NOT NULL DEFAULT 0, dog {T} NOT NULL DEFAULT ''
+  opp {T} NOT NULL DEFAULT '', result {T} NOT NULL DEFAULT '', pay bigint NOT NULL DEFAULT 0, dog {T} NOT NULL DEFAULT '',
+  competitive boolean NOT NULL DEFAULT false
 );
+-- Legacy live workers omit this field safely; old unverified history never qualifies.
+ALTER TABLE bark_tickets ADD COLUMN IF NOT EXISTS competitive boolean NOT NULL DEFAULT false;
 CREATE INDEX IF NOT EXISTS bark_tickets_sid ON bark_tickets(sid, created);
 CREATE INDEX IF NOT EXISTS bark_tickets_open ON bark_tickets(status, created) WHERE status IN ('wait', 'play', 'dog');
 CREATE INDEX IF NOT EXISTS bark_tickets_week ON bark_tickets(ended) WHERE status = 'done';

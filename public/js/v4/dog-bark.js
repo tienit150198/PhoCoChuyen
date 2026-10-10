@@ -15,12 +15,13 @@
 import {escapeHTML as esc} from '../icons.js';
 import {actBar} from '../ui-kit.js';
 import {stylesheet} from '../lazy.js';
+import {barkCompetition} from './dog-bark-board.js';
 
 const STAKES=[100,200,500,1000,5000],SEND_MS=250,SAMPLE_MS=70,CHEERS=['👏','🔥'];
 const BARKS=['a','b','c','d','e','f','g'];
 const B={dlg:null,env:null,live:null,bound:false,view:'lobby',info:null,lobby:null,stake:200,busy:false,flash:null,
   ticket:null,waitAt:0,match:null,st:null,end:null,watch:null,mic:null,sens:sens(),mute:muted(),timer:0,poll:0,
-  ac:null,buf:{},lastBark:0,oppHigh:false,fx:[],panel:null,year:''};
+  ac:null,buf:{},lastBark:0,oppHigh:false,fx:[],panel:null,year:'',infoRequest:null,infoAt:0};
 function sens(){try{const v=Number(localStorage.getItem('mnl.bark.sens'));return v>=0.5&&v<=2.5?v:1;}catch{return 1;}}
 function muted(){try{return localStorage.getItem('mnl.bark.mute')==='1';}catch{return false;}}
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -62,7 +63,11 @@ async function collect(){
   catch(e){console.warn('bark: collect',e);}
 }
 async function loadInfo(){
-  try{B.info=await B.env.api.json('/api/dogbark');}catch{B.info=B.info||{on:false};}
+  if(B.infoRequest)return B.infoRequest;
+  B.infoRequest=(async()=>{
+    try{B.info=await B.env.api.json('/api/dogbark');}catch{B.info=B.info||{on:false};}
+  })();
+  try{await B.infoRequest;}finally{B.infoAt=Date.now();B.infoRequest=null;}
   const o=B.info?.me?.open;
   if(o&&o.status==='wait'&&!B.ticket){B.ticket=o.ticket;B.live?.send({t:'bark_find',ticket:o.ticket});}
 }
@@ -232,7 +237,11 @@ export async function openDogBark(env){
   await loadInfo();
   lv?.send({t:'bark_rejoin'});lobby();paint();
   clearInterval(B.timer);B.timer=setInterval(tickUI,250);
-  clearInterval(B.poll);B.poll=setInterval(()=>{if(d.open&&B.view==='lobby')lobby();},4000);
+  clearInterval(B.poll);B.poll=setInterval(()=>{
+    if(!d.open||B.view!=='lobby')return;
+    lobby();
+    if(Date.now()-B.infoAt>=15000)loadInfo().then(()=>{if(d.open&&B.view==='lobby')paint();});
+  },4000);
 }
 export async function dogBarkAction(action,data,el,env){if(action!=='liveBark')return false;await openDogBark(env);return true;}
 
@@ -323,14 +332,13 @@ function panel(){
   return '';
 }
 function lobbyView(){
-  const i=B.info,me=i?.me,lob=B.lobby,k=i?.king;
+  const i=B.info,me=i?.me,lob=B.lobby;
   const waits=(lob?.wait||[]).map(([s,n])=>`<button type="button" class="db-chip db-wait-chip${s===B.stake?' on':''}" data-db="stake" data-v="${s}">👤 ${fmt(s)}${n>1?` ×${n}`:''}</button>`).join('');
   const chips=STAKES.map(s=>`<button type="button" class="db-chip${s===B.stake?' on':''}" data-db="stake" data-v="${s}">${fmt(s)}</button>`).join('');
   const ms=(lob?.matches||[]).slice(0,6).map(m=>`<li><button type="button" class="db-live" data-db="watch" data-m="${esc(m.m)}">
     <span>${esc(m.a.name)}</span><b>vs</b><span>${m.b.house?'🐕 ':''}${esc(m.b.name)}</span><small>${fmt(m.stake)} xu</small></button></li>`).join('');
   const cool=me?.cool>0?`<p class="db-flash bad">⏳ Nghỉ cổ họng ${Math.ceil(me.cool/60)} phút nữa nha.</p>`:'';
-  return `${k?.name?`<p class="db-king">👑 ${esc(k.title)} tuần: <b>${esc(k.name)}</b> · +${fmt(k.xu)} xu</p>`:''}
-    <p class="db-lead">Không có ai thì đấu với chó nhà Mây.</p>
+  return `<p class="db-lead">Không có ai thì đấu với chó nhà Mây.</p>
     ${flash()}${cool}${panel()}
     <div class="db-card"><h3>Cược</h3><div class="db-chips">${chips}</div>
       <label class="db-num"><input type="number" inputmode="numeric" min="${i?.min||100}" step="50" value="${B.stake}" data-db-stake aria-label="Số xu cược khác"><span aria-hidden="true">xu</span></label>
@@ -338,6 +346,7 @@ function lobbyView(){
     <div class="db-card db-mic">${sensRow()}<div class="db-row"><button type="button" class="btn small" data-db="test" aria-label="Thử mic" title="Thử mic">🎙️</button>
       <button type="button" class="btn small" data-db="mute" aria-label="Tiếng chó sủa" title="Tiếng chó sủa">${B.mute?'🔇':'🔊'}</button></div></div>
     ${ms?`<div class="db-card"><h3>Đang kéo · xem</h3><ul class="db-lives">${ms}</ul></div>`:''}
+    ${barkCompetition(i?.competition)}
     ${actBar({next:me&&me.dog_room<B.stake?`<span class="ui-note">${me.dog_room>=(i?.min||100)?`🐕 nhận ≤ ${fmt(me.dog_room)} xu`:'🐕 nghỉ hôm nay'}</span>`:'',
       main:`<button type="button" class="btn primary big" data-db="find"${B.busy||me?.cool>0||i?.on===false?' disabled':''}>${findLabel()}</button>`,cls:'db-bar'})}`;
 }
@@ -386,7 +395,9 @@ function paint(){
   const off=B.live&&!B.live.flags?.bark&&B.live.welcomed;
   const body=off?'<p class="db-lead">Kéo co chó sủa đang nghỉ, quay lại sau nha.</p>':
     B.view==='wait'?waitView():B.view==='match'&&B.match?matchView():B.view==='end'&&B.end?endView():B.view==='watch'&&B.watch?watchView():lobbyView();
+  const expanded=[...root.querySelectorAll('[data-db-disclosure][open]')].map(el=>el.dataset.dbDisclosure);
   root.innerHTML=head()+`<div class="db-body">${body}</div>`;
+  for(const el of root.querySelectorAll('[data-db-disclosure]'))el.open=expanded.includes(el.dataset.dbDisclosure);
   paintRope();
 }
 function meter(){const b=B.dlg?.querySelector('.db-meter b');if(b){const v=B.mic?.level||0;b.style.width=`${v}%`;b.classList.toggle('on',v>=BARK_MIN);}}

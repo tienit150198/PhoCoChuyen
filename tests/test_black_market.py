@@ -1,7 +1,5 @@
-"""🕶️ Chợ đen (game/fair_bm.py, game/fair.py; owner 08/10: "k phải là hội chợ, nó là Chợ đen", bảo kê 10k xu, không
-nộp thì bị trấn lột 30%, công an bắt cực cao): the bảo kê gate once a Vietnam day, the robbery, the arrests on every
-paid round (stake lost, fine of 30% of the wallet, banned until the day ends), nothing about the rate on the client,
-a save an older (1.9.26) server still validates, and the new name everywhere players see the fair."""
+"""Free Chợ đen entry (10/10), safe legacy entry commands and unchanged police enforcement.
+Covers empty wallets, old saves/bans, arrests/fines, hidden rates and rollback validation."""
 import datetime
 import io
 import json
@@ -103,183 +101,90 @@ class BlackMarketBase(unittest.TestCase):
 
 
 class Gate(BlackMarketBase):
-    def test_nothing_before_the_bao_ke(self):
-        s = story()
-        for name, p, _ in PAID.values():
-            with self.subTest(name=name):
-                self.refused(s, name, 'fair_bm_gate', **p)
-        self.refused(s, 'fair_oaq_start', 'fair_bm_gate', lv='de')
-        self.refused(s, 'fair_snack', 'fair_bm_gate', item='nuoc_mia')
-        self.refused(s, 'fair_borrow', 'fair_bm_gate', amount=100)
-        self.assertEqual(s['journey']['wallet'], 50000)
-        b = fh.public(s)['bm']
-        self.assertEqual((b['st'], b['inside'], b['ban'], b['fee']), ('', False, False, 10000))
-        # the organisers' gift is still claimed at the gate
-        s, r = self.act(s, 'fair_gift')
-        self.assertEqual(s['journey']['wallet'], 50500)
+    def test_free_entry_at_every_wallet_and_with_old_ask_enabled(self):
+        for wallet in (0, -500, 9999, 12345, 10**9):
+            with self.subTest(wallet=wallet):
+                s = story(wallet)
+                b = fh.public(s)['bm']
+                self.assertEqual((b['st'], b['inside'], b['ban'], b['fee']), ('free', True, False, 0))
+                s, r = self.act(s, 'fair_oaq_start', lv='de')
+                self.assertEqual(s['journey']['wallet'], wallet)
 
-    def test_pay_once_a_day(self):
-        s = story(25000)
-        s, r = self.act(s, 'fair_bm_pay')
-        self.assertEqual(r['fair']['paid'], 10000)
-        self.assertEqual(s['journey']['wallet'], 15000)
-        row = s['journey']['history'][-1]
-        self.assertEqual((row['amount'], row['kind'], row['label']), (-10000, 'fair', bm.FEE_LABEL))
-        self.assertEqual(s['journey']['fair_bm'], {'d': '2026-10-10', 's': 'paid'})
-        self.assertTrue(fh.public(s)['bm']['inside'])
-        s, r = self.act(s, 'fair_bm_pay')   # a retry, another tab: nothing more to pay
-        self.assertTrue(r['fair']['again'])
-        s, r = self.act(s, 'fair_bm_refuse')
-        self.assertTrue(r['fair']['again'])
-        self.assertEqual(s['journey']['wallet'], 15000)
-        self.caught(False)
-        s, r = self.act(s, 'fair_bc', bets={'ga': 10})
-        self.assertEqual(r['fair']['game'], 'bc')
-        self.assertEqual(s['journey']['fair']['stats']['lost'] - s['journey']['fair']['stats']['won'],
-                         10000 - r['fair']['net'])   # the fee is a fair loss (the Bảng vàng)
+    def test_old_pay_and_refuse_commands_never_touch_money_or_history(self):
+        for wallet in (0, -500, 9999, 12345, 10**9):
+            for command in bm.COMMANDS:
+                with self.subTest(wallet=wallet, command=command):
+                    s = story(wallet)
+                    s['journey']['bank'] = bk.initial(1, 1)
+                    s['journey']['bank']['balance'] = 80000
+                    before = json.loads(json.dumps(s['journey']['history']))
+                    for _ in range(2):
+                        s, r = self.act(s, command)
+                        self.assertTrue(r['fair']['again'])
+                        self.assertNotIn('paid', r['fair'])
+                        self.assertNotIn('robbed', r['fair'])
+                    self.assertEqual(s['journey']['wallet'], wallet)
+                    self.assertEqual(s['journey']['bank']['balance'], 80000)
+                    self.assertEqual(s['journey']['history'], before)
+                    self.assertEqual(s['journey']['fair']['net'], 0)
+                    self.assertEqual(s['journey']['fair']['stats']['lost'], 0)
+                    self.assertNotIn('fair_bm', s['journey'])
+                    validate_state(s)
 
-    def test_pay_needs_the_fee_in_the_wallet(self):
-        s = story(9999)
-        e = self.refused(s, 'fair_bm_pay', 'fair_bm_short')
-        self.assertIn('10.000', str(e))
-        self.assertEqual(s['journey']['wallet'], 9999)
-        self.assertNotIn('fair_bm', s['journey'])
-
-    def test_refuse_robs_30_percent_of_the_wallet_only(self):
-        s = story(12345)
-        b = s['journey']['bank'] = bk.initial(1, 1)
-        b['balance'] = 80000
-        validate_state(s)
-        s, r = self.act(s, 'fair_bm_refuse')
-        self.assertEqual(r['fair']['robbed'], 12345 * 30 // 100)
-        self.assertEqual(s['journey']['wallet'], 12345 - 3703)
-        self.assertEqual(s['journey']['bank']['balance'], 80000)   # never the bank account
-        row = s['journey']['history'][-1]
-        self.assertEqual((row['amount'], row['label']), (-3703, bm.ROB_LABEL))
-        self.assertIn('3.703', r['message'])
-        self.assertEqual(s['journey']['fair_bm']['s'], 'robbed')
-        self.assertTrue(fh.public(s)['bm']['inside'])
-
-    def test_refuse_with_an_empty_or_owing_wallet(self):
-        for w in (0, 3, -500):
-            with self.subTest(wallet=w):
-                s = story(w)
-                rows = len(s['journey']['history'])
-                s, r = self.act(s, 'fair_bm_refuse')
-                self.assertEqual(r['fair']['robbed'], 3 * 30 // 100 if w == 3 else 0)
-                self.assertEqual(s['journey']['wallet'], w)
-                self.assertEqual(len(s['journey']['history']), rows)
+    def test_enforcement_switch_does_not_control_free_entry(self):
+        for switch in (None, '1'):
+            with mock.patch.dict(os.environ):
+                if switch is None:
+                    os.environ.pop('MNL_BM_OFF', None)
+                else:
+                    os.environ['MNL_BM_OFF'] = switch
+                self.assertEqual(bm._gate_on(), switch is None)
+                s = story(0)
                 self.assertTrue(fh.public(s)['bm']['inside'])
+                for command in bm.COMMANDS:
+                    s, _ = self.act(s, command)
+                self.assertEqual(s['journey']['wallet'], 0)
+                self.assertNotIn('fair_bm', s['journey'])
 
-    def test_a_huge_wallet_is_robbed_in_valid_rows(self):
-        s = story(10**9)
-        s, r = self.act(s, 'fair_bm_refuse')
-        self.assertEqual(r['fair']['robbed'], 3 * 10**8)
-        self.assertEqual(s['journey']['wallet'], 7 * 10**8)
-        rows = [x for x in s['journey']['history'] if x['label'] == bm.ROB_LABEL]
-        self.assertEqual(sum(x['amount'] for x in rows), -3 * 10**8)
-        self.assertTrue(all(abs(x['amount']) <= 10**7 for x in rows))
-        validate_state(s)
+    def test_entry_stays_free_across_vietnam_midnight(self):
+        for day in (10, 11, 12, 13):
+            self.clock.t = at(2026, 10, day, 0, 0)
+            self.assertEqual(fh.public(story(0))['bm']['st'], 'free')
 
-    def test_the_vietnam_day_ends_it(self):
+    def test_old_paid_robbed_and_ban_saves_remain_readable(self):
+        for status in bm.STATES:
+            s = story()
+            s['journey']['fair_bm'] = {'d': '2026-10-10', 's': status}
+            validate_state(s)
+            before = json.loads(json.dumps(s['journey']['fair_bm']))
+            for command in bm.COMMANDS:
+                s, r = self.act(s, command)
+                self.assertEqual(s['journey']['fair_bm'], before)
+                self.assertEqual(s['journey']['wallet'], 50000)
+            self.assertEqual(fh.public(s)['bm']['ban'], status == 'ban')
+            self.clock.t = at(2026, 10, 11, 9)
+            self.assertEqual(fh.public(s)['bm']['st'], 'free')
+            self.clock.t = OPEN
+
+    def test_police_still_arrest_after_free_entry(self):
         s = story()
-        self.clock.t = at(2026, 10, 10, 23, 58)
         s, _ = self.act(s, 'fair_bm_pay')
-        self.caught(False)
-        self.clock.t = at(2026, 10, 10, 23, 59, 40)
-        s, _ = self.act(s, 'fair_bc', bets={'ga': 1})   # still today
-        self.clock.t = at(2026, 10, 11, 0, 0, 0)
-        self.assertEqual(fh.public(s)['bm']['st'], '')
-        self.refused(s, 'fair_bc', 'fair_bm_gate', bets={'ga': 1})
-        s, r = self.act(s, 'fair_bm_pay')
-        self.assertEqual(s['journey']['fair_bm'], {'d': '2026-10-11', 's': 'paid'})
-
-    def test_closed_market_takes_no_bao_ke(self):
-        os.environ['MNL_FAIR_DAYS'] = '5'   # an edition with an end (owner 09/10: this one has none)
-        s = story()
-        self.clock.t = at(2026, 10, 14, 0, 0)
-        self.refused(s, 'fair_bm_pay', 'fair_closed')
-        self.refused(s, 'fair_bm_refuse', 'fair_closed')
-
-
-class AskedOrNot(BlackMarketBase):
-    """Owner 09/10: "phí bảo kê k phải khi nào cũng thu, tỷ lệ thu là hên xui 40% /2 ngày"."""
-
-    def test_not_asked_walks_in_free(self):
-        mock.patch.stopall()   # the real roll, the real clock, then the clock again
-        self.setUp_clock_only()
-        s = story()
-        p = mock.patch.object(bm, 'asked', lambda j, t: False)
-        p.start()
-        self.addCleanup(p.stop)
-        b = fh.public(s)['bm']
-        self.assertEqual((b['st'], b['inside'], b['ban']), ('free', True, False))
-        self.caught(False)
-        s, r = self.act(s, 'fair_bc', bets={'cua': 10})
-        self.assertIn('dice', r['fair'])
-        s, r = self.act(s, 'fair_bm_pay')   # an old page: nothing taken
-        self.assertTrue(r['fair']['again'])
-        self.assertNotIn('fair_bm', s['journey'])
-        self.caught(True)   # the police still come (for a big winner)
         self.rich(s)
-        s, r = self.act(s, 'fair_bc', bets={'cua': 10})
-        self.assertIn('arrest', r['fair'])
-        self.assertEqual(fh.public(s)['bm']['st'], 'free')   # no ban (owner 09/10 "bỏ cấm")
-        self.assertNotIn('fair_bm', s['journey'])
-        validate_state(s)
-
-    def setUp_clock_only(self):
-        env = mock.patch.dict(os.environ, {'MNL_BM_OFF': '0'})
-        env.start()
-        self.addCleanup(env.stop)
-        p = mock.patch.object(fh, 'now', self.clock)
-        p.start()
-        self.addCleanup(p.stop)
-
-    def test_settled_for_the_two_day_stretch(self):
-        s = story()
-        self.clock.t = at(2026, 10, 11, 9)   # 11/10 and 12/10 are one stretch, 13/10 starts the next
-        s, _ = self.act(s, 'fair_bm_pay')
-        self.clock.t = at(2026, 10, 12, 22)
-        self.assertEqual(fh.public(s)['bm']['st'], 'paid')
-        self.caught(False)
-        s, r = self.act(s, 'fair_bc', bets={'cua': 10})
-        self.assertIn('dice', r['fair'])
-        self.clock.t = at(2026, 10, 13, 0, 0, 1)
-        self.assertEqual(fh.public(s)['bm']['st'], '')
-        self.refused(s, 'fair_bc', 'fair_bm_gate', bets={'cua': 10})
-
-    def test_an_arrest_keeps_the_bao_ke(self):
-        s = story()
-        self.clock.t = at(2026, 10, 11, 9)
-        s, _ = self.act(s, 'fair_bm_refuse')
         self.caught(True)
-        self.rich(s)
         s, r = self.act(s, 'fair_bc', bets={'cua': 10})
         self.assertIn('arrest', r['fair'])
-        self.assertEqual(fh.public(s)['bm']['st'], 'robbed')
-        self.clock.t = at(2026, 10, 12, 9)   # same stretch: still in, nothing to settle
-        b = fh.public(s)['bm']
-        self.assertEqual((b['st'], b['inside']), ('robbed', True))
-        w = s['journey']['wallet']
-        s, r = self.act(s, 'fair_bm_pay')
-        self.assertTrue(r['fair']['again'])
-        self.assertEqual(s['journey']['wallet'], w)
 
-    def test_the_roll_is_fixed_and_about_40_percent(self):
-        mock.patch.stopall()
-        j = story()['journey']
-        t1, t2 = at(2026, 10, 11, 0, 1), at(2026, 10, 12, 23, 59)
-        self.assertEqual(bm.asked(j, t1), bm.asked(j, t2), 'one answer for the whole stretch')
-        self.assertEqual((bm.BM_ASK_P, bm.ASK_DAYS), (0.40, 2))
-        hits = sum(bm.asked({'seed': seed}, at(2026, 10, 9 + 2 * k)) for seed in range(500) for k in range(4))
-        self.assertTrue(0.35 < hits / 2000 < 0.45, hits)
-        s = story()
-        self.assertNotIn('ask', json.dumps(fh.public(s)['bm']))
+    def test_closed_market_compatibility_commands_remain_closed(self):
+        os.environ['MNL_FAIR_DAYS'] = '5'
+        self.clock.t = at(2026, 10, 14, 0, 0)
+        for command in bm.COMMANDS:
+            self.refused(story(), command, 'fair_closed')
 
-    def test_old_save_block_kinds_still_read(self):
-        j = {'seed': 1, 'fair_bm': {'d': 'not a date', 's': 'paid'}}
-        self.assertEqual(bm.status(j, at(2026, 10, 11)), '')   # asked (patched): a broken date settles nothing
+    def test_client_has_no_payment_or_refusal_controls(self):
+        js = (ROOT / 'public/js/v4/fair.js').read_text(encoding='utf-8')
+        self.assertNotIn("send('fair_bm_pay'", js)
+        self.assertNotIn("send('fair_bm_refuse'", js)
+        self.assertNotIn('Nộp bảo kê', js)
 
 
 class Arrest(BlackMarketBase):
@@ -288,7 +193,7 @@ class Arrest(BlackMarketBase):
             if game == 'kn':   # a skill game since owner 09/10: not rolled (tests/test_fair_watch.py)
                 continue
             with self.subTest(game=game):
-                s = story(20000)
+                s = story(10000)
                 s, _ = self.act(s, 'fair_bm_pay')   # 10,000 left
                 self.rich(s)
                 with mock.patch.object(bm, '_arrest_roll', lambda *a: True):
@@ -298,7 +203,7 @@ class Arrest(BlackMarketBase):
                 self.assertEqual((r['fair']['game'], a['stake'], a['fine']), (game, stake, fine))
                 self.assertEqual(s['journey']['wallet'], 10000 - stake - fine)
                 self.assertEqual(a['wallet'], s['journey']['wallet'])
-                self.assertEqual(s['journey']['fair_bm']['s'], 'paid')
+                self.assertNotIn('fair_bm', s['journey'])
                 self.assertNotIn('dice', r['fair'])   # no outcome
                 last = s['journey']['history'][-1]
                 self.assertEqual((last['amount'], last['label']), (-fine, bm.FINE_LABEL))
@@ -325,15 +230,13 @@ class Arrest(BlackMarketBase):
             self.assertNotIn('arrest', r['fair'])
         roll.assert_not_called()
 
-    def test_a_ban_saved_today_by_1_9_28_lets_the_player_in(self):
+    def test_a_saved_same_day_ban_still_blocks_entry(self):
         s = story()
         s['journey']['fair_bm'] = {'d': '2026-10-10', 's': 'ban'}
         validate_state(s)
         b = fh.public(s)['bm']
-        self.assertEqual((b['st'], b['inside'], b['ban']), ('paid', True, False))
-        self.caught(False)
-        s, r = self.act(s, 'fair_bc', bets={'cua': 10})
-        self.assertIn('dice', r['fair'])
+        self.assertEqual((b['st'], b['inside'], b['ban']), ('ban', False, True))
+        self.refused(s, 'fair_bc', 'fair_bm_gate', bets={'cua': 10})
 
     def test_no_arrest_plays_the_round(self):
         s = story()
@@ -342,7 +245,7 @@ class Arrest(BlackMarketBase):
         s, r = self.act(s, 'fair_bc', bets={'cua': 100})
         self.assertIn('dice', r['fair'])
         self.assertNotIn('arrest', r['fair'])
-        self.assertEqual(s['journey']['fair_bm']['s'], 'paid')
+        self.assertNotIn('fair_bm', s['journey'])
 
     def test_round_begun_still_finishes_after_a_ban(self):
         s = story()
@@ -357,8 +260,8 @@ class Arrest(BlackMarketBase):
         self.assertTrue(r['fair']['folded'])
 
     def test_the_fine_never_makes_debt(self):
-        s = story(10050)
-        s, _ = self.act(s, 'fair_bm_pay')   # 50 left
+        s = story(50)
+        s, _ = self.act(s, 'fair_bm_pay')   # compatibility no-op; 50 left
         self.caught(True)
         self.rich(s)
         s, r = self.act(s, 'fair_xd', side='le', stake=50)
@@ -375,7 +278,7 @@ class Arrest(BlackMarketBase):
         s, r = self.act(s, 'fair_bc', bets={'cua': 10})
         self.assertIn('arrest', r['fair'])
         self.clock.t = at(2026, 10, 11, 9)
-        self.assertEqual(fh.public(s)['bm'], dict(fee=10000, st='', inside=False, ban=False, who=list(bm.GUARD)))
+        self.assertEqual(fh.public(s)['bm'], dict(fee=0, st='free', inside=True, ban=False, who=list(bm.GUARD)))
         s, _ = self.act(s, 'fair_bm_refuse')
         self.caught(False)
         s, r = self.act(s, 'fair_bc', bets={'cua': 10})
@@ -531,8 +434,8 @@ class NothingShown(BlackMarketBase):
         s, r = self.act(s, 'fair_bc', bets={'cua': 100})
         self.assertEqual(set(r['fair']['arrest']), {'game', 'stake', 'fine', 'wallet', 'say', 'jail'})
         self.assertNotIn('%', r['message'])
-        for text in (bm.NEED_IN, bm.BANNED, bm.SAY_ROB, bm.SAY_EMPTY, bm.SAY_PAID, bm.SAY_ARREST, bm.SHORT,
-                     bm.FEE_LABEL, bm.ROB_LABEL, bm.FINE_LABEL):
+        for text in (bm.NEED_IN, bm.BANNED, bm.SAY_ARREST,
+                     bm.FINE_LABEL,):
             self.assertNotIn('%', text)
             self.assertNotIn('30', text)
 
@@ -545,7 +448,7 @@ class NothingShown(BlackMarketBase):
 
 
 class OldServer(BlackMarketBase):
-    """A save written here (paid, banned) validates on 1.9.26, the release this one may be rolled back to."""
+    """Current and historical saves validate on 1.9.26, the release this one may be rolled back to."""
 
     def old_tree(self):
         if os.environ.get('MNL_BM_OLD_TREE'):
@@ -570,16 +473,21 @@ class OldServer(BlackMarketBase):
         banned = json.loads(json.dumps(s))
         s2 = story(5000)
         s2, _ = self.act(s2, 'fair_bm_refuse')
+        historical = []
+        for status in bm.STATES:
+            old_save = story()
+            old_save['journey']['fair_bm'] = {'d': '2026-10-10', 's': status}
+            historical.append(old_save)
         old = self.old_tree()
         prog = ('import json,sys;from game.engine import validate_state,migrate_state;'
                 'out=[]\nfor s in json.load(sys.stdin):\n validate_state(s);s=migrate_state(s);validate_state(s);'
                 'out.append(s["journey"].get("fair_bm"))\nprint(json.dumps(out))')
         env = dict(os.environ, PYTHONPATH=os.pathsep.join(x for x in (str(old), os.environ.get('PYTHONPATH', '')) if x))
-        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps([paid, banned, s2]), capture_output=True,
+        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps([paid, banned, s2] + historical), capture_output=True,
                              text=True, cwd=old, env=env, encoding='utf-8', timeout=300)
         self.assertEqual(out.returncode, 0, out.stderr[-3000:])
-        self.assertEqual(json.loads(out.stdout), [{'d': '2026-10-10', 's': 'paid'}, {'d': '2026-10-10', 's': 'paid'},
-                                                  {'d': '2026-10-10', 's': 'robbed'}])
+        self.assertEqual(json.loads(out.stdout), [None, None, None] +
+                         [{'d': '2026-10-10', 's': status} for status in bm.STATES])
 
     def test_bad_blocks_are_refused(self):
         for bad in ({'d': '2026-10-10'}, {'d': '2026-10-10', 's': 'vip'}, {'d': 'hôm nay!!!', 's': 'paid'}, 'paid'):

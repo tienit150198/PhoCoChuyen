@@ -57,3 +57,17 @@ test('closing and reopening before an ô ăn quan answer skips the cancelled rep
  await f.advance(999);assert.equal(f.S.busy,true);await f.advance(1000);await move;
  assert.equal(f.S.busy,false);assert.equal(f.S.oaq.end.prize,15);assert.equal(f.sounds.length,0);assert.equal(f.renders.length,2);
 });
+
+
+test('free entry opens all wallets while a police ban and arrest still block stalls',()=>{
+ const fair={open:true,wallet:0,bm:{fee:0,st:'free',inside:true,ban:false}},S={tab:'home',arrest:null};
+ const context=vm.createContext({F:()=>fair,S,btn:()=>'<button>Quay về</button>'});
+ const gate=vm.runInContext(slice('const BM=','function arrestCard')+';({gated,blocked,bmGate})',context);
+ for(const wallet of [0,9999,10000]){fair.wallet=wallet;assert.equal(gate.gated(),false);assert.equal(gate.blocked(),false);}
+ fair.bm={fee:0,st:'ban',inside:false,ban:true};
+ assert.equal(gate.gated(),true);assert.equal(gate.blocked(),true);
+ assert.match(gate.bmGate(),/Hôm nay bạn bị đuổi/);assert.doesNotMatch(gate.bmGate(),/bảo kê|bmpay|bmrefuse/);
+ S.tab='board';assert.equal(gate.blocked(),false,'leaderboard remains available during a ban');
+ fair.bm={fee:0,st:'free',inside:true,ban:false};S.arrest={fine:300};
+ assert.equal(gate.blocked(),true,'arrest receipt retains its existing blocking flow');
+});

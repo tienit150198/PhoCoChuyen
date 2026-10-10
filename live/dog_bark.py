@@ -441,10 +441,12 @@ class DogBarkFeature(Feature):
 
     def _finish(self, m: Match, winner: str, why: str) -> None:
         m.over = True
-        asyncio.ensure_future(self._settle(m, winner, why))
+        asyncio.ensure_future(self._settle(m, winner, why, competitive=m.rope.t > 0))
 
-    async def _settle(self, m: Match, winner: str, why: str) -> None:
+    async def _settle(self, m: Match, winner: str, why: str, competitive: bool = False) -> None:
         t = time.time()
+        aborted = why == 'nomic' and m.go_at is None
+        status = 'back' if aborted else 'done'
         rows = []
         for s in m.sides():
             side = 'a' if s is m.a else 'b'
@@ -457,10 +459,10 @@ class DogBarkFeature(Feature):
         async def run(tx):
             done = []
             for s, res, pay in rows:
-                n = await tx.execute("UPDATE bark_tickets SET status='done', result=?, pay=?, ended=? WHERE id=? AND status=?",
-                                     (res, pay, t, s.ticket, prev))
+                n = await tx.execute("UPDATE bark_tickets SET status=?, result=?, pay=?, ended=?, competitive=? WHERE id=? AND status=?",
+                                     (status, '' if aborted else res, pay, t, competitive and not aborted, s.ticket, prev))
                 if n == 1 and pay > 0:
-                    what = 'win' if res == 'win' else 'draw'
+                    what = 'back' if aborted else 'win' if res == 'win' else 'draw'
                     await tx.execute("INSERT INTO live_effects(id, sid, kind, amount, data, status, at) VALUES(?,?,?,?,?,'pending',?) "
                                      'ON CONFLICT(id) DO NOTHING',
                                      (f'bark:{s.ticket}', s.sid, G.FX, pay, json.dumps(dict(ticket=s.ticket, what=what, src='bark')), t))

@@ -34,7 +34,7 @@ class Decay(FairBase):
         self.assertAlmostEqual(rates[fh.RUN_FREE], fh.XD_BASE - .015)
         self.assertEqual(rates[25:], [fh.XD_FLOOR] * 175)
         self.assertAlmostEqual(fh.XD_FLOOR * (1 - fh.RAID_PCT / 100), .40, delta=.001)   # 40% won rounds after raids
-        self.assertEqual([fh.run_rate('xs', n) for n in (1, 10, 11, 16, 17, 200)], [.50, .50, .485, .41, .40, .40])
+        self.assertEqual([fh.run_rate('xs', n) for n in (1, 10, 11, 16, 17, 200)], [.51, .51, .495, .42, .405, .40])
         # A draw a little under the floor still wins on round 41, one a little over loses.
         self.dice(Dice(draws=[.5, fh.XD_FLOOR - .001]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=10)

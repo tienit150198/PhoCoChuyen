@@ -217,7 +217,7 @@ function render(){
   if(!S.dlg)return;
   keep(()=>{const root=S.dlg.querySelector('.fh-root');tplEl.innerHTML=page();
     const box=document.createElement('div');box.append(tplEl.content);morph(root,Object.assign(box,{className:root.className}));});
-  const shut=blocked();   // the bảo kê gate, a ban or an arrest's receipt: no stall behind it
+  const shut=blocked();   // a ban or an arrest's receipt: no stall behind it
   if(S.tab==='xs'&&!shut)XS?.mount();   // a new ticket's silver: painted once, then left to the finger
   if(S.tab==='pb'&&!shut)PB?.mount();   // the photobooth's stage: its canvas, drawn when the room changes
   if(S.tab==='dt'&&!shut)KN?.mount();   // the phóng dao board: its canvas, drawn by its own frames
@@ -289,33 +289,18 @@ function page(){
   const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().knife?kn().view():homeView(),xs:()=>F().scratch?xs().view():homeView(),dg:()=>F().dog?dg().view():homeView(),pb:()=>F().photo?pb().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
   const gifting=!!S.gift&&clean();   // the gift card is the whole screen until "Vào hội" (clean layout: nothing else behind it)
-  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open&&!gifting?strip():''}${f.open?nav():''}${robCard()}${wealthRaidCard()}${auditCard()}${locCard()}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab)+coldLine(S.tab):''}${body}${gifting?'':note()}</div>`;
+  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open&&!gifting?strip():''}${f.open?nav():''}${wealthRaidCard()}${auditCard()}${locCard()}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab)+coldLine(S.tab):''}${body}${gifting?'':note()}</div>`;
 }
-/* ---- 🕶️ Chợ đen: the bảo kê at the gate, the police (game/fair_bm.py; an older server sends no `bm`: no gate) ----
- * No rate and no percentage is ever shown (owner 08/10): the fee is a price, the receipts say the xu taken. */
+/* ---- 🕶️ Chợ đen: free entry and the police (game/fair_bm.py; an older server sends no `bm`: no gate) ----
+ * No rate and no percentage is ever shown (owner 08/10): receipts say the fine taken. */
 const BM=()=>F().bm||null;
-const gated=()=>{const b=BM();return !!b&&!!F().open&&!b.inside;};
+const gated=()=>!!F().open&&!!BM()?.ban;
 const blocked=()=>!!S.arrest||gated()&&S.tab!=='board';
-const GUARD=()=>{const w=BM()?.who||[];return {name:w[0]||'Đàn em chợ đen',emoji:w[1]||'🕶️'};};
 function bmGate(){
-  const b=BM(),w=F().wallet||0,short=w<b.fee;
-  if(b.ban)return `<section class="fh-card fh-bm ban" data-fh-key="bm-ban"><div class="fh-big" aria-hidden="true">🚫</div><h3>Hôm nay bạn bị đuổi khỏi chợ đen</h3>
+  return `<section class="fh-card fh-bm ban" data-fh-key="bm-ban"><div class="fh-big" aria-hidden="true">🚫</div><h3>Hôm nay bạn bị đuổi khỏi chợ đen</h3>
     <p>Công an vừa ập vào, hôm nay chợ không cho bạn vô nữa. Mai quay lại nhé.</p>${btn('‹ Quay về','close',{},'primary full',' data-fh-key="bm-back"')}</section>`;
-  return `<section class="fh-card fh-bm" data-fh-key="bm-gate"><div class="fh-big" aria-hidden="true">🕶️</div><h3>Cổng chợ đen</h3>
-    ${say(GUARD(),'Vào chợ đen phải nộp tiền bảo kê. Nộp rồi thì cứ ra vô thoải mái.','dark')}
-    <div class="fh-bm-go">${btn(`💵 Nộp bảo kê · ${xu(b.fee)}`,'bmpay',{},'primary big full',short||S.busy?' disabled data-fh-key="bm-pay"':' data-fh-key="bm-pay"')}
-      ${short?`<p class="fh-why">Ví chưa đủ ${xu(b.fee)} để nộp bảo kê.</p>`:''}
-      ${btn(S.bmSure?'Chắc chưa? Không nộp':'🙅 Không nộp','bmrefuse',{},'ghost full'+(S.bmSure?' danger':''),S.busy?' disabled data-fh-key="bm-no"':' data-fh-key="bm-no"')}
-      <p class="fh-why">Không nộp thì coi chừng bị trấn lột đó nha.</p>
-      ${btn('‹ Quay về','close',{},'ghost full',' data-fh-key="bm-back"')}</div>
-    <p class="fh-rule">🚨 Chợ đen hay bị công an ập vào. Bị bắt thì mất tiền cược và nộp phạt.</p></section>`;
 }
-function robCard(){
-  const r=S.robbed;if(!r)return '';
-  return `<section class="fh-card fh-raid" role="alert" data-fh-key="bm-rob"><h3>${r.robbed?'🕶️ Bị trấn lột':'🕶️ Đàn em cho qua'}</h3>${say(GUARD(),r.say||'','dark')}
-    ${r.robbed?`<div class="fh-raid-bill"><span>Bị lấy từ ví</span><b>−${xu(r.robbed)}</b></div>`:''}
-    <p>Ví còn <b>${xu(r.wallet)}</b>.${r.robbed?' Đã ghi trong Sổ ví.':''} Giờ ra vô chợ đen thoải mái.</p>${btn('Vào chợ đen','robok',{},'primary',' data-fh-key="bm-robok"')}</section>`;
-}
+
 function arrestCard(){
   const r=S.arrest;
   return `<section class="fh-card fh-raid" role="alert" data-fh-key="bm-arrest"><div class="fh-siren" aria-hidden="true"><i></i><i></i></div>
@@ -325,21 +310,6 @@ function arrestCard(){
     ${r.titles?.includes('f_raid')?'<p class="fh-award">🚨 Danh hiệu mới: <b>Bị công an hỏi thăm</b></p>':''}
     ${btn(r.jail?'🚔 Về trại tạm giữ':'Dạ, em biết rồi','arrestok',{},'primary',' data-fh-key="bm-arrestok"')}</section>`;
 }
-async function bmPay(){
-  if(S.busy)return;S.busy=true;S.bmSure=false;S.flash=null;render();
-  const r=await send('fair_bm_pay',{});S.busy=false;
-  if(r?.fair?.paid)S.flash={text:r.message||'Đã nộp bảo kê.',kind:'good'};
-  render();
-}
-async function bmRefuse(){
-  if(S.busy)return;
-  if(!S.bmSure){S.bmSure=true;render();return;}
-  S.bmSure=false;S.busy=true;S.flash=null;render();
-  const r=await send('fair_bm_refuse',{});S.busy=false;
-  if(r?.fair&&'robbed' in r.fair){S.robbed={...r.fair};if(r.fair.robbed)sfx('lose');}
-  render();
-}
-
 // 🥶 a long run of one luck stall cools its luck (server: fair.cold); honest about it, in that stall only
 const coldLine=tab=>{const c=F().cool||F().cold;if(!c||c.game!==tab)return '';
   return `<p class="fh-cold" role="note">🥶 Vận đang nguội vì chơi liền một trò. ${c.switch?`Cần thêm ${c.switch} ván ≥ ${xu(c.min||20)} ở trò khác (bầu cua, chiếu trong, lô tô, vé cào, đua chó)`:'Đổi trò khác'} hoặc nghỉ ${c.gap} phút là vận ấm lại; ném vòng, ô ăn quan, phóng dao không tính.</p>`;};
@@ -1223,9 +1193,6 @@ async function onClick(op,data){
     case'wealthraidok':S.wealthRaid=null;render();return;
     case'auditok':S.audit=null;render();return;
     case'locok':S.loc=null;render();return;
-    case'bmpay':bmPay();return;
-    case'bmrefuse':bmRefuse();return;
-    case'robok':S.robbed=null;render();return;
     case'jail':S.dlg.close();import('./jail.js').then(m=>m.openJail(S.env)).catch(()=>{/* the next state */});return;
     case'arrestok':{const jailed=!!S.arrest?.jail;S.arrest=null;S.tab='home';pauseLoto();ltMusic();
       if(jailed){S.dlg.close();import('./jail.js').then(m=>m.openJail(S.env)).catch(()=>{/* app.js opens it on the next state */});return;}   // 🚔 game/jail.py

@@ -133,6 +133,13 @@ class LiveDogBark(LiveCase):
             ea, eb = await a.expect('bark_end', timeout=5), await b.expect('bark_end', timeout=5)
         self.assertEqual((ea['result'], ea['pay'], eb['result'], eb['pay'], ea['x']), ('draw', 300, 'draw', 300, 0))
         self.assertEqual((self.fx(ka)['amount'], self.fx(kb)['amount']), (300, 300))
+        self.assertEqual((self.row(ka)['status'], self.row(ka)['result']), ('done', 'draw'))
+        self.assertEqual((self.row(kb)['status'], self.row(kb)['result']), ('done', 'draw'))
+        from game import dog_bark_board
+        v = dog_bark_board.view(self.store, sa)
+        self.assertEqual(v['me']['played'], 1)
+        self.assertTrue(self.row(ka)['competitive'])
+        self.assertTrue(self.row(kb)['competitive'])
 
     async def test_house_dog_after_the_wait(self):
         ta, sa = self.account('Lan')
@@ -170,6 +177,7 @@ class LiveDogBark(LiveCase):
             await self.shout(a, go['m'], 96, 8)
             ev = await a.expect('bark_end', timeout=3)
         self.assertEqual((ev['result'], ev['pay'], ev['why']), ('win', 400, 'end'))
+        self.assertTrue(self.row(ka)['competitive'])
         kb = self.ticket(sa, 200)                            # the mic says ready, then sends nothing: the match waits
         with patch.object(G, 'DOG_AFTER', 0.2), patch.object(G, 'PAUSE_MAX', 1.0):
             await a.call('bark_find', 'bark_wait', ticket=kb)
@@ -190,7 +198,22 @@ class LiveDogBark(LiveCase):
             await a.send(t='bark_ready', m=g['m'], floor=-60)   # only one side's mic ever delivers
             ea = await a.expect('bark_end', timeout=4)
         self.assertEqual((ea['result'], ea['why'], ea['pay']), ('draw', 'nomic', 300))
+        self.assertFalse(self.row(ka)['competitive'])
         self.assertEqual((self.fx(ka)['amount'], self.fx(kb)['amount']), (300, 300))
+        self.assertEqual((self.row(ka)['status'], self.row(ka)['result']), ('back', ''))
+        self.assertEqual((self.row(kb)['status'], self.row(kb)['result']), ('back', ''))
+        from game import dog_bark_board
+        v = dog_bark_board.view(self.store, sa)
+        self.assertEqual(v['me']['played'], 0)
+
+    async def test_prestart_quit_is_not_competitive(self):
+        a, b, ka, kb, sa, sb = await self.pair()
+        go = await a.expect('bark_go')
+        await b.expect('bark_go')
+        await a.send(t='bark_quit', m=go['m'])
+        await a.expect('bark_end', timeout=4)
+        self.assertFalse(self.row(ka)['competitive'])
+        self.assertFalse(self.row(kb)['competitive'])
 
     async def test_house_dog_respects_the_day_caps(self):
         ta, sa = self.account('Lan')

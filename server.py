@@ -1611,6 +1611,7 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         try:fn()
         except Exception as e:  # never kill the server for housekeeping
             sys.stderr.write(f"[maintenance] {name}: {type(e).__name__}\n")
+    step("dog_bark_start",lambda:dog_bark.run_housekeeping(store))  # initialize the weekly competition before the first tick
     while not stop.wait(30):
         now=time.time()
         if now-last_hourly>3600:

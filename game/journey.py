@@ -322,6 +322,8 @@ TITLES = [
     _t('w_pro', 'secret', '🎊', 'Ăn cưới chuyên nghiệp', 'Lọt top 3 Khách mời của tuần.', lambda x: False, True),
 ]
 TITLES += fh.titles(_t)   # 🏮 Hội chợ dân gian: secret, granted by a round or after the fair (game/fair.py)
+from . import dog_bark_board as bark_board
+TITLES += bark_board.titles(_t)
 TITLE_INDEX = {t['id']: t for t in TITLES}
 STATS = ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary', 'reopened', 'paused', 'max_wallet',
          'debt_repaid', 'calm_days', 'normal_days', 'festival_days', 'homes_bought', 'home_paid')

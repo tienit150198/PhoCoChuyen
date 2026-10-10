@@ -12,10 +12,10 @@ def owned(iid, price=5000):
 
 
 class Collections(unittest.TestCase):
-    def test_catalogue_has_four_new_distinct_paintings_and_provenance(self):
+    def test_catalogue_has_thirty_distinct_paintings_and_provenance(self):
         art = [x for x in C.ITEMS if x['kind'] == 'art']
-        self.assertEqual(len(art), 14)
-        self.assertEqual(len({x['motif'] for x in art}), 14)
+        self.assertEqual(len(art), 30)
+        self.assertEqual(len({x['motif'] for x in art}), 30)
         for x in C.ITEMS:
             self.assertTrue(x['story'])
             self.assertEqual(x['collector_points'], {1: 10, 2: 40, 3: 120}[x['tier']])

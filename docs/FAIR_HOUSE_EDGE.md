@@ -1,4 +1,4 @@
-# 🕶️ Chợ đen (was Hội chợ): the house always wins (08/10/2026)
+# 🕶️ Chợ đen (was Hội chợ): house edge and free entry (updated 10/10/2026)
 
 Owner 08/10: "mở hội chợ nhé, tỷ lệ chỉnh lại làm sao cho phù hợp, đảm bảo nhà cái luôn thắng", then "chợ đen để
 luôn ở ngoài nhé". This edition opened on 09/10 (`FAIR_START` 2026-10-09, edition `fair20261009`). Its entry stays in
@@ -31,14 +31,18 @@ returns less: the cool-off after 4 wins, the spam decay, a late Kinh, the police
 The figures come from `scripts/sim_fair_odds.py` (`exact()`), which also checks them on 10^6 real-draw rounds per stall.
 `tests/test_fair_house_edge.py` runs the same checks on smaller samples.
 
-| stall | before (07/10 rules) | now | now, with 🍀 Lộc gate always open | 10^6 rounds (fresh / spam / press) |
+| stall | before (07/10 rules) | now | now, with 🍀 Lộc gate always open | 10^6 rounds, 10/10 rerun (fresh / spam / press) |
 |---|---|---|---|---|
 | 🦀 Bầu cua (honest dice, bão 10:1) | 95.4% (Lộc: 100.9%) | 95.4% | 96.5% | 95.2% / 95.5% / 95.2% |
-| 🕯️ Chiếu trong (even money, 0.88% raids) | 100.7% (Lộc: 107.5%) | 96.1% | 97.4% | 95.6% / 79.7% / 96.0% |
-| 🎱 Lô tô (Kinh 2.1× the tờ) | 105.6% (2/5-xu tờ 100.6%; Lộc: 112.3%) | 95.6% (2/5-xu tờ 91.0%) | 96.8% | 95.5% / 84.0% / 95.5% |
-| 🎟️ Vé cào | 80.0% | 90.0% | 90.5% | 89.6% / 72.1% / 90.0% |
+| 🕯️ Chiếu trong (even money, 0.88% raids) | 100.7% (Lộc: 107.5%) | 97.1% | 98.4% | 96.5% / 79.7% / 96.9% |
+| 🎱 Lô tô (Kinh 2.1× the tờ) | 105.6% (2/5-xu tờ 100.6%; Lộc: 112.3%) | 96.6% (2/5-xu tờ 92.0%) | 97.8% | 96.5% / 84.0% / 96.5% |
+| 🎟️ Vé cào | 80.0% | 91.9% | 92.3% | 91.2% / 72.1% / 91.7% |
 | 🐕 Đua chó (09/10, fixed odds; the outsider ×19 at best) | – | 95.0% (favourite 92.8%) | 95.0% | 93.5% / 93.9% / 93.8% (a dog at random: 93.85%) |
 | 🎲 Lô tô side bets (chẵn/lẻ, cột) | 94–98% blind; **107.7% / 163.8%** after seeing the minute's calls | closed | – | – |
+
+The 10/10 rerun of `python scripts/sim_fair_odds.py 1000000` also returned 96.63%, 97.82%, 97.58%,
+91.58% and 94.09% respectively for fresh rounds with Lộc. All simulated patterns stayed below 100%; 20,000 lô tô
+rounds agreed with their server draw in 100% of cases. A finite sample can differ from the exact expectation.
 
 How the three betting patterns play:
 
@@ -48,10 +52,15 @@ How the three betting patterns play:
 
 ## What changed
 
-- **Per-stall fresh draw:** `fair.BASES` sets xóc đĩa .485 (48 won rounds in 100 after raids), lô tô .455 and vé cào
-  .50. These used to be .508 / .503 / .503. Ném vòng is free and stays at .503.
+- **10/10 scope:** only the base win draws of chiếu trong, lô tô and vé cào increased. Skill games keep their
+  opponents/collisions; bầu cua keeps honest dice; dog racing keeps its fixed draw and payouts. Cool-off, spam decay,
+  Lộc limits and police enforcement remain. Exact fresh maximum RTP is 97.1376% / 96.6% / 91.851% respectively;
+  even with Lộc's gate always open it is 98.4489576% / 97.8282% / 92.275116%, all below 100%.
+
+- **Per-stall fresh draw:** `fair.BASES` sets xóc đĩa .49 (48.57 won rounds in 100 after raids), lô tô .46 and vé cào
+  .51, increased slightly on 10/10 from .485 / .455 / .50. Earlier rates were .508 / .503 / .503. Ném vòng is free and stays at .503.
 - **Vé cào prizes:** the weights in `fair_scratch.PRIZES` now average 1.80× a won ticket (was 1.59×). Big prizes come a
-  little more often and a ticket returns 90%.
+  little more often and a fresh ticket now returns 91.851%.
 - **🍀 Lộc trời cho:** `LOC_P` drops from .015 to .003 and stays ×10, once an hour across the server. On a busy server
   the hour's Lộc still comes. A lone player can no longer count on it.
 - **Lô tô side bets are closed** (`SIDE_OPEN`). The số chốt is a call of the minute's sequence, and that sequence is the
@@ -68,18 +77,19 @@ How the three betting patterns play:
   knife stake (`fair_knife.STAKES`) are saved and checked by older servers, and vé cào sells fixed-price tickets.
   None of this changes a return: every stake gets the same odds.
 
-## 🕶️ Chợ đen: bảo kê and arrests (owner 08/10, late)
+## 🕶️ Chợ đen: free entry and arrests (updated 10/10)
 
-Owner 08/10 23:15: "k phải là hội chợ, nó là "Chợ đen". Vào chợ đen phải nộp bảo kê, phí bảo kê là 10k xu, nếu k nộp
-thì bị trấn lột 30% tiền hiện có. vào chợ đen có thể bị công an bắt, tỷ lệ bị bắt cực cao". Players see "Chợ đen"
-everywhere (ids, keys, endpoints and the edition `fair20261009` are unchanged). The rules live in `game/fair_bm.py`:
+The owner removed the entry fee on 10/10. Players see "Chợ đen" everywhere; ids, keys, endpoints and edition
+`fair20261009` are unchanged. The rules live in `game/fair_bm.py`:
 
-- **Bảo kê, hên xui** (owner 09/10: "phí bảo kê k phải khi nào cũng thu, tỷ lệ thu là hên xui 40% /2 ngày"): Vietnam
-  days (UTC+7) go in stretches of 2 (`ASK_DAYS`); in a stretch the đàn em ask `BM_ASK_P` (40%) of the time, fixed by
-  (journey seed, stretch) in `fair_bm.asked` (never shown, never saved). Not asked: the player walks in. Asked: `fair_bm_pay` takes `BM_FEE` (10,000 xu, shown: it is a price) from the
-  wallet; `fair_bm_refuse` lets the đàn em take `ROB_PCT` (30%) of the wallet, cash only, never the bank account, 0 when
-  the wallet is empty. Either way the player is in until the stretch ends. Until then every `fair_*` command except
-  finishing what was begun (`fair.LATE`), the gift and repaying a loan is refused (`fair_bm_gate`).
+- **Free entry for everyone**, including an empty or negative wallet. The old randomized 10,000 xu protection fee
+  and 30% refusal robbery are retired. `fair_bm_pay` and `fair_bm_refuse` accept legacy client retries as safe no-ops:
+  no wallet/bank/history mutation, no new paid/robbed record, no charge or refund. The public compatibility field
+  `fee` is 0, `st` is `free`, and `inside` is true, except for a saved same-day ban. Payment/refusal controls are removed.
+- **Saved bans and jail remain enforced.** A legacy `ban` for today's Vietnam date still blocks new stall entry;
+  it expires at Vietnam midnight. Existing `paid`/`robbed` records remain valid and unchanged. Finishing existing
+  rounds, the gift and loan repayment keep their existing gate exceptions. Current police arrests still fine and
+  jail players according to their existing rules; removing the fee does not disable `_gate_on()` or police checks.
 - **Arrests on the paid rounds** (bầu cua, chiếu trong, a lô tô purchase, a vé cào, a đua chó bet; not Phóng dao or
   ô ăn quan, see below), rate `fair_bm.arrest_p(f, stake)`, drawn by `fair_bm._arrest_roll(p)` from its own random
   source before the round is drawn; at 0 nothing is rolled:
@@ -107,11 +117,11 @@ everywhere (ids, keys, endpoints and the edition `fair20261009` are unchanged). 
   run on rounds the police did not catch. Nothing new is saved for the rate (it is computed from the stake and
   `journey['fair'].net`), so the save stays what 1.9.30/1.9.31 validate.
 - **What it does to the house edge:** a round rolled at rate p returns (1 − p) × the table's return, before the fine:
-  above 300k, at most 0.95 × 97.4% ≈ **92.5%** for the best stall with the 🍀 gate open; a 100,000 xu round below 300k
-  at most 0.94 × the table; a capped round 0.3 × the table. The fine (30% of the wallet on an arrest) makes the
-  expected loss of a raided round grow with the wallet, not the stake. The day's bảo kê comes before any round.
-- **Nothing reaches the client** about the rate or the percentages: `fair.bm` carries only the fee, today's standing
-  (`st`, `inside`, `ban`) and the đàn em's name. Receipts give xu (the robbery, the fine).
+  above 300k, at most 0.95 × 98.44896% ≈ **93.5%** for the best stall with the 🍀 gate open; a 100,000 xu round below 300k
+  at most 0.94 × the table; a capped round 0.70 × the table. The fine (30% of the wallet on an arrest) makes the
+  expected loss of a raided round grow with the wallet, not the stake.
+- **Nothing reaches the client** about the rate or the percentages: `fair.bm` carries only the zero legacy fee, today's standing
+  (`st`, `inside`, `ban`) and the đàn em's name. Receipts give the fine in xu.
 - **Save:** `journey['fair_bm']` `{d, s}` (the Vietnam date; `paid`, `robbed` or `ban`) sits beside `journey['fair']`,
   where a 1.9.26 server's fair validator would refuse a new key; the journey keeps unknown optional blocks, so a
   1.9.20–1.9.26 server validates and keeps the save (it just has no gate).
