@@ -366,7 +366,7 @@ function act(a,d){
     case'account':S.dlg.close();S.env?.act?.('v4AccountOpen',{mode:'register'});return;   // v4/account.js
     case'places':S.picker=!S.picker;if(S.picker)live.send({t:'walk_places'});head();return;
     case'go':S.picker=false;head();if(d.place!==S.room?.place)enter(d.place);return;
-    case'back':if(S.lastPublic)enter(S.lastPublic);return;
+    case'public':if(S.lastPublic)enter(S.lastPublic);return;
     case'emotes':S.emotes=!S.emotes;S.dlg.querySelector('.wk-emotes').hidden=!S.emotes;S.dlg.querySelector('.wk-emo-btn').setAttribute('aria-expanded',String(S.emotes));return;
     case'emote':live.send({t:'emote',e:d.e});S.emotes=false;S.dlg.querySelector('.wk-emotes').hidden=true;return;
     case'topic':live.send({t:'topic'});return;
@@ -461,7 +461,7 @@ function head(light=false){
   S.dlg.querySelector('.wk-say').hidden=false;
   for(const b of S.dlg.querySelectorAll('[data-wedonly]'))b.hidden=true;
   h.innerHTML=(r?.private
-    ?`<button type="button" class="wk-where" data-wk="back">${icon('back',16)}<b>${esc(label)}</b></button>`
+    ?`<button type="button" class="wk-where" data-wk="public">${icon('back',16)}<b>${esc(label)}</b></button>`
     :`<button type="button" class="wk-where" data-wk="places" aria-expanded="${S.picker}"><b>${esc(label)}</b>${r?`<small class="wk-n" aria-label="${n} người ở đây">${n}</small>`:''}${icon('chevron',14,'wk-chev')}</button>`)+
     `<span class="grow"></span><button type="button" class="icon-btn" data-wk="close" aria-label="Đóng">${icon('x',20)}</button>`;
   const pl=S.dlg.querySelector('.wk-places');pl.hidden=!S.picker;

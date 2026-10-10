@@ -23,6 +23,7 @@ Review độc lập phát hiện ô chat khách có thể còn chữ sau khi g�
 - Kiểm tra dock/menu của cả 50 nghề ở phone/tablet/desktop; ngoài đảo vẫn mở được các thao tác đang bị ẩn ở dock.
 - `Đổi nghề` trong menu và trong nơi làm, cùng liên kết hành trình, mở đúng danh sách/hành trình. Nút `isoTown` vẫn trở về đảo.
 - 19 màn hình dùng chung truyền đúng hành động; 66 tiện ích giữ dữ liệu route; 12 lối điều hướng vẫn chịu rào chặn trại; khóa truyện vẫn được giữ.
+- Sửa nút trở lại phố từ khu riêng bị trùng với thao tác ngồi sau xe. Năm ca chạy hàm thật xác nhận quay lại nơi công cộng và giao thức ngồi sau xe vẫn độc lập, kể cả khi không có bạn đời hoặc chưa nhớ điểm quay lại.
 - Đây là kiểm tra đầy đủ đường vào theo danh mục, không phải xác nhận đã chơi toàn bộ giao dịch của 50 nghề.
 
 ## Trình duyệt thật
@@ -34,6 +35,7 @@ Chromium trong IAB, tài khoản khách kiểm thử riêng tại `localhost:188
 - 768×1024: kiểm tra menu, tủ đồ và điều kiện khóa; phát hiện và sửa thiếu thao tác nghề trên tablet, tải lại xác nhận Khách ghé/Pha chế hiện.
 - 1280×720: kiểm tra menu, toàn đảo, kéo camera. Góc nhìn sau kéo giữ ở chế độ browse và vòng vẽ ngủ sau khi đứng yên.
 - Đang đi theo chỉ dẫn có bảy điểm đường: mở hành trình giữ bộ đếm ở 87 khung trong hai lần đọc cách nhau qua các lượt kiểm tra; đóng bảng nhân vật tiếp tục. Không có lỗi console ở lượt kiểm tra cuối.
+- Mở nhà 3D từ hành trình và vào màn bày trí: cảnh nhà cùng danh sách vật dụng hiển thị; không thực hiện mua vật dụng trong lượt kiểm tra này.
 
 ### Mẫu chẩn đoán sau sửa
 
@@ -44,15 +46,15 @@ Chromium trong IAB, tài khoản khách kiểm thử riêng tại `localhost:188
 
 Nguồn: `canvas.dataset.isoProfile` khi bật `?isometricdebug=1`. Đây là thời gian JavaScript đồng bộ của Phaser, bao gồm update/render; **không phải FPS hoặc thời gian GPU/compositor**. Hai cảnh khác nhau nên không dùng làm tỷ lệ tăng tốc trước–sau. Những lượt tải đầu/đổi kích thước khi đang chạy test nền có đỉnh cao hơn; bảng trên là mẫu di chuyển sau tải. Không kết luận hết giật trên mọi thiết bị hoặc đủ 1.000 CCU từ các mẫu này.
 
-Ảnh bằng chứng: `output/release-2.0-local/perf-mobile-menu.png`, `perf-desktop-menu.png`.
+Ảnh bằng chứng: `output/release-2.0-local/perf-mobile-menu.png`, `perf-desktop-menu.png`, `perf-home3d.png`.
 
 ## Kiểm tra đã chạy
 
 - Build Phaser và nhà/khu dân cư 3D; `typecheck:isometric` đạt.
-- `test:performance-parity`: 67/67 ca đạt; bao gồm các ca thất bại trước sửa.
+- `test:performance-parity`: 72/72 ca đạt; bao gồm các ca thất bại trước sửa.
 - `test:isometric`, `test:career-architecture`, `test:living-districts`, `test:release-ui` đạt.
 - `npm run check`: 346/346 file JS và gate cú pháp Safari 15 đạt.
 - `illustrated-icons.mjs --live=http://127.0.0.1:18893/api/content`: 7/7 đạt, đã chạy cả ca catalogue HTTP thường bị bỏ qua.
-- Review chéo độc lập không còn lỗi chặn sau sửa ô chat và mở rộng menu tablet/desktop.
+- Review chéo độc lập không còn lỗi chặn sau sửa ô chat, mở rộng menu tablet/desktop và tách thao tác quay lại phố/ngồi sau xe.
 
 Chưa đo GPU trên Android/iPhone/iPad thật, chưa chạy lại tải 1.000 người cho thay đổi frontend này, chưa phát hành production. Cần xác minh bản triển khai rồi mới gửi thông báo hoặc kích hoạt sự kiện hai ngày vàng.
