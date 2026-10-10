@@ -18,7 +18,7 @@ Mục tiêu: đưa giao diện Phaser 2.5D đã hoàn thiện lên hệ thống,
 - [x] Build Phaser/3D, typecheck, JS/Safari compatibility, nhóm kiểm tra nghề/bản đồ/nước/nhà và backend bị ảnh hưởng.
 - [x] Kiểm tra trình duyệt mobile, tablet, desktop với kích thước thực được ghi nhận: mới/cũ, settings, góp ý, khu phố và nghề, popup/cuộn.
 - [x] Review độc lập yêu cầu và chất lượng, sửa các lỗi còn lại.
-- [ ] Đóng gói từ baseline production; xác minh manifest/task compatibility, giữ dữ liệu người dùng.
+- [x] Đóng gói từ baseline tái lập theo manifest production; xác minh manifest/task compatibility, giữ dữ liệu người dùng. Cần đối chiếu manifest thực khi SSH được khôi phục.
 - [ ] Triển khai, health/static/API smoke, kích hoạt 48 giờ.
 - [ ] Công bố bản 2.0 và hướng dẫn Cài đặt → Giao diện mới; xác minh thông báo hiển thị.
 

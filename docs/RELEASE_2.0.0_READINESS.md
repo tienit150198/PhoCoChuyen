@@ -46,6 +46,10 @@ Source ghép main `bafd85ea` (1.9.48); safety stash vẫn được giữ. Dựng
 
 Manifest baseline SHA-256: `8405660b1bee772f392f2b1882e5d1d5f1dc77b0985c4b4b54356ca53c4baf29`. Phải đối chiếu manifest thực trên production trước khi rollout. Không đóng gói output/tmp, thông tin xác thực, bản lưu hoặc ghi chú khôi phục mật khẩu.
 
+Source ứng viên `0c7db8d6eb9e4c51c2a9ac812619eb12b556b802` đã push lên main. Gói `output/release-2.0-local/mnl-2.0.0.zip`: **103.213.669 byte**, SHA-256 `892c52b5815d642a7e0a5be45f58c45447e332cfac1eaad51b05188883d99fe0`; 2.181 file kể cả manifest, 329 mục thay đổi, không xóa mục nào. Root `MANIFEST.json` trong Git vẫn đại diện production 1.9.48 cho đến khi thực sự deploy.
+
+`verify_package.py` đạt: toàn bộ 2.180 mã băm source/asset khớp, server giải nén khởi động bằng PostgreSQL riêng, phục vụ asset, tạo hồ sơ/chọn nghề/mở ngày làm, từ chối nghề bị khóa, replay request không áp dụng hai lần và export save 50 nghề. **345/345 JavaScript trong chính gói ZIP** qua gate Safari 15. Báo cáo máy đọc được nằm ở `output/release-2.0-local/package-verify.json`; chưa có smoke production 2.0 vì SSH chưa truy cập được.
+
 ## Các bước còn lại trên production
 
 1. Khôi phục SSH; đọc health, current release và manifest; nếu production đã đổi thì cập nhật baseline và kiểm tra tương thích lại.
