@@ -1165,5 +1165,5 @@ function fixPanel(r){
     return `<li class="rn-part ${tone(p.c)}"><div class="rn-part-top"><span class="rn-part-ico" aria-hidden="true">${m.emoji}</span><div class="grow"><b>${esc(m.name)}</b><small>${esc(condWord(p.c,p.id))} · ${p.c}%</small></div><span class="rn-lv" aria-label="Nâng cấp ${p.lv}/2">${'★'.repeat(p.lv)}${'☆'.repeat(2-p.lv)}</span></div>
       <div class="bk-bar ${tone(p.c)}" aria-hidden="true"><i style="width:${p.c}%"></i></div>
       <div class="rn-part-go">${p.fix?btn(`Sửa · ${xu(p.fix)}`,'fix',{part:p.id},'ghost',short(p.fix)):''}${p.up?btn(`⬆ ${esc(p.up.name)} · ${xu(p.up.cost)}`,'up',{part:p.id},'ghost',short(p.up.cost)):'<span class="rn-max">Đã nâng cấp hết</span>'}</div></li>`;}).join('');
-  return `<section class="bk-card"><h3>Sửa nhà</h3><p class="bk-hint">Có ${xu(ready)} (tài khoản + ví). Mỗi nâng cấp: ấm cúng +${CR().cozy_lv}.</p>${all}<ul class="rn-parts">${rows}</ul></section>`;
+  return `<section class="bk-card"><h3>Sửa nhà</h3><p class="bk-hint">Có ${xu(ready)} (tài khoản + ví). Mỗi nâng cấp: ấm cúng +${CR().cozy_lv}.</p><p class="bk-hint">Sửa hao mòn và nâng cấp ở đây tự trả xu, kể cả khi có bảo hiểm nhà 100%. Bảo hiểm chi trả sự cố trong mục Bảo hiểm & rủi ro.</p>${all}<ul class="rn-parts">${rows}</ul></section>`;
 }

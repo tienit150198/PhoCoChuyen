@@ -86,6 +86,7 @@ function polRow(p){
   if(!p.on&&!p.can&&!p.company)notes.push('Chưa có gì để bảo hiểm');
   if(p.on&&p.wait)notes.push(`Có hiệu lực sau ${p.wait} ngày`);
   else if(p.on&&p.wait_full)notes.push(`Gói 100% có hiệu lực sau ${p.wait_full} ngày, giờ vẫn trả ${c.cover}%`);
+  if(p.id==='nha')notes.push('Chi trả sự cố ở Bảo hiểm & rủi ro. Sửa hao mòn và nâng cấp trong Bày trí phòng tự trả xu.');
   const stop=p.on?`<button type="button" class="btn ghost small" data-rui="pol" data-id="${p.id}" data-on="0"${S.busy?' disabled':''}>Ngưng</button>`:'';
   return `<li class="rui-pol${p.on?' on':''}"><div class="rui-row"><span class="rui-ico" aria-hidden="true">${c.emoji}</span><span class="grow"><b>${esc(c.name)}${p.on?' ✓':''}</b><small>${esc(c.what)}</small>${notes.map(n=>`<em class="rui-wait">${esc(n)}</em>`).join('')}</span>${stop}</div>`+
     (p.on||p.can||p.company?`<div class="rui-tiers" role="group" aria-label="${esc(c.name)}">${tierBtn(p,c,false)}${tierBtn(p,c,true)}</div>`:'')+'</li>';
@@ -108,8 +109,8 @@ function ruiPage(){
     `<h3 class="rui-h">🔒 Đồ phòng thân</h3><ul class="rui-list">${CAT().gear.map(g=>gearRow(g,(r.gear||[]).includes(g.id))).join('')}</ul>`+
     help(['Chuyện xấu luôn báo trước 1–2 ngày. Phòng trước là tránh được.',`Tổng ví, tài khoản, tiết kiệm và vàng dưới ${fmt(rules.floor||300)} xu: không có chuyện gì.`,
       `Trộm/hack mới: mức mất được chốt theo tổng tài sản khi báo trước, có giới hạn theo tháng và tiền thực có. Các sự cố khác: mỗi lần tối đa ${rules.event_pct||8}%, mỗi tháng tối đa ${rules.month_pct||12}% phần tài sản trên ${fmt(rules.floor||300)} xu.`,
-      `Bảo hiểm mới mua có hiệu lực sau ${rules.wait||3} ngày.`,
-      `Gói trọn 100%: giá gấp ${rules.full_x||2} gói thường, trả hết tiền sửa, tiền khám.`,
+      `Bảo hiểm mới mua có hiệu lực sau ${rules.wait||3} ngày sống. Sự cố đã được báo trước khi gói có hiệu lực vẫn tính theo mức bảo hiểm lúc báo trước.`,
+      `Gói trọn 100%: giá gấp ${rules.full_x||2} gói thường, trả hết chi phí sửa, khám của sự cố được bảo hiểm. Sửa hao mòn và nâng cấp nhà trong Bày trí phòng không được chi trả.`,
       `Đổi gói lúc nào cũng được: giá mới tính từ hôm nay. Lên 100% thì sau ${rules.wait||3} ngày mới trả đủ, trong lúc chờ vẫn trả 80%.`,
       `Bị hack: mất ${rules.hack_pct||8}% tài khoản thanh toán, tối đa ${fmt(exposure?.hack_max||rules.hack_max||3000)} xu trước đồ bảo vệ và chịu giới hạn rủi ro chung.`,
       ...(rules.wealth_bands||[]).filter(b=>b.threshold).map(b=>`Từ ${xu(b.threshold)} tài sản: khả năng trộm/hack gấp ${fmt(b.odds_pct/100)} lần; trần trộm nhà/hack tăng theo ${b.cap_pct}% tài sản nếu cao hơn trần cơ bản.`),
