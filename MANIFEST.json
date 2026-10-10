@@ -1,34 +1,29 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "1.9.45",
-  "created_at_utc": "2026-10-10T15:03:04.004746+00:00",
+  "version": "1.9.46",
+  "created_at_utc": "2026-10-10T15:15:49.775085+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 441,
+  "minified": 442,
   "release_from_live": {
     "live_release": "mot-ngay-lam-nghe",
-    "live_version": "1.9.44",
-    "live_manifest_sha256": "6b8e15e0f236a821e7ea3613dd1ecc121303baae0ca2adea24f013982c3ffdb2",
-    "base": "2823001e461b89cb75b2f53c9f313a22b05101ef",
-    "ref": "ee2bc1d7a9e482ddf1ee5d0e30e9083c828ef510",
+    "live_version": "1.9.45",
+    "live_manifest_sha256": "5c6c400e312f295582fec29d4510006be04485c5ebf196e009cf4fcf097e5924",
+    "base": "a8f2061a10766933e6611be1bea713773b2f8653",
+    "ref": "fcae078af1739d056da71d419423eb730c780202",
     "changed": [
       "CHANGELOG.md",
-      "docs/AUCTION_COLLECTIONS_2026-10-10.md",
       "docs/BARK_WEEKLY_2026-10-10.md",
-      "docs/DEPLOY_1.9.44_2026-10-10.md",
-      "docs/superpowers/plans/2026-10-10-bark-open-ranking.md",
+      "docs/DEPLOY_1.9.45_2026-10-10.md",
       "game/__init__.py",
       "game/dog_bark_board.py",
-      "game/whats_new.py",
       "public/js/v4/dog-bark-board.js",
-      "public/js/v4/whatsnew-data.js",
       "tests/dog_bark_board.mjs",
       "tests/test_dog_bark_board.py",
       "tests/test_task_compat.py"
     ],
     "deleted": [],
     "minified": [
-      "public/js/v4/dog-bark-board.js",
-      "public/js/v4/whatsnew-data.js"
+      "public/js/v4/dog-bark-board.js"
     ]
   },
   "files": [
@@ -49,8 +44,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 301057,
-      "sha256": "cf787234b5077a0d191434ed283bb4099fea2b33faab7bb5254534cf99022fb8"
+      "bytes": 301333,
+      "sha256": "5bd63147a4c2d1f5c318af7b6d2352b4c06c69ad2531b3367ae5ab70eb660af7"
     },
     {
       "path": "Dockerfile",
@@ -284,8 +279,8 @@
     },
     {
       "path": "docs/BARK_WEEKLY_2026-10-10.md",
-      "bytes": 4749,
-      "sha256": "b1b67fefb1d37e11031a6ef5072fef52a27bffb42f7083f4faad938fdd356a72"
+      "bytes": 4862,
+      "sha256": "02401b032916a5655a143f9571d7147baf537d85f8f445e3d67fb3f098b033a3"
     },
     {
       "path": "docs/DANH_MUC_MAN_HINH_ASSET_ISOMETRIC_2026-10-05.md",
@@ -356,6 +351,11 @@
       "path": "docs/DEPLOY_1.9.44_2026-10-10.md",
       "bytes": 4098,
       "sha256": "0685d0f7208bc415cf5a3594253f8400fd41cad5b07ac8b04cf4be295ddc3f84"
+    },
+    {
+      "path": "docs/DEPLOY_1.9.45_2026-10-10.md",
+      "bytes": 2495,
+      "sha256": "147fa13e2f35565eb4f99a3334fc7b926bc18454b1541ed9e28a8fd96c05c05a"
     },
     {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
@@ -1685,7 +1685,7 @@
     {
       "path": "game/__init__.py",
       "bytes": 106,
-      "sha256": "8cafc84382e38c02c3c8cef06c73719ccc92b955af4f12f710da4ef8d256d5b3"
+      "sha256": "3c76437af96d39a7d6f52d5c53d0767b5dff6f7beddeaf96cd46082372e097c2"
     },
     {
       "path": "game/abandon.py",
@@ -2334,8 +2334,8 @@
     },
     {
       "path": "game/dog_bark_board.py",
-      "bytes": 10330,
-      "sha256": "336b0e045c6856008c72c99a14440df6f50522f2dddaea81f3081250cb8d44c8"
+      "bytes": 10286,
+      "sha256": "0133c984f24b94c457db2fcdfb96fd8bc89df0686a9a23d3b80cfa4d06637226"
     },
     {
       "path": "game/employment.py",
@@ -5244,8 +5244,8 @@
     },
     {
       "path": "public/js/v4/dog-bark-board.js",
-      "bytes": 3274,
-      "sha256": "fbfcda983e2fad13736648b1629d51f20767e19652961047399151d13dbdada6"
+      "bytes": 3185,
+      "sha256": "c413ce569d7827bc053c0343dff10da570a14225213ac90ff23b6a978eff7b82"
     },
     {
       "path": "public/js/v4/dog-bark.js",
@@ -6854,8 +6854,8 @@
     },
     {
       "path": "tests/dog_bark_board.mjs",
-      "bytes": 2006,
-      "sha256": "603c57bf268125c4e677df6100b3f902ddbf634004d9bc73cf761067f181a1c2"
+      "bytes": 1685,
+      "sha256": "b65e0d698c6ec2ec5387978de8349ea7c347c55a6e6502253e497ae5569d60a1"
     },
     {
       "path": "tests/envelope_send.mjs",
@@ -8099,8 +8099,8 @@
     },
     {
       "path": "tests/test_dog_bark_board.py",
-      "bytes": 10424,
-      "sha256": "e4ac436e4d6eb9c61543f289f58754df93c0d2d23c8950ea93949cb0575d49cd"
+      "bytes": 10669,
+      "sha256": "7c912b751e24c014940317fa3053d3cc923cb7132747ed3a1a8594ff97b213eb"
     },
     {
       "path": "tests/test_economy_pass2.py",
@@ -9345,7 +9345,7 @@
     {
       "path": "tests/test_task_compat.py",
       "bytes": 5568,
-      "sha256": "5b44d6b607892aaf0e0236e83def3f987b23cf52dde15d74188b59d1ca2c3b8b"
+      "sha256": "c67f21eb50227c110a3c57027557d9ede2801c81ae1a3367305c5b8ce003088c"
     },
     {
       "path": "tests/test_teacher_care.py",
