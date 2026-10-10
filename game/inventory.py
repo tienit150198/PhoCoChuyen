@@ -516,7 +516,7 @@ def _schedule(sup: dict, career: str, now: int, seed: str) -> dict:
 
 
 # ---------------------------------------------------------------- prices, carts and haggling
-CART_LINES = 20     # lines in one supplier's draft (several sizes of one item are separate lines)
+CART_LINES = 40     # feedback #324: several sizes of one item are separate lines
 LEGACY_LINES = 8    # what releases before 1.7.16 accept in inv['cart'] (one line per item); the rest
                     # of a draft waits in inv['cart_more'], which they ignore (see _store_lines)
 FIT_LINES = 40      # lines one inv_cart `fit` call may list (the rest past CART_LINES stays out)

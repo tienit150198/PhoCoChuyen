@@ -605,7 +605,7 @@ class WideDraft(unittest.TestCase):
         j = Journey('nail')
         set_money(j.c, 50000)
         inv = public_inv(j)
-        self.assertEqual((inv['cart_lines'], inv['transit_cap']), (20, 12))
+        self.assertEqual((inv['cart_lines'], inv['transit_cap']), (40, 12))
         ids = [i['id'] for i in I.catalogue('nail') if inv['room'][i['id']] >= 2][:20]
         self.assertEqual(len(ids), 20)
         j.act('inv_cart', supplier='partner', op='add', lines=[dict(item=i, qty=2) for i in ids])
@@ -628,7 +628,7 @@ class WideDraft(unittest.TestCase):
         self.assertNotIn('cart', j.c['ext']['inv']); self.assertNotIn('cart_more', j.c['ext']['inv'])
         validate_state(j.state)
         with self.assertRaises(GameError):
-            j.act('inv_cart', supplier='partner', op='add', lines=[dict(item=i, qty=1) for i in [*ids, ids[0]]][:21])
+            j.act('inv_cart', supplier='partner', op='add', lines=[dict(item=ids[0], qty=1)] * 41)
 
     def test_several_sizes_of_one_item(self):
         j = Journey('clothing')
