@@ -1,3 +1,7 @@
+# v1.9.42 — 2026-10-10
+
+Gồm dog-bark-fix: dây chỉ nhích khi có tiếng sủa thật (cả hai bên), cả hai im thì hòa; đo nền ồn, tắt khử vọng; chó nhà Mây sủa thành tiếng mỗi lần kéo. Không có Có gì mới.
+
 # Chưa phát hành — dog-bark-fix (không có Có gì mới)
 
 🐕 Kéo co chó sủa: **phải sủa mới tính**, cả hai bên (chủ game 10/10 "chó sủa sao nhiều trận không thắng", "có trận tự thắng mà không cần sủa"). Lỗi cũ: chó nhà Mây kéo liên tục cả lúc không phát tiếng (tiếng chỉ phát khi lực ≥ 35, lực "sủa một mình" 22–34 nên dây trôi mà không nghe sủa); dây chạy hết nửa sân trong ~2 giây; mic bật khử tiếng vọng nên giọng người chơi bị dìm đúng lúc chó sủa; không trừ tiếng ồn nền nên phòng ồn tự kéo dây.
