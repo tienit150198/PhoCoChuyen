@@ -1,91 +1,34 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "1.9.44",
-  "created_at_utc": "2026-10-10T14:43:51.135833+00:00",
+  "version": "1.9.45",
+  "created_at_utc": "2026-10-10T15:03:04.004746+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 439,
+  "minified": 441,
   "release_from_live": {
     "live_release": "mot-ngay-lam-nghe",
-    "live_version": "1.9.43",
-    "live_manifest_sha256": "c4346999f460e64e402f4832c44660714f4debf4ecbf209b61db4fc4206a91dc",
-    "base": "09f630c4a5cc0d133ec5310b013e69519696701a",
-    "ref": "8593e926738d101d74ec54734dc7611196374619",
+    "live_version": "1.9.44",
+    "live_manifest_sha256": "6b8e15e0f236a821e7ea3613dd1ecc121303baae0ca2adea24f013982c3ffdb2",
+    "base": "2823001e461b89cb75b2f53c9f313a22b05101ef",
+    "ref": "ee2bc1d7a9e482ddf1ee5d0e30e9083c828ef510",
     "changed": [
+      "CHANGELOG.md",
       "docs/AUCTION_COLLECTIONS_2026-10-10.md",
       "docs/BARK_WEEKLY_2026-10-10.md",
-      "docs/FAIR_HOUSE_EDGE.md",
-      "docs/INCOME_UPGRADES_2026-10-10.md",
-      "docs/superpowers/plans/2026-10-10-auction-collections.md",
-      "docs/superpowers/plans/2026-10-10-bark-weekly.md",
-      "docs/superpowers/plans/2026-10-10-income-upgrades.md",
+      "docs/DEPLOY_1.9.44_2026-10-10.md",
+      "docs/superpowers/plans/2026-10-10-bark-open-ranking.md",
       "game/__init__.py",
-      "game/auction.py",
-      "game/auction_content.py",
-      "game/business.py",
-      "game/careers/cafe_bakery.py",
-      "game/careers/florist.py",
-      "game/content.py",
-      "game/dog_bark.py",
       "game/dog_bark_board.py",
-      "game/engine.py",
-      "game/fair.py",
-      "game/fair_bm.py",
-      "game/fair_scratch.py",
-      "game/income_gear.py",
-      "game/journey.py",
-      "game/leaderboard.py",
-      "game/live_effects.py",
-      "game/pg_schema.py",
-      "game/quay_business.py",
-      "game/quay_self.py",
-      "game/workplace_business.py",
-      "live/dog_bark.py",
-      "public/css/auction.css",
-      "public/css/dog-bark.css",
-      "public/css/leaderboard.css",
-      "public/js/v4/auction-art.js",
-      "public/js/v4/auction-display.js",
-      "public/js/v4/auction.js",
-      "public/js/v4/deco-art.js",
+      "game/whats_new.py",
       "public/js/v4/dog-bark-board.js",
-      "public/js/v4/dog-bark.js",
-      "public/js/v4/fair.js",
-      "public/js/v4/leaderboard.js",
-      "public/js/v4/work-equipment.js",
-      "server.py",
-      "tests/auction_collections.mjs",
+      "public/js/v4/whatsnew-data.js",
       "tests/dog_bark_board.mjs",
-      "tests/fair_lifecycle.mjs",
-      "tests/income_equipment.mjs",
-      "tests/test_auction_collections.py",
-      "tests/test_auction_svg.py",
-      "tests/test_black_market.py",
-      "tests/test_deco_more.py",
       "tests/test_dog_bark_board.py",
-      "tests/test_fair_dog.py",
-      "tests/test_fair_house_edge.py",
-      "tests/test_fair_rotation.py",
-      "tests/test_fair_scratch.py",
-      "tests/test_fair_tighten.py",
-      "tests/test_income_gear.py",
-      "tests/test_jail.py",
-      "tests/test_live_auction.py",
-      "tests/test_live_dog_bark.py"
+      "tests/test_task_compat.py"
     ],
     "deleted": [],
     "minified": [
-      "public/css/auction.css",
-      "public/css/dog-bark.css",
-      "public/css/leaderboard.css",
-      "public/js/v4/auction-art.js",
-      "public/js/v4/auction-display.js",
-      "public/js/v4/auction.js",
-      "public/js/v4/deco-art.js",
       "public/js/v4/dog-bark-board.js",
-      "public/js/v4/dog-bark.js",
-      "public/js/v4/fair.js",
-      "public/js/v4/leaderboard.js",
-      "public/js/v4/work-equipment.js"
+      "public/js/v4/whatsnew-data.js"
     ]
   },
   "files": [
@@ -106,8 +49,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 300381,
-      "sha256": "00bae93bf21b24b14678a48121995a61ca7ce78243edee7a4c4139e1939d25e8"
+      "bytes": 301057,
+      "sha256": "cf787234b5077a0d191434ed283bb4099fea2b33faab7bb5254534cf99022fb8"
     },
     {
       "path": "Dockerfile",
@@ -336,13 +279,13 @@
     },
     {
       "path": "docs/AUCTION_COLLECTIONS_2026-10-10.md",
-      "bytes": 3992,
-      "sha256": "fe11055dbf1428099638de0a77a93eb1b9e33117c94c84bdf7cd2de43bd5eace"
+      "bytes": 4198,
+      "sha256": "cac839b1a99e9e896b76e5fd9b21485a1df308a0611c841443a66ac4562fc3e5"
     },
     {
       "path": "docs/BARK_WEEKLY_2026-10-10.md",
-      "bytes": 4665,
-      "sha256": "f6047b1b189652bc0cd6cda14b6335eeb4e1af9de22a4264190a60b826d544d5"
+      "bytes": 4749,
+      "sha256": "b1b67fefb1d37e11031a6ef5072fef52a27bffb42f7083f4faad938fdd356a72"
     },
     {
       "path": "docs/DANH_MUC_MAN_HINH_ASSET_ISOMETRIC_2026-10-05.md",
@@ -408,6 +351,11 @@
       "path": "docs/DEPLOY_1.7.9_2026-10-04.md",
       "bytes": 4108,
       "sha256": "3f3d9679c7cbd1dc892daa1767f5862b0bca168a4a40e92096711da0e91b480c"
+    },
+    {
+      "path": "docs/DEPLOY_1.9.44_2026-10-10.md",
+      "bytes": 4098,
+      "sha256": "0685d0f7208bc415cf5a3594253f8400fd41cad5b07ac8b04cf4be295ddc3f84"
     },
     {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
@@ -1515,6 +1463,11 @@
       "sha256": "5340dd8f33cd8cb7925c244e55445aa36aa50bb4d6f5555096bb563e5b9942de"
     },
     {
+      "path": "docs/superpowers/plans/2026-10-10-bark-open-ranking.md",
+      "bytes": 1184,
+      "sha256": "b1d17d13654d2c101d40a947c8df6473a7de0d1f535d8400b2a97573fd0ffc15"
+    },
+    {
       "path": "docs/superpowers/plans/2026-10-10-bark-weekly.md",
       "bytes": 2357,
       "sha256": "a71db48b6a73755606fe780af5a5b8d289893d55c50bf7d18d90f9cd388078b9"
@@ -1732,7 +1685,7 @@
     {
       "path": "game/__init__.py",
       "bytes": 106,
-      "sha256": "71d543af414dccef5f66b5c166078bc3cd7c828bf44fa6ecd7c829a46688ca92"
+      "sha256": "8cafc84382e38c02c3c8cef06c73719ccc92b955af4f12f710da4ef8d256d5b3"
     },
     {
       "path": "game/abandon.py",
@@ -2381,8 +2334,8 @@
     },
     {
       "path": "game/dog_bark_board.py",
-      "bytes": 10286,
-      "sha256": "0133c984f24b94c457db2fcdfb96fd8bc89df0686a9a23d3b80cfa4d06637226"
+      "bytes": 10330,
+      "sha256": "336b0e045c6856008c72c99a14440df6f50522f2dddaea81f3081250cb8d44c8"
     },
     {
       "path": "game/employment.py",
@@ -3096,8 +3049,8 @@
     },
     {
       "path": "game/whats_new.py",
-      "bytes": 67118,
-      "sha256": "27eefed972393bf0cb0102ec837cd6cc7eee1b75eeed5237aa70de5a9ecc2e46"
+      "bytes": 67846,
+      "sha256": "acce13ef020bb00bd1ce06d3289f91ad95ab7bf45cb80a5a06a232ed4a72c211"
     },
     {
       "path": "game/work_gear.py",
@@ -5291,8 +5244,8 @@
     },
     {
       "path": "public/js/v4/dog-bark-board.js",
-      "bytes": 3185,
-      "sha256": "c413ce569d7827bc053c0343dff10da570a14225213ac90ff23b6a978eff7b82"
+      "bytes": 3274,
+      "sha256": "fbfcda983e2fad13736648b1629d51f20767e19652961047399151d13dbdada6"
     },
     {
       "path": "public/js/v4/dog-bark.js",
@@ -5801,8 +5754,8 @@
     },
     {
       "path": "public/js/v4/whatsnew-data.js",
-      "bytes": 53817,
-      "sha256": "1df6e775a2e2a9cf2abc0c7b6c02748e4f02cfe38b3f21f6e30faf0500e8ad3a"
+      "bytes": 54466,
+      "sha256": "f937340692272fa4e36a36ec35aed385bf6c5eeaa8d00ab90de4668c4e690f68"
     },
     {
       "path": "public/js/v4/whatsnew.js",
@@ -6901,8 +6854,8 @@
     },
     {
       "path": "tests/dog_bark_board.mjs",
-      "bytes": 1685,
-      "sha256": "b65e0d698c6ec2ec5387978de8349ea7c347c55a6e6502253e497ae5569d60a1"
+      "bytes": 2006,
+      "sha256": "603c57bf268125c4e677df6100b3f902ddbf634004d9bc73cf761067f181a1c2"
     },
     {
       "path": "tests/envelope_send.mjs",
@@ -8146,8 +8099,8 @@
     },
     {
       "path": "tests/test_dog_bark_board.py",
-      "bytes": 9669,
-      "sha256": "434187e5e32236dfde45e0dbd92df8b3895dded3ba5e7af829fca40ac8c0de2d"
+      "bytes": 10424,
+      "sha256": "e4ac436e4d6eb9c61543f289f58754df93c0d2d23c8950ea93949cb0575d49cd"
     },
     {
       "path": "tests/test_economy_pass2.py",
@@ -9391,8 +9344,8 @@
     },
     {
       "path": "tests/test_task_compat.py",
-      "bytes": 5572,
-      "sha256": "ea0c95c182cca7b22d5baebdebfaf0ebb930686a502587afa04d62c38cad1377"
+      "bytes": 5568,
+      "sha256": "5b44d6b607892aaf0e0236e83def3f987b23cf52dde15d74188b59d1ca2c3b8b"
     },
     {
       "path": "tests/test_teacher_care.py",
