@@ -227,3 +227,18 @@ class WeeklyLoss(StoreBase):
         self.assertFalse(self.board(a)['fair']['seeded'])
         self.assertEqual(self.board(a)['me']['net'],-10)
         self.assertTrue(self.fl.seed_current(self.store,week)['done'])
+
+    def test_seed_zero_current_balance_and_untouched_save(self):
+        from game import marriage
+        a=self.player('Lan')
+        b=self.player('Chua choi')
+        self.lose(a,10)
+        def reset(s):
+            s['journey'].pop('fair',None)
+        marriage._mutate(self.store,{self.store.key(a):reset})
+        state,revision,_=self.store.read(a)
+        week=int(self.fl.week_start(self.clock.t))
+        self.assertTrue(self.fl.seed_current(self.store,week)['done'])
+        self.assertEqual(self.board(a)['me']['net'],0)
+        self.assertEqual(self.board(b)['me']['net'],0)
+        self.assertEqual(self.store.read(a)[:2],(state,revision))

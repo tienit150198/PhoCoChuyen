@@ -98,7 +98,10 @@ def seed_current(store, week, batch=50):
             return progress
         # Acquire ALL save locks before the advisory lock: deletion also locks
         # saves and the settlement cursor, so alternating these locks can cycle.
-        rows = list(db.execute("SELECT sid,state::jsonb->'journey'->'fair' AS fair FROM sessions "
+        # Saved JSON uses literal ASCII keys. Most visitors never opened the fair;
+        # skip full JSON parsing for their much larger career save payloads.
+        rows = list(db.execute("SELECT sid,CASE WHEN strpos(state,'\"fair\"')>0 "
+                               "THEN state::jsonb->'journey'->'fair' ELSE NULL END AS fair FROM sessions "
                                'WHERE sid>? ORDER BY sid LIMIT ? FOR UPDATE', (progress['last'], batch)))
         _activate(db, now())
         db.execute('SELECT pg_advisory_xact_lock_shared(1947,?)', (week // WEEK,))
