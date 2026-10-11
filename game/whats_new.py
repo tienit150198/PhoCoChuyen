@@ -32,6 +32,13 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.0.5", date="2026-10-12", items=(
+        dict(emoji='🚔', text='Công an: thêm Giám đốc CATP (1 ghế) và hàm Thiếu tướng; Phó Giám đốc tối đa 5 người. Thi lên Thiếu úy xong là Học viên.'),
+        dict(emoji='🕵️', text='Ca trực mới: kiểm tra cửa hàng (thuế, nguồn hàng, tờ khai), gỡ bài đòi hỏi ngoài dịch vụ, tìm trẻ lạc, phá án buôn lậu.'),
+        dict(emoji='🎪', text='Công an tuần tra Chợ đen: lục soát, phạt, tạm giữ người cược lớn. Nhận phong bì dễ bị phát hiện, coi chừng nhé!'),
+        dict(emoji='🖍️', text='Vi phạm nhiều lần bị hạ hàm, giam hàm; lần thứ 4 bị khai trừ, tạm giữ và không được vào lại ngành Công an.'),
+        dict(emoji='🎨', text='Giao diện mới: sửa bài tập huấn Thư viện, nhạc nền khi mạng chậm, thanh nhập kho và lớp che màn hình.'),
+    )),
     dict(version="2.0.4", date="2026-10-11", items=(
         dict(emoji='🚨', text='Chợ đen: bị bắt thì mất tiền cược ván đó, phạt thêm 30% tiền cược ván đó. Chơi nhỏ thì yên, cược lớn, lời nhiều dễ bị bắt.'),
         dict(emoji='💸', text='Ai bị phạt sai ở Chợ đen chiều 11/10 đã được hoàn phần phạt dư vào ví. Phố xin lỗi các bạn nhé!'),

@@ -1,3 +1,15 @@
+# v2.0.5 — 2026-10-12
+
+Công an (spec chủ phố 11/10): thêm chức Giám đốc CATP (tối đa 1 người chơi) và hàm Thiếu tướng; Phó Giám đốc CATP tối đa 5 người chơi (bảng cand_roster, kiểm ghế trong giao dịch lệnh). Lên Giám đốc cần 20 ngày ở Phó Giám đốc, lên Thiếu tướng cần 10 ngày ở Đại tá, tổng 30 ngày liền không vi phạm. Học viên (bảng đỏ trơn) hiện sau khóa chuyển loại, trước Thiếu úy. Quân hàm theo bảng màu mới (đỏ #EE0000, vạch #FFFF00 hướng lên; Úy/Tá sao to hơn 2%, vạch #FFFF66, sao #FFFF33; Thiếu tướng nền #DD0000).
+
+Bút tích đỏ: cảnh cáo thứ 2 là một kỳ Không hoàn thành nhiệm vụ, thứ 3 hạ 1 bậc hàm và giam hàm 20 ngày làm, thứ 4 (chưa đủ 10 ngày sạch) khai trừ cuối ca, tạm giữ 3 ngày, cấm vào lại ngành Công an. Chỉ huy (từ Ban chỉ huy CA phường) xét thi đua toàn lực lượng và khai trừ lỗi nặng.
+
+Ca trực mới: kiểm tra doanh nghiệp (thuế, nguồn hàng, tờ khai hải quan), gỡ bài đòi hỏi ngoài dịch vụ và xử phạt bóc phốt đòi đền bù, trẻ lạc giao nhầm người (hạ 1 bậc, giam hàm đến 15 ngày), án buôn lậu trên 100.000 xu (phá được +1 ngày xét thăng hàm; thất bại, nhận hối lộ, để thoát giam hàm 3 ngày).
+
+Tuần tra Chợ đen giữa người chơi: lục soát, phạt hành chính 30% tiền cược, tạm giữ 1 ngày, bắt giữ 3 ngày; chứng cứ là ván có trả tiền trong 15 phút gần nhất, người chơi nhỏ chỉ bị lục soát. Phong bì tối đa 5.000 xu, tỷ lệ bị phát hiện 5% + 0,5% mỗi lần (tối đa 85%). Schema 41: cand_roster, cand_stops, cand_acts.
+
+Gồm cả các sửa giao diện mới của 2.0.4.2.
+
 # v2.0.4.2 — 2026-10-11
 
 Giao diện mới: bài tập huấn Thư viện tô sáng đáp án đã chọn (#341); nhạc nền mạng chậm phát tiếp từ chỗ đoạn mở đầu dừng, không lặp lại đoạn đầu (#346); thanh công việc và các tab kho luôn vừa màn hình 360 px, không trượt qua lại khi nhập hàng (#348); khay thùng hàng giữ ô 30 px như giao diện cũ (#345); nút Thử lại khi tải phố lỗi bấm được, hộp chọn giao diện đóng ngay khi lưu lỗi, nhãn Xem hướng dẫn không che cần điều khiển/menu, chạm đóng menu không làm nhân vật đi, Esc ngoài phố không làm mờ đảo (#344).
