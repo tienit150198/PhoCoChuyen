@@ -257,13 +257,16 @@ def suspended(s: dict, c: dict, career: str) -> bool:
 
 
 def violation(s: dict, c: dict, career: str, code: str, key: str, grace: bool = False) -> str:
-    """A career's detected procedure violation (⚠️ cảnh cáo) on its org ladder; '' when the contract has none."""
+    """A career's detected procedure violation (⚠️ cảnh cáo) on its org ladder; '' when the contract has none.
+    The warnings escalate (bút tích đỏ, owner 11/10: game/org.py _warn); a 4th sets the expulsion, done at the close."""
     rec, x = org_live(s, c, career, True)
     if not x:
         return ''
     before = x['p']
-    line = ORG.violation(x, s, c, code, key, grace)
+    line = ORG.violation(x, s, c, code, key, grace, ORG.ext_of(rec, x))
     _org_step(rec, x, before)
+    if line and expel_due(rec):
+        line += ' Hết ca này bàn giao công việc.'
     return line
 
 
@@ -273,8 +276,97 @@ def bribe(s: dict, c: dict, career: str, key: str) -> str:
         return ''
     before = x['p']
     line = ORG.bribe(x, s, c, key)
+    if line:   # the gravest fault (owner spec 11/10): a commander may expel for it
+        ORG.add_sev(ORG.ext_of(rec, x), 'bribe', _now())
     _org_step(rec, x, before)
     return line
+
+
+def _now() -> float:
+    import time
+    return time.time()
+
+
+# ------------------------------------------------------------------------------------- owner spec 11/10: cases, expulsion
+def case_grave(s: dict, c: dict, career: str, code: str, days: int, why: str) -> str:
+    """A grave fault in a case (a lost child handed to the wrong adult and taken): one grade down at once, the grade
+    held `days` worked days, and a grave mark (`code`) a commander may expel for. '' off the ladder."""
+    rec, x = org_live(s, c, career, True)
+    if not x:
+        return ''
+    before = x['p']
+    e = ORG.ext_of(rec, x)
+    line = ORG.demote_hold(x, s, e, days, why)
+    ORG.add_sev(e, code, _now())
+    _org_step(rec, x, before)
+    return line
+
+
+def case_hold(s: dict, c: dict, career: str, days: int) -> str:
+    """A case failed (the smuggling ring got away, a bribe taken in it): the grade held `days` worked days."""
+    rec, x = org_live(s, c, career, True)
+    if not x:
+        return ''
+    return ORG.hold_only(ORG.ext_of(rec, x), days)
+
+
+def case_bonus(s: dict, c: dict, career: str, n: int = 1) -> str:
+    """A case solved: `n` worked days towards the next grade."""
+    rec, x = org_live(s, c, career, True)
+    if not x:
+        return ''
+    return ORG.bonus_days(x, n)
+
+
+GOV = ('police',)   # careers of the state (owner 11/10: an expelled officer may never join again; Hải quan later)
+BAN_KEY = 'gov_ban'
+
+
+def banned(s: dict, career: str) -> bool:
+    b = (s.get('journey') or {}).get(BAN_KEY)
+    return career in GOV and isinstance(b, dict)
+
+
+def expel_due(rec: dict | None) -> bool:
+    e = rec.get('cx') if isinstance(rec, dict) else None
+    return isinstance(e, dict) and isinstance(e.get('out'), dict) and not e['out'].get('t')
+
+
+def mark_expel(rec: dict, x: dict, s: dict, code: str) -> None:
+    """A commander's expulsion (game/cand_ops.py): set here, done at the officer's next close."""
+    e = ORG.ext_of(rec, x)
+    e['out'] = dict(t=0, d=ORG._day(s), c=code[:40])
+
+
+def after_close(s: dict, c: dict, career: str) -> list[str]:
+    """end_day, once the day is closed and paid: an expulsion set during the day is done now: the trại tạm giữ
+    (org expel_jail days), the contract ended, the ban from the force (journey['gov_ban'], every state career)."""
+    if career not in GOV or not _job_ok(c):
+        return []
+    rec = _live(s, c, career)
+    if not expel_due(rec):
+        return []
+    x = ORG.active(career, c, rec)
+    o = ORG.OC.ORGS[x['org']] if x else ORG.OC.ORGS['cand']
+    e = rec['cx']
+    t = int(_now())
+    e['out']['t'] = t
+    j = s['journey']
+    j[BAN_KEY] = dict(v=1, t=t, d=int(j.get('life_day') or 1), c=str(e['out']['c'])[:40])
+    lines = ['🚨 Quyết định khai trừ khỏi lực lượng Công an. Không được tuyển lại vào ngành.']
+    from . import jail
+    days = jail.arrest(j, 'cand', int(o.get('expel_jail') or 3))
+    if days:
+        lines.append(f'🚔 Tạm giữ {days} ngày.')
+    from . import archive as ar
+    from . import employment as em
+    job = c['job']
+    job['history'] = ar.last(job['history'] + [dict(day=c['day'], event='quit', posting=job['employer'])], 40, 'job.history', c)
+    keep, door = job['history'], job.get('backdoor')
+    c['job'] = em.initial()
+    c['job'].update(history=keep, backdoor=door)
+    lines.append('🚧 Xí nghiệp Đường sắt Sông Mây đang cần người gác chắn: ghé Xin việc nếu muốn làm lại từ đầu.')
+    return lines
 
 
 def report_bribe(s: dict, c: dict, career: str) -> str:
@@ -854,7 +946,7 @@ def _org_action(s: dict, c: dict, career: str, rec: dict, x: dict, name: str, p:
             return ORG.set_aim(x, p, need)
         if name == 'pm_org_own':
             need(ORG.can_own(x, c), 'Không có phong bì nào cần tự giác nộp lại hôm nay.')
-            return dict(message=ORG.own(x, s, c))
+            return dict(message=ORG.own(x, s, c, ORG.ext_of(rec, x)))
         lvl = _org_level(x)
         need(lvl and x['office'] is not None, 'Phòng chỉ huy mở từ Tổ trưởng.', 'not_manager')
         okey = ORG.OC.ORGS[x['org']]['office']
@@ -867,7 +959,7 @@ def _org_action(s: dict, c: dict, career: str, rec: dict, x: dict, name: str, p:
         r = OF.action(okey, x['office'], lvl, c, name, p, _seed(s), need)
         if name == 'pm_of_hr' and p.get('act') in ORG_DISCIPLINE and r.get('just') is False:
             # Abuse of power over an NPC is noted against the player (the Trợ lý's inspection): a normal warning.
-            line = ORG.violation(x, s, c, 'wrong_discipline', f'hr-{c["day"]}')
+            line = ORG.violation(x, s, c, 'wrong_discipline', f'hr-{c["day"]}', ext=ORG.ext_of(rec, x))
             if line:
                 r['message'] = f'{r["message"]} 🗂️ Trợ lý BGĐ ghi nhận. {line}'
         return r
@@ -996,7 +1088,7 @@ def on_close(s: dict, c: dict, career: str, summary: dict) -> dict | None:
     if x is not None:
         before = x['p']
         today = [f['stars'] for f in c['feed'] if f.get('stars') and f.get('day') == c['day'] and f.get('kind') == 'review']
-        lines = ORG.close(x, s, c, career, worked, good, sum(today) / len(today) if today else None)
+        lines = ORG.close(x, s, c, career, worked, good, sum(today) / len(today) if today else None, ORG.ext_of(rec, x))
         _org_step(rec, x, before)
         if worked:
             rec['worked'] = min(10**6, rec['worked'] + 1)
@@ -1009,7 +1101,7 @@ def on_close(s: dict, c: dict, career: str, summary: dict) -> dict | None:
             dd = x['due']
             out['line'] = '🎖️ ' + (f'Đầu ca sau: bài kiểm tra {ORG.OC.ORGS[x["org"]]["courses"][dd["to"]]}.' if dd['k'] == 'course'
                                   else f'Ban chỉ huy hẹn đầu ca sau: xét bổ nhiệm {ORG._post(ORG.OC.ORGS[x["org"]], dd["to"])["short"]}.')
-        nxt = _org_next(x)
+        nxt = _org_next(x, rec)
         if nxt and worked:
             out['next'] = nxt
         return out or None
@@ -1113,18 +1205,19 @@ def _shift_view(sh: dict) -> dict:
     return v
 
 
-def _org_next(x: dict) -> dict | None:
+def _org_next(x: dict, rec: dict | None = None) -> dict | None:
     """The strip's line (good/need/title) and requirements: the next grade inside the post, else the next post."""
     ng = ORG.next_grade(x)
+    hold = ORG.hold_of((rec or {}).get('cx'))
     if ng:
-        return dict(title=ng['name'], good=ng['good'], need=ng['need'], requirements=ng['rows'] + ORG.waits(x), why=None, wait=x['wait'], pct=0)
+        return dict(title=ng['name'], good=ng['good'], need=ng['need'], requirements=ng['rows'] + ORG.waits(x, hold), why=None, wait=x['wait'], pct=0)
     tp = ORG.target(x)
     if not tp:
         return None
     o = ORG.OC.ORGS[x['org']]
     days = ORG.post(x)['days']
     # The waits (a suspension, a retry, the seat) are listed too, so "all met" on screen never hides what holds it back.
-    return dict(title=ORG._post(o, tp)['short'], good=min(x['tip'], days), need=days, requirements=ORG.post_rows(x, tp) + ORG.waits(x),
+    return dict(title=ORG._post(o, tp)['short'], good=min(x['tip'], days), need=days, requirements=ORG.post_rows(x, tp) + ORG.waits(x, hold),
                 why=None, wait=x['wait'], pct=0)
 
 
@@ -1137,8 +1230,8 @@ def _org_public(s: dict, c: dict, career: str, rec: dict | None) -> dict | None:
         rec = tmp
     if x is None:
         return None
-    ov = ORG.public(x, c)
-    v = dict(track='emp', rank=min(_rank(rec), TOP), top=TOP, title=ov['title'], pct=ov['pct'], next=_org_next(x), mgr=can_manage(s, c, career),
+    ov = ORG.public(x, c, rec.get('cx') if isinstance(rec.get('cx'), dict) else None)
+    v = dict(track='emp', rank=min(_rank(rec), TOP), top=TOP, title=ov['title'], pct=ov['pct'], next=_org_next(x, rec), mgr=can_manage(s, c, career),
              team=TEAM.get(min(max(_rank(rec), MGR_FROM), TOP)), due=None, log=[], shifts=rec['mgr']['n'], pcts=[], org=ov)
     if x['due']:
         v['due'] = dict(ov['due'], who='Ban chỉ huy')
@@ -1195,6 +1288,9 @@ def public(s: dict, c: dict, career: str) -> dict | None:
 # ------------------------------------------------------------------------------------- validation
 def validate(s: dict) -> None:
     j = s.get('journey')
+    if isinstance(j, dict) and BAN_KEY in j:
+        e0 = _core()
+        validate_ban(j, e0.need, e0.integer, e0.clean_text, 'Dữ liệu thăng tiến không hợp lệ.')
     if not isinstance(j, dict) or 'promo' not in j:
         return
     e = _core()
@@ -1237,6 +1333,8 @@ def validate(s: dict) -> None:
             OF.validate(cid, rec['office'], need, integer, txt, bad)
         if 'org' in rec:
             ORG.validate(cid, rec['org'], need, integer, txt, bad)
+        if 'cx' in rec:
+            ORG.validate_ext(rec['cx'], need, integer, txt, bad)
         mgr = rec['mgr']
         need(isinstance(mgr, dict), bad)
         integer(mgr.get('n'), 0, 10**6)
@@ -1295,3 +1393,13 @@ def _validate_shift(sh, need, integer, txt, bad) -> None:
         for k in ('a', 'b'):
             need(type(x.get(k)) is int and 0 <= x[k] < len(team), bad)
         need(x.get('pick') is None or x['pick'] in [o['id'] for o in PC.ESCALATION_INDEX[x['id']]['options']], bad)
+
+
+def validate_ban(j: dict, need, integer, txt, bad: str) -> None:
+    b = j.get(BAN_KEY)
+    if b is None:
+        return
+    need(isinstance(b, dict) and set(b) == {'v', 't', 'd', 'c'} and b['v'] == 1, bad, 'invalid_save')
+    integer(b['t'], 0, 10**11)
+    integer(b['d'], 1, 10**6)
+    txt(b['c'], 40)

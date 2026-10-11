@@ -84,6 +84,15 @@ if hasattr(os,"register_at_fork"):
 # on only once no older server version shares the database (they cannot parse it).
 FRESH=""
 
+
+def _cand_prepare(db,action:str)->None:
+    """👮 The CAND seat counts before a command (game/cand_roster.py): fresh for an appointment, else cached a minute."""
+    try:
+        from . import cand_roster
+        cand_roster.prepare(db,action)
+    except Exception:  # noqa: BLE001 - never fails a command: without counts no cap is known
+        pass
+
 class Conflict(GameError):
     pass
 
@@ -477,6 +486,7 @@ class Store:
                                "EXISTS(SELECT 1 FROM accounts a WHERE a.sid=s.sid) AS acct FROM sessions s "
                                "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?",(request_id,sid),text_bytes=True).fetchone())
                 fh.loc_prepare(db,action)  # a fair luck round: is the hourly 🍀 gate open (no read for other actions)
+                _cand_prepare(db,action)  # 👮 the CAND seat counts (PGĐ ≤ 5, GĐ ≤ 1: game/cand_roster.py)
             if not row:raise GameError("Phiên chơi không tồn tại.","session_missing")
             who[0]=sid
             if row["rhash"] is not None:return self._replay(sid,row,fingerprint)
@@ -652,6 +662,8 @@ class Store:
                     pets.command_commit(db,sid,action,current)  # 🐾 Bé cưng của tuần (pet_board)
                 from . import jail
                 jail.mark_commit(db,sid,before,current)  # 🚔 jail_marks follows the save (the live server's cheap check)
+                from . import cand_roster
+                cand_roster.command_commit(db,sid,before,current,action)  # 👮 the CAND roster row (seats, commanders' lists)
                 if action=='jail_end':
                     jail.command_commit(db,sid,action,result)  # 🚔 out of the trại tạm giữ: the friends' bail requests go
                 if action.startswith('jr_lux_'):
@@ -710,6 +722,7 @@ class Store:
             if expected is not None and row["revision"]!=expected:raise Conflict("Tiến trình đã thay đổi ở tab khác. Đã đồng bộ lại; hãy xem trạng thái trước khi thao tác tiếp.","revision_conflict")
             before_out=[]
             fh.loc_prepare(db,action)
+            _cand_prepare(db,action)
             first=tree_copy(payload) if action in fh.LOC_ACTIONS else payload
             raw,result,serialized,cut,board,steps=self._compute(sid,row["state"],career,action,first,internal,row["revision"],before_out=before_out)
             if not fh.loc_claim(db,result):  # 🍀 taken by another worker meanwhile: the same command, gate shut

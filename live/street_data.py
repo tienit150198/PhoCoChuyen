@@ -180,7 +180,7 @@ LOOK_DEFAULTS = {
 # 🎖️ The rank a stroller wears (game/org_content.py grade ids, public/js/v4/insignia.js draws them): `rk` = {o, g} in
 # walk_in / wed_in, apart from the look (older services ignore it, an id this list lacks shows nothing).
 ORG_GRADES = {'cand': ('binh_nhi', 'binh_nhat', 'ha_si', 'trung_si', 'thuong_si', 'thieu_uy', 'trung_uy', 'thuong_uy', 'dai_uy',
-                       'thieu_ta', 'trung_ta', 'thuong_ta', 'dai_ta')}
+                       'thieu_ta', 'trung_ta', 'thuong_ta', 'dai_ta', 'thieu_tuong', 'hoc_vien')}   # 11/10: GĐ's general, Học viên
 
 # 🐾 The pet walking beside a stroller (game/pets_content.py breed ids -> number of coats; public/js/v4/pet-art.js draws
 # them): `pt` = {b, c, n, a} in walk_in / wed_in, apart from the look (older services ignore it; a breed this list lacks,

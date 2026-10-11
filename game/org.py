@@ -21,6 +21,13 @@ State: journey['promo'][career]['org'] (optional; builds without it ignore the r
 step in record['rank'], which this module keeps in step with the post for them, never above 4). Existing players are
 put on the ladder lazily from their step (never lower, the pay never below today's). Everything random is rolled
 from (seed, career, day, …).
+
+Owner spec 11/10 (the extension `ext` = journey['promo'][career]['cx'], a key older builds keep untouched; see
+new_ext()): warnings count as bút tích đỏ (`red`) until 10 clean days clear them: the 2nd adds a "Không hoàn thành
+nhiệm vụ" period, the 3rd takes one grade and holds the grade (`hold`, giam hàm) 20 worked days, the 4th expels
+(game/promotion.py expel: jail, the contract ended, a ban from the force). A held grade takes no step and no
+appointment. Posts with a seat cap (org_content.SEATS: PGĐ 5, GĐ 1) are appointed only while a seat is free
+(game/cand_roster.py counts the players holding it).
 """
 from __future__ import annotations
 
@@ -36,6 +43,7 @@ EVALS_MAX = 6
 VT_MAX = 24
 RETRY = 3
 VAC_WAIT = 3
+WARNS_KEPT = 3    # open warnings a save may carry (the 4th demoted before 11/10, the 3rd since)
 LIEM_MAX = 999
 KEYS = frozenset(('v', 'org', 'g', 'p', 'tig', 'tip', 'st', 'warns', 'wlog', 'clean', 'mark', 'liem', 'evals', 'evn', 'hist',
                   'courses', 'due', 'wait', 'vac', 'aim', 'susp', 'floor', 'bt', 'adj', 'vt', 'office', 'insp'))
@@ -86,6 +94,45 @@ def active(career: str, c: dict, rec: dict | None) -> dict | None:
     return o if o is not None and wears(career, c) and o.get('org') == org_id(career) else None
 
 
+# ------------------------------------------------------------------------------------- the extension (rec['cx'])
+EXT_V = 1
+EXT_KEYS = frozenset(('v', 'red', 'hold', 'sev', 'hon', 'out'))
+SEV_MAX = 6
+HON_MAX = 6
+HOLD_MAX = 60
+
+
+def new_ext() -> dict:
+    """red: warnings since the last clean slate; hold: worked days the grade is held (giam hàm); sev: the gravest
+    faults [{t: epoch, c: code}] a commander may expel for; hon: commendations [{t, by}]; out: set once expelled."""
+    return dict(v=EXT_V, red=0, hold=0, sev=[], hon=[], out=None)
+
+
+def ext_of(rec: dict | None, x: dict | None = None) -> dict | None:
+    """The record's extension, created (its red count seeded from the open warnings) when missing."""
+    if not isinstance(rec, dict):
+        return None
+    e = rec.get('cx')
+    if not isinstance(e, dict) or e.get('v') != EXT_V:
+        e = rec['cx'] = new_ext()
+        if x:
+            e['red'] = len(x['warns'])
+    return e
+
+
+def hold_of(e: dict | None) -> int:
+    return int(e['hold']) if isinstance(e, dict) else 0
+
+
+def add_hold(e: dict, days: int) -> int:
+    e['hold'] = max(e['hold'], min(HOLD_MAX, int(days)))
+    return e['hold']
+
+
+def add_sev(e: dict, code: str, t: float) -> None:
+    e['sev'] = (e['sev'] + [dict(t=int(t), c=code[:40])])[-SEV_MAX:]
+
+
 # ------------------------------------------------------------------------------------- creation and migration
 def new(oid: str, post: str, grade: str, floor: int = 0, keep: dict | None = None) -> dict:
     o = OC.ORGS[oid]
@@ -127,8 +174,19 @@ def post(x: dict) -> dict:
     return _post(OC.ORGS[x['org']], x['p'])
 
 
+def cadet(x: dict) -> bool:
+    """🎓 Học viên: a Thượng sĩ who passed the officer course, until the commission."""
+    ca = getattr(OC, 'CADET', None)
+    return bool(ca) and x['org'] == 'cand' and grade(x)['id'] == ca['grade'] and ca['course'] in x['courses']
+
+
+def shown_grade(x: dict) -> dict:
+    """The grade on the boards and the card: Học viên in place of Thượng sĩ after the officer course."""
+    return OC.CADET if cadet(x) else grade(x)
+
+
 def title(x: dict) -> str:
-    return f'{grade(x)["name"]} · {post(x)["short"]}'
+    return f'{shown_grade(x)["name"]} · {post(x)["short"]}'
 
 
 def stars(x: dict) -> int | None:
@@ -185,12 +243,19 @@ def clean_row(x: dict) -> dict:
     return dict(id='clean', met=False, label=f'Xóa cảnh cáo: {min(x["clean"], n)}/{n} ngày làm không vi phạm')
 
 
-def waits(x: dict) -> list[dict]:
+def waits(x: dict, hold: int = 0) -> list[dict]:
     """What holds the next step back besides its requirements (for the screens only, never a requirement itself):
-    a suspension, a retry after a failed interview, the seat of the next post not free yet."""
+    a suspension, a held grade, a retry after a failed interview, the seat of the next post not free yet."""
     rows = []
     if x['susp'] > 0:
         rows.append(dict(id='susp', met=False, label=f'Hết tạm đình chỉ: còn {x["susp"]} ngày'))
+    if hold > 0:
+        rows.append(dict(id='hold', met=False, label=f'Giam hàm: còn {hold} ngày làm'))
+    tp = target(x) if next_grade(x) is None else None
+    if tp and tp in OC.SEATS:
+        from . import cand_roster as CR
+        if CR.full(tp):
+            rows.append(dict(id='seats', met=False, label=f'Ghế {_post(OC.ORGS[x["org"]], tp)["short"]}: đủ {OC.SEATS[tp]} người, chờ ghế trống'))
     if next_grade(x) is None and target(x):
         if x['wait'] > 0:
             rows.append(dict(id='wait', met=False, label=f'Hẹn xét lại sau {x["wait"]} ngày làm'))
@@ -238,9 +303,17 @@ def _gate_rows(x: dict, gi: int) -> list[dict]:
     if gate and gate.startswith('course:'):
         cid = gate.split(':', 1)[1]
         rows.append(dict(id='course', met=cid in x['courses'], label=o['courses'][cid], course=cid))
+    if gate and gate.startswith('clean:'):
+        rows.append(run_row(x, int(gate.split(':', 1)[1])))
     if gate == 'clean' or (nxt and barred_grade(o, nxt['id'])):
         rows.append(dict(id='mark', met=x['mark']['b'] is None, label='Chưa từng có dấu liêm chính'))
     return rows
+
+
+def run_row(x: dict, n: int) -> dict:
+    """n worked days in a row without any violation (owner spec 11/10: PGĐ → GĐ, Đại tá → Thiếu tướng)."""
+    k = streak(x)
+    return dict(id='run', met=k >= n, label=f'{min(k, n)}/{n} ngày làm liên tục không vi phạm')
 
 
 def barred_grade(o: dict, gid: str) -> bool:
@@ -290,6 +363,8 @@ def post_rows(x: dict, pid: str) -> list[dict]:
         rows.append(dict(id='evals', met=_good_evals(x) >= n, label=f'{min(_good_evals(x), n)}/{n} kỳ “Hoàn thành tốt” trở lên'))
     if tp['extra'].get('nomark'):
         rows.append(dict(id='mark', met=x['mark']['b'] is None, label='Chưa từng có dấu liêm chính'))
+    if tp['extra'].get('clean'):
+        rows.append(run_row(x, tp['extra']['clean']))
     if x['g'] < lo:   # promoted on appointment: that step's own gate too
         rows += [r for r in _gate_rows(x, x['g']) if r['id'] != 'mark' or not tp['extra'].get('nomark')]
     return rows
@@ -334,9 +409,9 @@ def _step_down(x: dict, d: int, why: str) -> str:
     return f'Chức vụ: {old["short"]} → {new_p["short"]}. {who} nhận ghế {old["short"]}.'
 
 
-def violation(x: dict | None, s: dict, c: dict, code: str, key: str, grace: bool = False) -> str:
+def violation(x: dict | None, s: dict, c: dict, code: str, key: str, grace: bool = False, ext: dict | None = None) -> str:
     """A procedure violation the career detected: a ⚠️ cảnh cáo (once per key a day). `grace`: on probation or while a
-    tutor stands beside the player, it is a reminder only."""
+    tutor stands beside the player, it is a reminder only. `ext`: the extension (bút tích đỏ, giam hàm, khai trừ)."""
     if x is None or code not in OC.VIOLATIONS:
         return ''
     seen = _today(x, c['day'])
@@ -348,10 +423,10 @@ def violation(x: dict | None, s: dict, c: dict, code: str, key: str, grace: bool
     why, how = OC.VIOLATIONS[code]
     if grace:
         return f'📖 Nhắc quy trình: {why.lower()}. {how} (Đang kèm việc: chưa tính cảnh cáo.)'
-    return _warn(x, s, c, code)
+    return _warn(x, s, c, code, ext)
 
 
-def _warn(x: dict, s: dict, c: dict, code: str) -> str:
+def _warn(x: dict, s: dict, c: dict, code: str, ext: dict | None = None) -> str:
     o = OC.ORGS[x['org']]
     d = _day(s)
     x['warns'] = (x['warns'] + [dict(d=d, c=code)])[-o['demote_on']:]
@@ -360,10 +435,48 @@ def _warn(x: dict, s: dict, c: dict, code: str) -> str:
     _log(x, d, 'warn', code)
     why, how = OC.VIOLATIONS[code]
     n = len(x['warns'])
+    red = 0
+    if ext is not None:   # bút tích đỏ (owner 11/10): counted across a demotion until 10 clean days clear them
+        ext['red'] = red = min(99, ext['red'] + 1)
+        if red >= o.get('red_expel', 99):
+            x['warns'] = []
+            ext['out'] = dict(t=0, d=d, c=code)   # promotion.expel() finishes it (jail, the contract, the ban)
+            return f'⚠️ Cảnh cáo lần {red}: {why.lower()}. 🚨 Khai trừ khỏi lực lượng.'
     if n >= o['demote_on']:
         x['warns'] = []
-        return f'⚠️ Cảnh cáo lần {n}: {why.lower()}. ' + _demote(x, d, 'warn4') + f' 📖 {how}'
+        line = f'⚠️ Cảnh cáo lần {red or n}: {why.lower()}. ' + _demote(x, d, 'warn4')
+        if ext is not None and o.get('red_hold'):
+            add_hold(ext, o['red_hold'])
+            line += f' Giam hàm {o["red_hold"]} ngày làm.'
+        return line + f' 📖 {how}'
+    if ext is not None and red == o.get('red_kht'):
+        x['evals'] = (x['evals'] + [dict(d=d, g='kht')])[-EVALS_MAX:]
+        x['adj'] = max(-50, x['adj'] - 5)
+        return f'⚠️ Cảnh cáo {n}/{o["warn_max"]}: {why.lower()}. 📋 Ghi 1 kỳ “Không hoàn thành nhiệm vụ”. 📖 {how}'
     return f'⚠️ Cảnh cáo {n}/{o["warn_max"]}: {why.lower()}. 📖 {how}'
+
+
+def demote_hold(x: dict, s: dict, ext: dict, days: int, why: str) -> str:
+    """A grave fault in a case (owner spec 11/10: a child handed to the wrong adult): one grade down at once and the
+    grade held `days` worked days. Logged as a demotion; the warnings stay."""
+    d = _day(s)
+    x['clean'] = 0
+    x['adj'] = max(-50, x['adj'] - 10)
+    line = _demote(x, d, why[:24])
+    add_hold(ext, days)
+    return f'{line} Giam hàm {days} ngày làm.'
+
+
+def hold_only(ext: dict, days: int) -> str:
+    """A case failed (owner spec 11/10: the smuggling ring got away): the grade held `days` worked days."""
+    add_hold(ext, days)
+    return f'⏸️ Giam hàm {days} ngày làm.'
+
+
+def bonus_days(x: dict, n: int = 1) -> str:
+    """A case solved (owner spec 11/10): `n` worked days towards the next grade."""
+    x['tig'] = min(10**6, x['tig'] + int(n))
+    return f'⭐ +{n} ngày xét thăng cấp bậc hàm.'
 
 
 def bribe(x: dict | None, s: dict, c: dict, key: str) -> str:
@@ -389,7 +502,7 @@ def can_own(x: dict | None, c: dict) -> bool:
     return bool(x) and isinstance(x['bt'], dict) and x['bt']['d'] == c['day']
 
 
-def own(x: dict, s: dict, c: dict) -> str:
+def own(x: dict, s: dict, c: dict, ext: dict | None = None) -> str:
     """Owning up the same shift: the demotion is undone and becomes a normal warning; the mark stays (đã tự giác)."""
     bt = x['bt']
     if x['g'] < bt['g']:
@@ -399,7 +512,7 @@ def own(x: dict, s: dict, c: dict) -> str:
     x['bt'] = None
     x['mark']['s'] = True
     _log(x, _day(s), 'own', 'bribe_owned')
-    return '🙇 Tự giác nộp lại phong bì, báo cáo. Giữ bậc hàm, ' + _warn(x, s, c, 'bribe_owned') + ' Dấu liêm chính vẫn ghi “đã tự giác”.'
+    return '🙇 Tự giác nộp lại phong bì, báo cáo. Giữ bậc hàm, ' + _warn(x, s, c, 'bribe_owned', ext) + ' Dấu liêm chính vẫn ghi “đã tự giác”.'
 
 
 def report(x: dict | None) -> str:
@@ -412,8 +525,16 @@ def report(x: dict | None) -> str:
 
 
 # ------------------------------------------------------------------------------------- the day's close
-def close(x: dict, s: dict, c: dict, career: str, worked: bool, good: bool, day_stars: float | None) -> list[str]:
-    """end_day: suspension, the day's ★, decay, the evaluation, a grade step, and the next morning's appointment or course."""
+def close(x: dict, s: dict, c: dict, career: str, worked: bool, good: bool, day_stars: float | None, ext: dict | None = None) -> list[str]:
+    """end_day: suspension, the day's ★, decay, the evaluation, a grade step, and the next morning's appointment or course.
+    `ext`: a held grade (giam hàm) counts down here and blocks the step; 10 clean days clear the red count too."""
+    lines = _close(x, s, c, career, worked, good, day_stars, ext)
+    if ext is not None and not x['warns'] and streak(x) >= OC.ORGS[x['org']]['decay_days']:
+        ext['red'] = 0
+    return lines
+
+
+def _close(x: dict, s: dict, c: dict, career: str, worked: bool, good: bool, day_stars: float | None, ext: dict | None) -> list[str]:
     o = OC.ORGS[x['org']]
     d = _day(s)
     lines = []
@@ -452,8 +573,14 @@ def close(x: dict, s: dict, c: dict, career: str, worked: bool, good: bool, day_
         lines.append(f'📋 Đánh giá kỳ: {label} (★ {st / 10:.1f}).')
         if gid == 'xs' and x['warns']:
             x['warns'].pop(0)
+            if ext is not None:
+                ext['red'] = max(0, ext['red'] - 1)
             _log(x, d, 'clear', 'xs')
             lines.append('🧽 Xuất sắc: xóa 1 cảnh cáo.')
+    if ext is not None and ext['hold'] > 0:
+        ext['hold'] -= 1
+        lines.append(f'⏸️ Giam hàm: còn {ext["hold"]} ngày làm.' if ext['hold'] else '✅ Hết giam hàm từ ca sau.')
+        return lines
     if x['susp'] > 0 or x['due'] is not None:
         return lines
     # A grade step inside the post.
@@ -474,6 +601,11 @@ def close(x: dict, s: dict, c: dict, career: str, worked: bool, good: bool, day_
     tp = target(x)
     if tp and x['wait'] == 0:
         rows = post_rows(x, tp)
+        if tp in OC.SEATS and all(r['met'] for r in rows if r['id'] != 'course'):
+            from . import cand_roster as CR
+            if CR.full(tp):
+                lines.append(f'🪑 Ghế {_post(o, tp)["short"]} đã đủ {OC.SEATS[tp]} người: chờ ghế trống.')
+                return lines
         if all(r['met'] for r in rows if r['id'] != 'course'):
             course = next((r for r in rows if r['id'] == 'course' and not r['met']), None)
             if course:
@@ -531,6 +663,12 @@ def answer(x: dict, s: dict, c: dict, p: dict, need) -> dict:
         x['courses'] = sorted(set(x['courses'] + [due['to']]))
         return dict(message=f'🎓 Đạt {o["courses"][due["to"]]}.', celebrate=True)
     tp = _post(o, due['to'])
+    if tp['id'] in OC.SEATS:
+        from . import cand_roster as CR
+        if CR.full(tp['id']):
+            x['wait'] = RETRY
+            return dict(message=f'Đạt phỏng vấn, nhưng ghế {tp["short"]} đã đủ {OC.SEATS[tp["id"]]} người. Hẹn xét lại sau {RETRY} ngày làm.',
+                        later=True)
     before = post(x)
     x['p'], x['tip'], x['vac'], x['aim'] = tp['id'], 0, None, None
     _hist(x, d, 'p', before['id'], tp['id'], 'appoint')
@@ -671,9 +809,9 @@ LOG_WORD = {'warn': '⚠️ Cảnh cáo', 'demote': '⬇️ Hạ bậc', 'susp':
             'bribe': '💵 Nhận phong bì', 'own': '🙇 Tự giác'}
 
 
-def public(x: dict, c: dict) -> dict:
+def public(x: dict, c: dict, ext: dict | None = None) -> dict:
     o = OC.ORGS[x['org']]
-    g, p = grade(x), post(x)
+    g, p = shown_grade(x), post(x)
     st = stars(x)
     nb = next_grade(x)
     tp = target(x)
@@ -702,23 +840,37 @@ def public(x: dict, c: dict) -> dict:
                 mark=dict(on=x['mark']['b'] is not None, d=x['mark']['b'], self=x['mark']['s']), liem=x['liem'],
                 eval=dict((k, lab) for _, k, lab in o['evals'])[ev['g']] if ev else None, evn=x['evn'], window=o['eval_window'],
                 next_grade=nb, next_post=nxt_post, aims=[dict(id=a, short=_post(o, a)['short']) for a in _aims(x)], aim=tp,
-                due=due, wait=x['wait'], susp=x['susp'], waits=waits(x), pct=raise_pct(x), own=can_own(x, c),
-                ladder=[dict(id=gg['id'], name=gg['name'], ins=gg['ins'], on=i <= x['g']) for i, gg in enumerate(o['grades'][:-1])],
-                boss=OC.BOSS, insp=insp_public(x, c) if p.get('olv') == 4 else None)
+                due=due, wait=x['wait'], susp=x['susp'], waits=waits(x, hold_of(ext)), pct=raise_pct(x), own=can_own(x, c),
+                ladder=_ladder(x), boss=OC.BOSS, seats=dict(OC.SEATS), hold=hold_of(ext),
+                red=int(ext['red']) if ext else len(x['warns']), red_expel=o.get('red_expel'),
+                insp=insp_public(x, c) if p.get('olv') == 4 else None)
+
+
+def _ladder(x: dict) -> list[dict]:
+    """Every grade (the Học viên board between Thượng sĩ and Thiếu úy), the ones reached lit."""
+    o = OC.ORGS[x['org']]
+    rows = []
+    for i, gg in enumerate(o['grades']):
+        rows.append(dict(id=gg['id'], name=gg['name'], ins=gg['ins'], on=i <= x['g']))
+        ca = OC.CADET
+        if x['org'] == 'cand' and gg['id'] == ca['grade']:
+            rows.append(dict(id=ca['id'], name=ca['name'], ins=ca['ins'], on=cadet(x) or i < x['g']))
+    return rows
 
 
 # ------------------------------------------------------------------------------------- validation
 def validate(career: str, x, need, integer, txt, bad: str) -> None:
     need(isinstance(x, dict) and set(x) == KEYS and x['v'] == V and x['org'] in OC.ORGS, bad, 'invalid_save')
     o = OC.ORGS[x['org']]
-    integer(x['g'], 0, len(o['grades']) - 2)   # never the NPC-only top grade
+    integer(x['g'], 0, len(o['grades']) - 1)
     need(x['p'] in {p['id'] for p in o['posts']}, bad)
+    need(x['g'] < len(o['grades']) - 1 or _post(o, x['p'])['hi'] == o['grades'][-1]['id'], bad)   # the top grade: GĐ only
     for k in ('tig', 'tip'):
         integer(x[k], 0, 10**6)
     need(isinstance(x['st'], list) and len(x['st']) <= ST_MAX, bad)
     for v in x['st']:
         integer(v, 10, 50)
-    need(isinstance(x['warns'], list) and len(x['warns']) < o['demote_on'], bad)
+    need(isinstance(x['warns'], list) and len(x['warns']) <= WARNS_KEPT, bad)
     for w in x['warns']:
         need(isinstance(w, dict) and set(w) == {'d', 'c'} and w['c'] in OC.VIOLATIONS, bad)
         integer(w['d'], 1, 10**6)
@@ -762,7 +914,7 @@ def validate(career: str, x, need, integer, txt, bad: str) -> None:
     if bt is not None:
         need(isinstance(bt, dict) and set(bt) == {'d', 'g', 'p', 's'} and bt['p'] in {p['id'] for p in o['posts']}, bad)
         integer(bt['d'], 1, 10**9)
-        integer(bt['g'], 0, len(o['grades']) - 2)
+        integer(bt['g'], 0, len(o['grades']) - 1)
         integer(bt['s'], 0, o['susp_days'])
     integer(x['adj'], -50, 10)
     vt = x['vt']
@@ -786,3 +938,21 @@ def validate(career: str, x, need, integer, txt, bad: str) -> None:
             need(isinstance(rw['bad'], list) and len(rw['bad']) == 3 and all(type(b) is bool for b in rw['bad']) and type(rw['cor']) is bool, bad)
             need(isinstance(rw['m'], list) and len(rw['m']) == 3 and all(m_ is None or type(m_) is bool for m_ in rw['m']), bad)
             need(rw['gr'] is None or rw['gr'] in INSP_GRADES, bad)
+
+
+def validate_ext(e, need, integer, txt, bad: str) -> None:
+    need(isinstance(e, dict) and set(e) == EXT_KEYS and e['v'] == EXT_V, bad)
+    integer(e['red'], 0, 99)
+    integer(e['hold'], 0, HOLD_MAX)
+    for k, mx in (('sev', SEV_MAX), ('hon', HON_MAX)):
+        need(isinstance(e[k], list) and len(e[k]) <= mx, bad)
+        for r in e[k]:
+            need(isinstance(r, dict) and set(r) == ({'t', 'c'} if k == 'sev' else {'t', 'by'}), bad)
+            integer(r['t'], 0, 10**11)
+            txt(r['c' if k == 'sev' else 'by'], 40)
+    o = e['out']
+    if o is not None:
+        need(isinstance(o, dict) and set(o) == {'t', 'd', 'c'}, bad)
+        integer(o['t'], 0, 10**11)
+        integer(o['d'], 1, 10**6)
+        txt(o['c'], 40)

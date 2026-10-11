@@ -156,17 +156,73 @@ class Migration(unittest.TestCase):
 
 
 class Warnings(unittest.TestCase):
-    def test_fourth_warning_demotes_one_grade_and_resets(self):
+    def test_red_marks_escalate_kht_then_demotion_and_hold_then_expulsion(self):
+        """Owner 11/10 (bút tích đỏ): the 2nd warning is a "Không hoàn thành nhiệm vụ" period, the 3rd one grade down
+        and the grade held 20 worked days, the 4th (no 10 clean days between) jail, expulsion and a ban."""
         j = officer('to_vien', 'trung_si')
-        for i in range(3):
-            line = pm.violation(j.state, j.c, 'police', 'skip_step', f't{i}')
-            self.assertIn(f'{i + 1}/3', line)
-        self.assertEqual(len(view(j)['org']['warns']), 3)
-        line = pm.violation(j.state, j.c, 'police', 'skip_step', 't3')
+        line = pm.violation(j.state, j.c, 'police', 'skip_step', 't0')
+        self.assertIn('1/3', line)
+        line = pm.violation(j.state, j.c, 'police', 'skip_step', 't1')
+        self.assertIn('2/3', line)
+        self.assertIn('Không hoàn thành nhiệm vụ', line)
+        self.assertEqual(org(j)['evals'][-1]['g'], 'kht')
+        self.assertEqual(len(view(j)['org']['warns']), 2)
+        line = pm.violation(j.state, j.c, 'police', 'skip_step', 't2')
         self.assertIn('Hạ 1 bậc hàm', line)
+        self.assertIn('Giam hàm 20', line)
         x = org(j)
         self.assertEqual(O['grades'][x['g']]['id'], 'ha_si')
         self.assertEqual(x['warns'], [])
+        rec = pm.record(j.state, 'police')
+        self.assertEqual((rec['cx']['red'], rec['cx']['hold']), (3, 20))
+        self.assertEqual(view(j)['org']['hold'], 20)
+        validate_state(j.state)
+        line = pm.violation(j.state, j.c, 'police', 'skip_step', 't3')
+        self.assertIn('Khai trừ', line)
+        self.assertTrue(pm.expel_due(rec))
+        from unittest import mock
+        from game import jail
+        j.state['journey']['story'] = True   # the trại tạm giữ is the journey's
+        j.state['journey'].setdefault('unlocked', []).append('police')
+        with mock.patch.dict(os.environ, {'MNL_JAIL_OFF': ''}):
+            r = j.act('end_day', carry_event=True)
+            self.assertTrue(jail.jailed(j.state))
+            validate_state(j.state)
+        self.assertIn('khai trừ', ' '.join(r['summary']['promo']['org']).lower())
+        self.assertIn('Tạm giữ 3 ngày', ' '.join(r['summary']['promo']['org']))
+        self.assertEqual(j.c['job']['status'], 'none')
+        self.assertTrue(j.state['journey']['gov_ban'])
+        with self.assertRaises(GameError):
+            j.act('job_apply', posting='cap-kv')
+
+    def test_a_held_grade_takes_no_step_until_it_is_served(self):
+        j = officer('to_vien', 'binh_nhi')
+        rec = pm.record(j.state, 'police')
+        x = org(j)
+        x['st'], x['tig'] = [45] * 10, 10
+        ORG.ext_of(rec, x)['hold'] = 2
+        self.assertIn('hold', [r['id'] for r in view(j)['next']['requirements']])
+        day(j)
+        self.assertEqual(O['grades'][org(j)['g']]['id'], 'binh_nhi')
+        day(j)
+        self.assertEqual(O['grades'][org(j)['g']]['id'], 'binh_nhi')
+        self.assertEqual(pm.record(j.state, 'police')['cx']['hold'], 0)
+        day(j)
+        self.assertEqual(O['grades'][org(j)['g']]['id'], 'binh_nhat')
+        validate_state(j.state)
+
+    def test_case_hooks_demote_hold_and_bonus(self):
+        j = officer('to_vien', 'trung_si')
+        line = pm.case_grave(j.state, j.c, 'police', 'kidnap', 15, 'kidnap')
+        self.assertIn('Hạ 1 bậc hàm', line)
+        rec = pm.record(j.state, 'police')
+        self.assertEqual((O['grades'][org(j)['g']]['id'], rec['cx']['hold'], rec['cx']['sev'][-1]['c']), ('ha_si', 15, 'kidnap'))
+        self.assertIn('Giam hàm 3', pm.case_hold(j.state, j.c, 'police', 3))
+        rec = pm.record(j.state, 'police')
+        self.assertEqual(rec['cx']['hold'], 15)   # the longer hold stands
+        t = org(j)['tig']
+        self.assertIn('+1 ngày', pm.case_bonus(j.state, j.c, 'police', 1))
+        self.assertEqual(org(j)['tig'], t + 1)
         validate_state(j.state)
 
     def test_one_warning_per_key_a_day_and_grace(self):
@@ -244,7 +300,7 @@ class Feedback251(unittest.TestCase):
         return j
 
     def test_a_served_discipline_clears_every_warning_and_the_appointment_follows(self):
-        j = self.ready(warns=3)
+        j = self.ready(warns=2)
         nxt = view(j)['next']
         self.assertEqual(nxt['title'], 'Tổ trưởng')
         lock = [r['label'] for r in nxt['requirements'] if not r['met']]
@@ -252,7 +308,7 @@ class Feedback251(unittest.TestCase):
         day(j)   # the violation day
         for i in range(O['decay_days'] - 1):
             day(j)
-            self.assertEqual(len(org(j)['warns']), 3)
+            self.assertEqual(len(org(j)['warns']), 2)
         self.assertIn('Xóa cảnh cáo: 9/10 ngày làm không vi phạm', [r['label'] for r in view(j)['next']['requirements']])
         day(j)
         x = org(j)
@@ -526,12 +582,14 @@ class Insignia(unittest.TestCase):
             got = json.loads(re.sub(r'(\w+):', r'"\1":', rows[g['id']]).replace("'", '"'))
             self.assertEqual(got, g['ins'], g['id'])
         from live.street_data import ORG_GRADES
-        self.assertEqual(ORG_GRADES['cand'], tuple(g['id'] for g in O['grades'][:-1]))   # never the NPC-only general
+        self.assertEqual(ORG_GRADES['cand'], tuple(g['id'] for g in O['grades']) + (OC.CADET['id'],))
+        self.assertIn(OC.CADET['id'], rows)
 
     def test_live_keeps_a_known_rank_and_drops_anything_else(self):
         from live.street import clean_rank
         self.assertEqual(clean_rank({'o': 'cand', 'g': 'dai_uy'}), {'o': 'cand', 'g': 'dai_uy'})
-        for bad in (None, 'x', {'o': 'cand', 'g': 'thieu_tuong'}, {'o': 'x', 'g': 'dai_uy'}, {'o': 'cand', 'g': 'dai_uy', 'z': 1}):
+        self.assertEqual(clean_rank({'o': 'cand', 'g': 'hoc_vien'}), {'o': 'cand', 'g': 'hoc_vien'})
+        for bad in (None, 'x', {'o': 'cand', 'g': 'dai_tuong'}, {'o': 'x', 'g': 'dai_uy'}, {'o': 'cand', 'g': 'dai_uy', 'z': 1}):
             self.assertIsNone(clean_rank(bad))
 
 
@@ -594,3 +652,76 @@ class Saves(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class Directors(unittest.TestCase):
+    """Owner spec 11/10: Giám đốc CATP (1 seat) after 20 clean days as PGĐ (5 seats), Thiếu tướng after 10 clean days
+    more at Đại tá; Học viên between Thượng sĩ and Thiếu úy."""
+
+    def setUp(self):
+        from game import cand_roster as CR
+        self.CR = CR
+        CR._cache.update(at=0.0, n={})
+
+    def tearDown(self):
+        self.CR._cache.update(at=0.0, n={})
+
+    def pgd(self, clean=20):
+        j = officer('pgd', 'dai_ta')
+        x = org(j)
+        x['st'], x['tip'], x['clean'] = [48] * 10, 20, clean
+        return j
+
+    def test_the_way_to_giam_doc_needs_twenty_clean_days(self):
+        j = self.pgd(clean=19)
+        rows = {r['id']: r for r in view(j)['next']['requirements']}
+        self.assertEqual(view(j)['next']['title'], 'Giám đốc CATP')
+        self.assertFalse(rows['run']['met'])
+        org(j)['clean'] = 20
+        rows = {r['id']: r for r in view(j)['next']['requirements']}
+        self.assertTrue(rows['run']['met'])
+
+    def test_a_full_seat_waits_and_a_free_one_appoints(self):
+        j = self.pgd()
+        self.CR._cache.update(at=10**12, n={'gd': 1})
+        day(j)
+        self.assertIsNone(org(j)['due'])
+        self.assertIn('seats', [w['id'] for w in view(j)['org']['waits']])
+        self.CR._cache.update(at=10**12, n={})
+        for _ in range(ORG.VAC_WAIT + 2):
+            if org(j)['due']:
+                break
+            day(j)
+        self.assertEqual(org(j)['due']['to'], 'gd')
+        self.CR._cache.update(at=10**12, n={'gd': 1})   # taken overnight: the interview passes, the seat waits
+        answer_due(j)
+        self.assertEqual(org(j)['p'], 'pgd')
+        self.assertEqual(org(j)['wait'], ORG.RETRY)
+        validate_state(j.state)
+
+    def test_giam_doc_rises_to_thieu_tuong_after_ten_clean_days(self):
+        j = officer('gd', 'dai_ta')
+        x = org(j)
+        x['st'], x['clean'] = [48] * 10, 25
+        for _ in range(4):
+            day(j)
+        self.assertEqual(O['grades'][org(j)['g']]['id'], 'dai_ta')   # 10 days at Đại tá, 30 clean in a row
+        x = org(j)
+        x['tig'] = 10
+        day(j)
+        x = org(j)
+        self.assertEqual(O['grades'][x['g']]['id'], 'thieu_tuong')
+        self.assertEqual(view(j)['org']['grade']['name'], 'Thiếu tướng')
+        validate_state(j.state)
+        x['p'] = 'pgd'   # never the general below the Giám đốc's seat
+        with self.assertRaises(GameError):
+            validate_state(j.state)
+
+    def test_hoc_vien_shows_after_the_officer_course(self):
+        j = officer('to_vien', 'thuong_si')
+        org(j)['courses'] = ['chuyen_loai']
+        v = view(j)['org']
+        self.assertEqual((v['grade']['id'], v['grade']['name'], v['grade']['ins']), ('hoc_vien', 'Học viên', {'base': 'cadet'}))
+        ids = [g['id'] for g in v['ladder']]
+        self.assertEqual(ids[ids.index('thuong_si') + 1], 'hoc_vien')
+        self.assertEqual(ids[-1], 'thieu_tuong')

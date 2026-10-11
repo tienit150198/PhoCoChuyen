@@ -7,7 +7,8 @@ An org has two separate tracks (owner spec 06/10):
   appointment), days in the current post, ★, no open warning, a vacancy and a short interview.
 
 Insignia (`ins`) are drawn by public/js/v4/insignia.js, generic for every org:
-  base 'nco' | 'officer' | 'general'   the board's colour (the game's own palette: teal, deep teal, bronze)
+  base 'nco' | 'officer' | 'general' | 'cadet'   the board's colour (owner spec 11/10: red #EE0000, the general #DD0000,
+                                                 yellow marks; 'cadet' the plain board of a Học viên)
   v  chevrons (vạch chữ V)          h  straight stripes (vạch ngang)
   b  long bars (1 cấp úy, 2 cấp tá) s  stars                big  one big star (cấp tướng)
 Another org may later add its own shape keys (the pilot keeps promotion_content.INSIGNIA for now).
@@ -45,9 +46,14 @@ CAND_GRADES = (
     _g('thieu_ta', 'Thiếu tá', dict(base=OFFICER, b=2, s=1), 10, 42, coef=6.0),
     _g('trung_ta', 'Trung tá', dict(base=OFFICER, b=2, s=2), 10, 43, 'course:chi_huy_tp', coef=6.6),
     _g('thuong_ta', 'Thượng tá', dict(base=OFFICER, b=2, s=3), 12, 45, 'clean', coef=7.3),
-    _g('dai_ta', 'Đại tá', dict(base=OFFICER, b=2, s=4), None, None, coef=8.0),            # the players' ceiling
-    _g('thieu_tuong', 'Thiếu tướng', dict(base=GENERAL, big=1, s=1), None, None, 'npc'),   # Giám đốc CATP: an NPC only
+    # Đại tá → Thiếu tướng (owner spec 11/10): only as Giám đốc CATP, 10 worked days at Đại tá, and 30 worked days in a
+    # row without any violation (the 20 days as PGĐ before the appointment and these 10).
+    _g('dai_ta', 'Đại tá', dict(base=OFFICER, b=2, s=4), 10, 45, 'clean:30', coef=8.0),
+    _g('thieu_tuong', 'Thiếu tướng', dict(base=GENERAL, s=1), None, None, coef=9.0),     # the Giám đốc CATP's ceiling
 )
+# 🎓 Học viên (owner spec 11/10): a Thượng sĩ who passed the officer course shows a plain red board until the
+# commission (the next day's close: Thiếu úy). A display only: the record keeps the grade Thượng sĩ.
+CADET = dict(id='hoc_vien', name='Học viên', ins=dict(base='cadet'), course='chuyen_loai', grade='thuong_si')
 
 # Ward chain → (transfer) city. Trưởng phòng PC06's ceiling is Thượng tá (owner OK 06/10), so the way to PGĐ works.
 CAND_POSTS = (
@@ -66,15 +72,21 @@ CAND_POSTS = (
        frm=('pho_phong',), olv=3, bonus=15, chain='city'),
     _p('tro_ly', 'Thư ký – Trợ lý Ban Giám đốc', 'Trợ lý BGĐ', 'tp', 'trung_ta', 'thuong_ta', 12, need=42,
        frm=('truong_ca', 'pho_phong', 'truong_phong'), olv=4, bonus=12, chain='aide', extra=dict(good_evals=3, nomark=True)),
-    _p('pgd', 'Phó Giám đốc Công an Thành phố', 'Phó Giám đốc CATP', 'tp', 'thuong_ta', 'dai_ta', 10, need=45,
+    # PGĐ → GĐ: 20 worked days as PGĐ, every one without a violation (owner spec 11/10).
+    _p('pgd', 'Phó Giám đốc Công an Thành phố', 'Phó Giám đốc CATP', 'tp', 'thuong_ta', 'dai_ta', 20, need=45,
        frm=('truong_phong', 'tro_ly'), olv=5, bonus=20, chain='city', extra=dict(nomark=True)),
+    _p('gd', 'Giám đốc Công an Thành phố', 'Giám đốc CATP', 'tp', 'dai_ta', 'thieu_tuong', 0, need=45,
+       frm=('pgd',), olv=5, bonus=25, chain='city', extra=dict(nomark=True, clean=20)),
 )
+# Seats players may hold at once (owner spec 11/10): a post here is appointed only while fewer players hold it
+# (game/cand_roster.py counts them across saves). Thiếu tướng is the Giám đốc's ceiling, so it has one seat too.
+SEATS = {'pgd': 5, 'gd': 1}
 # After each post: where the next appointment may lead, in order (the first is the default way; the player may aim
 # for another one on the rank card).
 CAND_NEXT = {
     'to_vien': ('to_pho',), 'to_pho': ('to_truong',), 'to_truong': ('doi_pho',), 'doi_pho': ('doi_truong',),
     'doi_truong': ('pho_truong_ca',), 'pho_truong_ca': ('truong_ca', 'pho_phong'), 'truong_ca': ('pho_phong', 'tro_ly'),
-    'pho_phong': ('truong_phong', 'tro_ly'), 'truong_phong': ('pgd', 'tro_ly'), 'tro_ly': ('pgd',), 'pgd': (),
+    'pho_phong': ('truong_phong', 'tro_ly'), 'truong_phong': ('pgd', 'tro_ly'), 'tro_ly': ('pgd',), 'pgd': ('gd',), 'gd': (),
 }
 
 COURSES = {
@@ -133,19 +145,21 @@ QUESTION_INDEX = {q['id']: q for rows in QUESTIONS.values() for q in rows}
 
 # NPCs named in messages: who fills a seat a demotion leaves, who signs, who approves.
 SEAT_NPC = ('Thiếu tá Đỗ Văn Khang', 'Đại úy Lê Thu Hà', 'Thượng úy Phan Minh', 'Trung úy Vũ Hạnh', 'Thiếu úy Đặng Quý', 'Trung tá Ngô Tường')
-BOSS = 'Thiếu tướng Hoàng Trí, Giám đốc Công an Thành phố'   # NPC only: never a player's post
+BOSS = 'Thiếu tướng Hoàng Trí, Giám đốc Công an Thành phố'   # signs while no player holds the Giám đốc's seat
 
 ORGS = {
     'cand': dict(
         name='Công an nhân dân', unit='Công an phường Mây', grade_word='Cấp bậc hàm', post_word='Chức vụ',
         grades=CAND_GRADES, posts=CAND_POSTS, next=CAND_NEXT, courses=COURSES,
         pay_ref=3.2, eval_window=10, evals=EVALS,
-        warn_max=3, demote_on=4, decay_days=10, susp_days=3,
-        severe=SEVERE, bar_on_mark=('tro_ly', 'pgd', 'dai_ta'),
+        # Warnings (bút tích đỏ, owner 11/10): the 2nd is a "Không hoàn thành nhiệm vụ" period, the 3rd one grade down
+        # and the grade held 20 worked days, the 4th (before 10 clean days) jail, expulsion and a ban from the force.
+        warn_max=3, demote_on=3, decay_days=10, susp_days=3, red_kht=2, red_hold=20, red_expel=4, expel_jail=3,
+        severe=SEVERE, bar_on_mark=('tro_ly', 'pgd', 'gd', 'dai_ta', 'thieu_tuong'),
         start=('to_vien', 'binh_nhi'),
         # The step the record keeps for builds without org (game/promotion.py rank 0..4; nobody's step goes down there).
         step={'to_vien': 0, 'to_pho': 2, 'to_truong': 3, 'doi_pho': 3, 'doi_truong': 3, 'pho_truong_ca': 4, 'truong_ca': 4,
-              'pho_phong': 4, 'truong_phong': 4, 'tro_ly': 4, 'pgd': 4},
+              'pho_phong': 4, 'truong_phong': 4, 'tro_ly': 4, 'pgd': 4, 'gd': 4},
         # Existing players (never lowered): their step → post and grade.
         migrate=(('to_vien', 'ha_si'), ('to_vien', 'thuong_si'), ('to_pho', 'trung_uy'), ('to_truong', 'thuong_uy'),
                  ('pho_truong_ca', 'thieu_ta')),

@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 39  # 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 40  # 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -599,6 +599,24 @@ CREATE TABLE IF NOT EXISTS wed_invite_seen (
 -- written in the save's own transaction, so the live server knows "free" from a primary-key lookup (no save read).
 -- Not in the save: an older build ignores it (a stale row is checked against the save and deleted).
 CREATE TABLE IF NOT EXISTS jail_marks (sid {T} PRIMARY KEY, until double precision NOT NULL);
+-- 👮 Công an phường Mây across players (owner spec 11/10; SCHEMA_VERSION 40). cand_roster: one row per save on the CAND
+-- ladder, written in the save's own transaction (game/cand_roster.py command_commit): the seat caps (PGĐ 5, GĐ 1) and
+-- the commanders' lists. cand_stops: a patrol's stop of a player at Chợ đen (game/cand_ops.py), status ask -> offer ->
+-- done | gone, every move a guarded UPDATE from the status before. cand_acts: a commander's commendation or expulsion,
+-- one per (by, target, kind, day). Not in the save: an older build never sees them.
+CREATE TABLE IF NOT EXISTS cand_roster (
+  sid {T} PRIMARY KEY, name {T} NOT NULL DEFAULT '', post {T} NOT NULL, grade {T} NOT NULL, seen double precision NOT NULL,
+  sev double precision NOT NULL DEFAULT 0, sev_code {T} NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS cand_stops (
+  id {T} PRIMARY KEY, officer {T} NOT NULL, target {T} NOT NULL, at double precision NOT NULL, status {T} NOT NULL DEFAULT 'ask',
+  act {T} NOT NULL DEFAULT '', bribe bigint NOT NULL DEFAULT 0, outcome {T} NOT NULL DEFAULT '', done_at double precision,
+  day {T} NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS cand_acts (
+  id {T} PRIMARY KEY, by_sid {T} NOT NULL, target {T} NOT NULL, kind {T} NOT NULL, day {T} NOT NULL, at double precision NOT NULL,
+  note {T} NOT NULL DEFAULT ''
+);
 -- 🐕 Kéo co chó sủa (game/dog_bark.py, live/dog_bark.py; SCHEMA_VERSION 34): one row per stake put in escrow (`id` the
 -- ticket, the payout row is live_effects 'bark:<id>'). status wait -> play | dog -> done, or -> back (refunded); every
 -- move is a guarded UPDATE from the status before, so a ticket is settled once. No save key: an older build never sees it.
@@ -696,6 +714,10 @@ CREATE INDEX IF NOT EXISTS quay_jobs_worker ON quay_jobs (worker, status);
 CREATE INDEX IF NOT EXISTS quay_jobs_open ON quay_jobs (status, until);
 CREATE INDEX IF NOT EXISTS bank_xfers_receiver ON bank_xfers (receiver, status);
 CREATE INDEX IF NOT EXISTS bank_xfers_sender ON bank_xfers (sender, at);
+CREATE INDEX IF NOT EXISTS cand_roster_post ON cand_roster (post, seen);
+CREATE INDEX IF NOT EXISTS cand_stops_target ON cand_stops (target, at);
+CREATE INDEX IF NOT EXISTS cand_stops_officer ON cand_stops (officer, at);
+CREATE INDEX IF NOT EXISTS cand_acts_target ON cand_acts (target, kind, day);
 CREATE INDEX IF NOT EXISTS bank_xfers_open ON bank_xfers (status, at);
 CREATE INDEX IF NOT EXISTS live_dates_at ON live_dates (at);
 CREATE INDEX IF NOT EXISTS date_bonds_b ON date_bonds (b);
@@ -923,6 +945,9 @@ TABLES = [
     dict(name='wed_invites', identity='id'),
     dict(name='wed_invite_seen', identity=None),
     dict(name='jail_marks', identity=None),
+    dict(name='cand_roster', identity=None),
+    dict(name='cand_stops', identity=None),
+    dict(name='cand_acts', identity=None),
     dict(name='bark_tickets', identity=None),
     dict(name='fair_loss_week', identity=None),
     dict(name='mnl_meta', identity=None),

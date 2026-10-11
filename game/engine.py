@@ -748,6 +748,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         c["day_start_money"]=c["money"];c["earnings"]=0;c["costs"]=0
         if c["event"] and c["event"]["stage"]=="resolved":c["event"]=None
         log(s,c,"day",f"Khép ngày {oldday}; {summary['completed']} việc xong, {summary['carried']} việc được giữ lại.")
+        out_lines=pm.after_close(s,c,career)  # 👮 an expulsion set during the day (owner 11/10): jail, contract ended, ban
+        if out_lines:summary["promo"]=dict(summary.get("promo") or {},org=list((summary.get("promo") or {}).get("org") or [])+out_lines)
         result.update(message="Một ngày nữa đã có câu chuyện để nhớ.",summary=summary)
     elif action=="more_work":
         need(not pm.managing(s,c,career),"Hôm nay bạn làm quản lý: giao việc cho đội nhé.","manager_shift")

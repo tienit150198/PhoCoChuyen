@@ -88,8 +88,8 @@ SAFE_S = 86400                 # the safety release: past days × SAFE_S real se
 ASK_GAP_S = 600                # one bail request to the friends every ten minutes at most
 ASK_MAX = 60                   # friends asked at most (the newest friendships first)
 ASK_DAYS = 4                   # a request older than this is not shown any more
-WHY = ('bm', 'cop')
-WHY_TEXT = dict(bm='Đánh bạc ở chợ đen', cop='Tố cáo sai sự thật')
+WHY = ('bm', 'cop', 'cand')
+WHY_TEXT = dict(bm='Đánh bạc ở chợ đen', cop='Tố cáo sai sự thật', cand='Bị khai trừ khỏi lực lượng Công an')
 KEYS = {'v', 'id', 'why', 'days', 'left', 'at', 'day', 'since', 'tasks', 'done', 'go', 'ask'}
 KEY2 = 'jail2'
 VERSION2 = 1
