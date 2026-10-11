@@ -60,6 +60,13 @@ class WedCase(LiveCase):
         with self.store.connect() as db:
             return [dict(r) for r in db.execute(sql, args).fetchall()]
 
+    async def until(self, check, tries=50):
+        """Payments are tasks spawned by the ticks: a loaded machine needs more than the ticks' 0.3 s."""
+        for _ in range(tries):
+            if check():
+                return
+            await asyncio.sleep(0.1)
+
 
 @unittest.skipUnless(HAVE_WS, 'needs websockets')
 class Room(WedCase):
@@ -147,11 +154,9 @@ class Attendance(WedCase):
         await self.ticks(at - 30, 30 + 90)                  # the party starts, and someone leaves after a minute and a half
         await early.call('walk_out', 'walk_left')
         await self.ticks(at + 90, 3 * 60)                   # four minutes in
-        for _ in range(40):   # the minute grants land asynchronously after the ticks (a loaded machine needs more than 0.3 s)
-            coins = self.rows("SELECT id, amount FROM live_effects WHERE sid=? AND kind='coins' ORDER BY id", sid)
-            if len(coins) >= 4 and len(self.rows("SELECT id FROM live_effects WHERE sid=? AND kind='coins'", sa)) >= 4:
-                break
-            await asyncio.sleep(0.1)
+        n = lambda s: len(self.rows("SELECT id FROM live_effects WHERE sid=? AND kind='coins'", s))   # noqa: E731
+        await self.until(lambda: n(sid) >= 4 and n(sa) >= 4 and n(esid) >= 2)
+        coins = self.rows("SELECT id, amount FROM live_effects WHERE sid=? AND kind='coins' ORDER BY id", sid)
         self.assertEqual([r['amount'] for r in coins], [WL.MINUTE_XU] * 4)
         self.assertEqual(len(self.rows("SELECT id FROM live_effects WHERE sid=? AND kind='coins'", sa)), 4, 'the couple are paid too')
         self.assertEqual(len(self.rows("SELECT id FROM live_effects WHERE sid=? AND kind='coins'", esid)), 2, 'only the minutes present')
@@ -175,12 +180,15 @@ class Attendance(WedCase):
         tok, sid = self.account('Hà Vy')
         await self.join(tok, wid)
         await self.ticks(at - 5, 5 + 125)                   # minutes 1 and 2 paid
+        steps = lambda: self.rows('SELECT paid, steps FROM wedding_guests WHERE wedding=? AND sid=?', wid, sid)   # noqa: E731
+        await self.until(lambda: steps() == [dict(paid=1, steps=2)])
         self.wed.att.clear()                                # a new process: nothing in memory
         for p in self.wed.parties.values():
             p.pop('minute', None)
         g = await self.join(tok, wid)                       # the socket walks back in
         await asyncio.sleep(0.3)
         await self.ticks(at + 125, 60)
+        await self.until(lambda: steps() == [dict(paid=1, steps=3)])
         coins = self.rows("SELECT id FROM live_effects WHERE sid=? AND kind='coins' ORDER BY id", sid)
         self.assertEqual(len(coins), 3)
         self.assertEqual(self.rows('SELECT paid, steps FROM wedding_guests WHERE wedding=? AND sid=?', wid, sid), [dict(paid=1, steps=3)])
