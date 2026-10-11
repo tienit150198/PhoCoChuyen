@@ -393,19 +393,14 @@ def sell_fee(value: int) -> int:
     return max(FEE_MIN, -(-value * SELL_FEE_PCT // 100))
 
 
-<<<<<<< HEAD
 def value_of(own: dict, day: int, basis: int = 10000, idle: int = 0) -> int:
-    """Market value today: the price plus GROW_RATE per year held, capped, rounded down to 10 xu. `idle`: life days held
-    that the real-time allowance did not cover (idle_days): they add no value."""
-=======
-def value_of(own: dict, day: int, basis: int = 10000) -> int:
     """Market value today: the price plus GROW_RATE per year held, capped, times today's property quote over the one
-    it was bought at (`basis`, journey.property_market_basis), rounded down to 10 xu.
+    it was bought at (`basis`, journey.property_market_basis), rounded down to 10 xu. `idle`: life days held that the
+    real-time allowance did not cover (idle_days): they add no value.
 
     The price paid is always the fixed list price, so a quote below neutral on the purchase day is read as neutral
     (11/10 audit: buying during bad news and selling once it was over paid 1.75–2.9×, +22–79k a villa). A quote above
     neutral still counts: a home bought at list during good news is not an instant resale windfall."""
->>>>>>> fix/housing-skill-1011
     price = own['price']
     held = max(0, day - own['day'] - max(0, idle))
     grown = price + price * GROW_RATE * held // (10000 * YEAR_DAYS)
