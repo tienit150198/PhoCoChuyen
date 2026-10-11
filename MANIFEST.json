@@ -1,15 +1,15 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "2.0.1",
-  "created_at_utc": "2026-10-11T04:51:37.453753+00:00",
+  "version": "2.0.2",
+  "created_at_utc": "2026-10-11T05:06:10.079374+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 526,
+  "minified": 527,
   "release_from_live": {
     "live_release": "mot-ngay-lam-nghe",
     "live_version": "2.0.0",
     "live_manifest_sha256": "eb822c13a05b204c6cde23133411aa76351d77fb47083d0d5c4d7e1ff58d5528",
     "base": "253bc53c91eb6fdbeab14ea7381ebe08ccee2f19",
-    "ref": "4e1923c7f7759368ac13473518aab32b132046eb",
+    "ref": "22be33b0ed6ceec017022f720880ba8fb986b9ba",
     "changed": [
       "CHANGELOG.md",
       "client/isometric/performance-probe.ts",
@@ -19,9 +19,12 @@
       "docs/LIVE_BASE.md",
       "docs/RELEASE_2.0.0_READINESS.md",
       "docs/qa/dual-interface-2026-10-11.md",
+      "docs/qa/feedback-2026-10-11.md",
       "docs/qa/hotfix-2.0.1-2026-10-11.md",
       "game/__init__.py",
+      "game/career_stories.py",
       "game/fair_bm.py",
+      "game/inventory.py",
       "game/pg_schema.py",
       "game/town_treasure.py",
       "live/town_treasure.py",
@@ -35,7 +38,9 @@
       "public/js/isometric/water-poses.js",
       "public/js/pixel/places.js",
       "public/js/shared-island.js",
+      "public/js/v4/dog-bark.js",
       "public/js/v4/town-walk.js",
+      "tests/dog_bark_recovery.mjs",
       "tests/isometric-character-composition.mjs",
       "tests/isometric-peer-render-performance.mjs",
       "tests/isometric-performance-probe.mjs",
@@ -46,6 +51,9 @@
       "tests/pixel-places.mjs",
       "tests/shared-island.mjs",
       "tests/test_black_market.py",
+      "tests/test_career_stories.py",
+      "tests/test_inventory_cart.py",
+      "tests/test_inventory_cart_40.py",
       "tests/test_jail.py",
       "tests/test_live_town_treasure.py",
       "tests/test_town_treasure.py",
@@ -62,6 +70,7 @@
       "public/js/isometric/water-poses.js",
       "public/js/pixel/places.js",
       "public/js/shared-island.js",
+      "public/js/v4/dog-bark.js",
       "public/js/v4/town-walk.js"
     ]
   },
@@ -1442,6 +1451,11 @@
       "sha256": "d091e5f6d6186cc76a6853e4e0fe98a1e84d2700ae69f611b06ef0a0aa32a8df"
     },
     {
+      "path": "docs/qa/feedback-2026-10-11.md",
+      "bytes": 4095,
+      "sha256": "5a788f40b0afe9df4cb9684359a189b6954d377a2117945de5009f98fa147adb"
+    },
+    {
       "path": "docs/qa/hotfix-2.0.1-2026-10-11.md",
       "bytes": 5949,
       "sha256": "a082b86b5cb7bf7023b3008fc9079aa20c1fe7ab090959a08f18dc378b328b42"
@@ -1994,7 +2008,7 @@
     {
       "path": "game/__init__.py",
       "bytes": 105,
-      "sha256": "64ecd95324d9c61cfec9f4a7e8248c74924a3cace082163bb3804bbc28b584af"
+      "sha256": "216009482c41a2c97eef4c01d641c1065f3e2d33aa417e9f37c281b23fa1d415"
     },
     {
       "path": "game/abandon.py",
@@ -2158,8 +2172,8 @@
     },
     {
       "path": "game/career_stories.py",
-      "bytes": 217421,
-      "sha256": "fcd0a483f1e6f60e5d0abe4aff037dbe4ff8ad3ce63b3d88c8ed16d93d021f65"
+      "bytes": 217481,
+      "sha256": "ca5acc3abbce5be609085ea922e342d777b532cf813bf06ecfcf94227d6783e0"
     },
     {
       "path": "game/career_voice.py",
@@ -2884,7 +2898,7 @@
     {
       "path": "game/inventory.py",
       "bytes": 89584,
-      "sha256": "943208e0c9ac1e8576806467682cc96f5a3ea9e07e4e1c8e4014f0a0bc683e53"
+      "sha256": "c5932969e7095c491653ec723c077e409facbae1f4b6581732f848784ba43663"
     },
     {
       "path": "game/invest.py",
@@ -3624,12 +3638,12 @@
     {
       "path": "package-lock.json",
       "bytes": 35890,
-      "sha256": "a20142857edce53bcc06d3d1721a0b35a899c0ca9c6a08e367b3cfaea8140852"
+      "sha256": "706f4da86aa375eb609975a08da7f4f48fffee1afef44ff2a2ebd46aa5cd8ffa"
     },
     {
       "path": "package.json",
       "bytes": 3745,
-      "sha256": "07a25371b55966e9af81ef12560d5c59cc6b816ae9ee4534a5db77041b95306f"
+      "sha256": "e467e79a06032853299a603a03555cd4e5d4fbf1aa170a3a5cd1a6c8a186e7c4"
     },
     {
       "path": "public/admin.html",
@@ -6293,8 +6307,8 @@
     },
     {
       "path": "public/js/v4/dog-bark.js",
-      "bytes": 22958,
-      "sha256": "39265f36ad254d7d8931e9d6f3dfffbe004ec9ed33642aa6f2e8f6518e346fdb"
+      "bytes": 23630,
+      "sha256": "b67b274faf2c76f2afe803ed9045d15987adc5c63708fb18b4701ed1de5bffb4"
     },
     {
       "path": "public/js/v4/envelope-send.js",
@@ -7977,6 +7991,11 @@
       "sha256": "b65e0d698c6ec2ec5387978de8349ea7c347c55a6e6502253e497ae5569d60a1"
     },
     {
+      "path": "tests/dog_bark_recovery.mjs",
+      "bytes": 5324,
+      "sha256": "081fa9cfacb359d14559fb3a4cd6c2976540b15da891a6eb078721ce75bdfcf0"
+    },
+    {
       "path": "tests/envelope_send.mjs",
       "bytes": 2406,
       "sha256": "640c981864bb1f214bc1210152912f67c271a76f177bad8c6a5defa61c3fe2a1"
@@ -9223,8 +9242,8 @@
     },
     {
       "path": "tests/test_career_stories.py",
-      "bytes": 15434,
-      "sha256": "57fa07fb290bd06b01897ebc5b5f147eb8a85e9d045b7ef892f6616c4448f5d7"
+      "bytes": 17481,
+      "sha256": "1b60cb159b8d6b063c822e66f4b8865ce45dd0e76c59bc87de69301d487ac6af"
     },
     {
       "path": "tests/test_career_tax_payroll.py",
@@ -9868,8 +9887,13 @@
     },
     {
       "path": "tests/test_inventory_cart.py",
-      "bytes": 40398,
-      "sha256": "3be3277f63fa8ae36183e44aa95a74e25125b0e99a9051d16d11cdb05f074052"
+      "bytes": 40325,
+      "sha256": "2284a55e057c538d78a0eb806458c6b2d38863dcba1c51abe9d0e88f6cc360d0"
+    },
+    {
+      "path": "tests/test_inventory_cart_40.py",
+      "bytes": 3705,
+      "sha256": "0ad8323b60dca1bd0f145c4256e39d20f8b90d0c83c507990bb1ee6063e504af"
     },
     {
       "path": "tests/test_inventory_flow.py",

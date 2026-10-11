@@ -1,6 +1,6 @@
 # Current production baseline
 
-As of 2026-10-11, production runs **2.0.1-20261011115727**, source `4e1923c7f7759368ac13473518aab32b132046eb`. Root `MANIFEST.json` was downloaded from that running release. Use that explicit source ref as `--base` for future reconstruction; the manifest/report commit only records deployment evidence. Details are in [the deployment report](DEPLOY_2.0.1_2026-10-11.md). The section below preserves the historical 1.7.15 reconstruction and minified-source table used by tooling.
+As of 2026-10-11, production runs **2.0.2-20261011120834**, source `22be33b0ed6ceec017022f720880ba8fb986b9ba`. Root `MANIFEST.json` was downloaded from that running release. Use that explicit source ref as `--base` for future reconstruction; the manifest/report commit only records deployment evidence. Details are in [the deployment report](DEPLOY_2.0.2_2026-10-11.md). The section below preserves the historical 1.7.15 reconstruction and minified-source table used by tooling.
 
 # Historical branch `live-1.7.15`
 
