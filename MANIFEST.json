@@ -1,442 +1,68 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "2.0.0",
-  "created_at_utc": "2026-10-10T22:26:33.853731+00:00",
+  "version": "2.0.1",
+  "created_at_utc": "2026-10-11T04:51:37.453753+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 517,
+  "minified": 526,
   "release_from_live": {
-    "live_release": "reconstructed-1.9.48",
-    "live_version": "1.9.48",
-    "live_manifest_sha256": "8405660b1bee772f392f2b1882e5d1d5f1dc77b0985c4b4b54356ca53c4baf29",
-    "base": "ff76378b89876e6fd63c137546afc1132f272c35",
-    "ref": "253bc53c91eb6fdbeab14ea7381ebe08ccee2f19",
+    "live_release": "mot-ngay-lam-nghe",
+    "live_version": "2.0.0",
+    "live_manifest_sha256": "eb822c13a05b204c6cde23133411aa76351d77fb47083d0d5c4d7e1ff58d5528",
+    "base": "253bc53c91eb6fdbeab14ea7381ebe08ccee2f19",
+    "ref": "4e1923c7f7759368ac13473518aab32b132046eb",
     "changed": [
-      ".gitignore",
       "CHANGELOG.md",
-      "client/district3d/architecture.js",
-      "client/district3d/model.js",
-      "client/district3d/scene.js",
-      "client/home3d/architecture.js",
-      "client/home3d/meshes.js",
-      "client/home3d/model.js",
-      "client/home3d/scene.js",
-      "client/isometric/amenity-art.ts",
-      "client/isometric/asset-manifest.ts",
-      "client/isometric/building-art.ts",
-      "client/isometric/career-art.ts",
-      "client/isometric/career-facade.ts",
-      "client/isometric/career-gallery.ts",
-      "client/isometric/island.ts",
-      "client/isometric/model.ts",
       "client/isometric/performance-probe.ts",
       "client/isometric/phaser-world.ts",
-      "client/isometric/sign-placement.ts",
-      "client/isometric/static-lod.ts",
-      "client/isometric/town-scenery.ts",
-      "client/isometric/trail-geometry.ts",
-      "client/isometric/visibility.ts",
-      "client/isometric/work-architecture.ts",
-      "client/isometric/work-careers.ts",
-      "client/isometric/work-layout.ts",
-      "docs/DEPLOY_1.9.48_2026-10-10.md",
-      "docs/PHASER_25D.md",
+      "docs/DEPLOY_2.0.0_2026-10-11.md",
+      "docs/DEPLOY_ROLLING.md",
+      "docs/LIVE_BASE.md",
       "docs/RELEASE_2.0.0_READINESS.md",
       "docs/qa/dual-interface-2026-10-11.md",
-      "docs/qa/isometric-feature-parity.json",
-      "docs/qa/isometric-feature-parity.md",
-      "docs/qa/performance-2026-10-11.md",
-      "docs/superpowers/plans/2026-10-10-camera-water-navigation.md",
-      "docs/superpowers/plans/2026-10-10-complete-phaser-25d.md",
-      "docs/superpowers/plans/2026-10-10-connected-streets-compact-hud.md",
-      "docs/superpowers/plans/2026-10-10-fair-weekly-loss.md",
-      "docs/superpowers/plans/2026-10-10-free-rowing.md",
-      "docs/superpowers/plans/2026-10-10-island-neighbourhoods.md",
-      "docs/superpowers/plans/2026-10-10-organic-streets.md",
-      "docs/superpowers/plans/2026-10-10-player-visibility-performance.md",
-      "docs/superpowers/plans/2026-10-10-pool-occlusion-correction.md",
-      "docs/superpowers/plans/2026-10-10-town-cohesion-performance.md",
-      "docs/superpowers/plans/2026-10-11-career-architecture-verification.md",
-      "docs/superpowers/plans/2026-10-11-career-architecture.md",
-      "docs/superpowers/plans/2026-10-11-career-art-prompts.json",
-      "docs/superpowers/plans/2026-10-11-career-interior-architecture.md",
-      "docs/superpowers/plans/2026-10-11-civic-art-avatar-expansion.md",
-      "docs/superpowers/plans/2026-10-11-civic-art-prompts.md",
-      "docs/superpowers/plans/2026-10-11-civic-avatar-verification.md",
-      "docs/superpowers/plans/2026-10-11-district-inventory-audit.md",
-      "docs/superpowers/plans/2026-10-11-living-districts-3d-treasure.md",
-      "docs/superpowers/plans/2026-10-11-living-districts-verification.md",
-      "docs/superpowers/plans/2026-10-11-major-2d-release.md",
-      "docs/superpowers/plans/2026-10-11-performance-parity.md",
+      "docs/qa/hotfix-2.0.1-2026-10-11.md",
       "game/__init__.py",
-      "game/avatar.py",
-      "game/content.py",
-      "game/engine.py",
-      "game/fair.py",
-      "game/fair_golden_days.py",
-      "game/fair_scratch.py",
-      "game/feedback_images.py",
+      "game/fair_bm.py",
       "game/pg_schema.py",
-      "game/player_feedback.py",
-      "game/town_layout.json",
       "game/town_treasure.py",
-      "game/wardrobe.py",
-      "game/webassets.py",
-      "live/app.py",
-      "live/config.py",
-      "live/hub.py",
-      "live/street_data.py",
-      "live/town.py",
       "live/town_treasure.py",
       "package-lock.json",
       "package.json",
-      "public/career-gallery.html",
-      "public/css/career-gallery.css",
-      "public/css/careers/delivery.css",
-      "public/css/careers/farm.css",
-      "public/css/careers/pilot.css",
-      "public/css/chat.css",
-      "public/css/cozy-reference.css",
-      "public/css/feedback.css",
-      "public/css/guide.css",
-      "public/css/isometric.css",
-      "public/css/reno.css",
-      "public/css/residential.css",
-      "public/icons/careers-v1/accounting.webp",
-      "public/icons/careers-v1/babysitter.webp",
-      "public/icons/careers-v1/cafe_bakery.webp",
-      "public/icons/careers-v1/clothing.webp",
-      "public/icons/careers-v1/com.webp",
-      "public/icons/careers-v1/corp_accounting.webp",
-      "public/icons/careers-v1/customer_care.webp",
-      "public/icons/careers-v1/delivery.webp",
-      "public/icons/careers-v1/drain.webp",
-      "public/icons/careers-v1/farm.webp",
-      "public/icons/careers-v1/flight_attendant.webp",
-      "public/icons/careers-v1/florist.webp",
-      "public/icons/careers-v1/fruit.webp",
-      "public/icons/careers-v1/garbage.webp",
-      "public/icons/careers-v1/giupviec.webp",
-      "public/icons/careers-v1/grocery.webp",
-      "public/icons/careers-v1/group_accounting.webp",
-      "public/icons/careers-v1/homemaker.webp",
-      "public/icons/careers-v1/homestay.webp",
-      "public/icons/careers-v1/hr_admin.webp",
-      "public/icons/careers-v1/ice_cream.webp",
-      "public/icons/careers-v1/it_helpdesk.webp",
-      "public/icons/careers-v1/library.webp",
-      "public/icons/careers-v1/lifeguard.webp",
-      "public/icons/careers-v1/lighthouse.webp",
-      "public/icons/careers-v1/milk_tea.webp",
-      "public/icons/careers-v1/mother_baby.webp",
-      "public/icons/careers-v1/nail.webp",
-      "public/icons/careers-v1/naucom.webp",
-      "public/icons/careers-v1/nurse.webp",
-      "public/icons/careers-v1/oil.webp",
-      "public/icons/careers-v1/pagoda.webp",
-      "public/icons/careers-v1/pet_care.webp",
-      "public/icons/careers-v1/pet_shop.webp",
-      "public/icons/careers-v1/pharmacy.webp",
-      "public/icons/careers-v1/pho.webp",
-      "public/icons/careers-v1/photobooth.webp",
-      "public/icons/careers-v1/pilot.webp",
-      "public/icons/careers-v1/police.webp",
-      "public/icons/careers-v1/railway.webp",
-      "public/icons/careers-v1/repair.webp",
-      "public/icons/careers-v1/rescue.webp",
-      "public/icons/careers-v1/restaurant.webp",
-      "public/icons/careers-v1/salon.webp",
-      "public/icons/careers-v1/secretary.webp",
-      "public/icons/careers-v1/tax_payroll.webp",
-      "public/icons/careers-v1/teacher.webp",
-      "public/icons/careers-v1/tour_guide.webp",
-      "public/icons/careers-v1/tra_da.webp",
-      "public/icons/careers-v1/zpop.webp",
-      "public/icons/cozy-v2/boat.webp",
-      "public/icons/cozy-v2/character-female.webp",
-      "public/icons/cozy-v2/character-male.webp",
-      "public/icons/cozy-v2/fish.webp",
-      "public/icons/cozy-v2/fishing-actions.webp",
-      "public/icons/cozy-v2/garage.webp",
-      "public/icons/cozy-v2/leisure-lake.webp",
-      "public/icons/cozy-v2/leisure-pool.webp",
-      "public/icons/cozy-v2/mother-baby.webp",
-      "public/icons/cozy-v2/pharmacy.webp",
-      "public/icons/cozy-v2/pho.webp",
-      "public/icons/cozy-v2/vegetation.webp",
-      "public/icons/cozy-v3/aircraft-chase.webp",
-      "public/icons/cozy-v3/airport.webp",
-      "public/icons/cozy-v3/florist.webp",
-      "public/icons/cozy-v3/lighthouse.webp",
-      "public/icons/cozy-v3/market.webp",
-      "public/icons/cozy-v3/office.webp",
-      "public/icons/cozy-v3/pagoda.webp",
-      "public/icons/cozy-v3/park-gazebo.webp",
-      "public/icons/cozy-v3/pet.webp",
-      "public/icons/cozy-v3/salon.webp",
-      "public/icons/cozy-v3/school.webp",
-      "public/icons/cozy-v3/town-pool.webp",
-      "public/icons/cozy-v4/civic-date.webp",
-      "public/icons/cozy-v4/civic-karaoke.webp",
-      "public/icons/cozy-v4/civic-market.webp",
-      "public/icons/cozy-v4/civic-park.webp",
-      "public/icons/cozy-v4/civic-pets.webp",
-      "public/icons/cozy-v4/civic-wedding.webp",
-      "public/icons/cozy-v4/manifest.json",
-      "public/icons/cozy-v5/district-apartment.webp",
-      "public/icons/cozy-v5/district-rent.webp",
-      "public/icons/cozy-v5/district-townhouse.webp",
-      "public/icons/cozy-v5/district-villa.webp",
-      "public/icons/cozy-v5/dograce.webp",
-      "public/icons/cozy-v5/fairgrounds.webp",
-      "public/icons/cozy-v5/generation-prompts.md",
-      "public/icons/cozy-v5/manifest.json",
-      "public/icons/isometric/bench.webp",
-      "public/icons/isometric/cafe.webp",
-      "public/icons/isometric/character-female.webp",
-      "public/icons/isometric/character-male.webp",
-      "public/icons/isometric/counter.webp",
-      "public/icons/isometric/crates.webp",
-      "public/icons/isometric/desk.webp",
-      "public/icons/isometric/grocery.webp",
-      "public/icons/isometric/interior-cafe.webp",
-      "public/icons/isometric/interior-home.webp",
-      "public/icons/isometric/interior-office.webp",
-      "public/icons/isometric/interior-shop.webp",
-      "public/icons/isometric/shelf.webp",
-      "public/icons/isometric/tree.webp",
-      "public/icons/pixel/logo.svg",
-      "public/index.html",
+      "public/css/shared-island.css",
       "public/js/app.js",
-      "public/js/boot.js",
-      "public/js/careers/activity_visibility.js",
-      "public/js/careers/delivery.js",
-      "public/js/careers/delivery_drive.js",
-      "public/js/careers/delivery_isometric.js",
-      "public/js/careers/farm.js",
-      "public/js/careers/farm_isometric.js",
-      "public/js/careers/farm_walk.js",
-      "public/js/careers/florist.js",
-      "public/js/careers/pilot_aircraft.js",
-      "public/js/careers/pilot_fly.js",
-      "public/js/classic-icons.js",
-      "public/js/icons.js",
-      "public/js/illustrated-icons.js",
-      "public/js/interface-mode.js",
-      "public/js/iso-boot.js",
-      "public/js/iso-guide.js",
-      "public/js/isometric/career-gallery.js",
       "public/js/isometric/character-art.js",
-      "public/js/isometric/leisure-actors.js",
-      "public/js/isometric/leisure-art.js",
-      "public/js/isometric/leisure-presence.js",
       "public/js/isometric/phaser-world.js",
-      "public/js/isometric/portraits.js",
-      "public/js/isometric/resident-shops.js",
-      "public/js/isometric/town-utilities.js",
       "public/js/isometric/treasure.js",
-      "public/js/isometric/ui-icons.js",
       "public/js/isometric/water-poses.js",
-      "public/js/isometric-movement.js",
-      "public/js/isometric-shell.js",
-      "public/js/isometric-town.js",
-      "public/js/isometric-treasure.js",
-      "public/js/operations-ui.js",
-      "public/js/pixel/art.js",
-      "public/js/pixel/icons.js",
-      "public/js/pixel/place-geometry.js",
       "public/js/pixel/places.js",
-      "public/js/pixel/presentation.js",
-      "public/js/scenes/index.js",
-      "public/js/scenes/vocabulary.js",
-      "public/js/v4/avatar.js",
-      "public/js/v4/chat.js",
-      "public/js/v4/face-code.js",
-      "public/js/v4/face.js",
-      "public/js/v4/feedback.js",
-      "public/js/v4/guide.js",
-      "public/js/v4/home-3d-scene.js",
-      "public/js/v4/home-3d.js",
-      "public/js/v4/home-crowd.js",
-      "public/js/v4/home-walk.js",
-      "public/js/v4/house.js",
-      "public/js/v4/journey.js",
-      "public/js/v4/live.js",
-      "public/js/v4/look.js",
-      "public/js/v4/reno.js",
-      "public/js/v4/residential.js",
-      "public/js/v4/settings.js",
-      "public/js/v4/views.js",
-      "public/js/v4/walk.js",
-      "public/js/v4/workplace-visit.js",
-      "public/privacy.html",
-      "requirements.txt",
-      "scripts/activate_fair_golden_days.py",
-      "scripts/build_home3d.mjs",
-      "scripts/build_isometric.mjs",
-      "scripts/check_js.mjs",
-      "scripts/check_old_safari.mjs",
-      "scripts/home3d-compat.mjs",
-      "scripts/package_civic_assets.mjs",
-      "scripts/prepare_career_art.mjs",
-      "scripts/publish_major_release.py",
-      "server.py",
-      "tests/activity-render-lifecycle.mjs",
-      "tests/avatar-expansion.mjs",
-      "tests/career-vocabulary.mjs",
-      "tests/cozy-portraits.mjs",
-      "tests/delivery_isometric.mjs",
-      "tests/delivery_render_performance.mjs",
-      "tests/district3d.mjs",
-      "tests/farm_isometric.mjs",
-      "tests/feedback-images.mjs",
-      "tests/florist_wait_lifecycle.mjs",
-      "tests/guide-duplicate-accessibility.mjs",
-      "tests/home3d-adapter.mjs",
-      "tests/home3d-compat.mjs",
-      "tests/home3d.mjs",
-      "tests/interface-mode.mjs",
-      "tests/island-neighbourhoods.mjs",
-      "tests/isometric-amenities.mjs",
-      "tests/isometric-asset-lifecycle.mjs",
-      "tests/isometric-camera-follow.mjs",
-      "tests/isometric-camera.mjs",
-      "tests/isometric-career-art.mjs",
-      "tests/isometric-career-exterior-assets.mjs",
-      "tests/isometric-career-facades.mjs",
-      "tests/isometric-career-gallery.mjs",
-      "tests/isometric-chat-boot.mjs",
-      "tests/isometric-feature-parity.mjs",
-      "tests/isometric-guide-lifecycle.mjs",
-      "tests/isometric-hud-layout.cjs",
-      "tests/isometric-landmarks.mjs",
-      "tests/isometric-loader.mjs",
-      "tests/isometric-resident-shops.mjs",
-      "tests/isometric-shell.mjs",
-      "tests/isometric-signs.mjs",
-      "tests/isometric-static-lod.mjs",
-      "tests/isometric-town-appearance.mjs",
-      "tests/isometric-town.mjs",
+      "public/js/shared-island.js",
+      "public/js/v4/town-walk.js",
+      "tests/isometric-character-composition.mjs",
+      "tests/isometric-peer-render-performance.mjs",
+      "tests/isometric-performance-probe.mjs",
+      "tests/isometric-treasure-markers.mjs",
       "tests/isometric-visibility.mjs",
-      "tests/isometric-work-architecture.mjs",
-      "tests/isometric-work-layout.mjs",
-      "tests/isometric-work-semantics.mjs",
-      "tests/isometric-world.mjs",
-      "tests/leisure-actors.mjs",
-      "tests/leisure-art.mjs",
       "tests/leisure-keyboard.mjs",
-      "tests/live-background-render.mjs",
-      "tests/old_safari_regex.mjs",
-      "tests/organic-streets.mjs",
       "tests/phaser-current-integration.mjs",
-      "tests/phaser25d-wired.mjs",
-      "tests/pilot-aircraft.mjs",
       "tests/pixel-places.mjs",
-      "tests/render-residential-architecture.mjs",
-      "tests/residential-architecture.mjs",
-      "tests/staff_refresh_fair.mjs",
-      "tests/street-connectivity.mjs",
-      "tests/test_avatar_expansion.py",
-      "tests/test_career_words.py",
-      "tests/test_career_zpop.py",
-      "tests/test_fair_golden_days.py",
-      "tests/test_feedback_images.py",
-      "tests/test_home_rooms.py",
-      "tests/test_house_reno.py",
-      "tests/test_interface_settings.py",
-      "tests/test_live_residential_activity.py",
-      "tests/test_live_town.py",
-      "tests/test_live_town_socket.py",
+      "tests/shared-island.mjs",
+      "tests/test_black_market.py",
+      "tests/test_jail.py",
       "tests/test_live_town_treasure.py",
-      "tests/test_major_release_notice.py",
-      "tests/test_player_feedback.py",
-      "tests/test_public_view.py",
-      "tests/test_task_compat.py",
       "tests/test_town_treasure.py",
-      "tests/test_webassets.py",
-      "tests/three-scene-lifecycle.mjs",
-      "tests/tiktok_account.mjs",
-      "tests/town-art-polish.mjs",
-      "tests/town-district-inventory.mjs",
-      "tests/town-ground.mjs",
-      "tests/town-map-contract.mjs",
       "tests/town-treasure-client.mjs",
-      "tests/walk-return-route.mjs",
       "tests/water-poses.mjs"
     ],
     "deleted": [],
     "minified": [
-      "public/css/career-gallery.css",
-      "public/css/careers/delivery.css",
-      "public/css/careers/farm.css",
-      "public/css/careers/pilot.css",
-      "public/css/chat.css",
-      "public/css/cozy-reference.css",
-      "public/css/feedback.css",
-      "public/css/guide.css",
-      "public/css/isometric.css",
-      "public/css/reno.css",
+      "public/css/shared-island.css",
       "public/js/app.js",
-      "public/js/boot.js",
-      "public/js/careers/activity_visibility.js",
-      "public/js/careers/delivery.js",
-      "public/js/careers/delivery_drive.js",
-      "public/js/careers/delivery_isometric.js",
-      "public/js/careers/farm.js",
-      "public/js/careers/farm_isometric.js",
-      "public/js/careers/farm_walk.js",
-      "public/js/careers/florist.js",
-      "public/js/careers/pilot_aircraft.js",
-      "public/js/careers/pilot_fly.js",
-      "public/js/classic-icons.js",
-      "public/js/icons.js",
-      "public/js/illustrated-icons.js",
-      "public/js/interface-mode.js",
-      "public/js/iso-boot.js",
-      "public/js/iso-guide.js",
-      "public/js/isometric/career-gallery.js",
       "public/js/isometric/character-art.js",
-      "public/js/isometric/leisure-actors.js",
-      "public/js/isometric/leisure-art.js",
-      "public/js/isometric/leisure-presence.js",
       "public/js/isometric/phaser-world.js",
-      "public/js/isometric/portraits.js",
-      "public/js/isometric/resident-shops.js",
-      "public/js/isometric/town-utilities.js",
       "public/js/isometric/treasure.js",
-      "public/js/isometric/ui-icons.js",
       "public/js/isometric/water-poses.js",
-      "public/js/isometric-movement.js",
-      "public/js/isometric-shell.js",
-      "public/js/isometric-town.js",
-      "public/js/isometric-treasure.js",
-      "public/js/operations-ui.js",
-      "public/js/pixel/art.js",
-      "public/js/pixel/icons.js",
-      "public/js/pixel/place-geometry.js",
       "public/js/pixel/places.js",
-      "public/js/pixel/presentation.js",
-      "public/js/scenes/index.js",
-      "public/js/scenes/vocabulary.js",
-      "public/js/v4/avatar.js",
-      "public/js/v4/chat.js",
-      "public/js/v4/face-code.js",
-      "public/js/v4/face.js",
-      "public/js/v4/feedback.js",
-      "public/js/v4/guide.js",
-      "public/js/v4/home-3d-scene.js",
-      "public/js/v4/home-3d.js",
-      "public/js/v4/home-crowd.js",
-      "public/js/v4/home-walk.js",
-      "public/js/v4/house.js",
-      "public/js/v4/journey.js",
-      "public/js/v4/live.js",
-      "public/js/v4/look.js",
-      "public/js/v4/reno.js",
-      "public/js/v4/residential.js",
-      "public/js/v4/settings.js",
-      "public/js/v4/views.js",
-      "public/js/v4/walk.js",
-      "public/js/v4/workplace-visit.js"
+      "public/js/shared-island.js",
+      "public/js/v4/town-walk.js"
     ]
   },
   "files": [
@@ -457,8 +83,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 303394,
-      "sha256": "cdb3895c6a8e5c63a28b21cba3921bb84b0fb9fe09f296255b38fd8067beb1e1"
+      "bytes": 305082,
+      "sha256": "23dfa135a1dfada0636ade85c1d3bb999f64756bbbfe1a20a3919df8305b1b0b"
     },
     {
       "path": "Dockerfile",
@@ -567,13 +193,13 @@
     },
     {
       "path": "client/isometric/performance-probe.ts",
-      "bytes": 1562,
-      "sha256": "a3d527337b9374728c893bd6f1b94de4ae2c95bffd2c9b0a93d4a3d8056dfa50"
+      "bytes": 1987,
+      "sha256": "fc6ebab346d94fd1c35edcfa1b333f94bfb1159ccda9c003d04849897fa14124"
     },
     {
       "path": "client/isometric/phaser-world.ts",
-      "bytes": 109821,
-      "sha256": "8b09a637cefcf1c15e1189e298660977151bcdfc7293b6c940710394bf8462c6"
+      "bytes": 113802,
+      "sha256": "aca809c5afa9a8d89d03c46118c4b411a5ef4ab167f488ceaf3046c3aaa37cb6"
     },
     {
       "path": "client/isometric/sign-placement.ts",
@@ -891,6 +517,11 @@
       "sha256": "a783358851da208dda5f3f362ea27cbd8970a28bce6dc87c85df721c129b1cf2"
     },
     {
+      "path": "docs/DEPLOY_2.0.0_2026-10-11.md",
+      "bytes": 6846,
+      "sha256": "dbfa7f64ef53d82f4b897d7a08f7d9e2ca523e5e75547f763744d3e39ecb8a08"
+    },
+    {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
       "bytes": 3743,
       "sha256": "788f3a3a7f371dc6a143196595d8ad9aa68ccf6c31caeb5886a419ee9ec14c06"
@@ -912,8 +543,8 @@
     },
     {
       "path": "docs/DEPLOY_ROLLING.md",
-      "bytes": 14573,
-      "sha256": "679e164901d78b99af587ec2383062c58403984752e519ac4e9149469ec48885"
+      "bytes": 14942,
+      "sha256": "954c8d59f2ce33bb52f4f7b52aa61aa30f2112c2bf84e1df083ca5fcb2f99374"
     },
     {
       "path": "docs/DESIGN.md",
@@ -1062,8 +693,8 @@
     },
     {
       "path": "docs/LIVE_BASE.md",
-      "bytes": 7125,
-      "sha256": "efc739bde9247257ad0fe0b8e5f28d6a86d96b07932de8d771fa002678c40f29"
+      "bytes": 7570,
+      "sha256": "24f68e67f46f9f5aaa75b5f565cd9ea05644a0c0395a02500144698f5234e83e"
     },
     {
       "path": "docs/LIVE_CONNECTION_2026-10-05.md",
@@ -1167,8 +798,8 @@
     },
     {
       "path": "docs/RELEASE_2.0.0_READINESS.md",
-      "bytes": 13293,
-      "sha256": "80eb57c354955ee052ceeabbbcd145c47548d40eac96d2aacb083f6ca69ad571"
+      "bytes": 14671,
+      "sha256": "09bc8b44aa7babf2521d6fcde841a12178c24f82e605fc58f5d2067f1e17c77f"
     },
     {
       "path": "docs/SECURITY_AND_PRIVACY.md",
@@ -1807,8 +1438,13 @@
     },
     {
       "path": "docs/qa/dual-interface-2026-10-11.md",
-      "bytes": 5797,
-      "sha256": "c432f8d515a4eb0fecf5720b38c46a344ad5135433afabe639e6839570dbbc00"
+      "bytes": 6118,
+      "sha256": "d091e5f6d6186cc76a6853e4e0fe98a1e84d2700ae69f611b06ef0a0aa32a8df"
+    },
+    {
+      "path": "docs/qa/hotfix-2.0.1-2026-10-11.md",
+      "bytes": 5949,
+      "sha256": "a082b86b5cb7bf7023b3008fc9079aa20c1fe7ab090959a08f18dc378b328b42"
     },
     {
       "path": "docs/qa/isometric-feature-parity.json",
@@ -2358,7 +1994,7 @@
     {
       "path": "game/__init__.py",
       "bytes": 105,
-      "sha256": "320c1271356fc62c72eecc20ff4a062d0f806dd5b32c7e5e91e5327d8e7d3bfc"
+      "sha256": "64ecd95324d9c61cfec9f4a7e8248c74924a3cace082163bb3804bbc28b584af"
     },
     {
       "path": "game/abandon.py",
@@ -3057,8 +2693,8 @@
     },
     {
       "path": "game/fair_bm.py",
-      "bytes": 9303,
-      "sha256": "dfed9165d073c571ee5610924da9d4af137f9b415b29ea6baf21361814ec2ecb"
+      "bytes": 9357,
+      "sha256": "2278683d6b57a397fe891704a1fa211744d0dfeb9b74eb60a716003edd4eaa15"
     },
     {
       "path": "game/fair_board.py",
@@ -3422,8 +3058,8 @@
     },
     {
       "path": "game/pg_schema.py",
-      "bytes": 67293,
-      "sha256": "a7857d4762d2286a527557799060f558318c122e28ccab00b34f3019429125f0"
+      "bytes": 67572,
+      "sha256": "a4dddaeb1d8fb8bcd4f27d675f5f3d0f1cd41e3824e6d25c5f0ac9b9d3bbdd4b"
     },
     {
       "path": "game/player_feedback.py",
@@ -3682,8 +3318,8 @@
     },
     {
       "path": "game/town_treasure.py",
-      "bytes": 8689,
-      "sha256": "d5e6a456da4fa502b65ab39ad0808f67d0edf15322d919655313de61cda3314c"
+      "bytes": 9675,
+      "sha256": "29e5620429ed432f4fbccecf2558df6d09c48fd955c7f88d0dc2f5342b6a702f"
     },
     {
       "path": "game/traffic.py",
@@ -3962,8 +3598,8 @@
     },
     {
       "path": "live/town_treasure.py",
-      "bytes": 7703,
-      "sha256": "7fc5479655350592a6e2abe74c74de2cd8dbb00317f25b7380c11948359fbcaf"
+      "bytes": 7791,
+      "sha256": "2e4c150b9b545452f80ecd379b589c8cd577d5eab6b9c40d82fe3507c15daf31"
     },
     {
       "path": "live/wedding.py",
@@ -3988,12 +3624,12 @@
     {
       "path": "package-lock.json",
       "bytes": 35890,
-      "sha256": "43e5277ee603271e6b4ba45f073baf39c6095d2abc488ee5eb7685054048915a"
+      "sha256": "a20142857edce53bcc06d3d1721a0b35a899c0ca9c6a08e367b3cfaea8140852"
     },
     {
       "path": "package.json",
-      "bytes": 3520,
-      "sha256": "22c175ef51d3509a5488309725d4cbfcc6d165d6804ad8248e4ad7b292b5f8ef"
+      "bytes": 3745,
+      "sha256": "07a25371b55966e9af81ef12560d5c59cc6b816ae9ee4534a5db77041b95306f"
     },
     {
       "path": "public/admin.html",
@@ -4644,6 +4280,11 @@
       "path": "public/css/rui.css",
       "bytes": 5690,
       "sha256": "089905cd5a7228a63e942f9085875996d9cd207d495543c9771eb713c6397700"
+    },
+    {
+      "path": "public/css/shared-island.css",
+      "bytes": 2818,
+      "sha256": "c13c99ef5aa91c8136232faf6cd08b9bf8dd52a204405aaf7b692a2db9c7204a"
     },
     {
       "path": "public/css/shortpay.css",
@@ -5562,8 +5203,8 @@
     },
     {
       "path": "public/js/app.js",
-      "bytes": 190894,
-      "sha256": "c6ef19b56000c719db642878f5132acd584db33e9753927730e6a5c66fb6d936"
+      "bytes": 191136,
+      "sha256": "ad39c186c76468fb627ccf458a9a1f571d3d1efb670331e9635d39ebaa373b76"
     },
     {
       "path": "public/js/archive.js",
@@ -6002,8 +5643,8 @@
     },
     {
       "path": "public/js/isometric/character-art.js",
-      "bytes": 5168,
-      "sha256": "3a9dc09cd416fbc528316ffbd579161455cdc59e814e636a24ac4d6363080a54"
+      "bytes": 9337,
+      "sha256": "fcb76e1ed947d62f921390c095fc41af3b6a4689619544031e1c9a0a3aab15e5"
     },
     {
       "path": "public/js/isometric/leisure-actors.js",
@@ -6022,8 +5663,8 @@
     },
     {
       "path": "public/js/isometric/phaser-world.js",
-      "bytes": 1466416,
-      "sha256": "c2b75c1a9df5dbc8c5696c6ab534e31331980791c0ccc3964d55a0a61988d81f"
+      "bytes": 1468618,
+      "sha256": "0c55bc1e32186986fa3a426b5a5df8e29b423d862abd6fe6257944ab8325a92b"
     },
     {
       "path": "public/js/isometric/portraits.js",
@@ -6042,8 +5683,8 @@
     },
     {
       "path": "public/js/isometric/treasure.js",
-      "bytes": 3684,
-      "sha256": "4da3a5cd6427fb83deaa42c5106e26a91cc3e950e5c3a8ffce64e3ae162e2719"
+      "bytes": 3590,
+      "sha256": "4f3fb9a963b92137112a1135ba0d87f9f18621ec184ea9bcac6b6297110db678"
     },
     {
       "path": "public/js/isometric/ui-icons.js",
@@ -6052,8 +5693,8 @@
     },
     {
       "path": "public/js/isometric/water-poses.js",
-      "bytes": 5475,
-      "sha256": "4b1ef0a628c46625e996805efe8042acdbef03b846f12133b72ad70fa8a993f0"
+      "bytes": 5814,
+      "sha256": "ab20a83460dc5c9ca64490649fa2b5b2b3a405cc2feda184ca814a4ed2063b3c"
     },
     {
       "path": "public/js/isometric-movement.js",
@@ -6117,8 +5758,8 @@
     },
     {
       "path": "public/js/pixel/places.js",
-      "bytes": 20034,
-      "sha256": "61c66f9b27d4cf5b2bc25a1d3cf5801af4cf9b468c74854bf83d6a7c1238175e"
+      "bytes": 20313,
+      "sha256": "962f9a4d01b83030def35763e53dca25cf0dd31a3567ea5d0aa2f4575494e37b"
     },
     {
       "path": "public/js/pixel/presentation.js",
@@ -6364,6 +6005,11 @@
       "path": "public/js/scenes/ward.js",
       "bytes": 8354,
       "sha256": "0e163cdf4cebe8f4b09d2c1f9e9e5b284787a253a85698e03d07a70e8f99c772"
+    },
+    {
+      "path": "public/js/shared-island.js",
+      "bytes": 5523,
+      "sha256": "a041bdfa8f4258f8336aeb1ec342368956e091325508b516c68f4e4335c73244"
     },
     {
       "path": "public/js/shop-events-ui.js",
@@ -7122,8 +6768,8 @@
     },
     {
       "path": "public/js/v4/town-walk.js",
-      "bytes": 24469,
-      "sha256": "b35fc12e480d01926d439a49b2eb91263103dfde1c29a748830f7537017e1b17"
+      "bytes": 24575,
+      "sha256": "5a661a709ac12b64ec059cb3b32d3bb06679f1d644715e4ef9ba7441fd0a7c90"
     },
     {
       "path": "public/js/v4/traffic.js",
@@ -8671,6 +8317,11 @@
       "sha256": "73e924e824d7365c58b3e9be80dfd9204f2689eed524e2312cd5a977f2fb4b87"
     },
     {
+      "path": "tests/isometric-character-composition.mjs",
+      "bytes": 6899,
+      "sha256": "703694aa72edbe2b3f608cc751445a7337dfce7c11427298a6e29e58744d61e6"
+    },
+    {
       "path": "tests/isometric-character.mjs",
       "bytes": 1990,
       "sha256": "bf40742e9a6a61eb5d3506b3efd049117e918dc9d9fa8af04709f3a128973e7d"
@@ -8716,6 +8367,16 @@
       "sha256": "5c1b3d94a300796851b368b62eeaa4c26a61e77f20a5ddaa45c255d5baf5e936"
     },
     {
+      "path": "tests/isometric-peer-render-performance.mjs",
+      "bytes": 13324,
+      "sha256": "a190a24db1ef281cfe457089f5c81e7f9845430aec4f12bf583d739c21e32526"
+    },
+    {
+      "path": "tests/isometric-performance-probe.mjs",
+      "bytes": 1878,
+      "sha256": "bb1ca47f80b95cee0feff5850745d8712a95dca313f72a4c12dbe7e2222aaf14"
+    },
+    {
       "path": "tests/isometric-renderer-browser.cjs",
       "bytes": 3321,
       "sha256": "cf0831065c1b8028ed05c8e816d54dafd5063129b44da007c991d1797bcae28d"
@@ -8756,9 +8417,14 @@
       "sha256": "ce492d169113b75d39b38d9848c9742fab6f48342b8e0ef9917ff75b9071f8a3"
     },
     {
+      "path": "tests/isometric-treasure-markers.mjs",
+      "bytes": 5283,
+      "sha256": "fc450736b9e2a8cef9d8fb622b51b3720a9d354dde5a17b7da33a6c4b986edc8"
+    },
+    {
       "path": "tests/isometric-visibility.mjs",
-      "bytes": 17121,
-      "sha256": "bae64010082f4d1a7becef2e32ba5aaebcd920ed50bb39dd2af1e88a5ade64d1"
+      "bytes": 17321,
+      "sha256": "44e7e512daaca0c2c91ed602ad66ebc86a6721a97d11e91ec4d3b48e1c020fde"
     },
     {
       "path": "tests/isometric-work-architecture.mjs",
@@ -8827,8 +8493,8 @@
     },
     {
       "path": "tests/leisure-keyboard.mjs",
-      "bytes": 6865,
-      "sha256": "0a7837e9c55bb0c2bb93e858915e9e8ca2b16f0148e4807ac87aed1ba3f797a1"
+      "bytes": 8930,
+      "sha256": "beaccd0c7d83b8949f640bbfeda287dc4f3e4a7c08d332c7fe151542969b1d2a"
     },
     {
       "path": "tests/leisure-wardrobe.mjs",
@@ -8942,8 +8608,8 @@
     },
     {
       "path": "tests/phaser-current-integration.mjs",
-      "bytes": 14148,
-      "sha256": "e1838389d65bd614d443b3fb5eca60275adc048ecda707311d79a01383772329"
+      "bytes": 14239,
+      "sha256": "34bf59087e1107577942184b8f33b88b413b1539b1689a3508d3f1d603e5a46e"
     },
     {
       "path": "tests/phaser25d-wired.mjs",
@@ -8977,8 +8643,8 @@
     },
     {
       "path": "tests/pixel-places.mjs",
-      "bytes": 24688,
-      "sha256": "855c4feca8d073393a6270c5a12785337e11f19f61fe7830d946fd67ba11cb61"
+      "bytes": 26948,
+      "sha256": "a104d48b351baf997aa7cc2cba69ad5269de8261e1ad915b8de8434c65d26b35"
     },
     {
       "path": "tests/player_names.mjs",
@@ -9069,6 +8735,11 @@
       "path": "tests/select_all.mjs",
       "bytes": 4037,
       "sha256": "2fb5480bcbd483bb316303468130954db40049c9e57c3cca6fd67ade790cb730"
+    },
+    {
+      "path": "tests/shared-island.mjs",
+      "bytes": 9532,
+      "sha256": "4ef2d6b822f391bbf65c67d14433e1bf98e89f51919b4d2cae38c624fd62269c"
     },
     {
       "path": "tests/sheet_gesture.mjs",
@@ -9282,8 +8953,8 @@
     },
     {
       "path": "tests/test_black_market.py",
-      "bytes": 24410,
-      "sha256": "69ac966760da1822c8e7cf11a981449dac5f9ba273b4e0f4e4f4b5e573934ddd"
+      "bytes": 25020,
+      "sha256": "17cdae1e3048ee6c255eac9d8828f9990e40513f2962613f50fb84aa366f6cca"
     },
     {
       "path": "tests/test_board.py",
@@ -10217,8 +9888,8 @@
     },
     {
       "path": "tests/test_jail.py",
-      "bytes": 44807,
-      "sha256": "66109e6abcb881013548ad66cee7290fdfddbae819f5c2d2d0ab05f88deb13de"
+      "bytes": 44783,
+      "sha256": "cd31f7ae9b4dd7a21cdf05810dff6c15ab1e1e2c183c72d95c075fb2012d7c3e"
     },
     {
       "path": "tests/test_jail_games.py",
@@ -10442,8 +10113,8 @@
     },
     {
       "path": "tests/test_live_town_treasure.py",
-      "bytes": 8206,
-      "sha256": "50b0aab16bde3130128efbb3e96468f4e86269bccdb01206c7b536b040fd710a"
+      "bytes": 9247,
+      "sha256": "4a0ddd5f262dc99186e002c2674c9cada259021b18879f46cb3e0cdfb096b751"
     },
     {
       "path": "tests/test_live_units.py",
@@ -11112,8 +10783,8 @@
     },
     {
       "path": "tests/test_town_treasure.py",
-      "bytes": 10874,
-      "sha256": "942e0900e1456c08dd99ec6cfcc4ba84713989101739c9f6097e9dc2373674c6"
+      "bytes": 15428,
+      "sha256": "cd6aaff87b3f38763dbdca4d14a29996d1afba300c27014675f8f32553ebc521"
     },
     {
       "path": "tests/test_traffic.py",
@@ -11342,8 +11013,8 @@
     },
     {
       "path": "tests/town-treasure-client.mjs",
-      "bytes": 5414,
-      "sha256": "6807a6a639e845ed119df8f9c9e0865bd8aa1b412c6d67710c7b07fcb4a4382c"
+      "bytes": 6758,
+      "sha256": "559cd28a7aa3efaf6e90107604213019d2bf33c62cd53baddc73852b744a090a"
     },
     {
       "path": "tests/update_pill.mjs",
@@ -11362,8 +11033,8 @@
     },
     {
       "path": "tests/water-poses.mjs",
-      "bytes": 10104,
-      "sha256": "553170a01cdfc0c122eddc570d654bbfe89dfc7aa0fa43091085746e30b38949"
+      "bytes": 11542,
+      "sha256": "3c19a273f9e2ecfd102a45973dee29d6f49cc5676f65cec53ceb4d6b2fa8a3b0"
     },
     {
       "path": "tests/wealth.mjs",

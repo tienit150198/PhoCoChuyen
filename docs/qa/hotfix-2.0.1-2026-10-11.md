@@ -32,7 +32,7 @@ Local dùng PostgreSQL riêng ở loopback55439, HTTP18893/live18894; không dù
 
 ## Giới hạn và bằng chứng
 
-- IAB viewport override trong lượt này không đổi kích thước DOM thực1280×720; không ghi nhận nó là kiểm tra mobile/tablet thật. CSS có safe-area và viewport-height fallback; kiểm tương thích JS không thay cho đo FPS trên điện thoại.
+- Lượt local ban đầu: IAB viewport override không đổi DOM thực1280×720, không tính là kiểm mobile/tablet. Sau triển khai, tab production áp dụng được override sau reload: DOM xác nhận390×844 (lên thuyền/chèo),834×1112 (phố),1280×720 sau reset (desktop). Đây là kiểm bố cục và thao tác bằng trình duyệt desktop, không thay cho đo FPS/cảm ứng trên điện thoại thật.
 - Atlas minh họa vẫn có tóc nam/tóc búi nữ vẽ sẵn. Kính/mũ/màu trang phục đã sửa nhưng chưa có silhouette riêng cho mọi kiểu tóc trong tủ đồ. Không coi đây là kiểm chứng mọi tổ hợp avatar.
 - Không tìm thấy lỗi pool đè người trong lượt tái hiện hiện tại; chưa khẳng định mọi tọa độ/thiết bị đều hết lỗi.
 - Bằng chứng cục bộ: output/hotfix-2.0.1/ (logs, perf JSON, rowing-fixed-desktop.png, classic-shared-island.png); output/avatar-street-fix/; output/water-review-20261011/.
