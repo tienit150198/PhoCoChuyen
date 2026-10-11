@@ -550,6 +550,11 @@ html[data-game="isometric"] #pauseOverlay {z-index: 30;}
   html[data-game="isometric"] #dock .dock-btn {flex-direction: column;min-width: 83px;max-width: 127px;min-height: 56px;gap: 4px;padding: 5px 7px;font-size: 10px;line-height: 1.3;}
   html[data-game="isometric"] #dock .dock-btn > svg {width: 19px;height: 19px;}
   html[data-game="isometric"] #dock .dock-btn > span {text-align: center;}
+  /* #348: the work bar is pinned to both edges and its buttons share it, so it never re-centres or turns into a
+     sideways scroller (360 px phones) when a badge or label changes while restocking. */
+  html[data-game="isometric"][data-scene-mode="work"] #dock {left: 12px !important;right: 12px !important;width: auto !important;max-width: none;transform: none;justify-content: center;overflow-x: hidden;}
+  html[data-game="isometric"][data-scene-mode="work"] #dock .dock-btn {flex: 1 1 0;min-width: 0;}
+  html[data-game="isometric"][data-scene-mode="work"] #dock .dock-btn > span {max-width: 100%;}
   html[data-game="isometric"].menu-open #rail {left: 12px !important;right: 12px !important;width: auto;bottom: calc(var(--iso-nav-h) + 20px + var(--safe-b)) !important;max-height: calc(100dvh - 178px);padding: 12px !important;gap: 7px;border-radius: 17px;}
   html[data-game="isometric"] #rail .rail-item {font-size: 10px;}
   html[data-game="isometric"] .sheet:not(.tw-sheet) {width: calc(100% - 12px);max-height: calc(100dvh - 16px - var(--safe-t));border-radius: 18px 18px 10px 10px;}
@@ -905,3 +910,7 @@ html[data-game="isometric"] #isoHUD .iso-camera-options {position:absolute;right
   html[data-game="isometric"][data-scene-mode="work"] .wv-work-hud > #taskHUD {width:100% !important;}
   html[data-game="isometric"][data-scene-mode="work"] #sceneAreas {top:70px;left:120px;width:auto;max-width:180px;}
 }
+/* #348: the stock room's three tabs (Kệ hàng / Thùng hàng · N / Hạn dùng) always fit the sheet: never a sideways
+   scroller that slides left and right as the crate count changes or a tab is tapped. */
+html[data-game="isometric"] .sheet .pill-tabs.inv-tabs {overflow-x: hidden;}
+html[data-game="isometric"] .sheet .pill-tabs.inv-tabs button {flex: 1 1 auto;min-width: 0;padding-inline: 8px;overflow: hidden;text-overflow: ellipsis;}
