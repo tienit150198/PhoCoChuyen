@@ -21,8 +21,9 @@ computed from it at projection time (public_task). An older build keeps the key 
 
 The contract is journey['abroad']['work'] as for a hired job, with career 'clothing', emp None, hd 0 and fee 0 (Chị
 Vy pays the ticket, so a rollback that ends the contract costs no money). A worked day (at least one customer served)
-pays a commission of `pct` % of the day's counter sales into the shop fund, counts the day and brings a line from the
-city and a letter from home; the last one brings you home.
+pays a commission of `pct` % of the day's margin (the counter's takings less the goods' cost: clothing._takings, since
+11/10; it was the whole day's sales) into the shop fund, counts the day and brings a line from the city and a letter
+from home; the last one brings you home.
 """
 from __future__ import annotations
 
@@ -38,19 +39,21 @@ PATIENCE = dict(good=5, bad=-8)
 MALE = (2,)                   # clothing.TUAN: the student
 
 # ---------------------------------------------------------------- the four partner shops
+# pct: the commission on the day's margin (11/10; it was 40–50 % of the whole day's sales). A contract signed before
+# keeps its own pct, now on the margin too.
 SHOPS = {
-    'han_quoc': dict(name='Chỉ Mây Seoul', area='Hongdae', days=4, pct=40, style='Oversize, màu trung tính, đồ đôi',
+    'han_quoc': dict(name='Chỉ Mây Seoul', area='Hongdae', days=4, pct=25, style='Oversize, màu trung tính, đồ đôi',
                      hi='Annyeong haseyo!', address=('Mapo-gu, Seoul', 'Ký túc xá Sinchon, phòng 508', 'Gangnam-gu, tầng 12'),
                      names=('Chị Ji-eun', 'Chị Seo-yeon', 'Min-jun', 'Chị Hye-jin', 'Bà Park', 'Cô Kim', 'Chị Yuna', 'Bà Choi'),
                      lines=('Hongdae tối nào cũng có nhóm nhảy ngay trước tiệm.',
                             'Chị Ji-eun dạy bạn gấp áo kiểu Hàn: vuông như hộp quà.',
                             'Khách trẻ chụp ảnh ở gương lớn nhiều hơn mua.',
                             'Tan ca, cả tiệm đi ăn gà rán, uống trà lúa mạch.')),
-    'nhat_ban': dict(name='Chỉ Mây Osaka', area='Shinsaibashi', days=5, pct=45, style='Gọn gàng, kín đáo, gói quà thật kỹ',
+    'nhat_ban': dict(name='Chỉ Mây Osaka', area='Shinsaibashi', days=5, pct=30, style='Gọn gàng, kín đáo, gói quà thật kỹ',
                      hi='Irasshaimase!', address=('Namba, Osaka', 'Tenma, Osaka', 'Umeda, tầng 7')),
-    'phap': dict(name='Chỉ Mây Lyon', area='Presqu’île', days=5, pct=45, style='Thanh lịch, chất liệu tự nhiên',
+    'phap': dict(name='Chỉ Mây Lyon', area='Presqu’île', days=5, pct=30, style='Thanh lịch, chất liệu tự nhiên',
                  hi='Bonjour !', address=('Croix-Rousse, Lyon', 'Rue de la République, Lyon', 'Vieux Lyon, tầng 3')),
-    'uc': dict(name='Chỉ Mây Melbourne', area='Fitzroy', days=6, pct=50, style='Thoải mái, chống nắng, mặc nhiều lớp',
+    'uc': dict(name='Chỉ Mây Melbourne', area='Fitzroy', days=6, pct=35, style='Thoải mái, chống nắng, mặc nhiều lớp',
                hi='G’day!', address=('Fitzroy, Melbourne', 'St Kilda, Melbourne', 'Footscray, Melbourne')),
 }
 SHOPS['nhat_ban'].update(
@@ -445,8 +448,9 @@ def why_not(s: dict) -> str | None:
     return None
 
 
-def on_close(s: dict, c: dict, sales: int) -> list[str]:
-    """clothing.on_close while on the contract: the commission, the day counted, the city, a letter; the last day home."""
+def on_close(s: dict, c: dict, margin: int) -> list[str]:
+    """clothing.on_close while on the contract: the commission on the day's `margin`, the day counted, the city, a
+    letter; the last day home."""
     from . import abroad as ab
     from .careers import kit
     w = ab.contract(s)
@@ -455,10 +459,10 @@ def on_close(s: dict, c: dict, sales: int) -> list[str]:
     to, sh = w['to'], SHOPS[w['to']]
     d = next(x for x in AC.DESTS if x['id'] == to)
     lines = []
-    bonus = max(0, sales) * w['pct'] // 100
+    bonus = max(0, margin) * w['pct'] // 100
     if bonus > 0:
-        kit.money(s, c, bonus, f'🌏 Hoa hồng chi nhánh {d["city"]} (+{w["pct"]}% doanh thu)', None, 'revenue')
-        lines.append(f'🌏 Hoa hồng {sh["name"]}: +{bonus} xu ({w["pct"]}% doanh thu hôm nay).')
+        kit.money(s, c, bonus, f'🌏 Hoa hồng chi nhánh {d["city"]} (+{w["pct"]}% tiền lời)', None, 'revenue')
+        lines.append(f'🌏 Hoa hồng {sh["name"]}: +{bonus} xu ({w["pct"]}% tiền lời hôm nay).')
     w['n'] += 1
     seed = int(s['journey'].get('seed') or 0)
     lines.append(f'{d["flag"]} Ngày {w["n"]}/{w["need"]} ở {d["city"]}: {sh["lines"][(w["n"] - 1) % len(sh["lines"])]}')

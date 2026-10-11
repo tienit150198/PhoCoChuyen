@@ -53,33 +53,35 @@ ID = 'clothing'
 PREFIX = 'ao_'
 
 # ---------------------------------------------------------------- the stock
+# Wholesale costs went up by half on 11/10 (owner: "tiệm áo thì cũng sửa lại bớt đi"; see _takings): the shop still
+# earns the most of any career, a plain day about a quarter less than before, a fully geared one about 40 % less.
 ITEMS = [
-    dict(id='tee', name='Áo thun cotton', emoji='👕', group='top', unit='cái', cost=55, start=16),
-    dict(id='shirt', name='Sơ mi công sở', emoji='👔', group='top', unit='cái', cost=100, start=12),
-    dict(id='jeans', name='Quần jean', emoji='👖', group='bottom', unit='cái', cost=130, start=15),
-    dict(id='dress', name='Váy liền', emoji='👗', group='one', unit='cái', cost=115, start=9),
-    dict(id='aodai', name='Áo dài cách tân', emoji='🥻', group='one', unit='bộ', cost=190, start=8),
-    dict(id='pajama', name='Đồ bộ mặc nhà', emoji='🌙', group='one', unit='bộ', cost=60, start=9),
-    dict(id='kids', name='Đồ bộ trẻ em', emoji='🧒', group='kids', unit='bộ', cost=45, start=12),
-    dict(id='hat', name='Nón vành', emoji='👒', group='acc', unit='cái', cost=30, start=6),
-    dict(id='belt', name='Thắt lưng da', emoji='🪢', group='acc', unit='sợi', cost=35, start=6),
-    dict(id='socks', name='Tất cổ ngắn', emoji='🧦', group='acc', unit='đôi', cost=8, start=12),
+    dict(id='tee', name='Áo thun cotton', emoji='👕', group='top', unit='cái', cost=80, start=16),
+    dict(id='shirt', name='Sơ mi công sở', emoji='👔', group='top', unit='cái', cost=150, start=12),
+    dict(id='jeans', name='Quần jean', emoji='👖', group='bottom', unit='cái', cost=195, start=15),
+    dict(id='dress', name='Váy liền', emoji='👗', group='one', unit='cái', cost=170, start=9),
+    dict(id='aodai', name='Áo dài cách tân', emoji='🥻', group='one', unit='bộ', cost=285, start=8),
+    dict(id='pajama', name='Đồ bộ mặc nhà', emoji='🌙', group='one', unit='bộ', cost=90, start=9),
+    dict(id='kids', name='Đồ bộ trẻ em', emoji='🧒', group='kids', unit='bộ', cost=65, start=12),
+    dict(id='hat', name='Nón vành', emoji='👒', group='acc', unit='cái', cost=45, start=6),
+    dict(id='belt', name='Thắt lưng da', emoji='🪢', group='acc', unit='sợi', cost=50, start=6),
+    dict(id='socks', name='Tất cổ ngắn', emoji='🧦', group='acc', unit='đôi', cost=12, start=12),
     # 1.7.16 (góp ý #191): more dresses, separates, shoes and accessories. They start at 0 on the rack
     # (Kho → nhập hàng); a save only gets their grid rows once one of them is stocked (see _sync).
-    dict(id='maxi', name='Đầm maxi', emoji='👘', group='one', unit='cái', cost=150, start=0),
-    dict(id='babydoll', name='Váy babydoll', emoji='🎀', group='one', unit='cái', cost=95, start=0),
-    dict(id='set2', name='Set áo + chân váy', emoji='👚', group='one', unit='bộ', cost=140, start=0),
-    dict(id='blazer', name='Áo blazer', emoji='🧥', group='top', unit='cái', cost=180, start=0),
-    dict(id='cardigan', name='Áo cardigan len', emoji='🧶', group='top', unit='cái', cost=85, start=0),
-    dict(id='polo', name='Áo polo', emoji='🎽', group='top', unit='cái', cost=70, start=0),
-    dict(id='skirt', name='Chân váy chữ A', emoji='💃', group='bottom', unit='cái', cost=70, start=0),
-    dict(id='trousers', name='Quần tây ống suông', emoji='🕴️', group='bottom', unit='cái', cost=110, start=0),
-    dict(id='shorts', name='Quần short kaki', emoji='🩳', group='bottom', unit='cái', cost=50, start=0),
-    dict(id='sneaker', name='Giày sneaker', emoji='👟', group='shoes', unit='đôi', cost=150, start=0),
-    dict(id='sandal', name='Sandal quai mảnh', emoji='👡', group='shoes', unit='đôi', cost=70, start=0),
-    dict(id='bag', name='Túi xách tay', emoji='👜', group='acc', unit='cái', cost=90, start=0),
-    dict(id='earrings', name='Bông tai ngọc trai', emoji='💎', group='acc', unit='đôi', cost=25, start=0),
-    dict(id='scarf', name='Khăn lụa', emoji='🧣', group='acc', unit='chiếc', cost=40, start=0),
+    dict(id='maxi', name='Đầm maxi', emoji='👘', group='one', unit='cái', cost=225, start=0),
+    dict(id='babydoll', name='Váy babydoll', emoji='🎀', group='one', unit='cái', cost=140, start=0),
+    dict(id='set2', name='Set áo + chân váy', emoji='👚', group='one', unit='bộ', cost=210, start=0),
+    dict(id='blazer', name='Áo blazer', emoji='🧥', group='top', unit='cái', cost=270, start=0),
+    dict(id='cardigan', name='Áo cardigan len', emoji='🧶', group='top', unit='cái', cost=125, start=0),
+    dict(id='polo', name='Áo polo', emoji='🎽', group='top', unit='cái', cost=105, start=0),
+    dict(id='skirt', name='Chân váy chữ A', emoji='💃', group='bottom', unit='cái', cost=105, start=0),
+    dict(id='trousers', name='Quần tây ống suông', emoji='🕴️', group='bottom', unit='cái', cost=165, start=0),
+    dict(id='shorts', name='Quần short kaki', emoji='🩳', group='bottom', unit='cái', cost=75, start=0),
+    dict(id='sneaker', name='Giày sneaker', emoji='👟', group='shoes', unit='đôi', cost=225, start=0),
+    dict(id='sandal', name='Sandal quai mảnh', emoji='👡', group='shoes', unit='đôi', cost=105, start=0),
+    dict(id='bag', name='Túi xách tay', emoji='👜', group='acc', unit='cái', cost=135, start=0),
+    dict(id='earrings', name='Bông tai ngọc trai', emoji='💎', group='acc', unit='đôi', cost=35, start=0),
+    dict(id='scarf', name='Khăn lụa', emoji='🧣', group='acc', unit='chiếc', cost=60, start=0),
 ]
 LEGACY = ('tee', 'shirt', 'jeans', 'dress', 'aodai', 'pajama', 'kids', 'hat', 'belt', 'socks')
 ITEM = {x['id']: x for x in ITEMS}
@@ -155,6 +157,7 @@ DISPLAY_PAY = 25
 SHIP_FEE = 15
 DISPLAY_FRESH = 2           # days a good mannequin keeps drawing people in
 RETURN_PAY = 10             # Vy's small bonus for handling a return by the book
+SKIP_PCT = 10               # a life day past the real-time allowance keeps the goods' cost and this % of a bill (_takings)
 POLICY = ['Đổi trả trong 7 ngày, đồ còn tem mác, chưa mặc.',
           'Có hóa đơn thì hoàn tiền; mất hóa đơn thì chỉ đổi sang món khác.',
           'Hàng sale không đổi trả (hóa đơn có đóng dấu SALE).',
@@ -610,6 +613,7 @@ def _extend(d: dict) -> dict:
     d.setdefault('notes', [])
     d.setdefault('seq', 0)
     d.setdefault('day_sales', 0)
+    d.setdefault('day_margin', 0)   # 11/10: today's margin (_takings); optional, an older build ignores it
     st = d.setdefault('stats', {})
     for k in STAT_KEYS:
         st.setdefault(k, 0)
@@ -745,6 +749,45 @@ def _restock_one(c: dict, item: str, size: str) -> None:
     row[size] = row.get(size, 0) + 1
 
 
+# ---- the shop's takings (owner 11/10: "tiệm áo thì cũng sửa lại bớt đi")
+# The audit of 11/10 found an optimised day paying 3–4.5k xu a life day, several times any other career: the
+# ⚙️ quality gear (+30 %) and the 🌏 commission abroad (+40–50 %) were counted on the whole bill, i.e. on the goods'
+# cost again (a bill is about twice what its goods cost), on top of the 🏷️ +25 % price band. They now count on the
+# margin (the bill less the goods' recorded cost, Bà Tư's share, the ship fee and losses) and the goods cost more.
+# A life day past the real-time allowance (game/interest_clock.py: 1 real hour = 1 day, as the salary, the tenants'
+# rent and the bank's interest) keeps the goods' cost and SKIP_PCT % of the bill: ending empty days fast pays little.
+def _paid_day(s: dict) -> bool:
+    from .. import interest_clock as ic
+    return ic.day_paid(s)
+
+
+def _markup(units) -> int:
+    """How much (item, unit price) pairs are billed above the list prices (PRICES): a 🏷️ price set above the list
+    is the shop's own extra and does not feed the bonuses a second time."""
+    return sum(max(0, unit - PRICES[item]) for item, unit in units)
+
+
+def _takings(s: dict, c: dict, net: int, cost: int, bill: int, markup: int = 0) -> tuple[int, int, int]:
+    """One sale: (credited, margin, held). `net` the customer's money after the counter's own costs (losses, the
+    ship fee), `cost` what the sale cost the shop (goods, Bà Tư's share), `bill` the bill's total, `markup` its part
+    above the list prices (_markup). `margin` is what the quality gear and the day's 🌏 commission count on; `held`
+    what a day past the real-time allowance does not credit."""
+    got = max(0, net)
+    held = 0
+    if got and not _paid_day(s):
+        held = max(0, got - cost - max(0, bill) * SKIP_PCT // 100)
+        got -= held
+    margin = max(0, got - markup - cost)
+    d = _data(c)
+    d['day_margin'] = min(10 ** 9, d['day_margin'] + margin)
+    return got, margin, held
+
+
+def _held_line(held: int) -> str:
+    return (f'⏱️ Hôm nay đã quá số ngày có lời theo giờ thật (1 giờ = 1 ngày): tiệm chỉ giữ tiền vốn hàng và {SKIP_PCT}% bill, '
+            f'không tính {held} xu tiền lời.')
+
+
 def _price(c: dict, item: str) -> int:
     d = _data(c)
     sale = d.get('sale')
@@ -847,6 +890,7 @@ def on_start(s: dict, c: dict) -> None:
                 t.pop('abroad')
     d = _data(c)
     d['day_sales'] = 0
+    d['day_margin'] = 0
     d['swaps'] = [x for x in d['swaps'] if x['day'] >= c['day']]
 
 
@@ -1400,9 +1444,10 @@ def _finish(s, c, t):
         d['stats']['customers'] += 1
         kit.complete(s, c, t, 0, f'{who} để đồ lại trên quầy, không mua nữa: “{t["title"]}”.')
         return dict(message=f'{who} để đồ lại, không lấy nữa. ' + ' '.join(notes))
+    cost = 0
     for x in t['bill']['lines']:
         if x['item']:
-            _sell(c, x['item'], x['size'])
+            cost += _sell(c, x['item'], x['size'])
     for x, right in wrong:
         d['seq'] += 1
         d['swaps'] = ar.last(d['swaps'] + [dict(id=f'sw-{d["seq"]}', npc=t['npc'], item=x['item'], colour=x['colour'], wrong=x['size'],
@@ -1411,19 +1456,23 @@ def _finish(s, c, t):
         _remember_sizes(c, t)
     share = t['needs']['fee'] * TAILOR_SHARE // 100 if t['kind'] == 'alter' and t['alt']['mode'] == 'send' else 0
     net = react['pay'] - money['loss']
+    markup = _markup((x['item'], x['unit']) for x in t['bill']['lines'] if x['item'])
+    got, margin, held = _takings(s, c, net, cost + share, total, markup)
     t['stage'] = 'done'
-    t['result'] = dict(total=total, net=net, loss=money['loss'], tip=money['tip'])
+    t['result'] = dict(total=total, net=net - held, loss=money['loss'], tip=money['tip'])
     d['stats']['sales'] += max(0, react['pay'])
     d['stats']['customers'] += 1
     d['day_sales'] += max(0, react['pay'])
     kit.metric(c, 'ao_sales')
-    kit.complete(s, c, t, max(0, net), f'Bạn đã phục vụ {who}: “{t["title"]}”.')
+    kit.complete(s, c, t, got, f'Bạn đã phục vụ {who}: “{t["title"]}”.', bonus_base=margin)
     if net < 0 and min(-net, c['money']) > 0:
         kit.money(s, c, -min(-net, c['money']), 'Thất thoát ở quầy: ' + t['title'], t['id'], 'loss')
     if share and c['money'] > 0:
         kit.money(s, c, -min(share, c['money']), 'Trả công Bà Tư sửa đồ', t['id'], 'service')
         notes.append(f'Gửi Bà Tư {share} xu tiền công.')
-    head = f'Đã thu {total} xu · +{max(0, net)} xu.'
+    if held:
+        notes.append(_held_line(held))
+    head = f'Đã thu {total} xu · +{got} xu.'
     if wrong:
         notes.append('Khách về nhà mặc thử mới biết không vừa — mai sẽ quay lại đổi size.')
     return dict(message=head + (' ' + ' '.join(notes) if notes else ''), celebrate=not cq.slips(t) and not t['mistakes'])
@@ -1850,7 +1899,9 @@ def _online(s, c, t, name, p):
     if name == 'ao_label':
         kit.need(pc['items'], 'Gói còn trống.')
         kit.need(not pc['sealed'], 'Gói đã dán rồi.')
-        total = sum(_price(c, x['item']) for x in pc['items'])
+        # The customer pays for what they ordered (11/10 audit: three dear extras stuffed into every parcel were
+        # billed and paid about +600 xu an order). An extra piece is never on the label: it comes back to the rack.
+        total = sum(_price(c, x['item']) for x in _billed(t))
         cod = total if t['needs']['pay'] == 'cod' else 0
         pc['label'] = dict(total=total, cod=cod)
         return dict(message=f'In phiếu giao: {who} · {t["needs"]["address"]} · ' + (f'thu hộ {cod} xu.' if cod else 'đã thanh toán, không thu hộ.'))
@@ -1886,6 +1937,16 @@ def _parcel_diff(t: dict) -> tuple[list, list, list]:
     return want, wrong, extra
 
 
+def _billed(t: dict) -> list:
+    """The packed pieces the order pays for: the right ones, and a wrong size/colour standing in for an ordered
+    line (paid, then sent back: its slip and the ship fee both ways). An extra piece is not in it."""
+    _, _, extra = _parcel_diff(t)
+    out = list(t['parcel']['items'])
+    for x in extra:
+        out.remove(x)
+    return out
+
+
 def _ship(s, c, t):
     pc = t['parcel']
     d = _data(c)
@@ -1910,26 +1971,33 @@ def _ship(s, c, t):
     if not pc['sealed']:
         t['mistakes'] += 1
         cq.slip(t, 'unsealed', 1, 'Gói hàng tới nơi bung băng keo, đồ lấm bụi.', 'gói hàng không dán kỹ')
-    total = pc['label']['total']
+    # A label printed by an older build may still bill the extras: never more than the order's own pieces.
+    total = min(pc['label']['total'], sum(_price(c, x['item']) for x in _billed(t)))
     react = cq.react(s, c, t, total, who=who)
-    for x in pc['items']:
-        _sell(c, x['item'], x['size'])
+    cost = 0
+    for x in _billed(t):    # an extra piece comes back with the return parcel: it stays on the rack
+        cost += _sell(c, x['item'], x['size'])
     pay = react['pay']
     if pay:
         kit.bank(pay)
     net = pay - SHIP_FEE - loss
+    got, margin, held = _takings(s, c, net, cost, total, _markup((x['item'], _price(c, x['item'])) for x in _billed(t)))
     t['stage'] = 'done'
-    t['result'] = dict(total=total, net=net, loss=loss)
+    t['result'] = dict(total=total, net=net - held, loss=loss)
     d['stats']['sales'] += max(0, pay)
     d['day_sales'] += max(0, pay)
     kit.metric(c, 'ao_online')
-    kit.complete(s, c, t, max(0, net), f'Bạn gửi đơn online cho {who}.')
+    kit.complete(s, c, t, got, f'Bạn gửi đơn online cho {who}.', bonus_base=margin)
     if net < 0 and c['money'] > 0:
         kit.money(s, c, -min(-net, c['money']), 'Phí ship đơn online', t['id'], 'loss')
     received = pay
     msg = f'Shipper chạy đi rồi! {"Tiền chuyển khoản" if t["needs"]["pay"] == "paid" else "Tiền thu hộ"} {received} xu · trừ ship {SHIP_FEE} xu.'
     if loss:
         msg += f' Gửi sai phải chịu thêm {loss} xu phí ship hai chiều.'
+    if extra:
+        msg += f' Món dư không ai trả tiền: khách gửi trả {len(extra)} món, treo lại lên giá.'
+    if held:
+        msg += ' ' + _held_line(held)
     if react['message']:
         msg += ' ' + react['message']
     return dict(message=msg, celebrate=not cq.slips(t))
@@ -2026,17 +2094,20 @@ def on_close(s: dict, c: dict) -> dict:
     d['swaps'] = [x for x in d['swaps'] if x['day'] > c['day']]
     disp = d.get('display')
     walk = 0
-    if isinstance(disp, dict) and disp.get('score', 0) >= 4 and 0 <= c['day'] - disp['day'] <= DISPLAY_FRESH:
+    paid = _paid_day(s)
+    # Passers-by come on a day the real-time allowance covers (a skipped day has nobody walking past: 11/10 audit).
+    if paid and isinstance(disp, dict) and disp.get('score', 0) >= 4 and 0 <= c['day'] - disp['day'] <= DISPLAY_FRESH:
         want = 2 if disp['score'] >= 5 else 1
         for item in ('hat', 'socks', 'belt'):
             if walk >= want:
                 break
             size = 'F'
             if _free(c, item, size) > 0:
-                _sell(c, item, size)
+                cost = _sell(c, item, size)
                 price = _price(c, item)
                 kit.money(s, c, price, f'Khách ghé vì ma-nơ-canh: {ITEM[item]["name"]}', None, 'revenue')
                 d['day_sales'] += price
+                d['day_margin'] = min(10 ** 9, d['day_margin'] + max(0, min(price, PRICES[item]) - cost))
                 d['stats']['sales'] += price
                 walk += 1
         if walk:
@@ -2051,9 +2122,11 @@ def on_close(s: dict, c: dict) -> dict:
         lines.append(f'🪡 Tiệm: {look["name"]}.')
     tomorrow = mod_of(c['day'] + 1)
     lines.append(f'📅 Ngày mai: {tomorrow["emoji"]} {tomorrow["name"]}.')
-    lines.extend(_abroad().on_close(s, c, d['day_sales']))   # 🌏 a day at the partner shop abroad
+    # 🌏 a day at the partner shop abroad: the commission is on the day's margin (none past the real-time allowance)
+    lines.extend(_abroad().on_close(s, c, min(d['day_margin'], d['day_sales']) if paid else 0))
     summary = dict(sales=d['day_sales'], lines=lines, note=f'Doanh thu quầy hôm nay {d["day_sales"]} xu.')
     d['day_sales'] = 0
+    d['day_margin'] = 0
     return summary
 
 
@@ -2432,6 +2505,7 @@ def validate_data(c: dict) -> None:
         kit.text(x['text'], 200)
     kit.integer(d['seq'], 0, 10 ** 9)
     kit.integer(d['day_sales'], 0, 10 ** 9)
+    kit.integer(d.get('day_margin', 0), 0, 10 ** 9)
     kit.need(isinstance(d['stats'], dict) and set(d['stats']) == set(STAT_KEYS), 'Thống kê tiệm sai.')
     _ints(d['stats'].values(), 0, 10 ** 9)
 
