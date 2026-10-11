@@ -676,13 +676,14 @@ def run_rate(game: str, n: int) -> float:
 
 
 def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = None) -> float:
-    """Count the round in the player's runs and return its draw (run_rate of the decay count): no profit or price
-    penalty. The older run keys (_run) are kept up to date for older servers, but decide nothing any more."""
+    """Count the round and choose its draw. Golden days use the current round's stake:
+    300,000 xu or more draws at 40%; smaller stakes keep the event boost. Outside
+    the event, the ordinary run rate applies. Wallet and past profit do not decide odds."""
     _run(j, game, t)
     n = _heat(j, game, t, stake or 0)
     if golden.active(game, t):
         golden.mark_display(j)
-        return golden.WIN_P
+        return golden.HIGH_STAKE_WIN_P if (stake or 0) >= golden.HIGH_STAKE else golden.WIN_P
     return run_rate(game, n)
 
 

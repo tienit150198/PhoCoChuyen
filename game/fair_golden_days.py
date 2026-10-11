@@ -17,6 +17,10 @@ KEY = 'fair_golden_days_20261011'
 DISPLAY_KEY = 'fair_golden_days'
 DURATION = 48 * 60 * 60
 WIN_P = .70                    # server only; never include in public/status data
+# Owner 11/10: 299k keeps the event boost; 300k or more in ONE round draws at 40%.
+# This is the accepted stake, not the wallet, cumulative wagers, or past profit.
+HIGH_STAKE = 300_000
+HIGH_STAKE_WIN_P = .40
 GAMES = ('xd', 'lt', 'xs')
 ACTIONS = ('fair_xd', 'fair_loto_buy', 'fair_xs')
 TITLE = '2 ngày vàng, tăng tỷ lệ thắng cược Chợ Đen'
