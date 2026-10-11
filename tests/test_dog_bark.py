@@ -65,6 +65,54 @@ def runs(profile, n, seed=20261010, **kw):
     return [G.simulate(rng, profile() if profile in (NORMAL, HARD) else profile, **kw) for _ in range(n)]
 
 
+class Plausibility(unittest.TestCase):
+    """11/10 audit: a script sending jittered 90..100 won 2000/2000 against the house dog. A voice must breathe, and a
+    long run counts at most SUSTAIN_MAX on average: a script is worth a strong player, never a sure thing."""
+
+    @staticmethod
+    def levels(profile, seconds, seed=1, rate=0.1):
+        v, r, t, out = G.Voice(), random.Random(seed), 0.0, []
+        while t < seconds:
+            v.add([profile(t, r)], t)
+            out.append((t, v.level(t)))
+            t += rate
+        return out
+
+    def test_a_held_shout_must_breathe(self):
+        lv = self.levels(lambda t, r: r.uniform(90, 100), 9.0)
+        self.assertTrue(all(x > 0 for t, x in lv if t < G.BREATH_S - 0.2))
+        self.assertTrue(all(x == 0 for t, x in lv if t > G.BREATH_S + 0.2), 'no breath for BREATH_S: no pull')
+        v = G.Voice()
+        for i in range(90):
+            v.add([95 + (i % 3)], i * 0.1)
+        self.assertEqual(v.level(8.9), 0.0)
+        v.add([5], 9.0)                                       # a breath
+        for i in range(1, 6):
+            v.add([95 + (i % 3)], 9.0 + i * 0.1)
+        self.assertGreater(v.level(9.5), 0.0)
+        v = G.Voice()                                         # a pause between frames is a breath too
+        for i in range(50):
+            v.add([95 + (i % 3)], i * 0.1)
+        for i in range(30):
+            v.add([95 + (i % 3)], 5.0 + G.BREATH_GAP + 0.1 + i * 0.1)
+        self.assertGreater(v.level(5.0 + G.BREATH_GAP + 3.0), 0.0)
+
+    def test_a_long_loud_run_counts_at_most_sustain_max(self):
+        bot = bursts(90, 100, 1.6, 0.25)                      # a script that breathes
+        late = [x for t, x in self.levels(bot, 30.0) if t >= G.SUSTAIN_S]
+        self.assertLessEqual(sum(late) / len(late), G.SUSTAIN_MAX + 5)
+        hard = [x for t, x in self.levels(HARD(), 30.0) if t >= G.SUSTAIN_S]
+        self.assertLess(abs(sum(late) / len(late) - sum(hard) / len(hard)), 8, 'a script is worth a hard shouter, no more')
+        v = G.Voice()                                         # one real shout is never capped (too short to be a run)
+        for i, x in enumerate((70, 82, 64, 90, 75, 88)):
+            v.add([x], i * 0.07)
+        self.assertGreater(v.level(0.4), 70)
+
+    def test_a_held_script_loses_to_the_dog(self):
+        res = runs(lambda t, r: r.uniform(90, 100), 200)
+        self.assertLess(sum(x['win'] == 'a' for x in res) / len(res), 0.1)
+
+
 class RopeAndDog(unittest.TestCase):
     """Owner 10/10 ("phải sủa mới tính"): the rope moves only on a bark, for both sides."""
 
@@ -346,6 +394,43 @@ class Database(unittest.TestCase):
         self.settle(a, 'draw', 700, prev='dog')
         self.assertTrue(self.pay(a))
         self.assertEqual(self.wallet(a), 9_500)              # a draw gives the stake back
+
+    def test_new_account_risks_against_players_within_the_transfer_cap(self):
+        from game import bank_xfer
+        a, old = self.player(wallet=2_000_000, name='Mới'), self.player(wallet=2_000_000, name='Cũ')
+        sid = self.store.key(a)
+        with self.store.connect() as db:
+            db.execute("UPDATE accounts SET created_at=? WHERE sid=?", (time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time() - 3600)), sid))
+        self.assertEqual(G.view(self.store, a)['me']['new_room'], bank_xfer.NEW_DAY_MAX)
+        for _ in range(2):                                    # 2 × 200.000 thrown away to another player
+            self.join(a, G.STAKE_MAX)
+            self.start(a)
+            self.settle(a, 'lose', 0)
+        with self.assertRaises(GameError) as e:
+            self.join(a, G.STAKE_MAX)
+        self.assertEqual(e.exception.code, 'bark_new')
+        self.assertEqual(G.view(self.store, a)['me']['new_room'], bank_xfer.NEW_DAY_MAX - 2 * G.STAKE_MAX)
+        self.join(a, 100_000)                                 # what is left of the day
+        self.start(a, 'dog')                                  # a house-dog match is no transfer: its stake gives the room back
+        self.settle(a, 'lose', 0, prev='dog')
+        self.join(a, 100_000)
+        self.start(a)
+        self.settle(a, 'win', 200_000)                        # a win gives room back
+        self.join(a, 100_000)
+        self.start(a)
+        self.settle(a, 'lose', 0)
+        self.assertEqual(G.view(self.store, a)['me']['new_room'], 100_000)
+        with self.store.connect() as db:                      # the bank transfers of the day share the same cap
+            db.execute('INSERT INTO bank_xfer_days(sid,day,sent,n,got) VALUES(?,?,?,0,0)', (sid, bank_xfer.vn_day(), 60_000))
+        with self.assertRaises(GameError) as e:
+            self.join(a, 100_000)
+        self.assertEqual(e.exception.code, 'bark_new')
+        self.join(a, 40_000)
+        for _ in range(3):                                    # an older account: only STAKE_MAX
+            self.join(old, G.STAKE_MAX)
+            self.start(old)
+            self.settle(old, 'lose', 0)
+        self.assertIsNone(G.view(self.store, old)['me']['new_room'])
 
     def test_who_may_play(self):
         for kw, code in ((dict(account=False, year=None), 'bark_account'), (dict(year=None), 'bark_birth'), (dict(year=2015), 'bark_young')):

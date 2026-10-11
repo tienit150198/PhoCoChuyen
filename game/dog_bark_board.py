@@ -5,6 +5,13 @@ count; a match crossing midnight belongs to its finish week. The first invocatio
 persists the current week, never earlier weeks. Only matches verified by the upgraded live service qualify. A
 60-second grace lets transactions at the boundary finish; snapshots never change.
 
+Anti-farming (11/10 audit: a scripted voice won every house-dog match, quits counted as wins, and a few accounts
+could throw matches to one another): only matches between two players that ran to the end or the time limit
+count (the live service marks them `competitive`; never the house dog, a quit or a lost page), against an
+opponent whose account was OPP_ACCOUNT_DAYS old at the match, at most PER_OPP matches per opponent a week. A
+player qualifies with MINIMUM such matches against OPPONENTS_MIN different opponents, and ranks by how many
+different opponents they beat, then the win rate: throwing matches needs many aged accounts, not a few.
+
 Meta cursor and winner snapshots commit with dedicated bark_weekly effects. Old
 workers defer this kind. Deploy all title-aware workers before the first Monday's
 prizes: rolling back to an older strict title registry AFTER payment is unsafe.
@@ -21,6 +28,9 @@ from . import dog_bark as bark
 
 WEEK = 7 * 86400
 MINIMUM = 30
+OPPONENTS_MIN = 5       # different opponents in the counted matches
+PER_OPP = 6             # matches counted per opponent a week (the first ones)
+OPP_ACCOUNT_DAYS = 7    # the opponent's account this many days old when the match was made (bank_xfer.NEW_DAYS)
 GRACE = 60
 LIMIT = 20
 FX = 'bark_weekly'
@@ -59,15 +69,27 @@ def _prize(rank):
     return 0, ''
 
 
-# bark_tickets_week is the partial index on ended WHERE status='done'. Account
-# created_at is UTC text, as in pg_schema.NOW_TEXT; don't inherit an old account's
-# tickets if a sid is registered again. No sessions JSON is read.
-_STATS = """SELECT b.sid, COUNT(*) AS played,
-    SUM(CASE WHEN b.result='win' THEN 1 ELSE 0 END) AS wins, MAX(b.ended) AS achieved
+# bark_tickets_week is the partial index on ended WHERE status='done'; both tickets of a
+# match share `match` and `ended` (one settle transaction). Account created_at is UTC
+# text, as in pg_schema.NOW_TEXT; don't inherit an old account's tickets if a sid is
+# registered again. No sessions JSON is read. Parameters: _args().
+_STATS = """WITH m AS (
+    SELECT b.sid, b.result, b.ended, o.sid AS opp,
+        ROW_NUMBER() OVER (PARTITION BY b.sid, o.sid ORDER BY b.ended, b.id) AS k
     FROM bark_tickets b JOIN accounts a ON a.sid=b.sid
-    WHERE b.status='done' AND b.competitive=true AND b.result IN ('win','lose','draw')
-    AND b.ended>=? AND b.ended<?
-    AND b.created >= EXTRACT(EPOCH FROM (a.created_at::timestamp AT TIME ZONE 'UTC'))"""
+    JOIN bark_tickets o ON o.match=b.match AND o.sid<>b.sid AND o.status='done' AND o.ended>=? AND o.ended<?
+    JOIN accounts oa ON oa.sid=o.sid
+    WHERE b.status='done' AND b.competitive=true AND b.opp='pvp' AND b.result IN ('win','lose','draw')
+    AND b.ended>=? AND b.ended<? {own}
+    AND b.created >= EXTRACT(EPOCH FROM (a.created_at::timestamp AT TIME ZONE 'UTC'))
+    AND b.created >= EXTRACT(EPOCH FROM (oa.created_at::timestamp AT TIME ZONE 'UTC')) + ?)
+    SELECT sid, COUNT(*) AS played, SUM(CASE WHEN result='win' THEN 1 ELSE 0 END) AS wins, MAX(ended) AS achieved,
+    COUNT(DISTINCT opp) AS opponents, COUNT(DISTINCT CASE WHEN result='win' THEN opp END) AS beaten
+    FROM m WHERE k<=? GROUP BY sid"""
+
+
+def _args(w, sid=None):
+    return (w, w+WEEK, w, w+WEEK) + ((sid,) if sid else ()) + (OPP_ACCOUNT_DAYS*86400, PER_OPP)
 
 
 def _people(db, sids):
@@ -84,10 +106,12 @@ def _people(db, sids):
 
 
 def _standings(db, w):
-    rows = [dict(r) for r in db.execute(_STATS + ' GROUP BY b.sid HAVING COUNT(*)>=?', (w, w+WEEK, MINIMUM))]
-    # Compare integer fractions, never display-rounded percentages. Totals are
-    # grouped in PostgreSQL; memory is proportional to active competitors only.
-    rows.sort(key=lambda r: (-Fraction(r['wins'], r['played']), -r['wins'], r['achieved'], r['sid']))
+    rows = [dict(r) for r in db.execute(_STATS.format(own='') + ' HAVING COUNT(*)>=? AND COUNT(DISTINCT opp)>=?',
+                                         _args(w) + (MINIMUM, OPPONENTS_MIN))]
+    # Different opponents beaten first, then the win rate (integer fractions, never
+    # display-rounded percentages). Totals are grouped in PostgreSQL; memory is
+    # proportional to active competitors only.
+    rows.sort(key=lambda r: (-r['beaten'], -Fraction(r['wins'], r['played']), -r['wins'], r['achieved'], r['sid']))
     ranked = []
     # Bounded name queries; a hidden or offensive name cannot take a prize slot.
     for start in range(0, len(rows), 200):
@@ -104,6 +128,7 @@ def _public(r, name):
     reward, title = _prize(r.get('rank'))
     return dict(rank=r.get('rank'), name=name, wins=int(r['wins']), played=int(r['played']),
                 rate=round(100 * int(r['wins']) / int(r['played']), 4) if r['played'] else 0,
+                beaten=int(r.get('beaten') or 0), opponents=int(r.get('opponents') or 0),
                 reward=reward, title=title)
 
 
@@ -174,19 +199,21 @@ def view(store, sid=None, t=None):
         public = [_public(r, people[r['sid']]['name']) for r in rows if people.get(r['sid'], {}).get('visible')]
         me = None
         if sid and sid in people:
-            own = db.execute(_STATS + ' AND b.sid=? GROUP BY b.sid', (w, w+WEEK, sid)).fetchone()
+            own = db.execute(_STATS.format(own='AND b.sid=?'), _args(w, sid)).fetchone()
             rank = next((r['rank'] for r in rows if r['sid'] == sid), None)
-            own = dict(own) if own else dict(wins=0, played=0)
+            own = dict(own) if own else dict(wins=0, played=0, opponents=0, beaten=0)
             visible = people[sid]['visible']
             me = _public(dict(own, rank=rank if visible else None), 'Bạn')
-            me.update(eligible=visible and own['played']>=MINIMUM, remaining=max(0, MINIMUM-own['played']), visible=visible)
+            me.update(eligible=visible and own['played']>=MINIMUM and own['opponents']>=OPPONENTS_MIN,
+                      remaining=max(0, MINIMUM-own['played']), opp_remaining=max(0, OPPONENTS_MIN-own['opponents']),
+                      visible=visible)
         prev = db.execute('SELECT v FROM leaderboard_meta WHERE k=?', (META+week_label(w-WEEK),)).fetchone()
         previous = None
         if prev:
             won = json.loads(prev['v'])
             names = _people(db, [r['sid'] for r in won])
             previous = dict(week=week_label(w-WEEK), rows=[_public(r, names.get(r['sid'], {}).get('name', 'Một người chơi')) for r in won])
-    return dict(week=week_label(w), ends=w+WEEK, minimum=MINIMUM,
+    return dict(week=week_label(w), ends=w+WEEK, minimum=MINIMUM, opponents_min=OPPONENTS_MIN, per_opp=PER_OPP,
                 prizes=[dict(rank=i+1, coins=coins, title=TITLE_NAMES[TITLE_IDS[i]]) for i, coins in enumerate(COINS)],
                 rows=public, me=me, previous=previous)
 

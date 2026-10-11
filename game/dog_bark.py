@@ -3,7 +3,7 @@ the Chợ đen: no fair police, no Lộc trời cho, no fair board), with its ow
 (both servers read it: this module for the command and the page's microphone header, live/config.py for the socket).
 
 How a match runs
-* The player picks a stake (MIN_STAKE .. the wallet; STAKE_MAX only keeps a payout inside one Sổ ví row) and taps
+* The player picks a stake (MIN_STAKE .. the wallet, at most STAKE_MAX; a new account less, see pvp_room) and taps
   "Tìm đối thủ": the command `jr_bark_join {stake}` takes the stake from the wallet (escrow) and command_commit writes
   the ticket row (`bark_tickets`, status 'wait') in the same transaction, after the rules that need the database: an
   account with a birth year (account_birth, game/karaoke_mic.py) of someone MIN_AGE or older, no other open ticket,
@@ -55,7 +55,9 @@ KIND = 'life'                      # wallet history kind (journey.HISTORY_KINDS)
 LABEL = '🐕 Kéo co chó sủa'
 HOUSE = 'Chó nhà Mây'              # the house dog's tag: "🐕 Chó nhà Mây · Mực"
 MIN_STAKE = 100
-STAKE_MAX = 5_000_000              # a win pays 2× in one Sổ ví row, which every validator keeps within 10**7
+STAKE_MAX = 200_000                # 11/10 audit: a thrown match moved up to 5M between two accounts (was 5_000_000).
+                                   # An account younger than bank_xfer.NEW_DAYS also risks against players at most
+                                   # what is left of its bank_xfer.NEW_DAY_MAX today (pvp_room, command_commit)
 FEE_PCT = 0                        # owner: "win thì hệ thống trả lại": the winner gets both stakes
 MIN_AGE = 16
 # the day's caps (Vietnam day)
@@ -82,6 +84,14 @@ BATCH_MAX = 6                      # samples in one frame
 FLAT_RUN = 30                      # this many identical non-zero samples in a row count as silence (not a voice)
 FLAT_SPREAD = 1.5                  # a window whose samples stay within this is a hum, not a bark: 0
 BARK_MIN = 30.0                    # a sample under this (above the page's noise floor) is no bark: it pulls 0
+# Plausibility (11/10 audit: a script sending jittered 90..100 beat the house dog every time). A human voice must breathe
+# and cannot hold a full shout: a side loud for BREATH_S without one sample under BARK_MIN (or a pause between frames of
+# BREATH_GAP) pulls 0 until it breathes; and over SUSTAIN_S its mean pull counts at most SUSTAIN_MAX (a hard, honest
+# barker averages about 50..65 over a few seconds), so a script is worth a strong player at most, never a sure win.
+BREATH_S = 6.0
+BREATH_GAP = 0.6
+SUSTAIN_S = 3.0
+SUSTAIN_MAX = 60.0
 LIVE_GAP = 1.5                     # no sample for this long: the page's mic is not delivering (the match waits)
 READY_MAX = 20.0                   # a match whose mics never came alive is called off: stakes back
 PAUSE_MAX = 15.0                   # a house-dog match paused this long for the mic ends as at the time limit
@@ -169,6 +179,7 @@ class Voice:
         self.sum = 0.0
         self.peak = 0.0
         self.at = None                 # when the last sample arrived (the mic is alive)
+        self.loud = None               # when the current run of bark-level samples began (None: breathing)
 
     @staticmethod
     def clamp(v) -> float | None:
@@ -191,6 +202,10 @@ class Voice:
                 break
             self.sec.append(t)
             v = round(v, 1)
+            if v < BARK_MIN or (self.at is not None and t - self.at > BREATH_GAP):
+                self.loud = None       # a breath: a quiet sample, or a pause in what the page delivers
+            if v >= BARK_MIN and self.loud is None:
+                self.loud = t
             self.run = self.run + 1 if v == self.last else 1
             self.last = v
             if self.run >= FLAT_RUN and v > 0:   # a held identical number is not a voice
@@ -204,13 +219,22 @@ class Voice:
         return kept
 
     def level(self, t: float) -> float:
-        """The pull now: the mean of the window's samples, the ones under BARK_MIN counting 0; 0 for a flat window."""
+        """The pull now: the mean of the window's samples, the ones under BARK_MIN counting 0; 0 for a flat window, and
+        0 for a voice that has not breathed for BREATH_S; scaled down when the SUSTAIN_S mean is above SUSTAIN_MAX."""
         vals = [v for at, v in self.s if t - at <= WINDOW]
         if not vals:
             return 0.0
         if len(vals) >= 4 and max(vals) - min(vals) <= FLAT_SPREAD:
             return 0.0
-        return sum(v if v >= BARK_MIN else 0.0 for v in vals) / len(vals)
+        if self.loud is not None and t - self.loud > BREATH_S:
+            return 0.0
+        pull = sum(v if v >= BARK_MIN else 0.0 for v in vals) / len(vals)
+        span = [(at, v) for at, v in self.s if t - at <= SUSTAIN_S]
+        if pull and span and t - span[0][0] >= SUSTAIN_S - 0.5:   # only a long run is capped: one shout never is
+            mean = sum(v if v >= BARK_MIN else 0.0 for _, v in span) / len(span)
+            if mean > SUSTAIN_MAX:
+                pull *= SUSTAIN_MAX / mean
+        return pull
 
     def alive(self, t: float) -> bool:
         return self.at is not None and t - self.at <= LIVE_GAP
@@ -460,7 +484,9 @@ def who_why(row) -> tuple[str, str]:
 WHO_SQL = 'SELECT a.created_at, b.year FROM accounts a LEFT JOIN account_birth b ON b.sid=a.sid WHERE a.sid=?'
 TODAY_SQL = ("SELECT COUNT(*) AS n, COALESCE(SUM(CASE WHEN status<>'back' THEN 1 ELSE 0 END), 0) AS played, "
              "COALESCE(SUM(CASE WHEN opp='dog' AND status<>'back' THEN 1 ELSE 0 END), 0) AS dog_n, "
-             "COALESCE(SUM(CASE WHEN opp='dog' AND status='done' THEN pay-stake ELSE 0 END), 0) AS dog_net "
+             "COALESCE(SUM(CASE WHEN opp='dog' AND status='done' THEN pay-stake ELSE 0 END), 0) AS dog_net, "
+             # what left this save toward other players today: open stakes and net losses (a 'back' or a draw: 0)
+             "COALESCE(SUM(CASE WHEN opp<>'dog' THEN stake-pay ELSE 0 END), 0) AS pvp_out "
              "FROM bark_tickets WHERE sid=? AND created>=?")
 LAST_SQL = "SELECT result, ended FROM bark_tickets WHERE sid=? AND status='done' AND result<>'' ORDER BY ended DESC LIMIT ?"
 
@@ -477,6 +503,19 @@ def dog_room(today: dict) -> int:
     if int(today['dog_n']) >= DOG_DAY:
         return 0
     return max(0, DOG_WIN_DAY - max(0, int(today['dog_net'])))
+
+
+def pvp_room(db, sid: str, today: dict) -> int | None:
+    """The most a stake may be today for an account younger than bank_xfer.NEW_DAYS (None: no limit). A thrown match is a
+    transfer between two accounts, so a new account risks against players at most what is left of its NEW_DAY_MAX, the
+    one daily outflow cap its bank transfers, envelopes and gifts share (open stakes and net losses count, wins give
+    room back). Nothing is written to the transfer counter: a stake may come back."""
+    from . import bank_xfer
+    cap = bank_xfer._day_cap(db, sid)
+    if cap is None:
+        return None
+    sent = bank_xfer._today(db, sid, bank_xfer.vn_day())['sent']
+    return max(0, cap - sent - max(0, int(today.get('pvp_out') or 0)))
 
 
 def command_commit(db, sid: str, action: str, result) -> None:
@@ -499,6 +538,11 @@ def command_commit(db, sid: str, action: str, result) -> None:
     need(int(today['n']) < JOIN_DAY, 'Hôm nay đặt rồi hủy nhiều quá, mai quay lại nha.', 'bark_day')
     left = cool_left([dict(x) for x in db.execute(LAST_SQL, (sid, STREAK)).fetchall()], t)
     need(not left, f'Thắng liền {STREAK} kèo rồi! Cho cổ họng nghỉ {max(1, -(-left // 60))} phút nha 🐕', 'bark_cool')
+    room = pvp_room(db, sid, today)
+    if room is not None:
+        from .bank_xfer import NEW_DAYS
+        need(int(r['stake']) <= room, (f'Tài khoản mới (dưới {NEW_DAYS} ngày) hôm nay chỉ còn cược được {fmt(room)} xu nha.' if room >= MIN_STAKE
+                                       else f'Tài khoản mới (dưới {NEW_DAYS} ngày) hôm nay cược đủ rồi, mai chơi tiếp nha 🐕'), 'bark_new')
     db.execute("INSERT INTO bark_tickets(id, sid, stake, status, created) VALUES(?,?,?,'wait',?)", (r['ticket'], sid, int(r['stake']), t))
     from . import live_chat
     live_chat.notify(db, dict(op='bark_ticket'))   # the live service looks at its queue now (the page also tells it)
@@ -619,8 +663,9 @@ def view(store, token: str | None) -> dict:
         left = cool_left([dict(x) for x in db.execute(LAST_SQL, (sid, STREAK)).fetchall()], t)
         o = db.execute("SELECT id, stake, status, created FROM bark_tickets WHERE sid=? AND status IN ('wait','play','dog') "
                        'ORDER BY created DESC LIMIT 1', (sid,)).fetchone()
+        room = pvp_room(db, sid, today) if not code else None
     out['me'] = dict(code=code, why=why, played=int(today['played']), dog_n=int(today['dog_n']), dog_net=int(today['dog_net']),
-                     dog_room=dog_room(today), cool=left,
+                     dog_room=dog_room(today), cool=left, new_room=room,
                      open=dict(ticket=o['id'], stake=int(o['stake']), status=o['status'], at=float(o['created'])) if o else None)
     return out
 

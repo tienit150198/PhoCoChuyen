@@ -61,6 +61,8 @@ class LiveDogBark(LiveCase):
 
     async def pair(self, stake=500, ips=('10.0.0.1', '10.0.0.2')):
         (ta, sa), (tb, sb) = self.account('Lan'), self.account('Minh')
+        with self.store.connect() as db:   # the weekly board counts opponents with an account a week old
+            db.execute("UPDATE accounts SET created_at='2026-01-01 00:00:00' WHERE sid IN (?,?)", (sa, sb))
         a, b = await self.join(ta, ips[0]), await self.join(tb, ips[1])
         ka, kb = self.ticket(sa, stake), self.ticket(sb, stake)
         self.assertTrue(a.welcome['flags']['bark'])
@@ -112,6 +114,7 @@ class LiveDogBark(LiveCase):
             ea = await a.expect('bark_end', timeout=5)
         self.assertEqual((ea['result'], ea['why'], ea['pay']), ('win', 'gone', 1_000))
         self.assertEqual(self.row(kb)['result'], 'lose')
+        self.assertFalse(self.row(ka)['competitive'], 'a lost page is no weekly-board win')
 
     async def test_quit_loses_and_bad_loudness_is_harmless(self):
         a, b, ka, kb, sa, sb = await self.pair()
@@ -121,6 +124,8 @@ class LiveDogBark(LiveCase):
         await a.send(t='bark_quit', m=ga['m'])
         ea, eb = await a.expect('bark_end', timeout=4), await b.expect('bark_end', timeout=4)
         self.assertEqual((ea['result'], ea['why'], eb['result'], eb['pay']), ('lose', 'quit', 'win', 1_000))
+        self.assertFalse(self.row(kb)['competitive'], 'a quit is no weekly-board win')
+        self.assertFalse(self.row(ka)['competitive'])
 
     async def test_draw_refunds_both(self):
         with patch.object(G, 'MATCH_S', 1.0):
@@ -177,7 +182,7 @@ class LiveDogBark(LiveCase):
             await self.shout(a, go['m'], 96, 8)
             ev = await a.expect('bark_end', timeout=3)
         self.assertEqual((ev['result'], ev['pay'], ev['why']), ('win', 400, 'end'))
-        self.assertTrue(self.row(ka)['competitive'])
+        self.assertFalse(self.row(ka)['competitive'], 'house-dog matches never count for the weekly board')
         kb = self.ticket(sa, 200)                            # the mic says ready, then sends nothing: the match waits
         with patch.object(G, 'DOG_AFTER', 0.2), patch.object(G, 'PAUSE_MAX', 1.0):
             await a.call('bark_find', 'bark_wait', ticket=kb)

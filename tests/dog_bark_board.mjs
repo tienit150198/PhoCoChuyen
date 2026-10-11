@@ -16,4 +16,10 @@ assert.match(html,/Hòa tính vào tổng trận/);assert.match(html,/không tí
 assert.match(barkCompetition({...base,me:{eligible:true,visible:false,rank:null,played:30,wins:27,rate:90,remaining:0}}),/đang ẩn tên/);
 assert.match(barkCompetition({...base,me:{eligible:true,visible:true,rank:2,played:30,wins:27,rate:90,remaining:0}}),/Hạng 2/);
 assert.match(barkCompetition({...base,me:{eligible:true,visible:true,rank:null,played:40,wins:20,rate:50,remaining:0}}),/Đã đủ điều kiện/);
+const fair={...base,opponents_min:5,per_opp:6,rows:[{rank:1,name:'Lan',wins:20,played:40,rate:50,beaten:10,opponents:10,reward:2000000,title:''}],
+  me:{played:30,wins:12,rate:40,remaining:0,opponents:3,opp_remaining:2,eligible:false,visible:true}};
+const fairHtml=barkCompetition(fair);
+assert.match(fairHtml,/Thắng 10 người/);assert.match(fairHtml,/20\/40 trận thắng \(50%\)/);
+assert.match(fairHtml,/3\/5 đối thủ · Cần kéo với 2 người khác nữa/);assert.match(fairHtml,/5 đối thủ khác nhau/);
+assert.match(fairHtml,/chó nhà Mây, trận bỏ cuộc/);assert.match(fairHtml,/tối đa 6 trận một tuần/);
 console.log('Bark weekly board: prizes, qualification, ranking, privacy, previous winners and escaping passed.');
