@@ -175,7 +175,7 @@ function roomSteps(t,x){
 /* ------------------------------------------------------------ the archive */
 function trainCard(t,x){
   const qs=cc(x).training||[],ans=(x.ui.train??=[]);
-  const rows=qs.map((q,i)=>`<li><b>${i+1}. ${x.esc(q.q)}</b><div class="tv-opts">${q.options.map(o=>`<button type="button" class="tv-opt ${ans[i]===o.id?'tv-on':''}" data-action="car:train" data-i="${i}" data-o="${x.esc(o.id)}">${x.esc(o.label)}</button>`).join('')}</div></li>`).join('');
+  const rows=qs.map((q,i)=>`<li><b>${i+1}. ${x.esc(q.q)}</b><div class="tv-opts">${q.options.map(o=>`<button type="button" class="tv-opt ${ans[i]===o.id?'tv-on':''}" aria-pressed="${ans[i]===o.id}" data-action="car:train" data-i="${i}" data-o="${x.esc(o.id)}">${x.esc(o.label)}</button>`).join('')}</div></li>`).join('');
   const ready=qs.length&&qs.every((_,i)=>ans[i]);
   return `<section class="card tv-train"><h4>👩‍🏫 Tập huấn nghiệp vụ lưu trữ</h4><p class="small">Cô Nguyệt: “Trước khi cầm chìa khóa kho, trả lời giúp cô mấy câu.”</p><ol class="tv-quiz">${rows}</ol>
     <button type="button" class="btn primary full" data-action="car:trainSend"${ready?'':' disabled'}>✅ Nộp bài tập huấn</button></section>`;
