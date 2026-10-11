@@ -52,10 +52,20 @@ function dialog(){
   d.addEventListener('submit',e=>{e.preventDefault();click('give');});
   document.body.append(d);M.dlg=d;return d;
 }
-function close(){clearInterval(M.poll);clearInterval(M.tick);M.poll=M.tick=0;M.view='';M.stop=null;M.flash=null;M.give=false;M.sure=null;if(M.dlg?.open)M.dlg.close();}
+function close(){
+  const told=M.view==='told';
+  clearInterval(M.poll);clearInterval(M.tick);M.poll=M.tick=0;M.view='';M.stop=null;M.flash=null;M.give=false;M.sure=null;if(M.dlg?.open)M.dlg.close();
+  // 🚔 Held or arrested: the outcome was read first (v4/jail.js waits while this modal is up); now the camp (it closes
+  // the Chợ đen sheet behind, which has no arrest card of its own for a patrol's check).
+  const env=M.env;
+  if(told&&env?.api?.state?.jail)import('./jail.js').then(m=>m.openJail(env)).catch(()=>{/* the next state */});
+}
 function stopTimers(){clearInterval(M.poll);clearInterval(M.tick);M.poll=M.tick=0;}
 async function show(){
-  await loadCss();const d=dialog();d.innerHTML=html();
+  await loadCss();const d=dialog();
+  const typed=d.querySelector('#cdAmount')?.value||'';   // a re-render (a wrong amount, a poll) keeps what was typed
+  d.innerHTML=html();
+  if(typed){const inp=d.querySelector('#cdAmount');if(inp)inp.value=typed;}
   if(!d.open){
     // Above whatever sheet is up (a modal dialog stacks on the top layer); the Chợ đen sheet stays under it.
     try{d.showModal();}catch{d.setAttribute('open','');}
@@ -106,8 +116,11 @@ function stopHTML(){
         <div class="cd-acts two"><button type="button" class="btn" data-cd="take">💵 Nhận</button><button type="button" class="btn primary" data-cd="refuse">Từ chối &amp; lập biên bản</button></div>`;
     return head('Kiểm tra',name)+`<div class="cd-body">${body}${bar()}${flash()}</div>`;
   }
-  if(s&&s.act!=='search'&&(s.st==='done'||s.st==='gone'))
-    return head('Kiểm tra',name)+`<div class="cd-body"><p class="cd-line">${esc(s.text||'')}</p>${flash()}<div class="cd-acts"><button type="button" class="btn primary big" data-cd="close">Xong</button></div></div>`;
+  if(s&&s.act!=='search'&&(s.st==='done'||s.st==='gone')){
+    // Nhận / Từ chối: the answer is the outcome (what was really taken, the Liêm chính): one line, not the same words twice.
+    const dup=s.text&&M.flash?.text?.startsWith(s.text);
+    return head('Kiểm tra',name)+`<div class="cd-body">${dup?'':`<p class="cd-line">${esc(s.text||'')}</p>`}${flash()}<div class="cd-acts"><button type="button" class="btn primary big" data-cd="close">Xong</button></div></div>`;
+  }
   const can=s?.acts||null;   // after a search: what the evidence allows (before it: the server decides)
   const found=s?.text?`<p class="cd-found">${esc(s.text)}</p>`:'<p class="cd-line muted">Chọn việc cần làm. Chỉ xử lý người có dấu hiệu đánh bạc ăn tiền.</p>';
   const btns=ACTS.map(([id,e,l])=>{const off=M.busy||(can&&!can.includes(id))||(id==='search'&&s);
@@ -184,8 +197,10 @@ async function click(op,data={}){
   const run=async(fn)=>{M.busy=true;M.flash=null;show();try{await fn();}catch(e){M.flash={text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};}finally{M.busy=false;if(M.view)show();}};
   switch(op){
     case'act':return run(async()=>{const d=await call(env,'cand_stop',{pid:M.who.pid,act:data.act});if(d.stop){if(!d.stop.name)d.stop.name=M.who.name;take(d.stop);}});
-    case'take':case'refuse':return run(async()=>{const d=await call(env,'cand_decide',{id:M.stop.id,take:op==='take'});if(d.stop)take(d.stop);M.flash={text:d.message,kind:op==='take'?'info':'good'};});
-    case'coop':return run(async()=>{const d=await call(env,'cand_answer',{id:M.stop.id,bribe:0});if(d.stop)take(d.stop);M.view='told';env.api?.refresh?.().catch(()=>{});});
+    case'take':case'refuse':return run(async()=>{const d=await call(env,'cand_decide',{id:M.stop.id,take:op==='take'});if(d.stop){if(d.message&&d.stop.st==='done')d.stop.text=d.message;take(d.stop);}M.flash={text:d.message,kind:op==='take'?'info':'good'};});
+    // The answer's message counts what was really taken (a short wallet pays less than the fine as set, which the stop's
+    // own line repeats): that one is shown, as the officer's page shows it.
+    case'coop':return run(async()=>{const d=await call(env,'cand_answer',{id:M.stop.id,bribe:0});if(d.stop){if(d.message&&d.stop.st==='done')d.stop.text=d.message;take(d.stop);}M.view='told';env.api?.refresh?.().catch(()=>{});});
     case'envelope':M.give=true;show();return;
     case'nogive':M.give=false;show();return;
     case'give':{

@@ -80,7 +80,7 @@ export function sync(env){
   const j=J();
   if(j){
     if(typeof j.now==='number')S.skew=j.now*1000-Date.now();
-    if(S.id!==j.id){S.id=j.id;S.game=null;S.panel=null;if(!document.querySelector('dialog.fh-sheet[open]'))openJail(env);}   // the Chợ đen's arrest card goes first; its button opens the camp
+    if(S.id!==j.id){S.id=j.id;S.game=null;S.panel=null;if(!document.querySelector('dialog.fh-sheet[open],dialog.cd-dialog[open]'))openJail(env);}   // the Chợ đen's arrest card (or a patrol's outcome, v4/cand.js) goes first; its button opens the camp
     else if(S.dlg?.open&&!S.busy)render();
     if(S.game&&!j.tasks.some(t=>t.id===S.game.task&&!t.done))S.game=null;
     S.map?.redraw();
