@@ -1,6 +1,10 @@
-# Branch `live-1.7.15`: the tree production runs
+# Current production baseline
 
-Production (103.195.238.178) runs release **1.7.15-hai-thousand-final-20261005234904**
+As of 2026-10-11, production runs **2.0.0-20261011103230**, source `253bc53c91eb6fdbeab14ea7381ebe08ccee2f19`. Root `MANIFEST.json` was downloaded from that running release. Use it for future baseline reconstruction; details are in [the deployment report](DEPLOY_2.0.0_2026-10-11.md). The section below preserves the historical 1.7.15 reconstruction and minified-source table used by tooling.
+
+# Historical branch `live-1.7.15`
+
+At the time of that reconstruction, production (103.195.238.178) ran release **1.7.15-hai-thousand-final-20261005234904**
 (`/opt/mot-ngay-lam-nghe/current`). GitHub `main` had moved on (Phaser 2.5D work, not deployed), and no
 commit held what production runs. This branch does. It starts from `6250463` ("Archive pixel-era working
 state…"), the closest commit, and takes every file from the release itself.

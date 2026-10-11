@@ -78,7 +78,10 @@ For a few seconds both releases serve the same PostgreSQL database:
   theoretical sum of 72 is above `max_connections = 60`. In practice the server being drained holds
   only idle connections (≤ 6 per worker once unused for `PG_POOL_IDLE_MS`, 10 s), and real load uses 19–24 connections in total (see PG_E2E).
   A request that finds its pool full waits up to `PG_POOL_WAIT_MS` (10 s) rather than failing. For a
-  hard guarantee, run with `BRIDGE_PG_POOL_MAX=3`.
+  smaller bridge pool, run with `BRIDGE_PG_POOL_MAX=3`, but that value alone is not a capacity guarantee:
+  count every worker's pool, live/LISTEN, other services and administrative reserve against the actual
+  `max_connections`. The historical 4 × 12 + 4 × 3 already consumes all 60 slots before live. On the
+  2.0.0 rollout, the measured configuration was 200 slots, canonical 8 × 12, bridge 8 × 3 and live 8 + 1.
 * **Memory**: for a few seconds 2 × 4 workers run. Each is ~70–200 MB at normal load, far from the 3 GB
   `MemoryMax` of either cgroup.
 * **Static files**: the bridge writes the new release's hashed files into `shared/_v` (STATIC_CAS_DIR)

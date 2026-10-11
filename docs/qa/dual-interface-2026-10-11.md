@@ -37,4 +37,4 @@ Kết quả cuối: **346/346 JS nguồn** qua cú pháp/Safari 15. Gói từ `2
 
 ## Giới hạn phát hành
 
-Chưa triển khai production: SSH báo `Permission denied (publickey,password)`, health vẫn 1.9.48. Chưa gửi thông báo hoặc kích hoạt sự kiện. Đo hiệu năng trước đó là thời gian JavaScript của cảnh kiểm tra, không chứng minh FPS trên mọi máy hoặc năng lực 1.000 CCU.
+Đã triển khai **2.0.0** ngày 11/10/2026 sau khi chủ game cung cấp kết nối SSH. HTTPS/WSS smoke đạt, tin **33045** đã ghim, hai ngày vàng chạy đến 10:39:43 ngày 13/10/2026 (UTC+7). Xem [báo cáo production](../DEPLOY_2.0.0_2026-10-11.md) để biết phạm vi đã kiểm và rollback. Đo hiệu năng trước đó là thời gian JavaScript của cảnh kiểm tra, không chứng minh FPS trên mọi máy hoặc năng lực 1.000 CCU.

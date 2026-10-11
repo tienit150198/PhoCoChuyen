@@ -1,6 +1,8 @@
 # Phố Có Chuyện 2.0.0 — kết quả chuẩn bị phát hành
 
-Ngày 11/10/2026. Trạng thái: hoàn thiện mã nguồn và kiểm tra local; **chưa triển khai, chưa thông báo, chưa kích hoạt hai ngày vàng**. Production được đọc qua `/api/health` vẫn là 1.9.48. Kết nối SSH trên máy phát triển hiện bị từ chối xác thực; cần khôi phục kết nối deploy đã được chủ game cho phép.
+**Cập nhật 11/10/2026, 10:40 UTC+7: đã triển khai 2.0.0, smoke production đạt, đã ghim thông báo và kích hoạt hai ngày vàng.** Sự kiện kết thúc 10:39:43 ngày 13/10/2026. Chi tiết bản chạy, backup, kiểm tra và rollback: [báo cáo triển khai](DEPLOY_2.0.0_2026-10-11.md).
+
+Các phần dưới lưu lịch sử chuẩn bị/nghiệm thu trước rollout; các ghi nhận “chưa triển khai” hoặc SSH bị từ chối là trạng thái tại thời điểm kiểm tra cũ, đã được giải quyết khi chủ game cung cấp kết nối.
 
 ## Nội dung
 
@@ -74,7 +76,7 @@ Chi tiết tại `docs/qa/dual-interface-2026-10-11.md`. Đã sửa đồng bộ
 
 Production đọc qua health vẫn **1.9.48**. SSH chưa xác thực được; chưa rollout, chưa thông báo hoặc kích hoạt hai ngày vàng. HTTP local 18893 và live fixture 18894 đã chạy mã mới trên schema kiểm thử riêng. Commit tài liệu nghiệm thu sau ứng viên không thay đổi mã chạy trong gói.
 
-## Các bước còn lại trên production
+## Checklist production trước rollout — đã thực hiện, xem báo cáo triển khai
 
 1. Khôi phục SSH; đọc health, current release và manifest; nếu production đã đổi thì cập nhật baseline và kiểm tra tương thích lại.
 2. Backup PostgreSQL và xác minh mục lục; giữ toàn bộ release cũ. Kiểm tra dependency **Pillow >=12.1.1,<13** trong đúng Python của service trước khi bật bridge; script rolling hiện không tự cài dependency.
