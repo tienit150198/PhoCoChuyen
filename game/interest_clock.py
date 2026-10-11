@@ -14,7 +14,9 @@ renewed into ~146M xu. From now on a save earns interest on at most as many life
 Rollback safety: the bank's and the invest's own day cursors still advance every day exactly as before, so an older
 build loading a save from this one has nothing to catch up. The allowance lives in an OPTIONAL journey key (KEY):
 journey.validate of every build accepts extra keys (`set(initial()) <= set(j)`), and a save without it simply starts
-a full bucket.
+a full bucket, unless it is a new save (11/10 audit: every new alt could end CAP paid days at once): a save still in its
+first NEW_DAYS life days starts with START interest days only (journey.after decides each life day of every story
+save from its first command, so a new save gets its block on day 1). A reset_all keeps the allowance it had.
 
 KEY {v, s, d, t, at, x, w, n, a}:
   s   the life day the allowance began for this save (days before it were paid by the old rules: the audit
@@ -29,6 +31,7 @@ The alert: a save that ends more than ALERT_DAYS life days within one real day w
 """
 from __future__ import annotations
 
+import os
 import sys
 import time
 
@@ -36,6 +39,8 @@ KEY = 'iclock'
 VERSION = 1
 RATE_SECONDS = 3600      # one interest day per real hour
 CAP = 168                # banked at most: a week of hours
+START = 12               # what a new save starts with (an existing save without the block still starts full)
+NEW_DAYS = 12            # a save without the block up to this life day is a new one
 KEEP_DAYS = 400          # forfeited ranges kept (the bank's catch-up limit; the longest term is 180 days)
 RANGES_MAX = 400
 ALERT_DAYS = 150         # life days ended within one real day before the log line
@@ -53,7 +58,9 @@ def _valid(c) -> bool:
 
 
 def _fresh(day: int, t: int) -> dict:
-    return dict(v=VERSION, s=int(day), d=int(day), t=CAP, at=t, x=[], w=t, n=0, a=False)
+    # MNL_ICLOCK_FULL=1: new saves start full too (the tests set it; tests/test_interest_clock.py checks START).
+    new = day <= NEW_DAYS and os.environ.get('MNL_ICLOCK_FULL') != '1'
+    return dict(v=VERSION, s=int(day), d=int(day), t=START if new else CAP, at=t, x=[], w=t, n=0, a=False)
 
 
 def get(s: dict) -> dict | None:

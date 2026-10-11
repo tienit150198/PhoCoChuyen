@@ -585,13 +585,17 @@ def _close(s: dict, c: dict, career: str, rec: dict, sh: dict) -> dict:
     e = _core()
     n = min(_rank(rec), TOP)
     res = _results(sh)
+    # ⏱️ A life day beyond the real-time allowance (game/interest_clock.py, 1 real hour = 1 paid day) pays no manager
+    # bonus and brings no team sales (11/10 audit: a manager shift on every skipped day, like the salary and the office).
+    from . import interest_clock as ic
+    paid = ic.day_paid(s)
     if track(career) == 'emp':
-        bonus = min(CAP.get(n, CAP[3]), XU_PER_PT * sh['pts'])
+        bonus = min(CAP.get(n, CAP[3]), XU_PER_PT * sh['pts']) if paid else 0
         if bonus:
             e.money(s, c, bonus, f'🧑‍💼 Thưởng quản lý · {res["good"]} việc tốt', f'pm-{c["day"]}', category='bonus')
         sh['bonus'] = bonus
     else:
-        sales = min(OWN_CAP.get(n, OWN_CAP[3]), OWN_XU_PER_PT * sh['pts'])
+        sales = min(OWN_CAP.get(n, OWN_CAP[3]), OWN_XU_PER_PT * sh['pts']) if paid else 0
         wage = min(sales, HELPER_WAGE * sum(1 for m in sh['team'] if m.get('tmp')))
         if sales:
             e.money(s, c, sales, f'🧑‍💼 Doanh thu đội · {res["good"]} việc tốt', f'pm-{c["day"]}', category='revenue')
@@ -618,6 +622,9 @@ def _move(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         own = track(career) == 'own'
         from . import career_voice
         line = f'+{res["bonus"]} xu ' + (career_voice.term(career, 'income') + ' đội' if own else 'thưởng quản lý')
+        from . import interest_clock as ic
+        if not res['bonus'] and res['pts'] and not ic.day_paid(s):
+            line = '⏱️ quá số ngày có thưởng theo giờ thật (1 giờ = 1 ngày), không có ' + (career_voice.term(career, 'income') + ' đội' if own else 'thưởng quản lý')
         return dict(message=f'🧑‍💼 Chốt ca: {res["good"]}/{res["size"]} việc tốt · {line}.', celebrate=res['quality'] >= GOOD_Q,
                     manager=res)
     need(sh['n'] < MAX_MOVES, 'Ca đã dài lắm rồi. Chốt ca thôi!')

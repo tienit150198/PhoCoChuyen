@@ -483,6 +483,35 @@ def enable_story(s: dict, seed: int | None = None) -> dict:
     return s
 
 
+RESET_KEY = 'resets'   # optional: how many times this save started again (reset_all); no 🎁 welcome gift after one
+
+
+def carry_reset(old: dict, fresh: dict) -> None:
+    """reset_all on a story save (11/10 audit: reset → draw the new funds into the wallet → send them away → reset,
+    ≈1.6k a cycle, with the 🎁 welcome gift and a full ⏱️ allowance every time): the new journey never starts with more
+    than the old one held. Each workplace fund is at most what it was (like reset_career), the wallet too, a starter
+    grant already taken stays taken, the real-time allowance carries on (game/interest_clock.py) and the welcome
+    gift is not paid again. Everything else starts afresh as before."""
+    oj = old.get('journey') if isinstance(old.get('journey'), dict) else {}
+    olds = old.get('careers') if isinstance(old.get('careers'), dict) else {}
+    j = fresh['journey']
+    for cid, c in fresh['careers'].items():
+        o = olds.get(cid)
+        if not isinstance(o, dict):
+            continue
+        if type(o.get('money')) is int:
+            c['money'] = c['day_start_money'] = c['ops']['finance']['opening_balance'] = min(c['money'], max(0, o['money']))
+        f = o.get('ops', {}).get('finance') if isinstance(o.get('ops'), dict) else None
+        if isinstance(f, dict) and f.get('grant_used') is True:
+            c['ops']['finance']['grant_used'] = True
+    if type(oj.get('wallet')) is int:
+        j['wallet'] = min(j['wallet'], max(0, oj['wallet']))
+    if icl.get(old):
+        j[icl.KEY] = copy.deepcopy(oj[icl.KEY])
+    n = oj.get(RESET_KEY)
+    j[RESET_KEY] = min(10**6, (n if type(n) is int and n > 0 else 0) + 1)
+
+
 def migrate(s: dict) -> dict:
     """Saves from before the journey: story on, fast-forwarded, no retro costs."""
     seed = int(hashlib.sha256(f"{s.get('name')}|{s.get('seq')}".encode()).hexdigest()[:7], 16)
@@ -645,6 +674,9 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
         # 💼 Nor does the accounting salary's ×3 / ×5 part (09/10 audit: x3 paid twice the boosted salary again).
         boost = job_note.get('boost') if type(job_note.get('boost')) is int else 0
         extra = x3.bonus(int((result.get('summary') or {}).get('net') or 0) - int(ot) - boost)
+        if extra > 0 and not icl.day_paid(s):   # ⏱️ beyond the real-time allowance (1 real hour = 1 paid day): no bonus
+            extra = 0
+            notes.append(f'⏱️ Hôm nay quá số ngày có thưởng theo giờ thật (1 giờ = 1 ngày): không có thưởng x{x3.X}.')
         if extra > 0:
             _wallet(j, extra, 'salary', f'🔥 Thưởng ngày x{x3.X} · {_place(career)}', career)
             notes.append(f'🔥 Hôm nay {_place(career)} lời x{x3.X}: thưởng thêm {extra} xu vào ví.')
@@ -655,7 +687,8 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     # A workplace you are not working at today costs nothing: no fund or wallet line for it
     # (it used to pay 4-11 xu "duy trì khi vắng chủ" every day, the "Nơi làm khác" chip).
     idle_total = 0
-    if day == 1:   # the end of a new player's first day: Bà Tám's welcome, through the wallet like any income
+    gift = day == 1 and not j.get(RESET_KEY)   # once a save: not again after a reset_all (carry_reset)
+    if gift:   # the end of a new player's first day: Bà Tám's welcome, through the wallet like any income
         _wallet(j, WELCOME_GIFT, 'life', WELCOME_LABEL)
         notes.append(f'🎁 Bà Tám gửi quà chào hàng xóm mới: +{WELCOME_GIFT} xu vào ví.')
     j['clean_days'] = j['clean_days'] + 1 if j['wallet'] >= 0 else 0
@@ -667,7 +700,7 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     summary = result.get('summary')
     if isinstance(summary, dict):
         summary['journey'] = dict(life_day=day, living=cost['total'], upkeep=idle_total, salary=pay, wallet=j['wallet'],
-                                  **({'gift': WELCOME_GIFT} if day == 1 else {}), **({'x3': extra} if extra > 0 else {}))
+                                  **({'gift': WELCOME_GIFT} if gift else {}), **({'x3': extra} if extra > 0 else {}))
     result.setdefault('effects', []).extend(notes)
 
 
@@ -717,6 +750,8 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
     j = s['journey']
     if action == 'end_day' and career in s['careers']:
         _end_of_day(s, career, result)
+    if j['story']:
+        icl.sync(s)   # ⏱️ every story save decides each new life day (a save without bank or home included)
     bk.on_life_day(s, result)   # 🏦 interest, statements, installments: once per life day (idempotent)
     hs.on_life_day(s, result)   # 🏠 home installments and comfort (after the bank's morning)
     rn.on_life_day(s, result)   # 🛠️ wear and the Ấm cúng morning (after the home's)
@@ -1102,6 +1137,8 @@ def validate(s: dict) -> None:
     lfx.validate(j)
     fh.validate(j)   # 🏮 journey['fair'] (optional)
     icl.validate(s)   # ⏱️ journey['iclock'] (optional)
+    if RESET_KEY in j:   # optional: after a reset_all
+        integer(j[RESET_KEY], 1, 10**6)
     wl.gift_validate(j)   # 🎁 journey['wed_gift'] (optional)
     nd.validate(s)   # 🍚😴 journey['needs'] (optional)
     cg.validate(s)   # 🛕 journey['chua'] (optional)

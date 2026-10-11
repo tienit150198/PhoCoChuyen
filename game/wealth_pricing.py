@@ -33,7 +33,8 @@ def total(s):
         if house.get('id') in seen:
             continue
         seen.add(house.get('id'))
-        wealth += housing.value_of(house, j.get('life_day', 1), j.get('property_market_basis', {}).get(house.get('id'), 10000))
+        wealth += housing.value_of(house, j.get('life_day', 1), j.get('property_market_basis', {}).get(house.get('id'), 10000),
+                                   housing.idle_days(j, house))
     wealth += sum(garage.sell_price(car['p']) for car in (j.get('garage') or {}).get('cars', {}).values())
     wealth += sum(gadgets.sell_price(x['p']) for x in (j.get('gadgets') or {}).get('own', {}).values())
     wealth += sum(max(0, st.get('fund', 0)) + max(0, st.get('till', 0))
