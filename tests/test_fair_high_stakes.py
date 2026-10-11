@@ -1,6 +1,7 @@
 """Golden-days odds depend on this round's stake and today's Chợ đen net (owner 11/10: the 70% only for a stake
 under 50,000 while today's net is at most 300,000; 40% from 300,000), never the wallet."""
 import random
+import unittest
 from unittest import mock
 
 from game import engine, fair as fh, fair_golden_days as golden
@@ -85,3 +86,25 @@ class GoldenHighStakes(FairBase):
         wins = sum(fh._draw_luck(j, 'xd', fh.luck_p(j, None, 'xd', OPEN + n / 100, stake=1000000))
                    for n in range(20000))
         self.assertAlmostEqual(wins / 20000, .40, delta=.015)
+
+
+class SpamRounds(unittest.TestCase):
+    """Owner 11/10 (night): past 50 rounds of 50k+ in one day the police come far more often; smaller rounds don't count."""
+
+    def test_counter_counts_only_big_rounds_and_resets_daily(self):
+        from game import fair_bm as bm
+        j = {}
+        self.assertEqual(bm.count_big(j, OPEN, 49_999), 0)
+        self.assertNotIn(bm.SPAM_KEY, j)
+        for n in range(1, 4):
+            self.assertEqual(bm.count_big(j, OPEN, 50_000), n)
+        self.assertEqual(bm.count_big(j, OPEN + 86400, 50_000), 1)
+        bm.validate(j)
+
+    def test_odds_jump_after_the_fiftieth(self):
+        from game import fair_bm as bm
+        base = bm.arrest_p({'net': 0}, 50_000)
+        self.assertEqual(bm.arrest_p({'net': 0}, 50_000, 50), base)
+        self.assertAlmostEqual(bm.arrest_p({'net': 0}, 50_000, 51), base + .20)
+        self.assertAlmostEqual(bm.arrest_p({'net': 0}, 50_000, 61), base + .30)
+        self.assertEqual(bm.arrest_p({'net': 0}, 50_000, 10**6), bm.ARREST_CAP)

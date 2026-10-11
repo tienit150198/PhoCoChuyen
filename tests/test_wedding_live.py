@@ -265,9 +265,6 @@ class Envelopes(WedBase):
             with self.assertRaises(mr.MarriageError) as e:
                 self.act(g, 'envelope', wedding=wid, **{'wish': 0, **bad})
             self.assertEqual(e.exception.code, 'bad_envelope')
-        with self.assertRaises(mr.MarriageError) as e:
-            self.give(g, wid, 50, 'rid-young-0001')
-        self.assertEqual(e.exception.code, 'too_new', 'an envelope is a transfer: not from an account made today')
         self.assertEqual(self.wallet(g), 2000)
         self.age(g)
         with self.assertRaises(mr.MarriageError) as e:

@@ -45,6 +45,11 @@ BIG_STAKE_FROM = 50000         # a round staking this much can be raided whateve
 # is worth it: (stake from, % at that stake, stake to, % reached there), linear in between; never shown.
 STAKE_CURVE = ((50_000, 2, 300_000, 10), (300_000, 30, 1_000_000, 50), (1_000_000, 50, 10_000_000, 80))
 STAKE_TOP_PCT = 90             # from the last step's end
+# Owner 11/10 (night): "nếu chơi trên 50 ván thì tỷ lệ bị bắt tăng cao nữa, chỉ tính 50k trở lên mỗi ván": past
+# SPAM_ROUNDS rounds of BIG_STAKE_FROM xu or more in one Vietnam day, each further such round adds SPAM_PCT % plus
+# SPAM_STEP % per round beyond (spam_pct). journey[SPAM_KEY] {d: Vietnam date, n: such rounds that day} (optional: an
+# older server keeps the journey's unknown keys). Never shown.
+SPAM_KEY, SPAM_ROUNDS, SPAM_PCT, SPAM_STEP = 'fair_big', 50, 20, 1
 ARREST_CAP = 0.90              # whole-round cap; never shown
 JAIL_DAYS = 3                  # caught: jail days in the trại tạm giữ (owner 09/10 "chơi cờ bạc bị bắt 3 ngày")
 STATES = ('paid', 'robbed', 'ban')
@@ -86,10 +91,29 @@ def profit_pct(f: dict | None) -> float:
     return float(max(pct for lo, pct in PROFIT_CURVE if f['net'] > lo))
 
 
-def arrest_p(f: dict | None, stake) -> float:
-    """This paid round's raid chance: today's winnings' profit_pct plus the stake's big_stake_pct, never above
-    ARREST_CAP. 0: the police are not even rolled for. Never shown."""
-    p = (big_stake_pct(stake) + profit_pct(f)) / 100
+def count_big(j: dict, t: float, stake) -> int:
+    """Count a round of BIG_STAKE_FROM xu or more in today's journey[SPAM_KEY]; returns today's such rounds (this one
+    included; 0 for a smaller round, which counts nothing)."""
+    if type(stake) is not int or stake < BIG_STAKE_FROM:
+        return 0
+    day = _vn_date(t)
+    c = j.get(SPAM_KEY)
+    n = c['n'] if isinstance(c, dict) and c.get('d') == day and type(c.get('n')) is int else 0
+    n = min(10**6, n + 1)
+    j[SPAM_KEY] = dict(d=day, n=n)
+    return n
+
+
+def spam_pct(big_rounds: int) -> float:
+    """The extra % for the big_rounds-th 50k+ round today: 0 up to SPAM_ROUNDS, then SPAM_PCT and SPAM_STEP more for
+    every round beyond."""
+    return 0.0 if big_rounds <= SPAM_ROUNDS else float(SPAM_PCT + SPAM_STEP * (big_rounds - SPAM_ROUNDS - 1))
+
+
+def arrest_p(f: dict | None, stake, big_rounds: int = 0) -> float:
+    """This paid round's raid chance: today's winnings' profit_pct plus the stake's big_stake_pct plus spam_pct for
+    today's 50k+ rounds, never above ARREST_CAP. 0: the police are not even rolled for. Never shown."""
+    p = (big_stake_pct(stake) + profit_pct(f) + spam_pct(big_rounds)) / 100
     return min(ARREST_CAP, p) if p > 0 else 0.0
 
 
@@ -242,10 +266,14 @@ def public(j: dict, t: float) -> dict:
 
 
 def validate(j: dict) -> None:
-    if KEY not in j:
-        return
     from .engine import need
     import datetime
+    if SPAM_KEY in j:
+        c = j[SPAM_KEY]
+        need(isinstance(c, dict) and set(c) == {'d', 'n'} and isinstance(c['d'], str) and len(c['d']) == 10
+             and type(c['n']) is int and 0 <= c['n'] <= 10**6, 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
+    if KEY not in j:
+        return
     b = j[KEY]
     need(isinstance(b, dict) and set(b) == {'d', 's'} and b['s'] in STATES and isinstance(b['d'], str)
          and len(b['d']) == 10, 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')

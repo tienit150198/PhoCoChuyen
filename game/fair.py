@@ -1345,7 +1345,7 @@ def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
     outcome (raises _Caught, which apply() turns into the command's result)."""
     if not bm._gate_on():
         return
-    p = bm.arrest_p(f, stake)
+    p = bm.arrest_p(f, stake, bm.count_big(j, t, stake))   # owner 11/10: past 50 rounds of 50k+ today, far likelier
     if p <= 0 or not bm._arrest_roll(p):
         return
     _arrested(j, f, t, game, stake, lambda amount: _pay_big(j, f, game, amount))

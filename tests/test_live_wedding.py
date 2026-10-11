@@ -195,6 +195,9 @@ class Attendance(WedCase):
         self.assertEqual(g.room['wed']['minutes'], WL.PARTY_MINUTES)
 
     async def test_two_paid_weddings_a_day_and_the_anti_abuse_rules(self):
+        guard = patch.object(WL, 'GUEST_ACCOUNT_DAYS', 1)   # the age rule still works when set (owner 11/10: off, 0)
+        guard.start()
+        self.addCleanup(guard.stop)
         (ta, tb), (sa, sb), wid, at = self.party()
         tok, sid = self.account('Hà Vy')
         day, week = WL.vn_day(time.time()), WL.vn_week(time.time())
