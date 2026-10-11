@@ -219,8 +219,13 @@ class Envelopes(WedBase):
     """🧧 A guest's red envelope for the couple at a party that is on (feedback #56): from the guest's wallet, half to
     each spouse, once per request id; one of ENVELOPES each time, as many as the wallet allows (no cap), never minting."""
     def guest_at(self, wid, tok, ok=1):
+        self.age(tok)
         self.store.transaction(lambda db: db.execute("INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) "
                                                      "VALUES(?, ?, 'p', ?, 0, 0, ?, 'd', 'w')", (wid, self.sid(tok), ok, self.clock.t)))
+
+    def age(self, tok, created='2026-01-01 00:00:00'):
+        """An account as old as an envelope (a transfer) needs (bank_xfer.ACCOUNT_DAYS)."""
+        self.store.transaction(lambda db: db.execute('UPDATE accounts SET created_at=? WHERE sid=?', (created, self.sid(tok))))
 
     def give(self, tok, wid, amount, rid, wish=0):
         return self.act(tok, 'envelope', wedding=wid, amount=amount, wish=wish, rid=rid)
@@ -260,6 +265,11 @@ class Envelopes(WedBase):
             with self.assertRaises(mr.MarriageError) as e:
                 self.act(g, 'envelope', wedding=wid, **{'wish': 0, **bad})
             self.assertEqual(e.exception.code, 'bad_envelope')
+        with self.assertRaises(mr.MarriageError) as e:
+            self.give(g, wid, 50, 'rid-young-0001')
+        self.assertEqual(e.exception.code, 'too_new', 'an envelope is a transfer: not from an account made today')
+        self.assertEqual(self.wallet(g), 2000)
+        self.age(g)
         with self.assertRaises(mr.MarriageError) as e:
             self.give(g, wid, 50, 'rid-notguest-1')
         self.assertEqual(e.exception.code, 'not_guest', 'only a guest recorded at the party')

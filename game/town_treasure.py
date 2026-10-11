@@ -3,6 +3,13 @@
 Only the live service writes short-lived position proofs. HTTP resolves the login
 again, locks its save and the chest, and pays the fixed reward in that same
 transaction. No browser coordinates or reward amount enter this operation.
+
+Anti-farming (11/10 audit: bots collected every chest of every wave plus the
+overnight backlog): a chest lives KEEP_WAVES waves, then it is gone; an account
+picks at most WAVE_MAX chest per wave window and DAY_MAX in any 24 hours,
+counted from the claimed rows (kept a day for replays, so no new table or save
+key); and the account must be ACCOUNT_AGE old. Claims lock the session row
+first, so two tabs of one account cannot pass a cap together.
 """
 from __future__ import annotations
 
@@ -24,20 +31,29 @@ RADIUS = 1.6
 PROOF_TTL = 5.0
 POSITION_TTL = 12.0
 AUDIT_BUCKETS = 144
+KEEP_WAVES = 3          # a chest is claimable in its wave and the next two (20-30 minutes), then it expires
+WAVE_MAX = 1            # chests one account picks in one wave window (PERIOD)
+DAY_MAX = 5             # chests one account picks in any 24 hours (claimed rows are kept that long)
+ACCOUNT_AGE = 86400     # the account is at least a day old (as game/bank_xfer.py ACCOUNT_DAYS)
+DAY = 86400
 MAP_ID = 'iso-town-v1'
 START = (6.0, 6.0)
 REQUEST = re.compile(r'[A-Za-z0-9._:-]{8,80}')
 CHEST = re.compile(r'tt-[0-9]{1,12}-[0-4]')
 INSERT_WAVE = 'INSERT INTO town_treasure_waves(bucket) VALUES(?) ON CONFLICT(bucket) DO NOTHING RETURNING bucket'
 INSERT_CHEST = 'INSERT INTO town_treasure_chests(id,bucket,map_id,x,y) VALUES(?,?,?,?,?)'
-# Keep every unclaimed receipt, but send one marker per exact authored location.
-# The oldest id stays claimable until collected; the next receipt then takes over.
+# Unclaimed chests of the last KEEP_WAVES waves (parameters: chest_args()), one
+# marker per exact authored location. The oldest id stays claimable until
+# collected or expired; the next receipt then takes over.
 SELECT_CHESTS = '''SELECT oldest.id,oldest.bucket,g.map_id,g.x,g.y,oldest.winner,g.count
  FROM (SELECT map_id,x,y,COUNT(*) AS count FROM town_treasure_chests
-       WHERE winner IS NULL GROUP BY map_id,x,y) g
- CROSS JOIN LATERAL (SELECT id,bucket,winner FROM town_treasure_chests WHERE winner IS NULL
+       WHERE winner IS NULL AND bucket>=? GROUP BY map_id,x,y) g
+ CROSS JOIN LATERAL (SELECT id,bucket,winner FROM town_treasure_chests WHERE winner IS NULL AND bucket>=?
        AND map_id=g.map_id AND x=g.x AND y=g.y ORDER BY bucket,id LIMIT 1) oldest
  ORDER BY g.map_id,g.x,g.y'''
+# One account's claims in the last 24 hours, and how many since the current wave window began.
+SELECT_MINE = ('SELECT COUNT(*) AS day, COALESCE(SUM(CASE WHEN won_at>=? THEN 1 ELSE 0 END),0) AS wave '
+               'FROM town_treasure_chests WHERE winner=? AND won_at>=?')
 SELECT_WAVE_COUNT = 'SELECT COUNT(*) AS added FROM town_treasure_chests WHERE bucket=?'
 
 
@@ -54,6 +70,21 @@ def need(ok, message, code='treasure_bad', status=400):
 
 def now():
     return time.time()
+
+
+def first_bucket(at):
+    """The oldest wave whose chests are still on the map at `at`."""
+    return int(at // PERIOD) - KEEP_WAVES + 1
+
+
+def chest_args(at):
+    return (first_bucket(at),) * 2
+
+
+def account_old_enough(created_at, at):
+    """accounts.created_at is UTC text 'YYYY-MM-DD HH:MM:SS' (pg_schema.NOW_TEXT)."""
+    cut = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(at - ACCOUNT_AGE))
+    return bool(created_at) and str(created_at) <= cut
 
 
 def enabled():
@@ -88,18 +119,22 @@ def spawn_rows(bucket):
 
 def view(rows, at, on=True, added=0):
     bucket = int(at // PERIOD)
-    chests = [dict(id=r['id'], map_id=r['map_id'], x=r['x'], y=r['y'], claimed=False, count=int(r['count'])) for r in rows]
+    chests = [dict(id=r['id'], map_id=r['map_id'], x=r['x'], y=r['y'], claimed=False, count=int(r['count']),
+                   gone_at=(int(r['bucket']) + KEEP_WAVES) * PERIOD) for r in rows]
     return dict(enabled=on, server_time=at,
                 wave=dict(id=str(bucket), starts_at=bucket * PERIOD, expires_at=(bucket + 1) * PERIOD,
-                          next_at=(bucket + 1) * PERIOD, added=added,
-                          reward=REWARD, notice=f'{added} rương kho báu vừa xuất hiện trong phố! Mỗi rương có 10.000 xu.') if on else None,
+                          next_at=(bucket + 1) * PERIOD, added=added, per_wave=WAVE_MAX, per_day=DAY_MAX,
+                          reward=REWARD, notice=f'{added} rương kho báu vừa xuất hiện trong phố! Mỗi rương có 10.000 xu, '
+                                                f'mỗi người nhặt {WAVE_MAX} rương mỗi đợt, tối đa {DAY_MAX} rương một ngày.') if on else None,
                 chests=chests, total_unclaimed=sum(c['count'] for c in chests))
 
 
 def cleanup_sql(bucket, at):
-    # Retain unclaimed chests indefinitely. A newly claimed old chest still gets
-    # a full day of replay protection, measured from collection, not spawning.
-    return [('DELETE FROM town_treasure_chests WHERE winner IS NOT NULL AND won_at<?', (at - AUDIT_BUCKETS * PERIOD,)),
+    # Unclaimed chests expire after KEEP_WAVES waves (no overnight backlog). A
+    # claimed chest keeps a full day of replay protection and per-day cap
+    # accounting, measured from collection, not spawning.
+    return [('DELETE FROM town_treasure_chests WHERE winner IS NULL AND bucket<?', (bucket - KEEP_WAVES + 1,)),
+            ('DELETE FROM town_treasure_chests WHERE winner IS NOT NULL AND won_at<?', (at - AUDIT_BUCKETS * PERIOD,)),
             ('DELETE FROM town_treasure_waves w WHERE bucket<? AND NOT EXISTS '
              '(SELECT 1 FROM town_treasure_chests c WHERE c.bucket=w.bucket)', (bucket - AUDIT_BUCKETS,)),
             ('DELETE FROM town_treasure_proofs WHERE created_at<?', (at - PROOF_TTL,)),
@@ -112,7 +147,7 @@ def ensure_wave(db, at):
         db.executemany(INSERT_CHEST, spawn_rows(bucket))
         for sql, args in cleanup_sql(bucket, at):
             db.execute(sql, args)
-    return db.execute(SELECT_CHESTS).fetchall()
+    return db.execute(SELECT_CHESTS, chest_args(at)).fetchall()
 
 
 def snapshot(store):
@@ -142,8 +177,8 @@ def claim(store, token, data):
     def write(db):
         # Same session-first lock order as Store.command and account switches.
         sid, csrf = store._resolve(db, store.digest(token))
-        need(csrf and db.execute('SELECT 1 FROM accounts WHERE sid=?', (sid,)).fetchone(),
-             'Đăng nhập tài khoản để nhặt kho báu.', 'treasure_account', 403)
+        account = db.execute('SELECT created_at FROM accounts WHERE sid=?', (sid,)).fetchone() if csrf else None
+        need(account, 'Đăng nhập tài khoản để nhặt kho báu.', 'treasure_account', 403)
         saved = db.execute('SELECT state,revision FROM sessions WHERE sid=? FOR UPDATE', (sid,)).fetchone()
         need(saved, 'Phiên chơi không tồn tại.', 'session_missing', 401)
         chest = db.execute('SELECT * FROM town_treasure_chests WHERE id=? FOR UPDATE', (chest_id,)).fetchone()
@@ -156,6 +191,13 @@ def claim(store, token, data):
                         revision=saved['revision'], result=json.loads(chest['result']), replayed=True)
         used = db.execute('SELECT id FROM town_treasure_chests WHERE winner=? AND request_id=?', (sid,request_id)).fetchone()
         need(not used, 'Mã yêu cầu đã dùng cho rương khác.', 'treasure_request', 409)
+        need(int(chest['bucket']) >= first_bucket(at), 'Rương này đã biến mất rồi. Chờ đợt rương mới nhé!', 'treasure_missing', 409)
+        need(account_old_enough(account['created_at'], at),
+             'Tài khoản cần đủ 1 ngày tuổi mới nhặt được kho báu.', 'treasure_new', 403)
+        # The session row is locked above, so one account's claims are serialized and the caps hold.
+        mine = db.execute(SELECT_MINE, (int(at // PERIOD) * PERIOD, sid, at - DAY)).fetchone()
+        need(int(mine['wave']) < WAVE_MAX, 'Bạn đã nhặt rương của đợt này rồi. Đợt sau nhặt tiếp nhé!', 'treasure_wave', 409)
+        need(int(mine['day']) < DAY_MAX, f'Hôm nay bạn đã nhặt đủ {DAY_MAX} rương rồi. Mai quay lại nhé!', 'treasure_day', 409)
         position = db.execute('SELECT * FROM town_treasure_presence WHERE sid=? FOR UPDATE', (sid,)).fetchone()
         ticket = db.execute('SELECT * FROM town_treasure_proofs WHERE sid=? FOR UPDATE', (sid,)).fetchone()
         at = now()

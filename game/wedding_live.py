@@ -39,6 +39,8 @@ MINUTE_XU = 20                  # every minute of the party, everyone present (t
 REMIND_BEFORE = 30 * 60         # friends get a reminder 30 minutes before
 VISIBLE = 60                    # avatars shown at once; more guests watch from the "đông quá" view, still counted
 GUEST_WEDDINGS_PER_DAY = 2      # a guest's minute money from at most 2 weddings a day (anti-farming; still counted)
+GUEST_ACCOUNT_DAYS = 1          # 11/10 audit: a counted guest (minute money, the couple's HOST_XU, the race) has an account
+                                # this many real days old; a fresh alt account watches and is recorded, never counted
 GUEST_CLOSE = 2                 # closeness with each spouse, once per wedding
 GUEST_MIN_MINUTES = 2           # "đi ăn cưới" counts (the couple's 15 xu, Khách mời của tuần) from 2 minutes at the party (owner, 01/10)
 HOST_XU = 15                    # each spouse, for every counted guest who came (owner: 15 xu a guest, no cap but the room's)
@@ -112,6 +114,15 @@ def vn_week(t: float) -> str:
 def week_start(t: float) -> float:
     d = vn(t).replace(hour=0, minute=0, second=0, microsecond=0)
     return (d - datetime.timedelta(days=d.weekday())).timestamp()
+
+
+def account_cut(t: float, days: int = GUEST_ACCOUNT_DAYS) -> str:
+    """accounts.created_at (UTC text 'YYYY-MM-DD HH:MM:SS', pg_schema.NOW_TEXT) at most this: old enough."""
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(t - days * 86400))
+
+
+def account_old_enough(created_at, t: float, days: int = GUEST_ACCOUNT_DAYS) -> bool:
+    return bool(created_at) and str(created_at) <= account_cut(t, days)
 
 
 def days_between(t0: float, t1: float) -> int:
@@ -342,9 +353,11 @@ def envelope(store, sid: str, display: str, d: dict) -> dict:
     with store.connect() as db:
         if db.execute('SELECT 1 FROM marriage_effects WHERE id=?', (eid,)).fetchone():
             return dict(message='Phong bì này đã gửi rồi.', changed=False, quiet=True, rid=rid)
+        from . import bank_xfer   # 💸 a new account's daily outflow cap (09/10 audit)
+        # 11/10 audit: an envelope is a transfer, so the sender's account is as old as a bank transfer needs
+        mr.need(bank_xfer._old_enough(db, sid), f'Phong bì mở khi tài khoản đủ {bank_xfer.ACCOUNT_DAYS} ngày (đời thực) nhé.', 'too_new', 403)
         p = check(db, now())
         names = dict(a=mr._display(db, p['a']), b=mr._display(db, p['b']))
-        from . import bank_xfer   # 💸 a new account's daily outflow cap (09/10 audit)
         bank_xfer.check_out(db, sid, amount)
     # BANK.PAY: a gift from the wallet, cash (like the spouse transfer)
     out = mr._effect(eid, sid, 'wallet', -amount, f'🧧 Phong bì mừng cưới {names["a"]} & {names["b"]}', dict(wedding=wid, wish=wish))

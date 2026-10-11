@@ -16,13 +16,15 @@ from outside the gate (the watchers' view), never chats (store_message refuses),
 Attendance (owner, 01/10 after the first party: everyone who walks in is recorded, the party lasts 10 minutes):
 * a guest is written to `wedding_guests` the moment they walk in (or watch from the gate), whoever they are; one
   account counts once (by player, whatever the tabs); the couple are never their own guests;
-* a counted guest (ok) is an account with a named save; a player without an account is recorded (ok=0) and watches;
+* a counted guest (ok) is an account GUEST_ACCOUNT_DAYS old with a named save (11/10 audit: fresh alt accounts farmed
+  the minute money and the couple's HOST_XU); a player without one is recorded (ok=0) and watches;
 * every minute of the party (at+60 … at+600) everyone present during that minute gets MINUTE_XU (20 xu): the
-  couple always, counted guests from at most GUEST_WEDDINGS_PER_DAY weddings a day; `steps` = minutes present;
+  couple always, counted guests from at most GUEST_WEDDINGS_PER_DAY weddings a day (decided under a per-player lock,
+  so parties paying at the same minute cannot both pass it); `steps` = minutes present;
   closeness with each spouse once per wedding. The minute marks come from the clock and every payment has a fixed
   key, so a restart of this service loses nothing but the seconds before the guests' sockets walk back in;
 * at the end each spouse gets HOST_XU (15 xu) per counted guest, and the title "Đám cưới đông vui 🎉" at 20, with
-  the private congratulation card.
+  the private congratulation card; nothing when the party was cancelled or the couple broke up meanwhile.
 
 Also here (one process, so once): the reminder 30 minutes before (the couple's friends: inbox + web push), the
 weekly race settle ("Khách mời của tuần": #1 🥇 Khách quý của phố 300 xu, #2-#3 🎊 Ăn cưới chuyên nghiệp 150 xu;
@@ -85,7 +87,7 @@ CLOSE_AFTER = 120.0         # the room stays this long after the end (goodbyes),
 
 class Att:
     """One player's presence at one party."""
-    __slots__ = ('sid', 'pid', 'ok', 'couple', 'seen', 'mins', 'paid', 'told', 'lock', 'rec')
+    __slots__ = ('sid', 'pid', 'ok', 'couple', 'seen', 'mins', 'paid', 'told', 'lock', 'rec', 'young')
 
     def __init__(self, sid: str, pid: str, ok: bool, couple: bool = False):
         self.sid, self.pid, self.ok, self.couple = sid, pid, ok, couple
@@ -93,6 +95,7 @@ class Att:
         self.paid = True if couple else None    # None: decided at the first minute (the daily cap)
         self.lock = asyncio.Lock()
         self.rec = None                          # the task writing the guest row
+        self.young = False                       # an account younger than WL.GUEST_ACCOUNT_DAYS: recorded, never counted
 
 
 class WeddingFeature(Feature):
@@ -574,7 +577,7 @@ class WeddingFeature(Feature):
         a = att.get(pl.pid)
         if a is None:
             a = att[pl.pid] = Att(pl.sid, pl.pid, ok=couple or bool(pl.account and pl.name), couple=couple)
-        elif not a.ok and pl.account and pl.name:   # signed up or named during the party
+        elif not a.ok and not a.young and pl.account and pl.name:   # signed up or named during the party
             a.ok, a.rec = True, None
         a.seen = max(a.seen, now)
         if not couple and a.rec is None:
@@ -586,15 +589,24 @@ class WeddingFeature(Feature):
         """The guest row (once; after a restart it reads back the minutes and the daily-cap decision already made)."""
         try:
             async with a.lock:
-                await self.db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?, ?, ?, ?, 0, 0, ?, ?, ?) '
-                                      'ON CONFLICT(wedding, sid) DO NOTHING', (p['id'], a.sid, a.pid, int(a.ok), now, WL.vn_day(now), WL.vn_week(now)))
-                row = await self.db.fetchrow('SELECT ok, paid, steps FROM wedding_guests WHERE wedding=? AND sid=?', (p['id'], a.sid))
+                # A counted guest is an account GUEST_ACCOUNT_DAYS old: a fresh alt is recorded, never counted
+                t = time.time()
+                await self.db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?, ?, ?, '
+                                      'CASE WHEN ?=1 AND EXISTS(SELECT 1 FROM accounts WHERE sid=? AND created_at<=?) THEN 1 ELSE 0 END, 0, 0, ?, ?, ?) '
+                                      'ON CONFLICT(wedding, sid) DO NOTHING',
+                                      (p['id'], a.sid, a.pid, int(a.ok), a.sid, WL.account_cut(t), now, WL.vn_day(now), WL.vn_week(now)))
+                row = await self.db.fetchrow('SELECT ok, paid, steps, (SELECT created_at FROM accounts WHERE sid=?) AS created FROM wedding_guests '
+                                             'WHERE wedding=? AND sid=?', (a.sid, p['id'], a.sid))
                 if row:
+                    if a.ok and not WL.account_old_enough(row['created'], t):
+                        a.ok, a.young = False, True
                     a.mins = max(a.mins, int(row['steps']))
                     if int(row['paid']):
                         a.paid = True
                     if a.ok and not int(row['ok']):   # named or signed up since the first visit
                         await self.db.execute('UPDATE wedding_guests SET ok=1 WHERE wedding=? AND sid=?', (p['id'], a.sid))
+                    elif a.young and int(row['ok']):  # counted by an older build: a fresh account never counts
+                        await self.db.execute('UPDATE wedding_guests SET ok=0 WHERE wedding=? AND sid=?', (p['id'], a.sid))
         except DbError as e:
             a.rec = None   # tried again at the next tick
             log('wedding record:', type(e).__name__, e)
@@ -635,12 +647,15 @@ class WeddingFeature(Feature):
             if not a.ok:
                 if not a.told:
                     a.told = True
-                    self.hub.send_many(self.hub.conns_of(a.pid), dict(t='wed_xu', id=p['id'], n=0, k=k, max=WL.PARTY_MINUTES, why='account'))
+                    self.hub.send_many(self.hub.conns_of(a.pid), dict(t='wed_xu', id=p['id'], n=0, k=k, max=WL.PARTY_MINUTES,
+                                                                      why='new' if a.young else 'account'))
                 return
             if a.paid is None:
                 day = WL.vn_day(time.time())
 
                 async def run(tx):
+                    # One player's daily cap is decided by one transaction at a time (parties paying the same minute)
+                    await tx.fetchval('SELECT pg_advisory_xact_lock(17825, hashtext(?))', ('wed_paid:' + a.sid,))
                     n = await tx.fetchval('SELECT COUNT(*) FROM wedding_guests WHERE sid=? AND day=? AND paid=1 AND wedding<>?', (a.sid, day, p['id']))
                     if int(n or 0) >= WL.GUEST_WEDDINGS_PER_DAY:
                         return False
@@ -658,7 +673,16 @@ class WeddingFeature(Feature):
             self.hub.send_many(self.hub.conns_of(a.pid), dict(t='wed_xu', id=p['id'], n=WL.MINUTE_XU, k=k, max=WL.PARTY_MINUTES))
 
     async def settle_party(self, p: dict) -> int:
-        """The end: each spouse gets HOST_XU per counted guest who came (once), then the party is done."""
+        """The end: each spouse gets HOST_XU per counted guest who came (once), then the party is done. A party cancelled
+        meanwhile (a divorce, a broken engagement: game/wedding_live.py cancel_party) or whose couple is no longer together
+        pays nothing."""
+        live = await self.db.fetchrow('SELECT p.status, c.status AS couple FROM wedding_parties p LEFT JOIN couples c ON c.id=p.couple '
+                                      'WHERE p.wedding=?', (p['id'],))
+        if not live or live['status'] != 'booked' or live['couple'] not in ('engaged', 'married'):
+            room = self.hub.rooms.get(f'{PREFIX}{p["id"]}')
+            if room is not None and (live or {}).get('status') != 'done':   # 'done': settled already, the room was told
+                room.send(dict(t='wed_end', id=p['id'], n=0))
+            return 0
         n = min(WL.HOST_COUNT_MAX, int(await self.db.fetchval('SELECT COUNT(*) FROM wedding_guests WHERE wedding=? AND ok=1 AND steps>=?', (p['id'], WL.GUEST_MIN_MINUTES)) or 0))
         total = n * WL.HOST_XU + sum(xu for k, xu, _ in WL.HOST_BONUS if n >= k)
         if total:

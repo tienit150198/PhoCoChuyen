@@ -22,6 +22,14 @@ class WedCase(LiveCase):
     def wed(self):
         return self.app.by_name['wedding']
 
+    def account(self, display='Hoa Gió', old=True):
+        """A registered player; `old`: the account is older than WL.GUEST_ACCOUNT_DAYS too (a counted guest)."""
+        token, sid = super().account(display, old)
+        if old:
+            with self.store.connect() as db:
+                db.execute("UPDATE accounts SET created_at='2026-01-01 00:00:00' WHERE sid=?", (sid,))
+        return token, sid
+
     def party(self, at_in=60.0, wid=7):
         """A booked party (as game/marriage.py confirms one) between two accounts; returns (tokens, sids, wid, at)."""
         ta, sa = self.account('Lan Anh')
@@ -51,6 +59,13 @@ class WedCase(LiveCase):
     def rows(self, sql, *args):
         with self.store.connect() as db:
             return [dict(r) for r in db.execute(sql, args).fetchall()]
+
+    async def until(self, check, tries=50):
+        """Payments are tasks spawned by the ticks: a loaded machine needs more than the ticks' 0.3 s."""
+        for _ in range(tries):
+            if check():
+                return
+            await asyncio.sleep(0.1)
 
 
 @unittest.skipUnless(HAVE_WS, 'needs websockets')
@@ -139,6 +154,8 @@ class Attendance(WedCase):
         await self.ticks(at - 30, 30 + 90)                  # the party starts, and someone leaves after a minute and a half
         await early.call('walk_out', 'walk_left')
         await self.ticks(at + 90, 3 * 60)                   # four minutes in
+        n = lambda s: len(self.rows("SELECT id FROM live_effects WHERE sid=? AND kind='coins'", s))   # noqa: E731
+        await self.until(lambda: n(sid) >= 4 and n(sa) >= 4 and n(esid) >= 2)
         coins = self.rows("SELECT id, amount FROM live_effects WHERE sid=? AND kind='coins' ORDER BY id", sid)
         self.assertEqual([r['amount'] for r in coins], [WL.MINUTE_XU] * 4)
         self.assertEqual(len(self.rows("SELECT id FROM live_effects WHERE sid=? AND kind='coins'", sa)), 4, 'the couple are paid too')
@@ -163,12 +180,15 @@ class Attendance(WedCase):
         tok, sid = self.account('Hà Vy')
         await self.join(tok, wid)
         await self.ticks(at - 5, 5 + 125)                   # minutes 1 and 2 paid
+        steps = lambda: self.rows('SELECT paid, steps FROM wedding_guests WHERE wedding=? AND sid=?', wid, sid)   # noqa: E731
+        await self.until(lambda: steps() == [dict(paid=1, steps=2)])
         self.wed.att.clear()                                # a new process: nothing in memory
         for p in self.wed.parties.values():
             p.pop('minute', None)
         g = await self.join(tok, wid)                       # the socket walks back in
         await asyncio.sleep(0.3)
         await self.ticks(at + 125, 60)
+        await self.until(lambda: steps() == [dict(paid=1, steps=3)])
         coins = self.rows("SELECT id FROM live_effects WHERE sid=? AND kind='coins' ORDER BY id", sid)
         self.assertEqual(len(coins), 3)
         self.assertEqual(self.rows('SELECT paid, steps FROM wedding_guests WHERE wedding=? AND sid=?', wid, sid), [dict(paid=1, steps=3)])
@@ -183,17 +203,38 @@ class Attendance(WedCase):
                 db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?,?,?,1,1,4,?,?,?)',
                            (other, sid, 'x', time.time(), day, week))
         g = await self.join(tok, wid)
-        await self.join(self.account('Bé Mới', old=False)[0], wid)  # a brand-new account: counted now (owner, 01/10)
+        ntok, nsid = self.account('Bé Mới', old=False)
+        young = await self.join(ntok, wid)                          # a brand-new account: recorded, never counted (11/10 audit)
         await self.join(self.guest('Lâu Năm')[0], wid)              # no account: watches, recorded, never counted
         await self.join(self.guest(None)[0], wid)                   # no name, no account: never counted
         await self.join(ta, wid)                                    # the bride: never her own guest
         await self.ticks(at - 1, 62)
         rows = {r['sid']: r for r in self.rows('SELECT sid, ok, paid, steps FROM wedding_guests WHERE wedding=?', wid)}
         self.assertEqual((rows[sid]['ok'], rows[sid]['paid'], rows[sid]['steps']), (1, 0, 1), 'counted for the couple and the race, no coins (3rd today)')
-        self.assertEqual(sorted(r['ok'] for r in rows.values()), [0, 0, 1, 1])
+        self.assertEqual(sorted(r['ok'] for r in rows.values()), [0, 0, 0, 1])
+        self.assertEqual(rows[nsid]['ok'], 0)
         self.assertNotIn(sa, rows)
         self.assertEqual(self.rows("SELECT * FROM live_effects WHERE sid=? AND id LIKE 'wedm:%'", sid), [])
+        self.assertEqual(self.rows("SELECT * FROM live_effects WHERE sid=?", nsid), [])
         self.assertEqual((await g.expect('wed_xu'))['why'], 'cap')
+        self.assertEqual((await young.expect('wed_xu'))['why'], 'new')
+
+    async def test_the_daily_cap_holds_when_parties_pay_the_same_minute(self):
+        from live.wedding import Att
+        tok, sid = self.account('Hà Vy')
+        parties = [self.party(wid=wid) for wid in (31, 32, 33)]
+        day, week = WL.vn_day(time.time()), WL.vn_week(time.time())
+        with self.store.connect() as db:
+            for _, _, wid, _ in parties:
+                db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?,?,?,1,0,0,?,?,?)',
+                           (wid, sid, self.pid(sid), time.time(), day, week))
+        await self.wed.refresh(time.time())
+        ps = [self.wed.parties[wid] for _, _, wid, _ in parties]
+        atts = [Att(sid, self.pid(sid), ok=True) for _ in ps]
+        await asyncio.gather(*(self.wed._pay_one(p, 1, a) for p, a in zip(ps, atts)))
+        self.assertEqual(sorted(a.paid for a in atts), [False, True, True])
+        self.assertEqual(len(self.rows('SELECT 1 FROM wedding_guests WHERE sid=? AND paid=1', sid)), WL.GUEST_WEDDINGS_PER_DAY)
+        self.assertEqual(len(self.rows("SELECT 1 FROM live_effects WHERE sid=? AND id LIKE 'wedm:%'", sid)), WL.GUEST_WEDDINGS_PER_DAY)
 
 
 @unittest.skipUnless(HAVE_WS, 'needs websockets')
@@ -224,6 +265,18 @@ class Hosts(WedCase):
             self.assertEqual(self.rows('SELECT status, guests FROM wedding_parties WHERE wedding=?', wid), [dict(status='done', guests=min(n, WL.HOST_COUNT_MAX))])
             with self.store.connect() as db:
                 db.execute('DELETE FROM live_effects')
+
+    async def test_a_cancelled_party_or_a_broken_couple_pays_no_host_money(self):
+        for wid, sql in ((61, "UPDATE wedding_parties SET status='cancelled' WHERE wedding=?"),
+                         (62, "UPDATE couples SET status='broken' WHERE id=?")):
+            (ta, tb), (sa, sb), wid, at = self.party(wid=wid)
+            self.counted(wid, 25, first=wid * 100)
+            await self.wed.refresh(time.time())
+            p = self.wed.parties[wid]
+            with self.store.connect() as db:
+                db.execute(sql, (wid,))
+            self.assertEqual(await self.wed.settle_party(p), 0)
+            self.assertEqual(self.rows("SELECT * FROM live_effects WHERE sid IN (?, ?)", sa, sb), [])
 
     async def test_the_end_of_the_party(self):
         (ta, tb), (sa, sb), wid, at = self.party()
@@ -275,7 +328,10 @@ class Envelope(WedCase):
         with self.store.connect() as db:   # stayed the whole party (the ticks between are skipped here)
             db.execute('UPDATE wedding_guests SET steps=? WHERE wedding=? AND sid=?', (WL.PARTY_MINUTES, wid, gs))
         await self.wed.tick(at + WL.PARTY_SECS + 1)
-        await asyncio.sleep(0.3)
+        for _ in range(40):   # the settle is a task: a loaded machine needs more than 0.3 s
+            await asyncio.sleep(0.1)
+            if len(self.rows("SELECT 1 FROM live_effects WHERE id LIKE ?", f'wedhost:{wid}:%')) >= 2:
+                break
         for s in (sa, sb):
             card = [json.loads(r['data'])['popup']['text'] for r in self.rows("SELECT data FROM live_effects WHERE sid=? AND id LIKE 'wedhost:%'", s)]
             self.assertIn('🧧 Phong bì khách mừng: 55 xu', card[0])

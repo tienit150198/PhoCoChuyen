@@ -6,6 +6,7 @@ import json
 import secrets
 import tempfile
 import threading
+import time
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -118,52 +119,92 @@ class Treasure(unittest.TestCase):
             body=self.proof(sid,chest,**kw)
             with self.subTest(kw=kw), self.assertRaises(self.tt.TreasureError):self.tt.claim(self.store,token,body)
 
-    def test_unclaimed_chest_survives_new_waves_cleanup_and_restart_until_claimed(self):
+    def test_unclaimed_chest_expires_after_keep_waves_and_no_backlog_builds(self):
         token,sid = self.account()
         chest=self.tt.snapshot(self.store)['chests'][0]
+        self.now += 600*(self.tt.KEEP_WAVES-1)
+        self.assertIn(chest['id'], [c['id'] for c in self.tt.snapshot(self.store)['chests']], 'still there in the last kept wave')
+        self.assertEqual(chest['gone_at'],(int(chest['id'].split('-')[1])+self.tt.KEEP_WAVES)*600)
         self.now += 600
-        self.assertIn(chest['id'], [c['id'] for c in self.tt.snapshot(self.store)['chests']])
-        self.now += 90000
-        self.tt.snapshot(self.store)
-        with self.store.connect() as db:
-            self.assertEqual(db.execute('SELECT COUNT(*) FROM town_treasure_chests WHERE id=?',(chest['id'],)).fetchone()[0],1)
-        restart=Store(self.path,story=True);self.addCleanup(restart.close_pool)
-        self.assertIn(chest['id'], [c['id'] for c in self.tt.snapshot(restart)['chests']])
         body=self.proof(sid,chest)
-        paid=self.tt.claim(restart,token,body)
-        self.assertEqual(paid['result']['treasure']['coins'],10000)
-        self.assertNotIn(chest['id'], [c['id'] for c in self.tt.snapshot(restart)['chests']])
-        self.assertTrue(self.tt.claim(restart,token,body)['replayed'])
+        with self.assertRaises(self.tt.TreasureError) as caught:self.tt.claim(self.store,token,body)
+        self.assertEqual(caught.exception.code,'treasure_missing','expired even before any cleanup ran')
+        self.assertNotIn(chest['id'], [c['id'] for c in self.tt.snapshot(self.store)['chests']])
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM town_treasure_chests WHERE id=?',(chest['id'],)).fetchone()[0],0,'deleted by the next wave')
+        self.now += 90000
+        snap=self.tt.snapshot(self.store)
+        restart=Store(self.path,story=True);self.addCleanup(restart.close_pool)
+        self.assertEqual(self.tt.snapshot(restart)['chests'], snap['chests'])
+        self.assertLessEqual(snap['total_unclaimed'], 5, 'an idle night leaves one wave, never a backlog')
 
-    def test_same_spot_accumulates_all_rows_with_bounded_marker_payload(self):
+    def test_same_spot_markers_stay_bounded_to_the_kept_waves(self):
         spots=self.tt.locations()[:3]
+        keep=self.tt.KEEP_WAVES
         def fixed(bucket):return [(f'tt-{bucket}-{i}',bucket,self.tt.MAP_ID,x,y) for i,(x,y) in enumerate(spots)]
         with patch('game.town_treasure.spawn_rows',side_effect=fixed):
-            for _ in range(150):
-                snap=self.tt.snapshot(self.store);self.now+=600
+            for i in range(150):
+                if i:self.now+=600
+                snap=self.tt.snapshot(self.store)
         self.assertEqual(len(snap['chests']),3)
-        self.assertEqual(snap['total_unclaimed'],450)
-        self.assertEqual([c['count'] for c in snap['chests']],[150]*3)
+        self.assertEqual(snap['total_unclaimed'],3*keep)
+        self.assertEqual([c['count'] for c in snap['chests']],[keep]*3)
         self.assertEqual(snap['wave']['added'],3)
         self.assertIn('3 rương',snap['wave']['notice'])
         with self.store.connect() as db:
-            self.assertEqual(db.execute('SELECT COUNT(*) FROM town_treasure_chests').fetchone()[0],450)
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM town_treasure_chests').fetchone()[0],3*keep)
         token,sid=self.account();oldest=snap['chests'][0]
         self.tt.claim(self.store,token,self.proof(sid,oldest))
         with patch('game.town_treasure.spawn_rows',side_effect=fixed):after=self.tt.snapshot(self.store)
         marker=next(c for c in after['chests'] if (c['x'],c['y'])==(oldest['x'],oldest['y']))
-        self.assertNotEqual(marker['id'],oldest['id']);self.assertEqual(marker['count'],150)
-        self.assertEqual(after['total_unclaimed'],452)
+        self.assertNotEqual(marker['id'],oldest['id']);self.assertEqual(marker['count'],keep-1)
+        self.assertEqual(after['total_unclaimed'],3*keep-1)
 
-    def test_old_chest_claim_receipt_retention_starts_when_claimed_not_when_spawned(self):
+    def test_claim_receipt_retention_starts_when_claimed_not_when_spawned(self):
         token,sid=self.account();chest=self.tt.snapshot(self.store)['chests'][0]
-        self.now+=90000;body=self.proof(sid,chest);self.tt.claim(self.store,token,body)
-        self.tt.snapshot(self.store)
-        self.assertTrue(self.tt.claim(self.store,token,body)['replayed'])
-        self.now+=90000;self.tt.snapshot(self.store)
+        self.now+=1200;self.tt.snapshot(self.store)
+        body=self.proof(sid,chest);self.tt.claim(self.store,token,body)
+        self.now+=86400-600;self.tt.snapshot(self.store)
+        self.assertTrue(self.tt.claim(self.store,token,body)['replayed'],'a day after spawning, under a day after the claim')
+        self.now+=1200;self.tt.snapshot(self.store)
         with self.store.connect() as db:
             self.assertEqual(db.execute('SELECT COUNT(*) FROM town_treasure_chests WHERE id=?',(chest['id'],)).fetchone()[0],0)
             self.assertGreater(db.execute('SELECT COUNT(*) FROM town_treasure_chests WHERE winner IS NULL').fetchone()[0],0)
+
+    def test_one_chest_per_wave_and_five_a_day_per_account(self):
+        token,sid=self.account()
+        other,osid=self.account()
+        start=[self.store.read(t)[0]['journey']['wallet'] for t in (token,other)]
+        def pick(tok,s,chest):
+            try:return self.tt.claim(self.store,tok,self.proof(s,chest))
+            except self.tt.TreasureError as e:return e.code
+        got=0
+        for wave in range(self.tt.DAY_MAX+2):
+            chests=self.tt.snapshot(self.store)['chests']
+            fresh=[c for c in chests if c['id'].startswith(f'tt-{int(self.now//600)}-')]
+            first=pick(token,sid,fresh[0])
+            if wave<self.tt.DAY_MAX:
+                self.assertIsInstance(first,dict,wave);got+=1
+                self.assertEqual(pick(token,sid,fresh[1]),'treasure_wave','one chest a wave')
+                self.assertIsInstance(pick(other,osid,fresh[1]),dict,'another account still picks this wave')
+            else:
+                self.assertEqual(first,'treasure_day')
+            self.now+=600
+        self.assertEqual([self.store.read(t)[0]['journey']['wallet']-w for t,w in zip((token,other),start)],
+                         [self.tt.DAY_MAX*10000]*2,'both picked five')
+        self.now+=86400
+        self.assertIsInstance(pick(token,sid,self.tt.snapshot(self.store)['chests'][0]),dict,'the next day opens again')
+
+    def test_new_account_cannot_claim(self):
+        token,sid=self.account()
+        chest=self.tt.snapshot(self.store)['chests'][0]
+        with self.store.connect() as db:
+            db.execute('UPDATE accounts SET created_at=? WHERE sid=?',(time.strftime('%Y-%m-%d %H:%M:%S',time.gmtime(self.now-3600)),sid))
+        with self.assertRaises(self.tt.TreasureError) as caught:self.tt.claim(self.store,token,self.proof(sid,chest))
+        self.assertEqual(caught.exception.code,'treasure_new')
+        with self.store.connect() as db:
+            db.execute('UPDATE accounts SET created_at=? WHERE sid=?',(time.strftime('%Y-%m-%d %H:%M:%S',time.gmtime(self.now-86401)),sid))
+        self.assertEqual(self.tt.claim(self.store,token,self.proof(sid,chest))['result']['treasure']['coins'],10000)
 
     def test_thousand_chests_at_hundred_locations_keep_payload_bounded(self):
         # Synthetic locations exercise grouping independently from the map's
@@ -173,9 +214,9 @@ class Treasure(unittest.TestCase):
             db.executemany(self.tt.INSERT_WAVE,[(bucket-i,) for i in range(200)])
             rows=[(f'tt-{bucket-i//5}-{i%5}',bucket-i//5,self.tt.MAP_ID,float(i%100),7.0) for i in range(1000)]
             db.executemany(self.tt.INSERT_CHEST,rows[:100])
-            small=self.tt.view(db.execute(self.tt.SELECT_CHESTS).fetchall(),self.now,added=5)
+            small=self.tt.view(db.execute(self.tt.SELECT_CHESTS,(bucket-200,)*2).fetchall(),self.now,added=5)
             db.executemany(self.tt.INSERT_CHEST,rows[100:])
-            large=self.tt.view(db.execute(self.tt.SELECT_CHESTS).fetchall(),self.now,added=5)
+            large=self.tt.view(db.execute(self.tt.SELECT_CHESTS,(bucket-200,)*2).fetchall(),self.now,added=5)
             return small,large
         small,large=self.store.transaction(seed)
         self.assertEqual(len(small['chests']),100);self.assertEqual(len(large['chests']),100)

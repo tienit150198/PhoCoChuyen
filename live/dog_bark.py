@@ -441,7 +441,10 @@ class DogBarkFeature(Feature):
 
     def _finish(self, m: Match, winner: str, why: str) -> None:
         m.over = True
-        asyncio.ensure_future(self._settle(m, winner, why, competitive=m.rope.t > 0))
+        # The weekly board (game/dog_bark_board.py) counts only a match between two players that ran to an end of the
+        # rope or the time limit: never the house dog, a quit or a lost page (11/10 audit: farmed wins).
+        competitive = m.dog is None and why in ('end', 'time') and m.rope.t > 0
+        asyncio.ensure_future(self._settle(m, winner, why, competitive=competitive))
 
     async def _settle(self, m: Match, winner: str, why: str, competitive: bool = False) -> None:
         t = time.time()

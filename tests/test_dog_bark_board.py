@@ -36,14 +36,35 @@ class Weekly(unittest.TestCase):
         self.serial = 0
         return B
 
-    def matches(self, token, wins, losses=0, draws=0, at=None, status='done', opp='dog'):
+    def matches(self, token, wins, losses=0, draws=0, at=None, status='done', opp='pvp', opponents=None, opp_created=None):
+        """Finished matches as live/dog_bark.py settles them: a player-vs-player match is two tickets sharing `match` and
+        `ended`. Opponents are fresh aged accounts: PER_OPP matches each in turn, or `opponents` of them round robin."""
+        B = self.board()
         at = self.w + 100 if at is None else at
+        n = wins + losses + draws
+        pool = []
+        if opp == 'pvp':
+            k = opponents or max(B.OPPONENTS_MIN, -(-n // B.PER_OPP))
+            pool = [self.store.key(self.player(name=f'Đối thủ {i}')) for i in range(k)]
+            if opp_created:
+                with self.store.connect() as db:
+                    for o in pool:
+                        db.execute('UPDATE accounts SET created_at=? WHERE sid=?', (opp_created, o))
         with self.store.connect() as db:
+            i = 0
             for result, count in [('win', wins), ('lose', losses), ('draw', draws)]:
-                for i in range(count):
+                for _ in range(count):
                     self.serial += 1
-                    db.execute('INSERT INTO bark_tickets(id,sid,stake,status,created,started,ended,opp,result,pay,competitive) VALUES(?,?,100,?,?,?,?,?,?,0,true)',
-                               (f'k{self.serial:020x}', self.store.key(token), status, at-2, at-1, at, opp, result))
+                    mid = f'm{self.serial:012x}'
+                    db.execute('INSERT INTO bark_tickets(id,sid,stake,status,created,started,ended,match,opp,result,pay,competitive) VALUES(?,?,100,?,?,?,?,?,?,?,0,true)',
+                               (f'k{self.serial:020x}', self.store.key(token), status, at-2, at-1, at, mid, opp, result))
+                    if pool:
+                        o = pool[i % len(pool)] if opponents else pool[i // B.PER_OPP]
+                        other = dict(win='lose', lose='win', draw='draw')[result]
+                        self.serial += 1
+                        db.execute("INSERT INTO bark_tickets(id,sid,stake,status,created,started,ended,match,opp,result,pay,competitive) VALUES(?,?,100,?,?,?,?,?,'pvp',?,0,true)",
+                                   (f'k{self.serial:020x}', o, status, at-2, at-1, at, mid, other))
+                    i += 1
 
     def test_ranking_denominator_minimum_and_privacy(self):
         B = self.init_week()
@@ -193,6 +214,39 @@ class Weekly(unittest.TestCase):
             self.assertNotIn(sid,snapshot)
             self.assertIsNone(db.execute("SELECT 1 FROM live_effects WHERE kind='bark_weekly' AND sid=?",(sid,)).fetchone())
         self.assertEqual(B.view(self.store,None,t)['previous']['rows'][0]['name'],'Một người chơi')
+
+    def test_house_dog_matches_do_not_count(self):
+        B = self.init_week()
+        a = self.player(name='Chỉ kéo chó')
+        self.matches(a, 60, opp='dog')
+        v = B.view(self.store, self.store.key(a), self.w+1000)
+        self.assertEqual(v['rows'], [])
+        self.assertEqual((v['me']['played'], v['me']['eligible']), (0, False))
+
+    def test_few_opponents_or_new_opponents_cannot_qualify(self):
+        B = self.init_week()
+        a, b = self.player(name='Ba cái nick'), self.player(name='Nick mới')
+        self.matches(a, 60, opponents=B.OPPONENTS_MIN-1)       # thrown by a few accounts: PER_OPP each at most
+        self.matches(b, 30, opp_created=datetime.datetime.fromtimestamp(self.w, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S'))
+        v = B.view(self.store, self.store.key(a), self.w+1000)
+        self.assertEqual(v['rows'], [])
+        self.assertEqual((v['me']['played'], v['me']['opponents'], v['me']['opp_remaining'], v['me']['eligible']),
+                         (B.PER_OPP*(B.OPPONENTS_MIN-1), B.OPPONENTS_MIN-1, 1, False))
+        self.assertEqual(B.view(self.store, self.store.key(b), self.w+1000)['me']['played'], 0, 'opponents a few days old')
+        self.matches(a, 0, losses=B.PER_OPP)                  # more different opponents: now it counts
+        B.clear_cache()
+        v = B.view(self.store, self.store.key(a), self.w+1000)
+        self.assertEqual([r['name'] for r in v['rows']], ['Ba cái nick'])
+        self.assertTrue(v['me']['eligible'])
+
+    def test_more_opponents_beaten_ranks_above_a_perfect_rate(self):
+        B = self.init_week()
+        x, y = self.player(name='Toàn thắng'), self.player(name='Gặp nhiều người')
+        self.matches(x, 30)
+        self.matches(y, 20, losses=20, opponents=10)
+        v = B.view(self.store, None, self.w+1000)
+        self.assertEqual([(r['name'], r['beaten']) for r in v['rows']], [('Gặp nhiều người', 10), ('Toàn thắng', 5)])
+        self.assertEqual(v['rows'][1]['rate'], 100)
 
     def test_legacy_rows_cannot_qualify_and_schema_default_is_safe(self):
         B = self.init_week()
