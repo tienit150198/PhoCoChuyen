@@ -35,6 +35,7 @@ Các kiểm thử tái hiện trước sửa phát hiện khoản thu hồi lấ
 - Rà soát spec độc lập: 31 kiểm thử lõi và 63 trường hợp tình huống nghề bổ sung qua; kiểm tiền thực trừ, biên nhận và validator.
 - Bộ nghề liên quan: 292 kiểm thử có PostgreSQL qua. Bốn script UI quầy qua; các file JavaScript thay đổi kiểm tra cú pháp thành công.
 - Lượt cuối sau sửa các phát hiện review: 93 kiểm thử qua, gồm lưu PostgreSQL, biên nhận, giao thông, validator 2.0.2 và khoản phạt kiểm toán nghề. Rà soát chất lượng độc lập xác nhận không còn lỗi nghiêm trọng/quan trọng trong diff đã rà.
+- Sau khi live có hotfix 2.0.2.1 trong lúc tải bản đầu, guard triển khai dừng đúng trước chuyển dịch vụ. Đã tích hợp mã hotfix mới từ main, chạy 17 kiểm thử kết hợp đều qua, dựng lại gói và xác minh quy tắc hotfix còn nguyên trên runtime. Chi tiết triển khai ở [báo cáo 2.0.3](../DEPLOY_2.0.3_2026-10-11.md).
 - Đối chiếu 50 nghề, 40 ngày, 49.440 nhiệm vụ: mọi nhiệm vụ sinh từ baseline live 2.0.2 vẫn khớp bản mới.
 - Kiểm thử quay lui RUI tới 1.4.31 đã lỗi `Mã bảng giá không hợp lệ` ngay trên ZIP 2.0.2 đã xác minh, trước thay đổi này. Không dùng kiểm thử lịch sử đó để tuyên bố tương thích rollback hiện tại.
 

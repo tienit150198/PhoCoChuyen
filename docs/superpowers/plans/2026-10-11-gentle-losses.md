@@ -26,9 +26,9 @@
 
 - [x] Đọc live manifest và thống kê hiệu ứng: 2.0.2; 79 đã áp dụng, 180 đã hủy, không còn pending.
 - [x] Kiểm tra timer thu hồi cũ và tắt lịch tự thu hồi, giữ lịch sử để đối chiếu. `mnl-mishap-sweep.timer` đã disabled/inactive.
-- [ ] Đối chiếu source mới nhất trước commit và bản đang chạy trước rolling.
-- [ ] Đóng gói từ baseline live đã xác minh, xác nhận chỉ các file được duyệt thay đổi.
-- [ ] Kiểm tra health HTTP/live, hash runtime, các biên giới hạn trên mã đã triển khai; không tạo người chơi thử ở production.
-- [ ] Ghi báo cáo kết quả và trả lời góp ý liên quan khi có bằng chứng; không đổi Có gì mới.
+- [x] Đối chiếu source mới nhất trước commit và bản đang chạy trước rolling.
+- [x] Đóng gói từ baseline live đã xác minh, xác nhận chỉ các file được duyệt thay đổi.
+- [x] Kiểm tra health HTTP/live, hash runtime, các biên giới hạn trên mã đã triển khai; không tạo người chơi thử ở production.
+- [x] Ghi báo cáo kết quả và trả lời góp ý liên quan khi có bằng chứng; không đổi Có gì mới.
 
 Không tự hoàn xu cho lịch sử cũ khi chưa xác định từng khoản và nguyên nhân; đợt sửa này bảo vệ các lần phát sinh sau triển khai.

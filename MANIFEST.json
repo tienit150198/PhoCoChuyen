@@ -1,77 +1,116 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "2.0.2",
-  "created_at_utc": "2026-10-11T05:06:10.079374+00:00",
+  "version": "2.0.3",
+  "created_at_utc": "2026-10-11T06:22:05.692218+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 527,
+  "minified": 533,
   "release_from_live": {
     "live_release": "mot-ngay-lam-nghe",
-    "live_version": "2.0.0",
-    "live_manifest_sha256": "eb822c13a05b204c6cde23133411aa76351d77fb47083d0d5c4d7e1ff58d5528",
-    "base": "253bc53c91eb6fdbeab14ea7381ebe08ccee2f19",
-    "ref": "22be33b0ed6ceec017022f720880ba8fb986b9ba",
+    "live_version": "2.0.2",
+    "live_manifest_sha256": "f44ae534590da43821ff8b57ff2c6a2b272217c64e04340425542bf21a25cec5",
+    "base": "22be33b0ed6ceec017022f720880ba8fb986b9ba",
+    "ref": "e53d4587093b998fdc415675664a98cf3d992ef1",
     "changed": [
-      "CHANGELOG.md",
-      "client/isometric/performance-probe.ts",
-      "client/isometric/phaser-world.ts",
-      "docs/DEPLOY_2.0.0_2026-10-11.md",
-      "docs/DEPLOY_ROLLING.md",
+      "docs/DEPLOY_2.0.1_2026-10-11.md",
+      "docs/DEPLOY_2.0.2.1_2026-10-11.md",
+      "docs/DEPLOY_2.0.2_2026-10-11.md",
+      "docs/FAIR_HOUSE_EDGE.md",
       "docs/LIVE_BASE.md",
-      "docs/RELEASE_2.0.0_READINESS.md",
-      "docs/qa/dual-interface-2026-10-11.md",
-      "docs/qa/feedback-2026-10-11.md",
+      "docs/qa/black-market-high-stakes-2026-10-11.md",
+      "docs/qa/gentle-losses-2026-10-11.md",
       "docs/qa/hotfix-2.0.1-2026-10-11.md",
+      "docs/superpowers/plans/2026-10-11-gentle-losses.md",
       "game/__init__.py",
-      "game/career_stories.py",
+      "game/abandon.py",
+      "game/boba.py",
+      "game/careers/cafe_bakery.py",
+      "game/careers/delivery.py",
+      "game/careers/grocery.py",
+      "game/careers/homestay.py",
+      "game/careers/kit.py",
+      "game/careers/office.py",
+      "game/careers/pet_care.py",
+      "game/careers/repair.py",
+      "game/careers/restaurant.py",
+      "game/careers/salon.py",
+      "game/careers/tra_da.py",
+      "game/desk.py",
+      "game/fair.py",
       "game/fair_bm.py",
-      "game/inventory.py",
-      "game/pg_schema.py",
-      "game/town_treasure.py",
-      "live/town_treasure.py",
+      "game/fair_golden_days.py",
+      "game/fair_hai.py",
+      "game/happenings.py",
+      "game/incidents.py",
+      "game/life.py",
+      "game/loss_limits.py",
+      "game/mishap.py",
+      "game/operations.py",
+      "game/quay_business.py",
+      "game/quay_economy.py",
+      "game/quay_self.py",
+      "game/rui.py",
+      "game/shop_events.py",
+      "game/situations.py",
       "package-lock.json",
       "package.json",
-      "public/css/shared-island.css",
-      "public/js/app.js",
-      "public/js/isometric/character-art.js",
-      "public/js/isometric/phaser-world.js",
-      "public/js/isometric/treasure.js",
-      "public/js/isometric/water-poses.js",
-      "public/js/pixel/places.js",
-      "public/js/shared-island.js",
-      "public/js/v4/dog-bark.js",
-      "public/js/v4/town-walk.js",
-      "tests/dog_bark_recovery.mjs",
-      "tests/isometric-character-composition.mjs",
-      "tests/isometric-peer-render-performance.mjs",
-      "tests/isometric-performance-probe.mjs",
-      "tests/isometric-treasure-markers.mjs",
-      "tests/isometric-visibility.mjs",
-      "tests/leisure-keyboard.mjs",
-      "tests/phaser-current-integration.mjs",
-      "tests/pixel-places.mjs",
-      "tests/shared-island.mjs",
+      "public/js/operations-ui.js",
+      "public/js/v4/fair-knife.js",
+      "public/js/v4/fair.js",
+      "public/js/v4/quay.js",
+      "public/js/v4/rui.js",
+      "public/js/v4/traffic.js",
+      "scripts/sim_fair_odds.py",
+      "tests/bank_hack_ui.mjs",
+      "tests/fair_gentle_losses.mjs",
+      "tests/fair_shell_render.mjs",
+      "tests/test_abandon.py",
+      "tests/test_bank_hack.py",
       "tests/test_black_market.py",
-      "tests/test_career_stories.py",
-      "tests/test_inventory_cart.py",
-      "tests/test_inventory_cart_40.py",
+      "tests/test_career_corp_accounting.py",
+      "tests/test_career_grocery.py",
+      "tests/test_career_group_accounting.py",
+      "tests/test_career_homestay.py",
+      "tests/test_career_pet_care.py",
+      "tests/test_career_salon.py",
+      "tests/test_career_tax_payroll.py",
+      "tests/test_career_tra_da.py",
+      "tests/test_desk.py",
+      "tests/test_economy_pass2.py",
+      "tests/test_fair.py",
+      "tests/test_fair_asset_audit.py",
+      "tests/test_fair_gentle_losses.py",
+      "tests/test_fair_hai_police.py",
+      "tests/test_fair_high_stakes.py",
+      "tests/test_fair_house_edge.py",
+      "tests/test_fair_watch.py",
+      "tests/test_fair_wealth_raid.py",
+      "tests/test_gentle_losses.py",
+      "tests/test_gentle_remaining_losses.py",
+      "tests/test_happenings.py",
+      "tests/test_incidents.py",
+      "tests/test_incidents_scams.py",
       "tests/test_jail.py",
-      "tests/test_live_town_treasure.py",
-      "tests/test_town_treasure.py",
-      "tests/town-treasure-client.mjs",
-      "tests/water-poses.mjs"
+      "tests/test_life.py",
+      "tests/test_life_gentle_losses.py",
+      "tests/test_mishap.py",
+      "tests/test_operations.py",
+      "tests/test_quay_business.py",
+      "tests/test_quay_economy.py",
+      "tests/test_rui.py",
+      "tests/test_security_percent.py",
+      "tests/test_traffic.py",
+      "tests/test_wealth_risk.py",
+      "tests/test_wealth_security.py",
+      "tests/test_wp6_stalls_fair.py"
     ],
     "deleted": [],
     "minified": [
-      "public/css/shared-island.css",
-      "public/js/app.js",
-      "public/js/isometric/character-art.js",
-      "public/js/isometric/phaser-world.js",
-      "public/js/isometric/treasure.js",
-      "public/js/isometric/water-poses.js",
-      "public/js/pixel/places.js",
-      "public/js/shared-island.js",
-      "public/js/v4/dog-bark.js",
-      "public/js/v4/town-walk.js"
+      "public/js/operations-ui.js",
+      "public/js/v4/fair-knife.js",
+      "public/js/v4/fair.js",
+      "public/js/v4/quay.js",
+      "public/js/v4/rui.js",
+      "public/js/v4/traffic.js"
     ]
   },
   "files": [
@@ -531,6 +570,21 @@
       "sha256": "dbfa7f64ef53d82f4b897d7a08f7d9e2ca523e5e75547f763744d3e39ecb8a08"
     },
     {
+      "path": "docs/DEPLOY_2.0.1_2026-10-11.md",
+      "bytes": 5046,
+      "sha256": "a5c34fba0dbd92f1ae02d1ed4d428fdad52415a7b23df5872a95d3aa863ff4a3"
+    },
+    {
+      "path": "docs/DEPLOY_2.0.2.1_2026-10-11.md",
+      "bytes": 3213,
+      "sha256": "752aeaf4ffed56f87aa261c706d9ebb626e591c197904bfe5832782709887844"
+    },
+    {
+      "path": "docs/DEPLOY_2.0.2_2026-10-11.md",
+      "bytes": 4442,
+      "sha256": "9712387af2a5f5a8f56ac88b2beafd15080847eea6b0de7ce2e4e4be06a101ce"
+    },
+    {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
       "bytes": 3743,
       "sha256": "788f3a3a7f371dc6a143196595d8ad9aa68ccf6c31caeb5886a419ee9ec14c06"
@@ -592,8 +646,8 @@
     },
     {
       "path": "docs/FAIR_HOUSE_EDGE.md",
-      "bytes": 21555,
-      "sha256": "12f30d546c04f73fff7cf4cef4d6ea5f01b85035b7f385e26f2aa47bdc2ccda3"
+      "bytes": 22913,
+      "sha256": "b2931eb7ce96ded4aeb17d5484570f280c48a35baa12e6abc9ecb8923466f145"
     },
     {
       "path": "docs/FAIR_KNIFE_SKILL_RING_FIX_2026-10-05.md",
@@ -702,8 +756,8 @@
     },
     {
       "path": "docs/LIVE_BASE.md",
-      "bytes": 7570,
-      "sha256": "24f68e67f46f9f5aaa75b5f565cd9ea05644a0c0395a02500144698f5234e83e"
+      "bytes": 7656,
+      "sha256": "a550ef8ac5143d182a8169905ec12d07bb2aee0d457aa98f0f13f69ed267143e"
     },
     {
       "path": "docs/LIVE_CONNECTION_2026-10-05.md",
@@ -1446,6 +1500,11 @@
       "sha256": "4fd9c6a5602970bb3780601e49fc8fd8cf9241af8d9e849b69a159dbb9de92b7"
     },
     {
+      "path": "docs/qa/black-market-high-stakes-2026-10-11.md",
+      "bytes": 2400,
+      "sha256": "36b9f59e3855592c500e9d81eed6995c4a49ce2814494fbf5e6f3787938debc5"
+    },
+    {
       "path": "docs/qa/dual-interface-2026-10-11.md",
       "bytes": 6118,
       "sha256": "d091e5f6d6186cc76a6853e4e0fe98a1e84d2700ae69f611b06ef0a0aa32a8df"
@@ -1456,9 +1515,14 @@
       "sha256": "5a788f40b0afe9df4cb9684359a189b6954d377a2117945de5009f98fa147adb"
     },
     {
+      "path": "docs/qa/gentle-losses-2026-10-11.md",
+      "bytes": 6245,
+      "sha256": "926f2b409d170a2f35c0a236a3217d05473d3fb4970f6abfc57ab4ce7f3722ad"
+    },
+    {
       "path": "docs/qa/hotfix-2.0.1-2026-10-11.md",
-      "bytes": 5949,
-      "sha256": "a082b86b5cb7bf7023b3008fc9079aa20c1fe7ab090959a08f18dc378b328b42"
+      "bytes": 6109,
+      "sha256": "fca4253ce8828e3caa4784c7181e3c58d9fe12773ef876323db2e289e6264a86"
     },
     {
       "path": "docs/qa/isometric-feature-parity.json",
@@ -1781,6 +1845,11 @@
       "sha256": "02a28499d6eddc7789b03fa80a4b46217f2ab6bbb25abf8e772625532aa4a9a8"
     },
     {
+      "path": "docs/superpowers/plans/2026-10-11-gentle-losses.md",
+      "bytes": 3321,
+      "sha256": "204fcfa114805c24587e3c100727f70b05075014b41b6c18b9edfe3a845e11db"
+    },
+    {
       "path": "docs/superpowers/plans/2026-10-11-living-districts-3d-treasure.md",
       "bytes": 8721,
       "sha256": "b57bc0cfffc0e5bcdb2c75632fa72f6665c675181f753bddaf8396e4de6c63bd"
@@ -2008,12 +2077,12 @@
     {
       "path": "game/__init__.py",
       "bytes": 105,
-      "sha256": "216009482c41a2c97eef4c01d641c1065f3e2d33aa417e9f37c281b23fa1d415"
+      "sha256": "fa67f37b300fc8390cca5c0a0c1aacf92e03794368afc4f044deb6a3a1c6f271"
     },
     {
       "path": "game/abandon.py",
-      "bytes": 22859,
-      "sha256": "354d17a2d79edd14d632da4e0b3b09afa1a5648a32b9de82a4ab5c5d86c364ba"
+      "bytes": 22923,
+      "sha256": "2d459d0cf1c27f11be662397bc8521a945f8917599ef5c5ef628bc1cd37e9709"
     },
     {
       "path": "game/abroad.py",
@@ -2157,8 +2226,8 @@
     },
     {
       "path": "game/boba.py",
-      "bytes": 140369,
-      "sha256": "5fd6ca56b62829901c8ef530bab669c2aaa21f9789b05fa101859819f93da9d0"
+      "bytes": 140445,
+      "sha256": "ddaae0980fb689d0597656169a7ac00f3e02e2d5ae12c99d8d6ec4a4ae37061e"
     },
     {
       "path": "game/build_id.py",
@@ -2207,8 +2276,8 @@
     },
     {
       "path": "game/careers/cafe_bakery.py",
-      "bytes": 188883,
-      "sha256": "d0615d4bbc6fe94047ca651498aacfea1c8b36a4039872d6665799a627e1df8b"
+      "bytes": 188966,
+      "sha256": "d7fdadcc16d9508cfec0666c2437a922e81b42cfdcc4dfd349aa07a0688bb13f"
     },
     {
       "path": "game/careers/clothing.py",
@@ -2227,8 +2296,8 @@
     },
     {
       "path": "game/careers/delivery.py",
-      "bytes": 151582,
-      "sha256": "9cf9d597fd1e5970caf3f7b7bc9009384d02c0d68b3a67a0aed7b684d6a64aa8"
+      "bytes": 151775,
+      "sha256": "586742a14b3b120d4af53ff4349c5d4327079722c969a0f51434d6a2cb7f709a"
     },
     {
       "path": "game/careers/drain.py",
@@ -2282,8 +2351,8 @@
     },
     {
       "path": "game/careers/grocery.py",
-      "bytes": 224509,
-      "sha256": "50b27b115feedad3fd36bed0bfb90c2245553d9fea8b081e988f55f551fcc1c7"
+      "bytes": 224795,
+      "sha256": "60772c7e0b60b94fbe48dbb8b1a84fe90d1d14b73249a3cc8f562b269cff0763"
     },
     {
       "path": "game/careers/group_accounting.py",
@@ -2302,8 +2371,8 @@
     },
     {
       "path": "game/careers/homestay.py",
-      "bytes": 248876,
-      "sha256": "ce6e2ca29d84ab9a1519b6d8d8a9c3810513efc83218f7ff7f54ec5bfd2b0aab"
+      "bytes": 248999,
+      "sha256": "9e1b9f7ed18681694b5928339995a63e205284d29c8b4fbedb8132e7fdfa1de8"
     },
     {
       "path": "game/careers/hr_admin.py",
@@ -2322,8 +2391,8 @@
     },
     {
       "path": "game/careers/kit.py",
-      "bytes": 29039,
-      "sha256": "ba9f86a0a7a00fd18917535b9dee92b9f34cdf5179092a52a5f03104351bf709"
+      "bytes": 30511,
+      "sha256": "b3b1fec51e8744a6919661b4227528f5c166771e7de8ff9016fd8881a29cc84b"
     },
     {
       "path": "game/careers/library.py",
@@ -2387,8 +2456,8 @@
     },
     {
       "path": "game/careers/office.py",
-      "bytes": 14907,
-      "sha256": "8df63f484110f132348b6e90b8fe928fcf3180941d253651537752733e85da52"
+      "bytes": 14925,
+      "sha256": "4b3642a7445b79e99c7324233bc422da7824617aecf2db5c9bd11bba59ddc89f"
     },
     {
       "path": "game/careers/office_work.py",
@@ -2417,8 +2486,8 @@
     },
     {
       "path": "game/careers/pet_care.py",
-      "bytes": 214651,
-      "sha256": "8b993b15a8075f4c5fde015f0a703980d7f74614743878ecb822d81bd52dd3df"
+      "bytes": 214740,
+      "sha256": "0d36cdceeea36ea1dec4c8716a0450a68f06b7282747b8aa5b3550c51e734d6a"
     },
     {
       "path": "game/careers/pet_shop.py",
@@ -2467,8 +2536,8 @@
     },
     {
       "path": "game/careers/repair.py",
-      "bytes": 196511,
-      "sha256": "d65404cb90aa19dc8aa041c5dae4ae15449a774a5de4ba426d6d7299597bbb71"
+      "bytes": 196590,
+      "sha256": "a7e750b87e39f2395440af9bbf638ad0773b8b6ef74166f7082da8824b50ceb0"
     },
     {
       "path": "game/careers/rescue.py",
@@ -2482,13 +2551,13 @@
     },
     {
       "path": "game/careers/restaurant.py",
-      "bytes": 132081,
-      "sha256": "a3fded3480df3802b1228e7f37ebaaa016bf693f11d37841295fe4e8ab83f027"
+      "bytes": 132100,
+      "sha256": "d265f0a16a86f9d19d0b7798c62797fa67c850c060595c468446fec9ff0fec87"
     },
     {
       "path": "game/careers/salon.py",
-      "bytes": 204022,
-      "sha256": "08f8f724722370cf35d4def45734859d4f69eb5393ffb0545cbfe599c073bb66"
+      "bytes": 204149,
+      "sha256": "3dacbf7cd53638f5891173e2dcb38b7ff73ea3cca2622f78cc4f5eb4080247a3"
     },
     {
       "path": "game/careers/secretary.py",
@@ -2512,8 +2581,8 @@
     },
     {
       "path": "game/careers/tra_da.py",
-      "bytes": 118846,
-      "sha256": "4b069ac081dc30d71ad658906800f1c07eeae55eba211b1a12e39a7fd8f029a3"
+      "bytes": 118928,
+      "sha256": "9211a5affbab37214f10b47885ebdb13b565147d887a470c7abc72456a4141ca"
     },
     {
       "path": "game/careers/zpop.py",
@@ -2632,8 +2701,8 @@
     },
     {
       "path": "game/desk.py",
-      "bytes": 40076,
-      "sha256": "1dc49a8d2d0f87514bbd23c8cde7c9b0d549da30aed95b55032f26a0cfb30506"
+      "bytes": 40162,
+      "sha256": "bf87749de92ca3d7bb4618496a64c3238f64f73eebc7cf56e4d2af5e350e2e7f"
     },
     {
       "path": "game/desk_can.py",
@@ -2702,13 +2771,13 @@
     },
     {
       "path": "game/fair.py",
-      "bytes": 117913,
-      "sha256": "795169aa3d6eea514ce2f7096638d5693c43069bcf165cc8ac0cd02cf84f0f17"
+      "bytes": 119274,
+      "sha256": "9f916d2375713fcc9818baa643c7f56786f0a273eecfb45c618be16510de217d"
     },
     {
       "path": "game/fair_bm.py",
-      "bytes": 9357,
-      "sha256": "2278683d6b57a397fe891704a1fa211744d0dfeb9b74eb60a716003edd4eaa15"
+      "bytes": 9428,
+      "sha256": "28154215c818b12f0807141f9599031389e71fc1eaf6cbdd0abf82b70f99730b"
     },
     {
       "path": "game/fair_board.py",
@@ -2732,13 +2801,13 @@
     },
     {
       "path": "game/fair_golden_days.py",
-      "bytes": 4043,
-      "sha256": "eb976d14195576a1d1674d7476960ef1b26a2db970b9b7e8616d079a98f88d34"
+      "bytes": 4251,
+      "sha256": "61ce18f69a20aaf315cb65f4cdd64e9b0000f0d52684584278dcef55791b177c"
     },
     {
       "path": "game/fair_hai.py",
-      "bytes": 5808,
-      "sha256": "09b19c96f84090d559f7b640801da327f4b8b618f2b15cd9c15e5bf0089ff2fb"
+      "bytes": 4627,
+      "sha256": "f3105410a9006ce738bccdb00e972209e51e8d342ed021a4af56570d706eba57"
     },
     {
       "path": "game/fair_knife.py",
@@ -2837,8 +2906,8 @@
     },
     {
       "path": "game/happenings.py",
-      "bytes": 36148,
-      "sha256": "6c083e4a735345af11bfc155914566d2821a7f48228e091ea3819b3dd6379429"
+      "bytes": 35812,
+      "sha256": "26b3f44d7196f0c480b421404e66192a548647227c7755a9d0be854415fae6af"
     },
     {
       "path": "game/history_content.py",
@@ -2882,8 +2951,8 @@
     },
     {
       "path": "game/incidents.py",
-      "bytes": 27265,
-      "sha256": "efde91b7521d4b66286956681272268d12ec3e22fb2fb6c2c49631d4a7aee872"
+      "bytes": 32416,
+      "sha256": "201895bbdcf6cd69691e4420b5ff568212f967fe6be064364a48fc20a12dbeae"
     },
     {
       "path": "game/income_gear.py",
@@ -2952,8 +3021,8 @@
     },
     {
       "path": "game/life.py",
-      "bytes": 49151,
-      "sha256": "5dc66b6b39580dcb19f7facb93cfa7bc777c72329b055dae4e0ae7dc7a7d6dae"
+      "bytes": 49291,
+      "sha256": "e81da95ebb01661d21e0ed80bd218e23c83f872e3bb64bb4e9a99e1b1c975267"
     },
     {
       "path": "game/life_content.py",
@@ -2974,6 +3043,11 @@
       "path": "game/live_effects.py",
       "bytes": 13599,
       "sha256": "2bd9d88eb250d045a6fb3656965f64edb9e5541bc1a1c8d974cb511be5a85c23"
+    },
+    {
+      "path": "game/loss_limits.py",
+      "bytes": 588,
+      "sha256": "f55a305cf3f32c8a5688cde910819a1457538beeb984a2f3db030541fd79a779"
     },
     {
       "path": "game/lux.py",
@@ -3002,8 +3076,8 @@
     },
     {
       "path": "game/mishap.py",
-      "bytes": 6758,
-      "sha256": "4232bca0024cf883b3be629d78982a153ea716502f1e16ebff8f61030fb96bc8"
+      "bytes": 2648,
+      "sha256": "659c778031dc13fd68a7d8d2103e9201e275b0005aae4ab69538acb7b6055733"
     },
     {
       "path": "game/mistake_lines.py",
@@ -3022,8 +3096,8 @@
     },
     {
       "path": "game/operations.py",
-      "bytes": 75863,
-      "sha256": "0a584be9ac9424524c368cbe51b97b514e19da98205b9c338d46e2c7c9768988"
+      "bytes": 77197,
+      "sha256": "32d315d6025589bafe766f62672605e99c942f4734bc6230dc6394efb97edbd6"
     },
     {
       "path": "game/org.py",
@@ -3127,13 +3201,13 @@
     },
     {
       "path": "game/quay_business.py",
-      "bytes": 30746,
-      "sha256": "e4ba4feff58af10cd82e3e636474abe9ca2faf601e40210fc583049440bfdedd"
+      "bytes": 31125,
+      "sha256": "d895b89c70d46bdb77713ba01f190a2a8cac968ba27e3d16b63382fef60c1ae6"
     },
     {
       "path": "game/quay_economy.py",
-      "bytes": 13419,
-      "sha256": "922494b95e87bf8c646826738a1d52c178e36c2f1b3469c67f63d865cd0c5f2b"
+      "bytes": 13460,
+      "sha256": "b2168cd051853e94029b45d102adea3474e9d1293965c6209d7dfab56fc92d77"
     },
     {
       "path": "game/quay_events.py",
@@ -3152,8 +3226,8 @@
     },
     {
       "path": "game/quay_self.py",
-      "bytes": 54620,
-      "sha256": "561e34960ed6cdf74cecec05c8e15d3eb5d48c0e9d9dc34f727e3b8d148032d5"
+      "bytes": 56808,
+      "sha256": "42935ac1c95ca07d0ad65c4fb9415abf7209a5e3038c52697cd2cd54ceaab32e"
     },
     {
       "path": "game/realtime_market.py",
@@ -3202,8 +3276,8 @@
     },
     {
       "path": "game/rui.py",
-      "bytes": 78916,
-      "sha256": "219d02b065dfb0cd0b8f5f5d1210bd064e75c135fd4bd32e86235fddb9463891"
+      "bytes": 79591,
+      "sha256": "987e81022372bdb1015300d28eff52c827b0bcd9bdcbea8691f1871aba788556"
     },
     {
       "path": "game/save_guard.py",
@@ -3217,8 +3291,8 @@
     },
     {
       "path": "game/shop_events.py",
-      "bytes": 22920,
-      "sha256": "bbd4ec2caf845162a305446c7e5bc8b9bd038acbd63107d8e7bfe19187545a54"
+      "bytes": 23642,
+      "sha256": "fc69baba8366d7e9b6c9ced79d415ad9fcedd9b8a509471db715d3442a2aea56"
     },
     {
       "path": "game/short_pay.py",
@@ -3232,8 +3306,8 @@
     },
     {
       "path": "game/situations.py",
-      "bytes": 8627,
-      "sha256": "facda2267a95dbf1d28e60ef6c8ba89b1ebbaed6a48d6e8ebcfe4c94ac23fbae"
+      "bytes": 9346,
+      "sha256": "226e5322dea4ae2f5370cff04b78b74d32b846bdd4e006baf96fdbd1a44d9379"
     },
     {
       "path": "game/social.py",
@@ -3638,12 +3712,12 @@
     {
       "path": "package-lock.json",
       "bytes": 35890,
-      "sha256": "706f4da86aa375eb609975a08da7f4f48fffee1afef44ff2a2ebd46aa5cd8ffa"
+      "sha256": "d0d04741708bf2d26a698f6edd9737ae54ca01f813e24cee52ffe6812613ee50"
     },
     {
       "path": "package.json",
       "bytes": 3745,
-      "sha256": "e467e79a06032853299a603a03555cd4e5d4fbf1aa170a3a5cd1a6c8a186e7c4"
+      "sha256": "370545eb7b499afe0c9ddde04d296a4cb4e3237d8fcea373c523aae0d9b42682"
     },
     {
       "path": "public/admin.html",
@@ -5752,8 +5826,8 @@
     },
     {
       "path": "public/js/operations-ui.js",
-      "bytes": 25440,
-      "sha256": "c75d233a099990606b35bc9943fc1cc147a463a2123cd76948672d52341cedaf"
+      "bytes": 25531,
+      "sha256": "ff44686917f4ea9b60bc0f65b23faea32875feee209d0a21fe625072e05c0823"
     },
     {
       "path": "public/js/pixel/art.js",
@@ -6342,8 +6416,8 @@
     },
     {
       "path": "public/js/v4/fair-knife.js",
-      "bytes": 20387,
-      "sha256": "69ac76eedbb0a341b9c6ae88481bb20cc74694b6d55f8555650c2eab154fadd3"
+      "bytes": 20579,
+      "sha256": "664ccc0171cd3fe6a7ad33250fc9bb7dd0e20c0c4e69d98bd1f27576690f2101"
     },
     {
       "path": "public/js/v4/fair-loto.js",
@@ -6362,8 +6436,8 @@
     },
     {
       "path": "public/js/v4/fair.js",
-      "bytes": 94708,
-      "sha256": "f61e37a4465e771ff59a2a90839892355f08e22c1316e92d705b23fdef227444"
+      "bytes": 94699,
+      "sha256": "2f0358ccf90d98eae515c4ef2632534fcf5b7b2319d42e9328488d0a7e71ef5b"
     },
     {
       "path": "public/js/v4/family.js",
@@ -6682,8 +6756,8 @@
     },
     {
       "path": "public/js/v4/quay.js",
-      "bytes": 79402,
-      "sha256": "05b9788ad5e3c7f5cc057446e965b23c592149a544ae1e68d949f553c0ee128f"
+      "bytes": 79428,
+      "sha256": "95e2663aab44b1f470710ada3ffb3f78831267dabe4538d69c129321e26c0cd2"
     },
     {
       "path": "public/js/v4/reno.js",
@@ -6712,8 +6786,8 @@
     },
     {
       "path": "public/js/v4/rui.js",
-      "bytes": 17071,
-      "sha256": "eff660cc1247578ab9d581cde44c90c45cf9dfc18a4e9775b7bcd6befe17bbfc"
+      "bytes": 17130,
+      "sha256": "adc501e2280bca323a4c4b9db9bf891c19305bb9ca66e2f739f72369c30eee05"
     },
     {
       "path": "public/js/v4/scene-events.js",
@@ -6787,8 +6861,8 @@
     },
     {
       "path": "public/js/v4/traffic.js",
-      "bytes": 2865,
-      "sha256": "5db9f5aa941aa94cfc44fb2544bc7949b1eba8da6412ae80516bdeefbed0295b"
+      "bytes": 2948,
+      "sha256": "850a2a500ddf15042a5d9077a63e880c361d7a746706fb427e65e316f0bf1765"
     },
     {
       "path": "public/js/v4/views.js",
@@ -7632,8 +7706,8 @@
     },
     {
       "path": "scripts/sim_fair_odds.py",
-      "bytes": 10511,
-      "sha256": "21d078f412fa6b87db55b4f6808caaa1d67dd23d1d0442470088136eabeff728"
+      "bytes": 10664,
+      "sha256": "94558f7293deb195cdb1256a9130ba1204fb60fee992fc33508e0992f2c64d05"
     },
     {
       "path": "scripts/sim_lux.py",
@@ -7807,8 +7881,8 @@
     },
     {
       "path": "tests/bank_hack_ui.mjs",
-      "bytes": 2006,
-      "sha256": "791665725bb9cdedaf8ded840fe60916d006a76d1996fe260c59386e2006ad38"
+      "bytes": 2007,
+      "sha256": "ef790d0eb268062058c1aba438d5dbd3dcd53bd546dcd218e858bd5547505032"
     },
     {
       "path": "tests/bank_xfer_unlimited.mjs",
@@ -8031,6 +8105,11 @@
       "sha256": "cfc1f10f1d8f41e0f80330e09e93ffdba16c891859ac9d0f4b62e69f097a94c9"
     },
     {
+      "path": "tests/fair_gentle_losses.mjs",
+      "bytes": 2008,
+      "sha256": "af6b1ed4d78b49314945f6096fff2f5e97adae1e4b2d1f13fdf6825615416a38"
+    },
+    {
       "path": "tests/fair_knife_geometry.mjs",
       "bytes": 5737,
       "sha256": "48a83ae5f888245266290c32dc9c7e36e47d7202a3db1f95f0e89c6405afa641"
@@ -8097,8 +8176,8 @@
     },
     {
       "path": "tests/fair_shell_render.mjs",
-      "bytes": 2051,
-      "sha256": "39069a0ad17a2d44efcb6fe432e701e17747021def1872767879ebfd40d7ec5e"
+      "bytes": 2236,
+      "sha256": "6d0edee74318cc801d976479097bca4bca7025dd0b6fbb2f8ac3d84cf458b662"
     },
     {
       "path": "tests/fair_stakes.mjs",
@@ -8797,8 +8876,8 @@
     },
     {
       "path": "tests/test_abandon.py",
-      "bytes": 17793,
-      "sha256": "b2389972e8cd9a345525a2bf2dbdc37379b44fcfc3493d667d85b9776b06846e"
+      "bytes": 18013,
+      "sha256": "9af0ffc309924942de62ae5081abcd16479883ffc5ab14e2f7756c60855c282f"
     },
     {
       "path": "tests/test_abroad.py",
@@ -8957,8 +9036,8 @@
     },
     {
       "path": "tests/test_bank_hack.py",
-      "bytes": 11449,
-      "sha256": "991b183652c60baac563034a602f5baab7a2a8f787ebbc00c817c086a217b563"
+      "bytes": 11540,
+      "sha256": "38b575d4cbd3225254aea908c0464f9bde89e2a653e3e24e1b94160f6a98c23f"
     },
     {
       "path": "tests/test_bank_speaker.py",
@@ -8972,8 +9051,8 @@
     },
     {
       "path": "tests/test_black_market.py",
-      "bytes": 25020,
-      "sha256": "17cdae1e3048ee6c255eac9d8828f9990e40513f2962613f50fb84aa366f6cca"
+      "bytes": 25013,
+      "sha256": "3efa0265a26c336ba689b801cf5599863ce0e4717cfb67ef947d149ae489dfaa"
     },
     {
       "path": "tests/test_board.py",
@@ -9047,8 +9126,8 @@
     },
     {
       "path": "tests/test_career_corp_accounting.py",
-      "bytes": 72709,
-      "sha256": "26d14dc22887d08544920e1386884da448acb26f6b6279fb7634bf2cdfe5931a"
+      "bytes": 72787,
+      "sha256": "e64926b2224caebb92b45d9c0a481d48923480832e4954503b4bc100e6bb3acd"
     },
     {
       "path": "tests/test_career_delivery.py",
@@ -9102,13 +9181,13 @@
     },
     {
       "path": "tests/test_career_grocery.py",
-      "bytes": 115863,
-      "sha256": "0d3d5a19b6ed798aca0d90bb04207c7cff281e813193cf0871657115dbdeb15e"
+      "bytes": 115957,
+      "sha256": "3dacb32baaa2f1ad22317cf1750ed1a1843fce2fcd265f031a7c69bcf7e5e505"
     },
     {
       "path": "tests/test_career_group_accounting.py",
-      "bytes": 54781,
-      "sha256": "84545bcbcef770e1c5abc12ae0bd893a1b9c3385cd0230396d05dbfa70cababa"
+      "bytes": 55141,
+      "sha256": "a092a5b2e6e1a08d41cde389644fda64730b063febd67cbbb21d1722fa307957"
     },
     {
       "path": "tests/test_career_homemaker.py",
@@ -9117,8 +9196,8 @@
     },
     {
       "path": "tests/test_career_homestay.py",
-      "bytes": 109904,
-      "sha256": "0b76f0fe67a3b13ca9d08e84097013f34d4827bd60c6f1866c97556f3dad2add"
+      "bytes": 110011,
+      "sha256": "7c8d495dc68cba0912081ea00b8b9679f6164d3330645370b105137af843b04b"
     },
     {
       "path": "tests/test_career_hr_admin.py",
@@ -9182,8 +9261,8 @@
     },
     {
       "path": "tests/test_career_pet_care.py",
-      "bytes": 92024,
-      "sha256": "896f8ff19b70e6e475a4eb7ed88c7b0340ab8331e89a38c5a70020c922d9347a"
+      "bytes": 92131,
+      "sha256": "5664f319286c0cbe7068952749168ad8e180cb62c793fc5a1724bc24f4f8c2ab"
     },
     {
       "path": "tests/test_career_pet_shop.py",
@@ -9232,8 +9311,8 @@
     },
     {
       "path": "tests/test_career_salon.py",
-      "bytes": 86050,
-      "sha256": "23c7046e39189448473a283e29d5bfec8fb5eb465410a0ee71ca188f929a49f5"
+      "bytes": 86157,
+      "sha256": "73cb1b1b09c84bce88a0b9ae2fb847f07f95e29e5642a5e2046f472dd566dbf4"
     },
     {
       "path": "tests/test_career_secretary.py",
@@ -9247,13 +9326,13 @@
     },
     {
       "path": "tests/test_career_tax_payroll.py",
-      "bytes": 59641,
-      "sha256": "71c2b2e80962b17f56399c230324ff15806184ae1a14c371710b2932e6c3a095"
+      "bytes": 59714,
+      "sha256": "ec8ed4d55d81dd7cf4eb57a2f4bb3b1dda0c1058aaab00cd0b22fea94e1ee716"
     },
     {
       "path": "tests/test_career_tra_da.py",
-      "bytes": 35563,
-      "sha256": "be9432341e5cee3c8869ae0dd1cbfb1336a5059af24a6c4009e5f152f8205194"
+      "bytes": 35645,
+      "sha256": "9889972f328335067feb82709cd036e5e4f6537a1b9eb78e7b1ca8e437d038e9"
     },
     {
       "path": "tests/test_career_words.py",
@@ -9437,8 +9516,8 @@
     },
     {
       "path": "tests/test_desk.py",
-      "bytes": 30347,
-      "sha256": "6e7e594d2d19fb6b730b63996926e8363af8433a60ba0b427e26688a5f0fafd7"
+      "bytes": 30474,
+      "sha256": "243e9befdd6ec07391ad48bff10109fa91f55eac94813fade5f0ce9424f6edc4"
     },
     {
       "path": "tests/test_desk_care.py",
@@ -9462,8 +9541,8 @@
     },
     {
       "path": "tests/test_economy_pass2.py",
-      "bytes": 8503,
-      "sha256": "d7f5491556cfd2e90bd409386dc717d825c8290345b69b6292913f3cb85c8edd"
+      "bytes": 8498,
+      "sha256": "5364a7ce1bea0dcce50a84dadbe4717850a64a9b02102092fcad854a8124c2f9"
     },
     {
       "path": "tests/test_employment_interview.py",
@@ -9512,13 +9591,13 @@
     },
     {
       "path": "tests/test_fair.py",
-      "bytes": 84904,
-      "sha256": "cdc93f6ca6b4ed9de75ece82c19c234d259350415314ae89f7085e8074561261"
+      "bytes": 84842,
+      "sha256": "8988c9300f669994ea9dc3fc2a86228d1cee027ad2c474233add5ec7fba5dfe7"
     },
     {
       "path": "tests/test_fair_asset_audit.py",
-      "bytes": 13000,
-      "sha256": "a111bb7e6675f5c7dbee43c19f2fda1298d609a44ed1a3d606cce92f6db84cb2"
+      "bytes": 12779,
+      "sha256": "b28b07920dddd73621315d672c93d6f929944700e4c197a13de569edfbf4eaf9"
     },
     {
       "path": "tests/test_fair_bc_honest.py",
@@ -9551,19 +9630,29 @@
       "sha256": "6ec548e40d1ac503fff5aa11dbdbc8e4c4b03ffa2bba67a15e652e2f00dcc688"
     },
     {
+      "path": "tests/test_fair_gentle_losses.py",
+      "bytes": 11960,
+      "sha256": "95851749f74506a5cce6b34d6530c0f7b0927402267a6b10cc89935e4cd0dbfe"
+    },
+    {
       "path": "tests/test_fair_golden_days.py",
       "bytes": 12381,
       "sha256": "b60c0abb3fa192c5c1029322557c742c801fe329e786e42d6df39d876aac0a49"
     },
     {
       "path": "tests/test_fair_hai_police.py",
-      "bytes": 5669,
-      "sha256": "46259c1b9c99b3ca38250298017d9adf65e3c2fb25521083b4e233e37c3ce0cb"
+      "bytes": 5650,
+      "sha256": "6e19f9dd48f9840b8f8b1facd31c9f3e69b90660ce165b0db2bb48d424045fd0"
+    },
+    {
+      "path": "tests/test_fair_high_stakes.py",
+      "bytes": 2365,
+      "sha256": "eee6d7a5d6cc270f7a4109f6effbf7be56a32f1e9931ee246582487ed47e9b91"
     },
     {
       "path": "tests/test_fair_house_edge.py",
-      "bytes": 12709,
-      "sha256": "0f4e4391c903f0fcaffc62cdc93c4667214dbf9a5aeb687f1abb100321026e64"
+      "bytes": 13091,
+      "sha256": "34a0bfb4911cc6bc7ef5e4c37338ba997d1c3114ba60f81e1b5b22498efa961e"
     },
     {
       "path": "tests/test_fair_knife.py",
@@ -9632,13 +9721,13 @@
     },
     {
       "path": "tests/test_fair_watch.py",
-      "bytes": 21697,
-      "sha256": "55adb85011b5b91073863932e1a2ad35a22af906afeb14d1ac33588d5a9c0aaf"
+      "bytes": 21714,
+      "sha256": "fad2627232a8377b55c2ccf2330cb323da32786e84b802dbfb91f6ee79a7c2d7"
     },
     {
       "path": "tests/test_fair_wealth_raid.py",
-      "bytes": 6083,
-      "sha256": "5a71adf9a61839b02a9e5d4c64942397d0e8b98708ead83a0f764324596f0234"
+      "bytes": 6068,
+      "sha256": "e3ad91606751d157653ff2d429f0ae57e9fec778171f333afe40479da58f87a4"
     },
     {
       "path": "tests/test_family.py",
@@ -9746,6 +9835,16 @@
       "sha256": "6ccdc5f2cfa60b1e951203ca6c381dba618419dbdd82aea2ae1592b403aa2be7"
     },
     {
+      "path": "tests/test_gentle_losses.py",
+      "bytes": 6444,
+      "sha256": "5094ae7719e018f83cd2c7c8dca529f3db3baf4bd1a3ba795f4b9a4fa2cf2cf0"
+    },
+    {
+      "path": "tests/test_gentle_remaining_losses.py",
+      "bytes": 18686,
+      "sha256": "2e4ce1579f76571e41da54c367e517362b9c50716267b7783241338e35b05d0a"
+    },
+    {
       "path": "tests/test_guide_prompt.py",
       "bytes": 1513,
       "sha256": "4e4328fc1140f11c94f10ecc87c679a7bc05aeafcb89bc712dd226cd2177f623"
@@ -9762,8 +9861,8 @@
     },
     {
       "path": "tests/test_happenings.py",
-      "bytes": 21126,
-      "sha256": "cdab62b9199a6bd654582ab725035dc00d7c4ad1fd4f19773321c98fbb72984d"
+      "bytes": 21177,
+      "sha256": "7e6a0e709122e585d76113bdb4488219bc830dd9faee61add49e539f6cf4d14e"
     },
     {
       "path": "tests/test_history_course.py",
@@ -9857,13 +9956,13 @@
     },
     {
       "path": "tests/test_incidents.py",
-      "bytes": 24590,
-      "sha256": "7fc52d45e396fc96b7fd4b7de184f90e1a2737cdd28f5a0ed9aeb226aabe4703"
+      "bytes": 24624,
+      "sha256": "b341ca91a683afff2bc234854a729b5105a6817d935f0a61987f87463d5679f3"
     },
     {
       "path": "tests/test_incidents_scams.py",
-      "bytes": 13037,
-      "sha256": "43cfe46d38331323f265a9b08b12f88c5dc2ce324354563f936eb2ac9305e7a9"
+      "bytes": 13401,
+      "sha256": "df1d15e0d5ee8a13d2efdc64a79fb6e121680bfedbdb99561c1d7399bbd47c41"
     },
     {
       "path": "tests/test_income_gear.py",
@@ -9912,8 +10011,8 @@
     },
     {
       "path": "tests/test_jail.py",
-      "bytes": 44783,
-      "sha256": "cd31f7ae9b4dd7a21cdf05810dff6c15ab1e1e2c183c72d95c075fb2012d7c3e"
+      "bytes": 44790,
+      "sha256": "9e3b82994fe5bf44360f5fc6e218b7f413cfe05ef21d448cd7dc0eae7c9df755"
     },
     {
       "path": "tests/test_jail_games.py",
@@ -9982,8 +10081,13 @@
     },
     {
       "path": "tests/test_life.py",
-      "bytes": 17397,
-      "sha256": "2a958e63f8c861f2ec5a8f42a2eae2f24fdef35563ac0222b3a73e0e2358d153"
+      "bytes": 17398,
+      "sha256": "99647cff3be681b3eba5efaad8db77af8e87a2f046dfaf37129c42c05e3f04f9"
+    },
+    {
+      "path": "tests/test_life_gentle_losses.py",
+      "bytes": 1356,
+      "sha256": "52413eaf193cbe1fcdd253852b11e401e4a24766c5bafc286b41d6a6bc4ae72f"
     },
     {
       "path": "tests/test_life_heartbreak.py",
@@ -10217,8 +10321,8 @@
     },
     {
       "path": "tests/test_mishap.py",
-      "bytes": 9591,
-      "sha256": "7c7b754aef8f0bc68f95f1cb881db4f0a45c460e5f033150761adb05309f7761"
+      "bytes": 9451,
+      "sha256": "1242c30644966c01cbc6bf16520d8689052955b591c6f56fb3573202718d0193"
     },
     {
       "path": "tests/test_money_chip.py",
@@ -10287,8 +10391,8 @@
     },
     {
       "path": "tests/test_operations.py",
-      "bytes": 43574,
-      "sha256": "714b408cca251b0baa24152f9afeb1b9330048402ad88ece7e82bd948d0caa1a"
+      "bytes": 43646,
+      "sha256": "f8a544666e1fd490d06549e6ccd6d38ee1b27b2c9a063efde91cf54ec69fcd71"
     },
     {
       "path": "tests/test_org_police.py",
@@ -10462,13 +10566,13 @@
     },
     {
       "path": "tests/test_quay_business.py",
-      "bytes": 15359,
-      "sha256": "5408c2fe1b6947980ad56fce8f446fa779a03bd7e76113cb881039264874ce96"
+      "bytes": 15352,
+      "sha256": "ae0ec4303ccf1225b30f2a4db87ad4fae9ca188ffb00bf2e5c7f0b3b98e57b7f"
     },
     {
       "path": "tests/test_quay_economy.py",
-      "bytes": 8009,
-      "sha256": "80ae69d0efe1432d92d1cc845e86e1a31a807b50a07dced6cc4e7ce44af77cc7"
+      "bytes": 8029,
+      "sha256": "477ccd8e7c7e2f06238efe5f2c203374b4f50b71e5d556ed873c181782fa398a"
     },
     {
       "path": "tests/test_quay_fb295.py",
@@ -10587,8 +10691,8 @@
     },
     {
       "path": "tests/test_rui.py",
-      "bytes": 27444,
-      "sha256": "d6cf51dcfc024392a092f8eab707f4814b4910fa300070029cf4812c8dd31f50"
+      "bytes": 27420,
+      "sha256": "0255dd2a6cd73e74b8a0ac8b83ba6d0e76e4d3d545f04cf954f8e001a4bb13a8"
     },
     {
       "path": "tests/test_runtime_native_pg.py",
@@ -10627,8 +10731,8 @@
     },
     {
       "path": "tests/test_security_percent.py",
-      "bytes": 6504,
-      "sha256": "765085364c65e85d13f5759c91887f60c524a6fedc93e1d4921307739954fc5f"
+      "bytes": 6494,
+      "sha256": "5bc764c13435952bc393d4faece2ea0ddbad4cd65fd49901d26be924d14cf09c"
     },
     {
       "path": "tests/test_select_all.py",
@@ -10812,8 +10916,8 @@
     },
     {
       "path": "tests/test_traffic.py",
-      "bytes": 10063,
-      "sha256": "2e33175bf4eb3cd6b9d59189d9d8a39b00efb62881e588d9f0db5fc4bd1482ad"
+      "bytes": 10033,
+      "sha256": "ea3bf232438fc58674c0a62d718ed04975550d2d70f967c6130549f58f35823c"
     },
     {
       "path": "tests/test_tutorial_settings.py",
@@ -10917,13 +11021,13 @@
     },
     {
       "path": "tests/test_wealth_risk.py",
-      "bytes": 6801,
-      "sha256": "76f106d6b1eb9089b1a50c07c12ed303f35ca16b47141944b68a161b7c2e642f"
+      "bytes": 6773,
+      "sha256": "fcdc09009977f416f61224cee9cdac34f85e325f1c6d3469c69380c8fc92cd1f"
     },
     {
       "path": "tests/test_wealth_security.py",
-      "bytes": 6890,
-      "sha256": "87348209c757ef85e46e1d5b46aaa31fb3655763feaa8e507df67016cb960276"
+      "bytes": 6885,
+      "sha256": "42b783fc08b6dd861cb180d94143277de06c0d2a0a0b0c9399bb47783d3ff064"
     },
     {
       "path": "tests/test_webassets.py",
@@ -10987,8 +11091,8 @@
     },
     {
       "path": "tests/test_wp6_stalls_fair.py",
-      "bytes": 13641,
-      "sha256": "7c6509b5948d8ff0cb62331a2b7b47b9e68ec1b7dc284398b745c31c41639e2b"
+      "bytes": 13637,
+      "sha256": "685180cb7b329e2250c860d137f54bbc5b31a425ce4624efac921bde87a4da84"
     },
     {
       "path": "tests/test_x3_week.py",
