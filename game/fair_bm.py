@@ -35,13 +35,18 @@ from .loss_limits import bounded_loss
 
 KEY = 'fair_bm'
 BM_FEE = 0                     # legacy public field: entry is free
-FINE_PCT = 30                  # nominal request only, reduced by the shared compulsory-fine ceiling
-BM_ARREST_P = 0.0425           # 11/10: modestly below the former .05; never shown
+FINE_PCT = 30                  # owner 11/10 (later): caught, 30% of today's Chợ đen winnings (profit_fine)
+BM_ARREST_P = 0.02             # owner 11/10 (later) "tỷ lệ bị bắt giảm thấp"; never shown
 ARREST_FROM = 300000           # ... only while today's Chợ đen net is above this (owner 09/10 "hơn 300k"; never shown)
+# Owner 11/10 (later) "cho chơi thoải mái, cho ăn vui vẻ, nhưng nếu ăn lời nhiều thì có cơ chế xử lý, mọi trò": the
+# police's eye grows with today's Chợ đen winnings, on every paid round of every stall (profit_pct): (net above, %).
+PROFIT_CURVE = ((ARREST_FROM, 2), (1_000_000, 5), (3_000_000, 10), (10_000_000, 20))
 BIG_STAKE_FROM = 50000         # a round staking this much can be raided whatever the net (owner 09/10 "từ 50k trở lên")
-BIG_STAKE_STEP = 10000         # ... BIG_STAKE_PCT % at BIG_STAKE_FROM, BIG_STAKE_PCT % more each further step
-BIG_STAKE_PCT = 0.85           # 11/10: modestly below the former 1% per step; never shown
-ARREST_CAP = 0.25              # 11/10: whole-round cap reduced from .30; never shown
+# Owner 11/10 (later): "chơi từ 300k trở lên thì bị bắt nhiều", "cược nhiều thì tỷ lệ bị bắt cực cao" so that no stake
+# is worth it: (stake from, % at that stake, stake to, % reached there), linear in between; never shown.
+STAKE_CURVE = ((50_000, 2, 300_000, 10), (300_000, 30, 1_000_000, 50), (1_000_000, 50, 10_000_000, 80))
+STAKE_TOP_PCT = 90             # from the last step's end
+ARREST_CAP = 0.90              # whole-round cap; never shown
 JAIL_DAYS = 3                  # caught: jail days in the trại tạm giữ (owner 09/10 "chơi cờ bạc bị bắt 3 ngày")
 STATES = ('paid', 'robbed', 'ban')
 ROW_MAX = 10**7                # one Sổ ví row's |amount| (journey.validate)
@@ -51,6 +56,7 @@ GUARD = ('Đàn em chợ đen', '🕶️')
 NEED_IN = 'Hôm nay bạn bị đuổi khỏi chợ đen rồi, mai quay lại nhé.'
 BANNED = 'Hôm nay bạn bị đuổi khỏi chợ đen rồi, mai quay lại nhé.'
 SAY_ARREST = 'Tất cả đứng im! Ván này hủy, giữ lại tiền cược rồi nộp phạt nhẹ thôi nha!'
+SAY_SEIZE = 'Tất cả đứng im! Đánh bạc ăn tiền hả? Tiền cược tịch thu, nộp phạt đi!'
 SAY_CHEAT = 'Tay gì mà nhanh dữ vậy? Chơi kiểu này là gian rồi, về đồn làm việc!'
 
 _rng = random.SystemRandom()   # the arrests' own draws: the stalls' _rng (and the tests' scripted draws) stay as they were
@@ -63,20 +69,28 @@ def at_risk(f: dict | None) -> bool:
 
 
 def big_stake_pct(stake) -> float:
-    """The big stakes draw the police's eye (owner 09/10 "cược mà ai cược nhiều, từ 50k trở lên thì tăng tỷ lệ bị bắt,
-    mỗi 10k tăng 1% (từ mốc 50k)"): BIG_STAKE_PCT % for a round staking BIG_STAKE_FROM, BIG_STAKE_PCT % more for each
-    further BIG_STAKE_STEP xu (59,999 → .85, 60,000 → 1.7, 100,000 → 5.1 after the 11/10 reduction); nothing below
-    BIG_STAKE_FROM."""
+    """The big stakes draw the police's eye (STAKE_CURVE, owner 11/10): 0 below BIG_STAKE_FROM, 2 % → 10 % up to
+    300,000 xu, 30 % → 50 % up to 1,000,000, 50 % → 80 % up to 10,000,000, then STAKE_TOP_PCT."""
     if type(stake) is not int or stake < BIG_STAKE_FROM:
         return 0.0
-    return BIG_STAKE_PCT * (1 + (stake - BIG_STAKE_FROM) // BIG_STAKE_STEP)
+    for lo, lo_pct, hi, hi_pct in STAKE_CURVE:
+        if stake < hi:
+            return lo_pct + (hi_pct - lo_pct) * (stake - lo) / (hi - lo)
+    return float(STAKE_TOP_PCT)
+
+
+def profit_pct(f: dict | None) -> float:
+    """PROFIT_CURVE's % for today's Chợ đen net: 0 up to ARREST_FROM (at_risk), then 2 %, 5 % past 1M, 10 % past 3M,
+    20 % past 10M."""
+    if not at_risk(f):
+        return 0.0
+    return float(max(pct for lo, pct in PROFIT_CURVE if f['net'] > lo))
 
 
 def arrest_p(f: dict | None, stake) -> float:
-    """This paid round's raid chance: BM_ARREST_P while today's net is above ARREST_FROM (at_risk), plus the big
-    stake's big_stake_pct, never above ARREST_CAP. 0: the police are not even rolled for. Never shown."""
-    pct = big_stake_pct(stake)
-    p = pct / 100 + (BM_ARREST_P if at_risk(f) else 0)
+    """This paid round's raid chance: today's winnings' profit_pct plus the stake's big_stake_pct, never above
+    ARREST_CAP. 0: the police are not even rolled for. Never shown."""
+    p = (big_stake_pct(stake) + profit_pct(f)) / 100
     return min(ARREST_CAP, p) if p > 0 else 0.0
 
 
@@ -145,14 +159,77 @@ def apply(s: dict, name: str, p: dict, f: dict, t: float) -> dict:
     return dict(message='', effects=[], fair=dict(game='bm', bm=public(j, t), again=True))
 
 
-def arrest(j: dict, f: dict, t: float, game: str, stake: int, pay, *, charge: bool = True) -> dict:
-    """Cancel an unplayed round and charge only a bounded wallet fine, then keep the jail consequence.
-    `pay` remains for older callers; no stake is charged. Legacy seizures already paid the event's fine."""
+def total_money(j: dict) -> int:
+    """The wallet and the bank (current account, demand pot, term deposits): what a heavy fine counts."""
+    b = j.get('bank') if isinstance(j.get('bank'), dict) else None
+    bank = (max(0, b['balance']) + b['demand'] + sum(t['amount'] for t in b['terms'])) if b else 0
+    return max(0, j['wallet']) + bank
+
+
+def take_total(j: dict, f: dict, amount: int, label: str) -> int:
+    """Take `amount` xu from the wallet, then the bank's current account, its demand pot and its term deposits (closed
+    early, principal only, the rest back to the account); never below zero. A fair loss (net, stats.lost). Owner 11/10:
+    a Chợ đen arrest or a "thiết bị hỗ trợ" fine counts the bank too (no loss_limits ceiling). Returns what was taken."""
+    from . import bank as bk
+    from . import bank_content as K
+    taken = _take(j, f, min(int(amount), max(0, j['wallet'])), label)
+    left = int(amount) - taken
+    b = j.get('bank') if isinstance(j.get('bank'), dict) else None
+    if left > 0 and b is not None:
+        day = j['life_day']
+        x = min(left, max(0, b['balance']))
+        if x:
+            b['balance'] -= x
+            left -= x
+            bk._log(b, day, 'acc', label, -x)
+        x = min(left, b['demand'])
+        if x:
+            b['demand'] -= x
+            if not b['demand']:
+                b['pend'] = 0
+            left -= x
+            bk._log(b, day, 'sav', label + ' (sổ không kỳ hạn)', -x)
+        for t in sorted(list(b['terms']), key=lambda t: t['start'] + t['term']):
+            if left <= 0:
+                break
+            b['terms'].remove(t)   # closed early, principal only
+            x = min(left, t['amount'])
+            left -= x
+            rest = t['amount'] - x
+            bk._log(b, day, 'sav', f'{label}: tất toán sổ {K.TERMS[t["term"]].lower()}', -t['amount'])
+            if rest:
+                b['balance'] += rest
+                bk._log(b, day, 'acc', 'Phần còn lại của sổ bị tất toán', rest)
+        from_bank = int(amount) - taken - left
+        if from_bank:
+            f['net'] = max(-10**9, f['net'] - from_bank)
+            f['stats']['lost'] = min(10**9, f['stats']['lost'] + from_bank)
+            taken += from_bank
+    return taken
+
+
+def profit_fine(f: dict) -> int:
+    """FINE_PCT % of today's Chợ đen winnings (journey['fair'].net, 0 when the day is not won)."""
+    return max(0, f['net']) * FINE_PCT // 100
+
+
+def arrest(j: dict, f: dict, t: float, game: str, stake: int, pay, *, charge: bool = True, seize: bool = False) -> dict:
+    """The police caught this round, then JAIL_DAYS days in the trại tạm giữ. seize (owner 11/10, the Chợ đen's own
+    arrest roll): the round's stake is taken (`pay(-stake)`, the stall's Sổ ví row) and FINE_PCT % of today's
+    winnings from the wallet and the bank (take_total). Otherwise (the skill stalls' watch) the stake is not charged
+    and only a bounded wallet fine is."""
     from . import jail
-    due = bounded_loss(j['wallet'], max(0, j['wallet']) * FINE_PCT // 100, fine=True) if charge else 0
-    fine = _take(j, f, due, FINE_LABEL)
+    if seize:
+        due = profit_fine(f) if charge else 0
+        if stake:
+            pay(-stake)
+        fine = take_total(j, f, due, FINE_LABEL) if due else 0
+    else:
+        due = bounded_loss(j['wallet'], max(0, j['wallet']) * FINE_PCT // 100, fine=True) if charge else 0
+        fine = _take(j, f, due, FINE_LABEL)
     days = jail.arrest(j, 'bm', JAIL_DAYS, t)
-    return dict(game=game, stake=stake, fine=fine, wallet=j['wallet'], say=SAY_ARREST, jail=days, canceled=True)
+    return dict(game=game, stake=stake, fine=fine, wallet=j['wallet'], say=SAY_ARREST if not seize else SAY_SEIZE,
+                jail=days, canceled=not seize, seized=stake if seize else 0)
 
 
 def public(j: dict, t: float) -> dict:

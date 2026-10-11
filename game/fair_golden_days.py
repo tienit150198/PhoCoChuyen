@@ -21,6 +21,10 @@ WIN_P = .70                    # server only; never include in public/status dat
 # This is the accepted stake, not the wallet, cumulative wagers, or past profit.
 HIGH_STAKE = 300_000
 HIGH_STAKE_WIN_P = .40
+# Owner 11/10 (later): no exploit of the boost. It needs a small stake AND today's Chợ đen net still at most
+# NET_STOP; 50k–299,999 xu or a day already won past NET_STOP draws at the stall's ordinary rate (None).
+SMALL_STAKE = 50_000
+NET_STOP = 300_000
 GAMES = ('xd', 'lt', 'xs')
 ACTIONS = ('fair_xd', 'fair_loto_buy', 'fair_xs')
 TITLE = '2 ngày vàng, tăng tỷ lệ thắng cược Chợ Đen'
@@ -87,6 +91,16 @@ def prepare(db, action: str) -> None:
 def active(game: str, t: float) -> bool:
     start = _starts.get()
     return game in GAMES and start is not None and start <= t < start + DURATION
+
+
+def rate(stake: int, net: int) -> float | None:
+    """The event's draw for a round staking `stake` with today's Chợ đen net `net`: WIN_P for a small stake while the
+    day has not been won past NET_STOP, HIGH_STAKE_WIN_P from HIGH_STAKE, else None (the ordinary rate)."""
+    if stake >= HIGH_STAKE:
+        return HIGH_STAKE_WIN_P
+    if stake < SMALL_STAKE and net <= NET_STOP:
+        return WIN_P
+    return None
 
 
 def mark_display(j: dict) -> None:

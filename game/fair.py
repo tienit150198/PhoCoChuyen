@@ -155,8 +155,9 @@ ROUND_MAX = 1000               # what the saves keep of a stake (lô tô rounds,
 # Owner 08/10 "mn đặt cược bao nhiêu thoải mái nhé": bầu cua and chiếu trong take any stake the wallet holds. STAKE_MAX is
 # only the sane bound that keeps one round's Sổ ví row within what every validator accepts (|amount| <= 10**7: a bão
 # pays BAO times the stake); NET_SAFE keeps today's saved net (validated within ±10**9) far from its bound.
-STAKE_MAX = 10**6
-NET_SAFE = 10**8
+STAKE_MAX = 10**7             # owner 11/10 (later) "mức cược 1 ván không giới hạn, có thể hơn 1 triệu": the saves' own bounds
+NET_SAFE = 5 * 10**8           # (wallet ≤ 10**9, today's net within ±10**9) are the only limit; the police's STAKE_CURVE
+WALLET_SAFE = 9 * 10**8        # makes such stakes a bad bet. A win moves several Sổ ví rows (_pay_big).
 BC_MAX = STAKE_MAX
 BAO = 10                       # three dice on the face you bet: BAO:1 (standard rules: 3:1)
 # 🕯️ Chiếu trong
@@ -239,7 +240,11 @@ POINTS_DAY = 30
 # 09/10 (audit: a script solved the public board): phóng dao's net winnings (payouts − stakes) are capped at KN_DAY_CAP
 # a Vietnam day, counted in journey[DAY_KEY] (optional, ignored by an older server: journey keeps unknown keys).
 DAY_KEY = 'fair_day'   # journey['fair_day'] {d: 'YYYY-MM-DD', kn: knife net today, ring: ném vòng paid today}
-KN_DAY_CAP = 20_000
+KN_DAY_CAP = 20_000   # legacy (09/10–11/10): no cap any more (owner 11/10 "tiền lời không giới hạn"), see KN_DEVICE_FROM
+# Owner 11/10 (later): instead of a cap, today's phóng dao net winnings past KN_DEVICE_FROM bring the police for a
+# "thiết bị hỗ trợ", like Ông Hai's table (fair_hai.DEVICE_PCT % of the wallet and the bank, the jail; _kn_device).
+KN_DEVICE_FROM = 100_000
+KN_DEVICE_LABEL = '🚨 Công an phạt: dùng thiết bị hỗ trợ khi phóng dao'
 RING_PAY_DAY = 400     # 💍 ném vòng (free, wins on average): xu paid a Vietnam day at most (09/10 audit)
 KN_RAMP_KEY = 'fair_kn_ramp'   # journey['fair_kn_ramp'] {at, seed}: a 1.9.32 level, knife.speed_up() faster (09/10)
 KN_TWIST_KEY = 'fair_kn_twist'   # journey['fair_kn_twist'] {at, seed}: a level on knife.twist_schedule() (09/10, later)
@@ -678,15 +683,21 @@ def run_rate(game: str, n: int) -> float:
 
 
 def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = None) -> float:
-    """Count the round and choose its draw. Golden days use the current round's stake:
-    300,000 xu or more draws at 40%; smaller stakes keep the event boost. Outside
-    the event, the ordinary run rate applies. Wallet and past profit do not decide odds."""
+    """Count the round and choose its draw. Golden days (golden.rate): 300,000 xu or more draws at 40%; the boost only
+    for a stake under golden.SMALL_STAKE while today's net is at most golden.NET_STOP; otherwise, and outside the
+    event, the ordinary run rate applies."""
     _run(j, game, t)
     n = _heat(j, game, t, stake or 0)
-    if golden.active(game, t):
-        golden.mark_display(j)
-        return golden.HIGH_STAKE_WIN_P if (stake or 0) >= golden.HIGH_STAKE else golden.WIN_P
-    return run_rate(game, n)
+    p = _golden_rate(j, f, game, t, stake)
+    return run_rate(game, n) if p is None else p
+
+
+def _golden_rate(j: dict, f: dict | None, game: str, t: float, stake: int | None) -> float | None:
+    """The golden-days draw of this round (None: not boosted, the ordinary rate)."""
+    if not golden.active(game, t):
+        return None
+    golden.mark_display(j)
+    return golden.rate(stake or 0, _today(f, t)['net'])
 
 
 def cold(j: dict, t: float) -> dict | None:
@@ -922,7 +933,6 @@ def _kn_pay(j: dict, f: dict, run: dict, t: float) -> int:
     st = run['st']
     pz = knife.prize(st, _kn_cleared(run), run['bn'])
     day = _daily(j, t)
-    pz = max(0, min(pz, KN_DAY_CAP - day.get('kn', 0)))   # today's net winnings stop at KN_DAY_CAP
     day['kn'] = min(10**9, day.get('kn', 0) + pz)
     run.update(sg='done', pz=pz)
     if pz:
@@ -980,7 +990,6 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
              else 'Màn này đang chơi dở, phóng tiếp nha.', 'fair_kn_busy')
         _guard_free(e, f, j, t, stake)
         day = _daily(j, t)
-        need(day.get('kn', 0) < KN_DAY_CAP, 'Chủ quầy phóng dao hết xu trả thưởng hôm nay rồi, mai ghé lại nha.', 'fair_kn_cap')
         if bm._gate_on() and watch.kn_start(j, ms):   # a skill game: no arrest roll, only a burst of runs (fair_watch)
             watch.clear(j, 'ks')
             _arrested(j, f, t, 'kn', stake, lambda amount: _pay(j, f, 'kn', amount), 'kn_spam')
@@ -1051,6 +1060,7 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
         run.update(sg='choice', tp=[], day=vn_date(t), nx=0)
         if lv >= knife.LEVELS:   # the last level: nothing more to risk, the prize is paid
             pz = _kn_pay(j, f, run, t)
+            _kn_device(j, f, t, pz)
             out.update(cleared=True, all=True, paid=pz, run=_kn_view_run(run, t, j))
             return dict(fair=out, message=f'Phá đảo cả {knife.LEVELS} màn! +{pz} xu.')
         run['nx'] = int(not run['x2'] and _rng.random() < knife.X2_P)   # never two x2 levels in a row
@@ -1071,7 +1081,16 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
         return dict(fair=dict(game='kn', stopped=True, prize=run['pz'], again=True, run=_kn_view_run(run, t, j)),
                     message='Thưởng lượt này đã vô ví rồi.')
     pz = _kn_pay(j, f, run, t)
+    _kn_device(j, f, t, pz)
     return dict(fair=dict(game='kn', stopped=True, prize=pz, run=_kn_view_run(run, t, j)), message=f'Nhận thưởng {pz} xu!')
+
+
+def _kn_device(j: dict, f: dict, t: float, prize: int) -> None:
+    """A prize just paid by a player's command: today's phóng dao net past KN_DEVICE_FROM brings the police (the prize
+    stays). Not from _kn_settle (before a command, nothing can be raised there)."""
+    if prize <= 0 or not bm._gate_on() or _daily(j, t).get('kn', 0) <= KN_DEVICE_FROM:
+        return
+    _device(j, f, t, 'kn', prize, 'Phóng dao', KN_DEVICE_LABEL)
 
 
 def _kn_settle(s: dict) -> None:
@@ -1096,8 +1115,9 @@ def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
          f'Vé số cào có giá {", ".join(map(str, scratch.TIERS))} xu thôi nha.')
     _guard_free(e, f, j, t, price)
     _police(j, f, t, 'xs', price)
+    boosted = _golden_rate(j, f, 'xs', t, price) == golden.WIN_P
     win = _draw_luck(j, 'xs', luck_p(j, f, 'xs', t, stake=price))
-    mult = scratch.prize_mult(_rng, profit_only=golden.active('xs', t)) if win else 0
+    mult = scratch.prize_mult(_rng, profit_only=boosted) if win else 0
     cells = scratch.layout(price, mult, _rng)
     prize = mult * price
     _pay(j, f, 'xs', prize - price)
@@ -1147,6 +1167,7 @@ def _guard_round(e, f: dict, j: dict, t: float, stake: int, worst: int) -> None:
     need = e.need
     need(j['wallet'] >= stake, 'Ví không đủ xu cho ván này. Chợ đen không cho vay để chơi đâu nha.', 'fair_wallet')
     need(abs(f['net']) + worst * (BAO + 1) < NET_SAFE, ENOUGH, 'fair_enough')   # the saved net's sane bound
+    need(j['wallet'] + worst * BAO < WALLET_SAFE, ENOUGH, 'fair_enough')          # ... and the wallet's
     ms = int(t * 1000)
     need(ms - f['last'] >= GAP_MS or f['last'] > ms, 'Từ từ thôi, xúc xắc chưa kịp lăn!', 'fair_slow')
     f['last'] = ms
@@ -1305,26 +1326,30 @@ def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
     p = bm.arrest_p(f, stake)
     if p <= 0 or not bm._arrest_roll(p):
         return
-    _arrested(j, f, t, game, stake, lambda amount: _pay(j, f, game, amount))
+    _arrested(j, f, t, game, stake, lambda amount: _pay_big(j, f, game, amount))
 
 
 def _hai_device(s: dict, j: dict, f: dict, t: float, prize: int) -> None:
-    """👴 Owner 10/10: a win against Ông Hai means a third device helped. The prize stays (paid already); the police
-    charge a bounded wallet-only fine (fair_hai.device_fine) and the trại tạm giữ
-    (fair_bm.JAIL_DAYS). Raises _Caught: the command's whole result."""
+    """👴 Owner 11/10: past fair_hai.DEVICE_WINS wins against Ông Hai a device helped (_device)."""
+    _device(j, f, t, 'oaq', prize, 'Thắng Ông Hai', hai.FINE_LABEL)
+
+
+def _device(j: dict, f: dict, t: float, game: str, prize: int, what: str, label: str) -> None:
+    """🚨 "Thiết bị hỗ trợ" (owner 11/10): the prize stays (paid already); the police take fair_hai.DEVICE_PCT % of the
+    wallet and the bank together (fair_bm.take_total, no ceiling) and the trại tạm giữ (fair_bm.JAIL_DAYS).
+    Raises _Caught: the command's whole result."""
     from . import jail
-    pct = bm._rng.randint(hai.FINE_LO, hai.FINE_HI)
-    fine = hai.device_fine(s, j, f, pct)
+    fine = bm.take_total(j, f, bm.total_money(j) * hai.DEVICE_PCT // 100, label)
     days = jail.arrest(j, 'bm', bm.JAIL_DAYS, t)
     f['stats']['raids'] = min(10**9, f['stats']['raids'] + 1)
-    r = dict(game='oaq', stake=0, fine=fine, wallet=j['wallet'], say=hai.SAY_DEVICE, jail=days, seized=0)
+    r = dict(game=game, stake=0, fine=fine, wallet=j['wallet'], say=hai.SAY_DEVICE, jail=days, seized=0)
     got: list = []
     _grant(j, 'f_raid', got)
-    fair = dict(game='oaq', arrest=r)
+    fair = dict(game=game, arrest=r)
     if got:
         fair['titles'] = got
-    msg = (f'Thắng Ông Hai, +{_xu(prize)} xu. 🚨 Nhưng công an phát hiện dùng thiết bị thứ ba: nộp phạt {_xu(fine)} xu.'
-           + (f' Bạn bị tạm giữ {days} ngày.' if days else ''))
+    msg = (f'{what}, +{_xu(prize)} xu. 🚨 Nhưng công an phát hiện dùng thiết bị hỗ trợ: phạt {_xu(fine)} xu '
+           f'({hai.DEVICE_PCT}% tổng tiền).' + (f' Bạn bị tạm giữ {days} ngày.' if days else ''))
     raise _Caught(dict(message=msg, effects=[], fair=fair))
 
 
@@ -1336,7 +1361,7 @@ def _arrested(j: dict, f: dict, t: float, game: str, stake: int, pay, why: str =
     knife run already counted at its start). Raises _Caught: the command's whole result."""
     if count and stake and game in f['stats']:   # the round counts on the stall's Sổ ví row ("· N ván")
         f['stats'][game] = min(10**9, f['stats'][game] + 1)
-    r = bm.arrest(j, f, t, game, stake, pay, charge=why != 'oaq_win')
+    r = bm.arrest(j, f, t, game, stake, pay, charge=why != 'oaq_win', seize=not why)
     if why == 'oaq_win':   # 👴 a run of wins at Ông Hai's table: `stake` is his xu taken back (fair_hai.seize)
         r.update(say=hai.SAY, seized=stake, canceled=False)
     elif why:
@@ -1361,8 +1386,8 @@ def _arrested(j: dict, f: dict, t: float, game: str, stake: int, pay, why: str =
         msg = f'🚨 Công an thấy bạn bày bàn liên tục bất thường, nghi gian lận! Nộp phạt {fine} xu.'
     elif why == 'oaq_win':
         msg = f'🚨 Công an ập vào bàn Ông Hai! Đã thu {_xu(stake)} xu tiền phạt, không thu thêm.'
-    else:
-        msg = f'🚨 Công an ập vào! Hủy ván, giữ nguyên {_xu(stake)} xu tiền cược' + (f', nộp phạt {fine} xu' if r['fine'] else '') + '.'
+    else:   # owner 11/10: the stake is seized, the fine is FINE_PCT % of today's winnings (wallet, then bank)
+        msg = f'🚨 Công an ập vào! Tịch thu {_xu(stake)} xu tiền cược' + (f', phạt {fine} xu (30% tiền lời hôm nay)' if r['fine'] else '') + '.'
     msg += f' Bạn bị tạm giữ {r["jail"]} ngày.' if r.get('jail') else ''
     raise _Caught(dict(message=msg, effects=[], fair=fair))
 
@@ -1440,7 +1465,7 @@ def _apply(s: dict, name: str, p: dict) -> dict:
         bao = next((face for face in bets if dice.count(face) == 3), None)
         st['bc'] += 1
         delta = back - stake
-        _pay(j, f, 'bc', delta)
+        _pay_big(j, f, 'bc', delta)
         loc = _loc(j, f, 'bc', stake, delta, t)
         if bao:
             st['bao'] += 1
@@ -1478,7 +1503,7 @@ def _apply(s: dict, name: str, p: dict) -> dict:
             even = sum(coins) % 2 == 0
             win = (p['side'] == 'chan') == even
             delta = stake if win else -stake
-            _pay(j, f, 'xd', delta)
+            _pay_big(j, f, 'xd', delta)
             loc = _loc(j, f, 'xd', stake, delta, t)
             result['fair'] = dict(game='xd', raid=False, side=p['side'], stake=stake, coins=coins, even=even, net=delta)
             if loc:
@@ -1651,7 +1676,7 @@ def _apply(s: dict, name: str, p: dict) -> dict:
             end = _oaq_end(j, f, o, t, got)
             if o['lv'] == 'kho' and end['stage'] == 'won':   # 👴 a win at his table: the prize stays, then the police (fair_hai)
                 hai.won(j, t, end['prize'])
-                if bm._gate_on():
+                if hai.count_win(j) and bm._gate_on():   # past hai.DEVICE_WINS wins (owner 11/10)
                     _hai_device(s, j, f, t, end['prize'])
             elif o['lv'] == 'kho':
                 hai.lost(j)
