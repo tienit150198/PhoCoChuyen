@@ -49,3 +49,11 @@ Chủ game: "phải tính tiền phạt của 1 trận" — người cược 8�
 tiền cược ván đó và phạt thêm 30% chính tiền cược ấy (`fair_bm.round_fine`); ván 10k → mất 10k + phạt 3k. Tỷ lệ bị bắt
 không đổi. Commit `6b139d47`, release `2.0.3.3-20261011171609` (thay `game/fair.py`, `game/fair_bm.py` + 3 file phiên bản),
 0 file lệch manifest, health 2.0.3.3. Quay lui: `mnl-rolling-release --to …/2.0.3.2-20261011165748`.
+
+## 2.0.3.4 — mọi khoản phạt công an đều theo ván (17:26 11/10)
+
+Sau 2.0.3.3 vẫn còn hai kiểu phạt không theo ván: "Công an kiểm tra đánh bạc" (`_wealth_raid`, 30% ví khi lời hôm nay
+trên 50k, 35% mỗi 30 phút) và "Công an kiểm tra tài sản" (`_asset_audit`, 10% tiền lời). Cả hai đã tắt
+(`fair.WALLET_CHECKS = False`). "Công an phường kiểm tra" ở chiếu trong (hủy ván, giữ tiền cược) phạt 30% tiền cược ván đó
+(trước: 25%, trần 2.000). Bị bắt vì bấm nhanh/spam cũng phạt 30% tiền cược ván đó thay vì theo ví. Lời nhiều chỉ làm tăng
+tỷ lệ bị bắt. Commit `38766959`, release `2.0.3.4-20261011172521`, health 2.0.3.4, 0 Traceback.
