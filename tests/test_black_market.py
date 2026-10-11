@@ -199,16 +199,19 @@ class Arrest(BlackMarketBase):
                 with mock.patch.object(bm, '_arrest_roll', lambda *a: True):
                     s, r = self.act(s, name, **p)
                 a = r['fair']['arrest']
-                fine = 200
-                self.assertEqual((r['fair']['game'], a['stake'], a['fine']), (game, stake, fine))
-                self.assertEqual(s['journey']['wallet'], 10000 - fine)
-                self.assertTrue(a['canceled'])
+                fine = stake * 30 // 100   # owner 11/10: the stake is seized, the fine is 30% of it (bm.round_fine)
+                self.assertEqual((r['fair']['game'], a['stake'], a['fine'], a['seized']), (game, stake, fine, stake))
+                self.assertEqual(s['journey']['wallet'], 10000 - stake - fine)
+                self.assertFalse(a['canceled'])
+                self.assertEqual(a['say'], bm.SAY_SEIZE)
                 self.assertEqual(a['wallet'], s['journey']['wallet'])
                 self.assertNotIn('fair_bm', s['journey'])
                 self.assertNotIn('dice', r['fair'])   # no outcome
                 last = s['journey']['history'][-1]
                 self.assertEqual((last['amount'], last['label']), (-fine, bm.FINE_LABEL))
-                self.assertEqual([r['amount'] for r in s['journey']['history'] if r['kind'] == 'fair'], [-fine])
+                self.assertEqual([r['amount'] for r in s['journey']['history'] if r['kind'] == 'fair'], [-stake, -fine])
+                self.assertEqual(s['journey']['fair']['net'], bm.ARREST_FROM + 1 - stake - fine)
+                self.assertIn(f'Tịch thu {stake} xu tiền cược', r['message'])
                 self.assertIn('f_raid', s['journey']['titles'])
                 self.assertIn('Công an ập vào', r['message'])
                 pub = fh.public(s)['bm']
@@ -264,9 +267,62 @@ class Arrest(BlackMarketBase):
         s, _ = self.act(s, 'fair_bm_pay')   # compatibility no-op; 50 left
         self.caught(True)
         self.rich(s)
-        s, r = self.act(s, 'fair_xd', side='le', stake=50)
-        self.assertEqual(r['fair']['arrest']['fine'], 0)
-        self.assertEqual(s['journey']['wallet'], 50)
+        s, r = self.act(s, 'fair_xd', side='le', stake=50)   # the stake is seized: nothing left for its 15 xu fine
+        self.assertEqual((r['fair']['arrest']['seized'], r['fair']['arrest']['fine']), (50, 0))
+        self.assertEqual(s['journey']['wallet'], 0)
+        self.assertFalse(s['journey']['in_debt'])
+        self.assertNotIn('phạt thêm', r['message'])
+        validate_state(s)
+
+    def test_the_fine_is_the_round_s_whatever_the_day_won(self):
+        """Owner 11/10 "phải tính tiền phạt của 1 trận": a 400,000 round caught = the stake seized + 120,000, whatever
+        today's net."""
+        for net in (0, bm.ARREST_FROM + 1, 2 * 10**6, 10**8):
+            with self.subTest(net=net):
+                s = story(10**6)
+                s, _ = self.act(s, 'fair_bm_pay')
+                self.rich(s, net)
+                self.caught(True)
+                s, r = self.act(s, 'fair_xd', side='chan', stake=400000)
+                a = r['fair']['arrest']
+                self.assertEqual((a['seized'], a['fine']), (400000, 120000))   # (the cell: tests/test_jail.py)
+                self.assertEqual(s['journey']['wallet'], 10**6 - 520000)
+                self.assertEqual(s['journey']['fair']['net'], net - 520000)
+                self.assertIn('Tịch thu 400.000 xu tiền cược, phạt thêm 120.000 xu', r['message'])
+                validate_state(s)
+
+    def test_the_fine_takes_the_bank_after_the_wallet(self):
+        """What the wallet cannot pay comes from the bank: its account, the demand pot, then a term deposit (closed
+        early, the rest back to the account); never below zero, no loss_limits ceiling."""
+        s = story(450000)
+        j = s['journey']
+        b = j['bank'] = bk.initial(j['seed'], j['life_day'])
+        b['balance'], b['demand'] = 30000, 20000
+        b['terms'].append(dict(id='t1', amount=100000, term=30, rate=bk.TERM_RATE[30], start=j['life_day'],
+                               due=j['life_day'] + 30, renew=False))
+        b['seq'] = 1
+        validate_state(s)
+        self.caught(True)
+        s, r = self.act(s, 'fair_xd', side='chan', stake=400000)   # 50,000 left in the wallet; the fine is 120,000
+        a = r['fair']['arrest']
+        b = s['journey']['bank']
+        self.assertEqual((a['seized'], a['fine'], a['wallet']), (400000, 120000, 0))
+        # wallet 50k, account 30k, demand 20k, then 20k of the 100k term: closed, its 80k back to the account
+        self.assertEqual((s['journey']['wallet'], b['balance'], b['demand'], b['terms']), (0, 80000, 0, []))
+        self.assertEqual(s['journey']['fair']['net'], -520000)
+        self.assertEqual(s['journey']['fair']['stats']['lost'], 520000)
+        validate_state(s)
+
+    def test_a_fine_too_big_for_wallet_and_bank_stops_at_zero(self):
+        s = story(400000)
+        j = s['journey']
+        j['bank'] = bk.initial(j['seed'], j['life_day'])
+        j['bank']['balance'] = 70000
+        validate_state(s)
+        self.caught(True)
+        s, r = self.act(s, 'fair_xd', side='chan', stake=400000)
+        self.assertEqual(r['fair']['arrest']['fine'], 70000)
+        self.assertEqual((s['journey']['wallet'], s['journey']['bank']['balance']), (0, 0))
         self.assertFalse(s['journey']['in_debt'])
         validate_state(s)
 
@@ -291,10 +347,10 @@ class Arrest(BlackMarketBase):
 
             def random(self):
                 return self.x
-        self.assertEqual((bm.BM_ARREST_P, bm.ARREST_FROM), (0.0425, 300000))   # 11/10: a modest reduction, same eligibility
-        with mock.patch.object(bm, '_rng', R(.0424)):
+        self.assertEqual((bm.BM_ARREST_P, bm.ARREST_FROM), (0.02, 300000))   # owner 11/10 (later): "tỷ lệ bị bắt giảm thấp"
+        with mock.patch.object(bm, '_rng', R(.0199)):
             self.assertTrue(bm._arrest_roll())
-        with mock.patch.object(bm, '_rng', R(.0425)):
+        with mock.patch.object(bm, '_rng', R(.02)):
             self.assertFalse(bm._arrest_roll())
 
     def test_arrests_leave_the_stalls_draws_alone(self):
@@ -325,41 +381,59 @@ class Arrest(BlackMarketBase):
 
 
 class BigStake(BlackMarketBase):
-    """11/10: modestly lower the original stake/net curve, retaining its eligibility and hidden rates."""
+    """Owner 11/10 (later): the raid chance is today's winnings' share (PROFIT_CURVE) plus the stake's (STAKE_CURVE),
+    never above ARREST_CAP; hidden from the client."""
 
     POOR, RICH = {'net': 0}, {'net': bm.ARREST_FROM + 1}
 
     def test_the_constants(self):
-        self.assertEqual((bm.BIG_STAKE_FROM, bm.BIG_STAKE_STEP, bm.BIG_STAKE_PCT, bm.ARREST_CAP),
-                         (50000, 10000, .85, .25))
+        self.assertEqual((bm.BIG_STAKE_FROM, bm.STAKE_TOP_PCT, bm.ARREST_CAP, bm.FINE_PCT), (50000, 90, .90, 30))
+        self.assertEqual(bm.STAKE_CURVE, ((50_000, 2, 300_000, 10), (300_000, 30, 1_000_000, 50),
+                                          (1_000_000, 50, 10_000_000, 80)))
+        self.assertEqual(bm.PROFIT_CURVE, ((300_000, 2), (1_000_000, 5), (3_000_000, 10), (10_000_000, 20)))
+        for gone in ('BIG_STAKE_STEP', 'BIG_STAKE_PCT', 'profit_fine'):
+            self.assertFalse(hasattr(bm, gone), gone)
+
+    def test_the_stake_curve(self):
+        for stake, pct in ((None, 0), ('60000', 0), (60000.0, 0), (True, 0), (10, 0), (49999, 0), (50000, 2),
+                           (60000, 2.32), (100000, 3.6), (175000, 6), (299999, 9.999968), (300000, 30),
+                           (650000, 40), (999999, 49.9999714), (10**6, 50), (5_500_000, 65), (9_999_999, 79.9999967),
+                           (10**7, 90), (10**9, 90)):
+            with self.subTest(stake=stake):
+                self.assertAlmostEqual(bm.big_stake_pct(stake), pct, places=6)
+
+    def test_the_profit_curve(self):
+        for net, pct in ((None, 0), (-10**6, 0), (0, 0), (300000, 0), (300001, 2), (10**6, 2), (10**6 + 1, 5),
+                         (3 * 10**6, 5), (3 * 10**6 + 1, 10), (10**7, 10), (10**7 + 1, 20), (10**9, 20)):
+            with self.subTest(net=net):
+                self.assertEqual(bm.profit_pct(None if net is None else {'net': net}), pct)
 
     def test_the_boundaries(self):
-        for stake, poor, rich in ((10, 0, .0425), (49999, 0, .0425), (50000, .0085, .051), (59999, .0085, .051),
-                                  (60000, .017, .0595), (69999, .017, .0595), (100000, .051, .0935),
-                                  (289999, .204, .2465), (290000, .2125, .25), (300000, .221, .25),
-                                  (339999, .2465, .25), (340000, .25, .25), (750000, .25, .25), (10**6, .25, .25)):
+        for stake, poor, rich in ((10, 0, .02), (49999, 0, .02), (50000, .02, .04), (60000, .0232, .0432),
+                                  (100000, .036, .056), (300000, .30, .32), (10**6, .50, .52),
+                                  (10**7, .90, .90), (10**7 - 1, .7999999667, .8199999667)):
             with self.subTest(stake=stake):
                 self.assertAlmostEqual(bm.arrest_p(self.POOR, stake), poor, places=9)
                 self.assertAlmostEqual(bm.arrest_p(self.RICH, stake), rich, places=9)
                 self.assertLessEqual(bm.arrest_p(self.RICH, stake), bm.ARREST_CAP)
         self.assertEqual(bm.arrest_p(self.POOR, 49999), 0)   # below 50k and not rich: nobody rolls
         self.assertEqual(bm.arrest_p({'net': bm.ARREST_FROM}, 49999), 0)   # 300k is not "above 300k"
+        self.assertAlmostEqual(bm.arrest_p({'net': 2 * 10**6}, 400000), .05 + (30 + 20 / 7) / 100, places=9)   # 5% + 32.86%
+        self.assertAlmostEqual(bm.arrest_p({'net': 10**8}, 10), .20, places=9)
+        self.assertEqual(bm.arrest_p({'net': 10**8}, 10**7), .90)   # 20% + 90%, capped
         for odd in (None, '60000', 60000.0, True):
             self.assertEqual(bm.arrest_p(self.POOR, odd), 0)
 
-    def test_curve_remains_monotone_and_only_modestly_below_previous_rates(self):
-        stakes = [0, 49999] + list(range(50000, 1000001, 10000))
-        for net in (-100000, 0, 300000, 300001):
+    def test_curve_is_monotone_and_capped(self):
+        stakes = [0, 49999] + list(range(50000, 10**7 + 1, 50000)) + [2 * 10**7]
+        for net in (-100000, 0, 300000, 300001, 10**6 + 1, 3 * 10**6 + 1, 10**7 + 1):
             rates = [bm.arrest_p({'net': net}, stake) for stake in stakes]
             self.assertEqual(rates, sorted(rates), 'larger stakes never make arrest less likely')
-            for stake, rate in zip(stakes, rates):
-                old = min(.30, ((1 + (stake - 50000) // 10000) / 100 if stake >= 50000 else 0) + (.05 if net > 300000 else 0))
-                if old:
-                    self.assertLess(rate, old, (net, stake))
-                    self.assertGreaterEqual(rate, old * .8, (net, stake))
-                else:
-                    self.assertEqual(rate, 0)
-                self.assertLessEqual(rate, .25)
+            for rate in rates:
+                self.assertLessEqual(rate, bm.ARREST_CAP)
+        for stake in (10, 60000, 400000, 2 * 10**6):
+            rates = [bm.arrest_p({'net': net}, stake) for net in (0, 300001, 10**6 + 1, 3 * 10**6 + 1, 10**7 + 1)]
+            self.assertEqual(rates, sorted(rates), 'bigger winnings never make arrest less likely')
 
     def test_the_roll_takes_the_rate(self):
         class R:
@@ -368,13 +442,13 @@ class BigStake(BlackMarketBase):
 
             def random(self):
                 return self.x
-        with mock.patch.object(bm, '_rng', R(.2499)):
+        with mock.patch.object(bm, '_rng', R(.4999)):
             self.assertTrue(bm._arrest_roll(bm.arrest_p(self.POOR, 10**6)))
-        with mock.patch.object(bm, '_rng', R(.25)):
+        with mock.patch.object(bm, '_rng', R(.52)):
             self.assertFalse(bm._arrest_roll(bm.arrest_p(self.RICH, 10**6)))
-        with mock.patch.object(bm, '_rng', R(.0169)):
+        with mock.patch.object(bm, '_rng', R(.0231)):
             self.assertTrue(bm._arrest_roll(bm.arrest_p(self.POOR, 60000)))
-        with mock.patch.object(bm, '_rng', R(.017)):
+        with mock.patch.object(bm, '_rng', R(.0232)):
             self.assertFalse(bm._arrest_roll(bm.arrest_p(self.POOR, 60000)))
 
     def rolls(self, stake, net=0, on=False):
@@ -399,24 +473,27 @@ class BigStake(BlackMarketBase):
                 self.assertNotIn('arrest', r['fair'])
 
     def test_big_stakes_are_rolled_whatever_the_net(self):
-        for stake, net, p in ((50000, 0, .0085), (59999, -10**5, .0085), (60000, 0, .017), (60000, bm.ARREST_FROM + 1, .0595),
-                              (100000, bm.ARREST_FROM, .051), (10**6, 0, .25), (10**6, bm.ARREST_FROM + 1, .25)):
+        for stake, net, p in ((50000, 0, .02), (59999, -10**5, .02319968), (60000, 0, .0232), (60000, bm.ARREST_FROM + 1, .0432),
+                              (100000, bm.ARREST_FROM, .036), (10**6, 0, .50), (10**6, bm.ARREST_FROM + 1, .52),
+                              (10**6, 10**6 + 1, .55)):
             with self.subTest(stake=stake, net=net):
                 s, r, seen = self.rolls(stake, net)
                 self.assertEqual(len(seen), 1)
                 self.assertAlmostEqual(seen[0], p, places=9)
                 self.assertNotIn('arrest', r['fair'])
                 self.assertIn('coins', r['fair'])   # not caught: the round played
-        s, r, seen = self.rolls(49999, bm.ARREST_FROM + 1)   # small stakes: the 300k rule alone, as before
-        self.assertAlmostEqual(seen[0], bm.BM_ARREST_P, places=9)
+        s, r, seen = self.rolls(49999, bm.ARREST_FROM + 1)   # small stakes: today's winnings alone (PROFIT_CURVE)
+        self.assertAlmostEqual(seen[0], .02, places=9)
+        s, r, seen = self.rolls(49999, 3 * 10**6 + 1)
+        self.assertAlmostEqual(seen[0], .10, places=9)
 
     def test_caught_with_a_big_stake_and_a_small_net(self):
         s, r, seen = self.rolls(80000, 0, on=True)
         a = r['fair']['arrest']
         w = 3 * 10**6 - bm.BM_FEE
-        self.assertEqual((a['stake'], a['fine']), (80000, 2000))   # (the cell: tests/test_jail.py)
-        self.assertEqual(s['journey']['wallet'], w - 2000)
-        self.assertNotIn('%', r['message'])
+        self.assertEqual((a['stake'], a['seized'], a['fine']), (80000, 80000, 24000))   # (the cell: tests/test_jail.py)
+        self.assertEqual(s['journey']['wallet'], w - 80000 - 24000)
+        self.assertEqual(re.findall(r'[\d.,]+\s*%', r['message']), ['30%'])   # the fine's share of the stake, no rate
         validate_state(s)
         f = json.dumps(fh.public(s), ensure_ascii=False)
         for k in ('big_stake', 'arrest_p', '0.3', '0.04'):
@@ -429,7 +506,7 @@ class BigStake(BlackMarketBase):
         n = fh.dog.race(self.clock.t + 6)
         with mock.patch.object(bm, '_arrest_roll', lambda p=bm.BM_ARREST_P: seen.append(p) or False):
             s, r = self.act(s, 'fair_dg', race=n, lane=0, stake=200000)
-        self.assertAlmostEqual(seen[0], .136, places=9)
+        self.assertAlmostEqual(seen[0], .068, places=9)   # 200,000: 2% + 8% × 150/250
 
 
 class NothingShown(BlackMarketBase):
@@ -444,9 +521,9 @@ class NothingShown(BlackMarketBase):
         self.caught(True)
         self.rich(s)
         s, r = self.act(s, 'fair_bc', bets={'cua': 100})
-        self.assertEqual(set(r['fair']['arrest']), {'game', 'stake', 'fine', 'wallet', 'say', 'jail', 'canceled'})
-        self.assertNotIn('%', r['message'])
-        for text in (bm.NEED_IN, bm.BANNED, bm.SAY_ARREST,
+        self.assertEqual(set(r['fair']['arrest']), {'game', 'stake', 'fine', 'wallet', 'say', 'jail', 'canceled', 'seized'})
+        self.assertEqual(re.findall(r'[\d.,]+\s*%', r['message']), ['30%'])   # owner 11/10: the fine is 30% of the stake
+        for text in (bm.NEED_IN, bm.BANNED, bm.SAY_ARREST, bm.SAY_SEIZE,
                      bm.FINE_LABEL,):
             self.assertNotIn('%', text)
             self.assertNotIn('30', text)

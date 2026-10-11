@@ -55,8 +55,8 @@ class RaidOdds(FairBase):
         self.assertAlmostEqual(fh.RAID_PCT, .88)   # 07/10: half of 1.76%
         for draw, expected in [(.008799, True), (.0088, False), (.0176, False)]:
             with self.subTest(draw=draw):
-                self.dice(Dice(draws=[draw, .1]))
-                _, result = self.act(story(100), 'fair_xd', side='chan', stake=10)
+                self.dice(Dice(draws=[draw, .1]))   # a big stake: a round the police watch (owner 11/10)
+                _, result = self.act(story(100000), 'fair_xd', side='chan', stake=50000)
                 self.assertEqual(result['fair']['raid'], expected)
 
 

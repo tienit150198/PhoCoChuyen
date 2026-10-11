@@ -32,7 +32,7 @@ class HouseEdge(unittest.TestCase):
         r, p = fh.RAID_PCT / 100, fh.chance_rate('xd', 0)
         self.assertAlmostEqual(sim.exact()['xd']['rtp'], (1 - r) * p * 2 + r)
         with mock.patch.object(sim.random, 'Random', return_value=Dice(draws=[0])):
-            self.assertEqual(sim.play('xd', 'fresh', 1), .75)  # 100 stake returned, 25 nominal fine
+            self.assertEqual(sim.play('xd', 'fresh', 1), .70)  # 100 stake returned, 30 fine (owner 11/10: 30% of the stake)
 
     def test_gentler_fresh_draws_win_between_old_and_new_cutoffs(self):
         for game, old, new in (('xd', .485, .49), ('lt', .455, .46), ('xs', .50, .51)):

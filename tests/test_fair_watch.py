@@ -14,7 +14,6 @@ from unittest import mock
 
 from game import fair as fh
 from game import fair_bm as bm
-from game import fair_hai as hai
 from game import fair_knife as kn
 from game import fair_oaq as oaq
 from game import fair_watch as w
@@ -199,7 +198,7 @@ class KnifeScripts(WatchBase):
         wallet = s['journey']['wallet']
         s, r = self.throw(s, safe_taps(sc, sc['need'], start=3500), ahead=3400, latency=0)
         a = self.assert_caught(s, r, 'tay ném nhanh bất thường')
-        self.assertEqual((a['stake'], a['fine'], a['refunded']), (1000, min(2000, (wallet + 1000) * 2 // 100), 1000))
+        self.assertEqual((a['stake'], a['fine'], a['refunded']), (1000, 300, 1000))   # owner 11/10: 30% of the run's stake
         self.assertEqual(s['journey']['wallet'], wallet + 1000 - a['fine'])   # canceled run's stake refunded, no prize
         self.assertEqual(self.run_of(s)['sg'], 'lost')
         self.assertEqual(s['journey']['wallet'], 100000 - 1000 + paid - a['fine'])
@@ -220,7 +219,7 @@ class KnifeScripts(WatchBase):
         self.tick(1.5)
         s, r = self.act(s, 'fair_kn_start', stake=500)
         a = self.assert_caught(s, r, 'phóng dao liên tục bất thường')
-        self.assertEqual((a['stake'], a['fine']), (500, 2000))
+        self.assertEqual((a['stake'], a['fine']), (500, 150))   # owner 11/10: 30% of the round's stake, not the wallet's
         self.assertEqual(s['journey']['wallet'], wallet - a['fine'])
         self.assertEqual(s['journey']['history'][-1]['label'], bm.FINE_LABEL)
         self.roll.assert_not_called()
@@ -264,14 +263,13 @@ class OAQ(WatchBase):
                 self.assertNotIn('jail', s['journey'])
 
     def test_fishing_for_an_opening_is_not_caught(self):
-        """New game, give up, new game: 5.5 s a time for ten minutes (Ông Hai's own games a day, game/fair_hai.py, are
-        tests/test_fair_hai_police.py's)."""
+        """New game, give up, new game: 5.5 s a time for ten minutes (no games-a-day limit with Ông Hai since owner
+        11/10, game/fair_hai.py: tests/test_fair_hai_police.py)."""
         s = self.inside(0)
-        with mock.patch.object(hai, 'HAI_DAY', 10**6):
-            for _ in range(110):
-                self.tick(5.5)
-                s, r = self.act(s, 'fair_oaq_start', lv='kho')
-                self.assert_free(r)
+        for _ in range(110):
+            self.tick(5.5)
+            s, r = self.act(s, 'fair_oaq_start', lv='kho')
+            self.assert_free(r)
         self.assertNotIn('jail', s['journey'])
 
     def test_moves_no_hand_makes_are_caught(self):
@@ -288,7 +286,7 @@ class OAQ(WatchBase):
         a = self.assert_caught(s, r, 'nước đi nhanh bất thường')
         before = a['wallet'] + a['fine']                                 # (an earlier game may have been won)
         self.assertGreaterEqual(before, 20000)
-        self.assertEqual((a['stake'], a['fine']), (0, before * 2 // 100))   # no stake: the bounded fine and the cell
+        self.assertEqual((a['stake'], a['fine']), (0, 0))   # owner 11/10: a fine is 30% of a stake; none here, the cell
         self.assertEqual(s['journey']['wallet'], before - a['fine'])
         self.assertEqual(s['journey']['fair']['oaq']['stage'], 'lost')
         self.assertNotIn('Mất', r['message'])
@@ -302,7 +300,8 @@ class OAQ(WatchBase):
         self.tick(1)
         s, r = self.act(s, 'fair_oaq_start', lv='de')
         a = self.assert_caught(s, r, 'bày bàn liên tục bất thường')
-        self.assertEqual((a['stake'], a['fine']), (0, 100))
+        self.assertEqual((a['stake'], a['fine']), (0, 0))   # no stake, no fine (owner 11/10): the cell only
+        self.assertEqual(s['journey']['wallet'], 5000)
 
     def test_a_won_game_pays_the_old_prizes(self):   # owner 09/10: "thắng ông Hai vẫn là 10k/1 lần"
         self.assertEqual(public_state(story(0))['fair']['rules']['oaq_prize'], {'de': 50, 'kho': 10000})

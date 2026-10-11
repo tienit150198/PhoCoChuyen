@@ -232,8 +232,9 @@ class Police(DogBase):
         self.caught(True)
         s, r = self.bet(s, 0, 2000)
         a = r['fair']['arrest']
-        fine = (100000 - 100 - 2000) * 30 // 100
-        self.assertEqual((r['fair']['game'], a['stake'], a['fine'], a['jail']), ('dg', 2000, fine, bm.JAIL_DAYS))
+        fine = 2000 * 30 // 100   # owner 11/10: the stake is seized, the fine is 30% of it
+        self.assertEqual((r['fair']['game'], a['stake'], a['seized'], a['fine'], a['jail']), ('dg', 2000, 2000, fine, bm.JAIL_DAYS))
+        self.assertEqual(s['journey']['wallet'], 100000 - 100 - 2000 - fine)
         self.assertNotIn('order', r['fair'])   # no race
         h = s['journey']['history']
         self.assertEqual((h[-1]['amount'], h[-1]['label']), (-fine, bm.FINE_LABEL))
@@ -256,7 +257,7 @@ class Police(DogBase):
         s = self.inside(500000)
         s, _ = self.bet(s, 0, 100, first=1)
         self.rich(s, bm.ARREST_FROM)   # the arrest roll stays off; above the wealth check's threshold
-        with mock.patch.object(fh, 'WEALTH_RAID_P', 1.0), mock.patch.object(fh, 'GRACE_S', 0),                 mock.patch.object(fh, 'GRACE_ROUNDS', 0):
+        with mock.patch.object(fh, 'WEALTH_RAID_P', 1.0), mock.patch.object(fh, 'GRACE_S', 0),                 mock.patch.object(fh, 'GRACE_ROUNDS', 0), mock.patch.object(fh, 'WALLET_CHECKS', True):   # off since 11/10
             s, r = self.bet(s, 0, 100, first=1)
         self.assertIn('wealth_raid', r['fair'])
 

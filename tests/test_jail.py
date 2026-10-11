@@ -156,9 +156,9 @@ class ChoDenArrest(BlackMarketBase):
         w = s['journey']['wallet']
         with mock.patch.object(bm, '_arrest_roll', lambda *a: True):
             s, r = self.act(s, 'fair_bc', bets={'cua': 100})
-        a = r['fair']['arrest']
-        self.assertEqual((a['stake'], a['fine'], a['jail']), (100, min(2000, w * 2 // 100), 3))
-        self.assertEqual(s['journey']['wallet'], w - a['fine'])
+        a = r['fair']['arrest']   # owner 11/10: the stake seized and 30% of it
+        self.assertEqual((a['stake'], a['seized'], a['fine'], a['jail']), (100, 100, 30, 3))
+        self.assertEqual(s['journey']['wallet'], w - 100 - a['fine'])
         self.assertIn('tạm giữ 3 ngày', r['message'])
         b = s['journey']['jail']
         self.assertEqual((b['why'], b['days'], b['left'], b['day']), ('bm', 3, 3, 1))
@@ -170,25 +170,25 @@ class ChoDenArrest(BlackMarketBase):
         self.assertIn('trại tạm giữ', str(e.exception))
 
     def test_a_big_stake_can_be_jailed_without_the_300k(self):
-        """A 50,000 xu round is still rolled for at a net of 0 after the modest 11/10 reduction, and
-        the arrest is the same: stake, fine, the cell."""
+        """A 50,000 xu round is still rolled for at a net of 0 (fair_bm.STAKE_CURVE: 2%), and the arrest is the
+        same: the stake seized, 30% of it, the cell."""
         s = self.paid(0)
         seen = []
         with mock.patch.object(bm, '_arrest_roll', lambda p=bm.BM_ARREST_P: seen.append(p) or True):
             s, r = self.act(s, 'fair_bc', bets={'cua': 50000})
-        self.assertAlmostEqual(seen[0], .0085, places=9)
-        w = 100000   # Entry is free, and the raided stake is canceled.
-        a = r['fair']['arrest']
-        self.assertEqual((a['stake'], a['fine'], a['jail']), (50000, 2000, 3))
+        self.assertAlmostEqual(seen[0], .02, places=9)
+        a = r['fair']['arrest']   # entry is free; the raided stake is seized (owner 11/10)
+        self.assertEqual((a['stake'], a['seized'], a['fine'], a['jail']), (50000, 50000, 15000, 3))
+        self.assertEqual(s['journey']['wallet'], 100000 - 50000 - 15000)
         self.assertEqual(s['journey']['jail']['why'], 'bm')
         validate_state(s)
 
     def test_the_rate_is_low_and_its_own(self):
-        self.assertEqual((bm.BM_ARREST_P, bm.ARREST_FROM, bm.JAIL_DAYS), (0.0425, 300000, 3))
+        self.assertEqual((bm.BM_ARREST_P, bm.ARREST_FROM, bm.JAIL_DAYS), (0.02, 300000, 3))   # owner 11/10 (later)
         hits = 0
         with mock.patch.object(bm, '_rng', __import__('random').Random(7)):
             hits = sum(bm._arrest_roll() for _ in range(20000))
-        self.assertAlmostEqual(hits / 20000, .0425, delta=.008)
+        self.assertAlmostEqual(hits / 20000, .02, delta=.006)
 
     def test_kill_switch_keeps_the_fine_but_no_cell(self):
         s = self.paid(bm.ARREST_FROM + 5)

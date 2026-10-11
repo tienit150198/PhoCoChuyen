@@ -2,7 +2,8 @@
 counted towards both police cooldowns, so the first paid round after a break rolled the 30% raid and the 10% asset
 check at once. Now neither runs in a fair session's first GRACE_S seconds or first GRACE_ROUNDS paid rounds, whichever
 ends LATER; a session starts after SESSION_GAP away. Odds and gaps stay as 1.9.12; the xóc đĩa's own per-round raid
-(dẹp chiếu) is not touched."""
+(dẹp chiếu) is not touched. Owner 11/10: both wallet checks are off (fair.WALLET_CHECKS); these tests turn them back
+on to keep the dormant quiet-start rules checked."""
 import json
 from unittest import mock
 
@@ -22,7 +23,8 @@ def rich(profit=200000, wallet=100000, net=60000):
 class QuietStart(FairBase):
     def setUp(self):
         super().setUp()
-        for name, value in (('GRACE_S', 600), ('GRACE_ROUNDS', 20)):   # FairBase turns them off for the other tests
+        for name, value in (('GRACE_S', 600), ('GRACE_ROUNDS', 20),   # FairBase turns them off for the other tests
+                            ('WALLET_CHECKS', True)):                  # off since owner 11/10 (tests/test_fair_gentle_losses.py)
             p = mock.patch.object(fh, name, value)
             p.start()
             self.addCleanup(p.stop)
@@ -95,7 +97,7 @@ class QuietStart(FairBase):
     def test_the_back_corner_raid_is_per_round_as_before(self):
         s = rich()
         self.dice(Dice(draws=[0]))                                    # the dẹp chiếu draw, on the session's first round
-        s, result = self.act(s, 'fair_xd', side='chan', stake=10)
+        s, result = self.act(s, 'fair_xd', side='chan', stake=50000)  # a big stake: a round the police watch (11/10)
         self.assertTrue(result['fair']['raid'])
         self.assertNotIn('wealth_raid', result['fair'])
         self.assertEqual(s['journey'][fh.SESS_KEY]['n'], 1)          # it still counts as a paid round

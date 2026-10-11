@@ -21,6 +21,12 @@ def rich(profit=60000, wallet=100000, net=0):
 
 
 class AssetAudit(FairBase):
+    def setUp(self):
+        super().setUp()
+        p = mock.patch.object(fh, 'WALLET_CHECKS', True)   # off since owner 11/10 (fines per round only); the dormant
+        p.start()                                           # check keeps its rules checked here
+        self.addCleanup(p.stop)
+
     def test_the_rules(self):
         self.assertEqual((fh.AUDIT_FROM, fh.AUDIT_GAP, fh.AUDIT_P, fh.AUDIT_PCT), (50000, 7200, .225, 10))   # 07/10: half of 45%
         self.assertEqual((fh.WEALTH_THRESHOLD, fh.WEALTH_CHECK_GAP, fh.WEALTH_RAID_P), (50000, 1800, .35))   # 1.9.9's .70 halved
@@ -137,11 +143,11 @@ class AssetAudit(FairBase):
 
     def test_xd_normal_raid_charges_nothing_more(self):
         self.dice(Dice(draws=[0, 0]))
-        s, result = self.act(rich(net=60000), 'fair_xd', stake=10, side='chan')
+        s, result = self.act(rich(net=60000), 'fair_xd', stake=50000, side='chan')
         self.assertTrue(result['fair']['raid'])
         self.assertNotIn('wealth_raid', result['fair'])
         self.assertNotIn('audit', result['fair'])
-        self.assertEqual(s['journey']['wallet'], 100000 - 3)
+        self.assertEqual(s['journey']['wallet'], 100000 - 15000)   # a big (watched) round: 30% of its stake
 
     def test_saved_fields_validation(self):
         for bad in ([], dict(ed=fh.edition()), dict(ed=fh.edition(), base=0), dict(ed=fh.edition(), base='1', at=0),
@@ -173,6 +179,12 @@ class AssetAudit(FairBase):
 class RaidThenAudit(FairBase):
     """Both rules on one round: the 1.9.9 raid (30% of the wallet, today's net) first, then the asset check (10% of the
     fair profit made since its last check, which the raid has already lowered): never the same xu twice."""
+
+    def setUp(self):
+        super().setUp()
+        p = mock.patch.object(fh, 'WALLET_CHECKS', True)   # off since owner 11/10 (fines per round only); the dormant
+        p.start()                                           # check keeps its rules checked here
+        self.addCleanup(p.stop)
 
     def test_both_on_one_round_raid_first(self):
         s = rich(profit=200000, net=60000)
@@ -207,6 +219,12 @@ class RaidThenAudit(FairBase):
 
 
 class AssetAuditReplay(StoreBase):
+    def setUp(self):
+        super().setUp()
+        p = mock.patch.object(fh, 'WALLET_CHECKS', True)   # off since owner 11/10 (fines per round only); the dormant
+        p.start()                                           # check keeps its rules checked here
+        self.addCleanup(p.stop)
+
     def test_retry_cannot_charge_wallet_or_redraw_the_check(self):
         from game import marriage as mr
         tok = self.player('Lan', wallet=100000)

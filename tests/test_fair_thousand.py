@@ -3,7 +3,7 @@ import json
 import random
 from game import fair as fair, fair_knife as knife, fair_scratch as scratch
 from game.engine import GameError, validate_state
-from tests.test_fair import FairBase, story
+from tests.test_fair import Dice, FairBase, story
 
 
 class ThousandStake(FairBase):
@@ -49,3 +49,58 @@ class ThousandStake(FairBase):
         for choices in (knife.STAKES, scratch.TIERS, *fair.STAKE_TIERS.values()):
             self.assertIn(500, choices)
             self.assertEqual(max(choices), 1000)
+
+
+class TenMillionStake(FairBase):
+    """Owner 11/10 (later) "mức cược 1 ván không giới hạn, có thể hơn 1 triệu": up to STAKE_MAX = 10,000,000 a round;
+    a payout moves Sổ ví rows of at most 10**7 xu (fair._pay_big), the saves' own bound; NET_SAFE / WALLET_SAFE keep
+    today's net and the wallet far from theirs."""
+
+    def fair_rows(self, state):
+        return [row['amount'] for row in state['journey']['history'] if row['kind'] == 'fair']
+
+    def test_the_bounds(self):
+        self.assertEqual((fair.STAKE_MAX, fair.NET_SAFE, fair.WALLET_SAFE), (10**7, 5 * 10**8, 9 * 10**8))
+
+    def test_five_million_xoc_dia_wins_split_into_valid_rows(self):
+        state = story(3 * 10**7)
+        for n in range(1, 4):
+            self.dice(Dice(draws=[.99, 0]))   # no dẹp chiếu (a big stake is watched), then a won round
+            state, result = self.act(state, 'fair_xd', side='chan', stake=5 * 10**6)
+            self.assertEqual(result['fair']['net'], 5 * 10**6)
+            self.assertEqual(state['journey']['wallet'], 3 * 10**7 + n * 5 * 10**6)
+            rows = self.fair_rows(state)
+            self.assertEqual(sum(rows), n * 5 * 10**6)
+            self.assertTrue(all(abs(a) <= 10**7 for a in rows), rows)
+            validate_state(json.loads(json.dumps(state)))
+        self.assertEqual(self.fair_rows(state), [10**7, 5 * 10**6])   # the row fills up to 10**7, then a new one
+        self.assertEqual(state['journey']['fair']['net'], 15 * 10**6)
+
+    def test_a_bao_on_a_big_stake_takes_several_rows(self):
+        state = story(3 * 10**7)
+        self.dice(Dice(faces=['cua'] * 3))
+        state, result = self.act(state, 'fair_bc', bets={'cua': 2 * 10**6})
+        delta = fair.BAO * 2 * 10**6
+        self.assertEqual(state['journey']['wallet'], 3 * 10**7 + delta)
+        rows = self.fair_rows(state)
+        self.assertEqual(sum(rows), delta)
+        self.assertEqual(rows, [10**7] * (delta // 10**7))
+        validate_state(json.loads(json.dumps(state)))
+
+    def test_ten_million_is_the_most_a_round_takes(self):
+        self.dice(Dice(draws=[.99, .99]))
+        state, result = self.act(story(2 * 10**7), 'fair_xd', side='chan', stake=10**7)
+        self.assertEqual(result['fair']['net'], -10**7)
+        validate_state(json.loads(json.dumps(state)))
+        with self.assertRaises(GameError) as e:
+            self.act(story(2 * 10**7), 'fair_xd', side='chan', stake=10**7 + 1)
+        self.assertEqual(e.exception.code, 'fair_big')
+
+    def test_a_wallet_near_its_bound_is_told_enough(self):
+        rich = 89 * 10**7
+        with self.assertRaises(GameError) as e:   # 890M + 1M × BAO reaches WALLET_SAFE
+            self.act(story(rich), 'fair_xd', side='chan', stake=10**6)
+        self.assertEqual((e.exception.code, str(e.exception)), ('fair_enough', fair.ENOUGH))
+        self.dice(Dice(draws=[.99, .99]))
+        state, _ = self.act(story(rich), 'fair_xd', side='chan', stake=10**5)
+        validate_state(json.loads(json.dumps(state)))

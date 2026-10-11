@@ -22,7 +22,7 @@ class Dice(BaseDice):
 class Decay(FairBase):
     def xd(self, s, n, draw=.99, stake=10):
         for _ in range(n):
-            self.dice(Dice(draws=[.5, draw]))   # no raid, then the luck draw
+            self.dice(Dice(draws=[draw]))   # the luck draw (a small round: no dẹp chiếu draw since owner 11/10)
             s, _ = self.act(s, 'fair_xd', side='chan', stake=stake)
         return s
 
@@ -36,10 +36,10 @@ class Decay(FairBase):
         self.assertAlmostEqual(fh.XD_FLOOR * (1 - fh.RAID_PCT / 100), .40, delta=.001)   # 40% won rounds after raids
         self.assertEqual([fh.run_rate('xs', n) for n in (1, 10, 11, 16, 17, 200)], [.51, .51, .495, .42, .405, .40])
         # A draw a little under the floor still wins on round 41, one a little over loses.
-        self.dice(Dice(draws=[.5, fh.XD_FLOOR - .001]))
+        self.dice(Dice(draws=[fh.XD_FLOOR - .001]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=10)
         self.assertGreater(r['fair']['net'], 0)
-        self.dice(Dice(draws=[.5, fh.XD_FLOOR + .001]))
+        self.dice(Dice(draws=[fh.XD_FLOOR + .001]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=10)
         self.assertLess(r['fair']['net'], 0)
         validate_state(s)
@@ -209,13 +209,13 @@ class Loc(FairBase):
 
     def test_closed_gate_never_grants(self):
         fh._loc_gate.set(False)
-        self.dice(Dice(draws=[.5, .1, 0]))
+        self.dice(Dice(draws=[.1, 0]))
         s, r = self.act(story(1000), 'fair_xd', side='chan', stake=100)
         self.assertNotIn('loc', r['fair'])
         self.assertEqual(s['journey']['wallet'], 1100)
 
     def test_a_won_xoc_dia_round_pays_ten_times_its_stake(self):
-        self.dice(Dice(draws=[.5, .1, fh.LOC_P - .0001]))
+        self.dice(Dice(draws=[.1, fh.LOC_P - .0001]))
         s, r = self.act(story(1000), 'fair_xd', side='chan', stake=100)
         loc = r['fair']['loc']
         self.assertEqual((loc['won'], loc['bonus'], loc['mult']), (1000, 900, 10))
@@ -228,10 +228,10 @@ class Loc(FairBase):
         validate_state(s)
 
     def test_the_per_round_chance_and_losses(self):
-        self.dice(Dice(draws=[.5, .1, fh.LOC_P]))
+        self.dice(Dice(draws=[.1, fh.LOC_P]))
         s, r = self.act(story(1000), 'fair_xd', side='chan', stake=100)
         self.assertNotIn('loc', r['fair'])
-        self.dice(Dice(draws=[.5, .99, 0]))                         # a lost round: never
+        self.dice(Dice(draws=[.99, 0]))                         # a lost round: never
         s, r = self.act(s, 'fair_xd', side='chan', stake=100)
         self.assertNotIn('loc', r['fair'])
         self.assertTrue(fh._loc_gate.get())
@@ -270,16 +270,17 @@ class Loc(FairBase):
         self.assertEqual(s['journey']['wallet'], 1000 - 5 + 5 + 50)
         validate_state(s)
 
+    @mock.patch.object(fh, 'WALLET_CHECKS', True)   # off since owner 11/10; the dormant check keeps its rules
     def test_the_police_check_counts_the_bonus_later(self):
         s = story(100000)
         s['journey']['fair'] = f = dict(fh.initial(), date=fh.vn_date(OPEN), ed=fh.edition())
         f['stats']['won'] = 60000
-        self.dice(Dice(draws=[.5, .1, 0, 0]))
+        self.dice(Dice(draws=[.1, 0, 0]))   # a small round: no dẹp chiếu draw (owner 11/10), the round, the Lộc, the check
         s, r = self.act(s, 'fair_xd', side='chan', stake=100)
         self.assertEqual(r['fair']['loc']['won'], 1000)
         self.assertNotIn('wealth_raid', r['fair'])                    # today's net 1,000: the 1.9.9 raid is not due
         self.assertEqual(r['fair']['audit']['gain'], 61000)
-        self.assertEqual(r['fair']['audit']['amount'], 6100)
+        self.assertEqual(r['fair']['audit']['amount'], 2000)          # 10% = 6,100, within the loss_limits ceiling
 
 
 class StoreLoc(StoreBase):
@@ -295,14 +296,14 @@ class StoreLoc(StoreBase):
         return int(row[0]) if row else None
 
     def xd_win(self, tok, rid=None):
-        self.dice(Dice(draws=[.5, .1, 0, .99]))
+        self.dice(Dice(draws=[.1, 0, .99]))
         return self.cmd(tok, 'fair_xd', dict(side='chan', stake=100), rid)
 
     def test_once_an_hour_for_the_whole_server_and_replay_safe(self):
         a, b = self.player('Lan', wallet=1000), self.player('Minh', wallet=1000)
         rev = self.store.read(a)[1]
         args = (a, 'loc-retry-0001', rev, None, 'fair_xd', dict(side='chan', stake=100))
-        self.dice(Dice(draws=[.5, .1, 0, .99]))
+        self.dice(Dice(draws=[.1, 0, .99]))
         first = self.store.command(*args)
         self.assertEqual(first['result']['fair']['loc']['won'], 1000)
         self.assertEqual(self.store.read(a)[0]['journey']['wallet'], 2000)
@@ -330,7 +331,7 @@ class StoreLoc(StoreBase):
                     'INSERT INTO mnl_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value',
                     (fh.LOC_KEY, str(int(self.clock.t)))))
             return real(db, result)
-        self.dice(Dice(draws=[.5, .1, 0, .99, .1, .1, 0, .99]))   # the second computation wins its round too
+        self.dice(Dice(draws=[.1, 0, .99, .1, 0, .99]))   # the second computation wins its round too
         with mock.patch.object(fh, 'loc_claim', side_effect=rival_first):
             r = self.cmd(tok, 'fair_xd', dict(side='chan', stake=100))
         self.assertNotIn('loc', r['result']['fair'])

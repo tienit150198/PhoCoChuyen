@@ -14,6 +14,21 @@ def rich(net=60000, wallet=100000):
 
 
 class WealthRaid(FairBase):
+    def setUp(self):
+        super().setUp()
+        p = mock.patch.object(fh, 'WALLET_CHECKS', True)   # off since owner 11/10 (fines per round only); the dormant
+        p.start()                                           # check keeps its rules checked here
+        self.addCleanup(p.stop)
+
+    def test_off_since_11_10(self):
+        """Owner 11/10: a police fine is only ever the caught round's (fair_bm.round_fine): no wallet raid by default."""
+        with mock.patch.object(fh, 'WALLET_CHECKS', False):
+            self.dice(Dice(draws=[0]))
+            s, result = self.act(rich(), 'fair_bc', bets={'cua': 1})
+        self.assertNotIn('wealth_raid', result['fair'])
+        self.assertEqual(s['journey']['wallet'], 100000 - 1)
+        self.assertNotIn('wealth_check_at', s['journey']['fair'])
+
     def test_bounded_fine_after_round_and_records_it(self):
         self.assertEqual(fh.WEALTH_RAID_P, .35)   # 07/10: half of 1.9.9's .70 (gap and 30% unchanged)
         self.dice(Dice(draws=[fh.WEALTH_RAID_P - 1e-6]))  # losing bet (honest dice: no luck draw) then successful check
@@ -76,10 +91,10 @@ class WealthRaid(FairBase):
 
     def test_xd_normal_raid_does_not_double_charge(self):
         self.dice(Dice(draws=[0, 0]))
-        s, result = self.act(rich(), 'fair_xd', stake=10, side='chan')
+        s, result = self.act(rich(), 'fair_xd', stake=50000, side='chan')
         self.assertTrue(result['fair']['raid'])
         self.assertNotIn('wealth_raid', result['fair'])
-        self.assertEqual(s['journey']['wallet'], 100000 - 3)
+        self.assertEqual(s['journey']['wallet'], 100000 - 15000)   # a big (watched) round: 30% of its stake
 
     def test_check_timestamp_validation(self):
         for value in (-1, True, '123', 10**12):
@@ -104,6 +119,12 @@ class WealthRaid(FairBase):
 
 
 class WealthRaidReplay(StoreBase):
+    def setUp(self):
+        super().setUp()
+        p = mock.patch.object(fh, 'WALLET_CHECKS', True)   # off since owner 11/10 (fines per round only); the dormant
+        p.start()                                           # check keeps its rules checked here
+        self.addCleanup(p.stop)
+
     def test_retry_cannot_charge_wallet_or_redraw_the_check(self):
         from game import marriage as mr
         tok = self.player('Lan', wallet=100000)

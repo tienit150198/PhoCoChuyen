@@ -40,7 +40,8 @@ class NoCap(FairBase):
         return s, r['fair']['prize']
 
     def test_the_cap_and_its_helpers_are_gone(self):
-        # 09/10 (exploit audit): a net-winnings cap came back, fair.KN_DAY_CAP a Vietnam day (tests/test_exploit_fixes.py)
+        # 09/10 (exploit audit): a net-winnings cap came back, fair.KN_DAY_CAP a Vietnam day; owner 11/10 removed it again
+        # for the "thiết bị hỗ trợ" past fair.KN_DEVICE_FROM (tests/test_exploit_fixes.py)
         for name in ('KN_CAP_UNIT', 'kn_cap_left', '_kn_over'):
             self.assertFalse(hasattr(fh, name), name)
 

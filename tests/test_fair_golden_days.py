@@ -202,14 +202,14 @@ class GoldenDraws(FairBase):
             self.assertAlmostEqual(wins / count, golden.WIN_P, delta=.012, msg=game)
 
     def test_xd_keeps_raid_rule_and_result_coins_match_paid_win(self):
-        for draws, expected in [([.99, .699999], True), ([.99, .70], False)]:
+        for draws, expected in [([.699999], True), ([.70], False)]:   # a small round: no dẹp chiếu draw (owner 11/10)
             self.dice(Dice(draws=draws))
             _, result = self.act(story(100), 'fair_xd', side='chan', stake=10)
             out = result['fair']
             self.assertEqual(out['net'] > 0, expected)
             self.assertEqual(sum(out['coins']) % 2 == 0, expected)
-        self.dice(Dice(draws=[0]))
-        _, result = self.act(story(100), 'fair_xd', side='chan', stake=10)
+        self.dice(Dice(draws=[0]))   # a big stake: a round the police watch, the dẹp chiếu as before
+        _, result = self.act(story(100000), 'fair_xd', side='chan', stake=50000)
         self.assertTrue(result['fair']['raid'])
 
     def test_loto_bought_before_expiry_keeps_winning_cards_and_claim_rules_after_expiry(self):

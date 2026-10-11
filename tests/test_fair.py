@@ -218,9 +218,17 @@ class BauCua(FairBase):
 
 
 class ChieuTrong(FairBase):
+    def watched(self, s, net=None):
+        """Today's winnings past fair_bm.ARREST_FROM: a round the police watch (bm.arrest_p > 0), the only kind the dẹp
+        chiếu may come for (owner 11/10 "đánh nhiều mới bị phạt thôi")."""
+        s['journey']['fair'] = dict(fh.initial(), date=fh.vn_date(self.clock.t), ed=fh.edition(),
+                                      net=fh.bm.ARREST_FROM + 1 if net is None else net)
+        validate_state(s)
+        return s
+
     def test_even_money(self):
         s = story(200)
-        self.dice(Dice(coins=[1, 1, 0, 0], draws=[.9, .1]))
+        self.dice(Dice(coins=[1, 1, 0, 0], draws=[.1]))   # a small round: no raid draw, only the round's
         s, r = self.act(s, 'fair_xd', side='chan', stake=30)
         self.assertEqual((r['fair']['raid'], r['fair']['even'], r['fair']['net']), (False, True, 30))
         self.dice(Dice(coins=[1, 0, 0, 0], draws=[.9, .9]))
@@ -235,13 +243,14 @@ class ChieuTrong(FairBase):
                 apply_action(s, None, 'fair_xd', p)
 
     def test_raid_cancels_stake_fines_and_closes_the_corner(self):
-        s = story(200)
+        s = self.watched(story(200))
         self.dice(Dice(draws=[0.0]))
         s, r = self.act(s, 'fair_xd', side='le', stake=40)
         f = r['fair']
         self.assertTrue(f['raid'])
-        self.assertEqual((f['stake'], f['fine'], f['net']), (40, 4, -4))
-        self.assertEqual(s['journey']['wallet'], 196)
+        self.assertEqual((f['stake'], f['fine'], f['net']), (40, 12, -12))   # owner 11/10: 30% of the stake
+        self.assertEqual(s['journey']['wallet'], 188)
+        self.assertIn('30% tiền cược ván này', r['message'])
         self.assertIn('f_raid', s['journey']['titles'])
         self.assertIn('Công an phường', r['message'])
         with self.assertRaises(GameError) as e:
@@ -256,15 +265,17 @@ class ChieuTrong(FairBase):
         validate_state(s)
 
     def test_the_fine_never_takes_the_wallet_below_zero(self):
-        s = story(12)
+        s = self.watched(story(10))   # a whole-wallet stake: its fine (30%, at least FINE_MIN) is within the wallet
         self.dice(Dice(draws=[0.0]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=10)
-        self.assertEqual((r['fair']['fine'], s['journey']['wallet']), (0, 12))
+        self.assertEqual((r['fair']['fine'], s['journey']['wallet']), (fh.FINE_MIN, 10 - fh.FINE_MIN))
         self.assertFalse(s['journey']['in_debt'])
+        validate_state(s)
 
     def test_only_the_back_corner_is_ever_raided(self):
-        """A raid draw of 0 every time: bầu cua and lô tô never meet the police; the back corner always does."""
-        s = story(1000)
+        """A raid draw of 0 every time: bầu cua and lô tô never meet the police; the back corner always does (for a
+        round the police watch)."""
+        s = self.watched(story(1000), fh.bm.ARREST_FROM + 1000)   # still past it after the rounds below
         self.dice(Dice(draws=[0.0] * 50, faces=['ga'] * 90))
         for _ in range(10):
             s, r = self.act(s, 'fair_bc', bets={'cua': 1})
@@ -275,12 +286,22 @@ class ChieuTrong(FairBase):
         s, r = self.act(s, 'fair_xd', side='chan', stake=10)
         self.assertTrue(r['fair']['raid'])
 
-    def test_the_fine_is_a_quarter_of_the_stake(self):
-        s = story(1000)
+    def test_the_fine_is_30_percent_of_the_stake(self):
+        s = self.watched(story(1000))
         self.dice(Dice(draws=[0.0]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=50)
-        self.assertEqual((r['fair']['fine'], r['fair']['net']), (12, -12))
+        self.assertEqual((r['fair']['fine'], r['fair']['net']), (15, -15))   # owner 11/10: bm.round_fine
         self.assertEqual(fh.xd_fine(10), fh.FINE_MIN)
+        self.assertEqual((fh.xd_fine(1000), fh.xd_fine(10**7)), (300, 3 * 10**6))
+
+    def test_a_small_player_is_never_raided(self):
+        """Owner 11/10 "đánh nhiều mới bị phạt thôi": no big stake and no big winnings today, no dẹp chiếu."""
+        s = story(1000)
+        self.dice(Dice(draws=[0.0] * 20))
+        for _ in range(5):
+            s, r = self.act(s, 'fair_xd', side='chan', stake=49999 if s['journey']['wallet'] >= 49999 else 10)
+            self.assertFalse(r['fair']['raid'])
+        self.assertEqual(s['journey']['fair']['stats']['raids'], 0)
 
 class Calendar(FairBase):
     def test_closed_outside_the_window(self):
@@ -782,8 +803,9 @@ class Money(FairBase):
         self.dice(Dice(faces=['cua', 'cua', 'tom']))
         s, r = self.act(s, 'fair_bc', bets={'cua': 5, 'ca': 3})              # +7
         self.assertNotIn('points', r['fair'])
+        s['journey']['fair']['net'] = fh.bm.ARREST_FROM + 7   # today's winnings past it: a watched round (owner 11/10)
         self.dice(Dice(draws=[0.0]))
-        s, r = self.act(s, 'fair_xd', side='chan', stake=10)               # raided: the stake and the fine
+        s, r = self.act(s, 'fair_xd', side='chan', stake=10)               # raided: the stake kept, the fine paid
         self.assertTrue(r['fair']['raid'])
         lost = -r['fair']['net']
         with mock.patch.object(oaq, 'ai_move', weakest):

@@ -16,15 +16,16 @@ class PaidStakeLimits(FairBase):
         with patch.object(xs, 'prize_mult', return_value=50):
             state,result=self.act(state,'fair_xs',price=500)
         self.assertEqual(result['fair']['prize'],25000)
-        self.assertEqual(result['fair']['wealth_raid']['amount'],690)
-        self.assertEqual(state['journey']['fair']['net'],fh.NET_SAFE-1000+24500-690)
+        self.assertNotIn('wealth_raid',result['fair'])   # owner 11/10: the wallet raid is off (fh.WALLET_CHECKS)
+        self.assertEqual(state['journey']['fair']['net'],fh.NET_SAFE-1000+24500)
         validate_state(state)
         with self.assertRaises(GameError):self.act(state,'fair_xs',price=2)
-        state=story(10000)
+        state=story(100000)
         state['journey']['fair']=dict(fh.initial(), date=fh.vn_date(self.clock.t), net=-999499)
-        self.dice(Dice(draws=[0]))
-        state,result=self.act(state,'fair_xd',side='chan',stake=500)
-        self.assertEqual(state['journey']['fair']['net'],-999624)
+        self.dice(Dice(draws=[0]))   # a big stake (watched since 11/10): the dẹp chiếu, 30% of the stake
+        state,result=self.act(state,'fair_xd',side='chan',stake=50000)
+        self.assertTrue(result['fair']['raid'])
+        self.assertEqual(state['journey']['fair']['net'],-999499-15000)
         validate_state(state)
 
     def test_pending_knife_prize_crosses_old_bound_once(self):
@@ -130,6 +131,6 @@ class PaidStakeLimits(FairBase):
     def test_raid_increases_ten_percent_relative_only_on_chieu(self):
         self.assertAlmostEqual(fh.RAID_PCT, .88)   # 07/10: half of 1.76%
         for draw, raid in [(.008799, True), (.0088, False)]:
-            self.dice(Dice(draws=[draw, .1]))
-            _, result = self.act(story(1000), 'fair_xd', side='chan', stake=500)
+            self.dice(Dice(draws=[draw, .1]))   # a round the police watch (a big stake): owner 11/10
+            _, result = self.act(story(100000), 'fair_xd', side='chan', stake=50000)
             self.assertEqual(result['fair']['raid'], raid)
