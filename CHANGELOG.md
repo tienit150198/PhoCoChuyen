@@ -1,3 +1,7 @@
+# v2.0.4.2 — 2026-10-11
+
+Giao diện mới: bài tập huấn Thư viện tô sáng đáp án đã chọn (#341); nhạc nền mạng chậm phát tiếp từ chỗ đoạn mở đầu dừng, không lặp lại đoạn đầu (#346); thanh công việc và các tab kho luôn vừa màn hình 360 px, không trượt qua lại khi nhập hàng (#348); khay thùng hàng giữ ô 30 px như giao diện cũ (#345); nút Thử lại khi tải phố lỗi bấm được, hộp chọn giao diện đóng ngay khi lưu lỗi, nhãn Xem hướng dẫn không che cần điều khiển/menu, chạm đóng menu không làm nhân vật đi, Esc ngoài phố không làm mờ đảo (#344).
+
 # v2.0.4 — 2026-10-11
 
 Chợ đen: mọi khoản phạt công an là 30% tiền cược của chính ván bị bắt (kèm tịch thu tiền cược); ví thiếu thì trừ ngân hàng, sổ tiết kiệm, sổ Mây, vàng, Mây Coin. Tắt kiểm tra ví/tài sản cũ. Chơi nhỏ (dưới 50k, lời hôm nay chưa quá 300k) không bị bắt hay dẹp chiếu. Ván từ 50k thắng tối đa 40% (cả trong Hai ngày vàng). Hoàn phần phạt dư 16:49–17:26 bằng quà hệ thống.
