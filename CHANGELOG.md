@@ -1,3 +1,17 @@
+# v2.0.1 — 2026-10-11
+
+Sửa kính theo vị trí mắt ở từng hướng/bước đi, mũ khi quay lưng, màu áo và mảnh ảnh thừa của nhân vật ngoài phố. Dùng đường cắt cổ thực tế cho bơi/chèo thuyền, chỉnh tư thế ngồi và chân trên thuyền.
+
+Lên thuyền từ phần cầu gỗ đi được; bơi tự do có nút Lên bờ và phím Space tương ứng, quay lại thang trước khi lên. Không yêu cầu đi hết vòng mới được thoát hồ.
+
+Giảm xử lý/vẽ avatar đứng yên và ngoài màn hình; đổi màu sprite trực tiếp trên bộ đệm, giữ nguyên kết quả từng pixel. Chẩn đoán tùy chọn đo thêm khoảng thời gian giữa khung hình.
+
+Rương chưa nhặt được giữ lại qua các đợt và khởi động lại. Mỗi 10 phút vẫn thêm 3–5 rương; mỗi rương trả 10.000 xu một lần cho người nhặt hợp lệ. Rương trùng chỗ hiển thị thành cụm có số lượng, mở từng rương. Chỉ dọn biên nhận đã nhặt quá thời gian lưu vết; không xóa rương chưa nhặt. Schema 39 thêm chỉ mục cho truy vấn rương còn lại. Giữ nguyên thời hạn Hai ngày vàng và thông báo 2.0 đã phát.
+
+Giao diện cũ có lối Ra đảo nhặt rương trên bản đồ và menu Khu phố, dùng chung đảo/người chơi/rương với 2.5D. Đóng đảo trả lại nơi làm việc và giữ lựa chọn giao diện cũ.
+
+Giảm nhẹ khả năng bị công an bắt khi chơi Chợ Đen; giữ điều kiện áp dụng, tiền phạt và thời gian tạm giữ. Không đưa tỷ lệ vào giao diện công khai.
+
 # v2.0.0 — 2026-10-11
 
 Giao diện Phaser 2.5D cho khu phố và nơi làm nghề; 50 ngoại thất riêng, 50 bố cục nội thất, cây cối/tiện ích và biển hiệu theo công trình. Cải thiện camera, di chuyển, hoạt động ngoài trời và vòng đời tải tài nguyên; nhà ở/không gian trang trí 3D, avatar và phụ kiện dùng chung dữ liệu nhân vật.

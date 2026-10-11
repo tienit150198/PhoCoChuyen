@@ -34,10 +34,12 @@ class TownTreasureFeature(Feature):
                     await db.execute(tt.INSERT_CHEST, row)
                 for sql, args in tt.cleanup_sql(bucket, at):
                     await db.execute(sql, args)
-            return await db.fetch(tt.SELECT_CHESTS, (bucket,))
-        rows = await self.db.transaction(work)
+            rows = await db.fetch(tt.SELECT_CHESTS)
+            wave = await db.fetchrow(tt.SELECT_WAVE_COUNT, (bucket,))
+            return rows, wave['added']
+        rows, added = await self.db.transaction(work)
         old = self.snapshot
-        self.snapshot = tt.view(rows, at)
+        self.snapshot = tt.view(rows, at, added=added)
         self.refresh_at = time.monotonic() + REFRESH
         if broadcast or not old or old['wave']['id'] != self.snapshot['wave']['id'] or old['chests'] != self.snapshot['chests']:
             self.hub.send_many([c for c in self.hub.conns if c.ready], dict(t='town_treasure', **self.snapshot))
@@ -116,8 +118,8 @@ class TownTreasureFeature(Feature):
         proof = secrets.token_hex(24)
         async def work(db):
             chest = await db.fetchrow('SELECT * FROM town_treasure_chests WHERE id=?', (chest_id,))
-            if not chest or chest['bucket'] != int(at // tt.PERIOD):
-                raise LiveError('treasure_expired', 'Rương này đã hết hạn.')
+            if not chest:
+                raise LiveError('treasure_missing', 'Rương này không còn trên bản đồ.')
             if chest['winner']:
                 raise LiveError('treasure_taken', 'Một người khác đã nhặt rương này.')
             position = dict(map_id=tt.MAP_ID,x=w.x,y=w.y,seen_at=at-age,online=1)

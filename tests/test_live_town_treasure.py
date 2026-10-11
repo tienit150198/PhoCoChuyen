@@ -84,6 +84,21 @@ class TreasureSockets(LiveCase):
         self.assertEqual(result['result']['treasure']['coins'],10000)
         self.assertTrue(self.tt.claim(self.store,token,body)['replayed'])
 
+    async def test_old_unclaimed_chest_remains_in_live_snapshot_and_accepts_fresh_proof(self):
+        c,token,sid=await self.enter()
+        chest=self.next_chest();self.put_chest_near_spawn(chest)
+        future=time.time()+151*self.tt.PERIOD
+        with patch('game.town_treasure.now',return_value=future):
+            # Simulate an actively connected walker, whose position checkpoint
+            # is fresh even though the unclaimed chest is more than a day old.
+            await self.app.by_name['treasure'].checkpoint()
+            snapshot=await self.app.by_name['treasure'].refresh()
+            self.assertIn(chest['id'],[row['id'] for row in snapshot['chests']])
+            self.assertTrue(3<=snapshot['wave']['added']<=5)
+            proof=await c.call('town_treasure_prepare','town_treasure_ready',chest_id=chest['id'])
+            result=self.tt.claim(self.store,token,dict(chest_id=chest['id'],proof=proof['proof'],request_id='old-live-pick-001'))
+            self.assertEqual(result['result']['treasure']['coins'],10000)
+
     async def test_changing_outfit_preserves_an_issued_treasure_proof(self):
         c, token, sid = await self.enter()
         chest = self.next_chest(); self.put_chest_near_spawn(chest)

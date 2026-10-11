@@ -31,6 +31,7 @@ import type {ArchitectureInk} from './work-architecture';
 export type WorldMode = 'town' | 'work';
 type StaticVisual=Phaser.GameObjects.Image|Phaser.GameObjects.Text|Phaser.GameObjects.Container;
 type Occluder=OccludingShape&{image:Phaser.GameObjects.Image;sign?:Phaser.GameObjects.Container;alpha:number;target:number};
+type RemoteActor={peer:RemotePlayer;look:Record<string,any>;appearance:string;pose:string;artRevision:number;at:Point;from:Point;path:Point[];started:number;image:Phaser.GameObjects.Image;tag:Phaser.GameObjects.Text;texture:string};
 interface Hotspot extends Point {id:string;label:string;approach:Point;interactionPoint?:Point;point:Point;z:number;range:number}
 type PublicState = {current?:string;focus?:string;careers?:Record<string,any>;journey?:any;settings?:any;[key:string]:any};
 type Content = {catalogue?:Career[];npcs?:any[];[key:string]:any};
@@ -55,7 +56,7 @@ export class PhaserWorld {
   player:Point & {path:Point[];goal:Point|null;look:number}={x:6.2,y:6.2,path:[],goal:null,look:1};
   hotspots:Hotspot[]=[];
   remotePlayers:RemotePlayer[]=[];
-  treasure:Array<Point&{id:string}>=[];
+  treasure:Array<Point&{id:string;count:number}>=[];
   direction:Facing='se';
   reduced=false;
   width=1200;
@@ -113,7 +114,7 @@ export class PhaserWorld {
       scene:[new DioramaScene(owner)],callbacks:{postBoot(game){game.events.once(Phaser.Core.Events.DESTROY,()=>owner.disposeObservers());}}});
     this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(canvas.parentElement||canvas);
     if(typeof IntersectionObserver==='function'){this.visibleObserver=new IntersectionObserver(entries=>{this.visible=entries[entries.length-1]?.isIntersecting??true;this.wake();});this.visibleObserver.observe(canvas);}
-    this.modalObserver=new MutationObserver(()=>{if(document.querySelector('dialog[open]'))this.clearMovementControls();this.wake();});this.modalObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
+    this.modalObserver=new MutationObserver(()=>{if(this.blockingDialog())this.clearMovementControls();this.wake();});this.modalObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
     this.listen(canvas,'pointerdown',this.pointerDown as EventListener);
     this.listen(canvas,'pointermove',this.pointerMove as EventListener);
     this.listen(canvas,'pointerup',this.pointerUp as EventListener);
@@ -133,14 +134,14 @@ export class PhaserWorld {
   get paused(){return this._paused;}
   get cameraMode(){return this.stage?.cameraMode||'follow';}
   set paused(value:boolean){this._paused=!!value;if(this._paused){this.clearMovementControls();this.pointers.clear();this.pinch=null;}this.wake();}
-  setMovementInput(x:number,y:number){this.movementInput=this.shouldSleep()||!!document.querySelector('dialog[open]')?{x:0,y:0}:normalizeMovementInput(x,y);this.wake();}
+  setMovementInput(x:number,y:number){this.movementInput=this.shouldSleep()||this.blockingDialog()?{x:0,y:0}:normalizeMovementInput(x,y);this.wake();}
   getPresence(){return this.mode==='town'?{x:this.player.x,y:this.player.y,direction:this.direction}:null;}
   correctPresence(at:Point){if(this.mode!=='town'||!this.stage||!isWalkable(this.stage.navigation,at))return;Object.assign(this.player,at,{path:[],goal:null});this.pending=null;this.stage.positionPlayer(false);if(this.cameraMode==='follow')this.recenter();this.wake();}
   setTreasure(value:unknown){
-    const rows=Array.isArray(value)?value.filter(c=>c&&typeof c.id==='string'&&Number.isFinite(c.x)&&Number.isFinite(c.y)).slice(0,5).map(c=>({id:c.id,x:c.x,y:c.y})):[];
+    const rows=Array.isArray(value)?value.filter(c=>c&&typeof c.id==='string'&&Number.isFinite(c.x)&&Number.isFinite(c.y)).map(c=>({id:c.id,x:c.x,y:c.y,count:Number.isFinite(c.count)?Math.max(1,Math.floor(c.count)):1})):[];
     if(JSON.stringify(rows)===JSON.stringify(this.treasure))return;this.treasure=rows;this.stage?.syncTreasure();this.wake();
   }
-  setRemotePlayers(peers:unknown){const players=publicTownPlayers(peers),signature=JSON.stringify(players);if(signature===this.remoteSignature)return;this.remoteSignature=signature;this.remotePlayers=players;this.stage?.syncRemotePlayers();if(this.mode==='town')this.wake();}
+  setRemotePlayers(peers:unknown){const players=publicTownPlayers(peers),signature=JSON.stringify(players);if(signature===this.remoteSignature)return;this.remoteSignature=signature;this.remotePlayers=players;const changed=this.stage?.syncRemotePlayers();if(this.mode==='town'&&changed)this.wake();}
   private clearMovementControls(){this.keys.clear();this.movementInput={x:0,y:0};}
   get time(){return performance.now()/1000;}
   get ctx(){return this.fxContext;}
@@ -203,7 +204,7 @@ export class PhaserWorld {
   private zoomRange(){return this.mode==='town'?TOWN_ZOOM:CAMERA_ZOOM;}
   setZoom(value:number){const camera=this.stage?.cameras.main;if(camera&&this.stage){this.stage.browseCamera();const range=this.zoomRange();camera.setZoom(Phaser.Math.Clamp(value,range.min,range.max));this.wake();}}
   zoomBy(factor:number){this.setZoom((this.stage?.cameras.main.zoom||1)*factor);}
-  debug(){return {mode:this.mode,career:this.career,cameraMode:this.cameraMode,paused:this.paused,movementInput:{...this.movementInput},remotePlayers:this.remotePlayers.length,loopRunning:this.engine.loop.running,loopSleeping:!this.engine.loop.running,hidden:document.hidden,covered:!!document.querySelector('dialog[open]:not(.drawer)'),visible:this.visible,paths:this.player.path.length,hotspots:this.hotspots.length,sceneActive:this.stage?.sys.isActive(),sceneChildren:this.stage?.children.length,groundTextures:this.engine.textures.exists('iso-ground'),occluded:this.stage?.occludedCount||0,player:{x:this.player.x,y:this.player.y},camera:this.stage?{x:this.stage.cameras.main.scrollX,y:this.stage.cameras.main.scrollY,zoom:this.stage.cameras.main.zoom}:null};}
+  debug(){return {mode:this.mode,career:this.career,cameraMode:this.cameraMode,paused:this.paused,movementInput:{...this.movementInput},remotePlayers:this.remotePlayers.length,loopRunning:this.engine.loop.running,loopSleeping:!this.engine.loop.running,hidden:document.hidden,covered:this.blockingDialog(true),visible:this.visible,paths:this.player.path.length,hotspots:this.hotspots.length,sceneActive:this.stage?.sys.isActive(),sceneChildren:this.stage?.children.length,groundTextures:this.engine.textures.exists('iso-ground'),occluded:this.stage?.occludedCount||0,player:{x:this.player.x,y:this.player.y},camera:this.stage?{x:this.stage.cameras.main.scrollX,y:this.stage.cameras.main.scrollY,zoom:this.stage.cameras.main.zoom}:null};}
   say(text:string,npc:string|null=null){if(!text)return;this.stage?.say(String(text),npc);if(this.speechTimer)clearTimeout(this.speechTimer);this.speechTimer=setTimeout(()=>{this.speechTimer=null;this.stage?.clearSpeech();this.wake();},Math.min(9000,Math.max(3500,text.length*48)));this.wake();}
   celebrate(){this.stage?.celebrate();this.wake();}
   pet(){this.say(this.words().cat_line||'Mướp rất vui khi có bạn ở đây.');this.stage?.celebrate(true);this.wake();}
@@ -220,7 +221,8 @@ export class PhaserWorld {
     const image=out.toDataURL('image/webp',.8);this.cachedPreview.set(career,image);return image;
   }
   wake(){if(this.destroyed||!this.engine)return;if(this.shouldSleep()){this.clearMovementControls();this.engine.loop.sleep();return;}this.stage?.requestRender();this.engine.loop.wake();}
-  shouldSleep(){return this._paused||document.hidden||!this.visible||!!document.querySelector('dialog[open]:not(.drawer)');}
+  private blockingDialog(allowDrawer=false){return !!document.querySelector('dialog[open]'+(allowDrawer?':not(.drawer)':'')+(this.canvas?.closest?.('dialog[data-shared-island]')?':not([data-shared-island])':''));}
+  shouldSleep(){return this._paused||document.hidden||!this.visible||this.blockingDialog(true);}
   step(dt:number){
     if(this.shouldSleep()){this.clearMovementControls();this.engine.loop.sleep();return;}
     const stage=this.stage;if(!stage)return;
@@ -250,7 +252,7 @@ export class PhaserWorld {
   private pointerUp=(e:PointerEvent)=>{const pointer=this.pointers.get(e.pointerId);this.pointers.delete(e.pointerId);this.pinch=null;this.canvas.style.cursor='grab';if(pointer&&!pointer.drag&&!gestureIsDrag(pointer.start,this.local(e))&&!this._paused&&this.stage)this.tap(this.worldPoint(this.local(e)));this.wake();};
   private pointerCancel=(e:PointerEvent)=>{this.pointers.delete(e.pointerId);this.pinch=null;this.canvas.style.cursor='grab';this.wake();};
   private wheel=(e:WheelEvent)=>{if(!this.stage||this._paused)return;e.preventDefault();this.stage.browseCamera();const p=this.local(e),before=this.worldPoint(p),camera=this.stage.cameras.main,range=this.zoomRange();camera.setZoom(Phaser.Math.Clamp(camera.zoom*Math.exp(-e.deltaY*.0013),range.min,range.max));const after=this.worldPoint(p);camera.scrollX+=before.x-after.x;camera.scrollY+=before.y-after.y;this.lastInput=this.time;this.wake();};
-  private keydown=(e:KeyboardEvent)=>{const key=e.key.toLowerCase(),target=e.target as HTMLElement|null;if(target?.matches('input,textarea,select,[contenteditable="true"]')||this.shouldSleep())return;if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(key)){e.preventDefault();this.keys.add(key);this.wake();}if(key==='e'&&!e.repeat&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!document.querySelector('dialog[open]')&&this.stage){e.preventDefault();const h=nearestReachableHotspot(this.stage.navigation,this.player,this.hotspots);if(h){this.stage.highlight(h.id);this.go(h.id,()=>this.onInteract(h.id));}this.wake();}if(key==='home'){e.preventDefault();this.resetCamera();}};
+  private keydown=(e:KeyboardEvent)=>{const key=e.key.toLowerCase(),target=e.target as HTMLElement|null;if(target?.matches('input,textarea,select,[contenteditable="true"]')||this.shouldSleep())return;if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(key)){e.preventDefault();this.keys.add(key);this.wake();}if(key==='e'&&!e.repeat&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!this.blockingDialog()&&this.stage){e.preventDefault();const h=nearestReachableHotspot(this.stage.navigation,this.player,this.hotspots);if(h){this.stage.highlight(h.id);this.go(h.id,()=>this.onInteract(h.id));}this.wake();}if(key==='home'){e.preventDefault();this.resetCamera();}};
   private keyup=(e:KeyboardEvent)=>{this.keys.delete(e.key.toLowerCase());this.wake();};
   private tap(point:Point){if(this.mode==='work'&&this._fx?.tap?.(point)){this.wake();return;}const h=this.stage!.hitTest(point);if(h){this.stage!.highlight(h.id);this.go(h.id,()=>this.onInteract(h.id));return;}const ground=unproject(point);if(isWalkable(this.stage!.navigation,ground)){this.player.path=findRoute(this.stage!.navigation,this.player,ground);this.pending=null;this.player.goal=ground;this.stage!.mark(ground);this.wake();}}
   destroy(){if(this.destroyed)return;this.destroyed=true;if(this.speechTimer)clearTimeout(this.speechTimer);this.player.path=[];this.pending=null;this.clearMovementControls();this.disposeObservers();this._fx?.clear?.();this.engine.destroy(false);this.engine.loop.wake();this.cachedPreview.clear();if((window as any).__isoWorld===this)delete (window as any).__isoWorld;}
@@ -304,10 +306,11 @@ class DioramaScene extends Phaser.Scene {
   private signMounts=new Map<Phaser.GameObjects.Container,Point>();
   private selected?:Phaser.GameObjects.Image;
   private imageById=new Map<string,Phaser.GameObjects.Image>();
-  private treasureObjects:Phaser.GameObjects.Container[]=[];
+  private treasureObjects=new Map<string,{box:Phaser.GameObjects.Container;label:Phaser.GameObjects.Text;count:number}>();
   private previousMode:WorldMode|null=null;
   private previousCareer='';
-  private remoteActors=new Map<string,{peer:RemotePlayer;at:Point;from:Point;path:Point[];started:number;image:Phaser.GameObjects.Image;tag:Phaser.GameObjects.Text;texture:string}>();
+  private remoteActors=new Map<string,RemoteActor>();
+  private remoteVisualRevision=0;
   private npcArt:Array<{image:Phaser.GameObjects.Image;look:any;gender:string;uniformColor:string;texture:string;seed:number}>=[];
   private requestedAssets=new Set<string>();
   private assetWakeQueued=false;
@@ -342,24 +345,31 @@ class DioramaScene extends Phaser.Scene {
     this.previousMode=this.owner.mode;this.previousCareer=this.owner.career;this.cameras.main.setBackgroundColor(this.owner.mode==='town'?SEA_COLOR:'#ede3ce');this.background=this.add.graphics().setDepth(-10000);this.staticObjects.push(this.background);
     if(this.owner.mode==='town')this.town();else this.work();
     if(changed||!isWalkable(this.navigation,this.owner.player)){const home=this.owner.mode==='town'?{x:6.2,y:6.2}:{x:6.4,y:6.4};const at=nearestWalkable(this.navigation,home)||home;Object.assign(this.owner.player,at,{path:[],goal:null});this.owner.pending=null;if(modeChanged||!this.cameraSet||this.cameraMode==='follow')this.resetCamera(false);}
-    this.treasureObjects=[];this.syncTreasure();this.reindexStatics();this.refreshPlayer();this.positionPlayer(false);this.updateOcclusion(1/60);this.syncRemotePlayers();if(this.fxImage)this.fxImage.setVisible(this.owner.mode==='work');this.requestRender();
+    this.treasureObjects.clear();this.syncTreasure();this.reindexStatics();this.refreshPlayer();this.positionPlayer(false);this.updateOcclusion(1/60);this.syncRemotePlayers();if(this.fxImage)this.fxImage.setVisible(this.owner.mode==='work');this.requestRender();
   }
   syncTreasure(){
-    for(const object of this.treasureObjects){this.staticObjects=this.staticObjects.filter(o=>o!==object);object.destroy();}
-    this.treasureObjects=[];this.hits=this.hits.filter(h=>!h.hotspot.id.startsWith('treasure:'));this.owner.hotspots=this.owner.hotspots.filter(h=>!h.id.startsWith('treasure:'));
-    if(this.owner.mode==='town')for(const chest of this.owner.treasure||[]){
-      if(!isWalkable(this.navigation,chest))continue;
-      const at=px(chest),g=this.add.graphics();
-      g.fillStyle(0x4b3225,.22).fillEllipse(0,0,58,19);
-      const poly=(points:number[][],color:number)=>{g.fillStyle(color).lineStyle(2.5,0x67412a);const p=points.map(([x,y])=>new Phaser.Geom.Point(x,y));g.fillPoints(p,true).strokePoints(p,true);};
-      poly([[-26,-27],[7,-34],[28,-23],[-6,-15]],0xeec371);
-      poly([[-26,-27],[-6,-15],[-6,6],[-26,-6]],0x9b5b31);
-      poly([[-6,-15],[28,-23],[28,-2],[-6,6]],0xbf7c36);
-      g.lineStyle(5,0xf4c958).lineBetween(3,-30,3,1).lineBetween(19,-26,19,-3);
-      g.fillStyle(0xffe7a0).fillRoundedRect(6,-16,9,10,2);
-      const box=this.add.container(at.x,at.y,[g]).setDepth(at.y+.1).setSize(58,45);
-      const h:Hotspot={id:'treasure:'+chest.id,label:'Mở rương · 10.000 xu',x:chest.x,y:chest.y,z:0,point:at,approach:chest,range:1.2};
-      this.owner.hotspots.push(h);this.hits.push({hotspot:h,object:box,footprint:{x0:chest.x-.3,x1:chest.x+.3,y0:chest.y-.3,y1:chest.y+.3}});this.staticObjects.push(box);this.treasureObjects.push(box);
+    // The server groups cumulative chests by their exact spawn point. Keep one
+    // marker per point when its oldest claim ID or count changes after a pickup.
+    const chests=this.owner.mode==='town'?(this.owner.treasure||[]).filter(c=>isWalkable(this.navigation,c)):[],points=new Set(chests.map(c=>`${c.x}:${c.y}`));
+    for(const [key,{box}] of this.treasureObjects)if(!points.has(key)){this.staticObjects=this.staticObjects.filter(o=>o!==box);box.destroy();this.treasureObjects.delete(key);}
+    this.hits=this.hits.filter(h=>!h.hotspot.id.startsWith('treasure:'));this.owner.hotspots=this.owner.hotspots.filter(h=>!h.id.startsWith('treasure:'));
+    for(const chest of chests){
+      const at=px(chest),key=`${chest.x}:${chest.y}`;let marker=this.treasureObjects.get(key);
+      if(!marker){
+        const g=this.add.graphics();g.fillStyle(0x4b3225,.22).fillEllipse(0,0,58,19);
+        const poly=(points:number[][],color:number)=>{g.fillStyle(color).lineStyle(2.5,0x67412a);const p=points.map(([x,y])=>new Phaser.Geom.Point(x,y));g.fillPoints(p,true).strokePoints(p,true);};
+        poly([[-26,-27],[7,-34],[28,-23],[-6,-15]],0xeec371);
+        poly([[-26,-27],[-6,-15],[-6,6],[-26,-6]],0x9b5b31);
+        poly([[-6,-15],[28,-23],[28,-2],[-6,6]],0xbf7c36);
+        g.lineStyle(5,0xf4c958).lineBetween(3,-30,3,1).lineBetween(19,-26,19,-3);
+        g.fillStyle(0xffe7a0).fillRoundedRect(6,-16,9,10,2);
+        const label=this.add.text(0,-40,'',{fontFamily:FONT,fontSize:'13px',color:'#67412a',backgroundColor:'#fff3da',padding:{x:5,y:2}}).setOrigin(.5,1);
+        const box=this.add.container(at.x,at.y,[g,label]).setDepth(at.y+.1).setSize(58,45);
+        marker={box,label,count:0};this.treasureObjects.set(key,marker);this.staticObjects.push(box);
+      }
+      if(marker.count!==chest.count){marker.label.setText(chest.count>1?`${chest.count} rương`:'').setVisible(chest.count>1);marker.count=chest.count;}
+      const h:Hotspot={id:'treasure:'+chest.id,label:(chest.count>1?`${chest.count} rương · `:'')+'Mở 1 rương · 10.000 xu',x:chest.x,y:chest.y,z:0,point:at,approach:chest,range:1.2};
+      this.owner.hotspots.push(h);this.hits.push({hotspot:h,object:marker.box,footprint:{x0:chest.x-.3,x1:chest.x+.3,y0:chest.y-.3,y1:chest.y+.3}});
     }
     this.reindexStatics();this.requestRender();
   }
@@ -527,7 +537,9 @@ class DioramaScene extends Phaser.Scene {
     }
     // A marker above the roof reads as a character standing on that roof.
     // Keep real sprite depth and reveal the player only through the faded obstacle.
-    this.actorRing.setPosition(p.x,p.y-2).setDepth(this.actor.depth-.1).setAlpha(.65).setVisible(this.occludedCount===0);
+    if(this.actorRing.x!==p.x||this.actorRing.y!==p.y-2)this.actorRing.setPosition(p.x,p.y-2);
+    if(this.actorRing.depth!==this.actor.depth-.1)this.actorRing.setDepth(this.actor.depth-.1);
+    this.actorRing.setAlpha(.65).setVisible(this.occludedCount===0);
     return active;
   }
   private islandGround(){
@@ -872,31 +884,59 @@ class DioramaScene extends Phaser.Scene {
   private characterTexture(prefix:string,look:any,gender:string,direction:Facing,uniformColor:string,walkFrame=0){
     return this.characterFrames.get(prefix,JSON.stringify([look,gender,uniformColor,this.characterRevision]),direction+':'+walkFrame,key=>{
       const stamp=getCharacterStamp({look,gender,direction,uniformColor,walkFrame,onReady:this.charactersReady});
-      this.textures.addCanvas(key,stamp.canvas)!.setFilter(Phaser.Textures.FilterMode.LINEAR);
+      // Stamps are immutable. CanvasTexture would read back and retain a second
+      // RGBA buffer for every outfit/pose, although we never edit that texture.
+      const texture=this.textures.create(key,stamp.canvas)!;texture.add('__BASE',0,0,0,stamp.canvas.width,stamp.canvas.height);texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
     });
   }
   syncRemotePlayers(){
-    if(!this.sys.isActive())return;const peers=this.owner.mode==='town'?publicTownPlayers(this.owner.remotePlayers,this.navigation):[],present=new Set(peers.map(p=>p.pid));
-    for(const [pid,actor] of this.remoteActors)if(!present.has(pid)){actor.image.destroy();actor.tag.destroy();this.characterFrames.release('iso-peer-'+pid);this.remoteActors.delete(pid);}
+    if(!this.sys.isActive())return false;const revision=this.remoteVisualRevision,peers=this.owner.mode==='town'?publicTownPlayers(this.owner.remotePlayers,this.navigation):[],present=new Set(peers.map(p=>p.pid));
+    for(const [pid,actor] of this.remoteActors)if(!present.has(pid)){if(actor.image.visible||actor.tag.visible)this.remoteVisualRevision++;actor.image.destroy();actor.tag.destroy();this.characterFrames.release('iso-peer-'+pid);this.remoteActors.delete(pid);}
     for(const peer of peers){
-      const look={...defaultLook(peer.gender),...peer.look},key=this.characterTexture('iso-peer-'+peer.pid,look,peer.gender,peer.direction,'#8ba77a');
+      const appearance=JSON.stringify([peer.gender,peer.look]);
       let actor=this.remoteActors.get(peer.pid);
-      if(!actor){const image=this.add.image(0,0,key).setOrigin(.5,1).setScale(CHARACTER_SCALE),tag=this.add.text(0,0,peer.name,{fontFamily:FONT,fontSize:'13px',color:'#654a39',backgroundColor:'#fff3da',padding:{x:6,y:3}}).setOrigin(.5,1);actor={peer,at:{x:peer.x,y:peer.y},from:{x:peer.x,y:peer.y},path:[],started:0,image,tag,texture:key};this.remoteActors.set(peer.pid,actor);}
+      if(!actor){const image=this.add.image(0,0,'__DEFAULT').setOrigin(.5,1).setScale(CHARACTER_SCALE).setVisible(false),tag=this.add.text(0,0,peer.name,{fontFamily:FONT,fontSize:'13px',color:'#654a39',backgroundColor:'#fff3da',padding:{x:6,y:3}}).setOrigin(.5,1).setVisible(false);actor={peer,look:{...defaultLook(peer.gender),...peer.look},appearance,pose:'',artRevision:-1,at:{x:peer.x,y:peer.y},from:{x:peer.x,y:peer.y},path:[],started:0,image,tag,texture:''};this.remoteActors.set(peer.pid,actor);}
       else{
-        if(actor.texture!==key){actor.image.setTexture(key);actor.texture=key;}
-        if(Math.hypot(actor.peer.x-peer.x,actor.peer.y-peer.y)>1e-5){actor.from={...actor.at};actor.path=this.owner.reduced?[]:findRoute(this.navigation,actor.at,peer);actor.started=this.owner.time;if(!actor.path.length)actor.at={x:peer.x,y:peer.y};}
-        actor.peer=peer;actor.tag.setText(peer.name);
+        if(actor.appearance!==appearance){actor.look={...defaultLook(peer.gender),...peer.look};actor.appearance=appearance;actor.pose='';}
+        if(Math.hypot(actor.peer.x-peer.x,actor.peer.y-peer.y)>1e-5){
+          // Offscreen movement can leave the loop asleep. Advance the previous
+          // segment before starting a new packet so its coordinates stay current.
+          if(actor.path.length)actor.at=interpolateRoute(actor.from,actor.path,Math.min(1,(this.owner.time-actor.started)/.24));
+          actor.from={...actor.at};actor.path=this.owner.reduced?[]:findRoute(this.navigation,actor.at,peer);actor.started=this.owner.time;if(!actor.path.length)actor.at={x:peer.x,y:peer.y};
+        }
+        if(actor.peer.name!==peer.name){actor.tag.setText(peer.name);if(actor.tag.visible)this.remoteVisualRevision++;}actor.peer=peer;
       }
     }
-    this.stepRemotePlayers(this.owner.time);this.requestRender();
+    const moving=this.stepRemotePlayers(this.owner.time),changed=revision!==this.remoteVisualRevision||moving;if(changed)this.requestRender();return changed;
   }
   stepRemotePlayers(now:number){
-    let active=false;
+    let active=false;const c=this.cameras.main,cx=c.scrollX+c.width/2,cy=c.scrollY+c.height/2,hw=c.width/c.zoom/2+160,hh=c.height/c.zoom/2+160;
+    const inView=(point:Point)=>point.x>=cx-hw&&point.x<=cx+hw&&point.y>=cy-hh&&point.y<=cy+hh;
     for(const actor of this.remoteActors.values()){
       let moving=false;
-      if(actor.path.length){const progress=Math.min(1,(now-actor.started)/.24);actor.at=interpolateRoute(actor.from,actor.path,progress);moving=progress<1;if(!moving)actor.path=[];active||=moving;}
-      const walkFrame=moving&&!this.owner.reduced?1+Math.floor(now*7)%2:0,key=this.characterTexture('iso-peer-'+actor.peer.pid,{...defaultLook(actor.peer.gender),...actor.peer.look},actor.peer.gender,actor.peer.direction,'#8ba77a',walkFrame);if(key!==actor.texture){actor.image.setTexture(key);actor.texture=key;}
-      const point=px(actor.at);actor.image.setPosition(point.x,point.y).setDepth(point.y+.5);actor.tag.setPosition(point.x,point.y-112).setDepth(point.y+.7).setVisible(this.cameras.main.zoom>=.22);
+      if(actor.path.length){const progress=Math.min(1,(now-actor.started)/.24);actor.at=interpolateRoute(actor.from,actor.path,progress);moving=progress<1;if(!moving)actor.path=[];}
+      const point=px(actor.at),visible=inView(point);
+      if(actor.image.visible!==visible){actor.image.setVisible(visible);this.remoteVisualRevision++;}
+      const tagVisible=visible&&c.zoom>=.22;if(actor.tag.visible!==tagVisible){actor.tag.setVisible(tagVisible);this.remoteVisualRevision++;}
+      if(!visible){
+        // Keep state, but no recolouring/texture creation or continuous repaint
+        // for other players at the far end of the island. An incoming route near
+        // the viewport still advances, so walking into view is never suppressed.
+        // A long segment may cross the view with neither endpoint inside it.
+        // Conservative segment bounds avoid sleeping through that crossing.
+        if(moving&&!active){let previous=point;for(const nextGround of actor.path){const next=px(nextGround);if(Math.max(previous.x,next.x)>=cx-hw&&Math.min(previous.x,next.x)<=cx+hw&&Math.max(previous.y,next.y)>=cy-hh&&Math.min(previous.y,next.y)<=cy+hh){active=true;break;}previous=next;}}
+        continue;
+      }
+      active||=moving;
+      const walkFrame=moving&&!this.owner.reduced?1+Math.floor(now*7)%2:0,pose=actor.peer.direction+':'+walkFrame;
+      if(pose!==actor.pose||actor.artRevision!==this.characterRevision){
+        const key=this.characterTexture('iso-peer-'+actor.peer.pid,actor.look,actor.peer.gender,actor.peer.direction,'#8ba77a',walkFrame);
+        if(key!==actor.texture){actor.image.setTexture(key);actor.texture=key;this.remoteVisualRevision++;}actor.pose=pose;actor.artRevision=this.characterRevision;
+      }
+      if(actor.image.x!==point.x||actor.image.y!==point.y){actor.image.setPosition(point.x,point.y);this.remoteVisualRevision++;}
+      if(actor.image.depth!==point.y+.5)actor.image.setDepth(point.y+.5);
+      if(actor.tag.x!==point.x||actor.tag.y!==point.y-112)actor.tag.setPosition(point.x,point.y-112);
+      if(actor.tag.depth!==point.y+.7)actor.tag.setDepth(point.y+.7);
     }
     return active;
   }
@@ -997,7 +1037,7 @@ class DioramaScene extends Phaser.Scene {
     const F=figure(this.owner.state),uniformColor=this.owner.mode==='work'?this.owner.game?.catalogue?.find(c=>c.id===this.owner.career)?.color||'#8ba77a':'#8ba77a',key=this.characterTexture('iso-player',F.L,F.g||'none',this.owner.direction,uniformColor,walkFrame);this.actorDirection=this.owner.direction;this.actorWalkFrame=walkFrame;
     if(key===this.actorKey)return false;if(this.actor)this.actor.setTexture(key);else this.actor=this.add.image(0,0,key).setOrigin(.5,1).setScale(CHARACTER_SCALE);this.actorKey=key;return true;
   }
-  positionPlayer(moving:boolean){const pose=walkingPose(this.owner.walkDistance,moving,this.owner.reduced);if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==pose.frame)this.refreshPlayer(pose.frame);if(!this.actor)return;const f=px(this.owner.player);this.actor.setPosition(f.x,f.y).setDepth(f.y+.5).setRotation(pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*pose.squash);if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138};this.speech.setPosition(at.x,at.y);} }
+  positionPlayer(moving:boolean){const pose=walkingPose(this.owner.walkDistance,moving,this.owner.reduced);if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==pose.frame)this.refreshPlayer(pose.frame);if(!this.actor)return;const f=px(this.owner.player);if(this.actor.x!==f.x||this.actor.y!==f.y)this.actor.setPosition(f.x,f.y);if(this.actor.depth!==f.y+.5)this.actor.setDepth(f.y+.5);this.actor.setRotation(pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*pose.squash);if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138};this.speech.setPosition(at.x,at.y);} }
   hitTest(point:Point){const ground=unproject(point),hits=this.hits.filter(h=>h.rect?.contains(point.x,point.y)||h.footprint&&inside(ground,h.footprint)||h.object?.visible&&h.object.alpha>.6&&h.object.getBounds().contains(point.x,point.y)).sort((a,b)=>b.hotspot.point.y-a.hotspot.point.y);return hits[0]?.hotspot;}
   highlight(id:string){
     this.selected?.destroy();const h=this.owner.hotspots.find(h=>h.id===id);if(!h)return;const f=px(h.approach),key='illustrated-selection';this.textureObject(key,160,80,ctx=>{ctx.strokeStyle='#f7d391';ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(80,40,65,27,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#aa875a';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(80,40,69,31,0,0,Math.PI*2);ctx.stroke();});this.selected=this.add.image(f.x,f.y,key).setScale(.5).setDepth(f.y-1);this.requestRender();

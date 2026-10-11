@@ -337,6 +337,7 @@ function navItems(c){
   if(!EXT.includes(career()))items.push(['journal','book','Sổ tay']);
   items.push(['people','people','Người quen',L.people.m?.closenessBadge(api)||0],['album','camera','Kỷ niệm'],['workshop','sparkle','Trò nhỏ'],['passport','award','Hộ chiếu'],['rank','award','Xếp hạng']);
   items.push(['jrWardrobe','shirt','Tủ đồ']);  // 👗 Tủ đồ (v4/wardrobe.js, opened by journey.js)
+  if(!newInterface(api.state))items.push(['sharedIsland','map','Ra đảo nhặt rương']);
   {const chat=L.live.m?.liveNav();if(chat)items.push(chat);}  // 💬 Chat (v4/live.js): only while the live service has it on
   {const lv=L.live.m?.live;if(lv?.flags.street&&lv.welcomed)items.push(['liveWalk','map','Đi dạo']);}  // 🚶 Đi dạo (v4/walk.js): only while the live service has it on
   {const date=L.live.m?.dateNav();if(date)items.push(date);}  // 💕 Góc hẹn hò (v4/dating.js): only while the live service has dates on
@@ -388,7 +389,7 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()))||(x[0]==='fair'&&!api.state?.fair?.over);
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['fair','luxFw','wedInvite','spend','pets','liveWalk','liveWed','liveKara','liveBark','nhom','phone','social','jrTown','rank']],
+  ['pho','building','Khu phố',['fair','luxFw','wedInvite','spend','pets','sharedIsland','liveWalk','liveWed','liveKara','liveBark','nhom','phone','social','jrTown','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
@@ -1540,10 +1541,11 @@ async function talk(text){if(!ui.npc||!text.trim())return;const id=ui.npc;const 
 async function handleAction(action,data,el){
   // These island routes open local scenes without a server command. Apply the same camp boundary before
   // they can change mode or load a destination; chat and the camera keep their existing behavior.
-  if(api.state?.jail&&['home','leisurePlace','isoTown','isoWork','isoCareers','isoMission','isoPrepare','isoApply','isoQueue','isoGo','isoLeisure','isoBag'].includes(action)){
+  if(api.state?.jail&&['home','sharedIsland','leisurePlace','isoTown','isoWork','isoCareers','isoMission','isoPrepare','isoApply','isoQueue','isoGo','isoLeisure','isoBag'].includes(action)){
     await (await import('./v4/jail.js')).openJail(env());return;
   }
   if(action==='leisurePlace'){if(iso&&['fishing','boat','pool'].includes(data.kind))await iso.openLeisure(data.kind,env());return;}
+  if(action==='sharedIsland'){if(iso)await iso.isometricAction('isoTown',data,el,env());else await (await import('./shared-island.js')).openSharedIsland(env());return;}
   // Legacy Home opens the journey/career chooser (including More → Đổi nghề).
   // Island navigation has its own explicit isoTown action.
   if(action==='home'&&iso?.booted()&&isoTownFirst())action='isoCareers';

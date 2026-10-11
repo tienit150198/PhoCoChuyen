@@ -5,6 +5,24 @@ const WIDTH=120,HEIGHT=160,FOOT=156;
 const atlases=new Map(),stamps=new Map(),MAX_STAMPS=160;
 const cells={sw:0,se:1,nw:2,ne:3};
 export const atlasCell=(direction,walkFrame=0)=>({x:cells[direction]??cells.se,y:Math.max(0,Math.min(2,Math.trunc(Number(walkFrame)||0)))});
+// This painted sheet is not a regular 256px grid: the idle shoes cross y=256.
+// Keep its authored gutters, otherwise the next step inherits detached shoe pixels.
+export function atlasFrameRect(width,height,direction,walkFrame=0){const cell=atlasCell(direction,walkFrame),rows=[0,268,513,768];return {x:cell.x*width/4,y:Math.round(rows[cell.y]*height/768),w:width/4,h:Math.round(rows[cell.y+1]*height/768)-Math.round(rows[cell.y]*height/768)};}
+// Source-pixel landmarks measured on the two 1024×768 sheets, not foot offsets.
+// head x/y, eye left x/y + right x/y, torso centre x / neckline y / hem y.
+const POSES={
+  male:[
+    [[132,88,98,122,144,121,135,161,205],[409,88,406,124,452,123,420,161,207],[654,88,0,0,0,0,650,161,208],[911,88,0,0,0,0,916,161,208]],
+    [[128,343,89,379,134,379,127,417,459],[413,343,414,380,459,380,419,417,459],[654,343,0,0,0,0,649,417,459],[911,343,0,0,0,0,916,417,459]],
+    [[131,587,98,626,143,624,131,659,703],[413,587,410,627,455,625,419,659,703],[654,587,0,0,0,0,650,659,703],[911,587,0,0,0,0,916,659,703]],
+  ],
+  female:[
+    [[131,75,101,111,144,110,132,147,217],[400,75,391,111,436,109,400,147,217],[651,74,0,0,0,0,650,147,217],[907,74,0,0,0,0,907,147,217]],
+    [[129,327,95,363,142,362,131,399,465],[410,327,404,364,448,365,411,399,465],[652,327,0,0,0,0,650,399,465],[908,327,0,0,0,0,907,399,465]],
+    [[132,574,103,610,145,608,136,642,705],[406,574,399,610,443,609,406,642,705],[652,574,0,0,0,0,650,642,705],[907,574,0,0,0,0,907,642,705]],
+  ],
+};
+export function characterPose(gender,direction,walkFrame=0){const cell=atlasCell(direction,walkFrame),p=POSES[gender==='female'?'female':'male'][cell.y][cell.x];return {head:p.slice(0,2),eyes:p[2]?[[p[2],p[3]],[p[4],p[5]]]:[],torso:{x:p[6],top:p[7],bottom:p[8]}};}
 const normalise=options=>{
   const gender=options.gender==='female'?'female':'male';
   const look={...defaultLook(gender),...options.look};
@@ -18,11 +36,12 @@ function tint(source,target,reference){
   return colour.map(v=>Math.round(Math.min(255,Math.max(0,v*light))));
 }
 /** Palette masks distinguish fabric from warm skin. Preserve alpha, eyes, outlines and painted shading. */
-export function recolourPixel(pixel,y,palette){
+export function recolourPixel(pixel,y,palette,material=''){
   const [r,g,b,a]=pixel;
   if(a<12||Math.max(r,g,b)<65)return [...pixel];
   let colour=null,reference=1;
-  if(y<.58&&r>g*1.09&&g>b*1.08&&r<180){colour=palette.hair;reference=92;}
+  if(material==='top'){colour=palette.top;reference=(g>r*1.1&&b>r*1.05)?100:209;}
+  else if(y<.58&&r>g*1.09&&g>b*1.08&&r<180){colour=palette.hair;reference=92;}
   else if(y<.79&&r>g*1.08&&g>b*1.08&&r>145&&b<225){colour=palette.skin;reference=211;}
   else if(y>.43&&y<.83&&r>115&&g>110&&b>85&&r-g<38&&g-b<46&&r>=b){colour=palette.top;reference=209;}
   else if(y>.56&&y<.91&&g>r*1.1&&b>r*1.05&&b<g*1.15){colour=palette.top;reference=100;}
@@ -30,6 +49,35 @@ export function recolourPixel(pixel,y,palette){
   else if(y>.89&&r>g*1.08&&g>b*1.05){colour=palette.shoes;reference=98;}
   if(!colour||!/^#[0-9a-f]{6}$/i.test(colour))return [...pixel];
   return [...tint([r,g,b],colour,reference),a];
+}
+/** Recolor a stamp in place. Decode each saved color once, never per pixel.
+ * Keep recolourPixel as a small independent oracle for byte-level regression tests.
+ * Body anchors use canvas coordinates so the material boundary matches painting.
+ */
+export function recolourPixels(data,width,height,palette,body){
+  const decode=value=>value&&/^#[0-9a-f]{6}$/i.test(value)?rgb(value):null;
+  const hair=decode(palette.hair),skin=decode(palette.skin),top=decode(palette.top),bottom=decode(palette.bottom),shoes=decode(palette.shoes);
+  for(let row=0,i=0;row<height;row++){
+    const y=row/height,torsoRow=body&&row+body.y>=body.topY+2&&row+body.y<=body.hemY;
+    for(let col=0;col<width;col++,i+=4){
+      const r=data[i],g=data[i+1],b=data[i+2];
+      if(data[i+3]<12||Math.max(r,g,b)<65)continue;
+      let colour=null,reference=1;
+      if(torsoRow&&Math.abs(col+body.x-body.topX)<=body.halfWidth){colour=top;reference=(g>r*1.1&&b>r*1.05)?100:209;}
+      else if(y<.58&&r>g*1.09&&g>b*1.08&&r<180){colour=hair;reference=92;}
+      else if(y<.79&&r>g*1.08&&g>b*1.08&&r>145&&b<225){colour=skin;reference=211;}
+      else if(y>.43&&y<.83&&r>115&&g>110&&b>85&&r-g<38&&g-b<46&&r>=b){colour=top;reference=209;}
+      else if(y>.56&&y<.91&&g>r*1.1&&b>r*1.05&&b<g*1.15){colour=top;reference=100;}
+      else if(y>.68&&y<.94&&b>r*1.08&&b>g*1.06){colour=bottom;reference=98;}
+      else if(y>.89&&r>g*1.08&&g>b*1.05){colour=shoes;reference=98;}
+      if(!colour)continue;
+      const light=(r*.28+g*.56+b*.16)/reference;
+      data[i]=Math.round(Math.min(255,Math.max(0,colour[0]*light)));
+      data[i+1]=Math.round(Math.min(255,Math.max(0,colour[1]*light)));
+      data[i+2]=Math.round(Math.min(255,Math.max(0,colour[2]*light)));
+    }
+  }
+  return data;
 }
 function remember(key,value){stamps.set(key,value);while(stamps.size>MAX_STAMPS)stamps.delete(stamps.keys().next().value);return value;}
 function atlasFor(gender,onReady){
@@ -45,39 +93,72 @@ function atlasFor(gender,onReady){
   return entry;
 }
 export function preloadIllustratedCharacters(onReady){if(typeof Image==='undefined')return;for(const gender of ['male','female'])atlasFor(gender,onReady);}
+/** Clean only disconnected atlas debris once, when the source sheet loads. */
+export function cleanAtlasPixels(data,w,h){
+  const visited=new Uint8Array(w*h),components=[];let largest=0;
+  for(let i=0;i<w*h;i++)if(!visited[i]&&data[i*4+3]>20){
+    const points=[i];visited[i]=1;
+    for(let n=0;n<points.length;n++){const at=points[n],x=at%w,y=Math.floor(at/w);for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+      const nx=x+dx,ny=y+dy,next=ny*w+nx;if(nx<0||nx>=w||ny<0||ny>=h||visited[next]||data[next*4+3]<=20)continue;visited[next]=1;points.push(next);
+    }}
+    largest=Math.max(largest,points.length);components.push(points);
+  }
+  const keep=new Uint8Array(w*h);
+  // Tiny separated antialias specks are not characters; allow disconnected feet
+  // or a strand if they are substantial parts of the same pose.
+  for(const points of components)if(points.length>=largest*.02)for(const at of points){const x=at%w,y=Math.floor(at/w);for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const nx=x+dx,ny=y+dy;if(nx>=0&&nx<w&&ny>=0&&ny<h)keep[ny*w+nx]=1;}}
+  for(let i=0;i<w*h;i++)if(!keep[i])data[i*4+3]=0;
+  return data;
+}
 function extractView(entry,direction,walkFrame=0){
   const key=direction+walkFrame;if(entry.views.has(key))return entry.views.get(key);
-  const cell=atlasCell(direction,walkFrame),w=Math.floor(entry.img.naturalWidth/4),h=Math.floor(entry.img.naturalHeight/3);
+  const rect=atlasFrameRect(entry.img.naturalWidth,entry.img.naturalHeight,direction,walkFrame),{w,h}=rect;
   const cv=document.createElement('canvas');cv.width=w;cv.height=h;
-  const c=cv.getContext('2d',{willReadFrequently:true});c.drawImage(entry.img,cell.x*w,cell.y*h,w,h,0,0,w,h);
+  const c=cv.getContext('2d',{willReadFrequently:true});c.drawImage(entry.img,rect.x,rect.y,w,h,0,0,w,h);
   const pixels=c.getImageData(0,0,w,h);let x0=w,y0=h,x1=0,y1=0;
+  cleanAtlasPixels(pixels.data,w,h);c.putImageData(pixels,0,0);
   for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(pixels.data[(y*w+x)*4+3]>24){x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);}
-  const view={cv,x:x0,y:y0,w:Math.max(1,x1-x0+1),h:Math.max(1,y1-y0+1)};entry.views.set(key,view);return view;
+  const view={cv,x:x0,y:y0,w:Math.max(1,x1-x0+1),h:Math.max(1,y1-y0+1),rect};entry.views.set(key,view);return view;
 }
 function fallback(canvas,o){const c=canvas.getContext('2d');c.translate(WIDTH/2,FOOT-3);c.scale(.9,.9);paintPlayer(c,figureOf(o.look,o.gender),CANVAS);}
+const GLASSES=new Set(['kinh_tron','kinh_ram','kinh_mat_meo','kinh_can']);
+const BODY_ITEMS=new Set(['tui_cheo','tui_xach','khan_lua','vong_co','dong_ho','balo_mini','khan_choang']);
+const COVERING_HATS=new Set(['non_la','mu_len','mu_bucket','mu_luoi_trai','mu_beret','mu_cao_boi']);
+const REAR_ITEMS=new Set(['non_la','mu_len','no_toc','no_lua','kep_toc','mu_bucket','mu_luoi_trai','khan_bandana',...BODY_ITEMS]);
 function clothingDetails(c,o,box){
   const F=figureOf(o.look,o.gender),front=o.direction==='sw'||o.direction==='se';
   // Match the existing wardrobe item shapes while the illustrated base keeps its fabric shading.
   const cx=box.bodyX??box.x+box.w*.5,bodyY=box.bodyY??box.y+box.h*.8,foot=box.footY??FOOT,s=box.h/145;
   if(F.bottom.skirt||F.top.long){
     const x=box.w*.24,y=bodyY-box.h*.06,end=foot-(F.bottom.skirt==='long'?7:box.h*.13);
-    const fill=c.createLinearGradient(cx-x,y,cx+x,end);fill.addColorStop(0,F.bottom.c);fill.addColorStop(1,'#6b493b');
+    const fill=c.createLinearGradient(cx-x,y,cx+x,end);fill.addColorStop(0,F.bottom.c);fill.addColorStop(1,'#'+rgb(F.bottom.c).map(v=>Math.round(v*.76).toString(16).padStart(2,'0')).join(''));
     c.fillStyle=fill;c.strokeStyle='#684536';c.lineWidth=1;c.beginPath();c.moveTo(cx-x,y);c.lineTo(cx+x,y);c.lineTo(cx+x*1.4,end);c.quadraticCurveTo(cx,end+5,cx-x*1.4,end);c.closePath();c.fill();c.stroke();
   }
-  if(front&&F.top.d&&F.top.d!=='collar'){
-    c.save();c.translate(cx,bodyY+box.h*.07);c.scale(s*.64,s*.67);paintTop(c,F,CANVAS);c.restore();
+  if(front&&F.top.d){
+    c.save();if(Number.isFinite(box.topY)){const sy=(box.hemY-box.topY)/34;c.translate(cx,box.topY+52*sy);c.scale(s*.74,sy);}else{c.translate(cx,bodyY+box.h*.07);c.scale(s*.64,s*.67);}paintTop(c,F,CANVAS);c.restore();
   }
   const accessory=art(o.look,'acc');
-  if(o.look.acc!=='pk_khong'&&(front||accessory.back||['non_la','mu_len','no_toc','tui_cheo'].includes(o.look.acc))){
-    const body=accessory.anchor==='body'||o.look.acc==='tui_cheo',accessoryX=body?cx:box.faceX??cx,accessoryY=!body&&box.eyesY!==undefined?box.eyesY+78*s:foot;
-    c.save();c.translate(accessoryX+(o.direction==='sw'||o.direction==='nw'?-3:3),accessoryY);c.scale(s*.82,s);paintAcc(c,F,CANVAS,o.direction);c.restore();
+  if(o.look.acc!=='pk_khong'&&(front||accessory.back||REAR_ITEMS.has(o.look.acc))){
+    c.save();
+    if(GLASSES.has(o.look.acc)&&box.eyes?.length===2){
+      const [left,right]=box.eyes,sy=s*.88,centreY=(left[1]+right[1])/2;
+      c.transform((right[0]-left[0])/22,(right[1]-left[1])/22,0,sy,(left[0]+right[0])/2,centreY+78*sy);
+    }else if(Number.isFinite(box.headX)){
+      const body=accessory.anchor==='body'||BODY_ITEMS.has(o.look.acc),sx=body?s*.8:Math.min(s*1.22,1.18),sy=body?s*.85:s*(COVERING_HATS.has(o.look.acc)?1.35:1.04);
+      c.translate(body?cx:box.headX,body?(box.topY??bodyY)+52*sy:box.headY+103*sy);c.scale(sx,sy);
+    }else{
+      const body=accessory.anchor==='body'||BODY_ITEMS.has(o.look.acc),accessoryX=body?cx:box.faceX??cx,accessoryY=!body&&box.eyesY!==undefined?box.eyesY+78*s:foot;
+      c.translate(accessoryX+(o.direction==='sw'||o.direction==='nw'?-3:3),accessoryY);c.scale(s*.82,s);
+    }
+    paintAcc(c,F,CANVAS,o.direction);c.restore();
   }
 }
 /** Shared saved-wardrobe silhouettes. Optional pose anchors move head items separately from the torso. */
 export function paintWardrobeOverlay(c,options={},box,alignment={}){
   if(!c||typeof c.save!=='function'||!box||!['x','y','w','h'].every(key=>Number.isFinite(box[key]))||box.w<=0||box.h<=0)return false;
   const geometry={x:box.x,y:box.y,w:box.w,h:box.h};
-  for(const key of ['bodyX','bodyY','faceX','eyesY','footY'])if(Number.isFinite(alignment?.[key]))geometry[key]=alignment[key];
+  for(const key of ['bodyX','bodyY','faceX','eyesY','footY','headX','headY','topY','hemY'])if(Number.isFinite(alignment?.[key]))geometry[key]=alignment[key];
+  if(Array.isArray(alignment?.eyes)&&alignment.eyes.length===2&&alignment.eyes.every(point=>Array.isArray(point)&&point.length===2&&point.every(Number.isFinite)))geometry.eyes=alignment.eyes;
   clothingDetails(c,normalise(options||{}),geometry);return true;
 }
 /** Feet at (60,160). onReady requests one texture refresh after the atlas finishes loading. */
@@ -88,8 +169,15 @@ export function getCharacterStamp(options={}){
   if(!entry.ready){fallback(canvas,o);return remember(key,{canvas,width:WIDTH,height:HEIGHT,ready:false});}
   const view=extractView(entry,o.direction,o.walkFrame),scale=entry.scale,w=Math.round(view.w*scale),h=Math.round(view.h*scale),x=Math.round((WIDTH-w)/2),y=FOOT-h;
   const c=canvas.getContext('2d',{willReadFrequently:true});c.drawImage(view.cv,view.x,view.y,view.w,view.h,x,y,w,h);
+  const pose=characterPose(o.gender,o.direction,o.walkFrame),point=([px,py])=>[x+(px-view.rect.x-view.x)*w/view.w,y+(py-view.rect.y-view.y)*h/view.h];
+  const head=point(pose.head),top=point([pose.torso.x,pose.torso.top]),hem=point([pose.torso.x,pose.torso.bottom]);
+  const alignment={headX:head[0],headY:head[1],eyes:pose.eyes.map(point),bodyX:top[0],bodyY:hem[1],topY:top[1],hemY:hem[1]};
+  // Water poses receive the canvas itself, so carry the measured chin/neck crop
+  // on that object rather than cutting a constant percentage through a shirt.
+  canvas.headBottomY=Math.max(1,Math.min(HEIGHT,top[1]-2));
   const pixels=c.getImageData(x,y,w,h),palette={hair:hairColour(o.look),skin:art(o.look,'skin').c,top:o.look.uniform&&o.uniformColor?o.uniformColor:topColour(o.look,o.gender),bottom:art(o.look,'bottom').c,shoes:art(o.look,'shoes').c};
-  for(let row=0;row<h;row++)for(let col=0;col<w;col++){const i=(row*w+col)*4,output=recolourPixel(Array.from(pixels.data.subarray(i,i+4)),row/h,palette);pixels.data.set(output,i);}
-  c.putImageData(pixels,x,y);paintWardrobeOverlay(c,o,{x,y,w,h});
+  recolourPixels(pixels.data,w,h,palette,{x,y,topX:top[0],topY:top[1],hemY:hem[1],halfWidth:32*w/view.w});
+  c.putImageData(pixels,x,y);
+  paintWardrobeOverlay(c,o,{x,y,w,h},alignment);
   return remember(key,{canvas,width:WIDTH,height:HEIGHT,ready:true});
 }

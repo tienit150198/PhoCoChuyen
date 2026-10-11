@@ -170,13 +170,13 @@ class ChoDenArrest(BlackMarketBase):
         self.assertIn('trại tạm giữ', str(e.exception))
 
     def test_a_big_stake_can_be_jailed_without_the_300k(self):
-        """Owner 09/10 "từ 50k trở lên thì tăng tỷ lệ bị bắt": a 50,000 xu round is rolled for (1 %) at a net of 0, and
+        """A 50,000 xu round is still rolled for at a net of 0 after the modest 11/10 reduction, and
         the arrest is the same: stake, fine, the cell."""
         s = self.paid(0)
         seen = []
         with mock.patch.object(bm, '_arrest_roll', lambda p=bm.BM_ARREST_P: seen.append(p) or True):
             s, r = self.act(s, 'fair_bc', bets={'cua': 50000})
-        self.assertAlmostEqual(seen[0], .01, places=9)
+        self.assertAlmostEqual(seen[0], .0085, places=9)
         w = 100000 - 50000   # Chợ đen entry is free
         a = r['fair']['arrest']
         self.assertEqual((a['stake'], a['fine'], a['jail']), (50000, w * 30 // 100, 3))
@@ -184,11 +184,11 @@ class ChoDenArrest(BlackMarketBase):
         validate_state(s)
 
     def test_the_rate_is_low_and_its_own(self):
-        self.assertEqual((bm.BM_ARREST_P, bm.ARREST_FROM, bm.JAIL_DAYS), (0.05, 300000, 3))
+        self.assertEqual((bm.BM_ARREST_P, bm.ARREST_FROM, bm.JAIL_DAYS), (0.0425, 300000, 3))
         hits = 0
         with mock.patch.object(bm, '_rng', __import__('random').Random(7)):
             hits = sum(bm._arrest_roll() for _ in range(20000))
-        self.assertTrue(0.04 < hits / 20000 < 0.06, hits)
+        self.assertAlmostEqual(hits / 20000, .0425, delta=.008)
 
     def test_kill_switch_keeps_the_fine_but_no_cell(self):
         s = self.paid(bm.ARREST_FROM + 5)

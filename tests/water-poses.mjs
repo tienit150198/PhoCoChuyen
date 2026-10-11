@@ -61,6 +61,29 @@ test('chibi head crop meets the shoulders without an exposed upright neck',()=>{
     assert.ok(Math.hypot(swim.neck[0][0]-swim.neck[1][0],swim.neck[0][1]-swim.neck[1][1])<=2.8,'prone swimmer has a short neck continuous with its chest');
   }
 });
+test('rowers keep a seated thigh, a bent lower leg, and separate shoes at every heading',()=>{
+ for(let i=0;i<8;i++){
+  const pose={x:0,y:0,bob:0,heading:i*Math.PI/4},boat=waterPoses.rowboatGeometry(pose,500,true);
+  assert.equal(boat.legs?.length,2,'seated legs must have explicit joints instead of a standing-looking curve');
+  for(const leg of boat.legs){
+   const thigh=[leg.knee[0]-leg.hip[0],leg.knee[1]-leg.hip[1]],shin=[leg.ankle[0]-leg.knee[0],leg.ankle[1]-leg.knee[1]];
+   assert.ok(Math.hypot(...thigh)>2,'thigh rests across the seat');
+   assert.ok(leg.ankle[1]>leg.knee[1]+2,'lower leg drops into the hull');
+   assert.ok(Math.abs(thigh[0]*shin[1]-thigh[1]*shin[0])>.5||Math.abs(Math.cos(pose.heading))<.1,'side and diagonal legs bend at a visible knee');
+  }
+  const {c,calls}=drawing();drawRowboat(c,{width:120,height:160},pose,500,true,{look:{shoes:'bot_den'}});
+  assert.ok(calls.some(call=>call.kind==='stroke'&&call.colour==='#3d3533'),'shoe detail keeps feet distinct from skin and trousers');
+ }
+});
+
+test('water heads use the measured neckline instead of copying standing shirt pixels',()=>{
+ for(const draw of [drawSwimmer,drawRowboat]){
+  const {c,calls}=drawing(),stamp={width:120,height:160,headBottomY:87};
+  draw(c,stamp,{x:0,y:0,bob:0,heading:0},0,false);
+  const head=calls.find(call=>call.kind==='drawImage');
+  assert.equal(head.args[4],87,'the water neck must meet the actual head crop baseline');
+ }
+});
 
 test('swimming shoulders, hips and neck connect to one visible submerged torso',()=>{
   assert.equal(typeof waterPoses.swimmerGeometry,'function','swimming must share body and limb anchors');

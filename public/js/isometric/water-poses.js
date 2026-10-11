@@ -7,7 +7,7 @@ const ellipse=(c,x,y,rx,ry,colour,edge='')=>{c.beginPath();c.ellipse(x,y,rx,ry,0
 function curve(c,a,b,d,colour,width){c.beginPath();c.moveTo(...a);c.quadraticCurveTo(...b,...d);c.strokeStyle=colour;c.lineWidth=width;c.lineCap='round';c.stroke();}
 function limb(c,a,b,d,skin){curve(c,a,b,d,INK,3.1);curve(c,a,b,d,skin,2.25);}
 function ring(c,x,y,rx,alpha=.4){c.beginPath();c.ellipse(x,y,rx,rx*.32,0,0,TAU);c.strokeStyle=`rgba(235,255,246,${alpha})`;c.lineWidth=.6;c.stroke();}
-function palette(appearance){const look={...defaultLook(appearance.gender),...appearance.look};return {skin:art(look,'skin').c,top:topColour(look,appearance.gender),bottom:art(look,'bottom').c};}
+function palette(appearance){const look={...defaultLook(appearance.gender),...appearance.look};return {skin:art(look,'skin').c,top:topColour(look,appearance.gender),bottom:art(look,'bottom').c,shoes:art(look,'shoes').c};}
 
 /** Screen heading remains aligned with movement even with a foreshortened hull. */
 export function waterFrame(heading=0){
@@ -16,8 +16,8 @@ export function waterFrame(heading=0){
 }
 export function waterStroke(time,moving){return moving?Math.sin(time/240):0;}
 function face(c,stamp,x,y,size=20){
-  // The atlas' hair and face occupy the upper 58%; standing arms and clothes stay out.
-  const sh=stamp.height*.58,h=size*sh/stamp.width;
+  // Measured necklines keep the standing shirt out of the articulated body.
+  const sh=Number.isFinite(stamp.headBottomY)?Math.max(1,Math.min(stamp.height,stamp.headBottomY)):stamp.height*.58,h=size*sh/stamp.width;
   c.drawImage(stamp,0,0,stamp.width,sh,x-size/2,y-h,size,h);
 }
 
@@ -90,12 +90,13 @@ export function rowboatGeometry(pose,time,moving){
     return {side,grip:along(-4.5),lock:along(0),tip:along(16),bladeStart:along(12),depth:depth(2,side*7),inWater:4.8+dz*16<=0};
   }).sort((a,b)=>a.depth-b.depth);
   const arms=oars.map(oar=>({side:oar.side,shoulder:at(-1.5+lean,oar.side*3.2,11.6),elbow:at(-1+lean,oar.side*4.1,8.1),hand:oar.grip,depth:oar.depth}));
-  return {at,stroke,seat,hips,head,torso,arms,oars,hull:{rim,keel,walls,near,nearRim,outer:convexHull([...rim,...keel]),inside:HULL.map(([f,s])=>at(f*.91,s*.84,3.5))}};
+  const legs=[-1,1].map(side=>({side,hip:at(-1.5,side*1.8,5.6),knee:at(4.4,side*2.2,5),ankle:at(4.8,side*2.2,1.6),foot:at(6.7,side*2.2,1.6),depth:depth(4,side*2)})).sort((a,b)=>a.depth-b.depth);
+  return {at,stroke,seat,hips,head,torso,arms,legs,oars,hull:{rim,keel,walls,near,nearRim,outer:convexHull([...rim,...keel]),inside:HULL.map(([f,s])=>at(f*.91,s*.84,3.5))}};
 }
 
 /** Outer oars straddle the joined hull; only the near wall covers the seated legs. */
 export function drawRowboat(c,stamp,pose,time,moving,appearance={}){
-  const g=rowboatGeometry(pose,time,moving),{skin,top,bottom}=palette(appearance),{at,hull}=g,[farOar,nearOar]=g.oars,[farArm,nearArm]=g.arms;
+  const g=rowboatGeometry(pose,time,moving),{skin,top,bottom,shoes}=palette(appearance),{at,hull}=g,[farOar,nearOar]=g.oars,[farArm,nearArm]=g.arms;
   const outerOar=oar=>{
     line(c,oar.lock,oar.tip,'#76553b',1.25);line(c,oar.bladeStart,oar.tip,'#c58f54',2.9);
     if(moving&&oar.inWater)ring(c,...oar.tip,2.8,.52);
@@ -111,7 +112,11 @@ export function drawRowboat(c,stamp,pose,time,moving,appearance={}){
   for(const f of [-11,-1.5,12])line(c,at(f,-6.2,4.5),at(f,6.2,4.5),'#97633e',2.3);
   if(stamp){
     innerOar(farOar);oarlock(farOar);arm(farArm);
-    for(const side of [-1,1])curve(c,at(-1.5,side*1.8,5.6),at(4.5,side*2.1,5.5),at(6,side*2,2.5),bottom,2.8);
+    for(const leg of g.legs){
+      line(c,leg.hip,leg.knee,INK,3.7);line(c,leg.hip,leg.knee,bottom,2.8);
+      line(c,leg.knee,leg.ankle,INK,2.8);line(c,leg.knee,leg.ankle,skin,1.9);
+      line(c,leg.ankle,leg.foot,shoes,3.1);
+    }
     polygon(c,g.torso,top,INK);
     // Jacket panels rotate with the chest, rather than standing upright across the neck.
     for(const side of [-1,1])line(c,at(-.3+g.stroke*.5,side*2,11.1),at(-.4,side*1.8,6.1),'#e7b363',1.9);

@@ -67,10 +67,11 @@ function router(jailed=false){
   vm.runInContext(prefix+"calls.push(['fallback',action]);}\nglobalThis.route=handleAction;",context);
   return {route:context.route,calls};
 }
-test('home returns to the island and leisure uses the shared activity router',async()=>{
+test('home keeps the career-list action, explicit isoTown returns to the island, and leisure uses the shared router',async()=>{
   const h=router();await h.route('home',{});await h.route('leisurePlace',{kind:'pool'});
   await h.route('leisurePlace',{kind:'invented'});
-  assert.deepEqual(h.calls,[['iso','isoTown'],['leisure','pool']]);
+  await h.route('isoTown',{});
+  assert.deepEqual(h.calls,[['iso','isoCareers'],['leisure','pool'],['iso','isoTown']]);
 });
 test('jailed island destinations reopen the camp while chat remains available',async()=>{
   for(const action of ['home','leisurePlace','isoTown','isoWork','isoCareers','isoMission','isoPrepare','isoApply','isoQueue','isoGo','isoLeisure','isoBag']){

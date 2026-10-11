@@ -10,6 +10,7 @@ export {walkablePlace} from './place-geometry.js';
 
 const KINDS=['fishing','boat','pool'],TITLES={fishing:'Bờ hồ câu cá',boat:'Bến chèo thuyền',pool:'Hồ bơi khu phố'};
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const completedSwim=state=>state.phase==='pool'&&Array.isArray(state.round?.checkpoints)&&state.round.checkpoints.length>0&&state.next===state.round.checkpoints.length;
 
 /** Small deterministic simulation, independent of DOM and rendering. */
 export function createPixelPlay(kind,{command,now=()=>Date.now(),onChange=()=>{}}){
@@ -59,7 +60,7 @@ export function createPixelPlay(kind,{command,now=()=>Date.now(),onChange=()=>{}
       else if(t>=r.bite_at&&state.phase!=='bite'){state.phase='bite';state.message='Cá cắn câu! Bấm Giật cần hoặc phím Space ngay!';emit();}
     }
     if(state.phase==='pool'&&!state.busy&&!state.action&&state.round&&checkpointRequest!==state.round&&now()>=retryAt){
-      const target=state.round.checkpoints[state.next];
+      const target=state.round.checkpoints?.[state.next];
       if(target&&distance(state,{x:target[0],y:target[1]})<=8){
         const index=state.next;
         void send('jr_leisure_checkpoint',{round:state.round.id,index,x:Math.round(state.x*100)/100,y:Math.round(state.y*100)/100},result=>{
@@ -72,7 +73,10 @@ export function createPixelPlay(kind,{command,now=()=>Date.now(),onChange=()=>{}
   async function interact(){
     if(!alive||state.busy||state.action)return;
     if(state.phase==='walk'){
-      if(distance(placeWorldPoint(kind,state),placeWorldPoint(kind,dock))>18||!walkablePlace(kind,state.x,state.y)){state.message=kind==='pool'?'Đi đến thang hồ trước nhé.':'Đi đến đầu cầu gỗ trước nhé.';emit();return;}
+      const at=placeWorldPoint(kind,state),onLanding=kind==='boat'?at.y>=geometry.pier.top&&at.y<=geometry.pier.bottom:distance(at,placeWorldPoint(kind,dock))<=18;
+      // The whole visible wooden deck is a boarding landing, including its tip.
+      // The walkable check still excludes water and the bank beside the pier.
+      if(!onLanding||!walkablePlace(kind,state.x,state.y)){state.message=kind==='pool'?'Đi đến thang hồ trước nhé.':kind==='boat'?'Đi lên cầu gỗ rồi chọn Lên thuyền nhé.':'Đi đến đầu cầu gỗ trước nhé.';emit();return;}
       if(kind==='boat'){
         const from=[state.x,state.y];state.phase='boat';state.round=null;state.next=0;
         state.x=state.mooring.x;state.y=state.mooring.y;state.heading=state.mooring.heading;
@@ -86,9 +90,9 @@ export function createPixelPlay(kind,{command,now=()=>Date.now(),onChange=()=>{}
         if(kind==='fishing'){animate('cast',700);state.phase='waiting';state.message='Đã thả mồi. Chờ phao rung rồi bấm Giật cần trong vạch sáng.';}
         else{state.phase=kind;state.x=r.entry[0];state.y=r.entry[1];state.heading=-Math.PI/2;animate('board',700,from,r.entry);state.message='Bơi tự do hoặc qua từng vòng mốc. Về thang rồi chọn Lên bờ.';}
       });
-    }else if(state.phase==='boat'){
+    }else if(state.phase==='boat'||state.phase==='pool'&&!completedSwim(state)){
       await leave();
-    }else if(state.phase==='bite'||(state.phase==='pool'&&state.next===state.round.checkpoints.length)){
+    }else if(state.phase==='bite'||completedSwim(state)){
       if(kind==='fishing'){animate('reel',750);emit();}
       await send('jr_leisure_finish',{round:state.round.id},result=>{
         state.stats=result.leisure||state.stats;state.message=result.message||'Đã lưu thành tích.';
@@ -233,10 +237,11 @@ export function openPixelPlace(kind,env){
   function sync(){
     if(destroyed||!dialog.open)return;const s=play.state;
     if(statusText!==s.message){statusText=s.message;status.textContent=s.message;}
-    const labels={walk:kind==='fishing'?'Thả cần':kind==='boat'?'Lên thuyền':'Xuống hồ',waiting:'Chờ cá…',bite:'Giật cần!',boat:'Lên bờ',pool:'Lưu vòng bơi',return:'Lên bờ'};
+    const canSaveSwim=completedSwim(s);
+    const labels={walk:kind==='fishing'?'Thả cần':kind==='boat'?'Lên thuyền':'Xuống hồ',waiting:'Chờ cá…',bite:'Giật cần!',boat:'Lên bờ',pool:canSaveSwim?'Lưu vòng bơi':'Lên bờ',return:'Lên bờ'};
     const hadFocus=document.activeElement===button,hadLeaveFocus=document.activeElement===leaveButton;
-    button.textContent=s.action?.kind==='caught'?'Bắt được cá!':s.busy?'Đang xác nhận…':labels[s.phase];button.disabled=s.busy||!!s.action||s.phase==='waiting'||(s.phase==='pool'&&s.next<(s.round?.checkpoints?.length||0));
-    leaveButton.hidden=s.phase!=='pool';leaveButton.disabled=s.busy||!!s.action;leaveButton.textContent='Lên bờ';
+    button.textContent=s.action?.kind==='caught'?'Bắt được cá!':s.busy?'Đang xác nhận…':labels[s.phase];button.disabled=s.busy||!!s.action||s.phase==='waiting';
+    leaveButton.hidden=!canSaveSwim;leaveButton.disabled=s.busy||!!s.action;leaveButton.textContent='Lên bờ';
     // Disabling the boarding/cast button must not send keyboard input outside the modal.
     if(hadFocus&&button.disabled||hadLeaveFocus&&(leaveButton.disabled||leaveButton.hidden))canvas.focus({preventScroll:true});
     const stats=s.stats||env.api.state?.journey?.leisure||{};
@@ -271,7 +276,13 @@ export function openPixelPlace(kind,env){
     const actors=peers.sample(peerFrameAt?(time-peerFrameAt)/1000:0).map(peer=>({...peer,pose:leisurePose(peer.state,time,Date.now(),true)}));peerFrameAt=time;
     actors.push({local:true,state:s,pose,look:lookOf(env.api.state),gender:env.api.state?.journey?.gender,name:''});
     actors.sort((a,b)=>a.pose.y-b.pose.y);
-    for(const actor of actors)drawPlaceActor(ctx,kind,actor.state,actor.pose,time,art,{look:actor.look,gender:actor.gender,onReady:wake},{local:!!actor.local,name:actor.name,font:uiFont});
+    for(const actor of actors){
+      // Keep peer interpolation active, but skip expensive body/oar painting beyond
+      // the crop. The margin includes the full rod, oars, head and nameplate.
+      const p=actor.pose,padding=64;
+      if(!actor.local&&(p.x+padding<camera.x||p.x-padding>camera.x+camera.viewWidth||p.y+padding<camera.y||p.y-padding>camera.y+camera.viewHeight))continue;
+      drawPlaceActor(ctx,kind,actor.state,p,time,art,{look:actor.look,gender:actor.gender,onReady:wake},{local:!!actor.local,name:actor.name,font:uiFont});
+    }
     // Screen-space hints remain readable when a portrait camera crops the route.
     ctx.setTransform(ratio,0,0,ratio,0,0);
     const target=s.phase==='return'?(kind==='boat'?world.entry:s.round?.entry):kind==='pool'?s.round?.checkpoints?.[s.next]:null;

@@ -11,11 +11,17 @@ function harness(){
   const wave={enabled:true,server_time:1000,wave:{id:'w1',expires_at:1600,reward:10000,notice:'Rương đã xuất hiện!'},chests:[{id:'c1',map_id:'iso-town-v1',x:4,y:5,claimed:false}]};
   return {c,api,socket,world,doc,sent,drawn,notices,writes,timers,wave,emit:(t,f)=>listeners.get(t)?.(f),advance:ms=>time+=ms};
 }
-test('bounded public snapshots, single wave notice, expiry and disabled cleanup',()=>{
+test('single wave notice and unclaimed markers remain after the next wave time',()=>{
   const h=harness();h.c.start();h.c.receive(h.wave);h.c.receive(h.wave);
   assert.equal(h.drawn.at(-1).length,1);assert.equal(h.notices.length,1);
-  h.advance(600001);h.c.tick();assert.deepEqual(h.drawn.at(-1),[]);
+  h.advance(600001);h.c.tick();assert.equal(h.drawn.at(-1).length,1,'the cadence timestamp must not expire a chest');
   h.c.receive({...h.wave,enabled:false});assert.deepEqual(h.drawn.at(-1),[]);h.c.stop();assert.equal(h.timers.size,0);
+});
+test('all marker locations and truthful stack counts survive newer wave snapshots',()=>{
+ const h=harness();h.c.start();const markers=Array.from({length:12},(_,i)=>({id:'c'+i,map_id:'iso-town-v1',x:4+i,y:5,claimed:false,count:i+1}));
+ h.c.receive({...h.wave,chests:markers});assert.equal(h.drawn.at(-1).length,12,'no five-marker truncation');assert.equal(h.drawn.at(-1)[11].count,12);
+ h.c.receive({...h.wave,server_time:1601,wave:{...h.wave.wave,id:'w2',starts_at:1600,expires_at:2200,added:3},chests:markers});
+ assert.equal(h.drawn.at(-1).length,12);assert.equal(h.notices.length,2);h.c.stop();
 });
 test('collection publishes position and uses a server proof, never optimistic coins',async()=>{
   const h=harness();h.c.start();h.c.receive(h.wave);
@@ -23,6 +29,17 @@ test('collection publishes position and uses a server proof, never optimistic co
   h.emit('town_treasure_ready',{cid:'wrong',chest_id:'c1',proof:'ignore'});assert.equal(h.writes.length,0);
   h.emit('town_treasure_ready',{cid:h.sent.at(-1).cid,chest_id:'c1',proof:'signed',expires_at:1005});await claim;
   assert.equal(h.writes.length,1);assert.equal(h.writes[0][1].proof,'signed');assert.equal(h.api.saved.revision,2);h.c.stop();
+});
+test('collecting one stacked chest refreshes the next id without relying on a live push',async()=>{
+  const h=harness();let reads=0;
+  const first={...h.wave,chests:[{...h.wave.chests[0],count:2}]};
+  const next={...h.wave,server_time:1001,chests:[{...h.wave.chests[0],id:'c2',count:1}]};
+  h.api.json=async()=>++reads===1?first:next;
+  h.c.start();await Promise.resolve();await Promise.resolve();
+  const claim=h.c.claim('c1');await Promise.resolve();
+  h.emit('town_treasure_ready',{cid:h.sent.at(-1).cid,chest_id:'c1',proof:'signed'});await claim;
+  assert.equal(reads,2);assert.deepEqual(h.drawn.at(-1).map(c=>[c.id,c.count]),[['c2',1]]);
+  assert.equal(h.writes.length,1);h.c.stop();
 });
 test('distant, claimed and off-map treasure cannot start a claim; hidden stops requests',async()=>{
   const h=harness();h.c.start();h.c.receive({...h.wave,chests:[{...h.wave.chests[0],x:99}]});await h.c.claim('c1');assert.equal(h.sent.length,0);

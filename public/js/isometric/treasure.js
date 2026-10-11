@@ -4,13 +4,12 @@ export function createTreasureController(getEnv,options){
   const every=options.setInterval||setInterval,cancelEvery=options.clearInterval||clearInterval;
   const later=options.setTimeout||setTimeout,cancelLater=options.clearTimeout||clearTimeout;
   const uuid=options.uuid||(()=>crypto.randomUUID());
-  let snapshot=null,offset=0,seen='',timer=null,lastRead=-Infinity,reading=false,started=false,seq=0,pending=null,busy=false,lastWorld=null,epoch=0;
+  let snapshot=null,seen='',timer=null,lastRead=-Infinity,reading=false,started=false,seq=0,pending=null,busy=false,lastWorld=null,epoch=0;
   const off=[];
   const env=()=>typeof getEnv==='function'?getEnv():getEnv;
   const allowed=()=>socket.state==='open'&&socket.flags?.town&&socket.flags?.treasure;
-  const serverNow=()=>now()/1000+offset;
-  const active=()=>allowed()&&snapshot?.enabled&&snapshot.wave?.expires_at>serverNow();
-  const chests=()=>active()?(snapshot.chests||[]).filter(c=>!c.claimed&&c.map_id==='iso-town-v1'&&typeof c.id==='string'&&Number.isFinite(c.x)&&Number.isFinite(c.y)).slice(0,5):[];
+  const active=()=>allowed()&&snapshot?.enabled&&snapshot.wave;
+  const chests=()=>active()?(snapshot.chests||[]).filter(c=>!c.claimed&&c.map_id==='iso-town-v1'&&typeof c.id==='string'&&Number.isFinite(c.x)&&Number.isFinite(c.y)):[];
   function draw(){const w=env()?.world;if(w!==lastWorld){lastWorld?.setTreasure?.([]);lastWorld=w;}w?.setTreasure?.(chests());}
   function receive(value){
     if(!started||!value||typeof value.enabled!=='boolean')return;
@@ -20,7 +19,7 @@ export function createTreasureController(getEnv,options){
       const claimed=new Set(snapshot.chests.filter(c=>c.claimed).map(c=>c.id));
       value={...value,chests:(value.chests||[]).map(c=>claimed.has(c.id)?{...c,claimed:true}:c)};
     }
-    snapshot=value;if(Number.isFinite(value.server_time))offset=value.server_time-now()/1000;
+    snapshot=value;
     draw();if(active()&&seen!==value.wave.id){seen=value.wave.id;if(!doc.hidden)env()?.toast?.(value.wave.notice||'Rương đã xuất hiện trên đảo! Mỗi rương thưởng 10.000 xu.');}
   }
   async function read(){
@@ -53,6 +52,9 @@ export function createTreasureController(getEnv,options){
           const result=await e.api.retrying(()=>e.api.post('/api/town/treasure/claim',body));
           e.api.accept(result,since);e.toast?.(result.result?.message||'Bạn nhận được 10.000 xu!');
           if(snapshot)snapshot={...snapshot,chests:snapshot.chests.map(c=>c.id===id?{...c,claimed:true}:c)};draw();
+          // The same location can hold more unclaimed chests from earlier waves.
+          // Refresh its next id even when the live notification was missed.
+          lastRead=-Infinity;void read();
         }catch(error){await e.api.refresh().catch(()=>{});throw error;}
       };
       const job=(e.api.queue||Promise.resolve()).then(run,run);e.api.queue=job.catch(()=>{});await job;

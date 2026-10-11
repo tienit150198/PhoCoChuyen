@@ -20,6 +20,38 @@ test('walking respects shore and dock; activity requires approaching it',async()
  assert.ok(h.play.state.y<166);await h.play.interact();assert.equal(h.calls.length,0,'boarding a free boat does not create a server round');
  assert.equal(h.play.state.phase,'boat');
 });
+test('boarding works at the visible pier tip and both edges, without accepting the bank beside it',async()=>{
+ for(const [x,y] of [[93,108],[85,112],[101,112],[93,142],[93,165]]){
+  const h=harness();Object.assign(h.play.state,{x,y});
+  assert.equal(h.walkablePlace('boat',x,y),true);
+  await h.play.interact();assert.equal(h.play.state.phase,'boat',`visible pier ${x},${y} must allow boarding`);
+  assert.deepEqual(h.calls,[],'free boarding remains local');
+ }
+ for(const [x,y] of [[84,142],[102,142],[120,170],[93,180]]){
+  const h=harness();Object.assign(h.play.state,{x,y});await h.play.interact();
+  assert.equal(h.play.state.phase,'walk',`land outside the pier ${x},${y} cannot board`);
+ }
+});
+test('the swimming contextual action guides to the ladder and climbs out before finishing a lap',async()=>{
+ const h=harness('pool');h.dock();await h.play.interact();h.advance(700);
+ h.play.input(1,0);for(let n=0;n<20;n++)h.advance(50);h.play.reset();
+ const before={x:h.play.state.x,y:h.play.state.y};await h.play.interact();
+ assert.equal(h.play.state.phase,'return','primary interaction is available during free swimming');
+ assert.equal(h.play.state.x,before.x);assert.equal(h.play.state.y,before.y,'offshore exit guides instead of teleporting');
+ for(let n=0;n<100;n++){
+  const p=geometry.placeWorldPoint('pool',h.play.state,true),entry=geometry.placeWorldPoint('pool',{x:86,y:142},true);
+  if(Math.hypot(entry.x-p.x,entry.y-p.y)<5)break;
+  h.play.input(entry.x-p.x,entry.y-p.y);h.advance(50);
+ }
+ h.play.reset();await h.play.interact();assert.equal(h.play.state.phase,'walk');
+ h.advance(700);await h.play.interact();assert.equal(h.play.state.phase,'pool','exiting leaves the next session usable');
+ assert.deepEqual(h.calls.map(c=>c.name),['jr_leisure_start','jr_leisure_start']);
+});
+for(const checkpoints of [undefined,[]])test(`a swimmer with ${checkpoints?'empty':'missing'} checkpoint proof can leave without a false finish`,async()=>{
+ const h=harness('pool');Object.assign(h.play.state,{phase:'pool',x:86,y:142,round:{id:'partial',entry:[86,142],checkpoints}});
+ assert.doesNotThrow(()=>h.advance(50));await h.play.interact();
+ assert.equal(h.play.state.phase,'walk');assert.deepEqual(h.calls,[],'missing lap proof never submits a finish');
+});
 test('fishing has cast wait bite timed reel and real save command',async()=>{
  const h=harness('fishing');h.dock();
  await h.play.interact();assert.equal(h.play.state.phase,'waiting');

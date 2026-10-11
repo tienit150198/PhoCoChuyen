@@ -77,7 +77,9 @@ try {
     const owner={hotspots:[],treasure:[],mode:'town',career:'home',state:{look:{}},player:{x:2,y:2,path:[],goal:null},walkDistance:0,direction:'se',reduced:false,remotePlayers:[],width:800,height:600,canvas:{closest:()=>null}};
     const s=new DioramaScene(owner),frames=new Map();
     s.sys={isActive:()=>true};
-    s.textures={frames,exists:key=>frames.has(key),remove:key=>frames.delete(key),addCanvas(key,source){frames.set(key,frameFor(source,source.width,source.height));return {setFilter(){return this;}};}};
+    s.textures={frames,exists:key=>frames.has(key),remove:key=>frames.delete(key),
+      create(key,source){const texture={add(name,_source,_x,_y,width,height){frames.set(key,frameFor(source,width,height,name));return texture;},setFilter(){return texture;}};return texture;},
+      addCanvas(key,source){frames.set(key,frameFor(source,source.width,source.height));return {setFilter(){return this;}};}};
     s.add={image(x,y,key){allocations.images++;return new TestImage(s,x,y,key);},graphics:()=>new TestImage(s)};
     s.cameras={main:{scrollX:0,scrollY:0,width:800,height:600,zoom:1,setBackgroundColor(){return this;},setZoom(v){this.zoom=v;return this;},setScroll(x,y){this.scrollX=x;this.scrollY=y;return this;}}};
     s.refreshPlayer();s.positionPlayer(false);return s;

@@ -13,9 +13,9 @@
   wallet left after the stake, and JAIL_DAYS days in the trại tạm giữ (game/jail.py; rounds already going may still
   finish once out: game/fair.py LATE).
 * Big stakes (owner 09/10 "cược mà ai cược nhiều, từ 50k trở lên thì tăng tỷ lệ bị bắt, mỗi 10k tăng 1%"): a round
-  staking BIG_STAKE_FROM xu or more can be raided whatever today's net, big_stake_pct % (1 % at 50,000, 1 % more each
-  further 10,000), plus BM_ARREST_P while the net is above ARREST_FROM; never above ARREST_CAP (arrest_p). Same
-  consequences.
+  staking BIG_STAKE_FROM xu or more can be raided whatever today's net, big_stake_pct %, plus BM_ARREST_P while the
+  net is above ARREST_FROM; never above ARREST_CAP (arrest_p). Same consequences. Owner 11/10 "giảm nhẹ lại vì bị bắt
+  nhiều quá": reduce both terms by 15% and the cap from 30% to 25%; eligibility, fines and jail stay unchanged.
 * Nothing about the rate or the percentages reaches the client (owner 08/10: no odds shown); receipts show fines.
 
 Historical fees/robberies and current fines are fair losses (journey['fair'] net and stats.lost: the Bảng vàng),
@@ -35,12 +35,12 @@ import random
 KEY = 'fair_bm'
 BM_FEE = 0                     # legacy public field: entry is free
 FINE_PCT = 30                  # caught: this % of the wallet left after the stake (never shown)
-BM_ARREST_P = 0.05             # a paid round raided by the police (owner 09/10 "tỷ lệ bị bắt thấp tý"; never shown)
+BM_ARREST_P = 0.0425           # 11/10: modestly below the former .05; never shown
 ARREST_FROM = 300000           # ... only while today's Chợ đen net is above this (owner 09/10 "hơn 300k"; never shown)
 BIG_STAKE_FROM = 50000         # a round staking this much can be raided whatever the net (owner 09/10 "từ 50k trở lên")
 BIG_STAKE_STEP = 10000         # ... BIG_STAKE_PCT % at BIG_STAKE_FROM, BIG_STAKE_PCT % more each further step
-BIG_STAKE_PCT = 1              # (owner 09/10 "mỗi 10k tăng 1%"; never shown)
-ARREST_CAP = 0.30              # a round's whole raid chance never goes above this (never shown; owner 09/10 "tỷ lệ bị bắt khi chơi max 30%")
+BIG_STAKE_PCT = 0.85           # 11/10: modestly below the former 1% per step; never shown
+ARREST_CAP = 0.25              # 11/10: whole-round cap reduced from .30; never shown
 JAIL_DAYS = 3                  # caught: jail days in the trại tạm giữ (owner 09/10 "chơi cờ bạc bị bắt 3 ngày")
 STATES = ('paid', 'robbed', 'ban')
 ROW_MAX = 10**7                # one Sổ ví row's |amount| (journey.validate)
@@ -61,12 +61,13 @@ def at_risk(f: dict | None) -> bool:
     return isinstance(f, dict) and type(f.get('net')) is int and f['net'] > ARREST_FROM
 
 
-def big_stake_pct(stake) -> int:
+def big_stake_pct(stake) -> float:
     """The big stakes draw the police's eye (owner 09/10 "cược mà ai cược nhiều, từ 50k trở lên thì tăng tỷ lệ bị bắt,
     mỗi 10k tăng 1% (từ mốc 50k)"): BIG_STAKE_PCT % for a round staking BIG_STAKE_FROM, BIG_STAKE_PCT % more for each
-    further BIG_STAKE_STEP xu (59,999 → 1, 60,000 → 2, 100,000 → 6); nothing below BIG_STAKE_FROM."""
+    further BIG_STAKE_STEP xu (59,999 → .85, 60,000 → 1.7, 100,000 → 5.1 after the 11/10 reduction); nothing below
+    BIG_STAKE_FROM."""
     if type(stake) is not int or stake < BIG_STAKE_FROM:
-        return 0
+        return 0.0
     return BIG_STAKE_PCT * (1 + (stake - BIG_STAKE_FROM) // BIG_STAKE_STEP)
 
 

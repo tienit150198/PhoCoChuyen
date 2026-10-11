@@ -122,7 +122,7 @@ export function townHTML(env,h){
   const fr=s.fair,fairOn=J.story&&fr?.show&&!fr.over;
   const fair=fairOn?`<button type="button" class="tw-chip tw-fair${fr.open&&!fr.played?' due':''}" data-action="fair" aria-label="${esc(fr.soon?'Chợ đen sắp mở':'Vào chợ đen')}">🕶️ Chợ đen${fr.soon?' <small>sắp mở</small>':''}${fr.open&&!fr.played?'<i class="dot" aria-hidden="true"></i>':''}</button>`:'';
   return `<div class="tw-home"><header class="tw-top home-top"><div class="tw-title"><h2>Khu phố</h2>${day}</div>${x3}${fair}${cert}
-    <button type="button" class="tw-chip tw-list" data-action="jrList">📋 Danh sách</button>${close}</header>${goals}${hint}
+    <button type="button" class="tw-chip" data-action="sharedIsland">🏝️ Ra đảo nhặt rương</button><button type="button" class="tw-chip tw-list" data-action="jrList">📋 Danh sách</button>${close}</header>${goals}${hint}
     <div class="tw-slot" data-tw-slot><i class="tw-end" hidden></i></div></div>`;
 }
 /** Can this browser draw it? (else the list shows, as before) */

@@ -291,10 +291,10 @@ class Arrest(BlackMarketBase):
 
             def random(self):
                 return self.x
-        self.assertEqual((bm.BM_ARREST_P, bm.ARREST_FROM), (0.05, 300000))   # owner 09/10: "thấp tý", "hơn 300k"
-        with mock.patch.object(bm, '_rng', R(.0499)):
+        self.assertEqual((bm.BM_ARREST_P, bm.ARREST_FROM), (0.0425, 300000))   # 11/10: a modest reduction, same eligibility
+        with mock.patch.object(bm, '_rng', R(.0424)):
             self.assertTrue(bm._arrest_roll())
-        with mock.patch.object(bm, '_rng', R(.05)):
+        with mock.patch.object(bm, '_rng', R(.0425)):
             self.assertFalse(bm._arrest_roll())
 
     def test_arrests_leave_the_stalls_draws_alone(self):
@@ -325,21 +325,19 @@ class Arrest(BlackMarketBase):
 
 
 class BigStake(BlackMarketBase):
-    """Owner 09/10: "cược mà ai cược nhiều, từ 50k trở lên thì tăng tỷ lệ bị bắt, mỗi 10k tăng 1% (từ mốc 50k)": a round
-    staking 50,000 xu or more can be raided whatever today's net, 1 % more each further 10,000, the 300k rule's 5 % on
-    top, never above 30 % (owner 09/10 "tỷ lệ bị bắt khi chơi max 30% thôi nha")."""
+    """11/10: modestly lower the original stake/net curve, retaining its eligibility and hidden rates."""
 
     POOR, RICH = {'net': 0}, {'net': bm.ARREST_FROM + 1}
 
     def test_the_constants(self):
         self.assertEqual((bm.BIG_STAKE_FROM, bm.BIG_STAKE_STEP, bm.BIG_STAKE_PCT, bm.ARREST_CAP),
-                         (50000, 10000, 1, 0.30))
+                         (50000, 10000, .85, .25))
 
     def test_the_boundaries(self):
-        for stake, poor, rich in ((10, 0, .05), (49999, 0, .05), (50000, .01, .06), (59999, .01, .06),
-                                  (60000, .02, .07), (69999, .02, .07), (100000, .06, .11), (289999, .24, .29), (290000, .25, .30),
-                                  (300000, .26, .30), (339999, .29, .30), (340000, .30, .30),
-                                  (750000, .30, .30), (10**6, .30, .30)):
+        for stake, poor, rich in ((10, 0, .0425), (49999, 0, .0425), (50000, .0085, .051), (59999, .0085, .051),
+                                  (60000, .017, .0595), (69999, .017, .0595), (100000, .051, .0935),
+                                  (289999, .204, .2465), (290000, .2125, .25), (300000, .221, .25),
+                                  (339999, .2465, .25), (340000, .25, .25), (750000, .25, .25), (10**6, .25, .25)):
             with self.subTest(stake=stake):
                 self.assertAlmostEqual(bm.arrest_p(self.POOR, stake), poor, places=9)
                 self.assertAlmostEqual(bm.arrest_p(self.RICH, stake), rich, places=9)
@@ -349,6 +347,20 @@ class BigStake(BlackMarketBase):
         for odd in (None, '60000', 60000.0, True):
             self.assertEqual(bm.arrest_p(self.POOR, odd), 0)
 
+    def test_curve_remains_monotone_and_only_modestly_below_previous_rates(self):
+        stakes = [0, 49999] + list(range(50000, 1000001, 10000))
+        for net in (-100000, 0, 300000, 300001):
+            rates = [bm.arrest_p({'net': net}, stake) for stake in stakes]
+            self.assertEqual(rates, sorted(rates), 'larger stakes never make arrest less likely')
+            for stake, rate in zip(stakes, rates):
+                old = min(.30, ((1 + (stake - 50000) // 10000) / 100 if stake >= 50000 else 0) + (.05 if net > 300000 else 0))
+                if old:
+                    self.assertLess(rate, old, (net, stake))
+                    self.assertGreaterEqual(rate, old * .8, (net, stake))
+                else:
+                    self.assertEqual(rate, 0)
+                self.assertLessEqual(rate, .25)
+
     def test_the_roll_takes_the_rate(self):
         class R:
             def __init__(self, x):
@@ -356,13 +368,13 @@ class BigStake(BlackMarketBase):
 
             def random(self):
                 return self.x
-        with mock.patch.object(bm, '_rng', R(.2999)):
+        with mock.patch.object(bm, '_rng', R(.2499)):
             self.assertTrue(bm._arrest_roll(bm.arrest_p(self.POOR, 10**6)))
-        with mock.patch.object(bm, '_rng', R(.30)):
+        with mock.patch.object(bm, '_rng', R(.25)):
             self.assertFalse(bm._arrest_roll(bm.arrest_p(self.RICH, 10**6)))
-        with mock.patch.object(bm, '_rng', R(.0199)):
+        with mock.patch.object(bm, '_rng', R(.0169)):
             self.assertTrue(bm._arrest_roll(bm.arrest_p(self.POOR, 60000)))
-        with mock.patch.object(bm, '_rng', R(.02)):
+        with mock.patch.object(bm, '_rng', R(.017)):
             self.assertFalse(bm._arrest_roll(bm.arrest_p(self.POOR, 60000)))
 
     def rolls(self, stake, net=0, on=False):
@@ -387,8 +399,8 @@ class BigStake(BlackMarketBase):
                 self.assertNotIn('arrest', r['fair'])
 
     def test_big_stakes_are_rolled_whatever_the_net(self):
-        for stake, net, p in ((50000, 0, .01), (59999, -10**5, .01), (60000, 0, .02), (60000, bm.ARREST_FROM + 1, .07),
-                              (100000, bm.ARREST_FROM, .06), (10**6, 0, .30), (10**6, bm.ARREST_FROM + 1, .30)):
+        for stake, net, p in ((50000, 0, .0085), (59999, -10**5, .0085), (60000, 0, .017), (60000, bm.ARREST_FROM + 1, .0595),
+                              (100000, bm.ARREST_FROM, .051), (10**6, 0, .25), (10**6, bm.ARREST_FROM + 1, .25)):
             with self.subTest(stake=stake, net=net):
                 s, r, seen = self.rolls(stake, net)
                 self.assertEqual(len(seen), 1)
@@ -417,7 +429,7 @@ class BigStake(BlackMarketBase):
         n = fh.dog.race(self.clock.t + 6)
         with mock.patch.object(bm, '_arrest_roll', lambda p=bm.BM_ARREST_P: seen.append(p) or False):
             s, r = self.act(s, 'fair_dg', race=n, lane=0, stake=200000)
-        self.assertAlmostEqual(seen[0], .16, places=9)
+        self.assertAlmostEqual(seen[0], .136, places=9)
 
 
 class NothingShown(BlackMarketBase):

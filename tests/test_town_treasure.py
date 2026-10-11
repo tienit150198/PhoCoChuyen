@@ -68,7 +68,8 @@ class Treasure(unittest.TestCase):
         self.now += 1
         b = self.tt.snapshot(restart)
         self.assertNotEqual(b['wave']['id'], a['wave']['id'])
-        self.assertFalse(set(c['id'] for c in a['chests']) & set(c['id'] for c in b['chests']))
+        self.assertTrue(set(c['id'] for c in a['chests']).issubset(c['id'] for c in b['chests']))
+        self.assertEqual(b['total_unclaimed'], a['total_unclaimed'] + b['wave']['added'])
 
     def test_concurrent_workers_share_one_wave(self):
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as pool:
@@ -77,6 +78,8 @@ class Treasure(unittest.TestCase):
 
     def test_global_single_winner_and_retry_exact_reward(self):
         chest = self.tt.snapshot(self.store)['chests'][0]
+        self.now += 1200
+        self.tt.snapshot(self.store)
         players = [self.account(), self.account()]
         wallets = [self.store.read(p[0])[0]['journey']['wallet'] for p in players]
         bodies = [self.proof(p[1], chest) for p in players]
@@ -115,18 +118,82 @@ class Treasure(unittest.TestCase):
             body=self.proof(sid,chest,**kw)
             with self.subTest(kw=kw), self.assertRaises(self.tt.TreasureError):self.tt.claim(self.store,token,body)
 
-    def test_next_wave_expires_unclaimed_chest_and_bounds_audit(self):
+    def test_unclaimed_chest_survives_new_waves_cleanup_and_restart_until_claimed(self):
         token,sid = self.account()
         chest=self.tt.snapshot(self.store)['chests'][0]
-        body=self.proof(sid,chest)
         self.now += 600
-        with self.assertRaises(self.tt.TreasureError) as caught:self.tt.claim(self.store,token,body)
-        self.assertEqual(caught.exception.code,'treasure_expired')
+        self.assertIn(chest['id'], [c['id'] for c in self.tt.snapshot(self.store)['chests']])
         self.now += 90000
         self.tt.snapshot(self.store)
         with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM town_treasure_chests WHERE id=?',(chest['id'],)).fetchone()[0],1)
+        restart=Store(self.path,story=True);self.addCleanup(restart.close_pool)
+        self.assertIn(chest['id'], [c['id'] for c in self.tt.snapshot(restart)['chests']])
+        body=self.proof(sid,chest)
+        paid=self.tt.claim(restart,token,body)
+        self.assertEqual(paid['result']['treasure']['coins'],10000)
+        self.assertNotIn(chest['id'], [c['id'] for c in self.tt.snapshot(restart)['chests']])
+        self.assertTrue(self.tt.claim(restart,token,body)['replayed'])
+
+    def test_same_spot_accumulates_all_rows_with_bounded_marker_payload(self):
+        spots=self.tt.locations()[:3]
+        def fixed(bucket):return [(f'tt-{bucket}-{i}',bucket,self.tt.MAP_ID,x,y) for i,(x,y) in enumerate(spots)]
+        with patch('game.town_treasure.spawn_rows',side_effect=fixed):
+            for _ in range(150):
+                snap=self.tt.snapshot(self.store);self.now+=600
+        self.assertEqual(len(snap['chests']),3)
+        self.assertEqual(snap['total_unclaimed'],450)
+        self.assertEqual([c['count'] for c in snap['chests']],[150]*3)
+        self.assertEqual(snap['wave']['added'],3)
+        self.assertIn('3 rương',snap['wave']['notice'])
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM town_treasure_chests').fetchone()[0],450)
+        token,sid=self.account();oldest=snap['chests'][0]
+        self.tt.claim(self.store,token,self.proof(sid,oldest))
+        with patch('game.town_treasure.spawn_rows',side_effect=fixed):after=self.tt.snapshot(self.store)
+        marker=next(c for c in after['chests'] if (c['x'],c['y'])==(oldest['x'],oldest['y']))
+        self.assertNotEqual(marker['id'],oldest['id']);self.assertEqual(marker['count'],150)
+        self.assertEqual(after['total_unclaimed'],452)
+
+    def test_old_chest_claim_receipt_retention_starts_when_claimed_not_when_spawned(self):
+        token,sid=self.account();chest=self.tt.snapshot(self.store)['chests'][0]
+        self.now+=90000;body=self.proof(sid,chest);self.tt.claim(self.store,token,body)
+        self.tt.snapshot(self.store)
+        self.assertTrue(self.tt.claim(self.store,token,body)['replayed'])
+        self.now+=90000;self.tt.snapshot(self.store)
+        with self.store.connect() as db:
             self.assertEqual(db.execute('SELECT COUNT(*) FROM town_treasure_chests WHERE id=?',(chest['id'],)).fetchone()[0],0)
-            self.assertLessEqual(db.execute('SELECT COUNT(*) FROM town_treasure_waves').fetchone()[0],145)
+            self.assertGreater(db.execute('SELECT COUNT(*) FROM town_treasure_chests WHERE winner IS NULL').fetchone()[0],0)
+
+    def test_thousand_chests_at_hundred_locations_keep_payload_bounded(self):
+        # Synthetic locations exercise grouping independently from the map's
+        # present set of 92 authored approaches, which can grow in later maps.
+        bucket=int(self.now//self.tt.PERIOD)
+        def seed(db):
+            db.executemany(self.tt.INSERT_WAVE,[(bucket-i,) for i in range(200)])
+            rows=[(f'tt-{bucket-i//5}-{i%5}',bucket-i//5,self.tt.MAP_ID,float(i%100),7.0) for i in range(1000)]
+            db.executemany(self.tt.INSERT_CHEST,rows[:100])
+            small=self.tt.view(db.execute(self.tt.SELECT_CHESTS).fetchall(),self.now,added=5)
+            db.executemany(self.tt.INSERT_CHEST,rows[100:])
+            large=self.tt.view(db.execute(self.tt.SELECT_CHESTS).fetchall(),self.now,added=5)
+            return small,large
+        small,large=self.store.transaction(seed)
+        self.assertEqual(len(small['chests']),100);self.assertEqual(len(large['chests']),100)
+        self.assertEqual(large['total_unclaimed'],1000)
+        self.assertTrue(all(c['count']==10 for c in large['chests']))
+        self.assertLess(len(json.dumps(large)),len(json.dumps(small))*1.05)
+
+    def test_schema_38_upgrade_preserves_existing_unclaimed_rows_and_adds_active_index(self):
+        from game import pg_schema
+        first=self.tt.snapshot(self.store)
+        with self.store.connect() as db:
+            db.execute('DROP INDEX IF EXISTS town_treasure_unclaimed_location')
+            db.execute("UPDATE mnl_meta SET value='38' WHERE key='schema_version'")
+            self.assertTrue(pg_schema.ensure(db))
+            self.assertEqual(db.execute("SELECT value FROM mnl_meta WHERE key='schema_version'").fetchone()[0],'39')
+            index=db.execute("SELECT indexdef FROM pg_indexes WHERE schemaname=current_schema() AND indexname='town_treasure_unclaimed_location'").fetchone()
+            self.assertIsNotNone(index);self.assertIn('winner IS NULL',index[0])
+        self.assertEqual(self.tt.snapshot(self.store)['chests'],first['chests'])
 
     def test_time_rechecked_after_position_lock_wait(self):
         token,sid=self.account()
@@ -134,7 +201,7 @@ class Treasure(unittest.TestCase):
         body=self.proof(sid,chest)
         with patch('game.town_treasure.now',side_effect=[self.now,self.now+600]):
             with self.assertRaises(self.tt.TreasureError) as caught:self.tt.claim(self.store,token,body)
-        self.assertEqual(caught.exception.code,'treasure_expired')
+        self.assertEqual(caught.exception.code,'treasure_presence','proofs still expire even though the chest persists')
 
     def test_wallet_failure_rolls_back_claim_then_can_retry(self):
         token,sid = self.account()
