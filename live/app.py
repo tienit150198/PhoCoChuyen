@@ -43,6 +43,7 @@ from .auction import AuctionFeature
 from .dog_bark import DogBarkFeature
 from .fireworks import FireworksFeature
 from .wedinvite import WedInviteFeature
+from .cand import CandFeature
 
 try:
     import websockets
@@ -52,7 +53,7 @@ except ImportError:  # pragma: no cover
     websockets = None
 
 # Phase 2 adds live.street.StreetFeature, phase 3 live.dating.DatingFeature (one line each).
-FEATURES = [ChatFeature, StreetFeature, DatingFeature, WeddingFeature, FairFeature, BoothFeature, HomeFeature, WorkVisitsFeature, MarketFeature, TownFeature, TownTreasureFeature, KaraokeFeature, AuctionFeature, FireworksFeature, WedInviteFeature, DogBarkFeature]
+FEATURES = [ChatFeature, StreetFeature, DatingFeature, WeddingFeature, FairFeature, BoothFeature, HomeFeature, WorkVisitsFeature, MarketFeature, TownFeature, TownTreasureFeature, KaraokeFeature, AuctionFeature, FireworksFeature, WedInviteFeature, DogBarkFeature, CandFeature]
 HELLO_SECS = 10.0
 NOTIFY_CHANNEL = 'mnl_live'
 

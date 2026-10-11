@@ -22,6 +22,8 @@ import {crowd} from './fair-crowd.js';
 import {choice,next as nextRide,canRide,label as rideLabel,speedOf,drawRide,rider,steer,halfOf,topOf,wire,spouse as spouseOf,loadSpouse} from './ride.js';
 // 👶 the baby in my arms (v4/baby.js)
 import {withBaby,wire as babyWire} from './baby.js';
+// 👮 an officer on duty taps a player to check them; the player stopped answers (v4/cand.js, game/cand_ops.py)
+import {onDuty,openStop,watch as candWatch,unwatch as candUnwatch} from './cand.js';
 
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
@@ -82,10 +84,14 @@ export function setup(ctx){
     W.drawn=0;wake();
     hook();
     if(W.me){const here=frac([W.me.x,W.me.y]);if(W.playing){W.playing='';CR.walk([here,here],0,null,wire(W.ride));}CR.join(here,wire(W.ride));}   // off the stall: no badge
+    candWatch(S.env);   // 👮 a question from a patrol reaches this page even without the live push
+    const duty=onDuty(S.env?.api?.state);
+    if(duty&&!W.dutySaid&&W.me&&W.say){W.dutySaid=true;speak({hit:[W.me.x,W.me.y-120],line:'👮 Đang trực: chạm vào người chơi để kiểm tra.'});}
+    if(!duty)W.dutySaid=false;
   }
   function hook(){if(!W.hooked&&S.dlg){W.hooked=true;S.dlg.addEventListener('close',off);}}
   /** The sheet closed or the fair is over: out of the room. */
-  function off(){W.playing='';CR.leave();sleep();}
+  function off(){W.playing='';CR.leave();sleep();candUnwatch();}
   /** After every render of fair.js on a stall page (`id`: the stall's tab, or the food cart): for the others the player
    * stands at that stall, its badge over them, until they come back to the walk or leave. Opened from the list, the
    * walk there is played to them; the player stands there too when they come back. "Vay nóng" shows no badge (who
@@ -217,7 +223,11 @@ export function setup(ctx){
   function arrived(){const f=W.arrive;W.arrive=null;W.legs=[];W.leg=null;W.me.path=null;if(f)f();}
   function hitSpot(p){let best=null,bd=Infinity;for(const s of pl().spots){const d=Math.hypot(s.hit[0]-p[0],s.hit[1]-p[1]);if(d<=s.r&&d<bd){bd=d;best=s;}}return best;}
   function tapAt(cx,cy){
-    const p=toScene(cx,cy),spot=hitSpot(p);hush();
+    const p=toScene(cx,cy);
+    if(onDuty(S.env?.api?.state)){   // 👮 on duty: a tap on another player opens the check (v4/cand.js)
+      const who=CR.hit(p,scaleAt);if(who){hush();openStop(S.env,who);return;}
+    }
+    const spot=hitSpot(p);hush();
     if(spot)goSpot(spot);else walkTo(p);
   }
   function goSpot(s){

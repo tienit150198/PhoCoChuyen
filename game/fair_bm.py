@@ -50,6 +50,13 @@ STAKE_TOP_PCT = 90             # from the last step's end
 # SPAM_STEP % per round beyond (spam_pct). journey[SPAM_KEY] {d: Vietnam date, n: such rounds that day} (optional: an
 # older server keeps the journey's unknown keys). Never shown.
 SPAM_KEY, SPAM_ROUNDS, SPAM_PCT, SPAM_STEP = 'fair_big', 50, 20, 1
+# 👮 The patrol's evidence (game/cand_ops.py, owner spec 11/10): journey[EV_KEY] {t: ms of the last paid luck round,
+# s: its stake}, written by game/fair.py _police for every such round (optional: an older server keeps the journey's
+# unknown keys). A player officer at Chợ đen may stop only someone whose last such round is recent.
+EV_KEY = 'fair_ev'
+# journey[BR_KEY] {n, t}: the envelopes a player officer took from players at Chợ đen (game/cand_ops.py: n since the
+# last quiet week, t the last one, epoch s). Optional and top level so an older server keeps it untouched.
+BR_KEY = 'cand_br'
 ARREST_CAP = 0.90              # whole-round cap; never shown
 JAIL_DAYS = 3                  # caught: jail days in the trại tạm giữ (owner 09/10 "chơi cờ bạc bị bắt 3 ngày")
 STATES = ('paid', 'robbed', 'ban')
@@ -102,6 +109,12 @@ def count_big(j: dict, t: float, stake) -> int:
     n = min(10**6, n + 1)
     j[SPAM_KEY] = dict(d=day, n=n)
     return n
+
+
+def note_round(j: dict, t: float, stake) -> None:
+    """journey[EV_KEY]: this paid luck round, its time and its stake (the patrol's evidence, game/cand_ops.py)."""
+    if type(stake) is int and stake > 0:
+        j[EV_KEY] = dict(t=int(t * 1000), s=min(10**9, stake))
 
 
 def spam_pct(big_rounds: int) -> float:
@@ -272,6 +285,14 @@ def validate(j: dict) -> None:
         c = j[SPAM_KEY]
         need(isinstance(c, dict) and set(c) == {'d', 'n'} and isinstance(c['d'], str) and len(c['d']) == 10
              and type(c['n']) is int and 0 <= c['n'] <= 10**6, 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
+    if EV_KEY in j:
+        ev = j[EV_KEY]
+        need(isinstance(ev, dict) and set(ev) == {'t', 's'} and type(ev['t']) is int and 0 <= ev['t'] <= 10**14
+             and type(ev['s']) is int and 0 < ev['s'] <= 10**9, 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
+    if BR_KEY in j:
+        b = j[BR_KEY]
+        need(isinstance(b, dict) and set(b) == {'n', 't'} and type(b['n']) is int and 0 <= b['n'] <= 10**6
+             and type(b['t']) is int and 0 <= b['t'] <= 10**11, 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
     if KEY not in j:
         return
     b = j[KEY]

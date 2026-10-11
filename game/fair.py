@@ -1342,7 +1342,9 @@ def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
     09/10 "ae ăn tiền nhiều (hơn 300k) thì mới bị bắt"; plus a share for a stake of fair_bm.BIG_STAKE_FROM xu or more,
     whatever the net, owner 09/10 "từ 50k trở lên thì tăng tỷ lệ bị bắt"; capped at fair_bm.ARREST_CAP). Caught: the
     stake stays in the wallet, the bounded fine, and the trại tạm giữ for fair_bm.JAIL_DAYS jail days (game/jail.py); the round has no
-    outcome (raises _Caught, which apply() turns into the command's result)."""
+    outcome (raises _Caught, which apply() turns into the command's result). Every such round is noted first
+    (fair_bm.note_round: a player officer's evidence, game/cand_ops.py)."""
+    bm.note_round(j, t, stake)
     if not bm._gate_on():
         return
     p = bm.arrest_p(f, stake, bm.count_big(j, t, stake))   # owner 11/10: past 50 rounds of 50k+ today, far likelier

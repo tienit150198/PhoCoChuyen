@@ -266,7 +266,8 @@ def _mutate(store, fns: dict, db_ops=None) -> dict:
     revision, and any save not stamped by this build, is validated in full as before."""
     from . import storage as st
     from .engine import stamped, needs_migration, scoped_validation
-    prepared, prior = {}, {}
+    from . import cand_roster
+    prepared, prior, cand_before = {}, {}, {}
     with store.connect() as db:
         rows = {sid: db.execute('SELECT revision,state FROM sessions WHERE sid=?', (sid,), text_bytes=True).fetchone() for sid in fns}
     for sid, fn in fns.items():
@@ -283,6 +284,7 @@ def _mutate(store, fns: dict, db_ops=None) -> dict:
             snap = st.settle_scope.snapshot(state, known) if known is not None and st.SCOPED_CAREERS else None
             m = state.get('marriage') if isinstance(state.get('marriage'), dict) else {}
             prior[sid] = dict(marriage=dict(applied=list(m['applied']) if isinstance(m.get('applied'), list) else []))   # 💳 couple.commit_holds
+            cand_before[sid] = cand_roster.info(state)   # 👮 the CAND roster row before (a bribe found out demotes)
             fn(state)
             if known is None:
                 validate_state(state)
@@ -304,6 +306,7 @@ def _mutate(store, fns: dict, db_ops=None) -> dict:
         for sid, (_, _, _, state, original, jailed) in sorted(prepared.items()):
             rentals.command_commit(db, sid, original, state, 'shared_mutation')
             jail.mark_commit(db, sid, dict(journey=dict(jail=jailed)), state)  # 🚔 a bail frees the save: its mark goes
+            cand_roster.commit_info(db, sid, cand_before[sid], state)  # 👮 the roster row follows the save (game/cand_ops.py)
         return db_ops(db) if db_ops else None
     out = store.transaction(write)
     return dict(db=out, states={sid: (p[3], p[0] + 1) for sid, p in prepared.items()})
@@ -1233,8 +1236,9 @@ def act(store, token: str, op: str, d: dict) -> dict:
 
 
 def _more_actions() -> dict:
-    from . import friends as fr, couple as cp, family as fam, jail
-    return {**fr.ACTIONS, **cp.ACTIONS, **fam.ACTIONS, **jail.ACTIONS}   # 🚔 jail_ask, jail_bail (game/jail.py)
+    from . import friends as fr, couple as cp, family as fam, jail, cand_ops
+    # 🚔 jail_ask, jail_bail (game/jail.py); 👮 cand_* (game/cand_ops.py: the patrol at Chợ đen, the commanders)
+    return {**fr.ACTIONS, **cp.ACTIONS, **fam.ACTIONS, **jail.ACTIONS, **cand_ops.ACTIONS}
 
 
 def _ring_buy(store, sid: str, display: str, d: dict) -> dict:

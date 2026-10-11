@@ -68,7 +68,7 @@ const L={
   abroad:lazy(()=>import('./v4/abroad.js'),{css:['/css/abroad.css']}),  // ✈️ Du học, 🌏 Làm việc ở nước ngoài (game/abroad.py)
 };
 const TUT_OPEN=new Set(['help','tutGuide','tutReplay']);  // tutorial actions whose buttons other modules render
-const PROMO_OPEN=new Set(['promo','pmBoard','pmStart','pmPick','pmMate','pmOffice']);  // 🎖️ v4/promo.js
+const PROMO_OPEN=new Set(['promo','pmBoard','pmStart','pmPick','pmMate','pmOffice','pmForce']);  // 🎖️ v4/promo.js
 const ABROAD_OPEN=new Set(['abroad','abTab','abJob','abLesson']);  // ✈️🌏 v4/abroad.js
 /** A sheet whose code is not in yet: its header (with the close button) and a skeleton. */
 const lazyView=(h,fn)=>h.use()?fn(h.m):header('')+`<div class="sheet-body">${skeleton()}</div>`;
@@ -174,6 +174,7 @@ function bootLive(m){
   const fw=f=>import('./v4/fireworks.js').then(a=>a.onFireworks(env(),f)).catch(e=>console.warn('fireworks:',e));
   m.live.on('fireworks',fw);m.live.on('welcome',f=>{if(f.fw)fw(f.fw);});
   m.live.on('wedinvite',f=>import('./v4/wedinvite.js').then(a=>a.onWedInvite(env(),f)).catch(e=>console.warn('wedinvite:',e)));
+  m.live.on('cand',f=>import('./v4/cand.js').then(a=>a.onLive(env(),f)).catch(e=>console.warn('cand:',e)));   // 👮 a patrol's check (game/cand_ops.py)
   m.liveBoot(env());
 }
 const env=()=>({api,ui,cmd,confirmAction,toast,renderSheet,renderMain,openSheet,closeSheet,world,bootLive,act:(action,data={})=>handleAction(action,data,null),live:()=>L.live.m?.live||null});

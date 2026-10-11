@@ -207,7 +207,13 @@ export function crowd({state,content=()=>null,redraw,still,onBack=()=>{},onTaken
   const where=pid=>{const q=C.people.get(pid);if(!q)return null;const [x,y,m]=at(q,performance.now());return {x,y,moving:m,r:q.r,b:q.b,name:q.name,rv:q.rv};};
   /** The one sitting behind pid (a person entry) or null. */
   const pillion=pid=>{for(const q of C.people.values())if(q.b===pid)return q;return null;};
+  /** 👮 Who is drawn at scene point p (where items() last put them; scale(y) their size there): {pid, name} or null. */
+  const hit=(p,scale)=>{let best=null,bd=Infinity;
+    for(const q of C.people.values()){if(typeof q.sx!=='number'||q.on)continue;const s=scale(q.sy),half=34*s;
+      if(Math.abs(p[0]-q.sx)>half||p[1]<q.top-12*s||p[1]>q.sy+10*s)continue;
+      const d=Math.hypot(p[0]-q.sx,p[1]-(q.sy+q.top)/2);if(d<bd){bd=d;best=q;}}
+    return best?{pid:best.pid,name:best.name}:null;};
 
-  return {join,leave,walk,items,tags,busy,back,where,pillion,me:()=>C.me,behind:()=>C.back,coride:()=>Boolean(live.flags?.coride),
+  return {join,leave,walk,items,tags,busy,back,where,pillion,hit,me:()=>C.me,behind:()=>C.back,coride:()=>Boolean(live.flags?.coride),
     state:()=>({on:Boolean(C.room),room:C.room,me:C.me,s:C.s,back:C.back,people:[...C.people.values()].map(q=>{const [x,y,m]=at(q,performance.now());return {pid:q.pid,name:q.name,x,y,walking:m,s:q.s,ride:q.r?.v||null,b:q.b,bb:q.bb||null};})})};
 }

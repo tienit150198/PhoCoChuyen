@@ -249,6 +249,7 @@ export async function promoAction(action,data,el,env){
   }
   if(action==='pmBoard'){ui.pmPick=null;ui.pmOffice=false;openSheet('manager');return true;}
   if(action==='pmStart'){const r=await send('start_day',{manager:true});if(r){ui.pmPick=null;ui.pmOffice=false;ui.task=null;openSheet('manager');}return true;}
+  if(action==='pmForce'){import('./cand.js').then(m=>m.openForce(env)).catch(e=>toast(e.message||'Chưa mở được.','bad'));return true;}   // 👮 👥 Toàn lực lượng
   if(action==='pmOffice'){ui.pmOffice=true;ui.pmOfSlot=null;ui.pmOfWho=null;ui.pmOfTab=null;openSheet('manager');return true;}
   if(action==='pmOfTab'){ui.pmOfTab=data.tab;ui.pmOfSlot=null;ui.pmOfWho=null;renderSheet();return true;}
   if(action==='pmOfSlot'){const i=Number(data.i);ui.pmOfSlot=ui.pmOfSlot===i?null:i;ui.pmOfTab='plan';renderSheet();return true;}
