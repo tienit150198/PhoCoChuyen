@@ -180,8 +180,11 @@ const S={
     await wait(120);await settle();
     assert.equal(downloads.length,2,'tried again');
     serve(downloads[1]);await settle(10);ctx().advance(.5);await settle();
-    // the new head may play first; once the whole song is in it is the only one, looping
+    // the first seconds already ran out: the retry never plays the opening again; the whole song carries on
+    // from where they stopped (a slow phone network never repeats the same intro), then loops
+    assert.equal(ctx().sources.filter(s=>s.loop===false).length,1,'the opening plays once');
     p=ctx().playing();assert.equal(p.length,1);assert.equal(p[0].loop,true);assert.equal(p[0].buffer.tag,1);
+    assert.ok(p[0].offset>0,'carries on after the first seconds, not from the top');
     // The handoff from head to whole song does not drop the song (the head's onended must not clear it).
     m.configure({...ON,career:'teacher'});await settle();
     const d3=downloads[2],b3=bytes(d3.url,d3.len);d3.push(b3.subarray(0,170*1024));await settle();
