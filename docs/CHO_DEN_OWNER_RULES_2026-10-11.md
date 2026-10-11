@@ -117,6 +117,6 @@ Việc phải làm trong code để khớp các quyết định trên:
    2–10 theo bảng hiện tại. Bảng này gồm tiền thắng nhờ lỗ hổng Hai ngày vàng và hai trường hợp ô ăn quan nghi dùng
    máy giải. Cần quyết trước nửa đêm: vẫn trao, hoãn, hay loại các trường hợp này.
 9. **Tiền đã thắng.** Có thu hồi hoặc phạt hồi tố không? Đề xuất không thu hồi phần thắng trong sự kiện (lỗi luật của
-   game). Riêng hai trường hợp ô ăn quan (658 và khoảng 420 ván thắng) có thể áp luật mới một lần nếu chủ game muốn.
+   game). Riêng hai trường hợp ô ăn quan (658 và 456 ván thắng) có thể áp luật mới một lần nếu chủ game muốn.
 10. **Thời điểm deploy.** Đã hứa với người chơi sẽ deploy trong khung 04:00–05:00. Nếu chờ khung đó thì lỗ hổng Hai
     ngày vàng còn mở thêm khoảng 12 giờ. Chủ game quyết có hotfix sớm, không thông báo, như bản 2.0.2.1 hay không.
