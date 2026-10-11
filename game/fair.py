@@ -165,7 +165,7 @@ XD_MIN, XD_MAX = 10, STAKE_MAX
 SIDES = ('chan', 'le')
 RAID_PCT = .88                 # owner 07/10 "giảm bớt bị công an bắt xuống 50%": half of 1.76% (was 1.6% → +10%)
 FINE_MIN = 3
-FINE_DIV = 4                   # a raid's fine: stake // FINE_DIV, at least FINE_MIN
+FINE_DIV = 4                   # legacy (a raid's fine was stake // FINE_DIV); owner 11/10: bm.FINE_PCT of the round's stake
 RAID_COOLDOWN = 120
 WEALTH_THRESHOLD, WEALTH_CHECK_GAP, WEALTH_RAID_P = 50000, 1800, .35   # odds/cooldown unchanged; bounded fine
 # 🚨 The asset check (owner 07/10, a rule of its own; players: "công an tới hoài": at most once per 2 hours, 22.5% when
@@ -174,6 +174,7 @@ WEALTH_THRESHOLD, WEALTH_CHECK_GAP, WEALTH_RAID_P = 50000, 1800, .35   # odds/co
 AUDIT_FROM, AUDIT_GAP, AUDIT_P = 50000, 7200, .225
 AUDIT_KEY, AUDIT_PCT = 'fair_audit', 10   # journey['fair_audit'] {ed, base, at}: the profit left, the last check's time
 AUDIT_LABEL = '🚨 Công an kiểm tra tài sản · Nộp phạt'
+WALLET_CHECKS = False          # owner 11/10: _wealth_raid / _asset_audit off, fines are per round only
 POLICE_SAY = 'Chào em, nghe nói em lời ở chợ đen hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.'
 # 🍀 Lộc trời cho (owner 07/10): a won round of a paid luck stall pays LOC_MULT× its stake, LOC_P of the time, once per
 # LOC_GAP for the whole server (the mnl_meta row LOC_KEY holds the last one's time).
@@ -769,7 +770,8 @@ def xd_toss(side: str, want: bool) -> list:
 
 
 def xd_fine(stake: int) -> int:
-    return max(FINE_MIN, stake // FINE_DIV)
+    """Owner 11/10 "phải tính tiền phạt của 1 trận": the dẹp chiếu fine is the round's own stake × bm.FINE_PCT %."""
+    return max(FINE_MIN, bm.round_fine(stake))
 
 
 def _ltd(f: dict) -> dict:
@@ -1483,7 +1485,7 @@ def _apply(s: dict, name: str, p: dict) -> dict:
         wait = f['raid_until'] - int(t)
         need(wait <= 0, f'Chiếu trong vừa bị dẹp, {max(1, -(-wait // 60))} phút nữa mới bày lại. Ra trước chơi bầu cua, lô tô cho lành nha.',
              'fair_raided')
-        fine = bounded_loss(j['wallet'], xd_fine(stake), fine=True)
+        fine = min(max(0, j['wallet']), xd_fine(stake))   # ≤ the stake, which _guard_round makes the wallet cover
         want = None
         _guard_round(e, f, j, t, stake, max(stake, fine))
         _police(j, f, t, 'xd', stake)
@@ -1496,7 +1498,8 @@ def _apply(s: dict, name: str, p: dict) -> dict:
                 _pay(j, f, 'xd', -fine)
             _grant(j, 'f_raid', got)
             result['fair'] = dict(game='xd', raid=True, side=p['side'], stake=stake, fine=fine, net=-fine, canceled=True, cooldown=RAID_COOLDOWN)
-            result['message'] = f'Công an phường kiểm tra! Hủy ván, giữ nguyên {stake} xu tiền cược và nộp phạt {fine} xu.'
+            result['message'] = (f'Công an phường kiểm tra! Hủy ván, giữ nguyên {_xu(stake)} xu tiền cược và nộp phạt '
+                                 f'{_xu(fine)} xu (30% tiền cược ván này).')
         else:
             want = _draw_luck(j, 'xd', probability)
             coins = xd_toss(p['side'], want)
@@ -1746,7 +1749,9 @@ def _apply(s: dict, name: str, p: dict) -> dict:
             result['message'] = f'Trúng {n}/{ring.BOTTLES} cổ chai' + (f', +{prize} xu.' if prize else '.')
     paid_round = name in ('fair_bc', 'fair_xd', 'fair_xs', 'fair_dg') or name == 'fair_loto_kinh' and result['fair'].get('won')
     quiet = paid_round and _session(j, t)   # B6: the session's first minutes / rounds, no police check
-    if paid_round and not quiet and not result['fair'].get('raid'):
+    # Owner 11/10: a fine is only ever the caught round's (bm.round_fine); the wallet raid and the asset check, which
+    # fined the wallet or the profit, no longer run (WALLET_CHECKS). Big winnings raise the arrest odds instead.
+    if WALLET_CHECKS and paid_round and not quiet and not result['fair'].get('raid'):
         fine_budget = bounded_loss(j['wallet'], 10**9, fine=True)
         seizure = _wealth_raid(j, f, t)
         if seizure:

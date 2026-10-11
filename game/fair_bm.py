@@ -31,7 +31,6 @@ from __future__ import annotations
 
 import os
 import random
-from .loss_limits import bounded_loss
 
 KEY = 'fair_bm'
 BM_FEE = 0                     # legacy public field: entry is free
@@ -217,16 +216,16 @@ def round_fine(stake: int) -> int:
 def arrest(j: dict, f: dict, t: float, game: str, stake: int, pay, *, charge: bool = True, seize: bool = False) -> dict:
     """The police caught this round, then JAIL_DAYS days in the trại tạm giữ. seize (owner 11/10, the Chợ đen's own
     arrest roll): the round's stake is taken (`pay(-stake)`, the stall's Sổ ví row) and round_fine(stake) from the
-    wallet and the bank (take_total). Otherwise (the skill stalls' watch) the stake is not charged and only a bounded
-    wallet fine is."""
+    wallet and the bank (take_total). Otherwise (the skill stalls' watch) the stake is not charged and only
+    round_fine(stake) is, from the wallet."""
     from . import jail
     if seize:
         due = round_fine(stake) if charge else 0
         if stake:
             pay(-stake)
         fine = take_total(j, f, due, FINE_LABEL) if due else 0
-    else:
-        due = bounded_loss(j['wallet'], max(0, j['wallet']) * FINE_PCT // 100, fine=True) if charge else 0
+    else:   # owner 11/10: the round's own stake, never the wallet
+        due = min(max(0, j['wallet']), round_fine(stake)) if charge else 0
         fine = _take(j, f, due, FINE_LABEL)
     days = jail.arrest(j, 'bm', JAIL_DAYS, t)
     return dict(game=game, stake=stake, fine=fine, wallet=j['wallet'], say=SAY_ARREST if not seize else SAY_SEIZE,
