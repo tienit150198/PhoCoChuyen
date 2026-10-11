@@ -20,4 +20,4 @@ Máy chủ nay chọn 40% khi tiền cược của ván đạt 300.000 xu trong 
 - Sau vá, 50 kiểm thử qua, gồm ranh giới 299.000/299.999/300.000/300.001/1.000.000, đổi cược giữa các ván, số dư lớn, chuỗi thắng/chơi liên tục, mô phỏng 20.000 lượt và hết hạn sự kiện.
 - Lệnh: `python -m unittest tests.test_fair_high_stakes tests.test_fair_golden_days.GoldenDraws tests.test_fair_bc_honest tests.test_fair_house_edge.HouseEdge tests.test_fair_house_edge.Reopen tests.test_fair_scratch tests.test_fair_even_balance -q`.
 - Hai ca `tests.test_fair_house_edge.ReopenBoard` cần PostgreSQL chưa chạy được do thiếu `TEST_DATABASE_URL`; không dùng database production để chạy kiểm thử.
-- Bản vá cục bộ; chưa triển khai production.
+- Đã triển khai production 2.0.2.1 lúc 13:12:44 UTC+7 ngày 11/10/2026; xem `docs/DEPLOY_2.0.2.1_2026-10-11.md`.
