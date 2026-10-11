@@ -79,6 +79,26 @@ def solve(j, t):
             j.act('cap_cb', task=tid, i=i)
             j.act('cap_prio', task=tid, i=i, prio=PC.CALLS[cid]['best'])
         return j.act('cap_dispatch', task=tid)
+    if k == 'posts':
+        r = None
+        for i, pid in enumerate(t['_v']['posts']):
+            j.act('cap_plook', task=tid, i=i)
+            r = j.act('cap_post', task=tid, i=i, act=PC.POST_BEST[PC.POSTS[pid]['kind']])
+        return r
+    if k == 'inspect':
+        x = PC.BIZ[t['_v']['case']]
+        for pp in PC.PAPER_IDS:
+            j.act('cap_paper', task=tid, paper=pp)
+            j.act('cap_mark', task=tid, paper=pp, v=x['papers'][pp][0])
+        return j.act('cap_verdict', task=tid, v=PC.biz_best(x))
+    if k == 'ring':
+        r = None
+        for sid in PC.RING_STEP_IDS:
+            good = next(o[0] for o in PC.RING_STEP[sid]['options'] if o[2] == 'good')
+            r = j.act('cap_case', task=tid, step=sid, choice=good)
+            if sid == 'watch':
+                j.act('cap_caseenv', task=tid, choice='refuse')
+        return r
     x = P._case_of(t)
     if k == 'desk':
         if t['needs']['press']:
@@ -224,7 +244,8 @@ class Content(unittest.TestCase):
 
     def test_words_stay_pg13_without_force_or_real_law(self):
         texts = list(walk([PC.ODD, PC.DESK, PC.SITUATIONS, PC.BRIEF, PC.DESKS, PC.PRESS, PC.LOSTS, PC.DISPUTES, PC.CHILDREN, PC.SCENES,
-                           PC.TOPICS, PC.TALK_Q, PC.TALKS, PC.CALLS, PC.INTRO, PC.REG_STORY, P.SPEC]))
+                           PC.TOPICS, PC.TALK_Q, PC.TALKS, PC.CALLS, PC.INTRO, PC.REG_STORY, P.SPEC, PC.RINGS, PC.RING_STEPS, PC.RING_ENV,
+                           PC.POSTS, PC.POST_ACTS, PC.POST_OUT, PC.POST_RULE, PC.BIZ, PC.BIZ_OUT, PC.BIZ_RULE, PC.PAPERS, PC.VERDICTS]))
         self.assertGreater(len(texts), 800)
         for s in texts:
             self.assertFalse(ROUGH.search(s), s)
@@ -244,17 +265,19 @@ class Content(unittest.TestCase):
         self.assertEqual(seen, set(P.KINDS))
 
     def test_every_case_comes_up(self):
-        cases, scenes, calls = set(), set(), set()
+        cases, scenes, calls, posts = set(), set(), set(), set()
         for day in range(1, 301):
             for slot in range(0, 8):
                 t = P.make_task(day, slot, 1)
                 cases.add(t['_v'].get('case'))
                 scenes.update(t['_v'].get('scenes') or [])
                 calls.update(t['_v'].get('calls') or [])
-        for rows in (PC.DESKS, PC.LOSTS, PC.DISPUTES, PC.CHILDREN, PC.PATROLS, PC.TALKS):
+                posts.update(t['_v'].get('posts') or [])
+        for rows in (PC.DESKS, PC.LOSTS, PC.DISPUTES, PC.CHILDREN, PC.PATROLS, PC.TALKS, PC.BIZ, PC.RINGS):
             self.assertLessEqual(set(rows), cases)
         self.assertEqual(scenes, set(PC.SCENES))
         self.assertEqual(calls, set(PC.CALLS))
+        self.assertEqual(posts, set(PC.POSTS))
 
     def test_a_deal_always_exists_once_both_sides_are_heard(self):
         for case in PC.DISPUTES:

@@ -87,8 +87,13 @@ def detect(t: dict, new: set) -> str | None:
             return v
         if k == 'lost' and code in ('thin', 'wrong_owner') and sum(1 for x in seen if x.startswith('q:')) < 2:
             return 'no_verify'
-        if k == 'child' and code in ('thin', 'wrong_adult') and sum(1 for x in seen if x.startswith('v:')) < 2:
+        # A child handed to the wrong adult is a grave case of its own (police.py _handover: promotion.case_grave),
+        # however many checks were made: only a thin check on the right family is a ⚠️ here.
+        if k == 'child' and code == 'thin' and sum(1 for x in seen if x.startswith('v:')) < 2:
             return 'no_verify'
+        # Generator 2: a real complaint silenced, a post or a business in order punished heavily (police.py _post, _verdict).
+        if (k == 'posts' and code.startswith(('gag', 'heavy'))) or (k == 'inspect' and code == 'heavy'):
+            return 'wrong_penalty'
         if k == 'patrol' and code.startswith('unsafe'):
             return 'skip_step'
         if k == 'patrol' and code.startswith('bad'):

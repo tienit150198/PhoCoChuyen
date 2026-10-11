@@ -238,7 +238,7 @@ CHILDREN = {
                    tag='Thẻ học sinh: Lê Minh Tùng, lớp 2A, kèm số điện thoại của mẹ.',
                    who='Cô Hạnh hàng xóm', who_emoji='👩‍🦱', genuine=False,
                    says=dict(kid='Tùng gật đầu: “Cô Hạnh nhà bên.” Nhưng bé không chạy tới, cứ nắm tay bạn.',
-                             detail='“Thằng Tùng nhà chị Thủy chứ ai, để chị dẫn về luôn cho.”',
+                             detail='“Thằng Tùng nhà chị Thủy chứ ai, để chị dẫn về luôn cho.” Hỏi ai nhờ đón, cô ấp úng: “Thì… tiện đường.”',
                              id='Gọi số trên thẻ, chị Thủy nghe máy: “Hôm nay ông ngoại đón, tôi không nhờ ai hết. Giữ cháu giúp tôi, ông sắp tới.”')),
     'ch-mi': dict(kid='Bé Mi', emoji='👧', age='6 tuổi', npc=NAM, found='Đám cưới hẻm 4, đứng khóc cạnh rạp', place='Đám cưới hẻm 4',
                   asks=dict(name='“Con tên Mi.”', parent='“Con đi với bà nội.”', where='“Bà nội đang ăn cỗ, Mi đi coi cô dâu.”',
@@ -1120,3 +1120,192 @@ ODD = [
          words={'health': 'Em làm hai tiếng thôi, khuya quá dễ nhập sai.', 'alt': 'Em ở lại hai tiếng, mai đến sớm một tiếng.'},
          lawful='Chị Hằng cười: “Ừ, nhập sai còn mệt hơn.”'),
 ]
+
+
+# ================================================================ owner spec 11/10 (generator 2): four new pieces of work
+# ---------------------------------------------------------------- lost children: one more pick-up the parents did not ask for
+# Generator 2 adds ch-ken (CHILD_ROTATION_2); generator 1 keeps CHILD_ROTATION. A child handed to an adult the parents did
+# not send is led away (police.py _handover): hạ 1 bậc hàm, giam hàm KIDNAP_DAYS ngày (owner spec 11/10). The clues are in
+# plain sight: the child, the adult's own words and the parents' phone each tell it.
+CHILDREN['ch-ken'] = dict(
+    kid='Bé Ken', emoji='👦', age='5 tuổi', npc=UT, found='Chợ Mây, đứng khóc trước sạp trái cây', place='Chợ Mây',
+    asks=dict(name='“Con tên Ken.”', parent='“Ba con tên Phát.”', where='“Ba đi gửi xe, dặn Ken đứng chờ mà Ken đi coi cá.”',
+              wear='Áo thun vàng in con vịt, quần short xanh, tay cầm bịch chôm chôm.'),
+    tag='Dây đeo cổ ghi: “Trần Gia Khang (Ken) · Ba Phát”, kèm số điện thoại của ba.',
+    who='Chú Lực', who_emoji='🧢', genuine=False,
+    call='📞 Gọi số trên dây đeo, ba Ken nghe máy: “Tôi đang gửi xe, tôi tới liền! Đừng giao cháu cho ai hết.”',
+    came='Năm phút sau ba Ken chạy tới, hớt hải',
+    held='🏠 Bạn giữ Ken ở điểm tìm trẻ lạc. Năm phút sau ba Ken chạy tới, ôm chầm lấy con. Chú Lực đã lẩn đi từ lúc nào.',
+    says=dict(kid='Ken nép sau lưng bạn, lắc đầu: “Con không biết chú này.”',
+              detail='“Thằng nhỏ tên Ken, áo đỏ đó.” Áo Ken đang mặc màu vàng. Hỏi ai nhờ đón, chú nói “bạn của ba nó”.',
+              id='Chú đưa căn cước tên Phạm Văn Lực. Gọi số trên dây đeo: ba Ken nói “Tôi không nhờ ai đón hết, tôi đang tới!”'))
+CHILD_ROTATION_2 = ('ch-bin', 'ch-na', 'ch-tun', 'ch-mi', 'ch-ken')
+KIDNAP_DAYS = 15
+
+# ---------------------------------------------------------------- chuyên án đường dây buôn lậu (kind 'ring')
+# A big case, about one shift in five or six (police.py ring_slot): a tip, then three decisions and an envelope from the
+# ring. Hàng hóa không rõ xuất xứ, trị giá trên RING_VALUE_MIN xu. Solved: +1 ngày xét thăng cấp bậc hàm; failed, the
+# suspect escaped or the envelope taken: giam cấp bậc hàm RING_HOLD ngày (promotion.case_bonus / case_hold).
+RING_VALUE_MIN = 100_000
+RING_HOLD = 3
+RING_CHANCE = .18          # of a shift (day) from RING_FROM_DAY
+RING_FROM_DAY = 4
+RINGS = {
+    'rg-phone': dict(goods='Điện thoại xách tay không hóa đơn', emoji='📱', value=186_000, place='kho tôn cuối hẻm 9', boss='Hùng “Tàu”', npc=NAM,
+                     tip='Bà Năm: “Đêm nào cũng có xe tải nhỏ đỗ ở kho tôn hẻm 9, bốc thùng tới hai giờ sáng. Thùng in toàn chữ nước ngoài.”'),
+    'rg-cosmetic': dict(goods='Mỹ phẩm không nhãn phụ, không rõ xuất xứ', emoji='🧴', value=124_000, place='căn nhà khóa cửa ở tổ 6', boss='bà chủ “Lan Spa”', npc=THOA,
+                        tip='Cô Thoa: “Nhà cuối tổ 6 cửa đóng suốt, mà ngày nào cũng có shipper ôm cả chục kiện ra. Hộp toàn chữ lạ, không có tem tiếng Việt.”'),
+    'rg-wine': dict(goods='Rượu ngoại không tem', emoji='🍾', value=152_000, place='gian sau tiệm tạp hóa đầu chợ', boss='Tư “Mập”', npc=UT,
+                    tip='Dì Út: “Gian sau tiệm tạp hóa đầu chợ chất rượu ngoại tới nóc, chai nào cũng không tem. Bán sỉ cho quán nhậu cả phường.”'),
+}
+RING_ROTATION = ('rg-phone', 'rg-cosmetic', 'rg-wine')
+# The steps in order. Options: (id, label, grade good|fail|escape, outcome); {place} {goods} {boss} {value} filled in.
+RING_STEPS = (
+    ('tip', dict(emoji='📨', title='Tin báo', ask='Xử lý tin báo thế nào?', options=(
+        ('verify', 'Ghi sổ, giữ kín người báo, xác minh bí mật', 'good',
+         'Bạn ghi tin báo, giữ kín tên người báo. Anh Định gật đầu: “Chuyên án lớn, đi từng bước.”'),
+        ('rush', 'Kéo cả tổ tới {place} ngay cho nóng', 'escape',
+         'Cả tổ tới giữa trưa: chỉ còn thùng rỗng. Tối đó {boss} chuyển hàng đi chỗ khác, tắt máy.'),
+        ('drop', 'Hàng hóa là chuyện của chợ, bỏ qua', 'fail',
+         'Tin báo nằm im trong sổ. Một tuần sau, {goods} bán tràn chợ Mây.')))),
+    ('watch', dict(emoji='🔭', title='Xác minh', ask='Xác minh bằng cách nào?', options=(
+        ('watch', 'Theo dõi từ xa: ghi biển số xe, giờ nhập hàng', 'good',
+         'Ba đêm theo dõi: xe tới đúng 23 giờ, mỗi chuyến vài chục thùng. Đủ căn cứ báo cáo.'),
+        ('ask', 'Gõ cửa hỏi thẳng chủ kho', 'escape',
+         'Chủ kho cười: “Đồ cũ thôi mà.” Đêm đó {place} tắt đèn; {boss} biết bị để ý, trốn mất.'),
+        ('group', 'Hỏi trên nhóm mạng khu phố ai biết gì', 'escape',
+         'Bài hỏi lan khắp phường trong mười phút. Sáng hôm sau {place} khóa cửa, {boss} biến mất.')))),
+    ('papers', dict(emoji='🛃', title='Phối hợp Hải quan', ask='Trước khi kiểm tra kho?', options=(
+        ('customs', 'Báo Ban chỉ huy, mời Hải quan phối hợp, xin quyết định kiểm tra', 'good',
+         'Ban chỉ huy duyệt. Đội kiểm soát Hải quan cử người, quyết định kiểm tra ký trong ngày.'),
+        ('alone', 'Tự đi, khỏi báo ai cho kín', 'fail',
+         'Không quyết định, không Hải quan: chủ kho không mở cửa. Hồ sơ phải làm lại, hàng kịp chuyển đi.'),
+        ('wait', 'Chờ thêm hai tuần cho thật chắc', 'escape',
+         'Hai tuần sau lô hàng đã bán sạch; {boss} thuê kho mới ở phường bên.')))),
+    ('raid', dict(emoji='🚨', title='Kiểm tra kho', ask='Khi nào vào kho?', options=(
+        ('truck', 'Đúng lúc xe đang bốc hàng: đủ người, đủ giấy', 'good',
+         'Xe vừa mở thùng thì tổ công tác tới. Lô {goods} trị giá {value} xu bị tạm giữ, {boss} ký biên bản tại chỗ. Hồ sơ chuyển Hải quan xử lý.'),
+        ('noon', 'Giữa trưa, kho vắng cho dễ làm', 'escape',
+         'Giữa trưa kho chỉ còn vài thùng, người trông kho không biết gì. {boss} nghe tin, rời khỏi thành phố.'),
+        ('dawn', 'Rạng sáng, khi xe đã đi', 'escape',
+         'Xe đi rồi, kho còn ít hàng. Người cầm đầu không có mặt: {boss} trốn thoát.')))),
+)
+RING_STEP = dict(RING_STEPS)
+RING_STEP_IDS = tuple(k for k, _ in RING_STEPS)
+# The ring's envelope, after the watch (answers: police_beat.ANSWERS). Taking it: game/org.py bribe, and the case fails.
+RING_ENV = dict(emoji='💼', who='Người lạ đi xe tay ga',
+                text='Chặn bạn đầu hẻm, dúi phong bì dày: “Năm chục nghìn xu. Bên {boss} gửi, cán bộ nhắm mắt một tuần thôi.”')
+
+# ---------------------------------------------------------------- bài đăng về cửa hàng (kind 'posts')
+# Posts about the ward's shops (the wording of game/feedback.py TWISTS 'demand' and 'bocphot'). The game's rule: a real
+# complaint stays up and is never fined; a post that only asks for what the shop never offered may be taken down; a post
+# that says “pay me or I expose you” is an extortion threat: the poster is invited to work and fined (phạt hành chính).
+POST_ACTS = {'keep': ('💬', 'Để nguyên, nhắc cửa hàng trả lời'), 'down': ('🗑️', 'Gỡ bài'), 'fine': ('📝', 'Mời làm việc, phạt hành chính')}
+POST_ACT_IDS = ('keep', 'down', 'fine')
+POST_BEST = {'real': 'keep', 'demand': 'down', 'bocphot': 'fine'}
+POST_RULE = ('💬 Góp ý thật: để nguyên, nhắc cửa hàng sửa. Không gỡ, không phạt.', '🗑️ Đòi hỏi ngoài dịch vụ: có thể gỡ bài.',
+             '📝 Bóc phốt đòi đền bù (“trả tiền thì gỡ”): mời làm việc, phạt hành chính.')
+POSTS = {
+    'po-bun': dict(shop='Quán bún bò Cô Lan', emoji='🍜', who='Minh Thư', kind='real',
+                   text='Tô bún hôm qua có sợi tóc, nhắn quán không ai trả lời. Mong quán chú ý vệ sinh.',
+                   look='Ảnh chụp thật, giờ đăng khớp giờ quán bán. Cô Lan nhận: “Hôm đó đông, tụi tôi sơ ý.”'),
+    'po-xe': dict(shop='Tiệm sửa xe chú Tư', emoji='🛵', who='Anh Khoa', kind='real',
+                  text='Thay nhớt mà hóa đơn tính hai lần tiền nhớt. Tôi có ảnh hóa đơn, ai sửa xe ở đây nhớ coi kỹ.',
+                  look='Hóa đơn tính trùng thật. Chú Tư xem lại sổ: “Ờ, cháu nó bấm lộn, để chú trả lại.”'),
+    'po-giat': dict(shop='Tiệm giặt ủi Sạch Thơm', emoji='👕', who='Chị Mai', kind='real',
+                    text='Gửi áo trắng, nhận về loang màu xanh. Tiệm bảo “tại vải”. Mọi người cân nhắc.',
+                    look='Phiếu gửi ghi rõ áo trắng một màu. Chủ tiệm thừa nhận giặt chung máy với đồ màu.'),
+    'po-banh': dict(shop='Tiệm bánh mì Hai Lúa', emoji='🥖', who='Ông Bảy', kind='real',
+                    text='Bánh mì mua sáng nay, trưa đã thấy pa tê có mùi chua. Mong tiệm kiểm tra lại.',
+                    look='Ông Bảy còn giữ ổ bánh. Chủ tiệm kiểm tra: mẻ pa tê hôm qua để quên ngoài tủ.'),
+    'po-vip': dict(shop='Quán cà phê Gác Nhỏ', emoji='☕', who='“Khách VIP”', kind='demand',
+                   text='Khách VIP như tôi mà không được tặng gì. Xin thêm chút ưu đãi cũng không cho. Kỳ.',
+                   look='Quán chưa từng có chương trình tặng quà. Người đăng đòi giảm nửa giá vì “khách quen”, không được thì đăng bài.'),
+    'po-chen': dict(shop='Tiệm tóc Mây', emoji='💇', who='“Thanh Hương”', kind='demand',
+                    text='Tôi đang vội, muốn được làm trước mà tiệm cứ bắt xếp hàng. Thất vọng.',
+                    look='Hôm đó có năm khách chờ trước. Người đăng đòi chen lên đầu, nhân viên mời lấy số như mọi người.'),
+    'po-giam': dict(shop='Quán bún bò Cô Lan', emoji='🍜', who='“Ăn Là Ghiền”', kind='demand',
+                    text='Tôi đòi gặp chủ để xin giảm giá, nhân viên bảo không có. Một sao cho biết.',
+                    look='Món ăn không có gì sai. Người đăng muốn giảm giá vì “ăn nhiều lần rồi”, quán không đồng ý.'),
+    'po-phot': dict(shop='Tiệm bánh mì Hai Lúa', emoji='🥖', who='Admin nhóm “Review cả khu”', kind='bocphot',
+                    text='Bánh như vậy mà cũng dám nhận tiền. Hoàn tiền đi, không thì tối nay lên sóng.',
+                    look='Tin nhắn chủ tiệm đưa: “Chuyển hai triệu thì mình gỡ, không thì đăng thêm ba bài.”'),
+    'po-chup': dict(shop='Tiệm giặt ủi Sạch Thơm', emoji='👕', who='“Soi Phốt”', kind='bocphot',
+                    text='Đã chụp màn hình, tối nay lên group bóc phốt. Muốn yên thì đền bù.',
+                    look='Người đăng nhắn riêng đòi năm trăm nghìn “phí gỡ bài”, chưa từng gửi đồ ở tiệm.'),
+    'po-sansang': dict(shop='Tiệm sửa xe chú Tư', emoji='🛵', who='“Biker Phố”', kind='bocphot',
+                       text='Bài bóc phốt mình viết sẵn rồi, chỉ chờ bấm đăng. Đền bù đi, không thì cả phố biết.',
+                       look='Tin nhắn gửi chú Tư: “Một triệu thì bài này không bao giờ lên.” Tiệm chưa từng sửa xe cho người này.'),
+}
+POST_N = 3
+# What happens: '{kind}:{act}' → text ({shop} filled in).
+POST_OUT = {
+    'real:keep': 'Bài góp ý thật được giữ. {shop} vào trả lời, xin lỗi, sửa ngay.',
+    'real:down': 'Bài bị gỡ. Người đăng hỏi lại: “Góp ý thật mà cũng bị gỡ?” Cả nhóm khu phố bàn tán.',
+    'real:fine': 'Người góp ý bị mời lên phường, ngơ ngác: “Tôi chỉ kể chuyện thật.”',
+    'demand:keep': 'Bài để nguyên. {shop} bị chê oan, khách đọc rồi ngại ghé.',
+    'demand:down': 'Gỡ bài, nhắn người đăng: đòi thứ cửa hàng không có thì không phải góp ý. {shop} nhẹ người.',
+    'demand:fine': 'Mời lên phạt vì một bài đòi ưu đãi: nặng quá. Người đăng uất ức kể khắp nơi.',
+    'bocphot:keep': 'Bài vẫn treo, tin nhắn đòi tiền vẫn tới. {shop} sợ, tính chuyển tiền cho yên.',
+    'bocphot:down': 'Bài bị gỡ, nhưng người đăng lập tài khoản khác, đòi tiền tiếp.',
+    'bocphot:fine': 'Mời người đăng lên làm việc: đưa tin nhắn đòi tiền ra, người đó cúi đầu ký biên bản phạt hành chính, gỡ bài. {shop} cảm ơn.',
+}
+
+# ---------------------------------------------------------------- kiểm tra doanh nghiệp (kind 'inspect')
+# Three papers of a ward business; each is marked đủ (ok) or thiếu (miss), then one decision. The game's rule (shown on
+# the card): all in order → a reminder and the inspection record; tax unpaid or no invoices for the goods → a written
+# fine (phạt hành chính); imported goods without a customs declaration → the file goes to Hải quan.
+PAPERS = {'tax': ('🧾', 'Thuế kỳ này'), 'invoice': ('📦', 'Hóa đơn nguồn hàng'), 'customs': ('🛃', 'Tờ khai hải quan')}
+PAPER_IDS = ('tax', 'invoice', 'customs')
+VERDICTS = {'remind': ('💬', 'Nhắc nhở, ký biên bản kiểm tra'), 'fine': ('📝', 'Lập biên bản phạt hành chính'),
+            'customs': ('🛃', 'Chuyển hồ sơ sang Hải quan')}
+VERDICT_IDS = ('remind', 'fine', 'customs')
+BIZ_RULE = ('💬 Đủ giấy tờ: nhắc nhở, ký biên bản kiểm tra.', '📝 Chưa đóng thuế, không có hóa đơn nguồn hàng: phạt hành chính.',
+            '🛃 Hàng nhập khẩu thiếu tờ khai hải quan: chuyển Hải quan.')
+BIZ = {
+    'bz-cafe': dict(name='Quán cà phê Gác Nhỏ', emoji='☕', owner='Chị Vy', sells='cà phê, nước ép', npc=HANG,
+                    papers=dict(tax=('ok', 'Biên lai nộp thuế quý này, đủ, đúng hạn.'),
+                                invoice=('ok', 'Hóa đơn cà phê hạt, sữa, trái cây của nhà cung cấp, đủ từng lô.'),
+                                customs=('ok', 'Không bán hàng nhập khẩu, không cần tờ khai.'))),
+    'bz-grocery': dict(name='Tạp hóa Bà Tám', emoji='🏪', owner='Bà Tám', sells='mì gói, dầu ăn, bánh kẹo', npc=UT,
+                       papers=dict(tax=('miss', 'Quý này chưa nộp thuế. Bà Tám: “Tưởng thằng con nộp rồi.”'),
+                                   invoice=('ok', 'Hóa đơn nhập hàng từ đại lý, đủ.'),
+                                   customs=('ok', 'Hàng trong nước, không cần tờ khai.'))),
+    'bz-phone': dict(name='Cửa hàng điện thoại Minh Phát', emoji='📱', owner='Anh Phát', sells='điện thoại, phụ kiện', npc=VUONG,
+                     papers=dict(tax=('ok', 'Thuế quý này đã nộp đủ.'),
+                                 invoice=('ok', 'Hóa đơn ốp lưng, sạc của công ty trong nước.'),
+                                 customs=('miss', 'Hai chục máy nhập ngoại trong tủ kính, không có tờ khai hải quan nào.'))),
+    'bz-cosmetic': dict(name='Shop mỹ phẩm Hồng Nhung', emoji='💄', owner='Chị Nhung', sells='son, kem dưỡng nhập ngoại', npc=THOA,
+                        papers=dict(tax=('ok', 'Biên lai thuế quý này, đủ.'),
+                                    invoice=('miss', 'Không có hóa đơn nào: “Bạn gửi từ nước ngoài về giùm.”'),
+                                    customs=('miss', 'Hàng nhập ngoại, không tờ khai, không nhãn phụ tiếng Việt.'))),
+    'bz-hardware': dict(name='Vật liệu xây dựng Thành Công', emoji='🧱', owner='Chú Công', sells='xi măng, sắt thép', npc=DINH,
+                        papers=dict(tax=('ok', 'Thuế đã nộp đủ.'),
+                                    invoice=('miss', 'Ba chục bao xi măng không hóa đơn: “Mua lại của người quen.”'),
+                                    customs=('ok', 'Hàng trong nước, không cần tờ khai.'))),
+    'bz-bakery': dict(name='Tiệm bánh Mây Ngọt', emoji='🎂', owner='Cô Hồng', sells='bánh kem, bánh ngọt', npc=NAM,
+                      papers=dict(tax=('ok', 'Thuế quý này nộp đủ, có biên lai.'),
+                                  invoice=('ok', 'Hóa đơn bột, bơ, kem từ đại lý.'),
+                                  customs=('ok', 'Bơ nhập khẩu có tờ khai của đại lý kèm theo, đủ.'))),
+}
+BIZ_ROTATION = ('bz-cafe', 'bz-grocery', 'bz-phone', 'bz-cosmetic', 'bz-hardware', 'bz-bakery')
+# What happens: '{best}:{verdict}' → text ({owner} filled in).
+BIZ_OUT = {
+    'remind:remind': 'Giấy tờ đủ. Ký biên bản kiểm tra, nhắc {owner} giữ sổ sách gọn như vậy.',
+    'fine:fine': 'Lập biên bản phạt hành chính: {owner} ký, hẹn nộp phạt và bổ sung giấy trong tuần.',
+    'customs:customs': 'Niêm phong lô hàng nhập, chuyển hồ sơ sang Hải quan. {owner} được hướng dẫn lên Hải quan làm việc.',
+    'remind:fine': 'Giấy tờ đủ mà vẫn bị phạt. {owner} khiếu nại lên phường; anh Định phải xem lại hồ sơ.',
+    'remind:customs': 'Hồ sơ đủ mà vẫn chuyển Hải quan. Hải quan trả về, {owner} mất ba ngày đóng cửa chờ.',
+    'fine:remind': 'Chỉ nhắc nhở cho qua. Tuần sau đoàn liên ngành tới, thiếu sót vẫn y nguyên.',
+    'customs:remind': 'Chỉ nhắc nhở cho qua. Lô hàng không tờ khai vẫn bày bán như cũ.',
+    'fine:customs': 'Hồ sơ sang Hải quan bị trả về: hàng trong nước, không phải việc của Hải quan. Mất một tuần.',
+    'customs:fine': 'Phạt xong, nhưng lô hàng nhập không tờ khai vẫn bán tiếp, không ai truy nguồn.',
+}
+
+
+def biz_best(x: dict) -> str:
+    """The decision the game's rule gives for a business's papers (customs first: it is Hải quan's to handle)."""
+    p = x['papers']
+    if p['customs'][0] == 'miss':
+        return 'customs'
+    return 'fine' if any(p[k][0] == 'miss' for k in PAPER_IDS) else 'remind'
