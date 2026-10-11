@@ -924,3 +924,6 @@ html[data-game="isometric"] #isoHUD .iso-camera-options {position:absolute;right
    scroller that slides left and right as the crate count changes or a tab is tapped. */
 html[data-game="isometric"] .sheet .pill-tabs.inv-tabs {overflow-x: hidden;}
 html[data-game="isometric"] .sheet .pill-tabs.inv-tabs button {flex: 1 1 auto;min-width: 0;padding-inline: 8px;overflow: hidden;text-overflow: ellipsis;}
+/* #345: a crate's trays keep the classic 30 px slots (stock.css), as in the classic interface: the sheet-wide 44 px
+   button floor made a 40-unit crate 112 px taller and pushed its count and "Nhận" button further down. */
+html[data-game="isometric"] .sheet .inv-tray-slots .inv-good {min-height: 30px;border-radius: 7px;}
