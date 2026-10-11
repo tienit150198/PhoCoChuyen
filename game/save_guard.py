@@ -5,8 +5,10 @@
   server.py tells the store so by setting payload["admin_restore"] itself (a client's own value is dropped).
 * A guest save imports only a backup this server exported (an HMAC over the save's own id, its revision and the
   sha256 of the state, under SAVE_SIGN_SECRET), never one older than the save it replaces (revision), and never one
-  holding more xu than the save it replaces (wallet + bank + savings + funds: kpi.xu). An edited file, a clone into a
-  fresh save and "export, gamble, import back" are all refused.
+  holding more than the save it replaces (money(): every asset wealth.worth counts, gold, Mây, houses and vehicles
+  included, never less than kpi.xu). 11/10: and only into the save it was exported from (sig.save == save_tag(sid)):
+  gold exported then imported into fresh guests had cloned wealth. An edited file, a clone into another save and
+  "export, gamble, import back" are all refused.
 * MNL_IMPORT_GUARD_OFF=1 (tests/__init__.py only) keeps the old behaviour for the tests that build a save by import.
 
 The signature lives in the export envelope (key "sign"), outside the state: no save key is added.
@@ -76,7 +78,10 @@ def sign(sid: str, revision: int, state) -> dict:
 
 
 def money(state) -> int:
-    return kpi.xu(state) or 0
+    """Gross assets (wealth.worth: wallet, funds, bank, houses, gold, Mây, vehicles, lux…), never below kpi.xu."""
+    from . import wealth
+    w = wealth.worth(state)
+    return max(kpi.xu(state) or 0, w[1] if w else 0)
 
 
 def check(envelope: dict, candidate, current: dict, sid: str, revision: int, *, account: bool, admin: bool) -> None:
@@ -94,6 +99,9 @@ def check(envelope: dict, candidate, current: dict, sid: str, revision: int, *, 
         ok = hmac.compare_digest(sig['mac'], _mac(sig['save'], sig['revision'], digest(candidate)))
     if not ok:
         raise GameError('Tệp lưu không phải bản xuất nguyên vẹn từ máy chủ, không nhập được.', 'import_unsigned')
+    if not hmac.compare_digest(sig['save'], save_tag(sid)):
+        raise GameError('Bản lưu này của một tiến trình khác, không nhập được. '
+                        'Muốn chơi trên máy khác, hãy tạo tài khoản rồi đăng nhập ở máy đó.', 'import_other')
     if sig['revision'] < revision:
         raise GameError('Bản lưu này cũ hơn tiến trình hiện tại, không nhập được.', 'import_older')
     if money(candidate) > money(current):

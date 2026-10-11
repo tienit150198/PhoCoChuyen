@@ -123,6 +123,25 @@ def _regime(asset: str, salt: str, day: int) -> tuple[float, str, str]:
     return signal, direction, titles[int(headline * len(titles))]
 
 
+# 11/10: a regime that ramped in over its own hour was a sure trade (see the first tick rise, buy, sell at the hour's
+# end: +4–9 % after fees). Regimes from this market hour on are priced in whole at their opening tick and only decay
+# after it, so neither the headline nor the first ticks tell where the rest of the hour goes. Earlier regimes keep
+# the ramp: every price already shown stays the same.
+JUMP_FROM = int(dt.datetime(2026, 10, 11, 21, tzinfo=_VN).timestamp())
+_JUMP_PEAK = _DECAY_DAYS * (1 - math.exp(-1 / _DECAY_DAYS))   # the ramp's weight at the end of its hour
+
+
+def _jump_day() -> int:
+    return max(0, -(-(JUMP_FROM - EPOCH) // DAY_SECONDS))
+
+
+def _weight_jump(age: float) -> float:
+    """The regime's whole impulse at its opening tick, then the same eight-hour decay and last-hour fade."""
+    if age < 0 or age >= _REGIME_DAYS:
+        return 0.0
+    return _JUMP_PEAK * math.exp(-age / _DECAY_DAYS) * min(1.0, _REGIME_DAYS - age)
+
+
 def _weight(age: float) -> float:
     """Integral of an hourly unit impulse, followed by a continuous decay."""
     if age <= 0 or age >= _REGIME_DAYS:
@@ -142,8 +161,9 @@ def _price(asset: str, salt: str, anchor: int, tick: int) -> int:
     age = tick / _TICKS_PER_DAY
     day = tick // _TICKS_PER_DAY
     # At most 48 old/current regimes, even after years offline. Each term is
-    # causal: a regime starts with zero contribution at its opening boundary.
-    regime = sum(_regime(asset, salt, d)[0] * _weight(age - d)
+    # causal: a regime contributes nothing before its opening boundary (JUMP_FROM on: all of it from there).
+    jump = _jump_day()
+    regime = sum(_regime(asset, salt, d)[0] * (_weight_jump if d >= jump else _weight)(age - d)
                  for d in range(max(0, day - _REGIME_DAYS + 1), day + 1))
     wobble = (2 * _randoms(asset, salt, 'tick', tick)[0] - 1) * noise
     wobble *= min(1.0, tick / _TICKS_PER_DAY)

@@ -137,8 +137,10 @@ class RealtimeMarket(unittest.TestCase):
                         direction = q['news']['direction']
                         if direction == 'flat':
                             continue
-                        next_price = m.quote(asset, m.EPOCH + (day + 1) * m.DAY_SECONDS)['price']
-                        move = next_price - q['price']
+                        if day >= m._jump_day():   # 11/10: the hour's regime is priced in at its opening tick
+                            move = q['price'] - m.quote(asset, m.EPOCH + day * m.DAY_SECONDS - m.TICK_SECONDS)['price']
+                        else:
+                            move = m.quote(asset, m.EPOCH + (day + 1) * m.DAY_SECONDS)['price'] - q['price']
                         outcomes[direction].append(move > 0 if direction == 'up' else move < 0)
                     for direction, matched in outcomes.items():
                         agreement = sum(matched) / len(matched)
@@ -217,3 +219,32 @@ class RealtimeMarket(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class JumpKernel(unittest.TestCase):
+    """11/10: from realtime_market.JUMP_FROM a regime is priced in whole at its opening tick, so watching the hour's
+    first ticks (or its headline) and selling at its end is no sure trade; every earlier price stays as it was."""
+
+    def test_prices_before_the_cutover_never_change(self):
+        from game import realtime_market as m
+        with patch.dict(os.environ, {'MNL_MARKET_SALT': 'jump-cutover-check'}):
+            last = (m.JUMP_FROM - m.EPOCH) // m.TICK_SECONDS - 1
+            new = [m._price('coin', m._salt(), 10000, t) for t in range(last - 30, last + 1)]
+            with patch.object(m, 'JUMP_FROM', 4102444800):
+                m._price.cache_clear()
+                old = [m._price('coin', m._salt(), 10000, t) for t in range(last - 30, last + 1)]
+            m._price.cache_clear()
+            self.assertEqual(new, old)
+
+    def test_first_tick_rise_is_no_sure_trade(self):
+        import math
+        from game import realtime_market as m
+        with patch.dict(os.environ, {'MNL_MARKET_SALT': 'jump-momentum-check'}):
+            m._price.cache_clear()
+            P = lambda t: m._price('coin', m._salt(), 10000, t)  # noqa: E731
+            first = m._jump_day() + 60
+            rets = [math.log(P(h * 6 + 6) / P(h * 6 + 1)) + 2 * math.log(.98)
+                    for h in range(first, first + 1500) if P(h * 6 + 1) / P(h * 6) > 1.01]
+            m._price.cache_clear()
+            self.assertGreater(len(rets), 50)
+            self.assertLess(sum(rets) / len(rets), 0)

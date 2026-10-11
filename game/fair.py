@@ -1491,7 +1491,9 @@ def _apply(s: dict, name: str, p: dict) -> dict:
         _police(j, f, t, 'xd', stake)
         st['xd'] += 1
         probability = luck_p(j, f, 'xd', t, stake=stake)
-        if _rng.random() * 100 < RAID_PCT:
+        # Owner 11/10 "đánh nhiều mới bị phạt thôi": the dẹp chiếu only comes for a round the police would watch anyway
+        # (bm.arrest_p > 0: a big stake or today's winnings past ARREST_FROM); a small player is never raided.
+        if bm.arrest_p(f, stake) > 0 and _rng.random() * 100 < RAID_PCT:
             st['raids'] += 1
             f['raid_until'] = int(t) + RAID_COOLDOWN
             if fine:
