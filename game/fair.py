@@ -1386,8 +1386,8 @@ def _arrested(j: dict, f: dict, t: float, game: str, stake: int, pay, why: str =
         msg = f'🚨 Công an thấy bạn bày bàn liên tục bất thường, nghi gian lận! Nộp phạt {fine} xu.'
     elif why == 'oaq_win':
         msg = f'🚨 Công an ập vào bàn Ông Hai! Đã thu {_xu(stake)} xu tiền phạt, không thu thêm.'
-    else:   # owner 11/10: the stake is seized, the fine is FINE_PCT % of today's winnings (wallet, then bank)
-        msg = f'🚨 Công an ập vào! Tịch thu {_xu(stake)} xu tiền cược' + (f', phạt {fine} xu (30% tiền lời hôm nay)' if r['fine'] else '') + '.'
+    else:   # owner 11/10: the stake is seized, the fine is FINE_PCT % of that round's stake (wallet, then bank)
+        msg = f'🚨 Công an ập vào! Tịch thu {_xu(stake)} xu tiền cược' + (f', phạt thêm {fine} xu (30% tiền cược ván này)' if r['fine'] else '') + '.'
     msg += f' Bạn bị tạm giữ {r["jail"]} ngày.' if r.get('jail') else ''
     raise _Caught(dict(message=msg, effects=[], fair=fair))
 

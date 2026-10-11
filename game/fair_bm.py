@@ -35,7 +35,7 @@ from .loss_limits import bounded_loss
 
 KEY = 'fair_bm'
 BM_FEE = 0                     # legacy public field: entry is free
-FINE_PCT = 30                  # owner 11/10 (later): caught, 30% of today's Chợ đen winnings (profit_fine)
+FINE_PCT = 30                  # owner 11/10 (later): caught, the round's stake and FINE_PCT % of that stake (round_fine)
 BM_ARREST_P = 0.02             # owner 11/10 (later) "tỷ lệ bị bắt giảm thấp"; never shown
 ARREST_FROM = 300000           # ... only while today's Chợ đen net is above this (owner 09/10 "hơn 300k"; never shown)
 # Owner 11/10 (later) "cho chơi thoải mái, cho ăn vui vẻ, nhưng nếu ăn lời nhiều thì có cơ chế xử lý, mọi trò": the
@@ -208,19 +208,20 @@ def take_total(j: dict, f: dict, amount: int, label: str) -> int:
     return taken
 
 
-def profit_fine(f: dict) -> int:
-    """FINE_PCT % of today's Chợ đen winnings (journey['fair'].net, 0 when the day is not won)."""
-    return max(0, f['net']) * FINE_PCT // 100
+def round_fine(stake: int) -> int:
+    """FINE_PCT % of the caught round's own stake (owner 11/10 "phải tính tiền phạt của 1 trận": a 10k round is
+    never fined for the rest of the day's play)."""
+    return max(0, int(stake)) * FINE_PCT // 100
 
 
 def arrest(j: dict, f: dict, t: float, game: str, stake: int, pay, *, charge: bool = True, seize: bool = False) -> dict:
     """The police caught this round, then JAIL_DAYS days in the trại tạm giữ. seize (owner 11/10, the Chợ đen's own
-    arrest roll): the round's stake is taken (`pay(-stake)`, the stall's Sổ ví row) and FINE_PCT % of today's
-    winnings from the wallet and the bank (take_total). Otherwise (the skill stalls' watch) the stake is not charged
-    and only a bounded wallet fine is."""
+    arrest roll): the round's stake is taken (`pay(-stake)`, the stall's Sổ ví row) and round_fine(stake) from the
+    wallet and the bank (take_total). Otherwise (the skill stalls' watch) the stake is not charged and only a bounded
+    wallet fine is."""
     from . import jail
     if seize:
-        due = profit_fine(f) if charge else 0
+        due = round_fine(stake) if charge else 0
         if stake:
             pay(-stake)
         fine = take_total(j, f, due, FINE_LABEL) if due else 0
