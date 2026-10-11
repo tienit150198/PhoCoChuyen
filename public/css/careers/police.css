@@ -97,6 +97,26 @@ html[data-theme="dem"] .career-job.sk.cap{--sk-accent:#7fb0de;--sk-accent-2:#c99
 .career-job.sk.cap .cap-prio.on.p-later{background:var(--sk-accent);border-color:var(--sk-accent);color:#fff}
 .career-job.sk.cap .cap-prio.on.p-fake{background:var(--sk-muted);border-color:var(--sk-muted);color:#fff}
 
+/* ---------- posts about the ward's shops, business inspection, the big case (owner spec 11/10) */
+.career-job.sk.cap .cap-posts{display:grid;gap:10px;margin-top:10px}
+.career-job.sk.cap .cap-post .cap-said{margin-top:8px}
+.career-job.sk.cap .cap-post.done{border-color:var(--cap-green)}
+.career-job.sk.cap .cap-post .sk-opts{margin-top:8px}
+.career-job.sk.cap .cap-marks{display:flex;gap:6px;margin-top:6px}
+.career-job.sk.cap .cap-mark{flex:1 1 0;min-height:44px}
+.career-job.sk.cap .cap-mark.on{background:var(--sk-accent);border-color:var(--sk-accent);color:#fff}
+.career-job.sk.cap .cap-ring{border:2px solid var(--cap-red)}
+.career-job.sk.cap .cap-ring h4{margin:2px 0}
+.career-job.sk.cap .cap-ring-tag{display:inline-block;padding:1px 8px;border-radius:99px;background:var(--cap-red);color:#fff;font-weight:700;font-size:12px}
+.career-job.sk.cap .cap-ring-value{margin:0;font-size:20px;font-weight:800;color:var(--cap-red)}
+.career-job.sk.cap .cap-ring .cap-said{margin-top:8px}
+.career-job.sk.cap .cap-ring-track{list-style:none;display:flex;gap:4px;margin:10px 0 0;padding:0}
+.career-job.sk.cap .cap-ring-track li{flex:1 1 0;height:6px;border-radius:99px;background:var(--sk-surface-2)}
+.career-job.sk.cap .cap-ring-track li.on{background:var(--cap-green)}
+.career-job.sk.cap .cap-rstep{margin-top:10px}
+.career-job.sk.cap .cap-rstep h4{margin:0 0 4px}
+.career-job.sk.cap .cap-ring-end{display:inline-block;margin:10px 0}
+
 /* ---------- the end of the shift */
 .career-job.sk.cap .cap-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .career-job.sk.cap .cap-tiles div{display:flex;flex-direction:column;align-items:center;padding:6px 2px;border-radius:var(--sk-rs);background:var(--sk-surface-2);text-align:center}

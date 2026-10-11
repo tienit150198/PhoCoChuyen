@@ -184,7 +184,7 @@ function childPanel(t,x){
     const says=n.says||{};
     const vs=Object.entries(C.verify||{}).map(([k,[e,label]])=>says[k]!=null?said(x.esc(e),'',x.esc(says[k])):x.cmd(`${x.esc(e)} ${x.esc(label)}`,'cap_verify',{task:t.id,q:k},'ghost small cap-q')).join('');
     out+=`<section class="card cap-claim"><h4>${x.esc(n.who_emoji)} ${x.esc(n.who)} tới đón bé</h4><div class="cap-qs">${vs}</div></section>
-      <section class="card cap-decide"><h4>⚖️ Quyết định</h4><div class="sk-opts">${turn([opt(x,'🤝 Giao bé cho người nhà','đã xác minh','cap_handover',pay(t)),opt(x,'🏠 Giữ bé ở phường','gọi bố mẹ xác nhận','cap_hold',pay(t))],t.id).join('')}</div></section>`;
+      <section class="card cap-decide"><h4>⚖️ Quyết định</h4><div class="sk-opts">${turn([x.confirmCmd('<span class="sk-opt-label">🤝 Giao bé cho người đón</span>','cap_handover',pay(t),`Giao ${n.kid} cho ${n.who}? Bố mẹ bé đã xác nhận nhờ người này chưa?`,'sk-opt'),opt(x,'🏠 Giữ bé ở phường','gọi bố mẹ xác nhận','cap_hold',pay(t))],t.id).join('')}</div></section>`;
   }
   return out;
 }
@@ -253,6 +253,66 @@ function callsSteps(t,x){
   return (t.needs?.queue||[]).map((c,i)=>({ok:(t.prio||{})[String(i)]?true:null,label:`Xếp: ${c.who}`,go:{sel:`.cap-call:nth-child(${i+1})`,label:`☎️ ${x.esc(c.who)}`},pulse:''}));
 }
 
+/* ------------------------------------------------------------ posts about the ward's shops (owner spec 11/10) */
+const ruleBox=(x,key,title,rows)=>pane(x,key,title,`<ul class="cap-rule">${(rows||[]).map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul>`,false,'cap-rulebox');
+function postsPanel(t,x){
+  const C=cc(x),acts=C.post_acts||{};
+  const cards=(t.needs?.posts||[]).map((p,i)=>{
+    const opts=p.done?`<p class="cap-out">${x.esc((acts[p.done]||[''])[0])} ${x.esc(p.outcome||'')}</p>`
+      :`<div class="sk-opts">${turn(Object.entries(acts),t.id+i).map(([k,[e,label]])=>opt(x,`${x.esc(e)} ${x.esc(label)}`,'','cap_post',{task:t.id,i,act:k})).join('')}</div>`;
+    return `<article class="card cap-post${p.done?' done':''}"><div class="row"><span class="cap-big" aria-hidden="true">${x.esc(p.emoji)}</span><div class="grow"><b>${x.esc(p.shop)}</b><p class="small muted">${x.esc(p.who)}</p></div></div>
+      <p class="cap-said"><span>“${x.esc(p.text)}”</span></p>${p.look?`<p class="cap-look">🔍 ${x.esc(p.look)}</p>`:p.done?'':x.cmd('🔍 Xem kỹ, hỏi hai bên','cap_plook',{task:t.id,i},'ghost small cap-lookbtn')}${opts}</article>`;}).join('');
+  return `${ruleBox(x,'cap-post-rule','📏 Xử lý bài đăng',C.post_rule)}<div class="cap-posts">${cards}</div>`;
+}
+function postsSteps(t,x){
+  return (t.needs?.posts||[]).map((p,i)=>({ok:p.done?true:null,label:p.shop,
+    go:p.look?{sel:`.cap-post:nth-child(${i+1}) .sk-opts`,label:'⚖️ Chọn cách xử lý'}:{cmd:'cap_plook',payload:{task:t.id,i},label:`🔍 Xem kỹ bài ${i+1}`},pulse:''}));
+}
+
+/* ------------------------------------------------------------ business inspection */
+function inspectPanel(t,x){
+  const n=t.needs||{},C=cc(x),papers=C.papers||{},marks=n.marks||{},done=!!n.verdict;
+  const rows=(n.papers||[]).map(k=>{const [e,label]=papers[k]||['📄',k],txt=(n.checks||{})[k],m=marks[k];
+    if(txt==null)return `<li>${x.cmd(`${x.esc(e)} ${clean()?x.esc(label):`Xem ${x.esc(label.toLowerCase())}`}`,'cap_paper',{task:t.id,paper:k},'ghost cap-check')}</li>`;
+    const seg=['ok','miss'].map(v=>done?(m===v?`<span class="tag ${v==='ok'?'green':'danger'}">${v==='ok'?'✅ Đủ':'❌ Thiếu'}</span>`:'')
+      :x.cmd(v==='ok'?'✅ Đủ':'❌ Thiếu','cap_mark',{task:t.id,paper:k,v},`cap-mark${m===v?' on':''}`).replace('<button ',`<button aria-pressed="${m===v}" `)).join('');
+    return `<li class="seen${m?` ${m==='ok'?'ok':'bad'}`:''}"><b>${x.esc(e)} ${x.esc(label)}</b><span>${x.esc(txt)}</span><div class="cap-marks">${seg}</div></li>`;}).join('');
+  let out=`<section class="card cap-biz"><div class="row"><span class="cap-big" aria-hidden="true">${x.esc(n.emoji)}</span><div class="grow"><h4>${x.esc(n.name)}</h4><p class="small muted">${x.esc(n.owner)} · ${x.esc(n.sells)}</p></div></div></section>
+    ${ruleBox(x,'cap-biz-rule','📏 Mức xử lý',C.biz_rule)}<section class="card cap-docs"><h4>🗂️ Giấy tờ</h4><ul class="cap-checklist">${rows}</ul></section>`;
+  const V=C.verdicts||{},vl=k=>(V[k]||['',k]).join(' ');
+  if(done)return out+`<section class="card cap-decide"><p class="cap-out">✔️ ${x.esc(vl(n.verdict))}${n.best&&n.best!==n.verdict?`<br><small>Đáng lẽ: ${x.esc(vl(n.best))}</small>`:''}</p></section>`;
+  const all=(n.papers||[]).every(k=>marks[k]);
+  const vs=Object.entries(C.verdicts||{}).map(([k,[e,label]])=>opt(x,`${x.esc(e)} ${x.esc(label)}`,'','cap_verdict',{task:t.id,v:k})).join('');
+  return out+`<section class="card cap-decide"><h4>⚖️ Quyết định</h4>${all?`<div class="sk-opts">${vs}</div>`:'<p class="small muted">Đánh dấu đủ, thiếu từng giấy trước.</p>'}</section>`;
+}
+function inspectSteps(t,x){
+  const n=t.needs||{},papers=cc(x).papers||{},rows=[];
+  for(const k of n.papers||[]){const [e,label]=papers[k]||['📄',k],seen=(n.checks||{})[k]!=null;
+    rows.push({ok:(n.marks||{})[k]?true:null,label:label,go:seen?{sel:'.cap-docs',label:'✅ Đủ hay thiếu'}:{cmd:'cap_paper',payload:{task:t.id,paper:k},label:`${x.esc(e)} Xem ${x.esc(label.toLowerCase())}`},pulse:''});}
+  rows.push({ok:n.verdict?true:null,label:'Quyết định',go:{sel:'.cap-decide',label:'⚖️ Quyết định'},pulse:''});
+  return rows;
+}
+
+/* ------------------------------------------------------------ chuyên án đường dây buôn lậu */
+function ringPanel(t,x){
+  const n=t.needs||{},steps=n.steps||[],env=n.env;
+  let out=`<section class="card cap-ring"><div class="row"><span class="cap-big" aria-hidden="true">${x.esc(n.emoji)}</span><div class="grow"><small class="cap-ring-tag">🚨 Chuyên án lớn</small><h4>${x.esc(n.goods)}</h4><p class="cap-ring-value">${x.esc(n.value_text)} xu</p></div></div>
+    <p class="cap-said"><span>📨 ${x.esc(n.tip)}</span></p><ol class="cap-ring-track" aria-label="Các bước">${Array.from({length:n.of||4},(_,i)=>`<li class="${i<steps.filter(s=>s.done).length?'on':''}"></li>`).join('')}</ol></section>`;
+  for(const s of steps){
+    if(s.done){const o=(s.options||[]).find(o=>o.id===s.done);out+=`<article class="card cap-rstep done"><h4>${x.esc(s.emoji)} ${x.esc(s.title)}</h4><p class="cap-out">✔️ ${x.esc(o?.label||'')}<br><small>${x.esc(s.outcome||'')}</small></p></article>`;continue;}
+    out+=`<article class="card cap-rstep cap-decide"><h4>${x.esc(s.emoji)} ${x.esc(s.title)}</h4><p class="small">${x.esc(s.ask)}</p><div class="sk-opts">${turn(s.options||[],t.id+s.id).map(o=>opt(x,x.esc(o.label),'','cap_case',{task:t.id,step:s.id,choice:o.id})).join('')}</div></article>`;
+  }
+  if(env&&!env.answered&&t.stage!=='done')out+=`<section class="sk-event tense cap-beat cap-renv" role="alertdialog" aria-label="Phong bì"><div class="sk-ev-head"><span aria-hidden="true">${x.esc(env.emoji)}</span><div><small>${x.esc(env.who)}</small><h3>Phong bì</h3></div></div><p>${x.esc(env.text)}</p>
+    <div class="sk-opts">${turn(env.options||[],t.id).map(o=>opt(x,x.esc(o.label),'','cap_caseenv',{task:t.id,choice:o.id})).join('')}</div></section>`;
+  if(n.result)out+=`<p class="tag ${n.result==='solved'?'green':'danger'} cap-ring-end">${n.result==='solved'?'⭐ Phá án thành công':`⏸️ Chuyên án chưa thành · giam hàm ${cc(x).ring_hold||3} ngày`}</p>`;
+  return out;
+}
+function ringSteps(t,x){
+  const n=t.needs||{},steps=n.steps||[],rows=steps.map(s=>({ok:s.done?true:null,label:s.title,go:s.done?null:{sel:'.cap-rstep:not(.done) .sk-opts',label:`${x.esc(s.emoji)} ${x.esc(s.title)}`},pulse:''}));
+  if(n.env&&!n.env.answered&&t.stage!=='done')rows.push({ok:null,label:'Trả lời phong bì',go:{sel:'.cap-renv',label:'💼 Trả lời'},pulse:''});
+  return rows;
+}
+
 /* ------------------------------------------------------------ the end-of-shift duty book */
 function logCard(x){
   const td=data(x).today||{},rows=td.facts||[];
@@ -264,8 +324,8 @@ function logCard(x){
 }
 
 /* ------------------------------------------------------------ the guide */
-const STEPS={brief:briefSteps,desk:deskSteps,lost:lostSteps,dispute:disputeSteps,child:childSteps,patrol:patrolSteps,talk:talkSteps,calls:callsSteps};
-const PANELS={brief:briefPanel,desk:deskPanel,lost:lostPanel,dispute:disputePanel,child:childPanel,patrol:patrolPanel,talk:talkPanel,calls:callsPanel};
+const STEPS={brief:briefSteps,desk:deskSteps,lost:lostSteps,dispute:disputeSteps,child:childSteps,patrol:patrolSteps,talk:talkSteps,calls:callsSteps,posts:postsSteps,inspect:inspectSteps,ring:ringSteps};
+const PANELS={brief:briefPanel,desk:deskPanel,lost:lostPanel,dispute:disputePanel,child:childPanel,patrol:patrolPanel,talk:talkPanel,calls:callsPanel,posts:postsPanel,inspect:inspectPanel,ring:ringPanel};
 function finalOf(t,x,steps){
   const n=t.needs||{};
   if(t.kind==='brief'){const f=x.ui.first?.[t.id];return {label:'📋 GIAO BAN XONG',go:f?finalGo(steps,'cap_first',{task:t.id,first:f}):null,ready:!!f,why:'chọn việc làm trước'};}
@@ -286,7 +346,7 @@ function guide(t,x){
 }
 const hintFor=(g,x)=>nextHint(x,g.steps,{final:g.final&&g.final.ready!==false&&g.final.go?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null,pulse:g.pulse});
 function top(x){return `${introCard(x,'cap_intro','👮')}${deskCard(x,'cap_desk','Chuyện ở phường')}${oddCard(x,ODD_CFG)}${groundCard(x)}`;}
-const ASK_LABEL={desk:'👋 Mời ngồi, nhận hồ sơ',lost:'👋 Nhận đồ từ người nhặt',dispute:'👋 Mời hai bên ngồi',child:'🏃 Tới chỗ bé',patrol:'🚶 Bắt đầu tuần tra',talk:'👋 Tới nhà văn hóa',calls:'☎️ Nhấc máy'};
+const ASK_LABEL={desk:'👋 Mời ngồi, nhận hồ sơ',lost:'👋 Nhận đồ từ người nhặt',dispute:'👋 Mời hai bên ngồi',child:'🏃 Tới chỗ bé',patrol:'🚶 Bắt đầu tuần tra',talk:'👋 Tới nhà văn hóa',calls:'☎️ Nhấc máy',posts:'📱 Mở đơn của cửa hàng',inspect:'👋 Chào chủ tiệm',ring:'📨 Nghe tin báo'};
 
 export default {
   id:'police',

@@ -26,6 +26,19 @@ never force: one task is one piece of the shift.
 * ``calls``: three calls on the duty phone at once: call back, then give each a priority on the game's card. Someone
   in danger goes first; a false report is noted, not chased.
 
+Generator 2 (owner spec 11/10, the player-written design the owner approved; older saves keep generator 1 through the
+kit legacy band, heal_save):
+
+* ``child``: a child handed to an adult the parents did not send is led away (the ward searches, Công an Thành phố finds
+  the child safe): hạ 1 bậc hàm at once + giam hàm 15 ngày (promotion.case_grave), a reminder only under grace;
+* ``ring``: chuyên án đường dây buôn lậu, about one shift in five or six (ring_slot): the tip, the watch, Hải quan and
+  the papers, the raid; an envelope from the ring after the watch. Solved: +1 ngày xét thăng cấp bậc hàm
+  (case_bonus); failed, the suspect escaped or the envelope taken: giam hàm 3 ngày (case_hold; taken: also org bribe);
+* ``posts``: three posts about the ward's shops: a real complaint stays up (taking it down or fining it is a ⚠️
+  wrong_penalty), an unreasonable demand may be taken down, a “pay me or I expose you” threat is invited and fined;
+* ``inspect``: a business's papers (tax, invoices for the goods, customs declarations): mark each đủ/thiếu, then a
+  reminder, a written fine or the file to Hải quan; a heavy penalty on a business in order is a ⚠️ wrong_penalty.
+
 Around the tasks: the awkward people of the ward (air_odd engine, game/careers/police_content.py ODD): envelopes,
 an official's relative, the karaoke neighbour, the daily "suspicious person" report, a TikToker filming the desk, a
 drunk uncle, a grandmother who wants to chat for an hour, fake reports, a boss chasing quotas. Giving in is never
@@ -55,11 +68,11 @@ from .police_content import (PEOPLE, BRIEF, BRIEF_IDS, FLAG_TASK, DOCS, DOC_TEXT
                              DISPUTES, CHILDREN, KID_Q, ANNOUNCE, VERIFY, PLACES, SCENES, PATROLS, TOPICS, TALK_Q, TALKS, PRIO, CALLS)
 
 ID = 'police'
-GEN = 1
+GEN = 2               # generator 2 (owner spec 11/10): ring, posts, inspect, ch-ken; 1 = the legacy band (heal_save)
 BONUS = 10            # xu per task done by the book (a performance bonus: the salary is the pay)
 LEARN = 3             # anh Định stands beside you for the first three jobs
 FACTS_MAX = 14
-KINDS = ('brief', 'desk', 'lost', 'dispute', 'child', 'patrol', 'talk', 'calls')
+KINDS = ('brief', 'desk', 'lost', 'dispute', 'child', 'patrol', 'talk', 'calls', 'posts', 'inspect', 'ring')
 STAGES = ('open', 'done')
 MODS = PC.MODS
 DINH, HANG, NAM, THOA, QUY, KHA, VUONG, UT = range(8)
@@ -120,9 +133,15 @@ def flag_of(day: int) -> str:
     return BRIEF_IDS[kit.rng(ID, 'flag', day).randrange(len(BRIEF_IDS))]
 
 
-def _weights(day: int, mod: str) -> list:
+def _weights(day: int, mod: str, gen: int = GEN) -> list:
     w = {'desk': 3, 'lost': 2, 'patrol': 2, 'calls': 2 if day >= 2 else 0, 'dispute': 2 if day >= 2 else 0,
          'child': 1 if day >= 2 else 0, 'talk': 1 if day >= 3 else 0}
+    if gen >= 2:   # appended after the generator-1 keys: the draw walks the dict in order
+        w.update(posts=1 if day >= 3 else 0, inspect=1 if day >= 3 else 0)
+        if mod == 'audit':
+            w['inspect'] += 2
+        elif mod == 'market':
+            w['inspect'] += 1
     if mod == 'market':
         w['patrol'] += 2
         w['child'] += 1
@@ -143,16 +162,26 @@ def _weights(day: int, mod: str) -> list:
 DAY_ONE = ('desk', 'patrol', 'desk', 'calls', 'lost')
 
 
-def task_kind(day: int, slot: int) -> str:
+def ring_slot(day: int) -> int:
+    """The slot of today's chuyên án (0: none today): about one shift in five or six from RING_FROM_DAY (pure)."""
+    if day < PC.RING_FROM_DAY:
+        return 0
+    r = kit.rng(ID, 'ring', day)
+    return 2 + r.randrange(2) if r.random() < PC.RING_CHANCE else 0
+
+
+def task_kind(day: int, slot: int, gen: int = GEN) -> str:
     if slot <= 0:
         return 'brief'
     if slot == 1:
         return FLAG_TASK[flag_of(day)][0]
     if day == 1:
         return DAY_ONE[(slot - 2) % len(DAY_ONE)]
+    if gen >= 2 and slot == ring_slot(day):
+        return 'ring'
     mod = mod_of(day)['id']
-    prev = task_kind(day, slot - 1)
-    rows = [(k, v) for k, v in _weights(day, mod) if k != prev]
+    prev = task_kind(day, slot - 1, gen)
+    rows = [(k, v) for k, v in _weights(day, mod, gen) if k != prev]
     total = sum(v for _, v in rows)
     x = kit.rng(ID, 'kind', day, slot).random() * total
     for k, v in rows:
@@ -174,7 +203,7 @@ def _patrol_case(day: int, slot: int) -> str:
     return _rot(PC.PATROL_ROTATION, day, slot, _opened(day, 2, len(PC.PATROL_ROTATION)), 'pt')
 
 
-def _case(day: int, slot: int, kind: str) -> str:
+def _case(day: int, slot: int, kind: str, gen: int = GEN) -> str:
     if slot == 1:
         return FLAG_TASK[flag_of(day)][1]
     if kind == 'desk':
@@ -184,7 +213,12 @@ def _case(day: int, slot: int, kind: str) -> str:
     if kind == 'dispute':
         return _rot(PC.DISPUTE_ROTATION, day, slot, len(PC.DISPUTE_ROTATION), 'dp')
     if kind == 'child':
-        return _rot(PC.CHILD_ROTATION, day, slot, len(PC.CHILD_ROTATION), 'ch')
+        rows = PC.CHILD_ROTATION_2 if gen >= 2 else PC.CHILD_ROTATION
+        return _rot(rows, day, slot, len(rows), 'ch')
+    if kind == 'inspect':
+        return _rot(PC.BIZ_ROTATION, day, slot, len(PC.BIZ_ROTATION), 'bz')
+    if kind == 'ring':
+        return _rot(PC.RING_ROTATION, day, slot, len(PC.RING_ROTATION), 'rg')
     if kind == 'patrol':
         return _patrol_case(day, slot)
     if kind == 'talk':
@@ -217,21 +251,40 @@ def _calls(day: int, slot: int, case: str) -> list:
     return out
 
 
-def _common() -> dict:
-    return dict(gen=GEN, stage='open', seen=[], choice=None, result=None, story=None, press=None, offers=[], prio={}, acts={},
+def _posts(day: int, slot: int) -> list:
+    """Three posts about three shops: one real complaint (never taken down), one demand or threat, one more (pure)."""
+    r = kit.rng(ID, 'posts', day, slot)
+    shop = lambda k: PC.POSTS[k]['shop']
+    real = [k for k, v in PC.POSTS.items() if v['kind'] == 'real']
+    a = real[r.randrange(len(real))]
+    other = [k for k, v in PC.POSTS.items() if v['kind'] != 'real' and v['shop'] != shop(a)]
+    b = other[r.randrange(len(other))]
+    rest = [k for k in PC.POSTS if shop(k) not in (shop(a), shop(b))]
+    out = [a, b, rest[r.randrange(len(rest))]]
+    r.shuffle(out)
+    return out
+
+
+def _xu(n: int) -> str:
+    return f'{n:,}'.replace(',', '.')
+
+
+def _common(gen: int = GEN) -> dict:
+    return dict(gen=gen, stage='open', seen=[], choice=None, result=None, story=None, press=None, offers=[], prio={}, acts={},
                 topics=[], answers={})
 
 
 def make_task(day: int, slot: int, serial: int) -> dict:
-    kind = task_kind(day, slot)
-    c = _common()
+    gen = 1 if kit.legacy(serial) else GEN   # a task saved before generator 2 is rebuilt by generator 1 (heal_save)
+    kind = task_kind(day, slot, gen)
+    c = _common(gen)
     if kind == 'brief':
         flag = flag_of(day)
         entries = [dict(id=k, name=BRIEF[k]['name'], emoji=BRIEF[k]['emoji'], text=BRIEF[k]['urgent' if k == flag else 'calm']) for k in BRIEF_IDS]
         return kit.base_task(ID, day, slot, serial, DINH, 'Giao ban đầu ca',
                              'Anh Định: “Đọc sổ trực ban đêm qua đi em, rồi chọn việc làm trước. Chuyện nào có người đang gặp nguy thì đi trước.”',
                              kind='brief', needs=dict(entries=entries), _v=dict(first=flag), **c)
-    case = _case(day, slot, kind)
+    case = _case(day, slot, kind, gen)
     if kind == 'desk':
         x = DESKS[case]
         docs = ['form', 'id', 'host'] + (['guard'] if x['minor'] else [])
@@ -268,6 +321,23 @@ def make_task(day: int, slot: int, serial: int) -> dict:
         return kit.base_task(ID, day, slot, serial, x['npc'], f'Nói chuyện chống lừa đảo: {x["where"]}',
                              f'{x["where"]}: {_low(x["audience"])} chờ nghe phường nói chuyện chống lừa đảo.',
                              kind='talk', needs=dict(where=x['where'], audience=x['audience']), _v=dict(case=case), **c)
+    if kind == 'posts':
+        ids = _posts(day, slot)
+        return kit.base_task(ID, day, slot, serial, KHA, 'Bài đăng về cửa hàng',
+                             '📱 Ba cửa hàng trong phường gửi đơn: có bài đăng trên mạng nói về họ. Xem từng bài rồi xử lý.',
+                             kind='posts', needs=dict(posts=[{k: PC.POSTS[i][k] for k in ('shop', 'emoji', 'who', 'text')} for i in ids]),
+                             _v=dict(posts=ids), **c)
+    if kind == 'inspect':
+        x = PC.BIZ[case]
+        return kit.base_task(ID, day, slot, serial, x['npc'], f'Kiểm tra: {x["name"]}', f'{x["emoji"]} {x["name"]} ({x["sells"]}): {x["owner"]} mở sổ sách chờ kiểm tra.',
+                             kind='inspect', needs=dict(name=x['name'], emoji=x['emoji'], owner=x['owner'], sells=x['sells'], papers=list(PC.PAPER_IDS)),
+                             _v=dict(case=case), **c)
+    if kind == 'ring':
+        x = PC.RINGS[case]
+        return kit.base_task(ID, day, slot, serial, x['npc'], f'Chuyên án: {_low(x["goods"])}',
+                             f'🚨 Chuyên án lớn: hàng không rõ xuất xứ, trị giá {_xu(x["value"])} xu. {x["tip"]}',
+                             kind='ring', needs=dict(goods=x['goods'], emoji=x['emoji'], value=x['value'], place=x['place'], boss=x['boss'], tip=x['tip']),
+                             _v=dict(case=case), **c)
     q = _calls(day, slot, case)
     return kit.base_task(ID, day, slot, serial, HANG, 'Điện thoại trực ban', '☎️ Ba cuộc gọi tới cùng lúc. Chị Hằng: “Em xếp giúp chị, ai đi trước.”',
                          kind='calls', needs=dict(queue=[dict(who=CALLS[k]['who'], emoji=CALLS[k]['emoji'], text=CALLS[k]['text']) for k in q]),
@@ -323,10 +393,11 @@ def _pressure(c: dict, d: dict) -> int:
 # ================================================================ the actions
 FREE = ('cap_intro', 'cap_rest')
 NO_TICK = ('cap_intro', 'cap_rest', 'cap_read', 'cap_doc', 'cap_lq', 'cap_kq', 'cap_look', 'cap_topic', 'cap_invite', 'cap_cb', 'cap_prio',
-           'cap_desk', 'cap_odd', 'cap_log', 'cap_hear', 'cap_verify', 'cap_beat')
-PHYSICAL = ('cap_accept', 'cap_give', 'cap_handover', 'cap_act', 'cap_dispatch', 'cap_sign', 'cap_present')
+           'cap_desk', 'cap_odd', 'cap_log', 'cap_hear', 'cap_verify', 'cap_beat', 'cap_plook', 'cap_paper', 'cap_mark', 'cap_caseenv')
+PHYSICAL = ('cap_accept', 'cap_give', 'cap_handover', 'cap_act', 'cap_dispatch', 'cap_sign', 'cap_present', 'cap_case', 'cap_post', 'cap_verdict')
 GROUNDED = ('cap_first', 'cap_accept', 'cap_back', 'cap_count', 'cap_give', 'cap_keep', 'cap_offer', 'cap_sign', 'cap_refer', 'cap_calm',
-            'cap_handover', 'cap_hold', 'cap_act', 'cap_endpatrol', 'cap_present', 'cap_answer', 'cap_dispatch')
+            'cap_handover', 'cap_hold', 'cap_act', 'cap_endpatrol', 'cap_present', 'cap_answer', 'cap_dispatch', 'cap_post', 'cap_verdict',
+            'cap_case')
 
 
 def handle(s: dict, c: dict, name: str, p: dict) -> dict:
@@ -388,7 +459,13 @@ def _grace(c: dict, d: dict) -> bool:
 def heal_save(s: dict, c: dict) -> None:
     """migrate_state: ⚠️ warnings whose discipline is already served (10 worked days in a row without a violation, counted
     the way builds up to 1.9.19 logged them) are cleared on load, so an officer kept from promotion by them is unblocked
-    at once (feedback #251/#253/#258). A record it cannot read is left as it is for validation to judge."""
+    at once (feedback #251/#253/#258). A record it cannot read is left as it is for validation to judge.
+    Generator 2 (owner spec 11/10): tasks made by generator 1 move into the kit legacy serial band, so make_task
+    rebuilds them as they were made (the new kinds and rotations change what a day and slot give)."""
+    for t in c.get('tasks') if isinstance(c.get('tasks'), list) else ():
+        if (isinstance(t, dict) and t.get('career') == ID and t.get('gen') == 1 and type(t.get('created_turn')) is int
+                and 0 <= t['created_turn'] < kit.LEGACY_TURN):
+            t['created_turn'] += kit.LEGACY_TURN
     from .. import org
     try:
         x = org.get(_promo().record(s, ID))
@@ -403,9 +480,22 @@ def heal_save(s: dict, c: dict) -> None:
 
 
 def _rank_note(result: dict, line: str) -> None:
-    if line:
+    if line:   # a case may carry two (a held grade, then the envelope's demotion): both are kept
         result['message'] = f'{result.get("message", "")} {line}'.strip()
-        result['rank_note'] = line
+        result['rank_note'] = f'{result.get("rank_note", "")} {line}'.strip()
+
+
+def _case_rank(s: dict, c: dict, d: dict, fn: str, *args) -> str:
+    """A case's mark on the ladder (promotion.case_grave / case_hold / case_bonus). Under grace (anh Định beside a new
+    officer, or probation) a penalty is a reminder only, as pm.violation does; '' off the ladder."""
+    pm = _promo()
+    if not pm.org_live(s, c, ID, True)[1]:
+        return ''
+    if fn != 'case_bonus' and _grace(c, d):
+        what = (f'giao trẻ cho người bố mẹ không nhờ đón: hạ 1 bậc hàm, giam hàm {PC.KIDNAP_DAYS} ngày' if fn == 'case_grave'
+                else f'chuyên án thất bại: giam cấp bậc hàm {PC.RING_HOLD} ngày')
+        return f'📖 Nhắc quy trình: {what}. (Đang kèm việc: chưa tính.)'
+    return getattr(pm, fn)(s, c, ID, *args)
 
 
 def _procedure(s: dict, c: dict, d: dict, t: dict, before: set, result: dict) -> None:
@@ -481,7 +571,8 @@ def _task(c: dict, p: dict, kinds=None, known: bool = True) -> dict:
 
 def _case_of(t: dict) -> dict:
     v = t['_v']
-    return {'desk': DESKS, 'lost': LOSTS, 'dispute': DISPUTES, 'child': CHILDREN, 'patrol': PATROLS, 'talk': TALKS}[t['kind']][v['case']]
+    return {'desk': DESKS, 'lost': LOSTS, 'dispute': DISPUTES, 'child': CHILDREN, 'patrol': PATROLS, 'talk': TALKS, 'inspect': PC.BIZ,
+            'ring': PC.RINGS}[t['kind']][v['case']]
 
 
 def _seen(t: dict, key: str) -> bool:
@@ -906,7 +997,7 @@ def _announce(s, c, d, p):
     x = _case_of(t)
     lines = {'loa': f'📢 Loa {_low(x["place"])} đọc: “Một bé {x["age"]}, {_low(x["asks"]["wear"])} Người nhà mời tới điểm tìm trẻ lạc.”',
              'call': '📞 Gọi số trên thẻ: chuông đổ, đầu dây vội vã “Tôi tới ngay!”' if x['genuine'] else
-                     '📞 Gọi số trên thẻ, mẹ bé nghe máy: “Hôm nay ông ngoại đón, chị giữ cháu giúp tôi, ông sắp tới.”',
+                     x.get('call') or '📞 Gọi số trên thẻ, mẹ bé nghe máy: “Hôm nay ông ngoại đón, chị giữ cháu giúp tôi, ông sắp tới.”',
              'post': '📲 Ảnh bé lên nhóm khu phố, ba trăm lượt chia sẻ trong mười phút, kèm cả tên trường.'}
     if how == 'post':
         t['mistakes'] += 1
@@ -943,7 +1034,7 @@ def _handover(s, c, d, p):
     _not_calm(d, t)
     if not x['genuine']:
         t['mistakes'] += 1
-        cq.slip(t, 'wrong_adult', 3, 'Bé được giao cho người mà bố mẹ không nhờ đón.', 'giao trẻ khi chưa xác minh', safety=True)
+        cq.slip(t, 'wrong_adult', 3, 'Bé được giao cho người mà bố mẹ không nhờ đón, bị dẫn đi mất.', 'giao nhầm người, bé bị dẫn đi', safety=True)
     elif len(checks) < 2:
         t['mistakes'] += 1
         cq.slip(t, 'thin', 2, 'Giao bé mà xác minh qua loa, may mà đúng người nhà.', 'xác minh chưa kỹ')
@@ -952,12 +1043,19 @@ def _handover(s, c, d, p):
     if x['genuine']:
         _bump(d, 'helped')
         d['stats']['kids'] = min(10 ** 7, d['stats']['kids'] + 1)
-    _fact(d, t, f'Trẻ lạc: {x["kid"]} ({_low(x["place"])}) đã giao cho {x["who"]}.' + ('' if x['genuine'] else ' Bố mẹ không nhờ người này, đã báo cáo.'),
+    _fact(d, t, f'Trẻ lạc: {x["kid"]} ({_low(x["place"])}) đã giao cho {x["who"]}.' if x['genuine'] else
+          f'Trẻ lạc: {x["kid"]} bị giao nhầm cho {x["who"]}, bị dẫn đi; Công an Thành phố đã tìm thấy bé an toàn.',
           key=True, lie=f'Trẻ lạc: {x["kid"]} đã giao cho người nhà, xác minh đủ.' if cq.slips(t) else None)
     msg = _finish(s, c, d, t, BONUS, f'Giao {_low(x["kid"])} cho người nhà.')
+    # Owner spec 11/10: the wrong adult leads the child away (kept non-graphic: the ward searches, the city police
+    # find the child safe). Hạ 1 bậc hàm + giam hàm 15 ngày, however many checks were made; a reminder under grace.
     head = (f'🧒 {x["kid"]} về với {x["who"]}. Cả hai cảm ơn rối rít.' if x['genuine'] else
-            f'🧒 {x["who"]} dắt bé đi. Mười phút sau ông ngoại bé tới… 📋 Anh Định gọi ngay cho mẹ bé, lập báo cáo.')
-    return dict(message=f'{head} {msg}'.strip(), celebrate=not cq.slips(t), correct=not cq.safety(t))
+            f'🧒 {x["who"]} dắt bé đi. {x.get("came") or "Mười phút sau ông ngoại bé tới"}… 🚨 Bé đã bị dẫn đi mất. Cả phường tỏa đi tìm; '
+            f'tối đó Công an Thành phố tìm thấy bé an toàn, đưa về với gia đình. {x["who"]} bị mời về làm việc.')
+    result = dict(message=f'{head} {msg}'.strip(), celebrate=not cq.slips(t), correct=not cq.safety(t))
+    if not x['genuine']:
+        _rank_note(result, _case_rank(s, c, d, 'case_grave', 'kidnap', PC.KIDNAP_DAYS, 'kidnap'))
+    return result
 
 
 def _hold(s, c, d, p):
@@ -976,7 +1074,7 @@ def _hold(s, c, d, p):
     _bump(d, 'helped')
     _fact(d, t, f'Trẻ lạc: giữ {x["kid"]} ở phường, gọi bố mẹ xác nhận.', key=True)
     msg = _finish(s, c, d, t, BONUS, f'Giữ {_low(x["kid"])} chờ bố mẹ xác nhận.')
-    head = (f'🏠 Bạn giữ bé ở phường, gọi mẹ bé. Mười phút sau ông ngoại tới, mẹ xác nhận qua điện thoại. {x["who"]} gật gù: “Vậy là đúng.”'
+    head = ((x.get('held') or f'🏠 Bạn giữ bé ở phường, gọi mẹ bé. Mười phút sau ông ngoại tới, mẹ xác nhận qua điện thoại. {x["who"]} gật gù: “Vậy là đúng.”')
             if not x['genuine'] else f'🏠 {x["who"]} phải ngồi chờ thêm mười phút cho phường gọi xác nhận, hơi phật ý.')
     return dict(message=f'{head} {msg}'.strip(), celebrate=not cq.slips(t))
 
@@ -1210,6 +1308,211 @@ def _dispatch(s, c, d, p):
     return dict(message=f'{head} {msg}'.strip(), celebrate=not cq.slips(t), correct=worst < 3)
 
 
+# ---------------------------------------------------------------- posts about the ward's shops (generator 2)
+def _post_index(t: dict, i) -> int:
+    return kit.integer(i, 0, len(t['_v']['posts']) - 1)
+
+
+def _plook(s, c, d, p):
+    t = _task(c, p, ('posts',))
+    i = _post_index(t, p.get('i'))
+    kit.need(not _seen(t, f'look:{i}'), 'Đã xem kỹ rồi.')
+    _see(t, f'look:{i}')
+    kit.start_work(t)
+    return dict(message=f'🔍 {PC.POSTS[t["_v"]["posts"][i]]["look"]}')
+
+
+POST_GUARD = {'real': 'Góp ý thật thì để nguyên, nhắc cửa hàng sửa. Không gỡ, không phạt người góp ý.',
+              'demand': 'Đòi thứ cửa hàng không có thì gỡ là đủ, phạt thì nặng quá. Xem kỹ rồi chọn lại.',
+              'bocphot': 'Đòi tiền mới chịu gỡ là ép người ta. Xem kỹ tin nhắn rồi chọn lại.'}
+
+
+def _post(s, c, d, p):
+    """One post: keep it, take it down, or invite the poster and fine (a real complaint is never silenced)."""
+    t = _task(c, p, ('posts',))
+    ids = t['_v']['posts']
+    i = _post_index(t, p.get('i'))
+    kit.need(str(i) not in t['acts'], 'Bài này đã xử lý rồi.')
+    a = kit.one_of(p.get('act'), PC.POST_ACT_IDS, 'Chọn cách xử lý.')
+    x = PC.POSTS[ids[i]]
+    kind = x['kind']
+    if a != PC.POST_BEST[kind]:
+        g = _guard(d, f'post:{kind}', POST_GUARD[kind])
+        if g:
+            return g
+    t['acts'][str(i)] = a
+    kit.start_work(t)
+    out = PC.POST_OUT[f'{kind}:{a}'].format(shop=x['shop'])
+    if a != PC.POST_BEST[kind]:
+        t['mistakes'] += 1
+        if kind == 'real':   # ⚠️ wrong_penalty (police_beat.detect)
+            cq.slip(t, f'gag{i}', 3, out, 'gỡ, phạt bài góp ý thật')
+        elif a == 'fine':
+            cq.slip(t, f'heavy{i}', 2, out, 'phạt quá mức')
+        elif kind == 'bocphot' and a == 'keep':
+            cq.slip(t, f'miss{i}', 2, out, 'bỏ qua bài đòi tiền')
+        else:
+            cq.slip(t, f'soft{i}', 1, out, 'xử lý chưa trọn')
+        if not _seen(t, f'look:{i}'):
+            cq.slip(t, 'blind', 1, 'Xử lý bài đăng mà không xem kỹ đầu đuôi.', 'chưa xem kỹ')
+    if a == 'fine':
+        _bump(d, 'reports')
+    msg = f'{PC.POST_ACTS[a][0]} {out}'
+    if len(t['acts']) < len(ids):
+        return dict(message=msg, celebrate=a == PC.POST_BEST[kind], correct=not (kind == 'real' and a != 'keep'))
+    t['choice'] = 'done'
+    t['result'] = 'reviewed'
+    _bump(d, 'helped')
+    acts = list(t['acts'].values())
+    gag = any(c_.startswith('gag') for c_ in (r['code'] for r in cq.slips(t)))
+    _fact(d, t, f'Bài đăng về cửa hàng: xem {len(ids)} bài, gỡ {acts.count("down")}, mời {acts.count("fine")} người làm việc.'
+          + (' Có bài góp ý thật bị xử lý.' if gag else ''), key=gag or 'fine' in acts,
+          lie=f'Bài đăng về cửa hàng: xử lý đúng mức cả {len(ids)} bài.' if cq.slips(t) else None)
+    tail = _finish(s, c, d, t, BONUS, 'Xem bài đăng về cửa hàng trong phường.')
+    return dict(message=f'{msg} {tail}'.strip(), celebrate=not cq.slips(t), correct=not gag)
+
+
+# ---------------------------------------------------------------- business inspection (generator 2)
+def _paper(s, c, d, p):
+    t = _task(c, p, ('inspect',))
+    k = kit.one_of(p.get('paper'), PC.PAPER_IDS, 'Giấy này không có.')
+    kit.need(not _seen(t, f'paper:{k}'), 'Đã xem giấy này rồi.')
+    _see(t, f'paper:{k}')
+    kit.start_work(t)
+    e, name = PC.PAPERS[k]
+    return dict(message=f'{e} {name}: {_case_of(t)["papers"][k][1]}')
+
+
+def _mark(s, c, d, p):
+    """Đủ or thiếu on one paper already read (changeable until the decision)."""
+    t = _task(c, p, ('inspect',))
+    k = kit.one_of(p.get('paper'), PC.PAPER_IDS, 'Giấy này không có.')
+    v = kit.one_of(p.get('v'), ('ok', 'miss'), 'Chọn đủ hoặc thiếu.')
+    kit.need(_seen(t, f'paper:{k}'), 'Xem giấy trước đã.')
+    t['acts'][k] = v
+    return dict(message=f'{PC.PAPERS[k][0]} {PC.PAPERS[k][1]}: {"đủ" if v == "ok" else "thiếu"}.')
+
+
+def _verdict(s, c, d, p):
+    """Nhắc nhở · phạt hành chính · chuyển Hải quan, from the papers (the game's rule, PC.biz_best)."""
+    t = _task(c, p, ('inspect',))
+    v = kit.one_of(p.get('v'), PC.VERDICT_IDS, 'Chọn cách xử lý.')
+    kit.need(set(t['acts']) == set(PC.PAPER_IDS), 'Đánh dấu đủ hoặc thiếu cho từng giấy trước đã.')
+    x = _case_of(t)
+    best = PC.biz_best(x)
+    wrong = [k for k in PC.PAPER_IDS if t['acts'][k] != x['papers'][k][0]]
+    if wrong or v != best:
+        g = _guard(d, 'verdict', 'Đọc lại từng giấy: đủ thì nhắc nhở; thiếu thuế, hóa đơn thì phạt; hàng nhập thiếu tờ khai thì chuyển Hải quan.')
+        if g:
+            return g
+    for k in wrong:
+        t['mistakes'] += 1
+        cq.slip(t, f'mark_{k}', 1, f'{PC.PAPERS[k][1]} bị đánh dấu sai.', 'đánh dấu sai giấy tờ')
+    out = PC.BIZ_OUT[f'{best}:{v}'].format(owner=x['owner'])
+    if v != best:
+        t['mistakes'] += 1
+        if best == 'remind':   # ⚠️ wrong_penalty (police_beat.detect)
+            cq.slip(t, 'heavy', 3, out, 'xử lý nặng khi giấy tờ đủ')
+        elif v == 'remind':
+            cq.slip(t, 'soft', 2, out, 'cho qua sai phạm')
+        else:
+            cq.slip(t, 'wrongdesk', 2, out, 'chuyển sai nơi xử lý')
+    t['choice'] = v
+    t['result'] = 'inspected'
+    _bump(d, 'helped')
+    if v == 'fine':
+        _bump(d, 'reports')
+    _fact(d, t, f'Kiểm tra {x["name"]}: {_low(PC.VERDICTS[v][1])}.', key=v != 'remind' or best != 'remind',
+          lie=f'Kiểm tra {x["name"]}: đủ giấy tờ, đúng quy định.' if best != 'remind' else None)
+    tail = _finish(s, c, d, t, BONUS, f'Kiểm tra {x["name"]}.')
+    return dict(message=f'{PC.VERDICTS[v][0]} {out} {tail}'.strip(), celebrate=not cq.slips(t), correct=v == best)
+
+
+# ---------------------------------------------------------------- chuyên án đường dây buôn lậu (generator 2)
+def _ring_fmt(x: dict, text: str) -> str:
+    return text.format(place=x['place'], goods=_low(x['goods']), boss=x['boss'], value=_xu(x['value']))
+
+
+def _ring_env_open(t: dict) -> bool:
+    """The ring's envelope waits once the watch went well, until it is answered."""
+    return t['stage'] == 'open' and t['acts'].get('watch') == 'watch' and t['press'] is None
+
+
+def _case_step(s, c, d, p):
+    """The next step of the case: one good way; the others end it (the goods gone, or the suspect escaped)."""
+    t = _task(c, p, ('ring',))
+    acts = t['acts']
+    kit.need(not _ring_env_open(t), 'Trả lời người đưa phong bì trước đã.')
+    step = kit.one_of(p.get('step'), PC.RING_STEP_IDS, 'Bước này không có.')
+    kit.need(len(acts) < len(PC.RING_STEP_IDS) and step == PC.RING_STEP_IDS[len(acts)], 'Làm từng bước của chuyên án.')
+    st = PC.RING_STEP[step]
+    opts = {o[0]: o for o in st['options']}
+    choice = kit.one_of(p.get('choice'), opts, 'Chọn cách làm.')
+    _, label, grade, outcome = opts[choice]
+    if grade != 'good':
+        g = _guard(d, f'ring:{step}', 'Chuyên án lớn: kín đáo, đủ căn cứ, đủ giấy, đúng lúc. Nghĩ lại đi em.')
+        if g:
+            return g
+    acts[step] = choice
+    kit.start_work(t)
+    x = _case_of(t)
+    msg = f'{st["emoji"]} {_ring_fmt(x, outcome)}'
+    if grade != 'good':
+        t['mistakes'] += 1
+        cq.slip(t, f'ring_{grade}', 3, _ring_fmt(x, outcome), 'để đối tượng trốn thoát' if grade == 'escape' else 'chuyên án thất bại')
+        return _ring_end(s, c, d, t, grade, msg)
+    if step == PC.RING_STEP_IDS[-1]:
+        return _ring_end(s, c, d, t, 'solved', msg)
+    if step == 'watch':
+        e = PC.RING_ENV
+        msg += f' 🔔 {e["emoji"]} {e["who"]}: phong bì. Trả lời ngay nhé.'
+    return dict(message=msg, celebrate=True)
+
+
+def _case_env(s, c, d, p):
+    """The ring's envelope: refuse, report it (Liêm chính), or take it (org bribe, and the case is lost)."""
+    t = _task(c, p, ('ring',))
+    kit.need(_ring_env_open(t), 'Không có phong bì nào chờ trả lời.')
+    choice = kit.one_of(p.get('choice'), BT.ANSWERS, 'Chọn cách trả lời.')
+    if choice == 'take':
+        g = _guard(d, 'ring:env', 'Phong bì của đường dây là để mua sự im lặng. Không bao giờ nhận.')
+        if g:
+            return g
+    t['press'] = choice
+    x = _case_of(t)
+    if choice == 'take':   # the 'bribe' slip: _procedure runs promotion.bribe (one grade down at once)
+        note = _bribe(c, d, t, f'Nhận phong bì của đường dây {x["boss"]}.')
+        return _ring_end(s, c, d, t, 'bribed', f'💵 Bạn cầm phong bì. Ba hôm sau {x["place"]} dọn sạch, {x["boss"]} biến mất. {note}'.strip())
+    _bump(d, 'refused')
+    if choice == 'report':
+        _fact(d, t, f'Chuyên án {_low(x["goods"])}: lập biên bản người đưa phong bì, niêm phong nộp Ban chỉ huy.', key=True)
+        return dict(message=f'📝 Lập biên bản, niêm phong phong bì: thêm một chứng cứ cho chuyên án. {_promo().report_bribe(s, c, ID)}'.strip(),
+                    celebrate=True)
+    return dict(message='🙅 “Cán bộ không nhận gì.” Người lạ rồ ga đi mất.', correct=True)
+
+
+def _ring_end(s: dict, c: dict, d: dict, t: dict, how: str, msg: str) -> dict:
+    """Closes the case: solved → +1 ngày xét thăng cấp bậc hàm; anything else → giam hàm RING_HOLD ngày."""
+    x = _case_of(t)
+    goods = _low(x['goods'])
+    t['choice'] = how
+    t['result'] = 'solved' if how == 'solved' else 'failed'
+    if how == 'solved':
+        _bump(d, 'helped')
+        _bump(d, 'reports')
+        _fact(d, t, f'Chuyên án {goods}: tạm giữ lô hàng trị giá {_xu(x["value"])} xu, chuyển Hải quan.', key=True)
+        line = _case_rank(s, c, d, 'case_bonus', 1)
+        tail = _finish(s, c, d, t, BONUS * 3, f'Phá chuyên án {goods}.')
+    else:
+        _fact(d, t, f'Chuyên án {goods}: chưa thành, ' + ('đối tượng trốn thoát.' if how == 'escape' else 'hàng đã tẩu tán.'), key=True,
+              lie=f'Chuyên án {goods}: tạm giữ toàn bộ lô hàng.')
+        line = _case_rank(s, c, d, 'case_hold', PC.RING_HOLD)
+        tail = _finish(s, c, d, t, 0, f'Chuyên án {goods} chưa thành.')
+    result = dict(message=f'{msg} {tail}'.strip(), celebrate=how == 'solved', correct=how == 'solved')
+    _rank_note(result, line)
+    return result
+
+
 # ---------------------------------------------------------------- finishing a task
 def _finish(s: dict, c: dict, d: dict, t: dict, reward: int, narrative: str, job: bool = True) -> str:
     """Pays the bonus (none after a serious slip; half when tired, none while demoted) and completes once."""
@@ -1291,6 +1594,8 @@ ACTIONS = {
     'cap_look': _look, 'cap_act': _act, 'cap_endpatrol': _endpatrol,
     'cap_invite': _invite, 'cap_topic': _topic, 'cap_present': _present, 'cap_answer': _answer,
     'cap_cb': _cb, 'cap_prio': _prio, 'cap_dispatch': _dispatch,
+    'cap_plook': _plook, 'cap_post': _post, 'cap_paper': _paper, 'cap_mark': _mark, 'cap_verdict': _verdict,
+    'cap_case': _case_step, 'cap_caseenv': _case_env,
 }
 
 
@@ -1394,6 +1699,20 @@ def feedback(c: dict, t: dict) -> dict:
         return dict(criteria=[dict(key='topics', label='Đúng chuyện cần nghe', score=_score(codes, {'noinvite', 'miss'}), note='nói đúng chuyện của tổ' if not codes & {'noinvite', 'miss'} else 'chưa sát'),
                               dict(key='answers', label='Trả lời đúng', score=_score(codes, _pre(codes, 'qok'), _pre(codes, 'qbad')),
                                    note='các cụ hiểu, nhớ' if not _pre(codes, 'qok', 'qbad') else 'trả lời chưa đúng')])
+    if k == 'posts':
+        return dict(criteria=[dict(key='voice', label='Góp ý thật thì giữ', score=_score(codes, set(), set(), _pre(codes, 'gag')),
+                                   note='không bịt miệng người góp ý' if not _pre(codes, 'gag') else 'xử lý bài góp ý thật'),
+                              dict(key='measure', label='Đúng mức xử lý', score=_score(codes, _pre(codes, 'soft', 'blind'), _pre(codes, 'heavy', 'miss')),
+                                   note='gỡ, phạt đúng bài' if not _pre(codes, 'soft', 'blind', 'heavy', 'miss') else 'chưa đúng mức')])
+    if k == 'inspect':
+        return dict(criteria=[dict(key='papers', label='Xem đúng giấy tờ', score=_score(codes, _pre(codes, 'mark_')),
+                                   note='đánh dấu đúng từng giấy' if not _pre(codes, 'mark_') else 'đánh dấu sai'),
+                              dict(key='measure', label='Đúng mức xử lý', score=_score(codes, set(), {'soft', 'wrongdesk'}, {'heavy'}),
+                                   note='đúng nơi, đúng mức' if not codes & {'soft', 'wrongdesk', 'heavy'} else 'chưa đúng mức')])
+    if k == 'ring':
+        return dict(criteria=[honest,
+                              dict(key='case', label='Chuyên án từng bước', score=_score(codes, set(), set(), _pre(codes, 'ring_')),
+                                   note='kín đáo, đủ giấy, đúng lúc' if t.get('result') == 'solved' else 'chuyên án chưa thành')])
     return dict(criteria=[dict(key='priority', label='Người gặp nguy đi trước', score=_score(codes, set(), set(), _pre(codes, 'under')),
                                note='đúng người cần trước' if not _pre(codes, 'under') else 'để người gặp nguy chờ'),
                           dict(key='check', label='Gọi lại kiểm tra', score=_score(codes, _pre(codes, 'blind', 'order', 'over'), _pre(codes, 'dismiss')),
@@ -1419,6 +1738,12 @@ def known_request(c: dict, t: dict) -> str:
         return f'Tuần tra {n["name"]}: ' + ' '.join(sc['text'] for sc in n['scenes'])
     if k == 'talk':
         return f'{n["where"]}: {_low(n["audience"])}.'
+    if k == 'posts':
+        return 'Bài đăng: ' + '; '.join(f'{x["shop"]}: {x["text"]}' for x in n['posts'])
+    if k == 'inspect':
+        return f'Kiểm tra {n["name"]} ({n["sells"]}): thuế, hóa đơn nguồn hàng, tờ khai hải quan.'
+    if k == 'ring':
+        return f'Chuyên án {_low(n["goods"])}, trị giá {_xu(n["value"])} xu: {n["tip"]}'
     return 'Ba cuộc gọi: ' + '; '.join(f'{q["who"]}: {q["text"]}' for q in n['queue'])
 
 
@@ -1443,6 +1768,15 @@ def public_task(t: dict) -> dict:
         ids = t['_v']['calls']
         v['needs'] = dict(queue=[dict(q, detail=CALLS[ids[i]]['detail'] if f'cb:{i}' in seen else None, best=CALLS[ids[i]]['best'] if done else None)
                                  for i, q in enumerate(n['queue'])])
+        return v
+    if k == 'posts':   # what a post really is shows only in its look (and in what happened once handled)
+        ids = t['_v']['posts']
+        rows = []
+        for i, pid in enumerate(ids):
+            px, got = PC.POSTS[pid], t['acts'].get(str(i))
+            rows.append(dict(n['posts'][i], look=px['look'] if f'look:{i}' in seen else None, done=got,
+                             outcome=PC.POST_OUT[f'{px["kind"]}:{got}'].format(shop=px['shop']) if got else None))
+        v['needs'] = dict(n, posts=rows)
         return v
     x = _case_of(t)
     if k == 'desk':
@@ -1476,6 +1810,27 @@ def public_task(t: dict) -> dict:
             rows.append(dict(n['scenes'][i], look=sc['look'] if f'look:{i}' in seen else None, done=got,
                              outcome=opt[3] if opt else None, options=[dict(id=o[0], label=o[1]) for o in sc['options']]))
         view = dict(n, scenes=rows)
+    elif k == 'inspect':
+        view = dict(n, checks={p_: x['papers'][p_][1] for p_ in PC.PAPER_IDS if f'paper:{p_}' in seen}, marks=dict(t['acts']),
+                    verdict=t['choice'], best=PC.biz_best(x) if done else None)
+    elif k == 'ring':
+        acts = t['acts']
+        steps = []
+        for i, sid in enumerate(PC.RING_STEP_IDS):
+            st = PC.RING_STEP[sid]
+            got = acts.get(sid)
+            if got is None and (done or i > len(acts) or _ring_env_open(t)):
+                break
+            opt = next((o for o in st['options'] if o[0] == got), None)
+            steps.append(dict(id=sid, emoji=st['emoji'], title=st['title'], ask=st['ask'], done=got,
+                              outcome=_ring_fmt(x, opt[3]) if opt else None,
+                              options=[dict(id=o[0], label=_ring_fmt(x, o[1])) for o in st['options']]))
+        env = None
+        if acts.get('watch') == 'watch':
+            e = PC.RING_ENV
+            env = dict(emoji=e['emoji'], who=e['who'], text=_ring_fmt(x, e['text']), answered=t['press'],
+                       options=[dict(id=a, label=BT.LABELS[a]) for a in BT.ANSWERS])
+        view = dict(n, value_text=_xu(n['value']), steps=steps, env=env, of=len(PC.RING_STEP_IDS), result=t['result'])
     else:
         view = dict(n, invite=x['invite'] if 'invite' in seen else None, presented='present' in seen)
         if 'present' not in seen:
@@ -1519,6 +1874,9 @@ def content() -> dict:
                 verify={k: list(v) for k, v in VERIFY.items()}, places={k: list(v) for k, v in PLACES.items()},
                 topics={k: list(v) for k, v in TOPICS.items()}, topic_max=PC.TOPIC_MAX, prio={k: list(v) for k, v in PRIO.items()},
                 prio_order=list(PC.PRIO_ORDER), max_offers=PC.MAX_OFFERS, learn=LEARN,
+                post_acts={k: list(PC.POST_ACTS[k]) for k in PC.POST_ACT_IDS}, post_rule=list(PC.POST_RULE),
+                papers={k: list(PC.PAPERS[k]) for k in PC.PAPER_IDS}, verdicts={k: list(PC.VERDICTS[k]) for k in PC.VERDICT_IDS},
+                biz_rule=list(PC.BIZ_RULE), ring_hold=PC.RING_HOLD,
                 people=[dict(name=p[0], role=p[1], note=p[2]) for p in PEOPLE])
 
 
@@ -1530,7 +1888,10 @@ def hint(c: dict, t: dict) -> str:
             'child': 'Dỗ bé trước → hỏi, xem thẻ tên → đọc loa hoặc gọi số trên thẻ → xác minh người đón hai cách → giao hoặc giữ lại.',
             'patrol': 'Xem kỹ từng chuyện → lần đầu, chuyện nhỏ thì nhắc; tái phạm, nguy hiểm thì lập biên bản; nguy hiểm trước mắt thì xử lý ngay.',
             'talk': 'Đọc thư mời → chọn đúng chủ đề tổ đang gặp → trình bày → trả lời câu hỏi của các cụ.',
-            'calls': 'Gọi lại từng cuộc → ai đang gặp nguy thì đi ngay → tin báo sai thì ghi nhận, nhắc nhở → điều động.'}.get(t.get('kind'), '')
+            'calls': 'Gọi lại từng cuộc → ai đang gặp nguy thì đi ngay → tin báo sai thì ghi nhận, nhắc nhở → điều động.',
+            'posts': 'Xem kỹ từng bài → góp ý thật thì để nguyên → đòi hỏi ngoài dịch vụ thì gỡ → bóc phốt đòi tiền thì mời làm việc, phạt.',
+            'inspect': 'Xem từng giấy → đánh dấu đủ, thiếu → đủ thì nhắc nhở; thiếu thuế, hóa đơn thì phạt; hàng nhập thiếu tờ khai thì chuyển Hải quan.',
+            'ring': 'Tin báo → xác minh kín đáo → phối hợp Hải quan, đủ giấy → vào kho đúng lúc. Phong bì thì không bao giờ.'}.get(t.get('kind'), '')
 
 
 def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
@@ -1561,18 +1922,30 @@ def _seen_ok(t: dict) -> set:
         return {'invite', 'present'}
     if k == 'calls':
         return {f'cb:{i}' for i in range(len(v.get('calls') or []))}
+    if k == 'posts':
+        return {f'look:{i}' for i in range(len(v.get('posts') or []))}
+    if k == 'inspect':
+        return {f'paper:{x}' for x in PC.PAPER_IDS}
     return set()
 
 
 def validate_task(t: dict, original: dict) -> None:
-    kit.need(t.get('gen') == GEN and t.get('kind') in KINDS and t.get('stage') in STAGES, 'Việc ở Công an phường sai.')
+    # The generator is the one the task was made by (make_task: gen 1 in the legacy serial band, heal_save).
+    kit.need(t.get('gen') in (1, GEN) and t.get('gen') == original.get('gen') and t.get('kind') in KINDS and t.get('stage') in STAGES,
+             'Việc ở Công an phường sai.')
+    kind = t['kind']
     seen = t.get('seen')
     kit.need(isinstance(seen, list) and len(seen) == len(set(seen)) and set(seen) <= _seen_ok(t), 'Việc ở Công an phường sai.')
     for key in ('choice', 'result'):
         kit.need(t.get(key) is None or (isinstance(t[key], str) and len(t[key]) <= 24), 'Lựa chọn sai.')
     kit.need(t.get('story') is None or (isinstance(t['story'], str) and len(t['story']) <= 300), 'Chuyện người quen sai.')
-    press = (t.get('needs') or {}).get('press') if t.get('kind') == 'desk' else None
-    kit.need(t.get('press') is None or (press in PRESS and t['press'] in {o[0] for o in PRESS[press]['options']}), 'Câu trả lời ở bàn cư trú sai.')
+    acts = t.get('acts')
+    kit.need(isinstance(acts, dict), 'Việc tuần tra sai.')
+    if kind == 'ring':   # the press is the ring's envelope, answered only once the watch went well
+        kit.need(t.get('press') is None or (t['press'] in BT.ANSWERS and acts.get('watch') == 'watch'), 'Phong bì chuyên án sai.')
+    else:
+        press = (t.get('needs') or {}).get('press') if kind == 'desk' else None
+        kit.need(t.get('press') is None or (press in PRESS and t['press'] in {o[0] for o in PRESS[press]['options']}), 'Câu trả lời ở bàn cư trú sai.')
     offers = t.get('offers')
     kit.need(isinstance(offers, list) and len(offers) <= PC.MAX_OFFERS, 'Đề xuất hòa giải sai.')
     if offers:
@@ -1588,11 +1961,7 @@ def validate_task(t: dict, original: dict) -> None:
     n_calls = len((t.get('_v') or {}).get('calls') or []) if t.get('kind') == 'calls' else 0
     kit.need(isinstance(prio, dict) and len(prio) <= n_calls and all(k in {str(i) for i in range(n_calls)} and v in PRIO for k, v in prio.items()),
              'Mức ưu tiên sai.')
-    acts = t.get('acts')
-    scenes = (t.get('_v') or {}).get('scenes') or [] if t.get('kind') == 'patrol' else []
-    kit.need(isinstance(acts, dict) and len(acts) <= len(scenes), 'Việc tuần tra sai.')
-    for k_, v_ in acts.items():
-        kit.need(k_ in {str(i) for i in range(len(scenes))} and v_ in {o[0] for o in SCENES[scenes[int(k_)]]['options']}, 'Việc tuần tra sai.')
+    _validate_acts(t, kind, acts)
     topics = t.get('topics')
     kit.need(isinstance(topics, list) and len(topics) <= PC.TOPIC_MAX and len(set(topics)) == len(topics) and set(topics) <= set(TOPICS), 'Chủ đề sai.')
     answers = t.get('answers')
@@ -1600,6 +1969,31 @@ def validate_task(t: dict, original: dict) -> None:
     kit.need(isinstance(answers, dict) and set(answers) <= set(qs), 'Câu trả lời sai.')
     for q, a in answers.items():
         kit.need(a in {o[0] for o in TALK_Q[q]['options']}, 'Câu trả lời sai.')
+
+
+def _validate_acts(t: dict, kind: str, acts: dict) -> None:
+    """`acts`: a patrol's scenes, the posts handled ('0'.. → keep|down|fine), an inspection's marks (paper → ok|miss),
+    a case's steps (a prefix of RING_STEP_IDS; only the last may be a wrong turn, which ends it). Others: empty."""
+    v = t.get('_v') or {}
+    bad = 'Việc ở Công an phường sai.'
+    if kind == 'patrol':
+        scenes = v.get('scenes') or []
+        kit.need(len(acts) <= len(scenes), 'Việc tuần tra sai.')
+        for k_, v_ in acts.items():
+            kit.need(k_ in {str(i) for i in range(len(scenes))} and v_ in {o[0] for o in SCENES[scenes[int(k_)]]['options']}, 'Việc tuần tra sai.')
+    elif kind == 'posts':
+        n = len(v.get('posts') or [])
+        kit.need(set(acts) <= {str(i) for i in range(n)} and all(a in PC.POST_ACT_IDS for a in acts.values()), bad)
+    elif kind == 'inspect':
+        kit.need(set(acts) <= set(PC.PAPER_IDS) and all(a in ('ok', 'miss') for a in acts.values()), bad)
+    elif kind == 'ring':
+        ids = PC.RING_STEP_IDS[:len(acts)]
+        kit.need(set(acts) == set(ids), bad)
+        for i, sid in enumerate(ids):
+            grade = next((o[2] for o in PC.RING_STEP[sid]['options'] if o[0] == acts[sid]), None)
+            kit.need(grade is not None and (grade == 'good' or i == len(ids) - 1), bad)
+    else:
+        kit.need(not acts, 'Việc tuần tra sai.')
 
 
 def _vbool(x) -> None:
