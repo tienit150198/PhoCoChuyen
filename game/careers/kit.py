@@ -520,6 +520,8 @@ def _apply_effects(s: dict, c: dict, career: str, desk: dict, x: dict, eff: dict
                     desk['marks'][m] = c['day']
                 else:
                     desk['marks'].pop(m, None)
+        elif key == 'money_loss':
+            continue
         elif hook:
             note = hook(s, c, key, v)
             if note:
@@ -535,6 +537,9 @@ def desk_choose(s: dict, c: dict, career: str, desk: dict, scripts: list, option
     opt = next((o for o in x['options'] if o['id'] == option), None)
     need(opt, 'Lựa chọn không có trong tình huống.')
     cost = -min(0, int(opt.get('effects', {}).get('money', 0)))
+    if opt.get('effects', {}).get('money_loss'):
+        from ..loss_limits import bounded_loss
+        cost = bounded_loss(c['money'], cost, fine=opt['effects']['money_loss']=='fine')
     if not auto and cost:
         need(c['money'] >= cost, f'Chưa đủ {cost} xu cho lựa chọn này. Chọn cách khác nhé.')
     luck = opt.get('luck')
@@ -546,11 +551,26 @@ def desk_choose(s: dict, c: dict, career: str, desk: dict, scripts: list, option
     eff = dict(opt.get('effects', {}))
     for k, v in result.get('effects', {}).items() if result is not opt else ():
         eff[k] = eff.get(k, 0) + v if isinstance(v, int) and isinstance(eff.get(k), int) else v
+    loss = eff.get('money_loss')
+    paid = None
+    if loss and eff.get('money', 0) < 0:
+        from ..loss_limits import bounded_loss
+        paid = bounded_loss(c['money'], -eff['money'], fine=loss=='fine')
+        eff['money'] = -paid
     notes = _apply_effects(s, c, career, desk, x, eff, ev['id'], hook)
     good = result.get('good', opt.get('good'))
     outcome = ' '.join([result.get('outcome', opt.get('outcome', ''))] + notes).strip()   # hook notes belong to the outcome
+    label = opt['label']
+    if paid is not None:
+        import re
+        outcome = re.sub(r'(?<!\d)\d+ xu', f'{paid} xu', outcome)
+        if not re.search(r'(?<!\d)\d+ xu', outcome):
+            outcome += f' Đã trừ {paid} xu.'
+        label = re.sub(r'(?<!\d)\d+ xu', f'{paid} xu', label)
     desk['last'] = dict(script=x['id'], title=x['title'], emoji=x['emoji'], choice=opt['id'], label=opt['label'],
                         outcome=outcome, good=good, day=c['day'], auto=auto)
+    if paid is not None:
+        desk['last'].update(label=label, paid=paid)
     desk['log'] = ar.last(desk['log'] + [dict(id=ev['id'], script=x['id'], choice=opt['id'], day=c['day'], good=good, won=won)], DESK_LOG, 'desk.log', c)
     desk['ev'] = None
     metric(c, 'surprises')
@@ -592,7 +612,7 @@ def desk_hint(o: dict) -> str:
     return (f'{hint} · ' if hint else '') + f'🎲 Hên xui · {round(100 * luck["p"])}% được việc'
 
 
-def desk_public(desk: dict, scripts: list, career: str) -> dict:
+def desk_public(desk: dict, scripts: list, career: str, c: dict | None = None) -> dict:
     ev = desk.get('ev')
     view = None
     if ev:
@@ -602,6 +622,15 @@ def desk_public(desk: dict, scripts: list, career: str) -> dict:
                         npc=npc_id(career, x.get('npc', 0)), at=ev.get('at'),
                         options=[dict(id=o['id'], label=o['label'], hint=desk_hint(o),
                                       cost=-min(0, int(o.get('effects', {}).get('money', 0)))) for o in x['options']])
+            if c is not None:
+                import re
+                from ..loss_limits import bounded_loss
+                for shown, option in zip(view['options'], x['options']):
+                    loss = option.get('effects', {}).get('money_loss')
+                    if loss:
+                        shown['cost'] = bounded_loss(c['money'], shown['cost'], fine=loss=='fine')
+                        for key in ('label', 'hint'):
+                            shown[key] = re.sub(r'(?<!\d)\d+ xu', f'{shown["cost"]} xu', shown[key])
     return dict(ev=view, last=desk.get('last'), marks=sorted(desk.get('marks', {})), plan=list(desk.get('plan', [])),
                 fired=desk.get('fired', 0), log=[dict(script=h['script'], choice=h['choice'], day=h['day'], good=h['good'])
                                                    for h in desk.get('log', [])[-8:]])
@@ -630,3 +659,4 @@ def desk_validate(desk, scripts: list) -> None:
     if last is not None:
         need(isinstance(last, dict) and last.get('script') in ids and last.get('good') in (True, False, None), 'Kết quả chuyện bất ngờ sai.')
         text(last.get('outcome'), 600, 0)
+        if 'paid' in last:integer(last['paid'], 0, 2000)

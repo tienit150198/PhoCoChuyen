@@ -1102,6 +1102,7 @@ def _safety(s: dict, c: dict, p: dict) -> dict:
 
 
 def _desk_hook(s: dict, c: dict, key: str, v) -> str | None:
+    from ..loss_limits import bounded_loss
     d = _data(c)
     if key == 'safety':
         d['safety_day'] = c['day']
@@ -1110,7 +1111,7 @@ def _desk_hook(s: dict, c: dict, key: str, v) -> str | None:
         if d['safety_day'] == c['day']:
             c['xp'] += 10
             return 'Sổ khai báo lưu trú và sổ an toàn hôm nay đầy đủ — đạt.'
-        fine = min(15, c['money'])
+        fine = bounded_loss(c['money'], 15, fine=True)
         if fine:
             kit.money(s, c, -fine, 'Phạt thiếu sổ kiểm tra an toàn', None, 'event_cost')
         return f'Hôm nay chưa kiểm tra an toàn — bị nhắc nhở, phạt {fine} xu.'
@@ -2272,7 +2273,7 @@ def public_data(c: dict) -> dict:
     mod, nxt = today(day), today(day + 1)
     d['mod'] = dict(id=mod['id'], title=mod['title'], emoji=mod['emoji'], text=mod['text'])
     d['tomorrow'] = dict(id=nxt['id'], title=nxt['title'], emoji=nxt['emoji'])
-    d['desk'] = kit.desk_public(desk, DESK, ID)
+    d['desk'] = kit.desk_public(desk, DESK, ID, c)
     if d['desk']['ev']:
         # Options come in a shuffled order so the careful answer is not always the first button.
         kit.rng(ID, 'desk-order', d['desk']['ev']['id'], day).shuffle(d['desk']['ev']['options'])
@@ -3243,7 +3244,7 @@ SITUATIONS = [
                        outcome='Anh Kiệt hơi ngượng, nhận hóa đơn đúng. Tháng sau công ty anh đặt tiếp 3 phòng cho đoàn.',
                        perspectives=[_p('Anh Kiệt', '🧑‍💼', 'Thôi, giấy tờ sạch vẫn hơn.'), _p('Kế toán công ty anh Kiệt', '📑', 'Hóa đơn khớp lịch công tác, duyệt nhanh.'),
                                      _p('Chủ homestay', '🧾', 'Không đánh đổi uy tín lấy vài chục xu.')]),
-                  dict(id='fake', label='Xuất hóa đơn 3 đêm, nhận “bồi dưỡng”', quality='bad', cost=30,
+                  dict(id='fake', label='Xuất hóa đơn 3 đêm, nhận “bồi dưỡng”', quality='bad', cost=30, money_loss='fine',
                        outcome='Kiểm tra đối chiếu phát hiện hóa đơn khống: homestay bị phạt, anh Kiệt bị kỷ luật.',
                        perspectives=[_p('Kế toán công ty', '🔍', 'Lịch bay chỉ 1 đêm, hóa đơn 3 đêm?'), _p('Anh Kiệt', '😰', 'Tưởng chuyện nhỏ…')]),
                   dict(id='cold', label='Từ chối và nói to “Anh định gian lận à?”', requires=['rule'], quality='ok', stars=2,
@@ -3357,7 +3358,7 @@ DESK = [
                        outcome='Chú Thành lật từng trang sổ.'),
                   dict(id='rush', label='Xin chú chờ, thử chuông báo khói và bình chữa cháy ngay trước mặt', hint='Khách đang chờ sốt ruột hơn',
                        effects=dict(patience=-12, safety=True, inspect=True), good=True, outcome='Kiểm tra lại từng món ngay tại chỗ.'),
-                  dict(id='envelope', label='Kẹp phong bì “uống cà phê” vào sổ', hint='−20 xu', effects=dict(money=-20), good=False,
+                  dict(id='envelope', label='Kẹp phong bì “uống cà phê” vào sổ', hint='−20 xu', effects=dict(money=-20, money_loss='fine'), good=False,
                        outcome='Chú Thành đẩy phong bì lại, ghi thêm một dòng vào biên bản. Nhà bị phạt 20 xu và hẹn kiểm tra lại.')],
          default='log'),
     dict(id='gas', title='Mùi gas ở bếp chung', emoji='🔥', npc=14, min_day=3, tone='tense',
@@ -3472,7 +3473,7 @@ DESK = [
                        outcome='Ông Lâm mở cổng sân, còn dặn: “Xe dựng thẳng hàng giùm tôi.”'),
                   dict(id='street', label='Dựng tạm ra lề đường',
                        luck=dict(p=0.6, win=dict(good=None, outcome='Đêm yên ổn, sáng ra yên xe ướt đẫm sương.'),
-                                 lose=dict(effects=dict(money=-10), good=False, outcome='Tổ trật tự dán giấy nhắc, phạt 10 xu vì lấn lề.'))),
+                                 lose=dict(effects=dict(money=-10, money_loss='fine'), good=False, outcome='Tổ trật tự dán giấy nhắc, phạt 10 xu vì lấn lề.'))),
                   dict(id='no', label='Bảo khách tự tìm chỗ gửi', effects=dict(review=[2, 'Hỏi chỗ để xe mà chủ nhà bảo tự lo.']), good=False,
                        outcome='Anh Bảo đẩy xe xuống tận chợ gửi, về muộn, mặt mệt phờ.')],
          default='no'),

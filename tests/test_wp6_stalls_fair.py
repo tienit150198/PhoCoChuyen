@@ -63,8 +63,8 @@ class StallTheft(unittest.TestCase):
 
     def test_business_theft_with_a_ket_never_takes_more_than_half(self):
         choice = next(x for x in se.CATALOGUE['theft']['choices'] if x['id'] == 'record')
-        self.assertEqual(se._cost(choice, 1000, 'theft', ['ket'], 10**9, 20), 500)
-        self.assertEqual(se._cost(choice, 1000, 'theft', [], 10**9, 20), 1000)
+        self.assertEqual(se._cost(choice, 1000, 'theft', ['ket'], 10**9, 20), 5)
+        self.assertEqual(se._cost(choice, 1000, 'theft', [], 10**9, 20), 10)
 
     def test_stall_view_shows_the_risk_and_labels_are_honest(self):
         s = owner(100000)

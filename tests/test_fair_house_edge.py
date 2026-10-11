@@ -28,6 +28,12 @@ LAST_OPEN = at(2026, 10, 4, 20)       # day 2 of the last edition (03/10 → 07/
 
 
 class HouseEdge(unittest.TestCase):
+    def test_raid_return_includes_the_canceled_stake(self):
+        r, p = fh.RAID_PCT / 100, fh.chance_rate('xd', 0)
+        self.assertAlmostEqual(sim.exact()['xd']['rtp'], (1 - r) * p * 2 + r)
+        with mock.patch.object(sim.random, 'Random', return_value=Dice(draws=[0])):
+            self.assertEqual(sim.play('xd', 'fresh', 1), .75)  # 100 stake returned, 25 nominal fine
+
     def test_gentler_fresh_draws_win_between_old_and_new_cutoffs(self):
         for game, old, new in (('xd', .485, .49), ('lt', .455, .46), ('xs', .50, .51)):
             with self.subTest(game=game):

@@ -30,6 +30,9 @@ import hashlib
 import random
 import re
 from . import wealth_pricing
+from .loss_limits import bounded_loss
+
+SMALL_LOSSES = frozenset({'fine', 'theft_loss', 'scam_loss', 'under_table'})
 
 from . import archive as ar
 from .incident_content import INCIDENTS, INDEX, CATS, EMPLOYEE
@@ -247,15 +250,46 @@ def _lines(opt: dict, res: dict | None) -> list:
     return list(opt.get('pay', [])) + (list(res.get('pay', [])) if res else [])
 
 
+def _limited_lines(s: dict, c: dict, lines: list) -> list:
+    """Quote the whole outcome with the same cumulative caps as its debit."""
+    j = s.get('journey') or {}
+    story = _story(s)
+    cash_by = dict(wallet=j.get('wallet', 0), fund=c['money'])
+    quoted = []
+    charged = dict(wallet=0, fund=0)
+    caps = {}
+    for pocket, cash in (('wallet', j.get('wallet', 0)), ('fund', c['money'])):
+        has_fine = any(a < 0 and cat == 'fine' and (w if story else 'fund') == pocket for w, a, cat in lines)
+        caps[pocket] = bounded_loss(cash, 10**18, fine=has_fine)
+    category_charged = {}
+    for where, amount, cat in lines:
+        if amount < 0 and cat in SMALL_LOSSES:
+            pocket = where if story else 'fund'
+            cash = cash_by[pocket]
+            key = (pocket, cat == 'fine')
+            original = cash + charged[pocket]
+            category_cap = bounded_loss(original, 10**18, fine=cat == 'fine')
+            amount = -min(bounded_loss(cash, -amount, fine=cat == 'fine'),
+                          max(0, caps[pocket] - charged[pocket]),
+                          max(0, category_cap - category_charged.get(key, 0)))
+            charged[pocket] -= amount
+            category_charged[key] = category_charged.get(key, 0) - amount
+        quoted.append((where, amount, cat))
+        pocket = where if story else 'fund'
+        if pocket == 'fund' and amount < 0 and cat not in SMALL_LOSSES and story:
+            cash_by['wallet'] = max(0, cash_by['wallet'] - max(0, -amount - cash_by['fund']))
+        cash_by[pocket] = max(0, cash_by[pocket] + amount)
+    return quoted
+
+
 def _pay(s: dict, c: dict, career: str, lines: list, title: str, ref: str) -> list:
-    """Apply money lines. Fund costs never overdraw: what the fund lacks comes
-    from the wallet (story on) — a fine does not vanish because the till is empty."""
+    """Apply money lines; fines/theft never spill into another pocket."""
     e = _eng()
     j = s.get('journey') or {}
     story = _story(s)
     from . import journey as jr
     done = []
-    for where, amount, cat in lines:
+    for where, amount, cat in _limited_lines(s, c, lines):
         if not amount:
             continue
         if where == 'wallet' and story:
@@ -271,7 +305,7 @@ def _pay(s: dict, c: dict, career: str, lines: list, title: str, ref: str) -> li
             e.money(s, c, -take, title, ref, cat)
             done.append(dict(where='fund', amount=-take, cat=cat))
         rest = -amount - take
-        if rest and story:
+        if rest and story and cat not in SMALL_LOSSES:
             jr._wallet(j, -rest, 'incident', title, career)
             done.append(dict(where='wallet', amount=-rest, cat=cat))
     return done
@@ -329,9 +363,10 @@ def _schedule(box: dict, follow, day: int, src: str) -> None:
         box['follow'].append(dict(script=sid, day=day + max(1, int(days)), src=src))
 
 
-def _priced_spec(row):
+def _priced_spec(row, s=None, c=None):
     spec=INDEX[row['script']]
-    if 'wealth' not in row or row['script'] not in ('racket','racket_again'):
+    quoted = 'wealth' in row and row['script'] in ('racket','racket_again')
+    if not quoted and s is None:
         return spec
     spec=copy.deepcopy(spec)
     amounts={}
@@ -341,18 +376,38 @@ def _priced_spec(row):
             for where,amount,category in source.get('pay',[]):
                 if amount<0:
                     scaled=(wealth_pricing.event_cost(row) if 'percent' in row and opt['id']=='pay'
-                            else wealth_pricing.cost(-amount,row['wealth']))
+                            else wealth_pricing.cost(-amount,row['wealth'])) if quoted else -amount
                     amounts[str(-amount)]=str(scaled)
                     amount=-scaled
                 lines.append((where,amount,category))
             if 'pay' in source:source['pay']=lines
+        if s is not None and c is not None:
+            base = list(opt.get('pay', []))
+            for source in ((opt.get('luck') or {}).get('win', {}), (opt.get('luck') or {}).get('lose', {}), opt):
+                old = list(source.get('pay', []))
+                limited = _limited_lines(s, c, old if source is opt else base + old)
+                if source is not opt:
+                    limited = limited[len(base):]
+                for (_, before, _), (_, after, _) in zip(old, limited):
+                    if before < 0:
+                        for nominal, scaled in list(amounts.items()):
+                            if scaled == str(-before):amounts[nominal] = str(-after)
+                if 'pay' in source:source['pay'] = limited
     def text(node):
         if isinstance(node,str):
             return re.sub(r'(?<!\d)(\d+) xu',lambda m:amounts.get(m[1],m[1])+' xu',node)
         if isinstance(node,dict):return {k:text(v) for k,v in node.items()}
         if isinstance(node,list):return [text(v) for v in node]
         return node
-    return text(spec)
+    spec = text(spec)
+    ticket = spec.get('ticket')
+    if s is not None and c is not None and ticket and type(ticket.get('amount')) is int:
+        source = next((where for opt in spec['options'] for where, amount, category in opt.get('pay', [])
+                       if category == 'fine'), None)
+        if source is not None:
+            cash = s['journey']['wallet'] if source == 'wallet' and _story(s) else c['money']
+            ticket['amount'] = bounded_loss(cash, ticket['amount'], fine=True)
+    return spec
 
 
 def decide(s: dict, c: dict, career: str, option: str, auto: bool = False) -> dict:
@@ -360,7 +415,7 @@ def decide(s: dict, c: dict, career: str, option: str, auto: bool = False) -> di
     box = c['incidents']
     row = box['active']
     e.need(row, 'Không có chuyện nào đang chờ bạn quyết.')
-    x = _priced_spec(row)
+    x = _priced_spec(row, s, c)
     opt = next((o for o in x['options'] if o['id'] == option), None)
     e.need(opt, 'Lựa chọn không có trong chuyện này.')
     practice = row['practice']
@@ -397,7 +452,7 @@ def decide(s: dict, c: dict, career: str, option: str, auto: bool = False) -> di
                                                  won=won, auto=auto, follow=row.get('follow', False),
                                                  fund=sum(d['amount'] for d in done if d['where'] == 'fund'),
                                                  wallet=sum(d['amount'] for d in done if d['where'] == 'wallet'),
-                                                 trust=trust)], HISTORY, 'incidents.history', c)
+                                                 lines=tree_copy(done), trust=trust)], HISTORY, 'incidents.history', c)
     box['last'] = dict(id=row['id'], script=x['id'], choice=opt['id'], day=row['day'], good=good, won=won, auto=auto,
                        practice=practice, lines=done, trust=trust)
     if 'wealth' in row:
@@ -452,6 +507,39 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
 
 
 # ---------------------------------------------------------------- public view
+def _paid_label(opt: dict, row: dict, gender: str) -> str:
+    """Saved receipts describe what was paid, including historical larger charges."""
+    label = _txt(opt['label'], gender)
+    if not any(amount < 0 and category in SMALL_LOSSES for _, amount, category in opt.get('pay', [])):
+        return label
+    if 'lines' in row:
+        paid = sum(-line['amount'] for line in row['lines'] if line['amount'] < 0)
+    else:
+        paid = sum(max(0, -row.get(where, 0)) for where in ('fund', 'wallet'))
+    return re.sub(r'(?<!\d)\d+ xu', f'{paid} xu', label)
+
+
+def _paid_outcome(opt: dict, res: dict | None, row: dict, gender: str) -> str:
+    text = _txt(res['outcome'] if res and res.get('outcome') else opt['outcome'], gender)
+    original = _lines(opt, res)
+    changes = {}
+    for where, amount, category in original:
+        if amount >= 0 or category not in SMALL_LOSSES:
+            continue
+        group = [(w, a, cat) for w, a, cat in original if a < 0 and w == where and cat == category]
+        if len(group) != 1:
+            continue
+        if 'lines' in row:
+            paid = sum(-line['amount'] for line in row['lines'] if line['amount'] < 0
+                       and line['where'] == where and line['cat'] == category)
+        elif len(original) == 1:
+            paid = max(0, -row.get(where, 0))
+        else:
+            continue  # Older mixed receipts only retained net totals; keep their original narrative.
+        changes[str(-amount)] = str(paid)
+    return re.sub(r'(?<!\d)(\d+) xu', lambda match: changes.get(match[1], match[1]) + ' xu', text)
+
+
 def _history_view(h: dict, gender: str) -> dict:
     x = _priced_spec(h)
     opt = next(o for o in x['options'] if o['id'] == h['choice'])
@@ -459,7 +547,7 @@ def _history_view(h: dict, gender: str) -> dict:
     if h.get('won') is not None and opt.get('luck'):
         res = opt['luck']['win'] if h['won'] else opt['luck']['lose']
     return dict(id=h['id'], script=x['id'], emoji=x['emoji'], title=x['title'], cat=x['cat'], cat_label=CATS[x['cat']][1],
-                label=_txt(opt['label'], gender), outcome=_txt(res['outcome'] if res and res.get('outcome') else opt['outcome'], gender),
+                label=_paid_label(opt, h, gender), outcome=_paid_outcome(opt, res, h, gender),
                 good=h['good'], auto=h.get('auto', False), day=h['day'], fund=h.get('fund', 0), wallet=h.get('wallet', 0),
                 trust=h.get('trust', 0))
 
@@ -491,7 +579,7 @@ def public(c: dict, career: str, s: dict) -> dict:
                 employee=career in EMPLOYEE)
     row = box['active']
     if row:
-        x = _priced_spec(row)
+        x = _priced_spec(row, s, c)
         emoji, label = CATS[x['cat']]
         view['active'] = dict(
             id=row['id'], script=x['id'], day=row['day'], practice=row['practice'], cat=x['cat'], cat_emoji=emoji,
@@ -507,8 +595,8 @@ def public(c: dict, career: str, s: dict) -> dict:
         if last.get('won') is not None and opt.get('luck'):
             res = opt['luck']['win'] if last['won'] else opt['luck']['lose']
         view['last'] = dict(id=last['id'], script=x['id'], emoji=x['emoji'], title=x['title'], cat=x['cat'],
-                            cat_label=CATS[x['cat']][1], label=_txt(opt['label'], gender),
-                            outcome=_txt(res['outcome'] if res and res.get('outcome') else opt['outcome'], gender), good=last['good'],
+                            cat_label=CATS[x['cat']][1], label=_paid_label(opt, last, gender),
+                            outcome=_paid_outcome(opt, res, last, gender), good=last['good'],
                             practice=last['practice'], auto=last['auto'], day=last['day'], lines=tree_copy(last['lines']),
                             trust=last['trust'])
     return view
@@ -562,6 +650,14 @@ def validate(c: dict, career: str) -> None:
         for k in ('fund', 'wallet'):
             integer(h.get(k), -wealth_pricing.MAX_EVENT_COST, wealth_pricing.MAX_EVENT_COST)
         integer(h.get('trust'), -100, 100)
+        if 'lines' in h:
+            need(isinstance(h['lines'], list) and len(h['lines']) <= 8, 'Biên nhận chuyện đời sai.')
+            for line in h['lines']:
+                need(isinstance(line, dict) and line.get('where') in ('fund', 'wallet'), 'Biên nhận chuyện đời sai.')
+                integer(line.get('amount'), -wealth_pricing.MAX_EVENT_COST, wealth_pricing.MAX_EVENT_COST)
+                txt(line.get('cat'), 40)
+            for where in ('fund', 'wallet'):
+                need(sum(line['amount'] for line in h['lines'] if line['where']==where)==h[where], 'Biên nhận chuyện đời sai.')
     need(isinstance(box['follow'], list) and len(box['follow']) <= FOLLOW_MAX, 'Chuyện chờ về sau sai.')
     for quoted in [row,last]+box['history']:
         if quoted and 'wealth' in quoted:

@@ -84,6 +84,7 @@ from . import archive as ar
 from . import bank as bk
 from . import price_index as pi   # 💹 07/10: GEAR prices and THUOC are the base
 from . import wealth_pricing
+from .loss_limits import bounded_loss, THEFT_PCT, THEFT_MAX, FINE_PCT, FINE_MAX, RESERVE
 
 VERSION = 1
 KEY = 'rui'
@@ -275,9 +276,8 @@ def wealth_risk(s: dict) -> dict:
     from . import wealth_pricing
     w = wealth_pricing.total(s)
     threshold, odds_pct, cap_pct = next(b for b in reversed(WEALTH_BANDS) if w >= b[0])
-    scalable = min(LOSS_MAX, w * cap_pct // 100)
     return dict(threshold=threshold, odds_pct=odds_pct,
-                hack_max=max(HACK_MAX, scalable), theft_max=max(TROM_MAX, scalable),
+                hack_max=THEFT_MAX, theft_max=THEFT_MAX,
                 event_max=room(s) * EVENT_PCT // 100)
 
 
@@ -500,8 +500,10 @@ def _theft(s: dict, r: dict, kind: str) -> int:
     """What a theft takes from the cash this morning (before the caps)."""
     cash = max(0, s['journey']['wallet'])
     if kind == 'moc':
-        return min(MOC_MAX, (cash - FLOOR) * MOC_PCT // 100) if cash > FLOOR else 0
+        loss = min(MOC_MAX, (cash - FLOOR) * MOC_PCT // 100) if cash > FLOOR else 0
+        return bounded_loss(cash, loss)
     loss = min(wealth_risk(s)['theft_max'], (cash - FLOOR) * TROM_PCT // 100) if cash > FLOOR else 0
+    loss = bounded_loss(cash, loss)
     return loss // 4 if 'ket' in r['gear'] else loss
 
 
@@ -584,6 +586,7 @@ def _projected(s: dict, r: dict, kind: str, sub: str, ref) -> int:
     if kind == 'hack':
         b = bk.get(s)
         loss = min(wealth_risk(s)['hack_max'], max(0, b['balance']) * HACK_PCT // 100) if b else 0
+        loss = bounded_loss(b['balance'] if b else 0, loss)
         return loss // 2 if 'diet_virus' in r['gear'] else loss
     if kind == 'xe':
         from . import garage as gr
@@ -722,7 +725,7 @@ def _fire(s: dict, r: dict, day: int, notes: list) -> None:
 
 
 def _security_loss(s, r, quote, day):
-    """Saved 1–20% asset quote, reduced by gear and available target funds.
+    """Honor saved quotes under today's liquid-pocket ceiling, then apply gear.
 
     A month may lose at most 20% of this event's saved asset basis. Other risk
     kinds and pre-update warnings keep their original 8% / 12% budgets.
@@ -731,9 +734,11 @@ def _security_loss(s, r, quote, day):
     if quote['kind'] == 'hack':
         b = bk.get(s)
         cash = b['balance'] if b else 0
+        loss = bounded_loss(cash, loss)
         if 'diet_virus' in r['gear']: loss //= 2
     else:
         cash = max(0, s['journey']['wallet'])
+        loss = bounded_loss(cash, loss)
         if 'ket' in r['gear']: loss //= 4
     monthly = max(0, quote['wealth'] * 20 // 100 - _month(s, r, day)['lost'])
     return max(0, min(loss, monthly, cash, _have(s) - FLOOR))
@@ -795,7 +800,7 @@ def options(s: dict, r: dict) -> list[dict]:
     if k == 'phat':
         if sub == 'nhac':
             return [o('ok', '🙏', 'Cảm ơn anh', default=True)]
-        return [o('nop', '💵', 'Nộp phạt', cost, default=True),
+        return [o('nop', '💵', 'Nộp phạt', bounded_loss(s['journey']['wallet'], cost, fine=True), default=True),
                 o('xin', '🙏', 'Xin bỏ qua', note=f'{XIN_OK}% được miễn, không thì phạt nặng hơn')]
     return []
 
@@ -893,8 +898,15 @@ def _resolve(s: dict, r: dict, choice: str, day: int, auto: bool = False) -> str
     if insured and cov:
         full = cost if choice != 'tu' else cost // 2
         _stat(r, 'covered', full - pay)
+    if k == 'phat':
+        pay = bounded_loss(s['journey']['wallet'], pay, fine=True)
     if pay > 0:
-        got = _take(s, pay, WALLET[k], label or KIND_META[k][1])
+        if k == 'phat':
+            got = bounded_loss(s['journey']['wallet'], pay, fine=True)
+            if got:
+                _jr()._wallet(s['journey'], -got, WALLET[k], label or KIND_META[k][1])
+        else:
+            got = _take(s, pay, WALLET[k], label or KIND_META[k][1])
         if got < pay:
             _stat(r, 'waived', pay - got)
         _stat(r, 'paid', got)
@@ -1494,7 +1506,8 @@ def catalogue() -> dict:
                 gear=[dict(id=k, **v) for k, v in GEAR.items()],
                 rules=dict(floor=FLOOR, event_pct=EVENT_PCT, month_pct=MONTH_PCT, wait=WAIT, start_day=START_DAY,
                            start_chapter=START_CHAPTER, prevent_pct=PREVENT_PCT, card_days=CARD_DAYS,
-                           hack_pct=HACK_PCT, hack_max=HACK_MAX, full_x=FULL_X,
+                           hack_pct=THEFT_PCT, hack_max=THEFT_MAX, full_x=FULL_X,
+                           fine_pct=FINE_PCT, fine_max=FINE_MAX, loss_reserve=RESERVE,
                            wealth_bands=[dict(threshold=t, odds_pct=p, cap_pct=c) for t, p, c in WEALTH_BANDS]))
 
 

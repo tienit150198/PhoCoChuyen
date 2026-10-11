@@ -2625,11 +2625,11 @@ EVENTS = [
                        hint='Hàng hết hạn hôm nay, hàng không hóa đơn, kho có chuột đều bị ghi vào biên bản.',
                        effects=dict(inspect='open'), outcome='Đoàn kiểm tra đi một vòng kho và quầy.'),
                   dict(id='bribe', label='Dúi phong bì 30 xu “uống cà phê” cho nhanh', hint='Có thể cho qua… hoặc thành chuyện lớn.',
-                       effects=dict(money=-30), good=False,
+                       effects=dict(money=-30, money_loss='theft'), good=False,
                        luck=dict(p=0.3, win=dict(outcome='Họ nhìn nhau, cầm phong bì rồi đi. Cô Ba lắc đầu: “Mở đường kiểu này, lần sau họ lại ghé.”',
                                                  good=False, effects=dict(mark='bribed')),
                                  lose=dict(outcome='Trưởng đoàn trả lại phong bì và lập biên bản hành vi đưa tiền: phạt thêm 40 xu, cả hẻm đều biết.', good=False,
-                                           effects=dict(money=-40, review=[1, 'Nghe nói tiệm bị lập biên bản vì dúi phong bì cho đoàn kiểm tra…'], mark='fined'))))],
+                                           effects=dict(money=-40, money_loss='fine', review=[1, 'Nghe nói tiệm bị lập biên bản vì dúi phong bì cho đoàn kiểm tra…'], mark='fined'))))],
          default='open'),
     dict(id='GE-REINSPECT', title='Đoàn kiểm tra quay lại tái kiểm', emoji='📋', npc=0, min_day=3, tone='tense', at='any', weight=4, need_mark='reinspect',
          text='Đoàn quản lý thị trường quay lại như đã hẹn trong biên bản cam kết: “Xem tiệm khắc phục tới đâu rồi.”',
@@ -2639,7 +2639,7 @@ EVENTS = [
                        good=False, luck=dict(p=0.4, win=dict(outcome='Đoàn không lục sau nhà, ký biên bản cho qua. Cô Ba vẫn thấy chột dạ.', good=False,
                                                               effects=dict(unmark='reinspect')),
                                              lose=dict(outcome='Đoàn phát hiện thùng hàng giấu sau nhà: phạt 60 xu vì gian dối.', good=False,
-                                                       effects=dict(money=-60, mark='fined', review=[1, 'Tiệm bị bắt quả tang giấu hàng khi kiểm tra. Hết tin nổi!']))))],
+                                                       effects=dict(money=-60, money_loss='fine', mark='fined', review=[1, 'Tiệm bị bắt quả tang giấu hàng khi kiểm tra. Hết tin nổi!']))))],
          default='open'),
     dict(id='GE-FINE', title='Quyết định xử phạt', emoji='⚖️', npc=0, min_day=1, tone='tense', at='chain',
          text='Biên bản kiểm tra ghi nhận vi phạm.',
@@ -2852,6 +2852,7 @@ def _destroy(c: dict, ids: list, reason: str) -> int:
 
 
 def _inspect(s: dict, c: dict, flags: dict) -> str:
+    from ..loss_limits import bounded_loss
     d = _data(c)
     desk = d['desk']
     lines, lots, amount = [], [], 0
@@ -2880,10 +2881,11 @@ def _inspect(s: dict, c: dict, flags: dict) -> str:
     d['fine'] = dict(amount=amount, lines=lines, lots=lots)
     flags['good'] = False
     flags['fine'] = True
-    return 'Biên bản ghi: ' + '; '.join(lines) + f'. Mức phạt: {amount} xu.'
+    return 'Biên bản ghi: ' + '; '.join(lines) + f'. Mức phạt: {bounded_loss(c["money"], amount, fine=True)} xu.'
 
 
 def _fine(s: dict, c: dict, mode: str, flags: dict) -> str:
+    from ..loss_limits import bounded_loss
     d = _data(c)
     f = d['fine']
     kit.need(f, 'Không có biên bản phạt nào đang chờ.')
@@ -2901,15 +2903,14 @@ def _fine(s: dict, c: dict, mode: str, flags: dict) -> str:
         amount, msg = f['amount'] // 2, 'Bạn ký cam kết khắc phục, tiêu hủy toàn bộ hàng lỗi. Đoàn giảm nửa mức phạt và hẹn ngày tái kiểm.'
         marks['reinspect'] = c['day']
     else:
-        amount, msg = f['amount'], f'Bạn nộp phạt {f["amount"]} xu. Hàng vi phạm bị niêm phong mang đi.'
-    if mode != 'appeal' and not flags.get('auto'):
-        kit.need(c['money'] >= amount, f'Chưa đủ {amount} xu để nộp. Chọn cách khác nhé.')
-    pay = min(amount, c['money'])
+        amount, msg = f['amount'], 'Hàng vi phạm bị niêm phong mang đi.'
+    pay = bounded_loss(c['money'], amount, fine=True)
     if pay:
         kit.money(s, c, -pay, 'Nộp phạt quản lý thị trường', f'fine-{c["day"]}', 'fine')
         marks['fined'] = c['day']
+    msg += f' Đã nộp phạt {pay} xu.'
     if pay < amount:
-        msg += f' Két chỉ còn {pay} xu, nộp hết số đó.'
+        msg += ' Phần vượt giới hạn được miễn.'
     _destroy(c, f['lots'], 'Tiêu hủy theo biên bản kiểm tra')
     marks.pop('rats', None) if mode == 'half' else None
     d['stats']['fines'] += pay
@@ -2958,10 +2959,11 @@ def _decide(s: dict, c: dict, p: dict) -> dict:
 
 
 def _open_fine(s: dict, c: dict, d: dict) -> None:
+    from ..loss_limits import bounded_loss
     desk = d['desk']
     desk['seq'] += 1
     desk['ev'] = dict(id=f'desk-{desk["seq"]}', script='GE-FINE', day=c['day'], at='between')
-    kit.log(s, c, 'surprise', f'⚖️ Quyết định xử phạt: {"; ".join(d["fine"]["lines"])} — {d["fine"]["amount"]} xu.', kit.npc_id(ID, 0), desk['ev']['id'])
+    kit.log(s, c, 'surprise', f'⚖️ Quyết định xử phạt: {"; ".join(d["fine"]["lines"])} — {bounded_loss(c["money"], d["fine"]["amount"], fine=True)} xu.', kit.npc_id(ID, 0), desk['ev']['id'])
 
 
 def _close_desk(s: dict, c: dict, d: dict) -> str | None:
@@ -2980,8 +2982,9 @@ def _close_desk(s: dict, c: dict, d: dict) -> str | None:
 
 
 def _desk_view(c: dict, raw: dict) -> dict:
+    from ..loss_limits import bounded_loss
     desk = raw.get('desk') or kit.desk_initial()
-    view = kit.desk_public(desk, EVENTS, ID)
+    view = kit.desk_public(desk, EVENTS, ID, c)
     ev = view['ev']
     if ev:
         x = kit.desk_script(EVENTS, ev['script'])
@@ -2990,12 +2993,14 @@ def _desk_view(c: dict, raw: dict) -> dict:
                 o['cost'] = src['show_cost']
         f = raw.get('fine')
         if ev['script'] == 'GE-FINE' and f:
-            ev['text'] = 'Biên bản ghi: ' + '; '.join(f['lines']) + f'. Mức phạt: {f["amount"]} xu.'
+            full = bounded_loss(c['money'], f['amount'], fine=True)
+            half = bounded_loss(c['money'], f['amount'] // 2, fine=True)
+            ev['text'] = 'Biên bản ghi: ' + '; '.join(f['lines']) + f'. Mức phạt: {full} xu.'
             for o in ev['options']:
                 if o['id'] == 'pay':
-                    o['label'], o['cost'] = f'Nộp phạt {f["amount"]} xu', f['amount']
+                    o['label'], o['cost'] = f'Nộp phạt {full} xu', full
                 elif o['id'] == 'half':
-                    o['label'], o['cost'] = f'Tiêu hủy hàng lỗi, ký cam kết · nộp {f["amount"] // 2} xu', f['amount'] // 2
+                    o['label'], o['cost'] = f'Tiêu hủy hàng lỗi, ký cam kết · nộp {half} xu', half
     return view
 
 
@@ -3405,7 +3410,7 @@ SITUATIONS = [
                        outcome='Tí về tay không. Chú Hùng hơi bực nhưng chiều tự ra mua.',
                        perspectives=[dict(who='Bé Tí', emoji='😟', text='Em hiểu mà, nhưng về nhà khó giải thích lắm.'),
                                      dict(who='Cô Ba', emoji='👵', text='Đúng luật rồi, lần sau gọi cho phụ huynh luôn cho êm.')]),
-                  dict(id='sell', label='“Mua giùm ba thôi mà” — bán luôn cho nhanh', quality='bad', stars=5, cost=30,
+                  dict(id='sell', label='“Mua giùm ba thôi mà” — bán luôn cho nhanh', quality='bad', stars=5, cost=30, money_loss='fine',
                        review='Tiệm dễ thương ghê, bán liền không hỏi gì hết ✨',
                        outcome='Tuần sau có phụ huynh khác phản ánh tiệm bán bia cho học sinh; tổ dân phố nhắc nhở và phạt 30 xu.',
                        perspectives=[dict(who='Mẹ một học sinh khác', emoji='😠', text='Hôm nay mua giùm ba, mai mốt tụi nhỏ tự uống thì sao?'),

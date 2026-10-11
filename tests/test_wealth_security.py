@@ -57,7 +57,7 @@ class WealthSecurity(unittest.TestCase):
             self.assertEqual(before - st['fund'] - st['till'], choice['cost'])
             events.validate(st, st['id'], st['trade'], st['place'])
             quotes.append(choice['cost'])
-        self.assertGreater(quotes[1], quotes[0])
+        self.assertEqual(quotes, [1000, 1000])
 
     def test_asset_sources_are_owned_and_valuation_is_read_only(self):
         p = self.pricing()
@@ -119,7 +119,7 @@ class WealthSecurity(unittest.TestCase):
         view=incidents.public(c,'milk_tea',s)['active']
         opt=next(x for x in view['options'] if x['id']=='pay')
         quoted=-sum(x['amount'] for x in opt['stakes'])
-        self.assertGreater(quoted,40)
+        self.assertEqual(quoted,3)
         self.assertIn(str(quoted),opt['label'])
         from game.engine import money
         money(s,c,quoted,'Test capital',category='other_income')

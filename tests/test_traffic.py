@@ -2,6 +2,7 @@ import copy
 import unittest
 from unittest.mock import patch
 from game import traffic
+from game.loss_limits import bounded_loss
 from game.careers import kit
 from game.engine import GameError
 from tests.helpers import Journey
@@ -57,7 +58,7 @@ class Traffic(unittest.TestCase):
                 self.assertEqual(r['grace'],delta<1)
                 traffic.validate(d)
 
-    def test_delivery_zero_or_partial_funds_become_one_traffic_invoice(self):
+    def test_delivery_small_balance_is_preserved_without_deferred_invoice(self):
         from game.engine import validate_state
         for available in (0,5):
             j=Journey('delivery')
@@ -66,20 +67,18 @@ class Traffic(unittest.TestCase):
             r=j.act('dl_signal',target='gas',i=3,j=2,axis='y')
             token=r['traffic']['challenge']['token'];self.time=1056+10-11
             r=j.act('dl_cross',target='gas',token=token)
-            self.assertEqual(j.c['money'],0)
+            self.assertEqual(j.c['money'],available)
             self.assertEqual(j.state['journey']['wallet'],wallet)
             bills=[b for b in j.c['ops']['finance']['bills'] if b['source']==token]
-            self.assertEqual(len(bills),1);self.assertEqual(bills[0]['amount'],12-available)
-            self.assertEqual(bills[0]['kind'],'fine')
-            self.assertIn('Vượt đèn đỏ',bills[0]['label'])
+            self.assertEqual(bills,[])
+            self.assertEqual(r['receipt']['paid'],0)
             j.act('dl_cross',target='gas',token=token)
-            self.assertEqual(len([b for b in j.c['ops']['finance']['bills'] if b['source']==token]),1)
-            kit.money(j.state,j.c,12-available,'Test refill')
-            j.act('ops_pay_bill',bill=bills[0]['id'],confirm=True)
+            self.assertEqual(len([b for b in j.c['ops']['finance']['bills'] if b['source']==token]),0)
+            kit.money(j.state,j.c,1000,'Test refill')
+            j.act('dl_cross',target='gas',token=token)
             fine_rows=[r for r in j.c['ops']['finance']['ledger'] if r['category']=='fine']
-            self.assertEqual(-sum(r['amount'] for r in fine_rows),12)
-            self.assertEqual(j.c['money'],0)
-            with self.assertRaises(GameError):j.act('ops_pay_bill',bill=bills[0]['id'],confirm=True)
+            self.assertEqual(-sum(r['amount'] for r in fine_rows),0)
+            self.assertEqual(j.c['money'],available+1000)
             validate_state(j.state)
 
     def test_delivery_validates_leg_and_posts_one_fine_receipt(self):
@@ -97,10 +96,10 @@ class Traffic(unittest.TestCase):
         token=r['traffic']['challenge']['token'];offset=(3*7+2*3)%16
         self.time=1024+9-offset
         r=j.act('dl_cross',target=target,token=token)
-        self.assertEqual(j.c['money'],money-12)
+        self.assertEqual(j.c['money'],money-bounded_loss(money,12,fine=True))
         self.assertEqual(r['receipt']['signal'],'red')
         j.act('dl_cross',target=target,token=token)
-        self.assertEqual(j.c['money'],money-12)
+        self.assertEqual(j.c['money'],money-bounded_loss(money,12,fine=True))
         rows=[x for x in j.c['ops']['finance']['ledger'] if x['ref']=='traffic-'+token]
         self.assertEqual(len(rows),1)
         self.assertEqual(rows[0]['category'],'fine')
@@ -110,6 +109,7 @@ class Traffic(unittest.TestCase):
         s=opened('xe',staff=False);sid=ST(s)['id'];wallet=s['journey']['wallet']
         s,_=act(s,'jr_quay_online',stall=sid,on=True)
         s,_=act(s,'jr_quay_start',stall=sid)
+        ST(s)['fund'] = 1000
         clock_patch=patch('game.quay_business.time.time',return_value=ST(s)['run']['order_data']['0']['available_at']/1000)
         clock_patch.start();self.addCleanup(clock_patch.stop)
         s,r=act(s,'jr_quay_signal',stall=sid,order=0)
@@ -131,6 +131,7 @@ class Traffic(unittest.TestCase):
         s=opened('xe',staff=False);sid=ST(s)['id']
         s,_=act(s,'jr_quay_online',stall=sid,on=True)
         s,_=act(s,'jr_quay_start',stall=sid)
+        ST(s)['fund'] = 1000
         run=ST(s)['run'];order=qs.order(s,ST(s),run,0);cost=run['m']
         clock_patch=patch('game.quay_business.time.time',return_value=order['available_at']/1000)
         clock_patch.start();self.addCleanup(clock_patch.stop)
@@ -150,7 +151,7 @@ class Traffic(unittest.TestCase):
         self.assertNotEqual(qs.order(s,ST(s),ST(s)['run'],0)['id'],order['id'])
         self.assertEqual(ST(s)['run']['on'][0],0)
 
-    def test_counter_unpaid_fine_survives_close_and_uses_sales_then_local_funding(self):
+    def test_counter_empty_fine_is_waived_without_claiming_later_sales_or_funding(self):
         from tests.test_quay import opened,ST,act
         from tests.test_quay_self import serve_well
         s=opened('xe',staff=False);sid=ST(s)['id'];wallet=s['journey']['wallet']
@@ -162,24 +163,25 @@ class Traffic(unittest.TestCase):
         s,r=act(s,'jr_quay_signal',stall=sid,order=0)
         ch=r['traffic']['challenge'];self.time=1120+10-ch['offset']
         s,_=act(s,'jr_quay_cross',stall=sid,order=0,turn='S',token=ch['token'])
-        self.assertEqual(ST(s)['business'].get('unpaid_fines'),12)
+        self.assertEqual(ST(s)['business'].get('unpaid_fines'),0)
         from game import quay as qy, quay_business as qb
-        self.assertEqual(qy.sell_back(ST(s)),qy.PLACES['xe']['price']//2-12)
-        self.assertEqual(qb.public(ST(s))['unpaid_fines'],12)
+        self.assertEqual(qy.sell_back(ST(s)),qy.PLACES['xe']['price']//2)
+        self.assertEqual(qb.public(ST(s))['unpaid_fines'],0)
         s,_=serve_well(s)
         unpaid=ST(s)['business']['unpaid_fines']
-        self.assertGreater(unpaid,0)
-        self.assertEqual(ST(s)['till']+ST(s)['fund'],0)
-        self.assertEqual(ST(s)['business']['expenses']['loss']+unpaid,12)
+        self.assertEqual(unpaid,0)
+        self.assertGreater(ST(s)['till']+ST(s)['fund'],0)
+        self.assertEqual(ST(s)['business']['expenses']['loss'],0)
         s,_=act(s,'jr_quay_close',stall=sid)
         self.assertEqual(ST(s)['business']['unpaid_fines'],unpaid)
         self.assertEqual(s['journey']['wallet'],wallet)
+        before = ST(s)['fund']+ST(s)['till']
         s,_=act(s,'jr_quay_fund',stall=sid,amount=20)
         self.assertEqual(ST(s)['business']['unpaid_fines'],0)
-        self.assertEqual(ST(s)['business']['expenses']['loss'],12)
-        self.assertEqual(ST(s)['fund']+ST(s)['till'],20-unpaid)
+        self.assertEqual(ST(s)['business']['expenses']['loss'],0)
+        self.assertEqual(ST(s)['fund']+ST(s)['till'],before+20)
         s,_=act(s,'jr_quay_fund',stall=sid,amount=10)
-        self.assertEqual(ST(s)['business']['expenses']['loss'],12)
+        self.assertEqual(ST(s)['business']['expenses']['loss'],0)
 
 
 if __name__=='__main__':unittest.main()

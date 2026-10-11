@@ -12,7 +12,7 @@ scripts/sim_fair_odds.py, which checks it on 10^6 rounds a stall):
 
   stall        how                                                  return  with 🍀 Lộc (gate always open)
   bầu cua      three honest dice, 1:1 a die, bão BAO:1               95.4%   96.5%
-  chiếu trong  even money, BASES['xd'] won draws, RAID_PCT raids     97.1%   98.4%   (no fine: wallet short)
+  chiếu trong  even money, BASES['xd'] won draws, RAID_PCT raids     98.0%   99.3%   (no fine: wallet short)
   lô tô        BASES['lt'] rounds go the player's way, Kinh 2.1×     96.6%   97.8%   (2- and 5-xu tờ: 92.0%)
   vé cào       BASES['xs'] tickets win, scratch.PRIZES mean 1.80×    91.9%   92.3%
   đua chó      fixed odds (fair_dog.CLASSES), the outsider at best    95.0%   95.0%   (the favourite: 92.8%)
@@ -41,13 +41,13 @@ xuống còn 40%, công an sẽ đòi chứng minh tài sản ở đâu ra và t
 * Knife and o an quan remain skill games with unchanged opponents/collisions.
 * Normal back-corner raids: 0.88% (owner 07/10, "giảm bớt bị công an bắt xuống 50%": half of 1.76%). Paid chance
   rounds can also trigger a 35% enforcement check (was 70%) above 50,000 daily net xu, at most once per 30 minutes;
-  a successful check seizes 30% of the current wallet after settling the round.
+  a successful check charges a small wallet-only fine after settling the round.
 * Owner 07/10 adds, as a separate rule after that check on the same round, the police's asset check (chứng minh
   nguồn tài sản, _asset_audit) once the player's fair profit this edition (money_of, the Bảng vàng number) is
   above AUDIT_FROM: AUDIT_P (22.5%, half of 45% since the owner's 07/10 "giảm bớt bị công an bắt xuống 50%"), at most
-  once per AUDIT_GAP. It takes AUDIT_PCT (10%) of the profit made since the last
-  check (journey['fair_audit'] keeps that mark: never twice on the same xu), from the wallet first, then the bank
-  account, never below zero.
+  once per AUDIT_GAP. Its nominal request is AUDIT_PCT (10%) of new profit. Both checks together share the
+  loss_limits fine ceiling on the settled wallet. Bank accounts and savings are untouched; fair_audit keeps the
+  checked profit mark so the same profit is not checked twice.
 * 🍀 Lộc trời cho: a won paid luck round (bầu cua too: the dice stay honest) may, LOC_P of the time, win LOC_MULT× its
   stake instead of its normal winnings, at most once per LOC_GAP across the whole server (mnl_meta row LOC_KEY, taken in
   the command's own transaction by storage: loc_prepare / loc_claim).
@@ -82,6 +82,7 @@ from . import fair_cash as fc   # 🎁 tiền vốn and 💸 vay nóng
 from . import fair_food as ff   # 🍡 the food carts
 from . import fair_photo as fp  # 📸 the photobooth's ticket
 from . import fair_bm as bm     # 🕶️ Chợ đen: free entry and the police's arrests
+from .loss_limits import bounded_loss
 from . import fair_watch as watch   # 🕶️ the police's eye on the skill stalls: scripts and bursts only
 from . import fair_hai as hai     # 👴 Ông Hai's table: games a day, the police after a run of wins
 from . import fair_dog as dog    # 🐕 đua chó: the roster, the lineups, the draw
@@ -165,13 +166,13 @@ RAID_PCT = .88                 # owner 07/10 "giảm bớt bị công an bắt x
 FINE_MIN = 3
 FINE_DIV = 4                   # a raid's fine: stake // FINE_DIV, at least FINE_MIN
 RAID_COOLDOWN = 120
-WEALTH_THRESHOLD, WEALTH_CHECK_GAP, WEALTH_RAID_P = 50000, 1800, .35   # 07/10: half of .70; gap and 30% unchanged
+WEALTH_THRESHOLD, WEALTH_CHECK_GAP, WEALTH_RAID_P = 50000, 1800, .35   # odds/cooldown unchanged; bounded fine
 # 🚨 The asset check (owner 07/10, a rule of its own; players: "công an tới hoài": at most once per 2 hours, 22.5% when
 # due (half of 45%, owner 07/10 "giảm … xuống 50%"), a failed draw waits too): fair profit above AUDIT_FROM, AUDIT_PCT
 # of the profit made since the last check.
 AUDIT_FROM, AUDIT_GAP, AUDIT_P = 50000, 7200, .225
 AUDIT_KEY, AUDIT_PCT = 'fair_audit', 10   # journey['fair_audit'] {ed, base, at}: the profit left, the last check's time
-AUDIT_LABEL = '🚨 Công an kiểm tra tài sản · Thu 10% tiền lời chợ đen'
+AUDIT_LABEL = '🚨 Công an kiểm tra tài sản · Nộp phạt'
 POLICE_SAY = 'Chào em, nghe nói em lời ở chợ đen hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.'
 # 🍀 Lộc trời cho (owner 07/10): a won round of a paid luck stall pays LOC_MULT× its stake, LOC_P of the time, once per
 # LOC_GAP for the whole server (the mnl_meta row LOC_KEY holds the last one's time).
@@ -242,6 +243,7 @@ KN_DAY_CAP = 20_000
 RING_PAY_DAY = 400     # 💍 ném vòng (free, wins on average): xu paid a Vietnam day at most (09/10 audit)
 KN_RAMP_KEY = 'fair_kn_ramp'   # journey['fair_kn_ramp'] {at, seed}: a 1.9.32 level, knife.speed_up() faster (09/10)
 KN_TWIST_KEY = 'fair_kn_twist'   # journey['fair_kn_twist'] {at, seed}: a level on knife.twist_schedule() (09/10, later)
+KN_STAKE_KEY = 'fair_kn_stake'   # optional original stake day and cancellation receipt; older servers ignore it
 MONEY = ('won', 'lost', 'earned')   # the stats that make the board's score, reset with each edition
 
 TITLE_ROWS = (   # journey.TITLES (secret, granted here only)
@@ -869,6 +871,14 @@ def _kn_mark(j: dict, key: str, run: dict) -> bool:
     return isinstance(r, dict) and r.get('at') == run['at'] and r.get('seed') == run['sd']
 
 
+def _kn_stake_day(j: dict, run: dict) -> str:
+    if _kn_mark(j, KN_STAKE_KEY, run):
+        return j[KN_STAKE_KEY]['day']
+    # Legacy level 1 still has its original start time. Later levels do not;
+    # do not invent a credit to today's net or daily cap for an unknown stake day.
+    return vn_date(run['at'] / 1000) if run['lv'] == 1 else ''
+
+
 def _kn_ramp(j: dict, run: dict) -> bool:
     """A level started on 1.9.32: it turns knife.speed_up(level) faster. A level started before keeps its board."""
     return _kn_mark(j, KN_RAMP_KEY, run)
@@ -944,6 +954,9 @@ def _kn_view_run(run: dict | None, t: float, j: dict | None = None) -> dict | No
         out.update(paid=run['pz'])
     else:   # lost: the prize that was riding on the level went with it
         out.update(prize=0, gone=out['prize'])
+        if _kn_mark(j or {}, KN_STAKE_KEY, run) and j[KN_STAKE_KEY]['refunded']:
+            receipt = j[KN_STAKE_KEY]
+            out.update(canceled=True, refunded=receipt['refunded'], fine=receipt['fine'], gone=0)
     return out
 
 
@@ -967,12 +980,13 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
         _guard_free(e, f, j, t, stake)
         day = _daily(j, t)
         need(day.get('kn', 0) < KN_DAY_CAP, 'Chủ quầy phóng dao hết xu trả thưởng hôm nay rồi, mai ghé lại nha.', 'fair_kn_cap')
-        day['kn'] = max(-10**9, day.get('kn', 0) - stake)
         if bm._gate_on() and watch.kn_start(j, ms):   # a skill game: no arrest roll, only a burst of runs (fair_watch)
             watch.clear(j, 'ks')
             _arrested(j, f, t, 'kn', stake, lambda amount: _pay(j, f, 'kn', amount), 'kn_spam')
+        day['kn'] = max(-10**9, day.get('kn', 0) - stake)
         run = k['run'] = dict(st=stake, lv=1, sd=0, hot=0, at=0, sg='play', bn=0, x2=0, nx=0, tp=[], day='', pz=0)
         _kn_level(f, run, t)
+        j[KN_STAKE_KEY] = dict(at=run['at'], seed=run['sd'], day=vn_date(t), refunded=0, fine=0)
         _set_kn_skill(j, run)
         for key in ('fair_run', 'fair_run2', 'fair_run3'):
             j.pop(key, None)  # the older run keys only: the spam decay (COOL_KEY) waits for paid rounds or a pause
@@ -999,7 +1013,18 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
             return dict(fair=out, message='Mạng chập chờn, mấy dao vừa rồi chưa tới bia. Phóng tiếp nha.')
         if bm._gate_on() and watch.kn_throw(j, ms, taps[-1] - (ms - run['at'])):   # throws sent before they happen
             watch.clear(j, 'ka')
-            run['sg'] = 'lost'   # the stake went in at the start; the prize riding on the level goes with the run
+            run['sg'] = 'lost'   # closes the run before refunding; later throws cannot refund again
+            from . import journey as jr
+            jr._wallet(j, run['st'], KIND, '↩️ Hoàn tiền cược phóng dao · Ván bị hủy')
+            # Reverse the original stake loss; a returned stake is not a win or a prize.
+            f['stats']['lost'] = max(0, f['stats']['lost'] - run['st'])
+            started_day = _kn_stake_day(j, run)
+            j[KN_STAKE_KEY] = dict(at=run['at'], seed=run['sd'], day=started_day, refunded=run['st'], fine=0)
+            if f['date'] == started_day:
+                f['net'] = min(10**9, f['net'] + run['st'])
+            day = j.get(DAY_KEY)
+            if isinstance(day, dict) and day.get('d') == started_day:
+                day['kn'] = min(10**9, day.get('kn', 0) + run['st'])
             _arrested(j, f, t, 'kn', run['st'], lambda amount: None, 'kn_fast', count=False)
         chance = _chance(j, 'kn', run)
         if chance is not None:
@@ -1033,8 +1058,10 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
     need(not p, bad)
     if name == 'fair_kn_next':
         need(run and run['sg'] == 'choice', 'Không có màn nào đang chờ chơi tiếp.', 'fair_kn_over')
+        started_day = _kn_stake_day(j, run)
         run.update(lv=run['lv'] + 1, x2=run['nx'], nx=0)
         _kn_level(f, run, t)
+        j[KN_STAKE_KEY] = dict(at=run['at'], seed=run['sd'], day=started_day, refunded=0, fine=0)
         _set_kn_skill(j, run)
         _day(f, t)
         return dict(fair=dict(game='kn', next=True, run=_kn_view_run(run, t, j)), message='')
@@ -1154,25 +1181,19 @@ def _wealth_raid(j: dict, f: dict, t: float) -> dict | None:
     f['wealth_check_at'] = int(t)  # Failed checks share the cooldown, across workers/reloads.
     if _rng.random() >= WEALTH_RAID_P:
         return None
-    amount = max(0, j['wallet']) * 30 // 100
+    amount = bounded_loss(j['wallet'], max(0, j['wallet']) * 30 // 100, fine=True)
     if not amount:
         return None
-    from . import journey as jr
-    jr._wallet(j, -amount, KIND, '🚨 Công an kiểm tra chợ đen · Thu tiền trong ví')
-    f['net'] -= amount
-    f['stats']['lost'] += amount
+    bm._take(j, f, amount, '🚨 Công an kiểm tra chợ đen · Nộp phạt')
     f['stats']['raids'] += 1
     return dict(amount=amount, wallet=j['wallet'],
-                message=f'Công an kiểm tra đánh bạc! Thu {amount:,} xu trong ví.'.replace(',', '.'))
+                message=f'Công an kiểm tra đánh bạc! Nộp phạt {amount:,} xu từ ví.'.replace(',', '.'))
 
 
-def _asset_audit(s: dict, j: dict, f: dict, t: float, raided: bool = False) -> dict | None:
-    """🚨 The police's asset check (chứng minh nguồn tài sản, owner 07/10), a rule of its own next to _wealth_raid (which
-    stays as it was): only after a paid chance round (reads and offline time cannot take money), with fair profit this
-    edition (money_of, the Bảng vàng number) above AUDIT_FROM, new profit since the last check, AUDIT_GAP since the
-    last check (journey['fair_audit']['at'], failed draws too), then AUDIT_P. It takes AUDIT_PCT of the new profit, from
-    the wallet, then the bank account, never below zero (what neither holds is let go, no debt); the profit left becomes
-    the next check's base. A raid on the same round comes first: what it took is already out of the profit."""
+def _asset_audit(s: dict, j: dict, f: dict, t: float, raided: bool = False, budget: int | None = None) -> dict | None:
+    """Check new fair profit after a paid round, preserving eligibility, draw and cooldown.
+    The nominal profit-based request is limited to the wallet fine ceiling and this event's remaining budget.
+    The actual profit left becomes the next baseline, including when no more fine can be charged."""
     a = j.get(AUDIT_KEY)
     a = a if isinstance(a, dict) else {}
     profit = money_of(j)[0]
@@ -1186,26 +1207,16 @@ def _asset_audit(s: dict, j: dict, f: dict, t: float, raided: bool = False) -> d
     due = min(10**7, gain * AUDIT_PCT // 100)
     if not due:
         return None
-    from . import journey as jr
-    from . import bank as bk
-    cash = min(max(0, j['wallet']), due)
-    if cash:
-        jr._wallet(j, -cash, KIND, AUDIT_LABEL)
-    b = bk.get(s)
-    bank = min(max(0, b['balance']), due - cash) if b and type(b.get('balance')) is int else 0
-    if bank:
-        b['balance'] -= bank
-        bk._log(b, j['life_day'], 'acc', 'Công an thu 10% tiền lời chợ đen', -bank)
-    took = cash + bank
+    cash = bounded_loss(j['wallet'], due, fine=True)
+    if budget is not None:
+        cash = min(cash, max(0, budget))
+    took = bm._take(j, f, cash, AUDIT_LABEL)
     if took:
-        f['net'] -= took
-        f['stats']['lost'] += took
         f['stats']['raids'] += 1
     j[AUDIT_KEY]['base'] = profit - took
-    where = ' và '.join(x for x in (cash and f'ví {_xu(cash)}', bank and f'tài khoản ngân hàng {_xu(bank)}') if x)
-    msg = (f'Công an hỏi nguồn tài sản: thu 10% tiền lời mới ở chợ đen, {_xu(took)} xu ({where}).' if took else
-           'Công an hỏi nguồn tài sản, nhưng ví với tài khoản trống trơn nên lần này cho qua.')
-    return dict(amount=took, cash=cash, bank=bank, due=due, gain=gain, pct=AUDIT_PCT, say=POLICE_SAY,
+    msg = (f'Công an hỏi nguồn tài sản: nộp phạt {_xu(took)} xu từ ví.' if took else
+           'Công an hỏi nguồn tài sản: lần kiểm tra này không thu thêm xu.')
+    return dict(amount=took, cash=cash, bank=0, due=due, gain=gain, pct=AUDIT_PCT, say=POLICE_SAY,
                 wallet=j['wallet'], after_raid=raided, message=msg)
 
 
@@ -1286,7 +1297,7 @@ def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
     (fair_bm.arrest_p: fair_bm.BM_ARREST_P while the player's Chợ đen net today is above fair_bm.ARREST_FROM, owner
     09/10 "ae ăn tiền nhiều (hơn 300k) thì mới bị bắt"; plus a share for a stake of fair_bm.BIG_STAKE_FROM xu or more,
     whatever the net, owner 09/10 "từ 50k trở lên thì tăng tỷ lệ bị bắt"; capped at fair_bm.ARREST_CAP). Caught: the
-    stake is gone, the fine, and the trại tạm giữ for fair_bm.JAIL_DAYS jail days (game/jail.py); the round has no
+    stake stays in the wallet, the bounded fine, and the trại tạm giữ for fair_bm.JAIL_DAYS jail days (game/jail.py); the round has no
     outcome (raises _Caught, which apply() turns into the command's result)."""
     if not bm._gate_on():
         return
@@ -1298,7 +1309,7 @@ def _police(j: dict, f: dict, t: float, game: str, stake: int) -> None:
 
 def _hai_device(s: dict, j: dict, f: dict, t: float, prize: int) -> None:
     """👴 Owner 10/10: a win against Ông Hai means a third device helped. The prize stays (paid already); the police
-    fine FINE_LO..FINE_HI % of the wallet and the bank account (fair_hai.device_fine, no debt) and the trại tạm giữ
+    charge a bounded wallet-only fine (fair_hai.device_fine) and the trại tạm giữ
     (fair_bm.JAIL_DAYS). Raises _Caught: the command's whole result."""
     from . import jail
     pct = bm._rng.randint(hai.FINE_LO, hai.FINE_HI)
@@ -1319,16 +1330,19 @@ def _hai_device(s: dict, j: dict, f: dict, t: float, prize: int) -> None:
 def _arrested(j: dict, f: dict, t: float, game: str, stake: int, pay, why: str = '', count: bool = True) -> None:
     """The police take this round (`why`: '' the Chợ đen's arrest roll; 'kn_fast', 'kn_spam', 'oaq_fast', 'oaq_spam'
     what game/fair_watch.py saw on a skill stall; 'oaq_win' a run of wins at Ông Hai's table, game/fair_hai.py, `stake`
-    then being his xu already taken back): `pay(-stake)` takes the stake (a no-op when it is gone already or
-    there is none), the fine, the trại tạm giữ (fair_bm.arrest). count: the round is a new one on the Sổ ví row (not a
+    then being his xu already taken back): cancel the stake and charge one bounded fine, then the trại tạm giữ.
+    A watched knife throw refunds its already-paid stake before this call. count: a new round (not a
     knife run already counted at its start). Raises _Caught: the command's whole result."""
     if count and stake and game in f['stats']:   # the round counts on the stall's Sổ ví row ("· N ván")
         f['stats'][game] = min(10**9, f['stats'][game] + 1)
-    r = bm.arrest(j, f, t, game, stake, pay)
+    r = bm.arrest(j, f, t, game, stake, pay, charge=why != 'oaq_win')
     if why == 'oaq_win':   # 👴 a run of wins at Ông Hai's table: `stake` is his xu taken back (fair_hai.seize)
-        r.update(say=hai.SAY, seized=stake)
+        r.update(say=hai.SAY, seized=stake, canceled=False)
     elif why:
         r['say'] = bm.SAY_CHEAT
+    if why == 'kn_fast':
+        r['refunded'] = stake
+        j[KN_STAKE_KEY]['fine'] = r['fine']
     f['stats']['raids'] = min(10**9, f['stats']['raids'] + 1)
     got: list = []
     _grant(j, 'f_raid', got)
@@ -1337,19 +1351,17 @@ def _arrested(j: dict, f: dict, t: float, game: str, stake: int, pay, why: str =
         fair['titles'] = got
     fine = _xu(r['fine'])
     if why == 'kn_fast':
-        msg = f'🚨 Công an thấy tay ném nhanh bất thường, nghi gian lận! Mất {_xu(stake)} xu tiền cược, nộp phạt {fine} xu.'
+        msg = f'🚨 Công an thấy tay ném nhanh bất thường, nghi gian lận! Hủy ván, hoàn {_xu(stake)} xu tiền cược, nộp phạt {fine} xu.'
     elif why == 'kn_spam':
-        msg = f'🚨 Công an thấy bạn phóng dao liên tục bất thường, nghi gian lận! Mất {_xu(stake)} xu tiền cược, nộp phạt {fine} xu.'
+        msg = f'🚨 Công an thấy bạn phóng dao liên tục bất thường, nghi gian lận! Hủy ván, giữ nguyên tiền cược, nộp phạt {fine} xu.'
     elif why == 'oaq_fast':
         msg = f'🚨 Công an thấy nước đi nhanh bất thường, nghi gian lận! Nộp phạt {fine} xu.'
     elif why == 'oaq_spam':
         msg = f'🚨 Công an thấy bạn bày bàn liên tục bất thường, nghi gian lận! Nộp phạt {fine} xu.'
-    elif why == 'oaq_win' and r['fine']:
-        msg = f'🚨 Công an ập vào bàn Ông Hai! Thắng liền mấy ván là có chuyện: tịch thu {_xu(stake)} xu tiền thắng, nộp phạt {fine} xu.'
     elif why == 'oaq_win':
-        msg = f'🚨 Công an ập vào bàn Ông Hai! Thắng liền mấy ván là có chuyện: tịch thu {_xu(stake)} xu tiền thắng.'
+        msg = f'🚨 Công an ập vào bàn Ông Hai! Đã thu {_xu(stake)} xu tiền phạt, không thu thêm.'
     else:
-        msg = f'🚨 Công an ập vào! Mất {_xu(stake)} xu tiền cược' + (f', nộp phạt {fine} xu' if r['fine'] else '') + '.'
+        msg = f'🚨 Công an ập vào! Hủy ván, giữ nguyên {_xu(stake)} xu tiền cược' + (f', nộp phạt {fine} xu' if r['fine'] else '') + '.'
     msg += f' Bạn bị tạm giữ {r["jail"]} ngày.' if r.get('jail') else ''
     raise _Caught(dict(message=msg, effects=[], fair=fair))
 
@@ -1445,20 +1457,20 @@ def _apply(s: dict, name: str, p: dict) -> dict:
         wait = f['raid_until'] - int(t)
         need(wait <= 0, f'Chiếu trong vừa bị dẹp, {max(1, -(-wait // 60))} phút nữa mới bày lại. Ra trước chơi bầu cua, lô tô cho lành nha.',
              'fair_raided')
-        fine = xd_fine(stake)
+        fine = bounded_loss(j['wallet'], xd_fine(stake), fine=True)
         want = None
-        _guard_round(e, f, j, t, stake, stake + fine)
+        _guard_round(e, f, j, t, stake, max(stake, fine))
         _police(j, f, t, 'xd', stake)
         st['xd'] += 1
         probability = luck_p(j, f, 'xd', t, stake=stake)
         if _rng.random() * 100 < RAID_PCT:
-            fine = min(fine, j['wallet'] - stake)
             st['raids'] += 1
             f['raid_until'] = int(t) + RAID_COOLDOWN
-            _pay(j, f, 'xd', -(stake + fine))
+            if fine:
+                _pay(j, f, 'xd', -fine)
             _grant(j, 'f_raid', got)
-            result['fair'] = dict(game='xd', raid=True, side=p['side'], stake=stake, fine=fine, net=-(stake + fine), cooldown=RAID_COOLDOWN)
-            result['message'] = f'Công an phường kiểm tra! Mất {stake} xu tiền cược và nộp phạt {fine} xu.'
+            result['fair'] = dict(game='xd', raid=True, side=p['side'], stake=stake, fine=fine, net=-fine, canceled=True, cooldown=RAID_COOLDOWN)
+            result['message'] = f'Công an phường kiểm tra! Hủy ván, giữ nguyên {stake} xu tiền cược và nộp phạt {fine} xu.'
         else:
             want = _draw_luck(j, 'xd', probability)
             coins = xd_toss(p['side'], want)
@@ -1551,7 +1563,7 @@ def _apply(s: dict, name: str, p: dict) -> dict:
             lt['fk'] = min(3, lt.get('fk', 0) + 1)   # a counter only now; kept ≤ 3 so a 1.4.12 server (rolling release) still accepts the save
             ltd = _ltd(f)
             ltd['fk'] = min(FK_MAX, ltd['fk'] + 1)
-            fine = max(0, min(KINH_FINE, j['wallet']))
+            fine = bounded_loss(j['wallet'], KINH_FINE, fine=True)
             if fine > 0:
                 _pay(j, f, 'lt', -fine)
             result['fair'] = dict(game='lt', won=False, hut=True, fine=fine, fk=lt['fk'], out=False)
@@ -1709,11 +1721,12 @@ def _apply(s: dict, name: str, p: dict) -> dict:
     paid_round = name in ('fair_bc', 'fair_xd', 'fair_xs', 'fair_dg') or name == 'fair_loto_kinh' and result['fair'].get('won')
     quiet = paid_round and _session(j, t)   # B6: the session's first minutes / rounds, no police check
     if paid_round and not quiet and not result['fair'].get('raid'):
+        fine_budget = bounded_loss(j['wallet'], 10**9, fine=True)
         seizure = _wealth_raid(j, f, t)
         if seizure:
             result['fair']['wealth_raid'] = seizure
             result['message'] = (result['message'] + ' ' + seizure['message']).strip()
-        audit = _asset_audit(s, j, f, t, bool(seizure))   # 07/10: a separate rule, after the raid
+        audit = _asset_audit(s, j, f, t, bool(seizure), fine_budget - (seizure['amount'] if seizure else 0))
         if audit:
             result['fair']['audit'] = audit
             result['message'] = (result['message'] + ' ' + audit['message']).strip()
@@ -1910,6 +1923,15 @@ def validate(j: dict) -> None:
         integer(rules['at'], 0, 10**14)
         integer(rules['seed'], 0, 2**31)
         integer(rules['difficulty'], 135, 135)
+    if KN_STAKE_KEY in j:
+        from .engine import need, integer
+        r = j[KN_STAKE_KEY]
+        need(isinstance(r, dict) and set(r) == {'at', 'seed', 'day', 'refunded', 'fine'}
+             and isinstance(r['day'], str) and len(r['day']) <= 10, 'Dữ liệu phóng dao không hợp lệ.', 'invalid_save')
+        integer(r['at'], 0, 10**14)
+        integer(r['seed'], 0, 2**31)
+        integer(r['refunded'], 0, max(knife.STAKES))
+        integer(r['fine'], 0, 2000)
     for key in (KN_RAMP_KEY, KN_TWIST_KEY):   # 09/10, optional: an older server keeps them as they are
         if key in j:
             from .engine import need, integer

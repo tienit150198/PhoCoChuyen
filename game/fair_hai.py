@@ -3,18 +3,16 @@ thắng đi nhé. nếu thắng nhiều thì cho công an bắt thu tiền là �
 commands are in game/fair.py. Nothing here reaches the client before it happens (no count, no threshold shown).
 
 * A day's games: HAI_DAY games with Ông Hai a Vietnam day at most; one more is refused (TIRED), nothing changes.
-* Winning a lot: a won game that makes STREAK wins in a row at his table (no lost, drawn or given-up game with him in
-  between), or WINDOW_WINS wins within WINDOW seconds, brings the police at once. They take back the xu of every win
-  in that run (those still within WINDOW, never twice the same: a raid clears them), from the wallet first, then the
-  bank account, never below zero (what neither holds is let go, no debt), then the Chợ đen arrest (fair_bm.arrest:
-  the fine, fair_bm.FINE_PCT of the wallet left, and the trại tạm giữ). Only while the Chợ đen's police are on
-  (fair_bm._gate_on). The 30% raid and the 10% asset check of the paid stalls are untouched (ô ăn quan is no paid round).
+* Wins keep their prize, then trigger a bounded wallet-only fine and the existing jail consequence while police
+  enforcement is on. Legacy streak/window records remain readable; legacy collection uses the same small ceiling
+  and does not stack another arrest fine. Bank accounts and savings never fund these fines.
 
 Save: journey['fair_hai'] {d: the Vietnam date of `n`, n: games started with him that day, s: wins in a row,
 w: [[epoch s, xu], ...] his wins not taken yet, within WINDOW} (optional: an older server keeps the journey's unknown
 blocks as they are and never reads it; absent = nothing counted yet).
 """
 from __future__ import annotations
+from .loss_limits import bounded_loss
 
 KEY = 'fair_hai'
 HAI_DAY = 30             # games with Ông Hai a Vietnam day
@@ -22,14 +20,14 @@ STREAK = 2               # wins in a row that bring the police
 WINDOW, WINDOW_WINS = 86400, 3   # ... or this many wins within a day (24 h)
 W_MAX = 10               # the save's bound on w (a raid clears it at WINDOW_WINS)
 TIRED = 'Hôm nay Ông Hai đánh nhiều ván quá, ông mệt rồi. Mai cháu ghé nha!'
-SEIZE_LABEL = '🚨 Công an tịch thu tiền thắng Ông Hai'
+SEIZE_LABEL = '🚨 Công an kiểm tra bàn Ông Hai · Nộp phạt'
 # Owner 10/10: "nếu chơi thắng ông Hai thì bị bắt và phạt vì tội sử dụng thiết bị thứ 3, bỏ tù luôn và phạt 30 - 50% tiền;
-# còn ai thắng vẫn thắng bình thường". Every win at his table keeps its prize, then the police: a fine of FINE_LO..FINE_HI %
-# of the wallet and the bank account (never below zero, no debt) and the trại tạm giữ (fair_bm.JAIL_DAYS).
+# còn ai thắng vẫn thắng bình thường". The nominal percentage is now bounded by loss_limits;
+# the prize and the existing trại tạm giữ (fair_bm.JAIL_DAYS) remain.
 FINE_LO, FINE_HI = 30, 50
 FINE_LABEL = '🚨 Công an phạt: dùng thiết bị hỗ trợ khi chơi với Ông Hai'
 SAY_DEVICE = 'Thắng được Ông Hai thì chỉ có máy giúp thôi! Dùng thiết bị thứ ba là gian lận, nộp phạt rồi về đồn!'
-SAY = 'Thắng Ông Hai liền mấy ván, tiền vô như nước hả? Bàn này là sòng bạc trá hình. Tiền thắng tịch thu, về đồn làm việc!'
+SAY = 'Thắng Ông Hai liền mấy ván rồi nha. Nộp phạt nhẹ rồi về đồn làm việc!'
 
 
 def _of(j: dict) -> dict:
@@ -73,28 +71,14 @@ def won(j: dict, t: float, xu: int) -> int:
 
 
 def device_fine(s: dict, j: dict, f: dict, pct: int) -> int:
-    """The fine for a win at his table: `pct` % of the wallet and the bank account as they are now, taken the
-    seize() way (wallet first, then the account, never below zero). Returns what was taken."""
-    from . import bank as bk
-    b = bk.get(s)
-    held = max(0, j['wallet']) + (max(0, b['balance']) if b and type(b.get('balance')) is int else 0)
-    return seize(s, j, f, held * pct // 100, FINE_LABEL)
+    """The prize stays; only the current wallet funds the bounded fine."""
+    return seize(s, j, f, max(0, j['wallet']) * pct // 100, FINE_LABEL)
 
 
 def seize(s: dict, j: dict, f: dict, due: int, label: str = SEIZE_LABEL) -> int:
-    """Take `due` xu back: the wallet first, then the bank account, never below zero; a Chợ đen loss (the Bảng vàng
-    counts it). Returns what was taken."""
-    from . import bank as bk
+    """Legacy collection: one bounded wallet-only loss, recorded at its actual amount."""
     from . import fair_bm as bm
-    cash = bm._take(j, f, due, label)
-    b = bk.get(s)
-    bank = min(max(0, b['balance']), due - cash) if b and type(b.get('balance')) is int else 0
-    if bank:
-        b['balance'] -= bank
-        bk._log(b, j['life_day'], 'acc', label.replace('🚨 ', ''), -bank)
-        f['net'] = max(-10**9, f['net'] - bank)
-        f['stats']['lost'] = min(10**9, f['stats']['lost'] + bank)
-    return cash + bank
+    return bm._take(j, f, bounded_loss(j['wallet'], due, fine=True), label)
 
 
 def validate(j: dict) -> None:

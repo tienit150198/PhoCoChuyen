@@ -273,7 +273,7 @@ class Flow(unittest.TestCase):
         bal = s['journey']['bank']['balance']
         days(s)
         lost = 5300 - s['journey']['wallet']
-        self.assertEqual(lost, min(rui.MOC_MAX, (5300 - rui.FLOOR) * rui.MOC_PCT // 100))   # 600: well under the 8 % cap
+        self.assertEqual(lost, 53)   # 1% of the affected wallet, regardless of the bank balance
         self.assertEqual(s['journey']['bank']['balance'], bal)
         self.assertEqual(rows(s, 'Bị móc túi')[-1]['kind'], 'life')
         self.assertEqual(public_state(s)['rui']['card']['loss'], lost)
@@ -296,7 +296,7 @@ class Flow(unittest.TestCase):
         act_ok(s, 'jr_rui_gear', id='ket')
         self.assertEqual(s['journey']['wallet'], 4750)              # 💹 07/10: the safe 500 -> 550
         r = R(s)
-        self.assertEqual(rui._theft(s, r, 'trom'), min(rui.TROM_MAX, 4450 * rui.TROM_PCT // 100) // 4)
+        self.assertEqual(rui._theft(s, r, 'trom'), 47 // 4)  # The safe reduces the 1% ceiling further.
         p0 = next(p for p, k, *_ in rui.candidates(s, r, 30) if k == 'trom')
         act_ok(s, 'jr_rui_gear', id='khoa')
         p1 = next(p for p, k, *_ in rui.candidates(s, R(s), 30) if k == 'trom')

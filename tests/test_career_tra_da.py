@@ -685,7 +685,8 @@ class Sweep(Base):
             clock[0] += TD.SWEEP_FIRST + 1
             j.act('td_sweep_end')
         res = self.d['sweep']['result']
-        fine = TD.FINE_BASE + TD.FINE_STOOL * stools + TD.FINE_UMBRELLA
+        from game.loss_limits import bounded_loss
+        fine = bounded_loss(money, TD.FINE_BASE + TD.FINE_STOOL * stools + TD.FINE_UMBRELLA, fine=True)
         self.assertEqual(res['fine'], fine)
         self.assertEqual(money - j.c['money'], fine)
         rows = [r for r in j.c['ops']['finance']['ledger'] if r.get('ref') == 'sweep-3']

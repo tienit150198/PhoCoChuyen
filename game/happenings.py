@@ -33,6 +33,7 @@ import random
 from .happening_content import HAPPENINGS, INDEX, KINDS, REACTIONS, HURT, EMPLOYEE, OFFICE, POLICE, INSURANCE_TEXT
 from . import archive as ar
 from . import compensation as cf
+from .loss_limits import bounded_loss
 
 VERSION = 1
 HISTORY = 60
@@ -336,17 +337,10 @@ def _apply(s: dict, c: dict, career: str, x: dict, live: dict, pct: int) -> tupl
             lines.append(dict(where='stock', amount=-got * unit, cat='theft_loss' if x['kind'] in ('trom', 'dem') else 'damage'))
     cash = f['cash'] * pct // 100
     if cash:
-        if career in EMPLOYEE:
-            # The shortage is on your watch: half comes out of your pay.
-            mine = cash // 2
-            lines += _charge(s, c, career, cash - mine, x['label'], rid, 'theft_loss')
-            _wallet(s, -mine, 'Trừ lương bù tiền thiếu', career)
-            lines.append(dict(where='wallet', amount=-mine, cat='theft_loss'))
-        else:
-            take = min(cash, c['money'])      # a thief cannot take more than the till holds
-            if take:
-                _eng().money(s, c, -take, x['label'], rid, 'theft_loss')
-                lines.append(dict(where='fund', amount=-take, cat='theft_loss'))
+        take = bounded_loss(c['money'], cash)
+        if take:
+            _eng().money(s, c, -take, x['label'], rid, 'theft_loss')
+            lines.append(dict(where='fund', amount=-take, cat='theft_loss'))
     dmg = f['damage'] * pct // 100
     if dmg:
         lines += _charge(s, c, career, dmg, x['label'], rid, 'damage')
@@ -354,6 +348,8 @@ def _apply(s: dict, c: dict, career: str, x: dict, live: dict, pct: int) -> tupl
     if comp:
         lines += _charge(s, c, career, comp, x['label'], rid, 'compensation')
     wal = f['wallet'] * pct // 100
+    if x['kind'] != 'den':
+        wal = bounded_loss(s['journey']['wallet'], wal)
     if wal:
         _wallet(s, -wal, x['label'], career)
         lines.append(dict(where='wallet', amount=-wal, cat='compensation' if x['kind'] == 'den' else 'theft_loss'))

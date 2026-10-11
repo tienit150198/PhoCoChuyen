@@ -3,6 +3,7 @@ import json
 import unittest
 
 from game import employment
+from game.loss_limits import bounded_loss
 from game.careers import corp_accounting as CA
 from game.careers import kit, office
 from game.content import make_task
@@ -261,7 +262,7 @@ class CorpAccountingTests(unittest.TestCase):
         money = j.c['money']
         r = j.act('ca_stamp', task=tid, case=case['id'], verdict='approve')
         self.assertEqual(r['result'], 'wrong')
-        fine = min(case['_truth']['fine'], money)
+        fine = bounded_loss(money, case['_truth']['fine'], fine=True)
         self.assertEqual(j.c['money'], money - fine)
         self.assertIn(case['_truth']['oops'], r['message'])
         self.assertEqual(self.office['trust'], office.TRUST_START - 4)
@@ -280,8 +281,8 @@ class CorpAccountingTests(unittest.TestCase):
         validate_state(j.state)
         case = self.bad_case(tid)
         j.act('ca_stamp', task=tid, case=case['id'], verdict='approve')
-        self.assertEqual(j.c['money'], 0)
-        self.assertEqual(self.office['fines'], 3)
+        self.assertEqual(j.c['money'], 3)
+        self.assertEqual(self.office['fines'], 0)
 
     def test_rejecting_a_valid_document_hurts_trust(self):
         j = self.j
@@ -559,7 +560,7 @@ class CorpAccountingTests(unittest.TestCase):
         r = j.act('end_day', carry_event=True)
         audit = r['summary']['career']['audit']
         self.assertFalse(audit['ok'])
-        self.assertEqual(audit['amount'], min(10, money))
+        self.assertEqual(audit['amount'], bounded_loss(money, 10, fine=True))
         self.assertEqual(r['summary']['career']['desk']['slips'], 1)
 
     # ------------------------------------------------------------ validation of play (dossiers)

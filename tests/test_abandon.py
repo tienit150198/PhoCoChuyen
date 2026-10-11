@@ -155,6 +155,8 @@ class PromisedOrder(unittest.TestCase):
 class Escalation(unittest.TestCase):
     def test_repeat_escalates_and_warns(self):
         s = open_place(story(), 'grocery')
+        from game.engine import money
+        money(s, s['careers']['grocery'], 100000, 'Escalation fixture')
         fines, warns = [], []
         for _ in range(3):
             start_first(s, 'grocery')
@@ -206,6 +208,7 @@ class Pockets(unittest.TestCase):
 
     def test_employee_pay_is_docked_and_boss_trust_drops(self):
         s = open_place(story(), 'delivery')
+        s['journey']['wallet'] = 1000
         start_first(s, 'delivery')
         wallet, fund = s['journey']['wallet'], s['careers']['delivery']['money']
         preview = public_state(s)['abandon']['preview']
@@ -220,15 +223,16 @@ class Pockets(unittest.TestCase):
         self.assertEqual(public_state(s)['abandon']['trust']['delivery'], ab.TRUST_START - x['trust'])
         validate_state(s)
 
-    def test_employee_short_wallet_falls_back_to_pay(self):
+    def test_employee_short_wallet_is_preserved_without_falling_back_to_pay(self):
         s = open_place(story(), 'delivery')
         start_first(s, 'delivery')
         s['journey']['wallet'] = 2
         fund = s['careers']['delivery']['money']
         s, r = apply_action(s, 'grocery', 'select_career', {'confirm': True})
         x = r['abandon']
-        self.assertEqual(x['wallet'], 2)
-        self.assertEqual(s['careers']['delivery']['money'], fund - (x['fine'] - 2))
+        self.assertEqual((x['wallet'], x['fine']), (0, 0))
+        self.assertEqual(s['journey']['wallet'], 2)
+        self.assertEqual(s['careers']['delivery']['money'], fund)
 
     def test_office_boss_trust(self):
         s = open_place(story(), 'corp_accounting')

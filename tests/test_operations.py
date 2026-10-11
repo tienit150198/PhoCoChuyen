@@ -11,6 +11,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 from game import operations as ops
+from game.loss_limits import bounded_loss
 from game.engine import GameError, apply_action, migrate_state, new_state, public_state, validate_state, available, money
 from game.storage import Store, Conflict
 from tests.helpers import Journey
@@ -382,7 +383,7 @@ class OperationsTests(unittest.TestCase):
         self.assertEqual(self.c['stock'][item],t['needs']['qty']);self.assert_valid()
 
     def test_cash_theft_refund_not_taxable_revenue(self):
-        self.j=Journey('accounting',slot=0);before=self.c['money'];self.spawn();self.assertEqual(self.c['money'],before-18)
+        self.j=Journey('accounting',slot=0);before=self.c['money'];self.spawn();self.assertEqual(self.c['money'],before-bounded_loss(before,18))
         self.police_result();self.act('recover',confirm=True);self.assertEqual(self.c['money'],before)
         self.act('reward',confirm=True);self.assertEqual(self.o['finance']['period_revenue'],0);self.assert_valid()
 
@@ -435,7 +436,7 @@ class OperationsTests(unittest.TestCase):
         self.assertEqual(event['kind'],'theft');self.assertIsNone(self.o['security']['active'])
         shop_events.tick_career(self.j.state,self.c,self.j.career)
         self.assertEqual(event,self.o['shop_events']['pending']);self.assertEqual(before,self.c['money'])
-        expected=min(before,(event['wealth']*event['percent']+99)//100)
+        expected=bounded_loss(before,(event['wealth']*event['percent']+99)//100)
         self.act('shop_event',event=event['id'],choice='record',confirm=True)
         self.assertEqual(self.c['money'],before-expected);self.assert_valid()
 

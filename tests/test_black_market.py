@@ -199,16 +199,16 @@ class Arrest(BlackMarketBase):
                 with mock.patch.object(bm, '_arrest_roll', lambda *a: True):
                     s, r = self.act(s, name, **p)
                 a = r['fair']['arrest']
-                fine = (10000 - stake) * 30 // 100
+                fine = 200
                 self.assertEqual((r['fair']['game'], a['stake'], a['fine']), (game, stake, fine))
-                self.assertEqual(s['journey']['wallet'], 10000 - stake - fine)
+                self.assertEqual(s['journey']['wallet'], 10000 - fine)
+                self.assertTrue(a['canceled'])
                 self.assertEqual(a['wallet'], s['journey']['wallet'])
                 self.assertNotIn('fair_bm', s['journey'])
                 self.assertNotIn('dice', r['fair'])   # no outcome
                 last = s['journey']['history'][-1]
                 self.assertEqual((last['amount'], last['label']), (-fine, bm.FINE_LABEL))
-                self.assertTrue(s['journey']['history'][-2]['label'].startswith(fh.LABELS[game]))
-                self.assertEqual(s['journey']['history'][-2]['amount'], -stake)
+                self.assertEqual([r['amount'] for r in s['journey']['history'] if r['kind'] == 'fair'], [-fine])
                 self.assertIn('f_raid', s['journey']['titles'])
                 self.assertIn('Công an ập vào', r['message'])
                 pub = fh.public(s)['bm']
@@ -266,7 +266,7 @@ class Arrest(BlackMarketBase):
         self.rich(s)
         s, r = self.act(s, 'fair_xd', side='le', stake=50)
         self.assertEqual(r['fair']['arrest']['fine'], 0)
-        self.assertEqual(s['journey']['wallet'], 0)
+        self.assertEqual(s['journey']['wallet'], 50)
         self.assertFalse(s['journey']['in_debt'])
         validate_state(s)
 
@@ -387,7 +387,7 @@ class BigStake(BlackMarketBase):
         def roll(p=bm.BM_ARREST_P):
             seen.append(p)
             return on
-        with mock.patch.object(bm, '_arrest_roll', roll):
+        with mock.patch.object(bm, '_arrest_roll', roll), mock.patch.object(fh._rng, 'random', return_value=.99):
             s, r = self.act(s, 'fair_xd', side='chan', stake=stake)
         return s, r, seen
 
@@ -413,9 +413,9 @@ class BigStake(BlackMarketBase):
     def test_caught_with_a_big_stake_and_a_small_net(self):
         s, r, seen = self.rolls(80000, 0, on=True)
         a = r['fair']['arrest']
-        w = 3 * 10**6 - bm.BM_FEE - 80000
-        self.assertEqual((a['stake'], a['fine']), (80000, w * 30 // 100))   # (the cell: tests/test_jail.py)
-        self.assertEqual(s['journey']['wallet'], w - w * 30 // 100)
+        w = 3 * 10**6 - bm.BM_FEE
+        self.assertEqual((a['stake'], a['fine']), (80000, 2000))   # (the cell: tests/test_jail.py)
+        self.assertEqual(s['journey']['wallet'], w - 2000)
         self.assertNotIn('%', r['message'])
         validate_state(s)
         f = json.dumps(fh.public(s), ensure_ascii=False)
@@ -444,7 +444,7 @@ class NothingShown(BlackMarketBase):
         self.caught(True)
         self.rich(s)
         s, r = self.act(s, 'fair_bc', bets={'cua': 100})
-        self.assertEqual(set(r['fair']['arrest']), {'game', 'stake', 'fine', 'wallet', 'say', 'jail'})
+        self.assertEqual(set(r['fair']['arrest']), {'game', 'stake', 'fine', 'wallet', 'say', 'jail', 'canceled'})
         self.assertNotIn('%', r['message'])
         for text in (bm.NEED_IN, bm.BANNED, bm.SAY_ARREST,
                      bm.FINE_LABEL,):

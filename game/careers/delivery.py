@@ -983,12 +983,14 @@ def _traffic(s,c,d,name,p):
     from .. import operations as ops
     bid='traffic-'+r['token'];label='Vượt đèn đỏ · '+r['key']
     if r['fine'] and not r['duplicate']:
-        paid=min(c['money'],r['fine'])
+        from ..loss_limits import bounded_loss
+        paid=bounded_loss(c['money'],r['fine'],fine=True)
         if paid:kit.money(s,c,-paid,label,bid,'fine')
-        if paid<r['fine']:ops.bill(c,bid,'fine',label,r['fine']-paid,c['day']+1,r['token'])
+    paid = -sum(row['amount'] for row in c['ops']['finance']['ledger'] if row.get('ref') == bid and row['category'] == 'fine')
+    r['paid'] = paid
     bill=next((b for b in c['ops']['finance']['bills'] if b['id']==bid and b['status']=='unpaid'),None)
     if bill:message=f'🚦 Phạt đèn đỏ {r["fine"]} xu: còn {bill["amount"]} xu trong Hóa đơn của nghề. Trả khi quỹ nghề đủ tiền; biên nhận chỉ ghi một lần.'
-    elif r['fine']:message=f'🚦 Vượt đèn đỏ: phạt {r["fine"]} xu từ quỹ nghề. Biên nhận đã vào sổ thu chi.'
+    elif r['fine']:message=f'🚦 Vượt đèn đỏ: đã nộp {paid} xu từ quỹ nghề. Phần vượt giới hạn được miễn.'
     elif r['grace']:message='🚦 Đèn vừa chuyển đỏ: miễn phạt trong 1 giây đầu để kịp dừng an toàn.'
     else:message='🚦 Đã qua ngã tư đúng tín hiệu.'
     return dict(message=message,traffic=traffic.public(drive['traffic']),receipt=r)
@@ -1983,7 +1985,7 @@ SITUATIONS = [
                        outcome='Tới trễ 5 phút, anh Tùng càu nhàu một câu rồi thôi.',
                        perspectives=[_p('Anh Tùng', '🙄', 'Trễ 5 phút thì cũng được, miễn là báo.'),
                                      _p('Phụ huynh trước trường', '👩‍👧', 'Giờ tan trường mà xe cứ đâm ngược chiều thì sợ lắm.')]),
-                  dict(id='against', label='Chạy ngược chiều cho kịp', quality='bad', cost=15, stars=5,
+                  dict(id='against', label='Chạy ngược chiều cho kịp', quality='bad', cost=15, money_loss='fine', stars=5,
                        review='Nhanh ghê, 5 sao.',
                        outcome='Suýt quẹt một em học sinh, bị cảnh sát giao thông lập biên bản phạt.',
                        perspectives=[_p('Em học sinh', '😨', 'Em giật mình làm rơi cả cặp.'),
@@ -2080,7 +2082,7 @@ EVENTS = [
                        outcome='Giấy tờ đủ, anh cảnh sát dặn cài quai mũ bảo hiểm rồi cho đi tiếp.'),
                   dict(id='dodge', label='Quay đầu né chốt, chạy đường khác', hint='Dễ bị chặn lại',
                        luck=dict(p=0.4, win=dict(effects=dict(clock=4), outcome='Né được, nhưng phải chạy vòng thêm một đoạn.', good=False),
-                                 lose=dict(effects=dict(money=-20, clock=12), good=False,
+                                 lose=dict(effects=dict(money=-20, money_loss='fine', clock=12), good=False,
                                            outcome='Bị chặn lại ở đầu hẻm, lập biên bản vì bỏ chạy: phạt 20 xu, mất 12 phút.')))],
          default='stop'),
     dict(id='DE-STORM', title='Mưa giông bất chợt', emoji='🌩️', npc=6, min_day=2, tone='tense', weight=2, mods=SUNNY,
@@ -2098,7 +2100,7 @@ EVENTS = [
                        outcome='Số người nhận không có thật — đơn ảo lừa ứng tiền. Bạn báo chị Hạnh chặn shop.'),
                   dict(id='report', label='Từ chối ứng tiền, báo bưu cục', effects=dict(xp=4), good=True,
                        outcome='Chị Hạnh: “Bưu cục không bao giờ bắt tài xế ứng tiền. Em làm đúng rồi.”'),
-                  dict(id='pay', label='Ứng 80 xu cho nhanh, lời 40 xu mà', effects=dict(money=-80), good=False,
+                  dict(id='pay', label='Ứng tiền cho nhanh', effects=dict(money=-80, money_loss='theft'), good=False,
                        outcome='Shop chặn liên lạc, người nhận không có thật. Mất trắng 80 xu.')],
          default='report'),
     dict(id='DE-ERRAND', title='Bà Út nhờ mua giùm thuốc', emoji='👵', npc=3, min_day=2, tone='gentle',
@@ -2134,7 +2136,7 @@ EVENTS = [
                        outcome='Người kia cầm tiền đi luôn, dù lỗi chưa chắc ở bạn.'),
                   dict(id='flee', label='Chạy luôn cho kịp đơn', luck=dict(
                       p=0.5, win=dict(good=False, outcome='Không ai đuổi theo, nhưng áo đồng phục in logo rõ to — lòng cứ thấp thỏm.'),
-                      lose=dict(effects=dict(money=-25, review=[1, 'Shipper quẹt xe người ta rồi bỏ chạy!']), good=False,
+                      lose=dict(effects=dict(money=-25, money_loss='fine', review=[1, 'Shipper quẹt xe người ta rồi bỏ chạy!']), good=False,
                                 outcome='Người ta chụp biển số gửi bưu cục. Bạn bị phạt 25 xu và một lời phàn nàn công khai.')))],
          default='talk'),
     dict(id='DE-THREAT', title='Khách dọa 1 sao đòi miễn phí ship', emoji='😤', npc=1, min_day=2, tone='tense',
@@ -2342,7 +2344,7 @@ def _close_desk(s: dict, c: dict, d: dict) -> str | None:
 
 def _desk_view(c: dict) -> dict:
     d = _data(c)
-    view = kit.desk_public(d['desk'], EVENTS, ID)
+    view = kit.desk_public(d['desk'], EVENTS, ID, c)
     ev = view['ev']
     t = _ev_task(c)
     if ev and t is not None:

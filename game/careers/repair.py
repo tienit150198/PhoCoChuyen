@@ -2275,7 +2275,7 @@ def public_data(c: dict) -> dict:
         d.setdefault(k, tree_copy(v))
     mod = _today(c)
     d['today'] = dict(id=mod['id'], title=mod['title'], emoji=mod['emoji'], text=mod['text'])
-    d['desk'] = kit.desk_public(desk, DESK, ID)
+    d['desk'] = kit.desk_public(desk, DESK, ID, c)
     if d['desk']['ev']:
         # Options come in a shuffled order so the careful answer is not always the first button.
         kit.rng(ID, 'desk-order', d['desk']['ev']['id'], c['day']).shuffle(d['desk']['ev']['options'])
@@ -2414,19 +2414,19 @@ DESK = [
                        outcome='Đoàn đối chiếu từng dòng, ký biên bản “đạt”, còn dặn tiệm giữ thói quen tốt.'),
                   dict(id='stall', label='Hẹn mai mới đưa, đang bận', hint='Rủi ro', good=False,
                        luck=dict(p=0.4, win=dict(outcome='Đoàn đồng ý quay lại sau, dặn chuẩn bị đầy đủ.', good=None),
-                                 lose=dict(effects=dict(money=-15), outcome='Đoàn lập biên bản “không hợp tác”: phạt 15 xu.', good=False)))],
+                                 lose=dict(effects=dict(money=-15, money_loss='fine'), outcome='Đoàn lập biên bản “không hợp tác”: phạt 15 xu.', good=False)))],
          default='show'),
     dict(id='inspect_bad', title='Đoàn kiểm tra hỏi lô màn không hóa đơn', emoji='🚨', npc=6, min_day=3, tone='tense', need_mark='no_invoice',
          weight=3,
          text='Đoàn quản lý thị trường lật sổ nhập hàng, chỉ vào dòng trống: “Hai tấm màn này nhập từ đâu? Hóa đơn đâu?”',
          options=[dict(id='pay', label='Nhận lỗi, nộp phạt', hint='30 xu', good=None,
-                       effects=dict(money=-30, unmark='no_invoice'), outcome='Nộp phạt 30 xu, ký biên bản. Bài học đắt giá về nguồn hàng.'),
+                       effects=dict(money=-30, money_loss='fine', unmark='no_invoice'), outcome='Nộp phạt 30 xu, ký biên bản. Bài học đắt giá về nguồn hàng.'),
                   dict(id='surrender', label='Giao nộp lô màn, phạt nhẹ', hint='10 xu + mất 2 màn', good=None,
-                       effects=dict(money=-10, stock=dict(screen_c=-2), unmark='no_invoice'),
+                       effects=dict(money=-10, money_loss='fine', stock=dict(screen_c=-2), unmark='no_invoice'),
                        outcome='Tiệm giao nộp hai tấm màn không rõ nguồn gốc, bị phạt nhẹ vì thành khẩn.'),
                   dict(id='argue', label='Cãi là hàng tồn từ lâu', hint='Hên xui', good=False,
                        luck=dict(p=0.25, win=dict(effects=dict(unmark='no_invoice'), outcome='Đoàn tạm tin, dặn bổ sung giấy tờ trong tuần.', good=None),
-                                 lose=dict(effects=dict(money=-45, unmark='no_invoice',
+                                 lose=dict(effects=dict(money=-45, money_loss='fine', unmark='no_invoice',
                                                         review=[1, 'Tiệm sửa đồ đầu hẻm bị phạt vì bán linh kiện không rõ nguồn gốc. Tránh xa!']),
                                            outcome='Nói dối bị phát hiện: phạt 45 xu, chuyện lan khắp phố.', good=False)))],
          default='pay'),

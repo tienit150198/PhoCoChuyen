@@ -135,8 +135,9 @@ def note(o: dict, day: int, text: str, kind: str = 'info') -> None:
 
 
 def fine(s: dict, c: dict, o: dict, amount: int, reason: str, ref: str | None = None) -> int:
-    """Take a fine from the wallet, never more than what is there. Returns the amount taken."""
-    amount = min(max(0, int(amount)), max(0, c['money']))
+    """Book only the bounded fine paid from this career's liquid cash."""
+    from ..loss_limits import bounded_loss
+    amount = bounded_loss(c['money'], amount, fine=True)
     if amount:
         kit.money(s, c, -amount, reason, ref, 'penalty')
         o['fines'] += amount

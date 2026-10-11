@@ -90,7 +90,7 @@ class Economy(unittest.TestCase):
         s,st=self.sample(); st['till']=500
         wallet=s['journey']['wallet']
         with patch.object(qe, '_event', return_value='robbery'): qy._sell(s,st,1)
-        self.assertLess(st['hist'][-1]['net'],0)
+        self.assertLessEqual(st['hist'][-1]['costs']['incident'], 5)
         self.assertEqual(wallet,s['journey']['wallet'])
         self.assertGreater(st['hist'][-1]['costs']['incident'],0)
 

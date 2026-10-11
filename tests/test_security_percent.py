@@ -32,7 +32,7 @@ class SecurityPercent(unittest.TestCase):
         st.update(fund=10000000, till=0)
         view = events.public(st, True)['pending']
         price = next(x['cost'] for x in view['choices'] if x['id'] == 'record')
-        self.assertEqual(price, wp.event_cost(q))
+        self.assertEqual(price, 1000)
         s['journey']['wallet'] += 999999
         self.assertEqual(events.public(st, True)['pending'], view)
         before = st['fund']
@@ -49,15 +49,15 @@ class SecurityPercent(unittest.TestCase):
         q = c['incidents']['active']
         self.assertIn('percent', q)
         q['percent'] = 20
-        spec = incidents._priced_spec(q)
+        spec = incidents._priced_spec(q, s, c)
         paid = next(o for o in spec['options'] if o['id'] == 'pay')
-        self.assertEqual(-sum(a for _, a, _ in paid['pay']), wp.event_cost(q))
+        self.assertLessEqual(-sum(a for _, a, _ in paid['pay']), min(c['money'] // 100, 1000))
         repair = next(o for o in spec['options'] if o['id'] == 'call')
         self.assertEqual(-sum(a for _, a, _ in repair['pay']), wp.cost(10, q['wealth']))
         from game.engine import money
         money(s, c, wp.event_cost(q), 'Test capital', category='other_income')
         before = c['money']; s, _ = choose(s, 'milk_tea', 'pay')
-        self.assertEqual(before - s['careers']['milk_tea']['money'], wp.event_cost(q))
+        self.assertEqual(before - s['careers']['milk_tea']['money'], min(before // 100, 1000))
         validate_state(migrate_state(json.loads(json.dumps(s))))
 
     def test_personal_loss_uses_frozen_percent_and_correct_account(self):
@@ -74,7 +74,7 @@ class SecurityPercent(unittest.TestCase):
                 day = w['day']; s['journey']['life_day'] = day
                 wallet, balance = s['journey']['wallet'], bank.get(s)['balance']
                 rui._fire(s, r, day, [])
-                expected = 2000000 * pct // 100
+                expected = 1000
                 self.assertEqual(r['card']['loss'], expected)
                 self.assertEqual(wallet-s['journey']['wallet'], expected if kind == 'trom' else 0)
                 self.assertEqual(balance-bank.get(s)['balance'], expected if kind == 'hack' else 0)
@@ -93,11 +93,11 @@ class SecurityPercent(unittest.TestCase):
         s = grown(wallet=1000, bank=900, day=40)
         r = R(s)
         q = dict(kind='hack', wealth=100000000, percent=20)
-        self.assertEqual(rui._security_loss(s, r, q, 41), 900)
+        self.assertEqual(rui._security_loss(s, r, q, 41), 9)
         q['kind'] = 'trom'
-        self.assertEqual(rui._security_loss(s, r, q, 41), 1000)
+        self.assertEqual(rui._security_loss(s, r, q, 41), 10)
         bank.get(s)['balance'] = 0
-        self.assertEqual(rui._security_loss(s, r, q, 41), 700)
+        self.assertEqual(rui._security_loss(s, r, q, 41), 10)
         q.update(wealth=100000, percent=20)
         s['journey']['wallet'] = 100000
         rui._month(s, r, 41)['lost'] = 19900
@@ -117,8 +117,8 @@ class SecurityPercent(unittest.TestCase):
     def test_equipment_reduces_personal_loss_without_rerolling(self):
         s = grown(wallet=1000000, bank=1000000, day=40); r = R(s)
         q = dict(kind='hack', wealth=2000000, percent=10)
-        self.assertEqual(rui._security_loss(s, r, q, 41), 200000)
+        self.assertEqual(rui._security_loss(s, r, q, 41), 1000)
         r['gear'].append('diet_virus')
-        self.assertEqual(rui._security_loss(s, r, q, 41), 100000)
+        self.assertEqual(rui._security_loss(s, r, q, 41), 500)
         q['kind'] = 'trom'; r['gear'].append('ket')
-        self.assertEqual(rui._security_loss(s, r, q, 41), 50000)
+        self.assertEqual(rui._security_loss(s, r, q, 41), 250)

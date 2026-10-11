@@ -4,6 +4,7 @@ import unittest
 
 from game.engine import GameError, apply_action, new_state, public_state, validate_state
 from game import employment
+from game.loss_limits import bounded_loss
 from game.careers import tax_payroll as T
 from game.careers import kit, office
 from tests.helpers import Journey
@@ -452,7 +453,7 @@ class TaxPayrollTests(unittest.TestCase):
         j.act('tp_row', task=tid, row=row['id'])
         money = j.c['money']
         j.act('tp_pay', task=tid, confirm=True)
-        fine = row['_truth']['fines'][0]
+        fine = bounded_loss(money, row['_truth']['fines'][0], fine=True)
         self.assertTrue(any(e['category'] == 'penalty' and e['amount'] == -fine for e in j.c['ops']['finance']['ledger']))
         self.assertLess(j.c['money'], money + T.GRID_BONUS)
         post = next(p for p in j.c['feed'] if p['kind'] == 'review' and p['source'] == tid)

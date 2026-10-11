@@ -969,7 +969,8 @@ def _desk_hook(s: dict, c: dict, key: str, v) -> str | None:
         if d['sanitize_day'] == c['day']:
             c['xp'] += 10
             return 'Sổ khử khuẩn hôm nay đủ chữ ký — đạt.'
-        fine = min(15, c['money'])
+        from ..loss_limits import bounded_loss
+        fine = bounded_loss(c['money'], 15, fine=True)
         if fine:
             kit.money(s, c, -fine, 'Phạt vệ sinh chuồng trại', None, 'event_cost')
         return f'Hôm nay chưa khử khuẩn chuồng — phạt {fine} xu, hẹn kiểm lại.'
@@ -2501,7 +2502,7 @@ def public_data(c: dict) -> dict:
     d['level'] = kit.level(c)
     mod = today(c['day'])
     d['mod'] = dict(id=mod['id'], title=mod['title'], emoji=mod['emoji'], text=mod['text'])
-    d['desk'] = kit.desk_public(desk, DESK, ID)
+    d['desk'] = kit.desk_public(desk, DESK, ID, c)
     if d['desk']['ev']:
         # Options come in a shuffled order so the careful answer is not always the first button.
         kit.rng(ID, 'desk-order', d['desk']['ev']['id'], c['day']).shuffle(d['desk']['ev']['options'])
@@ -2954,7 +2955,7 @@ DESK = [
                        good=True, outcome='Bạn phun khử khuẩn chuồng, ngâm lược kéo, ký sổ trước mặt bác sĩ.'),
                   dict(id='gift', label='Mời nước, xin “thông cảm” cho qua', luck=dict(
                       p=0.3, win=dict(outcome='Bác sĩ Hòa lắc đầu, nhắc lần sau phải đủ sổ.', good=None),
-                      lose=dict(effects=dict(money=-20, review=[2, 'Tiệm thú cưng bị phạt vì vệ sinh chuồng.']), outcome='Bác sĩ Hòa từ chối, lập biên bản phạt.',
+                      lose=dict(effects=dict(money=-20, money_loss='fine', review=[2, 'Tiệm thú cưng bị phạt vì vệ sinh chuồng.']), outcome='Bác sĩ Hòa từ chối, lập biên bản phạt.',
                                 good=False)))],
          default='log'),
     dict(id='outage', title='Cúp điện cả dãy phố', emoji='🔌', npc=5, min_day=2, at='any', tone='tense',

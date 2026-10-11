@@ -18,6 +18,7 @@ from . import extra_content as data
 from . import consequences as cq
 from . import archive as ar
 from . import patience as pt
+from .loss_limits import bounded_loss
 
 CAREER = 'milk_tea'
 ING = data.INGREDIENT_INDEX
@@ -2067,7 +2068,7 @@ def _resolve(s: dict, c: dict, b: dict, ev: dict, choice: str) -> None:
         dirty = b['mess'] >= UNSAFE_MESS
         if choice == 'open':
             if dirty:
-                fine = min(40, c['money'])
+                fine = bounded_loss(c['money'], 40, fine=True)
                 if fine:
                     e.money(s, c, -fine, 'Phạt vệ sinh quầy pha', ev['id'], category='fine')
                 b['fines'] += fine
@@ -2085,7 +2086,7 @@ def _resolve(s: dict, c: dict, b: dict, ev: dict, choice: str) -> None:
             result = 'Bạn lau quầy trước khi mở sổ. Đoàn nhắc nhở giữ vệ sinh thường xuyên, không lập biên bản phạt.' if dirty else 'Quầy vốn đã sạch; đoàn kiểm nhanh rồi về. Khách xếp hàng phải chờ thêm một chút.'
             eff.append('Khách chờ -8 kiên nhẫn')
         else:
-            fine = min(80, c['money'])
+            fine = bounded_loss(c['money'], 80, fine=True)
             if fine:
                 e.money(s, c, -fine, 'Phạt vì đưa tiền cho đoàn kiểm tra', ev['id'], category='fine')
             b['fines'] += fine

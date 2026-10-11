@@ -20,6 +20,7 @@ from . import consequences as cq
 from . import desk_content as dc
 from . import archive as ar
 from . import patience as pt
+from .loss_limits import bounded_loss
 
 CAREERS = dc.CAREERS
 ACTIONS = ('desk_flag', 'desk_check', 'desk_count', 'desk_reply', 'desk_decide')
@@ -399,7 +400,7 @@ def _decide(s, c, t, p):
         if citation['n'] <= 2:
             lines.append(f'📄 Phiếu nhắc {citation["n"]}/2: {citation["rule"]}. Từ phiếu thứ ba trong ngày sẽ bị trừ xu.')
         else:
-            fine = min(20, 5 * risk, c['money'])
+            fine = bounded_loss(c['money'], min(20, 5 * risk), fine=True)
             if fine:
                 e.money(s, c, -fine, 'Phiếu phạt quầy: ' + citation['rule'], t['id'], 'fine')
                 d['today']['fines'] += fine
@@ -523,7 +524,7 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
                 note = f'{who} nhắc nhở {risk} điểm rủi ro (hồ sơ giao vội, hộp quá hạn để trên kệ, sổ tủ mát). Lần sau soát kỹ hơn nhé.'
             outcome = 'warning'
         else:
-            fine = min(60, 10 * (risk - 3), c['money'])
+            fine = bounded_loss(c['money'], min(60, 10 * (risk - 3)), fine=True)
             if fine:
                 e.money(s, c, -fine, f'{who} lập biên bản quy trình', f'desk-inspect-{day}', 'fine')
             note = f'{who} lập biên bản: {risk} điểm rủi ro · trừ {fine} xu.'

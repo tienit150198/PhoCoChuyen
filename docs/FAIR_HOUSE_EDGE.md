@@ -1,4 +1,4 @@
-# 🕶️ Chợ đen (was Hội chợ): house edge and free entry (updated 10/10/2026)
+# 🕶️ Chợ đen (was Hội chợ): house edge and free entry (updated 11/10/2026)
 
 Owner 08/10: "mở hội chợ nhé, tỷ lệ chỉnh lại làm sao cho phù hợp, đảm bảo nhà cái luôn thắng", then "chợ đen để
 luôn ở ngoài nhé". This edition opened on 09/10 (`FAIR_START` 2026-10-09, edition `fair20261009`). Its entry stays in
@@ -26,15 +26,16 @@ sight: a 🏮 Hội chợ chip in the town's top bar and a main menu entry. The 
   00:00: from then it refuses the stalls, collects open loans and crowns the end once (`fair:fair20261009`). Saves stay
   valid both ways (nothing new is written).
 
-The table gives the most one round can return per xu staked. That is a fresh run with perfect play. Every other state
-returns less: the cool-off after 4 wins, the spam decay, a late Kinh, the police. So no betting pattern comes out ahead.
+The table gives the upper return per xu staked for a fresh run with perfect play, before the separate Chợ đen arrest
+roll. Cool-off, spam decay and late Kinh claims lower this return. Canceled arrests retain their stake; their effect
+is described below and does not change the stalls' draw probabilities.
 The figures come from `scripts/sim_fair_odds.py` (`exact()`), which also checks them on 10^6 real-draw rounds per stall.
 `tests/test_fair_house_edge.py` runs the same checks on smaller samples.
 
 | stall | before (07/10 rules) | now | now, with 🍀 Lộc gate always open | 10^6 rounds, 10/10 rerun (fresh / spam / press) |
 |---|---|---|---|---|
 | 🦀 Bầu cua (honest dice, bão 10:1) | 95.4% (Lộc: 100.9%) | 95.4% | 96.5% | 95.2% / 95.5% / 95.2% |
-| 🕯️ Chiếu trong (even money, 0.88% raids) | 100.7% (Lộc: 107.5%) | 97.1% | 98.4% | 96.5% / 79.7% / 96.9% |
+| 🕯️ Chiếu trong (even money, 0.88% raids) | 100.7% (Lộc: 107.5%) | 98.0% | 99.3% | 96.5% / 79.7% / 96.9% (before 11/10 cancellation change) |
 | 🎱 Lô tô (Kinh 2.1× the tờ) | 105.6% (2/5-xu tờ 100.6%; Lộc: 112.3%) | 96.6% (2/5-xu tờ 92.0%) | 97.8% | 96.5% / 84.0% / 96.5% |
 | 🎟️ Vé cào | 80.0% | 91.9% | 92.3% | 91.2% / 72.1% / 91.7% |
 | 🐕 Đua chó (09/10, fixed odds; the outsider ×19 at best) | – | 95.0% (favourite 92.8%) | 95.0% | 93.5% / 93.9% / 93.8% (a dog at random: 93.85%) |
@@ -43,6 +44,10 @@ The figures come from `scripts/sim_fair_odds.py` (`exact()`), which also checks 
 The 10/10 rerun of `python scripts/sim_fair_odds.py 1000000` also returned 96.63%, 97.82%, 97.58%,
 91.58% and 94.09% respectively for fresh rounds with Lộc. All simulated patterns stayed below 100%; 20,000 lô tô
 rounds agreed with their server draw in 100% of cases. A finite sample can differ from the exact expectation.
+These are historical 10/10 samples, not a rerun of the 11/10 fine rules. The updated exact xóc đĩa upper return is
+98.0176%, or 99.3289576% with the Lộc gate always open. A dẹp chiếu now cancels the stake, so the formula adds the
+raid probability: `(1 − r) × 2 × p + r`, before its small fine. The simulator retains the canceled stake and charges
+the bounded fine for a representative 100,000-xu wallet.
 
 How the three betting patterns play:
 
@@ -51,6 +56,16 @@ How the three betting patterns play:
 - **press:** 1000 xu while the stall is warm, 10 xu once it has cooled.
 
 ## What changed
+
+- **11/10 small compulsory losses:** each arrest/check event takes at most 2% of the affected wallet, at most
+  2,000 xu, retaining 100 xu (or the entire balance if below 100). Wealth and asset checks on one paid round share
+  one ceiling. There is no bank/savings fallback. Unplayed arrested bets are canceled; an already-paid knife
+  stake is refunded once, with its loss reversed rather than recorded as winnings. Ông Hai's prize remains.
+  Ordinary played losing bets, draw probabilities, cooldowns, watch enforcement, jail days and awards are unchanged.
+  The optional `journey.fair_kn_stake` marker preserves the original stake day and cancellation receipt across
+  reloads without adding keys to the old fair/run schema. New runs reverse the correct daily counters across
+  midnight. A pre-update run already beyond level 1 may have no recoverable original stake date: its wallet,
+  edition loss statistics and weekly ranking are corrected, but its daily net/cap debit is conservatively retained.
 
 - **10/10 scope:** only the base win draws of chiếu trong, lô tô and vé cào increased. Skill games keep their
   opponents/collisions; bầu cua keeps honest dice; dog racing keeps its fixed draw and payouts. Cool-off, spam decay,
@@ -77,7 +92,7 @@ How the three betting patterns play:
   knife stake (`fair_knife.STAKES`) are saved and checked by older servers, and vé cào sells fixed-price tickets.
   None of this changes a return: every stake gets the same odds.
 
-## 🕶️ Chợ đen: free entry and arrests (updated 10/10)
+## 🕶️ Chợ đen: free entry and arrests (updated 11/10)
 
 The owner removed the entry fee on 10/10. Players see "Chợ đen" everywhere; ids, keys, endpoints and edition
 `fair20261009` are unchanged. The rules live in `game/fair_bm.py`:
@@ -93,33 +108,32 @@ The owner removed the entry fee on 10/10. Players see "Chợ đen" everywhere; i
 - **Arrests on the paid rounds** (bầu cua, chiếu trong, a lô tô purchase, a vé cào, a đua chó bet; not Phóng dao or
   ô ăn quan, see below), rate `fair_bm.arrest_p(f, stake)`, drawn by `fair_bm._arrest_roll(p)` from its own random
   source before the round is drawn; at 0 nothing is rolled:
-  - `BM_ARREST_P` (5%) while today's Chợ đen net is above `ARREST_FROM` (300,000 xu; owner 09/10 "ae ăn tiền nhiều
+  - `BM_ARREST_P` (4.25%) while today's Chợ đen net is above `ARREST_FROM` (300,000 xu; owner 09/10 "ae ăn tiền nhiều
     (hơn 300k) thì mới bị bắt", "tỷ lệ bị bắt thấp tý");
   - **plus big stakes, whatever the net** (owner 09/10 "cược mà ai cược nhiều, từ 50k trở lên thì tăng tỷ lệ bị bắt,
     mỗi 10k tăng 1% (từ mốc 50k)"): a round staking `BIG_STAKE_FROM` (50,000) xu or more adds
-    `BIG_STAKE_PCT × (1 + (stake − 50,000) // BIG_STAKE_STEP)` %, with `BIG_STAKE_PCT` 1 and `BIG_STAKE_STEP` 10,000:
+    `BIG_STAKE_PCT × (1 + (stake − 50,000) // BIG_STAKE_STEP)` %, with `BIG_STAKE_PCT` .85 and `BIG_STAKE_STEP` 10,000:
 
     | stake | net ≤ 300k | net > 300k |
     |---|---|---|
-    | < 50,000 | 0 (not rolled) | 5% |
-    | 50,000 – 59,999 | 1% | 6% |
-    | 60,000 – 69,999 | 2% | 7% |
-    | 100,000 | 6% | 11% |
-    | 290,000 | 25% | 30% (cap) |
-    | ≥ 340,000 | 30% (cap) | 30% (cap) |
+    | < 50,000 | 0 (not rolled) | 4.25% |
+    | 50,000 – 59,999 | .85% | 5.1% |
+    | 60,000 – 69,999 | 1.7% | 5.95% |
+    | 100,000 | 5.1% | 9.35% |
+    | 290,000 | 21.25% | 25% (cap) |
+    | ≥ 340,000 | 25% (cap) | 25% (cap) |
 
-  - never above `ARREST_CAP` (30%, owner 09/10 "tỷ lệ bị bắt khi chơi max 30% thôi nha"; was 70%, then 40% briefly) a round. The stake is the round's whole stake (bầu cua: all faces; lô tô: tờ and
+  - never above `ARREST_CAP` (25%, after the earlier 11/10 modest reduction) a round. The stake is the round's whole stake (bầu cua: all faces; lô tô: tờ and
     side bets; vé cào: its price).
 
-  Caught: the stake is lost with no outcome, a fine of `FINE_PCT` (30%) of the wallet left after the stake, and
-  `JAIL_DAYS` (3) days in the trại tạm giữ (`game/jail.py`). The wallet never goes below zero. The arrest replaces
+  Caught: the unplayed stake stays in the wallet, one small fine under `loss_limits.bounded_loss(..., fine=True)`, and
+  `JAIL_DAYS` (3) days in the trại tạm giữ (`game/jail.py`). The wallet reserve remains. The arrest replaces
   neither the chiếu trong's own rare dẹp chiếu (`RAID_PCT`) nor the police's wealth check and asset check; those still
   run on rounds the police did not catch. Nothing new is saved for the rate (it is computed from the stake and
   `journey['fair'].net`), so the save stays what 1.9.30/1.9.31 validate.
-- **What it does to the house edge:** a round rolled at rate p returns (1 − p) × the table's return, before the fine:
-  above 300k, at most 0.95 × 98.44896% ≈ **93.5%** for the best stall with the 🍀 gate open; a 100,000 xu round below 300k
-  at most 0.94 × the table; a capped round 0.70 × the table. The fine (30% of the wallet on an arrest) makes the
-  expected loss of a raided round grow with the wallet, not the stake.
+- **What it does to the house edge:** for arrest rate `a` and the table's return `R`, canceling an unplayed stake
+  gives `a + (1 − a) × R` before the bounded fine. This stays below 100% whenever `R < 1` and `a < 1`.
+  The expected actual fine, divided by the stake, lowers it further. Cancellations no longer forfeit the stake.
 - **Nothing reaches the client** about the rate or the percentages: `fair.bm` carries only the zero legacy fee, today's standing
   (`st`, `inside`, `ban`) and the đàn em's name. Receipts give the fine in xu.
 - **Save:** `journey['fair_bm']` `{d, s}` (the Vietnam date; `paid`, `robbed` or `ban`) sits beside `journey['fair']`,
@@ -212,7 +226,7 @@ of six dogs from `RACERS` (the pet system's breeds and coats) and gives each one
     judged by that server on its own soft board (no turn-backs), so it settles sanely, only easier. Today's heat
     (`heat()`, from the day's Chợ đen net) still applies as before.
   - **Out of the arrest roll.** Phóng dao and ô ăn quan are never rolled for by the Chợ đen's arrest
-    (`fair_bm.arrest_p`, neither the 5% nor the big stakes), and the wealth/asset checks run only after the paid
+    (`fair_bm.arrest_p`, neither the 4.25% nor the big stakes), and the wealth/asset checks run only after the paid
     luck rounds as before. The police come only for a **script or a burst** (`game/fair_watch.py`, conservative: a
     miss is better than an honest player arrested):
 
@@ -229,9 +243,9 @@ of six dogs from `RACERS` (the pet system's breeds and coats) and gives each one
     ~0.3 s a move) and a move takes two taps after it. Not used: tap rhythm (touch time stamps are often snapped to the
     screen's frames, so an even hand could look machine-regular).
 
-    Caught: the same arrest as the Chợ đen's (`fair._arrested`): Phóng dao loses the run's stake (taken at the start of
-    a run, or the run in play is lost with what rode on it), ô ăn quan has no stake (the game in play is lost); a fine
-    of `FINE_PCT` (30%) of the wallet; `JAIL_DAYS` (3) in the trại tạm giữ. The message says what was seen in words
+    Caught: the same arrest as the Chợ đen's (`fair._arrested`): Phóng dao cancels an unstarted bet or refunds the
+    already-paid run's stake once, ô ăn quan has no stake (the game in play is lost); a bounded wallet-only fine;
+    `JAIL_DAYS` (3) in the trại tạm giữ. The message says what was seen in words
     ("Công an thấy tay ném nhanh bất thường, nghi gian lận!"); no threshold reaches the client. The counters live in
     `journey['fair_watch']` (optional; windows `[at, n]`, an older server's journey keeps it unread). Off with the
     Chợ đen's kill switch (`MNL_BM_OFF`).

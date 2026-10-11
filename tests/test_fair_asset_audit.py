@@ -25,20 +25,20 @@ class AssetAudit(FairBase):
         self.assertEqual((fh.AUDIT_FROM, fh.AUDIT_GAP, fh.AUDIT_P, fh.AUDIT_PCT), (50000, 7200, .225, 10))   # 07/10: half of 45%
         self.assertEqual((fh.WEALTH_THRESHOLD, fh.WEALTH_CHECK_GAP, fh.WEALTH_RAID_P), (50000, 1800, .35))   # 1.9.9's .70 halved
 
-    def test_takes_ten_percent_of_fair_profit_and_records_it(self):
+    def test_profit_based_fine_is_bounded_and_records_actual_amount(self):
         self.dice(Dice(draws=[fh.AUDIT_P - 1e-6]))  # a losing bet (honest dice: no luck draw), then a successful check
         s, result = self.act(rich(), 'fair_bc', bets={'cua': 1})
         audit = result['fair']['audit']
         self.assertNotIn('wealth_raid', result['fair'])                    # today's net 0: the raid is not due
-        self.assertEqual((audit['gain'], audit['amount'], audit['cash'], audit['bank']), (59999, 5999, 5999, 0))
+        self.assertEqual((audit['gain'], audit['amount'], audit['cash'], audit['bank']), (59999, 1999, 1999, 0))
         self.assertFalse(audit['after_raid'])
-        self.assertEqual(s['journey']['wallet'], 100000 - 1 - 5999)
-        self.assertEqual(s['journey']['fair']['stats']['lost'], 1 + 5999)
-        self.assertEqual(fh.money_of(s['journey'])[0], 54000)                  # the board's number
-        self.assertEqual(s['journey']['fair_audit'], dict(ed=fh.edition(), base=54000, at=int(self.clock.t)))
+        self.assertEqual(s['journey']['wallet'], 98000)
+        self.assertEqual(s['journey']['fair']['stats']['lost'], 2000)
+        self.assertEqual(fh.money_of(s['journey'])[0], 58000)                  # the board's number
+        self.assertEqual(s['journey']['fair_audit'], dict(ed=fh.edition(), base=58000, at=int(self.clock.t)))
         self.assertNotIn('wealth_check_at', s['journey']['fair'])            # the raid's own state is untouched
         row = s['journey']['history'][-1]
-        self.assertEqual((row['kind'], row['amount']), ('fair', -5999))
+        self.assertEqual((row['kind'], row['amount']), ('fair', -1999))
         self.assertIn('tài sản', row['label'])
         self.assertIn('nguồn tài sản', audit['say'])
         self.assertIn(audit['message'], result['message'])
@@ -48,7 +48,7 @@ class AssetAudit(FairBase):
     def test_never_twice_on_the_same_profit(self):
         self.dice(Dice(draws=[0]))
         s, first = self.act(rich(), 'fair_bc', bets={'cua': 1})
-        self.assertEqual(first['fair']['audit']['amount'], 5999)
+        self.assertEqual(first['fair']['audit']['amount'], 1999)
         checked = s['journey']['fair_audit']['at']
         self.clock.t += fh.AUDIT_GAP
         self.dice(Dice(draws=[0]))
@@ -59,24 +59,24 @@ class AssetAudit(FairBase):
         self.dice(Dice(draws=[0]))
         s, third = self.act(s, 'fair_bc', bets={'cua': 1})
         self.assertEqual(third['fair']['audit']['gain'], 20000 - 2)
-        self.assertEqual(third['fair']['audit']['amount'], (20000 - 2) // 10)
+        self.assertEqual(third['fair']['audit']['amount'], 1959)
         self.assertEqual(s['journey']['fair_audit']['base'], fh.money_of(s['journey'])[0])
         validate_state(s)
 
-    def test_wallet_first_then_bank_never_below_zero_no_debt(self):
+    def test_wallet_only_and_no_debt(self):
         s = rich(profit=200000, wallet=5000)
         s['journey']['bank'] = dict(bk.initial(s['journey']['seed'], s['journey']['life_day']), balance=8000)
         self.dice(Dice(draws=[0]))
         s, result = self.act(s, 'fair_bc', bets={'cua': 1})
         audit = result['fair']['audit']
         self.assertEqual(audit['due'], 199999 // 10)
-        self.assertEqual((audit['cash'], audit['bank'], audit['amount']), (4999, 8000, 12999))
-        self.assertEqual(s['journey']['wallet'], 0)
-        self.assertEqual(s['journey']['bank']['balance'], 0)
-        self.assertEqual(s['journey']['bank']['log'][-1]['amt'], -8000)
+        self.assertEqual((audit['cash'], audit['bank'], audit['amount']), (99, 0, 99))
+        self.assertEqual(s['journey']['wallet'], 4900)
+        self.assertEqual(s['journey']['bank']['balance'], 8000)
+        self.assertEqual(s['journey']['bank']['log'], [])
         self.assertNotIn('fair_cash', s['journey'])               # what neither held is let go: no debt
         self.assertFalse(s['journey']['in_debt'])
-        self.assertEqual(s['journey']['fair_audit']['base'], 199999 - 12999)
+        self.assertEqual(s['journey']['fair_audit']['base'], 199900)
         validate_state(s)
         s2 = rich(wallet=1)                                        # nothing anywhere: the police let it go
         self.dice(Dice(draws=[0]))
@@ -125,7 +125,7 @@ class AssetAudit(FairBase):
         self.clock.t += 86400   # a new day: today's net is 0, the fair's profit is not
         self.dice(Dice(draws=[0]))
         s, result = self.act(s, 'fair_bc', bets={'cua': 1})
-        self.assertEqual(result['fair']['audit']['amount'], 5999)
+        self.assertEqual(result['fair']['audit']['amount'], 1999)
         validate_state(s)
 
     def test_an_older_edition_s_mark_does_not_count(self):
@@ -133,7 +133,7 @@ class AssetAudit(FairBase):
         s['journey']['fair_audit'] = dict(ed='fair20250101', base=59999, at=0)
         self.dice(Dice(draws=[0]))
         s, result = self.act(s, 'fair_bc', bets={'cua': 1})
-        self.assertEqual(result['fair']['audit']['amount'], 5999)
+        self.assertEqual(result['fair']['audit']['amount'], 1999)
 
     def test_xd_normal_raid_charges_nothing_more(self):
         self.dice(Dice(draws=[0, 0]))
@@ -141,7 +141,7 @@ class AssetAudit(FairBase):
         self.assertTrue(result['fair']['raid'])
         self.assertNotIn('wealth_raid', result['fair'])
         self.assertNotIn('audit', result['fair'])
-        self.assertEqual(s['journey']['wallet'], 100000 - 13)
+        self.assertEqual(s['journey']['wallet'], 100000 - 3)
 
     def test_saved_fields_validation(self):
         for bad in ([], dict(ed=fh.edition()), dict(ed=fh.edition(), base=0), dict(ed=fh.edition(), base='1', at=0),
@@ -167,7 +167,7 @@ class AssetAudit(FairBase):
         self.dice(Dice(draws=[0]))
         s, result = self.act(s, 'fair_loto_kinh', row=row, at=max(positions[n] for n in rv['card'][row]) + 1)
         self.assertTrue(result['fair']['won'])
-        self.assertEqual(result['fair']['audit']['amount'], (60000 - 5 + result['fair']['prize']) * 10 // 100)
+        self.assertEqual(result['fair']['audit']['amount'], min(2000, (100000 - 5 + result['fair']['prize']) * 2 // 100))
 
 
 class RaidThenAudit(FairBase):
@@ -179,16 +179,16 @@ class RaidThenAudit(FairBase):
         self.dice(Dice(draws=[0, 0]))   # the raid's draw, then the check's
         s, result = self.act(s, 'fair_bc', bets={'cua': 1})
         raid, audit = result['fair']['wealth_raid'], result['fair']['audit']
-        self.assertEqual(raid['amount'], 29999)                            # 30% of 99,999, exactly as 1.9.9
-        self.assertEqual(raid['wallet'], 70000)
-        profit = 200000 - 1 - 29999                                        # what the raid took is out of the profit
-        self.assertEqual((audit['gain'], audit['amount'], audit['cash']), (profit, profit // 10, profit // 10))
+        self.assertEqual(raid['amount'], 1999)
+        self.assertEqual(raid['wallet'], 98000)
+        profit = 200000 - 1 - 1999                                        # actual raid fine is out of the profit
+        self.assertEqual((audit['gain'], audit['amount'], audit['cash']), (profit, 0, 0))
         self.assertTrue(audit['after_raid'])
-        self.assertEqual(audit['wallet'], 70000 - profit // 10)
-        self.assertEqual(s['journey']['wallet'], 70000 - profit // 10)
-        self.assertEqual(fh.money_of(s['journey'])[0], profit - profit // 10)
-        self.assertEqual(s['journey']['fair_audit']['base'], profit - profit // 10)
-        self.assertEqual([r['amount'] for r in s['journey']['history'][-2:]], [-29999, -(profit // 10)])
+        self.assertEqual(audit['wallet'], 98000)
+        self.assertEqual(s['journey']['wallet'], 98000)
+        self.assertEqual(fh.money_of(s['journey'])[0], profit)
+        self.assertEqual(s['journey']['fair_audit']['base'], profit)
+        self.assertEqual([r['amount'] for r in s['journey']['history'][-2:]], [-1, -1999])
         self.assertLess(result['message'].index(raid['message']), result['message'].index(audit['message']))
         validate_state(s)
 
@@ -218,7 +218,7 @@ class AssetAuditReplay(StoreBase):
         args = (tok, 'asset-audit-retry-01', self.store.read(tok)[1], None, 'fair_bc', {'bets': {'cua': 1}})
         first = self.store.command(*args)
         saved = self.store.read(tok)[0]['journey']
-        self.assertEqual(first['result']['fair']['audit']['amount'], 5999)
+        self.assertEqual(first['result']['fair']['audit']['amount'], 1999)
         with mock.patch.object(fh, '_asset_audit', side_effect=AssertionError('Replay must not check again')), \
                 mock.patch.object(fh, '_wealth_raid', side_effect=AssertionError('Replay must not check again')):
             replay = self.store.command(*args)

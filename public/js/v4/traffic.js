@@ -26,7 +26,7 @@ export function signalHTML(traffic){
  const lamps=['red','yellow','green'].map(k=>`<i data-light-lamp="${k}" style="display:block;width:20px;height:20px;border-radius:50%;background:${k===s.color?COLORS[k]:'#46524e'};border:2px solid ${k===s.color?'#fff':'transparent'}"></i>`).join('');
  return `<div class="traffic-light" data-traffic-light data-token="${esc(token)}" data-offset="${ch.offset}" data-axis="${ch.axis}" data-server="${traffic.server_now}" style="padding:12px;border:2px solid ${color};border-radius:14px;background:#fff8e9;color:#283e3d">
  <div style="display:flex;align-items:center;gap:10px;min-height:76px"><span aria-hidden="true" style="display:flex;gap:5px;padding:7px;border-radius:12px;background:#263c36">${lamps}</span><b data-light-text style="flex:1;font-size:16px;line-height:1.35">${esc(label(s))}</b><strong data-light-count style="min-width:3ch;text-align:right;font-size:24px;font-variant-numeric:tabular-nums">${s.left}s</strong></div>
- <p style="margin:6px 0 0;font-size:12px;line-height:1.45">${esc(tr('Dừng chờ không mất xu. Qua vạch khi đèn đỏ: phạt 12 xu; 1 giây đầu mới chuyển đỏ được miễn để kịp dừng.'))}</p></div>`;
+ <p style="margin:6px 0 0;font-size:12px;line-height:1.45">${esc(tr('Dừng chờ không mất xu. Qua vạch khi đèn đỏ: phạt tối đa 12 xu và 2% tiền tại chỗ, giữ lại ít nhất 100 xu nếu đang có; 1 giây đầu mới chuyển đỏ được miễn để kịp dừng.'))}</p></div>`;
 }
 export function mountSignals(root){
  for(const box of root.querySelectorAll('[data-traffic-light]')){

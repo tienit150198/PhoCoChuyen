@@ -3,6 +3,7 @@ import copy
 import unittest
 
 from game import happenings as hp
+from game.loss_limits import bounded_loss
 from game import journey as jr
 from game.content import CAREERS
 from game.engine import GameError, apply_action, public_state, validate_state, new_state, migrate_state
@@ -179,11 +180,11 @@ class Theft(unittest.TestCase):
         s, r = react(s, 'grocery', 'let')
         c = s['careers']['grocery']
         cash = live['facts']['cash']
-        self.assertEqual(c['money'], before - min(cash, before))
+        self.assertEqual(c['money'], before - bounded_loss(before, cash))
         self.assertIn('theft_loss', cats(c, live['id']))
         self.assertTrue(ledger_ok(c))
         last = c['happen']['last']
-        self.assertEqual(sum(x['amount'] for x in last['lines']), -min(cash, before))
+        self.assertEqual(sum(x['amount'] for x in last['lines']), -bounded_loss(before, cash))
         pub = public_state(s)['careers']['grocery']['happen']
         self.assertEqual(pub['last']['label'], INDEX['grab_till']['label'])
         self.assertNotIn('_roll', str(pub))
@@ -268,14 +269,14 @@ class Theft(unittest.TestCase):
         self.assertEqual(c['happen']['last']['choice'], 'let')
         self.assertEqual(r['happen_auto'], live['id'])
 
-    def test_employee_pays_half_of_till_shortage(self):
+    def test_employee_wallet_does_not_cover_till_theft(self):
         s = open_day('teacher', day=8)
         c = s['careers']['teacher']
         live = fire(s, 'teacher', 'class_fund', roll=99)
         cash = live['facts']['cash']
         lines = c['happen']['live']['applied']
         wallet_part = sum(x['amount'] for x in lines if x['where'] == 'wallet')
-        self.assertEqual(wallet_part, -(cash // 2))
+        self.assertEqual(wallet_part, 0)
         self.assertTrue(ledger_ok(c))
         s, _ = react(s, 'teacher', 'let')
         validate_state(s)

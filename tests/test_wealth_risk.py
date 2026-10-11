@@ -27,14 +27,14 @@ class WealthRiskTests(unittest.TestCase):
         for kind in ('om', 'nha'):
             self.assertEqual(len({x[kind] for x in rows}), 1)
 
-    def test_millionaire_can_lose_substantial_cash_or_account_funds(self):
+    def test_millionaire_losses_remain_small_and_local(self):
         for kind in ('hack', 'trom'):
             s = grown(wallet=1000000 if kind == 'trom' else 0,
                       bank=1000000 if kind == 'hack' else 0, day=40)
             warn(s, kind, 'account' if kind == 'hack' else 'nha')
             mature(s)
-            self.assertEqual(R(s)['card']['loss'], 79976)
-            self.assertEqual(rui.wealth(s), 920024)
+            self.assertEqual(R(s)['card']['loss'], 1000)
+            self.assertEqual(rui.wealth(s), 999000)
             validate_state(s)
             snapshot = copy.deepcopy(s)
             rui.on_life_day(s)
@@ -83,7 +83,7 @@ class WealthRiskTests(unittest.TestCase):
         warn(s, 'hack', 'account')
         mature(s)
         loss = R(s)['card']['loss']
-        self.assertGreater(loss, 3000)
+        self.assertEqual(loss, 1000)
         with patch.object(rui, '_rng') as rng:
             rng.return_value.randint.return_value = 1
             s, _ = act(s, 'jr_rui_choose', id=R(s)['card']['id'], choice='secure')
@@ -118,7 +118,7 @@ class WealthRiskTests(unittest.TestCase):
         self.assertIsNotNone(profile)
         self.assertEqual(profile['threshold'], 1000000)
         self.assertEqual(profile['odds_pct'], 300)
-        self.assertEqual(profile['hack_max'], 80000)
+        self.assertEqual(profile['hack_max'], 1000)
         self.assertEqual(profile['event_max'], 79976)
         self.assertEqual(s, snapshot)
 
@@ -134,7 +134,7 @@ const {S,ruiPage}=new Function('icon','esc',source+'\\nreturn {S,ruiPage};')(()=
 const f=JSON.parse(fs.readFileSync(0,'utf8'));
 S.env={api:{state:{rui:f.rui},content:{journey:{rui:f.catalogue}}}};
 const html=ruiPage();
-assert.match(html,/tối đa 80\\.000 xu/);
+assert.match(html,/1\\.000 xu/);
 assert.match(html,/Tài sản từ 1\\.000\\.000 xu/);
 assert.match(html,/3 lần/);
 for(const id of ['hai_lop','diet_virus','bao_dong'])assert.ok(html.includes('data-id="'+id+'"'));

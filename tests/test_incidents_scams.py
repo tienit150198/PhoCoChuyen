@@ -113,13 +113,15 @@ class Effects(unittest.TestCase):
                 for won, res in branches(o):
                     s = copy.deepcopy(bases[cid])
                     row = fire(s, cid, sid)
+                    priced = next(x for x in inc._priced_spec(row, s, s['careers'][cid])['options'] if x['id'] == o['id'])
+                    res = ((priced.get('luck') or {}).get('win' if won else 'lose') if res else None)
                     c0 = s['careers'][cid]
                     fund0, wallet0, n0, trust0 = c0['money'], s['journey']['wallet'], len(c0['ops']['finance']['ledger']), \
                         c0['incidents']['trust']
                     with mock.patch.object(inc, '_luck', return_value=won):
                         s, r = choose(s, cid, o['id'], row['id'])
                     c = s['careers'][cid]
-                    lines = inc._lines(o, res)
+                    lines = inc._lines(priced, res)
                     fund = sum(a for w, a, _ in lines if w == 'fund')
                     wallet = sum(a for w, a, _ in lines if w == 'wallet')
                     key = (sid, o['id'], won)
@@ -134,12 +136,14 @@ class Effects(unittest.TestCase):
                     self.assertTrue(r['message'], key)
                     validate_state(s)
 
-    def test_voluntary_scam_payments_need_the_money(self):
+    def test_scam_payment_preserves_a_small_wallet(self):
         s = open_day('grocery')
         s['journey']['wallet'] = 10
         fire(s, 'grocery', 'fake_prize')
         pub = public_state(s)['careers']['grocery']['incidents']['active']
-        self.assertFalse(next(o for o in pub['options'] if o['id'] == 'pay')['affordable'])
+        self.assertTrue(next(o for o in pub['options'] if o['id'] == 'pay')['affordable'])
+        s, _ = choose(s, 'grocery', 'pay')
+        self.assertEqual(s['journey']['wallet'], 10)
         self.assertTrue(next(o for o in pub['options'] if o['id'] == 'check')['affordable'])
 
     def test_careless_scam_loss_is_hidden_until_decided(self):
@@ -208,7 +212,7 @@ class FollowUps(unittest.TestCase):
         box['follow'] = []
         fire(s, 'grocery', 'prize_more')
         s, _ = choose(s, 'grocery', 'pay')
-        self.assertEqual(s['journey']['wallet'], w0 - 70)
+        self.assertEqual(s['journey']['wallet'], w0 - 3)  # 2 xu, then 1 xu; each call is capped.
         self.assertEqual(s['careers']['grocery']['incidents']['follow'], [])   # no third call: the chain ends
 
 

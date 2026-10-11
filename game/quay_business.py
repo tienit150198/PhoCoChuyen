@@ -4,8 +4,8 @@ One business period is ten real minutes. Expenses carry fractional xu between
 settlements; arrivals have absolute timestamps, so polling cannot change income.
 Initialization purchases a modest starter shelf from existing business cash only.
 Old life-day sales are disabled as soon as this optional runtime exists.
-Unpaid traffic fines remain local liabilities and use later till/fund receipts;
-they never debit the owner's personal wallet or disappear when a run closes.
+Traffic fines are bounded immediate local payments. Excess legacy liabilities
+are waived once, without charging future receipts or the owner's wallet.
 """
 from __future__ import annotations
 
@@ -16,6 +16,7 @@ from . import quay_self as qs
 from . import quay_market as market
 from . import wealth_pricing
 from . import income_gear
+from .loss_limits import bounded_loss
 
 PERIOD = 600
 DEN = PERIOD * 1000
@@ -198,22 +199,29 @@ def _protection_plans(st):
 
 
 def collect_fines(st):
-    """Collect a local liability once, only from existing business cash."""
+    """Forgive old uncollected fines once; never seize future operating cash."""
     b = st.get('business')
     if not b or not b.get('unpaid_fines', 0):
         return 0
-    paid = qy._from_till_fund(st, b['unpaid_fines'])
-    b['unpaid_fines'] -= paid
-    b['expenses']['loss'] += paid
-    return paid
+    waived = b['unpaid_fines']
+    profit = _profit_state(st)
+    profit['costs'] = max(0, profit['costs']-waived)
+    if 'income_tax' in b:
+        b['income_tax']['loss'] = max(0, b['income_tax']['loss']-waived)
+    b['waived_fines'] = min(10**16, b.get('waived_fines', 0)+waived)
+    b['unpaid_fines'] = 0
+    return 0
 
 
 def assess_fine(st, amount):
+    collect_fines(st)
     b = st['business']
+    amount = bounded_loss(st['till']+st['fund'], amount, fine=True)
+    paid = qy._from_till_fund(st, amount)
     _profit_state(st)['costs'] += amount
     st['business']['income_tax']['loss'] += amount
-    b['unpaid_fines'] = b.get('unpaid_fines', 0) + amount
-    return collect_fines(st)
+    b['expenses']['loss'] += paid
+    return paid
 
 
 def _charge(st, elapsed):
@@ -331,7 +339,7 @@ def due(s, now=None):
                (wealth_pricing.ENABLED and st['business'].get('protection_quote', {}).get('day') != s['journey']['life_day']) or
                'profit_boost' not in st['business'] or 'market_epoch' not in st['business'] or
                visit_due(st,at) or
-               (st['business'].get('unpaid_fines', 0) > 0 and st['fund'] + st['till'] > 0) or
+               st['business'].get('unpaid_fines', 0) > 0 or
                (at > st['business']['cursor'] and (status(st) == 'running' or
                 (not st['business']['paused'] and isinstance(st.get('run'), dict) and st['run'].get('continuous') and not st['run'].get('x'))))
                for st in (qy.get(s) or {}).get('stalls', []))
@@ -352,7 +360,8 @@ def settle(s, now=None):
         fresh = tick_quay(s, st) or fresh
         fresh = tick_staff(s, st) or fresh
         b = st['business']
-        if collect_fines(st):
+        if b.get('unpaid_fines', 0):
+            collect_fines(st)
             changed = True
         if at <= b['cursor']:
             changed |= fresh
@@ -564,6 +573,7 @@ def validate(st, need, integer):
     need(isinstance(growth,dict) and set(growth)==set(income_gear.RATES))
     need(all(type(growth[k]) is int and growth[k] in rates for k,rates in income_gear.RATES.items()))
     need(integer(b.get('unpaid_fines', 0), 0, 10**16))
+    need(integer(b.get('waived_fines', 0), 0, 10**16))
     if 'profit_boost' in b:
         p = b['profit_boost']
         need(isinstance(p, dict) and set(p) == {'carry', 'total', 'costs'})

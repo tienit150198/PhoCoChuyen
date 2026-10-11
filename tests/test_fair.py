@@ -234,14 +234,14 @@ class ChieuTrong(FairBase):
             with self.assertRaises(GameError, msg=p):
                 apply_action(s, None, 'fair_xd', p)
 
-    def test_raid_confiscates_fines_and_closes_the_corner(self):
+    def test_raid_cancels_stake_fines_and_closes_the_corner(self):
         s = story(200)
         self.dice(Dice(draws=[0.0]))
         s, r = self.act(s, 'fair_xd', side='le', stake=40)
         f = r['fair']
         self.assertTrue(f['raid'])
-        self.assertEqual((f['stake'], f['fine'], f['net']), (40, 40 // fh.FINE_DIV, -40 - 40 // fh.FINE_DIV))
-        self.assertEqual(s['journey']['wallet'], 200 - 40 - 40 // fh.FINE_DIV)
+        self.assertEqual((f['stake'], f['fine'], f['net']), (40, 4, -4))
+        self.assertEqual(s['journey']['wallet'], 196)
         self.assertIn('f_raid', s['journey']['titles'])
         self.assertIn('Công an phường', r['message'])
         with self.assertRaises(GameError) as e:
@@ -259,7 +259,7 @@ class ChieuTrong(FairBase):
         s = story(12)
         self.dice(Dice(draws=[0.0]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=10)
-        self.assertEqual((r['fair']['fine'], s['journey']['wallet']), (2, 0))
+        self.assertEqual((r['fair']['fine'], s['journey']['wallet']), (0, 12))
         self.assertFalse(s['journey']['in_debt'])
 
     def test_only_the_back_corner_is_ever_raided(self):
@@ -279,7 +279,7 @@ class ChieuTrong(FairBase):
         s = story(1000)
         self.dice(Dice(draws=[0.0]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=50)
-        self.assertEqual((r['fair']['fine'], r['fair']['net']), (12, -62))
+        self.assertEqual((r['fair']['fine'], r['fair']['net']), (12, -12))
         self.assertEqual(fh.xd_fine(10), fh.FINE_MIN)
 
 class Calendar(FairBase):
@@ -616,10 +616,10 @@ class LotoShow(FairBase):
                 expected = probability * fh.prize_of(mode, 5, n) / (n * 5) - 1
                 self.assertAlmostEqual(ev, expected, delta=.20, msg=(mode, n, ev))
         p = fh.chance_rate('lt', OPEN)
-        for k in fh.LOTO_MODES:   # 08/10: the house always wins: a perfect player gets 91..96% back (no farming)
+        for k in fh.LOTO_MODES:   # current .46 draw and 2.1x payout: at most 96.6% back
             for tier, price in fh.LOTO_TIERS.items():
                 for n in range(1, fh.LOTO_CARDS + 1):
-                    self.assertTrue(.90 <= p * fh.prize_of(k, price, n) / (n * price) <= .96, (k, tier, n))
+                    self.assertTrue(.90 <= p * fh.prize_of(k, price, n) / (n * price) <= .97, (k, tier, n))
         self.assertTrue(.88 < cl / 600 < 1.05, cl / 600)   # blind side bets (closed since 08/10: SIDE_OPEN)
         self.assertTrue(.8 < cot / 600 < 1.05, cot / 600)
 
@@ -1188,7 +1188,7 @@ class Odds(FairBase):
     def xd(self, side, stake):
         def roll(want):
             if fh._rng.random() * 100 < fh.RAID_PCT:
-                return stake, -stake - fh.xd_fine(stake)
+                return stake, -fh.bounded_loss(100000, fh.xd_fine(stake), fine=True)
             coins = fh.xd_toss(side, want)
             right = (side == 'chan') == (sum(coins) % 2 == 0)
             self.assertEqual(right, want)                                # the coins always match the outcome
@@ -1208,7 +1208,7 @@ class Odds(FairBase):
         rate, ev = self.rounds(self.xd('le', 20))
         self.assertTrue(fh.WIN_P - .03 <= rate <= fh.WIN_P + .01, rate)   # the 1 % raids lose too
         r = fh.RAID_PCT / 100
-        expected = (1 - r) * (2 * fh.WIN_P - 1) - r * (1 + fh.xd_fine(20) / 20)
+        expected = (1 - r) * (2 * fh.WIN_P - 1) - r * fh.xd_fine(20) / 20
         self.assertAlmostEqual(ev, expected, delta=.025)
 
     def test_a_long_run_of_one_stall(self):

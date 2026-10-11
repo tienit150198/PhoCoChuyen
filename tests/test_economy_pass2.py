@@ -16,15 +16,15 @@ class PaidStakeLimits(FairBase):
         with patch.object(xs, 'prize_mult', return_value=50):
             state,result=self.act(state,'fair_xs',price=500)
         self.assertEqual(result['fair']['prize'],25000)
-        self.assertEqual(result['fair']['wealth_raid']['amount'],10350)
-        self.assertEqual(state['journey']['fair']['net'],fh.NET_SAFE-1000+24500-10350)
+        self.assertEqual(result['fair']['wealth_raid']['amount'],690)
+        self.assertEqual(state['journey']['fair']['net'],fh.NET_SAFE-1000+24500-690)
         validate_state(state)
         with self.assertRaises(GameError):self.act(state,'fair_xs',price=2)
         state=story(10000)
         state['journey']['fair']=dict(fh.initial(), date=fh.vn_date(self.clock.t), net=-999499)
         self.dice(Dice(draws=[0]))
         state,result=self.act(state,'fair_xd',side='chan',stake=500)
-        self.assertEqual(state['journey']['fair']['net'],-1000124)
+        self.assertEqual(state['journey']['fair']['net'],-999624)
         validate_state(state)
 
     def test_pending_knife_prize_crosses_old_bound_once(self):

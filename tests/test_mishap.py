@@ -38,7 +38,7 @@ class Apply(Base):
     def take(self, s, amount, sub='scam', eid='mishap-1-x-1'):
         return lfx.apply(s, dict(id=eid, kind='mishap', amount=amount, sub=sub))
 
-    def test_order_and_no_debt(self):
+    def test_account_only_and_no_debt(self):
         _tok, s = self.fresh()
         try:
             rich(s)
@@ -47,17 +47,17 @@ class Apply(Base):
             self.skipTest(f'save shape: {e}')
         s1, r = self.take(copy.deepcopy(s), 1200)
         b = s1['journey']['bank']
-        self.assertEqual(r['live']['taken'], 1200)
-        self.assertEqual((b['balance'], b['demand'], len(b['terms'])), (0, 300, 1))   # account first, then the demand pot
+        self.assertEqual(r['live']['taken'], 10)
+        self.assertEqual((b['balance'], b['demand'], len(b['terms'])), (990, 500, 1))
         s2, r = self.take(copy.deepcopy(s), 10**8)
         j = s2['journey']
-        total = 1000 + 500 + 2000 + (300 if isinstance(j.get('invest'), dict) else 0) + 200
-        self.assertEqual(r['live']['taken'], total)
-        self.assertEqual((j['bank']['balance'], j['bank']['demand'], j['bank']['terms'], j['wallet']), (0, 0, [], 0))
+        self.assertEqual(r['live']['taken'], 10)
+        self.assertEqual((j['bank']['balance'], j['bank']['demand'], j['bank']['terms'], j['wallet']),
+                         (990, 500, s['journey']['bank']['terms'], 200))
         self.assertTrue(j['bank']['inbox'][-1]['text'].startswith('Ngân hàng Phố'))
         validate_state(s2)
 
-    def test_a_term_closed_early_returns_the_rest(self):
+    def test_a_term_is_not_closed_to_cover_an_incident(self):
         _tok, s = self.fresh()
         try:
             rich(s, balance=0, demand=0, terms=(5000,), saving=0, wallet=0)
@@ -66,7 +66,8 @@ class Apply(Base):
             self.skipTest(f'save shape: {e}')
         s1, r = self.take(s, 1234)
         b = s1['journey']['bank']
-        self.assertEqual((r['live']['taken'], b['terms'], b['balance']), (1234, [], 5000 - 1234))
+        self.assertEqual((r['live']['taken'], len(b['terms']), b['balance']), (0, 1, 0))
+        self.assertEqual(b['terms'][0]['amount'], 5000)
 
     def test_paid_once_per_row(self):
         _tok, s = self.fresh()
@@ -77,9 +78,9 @@ class Apply(Base):
             self.skipTest(f'save shape: {e}')
         s, r1 = self.take(s, 700)
         s, r2 = self.take(s, 700)
-        self.assertEqual(r1['live']['taken'], 700)
+        self.assertEqual(r1['live']['taken'], 10)
         self.assertTrue(r2['live'].get('already'))
-        self.assertEqual(s['journey']['bank']['balance'], 300)
+        self.assertEqual(s['journey']['bank']['balance'], 990)
 
     def test_gear(self):
         _tok, s = self.fresh()
@@ -94,13 +95,13 @@ class Apply(Base):
         r = rui.get(s)
         r['gear'] = ['diet_virus']
         s1, res = self.take(copy.deepcopy(s), 800, sub='hack')
-        self.assertEqual(res['live']['taken'], 400)
+        self.assertEqual(res['live']['taken'], 5)
         r['gear'] = ['hai_lop']
         s2, res = self.take(copy.deepcopy(s), 800, sub='hack')
-        self.assertEqual(res['live']['taken'], 800)
+        self.assertEqual(res['live']['taken'], 10)
         self.assertIn('cuộc gọi', s2['journey']['bank']['log'][-1]['text'])
 
-    def test_coin_is_sold_at_its_live_price_and_police_has_its_words(self):
+    def test_coin_is_not_sold_to_pay_a_fine(self):
         _tok, s = self.fresh()
         try:
             rich(s, balance=0, demand=0, terms=(), saving=0, wallet=0)
@@ -117,14 +118,13 @@ class Apply(Base):
         worth = invest._value(iv['coin']['units'], iv['price'])
         s1, r = self.take(s, 123_457, sub='police')
         c = s1['journey']['invest']['coin']
-        self.assertEqual(r['live']['taken'], 123_457)
+        self.assertEqual(r['live']['taken'], 0)
         self.assertGreater(c['units'], 0)
-        self.assertLess(c['basis'], 400_000)
-        self.assertTrue(abs(invest._value(c['units'], s1['journey']['invest']['price']) - (worth - 123_457)) < 50)
-        self.assertIn('Cong an', s1['journey']['bank']['inbox'][-1]['text'])
+        self.assertEqual(c['basis'], 400_000)
+        self.assertEqual(invest._value(c['units'], s1['journey']['invest']['price']), worth)
         validate_state(s1)
 
-    def test_thugs_reach_the_workplace_funds_and_hacks_do_not(self):
+    def test_thugs_and_hacks_leave_workplace_funds_alone(self):
         _tok, s = self.fresh()
         try:
             rich(s, balance=100, demand=0, terms=(), saving=0, wallet=0)
@@ -139,11 +139,11 @@ class Apply(Base):
         validate_state(s)
         before = sum(c['money'] for c in cs)
         s1, r = self.take(copy.deepcopy(s), 3000, sub='hack')
-        self.assertEqual(r['live']['taken'], 100)
+        self.assertEqual(r['live']['taken'], 0)
         s2, r = self.take(copy.deepcopy(s), 3000, sub='thug')
-        self.assertEqual(r['live']['taken'], 3000)
+        self.assertEqual(r['live']['taken'], 0)
         after = sum(c['money'] for c in s2['careers'].values() if isinstance(c, dict) and type(c.get('money')) is int)
-        self.assertEqual(before - after, 2900)
+        self.assertEqual(before - after, 0)
         self.assertTrue(all(c['money'] >= 0 for c in s2['careers'].values() if isinstance(c, dict) and type(c.get('money')) is int))
         validate_state(s2)
 
@@ -187,7 +187,7 @@ class Sweep(Schedule):
         with self.store.connect() as db:
             rc = db.execute('SELECT result FROM receipts WHERE sid=? AND request_id=?', (sid, lfx.RID + lfx.short('mishap-7-s-1'))).fetchone()
         self.assertIsNotNone(rc)
-        self.assertEqual(json.loads(rc['result'])['live']['taken'], min(30, max(0, before)))
+        self.assertEqual(json.loads(rc['result'])['live']['taken'], 0)  # no account: never fall back to the wallet
         validate_state(self.state(tok))
         self.assertFalse(self.load(tok))   # nothing left due for on_load
 

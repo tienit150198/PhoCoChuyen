@@ -4,6 +4,7 @@ import unittest
 
 import game.careers.kit as kit
 from game import inventory
+from game.loss_limits import bounded_loss
 from game.engine import GameError, public_state, validate_state
 from game.careers import grocery as G
 from tests.helpers import Journey
@@ -1697,13 +1698,13 @@ class GrocerySurpriseTests(unittest.TestCase):
         self.assertEqual(d['desk']['ev']['script'], 'GE-FINE')
         self.assertEqual(d['fine']['amount'], 60)
         view = public_state(j.state)['careers']['grocery']['data']['desk']['ev']
-        self.assertIn('60', view['options'][0]['label'])
-        self.assertEqual(view['options'][0]['cost'], 60)
+        self.assertIn(str(bounded_loss(j.c['money'], 60, fine=True)), view['options'][0]['label'])
+        self.assertEqual(view['options'][0]['cost'], bounded_loss(j.c['money'], 60, fine=True))
         with self.assertRaises(GameError):
             j.act('gr_scan', item='egg', qty=1)
         money = j.c['money']
         j.act('gr_decide', option='pay')
-        self.assertEqual(money - j.c['money'], 60)
+        self.assertEqual(money - j.c['money'], bounded_loss(money, 60, fine=True))
         self.assertFalse([l for l in j.c['ext']['inv']['lots'] if l['supplier'] == 'noinvoice'])
         self.assertIn('fined', j.c['ext']['data']['desk']['marks'])
         self.assertIsNone(j.c['ext']['data']['fine'])
@@ -1723,7 +1724,7 @@ class GrocerySurpriseTests(unittest.TestCase):
         j.act('gr_decide', option='open')
         money = j.c['money']
         j.act('gr_decide', option='appeal')
-        self.assertEqual(money - j.c['money'], 30)
+        self.assertEqual(money - j.c['money'], bounded_loss(money, 30, fine=True))
 
     def test_half_fine_brings_a_reinspection(self):
         j = self._j()
@@ -1742,15 +1743,14 @@ class GrocerySurpriseTests(unittest.TestCase):
         j.act('gr_decide', option='open')
         self.assertNotIn('reinspect', j.c['ext']['data']['desk']['marks'])
 
-    def test_cannot_afford_a_fine_pick_another_way(self):
+    def test_small_balance_fine_is_waived_and_decision_finishes(self):
         j = self._j()
         inventory.add_lot(j.c, 'bread', 2, 3, 1, 'partner')
         force_event(j, 'GE-INSPECT')
         j.act('gr_decide', option='open')
         set_money(j, 5)
-        with self.assertRaises(GameError):
-            j.act('gr_decide', option='pay')
-        j.act('gr_decide', option='appeal')                     # first time: only a warning
+        j.act('gr_decide', option='pay')
+        self.assertEqual(j.c['money'], 5)
         self.assertIsNone(j.c['ext']['data']['desk']['ev'])
 
     def test_wholesale_deal_respects_room_and_cash(self):
@@ -1817,7 +1817,7 @@ class GrocerySurpriseTests(unittest.TestCase):
         d = j.c['ext']['data']
         self.assertIsNone(d['desk']['ev'])
         self.assertIsNone(d['fine'])
-        self.assertEqual(j.c['money'], 0)
+        self.assertEqual(j.c['money'], 20)
         roundtrip(j)
 
 

@@ -5,6 +5,7 @@ debits. Owner totals share one allowance across locations; incidents affect at
 most one counter per owner/life day. Legacy saves start with safe operating habits.
 """
 from __future__ import annotations
+from .loss_limits import bounded_loss
 
 PERIOD = 30
 REVENUE_ALLOWANCE = 1000
@@ -112,9 +113,12 @@ def settle(s, st, day):
     if event:q['risk_day']=day
     if event in ('theft', 'robbery'):
         protected = c['security'] or 'ket' in st['items']
-        loss = max(20, round(revenue * (.45 if protected else 1.5)))
-        # A két sắt: a thief never gets more than half of the till.
-        incident = min(max(0,st['till']//2 if 'ket' in st['items'] else st['till']-(1 if protected else 0)), loss)
+        loss = max(20, round(revenue * 1.5))
+        incident = bounded_loss(st['till'], loss)
+        if protected:
+            incident = incident * 30 // 100
+        if 'ket' in st['items']:
+            incident //= 2
         st['till'] -= incident
         if incident:
             st['theft'] = day
@@ -125,7 +129,7 @@ def settle(s, st, day):
     elif event in ('food_check', 'police_check'):
         violation = (st['trade'] in FOOD and not c['hygiene']) if event == 'food_check' else not c['invoices']
         if violation:
-            incident = max(20, revenue)
+            incident = bounded_loss(st['till'], max(20, revenue), fine=True)
             c['paused'] = event == 'food_check'
             label = 'Hàng không đạt vệ sinh: tiêu hủy, tạm dừng' if event == 'food_check' else 'Thiếu chứng từ: xử lý vi phạm'
             qy._log(st,day,label,-incident)

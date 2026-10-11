@@ -9,9 +9,25 @@ never change money, reviews or relationships.
 from __future__ import annotations
 from .jsoncopy import tree_copy
 from . import archive as ar
+from .loss_limits import bounded_loss
 
 MAX_COST = 80
 MAX_REWARD = 60
+
+
+def _cost(c, opt):
+    amount = min(MAX_COST, opt.get('cost', 0))
+    return bounded_loss(c['money'], amount, fine=opt['money_loss']=='fine') if opt.get('money_loss') else amount
+
+
+def _outcome(opt, paid=None):
+    text = opt['outcome']
+    if paid is not None:
+        import re
+        if re.search(r'(?<!\d)\d+ xu', text):
+            return re.sub(r'(?<!\d)\d+ xu', f'{paid} xu', text)
+        return text + f' Đã trừ {paid} xu.'
+    return text
 
 
 def scripts(career: str) -> list[dict]:
@@ -102,7 +118,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         opt = next(o for o in x['options'] if o['id'] == row['choice'])
         npc = _npc(career, x)
         if not row['practice']:
-            cost = min(MAX_COST, opt.get('cost', 0))
+            cost = _cost(c, opt)
+            if opt.get('money_loss'):row['paid'] = cost
             if cost:
                 e.money(s, c, -cost, 'Tình huống: ' + x['title'], row['id'], category='situation')
             reward = min(MAX_REWARD, opt.get('reward', 0))
@@ -123,7 +140,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
                     e.add_feed(s, c, npc, 'Chuyện ở quán: ' + x['title'] + '. ' + opt['outcome'], row['id'], kind='story')
             ext['sit_history'] = ar.last(ext['sit_history'] + [dict(id=row['id'], script=x['id'], choice=opt['id'], day=c['day'], quality=opt.get('quality', 'ok'))], 120, 'situations', c)
         row['stage'] = 'resolved'
-        return dict(message=opt['outcome'], celebrate=opt.get('quality') == 'good')
+        return dict(message=_outcome(opt, row.get('paid')), celebrate=opt.get('quality') == 'good')
     if name == 'sit_dismiss':
         need(row['stage'] == 'resolved' or row['practice'], 'Tình huống thật chưa xử lý xong.')
         ext['situation'] = None
@@ -141,11 +158,11 @@ def public(c: dict, career: str) -> dict | None:
     v = dict(row)
     v.update(title=x['title'], opening=x['opening'], tone=x.get('tone', 'gentle'), swap=x.get('swap'), npc=_npc(career, x),
              facts=[dict(id=f['id'], title=f['title'], source=f.get('source', ''), text=f['text'] if f['id'] in row['read'] else None) for f in x['facts']],
-             options=[dict(id=o['id'], label=o['label'], requires=o.get('requires', []), cost=o.get('cost', 0), reward=o.get('reward', 0),
+             options=[dict(id=o['id'], label=o['label'], requires=o.get('requires', []), cost=_cost(c, o), reward=o.get('reward', 0),
                            preview=o.get('preview')) for o in x['options']])
     if row['stage'] == 'resolved':
         opt = next(o for o in x['options'] if o['id'] == row['choice'])
-        v.update(outcome=opt['outcome'], quality=opt.get('quality', 'ok'), perspectives=tree_copy(opt.get('perspectives', [])),
+        v.update(outcome=_outcome(opt, row.get('paid')), quality=opt.get('quality', 'ok'), perspectives=tree_copy(opt.get('perspectives', [])),
                  lesson=x.get('lesson'))
     return v
 
@@ -173,3 +190,6 @@ def validate(c: dict, career: str) -> None:
     need(row.get('choice') in (None, *[o['id'] for o in x['options']]), 'Lựa chọn tình huống sai.')
     need(type(row.get('practice')) is bool, 'Cờ diễn tập sai.')
     integer(row.get('day'), 1, 10**7)
+    if 'paid' in row:
+        need(row['stage']=='resolved' and not row['practice'], 'Biên nhận tình huống sai.')
+        integer(row['paid'], 0, MAX_COST)

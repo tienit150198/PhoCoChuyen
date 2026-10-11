@@ -199,10 +199,10 @@ class KnifeScripts(WatchBase):
         wallet = s['journey']['wallet']
         s, r = self.throw(s, safe_taps(sc, sc['need'], start=3500), ahead=3400, latency=0)
         a = self.assert_caught(s, r, 'tay ném nhanh bất thường')
-        self.assertEqual((a['stake'], a['fine']), (1000, wallet * 30 // 100))
-        self.assertEqual(s['journey']['wallet'], wallet - a['fine'])   # the stake went in at the start, no prize
+        self.assertEqual((a['stake'], a['fine'], a['refunded']), (1000, min(2000, (wallet + 1000) * 2 // 100), 1000))
+        self.assertEqual(s['journey']['wallet'], wallet + 1000 - a['fine'])   # canceled run's stake refunded, no prize
         self.assertEqual(self.run_of(s)['sg'], 'lost')
-        self.assertEqual(s['journey']['wallet'], 100000 - 1000 + paid - 1000 - a['fine'])
+        self.assertEqual(s['journey']['wallet'], 100000 - 1000 + paid - a['fine'])
         self.assertNotIn('ka', s['journey'][w.KEY])                      # a fresh start once out
         self.assertNotIn('2500', r['message'])
         with self.assertRaises(GameError) as e:                          # the cell: no Chợ đen
@@ -220,8 +220,8 @@ class KnifeScripts(WatchBase):
         self.tick(1.5)
         s, r = self.act(s, 'fair_kn_start', stake=500)
         a = self.assert_caught(s, r, 'phóng dao liên tục bất thường')
-        self.assertEqual((a['stake'], a['fine']), (500, (wallet - 500) * 30 // 100))
-        self.assertEqual(s['journey']['wallet'], wallet - 500 - a['fine'])
+        self.assertEqual((a['stake'], a['fine']), (500, 2000))
+        self.assertEqual(s['journey']['wallet'], wallet - a['fine'])
         self.assertEqual(s['journey']['history'][-1]['label'], bm.FINE_LABEL)
         self.roll.assert_not_called()
 
@@ -288,7 +288,7 @@ class OAQ(WatchBase):
         a = self.assert_caught(s, r, 'nước đi nhanh bất thường')
         before = a['wallet'] + a['fine']                                 # (an earlier game may have been won)
         self.assertGreaterEqual(before, 20000)
-        self.assertEqual((a['stake'], a['fine']), (0, before * 30 // 100))   # no stake: the fine and the cell
+        self.assertEqual((a['stake'], a['fine']), (0, before * 2 // 100))   # no stake: the bounded fine and the cell
         self.assertEqual(s['journey']['wallet'], before - a['fine'])
         self.assertEqual(s['journey']['fair']['oaq']['stage'], 'lost')
         self.assertNotIn('Mất', r['message'])
@@ -302,7 +302,7 @@ class OAQ(WatchBase):
         self.tick(1)
         s, r = self.act(s, 'fair_oaq_start', lv='de')
         a = self.assert_caught(s, r, 'bày bàn liên tục bất thường')
-        self.assertEqual((a['stake'], a['fine']), (0, 1500))
+        self.assertEqual((a['stake'], a['fine']), (0, 100))
 
     def test_a_won_game_pays_the_old_prizes(self):   # owner 09/10: "thắng ông Hai vẫn là 10k/1 lần"
         self.assertEqual(public_state(story(0))['fair']['rules']['oaq_prize'], {'de': 50, 'kho': 10000})

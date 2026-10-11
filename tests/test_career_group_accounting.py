@@ -523,11 +523,16 @@ class GroupAccountingTests(unittest.TestCase):
             j.act('ga_pair', task=tid, a=a['id'], b=b['id'], cause='typo')
         self.play_board(tid)
         j.act('ga_submit', task=tid, confirm=True)
+        from game.loss_limits import bounded_loss
         r = j.act('end_day', carry_event=True)
+        finance = j.c['ops']['finance']
+        index = next(i for i, row in enumerate(finance['ledger']) if row['category']=='penalty')
+        available = finance['opening_balance'] + sum(row['amount'] for row in finance['ledger'][:index])
+        expected = bounded_loss(available, 10, fine=True)
         audit = r['summary']['career']['audit']
         self.assertFalse(audit['ok'])
-        self.assertEqual(audit['amount'], 10)
-        self.assertTrue(self.paid('penalty', -10))
+        self.assertEqual(audit['amount'], expected)
+        self.assertTrue(self.paid('penalty', -expected))
         self.assertEqual(r['summary']['career']['slips'], 3)
 
     def test_day_summary_names_milestones(self):

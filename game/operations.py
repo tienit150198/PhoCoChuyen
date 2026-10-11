@@ -12,6 +12,7 @@ import contextvars
 from contextlib import contextmanager
 from typing import Any
 from .jsoncopy import tree_copy
+from .loss_limits import bounded_loss
 
 CAREERS = ('mother_baby', 'pharmacy', 'accounting', 'customer_care', 'teacher', 'tour_guide', 'milk_tea')
 RULES = {
@@ -369,7 +370,7 @@ def spawn_case(s:dict,c:dict,career:str,kind:str,practice:bool=False) -> dict:
             loss=dict(kind='stock',item=item,qty=1,value=product.get('cost',18),cash=0)
             if not practice:c['stock'][item]-=1
         else:
-            amount=min(18,c['money'])
+            amount=bounded_loss(c['money'],18)
             loss=dict(kind='cash',item=None,qty=0,value=amount,cash=amount)
             if amount and not practice:eng.money(s,c,-amount,'Thiệt hại đã ghi nhận',cid,category='theft_loss')
     protection=sum(SECURITY_INDEX[i]['protection'] for i in sec['items'])
@@ -616,7 +617,10 @@ def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
         if name!='staff_talk':eng.log(s,c,'staff',result['message'],ref=e['id'])
     elif name=='pay_bill':
         b=next((b for b in f['bills'] if b['id']==p.get('bill')),None);need(b,'Không tìm thấy khoản cần trả.');need(b['status']=='unpaid','Khoản này đã được thanh toán rồi.')
-        eng.money(s,c,-b['amount'],b['label'],b['id'],category=b['kind']);b['status']='paid';b['paid_day']=c['day'];result['message']='Đã thanh toán '+b['label']+'. Biên nhận chỉ ghi một lần.'
+        amount = bounded_loss(c['money'], b['amount'], fine=True) if b['kind']=='fine' else b['amount']
+        if amount:eng.money(s,c,-amount,b['label'],b['id'],category=b['kind'])
+        if b['kind']=='fine':b.update(paid_amount=amount, waived_amount=b['amount']-amount)
+        b['status']='paid';b['paid_day']=c['day'];result['message']='Đã thanh toán '+b['label']+f': {amount} xu. Biên nhận chỉ ghi một lần.'
     elif name=='pay_all':
         # "Thanh toán tất cả" (owner, 02/10): every unpaid bill in one tap, overdue first; one that the till cannot
         # cover is skipped (never debt), the rest are still paid. Same receipts as paying each one.
@@ -624,11 +628,14 @@ def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
         need(due,'Không còn khoản nào cần trả.')
         paid=[]
         for b in due:
-            if c['money']<b['amount']:continue
-            eng.money(s,c,-b['amount'],b['label'],b['id'],category=b['kind']);b['status']='paid';b['paid_day']=c['day'];paid.append(b)
+            amount = bounded_loss(c['money'], b['amount'], fine=True) if b['kind']=='fine' else b['amount']
+            if c['money']<amount:continue
+            if amount:eng.money(s,c,-amount,b['label'],b['id'],category=b['kind'])
+            if b['kind']=='fine':b.update(paid_amount=amount, waived_amount=b['amount']-amount)
+            b['status']='paid';b['paid_day']=c['day'];paid.append(b)
         need(paid,'Chưa đủ xu cho khoản nào. Hoàn thành thêm việc rồi trả nhé.','not_enough')
         left=len(due)-len(paid)
-        result['message']=f"Đã thanh toán {len(paid)} khoản, tổng {sum(b['amount'] for b in paid)} xu."+(f' Còn {left} khoản chưa đủ xu.' if left else '')
+        result['message']=f"Đã thanh toán {len(paid)} khoản, tổng {sum(b.get('paid_amount',b['amount']) for b in paid)} xu."+(f' Còn {left} khoản chưa đủ xu.' if left else '')
     elif name=='extend_bill':
         b=next((b for b in f['bills'] if b['id']==p.get('bill')),None);need(b and b['status']=='unpaid','Khoản này không cần gia hạn.');need(not b['extended'],'Mỗi khoản chỉ được gia hạn một lần.')
         b['due']=max(b['due'],c['day'])+3;b['extended']=True;eng.log(s,c,'bill','Gia hạn '+b['label']+' tới ngày '+str(b['due']),ref=b['id'])
@@ -765,8 +772,16 @@ def public_operations(c:dict,career:str|None=None) -> dict:
     if o['incident']:
         for e in o['incident']['evidence']:
             if e['id'] not in o['incident']['read']:e['text']=None
+    f['bills'] = [dict(b, payable=bounded_loss(c['money'], b['amount'], fine=True)
+                     if b['kind']=='fine' and b['status']=='unpaid' else b.get('paid_amount', b['amount'])) for b in f['bills']]
     due=[b for b in f['bills'] if b['status']=='unpaid']
-    f['unpaid_total']=sum(b['amount'] for b in due);f['due_total']=sum(b['amount'] for b in due if b['due']<=c['day'])
+    f['unpaid_total']=sum(b['payable'] for b in due);f['due_total']=sum(b['payable'] for b in due if b['due']<=c['day'])
+    remaining = c['money']
+    for b in sorted(due, key=lambda b: (b['due'], b['id'])):
+        amount = bounded_loss(remaining, b['amount'], fine=True) if b['kind']=='fine' else b['amount']
+        if amount <= remaining:
+            remaining -= amount
+    f['pay_all_total'] = c['money'] - remaining
     f['estimate_tax']=math.ceil(f['period_revenue']*RULES['tax_percent']/100)
     # A salaried career pays no period tax or rent: the books show neither (its pay of the day is not taxable).
     if salaried(career):f.update(tax_exempt=True,period_revenue=0,period_rent=0,estimate_tax=0)
@@ -867,6 +882,10 @@ def validate(c:dict,career:str,same:frozenset=frozenset()) -> None:
         need(b.get('status') in ('paid','unpaid') and type(b.get('extended')) is bool,'Trạng thái khoản phải trả sai.')
         if b['status']=='paid':integer(b.get('paid_day'),1,10**9)
         else:need(b.get('paid_day') is None,'Khoản chưa trả không có ngày trả.')
+        if 'paid_amount' in b:
+            need(b['kind']=='fine' and b['status']=='paid','Biên nhận phạt sai.')
+            integer(b['paid_amount'],0,b['amount']);integer(b.get('waived_amount'),0,b['amount'])
+            need(b['paid_amount']+b['waived_amount']==b['amount'],'Biên nhận phạt sai.')
     need(len(bids)==len(set(bids)),'Khoản phải trả trùng mã.')
     need(isinstance(f['history'],list) and len(f['history'])<=60,'Lịch sử kỳ sai.')
     for h in (() if 'ops.finance.history' in same else f['history']):

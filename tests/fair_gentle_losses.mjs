@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+const src=readFileSync(new URL('../public/js/v4/fair.js',import.meta.url),'utf8');
+const S={arrest:{stake:1000,fine:20,canceled:true,refunded:1000,wallet:980},audit:{gain:200000,amount:0,after_raid:true,wallet:980}};
+const context=vm.createContext({S,xu:n=>`${n} xu`,esc:x=>x,say:()=>'',btn:()=>''});
+for(const [start,end] of [['function arrestCard(){','// 🥶'],['function auditCard(){','function closedCard('],['function raidCard(r){','async function shakeXd(']]){
+  vm.runInContext(src.slice(src.indexOf(start),src.indexOf(end,src.indexOf(start))),context);
+}
+const refunded=vm.runInContext('arrestCard()',context);
+assert.match(refunded,/Hoàn tiền cược/);
+assert.match(refunded,/\+1000 xu/);
+assert.doesNotMatch(refunded,/bị tịch thu/);
+S.arrest.refunded=0;
+assert.match(vm.runInContext('arrestCard()',context),/Hủy ván/);
+const raid=vm.runInContext('raidCard({stake:1000,fine:20,canceled:true})',context);
+assert.match(raid,/Hủy ván/);
+assert.doesNotMatch(raid,/bị tịch thu/);
+const audit=vm.runInContext('auditCard()',context);
+assert.doesNotMatch(audit,/30%|Thu .*%|tài khoản ngân hàng/);
+assert.match(audit,/Phạt thực tế/);
+assert.doesNotMatch(src,/bị bắt thì mất tiền cược|kiểm tra: mất tiền cược/);
+const knife=readFileSync(new URL('../public/js/v4/fair-knife.js',import.meta.url),'utf8');
+const knifeContext=vm.createContext({D:{},run:()=>({stage:'lost',canceled:true,refunded:1000,fine:20}),xu:n=>`${n} xu`});
+vm.runInContext(knife.slice(knife.indexOf('  function resultCard(){'),knife.indexOf('  function view(){')),knifeContext);
+const knifeReload=vm.runInContext('resultCard()',knifeContext);
+assert.match(knifeReload,/Hủy ván/);
+assert.match(knifeReload,/Hoàn.*1000 xu/);
+assert.doesNotMatch(knifeReload,/Dao chạm dao|Mất .*tiền đặt/);
+console.log('Fair cancellation, refund and actual-fine receipts render correctly.');

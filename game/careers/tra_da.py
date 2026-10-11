@@ -452,7 +452,7 @@ SITUATIONS = [
                        outcome='Thoát được lần này, nhưng chiều lại bày ra như cũ.',
                        perspectives=[dict(who='Bà Lựu', emoji='👵', text='Chạy mãi thì mệt lắm cháu ạ.'),
                                      dict(who='Cán bộ phường', emoji='👮', text='Lần sau chúng tôi đi lại đúng giờ ấy.')]),
-                  dict(id='argue', label='Cãi: “Cả phố bày, sao bắt mỗi tôi?”', quality='bad', cost=20, stars=2,
+                  dict(id='argue', label='Cãi: “Cả phố bày, sao bắt mỗi tôi?”', quality='bad', cost=20, money_loss='fine', stars=2,
                        review='Chủ quán cãi nhau với phường ngay trước mặt khách.',
                        outcome='Bị lập biên bản, phạt 20 xu và thu hai cái ghế.',
                        perspectives=[dict(who='Cán bộ phường', emoji='👮', text='Làm đúng thì không phải cãi.'),
@@ -1381,7 +1381,8 @@ def _sweep_resolve(s: dict, c: dict, d: dict) -> dict:
         lost = min(left, 3)
     if lost:
         d['owned']['stools'] = max(STOOLS_MIN, d['owned']['stools'] - lost)
-    paid = min(fine, c['money'])
+    from ..loss_limits import bounded_loss
+    paid = bounded_loss(c['money'], fine, fine=True)
     if paid:
         kit.money(s, c, -paid, 'Phạt lấn chiếm vỉa hè', f'sweep-{c["day"]}', 'fine')
     d['today']['fine'] += paid

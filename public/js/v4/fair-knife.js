@@ -112,6 +112,7 @@ export function setup(ctx){
   }
   function resultCard(){
     const r=run();
+    if(r?.canceled)return `<div class="fh-result" data-fh-key="kn-res"><b>Hủy ván do kiểm tra</b><small>Hoàn ${xu(r.refunded)} tiền cược · nộp phạt ${xu(r.fine)}</small></div>`;
     const x=D.last||(r?.stage==='lost'?{kind:'lost',lv:r.lv,stake:r.stake,gone:r.gone}:r?.stage==='done'?{kind:'paid',paid:r.paid,lv:r.lv,stake:r.stake}:null);   // after a reload: the server's word
     if(!x)return '';
     if(x.kind==='lost')return `<div class="fh-result bad" data-fh-key="kn-res"><b>${x.late?'Hết giờ, bia ngừng quay':`Dao chạm dao! Thua ở màn ${x.lv}`}</b><small>${x.gone?`Mất ${xu(x.gone)} thưởng và ${xu(x.stake)} tiền đặt`:`Mất ${xu(x.stake)} tiền đặt`}</small></div>`;

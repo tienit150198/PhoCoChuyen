@@ -9,6 +9,7 @@ from __future__ import annotations
 import copy
 import random
 from . import wealth_pricing
+from .loss_limits import bounded_loss
 
 GAP = 12
 RECENT = 8
@@ -195,9 +196,12 @@ def _cost(choice, cash, kind=None, items=(), wealth=0, percent=None):
     cost=_maximum(choice, wealth, percent)
     if (kind=='power_cut' and 'surge' in items) or (kind=='shop_inspection' and 'hygiene' in items):
         cost=(cost+1)//2
-    # A counter's két sắt: a theft never takes more than half of the cash there.
-    cap = cash // 2 if kind == 'theft' and 'ket' in items else cash
-    return min(cost, max(0, cap if percent is not None else cash // 10)) if choice['loss'] else cost
+    if choice['loss']:
+        cost = bounded_loss(cash, cost)
+        return cost // 2 if kind == 'theft' and 'ket' in items else cost
+    if kind == 'traffic_inspection' and choice['id'] == 'fine':
+        return bounded_loss(cash, cost, fine=True)
+    return cost
 
 
 def public(c, quay=False):
@@ -206,7 +210,8 @@ def public(c, quay=False):
     if not state:
         return None
     items = c['items'] if quay else c['ops']['security']['items']
-    recent = copy.deepcopy(state['recent'])
+    recent = copy.deepcopy(sorted(state['recent'] + container.get('shop_fine_receipts', []),
+                                  key=lambda row: int(row['id'].rsplit('-', 1)[-1]))[-RECENT:])
     for row in recent:
         if (row['kind'], row['choice']) in RECOVER and row['cost'] == 0:
             row['text'] = RECOVERED
@@ -220,12 +225,14 @@ def public(c, quay=False):
         for x in spec['choices']:
             cost = _cost(x, _cash(c, quay),pending['kind'],items,pending.get('wealth',0),pending.get('percent'))
             effect = x['text'] + (f" Uy tín {'+' if x['rep'] >= 0 else ''}{x['rep']}." if x['rep'] else '')
-            if x['loss']:effect += ((' Hao hụt tính theo tài sản lúc phát sinh, ' + ('két sắt giữ lại ít nhất nửa quỹ hiện có.' if pending['kind'] == 'theft' and 'ket' in items else 'không vượt quỹ hiện có.'))
-                                    if 'percent' in pending else ' Hao hụt tối đa 10% quỹ hiện có.')
+            if x['loss']:
+                effect += ' Hao hụt tối đa 1% quỹ hiện có và 1.000 xu; giữ lại tối đa 100 xu dự phòng.'
+                if pending['kind'] == 'theft' and 'ket' in items:
+                    effect += ' Két sắt giảm thêm một nửa thiệt hại.'
             odds = recover_odds(pending['kind'], x['id'], pending['camera_at_event'])
             if odds is not None:
                 effect = f'🎲 Hên xui · {odds}% lấy lại đủ, không mất xu. Không được thì: ' + effect[0].lower() + effect[1:]
-            out['pending']['choices'].append(dict(id=x['id'], label=x['label'], cost=cost, max_cost=_maximum(x,pending.get('wealth',0),pending.get('percent')),
+            out['pending']['choices'].append(dict(id=x['id'], label=x['label'], cost=cost, max_cost=cost,
                 rep=x['rep'], effect=effect, affordable=_cash(c, quay) >= cost, odds=odds))
     return out
 
@@ -272,7 +279,11 @@ def _choose(s, c, owner, p, quay):
                text=choice['text'], cost=cost, rep=choice['rep'])
     if 'wealth' in pending:row['wealth']=pending['wealth']
     if 'percent' in pending:row['percent']=pending['percent']
-    state['recent'] = (state['recent'] + [row])[-RECENT:]
+    if pending['kind']=='traffic_inspection' and choice['id']=='fine':
+        # 2.0.2's strict recent-row validator only accepts the former nominal fine.
+        container['shop_fine_receipts'] = (container.get('shop_fine_receipts', []) + [row])[-RECENT:]
+    else:
+        state['recent'] = (state['recent'] + [row])[-RECENT:]
     state['pending'] = None
     state['next'] = progress + GAP
     if back:
@@ -310,8 +321,12 @@ def validate(container, owner, career, place=None):
         if 'percent' in pending:check(pending['kind']=='theft' and wealth_pricing.valid_event_quote(pending))
         check(pending['kind'] in kinds and pending['id'] == prefix + str(state['seq']) and type(pending['camera_at_event']) is bool)
     check(isinstance(state['recent'],list) and len(state['recent']) <= RECENT)
+    fines = container.get('shop_fine_receipts', [])
+    check(isinstance(fines, list) and len(fines) <= RECENT)
+    for row in fines:
+        check(isinstance(row, dict) and row.get('kind')=='traffic_inspection' and row.get('choice')=='fine')
     ids=set()
-    for row in state['recent']:
+    for row in state['recent'] + fines:
         check(isinstance(row,dict) and {'id','kind','title','choice','text','cost','rep'} <= set(row) <= {'id','kind','title','choice','text','cost','rep','wealth','percent'})
         if 'wealth' in row:check(wealth_pricing.valid_wealth(row['wealth']))
         if 'percent' in row:check(row['kind']=='theft' and wealth_pricing.valid_event_quote(row))
@@ -324,6 +339,7 @@ def validate(container, owner, career, place=None):
         maximum=_maximum(choice,row.get('wealth',0),row.get('percent'))
         costs={maximum}
         if row['kind'] in ('power_cut','shop_inspection'):costs.add((maximum+1)//2)
-        check(integer(row['cost'], 0, maximum) and (choice['loss'] or row['cost'] in costs))
+        bounded_fine = row['kind'] == 'traffic_inspection' and row['choice'] == 'fine'
+        check(integer(row['cost'], 0, maximum) and (choice['loss'] or bounded_fine or row['cost'] in costs))
     check(pending is None or pending['id'] not in ids)
-    check(sum(row['cost'] for row in state['recent']) <= state['spent'])
+    check(sum(row['cost'] for row in state['recent'] + fines) <= state['spent'])

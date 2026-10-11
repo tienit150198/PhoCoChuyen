@@ -97,7 +97,7 @@ function gearRow(g,have){
 function ruiPage(){
   const r=R()||{pol:[],gear:[],broken:[]},rules=CAT().rules||{};
   const exposure=r.wealth_risk;
-  const wealthNote=exposure?.threshold?`<p class="rui-calm">${esc(`Tài sản từ ${xu(exposure.threshold)}: khả năng trộm/hack gấp ${fmt(exposure.odds_pct/100)} lần mức cơ bản, trước đồ bảo vệ. Thiệt hại trộm/hack tính theo tài sản, đồ bảo vệ và tiền đang có.`)}</p>`:'';
+  const wealthNote=exposure?.threshold?`<p class="rui-calm">${esc(`Tài sản từ ${xu(exposure.threshold)}: khả năng trộm/hack gấp ${fmt(exposure.odds_pct/100)} lần mức cơ bản, trước đồ bảo vệ. Mỗi vụ mất tối đa 1% số dư bị ảnh hưởng và 1.000 xu; đồ bảo vệ giảm thêm thiệt hại.`)}</p>`:'';
   const now=r.card||r.warn;
   const alert=now?`<button type="button" class="rui-now" data-rui="pop"><span aria-hidden="true">${now.emoji}</span><span class="grow"><b>${esc(now.title)}</b><small>${esc(now.text)}</small></span>${icon('chevron',18)}</button>`:'';
   const calm=r.calm?`<p class="rui-calm">🌱 Phố còn bình yên với người mới. Cứ yên tâm làm việc.</p>`:'';
@@ -107,12 +107,12 @@ function ruiPage(){
     `<h3 class="rui-h">🛡️ Bảo hiểm</h3><ul class="rui-list rui-pols">${(r.pol||[]).map(polRow).join('')}</ul>`+
     `<h3 class="rui-h">🔒 Đồ phòng thân</h3><ul class="rui-list">${CAT().gear.map(g=>gearRow(g,(r.gear||[]).includes(g.id))).join('')}</ul>`+
     help(['Chuyện xấu luôn báo trước 1–2 ngày. Phòng trước là tránh được.',`Tổng ví, tài khoản, tiết kiệm và vàng dưới ${fmt(rules.floor||300)} xu: không có chuyện gì.`,
-      `Trộm/hack mới: mức mất được chốt theo tổng tài sản khi báo trước, có giới hạn theo tháng và tiền thực có. Các sự cố khác: mỗi lần tối đa ${rules.event_pct||8}%, mỗi tháng tối đa ${rules.month_pct||12}% phần tài sản trên ${fmt(rules.floor||300)} xu.`,
+      `Trộm/hack: tối đa 1% số dư bị ảnh hưởng và 1.000 xu mỗi vụ. Phạt tiền: tối đa 2% ví và 2.000 xu. Luôn giữ lại 100 xu, hoặc toàn bộ số dư nếu đang dưới 100 xu. Các sự cố sửa chữa và sức khỏe: mỗi lần tối đa ${rules.event_pct||8}%, mỗi tháng tối đa ${rules.month_pct||12}% phần tài sản trên ${fmt(rules.floor||300)} xu.`,
       `Bảo hiểm mới mua có hiệu lực sau ${rules.wait||3} ngày.`,
       `Gói trọn 100%: giá gấp ${rules.full_x||2} gói thường, trả hết tiền sửa, tiền khám.`,
       `Đổi gói lúc nào cũng được: giá mới tính từ hôm nay. Lên 100% thì sau ${rules.wait||3} ngày mới trả đủ, trong lúc chờ vẫn trả 80%.`,
-      `Bị hack: mất ${rules.hack_pct||8}% tài khoản thanh toán, tối đa ${fmt(exposure?.hack_max||rules.hack_max||3000)} xu trước đồ bảo vệ và chịu giới hạn rủi ro chung.`,
-      ...(rules.wealth_bands||[]).filter(b=>b.threshold).map(b=>`Từ ${xu(b.threshold)} tài sản: khả năng trộm/hack gấp ${fmt(b.odds_pct/100)} lần; trần trộm nhà/hack tăng theo ${b.cap_pct}% tài sản nếu cao hơn trần cơ bản.`),
+      'Hack chỉ trừ tài khoản thanh toán; trộm chỉ trừ tiền mặt. Tiết kiệm, đầu tư và quỹ nơi làm việc được giữ nguyên.',
+      ...(rules.wealth_bands||[]).filter(b=>b.threshold).map(b=>`Từ ${xu(b.threshold)} tài sản: khả năng trộm/hack gấp ${fmt(b.odds_pct/100)} lần; giới hạn thiệt hại nhỏ vẫn giữ nguyên.`),
       'Khóa phiên lạ khi được cảnh báo để chặn vụ hack, không tốn xu.','Không truy thu rủi ro trong thời gian offline.','Không bao giờ bị nợ vì rủi ro.'])+`</div>`;
 }
 

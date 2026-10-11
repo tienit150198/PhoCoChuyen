@@ -2468,13 +2468,14 @@ def _ev_lost_kid(s, c, pl, choice):
 
 
 def _ev_inspection(s, c, pl, choice):
+    from ..loss_limits import bounded_loss
     d = kit.data(c)
     if choice == 'show':
         if d['clean_day'] == c['day']:
             pl['rules']['clean_badge'] = True
             kit.metric(c, 'inspections_passed')
             return 'Sổ vệ sinh ghi đủ, vòi đánh sữa sạch bóng. Đoàn dán tem “Quầy sạch” lên tủ kính.', True
-        fine = min(30, c['money'])
+        fine = bounded_loss(c['money'], 30, fine=True)
         if fine:
             kit.money(s, c, -fine, 'Phạt vệ sinh: sổ ca để trống', f'insp-{c["day"]}', category='fine')
         return f'Sổ vệ sinh hôm nay còn trống, vòi hơi còn bám sữa khô. Đoàn phạt {fine} xu và dặn vệ sinh máy đầu mỗi ca.', False
@@ -2483,7 +2484,7 @@ def _ev_inspection(s, c, pl, choice):
         d['clean_day'] = c['day']
         kit.metric(c, 'hygiene_checks')
         return 'Bạn xả nhóm pha, lau vòi hơi, ghi sổ ngay trước mặt đoàn. Không bị phạt, nhưng khách chờ lâu hơn một chút.', None
-    fine = min(60, c['money'])
+    fine = bounded_loss(c['money'], 60, fine=True)
     if fine:
         kit.money(s, c, -fine, 'Phạt: kẹp phong bì cho đoàn kiểm tra', f'insp-{c["day"]}', category='fine')
     return f'Đoàn trả lại phong bì và lập biên bản. Tiệm bị phạt {fine} xu, cả hẻm biết chuyện.', False

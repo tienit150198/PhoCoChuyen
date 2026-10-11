@@ -305,7 +305,7 @@ function arrestCard(){
   const r=S.arrest;
   return `<section class="fh-card fh-raid" role="alert" data-fh-key="bm-arrest"><div class="fh-siren" aria-hidden="true"><i></i><i></i></div>
     <h3>🚨 Công an ập vào!</h3>${say({name:'Công an phường',emoji:'👮'},r.say||'')}
-    <div class="fh-raid-bill">${r.stake?`<span>${r.seized?'Tiền thắng Ông Hai bị tịch thu':'Tiền cược bị tịch thu'}</span><b>−${xu(r.stake)}</b>`:''}<span>Nộp phạt</span><b>−${xu(r.fine)}</b></div>
+    <div class="fh-raid-bill">${r.refunded?`<span>Hoàn tiền cược</span><b>+${xu(r.refunded)}</b>`:r.canceled&&r.stake?`<span>Hủy ván · tiền cược giữ nguyên</span><b>${xu(r.stake)}</b>`:r.seized?`<span>Tiền đã thu</span><b>−${xu(r.seized)}</b>`:''}<span>Nộp phạt</span><b>−${xu(r.fine)}</b></div>
     <p>Ví còn <b>${xu(r.wallet)}</b>. Khoản phạt đã ghi trong Sổ ví.</p>${r.jail?`<p class="fh-jail">🚔 Bạn bị đưa về <b>trại tạm giữ ${r.jail} ngày</b>. Trong trại làm công ích để được về sớm, hoặc nhờ bạn bè bảo lãnh.</p>`:'<p>Công an đi rồi. Chơi tiếp thì cẩn thận nha.</p>'}
     ${r.titles?.includes('f_raid')?'<p class="fh-award">🚨 Danh hiệu mới: <b>Bị công an hỏi thăm</b></p>':''}
     ${btn(r.jail?'🚔 Về trại tạm giữ':'Dạ, em biết rồi','arrestok',{},'primary',' data-fh-key="bm-arrestok"')}</section>`;
@@ -325,9 +325,9 @@ function wealthRaidCard(){
 // 🚨 07/10: the asset check (chứng minh nguồn tài sản), a rule of its own; after a raid on the same round it says so
 function auditCard(){
   const r=S.audit;if(!r)return '';
-  return `<section class="fh-card fh-raid" role="alert" data-fh-key="asset-audit"><h3>🚨 Công an hỏi nguồn tài sản</h3>${r.after_raid?'<p><small>Thêm một lần nữa, sau lần thu 30% ví ở trên.</small></p>':''}${r.say?say({name:'Công an phường',emoji:'👮'},r.say):''}
-    <div class="fh-raid-bill"><span>Tiền lời mới ở chợ đen</span><b>${xu(r.gain)}</b><span>Thu ${r.pct}%</span><b>−${xu(r.amount)}</b>${r.bank?`<span>Từ ví</span><b>−${xu(r.cash)}</b><span>Từ tài khoản ngân hàng</span><b>−${xu(r.bank)}</b>`:''}</div>
-    <p>${esc(r.message)}</p><p>Ví còn <b>${xu(r.wallet)}</b>. Khoản thu đã được ghi trong Sổ ví.</p>${btn('Dạ, em hiểu','auditok',{},'primary')}</section>`;
+  return `<section class="fh-card fh-raid" role="alert" data-fh-key="asset-audit"><h3>🚨 Công an hỏi nguồn tài sản</h3>${r.after_raid?'<p><small>Cùng lượt kiểm tra vừa rồi.</small></p>':''}${r.say?say({name:'Công an phường',emoji:'👮'},r.say):''}
+    <div class="fh-raid-bill"><span>Tiền lời mới ở chợ đen</span><b>${xu(r.gain)}</b><span>Phạt thực tế</span><b>−${xu(r.amount)}</b></div>
+    <p>${esc(r.message||'')}</p><p>Ví còn <b>${xu(r.wallet)}</b>. ${r.amount?'Khoản phạt đã được ghi trong Sổ ví.':'Không thu thêm xu.'}</p>${btn('Dạ, em hiểu','auditok',{},'primary')}</section>`;
 }
 function closedCard(gone){
   const f=F();
@@ -352,7 +352,7 @@ function gateList(){
       <button type="button" class="fh-game" data-fh="tab" data-tab="ring" data-fh-key="g-ring"><span class="fh-gico">${MINI_BOTTLES}</span><span class="grow"><b>Ném vòng cổ chai</b><small>${r.nocap?`Mỗi vòng trúng +${r.ring_hit} xu, trúng cả ${r.rings||5} vòng thêm ${r.ring_all} xu`:`Trúng mỗi chai +${r.ring_hit||2} xu, đủ ${r.rings||5} chai thêm ${r.ring_all||5} xu`}</small>${meter(e.ring)}</span></button>
     </div>
     <div class="fh-sec"><h3>🎲 Thử vận may</h3><span class="fh-tag">Cược bằng xu</span></div>
-    ${BM()?`<p class="fh-rule">🚨 Chợ đen hay bị công an ập vào: bị bắt thì mất tiền cược và nộp phạt.</p>`:''}
+    ${BM()?`<p class="fh-rule">🚨 Chợ đen hay bị công an ập vào: ván bị hủy thì giữ lại tiền cược và nộp phạt nhẹ.</p>`:''}
     ${r.audit_from?`<p class="fh-rule">🚨 Lời ở chợ đen nhiều quá thì công an có thể ghé hỏi nguồn tài sản và thu lại một phần tiền lời.</p>`:''}
     <div class="fh-luck">
       ${luck('bc',FACE_ART.cua,'Bầu cua','Đặt bao nhiêu tùy bạn')}
@@ -618,9 +618,8 @@ async function shaken(go,open=ROLL_MS,gap=ROUND_GAP){
 function titles(x){if(x.titles?.length)S.flash={text:`🎉 Danh hiệu mới: ${x.titles.map(t=>TITLE_NAMES[t]||t).join(', ')}`,kind:'good'};}
 
 /* ---- 🕯️ Chiếu trong (xóc đĩa) ---- */
-/** What a chiếu trong round may cost at worst (the stake, or the stake and the fine when the police come): the
- * server checks that against today's room (game/fair.py fair_xd, _guard_round). */
-const xdWorst=st=>st+Math.max(R().fine_min||5,Math.floor(st/(R().xd_fine_div||2)));
+/** A raid cancels the stake; a played losing round still costs its stake. */
+const xdWorst=st=>st;
 /** Why a stake cannot be played right now ('' when it can). */
 function xdWhy(st){
   const f=F(),left=R().nocap?Infinity:f.today?.left??Infinity;
@@ -643,7 +642,7 @@ function xdView(){
   const dis=busy||wait>0;
   return `<section class="fh-stall fh-xd" aria-label="Chiếu trong: xóc đĩa chẵn lẻ">
     ${say(HOST,x.say,'dark')}
-    <p class="fh-warn">⚠️ Chiếu trong thỉnh thoảng có công an phường ghé kiểm tra: mất tiền cược và bị phạt.</p>
+    <p class="fh-warn">⚠️ Chiếu trong thỉnh thoảng có công an phường ghé kiểm tra: hủy ván, giữ lại tiền cược và phạt nhẹ.</p>
     ${closed}${broke}
     <div class="fh-table dark"><div class="fh-plate xd ${x.phase==='shake'?'shake':''} ${x.phase==='idle'&&x.coins?'open':''}"><div class="fh-coins">${coins}</div><div class="fh-bowl" aria-hidden="true"></div></div>${res}</div>
     ${hist}
@@ -658,7 +657,7 @@ function raidCard(r){
   return `<section class="fh-card fh-raid" role="alert"><div class="fh-siren" aria-hidden="true"><i></i><i></i></div>
     <h3>🚨 Công an phường kiểm tra!</h3>
     <p class="fh-cop">“Chợ đen vui thì vui, chiếu trong là dẹp nha bà con! Ai ngồi đây thì ghi tên, nộp phạt rồi ra trước chơi cho đàng hoàng.”</p>
-    <div class="fh-raid-bill"><span>Tiền cược bị tịch thu</span><b>−${xu(r.stake)}</b><span>Nộp phạt</span><b>−${xu(r.fine)}</b></div>
+    <div class="fh-raid-bill"><span>Hủy ván · tiền cược giữ nguyên</span><b>${xu(r.stake)}</b><span>Nộp phạt</span><b>−${xu(r.fine)}</b></div>
     <p class="muted small">Anh Ba chiếu trong đã cuốn chiếu chạy mất. Chiếu dẹp ${Math.round((r.cooldown||120)/60)} phút.</p>
     ${r.titles?.includes('f_raid')?'<p class="fh-award">🚨 Danh hiệu mới: <b>Bị công an hỏi thăm</b></p>':''}
     <div class="row wrap fh-raid-go">${btn('Dạ, em ra chơi bầu cua','raidok',{tab:'bc'},'primary')}${btn('Đi dò lô tô','raidok',{tab:'lt'},'ghost')}</div></section>`;

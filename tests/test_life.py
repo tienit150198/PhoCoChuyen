@@ -223,8 +223,8 @@ class Money(unittest.TestCase):
     def test_forced_loss_capped_by_wallet(self):
         s = at(state(wallet=10), 6)
         card = lf._fire_hard(s, L(s), lf.HARD_INDEX['lu_bank'], 6, 'teacher')
-        self.assertEqual(card['loss'], 10)
-        self.assertEqual(s['journey']['wallet'], 0)
+        self.assertEqual(card['loss'], 0)
+        self.assertEqual(s['journey']['wallet'], 10)
 
     def test_cope_once_a_day_and_hangover(self):
         s = state(wallet=100)
@@ -243,7 +243,7 @@ class Money(unittest.TestCase):
 
 class Neighbours(unittest.TestCase):
     def test_scam_card_leads_to_a_collection(self):
-        s = at(state(wallet=200, seed=1), 9)
+        s = at(state(wallet=2000, seed=1), 9)
         card = lf._fire_hard(s, L(s), lf.HARD_INDEX['lu_invest'], 9, 'teacher')
         L(s)['pending'] = card
         found = False

@@ -1360,7 +1360,8 @@ def _desk_hook(s: dict, c: dict, key: str, v) -> str | None:
         if d['sanitize_day'] == c['day']:
             c['xp'] += 10
             return 'Sổ đã ký khử khuẩn hôm nay — đoàn ký “đạt”, còn khen khăn thơm.'
-        fine = min(15, c['money'])
+        from ..loss_limits import bounded_loss
+        fine = bounded_loss(c['money'], 15, fine=True)
         if fine:
             kit.money(s, c, -fine, 'Phạt vệ sinh: chưa khử khuẩn dụng cụ', None, 'event_cost')
         return f'Sổ vệ sinh hôm nay còn trống: phạt {fine} xu, dặn khử khuẩn trước khi nhận khách.'
@@ -2231,7 +2232,7 @@ def public_data(c: dict) -> dict:
     d['sanitized_today'] = d['sanitize_day'] == c['day']
     mod = _today(c)
     d['today'] = dict(id=mod['id'], title=mod['title'], emoji=mod['emoji'], text=mod['text'])
-    d['desk'] = kit.desk_public(desk, DESK, ID)
+    d['desk'] = kit.desk_public(desk, DESK, ID, c)
     if d['desk']['ev']:
         # Options come in a shuffled order so the careful answer is not always the first button.
         kit.rng(ID, 'desk-order', d['desk']['ev']['id'], c['day']).shuffle(d['desk']['ev']['options'])
@@ -2634,11 +2635,11 @@ DESK = [
     dict(id='label_check', title='Đoàn kiểm tra hàng mỹ phẩm', emoji='🚨', npc=16, min_day=3, tone='tense', need_mark='no_label', weight=3,
          text='Đoàn kiểm tra lật chai dầu gội trên kệ: “Hàng này nhãn phụ đâu? Hóa đơn nhập đâu?”',
          options=[dict(id='surrender', label='Nhận lỗi, giao nộp hàng, nộp phạt nhẹ', hint='−15 xu · mất 3 chai', good=True,
-                       effects=dict(money=-15, stock=dict(rt_colorsafe=-3), unmark='no_label'),
+                       effects=dict(money=-15, money_loss='fine', stock=dict(rt_colorsafe=-3), unmark='no_label'),
                        outcome='Đoàn ghi nhận thành khẩn, phạt nhẹ. Kệ hàng sạch trở lại.'),
                   dict(id='argue', label='Nói là hàng khách gửi bán', hint='Hên xui', good=False,
                        luck=dict(p=0.25, win=dict(effects=dict(unmark='no_label'), outcome='Đoàn tạm tin, dặn bổ sung giấy tờ trong tuần.', good=None),
-                                 lose=dict(effects=dict(money=-40, unmark='no_label',
+                                 lose=dict(effects=dict(money=-40, money_loss='fine', unmark='no_label',
                                                         review=[1, 'Salon bị phạt vì bán mỹ phẩm không rõ nguồn gốc.']),
                                            outcome='Nói dối bị phát hiện: phạt 40 xu, chuyện lan khắp phố.', good=False)))],
          default='surrender'),
@@ -2658,7 +2659,7 @@ DESK = [
                        outcome='Kéo, lược, tông đơ ngâm khử khuẩn ngay tại chỗ; khăn bẩn đem giặt. Cô Tám ký “đạt”.'),
                   dict(id='coffee', label='Mời đoàn “ly cà phê” cho qua', hint='Hên xui', good=False,
                        luck=dict(p=0.2, win=dict(outcome='Đoàn cười trừ, dặn lần sau làm đúng sổ.', good=None),
-                                 lose=dict(effects=dict(money=-30, review=[1, 'Salon định “bồi dưỡng” đoàn kiểm tra thay vì khử khuẩn dụng cụ. Ghê!']),
+                                 lose=dict(effects=dict(money=-30, money_loss='fine', review=[1, 'Salon định “bồi dưỡng” đoàn kiểm tra thay vì khử khuẩn dụng cụ. Ghê!']),
                                            outcome='Đoàn lập biên bản: phạt 30 xu vì không hợp tác.', good=False)))],
          default='show'),
     dict(id='kol', title='Người nổi tiếng xin làm tóc miễn phí', emoji='🤳', npc=11, min_day=3, tone='gentle',

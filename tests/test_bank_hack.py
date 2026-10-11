@@ -34,17 +34,17 @@ class BankHackTests(unittest.TestCase):
         self.assertEqual(len(R(s)['hack_back']), 1)
         s, _ = act(s, 'jr_rui_choose', id=cid, choice='secure')
         self.assertEqual(len(R(s)['hack_back']), 1)
-        self.assertEqual(bk.get(s)['balance'], 9200)
+        self.assertEqual(bk.get(s)['balance'], 9900)
         mature(s)
-        self.assertEqual(bk.get(s)['balance'], 9200)
+        self.assertEqual(bk.get(s)['balance'], 9900)
         notes = mature(s)
         self.assertEqual(bk.get(s)['balance'], 10000)
         self.assertEqual(s['journey']['wallet'], 2000)
         self.assertTrue(any('bắt được' in n for n in notes))
-        self.assertEqual((bk.get(s)['log'][-1]['acc'], bk.get(s)['log'][-1]['amt']), ('acc', 800))
-        self.assertEqual(R(s)['log'][-1]['a'], 800)
-        self.assertEqual(R(s)['stats']['back'], 800)
-        self.assertEqual(R(s)['month']['lost'], 800)
+        self.assertEqual((bk.get(s)['log'][-1]['acc'], bk.get(s)['log'][-1]['amt']), ('acc', 100))
+        self.assertEqual(R(s)['log'][-1]['a'], 100)
+        self.assertEqual(R(s)['stats']['back'], 100)
+        self.assertEqual(R(s)['month']['lost'], 100)
         self.assertEqual(R(s)['hack_back'], [])
         snapshot = copy.deepcopy(s)
         rui.on_life_day(s)
@@ -57,13 +57,13 @@ class BankHackTests(unittest.TestCase):
         s, _ = self.reported_hack(100)
         mature(s)
         notes = mature(s)
-        self.assertEqual(bk.get(s)['balance'], 9200)
+        self.assertEqual(bk.get(s)['balance'], 9900)
         self.assertEqual(R(s).get('hack_back'), [])
         self.assertTrue(any('chưa bắt được' in n for n in notes))
         self.assertEqual(R(s)['stats']['back'], 0)
 
     def test_probability_boundary_and_hidden_result(self):
-        for roll, amount in ((30, 800), (31, 0)):
+        for roll, amount in ((30, 100), (31, 0)):
             s, _ = self.reported_hack(roll)
             self.assertEqual(R(s)['hack_back'][0]['amount'], amount)
             self.assertEqual(public_state(s)['rui']['hack_pending'], dict(n=1, days=2))
@@ -83,7 +83,7 @@ class BankHackTests(unittest.TestCase):
         mature(s)
         self.assertEqual(bk.get(s)['balance'], 10000)
         self.assertEqual(s['journey']['wallet'], 2073)
-        self.assertEqual(R(s)['stats']['back'], 873)
+        self.assertEqual(R(s)['stats']['back'], 173)
 
     def test_pending_refund_roundtrip_and_missing_account_preserves_claim(self):
         s, _ = self.reported_hack()
@@ -118,7 +118,7 @@ class BankHackTests(unittest.TestCase):
         validate_state(s)
         self.assertEqual(len(R(s)['hack_back']), 1)
         self.assertEqual(bk.get(s)['balance'], bk.BAL_MAX)
-        bk.get(s)['balance'] -= 800
+        bk.get(s)['balance'] -= 100
         mature(s)
         self.assertEqual(bk.get(s)['balance'], bk.BAL_MAX)
         self.assertEqual(R(s)['hack_back'], [])
@@ -179,14 +179,14 @@ class BankHackTests(unittest.TestCase):
         cash = s['journey']['wallet']
         warn(s, 'hack', 'account')
         mature(s)
-        self.assertEqual(b['balance'], 9200)
+        self.assertEqual(b['balance'], 9900)
         self.assertEqual(s['journey']['wallet'], cash)
         self.assertEqual({k: v for k, v in b.items() if k not in ('balance', 'log', 'seq')}, other)
-        self.assertEqual(R(s)['stats']['lost'], 800)
-        self.assertEqual(R(s)['month']['lost'], 800)
-        self.assertEqual(R(s)['card']['loss'], 800)
-        self.assertEqual(b['log'][-1]['amt'], -800)
-        self.assertEqual(R(s)['log'][-1]['a'], -800)
+        self.assertEqual(R(s)['stats']['lost'], 100)
+        self.assertEqual(R(s)['month']['lost'], 100)
+        self.assertEqual(R(s)['card']['loss'], 100)
+        self.assertEqual(b['log'][-1]['amt'], -100)
+        self.assertEqual(R(s)['log'][-1]['a'], -100)
         self.assertEqual(public_state(s)['rui']['card']['kind'], 'hack')
         validate_state(s)
         snapshot = copy.deepcopy(s)
@@ -195,7 +195,7 @@ class BankHackTests(unittest.TestCase):
         cid = R(s)['card']['id']
         s, _ = act(s, 'jr_rui_choose', id=cid, choice='secure')
         s, _ = act(s, 'jr_rui_choose', id=cid, choice='secure')
-        self.assertEqual(bk.get(s)['balance'], 9200)
+        self.assertEqual(bk.get(s)['balance'], 9900)
         self.assertIsNone(R(s)['card'])
 
     def test_prevention_is_free_and_cancels_loss(self):
@@ -221,17 +221,18 @@ class BankHackTests(unittest.TestCase):
         self.assertEqual(R(s)['stats']['fizzled'], 1)
 
     def test_loss_caps_and_current_balance(self):
-        for balance, expected in ((1000000, 80000), (10000, 800), (100, 8)):
+        for balance, expected in ((1000000, 1000), (10000, 100), (100, 0)):
             s = grown(day=40, bank=10000)
             warn(s, 'hack', 'account')
             bk.get(s)['balance'] = balance
             mature(s)
-            self.assertEqual(R(s)['card']['loss'], expected)
+            self.assertEqual((R(s)['card'] or {}).get('loss', 0), expected)
             self.assertEqual(bk.get(s)['balance'], balance - expected)
         s = grown(wallet=0, day=40, bank=400)
         warn(s, 'hack', 'account')
         mature(s)
-        self.assertEqual(R(s)['card']['loss'], 8)  # 8% of wealth above 300
+        self.assertIsNone(R(s)['card'])  # A sub-MIN_COST loss fizzles and leaves the account alone.
+        self.assertEqual(bk.get(s)['balance'], 400)
         s = grown(day=40, bank=10000)
         warn(s, 'hack', 'account')
         m = rui._month(s, R(s), 41)
@@ -255,7 +256,7 @@ class BankHackTests(unittest.TestCase):
         for _ in range(rui.CARD_DAYS):
             mature(s)
         self.assertIsNone(R(s)['card'])
-        self.assertEqual(bk.get(s)['balance'], 9200)
+        self.assertEqual(bk.get(s)['balance'], 9900)
         self.assertEqual(R(s)['stats']['events'], 1)
         validate_state(s)
 

@@ -252,7 +252,7 @@ class Choices(unittest.TestCase):
             for o in x['options']:
                 s = copy.deepcopy(bases[cid])
                 row = fire(s, cid, x['id'])
-                o = next(opt for opt in inc._priced_spec(row)['options'] if opt['id'] == o['id'])
+                o = next(opt for opt in inc._priced_spec(row, s, s['careers'][cid])['options'] if opt['id'] == o['id'])
                 c0 = s['careers'][cid]
                 fund0, wallet0, n0, trust0 = c0['money'], s['journey']['wallet'], len(c0['ops']['finance']['ledger']), c0['incidents']['trust']
                 s, r = choose(s, cid, o['id'], row['id'])
@@ -282,11 +282,12 @@ class Choices(unittest.TestCase):
 
     def test_wallet_lines_really_hit_the_wallet(self):
         s = open_day('pharmacy')
+        s['journey']['wallet'] = 1000
         fire(s, 'pharmacy', 'scam_police')
         w0 = s['journey']['wallet']
         f0 = s['careers']['pharmacy']['money']
         s, _ = choose(s, 'pharmacy', 'pay')
-        self.assertEqual(s['journey']['wallet'], w0 - 50)
+        self.assertEqual(s['journey']['wallet'], w0 - 10)
         self.assertEqual(s['careers']['pharmacy']['money'], f0)
         self.assertEqual(s['journey']['history'][-1]['kind'], 'incident')
 
@@ -326,17 +327,17 @@ class Choices(unittest.TestCase):
             choose(s, 'pharmacy', 'envelope')
         self.assertEqual(e.exception.code, 'not_enough')
 
-    def test_forced_cost_overflows_to_wallet_never_overdraws(self):
+    def test_forced_fine_preserves_small_fund_and_never_spills_to_wallet(self):
         s = open_day('grocery')
         set_money(s['careers']['grocery'], 20)
         w0 = s['journey']['wallet']
         fire(s, 'grocery', 'fire_safety')
         s, _ = choose(s, 'grocery', 'fine_only')
         c = s['careers']['grocery']
-        self.assertEqual(c['money'], 0)
-        self.assertEqual(s['journey']['wallet'], w0 - 30)
+        self.assertEqual(c['money'], 20)
+        self.assertEqual(s['journey']['wallet'], w0)
         self.assertTrue(ledger_ok(c))
-        self.assertEqual({(l['where'], l['amount']) for l in c['incidents']['last']['lines']}, {('fund', -20), ('wallet', -30)})
+        self.assertEqual({(l['where'], l['amount']) for l in c['incidents']['last']['lines']}, set())
 
     def test_story_off_pays_from_fund_only(self):
         s = open_day('pharmacy', story=False)
@@ -346,7 +347,7 @@ class Choices(unittest.TestCase):
         pub = public_state(s)['careers']['pharmacy']['incidents']['active']
         self.assertTrue(all(st['where'] == 'fund' for o in pub['options'] for st in o['stakes']))
         s, _ = choose(s, 'pharmacy', 'pay')
-        self.assertEqual(s['careers']['pharmacy']['money'], 250)
+        self.assertEqual(s['careers']['pharmacy']['money'], 297)
 
     def test_trust_flags_and_good_choice(self):
         s = open_day('teacher')
@@ -416,7 +417,7 @@ class DayEnd(unittest.TestCase):
         items = r['summary']['incidents']['items']
         self.assertEqual(items[0]['script'], 'fire_safety')
         self.assertTrue(items[0]['auto'])
-        self.assertEqual(items[0]['fund'], -50)
+        self.assertEqual(items[0]['fund'], -10)
 
     def test_quiet_day_has_no_summary_block(self):
         s = open_day('grocery')

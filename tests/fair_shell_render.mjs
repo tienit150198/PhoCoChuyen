@@ -9,6 +9,8 @@ const element={classList:{toggle(){}},textContent:''};
 const context=vm.createContext({api,mainDeferred:false,document:{body:element,querySelector:()=>covered?{open:true}:null,addEventListener(type,fn,capture){assert.equal(type,'close');assert.equal(capture,true);onClose=fn;}},$:()=>element,room:()=>({life:{},day:75}),meta:()=>({}),shell:{career(){},mark(){return '';}},setHTML(){domUpdates++;},hudHTML(){},railHTML(){},esc:x=>x,careerSwitchButton(){},taskCards(){},dockHTML(){},layout:()=> 'phone',hudFeedback(){},stepHint(){},sound:{configure(){}},world:{update(state){worldUpdates++;latest=state.seq;}}});
 // The shared workspace may also host a separate renderer integration.
 context.env=()=>({api});context.updateIsometricShell=()=>{};context.iso={booted:()=>false};   // the 2.5D HUD is not up in this slice
+context.otChip=()=>'';   // the overtime badge is outside this render/defer fixture
+context.workplaceAway=()=>null;context.career=()=> 'cafe_bakery';   // no away toast in this fixture
 vm.runInContext(src.slice(a,b),context);
 for(let i=1;i<=50;i++){api.state={...api.state,seq:i};vm.runInContext('renderMain()',context);}
 assert.equal(worldUpdates,0,'confirmed fair states must not repeatedly rebuild/repaint the obscured workplace');

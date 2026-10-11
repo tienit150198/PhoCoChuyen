@@ -1326,8 +1326,10 @@ class HomestayV2Tests(unittest.TestCase):
         self.data(j)['desk']['ev'] = ev()
         money = j.c['money']
         r = j.act('hs_desk', option='log')
-        self.assertIn('phạt 15', r['message'])
-        self.assertEqual(j.c['money'], money - 15)
+        from game.loss_limits import bounded_loss
+        paid = bounded_loss(money, 15, fine=True)
+        self.assertIn(f'phạt {paid}', r['message'])
+        self.assertEqual(j.c['money'], money - paid)
         j.state = copy.deepcopy(base)
         j.act('hs_safety')
         self.data(j)['desk']['ev'] = ev()

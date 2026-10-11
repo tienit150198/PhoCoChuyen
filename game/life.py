@@ -582,7 +582,9 @@ def _fire_hard(s: dict, L: dict, x: dict, day: int, career: str | None, gossip: 
     card['hit'] = _spirit(L, round(x['hit'] * HIT_SCALE))
     card['spirit'] = card['hit']
     if x['loss']:
-        card['loss'] = -_wallet(s, -x['loss'], _fill(x['title'], s, card))
+        from .loss_limits import bounded_loss
+        loss = bounded_loss(s['journey']['wallet'], x['loss']) if x['cat'] == 'lua' else x['loss']
+        card['loss'] = -_wallet(s, -loss, _fill(x['title'], s, card))
         card['money'] = -card['loss']
     L['recent'][x['id']] = day
     L['stats']['hard'] += 1

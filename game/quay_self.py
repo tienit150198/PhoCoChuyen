@@ -398,13 +398,23 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         if not r['duplicate']:
             _need(len(ride['picks'])<3,'Đã qua đủ ba ngã tư.')
             ride['picks'].append(turn)
+            paid = 0
             if r['fine']:
-                run['m']-=r['fine']
+                from .loss_limits import bounded_loss
                 if run.get('continuous'):
                     from .quay_business import assess_fine
-                    assess_fine(st, r['fine'])
-                qy._log(st,day,'🚦 Vượt đèn đỏ · biên nhận '+r['token'][:8],-r['fine'])
-        return dict(message=f'🚦 Vượt đèn đỏ: phạt {r["fine"]} xu, đã ghi vào chi phí quầy.' if r['fine'] else '🚦 Đèn vừa chuyển đỏ: miễn phạt trong 1 giây đầu để kịp dừng an toàn.' if r['grace'] else '🚦 Đã qua ngã tư đúng tín hiệu.',traffic=traffic.public(ride['traffic']),picks=list(ride['picks']),receipt=r)
+                    paid = assess_fine(st, r['fine'])
+                else:
+                    paid = bounded_loss(st['till'] + st['fund'], r['fine'], fine=True)
+                    qy._from_till_fund(st, paid)
+                    run['fine_paid'] = run.get('fine_paid', 0) + paid
+                run['m'] -= paid
+                qy._log(st,day,'🚦 Vượt đèn đỏ · biên nhận '+r['token'][:8],-paid)
+            tokens = {row['token'] for saved in rides.values() for row in saved['traffic']['receipts']}
+            run['traffic_paid'] = {token: amount for token, amount in run.get('traffic_paid', {}).items() if token in tokens}
+            run['traffic_paid'][r['token']] = paid
+        r['paid'] = run.get('traffic_paid', {}).get(r['token'], 0)
+        return dict(message=f'🚦 Vượt đèn đỏ: đã nộp {r["paid"]} xu, đã ghi vào chi phí quầy. Phần vượt giới hạn được miễn.' if r['fine'] else '🚦 Đèn vừa chuyển đỏ: miễn phạt trong 1 giây đầu để kịp dừng an toàn.' if r['grace'] else '🚦 Đã qua ngã tư đúng tín hiệu.',traffic=traffic.public(ride['traffic']),picks=list(ride['picks']),receipt=r)
     if name == 'jr_quay_serve':
         _need(set(p) <= {'stall', 'items', 'change', 'smile'}, 'Thao tác không hợp lệ.')
         _need(pending_event(run) is None, 'Xử lý chuyện này trước nhé.', 'event')
@@ -543,7 +553,9 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
             run['ss'] += stars
             run['sn'] += 1
             run['on'][jn] = 0
-            run.get('rides', {}).pop(str(jn), None)
+            finished_ride = run.get('rides', {}).pop(str(jn), None)
+            for receipt in (finished_ride or {}).get('traffic', {}).get('receipts', []):
+                run.get('traffic_paid', {}).pop(receipt['token'], None)
             delivery_speed = o.get('drive_factor', 1) if way == 'self' else 1
             _next_order(s, st, run, jn, max(st['business']['cursor'], o['available_at'] + round(_online_wait(st, s) * 2 / delivery_speed)))
             run['sk'] = run['u'] + sum(st['business']['stock'].values())
@@ -740,13 +752,21 @@ def close(s: dict, st: dict, day: int) -> str:
     unit = T['price'] * goods_pct(st) / 100 * T['cogs'] / 100
     spoil = T['spoil'] * (0.5 if 'tu' in st['items'] else 1) / 100
     spoiled = max(0, run['sk'] - run['u'] - auto) * spoil
-    gain = max(0, run['m'])
+    # Old uncollected traffic penalties are forgiven; new ones were paid at crossing.
+    for ride in run.get('rides', {}).values():
+        paid = run.setdefault('traffic_paid', {})
+        for receipt in ride['traffic']['receipts']:
+            if receipt['token'] not in paid:
+                run['m'] += receipt['fine']
+                paid[receipt['token']] = 0
+    settlement_m = run['m'] + run.get('fine_paid', 0)
+    gain = max(0, settlement_m)
     revenue = run['rv'] + round(auto * T['price'] * pct / 100) + gain
     wages = sum(x['wage'] for x in st['staff'])
-    cost = run['co'] + round((auto + spoiled) * unit) + wages + P['power'] + max(0, -run['m'])
+    cost = run['co'] + round((auto + spoiled) * unit) + wages + P['power'] + max(0, -settlement_m)
     st['till'] = min(qy.MONEY_MAX, st['till'] + revenue)
     qy._from_till_fund(st, cost)   # a shortfall past both is waived: never a debt
-    net = revenue - cost
+    net = revenue - cost - run.get('fine_paid', 0)
     for x in st['staff']:
         t = qy._target_mood(x)
         x['mo'] = min(t, x['mo'] + 10) if x['mo'] < t else max(t, x['mo'] - 10)
@@ -824,6 +844,8 @@ def run_view(s: dict, st: dict) -> dict | None:
             if out['orders'][-1]['ride']:
                 from . import traffic
                 ride=out['orders'][-1]['ride'];ride['traffic']=traffic.public(ride['traffic'])
+                ride['paid'] = {r['token']: run['traffic_paid'][r['token']] for r in ride['traffic']['receipts']
+                                if r['token'] in run.get('traffic_paid', {})}
     return out
 
 
@@ -909,3 +931,11 @@ def validate(st: dict, need, _int, _text) -> None:
                 need(isinstance(ride['picks'],list) and len(ride['picks'])<=3 and all(isinstance(x,str) and x in TURNS for x in ride['picks']))
                 traffic.validate(ride['traffic'])
                 need(len(ride['picks'])==len(ride['traffic']['receipts']))
+        if 'traffic_paid' in run:
+            receipts = {r['token']: r['fine'] for ride in run.get('rides', {}).values() for r in ride['traffic']['receipts']}
+            # A 2.0.2 worker may finish an order while preserving unknown run metadata.
+            need(isinstance(run['traffic_paid'], dict) and len(run['traffic_paid']) <= 9)
+            need(all(isinstance(token, str) and len(token)==32 and all(ch in '0123456789abcdef' for ch in token)
+                     and _int(value, 0, receipts.get(token, 12)) for token, value in run['traffic_paid'].items()))
+        if 'fine_paid' in run:
+            need(_int(run['fine_paid'], 0, 12 * 3 * len(run['on'])))

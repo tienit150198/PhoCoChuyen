@@ -42,6 +42,7 @@ import hashlib
 
 from . import archive as ar
 from . import compensation as cf
+from .loss_limits import bounded_loss
 
 VERSION = 1
 TRUST_START = 70          # "Điểm tin cậy của chủ" of a new employer
@@ -240,6 +241,7 @@ def assess(s: dict, cid: str) -> dict | None:
     n = min(3, today + 1)
     job_fine = sum(max(FINE_JOB_MIN, min(FINE_JOB_MAX, _value(t) // 4)) for t in jobs)
     fine = cf.comp(min(FINE_MAX, max(FINE_MIN, job_fine + min(FINE_WAIT_MAX, FINE_WAIT * len(waiting))) * n))
+    fine = bounded_loss(s['journey']['wallet'] if _employed(cid) else c['money'], fine, fine=True)
     trust = min(TRUST_MAX, min(TRUST_ONE_MAX, TRUST_BASE + TRUST_JOB * len(jobs) + len(waiting) // 2) * n)
     kind = _kind(cid, c)
     story = bool((s.get('journey') or {}).get('story'))
@@ -307,11 +309,9 @@ def _apply(s: dict, cid: str, x: dict) -> dict:
     fine = x['fine']
     j = s['journey']
     if x['pocket'] == 'fund':
-        fund = min(fine, c['money'])
-        wallet = min(fine - fund, max(0, j['wallet']))
+        fund = bounded_loss(c['money'], fine, fine=True)
     else:
-        wallet = min(fine, max(0, j['wallet']))
-        fund = min(fine - wallet, c['money'])
+        wallet = bounded_loss(j['wallet'], fine, fine=True)
     # One clear name everywhere it shows (fund ledger, Sổ ví, the banner): "Phạt bỏ dở ca ở <nơi>".
     # It used to say "trừ lương" in the wallet even for a shop you own.
     if fund:

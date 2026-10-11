@@ -1052,8 +1052,10 @@ class SalonV2Tests(unittest.TestCase):
         desk()['ev'] = dict(id='desk-99', script='health', day=j.c['day'], at='between')
         money = j.c['money']
         r = j.act('sl_desk', option='show')
-        self.assertIn('phạt 15', r['message'])
-        self.assertEqual(j.c['money'], money - 15)
+        from game.loss_limits import bounded_loss
+        paid = bounded_loss(money, 15, fine=True)
+        self.assertIn(f'phạt {paid}', r['message'])
+        self.assertEqual(j.c['money'], money - paid)
         j.state = copy.deepcopy(base)
         j.act('sl_sanitize')
         desk()['ev'] = dict(id='desk-98', script='health', day=j.c['day'], at='between')

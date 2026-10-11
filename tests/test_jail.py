@@ -153,12 +153,12 @@ class ChoDenArrest(BlackMarketBase):
             s, r = self.act(s, 'fair_bc', bets={'cua': 100})
         self.assertIn('dice', r['fair'])
         s['journey']['fair']['net'] = bm.ARREST_FROM + 1
-        w = s['journey']['wallet'] - 100
+        w = s['journey']['wallet']
         with mock.patch.object(bm, '_arrest_roll', lambda *a: True):
             s, r = self.act(s, 'fair_bc', bets={'cua': 100})
         a = r['fair']['arrest']
-        self.assertEqual((a['stake'], a['fine'], a['jail']), (100, w * 30 // 100, 3))
-        self.assertEqual(s['journey']['wallet'], w - w * 30 // 100)
+        self.assertEqual((a['stake'], a['fine'], a['jail']), (100, min(2000, w * 2 // 100), 3))
+        self.assertEqual(s['journey']['wallet'], w - a['fine'])
         self.assertIn('tạm giữ 3 ngày', r['message'])
         b = s['journey']['jail']
         self.assertEqual((b['why'], b['days'], b['left'], b['day']), ('bm', 3, 3, 1))
@@ -177,9 +177,9 @@ class ChoDenArrest(BlackMarketBase):
         with mock.patch.object(bm, '_arrest_roll', lambda p=bm.BM_ARREST_P: seen.append(p) or True):
             s, r = self.act(s, 'fair_bc', bets={'cua': 50000})
         self.assertAlmostEqual(seen[0], .0085, places=9)
-        w = 100000 - 50000   # Chợ đen entry is free
+        w = 100000   # Entry is free, and the raided stake is canceled.
         a = r['fair']['arrest']
-        self.assertEqual((a['stake'], a['fine'], a['jail']), (50000, w * 30 // 100, 3))
+        self.assertEqual((a['stake'], a['fine'], a['jail']), (50000, 2000, 3))
         self.assertEqual(s['journey']['jail']['why'], 'bm')
         validate_state(s)
 

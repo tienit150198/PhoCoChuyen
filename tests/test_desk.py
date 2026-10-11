@@ -6,6 +6,7 @@ import re
 import unittest
 
 from game import desk, desk_content as dc
+from game.loss_limits import bounded_loss
 from game.content import make_task
 from game.engine import GameError, apply_action, migrate_state, public_state, validate_state
 from tests.desk_support import Journey, desk_journey, find_case, flag_all, secrets, solve_desk
@@ -298,12 +299,13 @@ class PlayTests(unittest.TestCase):
         k.act('ask')
         money = k.c['money']
         r = k.act('desk_decide', task=k.task['id'], verdict='give', confirm=True)['desk_result']
-        self.assertEqual(r['fine'], 15)
+        paid = bounded_loss(money, 15, fine=True)
+        self.assertEqual(r['fine'], paid)
         self.assertIn('Phiếu phạt', ' '.join(r['lines']))
-        self.assertEqual(k.c['money'], money - 15)
+        self.assertEqual(k.c['money'], money - paid)
         fines = [x for x in k.c['ops']['finance']['ledger'] if x['category'] == 'fine']
-        self.assertEqual([x['amount'] for x in fines], [-15])
-        self.assertEqual(k.c['ext']['data']['desk']['citations'][-1]['fine'], 15)
+        self.assertEqual([x['amount'] for x in fines], [-paid])
+        self.assertEqual(k.c['ext']['data']['desk']['citations'][-1]['fine'], paid)
         validate_state(k.state)
 
     def test_inspection_day_praises_a_clean_counter(self):
@@ -323,7 +325,7 @@ class PlayTests(unittest.TestCase):
         money = j.c['money']
         r = j.act('end_day', carry_event=True)
         self.assertIn('lập biên bản', r['summary']['career']['note'])
-        self.assertTrue(any(x['amount'] == -30 and x['category'] == 'fine' for x in j.c['ops']['finance']['ledger']))
+        self.assertTrue(any(x['amount'] == -bounded_loss(money, 30, fine=True) and x['category'] == 'fine' for x in j.c['ops']['finance']['ledger']))
         self.assertEqual(j.c['ext']['data']['desk']['risk'], 0)
         self.assertEqual(j.c['ext']['data']['desk']['inspections'][-1]['outcome'], 'fine')
         self.assertLess(j.c['money'], money)

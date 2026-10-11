@@ -2111,7 +2111,7 @@ SITUATIONS = [
                        outcome='Đoàn ghi nhận quán tự giác, nhắc nhở và không lập biên bản.',
                        perspectives=[dict(who='Cán bộ kiểm tra', emoji='📋', text='Tự phát hiện và xử lý cho thấy quán có quy trình.'),
                                      dict(who='Nhân viên', emoji='🧑‍🍳', text='May mà mình ghi sổ đều.')]),
-                  dict(id='hide', label='Giấu lô quá hạn vào thùng xe', quality='bad', cost=40,
+                  dict(id='hide', label='Giấu lô quá hạn vào thùng xe', quality='bad', cost=40, money_loss='fine',
                        outcome='Đoàn phát hiện, lập biên bản nhắc nhở và phạt hành chính.',
                        perspectives=[dict(who='Cán bộ kiểm tra', emoji='🧐', text='Giấu diếm nghiêm trọng hơn nhiều so với một lô quá hạn.')])],
          lesson='Minh bạch và có sổ sách là cách tốt nhất để đi qua kiểm tra.'),

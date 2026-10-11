@@ -14,17 +14,17 @@ def rich(net=60000, wallet=100000):
 
 
 class WealthRaid(FairBase):
-    def test_seizes_thirty_percent_of_wallet_after_round_and_records_it(self):
+    def test_bounded_fine_after_round_and_records_it(self):
         self.assertEqual(fh.WEALTH_RAID_P, .35)   # 07/10: half of 1.9.9's .70 (gap and 30% unchanged)
         self.dice(Dice(draws=[fh.WEALTH_RAID_P - 1e-6]))  # losing bet (honest dice: no luck draw) then successful check
         s, result = self.act(rich(), 'fair_bc', bets={'cua': 1})
         raid = result['fair']['wealth_raid']
-        self.assertEqual(raid['amount'], 29999)  # 30% of 99,999, whole xu
-        self.assertEqual(s['journey']['wallet'], 70000)
-        self.assertEqual(s['journey']['fair']['net'], 30000)
-        self.assertEqual(s['journey']['fair']['stats']['lost'], 30000)
+        self.assertEqual(raid['amount'], 1999)  # 2% of 99,999, whole xu
+        self.assertEqual(s['journey']['wallet'], 98000)
+        self.assertEqual(s['journey']['fair']['net'], 58000)
+        self.assertEqual(s['journey']['fair']['stats']['lost'], 2000)
         row = s['journey']['history'][-1]
-        self.assertEqual(row['amount'], -29999)
+        self.assertEqual(row['amount'], -1999)
         self.assertIn('kiểm tra', row['label'])
         self.assertEqual(result['fair']['net'], -1)  # visual dice outcome is unchanged
         validate_state(s)
@@ -79,7 +79,7 @@ class WealthRaid(FairBase):
         s, result = self.act(rich(), 'fair_xd', stake=10, side='chan')
         self.assertTrue(result['fair']['raid'])
         self.assertNotIn('wealth_raid', result['fair'])
-        self.assertEqual(s['journey']['wallet'], 100000 - 13)
+        self.assertEqual(s['journey']['wallet'], 100000 - 3)
 
     def test_check_timestamp_validation(self):
         for value in (-1, True, '123', 10**12):
@@ -100,7 +100,7 @@ class WealthRaid(FairBase):
         self.dice(Dice(draws=[0]))
         s, result = self.act(s, 'fair_loto_kinh', row=row, at=max(positions[n] for n in rv['card'][row]) + 1)
         self.assertTrue(result['fair']['won'])
-        self.assertEqual(result['fair']['wealth_raid']['amount'], (100000 - 5 + result['fair']['prize']) * 30 // 100)
+        self.assertEqual(result['fair']['wealth_raid']['amount'], min(2000, (100000 - 5 + result['fair']['prize']) * 2 // 100))
 
 
 class WealthRaidReplay(StoreBase):
@@ -114,7 +114,7 @@ class WealthRaidReplay(StoreBase):
         args = (tok, 'wealth-raid-retry-01', self.store.read(tok)[1], None, 'fair_bc', {'bets': {'cua': 1}})
         first = self.store.command(*args)
         wallet = self.store.read(tok)[0]['journey']['wallet']
-        self.assertEqual(first['result']['fair']['wealth_raid']['amount'], 29999)
+        self.assertEqual(first['result']['fair']['wealth_raid']['amount'], 1999)
         with mock.patch.object(fh, '_wealth_raid', side_effect=AssertionError('Replay must not check again')):
             replay = self.store.command(*args)
         self.assertTrue(replay['replayed'])

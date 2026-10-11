@@ -306,7 +306,7 @@ class ContinuousBusiness(unittest.TestCase):
         self.assertEqual(st['fund']+st['till'],100)
         self.assertEqual(st['business']['cursor'],10000000)
 
-    def test_external_refund_pays_local_fine_without_backpaying_operation(self):
+    def test_external_refund_does_not_pay_a_previously_waived_fine(self):
         from game import quay_business as b
         from unittest.mock import patch
         s,st=fixture();b.settle(s,now=1000)
@@ -317,5 +317,5 @@ class ContinuousBusiness(unittest.TestCase):
             b.settle(s)
         self.assertEqual(st['business']['sold'],0)
         self.assertEqual(st['business']['unpaid_fines'],0)
-        self.assertEqual(st['business']['expenses']['loss'],12)
-        self.assertEqual(st['fund']+st['till'],88)
+        self.assertEqual(st['business']['expenses']['loss'],0)
+        self.assertEqual(st['fund']+st['till'],100)

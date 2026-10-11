@@ -45,20 +45,20 @@ class HaiPolice(WatchBase):
             s, r = self.win(s)
         a = r['fair']['arrest']
         self.assertEqual((a['say'], a['seized'], a['jail']), (hai.SAY_DEVICE, 0, bm.JAIL_DAYS))
-        self.assertEqual(a['fine'], (50000 + PRIZE) * 40 // 100)
+        self.assertEqual(a['fine'], (50000 + PRIZE) * 2 // 100)
         self.assertEqual(s['journey']['wallet'], 50000 + PRIZE - a['fine'])
         self.assertEqual(s['journey']['jail']['why'], 'bm')
         self.assertIn('thiết bị thứ ba', r['message'])
         validate_state(s)
 
-    def test_the_fine_is_between_30_and_50_percent(self):
+    def test_nominal_percentage_is_limited_by_small_fine_ceiling(self):
         for pct in (hai.FINE_LO, hai.FINE_HI):
             s = self.inside(10000)
             with mock.patch.object(bm._rng, 'randint', lambda lo, hi, pct=pct: pct):
                 s, r = self.win(s)
-            self.assertEqual(r['fair']['arrest']['fine'], (10000 + PRIZE) * pct // 100)
+            self.assertEqual(r['fair']['arrest']['fine'], (10000 + PRIZE) * 2 // 100)
 
-    def test_the_bank_account_pays_what_the_wallet_cannot_never_below_zero(self):
+    def test_the_bank_account_is_untouched(self):
         s = self.inside(0)
         b = s['journey'].get('bank')
         if not b:
@@ -67,9 +67,9 @@ class HaiPolice(WatchBase):
         with mock.patch.object(bm._rng, 'randint', lambda lo, hi: 50):
             s, r = self.win(s)
         a = r['fair']['arrest']
-        self.assertEqual(a['fine'], (PRIZE + 20000) // 2)
-        self.assertGreaterEqual(s['journey']['wallet'], 0)
-        self.assertGreaterEqual(bk.get(s)['balance'], 0)
+        self.assertEqual(a['fine'], PRIZE * 2 // 100)
+        self.assertEqual(s['journey']['wallet'], PRIZE - a['fine'])
+        self.assertEqual(bk.get(s)['balance'], 20000)
         validate_state(s)
 
     def test_be_bi_and_draws_never_bring_them(self):

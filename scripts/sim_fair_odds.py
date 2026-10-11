@@ -28,6 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from game import fair as fh            # noqa: E402
 from game import fair_scratch as xs    # noqa: E402
 from game import fair_dog as dg        # noqa: E402
+from game.loss_limits import bounded_loss  # noqa: E402
 
 LOC = fh.LOC_P * fh.LOC_MULT
 
@@ -49,9 +50,9 @@ def exact() -> dict:
     rtp = sum(p * b for p, b in rows)
     loc = sum(p * fh.LOC_P * max(0, fh.LOC_MULT - (b - 1)) for p, b in rows if b > 1)
     out['bc'] = dict(rtp=rtp, loc=rtp + loc)
-    # 🕯️ chiếu trong: the raid first (stake and a fine gone; a fine of 0 when the wallet is short: the upper bound)
+    # 🕯️ chiếu trong: a raid cancels/returns its stake; zero fine is the upper bound.
     r, p = fh.RAID_PCT / 100, fh.chance_rate('xd', 0)
-    rtp = (1 - r) * p * 2
+    rtp = (1 - r) * p * 2 + r
     out['xd'] = dict(rtp=rtp, loc=rtp + (1 - r) * p * fh.LOC_P * (fh.LOC_MULT - 1))
     # 🎱 lô tô: the round goes the player's way with BASES['lt'], a Kinh pays prize_of (the best tier and tờ count)
     p = fh.chance_rate('lt', 0)
@@ -115,7 +116,8 @@ def play(game: str, how: str, n: int, seed: int = 1, loc: bool = False) -> float
             elif game == 'xd':
                 st, p = pl.stake(10, 1000)
                 if rng.random() * 100 < fh.RAID_PCT:
-                    back = -fh.xd_fine(st)
+                    # A representative funded wallet; the canceled stake is retained.
+                    back = st - bounded_loss(100000, fh.xd_fine(st), fine=True)
                 else:
                     side = 'chan' if rng.random() < .5 else 'le'
                     coins = fh.xd_toss(side, fh._draw_luck(pl.j, 'xd', p))
