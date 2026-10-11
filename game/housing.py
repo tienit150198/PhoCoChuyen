@@ -103,6 +103,7 @@ YEAR_DAYS = bk.YEAR_DAYS          # 60 life days
 DOWN_PCT = 30                     # trả trước tối thiểu
 BUY_FEE_PCT, SELL_FEE_PCT, FEE_MIN = 2, 3, 10
 GROW_RATE, GROW_CAP_PCT = 300, 30  # market value: +3 %/năm on the price, at most +30 %
+IDLE = 'home_idle'                # optional journey key {home id: life days held beyond the real-time allowance}
 HOME_SCORE = 600
 RATES = ((740, 900), (670, 1020), (0, 1140))   # score -> basis points per year (9 / 10,2 / 11,4 %); /12 per month
 LOAN_MONTHS = (12, 24, 36)
@@ -392,13 +393,42 @@ def sell_fee(value: int) -> int:
     return max(FEE_MIN, -(-value * SELL_FEE_PCT // 100))
 
 
-def value_of(own: dict, day: int, basis: int = 10000) -> int:
-    """Market value today: the price plus GROW_RATE per year held, capped, rounded down to 10 xu."""
+def value_of(own: dict, day: int, basis: int = 10000, idle: int = 0) -> int:
+    """Market value today: the price plus GROW_RATE per year held, capped, rounded down to 10 xu. `idle`: life days held
+    that the real-time allowance did not cover (idle_days): they add no value."""
     price = own['price']
-    held = max(0, day - own['day'])
+    held = max(0, day - own['day'] - max(0, idle))
     grown = price + price * GROW_RATE * held // (10000 * YEAR_DAYS)
     base = min(price * (100 + GROW_CAP_PCT) // 100, grown)
     return base * pm.quote(own['kind'])['multiplier_bp'] // basis // 10 * 10
+
+
+def idle_days(j: dict, x: dict) -> int:
+    """⏱️ Life days home `x` was held beyond the real-time allowance (game/interest_clock.py, 1 real hour = 1 paid
+    day): its value does not grow on them (11/10 audit: ending empty days grew a home +3 % every 60 of them)."""
+    d = j.get(IDLE) if isinstance(j, dict) else None
+    v = d.get(x.get('id')) if isinstance(d, dict) and isinstance(x, dict) else None
+    return v if type(v) is int and v > 0 else 0
+
+
+def _tick_idle(s: dict, h: dict, n: int) -> None:
+    """Morning n beyond the allowance: one more idle day for every home held. A home with no count yet starts from
+    the days the allowance still remembers (homes bought before this count existed)."""
+    if ic.paid(s, n):
+        return
+    j = s['journey']
+    held = {x['id']: x for x in homes(h)}
+    old = j.get(IDLE) if isinstance(j.get(IDLE), dict) else {}
+    idle = {k: v for k, v in old.items() if k in held and type(v) is int}
+    for hid, x in held.items():
+        if n > x['day']:
+            if hid not in idle:
+                idle[hid] = ic.forfeited(s, x['day'], n - 1)
+            idle[hid] = min(10**6, idle[hid] + 1)
+    if idle:
+        j[IDLE] = idle
+    else:
+        j.pop(IDLE, None)
 
 
 def rate_for(score: int) -> int:
@@ -662,6 +692,7 @@ def _tick(s: dict, h: dict, n: int, notes: list) -> None:
     for x in homes(h):
         if x['loan']:
             _tick_loan(s, h, x, n, notes)
+    _tick_idle(s, h, n)
     place, kind = where(h)
     lease = s['journey'].get('rental')
     if lease and lease['start_day'] <= n < lease['end_day']:
@@ -1084,7 +1115,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
     x = _pick(h, p)
     need(x, 'Bạn chưa có nhà để bán.')
     need(p.get('confirm') is True, 'Xác nhận bán nhà.')
-    value = value_of(x, day, s['journey'].get('property_market_basis', {}).get(x['id'], 10000))
+    value = value_of(x, day, s['journey'].get('property_market_basis', {}).get(x['id'], 10000), idle_days(s['journey'], x))
     need(p.get('value') == value, 'Giá thị trường vừa thay đổi. Xem lại rồi bán nhé.', 'stale_quote')
     fee = sell_fee(value)
     off = _payoff(x['loan'], day, fee=False) if x['loan'] else None
@@ -1109,6 +1140,10 @@ def apply(s: dict, name: str, p: dict) -> dict:
         h['props'] = [o for o in h['props'] if o is not x]
     j.get('rental_ads', {}).pop(x['id'], None)
     j.get('property_market_basis', {}).pop(x['id'], None)
+    if isinstance(j.get(IDLE), dict):
+        j[IDLE].pop(x['id'], None)
+        if not j[IDLE]:
+            j.pop(IDLE)
     h['stats']['sold'] += 1
     _log(h, day, f'Bán {lname(H["name"])} được {_fmt(value)} xu, phí {_fmt(fee)} xu' + (f', trả nợ vay {_fmt(off["total"])} xu' if off else '') + '.', got)
     msg = f'Đã bán {lname(H["name"])} giá {_fmt(value)} xu (phí môi giới, thuế {_fmt(fee)} xu)'
@@ -1199,7 +1234,7 @@ def dorm_view(s: dict) -> dict:
 def _home_view(s: dict, h: dict, x: dict, day: int, ready: int) -> dict:
     """One home you own as the page shows it (`own` keeps 0.9's fields; the others add their tenant and what can be done)."""
     H = HOMES[x['kind']]
-    value = value_of(x, day, s['journey'].get('property_market_basis', {}).get(x['id'], 10000))
+    value = value_of(x, day, s['journey'].get('property_market_basis', {}).get(x['id'], 10000), idle_days(s['journey'], x))
     fee = sell_fee(value)
     ln = x['loan']
     loan = None
@@ -1383,3 +1418,8 @@ def validate(s: dict) -> None:
         integer(row['day'], 1, 10**6)
         txt(row['text'], 140)
         integer(row['amt'], -bk.AMOUNT_MAX * 2, bk.AMOUNT_MAX * 2)
+    if IDLE in j:   # ⏱️ optional (an older build ignores it: the value grows on every day held there)
+        need(isinstance(j[IDLE], dict) and len(j[IDLE]) <= OWNED_MAX, bad)
+        for k, n in j[IDLE].items():
+            txt(k, 16)
+            integer(n, 0, 10**6)

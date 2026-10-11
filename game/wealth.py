@@ -116,11 +116,11 @@ def _sheet(state, j) -> tuple[int, int]:
     if type(h) is dict:
         owned = [x for x in [h.get('own')] + _l(h.get('props')) if type(x) is dict]
         if owned:
-            from .housing import value_of
+            from .housing import value_of, idle_days
             day = _n(j.get('life_day'))
             basis = _d(j.get('property_market_basis'))
             for x in owned:
-                assets += value_of(x, day, basis.get(x.get('id'), 10000))
+                assets += value_of(x, day, basis.get(x.get('id'), 10000), idle_days(j, x))
                 debt += _rows_left(x.get('loan'))
     return assets, debt
 

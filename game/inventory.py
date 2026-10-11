@@ -1060,7 +1060,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         refund = _refund(order)
         order['claimed'] = True
         sup = _known(career, order['supplier'])
-        e.money(s, c, refund, f'Hoàn tiền giao thiếu · {sup["name"]}', order['id'], category='refund')
+        _book_refund(s, c, refund, refund if order['day'] == c['day'] else 0, f'Hoàn tiền giao thiếu · {sup["name"]}', order['id'])
         order['reply'] = sup['voice']['claim']
         return dict(message=f'{sup["name"]}: “{sup["voice"]["claim"]}” · +{refund} xu.')
     if name == 'inv_rate':
@@ -1096,6 +1096,19 @@ def cancel_refund(paid: int) -> int:
     return max(0, int(paid)) * CANCEL_PCT // 100
 
 
+def _book_refund(s: dict, c: dict, amount: int, today: int, reason: str, ref: str | None) -> None:
+    """A supplier gives back `amount` xu paid for stock, `today` of it paid on this workplace day. The cash and the
+    cash book row are as before; the day's figures are not income: the part paid today lowers today's cost (a negative
+    cost), the part paid on an earlier day was that day's cost and stays out of today's income and net, so out of the
+    🔥 x3 bonus (game/x3_week.py) too (11/10 audit: order on day A, cancel on the x3 day B, close: ≈+2.6k a cycle)."""
+    from . import engine as e
+    before = c['earnings']
+    e.money(s, c, amount, reason, ref, category='refund')
+    got = c['earnings'] - before
+    c['earnings'] -= got
+    c['costs'] = max(0, c['costs'] - min(got, max(0, today)))
+
+
 def _cancel(s: dict, c: dict, career: str, x: dict, p: dict) -> dict:
     """inv_cancel (player #276 "thêm dòng hủy hàng đang đặt"): call off an order still on the way,
     `order` (one item) or `group` (a whole merged order: one van, so all of it). Only before the
@@ -1126,7 +1139,8 @@ def _cancel(s: dict, c: dict, career: str, x: dict, p: dict) -> dict:
     what = (f'đơn gộp {len(lines)} món' if gid is not None else
             f'{lines[0]["qty"]} {item(career, lines[0]["item"]).get("unit", "phần")} {item(career, lines[0]["item"])["name"]}')
     if refund:
-        e.money(s, c, refund, f'Hủy đơn nhập: {what} · {sup["name"]}'[:120], ref, category='refund')
+        today = cancel_refund(sum(o['cost'] + o.get('ship', 0) for o in lines if o['day'] == c['day']))
+        _book_refund(s, c, refund, today, f'Hủy đơn nhập: {what} · {sup["name"]}'[:120], ref)
     e.log(s, c, 'stock', f'Hủy {what} đang giao từ {sup["name"]}, hoàn {refund} xu.', ref=ref)
     return dict(message=f'Đã hủy {what} với {sup["name"]} · nhận lại {refund} xu (đã trả {paid} xu).', refund=refund, paid=paid)
 
@@ -1411,7 +1425,7 @@ def _group_action(s: dict, c: dict, career: str, x: dict, name: str, p: dict) ->
         for o in due:
             o['claimed'] = True
             o['reply'] = sup['voice']['claim']
-        e.money(s, c, refund, f'Hoàn tiền giao thiếu · {sup["name"]}', gid, category='refund')
+        _book_refund(s, c, refund, sum(_refund(o) for o in due if o['day'] == c['day']), f'Hoàn tiền giao thiếu · {sup["name"]}', gid)
         return dict(message=f'{sup["name"]}: “{sup["voice"]["claim"]}” · +{refund} xu.')
     need(all(o['status'] == 'received' for o in lines) and all(o['rating'] is None for o in lines),
          'Chỉ đánh giá một lần sau khi nhận hàng.')

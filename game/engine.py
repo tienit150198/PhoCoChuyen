@@ -581,7 +581,9 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if action=="reset_all":
         need(p.get("confirm")=="BAT DAU LAI","Cần xác nhận trước khi xóa tiến trình.")
         fresh=new_state()
-        if s["journey"]["story"]:jr.enable_story(fresh,s["journey"]["seed"]+1)
+        if s["journey"]["story"]:
+            jr.enable_story(fresh,s["journey"]["seed"]+1)
+            jr.carry_reset(s,fresh)  # never more xu than the old journey held: no starter funds, gift or allowance twice
         ar.record([s],"reset_all",ar.JOURNEY)  # the whole previous journey stays in the archive
         return fresh,dict(message="Đã tạo hành trình mới.")
     if action.startswith("jr_"):return jr.action(s,career,action,p)
@@ -1139,11 +1141,14 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         ar.record([s["careers"][career]],"reset",career)  # the previous record stays in the archive
         pm.forget(s,career)  # 🎖️ the place's steps start again too
         old=s["careers"][career]["money"]
+        granted=s["careers"][career]["ops"]["finance"]["grant_used"]
         s["careers"][career]=fresh=initial_career(career)
         if (s.get("journey") or {}).get("story"):
             # The workplace fund carries over (never above the 320 a new place starts with): a reset is no way to
             # refill it after drawing it into the wallet (09/10: reset → start → jr_withdraw 240, again and again).
             fresh["money"]=fresh["day_start_money"]=fresh["ops"]["finance"]["opening_balance"]=min(fresh["money"],old)
+            # The 80-xu starter grant is once a place too (11/10 audit: reset → spend under 60 → grant → withdraw).
+            fresh["ops"]["finance"]["grant_used"]=granted
         return s,dict(message="Đã bắt đầu lại riêng nghề này.")
     else:raise GameError("Thao tác không được hỗ trợ.","unknown_action")
     life.update_patience(c,action,p,prior_mistakes)

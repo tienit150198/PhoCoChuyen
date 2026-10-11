@@ -35,6 +35,15 @@ def initial(career:str)->dict:
   activity_best={},badges=[],stickers=[],chapters={},visits=[],festival=False,festival_claimed=False,goals_history=[],
   day_guests=[],title_style='milk',onboarding=False,served_sources=[],day_talked=[],recap=None,**({'tour':tour_trip.fresh_care()} if career=='tour_guide' else {}))
 
+def _paid_day(s:dict)->bool:
+ # ⏱️ The day's small rewards (goals, mini games, the combo, the festival) are re-armed at every close: on a life day
+ # beyond the real-time allowance (game/interest_clock.py, 1 real hour = 1 paid day) they pay no xu (11/10 audit:
+ # ≈+68 xu per empty day ended).
+ from . import interest_clock as ic
+ return ic.day_paid(s)
+
+UNPAID='⏱️ Hôm nay quá số ngày có thưởng theo giờ thật (1 giờ = 1 ngày): không có thưởng xu.'
+
 def _id(c:dict,prefix:str)->str:
  c['life']['seq']+=1
  return f"{prefix}-{c['life']['seq']}"
@@ -84,7 +93,8 @@ def after_task(s:dict,c:dict,t:dict):
  else:x['streak']=0
  # Reward on the third accurate service only once per game day; no menu farming.
  if x['streak']==3 and not x['day_metrics'].get('combo_reward'):
-  core().money(s,c,8,'Ba việc liền mạch',f"combo-{c['day']}",category='skill_reward');x['day_metrics']['combo_reward']=1
+  if _paid_day(s):core().money(s,c,8,'Ba việc liền mạch',f"combo-{c['day']}",category='skill_reward')
+  x['day_metrics']['combo_reward']=1
  _sticker(c,'first-service','Một việc được làm đến nơi','🌱')
  if t['career']=='mother_baby':
   from . import giftshop
@@ -165,7 +175,7 @@ def _new_activity(c:dict,spec:dict,practice:bool)->dict:
 def _activity_finish(s:dict,c:dict,a:dict):
  x=c['life'];a['status']='completed';score=max(30,100-a['mistakes']*8);a['score']=score
  if not a['practice'] and a['spec'] not in x['activity_rewards']:
-  a['reward']=12;core().money(s,c,12,'Trò nhỏ: '+data.ACTIVITY_INDEX[a['spec']]['title'],a['id'],category='activity_reward')
+  if _paid_day(s):a['reward']=12;core().money(s,c,12,'Trò nhỏ: '+data.ACTIVITY_INDEX[a['spec']]['title'],a['id'],category='activity_reward')
   c['xp']+=10;x['activity_rewards'].append(a['spec']);_metric(c,'activities')
   _sticker(c,a['spec'],data.ACTIVITY_INDEX[a['spec']]['title'],data.ACTIVITY_INDEX[a['spec']]['emoji'])
  x['activity_best'][a['spec']]=max(score,x['activity_best'].get(a['spec'],0))
@@ -209,7 +219,7 @@ def _activity_action(s,c,name,p):
    else:a['mistakes']+=1;r['message']='Hai nhãn khác nhau. Ghi nhớ vị trí rồi chọn một thẻ khác.'
    if len(a['matched'])==len(a['cards']):_activity_finish(s,c,a)
  else:raise e.GameError('Thao tác trò nhỏ chưa được hỗ trợ.')
- if a['status']=='completed':r.update(message=f"Hoàn thành · {a['score']} điểm cá nhân · +{a['reward']} xu.",celebrate=True)
+ if a['status']=='completed':r.update(message=f"Hoàn thành · {a['score']} điểm cá nhân · +{a['reward']} xu."+('' if a['reward'] or a['practice'] or _paid_day(s) else ' '+UNPAID),celebrate=True)
  return r
 
 def handle(s:dict,c:dict,career:str,action:str,p:dict)->dict:
@@ -222,7 +232,9 @@ def handle(s:dict,c:dict,career:str,action:str,p:dict)->dict:
    need(not c['open'],'Chọn nhịp ngày trước khi mở ca.');need(p.get('mode') in [m['id'] for m in data.MODES],'Nhịp ngày không hợp lệ.');x['mode']=p['mode']
   elif name=='goal':
    g=next((v for v in goals(c) if v['id']==p.get('goal')),None);need(g and not g['claimed'] and g['current']>=g['goal'],'Mục tiêu chưa xong hoặc đã nhận.')
-   x['goals_claimed'].append(g['id']);e.money(s,c,g['reward'],'Mục tiêu: '+g['title'],f"goal-{c['day']}-{g['id']}",category='goal_reward');c['xp']+=10;r.update(message='Đã nhận thưởng mục tiêu ngày.',celebrate=True)
+   x['goals_claimed'].append(g['id']);paid=_paid_day(s)
+   if paid:e.money(s,c,g['reward'],'Mục tiêu: '+g['title'],f"goal-{c['day']}-{g['id']}",category='goal_reward')
+   c['xp']+=10;r.update(message='Đã nhận thưởng mục tiêu ngày.' if paid else UNPAID,celebrate=paid)
   elif name=='badge':
    b=next((v for v in data.ACHIEVEMENTS if v['id']==p.get('badge')),None);need(b and b['id'] not in x['badges'],'Huy hiệu không tồn tại hoặc đã nhận.');need(c['metrics'].get(b['metric'],0)>=b['goal'],'Chưa đủ dấu mốc.')
    x['badges'].append(b['id']);_sticker(c,'badge-'+b['id'],b['title'],b['emoji']);c['xp']+=15;r.update(message='Thêm huy hiệu '+b['title']+' vào hộ chiếu nghề.',celebrate=True)
@@ -248,7 +260,8 @@ def handle(s:dict,c:dict,career:str,action:str,p:dict)->dict:
    r['message']=place['name']+': '+place['description']
   elif name=='festival':
    need(c['open'] and x['festival'],'Ngày hội xuất hiện ngẫu nhiên. Mở ca có nhịp Ngày hội để tham gia.');need(not x['festival_claimed'],'Ngày hội này đã hoàn tất.');need(x['day_metrics'].get('served',0)>=3 and x['day_metrics'].get('activities',0)>=1,'Chuẩn bị 3 công việc hoàn tất và 1 trò nhỏ trước nhé.')
-   x['festival_claimed']=True;_metric(c,'festivals');e.money(s,c,30,'Hoạt động ngày hội',f"festival-{c['day']}",category='festival_reward');_sticker(c,'festival','Một góc ngày hội','🎏')
+   x['festival_claimed']=True;_metric(c,'festivals');_sticker(c,'festival','Một góc ngày hội','🎏')
+   if _paid_day(s):e.money(s,c,30,'Hoạt động ngày hội',f"festival-{c['day']}",category='festival_reward')
    e.add_feed(s,c,next(n['id'] for n in e.NPCS if n['career_id']==career),'Góc hoạt động hôm nay đã sẵn sàng. Cảm ơn bạn đã chuẩn bị thật chu đáo!',f"festival-{c['day']}",kind='story');r.update(message='Ngày hội đã có một góc mang dấu ấn của bạn!',celebrate=True)
   elif name=='chapter':
    story=data.STORY_INDEX.get(p.get('story'));need(story and story['career']==career,'Câu chuyện không thuộc nghề.')

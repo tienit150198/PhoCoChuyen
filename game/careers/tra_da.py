@@ -1278,6 +1278,12 @@ def _dispute(s, c, d, p):
         else:
             head = '😤 Hai bên to tiếng. Chú Tường lầm bầm trả đủ, mặt nặng như chì.'
     t['bill']['total'] = sum(r['amount'] for r in t['bill']['lines'])
+    # Chú Tường reads every line: the next one written over what he owes is questioned too (11/10 audit: only the
+    # first was, so writing 500 on every other line was paid in full; a real line is ≈10 xu).
+    nxt = next((r for r in t['bill']['lines'] if r['amount'] > r['due']), None)
+    if nxt is not None:
+        t['dispute'] = dict(line=nxt['id'], wrong=True, state='open')
+        return dict(message=f'{head} Chú lật tiếp: “Ơ, ngày {nxt["day"]} chú uống gì mà những {nxt["amount"]} xu?”')
     return _to_pay(d, t, head)
 
 
