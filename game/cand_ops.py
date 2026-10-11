@@ -679,7 +679,7 @@ def op_answer(store, sid: str, display: str, d: dict) -> dict:
     def ops(db):
         need(_move(db, row['id'], 'ask', 'offer', bribe=amount), 'Lượt kiểm tra này đã xong rồi.', 'cand_stale')
         _tell(db, row['officer'], 'offer', dict(row, status='offer', bribe=amount), f'💵 {display} đưa phong bì {_xu(amount)} xu.',
-              amount=amount, left=OFFER_S)
+              amount=amount, left=max(0, int(row['at'] + ASK_S + OFFER_S - t)))   # the real deadline, as view() counts it
     store.transaction(ops)
     row.update(status='offer', bribe=amount)
     return dict(message=f'Đã đưa phong bì {_xu(amount)} xu. Chờ cán bộ…', quiet=True, stop=view(row, sid, t, {row['officer']: name}))
