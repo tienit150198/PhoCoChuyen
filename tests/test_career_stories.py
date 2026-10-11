@@ -6,6 +6,7 @@ import unittest
 from game import career_stories as cst
 from game.content import CAREERS, NPC_INDEX
 from game.engine import GameError, apply_action, migrate_state, needs_migration, new_state, public_state, validate_state
+from tests.helpers import Journey
 
 
 def act(s, where, action, **p):
@@ -314,6 +315,49 @@ class SaveTest(unittest.TestCase):
         s['stories']['arcs']['farm'] = dict(seen=['farm_1'], picks={}, last=2)
         s, _ = act(s, None, 'reset_all', confirm='BAT DAU LAI')
         self.assertEqual(s['stories'], cst.initial())
+
+
+class QueueCapacityTest(unittest.TestCase):
+    def test_payment_keeps_forty_other_pending_career_stories(self):
+        j = Journey('mother_baby')
+        st = j.state['stories']
+        for cid in [cid for cid in cst.ARCS if cid != 'mother_baby'][:40]:
+            j.state['careers'][cid]['metrics']['served'] = 1
+            self.assertIsNotNone(cst.check(j.state, cid))
+        # An existing choice and its next pending scene must survive payment too.
+        st['arcs']['milk_tea'].update(seen=['milk_tea_1', 'milk_tea_2'], picks={'milk_tea_2': 'b'})
+        queued(j.state, 'milk_tea')[0]['beat'] = 'milk_tea_3'
+        before = copy.deepcopy(st)
+        self.assertEqual(len(before['queue']), 40)
+        validate_state(j.state)
+
+        result = j.solve()
+
+        self.assertEqual(result['status'], 'completed')
+        self.assertEqual(j.c['money'], 400)
+        self.assertTrue(ledger_ok(j.c))
+        self.assertEqual(j.state['stories']['queue'][:-1], before['queue'])
+        self.assertEqual(queued(j.state, 'mother_baby')[0]['beat'], 'mother_baby_1')
+        for cid, progress in before['arcs'].items():
+            self.assertEqual(j.state['stories']['arcs'][cid], progress)
+        validate_state(j.state)
+
+    def test_every_career_can_keep_one_pending_story_without_losing_any(self):
+        s = new_state()
+        for cid in cst.ARCS:
+            s['careers'][cid]['metrics']['served'] = 1
+            self.assertIsNotNone(cst.check(s, cid), cid)
+            cst.validate(s)
+        self.assertEqual(len(queued(s)), len(cst.ARCS))
+        self.assertEqual({q['career'] for q in queued(s)}, set(cst.ARCS))
+        before = copy.deepcopy(s['stories'])
+        for cid in cst.ARCS:
+            self.assertIsNone(cst.check(s, cid), cid)
+        self.assertEqual(s['stories'], before)
+        migrated = migrate_state(s)
+        self.assertEqual(migrated['stories'], before)
+        self.assertEqual(len(public_state(migrated)['stories']['due']), len(cst.ARCS))
+        validate_state(migrated)
 
 
 if __name__ == '__main__':

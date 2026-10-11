@@ -25,7 +25,6 @@ from .jsoncopy import tree_copy
 from .content import CAREERS, CAREER_META, NPC_INDEX
 
 VERSION = 1
-QUEUE_MAX = 40
 MAX_COINS = 10
 REL_BUMP = 6
 TOKENS = {
@@ -2286,7 +2285,8 @@ def validate(s: dict) -> None:
             beat = ARCS[cid]['beats'][BEAT_INDEX[cid][bid]]
             need(bool(beat['choice']) and oid in [o['id'] for o in beat['choice']['options']],
                  'Lựa chọn truyện nghề không hợp lệ.', 'invalid_save')
-    need(isinstance(st['queue'], list) and len(st['queue']) <= QUEUE_MAX, 'Hàng chờ truyện nghề không hợp lệ.', 'invalid_save')
+    # Every career may keep its next scene pending as the catalogue grows.
+    need(isinstance(st['queue'], list) and len(st['queue']) <= len(ARCS), 'Hàng chờ truyện nghề không hợp lệ.', 'invalid_save')
     seen_ids, seen_careers = set(), set()
     for q in st['queue']:
         need(isinstance(q, dict) and set(q) == {'id', 'career', 'beat', 'day'}, 'Hàng chờ truyện nghề không hợp lệ.', 'invalid_save')

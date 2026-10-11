@@ -50,9 +50,9 @@ function bind(){
   on('bark_end',f=>{if(B.match?.m!==f.m)return;stopSend();B.end=f;B.view='end';collect();paint();});
   on('bark_over',f=>{if(B.watch?.m===f.m){B.watch={...B.watch,over:f.winner};paint();}});
   on('bark_room',f=>{B.watch={...f,st:{x:f.x,a:0,b:0,left:f.left}};B.view='watch';paint();});
-  on('bark_none',()=>{if(B.view==='match'||B.view==='wait'){B.view='lobby';paint();}});
+  on('bark_none',()=>{if(B.view==='wait'){loadInfo().then(paint);}else if(B.view==='match'){stopSend();B.match=null;B.view='lobby';collect();paint();}});
   on('error',f=>{if(!String(f.ref||'').startsWith('bark_')||f.ref==='bark_v'||f.ref==='bark_cheer'||f.ref==='bark_ready')return;B.busy=false;B.flash={text:f.msg||'Chưa được, thử lại nha.',kind:'bad'};paint();});
-  on('welcome',()=>{if(B.dlg?.open){B.live.send({t:'bark_rejoin'});lobby();}});
+  on('welcome',()=>{if(B.dlg?.open){B.live.send({t:'bark_rejoin'});loadInfo().then(paint);lobby();}});
 }
 function lobby(){B.live?.send({t:'bark_lobby'});}
 
@@ -64,12 +64,23 @@ async function collect(){
 }
 async function loadInfo(){
   if(B.infoRequest)return B.infoRequest;
+  const ticketAtStart=B.ticket;
   B.infoRequest=(async()=>{
-    try{B.info=await B.env.api.json('/api/dogbark');}catch{B.info=B.info||{on:false};}
+    try{
+      B.info=await B.env.api.json('/api/dogbark');
+      if(!B.dlg?.open)return;
+      const o=B.info?.me?.open;
+      // Escrow survives a lost command response or a live-service restart. Restore
+      // it from the game server even if this page already remembers the ticket.
+      if(o?.status==='wait'&&!['match','end'].includes(B.view)&&B.ticket===ticketAtStart){
+        B.ticket=o.ticket;B.stake=o.stake;B.view='wait';B.waitAt=o.at*1000||Date.now();
+        B.live?.send({t:'bark_find',ticket:o.ticket});
+      }else if(!o&&B.ticket&&B.ticket===ticketAtStart&&['lobby','wait'].includes(B.view)){
+        B.ticket=null;B.view='lobby';await collect();
+      }
+    }catch{B.info=B.info||{on:false};}
   })();
   try{await B.infoRequest;}finally{B.infoAt=Date.now();B.infoRequest=null;}
-  const o=B.info?.me?.open;
-  if(o&&o.status==='wait'&&!B.ticket){B.ticket=o.ticket;B.live?.send({t:'bark_find',ticket:o.ticket});}
 }
 
 /* ---------------------------------------------------------------- the microphone */
@@ -231,16 +242,17 @@ function cancelTicket(){
 export async function openDogBark(env){
   B.env=env;await stylesheet('/css/dog-bark.css');
   const d=dialog();if(!d.open)d.showModal();
-  const lv=await socket();bind();
+  const lv=await socket();if(!d.open)return;bind();
   B.flash=null;if(!['match','wait'].includes(B.view))B.view='lobby';
   paint();
   await loadInfo();
+  if(!d.open)return;
   lv?.send({t:'bark_rejoin'});lobby();paint();
   clearInterval(B.timer);B.timer=setInterval(tickUI,250);
   clearInterval(B.poll);B.poll=setInterval(()=>{
-    if(!d.open||B.view!=='lobby')return;
-    lobby();
-    if(Date.now()-B.infoAt>=15000)loadInfo().then(()=>{if(d.open&&B.view==='lobby')paint();});
+    if(!d.open||!['lobby','wait'].includes(B.view))return;
+    if(B.view==='lobby')lobby();
+    if(Date.now()-B.infoAt>=15000)loadInfo().then(()=>{if(d.open)paint();});
   },4000);
 }
 export async function dogBarkAction(action,data,el,env){if(action!=='liveBark')return false;await openDogBark(env);return true;}
@@ -271,6 +283,8 @@ async function saveYear(){
   B.busy=false;paint();
 }
 async function find(){
+  if(B.busy)return;
+  if(B.ticket||B.info?.me?.open){await loadInfo();B.live?.send({t:'bark_rejoin'});paint();return;}
   const me=B.info?.me,stake=B.stake;
   if(me?.code==='bark_birth'){B.panel='birth';paint();return;}
   if(me?.code==='bark_young'){B.panel='young';paint();return;}
@@ -283,14 +297,26 @@ async function find(){
   if(st!=='live'){B.busy=false;B.flash={text:micWhy(st),kind:'bad'};paint();return;}
   try{
     const r=await B.env.api.command('jr_bark_join',{stake});
-    B.ticket=r?.bark?.ticket||r?.result?.bark?.ticket||null;
-    if(!B.ticket){await loadInfo();B.ticket=B.info?.me?.open?.ticket||null;}
-    B.view='wait';B.waitAt=Date.now();B.flash=null;
-    if(!B.live?.send({t:'bark_find',ticket:B.ticket}))B.flash={text:'Mất kết nối, đang nối lại…',kind:'bad'};
+    // A reconnect can deliver bark_go/bark_end before the HTTP join returns.
+    if(!B.match||!['match','end'].includes(B.view)){
+      B.ticket=r?.bark?.ticket||r?.result?.bark?.ticket||null;
+      if(!B.ticket){
+        await loadInfo();
+        if(!B.match||!['match','end'].includes(B.view))B.ticket=B.info?.me?.open?.ticket||null;
+      }
+      if(!B.match||!['match','end'].includes(B.view)){
+        B.view='wait';B.waitAt=Date.now();B.flash=null;
+        if(!B.live?.send({t:'bark_find',ticket:B.ticket}))B.flash={text:'Mất kết nối, đang nối lại…',kind:'bad'};
+      }
+    }
   }catch(e){
     const code=e.data?.code||e.code;
     if(code==='bark_birth')B.panel='birth';else if(code==='bark_young')B.panel='young';
-    else B.flash=e.quiet?null:{text:e.message||'Chưa đặt được kèo.',kind:'bad'};
+    else{
+      await loadInfo();
+      B.flash=B.ticket?null:(e.quiet?null:{text:e.message||'Chưa đặt được kèo.',kind:'bad'});
+      if(B.info?.me?.open&&B.info.me.open.status!=='wait')B.live?.send({t:'bark_rejoin'});
+    }
   }
   B.busy=false;paint();
 }
