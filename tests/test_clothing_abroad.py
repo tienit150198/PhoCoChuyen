@@ -77,10 +77,11 @@ class Contract(unittest.TestCase):
         for n in range(sh['days']):
             fund = j.c['money']
             A._data(j.c)['day_sales'] = 1000 if n == 0 else 0
+            A._data(j.c)['day_margin'] = 600 if n == 0 else 0   # 11/10: the commission is on the margin
             r = day(j)
             lines += r['summary']['career']['lines']
             if n == 0:
-                self.assertEqual(j.c['money'] - fund, 1000 * sh['pct'] // 100)
+                self.assertEqual(j.c['money'] - fund, 600 * sh['pct'] // 100)
         self.assertTrue(any('Hoa hồng' in x for x in lines))
         self.assertTrue(any(x.startswith('🇰🇷 Ngày 1/') for x in lines))
         self.assertTrue(any('Hết hợp đồng' in x for x in lines))

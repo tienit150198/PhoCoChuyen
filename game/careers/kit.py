@@ -140,9 +140,11 @@ def remember(s: dict, c: dict, npc: str, message: str, ref: str | None = None) -
     eng().remember(s, c, npc, message, ref)
 
 
-def complete(s: dict, c: dict, t: dict, reward: int, narrative: str, status: str = 'completed') -> None:
-    """Finish a task once: pays the reward, writes memory and a persona review."""
-    eng().task_done(s, c, t, reward, narrative, status)
+def complete(s: dict, c: dict, t: dict, reward: int, narrative: str, status: str = 'completed',
+             bonus_base: int | None = None) -> None:
+    """Finish a task once: pays the reward, writes memory and a persona review.
+    `bonus_base`: the quality gear's bonus counts on this (a shop's margin) instead of the whole reward."""
+    eng().task_done(s, c, t, reward, narrative, status, bonus_base)
 
 
 def data(c: dict) -> dict:

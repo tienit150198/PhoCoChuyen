@@ -349,7 +349,9 @@ def mark_done(c:dict,tid:str) -> None:
     if tid not in c["completed_ids"]:c["completed_ids"].append(tid)
     if len(c["completed_ids"])>COMPLETED_IDS_KEPT:c["completed_ids"]=ar.last(c["completed_ids"],COMPLETED_IDS_KEPT,"completed_ids",c)
 
-def task_done(s:dict,c:dict,t:dict,reward:int,narrative:str,status:str="completed") -> None:
+def task_done(s:dict,c:dict,t:dict,reward:int,narrative:str,status:str="completed",bonus_base:int|None=None) -> None:
+    """`bonus_base`: what the quality gear's bonus is counted on when it is not the whole reward (a shop's margin:
+    the bill less the goods' cost, game/careers/clothing.py); never more than the reward."""
     need(t["id"] not in c["completed_ids"],"Công việc đã nhận kết quả.","already_completed")
     t["status"]=status
     t["completed_turn"]=c["turn"]
@@ -364,7 +366,7 @@ def task_done(s:dict,c:dict,t:dict,reward:int,narrative:str,status:str="complete
         money(s,c,reward,"Hoàn thành: "+t["title"],t["id"])
         if status=='completed':
             from .income_gear import completion_bonus
-            completion_bonus(s,c,reward,t['title'],t['id'])
+            completion_bonus(s,c,reward if bonus_base is None else max(0,min(reward,bonus_base)),t['title'],t['id'])
     remember(s,c,t["npc"],narrative,t["id"])
     made=fbk.make_review(s,c,t,status)
     review=made["text"];stars=made["stars"]

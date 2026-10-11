@@ -758,6 +758,119 @@ class ClothingOnlineTests(unittest.TestCase):
         with self.assertRaises(GameError):
             j.act('ao_seal', task=j.task['id'])
 
+    def test_extras_in_a_parcel_are_not_billed_and_go_back_on_the_rack(self):
+        # 11/10 audit: three dear extras stuffed into every parcel were billed (COD) and paid about +600 xu an order.
+        j = job('online', lambda t: all(x['item'] != 'aodai' for x in t['needs']['lines']))
+        t = j.task
+        tid = t['id']
+        for x in t['needs']['lines']:
+            j.act('ao_pack', task=tid, **x)
+        j.act('ao_pack', task=tid, item='aodai', size='M', colour='đỏ')
+        stock = kit.stock(j.c, 'aodai')
+        j.act('ao_label', task=tid)
+        right = sum(A._price(j.c, x['item']) for x in t['needs']['lines'])
+        self.assertEqual(j.get(tid)['parcel']['label']['total'], right)
+        j.act('ao_seal', task=tid)
+        money = j.c['money']
+        r = j.act('ao_ship', task=tid, confirm=True)
+        t = j.get(tid)
+        self.assertIn('extra_parcel', slip_codes(t))
+        self.assertEqual(kit.stock(j.c, 'aodai'), stock)      # not sold: back on the rack
+        self.assertLess(j.c['money'] - money, right - A.SHIP_FEE)   # the extra only costs (its ship fee, the slip)
+        self.assertIn('treo lại lên giá', r['message'])
+        roundtrip(j)
+
+
+def rack_at(j, unit):
+    """Every piece on the rack was bought at `unit` xu (the grid keeps its counts)."""
+    for it in A.ITEMS:
+        n = kit.stock(j.c, it['id'])
+        if n:
+            kit.take(j.c, it['id'], n)
+            kit.add_lot(j.c, it['id'], n, unit, 999, 'test')
+
+
+@unittest.skipIf(A is None, 'clothing filtered out')
+class ClothingTakingsTests(unittest.TestCase):
+    """11/10 (owner: "tiệm áo thì cũng sửa lại bớt đi"): the bonuses count on the margin, a skipped day keeps little."""
+    def setUp(self):
+        from unittest import mock
+        patch = mock.patch('game.tips.after_task')   # a customer's own tip is not the shop's takings
+        patch.start()
+        self.addCleanup(patch.stop)
+
+    def fit(self, prices=False, gear=True):
+        from game import income_gear as ig
+        j = job('fit', lambda t: not t['needs'].get('haggle'))
+        if gear:
+            j.c['upgrades'] = list(j.c.get('upgrades', [])) + [ig.item_id('clothing', 'quality', n) for n in (1, 2, 3)]
+        if prices:
+            for item, base in A.PRICES.items():
+                j.c['life']['prices'][item] = round(base * 1.25)
+        rack_at(j, 50)
+        return j
+
+    def bonus(self, j, tid, money):
+        t = j.get(tid)
+        pieces = [x for x in t['bill']['lines'] if x['item']]
+        markup = sum(x['unit'] - A.PRICES[x['item']] for x in pieces)
+        margin = t['result']['net'] - markup - 50 * len(pieces)
+        self.assertGreater(margin, 0)
+        self.assertEqual(j.c['money'] - money - t['result']['tip'], t['result']['net'] + (margin * 30 + 99) // 100)
+
+    def test_quality_gear_counts_on_the_margin(self):
+        j = self.fit()
+        tid, money = j.task['id'], j.c['money']
+        solve(j, tid)
+        self.bonus(j, tid, money)
+
+    def test_a_price_above_the_list_does_not_feed_the_gear_again(self):
+        j = self.fit(prices=True)
+        tid, money = j.task['id'], j.c['money']
+        solve(j, tid)
+        self.assertGreater(j.get(tid)['bill']['total'], sum(A.PRICES[x['item']] for x in j.get(tid)['bill']['lines']) - 1)
+        self.bonus(j, tid, money)
+
+    def test_a_life_day_past_the_real_time_allowance_keeps_the_cost_and_a_tenth(self):
+        from game import interest_clock as ic
+        from tests.test_promotion import story
+        j = self.fit(gear=False)
+        story(j)
+        jr = j.state['journey']
+        if 'clothing' not in jr['unlocked']:
+            jr['unlocked'].append('clothing')
+        ic.sync(j.state)
+        jr[ic.KEY]['x'] = [[jr['life_day'], jr['life_day']]]
+        tid, money = j.task['id'], j.c['money']
+        r = solve(j, tid)
+        t = j.get(tid)
+        pieces = sum(1 for x in t['bill']['lines'] if x['item'])
+        self.assertEqual(j.c['money'] - money - t['result']['tip'], 50 * pieces + t['bill']['total'] * A.SKIP_PCT // 100)
+        self.assertIn('⏱️', r['message'])
+        self.assertEqual(j.c['ext']['data']['day_margin'], t['bill']['total'] * A.SKIP_PCT // 100)
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_nobody_walks_past_the_mannequin_on_a_skipped_day(self):
+        from game import interest_clock as ic
+        from tests.test_promotion import story
+        j = job('display')
+        solve(j, j.task['id'])
+        story(j)
+        jr = j.state['journey']
+        ic.sync(j.state)
+        jr[ic.KEY]['x'] = [[jr['life_day'], jr['life_day']]]
+        j.act('end_day', carry_event=True)
+        self.assertEqual(j.c['ext']['data']['stats']['walkins'], 0)
+
+    def test_a_covered_life_day_pays_the_whole_bill(self):
+        from tests.test_promotion import story
+        j = self.fit(gear=False)
+        story(j)
+        tid, money = j.task['id'], j.c['money']
+        solve(j, tid)
+        t = j.get(tid)
+        self.assertEqual(j.c['money'] - money - t['result']['tip'], t['bill']['total'])
+
 
 @unittest.skipIf(A is None, 'clothing filtered out')
 class ClothingDisplayTests(unittest.TestCase):
@@ -835,7 +948,7 @@ class ClothingStockAndSaveTests(unittest.TestCase):
     def test_old_data_without_new_fields(self):
         j = Journey('clothing')
         d = j.c['ext']['data']
-        for k in ('swaps', 'book', 'sale', 'display', 'intro', 'notes', 'seq', 'day_sales', 'stats'):
+        for k in ('swaps', 'book', 'sale', 'display', 'intro', 'notes', 'seq', 'day_sales', 'day_margin', 'stats'):
             d.pop(k)
         validate_state(j.state)
         self.assertIn('stats', d)

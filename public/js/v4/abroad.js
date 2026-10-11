@@ -69,7 +69,7 @@ function shopPage(env,A,K,J){
   const cards=K.dests.map(d=>{const sh=shops[d.id];if(!sh)return '';
     return `<article class="ab-card"><p class="ab-eyebrow">${d.flag} ${esc(sh.name)} · ${esc(sh.area)}</p><h3>${sh.days} ngày · hoa hồng +${sh.pct}%</h3>
       <p class="small muted">${esc(sh.style)}</p>
-      ${ask('Lên đường · Chị Vy bao vé','jr_abroad_work',{to:d.id,career:S.career},`Sang ${d.city} đứng tiệm ${sh.name} ${sh.days} ngày? Hoa hồng +${sh.pct}% doanh thu mỗi ngày, Chị Vy bao vé. Khách bên đó nói size kiểu ${d.name}. Trong lúc đi, các nơi làm khác tạm nghỉ.`,'primary small',!!why)}</article>`;}).join('');
+      ${ask('Lên đường · Chị Vy bao vé','jr_abroad_work',{to:d.id,career:S.career},`Sang ${d.city} đứng tiệm ${sh.name} ${sh.days} ngày? Hoa hồng +${sh.pct}% tiền lời mỗi ngày, Chị Vy bao vé. Khách bên đó nói size kiểu ${d.name}. Trong lúc đi, các nơi làm khác tạm nghỉ.`,'primary small',!!why)}</article>`;}).join('');
   return `<h3 class="ab-sub">👗 Tiệm Áo Chỉ Mây ở nước ngoài</h3>${why?`<p class="ab-why">🔒 ${esc(why)}</p>`:''}<div class="ab-list">${cards}</div>`;
 }
 function workPage(env,A,K,J){

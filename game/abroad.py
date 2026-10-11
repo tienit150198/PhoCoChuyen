@@ -32,7 +32,7 @@ Wallet rows use the existing kinds 'study' and 'life' (journey.HISTORY_KINDS is 
 
 👗 The clothes shop (#306, game/clothing_abroad.py) is not a hired job: Chị Vy sends you to a partner shop once you have
 served enough customers. Its contract is the same `work` block with career 'clothing', emp None, hd 0, fee 0 (she pays
-the ticket) and pct the commission on the day's counter sales; clothing.on_close counts its days. An older build finds
+the ticket) and pct the commission on the day's margin at the counter; clothing.on_close counts its days. An older build finds
 no hired job behind it and ends it (sync): no money is at stake.
 """
 from __future__ import annotations
@@ -282,7 +282,7 @@ def action(s: dict, name: str, p: dict) -> dict:
             d, sh = DEST[to], SHOP.SHOPS[to]
             b['work'] = dict(to=to, career=cid, emp=None, hd=0, n=0, need=sh['days'], pct=sh['pct'], fee=0, start=day)
             return dict(message=f'🌏 Lên đường tới {d["flag"]} {d["city"]}! {sh["days"]} ngày đứng tiệm {sh["name"]} ({sh["area"]}), '
-                                f'hoa hồng +{sh["pct"]}% doanh thu mỗi ngày. Chị Vy bao vé. Khách bên đó nói size kiểu khác, nhớ xem 📏 bảng quy đổi!',
+                                f'hoa hồng +{sh["pct"]}% tiền lời mỗi ngày. Chị Vy bao vé. Khách bên đó nói size kiểu khác, nhớ xem 📏 bảng quy đổi!',
                         celebrate=True)
         d, wk = DEST[to], C.WORK[to]
         cost = work_fee(to)
