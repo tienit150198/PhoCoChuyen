@@ -1386,6 +1386,7 @@ def _arrested(j: dict, f: dict, t: float, game: str, stake: int, pay, why: str =
     if count and stake and game in f['stats']:   # the round counts on the stall's Sổ ví row ("· N ván")
         f['stats'][game] = min(10**9, f['stats'][game] + 1)
     r = bm.arrest(j, f, t, game, stake, pay, charge=why != 'oaq_win', seize=not why)
+    j.pop(bm.EV_KEY, None)   # this round is fined: no player officer fines it again (game/cand_ops.py evidence)
     if why == 'oaq_win':   # 👴 a run of wins at Ông Hai's table: `stake` is his xu taken back (fair_hai.seize)
         r.update(say=hai.SAY, seized=stake, canceled=False)
     elif why:

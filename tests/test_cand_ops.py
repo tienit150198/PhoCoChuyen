@@ -512,15 +512,17 @@ class Patrol(Base):
         self.later(3)
         self.assertEqual(self.stop('fine', 'b')['st'], 'ask')
 
-    def test_a_search_then_the_same_officers_follow_up(self):
+    def test_a_search_holds_back_only_the_same_officers_next_search(self):
+        """Review 11/10: a friend searching every half hour never shields a gambler from the other officers."""
         self.cop('a')
         self.cop('b', name='Minh')
         self.player()
         self.stop('search', 'a')
-        self.refused('cand_recent', 'cand_stop', 'b', pid=pid_of('tgt'), act='fine')   # another officer waits
-        self.assertEqual(self.stop('fine', 'a')['st'], 'ask')
+        self.refused('cand_recent', 'cand_stop', 'a', pid=pid_of('tgt'), act='search')
+        self.assertEqual(self.stop('search', 'b')['st'], 'done')
+        self.assertEqual(self.stop('fine', 'b')['st'], 'ask')   # another officer is not held back
         self.later(K.FOLLOW_S + 1)
-        self.op('cand_poll', 'a')   # settles it (no answer: cooperation)
+        self.op('cand_poll', 'b')   # settles it (no answer: cooperation)
 
     def test_one_open_stop_one_penalty_per_player_a_day_ten_stops_a_day(self):
         self.cop()
@@ -551,15 +553,15 @@ class Patrol(Base):
         self.assertEqual(self.org('off')[1]['adj'], min(10, adj0 + K.REWARD_DAY_MAX))
         self.assertEqual(self.wallet('t4'), 200_000 - 18_000)   # the friend is fined all the same
 
-    def test_friends_get_no_liem_chinh_for_a_refused_envelope(self):
+    def test_no_envelope_between_friends(self):
+        """Review 11/10: an envelope between friends would be a transfer outside the bank's limits."""
         self.cop()
         self.player()
         self.friends('off', 'tgt')
-        liem = self.org('off')[1]['liem']
         st = self.stop('fine')
-        self.op('cand_answer', 'tgt', id=st['id'], bribe=1)
-        self.op('cand_decide', 'off', id=st['id'], take=False)
-        self.assertEqual(self.org('off')[1]['liem'], liem)
+        self.refused('cand_friend', 'cand_answer', 'tgt', id=st['id'], bribe=1)
+        self.op('cand_answer', 'tgt', id=st['id'], bribe=0)
+        self.assertEqual(self.wallet('tgt'), 200_000 - 18_000)
 
 
 # ===================================================================================== commanders

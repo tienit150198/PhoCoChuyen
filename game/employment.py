@@ -414,6 +414,10 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         need(job['status'] == 'hired', 'Bạn chưa có việc để nghỉ.')
         need(not c['open'], 'Kết thúc ca rồi mới xin nghỉ nhé.')
         need(p.get('confirm') is True, 'Xác nhận nghỉ việc.')
+        from . import promotion as pm
+        out = pm.after_close(s, c, career)   # a khai trừ already decided (a commander, a closed day): never dodged by quitting
+        if out:
+            return dict(message=' '.join(out))
         job['history'] = ar.last(job['history'] + [dict(day=c['day'], event='quit', posting=job['employer'])], 40, 'job.history', c)
         keep, door = job['history'], job.get('backdoor')
         c['job'] = initial()

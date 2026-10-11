@@ -109,14 +109,13 @@ def new_ext() -> dict:
 
 
 def ext_of(rec: dict | None, x: dict | None = None) -> dict | None:
-    """The record's extension, created (its red count seeded from the open warnings) when missing."""
+    """The record's extension, created when missing. Its red count starts at 0: warnings written before the red marks
+    (2.0.4.1 kept up to 3 open, the 4th only demoted) never count towards a khai trừ."""
     if not isinstance(rec, dict):
         return None
     e = rec.get('cx')
     if not isinstance(e, dict) or e.get('v') != EXT_V:
         e = rec['cx'] = new_ext()
-        if x:
-            e['red'] = len(x['warns'])
     return e
 
 

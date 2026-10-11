@@ -32,10 +32,9 @@ B. The patrol at Chợ đen (PvP). An officer on duty (the police shift open, hi
      then the Mây savings / gold / Mây Coin like the raid) and gone (never paid to the officer). 🚓 Tạm giữ:
      HOLD_DAYS (1) day in the trại tạm giữ ('bm'), no fine. ⛓️ Bắt giữ: ARREST_DAYS (3) days and the 30 % fine.
    * 🔎 Lục soát: done at once (no prompt): the officer reads what was found and which acts the evidence allows; the
-     target is told. A search by an officer lets that same officer follow up within FOLLOW_S (5 min) despite the
-     target's cooldown.
-   * Limits: a target at most once per TARGET_GAP_S (30 min) across all officers (searches included; the follow-up
-     above excepted); an officer at most OFFICER_DAY_MAX (10) stops a Vietnam day, one open stop at a time, one
+     target is told. A search never holds back a follow-up penalty (by any officer).
+   * Limits: a target at most once per TARGET_GAP_S (30 min) across all officers (a search holds back only the same
+     officer's next search); an officer at most OFFICER_DAY_MAX (10) stops a Vietnam day, one open stop at a time, one
      penalty stop on the same player a day. No xu for a stop ever: the reward is +0.1 ★ (org adj +1) for a stop that
      ends in a penalty, or the Liêm chính of a refused envelope (promotion.report_bribe), for at most REWARD_DAY_MAX (3)
      stops a Vietnam day and never when the two are friends (no farming between friends).
@@ -480,9 +479,9 @@ def stop_checks(db, officer: str, target: str, act: str, t: float) -> None:
     if act != 'search':
         need(not any(r['target'] == target and r['act'] != 'search' for r in mine),
              'Hôm nay bạn đã xử lý người này rồi.', 'cand_pair')
-    recent = _recent_on(db, target, t)
-    if act != 'search':   # the officer's own search just before does not hold the follow-up back
-        recent = [r for r in recent if not (r['act'] == 'search' and r['officer'] == officer and r['at'] > t - FOLLOW_S)]
+    # A search holds back only the same officer's next search: never another officer (a friend searching every half
+    # hour would shield a gambler) and never the follow-up penalty.
+    recent = [r for r in _recent_on(db, target, t) if r['act'] != 'search' or (act == 'search' and r['officer'] == officer)]
     need(not recent, 'Người này vừa bị kiểm tra, để lúc khác nhé.', 'cand_recent', 429)
 
 
@@ -615,6 +614,7 @@ def op_stop(store, sid: str, display: str, d: dict) -> dict:
         need(target, 'Không tìm thấy người này.', 'not_found', 404)
         need(target != sid, 'Không tự kiểm tra mình được.', 'self')
         need(_account(db, target), 'Người này chưa có tài khoản, không trả lời được: để họ chơi tiếp nhé.', 'cand_guest')
+        stop_checks(db, sid, target, act, t)   # the cheap limits first (unlocked; again under the locks below)
         name = _name(db, target)
     loaded = _read(store, target)
     need(loaded, 'Không tìm thấy người này.', 'not_found', 404)
@@ -661,6 +661,9 @@ def op_answer(store, sid: str, display: str, d: dict) -> dict:
         row = _stop(db, d.get('id'))
         need(row and row['target'] == sid, 'Không có lượt kiểm tra này.', 'not_found', 404)
         name = _name(db, row['officer'])
+        # no envelope between friends: it would be a transfer outside the bank's limits
+        need(amount == 0 or row['status'] != 'ask' or not _friends(db, row['officer'], sid),
+             'Cán bộ là bạn bè của bạn: không đưa phong bì được, hãy hợp tác nhé.', 'cand_friend')
     if row['status'] != 'ask':
         return dict(message=outcome_text(row, 'target') if row['status'] in ('done', 'gone') else 'Đã trả lời rồi.', quiet=True,
                     stop=view(row, sid, t, {row['officer']: name}))

@@ -2,7 +2,7 @@
 save, kept by the save's own command transaction (command_commit, like jail_marks). It answers:
 
 * the seats (org_content.SEATS: Phó Giám đốc CATP ≤ 5 players, Giám đốc CATP ≤ 1): a post with a cap is appointed only
-  while fewer players hold it (org.close / org.answer read full(); command_commit checks again under the row lock);
+  while fewer players hold it (org.close / org.answer read full(); command_commit checks again under a per-post lock);
 * the commanders' lists (game/cand_ops.py): who is on the force, who carries a grave fault (sev) a commander may expel
   for.
 
@@ -81,7 +81,9 @@ def full(post: str) -> bool:
 def command_commit(db, sid: str, before, after, action: str = '') -> None:
     """The roster row follows the save, in its transaction. A new appointment to a capped post is checked again here:
     two appointments at once never pass the cap together."""
-    commit_info(db, sid, info(before), after)
+    # the main path's before is storage._commit_before (no promo, no careers): it carries info(raw) as _cand
+    a = before['_cand'] if isinstance(before, dict) and '_cand' in before else info(before)
+    commit_info(db, sid, a, after)
 
 
 def commit_info(db, sid: str, a: dict | None, after) -> None:
@@ -103,7 +105,8 @@ def commit_info(db, sid: str, a: dict | None, after) -> None:
     if len(_touched) > 5000:
         _touched.clear()
     cap = OC.SEATS.get(b['post'])
-    if cap is not None and (a is None or a['post'] != b['post']):
+    if cap is not None and (a is None or a['post'] != b['post']):   # a move into a capped post, never a seated holder
+        db.execute('SELECT pg_advisory_xact_lock(17842, hashtext(?))', (b['post'],))   # two appointments at once: one waits
         n = db.execute('SELECT COUNT(*) AS n FROM cand_roster WHERE post=? AND seen>=?', (b['post'], t - SEEN_DAYS * 86400)).fetchone()['n']
         if int(n) > cap:
             from .engine import GameError

@@ -725,3 +725,62 @@ class Directors(unittest.TestCase):
         ids = [g['id'] for g in v['ladder']]
         self.assertEqual(ids[ids.index('thuong_si') + 1], 'hoc_vien')
         self.assertEqual(ids[-1], 'thieu_tuong')
+
+
+class ReviewFixes1011(unittest.TestCase):
+    """Review of 2.0.5 before release (11/10)."""
+
+    def test_the_main_paths_before_view_carries_the_roster_row(self):
+        """A seated PGĐ is never re-checked against the cap (storage._commit_before keeps no promo record: it carries
+        cand_roster.info as _cand); a move into the post still is."""
+        from game import cand_roster as CR
+        from game import storage
+
+        class DB:
+            def __init__(self):
+                self.sql = []
+
+            def execute(self, sql, params=()):
+                self.sql.append(sql)
+                return self
+
+            def fetchone(self):
+                return {'n': 99}
+
+        j = officer('pgd', 'dai_ta')
+        before = storage._commit_before(j.state)
+        self.assertEqual(before['_cand']['post'], 'pgd')
+        CR._touched.clear()
+        db = DB()
+        CR.command_commit(db, 'sid-a', before, j.state, 'end_day')
+        self.assertFalse(any('COUNT' in q for q in db.sql))
+        CR._touched.clear()
+        with self.assertRaises(GameError):
+            CR.command_commit(DB(), 'sid-a', dict(before, _cand=None), j.state, 'pm_answer')
+        CR._touched.clear()
+
+    def test_warnings_from_before_the_red_marks_never_lead_to_khai_tru(self):
+        j = officer('to_vien', 'trung_si')
+        x = org(j)
+        for i in range(2):
+            ORG.violation(x, j.state, j.c, 'skip_step', f'old{i}', False, None)
+        x['warns'].append(dict(x['warns'][-1], k='old2'))   # 2.0.4.1 kept up to 3 open warnings
+        rec = pm.record(j.state, 'police')
+        rec.pop('cx', None)
+        line = pm.violation(j.state, j.c, 'police', 'skip_step', 'new0')
+        self.assertNotIn('Khai trừ', line)
+        self.assertFalse(pm.expel_due(pm.record(j.state, 'police')))
+        self.assertEqual(pm.record(j.state, 'police')['cx']['red'], 1)
+        validate_state(j.state)
+
+    def test_an_expelled_officer_cannot_dodge_it_by_quitting(self):
+        j = officer('to_vien', 'trung_si')
+        day(j)
+        rec = pm.record(j.state, 'police')
+        pm.mark_expel(rec, org(j), j.state, 'bribe')
+        self.assertFalse(j.c['open'])
+        r = j.act('job_quit', confirm=True)
+        self.assertIn('khai trừ', r['message'].lower())
+        self.assertTrue(j.state['journey']['gov_ban'])
+        self.assertEqual(j.c['job']['status'], 'none')
+        validate_state(j.state)
