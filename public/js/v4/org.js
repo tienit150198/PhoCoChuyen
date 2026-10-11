@@ -29,28 +29,28 @@ function missing(n){
 function rows(list){return `<ul class="pm-rules">${(list||[]).map(r=>`<li>${r.met?'✓':'🔒'} ${esc(r.label)}</li>`).join('')}</ul>`;}
 function more(o,cmd){
   const warns=o.warns.length?`<p class="pm-eyebrow">⚠️ Cảnh cáo đang có</p><ul class="pm-rules">${o.warns.map(w=>`<li class="bad">⚠️ ${esc(w.why)}<small class="pm-hint">📖 ${esc(w.how)}</small></li>`).join('')}</ul>
-    <p class="small muted">🧽 ${Math.min(o.clean,o.decay)}/${o.decay} ngày làm không vi phạm → xóa hết cảnh cáo. Có vi phạm mới thì đếm lại từ 0. Lần thứ 4: hạ 1 bậc hàm.</p>`:'';
+    <p class="small muted">🧽 ${Math.min(o.clean,o.decay)}/${o.decay} ngày làm không vi phạm → xóa hết cảnh cáo. Có vi phạm mới thì đếm lại từ 0.</p>`:'';
   const hist=o.wlog.length?`<p class="pm-eyebrow">📜 Lịch sử</p><ul class="pm-rules">${o.wlog.map(w=>`<li>${esc(w.k)}${w.why?` · ${esc(w.why)}`:''}<small class="pm-hint">Ngày ${w.d}</small></li>`).join('')}</ul>`:'';
   const ng=o.next_grade?`<p class="pm-eyebrow">⭐ Lên ${esc(o.next_grade.name)}</p>${rows(o.next_grade.rows)}`:'';
   const np=o.next_post?`<p class="pm-eyebrow">🪑 Bổ nhiệm ${esc(o.next_post.short)}</p>${rows(o.next_post.rows)}`:'';
   const aims=o.aims.length>1?`<div class="row wrap og-aims">${o.aims.map(a=>cmd(`🧭 ${esc(a.short)}`,'pm_org_aim',{post:a.id},`small ${a.id===o.aim?'primary':'ghost'}`,a.id===o.aim)).join('')}</div>`:'';
   const ladder=`<ol class="og-ladder">${o.ladder.map(g=>`<li class="${g.on?'on':''}">${boardSVG(g.ins,44)}<span>${esc(g.name)}</span></li>`).join('')}</ol>`;
-  const mark=o.mark.on?`<p class="small bad">💵 Dấu liêm chính${o.mark.self?' (đã tự giác)':''}: không bổ nhiệm Trợ lý BGĐ, Phó Giám đốc, không lên Đại tá.</p>`:'';
+  const mark=o.mark.on?`<p class="small bad">💵 Dấu liêm chính${o.mark.self?' (đã tự giác)':''}: không bổ nhiệm Trợ lý BGĐ, Phó Giám đốc, Giám đốc, không lên Đại tá.</p>`:'';
   return `<details class="pm-more"><summary>Xem thêm</summary>${warns}${ng}${np}${aims}${mark}${hist}${ladder}
-    <ul class="pm-rules"><li>Vi phạm quy trình: cảnh cáo. ${o.decay||10} ngày làm không vi phạm: xóa hết. Lần 4: hạ 1 bậc hàm.</li><li>Nhận phong bì: hạ bậc ngay, ghi dấu liêm chính mãi mãi.</li><li>${esc(o.boss)}: không bổ nhiệm người chơi.</li></ul></details>`;
+    <ul class="pm-rules"><li>Vi phạm quy trình: cảnh cáo. ${o.decay||10} ngày làm không vi phạm: xóa hết.</li><li>Lần 2: ghi 1 kỳ “Không hoàn thành nhiệm vụ”. Lần 3: hạ 1 bậc hàm, giam hàm 20 ngày. Lần 4: tạm giữ, khai trừ khỏi lực lượng.</li><li>Nhận phong bì: hạ bậc ngay, ghi dấu liêm chính mãi mãi.</li><li>Giám đốc CATP: ${o.seats?.gd??1} người · Phó Giám đốc: tối đa ${o.seats?.pgd??5} người.</li></ul></details>`;
 }
 export function orgView(env,head,act,cmd,place){
   const c=env.api.state.careers[env.api.state.current],p=c.promo,o=p.org;
   if(o.due)return head('🎖️ Cấp bậc','',place)+`<div class="sheet-body">${due(o,act)}</div>`;
   const n=p.next,of=p.office,todo=of?.inbox?.length||0;
-  const line=o.susp?`⛔ Tạm đình chỉ: còn ${o.susp} ngày`:n?`${n.good}/${n.need} ngày → ${esc(n.title)}`:'Cao nhất rồi!';
+  const line=o.susp?`⛔ Tạm đình chỉ: còn ${o.susp} ngày`:o.hold?`⏸️ Giam hàm: còn ${o.hold} ngày làm`:n?`${n.good}/${n.need} ngày → ${esc(n.title)}`:'Cao nhất rồi!';
   const own=o.own?cmd('🙇 Tự giác nộp lại phong bì','pm_org_own',{},'primary big full'):'';
   const office=of?act(`🏢 ${esc(of.name)}${todo?` · ${todo}`:''}`,'pmOffice',{},`${own?'':'primary '}big full`):'';
   const main=own||office||act('Về ca','close',{},'primary big full');
   return head('🎖️ Cấp bậc','',place)+`<div class="sheet-body"><article class="pm-card og-card">
     <div class="og-top">${badgeSVG(34)}${boardSVG(o.grade.ins,120,o.grade.name)}</div>
     <h3 class="pm-title">${esc(o.grade.name)}</h3><p class="og-post">${esc(o.post.short)}</p>
-    <p class="og-stats">${warnChip(o)}<span>★ ${st(o.stars)}</span><span>🛡️ ${o.liem}</span>${o.mark.on?'<span class="bad">💵</span>':''}</p>
+    <p class="og-stats">${warnChip(o)}${o.red>o.warns.length?`<span class="bad" title="Bút tích đỏ">🖍️ ${o.red}/${o.red_expel||4}</span>`:''}<span>★ ${st(o.stars)}</span><span>🛡️ ${o.liem}</span>${o.mark.on?'<span class="bad">💵</span>':''}</p>
     ${n&&!o.susp?bar(n.good,n.need):''}<p class="pm-line">${line}</p>${o.susp?'':missing(n)}${main}${own&&office?office:''}${more(o,cmd)}</article></div>`;
 }
 
