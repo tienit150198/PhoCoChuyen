@@ -1089,15 +1089,25 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
 
 def _kn_device(j: dict, f: dict, t: float, prize: int) -> None:
     """A prize just paid by a player's command: today's phóng dao net past KN_DEVICE_FROM brings the police (the prize
-    stays). Not from _kn_settle (before a command, nothing can be raised there)."""
-    if prize <= 0 or not bm._gate_on() or _daily(j, t).get('kn', 0) <= KN_DEVICE_FROM:
-        return
-    _device(j, f, t, 'kn', prize, 'Phóng dao', KN_DEVICE_LABEL)
+    stays). _kn_settle applies the same rule to a prize it pays (_kn_due)."""
+    if _kn_due(j, t, prize):
+        _device(j, f, t, 'kn', prize, 'Phóng dao', KN_DEVICE_LABEL)
+
+
+def _kn_due(j: dict, t: float, prize: int) -> bool:
+    """Today's phóng dao net (the prize counted) is past KN_DEVICE_FROM while police enforcement is on."""
+    return prize > 0 and bm._gate_on() and _daily(j, t).get('kn', 0) > KN_DEVICE_FROM
 
 
 def _kn_settle(s: dict) -> None:
     """Before every command: a choice left from an earlier Vietnam day (neither "Dừng" nor "Chơi tiếp" tapped) is paid
-    as if "Dừng": the prize was won, it does not wait past the day (nor past the fair)."""
+    as if "Dừng": the prize was won, it does not wait past the day (nor past the fair).
+
+    11/10 audit: that payout skipped the "thiết bị hỗ trợ" check, so a choice left across midnight cashed any prize
+    without it. The same rule now applies (_kn_due) and the same fine is taken (fair_hai.device_fine, its Sổ ví /
+    bank / Mây rows are the receipt). Not the trại tạm giữ: this runs before engine's jail gate, which would refuse
+    the very command that has to save the sentence (the player would be told "đang ở trại" by a save that never
+    holds it)."""
     j = s.get('journey')
     k = j.get(KN_KEY) if isinstance(j, dict) else None
     run = k.get('run') if isinstance(k, dict) else None
@@ -1105,7 +1115,11 @@ def _kn_settle(s: dict) -> None:
         return
     t = now()
     if run['day'] != vn_date(t):
-        _kn_pay(j, _state(j, t), run, t)
+        f = _state(j, t)
+        pz = _kn_pay(j, f, run, t)
+        if _kn_due(j, t, pz):
+            hai.device_fine(None, j, f, hai.DEVICE_PCT, KN_DEVICE_LABEL)
+            f['stats']['raids'] = min(10**9, f['stats']['raids'] + 1)
 
 
 def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
@@ -1338,10 +1352,10 @@ def _hai_device(s: dict, j: dict, f: dict, t: float, prize: int) -> None:
 
 def _device(j: dict, f: dict, t: float, game: str, prize: int, what: str, label: str) -> None:
     """🚨 "Thiết bị hỗ trợ" (owner 11/10): the prize stays (paid already); the police take fair_hai.DEVICE_PCT % of the
-    wallet and the bank together (fair_bm.take_total, no ceiling) and the trại tạm giữ (fair_bm.JAIL_DAYS).
-    Raises _Caught: the command's whole result."""
+    player's money (fair_hai.device_fine: the wallet, the bank, the Mây savings, Mây Coin and gold; no ceiling) and the
+    trại tạm giữ (fair_bm.JAIL_DAYS). Raises _Caught: the command's whole result."""
     from . import jail
-    fine = bm.take_total(j, f, bm.total_money(j) * hai.DEVICE_PCT // 100, label)
+    fine = hai.device_fine(None, j, f, hai.DEVICE_PCT, label)
     days = jail.arrest(j, 'bm', bm.JAIL_DAYS, t)
     f['stats']['raids'] = min(10**9, f['stats']['raids'] + 1)
     r = dict(game=game, stake=0, fine=fine, wallet=j['wallet'], say=hai.SAY_DEVICE, jail=days, seized=0)

@@ -4,8 +4,10 @@ commands are in game/fair.py. Nothing here reaches the client before it happens 
 
 * Games: no limit (owner 11/10; HAI_DAY is only the legacy day counter's name).
 * Wins keep their prize. The DEVICE_WINS + 1-th win (count_win, journey[WINS_KEY]) brings the police: "thiết bị hỗ
-  trợ", DEVICE_PCT % of the wallet and the bank (device_fine) and the jail, while police enforcement is on. Legacy streak/window records remain readable; legacy collection uses the same small ceiling
-  and does not stack another arrest fine. Bank accounts and savings never fund these fines.
+  trợ", DEVICE_PCT % of the player's money (device_base: the wallet, the bank, and since 11/10 the Mây savings book,
+  Mây Coin and gold at what they sell for now, so parking the winnings there no longer halves the fine; device_fine)
+  and the jail, while police enforcement is on. Legacy streak/window records remain readable; legacy collection
+  (seize) uses the same small ceiling, wallet only, and does not stack another arrest fine.
 
 Save: journey['fair_hai'] {d: the Vietnam date of `n`, n: games started with him that day, s: wins in a row,
 w: [[epoch s, xu], ...] his wins not taken yet, within WINDOW} (optional: an older server keeps the journey's unknown
@@ -84,10 +86,108 @@ def won(j: dict, t: float, xu: int) -> int:
     return due
 
 
-def device_fine(s: dict, j: dict, f: dict, pct: int = DEVICE_PCT) -> int:
-    """The prize stays; pct % of the wallet and the bank together (fair_bm.total_money), taken from both, no ceiling."""
+def _coin_net(j: dict) -> int:
+    """What the Mây Coin held sells for now, the sale fee taken off (0: none)."""
+    from . import invest as iv
+    if not isinstance(j.get('invest'), dict):
+        return 0
+    gross = iv.value(dict(journey=j))
+    return gross - iv._fee(gross) if gross > 1 else 0
+
+
+def device_base(j: dict) -> int:
+    """What a "thiết bị hỗ trợ" fine counts (owner 11/10 "50% tổng tiền"): the wallet and the bank (fair_bm.total_money)
+    plus the Mây savings book, the Mây Coin and the gold at what they would sell for now (11/10 audit: winnings parked
+    there escaped half the fine). Homes, vehicles and the workplaces' funds are not money (and not taken)."""
     from . import fair_bm as bm
-    return bm.take_total(j, f, bm.total_money(j) * pct // 100, FINE_LABEL)
+    from . import vang
+    total = bm.total_money(j)
+    inv = j.get('invest')
+    if isinstance(inv, dict):
+        total += max(0, inv['saving']['balance']) + _coin_net(j)
+    return total + vang.value(dict(journey=j))
+
+
+def _credit(j: dict, amount: int, label: str) -> None:
+    """The change of a forced sale back into the wallet, Sổ ví rows of at most fair_bm.ROW_MAX."""
+    from . import fair_bm as bm
+    from . import journey as jr
+    while amount > 0:
+        part = min(amount, bm.ROW_MAX)
+        jr._wallet(j, part, 'invest', label)
+        amount -= part
+
+
+def _take_parked(j: dict, f: dict, amount: int, label: str) -> int:
+    """What the wallet and the bank could not pay of a device fine: from the Mây savings book (this period's interest
+    forfeited, as on a withdrawal), then gold and Mây Coin sold at today's price (the shop's spread, the 2 % fee; the
+    change back to the wallet). Each block's own log says so. A fair loss (net, stats.lost). Returns what was taken."""
+    from . import invest as iv
+    from . import vang
+    s = dict(journey=j)
+    day = j['life_day']
+    left = int(amount)
+    inv = j.get('invest') if isinstance(j.get('invest'), dict) else None
+    if left > 0 and inv is not None and inv['saving']['balance'] > 0:
+        sv = inv['saving']
+        x = min(left, sv['balance'])
+        lost = sv['pending'] // 1000
+        sv['forfeited'] = min(10**9, sv['forfeited'] + lost)
+        sv['pending'] = 0
+        sv['balance'] -= x
+        if not sv['balance']:
+            sv['term_day'] = day
+        iv._log(inv, day, 'withdraw', f'{label}: trừ {x} xu tiết kiệm' + (f', mất {lost} xu lãi kỳ này.' if lost else '.'))
+        left -= x
+    g = vang.get(s)
+    if left > 0 and g is not None and g.get('phan', 0) > 0:
+        pr = vang.price()
+        n = min(g['phan'], -(-left * vang.PHAN // max(1, vang.sell_price(pr))))   # the phân whose sale covers it
+        got = vang.worth(n, pr)
+        part = g['cost'] if n == g['phan'] else g['cost'] * n // g['phan']
+        g['phan'] -= n
+        g['cost'] -= part
+        g['stats']['sold'] = min(10**12, g['stats'].get('sold', 0) + n)
+        g['stats']['fees'] = min(10**12, g['stats'].get('fees', 0) + max(0, n * pr // vang.PHAN - got))
+        vang._log(g, 'sell', n, got)
+        x = min(left, got)
+        _credit(j, got - x, f'Tiền thừa sau khi bán vàng nộp phạt · {vang.amount_text(n)}')
+        left -= x
+    if left > 0 and inv is not None and iv._live_units(j, inv) > 0:
+        iv.sync_market(s)   # the one-time conversion of a legacy holding, today's price (as a sale does)
+        coin, price = inv['coin'], inv['price']
+        want = -(-left * 100 // (100 - iv.FEE_PCT)) + 2   # a gross whose proceeds cover `left`
+        units = min(coin['units'], -(-want * iv.COIN * iv.CENT // price))
+        gross = iv._value(units, price)
+        fee = iv._fee(gross)
+        if gross > fee:
+            got = gross - fee
+            part = coin['basis'] if units == coin['units'] else coin['basis'] * units // coin['units']
+            coin['realised'] = max(-10**9, min(10**9, coin['realised'] + got - part))
+            coin['units'] -= units
+            coin['basis'] -= part
+            coin['fees'] = min(10**9, coin['fees'] + fee)
+            coin['trades'] = min(10**7, coin['trades'] + 1)
+            iv._log(inv, day, 'sell', f'{label}: bán {iv._coins_text(units)} MÂY, nhận {got} xu nộp phạt.')
+            x = min(left, got)
+            _credit(j, got - x, 'Tiền thừa sau khi bán Mây Coin nộp phạt')
+            left -= x
+    parked = int(amount) - left
+    if parked:
+        f['net'] = max(-10**9, f['net'] - parked)
+        f['stats']['lost'] = min(10**9, f['stats']['lost'] + parked)
+    return parked
+
+
+def device_fine(s: dict | None, j: dict, f: dict, pct: int = DEVICE_PCT, label: str = FINE_LABEL) -> int:
+    """The prize stays; pct % of device_base, taken from the wallet and the bank (fair_bm.take_total), then from the
+    Mây savings, the gold and the Mây Coin (_take_parked); no ceiling, never below zero. Returns what was taken."""
+    from . import fair_bm as bm
+    due = device_base(j) * pct // 100
+    taken = bm.take_total(j, f, due, label)
+    if taken < due:
+        taken += _take_parked(j, f, due - taken, label)
+    return taken
 
 
 def seize(s: dict, j: dict, f: dict, due: int, label: str = SEIZE_LABEL) -> int:

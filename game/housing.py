@@ -393,12 +393,17 @@ def sell_fee(value: int) -> int:
 
 
 def value_of(own: dict, day: int, basis: int = 10000) -> int:
-    """Market value today: the price plus GROW_RATE per year held, capped, rounded down to 10 xu."""
+    """Market value today: the price plus GROW_RATE per year held, capped, times today's property quote over the one
+    it was bought at (`basis`, journey.property_market_basis), rounded down to 10 xu.
+
+    The price paid is always the fixed list price, so a quote below neutral on the purchase day is read as neutral
+    (11/10 audit: buying during bad news and selling once it was over paid 1.75–2.9×, +22–79k a villa). A quote above
+    neutral still counts: a home bought at list during good news is not an instant resale windfall."""
     price = own['price']
     held = max(0, day - own['day'])
     grown = price + price * GROW_RATE * held // (10000 * YEAR_DAYS)
     base = min(price * (100 + GROW_CAP_PCT) // 100, grown)
-    return base * pm.quote(own['kind'])['multiplier_bp'] // basis // 10 * 10
+    return base * pm.quote(own['kind'])['multiplier_bp'] // max(pm.NEUTRAL_BP, basis) // 10 * 10
 
 
 def rate_for(score: int) -> int:
@@ -945,7 +950,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
             bk._inbox(b, day, 'sms', f'{BK.BANK_NAME}: Khoản vay mua nhà {_fmt(loan)} xu đã giải ngân cho bên bán. Trả góp {months} kỳ, mỗi kỳ '
                                      f'{_fmt(q["installment"])} xu, cứ {MONTH_DAYS} ngày một kỳ, kỳ đầu Ngày {q["rows"][0]["due"]}.')
         x = dict(id=hid, kind=kind, price=price, day=day, down=down, fee=fee, joint=joint, loan=ln, mv=0, let=None, keep=None)
-        j.setdefault('property_market_basis', {})[hid] = pm.quote(kind)['multiplier_bp']
+        # Never below neutral: the list price was paid whatever today's news (value_of).
+        j.setdefault('property_market_basis', {})[hid] = max(pm.NEUTRAL_BP, pm.quote(kind)['multiplier_bp'])
         left, back = h['own'], 0
         if move_in:
             if left:
