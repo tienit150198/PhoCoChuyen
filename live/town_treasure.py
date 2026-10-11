@@ -34,7 +34,7 @@ class TownTreasureFeature(Feature):
                     await db.execute(tt.INSERT_CHEST, row)
                 for sql, args in tt.cleanup_sql(bucket, at):
                     await db.execute(sql, args)
-            rows = await db.fetch(tt.SELECT_CHESTS)
+            rows = await db.fetch(tt.SELECT_CHESTS, tt.chest_args(at))
             wave = await db.fetchrow(tt.SELECT_WAVE_COUNT, (bucket,))
             return rows, wave['added']
         rows, added = await self.db.transaction(work)
@@ -122,6 +122,8 @@ class TownTreasureFeature(Feature):
                 raise LiveError('treasure_missing', 'Rương này không còn trên bản đồ.')
             if chest['winner']:
                 raise LiveError('treasure_taken', 'Một người khác đã nhặt rương này.')
+            if int(chest['bucket']) < tt.first_bucket(at):
+                raise LiveError('treasure_missing', 'Rương này đã biến mất rồi. Chờ đợt rương mới nhé!')
             position = dict(map_id=tt.MAP_ID,x=w.x,y=w.y,seen_at=at-age,online=1)
             if not tt.near(position,chest,at):
                 raise LiveError('treasure_presence', 'Hãy đi sát rương trong phố rồi thử lại.')
