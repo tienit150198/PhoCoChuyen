@@ -57,3 +57,16 @@ trên 50k, 35% mỗi 30 phút) và "Công an kiểm tra tài sản" (`_asset_aud
 (`fair.WALLET_CHECKS = False`). "Công an phường kiểm tra" ở chiếu trong (hủy ván, giữ tiền cược) phạt 30% tiền cược ván đó
 (trước: 25%, trần 2.000). Bị bắt vì bấm nhanh/spam cũng phạt 30% tiền cược ván đó thay vì theo ví. Lời nhiều chỉ làm tăng
 tỷ lệ bị bắt. Commit `38766959`, release `2.0.3.4-20261011172521`, health 2.0.3.4, 0 Traceback.
+
+## 2.0.3.5 (17:33) và 2.0.4 (19:13 11/10)
+
+- 2.0.3.5 `d72cc2da`: nhập bản lưu chỉ vào đúng bản đã xuất, so tổng tài sản; dẹp chiếu chỉ với ván công an đang để ý
+  (arrest_p > 0); Mây Coin từ 21:00 tính tin tức ngay đầu giờ.
+- Hoàn tiền phạt dư (quà `refund-cd-20261011-*`, 8 người, 18.538.100 xu). Xử phạt nhóm nhân bản tài khoản 09/10
+  (Bunnyne gốc + Thịt Viên nhận tiền: còn 10% tài sản; 5 bản sao ntaphuong*: về 0; phần thiếu thành nợ ví). Sao lưu trạng
+  thái trước khi phạt: `/root/backup_clone_ring_20261011.tsv` (chmod 600), công cụ `/root/penalty_clone_20261011.py`.
+- 2.0.4 `8e9d2356`: gộp 4 nhánh sửa gian lận (x3/bỏ ngày, tiệm áo, kho báu/chó sủa/cưới, nhà/né phạt) + ván từ 50k thắng
+  tối đa 40% + phạt bị bắt trừ tiếp sổ Mây/vàng/Mây Coin + tài khoản mới 48 ngày trả lương; Có gì mới 2.0.4. 36 file
+  (4 JS nén bằng esbuild 0.28.2, kiểm tra trùng byte với bản đang chạy), check_task_compat OK, không có tiệc cưới trong
+  40 phút. Release `2.0.4-20261011191227`, health 2.0.4, game + mnl-live active, 0 Traceback. Quay lui:
+  `mnl-rolling-release --to …/2.0.3.5-20261011173211`.
