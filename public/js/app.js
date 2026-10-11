@@ -750,6 +750,9 @@ function jobView(){
     const open=Boolean(c.data?.desk?.ev)||/data-idle-open|class="fk-event"/.test(idle)||ui.idleOpen===t.id;
     const fold=idle?`<details class="idle-fold space-top" data-auto data-idle-task="${esc(t.id)}"${open?' open':''}><summary>${icon('clipboard',16)}<b>${deskWork()?'Bàn làm việc':'Việc giữa ca'}</b></summary>${idle}</details>`:'';
     if(t.desk)return header('Hồ sơ đã đóng dấu',esc(t.title),'KẾT QUẢ HỒ SƠ')+`<div class="sheet-body">${L.desk.use()?L.desk.m.deskDone(t,env()):skeleton()}${ways}${fold}</div>`;
+    // A task that went wrong (a case failed or an envelope taken, a safety slip such as a lost child handed to the
+    // wrong adult) is closed, not thanked for.
+    if(t.status==='cancelled'||t.result==='failed'||(t.slips||[]).some(r=>r?.safety))return header('Việc đã khép lại',t.title,'KẾT QUẢ HÔM NAY')+`<div class="sheet-body center done-body"><div class="celebration">${icon('clipboard',55)}</div><h2>Lần này chưa trọn.</h2>${ways}${fold}</div>`;
     return header('Một việc đã được làm tới nơi',t.title,'THÀNH QUẢ HÔM NAY')+`<div class="sheet-body center done-body"><div class="celebration">${icon('sparkle',55)}</div><h2>Cảm ơn bạn đã giúp!</h2>${ways}${fold}</div>`;
   }
   ui.task=t.id;let inner;
