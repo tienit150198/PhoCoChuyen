@@ -141,7 +141,8 @@ class Formula(unittest.TestCase):
         self.assertEqual(wl.score(s), (assets - debt, assets))
 
     def test_property_market_basis(self):
-        """A home's value is today's property quote over the one it was bought at (journey.property_market_basis)."""
+        """A home's value is today's property quote over the one it was bought at (journey.property_market_basis), never
+        below neutral (11/10: the list price was paid, a basis saved during bad news reads as 10000)."""
         s = fund(story(wallet=0), 'grocery', 0)   # a started workplace: the sheet does not fall back to the one on screen
         j = s['journey']
         j['life_day'] = 10
@@ -152,7 +153,7 @@ class Formula(unittest.TestCase):
         r = rich()
         r['journey']['property_market_basis'] = {r['journey']['home']['props'][0]['id']: 8000}
         with mock.patch.object(pm, 'quote', return_value=up):
-            self.assertEqual(wl.sheet(s)[1], 4000 * 12000 // 10000 + 4000 * 12000 // 8000)
+            self.assertEqual(wl.sheet(s)[1], 4000 * 12000 // 10000 * 2)
             self.assertEqual([wl.sheet(r)], js_pockets([r]), 'the sheet reads the same quote and basis')
 
     def test_wallet_debt_and_no_row(self):

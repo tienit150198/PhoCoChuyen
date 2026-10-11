@@ -15,12 +15,23 @@ capture the acquisition multiplier for new purchases and normalize resale
 as ``base_value * current_multiplier_bp // acquisition_multiplier_bp``.
 Older homes can use 10000 as their acquisition multiplier. Rental demand
 uses ``rent_bp`` directly, independently of the acquisition multiplier.
+11/10: the acquisition multiplier is never below 10000 (housing.value_of):
+the list price was paid, so a home bought during bad news is not a cheap
+buy that resells at 1.75–2.9× once the news is over.
+
+From SALT_FROM_BLOCK on, windows are seeded with a server secret
+(MNL_PROPERTY_SALT, else the market's MNL_MARKET_SALT / MNL_GOLD_SALT, which
+a public server must set: realtime_market.validate_runtime), so the news
+cannot be computed years ahead from this source. Earlier windows keep the
+unsalted seed: every quote already shown stays the same. Windows never cross
+a block boundary (an episode ends by day 22 of its 28), so the cutover is seamless.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 import datetime as dt
 from functools import lru_cache
+import os
 import random
 import time
 
@@ -30,6 +41,7 @@ START = dt.date(2026, 10, 6)
 WINDOW = 28
 NEUTRAL_BP = 10000
 MIN_BP, MAX_BP = 5500, 16500
+SALT_FROM_BLOCK = 1    # 2026-11-03: the first window that starts after the salt shipped (11/10)
 
 # (id, fictional headline, value change, rental-demand change), basis points.
 # Stable IDs and order keep an already-observed calendar reproducible.
@@ -66,9 +78,18 @@ def today() -> dt.date:
     return dt.datetime.fromtimestamp(now(), VN).date()
 
 
+def _salt() -> str:
+    """The calendar's secret (read per call, like realtime_market._salt; the same on every worker)."""
+    return (os.environ.get('MNL_PROPERTY_SALT') or os.environ.get('MNL_MARKET_SALT')
+            or os.environ.get('MNL_GOLD_SALT', 'pho-nha'))
+
+
 @lru_cache(maxsize=1024)
-def _window(kind: str, block: int) -> _Episode | None:
-    rng = random.Random(f'property-news-v1|{kind}|{block}')
+def _window(kind: str, block: int, salt: str = '') -> _Episode | None:
+    if block < SALT_FROM_BLOCK:   # already shown (or showing): the unsalted seed, unchanged
+        rng = random.Random(f'property-news-v1|{kind}|{block}')
+    else:
+        rng = random.Random(f'property-news-v2|{salt}|{kind}|{block}')
     if rng.random() >= .7:
         return None
     return _Episode(block * WINDOW + rng.randint(2, 7), rng.randint(3, 6),
@@ -92,7 +113,8 @@ def quote(kind: str, day: dt.date | str | None = None) -> dict:
     offset = (day - START).days
     if offset < 0:
         return result
-    event = _window(kind, offset // WINDOW)
+    block = offset // WINDOW
+    event = _window(kind, block, _salt() if block >= SALT_FROM_BLOCK else '')
     if event is None:
         return result
     elapsed = offset - event.start

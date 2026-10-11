@@ -656,21 +656,27 @@ def _tick(s: dict, b: dict, n: int, notes: list) -> None:
     """Morning of life day `n`: everything that the night before settled."""
     j = s['journey']
     # Savings: the demand pot earns every day; term deposits pay out on maturity.
+    # 11/10 audit: no pot or account goes past BAL_MAX (the validator's bound, which would refuse every later command
+    # of the save): interest that does not fit is not paid, a principal that does not fit stays in its sổ.
     if b['demand'] > 0 and ic.paid(s, n):   # ⏱️ a day beyond the real-time allowance earns nothing
         b['pend'] += b['demand'] * DEMAND_BP
         gain, b['pend'] = divmod(b['pend'], 10000)
+        gain = min(gain, max(0, BAL_MAX - b['demand']))
         if gain:
             b['demand'] += gain
-            b['stats']['interest_in'] += gain
+            b['stats']['interest_in'] = min(10**9, b['stats']['interest_in'] + gain)
             _log(b, n, 'sav', 'Lãi tiết kiệm không kỳ hạn', gain)
     for t in list(b['terms']):
         if n >= t['due']:
             gain = term_interest(t['amount'], t['rate'], term_days(s, t, n))
-            b['stats']['interest_in'] += gain
+            room = max(0, BAL_MAX - b['balance'])
             if t['renew'] and t['term'] in TERM_RATE:
                 # Tái tục: up to RENEW_MAX of the principal rolls into a new sổ of the same term, at today's rate; the
                 # interest (and any principal above RENEW_MAX) goes to the current account: no compounding without end.
-                keep = min(t['amount'], RENEW_MAX)
+                # What the account has no room for stays in the new sổ (principal) or is not paid (interest).
+                keep = max(min(t['amount'], RENEW_MAX), t['amount'] - room)
+                gain = min(gain, room - (t['amount'] - keep))
+                b['stats']['interest_in'] = min(10**9, b['stats']['interest_in'] + gain)
                 out = t['amount'] - keep + gain
                 name = K.TERMS[t['term']].lower()
                 t.update(amount=keep, rate=TERM_RATE[t['term']], start=n, due=n + t['term'])
@@ -683,6 +689,10 @@ def _tick(s: dict, b: dict, n: int, notes: list) -> None:
                 notes.append(_inbox(b, n, 'sms', K.RENEWED_SMS.format(bank=K.BANK_NAME, term=name, gain=_fmt(gain), total=_fmt(keep),
                                                                       due=t['due'])))
                 continue
+            if t['amount'] > room:   # the account cannot hold it: the sổ waits (no loss) until it can
+                continue
+            gain = min(gain, room - t['amount'])
+            b['stats']['interest_in'] = min(10**9, b['stats']['interest_in'] + gain)
             b['terms'].remove(t)
             b['balance'] += t['amount'] + gain
             _log(b, n, 'sav', f'Tất toán sổ {K.TERMS[t["term"]].lower()}', -t['amount'])
