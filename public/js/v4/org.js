@@ -6,6 +6,7 @@
  *   inspView(of, org, cmd)         🔎 kiểm tra điều lệnh, the Trợ lý BGĐ's tab in the office */
 import {escapeHTML as esc} from '../icons.js';
 import {boardSVG,badgeSVG} from './insignia.js';
+import {commands} from './cand.js';   // 👮 👥 Toàn lực lượng: commendations and expulsions across players (game/cand_ops.py)
 
 const bar=(a,b)=>`<div class="bar pm-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${b}" aria-valuenow="${a}"><i style="width:${b?Math.min(100,Math.round(100*a/b)):0}%"></i></div>`;
 const st=n=>n==null?'—':(n/10).toFixed(1);
@@ -47,11 +48,12 @@ export function orgView(env,head,act,cmd,place){
   const own=o.own?cmd('🙇 Tự giác nộp lại phong bì','pm_org_own',{},'primary big full'):'';
   const office=of?act(`🏢 ${esc(of.name)}${todo?` · ${todo}`:''}`,'pmOffice',{},`${own?'':'primary '}big full`):'';
   const main=own||office||act('Về ca','close',{},'primary big full');
+  const force=commands(o)?act('👥 Toàn lực lượng','pmForce',{},'big full'):'';
   return head('🎖️ Cấp bậc','',place)+`<div class="sheet-body"><article class="pm-card og-card">
     <div class="og-top">${badgeSVG(34)}${boardSVG(o.grade.ins,120,o.grade.name)}</div>
     <h3 class="pm-title">${esc(o.grade.name)}</h3><p class="og-post">${esc(o.post.short)}</p>
     <p class="og-stats">${warnChip(o)}${o.red>o.warns.length?`<span class="bad" title="Bút tích đỏ">🖍️ ${o.red}/${o.red_expel||4}</span>`:''}<span>★ ${st(o.stars)}</span><span>🛡️ ${o.liem}</span>${o.mark.on?'<span class="bad">💵</span>':''}</p>
-    ${n&&!o.susp?bar(n.good,n.need):''}<p class="pm-line">${line}</p>${o.susp?'':missing(n)}${main}${own&&office?office:''}${more(o,cmd)}</article></div>`;
+    ${n&&!o.susp?bar(n.good,n.need):''}<p class="pm-line">${line}</p>${o.susp?'':missing(n)}${main}${own&&office?office:''}${force}${more(o,cmd)}</article></div>`;
 }
 
 /* ------------------------------------------------------------------ 🔎 kiểm tra điều lệnh (Trợ lý BGĐ) */

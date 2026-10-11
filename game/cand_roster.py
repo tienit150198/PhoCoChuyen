@@ -81,7 +81,12 @@ def full(post: str) -> bool:
 def command_commit(db, sid: str, before, after, action: str = '') -> None:
     """The roster row follows the save, in its transaction. A new appointment to a capped post is checked again here:
     two appointments at once never pass the cap together."""
-    a, b = info(before), info(after)
+    commit_info(db, sid, info(before), after)
+
+
+def commit_info(db, sid: str, a: dict | None, after) -> None:
+    """command_commit with the save before already read (info(before)): marriage._mutate keeps only that."""
+    b = info(after)
     if b is None:
         if a is not None:
             db.execute('DELETE FROM cand_roster WHERE sid=?', (sid,))
