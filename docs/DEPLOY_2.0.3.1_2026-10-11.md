@@ -20,8 +20,9 @@ Triển khai theo yêu cầu chủ game, **không công bố** (không đổi C�
   - Theo tiền lời hôm nay: trên 300k là 2%, trên 1 triệu là 5%, trên 3 triệu là 10%, trên 10 triệu là 20%.
   - Theo tiền cược của ván: 50k–300k là 2→10%, 300k–1 triệu là 30→50%, 1–10 triệu là 50→80%, từ 10 triệu là 90%.
   - Tối đa 90%.
-  - Bị bắt: **tịch thu tiền cược**, phạt **30% tiền lời hôm nay** (trừ ví trước, thiếu thì trừ tài khoản ngân hàng, sổ
-    không kỳ hạn, sổ có kỳ hạn; không áp trần 2.000 xu của `loss_limits`), tạm giữ 3 ngày.
+  - Bị bắt: **tịch thu tiền cược**, phạt **30% tiền cược của chính ván đó** (từ 2.0.3.3; 2.0.3.1–2.0.3.2 phạt 30% tiền
+    lời cả ngày). Trừ ví trước, thiếu thì trừ tài khoản ngân hàng, sổ không kỳ hạn, sổ có kỳ hạn; không áp trần 2.000 xu
+    của `loss_limits`. Tạm giữ 3 ngày.
 - **Ô ăn quan (Ông Hai):** bỏ giới hạn 30 ván/ngày. Ván thắng không còn bị phạt từng ván. Ván thắng thứ 51 (đếm
   cộng dồn, `journey.fair_hai_w`) thì bị bắt vì "thiết bị hỗ trợ": phạt 50% tổng ví + ngân hàng, tạm giữ 3 ngày, rồi
   đếm lại từ 0.
@@ -41,3 +42,10 @@ Triển khai theo yêu cầu chủ game, **không công bố** (không đổi C�
   16:49, 0 phản hồi 5xx trong 2.000 dòng nginx gần nhất. Người chơi tiếp tục chơi chợ đen bình thường sau chuyển bản.
 - Các bài kiểm thử cũ đang kiểm luật cũ (phạt từng ván Ông Hai, 30 ván/ngày, trần 2.000 xu ở chợ đen, giữ tiền cược
   khi bị bắt, hằng số tỷ lệ bắt) sẽ báo lỗi cho tới khi được cập nhật theo luật mới.
+
+## 2.0.3.3 — phạt theo ván (17:17 11/10)
+
+Chủ game: "phải tính tiền phạt của 1 trận" — người cược 8–10k/ván bị phạt 30% tiền lời cả ngày. Từ 2.0.3.3 bị bắt thì mất
+tiền cược ván đó và phạt thêm 30% chính tiền cược ấy (`fair_bm.round_fine`); ván 10k → mất 10k + phạt 3k. Tỷ lệ bị bắt
+không đổi. Commit `6b139d47`, release `2.0.3.3-20261011171609` (thay `game/fair.py`, `game/fair_bm.py` + 3 file phiên bản),
+0 file lệch manifest, health 2.0.3.3. Quay lui: `mnl-rolling-release --to …/2.0.3.2-20261011165748`.
