@@ -54,6 +54,12 @@ export function promptInterface(env){
   const buttons=()=>[...dialog.querySelectorAll('button')].filter(b=>!b.disabled);
   const choose=async enabled=>{
     if(busy)return;busy=true;
+    // Keeping the interface in use needs no reload: close at once and save in the background, so a failed save (a
+    // deploy's 503, a weak network) never traps the player behind this prompt; it simply shows again next visit (#344).
+    if(enabled===newInterface(env.api.state)){
+      dialog.close();dialog.remove();offering=null;back?.isConnected&&back.focus({preventScroll:true});resolve(enabled);
+      saveInterface(env,enabled).catch(error=>console.warn('interface preference:',error));return;
+    }
     for(const button of dialog.querySelectorAll('button'))button.disabled=true;
     const status=dialog.querySelector('[role="status"]');status.textContent='Đang lưu lựa chọn…';
     try{

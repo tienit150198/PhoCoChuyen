@@ -500,6 +500,14 @@ html[data-game="isometric"] .tut-note {
   border-color: var(--iso-seam);
 }
 html[data-game="isometric"] #pauseOverlay {z-index: 30;}
+/* #344: the "Lần đầu làm ở đây?" guide pill (z 60) never sits over the More menu, an open HUD panel or the joystick. */
+html[data-game="isometric"]:is(.menu-open,.iso-disclosure-open) .tut-note {visibility: hidden;pointer-events: none;}
+@media (max-width: 699px) {
+  html[data-game="isometric"] .tut-note.tut-pill {left: calc(max(12px,var(--safe-l)) + 108px);right: max(12px,var(--safe-r));width: auto;max-width: none;margin: 0;}
+  html[data-game="isometric"] .tut-pill .tut-pill-text {position: absolute;width: 1px;height: 1px;overflow: hidden;clip: rect(0 0 0 0);white-space: nowrap;}
+}
+/* #344: tablet/desktop: the tap that closes the More menu lands on this clear backdrop, not on the island under it. */
+html[data-game="isometric"]:not([data-layout="phone"]).menu-open #app::after {content: "";position: fixed;inset: 0;z-index: 39;background: transparent;}
 
 @media (hover: hover) {
   html[data-game="isometric"] #isoHUD :is(.iso-profile, .iso-money, .iso-round, .iso-quick-button, .iso-mission):hover {background: var(--iso-paper-top);border-color: var(--iso-wood);}
@@ -736,6 +744,8 @@ html[data-game="isometric"] .town-presence-status[data-connected="true"] {color:
 .iso-loading {position:absolute;left:50%;top:45%;z-index:22;transform:translate(-50%,-50%);padding:8px 16px;border-radius:14px;background:#fff9edee;color:#66462f;font:600 14px/20px var(--font,"Be Vietnam Pro",system-ui,sans-serif);box-shadow:0 3px 12px #543b241a;pointer-events:none;animation:iso-loading-pulse 1.4s ease-in-out infinite;}
 @keyframes iso-loading-pulse {50% {opacity:.6;}}
 @media (prefers-reduced-motion: reduce) {.iso-loading {animation:none;}}
+/* #344: "Chưa tải được phố. [Thử lại]": the note lets taps through while loading, but its retry button must take them. */
+html[data-game="isometric"] .iso-loading.is-error {pointer-events: auto;animation: none;}
 html[data-game="isometric"] #world {background:#ede3ce;}
 
 /* 🧭 Chỉ đường (iso-guide.js): a searchable list of destinations; easy to read on a 360 px phone. */

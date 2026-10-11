@@ -124,6 +124,7 @@ function syncDisclosureLayer(){
   if(!hud?.dataset)return;
   const open=!document.querySelector('dialog[open]')&&(cameraOpen||['iso-tools','iso-mission'].some(name=>document.querySelector(`#isoHUD .${name}[open]`)));
   hud.dataset.disclosureOpen=String(Boolean(open));
+  document.documentElement?.classList?.toggle?.('iso-disclosure-open',Boolean(open));  // isometric.css hides the guide pill under it (#344)
 }
 
 const disclosures=(root,selector)=>root.querySelectorAll?[...root.querySelectorAll(selector)]:[root.querySelector(selector)].filter(Boolean);
