@@ -5,7 +5,7 @@
 .career-job.tv .tv-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .career-job.tv .tv-btn,.career-job.tv .tv-opt{min-height:44px;white-space:normal;text-align:left;line-height:1.25}
 .career-job.tv .tv-btn.full{width:100%;justify-content:flex-start}
-.career-job.tv .tv-on{border-color:var(--sk-accent);background:color-mix(in srgb,var(--sk-accent) 14%,var(--sk-surface));font-weight:700}
+.career-job.tv .tv-on,.career-job.tv .tv-opt.tv-on{border-color:var(--sk-accent);background:color-mix(in srgb,var(--sk-accent) 14%,var(--sk-surface));font-weight:700}
 .career-job.tv .tv-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;margin-top:6px}
 .career-job.tv .tv-opt{display:flex;align-items:center;padding:8px 10px;border:1px solid var(--sk-line);border-radius:var(--sk-rs);background:var(--sk-surface);color:var(--sk-ink);font:inherit;cursor:pointer}
 .career-job.tv .tv-opt:disabled{opacity:.5;cursor:not-allowed}
