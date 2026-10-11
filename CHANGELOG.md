@@ -1,3 +1,9 @@
+# v2.0.4 — 2026-10-11
+
+Chợ đen: mọi khoản phạt công an là 30% tiền cược của chính ván bị bắt (kèm tịch thu tiền cược); ví thiếu thì trừ ngân hàng, sổ tiết kiệm, sổ Mây, vàng, Mây Coin. Tắt kiểm tra ví/tài sản cũ. Chơi nhỏ (dưới 50k, lời hôm nay chưa quá 300k) không bị bắt hay dẹp chiếu. Ván từ 50k thắng tối đa 40% (cả trong Hai ngày vàng). Hoàn phần phạt dư 16:49–17:26 bằng quà hệ thống.
+
+Chống gian lận: nhập bản lưu chỉ vào đúng bản đã xuất, so tổng tài sản (vàng, Mây, nhà, xe). Mây Coin từ 21:00 11/10 tính tin tức ngay đầu giờ. Tiệm áo chỉ tính đồ khách đặt, thưởng đồ nghề/giá/nước ngoài trên tiền lời, giá sỉ ×1,5. x3 không tính tiền hoàn đơn; mục tiêu ngày, thưởng quản lý, x3, giá nhà chỉ tính cho ngày có giờ thật (bản mới bắt đầu 48 ngày). Chơi lại từ đầu không sinh tiền; sổ nợ trà đá kiểm mọi dòng ghi khống. Kho báu hết hạn sau 3 đợt, 1 rương/đợt, 5 rương/ngày, tài khoản từ 1 ngày. Kéo co chó sủa giới hạn sức kéo khi hét liên tục, bảng tuần chỉ tính trận người–người đủ điều kiện, cược tối đa 200.000. Tiệc cưới: khách và lì xì từ tài khoản 1 ngày, khóa giới hạn 2 tiệc/ngày, tiệc đã hủy không trả. Nhà mua lúc tin xấu tính giá gốc trung tính; lịch tin nhà có muối máy chủ từ 03/11. Phạt thiết bị hỗ trợ tính cả sổ Mây, vàng, Mây Coin; phóng dao trả lúc nửa đêm cũng bị kiểm. Lãi ngân hàng không vượt trần số dư.
+
 # v2.0.1 — 2026-10-11
 
 Sửa kính theo vị trí mắt ở từng hướng/bước đi, mũ khi quay lưng, màu áo và mảnh ảnh thừa của nhân vật ngoài phố. Dùng đường cắt cổ thực tế cho bơi/chèo thuyền, chỉnh tư thế ngồi và chân trên thuyền.

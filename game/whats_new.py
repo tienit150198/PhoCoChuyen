@@ -32,6 +32,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.0.4", date="2026-10-11", items=(
+        dict(emoji='🚨', text='Chợ đen: bị bắt thì mất tiền cược ván đó, phạt thêm 30% tiền cược ván đó. Chơi nhỏ thì yên, cược lớn, lời nhiều dễ bị bắt.'),
+        dict(emoji='💸', text='Ai bị phạt sai ở Chợ đen chiều 11/10 đã được hoàn phần phạt dư vào ví. Phố xin lỗi các bạn nhé!'),
+        dict(emoji='🛡️', text='Nhân bản tài khoản, dùng bot, lách lỗi kiếm xu: tài khoản chính bị trừ 90% tài sản, tài khoản phụ về 0.'),
+        dict(emoji='🧹', text='Sửa nhiều lỗi kiếm xu bất thường để ai chơi thật cũng công bằng.'),
+    )),
     dict(version="1.9.45", date="2026-10-10", items=(
         dict(emoji='🖼️', text='Sàn đấu giá đẹp hơn: 30 bức tranh độc bản, đồ sưu tầm nổi bật và bảng top nhà sưu tầm!'),
         dict(emoji='🛠️', text='Thêm vật dụng nâng cấp: tăng lượng khách, tăng thu nhập và nhận nhiều đơn online hơn theo nghề.'),
