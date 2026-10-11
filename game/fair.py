@@ -175,6 +175,9 @@ AUDIT_FROM, AUDIT_GAP, AUDIT_P = 50000, 7200, .225
 AUDIT_KEY, AUDIT_PCT = 'fair_audit', 10   # journey['fair_audit'] {ed, base, at}: the profit left, the last check's time
 AUDIT_LABEL = '🚨 Công an kiểm tra tài sản · Nộp phạt'
 WALLET_CHECKS = False          # owner 11/10: _wealth_raid / _asset_audit off, fines are per round only
+# Owner 11/10 (evening): "người ta spam chơi 50k nhiều quá thì giảm tỷ lệ thắng xuống 40%, mức 50–300k cũng áp dụng":
+# a luck round staking BIG_WIN_FROM or more draws at most BIG_WIN_P (golden days included). Never shown.
+BIG_WIN_FROM, BIG_WIN_P, BIG_WIN_GAMES = 50_000, .40, ('xd', 'lt', 'xs')
 POLICE_SAY = 'Chào em, nghe nói em lời ở chợ đen hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.'
 # 🍀 Lộc trời cho (owner 07/10): a won round of a paid luck stall pays LOC_MULT× its stake, LOC_P of the time, once per
 # LOC_GAP for the whole server (the mnl_meta row LOC_KEY holds the last one's time).
@@ -690,7 +693,10 @@ def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = 
     _run(j, game, t)
     n = _heat(j, game, t, stake or 0)
     p = _golden_rate(j, f, game, t, stake)
-    return run_rate(game, n) if p is None else p
+    p = run_rate(game, n) if p is None else p
+    if type(stake) is int and stake >= BIG_WIN_FROM and game in BIG_WIN_GAMES:
+        p = min(p, BIG_WIN_P)   # owner 11/10: a 50k+ round wins BIG_WIN_P at most, event or not ("tránh bị spam")
+    return p
 
 
 def _golden_rate(j: dict, f: dict | None, game: str, t: float, stake: int | None) -> float | None:

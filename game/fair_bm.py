@@ -224,6 +224,9 @@ def arrest(j: dict, f: dict, t: float, game: str, stake: int, pay, *, charge: bo
         if stake:
             pay(-stake)
         fine = take_total(j, f, due, FINE_LABEL) if due else 0
+        if fine < due:   # owner 11/10: not enough in the wallet and the bank, the rest from Mây savings, gold, Mây Coin
+            from .fair_hai import _take_parked
+            fine += _take_parked(j, f, due - fine, FINE_LABEL)
     else:   # owner 11/10: the round's own stake, never the wallet
         due = min(max(0, j['wallet']), round_fine(stake)) if charge else 0
         fine = _take(j, f, due, FINE_LABEL)

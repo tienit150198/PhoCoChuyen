@@ -15,8 +15,8 @@ class GoldenHighStakes(FairBase):
         self.addCleanup(golden.clear)
 
     def test_threshold_starts_at_300000_per_round(self):
-        ordinary = fh.BASES['xd']
-        for stake, expected in [(10, .70), (49999, .70), (50000, ordinary), (299000, ordinary), (299999, ordinary),
+        # owner 11/10 (evening): from fair.BIG_WIN_FROM a round draws at most fair.BIG_WIN_P, event or not
+        for stake, expected in [(10, .70), (49999, .70), (50000, .40), (299000, .40), (299999, .40),
                                 (300000, .40), (300001, .40), (1000000, .40)]:
             with self.subTest(stake=stake):
                 self.assertEqual(fh.luck_p({}, None, 'xd', OPEN, stake=stake), expected)
@@ -75,7 +75,9 @@ class GoldenHighStakes(FairBase):
 
     def test_expired_event_retains_ordinary_rules(self):
         t = OPEN + golden.DURATION
-        self.assertEqual(fh.luck_p({}, None, 'xd', t, stake=1000000), fh.BASES['xd'])
+        self.assertEqual(fh.luck_p({}, None, 'xd', t, stake=49_999), fh.BASES['xd'])
+        self.assertEqual(fh.luck_p({}, None, 'xd', t, stake=1000000), min(fh.BASES['xd'], fh.BIG_WIN_P))
+        self.assertEqual(fh.luck_p({}, None, 'xd', t, stake=50_000), min(fh.BASES['xd'], fh.BIG_WIN_P))
 
     def test_large_stake_seeded_distribution_is_40_percent(self):
         self.dice(random.Random(301001))
