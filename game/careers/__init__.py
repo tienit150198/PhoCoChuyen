@@ -36,6 +36,7 @@ ORDER = (
     'lifeguard',                   # cứu hộ hồ bơi: the high chair at Hồ bơi Sóng Xanh, the ward's public pool
     'police',                      # công an phường: community police at Công an phường Mây (papers, lost and found, mediation, patrols)
     'zpop',                        # bán album ZPOP: chị Thơ's Tiệm album Mây Pop on Phố chợ (BLANKPINK, 7GIÓ, KIWIZ; all fictional)
+    'art_studio', 'lawyer', 'laundry', 'post_office',
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}

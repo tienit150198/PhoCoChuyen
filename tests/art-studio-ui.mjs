@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import art from '../public/js/careers/art_studio.js';
+const calls=[];
+const x={ui:{},room:{data:{stats:{good:0,active_days:0},milestones:[],portfolio:[]}},cc:{options:{layout:{portrait:'Standing'},palette:{warm:'Warm'},medium:{ink:'Ink'}},recipients:['Mai'],guide:'Guide'},esc:String,cmd:(label,command,payload,style,disabled)=>{calls.push({command,payload,disabled});return `<button ${disabled?'disabled':''}>${label}</button>`;},button:(l,a,p)=>`<button data-action="${a}">${l}</button>`,render(){}};
+const t={id:'art-1',known:true,title:'Painting',stage:'plan',plan:{},painted:[],needs:{subject:'Cat',brief:'Cat portrait',recipient:'Mai',layout:'Standing',palette:'Warm',medium:'Ink',gross:28,cost:6,rule:'Base first',layers:[{id:'background',label:'Base'}]}};
+assert.match(art.job(t,x),/svg/);
+assert.equal(calls.find(c=>c.command==='art_begin').disabled,true);
+t.plan={layout:'portrait',palette:'warm',medium:'ink'};calls.length=0;art.job(t,x);assert.equal(calls.find(c=>c.command==='art_begin').disabled,false);
+t.stage='proof';art.job(t,x);
+for(const key of ['brief','surface','signature'])art.actions.artCheck({task:t.id,key},null,x);
+calls.length=0;art.job(t,x);assert.deepEqual(calls.find(c=>c.command==='art_proof').payload.checks,['brief','surface','signature']);
+art.actions.artCheck({task:t.id,key:'surface'},null,x);assert.equal(x.ui.artChecks[t.id].length,2);
+t.stage='deliver';calls.length=0;art.job(t,x);assert.deepEqual(calls[0].payload,{task:t.id,recipient:'Mai'});
+console.log('art UI: plan, layered SVG, proof toggles and recipient payload pass');

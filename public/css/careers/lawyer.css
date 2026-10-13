@@ -1,4 +1,3 @@
-@import url('./street_kit.css');
 .lw{--law-ink:#26465d;--law-paper:#f9f6ee;display:grid;gap:14px;color:var(--text,#263c4d);min-width:0}
 .lw header h3,.lw h4{color:var(--law-ink);margin:0 0 8px}
 .lw p{line-height:1.55;margin:7px 0;overflow-wrap:anywhere}

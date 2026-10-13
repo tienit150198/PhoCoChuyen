@@ -23,7 +23,7 @@ for(let x=nav.bounds.x0;x<=nav.bounds.x1;x+=.5)for(let y=nav.bounds.y0;y<=nav.bo
   assert.equal(serverWalk,model.isWalkable(nav,{x,y}),`same walkability at ${x},${y}`);
 }
 console.log(`Town geometry agrees for ${buildings.length} careers and every sampled ground point.`);
-for(const count of [7,8,12,41,42,48,49,50,56]){
+for(const count of [7,8,12,41,42,48,49,50,54,56]){
   const future=model.townBuildings(Array.from({length:count},(_,i)=>({id:`future-${i}`}))),nav=model.townNavigation(future);
   const mirrored=JSON.parse(execFileSync(process.env.PYTHON||'python',['-c',`import json; from live.town import town_geometry,town_obstacles; b,r=town_geometry(${count}); print(json.dumps(dict(bounds=b,roads=r,obstacles=town_obstacles(${count}))))`],{encoding:'utf8'}));
   assert.deepEqual(rect(nav.bounds),mirrored.bounds,'future row bounds also include the reserved commons slot');

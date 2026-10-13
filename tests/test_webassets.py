@@ -11,7 +11,7 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 def inline_scripts(html:str)->list[str]:
-    return re.findall(r'<script(?![^>]*\bsrc=)(?![^>]*type="application/json")[^>]*>(.*?)</script>',html,re.S)
+    return re.findall(r'<script(?![^>]*\bsrc=)(?![^>]*type="application/(?:ld\+)?json")[^>]*>(.*?)</script>',html,re.S)
 
 
 class ContentPartsTests(unittest.TestCase):
@@ -59,7 +59,7 @@ class PageAndContentTests(unittest.TestCase):
         self.assertEqual(imap['/js/app.js'],f"/js/app.js?v={content_hash((PUBLIC/'js/app.js').read_bytes())}")
         self.assertIn('/js/careers/restaurant.js',imap);self.assertIn('/css/careers/food_kit.css',imap)
         csp=h['Content-Security-Policy'];self.assertNotIn('unsafe-inline',csp.split('style-src')[0])
-        scripts=inline_scripts(html);self.assertEqual(len(scripts),2,'import map + boot script')
+        scripts=inline_scripts(html);self.assertEqual(len(scripts),2,'import map + boot script; JSON-LD is non-executable data')
         for text in scripts:
             digest="'sha256-"+base64.b64encode(hashlib.sha256(text.encode()).digest()).decode()+"'"
             self.assertIn(digest,csp)

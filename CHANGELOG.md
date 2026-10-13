@@ -1,3 +1,10 @@
+# v2.1.0 — 2026-10-13
+
+- Thêm bốn nghề: Xưởng vẽ Màu Nắng, Văn phòng luật Bình An, Tiệm giặt ủi Nếp Thơm và Bưu điện Cánh Thư. Mỗi nghề có quy trình riêng, nhiều loại đơn và nội dung nâng cao theo ngày nghề.
+- Thành tích yêu cầu việc đạt chất lượng và ngày thực sự làm việc; nội dung cuối mở từ ngày 40–45. Tiền giặt/vẽ trừ vật tư từng đơn; luật sư và bưu điện nhận lương theo hợp đồng cộng thưởng việc, bưu phí không trở thành thu nhập người chơi.
+- Mở giặt ủi ở chương 2, xưởng vẽ và bưu điện ở chương 3, luật sư ở chương 4. Tổng cộng 54 nghề, có địa điểm, hướng dẫn và giao diện điện thoại.
+- Bản lưu cũ tự bổ sung nghề mới, giữ tiến trình 50 nghề trước. Không đổi dữ kiện nhiệm vụ cũ hoặc bảng DB. Sau khi bản lưu có nghề mới, khắc phục bằng bản tương thích 2.1.x; không hạ mã trực tiếp về 2.0.7.
+
 # v2.0.7 — 2026-10-13
 
 - Thu két: chủ quầy đặt vốn giữ lại tùy ý; tiền còn dư mới về ví, áp dụng cả thu nhiều quầy. Két vào vốn giữ lại phần vượt trần trong két.

@@ -29,6 +29,7 @@ export const KIND_OF={
   lifeguard:'pool',
   police:'station',
   zpop:'albumshop',
+  art_studio:'office',lawyer:'office',laundry:'service',post_office:'office',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
 
@@ -107,6 +108,11 @@ const KIND_WORDS={
     confirm_title:'Xác nhận trước khi làm',rail_in:'Ở sân bay',more_aria:'Thêm: sổ bay, khu phố',queue_btn:'Bảng giờ bay',books:'Sổ lương',end_title:'Tan ca bay hôm nay?',end_text:'Lương ngày vào quỹ lương. Việc chưa xong được giữ lại cho mai.'},
 };
 const CAREER_WORDS={
+  art_studio:{shelf:'Kệ màu và giấy',evidence:'Phiếu đặt tranh',counter:'Bàn giao tranh',warehouse:'Kho vật tư vẽ',workbench:'Bàn vẽ',till:'Ví của xưởng',finance:'Sổ thu chi',property:'Xưởng vẽ',ledger:'SỔ TRANH',store:'VẬT TƯ VẼ',door_closed:'Mở xưởng',door_open:'Khép xưởng',open_sign:'ĐANG VẼ',closed_sign:'XƯỞNG ĐÃ NGHỈ',rail_in:'Trong xưởng vẽ',books:'Sổ xưởng',idle_line:'Phiếu đặt tranh mới đang chờ.',free_title:'Đã giao hết tranh!',more_btn:'Nhận thêm tranh',next_btn:'Phiếu tranh tiếp theo',free_more:'Nhận thêm tranh hoặc khép xưởng.',open_hint:'Chuẩn bị màu và mở xưởng nhé.',people_sub:'Khách đặt tranh và bạn trong xưởng.',feed_sub:'Nhận xét về những bức tranh.',cat_line:'Mướp ngồi làm mẫu bên cửa sổ.',end_title:'Khép xưởng hôm nay?',end_text:'Tiền vật tư từng tranh đã ghi vào sổ; chi phí ngày được tổng kết khi khép xưởng.'},
+  lawyer:{shelf:'Tủ hồ sơ',evidence:'Chứng cứ và quy tắc vụ việc',counter:'Bàn tư vấn',warehouse:'Kho hồ sơ lưu',workbench:'Bàn soạn hồ sơ',till:'Quỹ lương',finance:'Sổ lương',property:'Văn phòng Bình An',ledger:'SỔ HỒ SƠ',store:'HỒ SƠ',rail_in:'Trong văn phòng luật',books:'Sổ công việc',idle_line:'Hồ sơ tư vấn đang chờ.',free_title:'Đã xử lý hết hồ sơ!',more_btn:'Nhận thêm hồ sơ',next_btn:'Hồ sơ tiếp theo',free_more:'Nhận thêm hồ sơ hoặc tan ca.',end_title:'Tan ca tư vấn hôm nay?',end_text:'Lương được quyết toán theo hợp đồng khi bạn đã hoàn thành việc trong ca.'},
+  laundry:{shelf:'Kệ chất giặt và nhãn vải',evidence:'Phiếu nhận đồ',counter:'Quầy trả đồ',warehouse:'Kho vật tư giặt',workbench:'Bàn phân loại và gấp đồ',property:'Tiệm giặt ủi',rail_in:'Trong tiệm giặt',books:'Sổ giặt ủi',ledger:'SỔ GIẶT ỦI',store:'VẬT TƯ GIẶT',idle_line:'Giỏ đồ của khách đang chờ.',free_title:'Đã trả hết đồ!',more_btn:'Nhận thêm giỏ đồ',next_btn:'Giỏ đồ tiếp theo',free_more:'Nhận thêm đồ hoặc khép tiệm.',cat_line:'Mướp nằm cạnh giỏ khăn sạch.',open_hint:'Chuẩn bị bàn phân loại rồi mở tiệm nhé.',end_text:'Tiền giặt và tiền vật tư đã ghi từng đơn; chi phí ngày được tổng kết khi khép tiệm.'},
+  post_office:{shelf:'Kệ bưu gửi',evidence:'Nhãn gửi và bảng cước',counter:'Quầy tiếp nhận',warehouse:'Kho bưu kiện',workbench:'Bàn cân và đóng gói',till:'Quỹ lương',finance:'Sổ lương',property:'Bưu điện Cánh Thư',ledger:'SỔ BƯU GỬI',store:'BƯU KIỆN',rail_in:'Trong bưu điện',books:'Sổ bưu gửi',idle_line:'Bưu gửi mới đang chờ.',free_title:'Đã xử lý hết bưu gửi!',more_btn:'Nhận thêm bưu gửi',next_btn:'Bưu gửi tiếp theo',free_more:'Nhận thêm bưu gửi hoặc tan ca.',end_title:'Tan ca bưu điện hôm nay?',end_text:'Lương và thưởng thuộc về bạn. Bưu phí thu hộ được giữ trong sổ bưu điện.'},
+
   milk_tea:{warehouse:'Kho nguyên liệu'},
   delivery:{shelf:'Kệ bưu kiện',counter:'Quầy bưu cục',evidence:'Bản đồ tuyến giao',warehouse:'Lồng hàng chờ giao',finance:'Sổ tiền thu hộ',property:'Bưu cục Mây Chiều',open_sign:'ĐANG NHẬN ĐƠN',closed_sign:'TẠM NGHỈ GIAO'},
   tour_guide:{shelf:'Bưu thiếp & bản đồ',counter:'Điểm hẹn đoàn',evidence:'Bảng lộ trình',warehouse:'Hành trang',door_open:'Kết thúc chuyến',door_closed:'Xuất phát',finance:'Sổ quỹ đoàn',property:'Điểm hẹn Mây Lang Thang',open_sign:'ĐANG ĐÓN ĐOÀN',closed_sign:'HẸN CHUYẾN SAU',ledger:'SỔ ĐOÀN',
