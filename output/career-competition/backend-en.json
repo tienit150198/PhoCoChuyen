@@ -1,0 +1,30 @@
+{
+  "strings": {
+    "Tập sự thi đua": "Competition newcomer",
+    "Đồng nghiệp tin cậy": "Trusted colleague",
+    "Tổ nghề vững vàng": "Dependable team",
+    "Gương sáng nghề nghiệp": "Career role model",
+    "Dẫn dắt nghề nghiệp": "Career leader",
+    "Chất lượng thực tế": "Actual work quality",
+    "Quy trình ít sai sót": "Careful procedures",
+    "Phán đoán có chứng cứ": "Evidence-based judgment",
+    "Phối hợp cùng đồng nghiệp": "Teamwork with colleagues",
+    "Dữ liệu thi đua nghề không hợp lệ.": "Invalid career competition data.",
+    "Được ghi nhận một kỳ thi đua tốt.": "Recognized for a successful competition period.",
+    "Tiếp tục cải thiện chất lượng và phối hợp trong kỳ sau.": "Keep improving quality and teamwork in the next period.",
+    "Thao tác thi đua không hợp lệ.": "Invalid competition action.",
+    "Hãy hoàn thành công việc thực tế trong ca đang mở.": "Complete actual work during the current open shift first.",
+    "Cần bậc nghề 3 hoặc liên đoàn thi đua 2 để xử lý tình huống nhóm.": "Reach career rank 3 or competition league 2 to handle team scenarios.",
+    "Mỗi ngày chỉ có một tình huống nhóm.": "There is only one team scenario per day.",
+    "Đã mở tình huống phối hợp cùng đồng nghiệp.": "A teamwork scenario is now open.",
+    "Tình huống chưa mở hoặc đã ghi nhận lựa chọn.": "The scenario has not started or your choice has already been recorded.",
+    "Lựa chọn tình huống không hợp lệ.": "Invalid scenario choice.",
+    "Bạn": "You",
+    "Công việc tự hoàn thành": "Work completed manually",
+    "Kỳ thi đua tốt ở liên đoàn hiện tại": "Successful periods in the current league",
+    "Bậc nghề hiện tại": "Current career rank",
+    "Cần bậc nghề 3 hoặc liên đoàn thi đua 2.": "Requires career rank 3 or competition league 2.",
+    "Cần hoàn thành công việc thực tế trong ca đang mở.": "Complete actual work during the current open shift first."
+  },
+  "patterns": []
+}
