@@ -1041,7 +1041,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         lot = next((l for l in d['cold'] if l['id'] == p.get('lot')), None)
         kit.need(lot, 'Lô không còn trong kho mát.')
         d['cold'].remove(lot)
-        kit.waste(c, lot['crop'], min(60, lot['qty']), lot['qty'] * PRODUCE[lot['crop']]['value'], 'Hủy lô không đạt' + (' (chưa hết cách ly)' if lot['unsafe'] else ''))
+        kit.waste(c, lot['crop'], lot['qty'], lot['qty'] * PRODUCE[lot['crop']]['value'], 'Hủy lô không đạt' + (' (chưa hết cách ly)' if lot['unsafe'] else ''))
         return dict(message=f'Đã hủy lô {lot["id"]} ({lot["qty"]} {PRODUCE[lot["crop"]]["unit"]} {PRODUCE[lot["crop"]]["name"].lower()}), ghi hao hụt.')
     if name == 'fa_feed':
         coop = d['coop']
@@ -1572,7 +1572,7 @@ def on_close(s: dict, c: dict) -> dict:
     for lot in d['cold']:
         if lot['expires'] <= c['day']:
             expired += lot['qty']
-            kit.waste(c, lot['crop'], min(60, lot['qty']), lot['qty'] * PRODUCE[lot['crop']]['value'], 'Hết hạn trong kho mát')
+            kit.waste(c, lot['crop'], lot['qty'], lot['qty'] * PRODUCE[lot['crop']]['value'], 'Hết hạn trong kho mát')
         else:
             keep.append(lot)
     d['cold'] = keep

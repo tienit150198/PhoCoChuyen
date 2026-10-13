@@ -154,6 +154,47 @@ class FarmStorageCapacity(unittest.TestCase):
         self.assertEqual(g['store']['lua'][0], 360 - fp.DEPTH)
         self.assertEqual(len(g['plots']), fp.START_PLOTS)
 
+    def test_discard_records_entire_expanded_cold_lot_and_saves(self):
+        for qty in (4001, 8000):
+            with self.subTest(qty=qty):
+                j = self.farm(10)
+                d = self.cold(j, qty)
+                lot = copy.deepcopy(d['cold'][0])
+                validate_state(json.loads(json.dumps(j.state)))
+                result = farm._handle(j.state, j.c, 'fa_discard', {'lot': lot['id'], 'confirm': True})
+                self.assertEqual(d['cold'], [])
+                self.assertIn(lot['id'], result['message'])
+                record = j.c['life']['waste'][-1]
+                self.assertEqual(record, dict(day=j.c['day'], item=lot['crop'], qty=qty,
+                                              value=qty * farm.PRODUCE[lot['crop']]['value'], reason='Hủy lô không đạt'))
+                validate_state(json.loads(json.dumps(j.state)))
+                waste_count = len(j.c['life']['waste'])
+                with self.assertRaises(GameError):
+                    farm._handle(j.state, j.c, 'fa_discard', {'lot': lot['id'], 'confirm': True})
+                self.assertEqual(len(j.c['life']['waste']), waste_count)
+                self.assertEqual(j.c['life']['waste'][-1], record)
+
+    def test_expiry_records_entire_expanded_cold_lot_and_saves(self):
+        for qty in (4001, 8000):
+            with self.subTest(qty=qty):
+                j = self.farm(10)
+                d = self.cold(j, qty)
+                lot = d['cold'][0]
+                lot['expires'] = j.c['day']
+                keep = []
+                if qty < 8000:
+                    fresh = farm._add_lot(j.c, d, 'egg', 'A', 1, False, False, 'coop')
+                    fresh['expires'] = j.c['day'] + 2
+                    keep = [copy.deepcopy(fresh)]
+                validate_state(json.loads(json.dumps(j.state)))
+                summary = farm.on_close(j.state, j.c)
+                self.assertEqual(summary['expired_units'], qty)
+                self.assertEqual(d['cold'], keep)
+                self.assertEqual(j.c['life']['waste'][-1],
+                                 dict(day=j.c['day'], item=lot['crop'], qty=qty,
+                                      value=qty * farm.PRODUCE[lot['crop']]['value'], reason='Hết hạn trong kho mát'))
+                validate_state(json.loads(json.dumps(j.state)))
+
 
 if __name__ == '__main__':
     unittest.main()
