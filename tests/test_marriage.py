@@ -552,6 +552,7 @@ class WeddingTests(Base):
         self.assertEqual(self.rows("SELECT * FROM news WHERE kind='wedding'"), [])
 
     def test_divorce_cancels_pending_wedding_and_cools_down(self):
+        self.assertFalse(self.view(self.a)['outgoing'][0]['relationship_ended'])
         wid = self.plan_and_confirm(self.a, self.b)
         wallet = self.wallet(self.a)
         with self.assertRaises(mr.MarriageError):
@@ -560,6 +561,7 @@ class WeddingTests(Base):
         self.due(wid)
         self.assertFalse(mr.on_load(self.store, self.b, self.state(self.b)))
         self.assertEqual(self.row('SELECT status FROM weddings WHERE id=?', wid)['status'], 'cancelled')
+        self.assertTrue(self.view(self.a)['outgoing'][0]['relationship_ended'])
         self.assertEqual(self.wallet(self.a), wallet)        # the deposit is not refunded
         for tok in (self.a, self.b):
             self.assertIsNone(self.state(tok)['marriage']['spouse'])

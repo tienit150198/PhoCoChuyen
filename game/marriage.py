@@ -1148,11 +1148,13 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
                                  message=W.MESSAGE_INDEX.get(p['message'], W.MESSAGES[0])['text'], at=int(p['at']),
                                  expires=int(p['at'] + W.PROPOSAL_DAYS * DAY)))
         outgoing = []
-        for p in _rows(db, "SELECT * FROM proposals WHERE from_sid=? AND (status='pending' OR (status IN ('declined','accepted') AND decided>?)) ORDER BY id DESC LIMIT 10",
+        for p in _rows(db, "SELECT p.*, EXISTS(SELECT 1 FROM couples c WHERE c.ring=p.ring AND c.a=p.from_sid AND c.b=p.to_sid "
+                       "AND c.status IN ('broken','divorced')) AS relationship_ended FROM proposals p "
+                       "WHERE from_sid=? AND (status='pending' OR (status IN ('declined','accepted') AND decided>?)) ORDER BY id DESC LIMIT 10",
                        (sid, t - 3 * DAY)):
             ring = _row(db, 'SELECT * FROM marriage_rings WHERE id=?', (p['ring'],))
             tp = _row(db, 'SELECT code FROM marriage_people WHERE sid=?', (p['to_sid'],))
-            outgoing.append(dict(id=p['id'], name=_display(db, p['to_sid']), code=(tp or {}).get('code'), status=p['status'],
+            outgoing.append(dict(id=p['id'], name=_display(db, p['to_sid']), code=(tp or {}).get('code'), status=p['status'], relationship_ended=bool(p['relationship_ended']),
                                  ring=_ring_view(ring) if ring else None, message=W.MESSAGE_INDEX.get(p['message'], W.MESSAGES[0])['text'], at=int(p['at'])))
         blocks = []
         for b in _rows(db, 'SELECT target FROM marriage_blocks WHERE sid=? ORDER BY at DESC LIMIT 30', (sid,)):

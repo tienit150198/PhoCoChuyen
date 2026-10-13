@@ -22,6 +22,16 @@ def solve(j):
 
 
 class LawyerTests(unittest.TestCase):
+    def test_feedback371_invoice_total_below_cap(self):
+        j=Journey('lawyer',day=11,slot=2);j.act('ask')
+        n=j.task['needs']
+        self.assertEqual([i['amount'] for i in n['invoices']],[30,60,30])
+        self.assertEqual((n['cap'],n['credit']),(190,30))
+        for _ in range(3):step(j)
+        self.assertFalse(step(j,160)['correct'])
+        self.assertTrue(step(j,90)['correct'])
+        validate_state(j.state)
+
     def test_correct_recovery_and_duplicate(self):
         j=Journey('lawyer',slot=1)
         tid=j.task['id']

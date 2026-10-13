@@ -20,6 +20,7 @@ const S={dlg:null,env:null,view:null,catalog:null,tab:'home',plan:null,planKey:'
 const rid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
+export const proposalStatus=p=>p.status==='pending'?'đang chờ trả lời':p.status==='declined'?'chưa nhận lời':p.relationship_ended?'đã nhận lời trước đây · mối quan hệ đã kết thúc':'đã nhận lời';
 const signed=n=>`${n>0?'+':n<0?'−':''}${fmt(Math.abs(n))} xu`;
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const btn=(label,mr,data={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-mr="${mr}"${attrs(data)}${S.busy?' disabled':''}${extra}>${label}</button>`;
@@ -471,7 +472,7 @@ function single(){
       ${btn('💍 Gửi lời cầu hôn','propose',{},'primary big full',found?.can&&me.proposals_left>0?'':' disabled')}
       <p class="mr-hint">Còn ${me.proposals_left} lượt cầu hôn hôm nay. Bị từ chối thì chiếc nhẫn vẫn là của bạn.</p>`;
   }
-  const outgoing=v.outgoing.length?`<section class="mr-card"><h3>Lời cầu hôn đã gửi</h3><ul class="mr-list">${v.outgoing.map(p=>`<li><span class="mr-li-ring">${ringSVG(p.ring?.colors,30)}<span>Tới <b>${esc(p.name)}</b> · ${p.status==='pending'?'đang chờ trả lời':p.status==='declined'?'chưa nhận lời':'đã nhận lời'}</span></span>${p.status==='pending'?btn('Rút lại','cancel',{id:p.id},'ghost small'):''}</li>`).join('')}</ul></section>`:'';
+  const outgoing=v.outgoing.length?`<section class="mr-card"><h3>Lịch sử lời cầu hôn đã gửi</h3><ul class="mr-list">${v.outgoing.map(p=>`<li><span class="mr-li-ring">${ringSVG(p.ring?.colors,30)}<span>Tới <b>${esc(p.name)}</b> · ${proposalStatus(p)}</span></span>${p.status==='pending'?btn('Rút lại','cancel',{id:p.id},'ghost small'):''}</li>`).join('')}</ul></section>`:'';
   const blocks=v.blocks.length?`<section class="mr-card"><h3>Đã chặn</h3><ul class="mr-list">${v.blocks.map(b=>`<li><span>${esc(b.name)}</span>${btn('Bỏ chặn','unblock',{code:b.code},'ghost small')}</li>`).join('')}</ul></section>`:'';
   const last=v.last?.status==='divorced'?`<p class="mr-hint">Chuyện cũ đã khép lại. Mỗi người đều có quyền bắt đầu lại.</p>`:'';
   return `${notice()}${incoming?`<h3 class="mr-h">Lời cầu hôn gửi tới bạn</h3>${incoming}`:''}

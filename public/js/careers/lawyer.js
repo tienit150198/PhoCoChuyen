@@ -6,9 +6,12 @@ function progress(x){
   const d=data(x),m=d.milestone||{};
   return `<section class="lw-progress card"><h4>⚖️ Hồ sơ vững vàng</h4><p>${m.qualified||0}/${m.required_cases||120} hồ sơ không phải sửa · ${m.active_days||0}/${m.required_days||30} ngày có hoàn tất hồ sơ.</p><p class="small">Cần tới ngày nghề ${m.required_day||40} để mở đủ bước soát cuối. Ca rỗng không tăng tiến trình.</p>${m.earned?'<strong>Đã đạt mốc Hồ sơ vững vàng.</strong>':''}<p class="small">Lương ngày theo hợp đồng. Thưởng hồ sơ 4–7 xu trước hệ số; giảm khi phải sửa.</p></section>`;
 }
+function invoices(n,x){
+  return `<section class="lw-invoices card"><h4>Chứng từ gốc · xu</h4><ul>${(n.invoices||[]).map(i=>`<li><span>${x.esc(i.code)}</span><b>${x.fmt(i.amount)} xu</b></li>`).join('')}</ul><p>Đã nhận: ${x.fmt(n.credit||0)} xu · Giới hạn theo phiếu: ${x.fmt(n.cap||0)} xu</p>${n.duplicate?`<p>${x.esc(n.duplicate)}</p>`:''}</section>`;
+}
 function paperwork(t,x){
   const n=t.needs;
-  return `<section class="lw-rule"><h4>Quy tắc của hồ sơ</h4><p>${x.esc(n.rule)}</p><small>${x.esc(n.disclaimer)}</small></section><div class="lw-docs">${(n.documents||[]).map(d=>`<article class="lw-document"><h4>${x.esc(d.title)}</h4><p>${x.esc(d.text)}</p></article>`).join('')}</div><section class="lw-invoices card"><h4>Chứng từ gốc · xu</h4><ul>${(n.invoices||[]).map(i=>`<li><span>${x.esc(i.code)}</span><b>${x.fmt(i.amount)} xu</b></li>`).join('')}</ul><p>Đã nhận: ${x.fmt(n.credit||0)} xu · Giới hạn theo phiếu: ${x.fmt(n.cap||0)} xu</p>${n.duplicate?`<p>${x.esc(n.duplicate)}</p>`:''}</section>`;
+  return `<section class="lw-rule"><h4>Quy tắc của hồ sơ</h4><p>${x.esc(n.rule)}</p><small>${x.esc(n.disclaimer)}</small></section><div class="lw-docs">${(n.documents||[]).map(d=>`<article class="lw-document"><h4>${x.esc(d.title)}</h4><p>${x.esc(d.text)}</p></article>`).join('')}</div>${current(t)?.type==='amount'&&t.stage==='work'?'':invoices(n,x)}`;
 }
 function work(t,x){
   const s=current(t);if(!s)return '<p>Hồ sơ đã bàn giao.</p>';
@@ -22,7 +25,8 @@ function work(t,x){
     const count=s.type==='multi'?2:3;
     body+=`<p class="small" aria-live="polite">Đã chọn ${got.length}/${count}. Chạm mục đã chọn để bỏ.</p>${act(x,s.type==='multi'?'Gắn cặp chứng cứ':'Chốt dòng thời gian','submit',{key,task:t.id,step:s.id},'primary',got.length===count?'':' disabled')}${act(x,'Xếp lại','reset',{key},'ghost')}`;
   }
-  return `<section class="lw-work card" aria-label="Bước hồ sơ"><p class="lw-step">Bước ${t.at+1}/${t.needs.steps.length}</p><h3>${x.esc(s.title)}</h3><p>${x.esc(s.question)}</p><div class="lw-controls">${body}</div>${t.last_feedback?`<p class="lw-feedback" role="status">${x.esc(t.last_feedback)}</p>`:''}</section>`;
+  const question=s.type==='amount'?`Cộng các chứng từ gốc dưới đây, mỗi mã tính một lần. ${x.fmt(t.needs.cap)} xu là mức trần, không phải tổng chứng từ. Nếu tổng nhỏ hơn mức trần, dùng tổng đó; nếu lớn hơn, dùng mức trần. Sau đó trừ ${x.fmt(t.needs.credit)} xu đã nhận, kết quả thấp nhất là 0.`:s.question;
+  return `<section class="lw-work card" aria-label="Bước hồ sơ"><p class="lw-step">Bước ${t.at+1}/${t.needs.steps.length}</p><h3>${x.esc(s.title)}</h3><p>${x.esc(question)}</p>${s.type==='amount'?invoices(t.needs,x):''}<div class="lw-controls">${body}</div>${t.last_feedback?`<p class="lw-feedback" role="status">${x.esc(t.last_feedback)}</p>`:''}</section>`;
 }
 export default {
   id:'lawyer',css:true,
