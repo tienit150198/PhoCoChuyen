@@ -1,0 +1,541 @@
+﻿career,career_name,tier,content,profile,unlock_xu,cumulative_unlock_xu,min_level,min_clean,min_qualified_days,premium_contracts_per_budget,scenario_gross_xu,scenario_direct_cost_xu,scenario_tax_reserve_xu,scenario_contribution_xu,scenario_80pct_success_xu,scenario_max_contribution_per_budget_xu
+mother_baby,Tiệm mẹ & bé,1,Địu vải điều chỉnh theo số đo,retail,3000,3000,5,10,3,1,770,539,31,200,127.66,200
+mother_baby,Tiệm mẹ & bé,2,Ghế ăn dặm lắp ráp nhiều cấu hình,retail,9000,12000,12,30,7,1,1539,1077,62,400,255.38,400
+mother_baby,Tiệm mẹ & bé,3,Xe đẩy du lịch gấp gọn kiểm phanh,retail,30000,42000,25,70,14,2,3077,2153,124,800,510.82,1600
+mother_baby,Tiệm mẹ & bé,4,Bộ bàn ghế trẻ em chỉnh độ cao,retail,100000,142000,50,140,24,2,5770,4039,231,1500,957.66,3000
+mother_baby,Tiệm mẹ & bé,5,Tủ đồ sơ sinh phân ngăn theo cỡ,retail,350000,492000,90,260,40,3,11539,8077,462,3000,1915.38,9000
+mother_baby,Tiệm mẹ & bé,6,Góc chơi mô-đun có checklist lắp đặt,retail,1200000,1692000,150,450,65,3,30770,21539,1231,8000,5107.66,24000
+mother_baby,Tiệm mẹ & bé,7,Gói chuẩn bị đồ đi xa cho ba gia đình,retail,4000000,5692000,250,750,95,4,69231,48461,2770,18000,11492.34,72000
+mother_baby,Tiệm mẹ & bé,8,Đơn đồng phục nhà trẻ theo số đo từng bé,retail,12000000,17692000,400,1200,140,4,153847,107692,6154,40001,25539.28,160004
+mother_baby,Tiệm mẹ & bé,9,Hợp đồng lắp góc sinh hoạt cho lớp mầm non,retail,35000000,52692000,650,1900,200,5,384616,269231,15385,100000,63846.14,500000
+mother_baby,Tiệm mẹ & bé,10,Dự án trang bị nhiều phòng mẹ và bé theo đợt nghiệm thu,retail,100000000,152692000,1000,3000,280,5,961539,673077,38462,250000,159615.38,1250000
+pharmacy,Nhà thuốc nhỏ,1,Bộ sơ cứu gia đình đóng theo danh mục duyệt,craft,3000,3000,5,10,3,1,435,217,18,200,146.98,200
+pharmacy,Nhà thuốc nhỏ,2,Máy đo tại nhà kiểm phụ kiện và tự kiểm tra máy,craft,9000,12000,12,30,7,1,870,435,35,400,293.9,400
+pharmacy,Nhà thuốc nhỏ,3,Lô vật tư trạm y tế chia theo phiếu nhận,craft,30000,42000,25,70,14,2,1740,870,70,800,587.8,1600
+pharmacy,Nhà thuốc nhỏ,4,Tủ sơ cứu văn phòng có sơ đồ ngăn,craft,100000,142000,50,140,24,2,3261,1630,131,1500,1102.2,3000
+pharmacy,Nhà thuốc nhỏ,5,Bộ thiết bị hỗ trợ vận động đối chiếu quy cách,craft,350000,492000,90,260,40,3,6522,3261,261,3000,2204.34,9000
+pharmacy,Nhà thuốc nhỏ,6,Trạm hướng dẫn sử dụng thiết bị theo tài liệu hãng,craft,1200000,1692000,150,450,65,3,17392,8696,696,8000,5878.24,24000
+pharmacy,Nhà thuốc nhỏ,7,Hợp đồng kiểm kê tủ sơ cứu của năm văn phòng,craft,4000000,5692000,250,750,95,4,39131,19565,1566,18000,13226.1,72000
+pharmacy,Nhà thuốc nhỏ,8,Lô vật tư ngày hội cộng đồng bàn giao theo điểm,craft,12000000,17692000,400,1200,140,4,86957,43478,3479,40000,29391.32,160000
+pharmacy,Nhà thuốc nhỏ,9,Đơn thiết bị chăm sóc tại nhà nhiều địa chỉ có biên bản,craft,35000000,52692000,650,1900,200,5,217392,108696,8696,100000,73478.24,500000
+pharmacy,Nhà thuốc nhỏ,10,Hợp đồng cung ứng vật tư theo đợt với truy xuất lô và nghiệm thu,craft,100000000,152692000,1000,3000,280,5,543479,271739,21740,250000,183695.66,1250000
+accounting,Một ngày làm kế toán,1,Đối soát tiền sàn thương mại điện tử,fee,3000,3000,5,10,3,1,264,52,11,201,157.68,201
+accounting,Một ngày làm kế toán,2,Lập bảng biến động nghĩa vụ phiếu quà tặng,fee,9000,12000,12,30,7,1,527,105,22,400,313.7,400
+accounting,Một ngày làm kế toán,3,Đối chiếu quyền sở hữu hàng ký gửi,fee,30000,42000,25,70,14,2,1053,210,43,800,627.4,1600
+accounting,Một ngày làm kế toán,4,Phân bổ khoản thu trước của hội viên,fee,100000,142000,50,140,24,2,1974,394,79,1501,1177.16,3002
+accounting,Một ngày làm kế toán,5,Lập dự báo dòng tiền theo mùa,fee,350000,492000,90,260,40,3,3948,789,158,3001,2353.46,9003
+accounting,Một ngày làm kế toán,6,Đối soát quỹ tài trợ có mục đích,fee,1200000,1692000,150,450,65,3,10527,2105,422,8000,6273.7,24000
+accounting,Một ngày làm kế toán,7,Lập hồ sơ phí nhượng quyền có chứng từ,fee,4000000,5692000,250,750,95,4,23685,4737,948,18000,14115.78,72000
+accounting,Một ngày làm kế toán,8,Chuyển số dư mở cửa hàng mới,fee,12000000,17692000,400,1200,140,4,52632,10526,2106,40000,31368.44,160000
+accounting,Một ngày làm kế toán,9,Ánh xạ tài khoản giữa nhiều cửa hàng,fee,35000000,52692000,650,1900,200,5,131579,26315,5264,100000,78421.1,500000
+accounting,Một ngày làm kế toán,10,Di chuyển và bàn giao sổ sách hai cửa hàng,fee,100000000,152692000,1000,3000,280,5,328948,65789,13158,250001,196053.46,1250005
+customer_care,Chăm sóc khách hàng,1,Đối soát đơn chia nhiều kiện,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+customer_care,Chăm sóc khách hàng,2,Sửa lịch giao hàng định kỳ,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+customer_care,Chăm sóc khách hàng,3,Đối chiếu quyền bảo hành liên kết,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+customer_care,Chăm sóc khách hàng,4,Điều chỉnh thuê bao và kiểm kỳ thu kế tiếp,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+customer_care,Chăm sóc khách hàng,5,Thực hiện yêu cầu hỗ trợ tiếp cận,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+customer_care,Chăm sóc khách hàng,6,Quyết toán đổi hàng giữa nhiều cửa hàng,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+customer_care,Chăm sóc khách hàng,7,Liên hệ và theo dõi nhóm khách thuộc đợt thu hồi,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+customer_care,Chăm sóc khách hàng,8,Xử lý sự cố chung với phương án riêng từng tài khoản,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+customer_care,Chăm sóc khách hàng,9,Bảo đảm dịch vụ khi chuyển hệ thống,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+customer_care,Chăm sóc khách hàng,10,Điều phối khắc phục sự cố doanh nghiệp và kiểm toán đóng vụ,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+teacher,Một ngày làm giáo viên,1,Kế hoạch sáu buổi gỡ hiểu nhầm kiến thức,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+teacher,Một ngày làm giáo viên,2,Chuyển bài học thành bản chữ lớn dễ đọc,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+teacher,Một ngày làm giáo viên,3,Soạn học liệu có mô tả bằng âm thanh,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+teacher,Một ngày làm giáo viên,4,Xây chuỗi hỗ trợ ngôn ngữ cho học sinh mới,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+teacher,Một ngày làm giáo viên,5,Thiết kế bài đánh giá có nhiều cách tiếp cận,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+teacher,Một ngày làm giáo viên,6,Hiệu chuẩn thang chấm trên bài ẩn danh,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+teacher,Một ngày làm giáo viên,7,Tổ chức dự án tìm hiểu chung giữa hai lớp,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+teacher,Một ngày làm giáo viên,8,Thử nghiệm học liệu và đo tiến bộ,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+teacher,Một ngày làm giáo viên,9,Dự giờ đồng nghiệp và lập kế hoạch cải thiện,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+teacher,Một ngày làm giáo viên,10,Điều phối chấm thống nhất giữa các trường,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+tour_guide,Hướng dẫn viên du lịch,1,Dẫn tuyến lịch sử ban đêm bằng bộ nghe,service,3000,3000,5,10,3,1,328,114,14,200,153.16,200
+tour_guide,Hướng dẫn viên du lịch,2,Thăm xưởng in tranh và bàn giao bộ học cụ,service,9000,12000,12,30,7,1,656,229,27,400,306.26,400
+tour_guide,Hướng dẫn viên du lịch,3,Tour xe đạp có kiểm nhận xe thuê,service,30000,42000,25,70,14,2,1312,459,53,800,612.46,1600
+tour_guide,Hướng dẫn viên du lịch,4,Tuyến thủ công và ẩm thực có lối tiếp cận thuận tiện,service,100000,142000,50,140,24,2,2460,861,99,1500,1148.34,3000
+tour_guide,Hướng dẫn viên du lịch,5,Chuyến ngắm sao có phương án đổi theo thời tiết,service,350000,492000,90,260,40,3,4919,1721,197,3001,2297.54,9003
+tour_guide,Hướng dẫn viên du lịch,6,Chuyến sáng tác ảnh có đặt lịch địa điểm,service,1200000,1692000,150,450,65,3,13115,4590,525,8000,6124.6,24000
+tour_guide,Hướng dẫn viên du lịch,7,Hành trình khám phá học đường theo trạm,service,4000000,5692000,250,750,95,4,29509,10328,1181,18000,13780.32,72000
+tour_guide,Hướng dẫn viên du lịch,8,Kỳ lưu trú sáng tác tại làng nghề,service,12000000,17692000,400,1200,140,4,65574,22950,2623,40001,30623.8,160004
+tour_guide,Hướng dẫn viên du lịch,9,Chương trình đón đoàn văn hóa qua nhiều địa điểm,service,35000000,52692000,650,1900,200,5,163935,57377,6558,100000,76557.38,500000
+tour_guide,Hướng dẫn viên du lịch,10,Chuyến học tập doanh nghiệp với nhiều nhóm workshop,service,100000000,152692000,1000,3000,280,5,409837,143442,16394,250001,191394.28,1250005
+milk_tea,Tiệm trà sữa,1,Latte trà gạo rang tự rang và lọc,food,3000,3000,5,10,3,1,488,268,20,200,143.92,200
+milk_tea,Tiệm trà sữa,2,Trà sữa lá dứa ba tầng,food,9000,12000,12,30,7,1,976,536,40,400,287.84,400
+milk_tea,Tiệm trà sữa,3,Khay thử sáu ly trà nhài trái cây,food,30000,42000,25,70,14,2,1952,1073,79,800,575.62,1600
+milk_tea,Tiệm trà sữa,4,Trà sen hạt sen sên tại quầy,food,100000,142000,50,140,24,2,3659,2012,147,1500,1079.28,3000
+milk_tea,Tiệm trà sữa,5,Trà sữa mè đen rang xay,food,350000,492000,90,260,40,3,7318,4024,293,3001,2159.36,9003
+milk_tea,Tiệm trà sữa,6,Bộ trà hoa mộc nhĩ tuyết nấu riêng,food,1200000,1692000,150,450,65,3,19513,10732,781,8000,5756.08,24000
+milk_tea,Tiệm trà sữa,7,Quầy nếm ba dòng trà theo thứ tự hương,food,4000000,5692000,250,750,95,4,43903,24146,1757,18000,12951.24,72000
+milk_tea,Tiệm trà sữa,8,Đơn hai mươi ly gắn nhãn khẩu vị từng người,food,12000000,17692000,400,1200,140,4,97561,53658,3903,40000,28780.52,160000
+milk_tea,Tiệm trà sữa,9,Quầy trà sự kiện phục vụ theo ba lượt khách,food,35000000,52692000,650,1900,200,5,243903,134146,9757,100000,71951.24,500000
+milk_tea,Tiệm trà sữa,10,Hợp đồng quầy trà nhiều điểm với mẻ ủ và lịch giao riêng,food,100000000,152692000,1000,3000,280,5,609757,335366,24391,250000,179878.04,1250000
+restaurant,Quán mì cay,1,Mì miso mè rang xay tại bếp,food,3000,3000,5,10,3,1,488,268,20,200,143.92,200
+restaurant,Quán mì cay,2,Mì sườn bò hầm theo mẻ,food,9000,12000,12,30,7,1,976,536,40,400,287.84,400
+restaurant,Quán mì cay,3,Lẩu hải sản bốn người nấu theo lượt,food,30000,42000,25,70,14,2,1952,1073,79,800,575.62,1600
+restaurant,Quán mì cay,4,Mì vịt áp chảo với nước dùng riêng,food,100000,142000,50,140,24,2,3659,2012,147,1500,1079.28,3000
+restaurant,Quán mì cay,5,Mì nấm rừng nhiều lớp nước dùng,food,350000,492000,90,260,40,3,7318,4024,293,3001,2159.36,9003
+restaurant,Quán mì cay,6,Mì cà ri dừa với thịt gà nướng riêng,food,1200000,1692000,150,450,65,3,19513,10732,781,8000,5756.08,24000
+restaurant,Quán mì cay,7,Thực đơn nếm bốn món mì khẩu phần nhỏ,food,4000000,5692000,250,750,95,4,43903,24146,1757,18000,12951.24,72000
+restaurant,Quán mì cay,8,Bếp mì tiệc công ty phục vụ ba khung giờ,food,12000000,17692000,400,1200,140,4,97561,53658,3903,40000,28780.52,160000
+restaurant,Quán mì cay,9,Tiệc lẩu nhiều bàn có phiếu nguyên liệu riêng,food,35000000,52692000,650,1900,200,5,243903,134146,9757,100000,71951.24,500000
+restaurant,Quán mì cay,10,Hợp đồng bếp mì lưu động nhiều địa điểm và nghiệm thu từng ca,food,100000000,152692000,1000,3000,280,5,609757,335366,24391,250000,179878.04,1250000
+cafe_bakery,Tiệm bánh & cà phê,1,Espresso tonic rót hai tầng,food,3000,3000,5,10,3,1,488,268,20,200,143.92,200
+cafe_bakery,Tiệm bánh & cà phê,2,Hộp macaron hạt dẻ cười,food,9000,12000,12,30,7,1,976,536,40,400,287.84,400
+cafe_bakery,Tiệm bánh & cà phê,3,Bánh opera nhiều lớp theo đơn,food,30000,42000,25,70,14,2,1952,1073,79,800,575.62,1600
+cafe_bakery,Tiệm bánh & cà phê,4,Cold brew cam ủ và lọc theo mẻ,food,100000,142000,50,140,24,2,3659,2012,147,1500,1079.28,3000
+cafe_bakery,Tiệm bánh & cà phê,5,Bánh su vòng Paris-Brest nhân hạt,food,350000,492000,90,260,40,3,7318,4024,293,3001,2159.36,9003
+cafe_bakery,Tiệm bánh & cà phê,6,Bánh mille-feuille cán gấp nhiều lớp,food,1200000,1692000,150,450,65,3,19513,10732,781,8000,5756.08,24000
+cafe_bakery,Tiệm bánh & cà phê,7,Thực đơn thử cà phê kèm ba bánh mini,food,4000000,5692000,250,750,95,4,43903,24146,1757,18000,12951.24,72000
+cafe_bakery,Tiệm bánh & cà phê,8,Tháp bánh profiterole lắp theo sơ đồ,food,12000000,17692000,400,1200,140,4,97561,53658,3903,40000,28780.52,160000
+cafe_bakery,Tiệm bánh & cà phê,9,Tiệc trà chiều nhiều bàn có lịch ra bánh,food,35000000,52692000,650,1900,200,5,243903,134146,9757,100000,71951.24,500000
+cafe_bakery,Tiệm bánh & cà phê,10,Hợp đồng quầy cà phê và bánh nhiều ngày với giao mẻ theo giờ,food,100000000,152692000,1000,3000,280,5,609757,335366,24391,250000,179878.04,1250000
+florist,Tiệm hoa,1,Vòm kính hoa bảo quản khô,craft,3000,3000,5,10,3,1,435,217,18,200,146.98,200
+florist,Tiệm hoa,2,Mảng cây sống treo tường văn phòng,craft,9000,12000,12,30,7,1,870,435,35,400,293.9,400
+florist,Tiệm hoa,3,Cổng hoa đứng ghép mô-đun,craft,30000,42000,25,70,14,2,1740,870,70,800,587.8,1600
+florist,Tiệm hoa,4,Bức tranh hoa ép theo bố cục đặt riêng,craft,100000,142000,50,140,24,2,3261,1630,131,1500,1102.2,3000
+florist,Tiệm hoa,5,Vườn tiểu cảnh trong bình kín,craft,350000,492000,90,260,40,3,6522,3261,261,3000,2204.34,9000
+florist,Tiệm hoa,6,Đèn hoa khô có khung và dây điện mẫu,craft,1200000,1692000,150,450,65,3,17392,8696,696,8000,5878.24,24000
+florist,Tiệm hoa,7,Trần hoa treo theo bản đồ điểm neo,craft,4000000,5692000,250,750,95,4,39131,19565,1566,18000,13226.1,72000
+florist,Tiệm hoa,8,Trang trí tuyến lối vào bằng nhiều cụm hoa,craft,12000000,17692000,400,1200,140,4,86957,43478,3479,40000,29391.32,160000
+florist,Tiệm hoa,9,Không gian lễ hội thay hoa theo ba thời điểm,craft,35000000,52692000,650,1900,200,5,217392,108696,8696,100000,73478.24,500000
+florist,Tiệm hoa,10,Hợp đồng trang trí nhiều sảnh có thiết kế và nghiệm thu từng khu,craft,100000000,152692000,1000,3000,280,5,543479,271739,21740,250000,183695.66,1250000
+grocery,Tạp hóa đầu hẻm,1,Quầy chiết rót nước giặt cân bì và niêm nắp,retail,3000,3000,5,10,3,1,770,539,31,200,127.66,200
+grocery,Tạp hóa đầu hẻm,2,Hộp picnic lạnh đóng theo khẩu phần,retail,9000,12000,12,30,7,1,1539,1077,62,400,255.38,400
+grocery,Tạp hóa đầu hẻm,3,Bộ thực phẩm chuyển nhà đóng nhiều thùng,retail,30000,42000,25,70,14,2,3077,2153,124,800,510.82,1600
+grocery,Tạp hóa đầu hẻm,4,Gói cà phê hạt xay theo cỡ máy khách dùng,retail,100000,142000,50,140,24,2,5770,4039,231,1500,957.66,3000
+grocery,Tạp hóa đầu hẻm,5,Giỏ thực phẩm khô chia khẩu phần và nhãn lô,retail,350000,492000,90,260,40,3,11539,8077,462,3000,1915.38,9000
+grocery,Tạp hóa đầu hẻm,6,Trạm đóng gói giảm rác có đổi vỏ hoàn tiền,retail,1200000,1692000,150,450,65,3,30770,21539,1231,8000,5107.66,24000
+grocery,Tạp hóa đầu hẻm,7,Đơn tiếp tế phòng họp theo sơ đồ chỗ ngồi,retail,4000000,5692000,250,750,95,4,69231,48461,2770,18000,11492.34,72000
+grocery,Tạp hóa đầu hẻm,8,Hợp đồng hàng tuần cho bếp ăn với lịch giao lạnh,retail,12000000,17692000,400,1200,140,4,153847,107692,6154,40001,25539.28,160004
+grocery,Tạp hóa đầu hẻm,9,Đơn cứu trợ cộng đồng phân kiện theo hộ,retail,35000000,52692000,650,1900,200,5,384616,269231,15385,100000,63846.14,500000
+grocery,Tạp hóa đầu hẻm,10,Hợp đồng tiếp tế nhiều điểm có kiểm kê và đối soát theo đợt,retail,100000000,152692000,1000,3000,280,5,961539,673077,38462,250000,159615.38,1250000
+repair,Tiệm sửa đồ,1,Phục hồi bàn phím cơ và kiểm ma trận phím,craft,3000,3000,5,10,3,1,435,217,18,200,146.98,200
+repair,Tiệm sửa đồ,2,Hiệu chỉnh tay cầm trò chơi bị trôi cần,craft,9000,12000,12,30,7,1,870,435,35,400,293.9,400
+repair,Tiệm sửa đồ,3,Sửa máy may và cân mũi chỉ,craft,30000,42000,25,70,14,2,1740,870,70,800,587.8,1600
+repair,Tiệm sửa đồ,4,Đại tu cảm biến robot hút bụi,craft,100000,142000,50,140,24,2,3261,1630,131,1500,1102.2,3000
+repair,Tiệm sửa đồ,5,Sửa khẩu độ và căn chỉnh ống kính máy ảnh,craft,350000,492000,90,260,40,3,6522,3261,261,3000,2204.34,9000
+repair,Tiệm sửa đồ,6,Phục hồi hệ áp suất máy pha cà phê,craft,1200000,1692000,150,450,65,3,17392,8696,696,8000,5878.24,24000
+repair,Tiệm sửa đồ,7,Phục hồi ampli cổ và cân hai kênh,craft,4000000,5692000,250,750,95,4,39131,19565,1566,18000,13226.1,72000
+repair,Tiệm sửa đồ,8,Lắp phối hợp thiết bị phòng chiếu gia đình,craft,12000000,17692000,400,1200,140,4,86957,43478,3479,40000,29391.32,160000
+repair,Tiệm sửa đồ,9,Dự án phục hồi thiết bị phòng thu,craft,35000000,52692000,650,1900,200,5,217392,108696,8696,100000,73478.24,500000
+repair,Tiệm sửa đồ,10,Thay cụm quang máy chiếu và nghiệm thu hiệu chuẩn,craft,100000000,152692000,1000,3000,280,5,543479,271739,21740,250000,183695.66,1250000
+farm,Nông trại rau & gà,1,Nấm bào ngư trồng phôi nhiều đợt thu,craft,3000,3000,5,10,3,1,435,217,18,200,146.98,200
+farm,Nông trại rau & gà,2,Rau mầm thủy canh theo mật độ khay,craft,9000,12000,12,30,7,1,870,435,35,400,293.9,400
+farm,Nông trại rau & gà,3,Dưa lưới ghép gốc tuyển độ ngọt,craft,30000,42000,25,70,14,2,1740,870,70,800,587.8,1600
+farm,Nông trại rau & gà,4,Hoa ăn được thu và đóng hộp riêng,craft,100000,142000,50,140,24,2,3261,1630,131,1500,1102.2,3000
+farm,Nông trại rau & gà,5,Măng tây thu theo cỡ ngọn,craft,350000,492000,90,260,40,3,6522,3261,261,3000,2204.34,9000
+farm,Nông trại rau & gà,6,Vani thụ phấn và ủ quả theo lô,craft,1200000,1692000,150,450,65,3,17392,8696,696,8000,5878.24,24000
+farm,Nông trại rau & gà,7,Vườn trà lấy búp tuyển để chế biến theo mẻ,craft,4000000,5692000,250,750,95,4,39131,19565,1566,18000,13226.1,72000
+farm,Nông trại rau & gà,8,Hợp đồng hộp rau mùa vụ giao theo hộ gia đình,craft,12000000,17692000,400,1200,140,4,86957,43478,3479,40000,29391.32,160000
+farm,Nông trại rau & gà,9,Đơn nguyên liệu nhiều tuần cho bếp nhà hàng,craft,35000000,52692000,650,1900,200,5,217392,108696,8696,100000,73478.24,500000
+farm,Nông trại rau & gà,10,Dự án trang trại thử nghiệm nhiều khu với truy xuất từng lô,craft,100000000,152692000,1000,3000,280,5,543479,271739,21740,250000,183695.66,1250000
+delivery,Giao hàng,1,Giao hồ sơ niêm phong và mang bản ký về,service,3000,3000,5,10,3,1,328,114,14,200,153.16,200
+delivery,Giao hàng,2,Chuyển đồ may đo đi thử rồi hoàn trả,service,9000,12000,12,30,7,1,656,229,27,400,306.26,400
+delivery,Giao hàng,3,Bàn giao nhạc cụ thuê theo biên bản,service,30000,42000,25,70,14,2,1312,459,53,800,612.46,1600
+delivery,Giao hàng,4,Giao thực phẩm lạnh có nhật ký nhiệt độ,service,100000,142000,50,140,24,2,2460,861,99,1500,1148.34,3000
+delivery,Giao hàng,5,Giao bánh cưới theo khung giờ và hộp chống xóc,service,350000,492000,90,260,40,3,4919,1721,197,3001,2297.54,9003
+delivery,Giao hàng,6,Chuyển bộ gá triển lãm rồi thu hồi,service,1200000,1692000,150,450,65,3,13115,4590,525,8000,6124.6,24000
+delivery,Giao hàng,7,Tiếp tế vật tư sự kiện theo lịch,service,4000000,5692000,250,750,95,4,29509,10328,1181,18000,13780.32,72000
+delivery,Giao hàng,8,Luân chuyển thiết bị đoàn phim theo danh mục,service,12000000,17692000,400,1200,140,4,65574,22950,2623,40001,30623.8,160004
+delivery,Giao hàng,9,Giao nội thất mở cửa hàng theo từng đợt,service,35000000,52692000,650,1900,200,5,163935,57377,6558,100000,76557.38,500000
+delivery,Giao hàng,10,Chuyển hiện vật triển lãm và nghiệm thu sau mở kiện,service,100000000,152692000,1000,3000,280,5,409837,143442,16394,250001,191394.28,1250005
+homestay,Homestay nhỏ,1,Phòng làm việc dài ngày kèm màn hình và bộ lưu điện,service,3000,3000,5,10,3,1,328,114,14,200,153.16,200
+homestay,Homestay nhỏ,2,Gói lưu trú ngắm sao có bàn giao kính thiên văn,service,9000,12000,12,30,7,1,656,229,27,400,306.26,400
+homestay,Homestay nhỏ,3,Phòng sáng tác kèm giá vẽ và bộ vật liệu,service,30000,42000,25,70,14,2,1312,459,53,800,612.46,1600
+homestay,Homestay nhỏ,4,Cuối tuần workshop thủ công riêng,service,100000,142000,50,140,24,2,2460,861,99,1500,1148.34,3000
+homestay,Homestay nhỏ,5,Cuối tuần tìm hiểu gia phả có đặt phòng tư liệu,service,350000,492000,90,260,40,3,4919,1721,197,3001,2297.54,9003
+homestay,Homestay nhỏ,6,Trại xe đạp có khu giữ và vệ sinh thiết bị,service,1200000,1692000,150,450,65,3,13115,4590,525,8000,6124.6,24000
+homestay,Homestay nhỏ,7,Kỳ lưu trú viết sách có chia lịch phòng sáng tác,service,4000000,5692000,250,750,95,4,29509,10328,1181,18000,13780.32,72000
+homestay,Homestay nhỏ,8,Hợp đồng lưu trú và địa điểm cho đoàn phim nhỏ,service,12000000,17692000,400,1200,140,4,65574,22950,2623,40001,30623.8,160004
+homestay,Homestay nhỏ,9,Chuỗi workshop với giảng viên luân phiên,service,35000000,52692000,650,1900,200,5,163935,57377,6558,100000,76557.38,500000
+homestay,Homestay nhỏ,10,Thuê trọn khu nghỉ với lịch họp và sinh hoạt nhóm,service,100000000,152692000,1000,3000,280,5,409837,143442,16394,250001,191394.28,1250005
+pet_care,Chăm sóc thú cưng,1,Buổi làm quen chăm sóc theo tín hiệu tự nguyện,service,3000,3000,5,10,3,1,328,114,14,200,153.16,200
+pet_care,Chăm sóc thú cưng,2,Buổi tìm mùi có nhật ký cho chủ,service,9000,12000,12,30,7,1,656,229,27,400,306.26,400
+pet_care,Chăm sóc thú cưng,3,Khóa làm quen lồng vận chuyển,service,30000,42000,25,70,14,2,1312,459,53,800,612.46,1600
+pet_care,Chăm sóc thú cưng,4,Chải rụng lông chuyên biệt cho bộ lông hai lớp,service,100000,142000,50,140,24,2,2460,861,99,1500,1148.34,3000
+pet_care,Chăm sóc thú cưng,5,Thử dây đai và bàn giao kỹ năng đi dạo,service,350000,492000,90,260,40,3,4919,1721,197,3001,2297.54,9003
+pet_care,Chăm sóc thú cưng,6,Phòng leo trèo và giải trí riêng cho mèo,service,1200000,1692000,150,450,65,3,13115,4590,525,8000,6124.6,24000
+pet_care,Chăm sóc thú cưng,7,Lịch vận động nhẹ theo chỉ dẫn của chủ và bác sĩ thú y,service,4000000,5692000,250,750,95,4,29509,10328,1181,18000,13780.32,72000
+pet_care,Chăm sóc thú cưng,8,Thăm nhà hỗ trợ nhiều thú cưng làm quen nơi ở,service,12000000,17692000,400,1200,140,4,65574,22950,2623,40001,30623.8,160004
+pet_care,Chăm sóc thú cưng,9,Lưu trú trước chuyển nhà có chuẩn bị hồ sơ bàn giao,service,35000000,52692000,650,1900,200,5,163935,57377,6558,100000,76557.38,500000
+pet_care,Chăm sóc thú cưng,10,Phòng lưu trú dài ngày với hoạt động và báo cáo từng ngày,service,100000000,152692000,1000,3000,280,5,409837,143442,16394,250001,191394.28,1250005
+salon,Salon tóc,1,Cắt tạo dáng theo từng lọn tóc xoăn,service,3000,3000,5,10,3,1,328,114,14,200,153.16,200
+salon,Salon tóc,2,Tư vấn và tạo đường nét râu,service,9000,12000,12,30,7,1,656,229,27,400,306.26,400
+salon,Salon tóc,3,Cắt chỉnh và thử bộ tóc giả,service,30000,42000,25,70,14,2,1312,459,53,800,612.46,1600
+salon,Salon tóc,4,Nối tóc bằng miếng dán có sơ đồ lọn,service,100000,142000,50,140,24,2,2460,861,99,1500,1148.34,3000
+salon,Salon tóc,5,Đặt lọn nối phối màu riêng,service,350000,492000,90,260,40,3,4919,1721,197,3001,2297.54,9003
+salon,Salon tóc,6,Tạo kiểu tóc giả sân khấu có hồ sơ duy trì,service,1200000,1692000,150,450,65,3,13115,4590,525,8000,6124.6,24000
+salon,Salon tóc,7,Thiết kế kiểu tết bảo vệ tóc,service,4000000,5692000,250,750,95,4,29509,10328,1181,18000,13780.32,72000
+salon,Salon tóc,8,Giữ liên tục kiểu tóc cho buổi chụp tạp chí,service,12000000,17692000,400,1200,140,4,65574,22950,2623,40001,30623.8,160004
+salon,Salon tóc,9,Lịch thử và tạo kiểu ngày cưới cho cả nhóm,service,35000000,52692000,650,1900,200,5,163935,57377,6558,100000,76557.38,500000
+salon,Salon tóc,10,Đo và lắp bộ tóc cá nhân kèm lịch bảo dưỡng,service,100000000,152692000,1000,3000,280,5,409837,143442,16394,250001,191394.28,1250005
+corp_accounting,Kế toán doanh nghiệp,1,Truy nguyên vật liệu theo lệnh sản xuất,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+corp_accounting,Kế toán doanh nghiệp,2,Phân bổ giờ công theo trung tâm chi phí,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+corp_accounting,Kế toán doanh nghiệp,3,Tính phân bổ chi phí máy theo sản phẩm,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+corp_accounting,Kế toán doanh nghiệp,4,Đối chiếu chi phí sản phẩm dở dang,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+corp_accounting,Kế toán doanh nghiệp,5,Lập hồ sơ vốn hóa xây dựng dở dang,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+corp_accounting,Kế toán doanh nghiệp,6,Theo dõi tài sản theo bộ phận nghiệm thu,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+corp_accounting,Kế toán doanh nghiệp,7,Lập lịch thanh toán thuê theo quy tắc game,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+corp_accounting,Kế toán doanh nghiệp,8,Sửa dữ liệu nhập sổ bị từ chối,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+corp_accounting,Kế toán doanh nghiệp,9,Ánh xạ hệ thống tài khoản cũ sang mới,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+corp_accounting,Kế toán doanh nghiệp,10,Chạy thử và nghiệm thu chuyển hệ thống kế toán,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+tax_payroll,Thuế & tiền lương,1,Điều chỉnh lương theo ngày hiệu lực,fee,3000,3000,5,10,3,1,264,52,11,201,157.68,201
+tax_payroll,Thuế & tiền lương,2,Đối soát chênh lệch khấu trừ kỳ trước,fee,9000,12000,12,30,7,1,527,105,22,400,313.7,400
+tax_payroll,Thuế & tiền lương,3,Đối chiếu nghĩa vụ ngày phép có lương,fee,30000,42000,25,70,14,2,1053,210,43,800,627.4,1600
+tax_payroll,Thuế & tiền lương,4,Kiểm điều kiện phụ cấp theo hồ sơ duyệt,fee,100000,142000,50,140,24,2,1974,394,79,1501,1177.16,3002
+tax_payroll,Thuế & tiền lương,5,Phân bổ lương một người cho hai bộ phận,fee,350000,492000,90,260,40,3,3948,789,158,3001,2353.46,9003
+tax_payroll,Thuế & tiền lương,6,Gộp mã nhân sự trùng sau sáp nhập,fee,1200000,1692000,150,450,65,3,10527,2105,422,8000,6273.7,24000
+tax_payroll,Thuế & tiền lương,7,Quyết toán chênh lệch thưởng theo kết quả,fee,4000000,5692000,250,750,95,4,23685,4737,948,18000,14115.78,72000
+tax_payroll,Thuế & tiền lương,8,Nhập số lũy kế đầu kỳ cho bên tính lương mới,fee,12000000,17692000,400,1200,140,4,52632,10526,2106,40000,31368.44,160000
+tax_payroll,Thuế & tiền lương,9,So sánh hai lần chạy lương song song,fee,35000000,52692000,650,1900,200,5,131579,26315,5264,100000,78421.1,500000
+tax_payroll,Thuế & tiền lương,10,Bàn giao hoàn chỉnh hệ thống tính lương,fee,100000000,152692000,1000,3000,280,5,328948,65789,13158,250001,196053.46,1250005
+group_accounting,Kế toán tập đoàn,1,Lập bộ chứng từ đầu kỳ khi mua doanh nghiệp,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+group_accounting,Kế toán tập đoàn,2,Đối chiếu các khoản giá mua,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+group_accounting,Kế toán tập đoàn,3,Theo dõi điều chỉnh giá trị tài sản khi mua,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+group_accounting,Kế toán tập đoàn,4,Lập cầu nối lợi thế thương mại theo quy tắc game,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+group_accounting,Kế toán tập đoàn,5,Tính biến động vốn và NCI khi đổi tỷ lệ sở hữu,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+group_accounting,Kế toán tập đoàn,6,So sánh phạm vi hợp nhất khi mua từng bước,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+group_accounting,Kế toán tập đoàn,7,Đối chiếu ngày ngừng hợp nhất khi thoái vốn,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+group_accounting,Kế toán tập đoàn,8,Ánh xạ báo cáo lưu chuyển tiền của công ty con,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+group_accounting,Kế toán tập đoàn,9,Loại dòng tiền nội bộ trên sơ đồ tập đoàn,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+group_accounting,Kế toán tập đoàn,10,Hợp nhất lưu chuyển tiền và đối chiếu chênh lệch tỷ giá,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+clothing,Shop quần áo,1,Đầm dạ tiệc lụa nguyên chất chỉnh theo số đo,retail,3000,3000,5,10,3,1,770,539,31,200,127.66,200
+clothing,Shop quần áo,2,Tuxedo len may đo hai lần thử,retail,9000,12000,12,30,7,1,1539,1077,62,400,255.38,400
+clothing,Shop quần áo,3,Áo dài cưới thêu tay theo vị trí họa tiết,retail,30000,42000,25,70,14,2,3077,2153,124,800,510.82,1600
+clothing,Shop quần áo,4,Áo khoác cashmere dựng phom riêng,retail,100000,142000,50,140,24,2,5770,4039,231,1500,957.66,3000
+clothing,Shop quần áo,5,Đầm corset nhiều lớp có mẫu thử,retail,350000,492000,90,260,40,3,11539,8077,462,3000,1915.38,9000
+clothing,Shop quần áo,6,Bộ trang phục biểu diễn tháo ráp mô-đun,retail,1200000,1692000,150,450,65,3,30770,21539,1231,8000,5107.66,24000
+clothing,Shop quần áo,7,Bộ váy cưới nhiều phần có lịch thử và bàn giao,retail,4000000,5692000,250,750,95,4,69231,48461,2770,18000,11492.34,72000
+clothing,Shop quần áo,8,Bộ sưu tập giới hạn mười mẫu theo bảng vật liệu,retail,12000000,17692000,400,1200,140,4,153847,107692,6154,40001,25539.28,160004
+clothing,Shop quần áo,9,Đồng phục cao cấp cho đoàn theo hồ sơ từng người,retail,35000000,52692000,650,1900,200,5,384616,269231,15385,100000,63846.14,500000
+clothing,Shop quần áo,10,Hợp đồng thiết kế và may bộ sưu tập trình diễn nhiều đợt,retail,100000000,152692000,1000,3000,280,5,961539,673077,38462,250000,159615.38,1250000
+pet_shop,Shop thú cưng,1,Bộ kệ leo tường cho mèo lắp theo mặt bằng,retail,3000,3000,5,10,3,1,770,539,31,200,127.66,200
+pet_shop,Shop thú cưng,2,Bể thủy sinh bố cục đá và cây nhiều tầng,retail,9000,12000,12,30,7,1,1539,1077,62,400,255.38,400
+pet_shop,Shop thú cưng,3,Chuồng chim cảnh thiết kế vùng ăn và nghỉ,retail,30000,42000,25,70,14,2,3077,2153,124,800,510.82,1600
+pet_shop,Shop thú cưng,4,Trạm ăn chậm tùy chỉnh cho thú nhỏ,retail,100000,142000,50,140,24,2,5770,4039,231,1500,957.66,3000
+pet_shop,Shop thú cưng,5,Bộ vận chuyển thú cưng đo và lắp phụ kiện,retail,350000,492000,90,260,40,3,11539,8077,462,3000,1915.38,9000
+pet_shop,Shop thú cưng,6,Khu chơi trong nhà ghép mô-đun dễ vệ sinh,retail,1200000,1692000,150,450,65,3,30770,21539,1231,8000,5107.66,24000
+pet_shop,Shop thú cưng,7,Hợp đồng dựng góc sống cho ba hộ nhận nuôi,retail,4000000,5692000,250,750,95,4,69231,48461,2770,18000,11492.34,72000
+pet_shop,Shop thú cưng,8,Bể thủy sinh sảnh lớn với lịch bảo trì bàn giao,retail,12000000,17692000,400,1200,140,4,153847,107692,6154,40001,25539.28,160004
+pet_shop,Shop thú cưng,9,Không gian chăm sóc thú nhỏ cho trung tâm cộng đồng,retail,35000000,52692000,650,1900,200,5,384616,269231,15385,100000,63846.14,500000
+pet_shop,Shop thú cưng,10,Dự án lắp nhiều khu sinh hoạt thú cưng có nghiệm thu phúc lợi,retail,100000000,152692000,1000,3000,280,5,961539,673077,38462,250000,159615.38,1250000
+tra_da,Trà đá vỉa hè,1,Trà gừng sả nấu và lọc tại quán,food,3000,3000,5,10,3,1,488,268,20,200,143.92,200
+tra_da,Trà đá vỉa hè,2,Nước chanh muối pha từ hũ ghi ngày,food,9000,12000,12,30,7,1,976,536,40,400,287.84,400
+tra_da,Trà đá vỉa hè,3,Bình trà phục vụ buổi họp xóm,food,30000,42000,25,70,14,2,1952,1073,79,800,575.62,1600
+tra_da,Trà đá vỉa hè,4,Trà tắc mật ong chỉnh chua ngọt,food,100000,142000,50,140,24,2,3659,2012,147,1500,1079.28,3000
+tra_da,Trà đá vỉa hè,5,Nước me rang nấu theo mẻ,food,350000,492000,90,260,40,3,7318,4024,293,3001,2159.36,9003
+tra_da,Trà đá vỉa hè,6,Trà bưởi mật ong sơ chế vỏ riêng,food,1200000,1692000,150,450,65,3,19513,10732,781,8000,5756.08,24000
+tra_da,Trà đá vỉa hè,7,Bàn thử ba loại trà hương vườn,food,4000000,5692000,250,750,95,4,43903,24146,1757,18000,12951.24,72000
+tra_da,Trà đá vỉa hè,8,Quầy nước buổi sinh hoạt câu lạc bộ theo lượt,food,12000000,17692000,400,1200,140,4,97561,53658,3903,40000,28780.52,160000
+tra_da,Trà đá vỉa hè,9,Đơn nhiều bình giữ nhiệt phục vụ hội thao,food,35000000,52692000,650,1900,200,5,243903,134146,9757,100000,71951.24,500000
+tra_da,Trà đá vỉa hè,10,Hợp đồng quầy nước cộng đồng nhiều điểm với lịch tiếp bình,food,100000000,152692000,1000,3000,280,5,609757,335366,24391,250000,179878.04,1250000
+fruit,Bán trái cây,1,Hộp bưởi tách múi cân phần ăn được,retail,3000,3000,5,10,3,1,770,539,31,200,127.66,200
+fruit,Bán trái cây,2,Đĩa trái cây tỉa hình theo bố cục,retail,9000,12000,12,30,7,1,1539,1077,62,400,255.38,400
+fruit,Bán trái cây,3,Hộp nếm trái cây nhập lô có truy xuất,retail,30000,42000,25,70,14,2,3077,2153,124,800,510.82,1600
+fruit,Bán trái cây,4,Dâu phủ sô-cô-la canh nhiệt và đông mặt,retail,100000,142000,50,140,24,2,5770,4039,231,1500,957.66,3000
+fruit,Bán trái cây,5,Xoài sấy dẻo theo độ ẩm mẻ,retail,350000,492000,90,260,40,3,11539,8077,462,3000,1915.38,9000
+fruit,Bán trái cây,6,Mứt cam nguyên vỏ nấu theo độ sệt,retail,1200000,1692000,150,450,65,3,30770,21539,1231,8000,5107.66,24000
+fruit,Bán trái cây,7,Tháp trái cây nhiều tầng cố định lõi,retail,4000000,5692000,250,750,95,4,69231,48461,2770,18000,11492.34,72000
+fruit,Bán trái cây,8,Đơn hộp trái cây văn phòng theo tên từng người,retail,12000000,17692000,400,1200,140,4,153847,107692,6154,40001,25539.28,160004
+fruit,Bán trái cây,9,Bàn trái cây tiệc chia đợt bổ sung theo giờ,retail,35000000,52692000,650,1900,200,5,384616,269231,15385,100000,63846.14,500000
+fruit,Bán trái cây,10,Hợp đồng quầy trái cây nhiều sự kiện với lịch chín và kho lạnh,retail,100000000,152692000,1000,3000,280,5,961539,673077,38462,250000,159615.38,1250000
+garbage,Thu gom rác,1,Thu gom thiết bị điện tử theo lịch hẹn,service,3000,3000,5,10,3,1,328,114,14,200,153.16,200
+garbage,Thu gom rác,2,Tuyến phân loại chai thủy tinh nhà hàng theo màu,service,9000,12000,12,30,7,1,656,229,27,400,306.26,400
+garbage,Thu gom rác,3,Thu giấy bìa có cân và đóng kiện,service,30000,42000,25,70,14,2,1312,459,53,800,612.46,1600
+garbage,Thu gom rác,4,Hợp đồng kiểm chất lượng tái chế chung cư,service,100000,142000,50,140,24,2,2460,861,99,1500,1148.34,3000
+garbage,Thu gom rác,5,Trạm thu hồi và phân loại cốc dùng lại,service,350000,492000,90,260,40,3,4919,1721,197,3001,2297.54,9003
+garbage,Thu gom rác,6,Thu hồi nội thất trường học theo danh mục tái sử dụng,service,1200000,1692000,150,450,65,3,13115,4590,525,8000,6124.6,24000
+garbage,Thu gom rác,7,Tách rác hữu cơ chợ và bàn giao đơn vị xử lý,service,4000000,5692000,250,750,95,4,29509,10328,1181,18000,13780.32,72000
+garbage,Thu gom rác,8,Hợp đồng thu hồi bao bì tại địa điểm sự kiện,service,12000000,17692000,400,1200,140,4,65574,22950,2623,40001,30623.8,160004
+garbage,Thu gom rác,9,Kế hoạch chuyển rác sửa chữa của nhiều tòa nhà,service,35000000,52692000,650,1900,200,5,163935,57377,6558,100000,76557.38,500000
+garbage,Thu gom rác,10,Vận hành trạm rác lễ hội và đối soát khối lượng cuối ca,service,100000000,152692000,1000,3000,280,5,409837,143442,16394,250001,191394.28,1250005
+drain,Thông ống cống,1,Khảo sát đường ống có bản đồ và ảnh lỗi,service,3000,3000,5,10,3,1,328,114,14,200,153.16,200
+drain,Thông ống cống,2,Thay bẫy nước thoát sàn và kiểm mùi,service,9000,12000,12,30,7,1,656,229,27,400,306.26,400
+drain,Thông ống cống,3,Lắp giỏ lọc đường nước mưa,service,30000,42000,25,70,14,2,1312,459,53,800,612.46,1600
+drain,Thông ống cống,4,Hợp đồng bảo dưỡng bẫy mỡ,service,100000,142000,50,140,24,2,2460,861,99,1500,1148.34,3000
+drain,Thông ống cống,5,Kiểm cân dòng mạng ống thoát mái,service,350000,492000,90,260,40,3,4919,1721,197,3001,2297.54,9003
+drain,Thông ống cống,6,Cải tạo thoát nước quán ăn nhỏ,service,1200000,1692000,150,450,65,3,13115,4590,525,8000,6124.6,24000
+drain,Thông ống cống,7,Nghiệm thu tuyến chuyển hướng nước mưa sân trong,service,4000000,5692000,250,750,95,4,29509,10328,1181,18000,13780.32,72000
+drain,Thông ống cống,8,Bảo dưỡng trục thoát chung cư theo lịch từng hộ,service,12000000,17692000,400,1200,140,4,65574,22950,2623,40001,30623.8,160004
+drain,Thông ống cống,9,Đổi tuyến thoát nước nhà cổ với hạn chế tác động,service,35000000,52692000,650,1900,200,5,163935,57377,6558,100000,76557.38,500000
+drain,Thông ống cống,10,Lót phục hồi ống không đào mở và kiểm sau đóng rắn,service,100000000,152692000,1000,3000,280,5,409837,143442,16394,250001,191394.28,1250005
+homemaker,"Nội trợ, giúp việc nhà",1,Chuẩn bị bữa ăn năm ngày và đóng hộp ghi ngày,service,3000,3000,5,10,3,1,328,114,14,200,153.16,200
+homemaker,"Nội trợ, giúp việc nhà",2,Lập chu kỳ mua và kiểm hạn tủ thực phẩm,service,9000,12000,12,30,7,1,656,229,27,400,306.26,400
+homemaker,"Nội trợ, giúp việc nhà",3,Kiểm kê tủ áo và chuyển đồ theo mùa,service,30000,42000,25,70,14,2,1312,459,53,800,612.46,1600
+homemaker,"Nội trợ, giúp việc nhà",4,Sắp nhà mới theo kế hoạch chuyển vào,service,100000,142000,50,140,24,2,2460,861,99,1500,1148.34,3000
+homemaker,"Nội trợ, giúp việc nhà",5,Điều phối phòng và bữa ăn cho tuần có khách,service,350000,492000,90,260,40,3,4919,1721,197,3001,2297.54,9003
+homemaker,"Nội trợ, giúp việc nhà",6,Điều phối lịch thợ bảo dưỡng gia đình,service,1200000,1692000,150,450,65,3,13115,4590,525,8000,6124.6,24000
+homemaker,"Nội trợ, giúp việc nhà",7,Tổ chức kỳ nghỉ cho đại gia đình,service,4000000,5692000,250,750,95,4,29509,10328,1181,18000,13780.32,72000
+homemaker,"Nội trợ, giúp việc nhà",8,Lập kế hoạch bàn giao chăm sóc giữa hai gia đình,service,12000000,17692000,400,1200,140,4,65574,22950,2623,40001,30623.8,160004
+homemaker,"Nội trợ, giúp việc nhà",9,Mở và đóng nhà nghỉ theo mùa,service,35000000,52692000,650,1900,200,5,163935,57377,6558,100000,76557.38,500000
+homemaker,"Nội trợ, giúp việc nhà",10,Quản lý lịch việc nhà nhiều hộ và kiểm chất lượng,service,100000000,152692000,1000,3000,280,5,409837,143442,16394,250001,191394.28,1250005
+ice_cream,Bán kem,1,Sorbet xoài chanh dây cân độ ngọt,food,3000,3000,5,10,3,1,488,268,20,200,143.92,200
+ice_cream,Bán kem,2,Gelato hạt dẻ cười rang xay,food,9000,12000,12,30,7,1,976,536,40,400,287.84,400
+ice_cream,Bán kem,3,Semifreddo nhiều lớp đổ khuôn,food,30000,42000,25,70,14,2,1952,1073,79,800,575.62,1600
+ice_cream,Bán kem,4,Kem sữa chua việt quất tạo vân,food,100000,142000,50,140,24,2,3659,2012,147,1500,1079.28,3000
+ice_cream,Bán kem,5,Kem trà rang cuộn cùng bánh mỏng,food,350000,492000,90,260,40,3,7318,4024,293,3001,2159.36,9003
+ice_cream,Bán kem,6,Bánh kem lạnh nhiều tầng giữ đúng nhiệt,food,1200000,1692000,150,450,65,3,19513,10732,781,8000,5756.08,24000
+ice_cream,Bán kem,7,Khay nếm sáu vị tự làm cân khẩu phần,food,4000000,5692000,250,750,95,4,43903,24146,1757,18000,12951.24,72000
+ice_cream,Bán kem,8,Tháp kem mini cho tiệc sinh nhật theo giờ,food,12000000,17692000,400,1200,140,4,97561,53658,3903,40000,28780.52,160000
+ice_cream,Bán kem,9,Quầy kem sự kiện có hai trạm và lịch thay khay,food,35000000,52692000,650,1900,200,5,243903,134146,9757,100000,71951.24,500000
+ice_cream,Bán kem,10,Hợp đồng món tráng miệng đông lạnh nhiều ngày với chuỗi giao lạnh,food,100000000,152692000,1000,3000,280,5,609757,335366,24391,250000,179878.04,1250000
+nail,Làm móng,1,Tạo họa tiết mắt mèo bằng gel từ tính,service,3000,3000,5,10,3,1,328,114,14,200,153.16,200
+nail,Làm móng,2,Phủ bột chrome và khóa lớp hoàn thiện,service,9000,12000,12,30,7,1,656,229,27,400,306.26,400
+nail,Làm móng,3,Vẽ lớp màu nước trong trên móng,service,30000,42000,25,70,14,2,1312,459,53,800,612.46,1600
+nail,Làm móng,4,Đắp gel tạo cấu trúc bằng khuôn,service,100000,142000,50,140,24,2,2460,861,99,1500,1148.34,3000
+nail,Làm móng,5,Thiết kế họa tiết chìm và lớp trong bao phủ,service,350000,492000,90,260,40,3,4919,1721,197,3001,2297.54,9003
+nail,Làm móng,6,Lập thư viện móng thay đúng cỡ,service,1200000,1692000,150,450,65,3,13115,4590,525,8000,6124.6,24000
+nail,Làm móng,7,Thiết kế bộ móng từ buổi thử đến ngày sự kiện,service,4000000,5692000,250,750,95,4,29509,10328,1181,18000,13780.32,72000
+nail,Làm móng,8,Bộ móng thay nhanh cho biểu diễn sân khấu,service,12000000,17692000,400,1200,140,4,65574,22950,2623,40001,30623.8,160004
+nail,Làm móng,9,Bộ móng quà tặng cao cấp theo cỡ người nhận,service,35000000,52692000,650,1900,200,5,163935,57377,6558,100000,76557.38,500000
+nail,Làm móng,10,Đặt bộ móng tháo lắp riêng có duyệt mẫu và thử cỡ,service,100000000,152692000,1000,3000,280,5,409837,143442,16394,250001,191394.28,1250005
+pagoda,Thầy ở chùa,1,Dự tính suất bếp cộng đồng theo đăng ký,pagoda,0,0,5,10,3,0,0,0,0,0,0.0,0
+pagoda,Thầy ở chùa,2,Theo dõi hàng tặng trong kho bếp,pagoda,0,0,12,30,7,0,0,0,0,0,0.0,0
+pagoda,Thầy ở chùa,3,Lập lịch phát suất ăn thuận tiện cho người yếu sức,pagoda,0,0,25,70,14,0,0,0,0,0,0.0,0
+pagoda,Thầy ở chùa,4,Lập mục lục chuyện kể có sự đồng ý,pagoda,0,0,50,140,24,0,0,0,0,0,0.0,0
+pagoda,Thầy ở chùa,5,Kiểm kê hiện trạng hiện vật lâu năm,pagoda,0,0,90,260,40,0,0,0,0,0,0.0,0
+pagoda,Thầy ở chùa,6,Đối chiếu thông tin các bản kinh sách,pagoda,0,0,150,450,65,0,0,0,0,0,0.0,0
+pagoda,Thầy ở chùa,7,Số hóa tư liệu và kiểm tệp lưu,pagoda,0,0,250,750,95,0,0,0,0,0,0.0,0
+pagoda,Thầy ở chùa,8,Xếp ca tình nguyện viên điểm trú tạm,pagoda,0,0,400,1200,140,0,0,0,0,0,0.0,0
+pagoda,Thầy ở chùa,9,Bàn giao đồ dùng và hồ sơ gia đình an toàn,pagoda,0,0,650,1900,200,0,0,0,0,0,0.0,0
+pagoda,Thầy ở chùa,10,Điều phối điểm trú cộng đồng qua nhiều ngày,pagoda,0,0,1000,3000,280,0,0,0,0,0,0.0,0
+pho,Bán phở,1,Phở gà thả vườn với nồi nước dùng riêng,food,3000,3000,5,10,3,1,488,268,20,200,143.92,200
+pho,Bán phở,2,Phở bò sốt vang hầm kiểm độ mềm,food,9000,12000,12,30,7,1,976,536,40,400,287.84,400
+pho,Bán phở,3,Bộ phở tủy xương hai người phục vụ tại bàn,food,30000,42000,25,70,14,2,1952,1073,79,800,575.62,1600
+pho,Bán phở,4,Phở vịt quay tách da giòn và nước dùng,food,100000,142000,50,140,24,2,3659,2012,147,1500,1079.28,3000
+pho,Bán phở,5,Phở nấm chay ninh nhiều lớp rau củ,food,350000,492000,90,260,40,3,7318,4024,293,3001,2159.36,9003
+pho,Bán phở,6,Phở áp chảo giòn với sốt riêng,food,1200000,1692000,150,450,65,3,19513,10732,781,8000,5756.08,24000
+pho,Bán phở,7,Thực đơn nếm ba dòng phở cỡ nhỏ,food,4000000,5692000,250,750,95,4,43903,24146,1757,18000,12951.24,72000
+pho,Bán phở,8,Bàn phở gia đình nhiều phần cá nhân hóa,food,12000000,17692000,400,1200,140,4,97561,53658,3903,40000,28780.52,160000
+pho,Bán phở,9,Quầy phở tiệc phục vụ ba lượt có giữ nóng,food,35000000,52692000,650,1900,200,5,243903,134146,9757,100000,71951.24,500000
+pho,Bán phở,10,Hợp đồng bếp phở lưu động nhiều điểm và đối soát từng ca,food,100000000,152692000,1000,3000,280,5,609757,335366,24391,250000,179878.04,1250000
+com,Bán cơm,1,Cơm tấm gà nướng sả canh mặt da,food,3000,3000,5,10,3,1,488,268,20,200,143.92,200
+com,Bán cơm,2,Cơm niêu cá hồi kiểm lớp cháy,food,9000,12000,12,30,7,1,976,536,40,400,287.84,400
+com,Bán cơm,3,Sáu hộp bento văn phòng chia định lượng,food,30000,42000,25,70,14,2,1952,1073,79,800,575.62,1600
+com,Bán cơm,4,Cơm gà Hải Nam luộc và nấu nước dùng,food,100000,142000,50,140,24,2,3659,2012,147,1500,1079.28,3000
+com,Bán cơm,5,Cơm bò nướng sốt tiêu làm sốt tại chảo,food,350000,492000,90,260,40,3,7318,4024,293,3001,2159.36,9003
+com,Bán cơm,6,Cơm hải sản đút lò theo lớp,food,1200000,1692000,150,450,65,3,19513,10732,781,8000,5756.08,24000
+com,Bán cơm,7,Mâm cơm chay nấm nhiều món ra đồng thời,food,4000000,5692000,250,750,95,4,43903,24146,1757,18000,12951.24,72000
+com,Bán cơm,8,Đơn cơm sự kiện có ba thực đơn lựa chọn,food,12000000,17692000,400,1200,140,4,97561,53658,3903,40000,28780.52,160000
+com,Bán cơm,9,Tiệc cơm gia đình nhiều bàn ra món theo giờ,food,35000000,52692000,650,1900,200,5,243903,134146,9757,100000,71951.24,500000
+com,Bán cơm,10,Hợp đồng bếp cơm nhiều ngày với lịch nấu và bàn giao theo điểm,food,100000000,152692000,1000,3000,280,5,609757,335366,24391,250000,179878.04,1250000
+photobooth,Photobooth,1,Ảnh lưu niệm chuyển động qua tấm thấu kính,service,3000,3000,5,10,3,1,328,114,14,200,153.16,200
+photobooth,Photobooth,2,Bộ ảnh hồ sơ có bản kiểm kích thước,service,9000,12000,12,30,7,1,656,229,27,400,306.26,400
+photobooth,Photobooth,3,Thiệp lưu niệm ảnh phủ lớp trong,service,30000,42000,25,70,14,2,1312,459,53,800,612.46,1600
+photobooth,Photobooth,4,Đặt sách ảnh mini có duyệt trang,service,100000,142000,50,140,24,2,2460,861,99,1500,1148.34,3000
+photobooth,Photobooth,5,Sách lật ảnh chuyển động,service,350000,492000,90,260,40,3,4919,1721,197,3001,2297.54,9003
+photobooth,Photobooth,6,Bộ ba chân dung bồi khung giấy,service,1200000,1692000,150,450,65,3,13115,4590,525,8000,6124.6,24000
+photobooth,Photobooth,7,Sản xuất mẫu ảnh sự kiện đã duyệt nhận diện,service,4000000,5692000,250,750,95,4,29509,10328,1181,18000,13780.32,72000
+photobooth,Photobooth,8,Studio chân dung nhóm lưu động,service,12000000,17692000,400,1200,140,4,65574,22950,2623,40001,30623.8,160004
+photobooth,Photobooth,9,Sổ khách nhiều ngày có ảnh và quyền sử dụng rõ ràng,service,35000000,52692000,650,1900,200,5,163935,57377,6558,100000,76557.38,500000
+photobooth,Photobooth,10,Trạm chụp sự kiện lưu động có đối soát thiết bị và thành phẩm,service,100000000,152692000,1000,3000,280,5,409837,143442,16394,250001,191394.28,1250005
+giupviec,Giúp việc theo giờ,1,Giặt hút ghế bọc vải,service,3000,3000,5,10,3,1,328,114,14,200,153.16,200
+giupviec,Giúp việc theo giờ,2,Giặt hút bề mặt nệm và kiểm độ ẩm,service,9000,12000,12,30,7,1,656,229,27,400,306.26,400
+giupviec,Giúp việc theo giờ,3,Tháo rửa và lắp lại rèm lá,service,30000,42000,25,70,14,2,1312,459,53,800,612.46,1600
+giupviec,Giúp việc theo giờ,4,Vệ sinh bụi mịn sau sửa nhà,service,100000,142000,50,140,24,2,2460,861,99,1500,1148.34,3000
+giupviec,Giúp việc theo giờ,5,Thử và phủ bảo vệ sàn đá,service,350000,492000,90,260,40,3,4919,1721,197,3001,2297.54,9003
+giupviec,Giúp việc theo giờ,6,Lập lịch vệ sinh văn phòng nhỏ ngoài giờ,service,1200000,1692000,150,450,65,3,13115,4590,525,8000,6124.6,24000
+giupviec,Giúp việc theo giờ,7,Hợp đồng dọn phòng và thay vải nhà lưu trú ngắn ngày,service,4000000,5692000,250,750,95,4,29509,10328,1181,18000,13780.32,72000
+giupviec,Giúp việc theo giờ,8,Dự án sắp lại phòng học kỳ nghỉ,service,12000000,17692000,400,1200,140,4,65574,22950,2623,40001,30623.8,160004
+giupviec,Giúp việc theo giờ,9,Điều phối vệ sinh khi chuyển đồ từ kho vào nhà,service,35000000,52692000,650,1900,200,5,163935,57377,6558,100000,76557.38,500000
+giupviec,Giúp việc theo giờ,10,Dọn bàn giao nhiều căn hộ và nghiệm thu từng chủ nhà,service,100000000,152692000,1000,3000,280,5,409837,143442,16394,250001,191394.28,1250005
+naucom,Nấu cơm gia đình,1,Bữa sáng dim sum gói và hấp nhiều tầng,food,3000,3000,5,10,3,1,488,268,20,200,143.92,200
+naucom,Nấu cơm gia đình,2,Bữa ăn chuẩn bị sẵn ba ngày có nhãn bảo quản,food,9000,12000,12,30,7,1,976,536,40,400,287.84,400
+naucom,Nấu cơm gia đình,3,Tiệc tại nhà mười hai khách ra món theo lượt,food,30000,42000,25,70,14,2,1952,1073,79,800,575.62,1600
+naucom,Nấu cơm gia đình,4,Bữa mì tươi tự cán cho gia đình,food,100000,142000,50,140,24,2,3659,2012,147,1500,1079.28,3000
+naucom,Nấu cơm gia đình,5,Thực đơn nướng cuối tuần chia việc bếp và bàn,food,350000,492000,90,260,40,3,7318,4024,293,3001,2159.36,9003
+naucom,Nấu cơm gia đình,6,Bữa chay lễ với bốn món hấp và kho,food,1200000,1692000,150,450,65,3,19513,10732,781,8000,5756.08,24000
+naucom,Nấu cơm gia đình,7,Lớp nấu tại nhà kèm bữa ăn thực hành,food,4000000,5692000,250,750,95,4,43903,24146,1757,18000,12951.24,72000
+naucom,Nấu cơm gia đình,8,Hợp đồng bữa gia đình ba nhà theo lịch riêng,food,12000000,17692000,400,1200,140,4,97561,53658,3903,40000,28780.52,160000
+naucom,Nấu cơm gia đình,9,Tuần tiếp khách tại nhà với ngân sách từng bữa,food,35000000,52692000,650,1900,200,5,243903,134146,9757,100000,71951.24,500000
+naucom,Nấu cơm gia đình,10,Hợp đồng bếp gia đình dài ngày có sổ chợ và nghiệm thu từng buổi,food,100000000,152692000,1000,3000,280,5,609757,335366,24391,250000,179878.04,1250000
+babysitter,Bảo mẫu,1,Đón trẻ ở trường theo danh sách được phép,service,3000,3000,5,10,3,1,328,114,14,200,153.16,200
+babysitter,Bảo mẫu,2,Buổi sinh hoạt thư viện có người giám hộ đồng ý,service,9000,12000,12,30,7,1,656,229,27,400,306.26,400
+babysitter,Bảo mẫu,3,Chuẩn bị đồ và bàn giao trẻ trong chuyến đi,service,30000,42000,25,70,14,2,1312,459,53,800,612.46,1600
+babysitter,Bảo mẫu,4,Ca chăm anh chị em có lịch riêng từng bé,service,100000,142000,50,140,24,2,2460,861,99,1500,1148.34,3000
+babysitter,Bảo mẫu,5,Ngày thủ công với vật liệu theo độ tuổi,service,350000,492000,90,260,40,3,4919,1721,197,3001,2297.54,9003
+babysitter,Bảo mẫu,6,Kế hoạch giúp trẻ quen người chăm khi gia đình đi thăm,service,1200000,1692000,150,450,65,3,13115,4590,525,8000,6124.6,24000
+babysitter,Bảo mẫu,7,Chương trình sinh hoạt nhiều ngày trong kỳ nghỉ,service,4000000,5692000,250,750,95,4,29509,10328,1181,18000,13780.32,72000
+babysitter,Bảo mẫu,8,Lịch chăm trẻ cho buổi tổng duyệt và ngày cưới,service,12000000,17692000,400,1200,140,4,65574,22950,2623,40001,30623.8,160004
+babysitter,Bảo mẫu,9,Xếp ca nhóm chăm trẻ tại kỳ nghỉ gia đình,service,35000000,52692000,650,1900,200,5,163935,57377,6558,100000,76557.38,500000
+babysitter,Bảo mẫu,10,Phòng chăm trẻ sự kiện với xác minh từng lượt đón,service,100000000,152692000,1000,3000,280,5,409837,143442,16394,250001,191394.28,1250005
+library,Thư viện – Lưu trữ,1,Lập thông tin đồng ý cho tư liệu truyền khẩu,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+library,Thư viện – Lưu trữ,2,Gắn chủ đề từng đoạn ghi âm,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+library,Thư viện – Lưu trữ,3,Xuất mục lục theo quyền truy cập,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+library,Thư viện – Lưu trữ,4,So sánh bản chuyển định dạng tư liệu,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+library,Thư viện – Lưu trữ,5,Tiếp nhận tư liệu số có mã kiểm tệp,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+library,Thư viện – Lưu trữ,6,Khôi phục bản lưu bị lỗi,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+library,Thư viện – Lưu trữ,7,Theo dõi nguồn gốc và phiên bản bộ sưu tập,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+library,Thư viện – Lưu trữ,8,Lập bản đồ sách sẵn có giữa các thư viện,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+library,Thư viện – Lưu trữ,9,Đối soát chậm luân chuyển và gia hạn mượn,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+library,Thư viện – Lưu trữ,10,Điều phối dự án mượn liên thư viện,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+pilot,Phi công,1,Ghép pallet với vị trí trên bảng tải,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+pilot,Phi công,2,Kiểm giới hạn tải từng khoang,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+pilot,Phi công,3,Tính trọng tâm theo biểu đồ tàu bay game,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+pilot,Phi công,4,Điều chỉnh bảng tải khi đổi hàng và nhiên liệu,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+pilot,Phi công,5,Lập lịch nhiệm vụ tổ lái nhiều chặng,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+pilot,Phi công,6,Kiểm bộ dữ liệu điều phái sân bay xa,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+pilot,Phi công,7,Lập phương án gián đoạn bảo dưỡng giữa chặng,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+pilot,Phi công,8,Đánh dấu sai lệch trên bản ghi tiếp cận,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+pilot,Phi công,9,Thiết kế mục tiêu huấn luyện lại cho học viên,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+pilot,Phi công,10,Đánh giá và rút kinh nghiệm buổi bay mô phỏng,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+flight_attendant,Tiếp viên hàng không,1,Bàn giao xe phục vụ niêm phong,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+flight_attendant,Tiếp viên hàng không,2,Đối chiếu số lượng suất ăn đặc biệt,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+flight_attendant,Tiếp viên hàng không,3,Lập hồ sơ ngoại lệ nhiệt độ khoang bếp,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+flight_attendant,Tiếp viên hàng không,4,Bàn giao lỗi cabin qua nhiều chặng,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+flight_attendant,Tiếp viên hàng không,5,Lập phương án hỗ trợ lỡ chuyến nối,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+flight_attendant,Tiếp viên hàng không,6,Điều phối bàn giao khách cần hỗ trợ di chuyển,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+flight_attendant,Tiếp viên hàng không,7,Phân công người và vật tư cabin,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+flight_attendant,Tiếp viên hàng không,8,Đánh giá buổi phổ biến nhiệm vụ của học viên,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+flight_attendant,Tiếp viên hàng không,9,Đánh giá phân vai trong diễn tập thoát hiểm,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+flight_attendant,Tiếp viên hàng không,10,Hướng dẫn và tổng kết buổi mô phỏng cabin,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+oil,Thợ dầu khí,1,Lập đường cơ sở rung của bơm,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+oil,Thợ dầu khí,2,Phân biệt lỗi cảm biến và xu hướng hỏng máy,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+oil,Thợ dầu khí,3,Lập hồ sơ xu hướng mẫu dầu bôi trơn,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+oil,Thợ dầu khí,4,Xếp ưu tiên bảo dưỡng theo bằng chứng,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+oil,Thợ dầu khí,5,Tối ưu kho phụ tùng thiết yếu,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+oil,Thợ dầu khí,6,Lập dự phòng khi phụ tùng giao chậm,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+oil,Thợ dầu khí,7,Vẽ quan hệ công việc dùng chung điểm cô lập,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+oil,Thợ dầu khí,8,Tìm xung đột nhân lực và giấy phép,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+oil,Thợ dầu khí,9,Kiểm bàn giao từng giai đoạn dừng máy,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+oil,Thợ dầu khí,10,Điều phối dự án dừng giàn bảo dưỡng,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+hr_admin,Hành chính – Nhân sự,1,Hồ sơ nhận việc liên kết đầy đủ bàn giao,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+hr_admin,Hành chính – Nhân sự,2,Bộ bằng chứng đánh giá thử việc,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+hr_admin,Hành chính – Nhân sự,3,Đối soát đăng ký và hoàn thành đào tạo,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+hr_admin,Hành chính – Nhân sự,4,Đối soát đăng ký phúc lợi nhân viên,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+hr_admin,Hành chính – Nhân sự,5,Hồ sơ bàn giao điều chuyển nội bộ,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+hr_admin,Hành chính – Nhân sự,6,Ma trận kỹ năng có bằng chứng xác thực,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+hr_admin,Hành chính – Nhân sự,7,Tiếp nhận nhóm nhân sự thời vụ,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+hr_admin,Hành chính – Nhân sự,8,Triển khai chính sách và xác nhận tại cơ sở mới,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+hr_admin,Hành chính – Nhân sự,9,Dự án chuyển chương trình phúc lợi giữa các đơn vị,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+hr_admin,Hành chính – Nhân sự,10,Triển khai nhân sự nhiều cơ sở có quản lý nghiệm thu,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+secretary,Thư ký giám đốc,1,Biên soạn bộ tài liệu họp có kiểm phiên bản,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+secretary,Thư ký giám đốc,2,Hồ sơ luân chuyển phê duyệt có lịch sử thay đổi,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+secretary,Thư ký giám đốc,3,Bộ quy trình đón đoàn khách,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+secretary,Thư ký giám đốc,4,Điều phối chuyến công tác lãnh đạo,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+secretary,Thư ký giám đốc,5,Theo dõi việc từ biên bản đến bằng chứng hoàn tất,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+secretary,Thư ký giám đốc,6,Điều phối họp nhà cung cấp và đánh giá mẫu,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+secretary,Thư ký giám đốc,7,Lịch lãnh đạo năm có rà soát công việc phụ thuộc,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+secretary,Thư ký giám đốc,8,Điều phối lịch và tài liệu đoàn khách quốc tế,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+secretary,Thư ký giám đốc,9,Thư ký hội nghị qua nhiều địa điểm,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+secretary,Thư ký giám đốc,10,Điều hành hồ sơ đại hội và theo dõi thực hiện nghị quyết,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+it_helpdesk,IT hỗ trợ,1,Phục hồi bản sao lưu trong môi trường thử và nghiệm thu,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+it_helpdesk,IT hỗ trợ,2,Triển khai cấu hình máy in đã được duyệt,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+it_helpdesk,IT hỗ trợ,3,Nghiệm thu âm thanh hình ảnh phòng họp,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+it_helpdesk,IT hỗ trợ,4,Triển khai thiết bị theo danh mục và cấu hình chuẩn,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+it_helpdesk,IT hỗ trợ,5,Chuyển quyền truy cập thư mục dùng chung,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+it_helpdesk,IT hỗ trợ,6,Đợt hỗ trợ đăng ký xác thực nhiều yếu tố,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+it_helpdesk,IT hỗ trợ,7,Nghiệm thu mạng và tài sản cơ sở mới,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+it_helpdesk,IT hỗ trợ,8,Chuyển nền tảng văn phòng có diễn tập khôi phục,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+it_helpdesk,IT hỗ trợ,9,Dự án hợp nhất môi trường làm việc sau sáp nhập,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+it_helpdesk,IT hỗ trợ,10,Chuyển hệ thống văn phòng có kiểm trước và sau thời điểm đổi,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+railway,Gác chắn đường sắt,1,Báo cáo xu hướng thời gian vận hành chắn,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+railway,Gác chắn đường sắt,2,Gộp báo cáo trùng của cùng lỗi,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+railway,Gác chắn đường sắt,3,Kiểm mẫu bằng chứng kiểm tra đường ngang,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+railway,Gác chắn đường sắt,4,Lập ưu tiên bảo dưỡng phòng ngừa,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+railway,Gác chắn đường sắt,5,Lập cửa sổ thi công theo lịch tàu game,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+railway,Gác chắn đường sắt,6,Đối chiếu xác nhận bàn giao khu vực thi công,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+railway,Gác chắn đường sắt,7,Lập phương án liên lạc khi hai chắn gặp sự cố,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+railway,Gác chắn đường sắt,8,Diễn tập bố trí người trực thay thế,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+railway,Gác chắn đường sắt,9,Giải quyết thông báo cho phép mở lại mâu thuẫn,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+railway,Gác chắn đường sắt,10,Diễn tập khôi phục nhiều đường ngang,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+nurse,Điều dưỡng,1,Bàn giao các việc chăm sóc còn chờ,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+nurse,Điều dưỡng,2,Phân công người theo dõi kết quả xét nghiệm,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+nurse,Điều dưỡng,3,Đối chiếu việc thiếu trong kế hoạch chăm sóc,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+nurse,Điều dưỡng,4,Kiểm bàn giao tư trang và giấy đồng ý,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+nurse,Điều dưỡng,5,Kiểm mẫu quy trình phòng nhiễm khuẩn khoa,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+nurse,Điều dưỡng,6,Đánh giá lại sau đợt cải thiện quy trình,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+nurse,Điều dưỡng,7,Lập kế hoạch thiết bị khi về nhà,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+nurse,Điều dưỡng,8,Xếp buổi hướng dẫn người chăm sóc,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+nurse,Điều dưỡng,9,Điều phối hẹn chuyển tiếp và nguồn lực,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+nurse,Điều dưỡng,10,Điều phối hội ý ra viện nhiều bên,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+lighthouse,Gác hải đăng,1,Kiểm kê tải của nguồn điện dự phòng,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+lighthouse,Gác hải đăng,2,Tính thời gian duy trì của bộ pin game,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+lighthouse,Gác hải đăng,3,Xếp thứ tự bảo dưỡng giữ đủ điện dự trữ,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+lighthouse,Gác hải đăng,4,Đối chiếu dữ liệu cảm biến từ xa,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+lighthouse,Gác hải đăng,5,Khảo sát xu hướng hiệu quả quang học,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+lighthouse,Gác hải đăng,6,Phân biệt suy giảm do thời tiết và thiết bị,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+lighthouse,Gác hải đăng,7,Lập bản đồ vùng ảnh hưởng khi đèn lân cận ngừng,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+lighthouse,Gác hải đăng,8,Theo dõi xác nhận thông báo của cơ quan quản lý,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+lighthouse,Gác hải đăng,9,Kiểm xác nhận khôi phục nhiều trạm,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+lighthouse,Gác hải đăng,10,Diễn tập duy trì hệ thống đèn khu vực,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+rescue,Tổng đài cứu hộ,1,Liên kết nhiều cuộc gọi về cùng sự cố,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+rescue,Tổng đài cứu hộ,2,Tách hai sự cố gần nhau bị gộp nhầm,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+rescue,Tổng đài cứu hộ,3,Gộp bằng chứng nguy hiểm từ nhiều người gọi,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+rescue,Tổng đài cứu hộ,4,Kiểm lịch sử sửa mã sự cố,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+rescue,Tổng đài cứu hộ,5,Điều phối bảng đơn vị hỗ trợ liên vùng,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+rescue,Tổng đài cứu hộ,6,Đối chiếu xác nhận tới nơi và bàn giao liên ngành,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+rescue,Tổng đài cứu hộ,7,Dự tính thời điểm đơn vị sẵn sàng trở lại,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+rescue,Tổng đài cứu hộ,8,Đồng bộ sổ điều phối khi dùng kênh dự phòng,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+rescue,Tổng đài cứu hộ,9,Giải quyết cập nhật muộn trái nhau,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+rescue,Tổng đài cứu hộ,10,Diễn tập khôi phục sau mất liên lạc,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+lifeguard,Cứu hộ hồ bơi,1,Lập buổi bơi thuận tiện cho nhiều nhu cầu,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+lifeguard,Cứu hộ hồ bơi,2,Phân bổ người hỗ trợ và chỗ nghỉ,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+lifeguard,Cứu hộ hồ bơi,3,Đánh giá sẵn sàng buổi bơi hòa nhập,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+lifeguard,Cứu hộ hồ bơi,4,Lập bản đồ điểm khuất tầm nhìn,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+lifeguard,Cứu hộ hồ bơi,5,Lập phương án trực an toàn sự kiện bơi,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+lifeguard,Cứu hộ hồ bơi,6,Xếp ca thay phiên giữ đủ vùng quan sát,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+lifeguard,Cứu hộ hồ bơi,7,Phân tích dòng thời gian sự cố suýt xảy ra,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+lifeguard,Cứu hộ hồ bơi,8,Đối chiếu bằng chứng thiết bị và đám đông,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+lifeguard,Cứu hộ hồ bơi,9,Kiểm lại sau thay đổi phòng ngừa,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+lifeguard,Cứu hộ hồ bơi,10,Thực hiện dự án cải thiện an toàn toàn hồ,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+police,Công an phường,1,Kiểm kê vật chứng theo mã niêm phong,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+police,Công an phường,2,Đối chiếu quyền tiếp cận vật chứng,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+police,Công an phường,3,Báo cấp phụ trách khi chuỗi bàn giao bị đứt,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+police,Công an phường,4,Lập lối đi sự kiện có hỗ trợ tiếp cận,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+police,Công an phường,5,Lập phương án an toàn và đầu mối sự kiện,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+police,Công an phường,6,Diễn tập xử lý lối thoát bị chặn,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+police,Công an phường,7,Ghép dấu hiệu đã kiểm chứng trong tin báo ẩn danh,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+police,Công an phường,8,Phân biệt trùng hợp và bằng chứng củng cố,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+police,Công an phường,9,Kiểm trường hợp liên kết sai giữa hồ sơ,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+police,Công an phường,10,Lập hồ sơ dấu hiệu lừa đảo trình người phụ trách,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+zpop,Bán album ZPOP,1,Khung trưng bày album dùng vật liệu lưu trữ,retail,3000,3000,5,10,3,1,770,539,31,200,127.66,200
+zpop,Bán album ZPOP,2,Hộp vinyl đánh số kiểm bản ép,retail,9000,12000,12,30,7,1,1539,1077,62,400,255.38,400
+zpop,Bán album ZPOP,3,Đơn nhóm fan chia kiện theo tên thành viên,retail,30000,42000,25,70,14,2,3077,2153,124,800,510.82,1600
+zpop,Bán album ZPOP,4,Túi đựng lightstick may theo kích thước,retail,100000,142000,50,140,24,2,5770,4039,231,1500,957.66,3000
+zpop,Bán album ZPOP,5,Bộ trưng bày photocard kiểm đủ thẻ và chống xước,retail,350000,492000,90,260,40,3,11539,8077,462,3000,1915.38,9000
+zpop,Bán album ZPOP,6,Gói phục hồi bao bì lưu niệm có biên bản hiện trạng,retail,1200000,1692000,150,450,65,3,30770,21539,1231,8000,5107.66,24000
+zpop,Bán album ZPOP,7,Gian trưng bày bộ sưu tập theo chủ đề album,retail,4000000,5692000,250,750,95,4,69231,48461,2770,18000,11492.34,72000
+zpop,Bán album ZPOP,8,Quầy nhận hàng concert chia giờ và đối soát mã,retail,12000000,17692000,400,1200,140,4,153847,107692,6154,40001,25539.28,160004
+zpop,Bán album ZPOP,9,Cửa hàng pop-up nhiều ngày phân bổ phiên bản theo hạn mức,retail,35000000,52692000,650,1900,200,5,384616,269231,15385,100000,63846.14,500000
+zpop,Bán album ZPOP,10,Hợp đồng triển lãm bộ sưu tập fan nhiều khu có mượn trả và kiểm kê,retail,100000000,152692000,1000,3000,280,5,961539,673077,38462,250000,159615.38,1250000
+art_studio,Xưởng vẽ,1,Bản in khắc cao su đánh số phiên bản,craft,3000,3000,5,10,3,1,435,217,18,200,146.98,200
+art_studio,Xưởng vẽ,2,Tranh trang trí dát lá vàng kiểm bề mặt,craft,9000,12000,12,30,7,1,870,435,35,400,293.9,400
+art_studio,Xưởng vẽ,3,Tấm kính màu ghép theo mẫu đặt riêng,craft,30000,42000,25,70,14,2,1740,870,70,800,587.8,1600
+art_studio,Xưởng vẽ,4,Tranh sơn dầu nhiều lớp có lịch khô,craft,100000,142000,50,140,24,2,3261,1630,131,1500,1102.2,3000
+art_studio,Xưởng vẽ,5,Tranh ghép gốm mosaic theo lưới màu,craft,350000,492000,90,260,40,3,6522,3261,261,3000,2204.34,9000
+art_studio,Xưởng vẽ,6,Tác phẩm dệt len theo sơ đồ mảng,craft,1200000,1692000,150,450,65,3,17392,8696,696,8000,5878.24,24000
+art_studio,Xưởng vẽ,7,Bộ tranh động cơ học quay tay có thử chuyển động,craft,4000000,5692000,250,750,95,4,39131,19565,1566,18000,13226.1,72000
+art_studio,Xưởng vẽ,8,Sách nghệ thuật thủ công nhiều trang đóng gáy,craft,12000000,17692000,400,1200,140,4,86957,43478,3479,40000,29391.32,160000
+art_studio,Xưởng vẽ,9,Không gian nghệ thuật tương tác nhiều trạm theo bản thiết kế,craft,35000000,52692000,650,1900,200,5,217392,108696,8696,100000,73478.24,500000
+art_studio,Xưởng vẽ,10,Hợp đồng sắp đặt nghệ thuật nhiều khu với chế tác và nghiệm thu từng phần,craft,100000000,152692000,1000,3000,280,5,543479,271739,21740,250000,183695.66,1250000
+lawyer,Luật sư,1,So sánh điều khoản giữa các bản hợp đồng,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+lawyer,Luật sư,2,Sửa mâu thuẫn thuật ngữ và dẫn chiếu,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+lawyer,Luật sư,3,Lập sơ đồ nghĩa vụ theo mốc hợp đồng,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+lawyer,Luật sư,4,Lập sổ nguồn chứng minh quyền cho phép,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+lawyer,Luật sư,5,Lập hồ sơ chuỗi quyền cấp phép,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+lawyer,Luật sư,6,Báo cáo ngoại lệ trong phạm vi được cấp phép,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+lawyer,Luật sư,7,Vẽ quan hệ nghĩa vụ của nhiều bên,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+lawyer,Luật sư,8,Theo dõi bằng chứng thực hiện thỏa thuận,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+lawyer,Luật sư,9,Đối chiếu điều kiện giải trừ nghĩa vụ,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+lawyer,Luật sư,10,Lập kế hoạch thực hiện thỏa thuận nhiều bên,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
+laundry,Giặt ủi,1,Chăm sóc vest có giữ cấu trúc,service,3000,3000,5,10,3,1,328,114,14,200,153.16,200
+laundry,Giặt ủi,2,Giữ nếp trang phục xếp ly,service,9000,12000,12,30,7,1,656,229,27,400,306.26,400
+laundry,Giặt ủi,3,Phục hồi chống thấm áo kỹ thuật theo nhãn,service,30000,42000,25,70,14,2,1312,459,53,800,612.46,1600
+laundry,Giặt ủi,4,Phục hồi túi ngủ lông vũ,service,100000,142000,50,140,24,2,2460,861,99,1500,1148.34,3000
+laundry,Giặt ủi,5,Điều phối xử lý đồ vải có chi tiết da,service,350000,492000,90,260,40,3,4919,1721,197,3001,2297.54,9003
+laundry,Giặt ủi,6,Hồ sơ tình trạng và chăm phục trang sân khấu,service,1200000,1692000,150,450,65,3,13115,4590,525,8000,6124.6,24000
+laundry,Giặt ủi,7,Hợp đồng đồng phục cửa hàng từ nhận đến trả,service,4000000,5692000,250,750,95,4,29509,10328,1181,18000,13780.32,72000
+laundry,Giặt ủi,8,Điều phối làm sạch đồ vải cho mượn trưng bày,service,12000000,17692000,400,1200,140,4,65574,22950,2623,40001,30623.8,160004
+laundry,Giặt ủi,9,Dự án phục hồi và cất giữ trang phục cưới,service,35000000,52692000,650,1900,200,5,163935,57377,6558,100000,76557.38,500000
+laundry,Giặt ủi,10,Bảo quản váy cưới đính hạt có biên bản kiểm kê,service,100000000,152692000,1000,3000,280,5,409837,143442,16394,250001,191394.28,1250005
+post_office,Bưu điện,1,Ghép biên nhận thu hộ với mã kiện,salary,3000,3000,5,10,3,1,200,0,0,200,160.0,200
+post_office,Bưu điện,2,Đối soát tiền thu hộ khi hoàn một phần,salary,9000,12000,12,30,7,1,400,0,0,400,320.0,400
+post_office,Bưu điện,3,Lập hồ sơ ngoại lệ chuyển tiền người gửi,salary,30000,42000,25,70,14,2,800,0,0,800,640.0,1600
+post_office,Bưu điện,4,Kiểm giấy tờ theo điểm đến hư cấu,salary,100000,142000,50,140,24,2,1500,0,0,1500,1200.0,3000
+post_office,Bưu điện,5,Đối chiếu nội dung khai báo và hồ sơ,salary,350000,492000,90,260,40,3,3000,0,0,3000,2400.0,9000
+post_office,Bưu điện,6,Lập bằng chứng bàn giao tuyến quốc tế game,salary,1200000,1692000,150,450,65,3,8000,0,0,8000,6400.0,24000
+post_office,Bưu điện,7,Lập thứ tự xử lý kiện trên tuyến gián đoạn,salary,4000000,5692000,250,750,95,4,18000,0,0,18000,14400.0,72000
+post_office,Bưu điện,8,Phân tuyến thay thế theo sức chứa,salary,12000000,17692000,400,1200,140,4,40000,0,0,40000,32000.0,160000
+post_office,Bưu điện,9,Đối soát bằng chứng giao hàng đến muộn,salary,35000000,52692000,650,1900,200,5,100000,0,0,100000,80000.0,500000
+post_office,Bưu điện,10,Điều phối và khép hồ sơ phục hồi tuyến,salary,100000000,152692000,1000,3000,280,5,250000,0,0,250000,200000.0,1250000
