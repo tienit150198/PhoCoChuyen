@@ -175,6 +175,30 @@ def test_resources_need_crew_distinct_and_lock_prevents_mutations():
     resources.validate(c,'grocery')
 
 
+def test_repeated_skill_template_creates_fifty_distinct_recruits():
+    from game import operations
+    s,c=fixture_state(tier=8)
+    legacy=copy.deepcopy(c['ops']['staff'])
+    template_name=operations.PEOPLE['grocery'][0][0]
+    for _ in range(50):
+        act(s,c,'scale_crew_hire',candidate=0)
+    crew=c['scale']['crew']
+    assert len({x['name'] for x in crew})==50
+    assert len({x['id'] for x in crew})==50
+    assert all(x['name']!=template_name and 'tuyển mới' in x['name'] for x in crew)
+    assert c['ops']['staff']==legacy
+    resources.validate(c,'grocery')
+    original_name=crew[0]['name']
+    act(s,c,'scale_crew_fire',crew=crew[0]['id'])
+    act(s,c,'scale_crew_hire',candidate=0)
+    assert c['scale']['crew'][-1]['name']!=original_name
+    assert '#51' in c['scale']['crew'][-1]['name']
+    view=resources.public(c,'grocery')
+    hire=next(x for x in view['actions'] if x['command']=='scale_crew_hire')
+    assert 'mẫu kỹ năng' in hire['label'] and 'Tuyển người mới' in hire['label']
+    resources.validate(c,'grocery')
+
+
 def test_shared_slots_count_business_only_and_chain_cert():
     s, c = fixture_state(tier=5)
     act(s,c,'scale_crew_hire',candidate=0)

@@ -37,6 +37,12 @@ def ensure(c, cid):
     return r
 
 
+def recruit_name(cid, candidate, serial):
+    """A generated recruit, never the canonical NPC whose skills are a template."""
+    roles = content.profile(cid).roles
+    return f'{roles[candidate % len(roles)]} #{serial} · tuyển mới'
+
+
 def candidates(c, cid):
     from . import operations
     r = c['scale']; p = content.profile(cid)
@@ -45,7 +51,8 @@ def candidates(c, cid):
     quote = content.quote(cid, r['tier'])
     # A one-time onboarding fee, distinct from recurring wages included in each quote.
     fee = max(1, math.ceil(quote['wages'] / quote['resources'])) if p.kind == 'business' else 0
-    return [dict(candidate=i, name=n, role=p.roles[i % len(p.roles)],
+    return [dict(candidate=i, name=recruit_name(cid, i, r['next_crew']), template_name=n,
+                 role=p.roles[i % len(p.roles)],
                  precision=precision, speed=speed, fee=fee,
                  wage=fee if p.kind == 'business' else 0)
             for i, (n, _role, _bio, speed, precision) in enumerate(operations.PEOPLE[cid])]
@@ -97,7 +104,7 @@ def public(c, cid):
     actions = []
     if r['tier']:
         for x in candidates(c, cid):
-            actions.append(_action('scale_crew_hire', f'Mời {x["name"]} · {x["role"]} · phí {x["fee"]:,} xu', rev,
+            actions.append(_action('scale_crew_hire', f'Tuyển người mới · {x["name"]} · mẫu kỹ năng {x["template_name"]} · phí {x["fee"]:,} xu', rev,
                                    dict(candidate=x['candidate']), reason='Đã đủ đội ngũ.' if len(r['crew']) >= len(r['resources']) else ''))
         for x in free:
             actions.append(_action('scale_crew_fire', f'Kết thúc phân công {x["name"]}', rev, dict(crew=x['id'])))
@@ -162,8 +169,9 @@ def validate(c, cid):
         _need(type(x['id']) is str and re.fullmatch(rf'scale-{cid}-crew-[1-9][0-9]{{0,8}}',x['id']))
         _need(type(x['candidate']) is int and 0<=x['candidate']<4)
         from . import operations
-        n,_,_,speed,precision=operations.PEOPLE[cid][x['candidate']]
-        _need(x['name']==n and x['role']==p.roles[x['candidate']%len(p.roles)]
+        _,_,_,speed,precision=operations.PEOPLE[cid][x['candidate']]
+        serial=int(x['id'].rsplit('-',1)[1])
+        _need(x['name']==recruit_name(cid,x['candidate'],serial) and x['role']==p.roles[x['candidate']%len(p.roles)]
               and type(x['precision']) is int and x['precision']==precision
               and type(x['speed']) is int and x['speed']==speed
               and type(x['wage']) is int and 0<=x['wage']<=10**9)

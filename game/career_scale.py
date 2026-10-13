@@ -187,6 +187,7 @@ def action(s,c,cid,name,p,now=None):
         _need(0<=p['candidate']<len(candidates),'Không tìm thấy ứng viên.')
         _need(len(r['crew'])<len(r['resources']),'Đã đủ nhân sự cho tổng vị trí quy mô.')
         chosen=dict(candidates[p['candidate']]); fee=chosen.pop('fee')
+        chosen.pop('template_name')
         chosen['id']=f'scale-{cid}-crew-{r["next_crew"]}'
         r['next_crew']+=1; r['crew'].append(chosen)
         label=f'Tiếp nhận đội ngũ: {chosen["name"]}'
