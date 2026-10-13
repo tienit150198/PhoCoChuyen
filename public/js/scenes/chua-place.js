@@ -237,6 +237,12 @@ function fence(c,x0,x1,fy,o){
   for(let i=0;i<n;i++){const x=x0+8+i*13,sw=o.reduced?0:Math.sin(o.t*1.2+i)*1.5;if(hash(i*3.1)<.25)continue;
     R(c,x+sw,fy-32,8,16+((i*7)%3)*3,'#c8422f',2);L(c,x+4,fy-36,x+4+sw,fy-32,'#e8c26a',1);}
   if(o.mine){R(c,x1-22,fy-34,10,20,'#e04a34',2,'#ffe08a',1.5);}
+  const cards=(o.cards||[]).slice(-10);
+  cards.forEach((card,i)=>{const x=x0+8+i*((x1-x0-18)/Math.max(1,cards.length-1)),y=fy-33+(i%2)*9,sw=o.reduced?0:Math.sin(o.t+i)*1.3;
+    L(c,x+4,fy-38,x+4+sw,y,'#f3d590',1.2);R(c,x+sw,y,11,22,'#e04a34',2,'#ffe08a',1);
+    T(c,String((o.cards.length-cards.length)+i+1),x+5+sw,y+10,6,'#fff3cb',700);
+  });
+  if(cards.length)T(c,`${o.cards.length} bảng của bạn`,(x0+x1)/2,fy-57,11,'#67452f',700);
 }
 function bodhi(c,x,fy,port){
   const s=port?.8:1;R(c,x-10*s,fy-120*s,20*s,124*s,'#7a5a3c',6);L(c,x,fy-90*s,x-30*s,fy-130*s,'#7a5a3c',8*s);L(c,x,fy-100*s,x+28*s,fy-140*s,'#7a5a3c',7*s);

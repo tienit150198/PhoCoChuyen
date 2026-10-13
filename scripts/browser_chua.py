@@ -21,6 +21,7 @@ from browser_housing import server  # noqa: E402
 
 ARGS = [a for a in sys.argv[1:] if not a.startswith('--')]
 OUT = Path(ARGS[0]) if ARGS else ROOT.parent / '_chua_shots'
+ARCHIVE = '--archive' in sys.argv
 EN = '--lang' in sys.argv and sys.argv[sys.argv.index('--lang') + 1] == 'en'
 REACH = """()=>{const st=__chua.state();return st.spots.filter(id=>{const r=__chua.route(id);return !r||!r.length;});}"""
 BEATS = """async(skip)=>{const c=__chua.chantClock();const mo=document.querySelector('.cv-mo');
@@ -43,7 +44,7 @@ def read(db: str, token: str) -> dict:
     return out
 
 
-def seed(lang='vi', theme='kem', day=5):
+def seed(lang='vi', theme='kem', day=5, new_interface=True):
     def fn(s):
         from game import journey as jr
         from game import whats_new as wn
@@ -53,6 +54,7 @@ def seed(lang='vi', theme='kem', day=5):
         j.pop('chua', None)
         jr._welcome_settings(s)
         s['settings'].update(uiTheme=theme, lang=lang, tutorialDone=True, whatsNewSeen=wn.LATEST)
+        j['interface'] = dict(newInterface=new_interface, interfacePromptSeen=True)
         j['life']['spirit'] = 40
     return fn
 
@@ -61,16 +63,18 @@ async def main():
     from playwright.async_api import async_playwright
     OUT.mkdir(parents=True, exist_ok=True)
     errors, problems, misses, sounds = [], [], set(), []
-    passes = [('en', 390, 844, False, 'kem', 6)] if EN else [
-        ('vi', 390, 844, False, 'kem', 5), ('vi', 1280, 800, False, 'kem', 5), ('vi', 390, 844, True, 'dem', 6)]
+    passes = [('en', 390, 844, False, 'kem', 6, True)] if EN else [
+        ('vi', 390, 844, False, 'kem', 5, True), ('vi', 1280, 800, False, 'kem', 5, True), ('vi', 390, 844, True, 'dem', 6, False), ('vi', 1280, 800, False, 'kem', 5, False)]
+    if ARCHIVE:
+        passes = [('vi', 390, 844, True, 'kem', 5, True)]
     with server() as (base, db):
         async with async_playwright() as pw:
             browser = await pw.chromium.launch()
-            for lang, w, h, reduced, theme, day in passes:
-                tag = f'{lang}-{w}x{h}{"-reduced" if reduced else ""}-{theme}'
+            for lang, w, h, reduced, theme, day, new_interface in passes:
+                tag = f'{lang}-{w}x{h}{"-reduced" if reduced else ""}-{theme}-{"new" if new_interface else "classic"}'
                 ctx = await browser.new_context(viewport=dict(width=w, height=h), is_mobile=w < 500, has_touch=w < 500,
                                                 reduced_motion='reduce' if reduced else 'no-preference')
-                await ctx.add_init_script("try{localStorage.setItem('mnl.wn.seen','99.0.0')}catch(e){}")
+                await ctx.add_init_script("try{localStorage.setItem('mnl.wn.seen','99.0.0');localStorage.setItem('mnl.x3.week','blocked')}catch(e){}")
                 page = await ctx.new_page()
                 page.on('console', lambda m: m.type == 'error' and errors.append(m.text))
                 page.on('pageerror', lambda e: errors.append(str(e)))
@@ -78,7 +82,7 @@ async def main():
                 await page.goto(base)
                 await page.wait_for_selector('#app:not([hidden])', timeout=30000)
                 token = next(c['value'] for c in await ctx.cookies() if c['name'] == 'mnl_session')
-                mutate(db, token, seed(lang, theme, day))
+                mutate(db, token, seed(lang, theme, day, new_interface))
                 await page.reload()
                 await page.wait_for_selector('#app:not([hidden])', timeout=30000)
                 await page.wait_for_timeout(1500)
@@ -98,9 +102,14 @@ async def main():
                     if bad:
                         problems.append(f'[{tag}] {area}: unreachable {bad}')
 
-                await page.click('#topbar [data-action="status"]')
+                await shot('00-boot')
+                if new_interface:
+                    await page.locator('[data-action="isoCareers"]:visible').first.click()
+                    await page.locator('#sheet [data-action="jrView"][data-view="life"]').first.click()
+                else:
+                    await page.click('#topbar [data-action="status"]')
+                    await page.click('#sheet [data-action="stView"][data-view="life"]')
                 await page.wait_for_selector('#sheet[open]', timeout=8000)
-                await page.click('#sheet [data-action="stView"][data-view="life"]')
                 await page.wait_for_selector('#sheet[open] .cg-enter', timeout=8000)
                 await page.evaluate("document.querySelector('#sheet .cg-enter').scrollIntoView({block:'center'})")
                 await shot('01-sheet')
@@ -108,6 +117,14 @@ async def main():
                 await page.wait_for_selector('.cv-sheet[open] canvas', timeout=8000)
                 await shot('02-yard', 900)
                 await reach('san')
+                if ARCHIVE:
+                    before_donation = await page.evaluate('__chua.state().me')
+                    await page.click('.cv-head [data-cv="donate"]')
+                    await page.wait_for_selector('.sd-sheet[open]')
+                    await page.keyboard.press('ArrowLeft')
+                    await page.click('.sd-sheet [data-sd="close"]')
+                    if await page.evaluate('__chua.state().me') != before_donation:
+                        problems.append(f'[{tag}] donation child moved temple player')
                 # incense at the burner
                 await go('huong')
                 await page.wait_for_selector('.cv-panel:not([hidden]) [data-act="huong"]', timeout=5000)
@@ -115,11 +132,28 @@ async def main():
                 await page.click('.cv-panel [data-act="huong"]')
                 await page.wait_for_selector('.cv-panel .cv-result', timeout=8000)
                 await shot('04-huong-done', 900)
-                if not reduced:
-                    # a wish at the fence
-                    await go('nguyen')
-                    await page.wait_for_selector('.cv-panel [data-act="nguyen"]', timeout=5000)
-                    await shot('05-nguyen')
+                # Repeating incense stays available after the first result.
+                await page.click('.cv-panel [data-cv="again"]')
+                await page.click('.cv-panel [data-act="huong"]')
+                await page.wait_for_selector('.cv-panel .cv-result', timeout=8000)
+                # Write two private family cards, using the real composer and API.
+                await go('nguyen')
+                await page.wait_for_selector('.cv-panel [data-cv="card-recipient"]', timeout=5000)
+                for index in range(2):
+                    await page.click('.cv-panel [data-cv="card-recipient"][data-id="cha_me"]')
+                    await page.click('.cv-panel [data-cv="card-blessing"][data-id="may_man"]')
+                    await page.fill('.cv-panel [name="card-name"]', 'Gia đình Lan')
+                    await page.fill('.cv-panel [name="card-message"]', f'Bình an {index} & nhiều niềm vui')
+                    await shot(f'05-nguyen-draft-{index}')
+                    await page.click('.cv-panel [data-cv="card-send"]')
+                    await page.wait_for_selector('.cv-panel .cv-result', timeout=8000)
+                    if await page.locator('.cv-card img').count():
+                        problems.append(f'[{tag}] card HTML was not escaped')
+                    if index == 0:
+                        await page.click('.cv-panel [data-cv="again"]')
+                await shot('05b-cards-saved')
+                if len(read(db, token)['chua'].get('cards', [])) != 2:
+                    problems.append(f'[{tag}] repeated cards not saved')
                 # into the main hall through its door
                 await go('go:dien', 3200)
                 st = await page.evaluate('__chua.state()')
@@ -141,12 +175,17 @@ async def main():
                 await page.click('.cv-panel [data-cv="who"][data-id="cha_me"]')
                 if await page.locator('.cv-panel [data-cv="what"][data-id="yen_nghi"]:not([disabled])').count():
                     problems.append(f'[{tag}] yên nghỉ offered for cha mẹ')
-                await page.click('.cv-panel [data-cv="what"][data-id="khoe"]')
+                await page.click('.cv-panel [data-cv="what"][data-id="may_man"]')
                 await page.evaluate("document.querySelector('.cv-panel .cv-prayer')?.scrollIntoView({block:'nearest'})")
                 await shot('08-khan')
                 await page.click('.cv-panel [data-act="khan"]')
                 await page.wait_for_selector('.cv-panel .cv-result', timeout=8000)
                 await shot('09-khan-done', 900)
+                await page.click('.cv-panel [data-cv="again"]')
+                await page.click('.cv-panel [data-cv="who"][data-id="cha_me"]')
+                await page.click('.cv-panel [data-cv="what"][data-id="may_man"]')
+                await page.click('.cv-panel [data-act="khan"]')
+                await page.wait_for_selector('.cv-panel .cv-result', timeout=8000)
                 # tụng kinh: the mõ on the beat (every fourth beat left out: 9 of 12)
                 await go('tung')
                 await page.wait_for_selector('.cv-panel [data-cv="chant"]', timeout=5000)
@@ -183,6 +222,39 @@ async def main():
                 await page.wait_for_timeout(300)
                 if await page.locator('.cv-sheet[open]').count():
                     problems.append(f'[{tag}] the pagoda did not close')
+                # Reopen after a reload and day change: cards remain readable at the fence.
+                def next_day(save):
+                    save['journey'].update(life_day=day + 1)
+                    if ARCHIVE:
+                        from game import chua
+                        for index in range(41):
+                            chua.action(save, 'jr_chua_do', dict(act='nguyen', recipient='ca_nha', blessing='binh_an', message=f'Archive marker {index}'))
+                mutate(db, token, next_day)
+                await page.reload()
+                await page.wait_for_selector('#app:not([hidden])', timeout=30000)
+                await page.wait_for_timeout(1200)
+                await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
+                await shot('00-boot')
+                if new_interface:
+                    await page.locator('[data-action="isoCareers"]:visible').first.click()
+                    await page.locator('#sheet [data-action="jrView"][data-view="life"]').first.click()
+                else:
+                    await page.click('#topbar [data-action="status"]')
+                    await page.click('#sheet [data-action="stView"][data-view="life"]')
+                await page.click('#sheet .cg-enter')
+                await page.wait_for_selector('.cv-sheet[open] canvas')
+                await go('nguyen')
+                await page.wait_for_selector('.cv-card', timeout=8000)
+                if await page.locator('.cv-card').count() != (40 if ARCHIVE else 2):
+                    problems.append(f'[{tag}] cards missing after reload/day change')
+                await shot('13-cards-next-day')
+                if ARCHIVE:
+                    await page.click('.cv-panel [data-cv="older-cards"]')
+                    await page.wait_for_function("document.querySelectorAll('.cv-card').length===43")
+                    if 'Bình an 0 & nhiều niềm vui' not in await page.locator('.cv-card-list').inner_text():
+                        problems.append(f'[{tag}] earliest card not readable from archive')
+                    await shot('14-archived-cards')
+                await page.click('.cv-head [data-cv="close"]')
                 await ctx.close()
             await browser.close()
     errs = [e for e in errors if 'favicon' not in e and '409 (Conflict)' not in e]   # 409: the save was changed under the page (mutate)
