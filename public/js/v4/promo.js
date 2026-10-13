@@ -11,6 +11,7 @@
  *            Shown in the 'manager' sheet while ui.pmOffice is set. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {T} from './terms.js';
+import {masteryCard} from './career-mastery.js';
 import {orgView,inspView} from './org.js';   // 🎖️ a career on an org ladder (game/org.py)
 
 const KIND={khach:['🗣️','Khách'],tay:['🔧','Tay nghề'],so:['📋','Giấy tờ'],gap:['⚡','Việc gấp']};
@@ -84,9 +85,10 @@ function lastReview(env,wait){
 }
 export function promoView(env){
   const c=room(env),p=c.promo;
-  if(!p)return head('🎖️ Thăng tiến')+`<div class="sheet-body"><p class="muted">Có việc làm rồi mới tính chuyện lên chức nhé.</p></div>`;
-  if(p.org)return orgView(env,head,act,cmd,esc(place(env)).toUpperCase());
-  if(p.due)return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body">${review(p)}</div>`;
+  const mastery=c.mastery?`<div class="sheet-body cm-section">${masteryCard(c.mastery)}</div>`:'';
+  if(!p)return head('🎖️ Thăng tiến')+`<div class="sheet-body"><p class="muted">Có việc làm rồi mới tính chuyện lên chức nhé.</p></div>`+mastery;
+  if(p.org)return orgView(env,head,act,cmd,esc(place(env)).toUpperCase())+mastery;
+  if(p.due)return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body">${review(p)}</div>`+mastery;
   const n=p.next,sh=p.shift;
   const line=n?`${n.good}/${n.need} ngày tốt → ${esc(n.title)}`:'Bậc cao nhất rồi!';
   const care=n?.requirements?.find(r=>r.id==='care');
@@ -104,7 +106,7 @@ export function promoView(env){
   const step=`<span class="pm-step">${Array.from({length:p.top},(_,i)=>`<i class="${i<p.rank?'on':''}"></i>`).join('')}</span>`;
   if(office&&c.open&&of.live&&!sh)main=office+act('Về quầy','close',{},'ghost full');
   else if(office)main=office+main;
-  return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body"><article class="pm-card pm-ladder">${badge(p)}<h3 class="pm-title">${esc(p.title)}</h3>${step}${n?bar(n.good,n.need):''}<p class="pm-line">${line}</p><p class="small">💰 ${benefit}</p><p class="small muted">${work}</p>${lock}${main}${more(p,env.api.state.current)}</article></div>`;
+  return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body"><article class="pm-card pm-ladder">${badge(p)}<h3 class="pm-title">${esc(p.title)}</h3>${step}${n?bar(n.good,n.need):''}<p class="pm-line">${line}</p><p class="small">💰 ${benefit}</p><p class="small muted">${work}</p>${lock}${main}${more(p,env.api.state.current)}</article></div>`+mastery;
 }
 
 /* ------------------------------------------------------------------ 🏢 Phòng điều hành */

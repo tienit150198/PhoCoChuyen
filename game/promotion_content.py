@@ -4,8 +4,8 @@ line fits a phone at a glance. Everything is fictional.
 """
 from __future__ import annotations
 
-# Employee careers: the titles above the hired one (step 1 → 4; a longer ladder, promotion.TOP_BY_CAREER, goes on
-# past step 4: pilot to 7, teacher to 5).
+# Employee titles above the hired one. Original steps stay in place; the append-only
+# extension below completes every ordinary ladder through step 7.
 EMP_TITLES = {
     'lawyer': ('Chuyên viên hồ sơ chính', 'Chuyên viên đối chiếu cao cấp', 'Trưởng nhóm hồ sơ', 'Phụ trách chuyên môn Bình An'),
     'post_office': ('Giao dịch viên chính', 'Trưởng ca bưu gửi', 'Phó phụ trách bưu cục', 'Phụ trách bưu điện Cánh Thư'),
@@ -52,6 +52,55 @@ OWN_TITLES = {
 OWN_TITLES['giupviec'] = OWN_TITLES['naucom'] = OWN_TITLES['babysitter'] = OWN_TITLES['homemaker']
 # The ward library: a public servant's standing, from the desk to running the library and the ward's records.
 OWN_TITLES['library'] = ('Cán bộ thư viện vững tay', 'Thủ thư có tiếng', 'Phó phụ trách thư viện', 'Phụ trách Thư viện – Lưu trữ')
+# Append only: old saves retain the same title at every previously earned step.
+# Police's live appointments remain in org_content; these are fallback ladder labels.
+_EMP_HIGH = {
+    'lawyer': ('Trưởng bộ phận nghiệp vụ', 'Giám đốc chuyên môn Bình An', 'Cố vấn hồ sơ cấp cao'),
+    'post_office': ('Trưởng cụm bưu cục', 'Giám đốc vận hành bưu chính', 'Giám đốc mạng lưới bưu chính'),
+    'corp_accounting': ('Giám đốc kế toán', 'Phó giám đốc tài chính', 'Giám đốc tài chính'),
+    'tax_payroll': ('Giám đốc chính sách thuế – lương', 'Giám đốc tuân thủ thuế', 'Cố vấn thuế – lương cấp cao'),
+    'group_accounting': ('Giám đốc hợp nhất', 'Phó giám đốc tài chính tập đoàn', 'Giám đốc tài chính tập đoàn'),
+    'hr_admin': ('Giám đốc nhân sự', 'Giám đốc phát triển tổ chức', 'Cố vấn nhân sự cấp cao'),
+    'secretary': ('Giám đốc điều phối văn phòng', 'Giám đốc hành chính', 'Cố vấn điều hành cấp cao'),
+    'it_helpdesk': ('Giám đốc hạ tầng', 'Giám đốc công nghệ', 'Cố vấn kiến trúc hệ thống'),
+    'pharmacy': ('Quản lý cụm nhà thuốc', 'Giám đốc chuyên môn dược', 'Cố vấn chất lượng dược'),
+    'customer_care': ('Giám đốc dịch vụ khách hàng', 'Giám đốc trải nghiệm khách hàng', 'Cố vấn chất lượng dịch vụ'),
+    'teacher': ('Trưởng phòng Giáo dục', 'Giám đốc Sở Giáo dục'),
+    'tour_guide': ('Giám đốc điều hành tour', 'Giám đốc phát triển tuyến', 'Cố vấn du lịch cấp cao'),
+    'repair': ('Quản lý cụm xưởng', 'Giám đốc kỹ thuật sửa chữa', 'Chuyên gia chẩn đoán cấp cao'),
+    'delivery': ('Quản lý vùng giao nhận', 'Giám đốc vận hành giao nhận', 'Giám đốc mạng lưới giao nhận'),
+    'pet_care': ('Quản lý cụm chăm thú cưng', 'Giám đốc dịch vụ chăm thú cưng', 'Chuyên gia đào tạo chăm thú cưng'),
+    'salon': ('Giám đốc sáng tạo tóc', 'Giám đốc đào tạo salon', 'Cố vấn nghệ thuật tóc'),
+    'flight_attendant': ('Giám đốc dịch vụ trên không', 'Giám đốc đào tạo tiếp viên', 'Cố vấn trải nghiệm chuyến bay'),
+    'oil': ('Quản lý cụm giàn', 'Giám đốc khai thác ngoài khơi', 'Cố vấn an toàn khai thác'),
+    'railway': ('Trưởng phòng an toàn cung đường', 'Giám đốc vận hành tuyến', 'Cố vấn an toàn đường sắt'),
+    'nurse': ('Giám đốc điều dưỡng', 'Giám đốc chất lượng chăm sóc', 'Cố vấn thực hành điều dưỡng'),
+    'lighthouse': ('Trưởng vùng đèn biển', 'Giám đốc vận hành báo hiệu', 'Cố vấn an toàn luồng biển'),
+    'rescue': ('Giám đốc điều phối liên vùng', 'Giám đốc đào tạo ứng cứu', 'Cố vấn điều phối khẩn cấp'),
+    'lifeguard': ('Quản lý an toàn cụm hồ bơi', 'Giám đốc đào tạo cứu hộ nước', 'Cố vấn an toàn dưới nước'),
+    'police': ('Trưởng Công an phường', 'Phụ trách nghiệp vụ địa bàn', 'Cố vấn nghiệp vụ khu vực'),
+}
+for _career, _titles in _EMP_HIGH.items():
+    EMP_TITLES[_career] += _titles
+
+_OWN_HIGH = {
+    'shop': ('{chu} xây dựng thương hiệu', '{chu} phát triển chuỗi bền vững', '{chu} truyền nghề cho phố'),
+    'art_studio': ('Chủ xưởng nghệ thuật có tiếng', 'Nghệ nhân dẫn dắt xưởng vẽ', 'Người truyền nghề Màu Nắng'),
+    'laundry': ('Chủ xưởng chăm vải', 'Chuyên gia bảo dưỡng vải', 'Người truyền nghề Nếp Thơm'),
+    'accounting': ('Chủ văn phòng kế toán có tiếng', 'Chuyên gia đối soát độc lập', 'Người truyền nghề sổ sách'),
+    'homemaker': ('Quản gia điều phối nhiều nhà', 'Chuyên gia tổ chức gia đình', 'Người truyền nghề chăm nhà'),
+    'giupviec': ('Điều phối viên chăm nhà', 'Chuyên gia vệ sinh gia đình', 'Người truyền nghề giúp việc'),
+    'naucom': ('Bếp gia đình được tín nhiệm', 'Chuyên gia tổ chức bữa nhà', 'Người truyền nghề nấu cơm'),
+    'babysitter': ('Điều phối viên chăm trẻ', 'Chuyên gia nếp sinh hoạt trẻ', 'Người truyền nghề bảo mẫu'),
+    'pagoda': ('Điều phối công quả liên ban', 'Người hướng dẫn công quả', 'Người gìn giữ nếp chùa'),
+    'garbage': ('Điều phối viên thu gom khu vực', 'Chuyên gia phân loại và thu gom', 'Người truyền nghề giữ phố sạch'),
+    'drain': ('Chủ đội thoát nước khu vực', 'Chuyên gia xử lý tắc nghẽn', 'Người truyền nghề thoát nước'),
+    'farm': ('Chủ trại sản xuất bền vững', 'Nhà nông hướng dẫn cộng đồng', 'Người truyền nghề nông'),
+    'homestay': ('Chủ thương hiệu lưu trú', 'Chuyên gia vận hành lưu trú', 'Người truyền nghề đón khách'),
+    'library': ('Điều phối thư viện cộng đồng', 'Chuyên gia thư viện – lưu trữ', 'Người truyền nghề gìn giữ sách'),
+}
+for _career, _titles in _OWN_HIGH.items():
+    OWN_TITLES[_career] += _titles
 CHU = {'male': 'Ông chủ', 'female': 'Bà chủ', None: 'Chủ tiệm'}
 ONG = {'male': 'Ông chủ', 'female': 'Bà chủ', None: 'Chủ'}
 BASE_EMP = 'Nhân viên'      # an employee's title before step 1 is the posting's own title
@@ -65,7 +114,7 @@ INSIGNIA = {
               dict(g=0, s=1, w=False, big=True, wing=True)),
 }
 # Other careers: one emoji by step (0..top); every other career keeps 🎖️.
-BADGE = {'teacher': ('🍎', '🏅', '📒', '📚', '🗝️', '🏫')}
+BADGE = {'teacher': ('🍎', '🏅', '📒', '📚', '🗝️', '🏫', '🎓', '🌟')}
 
 
 def insignia_label(x: dict) -> str:
