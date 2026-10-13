@@ -32,7 +32,7 @@ export async function openVenue(env,{id,title,layout,eyebrow,badge}={}){
   function resume(){if(dead)return;stop();suspended=false;scene.resume();control?.enable(!document.hidden);if(!dialog.open)dialog.showModal();env.onResume?.();if(!document.hidden)lifecycle?.resume();canvas.focus({preventScroll:true});}
   function paint(){
     const state=env.getState?.()||env.api?.state||{},me=figure(state);
-    renderVenue(canvas,room,scene.state,{translate:t,time:performance.now(),peers:env.getPeers?.()||[],avatar:(direction,walkFrame)=>getCharacterStamp({look:me.L,gender:me.g,direction,walkFrame,onReady:()=>lifecycle?.wake()})});
+    renderVenue(canvas,room,scene.state,{translate:t,time:performance.now(),peers:env.getPeers?.()||[],bubbles:env.getBubbles?.()||[],avatar:(direction,walkFrame)=>getCharacterStamp({look:me.L,gender:me.g,direction,walkFrame,onReady:()=>lifecycle?.wake()})});
     const near=scene.nearby(),exit=Math.hypot(scene.state.x-room.entry.x,scene.state.y-room.entry.y)<38;
     const message=near?near.detail:'Đi dạo trong phòng, hoặc chạm tên một góc để đi tới.';
     if(message!==lastStatus){status.textContent=message;lastStatus=message;}

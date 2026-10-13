@@ -38,6 +38,7 @@ class ScaleSitesBrowser(LiveCase):
           import {createTownPresence} from '/js/isometric-town.js';
           const state={name:'Lan',current:'grocery',journey:{gender:'female'},careers:{grocery:{scale:{sites:[{id:'base',name:'Tiệm Lan'}]}}}};
           const api=new EventTarget();Object.assign(api,{state,live:{url:'WS_URL'}});
+          window.bubblePaints=[];const fillText=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(text,x,y,...rest){if(text==='wasd xin chào'||text==='👋')bubblePaints.push({text,x,y});return fillText.call(this,text,x,y,...rest);};
           window.toasts=[];window.env={api,ui:{},toast:t=>toasts.push(t),closeSheet:()=>document.querySelector('#sheet').close(),openSheet:()=>document.querySelector('#sheet').showModal(),world:{mode:'town',getPresence:()=>({x:6,y:6,direction:'ne'}),setRemotePlayers:()=>{},setSocialEnabled:()=>{}}};
           window.live=live;window.frames=[];live.on('*',f=>frames.push(f));liveBoot(env);window.bridge=createTownPresence(env).start();
           window.enter=async()=>window.visit=await openScaleSiteGuest(env,'SITE_CODE');
@@ -68,23 +69,37 @@ class ScaleSitesBrowser(LiveCase):
             await guest.get_by_label('Người ở gần').select_option(self.pid(sid))
             await guest.get_by_role('button',name='Xem bạn',exact=True).click()
             await guest.wait_for_function("frames.some(f=>f.t==='town_card')")
+            out=Path(__file__).resolve().parents[1]/'output'/'playwright'/'scale-sites';out.mkdir(parents=True,exist_ok=True)
             # Typing letters used by walking must remain typing, not movement.
             before=await owner.evaluate('({x:visit.scene.state.x,y:visit.scene.state.y})')
             await owner.get_by_label('Lời nhắn trong cơ sở').fill('wasd xin chào')
             await owner.get_by_role('button',name='Gửi',exact=True).click()
             await guest.get_by_role('log').filter(has_text='wasd xin chào').wait_for()
+            await guest.wait_for_function("bubblePaints.some(p=>p.text==='wasd xin chào')")
+            await owner.wait_for_function("bubblePaints.some(p=>p.text==='wasd xin chào')")
+            await guest.locator('canvas').scroll_into_view_if_needed()
+            await guest.screenshot(path=str(out/'phone-speech-bubble.png'))
             self.assertEqual(before,await owner.evaluate('({x:visit.scene.state.x,y:visit.scene.state.y})'))
             await guest.get_by_role('button',name='Thả biểu cảm 👋',exact=True).click()
             await owner.get_by_role('log').filter(has_text='👋').wait_for()
+            await owner.wait_for_function("bubblePaints.some(p=>p.text==='👋')")
+            await owner.locator('canvas').scroll_into_view_if_needed()
+            await owner.screenshot(path=str(out/'desktop-speech-reaction-bubbles.png'))
             # Desktop keyboard movement is real and collision bounded.
             await owner.locator('canvas').focus();await owner.keyboard.down('ArrowRight');await asyncio.sleep(.4);await owner.keyboard.up('ArrowRight')
             after=await owner.evaluate('({x:visit.scene.state.x,y:visit.scene.state.y})')
             self.assertNotEqual(before,after)
+            self.assertGreater(await owner.evaluate("new Set(bubblePaints.filter(p=>p.text==='wasd xin chào').map(p=>p.x)).size"),1)
             # Phone tap on floor moves within the actual modal canvas.
             canvas=guest.locator('canvas');await canvas.scroll_into_view_if_needed();box=await canvas.bounding_box()
             x,y=320+(260-310)*.67,76+(260+310)*.38
             await guest.touchscreen.tap(box['x']+x/640*box['width'],box['y']+y/470*box['height'])
             await guest.wait_for_function('visit.scene.state.x>245')
+            # Expiry repaints the static room; no continuous animation is required.
+            await asyncio.sleep(8.2)
+            await owner.evaluate('bubblePaints.length=0;visit.wake()')
+            await asyncio.sleep(.1)
+            self.assertEqual(await owner.evaluate('bubblePaints'),[])
             # Room reconnect after a real socket close restores the same authorized site.
             guest_pid=await guest.evaluate('live.me.pid')
             conn=next(c for c in self.app.hub.conns if c.player.pid==guest_pid)

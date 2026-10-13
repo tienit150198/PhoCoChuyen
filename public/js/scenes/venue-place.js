@@ -118,7 +118,7 @@ function furniture(c,p){
   if(p.kind==='play')for(let i=0;i<5;i++)slab(c,{x:p.x+10+i*15,y:p.y+15+(i%2)*22,w:14,h:14},15,['#afc3b2','#d29985','#e3c77d'][i%3]);
 }
 /** Rendering is retained-mode only at the wrapper level: this scene owns no listeners or animation. */
-export function renderVenue(canvas,room,state,{avatar,time=0,translate=text=>text,peers=[]}={}){
+export function renderVenue(canvas,room,state,{avatar,time=0,translate=text=>text,peers=[],bubbles=[]}={}){
   const c=canvas.getContext('2d');if(!c)return;c.clearRect(0,0,640,470);c.fillStyle=room.outdoor?'#edf1df':'#f7f0e4';c.fillRect(0,0,640,470);
   const a=projectVenue({x:0,y:0}),b=projectVenue({x:room.width,y:0}),d=projectVenue({x:0,y:room.height}),e=projectVenue({x:room.width,y:room.height});
   if(!room.outdoor){polygon(c,[{x:a.x,y:a.y-61},{x:b.x,y:b.y-61},b,a],room.wall);polygon(c,[{x:d.x,y:d.y-61},{x:a.x,y:a.y-61},a,d],'#dfd0b6');}
@@ -130,4 +130,17 @@ export function renderVenue(canvas,room,state,{avatar,time=0,translate=text=>tex
   const items=[...room.props.map(p=>({depth:p.x+p.y+(p.w+p.h)/2,paint:()=>furniture(c,p)})),{depth:state.x+state.y,paint(){const q=projectVenue(state);dot(c,q.x,q.y,12,'#5544382b');const stamp=avatar?.(state.direction,state.moving?(Math.floor(time/150)%3):0);if(stamp)c.drawImage(stamp.canvas||stamp,q.x-24,q.y-61,48,64);else{dot(c,q.x,q.y-40,10,'#e9c5a3');c.fillStyle='#8aaa9b';c.fillRect(q.x-9,q.y-31,18,25);}}}];items.sort((a,b)=>a.depth-b.depth).forEach(item=>item.paint());
   for(const actor of [...(room.actors||[]),...peers.map(p=>({...p,colour:'#7e9dc2'}))]){const q=projectVenue(actor);dot(c,q.x,q.y,10,'#5544382b');dot(c,q.x,q.y-33,8,'#e9c5a3');c.fillStyle=actor.colour||'#8aaa9b';c.fillRect(q.x-7,q.y-25,14,20);c.font='600 10px sans-serif';c.textAlign='center';c.fillStyle='#494f43';c.fillText(actor.name||'',q.x,q.y-46);}
   for(const s of room.stations){const q=projectVenue(s),near=Math.hypot(s.x-state.x,s.y-state.y)<38,label=translate(s.label);c.font='600 12px sans-serif';c.textAlign='center';const w=c.measureText(label).width+16;c.fillStyle=near?'#445747':'#fffcf0ee';c.beginPath();c.roundRect(q.x-w/2,q.y+11,w,22,7);c.fill();c.fillStyle=near?'#fff8e7':'#5a574b';c.fillText(label,q.x,q.y+26);}
+  const placedBubbles=[];
+  for(const bubble of bubbles){
+    if(!Number.isFinite(bubble.x)||!Number.isFinite(bubble.y)||typeof bubble.text!=='string')continue;
+    const q=projectVenue(bubble),lines=[];let line='';c.save();c.font='600 12px sans-serif';c.textAlign='center';
+    for(const word of bubble.text.slice(0,120).match(/\S{1,24}/gu)||[]){const next=line?line+' '+word:word;if(line&&c.measureText(next).width>190){lines.push(line);line=word;}else line=next;}if(line)lines.push(line);
+    if(!lines.length){c.restore();continue;}
+    const visible=lines.slice(0,4),width=Math.max(38,...visible.map(text=>c.measureText(text).width+20)),height=visible.length*16+12,x=Math.max(width/2+8,Math.min(632-width/2,q.x));let y=Math.max(8,q.y-67-height);
+    for(let n=0;n<placedBubbles.length;n++){const hit=placedBubbles.find(r=>Math.abs(x-r.x)<(width+r.width)/2+4&&y<r.y+r.height+4&&y+height+4>r.y);if(!hit)break;const above=Math.max(8,hit.y-height-5);if(above===y)break;y=above;}placedBubbles.push({x,y,width,height});
+    c.fillStyle='#fffdf3';c.strokeStyle='#a99a7f';c.lineWidth=1;c.beginPath();c.roundRect(x-width/2,y,width,height,9);c.fill();c.stroke();
+    polygon(c,[{x:q.x-5,y:y+height-1},{x:q.x+5,y:y+height-1},{x:q.x,y:y+height+6}],'#fffdf3');
+    c.fillStyle='#3f4c3b';visible.forEach((text,i)=>c.fillText(text,x,y+18+i*16));c.restore();
+  }
+
 }

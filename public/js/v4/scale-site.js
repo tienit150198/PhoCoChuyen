@@ -1,5 +1,5 @@
 import {lookOf} from './look.js';
-import {createSitePresence} from './site-presence.js';
+import {createSitePresence,createSiteBubbles} from './site-presence.js';
 
 /** Owned sites reuse the game's collision-tested isometric walking room. */
 const PROP={laundry:'machine',homestay:'bed',salon:'chair',nail:'table',photobooth:'screen',art_studio:'easel',
@@ -51,6 +51,7 @@ async function visitScaleSite(env,key){
   const request=++visitSequence;currentVisit?.close();currentVisit=null;
   let view=null,people=[],socialStatus='Đang vào cơ sở…',room=null,log=null,nearList=null,statusNode=null;
   const owned=key.owner===live.me?.pid;
+  const bubbles=createSiteBubbles({wake:()=>view?.wake()});
   const refreshNearby=()=>{
     if(!nearList||!view)return;
     const selected=nearList.value,near=people.filter(p=>Math.hypot(p.x-view.scene.state.x,p.y-view.scene.state.y)<=160);
@@ -61,10 +62,11 @@ async function visitScaleSite(env,key){
   const append=text=>{if(!log)return;const line=document.createElement('div');line.textContent=text;log.append(line);while(log.children.length>20)log.firstChild.remove();log.scrollTop=log.scrollHeight;};
   const session=createSitePresence(key,{transport:live,appearance:()=>({look:lookOf(env.api.state),g:env.api.state.journey?.gender}),
     onJoin:f=>{if(room){const next=scaleRoom({...f.layout,resource_name:'Vị trí'},f.site);Object.assign(room,next);view?.refreshLayout();if(view)view.element.querySelector('.venue-free').textContent=f.site.public?'Đang đón khách':'Riêng tư';}},
-    onPeers:p=>{people=p;view?.wake();refreshNearby();},
+    onReset:()=>bubbles.clear(),
+    onPeers:p=>{people=p;bubbles.retain(new Set([live.me?.pid,...p.map(peer=>peer.pid)]));view?.wake();refreshNearby();},
     onCorrect:p=>{if(view){view.scene.reset();Object.assign(view.scene.state,p);view.wake();}},
     onStatus:text=>{socialStatus=text;if(statusNode)statusNode.textContent=text;},
-    onMessage:f=>{const name=f.pid===live.me?.pid?'Bạn':people.find(p=>p.pid===f.pid)?.name||f.name||'Người chơi';
+    onMessage:f=>{if(f.t==='town_said'||f.t==='town_emoted')bubbles.show(f.pid,f.t==='town_said'?f.text:f.e);const name=f.pid===live.me?.pid?'Bạn':people.find(p=>p.pid===f.pid)?.name||f.name||'Người chơi';
       if(f.t==='town_said')append(`${name}: ${f.text}`);
       else if(f.t==='town_emoted')append(`${name} ${f.e}${f.target?' → '+(people.find(p=>p.pid===f.target)?.name||'Bạn'):''}`);
       else append(`${f.name}${f.friend?' · Bạn bè':f.code?' · Mã kết bạn: '+f.code:''}`);},
@@ -74,7 +76,7 @@ async function visitScaleSite(env,key){
   const {openVenue}=await import('./venue-visit.js');
   if(session.destroyed)return null;
   room=scaleRoom({...frame.layout,resource_name:'Vị trí'},frame.site);
-  view=await openVenue({...env,getPeers:()=>people,onMove:point=>{session.move(point);refreshNearby();},
+  view=await openVenue({...env,getPeers:()=>people,getBubbles:()=>bubbles.get().flatMap(b=>{const p=b.pid===live.me?.pid?view?.scene.state:people.find(p=>p.pid===b.pid);return p?[{...b,x:p.x,y:p.y}]:[];}),onMove:point=>{session.move(point);refreshNearby();},
     onClose:()=>{session.close();if(currentVisit===session)currentVisit=null;env.onClose?.();},
     onInteract:async station=>{
       if(!owned){append(station.detail);return;}

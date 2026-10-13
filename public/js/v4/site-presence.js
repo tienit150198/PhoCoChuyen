@@ -2,7 +2,7 @@
 const observers=new Set();
 export const sitePresence={active:false,set(value){this.active=value;for(const fn of observers)fn(value);},subscribe(fn){observers.add(fn);return()=>observers.delete(fn);}};
 let sequence=0;
-export function createSitePresence(key,{transport,onJoin,onPeers,onMessage,onClose,onStatus,onCorrect,appearance=()=>({})}={}){
+export function createSitePresence(key,{transport,onJoin,onPeers,onMessage,onClose,onStatus,onCorrect,onReset,appearance=()=>({})}={}){
   let room=null,me=null,joining=null,dead=false,started=false,timer=null,resolve,reject,ready=false,lastSent=0,lastPoint='';
   const peers=new Map(),off=[];
   const draw=()=>onPeers?.([...peers.values()].map(p=>({...p,x:p.x*20,y:p.y*20})));
@@ -14,7 +14,7 @@ export function createSitePresence(key,{transport,onJoin,onPeers,onMessage,onClo
   function close(why='out'){
     if(dead)return;dead=true;clearTimeout(timer);off.splice(0).forEach(fn=>fn());
     if(room||joining)transport.send({t:'town_out',cid:`site-out-${++sequence}`});
-    room=null;joining=null;peers.clear();draw();sitePresence.set(false);
+    room=null;joining=null;peers.clear();onReset?.();draw();sitePresence.set(false);
     if(!ready)reject?.(new Error(why==='private'?'Cơ sở chưa mở đón khách.':'Chưa vào được cơ sở trực tuyến.'));
     onClose?.(why);
   }
@@ -32,8 +32,8 @@ export function createSitePresence(key,{transport,onJoin,onPeers,onMessage,onClo
     }),...['town_said','town_emoted','town_card'].map(t=>transport.on(t,f=>{if(room&&f.room===room)onMessage?.(f);})),
     transport.on('town_left',f=>{if(f.why==='other'||f.why==='private'&&(!f.room||f.room===room))close(f.why);}),
     transport.on('error',f=>{if(f.ref===joining){onStatus?.(f.msg);close(f.code);}else if(String(f.ref).startsWith('site-'))onStatus?.(f.msg);else if(f.ref==='town_mv'&&room&&Number.isFinite(f.x))onCorrect?.({x:f.x*20,y:f.y*20});}),
-    transport.on('down',()=>{room=null;joining=null;clearTimeout(timer);peers.clear();draw();onStatus?.('Mất kết nối · Đang kết nối lại…');}),
-    transport.on('welcome',()=>{room=null;joining=null;peers.clear();draw();join();}));
+    transport.on('down',()=>{room=null;joining=null;clearTimeout(timer);peers.clear();onReset?.();draw();onStatus?.('Mất kết nối · Đang kết nối lại…');}),
+    transport.on('welcome',()=>{room=null;joining=null;peers.clear();onReset?.();draw();join();}));
     sitePresence.set(true);
     if(transport.state==='open'&&transport.flags?.town)join();else close('off');
     return promise;
@@ -43,4 +43,21 @@ export function createSitePresence(key,{transport,onJoin,onPeers,onMessage,onClo
     say(text){if(room)transport.send({t:'town_say',text,cid:`site-say-${++sequence}`});},
     emote(e,target){if(room)transport.send({t:'town_emote',e,...(target?{target}:{}),cid:`site-emote-${++sequence}`});},
     card(pid){if(room)transport.send({t:'town_card',pid,cid:`site-card-${++sequence}`});}};
+}
+
+/** A room owns one expiry timer; only acknowledged speech/emotes call show(). */
+export function createSiteBubbles({wake=()=>{},now=()=>Date.now(),setTimer=setTimeout,clearTimer=clearTimeout,ttl=8000}={}){
+  const entries=new Map();let timer=null;
+  function schedule(){
+    if(timer!==null)clearTimer(timer);timer=null;
+    if(!entries.size)return;
+    const first=Math.min(...[...entries.values()].map(b=>b.until));
+    timer=setTimer(()=>{timer=null;for(const [pid,b] of entries)if(b.until<=now())entries.delete(pid);wake();schedule();},Math.max(0,first-now()));
+  }
+  return {
+    show(pid,text){if(typeof pid!=='string'||typeof text!=='string'||!text.trim())return;entries.delete(pid);entries.set(pid,{pid,text:text.slice(0,120),until:now()+ttl});while(entries.size>60)entries.delete(entries.keys().next().value);schedule();wake();},
+    get(){return [...entries.values()].filter(b=>b.until>now());},
+    retain(pids){let changed=false;for(const pid of entries.keys())if(!pids.has(pid)){entries.delete(pid);changed=true;}if(changed){schedule();wake();}},
+    clear(){if(timer!==null)clearTimer(timer);timer=null;entries.clear();wake();}
+  };
 }
