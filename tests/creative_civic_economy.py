@@ -118,7 +118,9 @@ def shift(j, staff_orders=0):
         mode=mode, scheduled_jobs=len(ids), completed_jobs=len(completed),
         actions=dict(j.actions - before_actions), staff=len(j.c['ops']['staff']),
         contract_salary=j.c['job']['salary'], salary=salary,
-        customer_gross=sum(r['amount'] for r in ledger if r['category'] == 'revenue' and r['amount'] > 0),
+        ledger_revenue=sum(r['amount'] for r in ledger if r['category'] == 'revenue' and r['amount'] > 0),
+        customer_gross=(0 if employment.required(j.career) else
+                        sum(r['amount'] for r in ledger if r['category'] == 'revenue' and r['amount'] > 0)),
         task_bonus=bonuses if employment.required(j.career) else 0,
         staff_orders_completed=j.c['ops'].get('business', {}).get('served', 0) - before_staff_orders,
         staff_seconds_since_anchor=elapsed,
