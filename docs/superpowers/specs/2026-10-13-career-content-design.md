@@ -153,3 +153,5 @@ Cọc, COD, tiền đi chợ, quỹ đoàn, ngân sách dự án, tiền phạt 
 Đã đọc danh mục code đủ 54 nghề, so giá/phí/cổng mở hiện tại theo từng nhóm. Ba hồ sơ đọc mã: [hàng hóa/ẩm thực/nghệ thuật](career-content-evidence/food-retail.md), [dịch vụ](career-content-evidence/service.md), [văn phòng/công vụ](career-content-evidence/professional.md). Các ví dụ giá và A/B/C thử trong hồ sơ audit là ý tưởng đầu vào; **bảng 10 bậc và CSV của thiết kế này có ưu tiên**, không cộng hai thang giá.
 
 Đã kiểm đếm 54 ID nghề, 540 dòng nghề/bậc không trùng, tên gói đủ 10 mỗi nghề, tổng phí và phương trình doanh thu − chi phí − thuế. Chưa tạo 540 quy trình game, chưa đo thời lượng chơi hoặc tỷ lệ khách nhận đơn và chưa dùng dữ liệu hành vi người chơi để hiệu chỉnh. Vì vậy không khẳng định đã cân bằng thực tế hay đã triển khai tính năng.
+
+Phần sức chứa được triển khai riêng theo [bản nâng kho](2026-10-13-capacity-expansion.md); trạng thái thiết kế của 540 gói nội dung ở tài liệu này không thay đổi.

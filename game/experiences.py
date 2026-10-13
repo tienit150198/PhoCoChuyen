@@ -459,6 +459,10 @@ def validate(c:dict,career:str):
  # Whole paid-storage lots can expire together; retain their exact quantity and value.
  from . import inventory
  waste_cap=max(999,shelf_cap,inventory.stock_limit(career,c))
+ if career=='farm':
+  from .capacity_progression import limit as storage_limit
+  from .careers.farm import COLD_CAP
+  waste_cap=max(waste_cap,storage_limit(c,career,COLD_CAP))
  for row in x['waste']:
   allowed=('cup',*data.INGREDIENT_INDEX)
   if career in PLUGINS:allowed=(*allowed,*[i['id'] for i in (PLUGINS[career].SPEC.get('inventory') or {}).get('items',[])],*PLUGINS[career].SPEC.get('waste_items',()))
