@@ -43894,6 +43894,10 @@
   "Mời {who} mang bản gốc tới văn phòng, mình cùng đối chiếu lại từng mục ạ.": "Please bring the originals to the office, {who}, so we can review every item together.",
   "Văn phòng đọc chứng cứ, xếp diễn biến, tính yêu cầu rồi mới đề xuất phương án. Hôm đó {fact} ạ.": "We read the evidence, order events and calculate the claim before proposing an approach. That day, {fact}.",
   "Mời {who} đọc mã phiếu, bưu điện sẽ đối chiếu chứng từ bàn giao ạ.": "Please provide your ticket code, {who}, and the post office will check the handover documents.",
-  "Bưu điện đối chiếu địa chỉ, cân, tính cước rồi chia tuyến và lưu chứng từ. Hôm đó {fact} ạ.": "The post office checks addresses, weighs parcels, calculates postage, sorts routes and files documents. That day, {fact}."
+  "Bưu điện đối chiếu địa chỉ, cân, tính cước rồi chia tuyến và lưu chứng từ. Hôm đó {fact} ạ.": "The post office checks addresses, weighs parcels, calculates postage, sorts routes and files documents. That day, {fact}.",
+  "Đơn riêng: vẽ một thiệp theo mẫu đã duyệt": "Independent order: draw a card from an approved design",
+  "Hồ sơ riêng: sắp xếp chứng cứ theo danh mục": "Independent casework: organize evidence using the checklist",
+  "Đơn riêng: giặt và gấp một túi đồ thường": "Independent order: wash and fold a bag of everyday laundry",
+  "Việc riêng: đóng gói và phân tuyến một lô thư": "Independent task: pack and route a batch of letters"
  }
 }

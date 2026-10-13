@@ -83,6 +83,10 @@ ORDERS = {
     'lifeguard': ('Việc riêng: trực cứu hộ cho một lớp bơi', 18, 4, {}),
     'police': ('Việc riêng: hỗ trợ tiếp dân một buổi', 16, 3, {}),
     'zpop': ('Đơn riêng: một bản PINK STATIC Pink ver', 20, 1, {'ps_pink': 1}),
+    'art_studio': ('Đơn riêng: vẽ một thiệp theo mẫu đã duyệt', 20, 4, {}),
+    'lawyer': ('Hồ sơ riêng: sắp xếp chứng cứ theo danh mục', 18, 3, {}),
+    'laundry': ('Đơn riêng: giặt và gấp một túi đồ thường', 18, 4, {}),
+    'post_office': ('Việc riêng: đóng gói và phân tuyến một lô thư', 16, 3, {}),
 }
 REASONS = {
     'working': 'Nhân viên đang xử lý đơn riêng.', 'closed': 'Nơi làm việc đã đóng ca.',
