@@ -762,7 +762,7 @@ def close(career: str, off: dict, rank: int, seed: int, day: int, earned: bool =
     k['ontime'] = _clamp(.6 * k['ontime'] + .4 * today)
     k['compl'] = min(999, round(k['compl'] * .6) + compl)
     k['days'] = min(10**6, k['days'] + 1)
-    if worked and score >= GOOD_SCORE:
+    if worked and earned and score >= GOOD_SCORE:
         k['good'] = min(10**6, k['good'] + 1)
     busy = {w for w in plan if w is not None}
     rota = rota_line(career, off, plan)   # before today's duty is counted: the days that cost today
@@ -793,9 +793,9 @@ def close(career: str, off: dict, rank: int, seed: int, day: int, earned: bool =
             + (f' · quỹ lương vượt {over}%' if over else ''))
     if not worked:
         head += ' · trợ lý xếp tạm, không có thưởng'
-    good = worked and score >= GOOD_SCORE
+    good = worked and earned and score >= GOOD_SCORE
     _log(off, f'Ngày {day}: {today}% · {compl} phàn nàn · điểm {score}' + (' ✓' if good else '') + (f' · +{bonus} xu' if bonus else ''))
-    return dict(lines=[head, score_line(o, score, today, morale, compl, over, worked)] + ([rota] if rota else []) + lines[:2], bonus=bonus, score=score,
+    return dict(lines=[head, score_line(o, score, today, morale, compl, over, worked, earned)] + ([rota] if rota else []) + lines[:2], bonus=bonus, score=score,
                 ontime=today, compl=compl, worked=worked, good=good)
 
 
@@ -817,7 +817,7 @@ def rota_line(career: str, off: dict, plan: list) -> str:
             f'Xếp người khác, cho nghỉ 1 ngày là hết mệt.')
 
 
-def score_line(o: dict, score: int, today: int, morale: int, compl: int, over: int, worked: bool) -> str:
+def score_line(o: dict, score: int, today: int, morale: int, compl: int, over: int, worked: bool, earned: bool = True) -> str:
     """The close's score, part by part (F#206: how an office day counts), and whether it counted."""
     parts = f'{o["kpi"][0].lower()} {round(.5 * today)} + tinh thần {round(.3 * morale)} + 20'
     if compl:
@@ -826,6 +826,8 @@ def score_line(o: dict, score: int, today: int, morale: int, compl: int, over: i
         parts += f' − vượt quỹ {2 * over}'
     if not worked:
         verdict = 'chưa tính: hôm nay bạn chưa tự xếp việc nào ở 🗓️ Điều phối'
+    elif not earned:
+        verdict = 'chưa tính: cần hoàn tất công việc trong ngày còn lượt trả công'
     elif score >= GOOD_SCORE:
         verdict = '✓ tính 1 ngày điều hành tốt'
     else:

@@ -109,7 +109,7 @@ class Ladders(unittest.TestCase):
         from game.engine import CAREERS
         for cid in CAREERS:
             t = pm.top(cid)
-            self.assertEqual(t, {'pilot': 7, 'teacher': 5}.get(cid, 4), cid)
+            self.assertEqual(t, 4 if cid in pm.ORG.OC.CAREER_ORG else 7, cid)
             if pm.track(cid) == 'emp':
                 self.assertGreaterEqual(len(PC.EMP_TITLES.get(cid, PC.EMP_TITLES['repair'])), t, cid)
             self.assertLess(t, len(pm.EMP_STEPS))
@@ -133,8 +133,8 @@ class Ladders(unittest.TestCase):
         j = worker('teacher')
         self.assertEqual(pm.title(j.state, j.c, 'teacher', 5), 'Hiệu trưởng')
         v = pm.public(j.state, j.c, 'teacher')
-        self.assertEqual((v['top'], v['badge']), (5, '🍎'))
-        self.assertEqual(pm.public(*(lambda x: (x.state, x.c))(worker('delivery')), 'delivery')['top'], 4)
+        self.assertEqual((v['top'], v['badge']), (7, '🍎'))
+        self.assertEqual(pm.public(*(lambda x: (x.state, x.c))(worker('delivery')), 'delivery')['top'], 7)
 
     def test_existing_top_rank_is_kept_and_can_go_on(self):
         """A Trưởng đội bay from before this build: rank 4, no 'hi'. Nothing is rewritten; the next step opens."""
@@ -158,13 +158,13 @@ class Ladders(unittest.TestCase):
         self.assertEqual(pm.public(j.state, j.c, 'pilot')['insignia']['s'], 2)
         validate_state(j.state)
 
-    def test_other_careers_still_stop_at_four(self):
+    def test_other_careers_continue_past_four_without_an_office(self):
         j = at('delivery', 4)
         rec = pm.record(j.state, 'delivery')
         rec['good'] = rec['worked'] = 40
         day(j)
-        self.assertIsNone(due(j))
-        self.assertIsNone(pm.public(j.state, j.c, 'delivery')['next'])
+        self.assertEqual(due(j)['to'], 5)
+        self.assertEqual(pm.public(j.state, j.c, 'delivery')['next']['need'], 24)
         self.assertNotIn('office', pm.public(j.state, j.c, 'delivery'))
 
     def test_pilot_climbs_to_the_cap(self):
@@ -499,9 +499,9 @@ class Saves(unittest.TestCase):
             o[path[-1]] = value
             with self.assertRaises(GameError, msg=repr(path)):
                 validate_state(s)
-        s = copy.deepcopy(j.state)   # a step above 4 on a career whose ladder stops there
+        s = copy.deepcopy(j.state)   # an ordinary career cannot exceed step 7
         rec = pm.new_record()
-        rec.update(rank=4, hi=dict(n=1, due=None, log=[]))
+        rec.update(rank=4, hi=dict(n=4, due=None, log=[]))
         s['journey']['promo']['delivery'] = rec
         with self.assertRaises(GameError):
             validate_state(s)

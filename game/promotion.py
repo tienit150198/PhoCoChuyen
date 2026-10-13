@@ -10,7 +10,7 @@ pay ask. Passing gives the new title and, for good:
   cao lương cao": the top steps pay clearly more, never ×5; steps above 4 go +66 / 77 / 88 %, and with the asks'
   points a step stays ≤ 100 %, the bound older builds validate a log row's pct at);
   `job['salary']` itself never changes (its validator keeps it inside the posting's range);
-* an owner: regulars tip a share of the day's sales (+3 / 6 / 9 / 12 %, capped per day).
+* an owner: regulars tip a share of the day's sales (+3 / 6 / 9 / 12 / 15 / 18 / 21 %, capped per day).
 
 Nothing goes down: a weak day only pauses the count, a review that does not pass simply comes again
 after a few worked days. Quitting a job starts that job's ladder again (the log is kept).
@@ -25,12 +25,11 @@ the temporary helpers). The usual hands-on shift stays available every day.
 State: journey['promo'] = {career: record} — a new optional key: older servers ignore it (their
 journey.validate allows extra keys), and nothing about the career or job blocks changes.
 
-Longer ladders (F#193): TOP_BY_CAREER lets a career go past step 4 (pilot to 7: Phó Giám đốc / Giám đốc Khối
-khai thác bay, Phó Tổng Giám đốc; teacher to 5: Hiệu trưởng). The record's own 'rank' never goes past 4 (TOP),
-because builds up to 1.7.15 validate it there and would refuse the whole save after a rollback: the steps above
-4 live in the record's optional key 'hi' = {n: steps above 4, due: that review, log: those steps}, which those
-builds keep and ignore (they show the holder as step 4). Nobody's rank is ever rewritten. From the executive step
-the 🏢 Phòng điều hành (game/promotion_office.py) opens, kept in the record's optional key 'office'.
+Every ordinary career reaches step 7. The record's own 'rank' stays at 4 (TOP); higher steps
+live in optional 'hi' = {n, due, log}. Existing records retain all progress. Builds before 2.1
+that validate career-specific high-step caps cannot load newly earned higher steps. Pilot's
+existing seven formal ranks stay unchanged. Teacher and pilot keep their executive offices;
+other careers qualify through good days, completed work and reviews without an office gate.
 
 Org ladders (game/org.py, owner spec 06/10, police first): a career with an org (org_content.CAREER_ORG) keeps its
 rank and post in the record's optional key 'org' (older builds keep and ignore it), with its own appointment, course,
@@ -47,7 +46,7 @@ from . import promotion_office as OF
 
 VERSION = 1
 # Steps 1..7. good: good days since the last step; ratio: share of worked days that were good (%).
-# Steps 5..7 exist only in a career with a longer ladder (TOP_BY_CAREER); office: good days in the 🏢 office.
+# Steps 5..7 extend ordinary careers; office requirements apply only where that office is available.
 EMP_STEPS = (None,
              dict(good=5, ratio=70, pct=8),
              dict(good=8, pct=20),
@@ -60,9 +59,12 @@ OWN_STEPS = (None,
              dict(good=5, ratio=70, served=15, pct=3, cap=10),
              dict(good=8, served=30, rating=40, pct=6, cap=18),
              dict(good=12, served=50, pct=9, cap=26),
-             dict(good=20, served=100, chapter=5, pct=12, cap=35))
+             dict(good=20, served=100, chapter=5, pct=12, cap=35),
+             dict(good=24, served=150, pct=15, cap=42),
+             dict(good=28, served=220, pct=18, cap=50),
+             dict(good=32, served=300, pct=21, cap=60))
 TOP = 4                        # the stored rank's cap (record['rank']; older builds validate it there)
-TOP_BY_CAREER = {'pilot': 7, 'teacher': 5}   # longer ladders: the steps above TOP live in record['hi']
+TOP_BY_CAREER = {'pilot': 7, 'teacher': 7}   # longer ladders: the steps above TOP live in record['hi']
 HI_KEYS = frozenset(('n', 'due', 'log'))
 ACCT = ('corp_accounting', 'tax_payroll', 'group_accounting')
 ACCT_CARE = {1: 2, 2: 3}       # the accounting care track's rank a step needs
@@ -109,7 +111,7 @@ def group(career: str) -> str:
 
 
 def top(career: str) -> int:
-    return TOP_BY_CAREER.get(career, TOP) if track(career) == 'emp' else TOP
+    return TOP if career in ORG.OC.CAREER_ORG else TOP_BY_CAREER.get(career, 7)
 
 
 def _hi(rec: dict, create: bool = False) -> dict | None:
@@ -501,7 +503,7 @@ def _gates(s: dict, c: dict, career: str, rec: dict) -> list[dict]:
     if st.get('chapter') and j.get('story'):
         rows.append(dict(id='chapter', met=int(j.get('chapter') or 1) >= st['chapter'],
                          label=f'Tới chương {st["chapter"]}'))
-    if st.get('office'):
+    if st.get('office') and OF.available(career, _rank(rec)):
         off = rec.get('office')
         got = off['kpi']['good'] if isinstance(off, dict) else 0
         rows.append(dict(id='office', met=got >= st['office'], got=min(got, st['office']), need=st['office'],
@@ -512,7 +514,7 @@ def _gates(s: dict, c: dict, career: str, rec: dict) -> list[dict]:
 def office_progress(career: str, rec: dict) -> tuple[int, int] | None:
     """(good office days, needed) for the next step when it asks for office days (F#206), else None."""
     n = _rank(rec) + 1
-    if track(career) != 'emp' or n > top(career) or not EMP_STEPS[n].get('office'):
+    if track(career) != 'emp' or n > top(career) or not EMP_STEPS[n].get('office') or not OF.available(career, _rank(rec)):
         return None
     off = rec.get('office')
     got = off['kpi']['good'] if isinstance(off, dict) else 0
@@ -1107,12 +1109,12 @@ def on_close(s: dict, c: dict, career: str, summary: dict) -> dict | None:
         return out or None
     if not worked:
         return out or None
-    if not emp and rec['rank'] >= 1:
-        st = OWN_STEPS[rec['rank']]
+    if not emp and _rank(rec) >= 1:
+        st = OWN_STEPS[_rank(rec)]
         tip = min(st['cap'], _day_sales(c) * st['pct'] // 100)
         if tip > 0:
             from . import career_voice
-            _core().money(s, c, tip, f'🎖️ {career_voice.term(career, "tip")} · {title(s, c, career, rec["rank"])}', f'pm-tip-{c["day"]}', category='tip')
+            _core().money(s, c, tip, f'🎖️ {career_voice.term(career, "tip")} · {title(s, c, career, _rank(rec))}', f'pm-tip-{c["day"]}', category='tip')
             out['tip'] = tip
     rec['worked'] = min(10**6, rec['worked'] + 1)
     if good:
