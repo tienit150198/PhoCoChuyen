@@ -1,3 +1,12 @@
+# v2.3.0 — 2026-10-13
+
+- Thêm thi đua cùng 3 đồng nghiệp NPC cho đủ54 nghề, với162 tình huống phân công, kiểm tra và ghi nhận. Mỗi kỳ10 ca thực sự làm việc; đạt80/100 được tính kỳ tốt bất kể thứ hạng NPC. Năm hạng thi đua cần tối thiểu150 ca cùng bậc nghề tương ứng.
+- Thưởng kỳ tối đa300/900/2.000/5.000/10.000xu theo hạng và không quá10% thu nhập cơ bản tự làm hợp lệ; không nhân lại x3/trang bị/nhân viên. Chùa nhận tinh thần theo phần còn thiếu đến trần100. Tình huống nhóm lưu một lựa chọn/ngày nghề; tiến trình cũ được giữ.
+- Mở tiện ích kiểm đếm, hạn mức nhập hàng, sở hữu/nâng quầy và sức chứa theo bậc trả xu. Giá bậc3.000 →100.000.000xu; tổng152.692.000xu mỗi nhánh. Mua tuần tự, server kiểm tra số dư và quyền sở hữu; không xóa tài sản vượt hạn mức cũ.
+-27 nghề có nhánh sức chứa kho, mở rộng cả nguyên liệu, lô hàng, hàng giữ cho khách và các kho thành phẩm liên quan. Số lượng hàng hủy/đặt trước được hạch toán đúng khi sức chứa tăng; không tăng cỡ mẻ nấu theo sức chứa.
+- Cho phép góp vốn nghề lớn trong trần quỹ; bản dịch và giao diện điện thoại đi kèm. Chưa phát hành540 gói công thức/mẫu hàng trong tài liệu thiết kế.
+- Không đổi schema DB hoặc dữ kiện sinh nhiệm vụ. Sau khi có người mua kho/quầy vượt giới hạn cũ, khắc phục bằng bản tương thích2.3.x; không hạ trực tiếp về2.2.1 vì giới hạn kiểm tra bản lưu cũ thấp hơn.
+
 # v2.2.1 — 2026-10-13
 
 - Thẻ chúc ở chùa có hai quyền xem: Công khai hoặc Chỉ mình tôi, chọn khi treo và đổi lại được sau đó. Thẻ đã viết trước đây giữ riêng tư.
