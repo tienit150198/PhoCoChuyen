@@ -2828,7 +2828,7 @@ def _deal(s: dict, c: dict, v, supplier: str) -> str:
     x = c['ext']['inv']
     from .. import inventory
     transit = sum(o['qty'] for o in x['orders'] if o['item'] == item and o['status'] == 'in_transit')
-    q = min(qty, max(0, inventory.capacity(ID) - kit.stock(c, item) - transit))
+    q = min(qty, max(0, inventory.capacity(ID, c) - kit.stock(c, item) - transit))
     kit.need(q > 0, f'Kho hết chỗ chứa {it["name"]} rồi (tính cả hàng đang giao).')
     cost = q * unit
     kit.need(c['money'] >= cost, f'Chưa đủ {cost} xu để lấy lô này. Chọn cách khác nhé.')

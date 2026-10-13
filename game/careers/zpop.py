@@ -331,7 +331,7 @@ def _close(s, c, d, p):
     unit = SKU['ps_jewel']['cost']
     cost = qty * unit
     from .. import inventory
-    room = max(0, inventory.capacity(ID) - kit.stock(c, 'ps_jewel'))
+    room = max(0, inventory.capacity(ID, c) - kit.stock(c, 'ps_jewel') - inventory._in_transit(c['ext']['inv'], 'ps_jewel'))
     kit.need(qty <= room, f'Kho chỉ còn chỗ cho {room} bản Jewel.')
     kit.need(c['money'] >= cost, f'Chốt {qty} bản cần {cost} xu, quỹ tiệm chưa đủ.')
     if qty:

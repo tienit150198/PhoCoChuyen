@@ -1521,7 +1521,10 @@ def _ice_man(s: dict, c: dict, d: dict) -> str | None:
     if not n:
         return None
     cost = ITEM['da']['cost']
-    n = min(n, c['money'] // cost)
+    from .. import inventory
+    if inventory.room(c, ID, 'da') == 0:
+        return None
+    n = min(n, c['money'] // cost, inventory.room(c, ID, 'da'))
     if not n:
         return 'Anh Tuấn xe đá ghé, nhưng quỹ quán không đủ tiền lấy đá.'
     kit.money(s, c, -n * cost, f'Anh Tuấn xe đá giao {n} cây đá', f'td-ice-{c["day"]}', 'stock')
@@ -1530,6 +1533,9 @@ def _ice_man(s: dict, c: dict, d: dict) -> str | None:
 
 
 def _sau_seller(s: dict, c: dict, d: dict) -> str | None:
+    from .. import inventory
+    if inventory.room(c, ID, 'sau') < SAU_BATCH:
+        return None
     cost = SAU_BATCH * ITEM['sau']['cost']
     if c['money'] < cost:
         return None

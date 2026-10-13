@@ -752,7 +752,8 @@ def on_start(s: dict, c: dict) -> None:
             on_task(s, c, t)
     if pl['mod'] == 'beef_day' and not pl['rules'].get('beef_gift'):
         pl['rules']['beef_gift'] = True
-        if kit.stock(c, 'beef') + 4 <= SPEC['inventory']['capacity']:
+        from .. import inventory
+        if kit.stock(c, 'beef') + inventory._in_transit(c['ext']['inv'], 'beef') + 4 <= inventory.capacity(ID, c):
             kit.add_lot(c, 'beef', 4, 0, 2, 'gift')
             kit.log(s, c, 'stock', 'Nhà cung cấp tặng 4 phần bò Mỹ mừng hàng mới về.')
             FS.flash(pl, 'good', '🥩 Nhà cung cấp tặng 4 phần bò Mỹ mừng hàng mới về.')

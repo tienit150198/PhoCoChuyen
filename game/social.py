@@ -371,7 +371,7 @@ def apply_internal(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         life_left = e.integer(p.get('life_left'), 1, 999) - max(0, c['day'] - e.integer(p.get('listed_day'), 1, 10 ** 9))
         if life_left >= 1:
             name = inv.item(career, item)['name']
-            fit = min(qty, max(0, inv.capacity(career) - inv.count(c, item)))
+            fit = min(qty, inv.room(c, career, item))
             if fit:
                 inv.add_lot(c, item, fit, min(10000, e.integer(p.get('unit_cost'), 0, 100000)), life_left, 'market-return')
             if fit < qty:
@@ -386,8 +386,8 @@ def apply_internal(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         spec = inv.item(career, item)
         qty = e.integer(p.get('qty'), 1, 50)
         total = e.integer(p.get('total'), 0, 10 ** 6)
-        e.need(inv.count(c, item) + inv._in_transit(c['ext']['inv'], item) + qty <= inv.capacity(career),
-               f'Kệ chỉ chứa {inv.capacity(career)} phần mỗi loại (tính cả hàng đang giao).')
+        e.need(qty <= inv.room(c, career, item),
+               f'Kệ chỉ chứa {inv.capacity(career, c)} phần mỗi loại (tính cả hàng đang giao).')
         e.money(s, c, -total, f'Mua ở chợ Phố nghề: {qty} {spec["name"]} của {who}', category='stock')
         inv.add_lot(c, item, qty, min(10000, total // qty), e.integer(p.get('life_left'), 1, 999), 'market')
         return dict(message=f'Đã mua {qty} {spec["name"]}. Hàng đã vào kho.')

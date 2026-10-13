@@ -470,7 +470,8 @@ def on_start(s: dict, c: dict) -> None:
     _care_start(s, c, d, pl)
     if pl['mod'] == 'market' and not pl['rules'].get('market_gift'):
         pl['rules']['market_gift'] = True
-        if kit.stock(c, 'rose_pink') + 6 <= SPEC['inventory']['capacity']:
+        from .. import inventory
+        if kit.stock(c, 'rose_pink') + inventory._in_transit(c['ext']['inv'], 'rose_pink') + 6 <= inventory.capacity(ID, c):
             kit.add_lot(c, 'rose_pink', 6, 0, 4, 'gift')
             kit.log(s, c, 'stock', 'Nhà vườn tặng 6 cành hồng phấn mới cắt.')
             FS.flash(pl, 'good', '🚚 Nhà vườn tặng 6 cành hồng phấn mới cắt.')

@@ -1569,6 +1569,10 @@ def _return(s, c, t, p):
         d['today']['refunds'] += 1
     if decision in ('refund', 'exchange'):
         if x['resell']:
+            from .. import inventory
+            cap = inventory.capacity(ID, c)
+            kit.need(inventory.room(c, ID, item) >= 1,
+                     f'Kho chứa tối đa {cap} phần mỗi loại (tính cả hàng đang giao).')
             kit.add_lot(c, item, 1, ITEM[item]['cost'], ITEM[item].get('life', 999), 'return')
             lines.append('Món còn nguyên seal, xếp lại lên kệ.')
         else:

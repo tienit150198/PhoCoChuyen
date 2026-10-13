@@ -506,8 +506,7 @@ def _apply_effects(s: dict, c: dict, career: str, desk: dict, x: dict, eff: dict
             for item_id, q in (v.items() if box else ()):
                 if q > 0:
                     # Room left counts goods still on the way, like a normal order does.
-                    cap = inventory.capacity(career)
-                    q = min(q, max(0, cap - stock(c, item_id) - inventory._in_transit(box, item_id)))
+                    q = min(q, inventory.room(c, career, item_id))
                     if q:
                         it = item(career, item_id)
                         add_lot(c, item_id, q, 0, it.get('life') or 999, 'event')

@@ -162,7 +162,7 @@ def _stock_give(s: dict, c: dict, career: str, item: str, qty: int, unit: int) -
         from . import boba
         if item not in boba.ING:
             return 0
-        qty = min(qty, 60 - boba.stock(c).get(item, 0))
+        qty = min(qty, max(0, boba.shelf_cap(c) - boba.held(c).get(item, 0) - boba._pending(boba.view(c), item)))
         if qty > 0:
             boba.add_lot(s, c, item, qty, min(20, unit))
         return max(0, qty)
@@ -172,7 +172,7 @@ def _stock_give(s: dict, c: dict, career: str, item: str, qty: int, unit: int) -
     it = next((x for x in inventory.catalogue(career) if x['id'] == item), None)
     if not it:
         return 0
-    qty = min(qty, inventory.capacity(career) - inventory.count(c, item))
+    qty = min(qty, inventory.room(c, career, item))
     if qty > 0:
         inventory.add_lot(c, item, qty, min(10000, unit), inventory._life(it), 'recovered')
     return max(0, qty)

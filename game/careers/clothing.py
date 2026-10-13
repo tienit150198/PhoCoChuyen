@@ -742,8 +742,10 @@ def _sell(c: dict, item: str, size: str) -> int:
 
 def _restock_one(c: dict, item: str, size: str) -> None:
     """A returned piece that can be sold again goes back on the rack in its size."""
-    if kit.stock(c, item) >= CAPACITY:
-        return
+    from .. import inventory
+    cap = inventory.capacity(ID, c)
+    kit.need(kit.stock(c, item) + inventory._in_transit(c['ext']['inv'], item) < cap,
+             f'Kho chứa tối đa {cap} phần mỗi loại (tính cả hàng đang giao).')
     kit.add_lot(c, item, 1, ITEM[item]['cost'], 999, 'return')
     row = _data(c)['grid'].setdefault(item, {z: 0 for z in SIZES[item]})
     row[size] = row.get(size, 0) + 1

@@ -832,7 +832,7 @@ def _topup_stock(c: dict) -> None:
     from .. import inventory
     for item_id in NEW_ITEMS:
         it = ITEM_INDEX[item_id]
-        room = inventory.capacity(ID) - kit.stock(c, item_id)
+        room = inventory.capacity(ID, c) - kit.stock(c, item_id) - inventory._in_transit(c['ext']['inv'], item_id)
         q = min(it.get('start', 0), room)
         if q > 0:
             kit.add_lot(c, item_id, q, 0, it.get('life') or 999, 'opening')
@@ -1047,7 +1047,7 @@ def _buyin(s: dict, c: dict, d: dict, t: dict, name: str, p: dict) -> dict:
                 got = []
                 from .. import inventory
                 for item_id in ('screen_u', 'battery_u'):
-                    room = inventory.capacity(ID) - kit.stock(c, item_id) - inventory._in_transit(c['ext']['inv'], item_id)
+                    room = inventory.capacity(ID, c) - kit.stock(c, item_id) - inventory._in_transit(c['ext']['inv'], item_id)
                     if room > 0:
                         kit.add_lot(c, item_id, 1, n['offer'] // 2, 999, 'buyin')
                         got.append(ITEM_INDEX[item_id]['name'].lower())
@@ -1644,7 +1644,7 @@ def _release_one(c: dict, o: dict) -> None:
     from .. import inventory
     o['used'] = True
     it = ITEM_INDEX[o['item']]
-    if inventory.capacity(ID) - kit.stock(c, o['item']) > 0:
+    if inventory.capacity(ID, c) - kit.stock(c, o['item']) - inventory._in_transit(c['ext']['inv'], o['item']) > 0:
         kit.add_lot(c, o['item'], 1, it['cost'], it.get('life') or 999, 'order')
     else:
         kit.waste(c, o['item'], 1, o['cost'], 'Linh kiện đặt riêng còn thừa, kệ đã đầy')
