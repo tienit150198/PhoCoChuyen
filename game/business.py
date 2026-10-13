@@ -1,7 +1,7 @@
 """Atomic server-time settlement shared by commands and read refreshes."""
 import secrets
 import time
-from . import quay_business, workplace_business
+from . import quay_business, workplace_business, business_progression
 
 ACTION='business_sync'
 
@@ -16,6 +16,7 @@ def settle(s,now=None):
 def reconcile(s):
     """Anchor resumed work after receiving stock/funds; never pay new income here."""
     now=time.time();changed=quay_business.reconcile(s)
+    changed=business_progression.reconcile(s,now=now) or changed
     for cid,c in s.get('careers',{}).items():
         if c.get('ops',{}).get('business') is not None:
             changed=workplace_business.refresh(c,cid,now=now) or changed
@@ -29,7 +30,7 @@ def on_load(store,token,state):
 def on_load_result(store,token,state):
     """Return the committed public view so read routes need not load it again."""
     now=time.time()
-    if not (quay_business.due(state,now=now) or workplace_business.due(state,now=now)):
+    if not (business_progression.owner_due(state,now=now) or quay_business.due(state,now=now) or workplace_business.due(state,now=now)):
         return None
     # Each transaction rechecks the saved cursor. Concurrent tabs serialize via
     # Store's revision/CAS, so a new request id never means paying an order twice.

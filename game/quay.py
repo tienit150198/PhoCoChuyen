@@ -476,6 +476,10 @@ def action(s: dict, name: str, p: dict) -> dict:
         need(trade in TRADES, 'Chọn một món để bán.')
         need(served(s, trade) >= UNLOCK_SERVED, f'Làm {UNLOCK_SERVED} việc ở nghề này trước nhé.', 'locked')
         need(place in PLACES, 'Chọn một chỗ đặt quầy.')
+        from . import business_progression as bp
+        license = bp.open_requirement(s, place)
+        need(license['allowed'], license['reason'], 'business_license')
+        bp.snapshot(s)
         need(p.get('confirm') is True, 'Xác nhận mở quầy.')
         nm = _name(p.get('name') or f'{TRADES[trade]["name"]} {str(s.get("name") or "")}'.strip()[:NAME_MAX])
         need(j['wallet'] >= 0, 'Ví đang nợ. Trả nợ trước rồi mở quầy nhé.', 'in_debt')
@@ -494,6 +498,9 @@ def action(s: dict, name: str, p: dict) -> dict:
         return dict(message=f'🏪 {nm} đã mở! Thuê người đứng quầy nhé.')
     q = get(s)
     need(q is not None, 'Bạn chưa có quầy nào.', 'no_stall')
+    if name == 'jr_quay_license_keep':
+        from .business_progression import choose
+        return choose(s, p)
     st = stall(s, p.get('stall'))
     if name == 'jr_quay_event':
         from .shop_events import choose_quay
@@ -671,6 +678,9 @@ def _upgrade(s: dict, st: dict, p: dict, day: int) -> dict:
     need(p.get('confirm') is True, 'Xác nhận mở rộng quầy.')
     busy = grow_busy(st, place)
     need(not busy, busy, 'busy')
+    from .business_progression import open_requirement
+    license = open_requirement(s, place, replace_id=st['id'])
+    need(license['allowed'], license['reason'], 'business_license')
     need(j['wallet'] >= 0, 'Ví đang nợ. Trả nợ trước rồi mở rộng nhé.', 'in_debt')
     cost = upgrade_cost(st, place)
     need(_have(s) >= cost, f'Cần {_fmt(cost)} xu trong ví hoặc tài khoản.', 'no_money')
@@ -786,11 +796,15 @@ def _stall_view(s: dict, st: dict) -> dict:
                value=shift_value(st['place'], st['trade']), **_qs().stall_view(s, st))
     out['grow'] = [dict(place=k, cost=upgrade_cost(st, k)) for k in bigger(st)]   # 🏗️ Mở rộng quầy (jr_quay_upgrade)
     for g in out['grow']:   # #303: the button greyed with the refusal's own words (a view field, never saved)
-        why = grow_busy(st, g['place'])
+        from .business_progression import open_requirement
+        g['license'] = open_requirement(s, g['place'], replace_id=st['id'])
+        why = grow_busy(st, g['place']) or g['license']['reason']
         if why:
             g['why'] = why
     from .quay_business import public as business_public
     out['business'] = business_public(st)
+    out['license_blocked'] = bool(st.get('business', {}).get('certificate_block'))
+    out['closed'] = out['closed'] or out['license_blocked']
     from .staff_life import public as staff_public
     out['staff_life'] = staff_public(st, quay=True)
     from .shop_events import public as events_public
@@ -813,6 +827,17 @@ def _stall_view(s: dict, st: dict) -> dict:
 def public(s: dict) -> dict:
     q = get(s) or {}
     out = dict(stalls=[_stall_view(s, st) for st in q.get('stalls', ())], lock=why_locked(s), can=known_trades(s))
+    from . import business_progression as bp
+    out['business_license'] = bp.evaluate(s)
+    blocked = set(out['business_license']['blocked_ids'])
+    for st in out['stalls']:
+        st['license_blocked'] = st['id'] in blocked
+        if st['license_blocked']:
+            st['closed'] = True
+            if st['business']:
+                st['business'].update(status='restricted', reason=bp.REASON, income=None, next_at=None)
+                st['business']['running_cost']['accruing'] = False
+    out['open_requirements'] = {k: bp.open_requirement(s, k) for k in PLACE_IDS}
     out['receipts']=q.get('receipts',[])
     if q.get('shift'):
         out['shift'] = {k: q['shift'][k] for k in ('id', 'career', 'wage', 'who', 'name', 'until')}
@@ -858,6 +883,8 @@ def validate(s: dict) -> None:
     need(type(q['seq']) is int and q['seq'] >= 0 and isinstance(q['stalls'], list))
     from .quay_economy import validate_owner
     validate_owner(q, need, _int)
+    from .business_progression import validate as validate_license
+    validate_license(q, need, _int)
     ids = set()
     for st in q['stalls']:
         need(isinstance(st, dict) and STALL_KEYS <= set(st))

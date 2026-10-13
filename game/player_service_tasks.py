@@ -361,7 +361,7 @@ def scrub_import(state):
 
 
 def _visit_open(st):
-    return not (st.get('due') or st.get('business',{}).get('paused') or st.get('economy',{}).get('paused'))
+    return not (st.get('due') or st.get('business',{}).get('paused') or st.get('business',{}).get('certificate_block') or st.get('economy',{}).get('paused'))
 
 
 def _visit_fulfillable(st):
@@ -460,7 +460,7 @@ def settle_visits(st,at):
             row['due_at']=at+_visit_duration(st);row['staffed']=True
             return at,True,True
         end=min(at,max(cursor,row['due_at']))
-        if not qb._charge(st,max(0,end-cursor)) or b.get('halted')==st['fund']+st['till']:
+        if not qb._charge(st,max(0,end-cursor),direct=True) or b.get('halted')==st['fund']+st['till']:
             for r in rows:r['due_at']=None
             return at,True,True
         cursor=end;changed=changed or cursor>b['cursor']

@@ -49,6 +49,9 @@ class Base(unittest.TestCase):
 
         def fn(s):
             j = s['journey']
+            # Established-owner hiring fixtures; licensing tests use raw owners.
+            from game.business_progression import CERTS
+            j['certificates'] = {gid: dict(score=100, best=100, earned_day=1, attempts=1) for gid in CERTS}
             j['gender'] = 'female'
             j['chapter'] = 3
             j['done'] = [1, 2]

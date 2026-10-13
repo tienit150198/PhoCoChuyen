@@ -134,7 +134,8 @@ class Upgrade(unittest.TestCase):
         st = ST(s)
         view = qy.public(s)['stalls'][0]
         cost = 4000 - 800 + (140 - 70)
-        self.assertEqual(view['grow'], [dict(place='sap', cost=cost), dict(place='kiot', cost=15000 - 800 + 250 - 70)])
+        self.assertEqual([{k: g[k] for k in ('place', 'cost')} for g in view['grow']], [dict(place='sap', cost=cost), dict(place='kiot', cost=15000 - 800 + 250 - 70)])
+        self.assertTrue(all(g['license']['allowed'] for g in view['grow']))
         keep = {k: st[k] for k in ('id', 'name', 'trade', 'staff', 'items', 'menu', 'hist', 'opened')}
         stock, fund = dict(st['business']['stock']), st['fund']
         wallet = s['journey']['wallet']
@@ -148,7 +149,7 @@ class Upgrade(unittest.TestCase):
         self.assertEqual(s['journey']['wallet'], wallet - cost)
         self.assertIn('Sạp chợ Phố', r['message'])
         self.assertEqual(s['journey']['history'][-1]['amount'], -cost)
-        self.assertEqual(qy.public(s)['stalls'][0]['grow'], [dict(place='kiot', cost=15000 - 4000 + 250 - 140)])
+        self.assertEqual([{k: g[k] for k in ('place', 'cost')} for g in qy.public(s)['stalls'][0]['grow']], [dict(place='kiot', cost=15000 - 4000 + 250 - 140)])
         # sang nhượng now gives what a stall opened as a Sạp would: half its price, items at the Sạp's price
         self.assertEqual(qy.sell_back(st) - st['till'] - st['fund'], 4000 * qy.SELL_PCT // 100 + 140 * qy.UPGRADE_BACK // 100
                          - st['business'].get('unpaid_fines', 0) - st['due'])

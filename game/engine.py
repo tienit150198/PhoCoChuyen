@@ -532,7 +532,10 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
     def run():
         with player_services.command(state,career,action,payload):
             out,result=_apply_action(state,career,action,payload,internal,owned)
-        if business.reconcile(out):validate_state(out)
+        noticed = False
+        if not internal or action == business.ACTION:
+            noticed = business.business_progression.owner_access(out)
+        if business.reconcile(out) or noticed:validate_state(out)
         return out,result
     try:return bank_speaker.collect(lambda:income_gear.collect(run))
     finally:
@@ -542,6 +545,8 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
 def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,internal:bool,owned:bool) -> tuple[dict,dict]:
     s=migrate_state(state,owned=owned)
     settled_at=business.time.time()
+    if not internal or action == business.ACTION:
+        business.business_progression.owner_access(s,now=settled_at)
     if business.settle(s,now=settled_at):validate_state(s)
     fh.settle(s)  # 💸 a vay nóng of a fair that has closed is collected (game/fair_cash.py)
     p=payload or {}

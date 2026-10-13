@@ -10,6 +10,7 @@ from __future__ import annotations
 import random
 import copy
 
+from . import business_progression as bp
 from . import quay as qy
 
 MENU_MAX = 18
@@ -357,7 +358,7 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         _need(st['due'] <= 0, 'Đóng tiền thuê rồi mở hàng nhé.', 'closed')
         _need(_open_run(st, day) is None, 'Bạn đang đứng quầy.', 'busy')
         b = st['business']
-        _need(not b['paused'], 'Mở lại quầy trước khi đứng bán.', 'closed')
+        _need(bp.can_arrive(st), 'Mở lại quầy trước khi đứng bán.', 'closed')
         _need(any(b['stock'].get(d, 0) for d in menu(st)['on']), 'Nhập hàng vào kho trước nhé.', 'sold_out')
         from .work_gear import factor
         b['manual_seq'] += 1
@@ -420,7 +421,7 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         _need(pending_event(run) is None, 'Xử lý chuyện này trước nhé.', 'event')
         _need(run['i'] < run['k'], 'Hết khách đứng chờ rồi. Đóng ca nhé!', 'no_customer')
         if run.get('continuous'):
-            _need(not st['business']['paused'] or run['next_at'] <= st['business'].get('closed_at', 0), 'Quầy đã đóng, chưa nhận khách mới.', 'closed')
+            _need(bp.can_arrive(st, run['next_at']), 'Quầy đã đóng, chưa nhận khách mới.', 'closed')
             _need(st['business']['cursor'] >= run['next_at'], 'Khách tiếp theo đang tới.', 'waiting')
         else:
             _need(run['u'] < run['sk'], 'Hết hàng rồi. Đóng ca nhé!', 'sold_out')
@@ -606,12 +607,13 @@ def _queue_wait(st):
     return min(10**15, max(1000, round(3000 / max(1e-12, willingness) / st['business'].get('speed_factor', 1) / (1+cached(st,'demand')/100))))
 
 
-def reopen_queue(st):
+def reopen_queue(st, closed_at=None):
     """Retain arrived customers/quotes, reanchor only future closed footfall."""
     b, run = st['business'], st.get('run')
     if not isinstance(run, dict) or not run.get('continuous') or run['x']:
         return
-    closed_at = b.get('closed_at', b['cursor'])
+    if closed_at is None:
+        closed_at = b.get('closed_at', b['cursor'])
     if run['next_at'] > closed_at:
         run['next_at'] = b['cursor'] + _queue_wait(st)
         run['current']['arrival_at'] = run['next_at']
@@ -652,8 +654,9 @@ def settle_queue(s, st, at):
     run = st.get('run')
     if not isinstance(run, dict) or not run.get('continuous') or run['x']:
         return False
-    if st['business']['paused']:
-        return False
+    stop = bp.cutoff(st)
+    if stop is not None:
+        at = min(at, stop)
     changed = False
     if 'crowd' not in run:
         _queue_traits(s, st, run, run['current'], 0, run['next_at'])
@@ -720,7 +723,7 @@ def _next_order(s, st, run, jn, at):
 
 def _check_order(st, run, o, p):
     if run.get('continuous'):
-        _need(not st['business']['paused'] or o['available_at'] <= st['business'].get('closed_at', 0), 'Quầy đã đóng, chưa nhận đơn mới.', 'closed')
+        _need(bp.can_arrive(st, o['available_at']), 'Quầy đã đóng, chưa nhận đơn mới.', 'closed')
         _need(st['business']['cursor'] >= o['available_at'], 'Đơn này chưa tới.', 'waiting')
         _need(p.get('order_id', o['id']) == o['id'], 'Đơn này đã thay đổi. Xem đơn mới nhé.', 'stale_order')
 
@@ -813,7 +816,7 @@ def run_view(s: dict, st: dict) -> dict | None:
         out['sk'] = run['u'] + sum(st['business']['stock'].values())
         if 'crowd' in run:
             at = st['business']['cursor']
-            arrived_by = min(at, st['business'].get('closed_at', 0)) if st['business']['paused'] else at
+            arrived_by = min(at, bp.cutoff(st)) if bp.cutoff(st) is not None else at
             out['crowd'] = [_customer_mood(row, at) for row in [run['current']] + run['crowd']['waiting']
                             if row['arrival_at'] <= arrived_by]
             out['voices'] = [row for row in out['crowd'] if row['mood'] != 'calm'][:2]
@@ -825,7 +828,7 @@ def run_view(s: dict, st: dict) -> dict | None:
         from .quay_events import BY_ID
         e = BY_ID[run['ev'][n]]
         out['ev'] = dict(id=e['id'], emoji=e['emoji'], title=e['title'], text=e['text'], picks=[[k, label] for k, label, _ in e['picks']])
-    elif run['i'] < run['k'] and (not run.get('continuous') and run['u'] < run['sk'] or run.get('continuous') and (not st['business']['paused'] or run['next_at'] <= st['business'].get('closed_at', 0)) and st['business']['cursor'] >= run['next_at'] and any(st['business']['stock'].get(d, 0) for d in menu(st)['on'])):
+    elif run['i'] < run['k'] and (not run.get('continuous') and run['u'] < run['sk'] or run.get('continuous') and (bp.can_arrive(st, run['next_at'])) and st['business']['cursor'] >= run['next_at'] and any(st['business']['stock'].get(d, 0) for d in menu(st)['on'])):
         out['cust'] = {k: v for k, v in customer(s, st, run, run['i']).items()}
         out['queue'] = [customer(s, st, run, i)['look'] for i in range(run['i'] + 1, min(run['k'], run['i'] + 4))]
         if 'crowd' in out:
@@ -836,7 +839,7 @@ def run_view(s: dict, st: dict) -> dict | None:
     out['orders'] = []
     for jn, st_ in enumerate(run['on']):
         o = order(s, st, run, jn)
-        if run.get('continuous') and st['business']['paused'] and o.get('available_at', 0) > st['business'].get('closed_at', 0):
+        if run.get('continuous') and not bp.can_arrive(st, o.get('available_at', 0)):
             continue
         if (st['business']['cursor'] >= o.get('available_at', 0) if run.get('continuous') else run['i'] >= o['at'] - 1 or run['i'] >= run['k'] or st_):
             out['orders'].append(dict(j=jn, id=o.get('id'), available_at=o.get('available_at', 0)/1000, drive_factor=o.get('drive_factor',1), name=o['name'], items=o['items'], total=o['total'], note=o['note'], cod=o['cod'], addr=o['addr'],

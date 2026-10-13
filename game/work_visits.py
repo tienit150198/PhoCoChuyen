@@ -121,7 +121,8 @@ def places(state):
     so the commit holds the lock only for the database part. Snapshots are written with sorted
     keys (_json), so the owner added afterwards gives the same text."""
     from .content import CAREER_META
-    from . import quay, quay_self
+    from . import quay, quay_self, business_progression
+    blocked = set(business_progression.evaluate(state)["blocked_ids"])
     out = []
     bridge = _bridge()
     for career, c in state.get('careers', {}).items():
@@ -139,7 +140,7 @@ def places(state):
     for st in (quay.get(state) or {}).get('stalls', []):
         board = quay_self.menu(st)
         inventory = st.get('business', {}).get('stock', {})
-        paused = st.get('business', {}).get('paused') or st.get('economy', {}).get('paused') or st.get('due', 0) > 0
+        paused = st['id'] in blocked or st.get('business', {}).get('paused') or st.get('economy', {}).get('paused') or st.get('due', 0) > 0
         ready = bool(inventory) and getattr(bridge, 'can_accept_visit', lambda st: True)(st)
         offers = [dict(offer_id=d, dish=d, price=board['p'][d], staffed=bool(st.get('staff')), label=quay_self.DISH[st['trade']][d]['name'], career=st['trade'])
                   for d in board['on'] if inventory.get(d, 0) > 0] if not paused and ready else []

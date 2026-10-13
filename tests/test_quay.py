@@ -32,6 +32,10 @@ def story(wallet=5000, seed=4242):
 def owner(wallet=5000, trade='milk_tea', served=12, chapter=3):
     s = story(wallet)
     j = s['journey']
+    # Economy fixtures exercise established, fully qualified business owners.
+    # Licensing regressions explicitly clear these certificates in their fixtures.
+    from game.business_progression import CERTS
+    j['certificates'] = {gid: dict(score=100, best=100, earned_day=1, attempts=1) for gid in CERTS}
     j['chapter'] = chapter
     j['done'] = list(range(1, chapter))
     for n in range(2, chapter + 1):

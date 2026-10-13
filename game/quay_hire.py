@@ -258,6 +258,8 @@ def post(store, sid: str, display: str, d: dict) -> dict:
     need(j.get('story'), 'Quầy riêng chỉ có trong hành trình.', 'not_story')
     st = next((x for x in (qy.get(s) or {}).get('stalls', ()) if x['id'] == d.get('stall')), None)
     need(st, 'Không thấy quầy này.', 'no_stall', 404)
+    from . import business_progression as bp
+    need(st['id'] not in bp.evaluate(s, now=now())['blocked_ids'], bp.REASON, 'business_license')
     need(st['due'] == 0 and st['left'] <= qy.LEFT_DAYS and not st.get('economy', {}).get('paused'), 'Quầy đang đóng. Mở lại quầy trước nhé.', 'closed')
     need(int(j['life_day']) >= LIFE_DAYS, f'Thuê người chơi mở từ ngày sống {LIFE_DAYS}.', 'too_new')
     value = qy.shift_value(st['place'], st['trade'])
@@ -288,8 +290,10 @@ def post(store, sid: str, display: str, d: dict) -> dict:
             if replay(db):
                 raise _PostReplay()
         from .quay_business import settle
+        bp.owner_access(s2, now=now())
         settle(s2, now=now())
         st2 = qy.stall(s2, st['id'])
+        need(not st2['business'].get('certificate_block'), bp.REASON, 'business_license')
         need(st2['due'] == 0 and st2['left'] <= qy.LEFT_DAYS and not st2.get('economy', {}).get('paused'), 'Quầy đang đóng.', 'closed')
         if source == 'stall':
             need(st2['till'] + st2['fund'] >= wage, f'Két và vốn quầy chưa đủ {wage} xu để giữ lương.', 'no_funds')

@@ -16,6 +16,7 @@ from . import quay_self as qs
 from . import quay_market as market
 from . import wealth_pricing
 from . import income_gear
+from . import business_progression as bp
 from .loss_limits import bounded_loss
 
 PERIOD = 600
@@ -174,6 +175,8 @@ def kept(st):
 
 def status(st):
     b = st.get('business', {})
+    if b.get('certificate_block'):
+        return 'restricted'
     if b.get('paused') or st.get('due', 0) or st.get('economy', {}).get('paused'):
         return 'paused'
     if not st['staff']:
@@ -224,8 +227,13 @@ def assess_fine(st, amount):
     return paid
 
 
-def _charge(st, elapsed):
+def _charge(st, elapsed, *, direct=False):
+    blocked = st.get('business', {}).get('certificate_block')
+    if blocked and not direct:
+        return True
     b, rates = st['business'], _rates(st)
+    if blocked:
+        rates = {'wages': rates['wages']}
     # Keep the last coin reserved. A zero balance otherwise stops small polls
     # earlier than a catch-up that reaches the next fractional expense boundary.
     cash = max(0, st['till'] + st['fund'] - 1)
@@ -335,7 +343,7 @@ def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=
 def due(s, now=None):
     from .player_service_tasks import visit_due
     at = _ms(now)
-    return any(not isinstance(st.get('business'), dict) or
+    return bp.due(s, now=now) or any(not isinstance(st.get('business'), dict) or
                (wealth_pricing.ENABLED and st['business'].get('protection_quote', {}).get('day') != s['journey']['life_day']) or
                'profit_boost' not in st['business'] or 'market_epoch' not in st['business'] or
                visit_due(st,at) or
@@ -345,11 +353,19 @@ def due(s, now=None):
                for st in (qy.get(s) or {}).get('stalls', []))
 
 
-def settle(s, now=None):
+def settle(s, now=None, *, _policy=True, _exclusive=False):
     from .player_service_tasks import settle_visits
     from .shop_events import tick_quay
     from .staff_life import tick_quay as tick_staff
     at, changed = _ms(now), False
+    if _policy:
+        policy = bp.evaluate(s, at / 1000)
+        deadline = int(policy['deadline'] * 1000) if policy['deadline'] is not None else None
+        if policy['blocked_ids'] and deadline is not None:
+            # Book the whole old interval first, excluding arrivals at the cutoff.
+            if any(st.get('business', {}).get('cursor', at) < deadline for st in (qy.get(s) or {}).get('stalls', [])):
+                changed = settle(s, now=deadline / 1000, _policy=False, _exclusive=True) or changed
+            changed = bp.reconcile(s, now=at / 1000) or changed
     # Capture once before settling any counter; publish only after old elapsed
     # service has been billed. All counters share this day's valuation.
     renew = [st for st in (qy.get(s) or {}).get('stalls', [])
@@ -376,7 +392,7 @@ def settle(s, now=None):
         _schedule(st, b['cursor'])
         cursor = visit_cursor
         run = st.get('run')
-        manual = isinstance(run, dict) and run.get('continuous') and not run.get('x') and not b['paused']
+        manual = isinstance(run, dict) and run.get('continuous') and not run.get('x') and not b['paused'] and not b.get('certificate_block')
         intervals = _intervals(st)
         if not st['staff'] and manual:
             _charge(st, at - cursor)
@@ -387,7 +403,7 @@ def settle(s, now=None):
             if not _charge(st, end - cursor):
                 break
             cursor = end
-            if when > at or status(st) == 'no_funds':
+            if when > at or (_exclusive and when == at) or status(st) == 'no_funds':
                 break
             qs.settle_queue(s, st, when)
             channel = income_gear.channel(st,b['seq'])
@@ -399,12 +415,14 @@ def settle(s, now=None):
         if status(st) != 'running':
             # Time while closed never becomes deferred sales after restocking.
             b['arrivals'] = _fresh(at, intervals)
-        qs.settle_queue(s, st, at)
+        qs.settle_queue(s, st, at - (1 if _exclusive else 0))
         b['cursor'] = at
         tick_quay(s, st)
     for st in renew:
         st['business']['protection_quote'] = dict(quote)
         changed = True
+    if _policy:
+        changed = bp.reconcile(s, now=at / 1000) or changed
     return changed
 
 
@@ -522,7 +540,7 @@ def public(st):
     if not b:
         return None
     code = status(st)
-    reasons = dict(running='Nhân viên đang bán', paused='Quầy tạm dừng', no_staff='Chủ tự phục vụ hoặc thuê nhân viên', out_of_stock='Hết hàng trong menu đang bán', no_funds='Hết vốn trả lương và chi phí')
+    reasons = dict(restricted=bp.REASON, running='Nhân viên đang bán', paused='Quầy tạm dừng', no_staff='Chủ tự phục vụ hoặc thuê nhân viên', out_of_stock='Hết hàng trong menu đang bán', no_funds='Hết vốn trả lương và chi phí')
     rows = qs.DISH[st['trade']]
     held = kept(st)
     if code == 'out_of_stock' and held:
@@ -531,17 +549,17 @@ def public(st):
     next_at = min((v for d, v in b['arrivals'].items() if _for_staff(st, d) > 0), default=0)
     visitors=public_visits(st)
     plans = _protection_plans(st)
-    if not b['paused'] and visit_due(st,b['cursor']+1):
+    if not b['paused'] and not b.get('certificate_block') and visit_due(st,b['cursor']+1):
         code='running'
         pending=[r['due_at'] for r in visitors if r['status']=='queued' and r['due_at'] is not None]
         next_at=round(min(pending)*1000) if pending else b['cursor']
     rates = _rates(st)
     run = st.get('run')
-    manual = isinstance(run, dict) and run.get('continuous') and not run.get('x') and not b['paused']
+    manual = isinstance(run, dict) and run.get('continuous') and not run.get('x') and not b['paused'] and not b.get('certificate_block')
     # Time costs (wages, rent, power, environment, protection) accrue per real second while the
     # counter is open and working, sales or not: the same rule as _charge in settle().
     running = dict(per_period=sum(rates.values()), spent=sum(b['expenses'].get(k, 0) for k in TIME_COSTS),
-                   accruing=bool(code == 'running' or (not st['staff'] and manual and code != 'paused')))
+                   accruing=bool(code == 'running' or (not st['staff'] and manual and code not in ('paused', 'restricted'))))
     return dict(v=1, status=code, reason=reasons[code], paused=b['paused'], running_cost=running,
         market=dict(market.snapshot(b['cursor']), town=True, runs=market.outlook(b['cursor']), day_percent=market.DAY_PERCENT,
                     down_minutes=market.DOWN_MINUTES),
@@ -558,7 +576,7 @@ def public(st):
         net=b['revenue'] + b.get('profit_boost', {}).get('total', 0) - sum(b['expenses'].values()) - b.get('unpaid_fines', 0),
         unpaid_fines=b.get('unpaid_fines', 0), expenses=dict(b['expenses']), recent=[dict(x) for x in b['recent']],
         next_at=next_at / 1000 if code == 'running' else None, server_now=b['cursor'] / 1000,
-        income=income(st, b['cursor']))
+        income=None if code == 'restricted' else income(st, b['cursor']))
 
 
 def validate(st, need, integer):
@@ -593,6 +611,10 @@ def validate(st, need, integer):
         need(isinstance(b['keep'], dict) and set(b['keep']) <= set(qs.DISH[st['trade']]) and all(integer(v, 0, KEEP_MAX) for v in b['keep'].values()))
     if 'market_epoch' in b:
         need(integer(b['market_epoch'], 0, 10**12))
+    if 'certificate_block' in b:
+        need(type(b['certificate_block']) is bool)
+    if 'certificate_closed_at' in b:
+        need(integer(b['certificate_closed_at'], 0, b['cursor']))
     if 'closed_at' in b:
         need(integer(b['closed_at'], 0, b['cursor']))
     if 'protection' in b:

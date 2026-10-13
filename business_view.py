@@ -55,7 +55,7 @@ def quay_snapshot(store, token):
         'story': journey['story'], 'life_day': journey['life_day'], 'wallet': journey['wallet'],
         'quay': quay.public(state) if quay.visible(state) else None}}
     expires = now + _TTL
-    if not (quay_business.due(state, now=expires) or workplace_business.due(state, now=expires)):
+    if not (business.business_progression.owner_due(state, now=expires) or quay_business.due(state, now=expires) or workplace_business.due(state, now=expires)):
         # Resolve once more after a cache miss: an account cookie may have been
         # rotated/remapped while Store.read or settlement was in flight.
         current_sid, current_revision = _identity(store, token)
