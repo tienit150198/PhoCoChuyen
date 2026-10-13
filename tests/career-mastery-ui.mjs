@@ -19,6 +19,7 @@ assert.doesNotMatch(masteryCard(state,{compact:true}),/data-command=/);
 html=masteryCard({...state,ready:true});assert.match(html,/data-command="mastery_start"/);
 html=masteryCard({...state,retry_good_days:2,last_result:{passed:false,score:6,total:8}});
 assert.match(html,/6\/8/);assert.match(html,/2 ngày/);assert.doesNotMatch(html,/data-command="mastery_start"/);
+assert.match(html,/cm-result is-failed/,'failed assessments must not use the success treatment');
 html=masteryCard({...state,exam:{index:1,total:4,complete:false,question:{id:'q2',text:'<script>bad</script>',options:[{id:'b',label:'Kiểm & sửa'}]}}});
 assert.match(html,/Câu 2\/4/);assert.match(html,/&lt;script&gt;/);assert.match(html,/mastery_answer/);
 assert.match(html,/&quot;option&quot;:&quot;b&quot;/);assert.doesNotMatch(html,/mastery_start|mastery_finish/);
