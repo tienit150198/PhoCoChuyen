@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import lawyer from '../public/js/careers/lawyer.js';
+const sent=[];
+const x={ui:{},room:{data:{milestone:{qualified:3,required_cases:120,active_days:2,required_days:30,required_day:40},today:{jobs:1}}},esc:s=>String(s??'').replaceAll('<','&lt;'),fmt:String,cmd:(l,a,p)=>`<button data-command="${a}">${l}</button>`,render(){},send:async(...args)=>sent.push(args)};
+const t={id:'test',known:true,at:0,stage:'work',title:'Case',needs:{disclaimer:'Fiction',rule:'Rule',documents:[],invoices:[],steps:[{id:'timeline',type:'order',title:'Time',question:'Order',options:[{id:'a',label:'First'},{id:'b',label:'Second'},{id:'c',label:'Third'}]}]}};
+assert.match(lawyer.job(t,x),/aria-pressed/);
+await lawyer.actions.select({key:'test:timeline',item:'b'},null,x);
+await lawyer.actions.select({key:'test:timeline',item:'a'},null,x);
+await lawyer.actions.select({key:'test:timeline',item:'c'},null,x);
+await lawyer.actions.submit({key:'test:timeline',task:'test',step:'timeline'},null,x);
+assert.deepEqual(sent.at(-1),['lw_submit',{task:'test',step:'timeline',value:['b','a','c']}]);
+x.ui.amt={zero:0};
+await lawyer.actions.lawAmount({key:'zero',task:'test',step:'amount'},null,x);
+assert.equal(sent.at(-1)[1].value,0);
+assert.match(lawyer.idle(x),/120/);
+console.log('lawyer UI rendering and payload tests passed');
