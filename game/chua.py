@@ -169,14 +169,15 @@ def _card_text(recipient: str, blessing: str, name: str, message: str, wish: str
 
 def _new_card(p: dict, day: int) -> dict:
     e = _core()
+    e.need(type(p.get('public', False)) is bool, 'Quyền xem bảng lời chúc không hợp lệ.')
     if p.get('wish') is not None:
         wish = p['wish']
         e.need(isinstance(wish, str) and wish in WISHES, 'Chọn một lời nguyện nhé.')
-        e.need(set(p) <= {'act', 'wish'}, 'Chọn một việc ở chùa nhé.')
+        e.need(set(p) <= {'act', 'wish', 'public'}, 'Chọn một việc ở chùa nhé.')
         recipient, blessing = WISH_CARD[wish]
         name = message = ''
     else:
-        e.need(set(p) <= {'act', 'recipient', 'blessing', 'name', 'message'}, 'Chọn một việc ở chùa nhé.')
+        e.need(set(p) <= {'act', 'recipient', 'blessing', 'name', 'message', 'public'}, 'Chọn một việc ở chùa nhé.')
         recipient, blessing = p.get('recipient'), p.get('blessing')
         e.need(isinstance(recipient, str) and recipient in KHAN_WHO, 'Bạn khấn cho ai?')
         e.need(isinstance(blessing, str) and blessing in KHAN_WHO[recipient][1], 'Bạn mong điều gì?')
@@ -196,13 +197,13 @@ def action(s: dict, name: str, p: dict) -> dict:
     need = e.need
     need(_story(s), 'Đi chùa chỉ có trong hành trình.', 'locked')
     need(name in COMMANDS, 'Thao tác không hợp lệ.', 'unknown_action')
-    need(isinstance(p, dict) and set(p) <= {'act', 'wish', 'who', 'what', 'beat', 'recipient', 'blessing', 'name', 'message'}
+    need(isinstance(p, dict) and set(p) <= {'act', 'wish', 'who', 'what', 'beat', 'recipient', 'blessing', 'name', 'message', 'public'}
          and isinstance(p.get('act'), str) and p['act'] in ACTS,
          'Chọn một việc ở chùa nhé.')
     act = p['act']
     x = ACTS[act]
     who, what, beat = p.get('who'), p.get('what'), p.get('beat')
-    extra = {k for k in ('wish', 'who', 'what', 'beat', 'recipient', 'blessing', 'name', 'message') if k in p}
+    extra = {k for k in ('wish', 'who', 'what', 'beat', 'recipient', 'blessing', 'name', 'message', 'public') if k in p}
     card = None
     if act == 'nguyen':
         card = _new_card(p, s['journey']['life_day'])
@@ -249,7 +250,10 @@ def action(s: dict, name: str, p: dict) -> dict:
     else:
         text = x['text']
     tail = f' ({", ".join(parts)})' if parts else ''
-    return dict(message=f'{x["emoji"]} {text}{tail}', effects=[])
+    result = dict(message=f'{x["emoji"]} {text}{tail}', effects=[])
+    if card is not None:
+        result['chua_card'] = dict(id=card['id'], public=p.get('public', False))
+    return result
 
 
 # ---------------------------------------------------------------- view
@@ -266,7 +270,7 @@ def public(s: dict) -> dict:
         (more if k in SCENE_ACTS else acts).append(
             dict(id=k, emoji=x['emoji'], name=x['name'], spirit=min(x['spirit'], max(0, 100 - spirit)), wake=x['wake'], full=x['full'],
                  feast=x['feast'], done=k in did, ok=not why, why=why))
-    return dict(enabled=True, unlimited=True, spirit=spirit,
+    return dict(enabled=True, unlimited=True, sharing=True, spirit=spirit,
                 lunar=lunar(day), label=lunar_label(day), feast=feast_day(day),
                 cards=[dict(row) for row in (j.get('chua') or {}).get('cards', [])],
                 card_choices=dict(recipients=[dict(id=k, text=v[0], blessings=list(v[1])) for k, v in KHAN_WHO.items()],

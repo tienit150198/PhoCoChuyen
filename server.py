@@ -727,6 +727,12 @@ class Handler(BaseHTTPRequestHandler):
                 data=dict(format="mot-ngay-lam-nghe/save-v4",app_version=__version__,state=state,archive=self.server.store.archive_export(token),
                           sign=save_guard.sign(self.server.store.resolve(token)[0],revision,state))
                 self.json(200,data,{"Content-Disposition":"attachment; filename=mot-ngay-lam-nghe-save.json"});return
+            if route=="/api/chua/cards":
+                token,_,_,_=self.require_session(light=True)
+                if not self.server.rate_limit("chua-cards:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                from game import chua_board
+                query=chua_board.parse_query(parse_qs(split.query,keep_blank_values=True,max_num_fields=3))
+                self.json(200,chua_board.page(self.server.store,token,**query));return
             if route=="/api/archive":  # older rows of a history (game/archive.py), owner only
                 token=self.token()
                 if not token:raise GameError("Tải lại trang để bắt đầu phiên chơi.","session_missing")
@@ -972,7 +978,7 @@ class Handler(BaseHTTPRequestHandler):
             route=urlsplit(self.path).path
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim") or route.startswith("/api/work-visits/"))
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility") or route.startswith("/api/work-visits/"))
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
@@ -981,7 +987,8 @@ class Handler(BaseHTTPRequestHandler):
             body=self.rfile.read(length);self.body_read=True
             data=json.loads(body,parse_constant=lambda x:(_ for _ in ()).throw(ValueError("nonfinite")))
             if not isinstance(data,dict):raise GameError("Dữ liệu cần là đối tượng JSON.")
-            if not jail.route_open(route):   # 🚔 jailed: only the camp, messages and công ích (game/jail.py, an allowlist)
+            # Card visibility is a privacy control, available even while jailed.
+            if route!="/api/chua/cards/visibility" and not jail.route_open(route):   # 🚔 jailed: only the camp, messages and công ích (game/jail.py, an allowlist)
                 # a light route has not read the save: the jail_marks row tells (no row: free, no save read)
                 if jail.jailed(state) if state is not None else jail.marked_token(self.server.store,token):self.error(409,jail.JAILED,"jailed");return
             if route=="/api/admin/users/password":
@@ -1008,6 +1015,10 @@ class Handler(BaseHTTPRequestHandler):
                 result=self.server.store.command(token,data.get("request_id"),data.get("expected_revision"),data.get("career"),data.get("action"),data.get("payload",{}))
                 self.json(200,result,known=state_delta.parse_known(data.get("known")));return
             if route!="/api/feedback" and length>64*1024:self.error(413,"Nội dung quá lớn.");return
+            if route=="/api/chua/cards/visibility":
+                if not self.server.rate_limit("chua-visibility:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                from game import chua_board
+                self.json(200,chua_board.set_visibility(self.server.store,token,data));return
             if route=="/api/town/treasure/claim":
                 if not self.server.rate_limit("treasure-claim:"+token,20):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,town_treasure.claim(self.server.store,token,data),known=FULL);return

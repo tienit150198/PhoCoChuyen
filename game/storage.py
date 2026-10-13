@@ -640,6 +640,8 @@ class Store:
                 current=after if after is not None else self.parse_state(serialized,sid)
                 from . import rentals
                 rentals.command_commit(db,sid,before,current,action)
+                from . import chua_board
+                chua_board.command_commit(db,sid,action,current,result or {})
                 work_visits.command_commit(db,sid,before,current,career,action,result or {},projected=projected if after is not None else None)
             if db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=? AND revision=?",
                           (serialized,revision+1,sid,revision)).rowcount!=1:
@@ -734,6 +736,8 @@ class Store:
             before=before_out[0]
             from . import rentals
             rentals.command_commit(db,sid,before,raw,action)
+            from . import chua_board
+            chua_board.command_commit(db,sid,action,raw,result)
             work_visits.command_commit(db,sid,before,raw,career,action,result)
             db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(serialized,revision,sid))
             from . import couple

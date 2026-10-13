@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 41  # 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 42  # 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -47,6 +47,13 @@ CREATE TABLE IF NOT EXISTS mnl_meta (key {T} PRIMARY KEY, value {T} NOT NULL);
 CREATE TABLE IF NOT EXISTS sessions (
   sid {T} PRIMARY KEY, csrf {T} NOT NULL, revision bigint NOT NULL DEFAULT 0,
   state {T} NOT NULL, updated_at {T} NOT NULL DEFAULT {NOW_TEXT}
+);
+-- Only explicitly shared temple cards; private save/archive rows are never backfilled.
+CREATE TABLE IF NOT EXISTS chua_public_cards (
+  position {ID} PRIMARY KEY,
+  sid {T} NOT NULL REFERENCES sessions(sid) ON DELETE CASCADE,
+  card_id {T} NOT NULL, card {T} NOT NULL,
+  UNIQUE(sid, card_id)
 );
 CREATE TABLE IF NOT EXISTS receipts (
   sid {T} NOT NULL, request_id {T} NOT NULL, request_hash {T} NOT NULL,
@@ -849,6 +856,7 @@ TABLES = [
     dict(name='player_feedback', identity='id'),
     dict(name='player_feedback_images', identity=None),
     dict(name='archive', identity=None),
+    dict(name='chua_public_cards', identity='position'),
     dict(name='profiles', identity=None),
     dict(name='work_visit_places', identity=None),
     dict(name='work_service_orders', identity=None),
