@@ -146,3 +146,18 @@ class SharedStorageExpansion(unittest.TestCase):
         validate_state(j.state)
         j.c['life']['waste'][-1]['qty'] = 6001
         with self.assertRaises(GameError): experiences.validate(j.c, j.career)
+
+    def test_grocery_inspection_keeps_all_large_stock_references_and_waste(self):
+        from game.careers import grocery
+        j = Journey('grocery'); expand(j.c, j.career)
+        j.c['ext']['inv']['lots'] = []
+        for n in range(301): inventory.add_lot(j.c, 'milk', 1, 1, 1, 'test')
+        large = inventory.add_lot(j.c, 'milk', 1500, 1000, 1, 'test')
+        grocery._inspect(j.state, j.c, {})
+        self.assertEqual(len(j.c['ext']['data']['fine']['lots']), 302)
+        validate_state(j.state)
+        grocery._destroy(j.c, [large['id']], 'Test discard')
+        self.assertEqual(j.c['life']['waste'][-1]['qty'], 1500)
+        self.assertEqual(j.c['life']['waste'][-1]['value'], 1500000)
+        j.c['ext']['inv']['lots'] = []
+        validate_state(j.state)  # The fine keeps references even after the goods are gone.

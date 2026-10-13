@@ -2845,7 +2845,7 @@ def _destroy(c: dict, ids: list, reason: str) -> int:
     n = 0
     for lot in x['lots']:
         if lot['id'] in ids and lot['qty'] > 0:
-            kit.waste(c, lot['item'], min(60, lot['qty']), lot['qty'] * lot['unit_cost'], reason)
+            kit.waste(c, lot['item'], lot['qty'], lot['qty'] * lot['unit_cost'], reason)
             n += lot['qty']
     x['lots'] = [l for l in x['lots'] if l['id'] not in ids]
     return n
@@ -3278,7 +3278,9 @@ def validate_data(c: dict) -> None:
     if f is not None:
         kit.need(isinstance(f, dict) and set(f) == {'amount', 'lines', 'lots'}, 'Biên bản phạt sai.')
         kit.integer(f['amount'], 1, 10**6)
-        kit.need(isinstance(f['lines'], list) and 0 < len(f['lines']) <= 6 and isinstance(f['lots'], list) and len(f['lots']) <= 300, 'Biên bản phạt sai.')
+        from .. import inventory
+        lot_limit = max(300, inventory.stock_limit(ID, c) * len(ITEMS))
+        kit.need(isinstance(f['lines'], list) and 0 < len(f['lines']) <= 6 and isinstance(f['lots'], list) and len(f['lots']) <= lot_limit, 'Biên bản phạt sai.')
         for x in f['lines'] + f['lots']:
             kit.text(x, 200)
 
