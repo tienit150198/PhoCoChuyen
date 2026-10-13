@@ -50,6 +50,19 @@ class BusinessCertificates(unittest.TestCase):
                 self.assertIn(q['answer'], [o['id'] for o in q['options']])
         self.assertEqual((ct.DRAW, ct.PASS_MARK), (6, 4))
 
+    def test_exam_answers_do_not_follow_ids_or_repeat_practice_positions(self):
+        self.require_courses()
+        patterns = []
+        for gid in IDS:
+            group = ct.INDEX[gid]
+            exam = ''.join(q['answer'] for q in group['bank'])
+            practice = ''.join(q['answer'] for q in group['practice'])
+            self.assertNotEqual(exam, practice * 2, gid)
+            for period in range(1, 7):
+                self.assertNotEqual(exam, (exam[:period] * 12)[:12], (gid, period))
+            patterns.append(exam)
+        self.assertEqual(len(set(patterns)), len(IDS))
+
     def test_self_study_rejected_for_every_business_level_before_debit(self):
         self.require_courses()
         s = story(wallet=20000)
