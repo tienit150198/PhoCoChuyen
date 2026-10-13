@@ -1,99 +1,44 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "2.0.6",
-  "created_at_utc": "2026-10-13T03:44:32.924778+00:00",
+  "version": "2.0.7",
+  "created_at_utc": "2026-10-13T05:24:38.782396+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 551,
+  "minified": 555,
   "release_from_live": {
-    "live_release": "live-2.0.5",
-    "live_version": "2.0.5",
-    "live_manifest_sha256": "b9778d594cc92580158f08d51d5daa272c6dbd088b606421396e511718aa39ab",
-    "base": "b18d14456b654a0dc123a8910cb530f991c89544",
-    "ref": "ca19d423afe224d0545839908fcbca4c33ed6682",
+    "live_release": "mot-ngay-lam-nghe",
+    "live_version": "2.0.6",
+    "live_manifest_sha256": "a2945554c34876e2e8b95ab468c723fef41bf8e48b25821607d2aa17cd7853ac",
+    "base": "ca19d423afe224d0545839908fcbca4c33ed6682",
+    "ref": "53eaad980c35296acd9c3b4c658b683f10f807bf",
     "changed": [
       "CHANGELOG.md",
-      "business_view.py",
-      "docs/BUSINESS_LICENSES_OPERATIONS.md",
+      "client/isometric/model.ts",
+      "client/isometric/phaser-world.ts",
+      "docs/DEPLOY_2.0.6_2026-10-13.md",
       "docs/LIVE_BASE.md",
-      "docs/qa/gentle-losses-2026-10-11.md",
-      "docs/superpowers/plans/2026-10-11-gentle-losses.md",
-      "docs/superpowers/plans/2026-10-12-business-economics.md",
-      "docs/superpowers/plans/2026-10-12-business-existing-owners.md",
-      "docs/superpowers/plans/2026-10-12-business-progression.md",
       "game/__init__.py",
-      "game/business.py",
-      "game/business_certificate_content.py",
-      "game/business_progression.py",
-      "game/certificate_content.py",
-      "game/certificates.py",
-      "game/engine.py",
-      "game/player_service_tasks.py",
       "game/quay.py",
-      "game/quay_business.py",
-      "game/quay_hire.py",
-      "game/quay_self.py",
-      "game/work_visits.py",
       "i18n/translations.json",
       "package-lock.json",
       "package.json",
-      "public/css/journey.css",
       "public/i18n/en.json",
-      "public/js/v4/business-economy-ui.js",
-      "public/js/v4/business-license-ui.js",
-      "public/js/v4/certificates.js",
-      "public/js/v4/journey.js",
+      "public/js/isometric/phaser-world.js",
+      "public/js/v4/abroad.js",
       "public/js/v4/quay-manage.js",
       "public/js/v4/quay.js",
-      "scripts/browser_business_licenses.py",
-      "tests/__init__.py",
-      "tests/audio_resume.mjs",
-      "tests/business_license_ui.mjs",
-      "tests/dog_bark_board.mjs",
-      "tests/test_black_market.py",
-      "tests/test_business_certificates.py",
-      "tests/test_business_progression.py",
-      "tests/test_career_clothing.py",
-      "tests/test_career_police.py",
-      "tests/test_clothing_abroad.py",
-      "tests/test_dog_bark.py",
-      "tests/test_dog_bark_board.py",
-      "tests/test_economy_pass2.py",
-      "tests/test_exploit_fixes.py",
-      "tests/test_fair.py",
-      "tests/test_fair_asset_audit.py",
-      "tests/test_fair_dog.py",
-      "tests/test_fair_event_odds.py",
-      "tests/test_fair_gentle_losses.py",
-      "tests/test_fair_golden_days.py",
-      "tests/test_fair_hai_police.py",
-      "tests/test_fair_high_stakes.py",
-      "tests/test_fair_house_edge.py",
-      "tests/test_fair_knife_nocap.py",
-      "tests/test_fair_police_grace.py",
-      "tests/test_fair_thousand.py",
-      "tests/test_fair_tighten.py",
-      "tests/test_fair_watch.py",
-      "tests/test_fair_wealth_raid.py",
-      "tests/test_jail.py",
-      "tests/test_lb_wealth.py",
-      "tests/test_live_dog_bark.py",
-      "tests/test_live_town_treasure.py",
-      "tests/test_live_wedding.py",
-      "tests/test_org_police.py",
-      "tests/test_quay.py",
-      "tests/test_quay_fb295.py",
-      "tests/test_quay_hire.py",
-      "tests/test_realtime_market.py",
-      "tests/test_town_treasure.py",
-      "tests/test_wedding_live.py"
+      "tests/abroad-guidance.mjs",
+      "tests/abroad_guidance_browser.mjs",
+      "tests/isometric-treasure-markers.mjs",
+      "tests/isometric-world.mjs",
+      "tests/quay_manage_browser.mjs",
+      "tests/quay_reserve_browser.mjs",
+      "tests/test_quay_reserve.py",
+      "tests/test_task_compat.py"
     ],
     "deleted": [],
     "minified": [
-      "public/css/journey.css",
-      "public/js/v4/business-economy-ui.js",
-      "public/js/v4/business-license-ui.js",
-      "public/js/v4/certificates.js",
-      "public/js/v4/journey.js",
+      "public/js/isometric/phaser-world.js",
+      "public/js/v4/abroad.js",
       "public/js/v4/quay-manage.js",
       "public/js/v4/quay.js"
     ]
@@ -116,8 +61,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 310905,
-      "sha256": "5accc92c71240a0eae65826b8cba99bd0c84838a204c078f19657e4bbf82a075"
+      "bytes": 311563,
+      "sha256": "e22cd8606016706c2a9b2a70964fc9316a29f76cb8b5d634ca04b0632ad979c6"
     },
     {
       "path": "Dockerfile",
@@ -221,8 +166,8 @@
     },
     {
       "path": "client/isometric/model.ts",
-      "bytes": 23834,
-      "sha256": "eda1838380ad6ecd5953a2811f5cffb60eafc18301ffa68d0dabedf80ee62c88"
+      "bytes": 23913,
+      "sha256": "67c443a5bc110b019a03028cf9b5c597f54b067a45b1b02deda15727a3f3adda"
     },
     {
       "path": "client/isometric/performance-probe.ts",
@@ -231,8 +176,8 @@
     },
     {
       "path": "client/isometric/phaser-world.ts",
-      "bytes": 113802,
-      "sha256": "aca809c5afa9a8d89d03c46118c4b411a5ef4ab167f488ceaf3046c3aaa37cb6"
+      "bytes": 113893,
+      "sha256": "5728af4ab5ae3053dc177c6cd8b066e89ca8c58687477f1a53f90a95e0c07325"
     },
     {
       "path": "client/isometric/sign-placement.ts",
@@ -575,6 +520,11 @@
       "sha256": "9712387af2a5f5a8f56ac88b2beafd15080847eea6b0de7ce2e4e4be06a101ce"
     },
     {
+      "path": "docs/DEPLOY_2.0.6_2026-10-13.md",
+      "bytes": 5937,
+      "sha256": "d24b6d9a3b909f8f3837d438e1272c928d5423137cfcbfbfa1ce3034b0fd9344"
+    },
+    {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
       "bytes": 3743,
       "sha256": "788f3a3a7f371dc6a143196595d8ad9aa68ccf6c31caeb5886a419ee9ec14c06"
@@ -746,8 +696,8 @@
     },
     {
       "path": "docs/LIVE_BASE.md",
-      "bytes": 7656,
-      "sha256": "0bd618b02a672f9349b6815f6ccdc6440b340f773627b28fa1e675c1bfa8137c"
+      "bytes": 7657,
+      "sha256": "6b60eb3e1c7cefa7f156a10355b2fbd52a9bcae971e04ecee36a18307a7d7f8d"
     },
     {
       "path": "docs/LIVE_CONNECTION_2026-10-05.md",
@@ -2082,7 +2032,7 @@
     {
       "path": "game/__init__.py",
       "bytes": 105,
-      "sha256": "9065cf813efadc9a546bde8d190d2d09101c44270dd6f805c24d2c12921b78d2"
+      "sha256": "3c66bc00c527e8c0b3f9a3f971209baf179a015b6dac34e4ddba9cca1ec6a669"
     },
     {
       "path": "game/abandon.py",
@@ -3221,8 +3171,8 @@
     },
     {
       "path": "game/quay.py",
-      "bytes": 47960,
-      "sha256": "2713f2800a328fe8aba6846e261276785ded4004805769e4ca7b363b125714d7"
+      "bytes": 49060,
+      "sha256": "5f5b7835a1c97d02ecc48da8a155f6826d5b14a23ff2f9c536390535bcb59fb5"
     },
     {
       "path": "game/quay_business.py",
@@ -3531,8 +3481,8 @@
     },
     {
       "path": "i18n/translations.json",
-      "bytes": 4637168,
-      "sha256": "7b3a0c269c92b8d9e3d8d17657af1e6c8b80c37b1c8be388a9839e02697a0604"
+      "bytes": 4639486,
+      "sha256": "b94af02cb2ac79ea42d339ad0e39190abab34c389827ac9cb5c37463a3424194"
     },
     {
       "path": "live/__init__.py",
@@ -3742,12 +3692,12 @@
     {
       "path": "package-lock.json",
       "bytes": 35890,
-      "sha256": "1495f346a3ec04654e3dc283bdd9f9e9df8acb015e08bf9de77a9aa15cdd30dd"
+      "sha256": "7fb778cee176b0cdd513801aa7b4a5a8afd6c43497260dae47cb5a4f2219cfd1"
     },
     {
       "path": "package.json",
       "bytes": 3745,
-      "sha256": "610e46ed91ac00ff8027a58603fbbb5e2354c56f36d513bb79db33525f98fad3"
+      "sha256": "e87e87cb620da59064c74ea867f6f4e2ae20e09858b7a9a644e2ffc44b4217c3"
     },
     {
       "path": "public/admin.html",
@@ -4526,8 +4476,8 @@
     },
     {
       "path": "public/i18n/en.json",
-      "bytes": 9324169,
-      "sha256": "286ce16d910d2de9f379ae781c2c5c2be920b8ed6952ddddd7b1c3f19f9b632c"
+      "bytes": 9326506,
+      "sha256": "4422debb0231abb997dc794d464c7899a50341bb96518d166e7c543f12523984"
     },
     {
       "path": "public/icons/apple-touch-icon.png",
@@ -5786,8 +5736,8 @@
     },
     {
       "path": "public/js/isometric/phaser-world.js",
-      "bytes": 1468618,
-      "sha256": "0c55bc1e32186986fa3a426b5a5df8e29b423d862abd6fe6257944ab8325a92b"
+      "bytes": 1468788,
+      "sha256": "f235b5cd58a9fc0972cc93ca40dad9864938afb09c4dc9375163d90902ee579e"
     },
     {
       "path": "public/js/isometric/portraits.js",
@@ -6216,8 +6166,8 @@
     },
     {
       "path": "public/js/v4/abroad.js",
-      "bytes": 9346,
-      "sha256": "576977c8eb6a73633f1f30ec6c77bd102a78fadcad533d3555d93ab7145265fc"
+      "bytes": 9939,
+      "sha256": "6ce0b339e4f6142653c44db95e7d9623b81cf0ff6ad2b3985babbb03679cd638"
     },
     {
       "path": "public/js/v4/account.js",
@@ -6776,8 +6726,8 @@
     },
     {
       "path": "public/js/v4/quay-manage.js",
-      "bytes": 1650,
-      "sha256": "6dbd0df951b5f6347c7447aad0ea90d3dbe9134320ccca6c422d3cbfb0d22ba4"
+      "bytes": 1799,
+      "sha256": "e219cb4940aae8042153dc4e0b15998a91541f6145b5fdd478ccc586b59b7d20"
     },
     {
       "path": "public/js/v4/quay-owner-queue.js",
@@ -6801,8 +6751,8 @@
     },
     {
       "path": "public/js/v4/quay.js",
-      "bytes": 81569,
-      "sha256": "0ee3ff7c7041d48b8be41033c8f4f6d7ec99768a295f31f4a0ae8ea383edc99d"
+      "bytes": 82933,
+      "sha256": "c5190874b54853d4d9d99f6ee3ad01e7c9b63c7ddee4e758394fd404cceecef8"
     },
     {
       "path": "public/js/v4/reno.js",
@@ -7850,6 +7800,16 @@
       "sha256": "d74e0d455ff8c356c80aa4e78adae864a670415e1a736f83101c9a04b05095c2"
     },
     {
+      "path": "tests/abroad-guidance.mjs",
+      "bytes": 2109,
+      "sha256": "3c2be05cae91f39d677ac3f9130994690d741c6984ef108bfc2b6d4aa40d1386"
+    },
+    {
+      "path": "tests/abroad_guidance_browser.mjs",
+      "bytes": 3089,
+      "sha256": "19b86129c364ec0c2440fa2e712655804f0b4db87e7ba1a865cd2a4cffa15e9b"
+    },
+    {
       "path": "tests/accounting_jobs.mjs",
       "bytes": 3425,
       "sha256": "42f0bbd1466d420d8ccb0daa6878a06581c09c584b379132bcc1da30dd553569"
@@ -8571,8 +8531,8 @@
     },
     {
       "path": "tests/isometric-treasure-markers.mjs",
-      "bytes": 5283,
-      "sha256": "fc450736b9e2a8cef9d8fb622b51b3720a9d354dde5a17b7da33a6c4b986edc8"
+      "bytes": 6631,
+      "sha256": "ebcc79a6127fde2f88a4226124241ff020f520860b04a33388cc52fcb6bb5d52"
     },
     {
       "path": "tests/isometric-visibility.mjs",
@@ -8596,8 +8556,8 @@
     },
     {
       "path": "tests/isometric-world.mjs",
-      "bytes": 20635,
-      "sha256": "55f648d712ffc91c2ab6ed6e6822fa29a93696eaa30bfb231cc8684225a2f7bd"
+      "bytes": 21637,
+      "sha256": "5bcae50aa13fe61e773570d17f8f14296429f3e468e9117b8ff52f64672322be"
     },
     {
       "path": "tests/jail_games.mjs",
@@ -8831,13 +8791,18 @@
     },
     {
       "path": "tests/quay_manage_browser.mjs",
-      "bytes": 9517,
-      "sha256": "919cf2f8186fa89c6b53e909605f0e49f521f982a1c31296bdaf3b55006dc465"
+      "bytes": 9523,
+      "sha256": "9373a37baa4154b2c5ec0a5251f55a336a55c10567df498f3bff73c51b1e04d4"
     },
     {
       "path": "tests/quay_owner_queue.mjs",
       "bytes": 2629,
       "sha256": "464cf151864d0274a6ee15eac3d34a26cafc4432b1842c1da0cc0e0a41a40d9f"
+    },
+    {
+      "path": "tests/quay_reserve_browser.mjs",
+      "bytes": 6965,
+      "sha256": "fb39ffb0014e1bf44de98d66f72ce004299cd0c9c113ef9a63f587dad9dbd301"
     },
     {
       "path": "tests/quay_select_all_browser.mjs",
@@ -10680,6 +10645,11 @@
       "sha256": "55091059d638d8a7fe6c62ee096ec3c73e3260ae2c12d7b2928f8cada8516d7b"
     },
     {
+      "path": "tests/test_quay_reserve.py",
+      "bytes": 4843,
+      "sha256": "c6726a23ec801fa565c9e002ce5170e33cf3ad395fc0a6e2cab39cda6f9d6d87"
+    },
+    {
       "path": "tests/test_quay_self.py",
       "bytes": 13581,
       "sha256": "e6ba9cfffa88cf21d3ffc9305f41039a15056b24425e27690a32bd452f899e0f"
@@ -10911,8 +10881,8 @@
     },
     {
       "path": "tests/test_task_compat.py",
-      "bytes": 5568,
-      "sha256": "84d99dc3a207ebe02f442633e11e45da220be18d946003b942c16ded4a8d78db"
+      "bytes": 5567,
+      "sha256": "e40cca8a23ee635201e7606f6e2710258bddc24f970529c4383aa1fb27317a5e"
     },
     {
       "path": "tests/test_teacher_care.py",
