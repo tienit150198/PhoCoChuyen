@@ -30,6 +30,7 @@ IN_SAVE = {
     "ledger": dict(path=("ops", "finance", "ledger")),
     "feed": dict(path=("feed",), newest_first=True),
     "wallet": dict(path=("history",), journey=True),
+    "chua.cards": dict(path=("chua", "cards"), journey=True),
 }
 
 _OUT: contextvars.ContextVar = contextvars.ContextVar("archive_out", default=None)

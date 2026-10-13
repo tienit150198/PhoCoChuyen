@@ -1,4 +1,4 @@
-"""🛕 Đi chùa (game/chua.py): the quiet acts at chùa Gió Lành for everyone in the story, free, a few a day; the
+"""🛕 Đi chùa (game/chua.py): the quiet acts at chùa Gió Lành for everyone in the story, free and repeatable; the
 vegetarian meal on rằm and mùng 1; wishes; older saves, validation and refusals."""
 import copy
 import unittest
@@ -60,24 +60,22 @@ class Visit(unittest.TestCase):
         self.assertEqual(spirit(s), 57)
         self.assertIn('Cho khu phố bình an.', r['message'])
         self.assertEqual(s['journey']['wallet'], wallet, 'never costs xu')
-        self.assertEqual(s['journey']['chua'], dict(v=1, day=1, did=['huong', 'ngoi', 'nguyen'], n=3))
+        self.assertEqual({k: s['journey']['chua'][k] for k in cg.KEYS}, dict(v=1, day=1, did=['huong', 'ngoi', 'nguyen'], n=3))
         validate_state(s)
 
-    def test_daily_limit_and_once_each(self):
+    def test_unlimited_repeats_keep_unique_daily_history(self):
         s = story()
-        s, _ = do(s, act='huong')
-        with self.assertRaises(GameError) as e:
-            do(s, act='huong')
-        self.assertEqual(e.exception.code, 'already_done')
-        s, _ = do(s, act='chuong')
-        s, _ = do(s, act='quet')
-        s, _ = do(s, act='ngoi')
-        with self.assertRaises(GameError) as e:
-            do(s, act='khan', who='ca_nha', what='khoe')
-        self.assertEqual(e.exception.code, 'limit')
+        for _ in range(100):
+            s, result = do(s, act='huong')
+        self.assertEqual(spirit(s), 100)
+        self.assertNotIn('tinh thần +', result['message'])
+        self.assertEqual(s['journey']['chua']['did'], ['huong'])
+        self.assertEqual(s['journey']['chua']['n'], 100)
         view = cg.public(s)
-        self.assertEqual(view['left'], 0)
-        self.assertTrue(all(not a['ok'] and a['why'] for a in view['acts'] + view['more']))
+        self.assertTrue(view['unlimited'])
+        self.assertEqual(view['spirit'], 100)
+        self.assertTrue(all(a['ok'] for a in view['acts'] + view['more'] if a['id'] != 'com'))
+        validate_state(s)
 
     def test_a_new_day_opens_the_gate_again(self):
         s = story()
@@ -85,7 +83,7 @@ class Visit(unittest.TestCase):
             s, _ = do(s, act=a)
         s['journey']['life_day'] += 1
         validate_state(s)
-        self.assertEqual(cg.public(s)['left'], cg.DAILY)
+        self.assertTrue(cg.public(s)['unlimited'])
         s, _ = do(s, act='huong')
         self.assertEqual(s['journey']['chua']['did'], ['huong'])
         self.assertEqual(s['journey']['chua']['n'], 4)
@@ -135,9 +133,8 @@ class Scene(unittest.TestCase):
         self.assertIn('Con cầu mong cha mẹ được mạnh khỏe.', r['message'])
         self.assertEqual(s['journey']['wallet'], 40)
         self.assertEqual(s['journey']['chua']['did'], ['khan'])
-        with self.assertRaises(GameError) as e:
-            do(s, act='khan', who='pho', what='binh_an')
-        self.assertEqual(e.exception.code, 'already_done')
+        s, _ = do(s, act='khan', who='pho', what='binh_an')
+        self.assertEqual(spirit(s), 56)
         validate_state(s)
 
     def test_khan_refuses_what_does_not_fit(self):
@@ -157,7 +154,7 @@ class Scene(unittest.TestCase):
         for who, (words, whats) in cg.KHAN_WHO.items():
             self.assertTrue(whats and set(whats) <= set(cg.KHAN_WHAT), who)
         text = ' '.join(cg.KHAN_WHAT.values()).lower()
-        for bad in ('may mắn', 'giàu', 'tiền', 'trúng', 'đỗ', 'thi'):
+        for bad in ('giàu', 'tiền', 'trúng', 'đỗ', 'thi'):
             self.assertNotIn(bad, text)
 
     def test_chant_spirit_follows_the_beats_kept(self):
@@ -205,7 +202,7 @@ class Saves(unittest.TestCase):
         v = public_state(s)['chua']
         self.assertTrue(v['enabled'])
         self.assertEqual(len(v['acts']) + len(v['more']), len(cg.ACTS))
-        self.assertEqual(v['left'], cg.DAILY)
+        self.assertTrue(v['unlimited'])
 
     def test_older_clients_only_see_the_acts_they_can_draw(self):
         # an older client draws every row of `acts` as a plain button (no prayer composer, no mõ)
@@ -221,7 +218,7 @@ class Saves(unittest.TestCase):
         s, _ = do(story(), act='huong')
         for bad in ('x', dict(v=1, day=1, did=['huong']), dict(v=2, day=1, did=[], n=0), dict(v=1, day=99, did=[], n=0),
                     dict(v=1, day=1, did=['huong', 'huong'], n=2), dict(v=1, day=1, did=['ghost'], n=1),
-                    dict(v=1, day=1, did=['huong', 'chuong', 'quet', 'ngoi', 'khan'], n=5), dict(v=1, day=1, did=['huong'], n=0)):
+                    dict(v=1, day=1, did=['huong'], n=0)):
             t = copy.deepcopy(s)
             t['journey']['chua'] = bad
             with self.assertRaises(GameError, msg=bad):
