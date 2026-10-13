@@ -59,6 +59,10 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   lifeguard:style('lifering','pergola','lifering','#81a9ad','#f0dab5'),
   police:style('shield','civic','planter','#7e9588','#e7dcb4'),
   zpop:style('record','scallop','books','#a592b6','#f0d4c6'),
+  art_studio:style('palette','pergola','toolbox','#b8896f','#f4dfbc'),
+  lawyer:style('scales','civic','books','#54788b','#e5e7cf'),
+  laundry:style('washer','awning','trolley','#72a5a7','#e7edda'),
+  post_office:style('envelope','workshop','parcels','#c29150','#f3dfb8'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -182,6 +186,18 @@ function drawStructure(c:CanvasRenderingContext2D,s:CareerFacadeStyle,sign:{x:nu
 function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
   const {round,ellipse,poly,line,arc,star,heart,gradient,finish,body,cream,ink}=paint(c,s);
   switch(s.motif){
+    case 'palette':
+      ellipse(0,2,40,31,cream);ellipse(21,10,9,11,ink);
+      for(const [x,y,color] of [[-22,-9,'#b97565'],[-5,-18,'#7c9e83'],[14,-17,'#709cad'],[-27,9,'#ceab62']] as const)ellipse(x,y,7,7,color);
+      line([[-16,34],[31,-33]],'#876c50',7);poly([[24,-32],[40,-42],[32,-23]],s.main);break;
+    case 'scales':
+      line([[0,-34],[0,32]],ink,6);line([[-31,-18],[31,-18]],s.main,5);round(-25,30,50,9,4,body);
+      for(const x of [-27,27]){line([[x,-18],[x-12,7]],ink,2);line([[x,-18],[x+12,7]],ink,2);poly([[x-15,7],[x+15,7],[x+9,18],[x-9,18]],body);}ellipse(0,-34,6,6,cream);break;
+    case 'washer':
+      round(-33,-36,66,73,9,body);round(-27,-30,54,12,3,cream);ellipse(0,9,24,24,cream);ellipse(0,9,17,17,'#91b4bc');
+      arc(0,9,12,0,Math.PI,'#e3f0e9',5);ellipse(20,-24,3,3,s.main);break;
+    case 'envelope':
+      round(-40,-27,80,57,5,cream);line([[-37,-24],[0,5],[37,-24]],s.main,4);line([[-37,27],[-13,6]],s.main,3);line([[37,27],[13,6]],s.main,3);round(23,-19,9,12,2,body);break;
     case 'basket':
       arc(0,-7,25,Math.PI,0,'#93764f',6);poly([[-39,-8],[39,-8],[29,34],[-29,34]],gradient('#e8c58d','#b99361'));
       for(const x of [-21,-7,7,21])line([[x,-3],[x*.78,28]],'#eed7a9',4);line([[-31,9],[31,9]],'#a78255',3);

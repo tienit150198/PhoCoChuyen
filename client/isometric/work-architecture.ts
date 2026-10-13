@@ -22,6 +22,10 @@ const plan=(edge:readonly XY[],height:number,finish:WallFinish,opening:WallOpeni
  * Fittings resolve against actual furniture; they cannot create hidden blockers.
  */
 const PLANS:Record<string,Plan>={
+  art_studio:plan([[0,9],[0,6.2],[-.45,6.2],[-.45,1.8],[-.9,1.8],[-.9,-.6],[1.4,-.6],[2,-1.1],[3.3,-1.1],[4.1,0],[6.9,0],[7.7,-.7],[10,-.7],[10,0]],211,'lime','clerestory','gable',[['fixture0','plinth',16],['fixture1','hanging-rail',157],['fixture2','wash-splash',103]],0xdfc7ad),
+  lawyer:plan([[0,9],[0,7],[-.4,7],[-.4,3.1],[-.85,3.1],[-.85,-.45],[1.6,-.45],[1.6,-1.05],[3.2,-1.05],[4.1,0],[6.9,0],[7.9,-.55],[9.1,-.55],[10,0]],204,'timber','sash','flat',[['shelf','sorting-cubbies',153],['fixture1','timber-screen',105],['workbench','pigeonholes',111]],0xd5c7b6),
+  laundry:plan([[0,9],[0,5.8],[-.6,5.8],[-.6,2.3],[-1,2.3],[-1,-.3],[1.3,-.3],[1.3,-.95],[3.5,-.95],[4.1,0],[6.9,0],[7.35,-1.15],[9.65,-1.15],[10,0]],189,'ceramic','ribbon','step',[['fixture0','pipe-chase',133],['fixture2','wash-splash',114],['shelf','hanging-rail',158]],0xc9dbd3),
+  post_office:plan([[0,9],[0,6.7],[-.55,6.7],[-.55,3.4],[-1.05,3.4],[-1.05,-.65],[1.05,-.65],[2.1,-1.3],[3.15,-1.3],[4.1,0],[6.9,0],[7.65,-.4],[8.5,-.4],[8.5,-.95],[10,-.95],[10,0]],202,'brick','arch','step',[['fixture0','sorting-cubbies',159],['counter','service-hatch',124],['evidence','lightbox',149]],0xd7c1a1),
   // Tea: a glazed brewing bay and a low open pickup wing. Bakery: a deep brick
   // oven apse. Restaurant: two tiled service returns under a stepped hot-line wall.
   milk_tea:plan([[0,9],[0,5],[-.65,5],[-.65,1],[0,0],[1.5,-.8],[3.4,-.8],[4.1,0],[6.9,0],[8,-.45],[10,-.45],[10,0]],180,'glazing','ribbon','flat',[['workbench','pipe-chase',102],['fixture0','display-steps',32],['shelf','lightbox',118]],0xe3d5b4),

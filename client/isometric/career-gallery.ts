@@ -1,4 +1,4 @@
-import {CAREER_ART} from './career-art';
+import {careerPreview} from './building-art';
 // Same renderer as the game; this page only creates in-memory example state.
 // @ts-ignore Runtime module is built separately; never bundle a second Phaser copy.
 import {PhaserWorld} from '/js/isometric/phaser-world.js';
@@ -52,9 +52,10 @@ async function choose(id:string,view=mode){
   byId('position').textContent=`${catalogue.indexOf(c)+1} / ${catalogue.length}`;
   for(const item of catalogue)byId('card-'+item.id).classList.toggle('active',item.id===id);
   byId('outside').setAttribute('aria-pressed',String(mode==='outside'));byId('inside').setAttribute('aria-pressed',String(mode==='inside'));
-  const picture=byId<HTMLImageElement>('building');picture.src=`/icons/careers-v1/${id}.webp`;picture.alt=`Mặt ngoài ${title(c)}`;
+  const preview=careerPreview(id)!;
+  const picture=byId<HTMLImageElement>('building');picture.src=preview.src;picture.alt=`${preview.dedicated?'Mặt ngoài':'Minh họa dùng chung cho'} ${title(c)}`;
   history.replaceState(null,'',`#${encodeURIComponent(id)}/${mode}`);
-  if(mode==='inside')await showInside(version);else{if(world)world.paused=true;byId('interior').hidden=true;byId('exterior').hidden=false;status('Mặt tiền riêng của nghề. Chọn “Vào bên trong” để thử đường đi.');}
+  if(mode==='inside')await showInside(version);else{if(world)world.paused=true;byId('interior').hidden=true;byId('exterior').hidden=false;status(`${preview.dedicated?'Mặt tiền riêng của nghề.':'Minh họa mặt tiền dùng chung; nội thất và biển nghề được thiết kế riêng.'} Chọn “Vào bên trong” để thử đường đi.`);}
 }
 function safely(promise:Promise<any>){promise.catch(error=>{console.error(error);byId('error').hidden=false;byId('error').textContent='Chưa mở được cảnh. Tải lại trang để thử lại.';status('Không mở được cảnh.');});}
 function moveChoice(delta:number){const i=catalogue.findIndex(c=>c.id===current);safely(choose(catalogue[(i+delta+catalogue.length)%catalogue.length].id));}
@@ -75,15 +76,16 @@ function wire(){
 }
 async function boot(){
   const response=await fetch('/api/content?part=core',{credentials:'omit'});if(!response.ok)throw new Error(`Catalogue ${response.status}`);
-  content=await response.json();catalogue=(content.catalogue||[]).filter((c:Career)=>Object.prototype.hasOwnProperty.call(CAREER_ART,c.id));
+  content=await response.json();catalogue=(content.catalogue||[]).filter((c:Career)=>careerPreview(c.id)!==null);
   if(!catalogue.length)throw new Error('Catalogue empty');
   const fragment=document.createDocumentFragment();
   for(const c of catalogue){
     const option=new Option(title(c),c.id);select.add(option);
     const card=document.createElement('button');card.type='button';card.className='card';card.id='card-'+c.id;card.setAttribute('aria-label',`Xem ${title(c)}`);
-    const img=document.createElement('img');img.loading='lazy';img.decoding='async';img.src=`/icons/careers-v1/${c.id}.webp`;img.alt='';img.width=320;img.height=320;
+    const preview=careerPreview(c.id)!;
+    const img=document.createElement('img');img.loading='lazy';img.decoding='async';img.src=preview.src;img.alt='';img.width=320;img.height=320;
     const h=document.createElement('h3');h.textContent=title(c);const p=document.createElement('p');p.textContent=c.place||'';
-    const small=document.createElement('small');small.textContent='Xem mặt ngoài & vào bên trong →';card.append(img,h,p,small);
+    const small=document.createElement('small');small.textContent=preview.dedicated?'Xem mặt ngoài & vào bên trong →':'Minh họa dùng chung · Nội thất riêng →';card.append(img,h,p,small);
     card.addEventListener('click',()=>{safely(choose(c.id,'outside'));byId('viewer').scrollIntoView({block:'start',behavior:'auto'});});fragment.append(card);
   }
   byId('gallery').append(fragment);wire();filter();

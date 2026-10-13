@@ -17,14 +17,17 @@ const extraIds=[...extra.match(/^NEW_CAREERS = \(([^)]+)\)/m)[1].matchAll(/'([a-
 const plugins=await readFile('game/careers/__init__.py','utf8');
 const pluginIds=[...plugins.split('ORDER = (')[1].split('\n)')[0].matchAll(/^\s*([^#\n]*)/gm)].flatMap(([_,line])=>[...line.matchAll(/'([a-z_]+)'/g)].map(m=>m[1]));
 const ids=[...new Set([...coreIds,...extraIds,...pluginIds])];
+const fallbacks={art_studio:'office',lawyer:'office',laundry:'home',post_office:'garage'};
+const paintedIds=ids.filter(id=>!Object.hasOwn(fallbacks,id));
 
-test('every catalogue profession selects its own full painted exterior',()=>{
+test('the original 50 professions retain their own painted exteriors and four new careers use shipped fallbacks',()=>{
   const keys=new Set();
-  for(const id of ids){
+  for(const id of paintedIds){
     assert.equal(art.BUILDING_ART[id],'career-'+id,`${id} loads its own building instead of a shared house with a badge`);
     keys.add(art.BUILDING_ART[id]);
   }
-  assert.equal(ids.length,50);assert.equal(keys.size,50);
+  assert.equal(ids.length,54);assert.equal(keys.size,50);
+  for(const [id,base] of Object.entries(fallbacks))assert.equal(art.BUILDING_ART[id],base);
 });
 
 function canvasFactory(){
@@ -53,7 +56,7 @@ test('compositions are reused for the same source, and replaced for a newly load
 test('new painted exteriors pass through without any old roof glaze or floating motif overlay',()=>{
   assert.equal(typeof facade.drawCareerFacade,'function');
   const factory=canvasFactory();
-  for(const id of ids){
+  for(const id of paintedIds){
     const canvas=factory.create();canvas.width=512;canvas.height=430;
     const source={width:512,height:430};
     facade.drawCareerFacade(canvas.getContext('2d'),source,id,'career-'+id);
@@ -64,7 +67,7 @@ test('new painted exteriors pass through without any old roof glaze or floating 
 
 test('finished exteriors never populate the legacy composition cache',()=>{
   const factory=canvasFactory(),cache=new facade.CareerFacadeCache(factory.create);
-  for(const id of ids)assert.equal(cache.get(id,'career-'+id,{width:512,height:512}),null);
+  for(const id of paintedIds)assert.equal(cache.get(id,'career-'+id,{width:512,height:512}),null);
   assert.equal(factory.canvases.length,0);
 });
 
@@ -82,4 +85,11 @@ test('texture keys distinguish careers and base sources while unknown IDs stay b
   assert.notEqual(facade.careerFacadeTextureKey('salon','salon'),facade.careerFacadeTextureKey('nail','salon'));
   assert.notEqual(facade.careerFacadeTextureKey('nail','salon'),facade.careerFacadeTextureKey('nail','home'));
   assert.equal(facade.careerFacadeTextureKey('unknown','home'),null);
+});
+
+test('four new careers receive distinct composed fallback facades',()=>{
+  const factory=canvasFactory(),cache=new facade.CareerFacadeCache(factory.create),source={width:292,height:390};
+  const keys=new Set();
+  for(const [id,base] of Object.entries(fallbacks)){const canvas=cache.get(id,base,source);assert.ok(canvas);assert.ok(canvas.calls.length>30);keys.add(facade.careerFacadeTextureKey(id,base));assert.equal(cache.get(id,base,source),canvas);}
+  assert.equal(keys.size,4);assert.equal(factory.canvases.length,4);
 });

@@ -1,7 +1,7 @@
 import {CAREER_ART} from './career-art';
 
 /** Shared paintings remain available while a finished exterior is loading and
- * for older/non-catalogue callers. They are never the final career selection. */
+ * for careers whose dedicated exterior has not yet been painted. */
 export const LEGACY_BUILDING_ART:Record<string,string>={
   grocery:'grocery',mother_baby:'mother-baby',pharmacy:'pharmacy',
   accounting:'office',customer_care:'office',corp_accounting:'office',tax_payroll:'office',
@@ -14,9 +14,20 @@ export const LEGACY_BUILDING_ART:Record<string,string>={
   library:'school',nurse:'pharmacy',oil:'garage',railway:'airport',
   lighthouse:'lighthouse',rescue:'office',lifeguard:'market',police:'office',
   zpop:'grocery',
+  art_studio:'office',lawyer:'office',laundry:'home',post_office:'garage',
 };
-/** Exactly one complete exterior painting per real catalogue profession. */
+/** The original 50 paintings stay intact; newer careers use real shared art. */
 export const BUILDING_ART:Record<string,string>={...LEGACY_BUILDING_ART,...Object.fromEntries(Object.values(CAREER_ART).map(a=>[a.career,a.key]))};
+const PREVIEW_FALLBACKS:Readonly<Record<string,string>>={
+  art_studio:'/icons/cozy-v3/office.webp',lawyer:'/icons/cozy-v3/office.webp',
+  laundry:'/icons/isometric/home.webp',post_office:'/icons/cozy-v2/garage.webp',
+};
+/** Gallery URLs must point to shipped assets; a shared illustration is labelled honestly. */
+export function careerPreview(career:string):{src:string;dedicated:boolean}|null{
+  if(Object.prototype.hasOwnProperty.call(CAREER_ART,career))return {src:CAREER_ART[career].src,dedicated:true};
+  if(Object.prototype.hasOwnProperty.call(PREVIEW_FALLBACKS,career))return {src:PREVIEW_FALLBACKS[career],dedicated:false};
+  return null;
+}
 export const NEW_BUILDING_ART=['florist','salon','office','pet','school','pagoda','airport','market','lighthouse'];
 /** Keep a shop name to at most two lines; automatic word wrap made long signs tiny. */
 export function facadeTextLines(text:string){

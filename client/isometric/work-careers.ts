@@ -57,6 +57,10 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   lifeguard:identity('Thử nước · kiểm phao và quan sát hồ','Bàn trực cứu hộ','Mặt hồ','Trực cứu hộ'),
   police:identity('Đọc sổ trực · tiếp nhận việc dân','Bàn tiếp dân','Tiếp dân','Ghế chờ'),
   zpop:identity('Kiểm bản giới hạn · quét album','Bàn kiểm album','Album & đặt trước','Quét Zchart'),
+  art_studio:identity('Đọc đơn tranh · phối màu và dựng lớp','Bàn dựng tác phẩm','Mẫu màu & khung tranh','Vẽ & duyệt tranh'),
+  lawyer:identity('Đối chiếu chứng cứ · soạn phương án','Bàn đối chiếu hồ sơ','Chứng cứ & lưu trữ','Trao đổi phương án'),
+  laundry:identity('Đọc nhãn vải · giặt và trả đúng khách','Bàn xử lý & gấp đồ','Giặt & xử lý vết bẩn','Gấp & kiểm phiếu'),
+  post_office:identity('Kiểm bưu gửi · tính cước và chia tuyến','Bàn soạn bưu gửi','Bao gói & chia tuyến','Cân cước & bàn giao'),
 };
 
 const r=(x0:number,y0:number,x1:number,y1:number):Rect=>({x0,y0,x1,y1});
@@ -78,7 +82,26 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     layout.fixtures=[];layout.floors=[{footprint:r(0,0,10,9),pattern,color:outdoor?0xd0ccb5:0xe5cba4,accent:0xc2b99b}];layout.outdoor=outdoor;
   };
 
-  if(career==='accounting'){
+  if(career==='art_studio'){
+    clear();s('workbench','desk',r(3.1,3.2,5.4,4.2),4.25,4.8,57,cream);
+    refurnish('shelf','rack',117,0xbca4bd);
+    f('board',r(2.95,.55,4.4,1.15),125,cream);f('rack',r(5.1,.55,6.25,1.5),109,0xbca4bd);f('sink',r(5.95,3.1,6.45,4.1),60,blue);
+    z(r(2.7,.3,6.5,1.8),'plank');z(r(2.85,2.9,6.7,4.5),'mat',0xddc1ad);
+  }else if(career==='lawyer'){
+    clear();s('workbench','desk',r(3.15,.65,5.6,1.6),4.4,2.2,62,blue);
+    f('bookcase',r(5.95,.55,6.45,1.75),118);f('sofa',r(2.95,3.6,4.6,4.3),42,mint);f('desk',r(5.1,3.5,6,4.3),47,cream);
+    z(r(2.85,.3,6.7,1.95),'plank');z(r(2.65,3.2,6.3,4.6),'carpet',0xbfcbd1);
+  }else if(career==='laundry'){
+    clear(false,'tile');s('shelf','rack',r(.55,1.8,1.5,4.1),2,2.95,120,blue);
+    s('workbench','counter',r(3.1,3.4,5.6,4.25),4.4,4.85,57,mint);
+    f('washer',r(2.9,.65,4.1,1.85),83,cream);f('washer',r(4.65,.65,5.75,1.85),83,mint);f('sink',r(6.05,.65,6.55,1.85),62,blue);
+    z(r(2.65,.35,6.8,2.1),'tile',0xcbdedd);z(r(2.8,3.1,5.9,4.55),'checker',0xe8dfcb);
+  }else if(career==='post_office'){
+    clear();s('workbench','counter',r(3.05,3.05,5.3,4.05),4.2,4.65,62,0xc7a576);
+    refurnish('shelf','shelf',117);refurnish('evidence','routeboard',112,blue);
+    f('shelf',r(2.8,.55,4.2,1.35),116);f('crate',r(5,.65,6.3,1.55),55,cream);f('crate',r(5.95,3.25,6.45,4.15),45,0xc7a576);
+    z(r(2.55,.3,6.6,1.85),'plank');z(r(2.8,2.75,6.7,4.45),'tile',0xe2d0ad);
+  }else if(career==='accounting'){
     clear();s('workbench','desk',r(3,2.9,5.5,3.9),4.2,4.5);
     f('bookcase',r(2.9,.55,4.25,1.25),116);f('desk',r(5,.55,6.3,1.3),55,mint);f('sofa',r(.55,7.7,1.5,8.3),40,blue);
     z(r(2.65,.3,6.55,1.55),'plank');z(r(2.75,2.6,5.8,4.25));

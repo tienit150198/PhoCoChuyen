@@ -5,7 +5,8 @@ import {readFileSync} from 'node:fs';
 import {build} from 'esbuild';
 
 const html=readFileSync('public/career-gallery.html','utf8');
-const ids=JSON.parse(readFileSync('game/town_layout.json','utf8')).careerOrder;
+const fallback={art_studio:'/icons/cozy-v3/office.webp',lawyer:'/icons/cozy-v3/office.webp',laundry:'/icons/isometric/home.webp',post_office:'/icons/cozy-v2/garage.webp'};
+const ids=[...new Set([...JSON.parse(readFileSync('game/town_layout.json','utf8')).careerOrder,...Object.keys(fallback)])];
 const catalogue=ids.map(id=>({id,short:id,place:'Nơi làm việc '+id,focus:'Công việc '+id,playable:false}));
 catalogue.find(c=>c.id==='teacher').short='Giáo viên';
 catalogue.find(c=>c.id==='railway').short='Đường sắt';
@@ -83,10 +84,10 @@ test('the HTML mounts the tested gallery module and accessible career controls',
   assert.match(html,/id="status"[^>]*role="status"[^>]*aria-live="polite"/);
 });
 
-test('all 50 catalogue professions are reachable through cards, selector and wrapping pager without unlocks',async()=>{
+test('all 54 catalogue professions are reachable through cards, selector and wrapping pager without unlocks',async()=>{
   const h=harness();await flush();
-  assert.equal(h.nodes.get('gallery').children.length,50);assert.equal(h.nodes.get('career').children.length,50);assert.equal(h.worlds.length,0,'outside collection does not construct a renderer');
-  for(const id of ids){h.click('card-'+id);await flush();assert.equal(h.nodes.get('career').value,id);assert.equal(h.nodes.get('building').src,'/icons/careers-v1/'+id+'.webp');assert.equal(h.nodes.get('viewer').hidden,false);}
+  assert.equal(h.nodes.get('gallery').children.length,54);assert.equal(h.nodes.get('career').children.length,54);assert.equal(h.worlds.length,0,'outside collection does not construct a renderer');
+  for(const id of ids){h.click('card-'+id);await flush();assert.equal(h.nodes.get('career').value,id);assert.equal(h.nodes.get('building').src,fallback[id]||'/icons/careers-v1/'+id+'.webp');assert.equal(h.nodes.get('viewer').hidden,false);}
   h.click('next');await flush();assert.equal(h.nodes.get('career').value,ids[0]);h.click('previous');await flush();assert.equal(h.nodes.get('career').value,ids.at(-1));
   h.click('inside');await flush();h.worlds[0].resolve();await flush();
   for(const id of ids){h.select(id);await flush();assert.equal(h.worlds[0].state.current,id);assert.equal(h.worlds[0].state.careers[id].open,true);}
@@ -150,7 +151,7 @@ test('Vietnamese search is case-insensitive including uppercase Đ',async()=>{
   const h=harness();await flush();h.search('giao vien');assert.equal(h.nodes.get('card-teacher').hidden,false);
   h.search('duong sat');assert.equal(h.nodes.get('card-railway').hidden,false,'uppercase Đ in a career title folds to d');
   h.search('ĐƯỜNG SẮT');assert.equal(h.nodes.get('card-railway').hidden,false);
-  h.search('');assert.equal(h.nodes.get('count').textContent,'50 / 50 nghề');
+  h.search('');assert.equal(h.nodes.get('count').textContent,'54 / 54 nghề');
 });
 
 test('catalogue failures show an accessible error without creating a renderer',async()=>{
@@ -161,4 +162,9 @@ test('a deep link opens its exact profession and interior without game account s
   const h=harness({hash:'#pharmacy/inside'});await flush();assert.equal(h.nodes.get('career').value,'pharmacy');assert.equal(h.worlds.length,1);
   h.worlds[0].resolve();await flush();assert.equal(h.worlds[0].state.current,'pharmacy');assert.equal(h.nodes.get('interior').hidden,false);assert.deepEqual(h.forbidden,[]);
   const unknown=harness({hash:'#unreleased/inside'});await flush();assert.equal(unknown.worlds.length,0);assert.equal(unknown.nodes.get('viewer').hidden,true);assert.deepEqual(unknown.errors,[]);
+});
+
+test('the four shared preview images are labelled honestly and never request nonexistent dedicated files',async()=>{
+  const h=harness();await flush();
+  for(const [id,src] of Object.entries(fallback)){h.click('card-'+id);await flush();assert.equal(h.nodes.get('building').src,src);assert.match(h.nodes.get('status').textContent,/dùng chung/);assert.match(h.nodes.get('building').alt,/dùng chung/);assert.equal(h.nodes.get('card-'+id).children[0].src,src);}
 });
