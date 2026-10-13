@@ -811,4 +811,3 @@ Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chun
 8. Phân tuyến thay thế theo sức chứa
 9. Đối soát bằng chứng giao hàng đến muộn
 10. Điều phối và khép hồ sơ phục hồi tuyến
-
