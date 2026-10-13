@@ -123,6 +123,11 @@ class ScaleSites:
         await self._ensure_loaded(conn.player)
         if not data or (conn.player.pid != key[0] and (not data['site']['public'] or self.hub.blocked(conn.player.pid, key[0]))):
             raise LiveError('private', 'Cơ sở không tồn tại hoặc chưa mở đón khách.')
+        treasure = getattr(self.app, 'by_name', {}).get('treasure')
+        if treasure is not None and treasure.enabled():
+            await treasure.leave(conn)
+        # No awaits from the admission checks through room.add/publication: the
+        # treasure lease write above may have admitted another visitor meanwhile.
         rid = SITE_PREFIX + ':'.join(key)
         room = self.hub.rooms.get(rid)
         if room is not None:
@@ -132,9 +137,6 @@ class ScaleSites:
             raise LiveError('full', 'Cơ sở đang đông, lát quay lại nhé.')
         if room is None and len(self.hub.rooms_with_prefix(SITE_PREFIX)) >= SITE_ROOMS_MAX:
             raise LiveError('full', 'Các cơ sở đang đông, lát quay lại nhé.')
-        treasure = getattr(self.app, 'by_name', {}).get('treasure')
-        if treasure is not None and treasure.enabled():
-            await treasure.leave(conn)
         self._leave(conn, 'other', takeover=True)
         # Leaving the last occupant may have dropped this exact room.
         room = self.hub.rooms.get(rid)
@@ -145,7 +147,10 @@ class ScaleSites:
         if room is None:
             room = self.hub.room(rid, cap=SITE_CAP, on_empty=self._empty)
             room.data.update(people={}, ev=[], mvi={}, h=None, last=0.0, hidden_seen=set(), site_key=key, site_layout=data)
-        room.add(conn)
+        if not room.add(conn):
+            if not room.conns:
+                self._empty(room)
+            raise LiveError('full', 'Cơ sở đang đông, lát quay lại nhé.')
         look, gender = clean_look(f.get('look'), f.get('g'))
         w = Walker(conn.player, look, gender, (11.5, 16.25), clean_direction(f.get('direction')))
         room.data['people'][w.pid] = w
