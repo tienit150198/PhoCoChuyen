@@ -158,7 +158,9 @@ def _period_result(career, number, league, days, authorized, rank, spirit_room=0
     totals = [sum(d['npc'][i] for d in days) for i in range(3)]
     player = sum(d['score'] for d in days)
     place = 1 + sum(n > player for n in totals)
-    good = score >= 80 and place <= 2
+    # Recognition is earned against an absolute quality standard. Strong NPC
+    # peers never take away the player's progress or otherwise eligible reward.
+    good = score >= 80
     income = sum(d['income'] for d in days)
     bonus = min(CAPS[league], income // 10) if good and authorized and career != 'pagoda' else 0
     spirit = min(SPIRIT_CAP, spirit_room) if good and authorized and career == 'pagoda' else 0

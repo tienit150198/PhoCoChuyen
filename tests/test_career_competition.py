@@ -280,3 +280,12 @@ def test_validation_rejects_forged_award_and_aggregate():
         d['competition']['history'][0][field] = value
         with pytest.raises(Exception):
             cc.validate(d, 'post_office')
+
+
+def test_absolute_quality_earns_recognition_and_reward_even_rank_four():
+    days = [dict(score=80, npc=[81, 90, 99], income=100000) for _ in range(10)]
+    result = cc._period_result('post_office', 20, 3, days, True, 7)
+    assert result['rank'] == 4
+    assert result['good'] is True
+    assert result['bonus'] == cc.CAPS[3]
+    assert cc._advance('post_office', 3, cc.GOOD[3] - 1, result) == (4, 0)
