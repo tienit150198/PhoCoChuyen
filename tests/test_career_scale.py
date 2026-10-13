@@ -1,0 +1,268 @@
+"""Ownership, real-day progression and physical resource contracts."""
+import copy
+import pytest
+
+from game import engine as e
+from game import career_scale as scale
+from game import career_scale_resources as resources
+from game import career_scale_finance as finance
+
+NOW = 1791936000
+
+
+def fixture_state(cid='grocery', tier=0):
+    from game import employment
+    s = e.new_state()
+    c = s['careers'][cid]
+    c.update(started=True, open=True, money=500_000_000)
+    if employment.required(cid): c['job']=employment.hired_record(cid)
+    r = scale.ensure(c, cid, NOW)
+    if tier:
+        r['tier'] = tier
+        r['today']['requires_contract'] = True
+        resources.ensure(c, cid)
+    return s, c
+
+
+def finish(c, n, mistakes=0, now=NOW):
+    task = dict(id=f'grocery-{c["day"]:04d}-{n}', career='grocery', day=c['day'],
+                status='completed', mistakes=mistakes)
+    c['tasks'].append(task)
+    c['completed_ids'].append(task['id'])
+    return scale.completed(c, 'grocery', task, now)
+
+
+def ready(c):
+    c['scale'].update(clean=1200, qualified_days=240, start_day=c['scale']['today']['day']-240)
+
+
+def act(s, c, name, **payload):
+    payload['expected_revision'] = c['scale']['revision']
+    return scale.action(s, c, 'grocery', name, payload, NOW)
+
+
+def test_optional_sidecar_public_pure_preserves_legacy():
+    s = e.new_state(); c = s['careers']['grocery']
+    c['money'] = 900000000; c['day'] = 500
+    before = copy.deepcopy(c)
+    out = scale.public(s, c, 'grocery', NOW)
+    assert out['tier'] == 0 and out['next']['can_buy'] is False
+    assert c == before
+    scale.validate(c, 'grocery')
+
+
+def test_upgrade_exact_capital_once_and_stale():
+    s, c = fixture_state(); ready(c)
+    legacy = {k: copy.deepcopy(c[k]) for k in ('stock','tasks','upgrades','earnings','costs')}
+    money = c['money']; revenue = c['ops']['finance']['period_revenue']
+    scale.action(s, c, 'grocery', 'scale_upgrade', {'expected_tier': 0}, NOW)
+    assert c['money'] == money - 50000
+    assert c['ops']['finance']['period_revenue'] == revenue
+    assert all(c[k] == v for k, v in legacy.items())
+    assert len(c['scale']['resources']) == 2 and not c['scale']['crew']
+    with pytest.raises(e.GameError):
+        scale.action(s, c, 'grocery', 'scale_upgrade', {'expected_tier': 0}, NOW)
+    assert c['money'] == money - 50000
+
+
+def test_certificate_and_funds_guards():
+    s, c = fixture_state(tier=1); ready(c)
+    with pytest.raises(e.GameError):
+        scale.action(s, c, 'grocery', 'scale_upgrade', {'expected_tier': 1}, NOW)
+    s['journey']['certificates'] = {'business_advanced': {'earned_day': 1}}
+    c['money'] = 249999
+    with pytest.raises(e.GameError):
+        scale.action(s, c, 'grocery', 'scale_upgrade', {'expected_tier': 1}, NOW)
+    for invalid in (True, 250000.0):
+        c['money'] = invalid
+        with pytest.raises(e.GameError):
+            scale.action(s, c, 'grocery', 'scale_upgrade', {'expected_tier': 1}, NOW)
+
+
+def test_real_day_finalizes_only_after_errors_and_never_from_career_day():
+    s, c = fixture_state()
+    for n in range(3): assert finish(c, n)
+    assert scale.public(s, c, 'grocery', NOW)['progress']['qualified_days'] == 0
+    finish(c, 3, mistakes=1)
+    c['day'] += 1
+    finish(c, 4, now=NOW+86400)
+    assert c['scale']['qualified_days'] == 0
+    for n in range(5, 8): finish(c, n, now=NOW+86400)
+    finish(c, 8, now=NOW+2*86400)
+    assert c['scale']['qualified_days'] == 1
+    assert len(c['scale']['today']['ids']) == 1
+
+
+def test_contract_required_after_first_upgrade_and_clock_rollback():
+    s, c = fixture_state(tier=1)
+    for n in range(3): finish(c, n)
+    finish(c, 3, now=NOW+86400)
+    assert c['scale']['qualified_days'] == 0
+    for n in range(4, 6): finish(c, n, now=NOW+86400)
+    scale.accepted(c, 'grocery', NOW+86400)
+    finish(c, 6, now=NOW+2*86400)
+    assert c['scale']['qualified_days'] == 1
+    assert scale.completed(c, 'grocery', c['tasks'][0], NOW) is False
+
+
+def test_authoritative_task_and_duplicate_guards():
+    s, c = fixture_state(); finish(c, 0)
+    assert not scale.completed(c, 'grocery', copy.deepcopy(c['tasks'][0]), NOW)
+    assert not scale.completed(c, 'grocery', c['tasks'][0], NOW)
+    assert c['scale']['clean'] == 1
+    assert not scale.completed(c, 'grocery', c['tasks'][0], NOW+86400)
+
+
+def test_valid_mastery_clean_inherited_once_but_not_its_career_days():
+    from game import career_mastery as mastery
+    from tests.test_career_mastery import career, job
+    c=career(); c['started']=True
+    task=job(c,'grocery'); mastery.completed(c,'grocery',task)
+    scale.completed(c,'grocery',task,NOW)
+    assert c['scale']['clean']==1 and c['scale']['qualified_days']==0
+    task2=job(c,'grocery'); mastery.completed(c,'grocery',task2)
+    scale.completed(c,'grocery',task2,NOW)
+    assert c['scale']['clean']==2
+    assert c['scale']['inherited_clean']==0
+    scale.validate(c,'grocery')
+
+
+def test_rejected_resource_action_does_not_mutate_save():
+    s,c=fixture_state(tier=1); c['money']=0
+    before=copy.deepcopy(c)
+    with pytest.raises(e.GameError): act(s,c,'scale_crew_hire',candidate=0)
+    assert c==before
+
+
+def test_daily_tracking_overflow_cannot_freeze_a_passing_ratio():
+    s,c=fixture_state()
+    today=c['scale']['today']
+    today.update(ids=[f'grocery-0001-{n}' for n in range(scale.DAY_MAX)],total=scale.DAY_MAX,clean=scale.DAY_MAX)
+    c['scale']['clean']=scale.DAY_MAX
+    assert not finish(c,scale.DAY_MAX,mistakes=1)
+    assert today['overflow']
+    scale.ensure(c,'grocery',NOW+86400)
+    assert c['scale']['qualified_days']==0
+
+
+def test_maintenance_explicit_exact_cost_and_no_busy_reset():
+    s,c=fixture_state(tier=1)
+    act(s,c,'scale_crew_hire',candidate=0)
+    act(s,c,'scale_resource_assign',resource='r1',crew=c['scale']['crew'][0]['id'],site='base')
+    row=c['scale']['resources'][0]; row['condition']=70
+    fee=resources.maintenance_fee(c,'grocery',row); before=c['money']
+    resources.lock(c,'grocery','grocery-1',['r1'])
+    with pytest.raises(e.GameError): act(s,c,'scale_resource_maintain',resource='r1',expected_condition=70)
+    resources.release(c,'grocery','grocery-1')
+    act(s,c,'scale_resource_maintain',resource='r1',expected_condition=70)
+    assert c['money']==before-fee and c['scale']['resources'][0]['condition']==100
+    scale.validate(c,'grocery')
+
+
+def test_resources_need_crew_distinct_and_lock_prevents_mutations():
+    s, c = fixture_state(tier=1)
+    assert resources.available(c, 'grocery') == []
+    act(s,c,'scale_crew_hire', candidate=0)
+    crew = c['scale']['crew'][0]['id']
+    act(s,c,'scale_resource_assign', resource='r1', crew=crew, site='base')
+    assert len(resources.available(c, 'grocery')) == 1
+    with pytest.raises(e.GameError):
+        act(s,c,'scale_resource_assign', resource='r2', crew=crew, site='base')
+    resources.lock(c,'grocery','grocery-1',['r1'])
+    with pytest.raises(e.GameError): act(s,c,'scale_crew_fire', crew=crew)
+    with pytest.raises(e.GameError): resources.lock(c,'grocery','grocery-2',['r1'])
+    resources.release(c,'grocery','grocery-1')
+    resources.validate(c,'grocery')
+
+
+def test_shared_slots_count_business_only_and_chain_cert():
+    s, c = fixture_state(tier=5)
+    act(s,c,'scale_crew_hire',candidate=0)
+    crew=c['scale']['crew'][0]['id']
+    s['journey']['quay']={'stalls':[{'id':'q1'}]}
+    with pytest.raises(e.GameError): act(s,c,'scale_site_open',resource='r7',crew=crew)
+    s['journey']['quay']['paid_tier']={'slots':2}
+    act(s,c,'scale_site_open',resource='r7',crew=crew)
+    assert scale.external_slots(s)==1
+    act(s,c,'scale_crew_hire',candidate=1)
+    crew=c['scale']['crew'][1]['id']
+    with pytest.raises(e.GameError): act(s,c,'scale_site_open',resource='r8',crew=crew)
+    s['journey']['certificates']={'business_chain':{'earned_day':1}}
+    act(s,c,'scale_site_open',resource='r8',crew=crew)
+    assert scale.external_slots(s)==2
+
+
+def test_agency_community_sites_do_not_use_business_rights():
+    for cid in ('teacher','pagoda'):
+        s,c=fixture_state(cid,tier=4)
+        s['journey']['quay']={'stalls':[{'id':'q1'}]}
+        scale.action(s,c,cid,'scale_crew_hire',dict(candidate=0,expected_revision=0),NOW)
+        scale.action(s,c,cid,'scale_site_open',dict(resource='r6',crew=c['scale']['crew'][0]['id'],expected_revision=1),NOW)
+        assert len(c['scale']['sites'])==2 and scale.external_slots(s)==0
+        scale.validate(c,cid)
+
+
+def test_public_rollover_does_not_commit_progress_and_current_day_is_pending():
+    s,c=fixture_state()
+    for n in range(3): finish(c,n)
+    before=copy.deepcopy(c)
+    view=scale.public(s,c,'grocery',NOW+86400)
+    assert view['progress']['qualified_days']==1 and c==before
+    assert view['progress']['today']['pending'] is True
+
+
+def test_lock_rejects_foreign_career_and_duplicates_atomically():
+    s,c=fixture_state(tier=1)
+    act(s,c,'scale_crew_hire',candidate=0)
+    act(s,c,'scale_resource_assign',resource='r1',crew=c['scale']['crew'][0]['id'],site='base')
+    before=copy.deepcopy(c)
+    for job,ids in (('teacher-1',['r1']),('grocery-1',['r1','r1']),('grocery-1',['r1','r2'])):
+        with pytest.raises(e.GameError): resources.lock(c,'grocery',job,ids)
+        assert c==before
+
+
+@pytest.mark.parametrize('cid',['teacher','pagoda'])
+def test_agency_community_no_fee_or_rank_change(cid):
+    s,c=fixture_state(cid); ready(c); old=copy.deepcopy(c.get('job')); money=c['money']
+    scale.action(s,c,cid,'scale_upgrade',{'expected_tier':0},NOW)
+    assert c['money']==money and c.get('job')==old
+
+
+def test_existing_employment_required_but_no_paid_authority_rank():
+    s,c=fixture_state('teacher'); ready(c); c['job']['status']='none'
+    with pytest.raises(e.GameError): scale.action(s,c,'teacher','scale_upgrade',{'expected_tier':0},NOW)
+
+
+def test_all_career_stages_allocate_whole_network_only_and_preserve_legacy():
+    from game import career_scale_content as content
+    for cid in content.PROFILES:
+        s,c=fixture_state(cid)
+        legacy=copy.deepcopy(c['ops'])
+        for tier in range(1,9):
+            c['scale']['tier']=tier; c['scale']['today']['requires_contract']=True
+            resources.ensure(c,cid)
+            scale.validate(c,cid)
+            view=scale.public(s,c,cid,NOW)
+            assert len(view['resources'])==content.stage(cid,tier).resources
+            assert len(view['sites'])==1 and view['crew']==[]
+            assert c['ops']==legacy
+
+
+def test_upgrade_preserves_positions_when_new_site_density_falls():
+    s,c=fixture_state(tier=3); ready(c)
+    assert sum(x['site']=='base' for x in c['scale']['resources'])==6
+    s['journey']['certificates']={'business_advanced':{'earned_day':1}}
+    scale.action(s,c,'grocery','scale_upgrade',{'expected_tier':3},NOW)
+    assert sum(x['site']=='base' for x in c['scale']['resources'])==6
+    scale.validate(c,'grocery')
+
+
+def test_bool_corruption_rejected_and_receipts_bounded():
+    s,c=fixture_state(); c['scale']['tier']=True
+    with pytest.raises(e.GameError): scale.validate(c,'grocery')
+    c['scale']['tier']=0
+    for n in range(85): finance.move(s,c,-1,'Test',str(n))
+    assert len(c['scale']['capital_history']) <= 80
+    before=c['money']
+    with pytest.raises(e.GameError): finance.move(s,c,True,'Test','bool')
+    assert c['money']==before
