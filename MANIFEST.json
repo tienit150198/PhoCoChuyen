@@ -1,133 +1,92 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "2.3.0",
-  "created_at_utc": "2026-10-13T15:01:58.678486+00:00",
+  "version": "2.3.1",
+  "created_at_utc": "2026-10-13T20:28:08.212282+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 605,
+  "minified": 614,
   "release_from_live": {
     "live_release": "mot-ngay-lam-nghe",
-    "live_version": "2.2.1",
-    "live_manifest_sha256": "32a58c346e1bd833eb197f62bcefbbbbbb6862b90444608d5993dc40d737472b",
-    "base": "24a910f3a5c9cac877301d9a306e03057054edcd",
-    "ref": "baf36b505b9788c6e37197610e83632d780ffb0d",
+    "live_version": "2.3.0",
+    "live_manifest_sha256": "3995031fa3a9b203237edfb99d3d6496a5bfc4b898f4cd86f86a4c550b4dcb7e",
+    "base": "baf36b505b9788c6e37197610e83632d780ffb0d",
+    "ref": "0a5e3b0537d78d4ca6ac7019c032cc397539b503",
     "changed": [
-      "CHANGELOG.md",
+      "client/isometric/phaser-world.ts",
       "docs/BUSINESS_LICENSES_OPERATIONS.md",
-      "docs/DEPLOY_2.2.1_2026-10-13.md",
+      "docs/DEPLOY_2.3.0_2026-10-13.md",
+      "docs/FAIR_HOUSE_EDGE.md",
       "docs/LIVE_BASE.md",
-      "docs/PAID_CONVENIENCE_REVIEW.md",
-      "docs/superpowers/plans/2026-10-13-capacity-expansion.md",
-      "docs/superpowers/plans/2026-10-13-career-competition.md",
-      "docs/superpowers/plans/2026-10-13-paid-convenience.md",
-      "docs/superpowers/plans/2026-10-13-temple-card-visibility.md",
-      "docs/superpowers/specs/2026-10-13-capacity-expansion.md",
-      "docs/superpowers/specs/2026-10-13-capacity-verification.md",
-      "docs/superpowers/specs/2026-10-13-career-competition-design.md",
-      "docs/superpowers/specs/2026-10-13-career-content-catalog.md",
-      "docs/superpowers/specs/2026-10-13-career-content-design.md",
-      "docs/superpowers/specs/2026-10-13-career-content-economy.csv",
-      "docs/superpowers/specs/2026-10-13-career-content-economy.md",
-      "docs/superpowers/specs/career-content-evidence/capacity-resources.md",
-      "docs/superpowers/specs/career-content-evidence/food-retail.md",
-      "docs/superpowers/specs/career-content-evidence/professional.md",
-      "docs/superpowers/specs/career-content-evidence/service.md",
+      "docs/qa/fair-first-round-2026-10-14.md",
+      "docs/qa/feedback-2026-10-14.md",
+      "docs/qa/wedding-cancellation-2026-10-14.md",
+      "docs/superpowers/plans/2026-10-13-town-social.md",
+      "docs/superpowers/plans/2026-10-14-fair-first-round.md",
+      "docs/superpowers/plans/2026-10-14-order-limit-upgrades.md",
+      "docs/superpowers/plans/2026-10-14-wedding-cancellation.md",
+      "docs/superpowers/specs/2026-10-14-career-scale-design.md",
+      "docs/superpowers/specs/career-scale-evidence/calculate.py",
+      "docs/superpowers/specs/career-scale-evidence/careers.md",
+      "docs/superpowers/specs/career-scale-evidence/economy-summary.md",
+      "docs/superpowers/specs/career-scale-evidence/economy.csv",
       "game/__init__.py",
-      "game/boba.py",
       "game/capacity_progression.py",
-      "game/career_competition.py",
-      "game/career_competition_content.py",
-      "game/careers/cafe_bakery.py",
-      "game/careers/clothing.py",
-      "game/careers/com.py",
-      "game/careers/farm.py",
-      "game/careers/farm_plus.py",
-      "game/careers/florist.py",
-      "game/careers/grocery.py",
-      "game/careers/kit.py",
-      "game/careers/mother_baby.py",
-      "game/careers/pet_shop.py",
-      "game/careers/repair.py",
-      "game/careers/restaurant.py",
-      "game/careers/tra_da.py",
-      "game/careers/zpop.py",
-      "game/content.py",
       "game/convenience.py",
-      "game/engine.py",
-      "game/experiences.py",
-      "game/giftshop.py",
-      "game/happenings.py",
+      "game/fair.py",
+      "game/fair_scratch.py",
       "game/inventory.py",
-      "game/journey.py",
-      "game/operations.py",
-      "game/progression_prices.py",
-      "game/quay.py",
-      "game/quay_business.py",
-      "game/quay_progression.py",
-      "game/social.py",
-      "i18n/translations.json",
-      "package-lock.json",
-      "package.json",
-      "public/css/promo.css",
-      "public/i18n/en.json",
-      "public/js/app.js",
-      "public/js/careers/cafe_bakery.js",
-      "public/js/careers/com.js",
-      "public/js/careers/farm.js",
-      "public/js/careers/milk_tea.js",
-      "public/js/careers/restaurant.js",
-      "public/js/v4/career-competition.js",
-      "public/js/v4/promo.js",
-      "public/js/v4/quay-business-ui.js",
-      "public/js/v4/quay-manage.js",
-      "public/js/v4/quay.js",
+      "game/marriage.py",
+      "game/order_progression.py",
+      "live/chat.py",
+      "live/effects.py",
+      "live/town.py",
+      "live/town_social.py",
+      "live/wedding.py",
+      "public/css/isometric-social.css",
+      "public/js/careers/lawyer.js",
+      "public/js/isometric/phaser-world.js",
+      "public/js/isometric-social.js",
+      "public/js/isometric-town.js",
+      "public/js/v4/inventory-limits.js",
+      "public/js/v4/marriage.js",
       "public/js/v4/views.js",
-      "public/js/v4/wealth.js",
       "public/js/v4/work-equipment.js",
-      "scripts/browser_capacity_progression.py",
-      "scripts/browser_career_competition.py",
-      "scripts/browser_quay_progression.py",
-      "tests/capacity_equipment.mjs",
-      "tests/career_competition.mjs",
-      "tests/large-capital.mjs",
-      "tests/quay_progression.mjs",
-      "tests/test_boba_storage_capacity.py",
-      "tests/test_business_progression.py",
-      "tests/test_capacity_catalog.py",
-      "tests/test_career_competition.py",
-      "tests/test_career_competition_content.py",
-      "tests/test_competition_i18n.py",
-      "tests/test_competition_integration.py",
-      "tests/test_farm_storage_capacity.py",
-      "tests/test_prepared_storage_capacity.py",
-      "tests/test_quay.py",
-      "tests/test_quay_business.py",
-      "tests/test_quay_economy.py",
-      "tests/test_quay_fb295.py",
-      "tests/test_quay_manage.py",
-      "tests/test_quay_progression.py",
-      "tests/test_shared_storage_expansion.py",
-      "tests/test_shop_fund_move.py",
+      "scripts/browser_feedback_20261014.py",
+      "scripts/browser_order_progression.py",
+      "scripts/browser_town_social.py",
+      "scripts/sim_fair_odds.py",
+      "tests/isometric-peer-render-performance.mjs",
+      "tests/isometric-social.mjs",
+      "tests/isometric-town.mjs",
+      "tests/lawyer-ui.mjs",
+      "tests/marriage_proposal_history.mjs",
+      "tests/order_limits.mjs",
+      "tests/test_black_market.py",
+      "tests/test_career_lawyer.py",
+      "tests/test_fair.py",
+      "tests/test_fair_event_odds.py",
+      "tests/test_fair_first_round.py",
+      "tests/test_fair_house_edge.py",
+      "tests/test_fair_rotation.py",
+      "tests/test_fair_scratch.py",
+      "tests/test_fair_tighten.py",
+      "tests/test_live_town_social.py",
+      "tests/test_live_town_social_retention.py",
+      "tests/test_live_wedding.py",
+      "tests/test_marriage.py",
+      "tests/test_order_progression.py",
       "tests/test_task_compat.py",
-      "tests/test_warehouse_convenience.py",
-      "tests/warehouse_convenience.mjs",
-      "tests/warehouse_convenience_browser.mjs"
+      "tests/test_upkeep.py"
     ],
     "deleted": [],
     "minified": [
-      "public/css/promo.css",
-      "public/js/app.js",
-      "public/js/careers/cafe_bakery.js",
-      "public/js/careers/com.js",
-      "public/js/careers/farm.js",
-      "public/js/careers/milk_tea.js",
-      "public/js/careers/restaurant.js",
-      "public/js/v4/career-competition.js",
-      "public/js/v4/promo.js",
-      "public/js/v4/quay-business-ui.js",
-      "public/js/v4/quay-manage.js",
-      "public/js/v4/quay.js",
+      "public/css/isometric-social.css",
+      "public/js/careers/lawyer.js",
+      "public/js/isometric/phaser-world.js",
+      "public/js/isometric-social.js",
+      "public/js/isometric-town.js",
+      "public/js/v4/inventory-limits.js",
+      "public/js/v4/marriage.js",
       "public/js/v4/views.js",
-      "public/js/v4/wealth.js",
       "public/js/v4/work-equipment.js"
     ]
   },
@@ -264,8 +223,8 @@
     },
     {
       "path": "client/isometric/phaser-world.ts",
-      "bytes": 113893,
-      "sha256": "5728af4ab5ae3053dc177c6cd8b066e89ca8c58687477f1a53f90a95e0c07325"
+      "bytes": 115215,
+      "sha256": "13c23881ae55f0f7ac4b8520c5a5244e89a37cebb1e1d041d6fba99e54b50a02"
     },
     {
       "path": "client/isometric/sign-placement.ts",
@@ -494,8 +453,8 @@
     },
     {
       "path": "docs/BUSINESS_LICENSES_OPERATIONS.md",
-      "bytes": 4607,
-      "sha256": "731869698829fa941fab5c3980365bb2776d406918e43da8707ea14c0068b852"
+      "bytes": 4591,
+      "sha256": "e1c559c6ca05439c1c697dfb98c66a97392c8b1981ae99240ffc405b3e2a86fa"
     },
     {
       "path": "docs/CAREER_BALANCE_2.1.0.md",
@@ -638,6 +597,11 @@
       "sha256": "f2aef0a4b5ab473770f8aa610714c6996d2234e4cde17459e01eb464eabf8c73"
     },
     {
+      "path": "docs/DEPLOY_2.3.0_2026-10-13.md",
+      "bytes": 4276,
+      "sha256": "6882c8e83a97fef0f9a2514545a2acd7b05f0b9f6ae955d8e924aaeac56ebe79"
+    },
+    {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
       "bytes": 3743,
       "sha256": "788f3a3a7f371dc6a143196595d8ad9aa68ccf6c31caeb5886a419ee9ec14c06"
@@ -699,8 +663,8 @@
     },
     {
       "path": "docs/FAIR_HOUSE_EDGE.md",
-      "bytes": 22913,
-      "sha256": "b2931eb7ce96ded4aeb17d5484570f280c48a35baa12e6abc9ecb8923466f145"
+      "bytes": 27659,
+      "sha256": "16bef369b2371022395451169c6c62abfcfedfcba199a57cf6a0f1dc66151189"
     },
     {
       "path": "docs/FAIR_KNIFE_SKILL_RING_FIX_2026-10-05.md",
@@ -810,7 +774,7 @@
     {
       "path": "docs/LIVE_BASE.md",
       "bytes": 7657,
-      "sha256": "21a81aab64e83c4b2c849f100f55a7b96534785579692172e0f789c5c596115c"
+      "sha256": "c898219213d8a96c754677f155a76fab2689a890d777dac4b7272df9dfce0cea"
     },
     {
       "path": "docs/LIVE_CONNECTION_2026-10-05.md",
@@ -1578,9 +1542,19 @@
       "sha256": "d091e5f6d6186cc76a6853e4e0fe98a1e84d2700ae69f611b06ef0a0aa32a8df"
     },
     {
+      "path": "docs/qa/fair-first-round-2026-10-14.md",
+      "bytes": 4792,
+      "sha256": "3dced6a89100e4b6bf01c5b56fef9e20e64747149342fef778b28fa10d597421"
+    },
+    {
       "path": "docs/qa/feedback-2026-10-11.md",
       "bytes": 4095,
       "sha256": "5a788f40b0afe9df4cb9684359a189b6954d377a2117945de5009f98fa147adb"
+    },
+    {
+      "path": "docs/qa/feedback-2026-10-14.md",
+      "bytes": 4257,
+      "sha256": "89a13b6f83c224c6e3d48236ed2fa10a89c2dd1f7b48ec9924a2ce0a3fe870d5"
     },
     {
       "path": "docs/qa/gentle-losses-2026-10-11.md",
@@ -1606,6 +1580,11 @@
       "path": "docs/qa/performance-2026-10-11.md",
       "bytes": 6229,
       "sha256": "91e15c059505195d96f2097d3662634c0d8b27a85570842c132ed0bae14e0988"
+    },
+    {
+      "path": "docs/qa/wedding-cancellation-2026-10-14.md",
+      "bytes": 5639,
+      "sha256": "64e4aa8f8aa2cdcc69a0bde1f61447d145edd525d27aabfdf2ed7cd3a30950e0"
     },
     {
       "path": "docs/superpowers/plans/2026-10-01-live-chat-v1.md",
@@ -1988,6 +1967,26 @@
       "sha256": "66cd9da92d18bac69779cfc8cd7f455db957fda236fc6767d2b742a7f0026162"
     },
     {
+      "path": "docs/superpowers/plans/2026-10-13-town-social.md",
+      "bytes": 6524,
+      "sha256": "4d7bfc0f4d31e4954f8426a137d5ea36b2892817d9bb54eef99296f71a9ff306"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-14-fair-first-round.md",
+      "bytes": 1723,
+      "sha256": "124a5da882574c9906292808d94d0bdef17098184a4075bfaae8fbdcc19f5aad"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-14-order-limit-upgrades.md",
+      "bytes": 4866,
+      "sha256": "27279dceec7b7f7de214e64711e473887a9e5e9883ae4742a8c3b356bca68ca5"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-14-wedding-cancellation.md",
+      "bytes": 1682,
+      "sha256": "747900d12a41ed650aa6895d1535ed461939a345fc605b2d52fdbb45aaeaa3d2"
+    },
+    {
       "path": "docs/superpowers/specs/2026-09-28-ui-readability-phase1-design.md",
       "bytes": 3039,
       "sha256": "50c88aa1d3fd1f85cf6c9e1941afcfa0aba693efc2bda8e2826f4e3d880823df"
@@ -2238,6 +2237,11 @@
       "sha256": "6d9117144db8a02ca9c41436c4f6991317dddf6b6e1264bb8bae9c9c276812bd"
     },
     {
+      "path": "docs/superpowers/specs/2026-10-14-career-scale-design.md",
+      "bytes": 26341,
+      "sha256": "702f2aea5d47873d77fd9a0cf4548d86d94484807b08df80f476a087541fc8ad"
+    },
+    {
       "path": "docs/superpowers/specs/career-content-evidence/capacity-resources.md",
       "bytes": 10728,
       "sha256": "514058cee9bc35dcfd281ecac844a44fdae3b512fb7a6a932da55599b1627853"
@@ -2258,9 +2262,29 @@
       "sha256": "66853b08e9ead39b793d4540c48bd844acd832e3f34ee0a060d2add3d1c9d875"
     },
     {
+      "path": "docs/superpowers/specs/career-scale-evidence/calculate.py",
+      "bytes": 23856,
+      "sha256": "40047c3acb91cd5d9dbf545f9fffa8316d2a640fd5d6f4e2564d96a57ca08686"
+    },
+    {
+      "path": "docs/superpowers/specs/career-scale-evidence/careers.md",
+      "bytes": 18852,
+      "sha256": "58eb03e7b970edaf596f42d0db6643638e27e3271bb8ee89774a6799f791d676"
+    },
+    {
+      "path": "docs/superpowers/specs/career-scale-evidence/economy-summary.md",
+      "bytes": 4176,
+      "sha256": "8061dd79514fbc5c606a284017c38cbee6753bc4c2b2e59c8b480d1674cceb09"
+    },
+    {
+      "path": "docs/superpowers/specs/career-scale-evidence/economy.csv",
+      "bytes": 84146,
+      "sha256": "8151224e9e2f9326d0c076f7f87c668f6eb1d2bc91fd02c66a8b49133f96b5e6"
+    },
+    {
       "path": "game/__init__.py",
       "bytes": 105,
-      "sha256": "deca0d3f9faa6b7121843f6cbdb251abb6789d31dde7f95d4811ed72fa289f5d"
+      "sha256": "3aa491e1979f65ef3baa1d4de996c9b236b75612c3e1bf9714f2dd0922bf3073"
     },
     {
       "path": "game/abandon.py",
@@ -2444,8 +2468,8 @@
     },
     {
       "path": "game/capacity_progression.py",
-      "bytes": 2666,
-      "sha256": "1298350805558ac14611d453bb36d68e199e661bea7d2b3b23237c72aa0e5f09"
+      "bytes": 2767,
+      "sha256": "116aa48caa78d8f80412a90fd4ca589cf06c6bf92f788b2fca6ece87d5e7a602"
     },
     {
       "path": "game/career_competition.py",
@@ -2904,8 +2928,8 @@
     },
     {
       "path": "game/convenience.py",
-      "bytes": 4024,
-      "sha256": "995866b1af94aa500a3fbe412702fe23c2cfb1da2338751590a3e03b0c3dcf44"
+      "bytes": 4096,
+      "sha256": "a462bdb90a0f729880ad1fc3034a6fb6d96a043ea84d9a94dbd72b0bb8b9fb3f"
     },
     {
       "path": "game/couple.py",
@@ -3029,8 +3053,8 @@
     },
     {
       "path": "game/fair.py",
-      "bytes": 123936,
-      "sha256": "dc52af474f8b7991cade638c3159b5dad465afdb3c2433bf8d08c1a811df124a"
+      "bytes": 123959,
+      "sha256": "4287741194e90cd2e88f2d0b0f121c8d3d76954de0a35ff2eb0337b6211e2abc"
     },
     {
       "path": "game/fair_bm.py",
@@ -3094,8 +3118,8 @@
     },
     {
       "path": "game/fair_scratch.py",
-      "bytes": 3885,
-      "sha256": "2384bc5695efe13b6d3cc1f48faf5ad1803cd531d701e89535e51a2b7adde612"
+      "bytes": 3777,
+      "sha256": "39b7346a5534be290c54398547f74a61d7fb586e9ad29b79f521aea45621a322"
     },
     {
       "path": "game/fair_watch.py",
@@ -3224,8 +3248,8 @@
     },
     {
       "path": "game/inventory.py",
-      "bytes": 91857,
-      "sha256": "cfdb4cd2efa2795f0cf872cea120f8a1fc7bdfe32e5758880ef3410bdc9a359e"
+      "bytes": 92701,
+      "sha256": "6c271772dbf6295ea19a7a0b1fd61367ed989dd5e8e4bb5bd0ab568c3865c352"
     },
     {
       "path": "game/invest.py",
@@ -3324,8 +3348,8 @@
     },
     {
       "path": "game/marriage.py",
-      "bytes": 97238,
-      "sha256": "4e7a88e2c3348aa16023bf0f50b61e38ee08cd974847150ff3046b97c49cbc76"
+      "bytes": 97493,
+      "sha256": "7c9ffa197c1d2ba512a96715f933aeb2b737d044e68d5633fb40ff2a87966be6"
     },
     {
       "path": "game/memo.py",
@@ -3356,6 +3380,11 @@
       "path": "game/operations.py",
       "bytes": 77368,
       "sha256": "8b47fb0e41dc240fac98866b5e0f5c66578ff989285a6ad3a8c50a964e7b52d9"
+    },
+    {
+      "path": "game/order_progression.py",
+      "bytes": 1884,
+      "sha256": "fa972904d670e8e2f05a689e65a0108edc070e6b436ee4f16122981be4c26bbd"
     },
     {
       "path": "game/org.py",
@@ -3819,8 +3848,8 @@
     },
     {
       "path": "live/chat.py",
-      "bytes": 91044,
-      "sha256": "a0312183869d5d4027757db4dc051df44098beb013eb08aa20ed54af9606e6bd"
+      "bytes": 91383,
+      "sha256": "b80de2231025b3f9f58ab954809b43692fd37a8b8633bab248e0db200c90c7a1"
     },
     {
       "path": "live/chat_reply.py",
@@ -3859,8 +3888,8 @@
     },
     {
       "path": "live/effects.py",
-      "bytes": 2795,
-      "sha256": "c263b2b0df3f6b350596fb2d87208308926c88ab89b50efe0d7188f75d3fc49b"
+      "bytes": 2925,
+      "sha256": "83306696c63bd76ae7d1e345bc16edd86e2bcffe3f95defd30102e48ff44ffed"
     },
     {
       "path": "live/faces.py",
@@ -3954,8 +3983,13 @@
     },
     {
       "path": "live/town.py",
-      "bytes": 17892,
-      "sha256": "d7370a49cf0edb4e66e4f3601b9f45c1b2f89e8678970f2d4377b396238f20f3"
+      "bytes": 18270,
+      "sha256": "eb2dec0d41336a3d98595fdad5bfc91373ed931ffa43b79eb7f48af815e0ecb0"
+    },
+    {
+      "path": "live/town_social.py",
+      "bytes": 8901,
+      "sha256": "b0501bcf071ad710bb35bcbb3f9a07719241bb10fc902138940c5f7e9e8a512c"
     },
     {
       "path": "live/town_treasure.py",
@@ -3964,8 +3998,8 @@
     },
     {
       "path": "live/wedding.py",
-      "bytes": 44994,
-      "sha256": "0f06a52b0adbb19075215ee7e2b287fd9ccb8acafc1b2cdee806541566900f49"
+      "bytes": 48665,
+      "sha256": "249bfda8843be32ef3141a2eaf8cee773874dfddd5e9e5c296636a46fa57800d"
     },
     {
       "path": "live/wedinvite.py",
@@ -4561,6 +4595,11 @@
       "path": "public/css/invest.css",
       "bytes": 8867,
       "sha256": "fb03624d65e4685f6e3f0706a470f56760ad40dcada6d067c93d079c30ee7ca9"
+    },
+    {
+      "path": "public/css/isometric-social.css",
+      "bytes": 3861,
+      "sha256": "6b5cfc898eff0f53d5c799358de6aaf55885ad4cebbd5c697d7a0a4d127dad18"
     },
     {
       "path": "public/css/isometric.css",
@@ -5814,8 +5853,8 @@
     },
     {
       "path": "public/js/careers/lawyer.js",
-      "bytes": 4033,
-      "sha256": "0543a6da56671ecb57b0df6bbab8dab33e4b8c930129ab56d59d96bd672c1644"
+      "bytes": 4513,
+      "sha256": "4eade9aa8f8fe7825799a5b637d1e8320cc291d8d423e9aaef8036021f2e6947"
     },
     {
       "path": "public/js/careers/library.js",
@@ -6074,8 +6113,8 @@
     },
     {
       "path": "public/js/isometric/phaser-world.js",
-      "bytes": 1485362,
-      "sha256": "6f48ec2ba1d69eefce6d90077d62063db2d4c4ec2c54c042f89d54da0a64186c"
+      "bytes": 1486361,
+      "sha256": "8f83d472fd575ce112aeee15493de195a45e26c6936e7815d5dcf51a78531ff3"
     },
     {
       "path": "public/js/isometric/portraits.js",
@@ -6118,9 +6157,14 @@
       "sha256": "dfeb75d04f2abf776ad3e5e78565cc777bb98022d5c750ee969b66f84dba1ccf"
     },
     {
+      "path": "public/js/isometric-social.js",
+      "bytes": 10081,
+      "sha256": "ade9b1676034acd1705a823f6d26fbff0e5d77f4ed5652b0f11a3075f46c869d"
+    },
+    {
       "path": "public/js/isometric-town.js",
-      "bytes": 5590,
-      "sha256": "1cfaee7db6139e5a7a315b14ab82fb0794bf0c2da96af19f070c742e1b1bb8e6"
+      "bytes": 5888,
+      "sha256": "d8592b39c0af73058f954b9c08a813cc85c2c59b1a7c50d9b84a6b542763b09e"
     },
     {
       "path": "public/js/isometric-treasure.js",
@@ -6913,6 +6957,11 @@
       "sha256": "60267dbab19327e89ab2b88e46f53c77dde6bf8a7b9d770409a33810c8a73d38"
     },
     {
+      "path": "public/js/v4/inventory-limits.js",
+      "bytes": 1527,
+      "sha256": "ac11cc01dfdbd29bb4ffeb7eae5ad15664e2cf90c4c42e8ec570a54dd8868e1b"
+    },
+    {
       "path": "public/js/v4/invest-chart.js",
       "bytes": 2958,
       "sha256": "ffcf13c39847d340e837c439c48204a07351b7d4848627be2b7476efc6914c27"
@@ -6979,8 +7028,8 @@
     },
     {
       "path": "public/js/v4/marriage.js",
-      "bytes": 68511,
-      "sha256": "17f641e9952ad43e6c3d3344458be92e820641449e1355d7603c2ede52074295"
+      "bytes": 68670,
+      "sha256": "4674b2bd552052c1c39e38cff64412f1d904c8d4001cb342bcb27d391360cfee"
     },
     {
       "path": "public/js/v4/media-gestures.js",
@@ -7224,8 +7273,8 @@
     },
     {
       "path": "public/js/v4/views.js",
-      "bytes": 103026,
-      "sha256": "21c69afc7d22e2b7d61661ae53694689a2d93a159c1949b5f33eebf1ac2e92e7"
+      "bytes": 104073,
+      "sha256": "e82180ba919b7ce49bc6b93aa3d1f07b597e56a6806f8ad1aa5914be9e350984"
     },
     {
       "path": "public/js/v4/walk.js",
@@ -7269,8 +7318,8 @@
     },
     {
       "path": "public/js/v4/work-equipment.js",
-      "bytes": 4794,
-      "sha256": "a670db411c4c8ac2ed4f252ecac8f7ddb5b9f35d53fdef943cb1dd8eb4526d82"
+      "bytes": 4864,
+      "sha256": "55291ae8eeeb2ce9939b0cf083517959bf4d3fe64d97053c19889c7ce71b3b6b"
     },
     {
       "path": "public/js/v4/workplace-visit-ui.js",
@@ -7668,6 +7717,11 @@
       "sha256": "afbb080842f07bc9cd398f63e54b417d5fc18fec550fab268ba2b0a12741bd3c"
     },
     {
+      "path": "scripts/browser_feedback_20261014.py",
+      "bytes": 3489,
+      "sha256": "e400a4886e309c24334edd7221bd9d336644ba734f6f1789ebd3d024c231d860"
+    },
+    {
       "path": "scripts/browser_feedback_workflows.py",
       "bytes": 6030,
       "sha256": "fa62751d7b5ea61ef4d8e7ccd08b6fde80efb17b90754ef79d79f8b48b66932f"
@@ -7788,6 +7842,11 @@
       "sha256": "4ed7bae21b99867bbc9754b99acfc59bb5e601c2548230234db41674ceb219cd"
     },
     {
+      "path": "scripts/browser_order_progression.py",
+      "bytes": 6753,
+      "sha256": "445c44d5c9b9ca37037a31971123ac0ed6ce157cd01a35c9f56a042c81c9109e"
+    },
+    {
       "path": "scripts/browser_pets.py",
       "bytes": 12183,
       "sha256": "c6db63ede99b000cee0ac7a6d52c110358c7b1eb23458650dc10213d692a3f28"
@@ -7861,6 +7920,11 @@
       "path": "scripts/browser_text_check.py",
       "bytes": 15048,
       "sha256": "7a0bcce4e951fc23f9ac1ddff62d30459b8c9cf0119a55d214d85399940670f7"
+    },
+    {
+      "path": "scripts/browser_town_social.py",
+      "bytes": 8752,
+      "sha256": "08da69489b9efe26f95e14f21289e34c5a57dc6ca80d246711b5ba9215f68953"
     },
     {
       "path": "scripts/browser_tutorial.py",
@@ -8109,8 +8173,8 @@
     },
     {
       "path": "scripts/sim_fair_odds.py",
-      "bytes": 10664,
-      "sha256": "94558f7293deb195cdb1256a9130ba1204fb60fee992fc33508e0992f2c64d05"
+      "bytes": 10280,
+      "sha256": "fceee3d3aec2b5a1be7ce76a3fe50bd3a43dd6e6013043a506f0a4a3d43a4216"
     },
     {
       "path": "scripts/sim_lux.py",
@@ -8919,8 +8983,8 @@
     },
     {
       "path": "tests/isometric-peer-render-performance.mjs",
-      "bytes": 13324,
-      "sha256": "a190a24db1ef281cfe457089f5c81e7f9845430aec4f12bf583d739c21e32526"
+      "bytes": 14028,
+      "sha256": "3c48078844d8c08f826af25c63eb37cd8c0a9dbff1cf8b5506f773ff9ef4665e"
     },
     {
       "path": "tests/isometric-performance-probe.mjs",
@@ -8948,6 +9012,11 @@
       "sha256": "012580fa5ab73b699a945fa9193f73461ba3c40568b5902bbd943975c94034bd"
     },
     {
+      "path": "tests/isometric-social.mjs",
+      "bytes": 12705,
+      "sha256": "f13462a5325b7561a2fdcea6912a74cee3a9523ff132fba5d4fa3a1e18715467"
+    },
+    {
       "path": "tests/isometric-static-lod.mjs",
       "bytes": 4629,
       "sha256": "a51a4f3703027ae60be332499b214a85c1a28e786996e963bee13cc0acb4b6ff"
@@ -8964,8 +9033,8 @@
     },
     {
       "path": "tests/isometric-town.mjs",
-      "bytes": 7006,
-      "sha256": "ce492d169113b75d39b38d9848c9742fab6f48342b8e0ef9917ff75b9071f8a3"
+      "bytes": 7736,
+      "sha256": "68ba0e72e41e2bbc80c6718d8d6cd702bb7b8815ee95da917e330ee1aa15b631"
     },
     {
       "path": "tests/isometric-treasure-markers.mjs",
@@ -9049,8 +9118,8 @@
     },
     {
       "path": "tests/lawyer-ui.mjs",
-      "bytes": 1347,
-      "sha256": "f80b6fd85b088eb024d739b3420bfa6aecf41dcca34b9f58ee412d2ab0daf842"
+      "bytes": 1903,
+      "sha256": "c5bb25e3d73fd90569ac9af93df7c0f3cb3ba4ed8c6ddd9ce5312c27d917d5ed"
     },
     {
       "path": "tests/leisure-actors.mjs",
@@ -9091,6 +9160,11 @@
       "path": "tests/market_ui.mjs",
       "bytes": 2909,
       "sha256": "1609905fd24519c8575fd03119127155c7c9c1fb76b8885e0d52a1eb675ec6c4"
+    },
+    {
+      "path": "tests/marriage_proposal_history.mjs",
+      "bytes": 639,
+      "sha256": "5fc1c562f73371e0b5e43f7c86bd7d2e28125fcb871710bb4bb85323e87a5d97"
     },
     {
       "path": "tests/media_gestures.mjs",
@@ -9141,6 +9215,11 @@
       "path": "tests/old_safari_regex.mjs",
       "bytes": 18662,
       "sha256": "e3854fee51ef0718c52be78ccdb6be31b9ed595be9f8daf3b47479e288295fe5"
+    },
+    {
+      "path": "tests/order_limits.mjs",
+      "bytes": 2917,
+      "sha256": "6b36b407b2a79540230561bd5ad690ce2f75df83b9e384a7b800fce6daf873e7"
     },
     {
       "path": "tests/organic-streets.mjs",
@@ -9554,8 +9633,8 @@
     },
     {
       "path": "tests/test_black_market.py",
-      "bytes": 30274,
-      "sha256": "16388ab4229fb55b9c39a4086d1847cc38a079f84f528e70957ade9846b2a09e"
+      "bytes": 30417,
+      "sha256": "46f3cd08d3f61a48a0b2e25a95bd8f1c1afc6e7b307ff9a2797bc09d24910ac8"
     },
     {
       "path": "tests/test_board.py",
@@ -9759,8 +9838,8 @@
     },
     {
       "path": "tests/test_career_lawyer.py",
-      "bytes": 6358,
-      "sha256": "ba474006878f5510d3b70a5a08477668d43f563fd6a81978a5435a8acf0e2cb5"
+      "bytes": 6790,
+      "sha256": "0053669ad51cb73de1ca757bfb4bce230fbd4838def5ca66d7b3e61cbb0a2606"
     },
     {
       "path": "tests/test_career_library.py",
@@ -10189,8 +10268,8 @@
     },
     {
       "path": "tests/test_fair.py",
-      "bytes": 86501,
-      "sha256": "a43fcd7bfac7d2882948c419c2d2cea3ede46041e4febdf5d13660244faf2544"
+      "bytes": 86791,
+      "sha256": "cf413d090e2c2bd29de913a8cea787087b2e29079ecb024d643c664c8c11ef11"
     },
     {
       "path": "tests/test_fair_asset_audit.py",
@@ -10214,8 +10293,13 @@
     },
     {
       "path": "tests/test_fair_event_odds.py",
-      "bytes": 10064,
-      "sha256": "6e03f3173288bf4afc66bdf8d7d55abd5c6f262f78a7da029e54b545dcbeca81"
+      "bytes": 10050,
+      "sha256": "e4827ab413e80e7a53e0f41aeeb662a88c19bf62291a1a99048a9c7b6fd094d2"
+    },
+    {
+      "path": "tests/test_fair_first_round.py",
+      "bytes": 4527,
+      "sha256": "29e474c38e571084324f458568688c4a9fd322c172fb3ea27f74b8f03b1a5f3e"
     },
     {
       "path": "tests/test_fair_forever.py",
@@ -10249,8 +10333,8 @@
     },
     {
       "path": "tests/test_fair_house_edge.py",
-      "bytes": 13115,
-      "sha256": "8773bb595ea7a1bdc40476647b18ca346ff978635484b90d617e199bb2431c36"
+      "bytes": 12791,
+      "sha256": "5681f24b19c99f4ff59256da6d82a37eae23402c114a384a8aa4a7c2cca5d006"
     },
     {
       "path": "tests/test_fair_knife.py",
@@ -10289,8 +10373,8 @@
     },
     {
       "path": "tests/test_fair_rotation.py",
-      "bytes": 5719,
-      "sha256": "38416ec4de8f1fd97a7e2947da3596eb6011476fd5bb1cb59693861d95b4e38c"
+      "bytes": 5720,
+      "sha256": "1fde38b81843ee88da692283c7cfff7bc8f3d2f93df9180bf5cc4273b5192ef5"
     },
     {
       "path": "tests/test_fair_round_identity.py",
@@ -10299,8 +10383,8 @@
     },
     {
       "path": "tests/test_fair_scratch.py",
-      "bytes": 12409,
-      "sha256": "434fdfed6166d633d265a1ef70240271eb8650cb452dc084e6fbd3248c0f9e05"
+      "bytes": 12546,
+      "sha256": "8c954b246ad110a6c95a5337329ffb29d469db5d121b2a4f6fb22dc39611860d"
     },
     {
       "path": "tests/test_fair_thousand.py",
@@ -10309,8 +10393,8 @@
     },
     {
       "path": "tests/test_fair_tighten.py",
-      "bytes": 19553,
-      "sha256": "a6943f873424e060d63fee49581e2c4052eaeeb1378b218472449b81f22bc49b"
+      "bytes": 19721,
+      "sha256": "6da4839cf147c87e652c3b934847a09315fea0eb65de4d400dad81d474b3bb73"
     },
     {
       "path": "tests/test_fair_town_gift.py",
@@ -10838,6 +10922,16 @@
       "sha256": "057cb3b818e46a9a1dbfa45fb352e26593d8258e287a3a9e2fe18fc968cc5094"
     },
     {
+      "path": "tests/test_live_town_social.py",
+      "bytes": 5842,
+      "sha256": "d838a7b94b337fbe6e225c517efd6cfffcd7f459aff144ee797f96b267014caf"
+    },
+    {
+      "path": "tests/test_live_town_social_retention.py",
+      "bytes": 3447,
+      "sha256": "988d116d47fea68defee9f09c004c3cabaae15fb3385e52ca171872d9e2fbced"
+    },
+    {
       "path": "tests/test_live_town_socket.py",
       "bytes": 5295,
       "sha256": "ecc450db388076126c7ba65d6d5df302e809d944f4a2d3a16cb01bb4ec990d89"
@@ -10854,8 +10948,8 @@
     },
     {
       "path": "tests/test_live_wedding.py",
-      "bytes": 34982,
-      "sha256": "017d5773ab845541bcb33b4f6f77772092d38a1426dca71f65723f9ca850ed2a"
+      "bytes": 44589,
+      "sha256": "835cb87b44d8f3cd39ed80f0e0d7c8ad356fb9b16d6d601c77c7eff4314e8513"
     },
     {
       "path": "tests/test_live_work_visits.py",
@@ -10884,8 +10978,8 @@
     },
     {
       "path": "tests/test_marriage.py",
-      "bytes": 37627,
-      "sha256": "e95a865e6f2662a4ed0d2d6a22fd746b29f7fb92faae9bb5cb651a8e86a8bb19"
+      "bytes": 37788,
+      "sha256": "7e9729c8f6619971b90dedb6162c2f1ec6f9d68b52cb4c13814232820d51e514"
     },
     {
       "path": "tests/test_mastery_engine.py",
@@ -11001,6 +11095,11 @@
       "path": "tests/test_operations.py",
       "bytes": 43646,
       "sha256": "f8a544666e1fd490d06549e6ccd6d38ee1b27b2c9a063efde91cf54ec69fcd71"
+    },
+    {
+      "path": "tests/test_order_progression.py",
+      "bytes": 11474,
+      "sha256": "3aaeff023b9b6d6d5e53ed742d16105c0d85073d578b524791303e34a38c3bf4"
     },
     {
       "path": "tests/test_org_police.py",
@@ -11480,7 +11579,7 @@
     {
       "path": "tests/test_task_compat.py",
       "bytes": 5567,
-      "sha256": "68841547df52dd354ba2b8c420cab7ec089d2d2a705f04d051bb2830d4d02550"
+      "sha256": "279d5686a1b7efb21c12c5ae6a082c23e50f8508da4eb769cd0c5a5b42c29b25"
     },
     {
       "path": "tests/test_teacher_care.py",
@@ -11609,8 +11708,8 @@
     },
     {
       "path": "tests/test_upkeep.py",
-      "bytes": 12964,
-      "sha256": "1381a030a7aab61378228bff90bdbb4b45d023c588bc58151fc820f463ced3bf"
+      "bytes": 12948,
+      "sha256": "7e24315ed2b665b63e9462392b98a42a35db104c71c1bef43f812ddcd69ca4fe"
     },
     {
       "path": "tests/test_validation_authors.py",
