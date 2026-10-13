@@ -11,4 +11,4 @@ Theo yêu cầu bổ sung của chủ game, gộp cùng bốn nghề nghệ thu�
 - Bổ sung giao diện thăng tiến và hộ chiếu, dịch Anh, kiểm thử tiến độ/sát hạch/tiền/replay, màn hình 390/1280px. Kiểm tra lại dữ liệu nhiệm vụ cũ, đóng gói dựa đúng bản live 2.0.7, kiểm tra gói rồi rolling deploy.
 - Bản cũ 2.0.7 không đọc được bốn nghề mới và bậc mở rộng: sau phát hành chỉ dùng mã tương thích 2.1.0 hoặc sửa tiến, không phục hồi DB cũ.
 
-Trạng thái: đang triển khai và kiểm chứng; chưa phát hành.
+Trạng thái: đã phát hành và kiểm chứng 2.1.0 ngày 13/10/2026. Sự cố dung lượng phát sinh khi triển khai đã xử lý; xem báo cáo DEPLOY_2.1.0_2026-10-13.md.

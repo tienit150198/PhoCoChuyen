@@ -1,46 +1,135 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "2.0.7",
-  "created_at_utc": "2026-10-13T05:24:38.782396+00:00",
+  "version": "2.1.0",
+  "created_at_utc": "2026-10-13T07:59:30.501914+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 555,
+  "minified": 573,
   "release_from_live": {
     "live_release": "mot-ngay-lam-nghe",
-    "live_version": "2.0.6",
-    "live_manifest_sha256": "a2945554c34876e2e8b95ab468c723fef41bf8e48b25821607d2aa17cd7853ac",
-    "base": "ca19d423afe224d0545839908fcbca4c33ed6682",
-    "ref": "53eaad980c35296acd9c3b4c658b683f10f807bf",
+    "live_version": "2.0.7",
+    "live_manifest_sha256": "898f14119101bb127be3a9117cf66f4fba27ae86ef8658d86e2c461ece482efe",
+    "base": "53eaad980c35296acd9c3b4c658b683f10f807bf",
+    "ref": "b217a0ca494b95fb45fc75969c880cae299398b7",
     "changed": [
       "CHANGELOG.md",
-      "client/isometric/model.ts",
-      "client/isometric/phaser-world.ts",
-      "docs/DEPLOY_2.0.6_2026-10-13.md",
+      "client/isometric/building-art.ts",
+      "client/isometric/career-facade.ts",
+      "client/isometric/career-gallery.ts",
+      "client/isometric/work-architecture.ts",
+      "client/isometric/work-careers.ts",
+      "docs/BUSINESS_LICENSES_OPERATIONS.md",
+      "docs/DEPLOY_2.0.7_2026-10-13.md",
       "docs/LIVE_BASE.md",
+      "docs/qa/isometric-feature-parity.json",
+      "docs/superpowers/plans/2026-10-13-career-endgame.md",
+      "docs/superpowers/plans/2026-10-13-creative-civic-careers.md",
+      "docs/superpowers/specs/2026-10-13-creative-civic-careers-design.md",
       "game/__init__.py",
-      "game/quay.py",
+      "game/career_mastery.py",
+      "game/career_voice.py",
+      "game/careers/__init__.py",
+      "game/careers/art_studio.py",
+      "game/careers/laundry.py",
+      "game/careers/lawyer.py",
+      "game/careers/post_office.py",
+      "game/careers/post_office_content.py",
+      "game/engine.py",
+      "game/guide_content.py",
+      "game/incident_content.py",
+      "game/journey.py",
+      "game/life_content.py",
+      "game/operations.py",
+      "game/promotion.py",
+      "game/promotion_content.py",
+      "game/promotion_office.py",
+      "game/review_aspects_content.py",
+      "game/town_layout.json",
+      "game/work_gear.py",
+      "game/workplace_business.py",
       "i18n/translations.json",
       "package-lock.json",
       "package.json",
+      "public/css/careers/art_studio.css",
+      "public/css/careers/laundry.css",
+      "public/css/careers/lawyer.css",
+      "public/css/careers/post_office.css",
+      "public/css/promo.css",
       "public/i18n/en.json",
+      "public/js/careers/art_studio.js",
+      "public/js/careers/laundry.js",
+      "public/js/careers/lawyer.js",
+      "public/js/careers/post_office.js",
+      "public/js/experience-ui.js",
+      "public/js/illustrated-icons.js",
+      "public/js/isometric/career-gallery.js",
       "public/js/isometric/phaser-world.js",
-      "public/js/v4/abroad.js",
-      "public/js/v4/quay-manage.js",
-      "public/js/v4/quay.js",
-      "tests/abroad-guidance.mjs",
-      "tests/abroad_guidance_browser.mjs",
-      "tests/isometric-treasure-markers.mjs",
-      "tests/isometric-world.mjs",
-      "tests/quay_manage_browser.mjs",
-      "tests/quay_reserve_browser.mjs",
-      "tests/test_quay_reserve.py",
-      "tests/test_task_compat.py"
+      "public/js/scenes/town-place.js",
+      "public/js/scenes/vocabulary.js",
+      "public/js/tutorial/guide-content.js",
+      "public/js/tutorial/store.js",
+      "public/js/v4/career-mastery.js",
+      "public/js/v4/careers.js",
+      "public/js/v4/promo.js",
+      "scripts/browser_career_mastery.py",
+      "scripts/browser_creative_civic.py",
+      "scripts/check_town_walk.mjs",
+      "tests/art-studio-ui.mjs",
+      "tests/career-mastery-ui.mjs",
+      "tests/career-vocabulary.mjs",
+      "tests/career_mastery_simulation.py",
+      "tests/creative_civic_economy.py",
+      "tests/isometric-career-art.mjs",
+      "tests/isometric-career-civic.mjs",
+      "tests/isometric-career-facades.mjs",
+      "tests/isometric-career-gallery.mjs",
+      "tests/isometric-feature-parity.mjs",
+      "tests/isometric-guide-lifecycle.mjs",
+      "tests/isometric-work-architecture.mjs",
+      "tests/isometric-work-semantics.mjs",
+      "tests/laundry_simulation.py",
+      "tests/laundry_ui.mjs",
+      "tests/lawyer-ui.mjs",
+      "tests/post_office-ui.mjs",
+      "tests/promotion-title-extensions.mjs",
+      "tests/test_career_art_studio.py",
+      "tests/test_career_laundry.py",
+      "tests/test_career_lawyer.py",
+      "tests/test_career_mastery.py",
+      "tests/test_career_post_office.py",
+      "tests/test_career_words.py",
+      "tests/test_creative_civic_backend_integration.py",
+      "tests/test_creative_civic_careers.py",
+      "tests/test_creative_civic_i18n.py",
+      "tests/test_creative_civic_staff.py",
+      "tests/test_mastery_engine.py",
+      "tests/test_promotion_endgame.py",
+      "tests/test_promotion_ladders.py",
+      "tests/test_task_compat.py",
+      "tests/test_webassets.py",
+      "tests/test_x3_week.py",
+      "tests/town-art-polish.mjs",
+      "tests/town-map-contract.mjs"
     ],
     "deleted": [],
     "minified": [
+      "public/css/careers/lawyer.css",
+      "public/css/careers/post_office.css",
+      "public/css/promo.css",
+      "public/js/careers/art_studio.js",
+      "public/js/careers/laundry.js",
+      "public/js/careers/lawyer.js",
+      "public/js/careers/post_office.js",
+      "public/js/experience-ui.js",
+      "public/js/illustrated-icons.js",
+      "public/js/isometric/career-gallery.js",
       "public/js/isometric/phaser-world.js",
-      "public/js/v4/abroad.js",
-      "public/js/v4/quay-manage.js",
-      "public/js/v4/quay.js"
+      "public/js/scenes/town-place.js",
+      "public/js/scenes/vocabulary.js",
+      "public/js/tutorial/guide-content.js",
+      "public/js/tutorial/store.js",
+      "public/js/v4/career-mastery.js",
+      "public/js/v4/careers.js",
+      "public/js/v4/promo.js"
     ]
   },
   "files": [
@@ -61,8 +150,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 311563,
-      "sha256": "e22cd8606016706c2a9b2a70964fc9316a29f76cb8b5d634ca04b0632ad979c6"
+      "bytes": 313270,
+      "sha256": "32144693e4a654097d2ab00ac1e194d867b2a4dd3a9f23e81a3f25ee49b2b97d"
     },
     {
       "path": "Dockerfile",
@@ -141,8 +230,8 @@
     },
     {
       "path": "client/isometric/building-art.ts",
-      "bytes": 3531,
-      "sha256": "0532629e4e50d880596ad57b0b4d04ecb51290363b094ade4d8142e43b2e48a4"
+      "bytes": 4248,
+      "sha256": "a8756fb63805c30fdfd0932110257d72d3ba902782c500f3ecaa03e82b66b446"
     },
     {
       "path": "client/isometric/career-art.ts",
@@ -151,13 +240,13 @@
     },
     {
       "path": "client/isometric/career-facade.ts",
-      "bytes": 30435,
-      "sha256": "20385891e4bcae342c9f799c1a8995b8f42df71ccdf9c64fde65d98d9d2648ea"
+      "bytes": 31718,
+      "sha256": "f331301ce86a726dd3f7ad3356eebeaf4c67f67d614725d47c4409a88bb2d7fc"
     },
     {
       "path": "client/isometric/career-gallery.ts",
-      "bytes": 7838,
-      "sha256": "2117772020474e58f368e552ea62de118cb66f7e9130111cffe38542743918bd"
+      "bytes": 8097,
+      "sha256": "eec2b5fe9be90770314043882c09b6455feaeaf4add3bbe52b22446c36ce23e5"
     },
     {
       "path": "client/isometric/island.ts",
@@ -211,13 +300,13 @@
     },
     {
       "path": "client/isometric/work-architecture.ts",
-      "bytes": 30259,
-      "sha256": "63b8ab24136fe706ca3db72b5f865b3fe8ba41e7a01a5ec387c803eb122a7a05"
+      "bytes": 31425,
+      "sha256": "ccfffa4b075fc249e6b1d445e5c008c2eb35bf989da76def4a6a32562cdb8ef2"
     },
     {
       "path": "client/isometric/work-careers.ts",
-      "bytes": 21121,
-      "sha256": "9ae1062c9a13c82d405e3f5a35dac0fb71574d84277fa6ecbabdd032fc915ead"
+      "bytes": 23191,
+      "sha256": "5b30333e6d3cabf55e3bbd2a5a8a6cf92dc1854a9ce1b522e92e114abf6c87fe"
     },
     {
       "path": "client/isometric/work-layout.ts",
@@ -406,8 +495,8 @@
     },
     {
       "path": "docs/BUSINESS_LICENSES_OPERATIONS.md",
-      "bytes": 4322,
-      "sha256": "db6e138cd7cd94f9d23b60a049c483223c50245d7203dbb1f50a7c59cb744a2a"
+      "bytes": 4344,
+      "sha256": "a4190d62f1d4f02f5a6498a6e00cd14e0d78756f29151f01de01b073ea23564c"
     },
     {
       "path": "docs/DANH_MUC_MAN_HINH_ASSET_ISOMETRIC_2026-10-05.md",
@@ -523,6 +612,11 @@
       "path": "docs/DEPLOY_2.0.6_2026-10-13.md",
       "bytes": 5937,
       "sha256": "d24b6d9a3b909f8f3837d438e1272c928d5423137cfcbfbfa1ce3034b0fd9344"
+    },
+    {
+      "path": "docs/DEPLOY_2.0.7_2026-10-13.md",
+      "bytes": 6022,
+      "sha256": "12678599368de651fe924e85312fc7794c3f7402eeb3ac6f05677447468b7ff1"
     },
     {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
@@ -697,7 +791,7 @@
     {
       "path": "docs/LIVE_BASE.md",
       "bytes": 7657,
-      "sha256": "6b60eb3e1c7cefa7f156a10355b2fbd52a9bcae971e04ecee36a18307a7d7f8d"
+      "sha256": "c38b954f565e28ab57fb593dd4d5de89134e18d08239a63b7e4bfa5253fa33f1"
     },
     {
       "path": "docs/LIVE_CONNECTION_2026-10-05.md",
@@ -1466,8 +1560,8 @@
     },
     {
       "path": "docs/qa/isometric-feature-parity.json",
-      "bytes": 111194,
-      "sha256": "8a9d7eefff55b8ebc1ea037af822d1d5b375ccd8e5afb868e084da1d0d4a5513"
+      "bytes": 116653,
+      "sha256": "9e5e3ab4489999a2d96aa47b8c54f10a21f303e5a3497e239c1d9e4bf1421ef5"
     },
     {
       "path": "docs/qa/isometric-feature-parity.md",
@@ -1825,6 +1919,16 @@
       "sha256": "83820088826a7f64dcf9426eddcd53c3bb6f3ee90b6d222cadb8a5bfc7869553"
     },
     {
+      "path": "docs/superpowers/plans/2026-10-13-career-endgame.md",
+      "bytes": 2088,
+      "sha256": "d008661da1960d726611373be931684a2a5691dc17eaa6e459ae57209a3835b7"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-13-creative-civic-careers.md",
+      "bytes": 3280,
+      "sha256": "bfee1e0fd5e42f10cb5cb0ee8ddb133807458d0cb84bd4161c544234929b8312"
+    },
+    {
       "path": "docs/superpowers/specs/2026-09-28-ui-readability-phase1-design.md",
       "bytes": 3039,
       "sha256": "50c88aa1d3fd1f85cf6c9e1941afcfa0aba693efc2bda8e2826f4e3d880823df"
@@ -2030,9 +2134,14 @@
       "sha256": "fe178eabf3b097d173036f721132e43c7285669f94a30f9b634eb39252c0bc06"
     },
     {
+      "path": "docs/superpowers/specs/2026-10-13-creative-civic-careers-design.md",
+      "bytes": 4280,
+      "sha256": "5d57c68cab97256c971dd770b933bfffc900b509adc2741b8d9838c4471ce6af"
+    },
+    {
       "path": "game/__init__.py",
       "bytes": 105,
-      "sha256": "3c66bc00c527e8c0b3f9a3f971209baf179a015b6dac34e4ddba9cca1ec6a669"
+      "sha256": "3e66a99edf33e6fb8627331247e47e6e31df0d45d41a21c3bca1b8669e9f2586"
     },
     {
       "path": "game/abandon.py",
@@ -2215,19 +2324,24 @@
       "sha256": "51aee6ded9e3ff13e97d601e8ed44ef87e97ae6ffd055cdcee3abd904974ee6b"
     },
     {
+      "path": "game/career_mastery.py",
+      "bytes": 14426,
+      "sha256": "b952531a55ce76b0d0ac27e80bb3edeb0eb02311e340c5c5cad423b8198d8274"
+    },
+    {
       "path": "game/career_stories.py",
       "bytes": 217481,
       "sha256": "ca5acc3abbce5be609085ea922e342d777b532cf813bf06ecfcf94227d6783e0"
     },
     {
       "path": "game/career_voice.py",
-      "bytes": 42688,
-      "sha256": "6fe2fafa9f1918c62e9b6021a4048b6b0f29c2372c6f476af88e17b18752542e"
+      "bytes": 44652,
+      "sha256": "1ad7fcadf89062aec3ef5dd2d4b29553f066759e0687f8d9adb6ba083d4c02dc"
     },
     {
       "path": "game/careers/__init__.py",
-      "bytes": 3872,
-      "sha256": "c8f35e6cb43e35d6c2aa76fc67904f418be359f240757292bbdf0645885ac7e5"
+      "bytes": 3927,
+      "sha256": "ea4edd9c0c70389a2e81979669bfec2c4f3755d4097b9c6e230efc4a0f7234b6"
     },
     {
       "path": "game/careers/air_odd.py",
@@ -2243,6 +2357,11 @@
       "path": "game/careers/airline.py",
       "bytes": 4960,
       "sha256": "d1f854b64e15c1604af8cd921c211164e8d5102ce5f7093318b371da92b8a9f2"
+    },
+    {
+      "path": "game/careers/art_studio.py",
+      "bytes": 18202,
+      "sha256": "bfce0a01cae0147ca6e4dc4cc719244ad9c811fc3b0986ea855e327cd7e1ee7f"
     },
     {
       "path": "game/careers/babysitter.py",
@@ -2368,6 +2487,16 @@
       "path": "game/careers/kit.py",
       "bytes": 30674,
       "sha256": "e48e61e119a269b7f91371f7133b28c745eb23299ea1e1c4b72358b1bf86659a"
+    },
+    {
+      "path": "game/careers/laundry.py",
+      "bytes": 18407,
+      "sha256": "bb98eb079a600b278c685de37e38eb3e9aaa6626c7a394599362889685eee57a"
+    },
+    {
+      "path": "game/careers/lawyer.py",
+      "bytes": 19678,
+      "sha256": "f1a5b97f4f14ec23047fcae96465388b053dce7f373b1c7bd0e8abc99ecae79f"
     },
     {
       "path": "game/careers/library.py",
@@ -2498,6 +2627,16 @@
       "path": "game/careers/police_content.py",
       "bytes": 161649,
       "sha256": "bef66b94b73be68c6c2db6b08f903cc245d0fc1f19c96bdeedb62cb24bc353bd"
+    },
+    {
+      "path": "game/careers/post_office.py",
+      "bytes": 17397,
+      "sha256": "0cc5fa5d88e4f146ffd7781e27a6e70e120858f9d89a42b876b16949ee51b9e3"
+    },
+    {
+      "path": "game/careers/post_office_content.py",
+      "bytes": 6282,
+      "sha256": "ff0c5db148931e72752223a94604ac1f15d17f2b31700c3a26a5db97ad6deac8"
     },
     {
       "path": "game/careers/railway.py",
@@ -2716,8 +2855,8 @@
     },
     {
       "path": "game/engine.py",
-      "bytes": 192891,
-      "sha256": "f2c1339649fa8651b97bc860f40e17e88015bdce235f25f365b0dd7e55c78964"
+      "bytes": 193554,
+      "sha256": "965ca5b0cb254fd06aaab44a1ceb677479072a69d504312d0eae2a55c6ff2672"
     },
     {
       "path": "game/estates.py",
@@ -2871,8 +3010,8 @@
     },
     {
       "path": "game/guide_content.py",
-      "bytes": 611092,
-      "sha256": "4ca028d3d98063ce5300e170ac5e5eb9d7247e9465c8182e073f65a412041277"
+      "bytes": 618497,
+      "sha256": "f3a19c9bebb184be149936decae2a2237695cf942e46a81eda6c1dd2a9501478"
     },
     {
       "path": "game/happening_content.py",
@@ -2921,8 +3060,8 @@
     },
     {
       "path": "game/incident_content.py",
-      "bytes": 161923,
-      "sha256": "b0446e25820a76459c908299f453afdf1deabe67edcfddc3c699aa21aa28c53a"
+      "bytes": 162080,
+      "sha256": "bcfc14805bfd74cc33c5862c6318a0728d3963bf7df72e137c4d62aa1b1c0a0e"
     },
     {
       "path": "game/incidents.py",
@@ -2956,8 +3095,8 @@
     },
     {
       "path": "game/journey.py",
-      "bytes": 75404,
-      "sha256": "9fd39ab823b9c02343fba30cede3bb0192cf4fefd1f9a275152477f7ece2f859"
+      "bytes": 75570,
+      "sha256": "2f557cb96e1b23250b8879df316a90abe49f05ee81fad8c4473b8f6a3a8b34a8"
     },
     {
       "path": "game/jsoncopy.py",
@@ -3001,8 +3140,8 @@
     },
     {
       "path": "game/life_content.py",
-      "bytes": 79649,
-      "sha256": "fb67be106bad4831386251ad885ee725e41aa60321a574d8d8b5393fd5f9623b"
+      "bytes": 80022,
+      "sha256": "fc93d88bbc6e4c087f8f52a002affc4b58fde4e2b508281c772f481844c28b5f"
     },
     {
       "path": "game/live_chat.py",
@@ -3071,8 +3210,8 @@
     },
     {
       "path": "game/operations.py",
-      "bytes": 77197,
-      "sha256": "32d315d6025589bafe766f62672605e99c942f4734bc6230dc6394efb97edbd6"
+      "bytes": 77226,
+      "sha256": "8f14e996e8413fd652f02f67123a8daa67ff391db9441b955f98ed89bedbc284"
     },
     {
       "path": "game/org.py",
@@ -3146,18 +3285,18 @@
     },
     {
       "path": "game/promotion.py",
-      "bytes": 63281,
-      "sha256": "e001fddb6dcd0977b317f1b984e4b9db430bd1903b8d9f72aa2bd9d8a4149519"
+      "bytes": 63305,
+      "sha256": "47d716357c09c3972066ba2c4922507de5aa53cd5d7d0e4c8953c255828f07f8"
     },
     {
       "path": "game/promotion_content.py",
-      "bytes": 24673,
-      "sha256": "74a1237373653cfba5fdfe0f6ec0c6c07ff8f4c7f2d5c89acc2475e16fae51b1"
+      "bytes": 30685,
+      "sha256": "2dc65855f293a7bec9203615922425c1db78197e08886e7736a54132d352be14"
     },
     {
       "path": "game/promotion_office.py",
-      "bytes": 60217,
-      "sha256": "3e18cc1edbc3fe9b2cfe7755fa077d8e025dd53d86185ca115d3de066b18118d"
+      "bytes": 60390,
+      "sha256": "f49ebedc19d316647905de4c06dfe4d1786ec265f9639a0c1d018493e3b10e5b"
     },
     {
       "path": "game/property_market.py",
@@ -3236,8 +3375,8 @@
     },
     {
       "path": "game/review_aspects_content.py",
-      "bytes": 92081,
-      "sha256": "4e51fc0853588353d753a83c936b9e120575e7c371d6ffde1e34af348e6a7479"
+      "bytes": 96382,
+      "sha256": "4fed418bdd5f4a8c703fd143707c368bde17049ca67710a7807fd345b703121a"
     },
     {
       "path": "game/review_gripes.py",
@@ -3376,8 +3515,8 @@
     },
     {
       "path": "game/town_layout.json",
-      "bytes": 106281,
-      "sha256": "b1f6c392dc9c379bc1b7a5613a9db1661265b62fac3d53afcf29e22ad5bd78f6"
+      "bytes": 133742,
+      "sha256": "be916db3614b27acb7b91ccf7a6cb7e9479fd639bf2ac0067605527695d0c4eb"
     },
     {
       "path": "game/town_treasure.py",
@@ -3446,8 +3585,8 @@
     },
     {
       "path": "game/work_gear.py",
-      "bytes": 3992,
-      "sha256": "8144200489e417f01b7882bc20dfcc6bf98a0948ff370e0f028db696f6f48820"
+      "bytes": 4227,
+      "sha256": "1fcbd072137b7c9f520872ee03ab464c1d804d623d87e53060e2828e12641233"
     },
     {
       "path": "game/work_visits.py",
@@ -3456,8 +3595,8 @@
     },
     {
       "path": "game/workplace_business.py",
-      "bytes": 37559,
-      "sha256": "4dbfae47b63c2650689a2ee0995e6153d9e2916992e4a89bea562a76b2833b4b"
+      "bytes": 37926,
+      "sha256": "ba372a071dadb81f73e3b43d2b929ec4c926a6fdddb8a93b6fe1d5c1043fc7ec"
     },
     {
       "path": "game/x3_week.py",
@@ -3481,8 +3620,8 @@
     },
     {
       "path": "i18n/translations.json",
-      "bytes": 4639486,
-      "sha256": "b94af02cb2ac79ea42d339ad0e39190abab34c389827ac9cb5c37463a3424194"
+      "bytes": 4771611,
+      "sha256": "90076486cb95f18b0e5df4306c7cefe962d0f92585a68a3ad150b2d78b2db014"
     },
     {
       "path": "live/__init__.py",
@@ -3692,12 +3831,12 @@
     {
       "path": "package-lock.json",
       "bytes": 35890,
-      "sha256": "7fb778cee176b0cdd513801aa7b4a5a8afd6c43497260dae47cb5a4f2219cfd1"
+      "sha256": "d8971749f095f5e29a6af04786011df23cb45b912a666bbf261d010306356e60"
     },
     {
       "path": "package.json",
       "bytes": 3745,
-      "sha256": "e87e87cb620da59064c74ea867f6f4e2ae20e09858b7a9a644e2ffc44b4217c3"
+      "sha256": "35e1639925bafc17d7c07b7d180658fbfaa7996f2f9cbe689990fcde56434ceb"
     },
     {
       "path": "public/admin.html",
@@ -3875,6 +4014,11 @@
       "sha256": "13afc85527e623724f0a589196cfa3f1a634ac5509ed1e0c30b5be5ff6e2d0c6"
     },
     {
+      "path": "public/css/careers/art_studio.css",
+      "bytes": 1085,
+      "sha256": "c7fcc6ffe06aa9bb8a00ddd09e5a9c07b225810413572eed52d1ee0ee9e25dbd"
+    },
+    {
       "path": "public/css/careers/babysitter.css",
       "bytes": 4912,
       "sha256": "66eab1818e07b42bf57341f991d2a8c79e8707d52f57030eb0c0a08e308c8730"
@@ -3980,6 +4124,16 @@
       "sha256": "6202f13544722707ad6c0b64d8d316681daca512152ee0a368ad15d5c4c0d6cd"
     },
     {
+      "path": "public/css/careers/laundry.css",
+      "bytes": 2812,
+      "sha256": "fbe73b817d313e2820844a1e9b17ab062f3872a54e6a7e1a92780f1cbc825c71"
+    },
+    {
+      "path": "public/css/careers/lawyer.css",
+      "bytes": 1567,
+      "sha256": "7140beaf20dedab4270f2a5e8b227116ec7eea0e5b874d9e6356d280a7aef028"
+    },
+    {
       "path": "public/css/careers/library.css",
       "bytes": 4730,
       "sha256": "8bb51c27f11f7f2a966ed4a70295e705efd7e06a65836988392b1807beb9ab9f"
@@ -4063,6 +4217,11 @@
       "path": "public/css/careers/police.css",
       "bytes": 10595,
       "sha256": "504467eff0c4d588c4595b3d6adbd60e29a89a47d7cd3781059b68bb5139e133"
+    },
+    {
+      "path": "public/css/careers/post_office.css",
+      "bytes": 3104,
+      "sha256": "a14bf1dc0275264e16cca34c2ad1c737f1930811ca7c05ae23fabe1e2eb6aac4"
     },
     {
       "path": "public/css/careers/railway.css",
@@ -4326,8 +4485,8 @@
     },
     {
       "path": "public/css/promo.css",
-      "bytes": 10659,
-      "sha256": "14bfae45da03243e8c1aed6b95c06e6f289be4458d19440588c18814a6d62156"
+      "bytes": 11629,
+      "sha256": "4356f6bb221a94665e7125bab10506e035f7e9a3b4d805c99391f9d7b65a72d7"
     },
     {
       "path": "public/css/quay.css",
@@ -4476,8 +4635,8 @@
     },
     {
       "path": "public/i18n/en.json",
-      "bytes": 9326506,
-      "sha256": "4422debb0231abb997dc794d464c7899a50341bb96518d166e7c543f12523984"
+      "bytes": 9480650,
+      "sha256": "de0596de11af6545a39c6f4075bd0bea3e7fe5e4a740d10cc0f51acc223b846f"
     },
     {
       "path": "public/icons/apple-touch-icon.png",
@@ -5320,6 +5479,11 @@
       "sha256": "abb7662f1f0e70b52797238d81574355c822236544d765373787f6b339820378"
     },
     {
+      "path": "public/js/careers/art_studio.js",
+      "bytes": 4885,
+      "sha256": "268c4417959e8182a6e489eae5edc24926f277f733b6be023e62caa076f4d160"
+    },
+    {
       "path": "public/js/careers/asm_kit.js",
       "bytes": 3733,
       "sha256": "3eed90b98e18eb2fab501593e52fe0f7764452a6b6bc2ca2b3c2e63c271a359c"
@@ -5485,6 +5649,16 @@
       "sha256": "591a653770f789642d1d43df396c7bac700bbbceead347de2c7be1fc86a5e344"
     },
     {
+      "path": "public/js/careers/laundry.js",
+      "bytes": 5675,
+      "sha256": "8dcda9659bd60b91f7007f572c8c6458051b6842457186c6eedbcbfc90b30b55"
+    },
+    {
+      "path": "public/js/careers/lawyer.js",
+      "bytes": 4033,
+      "sha256": "0543a6da56671ecb57b0df6bbab8dab33e4b8c930129ab56d59d96bd672c1644"
+    },
+    {
       "path": "public/js/careers/library.js",
       "bytes": 24543,
       "sha256": "32103ce4992a96c58e6ab8c71a8ed64fbf726665062f94c6b5baad71dff9f869"
@@ -5595,6 +5769,11 @@
       "sha256": "c4b4763894262d3105d5d92bcf3b19e0567108a6a66cb8dcd3310c7dbda6072f"
     },
     {
+      "path": "public/js/careers/post_office.js",
+      "bytes": 5097,
+      "sha256": "1cdb18f1a0a40adafc985e09042739d99eb262c77e8278f8d985f1cdc5409e59"
+    },
+    {
       "path": "public/js/careers/railway.js",
       "bytes": 23509,
       "sha256": "296ed25358c048c4014ee6c89f2f06d433f181fb1ac100b914c227e8ea3eedef"
@@ -5681,8 +5860,8 @@
     },
     {
       "path": "public/js/experience-ui.js",
-      "bytes": 37991,
-      "sha256": "e09fa22f1088033837476c7f200778d27cf1548894557a7ed845e7ae4712cd1f"
+      "bytes": 38072,
+      "sha256": "5085bfcd5d24352e059fe35e88d4274265d464b6876cb878cd0a4eb3e0ca515e"
     },
     {
       "path": "public/js/icons.js",
@@ -5691,8 +5870,8 @@
     },
     {
       "path": "public/js/illustrated-icons.js",
-      "bytes": 20922,
-      "sha256": "ff630480481aa9ddbffa5ac397eabeca9449aea437b3aa017cb7c00bca7c8181"
+      "bytes": 21000,
+      "sha256": "27de2c2bc87b35e42125cccb5fcb9d446f76ab3dc84e9fdba908ed7b66d6106e"
     },
     {
       "path": "public/js/interface-mode.js",
@@ -5711,8 +5890,8 @@
     },
     {
       "path": "public/js/isometric/career-gallery.js",
-      "bytes": 27463,
-      "sha256": "e8b658bc498620f506208a13400796b2c310d70dcebf606c1d65d55480313fca"
+      "bytes": 29942,
+      "sha256": "4ce4c657deab5fecc95a0beb165086820734f7231c67b01bbddc961725649d06"
     },
     {
       "path": "public/js/isometric/character-art.js",
@@ -5736,8 +5915,8 @@
     },
     {
       "path": "public/js/isometric/phaser-world.js",
-      "bytes": 1468788,
-      "sha256": "f235b5cd58a9fc0972cc93ca40dad9864938afb09c4dc9375163d90902ee579e"
+      "bytes": 1485362,
+      "sha256": "6f48ec2ba1d69eefce6d90077d62063db2d4c4ec2c54c042f89d54da0a64186c"
     },
     {
       "path": "public/js/isometric/portraits.js",
@@ -6066,13 +6245,13 @@
     },
     {
       "path": "public/js/scenes/town-place.js",
-      "bytes": 23505,
-      "sha256": "54d1285eb8a1aa7eff8b8be50cb39f17d32808407dc1110624e43b3c263d2785"
+      "bytes": 23763,
+      "sha256": "e1fdca3bddd8bd5a1af5194459deceed168bf46f48a08d2b29859c201b6d983c"
     },
     {
       "path": "public/js/scenes/vocabulary.js",
-      "bytes": 37380,
-      "sha256": "11f329dddfa02e8f02b071ee629083c059cb3f26c183e42eeb683c0e20cf4a3d"
+      "bytes": 40659,
+      "sha256": "7013a9b27fdc11ad24aaaef51b4b05e58bad225da782b7fada6a351414356105"
     },
     {
       "path": "public/js/scenes/ward.js",
@@ -6116,8 +6295,8 @@
     },
     {
       "path": "public/js/tutorial/guide-content.js",
-      "bytes": 407003,
-      "sha256": "bbeb9ffcaae340e96b0f4af749beb2554f28287ba1e02a603b2c2cda525d9f7c"
+      "bytes": 413701,
+      "sha256": "bb7c3f38b93ff3745dc0d21008fbdfed145cc6fe781fc5983df63c8980035106"
     },
     {
       "path": "public/js/tutorial/guide-data.js",
@@ -6136,8 +6315,8 @@
     },
     {
       "path": "public/js/tutorial/store.js",
-      "bytes": 2545,
-      "sha256": "8324844cc982ce0d7cb88f3d6dd411c865d36269fcda4b50ee08c0bf03d374a0"
+      "bytes": 2591,
+      "sha256": "20c759d870890c0fbbac4cbec10129d412e995f07094f52ecd81ccbf5ce63b92"
     },
     {
       "path": "public/js/tutorial/tips.js",
@@ -6290,9 +6469,14 @@
       "sha256": "35e82d338446cd27e6aaf8d4dc3e0df08caf59d6a357ad234287ed4264190069"
     },
     {
+      "path": "public/js/v4/career-mastery.js",
+      "bytes": 3941,
+      "sha256": "e1d7e2b01efba193aba6b832084b19acb5fa58df153d7d4362e3f409e56174a9"
+    },
+    {
       "path": "public/js/v4/careers.js",
-      "bytes": 7423,
-      "sha256": "efc9981dcc1042999e7088e4c946de4495657ee639810221ac815bc5316fbfed"
+      "bytes": 7468,
+      "sha256": "b0306632674e29de6524b1c7f1f6ebe9ad7efccff184d9dbbeb4f7808c4da770"
     },
     {
       "path": "public/js/v4/certificates.js",
@@ -6711,8 +6895,8 @@
     },
     {
       "path": "public/js/v4/promo.js",
-      "bytes": 25451,
-      "sha256": "02198dfd84098d2a3adaba482ca00fd1810261496d2bea21a50955e27df60e22"
+      "bytes": 25589,
+      "sha256": "533f37200dc13af9d366a95039ae3de9a978dcc25bcf2da759a125acddec0dde"
     },
     {
       "path": "public/js/v4/push.js",
@@ -7200,6 +7384,11 @@
       "sha256": "ca29d9599c855186a70c7b7d98510cc27b8a98080310371f42d2fe3e643be22e"
     },
     {
+      "path": "scripts/browser_career_mastery.py",
+      "bytes": 8102,
+      "sha256": "ab98b1895a2d9ba7c6974f17b1d14a9792481884231df1a5cb35ee559b3582dd"
+    },
+    {
       "path": "scripts/browser_cert_diploma.py",
       "bytes": 12334,
       "sha256": "c7f556b80b1cea4f89fea532648d2299d134bf0bec35928c11e736ed449f7ff5"
@@ -7228,6 +7417,11 @@
       "path": "scripts/browser_coride.py",
       "bytes": 11021,
       "sha256": "768f807cf77322e643cd482ffefc680308dab0a23e153ce66c7915b691a71082"
+    },
+    {
+      "path": "scripts/browser_creative_civic.py",
+      "bytes": 14209,
+      "sha256": "8e1546b2a67accbd6231d07160ceb2d8748b51d0a8f094cbefefcdc4c096f8cc"
     },
     {
       "path": "scripts/browser_deco.py",
@@ -7576,8 +7770,8 @@
     },
     {
       "path": "scripts/check_town_walk.mjs",
-      "bytes": 5570,
-      "sha256": "801167d2c256497cbebfbe027680b752f2b2d9094cb2cd209b84a586006e0d0f"
+      "bytes": 5616,
+      "sha256": "fc6350fa0d60efd4d989acadb1a64733eb86a425c1ede19988857c53c3d31174"
     },
     {
       "path": "scripts/check_word_caps.py",
@@ -7860,6 +8054,11 @@
       "sha256": "dc291e47672cc8d8e8e941f98f44a9514803b640e7be1b2b9989e2b050f76509"
     },
     {
+      "path": "tests/art-studio-ui.mjs",
+      "bytes": 1612,
+      "sha256": "2fd97cd8d61238eb210b765dfe9ffebf805d124bb6856effb6b2be18e7743006"
+    },
+    {
       "path": "tests/auction_collections.mjs",
       "bytes": 1929,
       "sha256": "0026ad0eb054ed17f5745addbfa0042bf1c787040ff75bd5c8cf8d0a9ac80f77"
@@ -7920,14 +8119,24 @@
       "sha256": "415f831954f0bd396f71f42c7bf7ca3c1a7a3645630a05b0564be9a620d0e754"
     },
     {
+      "path": "tests/career-mastery-ui.mjs",
+      "bytes": 3267,
+      "sha256": "d857061aa323f47a310680cae45b4480950eda0aa16b54b67d150709460ed596"
+    },
+    {
       "path": "tests/career-vocabulary.mjs",
       "bytes": 3235,
-      "sha256": "b2d695d8ad944cd98bdf79329f101b90ebe00fe97dbbe34610f40ef2ace75f99"
+      "sha256": "6677393c75cf0c66ecb6dded16d8b01d31c94c8af644686db09c193ad6bcfc05"
     },
     {
       "path": "tests/career_context_focus.mjs",
       "bytes": 799,
       "sha256": "c498a5c5fea0c883753a3a935434d8438a96fabb0305d2f4c1f27f496279b513"
+    },
+    {
+      "path": "tests/career_mastery_simulation.py",
+      "bytes": 2639,
+      "sha256": "c0c12c73ba0b6afaeca78dc6111d9ab1b14a05f36214a96350bc62a51e01d332"
     },
     {
       "path": "tests/chat_history.mjs",
@@ -7983,6 +8192,11 @@
       "path": "tests/craft_workbench.mjs",
       "bytes": 4508,
       "sha256": "481b28c786c8a5897c57a63f5fa79f2e3636f5c068d6a9a55514a71de08158b0"
+    },
+    {
+      "path": "tests/creative_civic_economy.py",
+      "bytes": 9993,
+      "sha256": "0a3d38db9a758742eaf31fca915fcd8219a1f07570b2448aeb45a9d85415a76e"
     },
     {
       "path": "tests/delivery_architecture.mjs",
@@ -8411,8 +8625,13 @@
     },
     {
       "path": "tests/isometric-career-art.mjs",
-      "bytes": 3833,
-      "sha256": "f81d98e6d4d6db49151d18f1779dfbd924a3c459bff2f279120b2af4282def83"
+      "bytes": 3902,
+      "sha256": "b0a94f8c27730d00f685a1f6fc1fadd6fc02b20a70c81c064fb981dce40e11ae"
+    },
+    {
+      "path": "tests/isometric-career-civic.mjs",
+      "bytes": 2873,
+      "sha256": "cc045584519f8d8771f7ac2e8cfda06e016f346f141733a32a617744454a5141"
     },
     {
       "path": "tests/isometric-career-exterior-assets.mjs",
@@ -8421,13 +8640,13 @@
     },
     {
       "path": "tests/isometric-career-facades.mjs",
-      "bytes": 4872,
-      "sha256": "cc2e50a975688e368496072320b066a24c182838f4b3cb40069a48b08c33f1e7"
+      "bytes": 5706,
+      "sha256": "e0bbc7ff1ce8a8d191375890e53077e64e8e9082fc2298bc074fc5c3827d33e1"
     },
     {
       "path": "tests/isometric-career-gallery.mjs",
-      "bytes": 13384,
-      "sha256": "73e924e824d7365c58b3e9be80dfd9204f2689eed524e2312cd5a977f2fb4b87"
+      "bytes": 14079,
+      "sha256": "89295437fded089d81296c72abce905a15949e85c95411a9a3334fd06200568e"
     },
     {
       "path": "tests/isometric-character-composition.mjs",
@@ -8447,12 +8666,12 @@
     {
       "path": "tests/isometric-feature-parity.mjs",
       "bytes": 11438,
-      "sha256": "f2a5ad7d3e38c293f0b83dca40f69c189723b776bdc4a1e7d64a5ff11cb2c730"
+      "sha256": "614995dd95f185bb1eeb2260c9ced4b77b95a08fa98b8245d4d58779c27593fb"
     },
     {
       "path": "tests/isometric-guide-lifecycle.mjs",
       "bytes": 28096,
-      "sha256": "88a91be5aefe76fcfbbbcac53bf1ce6704e5e15a83f444533378138b69e26d18"
+      "sha256": "692538811d96af9b5b9f1c39fc7aa5ea0a1ae47304a29e8e513b08a4daa58224"
     },
     {
       "path": "tests/isometric-hud-layout.cjs",
@@ -8541,8 +8760,8 @@
     },
     {
       "path": "tests/isometric-work-architecture.mjs",
-      "bytes": 7451,
-      "sha256": "8df0091a8d391a7c7506a9ce71ee056e92f4647f6640a4f568a2965474d9ac56"
+      "bytes": 7692,
+      "sha256": "c1ac5f2a499ffe68bef61e51c47ec627205bdee50bbd9e3833c21a6b1828fa2b"
     },
     {
       "path": "tests/isometric-work-layout.mjs",
@@ -8551,8 +8770,8 @@
     },
     {
       "path": "tests/isometric-work-semantics.mjs",
-      "bytes": 8913,
-      "sha256": "68e49aca31d3462c6d9a0be5432c442e953ff3f4228cade3fdc3177c9b64dc2d"
+      "bytes": 9078,
+      "sha256": "8c7cb86759fdb3e1c0f7919ea21d43932ae9f323d08799939f3df0c6abd33f97"
     },
     {
       "path": "tests/isometric-world.mjs",
@@ -8593,6 +8812,21 @@
       "path": "tests/karaoke_sync.mjs",
       "bytes": 7520,
       "sha256": "f284ca798b91e936a1f7805fe9801d5d945a7aaca85af3dfccc1c5de6bd8c192"
+    },
+    {
+      "path": "tests/laundry_simulation.py",
+      "bytes": 1247,
+      "sha256": "43c2711dd20108b1af0e7d0887474f83fbdda410483a07d51f92db276c900d89"
+    },
+    {
+      "path": "tests/laundry_ui.mjs",
+      "bytes": 1458,
+      "sha256": "8add2fcc6a2e89b12314a2575dacea19e4db985aee5f95aa3a1368b83a8da91c"
+    },
+    {
+      "path": "tests/lawyer-ui.mjs",
+      "bytes": 1347,
+      "sha256": "f80b6fd85b088eb024d739b3420bfa6aecf41dcca34b9f58ee412d2ab0daf842"
     },
     {
       "path": "tests/leisure-actors.mjs",
@@ -8765,9 +8999,19 @@
       "sha256": "9df761f613191112bc44dd70f304b63ae3a855a60b6b77add6b3039429be7916"
     },
     {
+      "path": "tests/post_office-ui.mjs",
+      "bytes": 2361,
+      "sha256": "d703e7a882aaf72302961418cf9210206be232ed754c29b94202a2e75a8d448f"
+    },
+    {
       "path": "tests/preview25d.mjs",
       "bytes": 1370,
       "sha256": "c4a757c5c9ec9b6c2606f8b2808d317c7f21d9171a11609b986629db21745de1"
+    },
+    {
+      "path": "tests/promotion-title-extensions.mjs",
+      "bytes": 1354,
+      "sha256": "86d80df567ec2d5f4f3ee3b88e197885d2f4147e239c270d23b6c05dd923e466"
     },
     {
       "path": "tests/qty_input.mjs",
@@ -9135,6 +9379,11 @@
       "sha256": "4873d71e624ff7df8237782392dea850e05a2fcc1414cde8121d96b00f1852e0"
     },
     {
+      "path": "tests/test_career_art_studio.py",
+      "bytes": 8564,
+      "sha256": "101012b1cfd28f950823eb0bf5fc2fbc4e09f5c32315c0b1bd9794a6ffea0e1c"
+    },
+    {
       "path": "tests/test_career_babysitter.py",
       "bytes": 32523,
       "sha256": "3ac1115870c06787f06a14f969b75ec0b2ff4a6ddc74d4339a3c6669d44f2c2c"
@@ -9245,6 +9494,16 @@
       "sha256": "cdd901d79368167197f35979474070ec7b8e2511875ca8a53da13bf8bf92d3ba"
     },
     {
+      "path": "tests/test_career_laundry.py",
+      "bytes": 7785,
+      "sha256": "987f2a5c6d58feec3dca7d3c9eb16064aa8d5b1f12d9f31fb2bf5946f776aba2"
+    },
+    {
+      "path": "tests/test_career_lawyer.py",
+      "bytes": 6358,
+      "sha256": "ba474006878f5510d3b70a5a08477668d43f563fd6a81978a5435a8acf0e2cb5"
+    },
+    {
       "path": "tests/test_career_library.py",
       "bytes": 32009,
       "sha256": "33c828d3b1d5788489859d0d077f4a5813dbb693768dddade9466927b94d1bbc"
@@ -9258,6 +9517,11 @@
       "path": "tests/test_career_lighthouse.py",
       "bytes": 33620,
       "sha256": "9f5c2f447fb0265045639046f98deca7ab1e3235055d9564eb6ac4682848b02b"
+    },
+    {
+      "path": "tests/test_career_mastery.py",
+      "bytes": 10288,
+      "sha256": "c149affc0eb004bf4b90bcbb8607e4cfe7706e3c20a75512579444bc084dc72c"
     },
     {
       "path": "tests/test_career_mother_baby.py",
@@ -9320,6 +9584,11 @@
       "sha256": "975bcd6583d2a73485819c2269447c8162a7f8bf9a49e659ad05fbdce1dc3561"
     },
     {
+      "path": "tests/test_career_post_office.py",
+      "bytes": 10505,
+      "sha256": "ce4b0b922c1c8759115d7f5465997bdde1edd32969dce2f34b52cb1ad9780f3d"
+    },
+    {
       "path": "tests/test_career_railway.py",
       "bytes": 36442,
       "sha256": "f30178044f4271c5d5da75957343ba00b22be0cb859dc2cd5976eee648ce5dcb"
@@ -9367,7 +9636,7 @@
     {
       "path": "tests/test_career_words.py",
       "bytes": 14763,
-      "sha256": "cf976ae7fd4b82c8e869aff799626c051ff898738042087bc16ccfc897c747e2"
+      "sha256": "895ed6e81b85952adec0e6556c1b53d512250e9741c8d2723a655fc3928ce9fa"
     },
     {
       "path": "tests/test_career_zpop.py",
@@ -9493,6 +9762,26 @@
       "path": "tests/test_cradle.py",
       "bytes": 14833,
       "sha256": "b14847a2726323b7a4ea4d999e2be02c91a312431d527df76cced728b371d750"
+    },
+    {
+      "path": "tests/test_creative_civic_backend_integration.py",
+      "bytes": 3354,
+      "sha256": "01508f1cab948fae8c36b04660a2f2e30157c0a6bf4251dc4c114aff075d6694"
+    },
+    {
+      "path": "tests/test_creative_civic_careers.py",
+      "bytes": 1177,
+      "sha256": "049a095ed3806441f074d4e37459c082bf10d131044567c537f8e41218fd237a"
+    },
+    {
+      "path": "tests/test_creative_civic_i18n.py",
+      "bytes": 2230,
+      "sha256": "0126160ab4ccc83c54fa6e50033ce96ac5d693e4a77e8d7d3a2c85a2d15e909e"
+    },
+    {
+      "path": "tests/test_creative_civic_staff.py",
+      "bytes": 2811,
+      "sha256": "bc7a3f61320aad9fb359d5fa3edee6ae429ddb36fad8e52ff9b8b3b615852651"
     },
     {
       "path": "tests/test_customer_care.py",
@@ -10315,6 +10604,11 @@
       "sha256": "e95a865e6f2662a4ed0d2d6a22fd746b29f7fb92faae9bb5cb651a8e86a8bb19"
     },
     {
+      "path": "tests/test_mastery_engine.py",
+      "bytes": 3320,
+      "sha256": "5f088110a0a7e03d2f08f87b0d939037f4006b1a3d6809abd86492136a79ca7a"
+    },
+    {
       "path": "tests/test_meter_lag.py",
       "bytes": 2763,
       "sha256": "7411f497b42ed84144a40904cd4a43c46318db50fd7575188e5f4da795a8376b"
@@ -10570,9 +10864,14 @@
       "sha256": "f4e49c2c6b9dc6e1fb0aa8eb2ec71b32e1c6d2859489dfa1fb5c98a0540cd15d"
     },
     {
+      "path": "tests/test_promotion_endgame.py",
+      "bytes": 7211,
+      "sha256": "f3fa0b84a564d73b811af439eea62de8decb17b6323771ae5c86ed955063cd95"
+    },
+    {
       "path": "tests/test_promotion_ladders.py",
-      "bytes": 25072,
-      "sha256": "545f5febe14659c1a6e2a6825bcf29937b95d2145edc73d7c459862c20410432"
+      "bytes": 25098,
+      "sha256": "dba17115560af6a003f5aa8c8893fc577df6b3fc8eb28862d1a2b1f9a085dfa5"
     },
     {
       "path": "tests/test_property_market.py",
@@ -10882,7 +11181,7 @@
     {
       "path": "tests/test_task_compat.py",
       "bytes": 5567,
-      "sha256": "e40cca8a23ee635201e7606f6e2710258bddc24f970529c4383aa1fb27317a5e"
+      "sha256": "bb77d5fe5317946a6bc731bae6cfb559401e13ba52e4be56f6b59967c244a449"
     },
     {
       "path": "tests/test_teacher_care.py",
@@ -11066,8 +11365,8 @@
     },
     {
       "path": "tests/test_webassets.py",
-      "bytes": 18713,
-      "sha256": "a0d0bd40bde4b33cdc88c6094935138f32892388c6e42074e9e9cad0770a0cf2"
+      "bytes": 18754,
+      "sha256": "9c2daca4d14ae5ca2a6f7ecae166d90e9d3df354a0221a182c167b82870db717"
     },
     {
       "path": "tests/test_wedding_invite.py",
@@ -11131,8 +11430,8 @@
     },
     {
       "path": "tests/test_x3_week.py",
-      "bytes": 9535,
-      "sha256": "83cdcde73d4f22e9d25f0ba00ff081f008345b0a369ae75c078d5dd600e100b4"
+      "bytes": 9585,
+      "sha256": "10fdff50d1e661d2a2f7b115f79265f11d49a25f1e339af85e58d2139ba0ad00"
     },
     {
       "path": "tests/three-scene-lifecycle.mjs",
@@ -11151,8 +11450,8 @@
     },
     {
       "path": "tests/town-art-polish.mjs",
-      "bytes": 4702,
-      "sha256": "314ab1119808a34565dea550c2f2f1f7cefdf2734070b49981d247b6fb8b6f08"
+      "bytes": 5086,
+      "sha256": "c0c86ddd7d6a486d6d56c64e7d950c33c8ff8374ef89515a5d05f99520468e5b"
     },
     {
       "path": "tests/town-district-inventory.mjs",
@@ -11166,8 +11465,8 @@
     },
     {
       "path": "tests/town-map-contract.mjs",
-      "bytes": 3105,
-      "sha256": "d18a6a56b310b964cb7d534aa0f97e0de8703bedd5490b6c34b036adb126cd91"
+      "bytes": 3108,
+      "sha256": "f1f4051738d368dd04e777264c0a9d60ed3e5ad3b3a839efce16ef6fbe5e5034"
     },
     {
       "path": "tests/town-polish.mjs",

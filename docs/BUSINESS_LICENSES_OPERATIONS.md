@@ -1,4 +1,4 @@
-# Vận hành chứng chỉ kinh doanh — 2.0.7
+# Vận hành chứng chỉ kinh doanh — 2.1.0
 
 ## Phạm vi
 
@@ -15,7 +15,7 @@ Không thay đổi bảng DB. Hồ sơ tùy chọn `journey.quay.business_licens
 - `MNL_BUSINESS_LICENSES_OFF=1`: bỏ điều kiện chứng chỉ khi mở/nâng cấp.
 - `MNL_BUSINESS_INSPECTIONS_OFF=1`: ngừng giao biên bản mới và ngừng cưỡng chế. Quầy được phục hồi khi quyết toán tiếp theo, không bán bù thời gian bị hạn chế; trạng thái tự đóng được giữ nguyên.
 
-**Tắt tính năng dùng mã hiện tại 2.0.7 cùng hai cờ OFF. Không quay về 2.0.5:** validator cũ không biết ba mã chứng chỉ mới. Không xóa chứng chỉ/hồ sơ/đơn hàng để ép bản lưu tương thích mã cũ.
+**Tắt tính năng dùng mã hiện tại 2.1.0 cùng hai cờ OFF. Không quay về 2.0.7 hoặc cũ hơn:** bản cũ không biết bốn nghề mới, bậc thăng tiến mở rộng hoặc các mã chứng chỉ tương ứng. Không xóa chứng chỉ/hồ sơ/đơn hàng để ép bản lưu tương thích mã cũ.
 
 Chuẩn bị cờ bằng EnvironmentFile cuối cùng của unit, rồi dùng rolling release trên chính thư mục mã tương thích đang chạy để bridge và canonical đều nhận cấu hình mới:
 

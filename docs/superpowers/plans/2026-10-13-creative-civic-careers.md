@@ -22,12 +22,12 @@ Each owner first runs a failing registration/behavior assertion, implements the 
 - [x] Add IDs to `game/careers/__init__.py`, `game/journey.py` chapter unlocks and required backend role/taxonomy maps.
 - [x] Add scene/vocabulary/guide definitions and safe town positions in existing map registries. Update count contracts to the explicit 54-ID catalogue rather than weakening uniqueness checks for existing assets.
 - [x] Verify `set(new_state()['careers'])` has all four and old-state migration adds them without altering old tasks.
-- [ ] Ensure story-mode income is paid through the appropriate shop/hired path, not duplicated. Simulate full jobs at days 1,4,10,20,40,60 and compare work/reward ratios; record exact outcomes and unlock requirements.
+- [x] Ensure story-mode income is paid through the appropriate shop/hired path, not duplicated. Simulate full jobs at days 1,4,10,20,40,60 and compare work/reward ratios; record exact outcomes and unlock requirements.
 
 ## 3. Review and acceptance
 
-- [ ] Parent reviews all changes and independent reviewer checks save/transaction/progression safety.
-- [ ] Browser exercise each career through real UI at 390px and desktop with a local test database; validate no page errors/overflow and live task progress survives reload.
-- [ ] Run scoped career, registry, migration, JS/typecheck/isometric build tests and old-task compatibility against live2.0.7.
-- [ ] Translate added user-facing text into English, verify pack, add release notes, package from live bytes, verify fresh installation, deploy guarded rolling release and verify public health/assets.
-- [ ] Record what shipped, numerical balance evidence, known limits and compatible rollback route; do not roll back to a server that rejects the four career IDs.
+- [x] Parent reviews all changes and independent reviewer checks save/transaction/progression safety.
+- [x] Browser exercise each career through real UI at 390px and desktop with a local test database; validate no page errors/overflow and live task progress survives reload.
+- [x] Run scoped career, registry, migration, JS/typecheck/isometric build tests and old-task compatibility against live2.0.7.
+- [x] Translate added user-facing text into English, verify pack, add release notes, package from live bytes, verify fresh installation, deploy guarded rolling release and verify public health/assets.
+- [x] Record what shipped, numerical balance evidence, known limits and compatible rollback route; do not roll back to a server that rejects the four career IDs.
