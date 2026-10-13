@@ -5285,7 +5285,16 @@
   "Ví chưa đủ $1 xu học phí.": "Your wallet does not have enough for the $1-coin tuition.",
   "Vốn mở quầy: $1 · $2.": "Outlet opening funds: $1 · $2.",
   "hoặc tự học miễn phí (thi $1).": "or study for free on your own (exam $1).",
-  "Đề ngắn $1 câu, đúng $2 là đạt, được mở sách và có 💡 gợi ý. Chứng chỉ xin việc thêm $3% cơ hội được nhận khi phỏng vấn chưa đủ điểm. Chứng chỉ có dấu 🎁 mở quyền lợi ghi ở từng khóa; chứng chỉ kinh doanh mở thêm quầy.": "A short $1-question exam; $2 correct answers to pass, with open-book access and 💡 hints. Job certificates add $3% to hiring chances when interview scores fall short. Certificates marked 🎁 unlock the benefits listed for each course; business certificates unlock more outlets."
+  "Đề ngắn $1 câu, đúng $2 là đạt, được mở sách và có 💡 gợi ý. Chứng chỉ xin việc thêm $3% cơ hội được nhận khi phỏng vấn chưa đủ điểm. Chứng chỉ có dấu 🎁 mở quyền lợi ghi ở từng khóa; chứng chỉ kinh doanh mở thêm quầy.": "A short $1-question exam; $2 correct answers to pass, with open-book access and 💡 hints. Job certificates add $3% to hiring chances when interview scores fall short. Certificates marked 🎁 unlock the benefits listed for each course; business certificates unlock more outlets.",
+  "Còn $1 ca đang mở": "$1 shifts still open",
+  "Còn $1 xu trong két vì vốn đã đầy.": "$1 coins remain in the till because capital is full.",
+  "Giữ lại $1 xu vào vốn quầy.": "Kept $1 coins as stall capital.",
+  "Thu két hiện tại: $1 xu về ví, $2 xu vào vốn quầy.": "Collect now: $1 coins to your wallet, $2 coins to stall capital.",
+  "Thu két hiện tại: $1 xu về ví.": "Collect now: $1 coins to your wallet.",
+  "Đã lưu vốn giữ lại khi thu két: $1 xu.": "Saved capital to keep when collecting the till: $1 coins.",
+  "✅ Hôm nay học rồi. Khép một ca làm việc và xác nhận để sang ngày sống mới, rồi học buổi $1. Không cần chờ sang ngày ngoài đời.": "✅ You have studied today. Close a work shift and confirm to advance to the next in-game day, then take lesson $1. You do not need to wait until tomorrow in real life.",
+  "💰 Đã thu két $1 quầy: +$2 xu vào ví.": "💰 Collected from $1 stalls: +$2 coins to your wallet.",
+  "💰 Đã thu két $1 quầy: +$2 xu vào ví. Giữ lại $3 xu vào vốn quầy.": "💰 Collected from $1 stalls: +$2 coins to your wallet. Kept $3 coins as stall capital."
  },
  "strings": {
   "% đường": "% sugar",
@@ -42709,6 +42718,13 @@
   "📖 Học và thi chứng chỉ": "📖 Study and take the certificate exam",
   "🚔 Công an kiểm tra": "🚔 Police inspection",
   "🚔 Cần bổ sung chứng chỉ": "🚔 Certificate required",
-  "🚔 Quầy tạm dừng nhận đơn mới. Học đủ chứng chỉ để gỡ hạn chế.": "🚔 This outlet has stopped accepting new orders. Complete the required certificates to lift the restriction."
+  "🚔 Quầy tạm dừng nhận đơn mới. Học đủ chứng chỉ để gỡ hạn chế.": "🚔 This outlet has stopped accepting new orders. Complete the required certificates to lift the restriction.",
+  "Khi thu két, chuyển tiền vào vốn cho đủ mức này, phần còn lại về ví. Lưu mức giữ lại chưa chuyển tiền. Đặt 0 để thu toàn bộ két.": "When collecting the till, top up capital to this amount and send the rest to your wallet. Saving this amount does not move any money. Set it to 0 to collect the entire till.",
+  "Khép ca ở tất cả những nơi dưới đây trước khi lên đường. Chỉ khép nơi vừa làm chưa đủ.": "Close your shifts at every workplace below before departing. Closing only your latest shift is not enough.",
+  "Khép tất cả các ca đang mở trước khi lên đường.": "Close all open shifts before departing.",
+  "Thao tác vốn giữ lại không hợp lệ.": "Invalid capital reserve action.",
+  "Về nơi làm việc để khép ca": "Return to your workplace to close your shift",
+  "Vốn giữ lại khi thu két": "Capital to keep when collecting the till",
+  "Vốn giữ lại phải là số nguyên từ 0 đến 100.000.000 xu.": "Capital to keep must be a whole number from 0 to 100,000,000 coins."
  }
 }

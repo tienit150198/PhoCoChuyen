@@ -1,3 +1,10 @@
+# v2.0.7 — 2026-10-13
+
+- Thu két: chủ quầy đặt vốn giữ lại tùy ý; tiền còn dư mới về ví, áp dụng cả thu nhiều quầy. Két vào vốn giữ lại phần vượt trần trong két.
+- Rương trên phố: ưu tiên nhặt rương khi trùng điểm tương tác với địa điểm, bằng chuột và phím E.
+- Du học: nói rõ cách sang ngày sống mới để học tiếp. Đi làm nước ngoài liệt kê đầy đủ ca còn mở và có nút về từng nơi.
+- Bổ sung bản dịch tiếng Anh, kiểm thử bảo toàn tiền và tương tác. Không thay dữ kiện nhiệm vụ hoặc bảng DB.
+
 # v2.0.6 — 2026-10-13
 
 🎓 Ba chứng chỉ kinh doanh học trả phí, lần lượt cơ bản / nâng cao / quản lý chuỗi. Học phí cơ sở 500 / 2.000 / 5.000 xu, theo chỉ số giá hiện tại là 550 / 2.200 / 5.500 xu; mỗi khóa gồm một lần thi, thi lại nửa phí hiện hành. Xe đẩy đầu tiên không cần giấy; nhiều xe/sạp cần cơ bản, tối đa hai ki-ốt cần nâng cao, từ ba ki-ốt cần quản lý chuỗi.
