@@ -37,3 +37,15 @@ await scaleAction('scaleSubmit',{command:'scale_stock_buy',payload:'{}'},
 assert.deepEqual(sent,{quantity:80});
 await assert.rejects(()=>scaleAction('scaleSubmit',{command:'reset_all',payload:'{}'},el,env));
 console.log('career scale rendering, escaping, numeric fields and double-click checks passed');
+
+const scoped={...sample,sites:[{id:'base',name:'Base'},{id:'branch-1',name:'Branch'}],
+ resources:[{id:'r1',site:'base',label:'Base resource'},{id:'r2',site:'branch-1',label:'Branch resource'}],
+ stock:{items:[{name:'Supplies',locations:[{site:'base',name:'Base stock'},{site:'branch-1',name:'Branch stock'}]}],actions:[
+ {site:'base',command:'scale_stock_receive',label:'Receive base',payload:{order:'s1'}},
+ {site:'branch-1',command:'scale_stock_receive',label:'Receive branch',payload:{order:'s2'}},
+ {command:'scale_stock_move',label:'Transfer',payload:{},fields:[{name:'source',label:'Source',options:[{value:'base',label:'Base'},{value:'branch-1',label:'Branch'}],value:'base'},{name:'site',label:'Target',options:[{value:'base',label:'Base'},{value:'branch-1',label:'Branch'}],value:'branch-1'}]}]}};
+const scopedHTML=scaleCard(scoped,{site:'branch-1'});
+assert.ok(!scopedHTML.includes('Receive base')&&!scopedHTML.includes('Base resource')&&!scopedHTML.includes('Base stock'));
+assert.ok(scopedHTML.includes('Receive branch')&&scopedHTML.includes('Branch resource'));
+assert.match(scopedHTML,/name="source"[^]*?value="branch-1" selected/);
+assert.match(scopedHTML,/name="site"[^]*?value="base" selected/);

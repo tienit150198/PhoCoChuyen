@@ -191,7 +191,7 @@ def public(c, cid):
                         dict(name='units',label=f'Số {m.unit}',type='number',min=1,max=MAX,value=1)],primary=False))
     for o in r['orders']:
         if not o['received']:
-            actions.insert(0,dict(command='scale_stock_receive',label=f"Kiểm đếm kiện {o['id']}",payload=dict(order=o['id']),
+            actions.insert(0,dict(site=o['site'],command='scale_stock_receive',label=f"Kiểm đếm kiện {o['id']}",payload=dict(order=o['id']),
                 fields=[dict(name='count',label=f"Phiếu giao: {o['quantity']} thùng",type='number',min=1,max=4000,value=1)]))
     return dict(items=items,actions=actions)
 
