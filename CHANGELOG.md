@@ -1,3 +1,9 @@
+# v2.2.1 — 2026-10-13
+
+- Thẻ chúc ở chùa có hai quyền xem: Công khai hoặc Chỉ mình tôi, chọn khi treo và đổi lại được sau đó. Thẻ đã viết trước đây giữ riêng tư.
+- Thêm bảng lời chúc công khai của mọi người, đọc theo trang. Chuyển về riêng tư gỡ thẻ khỏi bảng chung; chỉ chủ thẻ có quyền đổi, kể cả thẻ cũ trong lịch sử.
+- Giữ hoạt động chùa lặp không giới hạn và tinh thần tối đa 100; nội dung riêng tư không xuất hiện trong API bảng chung.
+
 # v2.2.0 — 2026-10-13
 
 - Cửa chùa mở thẳng sân đi bộ, có chánh điện và nhà ăn. Thắp hương, cầu may, khấn, tụng kinh và treo thẻ được làm lại không giới hạn; tinh thần vẫn tối đa 100. Cơm chay giữ điều kiện ngày có cơm và bụng chưa no.
