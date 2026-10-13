@@ -61,6 +61,7 @@ from . import chua as cg  # 🛕 Đi chùa
 from . import promotion as pm
 from . import career_mastery as cm  # Persistent manual-work mastery, separate from formal promotion.
 from . import career_competition as competition  # Earned NPC standings and recognition.
+from . import career_scale_quota as scale_quota
 from . import rui as rui_  # 🛡️ Rủi ro & bảo hiểm
 from . import vang as vang_  # 💰 Tiệm vàng
 
@@ -600,6 +601,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         if s["journey"]["story"]:
             jr.enable_story(fresh,s["journey"]["seed"]+1)
             jr.carry_reset(s,fresh)  # never more xu than the old journey held: no starter funds, gift or allowance twice
+        scale_quota.carry_reset(s,fresh)
         ar.record([s],"reset_all",ar.JOURNEY)  # the whole previous journey stays in the archive
         return fresh,dict(message="Đã tạo hành trình mới.")
     if action.startswith("jr_"):return jr.action(s,career,action,p)
@@ -1171,6 +1173,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         result["message"]="Đã lưu ảnh trong album nghề này (giữ sáu ảnh gần nhất)."
     elif action=="reset_career":
         need(p.get("confirm")=="BAT DAU LAI","Cần xác nhận trước khi xóa nghề.")
+        scale_quota.carry_reset(s,s,career)
         ar.record([s["careers"][career]],"reset",career)  # the previous record stays in the archive
         pm.forget(s,career)  # 🎖️ the place's steps start again too
         old=s["careers"][career]["money"]
