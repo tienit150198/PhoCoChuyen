@@ -1,44 +1,134 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "2.2.1",
-  "created_at_utc": "2026-10-13T11:05:40.354282+00:00",
+  "version": "2.3.0",
+  "created_at_utc": "2026-10-13T15:01:58.678486+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 590,
+  "minified": 605,
   "release_from_live": {
     "live_release": "mot-ngay-lam-nghe",
-    "live_version": "2.2.0",
-    "live_manifest_sha256": "4e51acb98d4f55de1f5b156cb4ad9e6a26ed3bc18606c4f2432b56217de1215e",
-    "base": "e179dd8a9cc6e773dc98fe453c206a1008e1bf2d",
-    "ref": "24a910f3a5c9cac877301d9a306e03057054edcd",
+    "live_version": "2.2.1",
+    "live_manifest_sha256": "32a58c346e1bd833eb197f62bcefbbbbbb6862b90444608d5993dc40d737472b",
+    "base": "24a910f3a5c9cac877301d9a306e03057054edcd",
+    "ref": "baf36b505b9788c6e37197610e83632d780ffb0d",
     "changed": [
       "CHANGELOG.md",
       "docs/BUSINESS_LICENSES_OPERATIONS.md",
-      "docs/DEPLOY_2.2.0_2026-10-13.md",
+      "docs/DEPLOY_2.2.1_2026-10-13.md",
       "docs/LIVE_BASE.md",
-      "docs/TEMPLE_SHARING_2.2.1.md",
+      "docs/PAID_CONVENIENCE_REVIEW.md",
+      "docs/superpowers/plans/2026-10-13-capacity-expansion.md",
+      "docs/superpowers/plans/2026-10-13-career-competition.md",
+      "docs/superpowers/plans/2026-10-13-paid-convenience.md",
       "docs/superpowers/plans/2026-10-13-temple-card-visibility.md",
-      "docs/superpowers/plans/2026-10-13-temple-public-venues.md",
+      "docs/superpowers/specs/2026-10-13-capacity-expansion.md",
+      "docs/superpowers/specs/2026-10-13-capacity-verification.md",
+      "docs/superpowers/specs/2026-10-13-career-competition-design.md",
+      "docs/superpowers/specs/2026-10-13-career-content-catalog.md",
+      "docs/superpowers/specs/2026-10-13-career-content-design.md",
+      "docs/superpowers/specs/2026-10-13-career-content-economy.csv",
+      "docs/superpowers/specs/2026-10-13-career-content-economy.md",
+      "docs/superpowers/specs/career-content-evidence/capacity-resources.md",
+      "docs/superpowers/specs/career-content-evidence/food-retail.md",
+      "docs/superpowers/specs/career-content-evidence/professional.md",
+      "docs/superpowers/specs/career-content-evidence/service.md",
       "game/__init__.py",
-      "game/chua.py",
-      "game/chua_board.py",
-      "game/pg_schema.py",
-      "game/storage.py",
+      "game/boba.py",
+      "game/capacity_progression.py",
+      "game/career_competition.py",
+      "game/career_competition_content.py",
+      "game/careers/cafe_bakery.py",
+      "game/careers/clothing.py",
+      "game/careers/com.py",
+      "game/careers/farm.py",
+      "game/careers/farm_plus.py",
+      "game/careers/florist.py",
+      "game/careers/grocery.py",
+      "game/careers/kit.py",
+      "game/careers/mother_baby.py",
+      "game/careers/pet_shop.py",
+      "game/careers/repair.py",
+      "game/careers/restaurant.py",
+      "game/careers/tra_da.py",
+      "game/careers/zpop.py",
+      "game/content.py",
+      "game/convenience.py",
+      "game/engine.py",
+      "game/experiences.py",
+      "game/giftshop.py",
+      "game/happenings.py",
+      "game/inventory.py",
+      "game/journey.py",
+      "game/operations.py",
+      "game/progression_prices.py",
+      "game/quay.py",
+      "game/quay_business.py",
+      "game/quay_progression.py",
+      "game/social.py",
       "i18n/translations.json",
-      "public/css/chua.css",
+      "package-lock.json",
+      "package.json",
+      "public/css/promo.css",
       "public/i18n/en.json",
-      "public/js/v4/chua-visit.js",
-      "public/js/v4/chua.js",
-      "scripts/browser_chua_visibility.py",
-      "server.py",
-      "tests/temple-card-visibility-ui.mjs",
-      "tests/test_chua_board.py",
-      "tests/test_task_compat.py"
+      "public/js/app.js",
+      "public/js/careers/cafe_bakery.js",
+      "public/js/careers/com.js",
+      "public/js/careers/farm.js",
+      "public/js/careers/milk_tea.js",
+      "public/js/careers/restaurant.js",
+      "public/js/v4/career-competition.js",
+      "public/js/v4/promo.js",
+      "public/js/v4/quay-business-ui.js",
+      "public/js/v4/quay-manage.js",
+      "public/js/v4/quay.js",
+      "public/js/v4/views.js",
+      "public/js/v4/wealth.js",
+      "public/js/v4/work-equipment.js",
+      "scripts/browser_capacity_progression.py",
+      "scripts/browser_career_competition.py",
+      "scripts/browser_quay_progression.py",
+      "tests/capacity_equipment.mjs",
+      "tests/career_competition.mjs",
+      "tests/large-capital.mjs",
+      "tests/quay_progression.mjs",
+      "tests/test_boba_storage_capacity.py",
+      "tests/test_business_progression.py",
+      "tests/test_capacity_catalog.py",
+      "tests/test_career_competition.py",
+      "tests/test_career_competition_content.py",
+      "tests/test_competition_i18n.py",
+      "tests/test_competition_integration.py",
+      "tests/test_farm_storage_capacity.py",
+      "tests/test_prepared_storage_capacity.py",
+      "tests/test_quay.py",
+      "tests/test_quay_business.py",
+      "tests/test_quay_economy.py",
+      "tests/test_quay_fb295.py",
+      "tests/test_quay_manage.py",
+      "tests/test_quay_progression.py",
+      "tests/test_shared_storage_expansion.py",
+      "tests/test_shop_fund_move.py",
+      "tests/test_task_compat.py",
+      "tests/test_warehouse_convenience.py",
+      "tests/warehouse_convenience.mjs",
+      "tests/warehouse_convenience_browser.mjs"
     ],
     "deleted": [],
     "minified": [
-      "public/css/chua.css",
-      "public/js/v4/chua-visit.js",
-      "public/js/v4/chua.js"
+      "public/css/promo.css",
+      "public/js/app.js",
+      "public/js/careers/cafe_bakery.js",
+      "public/js/careers/com.js",
+      "public/js/careers/farm.js",
+      "public/js/careers/milk_tea.js",
+      "public/js/careers/restaurant.js",
+      "public/js/v4/career-competition.js",
+      "public/js/v4/promo.js",
+      "public/js/v4/quay-business-ui.js",
+      "public/js/v4/quay-manage.js",
+      "public/js/v4/quay.js",
+      "public/js/v4/views.js",
+      "public/js/v4/wealth.js",
+      "public/js/v4/work-equipment.js"
     ]
   },
   "files": [
@@ -59,8 +149,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 314928,
-      "sha256": "1510996b9f9c3763bb3e244db6fc27c7d1af7b01f6afb3a2e8710c00fa243c73"
+      "bytes": 316672,
+      "sha256": "7a2a959e3722afca55eaff12f2cd335138d7123f74f754b3892860c127c9defe"
     },
     {
       "path": "Dockerfile",
@@ -405,7 +495,7 @@
     {
       "path": "docs/BUSINESS_LICENSES_OPERATIONS.md",
       "bytes": 4607,
-      "sha256": "21d7c4a3be94af6f2d4aef8431a76da10c40033f9a476432a0df99b7e9d221e3"
+      "sha256": "731869698829fa941fab5c3980365bb2776d406918e43da8707ea14c0068b852"
     },
     {
       "path": "docs/CAREER_BALANCE_2.1.0.md",
@@ -541,6 +631,11 @@
       "path": "docs/DEPLOY_2.2.0_2026-10-13.md",
       "bytes": 4821,
       "sha256": "2c426e23e509f50a957931970de9500371448e6ede9ce6f7fdf93005b1d2ec69"
+    },
+    {
+      "path": "docs/DEPLOY_2.2.1_2026-10-13.md",
+      "bytes": 4368,
+      "sha256": "f2aef0a4b5ab473770f8aa610714c6996d2234e4cde17459e01eb464eabf8c73"
     },
     {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
@@ -715,7 +810,7 @@
     {
       "path": "docs/LIVE_BASE.md",
       "bytes": 7657,
-      "sha256": "932dc857848915ff2a7de605afb9bc62fb508155f934650e96b2901054cf310e"
+      "sha256": "21a81aab64e83c4b2c849f100f55a7b96534785579692172e0f789c5c596115c"
     },
     {
       "path": "docs/LIVE_CONNECTION_2026-10-05.md",
@@ -776,6 +871,11 @@
       "path": "docs/OBSERVABILITY.md",
       "bytes": 9121,
       "sha256": "ddf4cfd884c44a918c47e663278be2250747f57aae0f1d227d8500af3b3cbc86"
+    },
+    {
+      "path": "docs/PAID_CONVENIENCE_REVIEW.md",
+      "bytes": 7555,
+      "sha256": "13be8617956e8ddbd010a91d5473d92ef8845e843c2ca7294ab9d57c7bdf7685"
     },
     {
       "path": "docs/PERFORMANCE_ROUND1_2026-10-05.md",
@@ -1853,6 +1953,16 @@
       "sha256": "83820088826a7f64dcf9426eddcd53c3bb6f3ee90b6d222cadb8a5bfc7869553"
     },
     {
+      "path": "docs/superpowers/plans/2026-10-13-capacity-expansion.md",
+      "bytes": 3046,
+      "sha256": "e8b85111a4308082d09141a7f04e70a6217c84683c1f657e6d7839ef4910e389"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-13-career-competition.md",
+      "bytes": 8328,
+      "sha256": "ba53cae1bbcb0e2906c79fd97a9f5fb9c966f5b734c1ac942eeb397318e27834"
+    },
+    {
       "path": "docs/superpowers/plans/2026-10-13-career-endgame.md",
       "bytes": 2199,
       "sha256": "e6a444aaa85e7b822408cad184f83d54994dabd4ae1d339015afc4544cc8da59"
@@ -1863,9 +1973,14 @@
       "sha256": "34c707400532a0f84079f73a7a798f104284b27bfef04afbf580328d7e69234e"
     },
     {
+      "path": "docs/superpowers/plans/2026-10-13-paid-convenience.md",
+      "bytes": 4632,
+      "sha256": "8d912ef411c2b15adecc4db231240f9841a06f237e90e0b82b760cefb4ac0d63"
+    },
+    {
       "path": "docs/superpowers/plans/2026-10-13-temple-card-visibility.md",
       "bytes": 2482,
-      "sha256": "3ce73c6755a3db4dffedb1f8a8f4d14bd5c7768a8da2dd5d045bf5e1d53b09c5"
+      "sha256": "1b9619be422dab38bf3c5af4bb8da63edf5a288921d6a606bb0eff53d8e5be0d"
     },
     {
       "path": "docs/superpowers/plans/2026-10-13-temple-public-venues.md",
@@ -2078,6 +2193,41 @@
       "sha256": "fe178eabf3b097d173036f721132e43c7285669f94a30f9b634eb39252c0bc06"
     },
     {
+      "path": "docs/superpowers/specs/2026-10-13-capacity-expansion.md",
+      "bytes": 4442,
+      "sha256": "e744416691c2898e48608325adac521a537d3ba8182e379a998248d1dcace63f"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-10-13-capacity-verification.md",
+      "bytes": 4074,
+      "sha256": "b9d95ddfbd4f2a3f6c45b1cd633ea7c2c4088b167be6181b22d0fed738be2ec4"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-10-13-career-competition-design.md",
+      "bytes": 24548,
+      "sha256": "2e32526901f6a42beec6f8f2bd564210a2b46d5f3003ce5245af833b26daa206"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-10-13-career-content-catalog.md",
+      "bytes": 41989,
+      "sha256": "7bc1da923c10c026336cb9b43463d102ecf52a7b5348d257e26de8e98c36258f"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-10-13-career-content-design.md",
+      "bytes": 29698,
+      "sha256": "7a886a1ec179791e2b2113e4b0b76febf21357c3ffc5068b1f3f3f99bb294fb4"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-10-13-career-content-economy.csv",
+      "bytes": 81429,
+      "sha256": "7703b9f8be2c54cd4a82a45b923259155c523259001965615ccb18b7192eefe7"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-10-13-career-content-economy.md",
+      "bytes": 7332,
+      "sha256": "332dcc042bd78bd2a52b373c817f4952869cc01d389c442d59144273c689e81e"
+    },
+    {
       "path": "docs/superpowers/specs/2026-10-13-creative-civic-careers-design.md",
       "bytes": 4280,
       "sha256": "5d57c68cab97256c971dd770b933bfffc900b509adc2741b8d9838c4471ce6af"
@@ -2088,9 +2238,29 @@
       "sha256": "6d9117144db8a02ca9c41436c4f6991317dddf6b6e1264bb8bae9c9c276812bd"
     },
     {
+      "path": "docs/superpowers/specs/career-content-evidence/capacity-resources.md",
+      "bytes": 10728,
+      "sha256": "514058cee9bc35dcfd281ecac844a44fdae3b512fb7a6a932da55599b1627853"
+    },
+    {
+      "path": "docs/superpowers/specs/career-content-evidence/food-retail.md",
+      "bytes": 31399,
+      "sha256": "1ae36ca1412b962a0b581fc7425442bf8189b715864fd761b1fc4f5b2ca7903a"
+    },
+    {
+      "path": "docs/superpowers/specs/career-content-evidence/professional.md",
+      "bytes": 41027,
+      "sha256": "c0994271af905d6bfaec1dfe51b360fb43771e08f82bd11f6e631dfa92e069ae"
+    },
+    {
+      "path": "docs/superpowers/specs/career-content-evidence/service.md",
+      "bytes": 34660,
+      "sha256": "66853b08e9ead39b793d4540c48bd844acd832e3f34ee0a060d2add3d1c9d875"
+    },
+    {
       "path": "game/__init__.py",
       "bytes": 105,
-      "sha256": "b831ffad1074c41ec6e1ffc2bfa0ce715965cfdbdeda66e51231ff2441220222"
+      "sha256": "deca0d3f9faa6b7121843f6cbdb251abb6789d31dde7f95d4811ed72fa289f5d"
     },
     {
       "path": "game/abandon.py",
@@ -2239,8 +2409,8 @@
     },
     {
       "path": "game/boba.py",
-      "bytes": 140445,
-      "sha256": "ddaae0980fb689d0597656169a7ac00f3e02e2d5ae12c99d8d6ec4a4ae37061e"
+      "bytes": 141768,
+      "sha256": "2dda39af9b57ac288e4ec9c297a57cfcb9ee82927a2fdbdec9e17a81d7df40f8"
     },
     {
       "path": "game/build_id.py",
@@ -2271,6 +2441,21 @@
       "path": "game/cand_roster.py",
       "bytes": 5780,
       "sha256": "51aee6ded9e3ff13e97d601e8ed44ef87e97ae6ffd055cdcee3abd904974ee6b"
+    },
+    {
+      "path": "game/capacity_progression.py",
+      "bytes": 2666,
+      "sha256": "1298350805558ac14611d453bb36d68e199e661bea7d2b3b23237c72aa0e5f09"
+    },
+    {
+      "path": "game/career_competition.py",
+      "bytes": 22295,
+      "sha256": "6d90e9ac67db02334b09b08a23e294b59c69ed9fcfb7d55462b9ec5d177da96b"
+    },
+    {
+      "path": "game/career_competition_content.py",
+      "bytes": 98819,
+      "sha256": "da422c148493be6b7b58cca79827a4224d565b81607313c5d3254a8028c87124"
     },
     {
       "path": "game/career_mastery.py",
@@ -2319,18 +2504,18 @@
     },
     {
       "path": "game/careers/cafe_bakery.py",
-      "bytes": 188966,
-      "sha256": "d7fdadcc16d9508cfec0666c2437a922e81b42cfdcc4dfd349aa07a0688bb13f"
+      "bytes": 189734,
+      "sha256": "d277a856608f040fb8f86e97f60d99d17e88df5d83e7a0c72d22f75383c564de"
     },
     {
       "path": "game/careers/clothing.py",
-      "bytes": 161011,
-      "sha256": "14f96f1806c1e71bc245490cfc2d738fa783e86152b0f14362eccaf8423be6b4"
+      "bytes": 161203,
+      "sha256": "d28561b28211cb0b0c8ddeb366fe2854edb379badbe723f8ca95188270ba534b"
     },
     {
       "path": "game/careers/com.py",
-      "bytes": 82575,
-      "sha256": "2fcb267120834472c614652978e293ee2efa01f7e132863eb0a1002337cfa41e"
+      "bytes": 83005,
+      "sha256": "ae8a7f685c1ce676d7efd72620f4bde6dac7805c32aca2a043046356ae816c56"
     },
     {
       "path": "game/careers/corp_accounting.py",
@@ -2349,13 +2534,13 @@
     },
     {
       "path": "game/careers/farm.py",
-      "bytes": 146581,
-      "sha256": "641cae00477754b1229c17f82e8a3103dbaeda8f682fd8ca243044d7b3fa4f76"
+      "bytes": 147601,
+      "sha256": "88d680a41a53c9ccdbc550db28e09deb70dfb862de582b934db282d76295188f"
     },
     {
       "path": "game/careers/farm_plus.py",
-      "bytes": 38602,
-      "sha256": "62aa79e2c7cf7cdc4815741bece8c95810a8c555e0ab05a13b7b1665e7f9c021"
+      "bytes": 38832,
+      "sha256": "97b7085f7b8e194028678192fbba376443065e14acfb27d3c35e7baece078241"
     },
     {
       "path": "game/careers/flight_attendant.py",
@@ -2364,8 +2549,8 @@
     },
     {
       "path": "game/careers/florist.py",
-      "bytes": 159717,
-      "sha256": "e32611728b6cf5c2785115b17e59a72f04fbe294d065eb4d20b9f9bfe8d2a147"
+      "bytes": 159800,
+      "sha256": "1ef0e929d973f8538fd51dca8ffb33901fd59a0b2068508dbab7368fd993c54b"
     },
     {
       "path": "game/careers/food_service.py",
@@ -2394,8 +2579,8 @@
     },
     {
       "path": "game/careers/grocery.py",
-      "bytes": 224795,
-      "sha256": "60772c7e0b60b94fbe48dbb8b1a84fe90d1d14b73249a3cc8f562b269cff0763"
+      "bytes": 224900,
+      "sha256": "063edb947e13ef176fc5edf9135440bf81a762dba1438df988f479f3b2148574"
     },
     {
       "path": "game/careers/group_accounting.py",
@@ -2434,8 +2619,8 @@
     },
     {
       "path": "game/careers/kit.py",
-      "bytes": 30674,
-      "sha256": "e48e61e119a269b7f91371f7133b28c745eb23299ea1e1c4b72358b1bf86659a"
+      "bytes": 30585,
+      "sha256": "df5989af519f18a8c3dad87966f58f8b185c0259bfbf04e7aaf36671636ada2b"
     },
     {
       "path": "game/careers/laundry.py",
@@ -2484,8 +2669,8 @@
     },
     {
       "path": "game/careers/mother_baby.py",
-      "bytes": 47867,
-      "sha256": "8d8d267ebde839a701197ba7b1ba67884ca418702dd47e121913143cb78db95a"
+      "bytes": 47840,
+      "sha256": "0a645ffc9f356560c1928cd0be7c56926dfe15e54cd662da7ccc31977eaf9d4e"
     },
     {
       "path": "game/careers/nail.py",
@@ -2544,8 +2729,8 @@
     },
     {
       "path": "game/careers/pet_shop.py",
-      "bytes": 142508,
-      "sha256": "36e9f013abe378d6d9c4b584307ad553855d0b9e5bc81ce20ee51433b4d5a78d"
+      "bytes": 142747,
+      "sha256": "a89ff8e8d63ac17778ed1c5b84c362c3fb033ec472a56f8400761d4d806b6d26"
     },
     {
       "path": "game/careers/pho.py",
@@ -2599,8 +2784,8 @@
     },
     {
       "path": "game/careers/repair.py",
-      "bytes": 196590,
-      "sha256": "a7e750b87e39f2395440af9bbf638ad0773b8b6ef74166f7082da8824b50ceb0"
+      "bytes": 196701,
+      "sha256": "4c2807d17d36bc0ec0d42150585b72e1a4f902870338dcf4982f1f9c900cedf3"
     },
     {
       "path": "game/careers/rescue.py",
@@ -2614,8 +2799,8 @@
     },
     {
       "path": "game/careers/restaurant.py",
-      "bytes": 132100,
-      "sha256": "d265f0a16a86f9d19d0b7798c62797fa67c850c060595c468446fec9ff0fec87"
+      "bytes": 132445,
+      "sha256": "58cad1f922aa34518de5dea58afcb9a48247c109bd5107168d8228f13274dafd"
     },
     {
       "path": "game/careers/salon.py",
@@ -2644,13 +2829,13 @@
     },
     {
       "path": "game/careers/tra_da.py",
-      "bytes": 119451,
-      "sha256": "284868d97eaf2d5ce3c7542d045ce39c868704b4607be7044a13488b6bc8cb77"
+      "bytes": 119668,
+      "sha256": "4f1a778d679410bd3654dd195c176d379b2ef63bd95adf9985954d405cdbdab4"
     },
     {
       "path": "game/careers/zpop.py",
-      "bytes": 52977,
-      "sha256": "f67c74e9d9d3dcd35a2309f498c8f015708a86e8d6132e3981c54825769fd7d6"
+      "bytes": 53033,
+      "sha256": "1dccc6fa85c09dc827bbe4ba83ca192ef998ce9613a2fe535033c4ac934ac6ec"
     },
     {
       "path": "game/careers/zpop_content.py",
@@ -2714,8 +2899,13 @@
     },
     {
       "path": "game/content.py",
-      "bytes": 23639,
-      "sha256": "9897028788471f9727321926c4ee14f062d511be6c718b299ba395f8a32defd3"
+      "bytes": 23745,
+      "sha256": "364f4c85c4de0e7e873feae709c52980bfe4f1891db6804e6447f83326ac97fd"
+    },
+    {
+      "path": "game/convenience.py",
+      "bytes": 4024,
+      "sha256": "995866b1af94aa500a3fbe412702fe23c2cfb1da2338751590a3e03b0c3dcf44"
     },
     {
       "path": "game/couple.py",
@@ -2809,8 +2999,8 @@
     },
     {
       "path": "game/engine.py",
-      "bytes": 193554,
-      "sha256": "965ca5b0cb254fd06aaab44a1ceb677479072a69d504312d0eae2a55c6ff2672"
+      "bytes": 194781,
+      "sha256": "bb2dea35370528894a3f53b4b976385862d3b05fdd154da1c2943037d0d68add"
     },
     {
       "path": "game/estates.py",
@@ -2829,8 +3019,8 @@
     },
     {
       "path": "game/experiences.py",
-      "bytes": 42594,
-      "sha256": "0f0629cbad70d91d72853f8d789de8583d2c0388397acb91faed70e4f711e4fb"
+      "bytes": 43359,
+      "sha256": "7991b2a0febb86da39fa6515492b5177b713ed8b3d5bdc0518a0d47fbfb7f3fd"
     },
     {
       "path": "game/extra_content.py",
@@ -2959,8 +3149,8 @@
     },
     {
       "path": "game/giftshop.py",
-      "bytes": 76180,
-      "sha256": "93dc0c2d59643bb606cfa8247608340f4427937d510c5982406010c046f8a598"
+      "bytes": 76520,
+      "sha256": "b2f11d8d8a8515104b3d4970b20152cfaed8f1f6affebbf1eb2edc047bd36883"
     },
     {
       "path": "game/guide_content.py",
@@ -2974,8 +3164,8 @@
     },
     {
       "path": "game/happenings.py",
-      "bytes": 35812,
-      "sha256": "26b3f44d7196f0c480b421404e66192a548647227c7755a9d0be854415fae6af"
+      "bytes": 35887,
+      "sha256": "542bf196a070aa7deacf27b9740be7e063e0c90f0be00057eec8f96affeaa755"
     },
     {
       "path": "game/history_content.py",
@@ -3034,8 +3224,8 @@
     },
     {
       "path": "game/inventory.py",
-      "bytes": 90562,
-      "sha256": "1782149c463be83eb07a1e89d7a6e646bf0549065d5af702c5ee7f74c6cb60b5"
+      "bytes": 91857,
+      "sha256": "cfdb4cd2efa2795f0cf872cea120f8a1fc7bdfe32e5758880ef3410bdc9a359e"
     },
     {
       "path": "game/invest.py",
@@ -3049,8 +3239,8 @@
     },
     {
       "path": "game/journey.py",
-      "bytes": 75570,
-      "sha256": "2f557cb96e1b23250b8879df316a90abe49f05ee81fad8c4473b8f6a3a8b34a8"
+      "bytes": 76050,
+      "sha256": "b8d5209207cf80077672b9cc12969c05ddb7a98493b05ac21e90dab53983058b"
     },
     {
       "path": "game/jsoncopy.py",
@@ -3164,8 +3354,8 @@
     },
     {
       "path": "game/operations.py",
-      "bytes": 77226,
-      "sha256": "8f14e996e8413fd652f02f67123a8daa67ff391db9441b955f98ed89bedbc284"
+      "bytes": 77368,
+      "sha256": "8b47fb0e41dc240fac98866b5e0f5c66578ff989285a6ad3a8c50a964e7b52d9"
     },
     {
       "path": "game/org.py",
@@ -3238,6 +3428,11 @@
       "sha256": "18ac030aff7a66dd638ec9949a159c65800cc0286e5c445bd18ab611d933d5c4"
     },
     {
+      "path": "game/progression_prices.py",
+      "bytes": 194,
+      "sha256": "9dbf63b6602b56b589be0a2842ff9daec0b2b75b0b0f5fa8fdf83eb9fe2b1478"
+    },
+    {
       "path": "game/promotion.py",
       "bytes": 63305,
       "sha256": "47d716357c09c3972066ba2c4922507de5aa53cd5d7d0e4c8953c255828f07f8"
@@ -3264,13 +3459,13 @@
     },
     {
       "path": "game/quay.py",
-      "bytes": 49060,
-      "sha256": "5f5b7835a1c97d02ecc48da8a155f6826d5b14a23ff2f9c536390535bcb59fb5"
+      "bytes": 49512,
+      "sha256": "71c5988e5530307d544cbbd59a2973ee0dadfde345e30c9b51678765a788ac39"
     },
     {
       "path": "game/quay_business.py",
-      "bytes": 32554,
-      "sha256": "db87ccbc20899f38164aef1d07f93b9c54295573c1b97b3663cf2ecaf1efd3f3"
+      "bytes": 32993,
+      "sha256": "1289c7495f3270a73a62ce35eecb281da2b1098e6aae89142bebbf7bcff82f60"
     },
     {
       "path": "game/quay_economy.py",
@@ -3291,6 +3486,11 @@
       "path": "game/quay_market.py",
       "bytes": 4415,
       "sha256": "a75f533d6b89f4269927d8d67c007327f5ca5a12632c10a84d684d219364289a"
+    },
+    {
+      "path": "game/quay_progression.py",
+      "bytes": 3250,
+      "sha256": "1c9cd0bced1c062e17a67337a64e0be1ecd1a841e4189d0d5666c342f95c4f33"
     },
     {
       "path": "game/quay_self.py",
@@ -3379,8 +3579,8 @@
     },
     {
       "path": "game/social.py",
-      "bytes": 51669,
-      "sha256": "78c85e8986b4b905e39da0c8cef9a9736f7a360bf902cef11834d3a2be358e33"
+      "bytes": 51591,
+      "sha256": "7b99cc76495a3eb3790f38b0cea9978eee0e33d0ae0bed67ef6ae9ea83d12cc4"
     },
     {
       "path": "game/spend.py",
@@ -3574,8 +3774,8 @@
     },
     {
       "path": "i18n/translations.json",
-      "bytes": 4780591,
-      "sha256": "2f69a24314a305527c0a925110862805518184d386e713bd9dc8dc48fc58011a"
+      "bytes": 5197927,
+      "sha256": "36763643a3599014ba0f88abef1859d8b46b40feb5b9f97b9f4f7d8b8f698036"
     },
     {
       "path": "live/__init__.py",
@@ -3785,12 +3985,12 @@
     {
       "path": "package-lock.json",
       "bytes": 35890,
-      "sha256": "d8971749f095f5e29a6af04786011df23cb45b912a666bbf261d010306356e60"
+      "sha256": "a10ca298db3ec9f562d59d752bab62fbcfa7333b3061fbca5aedf836770e1e86"
     },
     {
       "path": "package.json",
       "bytes": 3745,
-      "sha256": "35e1639925bafc17d7c07b7d180658fbfaa7996f2f9cbe689990fcde56434ceb"
+      "sha256": "edc69d1543a5884cc7c2bcf9d801e03501dc85cb0e574037e20fbf05b4f2247f"
     },
     {
       "path": "public/admin.html",
@@ -4439,8 +4639,8 @@
     },
     {
       "path": "public/css/promo.css",
-      "bytes": 11629,
-      "sha256": "4356f6bb221a94665e7125bab10506e035f7e9a3b4d805c99391f9d7b65a72d7"
+      "bytes": 13951,
+      "sha256": "d7e5da5a28bfa8fa65e9a61679dbbbe846ecd940333e22446f26f99e38b0ec0e"
     },
     {
       "path": "public/css/quay.css",
@@ -4594,8 +4794,8 @@
     },
     {
       "path": "public/i18n/en.json",
-      "bytes": 9489088,
-      "sha256": "6280a63584672a8b28109eb2a89a9a20c0320895ea8e94e5861f103e59dfce50"
+      "bytes": 9899906,
+      "sha256": "18dafcb6b560431c1bfd0e3501bee6f004712643e779c16f7f90e60b81b2b914"
     },
     {
       "path": "public/icons/apple-touch-icon.png",
@@ -5394,8 +5594,8 @@
     },
     {
       "path": "public/js/app.js",
-      "bytes": 191771,
-      "sha256": "2d83adac2d4495172ee3684c7637fd61c209371f517159c2cff7d5d11cfc072e"
+      "bytes": 192575,
+      "sha256": "1422e6fc01bac59d3cd4efd7c11ff05224d519350f015a4d26d404216f084f03"
     },
     {
       "path": "public/js/archive.js",
@@ -5454,8 +5654,8 @@
     },
     {
       "path": "public/js/careers/cafe_bakery.js",
-      "bytes": 62704,
-      "sha256": "eba8947503ed2989eafab41048ed03ad59f13be9b9b5156f53d09b7306eee2b3"
+      "bytes": 62948,
+      "sha256": "cb6e7734f04ea5de81b257e15c443f08abef4b3386fa9e6b9d812559db809384"
     },
     {
       "path": "public/js/careers/clothing.js",
@@ -5464,8 +5664,8 @@
     },
     {
       "path": "public/js/careers/com.js",
-      "bytes": 24121,
-      "sha256": "ce1830478ea0de19a52790d6b6dfa80d88f4fa635126ef503c332017839b109d"
+      "bytes": 24181,
+      "sha256": "cbb14074dccffe52392c0dff0a9d4845c5ca239e37f94cc8f0acf7f0b985ccb5"
     },
     {
       "path": "public/js/careers/corp_accounting.js",
@@ -5524,8 +5724,8 @@
     },
     {
       "path": "public/js/careers/farm.js",
-      "bytes": 48998,
-      "sha256": "3bff7dc35d30b11841660aed5fd585073bc7fb49c47186fcb76f5a53fe8f29d4"
+      "bytes": 49188,
+      "sha256": "3cd1aa293f39381cf5b75dab9d6c05e0599cc8bb0421fdb759ced56c81e606b1"
     },
     {
       "path": "public/js/careers/farm_isometric.js",
@@ -5634,8 +5834,8 @@
     },
     {
       "path": "public/js/careers/milk_tea.js",
-      "bytes": 69686,
-      "sha256": "98de55a542b4ef5349c10a38b42f608f605ddab70ae0e6293c934843acdf1507"
+      "bytes": 69709,
+      "sha256": "fb971ef94fc08206889893dacb4edd80e1b271249205c4f6b21a95eba9c284ea"
     },
     {
       "path": "public/js/careers/mother_baby.js",
@@ -5749,8 +5949,8 @@
     },
     {
       "path": "public/js/careers/restaurant.js",
-      "bytes": 47586,
-      "sha256": "ec20a328c40759198bf6c1d62370bd438a669cbe1024ee3d03656f59b194ca07"
+      "bytes": 47620,
+      "sha256": "aeca47645f13b40f924463b9aa3b41273494451dee55b21509f60baa6cf9e62b"
     },
     {
       "path": "public/js/careers/salon.js",
@@ -6433,6 +6633,11 @@
       "sha256": "35e82d338446cd27e6aaf8d4dc3e0df08caf59d6a357ad234287ed4264190069"
     },
     {
+      "path": "public/js/v4/career-competition.js",
+      "bytes": 5851,
+      "sha256": "7c3b047b6b819543fd904b56dc195fb897530f9b5bb57b777259c4c5f4e85d45"
+    },
+    {
       "path": "public/js/v4/career-mastery.js",
       "bytes": 3941,
       "sha256": "e1d7e2b01efba193aba6b832084b19acb5fa58df153d7d4362e3f409e56174a9"
@@ -6859,8 +7064,8 @@
     },
     {
       "path": "public/js/v4/promo.js",
-      "bytes": 25589,
-      "sha256": "533f37200dc13af9d366a95039ae3de9a978dcc25bcf2da759a125acddec0dde"
+      "bytes": 25733,
+      "sha256": "6bc6a210d3e03d31cfa1adcdf18e5486da27170d30700dab507a9c9b07c2e3dd"
     },
     {
       "path": "public/js/v4/push.js",
@@ -6869,13 +7074,13 @@
     },
     {
       "path": "public/js/v4/quay-business-ui.js",
-      "bytes": 2425,
-      "sha256": "76bb5462a63f92c77b157562b531fcd07a27f4d90ee007096fde3a7590e52963"
+      "bytes": 2638,
+      "sha256": "7cfe39245e75d916393e90cfc75126dd076d49270a0b52ada1a2f8daaccbb874"
     },
     {
       "path": "public/js/v4/quay-manage.js",
-      "bytes": 1799,
-      "sha256": "e219cb4940aae8042153dc4e0b15998a91541f6145b5fdd478ccc586b59b7d20"
+      "bytes": 1823,
+      "sha256": "405a18d6bd3250a25d5b67659a5663996ec53caaded5170e0984dfaa27957a2f"
     },
     {
       "path": "public/js/v4/quay-owner-queue.js",
@@ -6899,8 +7104,8 @@
     },
     {
       "path": "public/js/v4/quay.js",
-      "bytes": 82933,
-      "sha256": "c5190874b54853d4d9d99f6ee3ad01e7c9b63c7ddee4e758394fd404cceecef8"
+      "bytes": 85333,
+      "sha256": "132e04d8f45fb0b76ce26e32945dcee6e8d3d12cce1fd12e09c4719559e8cb95"
     },
     {
       "path": "public/js/v4/reno.js",
@@ -7019,8 +7224,8 @@
     },
     {
       "path": "public/js/v4/views.js",
-      "bytes": 101941,
-      "sha256": "561d8ad3b612cf06e12864176f0096481828ef35a98b561f912daf8c9f6748c5"
+      "bytes": 103026,
+      "sha256": "21c69afc7d22e2b7d61661ae53694689a2d93a159c1949b5f33eebf1ac2e92e7"
     },
     {
       "path": "public/js/v4/walk.js",
@@ -7034,8 +7239,8 @@
     },
     {
       "path": "public/js/v4/wealth.js",
-      "bytes": 12620,
-      "sha256": "0f71f4d7fa0fca3598a0a941299e8f947cea19c77d6dd45a5d081bb886810c0d"
+      "bytes": 12693,
+      "sha256": "fa97bf5624867f672f8a5bbe0adb4c7bb8c0d6f848254c2baf5e6a2cbfb29b33"
     },
     {
       "path": "public/js/v4/wedding.js",
@@ -7064,8 +7269,8 @@
     },
     {
       "path": "public/js/v4/work-equipment.js",
-      "bytes": 4046,
-      "sha256": "801d6e1876426699fd46784495fff37464b183ceaa19ac5bb0e31852bd89e3bf"
+      "bytes": 4794,
+      "sha256": "a670db411c4c8ac2ed4f252ecac8f7ddb5b9f35d53fdef943cb1dd8eb4526d82"
     },
     {
       "path": "public/js/v4/workplace-visit-ui.js",
@@ -7358,6 +7563,16 @@
       "sha256": "ca29d9599c855186a70c7b7d98510cc27b8a98080310371f42d2fe3e643be22e"
     },
     {
+      "path": "scripts/browser_capacity_progression.py",
+      "bytes": 4179,
+      "sha256": "d86d24298b97bb70fa3cb8334a426f56210839626b1633e9b0b99e69ff573082"
+    },
+    {
+      "path": "scripts/browser_career_competition.py",
+      "bytes": 4104,
+      "sha256": "37738410511c71533ba4f44ac1b815ffc44d928469a4182f468a0dd6e1c7270c"
+    },
+    {
       "path": "scripts/browser_career_mastery.py",
       "bytes": 8102,
       "sha256": "ab98b1895a2d9ba7c6974f17b1d14a9792481884231df1a5cb35ee559b3582dd"
@@ -7591,6 +7806,11 @@
       "path": "scripts/browser_quay.py",
       "bytes": 27602,
       "sha256": "6a1504d78d9bbef1251be64f5e240022a0db76b2419867bf198aa8e6e409e492"
+    },
+    {
+      "path": "scripts/browser_quay_progression.py",
+      "bytes": 5432,
+      "sha256": "eceeaf2cb6f62cbb073806467b29170edc41b4f9123bff2c89384b42f9f59ec6"
     },
     {
       "path": "scripts/browser_restock.py",
@@ -8108,6 +8328,11 @@
       "sha256": "415f831954f0bd396f71f42c7bf7ca3c1a7a3645630a05b0564be9a620d0e754"
     },
     {
+      "path": "tests/capacity_equipment.mjs",
+      "bytes": 1477,
+      "sha256": "5046f80d9d6bfd758d3db90a06acb2c33df187868fb71343eb4a215f7bbdb3f5"
+    },
+    {
       "path": "tests/career-mastery-ui.mjs",
       "bytes": 3267,
       "sha256": "d857061aa323f47a310680cae45b4480950eda0aa16b54b67d150709460ed596"
@@ -8116,6 +8341,11 @@
       "path": "tests/career-vocabulary.mjs",
       "bytes": 3235,
       "sha256": "6677393c75cf0c66ecb6dded16d8b01d31c94c8af644686db09c193ad6bcfc05"
+    },
+    {
+      "path": "tests/career_competition.mjs",
+      "bytes": 6846,
+      "sha256": "b8f6582936a0576e8f03d90d9b1062cf06b91a2c53ba57dc8d9af558294e0524"
     },
     {
       "path": "tests/career_context_focus.mjs",
@@ -8803,6 +9033,11 @@
       "sha256": "f284ca798b91e936a1f7805fe9801d5d945a7aaca85af3dfccc1c5de6bd8c192"
     },
     {
+      "path": "tests/large-capital.mjs",
+      "bytes": 1554,
+      "sha256": "63c2c291c4c0c343efed36a189fe72420d4d75a50f81684dc0d5eedcb8aa1f2c"
+    },
+    {
       "path": "tests/laundry_simulation.py",
       "bytes": 1247,
       "sha256": "43c2711dd20108b1af0e7d0887474f83fbdda410483a07d51f92db276c900d89"
@@ -9031,6 +9266,11 @@
       "path": "tests/quay_owner_queue.mjs",
       "bytes": 2629,
       "sha256": "464cf151864d0274a6ee15eac3d34a26cafc4432b1842c1da0cc0e0a41a40d9f"
+    },
+    {
+      "path": "tests/quay_progression.mjs",
+      "bytes": 1092,
+      "sha256": "4f7fcc9471d0afd5635bc987a71b763dd366181ec4bcc8ae4b8f1d9c74747f3e"
     },
     {
       "path": "tests/quay_reserve_browser.mjs",
@@ -9328,6 +9568,11 @@
       "sha256": "bf7735244dfec8c2bf867083f61d39460427906bb2600b00e03e5e908c3f35b8"
     },
     {
+      "path": "tests/test_boba_storage_capacity.py",
+      "bytes": 8721,
+      "sha256": "b73de1e3cab03677bbcacb5d6c2f2b156d1775fba60506c4a1929351ffcc2034"
+    },
+    {
       "path": "tests/test_boutique_rack.py",
       "bytes": 1687,
       "sha256": "bb8a1d9aadc85263cee96f5c9b74842fc09b28e3cd318ab47db430f784a25a32"
@@ -9349,8 +9594,8 @@
     },
     {
       "path": "tests/test_business_progression.py",
-      "bytes": 16397,
-      "sha256": "59da9fbf6c1f03b2f53601a337e5f424b940378079035a6002141b0299995040"
+      "bytes": 16498,
+      "sha256": "a2505990e367759803fd7e3f9764a14bb70d014192fe81d1e468f4f8555a4ce6"
     },
     {
       "path": "tests/test_business_storage.py",
@@ -9378,6 +9623,11 @@
       "sha256": "4873d71e624ff7df8237782392dea850e05a2fcc1414cde8121d96b00f1852e0"
     },
     {
+      "path": "tests/test_capacity_catalog.py",
+      "bytes": 2342,
+      "sha256": "fd7c24335a6707ad3e31d35d5302ecc9fca932b4673439cb058c11f105a162bc"
+    },
+    {
       "path": "tests/test_career_art_studio.py",
       "bytes": 8564,
       "sha256": "101012b1cfd28f950823eb0bf5fc2fbc4e09f5c32315c0b1bd9794a6ffea0e1c"
@@ -9401,6 +9651,16 @@
       "path": "tests/test_career_com.py",
       "bytes": 23136,
       "sha256": "85cda1c0a940eae364ec14845727b23f00e9bd9834ee60547e693f1f96c782f4"
+    },
+    {
+      "path": "tests/test_career_competition.py",
+      "bytes": 11520,
+      "sha256": "cc031e760f2dddeecc0285c41cb7bc7836e9b343317eed3eef44acc1f5700644"
+    },
+    {
+      "path": "tests/test_career_competition_content.py",
+      "bytes": 4329,
+      "sha256": "53651200623d95432d5e6b9a0353fc3aef9186762a86c2bf6415ab453fd68b9a"
     },
     {
       "path": "tests/test_career_corp_accounting.py",
@@ -9743,6 +10003,16 @@
       "sha256": "d1c917763bfa190ead4b0df63ee4f02e5289eed0524d55ae8b38faced4549bf0"
     },
     {
+      "path": "tests/test_competition_i18n.py",
+      "bytes": 628,
+      "sha256": "c3aadcbd0c0da5eb49fcc9b4226f88a551e199cbdd73b051a32d3773dbb13a16"
+    },
+    {
+      "path": "tests/test_competition_integration.py",
+      "bytes": 6062,
+      "sha256": "13875766d9cf75bfc5c17b2a18fe13e32b9921a718c4d2095c084952d13e81c9"
+    },
+    {
       "path": "tests/test_consequences.py",
       "bytes": 8053,
       "sha256": "3db984a936d0337759902b4baed654280dd2446829110a5baa75df73ec58f735"
@@ -10061,6 +10331,11 @@
       "path": "tests/test_family.py",
       "bytes": 17260,
       "sha256": "3f2df8fc3620ffc08afa870c7e34b05342e53a216264fb286b4bd5b1a65e6204"
+    },
+    {
+      "path": "tests/test_farm_storage_capacity.py",
+      "bytes": 8775,
+      "sha256": "515e536c7ff15f5177657277c0d798c5ae7ce0725aa7ddf67f1b63ca86180aea"
     },
     {
       "path": "tests/test_fastjson.py",
@@ -10863,6 +11138,11 @@
       "sha256": "b8a1dff30bb18f73f81a1b8e9cfe09648dcba19ea0b35f5594337d4e3d1c3ab9"
     },
     {
+      "path": "tests/test_prepared_storage_capacity.py",
+      "bytes": 8341,
+      "sha256": "2c04143d720a76ef3a5a8bb01b453edcd8c9fb7b33eabba0f5d7173541f2113e"
+    },
+    {
       "path": "tests/test_procedures_order.py",
       "bytes": 1535,
       "sha256": "686665e140d69dfcd6fa59a0b9dbd649476651c467e278510efad133d1b39cdd"
@@ -10899,23 +11179,23 @@
     },
     {
       "path": "tests/test_quay.py",
-      "bytes": 23160,
-      "sha256": "447d1f67753065909d82cdb36893dfc01a98c965f2a269fb95d0b9f3dae0ba66"
+      "bytes": 23242,
+      "sha256": "317c9cd5c6f8d90c130e6e6728a9d6b9f73a321e13d6dda3dc7c996d43462c9e"
     },
     {
       "path": "tests/test_quay_business.py",
-      "bytes": 15352,
-      "sha256": "ae0ec4303ccf1225b30f2a4db87ad4fae9ca188ffb00bf2e5c7f0b3b98e57b7f"
+      "bytes": 15487,
+      "sha256": "9c1381653d74db5226f5c1b53026145882fa66bea82c25c0c66bd65de3bace20"
     },
     {
       "path": "tests/test_quay_economy.py",
-      "bytes": 8029,
-      "sha256": "477ccd8e7c7e2f06238efe5f2c203374b4f50b71e5d556ed873c181782fa398a"
+      "bytes": 8091,
+      "sha256": "90837e3b84c87b19b039f0ba5d0c9f9bb7635b29767c00d9bf962a9448f01a7b"
     },
     {
       "path": "tests/test_quay_fb295.py",
-      "bytes": 17530,
-      "sha256": "4c06af35cf12c1f43280b0131fa13cea34649ff7b1b5b275386a4e12677e49b1"
+      "bytes": 18394,
+      "sha256": "c1d13ca391916ad4520848b339ec46b830ec98c25fdd097daf11a67d6a79af32"
     },
     {
       "path": "tests/test_quay_funding.py",
@@ -10929,8 +11209,8 @@
     },
     {
       "path": "tests/test_quay_manage.py",
-      "bytes": 6271,
-      "sha256": "7a5a7508dbb8734b6a163293663304258cc4fab38af2a5a66075a3fed36ea292"
+      "bytes": 6409,
+      "sha256": "ef8034d07de0e9156d79e58a8cb37cf6fc4d55105e9f033109937de73a019405"
     },
     {
       "path": "tests/test_quay_market.py",
@@ -10951,6 +11231,11 @@
       "path": "tests/test_quay_profit_boost.py",
       "bytes": 7479,
       "sha256": "55091059d638d8a7fe6c62ee096ec3c73e3260ae2c12d7b2928f8cada8516d7b"
+    },
+    {
+      "path": "tests/test_quay_progression.py",
+      "bytes": 9366,
+      "sha256": "ec726af40ff8d4f52e1ce728b620c3a0078ba09865cc81b94201b4ee2edd19f3"
     },
     {
       "path": "tests/test_quay_reserve.py",
@@ -11103,14 +11388,19 @@
       "sha256": "dc1bfa3799400bcbfe4ba46e814ef629c8da717818a5151a45d8aaea43188112"
     },
     {
+      "path": "tests/test_shared_storage_expansion.py",
+      "bytes": 9390,
+      "sha256": "408ca983ead9cb72016905c94390a7e9dc4c7d702285d6465c50b3b61338e0cb"
+    },
+    {
       "path": "tests/test_shop_events.py",
       "bytes": 13758,
       "sha256": "adb7db1de539a9d4bef98b14833925d60c4b84d181cf592a0962239c86448937"
     },
     {
       "path": "tests/test_shop_fund_move.py",
-      "bytes": 4756,
-      "sha256": "441a5c6287b2ab50711c89180403423ad17f0eb509e6b2a0ab69a485287ed4f3"
+      "bytes": 6558,
+      "sha256": "b5560c64736bd65025439b0fce3b0e9aec5801e7b1abf90d7ecdd35dcfdddb95"
     },
     {
       "path": "tests/test_short_pay.py",
@@ -11190,7 +11480,7 @@
     {
       "path": "tests/test_task_compat.py",
       "bytes": 5567,
-      "sha256": "e3db0a36178a191af8926ee5f5de80588581c107017aa1ee9742ddd62f965e64"
+      "sha256": "68841547df52dd354ba2b8c420cab7ec089d2d2a705f04d051bb2830d4d02550"
     },
     {
       "path": "tests/test_teacher_care.py",
@@ -11358,6 +11648,11 @@
       "sha256": "6f475a9fd91d727c841939c83b47d6a939761a4311ad61a20a92d3cc5fdb0e19"
     },
     {
+      "path": "tests/test_warehouse_convenience.py",
+      "bytes": 10644,
+      "sha256": "6d24b9bf5e8a66a47424e4d26aaed58a466c08ee128b74d8e3bb5f95f060e70e"
+    },
+    {
       "path": "tests/test_wealth.py",
       "bytes": 2107,
       "sha256": "45f8da8c96e9beed04706103c1e79e4fd86e66f8c6763b43cb0d5c0c146fb4ea"
@@ -11511,6 +11806,16 @@
       "path": "tests/wardrobe_collection.mjs",
       "bytes": 1781,
       "sha256": "6de7beca2f1d218150c0aba2e4b4bf6a16917be2e44f4f51601075fb375a978a"
+    },
+    {
+      "path": "tests/warehouse_convenience.mjs",
+      "bytes": 1691,
+      "sha256": "89817c18c2498d21099dd61a11183e0f5e918881aa4da58d5d8b2550d88fb083"
+    },
+    {
+      "path": "tests/warehouse_convenience_browser.mjs",
+      "bytes": 8756,
+      "sha256": "e2d1b13a0496e577e2ac66192031aebd330f8aa10cdbcda406924670d3dd3d65"
     },
     {
       "path": "tests/water-poses.mjs",
