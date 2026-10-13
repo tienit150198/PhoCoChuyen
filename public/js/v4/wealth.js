@@ -149,7 +149,7 @@ export function firstAmount(mode,max){
  * vốn would take from the wallet and from the account. */
 export function fundMove(state,cid){
   const j=state?.journey||{},p=j.places?.[cid]||{};
-  const fund=num(p.fund),draw=Math.max(0,Math.floor(num(p.withdraw_max))),invest=investMax(state);
+  const fund=num(p.fund),draw=Math.max(0,Math.floor(num(p.withdraw_max))),invest=Math.min(investMax(state),p.invest_max==null?Infinity:Math.max(0,Math.floor(num(p.invest_max))));
   const chosen=MOVE.mode[cid];
   const mode=chosen==='invest'?'invest':'draw';
   const max=mode==='draw'?draw:invest;

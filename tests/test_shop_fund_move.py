@@ -4,6 +4,7 @@ The server stays the authority: jr_withdraw takes any typed amount up to withdra
 the wallet first, then the bank account (like 🏪 Góp vốn quầy), never into debt and never past what is there. The
 public state says how much Góp vốn can take (journey.invest_max). No new save keys."""
 import json
+import copy
 import unittest
 
 from game import journey as jr
@@ -92,6 +93,41 @@ class FundMoveTest(unittest.TestCase):
         self.assertEqual(public_state(j.state)['journey']['invest_max'], 0)
         with self.assertRaises(GameError):
             j.act('jr_invest', career='milk_tea', amount=5)
+
+    def test_hundred_million_capital_preserves_cash_and_ledger(self):
+        s = self.s
+        s['journey']['wallet'] = 25_000_000
+        s, _ = act(s, 'jr_bk_open')
+        s['journey']['bank']['balance'] = 90_000_000
+        old = s['careers']['milk_tea']
+        start = old['money']
+        self.assertEqual(public_state(s)['journey']['invest_max'], 100_000_000)
+        s, _ = act(s, 'jr_invest', career='milk_tea', amount=100_000_000)
+        c = s['careers']['milk_tea']
+        self.assertEqual(c['money'], start + 100_000_000)
+        self.assertEqual(s['journey']['wallet'], 0)
+        self.assertEqual(s['journey']['bank']['balance'], 15_000_000)
+        self.assertEqual((c['earnings'], c['costs']), (old['earnings'], old['costs']))
+        self.assertTrue(ledger_ok(c))
+        rows = [r for r in s['journey']['history'] if r['kind'] == 'invest']
+        self.assertEqual(sum(r['amount'] for r in rows), -25_000_000)
+        self.assertTrue(all(abs(r['amount']) <= 10_000_000 for r in rows))
+        validate_state(json.loads(json.dumps(s)))
+
+    def test_capital_rejects_overflow_before_moving_money(self):
+        s = self.s
+        s['journey']['wallet'] = 200_000_000
+        c = s['careers']['milk_tea']
+        c['ops']['finance']['opening_balance'] += 999_999_990 - c['money']
+        c['money'] = 999_999_990
+        before = copy.deepcopy(s)
+        with self.assertRaisesRegex(GameError, 'Quỹ nghề chỉ còn chỗ'):
+            act(s, 'jr_invest', career='milk_tea', amount=11)
+        self.assertEqual(s, before)
+        self.assertEqual(public_state(s)['journey']['places']['milk_tea']['invest_max'], 10)
+        with self.assertRaises(GameError):
+            act(s, 'jr_invest', career='milk_tea', amount=100_000_001)
+        self.assertEqual(s, before)
 
 
 if __name__ == '__main__':

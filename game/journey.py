@@ -371,6 +371,14 @@ def withdraw_max(c: dict) -> int:
     return max(0, c['money'] - _unpaid(c) - RESERVE)
 
 
+CAPITAL_MAX = 100_000_000
+FUND_MAX = 1_000_000_000
+
+
+def capital_room(c: dict) -> int:
+    return max(0, min(FUND_MAX - c["money"], FUND_MAX - c["day_start_money"]))
+
+
 def invest_max(s: dict) -> int:
     """The most Góp vốn can put into a workplace fund: the cash in the wallet, then the bank account (0 while the
     wallet is in debt). Never the credit card or the savings."""
@@ -881,7 +889,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         elif name == 'jr_invest':
             # F#259 (08/10): put money back after drawing too much. The wallet first, then the bank account, like
             # 🏪 Góp vốn quầy (quay._take); never into debt, never the credit card.
-            amount = e.integer(p.get('amount'), 1, 10**6)
+            amount = e.integer(p.get('amount'), 1, CAPITAL_MAX)
+            need(amount <= capital_room(c), f'Quỹ nghề chỉ còn chỗ góp thêm {capital_room(c)} xu.')
             need(j['wallet'] >= 0, 'Ví đang nợ. Trả nợ trước rồi góp vốn nhé.')
             b = bk.get(s)
             need(invest_max(s) >= amount, 'Ví và tài khoản ngân hàng chưa đủ số này.' if b else 'Ví không đủ để góp vốn số này.')
@@ -1023,7 +1032,7 @@ def public(s: dict) -> dict:
         # upkeep(), withdraw_max() without asking twice
         employed, unpaid = _employed(cid), _unpaid(c)
         places[cid] = dict(fund=c['money'], upkeep=0,   # a place you are away from costs nothing (upkeep())
-                           paused=cid in j['paused'], employed=employed, unpaid=unpaid, withdraw_max=max(0, c['money'] - unpaid - RESERVE))
+                           paused=cid in j['paused'], employed=employed, unpaid=unpaid, invest_max=min(CAPITAL_MAX, invest_max(s), capital_room(c)), withdraw_max=max(0, c['money'] - unpaid - RESERVE))
     secret = {tid: dict(name=TITLE_INDEX[tid]['name'], emoji=TITLE_INDEX[tid]['emoji'], desc=TITLE_INDEX[tid]['desc'])
               for tid in j['titles'] if TITLE_INDEX[tid]['secret']}
     eq = TITLE_INDEX.get(j['equipped'])
@@ -1031,7 +1040,7 @@ def public(s: dict) -> dict:
         story=j['story'], gender=j['gender'], intro=j['intro'], chapter=j['chapter'], done=list(j['done']),
         finale=j['chapter'] > LAST,
         unlocked=list(j['unlocked']) + [cid for cid in aj.opened(s) if cid not in j['unlocked']] if j['story'] else list(s['careers']),
-        wallet=j['wallet'], debt=max(0, -j['wallet']), invest_max=min(10**6, invest_max(s)) if j['story'] else 0,
+        wallet=j['wallet'], debt=max(0, -j['wallet']), invest_max=min(CAPITAL_MAX, invest_max(s)) if j['story'] else 0,
         life_day=j['life_day'], living=living_cost(j),
         places=places, titles=sorted(([tid, day] for tid, day in j['titles'].items()), key=lambda x: (-x[1], x[0])),
         equipped=j['equipped'], equipped_title=dict(id=eq['id'], name=eq['name'], emoji=eq['emoji']) if eq else None,
