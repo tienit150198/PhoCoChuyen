@@ -173,6 +173,7 @@ class Integration(unittest.TestCase):
     def test_new_open_snapshots_before_append_and_issues_on_third_owner_action(self):
         from game import business_progression as bp
         s=owner(wallet=100000);s['journey']['certificates']={}
+        quay.ensure(s)['paid_tier']={'slots':2}  # Isolate certificate gating from purchased slots.
         with patch.dict(os.environ,{'MNL_BUSINESS_LICENSES_OFF':'1'}), patch('game.business.time.time',return_value=2000):
             for _ in range(3):s,_=act(s,'jr_quay_open',trade='milk_tea',place='kiot',confirm=True)
         case=quay.get(s)[bp.KEY]

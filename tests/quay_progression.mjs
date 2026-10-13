@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {restockQuote} from '../public/js/v4/quay-business-ui.js';
+import {againPlan,againAll} from '../public/js/v4/quay-manage.js';
+const rows=[{id:'a',cost:2},{id:'b',cost:3}];
+const business={stock:rows,stock_total:494,stock_capacity:500,stock_reserved:3,restock_batch:5,again:[{id:'a',qty:4},{id:'b',qty:4}]};
+const st={id:'q1',business,till:100,fund:0};
+assert.equal(restockQuote({a:4},rows,business),null,'reserved portions consume capacity');
+assert.equal(restockQuote({a:3,b:3},rows,{...business,stock_total:0}),null,'batch is aggregate');
+assert.equal(restockQuote({a:3},rows,business).count,3);
+assert.deepEqual(againPlan(st),{items:{a:3},count:3,total:6,trimmed:true});
+assert.equal(againPlan({...st,business:{...business,stock_total:600}}),null,'legacy over-cap stock is not reorderable');
+assert.equal(againPlan({...st,business:{...business,stock_total:0}}).count,5);
+assert.equal(againAll([st],0).steps[0].items.a,3);
+assert.equal(restockQuote({a:20000},rows).count,20000,'old-server fallback');
+console.log('quay paid limits: passed');

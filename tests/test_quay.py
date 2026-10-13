@@ -176,6 +176,7 @@ class Opening(unittest.TestCase):
         refused(self, s, 'jr_quay_open', trade='milk_tea', place='villa', confirm=True)
         refused(self, s, 'jr_quay_open', trade='milk_tea', place='xe', name='x' * 40, confirm=True)
         s, _ = act(s, 'jr_quay_open', trade='milk_tea', place='xe', confirm=True)
+        Q(s)['paid_tier'] = {'slots': 2}  # Established three-slot owner fixture.
         s, _ = act(s, 'jr_quay_open', trade='milk_tea', place='sap', confirm=True)
         s, _ = act(s, 'jr_quay_open', trade='milk_tea', place='kiot', confirm=True)
         self.assertEqual(len(Q(s)['stalls']), 3)

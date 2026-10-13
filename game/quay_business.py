@@ -463,7 +463,10 @@ def action(s, st, name, p):
     rows = qs.DISH[st['trade']]
     need(isinstance(items, dict) and items and all(d in rows and type(n) is int and 1 <= n <= STOCK_MAX for d, n in items.items()), 'Chọn số lượng hàng cần nhập.')
     from .player_service_tasks import reserved
-    need(sum(b['stock'].values()) + reserved(st) + sum(items.values()) <= STOCK_MAX, f'Kho chứa tối đa {STOCK_MAX} món.')
+    from .quay_progression import limit
+    capacity, batch = limit(b, 'storage'), limit(b, 'restock')
+    need(sum(items.values()) <= batch, f'Mỗi lần nhập tối đa {batch} phần, tính chung tất cả món.')
+    need(sum(b['stock'].values()) + reserved(st) + sum(items.values()) <= capacity, f'Kho chứa tối đa {capacity} phần, gồm hàng giữ cho khách.')
     cost = sum(unit_cost(st, d) * n for d, n in items.items())
     # F#295 (2) "tự trừ từ tài khoản của mình mà không cần nhập tiền qua góp vốn": `wallet: true` pays what the till and
     # the fund lack from the wallet, then the bank account (as 💼 Góp vốn does, quay._take), in this same command.
@@ -560,7 +563,8 @@ def public(st):
     # counter is open and working, sales or not: the same rule as _charge in settle().
     running = dict(per_period=sum(rates.values()), spent=sum(b['expenses'].get(k, 0) for k in TIME_COSTS),
                    accruing=bool(code == 'running' or (not st['staff'] and manual and code not in ('paused', 'restricted'))))
-    return dict(v=1, status=code, reason=reasons[code], paused=b['paused'], running_cost=running,
+    from .quay_progression import business_view
+    return dict(**business_view(st), v=1, status=code, reason=reasons[code], paused=b['paused'], running_cost=running,
         market=dict(market.snapshot(b['cursor']), town=True, runs=market.outlook(b['cursor']), day_percent=market.DAY_PERCENT,
                     down_minutes=market.DOWN_MINUTES),
         price_effect=price_effect(st), protection=dict(level=b.get('protection', {}).get('level', 'none'), options=[dict(level=k, **v) for k,v in plans.items()], **plans[b.get('protection', {}).get('level', 'none')], quote=dict(b.get('protection_quote', {}))),
@@ -584,6 +588,8 @@ def validate(st, need, integer):
     if b is None:
         return
     need(isinstance(b, dict) and b.get('v') == 1)
+    from .quay_progression import validate as validate_paid
+    validate_paid(b, ('storage', 'restock'), need, integer)
     need(all(k in b for k in ('cursor', 'paused', 'stock', 'arrivals', 'signature', 'carry', 'expenses', 'revenue', 'sold', 'recent', 'halted', 'seq', 'manual_seq')))
     need(integer(b['cursor'], 0, 10**15) and type(b['paused']) is bool and integer(b.get('owner_next', b['cursor']), 0, 10**18))
     need(type(b.get('speed_factor', 1)) in (int, float) and b.get('speed_factor', 1) in (1, 1.15, 1.35, 1.6))

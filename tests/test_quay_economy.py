@@ -1,4 +1,4 @@
-"""Business settlement: real ledger changes, aggregate tax, compliant checks and no counter cap."""
+"""Business settlement: real ledger changes, aggregate tax, compliant checks and purchased counter capacity."""
 import copy
 import unittest
 from unittest.mock import patch
@@ -13,8 +13,9 @@ class Economy(unittest.TestCase):
         qy.ensure(s)['stalls'].append(st)
         return s, st
 
-    def test_unlimited_open_and_large_sequence(self):
+    def test_purchased_slots_and_large_sequence(self):
         s = owner(100000)
+        qy.ensure(s)['paid_tier'] = {'slots': 7}
         for _ in range(14):
             s, _ = act(s, 'jr_quay_open', trade='milk_tea', place='xe', confirm=True)
         self.assertEqual(len(Q(s)['stalls']), 14)

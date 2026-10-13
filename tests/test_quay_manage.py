@@ -42,10 +42,13 @@ def run_all(s, action, payloads):
 class Plans(unittest.TestCase):
     def counters(self):
         s = owner(50000)
+        from game.quay import ensure
+        ensure(s)['paid_tier'] = {'slots': 2}
         s['careers']['grocery']['metrics']['served'] = 12
         for trade, name in (('milk_tea', 'Trà Một'), ('grocery', 'Tạp Hóa'), ('milk_tea', 'Trà Hai')):
             s, _ = apply_action(s, None, 'jr_quay_open', dict(trade=trade, place='xe', name=name, confirm=True))
         q = s['journey']['quay']['stalls']
+        q[0]['business']['paid_tier'] = {'restock': 1}
         s, _ = apply_action(s, None, 'jr_quay_restock', dict(stall=q[0]['id'], items={'hong_tra': 6, 'tra_dao': 2}))
         s, _ = apply_action(s, None, 'jr_quay_restock', dict(stall=q[2]['id'], items={'hong_tra': 3}))
         validate_state(s)

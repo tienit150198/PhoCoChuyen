@@ -13,7 +13,7 @@ from . import bank as bk
 
 VERSION = 1
 KEY = 'quay'
-MAX_STALLS = None                 # no gameplay limit; list view paginates
+MAX_STALLS = 50                   # highest purchased slot tier; existing larger collections remain
 UNLOCK_CHAPTER = 3
 UNLOCK_SERVED = 10
 MONTH_DAYS = bk.MONTH_DAYS        # rent every 5 life days, new candidates every tháng
@@ -467,11 +467,15 @@ def action(s: dict, name: str, p: dict) -> dict:
     day = int(j['life_day'])
     from . import quay_business
     quay_business.settle(s)
+    from . import quay_progression as paid
+    if name == 'jr_quay_convenience':
+        return paid.buy(s, p)
     if name == 'jr_quay_open':
         need(set(p) <= {'trade', 'place', 'name', 'confirm'}, 'Thông tin mở quầy không hợp lệ.')
         why = why_locked(s)
         need(not why, why or '', 'locked')
         q = ensure(s)
+        need(paid.slots(q)['remaining'] > 0, 'Đã hết chỗ mở quầy. Nâng bậc số quầy sở hữu trước nhé.', 'quay_slots')
         trade, place = p.get('trade'), p.get('place')
         need(trade in TRADES, 'Chọn một món để bán.')
         need(served(s, trade) >= UNLOCK_SERVED, f'Làm {UNLOCK_SERVED} việc ở nghề này trước nhé.', 'locked')
@@ -790,7 +794,7 @@ def catalogue() -> dict:
                 items=[dict(id=k, emoji=v['emoji'], name=v['name'], price=v['price'], line=v['line']) for k, v in ITEMS.items()],
                 orders=[dict(id=k, name=ORDER_NAMES[k]) for k in ORDERS], weather={w[0]: w[1] + ' ' + w[2] for w in WEATHER},
                 pace={p[0]: p[1] for p in PACE}, chapter=UNLOCK_CHAPTER, served=UNLOCK_SERVED, max=MAX_STALLS, left=LEFT_DAYS,
-                unlimited=True, tax=dict(period=30, revenue_allowance=1000, profit_allowance=200, vat_pct=2, income_pct=5),
+                unlimited=False, tax=dict(period=30, revenue_allowance=1000, profit_allowance=200, vat_pct=2, income_pct=5),
                 month=MONTH_DAYS, wage_pct=[WAGE_MIN_PCT, WAGE_MAX_PCT], **_qs().catalogue())
 
 
@@ -845,6 +849,8 @@ def public(s: dict) -> dict:
     q = get(s) or {}
     out = dict(stalls=[_stall_view(s, st) for st in q.get('stalls', ())], lock=why_locked(s), can=known_trades(s))
     from . import business_progression as bp
+    from .quay_progression import slots
+    out['slots'] = slots(q)
     out['business_license'] = bp.evaluate(s)
     blocked = set(out['business_license']['blocked_ids'])
     for st in out['stalls']:
@@ -902,6 +908,8 @@ def validate(s: dict) -> None:
     validate_owner(q, need, _int)
     from .business_progression import validate as validate_license
     validate_license(q, need, _int)
+    from .quay_progression import validate as validate_paid
+    validate_paid(q, ('slots',), need, _int)
     ids = set()
     for st in q['stalls']:
         need(isinstance(st, dict) and STALL_KEYS <= set(st))

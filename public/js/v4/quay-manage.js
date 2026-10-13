@@ -9,6 +9,7 @@
  *   stallLine   📋 one compact line per counter: status, stock low, cash, staff on the floor;
  *   againAll / tillAll / openAll   the bulk steps for a group (or every counter). */
 
+import {restockRoom} from './quay-business-ui.js';
 export const STOCK_MAX=20000;   // game/quay_business.py STOCK_MAX
 const n=v=>Math.max(0,Math.floor(Number(v)||0));
 
@@ -16,7 +17,7 @@ const n=v=>Math.max(0,Math.floor(Number(v)||0));
  * did not fit in the stock room and were left out (the server caps the room at STOCK_MAX portions). */
 export function againPlan(st){
   const b=st?.business,last=b?.again||[];if(!last.length)return null;
-  const rows=b.stock||[];let room=Math.max(0,STOCK_MAX-n(b.stock_total));let total=0,count=0,trimmed=false;const items={};
+  const rows=b.stock||[];let room=restockRoom(b);let total=0,count=0,trimmed=false;const items={};
   for(const {id,qty} of last){
     const row=rows.find(r=>r.id===id);if(!row){trimmed=true;continue;}
     const q=Math.min(n(qty),room);if(q<n(qty))trimmed=true;if(!q)continue;

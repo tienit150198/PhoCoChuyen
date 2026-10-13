@@ -33,6 +33,7 @@ def broke(s):
 class LastOrder(unittest.TestCase):
     def test_a_restock_is_kept_and_shown_for_next_time(self):
         s = opened('sap', wallet=20000)
+        ST(s)['business']['paid_tier'] = {'restock': 1}  # Preserve the original payment/upgrade scenario.
         st = ST(s)
         self.assertEqual(qy.public(s)['stalls'][0]['business']['again'], [])
         s, r = act(s, 'jr_quay_restock', stall=st['id'], items={DISH: 7, 'tra_dao': 3})
@@ -46,6 +47,7 @@ class LastOrder(unittest.TestCase):
 
     def test_a_refused_restock_keeps_the_old_last_order(self):
         s = opened('xe', wallet=20000)
+        ST(s)['business']['paid_tier'] = {'restock': 4}  # Preserve the original payment/upgrade scenario.
         s, _ = act(s, 'jr_quay_restock', stall=ST(s)['id'], items={DISH: 2})
         broke(s)
         refused(self, s, 'jr_quay_restock', 'no_money', stall=ST(s)['id'], items={DISH: 50})
@@ -66,12 +68,14 @@ class LastOrder(unittest.TestCase):
 class WalletShortfall(unittest.TestCase):
     def test_without_the_flag_a_short_counter_is_refused_as_before(self):
         s = opened('xe', wallet=5000)
+        ST(s)['business']['paid_tier'] = {'restock': 1}  # Preserve the original payment/upgrade scenario.
         broke(s)
         msg = refused(self, s, 'jr_quay_restock', 'no_money', stall=ST(s)['id'], items={DISH: 10})
         self.assertIn('két hoặc vốn quầy', msg)
 
     def test_the_shortfall_comes_from_the_wallet_in_the_same_command(self):
         s = opened('xe', wallet=5000)
+        ST(s)['business']['paid_tier'] = {'restock': 1}  # Preserve the original payment/upgrade scenario.
         st = broke(s)
         st['till'] = 5
         unit = qb.unit_cost(st, DISH)
@@ -98,6 +102,7 @@ class WalletShortfall(unittest.TestCase):
 
     def test_wallet_then_bank_never_into_debt(self):
         s = opened('xe', wallet=5000)
+        ST(s)['business']['paid_tier'] = {'restock': 1}  # Preserve the original payment/upgrade scenario.
         broke(s)
         s['journey']['wallet'] = 3
         validate_state(s)
@@ -129,6 +134,7 @@ class WalletShortfall(unittest.TestCase):
 class Upgrade(unittest.TestCase):
     def test_a_cart_grows_into_a_market_stall_keeping_everything(self):
         s = opened('xe', wallet=20000)
+        ST(s)['business']['paid_tier'] = {'restock': 1}  # Preserve the original payment/upgrade scenario.
         s, _ = act(s, 'jr_quay_buy', stall=ST(s)['id'], item='camera', confirm=True)
         s, _ = act(s, 'jr_quay_restock', stall=ST(s)['id'], items={DISH: 9})
         st = ST(s)
@@ -204,6 +210,7 @@ class Upgrade(unittest.TestCase):
 
     def test_303_the_owner_shift_is_the_reason_shown(self):
         s = opened('xe', wallet=20000)
+        ST(s)['business']['paid_tier'] = {'restock': 1}  # Preserve the original payment/upgrade scenario.
         sid = ST(s)['id']
         s, _ = act(s, 'jr_quay_restock', stall=sid, items={DISH: 9})
         s, _ = act(s, 'jr_quay_start', stall=sid)
@@ -289,6 +296,7 @@ class OldServer(unittest.TestCase):
 
     def saves(self):
         s = opened('xe', wallet=20000)
+        ST(s)['business']['paid_tier'] = {'restock': 1}  # Preserve the original payment/upgrade scenario.
         s, _ = act(s, 'jr_quay_restock', stall=ST(s)['id'], items={DISH: 4, 'tra_dao': 2})
         kept = json.loads(json.dumps(s))
         s, _ = act(s, 'jr_quay_upgrade', stall=ST(s)['id'], place='sap', confirm=True)

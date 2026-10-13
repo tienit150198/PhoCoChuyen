@@ -172,6 +172,7 @@ class ContinuousBusiness(unittest.TestCase):
         s = opened(staff=False)
         sid = ST(s)['id']
         s, _ = act(s,'jr_quay_fund',stall=sid,amount=400)
+        ST(s)['business']['paid_tier'] = {'restock': 4}  # 60 portions per order.
         s, _ = act(s,'jr_quay_restock',stall=sid,items={'ts_tran_chau':20,'hong_tra':20,'tra_dao':20})
         s, _ = act(s,'jr_quay_start',stall=sid)
         for _ in range(12):
@@ -196,6 +197,7 @@ class ContinuousBusiness(unittest.TestCase):
         from unittest.mock import patch
         s,st=fixture()
         b.settle(s,now=1000)
+        st['business']['paid_tier'] = {'restock': 1}
         wallet=s['journey']['wallet'];cash=st['fund']+st['till']
         with patch.object(b.time,'time',return_value=1000):
             quay.action(s,'jr_quay_restock',dict(stall='q1',items={'hong_tra':10}))
