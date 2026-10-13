@@ -1,6 +1,37 @@
 /* 🎖️ Thăng tiến and 🧑‍💼 Ca quản lý (public/js/v4/promo.js). Theme tokens only. */
 .pm-card{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:16px;border:1px solid var(--line);border-radius:var(--radius-lg,18px);background:var(--surface);box-shadow:var(--shadow-sm)}
 .cm-section{padding-top:0}
+/* NPC competition: keep content in normal flow, including phone layouts. */
+.cc-section{padding-top:0}
+.cc-card{min-width:0;overflow-wrap:anywhere;text-align:left}
+.cc-card h3,.cc-card h4,.cc-card p{margin:0}
+.cc-card .pm-eyebrow{flex-wrap:wrap}
+.cc-card h4{font-size:1rem}
+.cc-leagues{list-style:none;display:flex;gap:8px;padding:0;margin:0}
+.cc-league{display:grid;place-items:center;width:32px;height:32px;border:1px solid var(--line);border-radius:50%;color:var(--muted);font-variant-numeric:tabular-nums}
+.cc-league.is-current{background:var(--accent);color:var(--accent-ink,#fff);border-color:var(--accent);font-weight:800}
+.cc-league.is-past{color:var(--good);border-color:var(--good)}
+.cc-period,.cc-board,.cc-evidence,.cc-case,.cc-next,.cc-result{display:grid;gap:8px;min-width:0}
+.cc-period>div,.cc-requirements li>div{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.cc-card progress{display:block;width:100%;height:10px;accent-color:var(--accent)}
+.cc-standings,.cc-components,.cc-requirements{list-style:none;display:grid;gap:8px;padding:0;margin:0}
+.cc-standing{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:8px;padding:8px;border-radius:10px;background:var(--surface-2)}
+.cc-standing.is-player{outline:1px solid var(--accent);outline-offset:-1px}
+.cc-standing small,.cc-components small{display:block;font-size:.78rem;color:var(--muted);font-weight:400}
+.cc-standing>strong{text-align:right;font-variant-numeric:tabular-nums}
+.cc-rank{text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+.cc-components li{display:flex;justify-content:space-between;gap:8px;align-items:start}
+.cc-components li>span{min-width:0}
+.cc-components b,.cc-requirements b{flex:none;font-variant-numeric:tabular-nums}
+.cc-case,.cc-result{padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.cc-result.is-good h4,.cc-requirements .is-met,.cc-top{color:var(--good)}
+.cc-options{display:grid;gap:8px;min-width:0}
+.cc-options .btn{white-space:normal;min-height:48px;text-align:left;justify-content:flex-start;line-height:1.4;overflow-wrap:anywhere}
+.cc-case>.btn{white-space:normal;min-height:48px}
+.cc-requirements progress{margin-top:5px}
+.cc-rules{border-top:1px solid var(--line);padding-top:4px;font-size:.86rem}
+.cc-rules>summary{cursor:pointer;min-height:44px;align-content:center;font-weight:600}
+.cc-rules p{margin-top:8px}
 .cm-card{min-width:0;overflow-wrap:anywhere;text-align:left}
 .cm-card h3,.cm-card h4,.cm-card p{margin:0}
 .cm-card .pm-eyebrow{flex-wrap:wrap}
