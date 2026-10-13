@@ -71,7 +71,7 @@ def carry_reset(old, fresh, career=None):
     r = copy.deepcopy(old.get('journey', {}).get(KEY))
     if r is None:
         return
-    if r['reserved'] and (career is None or r['reserved'].startswith(career + '-')):
+    if r['reserved'] and (career is None or r['reserved'].startswith((career + '-',career + '_special-'))):
         r['tokens'] += 1
         r['reserved'] = None
     fresh['journey'][KEY] = r

@@ -330,6 +330,8 @@ def validate_account(s):
     """Cross-career reservation and resource ownership, also checked on imports."""
     reserved=[]
     for cid,c in s['careers'].items():
+        special=c.get('specialism',{}).get('job')
+        if special and special.get('phase')=='offered' and content.profile(cid).kind!='community':reserved.append(special['id'])
         r=c.get(KEY,{})
         offer,current=r.get('offer'),r.get('current')
         if offer and offer.get('reserved') and content.profile(cid).kind!='community':reserved.append(offer['id'])
@@ -338,5 +340,6 @@ def validate_account(s):
         _need(all(job in ids for lot in c.get(stock.KEY,{}).get('lots',[]) for job in lot['reserved']))
         busy={x['busy'] for x in c.get('scale',{}).get('resources',[]) if x['busy']}
         _need(busy==({current['id']} if current else set()))
+    _need(sum((c.get('specialism',{}).get('job') or {}).get('phase') in ('working','acceptance') for c in s['careers'].values())<=1, 'Chỉ có một công việc chuyên môn đang trực tiếp thực hiện.')
     held=s.get('journey',{}).get(quota.KEY,{}).get('reserved')
     _need(len(reserved)<=1 and held==(reserved[0] if reserved else None))

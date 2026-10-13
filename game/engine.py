@@ -61,6 +61,7 @@ from . import chua as cg  # 🛕 Đi chùa
 from . import promotion as pm
 from . import career_mastery as cm  # Persistent manual-work mastery, separate from formal promotion.
 from . import career_competition as competition  # Earned NPC standings and recognition.
+from . import career_specialism as specialism
 from . import career_scale_quota as scale_quota
 from . import career_scale as scale, career_scale_contracts as scale_contracts, career_scale_inventory as scale_stock
 from . import rui as rui_  # 🛡️ Rủi ro & bảo hiểm
@@ -634,6 +635,17 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     jr.gate(s,career,action,internal,p)
     if career!=s.get("current"):ab.check(s,career,{},internal)  # leaving work in progress only through select_career
     c=s["careers"][career]
+    if action.startswith('special_'):
+        need(career==s.get('current'),'Chọn nghề này trước khi học hoặc nhận đơn chuyên môn.')
+        if action in ('special_enrol','special_offer','special_start','special_stock_buy'):
+            from .accounting_jobs import can_work
+            allowed,why=can_work(s,career)
+            need(allowed,why)
+            need(not emp.required(career) or (c.get('job') or {}).get('status')=='hired','Cần được tuyển dụng trước khi nhận công việc chuyên môn.')
+            need(not pm.banned(s,career),'Đang bị đình chỉ; chưa thể nhận công việc mới.')
+        result=specialism.action(s,c,career,action,p)
+        validate_state(s)
+        return s,result
     if action.startswith('scale_'):
         need(career==s.get('current'),'Chọn nghề này trước khi điều phối.')
         from .accounting_jobs import can_work
@@ -1277,7 +1289,7 @@ def career_summary(raw:dict,cid:str) -> dict:
 
 # public_state rebuilds these from the save (None keeps each one's place in the key order).
 _PUBLIC_OWN=frozenset(("journey","invest","board","life","stories","closeness","abandon"))
-_FOCUS_OWN=frozenset(("ops","situation","incidents","happen","inventory","job","feed","ext","life","day_clock","tasks","event","pending","mastery","competition","scale","scale_contracts","scale_stock"))
+_FOCUS_OWN=frozenset(("ops","situation","incidents","happen","inventory","job","feed","ext","life","day_clock","tasks","event","pending","mastery","competition","scale","scale_contracts","scale_stock","specialism","special_stock"))
 
 def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     """Public projection. Only the current career (or `full`) gets the full view.
@@ -1330,6 +1342,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         sv['stock']=scale_stock.public(raw,cid)
         c['scale']=sv
         c.pop('scale_contracts',None);c.pop('scale_stock',None)
+        c['specialism']=specialism.public(s,raw,cid);c.pop('special_stock',None)
         c["promo"]=pm.public(s,raw,cid)  # 🎖️ Thăng tiến; the 🧑‍💼 board while a manager shift runs
 
         c["data"]=mod.public_data(raw) if mod and hasattr(mod,'public_data') else tree_copy(raw["ext"]["data"])
@@ -1488,6 +1501,7 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
     cm.validate(c,cid)
     competition.validate(c,cid)
     scale.validate(c,cid);scale_stock.validate(c,cid);scale_contracts.validate(c,cid)
+    specialism.validate(c,cid)
     player_services.validate_staff(c,cid)
     template_keys,ext_keys=_template_keys(cid)
     ops.validate(c,cid,same)

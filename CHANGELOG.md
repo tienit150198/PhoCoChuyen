@@ -1,3 +1,12 @@
+# v2.4.1 — 2026-10-14
+
+- Sửa khung “Nói gần đây” của map 2.5D che nút zoom: chừa khoảng riêng cho bộ điều khiển máy ảnh ở màn hình nhỏ, ngang và máy tính; chat/reaction vẫn dùng được.
+- Thêm đủ 540 gói chuyên môn (54 nghề × 10 bậc) trong Thăng tiến: định lượng vật tư, trình tự thao tác, tiêu chí bàn giao riêng theo gói. Mở gói bằng học phí, học và thực hành đạt yêu cầu trước khi nhận đơn.
+- Học phí tuần tự 3.000 → 100.000.000 xu; tổng 152.692.000 xu mỗi nghề có thu phí. Có điều kiện kinh nghiệm, việc tự làm không lỗi và ngày thực đạt chuẩn; thực hành lại không thu thêm tiền. Chùa học công quả miễn phí, chỉ tăng tinh thần trong trần 100.
+- Đơn chuyên môn dùng chung suất quản lý; một người trực tiếp làm một đơn chuyên môn mỗi lần. Kho riêng dùng quyền nâng sức chứa/hạn mức nhập đã mua, tính hàng đang về và đang giữ cho đơn. Mua, nhận, giữ và tiêu hao vật tư theo giá vốn từng lô; thuế, công và tiền nghiệm thu có biên nhận, không nhân thưởng cũ.
+- Nghề công vụ nhận vật tư hiện vật của đơn vị và phụ cấp nghiệm thu; ngân sách đơn vị không chuyển thành thu nhập cá nhân. Nội dung tình huống là mô phỏng trong game.
+- Giữ nguyên dữ kiện nhiệm vụ và kho cũ; gói mới phục vụ đơn chuyên môn riêng. Nhãn chính có tiếng Anh, nội dung 540 tình huống hiện dùng tiếng Việt dự phòng. Không đổi schema DB; cần giữ bản chạy hiểu dữ liệu chuyên môn sau khi người chơi sử dụng.
+
 # v2.4.0 — 2026-10-14
 
 - Mở lộ trình quy mô 8 bậc cho 54 nghề: kinh doanh phát triển cơ sở/chuỗi; nghề công vụ nhận phạm vi điều phối; chùa phát triển công quả. Không bán chức vụ hoặc cấp hàm.
