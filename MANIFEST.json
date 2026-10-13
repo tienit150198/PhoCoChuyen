@@ -1,83 +1,59 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "2.4.0",
-  "created_at_utc": "2026-10-13T21:34:01.751616+00:00",
+  "version": "2.4.1",
+  "created_at_utc": "2026-10-13T22:55:36.304421+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 624,
+  "minified": 630,
   "release_from_live": {
     "live_release": "mot-ngay-lam-nghe",
-    "live_version": "2.3.1",
-    "live_manifest_sha256": "a4352de6c2f8932a198777bb7afc567de32a82d20210cae20f9f4b294e47bc9b",
-    "base": "0a5e3b0537d78d4ca6ac7019c032cc397539b503",
-    "ref": "23fb59ff53d0bb35e7fef35347c505645e016708",
+    "live_version": "2.4.0",
+    "live_manifest_sha256": "517ac6db896857418f9682d915f8eafe54f8a323aa8744a290089840fcfdf580",
+    "base": "23fb59ff53d0bb35e7fef35347c505645e016708",
+    "ref": "40999f121be087940f6c1709c2115d5f02fb80bd",
     "changed": [
       "CHANGELOG.md",
-      "docs/CAREER_SCALE_VALIDATION_2026-10-14.md",
-      "docs/DEPLOY_2.3.1_2026-10-14.md",
+      "docs/DEPLOY_2.4.0_2026-10-14.md",
+      "docs/superpowers/plans/2026-10-14-career-content-runtime.md",
       "docs/superpowers/plans/2026-10-14-career-scale-implementation.md",
+      "docs/superpowers/specs/2026-10-14-career-content-runtime-design.md",
       "game/__init__.py",
-      "game/capacity_progression.py",
-      "game/career_scale.py",
-      "game/career_scale_content.py",
+      "game/build_id.py",
       "game/career_scale_contracts.py",
-      "game/career_scale_finance.py",
-      "game/career_scale_inventory.py",
       "game/career_scale_quota.py",
-      "game/career_scale_resources.py",
-      "game/certificate_content.py",
+      "game/career_specialism.py",
+      "game/career_specialism_content.py",
+      "game/career_specialism_jobs.py",
+      "game/career_specialism_stock.py",
+      "game/data/career_specialisms.json",
+      "game/data/career_specialisms_21_37.json",
+      "game/data/career_specialisms_38_54.json",
       "game/engine.py",
-      "game/journey.py",
-      "game/order_progression.py",
-      "game/quay.py",
-      "game/quay_progression.py",
       "i18n/overrides.json",
-      "live/scale_sites.py",
-      "live/town.py",
-      "live/town_social.py",
-      "public/css/career-scale.css",
+      "public/css/career-specialism.css",
+      "public/css/isometric-social.css",
+      "public/css/isometric.css",
       "public/i18n/en.json",
       "public/js/app.js",
-      "public/js/experience-ui.js",
-      "public/js/isometric-town.js",
-      "public/js/scenes/venue-place.js",
-      "public/js/v4/career-scale.js",
+      "public/js/v4/career-specialism.js",
       "public/js/v4/promo.js",
-      "public/js/v4/scale-site.js",
-      "public/js/v4/site-presence.js",
-      "public/js/v4/venue-visit.js",
-      "tests/career-scale.mjs",
-      "tests/isometric-leisure-presence.mjs",
-      "tests/isometric-town-appearance.mjs",
-      "tests/isometric-town.mjs",
-      "tests/scale-site-bubbles.mjs",
-      "tests/scale-site-presence.mjs",
-      "tests/scale-sites.mjs",
-      "tests/test_capacity_catalog.py",
-      "tests/test_career_scale.py",
-      "tests/test_career_scale_content.py",
-      "tests/test_career_scale_contracts.py",
-      "tests/test_career_scale_integration.py",
-      "tests/test_career_scale_inventory.py",
-      "tests/test_career_scale_quota.py",
-      "tests/test_career_scale_store.py",
-      "tests/test_live_scale_sites.py",
-      "tests/test_order_progression.py",
-      "tests/test_scale_site_capacity.py",
-      "tests/test_scale_sites_browser.py",
+      "scripts/browser_career_specialism.py",
+      "scripts/browser_town_social_layout.py",
+      "tests/career-specialism.mjs",
+      "tests/test_build_id.py",
+      "tests/test_career_specialism.py",
+      "tests/test_career_specialism_content.py",
+      "tests/test_career_specialism_integration.py",
+      "tests/test_career_specialism_store.py",
       "tests/test_task_compat.py"
     ],
     "deleted": [],
     "minified": [
-      "public/css/career-scale.css",
+      "public/css/career-specialism.css",
+      "public/css/isometric-social.css",
+      "public/css/isometric.css",
       "public/js/app.js",
-      "public/js/experience-ui.js",
-      "public/js/isometric-town.js",
-      "public/js/scenes/venue-place.js",
-      "public/js/v4/career-scale.js",
-      "public/js/v4/promo.js",
-      "public/js/v4/scale-site.js",
-      "public/js/v4/site-presence.js",
-      "public/js/v4/venue-visit.js"
+      "public/js/v4/career-specialism.js",
+      "public/js/v4/promo.js"
     ]
   },
   "files": [
@@ -98,8 +74,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 318524,
-      "sha256": "554feb9787d6b88972d318065ed7f5fa25b39e98013482107f35368dd2da3b0f"
+      "bytes": 320286,
+      "sha256": "9f4673f6d39c6c93e51095a72dc57c0487aa5efaa739eae8d5176be0b10acc45"
     },
     {
       "path": "Dockerfile",
@@ -600,6 +576,11 @@
       "path": "docs/DEPLOY_2.3.1_2026-10-14.md",
       "bytes": 2119,
       "sha256": "c444f7198da66bffcbec824e783e760524fbdfb9bfebef1fdf5d21bee14b4264"
+    },
+    {
+      "path": "docs/DEPLOY_2.4.0_2026-10-14.md",
+      "bytes": 4618,
+      "sha256": "346039c289f07447cdb83ac85a6e878437e464d0bfcf505a75e547c44dc04494"
     },
     {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
@@ -1972,9 +1953,14 @@
       "sha256": "4d7bfc0f4d31e4954f8426a137d5ea36b2892817d9bb54eef99296f71a9ff306"
     },
     {
+      "path": "docs/superpowers/plans/2026-10-14-career-content-runtime.md",
+      "bytes": 3778,
+      "sha256": "37ff687a67f278c4d893e530f3ad7ec58f00e53256fd0526691fa3f26ccc07f5"
+    },
+    {
       "path": "docs/superpowers/plans/2026-10-14-career-scale-implementation.md",
       "bytes": 10329,
-      "sha256": "fdbfad45ca1dfb1c3a706be3ef89187a3af9d9c4a5952554d1535b0f9659b381"
+      "sha256": "ceab6917d09d7fa0765a24eac8dbf70a7c162d1f64db5051709af29efeeb6c3b"
     },
     {
       "path": "docs/superpowers/plans/2026-10-14-fair-first-round.md",
@@ -2242,6 +2228,11 @@
       "sha256": "6d9117144db8a02ca9c41436c4f6991317dddf6b6e1264bb8bae9c9c276812bd"
     },
     {
+      "path": "docs/superpowers/specs/2026-10-14-career-content-runtime-design.md",
+      "bytes": 3735,
+      "sha256": "33cbc718d4e2544013096a3abe2eb8cb06f32f627fd01ba9da8e82be0d70f0b6"
+    },
+    {
       "path": "docs/superpowers/specs/2026-10-14-career-scale-design.md",
       "bytes": 26341,
       "sha256": "702f2aea5d47873d77fd9a0cf4548d86d94484807b08df80f476a087541fc8ad"
@@ -2289,7 +2280,7 @@
     {
       "path": "game/__init__.py",
       "bytes": 105,
-      "sha256": "ed09b86f185eb36125a1e7480b82eb0ba4f1ffee3c3dc829a00b149ff545c6c5"
+      "sha256": "8af499faa8fa24e4a5c4e59d733faa1badeb7a63b14ac31b2137777ff4c4871a"
     },
     {
       "path": "game/abandon.py",
@@ -2443,8 +2434,8 @@
     },
     {
       "path": "game/build_id.py",
-      "bytes": 6313,
-      "sha256": "9cae0415784e3c562ceeacbfff1a44a374dfae1b599a4093b3dd718f8d888f36"
+      "bytes": 6950,
+      "sha256": "d3a5416e321374fe376622b38947bfae29b254768b89f5f2f2a42c0784ce538a"
     },
     {
       "path": "game/business.py",
@@ -2503,8 +2494,8 @@
     },
     {
       "path": "game/career_scale_contracts.py",
-      "bytes": 22166,
-      "sha256": "b696e649abada06f04cf3f5ea09998bb211d817f1bf093e08888fc03f5d293ac"
+      "bytes": 22558,
+      "sha256": "f113abd471ff16a4168758674e0c438f17a24f340c37f8a05018fbfe69b52764"
     },
     {
       "path": "game/career_scale_finance.py",
@@ -2518,13 +2509,33 @@
     },
     {
       "path": "game/career_scale_quota.py",
-      "bytes": 2906,
-      "sha256": "a17670aa012de1986fb7572470f019b8d34a5a3a396eb9d17e55332e54a4580d"
+      "bytes": 2929,
+      "sha256": "63fa6790e41a49b357d50ec9213f6e08c2c426b1cf23bf3d8a55913646b81371"
     },
     {
       "path": "game/career_scale_resources.py",
       "bytes": 9969,
       "sha256": "31d0ae3c19ceedb1117c555a6224c216cc994d6b0337062ffe89d1e718281930"
+    },
+    {
+      "path": "game/career_specialism.py",
+      "bytes": 10940,
+      "sha256": "0cdac9ae2726f875c18cf64fe23a31bc6e7e1399f610a56624a4ab77054eab7e"
+    },
+    {
+      "path": "game/career_specialism_content.py",
+      "bytes": 11884,
+      "sha256": "0775b91f602a7c5cc006e1f88f917d2c0c27ccfaf32c1551717f463684052856"
+    },
+    {
+      "path": "game/career_specialism_jobs.py",
+      "bytes": 10772,
+      "sha256": "78c242127022827913cc578237d05e09bed98eb6b0a759a1fbc44f6199a74f53"
+    },
+    {
+      "path": "game/career_specialism_stock.py",
+      "bytes": 6475,
+      "sha256": "416e00dc27503b5a9f138ccce2228917ec11d9ced88dfc8c342877dfcef30c31"
     },
     {
       "path": "game/career_stories.py",
@@ -2992,6 +3003,21 @@
       "sha256": "4c338a6a2df7e69ba0a98665294d2746dcf9b9ecefe93a71c1549c442361b4ad"
     },
     {
+      "path": "game/data/career_specialisms.json",
+      "bytes": 230550,
+      "sha256": "ab3cc4efddfefc8dc962c31df5de7e13dd710eb94d8b4f12b124d9727eada441"
+    },
+    {
+      "path": "game/data/career_specialisms_21_37.json",
+      "bytes": 178358,
+      "sha256": "3eaef725a41ca1b256a8c985d216b93205b48701f73998588192e1410cfb7036"
+    },
+    {
+      "path": "game/data/career_specialisms_38_54.json",
+      "bytes": 170416,
+      "sha256": "414346ed0a50426e3e0cba4b6f334e17a8409b9865bcee603be1aa40625b9e4a"
+    },
+    {
       "path": "game/dayclock.py",
       "bytes": 13555,
       "sha256": "53e13d7321c296d9622a30ec3beffbdff5f56439a3803f69d62a19135736b59f"
@@ -3063,8 +3089,8 @@
     },
     {
       "path": "game/engine.py",
-      "bytes": 196482,
-      "sha256": "6954c1339d934ec526bd342a00feff3222e647bf820cde2d52d8437f0c2b58ff"
+      "bytes": 197416,
+      "sha256": "19bfb498ab3cbd0d7535df35f4013acda7d2f94b9dac3ceb1bcd798afd3c6314"
     },
     {
       "path": "game/estates.py",
@@ -3833,8 +3859,8 @@
     },
     {
       "path": "i18n/overrides.json",
-      "bytes": 2837574,
-      "sha256": "3e3e2bfc1e63341bececf77be88fc6c9f303557879f8b236af2a216002bfeb99"
+      "bytes": 2840288,
+      "sha256": "7e0da23a7e19335ee79dfa590857ed0cefbbaa64585bb6c45bf7c2beef8b8852"
     },
     {
       "path": "i18n/source.json",
@@ -4247,6 +4273,11 @@
       "sha256": "77b0c42bd65bee217cc164fb696c9ba23561924d2a34eb08c181e7814aedcb0d"
     },
     {
+      "path": "public/css/career-specialism.css",
+      "bytes": 3489,
+      "sha256": "bc34f90646091486fca9f140e04ce5ed92f5e86bb8fe00d83496de473a829d99"
+    },
+    {
       "path": "public/css/careers/air_kit.css",
       "bytes": 12346,
       "sha256": "13afc85527e623724f0a589196cfa3f1a634ac5509ed1e0c30b5be5ff6e2d0c6"
@@ -4648,13 +4679,13 @@
     },
     {
       "path": "public/css/isometric-social.css",
-      "bytes": 3861,
-      "sha256": "6b5cfc898eff0f53d5c799358de6aaf55885ad4cebbd5c697d7a0a4d127dad18"
+      "bytes": 3697,
+      "sha256": "afc96dcc0f6eeb106794d8e5094a6731fbf3870be7207e4af75b74b0101a9e04"
     },
     {
       "path": "public/css/isometric.css",
-      "bytes": 51244,
-      "sha256": "dd08418703f0f54e3bfc81cd84e11e1870afb483ec756f8c78025bfac25f51b0"
+      "bytes": 51543,
+      "sha256": "3260b6d58f74042a1403f6dff4421eb3d8eecffc6fe4091a36af1181f25c5fd0"
     },
     {
       "path": "public/css/jail.css",
@@ -4883,8 +4914,8 @@
     },
     {
       "path": "public/i18n/en.json",
-      "bytes": 10084069,
-      "sha256": "383a755fb8e03679e72c8d4f406f7151d6e29e8ca61f2e8ae94c4c642288c07b"
+      "bytes": 10086565,
+      "sha256": "543114e72f3b4ca2d3bb20ffccbd1343f92ad398ff1df3d5f82c88951bf08827"
     },
     {
       "path": "public/icons/apple-touch-icon.png",
@@ -5683,8 +5714,8 @@
     },
     {
       "path": "public/js/app.js",
-      "bytes": 192599,
-      "sha256": "52dd55f20a50afd013524198c44d79d3ff8d18de9ddc6f77da73cfcbc62b674e"
+      "bytes": 192628,
+      "sha256": "1e7b8407493e9e4d2f1b5682df13cfb709c9f87b09b9d9b3374108f05765e666"
     },
     {
       "path": "public/js/archive.js",
@@ -6742,6 +6773,11 @@
       "sha256": "debf59d23993a83685272c267d598c845636512bfd7b3de767e46bd5f1217302"
     },
     {
+      "path": "public/js/v4/career-specialism.js",
+      "bytes": 8439,
+      "sha256": "8ce55f6f19e981a5c423042614908b7e580f96c7ed60d3c4ec2668bd4130edd4"
+    },
+    {
       "path": "public/js/v4/careers.js",
       "bytes": 7468,
       "sha256": "b0306632674e29de6524b1c7f1f6ebe9ad7efccff184d9dbbeb4f7808c4da770"
@@ -7168,8 +7204,8 @@
     },
     {
       "path": "public/js/v4/promo.js",
-      "bytes": 25933,
-      "sha256": "66444bfdb5be8a0e74df920273e66dcd931ee30c42c00bb8a0755495b46aa7d6"
+      "bytes": 26123,
+      "sha256": "371bddc73dba41089573037a2e1b5898c609cfcd34d1e547c0cc7ec91f5ccdc2"
     },
     {
       "path": "public/js/v4/push.js",
@@ -7692,6 +7728,11 @@
       "sha256": "ab98b1895a2d9ba7c6974f17b1d14a9792481884231df1a5cb35ee559b3582dd"
     },
     {
+      "path": "scripts/browser_career_specialism.py",
+      "bytes": 5523,
+      "sha256": "349395b090a23985ac11f0b779a60c1016e812975106447d4b9d965033a0ab63"
+    },
+    {
       "path": "scripts/browser_cert_diploma.py",
       "bytes": 12334,
       "sha256": "c7f556b80b1cea4f89fea532648d2299d134bf0bec35928c11e736ed449f7ff5"
@@ -7990,6 +8031,11 @@
       "path": "scripts/browser_town_social.py",
       "bytes": 8752,
       "sha256": "08da69489b9efe26f95e14f21289e34c5a57dc6ca80d246711b5ba9215f68953"
+    },
+    {
+      "path": "scripts/browser_town_social_layout.py",
+      "bytes": 8044,
+      "sha256": "e7410b7802b08e5eab032ea79b21136f731030fffaf1ae64fc893d0c023c12c2"
     },
     {
       "path": "scripts/browser_tutorial.py",
@@ -8470,6 +8516,11 @@
       "path": "tests/career-scale.mjs",
       "bytes": 3538,
       "sha256": "539fc992da5d4ca3dc6f8f3bd20a264a1f5961b46ffa326e60fc01fd0b8da01b"
+    },
+    {
+      "path": "tests/career-specialism.mjs",
+      "bytes": 5150,
+      "sha256": "90412276fed4453a239b5e2ee62a960749ed0303e5c1e03fcb299d78bc254b51"
     },
     {
       "path": "tests/career-vocabulary.mjs",
@@ -9743,8 +9794,8 @@
     },
     {
       "path": "tests/test_build_id.py",
-      "bytes": 4884,
-      "sha256": "da67379f0b93b5550d514e5c32533b86e9ed08ae38f00a71bfd6b7f50fe30828"
+      "bytes": 6677,
+      "sha256": "4c69ba01d2b8f0cdacd02567e90775237af903be0da779818d940aeadd845280"
     },
     {
       "path": "tests/test_business_certificates.py",
@@ -10075,6 +10126,26 @@
       "path": "tests/test_career_secretary.py",
       "bytes": 228,
       "sha256": "f0d69bcb5b0c04e8880564055d20f8721ae14f3b3ceb2d408d7fb9411f67c42c"
+    },
+    {
+      "path": "tests/test_career_specialism.py",
+      "bytes": 8242,
+      "sha256": "3658864dd7bcd855bfffcef3b5a17ce059972ec963186d8b373f6a0ad2813f4d"
+    },
+    {
+      "path": "tests/test_career_specialism_content.py",
+      "bytes": 4617,
+      "sha256": "e12ad66867420d96f11a1a4df46103b7a980836c07d865726bf73d14a2946482"
+    },
+    {
+      "path": "tests/test_career_specialism_integration.py",
+      "bytes": 4056,
+      "sha256": "20b3ed2acca5ddb8281379792aef31b5aeb79a8381ca04e9cae9a91c6266b9a0"
+    },
+    {
+      "path": "tests/test_career_specialism_store.py",
+      "bytes": 2358,
+      "sha256": "1f6014d66614266835ced796c9424deafadb5560fd459e2e281f11a8b043c16d"
     },
     {
       "path": "tests/test_career_stories.py",
@@ -11714,7 +11785,7 @@
     {
       "path": "tests/test_task_compat.py",
       "bytes": 5539,
-      "sha256": "fc4c4b4d69af97cabc98167b98d50c01a8e8d036567c14df8305b582b181bede"
+      "sha256": "6de6cb0b6f7f2bc9f0cb269b8fbeccab0afc4986ad03c7992d8aa77b9ff687e6"
     },
     {
       "path": "tests/test_teacher_care.py",
