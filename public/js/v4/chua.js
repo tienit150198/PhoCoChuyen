@@ -31,13 +31,57 @@ export function cardHistory(c){
   const cards=c.cards||[];
   return savedCards([...olderRows('','chua.cards').slice().reverse(),...cards],c.card_choices)+olderButton('','chua.cards',cards.length,cards.length>=40).replace('data-action="loadOlder"','data-cv="older-cards"');
 }
-export function cardComposer(choices,draft={},ok=true){
+/** Only the authenticated mine endpoint supplies cards eligible for visibility controls. */
+export function createCardBoard(api,changed=()=>{}){
+  const slot=()=>({rows:[],before:null,loading:false,loaded:false,error:'',request:0});
+  const board={tab:'mine',mine:slot(),public:slot(),busy:''};
+  board.load=async(scope,more=false)=>{
+    if(!['mine','public'].includes(scope))return;
+    const page=board[scope];if(more&&(page.loading||!page.before))return;
+    const cursor=more?page.before:null,request=++page.request;
+    if(!more){page.rows=[];page.before=null;}
+    page.loading=true;page.error='';changed(board);
+    try{
+      const data=await api.json(`/api/chua/cards?scope=${scope}&limit=20${cursor?`&before=${encodeURIComponent(cursor)}`:''}`);
+      if(request!==page.request)return;
+      const seen=new Set(page.rows.map(row=>row.id));page.rows.push(...data.rows.filter(row=>!seen.has(row.id)));
+      page.before=data.before;page.loaded=true;
+    }catch(error){if(request===page.request)page.error=error.message||'Chưa tải được bảng lời chúc. Bạn thử lại nhé.';}
+    finally{if(request===page.request){page.loading=false;changed(board);}}
+  };
+  board.setPublic=async(card,value)=>{
+    const own=board.mine.rows.find(row=>row.id===card.id);if(!own||board.busy)return false;
+    const shown=board.mine.rows.length;
+    board.busy=own.id;board.mine.error='';changed(board);
+    try{
+      const body={id:own.id,public:value===true};if(Number.isInteger(own.position))body.position=own.position;
+      await api.post('/api/chua/cards/visibility',body);
+      const refreshMine=async()=>{await board.load('mine');while(board.mine.rows.length<shown&&board.mine.before&&!board.mine.error)await board.load('mine',true);};
+      await Promise.all([refreshMine(),board.load('public')]);return true;
+    }catch(error){board.mine.error=error.message||'Chưa đổi được quyền xem. Bạn thử lại nhé.';return false;}
+    finally{board.busy='';changed(board);}
+  };
+  return board;
+}
+export function cardBoardTabs(board){
+  return `<div class="cv-card-tabs" role="group" aria-label="Chọn bảng lời chúc">${[['mine','Lời chúc của tôi'],['public','Bảng chung']].map(([id,label])=>`<button type="button" class="cv-pick${board.tab===id?' on':''}" data-cv="card-tab" data-id="${id}" aria-pressed="${board.tab===id}">${label}</button>`).join('')}<button type="button" class="btn ghost small" data-cv="card-refresh"${board[board.tab].loading?' disabled':''}>Làm mới</button></div>`;
+}
+export function cardBoardHTML(board,choices,withTabs=true){
+  const mine=board.tab==='mine',page=board[board.tab];
+  return `<section class="cv-card-board" data-with-tabs="${withTabs}" aria-label="Bảng lời chúc">${withTabs?cardBoardTabs(board):''}
+    <p class="cv-card-note">${mine?'Chỉ bạn có thể đổi quyền xem của những bảng này. Công khai sẽ chia sẻ cả tên và lời nhắn với mọi người.':'Những lời chúc được người viết chọn chia sẻ công khai. Làm mới để xem thay đổi mới nhất.'}</p>
+    ${page.error?`<p class="cv-why" role="alert">${esc(page.error)}</p>`:''}${board.busy?'<p class="cv-wait" role="status">Đang cập nhật…</p>':page.loading?'<p class="cv-wait" role="status">Đang tải bảng lời chúc…</p>':''}
+    ${!page.rows.length&&!page.loading?`<p class="cv-card-empty">${mine?'Bạn chưa treo bảng lời chúc nào.':'Chưa có lời chúc công khai.'}</p>`:''}
+    <ol class="cv-card-list">${page.rows.map(card=>`<li class="cv-card" data-card-id="${esc(card.id)}"><b>${cardText(card,choices)}</b><small>Ngày ${card.day|0} · <span class="cv-card-privacy">${card.public===true?'Công khai':'Chỉ mình tôi'}</span></small>${mine?`<button type="button" class="btn cream small" data-cv="card-toggle" data-id="${esc(card.id)}" data-public="${card.public!==true}"${board.busy?' disabled':''}>${board.busy===card.id?'Đang lưu…':card.public===true?'Chuyển về chỉ mình tôi':'Chia sẻ công khai'}</button>`:''}</li>`).join('')}</ol>
+    ${page.before?`<button type="button" class="btn ghost small full" data-cv="card-more"${page.loading?' disabled':''}>Xem thêm lời chúc</button>`:''}</section>`;
+}
+export function cardComposer(choices,draft={},ok=true,sharing=false){
   const who=choices.recipients.find(x=>x.id===draft.recipient),valid=who?.blessings.includes(draft.blessing);
   return `<div class="cv-card-compose"><h4 class="cv-q">Gửi lời chúc cho ai?</h4><div class="cv-chips">${choices.recipients.map(w=>`<button type="button" class="cv-pick${w.id===draft.recipient?' on':''}" data-cv="card-recipient" data-id="${esc(w.id)}" aria-pressed="${w.id===draft.recipient}">${esc(w.text)}</button>`).join('')}</div>
     <h4 class="cv-q">Mong điều gì?</h4><div class="cv-chips">${choices.blessings.map(w=>`<button type="button" class="cv-pick${w.id===draft.blessing?' on':''}" data-cv="card-blessing" data-id="${esc(w.id)}" aria-pressed="${w.id===draft.blessing}"${who?.blessings.includes(w.id)?'':' disabled'}>${esc(w.text)}</button>`).join('')}</div>
     <label class="cv-card-field">Tên người nhận (không bắt buộc)<input name="card-name" data-card-field="name" maxlength="40" value="${esc(draft.name||'')}" autocomplete="off"></label>
     <label class="cv-card-field">Lời nhắn (không bắt buộc)<textarea name="card-message" data-card-field="message" maxlength="140" rows="2">${esc(draft.message||'')}</textarea></label>
-    <p class="cv-card-note">Chỉ bạn đọc được bảng này. Bảng được giữ lại khi quay về; hàng rào hiển thị 40 bảng gần nhất. Chọn Xem cũ hơn để đọc những bảng trước đó.</p>
+    ${sharing?`<fieldset class="cv-card-visibility"><legend>Ai có thể đọc bảng này?</legend><div class="cv-chips"><button type="button" class="cv-pick${draft.public!==true?' on':''}" data-cv="card-public" data-public="false" aria-pressed="${draft.public!==true}">Chỉ mình tôi</button><button type="button" class="cv-pick${draft.public===true?' on':''}" data-cv="card-public" data-public="true" aria-pressed="${draft.public===true}">Công khai</button></div><p class="cv-card-note">Mọi người có thể đọc tên và lời nhắn khi bạn chọn Công khai. Chỉ mình tôi giữ bảng riêng tư. Bạn có thể đổi lại sau khi treo.</p></fieldset>`:'<p class="cv-card-note">Chỉ bạn đọc được bảng này. Bảng được giữ lại khi quay về; hàng rào hiển thị 40 bảng gần nhất. Chọn Xem cũ hơn để đọc những bảng trước đó.</p>'}
     <div class="cv-p-acts"><button type="button" class="btn primary" data-cv="card-send"${ok&&valid?'':' disabled'}>📜 Treo bảng lời chúc</button></div></div>`;
 }
 

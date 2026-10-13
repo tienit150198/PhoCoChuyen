@@ -60,6 +60,13 @@ html[data-theme="dem"] .cv-stage{background:#2a2621}
 .cv-card b,.cv-card span{font-size:.88rem;color:var(--ink)}
 .cv-card p{white-space:pre-wrap}
 .cv-card small{color:var(--muted);font-size:.75rem}
+.cv-card-visibility{min-width:0;margin:12px 0 0;padding:10px;border:1px solid var(--line-strong);border-radius:12px}
+.cv-card-visibility legend{padding:0 5px;font-size:.88rem;font-weight:700;color:var(--ink)}
+.cv-card-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.cv-card-board{margin-top:12px;padding-top:8px;border-top:1px solid var(--line)}
+.cv-card-board .cv-card-list{max-height:320px}
+.cv-card .cv-card-privacy{font-size:inherit;color:inherit}
+.cv-card [data-cv="card-toggle"]{justify-self:start;min-height:40px}
 @media (max-width:759px){.cv-panel:has(.cv-card-compose){max-height:72%}.cv-card-compose .cv-pick{min-height:44px}.cv-card-list{max-height:160px}}
 
 /* tụng kinh */

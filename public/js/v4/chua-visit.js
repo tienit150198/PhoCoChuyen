@@ -9,7 +9,7 @@
  * Reduced motion: the player steps straight to where they tapped, nothing drifts, the chant's ring stays still
  * (the mõ lights up on the beat instead). */
 import {icon,escapeHTML as esc} from '../icons.js';
-import {visitStatus,cardComposer,cardHistory,cardResult,spiritGain,actionDone,actionWhy} from './chua.js';
+import {visitStatus,cardComposer,cardHistory,cardResult,spiritGain,actionDone,actionWhy,createCardBoard,cardBoardHTML,cardBoardTabs} from './chua.js';
 import {loadOlder} from '../archive.js';
 import {stylesheet} from '../lazy.js';
 import {figure,paintPlayer,CANVAS} from './look.js';
@@ -20,7 +20,7 @@ const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
 const S={env:null,dlg:null,cv:null,ctx:null,stage:null,area:'san',port:false,k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,cam:null,
   me:{x:0,y:0,path:null,pose:'stand',poseUntil:0,step:0},arrive:null,fx:{},panel:null,result:'',chant:null,khan:{who:'',what:''},
-  card:{recipient:'',blessing:'',name:'',message:''},talk:{},raf:0,last:0,drawn:0,time:0,fadeAt:-9,busy:false,bound:false,covered:false};
+  card:{recipient:'',blessing:'',name:'',message:'',public:false},board:null,talk:{},raf:0,last:0,drawn:0,time:0,fadeAt:-9,busy:false,bound:false,covered:false};
 const C=()=>S.env?.api.state?.chua;
 const day=()=>({lunar:C()?.lunar|0,feast:!!C()?.feast});
 const pl=()=>plan(S.area,S.port,day());
@@ -156,6 +156,7 @@ function bind(){
 export async function openChua(env){
   S.env=env;bind();await stylesheet('/css/chua.css');
   if(!hasScene(C()))return;
+  S.card.public=false;S.board=C().sharing?createCardBoard(S.env.api,refreshBoard):null;
   const d=dialog();
   S.area='san';S.panel=null;S.result='';S.chant=null;S.khan={who:'',what:''};S.fx={};S.me.pose='stand';S.me.path=null;S.arrive=null;
   if(!d.open)d.showModal();
@@ -222,7 +223,7 @@ function goSpot(s,after=null){
   if(!s)return;closePanel();
   walkTo(s.stand,()=>{
     if(s.kind==='door'){enterArea(s.to);after?.();}
-    else{S.panel=s;S.result='';if(s.kind==='npc')S.talk[s.who]=S.talk[s.who]??0;if(s.act)prefetch(s.act);panel();}
+    else{S.panel=s;S.result='';if(s.kind==='npc')S.talk[s.who]=S.talk[s.who]??0;if(s.act)prefetch(s.act);panel();if(s.act==='nguyen'&&S.board)S.board.load(S.board.tab);}
   });
 }
 function goArea(id){
@@ -272,7 +273,10 @@ const top=(emoji,title,sub='')=>`<div class="cv-p-head"><span class="cv-p-emoji"
 const why=a=>actionWhy(C(),a);
 function actBody(a){
   const no=why(a),note=no?`<p class="cv-why">${esc(no)}</p>`:'';
-  if(a.id==='nguyen'&&C().card_choices)return `<p>${esc(INTRO.nguyen)}</p>${note}${cardComposer(C().card_choices,S.card,a.ok)}${cardHistory(C())}`;
+  if(a.id==='nguyen'&&C().card_choices){
+    if(S.board)return `<p>${esc(INTRO.nguyen)}</p>${note}${cardBoardTabs(S.board)}${S.board.tab==='mine'?cardComposer(C().card_choices,S.card,a.ok,true):''}${cardBoardHTML(S.board,C().card_choices,false)}`;
+    return `<p>${esc(INTRO.nguyen)}</p>${note}${cardComposer(C().card_choices,S.card,a.ok)}${cardHistory(C())}`;
+  }
   if(a.id==='nguyen')return `<p>${esc(INTRO.nguyen)}</p>${note}<div class="cv-chips">${(C().wishes||[]).map(w=>`<button type="button" class="cv-pick" data-cv="do" data-act="nguyen" data-wish="${esc(w.id)}"${a.ok?'':' disabled'}>📜 ${esc(w.text)}</button>`).join('')}</div>`;
   if(a.id==='khan')return khanBody(a,note);
   if(a.id==='tung')return `<p>${esc(INTRO.tung)}</p>${a.ok?'':`<p class="cv-why">${esc(no)} · vẫn tụng cùng thầy được, chỉ không tính thêm.</p>`}
@@ -305,7 +309,7 @@ function panel(){
   if(!s){box.hidden=true;box.innerHTML='';S.stage.classList.remove('has-panel');return;}
   let html='';
   if(S.chant)html=chantHTML();
-  else if(S.result)html=S.result;
+  else if(S.result)html=S.result+(s.act==='nguyen'?(S.board?cardBoardHTML(S.board,C().card_choices):cardHistory(C())):'');
   else if(s.kind==='npc')html=talkBody(s.who);
   else if(s.kind==='look')html=top('👀',spotName(s).replace(/^\S+\s/,''))+`<p>${esc(LOOKS[s.look]||'')}</p>`;
   else{const a=actOf(s.act);if(!a){closePanel();return;}html=top(a.emoji,a.name,gain(a))+actBody(a);}
@@ -313,7 +317,12 @@ function panel(){
   if(S.chant)S.chant.el=null;
 }
 function closePanel(){if(S.chant?.state==='run')return;S.panel=null;S.result='';S.chant=null;stand();panel();}
-function showResult(emoji,title,text,body=null){S.result=top(emoji,title)+`<p class="cv-result">${body??esc(text)}</p><div class="cv-p-acts">${C()?.unlimited&&S.panel?.kind==='act'&&actOf(S.panel.act)?.ok?'<button type="button" class="btn cream small" data-cv="again">Làm thêm lần nữa</button>':''}<button type="button" class="btn primary small" data-cv="shut">Đóng</button></div>${S.panel?.act==='nguyen'?cardHistory(C()):''}`;panel();}
+function showResult(emoji,title,text,body=null){S.result=top(emoji,title)+`<p class="cv-result">${body??esc(text)}</p><div class="cv-p-acts">${C()?.unlimited&&S.panel?.kind==='act'&&actOf(S.panel.act)?.ok?'<button type="button" class="btn cream small" data-cv="again">Làm thêm lần nữa</button>':''}<button type="button" class="btn primary small" data-cv="shut">Đóng</button></div>`;panel();}
+function refreshBoard(board){
+  if(S.board!==board||!S.dlg?.open||S.panel?.act!=='nguyen')return;
+  const box=S.dlg.querySelector('.cv-card-board');if(box)box.outerHTML=cardBoardHTML(board,C().card_choices,box.dataset.withTabs==='true');
+  for(const tabs of S.dlg.querySelectorAll('.cv-card-tabs'))tabs.outerHTML=cardBoardTabs(board);
+}
 async function readOlderCards(){
   const pending=loadOlder(S.env.api,'','chua.cards',C()?.cards?.length||0);S.result='';panel();
   try{await pending;if(S.dlg?.open&&S.panel?.act==='nguyen')panel();}
@@ -338,7 +347,7 @@ async function doAct(id,extra={}){
     const [r]=await Promise.all([S.env.cmd('jr_chua_do',{act:id,...extra},{quiet:true}),sleep(still()?0:900)]);
     if(r?.message){const card=id==='nguyen'?C()?.cards?.at(-1):null;showResult(a.emoji,a.name,r.message,card?cardResult(r.message,card,C().card_choices):null);}else{stand();panel();}
     if(id==='khan')S.khan={who:'',what:''};
-    if(id==='nguyen'&&r?.message){S.card={...S.card,name:'',message:''};S.drawn=0;}
+    if(id==='nguyen'&&r?.message){S.card={...S.card,name:'',message:'',public:false};S.drawn=0;if(S.board){S.board.load('mine');S.board.load('public');}}
   }finally{S.busy=false;}
   if(id==='huong'||id==='nguyen'||id==='chuong')S.me.poseUntil=S.time+3;
 }
@@ -354,9 +363,14 @@ function act(kind,data){
     case'shut':closePanel();return;
     case'again':S.result='';stand();panel();return;
     case'older-cards':readOlderCards();return;
+    case'card-public':if(S.board){S.card.public=data.public==='true';panel();}return;
+    case'card-tab':if(S.board&&['mine','public'].includes(data.id)){S.board.tab=data.id;S.result='';panel();S.board.load(data.id);}return;
+    case'card-refresh':S.board?.load(S.board.tab);return;
+    case'card-more':S.board?.load(S.board.tab,true);return;
+    case'card-toggle':if(S.board)S.board.setPublic({id:data.id},data.public==='true');return;
     case'card-recipient':{S.card.recipient=data.id;const who=C().card_choices.recipients.find(x=>x.id===data.id);if(!who?.blessings.includes(S.card.blessing))S.card.blessing='';panel();return;}
     case'card-blessing':S.card.blessing=data.id;panel();return;
-    case'card-send':{const who=C().card_choices.recipients.find(x=>x.id===S.card.recipient);if(who?.blessings.includes(S.card.blessing))doAct('nguyen',{...S.card});return;}
+    case'card-send':{const who=C().card_choices.recipients.find(x=>x.id===S.card.recipient);if(who?.blessings.includes(S.card.blessing)){const payload={...S.card};if(!C().sharing)delete payload.public;doAct('nguyen',payload);}return;}
     case'do':doAct(data.act,data.act==='nguyen'?{wish:data.wish}:data.act==='khan'?{who:S.khan.who,what:S.khan.what}:{});return;
     case'who':{S.khan.who=data.id;const w=C().khan.who.find(x=>x.id===data.id);if(!w?.what.includes(S.khan.what))S.khan.what='';panel();return;}
     case'what':S.khan.what=data.id;panel();S.dlg.querySelector('.cv-panel [data-act="khan"]')?.scrollIntoView?.({block:'nearest'});return;
