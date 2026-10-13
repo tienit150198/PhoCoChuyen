@@ -9,7 +9,7 @@
  * Reduced motion: the player steps straight to where they tapped, nothing drifts, the chant's ring stays still
  * (the mõ lights up on the beat instead). */
 import {icon,escapeHTML as esc} from '../icons.js';
-import {visitStatus,cardComposer,cardHistory,spiritGain,actionDone,actionWhy} from './chua.js';
+import {visitStatus,cardComposer,cardHistory,cardResult,spiritGain,actionDone,actionWhy} from './chua.js';
 import {loadOlder} from '../archive.js';
 import {stylesheet} from '../lazy.js';
 import {figure,paintPlayer,CANVAS} from './look.js';
@@ -313,7 +313,7 @@ function panel(){
   if(S.chant)S.chant.el=null;
 }
 function closePanel(){if(S.chant?.state==='run')return;S.panel=null;S.result='';S.chant=null;stand();panel();}
-function showResult(emoji,title,text){S.result=top(emoji,title)+`<p class="cv-result">${esc(text)}</p><div class="cv-p-acts">${C()?.unlimited&&S.panel?.kind==='act'&&actOf(S.panel.act)?.ok?'<button type="button" class="btn cream small" data-cv="again">Làm thêm lần nữa</button>':''}<button type="button" class="btn primary small" data-cv="shut">Đóng</button></div>${S.panel?.act==='nguyen'?cardHistory(C()):''}`;panel();}
+function showResult(emoji,title,text,body=null){S.result=top(emoji,title)+`<p class="cv-result">${body??esc(text)}</p><div class="cv-p-acts">${C()?.unlimited&&S.panel?.kind==='act'&&actOf(S.panel.act)?.ok?'<button type="button" class="btn cream small" data-cv="again">Làm thêm lần nữa</button>':''}<button type="button" class="btn primary small" data-cv="shut">Đóng</button></div>${S.panel?.act==='nguyen'?cardHistory(C()):''}`;panel();}
 async function readOlderCards(){
   const pending=loadOlder(S.env.api,'','chua.cards',C()?.cards?.length||0);S.result='';panel();
   try{await pending;if(S.dlg?.open&&S.panel?.act==='nguyen')panel();}
@@ -336,7 +336,7 @@ async function doAct(id,extra={}){
   const box=S.dlg.querySelector('.cv-panel .cv-p-acts');if(box)box.innerHTML='<p class="cv-wait" aria-live="polite">…</p>';
   try{
     const [r]=await Promise.all([S.env.cmd('jr_chua_do',{act:id,...extra},{quiet:true}),sleep(still()?0:900)]);
-    if(r?.message)showResult(a.emoji,a.name,r.message);else{stand();panel();}
+    if(r?.message){const card=id==='nguyen'?C()?.cards?.at(-1):null;showResult(a.emoji,a.name,r.message,card?cardResult(r.message,card,C().card_choices):null);}else{stand();panel();}
     if(id==='khan')S.khan={who:'',what:''};
     if(id==='nguyen'&&r?.message){S.card={...S.card,name:'',message:''};S.drawn=0;}
   }finally{S.busy=false;}

@@ -21,7 +21,7 @@ await loadOlder({json:async url=>{archiveURL=url;return {rows:[{row:{day:1,text:
 assert.match(archiveURL,/kind=chua.cards&skip=40/);
 assert.match(ui.cardHistory({cards:[{day:2,text:'New private blessing'}]}),/New private blessing[\s\S]*Old private blessing/);
 syncOlder('temple-test-next');
-const choices={recipients:[{id:'cha_me',text:'cha mẹ',blessings:['may_man']}],blessings:[{id:'may_man',text:'may mắn'}]};
+const choices={recipients:[{id:'cha_me',text:'cha mẹ',blessings:['may_man']}],blessings:[{id:'may_man',text:'gặp nhiều may mắn'}]};
 const draft={recipient:'cha_me',blessing:'may_man',name:'<img src=x onerror=alert(1)>',message:'<script>evil()</script>'};
 const form=ui.cardComposer(choices,draft,true);
 assert.match(form,/maxlength="40"/);assert.match(form,/maxlength="140"/);
@@ -57,3 +57,22 @@ assert.equal(parent.covered,true);assert.equal(sound.at(-1),null);
 closeDonation();await pendingDonation;
 assert.equal(parent.covered,false);assert.equal(sound.at(-1),'san');assert.deepEqual(parent.me,{x:7,y:9});
 console.log('Temple repeat copy, private card composer, escaping, and unreachable movement passed.');
+
+// Exercise the actual English dictionary with Vietnamese user-authored words.
+globalThis.Node={ELEMENT_NODE:1,TEXT_NODE:3};globalThis.NodeFilter={SHOW_TEXT:4,SHOW_ELEMENT:1};
+globalThis.document={documentElement:{},body:{nodeType:1,closest(){return false;}},createTreeWalker(){return {nextNode(){return null;}}},title:''};
+globalThis.MutationObserver=class {observe(){}};
+globalThis.__mnlBoot={i18n:Promise.resolve(JSON.parse(readFileSync(new URL('../public/i18n/en.json',import.meta.url),'utf8')))};
+const {setLanguage}=await import('../public/js/v4/i18n.js');await setLanguage('en');
+const personal={recipient:'cha_me',blessing:'may_man',name:'Gia đình Lan',message:'Bình an & niềm vui',text:'Con cầu mong Gia đình Lan gặp nhiều may mắn. Bình an & niềm vui'};
+assert.equal(typeof ui.cardText,'function');
+const translated=ui.cardText(personal,choices);
+assert.match(translated,/May/);assert.match(translated,/have good luck/);
+assert.match(translated,/<span data-no-translate>Gia đình Lan<\/span>/);
+assert.match(translated,/<span data-no-translate>Bình an &amp; niềm vui<\/span>/);
+assert.doesNotMatch(translated,/Con cầu mong|gặp nhiều may mắn/);
+const result=ui.cardResult(`Bạn viết lên mảnh giấy đỏ, buộc vào hàng rào cạnh cổng tam quan. “${personal.text}” (tinh thần +3)`,personal,choices);
+assert.doesNotMatch(result,/Con cầu mong|tinh thần|gặp nhiều may mắn/);
+assert.match(result,/data-no-translate>Gia đình Lan/);
+assert.match(ui.cardText({text:'Lời nguyện cũ chưa có metadata'}),/Lời nguyện cũ chưa có metadata/);
+console.log('English generated card text is translated while Vietnamese user text is preserved.');

@@ -11,6 +11,7 @@ Vietnamese left on screen (build public/i18n/en.json first: python scripts/i18n_
     python scripts/browser_chua.py [out_dir] [--lang en]
 """
 import asyncio
+import json
 import sys
 from pathlib import Path
 
@@ -63,6 +64,7 @@ async def main():
     from playwright.async_api import async_playwright
     OUT.mkdir(parents=True, exist_ok=True)
     errors, problems, misses, sounds = [], [], set(), []
+    visible_temple_vi = []
     passes = [('en', 390, 844, False, 'kem', 6, True)] if EN else [
         ('vi', 390, 844, False, 'kem', 5, True), ('vi', 1280, 800, False, 'kem', 5, True), ('vi', 390, 844, True, 'dem', 6, False), ('vi', 1280, 800, False, 'kem', 5, False)]
     if ARCHIVE:
@@ -92,6 +94,15 @@ async def main():
                 async def shot(name, wait=450):
                     await page.wait_for_timeout(wait)
                     await page.screenshot(path=str(OUT / f'{tag}-{name}.png'))
+                    if lang == 'en':
+                        words = await page.evaluate("""()=>{const root=document.querySelector('.cv-sheet[open]');if(!root)return[];
+                          const out=[],walk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+                          for(let n=walk.nextNode();n;n=walk.nextNode()){const el=n.parentElement,t=n.textContent.trim();
+                            if(!t||el.closest('input,textarea,[data-no-translate]')||!el.getClientRects().length)continue;
+                            if(/[àáảãạăâèéẻẽẹêìíỉĩịòóỏõọôơùúủũụưỳýỷỹỵđ]/i.test(t))out.push(t);}
+                          return [...new Set(out)];}""")
+                        if words:
+                            visible_temple_vi.append(dict(screen=f'{tag}-{name}', text=words))
 
                 async def go(spot, wait=2600):
                     await page.evaluate('(id)=>__chua.go(id)', spot)
@@ -267,6 +278,8 @@ async def main():
     print('errors:', errs or 'none')
     if EN:
         print('untranslated:', sorted(m for m in misses) or 'none')
+        (OUT / 'visible-temple-vietnamese.json').write_text(json.dumps(visible_temple_vi, ensure_ascii=False, indent=2), encoding='utf-8')
+        print('visible temple Vietnamese:', sorted({text for row in visible_temple_vi for text in row['text']}) or 'none')
     sys.exit(1 if problems or errs else 0)
 
 

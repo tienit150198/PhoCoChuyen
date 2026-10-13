@@ -5,18 +5,31 @@
  * quick way. A server without the scene's fields (`more`, `khan`, `chant`) gets no way in, only the buttons. */
 import {escapeHTML as esc} from '../icons.js';
 import {olderRows,olderButton} from '../archive.js';
+import {t} from './i18n.js';
 
 export const actionDone=(c,a)=>!!a?.done&&!c?.unlimited;
 export const actionWhy=(c,a)=>actionDone(c,a)?'Hôm nay làm rồi':a.why;
 export const visitStatus=c=>c.unlimited?`Tinh thần ${Math.max(0,Math.min(100,c.spirit|0))}/100 · có thể làm lại`:`còn ${c.left|0}/${c.daily|0} việc hôm nay`;
 /** These private cards come only from the current player's server state. Never interpolate user text as HTML. */
-export function savedCards(cards=[]){
+export function cardText(card,choices){
+  const who=choices?.recipients?.find(x=>x.id===card.recipient),blessing=choices?.blessings?.find(x=>x.id===card.blessing);
+  if(card.wish||!who||!blessing)return esc(t(card.text||''));
+  const recipient=card.name?`<span data-no-translate>${esc(card.name)}</span>`:`<span>${esc(t(who.text))}</span>`;
+  return `<span>${esc(t('Con cầu mong'))}</span> ${recipient} <span>${esc(t(blessing.text))}.</span>${card.message?` <span data-no-translate>${esc(card.message)}</span>`:''}`;
+}
+/** Split the server-authored receipt around its exact card quote; never translate user-authored words. */
+export function cardResult(message,card,choices){
+  const quote=`“${card.text}”`,at=message.indexOf(quote);
+  if(at<0)return esc(t(message));
+  return `<span>${esc(t(message.slice(0,at)))}</span>“${cardText(card,choices)}”<span>${esc(t(message.slice(at+quote.length)))}</span>`;
+}
+export function savedCards(cards=[],choices){
   if(!cards.length)return '<p class="cv-card-empty">Chưa có bảng lời chúc. Viết bảng đầu tiên cho người thân nhé.</p>';
-  return `<details class="cv-saved" open><summary>Bảng lời chúc của bạn (${cards.length})</summary><ol class="cv-card-list">${cards.slice().reverse().map(c=>`<li class="cv-card"><b>${esc(c.text||'')}</b><small>Ngày ${c.day|0}</small></li>`).join('')}</ol></details>`;
+  return `<details class="cv-saved" open><summary>Bảng lời chúc của bạn (${cards.length})</summary><ol class="cv-card-list">${cards.slice().reverse().map(c=>`<li class="cv-card"><b>${cardText(c,choices)}</b><small>Ngày ${c.day|0}</small></li>`).join('')}</ol></details>`;
 }
 export function cardHistory(c){
   const cards=c.cards||[];
-  return savedCards([...olderRows('','chua.cards').slice().reverse(),...cards])+olderButton('','chua.cards',cards.length,cards.length>=40).replace('data-action="loadOlder"','data-cv="older-cards"');
+  return savedCards([...olderRows('','chua.cards').slice().reverse(),...cards],c.card_choices)+olderButton('','chua.cards',cards.length,cards.length>=40).replace('data-action="loadOlder"','data-cv="older-cards"');
 }
 export function cardComposer(choices,draft={},ok=true){
   const who=choices.recipients.find(x=>x.id===draft.recipient),valid=who?.blessings.includes(draft.blessing);
