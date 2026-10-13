@@ -214,8 +214,7 @@ def validate_task(t, original):
     kit.need(len(errors) == len(set(errors)) and set(errors) <= set(ids[:min(at + 1, len(ids))]), 'Nhật ký lỗi bưu gửi sai.')
     kit.need(t.get('mistakes') >= len(errors), 'Số lỗi bưu gửi sai.')
     kit.need(isinstance(t.get('lines'), list) and len(t['lines']) <= 24 and all(isinstance(x, str) and len(x) < 500 for x in t['lines']), 'Nhật ký bưu gửi sai.')
-    if t.get('status') == 'completed':
-        kit.need(at == len(steps), 'Chưa đủ chứng từ để hoàn thành bưu gửi.')
+    kit.need((t['stage'] == 'done') == (t.get('status') == 'completed'), 'Chưa đủ chứng từ để hoàn thành bưu gửi.')
 
 
 def validate_data(c):

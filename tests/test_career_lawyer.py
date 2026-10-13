@@ -126,3 +126,18 @@ class LawyerTests(unittest.TestCase):
         self.assertEqual(j.c['ext']['data']['active_days'],1)
         self.assertFalse(any(row.get('category')=='salary' for row in j.c['ops']['finance']['ledger']))
 
+
+    def test_carried_old_case_cannot_unlock_final_tier(self):
+        j=Journey('lawyer',slot=1,day=39)
+        d=j.c['ext']['data'];d.update(jobs=119,qualified=119,active_days=29,last_active_day=38)
+        j.c['day']=40
+        solve(j)
+        self.assertFalse(lw.public_data(j.c)['milestone']['earned'])
+        self.assertEqual(j.c['ext']['data']['last_good_task_day'],39)
+        j.state=json.loads(json.dumps(j.state));validate_state(j.state)
+
+    def test_final_tier_must_be_completed_without_corrections(self):
+        j=Journey('lawyer',slot=1,day=40)
+        d=j.c['ext']['data'];d.update(jobs=120,qualified=120,active_days=29,last_active_day=39)
+        j.act('ask');step(j,['signed','claim']);solve(j)
+        self.assertFalse(lw.public_data(j.c)['milestone']['earned'])

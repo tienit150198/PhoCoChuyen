@@ -31,7 +31,7 @@ RULE='Dùng thỏa thuận đã ký cùng biên bản có xác nhận; lời k�
 
 
 def initial():
-    return dict(v=1,jobs=0,qualified=0,active_days=0,last_active_day=0,earned=0,
+    return dict(v=1,jobs=0,qualified=0,active_days=0,last_active_day=0,last_good_task_day=0,earned=0,
                 today=dict(day=0,jobs=0,clean=0,earned=0),milestone=False)
 
 
@@ -99,9 +99,10 @@ def handle(s,c,name,p):
     d=c['ext']['data'];_today(c)
     clean=not t['failed'];bonus=max(2,len(t['needs']['steps'])-1-len(t['failed']))
     d['jobs']+=1;d['qualified']+=int(clean);d['earned']+=bonus
+    if clean:d['last_good_task_day']=max(d['last_good_task_day'],t['day'])
     if d['last_active_day']!=c['day']:d['active_days']+=1;d['last_active_day']=c['day']
     d['today']['jobs']+=1;d['today']['clean']+=int(clean);d['today']['earned']+=bonus
-    d['milestone']=d['qualified']>=120 and d['active_days']>=30 and d['last_active_day']>=40
+    d['milestone']=d['qualified']>=120 and d['active_days']>=30 and d['last_good_task_day']>=40
     t['stage']='done'
     kit.complete(s,c,t,bonus,'Hồ sơ có căn cứ, khoản yêu cầu được đối chiếu; người hướng dẫn tiếp nhận phương án.')
     return dict(correct=clean,celebrate=clean,message=f'Đã bàn giao hồ sơ. Thưởng hồ sơ {bonus} xu; lương ngày trả khi khép ca.')
@@ -143,7 +144,7 @@ def public_task(t):
 
 def public_data(c):
     d=copy.deepcopy(c['ext']['data'])
-    d['milestone']=dict(title='Hồ sơ vững vàng',qualified=d['qualified'],required_cases=120,active_days=d['active_days'],required_days=30,required_day=40,earned=d['qualified']>=120 and d['active_days']>=30 and d['last_active_day']>=40)
+    d['milestone']=dict(title='Hồ sơ vững vàng',qualified=d['qualified'],required_cases=120,active_days=d['active_days'],required_days=30,required_day=40,earned=d['qualified']>=120 and d['active_days']>=30 and d['last_good_task_day']>=40)
     return d
 
 
@@ -180,9 +181,9 @@ def validate_task(t,original):
 def validate_data(c):
     d=c['ext']['data'];base=initial()
     kit.need(isinstance(d,dict) and set(d)==set(base),'Sổ hồ sơ sai.')
-    for k in ('v','jobs','qualified','active_days','last_active_day','earned'):kit.integer(d.get(k),0,10**9)
-    kit.need(d['v']==1 and d['qualified']<=d['jobs'] and d['active_days']<=d['jobs'] and d['last_active_day']<=c['day'],'Thống kê hồ sơ sai.')
-    kit.need(type(d['milestone']) is bool and d['milestone']==(d['qualified']>=120 and d['active_days']>=30 and d['last_active_day']>=40),'Mốc hồ sơ sai.')
+    for k in ('v','jobs','qualified','active_days','last_active_day','last_good_task_day','earned'):kit.integer(d.get(k),0,10**9)
+    kit.need(d['v']==1 and d['qualified']<=d['jobs'] and d['active_days']<=d['jobs'] and d['last_active_day']<=c['day'] and d['last_good_task_day']<=c['day'],'Thống kê hồ sơ sai.')
+    kit.need(type(d['milestone']) is bool and d['milestone']==(d['qualified']>=120 and d['active_days']>=30 and d['last_good_task_day']>=40),'Mốc hồ sơ sai.')
     kit.need(isinstance(d['today'],dict) and set(d['today'])==set(base['today']),'Sổ ca sai.')
     for value in d['today'].values():kit.integer(value,0,10**9)
     kit.need(d['today']['clean']<=d['today']['jobs']<=d['jobs'] and d['today']['day']<=c['day'],'Sổ ca sai.')

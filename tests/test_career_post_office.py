@@ -196,5 +196,25 @@ class PostOfficeJourney(unittest.TestCase):
         self.assertEqual(j.c['ext']['data']['stats']['qualified'], 0)
 
 
+    def test_finished_progress_requires_completed_status_in_saves(self):
+        from game.engine import GameError, validate_state
+        j = self.journey(); done = solve(j)
+        for status in ('in_progress', 'cancelled'):
+            bad = copy.deepcopy(j.state)
+            task = bad['careers']['post_office']['tasks'][0]
+            task['status'] = status
+            bad['careers']['post_office']['active_task'] = task['id'] if status == 'in_progress' else None
+            with self.assertRaises(GameError): validate_state(bad)
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_cancelled_partial_progress_remains_loadable(self):
+        from game.engine import validate_state
+        j = self.journey(); j.act('ask')
+        st = j.task['needs']['steps'][0]
+        j.act('post_step', step=st['id'], value=j.task['_key'][st['id']])
+        j.task['status'] = 'cancelled'; j.c['active_task'] = None
+        validate_state(json.loads(json.dumps(j.state)))
+
+
 if __name__ == '__main__':
     unittest.main()
