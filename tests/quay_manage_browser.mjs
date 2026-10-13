@@ -30,7 +30,7 @@ api.command=async(action,p)=>{calls.push([action,JSON.parse(JSON.stringify(p))])
   if(action==='jr_quay_pause'){st.business.paused=p.on;st.business.status=p.on?'paused':'running';}
   if(action==='jr_quay_upgrade'){st.place=p.place;st.grow=st.grow.filter(g=>g.place!=='sap'&&g.place!==p.place);}
   api.dispatchEvent(new Event('state'));return {message:'OK'};};
-window.fixture={api,open:()=>openQuay({api,closeSheet(){},confirmAction:async(title,msg,label,money)=>{asks.push({title,msg,label,money});return true;}})};await fixture.open();
+window.fixture={api,open:()=>openQuay({api,ui:{},closeSheet(){},confirmAction:async(title,msg,label,money)=>{asks.push({title,msg,label,money});return true;}})};await fixture.open();
 </script>`;
 const server=createServer(async(req,res)=>{try{if(req.url==='/'){res.setHeader('Content-Type','text/html');res.end(html);return;}const path=resolve(root,'public','.'+decodeURIComponent(req.url.split('?')[0]));if(!path.startsWith(resolve(root,'public')))throw Error('path');res.setHeader('Content-Type',({'.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml'})[extname(path)]||'application/octet-stream');res.end(await readFile(path));}catch{res.statusCode=404;res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));await mkdir(out,{recursive:true});

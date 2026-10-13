@@ -525,21 +525,31 @@ def action(s: dict, name: str, p: dict) -> dict:
         from .staff_life import tick_quay as tick_staff
         tick_staff(s, st)
         return result
+    if name == 'jr_quay_reserve':
+        need(set(p) <= {'stall', 'amount'}, 'Thao tác vốn giữ lại không hợp lệ.')
+        st['reserve'] = e.integer(p.get('amount'), 0, MONEY_MAX)
+        return dict(message=f'Đã lưu vốn giữ lại khi thu két: {_fmt(st["reserve"])} xu.')
     if name == 'jr_quay_till':
         need(set(p) <= {'stall', 'to'} and p.get('to', 'wallet') in ('wallet', 'fund'), 'Thao tác két không hợp lệ.')
         amount = st['till']
         was = st['left'] > LEFT_DAYS
         st['left'] = 0
         if amount <= 0:
-            return dict(message='Két trống. Quầy vẫn mở bình thường.' if not was else 'Quầy mở lại rồi!')
-        st['till'] = 0
+            return dict(message='Két trống. Quầy vẫn mở bình thường.' if not was else 'Quầy mở lại rồi!', collected=0, retained=0)
         if p.get('to') == 'fund':
-            st['fund'] = min(MONEY_MAX, st['fund'] + amount)
+            amount = min(amount, MONEY_MAX - st['fund'])
+            st['fund'] += amount
+            st['till'] -= amount
             _log(st, day, 'Két vào vốn quầy', 0)
-            return dict(message=f'Đã cất {_fmt(amount)} xu vào vốn quầy.')
-        _jr()._wallet(j, amount, KIND_OUT, f'Thu két {st["name"]}', st['trade'])
+            return dict(message=f'Đã cất {_fmt(amount)} xu vào vốn quầy.' + (f' Còn {_fmt(st["till"])} xu trong két vì vốn đã đầy.' if st['till'] else ''), collected=0, retained=amount)
+        amount = collectable_till(st)
+        retained = st['till'] - amount
+        st['fund'] += retained
+        st['till'] = 0
+        if amount:
+            _jr()._wallet(j, amount, KIND_OUT, f'Thu két {st["name"]}', st['trade'])
         _log(st, day, 'Thu két về ví', amount)
-        return dict(message=f'💰 Thu két: +{_fmt(amount)} xu vào ví.')
+        return dict(message=f'💰 Thu két: +{_fmt(amount)} xu vào ví.' + (f' Giữ lại {_fmt(retained)} xu vào vốn quầy.' if retained else ''), collected=amount, retained=retained)
     if name == 'jr_quay_fund':
         need(set(p) <= {'stall', 'amount'}, 'Thao tác vốn không hợp lệ.')
         amount = e.integer(p.get('amount'), -MONEY_MAX, MONEY_MAX)
@@ -784,6 +794,11 @@ def catalogue() -> dict:
                 month=MONTH_DAYS, wage_pct=[WAGE_MIN_PCT, WAGE_MAX_PCT], **_qs().catalogue())
 
 
+def collectable_till(st: dict) -> int:
+    """Only top up the optional operating floor; existing capital stays in the stall."""
+    return max(0, st['till'] - max(0, st.get('reserve', 0) - st['fund']))
+
+
 def _stall_view(s: dict, st: dict) -> dict:
     P = PLACES[st['place']]
     day = int(s['journey']['life_day'])
@@ -794,6 +809,8 @@ def _stall_view(s: dict, st: dict) -> dict:
                case=dict(lost=st['case']['lost'], all=st['case']['all'], rep=st['case']['rep']) if st['case'] else None,
                hist=[[x['d'], x['n'], x['net']] for x in st['hist']], today=fc, sell=sell_back(st),
                value=shift_value(st['place'], st['trade']), **_qs().stall_view(s, st))
+    out['reserve'] = st.get('reserve', 0)
+    out['collectable_till'] = collectable_till(st)
     out['grow'] = [dict(place=k, cost=upgrade_cost(st, k)) for k in bigger(st)]   # 🏗️ Mở rộng quầy (jr_quay_upgrade)
     for g in out['grow']:   # #303: the button greyed with the refusal's own words (a view field, never saved)
         from .business_progression import open_requirement
@@ -896,6 +913,7 @@ def validate(s: dict) -> None:
         need(_text(st['name'], NAME_MAX) and 1 <= len(st['name']) and st['name'] == st['name'].strip())
         for k in ('opened', 'day'):
             need(_int(st[k], 0, 10**6))
+        need(_int(st.get('reserve', 0), 0, MONEY_MAX))
         for k in ('fund', 'till', 'due'):
             need(_int(st[k], 0, MONEY_MAX))
         need(_int(st['left'], 0, 10**6) and _int(st['rep'], 90, 110) and _int(st['theft'], 0, 10**6))

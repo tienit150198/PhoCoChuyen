@@ -33,13 +33,13 @@ import {qtyBox,QTY} from '../qty-input.js';
 // "Tất cả" (F#290): lắp hết thiết bị, thuê đủ chỗ, reusing the per-item commands one by one.
 import {buyAllPlan,quayHave,hireAllPlan,runAll} from './select-all.js';
 // F#295/#296: 🔁 Nhập lại như lần trước, 👛 thiếu thì lấy từ ví, 📋 Quản lý chung (pure plans, tests/quay_manage.mjs).
-import {againPlan,shortOf,groupStalls,stallLine,againAll,tillAll,openAll} from './quay-manage.js';
+import {againPlan,shortOf,groupStalls,stallLine,againAll,tillAll,openAll,collectableTill} from './quay-manage.js';
 // Clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded so the node tests can load this file.
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
 
 const PAGE_SIZE=12;
 const S={page:0,md:{},lk:{},run:null,anchor:'',anchorAt:0,dlg:null,env:null,view:'list',tab:'mine',pick:null,busy:false,flash:null,listening:false,open:{},help:{},wage:{},hire:null,loading:false,to:{}};
-S.search={};S.stockDraft={};S.visit=null;S.visitor=null;S.visitorDraft={};S.syncFailed=false;S.poller=null;S.account=null;
+S.search={};S.reserveDraft={};S.stockDraft={};S.visit=null;S.visitor=null;S.visitorDraft={};S.syncFailed=false;S.poller=null;S.account=null;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
@@ -80,7 +80,7 @@ function dialog(){
     if(el.dataset.why){e.preventDefault();whyTap(el);return;}   // dimmed with a reason: say why, send nothing
     e.preventDefault();S.anchor=selOf(el);S.anchorAt=performance.now();onClick(el.dataset.qy,el.dataset,el);
   });
-  d.addEventListener('input',e=>{const t=e.target;if(t.name==='qy-price'){const st=stallOf(t.dataset.id);if(st){menuDraft(st).p[t.dataset.k]=t.value;render();}return;}if(t.name==='qy-search'){S.search[t.dataset.id]=t.value;render();return;}if(t.name==='qy-stock'){(S.stockDraft[t.dataset.id]??={})[t.dataset.k]=t.value;render();return;}if(t.name==='qy-name'&&S.pick)S.pick.name=t.value;
+  d.addEventListener('input',e=>{const t=e.target;if(t.name==='qy-reserve'){S.reserveDraft[t.dataset.id]=t.value;return;}if(t.name==='qy-price'){const st=stallOf(t.dataset.id);if(st){menuDraft(st).p[t.dataset.k]=t.value;render();}return;}if(t.name==='qy-search'){S.search[t.dataset.id]=t.value;render();return;}if(t.name==='qy-stock'){(S.stockDraft[t.dataset.id]??={})[t.dataset.k]=t.value;render();return;}if(t.name==='qy-name'&&S.pick)S.pick.name=t.value;
     if(t.name==='qy-sign'){const st=stallOf(t.dataset.id);if(st){lookDraft(st).name=t.value;paintCanvases();}}});
   d.addEventListener('submit',e=>e.preventDefault());
   // the spacer under the page goes away as the player scrolls back up (never while a render is holding the spot)
@@ -94,7 +94,7 @@ function dialog(){
   S.dlg=d;return d;
 }
 export async function openQuay(env,data={}){
-  const account=JSON.stringify([env.api.account?.username||'',env.api.csrf||'']);if(account!==S.account){S.md={};S.lk={};S.search={};S.stockDraft={};S.visitorDraft={};S.returnRoute=null;env.ui.businessReturn=false;S.account=account;}
+  const account=JSON.stringify([env.api.account?.username||'',env.api.csrf||'']);if(account!==S.account){S.md={};S.lk={};S.search={};S.reserveDraft={};S.stockDraft={};S.visitorDraft={};S.returnRoute=null;env.ui.businessReturn=false;S.account=account;}
   S.env=env;
   if(S.syncApi!==env.api){
     S.sync?.dispose();S.syncApi=env.api;
@@ -131,10 +131,10 @@ async function send(action,payload={}){
 /** The same command for each payload, one at a time (select-all.js runAll); stops at the first refusal, whose
  * message comes back as `why`. One busy spell and one flash for the whole run. */
 async function sendAll(payloads,action){
-  S.busy=true;render();let why='';
+  S.busy=true;render();let why='',collected=0,retained=0;
   try{
-    const r=await runAll(payloads,async p=>{try{return await S.sync.command(action,p);}catch(e){why=e.quiet?'':(e.message||'');return null;}});
-    return {...r,why};
+    const r=await runAll(payloads,async p=>{try{const result=await S.sync.command(action,p);collected+=Number(result?.collected)||0;retained+=Number(result?.retained)||0;return result;}catch(e){why=e.quiet?'':(e.message||'');return null;}});
+    return {...r,why,collected,retained};
   }finally{S.busy=false;render();}
 }
 async function preparePayment(){
@@ -206,7 +206,7 @@ async function onClick(op,data,el){
       S.flash={text:r.done===r.total?`🔁 Đã nhập lại cho ${r.done} quầy.`:`🔁 Đã nhập lại ${r.done}/${r.total} quầy.${r.why?' '+r.why:''}`,kind:r.done?'good':'bad'};render();return;}
     case'bulkTill':{if(S.busy)return;const plan=tillAll(groupOf(data.g));if(!plan.steps.length)return;
       const r=await sendAll(plan.steps,'jr_quay_till');
-      S.flash={text:r.done===r.total?`💰 Đã thu két ${r.done} quầy: +${xu(plan.total)} vào ví.`:`💰 Đã thu két ${r.done}/${r.total} quầy.${r.why?' '+r.why:''}`,kind:r.done?'good':'bad'};render();return;}
+      S.flash={text:r.done===r.total?`💰 Đã thu két ${r.done} quầy: +${xu(r.collected)} vào ví.${r.retained?` Giữ lại ${xu(r.retained)} vào vốn quầy.`:''}`:`💰 Đã thu két ${r.done}/${r.total} quầy.${r.why?' '+r.why:''}`,kind:r.done?'good':'bad'};render();return;}
     case'bulkOpen':{if(S.busy)return;const plan=openAll(groupOf(data.g));if(!plan.steps.length)return;
       const r=await sendAll(plan.steps,'jr_quay_pause');
       S.flash={text:r.done===r.total?`▶️ ${r.done} quầy đã mở bán lại.`:`▶️ ${r.done}/${r.total} quầy đã mở bán lại.${r.why?' '+r.why:''}`,kind:r.done?'good':'bad'};render();return;}
@@ -231,6 +231,10 @@ async function onClick(op,data,el){
       }return;}
     case'more':S.open[data.id]=S.open[data.id]===data.part?'':data.part;render();return;
     case'till':send('jr_quay_till',{stall:data.id,...(data.to?{to:data.to}:{})});return;
+    case'reservesave':{const st=stallOf(data.id);if(!st)return;
+      const raw=String(S.reserveDraft[st.id]??st.reserve??0).trim(),amount=Number(raw);
+      if(!raw||!Number.isSafeInteger(amount)||amount<0||amount>1e8){S.flash={text:'Vốn giữ lại phải là số nguyên từ 0 đến 100.000.000 xu.',kind:'bad'};render();return;}
+      send('jr_quay_reserve',{stall:st.id,amount}).then(r=>{if(r&&String(S.reserveDraft[st.id]??st.reserve??0).trim()===raw){delete S.reserveDraft[st.id];render();}});return;}
     case'fund':{const amount=num(`#qy-fund-${data.id}`);if(!amount){S.flash={text:'Nhập số xu nhé.',kind:'bad'};render();return;}
       send('jr_quay_fund',{stall:data.id,amount:data.sign==='-'?-Math.abs(amount):Math.abs(amount)});return;}
     case'order':send('jr_quay_order',{stall:data.id,level:data.level});return;
@@ -576,6 +580,9 @@ function fundPart(st){
   return `<div class="qy-part"><p class="qy-line">Vốn quầy <b>${xu(st.fund)}</b> ${helpBtn('fund')}</p>
     ${helpText('fund','Tiền hàng, lương, điện, phí online, thuê chỗ, vật tư, bảo vệ và thuế lấy từ két trước, thiếu mới lấy vốn quầy. Góp vốn dùng ví trước, thiếu mới lấy tài khoản ngân hàng; không dùng thẻ tín dụng. Xem từng khoản trong Sổ quầy & an toàn. Chi phí chưa trả hiện trên thẻ quầy và tạm dừng quầy; chủ chọn Đóng tiền để trả.')}
     ${helpText('fund','Muốn góp vốn bằng quỹ chung: rút từ quỹ chung về ví ở Ngân hàng, rồi Góp vào vốn quầy.')}
+    <div class="qy-fund"><label class="bk-field"><span>Vốn giữ lại khi thu két</span><input type="number" inputmode="numeric" min="0" max="100000000" step="1" name="qy-reserve" data-id="${st.id}" value="${esc(S.reserveDraft[st.id]??st.reserve??0)}"></label>${btn('Lưu','reservesave',{id:st.id},'primary')}</div>
+    <p class="qy-muted">Khi thu két, chuyển tiền vào vốn cho đủ mức này, phần còn lại về ví. Lưu mức giữ lại chưa chuyển tiền. Đặt 0 để thu toàn bộ két.</p>
+    <p class="qy-line">Thu két hiện tại: ${xu(collectableTill(st))} về ví${st.till>collectableTill(st)?`, ${xu(st.till-collectableTill(st))} vào vốn quầy`:''}.</p>
     <div class="qy-fund"><label class="bk-field"><span>Số xu</span>${qtyBox({value:50,min:1,max:1e9,label:'Số xu',attrs:`id="qy-fund-${st.id}"`})}</label>
       ${btn('Góp vào','fund',{id:st.id,sign:'+'},'primary')}${btn('Rút ra','fund',{id:st.id,sign:'-'},'ghost')}</div>
     <div class="bk-actions">${btn('Két vào vốn','till',{id:st.id,to:'fund'},'ghost',st.till?'':'Két đang trống')}${btn(`Sang nhượng · ${xu(st.sell)}`,'sell',{id:st.id},'danger')}</div></div>`;

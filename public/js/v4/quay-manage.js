@@ -57,10 +57,13 @@ export function againAll(stalls,have){
   return {steps,total,short,skip};
 }
 
-/** 💰 Thu két: the counters whose till holds something. */
+/** Preview supplied by the server; old saves without the new fields still collect their whole till. */
+export const collectableTill=st=>st?.collectable_till!=null?n(st.collectable_till):Math.max(0,n(st?.till)-Math.max(0,n(st?.reserve)-n(st?.fund)));
+
+/** 💰 Thu két: include cash retained into capital, even when nothing reaches the wallet. */
 export function tillAll(stalls){
   const list=(stalls||[]).filter(st=>n(st.till)>0);
-  return {steps:list.map(st=>({stall:st.id})),total:list.reduce((a,st)=>a+n(st.till),0)};
+  return {steps:list.map(st=>({stall:st.id})),total:list.reduce((a,st)=>a+collectableTill(st),0)};
 }
 
 /** ▶️ Mở bán: the counters their owner paused (staff sell again; unpaid costs or checks still keep a counter shut). */
