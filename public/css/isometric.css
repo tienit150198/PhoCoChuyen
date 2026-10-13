@@ -19,6 +19,8 @@ html[data-game="isometric"] {
   --iso-focus: #2f604c;
   --iso-nav-h: 78px;
   --iso-scene-h: 60px;
+  /* Shared with the nearby-speech dock so it clears the expanded camera controls. */
+  --iso-town-camera-bottom: 104px;
 }
 
 html[data-game="isometric"][data-theme="dem"] {
@@ -645,7 +647,7 @@ html[data-game="isometric"] {--iso-nav-h:72px;}
 .iso-scene {left:max(24px,var(--safe-l));bottom:calc(20px + var(--safe-b));transform:none;max-width:320px;min-height:56px;gap:8px;}
 .iso-scene-copy small {display:block;}
 .iso-scene-symbol {display:none;}
-.iso-camera {bottom:calc(104px + var(--safe-b));display:block;}
+.iso-camera {bottom:calc(var(--iso-town-camera-bottom) + var(--safe-b));display:block;}
 .iso-camera-options {display:grid;grid-template-columns:repeat(2,44px);gap:7px;}
 .iso-camera-toggle {display:none;}
 .iso-chat {position:absolute;right:max(24px,var(--safe-r));bottom:calc(22px + var(--safe-b));display:flex;align-items:center;gap:10px;min-height:54px;min-width:176px;padding:8px 14px;background:var(--iso-paper);border:1px solid var(--iso-seam);border-radius:18px;box-shadow:var(--iso-lift);text-align:left;}
@@ -663,9 +665,10 @@ html[data-game="isometric"] .town-presence-status[data-connected="true"] {color:
 @media (hover:hover) {.iso-chat:hover {background:var(--iso-paper-top);border-color:var(--iso-wood);}}
 @media (pointer:coarse), (max-width:699px) {.iso-key-hint {display:none;}}
 @media (min-width:700px) and (max-width:1100px) and (min-height:521px) {
+  html[data-game="isometric"] {--iso-town-camera-bottom:206px;}
   .iso-scene {bottom:calc(128px + var(--safe-b));max-width:300px;}
   .iso-chat {bottom:calc(130px + var(--safe-b));}
-  .iso-camera {bottom:calc(206px + var(--safe-b));}
+  .iso-camera {bottom:calc(var(--iso-town-camera-bottom) + var(--safe-b));}
   .iso-key-hint {bottom:calc(194px + var(--safe-b));}
   html[data-game="isometric"] .iso-movement[data-mode="town"] {bottom:calc(var(--iso-nav-h) + var(--iso-scene-h) + 70px + var(--safe-b));}
   html[data-game="isometric"][data-scene-mode="work"] .iso-scene {bottom:calc(104px + var(--safe-b));}
@@ -716,7 +719,8 @@ html[data-game="isometric"] .town-presence-status[data-connected="true"] {color:
 
 /* A single labelled camera handle keeps compact screens open for walking. */
 @media (max-width:699px), (max-height:520px) {
-  html[data-game="isometric"] #isoHUD .iso-camera {display:block;right:12px;bottom:calc(184px + var(--safe-b));z-index:35;}
+  html[data-game="isometric"] {--iso-town-camera-bottom:184px;}
+  html[data-game="isometric"] #isoHUD .iso-camera {display:block;right:12px;bottom:calc(var(--iso-town-camera-bottom) + var(--safe-b));z-index:35;}
   .iso-camera-toggle {display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:60px;min-height:52px;padding:5px;border:1px solid var(--iso-seam);border-radius:14px;background:var(--iso-paper);color:var(--iso-ink);box-shadow:var(--iso-lift);font-size:9px;font-weight:700;}
   .iso-camera-toggle[aria-expanded="true"] {background:var(--iso-leaf-soft);color:var(--iso-leaf);}
   .iso-camera-options {display:none;position:absolute;right:calc(100% + 8px);bottom:0;gap:8px;padding:8px;border:1px solid var(--iso-seam);border-radius:16px;background:var(--iso-paper-top);box-shadow:var(--iso-lift);}
@@ -724,8 +728,9 @@ html[data-game="isometric"] .town-presence-status[data-connected="true"] {color:
   html[data-game="isometric"][data-scene-mode="work"] #isoHUD .iso-camera {bottom:calc(242px + var(--safe-b));}
 }
 @media (max-height:520px) and (orientation:landscape) {
+  html[data-game="isometric"] {--iso-town-camera-bottom:84px;}
   html[data-game="isometric"] #isoHUD .iso-camera,
-  html[data-game="isometric"][data-scene-mode="work"] #isoHUD .iso-camera {bottom:calc(84px + var(--safe-b));}
+  html[data-game="isometric"][data-scene-mode="work"] #isoHUD .iso-camera {bottom:calc(var(--iso-town-camera-bottom) + var(--safe-b));}
   .iso-camera-options {grid-template-columns:repeat(4,44px);right:calc(100% + 8px);bottom:36px;}
   html[data-game="isometric"][data-scene-mode="work"] #isoHUD .iso-camera {left:calc(50% - 30px);right:auto;top:70px;bottom:auto;}
   html[data-game="isometric"][data-scene-mode="work"] .iso-camera-options {right:0;top:calc(100% + 8px);bottom:auto;}
