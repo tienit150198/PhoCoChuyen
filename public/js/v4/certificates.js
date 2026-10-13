@@ -23,6 +23,7 @@ export function certCss(){
 const K=api=>api.content?.journey?.certs||null;
 const placeOf=(api,cid)=>{const m=api.content.catalogue.find(x=>x.id===cid);return m?(m.place||m.short):cid;};
 const held=rec=>!!(rec&&rec.earned_day!=null);
+const allowsSelf=g=>(g.allowed_modes||['class','self']).includes('self');
 /** Default personal payment for tuition; null shuts the paid class and offers free self-study. */
 export function feePay(J,fee){
   return personalPayment(J,fee);
@@ -163,15 +164,16 @@ function paperCard(env,k){
   const J=api.state.journey,fee=g.retake_fee,how=feePay(J,fee),poor=!how&&!paymentChoices(J,fee).some(x=>x.ok);
   const view=P.passed&&held(J.certificates?.[g.id])?btn('🎓 Xem giấy chứng nhận','jrCertDiploma',{cert:g.id},'cream'):'';
   // A wallet short of the review class: the free self-study comes first and is the main button.
-  const self=btn(`📖 Tự học miễn phí, thi từ Ngày ${fmt(J.life_day+k.self_days)}`,'jrCertEnrol',{cert:g.id,mode:'self'},poor?'primary':'cream');
+  const self=allowsSelf(g)?btn(`📖 Tự học miễn phí, thi từ Ngày ${fmt(J.life_day+k.self_days)}`,'jrCertEnrol',{cert:g.id,mode:'self'},poor?'primary':'cream'):'';
   const cls=poor?`<button type="button" class="btn ghost" disabled>📚 Ôn & thi lại ngay · ${fmt(fee)} xu<small class="ct-why">${esc(shortLine(J,fee))}</small></button>`
     :`<button type="button" class="btn primary" data-action="jrCertEnrol" data-cert="${esc(g.id)}" data-mode="class">📚 Ôn & thi lại ngay · ${fmt(fee)} xu</button>`;
-  const again=P.passed?view+againButtons(api,g):J.study?'':poor?self+cls:cls+btn(`📖 Tự học, thi từ Ngày ${fmt(J.life_day+k.self_days)}`,'jrCertEnrol',{cert:g.id,mode:'self'},'cream');
+  const again=P.passed?view+againButtons(api,g):J.study?'':poor?self+cls:cls+self;
   return `<section class="card ct-result ${P.passed?'good':'bad'}"><span class="eyebrow">Bài thi gần nhất · Ngày ${fmt(P.day)}</span>
     <h3>${g.emoji} ${esc(g.name)}: ${P.passed?'Đạt':'Chưa đạt'}</h3>
     <div class="ct-score"><b>${P.score}</b><span>điểm · đúng ${P.right}/${k.draw} câu</span></div>
     ${P.passed&&g.perk?`<p class="small">🎁 ${esc(g.perk)}</p>`:P.passed?`<p class="small">Tỷ lệ được nhận +${k.bonus}% (tối đa ${k.cap}%) ở ${g.careers.map(cid=>esc(placeOf(api,cid))).join(', ')} khi điểm phỏng vấn chưa đủ 60.</p>`
       :`<p class="small">Cần đúng ${k.pass_mark}/${k.draw} câu. Xem lời giải bên dưới rồi thi lại: mỗi lần là một đề khác, vẫn có 💡 gợi ý.</p>`}
+    ${g.business_level&&!P.passed?'<p class="small muted">Học phí ôn gồm 1 lần thi; chỉ thu khi đăng ký, không thu thêm khi trả lời câu hỏi.</p>':''}
     ${again?`<div class="ct-actions">${again}</div>`:''}
     <details class="ct-box"${!P.passed&&bad.length?' open':''}><summary>Xem lời giải (${bad.length?`${bad.length} câu sai`:'đúng hết'})</summary>${list}</details></section>`;
 }
@@ -182,16 +184,18 @@ const shortLine=paymentShortfall;
 function groupCard(env,k,g,focus){
   const {api}=env,J=api.state.journey,r=J.certificates?.[g.id],st=J.study,has=held(r);
   const fee=r?.attempts?g.retake_fee:g.fee,max=r&&r.best>=100;
+  const prerequisite=k.groups.find(x=>x.id===g.prerequisite),locked=prerequisite&&!held(J.certificates?.[prerequisite.id]);
   let actions='';
   if(st?.cert===g.id)actions=`<p class="small muted">Đang học khóa này (ở trên).</p>`;
   else if(st)actions=`<p class="small muted">Đang học một khóa khác. Thi xong hoặc bỏ khóa đó rồi đăng ký tiếp nhé.</p>`;
   else if(max)actions=`<p class="small ct-good">Điểm tối đa rồi. Giỏi quá!</p>`;
+  else if(locked)actions=`<p class="small">Cần đỗ ${esc(prerequisite.name)} trước khi đăng ký.</p>${btn('📖 Học '+esc(prerequisite.short),'jrCerts',{cert:prerequisite.id},'cream')}`;
   else{
     // The chosen source cannot pay: the class is shut with what is missing, and free
     // self-study is the first, main button.
     const how=feePay(J,fee),poor=!how&&!paymentChoices(J,fee).some(x=>x.ok);
     const cls=`<button type="button" class="btn ${poor?'ghost':'primary'} ct-big"${poor?' disabled':` data-action="jrCertEnrol" data-cert="${esc(g.id)}" data-mode="class"`}><span>📚 ${r?.attempts?'Lớp ôn':'Lớp cấp tốc'} · ${fmt(fee)} xu</span><small${poor?' class="ct-why"':''}>${poor?esc(shortLine(J,fee)):`${how==='card'?`Ví còn ${fmt(Math.max(0,J.wallet))} xu: quẹt thẻ · `:''}${k.class_days?`Thi từ Ngày ${fmt(J.life_day+k.class_days)}`:'Học xong thi ngay hôm nay'}`}</small></button>`;
-    const self=`<button type="button" class="btn ${poor?'primary':'cream'} ct-big" data-action="jrCertEnrol" data-cert="${esc(g.id)}" data-mode="self"><span>📖 Tự học · miễn phí</span><small>Thi từ Ngày ${fmt(J.life_day+k.self_days)}${k.self_days===1?' (ngày mai)':` (còn ${k.self_days} ngày)`}</small></button>`;
+    const self=allowsSelf(g)?`<button type="button" class="btn ${poor?'primary':'cream'} ct-big" data-action="jrCertEnrol" data-cert="${esc(g.id)}" data-mode="self"><span>📖 Tự học · miễn phí</span><small>Thi từ Ngày ${fmt(J.life_day+k.self_days)}${k.self_days===1?' (ngày mai)':` (còn ${k.self_days} ngày)`}</small></button>`:'';
     actions=`<div class="ct-actions">${poor?self+cls:cls+self}</div>`;
   }
   if(has)actions=btn('🎓 Xem giấy chứng nhận','jrCertDiploma',{cert:g.id},'cream small ct-dip')+actions;
@@ -199,7 +203,8 @@ function groupCard(env,k,g,focus){
   return `<article class="jr-card ct-group${focus?' focus':''}${has?' earned':''}" id="ct-${esc(g.id)}"><div class="ct-top"><span class="ct-emoji" aria-hidden="true">${g.emoji}</span><div class="grow"><h3>${esc(g.name)}</h3><small class="muted">${esc(g.issuer)}</small></div></div>
     <div class="ct-status">${status}</div>
     <p class="small">${esc(g.intro)}</p>
-    <p class="small muted">Dùng cho: ${g.careers.filter(cid=>api.state.careers[cid]).map(cid=>esc(placeOf(api,cid))).join(', ')}</p>${g.perk?`<p class="small">🎁 ${esc(g.perk)}</p>`:''}
+    ${g.careers.length?`<p class="small muted">Dùng cho: ${g.careers.filter(cid=>api.state.careers[cid]).map(cid=>esc(placeOf(api,cid))).join(', ')}</p>`:''}${g.perk?`<p class="small">🎁 ${esc(g.perk)}</p>`:''}
+    ${g.business_level?`<p class="small muted">${r?.attempts?'Học phí ôn':'Học phí'} ${fmt(fee)} xu, gồm 1 lần thi. Chỉ thu khi đăng ký; trả lời bài thi không mất thêm phí. Thi lại bằng nửa học phí hiện hành, làm tròn lên.</p>`:''}
     ${actions}</article>`;
 }
 
@@ -213,7 +218,7 @@ export function certsView(env){
   const st=J.study,sg=st&&k.groups.find(x=>x.id===st.cert);
   const focus=ui.certFocus&&k.groups.some(g=>g.id===ui.certFocus)?ui.certFocus:null;
   const order=[...k.groups].sort((a,b)=>(b.id===focus)-(a.id===focus));
-  const lead=`Đề ngắn ${k.draw} câu, đúng ${k.pass_mark} là đạt, được mở sách và có 💡 gợi ý. Có chứng chỉ thì khi phỏng vấn chưa đủ điểm vẫn thêm ${k.bonus}% cơ hội được nhận. Chứng chỉ có dấu 🎁 thì mở thêm món mới ở chỗ làm.`;
+  const lead=`Đề ngắn ${k.draw} câu, đúng ${k.pass_mark} là đạt, được mở sách và có 💡 gợi ý. Chứng chỉ xin việc thêm ${k.bonus}% cơ hội được nhận khi phỏng vấn chưa đủ điểm. Chứng chỉ có dấu 🎁 mở quyền lợi ghi ở từng khóa; chứng chỉ kinh doanh mở thêm quầy.`;
   return head(title,esc(lead))+`<div class="sheet-body jr-body ct-body">
     ${sg?studyCard(env,k,sg,st):''}${paperCard(env,k)}
     <h3 class="jr-sub">Các chứng chỉ · ví còn ${fmt(J.wallet)} xu</h3>
@@ -230,10 +235,11 @@ export async function certAction(action,data,el,env){
       document.getElementById('sheet')?.scrollTo?.(0,0);return true;
     case'jrCertEnrol':{
       const g=k?.groups.find(x=>x.id===data.cert);if(!g)return true;
+      if(!(g.allowed_modes||['class','self']).includes(data.mode))return true;
       const payload={cert:g.id,mode:data.mode};if(ui.certCareer&&g.careers.includes(ui.certCareer))payload.career=ui.certCareer;
       if(data.mode==='class'){
         const r=J.certificates?.[g.id],fee=r?.attempts?g.retake_fee:g.fee;
-        const how=await confirmPurchase(env,{title:`Đăng ký ${r?.attempts?'lớp ôn':'lớp cấp tốc'}?`,message:`${g.name}: học phí ${fmt(fee)} xu. ${k.class_days?`Bài thi mở từ Ngày ${J.life_day+k.class_days}.`:'Học xong vào thi luôn hôm nay.'}`,label:`Đóng ${fee} xu`,cost:fee});
+        const how=await confirmPurchase(env,{title:`Đăng ký ${r?.attempts?'lớp ôn':'lớp cấp tốc'}?`,message:`${g.name}: học phí ${fmt(fee)} xu.${g.business_level?' Học phí gồm 1 lần thi, chỉ thu khi đăng ký; trả lời câu hỏi không mất thêm phí.':''} ${k.class_days?`Bài thi mở từ Ngày ${J.life_day+k.class_days}.`:'Học xong vào thi luôn hôm nay.'}`,label:`Đóng ${fee} xu`,cost:fee});
         if(!how)return true;
         payload.pay=how;
       }

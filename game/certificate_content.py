@@ -11,8 +11,11 @@ Shapes:
 * GROUPS: {id, emoji, name, short, issuer, careers, fee, intro, notes[str],
   practice[{text, options[{id, label}], answer, why}], bank[same, plus id]},
   optional hire=False + perk (a craft certificate for a job without an interview: the perk replaces the hire bonus).
+  Business groups additionally declare allowed_modes, prerequisite, business_level and level_benefit.
 """
 from __future__ import annotations
+
+from .business_certificate_content import GROUPS as BUSINESS_GROUPS
 
 
 def _q(qid, text, options, answer, why):
@@ -23,7 +26,7 @@ def _p(text, options, answer, why):
     return dict(text=text, options=[dict(id=k, label=v) for k, v in options], answer=answer, why=why)
 
 
-GROUPS = [
+GROUPS = [*BUSINESS_GROUPS,
     dict(
         id='work_safety', emoji='🦺', name='Chứng chỉ An toàn lao động', short='An toàn lao động',
         issuer='Trung tâm dạy nghề phường (lớp giả lập)', careers=('delivery', 'repair'), fee=15,

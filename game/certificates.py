@@ -5,10 +5,11 @@ group covers related hired jobs (certificate_content.GROUPS). Holding it raises
 the hire chance for those jobs (employment._evaluate reads `boosted`).
 
 Flow, on the journey clock (life days):
-* `jr_cert_enrol` {cert, mode, career?}: one course at a time. `class` = evening
+* `jr_cert_enrol` {cert, mode, career?}: one course at a time. `class` = paid
   class, tuition from the wallet (a retake or a higher-score attempt costs half
   of it, rounded up), exam opens CLASS_DAYS later; `self` = free self-study,
-  SELF_DAYS later. Nobody is soft-locked by a thin wallet.
+  SELF_DAYS later. Business courses only allow paid classes and require the
+  previous level's earned certificate; existing job courses retain free study.
 * While studying: lesson notes and a practice quiz (browser only, separate bank).
 * `jr_cert_answer` {question, option}: the exam paper (DRAW questions drawn at
   enrolment, seeded) opens on `ready`; the last answer grades it. PASS_MARK right
@@ -174,6 +175,10 @@ def action(s: dict, name: str, p: dict) -> dict:
         g = INDEX[gid]
         mode = p.get('mode')
         need(mode in MODES, 'Chọn học lớp buổi tối hoặc tự học.')
+        need(mode in g.get('allowed_modes', MODES), 'Khóa kinh doanh cần đăng ký lớp và đóng học phí, gồm 1 lần thi.')
+        prerequisite = g.get('prerequisite')
+        need(not prerequisite or earned(j, prerequisite),
+             f'Cần đỗ {INDEX[prerequisite]["name"]} trước khi đăng ký khóa này.' if prerequisite else '')
         study = j['study']
         need(study is None, f'Bạn đang học {INDEX[study["cert"]]["name"]}. Thi xong hoặc bỏ khóa đó trước nhé.' if study else '')
         rec = j['certificates'].get(gid)
@@ -181,7 +186,8 @@ def action(s: dict, name: str, p: dict) -> dict:
         cost = fee(j, gid, mode)
         from . import bank as bk   # 🏦 p['pay']: 'auto' | 'cash' | 'card' | 'joint' (game/bank.py)
         need(j['wallet'] >= cost or (cost and bk.can_pay(s, cost, p.get('pay', 'auto'))),
-             f'Ví chưa đủ {cost} xu học phí. Tự học thì miễn phí, chỉ chậm hơn một ngày.')
+             f'Ví chưa đủ {cost} xu học phí.' + (' Tự học thì miễn phí, chỉ chậm hơn một ngày.'
+                                               if 'self' in g.get('allowed_modes', MODES) else ' Học phí gồm 1 lần thi.'))
         career = p.get('career') if p.get('career') in CAREERS else None
         paid = bk.pay(s, cost, f'Học phí · {g["name"]}', method=p.get('pay', 'auto'), kind='study', career=career) if cost else None
         days = CLASS_DAYS if mode == 'class' else SELF_DAYS
@@ -244,7 +250,9 @@ def _grade(s: dict, j: dict, study: dict) -> dict:
         out.update(message=f'{head} Điểm cao nhất của bạn: {rec["best"]}.', celebrate=score >= rec['best'])
     else:
         out['message'] = (f'{head} Cần {PASS_MARK}/{DRAW} câu. Xem lời giải rồi thi lại: lớp ôn {retake_fee(gid)} xu '
-                          f'(thi lại ngay hôm nay) hoặc tự học miễn phí (thi {days_.when_day(s, j["life_day"] + SELF_DAYS)}).')
+                          f'(gồm 1 lần thi, thi lại ngay hôm nay)' +
+                          (f' hoặc tự học miễn phí (thi {days_.when_day(s, j["life_day"] + SELF_DAYS)}).'
+                           if 'self' in g.get('allowed_modes', MODES) else '.'))
     return out
 
 
@@ -301,6 +309,8 @@ def content() -> dict:
         groups=[dict({k: g[k] for k in ('id', 'emoji', 'name', 'short', 'issuer', 'intro', 'notes', 'practice')},
                      careers=list(g['careers']), fee=tuition(g['id']), retake_fee=retake_fee(g['id']),
                      hire=g.get('hire', True), perk=g.get('perk', ''),
+                     allowed_modes=list(g.get('allowed_modes', MODES)), prerequisite=g.get('prerequisite'),
+                     business_level=g.get('business_level', 0), level_benefit=g.get('level_benefit', ''),
                      questions={q['id']: dict(text=q['text'], options=q['options'], hint=hint(g, q)) for q in g['bank']})
                 for g in GROUPS])
 
@@ -332,6 +342,7 @@ def validate(s: dict) -> None:
     if study is not None:
         need(isinstance(study, dict) and set(study) == STUDY_KEYS and study.get('cert') in INDEX and study.get('mode') in MODES,
              'Khóa học không hợp lệ.')
+        need(study['mode'] in INDEX[study['cert']].get('allowed_modes', MODES), 'Hình thức học không hợp lệ.')
         integer(study['start'], 1, life_day)
         need(type(study['ready']) is int and study['ready'] == study['start'] + (CLASS_DAYS if study['mode'] == 'class' else SELF_DAYS),
              'Khóa học không hợp lệ.')
