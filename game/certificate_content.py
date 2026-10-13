@@ -29,7 +29,7 @@ def _p(text, options, answer, why):
 GROUPS = [*BUSINESS_GROUPS,
     dict(
         id='work_safety', emoji='🦺', name='Chứng chỉ An toàn lao động', short='An toàn lao động',
-        issuer='Trung tâm dạy nghề phường (lớp giả lập)', careers=('delivery', 'repair'), fee=15,
+        issuer='Trung tâm dạy nghề phường (lớp giả lập)', careers=('delivery', 'repair', 'post_office'), fee=15,
         intro='An toàn điện khi sửa đồ, an toàn đường sá khi giao hàng, giữ đồ và tiền của khách cho đúng.',
         notes=[
             'Máy điện: rút điện trước khi mở. Quạt còn tụ giữ điện, phải xả tụ bằng điện trở. Nồi cơm chờ mâm nhiệt nguội. Điện thoại, laptop tắt nguồn và ngắt cáp pin.',
@@ -577,7 +577,7 @@ GROUPS = [*BUSINESS_GROUPS,
         ]),
     dict(
         id='office_admin', emoji='🗂️', name='Chứng chỉ Hành chính văn phòng', short='Hành chính văn phòng',
-        issuer='Trung tâm dạy nghề phường (lớp giả lập)', careers=('hr_admin', 'secretary', 'it_helpdesk'), fee=20,
+        issuer='Trung tâm dạy nghề phường (lớp giả lập)', careers=('hr_admin', 'secretary', 'it_helpdesk', 'lawyer'), fee=20,
         intro='Lọc hồ sơ công bằng, chấm công, hợp đồng lao động, lời nhắn và lịch họp, thư lừa đảo, an toàn máy tính. Luật chơi đơn giản của game.',
         notes=[
             'Lọc hồ sơ chỉ theo yêu cầu công việc: kinh nghiệm, kỹ năng, bằng cấp. Không loại vì giới tính, hôn nhân, tuổi hay quê quán.',

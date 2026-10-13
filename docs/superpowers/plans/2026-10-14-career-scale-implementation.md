@@ -64,16 +64,16 @@ Ownership: root integrator for `game/engine.py`, journey validation, shared slot
 
 Ownership assigned after inspecting the current interior adapter; no changes to shared live protocol without separate tests.
 
-- [ ] Reuse each career's navigable interior with a stable owned-site context and visible stations/NPCs matching actual assignments. Add site selector and return route to chain overview; no fullscreen management-only substitute.
-- [ ] Bind interactions to the selected site and active resource/contract. Switching sites must not leak another location's actions, occupants, chat or reactions.
-- [ ] Verify mobile touch walking and desktop movement, station interaction, correct site labels, ownership checks, social privacy and reconnects. Use deterministic local test accounts; no production player-state mutation for screenshots.
+- [x] Reuse each career's navigable interior with a stable owned-site context and visible stations/NPCs matching actual assignments. Add site selector and return route to chain overview; no fullscreen management-only substitute.
+- [x] Bind interactions to the selected site and active resource/contract. Switching sites must not leak another location's actions, occupants, chat or reactions.
+- [x] Verify mobile touch walking and desktop movement, station interaction, correct site labels, ownership checks, social privacy and reconnects. Use deterministic local test accounts; no production player-state mutation for screenshots.
 
 ## Task 6 — balance, review and Release B
 
-- [ ] Obtain read-only aggregate production liquidity/earnings evidence, excluding player identities. Compare proposed payouts with current income sources and existing paid upgrades; record assumptions and any justified tuning.
-- [ ] Use implemented commands to simulate every offered career/stage, reconcile all ledgers and confirm no multiplicative rewards or capacity duplication. CSV targets alone do not count as proof.
-- [ ] Run independent spec review, then code-quality/security-of-transactions review. Resolve findings and rerun affected checks.
-- [ ] Run task compatibility against the actual Release A source, all new focused suites, existing money/inventory/certificate/competition/social regressions, and real mobile/desktop browser flows.
+- [x] Obtain read-only aggregate production liquidity/earnings evidence, excluding player identities. Compare proposed payouts with current income sources and existing paid upgrades; record assumptions and any justified tuning.
+- [x] Use implemented commands to simulate every offered career/stage, reconcile all ledgers and confirm no multiplicative rewards or capacity duplication. CSV targets alone do not count as proof.
+- [x] Run independent spec review, then code-quality/security-of-transactions review. Resolve findings and rerun affected checks.
+- [x] Run task compatibility against the actual Release A source, all new focused suites, existing money/inventory/certificate/competition/social regressions, and real mobile/desktop browser flows.
 - [ ] Build from verified live Release A bytes and its exact source ref; verify extracted package/HTTP. Publish only implemented, tested stages; do not charge for placeholders or report omitted stages as complete.
 - [ ] Rolling deploy with package hash, disk, DB-connection and rollback-compatibility guards. Verify service/public health, assets, hashes, logs and representative read-only projections.
 - [ ] Document both deployments and remaining limitations, stop local test services, leave source clean and report actual deployed behavior.
