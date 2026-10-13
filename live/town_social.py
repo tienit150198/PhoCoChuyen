@@ -20,6 +20,7 @@ class Audience:
 
     def allows(self, player):
         return (time.monotonic() < self.until and player.pid in self.pids
+                and (not self.room.data.get('site_key') or player.ext.get('town') == self.room.id)
                 and not self.town.hub.blocked(player.pid, self.author))
 
     def send(self, frame, sender=None, skip=None):
@@ -67,6 +68,7 @@ class TownSocial:
                 and not self.hub.blocked(a.pid, b.pid))
 
     async def _social_me(self, conn, fresh_mute=False):
+        await self._site_access(conn)
         room, w = self._me(conn)
         if not self.cfg.chat or self.app.chat is None:
             raise LiveError('off', 'Trò chuyện đang tạm nghỉ.')
@@ -134,6 +136,7 @@ class TownSocial:
 
     @on('town_card', rate=(20, 60))
     async def town_card(self, conn, f):
+        await self._site_access(conn)
         room, w = self._me(conn)
         other = self._social_other(room, w, f.get('pid'))
         if not self.cfg.chat or not self.app.chat:

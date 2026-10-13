@@ -3,6 +3,7 @@
  * All careers use iso-town-v1. A room holds at most 30 real players and updates at 4/s.
  */
 import {live} from './v4/live.js';
+import {sitePresence} from './v4/site-presence.js';
 import {createTownSocial} from './isometric-social.js';
 import {lookOf} from './v4/look.js';
 import {leisurePresence,publicActivity} from './isometric/leisure-presence.js';
@@ -45,7 +46,7 @@ export function createTownPresence(envGetter,options={}){
     try{const at=publicPoint(world()?.getPresence?.());if(at){anchor=at;return at;}}catch{}
     return leisure.current?anchor:null;
   };
-  const wanted=()=>!env()?.api?.state?.jail&&!taken&&doc?.visibilityState!=='hidden'&&Boolean(point());
+  const wanted=()=>!sitePresence.active&&!env()?.api?.state?.jail&&!taken&&doc?.visibilityState!=='hidden'&&Boolean(point());
   const enabled=()=>socket.state==='open'&&Boolean(socket.flags?.town);
 
   function updateSocial(){
@@ -63,7 +64,7 @@ export function createTownPresence(envGetter,options={}){
   }
   function status(){
     updateSocial();
-    const inTown=!env()?.api?.state?.jail&&Boolean(point())&&doc?.visibilityState!=='hidden';
+    const inTown=!sitePresence.active&&!env()?.api?.state?.jail&&Boolean(point())&&doc?.visibilityState!=='hidden';
     let text=room?`Khu phố trực tuyến · ${peers.size} người cùng dạo`:
       taken?'Khu phố đang mở ở tab khác':
       !env()?.api?.live?.url?'Chưa bật kết nối khu phố':
@@ -122,10 +123,10 @@ export function createTownPresence(envGetter,options={}){
   function onMode(){taken=false;retryAt=0;sync();}
   function start(){
     if(started)return api;started=true;
-    off.push(socket.on('welcome',()=>{clear();retryAt=0;sync();}),
+    off.push(sitePresence.subscribe(()=>sync()),socket.on('welcome',()=>{clear();retryAt=0;sync();}),
       socket.on('down',()=>{clear();}),
       socket.on('town_room',f=>{
-        if(f.map!==MAP)return;
+        if(f.map!==MAP||sitePresence.active)return;
         if(!wanted()||!enabled()){socket.send({t:'town_out',cid:`town-out-${++seq}`});clear();return;}
         if(f.cid&&f.cid!==joining?.cid)return; // a late reply from an earlier town/work switch
         if(socket.flags?.treasure&&Number.isFinite(f.x)&&Number.isFinite(f.y)){

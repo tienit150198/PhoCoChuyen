@@ -25,6 +25,7 @@ from .auth import pid_of
 from .protocol import Feature, LiveError, on
 from .street import clean_look
 from .town_social import TownSocial
+from .scale_sites import ScaleSites, SITE_PREFIX, site_point
 
 MAP_ID = 'iso-town-v1'
 PREFIX = MAP_ID + ':'
@@ -151,7 +152,7 @@ class Walker:
         return out
 
 
-class TownFeature(TownSocial, Feature):
+class TownFeature(ScaleSites, TownSocial, Feature):
     name, flag = 'town', 'town'
 
     def __init__(self, app):
@@ -312,13 +313,14 @@ class TownFeature(TownSocial, Feature):
     @on('town_mv', rate=(4, 1.0))
     async def town_mv(self, conn, f):
         room, w = self._me(conn)
-        x, y = clean_point(f.get('x'), f.get('y'))
+        x, y = (site_point(room.data['site_layout'], f.get('x'), f.get('y'))
+                if 'site_key' in room.data else clean_point(f.get('x'), f.get('y')))
         now = time.monotonic()
         credit = min(MAX_CREDIT, w.credit + max(0.0, now - w.last) * SPEED)
         distance = math.hypot(x - w.x, y - w.y)
         if distance > credit + .003:
             raise LiveError('speed', 'Bước đi quá xa.', x=w.x, y=w.y)
-        activity = clean_activity(f['activity']) if 'activity' in f else w.activity
+        activity = None if 'site_key' in room.data else clean_activity(f['activity']) if 'activity' in f else w.activity
         remaining = activity_credit(w, activity, now)
         appearance = clean_look(f.get('look', w.look), f.get('g', w.gender)) if 'look' in f or 'g' in f else None
         w.credit, w.last = max(0.0, credit - distance), now
@@ -338,7 +340,7 @@ class TownFeature(TownSocial, Feature):
         if self.db is None or time.monotonic() < self._blocks_at:
             return
         self._blocks_at = time.monotonic() + BLOCK_REFRESH
-        players = {w.pid: w.player for room in self.hub.rooms_with_prefix(PREFIX)
+        players = {w.pid: w.player for room in self.hub.rooms_with_prefix(PREFIX) + self.hub.rooms_with_prefix(SITE_PREFIX)
                    for w in room.data['people'].values()}
         people = list(players.values())
         hidden = {p.pid: set() for p in people}
@@ -357,13 +359,14 @@ class TownFeature(TownSocial, Feature):
             p.hidden = hidden[pid]
 
     async def tick(self, now):
+        await self._refresh_sites(now)
         await self._refresh_blocks()
         if hasattr(self, 'social_receipts'):
             self._social_prune()
         if now >= self._social_prune_at:
             self._social_prune_at = now + 60
             await self.prune_social_messages()
-        for room in self.hub.rooms_with_prefix(PREFIX):
+        for room in self.hub.rooms_with_prefix(PREFIX) + self.hub.rooms_with_prefix(SITE_PREFIX):
             d, people = room.data, room.data['people']
             for pid, w in list(people.items()):
                 for q in w.player.hidden & people.keys():

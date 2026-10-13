@@ -1,3 +1,4 @@
+import {sitePresence} from '../public/js/v4/site-presence.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {readFileSync} from 'node:fs';
@@ -14,7 +15,7 @@ function harness({state='open',flag=true,mode='town',url='/live'}={}){
   const world={mode,getPresence(){return this.mode==='town'?{x:6,y:6,direction:1,name:'Spoof',task:'private'}:null;},setRemotePlayers(p){drawn.push(p);}};
   const env={world,api:{live:{url},state:{private:'secret',journey:{gender:'female'}}}};
   const socialFrames=[],social={update:s=>socialFrames.push(s),stop(){}};
-  const context=vm.createContext({live,leisurePresence:createLeisurePresence(),publicActivity,lookOf:()=>({top:'ao_quen'}),console,document:doc,window:eventTarget,
+  const context=vm.createContext({sitePresence,live,leisurePresence:createLeisurePresence(),publicActivity,lookOf:()=>({top:'ao_quen'}),console,document:doc,window:eventTarget,
     setInterval:(fn)=>{timers.set(++id,fn);return id;},clearInterval:i=>timers.delete(i),
     setTimeout:(fn)=>{timers.set(++id,fn);return id;},clearTimeout:i=>timers.delete(i),Date:{now:()=>now}});
   vm.runInContext(source+'\nglobalThis.factory=createTownPresence;',context);
@@ -102,4 +103,12 @@ test('treasure-enabled joins restore the server checkpoint before the next movem
   const n=h.sent.length;h.tick(20000);h.mode('town');assert.equal(h.sent.length,n);
   assert.equal(h.statuses.at(-1).visible,false);
   delete h.env.api.state.jail;h.tick();assert.equal(h.sent.at(-1).t,'town_in');h.bridge.stop();
+});
+
+test('owned interior suspends town, ignores late outdoor joins, and restores street on exit',()=>{
+ const h=harness();h.emit('town_room',{map:'iso-town-v1',room:'r',me:'me',social:true,people:[]});
+ sitePresence.set(true);assert.equal(h.sent.at(-1).t,'town_out');const count=h.sent.length;
+ h.emit('town_room',{map:'iso-town-v1',room:'r',me:'me',people:[]});h.tick();
+ assert.equal(h.sent.length,count,'late outdoor acknowledgement must not evict the newer interior');
+ sitePresence.set(false);assert.equal(h.sent.at(-1).t,'town_in');h.bridge.stop();
 });
