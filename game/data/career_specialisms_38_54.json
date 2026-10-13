@@ -1,0 +1,4296 @@
+{
+  "pilot": [
+    {
+      "tier": 1,
+      "title": "Ghép pallet với vị trí trên bảng tải",
+      "output_unit": "bảng ghép tải",
+      "inputs": [
+        {
+          "name": "Thẻ pallet mô phỏng",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đọc mã pallet và ô nhận trên thẻ quy tắc game.",
+        "Ghép từng pallet vào ô tương thích trên sơ đồ giấy.",
+        "Ghi mã ô bên cạnh từng pallet để bàn giao điều phái giả lập."
+      ],
+      "check": {
+        "prompt": "Bảng ghép nào được nhận?",
+        "good": "Mọi pallet có đúng một ô phù hợp trên thẻ.",
+        "bad": "Một pallet nằm ở hai ô để lấp chỗ trống.",
+        "why": "Trùng ô làm mất khả năng truy nguyên vị trí hàng."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Kiểm giới hạn tải từng khoang",
+      "output_unit": "phiếu kiểm khoang",
+      "inputs": [
+        {
+          "name": "Phiếu tải khoang giả lập",
+          "unit": "phiếu",
+          "quantity": 2,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Chép sức chứa từng khoang từ thẻ tàu bay hư cấu.",
+        "Cộng các thẻ tải đã phân vào mỗi khoang.",
+        "Khoanh khoang vượt mức và gửi yêu cầu phân bổ lại."
+      ],
+      "check": {
+        "prompt": "Khoang vượt giới hạn trên thẻ xử lý thế nào?",
+        "good": "Đánh dấu chưa đạt và yêu cầu sửa bảng phân bổ.",
+        "bad": "Dùng sức chứa dư khoang khác để bỏ qua.",
+        "why": "Mỗi khoang có giới hạn độc lập trong trò chơi."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Tính trọng tâm theo biểu đồ tàu bay game",
+      "output_unit": "bản đối chiếu cân bằng",
+      "inputs": [
+        {
+          "name": "Biểu đồ cân bằng game",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Đọc điểm tải và hệ số quy ước trên biểu đồ game.",
+        "Ghép tổng điểm tính được với dải màu tương ứng.",
+        "Đính kèm phép tính cùng kết luận theo dải được duyệt."
+      ],
+      "check": {
+        "prompt": "Căn cứ nào đủ cho kết luận?",
+        "good": "Phép tính và dải màu cùng khớp biểu đồ game.",
+        "bad": "Chỉ ghi cảm giác tàu bay có vẻ cân.",
+        "why": "Bài mô phỏng yêu cầu bằng chứng tính điểm, không suy đoán."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Điều chỉnh bảng tải khi đổi hàng và nhiên liệu",
+      "output_unit": "bảng tải sửa đổi",
+      "inputs": [
+        {
+          "name": "Phiếu thay đổi tải giả lập",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Đóng dấu phiên bản cũ khi nhận thẻ đổi hàng và nhiên liệu game.",
+        "Thay các dòng bị ảnh hưởng rồi tính lại tổng theo quy tắc thẻ.",
+        "Nộp bảng mới cùng danh sách chênh lệch cho điều phái giả lập."
+      ],
+      "check": {
+        "prompt": "Phiên bản nào bàn giao được?",
+        "good": "Bảng mới ghi rõ cả thay hàng lẫn nhiên liệu game.",
+        "bad": "Bảng chỉ đổi tổng mà không ghi dòng thay đổi.",
+        "why": "Nhật ký chênh lệch giúp đối chiếu đủ hai nguồn thay đổi."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Lập lịch nhiệm vụ tổ lái nhiều chặng",
+      "output_unit": "lịch tổ lái",
+      "inputs": [
+        {
+          "name": "Thẻ chặng và ca tổ lái game",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đánh dấu các chặng và khoảng nghỉ từ thẻ lịch hư cấu.",
+        "Xếp người vào chặng không chồng giờ theo quy tắc game.",
+        "Gắn người dự phòng cho chặng còn thiếu và lưu bảng phân công."
+      ],
+      "check": {
+        "prompt": "Lịch nào đạt?",
+        "good": "Mỗi chặng có người và không trùng ca trên thẻ.",
+        "bad": "Một người được xếp ở hai chặng đồng thời.",
+        "why": "Nguồn lực chỉ được phân cho một nhiệm vụ tại một thời điểm."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Kiểm bộ dữ liệu điều phái sân bay xa",
+      "output_unit": "hồ sơ điều phái",
+      "inputs": [
+        {
+          "name": "Gói dữ liệu sân bay hư cấu",
+          "unit": "gói",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Liệt kê tên tệp và ngày hiệu lực yêu cầu trong bộ thẻ sân bay.",
+        "Đối chiếu phiên bản từng tệp với danh mục được duyệt.",
+        "Tách tệp thiếu hoặc cũ vào phiếu yêu cầu bổ sung."
+      ],
+      "check": {
+        "prompt": "Có tệp hết hạn trong bộ thì nghiệm thu ra sao?",
+        "good": "Để hồ sơ chờ bổ sung và nêu tên tệp.",
+        "bad": "Chấp nhận vì đủ số lượng tệp.",
+        "why": "Đủ số lượng không chứng minh đúng phiên bản dữ liệu."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lập phương án gián đoạn bảo dưỡng giữa chặng",
+      "output_unit": "phương án gián đoạn",
+      "inputs": [
+        {
+          "name": "Thẻ gián đoạn hành trình game",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 4500
+        }
+      ],
+      "procedure": [
+        "Đọc thông báo bảo dưỡng giả lập và các chặng bị ảnh hưởng.",
+        "Ghép phương án lịch thay thế với nguồn lực có trên thẻ.",
+        "Lưu lựa chọn đã duyệt và danh sách bên cần nhận cập nhật."
+      ],
+      "check": {
+        "prompt": "Phương án nào hoàn chỉnh?",
+        "good": "Lịch thay thế có nguồn lực và người nhận cập nhật.",
+        "bad": "Chỉ xóa chặng bị gián đoạn khỏi bảng.",
+        "why": "Xóa lịch không giải quyết hành trình tiếp theo và bàn giao."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Đánh dấu sai lệch trên bản ghi tiếp cận",
+      "output_unit": "phiếu sai lệch",
+      "inputs": [
+        {
+          "name": "Bản ghi huấn luyện mô phỏng",
+          "unit": "bản",
+          "quantity": 2,
+          "unit_cost": 7500
+        }
+      ],
+      "procedure": [
+        "Đọc dòng thời gian mô phỏng cùng các mốc chuẩn của bài tập.",
+        "Gắn cờ thời điểm khác thẻ tiêu chí, không tự thêm hướng dẫn bay.",
+        "Trích mã đoạn ghi để giảng viên xem lại từng sai lệch."
+      ],
+      "check": {
+        "prompt": "Phiếu nào đủ bằng chứng?",
+        "good": "Mỗi cờ có thời điểm và mã tiêu chí game.",
+        "bad": "Chấm không đạt toàn buổi mà không chỉ đoạn.",
+        "why": "Giảng viên cần liên kết sai lệch với đoạn ghi cụ thể."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Thiết kế mục tiêu huấn luyện lại cho học viên",
+      "output_unit": "kế hoạch học lại",
+      "inputs": [
+        {
+          "name": "Phiếu năng lực học viên game",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Gom các lỗi đã được giảng viên xác nhận theo tiêu chí mô phỏng.",
+        "Chọn mục tiêu quan sát được cho từng lỗi trên thẻ học tập.",
+        "Xếp bài tập và mốc kiểm lại vào lịch được duyệt."
+      ],
+      "check": {
+        "prompt": "Mục tiêu nào kiểm được?",
+        "good": "Học viên nộp đủ ba mục của bảng tải giả lập.",
+        "bad": "Học viên phải bay giỏi hơn vào lần sau.",
+        "why": "Mục tiêu cần hành vi quan sát được trong bài mô phỏng."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Đánh giá và rút kinh nghiệm buổi bay mô phỏng",
+      "output_unit": "báo cáo rút kinh nghiệm",
+      "inputs": [
+        {
+          "name": "Bộ phản hồi buổi bay mô phỏng",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu mục tiêu đầu buổi với các đoạn ghi được đánh dấu.",
+        "Tổng hợp điểm đạt và điểm cần học lại kèm mã bằng chứng.",
+        "Giao người theo dõi từng việc và lịch đánh giá buổi sau."
+      ],
+      "check": {
+        "prompt": "Báo cáo nào khép buổi tập?",
+        "good": "Có bằng chứng, người theo dõi và lịch kiểm lại.",
+        "bad": "Chỉ có điểm số cuối buổi.",
+        "why": "Điểm số không thay thế kế hoạch cải thiện được phân công."
+      }
+    }
+  ],
+  "flight_attendant": [
+    {
+      "tier": 1,
+      "title": "Bàn giao xe phục vụ niêm phong",
+      "output_unit": "biên bản xe phục vụ",
+      "inputs": [
+        {
+          "name": "Thẻ xe phục vụ niêm phong game",
+          "unit": "thẻ",
+          "quantity": 2,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu số xe và mã niêm phong với phiếu cấp của hãng hư cấu.",
+        "Ghi tình trạng niêm phong theo ảnh mô phỏng trước khi nhận.",
+        "Ký nhận đúng mã xe hoặc lập phiếu lệch mã để chuyển phụ trách."
+      ],
+      "check": {
+        "prompt": "Xe có mã niêm phong khác phiếu thì chọn gì?",
+        "good": "Giữ trạng thái chờ đối chiếu và ghi mã thực thấy.",
+        "bad": "Sửa mã trên phiếu cho giống mà không ghi chú.",
+        "why": "Sai khác phải còn dấu vết để truy nguyên bàn giao."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Đối chiếu số lượng suất ăn đặc biệt",
+      "output_unit": "bảng đối chiếu suất ăn",
+      "inputs": [
+        {
+          "name": "Phiếu suất ăn đặc biệt game",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đọc nhu cầu từ danh sách hành khách giả lập đã mã hóa.",
+        "Ghép mã suất ăn với mã chỗ ngồi và số suất được cấp.",
+        "Lập phiếu thiếu thừa trước khi bàn giao bảng phục vụ."
+      ],
+      "check": {
+        "prompt": "Bảng nào đạt?",
+        "good": "Mã yêu cầu và mã suất khớp từng chỗ ngồi.",
+        "bad": "Chỉ đủ tổng số suất của cả cabin.",
+        "why": "Tổng đủ vẫn có thể thiếu loại suất được đăng ký."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Lập hồ sơ ngoại lệ nhiệt độ khoang bếp",
+      "output_unit": "hồ sơ ngoại lệ",
+      "inputs": [
+        {
+          "name": "Bản ghi khoang bếp mô phỏng",
+          "unit": "bản",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Đọc dải chấp nhận trên thẻ quy tắc nhiệt độ hư cấu.",
+        "Khoanh khoảng thời gian ngoài dải từ bản ghi cung cấp.",
+        "Gắn mã xe liên quan và chuyển hồ sơ cho người phụ trách game."
+      ],
+      "check": {
+        "prompt": "Hồ sơ ngoại lệ cần gì?",
+        "good": "Mốc bắt đầu, kết thúc và mã xe bị ảnh hưởng.",
+        "bad": "Chỉ nhiệt độ cuối cùng trở về dải.",
+        "why": "Giá trị cuối không xóa khoảng ngoại lệ đã ghi nhận."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Bàn giao lỗi cabin qua nhiều chặng",
+      "output_unit": "sổ chuyển chặng",
+      "inputs": [
+        {
+          "name": "Phiếu lỗi cabin giả lập",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Gom phiếu lỗi theo mã ghế hoặc mã thiết bị cabin.",
+        "Nối cập nhật mới với lỗi đang mở từ chặng trước.",
+        "Bàn giao lỗi chưa đóng cùng người tiếp nhận ở chặng kế."
+      ],
+      "check": {
+        "prompt": "Lỗi nào được bỏ khỏi sổ mở?",
+        "good": "Lỗi có xác nhận hoàn tất đúng mã thiết bị.",
+        "bad": "Lỗi không ai nhắc lại trong chặng mới.",
+        "why": "Sự im lặng không phải xác nhận khắc phục."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Lập phương án hỗ trợ lỡ chuyến nối",
+      "output_unit": "phương án hỗ trợ nối chuyến",
+      "inputs": [
+        {
+          "name": "Thẻ hành trình nối chuyến game",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 4500
+        }
+      ],
+      "procedure": [
+        "Nhóm khách giả lập theo chặng nối bị lỡ trên bảng lịch.",
+        "Đối chiếu lựa chọn hỗ trợ đã được hãng hư cấu duyệt.",
+        "Gửi mã phương án tới đầu mối mặt đất và ghi xác nhận."
+      ],
+      "check": {
+        "prompt": "Phương án nào nghiệm thu được?",
+        "good": "Mỗi nhóm có lựa chọn hợp lệ và đầu mối nhận.",
+        "bad": "Cả đoàn nhận một lời hứa chưa có nguồn lực.",
+        "why": "Hỗ trợ chỉ khả thi khi có bên tiếp nhận và phương án được duyệt."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Điều phối bàn giao khách cần hỗ trợ di chuyển",
+      "output_unit": "hồ sơ hỗ trợ khách",
+      "inputs": [
+        {
+          "name": "Phiếu bàn giao hỗ trợ di chuyển",
+          "unit": "phiếu",
+          "quantity": 2,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Đọc nhu cầu hỗ trợ đã được khách giả lập đồng ý ghi nhận.",
+        "Ghép thời điểm đến với đầu mối hỗ trợ mặt đất trên thẻ game.",
+        "Lưu xác nhận nhận khách theo mã và hạn chế thông tin chia sẻ."
+      ],
+      "check": {
+        "prompt": "Bàn giao nào đúng?",
+        "good": "Đầu mối được phân công xác nhận đúng mã khách.",
+        "bad": "Công khai toàn bộ nhu cầu cá nhân lên bảng chung.",
+        "why": "Bàn giao cần đúng người nhận và chỉ thông tin cần thiết."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Phân công người và vật tư cabin",
+      "output_unit": "bảng phân công cabin",
+      "inputs": [
+        {
+          "name": "Thẻ vị trí cabin và vật tư game",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đếm các vị trí và bộ vật tư trên sơ đồ cabin hư cấu.",
+        "Phân người phụ trách và vật tư tương ứng theo thẻ vai trò.",
+        "Kiểm vị trí còn trống rồi phát bảng đã sửa cho cả nhóm."
+      ],
+      "check": {
+        "prompt": "Dấu hiệu bảng hoàn chỉnh là gì?",
+        "good": "Mỗi vị trí có người và bộ vật tư đúng mã.",
+        "bad": "Đủ nhân sự tổng cộng nhưng một vị trí trống.",
+        "why": "Độ phủ từng vị trí quyết định bảng phân công đạt yêu cầu."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Đánh giá buổi phổ biến nhiệm vụ của học viên",
+      "output_unit": "đánh giá học viên cabin",
+      "inputs": [
+        {
+          "name": "Phiếu quan sát phổ biến nhiệm vụ",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đọc các mục học viên phải trình bày trên thẻ buổi tập.",
+        "Ghi dẫn chứng khi học viên nêu nhiệm vụ và xác nhận hiểu.",
+        "Chấm từng mục rồi giao mục còn thiếu để thực hành lại."
+      ],
+      "check": {
+        "prompt": "Cách chấm nào đủ cơ sở?",
+        "good": "Gắn nhận xét với lời trình bày và mục tiêu cụ thể.",
+        "bad": "Chấm cao chỉ vì học viên nói tự tin.",
+        "why": "Tự tin không chứng minh đã phổ biến đủ nhiệm vụ."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Đánh giá phân vai trong diễn tập thoát hiểm",
+      "output_unit": "đánh giá phân vai",
+      "inputs": [
+        {
+          "name": "Thẻ vai diễn tập cabin",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Lấy sơ đồ vai trò từ kịch bản diễn tập hư cấu đã duyệt.",
+        "So sánh lượt nhận vai trong bản ghi với sơ đồ, không hướng dẫn thoát hiểm thật.",
+        "Lập phiếu vai trùng hoặc thiếu để giảng viên điều chỉnh."
+      ],
+      "check": {
+        "prompt": "Lượt phân vai nào đạt?",
+        "good": "Từng vai trong kịch bản có một người nhận rõ ràng.",
+        "bad": "Hai người nhận một vai còn vai khác bỏ trống.",
+        "why": "Đánh giá tập trung vào độ phủ vai của bài mô phỏng."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Hướng dẫn và tổng kết buổi mô phỏng cabin",
+      "output_unit": "hồ sơ tổng kết cabin",
+      "inputs": [
+        {
+          "name": "Bộ kịch bản cabin mô phỏng",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Phát mục tiêu và vai của buổi mô phỏng cho học viên.",
+        "Thu phiếu quan sát theo các mốc trong kịch bản.",
+        "Tổng hợp bằng chứng và giao bài tập lại cho mục chưa đạt."
+      ],
+      "check": {
+        "prompt": "Tổng kết nào có thể theo dõi?",
+        "good": "Mỗi mục chưa đạt có bằng chứng và bài tập tiếp theo.",
+        "bad": "Chỉ ghi cả lớp cần cố gắng.",
+        "why": "Nhận xét chung không xác định được việc học viên cần thực hiện."
+      }
+    }
+  ],
+  "oil": [
+    {
+      "tier": 1,
+      "title": "Lập đường cơ sở rung của bơm",
+      "output_unit": "hồ sơ đường cơ sở",
+      "inputs": [
+        {
+          "name": "Bộ số đo rung bơm giả lập",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Chọn các bản ghi được gắn trạng thái ổn định trên thẻ máy game.",
+        "Nhóm số đo theo cùng chế độ và vị trí cảm biến mô phỏng.",
+        "Lưu dải cơ sở kèm mã mẫu nguồn để so sánh về sau."
+      ],
+      "check": {
+        "prompt": "Tập mẫu nào phù hợp?",
+        "good": "Các mẫu cùng chế độ có nhãn ổn định được duyệt.",
+        "bad": "Trộn mọi chế độ để có nhiều số liệu.",
+        "why": "Khác chế độ tạo đường cơ sở không so sánh được."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Phân biệt lỗi cảm biến và xu hướng hỏng máy",
+      "output_unit": "phiếu phân loại bất thường",
+      "inputs": [
+        {
+          "name": "Thẻ cảm biến và xu hướng game",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu dấu thời gian của cảm biến chính và bản ghi tham chiếu.",
+        "So sánh mẫu bất thường với các mẫu lỗi trên thẻ hư cấu.",
+        "Ghi giả thuyết cùng bằng chứng và chuyển người phụ trách xác minh."
+      ],
+      "check": {
+        "prompt": "Một cảm biến lệch riêng thì kết luận gì?",
+        "good": "Đánh dấu cần kiểm nguồn đo trước khi quy lỗi máy.",
+        "bad": "Khẳng định máy hỏng chỉ từ một giá trị.",
+        "why": "Bằng chứng đơn lẻ chưa phân biệt lỗi đo với xu hướng thiết bị."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Lập hồ sơ xu hướng mẫu dầu bôi trơn",
+      "output_unit": "biểu đồ mẫu dầu",
+      "inputs": [
+        {
+          "name": "Phiếu mẫu dầu mô phỏng",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Ghép mã mẫu với máy và ngày lấy mẫu giả lập.",
+        "Xếp chỉ số mẫu theo thời gian trong cùng bộ dữ liệu.",
+        "Gắn cờ xu hướng theo thẻ game rồi lưu liên kết mẫu gốc."
+      ],
+      "check": {
+        "prompt": "Biểu đồ nào có thể nghiệm thu?",
+        "good": "Chuỗi mẫu cùng máy được xếp đúng ngày.",
+        "bad": "Mẫu nhiều máy nối thành một đường chung.",
+        "why": "Mất nguồn gốc mẫu khiến xu hướng không còn ý nghĩa."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Xếp ưu tiên bảo dưỡng theo bằng chứng",
+      "output_unit": "danh sách ưu tiên",
+      "inputs": [
+        {
+          "name": "Thẻ rủi ro bảo dưỡng game",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Gom phiếu bất thường cùng mức ảnh hưởng trên thẻ máy.",
+        "Chấm mức ưu tiên bằng ma trận hư cấu của cơ quan.",
+        "Xếp việc theo điểm và ghi bằng chứng cho các trường hợp đồng hạng."
+      ],
+      "check": {
+        "prompt": "Danh sách nào đúng căn cứ?",
+        "good": "Mỗi hạng có điểm ma trận và phiếu bất thường.",
+        "bad": "Máy có tên quen thuộc luôn xếp trước.",
+        "why": "Ưu tiên phải truy nguyên tới ảnh hưởng và bằng chứng đã cho."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Tối ưu kho phụ tùng thiết yếu",
+      "output_unit": "định mức kho",
+      "inputs": [
+        {
+          "name": "Thẻ tồn kho phụ tùng mô phỏng",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghép mã phụ tùng với thiết bị và thời gian cung ứng game.",
+        "Tính nhu cầu từ lịch bảo dưỡng giả lập và lượng tồn.",
+        "Đề xuất mức bổ sung trong ngân sách cơ quan rồi lưu lý do."
+      ],
+      "check": {
+        "prompt": "Mã nào cần bổ sung trước?",
+        "good": "Mã thiếu so với nhu cầu đã duyệt và giao lâu.",
+        "bad": "Mã có giá rẻ nhất dù không có nhu cầu.",
+        "why": "Tồn kho cần đáp ứng công việc cụ thể trong thời gian cung ứng."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Lập dự phòng khi phụ tùng giao chậm",
+      "output_unit": "kế hoạch dự phòng phụ tùng",
+      "inputs": [
+        {
+          "name": "Phiếu chậm cung ứng giả lập",
+          "unit": "phiếu",
+          "quantity": 2,
+          "unit_cost": 6500
+        }
+      ],
+      "procedure": [
+        "Đánh dấu công việc phụ thuộc mã phụ tùng giao chậm.",
+        "Chọn nguồn dự phòng hoặc dời lịch từ các lựa chọn được duyệt.",
+        "Gắn mốc quyết định và người xác nhận cho phương án thay thế."
+      ],
+      "check": {
+        "prompt": "Phương án nào chấp nhận được?",
+        "good": "Dùng lựa chọn được duyệt có người xác nhận và hạn chót.",
+        "bad": "Tự chọn linh kiện khác mã vì trông giống.",
+        "why": "Tương thích chỉ được xác nhận bằng danh mục của bài game."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Vẽ quan hệ công việc dùng chung điểm cô lập",
+      "output_unit": "sơ đồ phụ thuộc công việc",
+      "inputs": [
+        {
+          "name": "Thẻ phụ thuộc điểm cô lập game",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đọc mã điểm chung trên giấy công việc mô phỏng.",
+        "Nối các việc dùng chung mã thành nhóm phụ thuộc trên sơ đồ.",
+        "Đánh dấu nhóm cần điều phối viên duyệt trình tự, không thao tác thiết bị."
+      ],
+      "check": {
+        "prompt": "Sơ đồ nào đúng?",
+        "good": "Hai việc dùng chung mã được nối và chờ duyệt.",
+        "bad": "Các việc được xem là độc lập vì khác tổ.",
+        "why": "Mã phụ thuộc chung chi phối phối hợp dù khác nhóm nhân sự."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Tìm xung đột nhân lực và giấy phép",
+      "output_unit": "bảng xung đột",
+      "inputs": [
+        {
+          "name": "Bộ lịch nhân lực và giấy phép game",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 11000
+        }
+      ],
+      "procedure": [
+        "Xếp ca nhân lực và thời hạn giấy phép hư cấu trên cùng trục giờ.",
+        "Khoanh các cặp việc trùng người hoặc nằm ngoài hiệu lực thẻ.",
+        "Đề xuất đổi ca theo nguồn lực còn trống để người phụ trách duyệt."
+      ],
+      "check": {
+        "prompt": "Việc nào chưa được xếp?",
+        "good": "Việc nằm ngoài hiệu lực giấy phép trên thẻ game.",
+        "bad": "Việc có giấy phép bất kỳ dù sai thời điểm.",
+        "why": "Bài tập đòi hỏi đồng thời phù hợp người và khoảng hiệu lực."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Kiểm bàn giao từng giai đoạn dừng máy",
+      "output_unit": "hồ sơ bàn giao giai đoạn",
+      "inputs": [
+        {
+          "name": "Phiếu nghiệm thu dừng máy game",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 5500
+        }
+      ],
+      "procedure": [
+        "Liệt kê chứng cứ phải có ở từng cổng kiểm trên kế hoạch giả lập.",
+        "Đối chiếu chữ ký vai trò và mã công việc với từng giai đoạn.",
+        "Giữ cổng chưa đủ chứng cứ ở trạng thái chờ bổ sung."
+      ],
+      "check": {
+        "prompt": "Giai đoạn nào được chuyển?",
+        "good": "Giai đoạn có đủ bằng chứng và xác nhận đúng vai.",
+        "bad": "Giai đoạn đã đến hạn dù thiếu xác nhận.",
+        "why": "Lịch dự kiến không thay thế bằng chứng bàn giao."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Điều phối dự án dừng giàn bảo dưỡng",
+      "output_unit": "hồ sơ điều phối bảo dưỡng",
+      "inputs": [
+        {
+          "name": "Bộ tiến độ dừng giàn mô phỏng",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 15000
+        }
+      ],
+      "procedure": [
+        "Nối các gói việc, nguồn lực và cổng bàn giao thành tiến độ game.",
+        "Cập nhật thẻ chậm tiến độ rồi tính lại các mốc phụ thuộc.",
+        "Lập báo cáo chênh lệch ngân sách và việc còn mở cho điều phối viên."
+      ],
+      "check": {
+        "prompt": "Hồ sơ cuối đợt cần gì?",
+        "good": "Tiến độ cập nhật, ngân sách và danh sách việc còn mở.",
+        "bad": "Bản tiến độ ban đầu đóng dấu hoàn thành.",
+        "why": "Bàn giao phải phản ánh trạng thái thực của kịch bản sau các thay đổi."
+      }
+    }
+  ],
+  "hr_admin": [
+    {
+      "tier": 1,
+      "title": "Hồ sơ nhận việc liên kết đầy đủ bàn giao",
+      "output_unit": "hồ sơ nhận việc",
+      "inputs": [
+        {
+          "name": "Bộ hồ sơ nhận việc đã mã hóa",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu danh mục giấy tờ với mã nhân sự mới.",
+        "Ghép xác nhận cấp tài khoản và tài sản vào từng hồ sơ.",
+        "Ghi người nhận bàn giao và tách mục còn thiếu để bổ sung."
+      ],
+      "check": {
+        "prompt": "Hồ sơ nào hoàn chỉnh?",
+        "good": "Giấy tờ và bàn giao tài sản cùng khớp mã nhân sự.",
+        "bad": "Có giấy tờ nhưng thiếu người nhận máy tính.",
+        "why": "Nhận việc bao gồm cả bằng chứng bàn giao nguồn lực."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Bộ bằng chứng đánh giá thử việc",
+      "output_unit": "bộ bằng chứng thử việc",
+      "inputs": [
+        {
+          "name": "Phiếu đánh giá thử việc",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Đọc mục tiêu đã thống nhất đầu kỳ trên phiếu giả lập.",
+        "Gắn sản phẩm công việc và nhận xét có ngày vào từng mục tiêu.",
+        "Tổng hợp mục đã đủ bằng chứng và mục cần người đánh giá xác nhận."
+      ],
+      "check": {
+        "prompt": "Đánh giá nào có cơ sở?",
+        "good": "Nhận xét gắn với mục tiêu và sản phẩm cụ thể.",
+        "bad": "Chỉ ghi người mới có vẻ chăm chỉ.",
+        "why": "Ấn tượng cá nhân không thay thế bằng chứng theo mục tiêu."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Đối soát đăng ký và hoàn thành đào tạo",
+      "output_unit": "bảng đối soát đào tạo",
+      "inputs": [
+        {
+          "name": "Bản ghi đào tạo nội bộ",
+          "unit": "bản",
+          "quantity": 3,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Ghép danh sách đăng ký với mã lớp và mã nhân sự.",
+        "Đối chiếu điểm danh cùng chứng nhận hoàn tất của từng lớp.",
+        "Lập danh sách đăng ký chưa hoàn tất để xếp lượt bổ sung."
+      ],
+      "check": {
+        "prompt": "Ai được đánh dấu hoàn thành?",
+        "good": "Người có bằng chứng hoàn tất đúng lớp.",
+        "bad": "Người đã đăng ký nhưng chưa có kết quả.",
+        "why": "Đăng ký thể hiện nhu cầu, không chứng minh hoàn thành."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Đối soát đăng ký phúc lợi nhân viên",
+      "output_unit": "bảng đối soát phúc lợi",
+      "inputs": [
+        {
+          "name": "Phiếu đăng ký phúc lợi game",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Đọc lựa chọn và ngày hiệu lực từ phiếu nhân viên giả lập.",
+        "So sánh mã gói với danh sách nhà cung cấp đã nhận.",
+        "Tách người thiếu xác nhận để xử lý trước kỳ hiệu lực."
+      ],
+      "check": {
+        "prompt": "Trường hợp nào cần giữ mở?",
+        "good": "Phiếu chọn gói A nhưng xác nhận ghi gói B.",
+        "bad": "Phiếu và xác nhận cùng gói cùng kỳ.",
+        "why": "Sự khác mã gói ảnh hưởng đúng quyền lựa chọn đã ghi."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Hồ sơ bàn giao điều chuyển nội bộ",
+      "output_unit": "hồ sơ điều chuyển",
+      "inputs": [
+        {
+          "name": "Phiếu điều chuyển nội bộ",
+          "unit": "phiếu",
+          "quantity": 2,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Đọc ngày chuyển và đơn vị nhận từ quyết định game.",
+        "Ghép biên bản công việc, tài sản và quyền truy cập cần bàn giao.",
+        "Thu xác nhận hai đơn vị rồi đánh dấu các đầu việc còn mở."
+      ],
+      "check": {
+        "prompt": "Bằng chứng nào đủ đóng hồ sơ?",
+        "good": "Hai đơn vị xác nhận cùng ngày chuyển và danh mục.",
+        "bad": "Chỉ có thông báo từ đơn vị cũ.",
+        "why": "Đơn vị nhận cần xác nhận đã tiếp nhận trách nhiệm."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Ma trận kỹ năng có bằng chứng xác thực",
+      "output_unit": "ma trận kỹ năng",
+      "inputs": [
+        {
+          "name": "Thẻ chứng nhận kỹ năng",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Lập các cột kỹ năng theo yêu cầu vị trí đã duyệt.",
+        "Gắn chứng nhận hoặc bài đánh giá còn hiệu lực với từng ô nhân sự.",
+        "Để ô thiếu bằng chứng ở trạng thái cần xác minh."
+      ],
+      "check": {
+        "prompt": "Ô nào được đánh dấu đạt?",
+        "good": "Ô có mã bằng chứng còn hiệu lực đúng kỹ năng.",
+        "bad": "Ô được tự khai nhưng không có xác minh.",
+        "why": "Ma trận chỉ đáng tin khi mỗi kết quả có nguồn xác thực."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Tiếp nhận nhóm nhân sự thời vụ",
+      "output_unit": "đợt tiếp nhận thời vụ",
+      "inputs": [
+        {
+          "name": "Gói tiếp nhận nhân sự thời vụ",
+          "unit": "gói",
+          "quantity": 3,
+          "unit_cost": 6500
+        }
+      ],
+      "procedure": [
+        "Nhóm người theo ngày vào ca và đầu mối quản lý.",
+        "Phân suất hướng dẫn, thẻ làm việc và dụng cụ theo danh sách.",
+        "Đối chiếu lượt nhận thực tế rồi lập bảng thiếu cho ca sau."
+      ],
+      "check": {
+        "prompt": "Đợt tiếp nhận nào đạt?",
+        "good": "Mỗi người có đủ mục nhận và đầu mối hướng dẫn.",
+        "bad": "Đủ tổng số thẻ nhưng không biết ai đã nhận.",
+        "why": "Phân bổ theo người giúp tránh cấp trùng hoặc bỏ sót."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Triển khai chính sách và xác nhận tại cơ sở mới",
+      "output_unit": "hồ sơ triển khai chính sách",
+      "inputs": [
+        {
+          "name": "Bộ chính sách cơ sở mới",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Đóng mã phiên bản chính sách được duyệt cho cơ sở mới.",
+        "Xếp buổi phổ biến theo ca và ghi người đã tham dự.",
+        "Thu xác nhận đọc đúng phiên bản rồi lập lượt cho người vắng."
+      ],
+      "check": {
+        "prompt": "Xác nhận nào hợp lệ?",
+        "good": "Nhân viên xác nhận đúng bản chính sách được phát.",
+        "bad": "Chữ ký không ghi phiên bản tài liệu.",
+        "why": "Không có phiên bản sẽ không biết nhân viên đã nhận nội dung nào."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Dự án chuyển chương trình phúc lợi giữa các đơn vị",
+      "output_unit": "kế hoạch chuyển phúc lợi",
+      "inputs": [
+        {
+          "name": "Bảng chuyển đổi chương trình phúc lợi",
+          "unit": "bảng",
+          "quantity": 3,
+          "unit_cost": 6500
+        }
+      ],
+      "procedure": [
+        "Ánh xạ mã gói cũ sang gói mới theo bảng chuyển được duyệt.",
+        "Đánh dấu khoảng ngày chưa có bên cung cấp xác nhận.",
+        "Phân người xử lý ngoại lệ và đối soát xác nhận từng đơn vị."
+      ],
+      "check": {
+        "prompt": "Chuyển đổi nào đạt?",
+        "good": "Không còn khoảng hiệu lực trống chưa được xử lý.",
+        "bad": "Gói mới đã nhập nhưng bỏ qua ngày hiệu lực.",
+        "why": "Chương trình cần liên tục theo các mốc trong quy tắc game."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Triển khai nhân sự nhiều cơ sở có quản lý nghiệm thu",
+      "output_unit": "hồ sơ triển khai nhiều cơ sở",
+      "inputs": [
+        {
+          "name": "Bộ nghiệm thu nhân sự cơ sở",
+          "unit": "bộ",
+          "quantity": 4,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Lập mốc nhận việc, đào tạo và bàn giao riêng cho từng cơ sở.",
+        "Gắn người phụ trách cùng ngân sách vào các mốc trên bảng tổng.",
+        "Đóng cơ sở đủ bằng chứng và giữ danh sách ngoại lệ chưa xử lý."
+      ],
+      "check": {
+        "prompt": "Bảng tổng nào được nghiệm thu?",
+        "good": "Mỗi cơ sở có bằng chứng riêng và trạng thái rõ.",
+        "bad": "Một cơ sở đạt nên đánh dấu tất cả hoàn thành.",
+        "why": "Mức hoàn thành phải được xác minh theo từng địa điểm."
+      }
+    }
+  ],
+  "secretary": [
+    {
+      "tier": 1,
+      "title": "Biên soạn bộ tài liệu họp có kiểm phiên bản",
+      "output_unit": "bộ tài liệu họp",
+      "inputs": [
+        {
+          "name": "Tập tài liệu họp theo phiên bản",
+          "unit": "tập",
+          "quantity": 3,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Lấy danh mục tài liệu và người duyệt từ lịch họp.",
+        "Chọn bản đã duyệt mới nhất của từng mục rồi đánh số trang.",
+        "Lập mục lục ghi phiên bản và gửi đúng danh sách người nhận."
+      ],
+      "check": {
+        "prompt": "Bộ tài liệu nào đạt?",
+        "good": "Mục lục khớp mã phiên bản từng tệp được duyệt.",
+        "bad": "Tệp mới nhất theo giờ tải nhưng chưa được duyệt.",
+        "why": "Mới nhất không đồng nghĩa là bản được phép dùng."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Hồ sơ luân chuyển phê duyệt có lịch sử thay đổi",
+      "output_unit": "hồ sơ phê duyệt",
+      "inputs": [
+        {
+          "name": "Phiếu luân chuyển phê duyệt",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đọc tuyến người duyệt trên thẻ quy trình nội bộ.",
+        "Ghi từng thay đổi cùng người sửa và phiên bản được chuyển.",
+        "Thu xác nhận trên bản cuối rồi khóa mục đã hoàn tất."
+      ],
+      "check": {
+        "prompt": "Xác nhận nào đủ giá trị trong game?",
+        "good": "Xác nhận trỏ đúng phiên bản cuối được chuyển.",
+        "bad": "Dùng chữ ký bản cũ cho nội dung đã sửa.",
+        "why": "Phê duyệt chỉ gắn với nội dung mà người duyệt đã xem."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Bộ quy trình đón đoàn khách",
+      "output_unit": "quy trình đón đoàn",
+      "inputs": [
+        {
+          "name": "Thẻ đón đoàn và sơ đồ phòng",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Xác nhận số khách, nhu cầu tiếp cận và khung giờ đã đăng ký.",
+        "Ghép lối vào, phòng đón và người hướng dẫn trên sơ đồ.",
+        "Phát lịch đón có đầu mối và phương án khi khách đến trễ."
+      ],
+      "check": {
+        "prompt": "Quy trình nào khả thi?",
+        "good": "Phòng và người đón đều trống đúng khung giờ.",
+        "bad": "Chỉ ghi tên phòng mà chưa kiểm lịch sử dụng.",
+        "why": "Đón đoàn cần đồng thời có địa điểm và người phụ trách."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Điều phối chuyến công tác lãnh đạo",
+      "output_unit": "hồ sơ công tác",
+      "inputs": [
+        {
+          "name": "Phiếu đặt dịch vụ công tác",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu thời gian họp với lựa chọn đi lại và lưu trú được duyệt.",
+        "Ghép mã đặt chỗ vào từng chặng của lịch trình.",
+        "Bàn giao lịch có đầu mối hỗ trợ và theo dõi khoản chưa xác nhận."
+      ],
+      "check": {
+        "prompt": "Lịch nào sẵn sàng bàn giao?",
+        "good": "Các chặng có mã xác nhận hoặc ngoại lệ được nêu rõ.",
+        "bad": "Ghi mọi đặt chỗ là xong ngay sau khi gửi yêu cầu.",
+        "why": "Yêu cầu đặt dịch vụ chưa phải xác nhận được cung cấp."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Theo dõi việc từ biên bản đến bằng chứng hoàn tất",
+      "output_unit": "sổ việc sau họp",
+      "inputs": [
+        {
+          "name": "Phiếu theo dõi kết luận họp",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Tách từng việc cùng người chịu trách nhiệm từ biên bản đã duyệt.",
+        "Gắn hạn hoàn tất và tài liệu chứng minh cho từng việc.",
+        "Đối chiếu bằng chứng trước khi chuyển trạng thái sang hoàn thành."
+      ],
+      "check": {
+        "prompt": "Việc nào được đóng?",
+        "good": "Việc có sản phẩm đúng yêu cầu trong biên bản.",
+        "bad": "Việc đã được người làm nhắn là đang cố gắng.",
+        "why": "Tiến độ trao đổi không chứng minh sản phẩm hoàn tất."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Điều phối họp nhà cung cấp và đánh giá mẫu",
+      "output_unit": "hồ sơ đánh giá mẫu",
+      "inputs": [
+        {
+          "name": "Thẻ mẫu nhà cung cấp",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 4500
+        }
+      ],
+      "procedure": [
+        "Gắn mã nhà cung cấp lên mẫu và tiêu chí cuộc họp.",
+        "Xếp lượt trình bày không trùng người đánh giá.",
+        "Thu phiếu chấm theo cùng tiêu chí rồi lưu quyết định chọn mẫu."
+      ],
+      "check": {
+        "prompt": "So sánh nào công bằng?",
+        "good": "Các mẫu có phiếu theo cùng bộ tiêu chí.",
+        "bad": "Một mẫu chấm ngoại hình còn mẫu khác chấm giá.",
+        "why": "Khác thước đo làm kết quả không so sánh được."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lịch lãnh đạo năm có rà soát công việc phụ thuộc",
+      "output_unit": "lịch lãnh đạo năm",
+      "inputs": [
+        {
+          "name": "Bộ lịch mốc công việc năm",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Đặt các hạn quyết định cố định lên lịch năm.",
+        "Nối từng cuộc họp với tài liệu phải hoàn tất trước đó.",
+        "Dời mốc chuẩn bị bị chồng và xác nhận với người phụ trách."
+      ],
+      "check": {
+        "prompt": "Lịch nào phản ánh phụ thuộc?",
+        "good": "Tài liệu được duyệt trước cuộc họp cần dùng.",
+        "bad": "Họp ra quyết định trước hạn nộp tài liệu đầu vào.",
+        "why": "Quan hệ trước sau cần khả thi để cuộc họp có đủ dữ liệu."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Điều phối lịch và tài liệu đoàn khách quốc tế",
+      "output_unit": "hồ sơ đoàn quốc tế",
+      "inputs": [
+        {
+          "name": "Bộ lịch đoàn và tài liệu song ngữ",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Ghi múi giờ và ngôn ngữ của các đầu mối đoàn giả lập.",
+        "Quy đổi giờ về lịch chung rồi ghép người phiên dịch phù hợp.",
+        "Đối chiếu bản song ngữ cùng phiên bản trước khi gửi lịch."
+      ],
+      "check": {
+        "prompt": "Lịch nào tránh nhầm giờ?",
+        "good": "Mỗi mốc ghi múi giờ và có người phiên dịch đã nhận.",
+        "bad": "Ghi giờ địa phương không nói thuộc địa điểm nào.",
+        "why": "Nhãn múi giờ giúp các bên hiểu cùng một thời điểm."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Thư ký hội nghị qua nhiều địa điểm",
+      "output_unit": "sổ thư ký hội nghị",
+      "inputs": [
+        {
+          "name": "Phiếu phiên họp nhiều địa điểm",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Gắn mã phiên và phòng cho từng mục chương trình.",
+        "Phân thư ký cùng mẫu biên bản riêng cho các phiên đồng thời.",
+        "Gộp kết luận theo mã phiên rồi kiểm người nhận hành động."
+      ],
+      "check": {
+        "prompt": "Sổ hội nghị nào truy nguyên được?",
+        "good": "Mỗi kết luận giữ mã phiên và thư ký ghi nhận.",
+        "bad": "Gộp mọi kết luận thành danh sách không có nguồn.",
+        "why": "Nguồn phiên họp cần thiết khi đối chiếu nội dung hoặc người phụ trách."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Điều hành hồ sơ đại hội và theo dõi thực hiện nghị quyết",
+      "output_unit": "sổ thực hiện nghị quyết",
+      "inputs": [
+        {
+          "name": "Bộ hồ sơ nghị quyết game",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 8500
+        }
+      ],
+      "procedure": [
+        "Đối chiếu chương trình, biên bản và bản nghị quyết được duyệt.",
+        "Tách nghĩa vụ thực hiện thành việc có chủ trì và mốc báo cáo.",
+        "Thu bằng chứng theo mốc rồi lập bảng việc chưa hoàn tất."
+      ],
+      "check": {
+        "prompt": "Bản theo dõi nào đầy đủ?",
+        "good": "Mỗi việc trỏ tới mục nghị quyết và bằng chứng thực hiện.",
+        "bad": "Chỉ đếm số nghị quyết đã phát hành.",
+        "why": "Phát hành văn bản chưa chứng minh thực hiện nội dung."
+      }
+    }
+  ],
+  "it_helpdesk": [
+    {
+      "tier": 1,
+      "title": "Phục hồi bản sao lưu trong môi trường thử và nghiệm thu",
+      "output_unit": "biên bản phục hồi thử",
+      "inputs": [
+        {
+          "name": "Gói dữ liệu sao lưu thử nghiệm",
+          "unit": "gói",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Kiểm mã bản sao và phạm vi dữ liệu được phép dùng trong máy thử.",
+        "Khôi phục vào vùng thử riêng theo phiếu thao tác đã duyệt.",
+        "So sánh mã kiểm tệp và cho người dùng thử xác nhận đủ dữ liệu."
+      ],
+      "check": {
+        "prompt": "Kết quả nào được nhận?",
+        "good": "Dữ liệu khôi phục khớp mã kiểm và được thử mở.",
+        "bad": "Phần mềm báo thành công nhưng chưa mở tệp nào.",
+        "why": "Trạng thái công cụ không thay kiểm chứng dữ liệu sử dụng được."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Triển khai cấu hình máy in đã được duyệt",
+      "output_unit": "máy in được nghiệm thu",
+      "inputs": [
+        {
+          "name": "Bộ cấu hình máy in chuẩn",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu mã máy in và cấu hình đã được quản trị viên duyệt.",
+        "Áp cấu hình vào thiết bị thử theo hướng dẫn nội bộ.",
+        "In trang kiểm rồi lưu mã máy và kết quả người dùng xác nhận."
+      ],
+      "check": {
+        "prompt": "Máy in nào đạt?",
+        "good": "Trang kiểm đúng khổ giấy và hàng đợi đã duyệt.",
+        "bad": "In được nhưng chạy nhầm máy của phòng khác.",
+        "why": "Đúng đích và đúng cấu hình đều thuộc tiêu chí triển khai."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Nghiệm thu âm thanh hình ảnh phòng họp",
+      "output_unit": "biên bản phòng họp",
+      "inputs": [
+        {
+          "name": "Bộ mẫu thử âm thanh hình ảnh",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 4500
+        }
+      ],
+      "procedure": [
+        "Kiểm danh mục cổng và thiết bị theo sơ đồ phòng.",
+        "Chạy tệp thử hình và tiếng ở các vị trí trong phiếu nghiệm thu.",
+        "Lưu kết quả từng vị trí và yêu cầu sửa điểm chưa đạt."
+      ],
+      "check": {
+        "prompt": "Bằng chứng nào đủ?",
+        "good": "Có ảnh hiển thị và xác nhận nghe ở các vị trí yêu cầu.",
+        "bad": "Chỉ chụp màn hình đang bật.",
+        "why": "Màn hình bật không chứng minh đường âm thanh hoạt động."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Triển khai thiết bị theo danh mục và cấu hình chuẩn",
+      "output_unit": "lô thiết bị bàn giao",
+      "inputs": [
+        {
+          "name": "Tem tài sản và gói cấu hình máy",
+          "unit": "bộ",
+          "quantity": 4,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Ghép số máy với người nhận trên danh mục được duyệt.",
+        "Cài cấu hình chuẩn bằng công cụ nội bộ và ghi phiên bản.",
+        "Đối chiếu ứng dụng bắt buộc rồi thu biên nhận từng máy."
+      ],
+      "check": {
+        "prompt": "Lô nào bàn giao được?",
+        "good": "Từng số máy có cấu hình và người nhận đúng danh mục.",
+        "bad": "Đếm đủ máy nhưng không gắn ai nhận máy nào.",
+        "why": "Truy nguyên từng thiết bị là điều kiện quản lý tài sản."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Chuyển quyền truy cập thư mục dùng chung",
+      "output_unit": "biên bản chuyển quyền",
+      "inputs": [
+        {
+          "name": "Phiếu quyền thư mục đã duyệt",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Lập danh sách nhóm cũ và nhóm mới từ yêu cầu đã phê duyệt.",
+        "Áp quyền theo ma trận được duyệt trong môi trường thử.",
+        "Thử tài khoản đúng vai và tài khoản không được phép trước bàn giao."
+      ],
+      "check": {
+        "prompt": "Cặp phép thử nào cần có?",
+        "good": "Người được phép mở được, người ngoài nhóm bị chặn.",
+        "bad": "Chỉ thử bằng tài khoản quản trị viên.",
+        "why": "Tài khoản quản trị không đại diện quyền của người sử dụng."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Đợt hỗ trợ đăng ký xác thực nhiều yếu tố",
+      "output_unit": "đợt hỗ trợ MFA",
+      "inputs": [
+        {
+          "name": "Thẻ hướng dẫn MFA nội bộ",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Lập lượt đăng ký theo danh sách tài khoản được duyệt.",
+        "Hướng dẫn người dùng tự đăng ký trên màn hình chính thức của tổ chức.",
+        "Ghi trạng thái thử đăng nhập và đầu mối hỗ trợ khôi phục."
+      ],
+      "check": {
+        "prompt": "Biên bản nào đúng?",
+        "good": "Chỉ lưu trạng thái hoàn thành, không ghi mã bí mật.",
+        "bad": "Yêu cầu gửi mã xác thực vào bảng theo dõi chung.",
+        "why": "Mã xác thực thuộc người dùng, bảng triển khai chỉ cần trạng thái."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Nghiệm thu mạng và tài sản cơ sở mới",
+      "output_unit": "biên bản cơ sở mới",
+      "inputs": [
+        {
+          "name": "Bộ sơ đồ mạng và tem tài sản",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 6500
+        }
+      ],
+      "procedure": [
+        "Đối chiếu thiết bị lắp với sơ đồ mạng được duyệt.",
+        "Thử kết nối tại từng ổ được đánh số trong phiếu kiểm.",
+        "Bàn giao sơ đồ hoàn công và danh sách tài sản khớp vị trí."
+      ],
+      "check": {
+        "prompt": "Hồ sơ nào đạt?",
+        "good": "Ổ mạng đã thử có mã tương ứng trên sơ đồ hoàn công.",
+        "bad": "Chỉ xác nhận một máy truy cập mạng thành công.",
+        "why": "Một vị trí tốt chưa chứng minh toàn bộ điểm cần nghiệm thu."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Chuyển nền tảng văn phòng có diễn tập khôi phục",
+      "output_unit": "biên bản diễn tập khôi phục",
+      "inputs": [
+        {
+          "name": "Gói dữ liệu diễn tập chuyển nền tảng",
+          "unit": "gói",
+          "quantity": 2,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Chọn dữ liệu thử và điểm quay lại trong kế hoạch được duyệt.",
+        "Chạy chuyển thử rồi diễn tập phục hồi vào môi trường thử.",
+        "Đối chiếu dữ liệu sau phục hồi và ghi thời gian thực hiện."
+      ],
+      "check": {
+        "prompt": "Diễn tập nào có bằng chứng?",
+        "good": "Mở được dữ liệu sau phục hồi và ghi thời gian kiểm.",
+        "bad": "Chỉ kiểm rằng tệp sao lưu tồn tại.",
+        "why": "Có tệp sao lưu chưa chứng minh khôi phục được."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Dự án hợp nhất môi trường làm việc sau sáp nhập",
+      "output_unit": "hồ sơ hợp nhất văn phòng",
+      "inputs": [
+        {
+          "name": "Bộ ánh xạ tài khoản sau sáp nhập",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Ghép tài khoản và tài sản hai đơn vị theo mã nhân sự được duyệt.",
+        "Tách xung đột tên cùng quyền truy cập để chủ sở hữu quyết định.",
+        "Thử nhóm đại diện rồi bàn giao bảng ánh xạ đã xác nhận."
+      ],
+      "check": {
+        "prompt": "Tài khoản trùng tên xử lý thế nào?",
+        "good": "Xác minh chủ sở hữu trước khi hợp nhất quyền.",
+        "bad": "Gộp tự động mọi quyền của hai tài khoản.",
+        "why": "Trùng tên không chứng minh cùng người hoặc cùng phạm vi truy cập."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Chuyển hệ thống văn phòng có kiểm trước và sau thời điểm đổi",
+      "output_unit": "biên bản chuyển hệ thống",
+      "inputs": [
+        {
+          "name": "Phiếu kiểm trước sau chuyển hệ thống",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 6500
+        }
+      ],
+      "procedure": [
+        "Chốt kết quả nền và điểm quay lại trước giờ chuyển đã duyệt.",
+        "Thực hiện danh sách chuyển trong môi trường được cho phép.",
+        "Chạy lại cùng phép kiểm và quyết định tiếp tục theo tiêu chí đã duyệt."
+      ],
+      "check": {
+        "prompt": "Kết quả nào đủ so sánh?",
+        "good": "Cùng bộ phép kiểm được chạy trước và sau giờ chuyển.",
+        "bad": "Đổi phép kiểm sau chuyển để chỉ còn các mục đạt.",
+        "why": "Thước đo giữ nguyên mới phản ánh tác động của lần chuyển."
+      }
+    }
+  ],
+  "railway": [
+    {
+      "tier": 1,
+      "title": "Báo cáo xu hướng thời gian vận hành chắn",
+      "output_unit": "báo cáo thời gian chắn",
+      "inputs": [
+        {
+          "name": "Bản ghi chắn mô phỏng",
+          "unit": "bản",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Đọc mốc bắt đầu và kết thúc từ nhật ký game được cấp.",
+        "Tính thời lượng từng lượt rồi nhóm theo cùng loại lượt.",
+        "So sánh các nhóm với dải chuẩn hư cấu và gắn mã bản ghi lệch."
+      ],
+      "check": {
+        "prompt": "Báo cáo nào có căn cứ?",
+        "good": "Mỗi thời lượng có hai mốc nguồn cùng loại lượt.",
+        "bad": "So thời lượng của các loại lượt khác nhau không phân nhóm.",
+        "why": "Phân nhóm giúp tránh hiểu nhầm sự khác biệt do loại lượt."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Gộp báo cáo trùng của cùng lỗi",
+      "output_unit": "sổ lỗi đã gộp",
+      "inputs": [
+        {
+          "name": "Phiếu lỗi đường ngang giả lập",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "So mã thiết bị, thời điểm và mô tả của các phiếu báo.",
+        "Nối các phiếu trùng vào một mã lỗi chính vẫn giữ số phiếu gốc.",
+        "Chuyển bản tổng hợp có nguồn báo cho người phụ trách game."
+      ],
+      "check": {
+        "prompt": "Gộp nào đúng?",
+        "good": "Giữ một lỗi chính và liên kết mọi phiếu nguồn.",
+        "bad": "Xóa các phiếu phụ để sổ nhìn gọn.",
+        "why": "Nguồn báo phải còn để kiểm chứng quá trình gộp."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Kiểm mẫu bằng chứng kiểm tra đường ngang",
+      "output_unit": "phiếu kiểm mẫu",
+      "inputs": [
+        {
+          "name": "Bộ ảnh kiểm tra đường ngang game",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Đọc danh mục bằng chứng bắt buộc trong thẻ quy tắc hư cấu.",
+        "Ghép ảnh và biên bản theo mã vị trí, ngày kiểm của mẫu.",
+        "Ghi mục thiếu hoặc sai ngày để người kiểm tra bổ sung."
+      ],
+      "check": {
+        "prompt": "Mẫu nào đạt?",
+        "good": "Ảnh đúng mã vị trí và đúng ngày biên bản.",
+        "bad": "Ảnh rõ nét nhưng thuộc đường ngang khác.",
+        "why": "Độ rõ không thay thế tính đúng đối tượng của bằng chứng."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Lập ưu tiên bảo dưỡng phòng ngừa",
+      "output_unit": "bảng bảo dưỡng phòng ngừa",
+      "inputs": [
+        {
+          "name": "Thẻ ưu tiên bảo dưỡng chắn",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 5500
+        }
+      ],
+      "procedure": [
+        "Gom số lần lặp lỗi từ sổ mô phỏng theo mã thiết bị.",
+        "Áp ma trận tần suất và ảnh hưởng trên thẻ game.",
+        "Xếp lượt xem xét trong ngân sách cơ quan và ghi căn cứ điểm."
+      ],
+      "check": {
+        "prompt": "Ưu tiên nào đúng?",
+        "good": "Mức xếp có số lần lỗi và điểm ảnh hưởng trên thẻ.",
+        "bad": "Xếp theo thứ tự tên đường ngang.",
+        "why": "Thứ tự tên không phản ánh nhu cầu bảo dưỡng của kịch bản."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Lập cửa sổ thi công theo lịch tàu game",
+      "output_unit": "cửa sổ công việc game",
+      "inputs": [
+        {
+          "name": "Thẻ lịch tàu hư cấu",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Đánh dấu các khoảng bị khóa trên lịch tàu mô phỏng.",
+        "Ghép thời lượng công việc với khoảng trống được thẻ cho phép.",
+        "Gửi cửa sổ dự kiến cho vai điều phối game xác nhận."
+      ],
+      "check": {
+        "prompt": "Khoảng nào được chọn?",
+        "good": "Khoảng trống đủ thời lượng và được xác nhận.",
+        "bad": "Khoảng có chỗ trống ngắn hơn công việc.",
+        "why": "Bài game đòi hỏi đủ thời gian trong cửa sổ hợp lệ."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Đối chiếu xác nhận bàn giao khu vực thi công",
+      "output_unit": "hồ sơ bàn giao khu vực",
+      "inputs": [
+        {
+          "name": "Phiếu bàn giao khu vực game",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu mã khu vực trên phiếu bên giao và bên nhận.",
+        "So mốc giờ và phạm vi với thẻ công việc được duyệt.",
+        "Giữ trạng thái chờ khi hai bên chưa xác nhận cùng phạm vi."
+      ],
+      "check": {
+        "prompt": "Bàn giao nào đạt?",
+        "good": "Hai bên xác nhận cùng mã khu vực và phạm vi.",
+        "bad": "Chỉ bên giao ký còn bên nhận chưa xác nhận.",
+        "why": "Bàn giao cần sự khớp thông tin ở cả hai phía."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lập phương án liên lạc khi hai chắn gặp sự cố",
+      "output_unit": "sơ đồ liên lạc sự cố",
+      "inputs": [
+        {
+          "name": "Thẻ đầu mối liên lạc chắn game",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Tách hai sự cố giả lập theo mã đường ngang.",
+        "Ghép đầu mối chính và dự phòng từ thẻ liên lạc cơ quan.",
+        "Diễn tập gửi thẻ tin và ghi xác nhận riêng cho từng điểm."
+      ],
+      "check": {
+        "prompt": "Sơ đồ nào đầy đủ?",
+        "good": "Mỗi điểm có đầu mối nhận và kênh dự phòng riêng.",
+        "bad": "Hai điểm dùng một ô xác nhận không ghi mã.",
+        "why": "Xác nhận chung không chứng minh từng điểm đã nhận thông tin."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Diễn tập bố trí người trực thay thế",
+      "output_unit": "lịch diễn tập thay ca",
+      "inputs": [
+        {
+          "name": "Thẻ ca trực thay thế mô phỏng",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 4500
+        }
+      ],
+      "procedure": [
+        "Đọc vai được phép thay thế trong danh sách nhân sự game.",
+        "Xếp người vào ca trống không trùng nhiệm vụ trên bảng.",
+        "Ghi lượt nhận ca giả lập và bàn giao thông tin còn mở."
+      ],
+      "check": {
+        "prompt": "Người nào được xếp thay?",
+        "good": "Người đủ vai trên thẻ và không trùng ca.",
+        "bad": "Bất kỳ người rảnh dù thiếu vai được duyệt.",
+        "why": "Bài tập yêu cầu phù hợp vai trò lẫn thời gian."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Giải quyết thông báo cho phép mở lại mâu thuẫn",
+      "output_unit": "phiếu xử lý mâu thuẫn",
+      "inputs": [
+        {
+          "name": "Bộ thông báo khôi phục game",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9500
+        }
+      ],
+      "procedure": [
+        "Xếp thông báo theo mã khu vực, nguồn và thời điểm hiệu lực.",
+        "Đánh dấu hai thông báo trái nhau và giữ trạng thái chờ xác minh.",
+        "Chuyển mâu thuẫn tới vai có thẩm quyền trong game để xác nhận lại."
+      ],
+      "check": {
+        "prompt": "Khi hai thông báo trái nhau thì chọn gì?",
+        "good": "Chờ đầu mối có thẩm quyền xác minh đúng mã khu vực.",
+        "bad": "Tự chọn thông báo thuận tiện hơn.",
+        "why": "Tài liệu mâu thuẫn cần xác nhận nguồn, không suy đoán trạng thái."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Diễn tập khôi phục nhiều đường ngang",
+      "output_unit": "hồ sơ diễn tập khu vực",
+      "inputs": [
+        {
+          "name": "Bộ kịch bản khôi phục đường ngang",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Lập bảng trạng thái riêng cho mỗi đường ngang trong kịch bản.",
+        "Ghép lượt liên lạc và phiếu xác nhận khôi phục vào từng điểm.",
+        "Tổng kết điểm chưa đủ xác nhận và giao việc cải thiện diễn tập."
+      ],
+      "check": {
+        "prompt": "Toàn khu vực được ghi hoàn tất khi nào?",
+        "good": "Từng điểm có đủ xác nhận theo thẻ quy tắc game.",
+        "bad": "Điểm lớn nhất xong nên suy ra các điểm khác xong.",
+        "why": "Trạng thái tổng phải dựa trên bằng chứng của từng điểm."
+      }
+    }
+  ],
+  "nurse": [
+    {
+      "tier": 1,
+      "title": "Bàn giao các việc chăm sóc còn chờ",
+      "output_unit": "sổ bàn giao việc chờ",
+      "inputs": [
+        {
+          "name": "Phiếu việc chăm sóc hư cấu",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đọc mã người bệnh giả lập và các việc hành chính còn mở.",
+        "Ghép mỗi việc với người phụ trách và mốc theo dõi trên thẻ khoa game.",
+        "Thu xác nhận nhận việc ở ca sau, không đưa chỉ dẫn điều trị."
+      ],
+      "check": {
+        "prompt": "Bàn giao nào đủ?",
+        "good": "Mỗi việc chờ có người nhận và thời điểm theo dõi.",
+        "bad": "Chỉ ghi tổng số việc chưa xong của cả khoa.",
+        "why": "Người nhận cần biết mình theo dõi việc nào và khi nào."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Phân công người theo dõi kết quả xét nghiệm",
+      "output_unit": "bảng người theo dõi kết quả",
+      "inputs": [
+        {
+          "name": "Thẻ theo dõi kết quả giả lập",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghép yêu cầu xét nghiệm hư cấu với mã hồ sơ đã mã hóa.",
+        "Phân người theo dõi tình trạng trả kết quả theo lịch ca game.",
+        "Ghi đường chuyển thông tin tới người chuyên môn khi kết quả đến."
+      ],
+      "check": {
+        "prompt": "Bảng nào đạt?",
+        "good": "Mỗi yêu cầu có người theo dõi và đầu mối nhận.",
+        "bad": "Kết quả được coi đã xử lý ngay khi tệp xuất hiện.",
+        "why": "Có tệp không chứng minh người phụ trách đã nhận thông tin."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Đối chiếu việc thiếu trong kế hoạch chăm sóc",
+      "output_unit": "phiếu đối chiếu việc thiếu",
+      "inputs": [
+        {
+          "name": "Bộ kế hoạch chăm sóc mô phỏng",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 7500
+        }
+      ],
+      "procedure": [
+        "Đọc các việc được đội chuyên môn giả lập duyệt trong kế hoạch.",
+        "Đối chiếu dấu xác nhận với từng mã việc trên sổ thực hiện.",
+        "Lập danh sách chưa có bằng chứng và gửi phụ trách xác minh."
+      ],
+      "check": {
+        "prompt": "Mục không có dấu xác nhận xử lý thế nào?",
+        "good": "Ghi chưa đủ bằng chứng và yêu cầu xác minh.",
+        "bad": "Tự ghi đã làm vì cùng phòng với người khác.",
+        "why": "Không được suy diễn việc hoàn tất từ hồ sơ khác."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Kiểm bàn giao tư trang và giấy đồng ý",
+      "output_unit": "biên bản bàn giao tư trang",
+      "inputs": [
+        {
+          "name": "Túi hồ sơ tư trang và đồng ý game",
+          "unit": "túi",
+          "quantity": 2,
+          "unit_cost": 6500
+        }
+      ],
+      "procedure": [
+        "Kiểm số món theo danh mục tư trang của hồ sơ hư cấu.",
+        "Đối chiếu người được phép nhận và phạm vi giấy đồng ý game.",
+        "Thu xác nhận theo mã hồ sơ và ghi rõ món còn chờ bàn giao."
+      ],
+      "check": {
+        "prompt": "Biên bản nào được chấp nhận?",
+        "good": "Đúng người nhận và từng món được đối chiếu.",
+        "bad": "Ai đến sớm cũng được nhận túi tư trang.",
+        "why": "Bài tập yêu cầu bàn giao đúng người được ghi trên hồ sơ."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Kiểm mẫu quy trình phòng nhiễm khuẩn khoa",
+      "output_unit": "phiếu kiểm mẫu quy trình",
+      "inputs": [
+        {
+          "name": "Bộ bằng chứng quy trình khoa game",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Chọn mẫu theo danh sách kiểm hồ sơ của khoa hư cấu.",
+        "So nhật ký, phiên bản hướng dẫn và xác nhận tập huấn theo thẻ tiêu chí.",
+        "Ghi điểm thiếu bằng chứng để người phụ trách quy trình xử lý."
+      ],
+      "check": {
+        "prompt": "Kết luận nào phù hợp?",
+        "good": "Mẫu thiếu nhật ký được ghi cần bổ sung bằng chứng.",
+        "bad": "Tự đưa phác đồ phòng nhiễm khuẩn thay cho phần thiếu.",
+        "why": "Nhiệm vụ kiểm hồ sơ theo thẻ, không thay quyết định chuyên môn."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Đánh giá lại sau đợt cải thiện quy trình",
+      "output_unit": "báo cáo đánh giá lại",
+      "inputs": [
+        {
+          "name": "Phiếu đánh giá trước sau cải thiện",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 4500
+        }
+      ],
+      "procedure": [
+        "Lấy bộ tiêu chí và tỷ lệ hồ sơ đủ trước đợt cải thiện.",
+        "Chấm mẫu sau cải thiện bằng chính bộ tiêu chí đó.",
+        "So tỷ lệ và ghi phần chưa đạt cần tiếp tục theo dõi."
+      ],
+      "check": {
+        "prompt": "So sánh nào hợp lệ?",
+        "good": "Hai đợt dùng cùng tiêu chí và ghi cỡ mẫu.",
+        "bad": "Đợt sau bỏ tiêu chí khó để tăng tỷ lệ đạt.",
+        "why": "Thay tiêu chí khiến mức cải thiện không còn so sánh được."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lập kế hoạch thiết bị khi về nhà",
+      "output_unit": "kế hoạch bàn giao thiết bị",
+      "inputs": [
+        {
+          "name": "Thẻ thiết bị về nhà theo chỉ định",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 5500
+        }
+      ],
+      "procedure": [
+        "Đọc danh mục thiết bị đã được đội chuyên môn giả lập duyệt.",
+        "Ghép mỗi mã thiết bị với bên cung cấp, lịch giao và người nhận.",
+        "Chuyển mục chưa xác nhận về đầu mối, không tự thay loại thiết bị."
+      ],
+      "check": {
+        "prompt": "Kế hoạch nào sẵn sàng?",
+        "good": "Mỗi mã được duyệt có bên cung cấp và lịch xác nhận.",
+        "bad": "Tự đổi thiết bị khác loại để đủ danh mục.",
+        "why": "Thiết bị cần khớp danh mục chuyên môn đã duyệt của kịch bản."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Xếp buổi hướng dẫn người chăm sóc",
+      "output_unit": "lịch buổi hướng dẫn",
+      "inputs": [
+        {
+          "name": "Phiếu lịch hướng dẫn người chăm sóc",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi người chăm sóc được đồng ý tham dự và chủ đề đã duyệt.",
+        "Ghép lịch rảnh với người hướng dẫn chuyên môn giả lập.",
+        "Thu xác nhận tham dự và chuyển câu hỏi còn mở cho người hướng dẫn."
+      ],
+      "check": {
+        "prompt": "Bằng chứng hoàn tất lịch là gì?",
+        "good": "Người học và người hướng dẫn xác nhận buổi đã diễn ra.",
+        "bad": "Chỉ có thư mời đã gửi.",
+        "why": "Thư mời không chứng minh đã có buổi hướng dẫn."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Điều phối hẹn chuyển tiếp và nguồn lực",
+      "output_unit": "bảng điều phối chuyển tiếp",
+      "inputs": [
+        {
+          "name": "Bộ phiếu hẹn chuyển tiếp game",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Đọc các cuộc hẹn đã được nhóm chuyên môn hư cấu yêu cầu.",
+        "Đối chiếu thời gian, phương tiện hỗ trợ và đầu mối cơ sở nhận.",
+        "Ghi xác nhận từng nguồn lực và báo các mốc chưa khớp."
+      ],
+      "check": {
+        "prompt": "Lịch nào khả thi?",
+        "good": "Giờ hẹn và nguồn lực hỗ trợ cùng được xác nhận.",
+        "bad": "Có giờ hẹn nhưng phương tiện đến sau giờ đó.",
+        "why": "Nguồn lực phải khớp thời gian của cuộc hẹn."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Điều phối hội ý ra viện nhiều bên",
+      "output_unit": "biên bản hội ý nhiều bên",
+      "inputs": [
+        {
+          "name": "Bộ hồ sơ hội ý ra viện mô phỏng",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Gom việc còn chờ từ thẻ của các vai trong kịch bản.",
+        "Xếp hội ý với người bệnh giả lập hoặc đại diện được đồng ý và các đầu mối.",
+        "Lưu quyết định của đội chuyên môn cùng người theo dõi từng việc."
+      ],
+      "check": {
+        "prompt": "Biên bản nào đủ điều phối?",
+        "good": "Mỗi việc có quyết định ghi nhận và người theo dõi.",
+        "bad": "Tự kết luận đủ điều kiện ra viện từ số việc ít.",
+        "why": "Điều phối ghi nhận quyết định chuyên môn, không tự thay quyết định đó."
+      }
+    }
+  ],
+  "lighthouse": [
+    {
+      "tier": 1,
+      "title": "Kiểm kê tải của nguồn điện dự phòng",
+      "output_unit": "bảng kiểm kê tải",
+      "inputs": [
+        {
+          "name": "Thẻ tải điện trạm hư cấu",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Đối chiếu mã thiết bị trên sơ đồ trạm game với danh mục tải.",
+        "Ghi điểm tiêu thụ quy ước và nhóm ưu tiên từ từng thẻ.",
+        "Cộng điểm theo nhóm rồi ghi thiết bị chưa xác định vào mục cần hỏi."
+      ],
+      "check": {
+        "prompt": "Bảng nào đạt?",
+        "good": "Mỗi mã thiết bị có điểm tải từ thẻ tương ứng.",
+        "bad": "Ước lượng tải từ kích thước hình vẽ.",
+        "why": "Số liệu bài tập phải có nguồn, không lấy từ cảm giác."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Tính thời gian duy trì của bộ pin game",
+      "output_unit": "phiếu thời gian duy trì",
+      "inputs": [
+        {
+          "name": "Thẻ dung lượng pin game",
+          "unit": "thẻ",
+          "quantity": 2,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Lấy dung lượng điểm và mức dùng mỗi lượt từ thẻ pin hư cấu.",
+        "Chia điểm còn lại cho điểm dùng mỗi lượt theo quy tắc game.",
+        "Ghi số lượt duy trì cùng giả định tải đã dùng trong phép tính."
+      ],
+      "check": {
+        "prompt": "Kết quả nào kiểm được?",
+        "good": "Số lượt kèm dung lượng và mức dùng trên thẻ.",
+        "bad": "Chỉ ghi pin đủ lâu mà không có phép tính.",
+        "why": "Thời gian mô phỏng phụ thuộc cả dung lượng và tải quy ước."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Xếp thứ tự bảo dưỡng giữ đủ điện dự trữ",
+      "output_unit": "lịch giữ điện dự trữ",
+      "inputs": [
+        {
+          "name": "Phiếu lịch bảo dưỡng nguồn game",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Đọc mức dự trữ bắt buộc và các nguồn đang có trên thẻ trạm.",
+        "Xếp các công việc giấy sao cho điểm dự trữ không xuống dưới mức game.",
+        "Đính bảng điểm từng lượt để vai phụ trách duyệt lịch."
+      ],
+      "check": {
+        "prompt": "Lịch nào được nhận?",
+        "good": "Mỗi lượt giữ đủ điểm dự trữ theo thẻ.",
+        "bad": "Chỉ tổng điểm cả ngày đạt nhưng một lượt bị thiếu.",
+        "why": "Yêu cầu dự trữ phải được đáp ứng tại từng lượt mô phỏng."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Đối chiếu dữ liệu cảm biến từ xa",
+      "output_unit": "phiếu đối chiếu cảm biến",
+      "inputs": [
+        {
+          "name": "Bộ dữ liệu cảm biến trạm game",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Ghép bản ghi từ xa và bản đối chiếu theo cùng mã trạm.",
+        "Căn dấu thời gian để so các giá trị cùng lượt.",
+        "Gắn cờ thiếu hoặc lệch và chuyển yêu cầu xác minh nguồn đo."
+      ],
+      "check": {
+        "prompt": "So sánh nào đúng?",
+        "good": "Hai bản ghi cùng trạm và cùng thời điểm.",
+        "bad": "So hai thời điểm khác nhau rồi kết luận lỗi.",
+        "why": "Sai lệch thời điểm có thể tạo chênh lệch giả."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Khảo sát xu hướng hiệu quả quang học",
+      "output_unit": "báo cáo xu hướng quang học",
+      "inputs": [
+        {
+          "name": "Phiếu đo quang học mô phỏng",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Nhóm số đo theo cùng cấu hình được ghi trong dữ liệu game.",
+        "Vẽ thứ tự điểm đo theo ngày của từng nhóm.",
+        "Đánh dấu đoạn giảm theo dải đánh giá hư cấu và dẫn mã mẫu."
+      ],
+      "check": {
+        "prompt": "Xu hướng nào có cơ sở?",
+        "good": "Đo cùng cấu hình giảm qua các mốc có mã nguồn.",
+        "bad": "Gộp mọi cấu hình thành một đường duy nhất.",
+        "why": "Khác cấu hình có thể làm thay đổi số đo dù thiết bị không đổi."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Phân biệt suy giảm do thời tiết và thiết bị",
+      "output_unit": "phiếu giả thuyết suy giảm",
+      "inputs": [
+        {
+          "name": "Thẻ thời tiết và thiết bị giả lập",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 5500
+        }
+      ],
+      "procedure": [
+        "Ghép thời tiết game với các lượt đo cùng thời điểm.",
+        "So các cặp cùng thời tiết và các cặp cùng cấu hình thiết bị.",
+        "Ghi giả thuyết phù hợp nhất cùng phần cần kiểm thêm."
+      ],
+      "check": {
+        "prompt": "Bản nhận xét nào thận trọng?",
+        "good": "Chỉ ra cặp bằng chứng và đề nghị xác minh nguyên nhân.",
+        "bad": "Khẳng định thiết bị hỏng khi gặp một lượt sương mù.",
+        "why": "Dữ liệu thời tiết cần được đối chiếu trước khi quy nguyên nhân."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lập bản đồ vùng ảnh hưởng khi đèn lân cận ngừng",
+      "output_unit": "bản đồ vùng ảnh hưởng",
+      "inputs": [
+        {
+          "name": "Bản đồ đèn khu vực hư cấu",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Đọc các ô phủ quy ước của từng đèn trên bản đồ game.",
+        "Đánh dấu ô mất phủ khi loại đèn đang ngừng trong kịch bản.",
+        "Ghi mã ô và chuyển bản đồ tới vai quản lý thông báo."
+      ],
+      "check": {
+        "prompt": "Bản đồ nào chính xác?",
+        "good": "Các ô ảnh hưởng được tính lại theo đèn còn hoạt động.",
+        "bad": "Tô toàn khu vực ảnh hưởng dù vẫn có ô được phủ.",
+        "why": "Phải đối chiếu vùng phủ còn lại của từng ô trong trò chơi."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Theo dõi xác nhận thông báo của cơ quan quản lý",
+      "output_unit": "sổ xác nhận thông báo",
+      "inputs": [
+        {
+          "name": "Phiếu theo dõi thông báo trạm",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Gắn mã sự kiện và phiên bản vào thông báo mô phỏng.",
+        "Gửi theo danh sách đầu mối cơ quan được thẻ game chỉ định.",
+        "Ghi từng xác nhận và nhắc lại đầu mối chưa phản hồi."
+      ],
+      "check": {
+        "prompt": "Sổ nào đủ căn cứ?",
+        "good": "Mỗi đầu mối xác nhận đúng phiên bản thông báo.",
+        "bad": "Chỉ lưu giờ gửi rồi xem như tất cả đã nhận.",
+        "why": "Gửi đi chưa chứng minh người nhận đã xác nhận."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Kiểm xác nhận khôi phục nhiều trạm",
+      "output_unit": "bảng phục hồi nhiều trạm",
+      "inputs": [
+        {
+          "name": "Bộ xác nhận phục hồi trạm game",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 6500
+        }
+      ],
+      "procedure": [
+        "Đối chiếu mã trạm với phiếu hoàn tất trong kịch bản.",
+        "So thời điểm và người xác nhận theo thẻ vai trò được duyệt.",
+        "Tách phiếu thiếu hoặc trái nhau để xác minh trước khi đóng trạng thái."
+      ],
+      "check": {
+        "prompt": "Trạm nào được đóng?",
+        "good": "Trạm có xác nhận phù hợp mã và vai trò game.",
+        "bad": "Trạm nằm gần một trạm đã được xác nhận.",
+        "why": "Mỗi trạm cần bằng chứng riêng về trạng thái của mình."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Diễn tập duy trì hệ thống đèn khu vực",
+      "output_unit": "hồ sơ diễn tập hệ thống đèn",
+      "inputs": [
+        {
+          "name": "Bộ kịch bản duy trì hệ thống đèn",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 14000
+        }
+      ],
+      "procedure": [
+        "Lập bảng các trạm, điểm dự trữ và đầu mối theo kịch bản.",
+        "Cập nhật thẻ sự cố qua từng lượt và phân việc cho vai phù hợp.",
+        "Tổng kết khoảng thiếu nguồn lực cùng nhiệm vụ cải thiện có người nhận."
+      ],
+      "check": {
+        "prompt": "Hồ sơ nào hoàn tất diễn tập?",
+        "good": "Có diễn biến từng lượt và người nhận việc cải thiện.",
+        "bad": "Chỉ có bản đồ trạm trước diễn tập.",
+        "why": "Bản đồ ban đầu không thể hiện cách phối hợp qua các tình huống."
+      }
+    }
+  ],
+  "rescue": [
+    {
+      "tier": 1,
+      "title": "Liên kết nhiều cuộc gọi về cùng sự cố",
+      "output_unit": "hồ sơ liên kết cuộc gọi",
+      "inputs": [
+        {
+          "name": "Thẻ cuộc gọi cứu hộ hư cấu",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "So vị trí, thời điểm và mô tả trên các thẻ cuộc gọi game.",
+        "Liên kết cuộc gọi phù hợp vào mã sự cố chính mà giữ mã nguồn.",
+        "Ghi lý do liên kết và chuyển trường hợp chưa rõ cho vai giám sát."
+      ],
+      "check": {
+        "prompt": "Liên kết nào có căn cứ?",
+        "good": "Nhiều thuộc tính trùng và còn mã từng cuộc gọi.",
+        "bad": "Chỉ dựa vào hai người gọi có tên giống nhau.",
+        "why": "Tên giống không chứng minh cùng một sự cố."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Tách hai sự cố gần nhau bị gộp nhầm",
+      "output_unit": "hồ sơ tách sự cố",
+      "inputs": [
+        {
+          "name": "Bộ sự cố bị gộp nhầm game",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Đọc các điểm mâu thuẫn về vị trí và thời gian trong hồ sơ chung.",
+        "Chia bằng chứng về hai mã sự cố theo nguồn đã xác minh.",
+        "Lưu lịch sử tách và báo đầu mối phụ trách hai hồ sơ."
+      ],
+      "check": {
+        "prompt": "Bản tách nào đầy đủ?",
+        "good": "Hai hồ sơ giữ nguồn và ghi liên kết lịch sử tách.",
+        "bad": "Xóa hồ sơ chung mà không lưu dấu thay đổi.",
+        "why": "Lịch sử cần thiết để không làm mất thông tin đã điều phối."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Gộp bằng chứng nguy hiểm từ nhiều người gọi",
+      "output_unit": "bảng bằng chứng sự cố",
+      "inputs": [
+        {
+          "name": "Phiếu bằng chứng nguy hiểm game",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Tách điều người gọi quan sát khỏi suy đoán trên từng thẻ.",
+        "Gắn thời điểm, nguồn và mức xác minh theo quy tắc game.",
+        "Tổng hợp các dấu hiệu đã xác minh cho vai điều phối xem xét."
+      ],
+      "check": {
+        "prompt": "Thông tin nào được ghi đã xác minh?",
+        "good": "Dấu hiệu có nguồn đối chiếu theo thẻ tiêu chí.",
+        "bad": "Tin đồn được nhiều người lặp lại không rõ nguồn.",
+        "why": "Lặp lại không tạo thêm nguồn bằng chứng độc lập."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Kiểm lịch sử sửa mã sự cố",
+      "output_unit": "phiếu kiểm sửa mã",
+      "inputs": [
+        {
+          "name": "Bản lịch sử mã sự cố giả lập",
+          "unit": "bản",
+          "quantity": 2,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Sắp các lần sửa theo thời gian và người thực hiện.",
+        "Đối chiếu lý do sửa với bằng chứng được gắn tại thời điểm đó.",
+        "Đánh dấu lần sửa thiếu nguồn để giám sát kiểm lại."
+      ],
+      "check": {
+        "prompt": "Lần sửa nào hợp lệ trong game?",
+        "good": "Có người sửa, lý do và bằng chứng liên kết.",
+        "bad": "Chỉ còn mã cuối cùng còn lịch sử bị xóa.",
+        "why": "Lịch sử giúp kiểm tra tính nhất quán của thay đổi."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Điều phối bảng đơn vị hỗ trợ liên vùng",
+      "output_unit": "bảng nguồn lực liên vùng",
+      "inputs": [
+        {
+          "name": "Thẻ đơn vị hỗ trợ liên vùng",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 4500
+        }
+      ],
+      "procedure": [
+        "Đọc vai trò và tình trạng sẵn sàng từ các thẻ đơn vị game.",
+        "Ghép yêu cầu hỗ trợ với đơn vị phù hợp trên bảng mô phỏng.",
+        "Ghi đầu mối xác nhận và giữ chỗ phân bổ để tránh giao trùng."
+      ],
+      "check": {
+        "prompt": "Phân bổ nào đúng?",
+        "good": "Đơn vị phù hợp đã xác nhận và chưa nhận việc khác.",
+        "bad": "Cùng đơn vị được cấp đồng thời cho hai yêu cầu.",
+        "why": "Một nguồn lực không được tính sẵn sàng hai lần."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Đối chiếu xác nhận tới nơi và bàn giao liên ngành",
+      "output_unit": "hồ sơ bàn giao liên ngành",
+      "inputs": [
+        {
+          "name": "Phiếu tới nơi và bàn giao liên ngành",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 5500
+        }
+      ],
+      "procedure": [
+        "Ghép thông báo tới nơi với đúng mã sự cố và đơn vị.",
+        "Đối chiếu người giao, người nhận và phạm vi trách nhiệm trên thẻ.",
+        "Giữ mục chưa có người nhận xác nhận ở trạng thái bàn giao chờ."
+      ],
+      "check": {
+        "prompt": "Mốc nào chứng minh bàn giao?",
+        "good": "Bên nhận xác nhận đúng phạm vi theo mã sự cố.",
+        "bad": "Chỉ thông báo đơn vị đã tới nơi.",
+        "why": "Tới nơi và nhận trách nhiệm là hai mốc khác nhau."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Dự tính thời điểm đơn vị sẵn sàng trở lại",
+      "output_unit": "bảng dự tính nguồn lực",
+      "inputs": [
+        {
+          "name": "Thẻ thời lượng tái sẵn sàng game",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đọc các việc còn lại của đơn vị trên thẻ nhiệm vụ giả lập.",
+        "Cộng số lượt quy ước theo quan hệ trước sau được cho.",
+        "Ghi thời điểm dự kiến và cập nhật khi có xác nhận thực tế."
+      ],
+      "check": {
+        "prompt": "Dự tính nào đúng nhãn?",
+        "good": "Ghi rõ dự kiến và các việc còn phụ thuộc.",
+        "bad": "Đánh dấu sẵn sàng ngay khi tính được một giờ tương lai.",
+        "why": "Ước tính thời điểm không phải xác nhận sẵn sàng thực tế."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Đồng bộ sổ điều phối khi dùng kênh dự phòng",
+      "output_unit": "sổ điều phối đồng bộ",
+      "inputs": [
+        {
+          "name": "Bộ sổ điều phối dự phòng game",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Đánh số các ghi nhận trong sổ dự phòng theo mã sự cố và thời gian.",
+        "So từng mục với sổ chính để tìm thiếu hoặc trùng.",
+        "Nhập phần thiếu một lần và lưu bảng đối chiếu nguồn."
+      ],
+      "check": {
+        "prompt": "Cách đồng bộ nào đạt?",
+        "good": "Mục mới được bổ sung, mục đã có không bị nhân đôi.",
+        "bad": "Chép toàn bộ sổ dự phòng vào cuối sổ chính.",
+        "why": "Chép nguyên sẽ tạo trùng lệnh và sai lịch sử diễn biến."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Giải quyết cập nhật muộn trái nhau",
+      "output_unit": "phiếu xác minh cập nhật",
+      "inputs": [
+        {
+          "name": "Thẻ cập nhật muộn mâu thuẫn",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Tách thời điểm sự kiện khỏi thời điểm nhận tin của từng thẻ.",
+        "So nguồn và phạm vi để nhận diện hai cập nhật trái nhau.",
+        "Giữ cả hai bằng chứng và xin vai phụ trách xác nhận trạng thái đúng."
+      ],
+      "check": {
+        "prompt": "Tin đến sau luôn mới hơn sao?",
+        "good": "Không, cần so thời điểm sự kiện và nguồn.",
+        "bad": "Có, dùng tin đến cuối và bỏ mọi tin trước.",
+        "why": "Độ trễ truyền tin có thể đảo thứ tự sự kiện."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Diễn tập khôi phục sau mất liên lạc",
+      "output_unit": "hồ sơ diễn tập liên lạc",
+      "inputs": [
+        {
+          "name": "Bộ kịch bản mất liên lạc game",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Chuyển bảng điều phối mô phỏng sang kênh dự phòng trên thẻ.",
+        "Ghi số thứ tự, người nhận và xác nhận của từng cập nhật giả lập.",
+        "Khi kênh chính trở lại, đối soát thiếu trùng rồi tổng kết điểm cần sửa."
+      ],
+      "check": {
+        "prompt": "Diễn tập nào khép được?",
+        "good": "Sổ hai kênh đã đối soát và ngoại lệ có người theo dõi.",
+        "bad": "Kênh chính lên lại nên bỏ sổ dự phòng.",
+        "why": "Thông tin phát sinh lúc gián đoạn vẫn cần được bảo toàn."
+      }
+    }
+  ],
+  "lifeguard": [
+    {
+      "tier": 1,
+      "title": "Lập buổi bơi thuận tiện cho nhiều nhu cầu",
+      "output_unit": "kế hoạch buổi bơi hòa nhập",
+      "inputs": [
+        {
+          "name": "Thẻ nhu cầu buổi bơi hư cấu",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 4500
+        }
+      ],
+      "procedure": [
+        "Nhóm nhu cầu tiếp cận đã được người tham dự giả lập đồng ý ghi nhận.",
+        "Ghép khung giờ và khu vực phù hợp từ thẻ quy tắc hồ game.",
+        "Lưu các yêu cầu chưa đáp ứng để quản lý xem xét trước khi xác nhận buổi."
+      ],
+      "check": {
+        "prompt": "Buổi nào đủ hồ sơ kế hoạch?",
+        "good": "Nhu cầu được ghép với nguồn lực cụ thể theo thẻ.",
+        "bad": "Chỉ ghi mọi người đều được chào đón.",
+        "why": "Thông điệp chung chưa giải quyết nhu cầu tiếp cận đã đăng ký."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Phân bổ người hỗ trợ và chỗ nghỉ",
+      "output_unit": "bảng phân bổ hỗ trợ",
+      "inputs": [
+        {
+          "name": "Thẻ người hỗ trợ và khu nghỉ game",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Đếm số nhóm cần hỗ trợ cùng chỗ nghỉ trên sơ đồ hư cấu.",
+        "Xếp người và chỗ theo giới hạn ghi trên thẻ nguồn lực.",
+        "Kiểm các lượt bị trùng rồi xác nhận đầu mối từng nhóm."
+      ],
+      "check": {
+        "prompt": "Phân bổ nào đạt?",
+        "good": "Không người hay chỗ nghỉ nào bị cấp trùng cùng lượt.",
+        "bad": "Mỗi nhóm có tên người nhưng một người nhận mọi nhóm.",
+        "why": "Nguồn lực phải có mặt được tại thời điểm đã phân."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Đánh giá sẵn sàng buổi bơi hòa nhập",
+      "output_unit": "biên bản sẵn sàng",
+      "inputs": [
+        {
+          "name": "Bộ phiếu sẵn sàng buổi bơi game",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Lấy danh mục nhân sự, lối tiếp cận và liên lạc từ kịch bản được duyệt.",
+        "Đối chiếu từng xác nhận chuẩn bị với danh mục.",
+        "Chuyển mục thiếu cho vai quản lý quyết định, chưa đánh dấu sẵn sàng."
+      ],
+      "check": {
+        "prompt": "Buổi nào được ghi sẵn sàng trong game?",
+        "good": "Tất cả điều kiện thẻ có xác nhận đúng đầu mối.",
+        "bad": "Hầu hết mục đủ nên tự bỏ qua mục thiếu.",
+        "why": "Các điều kiện bắt buộc không thể được thay bằng tỷ lệ hoàn tất."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Lập bản đồ điểm khuất tầm nhìn",
+      "output_unit": "bản đồ điểm khuất",
+      "inputs": [
+        {
+          "name": "Bản đồ tầm nhìn hồ mô phỏng",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Đọc các vùng nhìn được từ từng vị trí theo thẻ sơ đồ game.",
+        "Chồng lớp vùng nhìn trên lưới để tìm ô chưa phủ.",
+        "Đánh dấu ô khuất và gửi phương án bố trí giấy cho quản lý duyệt."
+      ],
+      "check": {
+        "prompt": "Bản đồ nào có ích?",
+        "good": "Ô khuất được ghi rõ mã trên lưới mô phỏng.",
+        "bad": "Chỉ đếm tổng số vị trí quan sát.",
+        "why": "Nhiều vị trí vẫn có thể cùng bỏ sót một ô."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Lập phương án trực an toàn sự kiện bơi",
+      "output_unit": "kế hoạch trực sự kiện",
+      "inputs": [
+        {
+          "name": "Bộ kịch bản trực sự kiện bơi",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 11000
+        }
+      ],
+      "procedure": [
+        "Đọc các vùng, lượt khách và vai trò bắt buộc trong kịch bản.",
+        "Phân ca và đầu mối liên lạc theo thẻ nguồn lực đã duyệt.",
+        "Lập danh sách khoảng thiếu người để quản lý xử lý trước sự kiện game."
+      ],
+      "check": {
+        "prompt": "Kế hoạch nào đạt?",
+        "good": "Từng vùng từng lượt có đủ vai theo thẻ.",
+        "bad": "Chỉ tổng số ca cả ngày bằng yêu cầu.",
+        "why": "Độ phủ theo thời điểm và khu vực mới quyết định đủ nguồn lực."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Xếp ca thay phiên giữ đủ vùng quan sát",
+      "output_unit": "lịch thay phiên",
+      "inputs": [
+        {
+          "name": "Thẻ ca quan sát hồ game",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Chép vùng quan sát và khoảng nghỉ từ thẻ quy tắc hư cấu.",
+        "Xếp lượt thay người sao cho không có ô thời gian trống trên bảng.",
+        "Thu xác nhận bàn giao vai trong diễn tập trước khi đóng lượt."
+      ],
+      "check": {
+        "prompt": "Lịch nào hợp lệ?",
+        "good": "Mỗi vùng luôn có vai được phân trong từng lượt game.",
+        "bad": "Hai người cùng nghỉ vì tổng giờ trực đã đủ.",
+        "why": "Tổng giờ không bù cho khoảng trống cùng thời điểm."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Phân tích dòng thời gian sự cố suýt xảy ra",
+      "output_unit": "dòng thời gian phân tích",
+      "inputs": [
+        {
+          "name": "Bản ghi sự cố suýt xảy ra game",
+          "unit": "bản",
+          "quantity": 3,
+          "unit_cost": 5500
+        }
+      ],
+      "procedure": [
+        "Sắp các thẻ quan sát theo thời điểm sự kiện được ghi.",
+        "Tách điều đã thấy khỏi giả thuyết về nguyên nhân.",
+        "Liên kết các khoảng thiếu thông tin với yêu cầu xác minh tiếp theo."
+      ],
+      "check": {
+        "prompt": "Phân tích nào đúng?",
+        "good": "Dòng thời gian giữ bằng chứng và đánh dấu phần chưa rõ.",
+        "bad": "Điền nguyên nhân tự đoán vào chỗ thiếu bản ghi.",
+        "why": "Khoảng thiếu dữ liệu cần được nêu rõ để tránh kết luận sai."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Đối chiếu bằng chứng thiết bị và đám đông",
+      "output_unit": "bảng đối chiếu điều kiện hồ",
+      "inputs": [
+        {
+          "name": "Bộ ảnh thiết bị và lượt khách game",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9500
+        }
+      ],
+      "procedure": [
+        "Ghép ảnh thiết bị với bản đếm khách cùng khu và cùng lượt.",
+        "So các điều kiện với giới hạn hư cấu trên thẻ hồ.",
+        "Ghi vùng có dữ liệu thiếu hoặc vượt thẻ để quản lý đánh giá."
+      ],
+      "check": {
+        "prompt": "Cặp bằng chứng nào so được?",
+        "good": "Ảnh và bản đếm cùng vùng cùng lượt.",
+        "bad": "Ảnh buổi sáng ghép bản đếm buổi chiều.",
+        "why": "Điều kiện thay đổi theo lượt nên cần cùng mốc để đối chiếu."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Kiểm lại sau thay đổi phòng ngừa",
+      "output_unit": "báo cáo kiểm lại",
+      "inputs": [
+        {
+          "name": "Phiếu kiểm thay đổi phòng ngừa",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Lấy các ô chưa đạt trong bản đánh giá trước thay đổi.",
+        "Chạy lại phép kiểm trên cùng sơ đồ và tiêu chí game.",
+        "Ghi ô đã cải thiện cùng ô còn thiếu để giao việc tiếp."
+      ],
+      "check": {
+        "prompt": "Kết quả nào chứng minh cải thiện?",
+        "good": "Cùng phép kiểm cho thấy ô trước thiếu nay đạt.",
+        "bad": "Đổi tên vùng rồi không còn tìm thấy lỗi cũ.",
+        "why": "Mã và tiêu chí ổn định cần thiết để so trước sau."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Thực hiện dự án cải thiện an toàn toàn hồ",
+      "output_unit": "hồ sơ dự án toàn hồ",
+      "inputs": [
+        {
+          "name": "Bộ hồ sơ cải thiện toàn hồ game",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Nhóm vấn đề theo vùng và căn cứ từ các cuộc kiểm trước.",
+        "Phân nguồn ngân sách cơ quan và người theo dõi từng thay đổi được duyệt.",
+        "Nghiệm thu từng thay đổi bằng kiểm lại rồi tổng hợp việc còn mở."
+      ],
+      "check": {
+        "prompt": "Dự án nào đủ cơ sở đóng?",
+        "good": "Các thay đổi có bằng chứng kiểm lại theo từng vùng.",
+        "bad": "Đã dùng hết ngân sách nên ghi hoàn thành.",
+        "why": "Chi ngân sách không chứng minh mục tiêu cải thiện đã đạt."
+      }
+    }
+  ],
+  "police": [
+    {
+      "tier": 1,
+      "title": "Kiểm kê vật chứng theo mã niêm phong",
+      "output_unit": "sổ kiểm kê vật chứng game",
+      "inputs": [
+        {
+          "name": "Thẻ vật chứng hư cấu có mã niêm phong",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Đọc danh mục vật chứng giả lập và ảnh mã niêm phong.",
+        "Ghép từng món với mã vị trí lưu và tình trạng trên ảnh.",
+        "Lập phiếu lệch mã cho vai phụ trách thay vì tự sửa hồ sơ."
+      ],
+      "check": {
+        "prompt": "Sổ nào được nghiệm thu?",
+        "good": "Mỗi món có mã niêm phong và vị trí khớp bằng chứng.",
+        "bad": "Chỉ ghi tổng số món đủ nên bỏ qua mã khác.",
+        "why": "Số lượng đủ không chứng minh đúng vật chứng của từng hồ sơ."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Đối chiếu quyền tiếp cận vật chứng",
+      "output_unit": "bảng kiểm quyền tiếp cận",
+      "inputs": [
+        {
+          "name": "Phiếu quyền tiếp cận vật chứng game",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Lấy danh sách vai được phép từ thẻ quy tắc hư cấu.",
+        "So các lượt truy cập giả lập với phạm vi và thời hạn trên thẻ.",
+        "Gắn cờ lượt ngoài phạm vi để cấp phụ trách xem xét."
+      ],
+      "check": {
+        "prompt": "Lượt nào phù hợp?",
+        "good": "Vai có quyền đúng mã hồ sơ trong thời hạn game.",
+        "bad": "Vai có quyền hồ sơ khác nhưng quen người quản lý.",
+        "why": "Quyền phải khớp phạm vi cụ thể, không dựa vào quan hệ."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Báo cấp phụ trách khi chuỗi bàn giao bị đứt",
+      "output_unit": "phiếu báo đứt chuỗi",
+      "inputs": [
+        {
+          "name": "Bộ biên nhận bàn giao vật chứng game",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9500
+        }
+      ],
+      "procedure": [
+        "Xếp các biên nhận theo mã vật chứng và thời điểm bàn giao.",
+        "Tìm đoạn thiếu bên giao hoặc bên nhận trong chuỗi.",
+        "Giữ nguyên hồ sơ và báo cấp phụ trách kèm mã đoạn thiếu."
+      ],
+      "check": {
+        "prompt": "Khi thiếu chữ ký nhận thì làm gì?",
+        "good": "Lập ngoại lệ có nguồn và chuyển phụ trách xác minh.",
+        "bad": "Tự điền tên người nhận dự đoán để nối chuỗi.",
+        "why": "Điền suy đoán làm sai bằng chứng bàn giao."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Lập lối đi sự kiện có hỗ trợ tiếp cận",
+      "output_unit": "sơ đồ tiếp cận sự kiện",
+      "inputs": [
+        {
+          "name": "Bản đồ lối đi sự kiện hư cấu",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 6500
+        }
+      ],
+      "procedure": [
+        "Đánh dấu nhu cầu tiếp cận và khu vực trên sơ đồ game.",
+        "Ghép tuyến được thẻ cho phép với điểm hỗ trợ và lối vào.",
+        "Kiểm các đoạn bị chặn trong kịch bản rồi gửi sơ đồ để duyệt."
+      ],
+      "check": {
+        "prompt": "Sơ đồ nào đáp ứng nhu cầu?",
+        "good": "Tuyến nối liên tục tới điểm hỗ trợ được ghi.",
+        "bad": "Có điểm hỗ trợ nhưng đường tới đó bị ngắt.",
+        "why": "Điểm hỗ trợ chỉ hữu ích khi tuyến tiếp cận trong sơ đồ liên tục."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Lập phương án an toàn và đầu mối sự kiện",
+      "output_unit": "kế hoạch đầu mối sự kiện",
+      "inputs": [
+        {
+          "name": "Thẻ vai trò an toàn sự kiện game",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Liệt kê các khu và tình huống trong kịch bản được duyệt.",
+        "Ghép mỗi khu với đầu mối chính và đầu mối dự phòng trên thẻ.",
+        "Diễn tập chuyển thẻ thông tin và ghi người xác nhận nhận."
+      ],
+      "check": {
+        "prompt": "Phương án nào đầy đủ?",
+        "good": "Mỗi khu có đầu mối chính, dự phòng và lượt xác nhận.",
+        "bad": "Chỉ một số điện thoại giả lập chung không phân vai.",
+        "why": "Phân vai rõ giúp thông tin của từng khu có người chịu trách nhiệm."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Diễn tập xử lý lối thoát bị chặn",
+      "output_unit": "biên bản diễn tập lối bị chặn",
+      "inputs": [
+        {
+          "name": "Bộ thẻ lối thoát mô phỏng",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Đặt thẻ chặn lên vị trí được kịch bản chỉ định.",
+        "Đánh dấu tuyến bị ảnh hưởng và chuyển thông tin tới vai điều phối game.",
+        "Ghi quyết định của vai phụ trách cùng việc cải thiện sau diễn tập."
+      ],
+      "check": {
+        "prompt": "Biên bản nào đúng phạm vi?",
+        "good": "Ghi ảnh hưởng và quyết định trong kịch bản hư cấu.",
+        "bad": "Tự hướng dẫn đám đông ngoài đời theo sơ đồ game.",
+        "why": "Sơ đồ diễn tập không phải chỉ dẫn an toàn cho sự kiện thực."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Ghép dấu hiệu đã kiểm chứng trong tin báo ẩn danh",
+      "output_unit": "bảng dấu hiệu đã kiểm chứng",
+      "inputs": [
+        {
+          "name": "Phiếu dấu hiệu tin báo giả lập",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 5500
+        }
+      ],
+      "procedure": [
+        "Tách từng dấu hiệu khỏi thông tin định danh không cần thiết.",
+        "Gắn nguồn đối chiếu và trạng thái xác minh theo thẻ game.",
+        "Chỉ ghép dấu hiệu đã kiểm chứng vào bảng trình phụ trách."
+      ],
+      "check": {
+        "prompt": "Dấu hiệu nào được ghép?",
+        "good": "Dấu hiệu có nguồn đối chiếu độc lập trên thẻ.",
+        "bad": "Nhận định về con người chỉ dựa vào tin nặc danh.",
+        "why": "Tin báo cần được xác minh, không được biến thành kết luận về người."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Phân biệt trùng hợp và bằng chứng củng cố",
+      "output_unit": "phiếu phân biệt liên hệ",
+      "inputs": [
+        {
+          "name": "Bộ thẻ bằng chứng liên quan game",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Liệt kê điểm giống và khác giữa hai hồ sơ hư cấu.",
+        "Đối chiếu độ độc lập của nguồn cho từng điểm giống.",
+        "Đánh dấu liên hệ chưa đủ căn cứ để người phụ trách xem lại."
+      ],
+      "check": {
+        "prompt": "Nhận xét nào phù hợp?",
+        "good": "Trùng một chi tiết phổ biến chưa đủ để kết luận liên quan.",
+        "bad": "Cùng màu túi nghĩa là cùng người thực hiện.",
+        "why": "Đặc điểm phổ biến có thể trùng hợp, cần bằng chứng củng cố."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Kiểm trường hợp liên kết sai giữa hồ sơ",
+      "output_unit": "báo cáo liên kết sai",
+      "inputs": [
+        {
+          "name": "Phiếu rà soát liên kết hồ sơ",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Đọc quy tắc liên kết và mã nguồn đã dùng ở từng cặp hồ sơ.",
+        "So các trường định danh hư cấu cùng mốc thời gian để tìm mâu thuẫn.",
+        "Gỡ đề xuất liên kết sai qua vai phụ trách và giữ nhật ký lý do."
+      ],
+      "check": {
+        "prompt": "Cặp nào cần rà soát?",
+        "good": "Trùng tên nhưng mã nguồn và thời gian mâu thuẫn.",
+        "bad": "Khác mã hồ sơ nhưng có bằng chứng liên hệ đã xác minh.",
+        "why": "Trùng tên dễ tạo liên kết sai khi các thuộc tính khác không khớp."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Lập hồ sơ dấu hiệu lừa đảo trình người phụ trách",
+      "output_unit": "hồ sơ trình phụ trách",
+      "inputs": [
+        {
+          "name": "Bộ hồ sơ dấu hiệu lừa đảo game",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 7500
+        }
+      ],
+      "procedure": [
+        "Lập dòng thời gian từ các chứng từ hư cấu có nguồn.",
+        "Tách dấu hiệu đã xác minh khỏi lời kể chưa đối chiếu.",
+        "Soạn bản trình kèm mục còn thiếu để vai phụ trách quyết định bước tiếp."
+      ],
+      "check": {
+        "prompt": "Hồ sơ nào được nhận?",
+        "good": "Nguồn chứng từ, mức xác minh và khoảng thiếu được nêu rõ.",
+        "bad": "Tự ghi một người có tội từ vài dấu hiệu.",
+        "why": "Dấu hiệu để xem xét không phải kết luận trách nhiệm của cá nhân."
+      }
+    }
+  ],
+  "zpop": [
+    {
+      "tier": 1,
+      "title": "Khung trưng bày album dùng vật liệu lưu trữ",
+      "output_unit": "khung album",
+      "inputs": [
+        {
+          "name": "Bìa không axit",
+          "unit": "tấm",
+          "quantity": 2,
+          "unit_cost": 12000
+        },
+        {
+          "name": "Khung trưng bày album",
+          "unit": "chiếc",
+          "quantity": 1,
+          "unit_cost": 35000
+        }
+      ],
+      "procedure": [
+        "Đo album và cắt bìa lót không axit theo lòng khung.",
+        "Gắn album bằng góc giữ tháo được, tránh dán lên bìa gốc.",
+        "Đóng khung rồi đối chiếu ảnh hiện trạng và độ giữ chắc."
+      ],
+      "check": {
+        "prompt": "Khung nào đạt?",
+        "good": "Album giữ chắc và tháo ra không bóc bìa gốc.",
+        "bad": "Dán keo trực tiếp lên chữ ký để khỏi xê dịch.",
+        "why": "Cách gắn cần giữ hiện trạng của album sưu tầm."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Hộp vinyl đánh số kiểm bản ép",
+      "output_unit": "hộp vinyl",
+      "inputs": [
+        {
+          "name": "Bao lót vinyl",
+          "unit": "chiếc",
+          "quantity": 2,
+          "unit_cost": 8000
+        },
+        {
+          "name": "Hộp đĩa đánh số",
+          "unit": "hộp",
+          "quantity": 1,
+          "unit_cost": 25000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu mã bản ép trên đĩa với đơn và phiếu tình trạng.",
+        "Lồng từng đĩa vào bao phù hợp rồi xếp cùng phiếu mã bản ép.",
+        "Gắn số hộp và kiểm lại số đĩa trước khi niêm đóng."
+      ],
+      "check": {
+        "prompt": "Hộp nào đúng đơn?",
+        "good": "Mã bản ép khớp yêu cầu và số hộp khớp phiếu.",
+        "bad": "Bìa giống nhau nên bỏ qua mã bản ép.",
+        "why": "Các bản ép có thể khác dù thiết kế bìa trông giống."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Đơn nhóm fan chia kiện theo tên thành viên",
+      "output_unit": "kiện nhóm fan",
+      "inputs": [
+        {
+          "name": "Túi chống xước album",
+          "unit": "túi",
+          "quantity": 4,
+          "unit_cost": 4500
+        },
+        {
+          "name": "Nhãn tên thành viên",
+          "unit": "nhãn",
+          "quantity": 4,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu tên thành viên, phiên bản và số lượng trên bảng chia đơn.",
+        "Bọc từng phần rồi đặt vào ngăn gắn tên tương ứng.",
+        "Đọc lại mã phiên bản từng ngăn và ký bảng kiểm chia kiện."
+      ],
+      "check": {
+        "prompt": "Kiện nào đủ bằng chứng?",
+        "good": "Từng người có mã phiên bản và số lượng đã đối chiếu.",
+        "bad": "Tổng album đủ nhưng chia ngẫu nhiên cho các tên.",
+        "why": "Đơn nhóm cần đúng phần của từng thành viên."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Túi đựng lightstick may theo kích thước",
+      "output_unit": "túi lightstick",
+      "inputs": [
+        {
+          "name": "Vải lót mềm",
+          "unit": "miếng",
+          "quantity": 2,
+          "unit_cost": 9000
+        },
+        {
+          "name": "Vải thân túi",
+          "unit": "miếng",
+          "quantity": 2,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Đo thân và đầu lightstick mẫu rồi cộng phần đường may theo rập.",
+        "Cắt thân và lót, may ghép cùng phần đóng túi theo mẫu duyệt.",
+        "Thử cho mẫu vào và kiểm đầu đèn không bị ép khi đóng."
+      ],
+      "check": {
+        "prompt": "Túi nào được nhận?",
+        "good": "Đóng được mà không ép đầu đèn hoặc cọ bề mặt.",
+        "bad": "Túi khít đến mức phải ép đầu đèn mới đóng.",
+        "why": "Khoảng chứa phải bảo vệ vật phẩm khi sử dụng túi."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Bộ trưng bày photocard kiểm đủ thẻ và chống xước",
+      "output_unit": "bộ photocard trưng bày",
+      "inputs": [
+        {
+          "name": "Bao photocard trong",
+          "unit": "chiếc",
+          "quantity": 8,
+          "unit_cost": 2500
+        },
+        {
+          "name": "Bìa trưng bày thẻ",
+          "unit": "tấm",
+          "quantity": 2,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu danh mục thẻ theo mã và ghi vết xước có sẵn.",
+        "Lồng từng thẻ vào bao rồi xếp theo sơ đồ bộ sưu tập.",
+        "Kiểm đủ mã và bề mặt bao trước khi bàn giao."
+      ],
+      "check": {
+        "prompt": "Bộ nào hoàn chỉnh?",
+        "good": "Đủ từng mã thẻ và bề mặt được bảo vệ riêng.",
+        "bad": "Đủ số lượng nhưng có hai thẻ trùng và thiếu một mã.",
+        "why": "Đủ số lượng không thay thế đủ các thẻ trong danh mục."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Gói phục hồi bao bì lưu niệm có biên bản hiện trạng",
+      "output_unit": "bộ bao bì phục hồi",
+      "inputs": [
+        {
+          "name": "Giấy gia cố không axit",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 7000
+        },
+        {
+          "name": "Hộp lưu bao bì",
+          "unit": "hộp",
+          "quantity": 1,
+          "unit_cost": 22000
+        }
+      ],
+      "procedure": [
+        "Chụp và đánh dấu nếp gãy, rách trên biên bản hiện trạng.",
+        "Thử cách đỡ bằng giấy gia cố ở vị trí kín theo phương án khách duyệt.",
+        "Ổn định hình hộp rồi so ảnh trước sau và ghi phần không xử lý."
+      ],
+      "check": {
+        "prompt": "Nghiệm thu nào minh bạch?",
+        "good": "Có ảnh trước sau và ghi rõ nếp cũ còn lại.",
+        "bad": "Phủ kín vết hỏng để không còn thấy hiện trạng.",
+        "why": "Phục hồi cần minh bạch và tránh làm mất đặc điểm gốc."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Gian trưng bày bộ sưu tập theo chủ đề album",
+      "output_unit": "gian trưng bày album",
+      "inputs": [
+        {
+          "name": "Bệ trưng bày mô-đun",
+          "unit": "bệ",
+          "quantity": 2,
+          "unit_cost": 18000
+        },
+        {
+          "name": "Thẻ chú thích album",
+          "unit": "thẻ",
+          "quantity": 6,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Nhóm album theo chủ đề đã duyệt và gắn mã hiện vật.",
+        "Xếp bệ cùng thẻ chú thích theo đường xem trên sơ đồ.",
+        "Đối chiếu từng mã album với vị trí và ảnh toàn gian."
+      ],
+      "check": {
+        "prompt": "Gian nào đạt bố cục?",
+        "good": "Album đúng chủ đề, thẻ chú thích khớp mã hiện vật.",
+        "bad": "Đổi chỗ album mà giữ nguyên thẻ giới thiệu.",
+        "why": "Chú thích sai mã khiến khách hiểu nhầm bộ sưu tập."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Quầy nhận hàng concert chia giờ và đối soát mã",
+      "output_unit": "lượt quầy concert",
+      "inputs": [
+        {
+          "name": "Túi nhận hàng concert",
+          "unit": "túi",
+          "quantity": 4,
+          "unit_cost": 6000
+        },
+        {
+          "name": "Phiếu nhận có mã",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 1500
+        }
+      ],
+      "procedure": [
+        "Chia đơn theo khung giờ nhận và soạn túi đúng mã.",
+        "Xác minh mã nhận trong bảng trước khi trao túi tương ứng.",
+        "Đánh dấu mã đã nhận một lần và đối chiếu túi còn lại cuối lượt."
+      ],
+      "check": {
+        "prompt": "Lượt giao nào đúng?",
+        "good": "Mã khớp đơn và được đánh dấu đã nhận ngay.",
+        "bad": "Cùng mã được nhận lại vì còn túi trên bàn.",
+        "why": "Đối soát mã tránh giao trùng và mất phần người khác."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Cửa hàng pop-up nhiều ngày phân bổ phiên bản theo hạn mức",
+      "output_unit": "đợt pop-up",
+      "inputs": [
+        {
+          "name": "Khay chia phiên bản",
+          "unit": "khay",
+          "quantity": 3,
+          "unit_cost": 15000
+        },
+        {
+          "name": "Nhãn hạn mức từng ngày",
+          "unit": "nhãn",
+          "quantity": 6,
+          "unit_cost": 1500
+        }
+      ],
+      "procedure": [
+        "Tách tồn album theo phiên bản rồi phân hạn mức cho từng ngày.",
+        "Xếp khay theo mã và ghi lượng xuất của mỗi lượt bán.",
+        "Đối chiếu tồn cuối ngày trước khi duyệt chuyển hạn mức ngày sau."
+      ],
+      "check": {
+        "prompt": "Bảng nào đúng?",
+        "good": "Tồn đầu trừ xuất khớp tồn cuối từng phiên bản.",
+        "bad": "Chỉ kiểm tổng album vì các phiên bản cùng giá.",
+        "why": "Hạn mức áp dụng riêng từng phiên bản, không gộp tổng."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Hợp đồng triển lãm bộ sưu tập fan nhiều khu có mượn trả và kiểm kê",
+      "output_unit": "khu triển lãm fan",
+      "inputs": [
+        {
+          "name": "Túi lưu trữ hiện vật",
+          "unit": "túi",
+          "quantity": 4,
+          "unit_cost": 6000
+        },
+        {
+          "name": "Thẻ mượn trả triển lãm",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Gắn mã mượn và ảnh hiện trạng cho từng vật phẩm được chủ đồng ý.",
+        "Phân vị trí trưng bày theo khu rồi lập danh mục chuyển khu.",
+        "Khi hoàn trả, so ảnh tình trạng và thu xác nhận từng chủ."
+      ],
+      "check": {
+        "prompt": "Khu nào đủ hồ sơ hoàn trả?",
+        "good": "Mỗi vật phẩm có ảnh đối chiếu và chủ xác nhận nhận.",
+        "bad": "Chỉ ghi đã dọn trống khu triển lãm.",
+        "why": "Dọn trống không chứng minh vật phẩm về đúng chủ và đúng tình trạng."
+      }
+    }
+  ],
+  "art_studio": [
+    {
+      "tier": 1,
+      "title": "Bản in khắc cao su đánh số phiên bản",
+      "output_unit": "bộ bản in cao su",
+      "inputs": [
+        {
+          "name": "Tấm cao su khắc",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 28000
+        },
+        {
+          "name": "Giấy in mỹ thuật",
+          "unit": "tờ",
+          "quantity": 4,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Chuyển hình đảo chiều lên cao su rồi tạo mảng khắc theo mẫu duyệt.",
+        "Lăn mực từ bộ dụng cụ dùng chung và in thử để chỉnh vùng bám mực.",
+        "In trên giấy mỹ thuật, để khô rồi đánh số các bản đạt."
+      ],
+      "check": {
+        "prompt": "Bộ in nào đạt?",
+        "good": "Hình đúng chiều và mỗi bản đạt có số riêng.",
+        "bad": "Đánh số cả bản lem để đủ số lượng.",
+        "why": "Số phiên bản chỉ dành cho các bản đáp ứng chất lượng đã duyệt."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Tranh trang trí dát lá vàng kiểm bề mặt",
+      "output_unit": "tranh dát lá vàng",
+      "inputs": [
+        {
+          "name": "Lá màu vàng trang trí",
+          "unit": "lá",
+          "quantity": 4,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Tấm nền phủ lót",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 25000
+        }
+      ],
+      "procedure": [
+        "Vẽ vùng dát trên nền đã khô theo mẫu bố cục.",
+        "Phủ lớp kết dính từ bộ dụng cụ theo hướng dẫn rồi đặt lá từng vùng.",
+        "Gạt phần dư và kiểm bề mặt dưới ánh sáng xiên sau khi ổn định."
+      ],
+      "check": {
+        "prompt": "Tranh nào được nhận?",
+        "good": "Lá bám đều trong vùng duyệt, không có mảng bong.",
+        "bad": "Bề mặt sáng nhưng có lá đang bong ở mép.",
+        "why": "Độ bám và ranh giới bố cục là tiêu chí ngoài độ sáng."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Tấm kính màu ghép theo mẫu đặt riêng",
+      "output_unit": "tấm kính màu",
+      "inputs": [
+        {
+          "name": "Miếng kính màu mài cạnh",
+          "unit": "miếng",
+          "quantity": 4,
+          "unit_cost": 8000
+        },
+        {
+          "name": "Khung ghép kính",
+          "unit": "khung",
+          "quantity": 1,
+          "unit_cost": 28000
+        }
+      ],
+      "procedure": [
+        "Đánh số miếng kính đã xử lý cạnh theo mẫu khách duyệt.",
+        "Xếp thử trong khung và điều chỉnh khe theo sơ đồ.",
+        "Cố định bằng hệ ghép của bộ dụng cụ rồi kiểm đúng màu và độ giữ."
+      ],
+      "check": {
+        "prompt": "Tấm nào đạt?",
+        "good": "Màu đúng ô mẫu, miếng không lỏng trong khung.",
+        "bad": "Đúng màu nhưng một miếng rung khi nhấc khung.",
+        "why": "Thành phẩm cần giữ ổn định các miếng ghép."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Tranh sơn dầu nhiều lớp có lịch khô",
+      "output_unit": "tranh sơn dầu",
+      "inputs": [
+        {
+          "name": "Toan căng khung",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 35000
+        },
+        {
+          "name": "Màu sơn dầu",
+          "unit": "tuýp",
+          "quantity": 3,
+          "unit_cost": 14000
+        }
+      ],
+      "procedure": [
+        "Phác mảng lớn rồi sơn lớp nền theo mẫu đã duyệt.",
+        "Ghi ngày và trạng thái khô của lớp trước trước khi phủ lớp tiếp.",
+        "Hoàn thiện chi tiết rồi đối chiếu bố cục và lịch khô khi bàn giao."
+      ],
+      "check": {
+        "prompt": "Tranh nào đủ hồ sơ?",
+        "good": "Các lớp có ghi trạng thái khô và bề mặt ổn định.",
+        "bad": "Ghi đã khô chỉ vì đủ số ngày dự kiến.",
+        "why": "Lịch là dự kiến, cần quan sát trạng thái thực của lớp màu."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Tranh ghép gốm mosaic theo lưới màu",
+      "output_unit": "tranh mosaic",
+      "inputs": [
+        {
+          "name": "Mảnh gốm mosaic",
+          "unit": "gói",
+          "quantity": 3,
+          "unit_cost": 12000
+        },
+        {
+          "name": "Tấm nền mosaic",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 26000
+        }
+      ],
+      "procedure": [
+        "Chuyển lưới màu đã duyệt lên tấm nền và phân mảnh theo ô.",
+        "Dán mảnh từ trong ra theo lưới bằng dụng cụ xưởng.",
+        "Hoàn thiện khe bằng vật liệu xưởng rồi kiểm mảnh lỏng và sai màu."
+      ],
+      "check": {
+        "prompt": "Tranh nào đúng mẫu?",
+        "good": "Màu khớp ô lưới, không có mảnh rời.",
+        "bad": "Tổng số mảnh đủ nhưng ghép đảo vùng màu.",
+        "why": "Bố cục phụ thuộc vị trí màu chứ không chỉ số mảnh."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Tác phẩm dệt len theo sơ đồ mảng",
+      "output_unit": "tác phẩm dệt len",
+      "inputs": [
+        {
+          "name": "Len màu theo bảng",
+          "unit": "cuộn",
+          "quantity": 3,
+          "unit_cost": 16000
+        },
+        {
+          "name": "Sợi dọc nền",
+          "unit": "cuộn",
+          "quantity": 1,
+          "unit_cost": 14000
+        }
+      ],
+      "procedure": [
+        "Căng sợi dọc trên khung dùng chung theo chiều rộng mẫu.",
+        "Luồn len màu theo từng hàng trong sơ đồ mảng và nén đều.",
+        "Khóa đầu sợi, tháo khung rồi kiểm mép và kích thước."
+      ],
+      "check": {
+        "prompt": "Tác phẩm nào đạt?",
+        "good": "Mảng đúng sơ đồ và mép không co lệch.",
+        "bad": "Màu đúng nhưng tháo khung thì sợi đầu bung.",
+        "why": "Khóa đầu sợi và độ ổn định là điều kiện hoàn thiện."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Bộ tranh động cơ học quay tay có thử chuyển động",
+      "output_unit": "bộ tranh quay tay",
+      "inputs": [
+        {
+          "name": "Bìa cứng làm cảnh động",
+          "unit": "tấm",
+          "quantity": 3,
+          "unit_cost": 9000
+        },
+        {
+          "name": "Bộ trục tay quay",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 35000
+        }
+      ],
+      "procedure": [
+        "Cắt cảnh và các thanh nối theo mẫu chuyển động duyệt.",
+        "Lắp trục, tay quay và thanh nối vào khung thử theo sơ đồ.",
+        "Quay đủ vòng kiểm cảnh di chuyển không cọ rồi cố định chi tiết."
+      ],
+      "check": {
+        "prompt": "Bộ nào nghiệm thu được?",
+        "good": "Quay trọn vòng, cảnh không kẹt và trục không rời.",
+        "bad": "Đẹp khi đứng yên nhưng chỉ quay được nửa vòng.",
+        "why": "Tác phẩm cơ học cần hoạt động đủ chu kỳ thiết kế."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Sách nghệ thuật thủ công nhiều trang đóng gáy",
+      "output_unit": "sách nghệ thuật",
+      "inputs": [
+        {
+          "name": "Giấy mỹ thuật đóng sách",
+          "unit": "tờ",
+          "quantity": 6,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Chỉ và bìa đóng gáy",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 22000
+        }
+      ],
+      "procedure": [
+        "Gấp và xếp các tay sách theo thứ tự trang đã duyệt.",
+        "Khâu qua lỗ gáy rồi gắn bìa bằng bộ dụng cụ xưởng.",
+        "Mở từng trang để kiểm đủ nội dung, chiều trang và độ bền gáy."
+      ],
+      "check": {
+        "prompt": "Cuốn nào đạt?",
+        "good": "Trang đúng thứ tự và mở được không tuột chỉ.",
+        "bad": "Bìa đẹp nhưng hai trang bị khâu dính.",
+        "why": "Sách cần sử dụng được ở từng trang, không chỉ đẹp bên ngoài."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Không gian nghệ thuật tương tác nhiều trạm theo bản thiết kế",
+      "output_unit": "trạm nghệ thuật tương tác",
+      "inputs": [
+        {
+          "name": "Tấm bìa tạo trạm tương tác",
+          "unit": "tấm",
+          "quantity": 4,
+          "unit_cost": 10000
+        },
+        {
+          "name": "Bộ chi tiết nút kéo",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 20000
+        }
+      ],
+      "procedure": [
+        "Ghép mô hình trạm từ bản thiết kế và gắn chi tiết người xem thao tác.",
+        "Thử từng tác động kéo hoặc xoay với phản hồi hình ảnh dự kiến.",
+        "Gắn hướng dẫn ngắn rồi chạy thử lượt xem để ghi chỗ cần chỉnh."
+      ],
+      "check": {
+        "prompt": "Trạm nào đạt?",
+        "good": "Thao tác trong hướng dẫn tạo đúng phản hồi thiết kế.",
+        "bad": "Có hướng dẫn nhưng bộ phận không phản hồi khi thao tác.",
+        "why": "Tính tương tác cần được kiểm bằng hành động của người xem."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Hợp đồng sắp đặt nghệ thuật nhiều khu với chế tác và nghiệm thu từng phần",
+      "output_unit": "phần sắp đặt nghệ thuật",
+      "inputs": [
+        {
+          "name": "Tấm nền sắp đặt",
+          "unit": "tấm",
+          "quantity": 3,
+          "unit_cost": 13000
+        },
+        {
+          "name": "Bộ mối ghép mô-đun",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 18000
+        }
+      ],
+      "procedure": [
+        "Chế tác mô-đun theo kích thước và bảng vật liệu của từng khu.",
+        "Lắp thử các mối ghép và đánh mã thứ tự chuyển đến vị trí.",
+        "Đối chiếu bản thiết kế, ảnh hoàn công và phiếu nhận từng phần."
+      ],
+      "check": {
+        "prompt": "Phần nào được nghiệm thu?",
+        "good": "Mã mô-đun, vị trí và ảnh hoàn công đều khớp thiết kế.",
+        "bad": "Một khu hoàn tất nên ký thay mọi phần còn lại.",
+        "why": "Hợp đồng cần bằng chứng chế tác và bàn giao theo từng phần."
+      }
+    }
+  ],
+  "lawyer": [
+    {
+      "tier": 1,
+      "title": "So sánh điều khoản giữa các bản hợp đồng",
+      "output_unit": "bảng so điều khoản",
+      "inputs": [
+        {
+          "name": "Bộ hợp đồng hư cấu có phiên bản",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Ghép hai bản hợp đồng game bằng mã văn bản và ngày phiên bản.",
+        "Đánh dấu các đoạn thêm, bỏ hoặc đổi theo từng số điều.",
+        "Lập bảng chênh lệch kèm trích nguồn để người phụ trách xem xét."
+      ],
+      "check": {
+        "prompt": "Bảng nào đủ căn cứ?",
+        "good": "Mỗi thay đổi trỏ đúng số điều của cả hai bản.",
+        "bad": "Chỉ ghi bản mới tốt hơn mà không chỉ chỗ sửa.",
+        "why": "So sánh điều khoản cần cho thấy nội dung thay đổi cụ thể."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Sửa mâu thuẫn thuật ngữ và dẫn chiếu",
+      "output_unit": "bản sửa dẫn chiếu",
+      "inputs": [
+        {
+          "name": "Phiếu thuật ngữ và dẫn chiếu game",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Lập bảng thuật ngữ được định nghĩa trong hợp đồng hư cấu.",
+        "So từng cách dùng và đích dẫn chiếu với bảng định nghĩa.",
+        "Đề xuất sửa có đánh dấu thay đổi để người phụ trách duyệt."
+      ],
+      "check": {
+        "prompt": "Sửa nào kiểm chứng được?",
+        "good": "Thuật ngữ thống nhất và dẫn chiếu trỏ tới điều tồn tại.",
+        "bad": "Đổi số điều nhưng bỏ qua các đoạn dẫn tới số cũ.",
+        "why": "Sửa cấu trúc cần cập nhật cả các chỗ đang tham chiếu."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Lập sơ đồ nghĩa vụ theo mốc hợp đồng",
+      "output_unit": "sơ đồ mốc nghĩa vụ",
+      "inputs": [
+        {
+          "name": "Thẻ nghĩa vụ hợp đồng giả lập",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Tách bên chịu trách nhiệm, sản phẩm và mốc từ từng điều game.",
+        "Nối các nghĩa vụ theo điều kiện trước sau được ghi.",
+        "Gắn bằng chứng cần nộp vào từng mốc của sơ đồ."
+      ],
+      "check": {
+        "prompt": "Sơ đồ nào đúng?",
+        "good": "Mỗi mốc có bên thực hiện và bằng chứng theo điều.",
+        "bad": "Chỉ vẽ các ngày mà không ghi ai làm việc gì.",
+        "why": "Ngày tháng cần gắn nghĩa vụ cụ thể để theo dõi thực hiện."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Lập sổ nguồn chứng minh quyền cho phép",
+      "output_unit": "sổ nguồn quyền cho phép",
+      "inputs": [
+        {
+          "name": "Bộ nguồn cho phép sử dụng game",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Thu các văn bản cho phép đã có trong hồ sơ hư cấu.",
+        "Ghi nguồn, phạm vi, thời hạn và người cấp theo từng văn bản.",
+        "Đánh dấu mục chưa rõ nguồn để xin xác minh trước khi ghi được phép."
+      ],
+      "check": {
+        "prompt": "Mục nào đủ bằng chứng?",
+        "good": "Có văn bản nguồn khớp phạm vi và thời hạn game.",
+        "bad": "Nghe người quen nói chủ sở hữu chắc sẽ đồng ý.",
+        "why": "Sự đồng ý cần được chứng minh trong hồ sơ nguồn của bài tập."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Lập hồ sơ chuỗi quyền cấp phép",
+      "output_unit": "hồ sơ chuỗi quyền",
+      "inputs": [
+        {
+          "name": "Thẻ chuỗi cấp phép hư cấu",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 6500
+        }
+      ],
+      "procedure": [
+        "Sắp các văn bản cấp phép theo bên cấp và bên nhận.",
+        "Nối từng mắt xích với phạm vi được chuyển tiếp theo quy tắc game.",
+        "Khoanh mắt xích thiếu nguồn rồi trình người phụ trách xác minh."
+      ],
+      "check": {
+        "prompt": "Chuỗi nào đủ hồ sơ?",
+        "good": "Mỗi lượt chuyển có nguồn và phạm vi nối tiếp phù hợp.",
+        "bad": "Có văn bản cuối nên bỏ qua các lượt chuyển trước.",
+        "why": "Bản cuối không tự chứng minh nguồn quyền xuyên suốt chuỗi."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Báo cáo ngoại lệ trong phạm vi được cấp phép",
+      "output_unit": "báo cáo ngoại lệ cấp phép",
+      "inputs": [
+        {
+          "name": "Phiếu phạm vi sử dụng được cấp",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đọc phạm vi sử dụng cho phép trên các thẻ hồ sơ giả lập.",
+        "So mục đích, kênh và khoảng thời gian sử dụng được đề nghị.",
+        "Lập bảng phần nằm ngoài phạm vi để phụ trách quyết định bước tiếp."
+      ],
+      "check": {
+        "prompt": "Trường hợp nào là ngoại lệ?",
+        "good": "Đề nghị dùng ở kênh chưa có trong phạm vi được cấp.",
+        "bad": "Nội dung đúng kênh và đúng thời hạn đã ghi.",
+        "why": "Mỗi chiều phạm vi cần phù hợp, không chỉ tên tài sản."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Vẽ quan hệ nghĩa vụ của nhiều bên",
+      "output_unit": "sơ đồ quan hệ nghĩa vụ",
+      "inputs": [
+        {
+          "name": "Bộ điều khoản nhiều bên game",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Gắn mã cho mỗi bên trong thỏa thuận hư cấu.",
+        "Vẽ mũi tên từ bên thực hiện tới bên nhận cho từng nghĩa vụ.",
+        "Gắn điều kiện phụ thuộc và số điều lên từng mũi tên."
+      ],
+      "check": {
+        "prompt": "Sơ đồ nào đọc được?",
+        "good": "Mũi tên nêu việc, bên nhận và điều nguồn.",
+        "bad": "Đường nối các bên nhưng không ghi nghĩa vụ nào.",
+        "why": "Đường nối trống không thể hiện trách nhiệm cụ thể giữa các bên."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Theo dõi bằng chứng thực hiện thỏa thuận",
+      "output_unit": "sổ thực hiện thỏa thuận",
+      "inputs": [
+        {
+          "name": "Phiếu bằng chứng thỏa thuận game",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 4500
+        }
+      ],
+      "procedure": [
+        "Tạo dòng theo dõi từ từng nghĩa vụ đã xác định trong hồ sơ.",
+        "Ghép biên nhận hoặc sản phẩm nộp với đúng mã nghĩa vụ.",
+        "Để mục chưa đủ bằng chứng mở và giao đầu mối theo dõi."
+      ],
+      "check": {
+        "prompt": "Nghĩa vụ nào được ghi hoàn tất?",
+        "good": "Bằng chứng phù hợp điều kiện hoàn tất trên thẻ game.",
+        "bad": "Bên thực hiện nói đã xong nhưng chưa nộp chứng cứ.",
+        "why": "Sổ theo dõi cần căn cứ đối chiếu với tiêu chí đã ghi."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Đối chiếu điều kiện giải trừ nghĩa vụ",
+      "output_unit": "phiếu đối chiếu giải trừ",
+      "inputs": [
+        {
+          "name": "Bộ điều kiện giải trừ giả lập",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 11000
+        }
+      ],
+      "procedure": [
+        "Liệt kê các điều kiện cần đủ theo thẻ thỏa thuận hư cấu.",
+        "Đối chiếu mỗi điều kiện với bằng chứng và thời điểm hiệu lực.",
+        "Trình bảng đạt hoặc còn thiếu cho người phụ trách xác nhận."
+      ],
+      "check": {
+        "prompt": "Bảng nào đúng phạm vi công việc?",
+        "good": "Nêu rõ từng điều kiện và bằng chứng để phụ trách quyết định.",
+        "bad": "Tự tuyên bố hết nghĩa vụ khi mới đủ một điều kiện.",
+        "why": "Bài tập chỉ đối chiếu toàn bộ điều kiện đã cho trong hồ sơ."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Lập kế hoạch thực hiện thỏa thuận nhiều bên",
+      "output_unit": "kế hoạch thực hiện thỏa thuận",
+      "inputs": [
+        {
+          "name": "Bộ kế hoạch thỏa thuận nhiều bên",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 8500
+        }
+      ],
+      "procedure": [
+        "Chuyển các nghĩa vụ trong sơ đồ thành việc có người chủ trì.",
+        "Xếp mốc theo phụ thuộc và ngân sách nguồn lực được duyệt trong game.",
+        "Lập lịch thu bằng chứng và đường xử lý việc chậm cho từng bên."
+      ],
+      "check": {
+        "prompt": "Kế hoạch nào có thể theo dõi?",
+        "good": "Mỗi việc có bên chủ trì, mốc phụ thuộc và chứng cứ cần nộp.",
+        "bad": "Chia đều số việc cho các bên dù khác nghĩa vụ đã ghi.",
+        "why": "Phân công phải bám thỏa thuận chứ không chỉ cân bằng số lượng."
+      }
+    }
+  ],
+  "laundry": [
+    {
+      "tier": 1,
+      "title": "Chăm sóc vest có giữ cấu trúc",
+      "output_unit": "bộ vest được chăm sóc",
+      "inputs": [
+        {
+          "name": "Túi lưới chăm vest",
+          "unit": "túi",
+          "quantity": 1,
+          "unit_cost": 15000
+        },
+        {
+          "name": "Vật tư làm sạch theo nhãn vest",
+          "unit": "gói",
+          "quantity": 2,
+          "unit_cost": 18000
+        }
+      ],
+      "procedure": [
+        "Đọc nhãn và ghi cấu trúc vai, lớp dựng cùng vết bẩn khi nhận vest.",
+        "Chọn phương pháp nhãn cho phép, thử vùng kín rồi xử lý bằng thiết bị tiệm.",
+        "Định hình theo phom gốc và so vai, ve áo cùng biên bản trước khi trả."
+      ],
+      "check": {
+        "prompt": "Bộ nào được nhận?",
+        "good": "Sạch theo phạm vi duyệt, vai và ve áo giữ phom ban đầu.",
+        "bad": "Bề mặt sạch nhưng lớp dựng bị phồng.",
+        "why": "Vest cần giữ cấu trúc, không chỉ hết vết bẩn nhìn thấy."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Giữ nếp trang phục xếp ly",
+      "output_unit": "trang phục xếp ly",
+      "inputs": [
+        {
+          "name": "Kẹp giữ nếp có đệm",
+          "unit": "chiếc",
+          "quantity": 4,
+          "unit_cost": 3500
+        },
+        {
+          "name": "Dung dịch phù hợp nhãn vải xếp ly",
+          "unit": "gói",
+          "quantity": 1,
+          "unit_cost": 18000
+        }
+      ],
+      "procedure": [
+        "Chụp hướng và độ đều các nếp, đọc nhãn chăm sóc.",
+        "Làm sạch bằng chế độ nhãn cho phép và giữ nếp theo đường gấp gốc.",
+        "Hoàn thiện với kẹp đệm rồi so nếp và kích thước sau khô."
+      ],
+      "check": {
+        "prompt": "Sản phẩm nào đạt?",
+        "good": "Nếp theo hướng gốc, không có vệt ép hoặc kéo giãn.",
+        "bad": "Ủi phẳng mọi nếp để bề mặt thật nhẵn.",
+        "why": "Xếp ly là cấu trúc cần bảo tồn của trang phục."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Phục hồi chống thấm áo kỹ thuật theo nhãn",
+      "output_unit": "áo kỹ thuật phục hồi",
+      "inputs": [
+        {
+          "name": "Chất chăm áo kỹ thuật theo nhãn",
+          "unit": "gói",
+          "quantity": 2,
+          "unit_cost": 16000
+        },
+        {
+          "name": "Thẻ kiểm bề mặt áo",
+          "unit": "thẻ",
+          "quantity": 2,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Đọc nhãn lớp phủ và ghi tình trạng đường dán, bề mặt khi nhận.",
+        "Làm sạch rồi áp dụng sản phẩm tương thích theo nhãn và hướng dẫn hãng.",
+        "Kiểm bề mặt cùng đường dán theo phiếu hãng rồi ghi phần chưa đạt."
+      ],
+      "check": {
+        "prompt": "Áo nào đủ bằng chứng?",
+        "good": "Sản phẩm tương thích nhãn và tình trạng đường dán được kiểm.",
+        "bad": "Phủ hóa chất bất kỳ để nước trượt nhanh hơn.",
+        "why": "Tính tương thích và cấu trúc áo phải được bảo toàn khi xử lý."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Phục hồi túi ngủ lông vũ",
+      "output_unit": "túi ngủ lông vũ",
+      "inputs": [
+        {
+          "name": "Chất giặt phù hợp lông vũ",
+          "unit": "gói",
+          "quantity": 2,
+          "unit_cost": 15000
+        },
+        {
+          "name": "Túi cất thoáng",
+          "unit": "túi",
+          "quantity": 1,
+          "unit_cost": 16000
+        }
+      ],
+      "procedure": [
+        "Đọc nhãn, kiểm đường may và ghi các vùng lông dồn trước xử lý.",
+        "Giặt và làm khô theo nhãn thiết bị bằng lượt kiểm độ khô, độ tơi.",
+        "Phân bố lại phần lông theo cấu trúc rồi cất thoáng khi đạt điều kiện nhãn."
+      ],
+      "check": {
+        "prompt": "Túi ngủ nào được trả?",
+        "good": "Lông tơi, không còn vùng ẩm và đường may giữ nguyên.",
+        "bad": "Ngoài túi khô nhưng phần lông còn vón ẩm.",
+        "why": "Vỏ khô không chứng minh vật liệu bên trong đủ khô để cất."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Điều phối xử lý đồ vải có chi tiết da",
+      "output_unit": "hồ sơ đồ vải chi tiết da",
+      "inputs": [
+        {
+          "name": "Vật tư thử vùng vải có da",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 12000
+        },
+        {
+          "name": "Túi phân luồng xử lý",
+          "unit": "túi",
+          "quantity": 1,
+          "unit_cost": 14000
+        }
+      ],
+      "procedure": [
+        "Đọc nhãn từng phần và ghi tình trạng màu da, đường ghép.",
+        "Thử phương pháp tương thích ở vùng kín hoặc chuyển chuyên viên khi nhãn yêu cầu.",
+        "Đối chiếu màu, độ mềm và đường ghép sau xử lý rồi ghi biên nhận."
+      ],
+      "check": {
+        "prompt": "Cách xử lý nào phù hợp?",
+        "good": "Chọn theo yêu cầu của cả vải và da, có kiểm thử vùng kín.",
+        "bad": "Chỉ đọc nhãn phần vải rồi dùng chung một chế độ.",
+        "why": "Chi tiết da có thể cần cách chăm khác phần vải chính."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Hồ sơ tình trạng và chăm phục trang sân khấu",
+      "output_unit": "bộ phục trang sân khấu",
+      "inputs": [
+        {
+          "name": "Thẻ hiện trạng phục trang",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 3000
+        },
+        {
+          "name": "Túi bảo vệ chi tiết sân khấu",
+          "unit": "túi",
+          "quantity": 2,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Kiểm nhãn, đếm phụ kiện và chụp các vết cũ theo mã vai diễn.",
+        "Tách phần tháo được rồi làm sạch từng phần bằng phương pháp được duyệt.",
+        "Lắp lại đúng mã, kiểm sắc màu và phụ kiện theo ảnh lúc nhận."
+      ],
+      "check": {
+        "prompt": "Bộ nào trả được?",
+        "good": "Đủ chi tiết đúng mã vai và hiện trạng được đối chiếu.",
+        "bad": "Đủ tổng phụ kiện nhưng gắn sang phục trang khác.",
+        "why": "Phụ kiện phải trở lại đúng bộ để bảo toàn phục trang."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Hợp đồng đồng phục cửa hàng từ nhận đến trả",
+      "output_unit": "lượt đồng phục cửa hàng",
+      "inputs": [
+        {
+          "name": "Nhãn mã đồng phục chịu giặt",
+          "unit": "nhãn",
+          "quantity": 4,
+          "unit_cost": 2000
+        },
+        {
+          "name": "Chất giặt theo nhóm vải",
+          "unit": "gói",
+          "quantity": 2,
+          "unit_cost": 14000
+        }
+      ],
+      "procedure": [
+        "Gắn mã người hoặc mã bộ rồi phân nhóm theo nhãn màu và chất liệu.",
+        "Giặt từng nhóm bằng chế độ tương ứng và kiểm vết bẩn còn lại.",
+        "Đóng theo người nhận rồi đối soát số món và tình trạng khi trả."
+      ],
+      "check": {
+        "prompt": "Lượt nào đạt hợp đồng?",
+        "good": "Đúng số món theo mã người, sạch và không phai lệch.",
+        "bad": "Đủ tổng số áo nhưng trả lẫn cỡ cho nhân viên.",
+        "why": "Bàn giao cần đúng chủ và cỡ của từng bộ đồng phục."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Điều phối làm sạch đồ vải cho mượn trưng bày",
+      "output_unit": "kiện đồ vải cho mượn",
+      "inputs": [
+        {
+          "name": "Giấy lót đồ vải trưng bày",
+          "unit": "tờ",
+          "quantity": 4,
+          "unit_cost": 4500
+        },
+        {
+          "name": "Túi lưu hiện vật vải",
+          "unit": "túi",
+          "quantity": 1,
+          "unit_cost": 18000
+        }
+      ],
+      "procedure": [
+        "Đọc điều kiện cho mượn, nhãn và chụp điểm yếu của từng món.",
+        "Chỉ xử lý phạm vi chủ sở hữu duyệt, dùng cách thử phù hợp ở vùng kín.",
+        "Lót và đóng kiện rồi đối chiếu màu, kích thước với biên bản nhận."
+      ],
+      "check": {
+        "prompt": "Kiện nào đủ nghiệm thu?",
+        "good": "Xử lý đúng phạm vi, ảnh sau khớp tình trạng đã ghi.",
+        "bad": "Tẩy mọi vết cũ dù chủ chỉ cho phép làm sạch bụi.",
+        "why": "Đồ cho mượn phải giữ phạm vi can thiệp được chủ đồng ý."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Dự án phục hồi và cất giữ trang phục cưới",
+      "output_unit": "hồ sơ cất trang phục cưới",
+      "inputs": [
+        {
+          "name": "Giấy lụa không axit",
+          "unit": "tờ",
+          "quantity": 5,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Hộp cất trang phục cưới",
+          "unit": "hộp",
+          "quantity": 1,
+          "unit_cost": 30000
+        }
+      ],
+      "procedure": [
+        "Đọc nhãn và lập ảnh vết bẩn, độ yếu vải cùng phần trang trí.",
+        "Thử rồi xử lý theo phương án duyệt, kiểm khô hoàn toàn trước khi xếp.",
+        "Đệm nếp bằng giấy phù hợp và lưu ảnh bố trí cùng hướng dẫn cất theo nhãn."
+      ],
+      "check": {
+        "prompt": "Bộ nào sẵn sàng cất?",
+        "good": "Khô theo kiểm tra, nếp được đệm và có ảnh bố trí.",
+        "bad": "Cất ngay khi bề ngoài có vẻ sạch dù còn ẩm.",
+        "why": "Độ ẩm và nếp ép có thể làm hỏng trang phục trong thời gian cất."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Bảo quản váy cưới đính hạt có biên bản kiểm kê",
+      "output_unit": "váy cưới đính hạt bảo quản",
+      "inputs": [
+        {
+          "name": "Khay kiểm hạt trang trí",
+          "unit": "khay",
+          "quantity": 1,
+          "unit_cost": 16000
+        },
+        {
+          "name": "Túi và giấy bảo quản váy",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 17000
+        }
+      ],
+      "procedure": [
+        "Đếm hạt theo vùng, ghi hạt lỏng và đọc nhãn chăm váy.",
+        "Cố định phần cần bảo vệ theo đồng ý rồi làm sạch đúng phương pháp nhãn.",
+        "Kiểm lại từng vùng hạt, độ khô và hình dáng trước khi bọc cất."
+      ],
+      "check": {
+        "prompt": "Váy nào đủ biên bản trả?",
+        "good": "Số hạt từng vùng khớp hoặc có ngoại lệ được ghi nhận.",
+        "bad": "Chỉ kiểm tổng hạt nên bỏ qua vùng mất hạt khác vùng dư.",
+        "why": "Kiểm theo vùng phát hiện thay đổi mà tổng số có thể che khuất."
+      }
+    }
+  ],
+  "post_office": [
+    {
+      "tier": 1,
+      "title": "Ghép biên nhận thu hộ với mã kiện",
+      "output_unit": "bảng ghép thu hộ",
+      "inputs": [
+        {
+          "name": "Phiếu thu hộ có mã kiện game",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đọc mã kiện và số tiền trên từng biên nhận hư cấu.",
+        "Ghép biên nhận với đúng dòng kiện trong sổ tuyến.",
+        "Tách mã thiếu hoặc trùng vào danh sách đối soát trước khi cộng tiền."
+      ],
+      "check": {
+        "prompt": "Bảng nào đúng?",
+        "good": "Mỗi biên nhận khớp đúng một mã kiện.",
+        "bad": "Ghép theo số tiền giống nhau dù khác mã kiện.",
+        "why": "Số tiền có thể trùng, mã kiện mới xác định đúng giao dịch."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Đối soát tiền thu hộ khi hoàn một phần",
+      "output_unit": "bảng quyết toán hoàn phần",
+      "inputs": [
+        {
+          "name": "Bộ phiếu thu hộ hoàn một phần",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 8500
+        }
+      ],
+      "procedure": [
+        "Tách phần hàng đã nhận và phần hoàn theo phiếu giao game.",
+        "Đối chiếu khoản thu với phần giữ lại và khoản cần hoàn theo thẻ quy tắc.",
+        "Lập bảng tiền cùng chứng từ nguồn cho từng chênh lệch."
+      ],
+      "check": {
+        "prompt": "Bảng nào cân đúng?",
+        "good": "Tiền đối soát dựa trên phần giữ lại đã xác nhận.",
+        "bad": "Thu toàn bộ giá trị ban đầu dù có phần hoàn.",
+        "why": "Phần hàng được giữ và được hoàn quyết định khoản đối soát của kịch bản."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Lập hồ sơ ngoại lệ chuyển tiền người gửi",
+      "output_unit": "hồ sơ ngoại lệ người gửi",
+      "inputs": [
+        {
+          "name": "Phiếu ngoại lệ chuyển tiền game",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "So mã người gửi, kỳ chuyển và trạng thái giao dịch hư cấu.",
+        "Gom chứng từ cho khoản bị lệch hoặc chưa xác nhận đến.",
+        "Chuyển hồ sơ có người theo dõi và mốc kiểm lại tới đầu mối cơ quan."
+      ],
+      "check": {
+        "prompt": "Khoản nào được ghi đã chuyển xong?",
+        "good": "Khoản có xác nhận đúng người nhận và kỳ.",
+        "bad": "Khoản đã lập lệnh nhưng chưa có xác nhận xử lý.",
+        "why": "Lập lệnh không chứng minh người gửi đã nhận được tiền."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Kiểm giấy tờ theo điểm đến hư cấu",
+      "output_unit": "phiếu kiểm giấy tờ",
+      "inputs": [
+        {
+          "name": "Bộ thẻ giấy tờ điểm đến hư cấu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Đọc danh mục giấy tờ theo mã vùng trên thẻ bưu chính game.",
+        "Đối chiếu từng tờ với mã kiện, phiên bản và mục bắt buộc.",
+        "Lập phiếu thiếu để bổ sung trước khi gắn trạng thái hồ sơ đủ."
+      ],
+      "check": {
+        "prompt": "Hồ sơ nào đủ theo game?",
+        "good": "Đúng danh mục của vùng đích hư cấu và cùng mã kiện.",
+        "bad": "Có nhiều giấy tờ nhưng thuộc một vùng đích khác.",
+        "why": "Số lượng giấy tờ không thay thế đúng yêu cầu của điểm đến."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Đối chiếu nội dung khai báo và hồ sơ",
+      "output_unit": "bảng đối chiếu khai báo",
+      "inputs": [
+        {
+          "name": "Phiếu khai báo hàng hư cấu",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 4500
+        }
+      ],
+      "procedure": [
+        "Ghép khai báo với danh mục và ảnh kiện được cấp trong trò chơi.",
+        "So mô tả, số lượng và mã hồ sơ theo từng dòng.",
+        "Ghi chênh lệch để người gửi giả lập xác nhận lại."
+      ],
+      "check": {
+        "prompt": "Dòng nào cần làm rõ?",
+        "good": "Khai báo hai món nhưng danh mục ghi ba món.",
+        "bad": "Mô tả và số lượng cùng khớp tài liệu nguồn.",
+        "why": "Chênh lệch phải được xác nhận, không được tự sửa theo phỏng đoán."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Lập bằng chứng bàn giao tuyến quốc tế game",
+      "output_unit": "biên bản chuyển tuyến",
+      "inputs": [
+        {
+          "name": "Thẻ bàn giao tuyến quốc tế game",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Đối chiếu danh sách kiện với mã chuyến hư cấu đã được duyệt.",
+        "Ghép bên giao, bên nhận và mốc chuyển trên từng biên nhận.",
+        "Khóa danh sách đã nhận và tách kiện chưa có xác nhận."
+      ],
+      "check": {
+        "prompt": "Kiện nào được ghi bàn giao?",
+        "good": "Có bên nhận xác nhận đúng mã kiện và mã chuyến.",
+        "bad": "Chỉ được đưa vào danh sách dự kiến của chuyến.",
+        "why": "Danh sách dự kiến không chứng minh lượt chuyển đã xảy ra."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lập thứ tự xử lý kiện trên tuyến gián đoạn",
+      "output_unit": "hàng đợi kiện gián đoạn",
+      "inputs": [
+        {
+          "name": "Thẻ ưu tiên tuyến gián đoạn game",
+          "unit": "thẻ",
+          "quantity": 3,
+          "unit_cost": 5500
+        }
+      ],
+      "procedure": [
+        "Nhóm các kiện chờ theo thời hạn và điều kiện trên thẻ game.",
+        "Chấm thứ tự bằng quy tắc ưu tiên được cơ quan hư cấu cấp.",
+        "Ghi lý do thứ tự và đầu mối theo dõi kiện chưa có lượt."
+      ],
+      "check": {
+        "prompt": "Hàng đợi nào đúng quy tắc?",
+        "good": "Mỗi vị trí có căn cứ hạn và điều kiện trên thẻ.",
+        "bad": "Đưa kiện có người quen lên trước không có căn cứ.",
+        "why": "Ưu tiên phải minh bạch theo quy tắc chung của kịch bản."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Phân tuyến thay thế theo sức chứa",
+      "output_unit": "bảng phân tuyến thay thế",
+      "inputs": [
+        {
+          "name": "Bộ sơ đồ tuyến và sức chứa game",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Đọc các tuyến còn mở và sức chứa quy ước từng chuyến.",
+        "Phân kiện theo điểm đến và lượng chỗ còn trống.",
+        "Cộng tải từng chuyến rồi tách kiện chưa có chỗ vào danh sách chờ."
+      ],
+      "check": {
+        "prompt": "Bảng nào khả thi?",
+        "good": "Mỗi chuyến không vượt sức chứa trên thẻ và đúng điểm đến.",
+        "bad": "Dồn tất cả kiện vào tuyến ngắn nhất dù hết chỗ.",
+        "why": "Tuyến thay thế cần đáp ứng cả điểm đến lẫn sức chứa."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Đối soát bằng chứng giao hàng đến muộn",
+      "output_unit": "sổ cập nhật giao muộn",
+      "inputs": [
+        {
+          "name": "Phiếu bằng chứng giao đến muộn",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Tách thời điểm giao thực ghi trên bằng chứng khỏi giờ nhận cập nhật.",
+        "Ghép bằng chứng với mã kiện và kiểm người nhận theo quy tắc game.",
+        "Cập nhật trạng thái một lần rồi ghi lịch sử điều chỉnh đối soát."
+      ],
+      "check": {
+        "prompt": "Cập nhật nào đúng?",
+        "good": "Ghi giờ giao từ bằng chứng và giữ giờ nhận tin riêng.",
+        "bad": "Dùng giờ nhập dữ liệu làm giờ giao của mọi kiện.",
+        "why": "Độ trễ dữ liệu không làm thay đổi thời điểm sự kiện được chứng minh."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Điều phối và khép hồ sơ phục hồi tuyến",
+      "output_unit": "hồ sơ khép tuyến phục hồi",
+      "inputs": [
+        {
+          "name": "Bộ hồ sơ phục hồi tuyến game",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Gom kiện chờ, nguồn lực và bằng chứng chuyển tuyến vào bảng tổng.",
+        "Theo dõi từng kiện tới trạng thái đã xác nhận hoặc ngoại lệ có người nhận.",
+        "Đối soát số kiện cùng tiền thu hộ trước khi lập biên bản khép tuyến."
+      ],
+      "check": {
+        "prompt": "Tuyến nào đủ điều kiện khép hồ sơ?",
+        "good": "Kiện và khoản thu đều đối soát, ngoại lệ có đầu mối rõ.",
+        "bad": "Xe chạy lại bình thường nên bỏ các kiện còn thiếu tin.",
+        "why": "Khôi phục vận chuyển chưa tự giải quyết các tồn đọng hồ sơ."
+      }
+    }
+  ]
+}
