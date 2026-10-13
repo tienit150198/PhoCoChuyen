@@ -12,7 +12,7 @@ from tests.test_fair_knife import safe_taps, crash_tap
 
 class EventOdds(unittest.TestCase):
     def test_each_chance_stall_starts_at_requested_rate(self):
-        for game in fh.CHANCE_GAMES:   # owner 08/10: each stall's fresh draw (BASES), below what breaks even
+        for game in fh.CHANCE_GAMES:   # current ordinary fresh draws
             with self.subTest(game=game):
                 self.assertAlmostEqual(fh.luck_p({}, None, game, OPEN), fh.BASES.get(game, fh.LUCK_BASE))
         self.assertEqual((xs.P_HI, xs.P_LO), (fh.BASES['xs'], fh.BASES['xs']))
@@ -26,8 +26,9 @@ class EventOdds(unittest.TestCase):
                 self.assertEqual(set(rates), {base})
                 continue
             floor = fh.XD_FLOOR if game == 'xd' else fh.P_FLOOR
-            self.assertEqual(rates[:fh.RUN_FREE], [base] * fh.RUN_FREE)
-            self.assertAlmostEqual(rates[fh.RUN_FREE], base - fh.RUN_STEP)
+            free = 10 if game == 'ring' else 1
+            self.assertEqual(rates[:free], [base] * free)
+            self.assertAlmostEqual(rates[free], base - fh.RUN_STEP)
             self.assertEqual(rates, sorted(rates, reverse=True))
             self.assertEqual(rates[30:], [floor] * 70)
 

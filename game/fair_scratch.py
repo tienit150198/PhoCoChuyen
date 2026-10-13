@@ -10,12 +10,12 @@ its prize in exactly 3 boxes and every other amount at most twice, a losing one 
 rule on the ticket, "3 ô giống nhau trúng số đó", always reads the same as the result). The client only scratches it
 open; nothing it sends decides anything.
 
-Owner 10/10: 51% of tickets win (previously 50%) at every price in normal play (game.fair BASES['xs'], with its
-cool-off to 45% after four wins and its spam decay to 40% for a long run of tickets; no sure
-win after losses any more); winning does not always mean net profit (a refund is a win).
-Owner 08/10 ("đảm bảo nhà cái luôn thắng"): the prize weights give a mean of 1.80× the price a
-won ticket (was 1.59×: 80% back), so a ticket returns 91.851% of its price at the most (a fresh run);
-the bigger prizes come a little more often. Already purchased tickets retain their layout and payment.
+Owner 14/10: 55% of tickets win on the first ordinary round of a run at every price
+(game.fair.BASES['xs']); round 2 is 53.5%, then 52%, 50.5%, ... down to 40%.
+Four consecutive wins still cap the next draw at 45%; existing reset and large-stake rules remain.
+A refund counts as a winning ticket. The unchanged PRIZES table averages 1.801× a won ticket,
+so the first ordinary round returns 99.055% before streak cooling, police or Lộc.
+Already purchased tickets retain their layout and payment.
 The temporary golden-days event uses only PRIZES multipliers above one for its
 winning draw, so an event win is positive net. Normal tickets keep the full table.
 """
@@ -30,7 +30,7 @@ MATCH = 3                       # 3 boxes of the same amount: that amount is won
 PRIZES = ((1, 655), (2, 230), (3, 62), (5, 32), (10, 14), (20, 5), (50, 2))
 MULTS = tuple(m for m, _ in PRIZES)
 # Historical API retained at the current fixed base probability.
-P_HI, P_LO = .51, .51   # game.fair.BASES['xs']
+P_HI, P_LO = .55, .55   # game.fair.BASES['xs']
 RUN_STEP = 0
 
 

@@ -637,10 +637,11 @@ class LotoShow(FairBase):
                 expected = probability * fh.prize_of(mode, 5, n) / (n * 5) - 1
                 self.assertAlmostEqual(ev, expected, delta=.20, msg=(mode, n, ev))
         p = fh.chance_rate('lt', OPEN)
-        for k in fh.LOTO_MODES:   # current .46 draw and 2.1x payout: at most 96.6% back
+        for k in fh.LOTO_MODES:   # 55% fresh draw; 2.1x payout rounded down on small tiers
             for tier, price in fh.LOTO_TIERS.items():
                 for n in range(1, fh.LOTO_CARDS + 1):
-                    self.assertTrue(.90 <= p * fh.prize_of(k, price, n) / (n * price) <= .97, (k, tier, n))
+                    self.assertAlmostEqual(p * fh.prize_of(k, price, n) / (n * price),
+                                           .55 * ((price * n * 21) // 10) / (price * n), msg=(k, tier, n))
         self.assertTrue(.88 < cl / 600 < 1.05, cl / 600)   # blind side bets (closed since 08/10: SIDE_OPEN)
         self.assertTrue(.8 < cot / 600 < 1.05, cot / 600)
 
@@ -1578,6 +1579,12 @@ class Idempotent(StoreBase):
 
 
 class Board(StoreBase):
+    def setUp(self):
+        super().setUp()
+        board_clock = mock.patch.object(fb, 'now', side_effect=lambda: self.clock.t)
+        board_clock.start()
+        self.addCleanup(board_clock.stop)
+
     def score(self, tok, rounds):
         self.dice(Dice(faces=['cua'] * (3 * rounds)))
         for _ in range(rounds):

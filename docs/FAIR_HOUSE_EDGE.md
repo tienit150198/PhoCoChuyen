@@ -1,8 +1,72 @@
-# 🕶️ Chợ đen (was Hội chợ): house edge and free entry (updated 11/10/2026)
+# 🕶️ Chợ đen (was Hội chợ): ordinary odds, returns and free entry (updated 14/10/2026)
 
 Owner 08/10: "mở hội chợ nhé, tỷ lệ chỉnh lại làm sao cho phù hợp, đảm bảo nhà cái luôn thắng", then "chợ đen để
 luôn ở ngoài nhé". This edition opened on 09/10 (`FAIR_START` 2026-10-09, edition `fair20261009`). Its entry stays in
 sight: a 🏮 Hội chợ chip in the town's top bar and a main menu entry. The 🏮 gate on Phố hàng rong is still there too.
+
+## Current ordinary odds — 14/10/2026
+
+The latest owner instruction supersedes the historical requirement that every paid stall always have a house edge.
+Only chiếu trong (`xd`), lô tô (`lt`) and vé cào (`xs`) change: **one initial round at 55% per run**, then subtract
+1.5 percentage points on each subsequent round. The first ten draws are **55%, 53.5%, 52%, 50.5%, 49%, 47.5%,
+46%, 44.5%, 43%, 41.5%**. Round 11 reaches the existing floor: **40.4% xd**, **40% lt/xs**, and stays there.
+`RUN_FREE = 1`; ném vòng alone keeps `RING_RUN_FREE = 10`, its .503 base and its existing decay.
+
+- Existing `fair_cool` history is retained, including after reload; this release does not grant every player a new first round.
+- Reset behavior is unchanged: the elapsed whole-second gap must be **greater than 600 seconds** (exactly 600 remains
+  the same run), or three qualifying paid rounds at other stalls must occur since the last round there. Each must
+  stake at least `max(20, ceil(last saved stake / 4))`; free/skill rounds and smaller bets do not qualify.
+- Four consecutive wins still cap the next ordinary draw at 45%, without raising an already lower rate. A stake
+  **at least 50,000 xu** still caps xd/lt/xs at 40%, including during the golden-days event. Existing stake menus remain.
+- The one-shot golden-days 70% event and its persisted window are unchanged. These figures describe ordinary play
+  outside that event. Purchased scratch tickets and locked ring rounds keep their original outcomes/rates.
+- Payouts are unchanged. Ordinary scratch wins include refunds; `PRIZES` still has conditional mean **1.801×**.
+  Bầu cua keeps honest dice, dog racing fixed odds, and knife/oan-quan skill rules. No public probability is added.
+
+### Exact single-round return before police
+
+This is expected money returned divided by stake, **not the chance of net profit**. It assumes a fresh ordinary
+round with no four-win streak cap and, for lô tô, correct marks and timely Kinh. It excludes all police enforcement
+and fines. Lộc is shown separately assuming its server gate is always open; actual hourly gating can lower it.
+
+| Stall | Exact initial RTP | With always-open Lộc gate |
+|---|---:|---:|
+| Bầu cua | 95.370370% | 96.474537% |
+| Chiếu trong | **110%** (`2 × .55`) | 111.485% |
+| Lô tô, best tier | **115.5%** (`2.1 × .55`) | 116.9685% |
+| Vé cào | **99.055%** (`1.801 × .55`) | 99.51238% |
+| Đua chó, best dog | 95% | 95% |
+
+Lô tô tickets whose payout rounds to 2× return 110% on the first round. The new xd/lt figures mean that
+fresh or selectively larger warm bets **can exceed 100% expected return**. Cooling repeated play below 100%
+does not establish a house edge for every strategy.
+
+`scripts/sim_fair_odds.py` reports these exact values and Monte Carlo using real draw and payout functions.
+It deliberately omits all enforcement: the actual xd raid requires `bm.arrest_p(f, stake) > 0`; an unconditional
+raid on every simulated small bet would incorrectly reduce the before-police result.
+The patterns are fresh (pause >600 s each round, 100 xu), spam (one round each second, 100 xu), and press
+(pause >600 s, 1,000 xu when the streak is warm, 10 xu xd / 2 xu lt/xs when cooled). Pauses reset repetition,
+but preserve the four-win cap, so repeated fresh results are lower than the exact single fresh round.
+The long-run fresh win probability is approximately .54238645: RTP 108.4773% xd, 113.9012% lt,
+97.6838% xs before Lộc. At the spam floor, expected RTP is 80.8% xd, 84% lt and 72.04% xs.
+Finite samples vary, especially scratch jackpots; tests compare simulation to the relevant expectation.
+
+### 14/10 verification sample
+
+`python scripts/sim_fair_odds.py 1000000` (default seed 1; 1,000,000 rounds per pattern):
+
+| Stall | Fresh | Spam | Press | Fresh + Lộc |
+|---|---:|---:|---:|---:|
+| Bầu cua | 95.24% | 95.47% | 95.21% | 96.63% |
+| Chiếu trong | 108.50% | 80.90% | 110.01% | 110.07% |
+| Lô tô | 113.92% | 84.04% | 115.39% | 115.31% |
+| Vé cào | 97.49% | 72.14% | 98.73% | 98.07% |
+| Đua chó (random dog) | 93.52% | 93.92% | 93.76% | 94.09% |
+
+20,000 additional lô tô card rounds agreed with their drawn outcome in 100% of cases; 55.66% were drawn for the player.
+These are before-police samples under the current ordinary rules, not a guarantee for a particular player.
+
+The dated tables and change notes below are historical and do not define the current 55%/one-round rule.
 
 ## No end (owner 09/10: "chợ đen mở mãi đi, k có thời hạn nhé")
 
@@ -26,13 +90,15 @@ sight: a 🏮 Hội chợ chip in the town's top bar and a main menu entry. The 
   00:00: from then it refuses the stalls, collects open loans and crowns the end once (`fair:fair20261009`). Saves stay
   valid both ways (nothing new is written).
 
+## Historical return tables — 07–11/10 (superseded)
+
 The table gives the upper return per xu staked for a fresh run with perfect play, before the separate Chợ đen arrest
 roll. Cool-off, spam decay and late Kinh claims lower this return. Canceled arrests retain their stake; their effect
 is described below and does not change the stalls' draw probabilities.
 The figures come from `scripts/sim_fair_odds.py` (`exact()`), which also checks them on 10^6 real-draw rounds per stall.
 `tests/test_fair_house_edge.py` runs the same checks on smaller samples.
 
-| stall | before (07/10 rules) | now | now, with 🍀 Lộc gate always open | 10^6 rounds, 10/10 rerun (fresh / spam / press) |
+| stall | before (07/10 rules) | 10/10 rules | 10/10 with 🍀 Lộc gate always open | 10^6 rounds, 10/10 rerun (fresh / spam / press) |
 |---|---|---|---|---|
 | 🦀 Bầu cua (honest dice, bão 10:1) | 95.4% (Lộc: 100.9%) | 95.4% | 96.5% | 95.2% / 95.5% / 95.2% |
 | 🕯️ Chiếu trong (even money, 0.88% raids) | 100.7% (Lộc: 107.5%) | 98.0% | 99.3% | 96.5% / 79.7% / 96.9% (before 11/10 cancellation change) |
@@ -44,10 +110,10 @@ The figures come from `scripts/sim_fair_odds.py` (`exact()`), which also checks 
 The 10/10 rerun of `python scripts/sim_fair_odds.py 1000000` also returned 96.63%, 97.82%, 97.58%,
 91.58% and 94.09% respectively for fresh rounds with Lộc. All simulated patterns stayed below 100%; 20,000 lô tô
 rounds agreed with their server draw in 100% of cases. A finite sample can differ from the exact expectation.
-These are historical 10/10 samples, not a rerun of the 11/10 fine rules. The updated exact xóc đĩa upper return is
+These are historical 10/10 samples, not a rerun of the 11/10 fine rules. The historical 11/10 simulator modeled xóc đĩa upper return as
 98.0176%, or 99.3289576% with the Lộc gate always open. A dẹp chiếu now cancels the stake, so the formula adds the
-raid probability: `(1 − r) × 2 × p + r`, before its small fine. The simulator retains the canceled stake and charges
-the bounded fine for a representative 100,000-xu wallet.
+raid probability: `(1 − r) × 2 × p + r`, before its small fine. That historical simulator retained the canceled stake and charged
+a bounded fine for a representative 100,000-xu wallet. The current before-police simulator excludes this roll entirely.
 
 How the three betting patterns play:
 
@@ -55,7 +121,7 @@ How the three betting patterns play:
 - **spam:** one round a second at one stall.
 - **press:** 1000 xu while the stall is warm, 10 xu once it has cooled.
 
-## What changed
+## Historical changes through 11/10 (odds superseded above)
 
 - **11/10 small compulsory losses:** each arrest/check event takes at most 2% of the affected wallet, at most
   2,000 xu, retaining 100 xu (or the entire balance if below 100). Wealth and asset checks on one paid round share
@@ -132,7 +198,7 @@ The owner removed the entry fee on 10/10. Players see "Chợ đen" everywhere; i
   run on rounds the police did not catch. Nothing new is saved for the rate (it is computed from the stake and
   `journey['fair'].net`), so the save stays what 1.9.30/1.9.31 validate.
 - **What it does to the house edge:** for arrest rate `a` and the table's return `R`, canceling an unplayed stake
-  gives `a + (1 − a) × R` before the bounded fine. This stays below 100% whenever `R < 1` and `a < 1`.
+  gives `a + (1 − a) × R` before the bounded fine. This stays below 100% whenever `R < 1` and `a < 1`; it does not establish a house edge when the current fresh `R` exceeds 1.
   The expected actual fine, divided by the stake, lowers it further. Cancellations no longer forfeit the stake.
 - **Nothing reaches the client** about the rate or the percentages: `fair.bm` carries only the zero legacy fee, today's standing
   (`st`, `inside`, `ban`) and the đàn em's name. Receipts give the fine in xu.

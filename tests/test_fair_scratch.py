@@ -33,8 +33,8 @@ class Table(unittest.TestCase):
 
     def test_rebalanced_prize_table_prefers_small_prizes(self):
         self.assertEqual((xs.P_HI, xs.P_LO), (fh.BASES['xs'],) * 2)    # owner 07/10: about 50% of tickets win
-        self.assertAlmostEqual(self.ev(xs.P_HI), .51 * 1.801)            # 10/10: 91.851% back before cool-off
-        self.assertAlmostEqual(self.ev(xs.P_LO), .51 * 1.801)
+        self.assertAlmostEqual(self.ev(xs.P_HI), .55 * 1.801)            # 14/10: 99.055% back before cool-off
+        self.assertAlmostEqual(self.ev(xs.P_LO), .55 * 1.801)
         weights = dict(xs.PRIZES)
         self.assertGreater(weights[1], sum(weights.values()) / 2)        # still mostly a refund
         self.assertEqual(sorted(weights.values(), reverse=True), [weights[m] for m in xs.MULTS])   # rarer as they grow
@@ -118,8 +118,10 @@ class Scratch(FairBase):
         s['journey']['fair']['date'] = fh.vn_date(self.clock.t + 2)
         for net in (3500, 9000, -400):                              # 06/10: the same draw at any net
             s['journey']['fair']['net'] = net
+            self.clock.t += fh.RUN_GAP + 1  # compare fresh draws, without repetition cooling
             s, r = self.buy(s, 2, [fh.BASES['xs'] + .001])
             self.assertEqual(r['fair']['mult'], 0)
+            self.clock.t += fh.RUN_GAP + 1
             s, r = self.buy(s, 2, [fh.BASES['xs'] - .001])
             self.assertGreater(r['fair']['mult'], 0)
 

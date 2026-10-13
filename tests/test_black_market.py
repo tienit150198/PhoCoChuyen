@@ -355,6 +355,8 @@ class Arrest(BlackMarketBase):
 
     def test_arrests_leave_the_stalls_draws_alone(self):
         """The arrest has its own random source: a stall's scripted draws (fair._rng) are not consumed by it."""
+        gate = fh._loc_gate.set(False)  # isolate arrest draws from the optional Lộc bonus
+        self.addCleanup(fh._loc_gate.reset, gate)
         s = story()
         s, _ = self.act(s, 'fair_bm_pay')
         seen = []

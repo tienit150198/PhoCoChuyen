@@ -1,21 +1,22 @@
-"""🎪 The fair's house edge (owner 08/10: "đảm bảo nhà cái luôn thắng"): the exact return of every paid luck stall of
-game/fair.py, and a Monte-Carlo check of it on the module's own functions (dev tool; docs/FAIR_HOUSE_EDGE.md).
+"""The fair's ordinary before-police return, exact fresh maxima and real-draw Monte Carlo.
 
     python scripts/sim_fair_odds.py [rounds per stall, default 1000000] [--side]
 
-exact(): the most one round can return per xu staked (a fresh run: the stall's BASES draw, perfect play, the
-cheapest fine), with and without 🍀 Lộc trời cho as if its server-wide gate were always open (a lone player). Every
-other state of a round is lower (the cool-off after a winning streak, the spam decay, a late Kinh, the police), so
-any way of betting returns less than its stakes.
+exact(): one fresh ordinary round before streak cooling, enforcement or fines, with and without
+Lộc as if its hourly server gate were always open. Since 14/10, xd/lt/xs start at .55 for ONE round,
+then lose .015 each round to their existing floors. xd and lt can exceed 100% RTP.
+No police enforcement is simulated: actual xd raids require bm.arrest_p(f, stake) > 0, so adding
+an unconditional raid to these small-stake rounds would misstate their before-police returns.
 
-The simulation plays each stall with the real draw (fair._draw_luck, fair.luck_p: streak cool-off and spam decay)
-and payouts (bc_fair_roll / bc_back, xd_toss / xd_fine, prize_of, scratch.prize_mult, fair_dog.lineup / draw / back),
-three ways:
-  fresh   a long pause before every round (never cooled by a run), 100 xu flat
-  spam    one round a second at the same stall, 100 xu flat
-  press   fresh, but 1000 xu while the streak is not cooled and 10 xu while it is (betting the "warm" rounds)
-and the lô tô rounds once more through loto_rs / round_view (the cards really go the player's way exactly when drawn).
---side: why the lô tô side bets are closed (the minute's calls are public: the best chẵn/lẻ and cột once seen).
+play() uses real draws (fair._draw_luck, fair.luck_p) and payouts (bc_fair_roll / bc_back,
+xd_toss, prize_of, scratch.prize_mult, fair_dog.lineup / draw / back):
+  fresh   a pause > RUN_GAP before each round, 100 xu flat
+  spam    one round a second at one stall, 100 xu flat
+  press   fresh, 1000 xu while the streak is warm, 10 xu (lt/xs: 2) while cooled
+Pauses reset repetition only: all patterns retain the four-win streak cap, so repeated fresh
+Monte Carlo is lower than exact()'s single fresh round. The simulation also checks real loto
+cards through loto_rs / round_view. It excludes the temporary golden-days event.
+--side: why public minute calls made the now-closed loto side bets exploitable.
 """
 from __future__ import annotations
 
@@ -28,7 +29,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from game import fair as fh            # noqa: E402
 from game import fair_scratch as xs    # noqa: E402
 from game import fair_dog as dg        # noqa: E402
-from game.loss_limits import bounded_loss  # noqa: E402
 
 LOC = fh.LOC_P * fh.LOC_MULT
 
@@ -43,17 +43,17 @@ def _bc_rows():
 
 
 def exact() -> dict:
-    """{stall: dict(rtp, loc)}: the most a round returns per xu staked, without and with an always-open Lộc gate."""
+    """Single fresh ordinary round before police/streak cooling, with/without an always-open Lộc gate."""
     out = {}
     # 🦀 bầu cua: three honest dice, each face bet on its own (several faces: the sum of single bets, the same return)
     rows = _bc_rows()
     rtp = sum(p * b for p, b in rows)
     loc = sum(p * fh.LOC_P * max(0, fh.LOC_MULT - (b - 1)) for p, b in rows if b > 1)
     out['bc'] = dict(rtp=rtp, loc=rtp + loc)
-    # 🕯️ chiếu trong: a raid cancels/returns its stake; zero fine is the upper bound.
-    r, p = fh.RAID_PCT / 100, fh.chance_rate('xd', 0)
-    rtp = (1 - r) * p * 2 + r
-    out['xd'] = dict(rtp=rtp, loc=rtp + (1 - r) * p * fh.LOC_P * (fh.LOC_MULT - 1))
+    # 🕯️ chiếu trong: even money, before all enforcement.
+    p = fh.chance_rate('xd', 0)
+    rtp = p * 2
+    out['xd'] = dict(rtp=rtp, loc=rtp + p * fh.LOC_P * (fh.LOC_MULT - 1))
     # 🎱 lô tô: the round goes the player's way with BASES['lt'], a Kinh pays prize_of (the best tier and tờ count)
     p = fh.chance_rate('lt', 0)
     best = max(fh.prize_of(m, pr, n) / (pr * n) for m in fh.LOTO_MODES for pr in fh.LOTO_TIERS.values()
@@ -115,13 +115,9 @@ def play(game: str, how: str, n: int, seed: int = 1, loc: bool = False) -> float
                 back = fh.bc_back({face: st}, fh.bc_fair_roll())
             elif game == 'xd':
                 st, p = pl.stake(10, 1000)
-                if rng.random() * 100 < fh.RAID_PCT:
-                    # A representative funded wallet; the canceled stake is retained.
-                    back = st - bounded_loss(100000, fh.xd_fine(st), fine=True)
-                else:
-                    side = 'chan' if rng.random() < .5 else 'le'
-                    coins = fh.xd_toss(side, fh._draw_luck(pl.j, 'xd', p))
-                    back = 2 * st if (side == 'chan') == (sum(coins) % 2 == 0) else 0
+                side = 'chan' if rng.random() < .5 else 'le'
+                coins = fh.xd_toss(side, fh._draw_luck(pl.j, 'xd', p))
+                back = 2 * st if (side == 'chan') == (sum(coins) % 2 == 0) else 0
             elif game == 'dg':   # a random dog of a random race; 100 xu (press: 1000, it never cools)
                 pl.t += 1 if how == 'spam' else fh.RUN_GAP + 1
                 st = 1000 if how == 'press' else 100
@@ -185,6 +181,7 @@ def side_peek(slots: int = 40, rounds: int = 600, seed: int = 4) -> tuple[float,
 
 def main() -> None:
     n = next((int(a) for a in sys.argv[1:] if a.isdigit()), 1_000_000)
+    print('Ordinary draws, before all police enforcement; exact = one fresh round, MC retains streak cooling.')
     names = dict(bc='🦀 bầu cua', xd='🕯️ chiếu trong', lt='🎱 lô tô', xs='🎟️ vé cào', dg='🐕 đua chó')
     ex = exact()
     print(f'{"stall":16} {"exact":>7} {"+Lộc":>7} | {n:,} rounds each: {"fresh":>7} {"spam":>7} {"press":>7} {"fresh+Lộc":>9}')

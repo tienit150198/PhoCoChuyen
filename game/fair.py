@@ -4,20 +4,22 @@ The ordinary rules below resume automatically outside the one-shot golden-days
 promotion (game/fair_golden_days.py). During its persisted 48-hour window only
 chiếu trong, lô tô and vé cào use the event draw; scratch wins then exclude refunds.
 
-🎪 The house always wins (owner 08/10: "mở hội chợ nhé, tỷ lệ chỉnh lại làm sao cho phù hợp, đảm bảo nhà cái luôn
-thắng"; the edition from FAIR_START 2026-10-09). Every paid luck stall returns less than it takes on every round, so
-no way of betting (big when warm, small when cooled, switching stalls, a long pause) comes out ahead in the long run.
-The most a round can return per xu staked (a fresh run, perfect play, see docs/FAIR_HOUSE_EDGE.md and
-scripts/sim_fair_odds.py, which checks it on 10^6 rounds a stall):
+Owner 14/10: chiếu trong, lô tô and vé cào start at 55% for ONE ordinary round per run,
+then decrease 1.5 percentage points every round from round 2 (53.5%, 52%, 50.5%, ...).
+Floors, streak caps, large-stake caps, reset rules and payouts stay unchanged. Existing saved
+heat is retained. Ném vòng keeps its own ten-round grace. This supersedes the historical
+08/10 goal that every paid stall must always have a house edge: the initial xd/lt RTP now exceeds 100%.
+Single fresh ordinary round, before police and streak cooling (docs/FAIR_HOUSE_EDGE.md;
+scripts/sim_fair_odds.py keeps the real draws/payouts and omits enforcement):
 
-  stall        how                                                  return  with 🍀 Lộc (gate always open)
-  bầu cua      three honest dice, 1:1 a die, bão BAO:1               95.4%   96.5%
-  chiếu trong  even money, BASES['xd'] won draws, RAID_PCT raids     98.0%   99.3%   (no fine: wallet short)
-  lô tô        BASES['lt'] rounds go the player's way, Kinh 2.1×     96.6%   97.8%   (2- and 5-xu tờ: 92.0%)
-  vé cào       BASES['xs'] tickets win, scratch.PRIZES mean 1.80×    91.9%   92.3%
-  đua chó      fixed odds (fair_dog.CLASSES), the outsider at best    95.0%   95.0%   (the favourite: 92.8%)
+  stall        how                                            return  with 🍀 Lộc (gate always open)
+  bầu cua      three honest dice, 1:1 a die, bão BAO:1         95.4%   96.5%
+  chiếu trong  even money, 55% win draw                       110.0%  111.5%
+  lô tô        55% draw, timely Kinh at 2.1×                  115.5%  117.0%   (2- and 5-xu tờ: 110.0%)
+  vé cào       55% tickets win, mean prize 1.801×              99.1%   99.5%
+  đua chó      fixed odds, the outsider at best               95.0%   95.0%   (the favourite: 92.8%)
 
-Every other state is lower: the cool-off after STREAK wins (WIN_P_LOW), the spam decay (RUN_STEP down to P_FLOOR),
+Ordinary draw reductions remain: the cool-off after STREAK wins (WIN_P_LOW), the spam decay (RUN_STEP down to P_FLOOR),
 a Kinh called late, the police (raids, the asset check). The lô tô side bets are closed (SIDE_OPEN: the minute's
 calls are the same for everyone, so a player who saw them could pick the likely chẵn/lẻ or cột). 🍀 Lộc trời cho stays
 (LOC_P lower: on a busy server it still comes about once an hour). Phóng dao is a skill game (owner 05/10: no chance
@@ -108,22 +110,23 @@ KIND = 'fair'                  # journey wallet history kind (journey.HISTORY_KI
 # puts on the saved counters (rolling release), which therefore stop there.
 DAY_CAP = 150
 ROUNDS_DAY = 400
-# The draw of a fresh round, per stall (owner 08/10: "đảm bảo nhà cái luôn thắng"): each one below what breaks even,
-# so every round of every paid stall returns less than its stake (the table at the top, docs/FAIR_HOUSE_EDGE.md).
+# Owner 14/10: one initial ordinary round at 55% in xd/lt/xs; payouts remain unchanged.
+# The initial xd/lt return now exceeds break-even (docs/FAIR_HOUSE_EDGE.md).
 # xóc đĩa: even money, its raids (RAID_PCT) come first; lô tô: a Kinh pays LOTO_PAY tenths of the tờ; vé cào: a won
 # ticket pays scratch.PRIZES; ném vòng takes no stake (3 decimals: a ring round keeps its draw as p/1000).
-# Owner 10/10: slightly gentler luck draws; skill games, honest dice and fixed dog odds stay unchanged.
-BASES = dict(xd=.49, lt=.46, xs=.51, ring=.503)
+# Skill games, honest dice, fixed dog odds and the free ring draw stay unchanged.
+BASES = dict(xd=.55, lt=.55, xs=.55, ring=.503)
 WIN_P, WIN_P_LOW = .50, .45   # the older single rate (rules.luck_pct for an older client), and the streak cool-off
 LOTO_WIN_P = BASES['lt']
 LUCK_BASE = BASES['ring']      # the draw of a stall without its own BASES entry
 XD_BASE = BASES['xd']
-LUCK_PCT = 48                  # rules.luck_pct, the one rate an older client shows for all of them (about BASES' mean)
+LUCK_PCT = 48                  # legacy compatibility value; current public rules expose no win rates
 STREAK = 4                     # wins in a row before the cool-off (no sure win after losses since 07/10)
 # Spam decay (owner 07/10): rounds RUN_FREE + 1, + 2, … of one luck stall draw RUN_STEP less each, down to P_FLOOR
-# (XD_FLOOR for xóc đĩa: 40% won rounds after its raids). Back to the full rate: SWITCH_ROUNDS rounds of other PAID_LUCK
+# (XD_FLOOR for xóc đĩa); ring retains RING_RUN_FREE rounds. Back to the full rate: SWITCH_ROUNDS rounds of other PAID_LUCK
 # stalls since the stall's last round, or a RUN_GAP pause from it; a free or skill stall resets nothing (07/10).
-RUN_FREE, RUN_STEP, RUN_GAP, P_FLOOR = 10, .015, 600, .40
+RUN_FREE, RUN_STEP, RUN_GAP, P_FLOOR = 1, .015, 600, .40
+RING_RUN_FREE = 10             # free ring rounds keep their existing grace period
 XD_FLOOR = .404               # .404 × (1 − 0.88%) ≈ 40.04% won rounds (was .407 with 1.76% raids)
 DECAY_EXEMPT = ('bc',)         # bầu cua: honest dice with a house edge, no draw to lower
 PAID_LUCK = ('bc', 'xd', 'lt', 'xs', 'dg')   # the paid luck stalls whose rounds count as a switch (🐕 đua chó too)
@@ -198,7 +201,7 @@ LOTO_PRICE = 5
 LOTO_PRIZE = 10                # the older client's plain card: prize_of('thuong', LOTO_PRICE, 1) (was 23, a pot)
 LOTO_NPCS = 4
 # Loto: BASES['lt'] of the rounds go the player's way, and a Kinh pays LOTO_PAY tenths of what the tờ cost, rounded
-# down (07/10: 2.1×, was 2.2× / 2.3×): a player who always calls in time gets 95.6% back (91% on the 2- and 5-xu tờ).
+# down (07/10: 2.1×, was 2.2× / 2.3×): a fresh 55% round returns 115.5% (110% on the 2- and 5-xu tờ).
 LOTO_PAY = dict(thuong=21, nguoc=21, doi=21, dem=21)
 LOTO_TRIES = 300               # round ids tried for the outcome drawn (≈2..8 needed); the last one tried after that
 LOTO_TTL = 20 * 60             # a card can be claimed this long after it was bought
@@ -679,11 +682,12 @@ def _heat(j: dict, game: str, t: float, stake: int = 0) -> int:
 
 def run_rate(game: str, n: int) -> float:
     """The draw of round n (1: the first) of a run of one stall: the full rate for RUN_FREE rounds, then RUN_STEP less a
-    round, never below the floor. Bầu cua (DECAY_EXEMPT) keeps its rate (its dice are honest anyway)."""
+    round, never below the floor. Ring keeps RING_RUN_FREE rounds; bầu cua keeps honest dice."""
     base = chance_rate(game, 0)
-    if game in DECAY_EXEMPT or n <= RUN_FREE:
+    free = RING_RUN_FREE if game == 'ring' else RUN_FREE
+    if game in DECAY_EXEMPT or n <= free:
         return base
-    return max(XD_FLOOR if game == 'xd' else P_FLOOR, round(base - RUN_STEP * (n - RUN_FREE), 3))
+    return max(XD_FLOOR if game == 'xd' else P_FLOOR, round(base - RUN_STEP * (n - free), 3))
 
 
 def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = None) -> float:

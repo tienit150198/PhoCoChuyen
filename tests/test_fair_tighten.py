@@ -34,7 +34,7 @@ class Decay(FairBase):
         self.assertAlmostEqual(rates[fh.RUN_FREE], fh.XD_BASE - .015)
         self.assertEqual(rates[25:], [fh.XD_FLOOR] * 175)
         self.assertAlmostEqual(fh.XD_FLOOR * (1 - fh.RAID_PCT / 100), .40, delta=.001)   # 40% won rounds after raids
-        self.assertEqual([fh.run_rate('xs', n) for n in (1, 10, 11, 16, 17, 200)], [.51, .51, .495, .42, .405, .40])
+        self.assertEqual([fh.run_rate('xs', n) for n in (1, 10, 11, 16, 17, 200)], [.55, .415, .40, .40, .40, .40])
         # A draw a little under the floor still wins on round 41, one a little over loses.
         self.dice(Dice(draws=[fh.XD_FLOOR - .001]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=10)
@@ -69,8 +69,9 @@ class Decay(FairBase):
         s = self.xd(story(10**6), 30)
         s = self.xs(s, 2)                                            # two vé cào: not yet
         self.assertEqual(s['journey'][fh.COOL_KEY]['xd']['sw'], 2)
+        # The most recent scratch stall now cools after its first round too.
         cold = public_state(s)['fair']['cool']
-        self.assertEqual((cold['game'], cold['switch'], cold['min']), ('xd', 1, 20))
+        self.assertEqual((cold['game'], cold['switch'], cold['min']), ('xs', 3, 20))
         self.assertEqual(self.xd_p(s), fh.XD_FLOOR)
         s = self.xd(s, 1)                                            # back to xóc đĩa: the switch starts over
         s = self.xs(s, 2)
@@ -106,7 +107,7 @@ class Decay(FairBase):
         s = self.xs(s, 3, price=200)                                 # 200 < 250: nothing
         self.assertEqual(self.xd_p(s), fh.XD_FLOOR)
         s = self.xs(s, 2, price=500)
-        self.assertEqual(public_state(s)['fair']['cool']['switch'], 1)
+        self.assertEqual(s['journey'][fh.COOL_KEY]['xd']['sw'], 2)
         s = self.xd(s, 1, stake=40)                                  # back at 40 xu: the switch starts over, min 20
         self.assertEqual(public_state(s)['fair']['cool']['min'], 20)
         s = self.xs(s, 3, price=20)
@@ -140,13 +141,14 @@ class Decay(FairBase):
         validate_state(s2)
         self.assertEqual(fh.luck_p(s2['journey'], None, 'xd', self.clock.t), fh.XD_BASE)
 
-    def test_normal_play_keeps_the_full_rate(self):
+    def test_switching_warms_previous_stall_but_current_run_still_cools(self):
         s = story(10**6)
         for _ in range(5):   # a few rounds of each stall, 20 xu or more
             s = self.xd(s, 4, stake=20)
             s = self.xs(s, 4, price=20)
-            self.assertIsNone(public_state(s)['fair']['cool'])
-        self.assertLessEqual(s['journey']['fair_run2']['n'], fh.RUN_FREE)
+            self.assertEqual(public_state(s)['fair']['cool']['game'], 'xs')
+            self.assertEqual(self.xd_p(s), .55)
+        self.assertEqual(s['journey']['fair_run2']['n'], 4)
         self.assertEqual(set(s['journey'][fh.COOL_KEY]), {'xs'})     # four vé cào warmed xóc đĩa up each time
 
     def test_the_hint_shows_from_the_first_cooled_round(self):
@@ -331,7 +333,8 @@ class StoreLoc(StoreBase):
                     'INSERT INTO mnl_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value',
                     (fh.LOC_KEY, str(int(self.clock.t)))))
             return real(db, result)
-        self.dice(Dice(draws=[.1, 0, .99, .1, 0, .99]))   # the second computation wins its round too
+        # Small bets have no raid draw: win + Lộc, then the retry's plain win.
+        self.dice(Dice(draws=[.1, 0, .1]))
         with mock.patch.object(fh, 'loc_claim', side_effect=rival_first):
             r = self.cmd(tok, 'fair_xd', dict(side='chan', stake=100))
         self.assertNotIn('loc', r['result']['fair'])
