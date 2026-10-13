@@ -28,6 +28,10 @@ NAMES = {
  'lifeguard':'Phao ống, sào cứu hộ và máy AED',
  'police':'Bộ đàm tuần tra và máy quét giấy tờ',
  'zpop':'Máy quét Zchart và kệ kính lightstick',
+ 'art_studio':'Giá vẽ và bộ đèn so màu',
+ 'lawyer':'Máy quét tài liệu và khay đối chiếu hồ sơ',
+ 'laundry':'Bộ máy giặt và bàn ủi chăm vải',
+ 'post_office':'Cân kiện và máy in nhãn bưu gửi',
 }
 RATES=(100,115,135,160)
 PRICES=(0,90,220,480)

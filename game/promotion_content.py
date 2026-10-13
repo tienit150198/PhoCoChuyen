@@ -7,6 +7,8 @@ from __future__ import annotations
 # Employee careers: the titles above the hired one (step 1 → 4; a longer ladder, promotion.TOP_BY_CAREER, goes on
 # past step 4: pilot to 7, teacher to 5).
 EMP_TITLES = {
+    'lawyer': ('Chuyên viên hồ sơ chính', 'Chuyên viên đối chiếu cao cấp', 'Trưởng nhóm hồ sơ', 'Phụ trách chuyên môn Bình An'),
+    'post_office': ('Giao dịch viên chính', 'Trưởng ca bưu gửi', 'Phó phụ trách bưu cục', 'Phụ trách bưu điện Cánh Thư'),
     'corp_accounting': ('Kế toán viên chính', 'Kế toán phụ trách phần hành', 'Phó phòng kế toán', 'Kế toán trưởng'),
     'tax_payroll': ('Chuyên viên lương bậc 2', 'Trưởng nhóm lương', 'Phó phòng thuế – lương', 'Trưởng phòng thuế – lương'),
     'group_accounting': ('Chuyên viên hợp nhất bậc 2', 'Trưởng nhóm hợp nhất', 'Phó phòng tài chính TĐ', 'Kế toán trưởng tập đoàn'),
@@ -35,6 +37,8 @@ EMP_TITLES = {
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
 OWN_TITLES = {
+    'art_studio': ('Họa sĩ vững tay', 'Họa sĩ có tiếng', 'Chủ xưởng Màu Nắng', 'Nghệ nhân được tín nhiệm'),
+    'laundry': ('Thợ giặt vững tay', 'Thợ chăm vải có tiếng', 'Chủ tiệm Nếp Thơm', 'Nghệ nhân chăm vải'),
     'shop': ('Chủ quầy vững tay', 'Chủ tiệm có tiếng', '{chu} được nể', '{ong} chuỗi tiệm'),
     'accounting': ('Sổ sách vững tay', 'Kế toán có tiếng', 'Trưởng nhóm sổ', 'Chủ văn phòng sổ sách'),
     'homemaker': ('Nội trợ khéo tay', 'Nội trợ có tiếng', 'Quản gia', 'Quản gia trưởng'),
@@ -78,7 +82,7 @@ BASE_OWN = 'Chủ mới'        # an owner before step 1
 # Question banks of the review, by career group. score: 2 best · 1 ok · 0 not now.
 GROUP = {
     'office': ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk',
-               'accounting', 'customer_care'),
+               'accounting', 'customer_care', 'lawyer', 'post_office'),
     'air': ('pilot', 'flight_attendant'),
     'rig': ('oil',),
     'rail': ('railway',),
@@ -86,7 +90,7 @@ GROUP = {
     'pool': ('lifeguard',),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
                 'homemaker', 'giupviec', 'naucom', 'babysitter', 'library', 'pagoda',
-                'mother_baby', 'nurse', 'police'),
+                'mother_baby', 'nurse', 'police', 'art_studio', 'laundry'),
     'call': ('rescue',),
 }   # every other career: 'trade'
 

@@ -45,6 +45,20 @@ SHOP = dict(
 
 # Short keys, one row per non-shop career. Missing keys are derived from `place` in _row().
 _ROWS = {
+    'lawyer': dict(place='văn phòng luật', self='văn phòng', people='người nhờ đối chiếu', who='anh chị', owner='chuyên viên hồ sơ',
+                   served='hồ sơ đã đối chiếu', record='bản đối chiếu', review='góp ý về hồ sơ', reply='phản hồi', books='Sổ hồ sơ',
+                   rail_in='Trong văn phòng', confirm='Xác nhận căn cứ hồ sơ', team='Nhóm hồ sơ Bình An',
+                   daily='Hồ sơ và bảng quy tắc đã sẵn trên bàn. Vào ca đối chiếu nhé!',
+                   invite_label='Mời đối chiếu lại', offers=dict(drink=None, gift=None, refund=None),
+                   invite='Mời {who} mang bản gốc tới văn phòng, mình cùng đối chiếu lại từng mục ạ.',
+                   process='Văn phòng đọc chứng cứ, xếp diễn biến, tính yêu cầu rồi mới đề xuất phương án. Hôm đó {fact} ạ.'),
+    'post_office': dict(place='bưu điện', self='bưu điện', people='người gửi và người nhận', who='anh chị', owner='nhân viên bưu điện',
+                        served='bưu gửi đã bàn giao', record='phiếu bưu gửi', review='góp ý về bưu gửi', reply='phản hồi', books='Sổ bưu gửi',
+                        rail_in='Ở quầy bưu gửi', confirm='Xác nhận phiếu bưu gửi', team='Tổ quầy và chia tuyến',
+                        daily='Túi thư mới đã đến. Vào ca kiểm phiếu và chia tuyến nhé!',
+                        invite_label='Mời tra cứu phiếu', offers=dict(drink=None, gift=None, refund=None),
+                        invite='Mời {who} đọc mã phiếu, bưu điện sẽ đối chiếu chứng từ bàn giao ạ.',
+                        process='Bưu điện đối chiếu địa chỉ, cân, tính cước rồi chia tuyến và lưu chứng từ. Hôm đó {fact} ạ.'),
     'accounting': dict(place='Góc Sổ Xinh', self='bên mình', people='khách thuê sổ', who='anh chị', owner='kế toán',
                        served='bộ sổ đã soát', record='chứng từ', review='nhận xét', books='Sổ văn phòng',
                        rail_in='Trong văn phòng', confirm='Xác nhận việc sổ sách', tip='Khách thuê sổ thưởng thêm',
@@ -321,6 +335,7 @@ _SALARIED = frozenset((
     'nurse', 'police', 'rescue', 'lifeguard', 'library', 'railway', 'lighthouse',
     'pilot', 'flight_attendant', 'oil',
     'corp_accounting', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk', 'customer_care',
+    'lawyer', 'post_office',
 ))
 
 

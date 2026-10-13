@@ -31,6 +31,7 @@ FAMILY = {
     'teacher': 'school',
     'customer_care': 'office', 'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office',
     'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office',
+    'art_studio': 'service', 'laundry': 'service', 'lawyer': 'office', 'post_office': 'office',
 }
 FAMILY_NAME = {'food': 'Ăn uống', 'shop': 'Cửa hàng', 'service': 'Dịch vụ', 'school': 'Lớp học', 'office': 'Văn phòng'}
 
@@ -47,6 +48,31 @@ def A(aid, fams, label, claim, *, topic, neg=(), pos=(), sarc=(), word=('', ''),
 
 
 ASPECTS = dict((
+    A('art_brief', ('service',), 'Theo phiếu đặt tranh', 'có bước dựng tranh phải sửa', topic='taste', only=('art_studio',),
+      neg=['bố cục và trình tự dựng tranh phải sửa mới khớp phiếu đặt'],
+      pos=['đối chiếu bố cục, bảng màu và lớp tranh theo phiếu đặt rất kỹ'],
+      word=('Phải sửa tranh.', 'Đúng phiếu đặt.'), sig_neg=('crit:craft:lo',), sig_pos=('crit:craft:hi',)),
+    A('art_style', ('service',), 'Cảm nhận nét vẽ', 'nét vẽ chưa hợp gu', topic='taste', only=('art_studio',), subjective=True,
+      neg=['nét vẽ này chưa đúng gu của mình'], pos=['nét vẽ hợp gu, nhìn tranh thấy vui'], word=('Chưa hợp gu.', 'Hợp gu.')),
+    A('art_palette', ('service',), 'Cảm nhận bảng màu', 'bảng màu chưa hợp gu', topic='ambience', only=('art_studio',), subjective=True,
+      neg=['mình thích bảng màu dịu hơn một chút'], pos=['màu tranh nhìn rất dễ chịu'], word=('Thích màu dịu hơn.', 'Màu dễ chịu.')),
+    A('laundry_care', ('service',), 'Chăm vải theo nhãn', 'có bước chăm vải phải làm lại', topic='clean', only=('laundry',),
+      neg=['có công đoạn giặt ủi phải làm lại sau khi đối chiếu nhãn'],
+      pos=['giữ đúng chất liệu, nếp đồ và nhãn chăm vải'],
+      word=('Phải làm lại.', 'Đúng nhãn vải.'), sig_neg=('crit:craft:lo',), sig_pos=('crit:craft:hi',)),
+    A('laundry_tag', ('service',), 'Tem và phiếu đồ', 'phiếu nhận đồ phải kiểm lại', topic='method', only=('laundry',),
+      neg=['phải đối chiếu lại số phiếu trước khi trả đồ'], pos=['tem từng món và phiếu nhận được đối chiếu cẩn thận'],
+      word=('Kiểm lại phiếu.', 'Tem phiếu rõ.'), sig_neg=('crit:tag:lo',), sig_pos=('crit:tag:hi',)),
+    A('laundry_fold', ('service',), 'Cách xếp đồ', 'cách xếp đồ chưa hợp ý', topic='ambience', only=('laundry',), subjective=True,
+      neg=['mình thích cách xếp đồ gọn nhỏ hơn nữa'], pos=['đồ xếp gọn đúng kiểu mình thích'], word=('Thích gọn hơn.', 'Xếp gọn.')),
+    A('lawyer_evidence', ('office',), 'Căn cứ hồ sơ', 'đối chiếu hồ sơ còn phải sửa', topic='method', only=('lawyer',),
+      neg=['có phần chứng cứ hoặc tính toán phải đối chiếu lại'],
+      pos=['chứng cứ và các khoản đã nhận được đối chiếu rõ ràng'],
+      word=('Còn phải sửa.', 'Căn cứ rõ ràng.'), sig_neg=('crit:accuracy:lo',), sig_pos=('crit:accuracy:hi',)),
+    A('post_proof', ('office',), 'Tuyến và chứng từ', 'chia tuyến hoặc giấy bàn giao phải sửa', topic='method', only=('post_office',),
+      neg=['phải kiểm lại tuyến hoặc chứng từ trước khi bàn giao'],
+      pos=['tuyến đúng phiếu, chứng từ bàn giao đầy đủ'],
+      word=('Phải đối chiếu lại.', 'Bàn giao đủ giấy.'), sig_neg=('crit:proof:lo',), sig_pos=('crit:proof:hi',)),
     # ================================================================ FOOD AND DRINK
     A('sweet', ('food',), 'Độ ngọt', 'ngọt quá so với lời dặn', topic='taste', only=('milk_tea', 'cafe_bakery'), subjective=True,
       neg=['ly nước ngọt khé, uống xong khát thêm', 'dặn ít đường mà ngọt như đổ cả hũ', 'ngọt gắt cổ, phải xin thêm đá cho loãng bớt',
@@ -725,7 +751,15 @@ NV = {'polite': {'male': 'anh nhân viên', 'female': 'chị nhân viên', None:
       'harsh': {'male': 'thằng nhỏ đứng quầy', 'female': 'con nhỏ đứng quầy', None: 'bạn đứng quầy'}}
 NV_FAM = {'service': {'polite': {'male': 'anh thợ', 'female': 'chị thợ', None: 'bạn thợ'},
                       'harsh': {'male': 'thằng nhỏ thợ phụ', 'female': 'con nhỏ thợ phụ', None: 'bạn thợ phụ'}}}
-NV_CAREER = {'tour_guide': {'polite': {'male': 'anh hướng dẫn viên', 'female': 'chị hướng dẫn viên', None: 'hướng dẫn viên'},
+NV_CAREER = {'art_studio': {'polite': {'male': 'anh họa sĩ', 'female': 'chị họa sĩ', None: 'họa sĩ'},
+                           'harsh': {'male': 'anh họa sĩ', 'female': 'chị họa sĩ', None: 'họa sĩ'}},
+             'laundry': {'polite': {'male': 'anh thợ giặt', 'female': 'chị thợ giặt', None: 'thợ giặt'},
+                         'harsh': {'male': 'anh thợ giặt', 'female': 'chị thợ giặt', None: 'thợ giặt'}},
+             'lawyer': {'polite': {'male': 'anh chuyên viên hồ sơ', 'female': 'chị chuyên viên hồ sơ', None: 'chuyên viên hồ sơ'},
+                        'harsh': {'male': 'anh chuyên viên hồ sơ', 'female': 'chị chuyên viên hồ sơ', None: 'chuyên viên hồ sơ'}},
+             'post_office': {'polite': {'male': 'anh nhân viên bưu điện', 'female': 'chị nhân viên bưu điện', None: 'nhân viên bưu điện'},
+                             'harsh': {'male': 'anh nhân viên bưu điện', 'female': 'chị nhân viên bưu điện', None: 'nhân viên bưu điện'}},
+             'tour_guide': {'polite': {'male': 'anh hướng dẫn viên', 'female': 'chị hướng dẫn viên', None: 'hướng dẫn viên'},
                             'harsh': {'male': 'anh hướng dẫn viên', 'female': 'chị hướng dẫn viên', None: 'hướng dẫn viên'}},
              'farm': {'polite': {'male': 'anh bán hàng', 'female': 'chị bán hàng', None: 'người bán'},
                       'harsh': {'male': 'thằng nhỏ bán hàng', 'female': 'con nhỏ bán hàng', None: 'người bán'}},
