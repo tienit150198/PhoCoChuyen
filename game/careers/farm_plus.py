@@ -25,6 +25,7 @@ All randomness is seeded by the planting/order serial; all time is kit.now() (te
 from __future__ import annotations
 
 from . import kit
+from .. import capacity_progression as capacity
 
 KEY = 'farm_plus'
 VERSION = 1
@@ -237,8 +238,9 @@ def _harvest(s: dict, c: dict, g: dict, i: int, now: int) -> str:
     base = crop['qty'] + (1 if crop['id'] in IN_SEASON.get(_season(c), ()) else 0)
     qty = max(1, (base * pct + 50) // 100)
     grade = 'A' if not missed and stage == 'ripe' else 'B'
-    room = STORE_CAP - _store_units(g)
-    kit.need(room >= qty, f'Kho trang trại đầy ({_store_units(g)}/{STORE_CAP}). Bán bớt ở chợ hoặc giao đơn trước nhé.')
+    cap = capacity.limit(c, 'farm', STORE_CAP)
+    room = cap - _store_units(g)
+    kit.need(room >= qty, f'Kho trang trại đầy ({_store_units(g)}/{cap}). Bán bớt ở chợ hoặc giao đơn trước nhé.')
     _put(g, crop['id'], grade, qty)
     st = g['stats']
     st['harvests'] += 1
@@ -552,7 +554,8 @@ def _act(s: dict, c: dict, g: dict, name: str, p: dict, now: int) -> dict:
             kit.money(s, c, pay, 'Bán heo hơi cho lò mổ xã', 'pig', 'revenue')
             return dict(message=f'🐖 Bán heo được {pay} xu. +10 điểm nông. Mua heo con nuôi lứa mới nha.', celebrate=True)
         prod = PRODUCTS[a['product']]
-        kit.need(STORE_CAP - _store_units(g) >= a['qty'], f'Kho trang trại đầy ({_store_units(g)}/{STORE_CAP}).')
+        cap = capacity.limit(c, 'farm', STORE_CAP)
+        kit.need(cap - _store_units(g) >= a['qty'], f'Kho trang trại đầy ({_store_units(g)}/{cap}).')
         _put(g, a['product'], 'A', a['qty'])
         pen['fed'] = 0
         g['xp'] += 2
@@ -568,7 +571,7 @@ def _act(s: dict, c: dict, g: dict, name: str, p: dict, now: int) -> dict:
         room = DEPTH - sold
         prod = PRODUCTS[pid]
         kit.need(room > 0, f'Chợ hôm nay đủ {prod["name"].lower()} rồi, mai bán tiếp.')
-        qty = kit.integer(p.get('qty', min(have, room)), 1, STORE_CAP)
+        qty = kit.integer(p.get('qty', min(have, room)), 1, capacity.limit(c, 'farm', STORE_CAP))
         qty = min(qty, have, room)
         total = sale(c, g, pid, grade, qty, sold)
         _take(g, pid, grade, qty)
@@ -643,7 +646,7 @@ def view(c: dict) -> dict:
     nxt = LEVELS[lv] if lv < len(LEVELS) else None
     return dict(open=True, now=now, xp=g['xp'], level=lv, title=title(lv), floor=LEVELS[lv - 1], next=nxt,
                 plots=plots, plot_cost=PLOT_COST[len(g['plots']) - START_PLOTS] if len(g['plots']) < MAX_PLOTS else None,
-                pens=pens, store=store, store_units=_store_units(g), store_cap=STORE_CAP, orders=orders, ups=list(g['ups']),
+                pens=pens, store=store, store_units=_store_units(g), store_cap=capacity.limit(c, 'farm', STORE_CAP), orders=orders, ups=list(g['ups']),
                 crops=crops, festival=festival(c), sky=_weather(c), season=_season(c), stats=dict(g['stats']), depth=DEPTH, slip=SLIP)
 
 
@@ -686,8 +689,8 @@ def validate(c: dict) -> None:
     need(isinstance(g['store'], dict) and set(g['store']) <= set(PRODUCTS), 'Kho trang trại sai.')
     for v in g['store'].values():
         need(isinstance(v, list) and len(v) == 2 and sum(v) > 0, 'Kho trang trại sai.')
-        I(v[0], 0, STORE_CAP)
-        I(v[1], 0, STORE_CAP)
+        I(v[0], 0, capacity.limit(c, 'farm', STORE_CAP))
+        I(v[1], 0, capacity.limit(c, 'farm', STORE_CAP))
     need(isinstance(g['ups'], list) and set(g['ups']) <= set(UPGRADE) and len(set(g['ups'])) == len(g['ups']), 'Nâng cấp sai.')
     need(isinstance(g['orders'], list) and len(g['orders']) <= ORDERS_OPEN, 'Đơn đặc sản sai.')
     for o in g['orders']:

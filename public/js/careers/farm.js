@@ -84,7 +84,7 @@ function tabs(x){
   const tab=x.ui.tab||'field',d=data(x);
   const ripe=d.plots.filter(p=>p.stage==='ripe').length,pl=d.pledge;
   const b=(id,label,sub,badge='')=>carBtn(x,`<span>${label}</span><small>${sub}</small>${badge}`,'tab',{tab:id},`fa-tab ${tab===id?'primary':'ghost'}`,` role="tab" aria-selected="${tab===id}"`);
-  return `<div class="fa-tabs" role="tablist" aria-label="Khu làm việc">${b('field','🌱 Vườn',ripe?`${ripe} luống chín`:'6 luống',ripe?`<b class="fa-badge">${ripe}</b>`:'')}${b('coop','🐔 Chuồng',`${d.coop?.nest||0} trứng · ${d.coop?.hens||0} mái`)}${b('cold','❄️ Kho mát',`${d.cold_units||0}/${x.cc.cold_cap}`)}${b('market','📈 Chợ',pl?`HTX ${pl.done}/${pl.qty}`:`bán sỉ`,pl&&pl.done<pl.qty?'<b class="fa-badge">!</b>':'')}${b('plus','🌟 Trại',plusSub(x),plusBadge(x))}</div>`;
+  return `<div class="fa-tabs" role="tablist" aria-label="Khu làm việc">${b('field','🌱 Vườn',ripe?`${ripe} luống chín`:'6 luống',ripe?`<b class="fa-badge">${ripe}</b>`:'')}${b('coop','🐔 Chuồng',`${d.coop?.nest||0} trứng · ${d.coop?.hens||0} mái`)}${b('cold','❄️ Kho mát',`${(d.cold_units||0)+(d.cold_held||0)}/${d.cold_cap??x.cc.cold_cap}`)}${b('market','📈 Chợ',pl?`HTX ${pl.done}/${pl.qty}`:`bán sỉ`,pl&&pl.done<pl.qty?'<b class="fa-badge">!</b>':'')}${b('plus','🌟 Trại',plusSub(x),plusBadge(x))}</div>`;
 }
 
 /* ------------------------------------------------------------ field */
@@ -194,7 +194,7 @@ function coopTab(x){
     <div class="fa-nest">${Array.from({length:Math.min(24,coop.nest||0)},(_,i)=>`<span class="${i<(coop.stale||0)?'stale':''}">🥚</span>`).join('')||'<small class="muted">Ổ trống</small>'}</div>
     <div class="fa-mood"><div class="row spread"><b>Tinh thần đàn · ${x.esc(face)}</b><small>${mood}/100</small></div><span class="fa-meter mood ${mood<ok?'low':''}" style="--lo:${ok}%"><i style="width:${mood}%"></i></span>
       <small class="muted">Mai đẻ khoảng ${coop.lay_pct??100}% đàn${d.fed_today?'':' (chưa ăn: chỉ nửa đàn)'}.</small></div>
-    <dl class="kv"><dt>Đàn gà</dt><dd>${coop.hens||0} mái</dd><dt>Trứng trong ổ</dt><dd>${coop.nest||0}${coop.stale?` · ${coop.stale} quả từ hôm qua`:''}</dd><dt>Hôm nay</dt><dd>${d.fed_today?'✓ đã cho ăn':'<b class="fa-bad">chưa cho ăn</b>'} · ${coop.cleaned_today?'✓ chuồng sạch':'<b class="fa-bad">chưa dọn chuồng</b>'}</dd><dt>Cám trong kho</dt><dd>${st.feed||0} bao</dd></dl>
+    <dl class="kv"><dt>Đàn gà</dt><dd>${coop.hens||0} mái</dd><dt>Trứng trong ổ</dt><dd>${coop.nest||0}/${coop.nest_cap??40}${coop.stale?` · ${coop.stale} quả từ hôm qua`:''}</dd><dt>Hôm nay</dt><dd>${d.fed_today?'✓ đã cho ăn':'<b class="fa-bad">chưa cho ăn</b>'} · ${coop.cleaned_today?'✓ chuồng sạch':'<b class="fa-bad">chưa dọn chuồng</b>'}</dd><dt>Cám trong kho</dt><dd>${st.feed||0} bao</dd></dl>
     <p class="muted small">🥚 qua đêm → loại B</p>
     <div class="row wrap">${x.cmd('🌾 Cho gà ăn & thay nước','fa_feed',{},'primary',d.fed_today||!st.feed)}${x.cmd('🧹 Dọn chuồng','fa_clean',{},'',!!coop.cleaned_today)}${x.cmd('🧺 Nhặt trứng','fa_collect',{},'',!coop.nest)}
       ${(coop.hens||0)<(x.cc.hens||10)?x.confirmCmd(`🐔 Mua gà mái đẻ · ${x.cc.hen_cost} xu`,'fa_hen',{},`Mua một gà mái đẻ giá ${x.cc.hen_cost} xu?`,'ghost small',(Number(x.room.money)||0)<x.cc.hen_cost):''}</div></div>`;
@@ -204,7 +204,7 @@ function coopTab(x){
 function coldTab(t,x){
   const d=data(x),order=t&&t.known?t.needs:null;
   const lots=[...(d.cold||[])].sort((a,b)=>a.crop.localeCompare(b.crop)||a.expires-b.expires);
-  return `<div class="row spread wrap"><p class="muted small grow">❄️ ${d.cold_units||0}/${x.cc.cold_cap}</p>${x.button('📦 Kho vật tư','inventory',{},'ghost small')}</div>
+  return `<div class="row spread wrap"><p class="muted small grow">❄️ ${(d.cold_units||0)+(d.cold_held||0)}/${d.cold_cap??x.cc.cold_cap}</p>${x.button('📦 Kho vật tư','inventory',{},'ghost small')}</div>${d.cold_held?`<p class="muted small">Gồm ${d.cold_held} phần đang giữ trong thùng cho đơn.</p>`:''}
     <div class="fa-lots">${lots.map(l=>{
       const p=produce(x,l.crop),inOrder=order&&l.crop in order.items;
       const need=inOrder?Math.max(0,order.items[l.crop]-packed(t,l.crop)):0,n=Math.min(need,l.qty);

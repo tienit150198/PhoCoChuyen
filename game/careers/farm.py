@@ -66,6 +66,7 @@ from . import kit
 from .. import consequences as cq
 from .. import archive as ar
 from .. import compensation as cf
+from .. import capacity_progression as capacity
 from . import farm_plus as fp
 
 ID = 'farm'
@@ -661,9 +662,19 @@ def _add_lot(c: dict, d: dict, crop: str, grade: str, qty: int, organic: bool, u
     return lot
 
 
-def _room_for(d: dict, qty: int, lots: int) -> None:
-    kit.need(_cold_units(d) + qty <= COLD_CAP and len(d['cold']) + lots <= MAX_LOTS,
-             f'Kho mát đầy ({_cold_units(d)}/{COLD_CAP} đơn vị). Giao bớt đơn hoặc bỏ lô hư trước nhé.')
+def _cold_held(c: dict) -> list:
+    """Packed orders reserve their cold-room space until sold or returned."""
+    return [entry for t in c['tasks'] if t.get('career') == ID
+            and t['status'] not in ('completed', 'cancelled', 'referred') for entry in t.get('crate', [])]
+
+
+def _room_for(c: dict, d: dict, qty: int, lots: int) -> None:
+    held = _cold_held(c)
+    used = _cold_units(d) + sum(e['qty'] for e in held)
+    lot_count = len({l['id'] for l in d['cold']} | {e['lot'] for e in held})
+    cap = capacity.limit(c, ID, COLD_CAP)
+    kit.need(used + qty <= cap and lot_count + lots <= capacity.limit(c, ID, MAX_LOTS),
+             f'Kho mát đầy ({used}/{cap} đơn vị, gồm hàng giữ cho đơn). Giao bớt đơn hoặc bỏ lô hư trước nhé.')
 
 
 def _harvest_yield(p: dict) -> tuple[int, int, str]:
@@ -779,7 +790,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.confirm(p, 'Xác nhận bán sỉ cho chợ đầu mối.')
         lot = _lot(d, p.get('lot'))
         _sellable(c, lot)
-        qty = kit.integer(p.get('qty', lot['qty']), 1, 60 * 12)
+        qty = kit.integer(p.get('qty', lot['qty']), 1, max(60 * 12, capacity.limit(c, ID, COLD_CAP)))
         kit.need(qty <= lot['qty'], f'Lô {lot["id"]} chỉ còn {lot["qty"]}.')
         m = _mkt(c, d)
         crop = PRODUCE[lot['crop']]
@@ -995,7 +1006,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.need(plot['growth'] >= YOUNG, f'{crop["name"]} còn non quá (độ lớn {plot["growth"]}/{RIPE}), chưa thu được.')
         kit.need(plot['growth'] < ROTTEN, 'Luống đã quá lứa, hỏng hết. Dọn luống làm phân thôi.')
         a, b, ripeness = _harvest_yield(plot)
-        _room_for(d, a + b, int(a > 0) + int(b > 0))
+        _room_for(c, d, a + b, int(a > 0) + int(b > 0))
         unsafe = c['turn'] < plot['phi']
         lots = []
         if a:
@@ -1052,7 +1063,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         stale = min(coop['stale'], n)
         cracked = n // 9
         fresh = max(0, n - stale - cracked)
-        _room_for(d, fresh + stale, int(fresh > 0) + int(stale > 0))
+        _room_for(c, d, fresh + stale, int(fresh > 0) + int(stale > 0))
         if fresh:
             _add_lot(c, d, 'egg', 'A', fresh, False, False, 'coop')
         if stale:
@@ -1311,8 +1322,12 @@ def public_data(c: dict) -> dict:
     d['plan'] = _plan(c, d, tomorrow)
     d['care'] = care
     coop = d['coop']
-    d['coop'] = dict(coop, lay_pct=_lay_pct(coop['mood']), cleaned_today=coop['cleaned'] == c['day'], mood_ok=MOOD_OK)
+    d['coop'] = dict(coop, lay_pct=_lay_pct(coop['mood']), cleaned_today=coop['cleaned'] == c['day'], mood_ok=MOOD_OK,
+                     nest_cap=capacity.limit(c, ID, NEST_MAX))
     d['cold_units'] = _cold_units(d)
+    d['cold_held'] = sum(e['qty'] for e in _cold_held(c))
+    d['cold_cap'] = capacity.limit(c, ID, COLD_CAP)
+    d['cold_lot_cap'] = capacity.limit(c, ID, MAX_LOTS)
     d['fed_today'] = d['coop']['fed'] == c['day']
     d['prices'] = {k: _price(c, k) for k in PRICES}
     day = c['day']
@@ -1473,7 +1488,8 @@ def validate_data(c: dict) -> None:
         for k in ('compost', 'npk', 'organic'):
             kit.need(type(p[k]) is bool, 'Luống sai.')
         kit.need(p['organic'] or p['crop'], 'Luống trống không thể mất chuẩn hữu cơ.')
-    kit.need(isinstance(d['cold'], list) and len(d['cold']) <= MAX_LOTS + 12, 'Kho mát sai.')
+    # Keep the historical return allowance for existing saves; new intake also reserves packed lots.
+    kit.need(isinstance(d['cold'], list) and len(d['cold']) <= capacity.limit(c, ID, MAX_LOTS) + 12, 'Kho mát sai.')
     ids = set()
     for lot in d['cold']:
         kit.need(isinstance(lot, dict) and set(lot) == {'id', 'crop', 'grade', 'qty', 'day', 'expires', 'organic', 'unsafe', 'plot'}, 'Lô kho mát sai.')
@@ -1481,7 +1497,7 @@ def validate_data(c: dict) -> None:
         kit.need(lot['plot'] in (*PLOT_IDS, 'coop', 'crate') and lot['id'] not in ids, 'Lô kho mát sai.')
         ids.add(lot['id'])
         kit.text(lot['id'], 20)
-        kit.integer(lot['qty'], 1, 60 * 12)
+        kit.integer(lot['qty'], 1, max(60 * 12, capacity.limit(c, ID, COLD_CAP)))
         kit.integer(lot['day'], 1, 10**7)
         kit.integer(lot['expires'], 0, 10**7)
     coop = d['coop']
@@ -1490,7 +1506,7 @@ def validate_data(c: dict) -> None:
     kit.integer(coop['cleaned'], 0, max(0, c['day']))
     kit.integer(coop['hens'], 0, HENS)
     kit.integer(coop['fed'], 0, 10**7)
-    kit.integer(coop['nest'], 0, NEST_MAX)
+    kit.integer(coop['nest'], 0, capacity.limit(c, ID, NEST_MAX))
     kit.integer(coop['stale'], 0, coop['nest'])
     kit.need(isinstance(d['diary'], list) and len(d['diary']) <= 40, 'Nhật ký canh tác sai.')
     for row in d['diary']:
@@ -1649,7 +1665,7 @@ def _hens_night(c: dict, coop: dict) -> int:
     coop['mood'] = max(MOOD_MIN, min(100, mood))
     laid = (coop['hens'] if fed else coop['hens'] // 2) * _lay_pct(coop['mood']) // 100
     coop['stale'] = coop['nest']
-    coop['nest'] = min(NEST_MAX, coop['nest'] + laid)
+    coop['nest'] = min(capacity.limit(c, ID, NEST_MAX), coop['nest'] + laid)
     coop['stale'] = min(coop['stale'], coop['nest'])
     return laid
 
