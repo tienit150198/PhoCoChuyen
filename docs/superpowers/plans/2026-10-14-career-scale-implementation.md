@@ -74,9 +74,9 @@ Ownership assigned after inspecting the current interior adapter; no changes to 
 - [x] Use implemented commands to simulate every offered career/stage, reconcile all ledgers and confirm no multiplicative rewards or capacity duplication. CSV targets alone do not count as proof.
 - [x] Run independent spec review, then code-quality/security-of-transactions review. Resolve findings and rerun affected checks.
 - [x] Run task compatibility against the actual Release A source, all new focused suites, existing money/inventory/certificate/competition/social regressions, and real mobile/desktop browser flows.
-- [ ] Build from verified live Release A bytes and its exact source ref; verify extracted package/HTTP. Publish only implemented, tested stages; do not charge for placeholders or report omitted stages as complete.
-- [ ] Rolling deploy with package hash, disk, DB-connection and rollback-compatibility guards. Verify service/public health, assets, hashes, logs and representative read-only projections.
-- [ ] Document both deployments and remaining limitations, stop local test services, leave source clean and report actual deployed behavior.
+- [x] Build from verified live Release A bytes and its exact source ref; verify extracted package/HTTP. Publish only implemented, tested stages; do not charge for placeholders or report omitted stages as complete.
+- [x] Rolling deploy with package hash, disk, DB-connection and rollback-compatibility guards. Verify service/public health, assets, hashes, logs and representative read-only projections.
+- [x] Document both deployments and remaining limitations, stop local test services, leave source clean and report actual deployed behavior.
 
 ## Review boundaries
 
