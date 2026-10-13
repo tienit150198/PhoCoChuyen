@@ -1,72 +1,44 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "2.2.0",
-  "created_at_utc": "2026-10-13T09:00:47.665346+00:00",
+  "version": "2.2.1",
+  "created_at_utc": "2026-10-13T11:05:40.354282+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 587,
+  "minified": 590,
   "release_from_live": {
     "live_release": "mot-ngay-lam-nghe",
-    "live_version": "2.1.0",
-    "live_manifest_sha256": "f1f9def02710719b7e2ae0a479c23da41aa6b88d7c79939fc5ac51db293caf5a",
-    "base": "b217a0ca494b95fb45fc75969c880cae299398b7",
-    "ref": "e179dd8a9cc6e773dc98fe453c206a1008e1bf2d",
+    "live_version": "2.2.0",
+    "live_manifest_sha256": "4e51acb98d4f55de1f5b156cb4ad9e6a26ed3bc18606c4f2432b56217de1215e",
+    "base": "e179dd8a9cc6e773dc98fe453c206a1008e1bf2d",
+    "ref": "24a910f3a5c9cac877301d9a306e03057054edcd",
     "changed": [
       "CHANGELOG.md",
       "docs/BUSINESS_LICENSES_OPERATIONS.md",
-      "docs/CAREER_BALANCE_2.1.0.md",
-      "docs/DEPLOY_2.1.0_2026-10-13.md",
+      "docs/DEPLOY_2.2.0_2026-10-13.md",
       "docs/LIVE_BASE.md",
-      "docs/TEMPLE_VENUES_2.2.0.md",
-      "docs/superpowers/plans/2026-10-13-career-endgame.md",
-      "docs/superpowers/plans/2026-10-13-creative-civic-careers.md",
+      "docs/TEMPLE_SHARING_2.2.1.md",
+      "docs/superpowers/plans/2026-10-13-temple-card-visibility.md",
       "docs/superpowers/plans/2026-10-13-temple-public-venues.md",
-      "docs/superpowers/specs/2026-10-13-temple-public-venues.md",
       "game/__init__.py",
-      "game/archive.py",
       "game/chua.py",
+      "game/chua_board.py",
+      "game/pg_schema.py",
+      "game/storage.py",
       "i18n/translations.json",
       "public/css/chua.css",
-      "public/css/venue-visit.css",
       "public/i18n/en.json",
-      "public/js/app.js",
-      "public/js/scenes/chua-place.js",
-      "public/js/scenes/venue-place.js",
       "public/js/v4/chua-visit.js",
       "public/js/v4/chua.js",
-      "public/js/v4/community-outings.js",
-      "public/js/v4/journey.js",
-      "public/js/v4/life.js",
-      "public/js/v4/outings.js",
-      "public/js/v4/spend.js",
-      "public/js/v4/venue-routing.js",
-      "public/js/v4/venue-visit.js",
-      "scripts/browser_chua.py",
-      "scripts/browser_public_venue_routes.py",
-      "scripts/browser_venue_visit.py",
-      "tests/outings.mjs",
-      "tests/temple-walk-ui.mjs",
-      "tests/test_chua.py",
-      "tests/test_chua_cards.py",
-      "tests/test_task_compat.py",
-      "tests/venue-routing.mjs",
-      "tests/venue-visit.mjs"
+      "scripts/browser_chua_visibility.py",
+      "server.py",
+      "tests/temple-card-visibility-ui.mjs",
+      "tests/test_chua_board.py",
+      "tests/test_task_compat.py"
     ],
     "deleted": [],
     "minified": [
       "public/css/chua.css",
-      "public/css/venue-visit.css",
-      "public/js/app.js",
-      "public/js/scenes/chua-place.js",
-      "public/js/scenes/venue-place.js",
       "public/js/v4/chua-visit.js",
-      "public/js/v4/chua.js",
-      "public/js/v4/community-outings.js",
-      "public/js/v4/journey.js",
-      "public/js/v4/life.js",
-      "public/js/v4/outings.js",
-      "public/js/v4/spend.js",
-      "public/js/v4/venue-routing.js",
-      "public/js/v4/venue-visit.js"
+      "public/js/v4/chua.js"
     ]
   },
   "files": [
@@ -87,8 +59,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 314352,
-      "sha256": "710662a244cd538b43aec83f872504aca88e3538981e280a125f1333ec224e33"
+      "bytes": 314928,
+      "sha256": "1510996b9f9c3763bb3e244db6fc27c7d1af7b01f6afb3a2e8710c00fa243c73"
     },
     {
       "path": "Dockerfile",
@@ -432,8 +404,8 @@
     },
     {
       "path": "docs/BUSINESS_LICENSES_OPERATIONS.md",
-      "bytes": 4425,
-      "sha256": "4c867f414ba36c6a37ad84483ff6950cfaea9e6435ccce2dd10612a2c38777fe"
+      "bytes": 4607,
+      "sha256": "21d7c4a3be94af6f2d4aef8431a76da10c40033f9a476432a0df99b7e9d221e3"
     },
     {
       "path": "docs/CAREER_BALANCE_2.1.0.md",
@@ -564,6 +536,11 @@
       "path": "docs/DEPLOY_2.1.0_2026-10-13.md",
       "bytes": 7003,
       "sha256": "7364a8a27a3688012495190887ffee5ae3f834128f8333a986bd44fb7a03ddc3"
+    },
+    {
+      "path": "docs/DEPLOY_2.2.0_2026-10-13.md",
+      "bytes": 4821,
+      "sha256": "2c426e23e509f50a957931970de9500371448e6ede9ce6f7fdf93005b1d2ec69"
     },
     {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
@@ -738,7 +715,7 @@
     {
       "path": "docs/LIVE_BASE.md",
       "bytes": 7657,
-      "sha256": "2fc8ff0783a122cd1cf7ea75a25b4c5c2f299fe2f041b6fe0c76682b643d0aaa"
+      "sha256": "932dc857848915ff2a7de605afb9bc62fb508155f934650e96b2901054cf310e"
     },
     {
       "path": "docs/LIVE_CONNECTION_2026-10-05.md",
@@ -854,6 +831,11 @@
       "path": "docs/SHOP_PROFIT_CONTINUOUS_2026-10-05.md",
       "bytes": 3532,
       "sha256": "31b9f03c9beb5263e62333db719e25d57c2928dd7007b7782c26eb5af74fc08e"
+    },
+    {
+      "path": "docs/TEMPLE_SHARING_2.2.1.md",
+      "bytes": 1695,
+      "sha256": "6908edf743cd510b94643baafda891f21af7c43fd18df0e853c54fe0994941de"
     },
     {
       "path": "docs/TEMPLE_VENUES_2.2.0.md",
@@ -1881,9 +1863,14 @@
       "sha256": "34c707400532a0f84079f73a7a798f104284b27bfef04afbf580328d7e69234e"
     },
     {
+      "path": "docs/superpowers/plans/2026-10-13-temple-card-visibility.md",
+      "bytes": 2482,
+      "sha256": "3ce73c6755a3db4dffedb1f8a8f4d14bd5c7768a8da2dd5d045bf5e1d53b09c5"
+    },
+    {
       "path": "docs/superpowers/plans/2026-10-13-temple-public-venues.md",
-      "bytes": 2309,
-      "sha256": "e0b13126081c5f0eb8c0f20ef24d2600b7d84e96efd473f40f445f81fe79eb20"
+      "bytes": 2517,
+      "sha256": "66cd9da92d18bac69779cfc8cd7f455db957fda236fc6767d2b742a7f0026162"
     },
     {
       "path": "docs/superpowers/specs/2026-09-28-ui-readability-phase1-design.md",
@@ -2103,7 +2090,7 @@
     {
       "path": "game/__init__.py",
       "bytes": 105,
-      "sha256": "40dc3013bbc6c55ce7b1c18eb54e4e94987f22fd48edf08aeffd0255f111b24f"
+      "sha256": "b831ffad1074c41ec6e1ffc2bfa0ce715965cfdbdeda66e51231ff2441220222"
     },
     {
       "path": "game/abandon.py",
@@ -2682,8 +2669,13 @@
     },
     {
       "path": "game/chua.py",
-      "bytes": 16060,
-      "sha256": "73dd28c3c0306e18ec01b034e379d8741322337c5ed15265557edcde743070d9"
+      "bytes": 16342,
+      "sha256": "22fd0f86551de3d5269eaa12e80933fb3de36cc386680fd411b0f800839c9e79"
+    },
+    {
+      "path": "game/chua_board.py",
+      "bytes": 7684,
+      "sha256": "a57dfaaba17b8cf713eb92efc70eeaeb8c8015ed2a0aebbf19d37844ffb0c33f"
     },
     {
       "path": "game/classroom.py",
@@ -3222,8 +3214,8 @@
     },
     {
       "path": "game/pg_schema.py",
-      "bytes": 70105,
-      "sha256": "6336c72858810c47bd783dfe66296dc6aa7b56164e97fb884c8eca97d5eea04d"
+      "bytes": 70517,
+      "sha256": "d5e156fd9cdaa5dc9dc1cbf3eb264205983b396fec672cfed235ec3e3e74f28a"
     },
     {
       "path": "game/player_feedback.py",
@@ -3427,8 +3419,8 @@
     },
     {
       "path": "game/storage.py",
-      "bytes": 59414,
-      "sha256": "a50487fabb4759954f6dd27636d35c63d3e072759685386ce5fc11164db1e535"
+      "bytes": 59634,
+      "sha256": "96a7834d902eb573aae88c81c871ef98bae1b8f1d302fd284fd9c1a72098b3c3"
     },
     {
       "path": "game/system_gift.py",
@@ -3582,8 +3574,8 @@
     },
     {
       "path": "i18n/translations.json",
-      "bytes": 4778551,
-      "sha256": "8ba8c08da8ea0369031d4ad3296cfa1079d12027da5e552bbc6e202e2efa09ce"
+      "bytes": 4780591,
+      "sha256": "2f69a24314a305527c0a925110862805518184d386e713bd9dc8dc48fc58011a"
     },
     {
       "path": "live/__init__.py",
@@ -4252,8 +4244,8 @@
     },
     {
       "path": "public/css/chua.css",
-      "bytes": 6770,
-      "sha256": "3165b3fd17c025814906a06a3d4e8e33f878eb4cae8651e219fe57ce6316ee78"
+      "bytes": 7291,
+      "sha256": "49ba1b4c6da5d23948beb3f8aba772648f6894149c68bec36f2694312f8129ed"
     },
     {
       "path": "public/css/closeness.css",
@@ -4602,8 +4594,8 @@
     },
     {
       "path": "public/i18n/en.json",
-      "bytes": 9487163,
-      "sha256": "50e8cd1d3338060acfe6fdadede268a28e54e5b02e483327cea123a3ea8905a9"
+      "bytes": 9489088,
+      "sha256": "6280a63584672a8b28109eb2a89a9a20c0320895ea8e94e5861f103e59dfce50"
     },
     {
       "path": "public/icons/apple-touch-icon.png",
@@ -6462,13 +6454,13 @@
     },
     {
       "path": "public/js/v4/chua-visit.js",
-      "bytes": 28304,
-      "sha256": "0da5a717b22ebea0581b0c369cce6afc989935cb1563cb34324ca57f177401cc"
+      "bytes": 29424,
+      "sha256": "a08bfe3702050d5bd4252a5292090f20abbd4cf75746f4e6da7fea732c211ab0"
     },
     {
       "path": "public/js/v4/chua.js",
-      "bytes": 5193,
-      "sha256": "59d4aa2f0c5abf4a85de13448d14f896e88a57b2817d8ae5a68d83ae79709ee6"
+      "bytes": 9242,
+      "sha256": "4940a91550059cb04d1720d91eb47514aa3ffa84bb03d3843b0b6e1f7bfd4a3a"
     },
     {
       "path": "public/js/v4/classroom.js",
@@ -7391,6 +7383,11 @@
       "sha256": "0cd56d7fb877f8e964fddf8dd35657d5588458a4806a70aadf123e04ffb7f7e4"
     },
     {
+      "path": "scripts/browser_chua_visibility.py",
+      "bytes": 9417,
+      "sha256": "75c63519add306a3c3517896e8c920a3a5e4ffdde87c7f9919fdc908f8fafb2c"
+    },
+    {
       "path": "scripts/browser_colors.py",
       "bytes": 16776,
       "sha256": "9704e897ce008d70544fcc2036d3580e8e75fc49fe36a8ae16d13af81cfbde09"
@@ -7957,8 +7954,8 @@
     },
     {
       "path": "server.py",
-      "bytes": 130576,
-      "sha256": "a6ce9c61151607739fce1de10461314540d4f7e2f757a2746fd62fcc3f8b11a2"
+      "bytes": 131546,
+      "sha256": "5eb3d8886c4b749a4c96ec5f13625d3ca4a878293a85d8fd11d3cd51a074ae0d"
     },
     {
       "path": "start.bat",
@@ -9131,6 +9128,11 @@
       "sha256": "e3edd59500545e9c10f1bb1c838d3e5268674f1058f9d80519e419bf22a44a8b"
     },
     {
+      "path": "tests/temple-card-visibility-ui.mjs",
+      "bytes": 5029,
+      "sha256": "574cdd38662d21bdf3240306b9aa72d03ffe1e384f5a65832c0cc84f17f8c200"
+    },
+    {
       "path": "tests/temple-walk-ui.mjs",
       "bytes": 6372,
       "sha256": "d262f7cca73a55e6172ffea6034c98f3412b8a99442e77febcb62aabd4ca466a"
@@ -9659,6 +9661,11 @@
       "path": "tests/test_chua.py",
       "bytes": 10073,
       "sha256": "6288acb8e179e3042bddb33b796a87eeb014da81640294dc533ca8a3bb3ffb3f"
+    },
+    {
+      "path": "tests/test_chua_board.py",
+      "bytes": 14295,
+      "sha256": "61c7cdb1a890c124cbf05e714cfdfeb3b82f5c99650223d93188d1726d6769d2"
     },
     {
       "path": "tests/test_chua_cards.py",
@@ -11183,7 +11190,7 @@
     {
       "path": "tests/test_task_compat.py",
       "bytes": 5567,
-      "sha256": "9e58af1fad0b623be91145d97375d8a456d07d6ac5692c03ee5f9e4bb56c1b04"
+      "sha256": "e3db0a36178a191af8926ee5f5de80588581c107017aa1ee9742ddd62f965e64"
     },
     {
       "path": "tests/test_teacher_care.py",
