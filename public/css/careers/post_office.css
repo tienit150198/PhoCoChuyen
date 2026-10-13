@@ -1,0 +1,34 @@
+/* Cánh Thư: stamped parcel labels, a small tariff board and one work step at a time. */
+.career-job.post-office{--sk-accent:#b85b38;--sk-accent-2:#e7b778;min-width:0;overflow-wrap:anywhere}
+.post-office .post-parcel{position:relative;border:1px solid var(--sk-line,#d9c7ad);border-left:5px solid var(--sk-accent);border-radius:12px;padding:16px;background:var(--sk-surface,#fffaf0);margin:12px 0}
+.post-office .post-stamp{position:absolute;right:14px;top:14px;font-size:30px;color:var(--sk-accent);transform:rotate(-10deg)}
+.post-office .post-parcel>small{display:block;padding-right:40px;letter-spacing:.05em}
+.post-office .post-parcel h3{margin:5px 42px 6px 0;font-variant-numeric:tabular-nums}
+.post-office dl{margin:10px 0;display:grid;gap:5px}
+.post-office dl>div{display:flex;justify-content:space-between;gap:16px}
+.post-office dt{color:var(--sk-muted,#725e4e);flex-shrink:0}
+.post-office dd{margin:0;text-align:right;font-weight:600}
+.post-office .post-step{padding:16px}
+.post-office .post-step-count{font-size:13px;color:var(--sk-muted,#725e4e);margin:0 0 6px}
+.post-office progress{display:block;width:100%;height:7px;accent-color:var(--sk-accent);margin-bottom:14px}
+.post-office .post-evidence{padding:12px;border-left:3px solid var(--sk-accent-2);background:var(--sk-surface-2,#f9f0df);line-height:1.55}
+.post-office .post-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:14px}
+.post-office .post-options button{min-height:48px;white-space:normal;text-align:left;padding:12px;line-height:1.4}
+.post-office button:focus-visible,.post-office summary:focus-visible,.post-office input:focus-visible{outline:3px solid var(--sk-accent);outline-offset:3px}
+.post-office .post-rates{padding:12px;border:1px dashed var(--sk-accent);border-radius:10px;margin:12px 0;font-size:13px;line-height:1.5}
+.post-office .post-rates h4{margin:0 0 8px}
+.post-office .post-rates ul,.post-office .post-rules{padding-left:20px}
+.post-office .post-rates li,.post-office .post-rules li{margin:6px 0}
+.post-office .post-progress,.post-office .post-notebook{border-top:1px solid var(--sk-line,#d9c7ad);padding:12px 0;margin-top:10px}
+.post-office summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.post-office .post-progress ul{list-style:none;padding:0;display:grid;gap:10px}
+.post-office .post-progress li{display:grid;gap:5px}
+.post-office .post-progress li span{font-size:13px;color:var(--sk-muted,#725e4e)}
+.post-office .post-last{padding:12px;background:var(--sk-surface-2,#f9f0df);border-radius:10px;font-size:13px;line-height:1.5}
+.post-office .post-batch{display:flex;flex-wrap:wrap;list-style:none;padding:0;gap:6px}
+.post-office .post-batch li{padding:5px 8px;border:1px solid var(--sk-line,#d9c7ad);border-radius:6px;font-size:12px}
+.post-office .post-batch .current{border-color:var(--sk-accent);font-weight:700}
+.post-office .post-batch .done{color:var(--sk-good,#357956)}
+.post-office .sk-amt-in{min-width:0}
+.post-office .sk-amt input{max-width:100%;font-size:18px}
+@media(max-width:480px){.post-office .post-options{grid-template-columns:minmax(0,1fr)}.post-office .post-parcel,.post-office .post-step{padding:13px}.post-office dl>div{gap:10px}}
