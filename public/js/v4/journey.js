@@ -148,6 +148,7 @@ function meCard(env){
         <button type="button" class="jr-title-chip jr-wd-chip" data-action="jrWardrobe"><span aria-hidden="true">👗</span> Thay đồ</button>${rideChip(api)}${phoneChip(api)}
         <div class="jr-level"><div class="jr-level-row"><b>Trưởng thành cấp ${mat.level}</b><small>${esc(mat.name)}</small></div><div class="jr-bar" role="progressbar" aria-label="Kinh nghiệm trưởng thành" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div></div></div></div>
     ${J.story?`<div class="jr-stats">${wallet}<div class="jr-stat"><small>Ngày sống</small><b>${fmt(J.life_day)}</b></div><button type="button" class="jr-stat" data-action="jrView" data-view="titles"><small>Danh hiệu</small><b>${J.titles.length}</b></button></div>`:''}
+    ${J.story?`<div class="jr-actions">${btn('🛕 Vào chùa','lfChuaVisit',{},'cream small')}${btn('🚶 Đi chơi & làm đẹp','jrView',{view:'outings'},'cream small')}</div>`:''}
     ${certBadges(env)}
     <details class="jr-skills-box"><summary>Kỹ năng</summary><ul class="jr-skills">${skills}</ul></details>
   </section>`;

@@ -1,3 +1,10 @@
+# v2.2.0 — 2026-10-13
+
+- Cửa chùa mở thẳng sân đi bộ, có chánh điện và nhà ăn. Thắp hương, cầu may, khấn, tụng kinh và treo thẻ được làm lại không giới hạn; tinh thần vẫn tối đa 100. Cơm chay giữ điều kiện ngày có cơm và bụng chưa no.
+- Thẻ chúc người thân lưu riêng tư, giữ qua ngày sống; 40 thẻ gần nhất ở hàng rào, thẻ cũ đọc qua lịch sử. Chống lệnh gửi trùng, giữ bản lưu cũ và không đổi bảng DB.
+- Thêm 14 không gian đi lại cho quán cà phê, spa, rạp phim, karaoke, sân chơi thú cưng, salon, làm móng, thủ công, sách, vẽ, nhạc, đọc sách, vườn và gia đình. Chạm để đi, phím mũi tên/WASD hoặc cần di chuyển; có vật cản, điểm tương tác và lối ra.
+- Vào phòng miễn phí; tới quầy mới mở dịch vụ hiện có. Đóng dịch vụ trở lại đúng phòng. Giao diện cũ cũng vào được khu câu cá, chèo thuyền và bơi; danh mục đi chơi có lối vào trực tiếp.
+
 # v2.1.0 — 2026-10-13
 
 - Thêm bốn nghề: Xưởng vẽ Màu Nắng, Văn phòng luật Bình An, Tiệm giặt ủi Nếp Thơm và Bưu điện Cánh Thư. Mỗi nghề có quy trình riêng, nhiều loại đơn và nội dung nâng cao theo ngày nghề.

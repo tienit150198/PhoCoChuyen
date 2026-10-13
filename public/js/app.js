@@ -1548,7 +1548,7 @@ async function handleAction(action,data,el){
   if(api.state?.jail&&['home','sharedIsland','leisurePlace','isoTown','isoWork','isoCareers','isoMission','isoPrepare','isoApply','isoQueue','isoGo','isoLeisure','isoBag'].includes(action)){
     await (await import('./v4/jail.js')).openJail(env());return;
   }
-  if(action==='leisurePlace'){if(iso&&['fishing','boat','pool'].includes(data.kind))await iso.openLeisure(data.kind,env());return;}
+  if(action==='leisurePlace'){await (await import('./v4/venue-routing.js')).visitLeisure(env(),data.kind);return;}
   if(action==='sharedIsland'){if(iso)await iso.isometricAction('isoTown',data,el,env());else await (await import('./shared-island.js')).openSharedIsland(env());return;}
   // Legacy Home opens the journey/career chooser (including More → Đổi nghề).
   // Island navigation has its own explicit isoTown action.
@@ -1674,8 +1674,8 @@ async function handleAction(action,data,el){
       if(action==='liveWalk'){const w=await import('./v4/walk.js');L.live.m?.benchSpot(w.walk);await w.openWalk(env(),data);break;}  // 🚶 Đi dạo (v4/walk.js): its own dialog; 💕 its benches are the dating bench
       if(action==='liveDate'){(await viaLazy(L.live,el)).openDate(data);break;}  // 💕 Góc hẹn hò (v4/dating.js)
       if(action==='liveWed'){await (await import('./v4/wedding.js')).openWeddings(env());break;}  // 💍 Lịch cưới (v4/wedding.js): its own dialog
-      if(action==='liveKara'){await (await import('./v4/karaoke.js')).openKaraoke(env(),data);break;}  // 🎤 Phòng hát (v4/karaoke.js): its own dialog
-      if(action==='liveBark'){await (await import('./v4/dog-bark.js')).openDogBark(env());break;}  // 🐕 Kéo co chó sủa (v4/dog-bark.js): its own dialog
+      if(action==='liveKara'){await (await import('./v4/venue-routing.js')).visitVenue(env(),'karaoke',async()=>{await (await import('./v4/karaoke.js')).openKaraoke(env(),data);});break;}  // 🎤 Phòng hát (v4/karaoke.js): its own dialog
+      if(action==='liveBark'){await (await import('./v4/venue-routing.js')).visitVenue(env(),'bark',async()=>{await (await import('./v4/dog-bark.js')).openDogBark(env());});break;}  // 🐕 Kéo co chó sủa (v4/dog-bark.js): its own dialog
       if(action==='wedInvite'){await (await import('./v4/wedinvite.js')).openWedInvite(env());break;}  // 💌 Gửi thiệp mời cưới cả phố: its own dialog
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy

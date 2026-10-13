@@ -64,7 +64,13 @@ export async function openSpend(env,tab){
 }
 export async function spendAction(action,data,el,env){
   if(!(action in ACTIONS))return false;
-  await openSpend(env,ACTIONS[action]||data?.tab);return true;
+  const tab=ACTIONS[action]||data?.tab||'quan';
+  const {venueForSpend,visitVenue,visitTemple}=await import('./venue-routing.js');
+  const id=venueForSpend(tab);
+  if(id==='temple')await visitTemple(env);
+  else if(id)await visitVenue(env,id,()=>openSpend({...env,venueId:id},tab));
+  else await openSpend(env,tab);
+  return true;
 }
 
 async function loadBoard(force=false){
@@ -124,7 +130,7 @@ async function onClick(op,data){
   const v=V()||{};
   switch(op){
     case'close':S.dlg.close();return;
-    case'tab':S.tab=data.tab;S.flash=null;render();S.dlg.querySelector('.sd-body')?.scrollTo?.(0,0);if(S.tab==='chua')loadBoard();return;
+    case'tab':{if(data.tab!=='style'){S.dlg.close();await spendAction('spend',{tab:data.tab},null,S.env);return;}S.tab=data.tab;S.flash=null;render();S.dlg.querySelector('.sd-body')?.scrollTo?.(0,0);return;}
     case'shop':S.shop=data.id;S.pick.quan=null;render();return;
     case'pick':S.pick[S.tab]=data.id;render();return;
     case'kind':S.kind=data.kind;S.pick.style=null;render();return;
@@ -162,7 +168,7 @@ function page(){
   const [label,,why]=main(v);
   const bar=`<footer class="sd-bar">${why&&why!=='✓'?`<small class="sd-why">${esc(why)}</small>`:''}<button type="button" class="btn primary big sd-main" data-sd="go"${S.busy||why?' disabled':''}>${esc(label)}</button></footer>`;
   const flash=`<p class="sd-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
-  return head+tabs+`<div class="sheet-body sd-body">${flash}${inner}</div>`+bar;
+  return head+(S.env.venueId?'':tabs)+`<div class="sheet-body sd-body">${flash}${inner}</div>`+bar;
 }
 const fx=(full,wake,spirit)=>[full?`🍚+${full}`:'',wake?`⚡+${wake}`:'',spirit?`😊+${spirit}`:''].filter(Boolean).map(x=>`<i>${x}</i>`).join('');
 function row(it,on,extra=''){

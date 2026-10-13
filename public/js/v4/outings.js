@@ -2,7 +2,7 @@
 import {escapeHTML as esc,icon} from '../icons.js';
 import {lookOf,portrait} from './look.js';
 import {confirmPurchase} from './payment.js';
-import {communityView,communityAction} from './community-outings.js';
+import {communityView,communityAction,visitCommunity} from './community-outings.js';
 import {craftedArt} from './craft-art.js';
 const tabs=[['salon','💇','Ghé salon'],['nails','💅','Làm móng'],['craft','🧵','Xưởng handmade'],['community','🏘️','Sách, CLB & gia đình']];
 const st=ui=>ui.outings??={tab:'salon',hair:null,color:'rose',pattern:'plain',kind:'teddy'};
@@ -28,6 +28,9 @@ export function outingsView({api,ui}){
  if(!c.crafts.some(x=>x.id===s.kind))s.kind=c.crafts[0]?.id;
  const look=lookOf(api.state),hair=d.hairstyles.find(x=>x.id===s.hair)||d.hairstyles.find(x=>x.id===look.hair)||d.hairstyles[0];
  s.hair=hair?.id;
+ if(!ui.venueService){
+  return `<header class="sheet-head jr-head"><h2 class="grow">Đi chơi & làm đẹp</h2>${button(icon('x',18),'close',{},'ghost small')}</header>${styles}<div class="outings"><p>Chọn một nơi để vào đi dạo. Tới quầy hoặc góc hoạt động để tham gia.</p><nav class="out-tabs">${tabs.filter(t=>t[0]!=='community').map(([id,e,l])=>button(`${e} ${l}`,'jrOutTab',{tab:id},'primary')).join('')}</nav><div class="out-options">${[['spendQuan','☕ Quán cà phê'],['spendSpa','💆 Spa'],['spendRap','🎬 Rạp phim'],['spendChua','🛕 Chùa Gió Lành']].map(([action,label])=>button(label,action)).join('')}${[['fishing','🎣 Câu cá'],['boat','🚣 Chèo thuyền'],['pool','🏊 Bơi']].map(([kind,label])=>button(label,'leisurePlace',{kind})).join('')}</div>${communityView({api,ui})}</div>`;
+ }
  let body='',price=0,done=false;
  if(s.tab==='community'){
   body=communityView({api,ui});
@@ -43,18 +46,28 @@ export function outingsView({api,ui}){
  const pay=s.tab==='community'?'':done?'<p class="notice">Mẫu này đã lưu rồi, không cần trả thêm.</p>':full?'<p class="notice">Kệ đã đủ 24 món. Những món đã làm vẫn được giữ ở đây.</p>':s.tab==='craft'?`<p class="out-price">Vật liệu: ${price} xu · chỉ thanh toán khi hoàn thành</p>${button('🧵 Vào bàn làm','jrOutMake',{},'primary')}`:`<p class="out-price">Tổng: ${price} xu</p>${button(s.tab==='salon'?'Làm tóc & giữ kiểu':'Sơn & lưu bộ móng','jrOutBuy',{},'primary')}`;
  const nails=d.nails?`<section class="out-saved"><h3>Bộ móng đang giữ</h3>${art(c,d.nails,true)}<p>${esc(name(c.colors,d.nails.color))} · ${esc(name(c.patterns,d.nails.pattern))}</p><small>Ngày ${d.nails.day}</small></section>`:'';
  const shelf=`<h3 class="out-step">Kệ kỷ niệm · ${d.crafts.length}/${c.max_crafts}</h3>${d.crafts.length?`<div class="out-grid">${d.crafts.map(x=>`<article class="out-saved">${art(c,x)}<b>${esc(name(c.crafts,x.kind))}</b><p>${esc(name(c.colors,x.color))} · ${esc(name(c.patterns,x.pattern))}</p><small>Ngày ${x.day}</small></article>`).join('')}</div>`:'<p>Chưa có món thủ công. Thử phối một mẫu ở Xưởng DIY nhé.</p>'}`;
- return `<header class="sheet-head jr-head">${button(icon('back',18),'jrView',{view:'home'},'ghost small')}<div class="grow"><span class="eyebrow">MỘT BUỔI CHO MÌNH</span><h2>Đi chơi & làm đẹp</h2></div>${button(icon('x',18),'close',{},'ghost small')}</header>${styles}<div class="outings"><nav class="out-tabs" aria-label="Đi chơi">${tabs.map(([id,e,l])=>button(`${e} ${l}`,'jrOutTab',{tab:id},s.tab===id?'primary':'ghost')).join('')}</nav>${body}${pay}<hr>${nails}${shelf}</div>`;
+ return `<header class="sheet-head jr-head">${button(icon('back',18),'close',{},'ghost small')}<div class="grow"><span class="eyebrow">MỘT BUỔI CHO MÌNH</span><h2>Đi chơi & làm đẹp</h2></div>${button(icon('x',18),'close',{},'ghost small')}</header>${styles}<div class="outings"><nav class="out-tabs" aria-label="Đi chơi">${esc(tabs.find(t=>t[0]===s.tab)?.[2]||'')}</nav>${body}${pay}<hr>${nails}${shelf}</div>`;
 }
 
 export async function outingsAction(action,data,el,env){
  if(action==='jrOutCommunity')return communityAction(data,el,env);
+ if(action==='jrOutVenue')return visitCommunity(data.place,env);
  const {api,ui,cmd,renderSheet,confirmAction}=env,s=st(ui),c=api.content.journey.outings,d=api.state.journey.outings;
  if(action==='jrOutMake'||action==='jrOutBuy'&&s.tab==='craft'){
   if(d.crafts.length>=c.max_crafts)return true;
   const {openCraftWorkbench}=await import('./craft-workbench.js');
   await openCraftWorkbench(env,{kind:s.kind,color:s.color,pattern:s.pattern,materialChanges:{...s.materialChanges}});s.materialChanges={};return true;
  }
- if(action==='jrOutTab'){if(tabs.some(t=>t[0]===data.tab))s.tab=data.tab;renderSheet(false);return true;}
+ if(action==='jrOutTab'){
+  if(!['salon','nails','craft'].includes(data.tab))return true;
+  s.tab=data.tab;env.closeSheet();
+  const {visitVenue,waitForPanels}=await import('./venue-routing.js');
+  await visitVenue(env,s.tab,async()=>{
+   ui.venueService=true;
+   try{await waitForPanels(()=>env.openSheet('home',{jrView:'outings'}));}
+   finally{ui.venueService=false;}
+  });return true;
+ }
  if(action==='jrOutPick'){
   const list=data.key==='hair'?d.hairstyles:data.key==='kind'?c.crafts:data.key==='color'?c.colors:data.key==='pattern'?c.patterns:null;
   if(list?.some(x=>x.id===data.value)){
