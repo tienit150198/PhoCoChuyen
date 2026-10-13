@@ -1,0 +1,83 @@
+"""Warehouse convenience: purchased tiers change units, never trading income."""
+from .progression_prices import PRICES, MAX_TIER
+
+COUNT = (1, 2, 3, 5, 8, 12, 20, 30, 45, 65, 100)
+LINE = (6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 200)
+CAPACITY = (12, 24, 36, 48, 72, 96, 144, 192, 288, 384, 600)
+LEGACY = ('mother_baby', 'pharmacy')
+SAVE_LINE = LINE[-1]
+SAVE_STOCK = CAPACITY[-1]
+
+
+def item_id(career, group, tier):
+    return f'warehouse_{group}_{career}_{tier}'
+
+
+def countable(career):
+    from .inventory import catalogue as stock_catalogue
+    return career != 'pagoda' and (career in LEGACY or bool(stock_catalogue(career)))
+
+
+def tier(c, career, group):
+    owned = set(c.get('upgrades', []))
+    return max((n for n in range(1, MAX_TIER + 1) if item_id(career, group, n) in owned), default=0)
+
+
+def capacity(c, career, property_cap=None):
+    from .operations import PROPERTY_INDEX
+    base = property_cap if property_cap is not None else PROPERTY_INDEX[c['ops']['property']['tier']]['stock_cap']
+    return max(base, 24 if 'shelf' in c.get('upgrades', []) else 12, CAPACITY[tier(c, career, 'logistics')])
+
+
+def reserved(c, career):
+    """Registry gifts are off the shelf but can return if the party is missed."""
+    out = {}
+    if career == 'mother_baby':
+        from .careers import mother_baby as mb
+        care = mb.raw(c)
+        if care and care['reg']['state'] == 'open':
+            for lid, line in care['reg']['lines'].items():
+                if line['aside']:
+                    item = mb._reg_item(care, lid)
+                    out[item] = out.get(item, 0) + mb.REG_LINES[lid][2]
+    return out
+
+
+def room(c, career, item, ceiling=None):
+    incoming = sum(x['qty'] for x in c.get('shipments', []) if x['item'] == item and x['status'] != 'received')
+    return max(0, (capacity(c, career) if ceiling is None else ceiling) - c['stock'].get(item, 0) - incoming - reserved(c, career).get(item, 0))
+
+
+def public(c, career):
+    if not countable(career):
+        return None
+    count_tier = tier(c, career, 'count')
+    out = dict(count_tier=count_tier, count_step=COUNT[count_tier], max_tier=MAX_TIER)
+    if career in LEGACY:
+        logistics = tier(c, career, 'logistics')
+        out.update(logistics_tier=logistics, line_max=LINE[logistics], capacity=capacity(c, career), reserved=reserved(c, career))
+    return out
+
+
+def catalogue(careers):
+    out = []
+    for career in careers:
+        if not countable(career):
+            continue
+        for group in (('count', 'logistics') if career in LEGACY else ('count',)):
+            for n, price in enumerate(PRICES, 1):
+                count = group == 'count'
+                name = 'Bộ đếm kho' if count else 'Kho & đơn nhập'
+                description = (f'Đếm {COUNT[n]} món mỗi lần hoặc nhịp giữ. Vẫn tự kiểm và xác nhận nhận hàng.' if count else
+                               f'Mỗi dòng đặt tối đa {LINE[n]} món; sức chứa ít nhất {CAPACITY[n]} món mỗi mã, gồm cả hàng đang về.')
+                out.append(dict(id=item_id(career, group, n), name=f'{name} · Bậc {n}', icon='box',
+                                kind='equipment', careers=[career], price=price, min_level=1,
+                                gear_group='warehouse_' + group, gear_tier=n,
+                                effect_units=COUNT[n] if count else LINE[n],
+                                effect_previous=COUNT[n-1] if count else LINE[n-1],
+                                effect_capacity=None if count else CAPACITY[n],
+                                effect_previous_capacity=None if count else CAPACITY[n-1],
+                                effect_label='món / nhịp đếm' if count else 'món / dòng đặt',
+                                total_price=sum(PRICES), description=description,
+                                requires=item_id(career, group, n-1) if n > 1 else None))
+    return out

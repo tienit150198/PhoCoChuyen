@@ -94,6 +94,7 @@ def normalize(s: str) -> str:
     return "".join(c for c in s if unicodedata.category(c)!="Mn")
 
 from . import accounting_school as accounting_school_
+from . import convenience as warehouse
 from . import history_course as history_course_  # 📜 Học lịch sử Việt Nam (vs_*): its block is created on first use
 
 def new_state() -> dict:
@@ -880,16 +881,15 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         want={}
         for w in raw:
             need(isinstance(w,dict),"Danh sách hàng không hợp lệ.")
-            item=w.get("item");qty=integer(w.get("qty"),1,6)
+            item=w.get("item");qty=integer(w.get("qty"),1,warehouse.LINE[warehouse.tier(c,career,"logistics")])
             need(item in catalogue,"Mã hàng không hợp lệ.")
             need(item not in want,"Mỗi mã chỉ một dòng trong đơn gộp.")
             if career=="pharmacy":need(LOT_INDEX[item]["status"]=="available","Chỉ đặt lô hợp lệ.")
             want[item]=qty
         sup=_stock_supplier(career,p.get("supplier",STOCK_DEFAULT));need(sup,"Nhà cung cấp không tồn tại.")
-        cap=max(ops.PROPERTY_INDEX[c["ops"]["property"]["tier"]]["stock_cap"],24 if "shelf" in c["upgrades"] else 12)
+        cap=warehouse.capacity(c,career)
         for item,qty in want.items():
-            in_transit=sum(x["qty"] for x in c["shipments"] if x["item"]==item and x["status"]!="received")
-            need(c["stock"].get(item,0)+qty+in_transit<=cap,f"Kho mỗi mã chứa tối đa {cap}"+(f" ({catalogue[item]['name']})" if len(want)>1 else "")+". Nhận đủ rồi bán bớt hoặc nâng kệ.")
+            need(qty<=warehouse.room(c,career,item),f"Kho mỗi mã chứa tối đa {cap}"+(f" ({catalogue[item]['name']})" if len(want)>1 else "")+". Nhận đủ rồi bán bớt hoặc nâng kệ.")
         need(stock_vans(c)<STOCK_VANS,"Đang có nhiều kiện chờ giao. Nhận bớt rồi đặt tiếp nhé.")
         costs={item:max(1,math.ceil(catalogue[item]["cost"]*qty*sup["factor"])) for item,qty in want.items()}
         ids=[f"shipment-{s['seq']+k+1}" for k in range(len(want))]
@@ -917,7 +917,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
                 eta=inv._eta(shipment,door["abs"],c,career,door)
                 need(False,f'Kiện chưa tới. Dự kiến {eta["eta_label"]} ({eta["left_label"]}) — làm việc khác trong lúc chờ nhé.')
         else:need(c["turn"]>shipment["ready"],"Kiện chưa tới. Làm việc khác trong lúc chờ nhé.")
-        qty=integer(p.get("count"),1,12);need(qty==shipment["actual"],"Số kiểm đếm chưa khớp số hộp thấy trong kiện.")
+        qty=integer(p.get("count"),1,warehouse.SAVE_LINE);need(qty==shipment["actual"],"Số kiểm đếm chưa khớp số hộp thấy trong kiện.")
         stock_received(s,c,career,shipment,qty);metric(c,"restocked")
         log(s,c,"stock",f'Đã kiểm nhận {qty} × {shipment["item"]}.',ref=shipment["id"])
         result["message"]="Đã kiểm nhận. Chỉ số lượng thực nhận được cộng vào kho."
@@ -1285,6 +1285,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c["incidents"]=incs.public(raw,cid,s)
         c["happen"]=haps.public(raw,cid,s)
         c["inventory"]=inv.public(raw,cid)
+        c["warehouse"]=warehouse.public(raw,cid)
         c["job"]=emp.public(raw,cid,s)
         c["mastery"]=cm.public(raw,cid)
         c["promo"]=pm.public(s,raw,cid)  # 🎖️ Thăng tiến; the 🧑‍💼 board while a manager shift runs
@@ -1465,7 +1466,7 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
     need(isinstance(c["stock"],dict) and isinstance(c["metrics"],dict) and isinstance(c["chats"],dict),"Kho hoặc nhật ký không hợp lệ.")
     expected_items=PRODUCT_INDEX if cid=="mother_baby" else LOT_INDEX if cid=="pharmacy" else {}
     need(set(c["stock"])==set(expected_items),"Danh mục kho không hợp lệ.")
-    for k,n in c["stock"].items():integer(n,0,24)
+    for k,n in c["stock"].items():integer(n,0,warehouse.SAVE_STOCK)
     need(all(u in UPGRADE_INDEX for u in c["upgrades"]) and len(c["upgrades"])==len(set(c["upgrades"])),"Nâng cấp không hợp lệ.")
     need(all(cid in UPGRADE_INDEX[u].get('careers',CAREERS) for u in c['upgrades'] if UPGRADE_INDEX[u].get('kind')=='equipment'),"Thiết bị không thuộc nghề này.")
     need(all(not UPGRADE_INDEX[u].get('requires') or UPGRADE_INDEX[u]['requires'] in c['upgrades'] for u in c['upgrades']),"Thiết bị thiếu bậc trước.")
@@ -1581,7 +1582,7 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
         need(position.get("spot") in ("window","corner","front","center","wall"),"Vị trí trang trí không hợp lệ.")
     for shipment in (() if "shipments" in same else c["shipments"]):
         need(isinstance(shipment,dict) and shipment.get("item") in expected_items,"Kiện hàng sai mã.")
-        clean_text(shipment.get("id"),100);integer(shipment.get("qty"),1,6);integer(shipment.get("actual"),1,6);integer(shipment.get("cost"),0,10000)
+        clean_text(shipment.get("id"),100);integer(shipment.get("qty"),1,warehouse.SAVE_LINE);integer(shipment.get("actual"),1,warehouse.SAVE_LINE);integer(shipment.get("cost"),0,10**9)
         if "at" not in shipment:integer(shipment.get("ready"),0,10**9)
         need(shipment.get("status") in ("in_transit","received"),"Trạng thái kiện sai.")
     for pending in (() if "pending" in same else c["pending"]):
@@ -1837,7 +1838,8 @@ def _ph_sync(c:dict,care:dict)->None:
         for b in rows:
             if extra<=0:break
             used=min(extra,b["qty"]);b["qty"]-=used;extra-=used
-    care["batches"]=ar.last([b for b in care["batches"] if b["qty"]>0],80,"care.batches",c)
+    # A live batch is an asset with its own expiry/recall identity; never archive it to make room.
+    care["batches"]=[b for b in care["batches"] if b["qty"]>0]
 
 
 def _ph_init(c:dict)->dict:
@@ -2127,13 +2129,13 @@ def _ph_public(c:dict,care:dict)->dict:
 def _ph_validate(care:dict)->None:
     need(set(care)=={"v","start","seq","batches","regulars","fridge","flog","notices","recalls","waste","log"},"Sổ quầy thuốc không hợp lệ.")
     integer(care["v"],1,1);integer(care["start"],1,10**7);integer(care["seq"],0,10**7);integer(care["waste"],0,10**7)
-    need(isinstance(care["batches"],list) and len(care["batches"])<=80,"Sổ lô không hợp lệ.")
+    need(isinstance(care["batches"],list) and len(care["batches"])<=warehouse.SAVE_STOCK*len(_ph_open_lots()),"Sổ lô không hợp lệ.")
     seen=set()
     for b in care["batches"]:
         need(isinstance(b,dict) and set(b)=={"id","lot","qty","exp","got","recalled","warm"},"Lô hàng không hợp lệ.")
         need(re.fullmatch(r"L\d{3,7}",str(b["id"])) and b["id"] not in seen,"Mã lô không hợp lệ.");seen.add(b["id"])
         need(b["lot"] in LOT_INDEX and LOT_INDEX[b["lot"]]["status"]=="available","Lô không thuộc kệ xuất.")
-        integer(b["qty"],1,24);integer(b["exp"],0,10**7);integer(b["got"],1,10**7)
+        integer(b["qty"],1,warehouse.SAVE_STOCK);integer(b["exp"],0,10**7);integer(b["got"],1,10**7)
         need(b["recalled"] is None or b["recalled"] in RECALL_WHY,"Lý do thu hồi không hợp lệ.")
         need(type(b["warm"]) is bool,"Trạng thái tủ mát không hợp lệ.")
     need(isinstance(care["regulars"],dict) and set(care["regulars"])==set(PH_REG),"Sổ khách quen không hợp lệ.")

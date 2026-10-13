@@ -153,7 +153,8 @@ def _stock_give(s: dict, c: dict, career: str, item: str, qty: int, unit: int) -
     if career in ('mother_baby', 'pharmacy'):
         if item not in c.get('stock', {}):
             return 0
-        qty = min(qty, 24 - c['stock'][item])
+        from .convenience import room
+        qty = min(qty, room(c, career, item))
         if qty > 0:
             c['stock'][item] += qty
         return max(0, qty)

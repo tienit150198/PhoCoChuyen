@@ -651,8 +651,10 @@ def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
         reserved_incoming={}
         for sh in c['shipments']:
             if sh['status']=='in_transit':reserved_incoming[sh['item']]=reserved_incoming.get(sh['item'],0)+sh['qty']
-        limit=max(target['stock_cap'],24 if 'shelf' in c['upgrades'] else 12)
-        need(all(q+reserved_incoming.get(item,0)<=limit for item,q in c['stock'].items()),'Kho và hàng đang về vượt sức chứa chỗ mới. Hãy xử lý hàng trước.')
+        from .convenience import capacity as warehouse_capacity, reserved as warehouse_reserved
+        limit=warehouse_capacity(c,career,target['stock_cap'])
+        aside=warehouse_reserved(c,career)
+        need(all(q+reserved_incoming.get(item,0)+aside.get(item,0)<=limit for item,q in c['stock'].items()),'Kho và hàng đang về vượt sức chứa chỗ mới. Hãy xử lý hàng trước.')
         eng.money(s,c,-target['setup'],'Chuyển sang '+target['name'],target['id'],category='property_setup')
         o['property'].update(tier=target['id'],changed_day=c['day']);result['message']='Đã chuyển sang '+target['name']+'. Tiền thuê mới chỉ tính từ ca tiếp theo.'
     elif name=='buy_security':

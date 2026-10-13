@@ -762,9 +762,11 @@ def _resolve_return(s, c, b, t, p):
     t['mistakes'] += return_verdict(t, choice)
     t['gs']['resolution'] = choice
     if choice == 'refund':
+        from .convenience import SAVE_STOCK, room
+        need(not restock or room(c, CAREER, item, SAVE_STOCK) >= 1, 'Kệ đầy. Bán bớt hàng trước khi nhận món đổi trả.')
         e.money(s, c, -price, 'Hoàn tiền đổi trả ' + names[item]['name'], t['id'], category='refund')
         if restock:
-            c['stock'][item] = min(24, c['stock'][item] + 1)
+            c['stock'][item] += 1
     elif choice == 'exchange' and not restock:
         c['stock'][item] -= 1
     b['stats']['returns'] += 1
@@ -841,7 +843,7 @@ def after_task(s: dict, c: dict, t: dict) -> None:
     handed_back = r['kind'] in ('walkout', 'refuse')
     if handed_back:
         for k, v in t['basket'].items():
-            c['stock'][k] = min(24, c['stock'].get(k, 0) + v)
+            c['stock'][k] = c['stock'].get(k, 0) + v
     if r['message']:
         e.log(s, c, 'complaint', r['message'], t['npc'], t['id'])
     age = t['gift'].get('age')
@@ -895,7 +897,8 @@ def _check_formula(c, b):
 def _check_fake(c, b):
     if c['day'] < 3 or b['fake'] or 'fake' in [h['kind'] for h in b['ev_history'][-4:]]:
         return None
-    if c['stock'].get('bear', 0) + 6 > 24:
+    from .convenience import room
+    if room(c, CAREER, 'bear') < 6:
         return None
     r = rng(CAREER, 'fake', c['day'], c['turn'])
     return dict(seller='Anh Tâm', item='bear', qty=6, unit=20, _fake=r.random() < 0.7, inspected=False)
@@ -1119,9 +1122,11 @@ def _resolve(s: dict, c: dict, b: dict, ev: dict, choice: str) -> None:
             result = 'Kiểm xong nhưng ' + ' và '.join(parts) + '. Đọc kỹ ngày trên đáy hộp nhé.'
     elif k == 'fake':
         if choice == 'buy':
+            from .convenience import room
+            e.need(f['qty'] <= room(c, CAREER, 'bear'), 'Kho và hàng đang về đã đầy. Bán bớt hàng trước khi nhập thêm.')
             cost = f['qty'] * f['unit']
             e.money(s, c, -cost, 'Nhập gấu bông giá rẻ của Anh Tâm', ev['id'], category='stock')
-            c['stock']['bear'] = min(24, c['stock']['bear'] + f['qty'])
+            c['stock']['bear'] += f['qty']
             eff.append(f"-{cost} xu · +{f['qty']} gấu")
             if f['_fake']:
                 b['fake'] += f['qty']

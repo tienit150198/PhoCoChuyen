@@ -2,15 +2,18 @@ import {escapeHTML as esc,icon} from '../icons.js';
 
 export function equipmentView(c,career,upgrades){
  const items=upgrades.filter(u=>u.kind==='equipment'&&u.careers.includes(career)),owned=new Set(c.upgrades),fmt=n=>Number(n).toLocaleString('vi-VN');
- const groups=[['speed','Làm nhanh hơn'],['demand','Đón thêm khách'],['quality','Kiếm thêm từ mỗi việc'],['online','Thêm đơn online']];
+ const groups=[['speed','Làm nhanh hơn'],['demand','Đón thêm khách'],['quality','Kiếm thêm từ mỗi việc'],['online','Thêm đơn online'],['warehouse_count','Đếm kho nhanh hơn'],['warehouse_logistics','Kho & đơn nhập']];
  const percent=u=>u.effect_percent??u.gear_rate-100;
+ const shelfBase=Math.max(c.ops?.property?.details?.stock_cap||12,owned.has('shelf')?24:12);
+ const effect=u=>u.effect_units!=null?`${fmt(u.effect_units)} ${esc(u.effect_label)}`:`+${percent(u)}%`;
+ const transition=u=>u.effect_units!=null?`${fmt(u.effect_previous)} → ${effect(u)}`:`${effect(u)} ${esc(u.effect_label||'tốc độ')}`;
  const sections=groups.map(([group,title])=>{
   const rows=items.filter(u=>(u.gear_group||'speed')===group);if(!rows.length)return '';
   const current=rows.filter(u=>owned.has(u.id)).sort((a,b)=>b.gear_tier-a.gear_tier)[0];
-  return `<section class="space-top" aria-label="${esc(title)}"><div class="row spread wrap"><h3>${esc(title)}</h3><span class="tag green">${current?`Đã lắp bậc ${current.gear_tier} · +${percent(current)}%`:'Chưa nâng cấp'}</span></div><div class="upgrade-grid">${rows.map(u=>{
+  return `<section class="space-top" aria-label="${esc(title)}"><div class="row spread wrap"><h3>${esc(title)}</h3><span class="tag green">${current?`Đã lắp bậc ${current.gear_tier} · ${effect(current)}`:'Chưa nâng cấp'}</span></div>${rows[0].total_price?`<p class="muted small">Tổng đến bậc 10: ${fmt(rows[0].total_price)} xu. Mỗi bậc thay bậc trước.</p>`:''}<div class="upgrade-grid">${rows.map(u=>{
    const installed=owned.has(u.id),missing=u.requires&&!owned.has(u.requires),locked=(c.level||1)<(u.min_level||1),short=c.money<u.price,disabled=installed||missing||locked||short;
    const old=installed&&current.gear_tier>u.gear_tier;
-   return `<article class="upgrade-card"><div class="row spread">${icon('settings',27)}<span class="tag">+${percent(u)}% ${esc(u.effect_label||'tốc độ')}</span></div><h3>${esc(u.name)}</h3><p>${esc(u.description)}</p><button class="btn ${installed?'ghost':'primary'} full" type="button" data-action="buyUpgrade" data-item="${esc(u.id)}"${disabled?' disabled':''}>${installed?(old?'Đã có · dùng bậc cao hơn':'Đã lắp'):missing?`Cần bậc ${u.gear_tier-1} trước`:locked?`Cần cấp ${u.min_level}`:short?`Thiếu ${fmt(u.price-c.money)} xu`:`Lắp thiết bị · ${fmt(u.price)} xu`}</button></article>`;
+   return `<article class="upgrade-card"><div class="row spread">${icon('settings',27)}<span class="tag">${transition(u)}</span></div><h3>${esc(u.name)}</h3><p>${esc(u.description)}</p>${u.effect_capacity?`<p>${fmt(Math.max(shelfBase,u.effect_previous_capacity))} → ${fmt(Math.max(shelfBase,u.effect_capacity))} món / mã trên kệ</p>`:''}<button class="btn ${installed?'ghost':'primary'} full" type="button" data-action="buyUpgrade" data-item="${esc(u.id)}"${disabled?' disabled':''}>${installed?(old?'Đã có · dùng bậc cao hơn':'Đã lắp'):missing?`Cần bậc ${u.gear_tier-1} trước`:locked?`Cần cấp ${u.min_level}`:short?`Thiếu ${fmt(u.price-c.money)} xu`:`Lắp thiết bị · ${fmt(u.price)} xu`}</button></article>`;
   }).join('')}</div></section>`;
  }).join('');
  return `<section class="work-equipment" aria-labelledby="work-equipment-title"><span class="eyebrow">THIẾT BỊ NGHỀ</span><h3 id="work-equipment-title">Đầu tư để kiếm thêm</h3><p>Trả bằng quỹ của nghề này. Mỗi nhóm nâng riêng; bậc cao thay bậc thấp. Khách đang chờ giữ lịch cũ, lượt kế tiếp dùng nhịp mới. Thu nhập phụ thuộc hàng tồn, giá bán và chi phí.</p>${sections}</section>`;

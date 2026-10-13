@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import {equipmentView} from '../public/js/v4/work-equipment.js';
+import * as stock from '../public/js/v4/views.js';
+
+const items=[1,2].map(n=>({id:'count'+n,kind:'equipment',careers:['mother_baby'],gear_group:'warehouse_count',gear_tier:n,effect_units:n+1,effect_previous:n,effect_label:'món / nhịp đếm',total_price:152692000,requires:n>1?'count1':null,price:n===1?3000:9000,name:'Bộ đếm kho',description:'Tự xác nhận'}));
+let html=equipmentView({money:10000,upgrades:[]},'mother_baby',items);
+assert.match(html,/1 → 2 món \/ nhịp đếm/);
+assert.match(html,/152.692.000/);
+assert.match(html,/Cần bậc 1 trước/);
+assert.doesNotMatch(html,/NaN|undefined|100%/);
+const logistics={...items[0],id:'log1',gear_group:'warehouse_logistics',effect_units:8,effect_previous:6,effect_capacity:24,effect_previous_capacity:12,effect_label:'món / dòng đặt'};
+html=equipmentView({money:10000,upgrades:['shelf']},'mother_baby',[logistics]);
+assert.match(html,/24 → 24 món \/ mã trên kệ/);
+assert.match(html,/6 → 8 món \/ dòng đặt/);
+assert.equal(typeof stock.tallyBatch,'function');
+const ui={invTally:{x:[0,1]},invTyped:{x:true}};
+assert.equal(stock.tallyBatch(ui,'x',[1,2,3,4],2),4);
+assert.deepEqual(ui.invTally.x,[0,1,2,3]);
+assert.equal(ui.invCount.x,'4');assert.equal(ui.invTyped.x,undefined);
+assert.equal(stock.tallyBatch(ui,'x',[0,1,2,3,4],100),5);
+assert.equal(stock.stockCountStep({api:{state:{current:'x',careers:{x:{}}}}}),1);
+assert.equal(stock.stockCountStep({api:{state:{current:'x',careers:{x:{warehouse:{count_step:100}}}}}}),100);
+console.log('Warehouse unit progression and bounded tally passed.');

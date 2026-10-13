@@ -19,7 +19,7 @@ import {soundsBoot} from './v4/sounds.js';
 import {dayclockBoot,clockChip,clockAria,clockCard,clockSummary,closingNote,clockStep} from './v4/dayclock.js';  // giờ trong ngày
 import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCareerData,careerContext,startTicker,tickNow,careerSwitchButton,CSS_KIT} from './v4/careers.js';
 import {applyGuide,guideAction,nextHint,stepCta,plainText,firstTime,barParts} from './v4/guide.js';
-import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
+import {inventoryView,stockBoot,stockBatchButton,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {certBadge} from './v4/certificates.js';
 import {moneyBoot,confirmMoney,confirmShort,dialogBalances,isSpend,priceIn} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
 import {quickOpen,firstDay} from './v4/onboard.js';  // a brand-new player's first minutes
@@ -1155,7 +1155,7 @@ function warehouseView(){
   if(id==='accounting')return clientBoard();
   if(id==='customer_care')return followBoard();
   if(!['mother_baby','pharmacy'].includes(id))return queueView();
-  const c=room(),ph=id==='pharmacy',care=ph?careData():null,cap=Math.max(c.ops.property.details.stock_cap,c.upgrades.includes('shelf')?24:12);
+  const c=room(),ph=id==='pharmacy',care=ph?careData():null,cap=c.warehouse?.capacity??Math.max(c.ops.property.details.stock_cap,c.upgrades.includes('shelf')?24:12);
   const tab=ph&&['lots','regulars'].includes(ui.whTab)?ui.whTab:'stock';
   const bad=care?.batches?.filter(b=>b.flag).length||0,here=care?.regulars?.filter(r=>r.state==='here'||r.state==='call').length||0;
   const tabs=ph?`<div class="dw-tabs wh-tabs" role="tablist" aria-label="Kho & sổ quầy">${[['stock','📦','Kho',''],['lots','🧊','Sổ lô',bad?`${bad} cần rút`:''],['regulars','💊','Khách quen',here?`${here} cần làm`:'']].map(([k,e,l,n])=>`<button type="button" role="tab" aria-selected="${tab===k}" class="dw-tab${tab===k?' on':''}" data-wh-tab="${k}"><span><span aria-hidden="true">${e}</span> ${l}</span><em>${n||'&nbsp;'}</em></button>`).join('')}</div>`:'';
@@ -1166,7 +1166,8 @@ const SHIP_CAP=8,MERGE_CAP=12;
 /** Deliveries on the way (game/engine.py stock_vans): the lines of one merged order share a van. */
 const stockVans=c=>new Set(c.shipments.filter(s=>s.status==='in_transit').map(s=>s.placed!=null?`${s.supplier}|${s.placed}|${s.lo}|${s.hi}`:s.id)).size;
 function stockDesk(cap){
-  const c=room(),id=career(),mb=id==='mother_baby',desk=c.stock_desk||{},care=mb?null:careData(),list=mb?api.content.products:api.content.lots.filter(l=>l.status==='available');
+  stockBoot(env());
+  const c=room(),id=career(),mb=id==='mother_baby',desk=c.stock_desk||{},lineMax=c.warehouse?.line_max??6,care=mb?null:careData(),list=mb?api.content.products:api.content.lots.filter(l=>l.status==='available');
   const waiting=c.shipments.filter(s=>s.status!=='received'),arrived=waiting.filter(s=>s.ready_now),onWay=k=>waiting.filter(s=>s.item===k).reduce((n,s)=>n+s.qty,0),low=list.filter(p=>c.stock[p.id]+onWay(p.id)<=2);
   // order_stock takes at most SHIP_CAP deliveries on the way (game/engine.py): past that, receive one first.
   const vansFull=stockVans(c)>=SHIP_CAP,picks=ui.whPick?.[id]||{};
@@ -1176,10 +1177,10 @@ function stockDesk(cap){
   const expiredN=(care?.batches||[]).filter(b=>b.flag).reduce((n,b)=>n+b.qty,0);
   const strip=`<section class="inv-status" aria-label="Tình trạng kho"><div class="inv-chips">${care?phDay(c):''}${chip(arrived.length,'kiện đã tới · đếm ở dưới','accent')}${chip(waiting.length-arrived.length,'kiện đang giao','info')}${chip(low.length,'mã sắp hết','warn')}${vansFull?`<span class="inv-chip warn">🚚 Đủ ${SHIP_CAP} kiện đang giao: nhận bớt rồi đặt tiếp</span>`:''}${care&&expiredN?`<button type="button" class="inv-chip warn" data-wh-tab="lots">🧹 ${expiredN} hộp cần rút</button>`:''}${!waiting.length&&!low.length&&!expiredN?`<span class="inv-calm">${icon('check',14)} Kho ổn.</span>`:''}</div>`+
     `${!arrived.length&&next?`<div class="inv-cta"><p class="wh-next">Kiện sớm nhất: <b>${esc(next.eta_label||'')}</b>${next.left_label?` · ${esc(next.left_label)}`:''}</p>${c.open&&sameDay(next.arrives_day*1440)?commandButton('⏳ Chờ thêm 20 phút','advance',{},'primary'):''}</div>`:''}</section>`;
-  const parcel=s=>{const p=product(s.item);return s.ready_now?`<article class="card inv-crate-card open"><div class="row spread"><strong>${esc(p.name)}</strong>${pill('ĐÃ TỚI','green')}</div><div class="inv-slip"><span>Phiếu giao ghi</span><b>${s.qty} món</b></div><ul class="inv-crate" aria-label="Trong kiện">${Array.from({length:s.actual||0},()=>`<li>${itemArt(p.icon||'box',32,p.color)}</li>`).join('')}</ul><form class="inv-receive" data-receive="${esc(s.id)}"><label for="count-${esc(s.id)}">Bạn đếm được</label>${qtyBox({value:'',min:1,max:12,label:'Bạn đếm được',cls:'input',placeholder:'0',attrs:`id="count-${esc(s.id)}" required`})}<button class="btn primary" type="submit">${icon('check',15)} Kiểm & nhập kho</button></form></article>`
+  const parcel=s=>{const p=product(s.item);return s.ready_now?`<article class="card inv-crate-card open"><div class="row spread"><strong>${esc(p.name)}</strong>${pill('ĐÃ TỚI','green')}</div><div class="inv-slip"><span>Phiếu giao ghi</span><b>${s.qty} món</b></div><ul class="inv-crate" aria-label="Trong kiện">${Array.from({length:s.actual||0},(_,k)=>`<li><button type="button" class="inv-good${ui.invTally?.[s.id]?.includes(k)?' on':''}" data-action="v4Tally" data-order="${esc(s.id)}" data-i="${k}" aria-pressed="${!!ui.invTally?.[s.id]?.includes(k)}" aria-label="${esc(p.name)}">${itemArt(p.icon||'box',32,p.color)}</button></li>`).join('')}</ul><p class="muted small">👆 Chạm từng món · giữ để đếm nhanh</p><form class="inv-receive" data-receive="${esc(s.id)}"><label for="count-${esc(s.id)}">Bạn đếm được</label>${qtyBox({value:ui.invCount?.[s.id]??'',min:1,max:Math.max(12,s.qty),label:'Bạn đếm được',cls:'input',placeholder:'0',attrs:`id="count-${esc(s.id)}" data-v4-count="${esc(s.id)}" required`})}${stockBatchButton(s.id,env())}<button class="btn primary" type="submit">${icon('check',15)} Kiểm & nhập kho</button></form></article>`
     :`<article class="card order-row wh-parcel"><div class="row spread"><div class="grow"><strong>${esc(p.name)} · ${s.qty} món</strong><small class="muted block">${esc(s.supplier_emoji||'🚚')} ${esc(s.supplier_name||'')} · đã trả ${fmt(s.cost)} xu</small></div>${pill('ĐANG GIAO','amber')}</div><p class="wh-eta">Dự kiến nhận: <b>${esc(s.eta_label||'')}</b>${s.left_label?` · ${esc(s.left_label)}`:''}</p><span class="wh-prog" aria-hidden="true"><i style="width:${Math.round((s.progress||0)*100)}%"></i></span>${s.late_note?`<p class="wh-late">⚠️ ${esc(s.late_note)}</p>`:''}</article>`;};
   const pick=sups.length?`<details class="wh-sups wh-sups-fold" data-fold="wh-sups"><summary><span class="wh-sups-k">Nhập từ</span><b>${sup?`<span aria-hidden="true">${esc(sup.emoji||'🚚')}</span> ${esc(sup.name)}`:''}</b><small>${esc(sup?.quote?.label||sup?.window||'')}</small></summary><div class="wh-sup-list" role="radiogroup" aria-label="Chọn nhà cung cấp">${sups.map(s=>`<button type="button" role="radio" aria-checked="${s.id===supId}" class="wh-sup${s.id===supId?' on':''}" data-wh-sup="${esc(s.id)}"><span class="wh-sup-name"><span aria-hidden="true">${esc(s.emoji||'🚚')}</span> ${esc(s.name)}</span><b>${esc(s.quote?.label||s.window||'')}</b><small>${esc(priceWord(s.factor))} · ${esc(s.window||'')}</small></button>`).join('')}</div>${sup?.note?`<p class="dw-hint">${esc(sup.note)}</p>`:''}</details>`:'';
-  const row=p=>{const q=c.stock[p.id],on=onWay(p.id),held=q-c.available[p.id],room_=Math.max(0,cap-q-on),max=Math.min(6,room_),state=q===0?'out':q+on<=2?'low':'';
+  const row=p=>{const q=c.stock[p.id],on=onWay(p.id),held=q-c.available[p.id]+(c.warehouse?.reserved?.[p.id]||0),room_=Math.max(0,cap-q-on-(c.warehouse?.reserved?.[p.id]||0)),max=Math.min(lineMax,room_),state=q===0?'out':q+on<=2?'low':'';
     // The bill sits on the order button and follows the number ("Đặt 3 · 108 xu", whBill), priced as whOrder charges.
     const qty=Math.min(Math.max(1,max),state?Math.min(4,Math.max(1,max)):1),can=!!(max&&c.open&&!vansFull),cost=Math.max(1,Math.ceil(p.cost*qty*(sup?.factor??1)));
     const lots=care?.batches?.filter(b=>b.lot===p.id)||[],first=lots.find(b=>!b.flag),flagged=lots.filter(b=>b.flag).reduce((n,b)=>n+b.qty,0);
@@ -1203,7 +1204,7 @@ async function whMerge(){
   if(!items.length){toast('Tick “Gộp” ở ít nhất một mã nhé.',true);return;}
   if(items.length>MERGE_CAP){toast(`Một đơn gộp tối đa ${MERGE_CAP} mã.`,true);return;}
   const lines=[];
-  for(const item of items){const qty=Number(document.getElementById('qty-'+item)?.value);if(!Number.isInteger(qty)||qty<1||qty>6){toast('Mỗi mã từ 1 đến 6 món.',true);return;}lines.push({item,qty});}
+  for(const item of items){const qty=Number(document.getElementById('qty-'+item)?.value);if(!Number.isInteger(qty)||qty<1||qty>(c.warehouse?.line_max??6)){toast(`Mỗi mã từ 1 đến ${c.warehouse?.line_max??6} món.`,true);return;}lines.push({item,qty});}
   const cost=lines.reduce((n,l)=>n+Math.max(1,Math.ceil(product(l.item).cost*l.qty*sup.factor)),0);
   const what=lines.map(l=>`${l.qty} × ${product(l.item).name}`).join(', ');
   if(cost>c.money){toast(`Quỹ còn ${fmt(c.money)} xu, đơn gộp cần ${fmt(cost)} xu.`,true);return;}
@@ -1221,7 +1222,7 @@ function whBill(input){
 async function whOrder(item){
   const c=room(),id=career(),desk=c.stock_desk||{},sups=desk.suppliers||[],picked=ui.whSup?.[id],supId=sups.some(s=>s.id===picked)?picked:(desk.default||sups[0]?.id),sup=sups.find(s=>s.id===supId)||{factor:1,name:'nhà cung cấp',quote:{}};
   const qty=Number(document.getElementById('qty-'+item)?.value);
-  if(!Number.isInteger(qty)||qty<1||qty>6){toast('Mỗi lần đặt từ 1 đến 6 món.',true);return;}
+  if(!Number.isInteger(qty)||qty<1||qty>(c.warehouse?.line_max??6)){toast(`Mỗi lần đặt từ 1 đến ${c.warehouse?.line_max??6} món.`,true);return;}
   const p=product(item),cost=Math.max(1,Math.ceil(p.cost*qty*sup.factor));
   if(await confirmAction('Đặt một kiện hàng?',`${qty} × ${p.name} từ ${sup.name}: trả ${fmt(cost)} xu ngay. Dự kiến nhận: ${sup.quote?.eta_label||sup.window||''}. Chỉ cộng kho sau khi kiện tới và bạn đếm nhận.`,'Đặt hàng'))await cmd('order_stock',{item,qty,supplier:supId});
 }
@@ -1650,8 +1651,8 @@ async function handleAction(action,data,el){
     case'executeCS':if(await confirmAction('Gửi việc tới đầu mối?','Kho, bên vận chuyển hay kế toán có thể mất vài giờ tới vài ngày. Vụ vẫn mở tới khi bạn kiểm kết quả.','Gửi việc'))await cmd('cs_execute',{task:activeTask().id});break;
     case'closeCS':if(await confirmAction('Đóng vụ đã có kết quả?','','Đóng vụ'))await cmd('cs_close',{task:activeTask().id});break;
     case'end':if(!room().open){openSheet('summary');break;}if(await confirmAction(wordsFor(career()).end_title,wordsFor(career()).end_text,'Khép ca')){const r=await cmd('end_day',{carry_event:true});if(r){ui.task=null;openSheet('summary');world.say('Hẹn gặp lại vào một ngày dịu dàng.');}}break;
-    case'buyUpgrade':{const u=api.content.upgrades.find(x=>x.id===data.item);if(await confirmAction((u.kind==='equipment'?'Lắp ':'Đặt ')+u.name.toLowerCase()+'?',`Dùng ${u.price} xu của nghề này. ${u.description}`,u.kind==='equipment'?'Mua & lắp':'Mua & đặt'))await cmd('buy_upgrade',{item:data.item});break;}
-    case'restock':{const quantity=Number(document.getElementById('qty-'+data.item)?.value);if(!Number.isInteger(quantity)||quantity<1||quantity>6){toast('Mỗi lần đặt từ 1 đến 6 món.',true);break;}const p=product(data.item);if(await confirmAction('Đặt một kiện hàng?',`${quantity} × ${p.name}, tổng ${quantity*p.cost} xu. Chỉ cộng kho sau khi kiện tới và bạn kiểm nhận.`, 'Đặt hàng'))await cmd('order_stock',{item:data.item,qty:quantity});break;}
+    case'buyUpgrade':{const u=api.content.upgrades.find(x=>x.id===data.item);if(await confirmAction((u.kind==='equipment'?'Lắp ':'Đặt ')+u.name.toLowerCase()+'?',`Dùng ${fmt(u.price)} xu của nghề này. ${u.description}`,u.kind==='equipment'?'Mua & lắp':'Mua & đặt'))await cmd('buy_upgrade',{item:data.item});break;}
+    case'restock':{const quantity=Number(document.getElementById('qty-'+data.item)?.value);if(!Number.isInteger(quantity)||quantity<1||quantity>(room().warehouse?.line_max??6)){toast(`Mỗi lần đặt từ 1 đến ${room().warehouse?.line_max??6} món.`,true);break;}const p=product(data.item);if(await confirmAction('Đặt một kiện hàng?',`${quantity} × ${p.name}, tổng ${quantity*p.cost} xu. Chỉ cộng kho sau khi kiện tới và bạn kiểm nhận.`, 'Đặt hàng'))await cmd('order_stock',{item:data.item,qty:quantity});break;}
     case'confirmEvent':{const e=room().event,o=e.options.find(o=>o.id===e.chosen);if(await confirmAction('Xác nhận cách xử lý?',`${o.label}. ${e.practice?'Diễn tập không trừ xu.':o.cost?'Chi '+o.cost+' xu từ quỹ nghề.':'Không tốn xu.'}`, 'Bắt đầu thực hiện'))await cmd('event_confirm');break;}
     case'eventStep':{const r=await cmd('event_step');if(r){world.say(r.message);world.go(room().event.station,()=>{});}break;}
     case'practice':{const e=room().event;if(e&&e.stage!=='resolved'){if(e.practice){if(!(await confirmAction('Chuyển tình huống diễn tập?','Diễn tập hiện tại được cất lại, không thay đổi tiền hoặc quan hệ.','Chuyển tình huống')))break;await cmd('event_dismiss',{}, {quiet:true});}else{toast('Bạn đang có một chuyện thật trong ca. Hoàn thành trước rồi mở diễn tập nhé.',true);openSheet('event');break;}}const r=await cmd('event_start',{event:data.event});if(r)openSheet('event');break;}
@@ -1770,7 +1771,7 @@ document.addEventListener('submit',async e=>{
   else if(f.id==='chatForm'){const input=$('#chat-input'),text=input.value.trim();if(!text||L.chat.m?.chatBusy(ui.npc))return;input.value='';const count=$('#chat-count');if(count)count.textContent='0/200';await talk(text);}
   else if(f.id==='postForm'){const input=$('#post-text'),text=input.value.trim();if(!text)return;input.value='';await cmd('feed_post',{text});}
   else if(f.dataset.replyPost){const input=f.querySelector('input'),text=input.value.trim();if(!text)return;input.value='';await cmd('feed_reply',{post:f.dataset.replyPost,text});}
-  else if(f.dataset.receive){const count=Number(f.querySelector('input').value);await cmd('receive_stock',{shipment:f.dataset.receive,count});}
+  else if(f.dataset.receive){const count=Number(f.querySelector('input').value);if(await cmd('receive_stock',{shipment:f.dataset.receive,count}))for(const k of ['invCount','invTally','invTyped'])if(ui[k])delete ui[k][f.dataset.receive];}
   else if(f.id==='settingsForm'){await cmd('settings',{name:$('#player-name').value});}
 });
 document.addEventListener('input',e=>{

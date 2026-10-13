@@ -62,21 +62,27 @@ const trayed=o=>(Number(o.qty)||0)>TRAY_FROM;
 const HOLD_WAIT=300,HOLD_STEP=140;
 let stockEnv=null,stockOn=false;
 const holdSfx=new Sound();
-function tallyOne(ui,order,k){const t=(ui.invTally??={}),on=new Set(t[order]||[]);on.add(k);t[order]=[...on];
-  (ui.invCount??={})[order]=String(on.size);if(ui.invTyped)delete ui.invTyped[order];return on.size;}
-function stockBoot(env){
+export function stockCountStep(env){return Math.max(1,Math.min(100,Math.floor(Number(env?.api?.state?.careers?.[env.api.state.current]?.warehouse?.count_step)||1)));}
+export function tallyBatch(ui,order,indices,limit=1){
+  const t=(ui.invTally??={}),on=new Set(t[order]||[]);let left=Math.max(0,Math.floor(Number(limit)||0));
+  for(const k of indices){if(left<=0)break;if(Number.isInteger(k)&&k>=0&&!on.has(k)){on.add(k);left--;}}
+  t[order]=[...on];(ui.invCount??={})[order]=String(on.size);if(ui.invTyped)delete ui.invTyped[order];return on.size;
+}
+export function stockBatchButton(order,env){const step=stockCountStep(env);return step>1?`<button type="button" class="btn ghost small" data-action="v4TallyBatch" data-order="${esc(order)}">Đếm ${step} món</button>`:'';}
+export function stockBoot(env){
   stockEnv=env;
   if(stockOn||typeof document==='undefined')return;stockOn=true;
   if(!document.querySelector('link[data-stock-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href=asset('/css/stock.css');l.dataset.stockCss='1';document.head.append(l);}
   let crate=null,key='',wait=0,beat=0,x0=0,y0=0,counted=0,swallow=0,down=false;
   const step=()=>{
+    const sheet=document.getElementById('sheet');if(document.hidden||(sheet?.tagName==='DIALOG'&&!sheet.open)){cancel();return;}
     // The sheet may re-render under the finger (a state refresh): carry on in the same crate's new copy.
     if(crate&&!crate.isConnected&&key){crate=[...document.querySelectorAll('#sheet .inv-crate')].find(u=>u.querySelector('.inv-good')?.dataset.order===key)||null;crate?.classList.add('holding');}
-    const b=crate?.isConnected&&crate.querySelector('.inv-good:not(.on)');
-    if(!b){stop();return;}
-    const ui=stockEnv.ui,n=tallyOne(ui,b.dataset.order,Number(b.dataset.i));counted++;
-    b.classList.add('on','tick');b.setAttribute('aria-pressed','true');b.setAttribute('aria-label',`${b.getAttribute('aria-label')||''}, đã đếm`);
-    const inp=document.getElementById('count-'+b.dataset.order);if(inp){inp.value=String(n);inp.removeAttribute('aria-invalid');}
+    const goods=crate?.isConnected?[...crate.querySelectorAll('.inv-good:not(.on)')].slice(0,stockCountStep(stockEnv)):[];
+    if(!goods.length){stop();return;}
+    const order=goods[0].dataset.order,n=tallyBatch(stockEnv.ui,order,goods.map(b=>Number(b.dataset.i)),goods.length);counted+=goods.length;
+    for(const b of goods){b.classList.add('on','tick');b.setAttribute('aria-pressed','true');}
+    const inp=document.getElementById('count-'+order);if(inp){inp.value=String(n);inp.removeAttribute('aria-invalid');}
     holdSfx.pop();
   };
   const stop=()=>{
@@ -84,6 +90,10 @@ function stockBoot(env){
     // What was counted lands like taps do: the next step, the note "N món" (one re-render, not one per unit).
     if(counted){counted=0;swallow=down?Infinity:Date.now()+600;stockEnv?.renderSheet?.();}
   };
+  const cancel=()=>{down=false;stop();swallow=0;};
+  document.addEventListener('close',e=>{if(e.target.id==='sheet')cancel();},true);
+  window.addEventListener('blur',cancel);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)cancel();});
   document.addEventListener('pointerdown',e=>{
     const ul=e.target.closest?.('#sheet .inv-crate');
     if(!ul||e.button>0||!ul.querySelector('.inv-good:not(.on)'))return;
@@ -92,7 +102,7 @@ function stockBoot(env){
     wait=setTimeout(()=>{if(!crate)return;crate.classList.add('holding');step();beat=setInterval(step,HOLD_STEP);},HOLD_WAIT);
   });
   // A finger that slides is scrolling the sheet, not holding.
-  document.addEventListener('pointermove',e=>{if(crate&&!beat&&Math.hypot(e.clientX-x0,e.clientY-y0)>10)stop();});
+  document.addEventListener('pointermove',e=>{if(crate&&Math.hypot(e.clientX-x0,e.clientY-y0)>10)stop();});
   for(const t of ['pointerup','pointercancel'])document.addEventListener(t,()=>{down=false;if(crate)stop();if(swallow===Infinity)swallow=Date.now()+600;});
   document.addEventListener('contextmenu',e=>{if(e.target.closest?.('#sheet .inv-crate'))e.preventDefault();});
   // The click that ends a hold is not also a tap (it would un-count the good under the finger).
@@ -231,14 +241,14 @@ export function inventoryView(env){
   const crate=o=>{
     const i=byId[o.item]||{name:o.item},s=sup(o),isOpen=opened({id:o.id,lines:[o]});
     const form=`<div class="inv-slip"><span>Phiếu giao ghi</span><b>${o.qty} ${esc(unit(i))}</b></div><p class="inv-tip">${trayed(o)?TRAY_TIP:COUNT_TIP}</p><ul class="inv-crate${trayed(o)?' inv-trays':''}" aria-label="Trong thùng">${goodsOf(o,i)}</ul>`+
-      `<form class="inv-receive" data-v4-receive="${esc(o.id)}"><label for="count-${esc(o.id)}">Bạn đếm được</label>${counter(o)}<button class="btn primary" type="button" data-action="v4Receive" data-order="${esc(o.id)}">${icon('check',15)} Nhận vào kệ</button></form>`+
+      `<form class="inv-receive" data-v4-receive="${esc(o.id)}"><label for="count-${esc(o.id)}">Bạn đếm được</label>${counter(o)}${stockBatchButton(o.id,env)}<button class="btn primary" type="button" data-action="v4Receive" data-order="${esc(o.id)}">${icon('check',15)} Nhận vào kệ</button></form>`+
       `<p class="muted small">Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`;
     return `<article class="card inv-crate-card${isOpen?' open':''}" id="crate-${esc(o.id)}"><div class="row spread"><div><strong>${name(i)}${sizeNote(o)}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(paidOf({lines:[o]}))} xu${o.arrives_time?` · tới lúc ${esc(o.arrives_time)}`:''}</small></div>${pill('ĐÃ TỚI','green')}</div>${isOpen?form:button(`📦 Mở thùng & xếp lên kệ`,'v4InvOpen',{order:o.id},'primary big full inv-open')}</article>`;};
   // One crate for a merged order: a slip and a pile per line, one count each, one "receive" for all.
   const groupCrate=g=>{
     const s=sup(g.o),isOpen=opened(g),list=g.lines.map(o=>`${esc(byId[o.item]?.emoji||'📦')} ${esc(byId[o.item]?.name||o.item)}${sizeNote(o)} ×${o.qty}`).join(' · ');
     const body=isOpen?`<p class="inv-tip">${g.lines.some(trayed)?TRAY_TIP:COUNT_TIP}</p>`+g.lines.map(o=>{const i=byId[o.item]||{name:o.item};
-        return `<div class="inv-gline" id="crate-${esc(o.id)}"><div class="inv-slip"><span>${name(i)}${sizeNote(o)}</span><b>${o.qty} ${esc(unit(i))}</b></div><ul class="inv-crate${trayed(o)?' inv-trays':''}" aria-label="${esc(i.name)} trong thùng">${goodsOf(o,i)}</ul><div class="inv-receive"><label for="count-${esc(o.id)}">Đếm được</label>${counter(o)}</div></div>`;}).join('')+
+        return `<div class="inv-gline" id="crate-${esc(o.id)}"><div class="inv-slip"><span>${name(i)}${sizeNote(o)}</span><b>${o.qty} ${esc(unit(i))}</b></div><ul class="inv-crate${trayed(o)?' inv-trays':''}" aria-label="${esc(i.name)} trong thùng">${goodsOf(o,i)}</ul><div class="inv-receive"><label for="count-${esc(o.id)}">Đếm được</label>${counter(o)}${stockBatchButton(o.id,env)}</div></div>`;}).join('')+
       `<button class="btn primary big full" type="button" data-action="v4ReceiveGroup" data-group="${esc(g.id)}">${icon('check',15)} Nhận cả thùng lên kệ</button><p class="muted small">Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`
       :`<p class="inv-gnames">${list}</p>${button(`📦 Mở thùng gộp · ${g.lines.length} món`,'v4InvOpen',{order:g.id},'primary big full inv-open')}`;
     return `<article class="card inv-crate-card inv-group${isOpen?' open':''}" id="crate-${esc(g.id)}"><div class="row spread"><div><strong>🛒 Đơn gộp · ${g.lines.length} món</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(paidOf(g))} xu${g.o.arrives_time?` · tới lúc ${esc(g.o.arrives_time)}`:''}</small></div>${pill('ĐÃ TỚI','green')}</div>${body}</article>`;};
@@ -902,6 +912,8 @@ export async function v4Action(action,data,el,env){
       if(data.order)requestAnimationFrame(()=>document.getElementById('crate-'+data.order)?.scrollIntoView({block:'nearest'}));
       return true;}
     case'v4InvFocus':ui.invFocus=null;ui.orderItem=null;renderSheet(false);return true;
+    case'v4TallyBatch':{const goods=[...document.querySelectorAll('#sheet .inv-good:not(.on)')].filter(b=>b.dataset.order===data.order);
+      tallyBatch(ui,data.order,goods.map(b=>Number(b.dataset.i)),stockCountStep(env));renderSheet();return true;}
     case'v4TallyTray':{  // a whole tray at once (TRAY): counted, or all of it un-counted when it already was
       const t=(ui.invTally??={}),on=new Set(t[data.order]||[]),ks=[];for(let k=Number(data.from);k<Number(data.to);k++)ks.push(k);
       const all=ks.length&&ks.every(k=>on.has(k));for(const k of ks)all?on.delete(k):on.add(k);t[data.order]=[...on];

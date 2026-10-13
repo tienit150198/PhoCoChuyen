@@ -725,7 +725,7 @@ def _shower_failed(s: dict, c: dict, cr: dict, day: int) -> str:
         if line['aside']:
             item = _reg_item(cr, lid)
             qty = REG_LINES[lid][2]
-            c['stock'][item] = min(24, c['stock'][item] + qty)
+            c['stock'][item] += qty
             back += _price(c, item) * qty
             line['aside'] = False
     if back:
