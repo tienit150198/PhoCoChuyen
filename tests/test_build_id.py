@@ -4,6 +4,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 import unittest
 from unittest import mock
 
@@ -25,6 +26,33 @@ def sources():
 
 
 class BuildIdTests(unittest.TestCase):
+    def test_each_reachable_specialism_shard_changes_build_by_exact_bytes(self):
+        names = ('career_specialisms.json', 'career_specialisms_21_37.json', 'career_specialisms_38_54.json')
+        with tempfile.TemporaryDirectory() as root:
+            os.mkdir(os.path.join(root, 'data'))
+            for name in names:
+                with open(os.path.join(root, 'data', name), 'wb') as fh:
+                    fh.write(b'{"fixture": 1}\n')
+            with mock.patch.object(bid, 'ROOT', root), mock.patch.object(
+                    bid, 'closure', return_value={'career_specialism_content': b'# fixture\n'}):
+                baseline = bid.build_id(('fixture',))
+                self.assertRegex(baseline, r'^[0-9a-f]{20}$')
+                for name in names:
+                    path = os.path.join(root, 'data', name)
+                    with open(path, 'ab') as fh:
+                        fh.write(b' ')  # Same JSON meaning; every packaged byte is fingerprinted.
+                    self.assertNotEqual(bid.build_id(('fixture',)), baseline, name)
+                    with open(path, 'wb') as fh:
+                        fh.write(b'{"fixture": 1}\n')
+                    self.assertEqual(bid.build_id(('fixture',)), baseline)
+
+    def test_specialism_data_is_required_only_when_content_is_reachable(self):
+        with tempfile.TemporaryDirectory() as root, mock.patch.object(bid, 'ROOT', root):
+            with mock.patch.object(bid, 'closure', return_value={'engine': b'# fixture\n'}):
+                self.assertRegex(bid.build_id(('fixture',)), r'^[0-9a-f]{20}$')
+            with mock.patch.object(bid, 'closure', return_value={'career_specialism_content': b'# fixture\n'}):
+                self.assertTrue(bid.build_id(('fixture',)).startswith('unknown-'))
+
     def test_build_is_the_hash_of_the_import_closure(self):
         self.assertEqual(engine.BUILD, bid.build_id(CAREERS))
         self.assertRegex(engine.BUILD, r'^[0-9a-f]{20}$')

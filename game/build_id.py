@@ -17,6 +17,8 @@ BUILD is the SHA-256 of:
   included (scripts/check_task_compat.py stays the release gate for those);
 * game/__init__.py without its `__version__ = "..."` line: the release number is read only by
   admin statistics (tests/test_build_id.py keeps it so), so a version bump alone keeps BUILD.
+* the exact bytes of all three packaged specialism JSON shards when career_specialism_content
+  is reachable: their quantities, procedures and acceptance evidence shape saved work.
 
 Left out: modules engine cannot import at all (the admin users page, the board AI, dialogue and
 guide content, observability, state_delta, TikTok login, web assets, this module). A finer cut
@@ -39,6 +41,11 @@ SAVE_EPOCH = 1
 ROOT = os.path.dirname(os.path.abspath(__file__))
 ENTRY = 'engine'
 PACKAGE = ''  # game/__init__.py in the module map
+_SPECIALISM_DATA_FILES = (
+    'career_specialisms.json',
+    'career_specialisms_21_37.json',
+    'career_specialisms_38_54.json',
+)
 
 # `from . import a, b as c`, `from .x import y`, `from ..x import y`, `from game.x import y`,
 # `from game import x`, `import game.x`. Parenthesised name lists may span lines.
@@ -117,10 +124,16 @@ def build_id(careers) -> str:
     """Fingerprint of the save-shaping code (see the module doc)."""
     h = hashlib.sha256(f'epoch:{SAVE_EPOCH}\0'.encode() + ','.join(careers).encode() + b'\0')
     try:
-        for name, data in sorted(closure().items()):
+        sources = closure()
+        for name, data in sorted(sources.items()):
             if name == PACKAGE:
                 data = _VERSION.sub(b'', data, count=1)
             h.update(name.encode() + b'\0' + data + b'\0')
+        if 'career_specialism_content' in sources:
+            for filename in _SPECIALISM_DATA_FILES:
+                with open(os.path.join(ROOT, 'data', filename), 'rb') as fh:
+                    data = fh.read()
+                h.update(('data/' + filename).encode() + b'\0' + data + b'\0')
     except OSError:
         return 'unknown-' + secrets.token_hex(8)  # never matches: always the full migrate + validation
     return h.hexdigest()[:20]
