@@ -41,7 +41,7 @@ class CreativeCivicBackend(unittest.TestCase):
             self.assertIn(cid, work_gear.NAMES)
             self.assertIn(cid, review_aspects_content.FAMILY)
             titles = promotion_content.EMP_TITLES if cid in ('lawyer', 'post_office') else promotion_content.OWN_TITLES
-            self.assertEqual(len(titles[cid]), 4)
+            self.assertEqual(len(titles[cid]), 7)
             self.assertEqual(len([item for item in work_gear.catalogue() if cid in item['careers']]), 3)
 
     def test_reviews_have_own_grounded_aspects(self):

@@ -3,6 +3,8 @@
 - Thêm bốn nghề: Xưởng vẽ Màu Nắng, Văn phòng luật Bình An, Tiệm giặt ủi Nếp Thơm và Bưu điện Cánh Thư. Mỗi nghề có quy trình riêng, nhiều loại đơn và nội dung nâng cao theo ngày nghề.
 - Thành tích yêu cầu việc đạt chất lượng và ngày thực sự làm việc; nội dung cuối mở từ ngày 40–45. Tiền giặt/vẽ trừ vật tư từng đơn; luật sư và bưu điện nhận lương theo hợp đồng cộng thưởng việc, bưu phí không trở thành thu nhập người chơi.
 - Mở giặt ủi ở chương 2, xưởng vẽ và bưu điện ở chương 3, luật sư ở chương 4. Tổng cộng 54 nghề, có địa điểm, hướng dẫn và giao diện điện thoại.
+- Mở thang thăng tiến thông thường lên bậc 7; giáo viên có bậc 6–7, phi công giữ 7 bậc, công an giữ hệ thống bổ nhiệm riêng. Thưởng chủ tiệm bậc 5–7 tối đa 42/50/60 xu/ngày; tăng lương nhân viên 66/77/88% trước thương lượng.
+- Thêm ba bậc tay nghề cho mọi nghề: 40/120/260 việc tự làm không lỗi, 15/40/75 ngày đạt chuẩn và cấp nghề 20/45/90. Sát hạch 4 câu cần 7/8 điểm; trượt phải làm thêm 3 ngày đạt chuẩn. Thưởng ngày đạt chuẩn 6/12/20 xu có giới hạn lượt trả công, không nhân tiếp theo ngày x3.
 - Bản lưu cũ tự bổ sung nghề mới, giữ tiến trình 50 nghề trước. Không đổi dữ kiện nhiệm vụ cũ hoặc bảng DB. Sau khi bản lưu có nghề mới, khắc phục bằng bản tương thích 2.1.x; không hạ mã trực tiếp về 2.0.7.
 
 # v2.0.7 — 2026-10-13

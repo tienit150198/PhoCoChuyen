@@ -21,6 +21,15 @@ class CreativeCivicEnglish(unittest.TestCase):
                 with self.subTest(career=cid, text=text):
                     self.assertTrue(pack.get(text), 'New guide line needs an English translation')
 
+    def test_endgame_titles_and_mastery_actions_have_english(self):
+        from game import promotion_content as pc, career_mastery as cm
+        pack = json.loads((ROOT/'public/i18n/en.json').read_text(encoding='utf-8'))['strings']
+        labels = [t for table in (pc._EMP_HIGH, pc._OWN_HIGH) for titles in table.values() for t in titles]
+        labels += [r['title'] for r in cm.STEPS]
+        labels += ['Tay nghề lâu năm', 'Thưởng ngày tay nghề', 'Bắt đầu xét tay nghề · 4 câu', 'Nộp bài xét tay nghề']
+        for label in labels:
+            self.assertTrue(pack.get(label), 'Missing translation: ' + label)
+
     def test_critical_actions_and_finance_labels_are_translated(self):
         pack = json.loads((ROOT/'public/i18n/en.json').read_text(encoding='utf-8'))['strings']
         for label in ('Ghi cước vào phiếu', 'Chốt kiểm tranh', 'Đối chiếu và trả đồ', 'Gắn cặp chứng cứ',
