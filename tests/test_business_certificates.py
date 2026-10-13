@@ -63,6 +63,16 @@ class BusinessCertificates(unittest.TestCase):
             patterns.append(exam)
         self.assertEqual(len(set(patterns)), len(IDS))
 
+    def test_inventory_lessons_match_immediate_paid_restocking(self):
+        self.require_courses()
+        for gid in IDS:
+            group = ct.INDEX[gid]
+            content = json.dumps(group, ensure_ascii=False).lower()
+            for deferred in ('đang giao', 'đang về', 'đơn giao', 'chờ hàng', 'chưa giao', 'hàng chưa tới', 'đơn nhập'):
+                self.assertNotIn(deferred, content, (gid, deferred))
+            self.assertIn('vào kho ngay', content, gid)
+            self.assertIn('sức chứa', content, gid)
+
     def test_self_study_rejected_for_every_business_level_before_debit(self):
         self.require_courses()
         s = story(wallet=20000)
