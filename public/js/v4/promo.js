@@ -13,6 +13,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {T} from './terms.js';
 import {masteryCard} from './career-mastery.js';
 import {competitionCard} from './career-competition.js';
+import {scaleCard,scaleAction} from './career-scale.js';
 import {orgView,inspView} from './org.js';   // 🎖️ a career on an org ladder (game/org.py)
 
 const KIND={khach:['🗣️','Khách'],tay:['🔧','Tay nghề'],so:['📋','Giấy tờ'],gap:['⚡','Việc gấp']};
@@ -87,7 +88,8 @@ function lastReview(env,wait){
 export function promoView(env){
   const c=room(env),p=c.promo;
   const mastery=(c.mastery?`<div class="sheet-body cm-section">${masteryCard(c.mastery)}</div>`:'')
-    +(c.competition?`<div class="sheet-body cc-section">${competitionCard(c.competition)}</div>`:'');
+    +(c.competition?`<div class="sheet-body cc-section">${competitionCard(c.competition)}</div>`:'')
+    +(c.scale?`<div class="sheet-body">${scaleCard(c.scale,{site:env.ui.scaleSite})}</div>`:'');
   if(!p)return head('🎖️ Thăng tiến')+`<div class="sheet-body"><p class="muted">Có việc làm rồi mới tính chuyện lên chức nhé.</p></div>`+mastery;
   if(p.org)return orgView(env,head,act,cmd,esc(place(env)).toUpperCase())+mastery;
   if(p.due)return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body">${review(p)}</div>`+mastery;
@@ -244,6 +246,7 @@ export function promoSummary(p,career){
 }
 
 export async function promoAction(action,data,el,env){
+  if(action.startsWith('scale')&&await scaleAction(action,data,el,env))return true;
   const {ui,cmd:send,openSheet,toast,renderSheet}=env;
   if(action==='promo'){openSheet('promo');return true;}
   if(action==='pmAnswer'||action==='pmAsk'){   // the review: the generic command, plus the reason when it is put off (#11)

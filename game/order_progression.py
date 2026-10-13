@@ -28,9 +28,10 @@ def public(c, career):
 
 def catalogue(careers):
     from . import inventory
+    from .career_scale_content import PROFILES
     out = []
     for career in careers:
-        if not inventory.catalogue(career):
+        if not inventory.catalogue(career) and not (career in PROFILES and PROFILES[career].kind=='business'):
             continue
         for n, price in enumerate(PRICES, 1):
             out.append(dict(id=item_id(career, n), name=f'Hạn mức nhập hàng · Bậc {n}', icon='box',

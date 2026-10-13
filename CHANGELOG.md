@@ -1,3 +1,17 @@
+# v2.4.0 — 2026-10-14
+
+- Mở lộ trình quy mô 8 bậc cho 54 nghề: kinh doanh phát triển cơ sở/chuỗi; nghề công vụ nhận phạm vi điều phối; chùa phát triển công quả. Không bán chức vụ hoặc cấp hàm.
+- Tạp hóa có tổng phí quy mô 402.300.000 xu, tối đa 12 điểm và 50 vị trí toàn mạng. Các nhóm nghề dùng giá và tài nguyên riêng. Lên bậc cần việc sạch, ngày thực đạt chuẩn, chứng chỉ và quỹ nghề.
+- Hợp đồng nhiều bước: dự toán, nhập/giữ vật tư, xếp người vào vị trí, xử lý phát sinh, nghiệm thu và đối soát. Tiền vật tư, lương, mặt bằng, hao hụt và thuế có biên nhận; lãi không nhân lại thưởng cũ. Suất quản lý dùng chung: khởi đầu 1, thêm 4/ngày thực, giữ tối đa 12.
+- Sức chứa và nhập mỗi lần vẫn là quyền trả phí độc lập; kho điều phối tính cả hàng đang về và hàng giữ chỗ, dùng chung giữa các cơ sở. Cơ sở phụ kinh doanh dùng chung hạn mức số quầy toàn tài khoản.
+- Cơ sở có nội thất đi lại, vật cản, vị trí và nhân sự; cho phép ghé thăm công khai hoặc giữ riêng tư, chat và reaction theo phòng. Không đổi dữ kiện nhiệm vụ cũ hay schema DB.
+- Hợp đồng hiện có một dòng vật tư lõi riêng theo nghề; chưa triển khai 540 công thức/mẫu hàng từng được đề xuất. Tình huống mới ưu tiên tiếng Việt; nhãn thao tác và tài chính có bản tiếng Anh.
+
+# v2.3.1 — 2026-10-14
+
+- Chat/reaction và tương tác 2.5D; hạn mức nhập trả phí theo nghề; lịch sử hôn nhân và chặn hoạt động đám cưới đã hủy.
+- Chợ đen: đúng một lượt đầu 55%, sau đó theo tỷ lệ đã thống nhất.
+
 # v2.3.0 — 2026-10-13
 
 - Thêm thi đua cùng 3 đồng nghiệp NPC cho đủ54 nghề, với162 tình huống phân công, kiểm tra và ghi nhận. Mỗi kỳ10 ca thực sự làm việc; đạt80/100 được tính kỳ tốt bất kể thứ hạng NPC. Năm hạng thi đua cần tối thiểu150 ca cùng bậc nghề tương ứng.

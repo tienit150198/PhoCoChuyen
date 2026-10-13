@@ -29,10 +29,11 @@ def fresh(career='clothing', storage=5, order=0):
 
 class OrderProgression(unittest.TestCase):
     def test_catalogue_exact_scope_prices_and_progression(self):
-        eligible = {cid for cid in CAREERS if I.catalogue(cid)}
+        from game.career_scale_content import PROFILES
+        eligible = {cid for cid in CAREERS if I.catalogue(cid)} | {c for c,p in PROFILES.items() if p.kind=='business'}
         rows = [u for u in UPGRADES if u.get('gear_group') == 'warehouse_order']
-        self.assertEqual(len(eligible), 24)
-        self.assertEqual(len(rows), 240)
+        self.assertEqual(len(eligible), 36)
+        self.assertEqual(len(rows), 360)
         self.assertEqual({u['careers'][0] for u in rows}, eligible)
         limits = (80, 120, 200, 350, 550, 800, 1200, 1800, 2500, 3200, 4000)
         prices = (3000, 9000, 30000, 100000, 350000, 1200000, 4000000, 12000000, 35000000, 100000000)
@@ -42,7 +43,7 @@ class OrderProgression(unittest.TestCase):
             self.assertEqual(tuple(u['price'] for u in group), prices)
             self.assertEqual(tuple(u['effect_units'] for u in group), limits[1:])
             self.assertEqual(tuple(u['effect_previous'] for u in group), limits[:-1])
-            self.assertTrue(all(u['effect_units'] <= units(I.capacity(cid), 10) for u in group))
+            self.assertTrue(all(u['effect_units'] <= units(I.capacity(cid) if I.catalogue(cid) else 80, 10) for u in group))
             for n, u in enumerate(group, 1):
                 self.assertEqual(u['id'], f'warehouse_order_{cid}_{n}')
                 self.assertEqual(u['requires'], f'warehouse_order_{cid}_{n-1}' if n > 1 else None)

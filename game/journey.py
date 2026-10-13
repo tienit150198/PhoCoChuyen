@@ -1092,6 +1092,8 @@ def content() -> dict:
 def validate(s: dict) -> None:
     from . import career_scale_quota
     career_scale_quota.validate(s)
+    from .career_scale_contracts import validate_account
+    validate_account(s)
     e = _core()
     need, integer, txt = e.need, e.integer, e.clean_text
     j = s.get('journey')

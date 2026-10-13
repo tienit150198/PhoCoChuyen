@@ -167,8 +167,8 @@ def validate(c, cid):
     for x in crew:
         _need(type(x) is dict and set(x)=={'id','name','role','precision','speed','wage','candidate'})
         _need(type(x['id']) is str and re.fullmatch(rf'scale-{cid}-crew-[1-9][0-9]{{0,8}}',x['id']))
-        _need(type(x['candidate']) is int and 0<=x['candidate']<4)
         from . import operations
+        _need(type(x['candidate']) is int and 0<=x['candidate']<len(operations.PEOPLE[cid]))
         _,_,_,speed,precision=operations.PEOPLE[cid][x['candidate']]
         serial=int(x['id'].rsplit('-',1)[1])
         _need(x['name']==recruit_name(cid,x['candidate'],serial) and x['role']==p.roles[x['candidate']%len(p.roles)]

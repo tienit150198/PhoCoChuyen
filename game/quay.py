@@ -475,7 +475,8 @@ def action(s: dict, name: str, p: dict) -> dict:
         why = why_locked(s)
         need(not why, why or '', 'locked')
         q = ensure(s)
-        need(paid.slots(q)['remaining'] > 0, 'Đã hết chỗ mở quầy. Nâng bậc số quầy sở hữu trước nhé.', 'quay_slots')
+        from .career_scale import external_slots
+        need(paid.slots(q,external_slots(s))['remaining'] > 0, 'Đã hết chỗ mở quầy. Nâng bậc số quầy sở hữu trước nhé.', 'quay_slots')
         trade, place = p.get('trade'), p.get('place')
         need(trade in TRADES, 'Chọn một món để bán.')
         need(served(s, trade) >= UNLOCK_SERVED, f'Làm {UNLOCK_SERVED} việc ở nghề này trước nhé.', 'locked')
@@ -850,7 +851,8 @@ def public(s: dict) -> dict:
     out = dict(stalls=[_stall_view(s, st) for st in q.get('stalls', ())], lock=why_locked(s), can=known_trades(s))
     from . import business_progression as bp
     from .quay_progression import slots
-    out['slots'] = slots(q)
+    from .career_scale import external_slots
+    out['slots'] = slots(q,external_slots(s))
     out['business_license'] = bp.evaluate(s)
     blocked = set(out['business_license']['blocked_ids'])
     for st in out['stalls']:

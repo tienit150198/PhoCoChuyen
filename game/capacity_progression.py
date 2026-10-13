@@ -30,17 +30,20 @@ def units(base, n):
 
 def catalogue(careers):
     from . import inventory
+    from .career_scale_content import PROFILES
     out = []
     for career in careers:
         milk = career == 'milk_tea'
-        if not milk and not inventory.catalogue(career):
-            continue
-        base = 60 if milk else inventory.capacity(career)
+        legacy=bool(inventory.catalogue(career))
+        business=career in PROFILES and PROFILES[career].kind=='business'
+        if not milk and not legacy and not business:continue
+        base = 60 if milk else inventory.capacity(career) if legacy else 80
         for n, price in enumerate(PRICES, 1):
             capacity = units(base, n)
             previous = units(base, n - 1)
             description = (f'Mỗi nguyên liệu chứa tối đa {capacity} phần; mỗi cỡ ly chứa tối đa {(120 * RATIOS[n] + 7) // 8} ly. '
                            if milk else f'Mỗi mã hàng chứa tối đa {capacity} phần. ')
+            if business:description += f'Kho vật tư điều phối: {units(80,n)} thùng / mã. '
             description += 'Sức chứa gồm hàng đang về và phần giữ cho đơn. '
             description += ('Giới hạn mỗi lần đặt giữ nguyên.' if milk else 'Hạn mức mỗi lần đặt được nâng riêng.')
             out.append(dict(id=item_id(career, n), name=f'Sức chứa kho · Bậc {n}', icon='box',

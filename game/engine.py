@@ -62,6 +62,7 @@ from . import promotion as pm
 from . import career_mastery as cm  # Persistent manual-work mastery, separate from formal promotion.
 from . import career_competition as competition  # Earned NPC standings and recognition.
 from . import career_scale_quota as scale_quota
+from . import career_scale as scale, career_scale_contracts as scale_contracts, career_scale_inventory as scale_stock
 from . import rui as rui_  # 🛡️ Rủi ro & bảo hiểm
 from . import vang as vang_  # 💰 Tiệm vàng
 
@@ -366,7 +367,9 @@ def task_done(s:dict,c:dict,t:dict,reward:int,narrative:str,status:str="complete
     if t.get('player_order'):
         player_services.complete(s,c,t,narrative)
         return
-    if not pm.managing(s,c,t["career"]):cm.completed(c,t["career"],t)
+    if not pm.managing(s,c,t["career"]):
+        scale.completed(c,t["career"],t)
+        cm.completed(c,t["career"],t)
     if reward:
         money(s,c,reward,"Hoàn thành: "+t["title"],t["id"])
         if status=='completed':
@@ -631,6 +634,20 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     jr.gate(s,career,action,internal,p)
     if career!=s.get("current"):ab.check(s,career,{},internal)  # leaving work in progress only through select_career
     c=s["careers"][career]
+    if action.startswith('scale_'):
+        need(career==s.get('current'),'Chọn nghề này trước khi điều phối.')
+        from .accounting_jobs import can_work
+        allowed,why=can_work(s,career)
+        need(allowed,why)
+        if action in ('scale_offer','scale_start','scale_upgrade','scale_site_open'):
+            need(not emp.required(career) or (c.get('job') or {}).get('status')=='hired',
+                 'Cần được tuyển dụng trước khi nhận phạm vi hoặc bắt đầu ca điều phối.')
+            need(not pm.banned(s,career),'Đang bị đình chỉ nghiệp vụ; chưa thể bắt đầu ca điều phối.')
+        if action in scale.ACTIONS:result=scale.action(s,c,career,action,p)
+        elif action in scale_stock.ACTIONS:result=scale_stock.action(s,c,career,action,p)
+        else:result=scale_contracts.action(s,c,career,action,p)
+        validate_state(s)
+        return s,result
     # A plugin's repeat of a step already done (florist: Cắm on a bench already arranged, B8 07/10): a quiet OK with
     # nothing changed, no beat and no ticks. mod.repeat answers None for anything else (the command runs as before).
     if career==s.get("current") and hasattr(PLUGINS.get(career),"repeat") and action.startswith(PLUGINS[career].SPEC["prefix"]):
@@ -1260,7 +1277,7 @@ def career_summary(raw:dict,cid:str) -> dict:
 
 # public_state rebuilds these from the save (None keeps each one's place in the key order).
 _PUBLIC_OWN=frozenset(("journey","invest","board","life","stories","closeness","abandon"))
-_FOCUS_OWN=frozenset(("ops","situation","incidents","happen","inventory","job","feed","ext","life","day_clock","tasks","event","pending","mastery","competition"))
+_FOCUS_OWN=frozenset(("ops","situation","incidents","happen","inventory","job","feed","ext","life","day_clock","tasks","event","pending","mastery","competition","scale","scale_contracts","scale_stock"))
 
 def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     """Public projection. Only the current career (or `full`) gets the full view.
@@ -1306,6 +1323,13 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c["job"]=emp.public(raw,cid,s)
         c["mastery"]=cm.public(raw,cid)
         c["competition"]=competition.public(s,raw,cid)
+        sv=scale.public(s,raw,cid)
+        cv=scale_contracts.public(s,raw,cid)
+        sv['actions']=[a for a in sv['actions'] if a['command']!='scale_upgrade']+cv.pop('actions')
+        sv.update(cv)
+        sv['stock']=scale_stock.public(raw,cid)
+        c['scale']=sv
+        c.pop('scale_contracts',None);c.pop('scale_stock',None)
         c["promo"]=pm.public(s,raw,cid)  # 🎖️ Thăng tiến; the 🧑‍💼 board while a manager shift runs
 
         c["data"]=mod.public_data(raw) if mod and hasattr(mod,'public_data') else tree_copy(raw["ext"]["data"])
@@ -1463,6 +1487,7 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
     need(isinstance(c,dict),"Tiến trình nghề không hợp lệ.")
     cm.validate(c,cid)
     competition.validate(c,cid)
+    scale.validate(c,cid);scale_stock.validate(c,cid);scale_contracts.validate(c,cid)
     player_services.validate_staff(c,cid)
     template_keys,ext_keys=_template_keys(cid)
     ops.validate(c,cid,same)

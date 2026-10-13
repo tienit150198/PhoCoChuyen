@@ -64,7 +64,7 @@ const L={
   tut:lazy(()=>import('./tutorial/index.js')),  // first-run tour, guide, announcements
   live:lazy(()=>import('./v4/live.js')),  // 💬 Chat: the live socket, the chat button + badge (the dialog is v4/chat.js)
   tm:lazy(()=>import('./careers/tomorrow_kit.js'),{css:['/css/careers/tomorrow_kit.css']}),  // 🌅 Ngày mai in the pharmacy's day summary
-  promo:lazy(()=>import('./v4/promo.js'),{css:['/css/promo.css']}),  // 🎖️ Thăng tiến, 🧑‍💼 Ca quản lý (game/promotion.py)
+  promo:lazy(()=>import('./v4/promo.js'),{css:['/css/promo.css','/css/career-scale.css']}),  // 🎖️ Thăng tiến, 🧑‍💼 Ca quản lý
   abroad:lazy(()=>import('./v4/abroad.js'),{css:['/css/abroad.css']}),  // ✈️ Du học, 🌏 Làm việc ở nước ngoài (game/abroad.py)
 };
 const TUT_OPEN=new Set(['help','tutGuide','tutReplay']);  // tutorial actions whose buttons other modules render

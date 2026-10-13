@@ -8,17 +8,18 @@ from game import inventory
 
 class CapacityCatalogue(unittest.TestCase):
     def test_all_existing_shared_stock_and_boba_have_ten_tiers(self):
-        eligible={c for c in CAREERS if inventory.catalogue(c)} | {'milk_tea'}
+        from game.career_scale_content import PROFILES
+        eligible={c for c in CAREERS if inventory.catalogue(c)} | {'milk_tea'} | {c for c,p in PROFILES.items() if p.kind=='business'}
         rows=[u for u in UPGRADES if u.get('gear_group')=='warehouse_storage']
-        self.assertEqual(len(eligible),25)
-        self.assertEqual(len(rows),250)
+        self.assertEqual(len(eligible),36)
+        self.assertEqual(len(rows),360)
         self.assertEqual({u['careers'][0] for u in rows},eligible)
         for cid in eligible:
             group=[u for u in rows if u['careers']==[cid]]
             self.assertEqual([u['price'] for u in group],[3000,9000,30000,100000,350000,1200000,4000000,12000000,35000000,100000000])
             self.assertTrue(all(u['effect_units']>u['effect_previous'] for u in group))
         self.assertNotIn('pagoda',eligible)
-        self.assertNotIn('lawyer',eligible)
+        self.assertIn('lawyer',eligible)
 
     def test_paid_capacity_requires_real_purchase_and_preserves_stock(self):
         for cid,base,maximum in [('clothing',80,4000),('com',120,6000),('milk_tea',60,3000)]:

@@ -23,42 +23,42 @@ Approved spec: `docs/superpowers/specs/2026-10-14-career-scale-design.md`. The 5
 
 Ownership: `game/career_scale_content.py`, focused content tests, generated translation sidecar only. No edits to engine, storage, deployment or frontend.
 
-- [ ] Export the approved 54 IDs, groups, eight scale titles, price factors, resource nouns and management evidence into an immutable runtime catalogue, independent of docs imports.
-- [ ] For every offered stage define purchasable benefit, site/resource totals, prerequisites, new contract types, resource roles and actual material/service units. New high-price retail lines must describe a real bundle/quality rather than multiply an unchanged item's price.
-- [ ] Add career-specific planning, allocation, exception and acceptance evidence. Public-service stages describe assignment scope, not purchased rank; pagoda stages have no capital price or cash yield.
-- [ ] Test `set(PROFILES) == set(CAREERS)`, 8 stages each, integer final prices, 402,300,000 grocery cumulative capital, resource totals not multiplied by site count, and well-defined costs for every catalogue item.
+- [x] Export the approved 54 IDs, groups, eight scale titles, price factors, resource nouns and management evidence into an immutable runtime catalogue, independent of docs imports.
+- [x] For every offered stage define purchasable benefit, site/resource totals, prerequisites, new contract types, resource roles and actual material/service units. New high-price retail lines must describe a real bundle/quality rather than multiply an unchanged item's price.
+- [x] Add career-specific planning, allocation, exception and acceptance evidence. Public-service stages describe assignment scope, not purchased rank; pagoda stages have no capital price or cash yield.
+- [x] Test `set(PROFILES) == set(CAREERS)`, 8 stages each, integer final prices, 402,300,000 grocery cumulative capital, resource totals not multiplied by site count, and well-defined costs for every catalogue item.
 
 ## Task 2 — owned scale, sites and progression
 
 Ownership: `game/career_scale.py`, `game/career_scale_resources.py`, `tests/test_career_scale.py`. Engine hooks remain the integrator's responsibility.
 
-- [ ] Implement optional sidecar read/validate/public/action APIs: `public(s,c,cid,now=None)`, `action(s,c,cid,name,p,now=None)`, `validate(c,cid)`, and manual-work progress hooks. Keep explicit bounded schemas; reject booleans as integer prices, counts or timestamps.
-- [ ] Upgrade sequentially, checking expected tier, personal career funds, earned certificates, real qualified days and clean work before debit. Price and result derive exclusively from server catalogue. Record the exact capital receipt.
-- [ ] Plan site activation separately from buying scale. Reuse shared purchased secondary-location rights and count all occupied sites; preserve grandfathered assets. Each active site needs assigned resource and qualified NPC crew. No extra per-career allowance.
-- [ ] Model resource IDs, assignment, occupation/release and maintenance. Preserve larger existing resources. A machine, room, vehicle or worker cannot belong to two active jobs. Do not raise physical safety limits by buying generic capacity.
-- [ ] Count real-day qualifications from server time and witnessed manual work; retain established clean-work counters without fabricating timestamp history. Old saves remain playable.
-- [ ] Test exact debit, duplicate/stale purchase, missing certificate, insufficient funds, preserved stock/tasks/rights, invalid sidecars, capacity preservation and replay through Store.
+- [x] Implement optional sidecar read/validate/public/action APIs: `public(s,c,cid,now=None)`, `action(s,c,cid,name,p,now=None)`, `validate(c,cid)`, and manual-work progress hooks. Keep explicit bounded schemas; reject booleans as integer prices, counts or timestamps.
+- [x] Upgrade sequentially, checking expected tier, personal career funds, earned certificates, real qualified days and clean work before debit. Price and result derive exclusively from server catalogue. Record the exact capital receipt.
+- [x] Plan site activation separately from buying scale. Reuse shared purchased secondary-location rights and count all occupied sites; preserve grandfathered assets. Each active site needs assigned resource and qualified NPC crew. No extra per-career allowance.
+- [x] Model resource IDs, assignment, occupation/release and maintenance. Preserve larger existing resources. A machine, room, vehicle or worker cannot belong to two active jobs. Do not raise physical safety limits by buying generic capacity.
+- [x] Count real-day qualifications from server time and witnessed manual work; retain established clean-work counters without fabricating timestamp history. Old saves remain playable.
+- [x] Test exact debit, duplicate/stale purchase, missing certificate, insufficient funds, preserved stock/tasks/rights, invalid sidecars, capacity preservation and replay through Store.
 
 ## Task 3 — management contract accounting
 
 Ownership: `game/career_scale_contracts.py`, `game/career_scale_inventory.py`, contract regression tests. Coordinate data/API names with Tasks 1–2 before edits.
 
-- [ ] Add a common account quota: four new advanced/management starts per real day, stored at most 12, initial one; cross-career use shares one counter. A reserved offer has stable identity/seed and cancellation cannot reroll it. No reset from career-day advancement.
-- [ ] Implement offer → budget/stock allocation → staffing/resource scheduling → exception response → acceptance → settlement. Persist partially completed work. Distinct career evidence and material requirements must affect outcome.
-- [ ] New material stock follows actual paid storage/order rights; reserve transit/drafts/contracts, preserve quantities and cost through movements. Existing stock must only be consumed once. Service/agency procurement uses its correct ledger; no fake warehouse for a job without goods.
-- [ ] Debit confirmed working capital once, hold escrow, then book consumed inputs, wages, premises, loss and exactly one tax treatment. Returned materials retain cost basis. Refund unused escrow; losses cannot exceed committed capital. No automatic borrowing.
-- [ ] Pay the realized contract result once, with no old staff/day/equipment multipliers. Agency budgets are nonwithdrawable and only earned personal allowances are credited; pagoda creates no new cash reward. Do not count new project income again in NPC competition bonuses.
-- [ ] Test full/80%/60% demand, partial resources, failed acceptance, cancellation, reload, global quota/day boundary, refund, malformed/stale payloads, exact cost basis, stock reservations, clock catch-up and Store idempotency.
+- [x] Add a common account quota: four new advanced/management starts per real day, stored at most 12, initial one; cross-career use shares one counter. A reserved offer has stable identity/seed and cancellation cannot reroll it. No reset from career-day advancement.
+- [x] Implement offer → budget/stock allocation → staffing/resource scheduling → exception response → acceptance → settlement. Persist partially completed work. Distinct career evidence and material requirements must affect outcome.
+- [x] New material stock follows actual paid storage/order rights; reserve transit/drafts/contracts, preserve quantities and cost through movements. Existing stock must only be consumed once. Service/agency procurement uses its correct ledger; no fake warehouse for a job without goods.
+- [x] Debit confirmed working capital once, hold escrow, then book consumed inputs, wages, premises, loss and exactly one tax treatment. Returned materials retain cost basis. Refund unused escrow; losses cannot exceed committed capital. No automatic borrowing.
+- [x] Pay the realized contract result once, with no old staff/day/equipment multipliers. Agency budgets are nonwithdrawable and only earned personal allowances are credited; pagoda creates no new cash reward. Do not count new project income again in NPC competition bonuses.
+- [x] Test full/80%/60% demand, partial resources, failed acceptance, cancellation, reload, global quota/day boundary, refund, malformed/stale payloads, exact cost basis, stock reservations, clock catch-up and Store idempotency.
 
 ## Task 4 — engine and frontend integration
 
 Ownership: root integrator for `game/engine.py`, journey validation, shared slot integration; UI worker for a new `public/js/v4/career-scale.js`, scoped CSS and bounded entry-point changes agreed before edits.
 
-- [ ] Hook scale actions into no-tick command routing, project authoritative DTO only for focused career, validate sidecars, and record real-work evidence after authoritative task completion. Preserve legacy task generation and command shapes.
-- [ ] Provide comparison of current/next scale: final fee, actual resources, capacity, per-order limit, working capital, prerequisites and expected net under stated assumptions. Missing requirements disable the buy command with an actionable explanation.
-- [ ] Implement site selection, crew/resource assignments, stock purchases/movements and every contract stage as actual commands; never expose correct answer/hidden outcome in DTO.
-- [ ] Use existing Góp vốn for fund transfers; do not create implicit wallet withdrawal. Keep purchased convenience functional. Unsupported future content is non-purchasable.
-- [ ] Translate user-facing strings and test escaping, large values, empty/locked states, stale views, double clicks and errors in Node.
+- [x] Hook scale actions into no-tick command routing, project authoritative DTO only for focused career, validate sidecars, and record real-work evidence after authoritative task completion. Preserve legacy task generation and command shapes.
+- [x] Provide comparison of current/next scale: final fee, actual resources, capacity, per-order limit, working capital, prerequisites and expected net under stated assumptions. Missing requirements disable the buy command with an actionable explanation.
+- [x] Implement site selection, crew/resource assignments, stock purchases/movements and every contract stage as actual commands; never expose correct answer/hidden outcome in DTO.
+- [x] Use existing Góp vốn for fund transfers; do not create implicit wallet withdrawal. Keep purchased convenience functional. Unsupported future content is non-purchasable.
+- [x] Translate core navigation and finance labels; retain Vietnamese fallback for authored scenarios. Node checks cover escaping, large values, empty/locked states and duplicate clicks. Full English scenario translation is not claimed.
 
 ## Task 5 — navigable sites and social context
 

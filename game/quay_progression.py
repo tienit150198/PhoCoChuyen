@@ -24,8 +24,8 @@ def track_view(holder, track):
                 max_limit=LIMITS[track][-1], total_cost=sum(PRICES), spent=sum(PRICES[:level]))
 
 
-def slots(q):
-    used = len(q.get('stalls', ()))
+def slots(q, external=0):
+    used = len(q.get('stalls', ())) + external
     allowance = limit(q, 'slots')
     return dict(track_view(q, 'slots'), used=used, remaining=max(0, allowance-used), over_limit=max(0, used-allowance))
 

@@ -2,6 +2,7 @@
 import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
 import {skeleton} from './lazy.js';
 import {masteryCard} from './v4/career-mastery.js';
+import {scaleCard} from './v4/career-scale.js';
 import {lowItems,restockBar} from './v4/restock.js';
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const b=(label,action,payload={},cls='')=>`<button type="button" class="btn ${cls}" data-action="${action}" ${Object.entries(payload).map(([k,v])=>`data-${k}="${esc(v)}"`).join(' ')}>${label}</button>`;
@@ -155,7 +156,7 @@ function festivalCard(c){
 function passportView(cid,c,content,meta){
  const stories=content.experiences.stories.filter(x=>x.career===cid),x=c.life,served=c.metrics.served||0,badges=x.badges_view||[];
  const owned=badges.filter(v=>v.claimed).length,closed=stories.filter(st=>x.chapters[st.id]?.completed).length;
- const stats=masteryCard(c.mastery,{compact:true})+`<div class="lx-stats"><div><b>${owned}/${badges.length}</b><small>Huy hiệu</small></div><div><b>${closed}/${stories.length}</b><small>Chuyện</small></div><div><b>${x.stickers.length}</b><small>Thiệp</small></div></div>`;
+ const stats=scaleCard(c.scale,{compact:true})+masteryCard(c.mastery,{compact:true})+`<div class="lx-stats"><div><b>${owned}/${badges.length}</b><small>Huy hiệu</small></div><div><b>${closed}/${stories.length}</b><small>Chuyện</small></div><div><b>${x.stickers.length}</b><small>Thiệp</small></div></div>`;
  const story=st=>{const ch=x.chapters[st.id]||{step:0,completed:false},open=served>=st.goal,beat=st.beats[Math.min(2,ch.step)],wait=ch.step===1&&served<=ch.baseline;
   return `<article class="lx-card lx-story${ch.completed?' done':!open?' locked':''}"><div class="lx-story-top"><small>CHƯƠNG ${stories.indexOf(st)+1} · ${ch.step}/3 NHỊP</small>${!open&&!ch.completed?'':`<span class="lx-dots" aria-hidden="true">${[0,1,2].map(i=>`<i class="${i<ch.step||ch.completed?'on':''}"></i>`).join('')}</span>`}</div><h4>${!open&&!ch.completed?'🔒 ':''}${esc(st.title)}</h4><p>${ch.completed?'Đã lưu một kỷ niệm có nguồn vào hộ chiếu.':!open?'Mở sau '+st.goal+' công việc đã hoàn thành.':esc(beat.text)}</p>${ch.completed?'<span class="tag green">✓ Đã khép chuyện</span>':!open?'':`<div class="lx-actions">${wait?b('Làm tiếp một công việc','queue',{},'small primary'):beat.choices.map(a=>doB(esc(a.label),'life_chapter',{story:st.id,choice:a.id},'small')).join('')}</div>`}</article>`;};
  const badge=v=>{const ready=!v.claimed&&v.current>=v.goal,pct=Math.min(100,Math.round(Math.min(v.current,v.goal)/Math.max(1,v.goal)*100));
