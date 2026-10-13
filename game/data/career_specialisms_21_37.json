@@ -1,0 +1,5136 @@
+{
+  "clothing": [
+    {
+      "tier": 1,
+      "title": "Đầm dạ tiệc lụa nguyên chất chỉnh theo số đo",
+      "output_unit": "bộ đầm",
+      "inputs": [
+        {
+          "name": "Lụa tơ tằm xanh ngọc",
+          "unit": "m",
+          "quantity": 2,
+          "unit_cost": 22000
+        },
+        {
+          "name": "Khóa giọt lệ và chỉ xanh",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu vòng ngực và eo trên phiếu màu xanh ngọc",
+        "Cắt lụa theo rập đã chỉnh và ráp khóa sau",
+        "Thử đầm rồi ghi số đo gấu vào phiếu giao"
+      ],
+      "check": {
+        "prompt": "Khách yêu cầu xanh ngọc và eo 68 cm, nhận bản nào?",
+        "good": "Đầm xanh ngọc, phiếu thử ghi eo 68 cm",
+        "bad": "Đầm xanh lam, chỉ ghi cỡ M",
+        "why": "Màu duyệt và số đo thực phải cùng khớp."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Tuxedo len may đo hai lần thử",
+      "output_unit": "bộ tuxedo",
+      "inputs": [
+        {
+          "name": "Len merino đen",
+          "unit": "m",
+          "quantity": 2,
+          "unit_cost": 25000
+        },
+        {
+          "name": "Ve satin và khuy bọc",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Lấy số đo vai và chọn len đen cùng ve satin",
+        "Ráp lược để thử lần đầu rồi sửa độ xuôi vai",
+        "Thử lần hai sau may hoàn thiện và xác nhận dài tay"
+      ],
+      "check": {
+        "prompt": "Hồ sơ tuxedo đen nào đủ bàn giao?",
+        "good": "Có hai lần thử và dài tay đã duyệt",
+        "bad": "Chỉ có số đo ban đầu cùng ảnh thành phẩm",
+        "why": "Hai lần thử chứng minh các chỉnh sửa phom đã được kiểm lại."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Áo dài cưới thêu tay theo vị trí họa tiết",
+      "output_unit": "bộ áo dài",
+      "inputs": [
+        {
+          "name": "Lụa cưới đỏ",
+          "unit": "m",
+          "quantity": 2,
+          "unit_cost": 24000
+        },
+        {
+          "name": "Chỉ thêu vàng và cườm",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 15000
+        }
+      ],
+      "procedure": [
+        "Đặt rập theo số đo và đánh dấu họa tiết ở tà trước",
+        "Thêu hoa sen theo vị trí đã duyệt trước khi ráp tà",
+        "Thử áo và đối chiếu chiều dài hai tà"
+      ],
+      "check": {
+        "prompt": "Hoa sen được duyệt ở tà trước, chọn áo nào?",
+        "good": "Áo đỏ với hoa sen đúng tà và hai tà đều",
+        "bad": "Áo đỏ thêu hoa sen ở lưng",
+        "why": "Đúng họa tiết còn phải đúng vị trí khách đặt."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Áo khoác cashmere dựng phom riêng",
+      "output_unit": "áo khoác",
+      "inputs": [
+        {
+          "name": "Cashmere màu kem",
+          "unit": "m",
+          "quantity": 2,
+          "unit_cost": 28000
+        },
+        {
+          "name": "Dựng thân và khuy sừng",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 14000
+        }
+      ],
+      "procedure": [
+        "Ghi dài áo và độ rộng vai trên rập màu kem",
+        "Dựng thân áo rồi ráp tay theo đường vai đã chỉnh",
+        "Thử với áo mặc trong và kiểm độ rủ vạt"
+      ],
+      "check": {
+        "prompt": "Áo khoác kem nào đạt phom đặt riêng?",
+        "good": "Vai vừa khi mặc lớp trong, vạt rủ cân",
+        "bad": "Vừa khi mặc áo mỏng nhưng căng vai với lớp trong",
+        "why": "Áo khoác phải vừa cả cấu hình mặc đã thống nhất."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Đầm corset nhiều lớp có mẫu thử",
+      "output_unit": "bộ corset",
+      "inputs": [
+        {
+          "name": "Satin duchess tím",
+          "unit": "m",
+          "quantity": 2,
+          "unit_cost": 20000
+        },
+        {
+          "name": "Nẹp mềm và vải mẫu",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 18000
+        }
+      ],
+      "procedure": [
+        "Làm mẫu thử theo vòng eo và xác nhận độ thoải mái",
+        "Sửa rập mẫu rồi ráp các lớp satin cùng nẹp mềm",
+        "Thử bản hoàn thiện và kiểm mép nẹp được bọc kín"
+      ],
+      "check": {
+        "prompt": "Khách duyệt tím nhạt, mẫu nào được giao?",
+        "good": "Tím nhạt, rập sửa từ mẫu thử và nẹp kín",
+        "bad": "Tím đậm, bỏ mẫu thử để may thẳng",
+        "why": "Màu và mẫu thử là hai căn cứ của đơn đặt."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Bộ trang phục biểu diễn tháo ráp mô-đun",
+      "output_unit": "bộ biểu diễn",
+      "inputs": [
+        {
+          "name": "Gấm ánh bạc",
+          "unit": "m",
+          "quantity": 2,
+          "unit_cost": 18000
+        },
+        {
+          "name": "Khuy bấm và nhãn mô-đun",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 16000
+        }
+      ],
+      "procedure": [
+        "Đánh số áo thân và các phần tháo rời theo sơ đồ sân khấu",
+        "May phần gấm bạc với khuy bấm tại điểm nối đã đánh dấu",
+        "Thử đổi cấu hình và kiểm mỗi phần vẫn khóa chắc"
+      ],
+      "check": {
+        "prompt": "Bộ diễn cần đổi tay áo nhanh, chọn bằng chứng nào?",
+        "good": "Đổi được hai cấu hình và đủ nhãn phần rời",
+        "bad": "Ảnh một cấu hình với tay áo may cố định",
+        "why": "Tính tháo ráp phải được thử bằng thao tác thực tế."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Bộ váy cưới nhiều phần có lịch thử và bàn giao",
+      "output_unit": "bộ váy cưới",
+      "inputs": [
+        {
+          "name": "Tulle ngà và ren Chantilly",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 52000
+        },
+        {
+          "name": "Khuy váy rời và túi bảo quản",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 17000
+        }
+      ],
+      "procedure": [
+        "Chốt số đo và lịch thử riêng cho thân váy cùng đuôi rời",
+        "May nối ren theo rập ngà và chỉnh sau từng buổi thử",
+        "Đối chiếu đủ thân váy, đuôi rời và khăn trước khi đóng túi"
+      ],
+      "check": {
+        "prompt": "Phiếu nào đủ cho bộ váy nhiều phần?",
+        "good": "Ghi cỡ đã chỉnh và từng phần đã giao",
+        "bad": "Ghi tổng một bộ dù thiếu đuôi rời",
+        "why": "Bàn giao theo thành phần tránh thiếu phụ kiện đã đặt."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Bộ sưu tập giới hạn mười mẫu theo bảng vật liệu",
+      "output_unit": "mẫu sưu tập",
+      "inputs": [
+        {
+          "name": "Lụa jacquard theo bảng màu",
+          "unit": "m",
+          "quantity": 2,
+          "unit_cost": 22000
+        },
+        {
+          "name": "Nhãn số mẫu và chỉ phối",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Gán mã từng mẫu vào bảng mười thiết kế đã duyệt",
+        "Cắt jacquard theo màu và định mức của đúng mã mẫu",
+        "So lại bảng vật liệu rồi gắn số phiên bản lên thành phẩm"
+      ],
+      "check": {
+        "prompt": "Mẫu số 04 dùng màu đồng, chấp nhận bản nào?",
+        "good": "Mã 04 màu đồng đúng bảng vật liệu",
+        "bad": "Mã 04 màu bạc vì cùng loại jacquard",
+        "why": "Đúng chất vải chưa đủ khi bảng mẫu quy định màu riêng."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Đồng phục cao cấp cho đoàn theo hồ sơ từng người",
+      "output_unit": "bộ đồng phục",
+      "inputs": [
+        {
+          "name": "Len pha lụa xanh than",
+          "unit": "m",
+          "quantity": 2,
+          "unit_cost": 24000
+        },
+        {
+          "name": "Huy hiệu và nút đồng",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Lập phiếu số đo cá nhân với mã người mặc trong đoàn",
+        "May bộ xanh than theo rập từng người và gắn huy hiệu đúng bên",
+        "Cho từng người thử rồi ghi chỉnh sửa và ký nhận theo mã"
+      ],
+      "check": {
+        "prompt": "Hai người cùng cỡ nhãn nhưng khác dài tay, giao thế nào?",
+        "good": "Giao theo mã người và dài tay đã thử",
+        "bad": "Đổi lẫn vì cả hai đều mang nhãn L",
+        "why": "Hồ sơ cá nhân quyết định độ vừa của đồng phục may đo."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Hợp đồng thiết kế và may bộ sưu tập trình diễn nhiều đợt",
+      "output_unit": "đợt trình diễn",
+      "inputs": [
+        {
+          "name": "Lụa organza theo thiết kế",
+          "unit": "m",
+          "quantity": 2,
+          "unit_cost": 20000
+        },
+        {
+          "name": "Khóa ẩn và thẻ phối đồ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 18000
+        }
+      ],
+      "procedure": [
+        "Chia bản thiết kế và bảng cỡ người mẫu theo từng đợt",
+        "May organza đúng bảng màu rồi thử cùng phụ kiện phối",
+        "Nghiệm thu từng lượt mẫu và lưu phiên bản rập cuối"
+      ],
+      "check": {
+        "prompt": "Đợt hai đổi màu kem sang hồng, hồ sơ nào hợp lệ?",
+        "good": "Mẫu hồng và rập cuối được duyệt cho đợt hai",
+        "bad": "Dùng lại biên bản mẫu kem từ đợt một",
+        "why": "Mỗi đợt có yêu cầu và bằng chứng nghiệm thu riêng."
+      }
+    }
+  ],
+  "pet_shop": [
+    {
+      "tier": 1,
+      "title": "Bộ kệ leo tường cho mèo lắp theo mặt bằng",
+      "output_unit": "kệ leo",
+      "inputs": [
+        {
+          "name": "Tấm kệ bo cạnh",
+          "unit": "tấm",
+          "quantity": 2,
+          "unit_cost": 12000
+        },
+        {
+          "name": "Đệm chống trượt và bộ gá",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 18000
+        }
+      ],
+      "procedure": [
+        "Đo vùng tường trên mặt bằng và đánh dấu khoảng leo đã duyệt",
+        "Lắp bộ kệ mẫu vào các điểm gá tương ứng",
+        "Kiểm độ chắc và ghi khoảng cách giữa từng bậc"
+      ],
+      "check": {
+        "prompt": "Kệ nào khớp mặt bằng của mèo già?",
+        "good": "Các bậc cách nhau theo giới hạn đã duyệt",
+        "bad": "Kệ chắc nhưng bậc trên vượt khoảng leo trong phiếu",
+        "why": "Bố trí phải đáp ứng khả năng tiếp cận của thú cưng."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Bể thủy sinh bố cục đá và cây nhiều tầng",
+      "output_unit": "bố cục bể",
+      "inputs": [
+        {
+          "name": "Đá thủy sinh bo cạnh",
+          "unit": "kg",
+          "quantity": 2,
+          "unit_cost": 9000
+        },
+        {
+          "name": "Cây ráy và dương xỉ",
+          "unit": "bó",
+          "quantity": 2,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Phác vị trí đá thấp phía trước và cao phía sau",
+        "Cố định đá rồi cài cây theo từng tầng bố cục",
+        "Thử dòng nước và ghi lịch ổn định bể trước bàn giao"
+      ],
+      "check": {
+        "prompt": "Bể được bàn giao với bằng chứng nào?",
+        "good": "Có bố cục đã duyệt và nhật ký ổn định nước",
+        "bad": "Thả thú vào ngay chỉ vì nước nhìn trong",
+        "why": "Độ trong không thay thế việc kiểm điều kiện bể phù hợp."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Chuồng chim cảnh thiết kế vùng ăn và nghỉ",
+      "output_unit": "chuồng chim",
+      "inputs": [
+        {
+          "name": "Thanh đậu gỗ phù hợp loài",
+          "unit": "thanh",
+          "quantity": 2,
+          "unit_cost": 10000
+        },
+        {
+          "name": "Khay ăn và tấm lót",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 15000
+        }
+      ],
+      "procedure": [
+        "Đánh dấu vùng ăn tách khỏi vị trí thanh đậu",
+        "Gắn khay và thanh đậu theo bản vẽ phù hợp loài",
+        "Kiểm cửa đóng chắc và lối thay khay thông thoáng"
+      ],
+      "check": {
+        "prompt": "Khay ăn đặt ở đâu đạt yêu cầu?",
+        "good": "Lệch khỏi ngay dưới thanh đậu",
+        "bad": "Ngay dưới thanh đậu để tiết kiệm diện tích",
+        "why": "Tách vùng ăn khỏi chất bẩn rơi giúp giữ khu ăn sạch."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Trạm ăn chậm tùy chỉnh cho thú nhỏ",
+      "output_unit": "trạm ăn",
+      "inputs": [
+        {
+          "name": "Khay ăn chậm cỡ nhỏ",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 20000
+        },
+        {
+          "name": "Đế chống trượt",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu cỡ mõm và khẩu phần do chủ cung cấp",
+        "Lắp khay phù hợp trên đế chống trượt",
+        "Thử độ ổn định và bàn giao hướng dẫn vệ sinh"
+      ],
+      "check": {
+        "prompt": "Trạm nào phù hợp thú nhỏ trong phiếu?",
+        "good": "Khay tiếp cận được và không trượt khi thử",
+        "bad": "Khay đẹp nhưng khe quá sâu với cỡ mõm",
+        "why": "Kích thước tiếp cận quan trọng hơn hình thức khay."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Bộ vận chuyển thú cưng đo và lắp phụ kiện",
+      "output_unit": "bộ vận chuyển",
+      "inputs": [
+        {
+          "name": "Đệm lồng thông thoáng",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 22000
+        },
+        {
+          "name": "Bát gắn và nhãn chủ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 13000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu kích thước thú với lồng vận chuyển chủ đã duyệt",
+        "Lắp đệm và bát không chắn khe thoáng",
+        "Kiểm khóa lồng cùng nhãn liên hệ rồi cho chủ xác nhận"
+      ],
+      "check": {
+        "prompt": "Bộ vận chuyển nào đủ kiểm nhận?",
+        "good": "Đúng kích thước, khe thoáng mở và khóa chắc",
+        "bad": "Đủ phụ kiện nhưng đệm che kín khe thoáng",
+        "why": "Phụ kiện không được làm mất chức năng thông thoáng."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Khu chơi trong nhà ghép mô-đun dễ vệ sinh",
+      "output_unit": "khu chơi",
+      "inputs": [
+        {
+          "name": "Tấm sàn ghép lau rửa",
+          "unit": "tấm",
+          "quantity": 2,
+          "unit_cost": 14000
+        },
+        {
+          "name": "Ống chui mô-đun",
+          "unit": "đoạn",
+          "quantity": 1,
+          "unit_cost": 19000
+        }
+      ],
+      "procedure": [
+        "Chia mặt bằng thành vùng chạy và vùng nghỉ",
+        "Ghép sàn cùng ống chui theo lối không bị cụt",
+        "Tháo thử một mô-đun để kiểm khả năng vệ sinh"
+      ],
+      "check": {
+        "prompt": "Khu chơi nào đủ nghiệm thu?",
+        "good": "Có lối ra và tháo từng phần để lau được",
+        "bad": "Đẹp nhưng phải phá keo mới tháo được ống",
+        "why": "Thiết kế ghép phải hỗ trợ vệ sinh định kỳ."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Hợp đồng dựng góc sống cho ba hộ nhận nuôi",
+      "output_unit": "góc sống",
+      "inputs": [
+        {
+          "name": "Đệm nghỉ giặt được",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 23000
+        },
+        {
+          "name": "Bảng tên hộ và khay nước",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 14000
+        }
+      ],
+      "procedure": [
+        "Ghi nhu cầu loài và mặt bằng riêng của ba hộ nhận nuôi",
+        "Lắp góc nghỉ cùng khay nước theo hồ sơ từng hộ",
+        "Cho từng hộ đối chiếu danh mục và ký nhận riêng"
+      ],
+      "check": {
+        "prompt": "Ba hộ có nhận cùng bản bố trí không?",
+        "good": "Mỗi hộ nhận bản theo mặt bằng đã khảo sát",
+        "bad": "Sao chép một bản cho cả ba hộ dù diện tích khác",
+        "why": "Nghiệm thu phải gắn với điều kiện thực tế của từng nhà."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Bể thủy sinh sảnh lớn với lịch bảo trì bàn giao",
+      "output_unit": "đợt bể sảnh",
+      "inputs": [
+        {
+          "name": "Cây thủy sinh nền",
+          "unit": "bó",
+          "quantity": 3,
+          "unit_cost": 7000
+        },
+        {
+          "name": "Vật liệu lọc sinh học",
+          "unit": "gói",
+          "quantity": 1,
+          "unit_cost": 24000
+        }
+      ],
+      "procedure": [
+        "Phân khu bố cục bể sảnh và ghi vị trí cửa bảo trì",
+        "Trồng cây rồi xếp vật liệu lọc theo sơ đồ thiết bị",
+        "Bàn giao nhật ký nước và lịch chăm từng hạng mục"
+      ],
+      "check": {
+        "prompt": "Lịch bàn giao nào hữu dụng cho bể lớn?",
+        "good": "Ghi người phụ trách và ngày kiểm từng hạng mục",
+        "bad": "Chỉ nhắc vệ sinh khi thấy bẩn",
+        "why": "Lịch có người và mốc kiểm giúp duy trì bể sau lắp."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Không gian chăm sóc thú nhỏ cho trung tâm cộng đồng",
+      "output_unit": "trạm thú nhỏ",
+      "inputs": [
+        {
+          "name": "Tấm ngăn khu nghỉ",
+          "unit": "tấm",
+          "quantity": 2,
+          "unit_cost": 16000
+        },
+        {
+          "name": "Thẻ nhu cầu theo loài",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Chia khu yên tĩnh theo loài trong phòng cộng đồng",
+        "Lắp ngăn và gắn thẻ chế độ chăm đã được duyệt",
+        "Kiểm lối nhân viên tiếp cận và điểm đóng mở mỗi khu"
+      ],
+      "check": {
+        "prompt": "Không gian nào đạt yêu cầu chăm sóc?",
+        "good": "Khu nghỉ tách biệt và thẻ loài đọc rõ",
+        "bad": "Gộp thú khác nhu cầu vào một khu để dễ nhìn",
+        "why": "Phân vùng phải phù hợp nhu cầu của từng loài."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Dự án lắp nhiều khu sinh hoạt thú cưng có nghiệm thu phúc lợi",
+      "output_unit": "khu sinh hoạt",
+      "inputs": [
+        {
+          "name": "Mô-đun nền chống trượt",
+          "unit": "tấm",
+          "quantity": 2,
+          "unit_cost": 17000
+        },
+        {
+          "name": "Bảng kiểm phúc lợi và nhãn khu",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Lập danh sách nhu cầu vận động và nghỉ cho từng khu",
+        "Ghép nền và bố trí điểm ăn nghỉ theo thiết kế được duyệt",
+        "Kiểm từng mục phúc lợi với người phụ trách trước ký khu"
+      ],
+      "check": {
+        "prompt": "Dự án nhiều khu hoàn tất khi nào?",
+        "good": "Mỗi khu có biên bản nhu cầu và lỗi đã xử lý",
+        "bad": "Một khu đạt được dùng đại diện cho toàn dự án",
+        "why": "Nhu cầu và lỗi có thể khác giữa các khu sinh hoạt."
+      }
+    }
+  ],
+  "tra_da": [
+    {
+      "tier": 1,
+      "title": "Trà gừng sả nấu và lọc tại quán",
+      "output_unit": "bình trà",
+      "inputs": [
+        {
+          "name": "Gừng tươi và sả",
+          "unit": "bó",
+          "quantity": 1,
+          "unit_cost": 7000
+        },
+        {
+          "name": "Trà xanh",
+          "unit": "gói",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Rửa gừng sả và cắt phần dùng cho bình trà",
+        "Nấu gừng sả rồi hãm trà theo thẻ công thức game",
+        "Lọc bã vào bình sạch và gắn giờ pha"
+      ],
+      "check": {
+        "prompt": "Bình trà nào đủ giao?",
+        "good": "Nước trà lọc sạch có giờ pha",
+        "bad": "Bình còn bã sả và không ghi giờ",
+        "why": "Lọc và nhãn giờ là hai điểm kiểm của mẻ tại quán."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Nước chanh muối pha từ hũ ghi ngày",
+      "output_unit": "ly chanh muối",
+      "inputs": [
+        {
+          "name": "Chanh muối có nhãn hũ",
+          "unit": "quả",
+          "quantity": 1,
+          "unit_cost": 3000
+        },
+        {
+          "name": "Đường mía",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Đọc ngày và tình trạng hũ chanh theo phiếu quán",
+        "Dằm phần chanh rồi hòa đường với nước pha",
+        "Lọc hạt và ghi mã hũ vào phiếu ly"
+      ],
+      "check": {
+        "prompt": "Hũ mất nhãn ngày được dùng không?",
+        "good": "Tách hũ để kiểm lại và chọn hũ đủ nhãn",
+        "bad": "Dùng vì mùi vẫn giống chanh",
+        "why": "Truy xuất hũ là yêu cầu của gói pha chanh muối."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Bình trà phục vụ buổi họp xóm",
+      "output_unit": "bình họp xóm",
+      "inputs": [
+        {
+          "name": "Trà lài",
+          "unit": "gói",
+          "quantity": 1,
+          "unit_cost": 8000
+        },
+        {
+          "name": "Cốc giấy",
+          "unit": "cái",
+          "quantity": 4,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Đếm người dự họp và chia số bình theo bàn",
+        "Hãm trà lài rồi rót vào bình giữ nhiệt đã kiểm",
+        "Xếp cốc theo bàn và ghi giờ bàn giao"
+      ],
+      "check": {
+        "prompt": "Bàn bốn người nhận thế nào?",
+        "good": "Đủ cốc cùng bình ghi giờ",
+        "bad": "Chỉ giao bình không đối chiếu cốc",
+        "why": "Phục vụ buổi họp cần cả lượng trà và đồ dùng theo bàn."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Trà tắc mật ong chỉnh chua ngọt",
+      "output_unit": "ly trà tắc",
+      "inputs": [
+        {
+          "name": "Tắc tươi",
+          "unit": "quả",
+          "quantity": 2,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Trà đen và mật ong",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Pha trà đen và lọc hạt từ nước tắc",
+        "Hòa mật ong rồi thêm nước tắc theo mức chua đã chọn",
+        "Thử đối chiếu thẻ vị và gắn nhãn ít ngọt"
+      ],
+      "check": {
+        "prompt": "Khách chọn ít ngọt, ly nào đúng?",
+        "good": "Mật ong theo mức ít ngọt trên thẻ vị",
+        "bad": "Thêm mật ong gấp đôi để giảm chua",
+        "why": "Chỉnh chua không được tự đổi mức ngọt khách chọn."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Nước me rang nấu theo mẻ",
+      "output_unit": "bình nước me",
+      "inputs": [
+        {
+          "name": "Me chín bỏ vỏ",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 6000
+        },
+        {
+          "name": "Đường thốt nốt",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Rang me nhẹ theo thẻ mẻ rồi tách hạt",
+        "Nấu thịt me với đường thốt nốt theo định mức",
+        "Lọc cặn và đánh mã mẻ lên bình"
+      ],
+      "check": {
+        "prompt": "Mẻ nước me nào đạt?",
+        "good": "Không còn hạt và có mã mẻ",
+        "bad": "Có mã mẻ nhưng còn nguyên hạt me",
+        "why": "Lọc tách hạt là tiêu chí thành phẩm riêng của nước me."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Trà bưởi mật ong sơ chế vỏ riêng",
+      "output_unit": "ly trà bưởi",
+      "inputs": [
+        {
+          "name": "Vỏ và múi bưởi",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 6000
+        },
+        {
+          "name": "Trà nhài và mật ong",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Tách cùi trắng và sơ chế vỏ bưởi theo thẻ bếp",
+        "Hãm trà nhài rồi hòa phần bưởi cùng mật ong",
+        "So vị với mẫu duyệt và thêm sợi vỏ đã xử lý"
+      ],
+      "check": {
+        "prompt": "Mẫu trà bưởi nào phù hợp?",
+        "good": "Hương bưởi rõ và không lẫn cùi trắng",
+        "bad": "Thêm nguyên cùi trắng vào ly để đủ cân",
+        "why": "Sơ chế vỏ riêng tránh sai vị và kết cấu đã duyệt."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Bàn thử ba loại trà hương vườn",
+      "output_unit": "khay thử trà",
+      "inputs": [
+        {
+          "name": "Trà bạc hà, lài và sen",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 12000
+        },
+        {
+          "name": "Cốc thử nhỏ",
+          "unit": "cái",
+          "quantity": 3,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Đánh số ba mẫu theo thứ tự hương nhẹ đến đậm",
+        "Hãm riêng từng trà để không lẫn lá",
+        "Rót cốc theo số và đặt bảng tên tương ứng"
+      ],
+      "check": {
+        "prompt": "Khay thử nào đúng ba hương?",
+        "good": "Ba cốc riêng khớp nhãn và thứ tự hương",
+        "bad": "Ba nhãn khác nhau nhưng dùng chung một bình trà",
+        "why": "Nếm so sánh cần giữ riêng nguồn trà từng mẫu."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Quầy nước buổi sinh hoạt câu lạc bộ theo lượt",
+      "output_unit": "lượt quầy nước",
+      "inputs": [
+        {
+          "name": "Trà xanh và chanh",
+          "unit": "phần",
+          "quantity": 2,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Thẻ lượt phục vụ",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Chia danh sách câu lạc bộ theo lượt giải lao",
+        "Pha trà chanh theo số cốc của lượt sắp tới",
+        "Giao theo thẻ lượt và ghi phần còn lại"
+      ],
+      "check": {
+        "prompt": "Lượt sau còn đổi người, xử lý thế nào?",
+        "good": "Cập nhật số cốc trước khi pha lượt sau",
+        "bad": "Pha theo tổng danh sách cũ không kiểm lại",
+        "why": "Pha theo lượt cần phản ánh số người thực của từng lượt."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Đơn nhiều bình giữ nhiệt phục vụ hội thao",
+      "output_unit": "bình hội thao",
+      "inputs": [
+        {
+          "name": "Trà gạo rang",
+          "unit": "gói",
+          "quantity": 1,
+          "unit_cost": 9000
+        },
+        {
+          "name": "Tem số bình và nắp niêm",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Gán bình cho từng sân và giờ tiếp nước",
+        "Hãm trà gạo rồi kiểm nắp bình trước rót",
+        "Dán số bình và đối chiếu người nhận tại sân"
+      ],
+      "check": {
+        "prompt": "Bình số 3 được giao sân nào?",
+        "good": "Sân ghi cho bình 3 trên bảng điều phối",
+        "bad": "Sân gần nhất dù trên bảng là sân khác",
+        "why": "Mã bình nối lượng nước với đúng điểm phục vụ."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Hợp đồng quầy nước cộng đồng nhiều điểm với lịch tiếp bình",
+      "output_unit": "đợt tiếp bình",
+      "inputs": [
+        {
+          "name": "Trà sen và đường phèn",
+          "unit": "phần",
+          "quantity": 2,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Phiếu tuyến tiếp bình",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Xếp tuyến và giờ đổi bình của từng điểm cộng đồng",
+        "Pha mẻ trà sen rồi gán bình theo tuyến",
+        "Đổi bình theo phiếu và đối soát vỏ thu về"
+      ],
+      "check": {
+        "prompt": "Hoàn tất một tuyến cần hồ sơ nào?",
+        "good": "Có giờ giao, số bình mới và vỏ thu hồi",
+        "bad": "Chỉ tổng số bình đã pha trong bếp",
+        "why": "Đối soát tại điểm chứng minh việc tiếp bình đã diễn ra."
+      }
+    }
+  ],
+  "fruit": [
+    {
+      "tier": 1,
+      "title": "Hộp bưởi tách múi cân phần ăn được",
+      "output_unit": "hộp bưởi",
+      "inputs": [
+        {
+          "name": "Bưởi da xanh",
+          "unit": "quả",
+          "quantity": 1,
+          "unit_cost": 18000
+        },
+        {
+          "name": "Hộp thực phẩm",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Rửa vỏ rồi tách múi bưởi bỏ hạt và màng",
+        "Cân phần múi ăn được bằng hộp đã trừ bì",
+        "Đóng nắp và ghi khối lượng múi trên nhãn"
+      ],
+      "check": {
+        "prompt": "Nhãn 300 g phải phản ánh gì?",
+        "good": "300 g múi sau khi trừ hộp và vỏ",
+        "bad": "300 g tổng hộp cùng múi",
+        "why": "Khối lượng bán là phần ăn được theo tên gói."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Đĩa trái cây tỉa hình theo bố cục",
+      "output_unit": "đĩa tỉa",
+      "inputs": [
+        {
+          "name": "Dưa hấu và dứa",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 18000
+        },
+        {
+          "name": "Đĩa thực phẩm",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đánh dấu bố cục hoa dưa và quạt dứa trên sơ đồ",
+        "Tỉa từng phần trái cây theo mẫu đã chốt",
+        "Xếp lên đĩa và đối chiếu tâm cùng viền mẫu"
+      ],
+      "check": {
+        "prompt": "Đĩa nào khớp yêu cầu bố cục?",
+        "good": "Hoa dưa ở giữa, quạt dứa theo viền đã duyệt",
+        "bad": "Đủ lượng quả nhưng đảo hoa dưa ra mép",
+        "why": "Đơn tỉa hình yêu cầu vị trí hình chứ không chỉ lượng quả."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Hộp nếm trái cây nhập lô có truy xuất",
+      "output_unit": "hộp nếm",
+      "inputs": [
+        {
+          "name": "Nho và kiwi có mã lô",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 23000
+        },
+        {
+          "name": "Thẻ nguồn lô",
+          "unit": "tờ",
+          "quantity": 1,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu nhãn nguồn của nho và kiwi nhập",
+        "Chia từng loại vào ô riêng với dụng cụ sạch",
+        "Gắn mã lô tương ứng từng ô trước đóng hộp"
+      ],
+      "check": {
+        "prompt": "Hộp nếm cần giữ thông tin nào?",
+        "good": "Tên quả và mã lô riêng cho từng ngăn",
+        "bad": "Một mã lô nho dùng cho cả kiwi",
+        "why": "Mỗi loại quả phải truy ngược được nguồn nhập riêng."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Dâu phủ sô-cô-la canh nhiệt và đông mặt",
+      "output_unit": "hộp dâu phủ",
+      "inputs": [
+        {
+          "name": "Dâu tây",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 17000
+        },
+        {
+          "name": "Sô-cô-la đen",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Rửa rồi làm khô bề mặt dâu trước phủ",
+        "Làm chảy sô-cô-la theo thẻ nhiệt của game và nhúng dâu",
+        "Để lớp phủ ổn định rồi xếp hộp tránh chạm mặt"
+      ],
+      "check": {
+        "prompt": "Dâu nào được đóng hộp?",
+        "good": "Lớp phủ đã đông mặt và không dính ngăn",
+        "bad": "Lớp phủ còn chảy nhưng đã đậy kín",
+        "why": "Mặt phủ cần ổn định trước xếp để giữ hình thành phẩm."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Xoài sấy dẻo theo độ ẩm mẻ",
+      "output_unit": "túi xoài sấy",
+      "inputs": [
+        {
+          "name": "Xoài cát chín",
+          "unit": "phần",
+          "quantity": 2,
+          "unit_cost": 7000
+        },
+        {
+          "name": "Túi kín thực phẩm",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Gọt xoài và cắt lát có bề dày đồng đều",
+        "Xếp lát một lớp rồi chạy mẻ sấy theo thẻ game",
+        "Đọc kết quả độ ẩm mẻ đạt rồi đóng túi ghi mã"
+      ],
+      "check": {
+        "prompt": "Mẻ nào đủ điều kiện đóng túi?",
+        "good": "Phiếu đo độ ẩm đạt mức của công thức",
+        "bad": "Chỉ nhìn thấy xoài đổi màu",
+        "why": "Màu không xác nhận mức ẩm cần cho xoài sấy dẻo."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Mứt cam nguyên vỏ nấu theo độ sệt",
+      "output_unit": "hũ mứt cam",
+      "inputs": [
+        {
+          "name": "Cam vàng",
+          "unit": "quả",
+          "quantity": 2,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Đường cát và hũ",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Rửa cam và xử lý vỏ theo công thức đã duyệt",
+        "Nấu cam cùng đường rồi kiểm mẫu độ sệt",
+        "Cho mứt đạt mẫu vào hũ sạch và ghi ngày mẻ"
+      ],
+      "check": {
+        "prompt": "Mứt cam nào đạt nghiệm thu?",
+        "good": "Còn lát vỏ đều và mẫu sệt đạt thẻ bếp",
+        "bad": "Nước còn loãng nhưng tăng nhãn khối lượng",
+        "why": "Độ sệt là điểm kết thúc nấu được yêu cầu."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Tháp trái cây nhiều tầng cố định lõi",
+      "output_unit": "tầng tháp quả",
+      "inputs": [
+        {
+          "name": "Nho và dưa lưới",
+          "unit": "phần",
+          "quantity": 2,
+          "unit_cost": 9000
+        },
+        {
+          "name": "Lõi tháp tiếp xúc thực phẩm",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 14000
+        }
+      ],
+      "procedure": [
+        "Lắp lõi tháp theo sơ đồ tầng và thử độ vững",
+        "Cắt dưa rồi chia nho theo lượng mỗi tầng",
+        "Xếp từ tầng dưới lên và kiểm cân bằng sau cùng"
+      ],
+      "check": {
+        "prompt": "Tháp quả nào được đưa ra bàn?",
+        "good": "Các tầng cân và lõi không nghiêng khi kiểm",
+        "bad": "Trang trí đẹp nhưng tầng trên lệch làm lõi nghiêng",
+        "why": "Độ ổn định của lõi quyết định khả năng trưng bày tháp."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Đơn hộp trái cây văn phòng theo tên từng người",
+      "output_unit": "hộp văn phòng",
+      "inputs": [
+        {
+          "name": "Táo và thanh long",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 13000
+        },
+        {
+          "name": "Nhãn tên và hộp",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đọc lựa chọn quả và tên người nhận trong danh sách",
+        "Chia táo cùng thanh long theo từng phiếu cá nhân",
+        "Dán tên trước khi gom hộp theo phòng"
+      ],
+      "check": {
+        "prompt": "Người nhận yêu cầu không táo, chọn hộp nào?",
+        "good": "Hộp đúng tên và thay táo theo phiếu được duyệt",
+        "bad": "Hộp đúng tên nhưng giữ phần táo mặc định",
+        "why": "Cá nhân hóa bao gồm thành phần chứ không chỉ tên."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Bàn trái cây tiệc chia đợt bổ sung theo giờ",
+      "output_unit": "lượt bàn quả",
+      "inputs": [
+        {
+          "name": "Dưa lưới và cam",
+          "unit": "phần",
+          "quantity": 2,
+          "unit_cost": 9000
+        },
+        {
+          "name": "Khay phục vụ sạch",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Chia số khay theo giờ khách đến của buổi tiệc",
+        "Sơ chế phần quả dành cho lượt phục vụ hiện tại",
+        "Thay khay theo lịch và ghi số phần đã bổ sung"
+      ],
+      "check": {
+        "prompt": "Cách bổ sung nào đúng lịch tiệc?",
+        "good": "Đưa khay mới theo lượt và ghi lượng thực",
+        "bad": "Bày toàn bộ quả từ trước giờ khách đầu tiên",
+        "why": "Chia lượt giúp khớp lượng phục vụ với giờ đã đặt."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Hợp đồng quầy trái cây nhiều sự kiện với lịch chín và kho lạnh",
+      "output_unit": "đợt quầy quả",
+      "inputs": [
+        {
+          "name": "Chuối và xoài theo lịch chín",
+          "unit": "phần",
+          "quantity": 2,
+          "unit_cost": 8000
+        },
+        {
+          "name": "Thẻ kho lạnh và kiện",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Ghép độ chín từng lô với ngày từng sự kiện",
+        "Chuyển lượng phù hợp vào kho theo yêu cầu của từng quả",
+        "Xuất theo lịch và đối chiếu lô với điểm nhận"
+      ],
+      "check": {
+        "prompt": "Lô nào được xuất cho sự kiện ngày mai?",
+        "good": "Lô đạt độ chín theo phiếu và có nhật ký kho",
+        "bad": "Lô chưa chín chỉ vì nhập trước",
+        "why": "Lịch chín phải được đối chiếu cùng thứ tự nhập kho."
+      }
+    }
+  ],
+  "garbage": [
+    {
+      "tier": 1,
+      "title": "Thu gom thiết bị điện tử theo lịch hẹn",
+      "output_unit": "kiện điện tử",
+      "inputs": [
+        {
+          "name": "Thùng đệm thu hồi",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 17000
+        },
+        {
+          "name": "Nhãn mã thiết bị",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Chốt lịch và danh sách thiết bị với người giao",
+        "Nhận nguyên thiết bị rồi dán mã từng món vào thùng",
+        "Bàn giao đơn vị tiếp nhận được phân công và lưu phiếu"
+      ],
+      "check": {
+        "prompt": "Kiện điện tử nào đủ chứng từ?",
+        "good": "Mã từng thiết bị khớp phiếu đơn vị nhận",
+        "bad": "Chỉ có ảnh đống đồ trước thu gom",
+        "why": "Danh mục theo mã nối được thiết bị qua hai lần bàn giao."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Tuyến phân loại chai thủy tinh nhà hàng theo màu",
+      "output_unit": "thùng thủy tinh",
+      "inputs": [
+        {
+          "name": "Thùng phân màu",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 12000
+        },
+        {
+          "name": "Thẻ màu thủy tinh",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đặt thùng riêng theo màu chai của tuyến nhà hàng",
+        "Phân chai theo màu và tách món không đúng nhóm",
+        "Ghi lượng từng màu trước chuyển điểm tập kết"
+      ],
+      "check": {
+        "prompt": "Chai xanh được xếp ở đâu?",
+        "good": "Thùng xanh có thẻ tương ứng",
+        "bad": "Thùng trong vì còn chỗ trống",
+        "why": "Phân đúng màu là đầu ra riêng của tuyến tái chế này."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Thu giấy bìa có cân và đóng kiện",
+      "output_unit": "kiện giấy",
+      "inputs": [
+        {
+          "name": "Dây buộc kiện",
+          "unit": "cuộn",
+          "quantity": 1,
+          "unit_cost": 8000
+        },
+        {
+          "name": "Phiếu cân giấy",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Tách giấy bìa khô khỏi phần ướt lẫn tạp",
+        "Cân bì thùng rồi ghi khối lượng giấy thuần",
+        "Ép buộc kiện mẫu và gắn phiếu cân theo mã"
+      ],
+      "check": {
+        "prompt": "Khối lượng kiện được ghi thế nào?",
+        "good": "Lượng giấy đã trừ thùng đựng",
+        "bad": "Lượng giấy cộng cả thùng cân",
+        "why": "Phiếu cân phải phản ánh vật liệu được bàn giao."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Hợp đồng kiểm chất lượng tái chế chung cư",
+      "output_unit": "báo cáo chung cư",
+      "inputs": [
+        {
+          "name": "Túi mẫu phân loại",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Bảng kiểm tạp chất",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Chọn mẫu từ các điểm thu theo kế hoạch chung cư",
+        "Phân loại mẫu và đếm món lẫn sai nhóm",
+        "Ghi tỷ lệ tạp cùng vị trí cần sửa biển hướng dẫn"
+      ],
+      "check": {
+        "prompt": "Chung cư đạt chất lượng theo căn cứ nào?",
+        "good": "Kết quả mẫu gắn đúng điểm và ngưỡng đã giao",
+        "bad": "Chỉ số tổng không biết lấy ở thùng nào",
+        "why": "Vị trí mẫu giúp xác định chỗ cần cải thiện phân loại."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Trạm thu hồi và phân loại cốc dùng lại",
+      "output_unit": "lượt cốc thu hồi",
+      "inputs": [
+        {
+          "name": "Khay cốc dùng lại",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 14000
+        },
+        {
+          "name": "Tem phân loại cốc",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đếm cốc trả và ghi mã đợt thu hồi",
+        "Tách cốc nứt khỏi cốc chuyển sang quy trình rửa",
+        "Đối soát ba số cốc nhận, loại và bàn giao"
+      ],
+      "check": {
+        "prompt": "Nhận 20 cốc, loại 2 thì phiếu rửa ghi gì?",
+        "good": "18 cốc đưa rửa và 2 cốc loại có ghi nhận",
+        "bad": "20 cốc đưa rửa dù có 2 cốc nứt",
+        "why": "Tổng thu hồi phải khớp số đạt cộng số loại."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Thu hồi nội thất trường học theo danh mục tái sử dụng",
+      "output_unit": "lô nội thất",
+      "inputs": [
+        {
+          "name": "Nhãn tình trạng bàn ghế",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Đệm vận chuyển tái dùng",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Gắn mã bàn ghế theo danh mục trường học",
+        "Đánh dấu món dùng lại và món chờ sửa theo kiểm hiện trạng",
+        "Bàn giao từng nhóm cho đúng điểm tiếp nhận"
+      ],
+      "check": {
+        "prompt": "Ghế lỏng chân được ghi thế nào?",
+        "good": "Chờ sửa với mã ghế riêng",
+        "bad": "Dùng lại ngay vì còn đủ bốn chân",
+        "why": "Khả năng tái sử dụng cần dựa vào tình trạng đã kiểm."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Tách rác hữu cơ chợ và bàn giao đơn vị xử lý",
+      "output_unit": "thùng hữu cơ",
+      "inputs": [
+        {
+          "name": "Túi lót hữu cơ",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 3000
+        },
+        {
+          "name": "Tem tuyến chợ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Đặt thùng nhận rau quả thải tại đúng sạp trên tuyến",
+        "Loại bao nhựa khỏi phần hữu cơ đã tập kết",
+        "Cân và bàn giao thùng kín cho đơn vị xử lý"
+      ],
+      "check": {
+        "prompt": "Thùng hữu cơ nào được nhận?",
+        "good": "Đã tách bao nhựa và có phiếu cân",
+        "bad": "Rau quả lẫn túi nhựa nhưng ghi đủ cân",
+        "why": "Chất lượng phân loại là điều kiện bàn giao vật liệu hữu cơ."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Hợp đồng thu hồi bao bì tại địa điểm sự kiện",
+      "output_unit": "đợt bao bì",
+      "inputs": [
+        {
+          "name": "Túi phân giấy và nhựa",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Biển điểm thu",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Bố trí điểm thu bao bì theo sơ đồ sự kiện",
+        "Thu riêng giấy và nhựa vào đúng túi có biển",
+        "Đếm túi từng nhóm và ký nhận sau đóng điểm"
+      ],
+      "check": {
+        "prompt": "Kết ca sự kiện cần đối soát gì?",
+        "good": "Số túi từng loại tại từng điểm thu",
+        "bad": "Chỉ số người tham dự sự kiện",
+        "why": "Số người không chứng minh lượng bao bì thực thu."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Kế hoạch chuyển rác sửa chữa của nhiều tòa nhà",
+      "output_unit": "chuyến rác sửa chữa",
+      "inputs": [
+        {
+          "name": "Bao chứa phế thải",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 7000
+        },
+        {
+          "name": "Thẻ tuyến vận chuyển",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đọc danh mục vật liệu và khung giờ cho từng tòa nhà",
+        "Gom nhóm được phép trong phiếu tuyến, tách vật chưa rõ loại",
+        "Giao đúng điểm được phân công và ghi chuyến theo tòa"
+      ],
+      "check": {
+        "prompt": "Vật liệu lạ ngoài danh mục xử lý thế nào?",
+        "good": "Tách riêng để người phụ trách xác định",
+        "bad": "Trộn vào bao chung cho đủ tải",
+        "why": "Kế hoạch chỉ bao phủ loại vật liệu đã được xác định."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Vận hành trạm rác lễ hội và đối soát khối lượng cuối ca",
+      "output_unit": "ca trạm lễ hội",
+      "inputs": [
+        {
+          "name": "Bao phân loại màu",
+          "unit": "cái",
+          "quantity": 3,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Sổ cân cuối ca",
+          "unit": "quyển",
+          "quantity": 1,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Phân ca và đánh mã thùng theo khu lễ hội",
+        "Cân từng lượt chuyển khỏi trạm và ghi nhóm rác",
+        "Cộng sổ cân rồi đối chiếu lượng còn tại trạm"
+      ],
+      "check": {
+        "prompt": "Báo cáo cuối ca nào khớp thực tế?",
+        "good": "Ghi lượng chuyển đi và lượng còn chờ",
+        "bad": "Ghi tất cả đã chuyển dù còn thùng đầy",
+        "why": "Đối soát cuối ca phải thể hiện tồn chưa bàn giao."
+      }
+    }
+  ],
+  "drain": [
+    {
+      "tier": 1,
+      "title": "Khảo sát đường ống có bản đồ và ảnh lỗi",
+      "output_unit": "bản khảo sát",
+      "inputs": [
+        {
+          "name": "Thẻ đánh dấu nhánh ống",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Giấy sơ đồ chống ẩm",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Đánh số các nhánh ống trên sơ đồ mặt bằng game",
+        "Ghép ảnh khảo sát với đúng mã vị trí lỗi",
+        "Ghi chiều dòng và bàn giao bản đồ có chú giải"
+      ],
+      "check": {
+        "prompt": "Ảnh lỗi không có mã nhánh được chấp nhận không?",
+        "good": "Bổ sung vị trí để nối ảnh với sơ đồ",
+        "bad": "Chỉ lưu ảnh vì đã nhìn thấy lỗi",
+        "why": "Bản khảo sát phải chỉ ra nơi cần xử lý trên tuyến."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Thay bẫy nước thoát sàn và kiểm mùi",
+      "output_unit": "cụm bẫy nước",
+      "inputs": [
+        {
+          "name": "Bẫy nước mẫu đúng cỡ",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 25000
+        },
+        {
+          "name": "Gioăng kín",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu kích thước bẫy với đầu nối trên mô hình",
+        "Thay bẫy và lắp gioăng theo thẻ thao tác game",
+        "Chạy lượt thử thoát và ghi kết quả kiểm kín mùi"
+      ],
+      "check": {
+        "prompt": "Bẫy thay xong đủ nghiệm thu khi nào?",
+        "good": "Thoát đạt và phiếu kiểm kín mùi đạt",
+        "bad": "Nước thoát nhanh nhưng thiếu kiểm kín mùi",
+        "why": "Bẫy nước còn có nhiệm vụ ngăn đường mùi trở lại."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Lắp giỏ lọc đường nước mưa",
+      "output_unit": "giỏ lọc",
+      "inputs": [
+        {
+          "name": "Giỏ lọc lá",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 16000
+        },
+        {
+          "name": "Khung giữ giỏ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Đo cửa thu nước mưa và chọn giỏ theo kích thước",
+        "Gắn khung rồi đặt giỏ ở vị trí nhấc vệ sinh được",
+        "Thử dòng nước mẫu và tháo giỏ kiểm lối lấy rác"
+      ],
+      "check": {
+        "prompt": "Giỏ nào phù hợp bảo trì?",
+        "good": "Giữ lá, nước qua được và nhấc ra được",
+        "bad": "Dán cố định khiến không lấy giỏ ra được",
+        "why": "Giỏ lọc phải duy trì cả dòng chảy lẫn khả năng làm sạch."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Hợp đồng bảo dưỡng bẫy mỡ",
+      "output_unit": "lượt bẫy mỡ",
+      "inputs": [
+        {
+          "name": "Túi chứa chất thu hồi",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Tem ngày bảo dưỡng",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Ghi hiện trạng và lịch ngừng sử dụng theo phiếu quán",
+        "Thực hiện chuỗi vệ sinh bẫy mẫu trong trò chơi",
+        "Chạy thử dòng rồi ghi ngày kiểm và lượng bàn giao"
+      ],
+      "check": {
+        "prompt": "Biên bản nào đủ cho lịch bảo dưỡng?",
+        "good": "Có hiện trạng, lượt thử và ngày hẹn tiếp",
+        "bad": "Chỉ dán tem mới mà không ghi lượt thử",
+        "why": "Tem ngày không thay thế bằng chứng chức năng sau vệ sinh."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Kiểm cân dòng mạng ống thoát mái",
+      "output_unit": "bản cân dòng",
+      "inputs": [
+        {
+          "name": "Thẻ lưu lượng nhánh",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 7000
+        },
+        {
+          "name": "Giấy mạng ống",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Đặt mã cho từng nhánh thoát mái trên bảng mạng",
+        "So lượt thử lưu lượng của từng nhánh theo thẻ game",
+        "Đánh dấu nhánh lệch và lập phiếu kiểm lại sau chỉnh"
+      ],
+      "check": {
+        "prompt": "Nhánh có dòng thấp hơn mức mô hình cần gì?",
+        "good": "Ghi độ lệch và kiểm lại sau điều chỉnh",
+        "bad": "Lấy trung bình toàn mạng rồi bỏ nhánh lệch",
+        "why": "Dòng trung bình có thể che một nhánh thoát kém."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Cải tạo thoát nước quán ăn nhỏ",
+      "output_unit": "đoạn cải tạo",
+      "inputs": [
+        {
+          "name": "Ống PVC mô hình",
+          "unit": "đoạn",
+          "quantity": 2,
+          "unit_cost": 9000
+        },
+        {
+          "name": "Cút và gioăng nối",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Vẽ tuyến mới tách điểm thu bếp theo mặt bằng quán",
+        "Ghép ống và cút trên mô hình theo tuyến được duyệt",
+        "Chạy thử từng điểm thu và ghi ảnh hoàn công"
+      ],
+      "check": {
+        "prompt": "Bản cải tạo nào hoàn tất?",
+        "good": "Mọi điểm thu thử đạt và ảnh đúng tuyến mới",
+        "bad": "Chỉ điểm gần cửa thoát được thử",
+        "why": "Từng điểm sử dụng phải nối được tới tuyến thoát."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Nghiệm thu tuyến chuyển hướng nước mưa sân trong",
+      "output_unit": "tuyến sân trong",
+      "inputs": [
+        {
+          "name": "Máng dẫn nước mẫu",
+          "unit": "đoạn",
+          "quantity": 2,
+          "unit_cost": 13000
+        },
+        {
+          "name": "Mốc hướng dòng",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đặt mốc tuyến nước mưa theo sơ đồ sân được duyệt",
+        "Ghép máng chuyển hướng tránh vùng đi lại trên mô hình",
+        "Thử dòng từ đầu tuyến và ghi vị trí nước đến"
+      ],
+      "check": {
+        "prompt": "Tuyến mới đạt khi nước đi đâu?",
+        "good": "Đến điểm thu đã duyệt, không vào lối đi",
+        "bad": "Đến nhanh nhất dù chảy ngang lối đi",
+        "why": "Nghiệm thu phải bám đích thoát và vùng cần bảo vệ."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Bảo dưỡng trục thoát chung cư theo lịch từng hộ",
+      "output_unit": "ca trục thoát",
+      "inputs": [
+        {
+          "name": "Thẻ hẹn hộ dân",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Bộ niêm dấu kiểm tra",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Xếp lịch tiếp cận trục theo thời gian từng hộ đồng ý",
+        "Thực hiện lượt bảo dưỡng mô phỏng từ các điểm đã hẹn",
+        "Kiểm lại cùng hộ và đóng phiếu từng căn đã hoàn tất"
+      ],
+      "check": {
+        "prompt": "Hộ chưa mở cửa được ghi thế nào?",
+        "good": "Chưa thực hiện và cần hẹn lại",
+        "bad": "Hoàn thành vì các hộ cùng tầng đã xong",
+        "why": "Trục chung vẫn cần bằng chứng tiếp cận từng điểm trong lịch."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Đổi tuyến thoát nước nhà cổ với hạn chế tác động",
+      "output_unit": "tuyến nhà cổ",
+      "inputs": [
+        {
+          "name": "Đệm bảo vệ bề mặt",
+          "unit": "tấm",
+          "quantity": 2,
+          "unit_cost": 10000
+        },
+        {
+          "name": "Ống và khớp mẫu",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 22000
+        }
+      ],
+      "procedure": [
+        "Đánh dấu vùng giữ nguyên theo bản đồ nhà cổ",
+        "Lắp tuyến thay thế trên mô hình tránh vùng hạn chế",
+        "So ảnh trước sau và kiểm dòng theo tuyến mới"
+      ],
+      "check": {
+        "prompt": "Phương án nào đúng giới hạn tác động?",
+        "good": "Tuyến đạt dòng và giữ nguyên vùng đã đánh dấu",
+        "bad": "Tuyến ngắn hơn nhưng đi xuyên vùng bảo tồn",
+        "why": "Ràng buộc giữ hiện trạng là phần của yêu cầu thi công."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Lót phục hồi ống không đào mở và kiểm sau đóng rắn",
+      "output_unit": "lượt phục hồi ống",
+      "inputs": [
+        {
+          "name": "Ống lót mô phỏng",
+          "unit": "đoạn",
+          "quantity": 1,
+          "unit_cost": 32000
+        },
+        {
+          "name": "Thẻ chu kỳ đóng rắn",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Ghép ảnh lòng ống với chiều dài đoạn cần phục hồi",
+        "Chạy chuỗi đặt lót và đóng rắn theo thẻ mô phỏng",
+        "Đối chiếu ảnh sau đóng rắn và kết quả thử thông dòng"
+      ],
+      "check": {
+        "prompt": "Bằng chứng nào xác nhận phục hồi?",
+        "good": "Ảnh sau đóng rắn cùng lượt thử dòng đạt",
+        "bad": "Chỉ xác nhận đã đưa vật liệu lót vào",
+        "why": "Đặt vật liệu chưa chứng minh lớp phục hồi đã hoàn thành."
+      }
+    }
+  ],
+  "homemaker": [
+    {
+      "tier": 1,
+      "title": "Chuẩn bị bữa ăn năm ngày và đóng hộp ghi ngày",
+      "output_unit": "lịch bữa năm ngày",
+      "inputs": [
+        {
+          "name": "Gạo và rau củ theo thực đơn",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 18000
+        },
+        {
+          "name": "Hộp cùng nhãn ngày",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Chia thực đơn theo ngày và hướng dẫn bảo quản đã duyệt",
+        "Chuẩn bị từng phần rồi chia vào hộp theo bữa",
+        "Ghi ngày dùng và vị trí bảo quản riêng trên hộp"
+      ],
+      "check": {
+        "prompt": "Hộp cho ngày năm cần thông tin gì?",
+        "good": "Ngày dùng và cách bảo quản theo thực đơn",
+        "bad": "Chỉ tên món giống hộp ngày một",
+        "why": "Năm ngày không có nghĩa mọi món dùng chung cách bảo quản."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Lập chu kỳ mua và kiểm hạn tủ thực phẩm",
+      "output_unit": "chu kỳ tủ thực phẩm",
+      "inputs": [
+        {
+          "name": "Nhãn hạn dùng",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1500
+        },
+        {
+          "name": "Thẻ mua bổ sung",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi lượng và hạn của từng món đang có trong tủ",
+        "Xếp món dùng sớm phía trước rồi lập lịch tiêu thụ",
+        "Tạo danh sách mua phần thiếu sau khi trừ tồn dùng được"
+      ],
+      "check": {
+        "prompt": "Có hai gói cùng món, dùng gói nào trước?",
+        "good": "Gói có hạn sớm hơn còn đạt điều kiện",
+        "bad": "Gói mới mua vì bao bì đẹp hơn",
+        "why": "Lịch tiêu thụ ưu tiên hạn dùng phù hợp để giảm bỏ phí."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Kiểm kê tủ áo và chuyển đồ theo mùa",
+      "output_unit": "tủ áo theo mùa",
+      "inputs": [
+        {
+          "name": "Túi vải thoáng",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Nhãn mùa và chủ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Kiểm kê áo theo chủ, mùa và tình trạng cần sửa",
+        "Chuyển đồ trái mùa vào túi có nhãn rõ",
+        "Đặt đồ đang dùng vào ngăn và đối chiếu số món trước sau"
+      ],
+      "check": {
+        "prompt": "Tủ áo hoàn tất khi nào?",
+        "good": "Số món khớp và tìm được túi của từng người",
+        "bad": "Ngăn gọn nhưng gom lẫn chủ vào túi không nhãn",
+        "why": "Kiểm kê phải giữ khả năng tìm và đối soát từng món."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Sắp nhà mới theo kế hoạch chuyển vào",
+      "output_unit": "phòng nhà mới",
+      "inputs": [
+        {
+          "name": "Nhãn phòng",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Tấm lót ngăn",
+          "unit": "tấm",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Ghép mã thùng chuyển nhà với phòng trên kế hoạch",
+        "Mở thùng theo thứ tự đồ cần dùng và xếp đúng ngăn",
+        "Kiểm danh mục thiếu rồi bàn giao sơ đồ tìm đồ"
+      ],
+      "check": {
+        "prompt": "Thùng đồ bếp được xếp theo đâu?",
+        "good": "Mã phòng và thứ tự dùng trong kế hoạch",
+        "bad": "Phòng còn trống nhất bất kể nhãn",
+        "why": "Kế hoạch chuyển vào giúp đồ đến đúng nơi cần sử dụng."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Điều phối phòng và bữa ăn cho tuần có khách",
+      "output_unit": "ngày có khách",
+      "inputs": [
+        {
+          "name": "Thẻ lịch phòng",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Nhãn thực đơn cá nhân",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghép ngày khách đến với giường và nhu cầu bữa ăn",
+        "Xếp lịch thay vải tránh giờ khách nghỉ",
+        "Cập nhật bảng phòng cùng số suất cho ngày kế tiếp"
+      ],
+      "check": {
+        "prompt": "Khách đổi ngày về, phải cập nhật gì?",
+        "good": "Cả lịch phòng và số suất ăn",
+        "bad": "Chỉ lịch phòng còn giữ nguyên suất ăn",
+        "why": "Hai lịch dùng cùng thông tin số người lưu lại."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Điều phối lịch thợ bảo dưỡng gia đình",
+      "output_unit": "lượt bảo dưỡng nhà",
+      "inputs": [
+        {
+          "name": "Phiếu hẹn thợ",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Tấm phủ bảo vệ",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Ghi phạm vi việc và khoảng giờ gia đình cho phép",
+        "Xếp thợ theo thứ tự phụ thuộc rồi bảo vệ khu làm việc",
+        "Kiểm từng hạng mục cùng chủ nhà trước đóng lịch"
+      ],
+      "check": {
+        "prompt": "Thợ sơn cần vào sau sửa tường, xếp thế nào?",
+        "good": "Sửa tường được xác nhận xong rồi mới sơn",
+        "bad": "Hai việc chồng cùng vị trí để tiết kiệm lịch",
+        "why": "Thứ tự phụ thuộc tránh phải làm lại bề mặt."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Tổ chức kỳ nghỉ cho đại gia đình",
+      "output_unit": "ngày kỳ nghỉ",
+      "inputs": [
+        {
+          "name": "Thẻ hành lý gia đình",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Túi chia đồ",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Tổng hợp lịch đi và nhu cầu riêng của từng thành viên",
+        "Chia hành lý cùng đầu mối phụ trách theo chặng",
+        "Đối chiếu vật dụng thiết yếu với người nhận từng túi"
+      ],
+      "check": {
+        "prompt": "Hành lý chung nào dễ bàn giao?",
+        "good": "Túi theo chặng có người phụ trách rõ",
+        "bad": "Một túi lớn không ai biết món nào ở đâu",
+        "why": "Phân trách nhiệm giúp tìm đồ đúng lúc trong kỳ nghỉ."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Lập kế hoạch bàn giao chăm sóc giữa hai gia đình",
+      "output_unit": "ca bàn giao nhà",
+      "inputs": [
+        {
+          "name": "Sổ lịch chăm sóc",
+          "unit": "quyển",
+          "quantity": 1,
+          "unit_cost": 6000
+        },
+        {
+          "name": "Bìa hồ sơ riêng",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Ghi nhu cầu và phạm vi chia sẻ được hai gia đình đồng ý",
+        "Xếp lịch người nhận cùng việc còn chờ theo từng ca",
+        "Bàn giao hồ sơ đúng người và ghi xác nhận đã nhận"
+      ],
+      "check": {
+        "prompt": "Hồ sơ riêng được gửi cho ai?",
+        "good": "Người nhận đã được gia đình cho phép",
+        "bad": "Tất cả thành viên nhóm chung cho tiện",
+        "why": "Thông tin chăm sóc chỉ chia sẻ trong phạm vi đã đồng ý."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Mở và đóng nhà nghỉ theo mùa",
+      "output_unit": "lượt mở nhà nghỉ",
+      "inputs": [
+        {
+          "name": "Túi bọc đồ vải",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Bảng kiểm mở đóng",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu danh mục tài sản và dấu hiệu cần bảo trì đầu mùa",
+        "Chuẩn bị đồ vải cùng các hạng mục được phép theo bảng mở nhà",
+        "Cuối mùa kiểm kê lại và ghi phần cần xử lý trước lần mở sau"
+      ],
+      "check": {
+        "prompt": "Phiếu đóng nhà phải giữ mục nào?",
+        "good": "Tồn đồ và việc bảo trì còn chờ",
+        "bad": "Chỉ ghi nhà đã khóa cửa",
+        "why": "Bàn giao theo mùa cần thông tin cho lần mở tiếp theo."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Quản lý lịch việc nhà nhiều hộ và kiểm chất lượng",
+      "output_unit": "ca việc nhà",
+      "inputs": [
+        {
+          "name": "Thẻ màu từng hộ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Phiếu kiểm chất lượng",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Tách danh mục công việc theo nhu cầu từng hộ",
+        "Xếp ca và vật dụng theo thẻ màu để không nhầm địa chỉ",
+        "Đối chiếu kết quả với chủ từng hộ rồi ghi việc cần làm lại"
+      ],
+      "check": {
+        "prompt": "Một hộ phàn nàn còn việc thiếu, xử lý sao?",
+        "good": "Mở lại đúng mục của hộ đó và hẹn xử lý",
+        "bad": "Đóng ca vì tổng việc các hộ đã đủ",
+        "why": "Chất lượng được nghiệm thu theo từng hộ chứ không bù bằng hộ khác."
+      }
+    }
+  ],
+  "ice_cream": [
+    {
+      "tier": 1,
+      "title": "Sorbet xoài chanh dây cân độ ngọt",
+      "output_unit": "khay sorbet",
+      "inputs": [
+        {
+          "name": "Xoài và chanh dây",
+          "unit": "phần",
+          "quantity": 2,
+          "unit_cost": 7000
+        },
+        {
+          "name": "Đường làm sorbet",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Xay thịt xoài rồi lọc hạt chanh dây",
+        "Phối đường và đối chiếu độ ngọt với thẻ công thức",
+        "Chạy chu kỳ làm đông mẫu rồi chia khay ghi vị"
+      ],
+      "check": {
+        "prompt": "Sorbet nào được chấp nhận?",
+        "good": "Vị xoài chanh dây và độ ngọt đạt thẻ",
+        "bad": "Đông cứng nhưng chưa kiểm độ ngọt",
+        "why": "Đông thành công không chứng minh tỷ lệ ngọt đã đúng."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Gelato hạt dẻ cười rang xay",
+      "output_unit": "khay gelato",
+      "inputs": [
+        {
+          "name": "Hạt dẻ cười",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 17000
+        },
+        {
+          "name": "Nền sữa gelato",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Rang hạt theo thẻ bếp và để đạt trạng thái nghiền",
+        "Xay hạt thành hỗn hợp mịn rồi hòa nền sữa",
+        "Chạy máy mẫu và kiểm không còn vụn hạt thô"
+      ],
+      "check": {
+        "prompt": "Gelato hạt dẻ nào đạt kết cấu?",
+        "good": "Nền mịn với hạt đã xay đồng đều",
+        "bad": "Nền mịn nhưng rải hạt sống thay bước rang",
+        "why": "Hương rang xay là thao tác cốt lõi của công thức."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Semifreddo nhiều lớp đổ khuôn",
+      "output_unit": "khuôn semifreddo",
+      "inputs": [
+        {
+          "name": "Kem nền và cacao",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 19000
+        },
+        {
+          "name": "Bánh quy bơ",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Lót khuôn rồi chia nền thành phần kem và cacao",
+        "Đổ từng lớp xen bánh quy theo sơ đồ đã duyệt",
+        "Làm đông mẫu rồi cắt kiểm mặt lớp"
+      ],
+      "check": {
+        "prompt": "Lát semifreddo nào đúng mẫu?",
+        "good": "Ba lớp rõ theo sơ đồ và có lớp bánh",
+        "bad": "Các nguyên liệu trộn hết thành một màu",
+        "why": "Đổ khuôn nhiều lớp phải để lại cấu trúc lớp khi cắt."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Kem sữa chua việt quất tạo vân",
+      "output_unit": "khay kem vân",
+      "inputs": [
+        {
+          "name": "Sữa chua nền",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 13000
+        },
+        {
+          "name": "Mứt việt quất",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Chuẩn bị nền sữa chua và phần mứt riêng",
+        "Rót mứt vào nền rồi kéo vân theo đường mẫu",
+        "Làm đông khay và kiểm vân trên mẫu cắt"
+      ],
+      "check": {
+        "prompt": "Mẻ nào giữ yêu cầu tạo vân?",
+        "good": "Màu việt quất thành dải trong nền trắng",
+        "bad": "Toàn khay tím đều vì đánh mứt quá kỹ",
+        "why": "Vân cần hai thành phần còn phân biệt bằng mắt."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Kem trà rang cuộn cùng bánh mỏng",
+      "output_unit": "cuộn kem trà",
+      "inputs": [
+        {
+          "name": "Trà gạo rang và nền kem",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 15000
+        },
+        {
+          "name": "Bánh mỏng",
+          "unit": "cuốn",
+          "quantity": 2,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ủ hương trà rang vào nền rồi lọc hết bã",
+        "Dàn nền trên máy mẫu thành lớp đủ mỏng để cuộn",
+        "Cuộn kem và ghép bánh mỏng theo khẩu phần"
+      ],
+      "check": {
+        "prompt": "Cuộn nào đủ bàn giao?",
+        "good": "Cuộn giữ hình, không lẫn bã trà và đủ bánh",
+        "bad": "Kem thành cục có bã trà dù đủ bánh",
+        "why": "Lọc bã và dàn mỏng tạo ra kết cấu cuộn yêu cầu."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Bánh kem lạnh nhiều tầng giữ đúng nhiệt",
+      "output_unit": "tầng bánh lạnh",
+      "inputs": [
+        {
+          "name": "Cốt bánh và kem vani",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 24000
+        },
+        {
+          "name": "Mứt dâu làm lớp",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Chia cốt bánh và kem theo độ dày từng tầng",
+        "Ghép các tầng với mứt dâu rồi làm ổn định theo thẻ lạnh",
+        "Ghi nhiệt độ mẫu và kiểm tầng trước bàn giao"
+      ],
+      "check": {
+        "prompt": "Bánh đủ giao theo căn cứ nào?",
+        "good": "Tầng giữ phom và nhật ký lạnh đạt thẻ",
+        "bad": "Tầng đẹp nhưng mất nhật ký nhiệt độ",
+        "why": "Giữ nhiệt là tiêu chí đi cùng cấu trúc nhiều tầng."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Khay nếm sáu vị tự làm cân khẩu phần",
+      "output_unit": "khay sáu vị",
+      "inputs": [
+        {
+          "name": "Nền kem sáu vị đã nấu",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 30000
+        },
+        {
+          "name": "Cốc thử nhỏ",
+          "unit": "cái",
+          "quantity": 6,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu sáu mẻ vị với nhãn công thức của quầy",
+        "Cân từng phần kem bằng cùng định lượng thử",
+        "Xếp đủ sáu cốc theo bảng vị cho khách so sánh"
+      ],
+      "check": {
+        "prompt": "Khay sáu vị nào đúng chuẩn nếm?",
+        "good": "Sáu vị khác nhau có lượng bằng nhau",
+        "bad": "Sáu cốc nhưng hai cốc cùng vị thay vị thiếu",
+        "why": "Khay nếm cần đủ sự đa dạng đã hứa với khách."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Tháp kem mini cho tiệc sinh nhật theo giờ",
+      "output_unit": "tháp kem mini",
+      "inputs": [
+        {
+          "name": "Kem dâu và vani",
+          "unit": "phần",
+          "quantity": 2,
+          "unit_cost": 9000
+        },
+        {
+          "name": "Đế tháp thực phẩm",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Xác nhận giờ cắt bánh và sơ đồ tháp mini",
+        "Tạo phần kem rồi giữ trong kho theo thẻ nhiệt",
+        "Lắp lên đế sát giờ phục vụ và kiểm số phần"
+      ],
+      "check": {
+        "prompt": "Tháp được lắp thời điểm nào?",
+        "good": "Theo giờ phục vụ đã chốt với chủ tiệc",
+        "bad": "Từ đầu ngày để không cần xem lịch",
+        "why": "Lịch lắp phải bảo đảm hình thức món lạnh lúc phục vụ."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Quầy kem sự kiện có hai trạm và lịch thay khay",
+      "output_unit": "lượt trạm kem",
+      "inputs": [
+        {
+          "name": "Khay kem cacao và xoài",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 26000
+        },
+        {
+          "name": "Tem thay khay hai trạm",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Phân vị và khay dự phòng cho hai trạm sự kiện",
+        "Ghi thời điểm đưa từng khay vào quầy lạnh",
+        "Đổi khay theo lịch rồi đối chiếu tồn riêng từng trạm"
+      ],
+      "check": {
+        "prompt": "Trạm B hết xoài, dùng thông tin nào?",
+        "good": "Sổ tồn và lịch thay của trạm B",
+        "bad": "Tổng tồn hai trạm không xét vị",
+        "why": "Mỗi trạm có nhu cầu và tồn theo vị khác nhau."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Hợp đồng món tráng miệng đông lạnh nhiều ngày với chuỗi giao lạnh",
+      "output_unit": "kiện tráng miệng",
+      "inputs": [
+        {
+          "name": "Kem dừa và sorbet dâu",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 27000
+        },
+        {
+          "name": "Bao giữ lạnh và nhãn lô",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Ghép món đông lạnh với ngày và điểm giao hợp đồng",
+        "Đóng kiện có nhãn lô theo thẻ chuỗi lạnh",
+        "Bàn giao kèm nhật ký lạnh và xác nhận người nhận"
+      ],
+      "check": {
+        "prompt": "Chuyến giao nào đủ chứng minh chất lượng?",
+        "good": "Đúng lô, đúng điểm và có nhật ký lạnh liên tục",
+        "bad": "Đúng số hộp nhưng thiếu dữ liệu lúc vận chuyển",
+        "why": "Chuỗi giao lạnh phải được kiểm cả trên đường."
+      }
+    }
+  ],
+  "nail": [
+    {
+      "tier": 1,
+      "title": "Tạo họa tiết mắt mèo bằng gel từ tính",
+      "output_unit": "bộ mẫu mắt mèo",
+      "inputs": [
+        {
+          "name": "Gel từ tính",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 14000
+        },
+        {
+          "name": "Móng mẫu và lớp phủ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Chọn màu gel từ tính theo bảng mẫu đã duyệt",
+        "Quét gel lên móng mẫu rồi dùng nam châm kéo dải sáng",
+        "Hoàn thiện theo thẻ sản phẩm và so hướng dải từng móng"
+      ],
+      "check": {
+        "prompt": "Bộ mắt mèo nào khớp yêu cầu?",
+        "good": "Dải sáng nghiêng cùng hướng đã duyệt",
+        "bad": "Đúng màu nhưng dải sáng xoay tùy ý",
+        "why": "Hiệu ứng từ tính gồm cả vị trí và hướng của dải."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Phủ bột chrome và khóa lớp hoàn thiện",
+      "output_unit": "bộ mẫu chrome",
+      "inputs": [
+        {
+          "name": "Bột chrome",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 11000
+        },
+        {
+          "name": "Nền và lớp khóa",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Chuẩn bị nền trên móng mẫu theo thẻ vật liệu",
+        "Miết bột chrome đều lên nền phù hợp",
+        "Khóa lớp hoàn thiện rồi kiểm mép và độ phủ"
+      ],
+      "check": {
+        "prompt": "Bộ chrome nào đạt?",
+        "good": "Mặt phủ đều và lớp khóa kín mép",
+        "bad": "Sáng ở giữa nhưng bột hở quanh viền",
+        "why": "Lớp khóa giữ bề mặt chrome hoàn thiện đồng đều."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Vẽ lớp màu nước trong trên móng",
+      "output_unit": "bộ màu nước",
+      "inputs": [
+        {
+          "name": "Mực hiệu ứng trong",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 13000
+        },
+        {
+          "name": "Móng mẫu trắng",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Phủ nền sáng và đánh dấu bố cục hoa mờ",
+        "Tán lớp mực loãng từ nhạt đến đậm trên móng mẫu",
+        "Làm hoàn thiện theo thẻ rồi so độ trong giữa các lớp"
+      ],
+      "check": {
+        "prompt": "Họa tiết nào đúng hiệu ứng màu nước?",
+        "good": "Các lớp trong chồng thấy nhau",
+        "bad": "Màu đặc che kín toàn bộ lớp bên dưới",
+        "why": "Độ trong tạo chiều sâu đặc trưng của mẫu đã đặt."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Đắp gel tạo cấu trúc bằng khuôn",
+      "output_unit": "bộ cấu trúc",
+      "inputs": [
+        {
+          "name": "Gel tạo cấu trúc",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 17000
+        },
+        {
+          "name": "Khuôn móng mẫu",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Gắn khuôn vào tay mô hình theo trục móng",
+        "Phân bố gel theo sơ đồ đỉnh và độ dài đã duyệt",
+        "Hoàn thiện mẫu rồi kiểm trục cùng độ dày từng vùng"
+      ],
+      "check": {
+        "prompt": "Mẫu cấu trúc nào đủ nghiệm thu?",
+        "good": "Trục thẳng và độ dày đúng sơ đồ",
+        "bad": "Đỉnh lệch nhưng sơn màu che lại",
+        "why": "Hình học cấu trúc phải đạt trước khi trang trí."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Thiết kế họa tiết chìm và lớp trong bao phủ",
+      "output_unit": "bộ họa tiết chìm",
+      "inputs": [
+        {
+          "name": "Hoa ép trang trí móng",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 9000
+        },
+        {
+          "name": "Gel trong và móng mẫu",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 14000
+        }
+      ],
+      "procedure": [
+        "Xếp hoa ép theo bố cục đã xác nhận trên nền mẫu",
+        "Bao họa tiết bằng lớp trong theo thẻ sản phẩm",
+        "Kiểm mặt phẳng và không còn chi tiết nhô ra"
+      ],
+      "check": {
+        "prompt": "Bộ chìm nào đúng yêu cầu?",
+        "good": "Hoa nằm dưới lớp trong với bề mặt phẳng",
+        "bad": "Cánh hoa nhô khỏi mặt dù nhìn rõ",
+        "why": "Họa tiết chìm phải được bao phủ trọn vẹn."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Lập thư viện móng thay đúng cỡ",
+      "output_unit": "bộ thư viện cỡ",
+      "inputs": [
+        {
+          "name": "Móng tháo lắp nhiều cỡ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 16000
+        },
+        {
+          "name": "Thẻ cỡ và ô lưu",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Đo đối chiếu cỡ trên bộ mẫu theo từng ngón",
+        "Gán mã cỡ rồi lưu vào ô thư viện tương ứng",
+        "Chọn thử một bộ theo phiếu cỡ để kiểm khả năng tra"
+      ],
+      "check": {
+        "prompt": "Thư viện nào tra lại được?",
+        "good": "Mỗi ngón có mã cỡ nối với đúng ô lưu",
+        "bad": "Chỉ ghi một cỡ chung cho cả bàn tay",
+        "why": "Cỡ từng ngón là dữ liệu cần để thay đúng móng."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Thiết kế bộ móng từ buổi thử đến ngày sự kiện",
+      "output_unit": "bộ sự kiện",
+      "inputs": [
+        {
+          "name": "Gel màu đã duyệt",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 18000
+        },
+        {
+          "name": "Thẻ mẫu thử và móng",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Làm bộ thử theo trang phục và cỡ khách đã chọn",
+        "Ghi phản hồi rồi sửa màu hoặc độ dài trên mẫu",
+        "Đối chiếu bản duyệt cuối trước chuẩn bị bộ ngày sự kiện"
+      ],
+      "check": {
+        "prompt": "Bộ ngày sự kiện dựa vào mẫu nào?",
+        "good": "Mẫu sửa cuối được khách xác nhận",
+        "bad": "Mẫu thử đầu dù khách đã đổi độ dài",
+        "why": "Phản hồi buổi thử phải chuyển vào thành phẩm cuối."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Bộ móng thay nhanh cho biểu diễn sân khấu",
+      "output_unit": "bộ sân khấu",
+      "inputs": [
+        {
+          "name": "Móng tháo lắp theo vai",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 17000
+        },
+        {
+          "name": "Miếng dán và hộp theo cảnh",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Gán màu và cỡ móng cho từng cảnh biểu diễn",
+        "Xếp bộ cùng miếng dán vào hộp đánh số cảnh",
+        "Diễn tập thay bộ trên mẫu và kiểm không lẫn ngón"
+      ],
+      "check": {
+        "prompt": "Bộ thay nhanh nào đạt?",
+        "good": "Hộp đúng cảnh, đủ cỡ và đã thử thời gian đổi",
+        "bad": "Móng đẹp nhưng trộn mọi cảnh trong một hộp",
+        "why": "Tổ chức theo cảnh là điều kiện để thay nhanh."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Bộ móng quà tặng cao cấp theo cỡ người nhận",
+      "output_unit": "bộ quà tặng",
+      "inputs": [
+        {
+          "name": "Móng mẫu cao cấp",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 20000
+        },
+        {
+          "name": "Hộp lót và thẻ cỡ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu bảng cỡ người nhận với lựa chọn màu quà",
+        "Trang trí từng móng đúng số ngón và cỡ tương ứng",
+        "Xếp hộp theo sơ đồ tay kèm thẻ nhận diện cỡ"
+      ],
+      "check": {
+        "prompt": "Bộ quà nào phù hợp người nhận?",
+        "good": "Đúng cỡ từng ngón và đủ thẻ sắp xếp",
+        "bad": "Bộ cỡ trung bình vì người nhận chưa đến thử",
+        "why": "Thông tin cỡ đã có phải được dùng để làm quà riêng."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Đặt bộ móng tháo lắp riêng có duyệt mẫu và thử cỡ",
+      "output_unit": "bộ đặt riêng",
+      "inputs": [
+        {
+          "name": "Móng tháo lắp định cỡ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 18000
+        },
+        {
+          "name": "Vật liệu trang trí mẫu duyệt",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 16000
+        }
+      ],
+      "procedure": [
+        "Ghi cỡ từng ngón và làm bản phối màu cho khách duyệt",
+        "Chế tác bộ theo bản duyệt rồi thử cỡ trên mẫu xác nhận",
+        "Ghi mã bộ cùng hướng dẫn thay vào hộp bàn giao"
+      ],
+      "check": {
+        "prompt": "Bộ đặt riêng nào đủ hai mốc kiểm?",
+        "good": "Có duyệt trang trí và thử cỡ trước giao",
+        "bad": "Chỉ có ảnh đẹp của mẫu chưa đối chiếu cỡ",
+        "why": "Duyệt hình và thử cỡ giải quyết hai yêu cầu khác nhau."
+      }
+    }
+  ],
+  "pagoda": [
+    {
+      "tier": 1,
+      "title": "Dự tính suất bếp cộng đồng theo đăng ký",
+      "output_unit": "bảng suất ăn",
+      "inputs": [
+        {
+          "name": "Giấy đăng ký từ ngân sách bếp",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Thẻ chia suất từ kho chung",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Tổng hợp số người đăng ký theo buổi bếp cộng đồng",
+        "Tách suất thường và nhu cầu ăn đã được báo trước",
+        "Lập số suất dự trù trình người phụ trách bếp"
+      ],
+      "check": {
+        "prompt": "Bảng dự trù nào phản ánh đăng ký?",
+        "good": "Tổng suất khớp danh sách và nhu cầu riêng",
+        "bad": "Chỉ đếm số dòng mà bỏ hộ đăng ký nhiều người",
+        "why": "Dự trù dùng số người thực chứ không phải số phiếu."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Theo dõi hàng tặng trong kho bếp",
+      "output_unit": "phiếu kho tặng",
+      "inputs": [
+        {
+          "name": "Nhãn lô từ ngân sách kho",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Sổ nhập tặng từ kho chung",
+          "unit": "quyển",
+          "quantity": 1,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Ghi tên hàng, lượng và nguồn trao tặng được phép lưu",
+        "Đánh dấu hạn dùng rồi xếp lô dùng sớm phía trước",
+        "Đối soát nhập xuất và phần còn trong kho bếp"
+      ],
+      "check": {
+        "prompt": "Sổ hàng tặng cần giữ quan hệ nào?",
+        "good": "Tồn bằng nhập trừ lượng đã cấp cho bếp",
+        "bad": "Ghi toàn bộ là đã dùng ngay lúc tiếp nhận",
+        "why": "Hàng tiếp nhận và hàng đã dùng là hai trạng thái khác nhau."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Lập lịch phát suất ăn thuận tiện cho người yếu sức",
+      "output_unit": "lịch phát suất",
+      "inputs": [
+        {
+          "name": "Thẻ khung giờ từ ngân sách cộng đồng",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Biển điểm ngồi từ kho chung",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Ghi nhu cầu hỗ trợ đi lại theo đăng ký tự nguyện",
+        "Chia giờ nhận và bố trí chỗ ngồi chờ dễ tiếp cận",
+        "Xác nhận đầu mối hỗ trợ tại từng khung phát"
+      ],
+      "check": {
+        "prompt": "Lịch nào thuận tiện cho người yếu sức?",
+        "good": "Có giờ riêng và chỗ ngồi cùng người hỗ trợ",
+        "bad": "Yêu cầu mọi người xếp một hàng dài như nhau",
+        "why": "Lịch phục vụ cần đáp ứng nhu cầu tiếp cận đã ghi nhận."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Lập mục lục chuyện kể có sự đồng ý",
+      "output_unit": "mục chuyện kể",
+      "inputs": [
+        {
+          "name": "Phiếu đồng ý từ ngân sách tư liệu",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Bìa lưu chuyện kể từ kho chung",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Hỏi phạm vi ghi lại và công bố mà người kể đồng ý",
+        "Gắn tên chủ đề cùng điều kiện sử dụng vào từng chuyện",
+        "Lập mục lục chỉ hiện thông tin trong phạm vi cho phép"
+      ],
+      "check": {
+        "prompt": "Chuyện chỉ đồng ý lưu nội bộ được đưa đâu?",
+        "good": "Mục lục nội bộ có giới hạn truy cập",
+        "bad": "Trang công khai vì đã cho phép ghi âm",
+        "why": "Đồng ý ghi lại không đồng nghĩa đồng ý công bố."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Kiểm kê hiện trạng hiện vật lâu năm",
+      "output_unit": "phiếu hiện vật",
+      "inputs": [
+        {
+          "name": "Thẻ kiểm kê từ ngân sách bảo quản",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1500
+        },
+        {
+          "name": "Túi lưu hồ sơ từ kho chung",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu mã hiện vật với vị trí đang lưu giữ",
+        "Mô tả dấu vết hiện trạng bằng ảnh và ghi chú không can thiệp",
+        "Báo người phụ trách các thay đổi so lần kiểm trước"
+      ],
+      "check": {
+        "prompt": "Vết nứt mới được ghi thế nào?",
+        "good": "Gắn ảnh với mã hiện vật và báo phụ trách",
+        "bad": "Tự tô che vết rồi ghi hiện vật nguyên vẹn",
+        "why": "Kiểm kê cần bảo toàn bằng chứng hiện trạng."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Đối chiếu thông tin các bản kinh sách",
+      "output_unit": "bản đối chiếu kinh",
+      "inputs": [
+        {
+          "name": "Giấy đối chiếu từ ngân sách thư tịch",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Nhãn phiên bản từ kho chung",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi tên bản, lần in và nguồn của từng cuốn kinh sách",
+        "So trang mục lục cùng thông tin xuất bản giữa các bản",
+        "Lưu điểm khác biệt với mã trang để người phụ trách xem"
+      ],
+      "check": {
+        "prompt": "Hai bản khác trang do lần in, ghi gì?",
+        "good": "Khác biệt kèm nguồn và vị trí trang mỗi bản",
+        "bad": "Chọn một bản đúng rồi xóa thông tin bản kia",
+        "why": "Đối chiếu mô tả khác biệt mà không tự xóa lịch sử bản."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Số hóa tư liệu và kiểm tệp lưu",
+      "output_unit": "bộ tư liệu số",
+      "inputs": [
+        {
+          "name": "Phiếu số hóa từ ngân sách lưu trữ",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Dung lượng lưu từ quỹ tư liệu",
+          "unit": "gói",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Gán mã tư liệu và ghi phạm vi được phép số hóa",
+        "Tạo bản số theo thứ tự trang rồi đặt tên theo mã",
+        "Mở kiểm tệp và đối chiếu đủ trang trước sao lưu"
+      ],
+      "check": {
+        "prompt": "Bộ số hóa nào được nhận?",
+        "good": "Tệp mở được, đủ trang và tên nối được mã gốc",
+        "bad": "Có nhiều tệp nhưng không kiểm được thứ tự trang",
+        "why": "Số hóa cần tính đầy đủ và khả năng tìm về bản gốc."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Xếp ca tình nguyện viên điểm trú tạm",
+      "output_unit": "ca tình nguyện",
+      "inputs": [
+        {
+          "name": "Thẻ ca từ ngân sách điểm trú",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Bảng đầu mối từ kho chung",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Tổng hợp giờ sẵn sàng và nhiệm vụ từng tình nguyện viên",
+        "Xếp ca để luôn có người tại các điểm cần trực",
+        "Xác nhận người thay và ghi bàn giao việc chưa xong"
+      ],
+      "check": {
+        "prompt": "Lịch ca nào tránh bỏ trống điểm trú?",
+        "good": "Có người nhận ca kế tiếp đã xác nhận",
+        "bad": "Chỉ ghi người ca đầu và để trống ca tối",
+        "why": "Điểm trú cần liên tục người phụ trách theo lịch đã cam kết."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Bàn giao đồ dùng và hồ sơ gia đình an toàn",
+      "output_unit": "bộ bàn giao gia đình",
+      "inputs": [
+        {
+          "name": "Túi hồ sơ kín từ ngân sách hỗ trợ",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Thẻ mã gia đình từ kho chung",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Gắn mã gia đình lên danh mục đồ dùng và hồ sơ",
+        "Đối chiếu người nhận được cho phép trước chuẩn bị túi",
+        "Bàn giao kín và ký xác nhận theo từng mã gia đình"
+      ],
+      "check": {
+        "prompt": "Hồ sơ được đưa cho ai tại điểm nhận?",
+        "good": "Người đã xác minh quyền nhận của gia đình",
+        "bad": "Người đứng gần có thể gọi đúng tên gia đình",
+        "why": "Biết tên không đủ chứng minh quyền nhận hồ sơ riêng."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Điều phối điểm trú cộng đồng qua nhiều ngày",
+      "output_unit": "ngày điểm trú",
+      "inputs": [
+        {
+          "name": "Sổ điều phối từ ngân sách cứu trợ",
+          "unit": "quyển",
+          "quantity": 1,
+          "unit_cost": 7000
+        },
+        {
+          "name": "Thẻ giường và suất từ kho chung",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Cập nhật số người ở cùng nhu cầu sinh hoạt từng ngày",
+        "Phân giường, suất ăn và ca trực theo khả năng điểm trú",
+        "Cuối ngày đối soát tồn đồ cùng việc chuyển sang hôm sau"
+      ],
+      "check": {
+        "prompt": "Bảng ngày mới cần dựa vào dữ liệu nào?",
+        "good": "Số người thực và tồn sau bàn giao ngày trước",
+        "bad": "Lặp nguyên bảng ngày đầu dù có người rời đi",
+        "why": "Điều phối nhiều ngày phải phản ánh thay đổi thực tế."
+      }
+    }
+  ],
+  "pho": [
+    {
+      "tier": 1,
+      "title": "Phở gà thả vườn với nồi nước dùng riêng",
+      "output_unit": "tô phở gà",
+      "inputs": [
+        {
+          "name": "Gà thả vườn và gừng",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 18000
+        },
+        {
+          "name": "Bánh phở và hành",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Sơ chế gà rồi nấu nồi nước dùng riêng theo thẻ bếp",
+        "Lọc nước dùng và chia thịt gà chín theo khẩu phần",
+        "Trụng bánh phở rồi xếp thịt và chan nước dùng gà"
+      ],
+      "check": {
+        "prompt": "Tô phở gà nào đúng đơn?",
+        "good": "Dùng thịt gà và nước dùng từ nồi gà riêng",
+        "bad": "Dùng thịt gà nhưng chan nồi nước bò cho tiện",
+        "why": "Đơn này yêu cầu cả thịt lẫn nền nước dùng gà."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Phở bò sốt vang hầm kiểm độ mềm",
+      "output_unit": "tô sốt vang",
+      "inputs": [
+        {
+          "name": "Thịt bò và cà chua",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 20000
+        },
+        {
+          "name": "Bánh phở và quế hồi",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Ướp bò theo thẻ sốt vang rồi xào cùng cà chua",
+        "Hầm theo mẻ và kiểm độ mềm bằng mẫu bếp game",
+        "Trụng bánh phở rồi múc sốt và thịt đã đạt mẫu"
+      ],
+      "check": {
+        "prompt": "Mẻ sốt vang nào được ra tô?",
+        "good": "Bò đạt mẫu độ mềm và sốt đúng mẻ",
+        "bad": "Đủ giờ dự kiến nhưng kiểm thịt chưa đạt",
+        "why": "Thời gian dự kiến không thay thế kiểm thành phẩm."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Bộ phở tủy xương hai người phục vụ tại bàn",
+      "output_unit": "bộ phở tủy",
+      "inputs": [
+        {
+          "name": "Xương tủy và nước dùng bò",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 24000
+        },
+        {
+          "name": "Bánh phở hai phần",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Chuẩn bị xương tủy cùng nước dùng theo thẻ công thức",
+        "Chia bánh và đồ ăn kèm thành hai phần cân nhau",
+        "Đưa nước dùng với bộ hai phần tới bàn theo thứ tự phục vụ"
+      ],
+      "check": {
+        "prompt": "Bộ hai người cần những gì?",
+        "good": "Hai phần bánh riêng và đủ phần tủy đã đặt",
+        "bad": "Một tô lớn cùng một bộ đũa",
+        "why": "Phục vụ bộ hai người phải đủ phần và đồ dùng tương ứng."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Phở vịt quay tách da giòn và nước dùng",
+      "output_unit": "tô phở vịt",
+      "inputs": [
+        {
+          "name": "Vịt quay có da giòn",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 22000
+        },
+        {
+          "name": "Bánh phở và nước dùng vịt",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Chia thịt vịt và để phần da giòn trên khay riêng",
+        "Trụng bánh rồi xếp thịt theo khẩu phần",
+        "Chan nước dùng và đặt da giòn riêng lúc giao"
+      ],
+      "check": {
+        "prompt": "Cách phục vụ nào giữ yêu cầu da giòn?",
+        "good": "Da giòn để riêng khỏi nước dùng",
+        "bad": "Ngâm da trong nồi dùng từ đầu mẻ",
+        "why": "Tách da là thao tác cần để giữ kết cấu đã đặt."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Phở nấm chay ninh nhiều lớp rau củ",
+      "output_unit": "tô phở nấm",
+      "inputs": [
+        {
+          "name": "Nấm hương và củ cải",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 13000
+        },
+        {
+          "name": "Bánh phở và nấm đùi gà",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Ninh củ cải với nấm hương làm nền nước dùng chay",
+        "Nấu phần nấm đùi gà riêng theo thẻ bếp",
+        "Trụng bánh và ghép nấm cùng nước dùng đã lọc"
+      ],
+      "check": {
+        "prompt": "Nồi phở chay nào đúng thành phần?",
+        "good": "Nền rau củ và nấm, không lẫn nước thịt",
+        "bad": "Nền xương bò nhưng không gắp thịt vào tô",
+        "why": "Món chay cần đúng cả nền nước dùng."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Phở áp chảo giòn với sốt riêng",
+      "output_unit": "đĩa phở giòn",
+      "inputs": [
+        {
+          "name": "Bánh phở tươi",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 8000
+        },
+        {
+          "name": "Bò và rau cải làm sốt",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 18000
+        }
+      ],
+      "procedure": [
+        "Dàn bánh phở thành lớp và áp chảo theo mẫu giòn",
+        "Xào bò cùng rau cải rồi hoàn thiện sốt riêng",
+        "Đặt bánh lên đĩa và giao sốt trong chén cạnh bên"
+      ],
+      "check": {
+        "prompt": "Đĩa phở nào đúng yêu cầu tách sốt?",
+        "good": "Bánh giòn đi cùng chén sốt riêng",
+        "bad": "Đổ sốt ngập bánh trước giờ giao",
+        "why": "Tách sốt giúp người ăn giữ độ giòn theo ý muốn."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Thực đơn nếm ba dòng phở cỡ nhỏ",
+      "output_unit": "khay ba phở",
+      "inputs": [
+        {
+          "name": "Nước dùng bò, gà và nấm",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 24000
+        },
+        {
+          "name": "Bánh phở cỡ thử",
+          "unit": "phần",
+          "quantity": 3,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Gắn nhãn ba nồi bò, gà và nấm trên bàn nếm",
+        "Chia bánh phở thành ba phần nhỏ bằng nhau",
+        "Chan từng nền đúng nhãn rồi xếp theo thứ tự nếm"
+      ],
+      "check": {
+        "prompt": "Khay nếm nào phản ánh ba dòng phở?",
+        "good": "Ba tô nhỏ có ba nền nước dùng riêng",
+        "bad": "Ba tô cùng nước bò chỉ đổi rau trang trí",
+        "why": "Sự khác biệt cần nằm ở dòng phở được công bố."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Bàn phở gia đình nhiều phần cá nhân hóa",
+      "output_unit": "phần phở gia đình",
+      "inputs": [
+        {
+          "name": "Bò chín và thịt gà",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 23000
+        },
+        {
+          "name": "Bánh phở và rau thơm",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Đọc phiếu riêng về loại thịt và hành của từng người",
+        "Trụng bánh rồi xếp thành phần đúng phiếu cá nhân",
+        "Đánh dấu tô theo vị trí ngồi trước chan đúng nước dùng"
+      ],
+      "check": {
+        "prompt": "Người không hành nhận tô nào?",
+        "good": "Tô đúng chỗ ngồi, đúng thịt và không hành",
+        "bad": "Tô đúng thịt nhưng rắc hành như mặc định",
+        "why": "Cá nhân hóa cần giữ cả tùy chọn nguyên liệu phụ."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Quầy phở tiệc phục vụ ba lượt có giữ nóng",
+      "output_unit": "lượt quầy phở",
+      "inputs": [
+        {
+          "name": "Bánh phở và thịt bò chín",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 24000
+        },
+        {
+          "name": "Nước dùng cùng rau thơm",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Chia số suất theo ba lượt phục vụ của buổi tiệc",
+        "Giữ nồi theo thẻ nhiệt game và chuẩn bị lượt sắp tới",
+        "Ra tô theo lượt rồi ghi thời điểm và lượng còn"
+      ],
+      "check": {
+        "prompt": "Lượt hai đủ bằng chứng giữ nóng khi nào?",
+        "good": "Có ghi nhiệt theo thẻ và giờ phục vụ lượt hai",
+        "bad": "Chỉ ghi nhiệt đầu buổi trước lượt một",
+        "why": "Theo dõi phải gắn với từng khoảng phục vụ thực tế."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Hợp đồng bếp phở lưu động nhiều điểm và đối soát từng ca",
+      "output_unit": "ca bếp phở",
+      "inputs": [
+        {
+          "name": "Bánh phở, bò và gà",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 28000
+        },
+        {
+          "name": "Nước dùng đóng bình",
+          "unit": "bình",
+          "quantity": 1,
+          "unit_cost": 15000
+        }
+      ],
+      "procedure": [
+        "Phân mẻ nấu và số suất theo điểm bếp lưu động",
+        "Chuyển bình có mã mẻ rồi nấu phục vụ tại đúng điểm",
+        "Cuối ca đối chiếu suất đã giao và nguyên liệu còn"
+      ],
+      "check": {
+        "prompt": "Ca bếp nào được đóng sổ?",
+        "good": "Suất giao cùng tồn nguyên liệu khớp mẻ tại điểm",
+        "bad": "Chỉ doanh thu tổng dù không biết điểm dùng mẻ nào",
+        "why": "Đối soát từng ca cần nối vật tư với nơi sử dụng."
+      }
+    }
+  ],
+  "com": [
+    {
+      "tier": 1,
+      "title": "Cơm tấm gà nướng sả canh mặt da",
+      "output_unit": "đĩa cơm tấm",
+      "inputs": [
+        {
+          "name": "Gạo tấm",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Gà và sả",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 17000
+        }
+      ],
+      "procedure": [
+        "Vo gạo tấm rồi nấu theo mức nước của thẻ bếp",
+        "Ướp gà sả và nướng theo lượt, kiểm mẫu chín của game",
+        "Chia cơm rồi đặt gà với mặt da đạt màu đã duyệt"
+      ],
+      "check": {
+        "prompt": "Đĩa cơm tấm nào đủ kiểm nhận?",
+        "good": "Da đạt mẫu màu và phần gà đạt kiểm chín",
+        "bad": "Da vàng đẹp nhưng bỏ kiểm chín phần trong",
+        "why": "Màu mặt da chỉ là một phần tiêu chí món nướng."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Cơm niêu cá hồi kiểm lớp cháy",
+      "output_unit": "niêu cơm",
+      "inputs": [
+        {
+          "name": "Gạo thơm",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 6000
+        },
+        {
+          "name": "Cá hồi và gia vị",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 22000
+        }
+      ],
+      "procedure": [
+        "Nấu gạo trong niêu mẫu theo thẻ công thức",
+        "Chế biến cá hồi riêng rồi đặt lên phần cơm",
+        "Kiểm lớp cháy đáy theo mẫu trước bàn giao niêu"
+      ],
+      "check": {
+        "prompt": "Lớp cháy nào đạt yêu cầu?",
+        "good": "Mỏng đều theo mẫu, không có mảng cháy đen",
+        "bad": "Càng đen càng tốt vì gọi là cơm cháy",
+        "why": "Yêu cầu là lớp cháy kiểm soát theo mẫu đã chọn."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Sáu hộp bento văn phòng chia định lượng",
+      "output_unit": "bộ sáu hộp bento",
+      "inputs": [
+        {
+          "name": "Gạo và gà teriyaki",
+          "unit": "phần",
+          "quantity": 6,
+          "unit_cost": 9000
+        },
+        {
+          "name": "Bông cải, cà rốt và hộp",
+          "unit": "bộ",
+          "quantity": 6,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Lập sơ đồ sáu hộp với định lượng từng ngăn",
+        "Nấu cơm, gà và rau theo các mẻ trên thẻ bếp",
+        "Cân chia từng ngăn rồi đánh số đủ sáu hộp"
+      ],
+      "check": {
+        "prompt": "Sáu hộp bento đạt khi nào?",
+        "good": "Đủ sáu hộp và từng ngăn đạt định lượng",
+        "bad": "Tổng lượng đủ nhưng một hộp thiếu ngăn rau",
+        "why": "Đơn bento cần đồng đều ở từng hộp giao riêng."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Cơm gà Hải Nam luộc và nấu nước dùng",
+      "output_unit": "đĩa Hải Nam",
+      "inputs": [
+        {
+          "name": "Gạo thơm và gừng",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 7000
+        },
+        {
+          "name": "Gà và hành",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 18000
+        }
+      ],
+      "procedure": [
+        "Luộc gà theo thẻ game rồi giữ riêng nước dùng",
+        "Dùng phần nước gà để nấu cơm với gừng",
+        "Chia thịt gà chín và xới cơm theo suất"
+      ],
+      "check": {
+        "prompt": "Cơm Hải Nam nào đúng quy trình?",
+        "good": "Cơm nấu bằng nước gà của mẻ đã ghi",
+        "bad": "Cơm trắng thường rồi chan nước gà khi giao",
+        "why": "Hương cơm được tạo trong bước nấu bằng nước dùng."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Cơm bò nướng sốt tiêu làm sốt tại chảo",
+      "output_unit": "đĩa cơm bò",
+      "inputs": [
+        {
+          "name": "Gạo trắng",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Bò và tiêu đen",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 23000
+        }
+      ],
+      "procedure": [
+        "Nấu cơm và chuẩn bị thịt bò theo khẩu phần",
+        "Nướng bò theo thẻ bếp rồi giữ phần nước chảo",
+        "Nấu sốt tiêu tại chảo và rưới theo mức khách chọn"
+      ],
+      "check": {
+        "prompt": "Bằng chứng nào đúng món sốt tiêu tại chảo?",
+        "good": "Sốt được nấu từ phần nước chảo của mẻ",
+        "bad": "Dùng tương pha sẵn thay vì bước nấu sốt",
+        "why": "Gói yêu cầu thực hiện bước làm sốt riêng tại bếp."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Cơm hải sản đút lò theo lớp",
+      "output_unit": "phần cơm đút lò",
+      "inputs": [
+        {
+          "name": "Gạo và nước dùng rau",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 8000
+        },
+        {
+          "name": "Tôm, mực và đậu Hà Lan",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 22000
+        }
+      ],
+      "procedure": [
+        "Nấu cơm nền theo thẻ nước dùng",
+        "Xếp cơm cùng tôm mực và đậu thành lớp đã duyệt",
+        "Đút lò mô phỏng rồi kiểm chín đều các lớp"
+      ],
+      "check": {
+        "prompt": "Phần cơm nào được giao?",
+        "good": "Lớp trên và giữa đều đạt thẻ kiểm chín",
+        "bad": "Mặt trên đẹp nên không cần kiểm lớp giữa",
+        "why": "Món nhiều lớp cần kiểm phần bên trong."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Mâm cơm chay nấm nhiều món ra đồng thời",
+      "output_unit": "mâm chay",
+      "inputs": [
+        {
+          "name": "Gạo và đậu phụ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 13000
+        },
+        {
+          "name": "Nấm hương và rau cải",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 14000
+        }
+      ],
+      "procedure": [
+        "Chia nấm, đậu và rau theo món hấp, kho cùng canh",
+        "Xếp thứ tự nấu để các món chín gần cùng giờ",
+        "Ra cơm và các món theo sơ đồ mâm đã duyệt"
+      ],
+      "check": {
+        "prompt": "Mâm nào đạt yêu cầu ra đồng thời?",
+        "good": "Đủ món và cùng khung giờ phục vụ",
+        "bad": "Một món ra sớm rồi các món khác cách xa lịch",
+        "why": "Điểm khó là điều phối nhiều món của cùng mâm."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Đơn cơm sự kiện có ba thực đơn lựa chọn",
+      "output_unit": "suất sự kiện",
+      "inputs": [
+        {
+          "name": "Cơm và đạm theo ba thực đơn",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 22000
+        },
+        {
+          "name": "Rau củ cùng hộp nhãn",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Tổng hợp số suất từng lựa chọn gà, cá và chay",
+        "Nấu riêng từng thực đơn theo bảng số lượng",
+        "Đóng hộp đúng nhãn lựa chọn rồi chia điểm phát"
+      ],
+      "check": {
+        "prompt": "Khách chọn chay nhận suất nào?",
+        "good": "Hộp nhãn chay có đúng thành phần chay",
+        "bad": "Hộp nhãn chay nhưng dùng món cá do còn dư",
+        "why": "Nhãn lựa chọn phải phản ánh đúng món trong hộp."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Tiệc cơm gia đình nhiều bàn ra món theo giờ",
+      "output_unit": "lượt bàn cơm",
+      "inputs": [
+        {
+          "name": "Gạo và thịt kho",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 18000
+        },
+        {
+          "name": "Canh bí cùng rau xào",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 11000
+        }
+      ],
+      "procedure": [
+        "Ghép số bàn với giờ ra từng món trong tiệc gia đình",
+        "Nấu thịt kho trước rồi làm canh và rau theo lượt",
+        "Ra món theo số bàn và xác nhận đủ mâm"
+      ],
+      "check": {
+        "prompt": "Bàn số 2 đủ điều kiện xác nhận khi nào?",
+        "good": "Đủ món đúng lượt giờ của bàn số 2",
+        "bad": "Một món chuyển sang bàn khác nhưng tổng bếp đủ",
+        "why": "Nghiệm thu theo từng bàn cần đúng điểm nhận."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Hợp đồng bếp cơm nhiều ngày với lịch nấu và bàn giao theo điểm",
+      "output_unit": "ngày bếp cơm",
+      "inputs": [
+        {
+          "name": "Gạo và đạm thực đơn ngày",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 23000
+        },
+        {
+          "name": "Rau củ cùng phiếu điểm giao",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Chốt số suất ngày và lịch giao từng địa điểm",
+        "Nấu theo mẻ có mã gắn với ngày thực đơn",
+        "Bàn giao theo điểm rồi đối soát số nhận và phần dư"
+      ],
+      "check": {
+        "prompt": "Đổi thực đơn ngày ba cần cập nhật gì?",
+        "good": "Cả mẻ nguyên liệu và phiếu giao ngày ba",
+        "bad": "Chỉ đổi tên trên phiếu còn nấu món cũ",
+        "why": "Hợp đồng nhiều ngày cần nhất quán thực đơn với sản xuất."
+      }
+    }
+  ],
+  "photobooth": [
+    {
+      "tier": 1,
+      "title": "Ảnh lưu niệm chuyển động qua tấm thấu kính",
+      "output_unit": "ảnh thấu kính",
+      "inputs": [
+        {
+          "name": "Tấm thấu kính",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 14000
+        },
+        {
+          "name": "Giấy ảnh chuyển động",
+          "unit": "tờ",
+          "quantity": 1,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Chọn hai khung hình có chuyển động phù hợp với khách",
+        "Ghép dải ảnh theo mẫu thấu kính trên phần mềm game",
+        "Căn tấm thấu kính rồi nghiêng thử cả hai góc nhìn"
+      ],
+      "check": {
+        "prompt": "Ảnh chuyển động nào đạt?",
+        "good": "Nghiêng hai phía thấy lần lượt hai khung rõ",
+        "bad": "Chỉ một khung rõ còn khung kia chồng mờ",
+        "why": "Hiệu ứng cần hoạt động ở cả hai góc kiểm."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Bộ ảnh hồ sơ có bản kiểm kích thước",
+      "output_unit": "bộ ảnh hồ sơ",
+      "inputs": [
+        {
+          "name": "Giấy ảnh chuẩn khổ",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Thẻ kiểm kích thước",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Đọc yêu cầu khổ ảnh và nền từ phiếu hồ sơ hư cấu",
+        "Căn ảnh theo khung quy định rồi in bản thử",
+        "Đo khổ bản in và đối chiếu khoảng đầu trên thẻ"
+      ],
+      "check": {
+        "prompt": "Ảnh hồ sơ được duyệt dựa vào gì?",
+        "good": "Kích thước đo trên bản in khớp phiếu",
+        "bad": "Chỉ kích thước trên màn hình trước khi in",
+        "why": "Tỷ lệ in có thể khác tệp nên phải kiểm thành phẩm."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Thiệp lưu niệm ảnh phủ lớp trong",
+      "output_unit": "thiệp ảnh",
+      "inputs": [
+        {
+          "name": "Phôi thiệp giấy",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Màng phủ trong",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đặt ảnh và lời chúc vào đúng vùng của phôi thiệp",
+        "In bản đã duyệt rồi phủ lớp trong lên mặt ảnh",
+        "Ép phẳng và kiểm không có bọt che khuôn mặt"
+      ],
+      "check": {
+        "prompt": "Thiệp phủ trong nào đủ giao?",
+        "good": "Mặt phẳng và khuôn mặt không bị bọt che",
+        "bad": "Lời chúc rõ nhưng bọt phủ trên mắt",
+        "why": "Lớp phủ phải bảo vệ ảnh mà không giảm khả năng nhìn."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Đặt sách ảnh mini có duyệt trang",
+      "output_unit": "sách ảnh mini",
+      "inputs": [
+        {
+          "name": "Giấy ảnh hai mặt",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Bìa và gáy mini",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Sắp ảnh thành trang và gửi bản xem theo thứ tự",
+        "Áp các sửa đổi được duyệt rồi in bộ trang cuối",
+        "Đóng gáy và lật kiểm ảnh khớp từng trang duyệt"
+      ],
+      "check": {
+        "prompt": "Sách mini theo bản nào để đóng gáy?",
+        "good": "Bản trang cuối sau phản hồi khách",
+        "bad": "Bản đầu vì đã được xuất tệp trước",
+        "why": "Việc duyệt trang quyết định phiên bản thành phẩm."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Sách lật ảnh chuyển động",
+      "output_unit": "sách lật",
+      "inputs": [
+        {
+          "name": "Giấy ảnh mỏng",
+          "unit": "tờ",
+          "quantity": 4,
+          "unit_cost": 2500
+        },
+        {
+          "name": "Kẹp gáy sách lật",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Chọn chuỗi ảnh liên tiếp của một động tác",
+        "In và xếp khung theo số thứ tự chuyển động",
+        "Kẹp gáy rồi lật thử để phát hiện khung đảo"
+      ],
+      "check": {
+        "prompt": "Sách lật nào có chuyển động liền?",
+        "good": "Khung tăng liên tiếp và lật không giật ngược",
+        "bad": "Các ảnh đều đẹp nhưng khung cuối đặt giữa",
+        "why": "Thứ tự khung tạo ra chuyển động khi lật sách."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Bộ ba chân dung bồi khung giấy",
+      "output_unit": "bộ ba chân dung",
+      "inputs": [
+        {
+          "name": "Giấy ảnh chân dung",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Khung bìa giấy",
+          "unit": "cái",
+          "quantity": 3,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Chọn ba chân dung và thống nhất cách cắt khung",
+        "In cùng tông màu rồi bồi từng ảnh vào khung giấy",
+        "Xếp bộ ba và kiểm đường chân trời cùng thứ tự"
+      ],
+      "check": {
+        "prompt": "Bộ ba nào đúng mẫu trình bày?",
+        "good": "Tông màu thống nhất, ảnh không bị khung che mặt",
+        "bad": "Ba ảnh đủ nhưng một khung cắt mất cằm",
+        "why": "Bồi khung phải giữ vùng hình đã duyệt."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Sản xuất mẫu ảnh sự kiện đã duyệt nhận diện",
+      "output_unit": "mẫu sự kiện",
+      "inputs": [
+        {
+          "name": "Giấy in thử nhận diện",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Thẻ mã mẫu duyệt",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đặt logo và màu theo bộ nhận diện sự kiện được cung cấp",
+        "In mẫu thử rồi ghi mã phiên bản khách chọn",
+        "Khóa mẫu sản xuất theo mã đã duyệt trước nhân bản"
+      ],
+      "check": {
+        "prompt": "Mẫu nào dùng để in hàng loạt?",
+        "good": "Mã mẫu đã được chủ sự kiện xác nhận",
+        "bad": "Mẫu mới sửa màu nhưng chưa được xác nhận",
+        "why": "Sản xuất hàng loạt phải bám phiên bản nhận diện duyệt."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Studio chân dung nhóm lưu động",
+      "output_unit": "buổi studio nhóm",
+      "inputs": [
+        {
+          "name": "Phông giấy chân dung",
+          "unit": "cuộn",
+          "quantity": 1,
+          "unit_cost": 18000
+        },
+        {
+          "name": "Thẻ sơ đồ vị trí",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đếm nhóm và bố trí vị trí đứng theo mặt bằng chụp",
+        "Căn sáng bằng ảnh thử rồi chụp từng nhóm theo danh sách",
+        "So đủ mặt người và ghép tệp với tên nhóm"
+      ],
+      "check": {
+        "prompt": "Ảnh nhóm đủ bàn giao khi nào?",
+        "good": "Đủ người thấy rõ và mã tệp đúng nhóm",
+        "bad": "Ảnh sắc nét nhưng một người bị che phía sau",
+        "why": "Chất lượng chân dung nhóm bao gồm khả năng thấy từng người."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Sổ khách nhiều ngày có ảnh và quyền sử dụng rõ ràng",
+      "output_unit": "trang sổ khách",
+      "inputs": [
+        {
+          "name": "Trang sổ lưu ảnh",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 3000
+        },
+        {
+          "name": "Phiếu quyền sử dụng",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Ghi lựa chọn lưu và công bố ảnh của khách từng ngày",
+        "Chụp rồi gắn ảnh vào trang đúng ngày được đồng ý",
+        "Kiểm phạm vi dùng ảnh trước xuất bản sổ tổng hợp"
+      ],
+      "check": {
+        "prompt": "Khách chỉ đồng ý lưu sổ kín được xử lý sao?",
+        "good": "Giữ trong sổ nội bộ theo lựa chọn đã ghi",
+        "bad": "Đăng ảnh lên trang công khai cùng các khách khác",
+        "why": "Quyền sử dụng cần theo lựa chọn từng khách."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Trạm chụp sự kiện lưu động có đối soát thiết bị và thành phẩm",
+      "output_unit": "ca trạm chụp",
+      "inputs": [
+        {
+          "name": "Giấy ảnh theo ca",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Tem thiết bị và phiếu giao",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Kiểm danh mục thiết bị lúc dựng trạm theo địa điểm",
+        "Chụp và in theo mã khách rồi ghi số bản thành phẩm",
+        "Kết ca đối soát thiết bị thu về cùng ảnh đã giao"
+      ],
+      "check": {
+        "prompt": "Ca trạm nào đủ kết thúc?",
+        "good": "Thiết bị khớp và từng mã ảnh có trạng thái giao",
+        "bad": "Chỉ đếm ảnh đã in dù còn thiết bị chưa tìm thấy",
+        "why": "Trạm lưu động cần đối soát cả tài sản và sản phẩm."
+      }
+    }
+  ],
+  "giupviec": [
+    {
+      "tier": 1,
+      "title": "Giặt hút ghế bọc vải",
+      "output_unit": "ghế bọc vải",
+      "inputs": [
+        {
+          "name": "Dung dịch theo nhãn vải",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 9000
+        },
+        {
+          "name": "Khăn thử màu",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đọc nhãn ghế và thử dung dịch ở vùng khuất được phép",
+        "Giặt hút theo lượt trên mô hình sau khi thử màu đạt",
+        "Kiểm vết còn lại và bàn giao điều kiện khô theo nhãn"
+      ],
+      "check": {
+        "prompt": "Ghế nào đủ để kết ca?",
+        "good": "Thử màu đạt, vết xử lý và tình trạng khô được ghi",
+        "bad": "Sạch nhìn ngoài nhưng bỏ thử màu",
+        "why": "Chất liệu bọc cần được kiểm trước toàn bộ bề mặt."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Giặt hút bề mặt nệm và kiểm độ ẩm",
+      "output_unit": "bề mặt nệm",
+      "inputs": [
+        {
+          "name": "Dung dịch dành cho nệm",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 10000
+        },
+        {
+          "name": "Phiếu kiểm độ ẩm",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Đọc nhãn nệm và đánh dấu vùng cần giặt hút",
+        "Thực hiện lượt giặt hút mẫu theo thẻ vật liệu",
+        "Đo độ ẩm mô phỏng rồi ghi thời điểm có thể bàn giao"
+      ],
+      "check": {
+        "prompt": "Nệm nào được đánh dấu sẵn sàng sử dụng?",
+        "good": "Kết quả ẩm đạt điều kiện trên thẻ nhãn",
+        "bad": "Hết vết bẩn dù kết quả ẩm vẫn chưa đạt",
+        "why": "Bề mặt sạch không có nghĩa nệm đã khô đạt yêu cầu."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Tháo rửa và lắp lại rèm lá",
+      "output_unit": "bộ rèm lá",
+      "inputs": [
+        {
+          "name": "Dung dịch rèm theo vật liệu",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 6000
+        },
+        {
+          "name": "Nhãn thứ tự lá",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đánh số lá rèm và lưu ảnh vị trí trước tháo",
+        "Rửa từng lá theo nhãn rồi kiểm khô trước lắp",
+        "Lắp lại đúng thứ tự và thử kéo mở đủ hành trình"
+      ],
+      "check": {
+        "prompt": "Rèm lắp lại đạt khi nào?",
+        "good": "Đúng thứ tự lá và kéo không vướng",
+        "bad": "Lá sạch nhưng thứ tự ngược làm rèm kẹt",
+        "why": "Bàn giao cần khôi phục cả chức năng đóng mở."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Vệ sinh bụi mịn sau sửa nhà",
+      "output_unit": "phòng sau sửa",
+      "inputs": [
+        {
+          "name": "Túi lọc bụi phù hợp",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 12000
+        },
+        {
+          "name": "Khăn vi sợi",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Khoanh khu vực và ghi loại bụi theo phiếu công việc",
+        "Làm sạch theo thứ tự cao xuống thấp bằng bộ thiết bị phù hợp",
+        "Kiểm bề mặt bằng khăn sạch rồi ghi vùng còn cần xử lý"
+      ],
+      "check": {
+        "prompt": "Bằng chứng nào đủ sạch bụi mịn?",
+        "good": "Khăn kiểm đạt ở các điểm đã chọn",
+        "bad": "Chỉ nhìn từ cửa thấy sàn bóng",
+        "why": "Kiểm tiếp xúc phát hiện bụi còn lại khó nhìn từ xa."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Thử và phủ bảo vệ sàn đá",
+      "output_unit": "mảng sàn đá",
+      "inputs": [
+        {
+          "name": "Chất phủ đúng loại đá",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 18000
+        },
+        {
+          "name": "Miếng thử vùng khuất",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Xác định loại đá và thử lớp phủ ở vùng được phép",
+        "Chỉ phủ phần đã duyệt sau kết quả thử tương thích",
+        "Kiểm màu cùng độ đều và ghi thời gian chờ theo nhãn"
+      ],
+      "check": {
+        "prompt": "Sàn đá nào đủ quyết định phủ rộng?",
+        "good": "Vùng thử không đổi màu và được chủ duyệt",
+        "bad": "Chọn chất phủ vì dùng tốt trên đá khác",
+        "why": "Tương thích phải được kiểm trên đúng bề mặt cần chăm."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Lập lịch vệ sinh văn phòng nhỏ ngoài giờ",
+      "output_unit": "ca văn phòng",
+      "inputs": [
+        {
+          "name": "Khăn chia khu màu",
+          "unit": "cái",
+          "quantity": 3,
+          "unit_cost": 3000
+        },
+        {
+          "name": "Thẻ lịch ngoài giờ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Xác nhận giờ vào và vùng được phép của văn phòng",
+        "Dọn theo tuyến ít người dùng và phân khăn từng khu",
+        "Kiểm lại hạng mục rồi bàn giao quyền ra vào theo phiếu"
+      ],
+      "check": {
+        "prompt": "Ca ngoài giờ hoàn tất bằng chứng nào?",
+        "good": "Đủ việc và xác nhận bàn giao ra vào",
+        "bad": "Chỉ ảnh phòng sạch, chưa ghi bàn giao chìa khóa",
+        "why": "Dịch vụ ngoài giờ còn cần khép quy trình tiếp cận văn phòng."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Hợp đồng dọn phòng và thay vải nhà lưu trú ngắn ngày",
+      "output_unit": "lượt phòng lưu trú",
+      "inputs": [
+        {
+          "name": "Túi đồ vải riêng",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Tem phòng đã kiểm",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu phòng trả với số bộ vải cần thay",
+        "Tách vải dùng rồi dọn phòng theo bảng hạng mục",
+        "Lắp vải sạch và kiểm phòng trước gắn tem sẵn sàng"
+      ],
+      "check": {
+        "prompt": "Phòng nào được đánh dấu sẵn sàng?",
+        "good": "Đủ vải sạch và toàn bộ hạng mục đã kiểm",
+        "bad": "Thay vải xong nhưng còn đồ khách chưa bàn giao",
+        "why": "Nhãn sẵn sàng phản ánh trạng thái toàn phòng."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Dự án sắp lại phòng học kỳ nghỉ",
+      "output_unit": "phòng học sắp lại",
+      "inputs": [
+        {
+          "name": "Nhãn kệ học liệu",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Hộp phân đồ dùng",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Kiểm kê bàn ghế và học liệu trước kỳ nghỉ",
+        "Chuyển đồ theo sơ đồ lớp đã được giáo viên duyệt",
+        "Đối chiếu số món và kiểm lối đi sau sắp lại"
+      ],
+      "check": {
+        "prompt": "Phòng học nào đạt sơ đồ mới?",
+        "good": "Đủ đồ và lối đi thông theo bản duyệt",
+        "bad": "Kệ gọn nhưng chặn lối đi đã đánh dấu",
+        "why": "Sắp lại phải giữ cả số lượng lẫn khả năng sử dụng phòng."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Điều phối vệ sinh khi chuyển đồ từ kho vào nhà",
+      "output_unit": "lượt chuyển kho",
+      "inputs": [
+        {
+          "name": "Tấm phủ đồ",
+          "unit": "tấm",
+          "quantity": 2,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Nhãn vùng sạch",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đánh dấu nơi đặt đồ và thứ tự chuyển từ kho vào nhà",
+        "Vệ sinh vùng trống trước rồi phủ bảo vệ đồ mới chuyển",
+        "Kiểm bụi sau từng lượt và chỉ mở vùng sạch khi đạt"
+      ],
+      "check": {
+        "prompt": "Khi xe còn chuyển đồ, dọn thế nào?",
+        "good": "Theo vùng và lượt chuyển đã thống nhất",
+        "bad": "Đánh dấu toàn nhà sạch ngay sau lượt đầu",
+        "why": "Chuyển đồ tiếp tục có thể làm bẩn vùng vừa hoàn tất."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Dọn bàn giao nhiều căn hộ và nghiệm thu từng chủ nhà",
+      "output_unit": "căn hộ bàn giao",
+      "inputs": [
+        {
+          "name": "Khăn kiểm bề mặt",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 3000
+        },
+        {
+          "name": "Phiếu riêng từng căn",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Ghi yêu cầu chủ nhà và hiện trạng từng căn trước dọn",
+        "Làm sạch theo danh mục riêng với mã căn trên phiếu",
+        "Mời đúng chủ nhà kiểm từng mục rồi lưu lỗi cần bổ sung"
+      ],
+      "check": {
+        "prompt": "Căn A đã ký, căn B còn lỗi xử lý sao?",
+        "good": "Giữ căn B chờ nghiệm thu riêng",
+        "bad": "Dùng chữ ký căn A để đóng cả hai căn",
+        "why": "Mỗi chủ nhà có phạm vi và bằng chứng nghiệm thu riêng."
+      }
+    }
+  ],
+  "naucom": [
+    {
+      "tier": 1,
+      "title": "Bữa sáng dim sum gói và hấp nhiều tầng",
+      "output_unit": "khay dim sum",
+      "inputs": [
+        {
+          "name": "Vỏ há cảo và nhân tôm",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 19000
+        },
+        {
+          "name": "Nhân nấm rau và giấy lót",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Chia nhân tôm và nhân nấm vào hai khu gói riêng",
+        "Gói dim sum rồi xếp tầng hấp theo thẻ bếp game",
+        "Hấp theo mẻ và kiểm nhân đạt trước xếp khay"
+      ],
+      "check": {
+        "prompt": "Khay dim sum nào đủ nghiệm thu?",
+        "good": "Nhân đạt kiểm chín và không nhầm loại bánh",
+        "bad": "Vỏ trong đẹp nhưng bỏ kiểm nhân",
+        "why": "Bánh hấp cần đạt cả phần nhân bên trong."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Bữa ăn chuẩn bị sẵn ba ngày có nhãn bảo quản",
+      "output_unit": "bộ bữa ba ngày",
+      "inputs": [
+        {
+          "name": "Gạo, gà và rau củ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 24000
+        },
+        {
+          "name": "Hộp và nhãn bảo quản",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Chia thực đơn theo ngày dùng và khả năng bảo quản từng món",
+        "Nấu từng mẻ rồi đóng phần theo thẻ bếp đã duyệt",
+        "Ghi ngày dùng cùng hướng dẫn bảo quản cho từng hộp"
+      ],
+      "check": {
+        "prompt": "Hộp ngày ba cần nhãn nào?",
+        "good": "Ngày dùng và cách bảo quản riêng của món",
+        "bad": "Chỉ ghi để mát chung cho tất cả món",
+        "why": "Kế hoạch nhiều ngày cần phân biệt điều kiện của từng món."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Tiệc tại nhà mười hai khách ra món theo lượt",
+      "output_unit": "lượt tiệc tại nhà",
+      "inputs": [
+        {
+          "name": "Bò, khoai và rau theo thực đơn",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 28000
+        },
+        {
+          "name": "Nguyên liệu súp bí",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Lập giờ ra món cho mười hai khách theo thực đơn đã chốt",
+        "Nấu món cần lâu trước rồi chia khẩu phần theo lượt",
+        "Ra đủ phần từng lượt và xác nhận với người phụ trách bàn"
+      ],
+      "check": {
+        "prompt": "Lượt khai vị đạt yêu cầu khi nào?",
+        "good": "Đủ mười hai phần trong khung giờ đã chốt",
+        "bad": "Món chính xong sớm nên bỏ lượt khai vị",
+        "why": "Thực đơn tiệc bao gồm cả thứ tự phục vụ được duyệt."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Bữa mì tươi tự cán cho gia đình",
+      "output_unit": "bữa mì tươi",
+      "inputs": [
+        {
+          "name": "Bột mì và trứng",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 14000
+        },
+        {
+          "name": "Nấm cùng cà chua làm sốt",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Trộn và nghỉ bột theo thẻ mì tươi",
+        "Cán bột rồi cắt sợi đồng đều theo cỡ đã chọn",
+        "Nấu mì và ghép sốt nấm cà chua theo suất"
+      ],
+      "check": {
+        "prompt": "Mì tươi nào đúng cỡ gia đình chọn?",
+        "good": "Sợi cùng bề rộng như mẫu đã duyệt",
+        "bad": "Sợi dày mỏng lẫn nhau vì đều là bột tươi",
+        "why": "Cỡ sợi đồng đều giúp đạt kết cấu trong cùng mẻ nấu."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Thực đơn nướng cuối tuần chia việc bếp và bàn",
+      "output_unit": "bữa nướng",
+      "inputs": [
+        {
+          "name": "Gà, nấm và ớt chuông",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 25000
+        },
+        {
+          "name": "Khoai và sốt chấm",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 11000
+        }
+      ],
+      "procedure": [
+        "Tách phần sống với đồ bàn rồi phân việc bếp và phục vụ",
+        "Nướng từng nhóm nguyên liệu theo thẻ chín của game",
+        "Chuyển đồ chín bằng bộ dụng cụ riêng ra bàn đúng lượt"
+      ],
+      "check": {
+        "prompt": "Cách bàn giao đồ nướng nào đạt?",
+        "good": "Đồ chín qua khay riêng cùng dấu kiểm mẻ",
+        "bad": "Đồ chín đặt lại khay từng chứa gà sống",
+        "why": "Phân công bếp bàn phải giữ tách biệt phần sống và chín."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Bữa chay lễ với bốn món hấp và kho",
+      "output_unit": "mâm chay lễ",
+      "inputs": [
+        {
+          "name": "Đậu phụ, nấm hương và hạt sen",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 21000
+        },
+        {
+          "name": "Rau củ cho bốn món",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 13000
+        }
+      ],
+      "procedure": [
+        "Phân nguyên liệu cho hai món hấp và hai món kho",
+        "Khởi động món kho trước rồi xếp lượt hấp theo giờ ăn",
+        "Kiểm đủ bốn món và đặt mâm theo sơ đồ đã chốt"
+      ],
+      "check": {
+        "prompt": "Mâm chay lễ nào đúng hợp đồng?",
+        "good": "Đủ hai món hấp, hai món kho theo thực đơn",
+        "bad": "Bốn đĩa cùng một món để đủ số đĩa",
+        "why": "Số món phản ánh công thức khác nhau chứ không phải số đĩa."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lớp nấu tại nhà kèm bữa ăn thực hành",
+      "output_unit": "buổi học nấu",
+      "inputs": [
+        {
+          "name": "Bột bánh và rau làm nhân",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 17000
+        },
+        {
+          "name": "Nguyên liệu nước chấm",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Chia bộ nguyên liệu theo người học và giới thiệu thứ tự làm",
+        "Hướng dẫn gói bánh rồi cho người học thực hiện từng bước",
+        "Nấu bánh thực hành và cùng kiểm thành phẩm trước dùng bữa"
+      ],
+      "check": {
+        "prompt": "Buổi học đạt mục tiêu khi nào?",
+        "good": "Người học có thao tác và món thực hành được kiểm",
+        "bad": "Người hướng dẫn làm toàn bộ còn học viên chỉ ăn",
+        "why": "Sản phẩm đi cùng bằng chứng người học đã thực hành."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Hợp đồng bữa gia đình ba nhà theo lịch riêng",
+      "output_unit": "bữa theo nhà",
+      "inputs": [
+        {
+          "name": "Gạo và đạm theo hộ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 24000
+        },
+        {
+          "name": "Rau cùng nhãn thực đơn",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Đọc khẩu vị và lịch bữa riêng của ba nhà",
+        "Chia nguyên liệu theo mã hộ rồi nấu theo giờ của từng nhà",
+        "Bàn giao bữa có nhãn và ghi nhận thay đổi cho lần sau"
+      ],
+      "check": {
+        "prompt": "Nhà B ăn sớm hơn, xử lý lịch thế nào?",
+        "good": "Nấu và giao theo khung riêng của nhà B",
+        "bad": "Giao cùng giờ nhà A để thuận một chuyến",
+        "why": "Hợp đồng ba nhà giữ lịch và yêu cầu riêng từng hộ."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Tuần tiếp khách tại nhà với ngân sách từng bữa",
+      "output_unit": "bữa tiếp khách",
+      "inputs": [
+        {
+          "name": "Cá, gạo và rau theo thực đơn",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 25000
+        },
+        {
+          "name": "Trái cây tráng miệng",
+          "unit": "phần",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Đếm khách từng bữa và phân ngân sách tuần thành hạn mức bữa",
+        "Chọn lượng nguyên liệu trong hạn mức rồi nấu theo thực đơn",
+        "Ghi chi thực tế và phần dư chuyển sang kế hoạch bữa sau"
+      ],
+      "check": {
+        "prompt": "Bữa vượt dự toán cần ghi thế nào?",
+        "good": "Ghi chênh lệch và điều chỉnh sau khi chủ nhà duyệt",
+        "bad": "Giấu khoản vượt bằng cách xóa món khỏi sổ",
+        "why": "Ngân sách từng bữa cần số thực để chủ nhà quyết định."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Hợp đồng bếp gia đình dài ngày có sổ chợ và nghiệm thu từng buổi",
+      "output_unit": "ca bếp gia đình",
+      "inputs": [
+        {
+          "name": "Thực phẩm theo sổ chợ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 27000
+        },
+        {
+          "name": "Gia vị và hộp phần dư",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu tồn bếp rồi lập sổ chợ cho thực đơn đã duyệt",
+        "Nấu bữa và ghi lượng đã dùng từ từng khoản mua",
+        "Bàn giao cùng chủ nhà kiểm món, chi phí và phần còn"
+      ],
+      "check": {
+        "prompt": "Ca bếp dài ngày đóng sổ bằng gì?",
+        "good": "Có xác nhận bữa cùng chi thực và tồn chuyển ca",
+        "bad": "Chỉ ảnh món ăn không có sổ chợ",
+        "why": "Hợp đồng cần đối soát việc nấu lẫn khoản mua qua từng buổi."
+      }
+    }
+  ],
+  "babysitter": [
+    {
+      "tier": 1,
+      "title": "Đón trẻ ở trường theo danh sách được phép",
+      "output_unit": "lượt đón trường",
+      "inputs": [
+        {
+          "name": "Thẻ người đón được phép",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Phiếu bàn giao trường",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu lịch đón và danh sách người được giám hộ cho phép",
+        "Xác minh với trường trước nhận đúng trẻ theo phiếu",
+        "Ghi giờ bàn giao và báo đầu mối gia đình đã xác nhận"
+      ],
+      "check": {
+        "prompt": "Người lạ báo được nhờ đón, xử lý thế nào?",
+        "good": "Chờ xác minh qua đầu mối giám hộ đã lưu",
+        "bad": "Giao ngay vì người đó biết tên trẻ",
+        "why": "Biết tên trẻ không thay thế quyền đón đã xác minh."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Buổi sinh hoạt thư viện có người giám hộ đồng ý",
+      "output_unit": "buổi thư viện",
+      "inputs": [
+        {
+          "name": "Thẻ lịch đọc sách",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        },
+        {
+          "name": "Phiếu đồng ý hoạt động",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Xác nhận sự đồng ý và đầu mối liên hệ của người giám hộ",
+        "Chọn khu đọc cùng sách theo độ tuổi và nhu cầu trẻ",
+        "Kiểm đủ trẻ trước rời thư viện rồi bàn giao theo lịch"
+      ],
+      "check": {
+        "prompt": "Buổi thư viện đủ điều kiện bắt đầu khi nào?",
+        "good": "Có đồng ý và lịch bàn giao đã xác nhận",
+        "bad": "Có vé thư viện nhưng chưa có đồng ý giám hộ",
+        "why": "Hoạt động ngoài nhà cần đúng phạm vi gia đình cho phép."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Chuẩn bị đồ và bàn giao trẻ trong chuyến đi",
+      "output_unit": "lượt bàn giao chuyến đi",
+      "inputs": [
+        {
+          "name": "Túi đồ cá nhân",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 8000
+        },
+        {
+          "name": "Thẻ kiểm hành lý trẻ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Lập danh mục đồ cần mang theo hướng dẫn gia đình",
+        "Xếp đồ có nhãn và đối chiếu người nhận trẻ tại điểm đến",
+        "Bàn giao trẻ cùng túi đồ sau khi xác minh người nhận"
+      ],
+      "check": {
+        "prompt": "Bàn giao chuyến đi hoàn tất thế nào?",
+        "good": "Đúng người nhận đã xác minh và đủ đồ trên phiếu",
+        "bad": "Để túi đồ ở điểm đến rồi báo trẻ đã tới",
+        "why": "Cần xác nhận cả trẻ lẫn đồ dùng đã được tiếp nhận."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Ca chăm anh chị em có lịch riêng từng bé",
+      "output_unit": "ca anh chị em",
+      "inputs": [
+        {
+          "name": "Thẻ lịch từng bé",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Nhãn đồ cá nhân",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Ghi riêng giờ ăn, nghỉ và sinh hoạt của từng bé theo gia đình",
+        "Xếp hoạt động xen kẽ để luôn bảo đảm người chăm phù hợp",
+        "Ghi việc đã làm cho từng bé và chuyển thông tin khi kết ca"
+      ],
+      "check": {
+        "prompt": "Hai bé có giờ ngủ khác nhau, dùng lịch nào?",
+        "good": "Hai lịch riêng được bố trí người chăm phù hợp",
+        "bad": "Một lịch chung theo bé lớn cho dễ theo dõi",
+        "why": "Nhu cầu cá nhân không được mất khi chăm nhiều bé."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Ngày thủ công với vật liệu theo độ tuổi",
+      "output_unit": "buổi thủ công",
+      "inputs": [
+        {
+          "name": "Giấy màu theo độ tuổi",
+          "unit": "tập",
+          "quantity": 1,
+          "unit_cost": 7000
+        },
+        {
+          "name": "Bút sáp phù hợp tuổi",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu độ tuổi và chọn bộ vật liệu được phép",
+        "Chuẩn bị khu làm rồi hướng dẫn trẻ theo từng bước đơn giản",
+        "Thu kiểm vật liệu và ghi hoạt động để báo gia đình"
+      ],
+      "check": {
+        "prompt": "Bộ vật liệu nào đúng cho trẻ nhỏ?",
+        "good": "Bộ phù hợp độ tuổi đã ghi và được kiểm trước buổi",
+        "bad": "Bộ có chi tiết nhỏ chỉ vì trẻ thích màu",
+        "why": "Lựa chọn vật liệu dựa vào độ tuổi và kế hoạch đã duyệt."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Kế hoạch giúp trẻ quen người chăm khi gia đình đi thăm",
+      "output_unit": "buổi làm quen",
+      "inputs": [
+        {
+          "name": "Thẻ hoạt động quen thuộc",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Sổ phản hồi gia đình",
+          "unit": "quyển",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Hỏi gia đình hoạt động quen và tín hiệu trẻ cần hỗ trợ",
+        "Thực hiện buổi làm quen ngắn có giám hộ theo kế hoạch",
+        "Ghi phản hồi rồi thống nhất bước tiếp theo với gia đình"
+      ],
+      "check": {
+        "prompt": "Trẻ chưa sẵn sàng tách giám hộ, làm gì?",
+        "good": "Ghi nhận và điều chỉnh bước làm quen cùng gia đình",
+        "bad": "Bỏ qua phản hồi để giữ nguyên thời gian đã xếp",
+        "why": "Kế hoạch làm quen cần đáp ứng phản hồi thực của trẻ."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Chương trình sinh hoạt nhiều ngày trong kỳ nghỉ",
+      "output_unit": "ngày kỳ nghỉ trẻ",
+      "inputs": [
+        {
+          "name": "Học liệu kể chuyện và vẽ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 12000
+        },
+        {
+          "name": "Thẻ lịch sinh hoạt ngày",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Chia hoạt động nhiều ngày theo độ tuổi và thời gian nghỉ",
+        "Chuẩn bị học liệu riêng cho ngày đang thực hiện",
+        "Ghi mức tham gia rồi điều chỉnh ngày kế tiếp cùng giám hộ"
+      ],
+      "check": {
+        "prompt": "Ngày sau được xếp dựa trên gì?",
+        "good": "Kế hoạch và phản hồi của ngày trước",
+        "bad": "Lặp toàn bộ ngày đầu dù trẻ đã mệt",
+        "why": "Theo dõi phản hồi giúp lịch nhiều ngày phù hợp hơn."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Lịch chăm trẻ cho buổi tổng duyệt và ngày cưới",
+      "output_unit": "ca ngày cưới",
+      "inputs": [
+        {
+          "name": "Thẻ nhận trẻ theo buổi",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Bảng đầu mối gia đình",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Tách lịch tổng duyệt và ngày cưới với người bàn giao từng buổi",
+        "Bố trí khu sinh hoạt theo số trẻ thực tế của buổi đó",
+        "Kiểm quyền đón và ghi giờ trẻ rời từng buổi"
+      ],
+      "check": {
+        "prompt": "Danh sách tổng duyệt có dùng nguyên ngày cưới không?",
+        "good": "Kiểm xác nhận lại người đón và giờ của ngày cưới",
+        "bad": "Dùng nguyên vì cùng một sự kiện",
+        "why": "Mỗi buổi có thể đổi người đón và số trẻ tham dự."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Xếp ca nhóm chăm trẻ tại kỳ nghỉ gia đình",
+      "output_unit": "ca nhóm kỳ nghỉ",
+      "inputs": [
+        {
+          "name": "Thẻ phân vai người chăm",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 6000
+        },
+        {
+          "name": "Sổ chuyển ca theo bé",
+          "unit": "quyển",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Ghi người chăm được phép và nhu cầu của từng bé trong nhóm",
+        "Xếp ca bảo đảm không có khoảng trống trách nhiệm",
+        "Bàn giao từng bé cùng việc còn chờ cho người nhận ca"
+      ],
+      "check": {
+        "prompt": "Khi đổi ca, bằng chứng nào đủ?",
+        "good": "Người nhận xác nhận từng bé và việc đang chờ",
+        "bad": "Chỉ nhắn chung rằng đã hết ca",
+        "why": "Trách nhiệm chăm phải được chuyển rõ giữa hai người."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Phòng chăm trẻ sự kiện với xác minh từng lượt đón",
+      "output_unit": "lượt phòng sự kiện",
+      "inputs": [
+        {
+          "name": "Thẻ ghép trẻ và người đón",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 6000
+        },
+        {
+          "name": "Phiếu vào ra từng lượt",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Đăng ký trẻ cùng danh sách người đón được giám hộ cho phép",
+        "Ghi lượt vào và giữ thông tin đối chiếu tại bàn phụ trách",
+        "Xác minh người đón rồi ghi lượt ra khớp lượt vào"
+      ],
+      "check": {
+        "prompt": "Có thẻ trẻ nhưng không nằm trong danh sách đón, xử lý sao?",
+        "good": "Giữ quy trình xác minh với giám hộ trước bàn giao",
+        "bad": "Giao trẻ vì người đó cầm đúng thẻ",
+        "why": "Thẻ cần đi cùng quyền đón đã được xác nhận."
+      }
+    }
+  ],
+  "library": [
+    {
+      "tier": 1,
+      "title": "Lập thông tin đồng ý cho tư liệu truyền khẩu",
+      "output_unit": "hồ sơ truyền khẩu",
+      "inputs": [
+        {
+          "name": "Phiếu đồng ý từ ngân sách thư viện",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Bìa hồ sơ từ kho cơ quan",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi người cung cấp và phạm vi cho phép lưu tư liệu truyền khẩu",
+        "Gắn điều kiện trích dẫn, công bố và thời hạn theo lựa chọn đã ký",
+        "Lưu phiếu cùng mã tư liệu để tra khi có yêu cầu sử dụng"
+      ],
+      "check": {
+        "prompt": "Hồ sơ nào đủ làm căn cứ sử dụng?",
+        "good": "Có phạm vi đồng ý nối với mã tư liệu cụ thể",
+        "bad": "Có chữ ký nhưng không biết áp dụng cho bản ghi nào",
+        "why": "Sự đồng ý phải gắn được với đúng đối tượng sử dụng."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Gắn chủ đề từng đoạn ghi âm",
+      "output_unit": "bản gắn chủ đề",
+      "inputs": [
+        {
+          "name": "Thẻ mốc thời gian từ ngân sách lưu trữ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Giấy mục lục từ kho cơ quan",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Nghe bản ghi và đánh dấu đầu cuối từng đoạn có ý nghĩa",
+        "Chọn từ khóa chủ đề theo bộ từ vựng của thư viện",
+        "Lưu nhãn với mốc thời gian rồi mở thử đoạn được gắn"
+      ],
+      "check": {
+        "prompt": "Nhãn chủ đề nào giúp tìm đúng đoạn?",
+        "good": "Từ khóa và khoảng thời gian mở đúng nội dung",
+        "bad": "Từ khóa đúng nhưng toàn bộ nhãn trỏ về phút đầu",
+        "why": "Chủ đề cần nối với vị trí thực trong bản ghi."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Xuất mục lục theo quyền truy cập",
+      "output_unit": "bản mục lục",
+      "inputs": [
+        {
+          "name": "Giấy xuất mục lục từ ngân sách cơ quan",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Thẻ nhóm quyền từ kho thư viện",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Chọn nhóm người nhận và đọc quyền của từng trường dữ liệu",
+        "Lọc trường hạn chế trước tạo bản xuất mục lục",
+        "Mở bản xuất bằng quyền nhóm nhận để kiểm thông tin hiện ra"
+      ],
+      "check": {
+        "prompt": "Bản công khai nào đúng quyền?",
+        "good": "Chỉ hiện trường được phép của nhóm công chúng",
+        "bad": "Hiện cả ghi chú riêng vì nằm trong cùng hồ sơ",
+        "why": "Quyền truy cập phải được áp vào dữ liệu xuất ra."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "So sánh bản chuyển định dạng tư liệu",
+      "output_unit": "bản chuyển định dạng",
+      "inputs": [
+        {
+          "name": "Dung lượng thử chuyển từ ngân sách số",
+          "unit": "gói",
+          "quantity": 1,
+          "unit_cost": 8000
+        },
+        {
+          "name": "Phiếu so bản từ kho cơ quan",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Ghi đặc điểm bản nguồn gồm số trang và thành phần cần giữ",
+        "Tạo bản chuyển theo cấu hình định dạng đã duyệt",
+        "So trang, chữ và hình giữa nguồn với bản chuyển rồi ghi sai lệch"
+      ],
+      "check": {
+        "prompt": "Bản chuyển nào đủ kiểm nhận?",
+        "good": "Đủ trang và thành phần cần giữ đã được đối chiếu",
+        "bad": "Mở được tệp nên bỏ kiểm mất hình",
+        "why": "Tệp mở được chưa chứng minh nội dung còn nguyên."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Tiếp nhận tư liệu số có mã kiểm tệp",
+      "output_unit": "lô tiếp nhận số",
+      "inputs": [
+        {
+          "name": "Dung lượng tiếp nhận từ ngân sách cơ quan",
+          "unit": "gói",
+          "quantity": 1,
+          "unit_cost": 10000
+        },
+        {
+          "name": "Phiếu mã kiểm tệp từ ngân sách thư viện",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Nhận danh mục tệp cùng mã kiểm do bên giao cung cấp",
+        "Tính mã kiểm bản nhận trong công cụ game và so từng tệp",
+        "Ghi tệp khớp hoặc ngoại lệ trước đưa vào kho chính"
+      ],
+      "check": {
+        "prompt": "Một tệp có mã kiểm khác, xử lý thế nào?",
+        "good": "Giữ ngoại lệ và yêu cầu đối chiếu lại bản giao",
+        "bad": "Đổi mã trong danh mục để coi là khớp",
+        "why": "Mã khác có thể báo bản nhận không giống bản giao."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Khôi phục bản lưu bị lỗi",
+      "output_unit": "lượt khôi phục",
+      "inputs": [
+        {
+          "name": "Dung lượng vùng phục hồi từ ngân sách số",
+          "unit": "gói",
+          "quantity": 1,
+          "unit_cost": 12000
+        },
+        {
+          "name": "Phiếu nhật ký phục hồi từ ngân sách lưu trữ",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Xác định bản lỗi và chọn bản sao lưu có bằng chứng còn tốt",
+        "Khôi phục vào vùng riêng để giữ nguyên bản lỗi làm đối chiếu",
+        "Kiểm mã tệp và khả năng mở trước thay bản đang dùng"
+      ],
+      "check": {
+        "prompt": "Lượt khôi phục nào đủ chấp nhận?",
+        "good": "Bản phục hồi đã kiểm mã và mở thử đạt",
+        "bad": "Sao chép xong là ghi hoàn tất ngay",
+        "why": "Phục hồi cần xác minh bản mới thực sự sử dụng được."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Theo dõi nguồn gốc và phiên bản bộ sưu tập",
+      "output_unit": "hồ sơ phiên bản",
+      "inputs": [
+        {
+          "name": "Thẻ nguồn gốc từ ngân sách lưu trữ",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 5000
+        },
+        {
+          "name": "Bìa dòng phiên bản từ kho cơ quan",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Ghi nguồn cung cấp và mã lần tiếp nhận của bộ sưu tập",
+        "Nối mỗi lần sửa với bản trước và lý do thay đổi",
+        "Mở lịch sử để truy một mục từ bản hiện tại về nguồn"
+      ],
+      "check": {
+        "prompt": "Hồ sơ nào đủ truy xuất phiên bản?",
+        "good": "Có nguồn và liên kết bản trước của từng lần sửa",
+        "bad": "Chỉ giữ tên tệp mới nhất có chữ cuối cùng",
+        "why": "Tên tệp không thay thế quan hệ giữa các phiên bản."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Lập bản đồ sách sẵn có giữa các thư viện",
+      "output_unit": "bản đồ sách",
+      "inputs": [
+        {
+          "name": "Phiếu trạng thái từ ngân sách liên thư viện",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Nhãn mã cơ sở từ kho cơ quan",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Thu danh mục cùng thời điểm cập nhật của từng thư viện",
+        "Ghép mã sách thống nhất với cơ sở và trạng thái sẵn có",
+        "Đánh dấu bản hết hạn dữ liệu để xác minh trước đặt mượn"
+      ],
+      "check": {
+        "prompt": "Sách ghi có từ tháng trước được xem thế nào?",
+        "good": "Cần xác minh lại trạng thái tại cơ sở",
+        "bad": "Chắc chắn còn vì lần trước ghi sẵn có",
+        "why": "Bản đồ khả dụng cần tính đến độ mới của dữ liệu."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Đối soát chậm luân chuyển và gia hạn mượn",
+      "output_unit": "hồ sơ gia hạn",
+      "inputs": [
+        {
+          "name": "Phiếu luân chuyển từ ngân sách thư viện",
+          "unit": "tờ",
+          "quantity": 2,
+          "unit_cost": 1000
+        },
+        {
+          "name": "Thẻ hẹn gia hạn từ kho cơ quan",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đối chiếu ngày gửi, ngày nhận và hạn của lượt mượn",
+        "Phân biệt chậm vận chuyển với giữ sách quá hạn theo hồ sơ",
+        "Xin xác nhận gia hạn rồi cập nhật hạn mới vào hai bên"
+      ],
+      "check": {
+        "prompt": "Hạn mượn mới có hiệu lực khi nào?",
+        "good": "Có xác nhận gia hạn từ thư viện cho mượn",
+        "bad": "Tự cộng ngày vì bưu kiện đến chậm",
+        "why": "Hạn mới phải dựa vào quyền gia hạn đã được xác nhận."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Điều phối dự án mượn liên thư viện",
+      "output_unit": "đợt mượn liên thư viện",
+      "inputs": [
+        {
+          "name": "Nhãn kiện từ ngân sách hợp tác",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 4000
+        },
+        {
+          "name": "Phiếu bàn giao giữa cơ sở từ ngân sách hợp tác",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 1000
+        }
+      ],
+      "procedure": [
+        "Tổng hợp yêu cầu và xác nhận cơ sở đang giữ từng tài liệu",
+        "Xếp tuyến chuyển cùng hạn trả và mã kiện tương ứng",
+        "Đối soát nhận, trả và ngoại lệ với từng cơ sở trước đóng đợt"
+      ],
+      "check": {
+        "prompt": "Dự án mượn liên thư viện đóng khi nào?",
+        "good": "Các tài liệu đã trả hoặc có ngoại lệ được xác nhận",
+        "bad": "Tất cả đã gửi đi dù chưa biết bên nhận nhận đủ",
+        "why": "Gửi đi chỉ là một bước trong chu trình mượn và hoàn trả."
+      }
+    }
+  ]
+}
