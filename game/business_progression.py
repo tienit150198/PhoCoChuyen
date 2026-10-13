@@ -122,7 +122,10 @@ def reconcile(s, now=None):
         if was == new:continue
         b['certificate_block']=new;changed=True
         if new:
-            b['certificate_closed_at']=min(at,int(policy['deadline']*1000))
+            # Settlement stops at the original deadline on first expiry. A later
+            # priority change settles the previously allowed stall up to now;
+            # never backdate that transition and erase its accepted orders.
+            b['certificate_closed_at']=min(at,max(b['cursor'],int(policy['deadline']*1000)))
         else:
             old=b.pop('certificate_closed_at',b['cursor'])
             b['cursor']=max(b['cursor'],at)

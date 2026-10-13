@@ -114,6 +114,24 @@ class Policy(unittest.TestCase):
 
 
 class Integration(unittest.TestCase):
+    def test_priority_switch_preserves_orders_accepted_after_original_deadline(self):
+        from game import business_progression as bp, quay_self as qs
+        from tests.test_quay_owner_queue import OwnerQueue
+        s,st=OwnerQueue().shop()
+        q=quay.get(s);q['stalls'] += [dict(copy.deepcopy(st),id='q2'),dict(copy.deepcopy(st),id='q3')];q['seq']=3
+        s['journey']['certificates']={};q.pop(bp.KEY,None)
+        bp.owner_access(s,now=2000000000-bp.GRACE_SECONDS-60)
+        qb.settle(s,now=2000000000)
+        self.assertIn('cust',qs.run_view(s,st))
+        with patch('game.business.time.time',return_value=2000000001):
+            s,_=act(s,'jr_quay_license_keep',stalls=['q2'])
+            st=quay.get(s)['stalls'][0]
+            self.assertTrue(st['business']['certificate_block'])
+            self.assertIn('cust',qs.run_view(s,st))
+            c=qs.run_view(s,st)['cust']
+            s,_=act(s,'jr_quay_serve',stall='q1',items=c['items'],change=c['pay']-c['total'],smile=True)
+        self.assertNotIn('cust',qs.run_view(s,quay.get(s)['stalls'][0]))
+
     def test_deadline_excludes_exact_arrival_and_keeps_owner_queue(self):
         from game import business_progression as bp, quay_self as qs
         s=legacy(['xe']*3);qb.settle(s,now=1000);bp.owner_access(s,now=1000)

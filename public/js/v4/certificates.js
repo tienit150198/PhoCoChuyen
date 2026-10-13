@@ -220,6 +220,7 @@ export function certsView(env){
   const order=[...k.groups].sort((a,b)=>(b.id===focus)-(a.id===focus));
   const lead=`Đề ngắn ${k.draw} câu, đúng ${k.pass_mark} là đạt, được mở sách và có 💡 gợi ý. Chứng chỉ xin việc thêm ${k.bonus}% cơ hội được nhận khi phỏng vấn chưa đủ điểm. Chứng chỉ có dấu 🎁 mở quyền lợi ghi ở từng khóa; chứng chỉ kinh doanh mở thêm quầy.`;
   return head(title,esc(lead))+`<div class="sheet-body jr-body ct-body">
+    ${ui.businessReturn?'<button type="button" class="btn cream" data-action="quay" data-resume="true">← Trở lại quầy đang xem</button>':''}
     ${sg?studyCard(env,k,sg,st):''}${paperCard(env,k)}
     <h3 class="jr-sub">Các chứng chỉ · ví còn ${fmt(J.wallet)} xu</h3>
     <div class="ct-grid">${order.map(g=>groupCard(env,k,g,g.id===focus)).join('')}</div></div>`;

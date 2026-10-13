@@ -65,5 +65,5 @@ export function tillAll(stalls){
 
 /** ▶️ Mở bán: the counters their owner paused (staff sell again; unpaid costs or checks still keep a counter shut). */
 export function openAll(stalls){
-  return {steps:(stalls||[]).filter(st=>st?.business?.paused&&!st.due).map(st=>({stall:st.id,on:false}))};
+  return {steps:(stalls||[]).filter(st=>st?.business?.paused&&!st.due&&!st.license_blocked).map(st=>({stall:st.id,on:false}))};
 }

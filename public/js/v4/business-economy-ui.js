@@ -61,9 +61,9 @@ export function marketBanner(stalls,now=Date.now()/1000){
 }
 export function businessControls(st,button){
  const b=st.business;if(!b)return '';
- const closed=b.paused,market=b.market,protection=b.protection;
+ const closed=b.paused,blocked=st.license_blocked,market=b.market,protection=b.protection;
  const options=protection?.options||[];
- return `<div class="qy-economy-controls"><div class="bk-actions">${button(closed?'🟢 Mở quầy':'🔴 Đóng quầy','pause',{id:st.id,on:!closed},closed?'primary':'ghost')}</div><p class="bk-hint">${closed?'Quầy đang đóng, không nhận khách mới.':'Quầy đang mở nhận khách khi đủ hàng và vốn.'} Đơn đã nhận vẫn được phục vụ. Thời gian đóng không tạo đơn bán bù.</p>
+ return `<div class="qy-economy-controls"><div class="bk-actions">${button(closed?'🟢 Mở quầy':'🔴 Đóng quầy','pause',{id:st.id,on:!closed},closed?'primary':'ghost',closed&&blocked?'Cần bổ sung chứng chỉ trước khi mở lại':'')}</div><p class="bk-hint">${blocked?'Quầy cần bổ sung chứng chỉ, không nhận khách mới.':closed?'Quầy đang đóng, không nhận khách mới.':'Quầy đang mở nhận khách khi đủ hàng và vốn.'} Đơn đã nhận vẫn được phục vụ. Thời gian đóng không tạo đơn bán bù.</p>
  ${market?marketHTML(b):''}
  ${protection?`<details class="qy-protection"><summary>🛡️ ${esc(protection.label||'Bảo vệ quầy')} · ${fmt(protection.period_cost)} xu / ${Math.round((b.period_seconds||600)/60)} phút hoạt động</summary><p class="bk-hint">Gói bảo vệ giảm khả năng bị trộm khi quầy hoạt động: cơ bản −20%, tăng cường −40%. Phí theo tổng tài sản của bạn, gồm tiền, nhà, xe và đầu tư; báo giá giữ trong ngày game. Chi phí lấy từ vốn/két và ghi trong sổ.</p><div class="bk-actions">${options.map(x=>button(`${esc(x.label)}${PLAN_CUT[x.level]?` (−${PLAN_CUT[x.level]}% trộm)`:''} · ${fmt(x.period_cost)} xu`,'protection',{id:st.id,level:x.level},x.level===protection.level?'primary':'ghost',x.level===protection.level?'Đang sử dụng':'')).join('')}</div></details>`:''}${theftRiskHTML(st)}${runningCostHTML(st)}</div>`;
 }

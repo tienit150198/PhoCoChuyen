@@ -25,6 +25,7 @@ import {staffLifeCard} from '../staff-life-ui.js';
 import {ownerQueueHTML,ownerArrivalText,counterActivity,counterActivityHTML} from './quay-owner-queue.js';
 import {shopEventCard} from '../shop-events-ui.js';
 import {createQuaySync} from './quay-sync.js';
+import {licensePanel,licenseRequirement,preferStall} from './business-license-ui.js';
 import {stallAway,stallAwayCard} from '../away-report.js';   // B4: 🧾 Lúc bạn vắng
 import {keepStepper} from '../keep-ui.js';   // 🔒 Giữ lại cho ca của tôi (B4 part 2)
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
@@ -93,7 +94,7 @@ function dialog(){
   S.dlg=d;return d;
 }
 export async function openQuay(env,data={}){
-  const account=env.api.account?.username||'';if(account!==S.account){S.md={};S.lk={};S.search={};S.stockDraft={};S.visitorDraft={};S.account=account;}
+  const account=JSON.stringify([env.api.account?.username||'',env.api.csrf||'']);if(account!==S.account){S.md={};S.lk={};S.search={};S.stockDraft={};S.visitorDraft={};S.returnRoute=null;env.ui.businessReturn=false;S.account=account;}
   S.env=env;
   if(S.syncApi!==env.api){
     S.sync?.dispose();S.syncApi=env.api;
@@ -103,9 +104,13 @@ export async function openQuay(env,data={}){
   await ensureCss();
   const d=dialog();
   S.focusedVisitorPlace=null;S.view='list';S.pick=null;S.hire=null;S.visitor=data.visitor||null;if(env.api.quayInvites>0&&!data.visitor)S.tab='jobs';   // 💼 a friend's invitation waits: open on it
+  const resume=data.resume==='true'?S.returnRoute:null;
+  if(resume){const {scroll,...route}=resume;Object.assign(S,route);S.returnRoute=null;env.ui.businessReturn=false;}
+  else if(data.inspection==='true')S.tab='mine';
   if(S.visitor){const st=V()?.stalls?.find(st=>st.business?.visitor_orders?.some(o=>String(o.id)===String(S.visitor)));if(st){S.visit=st.id;S.view='visitor';}}
   if(!d.open){d.showModal();toTop();}
   render();
+  if(resume?.scroll){S.hold=null;const {sel,y,top}=resume.scroll;holdAt(d,sel,y,top);}
   S.poller??=createQuayPoller({refresh:()=>S.sync.refresh(),active:()=>!!S.dlg?.open&&!S.busy&&document.visibilityState!=='hidden',failed:failed=>{if(S.syncFailed!==failed){S.syncFailed=failed;if(S.dlg?.open)render();}}});S.poller.start();
   if(S.tab==='jobs')loadHire();
 }
@@ -164,8 +169,21 @@ async function hireSend(op,body={}){
 const stallOf=id=>(V()?.stalls||[]).find(x=>x.id===id);
 const num=(sel,fallback=0)=>{const v=Number(S.dlg?.querySelector(sel)?.value);return Number.isFinite(v)?Math.round(v):fallback;};
 
-async function onClick(op,data){
+async function onClick(op,data,el){
   switch(op){
+    case'licenseLearn':{
+      if(!data.cert)return;
+      const card=el?.closest('.qy-stall'),an=card?(card.querySelector('.qy-grow')||card):null;
+      const sel=card?`[data-qk="${CSS.escape(card.dataset.qk)}"]${an===card?'':' .qy-grow'}`:'';
+      const route={view:S.view,pick:S.pick?{...S.pick}:null,tab:S.tab,page:S.page,
+        scroll:{sel,y:an?.getBoundingClientRect().top||0,top:S.dlg.scrollTop}};
+      S.dlg.close();S.returnRoute=route;S.env.ui.businessReturn=true;
+      const {certAction}=await import('./certificates.js');
+      await certAction('jrCerts',{cert:data.cert},null,S.env);return;}
+    case'licenseKeep':{
+      const v=V(),ids=(v?.stalls||[]).map(st=>st.id),preferred=v?.business_license?.preferred_ids||[];
+      const list=preferStall(ids,preferred,data.id);if(!list.length)return;
+      await send('jr_quay_license_keep',{stalls:list});return;}
     case'visit':S.visit=data.id;S.view='visit';S.flash=null;render();toTop();return;
     case'pause':send('jr_quay_pause',{stall:data.id,on:data.on==='true'});return;
     case'keep':send('jr_quay_keep',{stall:data.id,dish:String(data.k||''),qty:Number(data.n)||0});return;   // 🔒 Giữ cho ca
@@ -369,7 +387,7 @@ function page(){
   if(S.view==='visitor'&&stallOf(S.visit))return head()+`<div class="sheet-body bk qy-body">${visitorPanel(stallOf(S.visit))}</div>`;
   if(S.view==='visit'&&stallOf(S.visit))return head()+`<div class="sheet-body bk qy-body">${visitView(stallOf(S.visit))}</div>`;
   const inner=S.view==='open'?openView(v):S.view==='all'&&v.stalls.length?manageView(v):listView(v);
-  return head()+`<div class="sheet-body bk qy-body">${tabs}${flash()}${inner}</div>`;
+  return head()+`<div class="sheet-body bk qy-body">${tabs}${flash()}${licensePanel(v.business_license)}${inner}</div>`;
 }
 
 function mainTabs(){
@@ -439,7 +457,7 @@ function listView(v){
 /* 📋 Quản lý chung (F#295/#296 "nhiều quầy (>10)… quản lý chung, hay cùng loại tiệm với nhau"): every counter on one
  * compact line, grouped by what it sells, and one tap for a whole group (or all): 🔁 nhập lại như lần trước, 💰 thu két,
  * ▶️ mở bán lại. Each bulk tap sends the same per-counter command one after another (select-all.js runAll). */
-const LINE={running:'🟢 Đang bán',paused:'⏸️ Tạm dừng',no_staff:'🙋 Chưa có nhân viên',out_of_stock:'📦 Hết hàng',no_funds:'💸 Thiếu vốn'};
+const LINE={running:'🟢 Đang bán',restricted:'🚔 Cần bổ sung chứng chỉ',paused:'⏸️ Tạm dừng',no_staff:'🙋 Chưa có nhân viên',out_of_stock:'📦 Hết hàng',no_funds:'💸 Thiếu vốn'};
 function bulkRow(list,g){
   const a=againAll(list,quayHave(J())),t=tillAll(list),o=openAll(list);
   const out=[a.steps.length?btn(`🔁 Nhập lại như lần trước · ${xu(a.total)}`,'bulkAgain',{g},'small primary'):'',
@@ -470,6 +488,7 @@ function stallCard(st){
   const week=st.hist.reduce((a,h)=>a+h[2],0);
   const part=S.open[st.id]||'';
   const alerts=[
+    st.license_blocked?`<div class="bk-alert warn"><p>🚔 Quầy tạm dừng nhận đơn mới. Học đủ chứng chỉ để gỡ hạn chế.</p>${btn('Ưu tiên giữ quầy này hoạt động','licenseKeep',{id:st.id},'small')}<small>Chỉ đổi thứ tự ưu tiên trong số quầy được phép bán; không tăng quyền kinh doanh.</small></div>`:'',
     st.case?`<div class="bk-alert bad qy-row"><span>🚨 ${st.case.all?'Mất cả két':'Trộm lấy'} ${xu(st.case.lost)}</span>${st.case.rep?'<small>Đã báo công an</small>':btn('Báo công an','police',{id:st.id},'small')}</div>`:'',
     st.due?`<div class="bk-alert warn qy-row"><span>🧾 Chi phí chưa trả ${xu(st.due)}</span>${btn('Đóng tiền','pay',{id:st.id},'small primary')}</div>`:'',
     !st.business&&!st.closed&&st.left<=1&&st.till>0?`<p class="bk-alert warn">Ghé thu két kẻo quầy đóng nhé.</p>`:'',
@@ -572,7 +591,7 @@ function upPart(st){
 function growPart(st){
   const g=st.grow||[];if(!g.length)return '';
   const rows=g.map(x=>{const P=place(x.place);return `<li class="qy-up"><span class="qy-up-emoji" aria-hidden="true">${P.emoji||'🏪'}</span><div class="grow"><b>${esc(P.name||x.place)}</b><small>${P.slots||1} chỗ nhân viên · thuê ${xu(P.rent)}/tháng</small></div>
-      ${x.why?withWhy(btn(`Mở rộng · ${xu(x.cost)}`,'grow',{id:st.id,place:x.place},'small primary'),{why:x.why}):btn(`Mở rộng · ${xu(x.cost)}`,'grow',{id:st.id,place:x.place},'small primary',quayHave(J())<x.cost?`Cần ${xu(x.cost)}`:'')}</li>`;}).join('');   // #303: the server's reason (grow_busy)
+      ${x.why?withWhy(btn(`Mở rộng · ${xu(x.cost)}`,'grow',{id:st.id,place:x.place},'small primary'),{why:x.why}):btn(`Mở rộng · ${xu(x.cost)}`,'grow',{id:st.id,place:x.place},'small primary',quayHave(J())<x.cost?`Cần ${xu(x.cost)}`:'')}${licenseRequirement(x.license,V()?.business_license)}</li>`;}).join('');   // #303: the server's reason (grow_busy)
   return `<h4>🏗️ Mở rộng quầy ${helpBtn(`grow:${st.id}`)}</h4>${helpText(`grow:${st.id}`,'Giữ nguyên hàng, nhân viên, menu, két và vốn. Chỉ trả phần chênh giá chỗ và thiết bị đã lắp. Chỗ lớn hơn có thêm chỗ cho nhân viên và đông khách hơn; tiền thuê, điện và lương cũng cao hơn.')}<ul class="qy-list qy-grow">${rows}</ul>`;
 }
 /* 🛠️ Lắp tất cả (F#290): only with two or more items left; the total is what the money there pays, cheapest first. */
@@ -587,6 +606,7 @@ function buyAllRow(st){
 /* Opening a counter: what, where, a name. */
 function openView(v){
   const p=S.pick||{},cat=CAT(),P=place(p.place);
+  const requirement=v.open_requirements?.[p.place],cost=(P.price||0)+(P.fund||0);
   const trades=Object.keys(cat.trades).map(id=>{const T=cat.trades[id],ok=v.can.includes(id);
     return `<button type="button" class="qy-chip${p.trade===id?' on':''}" data-qy="trade" data-id="${id}"${ok&&!S.busy?'':' disabled'}${ok?'':` title="Làm ${cat.served} việc ở nghề này trước"`}>${T.emoji} ${esc(T.name)}</button>`;}).join('');
   const places=cat.places.map(x=>`<button type="button" class="qy-place${p.place===x.id?' on':''}" data-qy="place" data-id="${x.id}"><span class="qy-up-emoji" aria-hidden="true">${x.emoji}</span>
@@ -594,7 +614,8 @@ function openView(v){
   return `<section class="bk-card"><h3>Bán gì?</h3><div class="qy-chips">${trades}</div></section>
     <section class="bk-card"><h3>Ở đâu? ${helpBtn('place')}</h3>${helpText('place','Chỗ to thì đông khách, nhiều người đứng, nhưng tiền thuê cao hơn.')}<div class="qy-places">${places}</div></section>
     <section class="bk-card"><label class="bk-field"><span>Tên quầy</span><input name="qy-name" maxlength="24" value="${esc(p.name||'')}" placeholder="${esc(`${trade(p.trade).name||''} ${S.env.api.state?.name||''}`.trim())}"></label>
-      <div class="bk-actions">${btn(`Mở quầy · ${xu((P.price||0)+(P.fund||0))}`,'open',{},'primary',p.trade?'':'Chọn món bán trước')}</div></section>`;
+      ${licenseRequirement(requirement,v.business_license)}<p>Vốn mở quầy: ${xu(cost)} · ${quayHave(J())>=cost?'✅ Đủ tiền':'Còn thiếu '+xu(cost-quayHave(J()))}.</p>
+      <div class="bk-actions">${btn(`Mở quầy · ${xu(cost)}`,'open',{},'primary',!p.trade?'Chọn món bán trước':requirement?.allowed===false?requirement.reason||'Cần bổ sung chứng chỉ':quayHave(J())<cost?'Chưa đủ vốn mở quầy':'')}</div></section>`;
 }
 
 /* ======================================================================== 🧑‍🍳 tự tay (game/quay_self.py) */
@@ -615,7 +636,7 @@ const stars=v=>v?`⭐ ${(v/10).toFixed(1)}`:'';
 function selfRow(st){
  const r=st.run,rate=st.rate||[0,0],on=!!st.online;
  const label=r&&!r.x?'🧑‍🍳 Tiếp tục tự đứng quầy':'🧑‍🍳 Tự đứng quầy';
- return `<div class="qy-self">${st.staff.length?btn('🏪 Vào xem tiệm','visit',{id:st.id},'primary'):''}${btn(label,r&&!r.x?'runopen':'runstart',{id:st.id},st.staff.length?'ghost':'primary',st.due?'Đóng chi phí còn thiếu trước nhé':st.business?.paused&&(!r||r.x)?'Mở quầy để bắt đầu nhận khách':'')}<button type="button" class="qy-switch${on?' on':''}" role="switch" aria-checked="${on}" data-qy="online" data-id="${st.id}"${S.busy?' disabled':''}><span class="qy-knob" aria-hidden="true"></span>📱 Bán online${on&&rate[0]?` <small>${stars(rate[1])} · ${rate[0]}</small>`:''}</button></div>`;
+ return `<div class="qy-self">${st.staff.length?btn('🏪 Vào xem tiệm','visit',{id:st.id},'primary'):''}${btn(label,r&&!r.x?'runopen':'runstart',{id:st.id},st.staff.length?'ghost':'primary',st.license_blocked&&(!r||r.x)?'Cần bổ sung chứng chỉ trước khi nhận khách mới':st.due?'Đóng chi phí còn thiếu trước nhé':st.business?.paused&&(!r||r.x)?'Mở quầy để bắt đầu nhận khách':'')}<button type="button" class="qy-switch${on?' on':''}" role="switch" aria-checked="${on}" data-qy="online" data-id="${st.id}"${S.busy||(st.license_blocked&&!on)?' disabled':''}><span class="qy-knob" aria-hidden="true"></span>📱 Bán online${on&&rate[0]?` <small>${stars(rate[1])} · ${rate[0]}</small>`:''}</button></div>`;
 }
 /** #19: what the staffed counter makes an hour (market now) and a day (24 h), from quay_business.income. */
 function quayIncome(b){
@@ -635,7 +656,7 @@ function visitorQueue(st){const rows=(st.business?.visitor_orders||[]).filter(o=
 function focusVisitorRoom(st){if(S.focusedVisitorPlace===st.id)return;S.focusedVisitorPlace=st.id;import('./workplace-visit.js').then(m=>m.workVisitsOwnerFocus(S.env,{kind:'quay',target:st.id,host:S.dlg})).catch(()=>{});}
 function visitorPanel(st){focusVisitorRoom(st);const o=(st.business?.visitor_orders||[]).find(o=>String(o.id)===String(S.visitor));if(!o||o.status!=='queued')return `<section class="bk-card">${flash()}<h3>Đơn khách đã được cập nhật</h3>${btn('Về quầy','back',{},'primary')}</section>`;const d=S.visitorDraft[S.visitor]??={items:[],step:'pick'};return `<section class="bk-card">${flash()}<div class="row"><span style="width:64px;flex:none">${avInner({fc:o.buyer?.fc,av:'🙂'})}</span><div><h3>${esc(o.buyer?.name||'Khách')} đang làm khách</h3><p>${esc(dishOf(st,o.dish).name)} · Đã trả ${xu(o.price)}</p></div></div>${o.note?`<p class="qy-order-note">${esc(o.note)}</p>`:''}${o.staffed?'<p>Nhân viên đang thực hiện đơn này.</p>':d.step==='pick'?`<h4>Chọn món vào khay</h4><div class="qy-tiles">${dishes(st).map(item=>`<button type="button" class="qy-tile-btn ${d.items.includes(item.id)?'on':''}" data-qy="vtray" data-id="${st.id}" data-k="${esc(item.id)}" aria-pressed="${d.items.includes(item.id)}"><span>${item.emoji}</span><b>${esc(item.name)}</b></button>`).join('')}</div><p>Khay: ${d.items.map(id=>esc(dishOf(st,id).name)).join(', ')||'Chưa có món'}</p>${btn('Kiểm khay & bàn giao','vcheck',{id:st.id},'primary',!d.items.length?'Chọn món trước':'')}`:`<p>✓ Đúng món · khách đã trả tiền, không cần thối lại.</p>${btn('😊 Giao món & cảm ơn','vserve',{id:st.id},'primary')}`}${btn('Về quầy','back',{},'ghost')}</section>`;}
 function visitView(st){focusVisitorRoom(st);
- return `<section class="bk-card qy-visit"><div class="qy-visit-title"><span>SAU QUẦY · ${esc(st.name)}</span><small>Khách và số liệu từ sổ bán hàng</small></div><canvas class="qy-scene qy-scene-first" data-qy-live data-cv="${st.id}" role="img" aria-label="Góc nhìn sau quầy ${esc(st.name)}"></canvas>${counterActivityHTML(st,esc)}${flash()}${businessPanel(st,true)}<div class="bk-actions">${btn('📦 Nhập thêm hàng','visitstock',{id:st.id},'primary')}${btn('Tự đứng quầy',st.run&&!st.run.x?'runopen':'runstart',{id:st.id},'ghost')}${btn('Quản lý tiệm','back',{},'ghost')}</div></section>`;
+ return `<section class="bk-card qy-visit"><div class="qy-visit-title"><span>SAU QUẦY · ${esc(st.name)}</span><small>Khách và số liệu từ sổ bán hàng</small></div><canvas class="qy-scene qy-scene-first" data-qy-live data-cv="${st.id}" role="img" aria-label="Góc nhìn sau quầy ${esc(st.name)}"></canvas>${counterActivityHTML(st,esc)}${flash()}${businessPanel(st,true)}<div class="bk-actions">${btn('📦 Nhập thêm hàng','visitstock',{id:st.id},'primary')}${btn('Tự đứng quầy',st.run&&!st.run.x?'runopen':'runstart',{id:st.id},'ghost',st.license_blocked&&(!st.run||st.run.x)?'Cần bổ sung chứng chỉ trước khi nhận khách mới':'')}${btn('Quản lý tiệm','back',{},'ghost')}</div></section>`;
 }
 function menuPart(st){
  const m=menuDraft(st),ds=dishes(st),changed=!sameMenu(m,st.menu),query=S.search[st.id]||'',payload=menuPayload(m,ds);
@@ -665,7 +686,7 @@ const R=()=>S.run;
 const freshRun=sid=>({sid,step:'pick',tray:[],change:0,phone:false,pack:null,hint:''});
 function runView(st){focusVisitorRoom(st);
   const r=st.run;
-  if(!r)return `<section class="bk-card bk-center qy-owner-opening">${flash()}<h3>${S.busy?'Đang vào quầy của bạn…':'Chưa vào được quầy'}</h3><p>${S.busy?'Đang lấy menu và đơn khách. Bạn có thể tự bán ở đây khi muốn.':'Bạn có thể thử mở lại hoặc về quản lý quầy để kiểm tra hàng và chi phí.'}</p><div class="bk-actions center">${btn(S.busy?'Đang mở quầy…':'🧑‍🍳 Thử đứng quầy lại','runstart',{id:st.id},'primary')}${btn('Về quầy','back',{},'ghost')}</div></section>`;
+  if(!r)return `<section class="bk-card bk-center qy-owner-opening">${flash()}<h3>${S.busy?'Đang vào quầy của bạn…':'Chưa vào được quầy'}</h3><p>${S.busy?'Đang lấy menu và đơn khách. Bạn có thể tự bán ở đây khi muốn.':'Bạn có thể thử mở lại hoặc về quản lý quầy để kiểm tra hàng và chi phí.'}</p><div class="bk-actions center">${btn(S.busy?'Đang mở quầy…':'🧑‍🍳 Thử đứng quầy lại','runstart',{id:st.id},'primary',st.license_blocked?'Cần bổ sung chứng chỉ trước khi nhận khách mới':'')}${btn('Về quầy','back',{},'ghost')}</div></section>`;
   const waiting=(r.orders||[]).filter(o=>!o.stars).length;
   const bar=`<div class="qy-runbar"><span title="Khách đã phục vụ">🧍 ${r.i} khách</span><span title="Doanh thu đã bán">💰 ${xu(r.rv)}</span>${r.stars?`<span>${stars(r.stars)}</span>`:''}
     ${r.crowd?.length>1?`<span title="Khách chờ tới lượt">${r.crowd.length-1} chờ</span>`:''}

@@ -1,3 +1,13 @@
+# v2.0.6 — 2026-10-13
+
+🎓 Ba chứng chỉ kinh doanh học trả phí, lần lượt cơ bản / nâng cao / quản lý chuỗi. Học phí cơ sở 500 / 2.000 / 5.000 xu, theo chỉ số giá hiện tại là 550 / 2.200 / 5.500 xu; mỗi khóa gồm một lần thi, thi lại nửa phí hiện hành. Xe đẩy đầu tiên không cần giấy; nhiều xe/sạp cần cơ bản, tối đa hai ki-ốt cần nâng cao, từ ba ki-ốt cần quản lý chuỗi.
+
+🚔 Chủ từ ba quầy chưa đủ giấy nhận một biên bản trong phiên chơi và có 72 giờ thực để học. Sau hạn, phần vượt quyền dừng nhận đơn mới và dừng chi phí tự động; giữ tài sản, đơn đã nhận và một quầy sinh kế cho chủ cũ. Học đủ hoặc chọn quầy ưu tiên cập nhật quyền hoạt động, không mở lại quầy chủ tự đóng. Không thu phạt hay tự ghi danh.
+
+Giao diện chỉ rõ học phí và vốn mở tiệm, khóa còn thiếu, thời hạn và lý do hạn chế; đi học rồi quay lại vị trí đang xem. Có bản dịch tiếng Anh. Không bật popup thông báo toàn hệ thống.
+
+Kỹ thuật: hồ sơ tùy chọn trong journey.quay.business_license, không thêm bảng DB. MNL_BUSINESS_LICENSES_OFF=1 tắt điều kiện mở rộng; MNL_BUSINESS_INSPECTIONS_OFF=1 tắt cưỡng chế. Rollback sử dụng mã 2.0.6 với hai cờ này, không quay về 2.0.5 vốn chưa biết các chứng chỉ mới.
+
 # v2.0.5 — 2026-10-12
 
 Công an (spec chủ phố 11/10): thêm chức Giám đốc CATP (tối đa 1 người chơi) và hàm Thiếu tướng; Phó Giám đốc CATP tối đa 5 người chơi (bảng cand_roster, kiểm ghế trong giao dịch lệnh). Lên Giám đốc cần 20 ngày ở Phó Giám đốc, lên Thiếu tướng cần 10 ngày ở Đại tá, tổng 30 ngày liền không vi phạm. Học viên (bảng đỏ trơn) hiện sau khóa chuyển loại, trước Thiếu úy. Quân hàm theo bảng màu mới (đỏ #EE0000, vạch #FFFF00 hướng lên; Úy/Tá sao to hơn 2%, vạch #FFFF66, sao #FFFF33; Thiếu tướng nền #DD0000).

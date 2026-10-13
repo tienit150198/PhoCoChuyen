@@ -175,6 +175,8 @@ import fs from 'node:fs';
 import {certsView} from './public/js/v4/certificates.js';
 const f=JSON.parse(fs.readFileSync(0,'utf8'));
 const env={ui:{},api:{content:{catalogue:[],journey:{certs:f.catalogue}},state:{careers:{},journey:f.journey}}};
+env.ui.businessReturn=true;
+assert.ok(certsView(env).includes('data-resume="true"'), 'Return to pending shop choice');
 const html=certsView(env);
 function card(id){return html.split(`id="ct-${id}"`)[1].split('</article>')[0];}
 assert.doesNotMatch(card('business_basics'),/data-mode="self"/);

@@ -384,3 +384,11 @@ html[data-layout="phone"] .jr-house-row{padding:12px 14px}
 html[data-layout="phone"] .jr-chapter>.jr-line.compact{display:none}
 /* 44 px targets on the home: the chips under the name and the workplace filters. */
 .jr-me .jr-title-chip,.jr-filters .chip{min-height:44px}
+#business-license-notice{position:fixed;right:12px;bottom:calc(82px + env(safe-area-inset-bottom,0px));z-index:45;max-width:min(360px,calc(100vw - 24px))}
+.business-license-notice{display:flex;gap:10px;text-align:left;white-space:normal;min-height:48px;background:#fff4d4;color:#38280e;border:1px solid #bd852c;box-shadow:0 3px 12px #0002}
+.business-license-notice b,.business-license-notice small{display:block}
+.business-license-notice small{font-size:.76rem;line-height:1.4;margin-top:3px}
+.qy-license p,.qy-license-requirement p{line-height:1.5;overflow-wrap:anywhere}
+.qy-license summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
+.qy-up:has(.qy-license-requirement){flex-wrap:wrap}
+.qy-up>.qy-license-requirement{flex-basis:100%;padding-left:4px}

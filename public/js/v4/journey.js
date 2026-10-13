@@ -4,6 +4,7 @@
  * game/journey.py. Buttons use data-action="jr…" (journeyAction) or the app's
  * `choose`/`close`; forms use data-jr-form (journeySubmit). */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {mountLicenseNotice} from './business-license-ui.js';
 import {marketTag} from '../market-ui.js';
 import {olderRows,olderButton} from '../archive.js';
 import {accountChip} from './account.js';
@@ -515,7 +516,7 @@ function maybeScene(){
 /* ------------------------------------------------------------------ HUD */
 /** The journey chip (name, title, wallet) left the stage for a calm screen: the same facts are in the
  * status sheet (tap the day) and the journey home. Removes a chip an older build left. */
-function hud(){document.getElementById('jrHud')?.remove();}
+function hud(){document.getElementById('jrHud')?.remove();mountLicenseNotice(E?.api.state?.journey);}
 
 /* ------------------------------------------------------------------ wiring */
 export function journeyBoot(env){
