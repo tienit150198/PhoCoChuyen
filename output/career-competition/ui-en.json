@@ -21,6 +21,7 @@
     "Tiến độ kỳ thi đua": "Competition period progress",
     "Mỗi kỳ gồm 10 ca có tự làm việc. Ngày trống không tăng tiến độ.": "Each period includes 10 shifts with manual work. Empty days do not advance progress.",
     "Thưởng và cách tính kỳ": "Rewards and period rules",
+    "Kỳ thi đua tốt: điểm trung bình từ 80/100, không phụ thuộc thứ hạng. Chỉ kỳ tốt mới được xét thưởng.": "A good period requires an average of at least 80/100, regardless of rank. Only good periods qualify for rewards.",
     "Chỉ phần thu nhập cơ bản từ việc tự làm trong ngày được trả công mới tính vào quỹ thưởng. Cần còn lượt nhận thu nhập khi chốt kỳ; thưởng không nhân theo trang bị, vốn hay nhân viên.": "Only base manual earnings from paid workdays count toward the reward budget. A paid-day allowance must remain when the period closes; equipment, capital and staff do not multiply the reward.",
     "Việc nhận rồi bỏ dở làm giảm kết quả. Tình huống lãnh đạo chỉ tác động đồng nghiệp NPC; trả lời không tạo tiền thưởng riêng.": "Abandoned accepted work lowers your result. Leadership scenarios affect NPC colleagues only; answering does not generate a separate cash reward."
   },
