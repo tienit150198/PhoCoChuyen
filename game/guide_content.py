@@ -91,7 +91,8 @@ ORDER = ('milk_tea',
  'rescue',
  'lifeguard',
  'police',
- 'zpop')
+ 'zpop',
+ 'laundry', 'art_studio', 'post_office', 'lawyer')
 # Careers still being built: their entry may be a stub until someone writes it.
 PENDING = ()
 SECTIONS = ('jobs', 'steps', 'stars', 'mistakes', 'prep', 'surprises')
@@ -6795,6 +6796,58 @@ for _entry in FOLLOWUP_GUIDES:
     next(g for g in GROUPS if g['id'] == _group)['topics'].append(dict(
         id=_entry['id'][2:], emoji=_entry['emoji'], title=_entry['q'], points=_points,
         **({'go': _entry['go']} if _entry.get('go') else {})))
+
+
+CAREERS.update({
+    'art_studio': dict(emoji='🎨', name='Xưởng vẽ', place='Xưởng vẽ Màu Nắng',
+        intro='Đọc lời đặt tranh, chọn bố cục và chất liệu rồi dựng từng lớp. Khách đánh giá cả yêu cầu lẫn cách hoàn thiện.',
+        jobs=[dict(emoji='🖼️', name='Tranh đặt riêng', how='Chân dung, phong cảnh và áp phích có bố cục, bảng màu và chất liệu riêng.'),
+              dict(emoji='🎨', name='Bộ tranh và triển lãm', how='Từ ngày 20 có bộ ba; ngày 40 có tranh lớn; ngày 45 mở các đề bài triển lãm.')],
+        steps=['Đọc phiếu đặt tranh, nhớ tên người nhận và ba yêu cầu về bố cục, màu, chất liệu.',
+               'Chọn đủ ba mục rồi bắt đầu dựng tranh. Không đổi chất liệu khi đã vẽ.',
+               'Làm nền, mảng màu nhạt, hình chính rồi chi tiết. Tranh cần chữ hoặc lớp bảo vệ thì làm sau.',
+               'Đối chiếu yêu cầu, kiểm bề mặt và ký tên; sau đó giao đúng người trên phiếu.'],
+        stars=['Giữ màu và chi tiết theo mẫu khách đã đồng ý; ghi nguồn mẫu khi cần.', 'Vẽ đúng thứ tự để các lớp không che nhau.'],
+        mistakes=[dict(bad='Chọn khác yêu cầu hoặc đảo lớp vẽ.', result='Khách góp ý và tiền công giảm; vật tư vẫn tính một lần khi giao.')],
+        prep=['Xem tiền vật tư và công tối đa trên phiếu trước khi bắt đầu.'],
+        surprises=['Hành trình triển lãm cần tranh đạt yêu cầu và nhiều ngày làm ít nhất hai tranh; ca rỗng không tăng mốc.'], buttons=[]),
+    'lawyer': dict(emoji='⚖️', name='Luật sư', place='Văn phòng luật Bình An',
+        intro='Làm hồ sơ hư cấu bằng chứng từ và quy tắc ghi ngay trên phiếu. Kết quả đánh giá cách xử lý, không bảo đảm thắng kiện.',
+        jobs=[dict(emoji='📂', name='Đối chiếu hồ sơ', how='Ghép chứng cứ, sắp thời gian, tính khoản yêu cầu rồi chọn phương án có căn cứ.'),
+              dict(emoji='🔎', name='Soát vụ việc phức tạp', how='Các mốc ngày 4, 10, 20 và 40 thêm đối chiếu, chứng từ trùng, phạm vi đại diện và soát cuối.')],
+        steps=['Hỏi khách để mở hồ sơ; đọc thỏa thuận, biên bản, lời kể và quy tắc riêng của vụ việc.',
+               'Gắn cặp chứng cứ chính rồi chốt dòng thời gian theo ngày ghi trên tài liệu.',
+               'Cộng chứng từ gốc một lần, trừ khoản đã nhận và giữ trong giới hạn trên phiếu; tự nhập số yêu cầu.',
+               'Chọn phương án theo chứng cứ, xử lý thông tin mới rồi chốt hồ sơ theo bước đang mở.'],
+        stars=['Không bỏ tài liệu bất lợi hoặc hứa chắc thắng.', 'Tách lời kể chưa kiểm chứng khỏi tài liệu có xác nhận.'],
+        mistakes=[dict(bad='Tính trùng hóa đơn hoặc chọn kết luận thiếu căn cứ.', result='Hồ sơ dừng ở bước đó để sửa; thưởng và đánh giá giảm.')],
+        prep=['Ứng tuyển và ký hợp đồng trước khi vào ca. Lương ngày do hợp đồng trả, thưởng hồ sơ chỉ là khoản nhỏ.'],
+        surprises=['Mốc Hồ sơ vững vàng cần 120 hồ sơ không sửa, 30 ngày có việc hoàn tất và một hồ sơ hoàn thành từ ngày nghề 40.'], buttons=[]),
+    'laundry': dict(emoji='🧺', name='Giặt ủi', place='Tiệm giặt ủi Nếp Thơm',
+        intro='Một phiếu có nhiều món với màu, chất vải và vết bẩn khác nhau. Chọn cách chăm từng món rồi trả đúng tem khách.',
+        jobs=[dict(emoji='👕', name='Giặt theo nhãn', how='Kiểm đồ, tách giỏ, xử lý vết bẩn, giặt và làm khô theo nhãn từng món.'),
+              dict(emoji='🧥', name='Đồ cần chăm riêng', how='Các mốc ngày 4, 10, 20 và 40 thêm vải khó, nhiều món và yêu cầu hoàn thiện riêng.')],
+        steps=['Hỏi khách và nhận phiếu; kiểm đủ màu, nhãn và vết bẩn của từng món.',
+               'Tách giỏ rồi chọn xử lý vết, giặt, làm khô và ủi hoặc gấp cho từng món.',
+               'Xác nhận mỗi công đoạn sau khi đã chọn đủ. Sai thì sửa ngay ở bước đang làm.',
+               'Kiểm đủ số món, vết bẩn, độ khô, nếp hoàn thiện và tem; đối chiếu phiếu khách trước khi trả.'],
+        stars=['Đọc bảng chăm vải; nhiệt cao và cách sấy không phù hợp làm giảm chất lượng.', 'Giữ đồ màu và đồ sáng riêng; mỗi món phải còn đúng tem.'],
+        mistakes=[dict(bad='Chọn sai chế độ hoặc thiếu bước kiểm.', result='Phải làm lại bước đang mở; chất lượng và tiền công giảm.')],
+        prep=['Tiệm ứng vật tư theo phiếu và trừ một lần khi thu tiền; xem công chuẩn sau vật tư trên phiếu.'],
+        surprises=['Thợ vững tay cần 100 phiếu đạt và 30 ngày làm; Nghệ nhân cần 180 phiếu đạt và 45 ngày có trả đồ.'], buttons=[]),
+    'post_office': dict(emoji='✉️', name='Bưu điện', place='Bưu điện Cánh Thư',
+        intro='Mỗi kiện là một lời hẹn: so danh tính, cân đúng, tính cước theo bảng trong game rồi lưu chứng từ bàn giao.',
+        jobs=[dict(emoji='📦', name='Nhận và chuyển bưu gửi', how='Thư bảo đảm từ ngày 4; kiện dễ vỡ và khổ dài từ ngày 10; mỗi kiện cần đủ tám bước.'),
+              dict(emoji='✉️', name='Nhận tại quầy và hàng hoàn', how='Từ ngày 20, so người nhận và xử lý hoàn. Ngày 40 có túi ba kiện cần chia riêng từng tuyến.')],
+        steps=['Đọc phiếu; so tên trên giấy, mã kiện và địa chỉ đã xác minh.',
+               'Ghi khối lượng thực tế trên cân, chọn bao gói theo nội dung và kích thước.',
+               'Chọn dịch vụ rẻ nhất đáp ứng hạn và yêu cầu ký nhận. Tự tính cước từ vùng, khối 500 g, dịch vụ và cạnh dài.',
+               'Nhận tại quầy hoặc hàng hoàn đã trả cước: nhập 0. Chia tuyến rồi lưu đúng bảng kê, chữ ký, phiếu hoàn hoặc phiếu hẹn.'],
+        stars=['Tên không khớp thì giữ xác minh, không giao theo lời tự xưng.', 'Cạnh dài trên 60 cm thêm 5 xu dù kiện nhẹ; mọi mức cước chỉ dùng trong game.'],
+        mistakes=[dict(bad='Chép cân ước tính, ghi sai cước hoặc chọn sai chứng từ.', result='Bước đó giữ lại để sửa; thưởng giảm và phiếu không tính đạt chuẩn.')],
+        prep=['Ứng tuyển trước khi làm. Cước thuộc bưu điện; bạn nhận lương hợp đồng và thưởng hiệu suất 4–9 xu mỗi phiếu.'],
+        surprises=['Mốc cuối cần 180 phiếu không sai, 45 ngày có phiếu đạt và 12 túi thư cuối tuyến; ca rỗng không tăng tiến trình.'], buttons=[]),
+})
 
 
 def public() -> dict:
