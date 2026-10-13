@@ -125,6 +125,9 @@ class ScaleSites:
             raise LiveError('private', 'Cơ sở không tồn tại hoặc chưa mở đón khách.')
         rid = SITE_PREFIX + ':'.join(key)
         room = self.hub.rooms.get(rid)
+        if room is not None:
+            self._site_evict(room, data)
+            room = self.hub.rooms.get(rid)
         if room and len(room.data['people']) >= SITE_CAP and conn.player.pid not in room.data['people']:
             raise LiveError('full', 'Cơ sở đang đông, lát quay lại nhé.')
         if room is None and len(self.hub.rooms_with_prefix(SITE_PREFIX)) >= SITE_ROOMS_MAX:
@@ -135,10 +138,13 @@ class ScaleSites:
         self._leave(conn, 'other', takeover=True)
         # Leaving the last occupant may have dropped this exact room.
         room = self.hub.rooms.get(rid)
+        if room is not None:
+            self._site_evict(room, data)
+            self._site_update(room, data)
+            room = self.hub.rooms.get(rid)
         if room is None:
             room = self.hub.room(rid, cap=SITE_CAP, on_empty=self._empty)
-            room.data.update(people={}, ev=[], mvi={}, h=None, last=0.0, hidden_seen=set(), site_key=key)
-        room.data['site_layout'] = data
+            room.data.update(people={}, ev=[], mvi={}, h=None, last=0.0, hidden_seen=set(), site_key=key, site_layout=data)
         room.add(conn)
         look, gender = clean_look(f.get('look'), f.get('g'))
         w = Walker(conn.player, look, gender, (11.5, 16.25), clean_direction(f.get('direction')))

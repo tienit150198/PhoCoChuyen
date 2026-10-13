@@ -134,3 +134,31 @@ class ScaleSiteSockets(LiveCase):
         updated=await owner.expect('town_site')
         self.assertEqual((updated.get('x'),updated.get('y')),(11.5,16.25))
         self.assertEqual((walker.x,walker.y),(11.5,16.25))
+
+    async def test_guest_join_pushes_changed_layout_to_existing_occupants(self):
+        owner,guest,sid,args=await self.fixture(True)
+        frame=await owner.call('site_in','town_room',**args)
+        town=self.app.by_name['town'];town._sites_at=float('inf')
+        room=self.app.hub.rooms[frame['room']]
+        walker=room.data['people'][args['owner']]
+        walker.x,walker.y=10.75,3.0
+        with self.store.connect() as db:
+            state=json.loads(db.execute('SELECT state FROM sessions WHERE sid=?',(sid,)).fetchone()['state'])
+            state['careers']['grocery']['scale']['resources'].append(dict(id='r2',site='base',crew=None,busy=None))
+            db.execute('UPDATE sessions SET state=? WHERE sid=?',(json.dumps(state),sid))
+        joined=await guest.call('site_in','town_room',**args)
+        updated=await owner.expect('town_site')
+        self.assertEqual(len(updated['layout']['resources']),2)
+        self.assertEqual((updated.get('x'),updated.get('y')),(11.5,16.25))
+        self.assertEqual((walker.x,walker.y),(11.5,16.25))
+        self.assertEqual(joined['people'][0]['x'],11.5)
+
+    async def test_owner_join_evicts_previously_public_guests_before_snapshot(self):
+        owner,guest,sid,args=await self.fixture(True)
+        await guest.call('site_in','town_room',**args)
+        self.app.by_name['town']._sites_at=float('inf')
+        self.save_site(sid,False)
+        joined=await owner.call('site_in','town_room',**args)
+        await guest.expect('town_left',why='private')
+        self.assertEqual(joined['people'],[])
+        self.assertEqual(set(self.app.hub.rooms[joined['room']].data['people']),{args['owner']})
