@@ -246,7 +246,7 @@ const heldOf=(x,id)=>{const s=station(x,id);return s.held??s.stock??0;};
 // The full batch's words as the guide names them ("[[Nấu +5]] trân châu", game/guide_content.py).
 const FULL={'Nấu':'Nấu +5','Ủ':'Ủ +5','Đánh':'Đánh +5'};
 function prepPlan(x,id){
-  const unit=ing(x,id).cost||0,cap=shelfCap(x),held=heldOf(x,id),room=Math.max(0,cap-held),money=fund(x);
+  const unit=ing(x,id).cost||0,cap=shelfCap(x),held=heldOf(x,id)+(B(x).pending?.[id]||0),room=Math.max(0,cap-held),money=fund(x);
   if(!room)return {qty:0,cost:0,why:`Kho đầy ${held}/${cap}`,label:FULL[verb(id)]};
   const qty=Math.min(5,room,unit?Math.floor(money/unit):5);
   if(qty<1)return {qty:0,cost:unit,why:`Thiếu ${unit-money} xu`,label:`${verb(id)} +1 · ${unit} xu`,poor:true};

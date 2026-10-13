@@ -118,7 +118,7 @@ def on_close(s:dict,c:dict,career:str)->dict:
     value=t['cup']['cost'];waste+=value
     x['waste'].append(dict(day=c['day'],item='cup',qty=1,value=value,reason='Ly đang làm được bỏ khi khép ca'))
     t['cup']=boba.new_cup();t['stage']='order'
-  x['pantry']=ar.last([lot for lot in x['pantry'] if lot['qty']>0], 250, 'life.pantry', c)
+  x['pantry']=[lot for lot in x['pantry'] if lot['qty']>0]
  if career=='mother_baby':
   from . import giftshop
   counter=giftshop.on_close(s,c)
@@ -376,6 +376,14 @@ def on_talk(c:dict,npc:str):
 def public_life(c:dict)->dict:
  # Called on public_state's private save: shared except what is written below (the activity's cards).
  x=dict(c['life'])
+ # The pantry screen needs quantity and expiry, not individual saved lot identities.
+ pantry={}
+ for lot in x['pantry']:
+  if lot['qty']>0 and lot['expires']>=c['day']:
+   key=(lot['item'],lot['expires'])
+   if key not in pantry:pantry[key]=dict(item=lot['item'],qty=0,expires=lot['expires'])
+   pantry[key]['qty']+=lot['qty']
+ x['pantry']=list(pantry.values())
  if x.get('activity'):x['activity']=tree_copy(x['activity'])
  x['goals']=goals(c);x['stock']=stock(c);x['weather']=data.WEATHERS[(c['day']-1)%3];x['forecast']={'calm':2,'normal':3,'festival':4}[x['mode']]
  if 'tour' in x:x['tour']=tour_trip.public_care(c)  # tour guide: the group, partners, kit, notebook, reviews
@@ -414,19 +422,22 @@ def public_task(t:dict)->dict:
 
 def validate(c:dict,career:str):
  e=core();need=e.need;x=c.get('life');need(isinstance(x,dict) and set(initial(career))<=set(x),'Bản lưu thiếu trải nghiệm v0.3.')
+ from . import boba
+ shelf_cap=boba.shelf_cap(c) if career=='milk_tea' else 60
  need(x.get('version')==1,'Phiên bản trải nghiệm không hợp lệ.');e.clean_text(x.get('shop_name'),36,0);need(x['mode'] in [m['id'] for m in data.MODES],'Nhịp ngày không hợp lệ.')
  for k in ('seq','streak','best_streak','tips','staff_tips','consumed_cost','day_waste'):e.integer(x.get(k),0,10**9)
  for k in ('festival','festival_claimed','onboarding'):need(type(x.get(k)) is bool,'Cờ trải nghiệm không hợp lệ.')
  for k in ('goals_claimed','pantry','price_history','waste','activity_rewards','activity_history','badges','stickers','visits','goals_history','day_guests','served_sources','day_talked'):
-  need(isinstance(x.get(k),list) and len(x[k])<=600,'Danh sách trải nghiệm quá lớn hoặc không hợp lệ.')
+  limit=boba.pantry_limit(c) if k=='pantry' and career=='milk_tea' else 600
+  need(isinstance(x.get(k),list) and len(x[k])<=limit,'Danh sách trải nghiệm quá lớn hoặc không hợp lệ.')
  for k in ('day_metrics','prices','activity_best','chapters'):need(isinstance(x.get(k),dict) and len(x[k])<=200,'Dữ liệu trải nghiệm không hợp lệ.')
  for k,v in x['day_metrics'].items():e.clean_text(k,100);e.integer(v,0,10**9)
  for k,v in x['prices'].items():
   need(k in (set(PLUGINS[career].SPEC.get('prices',{})) if career in PLUGINS else _price_keys(career)),'Mã bảng giá không hợp lệ.');e.integer(v,1,1000)
  for lot in x['pantry']:
-  need(isinstance(lot,dict) and set(('id','item','qty','unit_cost','expires','received'))<=set(lot),'Lô nguyên liệu thiếu dữ liệu.');need(lot['item'] in data.INGREDIENT_INDEX,'Nguyên liệu lạ.');e.clean_text(lot['id'],100);e.integer(lot['qty'],0,60);e.integer(lot['unit_cost'],0,20);e.integer(lot['expires'],1,999999);e.integer(lot['received'],1,999999)
+  need(isinstance(lot,dict) and set(('id','item','qty','unit_cost','expires','received'))<=set(lot),'Lô nguyên liệu thiếu dữ liệu.');need(lot['item'] in data.INGREDIENT_INDEX,'Nguyên liệu lạ.');e.clean_text(lot['id'],100);e.integer(lot['qty'],0,shelf_cap);e.integer(lot['unit_cost'],0,20);e.integer(lot['expires'],1,999999);e.integer(lot['received'],1,999999)
  need(len({l['id'] for l in x['pantry']})==len(x['pantry']),'Trùng lô nguyên liệu.')
- for k,qty in stock(c).items():need(qty<=60,'Tồn vượt sức chứa.')
+ for k,qty in stock(c).items():need(qty<=shelf_cap,'Tồn vượt sức chứa.')
  if career=='milk_tea':
   from . import boba
   boba.validate(c)
@@ -445,11 +456,13 @@ def validate(c:dict,career:str):
   need(isinstance(st,dict),'Thiệp không hợp lệ.')
   for k in ('id','title','emoji'):e.clean_text(st.get(k),200)
   e.integer(st.get('day'),1,999999)
- # Waste rows: qty and value wider than any write (bigger shelves, fb #277: a whole 80-unit lot can go at once).
+ # Whole paid-storage lots can expire together; retain their exact quantity and value.
+ from . import inventory
+ waste_cap=max(999,shelf_cap,inventory.stock_limit(career,c))
  for row in x['waste']:
   allowed=('cup',*data.INGREDIENT_INDEX)
   if career in PLUGINS:allowed=(*allowed,*[i['id'] for i in (PLUGINS[career].SPEC.get('inventory') or {}).get('items',[])],*PLUGINS[career].SPEC.get('waste_items',()))
-  need(isinstance(row,dict) and row.get('item') in allowed,'Hao hụt không hợp lệ.');e.integer(row.get('qty'),0,999);e.integer(row.get('value'),0,10**6);e.integer(row.get('day'),1,999999);e.clean_text(row.get('reason'),500)
+  need(isinstance(row,dict) and row.get('item') in allowed,'Hao hụt không hợp lệ.');e.integer(row.get('qty'),0,waste_cap);e.integer(row.get('value'),0,max(10**6,waste_cap*10000));e.integer(row.get('day'),1,999999);e.clean_text(row.get('reason'),500)
  for k in x['activity_rewards']:need(k in data.ACTIVITY_INDEX and data.ACTIVITY_INDEX[k]['career']==career,'Thưởng trò nhỏ sai nghề.')
  a=x['activity']
  if a:

@@ -591,12 +591,34 @@ def stock(c: dict) -> dict:
 
 
 def held(c: dict) -> dict:
-    """Everything on the shelf that has not expired by date (the 60-portion shelf limit)."""
+    """Everything on the shelf that has not expired by date, including stale tea."""
     out = {k: 0 for k in ING}
     for l in c['life']['pantry']:
         if l['item'] in out and l['expires'] >= c['day']:
             out[l['item']] += l['qty']
     return out
+
+
+def shelf_cap(c: dict) -> int:
+    from .capacity_progression import limit
+    return limit(c, CAREER, SHELF_CAP)
+
+
+def cup_cap(c: dict) -> int:
+    from .capacity_progression import limit
+    return limit(c, CAREER, CUP_CAP)
+
+
+def pantry_limit(c: dict) -> int:
+    # Even one-portion lots at full capacity fit; retain room for old empty rows.
+    return max(600, len(ING) * shelf_cap(c) + 600)
+
+
+def _need_room(c: dict, item: str, qty: int) -> None:
+    cap = shelf_cap(c)
+    _e().need(held(c)[item] + _pending(view(c), item) + qty <= cap,
+              f'Kho chứa tối đa {cap} phần mỗi loại (tính cả hàng đang giao).')
+    _e().need(sum(l['qty'] > 0 for l in c['life']['pantry']) < pantry_limit(c), 'Kho đang có quá nhiều lô. Dùng bớt trước khi nhập thêm nhé.')
 
 
 def _fifo(l: dict) -> tuple:
@@ -627,13 +649,13 @@ def add_lot(s: dict, c: dict, item: str, qty: int, unit_cost: int, note: str = '
                expires=c['day'] + shelf_life(c, item) - 1, received=c['day'])
     if item in FRESH:
         lot['made'] = opening_abs(c) if made is None else made
-    c['life']['pantry'].append(lot)
+    c['life']['pantry'] = [l for l in c['life']['pantry'] if l['qty'] > 0] + [lot]
 
 
 def _waste(c: dict, item: str, qty: int, value: int, reason: str) -> None:
     x = c['life']
     x['day_waste'] += value
-    x['waste'].append(dict(day=c['day'], item=item, qty=min(60, qty), value=min(10000, value), reason=reason))
+    x['waste'].append(dict(day=c['day'], item=item, qty=qty, value=value, reason=reason))
     x['waste'] = ar.last(x['waste'], 120, 'life.waste', c)
 
 
@@ -676,21 +698,24 @@ def _deliver(s: dict, c: dict, b: dict, now: int | None = None) -> list[str]:
     due = [o for o in b['orders'] if o['at'] <= now]
     if not due:
         return []
-    b['orders'] = [o for o in b['orders'] if o['at'] > now]
     e = _e()
     notes = []
     for o in sorted(due, key=lambda o: o['at']):
         sup = SUP_INDEX.get(o['supplier'], SUP_INDEX['partner'])
         if o['item'] in CUP_ITEMS:
             size = CUP_ITEMS[o['item']]
-            got = min(o['qty'] * CUP_PACK['qty'], CUP_CAP - b['cups'][size])
-            b['cups'][size] += max(0, got)
+            got = o['qty'] * CUP_PACK['qty']
+            if b['cups'][size] + got > cup_cap(c):
+                continue  # Keep the paid order intact until its entire delivery fits.
+            b['cups'][size] += got
             text = f"{o['qty'] * CUP_PACK['qty']} ly {size}"
         else:
-            got = min(o['qty'], SHELF_CAP - held(c)[o['item']])
-            if got > 0:
-                add_lot(s, c, o['item'], got, o['unit'])
+            got = o['qty']
+            if held(c)[o['item']] + got > shelf_cap(c) or sum(l['qty'] > 0 for l in c['life']['pantry']) >= pantry_limit(c):
+                continue
+            add_lot(s, c, o['item'], got, o['unit'])
             text = f"{o['qty']} phần {low(ING[o['item']]['name'])}"
+        b['orders'].remove(o)
         notes.append(f"📦 {sup['name']} giao tới {text}.")
         e.log(s, c, 'stock', f"Nhận hàng: {text} từ {sup['name']} lúc {hm(o['at'])}.", ref=o['id'])
     return notes
@@ -821,7 +846,10 @@ def batches(c: dict, now: int | None = None) -> list[dict]:
             if l.get('made') is not None:
                 good, ok = fresh_window(c, item)
                 row.update(made=hm(l['made']), good_until=till(l['made'] + good, l['made']), ok_until=till(l['made'] + ok, l['made']))
-            rows.append(row)
+            if rows and all(rows[-1].get(k) == v for k, v in row.items() if k != 'qty'):
+                rows[-1]['qty'] += row['qty']
+            else:
+                rows.append(row)
         if rows:
             out.append(dict(item=item, name=ING[item]['name'], emoji=ING[item]['emoji'], lots=rows))
     return out
@@ -896,6 +924,9 @@ def on_start(s: dict, c: dict) -> None:
             keep.append(pr)
             continue
         if pr['kind'] == 'portions' and pr.get('_honest'):
+            if held(c)[pr['item']] + _pending(b, pr['item']) + pr['qty'] > shelf_cap(c) or sum(l['qty'] > 0 for l in c['life']['pantry']) >= pantry_limit(c):
+                keep.append(pr)
+                continue
             add_lot(s, c, pr['item'], pr['qty'], 0)
             e.log(s, c, 'stock', f"Bình mang bù {pr['qty']} phần {ING[pr['item']]['name']} giao thiếu hôm trước.", 'milk_tea_npc_05', pr['ref'])
             e.add_feed(s, c, 'milk_tea_npc_05', f"Hôm qua giao thiếu {pr['qty']} phần, sáng nay mình mang bù rồi nha. Cảm ơn quán đã tin mình!", pr['ref'], kind='story')
@@ -1264,7 +1295,7 @@ def _prepare(s: dict, c: dict, p: dict) -> dict:
     need(item in MADE, f"{ING[item]['name']} mua từ nhà cung cấp: mở Kho → Đặt hàng (hỏa tốc 15–30 phút).")
     qty = e.integer(p.get('qty'), 1, 20)
     need(p.get('confirm') is True, 'Xác nhận chi phí trước khi nhập.')
-    need(held(c)[item] + qty <= SHELF_CAP, f'Kho chứa tối đa {SHELF_CAP} phần mỗi loại.')
+    _need_room(c, item, qty)
     ing = ING[item]
     cost = qty * ing['cost']
     verb = 'Nấu' if item in ('pearls', 'white_pearl') else 'Ủ' if item in BASES else 'Đánh'
@@ -1302,10 +1333,10 @@ def _order(s: dict, c: dict, p: dict) -> dict:
     need(len(b['orders']) < MAX_ORDERS, f'Đang chờ {MAX_ORDERS} đơn rồi. Đợi hàng tới bớt đã nhé.')
     if cups:
         size = CUP_ITEMS[item]
-        need(b['cups'][size] + (_pending(b, item) + qty) * CUP_PACK['qty'] <= CUP_CAP, f'Chồng ly {size} không còn chỗ cho ngần ấy ly.')
+        need(b['cups'][size] + (_pending(b, item) + qty) * CUP_PACK['qty'] <= cup_cap(c), f'Chồng ly {size} không còn chỗ cho ngần ấy ly.')
         base = CUP_PACK['cost']
     else:
-        need(held(c)[item] + _pending(b, item) + qty <= SHELF_CAP, f'Kho chứa tối đa {SHELF_CAP} phần mỗi loại (tính cả hàng đang giao).')
+        _need_room(c, item, qty)
         base = ING[item]['cost']
     cost = max(1, round(qty * base * sup['factor']))
     unit = min(20, max(0, round(base * sup['factor'])))
@@ -2095,6 +2126,7 @@ def _resolve(s: dict, c: dict, b: dict, ev: dict, choice: str) -> None:
     elif k == 'pearls_out':
         tasks = [t for t in (_task_by(c, x) for x in f['tasks']) if t and 'pearls' not in t['cup']['items']]
         if choice == 'cook':
+            _need_room(c, 'pearls', 8)
             e.money(s, c, -16, 'Nấu gấp trân châu', ev['id'], category='stock')
             add_lot(s, c, 'pearls', 8, 2)
             for t in _open_tasks(c):
@@ -2220,6 +2252,8 @@ def _resolve(s: dict, c: dict, b: dict, ev: dict, choice: str) -> None:
             result = 'Bạn làm lại ly trước, quầy còn vệt trà. Nhớ lau khi rảnh tay nhé.'
             eff.append('Quầy còn bẩn')
     elif k == 'short_delivery':
+        if choice in ('count', 'sign'):
+            _need_room(c, f['item'], f['got'])
         if choice == 'count':
             e.money(s, c, -f['got'] * f['cost'], 'Nhận ' + ING[f['item']]['name'], ev['id'], category='stock')
             add_lot(s, c, f['item'], f['got'], f['cost'])
@@ -2235,7 +2269,7 @@ def _resolve(s: dict, c: dict, b: dict, ev: dict, choice: str) -> None:
         else:
             sup = SUP_INDEX['partner']
             cost = f['billed'] * f['cost']
-            if c['money'] >= cost and held(c)[f['item']] + _pending(b, f['item']) + f['billed'] <= SHELF_CAP and len(b['orders']) < MAX_ORDERS:
+            if c['money'] >= cost and held(c)[f['item']] + _pending(b, f['item']) + f['billed'] <= shelf_cap(c) and len(b['orders']) < MAX_ORDERS:
                 o = _place(s, c, b, f['item'], f['billed'], sup, cost, f['cost'], 'Đặt lại ' + ING[f['item']]['name'])
                 v = order_view(c, o)
                 result = f"Bạn trả thùng. Bình hẹn giao lại đủ {f['billed']} phần theo chuyến Hạt Nắng: {v['eta_label']}."
@@ -2340,7 +2374,7 @@ def public(c: dict) -> dict:
         stations=[dict(id=x['id'], group=x['group'], level=x.get('level', 1), unlocked=x.get('level', 1) <= lv, stock=st[x['id']],
                        held=hl[x['id']], tired=tired.get(x['id'], 0), made=x['id'] in MADE, fresh=x['id'] in FRESH, on=x['id'] not in b['menu_off'])
                   for x in data.INGREDIENTS],
-        shelf_cap=SHELF_CAP, max_orders=MAX_ORDERS, cup_cap=CUP_CAP,
+        shelf_cap=shelf_cap(c), max_orders=MAX_ORDERS, cup_cap=cup_cap(c),
         menu_off=list(b['menu_off']),
         upgrades=[dict(u, owned=u['id'] in b['upgrades'], ready=lv >= u['level']) for u in UPGRADES],
         event=ev_view, notebook=notebook, warnings=warnings(c), history=b['history'][-7:], sold_out=b['sold_out'],
@@ -2475,7 +2509,7 @@ def validate(c: dict) -> None:
     b = view(c)
     need(isinstance(b['cups'], dict) and set(b['cups']) == {'M', 'L'}, 'Chồng ly sai.')
     for v in b['cups'].values():
-        e.integer(v, 0, CUP_CAP)
+        e.integer(v, 0, cup_cap(c))
     e.integer(b['mess'], 0, 9)
     need(isinstance(b['upgrades'], list) and all(u in UPGRADE_INDEX for u in b['upgrades']) and len(set(b['upgrades'])) == len(b['upgrades']), 'Nâng cấp quầy sai.')
     for k in ('day', 'turn0', 'quota', 'arrived', 'served', 'perfect', 'returned', 'walkouts', 'revenue', 'fines', 'bonus', 'events_today', 'ev_seq', 'sealer_off', 'total'):
