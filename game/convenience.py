@@ -80,6 +80,7 @@ def catalogue(careers):
                                 effect_label='món / nhịp đếm' if count else 'món / dòng đặt',
                                 total_price=sum(PRICES), description=description,
                                 requires=item_id(career, group, n-1) if n > 1 else None))
-    from . import capacity_progression
+    from . import capacity_progression, order_progression
     out.extend(capacity_progression.catalogue(careers))
+    out.extend(order_progression.catalogue(careers))
     return out

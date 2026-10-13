@@ -41,7 +41,8 @@ def catalogue(careers):
             previous = units(base, n - 1)
             description = (f'Mỗi nguyên liệu chứa tối đa {capacity} phần; mỗi cỡ ly chứa tối đa {(120 * RATIOS[n] + 7) // 8} ly. '
                            if milk else f'Mỗi mã hàng chứa tối đa {capacity} phần. ')
-            description += 'Sức chứa gồm hàng đang về và phần giữ cho đơn. Giới hạn mỗi lần đặt giữ nguyên.'
+            description += 'Sức chứa gồm hàng đang về và phần giữ cho đơn. '
+            description += ('Giới hạn mỗi lần đặt giữ nguyên.' if milk else 'Hạn mức mỗi lần đặt được nâng riêng.')
             out.append(dict(id=item_id(career, n), name=f'Sức chứa kho · Bậc {n}', icon='box',
                             kind='equipment', careers=[career], price=price, min_level=1,
                             gear_group='warehouse_storage', gear_tier=n,
