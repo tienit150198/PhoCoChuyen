@@ -1,135 +1,72 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "2.1.0",
-  "created_at_utc": "2026-10-13T07:59:30.501914+00:00",
+  "version": "2.2.0",
+  "created_at_utc": "2026-10-13T09:00:47.665346+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 573,
+  "minified": 587,
   "release_from_live": {
     "live_release": "mot-ngay-lam-nghe",
-    "live_version": "2.0.7",
-    "live_manifest_sha256": "898f14119101bb127be3a9117cf66f4fba27ae86ef8658d86e2c461ece482efe",
-    "base": "53eaad980c35296acd9c3b4c658b683f10f807bf",
-    "ref": "b217a0ca494b95fb45fc75969c880cae299398b7",
+    "live_version": "2.1.0",
+    "live_manifest_sha256": "f1f9def02710719b7e2ae0a479c23da41aa6b88d7c79939fc5ac51db293caf5a",
+    "base": "b217a0ca494b95fb45fc75969c880cae299398b7",
+    "ref": "e179dd8a9cc6e773dc98fe453c206a1008e1bf2d",
     "changed": [
       "CHANGELOG.md",
-      "client/isometric/building-art.ts",
-      "client/isometric/career-facade.ts",
-      "client/isometric/career-gallery.ts",
-      "client/isometric/work-architecture.ts",
-      "client/isometric/work-careers.ts",
       "docs/BUSINESS_LICENSES_OPERATIONS.md",
-      "docs/DEPLOY_2.0.7_2026-10-13.md",
+      "docs/CAREER_BALANCE_2.1.0.md",
+      "docs/DEPLOY_2.1.0_2026-10-13.md",
       "docs/LIVE_BASE.md",
-      "docs/qa/isometric-feature-parity.json",
+      "docs/TEMPLE_VENUES_2.2.0.md",
       "docs/superpowers/plans/2026-10-13-career-endgame.md",
       "docs/superpowers/plans/2026-10-13-creative-civic-careers.md",
-      "docs/superpowers/specs/2026-10-13-creative-civic-careers-design.md",
+      "docs/superpowers/plans/2026-10-13-temple-public-venues.md",
+      "docs/superpowers/specs/2026-10-13-temple-public-venues.md",
       "game/__init__.py",
-      "game/career_mastery.py",
-      "game/career_voice.py",
-      "game/careers/__init__.py",
-      "game/careers/art_studio.py",
-      "game/careers/laundry.py",
-      "game/careers/lawyer.py",
-      "game/careers/post_office.py",
-      "game/careers/post_office_content.py",
-      "game/engine.py",
-      "game/guide_content.py",
-      "game/incident_content.py",
-      "game/journey.py",
-      "game/life_content.py",
-      "game/operations.py",
-      "game/promotion.py",
-      "game/promotion_content.py",
-      "game/promotion_office.py",
-      "game/review_aspects_content.py",
-      "game/town_layout.json",
-      "game/work_gear.py",
-      "game/workplace_business.py",
+      "game/archive.py",
+      "game/chua.py",
       "i18n/translations.json",
-      "package-lock.json",
-      "package.json",
-      "public/css/careers/art_studio.css",
-      "public/css/careers/laundry.css",
-      "public/css/careers/lawyer.css",
-      "public/css/careers/post_office.css",
-      "public/css/promo.css",
+      "public/css/chua.css",
+      "public/css/venue-visit.css",
       "public/i18n/en.json",
-      "public/js/careers/art_studio.js",
-      "public/js/careers/laundry.js",
-      "public/js/careers/lawyer.js",
-      "public/js/careers/post_office.js",
-      "public/js/experience-ui.js",
-      "public/js/illustrated-icons.js",
-      "public/js/isometric/career-gallery.js",
-      "public/js/isometric/phaser-world.js",
-      "public/js/scenes/town-place.js",
-      "public/js/scenes/vocabulary.js",
-      "public/js/tutorial/guide-content.js",
-      "public/js/tutorial/store.js",
-      "public/js/v4/career-mastery.js",
-      "public/js/v4/careers.js",
-      "public/js/v4/promo.js",
-      "scripts/browser_career_mastery.py",
-      "scripts/browser_creative_civic.py",
-      "scripts/check_town_walk.mjs",
-      "tests/art-studio-ui.mjs",
-      "tests/career-mastery-ui.mjs",
-      "tests/career-vocabulary.mjs",
-      "tests/career_mastery_simulation.py",
-      "tests/creative_civic_economy.py",
-      "tests/isometric-career-art.mjs",
-      "tests/isometric-career-civic.mjs",
-      "tests/isometric-career-facades.mjs",
-      "tests/isometric-career-gallery.mjs",
-      "tests/isometric-feature-parity.mjs",
-      "tests/isometric-guide-lifecycle.mjs",
-      "tests/isometric-work-architecture.mjs",
-      "tests/isometric-work-semantics.mjs",
-      "tests/laundry_simulation.py",
-      "tests/laundry_ui.mjs",
-      "tests/lawyer-ui.mjs",
-      "tests/post_office-ui.mjs",
-      "tests/promotion-title-extensions.mjs",
-      "tests/test_career_art_studio.py",
-      "tests/test_career_laundry.py",
-      "tests/test_career_lawyer.py",
-      "tests/test_career_mastery.py",
-      "tests/test_career_post_office.py",
-      "tests/test_career_words.py",
-      "tests/test_creative_civic_backend_integration.py",
-      "tests/test_creative_civic_careers.py",
-      "tests/test_creative_civic_i18n.py",
-      "tests/test_creative_civic_staff.py",
-      "tests/test_mastery_engine.py",
-      "tests/test_promotion_endgame.py",
-      "tests/test_promotion_ladders.py",
+      "public/js/app.js",
+      "public/js/scenes/chua-place.js",
+      "public/js/scenes/venue-place.js",
+      "public/js/v4/chua-visit.js",
+      "public/js/v4/chua.js",
+      "public/js/v4/community-outings.js",
+      "public/js/v4/journey.js",
+      "public/js/v4/life.js",
+      "public/js/v4/outings.js",
+      "public/js/v4/spend.js",
+      "public/js/v4/venue-routing.js",
+      "public/js/v4/venue-visit.js",
+      "scripts/browser_chua.py",
+      "scripts/browser_public_venue_routes.py",
+      "scripts/browser_venue_visit.py",
+      "tests/outings.mjs",
+      "tests/temple-walk-ui.mjs",
+      "tests/test_chua.py",
+      "tests/test_chua_cards.py",
       "tests/test_task_compat.py",
-      "tests/test_webassets.py",
-      "tests/test_x3_week.py",
-      "tests/town-art-polish.mjs",
-      "tests/town-map-contract.mjs"
+      "tests/venue-routing.mjs",
+      "tests/venue-visit.mjs"
     ],
     "deleted": [],
     "minified": [
-      "public/css/careers/lawyer.css",
-      "public/css/careers/post_office.css",
-      "public/css/promo.css",
-      "public/js/careers/art_studio.js",
-      "public/js/careers/laundry.js",
-      "public/js/careers/lawyer.js",
-      "public/js/careers/post_office.js",
-      "public/js/experience-ui.js",
-      "public/js/illustrated-icons.js",
-      "public/js/isometric/career-gallery.js",
-      "public/js/isometric/phaser-world.js",
-      "public/js/scenes/town-place.js",
-      "public/js/scenes/vocabulary.js",
-      "public/js/tutorial/guide-content.js",
-      "public/js/tutorial/store.js",
-      "public/js/v4/career-mastery.js",
-      "public/js/v4/careers.js",
-      "public/js/v4/promo.js"
+      "public/css/chua.css",
+      "public/css/venue-visit.css",
+      "public/js/app.js",
+      "public/js/scenes/chua-place.js",
+      "public/js/scenes/venue-place.js",
+      "public/js/v4/chua-visit.js",
+      "public/js/v4/chua.js",
+      "public/js/v4/community-outings.js",
+      "public/js/v4/journey.js",
+      "public/js/v4/life.js",
+      "public/js/v4/outings.js",
+      "public/js/v4/spend.js",
+      "public/js/v4/venue-routing.js",
+      "public/js/v4/venue-visit.js"
     ]
   },
   "files": [
@@ -150,8 +87,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 313270,
-      "sha256": "32144693e4a654097d2ab00ac1e194d867b2a4dd3a9f23e81a3f25ee49b2b97d"
+      "bytes": 314352,
+      "sha256": "710662a244cd538b43aec83f872504aca88e3538981e280a125f1333ec224e33"
     },
     {
       "path": "Dockerfile",
@@ -495,8 +432,13 @@
     },
     {
       "path": "docs/BUSINESS_LICENSES_OPERATIONS.md",
-      "bytes": 4344,
-      "sha256": "a4190d62f1d4f02f5a6498a6e00cd14e0d78756f29151f01de01b073ea23564c"
+      "bytes": 4425,
+      "sha256": "4c867f414ba36c6a37ad84483ff6950cfaea9e6435ccce2dd10612a2c38777fe"
+    },
+    {
+      "path": "docs/CAREER_BALANCE_2.1.0.md",
+      "bytes": 4423,
+      "sha256": "21cd0be8fde88c8bea82ecc24edf8aed84db0a27d8d52cd611d5b0fc3fb7e95a"
     },
     {
       "path": "docs/DANH_MUC_MAN_HINH_ASSET_ISOMETRIC_2026-10-05.md",
@@ -617,6 +559,11 @@
       "path": "docs/DEPLOY_2.0.7_2026-10-13.md",
       "bytes": 6022,
       "sha256": "12678599368de651fe924e85312fc7794c3f7402eeb3ac6f05677447468b7ff1"
+    },
+    {
+      "path": "docs/DEPLOY_2.1.0_2026-10-13.md",
+      "bytes": 7003,
+      "sha256": "7364a8a27a3688012495190887ffee5ae3f834128f8333a986bd44fb7a03ddc3"
     },
     {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
@@ -791,7 +738,7 @@
     {
       "path": "docs/LIVE_BASE.md",
       "bytes": 7657,
-      "sha256": "c38b954f565e28ab57fb593dd4d5de89134e18d08239a63b7e4bfa5253fa33f1"
+      "sha256": "2fc8ff0783a122cd1cf7ea75a25b4c5c2f299fe2f041b6fe0c76682b643d0aaa"
     },
     {
       "path": "docs/LIVE_CONNECTION_2026-10-05.md",
@@ -907,6 +854,11 @@
       "path": "docs/SHOP_PROFIT_CONTINUOUS_2026-10-05.md",
       "bytes": 3532,
       "sha256": "31b9f03c9beb5263e62333db719e25d57c2928dd7007b7782c26eb5af74fc08e"
+    },
+    {
+      "path": "docs/TEMPLE_VENUES_2.2.0.md",
+      "bytes": 4157,
+      "sha256": "61f31c1417a5f849c492181afbce1eb78a48b5166f048bf7582427a13b64814b"
     },
     {
       "path": "docs/TESTING.md",
@@ -1920,13 +1872,18 @@
     },
     {
       "path": "docs/superpowers/plans/2026-10-13-career-endgame.md",
-      "bytes": 2088,
-      "sha256": "d008661da1960d726611373be931684a2a5691dc17eaa6e459ae57209a3835b7"
+      "bytes": 2199,
+      "sha256": "e6a444aaa85e7b822408cad184f83d54994dabd4ae1d339015afc4544cc8da59"
     },
     {
       "path": "docs/superpowers/plans/2026-10-13-creative-civic-careers.md",
       "bytes": 3280,
-      "sha256": "bfee1e0fd5e42f10cb5cb0ee8ddb133807458d0cb84bd4161c544234929b8312"
+      "sha256": "34c707400532a0f84079f73a7a798f104284b27bfef04afbf580328d7e69234e"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-13-temple-public-venues.md",
+      "bytes": 2309,
+      "sha256": "e0b13126081c5f0eb8c0f20ef24d2600b7d84e96efd473f40f445f81fe79eb20"
     },
     {
       "path": "docs/superpowers/specs/2026-09-28-ui-readability-phase1-design.md",
@@ -2139,9 +2096,14 @@
       "sha256": "5d57c68cab97256c971dd770b933bfffc900b509adc2741b8d9838c4471ce6af"
     },
     {
+      "path": "docs/superpowers/specs/2026-10-13-temple-public-venues.md",
+      "bytes": 3570,
+      "sha256": "6d9117144db8a02ca9c41436c4f6991317dddf6b6e1264bb8bae9c9c276812bd"
+    },
+    {
       "path": "game/__init__.py",
       "bytes": 105,
-      "sha256": "3e66a99edf33e6fb8627331247e47e6e31df0d45d41a21c3bca1b8669e9f2586"
+      "sha256": "40dc3013bbc6c55ce7b1c18eb54e4e94987f22fd48edf08aeffd0255f111b24f"
     },
     {
       "path": "game/abandon.py",
@@ -2235,8 +2197,8 @@
     },
     {
       "path": "game/archive.py",
-      "bytes": 4486,
-      "sha256": "d252444dab1a2a45330a3085859267716229f4b03a5b538202c8aa1a16124343"
+      "bytes": 4548,
+      "sha256": "7109d3fa6914c9d2be3644dd5e9b330230e8e7e06f88382f75205e908d914161"
     },
     {
       "path": "game/auction.py",
@@ -2720,8 +2682,8 @@
     },
     {
       "path": "game/chua.py",
-      "bytes": 13949,
-      "sha256": "45c8d096069c33c19dc4f54c38ec18130d2470d7db5538fa9ab92ebcbeaff521"
+      "bytes": 16060,
+      "sha256": "73dd28c3c0306e18ec01b034e379d8741322337c5ed15265557edcde743070d9"
     },
     {
       "path": "game/classroom.py",
@@ -3620,8 +3582,8 @@
     },
     {
       "path": "i18n/translations.json",
-      "bytes": 4771611,
-      "sha256": "90076486cb95f18b0e5df4306c7cefe962d0f92585a68a3ad150b2d78b2db014"
+      "bytes": 4778551,
+      "sha256": "8ba8c08da8ea0369031d4ad3296cfa1079d12027da5e552bbc6e202e2efa09ce"
     },
     {
       "path": "live/__init__.py",
@@ -4290,8 +4252,8 @@
     },
     {
       "path": "public/css/chua.css",
-      "bytes": 5551,
-      "sha256": "40319538da79928450cba6f1d3b4f476314ed2694237e76699087f8ba035b793"
+      "bytes": 6770,
+      "sha256": "3165b3fd17c025814906a06a3d4e8e33f878eb4cae8651e219fe57ce6316ee78"
     },
     {
       "path": "public/css/closeness.css",
@@ -4559,6 +4521,11 @@
       "sha256": "5b4e45dbc417999cba807cc4da5b08d4553e8e67e2df449485f5037631442528"
     },
     {
+      "path": "public/css/venue-visit.css",
+      "bytes": 3903,
+      "sha256": "1464a27219e082c03e3de72acb223d68eb640958b096d30121e1a907cdd277f1"
+    },
+    {
       "path": "public/css/walk.css",
       "bytes": 14498,
       "sha256": "9b573602f9fc30fc1094c7df53d632fdefeaf0e4098151e04750daf0145def87"
@@ -4635,8 +4602,8 @@
     },
     {
       "path": "public/i18n/en.json",
-      "bytes": 9480650,
-      "sha256": "de0596de11af6545a39c6f4075bd0bea3e7fe5e4a740d10cc0f51acc223b846f"
+      "bytes": 9487163,
+      "sha256": "50e8cd1d3338060acfe6fdadede268a28e54e5b02e483327cea123a3ea8905a9"
     },
     {
       "path": "public/icons/apple-touch-icon.png",
@@ -5435,8 +5402,8 @@
     },
     {
       "path": "public/js/app.js",
-      "bytes": 191621,
-      "sha256": "55faea886cb3363fe7d6c389e88779da6cb324f8138677f0cd1d41b86a6d5ca9"
+      "bytes": 191771,
+      "sha256": "2d83adac2d4495172ee3684c7637fd61c209371f517159c2cff7d5d11cfc072e"
     },
     {
       "path": "public/js/archive.js",
@@ -6070,8 +6037,8 @@
     },
     {
       "path": "public/js/scenes/chua-place.js",
-      "bytes": 18334,
-      "sha256": "85b449023e40314be8aa6f25ca9c479907cbd4028eb45bdf108287f1f481817b"
+      "bytes": 18711,
+      "sha256": "c5b565f164d147ff4eccc5ee7303ba6122c6a5c26b80f5acb7a260856535ce87"
     },
     {
       "path": "public/js/scenes/classroom.js",
@@ -6247,6 +6214,11 @@
       "path": "public/js/scenes/town-place.js",
       "bytes": 23763,
       "sha256": "e1fdca3bddd8bd5a1af5194459deceed168bf46f48a08d2b29859c201b6d983c"
+    },
+    {
+      "path": "public/js/scenes/venue-place.js",
+      "bytes": 13956,
+      "sha256": "50900833b3de9c146919b39b5ca083d7486b0efb20a4944ad7e17e81ca743b9f"
     },
     {
       "path": "public/js/scenes/vocabulary.js",
@@ -6490,13 +6462,13 @@
     },
     {
       "path": "public/js/v4/chua-visit.js",
-      "bytes": 25714,
-      "sha256": "392be751cf92c266d028cafd03bd1ce68c6206114176512512921be5d3387d11"
+      "bytes": 28304,
+      "sha256": "0da5a717b22ebea0581b0c369cce6afc989935cb1563cb34324ca57f177401cc"
     },
     {
       "path": "public/js/v4/chua.js",
-      "bytes": 1984,
-      "sha256": "1132339f04b98f63b08b798cbe21b2404a907d6f0fd7fa24ddb93ffb14549127"
+      "bytes": 5193,
+      "sha256": "59d4aa2f0c5abf4a85de13448d14f896e88a57b2817d8ae5a68d83ae79709ee6"
     },
     {
       "path": "public/js/v4/classroom.js",
@@ -6510,8 +6482,8 @@
     },
     {
       "path": "public/js/v4/community-outings.js",
-      "bytes": 2560,
-      "sha256": "b5b13b168cbfee61bd4d06d6e893da5c5ceed0fd95e7f76e96bb73295274c4ad"
+      "bytes": 3733,
+      "sha256": "3b27a0d22581bef9e1110327d51848d798f75e61189ecc0e4d2fa8cf5689744a"
     },
     {
       "path": "public/js/v4/courier.js",
@@ -6770,8 +6742,8 @@
     },
     {
       "path": "public/js/v4/journey.js",
-      "bytes": 44962,
-      "sha256": "448644d498555d357b2546ea0ca77e28fec94d4b6d665bcdf54f843996d97420"
+      "bytes": 45143,
+      "sha256": "a932ec95d3380cfe0478fad00660e2ee105556ceccb17c8fc1c3d009c1b8cd74"
     },
     {
       "path": "public/js/v4/karaoke-mic.js",
@@ -6790,8 +6762,8 @@
     },
     {
       "path": "public/js/v4/life.js",
-      "bytes": 12336,
-      "sha256": "12591228f022cd44f5d289244ec2193431ab06f07ca7ba5a8ec9b268d6185114"
+      "bytes": 12342,
+      "sha256": "0cebca36143116517d547c772992bf2e3c99191195b09f3fd924e00723300fdf"
     },
     {
       "path": "public/js/v4/live.js",
@@ -6850,8 +6822,8 @@
     },
     {
       "path": "public/js/v4/outings.js",
-      "bytes": 8766,
-      "sha256": "ead84fc027a96da9a25f7040384f9b9010686ac1571c2885311cfd52493ed651"
+      "bytes": 9767,
+      "sha256": "a75a865886213433b9fc9e0db9b18946d1d1f917cc08ea8b15b43ffaf7420cea"
     },
     {
       "path": "public/js/v4/palette.js",
@@ -7000,8 +6972,8 @@
     },
     {
       "path": "public/js/v4/spend.js",
-      "bytes": 11863,
-      "sha256": "dbe3ff7aefa064bfdd3b0b5d380256ecdb697e7a2ba6926500ce5151e18a4841"
+      "bytes": 12142,
+      "sha256": "76a6bbd231abcc1d1bcfb169b559cb7ae3455925d909889d41fd7e38c30d8a5d"
     },
     {
       "path": "public/js/v4/stories.js",
@@ -7042,6 +7014,16 @@
       "path": "public/js/v4/traffic.js",
       "bytes": 2948,
       "sha256": "850a2a500ddf15042a5d9077a63e880c361d7a746706fb427e65e316f0bf1765"
+    },
+    {
+      "path": "public/js/v4/venue-routing.js",
+      "bytes": 1208,
+      "sha256": "a778ef8557ac62b265c5c6cb2a0b672fb05a0623d8869f408f8aff039fe4160a"
+    },
+    {
+      "path": "public/js/v4/venue-visit.js",
+      "bytes": 5785,
+      "sha256": "4122f823dab79fa9bb8a0a4628b7b80bd1be75f9b653f1ce47574b085dc182c3"
     },
     {
       "path": "public/js/v4/views.js",
@@ -7405,8 +7387,8 @@
     },
     {
       "path": "scripts/browser_chua.py",
-      "bytes": 11314,
-      "sha256": "6190662f240c2416d9120695d2387eb0995e1ff254852b1581f81c60b70a8d03"
+      "bytes": 17618,
+      "sha256": "0cd56d7fb877f8e964fddf8dd35657d5588458a4806a70aadf123e04ffb7f7e4"
     },
     {
       "path": "scripts/browser_colors.py",
@@ -7604,6 +7586,11 @@
       "sha256": "a2284fb8f6d571c18fcabfd485b5ac1cea52c55fc7d4b932f380b9700e5a445d"
     },
     {
+      "path": "scripts/browser_public_venue_routes.py",
+      "bytes": 7116,
+      "sha256": "b722672e7378016155c6b190256baea4acb8d27c41060da5501787e97b153942"
+    },
+    {
       "path": "scripts/browser_quay.py",
       "bytes": 27602,
       "sha256": "6a1504d78d9bbef1251be64f5e240022a0db76b2419867bf198aa8e6e409e492"
@@ -7672,6 +7659,11 @@
       "path": "scripts/browser_v04.py",
       "bytes": 12980,
       "sha256": "6e310b8b0057efe55cef3edf206408b9e1a7ca3a6c4bf1bdb1a485cf7b167702"
+    },
+    {
+      "path": "scripts/browser_venue_visit.py",
+      "bytes": 6199,
+      "sha256": "95e9d23441b75de4870fc8e2d5404ffb51fb570784bc674cb0535f829ca3ad56"
     },
     {
       "path": "scripts/browser_weak_load.py",
@@ -8925,8 +8917,8 @@
     },
     {
       "path": "tests/outings.mjs",
-      "bytes": 1730,
-      "sha256": "5b52d1fe8e34032dea60c06f92f0ae006314d4b59d23c73065a53006ee155ec3"
+      "bytes": 1805,
+      "sha256": "a94277e102460a9222cfb3d649dcefa1d7ed2e3ce566854a093528752143319d"
     },
     {
       "path": "tests/payment_choice.mjs",
@@ -9137,6 +9129,11 @@
       "path": "tests/telemetry.mjs",
       "bytes": 7321,
       "sha256": "e3edd59500545e9c10f1bb1c838d3e5268674f1058f9d80519e419bf22a44a8b"
+    },
+    {
+      "path": "tests/temple-walk-ui.mjs",
+      "bytes": 6372,
+      "sha256": "d262f7cca73a55e6172ffea6034c98f3412b8a99442e77febcb62aabd4ca466a"
     },
     {
       "path": "tests/test_abandon.py",
@@ -9660,8 +9657,13 @@
     },
     {
       "path": "tests/test_chua.py",
-      "bytes": 10247,
-      "sha256": "a7f0f1b8904fdec7fb87ea28c8ceceeb7e016258fa904c984126bbc4673a1ac8"
+      "bytes": 10073,
+      "sha256": "6288acb8e179e3042bddb33b796a87eeb014da81640294dc533ca8a3bb3ffb3f"
+    },
+    {
+      "path": "tests/test_chua_cards.py",
+      "bytes": 8852,
+      "sha256": "69b6343d0e4a00a180cec267344ebbe50a49f09719baf2f6b26c22d37c22389b"
     },
     {
       "path": "tests/test_classroom.py",
@@ -11181,7 +11183,7 @@
     {
       "path": "tests/test_task_compat.py",
       "bytes": 5567,
-      "sha256": "bb77d5fe5317946a6bc731bae6cfb559401e13ba52e4be56f6b59967c244a449"
+      "sha256": "9e58af1fad0b623be91145d97375d8a456d07d6ac5692c03ee5f9e4bb56c1b04"
     },
     {
       "path": "tests/test_teacher_care.py",
@@ -11482,6 +11484,16 @@
       "path": "tests/update_pill.mjs",
       "bytes": 10375,
       "sha256": "f6bd5689f39f530e13c4b27334a30458388d1ddf06c032b52542058a8ade5c03"
+    },
+    {
+      "path": "tests/venue-routing.mjs",
+      "bytes": 1491,
+      "sha256": "2038b9b6ebcefd60ef5a28228d0dc142b81aced107041bc813984b21e2b55818"
+    },
+    {
+      "path": "tests/venue-visit.mjs",
+      "bytes": 3883,
+      "sha256": "b8820442ea8b5a366ef309f30ebb32e5661d7cfb7cec972706aaac244d50cd07"
     },
     {
       "path": "tests/walk-return-route.mjs",

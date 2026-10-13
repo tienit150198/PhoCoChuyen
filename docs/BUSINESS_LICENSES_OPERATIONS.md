@@ -15,7 +15,7 @@ Không thay đổi bảng DB. Hồ sơ tùy chọn `journey.quay.business_licens
 - `MNL_BUSINESS_LICENSES_OFF=1`: bỏ điều kiện chứng chỉ khi mở/nâng cấp.
 - `MNL_BUSINESS_INSPECTIONS_OFF=1`: ngừng giao biên bản mới và ngừng cưỡng chế. Quầy được phục hồi khi quyết toán tiếp theo, không bán bù thời gian bị hạn chế; trạng thái tự đóng được giữ nguyên.
 
-**Tắt tính năng dùng mã hiện tại 2.1.0 cùng hai cờ OFF. Không quay về 2.0.7 hoặc cũ hơn:** bản cũ không biết bốn nghề mới, bậc thăng tiến mở rộng hoặc các mã chứng chỉ tương ứng. Không xóa chứng chỉ/hồ sơ/đơn hàng để ép bản lưu tương thích mã cũ.
+**Tắt tính năng dùng mã hiện tại 2.2.0 cùng hai cờ OFF. Không quay về 2.0.7 hoặc cũ hơn:** bản cũ không biết bốn nghề mới, bậc thăng tiến mở rộng hoặc các mã chứng chỉ tương ứng. Không xóa chứng chỉ/hồ sơ/đơn hàng để ép bản lưu tương thích mã cũ.
 
 Chuẩn bị cờ bằng EnvironmentFile cuối cùng của unit, rồi dùng rolling release trên chính thư mục mã tương thích đang chạy để bridge và canonical đều nhận cấu hình mới:
 
@@ -37,3 +37,5 @@ Chạy DB thử với `TEST_DATABASE_URL`, tuyệt đối không đặt DB produ
 `scripts/browser_business_licenses.py` dùng tài khoản tổng hợp trong namespace PostgreSQL riêng, kiểm tra 390×844 và 1280×860: biên bản, quá hạn, khóa trả phí tuần tự, 8.250 xu tổng phí, khôi phục quyền, nút chặn và trở lại phần nâng cấp quầy thứ ba. Ảnh và báo cáo ở `output/playwright/business-licenses/`.
 
 Không thêm popup Có gì mới toàn hệ thống; chủ bị kiểm tra thấy biên bản riêng. Nội dung chuyên ngành, công cụ quản lý chuỗi mới và thay đổi lợi nhuận sạp nằm ngoài đợt này.
+
+Chùa 2.2.0 thêm thẻ và hoạt động lặp: không hạ về 2.1.0 sau khi hồ sơ đã có các trường mới. Chi tiết [phát hành 2.2.0](DEPLOY_2.2.0_2026-10-13.md).

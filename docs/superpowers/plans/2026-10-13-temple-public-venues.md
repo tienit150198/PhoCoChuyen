@@ -14,3 +14,7 @@
 - [ ] Root: wire spendChua directly to existing openChua; route spending, public outings and live game venue entries through openVenue. Add internal station dispatch distinct from entrance dispatch to prevent loops; preserve existing payment confirmations. Correct classic leisurePlace route.
 - [ ] Root: update shared translations using supplied sidecars, add routing/parity tests and a browser matrix with real doors, avatar movement and station interaction. Run affected Python suites and JS/typecheck/build checks.
 - [ ] Root: review changes, update version/release notes; reconstruct package from live2.1.0 bytes; verify clean install and old task compatibility. Guard live hash and free space, deploy, verify full HTTP bodies/asset hashes/services and record release evidence.
+
+## Kết quả
+
+Đã hoàn tất và phát hành 2.2.0 lúc 16:04:01 ngày 13/10/2026. Chi tiết kiểm chứng và giới hạn vận hành: [DEPLOY_2.2.0_2026-10-13.md](../../DEPLOY_2.2.0_2026-10-13.md).
