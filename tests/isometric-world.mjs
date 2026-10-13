@@ -158,6 +158,12 @@ const chooseNav=m.makeNavigation({bounds:{x0:0,y0:0,x1:10,y1:10},roads:[{x0:0,y0
 const choices=[{id:'unreachable',approach:{x:6.2,y:5}},{id:'counter',approach:{x:1,y:5}}];
 assert.equal(m.nearestReachableHotspot(chooseNav,{x:3.8,y:5},choices,3)?.id,'counter','E skips a closer station across disconnected ground');
 assert.equal(m.nearestReachableHotspot(chooseNav,{x:3.8,y:1},choices,2),null,'E does not activate distant stations');
+const chestChoice={id:'treasure:overlap',approach:{x:3,y:5}},serviceChoice={id:'place:bank',approach:{x:3,y:5}},choiceFrom={x:3.5,y:5};
+for(const order of [[serviceChoice,chestChoice],[chestChoice,serviceChoice]])assert.equal(m.nearestReachableHotspot(chooseNav,choiceFrom,order)?.id,chestChoice.id,'E prefers a chest at the same distance regardless of insertion order');
+assert.equal(m.nearestReachableHotspot(chooseNav,choiceFrom,[chestChoice,{...serviceChoice,approach:{x:3.25,y:5}}])?.id,serviceChoice.id,'E still prefers a strictly nearer service');
+assert.equal(m.nearestReachableHotspot(chooseNav,choiceFrom,[serviceChoice])?.id,serviceChoice.id,'E restores service access after the last chest is removed');
+assert.equal(m.nearestReachableHotspot(chooseNav,{x:3.8,y:5},[{...chestChoice,approach:{x:6.2,y:5}},...choices],3)?.id,'counter','E skips an unreachable chest');
+assert.equal(m.nearestReachableHotspot(chooseNav,{x:3.8,y:1},[chestChoice],2),null,'E cannot select an out-of-range chest');
 const foodNav=m.makeNavigation({bounds:{x0:0,y0:0,x1:10,y1:9},roads:[{x0:0,y0:0,x1:10,y1:9}],obstacles:[m.WORK_FOOD_SHELF],step:.25});
 assert.equal(m.isWalkable(foodNav,{x:7,y:1}),false,'the family shelf has a real footprint');
 assert.equal(m.lineClear(foodNav,{x:6.5,y:1},{x:7.2,y:1}),false,'walking cannot cross the visible family shelf');

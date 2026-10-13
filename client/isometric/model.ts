@@ -125,7 +125,7 @@ export function effectFrameState(ev:{t0:number;end?:number|null}|null|undefined,
 export function nearestReachableHotspot<T extends {id:string;approach:Point;interactionPoint?:Point}>(nav:Navigation,from:Point,hotspots:T[],range=2.4):T|null{
   // A sign may stand beside its entrance; either spot can select the same route.
   const distance=(p:Point)=>Math.hypot(p.x-from.x,p.y-from.y);
-  const nearby=hotspots.map(h=>({h,d:Math.min(distance(h.approach),h.interactionPoint?distance(h.interactionPoint):Infinity)})).filter(h=>h.d<=range).sort((a,b)=>a.d-b.d);
+  const nearby=hotspots.map(h=>({h,d:Math.min(distance(h.approach),h.interactionPoint?distance(h.interactionPoint):Infinity)})).filter(h=>h.d<=range).sort((a,b)=>a.d-b.d||Number(b.h.id.startsWith('treasure:'))-Number(a.h.id.startsWith('treasure:')));
   for(const {h} of nearby)if(findRoute(nav,from,h.approach).length)return h;return null;
 }
 export interface SavedDecor {id:'plant'|'lamp'|'seat'|'rug'|'poster';spot:string;at:Point;z:number;footprint:Rect|null}

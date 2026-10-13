@@ -7,7 +7,8 @@ import {build} from 'esbuild';
 // Keep the real snapshot adoption, marker lifecycle and navigation; only Phaser
 // drawing is replaced so retained marker identities can be asserted directly.
 class Visual {
-  constructor(x=0,y=0,children=[]){Object.assign(this,{x,y,children,visible:true});}
+  constructor(x=0,y=0,children=[]){Object.assign(this,{x,y,children,visible:true,alpha:1});}
+  getBounds(){return {contains:(x,y)=>x>=this.x-29&&x<=this.x+29&&y>=this.y-34&&y<=this.y+10};}
   fillStyle(){return this;} lineStyle(){return this;} fillEllipse(){return this;}
   fillPoints(){return this;} strokePoints(){return this;} lineBetween(){return this;}
   fillRoundedRect(){return this;} setDepth(depth){this.depth=depth;return this;}
@@ -17,7 +18,7 @@ class Visual {
 }
 const previous=globalThis.__treasureTestPhaser;
 globalThis.__treasureTestPhaser={Scene:class {},Geom:{Point:class {constructor(x,y){Object.assign(this,{x,y});}}}};
-const out=await build({stdin:{contents:readFileSync('client/isometric/phaser-world.ts','utf8')+'\nexport {DioramaScene};',loader:'ts',resolveDir:resolve('client/isometric')},bundle:true,write:false,platform:'node',format:'esm',logLevel:'silent',plugins:[{
+const out=await build({stdin:{contents:readFileSync('client/isometric/phaser-world.ts','utf8')+'\nexport {DioramaScene,project};',loader:'ts',resolveDir:resolve('client/isometric')},bundle:true,write:false,platform:'node',format:'esm',logLevel:'silent',plugins:[{
   name:'treasure-drawing-boundary',setup(b){
     b.onResolve({filter:/^(phaser|\/js\/)/},args=>({path:args.path,namespace:'treasure-test'}));
     b.onLoad({filter:/.*/,namespace:'treasure-test'},args=>({contents:args.path==='phaser'?'export default globalThis.__treasureTestPhaser;':args.path.includes('/look.js')?
@@ -25,7 +26,7 @@ const out=await build({stdin:{contents:readFileSync('client/isometric/phaser-wor
       'export const getCharacterStamp=()=>({}),preloadIllustratedCharacters=()=>{};':'export const kindOf=()=>"home",wordsFor=()=>({});',loader:'js'}));
   }
 }]});
-const {DioramaScene,PhaserWorld}=await import('data:text/javascript;base64,'+Buffer.from(out.outputFiles[0].text).toString('base64'));
+const {DioramaScene,PhaserWorld,project}=await import('data:text/javascript;base64,'+Buffer.from(out.outputFiles[0].text).toString('base64'));
 function fixture(){
   const owner={mode:'town',treasure:[],hotspots:[],wake(){this.wakes=(this.wakes||0)+1;}},scene=new DioramaScene(owner);
   owner.stage=scene;
@@ -35,6 +36,17 @@ function fixture(){
   return {owner,scene,adopt};
 }
 try {
+  await test('chest receives taps above an overlapping service and leaves the service accessible',()=>{
+    const {owner,scene,adopt}=fixture(),at={x:34,y:34.8},point=project(at);
+    const service={id:'place:bank',approach:at,point},hit={hotspot:service,footprint:{x0:at.x-.45,x1:at.x+.45,y0:at.y-.45,y1:at.y+.45}};
+    owner.hotspots.push(service);scene.hits.push(hit);adopt([{id:'bank-chest',...at,count:1}]);
+    for(const [x,y] of [[0,0],[10,-10],[0,-20]])assert.equal(scene.hitTest({x:point.x+x,y:point.y+y})?.id,'treasure:bank-chest','visible chest wins equal-depth overlap');
+    assert.equal(scene.hitTest(project({x:at.x+.4,y:at.y+.4}))?.id,'place:bank','service remains clickable outside chest bounds');
+    scene.hits.reverse();assert.equal(scene.hitTest(point)?.id,'treasure:bank-chest','priority does not depend on insertion order');
+    const foreground={id:'place:foreground',point:{...point,y:point.y+1}};
+    scene.hits.push({hotspot:foreground,footprint:hit.footprint});assert.equal(scene.hitTest(point)?.id,foreground.id,'ordinary foreground depth still wins');
+    scene.hits.pop();adopt([]);assert.equal(scene.hitTest(point)?.id,'place:bank','service receives taps after the last chest is removed');
+  });
   await test('all cumulative treasure locations remain available, including stacks larger than one wave',()=>{
     const {owner,scene,adopt}=fixture(),rows=Array.from({length:12},(_,i)=>({id:'chest-'+i,x:i+3,y:5,count:i===0?78:1}));
     adopt(rows);
