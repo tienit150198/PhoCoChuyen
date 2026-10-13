@@ -181,4 +181,3 @@ class PaidQuayStore(unittest.TestCase):
                     self.assertEqual((before, rev), (after, after_rev))
             finally:
                 store.close_pool()
-
