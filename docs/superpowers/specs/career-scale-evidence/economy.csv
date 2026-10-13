@@ -1,0 +1,433 @@
+﻿career,name,group,stage,title,expansion_fee_xu,cumulative_expansion_xu,qualified_real_days,clean_cases,coordinated_sites,total_resource_slots,resource_unit,revenue_at_full,operating_cost_at_full,net_at_full,net_at_80_percent,net_at_60_percent,break_even_demand_pct,cash_reserve_two_full_sessions,marginal_payback_sessions_full,marginal_payback_sessions_80,net_four_sessions_full,scope
+mother_baby,Tiệm mẹ & bé,retail,1,Tiệm chuyên đồ sơ sinh,50000,50000,3,10,1,2,quầy tư vấn,8334,7334,1000,680.00,360.00,37.50,14667,50.00,73.53,4000,proposed_new_management_only
+mother_baby,Tiệm mẹ & bé,retail,2,Cửa hàng mẹ bé,250000,300000,7,30,1,4,quầy tư vấn,29167,25667,3500,2380.00,1260.00,37.50,51334,100.00,147.06,14000,proposed_new_management_only
+mother_baby,Tiệm mẹ & bé,retail,3,Trung tâm mẹ bé,1000000,1300000,14,70,1,6,quầy tư vấn,100000,88000,12000,8160.00,4320.00,37.50,176000,117.65,173.01,48000,proposed_new_management_only
+mother_baby,Tiệm mẹ & bé,retail,4,Hai cửa hàng,4000000,5300000,30,140,2,10,quầy tư vấn,291667,256667,35000,23800.00,12600.00,37.50,513334,173.91,255.75,140000,proposed_new_management_only
+mother_baby,Tiệm mẹ & bé,retail,5,Cụm ba tiệm,12000000,17300000,60,260,3,16,quầy tư vấn,750000,660000,90000,61200.00,32400.00,37.50,1320000,218.18,320.86,360000,proposed_new_management_only
+mother_baby,Tiệm mẹ & bé,retail,6,Chuỗi năm tiệm,35000000,52300000,100,450,5,24,quầy tư vấn,1666667,1466667,200000,136000.00,72000.00,37.50,2933334,318.18,467.91,800000,proposed_new_management_only
+mother_baby,Tiệm mẹ & bé,retail,7,Chuỗi khu vực,100000000,152300000,160,750,8,36,quầy tư vấn,3500000,3080000,420000,285600.00,151200.00,37.50,6160000,454.55,668.45,1680000,proposed_new_management_only
+mother_baby,Tiệm mẹ & bé,retail,8,Mạng lưới mẹ bé,250000000,402300000,240,1200,12,50,quầy tư vấn,6666667,5866667,800000,544000.00,288000.00,37.50,11733334,657.89,967.49,3200000,proposed_new_management_only
+pharmacy,Nhà thuốc nhỏ,retail,1,Quầy mở rộng,50000,50000,3,10,1,2,quầy có người phụ trách,8334,7334,1000,680.00,360.00,37.50,14667,50.00,73.53,4000,proposed_new_management_only
+pharmacy,Nhà thuốc nhỏ,retail,2,Nhà thuốc chuẩn,250000,300000,7,30,1,4,quầy có người phụ trách,29167,25667,3500,2380.00,1260.00,37.50,51334,100.00,147.06,14000,proposed_new_management_only
+pharmacy,Nhà thuốc nhỏ,retail,3,Điểm cung ứng vật tư,1000000,1300000,14,70,1,6,quầy có người phụ trách,100000,88000,12000,8160.00,4320.00,37.50,176000,117.65,173.01,48000,proposed_new_management_only
+pharmacy,Nhà thuốc nhỏ,retail,4,Hai nhà thuốc,4000000,5300000,30,140,2,10,quầy có người phụ trách,291667,256667,35000,23800.00,12600.00,37.50,513334,173.91,255.75,140000,proposed_new_management_only
+pharmacy,Nhà thuốc nhỏ,retail,5,Cụm ba điểm,12000000,17300000,60,260,3,16,quầy có người phụ trách,750000,660000,90000,61200.00,32400.00,37.50,1320000,218.18,320.86,360000,proposed_new_management_only
+pharmacy,Nhà thuốc nhỏ,retail,6,Chuỗi năm điểm,35000000,52300000,100,450,5,24,quầy có người phụ trách,1666667,1466667,200000,136000.00,72000.00,37.50,2933334,318.18,467.91,800000,proposed_new_management_only
+pharmacy,Nhà thuốc nhỏ,retail,7,Chuỗi khu vực,100000000,152300000,160,750,8,36,quầy có người phụ trách,3500000,3080000,420000,285600.00,151200.00,37.50,6160000,454.55,668.45,1680000,proposed_new_management_only
+pharmacy,Nhà thuốc nhỏ,retail,8,Mạng lưới cung ứng,250000000,402300000,240,1200,12,50,quầy có người phụ trách,6666667,5866667,800000,544000.00,288000.00,37.50,11733334,657.89,967.49,3200000,proposed_new_management_only
+accounting,Một ngày làm kế toán,professional,1,Bàn dịch vụ,30000,30000,3,10,1,2,nhóm hồ sơ,2223,1623,600,364.44,128.89,49.06,3245,50.00,82.32,2400,proposed_new_management_only
+accounting,Một ngày làm kế toán,professional,2,Văn phòng nhỏ,150000,180000,7,30,1,4,nhóm hồ sơ,7778,5678,2100,1275.56,451.11,49.06,11356,100.00,164.63,8400,proposed_new_management_only
+accounting,Một ngày làm kế toán,professional,3,Văn phòng nhiều nhóm,600000,780000,14,70,1,6,nhóm hồ sơ,26667,19467,7200,4373.33,1546.67,49.06,38934,117.65,193.69,28800,proposed_new_management_only
+accounting,Một ngày làm kế toán,professional,4,Hai nhóm khách,2400000,3180000,30,140,2,10,nhóm hồ sơ,77778,56778,21000,12755.56,4511.11,49.06,113556,173.91,286.32,84000,proposed_new_management_only
+accounting,Một ngày làm kế toán,professional,5,Cụm văn phòng,7200000,10380000,60,260,3,16,nhóm hồ sơ,200000,146000,54000,32800.00,11600.00,49.06,292000,218.18,359.20,216000,proposed_new_management_only
+accounting,Một ngày làm kế toán,professional,6,Chuỗi dịch vụ,21000000,31380000,100,450,5,24,nhóm hồ sơ,444445,324445,120000,72888.89,25777.78,49.06,648889,318.18,523.84,480000,proposed_new_management_only
+accounting,Một ngày làm kế toán,professional,7,Trung tâm soát xét,60000000,91380000,160,750,8,36,nhóm hồ sơ,933334,681334,252000,153066.67,54133.33,49.06,1362667,454.55,748.34,1008000,proposed_new_management_only
+accounting,Một ngày làm kế toán,professional,8,Mạng lưới kế toán,150000000,241380000,240,1200,12,50,nhóm hồ sơ,1777778,1297778,480000,291555.56,103111.11,49.06,2595556,657.89,1083.12,1920000,proposed_new_management_only
+customer_care,Chăm sóc khách hàng,agency,1,Kèm nhân viên,0,0,3,10,1,2,nhóm hỗ trợ,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+customer_care,Chăm sóc khách hàng,agency,2,Điều phối ca,0,0,7,30,1,4,nhóm hỗ trợ,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+customer_care,Chăm sóc khách hàng,agency,3,Quản lý nhóm dự án,0,0,14,70,1,6,nhóm hỗ trợ,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+customer_care,Chăm sóc khách hàng,agency,4,Phối hợp hai nhóm,0,0,30,140,2,10,nhóm hỗ trợ,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+customer_care,Chăm sóc khách hàng,agency,5,Điều phối cụm,0,0,60,260,3,16,nhóm hỗ trợ,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+customer_care,Chăm sóc khách hàng,agency,6,Dự án liên phòng,0,0,100,450,5,24,nhóm hỗ trợ,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+customer_care,Chăm sóc khách hàng,agency,7,Vận hành khu vực,0,0,160,750,8,36,nhóm hỗ trợ,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+customer_care,Chăm sóc khách hàng,agency,8,Chương trình toàn hệ thống,0,0,240,1200,12,50,nhóm hỗ trợ,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+teacher,Một ngày làm giáo viên,agency,1,Kèm giáo viên mới,0,0,3,10,1,2,nhóm chuyên môn,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+teacher,Một ngày làm giáo viên,agency,2,Dẫn chuyên đề,0,0,7,30,1,4,nhóm chuyên môn,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+teacher,Một ngày làm giáo viên,agency,3,Điều phối tổ dự án,0,0,14,70,1,6,nhóm chuyên môn,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+teacher,Một ngày làm giáo viên,agency,4,Dự án liên lớp,0,0,30,140,2,10,nhóm chuyên môn,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+teacher,Một ngày làm giáo viên,agency,5,Dự án liên tổ,0,0,60,260,3,16,nhóm chuyên môn,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+teacher,Một ngày làm giáo viên,agency,6,Dự án liên trường,0,0,100,450,5,24,nhóm chuyên môn,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+teacher,Một ngày làm giáo viên,agency,7,Điều phối khu vực,0,0,160,750,8,36,nhóm chuyên môn,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+teacher,Một ngày làm giáo viên,agency,8,Chương trình chuyên môn,0,0,240,1200,12,50,nhóm chuyên môn,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+tour_guide,Hướng dẫn viên du lịch,service,1,Nhóm hướng dẫn,35000,35000,3,10,1,2,đoàn có hướng dẫn viên,3334,2634,700,413.33,126.67,51.16,5267,50.00,84.68,2800,proposed_new_management_only
+tour_guide,Hướng dẫn viên du lịch,service,2,Văn phòng tour,175000,210000,7,30,1,4,đoàn có hướng dẫn viên,11667,9217,2450,1446.67,443.33,51.16,18434,100.00,169.35,9800,proposed_new_management_only
+tour_guide,Hướng dẫn viên du lịch,service,3,Điều hành nhiều đoàn,700000,910000,14,70,1,6,đoàn có hướng dẫn viên,40000,31600,8400,4960.00,1520.00,51.16,63200,117.65,199.24,33600,proposed_new_management_only
+tour_guide,Hướng dẫn viên du lịch,service,4,Hai điểm khởi hành,2800000,3710000,30,140,2,10,đoàn có hướng dẫn viên,116667,92167,24500,14466.67,4433.33,51.16,184334,173.91,294.53,98000,proposed_new_management_only
+tour_guide,Hướng dẫn viên du lịch,service,5,Cụm điểm tour,8400000,12110000,60,260,3,16,đoàn có hướng dẫn viên,300000,237000,63000,37200.00,11400.00,51.16,474000,218.18,369.50,252000,proposed_new_management_only
+tour_guide,Hướng dẫn viên du lịch,service,6,Chuỗi văn phòng,24500000,36610000,100,450,5,24,đoàn có hướng dẫn viên,666667,526667,140000,82666.67,25333.33,51.16,1053334,318.18,538.86,560000,proposed_new_management_only
+tour_guide,Hướng dẫn viên du lịch,service,7,Điều hành khu vực,70000000,106610000,160,750,8,36,đoàn có hướng dẫn viên,1400000,1106000,294000,173600.00,53200.00,51.16,2212000,454.55,769.79,1176000,proposed_new_management_only
+tour_guide,Hướng dẫn viên du lịch,service,8,Mạng lưới du lịch,175000000,281610000,240,1200,12,50,đoàn có hướng dẫn viên,2666667,2106667,560000,330666.67,101333.33,51.16,4213334,657.89,1114.18,2240000,proposed_new_management_only
+milk_tea,Tiệm trà sữa,food,1,Quầy lớn,40000,40000,3,10,1,2,trạm pha chế,6667,5867,800,437.33,74.67,55.88,11734,50.00,91.46,3200,proposed_new_management_only
+milk_tea,Tiệm trà sữa,food,2,Cửa hàng trà sữa,200000,240000,7,30,1,4,trạm pha chế,23334,20534,2800,1530.67,261.33,55.88,41067,100.00,182.93,11200,proposed_new_management_only
+milk_tea,Tiệm trà sữa,food,3,Cửa hàng có bếp sơ chế,800000,1040000,14,70,1,6,trạm pha chế,80000,70400,9600,5248.00,896.00,55.88,140800,117.65,215.21,38400,proposed_new_management_only
+milk_tea,Tiệm trà sữa,food,4,Hai cửa hàng,3200000,4240000,30,140,2,10,trạm pha chế,233334,205334,28000,15306.67,2613.33,55.88,410667,173.91,318.13,112000,proposed_new_management_only
+milk_tea,Tiệm trà sữa,food,5,Cụm ba quán,9600000,13840000,60,260,3,16,trạm pha chế,600000,528000,72000,39360.00,6720.00,55.88,1056000,218.18,399.11,288000,proposed_new_management_only
+milk_tea,Tiệm trà sữa,food,6,Chuỗi năm quán,28000000,41840000,100,450,5,24,trạm pha chế,1333334,1173334,160000,87466.67,14933.33,55.88,2346667,318.18,582.04,640000,proposed_new_management_only
+milk_tea,Tiệm trà sữa,food,7,Chuỗi khu vực,80000000,121840000,160,750,8,36,trạm pha chế,2800000,2464000,336000,183680.00,31360.00,55.88,4928000,454.55,831.49,1344000,proposed_new_management_only
+milk_tea,Tiệm trà sữa,food,8,Thương hiệu trà sữa,200000000,321840000,240,1200,12,50,trạm pha chế,5333334,4693334,640000,349866.67,59733.33,55.88,9386667,657.89,1203.47,2560000,proposed_new_management_only
+restaurant,Quán mì cay,food,1,Quán mở rộng,40000,40000,3,10,1,2,trạm bếp,6667,5867,800,437.33,74.67,55.88,11734,50.00,91.46,3200,proposed_new_management_only
+restaurant,Quán mì cay,food,2,Nhà hàng mì,200000,240000,7,30,1,4,trạm bếp,23334,20534,2800,1530.67,261.33,55.88,41067,100.00,182.93,11200,proposed_new_management_only
+restaurant,Quán mì cay,food,3,Bếp phục vụ đoàn,800000,1040000,14,70,1,6,trạm bếp,80000,70400,9600,5248.00,896.00,55.88,140800,117.65,215.21,38400,proposed_new_management_only
+restaurant,Quán mì cay,food,4,Hai nhà hàng,3200000,4240000,30,140,2,10,trạm bếp,233334,205334,28000,15306.67,2613.33,55.88,410667,173.91,318.13,112000,proposed_new_management_only
+restaurant,Quán mì cay,food,5,Cụm ba quán,9600000,13840000,60,260,3,16,trạm bếp,600000,528000,72000,39360.00,6720.00,55.88,1056000,218.18,399.11,288000,proposed_new_management_only
+restaurant,Quán mì cay,food,6,Chuỗi năm quán,28000000,41840000,100,450,5,24,trạm bếp,1333334,1173334,160000,87466.67,14933.33,55.88,2346667,318.18,582.04,640000,proposed_new_management_only
+restaurant,Quán mì cay,food,7,Chuỗi khu vực,80000000,121840000,160,750,8,36,trạm bếp,2800000,2464000,336000,183680.00,31360.00,55.88,4928000,454.55,831.49,1344000,proposed_new_management_only
+restaurant,Quán mì cay,food,8,Hệ thống nhà hàng,200000000,321840000,240,1200,12,50,trạm bếp,5333334,4693334,640000,349866.67,59733.33,55.88,9386667,657.89,1203.47,2560000,proposed_new_management_only
+cafe_bakery,Tiệm bánh & cà phê,food,1,Quán bánh lớn,40000,40000,3,10,1,2,trạm lò hoặc pha chế,6667,5867,800,437.33,74.67,55.88,11734,50.00,91.46,3200,proposed_new_management_only
+cafe_bakery,Tiệm bánh & cà phê,food,2,Café có xưởng bánh,200000,240000,7,30,1,4,trạm lò hoặc pha chế,23334,20534,2800,1530.67,261.33,55.88,41067,100.00,182.93,11200,proposed_new_management_only
+cafe_bakery,Tiệm bánh & cà phê,food,3,Bếp bánh trung tâm,800000,1040000,14,70,1,6,trạm lò hoặc pha chế,80000,70400,9600,5248.00,896.00,55.88,140800,117.65,215.21,38400,proposed_new_management_only
+cafe_bakery,Tiệm bánh & cà phê,food,4,Hai cửa hàng,3200000,4240000,30,140,2,10,trạm lò hoặc pha chế,233334,205334,28000,15306.67,2613.33,55.88,410667,173.91,318.13,112000,proposed_new_management_only
+cafe_bakery,Tiệm bánh & cà phê,food,5,Cụm ba quán,9600000,13840000,60,260,3,16,trạm lò hoặc pha chế,600000,528000,72000,39360.00,6720.00,55.88,1056000,218.18,399.11,288000,proposed_new_management_only
+cafe_bakery,Tiệm bánh & cà phê,food,6,Chuỗi năm quán,28000000,41840000,100,450,5,24,trạm lò hoặc pha chế,1333334,1173334,160000,87466.67,14933.33,55.88,2346667,318.18,582.04,640000,proposed_new_management_only
+cafe_bakery,Tiệm bánh & cà phê,food,7,Chuỗi khu vực,80000000,121840000,160,750,8,36,trạm lò hoặc pha chế,2800000,2464000,336000,183680.00,31360.00,55.88,4928000,454.55,831.49,1344000,proposed_new_management_only
+cafe_bakery,Tiệm bánh & cà phê,food,8,Hệ thống café bánh,200000000,321840000,240,1200,12,50,trạm lò hoặc pha chế,5333334,4693334,640000,349866.67,59733.33,55.88,9386667,657.89,1203.47,2560000,proposed_new_management_only
+florist,Tiệm hoa,retail,1,Tiệm hoa lớn,50000,50000,3,10,1,2,bàn cắm hoa,8334,7334,1000,680.00,360.00,37.50,14667,50.00,73.53,4000,proposed_new_management_only
+florist,Tiệm hoa,retail,2,Studio hoa,250000,300000,7,30,1,4,bàn cắm hoa,29167,25667,3500,2380.00,1260.00,37.50,51334,100.00,147.06,14000,proposed_new_management_only
+florist,Tiệm hoa,retail,3,Trung tâm hoa sự kiện,1000000,1300000,14,70,1,6,bàn cắm hoa,100000,88000,12000,8160.00,4320.00,37.50,176000,117.65,173.01,48000,proposed_new_management_only
+florist,Tiệm hoa,retail,4,Hai tiệm,4000000,5300000,30,140,2,10,bàn cắm hoa,291667,256667,35000,23800.00,12600.00,37.50,513334,173.91,255.75,140000,proposed_new_management_only
+florist,Tiệm hoa,retail,5,Cụm ba tiệm,12000000,17300000,60,260,3,16,bàn cắm hoa,750000,660000,90000,61200.00,32400.00,37.50,1320000,218.18,320.86,360000,proposed_new_management_only
+florist,Tiệm hoa,retail,6,Chuỗi năm tiệm,35000000,52300000,100,450,5,24,bàn cắm hoa,1666667,1466667,200000,136000.00,72000.00,37.50,2933334,318.18,467.91,800000,proposed_new_management_only
+florist,Tiệm hoa,retail,7,Chuỗi khu vực,100000000,152300000,160,750,8,36,bàn cắm hoa,3500000,3080000,420000,285600.00,151200.00,37.50,6160000,454.55,668.45,1680000,proposed_new_management_only
+florist,Tiệm hoa,retail,8,Mạng lưới hoa,250000000,402300000,240,1200,12,50,bàn cắm hoa,6666667,5866667,800000,544000.00,288000.00,37.50,11733334,657.89,967.49,3200000,proposed_new_management_only
+grocery,Tạp hóa đầu hẻm,retail,1,Tạp hóa mở rộng,50000,50000,3,10,1,2,quầy thanh toán,8334,7334,1000,680.00,360.00,37.50,14667,50.00,73.53,4000,proposed_new_management_only
+grocery,Tạp hóa đầu hẻm,retail,2,Minimart,250000,300000,7,30,1,4,quầy thanh toán,29167,25667,3500,2380.00,1260.00,37.50,51334,100.00,147.06,14000,proposed_new_management_only
+grocery,Tạp hóa đầu hẻm,retail,3,Siêu thị mini,1000000,1300000,14,70,1,6,quầy thanh toán,100000,88000,12000,8160.00,4320.00,37.50,176000,117.65,173.01,48000,proposed_new_management_only
+grocery,Tạp hóa đầu hẻm,retail,4,Siêu thị khu phố,4000000,5300000,30,140,2,10,quầy thanh toán,291667,256667,35000,23800.00,12600.00,37.50,513334,173.91,255.75,140000,proposed_new_management_only
+grocery,Tạp hóa đầu hẻm,retail,5,Cụm ba siêu thị,12000000,17300000,60,260,3,16,quầy thanh toán,750000,660000,90000,61200.00,32400.00,37.50,1320000,218.18,320.86,360000,proposed_new_management_only
+grocery,Tạp hóa đầu hẻm,retail,6,Chuỗi năm điểm,35000000,52300000,100,450,5,24,quầy thanh toán,1666667,1466667,200000,136000.00,72000.00,37.50,2933334,318.18,467.91,800000,proposed_new_management_only
+grocery,Tạp hóa đầu hẻm,retail,7,Chuỗi khu vực,100000000,152300000,160,750,8,36,quầy thanh toán,3500000,3080000,420000,285600.00,151200.00,37.50,6160000,454.55,668.45,1680000,proposed_new_management_only
+grocery,Tạp hóa đầu hẻm,retail,8,Hệ thống bán lẻ,250000000,402300000,240,1200,12,50,quầy thanh toán,6666667,5866667,800000,544000.00,288000.00,37.50,11733334,657.89,967.49,3200000,proposed_new_management_only
+repair,Tiệm sửa đồ,technical,1,Tiệm có bàn sửa,60000,60000,3,10,1,2,bàn sửa có thợ,9231,8031,1200,627.69,55.38,58.06,16062,50.00,95.59,4800,proposed_new_management_only
+repair,Tiệm sửa đồ,technical,2,Xưởng nhỏ,300000,360000,7,30,1,4,bàn sửa có thợ,32308,28108,4200,2196.92,193.85,58.06,56216,100.00,191.18,16800,proposed_new_management_only
+repair,Tiệm sửa đồ,technical,3,Trung tâm bảo dưỡng,1200000,1560000,14,70,1,6,bàn sửa có thợ,110770,96370,14400,7532.31,664.62,58.06,192739,117.65,224.91,57600,proposed_new_management_only
+repair,Tiệm sửa đồ,technical,4,Hai xưởng,4800000,6360000,30,140,2,10,bàn sửa có thợ,323077,281077,42000,21969.23,1938.46,58.06,562154,173.91,332.48,168000,proposed_new_management_only
+repair,Tiệm sửa đồ,technical,5,Cụm ba xưởng,14400000,20760000,60,260,3,16,bàn sửa có thợ,830770,722770,108000,56492.31,4984.62,58.06,1445539,218.18,417.11,432000,proposed_new_management_only
+repair,Tiệm sửa đồ,technical,6,Chuỗi năm xưởng,42000000,62760000,100,450,5,24,bàn sửa có thợ,1846154,1606154,240000,125538.46,11076.92,58.06,3212308,318.18,608.29,960000,proposed_new_management_only
+repair,Tiệm sửa đồ,technical,7,Chuỗi khu vực,120000000,182760000,160,750,8,36,bàn sửa có thợ,3876924,3372924,504000,263630.77,23261.54,58.06,6745847,454.55,868.98,2016000,proposed_new_management_only
+repair,Tiệm sửa đồ,technical,8,Mạng lưới kỹ thuật,300000000,482760000,240,1200,12,50,bàn sửa có thợ,7384616,6424616,960000,502153.85,44307.69,58.06,12849231,657.89,1257.74,3840000,proposed_new_management_only
+farm,Nông trại rau & gà,farm,1,Khu trồng mở rộng,60000,60000,3,10,1,2,tổ khu trồng hoặc chăn nuôi,10000,8800,1200,576.00,-48.00,61.54,17600,50.00,104.17,4800,proposed_new_management_only
+farm,Nông trại rau & gà,farm,2,Nông trại nhiều khu,300000,360000,7,30,1,4,tổ khu trồng hoặc chăn nuôi,35000,30800,4200,2016.00,-168.00,61.54,61600,100.00,208.33,16800,proposed_new_management_only
+farm,Nông trại rau & gà,farm,3,Trang trại thương mại,1200000,1560000,14,70,1,6,tổ khu trồng hoặc chăn nuôi,120000,105600,14400,6912.00,-576.00,61.54,211200,117.65,245.10,57600,proposed_new_management_only
+farm,Nông trại rau & gà,farm,4,Hai khu sản xuất,4800000,6360000,30,140,2,10,tổ khu trồng hoặc chăn nuôi,350000,308000,42000,20160.00,-1680.00,61.54,616000,173.91,362.32,168000,proposed_new_management_only
+farm,Nông trại rau & gà,farm,5,Cụm nông trại,14400000,20760000,60,260,3,16,tổ khu trồng hoặc chăn nuôi,900000,792000,108000,51840.00,-4320.00,61.54,1584000,218.18,454.55,432000,proposed_new_management_only
+farm,Nông trại rau & gà,farm,6,Hợp tác sản xuất,42000000,62760000,100,450,5,24,tổ khu trồng hoặc chăn nuôi,2000000,1760000,240000,115200.00,-9600.00,61.54,3520000,318.18,662.88,960000,proposed_new_management_only
+farm,Nông trại rau & gà,farm,7,Vùng nguyên liệu,120000000,182760000,160,750,8,36,tổ khu trồng hoặc chăn nuôi,4200000,3696000,504000,241920.00,-20160.00,61.54,7392000,454.55,946.97,2016000,proposed_new_management_only
+farm,Nông trại rau & gà,farm,8,Mạng lưới nông nghiệp,300000000,482760000,240,1200,12,50,tổ khu trồng hoặc chăn nuôi,8000000,7040000,960000,460800.00,-38400.00,61.54,14080000,657.89,1370.61,3840000,proposed_new_management_only
+delivery,Giao hàng,logistics,1,Tổ giao hàng,60000,60000,3,10,1,2,tổ tuyến có xe,15000,13800,1200,420.00,-360.00,69.23,27600,50.00,142.86,4800,proposed_new_management_only
+delivery,Giao hàng,logistics,2,Điểm giao nhận,300000,360000,7,30,1,4,tổ tuyến có xe,52500,48300,4200,1470.00,-1260.00,69.23,96600,100.00,285.71,16800,proposed_new_management_only
+delivery,Giao hàng,logistics,3,Kho phân tuyến,1200000,1560000,14,70,1,6,tổ tuyến có xe,180000,165600,14400,5040.00,-4320.00,69.23,331200,117.65,336.13,57600,proposed_new_management_only
+delivery,Giao hàng,logistics,4,Hai trạm,4800000,6360000,30,140,2,10,tổ tuyến có xe,525000,483000,42000,14700.00,-12600.00,69.23,966000,173.91,496.89,168000,proposed_new_management_only
+delivery,Giao hàng,logistics,5,Cụm ba trạm,14400000,20760000,60,260,3,16,tổ tuyến có xe,1350000,1242000,108000,37800.00,-32400.00,69.23,2484000,218.18,623.38,432000,proposed_new_management_only
+delivery,Giao hàng,logistics,6,Mạng năm trạm,42000000,62760000,100,450,5,24,tổ tuyến có xe,3000000,2760000,240000,84000.00,-72000.00,69.23,5520000,318.18,909.09,960000,proposed_new_management_only
+delivery,Giao hàng,logistics,7,Điều hành khu vực,120000000,182760000,160,750,8,36,tổ tuyến có xe,6300000,5796000,504000,176400.00,-151200.00,69.23,11592000,454.55,1298.70,2016000,proposed_new_management_only
+delivery,Giao hàng,logistics,8,Mạng lưới giao nhận,300000000,482760000,240,1200,12,50,tổ tuyến có xe,12000000,11040000,960000,336000.00,-288000.00,69.23,22080000,657.89,1879.70,3840000,proposed_new_management_only
+homestay,Homestay nhỏ,hospitality,1,Nhà lưu trú lớn,75000,75000,3,10,1,2,phòng có lịch đặt,8334,6834,1500,666.67,-166.67,64.00,13667,50.00,112.50,6000,proposed_new_management_only
+homestay,Homestay nhỏ,hospitality,2,Nhà nghỉ nhỏ,375000,450000,7,30,1,4,phòng có lịch đặt,29167,23917,5250,2333.33,-583.33,64.00,47834,100.00,225.00,21000,proposed_new_management_only
+homestay,Homestay nhỏ,hospitality,3,Khách sạn nhỏ,1500000,1950000,14,70,1,6,phòng có lịch đặt,100000,82000,18000,8000.00,-2000.00,64.00,164000,117.65,264.71,72000,proposed_new_management_only
+homestay,Homestay nhỏ,hospitality,4,Hai cơ sở,6000000,7950000,30,140,2,10,phòng có lịch đặt,291667,239167,52500,23333.33,-5833.33,64.00,478334,173.91,391.30,210000,proposed_new_management_only
+homestay,Homestay nhỏ,hospitality,5,Cụm ba cơ sở,18000000,25950000,60,260,3,16,phòng có lịch đặt,750000,615000,135000,60000.00,-15000.00,64.00,1230000,218.18,490.91,540000,proposed_new_management_only
+homestay,Homestay nhỏ,hospitality,6,Chuỗi năm cơ sở,52500000,78450000,100,450,5,24,phòng có lịch đặt,1666667,1366667,300000,133333.33,-33333.33,64.00,2733334,318.18,715.91,1200000,proposed_new_management_only
+homestay,Homestay nhỏ,hospitality,7,Chuỗi khu vực,150000000,228450000,160,750,8,36,phòng có lịch đặt,3500000,2870000,630000,280000.00,-70000.00,64.00,5740000,454.55,1022.73,2520000,proposed_new_management_only
+homestay,Homestay nhỏ,hospitality,8,Hệ thống lưu trú,375000000,603450000,240,1200,12,50,phòng có lịch đặt,6666667,5466667,1200000,533333.33,-133333.33,64.00,10933334,657.89,1480.26,4800000,proposed_new_management_only
+pet_care,Chăm sóc thú cưng,service,1,Phòng chăm thú,35000,35000,3,10,1,2,ô chăm thú có người phụ trách,3334,2634,700,413.33,126.67,51.16,5267,50.00,84.68,2800,proposed_new_management_only
+pet_care,Chăm sóc thú cưng,service,2,Trung tâm chăm thú,175000,210000,7,30,1,4,ô chăm thú có người phụ trách,11667,9217,2450,1446.67,443.33,51.16,18434,100.00,169.35,9800,proposed_new_management_only
+pet_care,Chăm sóc thú cưng,service,3,Khu lưu trú thú,700000,910000,14,70,1,6,ô chăm thú có người phụ trách,40000,31600,8400,4960.00,1520.00,51.16,63200,117.65,199.24,33600,proposed_new_management_only
+pet_care,Chăm sóc thú cưng,service,4,Hai cơ sở,2800000,3710000,30,140,2,10,ô chăm thú có người phụ trách,116667,92167,24500,14466.67,4433.33,51.16,184334,173.91,294.53,98000,proposed_new_management_only
+pet_care,Chăm sóc thú cưng,service,5,Cụm ba điểm,8400000,12110000,60,260,3,16,ô chăm thú có người phụ trách,300000,237000,63000,37200.00,11400.00,51.16,474000,218.18,369.50,252000,proposed_new_management_only
+pet_care,Chăm sóc thú cưng,service,6,Chuỗi năm điểm,24500000,36610000,100,450,5,24,ô chăm thú có người phụ trách,666667,526667,140000,82666.67,25333.33,51.16,1053334,318.18,538.86,560000,proposed_new_management_only
+pet_care,Chăm sóc thú cưng,service,7,Chuỗi khu vực,70000000,106610000,160,750,8,36,ô chăm thú có người phụ trách,1400000,1106000,294000,173600.00,53200.00,51.16,2212000,454.55,769.79,1176000,proposed_new_management_only
+pet_care,Chăm sóc thú cưng,service,8,Mạng lưới chăm thú,175000000,281610000,240,1200,12,50,ô chăm thú có người phụ trách,2666667,2106667,560000,330666.67,101333.33,51.16,4213334,657.89,1114.18,2240000,proposed_new_management_only
+salon,Salon tóc,service,1,Salon lớn,35000,35000,3,10,1,2,ghế có thợ,3334,2634,700,413.33,126.67,51.16,5267,50.00,84.68,2800,proposed_new_management_only
+salon,Salon tóc,service,2,Salon nhiều khu,175000,210000,7,30,1,4,ghế có thợ,11667,9217,2450,1446.67,443.33,51.16,18434,100.00,169.35,9800,proposed_new_management_only
+salon,Salon tóc,service,3,Salon đào tạo,700000,910000,14,70,1,6,ghế có thợ,40000,31600,8400,4960.00,1520.00,51.16,63200,117.65,199.24,33600,proposed_new_management_only
+salon,Salon tóc,service,4,Hai salon,2800000,3710000,30,140,2,10,ghế có thợ,116667,92167,24500,14466.67,4433.33,51.16,184334,173.91,294.53,98000,proposed_new_management_only
+salon,Salon tóc,service,5,Cụm ba salon,8400000,12110000,60,260,3,16,ghế có thợ,300000,237000,63000,37200.00,11400.00,51.16,474000,218.18,369.50,252000,proposed_new_management_only
+salon,Salon tóc,service,6,Chuỗi năm salon,24500000,36610000,100,450,5,24,ghế có thợ,666667,526667,140000,82666.67,25333.33,51.16,1053334,318.18,538.86,560000,proposed_new_management_only
+salon,Salon tóc,service,7,Chuỗi khu vực,70000000,106610000,160,750,8,36,ghế có thợ,1400000,1106000,294000,173600.00,53200.00,51.16,2212000,454.55,769.79,1176000,proposed_new_management_only
+salon,Salon tóc,service,8,Thương hiệu salon,175000000,281610000,240,1200,12,50,ghế có thợ,2666667,2106667,560000,330666.67,101333.33,51.16,4213334,657.89,1114.18,2240000,proposed_new_management_only
+corp_accounting,Kế toán doanh nghiệp,agency,1,Kèm nhân viên,0,0,3,10,1,2,nhóm kế toán,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+corp_accounting,Kế toán doanh nghiệp,agency,2,Dẫn nhóm sổ,0,0,7,30,1,4,nhóm kế toán,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+corp_accounting,Kế toán doanh nghiệp,agency,3,Điều phối kỳ khóa sổ,0,0,14,70,1,6,nhóm kế toán,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+corp_accounting,Kế toán doanh nghiệp,agency,4,Hai đơn vị,0,0,30,140,2,10,nhóm kế toán,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+corp_accounting,Kế toán doanh nghiệp,agency,5,Cụm đơn vị,0,0,60,260,3,16,nhóm kế toán,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+corp_accounting,Kế toán doanh nghiệp,agency,6,Dự án liên phòng,0,0,100,450,5,24,nhóm kế toán,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+corp_accounting,Kế toán doanh nghiệp,agency,7,Soát xét khu vực,0,0,160,750,8,36,nhóm kế toán,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+corp_accounting,Kế toán doanh nghiệp,agency,8,Chương trình tài chính,0,0,240,1200,12,50,nhóm kế toán,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+tax_payroll,Thuế & tiền lương,professional,1,Bàn dịch vụ thuế lương,30000,30000,3,10,1,2,nhóm hồ sơ,2223,1623,600,364.44,128.89,49.06,3245,50.00,82.32,2400,proposed_new_management_only
+tax_payroll,Thuế & tiền lương,professional,2,Văn phòng nhỏ,150000,180000,7,30,1,4,nhóm hồ sơ,7778,5678,2100,1275.56,451.11,49.06,11356,100.00,164.63,8400,proposed_new_management_only
+tax_payroll,Thuế & tiền lương,professional,3,Trung tâm dịch vụ,600000,780000,14,70,1,6,nhóm hồ sơ,26667,19467,7200,4373.33,1546.67,49.06,38934,117.65,193.69,28800,proposed_new_management_only
+tax_payroll,Thuế & tiền lương,professional,4,Hai nhóm khách,2400000,3180000,30,140,2,10,nhóm hồ sơ,77778,56778,21000,12755.56,4511.11,49.06,113556,173.91,286.32,84000,proposed_new_management_only
+tax_payroll,Thuế & tiền lương,professional,5,Cụm văn phòng,7200000,10380000,60,260,3,16,nhóm hồ sơ,200000,146000,54000,32800.00,11600.00,49.06,292000,218.18,359.20,216000,proposed_new_management_only
+tax_payroll,Thuế & tiền lương,professional,6,Chuỗi dịch vụ,21000000,31380000,100,450,5,24,nhóm hồ sơ,444445,324445,120000,72888.89,25777.78,49.06,648889,318.18,523.84,480000,proposed_new_management_only
+tax_payroll,Thuế & tiền lương,professional,7,Soát xét khu vực,60000000,91380000,160,750,8,36,nhóm hồ sơ,933334,681334,252000,153066.67,54133.33,49.06,1362667,454.55,748.34,1008000,proposed_new_management_only
+tax_payroll,Thuế & tiền lương,professional,8,Mạng dịch vụ thuế lương,150000000,241380000,240,1200,12,50,nhóm hồ sơ,1777778,1297778,480000,291555.56,103111.11,49.06,2595556,657.89,1083.12,1920000,proposed_new_management_only
+group_accounting,Kế toán tập đoàn,agency,1,Kèm báo cáo viên,0,0,3,10,1,2,nhóm hợp nhất,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+group_accounting,Kế toán tập đoàn,agency,2,Nhóm hợp nhất,0,0,7,30,1,4,nhóm hợp nhất,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+group_accounting,Kế toán tập đoàn,agency,3,Dự án nhiều công ty,0,0,14,70,1,6,nhóm hợp nhất,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+group_accounting,Kế toán tập đoàn,agency,4,Hai nhóm đơn vị,0,0,30,140,2,10,nhóm hợp nhất,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+group_accounting,Kế toán tập đoàn,agency,5,Cụm hợp nhất,0,0,60,260,3,16,nhóm hợp nhất,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+group_accounting,Kế toán tập đoàn,agency,6,Dự án tập đoàn,0,0,100,450,5,24,nhóm hợp nhất,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+group_accounting,Kế toán tập đoàn,agency,7,Soát xét khu vực,0,0,160,750,8,36,nhóm hợp nhất,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+group_accounting,Kế toán tập đoàn,agency,8,Chương trình báo cáo,0,0,240,1200,12,50,nhóm hợp nhất,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+clothing,Shop quần áo,retail,1,Shop mở rộng,50000,50000,3,10,1,2,quầy bán hoặc phòng thử,8334,7334,1000,680.00,360.00,37.50,14667,50.00,73.53,4000,proposed_new_management_only
+clothing,Shop quần áo,retail,2,Boutique,250000,300000,7,30,1,4,quầy bán hoặc phòng thử,29167,25667,3500,2380.00,1260.00,37.50,51334,100.00,147.06,14000,proposed_new_management_only
+clothing,Shop quần áo,retail,3,Showroom,1000000,1300000,14,70,1,6,quầy bán hoặc phòng thử,100000,88000,12000,8160.00,4320.00,37.50,176000,117.65,173.01,48000,proposed_new_management_only
+clothing,Shop quần áo,retail,4,Hai cửa hàng,4000000,5300000,30,140,2,10,quầy bán hoặc phòng thử,291667,256667,35000,23800.00,12600.00,37.50,513334,173.91,255.75,140000,proposed_new_management_only
+clothing,Shop quần áo,retail,5,Cụm ba shop,12000000,17300000,60,260,3,16,quầy bán hoặc phòng thử,750000,660000,90000,61200.00,32400.00,37.50,1320000,218.18,320.86,360000,proposed_new_management_only
+clothing,Shop quần áo,retail,6,Chuỗi năm shop,35000000,52300000,100,450,5,24,quầy bán hoặc phòng thử,1666667,1466667,200000,136000.00,72000.00,37.50,2933334,318.18,467.91,800000,proposed_new_management_only
+clothing,Shop quần áo,retail,7,Chuỗi khu vực,100000000,152300000,160,750,8,36,quầy bán hoặc phòng thử,3500000,3080000,420000,285600.00,151200.00,37.50,6160000,454.55,668.45,1680000,proposed_new_management_only
+clothing,Shop quần áo,retail,8,Thương hiệu thời trang,250000000,402300000,240,1200,12,50,quầy bán hoặc phòng thử,6666667,5866667,800000,544000.00,288000.00,37.50,11733334,657.89,967.49,3200000,proposed_new_management_only
+pet_shop,Shop thú cưng,retail,1,Tiệm mở rộng,50000,50000,3,10,1,2,quầy tư vấn,8334,7334,1000,680.00,360.00,37.50,14667,50.00,73.53,4000,proposed_new_management_only
+pet_shop,Shop thú cưng,retail,2,Cửa hàng chuyên thú,250000,300000,7,30,1,4,quầy tư vấn,29167,25667,3500,2380.00,1260.00,37.50,51334,100.00,147.06,14000,proposed_new_management_only
+pet_shop,Shop thú cưng,retail,3,Siêu thị đồ thú,1000000,1300000,14,70,1,6,quầy tư vấn,100000,88000,12000,8160.00,4320.00,37.50,176000,117.65,173.01,48000,proposed_new_management_only
+pet_shop,Shop thú cưng,retail,4,Hai cửa hàng,4000000,5300000,30,140,2,10,quầy tư vấn,291667,256667,35000,23800.00,12600.00,37.50,513334,173.91,255.75,140000,proposed_new_management_only
+pet_shop,Shop thú cưng,retail,5,Cụm ba tiệm,12000000,17300000,60,260,3,16,quầy tư vấn,750000,660000,90000,61200.00,32400.00,37.50,1320000,218.18,320.86,360000,proposed_new_management_only
+pet_shop,Shop thú cưng,retail,6,Chuỗi năm tiệm,35000000,52300000,100,450,5,24,quầy tư vấn,1666667,1466667,200000,136000.00,72000.00,37.50,2933334,318.18,467.91,800000,proposed_new_management_only
+pet_shop,Shop thú cưng,retail,7,Chuỗi khu vực,100000000,152300000,160,750,8,36,quầy tư vấn,3500000,3080000,420000,285600.00,151200.00,37.50,6160000,454.55,668.45,1680000,proposed_new_management_only
+pet_shop,Shop thú cưng,retail,8,Mạng lưới đồ thú,250000000,402300000,240,1200,12,50,quầy tư vấn,6666667,5866667,800000,544000.00,288000.00,37.50,11733334,657.89,967.49,3200000,proposed_new_management_only
+tra_da,Trà đá vỉa hè,food,1,Quán nước hợp lệ,40000,40000,3,10,1,2,trạm phục vụ,6667,5867,800,437.33,74.67,55.88,11734,50.00,91.46,3200,proposed_new_management_only
+tra_da,Trà đá vỉa hè,food,2,Quán giải khát,200000,240000,7,30,1,4,trạm phục vụ,23334,20534,2800,1530.67,261.33,55.88,41067,100.00,182.93,11200,proposed_new_management_only
+tra_da,Trà đá vỉa hè,food,3,Quán nhiều khu,800000,1040000,14,70,1,6,trạm phục vụ,80000,70400,9600,5248.00,896.00,55.88,140800,117.65,215.21,38400,proposed_new_management_only
+tra_da,Trà đá vỉa hè,food,4,Hai quán,3200000,4240000,30,140,2,10,trạm phục vụ,233334,205334,28000,15306.67,2613.33,55.88,410667,173.91,318.13,112000,proposed_new_management_only
+tra_da,Trà đá vỉa hè,food,5,Cụm ba quán,9600000,13840000,60,260,3,16,trạm phục vụ,600000,528000,72000,39360.00,6720.00,55.88,1056000,218.18,399.11,288000,proposed_new_management_only
+tra_da,Trà đá vỉa hè,food,6,Chuỗi năm quán,28000000,41840000,100,450,5,24,trạm phục vụ,1333334,1173334,160000,87466.67,14933.33,55.88,2346667,318.18,582.04,640000,proposed_new_management_only
+tra_da,Trà đá vỉa hè,food,7,Chuỗi khu vực,80000000,121840000,160,750,8,36,trạm phục vụ,2800000,2464000,336000,183680.00,31360.00,55.88,4928000,454.55,831.49,1344000,proposed_new_management_only
+tra_da,Trà đá vỉa hè,food,8,Thương hiệu giải khát,200000000,321840000,240,1200,12,50,trạm phục vụ,5333334,4693334,640000,349866.67,59733.33,55.88,9386667,657.89,1203.47,2560000,proposed_new_management_only
+fruit,Bán trái cây,retail,1,Sạp trái cây lớn,50000,50000,3,10,1,2,quầy cân hoặc đóng gói,8334,7334,1000,680.00,360.00,37.50,14667,50.00,73.53,4000,proposed_new_management_only
+fruit,Bán trái cây,retail,2,Cửa hàng trái cây,250000,300000,7,30,1,4,quầy cân hoặc đóng gói,29167,25667,3500,2380.00,1260.00,37.50,51334,100.00,147.06,14000,proposed_new_management_only
+fruit,Bán trái cây,retail,3,Trung tâm giỏ quà,1000000,1300000,14,70,1,6,quầy cân hoặc đóng gói,100000,88000,12000,8160.00,4320.00,37.50,176000,117.65,173.01,48000,proposed_new_management_only
+fruit,Bán trái cây,retail,4,Hai cửa hàng,4000000,5300000,30,140,2,10,quầy cân hoặc đóng gói,291667,256667,35000,23800.00,12600.00,37.50,513334,173.91,255.75,140000,proposed_new_management_only
+fruit,Bán trái cây,retail,5,Cụm ba điểm,12000000,17300000,60,260,3,16,quầy cân hoặc đóng gói,750000,660000,90000,61200.00,32400.00,37.50,1320000,218.18,320.86,360000,proposed_new_management_only
+fruit,Bán trái cây,retail,6,Chuỗi năm điểm,35000000,52300000,100,450,5,24,quầy cân hoặc đóng gói,1666667,1466667,200000,136000.00,72000.00,37.50,2933334,318.18,467.91,800000,proposed_new_management_only
+fruit,Bán trái cây,retail,7,Chuỗi khu vực,100000000,152300000,160,750,8,36,quầy cân hoặc đóng gói,3500000,3080000,420000,285600.00,151200.00,37.50,6160000,454.55,668.45,1680000,proposed_new_management_only
+fruit,Bán trái cây,retail,8,Mạng trái cây sạch,250000000,402300000,240,1200,12,50,quầy cân hoặc đóng gói,6666667,5866667,800000,544000.00,288000.00,37.50,11733334,657.89,967.49,3200000,proposed_new_management_only
+garbage,Thu gom rác,agency,1,Kèm tổ viên,0,0,3,10,1,2,tổ thu gom có xe,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+garbage,Thu gom rác,agency,2,Điều phối tuyến,0,0,7,30,1,4,tổ thu gom có xe,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+garbage,Thu gom rác,agency,3,Dự án vệ sinh khu,0,0,14,70,1,6,tổ thu gom có xe,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+garbage,Thu gom rác,agency,4,Hai tổ tuyến,0,0,30,140,2,10,tổ thu gom có xe,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+garbage,Thu gom rác,agency,5,Cụm thu gom,0,0,60,260,3,16,tổ thu gom có xe,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+garbage,Thu gom rác,agency,6,Dự án liên khu,0,0,100,450,5,24,tổ thu gom có xe,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+garbage,Thu gom rác,agency,7,Điều phối khu vực,0,0,160,750,8,36,tổ thu gom có xe,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+garbage,Thu gom rác,agency,8,Chương trình môi trường,0,0,240,1200,12,50,tổ thu gom có xe,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+drain,Thông ống cống,technical,1,Tổ thông cống,60000,60000,3,10,1,2,đội có thiết bị,9231,8031,1200,627.69,55.38,58.06,16062,50.00,95.59,4800,proposed_new_management_only
+drain,Thông ống cống,technical,2,Đội có thiết bị,300000,360000,7,30,1,4,đội có thiết bị,32308,28108,4200,2196.92,193.85,58.06,56216,100.00,191.18,16800,proposed_new_management_only
+drain,Thông ống cống,technical,3,Trung tâm xử lý,1200000,1560000,14,70,1,6,đội có thiết bị,110770,96370,14400,7532.31,664.62,58.06,192739,117.65,224.91,57600,proposed_new_management_only
+drain,Thông ống cống,technical,4,Hai đội,4800000,6360000,30,140,2,10,đội có thiết bị,323077,281077,42000,21969.23,1938.46,58.06,562154,173.91,332.48,168000,proposed_new_management_only
+drain,Thông ống cống,technical,5,Cụm ba đội,14400000,20760000,60,260,3,16,đội có thiết bị,830770,722770,108000,56492.31,4984.62,58.06,1445539,218.18,417.11,432000,proposed_new_management_only
+drain,Thông ống cống,technical,6,Mạng năm đội,42000000,62760000,100,450,5,24,đội có thiết bị,1846154,1606154,240000,125538.46,11076.92,58.06,3212308,318.18,608.29,960000,proposed_new_management_only
+drain,Thông ống cống,technical,7,Điều phối khu vực,120000000,182760000,160,750,8,36,đội có thiết bị,3876924,3372924,504000,263630.77,23261.54,58.06,6745847,454.55,868.98,2016000,proposed_new_management_only
+drain,Thông ống cống,technical,8,Mạng dịch vụ thoát nước,300000000,482760000,240,1200,12,50,đội có thiết bị,7384616,6424616,960000,502153.85,44307.69,58.06,12849231,657.89,1257.74,3840000,proposed_new_management_only
+homemaker,"Nội trợ, giúp việc nhà",service,1,Nhóm hỗ trợ gia đình,35000,35000,3,10,1,2,đội phục vụ gia đình,3334,2634,700,413.33,126.67,51.16,5267,50.00,84.68,2800,proposed_new_management_only
+homemaker,"Nội trợ, giúp việc nhà",service,2,Dịch vụ chăm nhà,175000,210000,7,30,1,4,đội phục vụ gia đình,11667,9217,2450,1446.67,443.33,51.16,18434,100.00,169.35,9800,proposed_new_management_only
+homemaker,"Nội trợ, giúp việc nhà",service,3,Điều phối nhiều nhà,700000,910000,14,70,1,6,đội phục vụ gia đình,40000,31600,8400,4960.00,1520.00,51.16,63200,117.65,199.24,33600,proposed_new_management_only
+homemaker,"Nội trợ, giúp việc nhà",service,4,Hai đội,2800000,3710000,30,140,2,10,đội phục vụ gia đình,116667,92167,24500,14466.67,4433.33,51.16,184334,173.91,294.53,98000,proposed_new_management_only
+homemaker,"Nội trợ, giúp việc nhà",service,5,Cụm ba đội,8400000,12110000,60,260,3,16,đội phục vụ gia đình,300000,237000,63000,37200.00,11400.00,51.16,474000,218.18,369.50,252000,proposed_new_management_only
+homemaker,"Nội trợ, giúp việc nhà",service,6,Mạng năm đội,24500000,36610000,100,450,5,24,đội phục vụ gia đình,666667,526667,140000,82666.67,25333.33,51.16,1053334,318.18,538.86,560000,proposed_new_management_only
+homemaker,"Nội trợ, giúp việc nhà",service,7,Điều phối khu vực,70000000,106610000,160,750,8,36,đội phục vụ gia đình,1400000,1106000,294000,173600.00,53200.00,51.16,2212000,454.55,769.79,1176000,proposed_new_management_only
+homemaker,"Nội trợ, giúp việc nhà",service,8,Mạng dịch vụ gia đình,175000000,281610000,240,1200,12,50,đội phục vụ gia đình,2666667,2106667,560000,330666.67,101333.33,51.16,4213334,657.89,1114.18,2240000,proposed_new_management_only
+ice_cream,Bán kem,food,1,Quầy kem lớn,40000,40000,3,10,1,2,trạm làm hoặc bán kem,6667,5867,800,437.33,74.67,55.88,11734,50.00,91.46,3200,proposed_new_management_only
+ice_cream,Bán kem,food,2,Tiệm kem,200000,240000,7,30,1,4,trạm làm hoặc bán kem,23334,20534,2800,1530.67,261.33,55.88,41067,100.00,182.93,11200,proposed_new_management_only
+ice_cream,Bán kem,food,3,Xưởng kem nhỏ,800000,1040000,14,70,1,6,trạm làm hoặc bán kem,80000,70400,9600,5248.00,896.00,55.88,140800,117.65,215.21,38400,proposed_new_management_only
+ice_cream,Bán kem,food,4,Hai cửa hàng,3200000,4240000,30,140,2,10,trạm làm hoặc bán kem,233334,205334,28000,15306.67,2613.33,55.88,410667,173.91,318.13,112000,proposed_new_management_only
+ice_cream,Bán kem,food,5,Cụm ba tiệm,9600000,13840000,60,260,3,16,trạm làm hoặc bán kem,600000,528000,72000,39360.00,6720.00,55.88,1056000,218.18,399.11,288000,proposed_new_management_only
+ice_cream,Bán kem,food,6,Chuỗi năm tiệm,28000000,41840000,100,450,5,24,trạm làm hoặc bán kem,1333334,1173334,160000,87466.67,14933.33,55.88,2346667,318.18,582.04,640000,proposed_new_management_only
+ice_cream,Bán kem,food,7,Chuỗi khu vực,80000000,121840000,160,750,8,36,trạm làm hoặc bán kem,2800000,2464000,336000,183680.00,31360.00,55.88,4928000,454.55,831.49,1344000,proposed_new_management_only
+ice_cream,Bán kem,food,8,Thương hiệu kem,200000000,321840000,240,1200,12,50,trạm làm hoặc bán kem,5333334,4693334,640000,349866.67,59733.33,55.88,9386667,657.89,1203.47,2560000,proposed_new_management_only
+nail,Làm móng,service,1,Tiệm nail lớn,35000,35000,3,10,1,2,bàn có thợ,3334,2634,700,413.33,126.67,51.16,5267,50.00,84.68,2800,proposed_new_management_only
+nail,Làm móng,service,2,Studio nail,175000,210000,7,30,1,4,bàn có thợ,11667,9217,2450,1446.67,443.33,51.16,18434,100.00,169.35,9800,proposed_new_management_only
+nail,Làm móng,service,3,Studio đào tạo,700000,910000,14,70,1,6,bàn có thợ,40000,31600,8400,4960.00,1520.00,51.16,63200,117.65,199.24,33600,proposed_new_management_only
+nail,Làm móng,service,4,Hai tiệm,2800000,3710000,30,140,2,10,bàn có thợ,116667,92167,24500,14466.67,4433.33,51.16,184334,173.91,294.53,98000,proposed_new_management_only
+nail,Làm móng,service,5,Cụm ba tiệm,8400000,12110000,60,260,3,16,bàn có thợ,300000,237000,63000,37200.00,11400.00,51.16,474000,218.18,369.50,252000,proposed_new_management_only
+nail,Làm móng,service,6,Chuỗi năm tiệm,24500000,36610000,100,450,5,24,bàn có thợ,666667,526667,140000,82666.67,25333.33,51.16,1053334,318.18,538.86,560000,proposed_new_management_only
+nail,Làm móng,service,7,Chuỗi khu vực,70000000,106610000,160,750,8,36,bàn có thợ,1400000,1106000,294000,173600.00,53200.00,51.16,2212000,454.55,769.79,1176000,proposed_new_management_only
+nail,Làm móng,service,8,Thương hiệu nail,175000000,281610000,240,1200,12,50,bàn có thợ,2666667,2106667,560000,330666.67,101333.33,51.16,4213334,657.89,1114.18,2240000,proposed_new_management_only
+pagoda,Thầy ở chùa,community,1,Tham gia công quả,0,0,3,10,1,2,nhóm tình nguyện,0,0,0,0.00,0.00,0.00,0,,,0,proposed_new_management_only
+pagoda,Thầy ở chùa,community,2,Phụ trách việc nhỏ,0,0,7,30,1,4,nhóm tình nguyện,0,0,0,0.00,0.00,0.00,0,,,0,proposed_new_management_only
+pagoda,Thầy ở chùa,community,3,Điều phối buổi công quả,0,0,14,70,1,6,nhóm tình nguyện,0,0,0,0.00,0.00,0.00,0,,,0,proposed_new_management_only
+pagoda,Thầy ở chùa,community,4,Phối hợp hai nhóm,0,0,30,140,2,10,nhóm tình nguyện,0,0,0,0.00,0.00,0.00,0,,,0,proposed_new_management_only
+pagoda,Thầy ở chùa,community,5,Dự án cộng đồng,0,0,60,260,3,16,nhóm tình nguyện,0,0,0,0.00,0.00,0.00,0,,,0,proposed_new_management_only
+pagoda,Thầy ở chùa,community,6,Chương trình nhiều điểm,0,0,100,450,5,24,nhóm tình nguyện,0,0,0,0.00,0.00,0.00,0,,,0,proposed_new_management_only
+pagoda,Thầy ở chùa,community,7,Điều phối liên nhóm,0,0,160,750,8,36,nhóm tình nguyện,0,0,0,0.00,0.00,0.00,0,,,0,proposed_new_management_only
+pagoda,Thầy ở chùa,community,8,Truyền kinh nghiệm công quả,0,0,240,1200,12,50,nhóm tình nguyện,0,0,0,0.00,0.00,0.00,0,,,0,proposed_new_management_only
+pho,Bán phở,food,1,Quán phở lớn,40000,40000,3,10,1,2,trạm bếp,6667,5867,800,437.33,74.67,55.88,11734,50.00,91.46,3200,proposed_new_management_only
+pho,Bán phở,food,2,Nhà hàng phở,200000,240000,7,30,1,4,trạm bếp,23334,20534,2800,1530.67,261.33,55.88,41067,100.00,182.93,11200,proposed_new_management_only
+pho,Bán phở,food,3,Bếp nước dùng,800000,1040000,14,70,1,6,trạm bếp,80000,70400,9600,5248.00,896.00,55.88,140800,117.65,215.21,38400,proposed_new_management_only
+pho,Bán phở,food,4,Hai quán,3200000,4240000,30,140,2,10,trạm bếp,233334,205334,28000,15306.67,2613.33,55.88,410667,173.91,318.13,112000,proposed_new_management_only
+pho,Bán phở,food,5,Cụm ba quán,9600000,13840000,60,260,3,16,trạm bếp,600000,528000,72000,39360.00,6720.00,55.88,1056000,218.18,399.11,288000,proposed_new_management_only
+pho,Bán phở,food,6,Chuỗi năm quán,28000000,41840000,100,450,5,24,trạm bếp,1333334,1173334,160000,87466.67,14933.33,55.88,2346667,318.18,582.04,640000,proposed_new_management_only
+pho,Bán phở,food,7,Chuỗi khu vực,80000000,121840000,160,750,8,36,trạm bếp,2800000,2464000,336000,183680.00,31360.00,55.88,4928000,454.55,831.49,1344000,proposed_new_management_only
+pho,Bán phở,food,8,Thương hiệu phở,200000000,321840000,240,1200,12,50,trạm bếp,5333334,4693334,640000,349866.67,59733.33,55.88,9386667,657.89,1203.47,2560000,proposed_new_management_only
+com,Bán cơm,food,1,Quán cơm lớn,40000,40000,3,10,1,2,trạm bếp,6667,5867,800,437.33,74.67,55.88,11734,50.00,91.46,3200,proposed_new_management_only
+com,Bán cơm,food,2,Cửa hàng cơm,200000,240000,7,30,1,4,trạm bếp,23334,20534,2800,1530.67,261.33,55.88,41067,100.00,182.93,11200,proposed_new_management_only
+com,Bán cơm,food,3,Bếp suất ăn,800000,1040000,14,70,1,6,trạm bếp,80000,70400,9600,5248.00,896.00,55.88,140800,117.65,215.21,38400,proposed_new_management_only
+com,Bán cơm,food,4,Hai cơ sở,3200000,4240000,30,140,2,10,trạm bếp,233334,205334,28000,15306.67,2613.33,55.88,410667,173.91,318.13,112000,proposed_new_management_only
+com,Bán cơm,food,5,Cụm ba bếp,9600000,13840000,60,260,3,16,trạm bếp,600000,528000,72000,39360.00,6720.00,55.88,1056000,218.18,399.11,288000,proposed_new_management_only
+com,Bán cơm,food,6,Chuỗi năm cơ sở,28000000,41840000,100,450,5,24,trạm bếp,1333334,1173334,160000,87466.67,14933.33,55.88,2346667,318.18,582.04,640000,proposed_new_management_only
+com,Bán cơm,food,7,Chuỗi khu vực,80000000,121840000,160,750,8,36,trạm bếp,2800000,2464000,336000,183680.00,31360.00,55.88,4928000,454.55,831.49,1344000,proposed_new_management_only
+com,Bán cơm,food,8,Hệ thống suất ăn,200000000,321840000,240,1200,12,50,trạm bếp,5333334,4693334,640000,349866.67,59733.33,55.88,9386667,657.89,1203.47,2560000,proposed_new_management_only
+photobooth,Photobooth,arts,1,Góc chụp lớn,40000,40000,3,10,1,2,buồng chụp hoặc bàn xử lý,5000,4200,800,420.00,40.00,57.89,8400,50.00,95.24,3200,proposed_new_management_only
+photobooth,Photobooth,arts,2,Studio nhỏ,200000,240000,7,30,1,4,buồng chụp hoặc bàn xử lý,17500,14700,2800,1470.00,140.00,57.89,29400,100.00,190.48,11200,proposed_new_management_only
+photobooth,Photobooth,arts,3,Studio sự kiện,800000,1040000,14,70,1,6,buồng chụp hoặc bàn xử lý,60000,50400,9600,5040.00,480.00,57.89,100800,117.65,224.09,38400,proposed_new_management_only
+photobooth,Photobooth,arts,4,Hai studio,3200000,4240000,30,140,2,10,buồng chụp hoặc bàn xử lý,175000,147000,28000,14700.00,1400.00,57.89,294000,173.91,331.26,112000,proposed_new_management_only
+photobooth,Photobooth,arts,5,Cụm ba điểm,9600000,13840000,60,260,3,16,buồng chụp hoặc bàn xử lý,450000,378000,72000,37800.00,3600.00,57.89,756000,218.18,415.58,288000,proposed_new_management_only
+photobooth,Photobooth,arts,6,Chuỗi năm điểm,28000000,41840000,100,450,5,24,buồng chụp hoặc bàn xử lý,1000000,840000,160000,84000.00,8000.00,57.89,1680000,318.18,606.06,640000,proposed_new_management_only
+photobooth,Photobooth,arts,7,Chuỗi khu vực,80000000,121840000,160,750,8,36,buồng chụp hoặc bàn xử lý,2100000,1764000,336000,176400.00,16800.00,57.89,3528000,454.55,865.80,1344000,proposed_new_management_only
+photobooth,Photobooth,arts,8,Thương hiệu ảnh,200000000,321840000,240,1200,12,50,buồng chụp hoặc bàn xử lý,4000000,3360000,640000,336000.00,32000.00,57.89,6720000,657.89,1253.13,2560000,proposed_new_management_only
+giupviec,Giúp việc theo giờ,service,1,Tổ giúp việc,35000,35000,3,10,1,2,đội có dụng cụ,3334,2634,700,413.33,126.67,51.16,5267,50.00,84.68,2800,proposed_new_management_only
+giupviec,Giúp việc theo giờ,service,2,Dịch vụ vệ sinh,175000,210000,7,30,1,4,đội có dụng cụ,11667,9217,2450,1446.67,443.33,51.16,18434,100.00,169.35,9800,proposed_new_management_only
+giupviec,Giúp việc theo giờ,service,3,Trung tâm điều phối,700000,910000,14,70,1,6,đội có dụng cụ,40000,31600,8400,4960.00,1520.00,51.16,63200,117.65,199.24,33600,proposed_new_management_only
+giupviec,Giúp việc theo giờ,service,4,Hai đội,2800000,3710000,30,140,2,10,đội có dụng cụ,116667,92167,24500,14466.67,4433.33,51.16,184334,173.91,294.53,98000,proposed_new_management_only
+giupviec,Giúp việc theo giờ,service,5,Cụm ba đội,8400000,12110000,60,260,3,16,đội có dụng cụ,300000,237000,63000,37200.00,11400.00,51.16,474000,218.18,369.50,252000,proposed_new_management_only
+giupviec,Giúp việc theo giờ,service,6,Mạng năm đội,24500000,36610000,100,450,5,24,đội có dụng cụ,666667,526667,140000,82666.67,25333.33,51.16,1053334,318.18,538.86,560000,proposed_new_management_only
+giupviec,Giúp việc theo giờ,service,7,Điều phối khu vực,70000000,106610000,160,750,8,36,đội có dụng cụ,1400000,1106000,294000,173600.00,53200.00,51.16,2212000,454.55,769.79,1176000,proposed_new_management_only
+giupviec,Giúp việc theo giờ,service,8,Mạng vệ sinh,175000000,281610000,240,1200,12,50,đội có dụng cụ,2666667,2106667,560000,330666.67,101333.33,51.16,4213334,657.89,1114.18,2240000,proposed_new_management_only
+naucom,Nấu cơm gia đình,food,1,Nhóm bếp gia đình,40000,40000,3,10,1,2,đội bếp,6667,5867,800,437.33,74.67,55.88,11734,50.00,91.46,3200,proposed_new_management_only
+naucom,Nấu cơm gia đình,food,2,Dịch vụ bếp nhà,200000,240000,7,30,1,4,đội bếp,23334,20534,2800,1530.67,261.33,55.88,41067,100.00,182.93,11200,proposed_new_management_only
+naucom,Nấu cơm gia đình,food,3,Bếp đặt theo lịch,800000,1040000,14,70,1,6,đội bếp,80000,70400,9600,5248.00,896.00,55.88,140800,117.65,215.21,38400,proposed_new_management_only
+naucom,Nấu cơm gia đình,food,4,Hai đội bếp,3200000,4240000,30,140,2,10,đội bếp,233334,205334,28000,15306.67,2613.33,55.88,410667,173.91,318.13,112000,proposed_new_management_only
+naucom,Nấu cơm gia đình,food,5,Cụm ba đội,9600000,13840000,60,260,3,16,đội bếp,600000,528000,72000,39360.00,6720.00,55.88,1056000,218.18,399.11,288000,proposed_new_management_only
+naucom,Nấu cơm gia đình,food,6,Mạng năm đội,28000000,41840000,100,450,5,24,đội bếp,1333334,1173334,160000,87466.67,14933.33,55.88,2346667,318.18,582.04,640000,proposed_new_management_only
+naucom,Nấu cơm gia đình,food,7,Điều phối khu vực,80000000,121840000,160,750,8,36,đội bếp,2800000,2464000,336000,183680.00,31360.00,55.88,4928000,454.55,831.49,1344000,proposed_new_management_only
+naucom,Nấu cơm gia đình,food,8,Mạng bếp gia đình,200000000,321840000,240,1200,12,50,đội bếp,5333334,4693334,640000,349866.67,59733.33,55.88,9386667,657.89,1203.47,2560000,proposed_new_management_only
+babysitter,Bảo mẫu,service,1,Nhóm bảo mẫu,35000,35000,3,10,1,2,nhóm có người giám sát,3334,2634,700,413.33,126.67,51.16,5267,50.00,84.68,2800,proposed_new_management_only
+babysitter,Bảo mẫu,service,2,Dịch vụ chăm trẻ,175000,210000,7,30,1,4,nhóm có người giám sát,11667,9217,2450,1446.67,443.33,51.16,18434,100.00,169.35,9800,proposed_new_management_only
+babysitter,Bảo mẫu,service,3,Trung tâm điều phối,700000,910000,14,70,1,6,nhóm có người giám sát,40000,31600,8400,4960.00,1520.00,51.16,63200,117.65,199.24,33600,proposed_new_management_only
+babysitter,Bảo mẫu,service,4,Hai nhóm,2800000,3710000,30,140,2,10,nhóm có người giám sát,116667,92167,24500,14466.67,4433.33,51.16,184334,173.91,294.53,98000,proposed_new_management_only
+babysitter,Bảo mẫu,service,5,Cụm ba nhóm,8400000,12110000,60,260,3,16,nhóm có người giám sát,300000,237000,63000,37200.00,11400.00,51.16,474000,218.18,369.50,252000,proposed_new_management_only
+babysitter,Bảo mẫu,service,6,Mạng năm nhóm,24500000,36610000,100,450,5,24,nhóm có người giám sát,666667,526667,140000,82666.67,25333.33,51.16,1053334,318.18,538.86,560000,proposed_new_management_only
+babysitter,Bảo mẫu,service,7,Điều phối khu vực,70000000,106610000,160,750,8,36,nhóm có người giám sát,1400000,1106000,294000,173600.00,53200.00,51.16,2212000,454.55,769.79,1176000,proposed_new_management_only
+babysitter,Bảo mẫu,service,8,Mạng chăm trẻ,175000000,281610000,240,1200,12,50,nhóm có người giám sát,2666667,2106667,560000,330666.67,101333.33,51.16,4213334,657.89,1114.18,2240000,proposed_new_management_only
+library,Thư viện – Lưu trữ,agency,1,Kèm thủ thư,0,0,3,10,1,2,nhóm nghiệp vụ,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+library,Thư viện – Lưu trữ,agency,2,Phụ trách khu sách,0,0,7,30,1,4,nhóm nghiệp vụ,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+library,Thư viện – Lưu trữ,agency,3,Dự án thư viện,0,0,14,70,1,6,nhóm nghiệp vụ,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+library,Thư viện – Lưu trữ,agency,4,Hai nhóm,0,0,30,140,2,10,nhóm nghiệp vụ,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+library,Thư viện – Lưu trữ,agency,5,Cụm thư viện,0,0,60,260,3,16,nhóm nghiệp vụ,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+library,Thư viện – Lưu trữ,agency,6,Chương trình liên điểm,0,0,100,450,5,24,nhóm nghiệp vụ,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+library,Thư viện – Lưu trữ,agency,7,Điều phối khu vực,0,0,160,750,8,36,nhóm nghiệp vụ,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+library,Thư viện – Lưu trữ,agency,8,Mạng chia sẻ tư liệu,0,0,240,1200,12,50,nhóm nghiệp vụ,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+pilot,Phi công,agency,1,Hỗ trợ huấn luyện,0,0,3,10,1,2,tổ bay đủ điều kiện,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+pilot,Phi công,agency,2,Kèm tổ bay,0,0,7,30,1,4,tổ bay đủ điều kiện,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+pilot,Phi công,agency,3,Dự án điều phối,0,0,14,70,1,6,tổ bay đủ điều kiện,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+pilot,Phi công,agency,4,Hai tổ bay,0,0,30,140,2,10,tổ bay đủ điều kiện,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+pilot,Phi công,agency,5,Cụm tổ bay,0,0,60,260,3,16,tổ bay đủ điều kiện,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+pilot,Phi công,agency,6,Chương trình huấn luyện,0,0,100,450,5,24,tổ bay đủ điều kiện,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+pilot,Phi công,agency,7,Phối hợp khu vực,0,0,160,750,8,36,tổ bay đủ điều kiện,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+pilot,Phi công,agency,8,Chương trình khai thác,0,0,240,1200,12,50,tổ bay đủ điều kiện,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+flight_attendant,Tiếp viên hàng không,agency,1,Kèm tiếp viên,0,0,3,10,1,2,tổ tiếp viên,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+flight_attendant,Tiếp viên hàng không,agency,2,Điều phối phục vụ,0,0,7,30,1,4,tổ tiếp viên,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+flight_attendant,Tiếp viên hàng không,agency,3,Dự án chất lượng,0,0,14,70,1,6,tổ tiếp viên,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+flight_attendant,Tiếp viên hàng không,agency,4,Hai tổ,0,0,30,140,2,10,tổ tiếp viên,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+flight_attendant,Tiếp viên hàng không,agency,5,Cụm tổ,0,0,60,260,3,16,tổ tiếp viên,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+flight_attendant,Tiếp viên hàng không,agency,6,Chương trình huấn luyện,0,0,100,450,5,24,tổ tiếp viên,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+flight_attendant,Tiếp viên hàng không,agency,7,Phối hợp khu vực,0,0,160,750,8,36,tổ tiếp viên,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+flight_attendant,Tiếp viên hàng không,agency,8,Chương trình dịch vụ,0,0,240,1200,12,50,tổ tiếp viên,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+oil,Thợ dầu khí,agency,1,Kèm kỹ thuật viên,0,0,3,10,1,2,tổ kỹ thuật,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+oil,Thợ dầu khí,agency,2,Điều phối tổ,0,0,7,30,1,4,tổ kỹ thuật,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+oil,Thợ dầu khí,agency,3,Dự án bảo dưỡng,0,0,14,70,1,6,tổ kỹ thuật,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+oil,Thợ dầu khí,agency,4,Hai tổ,0,0,30,140,2,10,tổ kỹ thuật,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+oil,Thợ dầu khí,agency,5,Cụm tổ,0,0,60,260,3,16,tổ kỹ thuật,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+oil,Thợ dầu khí,agency,6,Dự án nhiều khu,0,0,100,450,5,24,tổ kỹ thuật,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+oil,Thợ dầu khí,agency,7,Phối hợp khu vực,0,0,160,750,8,36,tổ kỹ thuật,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+oil,Thợ dầu khí,agency,8,Chương trình vận hành,0,0,240,1200,12,50,tổ kỹ thuật,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+hr_admin,Hành chính – Nhân sự,agency,1,Kèm nhân viên,0,0,3,10,1,2,nhóm nhân sự,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+hr_admin,Hành chính – Nhân sự,agency,2,Điều phối nhóm,0,0,7,30,1,4,nhóm nhân sự,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+hr_admin,Hành chính – Nhân sự,agency,3,Dự án nhân sự,0,0,14,70,1,6,nhóm nhân sự,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+hr_admin,Hành chính – Nhân sự,agency,4,Hai bộ phận,0,0,30,140,2,10,nhóm nhân sự,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+hr_admin,Hành chính – Nhân sự,agency,5,Cụm bộ phận,0,0,60,260,3,16,nhóm nhân sự,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+hr_admin,Hành chính – Nhân sự,agency,6,Chương trình liên đơn vị,0,0,100,450,5,24,nhóm nhân sự,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+hr_admin,Hành chính – Nhân sự,agency,7,Điều phối khu vực,0,0,160,750,8,36,nhóm nhân sự,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+hr_admin,Hành chính – Nhân sự,agency,8,Chương trình nhân sự,0,0,240,1200,12,50,nhóm nhân sự,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+secretary,Thư ký giám đốc,agency,1,Kèm trợ lý,0,0,3,10,1,2,nhóm trợ lý,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+secretary,Thư ký giám đốc,agency,2,Điều phối lịch,0,0,7,30,1,4,nhóm trợ lý,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+secretary,Thư ký giám đốc,agency,3,Dự án văn phòng,0,0,14,70,1,6,nhóm trợ lý,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+secretary,Thư ký giám đốc,agency,4,Hai nhóm,0,0,30,140,2,10,nhóm trợ lý,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+secretary,Thư ký giám đốc,agency,5,Cụm nhóm,0,0,60,260,3,16,nhóm trợ lý,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+secretary,Thư ký giám đốc,agency,6,Chương trình liên đơn vị,0,0,100,450,5,24,nhóm trợ lý,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+secretary,Thư ký giám đốc,agency,7,Phối hợp khu vực,0,0,160,750,8,36,nhóm trợ lý,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+secretary,Thư ký giám đốc,agency,8,Chương trình điều hành,0,0,240,1200,12,50,nhóm trợ lý,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+it_helpdesk,IT hỗ trợ,agency,1,Kèm kỹ thuật viên,0,0,3,10,1,2,nhóm hỗ trợ IT,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+it_helpdesk,IT hỗ trợ,agency,2,Điều phối hỗ trợ,0,0,7,30,1,4,nhóm hỗ trợ IT,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+it_helpdesk,IT hỗ trợ,agency,3,Dự án hệ thống,0,0,14,70,1,6,nhóm hỗ trợ IT,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+it_helpdesk,IT hỗ trợ,agency,4,Hai nhóm,0,0,30,140,2,10,nhóm hỗ trợ IT,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+it_helpdesk,IT hỗ trợ,agency,5,Cụm nhóm,0,0,60,260,3,16,nhóm hỗ trợ IT,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+it_helpdesk,IT hỗ trợ,agency,6,Dự án liên đơn vị,0,0,100,450,5,24,nhóm hỗ trợ IT,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+it_helpdesk,IT hỗ trợ,agency,7,Điều phối khu vực,0,0,160,750,8,36,nhóm hỗ trợ IT,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+it_helpdesk,IT hỗ trợ,agency,8,Chương trình dịch vụ IT,0,0,240,1200,12,50,nhóm hỗ trợ IT,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+railway,Gác chắn đường sắt,agency,1,Kèm ca trực,0,0,3,10,1,2,tổ có người trực,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+railway,Gác chắn đường sắt,agency,2,Điều phối tổ,0,0,7,30,1,4,tổ có người trực,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+railway,Gác chắn đường sắt,agency,3,Dự án kiểm tra,0,0,14,70,1,6,tổ có người trực,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+railway,Gác chắn đường sắt,agency,4,Hai điểm,0,0,30,140,2,10,tổ có người trực,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+railway,Gác chắn đường sắt,agency,5,Cụm điểm,0,0,60,260,3,16,tổ có người trực,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+railway,Gác chắn đường sắt,agency,6,Chương trình liên tuyến,0,0,100,450,5,24,tổ có người trực,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+railway,Gác chắn đường sắt,agency,7,Phối hợp khu vực,0,0,160,750,8,36,tổ có người trực,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+railway,Gác chắn đường sắt,agency,8,Chương trình an toàn,0,0,240,1200,12,50,tổ có người trực,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+nurse,Điều dưỡng,agency,1,Kèm điều dưỡng,0,0,3,10,1,2,nhóm điều dưỡng,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+nurse,Điều dưỡng,agency,2,Điều phối nhóm,0,0,7,30,1,4,nhóm điều dưỡng,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+nurse,Điều dưỡng,agency,3,Dự án chăm sóc,0,0,14,70,1,6,nhóm điều dưỡng,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+nurse,Điều dưỡng,agency,4,Hai nhóm,0,0,30,140,2,10,nhóm điều dưỡng,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+nurse,Điều dưỡng,agency,5,Cụm nhóm,0,0,60,260,3,16,nhóm điều dưỡng,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+nurse,Điều dưỡng,agency,6,Chương trình liên khoa,0,0,100,450,5,24,nhóm điều dưỡng,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+nurse,Điều dưỡng,agency,7,Phối hợp khu vực,0,0,160,750,8,36,nhóm điều dưỡng,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+nurse,Điều dưỡng,agency,8,Chương trình chất lượng,0,0,240,1200,12,50,nhóm điều dưỡng,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+lighthouse,Gác hải đăng,agency,1,Kèm ca trực,0,0,3,10,1,2,tổ trực đèn,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+lighthouse,Gác hải đăng,agency,2,Điều phối tổ đèn,0,0,7,30,1,4,tổ trực đèn,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+lighthouse,Gác hải đăng,agency,3,Dự án bảo dưỡng,0,0,14,70,1,6,tổ trực đèn,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+lighthouse,Gác hải đăng,agency,4,Hai điểm,0,0,30,140,2,10,tổ trực đèn,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+lighthouse,Gác hải đăng,agency,5,Cụm điểm,0,0,60,260,3,16,tổ trực đèn,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+lighthouse,Gác hải đăng,agency,6,Chương trình tuyến biển,0,0,100,450,5,24,tổ trực đèn,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+lighthouse,Gác hải đăng,agency,7,Phối hợp khu vực,0,0,160,750,8,36,tổ trực đèn,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+lighthouse,Gác hải đăng,agency,8,Chương trình tín hiệu,0,0,240,1200,12,50,tổ trực đèn,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+rescue,Tổng đài cứu hộ,agency,1,Kèm điện thoại viên,0,0,3,10,1,2,tổ tổng đài,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+rescue,Tổng đài cứu hộ,agency,2,Điều phối ca,0,0,7,30,1,4,tổ tổng đài,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+rescue,Tổng đài cứu hộ,agency,3,Dự án phản ứng,0,0,14,70,1,6,tổ tổng đài,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+rescue,Tổng đài cứu hộ,agency,4,Hai tổ,0,0,30,140,2,10,tổ tổng đài,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+rescue,Tổng đài cứu hộ,agency,5,Cụm tổ,0,0,60,260,3,16,tổ tổng đài,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+rescue,Tổng đài cứu hộ,agency,6,Chương trình liên trạm,0,0,100,450,5,24,tổ tổng đài,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+rescue,Tổng đài cứu hộ,agency,7,Phối hợp khu vực,0,0,160,750,8,36,tổ tổng đài,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+rescue,Tổng đài cứu hộ,agency,8,Chương trình cứu hộ,0,0,240,1200,12,50,tổ tổng đài,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+lifeguard,Cứu hộ hồ bơi,agency,1,Kèm nhân viên,0,0,3,10,1,2,tổ giám sát,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+lifeguard,Cứu hộ hồ bơi,agency,2,Điều phối ca,0,0,7,30,1,4,tổ giám sát,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+lifeguard,Cứu hộ hồ bơi,agency,3,Dự án an toàn hồ,0,0,14,70,1,6,tổ giám sát,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+lifeguard,Cứu hộ hồ bơi,agency,4,Hai tổ,0,0,30,140,2,10,tổ giám sát,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+lifeguard,Cứu hộ hồ bơi,agency,5,Cụm hồ,0,0,60,260,3,16,tổ giám sát,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+lifeguard,Cứu hộ hồ bơi,agency,6,Chương trình liên điểm,0,0,100,450,5,24,tổ giám sát,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+lifeguard,Cứu hộ hồ bơi,agency,7,Phối hợp khu vực,0,0,160,750,8,36,tổ giám sát,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+lifeguard,Cứu hộ hồ bơi,agency,8,Chương trình cứu hộ nước,0,0,240,1200,12,50,tổ giám sát,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+police,Công an phường,agency,1,Kèm nghiệp vụ,0,0,3,10,1,2,tổ nghiệp vụ,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+police,Công an phường,agency,2,Phối hợp tổ,0,0,7,30,1,4,tổ nghiệp vụ,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+police,Công an phường,agency,3,Chuyên đề địa bàn,0,0,14,70,1,6,tổ nghiệp vụ,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+police,Công an phường,agency,4,Phối hợp hai tổ,0,0,30,140,2,10,tổ nghiệp vụ,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+police,Công an phường,agency,5,Chuyên đề liên tổ,0,0,60,260,3,16,tổ nghiệp vụ,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+police,Công an phường,agency,6,Dự án liên địa bàn,0,0,100,450,5,24,tổ nghiệp vụ,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+police,Công an phường,agency,7,Phối hợp khu vực,0,0,160,750,8,36,tổ nghiệp vụ,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+police,Công an phường,agency,8,Chương trình nghiệp vụ,0,0,240,1200,12,50,tổ nghiệp vụ,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
+zpop,Bán album ZPOP,retail,1,Tiệm album lớn,50000,50000,3,10,1,2,quầy bán hoặc nhận hàng,8334,7334,1000,680.00,360.00,37.50,14667,50.00,73.53,4000,proposed_new_management_only
+zpop,Bán album ZPOP,retail,2,Cửa hàng chuyên nhạc,250000,300000,7,30,1,4,quầy bán hoặc nhận hàng,29167,25667,3500,2380.00,1260.00,37.50,51334,100.00,147.06,14000,proposed_new_management_only
+zpop,Bán album ZPOP,retail,3,Showroom fan goods,1000000,1300000,14,70,1,6,quầy bán hoặc nhận hàng,100000,88000,12000,8160.00,4320.00,37.50,176000,117.65,173.01,48000,proposed_new_management_only
+zpop,Bán album ZPOP,retail,4,Hai cửa hàng,4000000,5300000,30,140,2,10,quầy bán hoặc nhận hàng,291667,256667,35000,23800.00,12600.00,37.50,513334,173.91,255.75,140000,proposed_new_management_only
+zpop,Bán album ZPOP,retail,5,Cụm ba tiệm,12000000,17300000,60,260,3,16,quầy bán hoặc nhận hàng,750000,660000,90000,61200.00,32400.00,37.50,1320000,218.18,320.86,360000,proposed_new_management_only
+zpop,Bán album ZPOP,retail,6,Chuỗi năm tiệm,35000000,52300000,100,450,5,24,quầy bán hoặc nhận hàng,1666667,1466667,200000,136000.00,72000.00,37.50,2933334,318.18,467.91,800000,proposed_new_management_only
+zpop,Bán album ZPOP,retail,7,Chuỗi khu vực,100000000,152300000,160,750,8,36,quầy bán hoặc nhận hàng,3500000,3080000,420000,285600.00,151200.00,37.50,6160000,454.55,668.45,1680000,proposed_new_management_only
+zpop,Bán album ZPOP,retail,8,Mạng lưới album,250000000,402300000,240,1200,12,50,quầy bán hoặc nhận hàng,6666667,5866667,800000,544000.00,288000.00,37.50,11733334,657.89,967.49,3200000,proposed_new_management_only
+art_studio,Xưởng vẽ,arts,1,Xưởng vẽ lớn,40000,40000,3,10,1,2,bàn vẽ hoặc khu trưng bày,5000,4200,800,420.00,40.00,57.89,8400,50.00,95.24,3200,proposed_new_management_only
+art_studio,Xưởng vẽ,arts,2,Studio,200000,240000,7,30,1,4,bàn vẽ hoặc khu trưng bày,17500,14700,2800,1470.00,140.00,57.89,29400,100.00,190.48,11200,proposed_new_management_only
+art_studio,Xưởng vẽ,arts,3,Gallery và xưởng,800000,1040000,14,70,1,6,bàn vẽ hoặc khu trưng bày,60000,50400,9600,5040.00,480.00,57.89,100800,117.65,224.09,38400,proposed_new_management_only
+art_studio,Xưởng vẽ,arts,4,Hai studio,3200000,4240000,30,140,2,10,bàn vẽ hoặc khu trưng bày,175000,147000,28000,14700.00,1400.00,57.89,294000,173.91,331.26,112000,proposed_new_management_only
+art_studio,Xưởng vẽ,arts,5,Cụm ba điểm,9600000,13840000,60,260,3,16,bàn vẽ hoặc khu trưng bày,450000,378000,72000,37800.00,3600.00,57.89,756000,218.18,415.58,288000,proposed_new_management_only
+art_studio,Xưởng vẽ,arts,6,Chuỗi năm điểm,28000000,41840000,100,450,5,24,bàn vẽ hoặc khu trưng bày,1000000,840000,160000,84000.00,8000.00,57.89,1680000,318.18,606.06,640000,proposed_new_management_only
+art_studio,Xưởng vẽ,arts,7,Chuỗi khu vực,80000000,121840000,160,750,8,36,bàn vẽ hoặc khu trưng bày,2100000,1764000,336000,176400.00,16800.00,57.89,3528000,454.55,865.80,1344000,proposed_new_management_only
+art_studio,Xưởng vẽ,arts,8,Mạng lưới nghệ thuật,200000000,321840000,240,1200,12,50,bàn vẽ hoặc khu trưng bày,4000000,3360000,640000,336000.00,32000.00,57.89,6720000,657.89,1253.13,2560000,proposed_new_management_only
+lawyer,Luật sư,professional,1,Bàn tư vấn,30000,30000,3,10,1,2,nhóm luật sư đủ điều kiện,2223,1623,600,364.44,128.89,49.06,3245,50.00,82.32,2400,proposed_new_management_only
+lawyer,Luật sư,professional,2,Văn phòng luật,150000,180000,7,30,1,4,nhóm luật sư đủ điều kiện,7778,5678,2100,1275.56,451.11,49.06,11356,100.00,164.63,8400,proposed_new_management_only
+lawyer,Luật sư,professional,3,Hãng luật nhỏ,600000,780000,14,70,1,6,nhóm luật sư đủ điều kiện,26667,19467,7200,4373.33,1546.67,49.06,38934,117.65,193.69,28800,proposed_new_management_only
+lawyer,Luật sư,professional,4,Hai nhóm hồ sơ,2400000,3180000,30,140,2,10,nhóm luật sư đủ điều kiện,77778,56778,21000,12755.56,4511.11,49.06,113556,173.91,286.32,84000,proposed_new_management_only
+lawyer,Luật sư,professional,5,Cụm văn phòng,7200000,10380000,60,260,3,16,nhóm luật sư đủ điều kiện,200000,146000,54000,32800.00,11600.00,49.06,292000,218.18,359.20,216000,proposed_new_management_only
+lawyer,Luật sư,professional,6,Hãng nhiều chi nhánh,21000000,31380000,100,450,5,24,nhóm luật sư đủ điều kiện,444445,324445,120000,72888.89,25777.78,49.06,648889,318.18,523.84,480000,proposed_new_management_only
+lawyer,Luật sư,professional,7,Điều phối khu vực,60000000,91380000,160,750,8,36,nhóm luật sư đủ điều kiện,933334,681334,252000,153066.67,54133.33,49.06,1362667,454.55,748.34,1008000,proposed_new_management_only
+lawyer,Luật sư,professional,8,Mạng lưới hãng luật,150000000,241380000,240,1200,12,50,nhóm luật sư đủ điều kiện,1777778,1297778,480000,291555.56,103111.11,49.06,2595556,657.89,1083.12,1920000,proposed_new_management_only
+laundry,Giặt ủi,service,1,Tiệm giặt lớn,35000,35000,3,10,1,2,máy có lịch chạy,3334,2634,700,413.33,126.67,51.16,5267,50.00,84.68,2800,proposed_new_management_only
+laundry,Giặt ủi,service,2,Tiệm nhiều máy,175000,210000,7,30,1,4,máy có lịch chạy,11667,9217,2450,1446.67,443.33,51.16,18434,100.00,169.35,9800,proposed_new_management_only
+laundry,Giặt ủi,service,3,Xưởng giặt,700000,910000,14,70,1,6,máy có lịch chạy,40000,31600,8400,4960.00,1520.00,51.16,63200,117.65,199.24,33600,proposed_new_management_only
+laundry,Giặt ủi,service,4,Hai cơ sở,2800000,3710000,30,140,2,10,máy có lịch chạy,116667,92167,24500,14466.67,4433.33,51.16,184334,173.91,294.53,98000,proposed_new_management_only
+laundry,Giặt ủi,service,5,Cụm ba điểm,8400000,12110000,60,260,3,16,máy có lịch chạy,300000,237000,63000,37200.00,11400.00,51.16,474000,218.18,369.50,252000,proposed_new_management_only
+laundry,Giặt ủi,service,6,Chuỗi năm điểm,24500000,36610000,100,450,5,24,máy có lịch chạy,666667,526667,140000,82666.67,25333.33,51.16,1053334,318.18,538.86,560000,proposed_new_management_only
+laundry,Giặt ủi,service,7,Chuỗi khu vực,70000000,106610000,160,750,8,36,máy có lịch chạy,1400000,1106000,294000,173600.00,53200.00,51.16,2212000,454.55,769.79,1176000,proposed_new_management_only
+laundry,Giặt ủi,service,8,Mạng giặt và giao nhận,175000000,281610000,240,1200,12,50,máy có lịch chạy,2666667,2106667,560000,330666.67,101333.33,51.16,4213334,657.89,1114.18,2240000,proposed_new_management_only
+post_office,Bưu điện,agency,1,Kèm giao dịch viên,0,0,3,10,1,2,tổ bưu chính,250,0,250,200.00,150.00,0.00,0,,,1000,proposed_new_management_only
+post_office,Bưu điện,agency,2,Điều phối quầy,0,0,7,30,1,4,tổ bưu chính,875,0,875,700.00,525.00,0.00,0,,,3500,proposed_new_management_only
+post_office,Bưu điện,agency,3,Dự án bưu cục,0,0,14,70,1,6,tổ bưu chính,3000,0,3000,2400.00,1800.00,0.00,0,,,12000,proposed_new_management_only
+post_office,Bưu điện,agency,4,Hai tổ,0,0,30,140,2,10,tổ bưu chính,8750,0,8750,7000.00,5250.00,0.00,0,,,35000,proposed_new_management_only
+post_office,Bưu điện,agency,5,Cụm bưu cục,0,0,60,260,3,16,tổ bưu chính,22500,0,22500,18000.00,13500.00,0.00,0,,,90000,proposed_new_management_only
+post_office,Bưu điện,agency,6,Chương trình liên tuyến,0,0,100,450,5,24,tổ bưu chính,50000,0,50000,40000.00,30000.00,0.00,0,,,200000,proposed_new_management_only
+post_office,Bưu điện,agency,7,Điều phối khu vực,0,0,160,750,8,36,tổ bưu chính,105000,0,105000,84000.00,63000.00,0.00,0,,,420000,proposed_new_management_only
+post_office,Bưu điện,agency,8,Chương trình bưu chính,0,0,240,1200,12,50,tổ bưu chính,200000,0,200000,160000.00,120000.00,0.00,0,,,800000,proposed_new_management_only
