@@ -1,6 +1,6 @@
 # Thi đua, ghi nhận và trách nhiệm quản lý cho mọi nghề
 
-Ngày 13/10/2026. **Bản thiết kế đề xuất, chưa triển khai tính năng này và chưa deploy.** Tiếp nối yêu cầu tất cả nghề có cạnh tranh và cấp trên ghi nhận như công an, bao gồm thu gom rác.
+Ngày 13/10/2026. **Đã chốt NPC theo trả lời người dùng ngày13/10/2026; đã triển khai local, chưa deploy.** Tiếp nối yêu cầu tất cả nghề có cạnh tranh và cấp trên ghi nhận như công an, bao gồm thu gom rác.
 
 ## Hiện trạng đã xác minh
 
@@ -12,7 +12,7 @@ Ngày 13/10/2026. **Bản thiết kế đề xuất, chưa triển khai tính n�
 
 ## Hướng chọn và phần cần chốt
 
-Đề xuất khung thi đua chung nhưng tiêu chí, người xét và việc quản lý riêng cho từng nghề. Mỗi người có ba đồng nghiệp/đối thủ NPC để chơi được ngay. Nếu chọn người chơi thật, thêm tổ nghề tự nguyện và bảng xếp hạng cùng nghề/cùng bậc, có trưởng tổ ghi nhận thành tích đã xác minh. Câu hỏi NPC/người thật/kết hợp đang chờ người dùng chọn; bản này mô tả rõ cả hai lớp, chưa coi lựa chọn đó đã được duyệt.
+Dùng khung thi đua chung nhưng tiêu chí, người xét và việc quản lý riêng cho từng nghề. Mỗi người có ba đồng nghiệp/đối thủ NPC để chơi được ngay. Nếu chọn người chơi thật, thêm tổ nghề tự nguyện và bảng xếp hạng cùng nghề/cùng bậc, có trưởng tổ ghi nhận thành tích đã xác minh. Người dùng đã chọn NPC. Lớp người chơi thật bên dưới chỉ là phương án lưu tham khảo, không thuộc triển khai này.
 
 Hai cách còn lại: chỉ thêm bảng xếp hạng tiền sẽ thiếu gameplay và thiên về người giàu; sao nguyên tổ chức công an sang54 nghề sẽ gán sai quyền, chức vụ và cơ chế nghề. Khung dùng chung với nội dung riêng tránh hai vấn đề đó.
 
@@ -22,21 +22,21 @@ Nhận mục tiêu ca → tự làm việc nghề → xem bằng chứng điểm
 
 Mỗi kỳ gồm10 ca làm có kết quả được máy chủ nghiệm thu. Chỉ mở/khép ca trống không tiến kỳ; ngày bỏ dở không được tính tốt. Ca hợp lệ phải hoàn thành ít nhất một công việc chính do game sinh và có kết quả chấm; mỗi nghề xác định loại việc chính, không lấy hoạt động phụ, mua bán tài sản hoặc thắp hương làm điểm. Các ca kém vẫn nằm trong kỳ để người chơi không bỏ dữ liệu xấu. Kỳ bắt đầu từ thời điểm bật tính năng, không suy diễn điểm quá khứ.
 
-Điểm ca0–100: chất lượng50, quy trình/an toàn25, xử lý tình huống15, phối hợp10. Chuẩn hóa trên các cơ hội đánh giá thực sự có trong ca; tiêu chí không có cơ hội được loại khỏi mẫu số và tái chuẩn hóa. Không có bằng chứng tổng thể thì ca không vào thi đua. Tỷ lệ thành công dùng tất cả nhiệm vụ đã nhận trong ca, kể cả hủy/bỏ, không chọn riêng nhiệm vụ đẹp. Nhiệm vụ nhiều bước lấy kết quả cuối, không cộng lại từng lần nhấn. Các module nghề cần adapter riêng; chỉ có cấu hình tên mà thiếu dữ liệu chấm chưa được công bố là hỗ trợ.
+Điểm ca0–100: chất lượng50, quy trình/an toàn25, xử lý tình huống15, phối hợp10. Chuẩn hóa trên các cơ hội đánh giá thực sự có trong ca; tiêu chí không có cơ hội được loại khỏi mẫu số và tái chuẩn hóa. Không có bằng chứng tổng thể thì ca không vào thi đua. Tỷ lệ thành công dùng tất cả nhiệm vụ đã nhận trong ca, kể cả hủy/bỏ, không chọn riêng nhiệm vụ đẹp. Nhiệm vụ nhiều bước lấy kết quả cuối, không cộng lại từng lần nhấn. Dùng feedback công bằng do từng module nghề đang trả về cùng số lỗi thực tế. Chỉ thêm thành phần phán đoán khi module có tiêu chí tương ứng. Việc setup/brief không tính; chuyển chuyên môn hợp lệ (referred) được bỏ qua trung lập; việc chờ chưa nhận không bị coi là làm dở.
 
 Không dùng tổng xu, số lần nhấn hay thời gian bấm nhanh để quyết định thứ hạng. Các nghề an toàn phải làm đúng quy trình; hoàn thành nhanh nhưng sai không thắng. NPC được tạo điểm cho từng ca từ đầu kỳ theo nghề và bậc, không tăng điểm để bám người chơi sau mỗi lượt. Bảng cá nhân có người chơi và ba NPC; điểm kỳ là trung bình10 ca, bằng điểm thì đồng hạng. Mốc tiến bộ xét chất lượng tuyệt đối80 điểm; vị trí trên bảng mang ý nghĩa thi đua, không chặn lên bậc chỉ vì đối thủ giỏi.
 
-Năm hạng thi đua riêng với chức vụ: Mới tham gia → Vững nghề → Nổi bật trong đơn vị → Tiêu biểu khu vực → Dẫn dắt nghề. Chuyển hạng cần lần lượt 2/3/4/6 kỳ đạt từ80 điểm, cùng điều kiện bậc nghề2/3/5/7 đã có. Tổng tối thiểu 15 kỳ = 150 ca hợp lệ đến hạng cao nhất; không tự giáng chức hoặc xóa danh hiệu đã có khi một kỳ kém. Chức vụ thực tế vẫn qua điều kiện và xét thăng tiến đang có.
+Năm hạng thi đua riêng với chức vụ: Tập sự thi đua → Đồng nghiệp tin cậy → Tổ nghề vững vàng → Gương sáng nghề nghiệp → Dẫn dắt nghề nghiệp. Chuyển hạng cần lần lượt 2/3/4/6 kỳ đạt từ80 điểm, cùng điều kiện bậc nghề2/3/5/7 đã có (giới hạn ở bậc tối đa của thang nghề; công an tối đa4). Tổng tối thiểu 15 kỳ = 150 ca hợp lệ đến hạng cao nhất; không tự giáng chức hoặc xóa danh hiệu đã có khi một kỳ kém. Chức vụ thực tế vẫn qua điều kiện và xét thăng tiến đang có.
 
 ## Khen thưởng và lợi ích
 
 Kết quả kỳ: dưới60 là cần rèn thêm;60–79 đạt;80–89 tốt;90–100 xuất sắc. Điểm và điều kiện công khai. Danh hiệu/giấy ghi nhận vào hồ sơ nghề, có nhận xét cụ thể gắn sự việc; nội dung mới gồm tình huống giao việc, kiểm tra thành quả, hướng dẫn người mới và đề nghị khen đúng người.
 
-Đề xuất quỹ thưởng kỳ có trần theo năm hạng300/900/2.000/5.000/10.000 xu, đồng thời không quá10% thu nhập nghề hợp lệ kỳ đó. Thu nhập hợp lệ là tiền công/lương và doanh thu dịch vụ game sinh đã đối soát; loại góp vốn, vay, chuyển tiền, bán tài sản, thưởng thi đua/tay nghề/thăng tiến, tiền khách giao hộ và phần do nhân viên tự chạy. Chỉ kỳ đạt80+ nhận thưởng; không nhân các hệ số nghề/thiết bị vào khoản này. Đây là mức đề xuất phải mô phỏng dữ liệu trò chơi trước khi phát hành, không phải doanh thu đã đo.
+Quỹ thưởng kỳ có trần theo năm hạng300/900/2.000/5.000/10.000 xu, đồng thời không quá10% thu nhập nghề hợp lệ kỳ đó. Thu nhập hợp lệ chỉ là phần công cơ bản từ hoàn thành thủ công, lấy bonus_base (lãi sau vật tư) khi nghề cung cấp; không tính lương chốt ca; loại góp vốn, vay, chuyển tiền, bán tài sản, thưởng thi đua/tay nghề/thăng tiến, tiền khách giao hộ và phần do nhân viên tự chạy. Chỉ kỳ đạt80+ nhận thưởng; không nhân các hệ số nghề/thiết bị vào khoản này. Chỉ công việc trong ngày được trả công góp vào quỹ; chốt kỳ cũng phải còn quyền nhận thu nhập. Khoản bị từ chối không trả bù. Kiểm thử 10 ca giặt ủi thực tế cho một khoản thưởng55xu; đây là dữ liệu kiểm thử local, không phải số liệu người chơi trên bản thật.
 
 Thưởng danh hiệu tách khỏi xu; chùa nhận ghi nhận công quả và điểm tinh thần, không có thưởng thi đua bằng xu hoặc so ai cầu nguyện/cúng nhiều hơn. Hoạt động đi chùa/thẻ chúc vẫn giữ cách chơi hiện tại.
 
-Được giao trách nhiệm cao hơn phải có hành động thực: nhận bảng việc của tổ, phân công NPC theo kỹ năng, kiểm lại kết quả, giúp người làm sai sửa và chọn hồ sơ xứng đáng khen. Mỗi nghề có ít nhất 3 tình huống quản lý riêng. Phần thưởng mở nội dung chỉ công bố khi nội dung đó đã được nối vào game;540 gói công thức/mẫu hàng thiết kế trước không được coi là đã triển khai nhờ tính năng này.
+Từ bậc nghề3 hoặc hạng thi đua2, sau khi tự hoàn thành việc trong ca, được nhận một tình huống/ngày. Người chơi chọn phương án phân công NPC, kiểm lỗi cần sửa hoặc ghi nhận hồ sơ xứng đáng; đáp án đã chọn được lưu cố định. Bảng quản lý nhiều bước hiện tại vẫn theo hệ thống promotion; tính năng này bổ sung tình huống quyết định có phản hồi. Mỗi nghề có ít nhất 3 tình huống quản lý riêng. Phần thưởng mở nội dung chỉ công bố khi nội dung đó đã được nối vào game;540 gói công thức/mẫu hàng thiết kế trước không được coi là đã triển khai nhờ tính năng này.
 
 ## Nếu dùng người chơi thật
 
@@ -115,11 +115,11 @@ Lên tổ phó có ca phân tuyến, phát hiện tuyến bị bỏ sót và h�
 
 ## Thiết kế kỹ thuật, lưu dữ liệu và kiểm thử
 
-Tách nội dung nghề, bộ chấm bằng chứng, kỳ thi đua và phép khen người khác. Hook hoàn thành nhiệm vụ/kết ca là nguồn duy nhất ghi điểm. Lưu phần mở rộng cóversion, kỳ hiện tại, taskID đã ghi, tổng điểm/mẫu số và mã phần thưởng đã trả; giữ toàn bộ tiến trình promotion/mastery/org cũ. Không tính lại một lần mua hay replayrequest thành việc nghề. NPC có seed ổn định theo người/nghề/kỳ.
+Tách nội dung nghề, bộ chấm bằng chứng, kỳ thi đua và phép khen người khác. Hook hoàn thành nhiệm vụ/kết ca là nguồn duy nhất ghi điểm. Lưu phần mở rộng cóversion, kỳ hiện tại, taskID đã ghi, tổng điểm/mẫu số và mã phần thưởng đã trả; giữ toàn bộ tiến trình promotion/mastery/org cũ. Không tính lại một lần mua hay replayrequest thành việc nghề. NPC có seed ổn định theo nghề/kỳ/hạng/ca, không phụ thuộc điểm hoặc thao tác người chơi.
 
 Nếu chọn xã hội: bảngroster/điểm/khen riêng theo namespace, dùng publicID, không lộsessionID. Kiểm tra quyền và ghi sổ trong transaction; inbox là kết quả của hành động trong game, không gửi tin người chơi khi xây tính năng. Không truy cập DB thật để thử.
 
-Kiểm thử phải có: đủ 54 adapter hoặc chỉ rõ nghề chưa hỗ trợ; điểm thật/không có cơ hội; hủy việc/ca trống/chuyển nghề; tiền thưởng không nhân chồng/không trả lặp; NPC không thay điểm theo người chơi; lịch khen theo múi giờgame; đồng thời 2 người khen một người; tự khen/người ngoài tổ/bậc không đủ; lưu cũ và việc đang chơi dở; cảnh thi đua điện thoại/máy tính và bản dịch. Khi triển khai không đổi bản thật nếu chưa có yêu cầu deploy.
+Kiểm thử phải có: đủ 54 adapter hoặc chỉ rõ nghề chưa hỗ trợ; điểm thật/không có cơ hội; hủy việc/ca trống/chuyển nghề; tiền thưởng không nhân chồng/không trả lặp; NPC không thay điểm theo người chơi; điều kiện hạng và giới hạn một tình huống/ngày nghề; lưu cũ và việc đang chơi dở; cảnh thi đua điện thoại/máy tính và bản dịch. Khi triển khai không đổi bản thật nếu chưa có yêu cầu deploy.
 
 ## Thứ tự làm đề xuất
 
@@ -128,3 +128,15 @@ Kiểm thử phải có: đủ 54 adapter hoặc chỉ rõ nghề chưa hỗ tr�
 3. Nối từng nhóm nghề theo ma trận, với tiêu chí và tình huống quản lý thật. Đánh dấu hoàn thành theo cả backend/UI/test, không chỉ có tên trong danh mục.
 4. Nếu chọn xã hội, thêm tổ nghề và khen giữa người chơi; kiểm tra giao dịch đồng thời trước khi cho dùng.
 5. Kiểm tra kinh tế và hồi quy, báo cáo phạm vi thực sự xong; giữ local theo yêu cầu chưa deploy.
+
+
+## Phạm vi đã triển khai và kiểm chứng
+
+- 54 nghề, mỗi nghề 3 đồng nghiệp NPC và 3 tình huống (phân công, kiểm tra, khen thưởng): 162 tình huống, 486 lựa chọn có phản hồi.
+- Giao diện nằm trong mục **Thăng tiến → Thi đua cùng đồng nghiệp** ở mọi nghề. Hiển thị kỳ 10 ca, điểm đã chốt, minh chứng hôm nay, người ghi nhận, điều kiện hạng kế tiếp và trần thưởng.
+- Tình huống trả lời một lần, tối đa một tình huống/ngày nghề sau khi tự làm việc; không tốn lượt thao tác. Đáp án/điểm chưa chọn không xuất ra client.
+- Thưởng tinh thần chùa tối đa5 mỗi kỳ, chỉ ghi đúng phần còn tăng được đến trần100. Lưu 24 kỳ gần nhất cùng checkpoint tích lũy để chơi tiếp lâu dài.
+- Ngày hoàn thành setup/brief đơn thuần không tăng kỳ. Thu nhập nhân viên, người chơi đặt dịch vụ, tiền chuyển/góp vốn và phần thưởng trang bị không góp vào quỹ thi đua; thưởng kỳ không bị nhân x3.
+- Lượt browser thật trên PostgreSQL local tại390px/1280px: mở tình huống → trả lời → tải lại → kết quả giữ nguyên, không trả lời lại, không tăng turn, không tràn ngang.
+- Các yêu cầu tương tác/khen người chơi thật trong phần tham khảo không được triển khai thêm. Không phát hành 540 gói công thức/mẫu hàng chỉ bằng thay đổi này.
+- Không push, deploy hoặc kết nối DB bản thật. DB kiểm thử local đã dừng sau khi kiểm tra browser.

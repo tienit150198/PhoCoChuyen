@@ -682,7 +682,8 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
         # 💼 Nor does the accounting salary's ×3 / ×5 part (09/10 audit: x3 paid twice the boosted salary again).
         boost = job_note.get('boost') if type(job_note.get('boost')) is int else 0
         mastery_bonus = ((result.get('summary') or {}).get('mastery') or {}).get('bonus') or 0
-        extra = x3.bonus(int((result.get('summary') or {}).get('net') or 0) - int(ot) - boost - int(mastery_bonus))
+        competition_bonus = ((result.get('summary') or {}).get('competition') or {}).get('bonus') or 0
+        extra = x3.bonus(int((result.get('summary') or {}).get('net') or 0) - int(ot) - boost - int(mastery_bonus) - int(competition_bonus))
         if extra > 0 and not icl.day_paid(s):   # ⏱️ beyond the real-time allowance (1 real hour = 1 paid day): no bonus
             extra = 0
             notes.append(f'⏱️ Hôm nay quá số ngày có thưởng theo giờ thật (1 giờ = 1 ngày): không có thưởng x{x3.X}.')

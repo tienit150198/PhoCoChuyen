@@ -60,6 +60,7 @@ from . import needs as nd  # 🍚 No bụng, 😴 Tỉnh táo
 from . import chua as cg  # 🛕 Đi chùa
 from . import promotion as pm
 from . import career_mastery as cm  # Persistent manual-work mastery, separate from formal promotion.
+from . import career_competition as competition  # Earned NPC standings and recognition.
 from . import rui as rui_  # 🛡️ Rủi ro & bảo hiểm
 from . import vang as vang_  # 💰 Tiệm vàng
 
@@ -372,6 +373,11 @@ def task_done(s:dict,c:dict,t:dict,reward:int,narrative:str,status:str="complete
             completion_bonus(s,c,reward if bonus_base is None else max(0,min(reward,bonus_base)),t['title'],t['id'])
     remember(s,c,t["npc"],narrative,t["id"])
     made=fbk.make_review(s,c,t,status)
+    if not pm.managing(s,c,t["career"]):
+        from . import interest_clock as competition_clock
+        base=reward if bonus_base is None else min(reward,bonus_base)
+        eligible=max(0,base) if status=="completed" and competition_clock.day_paid(s) else 0
+        competition.completed(c,t["career"],t,made.get("feedback") or {},income=eligible)
     review=made["text"];stars=made["stars"]
     ovt.on_job(s,c,t,reward,status,(made.get("feedback") or {}).get("fair",stars))  # ⏱️ Tăng ca ×2 past the normal day (game/overtime.py)
     if t['mistakes']==0 and status=='completed' and not made["feedback"].get("unfair") and made.get("aside",True):
@@ -645,7 +651,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         need(c["open"],"Mở ca trước khi xử lý công việc nhé.")
     no_tick={"task_select","settings","talk","feed_like","photo","decor_move","event_dismiss","quest_claim","chat_clear","reset_career","theme","sit_dismiss","sit_practice","inv_rate","inv_claim","inv_cart","inv_haggle","inv_cancel"}
     if mod:no_tick|=set(mod.SPEC.get('no_tick',()))
-    no_tick|={"mastery_start","mastery_answer","mastery_finish"}
+    no_tick|={"mastery_start","mastery_answer","mastery_finish","competition_start","competition_answer"}
     no_tick|=CARE_FREE
     if action.startswith("cl_"):need(c["open"],"Mở ca trước khi làm hoạt động lớp nhé.")
     no_tick|={"pm_answer","pm_ask","pm_close","pm_of_plan","pm_of_hr","pm_of_inbox","pm_of_insp","pm_org_aim","pm_org_own"}  # (pm_org_*, pm_of_insp: the org ladder, game/org.py) 🎖️ the review, closing the board and the 🏢 office take no time; a manager's moves do
@@ -678,6 +684,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
             if tip:result["message"]=f'{result.get("message") or ""} {tip}'.strip()
     elif action.startswith("mastery_"):
         result.update(cm.action(c,career,action,p))
+    elif action.startswith("competition_"):
+        result.update(competition.action(s,c,career,action,p))
     elif action.startswith("pm_"):  # 🎖️ the review, 🧑‍💼 the manager's board (game/promotion.py)
         result.update(pm.action(s,c,career,action,p))
     elif action.startswith("cl_"):
@@ -753,6 +761,12 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         if mastery:
             summary["mastery"]=mastery
             if mastery["bonus"]:money(s,c,mastery["bonus"],"Thưởng ngày tay nghề",f"mastery-{oldday}",category="bonus")
+        contest=competition.close(s,c,career,allow_reward=mastery_clock.day_paid(s),abandoned=bool(summary.get("abandon")))
+        summary["competition"]=contest
+        if contest["bonus"]:
+            money(s,c,contest["bonus"],"Thưởng thi đua nghề",f"competition-{oldday}",category="bonus")
+        if contest["spirit"]:
+            contest["spirit"]=nd._spirit(s,contest["spirit"])
         ot=ovt.on_close(s,c,career)  # ⚡ the busy tier's bonus; the day's ⏱️ overtime for the summary (journey: not in the x3 net)
         if ot:summary["ot"]=ot
         # The day's figures once everything has closed: the salary and the career's own closing are in, and
@@ -1243,7 +1257,7 @@ def career_summary(raw:dict,cid:str) -> dict:
 
 # public_state rebuilds these from the save (None keeps each one's place in the key order).
 _PUBLIC_OWN=frozenset(("journey","invest","board","life","stories","closeness","abandon"))
-_FOCUS_OWN=frozenset(("ops","situation","incidents","happen","inventory","job","feed","ext","life","day_clock","tasks","event","pending","mastery"))
+_FOCUS_OWN=frozenset(("ops","situation","incidents","happen","inventory","job","feed","ext","life","day_clock","tasks","event","pending","mastery","competition"))
 
 def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     """Public projection. Only the current career (or `full`) gets the full view.
@@ -1288,6 +1302,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c["warehouse"]=warehouse.public(raw,cid)
         c["job"]=emp.public(raw,cid,s)
         c["mastery"]=cm.public(raw,cid)
+        c["competition"]=competition.public(s,raw,cid)
         c["promo"]=pm.public(s,raw,cid)  # 🎖️ Thăng tiến; the 🧑‍💼 board while a manager shift runs
 
         c["data"]=mod.public_data(raw) if mod and hasattr(mod,'public_data') else tree_copy(raw["ext"]["data"])
@@ -1444,6 +1459,7 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
     from . import classroom
     need(isinstance(c,dict),"Tiến trình nghề không hợp lệ.")
     cm.validate(c,cid)
+    competition.validate(c,cid)
     player_services.validate_staff(c,cid)
     template_keys,ext_keys=_template_keys(cid)
     ops.validate(c,cid,same)
