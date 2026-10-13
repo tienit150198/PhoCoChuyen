@@ -783,6 +783,18 @@ def _case_count(d: dict, item: str) -> int:
     return sum(l['qty'] for l in d['case'] if l['item'] == item)
 
 
+def case_max(c: dict) -> int:
+    from ..capacity_progression import limit
+    return limit(c, ID, CASE_MAX)
+
+
+def _case_reserved(c: dict, item: str) -> int:
+    d = kit.data(c)
+    baking = sum(r['qty'] for r in d['oven'] if r['item'] == item and not r['task'])
+    picked = sum(x['item'] == item for t in c['tasks'] if _open(t) for x in t.get('bag', {}).get('items', []))
+    return baking + picked
+
+
 def _add_case(c: dict, item: str, qty: int, day: int, q: str, cost: int) -> None:
     d = kit.data(c)
     lot = next((l for l in d['case'] if l['item'] == item and l['day'] == day and l['q'] == q and not l['sale']), None)
@@ -1141,7 +1153,7 @@ def _counter(s: dict, c: dict, d: dict, t: dict, name: str, p: dict) -> dict:
         kit.need(i < len(bag['items']), 'Không có bánh này trong khay.')
         x = bag['items'].pop(i)
         bag['cost'] = max(0, bag['cost'] - x['cost'])
-        kit.need(_case_count(d, x['item']) < CASE_MAX, 'Tủ bánh đầy.')
+        kit.need(_case_count(d, x['item']) + _case_reserved(c, x['item']) < case_max(c), 'Tủ bánh đầy.')
         _add_case(c, x['item'], 1, x['day'], x['q'], x['cost'])
         opened = ' Đã mở miệng túi ra.' if bag['bagged'] else ''
         bag['bagged'] = False
@@ -1311,7 +1323,7 @@ def _bake(s: dict, c: dict, d: dict, p: dict) -> dict:
         kit.start_work(task)
     else:
         kit.need(_usable(c, b['unlock'], wanted=_wanted_anywhere(c, item)), f'{b["name"]} mở ở cấp {b["unlock"]}.')
-        kit.need(_case_count(d, item) + b['qty'] <= CASE_MAX, 'Tủ kính đã đầy loại bánh này.')
+        kit.need(_case_count(d, item) + _case_reserved(c, item) + b['qty'] <= case_max(c), 'Tủ kính đã đầy loại bánh này.')
         if b['proof']:
             trays = [x for x in d['proof'] if x['item'] == item]
             colds = [x for x in d['cold'] if x['item'] == item]
@@ -1349,6 +1361,8 @@ def _unload(s: dict, c: dict, d: dict, p: dict) -> dict:
     b = BAKES[rack['item']]
     sec = max(0.0, kit.tap_now(p) - rack['start']) * rack.get('pace', 1)
     done = _doneness(rack['item'], sec + rack.get('shift', 0))
+    if not rack['task'] and done != 'burnt':
+        kit.need(_case_count(d, rack['item']) + rack['qty'] <= case_max(c), 'Tủ kính đã đầy loại bánh này.')
     d['oven'] = [r for r in d['oven'] if r['id'] != rack['id']]
     label = dict(pale='còn nhạt màu, ruột chưa chín', golden='vàng đều, thơm lừng', dark='hơi sậm màu', burnt='cháy đen')[done]
     if rack['task']:
@@ -1395,7 +1409,7 @@ def _case_action(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
         kit.metric(c, 'donations')
         kit.log(s, c, 'donation', f'Tặng {lot["qty"]} {b["name"].lower()} (ra lò ngày {lot["day"]}) cho Bếp Cơm 0 Đồng Ngõ Mây, kèm nhãn ngày.')
         return dict(message=f'Đã đóng hộp {lot["qty"]} {b["name"].lower()} kèm nhãn ngày ra lò, gửi Bếp Cơm 0 Đồng Ngõ Mây. 💛')
-    kit.waste(c, lot['item'], min(60, lot['qty']), lot['qty'] * lot['cost'], 'Bỏ bánh khỏi tủ kính')
+    kit.waste(c, lot['item'], lot['qty'], lot['qty'] * lot['cost'], 'Bỏ bánh khỏi tủ kính')
     d['case'] = [l for l in d['case'] if l['id'] != lot['id']]
     d['discarded'] += lot['qty']
     return dict(message=f'Đã bỏ {lot["qty"]} {b["name"].lower()} và ghi hao hụt.')
@@ -1927,6 +1941,8 @@ def public_task(t: dict) -> dict:
 
 def public_data(c: dict) -> dict:
     d = tree_copy(kit.data(c))
+    d['case_max'] = case_max(c)
+    d['case_reserved'] = {item: _case_reserved(c, item) for item in CASE_ITEMS}
     # Reads may precede the first command that migrates an older save.
     d.setdefault('bar_pace', 1)
     for lot in d['case']:
@@ -2120,7 +2136,7 @@ def validate_data(c: dict) -> None:
     need(type(d['bar_pace']) is int and d['bar_pace'] in PACES, 'Nhịp máy pha sai.')
     for k in ('proof', 'oven', 'case'):
         need(isinstance(d.get(k), list), 'Dữ liệu lò bánh sai.')
-    need(len(d['proof']) <= 2 and len(d['oven']) <= 2 and len(d['case']) <= 40, 'Lò hoặc tủ bánh quá tải.')
+    need(len(d['proof']) <= 2 and len(d['oven']) <= 2 and len(d['case']) <= max(40, len(CASE_ITEMS) * case_max(c)), 'Lò hoặc tủ bánh quá tải.')
     for x in d['proof']:
         need(isinstance(x, dict) and x.get('item') in BAKES and BAKES[x['item']]['proof'] and isinstance(x.get('id'), str), 'Khay ủ sai.')
         for k in ('qty', 'since', 'ready', 'cost'):
@@ -2137,12 +2153,12 @@ def validate_data(c: dict) -> None:
         kit.integer(x.get('cost'), 0, 10000)
     for x in d['case']:
         need(isinstance(x, dict) and x.get('item') in CASE_ITEMS and x.get('q') in LOT_Q and isinstance(x.get('id'), str) and type(x.get('sale')) is bool, 'Khay tủ kính sai.')
-        kit.integer(x.get('qty'), 0, CASE_MAX)
+        kit.integer(x.get('qty'), 0, case_max(c))
         kit.integer(x.get('day'), 1, 10**7)
         kit.integer(x.get('cost'), 0, 10000)
     need(len({x['id'] for x in d['case']}) == len(d['case']), 'Trùng mã khay bánh.')
     for item in CASE_ITEMS:
-        need(_case_count(d, item) <= CASE_MAX, 'Tủ bánh vượt sức chứa.')
+        need(_case_count(d, item) <= case_max(c), 'Tủ bánh vượt sức chứa.')
     for k in ('drinks', 'pastries', 'cakes', 'donated', 'markdown_sold', 'discarded', 'clean_day'):
         kit.integer(d.get(k), 0, 10**9)
     kit.integer(d.get('counter_sold', 0), 0, 10**9)
@@ -2267,7 +2283,7 @@ def _close_case(s: dict, c: dict) -> dict:
                 lot['qty'] -= n
         # Tomorrow the lot is one day older: drop what may no longer be sold.
         if lot['qty'] and c['day'] + 1 - lot['day'] > b['max_age']:
-            kit.waste(c, lot['item'], min(60, lot['qty']), lot['qty'] * lot['cost'], 'Hết hạn bán theo quy định tủ kính')
+            kit.waste(c, lot['item'], lot['qty'], lot['qty'] * lot['cost'], 'Hết hạn bán theo quy định tủ kính')
             discarded += lot['qty']
             lot['qty'] = 0
         if lot['qty']:

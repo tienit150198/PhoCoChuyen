@@ -52,6 +52,18 @@ VA_WORD = {1: 'ít cơm', 2: 'cơm vừa', 3: 'thêm cơm', 4: 'thêm cơm'}
 # ---------------------------------------------------------------- the charcoal grill
 BATCH_MAX = 4
 RACK_MAX = 8
+
+
+def rack_max(c: dict) -> int:
+    from ..capacity_progression import limit
+    return limit(c, ID, RACK_MAX)
+
+
+def tray_max(c: dict) -> int:
+    from ..capacity_progression import limit
+    return limit(c, ID, TRAY_MAX)
+
+
 SIDE_OK = (8, 16)         # seconds a side: shorter is still pink, longer chars
 SIDE_BURN = 24            # past this the side is burnt
 GRILL_Q = ('ok', 'song', 'xem', 'khet')
@@ -569,7 +581,7 @@ def _fire(s, c, d, p):
 def _tray(s, c, d, p):
     k = kit.one_of(p.get('item'), TRAYS, 'Khay món này không có.')
     tray = d['trays'][k]
-    kit.need(tray['n'] + TRAY_N[k] <= TRAY_MAX, f'Khay {_lower(DISHES[k]["name"])} còn đầy, bán bớt rồi bày thêm.')
+    kit.need(tray['n'] + TRAY_N[k] <= tray_max(c), f'Khay {_lower(DISHES[k]["name"])} còn đầy, bán bớt rồi bày thêm.')
     kit.need(kit.stock(c, k) > 0, f'Kho hết {_lower(kit.item(ID, k)["name"])}. Nhập thêm ở kho nhé.')
     cost = kit.take(c, k, 1)
     tray['n'] += TRAY_N[k]
@@ -614,7 +626,7 @@ def _grill(s, c, d, p):
     kit.need(g['lit'], 'Chưa nhóm bếp than.')
     kit.need(g['b'] is None, 'Vỉ đang có mẻ sườn, gắp ra rồi hẵng nướng mẻ mới.')
     n = kit.integer(p.get('n', 1), 1, BATCH_MAX)
-    kit.need(len(d['rack']) + n <= RACK_MAX, f'Khay giữ ấm chỉ để được {RACK_MAX} miếng, bán bớt đã.')
+    kit.need(len(d['rack']) + n <= rack_max(c), f'Khay giữ ấm chỉ để được {rack_max(c)} miếng, bán bớt đã.')
     kit.need(kit.stock(c, 'suon') >= n, f'Kho còn {kit.stock(c, "suon")} miếng sườn ướp. Nhập thêm ở kho nhé.')
     cost = kit.take(c, 'suon', n)
     g['b'] = dict(n=n, start=round(kit.now(), 3), flip=None, c=cost)
@@ -635,6 +647,7 @@ def _lift(s, c, d, p):
     g = d['grill']
     b = g['b']
     kit.need(b, 'Trên vỉ chưa có sườn.')
+    kit.need(len(d['rack']) + b['n'] <= rack_max(c), f'Khay giữ ấm chỉ để được {rack_max(c)} miếng, bán bớt đã.')
     at = max(b['start'], kit.tap_now(p))
     if b['flip'] is None:
         q = 'song'
@@ -1151,7 +1164,7 @@ def public_data(c: dict) -> dict:
     stock = {x['id']: kit.stock(c, x['id']) for x in ITEMS} if c['ext'].get('inv') else {}
     mam = d['mam']
     return dict(intro=d['intro'], shop=d['shop'], pots=d['pots'], mam=dict(tasted=mam.get('tasted'), q=mam.get('q') if mam.get('tasted') else None),
-                grill=d['grill'], rack=d['rack'], trays=d['trays'], stock=stock,
+                grill=d['grill'], rack=d['rack'], trays=d['trays'], stock=stock, rack_max=rack_max(c), tray_max=tray_max(c),
                 mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']),
                 today=d['today'], stats=d['stats'], regulars={k: dict(v) for k, v in d['regulars'].items()},
                 desk=kit.desk_public(d['desk'], DESK, ID))
@@ -1256,14 +1269,14 @@ def validate_data(c: dict) -> None:
         if b['flip'] is not None:
             _vnum(b['flip'], 0, 10 ** 11)
         kit.integer(b['c'], 0, 10000)
-    kit.need(isinstance(d['rack'], list) and len(d['rack']) <= RACK_MAX, 'Khay giữ ấm sai.')
+    kit.need(isinstance(d['rack'], list) and len(d['rack']) <= rack_max(c), 'Khay giữ ấm sai.')
     for pc in d['rack']:
         kit.need(isinstance(pc, dict) and set(pc) == {'q', 'c'} and pc['q'] in GRILL_Q, 'Khay giữ ấm sai.')
         kit.integer(pc['c'], 0, 10000)
     kit.need(isinstance(d['trays'], dict) and set(d['trays']) == set(TRAYS), 'Tủ kính sai.')
     for tr in d['trays'].values():
         kit.need(isinstance(tr, dict) and set(tr) == {'n', 'c'}, 'Tủ kính sai.')
-        kit.integer(tr['n'], 0, TRAY_MAX)
+        kit.integer(tr['n'], 0, tray_max(c))
         kit.integer(tr['c'], 0, 10000)
     kit.need(isinstance(d['regulars'], dict) and set(d['regulars']) <= {str(i) for i in REG_STORY}, 'Sổ khách quen sai.')
     for v in d['regulars'].values():

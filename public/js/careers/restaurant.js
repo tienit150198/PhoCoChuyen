@@ -430,8 +430,8 @@ function pots(t,x){
       return tileBtn(x,{cmd:'rs_broth',payload:{task:t.id,broth:p.id},pick:p.id,emoji:p.emoji,name:p.name,sub,count:lock?null:q,zero:q<portions||off,locked:lock,selected:b.broth===p.id,
         wanted:!b.broth&&wantBroth.includes(p.id)&&!off,disabled:q<portions||off||!!b.broth||!b.container||locked,cls:'pot'+(st==='cold'?' cold':st==='stale'?' stale':''),
         label:lock?`Nước dùng ${p.name}, mở ở cấp ${p.unlock}`:off?`Nồi ${p.name} ${sub}`:`Chan nước dùng ${p.name}, nồi còn ${q} phần`});})];
-  // Cooking a pot is offered when it runs low (a pot holds 12 portions, one batch adds 6).
-  const low=x.cc.broths.filter(p=>p.unlock<=level&&(d.pots?.[p.id]??0)<=Math.min(6,2*portions)&&potRow(x,p.id)?.state!=='stale');
+  // Purchased storage changes the room available; each paid batch still adds six portions.
+  const low=x.cc.broths.filter(p=>p.unlock<=level&&(d.pots?.[p.id]??0)+(x.cc.pot_batch||6)<=(d.pot_max||x.cc.pot_max||12)&&potRow(x,p.id)?.state!=='stale');
   const cook=low.length?`<div class="rs-cook"><small>🔥 Nấu thêm nồi</small>${low.map(p=>{const packs=stockOf(x,p.pack);return x.cmd(`${p.emoji} ${x.esc(p.name)} · ${packs} gói`,'rs_pot',{broth:p.id},'ghost small',!packs);}).join('')}</div>`:'';
   return `${potAlert(x)}<div class="rs-grid rs-pots" role="group" aria-label="Tô, hộp và nồi nước dùng">${tiles.join('')}</div>${lockChip(x,x.cc.broths.filter(p=>p.unlock>level))}${portions>1?'<p class="muted small">🥶 1 tô = 2 phần nồi</p>':''}${cook}`;
 }

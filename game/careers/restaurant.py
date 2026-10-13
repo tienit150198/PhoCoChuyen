@@ -504,10 +504,16 @@ def _use_pot(d: dict, broth: str, n: int) -> int:
     return age
 
 
-def _cook(d: dict, broth: str, portions: int) -> bool:
+def pot_max(c: dict) -> int:
+    from ..capacity_progression import limit
+    return limit(c, ID, POT_MAX)
+
+
+def _cook(d: dict, broth: str, portions: int, capacity: int = POT_MAX) -> bool:
     """Add a fresh batch; returns True when older broth is still in the pot (it is ladled first)."""
     older = any(age > 0 for _, age in d['pot_lots'][broth])
-    d['pots'][broth] = min(POT_MAX, d['pots'][broth] + portions)
+    kit.need(d['pots'][broth] + portions <= capacity, 'Nồi còn nhiều, chưa cần nấu thêm.')
+    d['pots'][broth] += portions
     _sync_lots(d, broth)
     d['pot_warm'][broth] = True
     return older
@@ -899,9 +905,9 @@ def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
         b = BROTH_INDEX[broth]
         kit.need(b['unlock'] <= kit.level(c), f'Nồi {b["name"]} mở ở cấp {b["unlock"]}.')
         kit.need(_pot_state(d, broth) != 'stale', f'Nồi {b["name"]} còn phần nước dùng quá {KEEP_NIGHTS} đêm. Đổ phần cũ (🗑️) rồi mới nấu mẻ mới.')
-        kit.need(d['pots'][broth] + POT_BATCH <= POT_MAX, 'Nồi còn nhiều, chưa cần nấu thêm.')
+        kit.need(d['pots'][broth] + POT_BATCH <= pot_max(c), 'Nồi còn nhiều, chưa cần nấu thêm.')
         cost = kit.take(c, b['pack'], 1)
-        mixed = _cook(d, broth, POT_BATCH)
+        mixed = _cook(d, broth, POT_BATCH, pot_max(c))
         kit.metric(c, 'pots_cooked')
         extra = f' Trong nồi: {_lots_text(d["pot_lots"][broth])} — phần cũ được chan trước.' if mixed else ''
         return dict(message=f'Đã nấu thêm nồi {b["name"]}: +{POT_BATCH} phần nước dùng.{extra}', cost=cost)
@@ -1854,6 +1860,7 @@ def public_task(t: dict) -> dict:
 
 def public_data(c: dict) -> dict:
     d = tree_copy(kit.data(c))
+    d['pot_max'] = pot_max(c)
     pl = _peek_plan(c)
     d.pop('plan', None)
     d.pop('ev_hist', None)
@@ -1923,7 +1930,7 @@ def validate_data(c: dict) -> None:
     d = _migrate(c)
     kit.need(isinstance(d.get('pots'), dict) and set(d['pots']) == set(BROTH_INDEX), 'Nồi nước dùng sai.')
     for v in d['pots'].values():
-        kit.integer(v, 0, POT_MAX)
+        kit.integer(v, 0, pot_max(c))
     for k in ('bowls_served', 'dumped', 'clean_checked_day'):
         kit.integer(d.get(k), 0, 10**9)
     kit.need(isinstance(d['notebook'], list) and len(d['notebook']) <= 20 and all(isinstance(x, str) and x.startswith(ID + '_npc_') for x in d['notebook']), 'Sổ khách quen không hợp lệ.')
@@ -1934,7 +1941,7 @@ def validate_data(c: dict) -> None:
     for b, lots in m.items():
         kit.need(isinstance(lots, list) and len(lots) <= 8 and all(isinstance(x, list) and len(x) == 2 for x in lots), 'Mẻ nước dùng trong nồi sai.')
         for q, age in lots:
-            kit.integer(q, 1, POT_MAX)
+            kit.integer(q, 1, pot_max(c))
             kit.integer(age, 0, 99)
         ages = [age for _, age in lots]
         kit.need(ages == sorted(set(ages), reverse=True) and sum(q for q, _ in lots) == d['pots'][b], 'Mẻ nước dùng trong nồi sai.')
@@ -1975,7 +1982,7 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
                     and _pot_state(d, b['id']) != 'stale'), None)
         if low:
             kit.take(c, low['pack'], 1)
-            _cook(d, low['id'], POT_BATCH)
+            _cook(d, low['id'], POT_BATCH, pot_max(c))
             return f'Đã nấu thêm nồi {low["name"]} từ gói nước dùng trong kho.'
         return 'Đã sơ chế rau, xếp topping theo ngày nhập (vào trước dùng trước).'
     if not t or t['career'] != ID or not t['known']:

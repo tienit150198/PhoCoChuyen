@@ -523,6 +523,7 @@ function ovenPanel(t,x){
   const missing=b=>{const m=Object.entries(b.recipe).find(([k,q])=>stock(x,k)<q);if(!m)return '';const i=inv(x,m[0]);return `${i.emoji&&i.emoji!=='•'?i.emoji+' ':''}thiếu ${m[1]-stock(x,m[0])} ${lower(i.name)}`;};
   const wanted=id=>(x.room.tasks||[]).some(v=>v.known&&v.needs&&((v.needs.items||v.needs.pastry||{})[id]))||(d.rules?.box?.status==='open'&&d.rules.box.item===id);
   const racksFull=oven.length>=2;
+  const caseFull=b=>(d.case||[]).filter(l=>l.item===b.id).reduce((n,l)=>n+l.qty,0)+(d.case_reserved?.[b.id]||0)+b.qty>(d.case_max||cc(x).case_max||30);
   const bakeTile=(b,o)=>{const locked=b.unlock>level&&!wanted(b.id),q=freshCount(x,b.id);
     const short=!locked&&missing(b),go=short?lackGo(x,lacks(x,b.recipe),t?.id):null;
     // Short of an ingredient: the tile says what ("🧈 thiếu 1 bơ lạt") and a tap opens the stock room for it.
@@ -532,20 +533,20 @@ function ovenPanel(t,x){
   const shut=b=>b.unlock>level&&!wanted(b.id),bakeShut=(cc(x).bakes||[]).filter(b=>!b.cake&&shut(b));
   const shape=(cc(x).bakes||[]).filter(b=>b.proof&&!shut(b)).map(b=>bakeTile(b,{name:'Nhào '+lower(b.name),cmd:'cb_shape',payload:{item:b.id},disabled:proof.length>=2,
     extra:b.starter&&st.beats?`ủ ${st.beats} nhịp · men ${lower(st.label)}`:''})).join('');
-  const direct=(cc(x).bakes||[]).filter(b=>!b.proof&&!b.cake&&!shut(b)).map(b=>bakeTile(b,{name:b.name,cmd:'cb_bake',payload:{item:b.id},disabled:racksFull})).join('');
+  const direct=(cc(x).bakes||[]).filter(b=>!b.proof&&!b.cake&&!shut(b)).map(b=>bakeTile(b,{name:b.name,cmd:'cb_bake',payload:{item:b.id},disabled:racksFull||caseFull(b)})).join('');
   const cold=d.cold||[],fridgeFull=cold.length>=2;
   const trays=proof.length?proof.map(p=>{const b=bake(x,p.item);return `<div class="cb-slot ${p.left?'':'ready'}"><span class="tile-emoji" aria-hidden="true">${x.esc(b.emoji)}</span><div class="grow"><b>${p.qty} ${x.esc(lower(b.name))}</b><small class="muted">${p.left?`đang nở · còn ${p.left} nhịp`:p.over?'⚠️ ủ quá lâu, bánh sẽ xẹp':'✓ bột đã nở, sẵn sàng nướng'}${p.dense?' · men đói: sẽ đặc ruột':''}</small></div>
-    <div class="cb-slot-btns">${x.cmd('🔥 Vào lò','cb_bake',{item:p.item,tray:p.id},p.left||racksFull?'small':'primary small',!!p.left||racksFull)}${x.cmd('❄️ Cất tủ mát','cb_chill',{tray:p.id},'ghost small',fridgeFull)}</div></div>`;}).join(''):'<p class="muted small">Tủ ủ trống (2 ngăn).</p>';
+    <div class="cb-slot-btns">${x.cmd('🔥 Vào lò','cb_bake',{item:p.item,tray:p.id},p.left||racksFull?'small':'primary small',!!p.left||racksFull||caseFull(b))}${x.cmd('❄️ Cất tủ mát','cb_chill',{tray:p.id},'ghost small',fridgeFull)}</div></div>`;}).join(''):'<p class="muted small">Tủ ủ trống (2 ngăn).</p>';
   const fridge=[0,1].map(i=>{const c=cold[i];if(!c)return `<div class="cb-slot empty"><span class="tile-emoji" aria-hidden="true">❄️</span><small class="muted">Ngăn ${i+1} trống</small></div>`;const b=bake(x,c.item);
     const when=c.bakeable?(c.last?'⚠️ đêm cuối — nướng hôm nay kẻo chua':`✓ ủ lạnh ${c.nights} đêm · vào lò ngay`):'đang ủ lạnh · nướng từ sáng mai';
     return `<div class="cb-slot cold${c.bakeable?' ready':''}${c.last?' last':''}"><span class="tile-emoji" aria-hidden="true">${x.esc(b.emoji)}</span><div class="grow"><b>${c.qty} ${x.esc(lower(b.name))}</b><small class="muted">${when}${c.dense?' · men đói':''}</small></div>
-      ${c.bakeable?`<div class="cb-slot-btns">${x.cmd('🔥 Vào lò','cb_bake',{item:c.item,tray:c.id},racksFull?'small':'primary small',racksFull)}</div>`:''}</div>`;}).join('');
+      ${c.bakeable?`<div class="cb-slot-btns">${x.cmd('🔥 Vào lò','cb_bake',{item:c.item,tray:c.id},racksFull?'small':'primary small',racksFull||caseFull(b))}</div>`:''}</div>`;}).join('');
   const sp=bake(x,'sponge');
   const spShort=!t?.cake?.sponge&&!t?.cake?.baking?lacks(x,sp.recipe):[];
   const sponge=t&&t.known&&t.needs?.kind==='cake'?`<div class="row wrap">${x.cmd(`🎂 Nướng cốt bánh kem (${x.esc(spShort.length?lackText(x,spShort):recipe(sp))})`,'cb_bake',{item:'sponge',task:t.id},spShort.length?'ghost':'primary',racksFull||!!t.cake.sponge||t.cake.baking||!enough(sp))}${spShort.length?lackBtn(x,spShort,t.id):''}</div>`:'';
   const racks=[0,1].map(i=>{const r=oven[i];if(!r)return `<div class="cb-rack-row empty"><b>Tầng ${i+1}</b><small class="muted">trống</small></div>`;const b=bake(x,r.item);
     return `<div class="cb-rack-row"><b>Tầng ${i+1} · ${x.esc(b.emoji)} ${x.esc(b.name)}</b>${rackMeter(x,r)}${x.cmd('🧤 Lấy ra','cb_unload',{rack:r.id},'primary small')}</div>`;}).join('');
-  return `${t?shelf(x):''}<h4 class="section-title">Lò nướng 2 tầng</h4><div class="cb-oven">${racks}</div>
+  return `${t?shelf(x):''}<p class="muted small">Tủ kính · ${d.case_max||cc(x).case_max||30} bánh / loại</p><h4 class="section-title">Lò nướng 2 tầng</h4><div class="cb-oven">${racks}</div>
     ${sponge}
     <h4 class="section-title">Tủ ủ bột</h4><div class="stack cb-proof">${trays}</div>
     <h4 class="section-title">❄️ Tủ mát ủ lạnh qua đêm</h4><div class="stack cb-proof">${fridge}</div>

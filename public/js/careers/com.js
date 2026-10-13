@@ -66,13 +66,13 @@ function grillCard(x,t){
     body=`<p class="small"><b>${ph.b.n} miếng sườn trên vỉ</b> · ${ph.side===1?'mặt thứ nhất':'đã trở, mặt thứ hai'} · vàng đều trong ${lo}–${hi} giây</p>${grillBar(x)}
       <div class="ct-row">${ph.side===1?x.cmd('🔄 Trở mặt','com_flip',{},'primary ct-stop'):''}${x.cmd('🍖 Gắp ra khay','com_lift',{},ph.side===2?'primary ct-stop':'ghost ct-stop')}</div>`;
   }else{
-    const room=Number(cc(x).rack_max||8)-rack.length,n=Math.min(Number(cc(x).batch_max||4),room,stock(x,'suon'));
+    const room=Number(data(x).rack_max||cc(x).rack_max||8)-rack.length,n=Math.min(Number(cc(x).batch_max||4),room,stock(x,'suon'));
     body=`<p class="small muted">Vỉ trống · kho còn ${stock(x,'suon')} miếng sườn ướp</p><div class="ct-row" role="group" aria-label="Đặt sườn lên vỉ">${[1,2,3,4].map(k=>x.cmd(`🍖 ${k} miếng`,'com_grill',{n:k},'small',k>n)).join('')}</div>${n<1?`<small class="muted">${!stock(x,'suon')?'Hết sườn: nhập ở Kho':'Khay giữ ấm đầy'}</small>`:''}`;
   }
   const chips=rack.map((pc,i)=>{const bad=pc.q!=='ok',label=`🍖 <small>${x.esc((cc(x).grill_note||{})[pc.q]||pc.q)}</small>`;
     const pick=t&&t.known&&t.stage==='prep'&&(t.plates||[]).length&&open?x.cmd(label,'com_pick',{task:t.id,item:'suon',i,plate:(t.plates||[]).length-1},`small ct-pc q-${pc.q}`):`<span class="ct-pc q-${x.esc(pc.q)}">${label}</span>`;
     return `<li>${pick}${bad?x.confirmCmd('🗑️','com_toss',{i},'Bỏ miếng sườn này?','small ghost ct-toss'):''}</li>`;}).join('');
-  return `<section class="card ct-grill"><h4>🔥 Bếp than · vỉ sườn</h4>${body}<h4 class="section-title">Khay giữ ấm <small>${rack.length}/${cc(x).rack_max||8}</small></h4>${chips?`<ul class="ct-rack">${chips}</ul>`:'<p class="small muted">Chưa có miếng nào.</p>'}</section>`;
+  return `<section class="card ct-grill"><h4>🔥 Bếp than · vỉ sườn</h4>${body}<h4 class="section-title">Khay giữ ấm <small>${rack.length}/${data(x).rack_max||cc(x).rack_max||8}</small></h4>${chips?`<ul class="ct-rack">${chips}</ul>`:'<p class="small muted">Chưa có miếng nào.</p>'}</section>`;
 }
 
 /* ------------------------------------------------------------ the pots, the case */
@@ -143,7 +143,7 @@ function setupPanel(t,x){
   const keys=cc(x).trays||FIRST_TRAYS,two=keys.map(k=>few(DISH(x,k).name,2,true)),dup=new Set(two.filter((v,i)=>two.indexOf(v)!==i));
   const dishName=(k,i)=>clean()&&!dup.has(two[i])?two[i]:DISH(x,k).name;
   const trays=keys.map((k,i)=>{const D=DISH(x,k),n=Number(d.trays?.[k]?.n||0);
-    return tile(x,'com_tray',{item:k},`<span class="tile-emoji">${x.esc(D.emoji)}</span><b>${x.esc(dishName(k,i))}</b><small>${clean()?`${n||'–'} · 📦 ${stock(x,k)}`:`${n?`${n} phần`:'chưa bày'} · kho ${stock(x,k)}`}</small>`,n?'selected':'',!stock(x,k)||n+Number((cc(x).tray_n||{})[k]||8)>Number(cc(x).tray_max||16));}).join('');
+    return tile(x,'com_tray',{item:k},`<span class="tile-emoji">${x.esc(D.emoji)}</span><b>${x.esc(dishName(k,i))}</b><small>${clean()?`${n||'–'} · 📦 ${stock(x,k)}`:`${n?`${n} phần`:'chưa bày'} · kho ${stock(x,k)}`}</small>`,n?'selected':'',!stock(x,k)||n+Number((cc(x).tray_n||{})[k]||8)>Number(data(x).tray_max||cc(x).tray_max||16));}).join('');
   if(clean())return `<section class="card ct-setup"><h4 aria-label="Đổ nước mấy đốt ngón tay? Gạo tấm hút ít nước hơn gạo trắng.">💧 Mấy đốt? Tấm ít hơn</h4>${tip('Đổ nước tới đâu (đốt ngón tay)? Gạo tấm hút ít nước hơn gạo trắng.','Hai nồi cơm','p')}${pot('tam')}${pot('trang')}
     <div class="ct-row ct-morning">${m.tasted?fix:x.cmd('🥄 Nếm','com_taste',{},'primary').replace('<button ','<button aria-label="Nếm chén nước mắm pha tối qua" ')}${g.lit?'<span class="tag green">✓ Than hồng</span>':x.cmd('🔥 Nhóm','com_fire',{},'primary').replace('<button ','<button aria-label="Nhóm bếp than" ')}</div>
     <h4 class="section-title" aria-label="Bày khay">🍱</h4>${tip('Đồ nấu không để qua đêm: bày vừa đủ bán.','Bày khay lên tủ kính','p')}<div class="tile-grid ct-case">${trays}</div>
@@ -240,7 +240,7 @@ const hintFor=(g,x)=>nextHint(x,g.steps,{final:g.final&&g.final.ready!==false&&g
 function caseView(x){
   const tr=data(x).trays||{};
   const rows=(cc(x).trays||FIRST_TRAYS).map(k=>{const D=DISH(x,k),n=Number(tr[k]?.n||0);
-    return `<li><span aria-hidden="true">${x.esc(D.emoji)}</span><b>${x.esc(D.name)}</b><span class="sk-meter ${n&&n<3?'warn':''}"><i style="width:${n/Number(cc(x).tray_max||16)*100}%"></i></span><small>${n?`${n} phần`:'khay trống'} · kho ${stock(x,k)}</small>${!n||n<3?x.cmd('＋ Bày','com_tray',{item:k},'small ghost',!stock(x,k)):''}</li>`;}).join('');
+    return `<li><span aria-hidden="true">${x.esc(D.emoji)}</span><b>${x.esc(D.name)}</b><span class="sk-meter ${n&&n<3?'warn':''}"><i style="width:${n/Number(data(x).tray_max||cc(x).tray_max||16)*100}%"></i></span><small>${n?`${n} phần`:'khay trống'} · kho ${stock(x,k)}</small>${!n||n<3?x.cmd('＋ Bày','com_tray',{item:k},'small ghost',!stock(x,k)):''}</li>`;}).join('');
   return `<section class="card ct-shop"><h4>🍱 Tủ kính</h4><ul class="ct-trays">${rows}</ul><p class="small muted">🍖 ${stock(x,'suon')} miếng sườn ướp · 🥚 ${stock(x,'trung')} trứng · 🥡 ${stock(x,'hop')} hộp</p></section>`;
 }
 function potsCard(x){
