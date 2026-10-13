@@ -1361,9 +1361,15 @@ class ChatFeature(Feature):
         row = await self.db.fetchrow('SELECT channel, pid, hidden, deleted FROM chat_messages WHERE id=?', (mid,))
         if not row or row['hidden'] or row['deleted'] or row['pid'] in p.hidden:
             raise LiveError('gone', 'Tin nhắn này không còn.')
-        if kind_of(row['channel']) not in ('town', 'dm', 'group'):
+        nearby = self._route(row['channel']) if row['channel'].startswith('iso-talk:') else None
+        if nearby:
+            if not nearby[1](p, row['channel']):
+                raise LiveError('no_chat', 'Không tìm thấy cuộc trò chuyện này.')
+            c = Chan(row['channel'], kind_of(row['channel']))
+        elif kind_of(row['channel']) not in ('town', 'dm', 'group'):
             raise LiveError('bad', 'Không thả cảm xúc ở đây được.')
-        c = await self.member_chan(p, row['channel'])
+        else:
+            c = await self.member_chan(p, row['channel'])
         t = time.time()
 
         async def run(tx):

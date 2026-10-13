@@ -3,6 +3,7 @@
  * All careers use iso-town-v1. A room holds at most 30 real players and updates at 4/s.
  */
 import {live} from './v4/live.js';
+import {createTownSocial} from './isometric-social.js';
 import {lookOf} from './v4/look.js';
 import {leisurePresence,publicActivity} from './isometric/leisure-presence.js';
 
@@ -32,6 +33,7 @@ function appearance(state){
 export function createTownPresence(envGetter,options={}){
   const socket=options.transport||live,doc=options.document||globalThis.document,
     events=options.events||globalThis.window,now=options.now||(()=>Date.now()),leisure=options.leisure||leisurePresence;
+  let socialEnabled=false;
   let room=null,me=null,joining=null,joinedPoint=null,lastPoint=null,lastSent=0,
     joinedAppearance=null,lastAppearance=null,
     anchor=null,joinedActivity=null,lastActivity=null,pendingActivityClear=false,
@@ -46,14 +48,21 @@ export function createTownPresence(envGetter,options={}){
   const wanted=()=>!env()?.api?.state?.jail&&!taken&&doc?.visibilityState!=='hidden'&&Boolean(point());
   const enabled=()=>socket.state==='open'&&Boolean(socket.flags?.town);
 
+  function updateSocial(){
+    const active=!!room&&wanted()&&!leisure.current&&world()?.mode==='town';
+    world()?.setSocialEnabled?.(active&&socialEnabled);
+    options.social?.update({room,me,peers:[...peers.values()],active,enabled:socialEnabled});
+  }
   function draw(){
     const w=world();
     if(w!==lastWorld){lastWorld?.setRemotePlayers?.([]);lastWorld=w;}
     const all=[...peers.values()];
     w?.setRemotePlayers?.(all.filter(peer=>!peer.activity));
     leisure.updatePeers(all);
+    updateSocial();
   }
   function status(){
+    updateSocial();
     const inTown=!env()?.api?.state?.jail&&Boolean(point())&&doc?.visibilityState!=='hidden';
     let text=room?`Khu phố trực tuyến · ${peers.size} người cùng dạo`:
       taken?'Khu phố đang mở ở tab khác':
@@ -78,7 +87,7 @@ export function createTownPresence(envGetter,options={}){
     if(statusNode){statusNode.hidden=!inTown||unavailable;statusNode.dataset.connected=room?'true':'false';
       if(text!==lastStatus){statusNode.textContent=text;lastStatus=text;}}
   }
-  function clear(){room=null;me=null;joining=null;joinedPoint=null;lastPoint=null;joinedAppearance=null;lastAppearance=null;joinedActivity=null;lastActivity=null;pendingActivityClear=false;peers.clear();draw();status();}
+  function clear(){socialEnabled=false;room=null;me=null;joining=null;joinedPoint=null;lastPoint=null;joinedAppearance=null;lastAppearance=null;joinedActivity=null;lastActivity=null;pendingActivityClear=false;peers.clear();draw();status();}
   function leave(){
     if(room||joining)socket.send({t:'town_out',cid:`town-out-${++seq}`});
     clear();
@@ -93,6 +102,7 @@ export function createTownPresence(envGetter,options={}){
     }
   }
   function sync(){
+    updateSocial();
     if(!wanted()||!enabled()){if(room||joining)leave();else status();return;}
     if(joining&&now()-joining.at>JOIN_WAIT){joining=null;retryAt=now()+2000;}
     if(!room){join();return;}
@@ -121,7 +131,7 @@ export function createTownPresence(envGetter,options={}){
         if(socket.flags?.treasure&&Number.isFinite(f.x)&&Number.isFinite(f.y)){
           world()?.correctPresence?.({x:f.x,y:f.y});joinedPoint=point();
         }
-        room=f.room;me=f.me;joining=null;lastPoint=joinedPoint;lastAppearance=joinedAppearance;lastActivity=joinedActivity;lastSent=now();peers.clear();
+        socialEnabled=f.social===true;room=f.room;me=f.me;joining=null;lastPoint=joinedPoint;lastAppearance=joinedAppearance;lastActivity=joinedActivity;lastSent=now();peers.clear();
         for(const value of Array.isArray(f.people)?f.people:[]){const p=publicPeer(value);if(p&&p.pid!==me)peers.set(p.pid,p);}
         draw();status();
       }),
@@ -169,12 +179,13 @@ export function createTownPresence(envGetter,options={}){
     for(const unsubscribe of off.splice(0))unsubscribe();
     events?.removeEventListener?.('mnl:iso-mode',onMode);doc?.removeEventListener?.('visibilitychange',sync);
     if(statusNode)statusNode.hidden=true;
+    options.social?.stop();
   }
   const api={start,stop,sync};return api;
 }
 
 let singleton=null;
 export function bootIsometricTown(envGetter){
-  if(!singleton)singleton=createTownPresence(envGetter).start();
+  if(!singleton)singleton=createTownPresence(envGetter,{social:createTownSocial(envGetter)}).start();
   return singleton;
 }

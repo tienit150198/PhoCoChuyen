@@ -13,16 +13,26 @@ function harness({state='open',flag=true,mode='town',url='/live'}={}){
   const doc={visibilityState:'visible',...eventTarget};
   const world={mode,getPresence(){return this.mode==='town'?{x:6,y:6,direction:1,name:'Spoof',task:'private'}:null;},setRemotePlayers(p){drawn.push(p);}};
   const env={world,api:{live:{url},state:{private:'secret',journey:{gender:'female'}}}};
+  const socialFrames=[],social={update:s=>socialFrames.push(s),stop(){}};
   const context=vm.createContext({live,leisurePresence:createLeisurePresence(),publicActivity,lookOf:()=>({top:'ao_quen'}),console,document:doc,window:eventTarget,
     setInterval:(fn)=>{timers.set(++id,fn);return id;},clearInterval:i=>timers.delete(i),
     setTimeout:(fn)=>{timers.set(++id,fn);return id;},clearTimeout:i=>timers.delete(i),Date:{now:()=>now}});
   vm.runInContext(source+'\nglobalThis.factory=createTownPresence;',context);
-  const bridge=context.factory(()=>env,{transport:live,document:doc,events:eventTarget,now:()=>now,status:(text,visible)=>statuses.push({text,visible})});
+  const bridge=context.factory(()=>env,{transport:live,document:doc,events:eventTarget,now:()=>now,social,status:(text,visible)=>statuses.push({text,visible})});
   bridge.start();
-  return {bridge,live,world,env,sent,drawn,doc,statuses,emit:(t,f)=>listeners.get(t)?.(f),
+  return {bridge,live,world,env,sent,drawn,doc,statuses,socialFrames,emit:(t,f)=>listeners.get(t)?.(f),
     mode(m){world.mode=m;events.get('mnl:iso-mode')?.({detail:{mode:m}});},
     tick(ms=280){now+=ms;for(const fn of [...timers.values()])fn();}};
 }
+
+test('social capability follows real presence and clears on mode switch and disconnect',()=>{
+  const h=harness();h.emit('town_room',{map:'iso-town-v1',room:'r',me:'me',social:true,people:[]});
+  assert.equal(h.socialFrames.at(-1).enabled,true);assert.equal(h.socialFrames.at(-1).active,true);
+  h.mode('work');assert.equal(h.socialFrames.at(-1).active,false);
+  h.mode('town');h.emit('town_room',{map:'iso-town-v1',room:'r',me:'me',people:[]});
+  assert.equal(h.socialFrames.at(-1).enabled,false,'old services do not enable unsupported actions');
+  h.emit('down',{});assert.equal(h.socialFrames.at(-1).room,null);h.bridge.stop();
+});
 test('presence announces actual connection state and only real room peers',()=>{
   for(const [state,label] of [['idle','Khu phố chưa kết nối'],['connecting','Đang kết nối khu phố…'],['down','Khu phố mất kết nối'],['off','Khu phố trực tuyến không khả dụng']]){
     const h=harness({state});

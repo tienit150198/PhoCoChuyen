@@ -31,6 +31,18 @@ const out=await build({stdin:{contents:readFileSync('client/isometric/phaser-wor
 }]});
 const {DioramaScene,PhaserWorld}=await import('data:text/javascript;base64,'+Buffer.from(out.outputFiles[0].text).toString('base64'));
 const reset=()=>{for(const key of Object.keys(counters))counters[key]=0;};
+test('social anchors follow interpolated actors, zoom and mode; picking uses visible actors',()=>{
+  const {scene,owner}=fixture(1);scene.syncRemotePlayers();
+  const actor=scene.remoteActors.get('peer-0');
+  const anchor=scene.socialAnchor('peer-0');
+  assert.deepEqual(anchor,{x:390,y:174});
+  assert.equal(scene.hitRemote({x:actor.image.x,y:actor.image.y-50}),'peer-0');
+  actor.image.setPosition(64,400);scene.cameras.main.zoom=.5;
+  assert.deepEqual(scene.socialAnchor('peer-0'),{x:422,y:252.5});
+  actor.image.visible=false;assert.equal(scene.socialAnchor('peer-0'),null);
+  assert.equal(scene.hitRemote({x:64,y:350}),null);
+  owner.mode='work';assert.equal(scene.socialAnchor('peer-0'),null);
+});
 function fixture(count=29){
   const owner={mode:'town',reduced:false,time:1,remotePlayers:Array.from({length:count},(_,i)=>({pid:'peer-'+i,name:'Bạn '+i,look:{top:'ao_thun_kem'},gender:'male',x:6+i*.02,y:6,direction:'se'}))};
   const textures=new Map(),texture=key=>{const t={add(){return t;},setFilter(){return t;}};textures.set(key,t);return t;};

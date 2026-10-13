@@ -135,6 +135,13 @@ export class PhaserWorld {
   get cameraMode(){return this.stage?.cameraMode||'follow';}
   set paused(value:boolean){this._paused=!!value;if(this._paused){this.clearMovementControls();this.pointers.clear();this.pinch=null;}this.wake();}
   setMovementInput(x:number,y:number){this.movementInput=this.shouldSleep()||this.blockingDialog()?{x:0,y:0}:normalizeMovementInput(x,y);this.wake();}
+  private socialEnabled=false;
+  setSocialEnabled(value:boolean){this.socialEnabled=value;}
+  getSocialAnchor(pid:string|null=null){
+    const at=this.stage?.socialAnchor(pid);if(!at)return null;
+    const rect=this.canvas.getBoundingClientRect();
+    return {x:rect.left+at.x*rect.width/this.width,y:rect.top+at.y*rect.height/this.height};
+  }
   getPresence(){return this.mode==='town'?{x:this.player.x,y:this.player.y,direction:this.direction}:null;}
   correctPresence(at:Point){if(this.mode!=='town'||!this.stage||!isWalkable(this.stage.navigation,at))return;Object.assign(this.player,at,{path:[],goal:null});this.pending=null;this.stage.positionPlayer(false);if(this.cameraMode==='follow')this.recenter();this.wake();}
   setTreasure(value:unknown){
@@ -254,7 +261,7 @@ export class PhaserWorld {
   private wheel=(e:WheelEvent)=>{if(!this.stage||this._paused)return;e.preventDefault();this.stage.browseCamera();const p=this.local(e),before=this.worldPoint(p),camera=this.stage.cameras.main,range=this.zoomRange();camera.setZoom(Phaser.Math.Clamp(camera.zoom*Math.exp(-e.deltaY*.0013),range.min,range.max));const after=this.worldPoint(p);camera.scrollX+=before.x-after.x;camera.scrollY+=before.y-after.y;this.lastInput=this.time;this.wake();};
   private keydown=(e:KeyboardEvent)=>{const key=e.key.toLowerCase(),target=e.target as HTMLElement|null;if(target?.matches('input,textarea,select,[contenteditable="true"]')||this.shouldSleep())return;if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(key)){e.preventDefault();this.keys.add(key);this.wake();}if(key==='e'&&!e.repeat&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!this.blockingDialog()&&this.stage){e.preventDefault();const h=nearestReachableHotspot(this.stage.navigation,this.player,this.hotspots);if(h){this.stage.highlight(h.id);this.go(h.id,()=>this.onInteract(h.id));}this.wake();}if(key==='home'){e.preventDefault();this.resetCamera();}};
   private keyup=(e:KeyboardEvent)=>{this.keys.delete(e.key.toLowerCase());this.wake();};
-  private tap(point:Point){if(this.mode==='work'&&this._fx?.tap?.(point)){this.wake();return;}const h=this.stage!.hitTest(point);if(h){this.stage!.highlight(h.id);this.go(h.id,()=>this.onInteract(h.id));return;}const ground=unproject(point);if(isWalkable(this.stage!.navigation,ground)){this.player.path=findRoute(this.stage!.navigation,this.player,ground);this.pending=null;this.player.goal=ground;this.stage!.mark(ground);this.wake();}}
+  private tap(point:Point){if(this.mode==='town'&&this.socialEnabled){const pid=this.stage!.hitRemote(point);if(pid){window.dispatchEvent(new CustomEvent('mnl:town-peer',{detail:{pid}}));return;}}if(this.mode==='work'&&this._fx?.tap?.(point)){this.wake();return;}const h=this.stage!.hitTest(point);if(h){this.stage!.highlight(h.id);this.go(h.id,()=>this.onInteract(h.id));return;}const ground=unproject(point);if(isWalkable(this.stage!.navigation,ground)){this.player.path=findRoute(this.stage!.navigation,this.player,ground);this.pending=null;this.player.goal=ground;this.stage!.mark(ground);this.wake();}}
   destroy(){if(this.destroyed)return;this.destroyed=true;if(this.speechTimer)clearTimeout(this.speechTimer);this.player.path=[];this.pending=null;this.clearMovementControls();this.disposeObservers();this._fx?.clear?.();this.engine.destroy(false);this.engine.loop.wake();this.cachedPreview.clear();if((window as any).__isoWorld===this)delete (window as any).__isoWorld;}
   private disposeObservers(){this.resizeObserver?.disconnect();this.visibleObserver?.disconnect();this.modalObserver?.disconnect();for(const remove of this.listeners.splice(0))remove();}
 }
@@ -888,6 +895,24 @@ class DioramaScene extends Phaser.Scene {
       // RGBA buffer for every outfit/pose, although we never edit that texture.
       const texture=this.textures.create(key,stamp.canvas)!;texture.add('__BASE',0,0,0,stamp.canvas.width,stamp.canvas.height);texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
     });
+  }
+  socialAnchor(pid:string|null){
+    if(this.owner.mode!=='town'||!this.sys.isActive())return null;
+    const actor=pid===null?this.actor:this.remoteActors.get(pid)?.image;
+    if(!actor?.visible)return null;
+    const c=this.cameras.main,x=(actor.x-c.scrollX-c.width/2)*c.zoom+c.width/2,
+      y=(actor.y-140-c.scrollY-c.height/2)*c.zoom+c.height/2;
+    return x>=0&&x<=c.width&&y>=0&&y<=c.height?{x,y}:null;
+  }
+  hitRemote(point:Point){
+    if(this.owner.mode!=='town')return null;
+    let found:RemoteActor|null=null;
+    for(const actor of this.remoteActors.values()){
+      const image=actor.image;
+      if(image.visible&&Math.abs(point.x-image.x)<=30&&point.y>=image.y-130&&point.y<=image.y+5
+        &&(!found||image.depth>found.image.depth))found=actor;
+    }
+    return found?.peer.pid||null;
   }
   syncRemotePlayers(){
     if(!this.sys.isActive())return false;const revision=this.remoteVisualRevision,peers=this.owner.mode==='town'?publicTownPlayers(this.owner.remotePlayers,this.navigation):[],present=new Set(peers.map(p=>p.pid));

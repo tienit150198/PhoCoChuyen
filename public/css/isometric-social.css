@@ -1,0 +1,22 @@
+.town-social,.town-social-bubbles{font-family:var(--font,"Be Vietnam Pro",system-ui,sans-serif);color:#493f32}
+.town-social{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:calc(170px + env(safe-area-inset-bottom));z-index:65;width:min(340px,calc(100vw - 28px));pointer-events:none;text-align:left}
+.town-social[hidden],.town-social [hidden],.town-social-bubbles [hidden]{display:none!important}
+.town-social button,.town-social textarea,.town-social-panel{pointer-events:auto}
+.town-social button,.town-social-bubble button{font:inherit;cursor:pointer;border:1px solid #d8cbb5;border-radius:12px;background:#fffaf0;color:#493f32;min-height:40px;padding:7px 11px;touch-action:manipulation}
+.town-social button:hover,.town-social-bubble button:hover{background:#f4ead5}
+.town-social button:focus-visible,.town-social textarea:focus-visible,.town-social-bubble button:focus-visible{outline:3px solid #507250;outline-offset:2px}
+.town-social button:disabled{opacity:.6;cursor:wait}
+.town-social-toggle{display:block;margin-left:auto;box-shadow:0 3px 12px #4f422329;font-size:12px!important}
+.town-social-panel{margin-bottom:8px;position:absolute;right:0;bottom:100%;width:100%;box-sizing:border-box;max-height:min(460px,calc(100dvh - 220px));overflow:auto;overscroll-behavior:contain;padding:14px;border:1px solid #d8cbb5;border-radius:18px;background:#fffaf4;box-shadow:0 8px 30px #493f3229;font-size:12px}
+.town-social-heading{display:flex;justify-content:space-between;align-items:center;gap:8px}.town-social-heading strong{font-size:15px}
+.town-social-panel p{margin:8px 0;line-height:1.5}.town-social-panel form{display:flex;gap:6px;align-items:stretch}
+.town-social textarea{box-sizing:border-box;resize:vertical;min-width:0;flex:1;border:1px solid #d8cbb5;border-radius:10px;padding:9px;background:white;color:#493f32;font:inherit;font-size:16px;line-height:1.5}
+.town-social-emotes{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}.town-social-emotes button{font-size:20px;min-width:36px;padding:4px 6px}
+.town-social-status{color:#526543;min-height:18px}.town-social-people{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.town-social-people>span{color:#796c58;line-height:1.5}
+.town-social-card{border-top:1px solid #dfd2bd;margin-top:12px;padding-top:12px;display:flex;flex-wrap:wrap;gap:6px}.town-social-card>strong{width:100%;font-size:14px}.town-social-card .town-social-emotes{width:100%;margin:0 0 4px}.town-social-report{display:flex;flex-wrap:wrap;gap:5px}
+.town-social-bubbles{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden}
+.town-social-bubble{position:absolute;transform:translate(-50%,calc(-100% - 8px));width:max-content;max-width:min(250px,calc(100vw - 24px));padding:8px 10px;background:#fffef8;border:1px solid #d8cbb5;border-radius:14px;box-shadow:0 3px 10px #3b332326;text-align:center;overflow-wrap:anywhere;font-size:13px;line-height:1.45}
+.town-social-bubble>strong{display:block;color:#77664d;font-size:10px;margin-bottom:2px}.town-social-bubble>span{white-space:pre-wrap}.town-social-bubble-emote>span{font-size:30px;line-height:1.2}
+.town-social-bubble-actions{display:flex;gap:1px;margin-top:4px;pointer-events:auto}.town-social-bubble-actions button{font-size:16px;min-height:30px;min-width:30px;padding:2px;border-color:transparent;background:transparent;border-radius:8px}.town-social-counts{display:block;color:#68583e;font-size:11px}
+@media(max-width:600px){.town-social{bottom:calc(188px + env(safe-area-inset-bottom));right:max(10px,env(safe-area-inset-right));width:min(320px,calc(100vw - 20px))}.town-social-panel{max-height:calc(100dvh - 244px)}.town-social-toggle{max-width:168px}.town-social-bubble{max-width:210px}}
+@media(max-height:520px){.town-social{bottom:calc(104px + env(safe-area-inset-bottom))}.town-social-panel{max-height:calc(100dvh - 158px);width:min(360px,calc(100vw - 170px))}}

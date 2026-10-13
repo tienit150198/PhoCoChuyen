@@ -24,6 +24,7 @@ from . import faces
 from .auth import pid_of
 from .protocol import Feature, LiveError, on
 from .street import clean_look
+from .town_social import TownSocial
 
 MAP_ID = 'iso-town-v1'
 PREFIX = MAP_ID + ':'
@@ -150,13 +151,14 @@ class Walker:
         return out
 
 
-class TownFeature(Feature):
+class TownFeature(TownSocial, Feature):
     name, flag = 'town', 'town'
 
     def __init__(self, app):
         super().__init__(app)
         self.flushes = 0
         self._blocks_at = time.monotonic() + BLOCK_REFRESH
+        self._social_prune_at = time.monotonic() + 60
 
     async def on_hello(self, conn):
         # Chat normally canonicalizes hello's public face. Also support town alone.
@@ -288,7 +290,8 @@ class TownFeature(Feature):
         self._queue(room, w.pid, dict(k='in', **w.public()))
         peers = [o.public() for pid, o in room.data['people'].items()
                  if pid != w.pid and not self.hub.blocked(w.pid, pid)]
-        out = dict(t='town_room', map=MAP_ID, room=room.id, me=w.pid, people=peers, cap=CAP)
+        out = dict(t='town_room', map=MAP_ID, room=room.id, me=w.pid, people=peers, cap=CAP,
+                   social=bool(self.cfg.chat and self.app.chat))
         if treasure is not None and treasure.enabled():
             out.update(x=w.x, y=w.y)
         if isinstance(f.get('cid'), str) and len(f['cid']) <= 40:
@@ -355,6 +358,11 @@ class TownFeature(Feature):
 
     async def tick(self, now):
         await self._refresh_blocks()
+        if hasattr(self, 'social_receipts'):
+            self._social_prune()
+        if now >= self._social_prune_at:
+            self._social_prune_at = now + 60
+            await self.prune_social_messages()
         for room in self.hub.rooms_with_prefix(PREFIX):
             d, people = room.data, room.data['people']
             for pid, w in list(people.items()):
