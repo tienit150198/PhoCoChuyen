@@ -28,7 +28,7 @@ def _day_start(t: float) -> float:
 
 
 async def grant(db, sid: str, kind: str, amount: int, key: str, data: dict | None = None, cap: int | None = None,
-                cap_like: str | None = None) -> bool:
+                cap_like: str | None = None, *, tx=None) -> bool:
     low = SPIRIT_DOWN if kind == 'spirit' else 1
     if kind not in KINDS or type(amount) is not int or not low <= amount <= AMOUNT_MAX or amount == 0 or not key or len(key) > 120:
         raise ValueError('bad effect')
@@ -47,4 +47,5 @@ async def grant(db, sid: str, kind: str, amount: int, key: str, data: dict | Non
         n = await tx.execute("INSERT INTO live_effects(id, sid, kind, amount, data, status, at) VALUES(?, ?, ?, ?, ?, 'pending', ?) "
                              'ON CONFLICT(id) DO NOTHING', (key, sid, kind, amount, payload, t))
         return n == 1
-    return await db.transaction(run)
+    # A caller may keep its domain locks and this grant in the same transaction.
+    return await run(tx) if tx is not None else await db.transaction(run)

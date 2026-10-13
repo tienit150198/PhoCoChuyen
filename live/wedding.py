@@ -141,8 +141,9 @@ class WeddingFeature(Feature):
     async def refresh(self, now: float) -> None:
         """Booked parties from two days ago (an unsettled one after a restart) to 15 days ahead; the reminders; the
         settle of parties that ended; the weekly race."""
-        rows = await self.db.fetch("SELECT wedding, couple, a, b, at, reminded FROM wedding_parties WHERE status='booked' AND at>? AND at<? "
-                                   'ORDER BY at LIMIT ?', (now - 2 * 86400, now + 15 * 86400, PARTIES_MAX))
+        rows = await self.db.fetch("SELECT p.wedding, p.couple, p.a, p.b, p.at, p.reminded FROM wedding_parties p "
+                                   "JOIN couples c ON c.id=p.couple WHERE p.status='booked' AND c.status IN ('engaged', 'married') AND p.at>? AND p.at<? "
+                                   'ORDER BY p.at LIMIT ?', (now - 2 * 86400, now + 15 * 86400, PARTIES_MAX))
         keep = {}
         for r in rows:
             wid = int(r['wedding'])
@@ -158,10 +159,57 @@ class WeddingFeature(Feature):
             if wid not in keep and not p.get('closed'):
                 keep[wid] = p
         self.parties = keep
+        await self._prune(now)
         live_sids = {p[k] for p in keep.values() for k in ('a', 'b')}
         if len(self.names) > 4 * PARTIES_MAX:
             self.names = {k: v for k, v in self.names.items() if k in live_sids}
         await self._race(now)
+
+    def _discard(self, p: dict) -> None:
+        p['closed'] = True
+        self._close(p)
+        self.att.pop(p['id'], None)
+        if self.parties.get(p['id']) is p:
+            self.parties.pop(p['id'], None)
+
+    async def _prune(self, now: float) -> None:
+        """Reconcile warm rooms too: only a completed party gets the goodbye window."""
+        parties = list(self.parties.values())
+        if not parties:
+            return
+        rows = await self.db.fetch('SELECT p.wedding, p.status, c.status AS couple FROM wedding_parties p '
+                                   'LEFT JOIN couples c ON c.id=p.couple WHERE p.wedding IN (' + ','.join('?' for _ in parties) + ')',
+                                   tuple(p['id'] for p in parties))
+        states = {r['wedding']: r for r in rows}
+        for p in parties:
+            r = states.get(p['id'])
+            if not r or r['couple'] not in ('engaged', 'married') or r['status'] not in ('booked', 'done'):
+                self._discard(p)
+            elif r['status'] == 'done' and now >= p['at'] + WL.PARTY_SECS + CLOSE_AFTER:
+                self._discard(p)
+
+    async def _current(self, p: dict, *, done: bool = False) -> bool:
+        r = await self.db.fetchrow('SELECT p.status, c.status AS couple FROM wedding_parties p '
+                                   'LEFT JOIN couples c ON c.id=p.couple WHERE p.wedding=?', (p['id'],))
+        valid = bool(r and r['couple'] in ('engaged', 'married') and r['status'] in (('booked', 'done') if done else ('booked',)))
+        if not valid and (not r or r['status'] != 'done' or r['couple'] not in ('engaged', 'married')):
+            self._discard(p)
+        return valid
+
+    async def _locked(self, tx, p: dict, *, done: bool = False) -> bool:
+        """Match divorce's lock order: couple first, then party; hold through every write.
+        Completed parties may finish already queued attendance/minute work, never cancelled ones."""
+        couple = await tx.fetchval('SELECT status FROM couples WHERE id=? FOR SHARE', (p['couple'],))
+        party = await tx.fetchrow('SELECT status, couple FROM wedding_parties WHERE wedding=? FOR UPDATE', (p['id'],))
+        return bool(couple in ('engaged', 'married') and party and party['couple'] == p['couple']
+                    and party['status'] in (('booked', 'done') if done else ('booked',)))
+
+    async def _grant(self, p: dict, sid, kind, amount, key, data) -> bool:
+        async def run(tx):
+            if not await self._locked(tx, p):
+                return False
+            return await effects.grant(self.db, sid, kind, amount, key, data, tx=tx)
+        return await self.db.transaction(run)
 
     async def _remind(self, p: dict, now: float) -> None:
         """30 minutes before: the couple's friends get an inbox line and a web push (once, guarded in the database)."""
@@ -229,6 +277,7 @@ class WeddingFeature(Feature):
         now = time.time()
         if not self.parties and now >= self.next_refresh - REFRESH + 5:
             await self._refresh_now(now)
+        await self._prune(now)
         me = conn.player.pid
         out = []
         for p in sorted(self.parties.values(), key=lambda x: x['at']):
@@ -266,6 +315,8 @@ class WeddingFeature(Feature):
         p = self.parties.get(wid) if type(wid) is int else None
         if p is None or p.get('closed'):
             raise LiveError('gone', 'Không tìm thấy đám cưới này.')
+        if not await self._current(p):
+            raise LiveError('gone', 'Không tìm thấy đám cưới này.')
         if now < p['at'] - WL.OPEN_BEFORE:
             raise LiveError('early', f'Tiệc mở lúc {WL.fmt_at(p["at"] - WL.OPEN_BEFORE)[-5:]}, quay lại nhé!')
         if now >= p['at'] + WL.PARTY_SECS:
@@ -277,6 +328,11 @@ class WeddingFeature(Feature):
         bb = babies.clean_baby(f.get('bb'))   # 👶 the baby carried (optional)
         bsp = await babies.spouse_of(self.db, pl, bb)
         await self.street._ensure_loaded(pl)
+        await self.street.lb_fresh()
+        if p['photos'] is None:
+            p['photos'] = int(await self.db.fetchval('SELECT COUNT(*) FROM wedding_photos WHERE wedding=?', (p['id'],)) or 0)
+        if not await self._current(p) or p.get('closed'):
+            raise LiveError('gone', 'Không tìm thấy đám cưới này.')
         self.street._leave_player(pl, 'other', keep=conn)
         self._leave_watch(pl)
         room = self._room(p)
@@ -291,7 +347,6 @@ class WeddingFeature(Feature):
             else:
                 x, y = geo.spots['spawn']
                 at = geo.clamp(x + random.uniform(-90, 90), y + random.uniform(-30, 30))
-                await self.street.lb_fresh()
                 title = self.street.title_of(pl, f.get('title'), f.get('titles'))
             bb, _ = babies.claim(self.hub, bb, bsp)
             self.street._enter(room, conn, Walker(pl, look, g, title, at, now, rk=clean_rank(f.get('rk')), pt=clean_pet(f.get('pt')), bb=bb))
@@ -304,8 +359,6 @@ class WeddingFeature(Feature):
             pl.ext['wed_watch'] = room.id
             conn.ext['wed_watch'] = room.id
             overflow = why
-        if p['photos'] is None:
-            p['photos'] = int(await self.db.fetchval('SELECT COUNT(*) FROM wedding_photos WHERE wedding=?', (p['id'],)) or 0)
         snap = self.street._snapshot(room, pl, now)
         self._arrive(p, pl, couple, now)
         snap['wed'] = self._info(p, room, overflow, pl.pid)
@@ -340,18 +393,22 @@ class WeddingFeature(Feature):
         p = self.parties.get(wid)
         if p is None:
             raise LiveError('bad', 'Chỉ chụp ảnh chung ở đám cưới.')
-        now = time.time()
-        if now - p['photo_at'] < PHOTO_GAP:
-            raise LiveError('slow', 'Vừa chụp xong, chờ chút nhé.', wait=round(PHOTO_GAP - (now - p['photo_at']), 1))
-        if (p['photos'] or 0) >= WL.PHOTOS_MAX:
-            raise LiveError('full', f'Đã chụp đủ {WL.PHOTOS_MAX} tấm rồi.')
-        p['photo_at'] = now
-        n = (p['photos'] or 0) + 1
-        if await self.db.execute('INSERT INTO wedding_photos(wedding, n, sid, at) VALUES(?, ?, ?, ?) ON CONFLICT(wedding, n) DO NOTHING',
-                                 (wid, n, conn.player.sid, now)) != 1:
-            p['photos'] = int(await self.db.fetchval('SELECT COUNT(*) FROM wedding_photos WHERE wedding=?', (wid,)) or 0)
-            raise LiveError('slow', 'Có người vừa bấm chụp, cười lên nào!')
-        p['photos'] = n
+        if not await self._current(p, done=True):
+            raise LiveError('over', 'Tiệc tàn rồi.')
+        async def take(tx):
+            if not await self._locked(tx, p, done=True):
+                raise LiveError('over', 'Tiệc tàn rồi.')
+            now = time.time()
+            photos = await tx.fetchrow('SELECT COUNT(*) AS n, COALESCE(MAX(at), 0) AS last FROM wedding_photos WHERE wedding=?', (wid,))
+            if now - photos['last'] < PHOTO_GAP:
+                raise LiveError('slow', 'Vừa chụp xong, chờ chút nhé.', wait=round(PHOTO_GAP - (now - photos['last']), 1))
+            if photos['n'] >= WL.PHOTOS_MAX:
+                raise LiveError('full', f'Đã chụp đủ {WL.PHOTOS_MAX} tấm rồi.')
+            n = photos['n'] + 1
+            await tx.execute('INSERT INTO wedding_photos(wedding, n, sid, at) VALUES(?, ?, ?, ?)', (wid, n, conn.player.sid, now))
+            return n, now
+        n, now = await self.db.transaction(take)
+        p['photos'], p['photo_at'] = n, now
         room.send(dict(t='wed_photo', id=wid, n=n, pid=w.pid, name=w.name, at=round(now + 3, 3)))
         return None
 
@@ -386,7 +443,7 @@ class WeddingFeature(Feature):
             raise LiveError('bad', 'Món này không có trên mâm.')
         d = d if k == 'dish' else None
         now = time.time()
-        if not self._open(p, now) or p['ending']:
+        if not self._open(p, now) or p['ending'] or not await self._current(p):
             raise LiveError('over', 'Tiệc tàn rồi, cỗ dọn mất rồi 😅')
         pl = conn.player
         n, left = 0, None
@@ -398,7 +455,7 @@ class WeddingFeature(Feature):
                     continue
                 got.add(i)   # before the await: a second tap takes the next slot
                 try:
-                    ok = await effects.grant(self.db, pl.sid, 'spirit', amount, f'{prefix}:{p["id"]}:{pl.sid[:24]}:{i}', dict(src=f'wed_{k}'))
+                    ok = await self._grant(p, pl.sid, 'spirit', amount, f'{prefix}:{p["id"]}:{pl.sid[:24]}:{i}', dict(src=f'wed_{k}'))
                 except BaseException:
                     got.discard(i)
                     raise
@@ -427,6 +484,8 @@ class WeddingFeature(Feature):
 
     async def _toss_open(self, p: dict, now: float) -> None:
         try:
+            if not await self._current(p):
+                return
             caught = await self.db.fetchval('SELECT sid FROM live_effects WHERE id=?', (f'wtoss:{p["id"]}',))
         except BaseException:
             p['toss_state'] = None   # tried again at the next tick
@@ -458,6 +517,8 @@ class WeddingFeature(Feature):
     async def _toss(self, p: dict, room, by: str | None) -> None:
         """Throw the bouquet: from the spouse who pressed (else either spouse here, else the stage) to one guest present,
         the ones near the stage likelier. Nobody but the couple here: it lands on the floor."""
+        if not await self._current(p):
+            return
         if room is None or self.hub.rooms.get(room.id) is not room:
             room = self.hub.rooms.get(f'{PREFIX}{p["id"]}')
         if room is None:
@@ -477,7 +538,7 @@ class WeddingFeature(Feature):
                 weights.append(1.0 / (1.0 + (math.hypot(x - sx, y - sy) / 140.0) ** 2))
             c = random.choices(cands, weights)[0]
             cx, cy = c.at(now)
-            ok = await effects.grant(self.db, c.player.sid, 'coins', WL.TOSS_XU, f'wtoss:{p["id"]}', dict(src='bouquet'))
+            ok = await self._grant(p, c.player.sid, 'coins', WL.TOSS_XU, f'wtoss:{p["id"]}', dict(src='bouquet'))
             out.update(pid=c.pid, name=c.name, to=[round(cx, 1), round(cy, 1)], xu=WL.TOSS_XU if ok else 0)
         p['toss'] = dict(pid=out['pid'], name=out['name'])
         if self.hub.rooms.get(room.id) is room:
@@ -510,7 +571,7 @@ class WeddingFeature(Feature):
         if w.pid not in pids:
             raise LiveError('bad', 'Chú rể đang giữ quyền chọn nhạc nha 🎧')
         now = time.time()
-        if not self._open(p, now) or p['ending']:
+        if not self._open(p, now) or p['ending'] or not await self._current(p):
             raise LiveError('over', 'Tiệc tàn rồi.')
         last = p.get('music')
         if last and now - last['at'] < WL.MUSIC_GAP:
@@ -530,6 +591,8 @@ class WeddingFeature(Feature):
         rid = f.get('rid')
         if p is None or not isinstance(rid, str) or not RID.fullmatch(rid):
             raise LiveError('bad', 'Phong bì không hợp lệ.')
+        if not await self._current(p, done=True):
+            raise LiveError('over', 'Tiệc tàn rồi.')
         eid = f'wenv:{wid}:{rid}'
         told = p.setdefault('envs', set())
         if eid in told:
@@ -549,6 +612,7 @@ class WeddingFeature(Feature):
     # ---- every second: attendance, start, end ---------------------------------------------------------------
     async def tick(self, now: float):
         self.last = max(self.last, now)
+        await self._prune(now)
         if now >= self.next_refresh and self.refreshing is None:
             self.next_refresh = now + REFRESH
             self.spawn(self._refresh_now(now))
@@ -589,24 +653,28 @@ class WeddingFeature(Feature):
         """The guest row (once; after a restart it reads back the minutes and the daily-cap decision already made)."""
         try:
             async with a.lock:
-                # A counted guest is an account GUEST_ACCOUNT_DAYS old: a fresh alt is recorded, never counted
-                t = time.time()
-                await self.db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?, ?, ?, '
-                                      'CASE WHEN ?=1 AND EXISTS(SELECT 1 FROM accounts WHERE sid=? AND created_at<=?) THEN 1 ELSE 0 END, 0, 0, ?, ?, ?) '
-                                      'ON CONFLICT(wedding, sid) DO NOTHING',
-                                      (p['id'], a.sid, a.pid, int(a.ok), a.sid, WL.account_cut(t), now, WL.vn_day(now), WL.vn_week(now)))
-                row = await self.db.fetchrow('SELECT ok, paid, steps, (SELECT created_at FROM accounts WHERE sid=?) AS created FROM wedding_guests '
-                                             'WHERE wedding=? AND sid=?', (a.sid, p['id'], a.sid))
-                if row:
-                    if a.ok and not WL.account_old_enough(row['created'], t):
-                        a.ok, a.young = False, True
-                    a.mins = max(a.mins, int(row['steps']))
-                    if int(row['paid']):
-                        a.paid = True
-                    if a.ok and not int(row['ok']):   # named or signed up since the first visit
-                        await self.db.execute('UPDATE wedding_guests SET ok=1 WHERE wedding=? AND sid=?', (p['id'], a.sid))
-                    elif a.young and int(row['ok']):  # counted by an older build: a fresh account never counts
-                        await self.db.execute('UPDATE wedding_guests SET ok=0 WHERE wedding=? AND sid=?', (p['id'], a.sid))
+                async def run(tx):
+                    if not await self._locked(tx, p, done=True):
+                        return
+                    # A counted guest is an account GUEST_ACCOUNT_DAYS old: a fresh alt is recorded, never counted
+                    t = time.time()
+                    await tx.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?, ?, ?, '
+                                          'CASE WHEN ?=1 AND EXISTS(SELECT 1 FROM accounts WHERE sid=? AND created_at<=?) THEN 1 ELSE 0 END, 0, 0, ?, ?, ?) '
+                                          'ON CONFLICT(wedding, sid) DO NOTHING',
+                                          (p['id'], a.sid, a.pid, int(a.ok), a.sid, WL.account_cut(t), now, WL.vn_day(now), WL.vn_week(now)))
+                    row = await tx.fetchrow('SELECT ok, paid, steps, (SELECT created_at FROM accounts WHERE sid=?) AS created FROM wedding_guests '
+                                                 'WHERE wedding=? AND sid=?', (a.sid, p['id'], a.sid))
+                    if row:
+                        if a.ok and not WL.account_old_enough(row['created'], t):
+                            a.ok, a.young = False, True
+                        a.mins = max(a.mins, int(row['steps']))
+                        if int(row['paid']):
+                            a.paid = True
+                        if a.ok and not int(row['ok']):   # named or signed up since the first visit
+                            await tx.execute('UPDATE wedding_guests SET ok=1 WHERE wedding=? AND sid=?', (p['id'], a.sid))
+                        elif a.young and int(row['ok']):  # counted by an older build: a fresh account never counts
+                            await tx.execute('UPDATE wedding_guests SET ok=0 WHERE wedding=? AND sid=?', (p['id'], a.sid))
+                await self.db.transaction(run)
         except DbError as e:
             a.rec = None   # tried again at the next tick
             log('wedding record:', type(e).__name__, e)
@@ -641,66 +709,71 @@ class WeddingFeature(Feature):
         if a.rec is not None and not a.rec.done():
             await asyncio.shield(a.rec)
         async with a.lock:
-            if not a.couple:
-                a.mins += 1
-                await self.db.execute('UPDATE wedding_guests SET steps=? WHERE wedding=? AND sid=? AND steps<?', (a.mins, p['id'], a.sid, a.mins))
-            if not a.ok:
-                if not a.told:
-                    a.told = True
-                    self.hub.send_many(self.hub.conns_of(a.pid), dict(t='wed_xu', id=p['id'], n=0, k=k, max=WL.PARTY_MINUTES,
-                                                                      why='new' if a.young else 'account'))
-                return
-            if a.paid is None:
-                day = WL.vn_day(time.time())
-
-                async def run(tx):
-                    # One player's daily cap is decided by one transaction at a time (parties paying the same minute)
+            async def run(tx):
+                if not await self._locked(tx, p, done=True):
+                    return None
+                mins, paid, told = a.mins, a.paid, a.told
+                frame = dict(t='wed_xu', id=p['id'], n=0, k=k, max=WL.PARTY_MINUTES)
+                if not a.couple:
+                    mins += 1
+                    await tx.execute('UPDATE wedding_guests SET steps=? WHERE wedding=? AND sid=? AND steps<?', (mins, p['id'], a.sid, mins))
+                if not a.ok:
+                    frame['why'] = 'new' if a.young else 'account'
+                    return mins, paid, True, None if told else frame
+                if paid is None:
+                    day = WL.vn_day(time.time())
+                    # Serialize this guest's cap across simultaneous parties.
                     await tx.fetchval('SELECT pg_advisory_xact_lock(17825, hashtext(?))', ('wed_paid:' + a.sid,))
                     n = await tx.fetchval('SELECT COUNT(*) FROM wedding_guests WHERE sid=? AND day=? AND paid=1 AND wedding<>?', (a.sid, day, p['id']))
-                    if int(n or 0) >= WL.GUEST_WEDDINGS_PER_DAY:
-                        return False
-                    await tx.execute('UPDATE wedding_guests SET paid=1 WHERE wedding=? AND sid=?', (p['id'], a.sid))
-                    return True
-                a.paid = bool(await self.db.transaction(run))
-                for side in ('a', 'b'):
-                    await effects.grant(self.db, a.sid, 'closeness', WL.GUEST_CLOSE, f'wedc:{p["id"]}:{a.sid[:24]}:{side}', dict(src='wedding', **{'with': p[side]}))
-            if not a.paid:
-                if not a.told:
-                    a.told = True
-                    self.hub.send_many(self.hub.conns_of(a.pid), dict(t='wed_xu', id=p['id'], n=0, k=k, max=WL.PARTY_MINUTES, why='cap'))
-                return
-            await effects.grant(self.db, a.sid, 'coins', WL.MINUTE_XU, f'wedm:{p["id"]}:{a.sid[:24]}:{k}', dict(src='couple' if a.couple else 'guest'))
-            self.hub.send_many(self.hub.conns_of(a.pid), dict(t='wed_xu', id=p['id'], n=WL.MINUTE_XU, k=k, max=WL.PARTY_MINUTES))
+                    paid = int(n or 0) < WL.GUEST_WEDDINGS_PER_DAY
+                    if paid:
+                        await tx.execute('UPDATE wedding_guests SET paid=1 WHERE wedding=? AND sid=?', (p['id'], a.sid))
+                    for side in ('a', 'b'):
+                        await effects.grant(self.db, a.sid, 'closeness', WL.GUEST_CLOSE, f'wedc:{p["id"]}:{a.sid[:24]}:{side}', dict(src='wedding', **{'with': p[side]}), tx=tx)
+                if not paid:
+                    frame['why'] = 'cap'
+                    return mins, paid, True, None if told else frame
+                await effects.grant(self.db, a.sid, 'coins', WL.MINUTE_XU, f'wedm:{p["id"]}:{a.sid[:24]}:{k}', dict(src='couple' if a.couple else 'guest'), tx=tx)
+                frame['n'] = WL.MINUTE_XU
+                return mins, paid, told, frame
+            result = await self.db.transaction(run)
+            if result is not None:
+                a.mins, a.paid, a.told, frame = result
+                if frame is not None:
+                    self.hub.send_many(self.hub.conns_of(a.pid), frame)
 
     async def settle_party(self, p: dict) -> int:
         """The end: each spouse gets HOST_XU per counted guest who came (once), then the party is done. A party cancelled
         meanwhile (a divorce, a broken engagement: game/wedding_live.py cancel_party) or whose couple is no longer together
         pays nothing."""
-        live = await self.db.fetchrow('SELECT p.status, c.status AS couple FROM wedding_parties p LEFT JOIN couples c ON c.id=p.couple '
-                                      'WHERE p.wedding=?', (p['id'],))
-        if not live or live['status'] != 'booked' or live['couple'] not in ('engaged', 'married'):
-            room = self.hub.rooms.get(f'{PREFIX}{p["id"]}')
-            if room is not None and (live or {}).get('status') != 'done':   # 'done': settled already, the room was told
-                room.send(dict(t='wed_end', id=p['id'], n=0))
+        async def run(tx):
+            if not await self._locked(tx, p):
+                return None
+            n = min(WL.HOST_COUNT_MAX, int(await tx.fetchval('SELECT COUNT(*) FROM wedding_guests WHERE wedding=? AND ok=1 AND steps>=?', (p['id'], WL.GUEST_MIN_MINUTES)) or 0))
+            total = n * WL.HOST_XU + sum(xu for k, xu, _ in WL.HOST_BONUS if n >= k)
+            if total:
+                for side, other in (('a', 'nb'), ('b', 'na')):
+                    text = f'{n} khách đã đến chung vui với bạn và {p[other]}. Mỗi khách {WL.HOST_XU} xu: bạn nhận {total} xu mừng từ khu phố 💛'
+                    env = int(await tx.fetchval('SELECT COALESCE(SUM(amount), 0) FROM live_effects WHERE sid=? AND id LIKE ?',
+                                                     (p[side], f'wedenv:{p["id"]}:{side}:%')) or 0)
+                    if env:   # the guests' red envelopes (already in the wallet): their half
+                        text += f' 🧧 Phong bì khách mừng: {env} xu (đã vào ví).'
+                    first = min(total, effects.AMOUNT_MAX)   # a very full party: the rest in more rows (each paid once)
+                    await effects.grant(self.db, p[side], 'coins', first, f'wedhost:{p["id"]}:{side}',
+                                        dict(src='host', popup=dict(title='💍 Đám cưới của hai bạn', text=text)), tx=tx)
+                    for i, k in enumerate(range(first, total, effects.AMOUNT_MAX), 2):
+                        await effects.grant(self.db, p[side], 'coins', min(effects.AMOUNT_MAX, total - k), f'wedhost:{p["id"]}:{side}:{i}', dict(src='host'), tx=tx)
+                    for k, _, tid in WL.HOST_BONUS:
+                        if tid and n >= k:
+                            await effects.grant(self.db, p[side], 'title', 1, f'wedhost:{p["id"]}:{side}:{tid}', dict(title=tid), tx=tx)
+            await tx.execute("UPDATE wedding_parties SET status='done', guests=?, done_at=? WHERE wedding=? AND status='booked'", (n, time.time(), p['id']))
+            return n, total
+
+        result = await self.db.transaction(run)
+        if result is None:
+            await self._current(p, done=True)
             return 0
-        n = min(WL.HOST_COUNT_MAX, int(await self.db.fetchval('SELECT COUNT(*) FROM wedding_guests WHERE wedding=? AND ok=1 AND steps>=?', (p['id'], WL.GUEST_MIN_MINUTES)) or 0))
-        total = n * WL.HOST_XU + sum(xu for k, xu, _ in WL.HOST_BONUS if n >= k)
-        if total:
-            for side, other in (('a', 'nb'), ('b', 'na')):
-                text = f'{n} khách đã đến chung vui với bạn và {p[other]}. Mỗi khách {WL.HOST_XU} xu: bạn nhận {total} xu mừng từ khu phố 💛'
-                env = int(await self.db.fetchval('SELECT COALESCE(SUM(amount), 0) FROM live_effects WHERE sid=? AND id LIKE ?',
-                                                 (p[side], f'wedenv:{p["id"]}:{side}:%')) or 0)
-                if env:   # the guests' red envelopes (already in the wallet): their half
-                    text += f' 🧧 Phong bì khách mừng: {env} xu (đã vào ví).'
-                first = min(total, effects.AMOUNT_MAX)   # a very full party: the rest in more rows (each paid once)
-                await effects.grant(self.db, p[side], 'coins', first, f'wedhost:{p["id"]}:{side}',
-                                    dict(src='host', popup=dict(title='💍 Đám cưới của hai bạn', text=text)))
-                for i, k in enumerate(range(first, total, effects.AMOUNT_MAX), 2):
-                    await effects.grant(self.db, p[side], 'coins', min(effects.AMOUNT_MAX, total - k), f'wedhost:{p["id"]}:{side}:{i}', dict(src='host'))
-                for k, _, tid in WL.HOST_BONUS:
-                    if tid and n >= k:
-                        await effects.grant(self.db, p[side], 'title', 1, f'wedhost:{p["id"]}:{side}:{tid}', dict(title=tid))
-        await self.db.execute("UPDATE wedding_parties SET status='done', guests=?, done_at=? WHERE wedding=? AND status='booked'", (n, time.time(), p['id']))
+        n, total = result
         room = self.hub.rooms.get(f'{PREFIX}{p["id"]}')
         if room is not None:
             room.send(dict(t='wed_end', id=p['id'], n=n))

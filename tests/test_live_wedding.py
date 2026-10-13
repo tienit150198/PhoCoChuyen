@@ -138,6 +138,180 @@ class Room(WedCase):
 
 
 @unittest.skipUnless(HAVE_WS, 'needs websockets')
+class Cancellation(WedCase):
+    def cancel(self, wid, how='cancelled'):
+        with self.store.connect() as db:
+            if how == 'broken':
+                db.execute("UPDATE couples SET status='broken' WHERE id=?", (wid,))
+            elif how == 'missing':
+                db.execute('DELETE FROM wedding_parties WHERE wedding=?', (wid,))
+            else:
+                db.execute("UPDATE wedding_parties SET status='cancelled' WHERE wedding=?", (wid,))
+
+    async def test_refresh_removes_invalid_warm_parties_and_keeps_other_wedding(self):
+        for wid, how in ((71, 'cancelled'), (72, 'broken'), (73, 'missing')):
+            self.party(wid=wid)
+            await self.wed.refresh(time.time())
+            self.cancel(wid, how)
+        self.party(wid=74)
+        await self.wed.refresh(time.time())
+        self.assertEqual(set(self.wed.parties), {74})
+
+    async def test_warm_list_and_admission_check_current_status_before_refresh(self):
+        for wid, how in ((71, 'cancelled'), (72, 'broken'), (73, 'missing')):
+            self.party(wid=wid)
+            await self.wed.refresh(time.time())
+            self.wed.next_refresh = time.time() + 3600
+            self.cancel(wid, how)
+            newcomer = await self.connect(self.account('Khách')[0])
+            self.assertEqual((await newcomer.call('wed_in', 'error', id=wid, look=LOOK))['code'], 'gone')
+        self.party(wid=74)
+        await self.wed.refresh(time.time())
+        self.cancel(74)
+        self.assertEqual((await newcomer.call('wed_list', 'wed_list'))['parties'], [])
+
+    async def test_tick_evicts_avatars_and_watchers_without_affecting_other_room(self):
+        _, _, wid, at = self.party()
+        guest = await self.join(self.account('Khách')[0], wid)
+        watcher = await self.join(self.guest('Ngoài cổng')[0], wid)
+        self.party(wid=8)
+        other = await self.join(self.account('Tiệc khác')[0], 8)
+        self.wed.next_refresh = time.time() + 3600
+        self.cancel(wid)
+        await self.wed.tick(at + 1)
+        self.assertNotIn(f'wed:{wid}', self.app.hub.rooms)
+        for c in (guest, watcher):
+            self.assertEqual((await c.expect('walk_left'))['why'], 'wed_end')
+            pl = self.app.hub.players[c.welcome['me']['pid']]
+            self.assertNotIn('walk', pl.ext)
+            self.assertNotIn('wed_watch', pl.ext)
+        self.assertIn('wed:8', self.app.hub.rooms)
+        await other.nothing('walk_left')
+
+    async def test_cancelled_queued_attendance_minutes_and_bouquet_cannot_write(self):
+        from live.wedding import Att
+        (ta, _), _, wid, at = self.party()
+        await self.join(ta, wid)
+        token, sid = self.account('Khách')
+        await self.join(token, wid)
+        p = self.wed.parties[wid]
+        a = self.wed.att[wid][self.pid(sid)]
+        await a.rec
+        self.cancel(wid)
+        await self.wed._pay_one(p, 1, a)
+        await self.wed._toss(p, self.app.hub.rooms.get(f'wed:{wid}'), None)
+        _, late_sid = self.account('Đến muộn')
+        await self.wed._record(p, Att(late_sid, self.pid(late_sid), ok=True), at)
+        self.assertEqual(self.rows('SELECT * FROM live_effects'), [])
+        self.assertEqual(self.rows('SELECT paid, steps FROM wedding_guests WHERE wedding=? AND sid=?', wid, sid), [dict(paid=0, steps=0)])
+        self.assertEqual(self.rows('SELECT * FROM wedding_guests WHERE sid=?', late_sid), [])
+
+    async def test_cancelled_warm_eat_is_rejected(self):
+        _, _, wid, _ = self.party()
+        guest = await self.join(self.account('Khách')[0], wid)
+        self.cancel(wid)
+        self.assertEqual((await guest.call('wed_eat', 'error', k='dish', d=0))['code'], 'over')
+        self.assertEqual(self.rows('SELECT * FROM live_effects'), [])
+
+    async def test_done_party_keeps_goodbye_grace_and_queued_final_minute(self):
+        _, _, wid, at = self.party()
+        token, sid = self.account('Khách')
+        guest = await self.join(token, wid)
+        p = self.wed.parties[wid]
+        a = self.wed.att[wid][self.pid(sid)]
+        await a.rec
+        await self.wed.settle_party(p)
+        await self.wed.refresh(at + WL.PARTY_SECS + 1)
+        self.assertIn(wid, self.wed.parties)
+        self.assertIn(f'wed:{wid}', self.app.hub.rooms)
+        await self.wed._pay_one(p, WL.PARTY_MINUTES, a)
+        self.assertEqual(len(self.rows("SELECT * FROM live_effects WHERE id LIKE 'wedm:%'")), 1)
+        await self.wed.tick(at + WL.PARTY_SECS + 121)
+        self.assertEqual((await guest.expect('walk_left'))['why'], 'wed_end')
+
+    async def test_divorce_in_flight_blocks_host_settlement_and_minute_grants(self):
+        _, _, wid, at = self.party()
+        token, sid = self.account('Khách')
+        await self.join(token, wid)
+        p = self.wed.parties[wid]
+        a = self.wed.att[wid][self.pid(sid)]
+        await a.rec
+        with self.store.connect() as db:
+            db.execute('UPDATE wedding_guests SET steps=? WHERE wedding=?', (WL.GUEST_MIN_MINUTES, wid))
+        locked, release = asyncio.Event(), asyncio.Event()
+
+        async def divorce(tx):
+            await tx.execute("UPDATE couples SET status='broken' WHERE id=?", (wid,))
+            locked.set()
+            await release.wait()
+            await tx.execute("UPDATE wedding_parties SET status='cancelled' WHERE wedding=?", (wid,))
+
+        cancelling = asyncio.create_task(self.wed.db.transaction(divorce))
+        await locked.wait()
+        host = asyncio.create_task(self.wed.settle_party(p))
+        minute = asyncio.create_task(self.wed._pay_one(p, 1, a))
+        try:
+            await asyncio.sleep(0.1)
+            early_effects = self.rows('SELECT * FROM live_effects')
+        finally:
+            release.set()
+            await asyncio.gather(cancelling, host, minute)
+        self.assertEqual(early_effects, [], 'no rewards while divorce owns the couple lock')
+        self.assertEqual(host.result(), 0)
+        self.assertEqual(self.rows('SELECT * FROM live_effects'), [])
+
+    async def test_cancelled_photo_and_music_actions_are_rejected(self):
+        for wid, action, frame in ((71, 'wed_photo', {}), (72, 'wed_music', dict(k='edm'))):
+            (ta, _), _, _, _ = self.party(wid=wid)
+            bride = await self.join(ta, wid)
+            self.cancel(wid)
+            self.assertEqual((await bride.call(action, 'error', **frame))['code'], 'over')
+        self.assertEqual(self.rows('SELECT * FROM wedding_photos'), [])
+
+    async def test_admission_rechecks_after_loading_guest_details(self):
+        _, _, wid, _ = self.party()
+        await self.wed.refresh(time.time())
+        newcomer = await self.connect(self.account('Khách')[0])
+        loading, release = asyncio.Event(), asyncio.Event()
+        original = self.wed.street.lb_fresh
+
+        async def delayed():
+            loading.set()
+            await release.wait()
+            await original()
+
+        with patch.object(self.wed.street, 'lb_fresh', delayed):
+            await newcomer.send(t='wed_in', id=wid, look=LOOK)
+            await asyncio.wait_for(loading.wait(), 3)
+            self.cancel(wid)
+            release.set()
+            self.assertEqual((await newcomer.expect('error'))['code'], 'gone')
+        self.assertNotIn(f'wed:{wid}', self.app.hub.rooms)
+
+    async def test_failed_minute_transaction_keeps_state_and_notifications_unpaid(self):
+        _, _, wid, _ = self.party()
+        token, sid = self.account('Khách')
+        guest = await self.join(token, wid)
+        p = self.wed.parties[wid]
+        a = self.wed.att[wid][self.pid(sid)]
+        await a.rec
+        transaction = self.wed.db.transaction
+
+        async def fail_commit(fn):
+            async def run(tx):
+                await fn(tx)
+                raise RuntimeError('rollback before commit')
+            return await transaction(run)
+
+        with patch.object(self.wed.db, 'transaction', fail_commit):
+            with self.assertRaisesRegex(RuntimeError, 'rollback before commit'):
+                await self.wed._pay_one(p, 1, a)
+        self.assertEqual((a.mins, a.paid, a.told), (0, None, False))
+        self.assertEqual(self.rows('SELECT * FROM live_effects'), [])
+        await guest.nothing('wed_xu')
+
+
+@unittest.skipUnless(HAVE_WS, 'needs websockets')
 class Attendance(WedCase):
     async def test_recorded_on_entry_and_paid_every_minute(self):
         (ta, tb), (sa, sb), wid, at = self.party()
@@ -494,6 +668,34 @@ class Feast(WedCase):
         await self.wed.tick(at + WL.TOSS_AT + WL.TOSS_WAIT + 5)
         await g.nothing('wed_toss')
         self.assertEqual(len(self.rows("SELECT id FROM live_effects WHERE id LIKE 'wtoss:%'")), 1)
+
+    async def test_bouquet_retries_after_transient_party_status_read_failure(self):
+        import psycopg
+        (ta, _), _, wid, at = self.party()
+        bride = await self.join(ta, wid)
+        guest = await self.join(self.account('Bảo')[0], wid)
+        fetchrow = self.wed.db.fetchrow
+        failed = False
+
+        async def transient(sql, args=()):
+            nonlocal failed
+            if not failed and sql.startswith('SELECT p.status, c.status AS couple'):
+                failed = True
+                raise psycopg.OperationalError('transient wedding status read')
+            return await fetchrow(sql, args)
+
+        with patch.object(self.wed.db, 'fetchrow', transient):
+            await self.wed.tick(at + WL.TOSS_AT)
+            await asyncio.gather(*list(self.wed.tasks))
+        self.assertTrue(failed)
+        self.assertIsNone(self.wed.parties[wid]['toss_state'], 'the next tick must retry the failed status read')
+        await self.wed.tick(at + WL.TOSS_AT + 1)
+        await guest.expect('wed_toss_open')
+        await self.wed.tick(at + WL.TOSS_AT + WL.TOSS_WAIT + 2)
+        toss = await guest.expect('wed_toss')
+        self.assertEqual((toss['by'], toss['pid'], toss['xu']),
+                         (bride.welcome['me']['pid'], guest.welcome['me']['pid'], WL.TOSS_XU))
+        self.assertEqual(len(self.fx(f'wtoss:{wid}')), 1)
 
     async def test_dance_emote(self):
         (ta, tb), (sa, sb), wid, at = self.party()
