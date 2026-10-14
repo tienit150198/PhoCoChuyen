@@ -267,7 +267,9 @@ def _mutate(store, fns: dict, db_ops=None) -> dict:
     from . import storage as st
     from .engine import stamped, needs_migration, scoped_validation
     from . import cand_roster
-    prepared, prior, cand_before = {}, {}, {}
+    from . import leaderboard as lb
+    from . import fair_refund
+    prepared, prior, cand_before, ranked = {}, {}, {}, {}
     with store.connect() as db:
         rows = {sid: db.execute('SELECT revision,state FROM sessions WHERE sid=?', (sid,), text_bytes=True).fetchone() for sid in fns}
     for sid, fn in fns.items():
@@ -285,6 +287,9 @@ def _mutate(store, fns: dict, db_ops=None) -> dict:
             m = state.get('marriage') if isinstance(state.get('marriage'), dict) else {}
             prior[sid] = dict(marriage=dict(applied=list(m['applied']) if isinstance(m.get('applied'), list) else []))   # 💳 couple.commit_holds
             cand_before[sid] = cand_roster.info(state)   # 👮 the CAND roster row before (a bribe found out demotes)
+            # 🏆 the boards before: a player officer's fine at Chợ đen (game/cand_ops.py) moves the Bảng vàng and Top lỗ
+            refund = fair_refund.of(store, sid)
+            ranked[sid] = (lb.summary(state, refund), refund, lb.fh.money_of(state.get('journey'))[0])
             fn(state)
             if known is None:
                 validate_state(state)
@@ -303,6 +308,15 @@ def _mutate(store, fns: dict, db_ops=None) -> dict:
         from . import couple, jail, rentals
         for sid, (_, _, _, state, _, _) in sorted(prepared.items()):
             couple.commit_holds(db, sid, prior[sid], state)   # 💳 a joint-card hold made while computing this save
+        from . import fair_loss
+        for sid, (_, _, _, state, _, _) in sorted(prepared.items()):
+            # 🏆 Like a command: the board rows follow the save in its own transaction (a full sync when a number
+            # moved), and the week's Chợ đen net its change (game/fair_loss.py), so a fine here is not left out.
+            old, refund, net = ranked[sid]
+            rows = lb.summary(state, refund)
+            if rows != old:
+                lb.write(db, sid, rows)
+            fair_loss.record(db, sid, dict(_fair_net=net), state, 'shared_mutation')
         for sid, (_, _, _, state, original, jailed) in sorted(prepared.items()):
             rentals.command_commit(db, sid, original, state, 'shared_mutation')
             jail.mark_commit(db, sid, dict(journey=dict(jail=jailed)), state)  # 🚔 a bail frees the save: its mark goes

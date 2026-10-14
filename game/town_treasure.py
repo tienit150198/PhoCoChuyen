@@ -223,7 +223,7 @@ def claim(store, token, data):
                    (sid,at,request_id,json.dumps(result,ensure_ascii=False),chest_id))
         db.execute('DELETE FROM town_treasure_proofs WHERE sid=?', (sid,))
         _write_archive(db,sid,cut)
-        leaderboard.write(db,sid,leaderboard.summary(raw))
+        leaderboard.write(db,sid,leaderboard.summary(raw,leaderboard.fair_refund.of(store,sid)))
         db.execute("SELECT pg_notify('mnl_live',?)", (json.dumps(dict(kind='town_treasure', bucket=chest['bucket'])),))
         return dict(state=public_state(raw,migrated=True), revision=saved['revision']+1, result=result, replayed=False)
     return store.transaction(write)

@@ -96,7 +96,8 @@ class WeeklyLoss(StoreBase):
         from game import marriage
         def old(s):
             fh._state(s['journey'],self.clock.t)['stats']['lost']=2000
-        marriage._mutate(self.store,{self.store.key(a):old})
+        with patch.object(self.fl,'record'):   # a total from before the weekly book (shared writes now record too)
+            marriage._mutate(self.store,{self.store.key(a):old})
         self.lose(a,10)
         self.assertEqual(self.board(a)['me']['xu'],10)
         with self.store.connect() as db:

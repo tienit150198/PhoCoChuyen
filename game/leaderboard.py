@@ -56,6 +56,7 @@ from collections import OrderedDict
 
 from . import lb_titles as lbt   # 🏅 Danh hiệu tuần (the top of each board, refreshed daily)
 from . import fair as fh          # 🏮 Hội chợ dân gian: its board (fh.board()) while it runs
+from . import fair_refund         # 💸 Chợ đen fines paid back: added to the Bảng vàng score
 from . import wealth as wl        # 💰 net worth: "Tiền của bạn" (public/js/v4/wealth.js) + what the save holds beyond it
 from .content import CAREERS
 
@@ -137,10 +138,11 @@ def guest_name(name) -> str | None:
         return None
 
 
-def summary(state) -> dict:
+def summary(state, fair_extra: int = 0) -> dict:
     """Every board row this save earns: {board: (score, k1, k2, level, days, served,
     stars, mastered)} plus NAME -> the guest name (or None). Pure and cheap: a few
-    dozen dict reads per workplace, no copying."""
+    dozen dict reads per workplace, no copying. fair_extra: the Chợ đen fines the operator
+    paid back into this save (game/fair_refund.py of(store, sid)), added to its Bảng vàng score."""
     from .journey import BREADTH_XP, maturity
     cs = state.get('careers') if type(state) is dict else None
     if type(cs) is not dict:
@@ -188,6 +190,7 @@ def summary(state) -> dict:
         # Ties: most items, most legendary items, then earliest score (since).
         out[COLLECTION] = (points, items, legendary, 0, 0, items, 0, legendary)
     won, days = fh.money_of(state.get('journey'))
+    won += fair_extra if type(fair_extra) is int and fair_extra > 0 else 0
     if won > 0:   # 🏆 Bảng vàng hội chợ: xu won, players ahead only; ties go to who reached the score first (since)
         out[fh.board()] = (won, 0, 0, 0, days, 0, 0, 0)
     out[NAME] = guest_name(state.get('name'))
@@ -317,7 +320,7 @@ def _sync(store, items: list) -> list:
 
 def _parse(store, sid: str, text: str):
     try:
-        return summary(store.parse_state(text, sid))
+        return summary(store.parse_state(text, sid), fair_refund.of(store, sid))
     except (ValueError, TypeError, AttributeError, KeyError, RecursionError):
         return None  # unreadable save: left out of the boards
 
@@ -536,7 +539,7 @@ def set_visible(store, token: str, state: dict, visible) -> dict:
     if type(visible) is not bool:
         raise GameError('Lựa chọn không hợp lệ.', 'bad_request')
     sid, _ = store.resolve(token)
-    rows = summary(state)
+    rows = summary(state, fair_refund.of(store, sid))
 
     def step(db):
         if not db.execute("SELECT 1 FROM sessions WHERE sid=?", (sid,)).fetchone():

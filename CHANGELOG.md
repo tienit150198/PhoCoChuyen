@@ -1,3 +1,7 @@
+# Chưa phát hành
+
+- Bảng vàng chợ đen (Top lời) tính đúng lời ròng: tiền phạt chợ đen đã được hoàn bằng quà hệ thống (mã `refund-cd-…`, 8 người chiều 11/10, 18.538.100 xu) được cộng lại vào điểm (game/fair_refund.py; save không đổi); phạt của công an người chơi (và mọi thay đổi qua marriage._mutate) cập nhật ngay dòng bảng và sổ Top lỗ tuần trong cùng giao dịch, không còn chờ lệnh kế của người bị phạt. Tính lại dòng bảng hiện có: `scripts/fair_board_recompute.py` (mặc định chạy thử, `--apply` để ghi). Không công bố, không đổi schema hay save.
+
 # v2.4.2 — 2026-10-14
 
 - Theo yêu cầu chủ game, gom thay đổi 2.0.6–2.4.1 thành một thẻ Có gì mới: nghề, chứng chỉ, thăng tiến/thi đua, chùa và quyền riêng tư, đi lại/chat/reaction, quy mô/chuỗi, 540 gói chuyên môn, nâng kho/nhập/quầy và các lỗi đã sửa.

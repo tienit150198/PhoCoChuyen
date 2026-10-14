@@ -38,6 +38,7 @@ from . import fastjson as fj
 from . import pg_schema
 from . import settle_scope
 from . import fair as fh  # 🍀 Lộc trời cho: the server-wide hourly gate (loc_prepare / loc_claim)
+from . import fair_refund  # 💸 Chợ đen fines paid back: added to the Bảng vàng score (game/fair_refund.py)
 
 SAVE_FORMATS=("mot-ngay-lam-nghe/save-v1","mot-ngay-lam-nghe/save-v2","mot-ngay-lam-nghe/save-v3","mot-ngay-lam-nghe/save-v4")
 BUSY_MS=12000          # a write that must happen waits this long for the lock
@@ -534,7 +535,8 @@ class Store:
         if before_out is not None:before_out.append(_commit_before(raw))
         before=dict(raw["careers"]) if isinstance(raw.get("careers"),dict) else {}
         hit=lb.recall(sid,revision)
-        ranked=hit if hit is not None else lb.summary(raw)  # read before the reducer changes raw in place
+        refund=fair_refund.of(self,sid)  # 💸 Chợ đen fines paid back: on the Bảng vàng (game/fair_refund.py)
+        ranked=hit if hit is not None else lb.summary(raw,refund)  # read before the reducer changes raw in place
         marked=rt.marks(raw,ranked) if rt.ENABLED and action!="import_save" else None  # likewise
         x0=kpi.xu(raw) if action not in kpi.ECON_SKIP else None  # likewise: the xu held before (a few dict reads)
         with ar.collect() as box:
@@ -545,7 +547,7 @@ class Store:
         if type(serialized) is str:
             if len(serialized)>3*1024*1024 and len(serialized.encode())>14*1024*1024:raise GameError("Bản lưu quá lớn. Xóa bớt ảnh trong album trước khi nhập.")
         elif len(serialized)>14*1024*1024:raise GameError("Bản lưu quá lớn. Xóa bớt ảnh trong album trước khi nhập.")  # bytes: the same limit
-        ranks=lb.summary(raw)
+        ranks=lb.summary(raw,refund)
         steps=(rt.reached(marked,rt.marks(raw,ranks)),rt.life_day(raw)) if marked else ((),None)
         # An imported backup's own archive is older than anything its migration moved out.
         return raw,result,serialized,extra+_archive_rows(box,before,raw,career if career in CAREERS else ""),(ranks,ranks!=ranked or (hit is None and lb.heal(ranks)),lb.synced(sid,revision) if hit is not None else None),steps
