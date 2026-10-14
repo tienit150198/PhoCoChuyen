@@ -932,3 +932,14 @@ html[data-game="isometric"] .sheet .pill-tabs.inv-tabs button {flex: 1 1 auto;mi
 /* #345: a crate's trays keep the classic 30 px slots (stock.css), as in the classic interface: the sheet-wide 44 px
    button floor made a 40-unit crate 112 px taller and pushed its count and "Nhận" button further down. */
 html[data-game="isometric"] .sheet .inv-tray-slots .inv-good {min-height: 30px;border-radius: 7px;}
+
+/* Mobile sweep (15/10, owner: "nhiều cái UI bị đè nhau ở màn mobile"), phone portrait HUD:
+   - town: the joystick (bottom 160) dipped 8 px into "Đang ở" (bottom 112, 56 tall);
+   - work: the work buttons (bottom 143) dipped 7 px into "Đang ở" / "Trò chuyện" (bottom 94, 56 tall), so the
+     buttons, then the joystick and the camera handle above them, each move up to clear the row under them. */
+@media (max-width:699px) and (orientation:portrait) {
+  html[data-game="isometric"] .iso-movement[data-mode="town"] {bottom:calc(176px + var(--safe-b));}
+  html[data-game="isometric"][data-scene-mode="work"] #dock {bottom:calc(156px + var(--safe-b)) !important;}
+  html[data-game="isometric"] .iso-movement[data-mode="work"] {bottom:calc(240px + var(--safe-b));}
+  html[data-game="isometric"][data-scene-mode="work"] #isoHUD .iso-camera {bottom:calc(246px + var(--safe-b));}
+}
