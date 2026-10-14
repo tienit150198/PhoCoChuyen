@@ -1,3 +1,7 @@
+# v2.4.9 — 2026-10-14
+
+Gồm mapart (bản đồ 2.5D và cổ điển đẹp hơn, chim bay; không đổi vị trí cửa/đường) và treasure-free (rương kho báu không giới hạn mỗi đợt/ngày). Không có Có gì mới.
+
 # Chưa phát hành — mapart (không có Có gì mới)
 
 - Bản đồ đẹp hơn (chủ game “map đẹp hơn đi”), không đổi chỗ nào, cửa, đường đi hay vùng chạm. Phố 2.5D: cỏ có khóm cỏ, hoa nhỏ, sỏi và mảng nắng/bóng; đường có viền cỏ, lòng đường sáng hơn ở giữa và đá viền; bóng dưới nhà mềm hơn (bỏ vệt xám to). Tất cả nằm trong ảnh nền đã lưu sẵn, không tốn thêm gì mỗi khung hình; chi tiết nhỏ tắt khi thu nhỏ hết cỡ. Bản đồ phố cổ điển: bãi cỏ, hàng cây và mái nhà phía sau, vỉa hè lát gạch, lề đường, lối đi giữa hai mép cỏ, đèn lồng đỏ ở các cột đèn, tên phố trên đường mờ hơn, dấu x3 trên biển chỉ còn một chấm 🔥 (số x3 vẫn ở thanh trên); trên điện thoại, đủ ba nút ở thanh trên thì ẩn chữ “Khu phố” (trước bị che còn một chữ cái). Thỉnh thoảng có một đàn chim bay ngang (cả hai bản đồ): không có vòng lặp khung hình, tắt khi giảm chuyển động, tab ẩn hoặc đang ở trong nơi làm việc. Đo trên Chrome giả lập CPU chậm 4×: thời gian mỗi khung hình không đổi; dựng lại ảnh nền (thỉnh thoảng khi kéo bản đồ) chậm hơn khoảng 2–5 ms (2.5D) và 5–15 ms (cổ điển, một lần mỗi cỡ màn).
