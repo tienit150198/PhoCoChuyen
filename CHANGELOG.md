@@ -1,3 +1,7 @@
+# v2.4.11 — 2026-10-14
+
+Gồm chua (đi chùa từng bước, gọn đẹp) và profnghe (hồ sơ gọn, tìm nghề có tìm kiếm + lọc). Có gì mới: tổng hợp các bản 2.4.3–2.4.11 (không nhắc chợ đen/hội chợ).
+
 # v2.4.10 — 2026-10-14
 
 🧩 Ghép ba Phố Mây: chồng úp vẽ ô trên cùng (đã lật) ĐÈ LÊN các ô úp bên dưới — 2.4.7–2.4.9 vẽ ngược, ô úp che mất ô mở nên chạm vào chỉ trúng ô úp, chồng không lấy được và cuối màn dư 3 ô không khớp (màn 5 trở đi, 96/100 màn; chủ game báo ở màn 8). Đổi 🪷 thành 🥥 (🪷 hiện ô trống trên iOS 15.0–15.3, từ màn 77). Thêm scripts/browser_tile_levels.py: chơi trọn màn 1–20 bằng chạm thật trên màn hình điện thoại. Màn chơi, nước đi và bản lưu giữ nguyên. Không có Có gì mới.

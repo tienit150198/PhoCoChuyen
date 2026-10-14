@@ -1,5 +1,13 @@
 {
   "strings": {
+  "Ghép ba Phố Mây: sửa lỗi.": "Tile Match Phố Mây: bug fixes.",
+  "Bản đồ phố đẹp hơn: cỏ hoa, đường phố, đèn lồng và chim bay qua.": "A prettier town map: grass and flowers, streets, lanterns and birds flying by.",
+  "Đi chùa mới: thắp hương → khấn → lời chúc → chia sẻ, gọn và đẹp hơn.": "A new temple visit: incense → prayer → blessing → share, calmer and prettier.",
+  "Hồ sơ gọn hơn; tìm nghề có ô tìm kiếm, lọc theo nhóm và trạng thái.": "Tidier profiles; find careers with search and group/status filters.",
+  "Bớt chữ nhỏ ở Hành trình, Kho và màn làm ca cho dễ nhìn.": "Less small text on Journey, Stock and work screens.",
+  "Quầy nhập 200 phần mỗi lần; Bộ đếm kho bậc 5 mở 🤖 Tự nhận hàng.": "Counters restock 200 at a time; Stock counter tier 5 unlocks 🤖 auto-receive.",
+  "Ngày đạt chuẩn tính ngay khi đủ việc sạch, mốc đầu chỉ cần 2 ngày.": "Qualified days count as soon as you reach them; the first step needs only 2 days.",
+  "Rương kho báu trên bản đồ: nhặt thoải mái, ai tới trước nhặt trước.": "Town treasure chests: pick as many as you like, first come first served.",
   "Ghép ba Phố Mây: 100 màn ở Khu phố. Mỗi màn mới qua lần đầu, tiền làm việc và kinh doanh +0,2%, tối đa +20%!": "Tile Match Phố Mây: 100 levels in Khu phố. Each new level cleared adds +0.2% to work and business earnings, up to +20%!",
   "Chiếu trong, lô tô, vé cào: tỷ lệ gốc 55% ở đúng một lượt thường đầu mỗi chuỗi lượt, rồi giảm dần; vẫn chịu luật vận may.": "Inside mat, lotto and scratch cards: the base chance is 55% for just the first ordinary round of a run, then falls; luck rules still apply.",
   "Gom tin các bản 2.0.6–2.4.1: nghề mới, đi chùa, mở chuỗi, học chuyên môn và gặp nhau trên phố!": "Updates from versions 2.0.6–2.4.1: new careers, temple visits, business chains, specialist training and meeting around town!",

@@ -32,6 +32,16 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.11", date="2026-10-14", items=(
+        dict(emoji='🧩', text='Ghép ba Phố Mây: sửa lỗi.'),
+        dict(emoji='🗺️', text='Bản đồ phố đẹp hơn: cỏ hoa, đường phố, đèn lồng và chim bay qua.'),
+        dict(emoji='🛕', text='Đi chùa mới: thắp hương → khấn → lời chúc → chia sẻ, gọn và đẹp hơn.'),
+        dict(emoji='👤', text='Hồ sơ gọn hơn; tìm nghề có ô tìm kiếm, lọc theo nhóm và trạng thái.'),
+        dict(emoji='🧹', text='Bớt chữ nhỏ ở Hành trình, Kho và màn làm ca cho dễ nhìn.'),
+        dict(emoji='📦', text='Quầy nhập 200 phần mỗi lần; Bộ đếm kho bậc 5 mở 🤖 Tự nhận hàng.'),
+        dict(emoji='⏱️', text='Ngày đạt chuẩn tính ngay khi đủ việc sạch, mốc đầu chỉ cần 2 ngày.'),
+        dict(emoji='💰', text='Rương kho báu trên bản đồ: nhặt thoải mái, ai tới trước nhặt trước.'),
+    )),
     dict(version="2.4.3", date="2026-10-14", items=(
         dict(emoji='🧩', text='Ghép ba Phố Mây: 100 màn ở Khu phố. Mỗi màn mới qua lần đầu, tiền làm việc và kinh doanh +0,2%, tối đa +20%!'),
     )),
