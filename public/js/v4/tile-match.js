@@ -179,7 +179,7 @@ async function start(lv){
   if(T.busy)return;
   const top=localLv();
   if(lv>top+1){T.flash=`Qua màn ${top+1} trước đã nhé.`;paint();return;}
-  if(lv===top+1&&lv<=100&&localToday()>=(S().cap||15)){T.flash=`Hôm nay đã qua ${S().cap||15} màn mới. Mai chơi tiếp, giờ chơi lại màn cũ cho vui nhé!`;T.view='home';paint();return;}
+  if(S().capped&&lv===top+1&&lv<=100&&localToday()>=(S().cap||15)){T.flash=`Hôm nay đã qua ${S().cap||15} màn mới. Mai chơi tiếp, giờ chơi lại màn cũ cho vui nhé!`;T.view='home';paint();return;}
   T.busy=true;T.flash=null;
   try{
     const level=await loadLevel(lv);
@@ -300,11 +300,11 @@ function head(){
     ${helpBtn('tile-match','🧩 Ghép ba Phố Mây',[
       {title:'Cách chơi',open:true,body:'<ul><li>Chạm ô sáng để đưa xuống khay. Ô bị ô khác đè (dù một phần) thì mờ, chưa chạm được.</li><li>Ba ô giống nhau trong khay sẽ biến mất. Dọn sạch bàn là qua màn; khay đầy 7 ô là thua.</li><li>Chồng úp: chỉ ô trên cùng mở. 🔒 mở khi đã lấy ô 🔑. 🧊 chạm hai lần.</li></ul>'},
       {title:'Trợ giúp',body:`<ul><li>↩ Hoàn tác ô vừa đưa xuống · 🔀 Xáo các ô còn trên bàn · ⇪ Đẩy 3 ô đầu khay lên hàng chờ · ➕ Thêm 1 ô khay cho màn này.</li><li>Mỗi ngày có vài lượt miễn phí; sau đó trả xu, giá gấp đôi mỗi lần dùng trong cùng màn.</li></ul>`},
-      {title:'Phúc lợi',body:`<ul><li>Mỗi màn MỚI qua lần đầu: +0,2% tiền kiếm từ làm việc và kinh doanh (lương, tiền làm, nhân viên, quầy, hợp đồng). Tối đa +20% ở màn 100.</li><li>Không áp dụng cho lãi ngân hàng, đầu tư, chợ đen, quà, chuyển khoản.</li><li>Mỗi ngày tính tối đa ${st.cap||15} màn mới. Chơi lại màn cũ cho vui thoải mái.</li></ul>`}],{cls:'tm-q'})}
+      {title:'Phúc lợi',body:`<ul><li>Mỗi màn MỚI qua lần đầu: +0,2% tiền kiếm từ làm việc và kinh doanh (lương, tiền làm, nhân viên, quầy, hợp đồng). Tối đa +20% ở màn 100.</li><li>Không áp dụng cho lãi ngân hàng, đầu tư, chợ đen, quà, chuyển khoản.</li><li>Chơi bao nhiêu màn mỗi ngày cũng được.</li></ul>`}],{cls:'tm-q'})}
     <button type="button" class="tm-x" data-tm="close" aria-label="Đóng">✕</button></header>`;
 }
 function homeView(){
-  const st=S(),top=localLv(),lv=nextLevel(),today=localToday(),capped=top<100&&today>=st.cap,done=top>=100,wait=queue().length;
+  const st=S(),top=localLv(),lv=nextLevel(),today=localToday(),capped=!!st.capped&&top<100&&today>=st.cap,done=top>=100,wait=queue().length;
   const cleared=Array.from({length:top},(_,i)=>i+1).reverse();
   const replay=cleared.length?`<details class="tm-replay"><summary>Chơi lại · ${top} màn</summary><div class="tm-grid">${cleared.map(n=>`<button type="button" class="tm-lvbtn" data-tm="play" data-lv="${n}">${n}</button>`).join('')}</div></details>`:'';
   const main=done?`<button type="button" class="btn primary big" data-tm="play" data-lv="100">🏆 Chơi lại màn 100</button>`

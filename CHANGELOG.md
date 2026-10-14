@@ -2,6 +2,10 @@
 
 🔁 Tự đặt hàng: mở khóa trả phí cho từng nơi có kho (350.000 xu = bậc 5 của thang giá chung, cùng giá Bộ đếm kho · Bậc 5 mở 🤖 Tự nhận hàng; trả bằng quỹ trước, thiếu lấy ví), mua ở Kho (dòng 🔒 có giá, chỉ hiện khi đã đặt hàng ≥3 lần, #384) hoặc Thiết bị. Mỗi món một công tắc và “còn dưới X thì đặt Y” (mặc định X = 20% kệ, Y lấp tới ~90% trong hạn mức mỗi dòng). Hàng trên kệ + đang về dưới X thì đặt Y với nhà cung cấp dùng lần cuối (không thì Hạt Nắng) qua đúng đường inv_order (giá, giá sỉ, ship, thời gian giao, giao thiếu, lô FIFO); chỉ trả bằng quỹ, giữ sàn (80 xu + hóa đơn chưa trả + một ngày lương), tối đa 50% quỹ đầu ngày mỗi ngày, mỗi món một đơn tự đặt đang về, chừa 2 chuyến cho đơn tay; món vơi nhất đặt trước. Chạy sau mỗi thao tác và khi tải game (cả lúc vắng mặt), sau 🤖 Tự nhận hàng. Sổ tay: “🔁 Tự đặt 40 vắt Mì tươi (Nhà phân phối Hạt Nắng, ~13:15 hôm nay)”; quỹ thiếu: “🔁 Quỹ không đủ để tự đặt.” (một lần/ngày). Bản lưu: khóa tùy chọn `careers.<nghề>.auto_order` (không phải mã nâng cấp: 2.4.11 từ chối mã lạ trong `upgrades`); 2.4.11 đọc được, bỏ qua (tests/test_auto_order.py chạy trên `git archive rel-2.4.11`). Lệnh mới `stock_reorder` (không tốn giờ tiệm). check_task_compat OK. Có gì mới: một dòng 🔁 (đang gắn vào mục 2.4.11; đánh số lại khi phát hành).
 
+# v2.4.12 — 2026-10-14
+
+🧩 Ghép ba Phố Mây: bỏ giới hạn 15 màn mới mỗi ngày (chủ game 14/10); vẫn giữ thời gian tối thiểu mỗi màn. `n` vẫn lưu tối đa 15 để bản cũ đọc được. Không có Có gì mới.
+
 # v2.4.11 — 2026-10-14
 
 Gồm chua (đi chùa từng bước, gọn đẹp) và profnghe (hồ sơ gọn, tìm nghề có tìm kiếm + lọc). Có gì mới: tổng hợp các bản 2.4.3–2.4.11 (không nhắc chợ đen/hội chợ).

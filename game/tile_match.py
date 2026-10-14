@@ -53,7 +53,8 @@ from . import price_index
 VERSION = 1
 KEY = 'tile'
 LEVEL_MAX = 100
-CAP_DAY = 15                 # new levels cleared per Vietnam day
+CAP_DAY = 15                 # the save's bound on `n` (older builds validate n <= 15); owner 14/10: NO daily cap any more
+DAILY_CAP = False            # owner 14/10 "đừng giới hạn 1 ngày 15 màn, chơi không giới hạn"
 MIN_TAP_MS = 250             # at least this much server time per tap…
 MIN_LEVEL_MS = 20_000        # …and per level
 PERMILLE_PER_LEVEL = 2       # +0.2 % a level
@@ -691,7 +692,7 @@ def public(s: dict) -> dict:
     fresh = not t or t.get('d') != today()
     cur = (t or {}).get('cur') if t else None
     pm = permille(s)
-    out = dict(lv=cleared(s), max=LEVEL_MAX, pm=pm, pct=pct_text(pm), n=0 if fresh else int(t.get('n', 0)), cap=CAP_DAY, day=today(),
+    out = dict(lv=cleared(s), max=LEVEL_MAX, pm=pm, pct=pct_text(pm), n=0 if fresh else int(t.get('n', 0)), cap=CAP_DAY, capped=DAILY_CAP, day=today(),
                free=free_left(t), price=dict(PRICE), slot_max=SLOT_MAX)
     if isinstance(cur, dict):
         out['cur'] = dict(lv=cur['lv'], b=dict(cur.get('b') or {}), p=dict(cur.get('p') or {}))
@@ -764,7 +765,7 @@ def _end(s: dict, p: dict, e) -> dict:
     now = _ms()
     first = lv == t['lv'] + 1
     if first:
-        need(t['n'] < CAP_DAY, f'Hôm nay đã qua {CAP_DAY} màn mới, màn này mai tính nhé.', 'tile_cap')
+        need(not DAILY_CAP or t['n'] < CAP_DAY, f'Hôm nay đã qua {CAP_DAY} màn mới, màn này mai tính nhé.', 'tile_cap')
         least = need_ms(g.taps)
         if cur is not None:
             need(now - cur['t'] >= least, 'Nhanh quá, chưa tính màn này. Đợi giây lát nhé!', 'tile_fast')
@@ -779,7 +780,7 @@ def _end(s: dict, p: dict, e) -> dict:
             t['u'][k] = t['u'].get(k, 0) + v
     if first:
         t['lv'] = lv
-        t['n'] += 1
+        t['n'] = min(CAP_DAY, t['n'] + 1)   # counted for show only; stays within older builds' bound
     _rest(t, now if first or cur is None else cur['t'])
     pm = permille(s)
     msg = f'🎉 Qua màn {lv}!' + (f' {PREFIX} +{pct_text(pm)}%.' if first else '')
@@ -804,7 +805,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         t = _ensure(s)
         need(lv <= t['lv'] + 1, f'Qua màn {t["lv"] + 1} trước đã nhé.', 'tile_locked')
         if lv == t['lv'] + 1:
-            need(t['n'] < CAP_DAY, f'Hôm nay đã qua {CAP_DAY} màn mới. Mai chơi tiếp, giờ chơi lại màn cũ cho vui nhé!', 'tile_cap')
+            need(not DAILY_CAP or t['n'] < CAP_DAY, f'Hôm nay đã qua {CAP_DAY} màn mới. Mai chơi tiếp, giờ chơi lại màn cũ cho vui nhé!', 'tile_cap')
         t['cur'] = dict(lv=lv, t=_clock(t, _ms()), b={}, p={})
         return dict(message=f'🧩 Màn {lv}', tile=public(s))
     t = get(s)

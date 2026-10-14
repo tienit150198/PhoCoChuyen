@@ -340,9 +340,7 @@ class Commands(unittest.TestCase):
     def test_daily_cap_on_new_levels_replays_stay_open_and_the_next_day_resets(self):
         s = cleared(20)
         s['journey']['tile']['n'] = tm.CAP_DAY
-        with self.assertRaises(GameError) as e:
-            act(s, 'jr_tile_start', lv=21)
-        self.assertEqual(e.exception.code, 'tile_cap')
+        s, _ = act(s, 'jr_tile_start', lv=21)   # owner 14/10: no daily cap any more
         s, _ = act(s, 'jr_tile_start', lv=7)   # an old level, for fun
         self.clock.tick(24 * 3600)
         s, r = act(s, 'jr_tile_start', lv=21)
@@ -350,19 +348,17 @@ class Commands(unittest.TestCase):
         self.assertEqual(s['journey']['tile']['d'], tm.today())
 
     @with_clock
-    def test_fifteen_new_levels_a_day(self):
+    def test_no_daily_cap_on_new_levels(self):
+        """Owner 14/10: "đừng giới hạn 1 ngày 15 màn, chơi không giới hạn"."""
         s = cleared(0)
-        for lv in range(1, 17):
-            if lv == 16:
-                with self.assertRaises(GameError):
-                    act(s, 'jr_tile_start', lv=lv)
-                break
+        for lv in range(1, 18):
             s, _ = act(s, 'jr_tile_start', lv=lv)
             self.clock.tick(200)
             s, r = act(s, 'jr_tile_end', lv=lv, moves=tm.level(lv)['solution'])
             self.assertTrue(r['first'])
-        self.assertEqual(s['journey']['tile']['lv'], 15)
-        self.assertEqual(tm.permille(s), 30)
+        self.assertEqual(s['journey']['tile']['lv'], 17)
+        self.assertEqual(tm.permille(s), 34)
+        self.assertLessEqual(s['journey']['tile']['n'], tm.CAP_DAY)
 
     @with_clock
     def test_booster_prices_free_then_doubling_within_a_level(self):
@@ -519,13 +515,13 @@ class SelfDescribing(unittest.TestCase):
         big = next(lv for lv in range(16, 101) if len(tm.level(lv)['solution']) * tm.MIN_TAP_MS > tm.MIN_LEVEL_MS)
         self.assertGreater(tm.need_ms(len(tm.level(big)['solution'])), tm.MIN_LEVEL_MS)
         self.clock.tick(3600)
-        with self.assertRaises(GameError) as e:
-            end(s, 16)
-        self.assertEqual(e.exception.code, 'tile_cap')
+        s, r = end(s, 16)   # owner 14/10: the 16th new level of the day counts too
+        self.assertTrue(r['first'])
+        self.assertLessEqual(s['journey']['tile']['n'], tm.CAP_DAY)   # older builds' bound kept
         s, r = end(s, 3)   # replays stay open
         self.assertFalse(r['first'])
         self.clock.tick(24 * 3600)
-        s, r = end(s, 16)
+        s, r = end(s, 17)
         self.assertTrue(r['first'])
         self.assertEqual(s['journey']['tile']['n'], 1)
 
