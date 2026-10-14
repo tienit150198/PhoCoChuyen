@@ -1,3 +1,18 @@
+# Chưa phát hành — mobileui
+
+📱 Màn điện thoại không còn chỗ đè nhau (chủ game 15/10: “nhiều cái UI bị đè nhau ở màn mobile… check cẩn thận từng màn”). Quét tự động mọi màn tới được (HUD 2.5D, Tiện ích + từng nhóm, Thêm + từng nhóm, giao diện cổ điển, màn làm việc của 54 nghề và bước kế tiếp) ở 360×740, 375×667, 390×844, 412×915, 844×390 và 1366×768, có ảnh chụp từng trang cuộn; sửa riêng từng màn, chỉ CSS (một chỗ vẽ canvas của giao hàng), không đổi luật chơi hay bản lưu. Bỏ qua Kéo co chó sủa và Đi chùa (nhánh khác đang làm lại).
+
+- Phố 2.5D, điện thoại dọc: cần điều khiển không còn lấn 8 px vào thẻ “Đang ở”; trong tiệm, hàng nút làm việc (Khách ghé/Pha chế/Kho/Sổ tiệm) không còn đè thẻ “Đang ở”/“Trò chuyện”, cần điều khiển và nút Góc nhìn dời lên theo. Danh sách Tiện ích (và thẻ việc) khi mở nằm trên nút Góc nhìn (trước nút này che dòng “Thư giãn”, 360–375 px). (isometric.css)
+- Đầu mỗi bảng trên điện thoại hẹp (≤ 400 px): tên được hai dòng thay vì “Hai ly c…”, “Định…”, “T…” (Tủ đồ); ví + quỹ xếp hai dòng thay vì chữ đè lên nhau và “320 xu” bị cắt (Người quen, Túi đồ, Chuẩn bị, Sổ tiệm); nút ngắn trong đầu bảng (“Quay lại”, “🛵 Sổ shipper”) không xuống dòng. Gợi ý “Bước tiếp theo” trong đầu bảng có hàng riêng, hết cảnh bị bóp thành cột một chữ cao 320 px (Chăm sóc khách hàng). (compact.css D1–D2)
+- Bản đồ phố cổ điển: thông báo nằm trên mặt đường, không đè hàng nút “📋 Danh sách”, “🏝️ Ra đảo nhặt rương”, “Chỉ đường”. (compact.css D3)
+- Bàn văn phòng (HR, thư ký, IT, kế toán…) điện thoại ngang: hồ sơ đang mở không còn bị cắt còn 24 px dưới “Nhận thêm việc”; thẻ kế hoạch không bóp tên thành “Gói / báo / cáo”. (office_kit.css)
+- Hướng dẫn viên điện thoại ngang: nút “Chọn …” và ↶ không đè “Chọn thêm 2 điểm”. (teach.css)
+- Bán hoa: nhãn “Đúng tông”/“Khách cần” nằm trên mép thẻ, không đè bông hoa. (florist.css)
+- Giao hàng tự lái (sân < 420 px): dòng “km/h · Xăng” vẽ phía trên cần lái, không nằm dưới cần lái và bàn đạp Phanh/Ga. (delivery_isometric.js)
+- Nhà, xe, điện thoại (≤ 480 px): giá xuống dưới tên khi không đủ chỗ (trước “Du / thuyền / Hoàng / Hôn”), chip “Giữ xe & bảo dưỡng … xu/tháng” không tràn khỏi thẻ. (house.css)
+- Sưu tập, Đi chơi và các danh sách mua sắm (≤ 400 px): sao và giá xuống dòng dưới tên thay vì bóp tên thành ba dòng (“Tourbillon / Kim / Cương”). (spend.css)
+- Công cụ: `scripts/browser_mobile_sweep.py` + `scripts/mobile_layout_detect.js` (chạy lại toàn bộ lượt quét).
+
 # v2.4.14 — 2026-10-15
 
 🔁 Tự đặt hàng giá 100.000 xu (trước 350.000, chủ game 15/10); người đã mua giá cũ được hoàn phần chênh bằng quà hệ thống. Không có Có gì mới.
