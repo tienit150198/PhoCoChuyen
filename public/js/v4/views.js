@@ -70,6 +70,28 @@ export function autoStockRow(a){
   if(!a.unlocked)return '';   // not owned: no locked advert in the stock room (#384); Thiết bị lists Bộ đếm kho · Bậc 5
   return `<button type="button" class="inv-auto${a.on?' on':''}" role="switch" aria-checked="${a.on?'true':'false'}" data-command="stock_auto" data-payload="${esc(JSON.stringify({on:!a.on}))}"><span>🤖 Tự nhận hàng: <b>${a.on?'Bật':'Tắt'}</b></span><i aria-hidden="true"></i></button>`;
 }
+/** 🔁 Tự đặt hàng (game/auto_order.py; `warehouse.reorder`, an older server sends none: nothing shows). Not owned: one
+ * locked line with the price and "Mua", only once the player has ordered a few times (#384: no advert for a newcomer;
+ * Thiết bị always lists it). Owned: one row that opens a compact panel, "còn dưới X thì đặt Y" per item. */
+export function reorderRow(r,ui,byId){
+  if(!r)return '';
+  const fmt=n=>Number(n||0).toLocaleString('vi-VN');
+  if(!r.owned){
+    if(!r.tease)return '';
+    const q=`Mua 🔁 Tự đặt hàng cho nơi này? ${fmt(r.price)} xu: quỹ trả trước, thiếu thì lấy ví.`;
+    return `<div class="inv-ro-lock"><span>🔒 Tự đặt hàng · ${fmt(r.price)} xu</span>${confirmCmd(r.short?`Thiếu ${fmt(r.short)}`:'Mua','stock_reorder',{buy:true},q,'primary small',r.short>0)}</div>`;
+  }
+  const items=r.items||[],n=items.filter(i=>i.on).length,open=Boolean(ui.roOpen);
+  const head=`<button type="button" class="inv-auto inv-ro-head${r.on?' on':''}" data-action="v4RoOpen" aria-expanded="${open}"><span>🔁 Tự đặt hàng: <b>${r.on?`Bật · ${n} món`:'Tắt'}</b>${r.warn?' <em class="inv-ro-warn">· quỹ thiếu</em>':''}</span><span class="inv-ro-caret" aria-hidden="true">${open?'▴':'▾'}</span></button>`;
+  if(!open)return head;
+  const row=i=>{const it=byId[i.id]||{name:i.id};
+    return `<div class="inv-ro-row${i.on?'':' off'}"><button type="button" class="inv-ro-item" role="switch" aria-checked="${i.on}" data-command="stock_reorder" data-payload="${esc(JSON.stringify({item:i.id,on:!i.on}))}"><i aria-hidden="true"></i>${esc(it.emoji||'📦')} ${esc(it.name)}${i.auto?' 🚚':''}</button>`+
+      `<label>dưới <input type="number" inputmode="numeric" min="1" max="${r.cap}" value="${i.below}" id="ro-b-${esc(i.id)}"${i.on?'':' disabled'}></label>`+
+      `<label>đặt <input type="number" inputmode="numeric" min="1" max="${r.line}" value="${i.qty}" id="ro-q-${esc(i.id)}"${i.on?'':' disabled'}></label>`+
+      `<button type="button" class="btn ghost small" data-action="v4RoSave" data-item="${esc(i.id)}" aria-label="Lưu ${esc(it.name)}"${i.on?'':' disabled'}>${icon('check',14)}</button></div>`;};
+  const sw=`<button type="button" class="inv-auto${r.on?' on':''}" role="switch" aria-checked="${r.on}" data-command="stock_reorder" data-payload="${esc(JSON.stringify({on:!r.on}))}"><span>Tự đặt: <b>${r.on?'Bật':'Tắt'}</b></span><i aria-hidden="true"></i></button>`;
+  return `<section class="inv-ro" aria-label="Tự đặt hàng">${head}${sw}<p class="inv-ro-note">Quỹ trả · giữ ${fmt(r.floor)} xu · hôm nay ${fmt(r.spent)}/${fmt(r.budget)} xu</p>${items.map(row).join('')}</section>`;
+}
 export function stockCountStep(env){return Math.max(1,Math.min(100,Math.floor(Number(env?.api?.state?.careers?.[env.api.state.current]?.warehouse?.count_step)||1)));}
 export function tallyBatch(ui,order,indices,limit=1){
   const t=(ui.invTally??={}),on=new Set(t[order]||[]);let left=Math.max(0,Math.floor(Number(limit)||0));
@@ -224,7 +246,7 @@ export function inventoryView(env){
   const calm=!ready.length&&!transit.length&&!tonight&&!low.length?`<span class="inv-calm">${icon('check',14)} Kho ổn.</span>`:'';
   const now=clk?`<div class="row spread"><span class="tag blue" title="Mở cửa ${esc(clk.open_time)}–${esc(clk.close_time)}">🕑 ${esc(clk.label)}</span></div>`:'';   // the hours: its tooltip (#384)
   const first=transit[0],next=!ready.length&&first?`<small class="inv-next">${icon('truck',13)} ${first.group?`Đơn gộp ${transitS.find(g=>g.id===first.group)?.lines.length||''} món`:name(byId[first.item])} · <b>${esc(first.left_label||first.eta_label||'')}</b>${first.left_label&&first.eta_label?` <span class="muted">(${esc(first.eta_label)})</span>`:''}</small>`:'';
-  const strip=`<section class="inv-status" aria-label="Tình trạng kho">${now}${autoStockRow(c.warehouse?.auto)}<div class="inv-chips">${chip(readyS.length,'thùng đã tới','accent','orders')}${chip(transitS.length,'đơn đang giao','info','orders')}${chip(tonight,'hết hạn tối nay','bad','lots')}${chip(low.length,'loại sắp hết','warn','stock')}${calm}</div>${next}${cta?`<div class="inv-cta">${cta}</div>`:''}</section>`;
+  const strip=`<section class="inv-status" aria-label="Tình trạng kho">${now}${autoStockRow(c.warehouse?.auto)}${reorderRow(c.warehouse?.reorder,ui,byId)}<div class="inv-chips">${chip(readyS.length,'thùng đã tới','accent','orders')}${chip(transitS.length,'đơn đang giao','info','orders')}${chip(tonight,'hết hạn tối nay','bad','lots')}${chip(low.length,'loại sắp hết','warn','stock')}${calm}</div>${next}${cta?`<div class="inv-cta">${cta}</div>`:''}</section>`;
 
   /* Crates at the door: always on top, one big button each; opened, the goods are tapped to count. */
   const sup=o=>supOf(o.supplier);
@@ -942,6 +964,10 @@ export async function v4Action(action,data,el,env){
     case'situation':openSheet('situation');return true;
     case'jobapp':openSheet('jobapp');return true;
     case'v4InvTab':ui.invTab=data.tab;renderSheet(false);return true;
+    case'v4RoOpen':ui.roOpen=!ui.roOpen;renderSheet();return true;   // 🔁 Tự đặt hàng: the panel (reorderRow)
+    case'v4RoSave':{const val=k=>Math.floor(Number(document.getElementById(`ro-${k}-${data.item}`)?.value));const below=val('b'),qty=val('q');
+      if(!(below>=1&&qty>=1)){env.toast?.('Nhập số từ 1 nhé.','hint');return true;}
+      await cmd('stock_reorder',{item:data.item,below,qty});return true;}
     case'v4Order':{if(ui.orderItem!==data.item)ui.orderQty=0;ui.orderItem=data.item||null;if(ui.orderItem)ui.invCart=null;ui.invTab='stock';renderSheet(!ui.orderItem);return true;}
     /* Đơn gộp: a supplier's draft (game/inventory.py inv_cart / inv_haggle / inv_order_cart). */
     case'v4Cart':{

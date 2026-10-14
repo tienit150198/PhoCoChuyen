@@ -2080,6 +2080,27 @@ html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{an
 .inv-auto.on i{background:var(--good)}
 .inv-auto.on i::after{transform:translateX(18px)}
 .inv-auto.locked{display:block;cursor:default;color:var(--ink-2);border-style:dashed;line-height:1.45;padding:8px 12px}
+/* 🔁 Tự đặt hàng (views.js reorderRow): the locked line with its price, or a row that opens "còn dưới X thì đặt Y" per item */
+.inv-ro-lock{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;padding:6px 6px 6px 12px;border-radius:var(--radius);border:1px dashed var(--line-strong);color:var(--ink-2);font-size:var(--fs-2)}
+.inv-ro-lock .btn{flex:none;min-height:36px}
+.inv-ro{grid-column:1/-1;display:grid;gap:6px}
+.inv-ro-head{cursor:pointer}
+.inv-ro-head .inv-ro-caret{flex:none;color:var(--ink-2)}
+.inv-ro-warn{font-style:normal;color:var(--warn)}
+.inv-ro-note{margin:0;color:var(--ink-2);font-size:var(--fs-1,12px)}
+.inv-ro-row{display:grid;grid-template-columns:auto auto minmax(0,1fr) 44px;align-items:center;gap:4px 10px;padding:6px 0;border-top:1px solid var(--line)}
+.inv-ro-row .inv-ro-item{grid-column:1/-1}
+.inv-ro-row .btn{grid-column:4}
+.inv-ro-row.off{opacity:.65}
+.inv-ro-item{display:flex;align-items:center;gap:8px;min-width:0;min-height:40px;padding:0;border:0;background:none;color:var(--ink);font:inherit;font-size:var(--fs-2);text-align:left;cursor:pointer;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.inv-ro-item i{flex:none;position:relative;width:34px;height:20px;border-radius:10px;background:var(--line-strong)}
+.inv-ro-item i::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--surface)}
+.inv-ro-item[aria-checked="true"] i{background:var(--good)}
+.inv-ro-item[aria-checked="true"] i::after{transform:translateX(14px)}
+.inv-ro-row label{display:flex;align-items:center;gap:4px;color:var(--ink-2);font-size:var(--fs-1,12px)}
+.inv-ro-row input{width:60px;min-width:0;min-height:40px;padding:4px 6px;border-radius:8px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;font-size:16px;text-align:center}
+.inv-ro-row .btn{min-width:44px;min-height:40px;padding:0}
+@media (min-width:700px){.inv-ro-row{grid-template-columns:minmax(0,1fr) auto auto 44px}.inv-ro-row .inv-ro-item{grid-column:auto}}
 .inv-cta .btn{width:100%}
 .inv-bins{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
 .inv-bin{display:flex;flex-direction:column;align-items:stretch;gap:3px;min-width:0;min-height:112px;padding:10px 12px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line-strong);color:var(--ink);text-align:left;transition:border-color var(--dur),box-shadow var(--dur),transform .12s}

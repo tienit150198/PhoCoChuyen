@@ -28,6 +28,7 @@ from . import feedback as fbk
 from . import situations as sit
 from . import inventory as inv
 from . import auto_stock  # 🤖 Tự nhận hàng (Bộ đếm kho · Bậc 5): crates at the door counted and shelved
+from . import auto_order as ao  # 🔁 Tự đặt hàng (paid unlock): the stock room orders again when an item runs low
 from . import employment as emp
 from .careers import PLUGINS
 from . import journey as jr
@@ -574,6 +575,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if action==business.ACTION:
         need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
         got=auto_stock.run_all(s)  # 🤖 goods that came while the player was away: on the shelf before they look
+        got+=ao.run_all(s)  # 🔁 then what ran low while away is ordered again (fund only, floor and daily cap)
         if got:validate_state(s)
         return s,dict(message="Đã cập nhật hoạt động các tiệm.",**({"effects":got} if got else {}))
     if action=="select_career":
@@ -688,7 +690,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         need(not (desk_task and desk_task.get("desk")),"Hồ sơ này xử lý ở bàn giấy tờ: đánh dấu dòng sai rồi đóng dấu nhé.")
     if plugin_action and action not in mod.SPEC.get('free_actions',()):
         need(c["open"],"Mở ca trước khi xử lý công việc nhé.")
-    no_tick={"task_select","settings","talk","feed_like","photo","decor_move","event_dismiss","quest_claim","chat_clear","reset_career","theme","sit_dismiss","sit_practice","inv_rate","inv_claim","inv_cart","inv_haggle","inv_cancel",auto_stock.ACTION}
+    no_tick={"task_select","settings","talk","feed_like","photo","decor_move","event_dismiss","quest_claim","chat_clear","reset_career","theme","sit_dismiss","sit_practice","inv_rate","inv_claim","inv_cart","inv_haggle","inv_cancel",auto_stock.ACTION,ao.ACTION}
     if mod:no_tick|=set(mod.SPEC.get('no_tick',()))
     no_tick|={"mastery_start","mastery_answer","mastery_finish","competition_start","competition_answer"}
     no_tick|=CARE_FREE
@@ -708,6 +710,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         if mod and hasattr(mod,"on_stock"):mod.on_stock(s,c,action)  # e.g. a rush queue sees the goods just shelved
     elif action==auto_stock.ACTION:  # 🤖 Tự nhận hàng: Bật/Tắt (Kho)
         result.update(auto_stock.toggle(c,career,p))
+    elif action==ao.ACTION:  # 🔁 Tự đặt hàng: buy, the switch, an item's "còn dưới X thì đặt Y" (Kho)
+        result.update(ao.action(s,c,career,p))
     elif action.startswith("sit_"):
         result.update(sit.action(s,c,career,action,p))
     elif action.startswith("inc_"):
@@ -1234,6 +1238,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if action=='ask':life.on_talk(c,current_task(c,p.get('task'))['npc'])
     result["effects"]=tick_pending(s,c)
     result["effects"].extend(auto_stock.run(s,c,career))  # 🤖 a crate now at the door (Bậc 5, on): counted and shelved
+    result["effects"].extend(ao.run(s,c,career))  # 🔁 an item now below its line: ordered again (paid unlock, on)
     if career in dk.CAREERS:result["effects"][:0]=dk.tick(s,c,career)
     result["effects"][:0]=care_notes
     result["effects"].extend(care_tick(s,c,career))
@@ -1345,6 +1350,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c["happen"]=haps.public(raw,cid,s)
         c["inventory"]=inv.public(raw,cid)
         c["warehouse"]=warehouse.public(raw,cid)
+        if c["warehouse"] is not None:c["warehouse"]["reorder"]=ao.public(s,raw,cid)  # 🔁 Tự đặt hàng (None: no stock room)
         c["job"]=emp.public(raw,cid,s)
         c["mastery"]=cm.public(raw,cid)
         c["competition"]=competition.public(s,raw,cid)
@@ -1521,7 +1527,7 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
     life.validate(c,cid)
     ext=c.get("ext");need(isinstance(ext,dict) and ext_keys<=set(ext),"Bản lưu thiếu dữ liệu v0.4.")
     integer(ext.get("seq"),0,10**9);need(isinstance(ext.get("data"),dict),"Dữ liệu nghề không hợp lệ.")
-    sit.validate(c,cid);inv.validate(c,cid);emp.validate(c,cid);incs.validate(c,cid);haps.validate(c,cid)
+    sit.validate(c,cid);inv.validate(c,cid);ao.validate(c,cid);emp.validate(c,cid);incs.validate(c,cid);haps.validate(c,cid)
     cq.validate(c)  # complaints book (optional in older saves)
     fbk._ra.validate_recent(c)  # recent review aspects (optional in older saves)
     if cid in PLUGINS and hasattr(PLUGINS[cid],"validate_data"):PLUGINS[cid].validate_data(c)
