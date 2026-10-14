@@ -14,6 +14,7 @@ let html=masteryCard(state);
 assert.match(html,/20\/40/);assert.match(html,/8\/15/);assert.match(html,/Chuyên gia chăm vải/);
 assert.doesNotMatch(html,/data-command="mastery_start"/);
 assert.match(html,/aria-label="Việc làm sạch lỗi"/);
+assert.match(html,/cm-hint">Ngày nghề có ≥3 việc sạch, ≥80%; cộng khi khép ca\./,'F#383: the career-day rule sits on its row');
 assert.match(masteryCard(state,{compact:true}),/data-action="promo"/);
 assert.doesNotMatch(masteryCard(state,{compact:true}),/data-command=/);
 html=masteryCard({...state,ready:true});assert.match(html,/data-command="mastery_start"/);

@@ -156,3 +156,18 @@ def test_import_rejects_stock_over_paid_capacity(lots,transit):
  for key,n,index in [('lots',lots,1),('orders',transit,2)]:
   if n:c[stock.KEY][key].append(dict(id=f'special-supply-{index}',code='sp1_0',quantity=n,unit_cost=100))
  with pytest.raises(e.GameError):e.validate_state(s)
+
+
+def test_f382_specialism_shows_real_day_rule_today_and_reason():
+ s=e.new_state();s['current']='clothing';c=s['careers']['clothing']
+ c.update(started=True,open=True,xp=90000,money=800000000)
+ rows=sp.requirements(s,c,'clothing',1,NOW)
+ assert [r.get('id') for r in rows][2]=='real_days' and rows[2]['label']=='Ngày thực đạt chuẩn'
+ assert rows[2]['got']==0 and rows[2]['need']==3 and rows[2]['hint'].startswith('Hôm nay: 0/0 việc sạch')
+ assert 'tuyển dụng' not in rows[4].get('reason','')
+ nxt=sp.public(s,c,'clothing',NOW)['next']
+ assert nxt['can_enrol'] is False and nxt['reason']=='Chưa đủ: Việc tự làm không lỗi.'
+ assert 'scale' not in c,'reading requirements never writes the sidecar'
+ scale.ensure(c,'clothing',NOW)['clean']=13
+ nxt=sp.public(s,c,'clothing',NOW)['next']
+ assert nxt['can_enrol'] is False and nxt['reason']=='Cần thêm 3 ngày thực đạt chuẩn.'

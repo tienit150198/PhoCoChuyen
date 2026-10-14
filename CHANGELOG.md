@@ -2,6 +2,10 @@
 
 Gồm fb374 (nút nâng sức chứa kho riêng, giá nail ×2,5 — góp ý #374 #375 #378), bmrank (Bảng vàng chợ đen cộng lại tiền phạt đã hoàn, phạt công an người chơi cập nhật ngay; scripts/fair_board_recompute.py), tile-match (🧩 Ghép ba Phố Mây, journey.tile tùy chọn, phúc lợi +0,2 %/màn tối đa +20 %).
 
+# Chưa phát hành — fb382 (không có Có gì mới)
+
+- Ngày thực đạt chuẩn (góp ý #382, #383; Mở rộng nghề và Chuyên môn nghề): việc khách giữ lại từ ngày nghề trước, làm xong hôm nay nay được tính vào việc sạch và ngày thực (trước đây bị bỏ qua: một tiệm quần áo mất 5 việc, 4 việc sạch trong ngày 14/10). Dòng điều kiện hiện tiến độ hôm nay (“Hôm nay: 16/18 việc sạch · đạt, cộng lúc 0h”) và “Cách tính ?” (ngày lịch 0h–24h giờ Việt Nam, ≥3 việc tự làm không lỗi, ≥80% sạch, từ mốc 2 thêm ca quản lý nghiệm thu; khác ngày đạt chuẩn của Tay nghề). Nút bị khóa ghi “Cần thêm N ngày thực đạt chuẩn.” thay cho câu sai “Ngày thực đạt chuẩn đã kết thúc”. Tay nghề lâu năm giữ luật cũ, dòng ngày đạt chuẩn ghi rõ “Ngày nghề có ≥3 việc sạch, ≥80%; cộng khi khép ca”. Save không đổi dạng; bản cũ vẫn đọc được.
+
 # Chưa phát hành — fb374 (không có Có gì mới)
 
 - Kho (góp ý #375, #378): bảng Kho có riêng nút “Nâng sức chứa lên …” (Thiết bị → Sức chứa kho nghề) bên cạnh “Nâng nhập mỗi dòng”; trước đây chỉ có nút hạn mức nhập 80 → 120 nên người chơi mua nhầm tưởng là sức chứa. Khi một dòng đã nhập đầy kệ, bảng Kho không mời mua thêm hạn mức nhập; Thiết bị ghi rõ kho đang chứa bao nhiêu. Báo “Kho chứa tối đa …”/“Kệ … không đủ chỗ” chỉ chỗ nâng sức chứa. Không đổi giá, quyền đã mua hay dữ liệu bản lưu.

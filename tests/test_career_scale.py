@@ -1,5 +1,6 @@
 """Ownership, real-day progression and physical resource contracts."""
 import copy
+import json
 import pytest
 
 from game import engine as e
@@ -290,3 +291,71 @@ def test_bool_corruption_rejected_and_receipts_bounded():
     before=c['money']
     with pytest.raises(e.GameError): finance.move(s,c,True,'Test','bool')
     assert c['money']==before
+
+
+def test_f382_kept_job_finished_today_counts_but_future_day_does_not():
+    """F#383 (chippoo, clothing): jobs kept at day close ("việc được giữ lại") and finished on a later career day
+    are real manual work for the real-day track."""
+    s, c = fixture_state()
+    c['day'] = 10
+    kept = dict(id='grocery-0009-00', career='grocery', day=9, status='completed', mistakes=0)
+    c['tasks'].append(kept); c['completed_ids'].append(kept['id'])
+    assert scale.completed(c, 'grocery', kept, NOW)
+    assert c['scale']['today']['clean'] == 1 and c['scale']['clean'] == 1
+    future = dict(id='grocery-0011-00', career='grocery', day=11, status='completed', mistakes=0)
+    c['tasks'].append(future); c['completed_ids'].append(future['id'])
+    assert not scale.completed(c, 'grocery', future, NOW)
+    for bad in ('9', None, True):
+        t = dict(kept, id=f'grocery-x-{bad}', day=bad); c['tasks'].append(t); c['completed_ids'].append(t['id'])
+        assert not scale.completed(c, 'grocery', t, NOW)
+    scale.validate(c, 'grocery')
+
+
+def test_f382_requirement_explains_rule_and_today_live():
+    """F#382 (yenmy1808_, 16/18 clean today): the row says today counts at 0h and the button says what is missing."""
+    s, c = fixture_state()
+    for n in range(18): finish(c, n, mistakes=int(n < 2))
+    nxt = scale.public(s, c, 'grocery', NOW)['next']
+    row = nxt['requirements'][0]
+    assert row['id'] == 'real_days' and row['label'] == 'Ngày thực đạt chuẩn'
+    assert (row['got'], row['need'], row['met']) == (0, 3, False)
+    assert row['hint'] == 'Hôm nay: 16/18 việc sạch · đạt, cộng lúc 0h'
+    assert '≥' not in row['rule'] and '80%' in row['rule'] and '0h' in row['rule']
+    assert nxt['reason'] == 'Cần thêm 3 ngày thực đạt chuẩn.'
+    assert 'đã kết thúc' not in nxt['reason']
+    # Tomorrow the day is in, and the live line starts again.
+    nxt = scale.public(s, c, 'grocery', NOW + 86400)['next']
+    assert nxt['requirements'][0]['got'] == 1
+    assert nxt['requirements'][0]['hint'] == 'Hôm nay: 0/0 việc sạch · cần ≥3 việc sạch, ≥80%'
+    assert nxt['reason'] == 'Cần thêm 2 ngày thực đạt chuẩn.'
+
+
+def test_f382_weak_ratio_and_missing_contract_are_named():
+    s, c = fixture_state()
+    for n in range(4): finish(c, n, mistakes=int(n == 0))
+    assert scale.public(s, c, 'grocery', NOW)['next']['requirements'][0]['hint'].endswith('cần ≥3 việc sạch, ≥80%')
+    s, c = fixture_state(tier=1)
+    for n in range(3): finish(c, n)
+    row = scale.public(s, c, 'grocery', NOW)['next']['requirements'][0]
+    assert row['hint'] == 'Hôm nay: 3/3 việc sạch · thiếu ca quản lý nghiệm thu'
+    assert 'ca quản lý được nghiệm thu' in row['rule']
+    scale.accepted(c, 'grocery', NOW)
+    assert scale.public(s, c, 'grocery', NOW)['next']['requirements'][0]['hint'].endswith('đạt, cộng lúc 0h')
+
+
+def test_f382_other_missing_rows_read_as_sentences():
+    s, c = fixture_state(); ready(c); c['money'] = 0
+    assert scale.public(s, c, 'grocery', NOW)['next']['reason'] == 'Chưa đủ: Quỹ nghề (Góp vốn).'
+
+
+def test_f383_engine_counts_a_kept_clothing_job_for_the_real_day_only():
+    """Through the real engine: a clothing job kept past the day close and finished next career day."""
+    from tests.test_career_clothing import job as clothing_job, solve
+    j = clothing_job('fit'); tid = j.task['id']
+    j.c['day'] += 1
+    e.validate_state(j.state)
+    solve(j, tid)
+    assert j.get(tid)['status'] == 'completed' and j.get(tid)['day'] == j.c['day'] - 1
+    assert j.c['scale']['clean'] == 1 and j.c['scale']['today']['ids'] == [tid]
+    assert 'mastery' not in j.c, 'Tay nghề keeps its same-career-day rule'
+    e.validate_state(json.loads(json.dumps(j.state)))

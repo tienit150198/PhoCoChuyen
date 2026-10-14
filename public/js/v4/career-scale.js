@@ -25,8 +25,14 @@ function ledger(q){
   return `<dl class="scale-ledger">${Object.entries(COSTS).filter(([k])=>q[k]!=null).map(([k,label])=>`<div class="${k==='net'?'scale-net':''}"><dt>${label}</dt><dd>${coins(q[k])}</dd></div>`).join('')}</dl>`;
 }
 
+/** F#382/383: a counted requirement may carry today's live status (`hint`) and its rule (`rule`, behind "?"). */
+export function reqWhy(r,tx=esc){
+  return (!r.met&&r.hint?`<small class="req-hint">${tx(r.hint)}</small>`:'')
+    +(r.rule?`<details class="req-rule"><summary aria-label="${tx('Cách tính')}: ${tx(r.label)}">${tx('Cách tính')} ?</summary><p class="small">${tx(r.rule)}</p></details>`:'');
+}
+
 function requirements(rows){
-  return `<ul class="scale-requirements">${(rows||[]).map(r=>`<li class="${r.met?'is-met':''}"><span>${r.met?'✓':'○'} ${esc(r.label)}</span>${r.got!=null?`<b>${number(r.got)} / ${number(r.need)}</b>`:''}${r.reason?`<small>${esc(r.reason)}</small>`:''}</li>`).join('')}</ul>`;
+  return `<ul class="scale-requirements">${(rows||[]).map(r=>`<li class="${r.met?'is-met':''}"><span>${r.met?'✓':'○'} ${esc(r.label)}</span>${r.got!=null?`<b>${number(r.got)} / ${number(r.need)}</b>`:''}${r.reason?`<small>${esc(r.reason)}</small>`:''}${reqWhy(r)}</li>`).join('')}</ul>`;
 }
 
 function contractCard(c,kind,site){

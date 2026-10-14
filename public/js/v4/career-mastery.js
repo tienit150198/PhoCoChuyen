@@ -2,7 +2,7 @@
 import {escapeHTML as esc} from '../icons.js';
 const command=(label,action,payload={})=>`<button type="button" class="btn primary full" data-command="${action}" data-payload="${esc(JSON.stringify(payload))}">${esc(label)}</button>`;
 const benefit=n=>`Tối đa +${n} xu khi khép ngày đạt chuẩn, nếu còn lượt nhận thu nhập.`;
-const requirements=m=>(m.next?.requirements||[]).map(r=>`<li class="${r.met?'is-met':''}"><div><span>${r.met?'✓':'○'} ${esc(r.label)}</span><b>${r.got}/${r.need}</b></div><progress value="${Math.min(r.got,r.need)}" max="${Math.max(1,r.need)}" aria-label="${esc(r.label)}">${r.got}/${r.need}</progress></li>`).join('');
+const requirements=m=>(m.next?.requirements||[]).map(r=>`<li class="${r.met?'is-met':''}"><div><span>${r.met?'✓':'○'} ${esc(r.label)}</span><b>${r.got}/${r.need}</b></div>${r.id==='days'&&!r.met?'<small class="cm-hint">Ngày nghề có ≥3 việc sạch, ≥80%; cộng khi khép ca.</small>':''}<progress value="${Math.min(r.got,r.need)}" max="${Math.max(1,r.need)}" aria-label="${esc(r.label)}">${r.got}/${r.need}</progress></li>`).join('');
 export function masteryCard(m,{compact=false}={}){
   if(!m)return '';
   const current=`<h3>${esc(m.badge||'🌱')} ${esc(m.title)}</h3>`;

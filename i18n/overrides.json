@@ -23214,7 +23214,15 @@
   "chưa đọc thư mời": "didn't read the invitation",
   "chưa nói đúng chuyện cần nghe": "missed what they needed to hear",
   "Trình bày trước đã.": "Present first.",
-  "Đã trả lời câu này rồi.": "Already answered this one."
+  "Đã trả lời câu này rồi.": "Already answered this one.",
+  "Ngày thực đạt chuẩn": "Qualifying real days",
+  "đạt, cộng lúc 0h": "qualifies, added at midnight",
+  "thiếu ca quản lý nghiệm thu": "needs an accepted management shift",
+  "cần ≥3 việc sạch, ≥80%": "needs ≥3 clean jobs, ≥80%",
+  "Cách tính": "How it counts",
+  "Ngày nghề có ≥3 việc sạch, ≥80%; cộng khi khép ca.": "A career day with ≥3 clean jobs, ≥80%; counted when you close the day.",
+  "Ngày thực là ngày lịch 0h–24h giờ Việt Nam. Ngày đạt khi bạn tự làm xong ít nhất 3 việc không lỗi và ít nhất 80% số việc trong ngày không lỗi. Ngày đạt được cộng khi qua 0h. Việc giữ từ ngày nghề trước, làm xong hôm nay vẫn tính. Việc của nhân viên, ca quản lý và đơn người chơi không tính; đổi ngày nghề không tăng ngày thực. Khác với “ngày đạt chuẩn” của Tay nghề lâu năm, vốn tính theo ngày nghề khi khép ca.": "A real day is a calendar day, midnight to midnight, Vietnam time. It qualifies when you finish at least 3 jobs yourself without mistakes and at least 80% of that day's jobs are mistake-free. A qualifying day is added at midnight. Jobs kept from an earlier career day still count when you finish them today. Staff jobs, management shifts and player orders do not count; changing the career day does not add real days. This differs from the Mastery track's \"qualified days\", which count career days when you close them.",
+  "Ngày thực là ngày lịch 0h–24h giờ Việt Nam. Ngày đạt khi bạn tự làm xong ít nhất 3 việc không lỗi và ít nhất 80% số việc trong ngày không lỗi, kèm một ca quản lý được nghiệm thu. Ngày đạt được cộng khi qua 0h. Việc giữ từ ngày nghề trước, làm xong hôm nay vẫn tính. Việc của nhân viên, ca quản lý và đơn người chơi không tính; đổi ngày nghề không tăng ngày thực. Khác với “ngày đạt chuẩn” của Tay nghề lâu năm, vốn tính theo ngày nghề khi khép ca.": "A real day is a calendar day, midnight to midnight, Vietnam time. It qualifies when you finish at least 3 jobs yourself without mistakes, at least 80% of that day's jobs are mistake-free, and one management shift is accepted. A qualifying day is added at midnight. Jobs kept from an earlier career day still count when you finish them today. Staff jobs, management shifts and player orders do not count; changing the career day does not add real days. This differs from the Mastery track's \"qualified days\", which count career days when you close them."
   },
   "patterns": {
   "Trả tiền từ $1 khi đặt. Gộp nhiều món một đơn (tối đa $2 món): một lần ship. Hàng vào kệ sau khi bạn mở thùng và đếm đúng.": "Paid from $1 when you order. Put several goods in one order (up to $2): one delivery fee. Goods go on the shelf once you open the crate and count them right.",
@@ -26517,7 +26525,12 @@
     "Lần $1:": "Round $1:",
     "còn $1 lần": "$1 tries left",
     "🔍 Xem kỹ chuyện $1": "🔍 Look closely at $1",
-    "📒 Ghi sổ trực ban · $1 dòng": "📒 Write the duty log · $1 lines"
+    "📒 Ghi sổ trực ban · $1 dòng": "📒 Write the duty log · $1 lines",
+    "Hôm nay: $1/$2 việc sạch · $3": "Today: $1/$2 clean jobs · $3",
+    "Hôm nay: $1/$2 việc sạch": "Today: $1/$2 clean jobs",
+    "Cần thêm $1 ngày thực đạt chuẩn.": "$1 more qualifying real days needed.",
+    "Chưa đủ: $1.": "Not yet met: $1.",
+    "Cách tính: $1": "How it counts: $1"
   },
   "Góc hẹn hò: ngồi ghế đá chờ ghép đôi, hẹn 5 phút, cùng thả tim là thành “Đang tìm hiểu”.": "Dating corner: sit on a bench to be matched, a 5-minute date, both tap the heart to start “Getting to know”.",
   "Đám cưới trực tiếp: chọn ngày giờ thật, cả phố vào dự, khách nhận +15 xu mỗi 5 phút.": "Live weddings: pick a real date and time, the whole phố can attend, guests get +15 xu every 5 minutes.",
