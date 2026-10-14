@@ -1,3 +1,7 @@
+# v2.4.12 — 2026-10-14
+
+🧩 Ghép ba Phố Mây: bỏ giới hạn 15 màn mới mỗi ngày (chủ game 14/10); vẫn giữ thời gian tối thiểu mỗi màn. `n` vẫn lưu tối đa 15 để bản cũ đọc được. Không có Có gì mới.
+
 # v2.4.11 — 2026-10-14
 
 Gồm chua (đi chùa từng bước, gọn đẹp) và profnghe (hồ sơ gọn, tìm nghề có tìm kiếm + lọc). Có gì mới: tổng hợp các bản 2.4.3–2.4.11 (không nhắc chợ đen/hội chợ).
