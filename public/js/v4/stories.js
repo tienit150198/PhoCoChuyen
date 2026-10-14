@@ -141,7 +141,7 @@ export function storiesCard(env){
     const m=meta(a.career),dots=Array.from({length:a.total},(_,i)=>`<i class="${i<a.seen?'on':''}"></i>`).join('');
     const lead=a.pending?`<p class="st-row-note due">✨ Có chuyện mới</p>`:a.done?`<p class="st-row-note done">${esc(a.keepsake?.emoji||'🎁')} ${esc(a.keepsake?.name||'')}</p><p class="st-memory">${esc(a.keepsake?.desc||'')}</p>`:'';
     const recap=a.recap?`<p class="st-recap"><b>Gần nhất</b> ${esc(a.recap)}</p>`:'';
-    const unlock=!a.pending&&a.next?`<div class="st-unlock"><b>Để gặp đoạn tiếp theo</b><p>Các mốc tính riêng tại nơi làm này, theo ngày trong game.</p>
+    const unlock=!a.pending&&a.next?`<div class="st-unlock"><b>Để gặp đoạn tiếp theo</b>
       <ul>${a.next.requirements.map(r=>`<li class="${r.met?'met':''}"><span>${esc(r.label)}</span><strong>${fmt(r.current)}/${fmt(r.target)}</strong><small>${r.met?'Đã đạt':`Còn ${fmt(r.remaining)}`}</small></li>`).join('')}</ul>
       ${a.next.ready?'<p class="st-ready">Đủ điều kiện. Tiếp tục làm việc ở đây để gặp đoạn mới.</p>':''}</div>`:'';
     const past=a.beats.length?`<details class="st-past"><summary>Đã qua ${a.beats.length} đoạn</summary><ol>${a.beats.map(b=>`<li><span aria-hidden="true">${esc(b.emoji)}</span><span>${esc(b.title)}${b.recap?`<p>${esc(b.recap)}</p>`:''}${b.pick?`<small>Bạn chọn: ${esc(b.pick)}</small>`:''}</span></li>`).join('')}</ol></details>`:'';

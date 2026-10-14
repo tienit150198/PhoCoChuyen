@@ -329,7 +329,7 @@ function shelf(x){
   const d=data(x),wants=d.wants||[];
   if(!wants.length)return '';
   const sale=(d.case||[]).filter(l=>l.sale&&l.state==='day_old').reduce((a,l)=>a+l.qty,0),buyers=d.buyers??1;
-  return `<section class="cb-shelf" aria-label="Tủ kính bán lẻ"><p class="cb-shelf-head"><b>🧁 Tủ kính</b><small>${buyers?`Mỗi lượt giao có ${buyers} khách ghé mua bánh lẻ`:'Hôm nay vắng khách mua lẻ'}${sale?` · rổ −50%: ${sale}`:''}</small></p>
+  return `<section class="cb-shelf" aria-label="Tủ kính bán lẻ"><p class="cb-shelf-head"><b>🧁 Tủ kính</b><small>${buyers?`👥 ${buyers} khách lẻ/lượt`:'Vắng khách lẻ'}${sale?` · rổ −50%: ${sale}`:''}</small></p>
     <div class="cb-shelf-row">${wants.map(id=>{const b=bake(x,id),q=freshCount(x,id);return `<span class="cb-shelf-item${q?'':' is-empty'}"><span class="count-badge${q?'':' is-empty'}" data-count="${q}">${q}</span><span class="cb-shelf-emoji" aria-hidden="true">${x.esc(b.emoji)}</span><small>${x.esc(b.name)}</small></span>`;}).join('')}</div></section>`;
 }
 const extras=x=>banners(x)+boxCard(x);

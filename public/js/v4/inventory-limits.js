@@ -7,8 +7,10 @@ export function inventoryLimits(inv){
   const u=inv.order_upgrade,st=inv.storage_upgrade,cap=Number(inv.capacity)||0,line=Number(inv.line_cap)||80;
   const done='<small class="tag green">Đã mở tối đa</small>';
   const storage=st?(st.next_capacity?`<button type="button" class="btn small" data-action="v4StorageUpgrade">Nâng sức chứa lên ${fmt(st.next_capacity)} · ${fmt(st.next_price)} xu</button>`:done):'';
-  const order=u?(!u.next_limit?done:line>=cap&&st?.next_capacity?`<small class="muted">Một dòng đã nhập đầy kệ ${fmt(cap)}: nâng sức chứa trước.</small>`:`<button type="button" class="btn ghost small" data-action="v4OrderUpgrade">Nâng nhập mỗi dòng lên ${fmt(u.next_limit)} · ${fmt(u.next_price)} xu</button>`):'';
-  return `<section class="card" aria-label="Sức chứa và hạn mức nhập"><div class="row spread wrap"><span>Sức chứa: <b>${fmt(cap)}</b>/loại</span>${storage}</div><div class="row spread wrap space-top"><span>Nhập mỗi dòng: <b>${fmt(line)}</b></span>${order}</div></section>`;
+  // A line that already fills the shelf: no upgrade here, and the why is the row's tooltip, not a grey line (#384).
+  const full=u&&u.next_limit&&line>=cap&&st?.next_capacity?` title="Một dòng đã nhập đầy kệ ${fmt(cap)}: nâng sức chứa trước."`:'';
+  const order=u?(!u.next_limit?done:full?'':`<button type="button" class="btn ghost small" data-action="v4OrderUpgrade">Nâng nhập mỗi dòng lên ${fmt(u.next_limit)} · ${fmt(u.next_price)} xu</button>`):'';
+  return `<section class="card" aria-label="Sức chứa và hạn mức nhập"><div class="row spread wrap"><span>Sức chứa: <b>${fmt(cap)}</b>/loại</span>${storage}</div><div class="row spread wrap space-top"><span${full}>Nhập mỗi dòng: <b>${fmt(line)}</b></span>${order}</div></section>`;
 }
 
 // Only ten trays are mounted per line. Indices stay identical on every page, so

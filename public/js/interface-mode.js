@@ -47,7 +47,7 @@ export function promptInterface(env){
   dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-labelledby','interfacePromptTitle');
   dialog.setAttribute('aria-describedby','interfacePromptDescription');
   dialog.innerHTML='<h2 id="interfacePromptTitle">Bạn có muốn quay về giao diện cũ?</h2>'+
-    '<p id="interfacePromptDescription">Bạn đang dùng giao diện mới 2.5D. Có thể đổi bất cứ lúc nào trong Cài đặt → Giao diện. Tài khoản và tiến trình của bạn luôn được giữ nguyên.</p>'+
+    '<p id="interfacePromptDescription">Đổi lúc nào cũng được trong Cài đặt → Giao diện, tiến trình giữ nguyên.</p>'+
     '<div class="row wrap space-top"><button type="button" class="btn big" data-interface="legacy">Về giao diện cũ</button><button type="button" class="btn primary big" data-interface="new">Giữ giao diện mới</button></div><p role="status" aria-live="polite"></p>';
   let resolve,busy=false;
   offering=new Promise(done=>{resolve=done;});

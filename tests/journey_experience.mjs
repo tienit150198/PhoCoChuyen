@@ -97,7 +97,7 @@ test('compact first-day card prioritizes tasks with one primary work CTA and no 
  assert.equal((h.match(/data-action="choose"/g)||[]).length,1,'only one work CTA');
  assert.equal((h.match(/class="btn primary /g)||[]).length,1,'work CTA remains primary');
  assert.doesNotMatch(h,/Làm quen phố/,'compact omits long chapter tagline');
- assert.match(h,/jr-recommend-reason/,'matching work recommendation keeps its reason');
+ assert.doesNotMatch(h,/jr-recommend-reason/,'a generic reason ("một nơi đã mở…") is not repeated above the button (#384)');
  assert.match(h,/Xem tất cả mục tiêu/);
  const full=chapterCard(e);
  assert.match(full,/Làm quen phố/);assert.match(full,/data-goal="days"/);assert.match(full,/data-goal="tasks"/);

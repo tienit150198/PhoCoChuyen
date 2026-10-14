@@ -37,7 +37,7 @@ export function refTable(groups,esc){
 
 /* ================================================================ UI foundation */
 
-/** The switch: html[data-clean] (v4/shell.js applyClean). Phones by default; Cài đặt → Giao diện can turn it
+/** The switch: html[data-clean] (v4/shell.js applyClean). Phones and the 2.5D look by default; Cài đặt → Giao diện can turn it
  * off (or on everywhere), and the server can turn it off for everyone (MNL_CLEAN_UI=off). */
 export const clean=()=>typeof document!=='undefined'&&document.documentElement.hasAttribute('data-clean');
 

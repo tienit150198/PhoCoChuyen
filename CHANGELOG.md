@@ -14,6 +14,10 @@ Quầy: nhập hàng mỗi lần mặc định 200 phần (trước 5, chủ gam
 
 Gồm fb374 (nút nâng sức chứa kho riêng, giá nail ×2,5 — góp ý #374 #375 #378), bmrank (Bảng vàng chợ đen cộng lại tiền phạt đã hoàn, phạt công an người chơi cập nhật ngay; scripts/fair_board_recompute.py), tile-match (🧩 Ghép ba Phố Mây, journey.tile tùy chọn, phúc lợi +0,2 %/màn tối đa +20 %).
 
+# Chưa phát hành — declutter (không có Có gì mới)
+
+- Bớt chữ nhỏ cho người mới (chủ game “xóa bớt các chữ nhỏ kia đi”, góp ý #384): giao diện 2.5D bật “Giao diện gọn” ở mọi cỡ màn (trước chỉ điện thoại; Cài đặt → Giao diện vẫn Tắt được); Hành trình bỏ dòng lý do chung chung trên nút, nhãn nhóm nghề trên thẻ, “Mới mở” ở chương 1, “vắng chủ không tốn phí”, chip “📉 Lãi thấp”, dòng gợi ý danh hiệu, dòng “Học rồi thi…”; Kho bỏ dòng khóa 🤖 Tự nhận hàng khi chưa có Bộ đếm kho · Bậc 5, giờ mở cửa và đơn vị dưới từng ô (vào tooltip), dòng “nâng sức chứa trước”; tạp hóa: cách nhập & sức chứa vào “?”; tủ kính tiệm bánh, thẻ Giới thiệu nghề tiệm áo, mục nhiệm vụ HUD và cần điều khiển gọn chữ hơn; hộp hỏi giao diện ngắn lại. Lý do nút bị khóa, giá, tiền, hạn giữ nguyên. Chỉ giao diện; việc sinh nhiệm vụ không đổi. check_word_caps: Kho ≤ 66 chữ (trước 67–79), màn làm việc bảo mẫu/tiệm bánh/tạp hóa ≤ 22.
+
 # Chưa phát hành — fb382 (không có Có gì mới)
 
 - Ngày thực đạt chuẩn (góp ý #382, #383; Mở rộng nghề và Chuyên môn nghề): việc khách giữ lại từ ngày nghề trước, làm xong hôm nay nay được tính vào việc sạch và ngày thực (trước đây bị bỏ qua: một tiệm quần áo mất 5 việc, 4 việc sạch trong ngày 14/10). Dòng điều kiện hiện tiến độ hôm nay (“Hôm nay: 16/18 việc sạch · đạt, cộng lúc 0h”) và “Cách tính ?” (ngày lịch 0h–24h giờ Việt Nam, ≥3 việc tự làm không lỗi, ≥80% sạch, từ mốc 2 thêm ca quản lý nghiệm thu; khác ngày đạt chuẩn của Tay nghề). Nút bị khóa ghi “Cần thêm N ngày thực đạt chuẩn.” thay cho câu sai “Ngày thực đạt chuẩn đã kết thúc”. Tay nghề lâu năm giữ luật cũ, dòng ngày đạt chuẩn ghi rõ “Ngày nghề có ≥3 việc sạch, ≥80%; cộng khi khép ca”. Save không đổi dạng; bản cũ vẫn đọc được.

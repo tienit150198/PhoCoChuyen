@@ -81,10 +81,10 @@ export function certsEntry(env){
   const got=k.groups.filter(g=>held(J.certificates?.[g.id])).length,st=J.study;
   const g=st&&k.groups.find(x=>x.id===st.cert),miss=!st&&certMissing(api);
   const line=st&&g?(st.ready_now?`${g.emoji} Bài thi ${g.name} đã mở`:`${g.emoji} Đang học · thi từ Ngày ${fmt(st.ready)}${st.days_left?` (còn ${st.days_left} ngày)`:''}`)
-    :miss?`${miss.g.emoji} Bạn làm ở ${placeOf(api,miss.cid)} mà chưa có ${miss.g.name}`:'Học rồi thi lấy chứng chỉ nghề';
+    :miss?`${miss.g.emoji} Bạn làm ở ${placeOf(api,miss.cid)} mà chưa có ${miss.g.name}`:'';   // nothing due: the title alone (#384)
   const tail=st?.ready_now?'<span class="tag green">Vào thi</span>':miss?'<span class="tag amber">Đi thi ngay</span>':`<span class="ct-count">${got}/${k.groups.length}</span>`;
   const data=miss?` data-cert="${esc(miss.g.id)}" data-career="${esc(miss.cid)}"`:'';
-  return `<button type="button" class="jr-card ct-entry${st?.ready_now||miss?' due':''}" data-action="jrCerts"${data}><span class="ct-entry-icon" aria-hidden="true">🎓</span><span class="grow"><b>Thi chứng chỉ</b><small>${esc(line)}</small></span>${tail}${icon('arrow',16)}</button>`;
+  return `<button type="button" class="jr-card ct-entry${st?.ready_now||miss?' due':''}" data-action="jrCerts"${data}><span class="ct-entry-icon" aria-hidden="true">🎓</span><span class="grow"><b>Thi chứng chỉ</b>${line?`<small>${esc(line)}</small>`:''}</span>${tail}${icon('arrow',16)}</button>`;
 }
 
 /** Earned certificates as badges (profile card). */

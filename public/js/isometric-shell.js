@@ -55,7 +55,8 @@ export function isometricHUDHTML(model,state={}){
   const m=model;
   const missionTitle=!m.current?'Hôm nay, thử làm nghề gì?':m.needsJob?`Xin việc tại ${m.place}`:!m.open?'Ca làm đang nghỉ':m.task?.title||'Bạn đã làm hết việc đang chờ';
   const missionLabel=!m.current?'Chọn nghề':m.needsJob?'Xem tuyển dụng':!m.open?'Chuẩn bị ca':m.task?'Làm tiếp':'Mở sổ việc';
-  const missionMeta=m.current&&m.open&&!m.needsJob?`${m.taskCount} việc đang chờ`:!m.current?'Chọn nghề hôm nay':m.needsJob?'Tuyển dụng':'Ca làm của bạn';
+  // Only the count earns the small line; "Chọn nghề hôm nay", "Tuyển dụng", "Ca làm của bạn" repeated the title (#384).
+  const missionMeta=m.current&&m.open&&!m.needsJob?`${m.taskCount} việc đang chờ`:'';
   const missionAria=`${missionLabel}: ${missionTitle}`;
   const nav=[['isoCareers','briefcase','Công việc'],['isoMore','menu','Thêm']];
   const active=m.activeTab||(m.mode==='work'?'isoCareers':'isoTown');
@@ -79,7 +80,7 @@ export function isometricHUDHTML(model,state={}){
       </div>
     </details>
   </nav>
-  <details class="iso-mission"><summary data-iso-focus="iso-mission" aria-controls="isoMissionDetails" aria-label="Việc hôm nay: ${esc(missionTitle)}. Xem chi tiết">${icon('note',20)}<span class="iso-mission-copy"><small>${esc(missionMeta)}</small><b>${esc(missionTitle)}</b></span>${icon('arrow',16)}</summary><div class="iso-mission-details" id="isoMissionDetails"><b>${esc(missionTitle)}</b><button type="button" class="iso-mission-action" data-action="${m.missionAction}" aria-label="${esc(missionAria)}">${esc(missionLabel)} ${icon('arrow',16)}</button></div></details>
+  <details class="iso-mission"><summary data-iso-focus="iso-mission" aria-controls="isoMissionDetails" aria-label="Việc hôm nay: ${esc(missionTitle)}. Xem chi tiết">${icon('note',20)}<span class="iso-mission-copy">${missionMeta?`<small>${esc(missionMeta)}</small>`:''}<b>${esc(missionTitle)}</b></span>${icon('arrow',16)}</summary><div class="iso-mission-details" id="isoMissionDetails"><b>${esc(missionTitle)}</b><button type="button" class="iso-mission-action" data-action="${m.missionAction}" aria-label="${esc(missionAria)}">${esc(missionLabel)} ${icon('arrow',16)}</button></div></details>
   <div class="iso-camera${m.cameraOpen?' is-open':''}" role="group" aria-label="Góc nhìn Đảo Hoàng Sa">
     ${control('Góc nhìn','isoCamera','overview','iso-camera-toggle',' aria-label="Điều chỉnh góc nhìn" aria-expanded="'+Boolean(m.cameraOpen)+'" aria-controls="isoCameraOptions"')}
     <div class="iso-camera-options" id="isoCameraOptions"${m.cameraOpen?'':' hidden'}>

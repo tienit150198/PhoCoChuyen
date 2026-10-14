@@ -53,10 +53,10 @@ export function bootIsometricMovement(environment){
   const getEnvironment=typeof environment==='function'?environment:()=>environment;
   const stage=document.getElementById('stage')||document.getElementById('app');if(!stage)return null;
   const element=document.createElement('div');element.id='isoMovement';element.className='iso-movement';
-  const caption=document.createElement('span');caption.className='iso-stick-caption';caption.textContent='Di chuyển';caption.setAttribute('aria-hidden','true');
+  // No "Di chuyển" caption over the stick (#384: small extra words); the stick keeps its aria-label.
   const base=document.createElement('div');base.className='iso-stick-base';base.tabIndex=0;base.setAttribute('role','group');base.setAttribute('aria-label','Di chuyển nhân vật: kéo cần tròn, hoặc dùng phím mũi tên và W A S D.');
   const knob=document.createElement('span');knob.className='iso-stick-knob';knob.setAttribute('aria-hidden','true');
-  base.append(knob);element.append(caption,base);stage.append(element);
+  base.append(knob);element.append(base);stage.append(element);
   const media=window.matchMedia('(max-width: 699px), (pointer: coarse)'),listeners=[];
   let destroyed=false,allowed=false,lastMode=null,lastWorld=null;
   const control=createMovementController({

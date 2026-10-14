@@ -144,7 +144,7 @@ function meCard(env){
   return `<section class="jr-card jr-me" aria-label="Nhân vật của bạn">
     <div class="jr-me-top"><button type="button" class="jr-avatar" data-action="jrView" data-view="profile" aria-label="Sửa tên và nhân vật">${avatar(J.gender,68,lookOf(api.state))}</button>
       <div class="jr-me-text"><h2>${esc(api.state.name)}</h2>${spouseChip(api)}
-        ${J.story?wornChips(api,J)+'<p class="muted small jr-chat-hint">💬 Danh hiệu tự hiện cạnh tên trong chat. Chạm để đổi cái đang đeo.</p>':''}
+        ${J.story?wornChips(api,J):''}
         <button type="button" class="jr-title-chip jr-wd-chip" data-action="jrWardrobe"><span aria-hidden="true">👗</span> Thay đồ</button>${rideChip(api)}${phoneChip(api)}
         <div class="jr-level"><div class="jr-level-row"><b>Trưởng thành cấp ${mat.level}</b><small>${esc(mat.name)}</small></div><div class="jr-bar" role="progressbar" aria-label="Kinh nghiệm trưởng thành" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div></div></div></div>
     ${J.story?`<div class="jr-stats">${wallet}<div class="jr-stat"><small>Ngày sống</small><b>${fmt(J.life_day)}</b></div><button type="button" class="jr-stat" data-action="jrView" data-view="titles"><small>Danh hiệu</small><b>${J.titles.length}</b></button></div>`:''}
@@ -189,8 +189,9 @@ function resumeCard(env,{reasonOnly=false,slim=false}={}){
   const pending=(J.goals||[]).filter(x=>!x.done);
   const reason=pending.some(x=>x.id==='places')&&!room.metrics?.served?'Thử một nơi mới để tiến tới mục tiêu làm ở nhiều nơi.'
     :pending.some(x=>x.id.startsWith('office_'))&&CHAPTER_OFFICE.includes(sid)?'Mục tiêu chương này cần kinh nghiệm làm việc văn phòng.'
-    :room.started?'Tiếp tục công việc ở nơi bạn đã bắt đầu.':'Một nơi đã mở để bạn bắt đầu làm việc.';
-  return `<div class="jr-recommend">${slim?'':`<p class="jr-recommend-reason">${esc(reason)}</p>`}${reasonOnly?'':`<button type="button" class="btn primary big full jr-cta jr-resume" data-action="choose" data-career="${esc(sid)}"><span aria-hidden="true">${emojiOf(sm)}</span> ${esc(label)} ${icon('arrow',16)}</button>`}</div>`;
+    :'';   // declutter (#384): no generic line ("tiếp tục ở nơi đã bắt đầu"), the button already says it
+  if(reasonOnly&&!reason)return '';
+  return `<div class="jr-recommend">${slim||!reason?'':`<p class="jr-recommend-reason">${esc(reason)}</p>`}${reasonOnly?'':`<button type="button" class="btn primary big full jr-cta jr-resume" data-action="choose" data-career="${esc(sid)}"><span aria-hidden="true">${emojiOf(sm)}</span> ${esc(label)} ${icon('arrow',16)}</button>`}</div>`;
 }
 
 export function chapterCard(env,{compact=false}={}){
@@ -226,17 +227,17 @@ function placeCard(env,cid){
   if(p?.paused)tags.push(tag('Tạm đóng','amber'));
   if(job.status==='offer')tags.push(tag('💌 Có thư mời','blue'));
   else if(job.required&&job.status!=='hired')tags.push(tag(icon('briefcase',12)+' Cần xin việc','amber'));
-  if(!c.started&&J.story&&(api.content.journey.unlock_chapter||{})[cid]===J.chapter)tags.push(tag('Mới mở','green'));
+  if(!c.started&&J.story&&(api.content.journey.unlock_chapter||{})[cid]===J.chapter&&J.chapter>1)tags.push(tag('Mới mở','green'));   // chapter 1: every place is new, so no tag (#384)
   if(api.state.x3?.today?.includes(cid))tags.push(tag(`🔥 Lời x${api.state.x3.x} hôm nay`,'amber'));   // game/x3_week.py
-  {const mk=marketTag(api.state,cid);if(mk)tags.push(tag(esc(mk[0]),mk[1]));}   // 📈 staff profit ×market, 🔥 nghề hot hôm nay (game/staff_market.py)
+  {const mk=marketTag(api.state,cid);if(mk&&mk[1])tags.push(tag(esc(mk[0]),mk[1]));}   // only hot/high: a "📉 Lãi thấp" chip on most cards was noise (#384)   // 📈 staff profit ×market, 🔥 nghề hot hôm nay (game/staff_market.py)
   if(acctTag(aj))tags.push(tag(acctTag(aj),'amber'));
   let money='';
-  if(p&&J.story)money=p.employed?`<p class="jr-fund">Làm thuê · lương về ví${abandonTrust(api,cid)}</p>${btn('💵 Xem lương trong Sổ ví','jrView',{view:'wallet'},'ghost small')}`:`<p class="jr-fund">Quỹ ${fmt(p.fund)} xu · ${p.paused?'tạm đóng, mở lại miễn phí':'vắng chủ không tốn phí'}</p>`;
+  if(p&&J.story)money=p.employed?`<p class="jr-fund">Làm thuê · lương về ví${abandonTrust(api,cid)}</p>${btn('💵 Xem lương trong Sổ ví','jrView',{view:'wallet'},'ghost small')}`:`<p class="jr-fund">Quỹ ${fmt(p.fund)} xu${p.paused?' · tạm đóng, mở lại miễn phí':''}</p>`;
   if(aj&&!aj.ok)money=`<p class="jr-fund">🔒 ${esc(aj.why)}</p>`;
   const action=aj&&!aj.ok?btn(`Đi học ${icon('arrow',13)}`,'accountingSchool',{},'cream small'):p?.paused?btn('Mở lại','jrReopen',{career:cid},'cream small'):
     btn(`${c.started?'Tiếp tục':job.required&&job.status!=='hired'?'Xin việc':'Bắt đầu'} ${icon('arrow',13)}`,'choose',{career:cid},c.started?'primary small':'cream small');
   return `<article class="jr-place ${p?.paused?'paused':''} ${cid===api.state.current?'current':''}" style="--career:${colour(m.color)}"><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span>
-    <div class="jr-place-text"><span class="eyebrow">${esc(CATS[catOf(m)]||'')}</span><h3>${esc(m.place||m.short)}</h3><small>${esc(m.short||'')}</small><div class="jr-tags">${acctTags(aj,tags,tag).join('')}</div>${money}${J.story?certPlaceLine(env,cid):''}</div>${action}</article>`;
+    <div class="jr-place-text"><h3>${esc(m.place||m.short)}</h3><small>${esc(m.short||'')}</small><div class="jr-tags">${acctTags(aj,tags,tag).join('')}</div>${money}${J.story?certPlaceLine(env,cid):''}</div>${action}</article>`;
 }
 
 function lockedTile(env,cid){

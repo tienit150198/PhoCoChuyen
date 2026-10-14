@@ -81,6 +81,10 @@ DEFAULT += tuple(c for c in WAVE5 if c not in DEFAULT)
 WORK_DONE += ('zpop',)
 WORK_CAP.update(zpop=30)
 
+# Declutter 14/10 (#384, a brand-new babysitter on a Mac: "nhiều chữ… rối mắt"): the first-30-minutes work screens
+# measured 18–20 words; they stay a little under the general 25 so new helper lines do not creep back.
+WORK_CAP.update(babysitter=22, cafe_bakery=22, grocery=22)
+
 # Life sheets (cap 30, docs/UI_KIT.md): [name, rail action, rail group]; HUD is the home screen with no sheet open.
 LIFE = (('HUD', '', ''), ('town', 'jrTown', 'pho'), ('house', 'house', 'tien'), ('bank', 'bank', 'tien'), ('fair', 'fair', 'pho'),
         ('stall', 'quay', 'tien'), ('wardrobe', 'jrWardrobe', 'minh'), ('spend', 'spend', 'pho'), ('pets', 'pets', 'pho'),
@@ -174,6 +178,11 @@ async def run_life(args) -> int:
 
 # The stock room's order card (views.js orderCard): every career with a stock room shares it.
 KHO_CAP = 35
+# The stock room sheet itself, before an item is picked (the part on screen): declutter 14/10 (#384, owner "xóa bớt
+# các chữ nhỏ kia đi"): the locked 🤖 Tự nhận hàng advert, the opening hours, the unit line under every bin and the
+# "nâng sức chứa trước" line went: 67–79 words before, 51–66 after (360×780 and 390×844).
+KHO_SHEET_CAP = 66
+SHEET_COUNT = "async () => { const d = [...document.querySelectorAll('dialog[open]')].pop(); if (!d) return null; return (await import('/js/ui-kit.js')).wordBudget(d).words; }"
 KHO = ('cafe_bakery', 'clothing', 'grocery', 'florist', 'repair')
 KHO_COUNT = r"""() => {
   const d = [...document.querySelectorAll('dialog[open]')].pop(), card = d?.querySelector('.inv-order');
@@ -217,6 +226,9 @@ async def run_kho(args) -> int:
                         await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
                         await page.evaluate(TAP, ['inventory', ''])
                         await settle(page, 1500)
+                        sheet = await page.evaluate(SHEET_COUNT)
+                        if sheet is not None and sheet > KHO_SHEET_CAP:
+                            over.append(f'{cid} {w}x{h} stock room: {sheet} words (cap {KHO_SHEET_CAP})')
                         item = await page.evaluate("(document.querySelector('dialog[open] [data-action=v4Order][data-item]:not([data-item=\"\"])')||{dataset:{}}).dataset.item||null")
                         if not item:
                             rows.append(dict(career=cid, error='no item to order'))
@@ -228,14 +240,14 @@ async def run_kho(args) -> int:
                         if not m:
                             rows.append(dict(career=cid, error='no order card'))
                             continue
-                        rows.append(dict(career=cid, size=f'{w}x{h}', kho=m['words'], cut=m['cut'], wide=m['wide']))
+                        rows.append(dict(career=cid, size=f'{w}x{h}', kho=m['words'], sheet=sheet, cut=m['cut'], wide=m['wide']))
                         if m['words'] > KHO_CAP:
                             over.append(f'{cid} {w}x{h} order card: {m["words"]} words (cap {KHO_CAP})')
                         if m['cut']:
                             over.append(f'{cid} {w}x{h}: the sheet title is cut')
                         if m['wide']:
                             over.append(f'{cid} {w}x{h}: the sheet scrolls sideways')
-                        print(f"{cid:18} {w}x{h}  kho {m['words']:>3}{'  TITLE CUT' if m['cut'] else ''}{'  WIDE' if m['wide'] else ''}", flush=True)
+                        print(f"{cid:18} {w}x{h}  kho {m['words']:>3}  sheet {sheet!s:>3}{'  TITLE CUT' if m['cut'] else ''}{'  WIDE' if m['wide'] else ''}", flush=True)
                     except Exception as e:  # noqa: BLE001
                         rows.append(dict(career=cid, error=str(e)[:160]))
                         print(f'{cid:18} ERROR {str(e)[:160]}', flush=True)

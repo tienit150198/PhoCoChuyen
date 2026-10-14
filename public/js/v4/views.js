@@ -64,10 +64,10 @@ const HOLD_WAIT=300,HOLD_STEP=140;
 let stockEnv=null,stockOn=false;
 const holdSfx=new Sound();
 /** 🤖 Tự nhận hàng (game/auto_stock.py; `warehouse.auto`, an older server sends none: nothing shows): one switch once
- * Bộ đếm kho · Bậc 5 is owned, else one locked line naming what opens it. */
+ * Bộ đếm kho · Bậc 5 is owned, else nothing (the locked line was clutter for a new player, #384). */
 export function autoStockRow(a){
   if(!a)return '';
-  if(!a.unlocked)return `<p class="inv-auto locked"><span aria-hidden="true">🔒</span> 🤖 Tự nhận hàng · mở bằng <b>Bộ đếm kho · Bậc 5</b> (Thiết bị)</p>`;
+  if(!a.unlocked)return '';   // not owned: no locked advert in the stock room (#384); Thiết bị lists Bộ đếm kho · Bậc 5
   return `<button type="button" class="inv-auto${a.on?' on':''}" role="switch" aria-checked="${a.on?'true':'false'}" data-command="stock_auto" data-payload="${esc(JSON.stringify({on:!a.on}))}"><span>🤖 Tự nhận hàng: <b>${a.on?'Bật':'Tắt'}</b></span><i aria-hidden="true"></i></button>`;
 }
 export function stockCountStep(env){return Math.max(1,Math.min(100,Math.floor(Number(env?.api?.state?.careers?.[env.api.state.current]?.warehouse?.count_step)||1)));}
@@ -222,7 +222,7 @@ export function inventoryView(env){
   const cta=nx?.go&&!nx.go.sel?`<button type="button" class="btn primary big gd-cta"${goAttrs(nx.go)}>${nx.go.label}</button>`:'';
   const chip=(n,label,kind,tabId)=>n?`<button type="button" class="inv-chip ${kind}" data-action="v4InvTab" data-tab="${tabId}"><b>${n}</b> ${label}</button>`:'';
   const calm=!ready.length&&!transit.length&&!tonight&&!low.length?`<span class="inv-calm">${icon('check',14)} Kho ổn.</span>`:'';
-  const now=clk?`<div class="row spread"><span class="tag blue">🕑 ${esc(clk.label)}</span><small class="muted">Mở cửa ${esc(clk.open_time)}–${esc(clk.close_time)}</small></div>`:'';
+  const now=clk?`<div class="row spread"><span class="tag blue" title="Mở cửa ${esc(clk.open_time)}–${esc(clk.close_time)}">🕑 ${esc(clk.label)}</span></div>`:'';   // the hours: its tooltip (#384)
   const first=transit[0],next=!ready.length&&first?`<small class="inv-next">${icon('truck',13)} ${first.group?`Đơn gộp ${transitS.find(g=>g.id===first.group)?.lines.length||''} món`:name(byId[first.item])} · <b>${esc(first.left_label||first.eta_label||'')}</b>${first.left_label&&first.eta_label?` <span class="muted">(${esc(first.eta_label)})</span>`:''}</small>`:'';
   const strip=`<section class="inv-status" aria-label="Tình trạng kho">${now}${autoStockRow(c.warehouse?.auto)}<div class="inv-chips">${chip(readyS.length,'thùng đã tới','accent','orders')}${chip(transitS.length,'đơn đang giao','info','orders')}${chip(tonight,'hết hạn tối nay','bad','lots')}${chip(low.length,'loại sắp hết','warn','stock')}${calm}</div>${next}${cta?`<div class="inv-cta">${cta}</div>`:''}</section>`;
 
@@ -283,7 +283,7 @@ export function inventoryView(env){
       const life=!locked&&days&&days<900&&!exp?` · còn ${days} ngày`:'';
       return `<button type="button" class="inv-bin ${state}" data-action="v4Order" data-item="${esc(i.id)}"${locked?' disabled':''} aria-label="${esc(i.name)}: ${q} trên kệ${on?`, ${on} đang giao`:''}${carted?`, đã thêm ${carted} vào đơn`:''}${locked?`, mở ở cấp ${i.unlock}`:', chạm để nhập thêm'}">`+
         `<span class="inv-bin-top"><span class="inv-bin-emoji" aria-hidden="true">${esc(i.emoji||'📦')}</span><span class="inv-bin-count"><b>${locked?'—':q}</b><small>/${cap}</small></span></span>`+
-        `<span class="inv-bin-name">${esc(i.name)}</span><small class="inv-bin-unit">${esc(unit(i))}${life}</small>`+
+        `<span class="inv-bin-name">${esc(i.name)}</span>${life?`<small class="inv-bin-unit">${life.slice(3)}</small>`:''}`+
         `<span class="inv-bar" aria-hidden="true"><i style="width:${locked?0:pct(q)}%"></i><i class="on" style="width:${pct(on)}%"></i></span>`+
         `${flags?`<span class="inv-flags">${flags}</span>`:''}</button>`;};
     const shown=focus.length?items.filter(i=>focus.includes(i.id)):items;

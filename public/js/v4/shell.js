@@ -38,7 +38,8 @@ export const layoutPref=read;
 
 /* ---- Clean UI switch ("gọn hơn, clean hơn, ít chữ hơn"; docs/UI_KIT.md) ------------------------------------
  * html[data-clean] turns on the phone-first layout of the shared kit: header chips instead of pinned cards, notes
- * under the header. Player: Cài đặt → Giao diện → "Giao diện gọn" (Tự động = phones only, Bật = every screen
+ * under the header. Player: Cài đặt → Giao diện → "Giao diện gọn" (Tự động = phones, and every size in the 2.5D look
+ * (html[data-game=isometric], the default for new players; #384 on a Mac: "nhiều chữ… rối mắt"), Bật = every screen
  * size, Tắt). Server kill switch for everyone: MNL_CLEAN_UI=off (bootstrap `ui.clean`), kept in storage so the
  * next first frame already knows. */
 const CLEAN_KEY='mnl.clean',CLEAN_SRV='mnl.clean.srv';
@@ -47,7 +48,7 @@ let cleanServer=true;
 try{cleanServer=localStorage.getItem(CLEAN_SRV)!=='off';}catch{/* storage blocked */}
 export function applyClean(){
   const root=document.documentElement,pref=cleanPref();
-  const on=cleanServer&&(pref==='on'||(pref==='auto'&&root.dataset.layout==='phone'));
+  const on=cleanServer&&(pref==='on'||(pref==='auto'&&(root.dataset.layout==='phone'||root.dataset.game==='isometric')));
   if(root.hasAttribute('data-clean')!==on)root.toggleAttribute('data-clean',on);
 }
 export function setCleanPref(v){try{localStorage.setItem(CLEAN_KEY,['auto','on','off'].includes(v)?v:'auto');}catch{/* storage blocked */}applyClean();}
