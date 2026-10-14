@@ -177,7 +177,7 @@ function bootLive(m){
   m.live.on('cand',f=>import('./v4/cand.js').then(a=>a.onLive(env(),f)).catch(e=>console.warn('cand:',e)));   // 👮 a patrol's check (game/cand_ops.py)
   m.liveBoot(env());
 }
-const env=()=>({api,ui,cmd,confirmAction,toast,renderSheet,renderMain,openSheet,closeSheet,world,bootLive,act:(action,data={})=>handleAction(action,data,null),live:()=>L.live.m?.live||null});
+const env=()=>({api,ui,cmd,confirmAction,toast,renderSheet,renderMain,openSheet,closeSheet,world,bootLive,sound,act:(action,data={})=>handleAction(action,data,null),live:()=>L.live.m?.live||null});
 /** The one day counter the player sees: the life day in the story, the workplace's own day elsewhere (game/days.py). */
 const dayNo=c=>api.state?.journey?.story&&Number.isInteger(api.state.journey.life_day)?api.state.journey.life_day:c?.day;
 const needsJob=()=>room()?.job?.required&&room().job.status!=='hired';
@@ -344,7 +344,8 @@ function navItems(c){
   {const date=L.live.m?.dateNav();if(date)items.push(date);}  // 💕 Góc hẹn hò (v4/dating.js): only while the live service has dates on
   {const lv=L.live.m?.live;if(lv?.flags.wedding&&lv.welcomed)items.push(['liveWed','heart','Lịch cưới']);}  // 💍 Lịch cưới (v4/wedding.js): live weddings, while on
   {const lv=L.live.m?.live;if(lv?.flags.kara&&lv.welcomed)items.push(['liveKara','music','Phòng hát']);}  // 🎤 Phòng hát (v4/karaoke.js): only while the live service has it on (LIVE_KARAOKE)
-  {const lv=L.live.m?.live;if(lv?.flags.bark&&lv.welcomed&&api.state?.journey?.story)items.push(['liveBark','paw','Kéo co chó sủa']);}  // 🐕 Kéo co chó sủa (v4/dog-bark.js): only while the live service has it on (LIVE_DOG_BARK)
+  {const lv=L.live.m?.live;if(lv?.flags.bark&&lv.welcomed&&api.state?.journey?.story)items.push(['liveBark','paw','Kéo co chó sủa']);}
+  {const tm=api.state?.journey?.story&&api.state.journey.tile;if(tm){RAIL_NOTE.tileMatch='🧩 Phúc lợi +'+tm.pct+'%';items.push(['tileMatch','grid','Ghép ba Phố Mây']);}}  // 🧩 Ghép ba Phố Mây (v4/tile-match.js): its badge as the entry's line  // 🐕 Kéo co chó sủa (v4/dog-bark.js): only while the live service has it on (LIVE_DOG_BARK)
   items.push(['friends','user','Bạn bè',api.friendAlerts||0],['marriage','heart','Hôn nhân',api.marriageAlerts||0]);  // Bạn bè + Hôn nhân (v4/marriage.js, own dialog; badges from v4/ticker.js)
   items.push(['money','bag','Tiền của bạn']);  // 💰 the money sheet (v4/wealth.js), also behind the HUD money chips
   {const bk=api.state?.journey?.bank;items.push(['bank','coin','Ngân hàng',bk?.unread||(bk?.overdue?'dot':0)]);}  // 🏦 Ngân hàng Phố (v4/bank.js, own dialog)
@@ -390,7 +391,7 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()))||(x[0]==='fair'&&!api.state?.fair?.over);
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['fair','luxFw','wedInvite','spend','pets','sharedIsland','liveWalk','liveWed','liveKara','liveBark','nhom','phone','social','jrTown','rank']],
+  ['pho','building','Khu phố',['fair','luxFw','wedInvite','spend','pets','sharedIsland','liveWalk','liveWed','liveKara','liveBark','tileMatch','nhom','phone','social','jrTown','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
@@ -1677,6 +1678,7 @@ async function handleAction(action,data,el){
       if(action==='liveWed'){await (await import('./v4/wedding.js')).openWeddings(env());break;}  // 💍 Lịch cưới (v4/wedding.js): its own dialog
       if(action==='liveKara'){await (await import('./v4/venue-routing.js')).visitVenue(env(),'karaoke',async()=>{await (await import('./v4/karaoke.js')).openKaraoke(env(),data);});break;}  // 🎤 Phòng hát (v4/karaoke.js): its own dialog
       if(action==='liveBark'){await (await import('./v4/venue-routing.js')).visitVenue(env(),'bark',async()=>{await (await import('./v4/dog-bark.js')).openDogBark(env());});break;}  // 🐕 Kéo co chó sủa (v4/dog-bark.js): its own dialog
+      if(action==='tileMatch'){await (await import('./v4/tile-match.js')).openTileMatch(env());break;}  // 🧩 Ghép ba Phố Mây: its own dialog
       if(action==='wedInvite'){await (await import('./v4/wedinvite.js')).openWedInvite(env());break;}  // 💌 Gửi thiệp mời cưới cả phố: its own dialog
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy

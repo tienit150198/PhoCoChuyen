@@ -265,11 +265,13 @@ def _profit_state(st):
         costs=st['business'].get('unpaid_fines', 0)))
 
 
-def reward_margin(st, revenue, costs, percent=BONUS_PERCENT):
+def reward_margin(st, revenue, costs, percent=BONUS_PERCENT, owner=None):
     """Credit `percent` of realized margin after uncovered operating costs/losses.
 
     Inventory is expensed here only when consumed. Funding and unsold stock
     never earn a bonus; fractional xu survive small orders and polling.
+    `owner`: the stall owner's save; its 🧩 Phúc lợi (game/tile_match.py) adds its ‰ of the margin and this bonus to
+    the till as well (not to the profit bonus's total: older builds keep validating that).
     """
     p = _profit_state(st)
     margin = revenue - costs - p['costs']
@@ -280,6 +282,11 @@ def reward_margin(st, revenue, costs, percent=BONUS_PERCENT):
     bonus = min(bonus, qy.MONEY_MAX - st['till'])
     st['till'] += bonus
     p['total'] += bonus
+    if owner is not None:
+        from .tile_match import extra
+        tile = min(extra(owner, margin + bonus, f"quay|{st['id']}|{st['business']['seq']}"), qy.MONEY_MAX - st['till'])
+        st['till'] += tile
+        bonus += tile
     return bonus
 
 
@@ -295,8 +302,9 @@ def charge_income_tax(st, revenue, costs):
     return paid
 
 
-def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=0, extra_loss=0, employee=None):
-    """Book only a real fulfilled order; stock was purchased before this point."""
+def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=0, extra_loss=0, employee=None, owner=None):
+    """Book only a real fulfilled order; stock was purchased before this point. `owner`: the stall owner's save
+    (🧩 Phúc lợi on the margin, reward_margin)."""
     b = st['business']
     amount = sum(qs.price(st, d) for d in items) if total is None else total
     for d in items:
@@ -320,7 +328,7 @@ def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=
         b['expenses']['loss'] += paid
         costs += paid
     costs += charge_income_tax(st, amount, costs)
-    bonus = reward_margin(st, amount, costs, income_gear.profit_percent(st,BONUS_PERCENT if employee is None else STAFF_BONUS_PERCENT))
+    bonus = reward_margin(st, amount, costs, income_gear.profit_percent(st,BONUS_PERCENT if employee is None else STAFF_BONUS_PERCENT), owner)
     ratio = sum(qs.price(st, d) / qs.DISH[st['trade']][d]['base'] for d in items) / len(items)
     price_stars = 5 if ratio <= .9 else 4 if ratio < 1.15 else 3 if ratio < 1.5 else 2 if ratio < 2 else 1
     review = None
@@ -408,7 +416,7 @@ def settle(s, now=None, *, _policy=True, _exclusive=False):
             qs.settle_queue(s, st, when)
             channel = income_gear.channel(st,b['seq'])
             employee = st['staff'][b['seq'] % len(st['staff'])]
-            sale(st, [dish], when, channel=channel, employee=employee)
+            sale(st, [dish], when, channel=channel, employee=employee, owner=s)
             tick_staff(s, st)
             b['arrivals'][dish] = market.advance(when, intervals[dish])
         market.enter_epoch(st, at)

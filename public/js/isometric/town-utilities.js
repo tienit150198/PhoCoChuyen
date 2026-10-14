@@ -1,7 +1,7 @@
 /** Existing app routes shared by the compact HUD and searchable town guide.
  * Availability mirrors app.js navItems: no feature is invented by the map.
  */
-const JOURNEY_FEATURES={garage:'garage',gadgets:'gadgets',pets:'pets',spend:'spend',spendStyle:'spend',spendQuan:'spend',spendSpa:'spend',spendRap:'spend',spendChua:'spend',lux:'lux',luxFw:'lux',luxTrip:'lux',luxSuu:'lux',luxNha:'lux',luxBay:'lux',luxTiec:'lux',luxHoc:'lux',luxMtq:'lux',abroad:'abroad'};
+const JOURNEY_FEATURES={tileMatch:'tile',garage:'garage',gadgets:'gadgets',pets:'pets',spend:'spend',spendStyle:'spend',spendQuan:'spend',spendSpa:'spend',spendRap:'spend',spendChua:'spend',lux:'lux',luxFw:'lux',luxTrip:'lux',luxSuu:'lux',luxNha:'lux',luxBay:'lux',luxTiec:'lux',luxHoc:'lux',luxMtq:'lux',abroad:'abroad'};
 const CONTENT_FEATURES={quay:'quay',auction:'auction',auctionLands:'auction',jrCerts:'certs'};
 const LIVE_FEATURES={liveWalk:'street',liveDate:'dating',liveWed:'wedding',liveKara:'kara',liveBark:'bark'};
 const owns=(object,key)=>Object.prototype.hasOwnProperty.call(object,key);
@@ -74,6 +74,7 @@ export function townUtilityGroups(state={},content={},social={}){
       ['liveWalk','map','🚶','Phố đi dạo'],['liveDate','heart','💕','Góc hẹn hò'],
       ['liveWed','heart','💍','Lịch cưới'],['liveKara','music','🎤','Phòng hát'],
       ['liveBark','paw','🐕','Kéo co chó sủa'],
+      ['tileMatch','grid','🧩','Ghép ba Phố Mây'],
       ['wedInvite','mail','💌','Thiệp mời cưới'],
     ])},
   ].filter(group=>group.items.length);

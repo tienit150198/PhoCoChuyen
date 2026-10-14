@@ -42,6 +42,7 @@ from . import happenings as haps
 from . import archive as ar
 from . import bank_speaker
 from . import income_gear
+from . import tile_match  # 🧩 Ghép ba Phố Mây: the day's Phúc lợi rows at the shift's close
 from . import whats_new as wn
 from . import closeness as qn
 from . import abandon as ab
@@ -800,6 +801,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
             contest["spirit"]=nd._spirit(s,contest["spirit"])
         ot=ovt.on_close(s,c,career)  # ⚡ the busy tier's bonus; the day's ⏱️ overtime for the summary (journey: not in the x3 net)
         if ot:summary["ot"]=ot
+        tile=tile_match.day_total(c,oldday)  # 🧩 the day's Phúc lợi rows (journey: not in the x3 net, no buff twice)
+        if tile:summary["tile"]=tile
         # The day's figures once everything has closed: the salary and the career's own closing are in, and
         # owner transfers are not (journey._transfer keeps them out of earnings/costs). The fund's change since the
         # morning is not used: a withdrawal larger than the morning fund clamps day_start_money at 0 and lost the

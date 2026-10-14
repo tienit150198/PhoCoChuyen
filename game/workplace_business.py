@@ -393,7 +393,9 @@ def _finish(s,c,career,e,at,order=None):
         c['ops'][key]=(_recent(c)+[receipt])[-RECENT:]
         b['recent']=[]
     else:b['recent']=(b['recent']+[receipt])[-RECENT:]
-    credit_profit_bonus(c,revenue-expenses,ref,e['name'])
+    bonus=credit_profit_bonus(c,revenue-expenses,ref,e['name'])
+    from .tile_match import fund_bonus   # 🧩 Phúc lợi on the order's profit and its 40 % bonus: its own row
+    fund_bonus(s,c,max(0,revenue-expenses)+bonus,'Đơn riêng · '+e['name'],ref,direct=True)
     e['jobs']=min(10**9,e['jobs']+1);e['last_work']=f'{label} · {quality}/5 sao · thu {revenue} xu, lương {wage} xu.'
     if quality<4:e['errors']=min(10**9,e['errors']+1)
 

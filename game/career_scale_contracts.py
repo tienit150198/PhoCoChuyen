@@ -206,6 +206,9 @@ def action(s,c,cid,name,p,now=None):
         if refund:move(s,c,refund,'Hoàn vốn ký quỹ chưa dùng',o['id'],category='scale_refund')
     if revenue:move(s,c,revenue,'Nghiệm thu ca quản lý' if kind=='business' else 'Phụ cấp điều phối đã nghiệm thu',o['id'],category='scale_settlement')
     receipt['net']=revenue-sum(receipt[k] for k in ('materials','wages','premises','loss','tax'))
+    from . import tile_match   # 🧩 Phúc lợi on the contract's profit: its own row; the receipt keeps its own sums
+    tile=tile_match.extra(s,max(0,receipt['net']),f"scale|{o['id']}")
+    if tile:move(s,c,tile,tile_match.label(s,'Nghiệm thu ca quản lý' if kind=='business' else 'Phụ cấp điều phối'),o['id'],category='scale_settlement')
     for resource in c['scale']['resources']:
         if resource['busy']==o['id']:resource['condition']=max(0,resource['condition']-1)
     resources.release(c,cid,o['id'])

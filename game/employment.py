@@ -798,8 +798,12 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
     e.money(s, c, pay, 'Lương ngày ' + str(c['day']) + (' (thử việc 85%)' if job['probation'] else '') + (f' · +{lift}% chức vụ' if lift else '')
             + (f' · +{deg}% bằng du học' if deg else '') + (f' · 🌏 +{away}% ở nước ngoài' if away else ''),
             f'salary-{c["day"]}', category='salary')
+    from .tile_match import fund_bonus   # 🧩 Phúc lợi on the day's salary: its own row, moved to the wallet with it
+    tile = fund_bonus(s, c, pay, 'Lương ngày ' + str(c['day']), f'salary-{c["day"]}')
     job['days_worked'] += 1
-    note = dict(salary=pay, probation=job['probation'])
+    note = dict(salary=pay + tile, probation=job['probation'])
+    if tile:
+        note['tile'] = tile
     if lift:
         note['raise'] = lift
     if deg:

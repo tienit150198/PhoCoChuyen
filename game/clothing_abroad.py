@@ -462,6 +462,8 @@ def on_close(s: dict, c: dict, margin: int) -> list[str]:
     bonus = max(0, margin) * w['pct'] // 100
     if bonus > 0:
         kit.money(s, c, bonus, f'🌏 Hoa hồng chi nhánh {d["city"]} (+{w["pct"]}% tiền lời)', None, 'revenue')
+        from .tile_match import fund_bonus   # 🧩 Phúc lợi on the commission: its own row
+        fund_bonus(s, c, bonus, f'Hoa hồng {d["city"]}', f'abroad-{to}-{w["n"]}')
         lines.append(f'🌏 Hoa hồng {sh["name"]}: +{bonus} xu ({w["pct"]}% tiền lời hôm nay).')
     w['n'] += 1
     seed = int(s['journey'].get('seed') or 0)
