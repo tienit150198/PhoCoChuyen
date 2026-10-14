@@ -1,7 +1,7 @@
 """🔁 Tự đặt hàng (game/auto_order.py, feedback #387): a paid unlock per workplace with a stock room. Once owned, an item
 whose shelf plus what is on the way falls below its line is ordered again through the manual order path, from the fund
 only, above a floor and within a daily cap; once per item until it arrives; on load too. Saves holding it load on
-2.4.11 (`git archive rel-2.4.11`), the release this one may be rolled back to."""
+2.4.11 and 2.4.12 (`git archive`), the releases this one may be rolled back to."""
 import copy
 import io
 import json
@@ -20,7 +20,7 @@ from tests.helpers import Journey
 from tests.test_inventory_flow import Clock, empty, set_money, wait_until_ready
 
 ROOT = Path(__file__).resolve().parents[1]
-LIVE = 'rel-2.4.11'
+LIVES = (('rel-2.4.11', '2.4.11'), ('tile-nocap', '2.4.12'))   # releases this one may be rolled back to (live 2.4.12)
 ITEM = 'noodle'
 
 
@@ -276,16 +276,16 @@ class Switches(Base):
 
 class RollbackTo2411(unittest.TestCase):
     """Saves holding 🔁 Tự đặt hàng (bought, settings, automatic orders on the way and received, the switch off) validate,
-    migrate and render on 2.4.11 (`git archive rel-2.4.11`), which keeps the key without reading it."""
+    migrate, render and take a command on 2.4.11 and 2.4.12 (`git archive`), which keep the key without reading it."""
 
-    def tree(self):
+    def tree(self, ref):
         tmp = tempfile.mkdtemp(prefix='mnl-2411-')
         self.addCleanup(subprocess.run, ['rm', '-rf', tmp])
         try:
-            data = subprocess.run(['git', 'archive', LIVE, 'game', 'reference'], cwd=ROOT, capture_output=True,
+            data = subprocess.run(['git', 'archive', ref, 'game', 'reference'], cwd=ROOT, capture_output=True,
                                   timeout=120, check=True).stdout
         except (OSError, subprocess.SubprocessError):
-            self.skipTest(f'no git tree with {LIVE}')
+            return None
         with tarfile.open(fileobj=io.BytesIO(data)) as tar:
             tar.extractall(tmp, filter='data')
         return tmp
@@ -316,11 +316,19 @@ class RollbackTo2411(unittest.TestCase):
         finally:
             kit.clock = old
 
-    def test_saves_validate_on_2411(self):
+    def test_saves_validate_on_2411_and_2412(self):
         saves = self.saves()
         self.assertIn('open', saves[0]['careers']['restaurant']['auto_order'])
         self.assertIs(saves[1]['careers']['restaurant']['auto_order']['on'], False)
-        old = self.tree()
+        trees = [(self.tree(ref), want) for ref, want in LIVES]
+        if not any(t for t, _ in trees):
+            self.skipTest('no git tree with ' + ', '.join(ref for ref, _ in LIVES))
+        for old, want in trees:
+            if old:
+                with self.subTest(want=want):
+                    self.check(old, want, saves)
+
+    def check(self, old, want, saves):
         prog = ('import json,sys;from game.engine import validate_state,migrate_state,public_state,apply_action;out=[]\n'
                 'for s in json.load(sys.stdin):\n validate_state(s);s=migrate_state(s);validate_state(s);public_state(s)\n'
                 ' s,_=apply_action(s,"restaurant","inv_wait",{});validate_state(s)\n'
@@ -332,7 +340,7 @@ class RollbackTo2411(unittest.TestCase):
                              cwd=old, env=env, encoding='utf-8', timeout=300)
         self.assertEqual(got.returncode, 0, got.stderr[-3000:])
         version, keys = json.loads(got.stdout)
-        self.assertEqual(version, '2.4.11')
+        self.assertEqual(version, want)
         self.assertEqual(keys, [s['careers']['restaurant']['auto_order'] for s in saves])   # kept, not read
 
 
