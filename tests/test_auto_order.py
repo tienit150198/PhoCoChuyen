@@ -77,21 +77,21 @@ class Purchase(Base):
         validate_state(j.state)
 
     def test_fund_first_then_the_wallet(self):
-        j = self.journey(fund=100000)
+        j = self.journey(fund=30000)
         jr.enable_story(j.state, 7)
-        j.state['journey']['wallet'] = 300000
+        j.state['journey']['wallet'] = 120000
         j.act('stock_reorder', buy=True, confirm=True)
-        self.assertEqual(j.state['journey']['wallet'], 50000)                 # 250,000 from the wallet
+        self.assertEqual(j.state['journey']['wallet'], 50000)                 # 70,000 from the wallet
         self.assertTrue(ao.owned(j.c))
         f = j.c['ops']['finance']
         self.assertEqual(f['opening_balance'] + sum(x['amount'] for x in f['ledger']), j.c['money'])
-        self.assertEqual(j.state['journey']['history'][-1]['amount'], -250000)
+        self.assertEqual(j.state['journey']['history'][-1]['amount'], -70000)
         validate_state(j.state)
 
     def test_refused_when_fund_and_wallet_are_short(self):
-        j = self.journey(fund=100000)
+        j = self.journey(fund=30000)
         jr.enable_story(j.state, 7)
-        j.state['journey']['wallet'] = 200000
+        j.state['journey']['wallet'] = 20000
         before = copy.deepcopy(j.state)
         pub = public_state(j.state)['careers']['restaurant']['warehouse']['reorder']
         self.assertEqual(pub['short'], 50000)
@@ -99,7 +99,7 @@ class Purchase(Base):
             j.act('stock_reorder', buy=True, confirm=True)
         self.assertIn('50.000', str(e.exception))
         self.assertEqual(j.state, before)                                    # nothing changed
-        classic = self.journey(fund=349999)                                   # no story: no wallet to top up from
+        classic = self.journey(fund=99999)                                   # no story: no wallet to top up from
         with self.assertRaises(GameError):
             classic.act('stock_reorder', buy=True, confirm=True)
 
