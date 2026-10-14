@@ -18,6 +18,13 @@ assert.ok(!html.includes('NaN'));
 assert.ok(scaleCard({...sample,kind:'agency',next:{...sample.next,fee:0}}).includes('Giao phạm vi'));
 assert.ok(!scaleCard({...sample,kind:'community',quota:null}).includes('suất quản lý'));
 assert.ok(scaleCard(sample,{compact:true}).includes('Xem mở rộng'));
+// F#382/383: today's live status shows while unmet; the rule sits behind "Cách tính ?" and is escaped.
+const days={id:'real_days',label:'Ngày thực đạt chuẩn',got:0,need:3,met:false,hint:'Hôm nay: 16/18 việc sạch · đạt, cộng lúc 0h',rule:'Ngày thực là ngày lịch 0h–24h <b>'};
+const why=scaleCard({...sample,next:{...sample.next,requirements:[days],reason:'Cần thêm 3 ngày thực đạt chuẩn.'}});
+assert.ok(why.includes('class="req-hint">Hôm nay: 16/18 việc sạch · đạt, cộng lúc 0h<'));
+assert.match(why,/<details class="req-rule"><summary aria-label="Cách tính: Ngày thực đạt chuẩn">Cách tính \?<\/summary>/);
+assert.ok(why.includes('0h–24h &lt;b&gt;')&&why.includes('Cần thêm 3 ngày thực đạt chuẩn.'));
+assert.ok(!scaleCard({...sample,next:{...sample.next,requirements:[{...days,got:3,met:true}]}}).includes('req-hint'),'met rows drop the live line');
 
 let calls=0,release;
 const el={disabled:false,closest:()=>({querySelectorAll:()=>[]})};

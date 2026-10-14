@@ -6,6 +6,11 @@ Quầy: nhập hàng mỗi lần mặc định 200 phần (trước 5, chủ gam
 
 Gồm fb374 (nút nâng sức chứa kho riêng, giá nail ×2,5 — góp ý #374 #375 #378), bmrank (Bảng vàng chợ đen cộng lại tiền phạt đã hoàn, phạt công an người chơi cập nhật ngay; scripts/fair_board_recompute.py), tile-match (🧩 Ghép ba Phố Mây, journey.tile tùy chọn, phúc lợi +0,2 %/màn tối đa +20 %).
 
+# Chưa phát hành — fb382 (không có Có gì mới)
+
+- Ngày thực đạt chuẩn (góp ý #382, #383; Mở rộng nghề và Chuyên môn nghề): việc khách giữ lại từ ngày nghề trước, làm xong hôm nay nay được tính vào việc sạch và ngày thực (trước đây bị bỏ qua: một tiệm quần áo mất 5 việc, 4 việc sạch trong ngày 14/10). Dòng điều kiện hiện tiến độ hôm nay (“Hôm nay: 16/18 việc sạch · đạt, cộng lúc 0h”) và “Cách tính ?” (ngày lịch 0h–24h giờ Việt Nam, ≥3 việc tự làm không lỗi, ≥80% sạch, từ mốc 2 thêm ca quản lý nghiệm thu; khác ngày đạt chuẩn của Tay nghề). Nút bị khóa ghi “Cần thêm N ngày thực đạt chuẩn.” thay cho câu sai “Ngày thực đạt chuẩn đã kết thúc”. Tay nghề lâu năm giữ luật cũ, dòng ngày đạt chuẩn ghi rõ “Ngày nghề có ≥3 việc sạch, ≥80%; cộng khi khép ca”. Save không đổi dạng; bản cũ vẫn đọc được.
+- Đảo chung, nhặt rương cho người dùng trình đọc màn hình (góp ý #381): nút “📋 Danh sách rương” ở đầu màn liệt kê mọi rương, gần nhất trước (“Rương 1 · cách khoảng 12 bước”), mỗi dòng có nút “Đi tới và nhặt” tự đưa nhân vật tới rương và nhặt theo đúng đường chạm rương (máy chủ vẫn xác minh vị trí). Kết quả và lỗi được đọc qua vùng thông báo; danh sách tự cập nhật mỗi giây mà không làm mất tiêu điểm, nhớ trạng thái mở cho lần sau và khi mở sẵn thì tiêu điểm vào danh sách thay vì bản đồ. Chưa dịch tiếng Anh (cả màn đảo chưa có bản dịch).
+
 # Chưa phát hành — fb374 (không có Có gì mới)
 
 - Kho (góp ý #375, #378): bảng Kho có riêng nút “Nâng sức chứa lên …” (Thiết bị → Sức chứa kho nghề) bên cạnh “Nâng nhập mỗi dòng”; trước đây chỉ có nút hạn mức nhập 80 → 120 nên người chơi mua nhầm tưởng là sức chứa. Khi một dòng đã nhập đầy kệ, bảng Kho không mời mua thêm hạn mức nhập; Thiết bị ghi rõ kho đang chứa bao nhiêu. Báo “Kho chứa tối đa …”/“Kệ … không đủ chỗ” chỉ chỗ nâng sức chứa. Không đổi giá, quyền đã mua hay dữ liệu bản lưu.

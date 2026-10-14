@@ -1,6 +1,7 @@
 /** Professional learning and jobs. Prices, instructions and commands come from the server. */
 import {escapeHTML as esc} from '../icons.js';
 import {t} from './i18n.js';
+import {reqWhy} from './career-scale.js';
 
 const text=value=>esc(t(String(value??'')));
 const rows=value=>Array.isArray(value)?value:[];
@@ -34,7 +35,7 @@ function ledger(q){
 }
 
 function requirements(list){
-  return `<ul class="special-requirements">${rows(list).map(r=>`<li${r.met?' class="is-met"':''}><span>${r.met?'✓':'○'} ${text(r.label)}</span>${r.got!=null?`<b>${number(r.got)} / ${number(r.need)}</b>`:''}${r.reason?`<small>${text(r.reason)}</small>`:''}</li>`).join('')}</ul>`;
+  return `<ul class="special-requirements">${rows(list).map(r=>`<li${r.met?' class="is-met"':''}><span>${r.met?'✓':'○'} ${text(r.label)}</span>${r.got!=null?`<b>${number(r.got)} / ${number(r.need)}</b>`:''}${r.reason?`<small>${text(r.reason)}</small>`:''}${reqWhy(r,text)}</li>`).join('')}</ul>`;
 }
 
 function studyCard(s){

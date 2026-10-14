@@ -44,6 +44,36 @@ def _qualified(today):
             and (not today['requires_contract'] or today['accepted']))
 
 
+DAY_RULE=('Ngày thực là ngày lịch 0h–24h giờ Việt Nam. Ngày đạt khi bạn tự làm xong ít nhất 3 việc không lỗi và ít nhất '
+          '80% số việc trong ngày không lỗi. Ngày đạt được cộng khi qua 0h. Việc giữ từ ngày nghề trước, làm xong hôm nay '
+          'vẫn tính. Việc của nhân viên, ca quản lý và đơn người chơi không tính; đổi ngày nghề không tăng ngày thực. '
+          'Khác với “ngày đạt chuẩn” của Tay nghề lâu năm, vốn tính theo ngày nghề khi khép ca.')
+DAY_RULE_CONTRACT=('Ngày thực là ngày lịch 0h–24h giờ Việt Nam. Ngày đạt khi bạn tự làm xong ít nhất 3 việc không lỗi và ít '
+                   'nhất 80% số việc trong ngày không lỗi, kèm một ca quản lý được nghiệm thu. Ngày đạt được cộng khi qua 0h. '
+                   'Việc giữ từ ngày nghề trước, làm xong hôm nay vẫn tính. Việc của nhân viên, ca quản lý và đơn người chơi '
+                   'không tính; đổi ngày nghề không tăng ngày thực. Khác với “ngày đạt chuẩn” của Tay nghề lâu năm, vốn tính '
+                   'theo ngày nghề khi khép ca.')
+
+
+def days_row(r, need):
+    """The "Ngày thực đạt chuẩn" requirement with its rule and today's live status (F#382/383).
+    The day counts at 0h, so today's work shows as pending instead of leaving players at 0/3 all day."""
+    t=r['today']; got=r['qualified_days']
+    clean_ok=not t['overflow'] and t['clean']>=3 and t['clean']*100>=t['total']*80
+    status=('đạt, cộng lúc 0h' if _qualified(t) else 'thiếu ca quản lý nghiệm thu' if clean_ok else
+            'cần ≥3 việc sạch, ≥80%')
+    return dict(id='real_days',label='Ngày thực đạt chuẩn',got=got,need=need,met=got>=need,
+                hint=f'Hôm nay: {t["clean"]}/{t["total"]} việc sạch · {status}',
+                rule=DAY_RULE_CONTRACT if t['requires_contract'] else DAY_RULE)
+
+
+def _block(row):
+    """Why the button is off: a sentence, never a bare requirement label."""
+    if row.get('id')=='real_days':
+        return f'Cần thêm {row["need"]-row["got"]} ngày thực đạt chuẩn.'
+    return row.get('reason') or f'Chưa đủ: {row["label"]}.'
+
+
 def _roll(r, now):
     day = quota.day(now)
     if day > r['today']['day']:
@@ -64,8 +94,10 @@ def ensure(c,cid,now=None):
 
 def completed(c,cid,task,now=None):
     """Called only after authoritative manual completion, never NPC settlement."""
+    # F#382/383: a job kept from an earlier career day and finished today is still today's manual work. The real
+    # day is the unit here, so the career day it was opened on does not matter (Tay nghề keeps its own rule).
     if (not c.get('open') or task.get('status')!='completed' or task.get('career')!=cid
-            or task.get('day')!=c['day'] or task.get('player_order') or task.get('staff')
+            or type(task.get('day')) is not int or task['day']>c['day'] or task.get('player_order') or task.get('staff')
             or task.get('staff_id') or task.get('managed') or task.get('management')
             or task.get('id') not in c.get('completed_ids',())
             or not any(x is task for x in c.get('tasks',()))):
@@ -110,9 +142,7 @@ def external_slots(s):
 def _requirements(s,c,cid,r):
     from . import certificates, accounting_jobs, employment
     st=content.stage(cid,r['tier']+1)
-    req=[dict(label=label,got=got,need=need,met=got>=need) for label,got,need in (
-        ('Ngày thực đạt chuẩn đã kết thúc',r['qualified_days'],st.days),
-        ('Việc tự làm không sai tích lũy',r['clean'],st.clean))]
+    req=[days_row(r,st.days),dict(label='Việc tự làm không sai tích lũy',got=r['clean'],need=st.clean,met=r['clean']>=st.clean)]
     req.append(dict(label='Đã bắt đầu nghề',got=int(c.get('started') is True),need=1,met=c.get('started') is True))
     ok,reason=accounting_jobs.can_work(s,cid)
     req.append(dict(label='Điều kiện hành nghề hiện có',got=int(ok),need=1,met=ok,reason=reason))
@@ -246,7 +276,7 @@ def public(s,c,cid,now=None):
     if r['tier']<8:
         st=content.stage(cid,r['tier']+1); req=_requirements(s,c,cid,r)
         busy=any(x['busy'] for x in r['resources'])
-        reason=next((x.get('reason') or x['label'] for x in req if not x['met']),'')
+        reason=next((_block(x) for x in req if not x['met']),'')
         reason=reason or ('Hoàn tất hợp đồng đang giữ tài nguyên.' if busy else '')
         nxt=dict(tier=st.tier,title=st.title,fee=st.fee,
                  benefit=f'{st.resources} vị trí toàn mạng · tối đa {st.sites} điểm · {p.focus}',

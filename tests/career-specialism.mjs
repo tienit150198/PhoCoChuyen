@@ -23,6 +23,12 @@ assert.match(specialismCard({...sample,job:{...sample.job,phase:'offered'}}),/<d
 assert.match(specialismCard({...sample,job:{...sample.job,phase:'working'}}),/Thực hiện đơn/);
 assert.doesNotMatch(specialismCard({...sample,job:null}),/<details class="special-stock" open>/);
 assert.match(specialismCard({tier:0,kind:'community',next:{title:'Công quả',fee:0}}),/Miễn phí/);
+{ // F#382/383: the real-day row explains itself and the disabled enrol says why.
+  const n={...sample.next,reason:'Cần thêm 3 ngày thực đạt chuẩn.',requirements:[{id:'real_days',label:'Ngày thực đạt chuẩn',got:0,need:3,met:false,hint:'Hôm nay: 3/3 việc sạch · đạt, cộng lúc 0h',rule:'Ngày lịch 0h–24h'}]};
+  const out=specialismCard({...sample,next:n});
+  assert.ok(out.includes('req-hint')&&out.includes('Hôm nay: 3/3 việc sạch')&&out.includes('class="req-rule"')&&out.includes('Ngày lịch 0h–24h'));
+  assert.ok(out.includes('Cần thêm 3 ngày thực đạt chuẩn.'));
+}
 assert.match(specialismCard({tier:0,kind:'agency',next:{title:'Nghiệp vụ',fee:3000}}),/Học phí/);
 assert.doesNotMatch(specialismCard({tier:Infinity,job:{quote:{net:NaN}},actions:[{command:'reset_all',label:'BAD'}]}),/NaN|Infinity|BAD/);
 assert.ok(!specialismCard({actions:[{command:'special_ok',label:'<svg>',payload:{x:'" onmouseover="x'},fields:[{name:'x',label:'<img>',value:'"><script>',type:'text'}]}]}).includes('<script>'));

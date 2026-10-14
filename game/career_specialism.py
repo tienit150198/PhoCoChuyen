@@ -60,9 +60,9 @@ def requirements(s,c,cid,tier,now):
     work=allowed and hired and not banned
     reason=reason if not allowed else 'Cần được tuyển dụng vào nghề trước.' if not hired else 'Đang bị đình chỉ; chờ được phép hành nghề lại.' if banned else ''
     values=[('Cấp kinh nghiệm nghề',1+c['xp']//90,LEVELS[tier-1]),('Việc tự làm không lỗi',r['clean'],CLEAN[tier-1]),
-            ('Ngày thực đạt chuẩn đã kết thúc',r['qualified_days'],DAYS[tier-1]),('Đã bắt đầu nghề',int(c.get('started') is True),1),
+            None,('Đã bắt đầu nghề',int(c.get('started') is True),1),
             ('Đủ điều kiện hành nghề',int(work),1),('Quỹ nghề cho học phí',c['money'],fee(cid,tier))]
-    rows=[dict(label=label,got=got,need=n,met=got>=n) for label,got,n in values]
+    rows=[scale.days_row(r,DAYS[tier-1]) if v is None else dict(label=v[0],got=v[1],need=v[2],met=v[1]>=v[2]) for v in values]
     if reason:rows[4]['reason']=reason
     return rows
 
@@ -118,6 +118,7 @@ def public(s,c,cid,now=None):
     if r['tier']<10 and r['study'] is None:
         tier=r['tier']+1;p=pack(cid,tier);req=requirements(s,c,cid,tier,now);ready=all(x['met'] for x in req)
         out['next']=dict(title=p['title'],fee=fee(cid,tier),requirements=req,can_enrol=ready,
+            reason=next((scale._block(x) for x in req if not x['met']),''),
             benefit=f"Mở đơn {p['title']} gồm {jobs.QUANTITIES[tier-1]:,} {p['output_unit']}, vật tư và 5 bước thực hành/thi công.",
             quote=jobs.quote(cid,tier,jobs.QUANTITIES[tier-1]),action=button('special_enrol','Đăng ký học' if k!='community' else 'Học công quả',dict(tier=tier),disabled=not ready))
     if r['study']:

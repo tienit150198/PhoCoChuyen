@@ -14,3 +14,10 @@ dialog.shared-island{position:fixed;inset:0;margin:0;padding:0;width:100vw;max-w
 .shared-island-notice{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);max-width:min(540px,calc(100% - 32px));width:max-content;box-sizing:border-box;margin:0;padding:10px 16px;border:1px solid #bea27d;border-radius:12px;background:#fff6e6;box-shadow:0 3px 12px #49342325;text-align:center;font-size:14px;pointer-events:none}
 .shared-island footer{flex:none;margin:0;background:#fff3dd;padding:7px 12px max(7px,env(safe-area-inset-bottom));font-size:12px;text-align:center;border-top:1px solid #d7bd93}
 @media(max-width:600px){.shared-island header{gap:8px}.shared-island h2{font-size:18px}.shared-island header p{max-width:230px}.shared-island-notice{bottom:138px}.shared-island footer{font-size:11px}}
+/* F#381: chest list for screen readers and keyboards (header toggle, rows nearest first). */
+.shared-island-actions{display:flex;gap:8px;flex:none}
+.shared-island-list{flex:none;max-height:38vh;overflow:auto;padding:8px max(16px,env(safe-area-inset-right)) 8px max(16px,env(safe-area-inset-left));background:#fff8e9;border-bottom:1px solid #d7bd93}
+.shared-island-list[hidden]{display:none}.shared-island-list h3{margin:0 0 4px;font-size:16px}.shared-island-list h3:focus-visible{outline:3px solid #397b73;outline-offset:2px}
+.shared-island-list p{margin:0 0 6px;font-size:13px}.shared-island-list ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.shared-island-list li{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px}
+@media(max-width:600px){.shared-island-actions button{padding:8px 10px;font-size:13px}}
