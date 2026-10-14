@@ -1,59 +1,31 @@
 {
   "project": "Một ngày làm nghề",
-  "version": "2.4.1",
-  "created_at_utc": "2026-10-13T22:55:36.304421+00:00",
+  "version": "2.4.2",
+  "created_at_utc": "2026-10-14T02:59:34.010196+00:00",
   "scope": "public web game: character journey, multiplayer street, AI personas, web push, vi/en",
-  "minified": 630,
+  "minified": 631,
   "release_from_live": {
     "live_release": "mot-ngay-lam-nghe",
-    "live_version": "2.4.0",
-    "live_manifest_sha256": "517ac6db896857418f9682d915f8eafe54f8a323aa8744a290089840fcfdf580",
-    "base": "23fb59ff53d0bb35e7fef35347c505645e016708",
-    "ref": "40999f121be087940f6c1709c2115d5f02fb80bd",
+    "live_version": "2.4.1",
+    "live_manifest_sha256": "448887c1d32c6478b8a0c1db6a54874504c8cab0018fad0f9b939acf2a9bf560",
+    "base": "40999f121be087940f6c1709c2115d5f02fb80bd",
+    "ref": "6b9cd04884becc1758845b0bade226d1a8cfefa4",
     "changed": [
       "CHANGELOG.md",
-      "docs/DEPLOY_2.4.0_2026-10-14.md",
+      "docs/DEPLOY_2.4.1_2026-10-14.md",
       "docs/superpowers/plans/2026-10-14-career-content-runtime.md",
-      "docs/superpowers/plans/2026-10-14-career-scale-implementation.md",
-      "docs/superpowers/specs/2026-10-14-career-content-runtime-design.md",
       "game/__init__.py",
-      "game/build_id.py",
-      "game/career_scale_contracts.py",
-      "game/career_scale_quota.py",
-      "game/career_specialism.py",
-      "game/career_specialism_content.py",
-      "game/career_specialism_jobs.py",
-      "game/career_specialism_stock.py",
-      "game/data/career_specialisms.json",
-      "game/data/career_specialisms_21_37.json",
-      "game/data/career_specialisms_38_54.json",
-      "game/engine.py",
+      "game/whats_new.py",
       "i18n/overrides.json",
-      "public/css/career-specialism.css",
-      "public/css/isometric-social.css",
-      "public/css/isometric.css",
       "public/i18n/en.json",
-      "public/js/app.js",
-      "public/js/v4/career-specialism.js",
-      "public/js/v4/promo.js",
-      "scripts/browser_career_specialism.py",
-      "scripts/browser_town_social_layout.py",
-      "tests/career-specialism.mjs",
-      "tests/test_build_id.py",
-      "tests/test_career_specialism.py",
-      "tests/test_career_specialism_content.py",
-      "tests/test_career_specialism_integration.py",
-      "tests/test_career_specialism_store.py",
-      "tests/test_task_compat.py"
+      "public/js/v4/whatsnew-data.js",
+      "scripts/browser_whats_new.py",
+      "tests/test_task_compat.py",
+      "tests/whats_new.mjs"
     ],
     "deleted": [],
     "minified": [
-      "public/css/career-specialism.css",
-      "public/css/isometric-social.css",
-      "public/css/isometric.css",
-      "public/js/app.js",
-      "public/js/v4/career-specialism.js",
-      "public/js/v4/promo.js"
+      "public/js/v4/whatsnew-data.js"
     ]
   },
   "files": [
@@ -74,8 +46,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 320286,
-      "sha256": "9f4673f6d39c6c93e51095a72dc57c0487aa5efaa739eae8d5176be0b10acc45"
+      "bytes": 320886,
+      "sha256": "237ddf729f0684243a3c076af11f5818193313929d76de34d56eb82cc27ddaef"
     },
     {
       "path": "Dockerfile",
@@ -581,6 +553,11 @@
       "path": "docs/DEPLOY_2.4.0_2026-10-14.md",
       "bytes": 4618,
       "sha256": "346039c289f07447cdb83ac85a6e878437e464d0bfcf505a75e547c44dc04494"
+    },
+    {
+      "path": "docs/DEPLOY_2.4.1_2026-10-14.md",
+      "bytes": 4876,
+      "sha256": "7ad23af6793576db16564a610707624a7a7ed98caf1bb3969a146ce210fae383"
     },
     {
       "path": "docs/DEPLOY_FAIR_GENTLE_2026-10-05.md",
@@ -1954,8 +1931,8 @@
     },
     {
       "path": "docs/superpowers/plans/2026-10-14-career-content-runtime.md",
-      "bytes": 3778,
-      "sha256": "37ff687a67f278c4d893e530f3ad7ec58f00e53256fd0526691fa3f26ccc07f5"
+      "bytes": 3994,
+      "sha256": "482b51b76d3c76c77064824adc4674cc5267a007bbda209db9637026647b289d"
     },
     {
       "path": "docs/superpowers/plans/2026-10-14-career-scale-implementation.md",
@@ -2280,7 +2257,7 @@
     {
       "path": "game/__init__.py",
       "bytes": 105,
-      "sha256": "8af499faa8fa24e4a5c4e59d733faa1badeb7a63b14ac31b2137777ff4c4871a"
+      "sha256": "7e11d061edd3e932a907bdd6d23aba653ef52446beabe333fe14c90bddbd646e"
     },
     {
       "path": "game/abandon.py",
@@ -3829,8 +3806,8 @@
     },
     {
       "path": "game/whats_new.py",
-      "bytes": 69557,
-      "sha256": "e822e115b0d540d5b5181bb1f52fd642b2775242fe2a7502277ff2a23ebc960e"
+      "bytes": 72669,
+      "sha256": "94a5744b9fb1fa231f5e8cb20354a1aa5eaa71b9d0d88c4879990d14b0cbe856"
     },
     {
       "path": "game/work_gear.py",
@@ -3859,8 +3836,8 @@
     },
     {
       "path": "i18n/overrides.json",
-      "bytes": 2840288,
-      "sha256": "7e0da23a7e19335ee79dfa590857ed0cefbbaa64585bb6c45bf7c2beef8b8852"
+      "bytes": 2845013,
+      "sha256": "40fc6f0cd6d8d3209e50c9ae2b8d36b60ab03df40609c08b1132fc192b9d776e"
     },
     {
       "path": "i18n/source.json",
@@ -4914,8 +4891,8 @@
     },
     {
       "path": "public/i18n/en.json",
-      "bytes": 10086565,
-      "sha256": "543114e72f3b4ca2d3bb20ffccbd1343f92ad398ff1df3d5f82c88951bf08827"
+      "bytes": 10091222,
+      "sha256": "deb1276e5249bed540e36447e59b4ba265058b4bb7d2f57b9f3deb7afc2acf8e"
     },
     {
       "path": "public/icons/apple-touch-icon.png",
@@ -7409,8 +7386,8 @@
     },
     {
       "path": "public/js/v4/whatsnew-data.js",
-      "bytes": 56017,
-      "sha256": "0ef3b1c343f57386e77f97334e4b9199b8a50b1bbedd7f77cd1593903a2c0123"
+      "bytes": 58874,
+      "sha256": "5be2dcdebdb249299c945af85066a506d586876e9885ff0fe270e6a1e5a0840d"
     },
     {
       "path": "public/js/v4/whatsnew.js",
@@ -8066,6 +8043,11 @@
       "path": "scripts/browser_wedinvite.py",
       "bytes": 11509,
       "sha256": "3d5c3770b45470c55d84faa300c44c055c3cb580b3d85105aa31f10697fdd0be"
+    },
+    {
+      "path": "scripts/browser_whats_new.py",
+      "bytes": 4630,
+      "sha256": "910dca4366f107ef4e868e4b0f41a1c82c65ac2840413e83cc8ca80253147a4a"
     },
     {
       "path": "scripts/build_home3d.mjs",
@@ -11785,7 +11767,7 @@
     {
       "path": "tests/test_task_compat.py",
       "bytes": 5539,
-      "sha256": "6de6cb0b6f7f2bc9f0cb269b8fbeccab0afc4986ad03c7992d8aa77b9ff687e6"
+      "sha256": "3bc16127f97cc3709042094b8ae2098b08033df5ad43c3cc7f97f2036bf7b385"
     },
     {
       "path": "tests/test_teacher_care.py",
@@ -12134,8 +12116,8 @@
     },
     {
       "path": "tests/whats_new.mjs",
-      "bytes": 4092,
-      "sha256": "7357092bf26ee8d2700d35ea98dbd7fde78f84e781c4efdc06f5765db2d02a8f"
+      "bytes": 4232,
+      "sha256": "8f49ac53dc0385c3e7f7e430463d3219eee02d3842e7ad861284481b8be575c7"
     },
     {
       "path": "tests/work_equipment.mjs",
