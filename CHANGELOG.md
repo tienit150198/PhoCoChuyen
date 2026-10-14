@@ -1,3 +1,7 @@
+# v2.4.8 — 2026-10-14
+
+Gồm declutter (#384): bớt chữ nhỏ ở Hành trình/Công việc, Kho, màn làm ca, HUD; chế độ gọn tự bật ở mọi cỡ màn hình với giao diện 2.5D (tắt được trong Cài đặt). Không có Có gì mới.
+
 # v2.4.7 — 2026-10-14
 
 🧩 Ghép ba Phố Mây sửa lỗi “mãi không ghi nhận” và lag: chơi hoàn toàn trên máy, qua màn là hiện thẻ thắng ngay, máy chủ ghi nhận ngầm bằng MỘT lệnh `jr_tile_end {n, moves, ms, v}` (trợ giúp tính tiền lúc kết thúc), hàng chờ giữ qua tải lại trang (“Đang ghi nhận…” → “✓ Đã ghi nhận”); màn tự mô tả, không còn phụ thuộc `cur` (bỏ lỗi tile_none, uid 877); chồng úp lật từng ô (bản cũ để ô dưới úp mãi từ màn 8: “3 ô cuối không khớp”); bảng màn mới khó hơn từ màn 5 (bảng cũ v1 vẫn chấm được); bớt chữ trên màn chơi. journey.tile giữ nguyên dạng 2.4.5. Không có Có gì mới.
