@@ -1907,6 +1907,8 @@ try{
   ensureCareerUI();  // its workbench failed to come above (the game opens anyway): ask again in the background
   try{performance.mark('mnl-first-frame');}catch{/* no User Timing */}   // "time to first game frame" (telemetry.js load beacon)
   import('./telemetry.js').then(m=>m.telemetryBoot({api,ui})).catch(e=>console.warn('telemetry:',e));  // Giữ chân: leave/error/load beacons
+  // 🧩 Ghép ba: levels won but not confirmed yet (a reload, a lost connection) are sent again (v4/tile-match.js queue)
+  try{if(localStorage.getItem('mnl.tile.q'))whenIdle(()=>import('./v4/tile-match.js').then(m=>m.resumeTileSync(env())).catch(e=>console.warn('tile:',e)),1500);}catch{/* no storage */}
   // Prime the lazy menu module too; the island HUD may already have initialized the same live module.
   whenIdle(()=>L.live.get().then(bootLive).catch(e=>console.warn('live:',e)),800);
   // The rest of the catalogue (api.more), now that the first frame is out: it never competed with it on the wire.

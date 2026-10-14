@@ -87,17 +87,21 @@ class Levels(unittest.TestCase):
         built = [tm.build(lv) for lv in range(1, 101)]
         kinds = [len(b['icons']) for b in built]
         self.assertEqual(kinds, sorted(kinds), 'item kinds never go down')
-        self.assertEqual((kinds[0], kinds[-1]), (3, 17))
+        self.assertEqual((kinds[0], kinds[4], kinds[-1]), (3, 7, 20))
         tiles = [len(b['tiles']) for b in built]
-        self.assertLess(sum(tiles[:10]) / 10, 30)
+        self.assertLess(sum(tiles[:10]) / 10, 40)
         self.assertGreater(sum(tiles[90:]) / 10, 120)
         flags = lambda b, f: sum(1 for t in b['tiles'] if t[4] & f)
-        self.assertTrue(all(flags(b, tm.LOCK) == 0 for b in built[:39]))
-        self.assertTrue(all(flags(b, tm.LOCK) >= 1 for b in built[39:]))
-        self.assertTrue(all(flags(b, tm.ICE) == 0 for b in built[:54]))
-        self.assertTrue(all(flags(b, tm.ICE) >= 2 for b in built[54:]))
-        self.assertTrue(all(not b['stacks'] for b in built[:7]))
-        self.assertTrue(all(b['stacks'] for b in built[7:]))
+        self.assertTrue(all(flags(b, tm.LOCK) == 0 for b in built[:29]))
+        self.assertTrue(all(flags(b, tm.LOCK) >= 1 for b in built[29:]))
+        self.assertTrue(all(flags(b, tm.ICE) == 0 for b in built[:44]))
+        self.assertTrue(all(flags(b, tm.ICE) >= 2 for b in built[44:]))
+        self.assertTrue(all(not b['stacks'] for b in built[:4]))
+        self.assertTrue(all(b['stacks'] for b in built[4:]), 'a stack from level 5')
+        self.assertTrue(all(len(b['stacks']) >= 2 for b in built[9:]))
+        layers = [1 + max(t[2] for t in b['tiles'][:b['board']]) for b in built]
+        self.assertTrue(all(x >= 2 for x in layers[4:]), 'stacked layers from level 5')
+        self.assertGreaterEqual(sum(layers[4:20]) / 16, 3.2, 'deeper than 2.4.5 (2.0 on levels 5–20)')
         self.assertEqual(max(len(s['ids']) for s in built[-1]['stacks']), 10)
         peaks = [b['peak'] for b in built]
         self.assertEqual(peaks, sorted(peaks), 'the tray margin only tightens')
@@ -110,7 +114,7 @@ class Levels(unittest.TestCase):
     def test_difficulty_rises(self):
         dec = [sum(SCORES[i:i + 10]) / 10 for i in range(0, 100, 10)]
         self.assertEqual(dec, sorted(dec))
-        self.assertTrue(all(b - a > 2 for a, b in zip(dec, dec[1:])), dec)
+        self.assertTrue(all(b - a > 1.5 for a, b in zip(dec, dec[1:])), dec)
         top = 0
         for lv, d in enumerate(SCORES, 1):
             self.assertGreater(d, top - 8, f'level {lv} far easier than one before it')
@@ -121,6 +125,20 @@ class Levels(unittest.TestCase):
         self.assertGreater(rho, 0.97)
         for lv in (1, 30, 60, 100):   # the stored scores are what the code computes
             self.assertAlmostEqual(tm.difficulty(tm.build(lv)), SCORES[lv - 1], places=2)
+
+    def test_harder_from_level_5(self):
+        """Owner, 14/10 "quá dễ": the 2.4.5 table let the quick player (greedy_rate) win ~every level up to 20. Now it
+        loses a fair share from level 5, most mid levels and nearly every late one (each still solvable, above)."""
+        rate = [tm.greedy_rate(tm.level(lv)) for lv in range(1, 101)]
+        old = [tm.greedy_rate(tm.level(lv, 1)) for lv in (5, 10, 15, 20)]
+        self.assertGreater(min(old), 0.95)
+        dec = [sum(rate[i:i + 10]) / 10 for i in range(0, 100, 10)]
+        self.assertEqual(dec, sorted(dec, reverse=True), dec)
+        self.assertTrue(all(r == 1 for r in rate[:4]))
+        self.assertLess(max(rate[4:]), 0.91)
+        self.assertLess(sum(rate[4:20]) / 16, 0.75)
+        self.assertLess(sum(rate[30:60]) / 30, 0.40)
+        self.assertLess(sum(rate[70:]) / 30, 0.15)
 
     def test_the_rng_is_deterministic_32_bit(self):
         a, b = tm.Rng(99), tm.Rng(99)
@@ -220,7 +238,7 @@ class Commands(unittest.TestCase):
         self.assertEqual(s['journey']['tile']['lv'], 1)
         self.assertEqual(tm.permille(s), 2)
         self.assertIn('Phúc lợi +0,2%', r['message'])
-        self.assertNotIn('cur', s['journey']['tile'])
+        self.assertEqual(s['journey']['tile']['cur'], dict(lv=2, t=int(self.clock.t * 1000), b={}, p={}), 'the clock, 2.4.5 shape')
         # a replay for fun: allowed, nothing more
         s, _ = act(s, 'jr_tile_start', lv=1)
         self.clock.tick(30)
@@ -274,9 +292,9 @@ class Commands(unittest.TestCase):
         with self.assertRaises(GameError) as e:
             act(s, 'jr_tile_start', lv=5)
         self.assertEqual(e.exception.code, 'tile_locked')
-        with self.assertRaises(GameError) as e:
-            act(s, 'jr_tile_end', lv=4, moves=[])
-        self.assertEqual(e.exception.code, 'tile_none')
+        s2, r = act(s, 'jr_tile_end', lv=4, moves=[])   # a stale end of a game not won: nothing changes
+        self.assertFalse(r['win'])
+        self.assertEqual(s2['journey']['tile'], s['journey']['tile'])
         s, _ = act(s, 'jr_tile_start', lv=4)
         self.clock.tick(100)
         with self.assertRaises(GameError):
@@ -291,17 +309,19 @@ class Commands(unittest.TestCase):
             act(plain, 'jr_tile_start', lv=1)
 
     @with_clock
-    def test_boosters_must_be_granted_first(self):
+    def test_a_245_page_boosters_granted_first_are_not_charged_twice(self):
         s = cleared(19)
+        s['journey']['tile']['u'] = dict(tm.FREE)   # today's free uses spent
         s, _ = act(s, 'jr_tile_start', lv=20)
         self.clock.tick(100)
         sol = tm.level(20)['solution']
-        with self.assertRaises(GameError) as e:
-            act(s, 'jr_tile_end', lv=20, moves=[sol[0], tm.MOVE['undo']] + sol)
-        self.assertEqual(e.exception.code, 'tile_invalid')
+        w = s['journey']['wallet']
         s, r = act(s, 'jr_tile_boost', kind='undo', lv=20)
+        self.assertEqual(r['cost'], tm.PRICE['undo'])
         s, r = act(s, 'jr_tile_end', lv=20, moves=[sol[0], tm.MOVE['undo']] + sol)
         self.assertTrue(r['first'])
+        self.assertEqual(r['cost'], 0, 'granted and paid by jr_tile_boost')
+        self.assertEqual(w - s['journey']['wallet'], tm.PRICE['undo'])
 
     @with_clock
     def test_daily_cap_on_new_levels_replays_stay_open_and_the_next_day_resets(self):
@@ -371,9 +391,11 @@ class Commands(unittest.TestCase):
     def test_reset_all_keeps_the_levels(self):
         s = cleared(42)
         s, _ = act(s, 'jr_tile_start', lv=43)
+        s, _ = act(s, 'jr_tile_boost', kind='undo', lv=43)
+        clock = s['journey']['tile']['cur']['t']
         s, _ = apply_action(s, None, 'reset_all', {'confirm': 'BAT DAU LAI'})
         self.assertEqual(s['journey']['tile']['lv'], 42)
-        self.assertNotIn('cur', s['journey']['tile'])
+        self.assertEqual(s['journey']['tile']['cur'], dict(lv=43, t=clock, b={}, p={}), 'the clock stays, the attempt goes')
 
     def test_public_view_without_a_save_block(self):
         v = tm.public(story())
@@ -392,6 +414,162 @@ class Commands(unittest.TestCase):
             s2['journey']['tile'] = bad
             with self.assertRaises(GameError):
                 validate_state(s2)
+
+
+# ---------------------------------------------------------------- 2.4.6: a level is self-describing (one command)
+def end(s, n, moves=None, ms=None, **extra):
+    p = dict(n=n, moves=tm.level(n)['solution'] if moves is None else moves, **extra)
+    if ms is not None:
+        p['ms'] = ms
+    return act(s, 'jr_tile_end', **p)
+
+
+class SelfDescribing(unittest.TestCase):
+    """The owner's report (14/10): "ghi nhận lỗi khi qua các màn, mãi không ghi nhận" (4 × tile_none, uid 877). A page
+    that left a pending win and restarted the level sent the old win's end with the NEW attempt's moves: it did not
+    replay as a win, popped `cur`, and the real win then found none. Now an end needs nothing from the server first."""
+
+    @with_clock
+    def test_end_without_a_prior_start(self):
+        s = story(5000)   # no tile block at all: the page's own time, once
+        with self.assertRaises(GameError) as e:
+            end(s, 1, ms=5000)
+        self.assertEqual(e.exception.code, 'tile_fast')
+        s, r = end(s, 1, ms=25_000)
+        self.assertTrue(r['win'] and r['first'])
+        self.assertEqual(tm.cleared(s), 1)
+        # from now on the server's clock: the next first clear needs need_ms(taps) after this one
+        self.clock.tick(5)
+        with self.assertRaises(GameError) as e:
+            end(s, 2, ms=10**6)   # the page's claim no longer matters
+        self.assertEqual(e.exception.code, 'tile_fast')
+        self.clock.tick(tm.need_ms(len(tm.level(2)['solution'])) / 1000)
+        s, r = end(s, 2)
+        self.assertTrue(r['first'])
+        validate_state(s)
+
+    @with_clock
+    def test_a_double_start_or_a_quit_never_loses_a_clear(self):
+        s = cleared(3)
+        s, _ = act(s, 'jr_tile_start', lv=4)
+        self.clock.tick(15)
+        s, _ = act(s, 'jr_tile_start', lv=4)   # the same level again (a 2.4.5 page): the clock does not move
+        s, _ = act(s, 'jr_tile_quit')
+        s, _ = act(s, 'jr_tile_start', lv=2)   # even another level
+        self.clock.tick(10)
+        s, r = act(s, 'jr_tile_end', lv=4, moves=tm.level(4)['solution'])   # 2.4.5's payload, 25 s after the first start
+        self.assertTrue(r['first'])
+        self.assertEqual(tm.cleared(s), 4)
+
+    @with_clock
+    def test_the_reported_race_a_stale_end_then_the_real_one(self):
+        s = cleared(1)
+        s, _ = act(s, 'jr_tile_start', lv=2)
+        self.clock.tick(30)
+        partial = tm.level(2)['solution'][:4]   # the old win's end carrying the new attempt's first taps
+        s, r = act(s, 'jr_tile_end', lv=2, moves=partial)
+        self.assertFalse(r['win'])
+        s, r = act(s, 'jr_tile_end', lv=2, moves=tm.level(2)['solution'])   # 2.4.5: tile_none here
+        self.assertTrue(r['first'])
+
+    @with_clock
+    def test_a_retry_after_a_conflict_and_a_resent_end(self):
+        s = cleared(5)
+        s['journey']['tile']['cur'] = dict(lv=6, t=int(T0 * 1000), b={}, p={})
+        self.clock.tick(100)
+        before = copy.deepcopy(s)
+        # 409: the answer was computed on a save that moved; nothing was stored and the page sends it again
+        # against the refreshed save, which has no attempt record of this page at all (a quit from another tab).
+        moved, _ = act(before, 'jr_tile_quit')
+        s1, r = end(moved, 6)
+        self.assertTrue(r['first'])
+        # a lost answer, the same end again after a reload: a replay (nothing more), never a second buff
+        s2, r = end(s1, 6)
+        self.assertTrue(r['win'])
+        self.assertFalse(r['first'])
+        self.assertEqual((tm.cleared(s2), s2['journey']['tile']['n'], tm.permille(s2)), (6, 1, 12))
+
+    @with_clock
+    def test_min_time_taps_and_the_daily_cap(self):
+        s = cleared(0)
+        s['journey']['tile']['cur'] = dict(lv=1, t=int(T0 * 1000), b={}, p={})
+        for lv in range(1, 16):
+            sol = tm.level(lv)['solution']
+            least = tm.need_ms(len(sol)) / 1000
+            self.clock.tick(least - 1)
+            with self.assertRaises(GameError) as e:
+                end(s, lv)
+            self.assertEqual(e.exception.code, 'tile_fast')
+            self.clock.tick(1)
+            s, r = end(s, lv)
+            self.assertTrue(r['first'], lv)
+        big = next(lv for lv in range(16, 101) if len(tm.level(lv)['solution']) * tm.MIN_TAP_MS > tm.MIN_LEVEL_MS)
+        self.assertGreater(tm.need_ms(len(tm.level(big)['solution'])), tm.MIN_LEVEL_MS)
+        self.clock.tick(3600)
+        with self.assertRaises(GameError) as e:
+            end(s, 16)
+        self.assertEqual(e.exception.code, 'tile_cap')
+        s, r = end(s, 3)   # replays stay open
+        self.assertFalse(r['first'])
+        self.clock.tick(24 * 3600)
+        s, r = end(s, 16)
+        self.assertTrue(r['first'])
+        self.assertEqual(s['journey']['tile']['n'], 1)
+
+    @with_clock
+    def test_a_replay_gives_no_buff_and_a_level_ahead_is_refused(self):
+        s = cleared(7)
+        self.clock.tick(100)
+        for n in (1, 7):
+            s2, r = end(s, n)
+            self.assertTrue(r['win'])
+            self.assertFalse(r['first'])
+            self.assertEqual((tm.cleared(s2), tm.permille(s2), s2['journey']['tile']['n']), (7, 14, 0))
+        with self.assertRaises(GameError) as e:
+            end(s, 9)
+        self.assertEqual(e.exception.code, 'tile_locked')
+        for bad in (0, 101, '8', None, 8.0):
+            with self.assertRaises(GameError):
+                act(s, 'jr_tile_end', n=bad, moves=[])
+        with self.assertRaises(GameError):
+            act(s, 'jr_tile_end', n=8, moves=[], x=1)
+        with self.assertRaises(GameError) as e:
+            end(s, 8, moves=tm.level(9)['solution'])
+        self.assertEqual(e.exception.code, 'tile_invalid')
+
+    @with_clock
+    def test_boosters_are_priced_at_the_end(self):
+        s = cleared(9, wallet=10_000)
+        s['journey']['tile']['cur'] = dict(lv=10, t=int(T0 * 1000), b={}, p={})
+        self.clock.tick(600)
+        sol = tm.level(10)['solution']
+        U = tm.MOVE['undo']
+        moves = [sol[0], U, sol[0], U, sol[0], U, sol[0], U, sol[0], U] + sol   # 5 undos: 3 free, then 40, 80
+        w = s['journey']['wallet']
+        s2, r = end(s, 10, moves=moves)
+        base = tm.PRICE['undo']
+        self.assertEqual(r['cost'], base + base * 2)
+        self.assertEqual(w - s2['journey']['wallet'], base * 3)
+        self.assertEqual(s2['journey']['tile']['u'], {'undo': 3})
+        poor = copy.deepcopy(s)
+        poor['journey']['wallet'] = base
+        with self.assertRaises(GameError) as e:
+            end(poor, 10, moves=moves)
+        self.assertEqual(e.exception.code, 'tile_poor')
+        # a replay pays its paid boosters too, from today's leftovers first
+        s3, r = end(s2, 4, moves=[tm.level(4)['solution'][0], U] + tm.level(4)['solution'])
+        self.assertEqual(r['cost'], base)
+        self.assertFalse(r['first'])
+
+    @with_clock
+    def test_public_view_carries_the_clock(self):
+        s = cleared(2)
+        self.assertNotIn('at', tm.public(s))
+        s, _ = end(s, 3, ms=30_000)
+        v = tm.public(s)
+        self.assertEqual(v['at'], int(self.clock.t * 1000))
+        self.assertEqual(v['day'], tm.today())
+        self.assertEqual(v['min'], dict(level=tm.MIN_LEVEL_MS, tap=tm.MIN_TAP_MS))
 
 
 # ---------------------------------------------------------------- the buff
@@ -515,7 +693,7 @@ class Buff(unittest.TestCase):
         auctions, transfers, gifts and mishaps never reach it."""
         callers = set()
         for p in (ROOT / 'game').rglob('*.py'):
-            if p.name in ('tile_match.py', 'tile_match_levels.py'):
+            if p.name in ('tile_match.py', 'tile_match_levels.py', 'tile_match_levels_v1.py'):
                 continue
             src = p.read_text(encoding='utf-8')
             if re.search(r'tile_match|fund_bonus', src):
@@ -538,47 +716,83 @@ class Buff(unittest.TestCase):
 
 # ---------------------------------------------------------------- saves an older build reads
 class OlderBuild(unittest.TestCase):
-    """2.4.2 (origin/main at this branch's base) keeps journey['tile'] and validates the save; a rollback and a roll
-    forward lose nothing."""
+    """2.4.6 (rel-2.4.6, the live build when the self-describing end came; 2.4.5 passes the same) reads every journey['tile'] this build
+    writes, plays on it with its own start/boost/end, and this build reads its saves back: a rollback and a roll
+    forward lose nothing. TILE_OLD_REF picks another build."""
     @classmethod
     def setUpClass(cls):
         if not shutil.which('git'):
             raise unittest.SkipTest('no git')
-        ref = os.environ.get('TILE_OLD_REF', 'origin/main')
+        ref = os.environ.get('TILE_OLD_REF', 'rel-2.4.6')
         cls.tmp = tempfile.mkdtemp(prefix='tile-old-')
         arch = subprocess.run(['git', 'archive', ref], cwd=ROOT, capture_output=True)
         if arch.returncode:
             raise unittest.SkipTest(f'git archive {ref}: {arch.stderr.decode()[:200]}')
         subprocess.run(['tar', '-x', '-C', cls.tmp], input=arch.stdout, check=True)
-        if (Path(cls.tmp) / 'game' / 'tile_match.py').exists():
-            raise unittest.SkipTest(f'{ref} already has the mini-game')
+        old = Path(cls.tmp) / 'game' / 'tile_match.py'
+        if not old.exists() or 'def _end(' in old.read_text(encoding='utf-8'):
+            raise unittest.SkipTest(f'{ref} is not a 2.4.5-style build')
 
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(getattr(cls, 'tmp', ''), ignore_errors=True)
 
-    def old(self, state, action=None):
-        code = ('import json,sys\nfrom game.engine import validate_state,apply_action\n'
-                's=json.load(sys.stdin)\nvalidate_state(s)\n'
-                + (f's,_=apply_action(s,None,{action!r},{{"sound":False}})\n' if action else '')
-                + 'print(json.dumps(s["journey"].get("tile")))')
+    def old(self, state, steps=(), now=None):
+        """Run the old build on `state`: validate, then each (action, payload) at its clock; returns (tile, results)."""
+        code = ('import json,sys\nfrom game.engine import validate_state,apply_action\nfrom game import tile_match as tm\n'
+                'd=json.load(sys.stdin)\ns=d["s"]\nvalidate_state(s)\nout=[]\n'
+                'for a,p,t in d["steps"]:\n'
+                '    tm._now=(lambda t=t:t)\n'
+                '    s,r=apply_action(s,None,a,p)\n'
+                '    out.append({k:r.get(k) for k in ("win","first","cost")})\n'
+                'validate_state(s)\nprint(json.dumps([s["journey"].get("tile"),out]))')
         r = subprocess.run([sys.executable, '-I', '-c', f'import sys;sys.path.insert(0,{self.tmp!r});' + code],
-                           input=json.dumps(state), capture_output=True, text=True, cwd=self.tmp)
+                           input=json.dumps(dict(s=state, steps=list(steps))), capture_output=True, text=True, cwd=self.tmp)
         self.assertEqual(r.returncode, 0, r.stderr[-800:])
         return json.loads(r.stdout.strip().splitlines()[-1])
 
     @with_clock
-    def test_old_build_keeps_the_block_and_new_build_reads_it_back(self):
-        s = cleared(5)
-        s, _ = act(s, 'jr_tile_start', lv=6)
-        s, _ = act(s, 'jr_tile_boost', kind='undo', lv=6)
+    def test_old_build_keeps_and_plays_on_what_this_build_writes(self):
+        s = story(5000)
+        s, _ = end(s, 1, ms=30_000)   # no start at all
+        self.clock.tick(40)
+        s, _ = end(s, 2)
+        s, _ = end(s, 1, moves=[tm.level(1)['solution'][0], tm.MOVE['undo']] + tm.level(1)['solution'])   # a replay
+        s, _ = act(s, 'jr_tile_quit')
         validate_state(s)
-        kept = self.old(json.loads(json.dumps(s)), 'settings')
+        mine = json.loads(json.dumps(s))
+        kept, _ = self.old(mine, [('settings', {'sound': False}, self.clock.t)])
         self.assertEqual(kept, s['journey']['tile'])
+        # 2.4.5 plays level 3 on it (its own start, a booster, its end 100 s later)
+        t = self.clock.t
+        tile, out = self.old(mine, [('jr_tile_start', {'lv': 3}, t), ('jr_tile_boost', {'kind': 'undo', 'lv': 3}, t + 1),
+                                    ('jr_tile_end', {'lv': 3, 'moves': [tm.level(3, 1)['solution'][0], tm.MOVE['undo']] + tm.level(3, 1)['solution']}, t + 100)])
+        self.assertTrue(out[-1]['first'])
+        self.assertEqual(tile['lv'], 3)
+        self.assertNotIn('cur', tile, '2.4.5 pops its attempt')
+        # …and this build reads that back and goes on (the 2.4.5 save has no clock: the page's time, once)
         back = json.loads(json.dumps(s))
-        back['journey']['tile'] = kept
+        back['journey']['tile'] = tile
         validate_state(back)
-        self.assertEqual(tm.permille(back), 10)
+        self.assertEqual(tm.permille(back), 6)
+        self.clock.tick(200)
+        back, r = end(back, 4, ms=60_000)
+        self.assertTrue(r['first'])
+
+    @with_clock
+    def test_an_attempt_a_245_page_left_mid_level_counts_here(self):
+        s = cleared(5)
+        t = self.clock.t
+        tile, _ = self.old(json.loads(json.dumps(s)), [('jr_tile_start', {'lv': 6}, t), ('jr_tile_boost', {'kind': 'undo', 'lv': 6}, t + 1)])
+        self.assertEqual(tile['cur']['b'], {'undo': 1})
+        s['journey']['tile'] = tile
+        validate_state(s)
+        self.clock.tick(60)
+        sol = tm.level(6, 1)['solution']   # the old page played 2.4.5's table
+        s, r = act(s, 'jr_tile_end', lv=6, moves=[sol[0], tm.MOVE['undo']] + sol)   # the old page's end, this build
+        self.assertTrue(r['first'])
+        self.assertEqual(r['cost'], 0)
+        self.assertEqual(s['journey']['tile']['u'], {'undo': 1}, 'the free use is counted once')
 
 
 # ---------------------------------------------------------------- the page plays the same rules
@@ -640,6 +854,129 @@ let data='';process.stdin.on('data',d=>data+=d);process.stdin.on('end',()=>{{
                 won = o.pop('won')
                 self.assertEqual(o, c['want'])
                 self.assertEqual(won, c['want']['gone'] == len(c['level']['tiles']))
+
+
+class PageSync(unittest.TestCase):
+    """The page's queue (public/js/v4/tile-match.js): a won level is kept until the server confirms it, through a 409,
+    a lost connection, "too early" and a reload, and it is never sent twice once counted."""
+    def test_queue_survives_conflicts_errors_and_a_reload(self):
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('no node')
+        script = ROOT / 'public' / 'js' / 'v4' / 'tile-match.js'
+        sol = tm.level(1)['solution']
+        code = f'''
+const store=new Map();globalThis.localStorage={{getItem:k=>store.has(k)?store.get(k):null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k)}};
+const realTimeout=globalThis.setTimeout;globalThis.setTimeout=(fn,ms)=>realTimeout(fn,0);
+const {{_tileTest:X,Game,resumeTileSync}}=await import({json.dumps(script.as_uri())});
+const level={json.dumps(tm.public_level(1))},sol={json.dumps(sol)};
+const tile={{lv:0,n:0,cap:15,day:'2026-10-14',free:{{undo:3,shuffle:1,push:1,slot:1}},price:{{undo:40}},pct:'0'}};
+const calls=[];let plan=[];
+const api={{state:{{journey:{{tile,wallet:100}}}},account:{{uid:877}},clockOffset:0,command:async(a,p)=>{{
+  calls.push([a,p.n,p.moves.length]);const step=plan.shift()||'ok';
+  if(step!=='ok'){{const e=new Error(step);e.status=step==='net'?0:409;e.data={{code:step}};if(step==='tile_fast')e.status=400;throw e;}}
+  tile.lv=Math.max(tile.lv,p.n);tile.n++;tile.at=Date.now();return {{win:true,first:true,tile}};}}}};
+X.T.env={{api,toast:()=>{{}}}};
+// a win: the card at once, the level queued (a copy of its moves), then confirmed after a 409, a lost connection and "too early"
+X.T.lv=1;X.T.level=level;X.T.g=new Game(level);X.T.g.useFree={{}};X.T.g.usePaid={{}};X.T.g.useCost={{}};X.T.t0=Date.now()-30000;
+X.T.moves=[];for(const m of sol){{X.T.g.move(m);X.T.moves.push(m);}}
+plan=['revision_conflict','net','tile_fast'];
+X.win(X.T.g);
+const first={{view:X.T.view,sync:X.T.result.sync,stored:JSON.parse(store.get(X.SYNC_KEY)).length,local:X.localLv()}};
+X.T.moves.length=0;   // a new attempt reuses nothing of the queued level
+for(let i=0;i<50&&X.queue().length;i++)await new Promise(r=>realTimeout(r,5));
+const after={{sync:X.T.result.sync,left:X.queue().length,stored:store.has(X.SYNC_KEY),calls:calls.map(c=>c.slice())}};
+// a reload with a level already counted (its answer was lost) and one not yet: only the second is sent
+store.set(X.SYNC_KEY,JSON.stringify([{{id:1,who:'877',n:1,moves:sol,t0:Date.now()-60000,taps:sol.length,first:true}},{{id:2,who:'877',n:2,moves:[1,2],t0:Date.now()-60000,taps:2,first:true}},{{id:3,who:'other',n:5,moves:[],first:true}}]));
+tile.at=Date.now()-60000;X.T.q=null;calls.length=0;plan=['tile_invalid'];resumeTileSync(X.T.env);
+for(let i=0;i<50&&X.queue().length;i++)await new Promise(r=>realTimeout(r,5));
+console.log(JSON.stringify({{first,after,reload:{{calls,left:X.queue().length,others:JSON.parse(store.get(X.SYNC_KEY)||'[]').map(x=>x.who)}}}}));
+'''
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / 'sync.mjs'
+            f.write_text(code, encoding='utf-8')
+            r = subprocess.run([node, str(f)], capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0, r.stderr[-1500:])
+        got = json.loads(r.stdout.strip().splitlines()[-1])
+        self.assertEqual(got['first'], dict(view='done', sync='wait', stored=1, local=1))
+        self.assertEqual(got['after']['sync'], 'ok')
+        self.assertEqual(got['after']['left'], 0)
+        self.assertFalse(got['after']['stored'])
+        self.assertEqual(got['after']['calls'], [['jr_tile_end', 1, len(sol)]] * 4, 'one level, sent until confirmed, its own moves')
+        self.assertEqual(got['reload']['calls'], [['jr_tile_end', 2, 2]], 'the counted level is not sent again')
+        self.assertEqual(got['reload']['left'], 0, 'an invalid level is dropped with its reason')
+        self.assertEqual(got['reload']['others'], ['other'], "another player's queue is left alone")
+
+
+class PageBoards(unittest.TestCase):
+    """Owner, 14/10: "3 cái cuối không match với nhau" from level 8 (the first stack). The page never builds a level: it
+    draws what /api/tile/level sends (public_level, the server's own build), so the board is the server's by
+    construction. The page drew a stack tile by its place in the stack, though, so the tiles under a taken top stayed
+    blank backs. For all 100 levels, at three phone stages: the page's Game clears the server's intended solution,
+    every kind comes in threes, every tile the solution takes next is drawn face up and open, nothing face down is
+    open, every stack shows all its tiles in turn, and every board tile sits inside the stage."""
+    def test_page_draws_every_level_face_up_in_turn_and_inside_the_stage(self):
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('no node')
+        src = (ROOT / 'public' / 'js' / 'v4' / 'tile-match.js').read_text(encoding='utf-8')
+        self.assertIn('/api/tile/level?lv=', src)
+        self.assertNotIn('function build', src, 'the page draws the server\'s level, it never builds one')
+        levels = [dict(tm.public_level(lv), solution=tm.level(lv)['solution']) for lv in range(1, 101)]
+        script = ROOT / 'public' / 'js' / 'v4' / 'tile-match.js'
+        code = f'''
+const {{Game,geometry,place,above}}=await import({json.dumps(script.as_uri())});
+let data='';process.stdin.on('data',d=>data+=d);process.stdin.on('end',()=>{{
+  const out=[];
+  for(const lv of JSON.parse(data)){{
+    const bad=[];const cnt={{}};for(const t of lv.tiles)cnt[t[3]]=(cnt[t[3]]||0)+1;
+    if(Object.values(cnt).some(c=>c%3))bad.push('kinds not in threes');
+    for(const [W,H] of [[390,680],[360,600],[820,300]]){{
+      const g=new Game(lv),geo=geometry(W,H,lv,g.cap);
+      for(let t=0;t<g.n;t++){{const a=place(geo,lv,g,t);if(a.px<-0.5||a.py<-0.5||a.px+a.size>W+0.5||a.py+a.size>H+0.5){{bad.push(`tile ${{t}} outside ${{W}}x${{H}}`);break;}}}}
+      for(const m of lv.solution){{
+        for(let t=0;t<g.n;t++){{if(g.where[t]!=='b')continue;const a=place(geo,lv,g,t);
+          if(a.back&&g.open(t)){{bad.push(`open tile ${{t}} face down`);break;}}}}
+        if(!g.open(m)){{bad.push(`solution tile ${{m}} not open`);break;}}
+        const a=place(geo,lv,g,m);if(a&&a.back){{bad.push(`solution tile ${{m}} face down`);break;}}
+        g.move(m);
+      }}
+      if(!g.won)bad.push(`not won at ${{W}}x${{H}}`);
+      if(bad.length)break;
+    }}
+    out.push(bad.slice(0,3));
+  }}
+  console.log(JSON.stringify(out));}});
+'''
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / 'boards.mjs'
+            f.write_text(code, encoding='utf-8')
+            r = subprocess.run([node, str(f)], input=json.dumps(levels), capture_output=True, text=True, timeout=120)
+        self.assertEqual(r.returncode, 0, r.stderr[-1500:])
+        got = json.loads(r.stdout.strip().splitlines()[-1])
+        self.assertEqual({lv: b for lv, b in enumerate(got, 1) if b}, {})
+        self.assertTrue(any(l['stacks'] for l in levels))
+
+    def test_stack_tiles_turn_face_up_one_by_one(self):
+        """The 2.4.5 rule (a tile's place in its stack) against the fixed one, on level 8's first stack in 2.4.5's table."""
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('no node')
+        lv8 = dict(tm.level(8, 1))
+        lv8.pop('solution')
+        script = ROOT / 'public' / 'js' / 'v4' / 'tile-match.js'
+        code = f'''
+const {{Game,above}}=await import({json.dumps(script.as_uri())});
+const lv={json.dumps(lv8)},g=new Game(lv),ids=lv.stacks[0].ids,out=[];
+for(const t of ids){{out.push(ids.map(i=>g.where[i]==='b'?above(g,lv,i):-1));g.where[t]='g';for(const d of g.under[t])g.block[d]--;}}
+console.log(JSON.stringify(out));
+'''
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / 'stack.mjs'
+            f.write_text(code, encoding='utf-8')
+            r = subprocess.run([node, str(f)], capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0, r.stderr[-800:])
+        self.assertEqual(json.loads(r.stdout), [[0, 1, 2], [-1, 0, 1], [-1, -1, 0]])
 
 
 if __name__ == '__main__':

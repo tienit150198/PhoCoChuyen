@@ -24,16 +24,22 @@ commission abroad (clothing_abroad.on_close; the salary abroad is the employment
 Mây Coin, gold, the fair/black market, dog bark, auctions, transfers, gifts or mishaps: none of them calls these.
 The day's fund rows are kept out of the 🔥 x3 day's net (journey._end_of_day), so the buff never multiplies twice.
 
-Anti-cheat: `jr_tile_start {lv}` (only cleared + 1 or a level already cleared; new levels at most CAP_DAY a day)
-records the server time; `jr_tile_boost {kind}` grants (free or paid) one booster for that attempt;
-`jr_tile_end {lv, moves}` replays the taps and boosters against the regenerated level, checks the boosters were
-granted, that it is a win, and that the attempt took at least max(MIN_LEVEL_MS, MIN_TAP_MS × taps) of server
-time. Only the first clear of each level counts; replays are allowed for fun.
+Anti-cheat (2.4.7: a level is self-describing; the page plays locally and sends one command when it is won):
+`jr_tile_end {n, moves, ms?}` rebuilds level n from its seed (`build`), replays the taps and boosters, and counts a
+win only if n == lv + 1 (the first clear: the buff, at most CAP_DAY a Vietnam day) or n <= lv (a replay: nothing but
+the boosters' price). Boosters ride in `moves` and are priced at the end (today's free uses first, then xu doubling
+within the level; refused when the wallet is short). A first clear needs max(MIN_LEVEL_MS, MIN_TAP_MS × taps) of
+server time since the save's clock `cur.t` (set by the previous accepted first clear, or an older page's first
+start); a save that never had a clock falls back to the page's own `ms`, once. Nothing else is needed from the
+server first, so a lost start, a double start, a quit, a 409 retry or a day change can no longer lose a clear.
+Pages of 2.4.5–2.4.6 still send `jr_tile_start {lv}` (records the level; never moves the clock), `jr_tile_boost {kind, lv}`
+(grants and charges one booster at once, kept in cur.b / cur.p) and `jr_tile_end {lv, moves}` (its granted boosters
+are not charged again). A won end that does not replay as a win changes nothing.
 
-State (optional, absent until the first start): journey['tile'] = {lv: highest cleared (0..100), d: the Vietnam
-day of n/u, n: new levels cleared that day, u: {booster: free uses that day}, cur: {lv, t: start ms, b: {booster:
-granted this attempt}, p: {booster: paid this attempt}} or absent}. An older build keeps the journey's unknown
-keys and ignores it (journey.validate checks only the keys it knows); its earnings simply miss the buff.
+State (optional, absent until the first play): journey['tile'] = {lv: highest cleared (0..100), d: the Vietnam
+day of n/u, n: new levels cleared that day, u: {booster: free uses that day}, cur: {lv: the next level (or an older
+page's level), t: the clock (server ms), b: {booster: granted to an older page's attempt}, p: {booster: paid by
+it}}}. The shape is 2.4.5's and 2.4.6's (journey.validate there checks it the same way), so a rollback reads it unchanged.
 """
 from __future__ import annotations
 
@@ -287,11 +293,21 @@ def _assign(rng: Rng, order: list[int], kinds: int, peak: int, eager: int) -> li
     raise Gen('assign')
 
 
-def build(lv: int, row: tuple | None = None) -> dict:
-    """Level `lv` (1..100) from its row in LEVELS: a dict the page draws and `Game` replays."""
-    if row is None:
+TABLE = 2   # the level table this build serves (2.4.7: harder from level 5); 1 = 2.4.5–2.4.6's, still replayed
+
+
+def table(v: int = TABLE) -> tuple:
+    if v == 1:
+        from .tile_match_levels_v1 import LEVELS
+    else:
         from .tile_match_levels import LEVELS
-        row = LEVELS[lv - 1]
+    return LEVELS
+
+
+def build(lv: int, row: tuple | None = None, v: int = TABLE) -> dict:
+    """Level `lv` (1..100) from its row in table `v`: a dict the page draws and `Game` replays."""
+    if row is None:
+        row = table(v)[lv - 1]
     seed, shape, kinds, layers, fill, offset, stacks, locks, ice, peak, target = row
     rng = Rng(seed)
     stack_n = sum(stacks)
@@ -350,24 +366,24 @@ def build(lv: int, row: tuple | None = None) -> dict:
     solution = []
     for t in order:
         solution += [t, t] if flags[t] & ICE else [t]
-    return dict(lv=lv, seed=seed, shape=shape, cap=TRAY, w=W, h=H + (3 if stacks else 0), icons=icons,
+    return dict(lv=lv, v=v, seed=seed, shape=shape, cap=TRAY, w=W, h=H + (3 if stacks else 0), icons=icons,
                 tiles=[[x, y, z, kind[i], flags[i]] for i, (x, y, z) in enumerate(places)],
                 b=blockers, stacks=stack_rows, board=board, peak=peak, solution=solution)
 
 
-_CACHE: dict[int, dict] = {}
+_CACHE: dict[tuple, dict] = {}
 
 
-def level(lv: int) -> dict:
-    """The built level (bounded cache: at most LEVEL_MAX entries)."""
-    got = _CACHE.get(lv)
+def level(lv: int, v: int = TABLE) -> dict:
+    """The built level (bounded cache: at most LEVEL_MAX entries a table)."""
+    got = _CACHE.get((v, lv))
     if got is None:
-        got = _CACHE[lv] = build(lv)
+        got = _CACHE[v, lv] = build(lv, v=v)
     return got
 
 
 def public_level(lv: int) -> dict:
-    """What the page needs (no intended solution)."""
+    """What the page needs (no intended solution). `v` names the table: the page sends it back with the end."""
     x = level(lv)
     return {k: v for k, v in x.items() if k not in ('solution', 'peak')}
 
@@ -673,11 +689,100 @@ def public(s: dict) -> dict:
     fresh = not t or t.get('d') != today()
     cur = (t or {}).get('cur') if t else None
     pm = permille(s)
-    out = dict(lv=cleared(s), max=LEVEL_MAX, pm=pm, pct=pct_text(pm), n=0 if fresh else int(t.get('n', 0)), cap=CAP_DAY,
+    out = dict(lv=cleared(s), max=LEVEL_MAX, pm=pm, pct=pct_text(pm), n=0 if fresh else int(t.get('n', 0)), cap=CAP_DAY, day=today(),
                free=free_left(t), price=dict(PRICE), slot_max=SLOT_MAX)
     if isinstance(cur, dict):
         out['cur'] = dict(lv=cur['lv'], b=dict(cur.get('b') or {}), p=dict(cur.get('p') or {}))
+        out['at'] = cur['t']   # the clock: a first clear is counted from need_ms(taps) after it (server ms)
+    out['min'] = dict(level=MIN_LEVEL_MS, tap=MIN_TAP_MS)
     return out
+
+
+def _ms() -> int:
+    return int(_now() * 1000)
+
+
+def _clock(t: dict, now: int) -> int:
+    """The save's clock: the previous accepted first clear (or an older page's first start); `now` if it has none."""
+    cur = t.get('cur')
+    return cur['t'] if isinstance(cur, dict) and type(cur.get('t')) is int else now
+
+
+def _rest(t: dict, clock: int) -> None:
+    """cur between attempts: the next level and the clock, no booster of an older page's attempt (2.4.5's shape)."""
+    t['cur'] = dict(lv=min(LEVEL_MAX, t['lv'] + 1), t=clock, b={}, p={})
+
+
+def need_ms(taps: int) -> int:
+    """The least server time a first clear of `taps` taps takes since the clock."""
+    return max(MIN_LEVEL_MS, MIN_TAP_MS * taps)
+
+
+def _end(s: dict, p: dict, e) -> dict:
+    """A finished level, self-described: {n, moves, ms?} (or an older page's {lv, moves}). See the module doc."""
+    need = e.need
+    new = 'n' in p
+    need(({'n', 'moves'} <= set(p) <= {'n', 'moves', 'ms', 'v'}) if new else set(p) == {'lv', 'moves'}, 'Thao tác không hợp lệ.')
+    need(type(p.get('v', TABLE)) is int and p.get('v', TABLE) in (1, TABLE), 'Màn chơi không hợp lệ.', 'tile_level')
+    lv = p['n'] if new else p['lv']
+    need(type(lv) is int and 1 <= lv <= LEVEL_MAX, 'Màn chơi không hợp lệ.', 'tile_level')
+    moves = p['moves']
+    need(isinstance(moves, list) and len(moves) <= MOVES_MAX and all(type(m) is int for m in moves), 'Ván chơi không hợp lệ.', 'tile_invalid')
+    t = _ensure(s)
+    need(lv <= t['lv'] + 1, f'Qua màn {t["lv"] + 1} trước đã nhé.', 'tile_locked')
+    # The table the page played: its own `v`; a 2.4.5–2.4.6 page (no `v`) may hold a level of either table.
+    g = None
+    for v in ((p.get('v', TABLE),) if new else (TABLE, 1)):
+        try:
+            g = replay(level(lv, v), moves)
+        except Bad:
+            continue
+        if g.won:
+            break
+    if g is None:
+        raise e.GameError('Ván chơi không khớp với màn này.', 'tile_invalid')
+    if not g.won:   # never sent by a page for a game it did not win: nothing changes (a stale end cannot undo anything)
+        return dict(message='Chưa qua màn. Thử lại nhé!', win=False, lv=lv, tile=public(s))
+    cur = t.get('cur')
+    cur = cur if isinstance(cur, dict) else None
+    mine = cur if cur is not None and not new and cur['lv'] == lv else None   # an older page's attempt: its boosters are paid
+    granted, paid = (mine or {}).get('b') or {}, dict((mine or {}).get('p') or {})
+    free, cost = free_left(t), 0
+    uses = {}
+    for k in BOOSTS:
+        extra = g.used[k] - granted.get(k, 0)
+        if extra <= 0:
+            continue
+        uses[k] = min(extra, free[k])
+        for _ in range(extra - uses[k]):
+            n = paid.get(k, 0)
+            need(n < PAID_MAX, 'Màn này dùng trợ giúp nhiều quá rồi.', 'tile_paid')
+            cost += price(k, n)
+            paid[k] = n + 1
+    now = _ms()
+    first = lv == t['lv'] + 1
+    if first:
+        need(t['n'] < CAP_DAY, f'Hôm nay đã qua {CAP_DAY} màn mới, màn này mai tính nhé.', 'tile_cap')
+        least = need_ms(g.taps)
+        if cur is not None:
+            need(now - cur['t'] >= least, 'Nhanh quá, chưa tính màn này. Đợi giây lát nhé!', 'tile_fast')
+        else:   # a save with no clock yet (once): the page's own time
+            need(type(p.get('ms')) is int and p['ms'] >= least, 'Nhanh quá, không tính màn này. Chơi lại thong thả nhé!', 'tile_fast')
+    if cost:
+        need(s['journey']['wallet'] >= cost, f'Ví chưa đủ {cost} xu cho trợ giúp đã dùng.', 'tile_poor')
+        from . import bank
+        bank.pay(s, cost, f'{NAME} · trợ giúp', method='cash', kind='life', short=f'Ví chưa đủ {cost} xu cho trợ giúp.')
+    for k, v in uses.items():
+        if v:
+            t['u'][k] = t['u'].get(k, 0) + v
+    if first:
+        t['lv'] = lv
+        t['n'] += 1
+    _rest(t, now if first or cur is None else cur['t'])
+    pm = permille(s)
+    msg = f'🎉 Qua màn {lv}!' + (f' {PREFIX} +{pct_text(pm)}%.' if first else '')
+    return dict(message=msg, win=True, first=first, lv=lv, taps=g.taps, cost=cost,
+                ms=now - cur['t'] if cur is not None else p.get('ms'), tile=public(s))
 
 
 # ---------------------------------------------------------------- the commands
@@ -690,7 +795,7 @@ def action(s: dict, name: str, p: dict) -> dict:
     need(isinstance(p, dict), 'Thao tác không hợp lệ.')
     j = s['journey']
     need(j.get('story'), 'Ghép ba mở khi bạn đã vào hành trình.', 'tile_story')
-    if name == 'jr_tile_start':
+    if name == 'jr_tile_start':   # an older page: records the level for its boosters; the clock is never moved
         need(set(p) <= {'lv'}, 'Thao tác không hợp lệ.')
         lv = p.get('lv')
         need(type(lv) is int and 1 <= lv <= LEVEL_MAX, 'Màn chơi không hợp lệ.', 'tile_level')
@@ -698,17 +803,17 @@ def action(s: dict, name: str, p: dict) -> dict:
         need(lv <= t['lv'] + 1, f'Qua màn {t["lv"] + 1} trước đã nhé.', 'tile_locked')
         if lv == t['lv'] + 1:
             need(t['n'] < CAP_DAY, f'Hôm nay đã qua {CAP_DAY} màn mới. Mai chơi tiếp, giờ chơi lại màn cũ cho vui nhé!', 'tile_cap')
-        t['cur'] = dict(lv=lv, t=int(_now() * 1000), b={}, p={})
+        t['cur'] = dict(lv=lv, t=_clock(t, _ms()), b={}, p={})
         return dict(message=f'🧩 Màn {lv}', tile=public(s))
     t = get(s)
     cur = t.get('cur') if t else None
-    if name == 'jr_tile_quit':
+    if name == 'jr_tile_quit':   # an older page: the attempt's boosters are gone; the clock stays
         need(set(p) <= set(), 'Thao tác không hợp lệ.')
-        if t is not None:
-            t.pop('cur', None)
+        if isinstance(cur, dict):
+            _rest(t, cur['t'])
         return dict(message='Đã rời màn.', tile=public(s))
-    need(isinstance(cur, dict), 'Bắt đầu một màn trước đã nhé.', 'tile_none')
-    if name == 'jr_tile_boost':
+    if name == 'jr_tile_boost':   # an older page
+        need(isinstance(cur, dict), 'Bắt đầu một màn trước đã nhé.', 'tile_none')
         need(set(p) == {'kind', 'lv'}, 'Thao tác không hợp lệ.')
         kind = p['kind']
         need(kind in BOOSTS, 'Trợ giúp không hợp lệ.')
@@ -732,31 +837,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         b[kind] = b.get(kind, 0) + 1
         return dict(message=('Miễn phí hôm nay.' if not cost else f'−{cost} xu.'), boost=kind, cost=cost, tile=public(s))
     if name == 'jr_tile_end':
-        need(set(p) == {'lv', 'moves'}, 'Thao tác không hợp lệ.')
-        need(p['lv'] == cur['lv'], 'Màn đã đổi, mở lại màn nhé.', 'tile_stale')
-        lv = cur['lv']
-        moves = p['moves']
-        need(isinstance(moves, list) and len(moves) <= MOVES_MAX and all(type(m) is int for m in moves), 'Ván chơi không hợp lệ.', 'tile_invalid')
-        t = _ensure(s)
-        cur = t.pop('cur')
-        try:
-            g = replay(level(lv), moves)
-        except Bad:
-            raise e.GameError('Ván chơi không khớp với màn này.', 'tile_invalid')
-        for k in BOOSTS:
-            need(g.used[k] <= (cur.get('b') or {}).get(k, 0), 'Ván chơi dùng trợ giúp chưa nhận.', 'tile_invalid')
-        if not g.won:
-            return dict(message='Chưa qua màn. Thử lại nhé!', win=False, tile=public(s))
-        spent = int(_now() * 1000) - int(cur['t'])
-        need(spent >= max(MIN_LEVEL_MS, MIN_TAP_MS * g.taps), 'Nhanh quá, không tính màn này. Chơi lại thong thả nhé!', 'tile_fast')
-        first = lv == t['lv'] + 1
-        if first:
-            need(t['n'] < CAP_DAY, f'Hôm nay đã qua {CAP_DAY} màn mới, màn này mai tính nhé.', 'tile_cap')
-            t['lv'] = lv
-            t['n'] += 1
-        pm = permille(s)
-        msg = f'🎉 Qua màn {lv}!' + (f' {PREFIX} +{pct_text(pm)}%.' if first else '')
-        return dict(message=msg, win=True, first=first, lv=lv, taps=g.taps, ms=spent, tile=public(s))
+        return _end(s, p, e)
     raise e.GameError('Thao tác không hợp lệ.', 'unknown_action')
 
 
@@ -764,7 +845,9 @@ def carry_reset(old: dict, fresh: dict) -> None:
     """reset_all keeps the levels cleared and today's counts (they were earned, and the cap must hold)."""
     t = (old.get('journey') or {}).get(KEY)
     if isinstance(t, dict):
-        fresh['journey'][KEY] = {k: copy.deepcopy(v) for k, v in t.items() if k != 'cur'}
+        fresh['journey'][KEY] = keep = {k: copy.deepcopy(v) for k, v in t.items() if k != 'cur'}
+        if isinstance(t.get('cur'), dict):   # the clock stays (a reset is no way round the time a level takes)
+            _rest(keep, t['cur']['t'])
 
 
 def validate(s: dict) -> None:

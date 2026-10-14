@@ -118,13 +118,15 @@ async def main():
                     await page.wait_for_timeout(900)
                     await snap(f'{tag}-complete-pending.jpg')
                     await page.wait_for_selector('.tm-gain', timeout=40000)
+                    if '✓ Đã ghi nhận' not in await page.inner_text('.tm-done'):
+                        problems.append(f'[{tag}] no "✓ Đã ghi nhận" on the card')
                     await page.wait_for_timeout(900)
                     await snap(f'{tag}-complete.jpg')
                     got = {}
                     mutate(db, token, lambda s: got.update(s['journey'].get('tile') or {}))
-                    if got.get('lv') != lv or got.get('n') != 1 or 'cur' in got:
+                    if got.get('lv') != lv or got.get('n') != 1 or (got.get('cur') or {}).get('b'):
                         problems.append(f'[{tag}] server tile after the win: {got}')
-                    # a booster on the next level: free today, then the lobby
+                    # a booster on the next level: checked on the page (free today), paid with the level's end
                     await page.click('.tm-sheet .tm-bar [data-tm="next"]')
                     await page.wait_for_selector('.tm-sheet .tm-tile', timeout=8000)
                     await page.wait_for_timeout(500)
@@ -134,8 +136,11 @@ async def main():
                     await page.wait_for_timeout(700)
                     got = {}
                     mutate(db, token, lambda s: got.update(s['journey'].get('tile') or {}))
-                    if (got.get('u') or {}).get('undo') != 1 or (got.get('cur') or {}).get('b', {}).get('undo') != 1:
-                        problems.append(f'[{tag}] the undo booster was not granted: {got}')
+                    if (got.get('u') or {}).get('undo'):
+                        problems.append(f'[{tag}] the undo booster reached the server before the end: {got}')
+                    tag_free = await page.inner_text('.tm-boost[data-k="undo"] em')
+                    if tag_free.strip() != '2':
+                        problems.append(f'[{tag}] the undo booster shows {tag_free!r} free uses left, not 2')
                     await snap(f'{tag}-level{lv + 1}-undo.jpg')
                 await ctx.close()
             await browser.close()
