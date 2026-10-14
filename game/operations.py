@@ -157,17 +157,40 @@ def classify_money(amount:int, reason:str, explicit:str|None=None) -> str:
     return 'other_income' if amount>0 else 'other_cost'
 
 
-def record_money(c:dict, amount:int, reason:str, ref:str|None=None, category:str|None=None) -> None:
+def record_money(c:dict, amount:int, reason:str, ref:str|None=None, category:str|None=None, group:str|None=None) -> None:
+    """`group` (staff orders): one row per day, category and group, its amount the day's sum ("Lương đơn riêng · Nhi
+    · 37 đơn"). Each order's detail stays in its receipt; four rows an order filled the save (2.4.15: 14 MB saves)."""
     f=c['ops']['finance'];cat=classify_money(amount,reason,category)
-    f['ledger'].append(dict(id=_id(c,'entry'),day=c['day'],turn=c['turn'],amount=amount,category=cat,reason=reason,ref=ref))
     if cat=='revenue' and amount>0:f['period_revenue']+=amount
+    if group and _merge(f['ledger'],c,amount,cat,group):return
+    f['ledger'].append(dict(id=_id(c,'entry'),day=c['day'],turn=c['turn'],amount=amount,category=cat,reason=reason,ref=SUM+group if group else ref))
     trim_ledger(c)
+
+
+SUM='sum:'         # the ref of a summed row: SUM + its group
+MERGE_LOOK=24      # a summed row is looked for among the last rows only (an order writes five)
+MERGE_CAP=10**8    # past this a day's sum starts a new row (a row holds at most 10**9)
+_ORDERS=re.compile(r' · (\d+) đơn\Z')
+
+
+def _merge(rows:list, c:dict, amount:int, cat:str, group:str) -> bool:
+    """Add `amount` to today's summed row of `group`; False when there is none yet. The rows' sum, the
+    wallet check and every per-day total (the lãi/lỗ chart, 🧩 Phúc lợi) are the same as with one row each."""
+    key=SUM+group;day=c['day']
+    for r in reversed(rows[-MERGE_LOOK:]):
+        if r.get('ref')==key and r['day']==day and r['category']==cat:
+            total=r['amount']+amount
+            if not -MERGE_CAP<=total<=MERGE_CAP:return False
+            m=_ORDERS.search(r['reason']);n=int(m.group(1))+1 if m else 2
+            r['amount']=total;r['turn']=c['turn'];r['reason']=f'{group} · {n} đơn'[:1000]
+            return True
+    return False
 
 
 LEDGER_HIGH=200   # past this many rows the oldest move to the archive (game/archive.py),
 LEDGER_KEEP=120   # down to this many, but never rows of the last LEDGER_DAYS days
 LEDGER_DAYS=8     # (the lãi/lỗ chart reads 7 days), and never more than LEDGER_MAX rows.
-LEDGER_MAX=1200
+LEDGER_MAX=400    # 2.4.15: was 1200 (staff orders filled it in a day; a save of 54 careers reached 14 MB)
 
 _LEDGER_BATCH = contextvars.ContextVar('recent_ledger_batch', default=None)
 

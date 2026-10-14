@@ -1,3 +1,11 @@
+# v2.4.15 — 2026-10-15
+
+⚡ Giảm lag (chủ game 15/10). Bản lưu lớn (54 nghề, tới 14 MB) làm mỗi lệnh mất 1–1,6 s: sổ thu chi mỗi nghề giữ tới 1.200 dòng, phần lớn là 4–5 dòng cho từng đơn riêng của nhân viên.
+- Sổ thu chi: đơn riêng của nhân viên (lương, vật tư, doanh thu, thưởng 40%, 🧩 Phúc lợi) cộng vào một dòng mỗi ngày cho từng nhân viên ("Lương đơn riêng · Nhi · 37 đơn", ref `sum:<nhóm>`); tổng tiền, kiểm ví và mọi tổng theo ngày không đổi, chi tiết từng đơn vẫn ở biên nhận. LEDGER_MAX 1200 → 400: phần dư chuyển vào archive như trước (không mất). Bản lưu lớn nhỏ đi 25–40%.
+- Tính bù đơn nhân viên: hàng đợi heap thay cho quét lại mọi nhân viên mỗi đơn (cùng thứ tự, đã so từng byte trên 5 bản lưu thật); mỗi lệnh tính tối đa 0,3 s (SETTLE_SECONDS), phần còn lại lệnh sau tính tiếp.
+- 6 GET không đọc bản lưu nữa (home-guests, garage/spouse, family/baby, wedinvite, wedding, feedback/mine).
+Bản cũ đọc được bản lưu mới (dòng gộp là dòng sổ bình thường). Không có Có gì mới.
+
 # v2.4.14 — 2026-10-15
 
 🔁 Tự đặt hàng giá 100.000 xu (trước 350.000, chủ game 15/10); người đã mua giá cũ được hoàn phần chênh bằng quà hệ thống. Không có Có gì mới.

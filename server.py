@@ -787,12 +787,12 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("news:"+self.client_ip(),120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,marriage.news(self.server.store,(parse_qs(split.query).get("since") or ["0"])[0],self.token()));return
             if route in ("/api/wedding/race","/api/wedding/photos"):  # 💍 Khách mời của tuần (Xếp hạng), the couple's party photos (Kỷ niệm)
-                token,state,_,_=self.require_session()
+                token,state,_,_=self.require_session(light=True)  # 2.4.15: the save is not read here (light: no parse of a 10 MB save per poll)
                 if not self.server.rate_limit("wedding-get:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 sid=self.server.store.key(token)
                 self.json(200,wedding_live.race_view(self.server.store,sid) if route.endswith("race") else dict(photos=wedding_live.photos(self.server.store,sid)));return
             if route=="/api/garage/spouse":  # 🛵 vợ chồng chung xe: the spouse's vehicles (game/couple.py)
-                token,state,_,_=self.require_session()
+                token,state,_,_=self.require_session(light=True)  # 2.4.15: the save is not read here (light: no parse of a 10 MB save per poll)
                 if not self.server.rate_limit("spouse-cars:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,couple.spouse_cars(self.server.store,token));return
             if route=="/api/marriage":  # Hôn nhân: this player's view (+ the price lists with ?catalog=1)
@@ -800,7 +800,7 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("marriage-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,marriage.view(self.server.store,token,state,(parse_qs(split.query).get("catalog") or [""])[0]=="1"));return
             if route in ("/api/wedinvite","/api/wedinvite/me"):  # 💌 the cards not shown yet / the compose sheet (game/wed_invite.py)
-                token,state,_,_=self.require_session()
+                token,state,_,_=self.require_session(light=True)  # 2.4.15: the save is not read here (light: no parse of a 10 MB save per poll)
                 if not self.server.rate_limit("wedinv-get:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 if route=="/api/wedinvite/me":self.json(200,wed_invite.me(self.server.store,token));return
                 self.json(200,dict(items=wed_invite.due(self.server.store,self.server.store.key(token)),off=wed_invite.off()));return
@@ -830,7 +830,7 @@ class Handler(BaseHTTPRequestHandler):
                 if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route=="/api/family/baby":  # 👶 the shared child and custody copies as the home room draws them (game/family.py babies)
-                token,state,_,_=self.require_session()
+                token,state,_,_=self.require_session(light=True)  # 2.4.15: the save is not read here (light: no parse of a 10 MB save per poll)
                 if not self.server.rate_limit("family-baby:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,family_babies.babies(self.server.store,token));return
             if route=="/api/deco/mate":  # 💞 the spouse's pieces in the shared home (game/deco_mate.py): read-only, {} otherwise
@@ -838,7 +838,7 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("deco-mate:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,deco_mate.view(self.server.store,token,state));return
             if route=="/api/home-guests" or route.startswith("/api/home-guests/"):
-                token,state,_,_=self.require_session()
+                token,state,_,_=self.require_session(light=True)  # 2.4.15: the save is not read here (light: no parse of a 10 MB save per poll)
                 if not self.server.rate_limit("home-guests-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 query={k:v[0] for k,v in parse_qs(split.query).items()}
                 self.json(200,home_guests.get(self.server.store,token,state,route[len("/api/home-guests"):].lstrip('/'),query));return
@@ -866,7 +866,7 @@ class Handler(BaseHTTPRequestHandler):
                 binary,mime=pfb.read_image(self.server.store,token,route[len("/api/feedback/images/"):])
                 self.respond(200,binary,mime,extra={"Cross-Origin-Resource-Policy":"same-origin"},cache="private, no-store");return
             if route=="/api/feedback/mine":
-                token,_,_,_=self.require_session()
+                token,_,_,_=self.require_session(light=True)  # 2.4.15: the save is not read here (light: no parse of a 10 MB save per poll)
                 if not self.server.rate_limit("fb-mine:"+token,60):self.error(429,"Chậm lại một chút nhé.");return
                 self.json(200,dict(items=pfb.list_mine(self.server.store,token),admin=pfb.is_admin(self.server.store,token)));return
             if route=="/api/admin/feedback":

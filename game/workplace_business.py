@@ -8,6 +8,7 @@ their career day. A bounded catch-up retains its remaining cursor for later call
 from __future__ import annotations
 
 import copy
+import heapq
 import math
 import time
 from . import staff_life
@@ -17,6 +18,10 @@ VERSION = 1
 # Keep long offline catch-up responsive while retaining every pending order.
 # 1,024 accounting orders with real ledger writes take about 130 ms locally.
 MAX_ORDERS = 1024
+# 2.4.15: and at most this long (production: 1,024 orders of a 54-career save took 0.9 s, a whole worker held up).
+# The rest waits for the next command, as past MAX_ORDERS. 0: no time limit.
+import os as _os
+SETTLE_SECONDS = float(_os.environ.get('SETTLE_SECONDS', '0.3') or 0)
 RECENT = 12
 LIMIT = 10**12
 TIME_MAX = 10**11
@@ -376,10 +381,11 @@ def _finish(s,c,career,e,at,order=None):
     ref=f'staff-order-{career}-{seq}'
     # Customer revenue retains the normal deferred tax. Stock cost was already
     # paid on purchase; its basis belongs in the margin, never another cash debit.
-    for amount,category,reason in ((-wage,'wage','Lương đơn riêng'),(-supplies,'materials','Vật tư đơn riêng'),(revenue,'revenue',label)):
+    for amount,category,reason,group in ((-wage,'wage','Lương đơn riêng','Lương đơn riêng'),(-supplies,'materials','Vật tư đơn riêng','Vật tư đơn riêng'),
+                                         (revenue,'revenue',label,'Doanh thu đơn riêng')):
         c['money']+=amount
         c['earnings']+=max(0,amount);c['costs']+=max(0,-amount)
-        ops.record_money(c,amount,reason+' · '+e['name'],ref,category)
+        ops.record_money(c,amount,reason+' · '+e['name'],ref,category,group=group+' · '+e['name'])  # one row a day each
     expenses=cash+goods
     b['served']=seq;b['revenue']+=revenue;b['expenses']+=expenses
     b['wages']+=wage;b['materials']+=supplies;b['goods']+=goods;b['net']+=revenue-expenses
@@ -442,7 +448,8 @@ def credit_profit_bonus(c,margin,ref,name,visitor=False):
     profit['positive']+=margin;profit['total']+=bonus
     if bonus:
         c['money']+=bonus;c['earnings']+=bonus
-        ops.record_money(c,bonus,'Thưởng 40% lợi nhuận '+('đơn khách' if visitor else 'đơn riêng')+' · '+name,ref,'other_income')
+        why='Thưởng 40% lợi nhuận '+('đơn khách' if visitor else 'đơn riêng')+' · '+name
+        ops.record_money(c,bonus,why,ref,'other_income',group=None if visitor else why)
     profit[bucket][ref]=bonus
     if visitor:
         profit['visitor_total']+=bonus
@@ -475,11 +482,25 @@ def _settle(s,now=None):
         businesses.append((career,c,b,{e['id']:e for e in _eligible(c)}))
     # Oldest completion across every workplace: one large offline backlog cannot
     # monopolize the per-call budget while another workplace never gets a turn.
-    while remaining:
-        ready=[(p['at'],career,sid,c,b,p,employees[sid])
-               for career,c,b,employees in businesses for sid,p in b['pending'].items() if p['at']<=now]
-        if not ready:break
-        at,career,sid,c,b,pending,e=min(ready,key=lambda x:x[:3])
+    # 2.4.15: a heap of (at, career, staff) gives the same order as taking the minimum of every
+    # ready completion each time (rebuilt for 1024 orders: a third of a catch-up). An entry whose
+    # completion moved is stale and skipped; after each order the workplace's own staff are queued again.
+    by={career:(c,b,employees) for career,c,b,employees in businesses}
+    heap=[];queued={}
+    def queue(career):
+        c,b,employees=by[career]
+        for sid,p in b['pending'].items():
+            if p['at']<=now and queued.get((career,sid))!=p['at']:
+                queued[(career,sid)]=p['at'];heapq.heappush(heap,(p['at'],career,sid))
+    for career in by:queue(career)
+    stop=time.perf_counter()+SETTLE_SECONDS if SETTLE_SECONDS>0 else None
+    while remaining and heap:
+        if stop is not None and remaining<MAX_ORDERS and time.perf_counter()>stop:break  # at least one order a call
+        at,career,sid=heapq.heappop(heap)
+        c,b,employees=by[career];pending=b['pending'].get(sid)
+        if pending is None or pending['at']!=at:continue
+        queued.pop((career,sid),None)
+        e=employees[sid]
         order=_order(c,career,e=e) if c['money']>=_cash(c,career,e) else None
         reason=_blocked(c,career,e,b,order=order)
         if reason:
@@ -491,6 +512,7 @@ def _settle(s,now=None):
         tick_career(s,c,career)
         pending['seconds']=_seconds(c,e);pending['signature']=_signature(c,e)
         pending['at']=min(TIME_MAX,at+pending['seconds'])
+        queue(career)
     return changed
 
 

@@ -906,7 +906,8 @@ def fund_bonus(s: dict, c: dict, base: int, what: str, ref: str | None, *, direc
         from . import operations as ops
         c['money'] += bonus
         c['earnings'] += bonus
-        ops.record_money(c, bonus, label(s, what), ref, 'other_income')
+        why = label(s, what)
+        ops.record_money(c, bonus, why, ref, 'other_income', group=why)  # the staff orders' rows: one a day
     else:
         _core().money(s, c, bonus, label(s, what), ref, category='other_income')
     return bonus
