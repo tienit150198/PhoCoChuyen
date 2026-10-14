@@ -6,11 +6,17 @@ export function equipmentView(c,career,upgrades){
  const percent=u=>u.effect_percent??u.gear_rate-100;
  const shelfBase=Math.max(c.ops?.property?.details?.stock_cap||12,owned.has('shelf')?24:12);
  const effect=u=>u.effect_units!=null?`${fmt(u.effect_units)} ${esc(u.effect_label)}`:`+${percent(u)}%`;
+ // Feedback #375/#378: the per-line ladder was bought for shelf room. While one line already fills a whole shelf, say so
+ // here (the shelf size, else 0). Storage rows give the current shelf: the owned tier's units, or tier 1's "previous".
+ const shelfFull=(rows,current)=>{const st=items.filter(u=>u.gear_group==='warehouse_storage').sort((a,b)=>a.gear_tier-b.gear_tier);if(!st.length)return 0;
+  const have=st.filter(u=>owned.has(u.id)).pop(),shelf=have?have.effect_units:st[0].effect_previous,line=current?current.effect_units:rows[0].effect_previous;
+  return line>=shelf&&have?.gear_tier!==st[st.length-1].gear_tier?shelf:0;};
  const transition=u=>u.effect_units!=null?`${fmt(u.effect_previous)} → ${effect(u)}`:`${effect(u)} ${esc(u.effect_label||'tốc độ')}`;
  const sections=groups.map(([group,title])=>{
   const rows=items.filter(u=>(u.gear_group||'speed')===group);if(!rows.length)return '';
   const current=rows.filter(u=>owned.has(u.id)).sort((a,b)=>b.gear_tier-a.gear_tier)[0];
-  return `<section class="space-top" data-gear-group="${group}" aria-label="${esc(title)}"><div class="row spread wrap"><h3>${esc(title)}</h3><span class="tag green">${current?`Đã lắp bậc ${current.gear_tier} · ${effect(current)}`:'Chưa nâng cấp'}</span></div>${rows[0].total_price?`<p class="muted small">Tổng đến bậc 10: ${fmt(rows[0].total_price)} xu. Mỗi bậc thay bậc trước.</p>`:''}<div class="upgrade-grid">${rows.map(u=>{
+  const full=group==='warehouse_order'?shelfFull(rows,current):0;
+  return `<section class="space-top" data-gear-group="${group}" aria-label="${esc(title)}"><div class="row spread wrap"><h3>${esc(title)}</h3><span class="tag green">${current?`Đã lắp bậc ${current.gear_tier} · ${effect(current)}`:'Chưa nâng cấp'}</span></div>${rows[0].total_price?`<p class="muted small">Tổng đến bậc 10: ${fmt(rows[0].total_price)} xu. Mỗi bậc thay bậc trước.</p>`:''}${full?`<p class="small">Kho đang chứa ${fmt(full)} phần/mã: nhập mỗi dòng nhiều hơn chưa dùng được. Muốn chứa thêm, nâng Sức chứa kho nghề.</p>`:''}<div class="upgrade-grid">${rows.map(u=>{
    const installed=owned.has(u.id),missing=u.requires&&!owned.has(u.requires),locked=(c.level||1)<(u.min_level||1),short=c.money<u.price,disabled=installed||missing||locked||short;
    const old=installed&&current.gear_tier>u.gear_tier;
    return `<article class="upgrade-card"><div class="row spread">${icon('settings',27)}<span class="tag">${transition(u)}</span></div><h3>${esc(u.name)}</h3><p>${esc(u.description)}${(u.effect_resources||[]).map(r=>`<br>${esc(r.name)}: ${fmt(r.previous)} → ${fmt(r.capacity)} ${esc(r.unit)}`).join('')}${u.effect_capacity?`<br>${fmt(Math.max(shelfBase,u.effect_previous_capacity))} → ${fmt(Math.max(shelfBase,u.effect_capacity))} món / mã trên kệ`:''}</p><button class="btn ${installed?'ghost':'primary'} full" type="button" data-action="buyUpgrade" data-item="${esc(u.id)}"${disabled?' disabled':''}>${installed?(old?'Đã có · dùng bậc cao hơn':'Đã lắp'):missing?`Cần bậc ${u.gear_tier-1} trước`:locked?`Cần cấp ${u.min_level}`:short?`Thiếu ${fmt(u.price-c.money)} xu`:`Lắp thiết bị · ${fmt(u.price)} xu`}</button></article>`;

@@ -1,8 +1,14 @@
 const fmt=n=>Number(n).toLocaleString('vi-VN');
 
+// Two separate paid ladders (feedback #375/#378): shelf room per item, and how much one order line may carry. Each row
+// offers its own upgrade, named for what it raises. While one line already fills a whole shelf, a bigger line cannot be
+// used: the row says so instead of selling it here (it stays in Thiết bị → Nhập hàng mỗi lần).
 export function inventoryLimits(inv){
-  const u=inv.order_upgrade;
-  return `<section class="card" aria-label="Sức chứa và hạn mức nhập"><div class="row spread wrap"><span>Sức chứa: <b>${fmt(inv.capacity)}</b>/loại</span><span>Nhập mỗi dòng: <b>${fmt(inv.line_cap||80)}</b></span></div>${u?`<div class="row spread wrap space-top"><small class="muted">Hạn mức bậc ${u.tier}/${u.max_tier} · sức chứa nâng riêng</small>${u.next_limit?`<button type="button" class="btn ghost small" data-action="v4OrderUpgrade">Nâng lên ${fmt(u.next_limit)} · ${fmt(u.next_price)} xu</button>`:'<small class="tag green">Đã mở tối đa</small>'}</div>`:''}</section>`;
+  const u=inv.order_upgrade,st=inv.storage_upgrade,cap=Number(inv.capacity)||0,line=Number(inv.line_cap)||80;
+  const done='<small class="tag green">Đã mở tối đa</small>';
+  const storage=st?(st.next_capacity?`<button type="button" class="btn small" data-action="v4StorageUpgrade">Nâng sức chứa lên ${fmt(st.next_capacity)} · ${fmt(st.next_price)} xu</button>`:done):'';
+  const order=u?(!u.next_limit?done:line>=cap&&st?.next_capacity?`<small class="muted">Một dòng đã nhập đầy kệ ${fmt(cap)}: nâng sức chứa trước.</small>`:`<button type="button" class="btn ghost small" data-action="v4OrderUpgrade">Nâng nhập mỗi dòng lên ${fmt(u.next_limit)} · ${fmt(u.next_price)} xu</button>`):'';
+  return `<section class="card" aria-label="Sức chứa và hạn mức nhập"><div class="row spread wrap"><span>Sức chứa: <b>${fmt(cap)}</b>/loại</span>${storage}</div><div class="row spread wrap space-top"><span>Nhập mỗi dòng: <b>${fmt(line)}</b></span>${order}</div></section>`;
 }
 
 // Only ten trays are mounted per line. Indices stay identical on every page, so

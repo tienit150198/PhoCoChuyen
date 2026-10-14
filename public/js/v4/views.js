@@ -904,6 +904,7 @@ export async function v4Action(action,data,el,env){
       return true;}
     case'inventory':openSheet('inventory',{invFocus:null,invNeed:null,invReturn:null,orderRush:false});return true;
     case'v4OrderUpgrade':await api.more?.();openSheet('decor');requestAnimationFrame(()=>document.querySelector('[data-gear-group="warehouse_order"]')?.scrollIntoView({block:'start'}));return true;
+    case'v4StorageUpgrade':await api.more?.();openSheet('decor');requestAnimationFrame(()=>document.querySelector('[data-gear-group="warehouse_storage"]')?.scrollIntoView({block:'start'}));return true;
     case'v4CratePage':(ui.invPages??={})[data.order]=Math.max(0,Number(data.page)||0);renderSheet();return true;
     case'v4Restock':{
       // From a "📦 Nhập hàng" button (restock.js): straight to the crate, the orders on the way, or the order form.

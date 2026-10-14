@@ -92,7 +92,10 @@ ITEMS = ([dict(id=f'gel_{x["id"]}', name=f'Gel {x["name"].lower()}', emoji=x['em
             dict(id='cam_mau', name='Bông cầm máu', emoji='🩹', group='vt', unit='gói', cost=1, life=200, start=3),
             dict(id='bong_led', name='Bóng đèn LED dự phòng', emoji='💡', group='vt', unit='bóng', cost=6, life=999, start=1)])
 ITEM = {x['id']: x for x in ITEMS}
-PRICES = dict(cat_dua=4, son_thuong=8, son_gel=15, thao_gel=5, noi=20, french=4, hoa=5, da=4, cham_da=6)
+# Service prices ×2.5 (feedback #374, 14/10): at the old table a day-4–7 shop took a median 20 xu a day (net about −3),
+# against 60 for pet_care, 73 photobooth and 215 salon (120 recent saves each). OLD_PRICES stays for heal_save.
+OLD_PRICES = dict(cat_dua=4, son_thuong=8, son_gel=15, thao_gel=5, noi=20, french=4, hoa=5, da=4, cham_da=6)
+PRICES = dict(cat_dua=10, son_thuong=20, son_gel=38, thao_gel=12, noi=50, french=10, hoa=12, da=10, cham_da=15)
 SVC = {'cat_dua': 'Cắt dũa', 'son_thuong': 'Sơn thường', 'son_gel': 'Sơn gel', 'thao_gel': 'Tháo gel cũ', 'noi': 'Nối móng (úp tips)',
        'french': 'Vẽ French', 'hoa': 'Vẽ hoa', 'da': 'Đính đá', 'cham_da': 'Chăm sóc da tay'}
 
@@ -380,6 +383,27 @@ def _lower(s: str) -> str:
 
 def _p(c: dict, key: str) -> int:
     return max(1, int(kit.price(c, key, PRICES[key])))
+
+
+def rescaled(key: str, value) -> int | None:
+    """A saved price still in the old table's band (75–125% of OLD_PRICES, which the price board allowed) moved to the
+    same place in the new band; None when it is already a new-table price. The two bands never overlap, so it is
+    idempotent and needs no marker key (a rollback reads the higher prices as ordinary saved prices)."""
+    old, new = OLD_PRICES[key], PRICES[key]
+    if type(value) is not int or not 1 <= value <= round(old * 1.25):
+        return None
+    return min(round(new * 1.25), max(round(new * .75), round(value * new / old)))
+
+
+def heal_save(s: dict, c: dict) -> None:
+    """migrate_state: the price board each save copied at its first day follows the new table (feedback #374)."""
+    prices = c.get('life', {}).get('prices') if isinstance(c.get('life'), dict) else None
+    if not isinstance(prices, dict):
+        return
+    for key in OLD_PRICES:
+        value = rescaled(key, prices.get(key))
+        if value is not None:
+            prices[key] = value
 
 
 def rank(length: str) -> int:

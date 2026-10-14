@@ -214,5 +214,36 @@ class OrderProgression(unittest.TestCase):
         validate_state(json.loads(json.dumps(j.state)))
 
 
+
+class StorageBesideOrderLine(unittest.TestCase):
+    """Feedback #375 (grocery) / #378 (pet_shop): the Kho sheet sold only the per-line order limit (80 -> 120), which
+    players bought for shelf room. The sheet now carries the storage ladder too and a full shelf says where room is bought."""
+
+    def test_the_kho_view_names_both_ladders_and_a_full_shelf_points_to_storage(self):
+        for career in ('pet_shop', 'grocery'):
+            j = fresh(career, storage=0, order=1)
+            v = public_inv(j)
+            self.assertEqual((v['capacity'], v['line_cap']), (80, 120))
+            self.assertEqual(v['storage_upgrade'], dict(tier=0, max_tier=10, capacity=80, next_id=f'warehouse_storage_{career}_1',
+                                                        next_capacity=120, next_price=3000))
+            it = next(x for x in I.catalogue(career) if x.get('unlock', 1) <= 1)
+            qty = 80 - I.count(j.c, it['id']) + 1
+            with self.assertRaises(GameError) as e:
+                j.act('inv_order', item=it['id'], qty=qty, supplier='partner', confirm=True)
+            self.assertIn('Kho chứa tối đa 80', str(e.exception))
+            self.assertIn('Sức chứa kho nghề', str(e.exception))
+            buy(j, 'storage', 1)
+            self.assertEqual(I.capacity(career, j.c), 120)
+            self.assertEqual(public_inv(j)['storage_upgrade']['next_capacity'], 180)
+            j.act('inv_order', item=it['id'], qty=qty, supplier='partner', confirm=True)
+            validate_state(json.loads(json.dumps(j.state)))
+
+    def test_no_hint_once_storage_is_at_the_top(self):
+        j = fresh('pet_shop', storage=10, order=0)
+        self.assertEqual(I.full_hint(j.c, 'pet_shop'), '')
+        dto = public_inv(j)['storage_upgrade']
+        self.assertEqual((dto['tier'], dto['capacity'], dto['next_id'], dto['next_capacity']), (10, 4000, None, None))
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -734,6 +734,13 @@ SAVE_STOCK = 80
 SAVE_LINE = 80
 
 
+def full_hint(c: dict, career: str) -> str:
+    """Where more shelf room is bought (feedback #375/#378: players bought the per-line order limit for it)."""
+    from .capacity_progression import tier
+    from .progression_prices import MAX_TIER
+    return ' Muốn chứa thêm: Thiết bị → Sức chứa kho nghề.' if tier(c, career) < MAX_TIER else ''
+
+
 def stock_limit(career: str, c: dict | None = None) -> int:
     """The most of one item a save may hold: the career's shelf, or SAVE_STOCK if that is bigger."""
     return max(capacity(career, c), SAVE_STOCK)
@@ -979,7 +986,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         need(p.get('confirm') is True, 'Xác nhận đơn nhập và số tiền trước nhé.')
         cap = capacity(career, c)
         need(count(c, it['id']) + reserved(c, career, it['id']) + _in_transit(x, it['id']) + _drafted(x, it['id']) + qty <= cap,
-             f'Kho chứa tối đa {cap} phần mỗi loại (tính cả hàng đang giao).')
+             f'Kho chứa tối đa {cap} phần mỗi loại (tính cả hàng đang giao).' + full_hint(c, career))
         need(_shipments(x) < TRANSIT_CAP, 'Đang có nhiều đơn chờ giao. Nhận bớt rồi đặt tiếp nhé.')
         need(_transit_lines(x) < TRANSIT_LINES, 'Đang có nhiều hàng chờ giao. Nhận bớt rồi đặt tiếp nhé.')
         price = line_price(it, qty, sup)
@@ -1272,7 +1279,7 @@ def _cart_edit(c: dict, career: str, x: dict, p: dict, level: int) -> dict:
             new = have + qty
             need(new <= line_cap, f'Mỗi dòng tối đa {line_cap} {it.get("unit", "phần")}.')
             need(new <= room(it, row), f'Kệ {it["name"]} chỉ còn chỗ cho {room(it, row)} {it.get("unit", "phần")} '
-                 '(tính cả hàng đang giao và các dòng khác trong đơn).')
+                 '(tính cả hàng đang giao và các dòng khác trong đơn).' + full_hint(c, career))
             if row:
                 row['qty'] = new
             else:
@@ -1283,7 +1290,7 @@ def _cart_edit(c: dict, career: str, x: dict, p: dict, level: int) -> dict:
                 lines.append(dict(item=it['id'], qty=new, **({'size': size} if size is not None else {})))
             added += 1
         need(added or not left_out, f'Đơn {sup["name"]} đủ {CART_LINES} món. Đặt đơn này trước rồi thêm tiếp nhé.')
-        need(added, 'Kệ đã đủ hàng, không cần nhập thêm.')
+        need(added, 'Kệ đã đủ hàng, không cần nhập thêm.' + full_hint(c, career))
         msg = f'Đã thêm vào đơn {sup["name"]} · {len(lines)} món.'
         if left_out:
             msg += f' Đơn đủ {CART_LINES} món: còn {left_out} món chưa thêm, đặt đơn này rồi thêm tiếp.'
@@ -1335,7 +1342,8 @@ def _cart_place(s: dict, c: dict, career: str, x: dict, p: dict, level: int) -> 
         qty = sum(m['qty'] for m in draft if m['item'] == it['id'])
         need(count(c, it['id']) + reserved(c, career, it['id']) + _in_transit(x, it['id'])
              + _drafted(x, it['id'], sup['id']) + qty <= cap,
-             f'Kệ {it["name"]} không đủ chỗ cho {qty} {it.get("unit", "phần")} (tính cả hàng đang giao). Bớt lại nhé.')
+             f'Kệ {it["name"]} không đủ chỗ cho {qty} {it.get("unit", "phần")} (tính cả hàng đang giao). Bớt lại nhé.'
+             + full_hint(c, career))
     need(_shipments(x) < TRANSIT_CAP, 'Đang có nhiều đơn chờ giao. Nhận bớt rồi đặt tiếp nhé.')
     need(_transit_lines(x) + len(lines) <= TRANSIT_LINES, 'Đang có nhiều hàng chờ giao. Nhận bớt rồi đặt tiếp nhé.')
     deal = cart.get('deal')
@@ -1511,6 +1519,8 @@ def public(c: dict, career: str) -> dict | None:
     v['cart_lines'] = CART_LINES  # lines in one draft (inv_cart refuses one more)
     v['line_cap'] = order_progression.limit(c, career)
     v['order_upgrade'] = order_progression.public(c, career)
+    from . import capacity_progression
+    v['storage_upgrade'] = capacity_progression.public(c, career, capacity(career))
     v['cancel_pct'] = CANCEL_PCT  # share of the price an inv_cancel gives back (the confirm shows the xu)
     v['sizes'] = tree_copy((_spec(career) or {}).get('sizes', {}))
     # Derived numbers for the stock screen: what is on the way, room left on

@@ -1,3 +1,8 @@
+# Chưa phát hành — fb374 (không có Có gì mới)
+
+- Kho (góp ý #375, #378): bảng Kho có riêng nút “Nâng sức chứa lên …” (Thiết bị → Sức chứa kho nghề) bên cạnh “Nâng nhập mỗi dòng”; trước đây chỉ có nút hạn mức nhập 80 → 120 nên người chơi mua nhầm tưởng là sức chứa. Khi một dòng đã nhập đầy kệ, bảng Kho không mời mua thêm hạn mức nhập; Thiết bị ghi rõ kho đang chứa bao nhiêu. Báo “Kho chứa tối đa …”/“Kệ … không đủ chỗ” chỉ chỗ nâng sức chứa. Không đổi giá, quyền đã mua hay dữ liệu bản lưu.
+- Tiệm nail (góp ý #374): giá dịch vụ ×2,5 (cắt dũa 10, sơn thường 20, sơn gel 38, tháo gel 12, nối móng 50, French 10, vẽ hoa 12, đính đá 10, chăm da tay 15). Ngày 4–7 trước đây trung vị 20 xu/ngày, lỗ nhẹ, so với chăm thú cưng 60, chụp ảnh 73, salon 215. Bảng giá đã lưu theo giá cũ (kể cả giá tự chỉnh 75–125%) chuyển sang cùng vị trí trong khung giá mới một lần khi tải; đơn riêng mặc định của nhân viên nail 12 → 30 xu (= cắt dũa + sơn thường). Không đổi dữ kiện nhiệm vụ; không thêm khóa bản lưu, bản cũ đọc giá mới như giá thường.
+
 # v2.4.2 — 2026-10-14
 
 - Theo yêu cầu chủ game, gom thay đổi 2.0.6–2.4.1 thành một thẻ Có gì mới: nghề, chứng chỉ, thăng tiến/thi đua, chùa và quyền riêng tư, đi lại/chat/reaction, quy mô/chuỗi, 540 gói chuyên môn, nâng kho/nhập/quầy và các lỗi đã sửa.

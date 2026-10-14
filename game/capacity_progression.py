@@ -28,6 +28,16 @@ def units(base, n):
     return (base * RATIOS[n] + 7) // 8
 
 
+def public(c, career, base):
+    """The Kho sheet's own storage ladder (feedback #375/#378): shown beside the per-line order limit so a player
+    who hits "Kho chứa tối đa" buys shelf room, not a bigger order line the shelf cannot take."""
+    n = tier(c, career)
+    return dict(tier=n, max_tier=MAX_TIER, capacity=units(base, n),
+                next_id=item_id(career, n + 1) if n < MAX_TIER else None,
+                next_capacity=units(base, n + 1) if n < MAX_TIER else None,
+                next_price=PRICES[n] if n < MAX_TIER else None)
+
+
 def catalogue(careers):
     from . import inventory
     from .career_scale_content import PROFILES

@@ -773,5 +773,51 @@ class OldSaves(Base):
         self.assertIn('nail', m['journey']['unlocked'])
 
 
+
+class Rebalance(Base):
+    """Feedback #374: nail service prices ×2.5; boards saved on the old table follow, once, without a marker key."""
+
+    def test_new_table_and_the_staff_fallback(self):
+        from game import workplace_business as wb
+        for key, old in NL.OLD_PRICES.items():
+            self.assertTrue(2.4 * old <= NL.PRICES[key] <= 2.6 * old, key)   # ×2.5, halves rounded to a whole xu
+        self.assertEqual(wb.ORDERS['nail'][1], NL.PRICES['cat_dua'] + NL.PRICES['son_thuong'])
+
+    def test_an_old_board_moves_to_the_new_table_once(self):
+        s = new_state()
+        prices = s['careers']['nail']['life']['prices']
+        self.assertEqual(prices, NL.PRICES)                        # a new save starts on the new table
+        prices.update(NL.OLD_PRICES)
+        prices.update(son_gel=18, cat_dua=3, noi=50)               # 120% and 75% of the old table, one already new
+        m = migrate_state(json.loads(json.dumps(s)))
+        got = m['careers']['nail']['life']['prices']
+        self.assertEqual(got['son_thuong'], NL.PRICES['son_thuong'])
+        self.assertEqual(got['son_gel'], round(18 * 38 / 15))      # same place in the new band
+        self.assertEqual(got['cat_dua'], 8)                        # 75% of 10 (round half to even)
+        self.assertEqual(got['noi'], 50)
+        for key, value in got.items():
+            self.assertLessEqual(round(NL.PRICES[key] * .75), value, key)
+            self.assertLessEqual(value, round(NL.PRICES[key] * 1.25), key)
+        validate_state(m)
+        again = copy.deepcopy(m['careers']['nail'])
+        NL.heal_save(m, m['careers']['nail'])
+        self.assertEqual(m['careers']['nail'], again)              # idempotent: the two bands never overlap
+        self.assertNotIn('price_v', m['careers']['nail']['life'])  # no new save key
+
+    def test_a_board_set_after_the_change_is_never_touched(self):
+        for key in NL.PRICES:
+            for value in range(round(NL.PRICES[key] * .75), round(NL.PRICES[key] * 1.25) + 1):
+                self.assertIsNone(NL.rescaled(key, value), (key, value))
+
+    def test_a_regular_polish_pays_the_new_price(self):
+        t = self.at(1, 1)
+        money = self.j.c['money']
+        self.make(t['id'])
+        self.done_pay(t['id'])
+        t = self.j.get(t['id'])
+        self.assertEqual(t['price'], 20)
+        self.assertGreaterEqual(self.j.c['money'] - money, 20 * 84 // 100)
+
+
 if __name__ == '__main__':
     unittest.main()

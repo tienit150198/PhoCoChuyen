@@ -61,7 +61,7 @@ ORDERS = {
     'homemaker': ('Việc riêng: dọn và sắp xếp một phòng', 16, 4, {}),
     # One sealed tub sells as a whole 1.2 kg take-away tub (5 xu/100 g), never at a scoop's price.
     'ice_cream': ('Đơn riêng: hộp kem dừa mang về 1,2 kg', 60, 1, {'dua': 1}),
-    'nail': ('Lượt riêng: cắt dũa và sơn móng thường', 12, 1, {'son_nude': 1}),
+    'nail': ('Lượt riêng: cắt dũa và sơn móng thường', 30, 1, {'son_nude': 1}),
     'pagoda': ('Việc riêng: chuẩn bị vật phẩm theo đặt hàng', 12, 5, {}),
     'pho': ('Đơn riêng: phở chín mang về', 32, 2, {'banh': 1, 'chin': 1, 'rau': 1, 'hop': 1}),
     'com': ('Đơn riêng: cơm trứng rau mang về', 10, 1, {'gao': 1, 'trung': 1, 'rau': 1, 'hop': 1}),
