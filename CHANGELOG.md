@@ -1,3 +1,7 @@
+# v2.4.4 — 2026-10-14
+
+Quầy: nhập hàng mỗi lần mặc định 200 phần (trước 5, chủ game 14/10: quầy hết hàng không mở lại được); các bậc trả phí 300 → 20.000. Vượt mức thì thẻ nhập hàng báo ngay dưới ô nhập. Không có Có gì mới.
+
 # v2.4.3 — 2026-10-14
 
 Gồm fb374 (nút nâng sức chứa kho riêng, giá nail ×2,5 — góp ý #374 #375 #378), bmrank (Bảng vàng chợ đen cộng lại tiền phạt đã hoàn, phạt công an người chơi cập nhật ngay; scripts/fair_board_recompute.py), tile-match (🧩 Ghép ba Phố Mây, journey.tile tùy chọn, phúc lợi +0,2 %/màn tối đa +20 %).

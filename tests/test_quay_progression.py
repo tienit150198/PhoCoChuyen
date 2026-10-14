@@ -24,7 +24,7 @@ class PaidQuay(unittest.TestCase):
         view = quay.public(s)
         self.assertEqual(view['slots']['limit'], 1)
         b = view['stalls'][0]['business']
-        self.assertEqual((b['stock_capacity'], b['restock_batch'], b['stock_room']), (500, 5, 0))
+        self.assertEqual((b['stock_capacity'], b['restock_batch'], b['stock_room']), (500, 200, 0))
         self.assertEqual(s, before)
         validate_state(s)
         refused(self, s, 'jr_quay_restock', stall=ST(s)['id'], items={'hong_tra': 1})
@@ -57,7 +57,7 @@ class PaidQuay(unittest.TestCase):
         v = quay.public(s)
         self.assertEqual(v['slots']['limit'], 50)
         self.assertEqual(v['stalls'][0]['business']['stock_capacity'], 20000)
-        self.assertEqual(v['stalls'][0]['business']['restock_batch'], 1000)
+        self.assertEqual(v['stalls'][0]['business']['restock_batch'], 20000)
         validate_state(s)
 
     def test_open_slots_and_existing_many_quays(self):
@@ -105,10 +105,10 @@ class PaidQuay(unittest.TestCase):
             refused(self, s, 'jr_quay_restock', stall=st['id'], items={'hong_tra': 4})
             s, _ = act(s, 'jr_quay_restock', stall=st['id'], items={'hong_tra': 3})
         ST(s)['business']['stock'] = {}
-        refused(self, s, 'jr_quay_restock', stall=st['id'], items={'hong_tra': 3, 'tra_dao': 3})
+        refused(self, s, 'jr_quay_restock', stall=st['id'], items={'hong_tra': 101, 'tra_dao': 101})
         s, _ = self.buy(s, 'restock')
-        s, _ = act(s, 'jr_quay_restock', stall=st['id'], items={'hong_tra': 5, 'tra_dao': 5}, wallet=True)
-        self.assertEqual(sum(ST(s)['business']['stock'].values()), 10)
+        s, _ = act(s, 'jr_quay_restock', stall=st['id'], items={'hong_tra': 150, 'tra_dao': 150}, wallet=True)
+        self.assertEqual(sum(ST(s)['business']['stock'].values()), 300)
 
     def test_unlock_and_physical_licences_still_apply(self):
         s = owner(wallet=100000, chapter=2)

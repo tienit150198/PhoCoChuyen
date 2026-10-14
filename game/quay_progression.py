@@ -3,7 +3,7 @@ from .progression_prices import PRICES, MAX_TIER
 
 LIMITS = {
     'storage': (500, 750, 1000, 1500, 2500, 4000, 6000, 9000, 13000, 17000, 20000),
-    'restock': (5, 10, 20, 35, 60, 100, 160, 250, 400, 700, 1000),
+    'restock': (200, 300, 400, 600, 900, 1300, 2000, 3000, 5000, 9000, 20000),   # owner 14/10: 5 a time left counters empty
     'slots': (1, 2, 3, 4, 6, 8, 12, 18, 26, 38, 50),
 }
 LABELS = {'storage': 'Sức chứa kho quầy', 'restock': 'Nhập hàng mỗi lần', 'slots': 'Số quầy sở hữu'}
