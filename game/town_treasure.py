@@ -32,8 +32,8 @@ PROOF_TTL = 5.0
 POSITION_TTL = 12.0
 AUDIT_BUCKETS = 144
 KEEP_WAVES = 3          # a chest is claimable in its wave and the next two (20-30 minutes), then it expires
-WAVE_MAX = 1            # chests one account picks in one wave window (PERIOD)
-DAY_MAX = 5             # chests one account picks in any 24 hours (claimed rows are kept that long)
+WAVE_MAX = None         # owner 14/10: "mỗi người nhặt thoải mái, giới hạn không có" (was 1 a wave)
+DAY_MAX = None          # owner 14/10: no daily cap either (was 5); a picked chest is gone for everyone
 ACCOUNT_AGE = 86400     # the account is at least a day old (as game/bank_xfer.py ACCOUNT_DAYS)
 DAY = 86400
 MAP_ID = 'iso-town-v1'
@@ -124,8 +124,7 @@ def view(rows, at, on=True, added=0):
     return dict(enabled=on, server_time=at,
                 wave=dict(id=str(bucket), starts_at=bucket * PERIOD, expires_at=(bucket + 1) * PERIOD,
                           next_at=(bucket + 1) * PERIOD, added=added, per_wave=WAVE_MAX, per_day=DAY_MAX,
-                          reward=REWARD, notice=f'{added} rương kho báu vừa xuất hiện trong phố! Mỗi rương có 10.000 xu, '
-                                                f'mỗi người nhặt {WAVE_MAX} rương mỗi đợt, tối đa {DAY_MAX} rương một ngày.') if on else None,
+                          reward=REWARD, notice=f'{added} rương kho báu vừa xuất hiện trong phố! Mỗi rương có 10.000 xu, ai tới trước nhặt trước.') if on else None,
                 chests=chests, total_unclaimed=sum(c['count'] for c in chests))
 
 
@@ -196,8 +195,8 @@ def claim(store, token, data):
              'Tài khoản cần đủ 1 ngày tuổi mới nhặt được kho báu.', 'treasure_new', 403)
         # The session row is locked above, so one account's claims are serialized and the caps hold.
         mine = db.execute(SELECT_MINE, (int(at // PERIOD) * PERIOD, sid, at - DAY)).fetchone()
-        need(int(mine['wave']) < WAVE_MAX, 'Bạn đã nhặt rương của đợt này rồi. Đợt sau nhặt tiếp nhé!', 'treasure_wave', 409)
-        need(int(mine['day']) < DAY_MAX, f'Hôm nay bạn đã nhặt đủ {DAY_MAX} rương rồi. Mai quay lại nhé!', 'treasure_day', 409)
+        need(WAVE_MAX is None or int(mine['wave']) < WAVE_MAX, 'Bạn đã nhặt rương của đợt này rồi. Đợt sau nhặt tiếp nhé!', 'treasure_wave', 409)
+        need(DAY_MAX is None or int(mine['day']) < DAY_MAX, f'Hôm nay bạn đã nhặt đủ {DAY_MAX} rương rồi. Mai quay lại nhé!', 'treasure_day', 409)
         position = db.execute('SELECT * FROM town_treasure_presence WHERE sid=? FOR UPDATE', (sid,)).fetchone()
         ticket = db.execute('SELECT * FROM town_treasure_proofs WHERE sid=? FOR UPDATE', (sid,)).fetchone()
         at = now()

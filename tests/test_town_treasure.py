@@ -171,7 +171,8 @@ class Treasure(unittest.TestCase):
             self.assertEqual(db.execute('SELECT COUNT(*) FROM town_treasure_chests WHERE id=?',(chest['id'],)).fetchone()[0],0)
             self.assertGreater(db.execute('SELECT COUNT(*) FROM town_treasure_chests WHERE winner IS NULL').fetchone()[0],0)
 
-    def test_one_chest_per_wave_and_five_a_day_per_account(self):
+    def test_no_per_wave_or_daily_cap_a_picked_chest_is_gone(self):
+        """Owner 14/10: each player picks as many chests as they reach; a picked chest is gone for everyone."""
         token,sid=self.account()
         other,osid=self.account()
         start=[self.store.read(t)[0]['journey']['wallet'] for t in (token,other)]
@@ -179,21 +180,14 @@ class Treasure(unittest.TestCase):
             try:return self.tt.claim(self.store,tok,self.proof(s,chest))
             except self.tt.TreasureError as e:return e.code
         got=0
-        for wave in range(self.tt.DAY_MAX+2):
+        for wave in range(8):
             chests=self.tt.snapshot(self.store)['chests']
             fresh=[c for c in chests if c['id'].startswith(f'tt-{int(self.now//600)}-')]
-            first=pick(token,sid,fresh[0])
-            if wave<self.tt.DAY_MAX:
-                self.assertIsInstance(first,dict,wave);got+=1
-                self.assertEqual(pick(token,sid,fresh[1]),'treasure_wave','one chest a wave')
-                self.assertIsInstance(pick(other,osid,fresh[1]),dict,'another account still picks this wave')
-            else:
-                self.assertEqual(first,'treasure_day')
+            self.assertIsInstance(pick(token,sid,fresh[0]),dict,wave);got+=1
+            self.assertIsInstance(pick(token,sid,fresh[1]),dict,'a second chest the same wave');got+=1
+            self.assertNotIsInstance(pick(other,osid,fresh[1]),dict,'already picked: gone for the other account')
             self.now+=600
-        self.assertEqual([self.store.read(t)[0]['journey']['wallet']-w for t,w in zip((token,other),start)],
-                         [self.tt.DAY_MAX*10000]*2,'both picked five')
-        self.now+=86400
-        self.assertIsInstance(pick(token,sid,self.tt.snapshot(self.store)['chests'][0]),dict,'the next day opens again')
+        self.assertEqual(self.store.read(token)[0]['journey']['wallet']-start[0],got*10000)
 
     def test_new_account_cannot_claim(self):
         token,sid=self.account()
