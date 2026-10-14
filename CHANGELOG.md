@@ -2,6 +2,11 @@
 
 Gồm fb374 (nút nâng sức chứa kho riêng, giá nail ×2,5 — góp ý #374 #375 #378), bmrank (Bảng vàng chợ đen cộng lại tiền phạt đã hoàn, phạt công an người chơi cập nhật ngay; scripts/fair_board_recompute.py), tile-match (🧩 Ghép ba Phố Mây, journey.tile tùy chọn, phúc lợi +0,2 %/màn tối đa +20 %).
 
+# Chưa phát hành — wk244 🤖 Tự nhận hàng (góp ý #326 #333 #361; Có gì mới: chủ game quyết định)
+
+- 🤖 Tự nhận hàng: có 📦 Bộ đếm kho · Bậc 5 của nghề (đã bán, giá giữ nguyên) thì thùng hàng tới cửa được máy chủ tự đếm và nhập kệ, đúng như một lần đếm đúng: đủ số thực có, mỗi đơn thành một lô theo giá vốn của đơn, đơn gộp nhận cả thùng một lần; giao thiếu thì tự khiếu nại theo cùng đường hoàn tiền của nút “Khiếu nại phần thiếu” (một lần). Thùng không vừa kệ vẫn chờ ở cửa như trước. Chạy sau mỗi thao tác của nghề và khi tải game (hàng về lúc vắng mặt lên kệ trước khi người chơi xem). Áp dụng cả quầy mẹ & bé / nhà thuốc (kiện cũ), vật tư hợp đồng và vật tư chuyên môn (giữ giá vốn từng lô, FIFO). Sổ nghề ghi “📦 Tự nhận N món: …”.
+- Bảng Kho có công tắc “🤖 Tự nhận hàng: Bật/Tắt” (mặc định Bật khi đã mở; tắt thì quay về đếm tay); chưa mở thì hiện một dòng khóa nêu Bộ đếm kho · Bậc 5. Khóa save tùy chọn `careers.<nghề>.auto_stock = false` chỉ có khi người chơi tắt; 2.4.3 vẫn nhận save có khóa này (đã kiểm bằng git archive rel-2.4.3). Việc sinh nhiệm vụ không đổi.
+
 # Chưa phát hành — wk244 Top lời theo tuần (không có Có gì mới: thay đổi chợ đen)
 
 - Bảng vàng chợ đen: Top lời tính theo tuần như Top lỗ (chủ game 14/10), cùng sổ `fair_loss_week`, cùng tuần thứ Hai 00:00. Lời ròng tuần cộng tiền phạt được hoàn (`refund-cd-…`) trả vào save trong tuần, một lần. 👑 Vua trò chơi / 🎪 Cao thủ chợ đen trao thứ Hai từ 19/10 theo tuần vừa qua, cùng lúc với Top lỗ, không trao hai lần. Dải người chơi vẫn hiện “lời tích lũy cả chợ”. Schema 43 chỉ thêm chỉ mục. `scripts/fair_board_recompute.py --week` cộng các khoản hoàn đã trả trong tuần trước bản này (chạy thử mặc định).

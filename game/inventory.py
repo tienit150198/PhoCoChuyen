@@ -1088,11 +1088,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
     if name == 'inv_claim':
         need(order and order['status'] == 'received', 'Chỉ khiếu nại sau khi đã kiểm nhận.')
         need(order['actual'] < order['qty'] and not order['claimed'], 'Đơn này giao đủ hoặc đã được giải quyết.')
-        refund = _refund(order)
-        order['claimed'] = True
+        refund = claim(s, c, career, [order], order['id'])
         sup = _known(career, order['supplier'])
-        _book_refund(s, c, refund, refund if order['day'] == c['day'] else 0, f'Hoàn tiền giao thiếu · {sup["name"]}', order['id'])
-        order['reply'] = sup['voice']['claim']
         return dict(message=f'{sup["name"]}: “{sup["voice"]["claim"]}” · +{refund} xu.')
     if name == 'inv_rate':
         need(order and order['status'] == 'received' and order['rating'] is None, 'Chỉ đánh giá một lần sau khi nhận hàng.')
@@ -1117,6 +1114,19 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         x['lots'] = [l for l in x['lots'] if l['id'] != lot['id']]
         return dict(message='Đã bỏ lô hàng và ghi hao hụt.')
     raise e.GameError('Thao tác kho chưa được hỗ trợ.')
+
+
+def claim(s: dict, c: dict, career: str, due: list, ref: str) -> int:
+    """Claim the missing units of received orders `due` (one supplier, unclaimed, short): the paid share of what is
+    missing comes back once (`claimed`, the supplier's reply), the part paid today off today's cost (_book_refund).
+    inv_claim (one order or a merged one) and 🤖 Tự nhận hàng (game/auto_stock.py) both come here. Returns the xu."""
+    sup = _known(career, due[0]['supplier'])
+    refund = sum(_refund(o) for o in due)
+    for o in due:
+        o['claimed'] = True
+        o['reply'] = sup['voice']['claim']
+    _book_refund(s, c, refund, sum(_refund(o) for o in due if o['day'] == c['day']), f'Hoàn tiền giao thiếu · {sup["name"]}', ref)
+    return refund
 
 
 CANCEL_PCT = 80  # share (%) of what was paid that a cancelled order gives back (public/js mirrors cancel_pct)
@@ -1463,11 +1473,7 @@ def _group_action(s: dict, c: dict, career: str, x: dict, name: str, p: dict) ->
     if name == 'inv_claim':
         due = [o for o in lines if o['status'] == 'received' and o['actual'] < o['qty'] and not o['claimed']]
         need(due, 'Đơn này giao đủ hoặc đã được giải quyết.')
-        refund = sum(_refund(o) for o in due)
-        for o in due:
-            o['claimed'] = True
-            o['reply'] = sup['voice']['claim']
-        _book_refund(s, c, refund, sum(_refund(o) for o in due if o['day'] == c['day']), f'Hoàn tiền giao thiếu · {sup["name"]}', gid)
+        refund = claim(s, c, career, due, gid)
         return dict(message=f'{sup["name"]}: “{sup["voice"]["claim"]}” · +{refund} xu.')
     need(all(o['status'] == 'received' for o in lines) and all(o['rating'] is None for o in lines),
          'Chỉ đánh giá một lần sau khi nhận hàng.')

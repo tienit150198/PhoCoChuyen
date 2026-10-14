@@ -63,6 +63,13 @@ const trayed=o=>(Number(o.qty)||0)>TRAY_FROM;
 const HOLD_WAIT=300,HOLD_STEP=140;
 let stockEnv=null,stockOn=false;
 const holdSfx=new Sound();
+/** 🤖 Tự nhận hàng (game/auto_stock.py; `warehouse.auto`, an older server sends none: nothing shows): one switch once
+ * Bộ đếm kho · Bậc 5 is owned, else one locked line naming what opens it. */
+export function autoStockRow(a){
+  if(!a)return '';
+  if(!a.unlocked)return `<p class="inv-auto locked"><span aria-hidden="true">🔒</span> 🤖 Tự nhận hàng · mở bằng <b>Bộ đếm kho · Bậc 5</b> (Thiết bị)</p>`;
+  return `<button type="button" class="inv-auto${a.on?' on':''}" role="switch" aria-checked="${a.on?'true':'false'}" data-command="stock_auto" data-payload="${esc(JSON.stringify({on:!a.on}))}"><span>🤖 Tự nhận hàng: <b>${a.on?'Bật':'Tắt'}</b></span><i aria-hidden="true"></i></button>`;
+}
 export function stockCountStep(env){return Math.max(1,Math.min(100,Math.floor(Number(env?.api?.state?.careers?.[env.api.state.current]?.warehouse?.count_step)||1)));}
 export function tallyBatch(ui,order,indices,limit=1){
   const t=(ui.invTally??={}),on=new Set(t[order]||[]);let left=Math.max(0,Math.floor(Number(limit)||0));
@@ -217,7 +224,7 @@ export function inventoryView(env){
   const calm=!ready.length&&!transit.length&&!tonight&&!low.length?`<span class="inv-calm">${icon('check',14)} Kho ổn.</span>`:'';
   const now=clk?`<div class="row spread"><span class="tag blue">🕑 ${esc(clk.label)}</span><small class="muted">Mở cửa ${esc(clk.open_time)}–${esc(clk.close_time)}</small></div>`:'';
   const first=transit[0],next=!ready.length&&first?`<small class="inv-next">${icon('truck',13)} ${first.group?`Đơn gộp ${transitS.find(g=>g.id===first.group)?.lines.length||''} món`:name(byId[first.item])} · <b>${esc(first.left_label||first.eta_label||'')}</b>${first.left_label&&first.eta_label?` <span class="muted">(${esc(first.eta_label)})</span>`:''}</small>`:'';
-  const strip=`<section class="inv-status" aria-label="Tình trạng kho">${now}<div class="inv-chips">${chip(readyS.length,'thùng đã tới','accent','orders')}${chip(transitS.length,'đơn đang giao','info','orders')}${chip(tonight,'hết hạn tối nay','bad','lots')}${chip(low.length,'loại sắp hết','warn','stock')}${calm}</div>${next}${cta?`<div class="inv-cta">${cta}</div>`:''}</section>`;
+  const strip=`<section class="inv-status" aria-label="Tình trạng kho">${now}${autoStockRow(c.warehouse?.auto)}<div class="inv-chips">${chip(readyS.length,'thùng đã tới','accent','orders')}${chip(transitS.length,'đơn đang giao','info','orders')}${chip(tonight,'hết hạn tối nay','bad','lots')}${chip(low.length,'loại sắp hết','warn','stock')}${calm}</div>${next}${cta?`<div class="inv-cta">${cta}</div>`:''}</section>`;
 
   /* Crates at the door: always on top, one big button each; opened, the goods are tapped to count. */
   const sup=o=>supOf(o.supplier);
