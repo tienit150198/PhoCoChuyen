@@ -27,7 +27,8 @@ class CreativeCivicStaff(unittest.TestCase):
                 self.assertGreater(receipt['net'], 0)
                 self.assertEqual(j.c['tasks'], tasks)
                 self.assertEqual(j.state['journey']['wallet'], wallet)
-                rows = [r for r in j.c['ops']['finance']['ledger'] if r['ref'] == receipt['id']]
+                # 2.4.15: a staff order's rows are the day's summed rows (ref 'sum:<group>'); this is the first order
+                rows = [r for r in j.c['ops']['finance']['ledger'] if (r['ref'] or '').startswith('sum:') and receipt['name'] in r['reason']]
                 self.assertEqual(j.c['money'] - before, sum(r['amount'] for r in rows))
                 self.assertEqual(sum(r['category'] == 'wage' for r in rows), 1)
                 self.assertEqual(sum(r['category'] == 'other_income' for r in rows), 1)
