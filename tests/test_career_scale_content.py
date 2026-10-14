@@ -26,7 +26,7 @@ def test_catalogue_covers_all_54_careers_with_432_immutable_stages():
         assert [s.tier for s in p.stages] == list(range(1, 9))
         assert tuple(s.resources for s in p.stages) == (2, 4, 6, 10, 16, 24, 36, 50)
         assert tuple(s.sites for s in p.stages) == (1, 1, 1, 2, 3, 5, 8, 12)
-        assert tuple(s.days for s in p.stages) == (3, 7, 14, 30, 60, 100, 160, 240)
+        assert tuple(s.days for s in p.stages) == (2, 7, 14, 30, 60, 100, 160, 240)
         assert tuple(s.clean for s in p.stages) == (10, 30, 70, 140, 260, 450, 750, 1200)
         with pytest.raises(FrozenInstanceError):
             p.stages[0].fee = 1

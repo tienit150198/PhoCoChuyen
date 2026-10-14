@@ -80,17 +80,22 @@ def test_certificate_and_funds_guards():
             scale.action(s, c, 'grocery', 'scale_upgrade', {'expected_tier': 1}, NOW)
 
 
-def test_real_day_finalizes_only_after_errors_and_never_from_career_day():
+def test_real_day_credits_once_when_it_qualifies_and_never_from_career_day():
+    """Owner 14/10: the day counts the moment it qualifies; a later error that day does not take it back."""
     s, c = fixture_state()
-    for n in range(3): assert finish(c, n)
+    finish(c, 0); finish(c, 1)
     assert scale.public(s, c, 'grocery', NOW)['progress']['qualified_days'] == 0
-    finish(c, 3, mistakes=1)
-    c['day'] += 1
+    assert finish(c, 2)
+    assert scale.public(s, c, 'grocery', NOW)['progress']['qualified_days'] == 1
+    finish(c, 3, mistakes=1)   # 3/4 = 75%: no longer qualifies, the credit stays
+    assert scale.public(s, c, 'grocery', NOW)['progress']['qualified_days'] == 1
+    c['day'] += 1              # a new career day is not a new real day
     finish(c, 4, now=NOW+86400)
-    assert c['scale']['qualified_days'] == 0
-    for n in range(5, 8): finish(c, n, now=NOW+86400)
-    finish(c, 8, now=NOW+2*86400)
     assert c['scale']['qualified_days'] == 1
+    for n in range(5, 8): finish(c, n, now=NOW+86400)
+    assert scale.counted(c['scale'], c) == 2
+    finish(c, 8, now=NOW+2*86400)
+    assert c['scale']['qualified_days'] == 2
     assert len(c['scale']['today']['ids']) == 1
 
 
@@ -227,13 +232,15 @@ def test_agency_community_sites_do_not_use_business_rights():
         scale.validate(c,cid)
 
 
-def test_public_rollover_does_not_commit_progress_and_current_day_is_pending():
+def test_public_rollover_does_not_commit_progress_and_current_day_counts_now():
     s,c=fixture_state()
     for n in range(3): finish(c,n)
     before=copy.deepcopy(c)
     view=scale.public(s,c,'grocery',NOW+86400)
     assert view['progress']['qualified_days']==1 and c==before
-    assert view['progress']['today']['pending'] is True
+    assert view['progress']['today']['pending'] is False and view['progress']['today']['credited'] is False
+    view=scale.public(s,c,'grocery',NOW)
+    assert view['progress']['qualified_days']==1 and view['progress']['today']['credited'] is True
 
 
 def test_lock_rejects_foreign_career_and_duplicates_atomically():
@@ -312,35 +319,37 @@ def test_f382_kept_job_finished_today_counts_but_future_day_does_not():
 
 
 def test_f382_requirement_explains_rule_and_today_live():
-    """F#382 (yenmy1808_, 16/18 clean today): the row says today counts at 0h and the button says what is missing."""
+    """F#382 (yenmy1808_, 16/18 clean today): today already counts (owner 14/10) and the button says what is missing."""
     s, c = fixture_state()
     for n in range(18): finish(c, n, mistakes=int(n < 2))
     nxt = scale.public(s, c, 'grocery', NOW)['next']
     row = nxt['requirements'][0]
     assert row['id'] == 'real_days' and row['label'] == 'Ngày thực đạt chuẩn'
-    assert (row['got'], row['need'], row['met']) == (0, 3, False)
-    assert row['hint'] == 'Hôm nay: 16/18 việc sạch · đạt, cộng lúc 0h'
-    assert '≥' not in row['rule'] and '80%' in row['rule'] and '0h' in row['rule']
-    assert nxt['reason'] == 'Cần thêm 3 ngày thực đạt chuẩn.'
+    assert (row['got'], row['need'], row['met']) == (1, 2, False)
+    assert row['hint'] == 'Hôm nay: 16/18 việc sạch · đã tính ✓'
+    assert '≥' not in row['rule'] and '80%' in row['rule'] and 'cộng ngay lúc đạt' in row['rule']
+    assert nxt['reason'] == 'Cần thêm 1 ngày thực đạt chuẩn.'
     assert 'đã kết thúc' not in nxt['reason']
-    # Tomorrow the day is in, and the live line starts again.
+    # Tomorrow the day stays in once, and the live line starts again.
     nxt = scale.public(s, c, 'grocery', NOW + 86400)['next']
     assert nxt['requirements'][0]['got'] == 1
-    assert nxt['requirements'][0]['hint'] == 'Hôm nay: 0/0 việc sạch · cần ≥3 việc sạch, ≥80%'
-    assert nxt['reason'] == 'Cần thêm 2 ngày thực đạt chuẩn.'
+    assert nxt['requirements'][0]['hint'] == 'Hôm nay: 0/0 việc sạch · còn 3 việc sạch nữa là tính hôm nay'
+    assert nxt['reason'] == 'Cần thêm 1 ngày thực đạt chuẩn.'
 
 
 def test_f382_weak_ratio_and_missing_contract_are_named():
     s, c = fixture_state()
     for n in range(4): finish(c, n, mistakes=int(n == 0))
-    assert scale.public(s, c, 'grocery', NOW)['next']['requirements'][0]['hint'].endswith('cần ≥3 việc sạch, ≥80%')
+    # 3 clean of 4: one more clean job makes 4/5 = 80%.
+    assert scale.public(s, c, 'grocery', NOW)['next']['requirements'][0]['hint'] == 'Hôm nay: 3/4 việc sạch · còn 1 việc sạch nữa là tính hôm nay'
     s, c = fixture_state(tier=1)
     for n in range(3): finish(c, n)
     row = scale.public(s, c, 'grocery', NOW)['next']['requirements'][0]
-    assert row['hint'] == 'Hôm nay: 3/3 việc sạch · thiếu ca quản lý nghiệm thu'
-    assert 'ca quản lý được nghiệm thu' in row['rule']
+    assert row['hint'] == 'Hôm nay: 3/3 việc sạch · còn thiếu ca quản lý nghiệm thu là tính hôm nay'
+    assert 'ca quản lý được nghiệm thu' in row['rule'] and row['got'] == 0
     scale.accepted(c, 'grocery', NOW)
-    assert scale.public(s, c, 'grocery', NOW)['next']['requirements'][0]['hint'].endswith('đạt, cộng lúc 0h')
+    row = scale.public(s, c, 'grocery', NOW)['next']['requirements'][0]
+    assert row['hint'].endswith('đã tính ✓') and row['got'] == 1
 
 
 def test_f382_other_missing_rows_read_as_sentences():

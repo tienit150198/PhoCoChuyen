@@ -13,6 +13,10 @@ Gồm mapart (bản đồ 2.5D và cổ điển đẹp hơn, chim bay; không đ
 
 Rương kho báu bản đồ 2.5D: bỏ giới hạn 1 rương/đợt và 5 rương/ngày (chủ game 14/10 "mỗi người nhặt thoải mái"); rương nhặt xong biến mất với mọi người, ai tới trước nhặt trước. Vẫn cần tài khoản đủ 1 ngày tuổi và đứng gần rương.
 
+# Chưa phát hành — daygate
+
+Ngày thực đạt chuẩn (Mở rộng nghề, Chuyên môn nghề) được tính NGAY khi đạt (≥3 việc sạch, ≥80%; mốc có hợp đồng: thêm ca quản lý nghiệm thu), mỗi ngày lịch một lần, lỗi sau đó trong ngày không trừ; không còn chờ 0h. Mốc đầu cần 2 ngày thực thay vì 3. Dòng sống “Hôm nay: x/y việc sạch · đã tính ✓ / còn N việc sạch nữa” ở Mở rộng nghề, Chuyên môn, Tay nghề lâu năm và hàng “ngày tốt” Thăng tiến. Bản lưu: khóa tùy chọn `careers.<nghề>.scale_credit` (2.4.8 đọc được, bỏ qua). Không có Có gì mới.
+
 # v2.4.8 — 2026-10-14
 
 Gồm declutter (#384): bớt chữ nhỏ ở Hành trình/Công việc, Kho, màn làm ca, HUD; chế độ gọn tự bật ở mọi cỡ màn hình với giao diện 2.5D (tắt được trong Cài đặt). Không có Có gì mới.
