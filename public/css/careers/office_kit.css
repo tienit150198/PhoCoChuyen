@@ -207,6 +207,9 @@ html[data-layout="phone"] .career-job.ok{--ok-foot:68px}
 .career-job.ok .ok-people>summary{flex-wrap:wrap}
 .career-job.ok .ok-h2 small,.career-job.ok .ok-fold>summary small{font-size:.933rem;font-weight:400;color:var(--muted)}
 .career-job.ok .ok-plan>summary small{margin-left:auto;text-align:right;white-space:nowrap}
+/* Mobile sweep: in a narrow side pane the one-line count ("0/4 đã soát · 3 việc làm được") crushed the card's title
+   to one word a line ("Gói / báo / cáo / quý"); the count now drops under the title when both do not fit. */
+.career-job.ok .ok-plan>summary{flex-wrap:wrap;row-gap:2px}
 .career-job.ok .ok-trackfold>summary{flex-wrap:wrap}
 .career-job.ok .ok-trackfold>summary small{flex:1 1 150px;min-width:0;text-align:right}
 .career-job.ok .ok-plan-list,.career-job.ok .ok-mates{list-style:none;margin:0;padding:0;display:grid;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface);overflow:hidden}
@@ -283,6 +286,10 @@ html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-ca
    long as the document, not as the inbox */
 @container sheet (min-width:720px){
   .career-job.ok:not(.ok-idle)>.ok-pane:not(.ok-pane-doc){max-height:min(64vh,620px);overflow-y:auto;overscroll-behavior:contain}
+  /* Mobile sweep: on a short screen (phone landscape, 64vh = 250 px) the capped pane shrank its auto rows, so the
+     open dossier's row (.ok-mails, overflow:hidden) was cut to 24 px under "Nhận thêm việc". Rows keep their
+     content height; the pane scrolls instead. */
+  .career-job.ok:not(.ok-idle)>.ok-pane:not(.ok-pane-doc){grid-auto-rows:max-content}
 }
 
 /* ---------------------------------------------------------------- hands-on desks of Cánh Diều (office_work.js: hr_admin, secretary,
