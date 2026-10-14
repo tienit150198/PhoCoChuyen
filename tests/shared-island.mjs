@@ -79,3 +79,22 @@ await test('classic island uses the real shared room and server-proof chest clai
   assert.equal(writes.length,1);assert.equal(writes[0].url,'/api/town/treasure/claim');assert.equal(writes[0].body.proof,'server-proof');assert.equal(h.env.api.state.journey.wallet,10300);assert.equal(h.env.api.state.settings.newInterface,false);
   h.session.close();assert.equal(sent.at(-1).t,'town_out');assert.equal(timers.size,0);assert.ok([...listeners.values()].every(set=>set.size===0),'closing removes both protocols subscriptions');
 });
+
+await test('F#381: a screen-reader list names every chest nearest first and its button walks there and picks it',async()=>{
+  const h=harness(),rows=[];let pick;
+  Object.assign(h.view,{chests:r=>rows.push(r),onChest:fn=>{pick=fn;}});
+  const Base=h.runtime.World,gone=[];
+  h.runtime.World=class extends Base {
+    constructor(...args){super(...args);this.hotspots=[{id:'career:x',x:0,y:0},{id:'treasure:far',x:14,y:5},{id:'treasure:near',x:6,y:5}];this.treasure=[{id:'far',x:14,y:5},{id:'near',x:6,y:5,count:3}];}
+    getPresence(){return {x:4,y:5,direction:'se'};}
+    go(id,cb){h.calls.push(['go',id]);cb();}};
+  await h.session.start();
+  assert.deepEqual(rows.at(-1),[{id:'near',count:3,steps:2},{id:'far',count:1,steps:10}],'only chests, nearest first, stacked count kept');
+  pick('near');assert.deepEqual(h.calls.slice(-3),[['notice','Đang đi tới rương, khoảng 2 bước…'],['go','treasure:near'],['claim','near']]);
+  h.world.hotspots=h.world.hotspots.filter(x=>x.id!=='treasure:near');pick('near');
+  assert.deepEqual(h.calls.at(-1),['notice','Rương này đã được nhặt. Danh sách đã cập nhật.']);assert.deepEqual(rows.at(-1).map(r=>r.id),['far']);
+  h.session.close();const n=rows.length;await new Promise(r=>setTimeout(r,1100));assert.equal(rows.length,n,'the list timer stops on close');
+});
+await test('F#381: older views and worlds without the list keep working',async()=>{
+  const h=harness();await h.session.start();h.interact('treasure:a');assert.deepEqual(h.calls.at(-1),['claim','a']);h.session.close();
+});
