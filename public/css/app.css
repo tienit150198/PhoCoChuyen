@@ -1415,6 +1415,24 @@ html[data-layout="phone"] .settings-tabs{flex-wrap:nowrap;overflow-x:auto;scroll
 .shop-hero h3{font-size:1.333rem;margin:0}
 .shop-careers{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
 .back-btn{justify-self:start}
+/* 14/10 profile tidy (v4/social.js): the card's two buttons stay together; a profile is a header, one row of what
+   they own, the actions, then lists folded after three ("Xem thêm"). */
+.player-acts{display:flex;gap:var(--sp-2);margin-left:auto}
+.shop-hero .soc-owns,.shop-hero .soc-acts{flex-basis:100%}
+.shop-hero .soc-acts{gap:var(--sp-2)}
+.section-title small{font-weight:600}
+.soc-more{margin-top:var(--sp-2)}
+.soc-more>summary{display:flex;align-items:center;justify-content:center;min-height:44px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-weight:700;font-size:var(--fs-2);cursor:pointer;list-style:none}
+.soc-more>summary::-webkit-details-marker{display:none}
+.soc-more[open]>summary{margin-bottom:var(--sp-2)}
+.soc-edit{margin-top:var(--sp-3)}
+.soc-edit>summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer}
+.soc-edit .soc-profile>h3{display:none}
+html[data-layout="phone"] .shop-hero{gap:var(--sp-3);align-items:flex-start}
+html[data-layout="phone"] .shop-hero .avatar.huge{width:64px;height:64px;font-size:2.2rem}
+html[data-layout="phone"] .shop-hero>.grow{flex-basis:0;flex-grow:1}
+html[data-layout="phone"] .player-acts{width:100%}
+html[data-layout="phone"] .player-acts .btn{flex:1}
 .soc-gift{padding:0}
 .soc-gift>summary{display:flex;align-items:center;gap:8px;min-height:48px;padding:10px 16px}
 .soc-gift[open]>summary{border-bottom:1px solid var(--line)}

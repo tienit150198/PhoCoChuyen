@@ -1,3 +1,7 @@
+# (chưa phát hành) — profnghe
+
+Hồ sơ & tìm nghề (chủ game 14/10: "chỗ profiles quá lỗi, lộn xộn quá, tìm nghề cũng khó"). Nơi làm việc ở Hành trình: ô tìm nghề không cần dấu ("pho", "tra sua"; khớp nguyên chữ trước), lọc Đang làm / Mở được / Khóa và theo nhóm, thứ tự đang làm → mở được → khóa, mỗi nghề một hàng gọn (tên, ngày · cấp · quỹ, bước mở khóa “Xong chương N là mở” / “Mở ở chương N” — nghề khóa nay hiện tên), nhóm dài gập sau 6 dòng “Xem thêm”; gõ và chạm lọc chỉ ẩn/hiện hàng có sẵn (không vẽ lại); 🏆 Xếp hạng nghề ngay đầu mục, thẻ lời x3/nghề hot giữ nguyên. Thẻ nhân vật: ví lớn không tràn ô (809k xu, số đủ ở nhãn), danh hiệu đang đeo một dòng (cái đầu có tên, còn lại biểu tượng), xe/điện thoại/Thay đồ thành một hàng chip. Phố nghề: nút “Quay lại phố” mũi tên đúng chiều (trước là ›), tab Hồ sơ hiện thẻ của bạn như hàng xóm thấy + “✏️ Sửa hồ sơ” gập, hồ sơ người khác gọn (đầu thẻ, một hàng đồ có, nút chính, Nơi làm việc và đánh giá 3 cái + “Xem thêm”, “Cấp” thay “Lv”), thẻ ở phố 2 nghề +N. Chỉ giao diện, không đổi lưu. Không có Có gì mới.
+
 # v2.4.8 — 2026-10-14
 
 Gồm declutter (#384): bớt chữ nhỏ ở Hành trình/Công việc, Kho, màn làm ca, HUD; chế độ gọn tự bật ở mọi cỡ màn hình với giao diện 2.5D (tắt được trong Cài đặt). Không có Có gì mới.
