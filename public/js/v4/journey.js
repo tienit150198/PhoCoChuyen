@@ -22,7 +22,7 @@ import {lazy,skeleton} from '../lazy.js';
 import {FIRST_JOB,quiet,firstDay} from './onboard.js';
 import {highlight} from './guide.js';
 import {acctPlace,acctTag,acctTags} from './acct-jobs.js';   // 💼 kế toán: exam first, ×3/×5 (game/accounting_jobs.py)
-import {fundMoveHTML} from './wealth.js';   // 💼 Rút / góp vốn with a typed amount (F#259)
+import {fundMoveHTML,shortNum} from './wealth.js';   // 💼 Rút / góp vốn with a typed amount (F#259)
 // The town map's compact goal card on the clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded for tests.
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
 // 👗 Tủ đồ (v4/wardrobe.js): the sheet loads the first time it opens.
@@ -125,9 +125,11 @@ export const wornOf=J=>Array.isArray(J?.worn)?J.worn:J?.equipped_title?[{...J.eq
 const wearMax=J=>J?.wear_max||3;
 function wornChips(api,J){
   const worn=wornOf(J),rank=(api.lbTitles||[])[0];
-  const chip=(w,cls='')=>`<button type="button" class="jr-title-chip ${cls}" data-action="jrView" data-view="titles"><span aria-hidden="true">${esc(w.emoji)}</span> ${esc(w.name)}</button>`;
+  // 14/10 (profile tidy): one line under the name, as on Phố nghề: the first title by name, the others by emoji
+  // (the full names stay in the label and in Danh hiệu).
+  const chip=(w,named)=>`<button type="button" class="jr-title-chip${named?'':' icon'}" data-action="jrView" data-view="titles"${named?'':` aria-label="${esc(w.name)}" title="${esc(w.name)}"`}><span aria-hidden="true">${esc(w.emoji)}</span>${named?` ${esc(w.name)}`:''}</button>`;
   const top=rank?`<button type="button" class="jr-title-chip rank" data-action="rank" data-board="${esc(rank.board)}" title="${esc(rank.label)} tuần này"><span aria-hidden="true">${esc(rank.emoji)}</span> ${esc(rank.name)}</button>`:'';
-  return `<div class="jr-worn">${top}${worn.map(w=>chip(w)).join('')||`<button type="button" class="jr-title-chip empty" data-action="jrView" data-view="titles">Chọn danh hiệu để đeo</button>`}</div>`;
+  return `<div class="jr-worn">${top}${worn.map((w,i)=>chip(w,!rank&&!i)).join('')||`<button type="button" class="jr-title-chip empty" data-action="jrView" data-view="titles">Chọn danh hiệu để đeo</button>`}</div>`;
 }
 const spouseChip=api=>{const sp=api.state.marriage?.spouse;return sp?`<button type="button" class="jr-title-chip" data-action="marriage" data-tab="family"><span aria-hidden="true">${sp.status==='married'?'💍':'💞'}</span> ${sp.status==='married'?'Đã kết hôn':'Đã đính hôn'} · ${esc(sp.name)}</button>`:'';};
 /* 🚗 The vehicle the player rides (game/garage.py), next to Thay đồ; it opens the garage (v4/garage.js). */
@@ -140,13 +142,18 @@ function meCard(env){
   const span=mat.next?Math.max(1,mat.next-mat.floor):1,pct=mat.next?Math.min(100,Math.round((mat.xp-mat.floor)*100/span)):100;
   const skills=(C.skills||[]).map(sk=>{const v=J.skills.find(x=>x.id===sk.id)||{level:0};return `<li class="jr-skill ${v.level?'':'zero'}" title="${esc(sk.name)}"><span aria-hidden="true">${sk.emoji}</span><b>${esc(SKILL_SHORT[sk.id]||sk.name)}</b><i class="jr-pips" aria-label="Mức ${v.level}">${'●'.repeat(v.level)}${'○'.repeat(Math.max(0,6-v.level))}</i></li>`;}).join('');
   // 💰 The wallet stat opens "Tiền của bạn" (v4/wealth.js): every pocket in one place, Sổ ví one tap further.
-  const wallet=J.story?`<button type="button" class="jr-stat ${J.debt?'bad':''}" data-action="money"><small>Ví của bạn</small><b>${J.debt?`Nợ ${fmt(J.debt)} xu`:`${fmt(J.wallet)} xu`}</b></button>`:'';
+  // A big sum is shortened (809k, 1,2tr) so it stays inside its box on a phone; the exact sum is its label.
+  const sum=J.debt?`Nợ ${fmt(J.debt)} xu`:`${fmt(J.wallet)} xu`,short=J.debt?`Nợ ${shortNum(J.debt)} xu`:`${shortNum(J.wallet)} xu`;
+  const wallet=J.story?`<button type="button" class="jr-stat ${J.debt?'bad':''}" data-action="money" aria-label="${esc(`Ví của bạn: ${sum}`)}" title="${esc(sum)}"><small>Ví của bạn</small><b>${short}</b></button>`:'';
+  // 14/10 (profile tidy): the header is the portrait, the name, the worn titles on one line and the level; what you
+  // own (spouse, outfit, vehicle, phone) is one row of chips under it, then three numbers and the two outings.
+  const own=`${spouseChip(api)}<button type="button" class="jr-title-chip jr-wd-chip" data-action="jrWardrobe"><span aria-hidden="true">👗</span> Thay đồ</button>${rideChip(api)}${phoneChip(api)}`;
   return `<section class="jr-card jr-me" aria-label="Nhân vật của bạn">
     <div class="jr-me-top"><button type="button" class="jr-avatar" data-action="jrView" data-view="profile" aria-label="Sửa tên và nhân vật">${avatar(J.gender,68,lookOf(api.state))}</button>
-      <div class="jr-me-text"><h2>${esc(api.state.name)}</h2>${spouseChip(api)}
+      <div class="jr-me-text"><h2>${esc(api.state.name)}</h2>
         ${J.story?wornChips(api,J):''}
-        <button type="button" class="jr-title-chip jr-wd-chip" data-action="jrWardrobe"><span aria-hidden="true">👗</span> Thay đồ</button>${rideChip(api)}${phoneChip(api)}
         <div class="jr-level"><div class="jr-level-row"><b>Trưởng thành cấp ${mat.level}</b><small>${esc(mat.name)}</small></div><div class="jr-bar" role="progressbar" aria-label="Kinh nghiệm trưởng thành" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div></div></div></div>
+    <div class="jr-me-own">${own}</div>
     ${J.story?`<div class="jr-stats">${wallet}<div class="jr-stat"><small>Ngày sống</small><b>${fmt(J.life_day)}</b></div><button type="button" class="jr-stat" data-action="jrView" data-view="titles"><small>Danh hiệu</small><b>${J.titles.length}</b></button></div>`:''}
     ${J.story?`<div class="jr-actions">${btn('🛕 Vào chùa','lfChuaVisit',{},'cream small')}${btn('🚶 Đi chơi & làm đẹp','jrView',{view:'outings'},'cream small')}</div>`:''}
     ${certBadges(env)}
@@ -219,11 +226,53 @@ export function chapterCard(env,{compact=false}={}){
     ${compact?btn(slim?(expanded?'▴':'▾'):expanded?'Thu gọn mục tiêu':'Xem tất cả mục tiêu','jrGoals',{},'ghost small',` aria-expanded="${!!expanded}"${slim?` aria-label="${expanded?'Thu gọn mục tiêu':'Xem tất cả mục tiêu'}"`:''}`):`${say(ch.intro[ch.intro.length-1],g,'compact')}<button type="button" class="jr-link" data-action="jrStory" data-n="${ch.n}">${icon('book',14)} Nghe lại câu chuyện</button>`}</section>`;
 }
 
-function placeCard(env,cid){
+/* 🔎 Tìm nghề (owner 14/10: "tìm nghề cũng khó"): every career in one list with a search box (no accents needed:
+ * "pho", "tra sua"), a status chip (Đang làm · Mở được · Khóa) and a group chip (Ăn uống, Buôn bán, Dịch vụ…).
+ * Đang làm first, then Mở được, then Khóa; a long group folds after FIND_FOLD rows behind "Xem thêm". Typing and the
+ * chips only show or hide the rows already drawn (findApply), so 70+ rows stay quick on a weak phone. */
+const FIND_FOLD=6;
+const FIND_ST=[['mine','Đang làm'],['open','Mở được'],['lock','Khóa']];
+/** Lower case, no Vietnamese accents (đ → d), single spaces: "Quán Phở" and "quan pho" read the same. */
+export const foldVi=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[đĐ]/g,'d').toLowerCase().replace(/\s+/g,' ').trim();
+const findOf=ui=>({q:foldVi(ui.jrQ),st:ui.jrSt||'',cat:ui.jrCat||'',more:ui.jrMore||{}});
+/** Which rows show: the chips match and every typed word is in the row's key, best fit first: whole words ("pho" is
+ * Quán phở, not Văn phòng), else the start of a word, else anywhere. A group without a search or its own chip shows
+ * FIND_FOLD rows and says how many more. rows: [{k, st, cat}] → {show: [bool], n: {st: shown+folded}, more: {st: folded}}. */
+export function findPlan(rows,f){
+  const words=f.q?f.q.split(' '):[],n={},more={},seen={};
+  const tests=[w=>k=>` ${k} `.includes(` ${w} `),w=>k=>` ${k}`.includes(` ${w}`),w=>k=>k.includes(w)];
+  const chip=r=>!(f.st&&f.st!==r.st||f.cat&&f.cat!==r.cat);
+  const fit=tests.map(t=>{const ts=words.map(t);return r=>ts.every(x=>x(r.k));}).find(ok=>rows.some(r=>chip(r)&&ok(r)))||(()=>!words.length);
+  const show=rows.map(r=>{
+    if(!chip(r)||!fit(r))return false;
+    n[r.st]=(n[r.st]||0)+1;
+    if(f.q||f.st||f.more[r.st]||(seen[r.st]=(seen[r.st]||0)+1)<=FIND_FOLD)return true;
+    more[r.st]=(more[r.st]||0)+1;return false;
+  });
+  return {show,n,more};
+}
+/** The rows on screen follow the plan: hidden rows, each group's count and "Xem thêm", the empty line. */
+function findApply(root,ui){
+  const box=root?.querySelector?.('.jr-find');if(!box)return;
+  const els=[...box.querySelectorAll('.jr-row')],p=findPlan(els.map(e=>({k:e.dataset.k||'',st:e.dataset.st,cat:e.dataset.cat})),findOf(ui));
+  els.forEach((e,i)=>{if(e.hidden===p.show[i])e.hidden=!p.show[i];});
+  for(const g of box.querySelectorAll('.jr-find-grp')){const st=g.dataset.st,n=p.n[st]||0,m=p.more[st]||0;
+    g.hidden=!n;const c=g.querySelector('.jr-find-n');if(c)c.textContent=n;
+    const b=g.querySelector('.jr-find-more');if(b){b.hidden=!m;b.textContent=`Xem thêm ${m} nơi`;}}
+  const none=box.querySelector('.jr-find-none');if(none)none.hidden=Object.keys(p.n).length>0;
+}
+let findWired=false;
+function findWire(env){
+  if(findWired||typeof document==='undefined'||!document.addEventListener)return;findWired=true;
+  document.addEventListener('input',e=>{const t=e.target;if(!t?.matches?.('input[data-jr-find]'))return;
+    env.ui.jrQ=t.value;findApply(document.getElementById('sheet'),env.ui);});
+}
+
+/** One career row: the name, what it is, where you are with it (day · level · fund) or how it opens, its tags. */
+function placeCard(env,cid,st,hidden){
   const {api}=env,J=api.state.journey,m=meta(api,cid),c=api.state.careers[cid],p=J.places[cid];
   const job=c.job||{},tags=[],aj=acctPlace(api,cid);
-  if(cid===api.state.current&&c.started)tags.push(tag('Đang làm','blue'));
-  if(c.started)tags.push(tag(`Ngày ${c.day} · Cấp ${c.level||1}`,'green'));
+  if(cid===api.state.current&&c.started)tags.push(tag('📍 Đang ở đây','blue'));
   if(p?.paused)tags.push(tag('Tạm đóng','amber'));
   if(job.status==='offer')tags.push(tag('💌 Có thư mời','blue'));
   else if(job.required&&job.status!=='hired')tags.push(tag(icon('briefcase',12)+' Cần xin việc','amber'));
@@ -231,19 +280,25 @@ function placeCard(env,cid){
   if(api.state.x3?.today?.includes(cid))tags.push(tag(`🔥 Lời x${api.state.x3.x} hôm nay`,'amber'));   // game/x3_week.py
   {const mk=marketTag(api.state,cid);if(mk&&mk[1])tags.push(tag(esc(mk[0]),mk[1]));}   // only hot/high: a "📉 Lãi thấp" chip on most cards was noise (#384)   // 📈 staff profit ×market, 🔥 nghề hot hôm nay (game/staff_market.py)
   if(acctTag(aj))tags.push(tag(acctTag(aj),'amber'));
-  let money='';
-  if(p&&J.story)money=p.employed?`<p class="jr-fund">Làm thuê · lương về ví${abandonTrust(api,cid)}</p>${btn('💵 Xem lương trong Sổ ví','jrView',{view:'wallet'},'ghost small')}`:`<p class="jr-fund">Quỹ ${fmt(p.fund)} xu${p.paused?' · tạm đóng, mở lại miễn phí':''}</p>`;
-  if(aj&&!aj.ok)money=`<p class="jr-fund">🔒 ${esc(aj.why)}</p>`;
+  // One quiet line under the name: day · level · the fund (or the salary), or the step that opens it.
+  const line=[];
+  if(c.started)line.push(`Ngày ${c.day} · Cấp ${c.level||1}`);
+  if(p&&J.story)line.push(p.employed?`Làm thuê · lương về ví${abandonTrust(api,cid)}`:`Quỹ ${fmt(p.fund)} xu${p.paused?' · mở lại miễn phí':''}`);
+  if(aj&&!aj.ok)line.push(`🔒 ${aj.why}`);
   const action=aj&&!aj.ok?btn(`Đi học ${icon('arrow',13)}`,'accountingSchool',{},'cream small'):p?.paused?btn('Mở lại','jrReopen',{career:cid},'cream small'):
     btn(`${c.started?'Tiếp tục':job.required&&job.status!=='hired'?'Xin việc':'Bắt đầu'} ${icon('arrow',13)}`,'choose',{career:cid},c.started?'primary small':'cream small');
-  return `<article class="jr-place ${p?.paused?'paused':''} ${cid===api.state.current?'current':''}" style="--career:${colour(m.color)}"><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span>
-    <div class="jr-place-text"><h3>${esc(m.place||m.short)}</h3><small>${esc(m.short||'')}</small><div class="jr-tags">${acctTags(aj,tags,tag).join('')}</div>${money}${J.story?certPlaceLine(env,cid):''}</div>${action}</article>`;
+  return `<article class="jr-place jr-row ${p?.paused?'paused':''} ${cid===api.state.current?'current':''}"${rowData(api,m,st)}${hidden?' hidden':''} style="--career:${colour(m.color)}"><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span>
+    <div class="jr-place-text"><h3>${esc(m.place||m.short)}</h3><small>${esc([m.short||'',...line].filter(Boolean).join(' · '))}</small><div class="jr-tags">${acctTags(aj,tags,tag).join('')}</div>${p?.employed&&J.story?btn('💵 Xem lương','jrView',{view:'wallet'},'ghost small jr-pay'):''}${J.story?certPlaceLine(env,cid):''}</div>${action}</article>`;
 }
+/** The search key and filters of a row: the place, what it is and its group, without accents. */
+const rowData=(api,m,st)=>{const cat=catOf(m);return ` data-k="${esc(foldVi(`${m.place||''} ${m.short||''} ${CATS[cat]||''} ${m.id}`))}" data-st="${st}" data-cat="${esc(cat)}"`;};
 
-function lockedTile(env,cid){
+/** A place still locked: its name (so a search finds it) and the step that opens it. */
+function lockedTile(env,cid,hidden){
   const {api}=env,J=api.state.journey,m=meta(api,cid),n=(api.content.journey.unlock_chapter||{})[cid];
-  // One word per tile: the section is already "Còn ở phía trước"; the next chapter's places say "Sắp mở".
-  return `<article class="jr-locked" aria-label="Nơi làm việc chưa mở"><span class="jr-place-emoji silhouette" aria-hidden="true">${emojiOf(m)}</span><b>🔒${n===J.chapter+1?' Sắp mở':''}</b><small><span class="jr-locked-cat">${esc(CATS[catOf(m)]||'')}</span></small></article>`;
+  const when=!n?'Chưa mở':n===J.chapter+1?`Xong chương ${J.chapter} là mở`:`Mở ở chương ${n}`;
+  return `<article class="jr-row jr-place locked"${rowData(api,m,'lock')}${hidden?' hidden':''} aria-label="${esc(`${m.place||m.short}: ${when}`)}"><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span>
+    <div class="jr-place-text"><h3>${esc(m.place||m.short)}</h3><small>${esc(m.short||'')} · 🔒 ${esc(when)}</small></div></article>`;
 }
 
 /** 🔥 Today's x3 careers (game/x3_week.py); the week's list opens from here (v4/x3week.js). */
@@ -256,29 +311,30 @@ function x3Banner(env){
 }
 
 function placesSection(env){
-  const {api}=env,J=api.state.journey,all=api.content.catalogue.map(m=>m.id).filter(id=>api.state.careers[id]);
-  const order=id=>(api.content.journey.unlock_chapter||{})[id]||9;
-  const open=all.filter(id=>J.unlocked.includes(id)).sort((a,b)=>{
-    const A=api.state.careers[a],B=api.state.careers[b];
-    return (b===api.state.current)-(a===api.state.current)||(B.started-A.started)||order(a)-order(b);
-  });
-  const locked=all.filter(id=>!J.unlocked.includes(id)).sort((a,b)=>order(a)-order(b));
-  // Many open places (sandbox, late chapters): the old category chips come back.
-  let shown=open,chips='';
-  if(open.length>6){
-    const started=open.filter(id=>api.state.careers[id].started),cats=Object.keys(CATS).filter(k=>open.some(id=>catOf(meta(api,id))===k));
-    let cat=env.ui.homeCat||'all';
-    if(cat==='mine'&&!started.length||cat!=='all'&&cat!=='mine'&&!cats.includes(cat))cat='all';
-    shown=cat==='all'?open:cat==='mine'?started:open.filter(id=>catOf(meta(api,id))===cat);
-    const chip=(id,text,n)=>`<button type="button" class="chip ${cat===id?'active':''}" data-action="homeCat" data-cat="${id}" aria-pressed="${cat===id}">${text} <em>${n}</em></button>`;
-    chips=`<nav class="home-filters jr-filters" aria-label="Nhóm nơi làm việc">${chip('all','Tất cả',open.length)}${started.length?chip('mine','Đã làm',started.length):''}${cats.map(k=>chip(k,CATS[k],open.filter(id=>catOf(meta(api,id))===k).length)).join('')}</nav>`;
-  }
-  // The next chapter's places show as silhouettes; the rest stay one quiet tile.
-  const soon=locked.filter(id=>order(id)===J.chapter+1),later=locked.length-soon.length;
-  const rest=later?`<article class="jr-locked more" aria-label="Những nơi còn ở phía trước"><span class="jr-place-emoji silhouette" aria-hidden="true">🏙️</span><b>+${later} nơi nữa</b><small>Còn ở phía trước</small></article>`:'';
-  return `<section class="jr-places" tabindex="-1" aria-label="Nơi làm việc"><div class="jr-sec-head"><h2>Nơi làm việc</h2><small>${open.length}/${all.length} nơi đã mở</small></div>${x3Banner(env)}${chips}
-    <div class="jr-grid">${shown.map(id=>placeCard(env,id)).join('')}</div>
-    ${locked.length?`<h3 class="jr-sub">Còn ở phía trước</h3><div class="jr-locked-grid">${soon.map(id=>lockedTile(env,id)).join('')}${rest}</div>`:''}</section>`;
+  const {api,ui}=env,J=api.state.journey,all=api.content.catalogue.map(m=>m.id).filter(id=>api.state.careers[id]);
+  const order=id=>(api.content.journey.unlock_chapter||{})[id]||9,open=new Set(J.story?J.unlocked:all);
+  const C=id=>api.state.careers[id],rank=id=>order(id)*1000+all.indexOf(id);
+  // Đang làm (the one on screen first, then the most worked), Mở được (by chapter), Khóa (by chapter).
+  const groups={
+    mine:all.filter(id=>open.has(id)&&C(id).started).sort((a,b)=>(b===api.state.current)-(a===api.state.current)||(C(b).day||0)-(C(a).day||0)||rank(a)-rank(b)),
+    open:all.filter(id=>open.has(id)&&!C(id).started).sort((a,b)=>rank(a)-rank(b)),
+    lock:all.filter(id=>!open.has(id)).sort((a,b)=>rank(a)-rank(b)),
+  };
+  const f=findOf(ui),rows=FIND_ST.flatMap(([st])=>groups[st].map(id=>({id,st,k:foldVi(`${meta(api,id).place||''} ${meta(api,id).short||''} ${CATS[catOf(meta(api,id))]||''} ${id}`),cat:catOf(meta(api,id))})));
+  const plan=findPlan(rows,f);
+  const chip=(act,key,val,text,n,on)=>`<button type="button" class="chip ${on?'active':''}" data-action="${act}" data-${key}="${val}" aria-pressed="${on}">${text}${n==null?'':` <em>${n}</em>`}</button>`;
+  const cats=Object.keys(CATS).filter(k=>all.some(id=>catOf(meta(api,id))===k));
+  const chips=`<nav class="home-filters jr-filters" aria-label="Lọc nơi làm việc">${chip('jrFindSt','st','','Tất cả',all.length,!f.st)}${FIND_ST.filter(([st])=>groups[st].length).map(([st,l])=>chip('jrFindSt','st',st,l,groups[st].length,f.st===st)).join('')}</nav><nav class="home-filters jr-filters jr-cats" aria-label="Nhóm nghề">${chip('jrFindCat','cat','','Mọi nhóm',null,!f.cat)}${cats.map(k=>chip('jrFindCat','cat',k,CATS[k],null,f.cat===k)).join('')}</nav>`;
+  const search=`<label class="jr-find-q"><span class="sr-only">Tìm nghề</span>${icon('search',17)}<input type="search" class="input" data-jr-find data-preserve enterkeyhint="search" autocomplete="off" placeholder="Tìm nghề: phở, trà sữa, y tá…" value="${esc(ui.jrQ||'')}"></label>`;
+  let i=0;
+  const grp=([st,label])=>{
+    const ids=groups[st];if(!ids.length)return '';
+    const html=ids.map(id=>{const show=plan.show[i++];return st==='lock'?lockedTile(env,id,!show):placeCard(env,id,st,!show);}).join(''),n=plan.n[st]||0,m=plan.more[st]||0;
+    return `<section class="jr-find-grp" data-st="${st}"${n?'':' hidden'}><h3 class="jr-sub">${label} <small class="jr-find-n">${n}</small></h3><div class="jr-grid">${html}</div><button type="button" class="btn ghost small full jr-find-more" data-action="jrFindMore" data-st="${st}"${m?'':' hidden'}>Xem thêm ${m} nơi</button></section>`;
+  };
+  const board=btn('🏆 Xếp hạng nghề','rankWork',{},'ghost small jr-rank');
+  return `<section class="jr-places" tabindex="-1" aria-label="Nơi làm việc"><div class="jr-sec-head"><h2>Nơi làm việc</h2>${board}</div>${x3Banner(env)}
+    <div class="jr-find">${search}${chips}${FIND_ST.map(grp).join('')}<p class="jr-find-none muted"${Object.keys(plan.n).length?' hidden':''}>Không thấy nghề nào. Thử chữ khác hay bỏ bớt lọc nhé.</p></div></section>`;
 }
 
 function homeMain(env){
@@ -522,7 +578,7 @@ function hud(){document.getElementById('jrHud')?.remove();mountLicenseNotice(E?.
 
 /* ------------------------------------------------------------------ wiring */
 export function journeyBoot(env){
-  E=env;sceneDialog();storiesBoot(env);lifeBoot(env);investBoot(env);
+  E=env;sceneDialog();storiesBoot(env);lifeBoot(env);investBoot(env);findWire(env);
   document.addEventListener('sheetrender',()=>{if(TW.m&&E?.ui.view==='home')TW.m.townMount(E,TOWN_HELP);});   // 🗺️ the stage back into its slot
   const sheet=document.getElementById('sheet');
   // The first-run intro cannot be dismissed into an empty scene.
@@ -557,7 +613,15 @@ export async function journeyAction(action,data,el,env){
   const {ui,cmd,renderSheet,confirmAction,api}=env;
   switch(action){
     case'jrGoals':ui.jrGoalsExpanded=!ui.jrGoalsExpanded;renderSheet(false);return true;
-    case'jrPlaces':{ui.homeMode='list';ui.jrView='home';ui.homeCat='all';renderSheet(false);const places=document.querySelector('.jr-places');places?.scrollIntoView?.({block:'start'});places?.focus?.({preventScroll:true});return true;}
+    // 🔎 Tìm nghề: the chips show or hide the rows already drawn (no redraw); the next redraw reads the same ui fields.
+    case'jrFindSt':case'jrFindCat':case'jrFindMore':{
+      if(action==='jrFindSt'){ui.jrSt=data.st||'';ui.jrMore={};}
+      else if(action==='jrFindCat'){ui.jrCat=data.cat&&ui.jrCat!==data.cat?data.cat:'';ui.jrMore={};}
+      else ui.jrMore={...(ui.jrMore||{}),[data.st]:true};
+      const sheet=document.getElementById('sheet');
+      for(const c of sheet?.querySelectorAll?.('.jr-filters .chip')||[]){const on=c.dataset.action==='jrFindSt'?(c.dataset.st||'')===(ui.jrSt||''):(c.dataset.cat||'')===(ui.jrCat||'');c.classList.toggle('active',on);c.setAttribute('aria-pressed',String(on));}
+      findApply(sheet,ui);return true;}
+    case'jrPlaces':{ui.homeMode='list';ui.jrView='home';ui.homeCat='all';ui.jrSt=ui.jrCat=ui.jrQ='';ui.jrMore={};renderSheet(false);const places=document.querySelector('.jr-places');places?.scrollIntoView?.({block:'start'});places?.focus?.({preventScroll:true});return true;}
     case'jrView':ui.jrView=data.view||'home';renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);return true;
     case'jrStep':ui.jrStep=data.step;renderSheet(false);return true;
     case'jrJob':ui.jrJob=data.career;renderSheet();return true;

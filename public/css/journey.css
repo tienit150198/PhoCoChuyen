@@ -50,7 +50,13 @@ html:not([data-layout="phone"]) .sheet.home:has(.jr-body){width:min(900px,calc(1
 .jr-stat{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-height:52px;padding:8px 10px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);text-align:left}
 button.jr-stat:hover{border-color:var(--line-strong)}
 .jr-stat small{font-size:.8rem;color:var(--muted);font-weight:600}
-.jr-stat b{font-size:1rem;white-space:nowrap}
+.jr-stat b{font-size:1rem;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.jr-stat{min-width:0}
+/* 14/10 profile tidy: worn titles after the first are emoji chips; what you own is one row of chips under the header */
+.jr-worn .jr-title-chip.icon{padding:4px 10px;font-size:1rem}
+.jr-me-own{display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--sp-3)}
+.jr-me-own .jr-title-chip{margin:0;max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jr-me-own .jr-wd-chip{margin-top:0}
 .jr-stat.bad{background:var(--bad-soft);border-color:transparent}
 .jr-stat.bad b{color:var(--bad)}
 .jr-skills-box{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
@@ -356,15 +362,36 @@ html[data-layout="tablet"] .jr-columns,html[data-layout="phone"] .jr-columns{gri
 html[data-layout="tablet"] .jr-columns>.jr-col,html[data-layout="phone"] .jr-columns>.jr-col{grid-column:auto;grid-row:auto}
 .jr-col:empty{display:none}
 .btn.jr-resume{min-height:56px;white-space:normal;line-height:1.3}
-/* Phone, two or more workplaces: compact tiles two to a row (the name beside its emoji, the button at the foot). */
-html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)){grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2))>.jr-place{position:relative;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:8px;padding:10px}
-html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)) .jr-place-emoji{position:absolute;top:10px;left:10px;width:34px;height:34px;border-radius:11px;font-size:1.2rem}
-html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)) .jr-place-text{flex:1 1 auto}
-html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)) .jr-place-text .eyebrow{display:none}
-html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)) .jr-place-text h3{display:flex;align-items:center;min-height:34px;padding-left:42px;font-size:.933rem;line-height:1.25}
-html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)) .jr-place-text>small{margin-top:4px}
-html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)) .jr-place>.btn{width:100%;min-height:44px;margin:0}
+/* 🔎 Tìm nghề (journey.js placesSection): a search box, status + group chips, then one compact row per career in three
+   groups (Đang làm, Mở được, Khóa), each folded after a few rows. Rows off screen skip layout (content-visibility). */
+.jr-sec-head{flex-wrap:wrap}
+.jr-sec-head .jr-rank{margin-left:auto;min-height:36px}
+.jr-find{display:grid;gap:var(--sp-2)}
+.jr-find-q{position:relative;display:block}
+.jr-find-q svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.jr-find-q input.input[data-jr-find]{width:100%;min-height:44px;padding-left:40px!important}
+.jr-find .jr-filters{padding:0!important}
+.jr-find-grp{display:grid;gap:var(--sp-2)}
+.jr-find .jr-grid{align-items:start}
+.jr-find-grp .jr-sub{display:flex;align-items:baseline;gap:6px;margin:var(--sp-2) 0 0}
+.jr-find-grp .jr-sub small{color:var(--muted);font-weight:700}
+.jr-find [hidden]{display:none!important}
+.jr-row{content-visibility:auto;contain-intrinsic-size:auto 76px}
+.jr-place-text h3{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.jr-place-text>small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.jr-place.locked{background:var(--surface-2);box-shadow:none;border-style:dashed}
+.jr-place.locked .jr-place-emoji{filter:grayscale(1);opacity:.55}
+.jr-place.locked h3{color:var(--ink-2)}
+.jr-find-none{margin:var(--sp-2) 0;text-align:center}
+html[data-layout="phone"] .jr-find .jr-grid{grid-template-columns:minmax(0,1fr);gap:6px}
+html[data-layout="phone"] .jr-find .jr-place{flex-wrap:nowrap;gap:10px;padding:10px}
+html[data-layout="phone"] .jr-find .jr-place-emoji{width:40px;height:40px;border-radius:12px;font-size:1.3rem}
+html[data-layout="phone"] .jr-find .jr-place-text{flex:1 1 auto}
+html[data-layout="phone"] .jr-find .jr-place-text h3{font-size:var(--fs-2)}
+html[data-layout="phone"] .jr-find .jr-place>.btn{flex:none;min-height:44px;margin:0;padding-inline:10px;font-size:var(--fs-2)}
+html[data-layout="phone"] .jr-find .ct-place{min-height:36px;padding:4px 8px;font-size:var(--fs-1)}
+html[data-layout="phone"] .jr-find .jr-pay{min-height:36px;margin-top:4px;font-size:var(--fs-1)}
+html[data-layout="phone"] .jr-find .jr-tags .tag:nth-child(n+3){display:none}
 /* Phone: the fair is a one-line banner (the games are listed inside the fair). */
 html[data-layout="phone"] .jr-fair-games{display:none}
 html[data-layout="phone"] .jr-fair-row{min-height:56px;padding:14px 12px 10px}

@@ -9,6 +9,7 @@ const button=(label,action,data={},style='')=>`<button type="button" class="btn 
 const pill=(label,kind='')=>`<span class="tag ${kind}">${label}</span>`;
 const stars=n=>n?'★'.repeat(Math.round(n))+'☆'.repeat(5-Math.round(n)):'☆☆☆☆☆';
 const head=(title,sub,extra='')=>`<header class="sheet-head"><div class="grow"><span class="eyebrow">CHƠI CÙNG MỌI NGƯỜI</span><h2>${title}</h2>${sub?`<p>${sub}</p>`:''}</div>${extra}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
+const fmtN=n=>Number(n||0).toLocaleString('vi-VN');
 const ago=t=>{const s=Math.max(0,Date.now()/1000-t);if(s<60)return'vừa xong';if(s<3600)return`${Math.floor(s/60)} phút trước`;if(s<86400)return`${Math.floor(s/3600)} giờ trước`;return`${Math.floor(s/86400)} ngày trước`;};
 const AVATARS=['🌸','☕','🍜','🎉','💪','🌈','🍀','⭐','🧁','🎁','🧑‍🍳','👩‍🏫','🧑‍💼','🧑‍🌾','🐱','🐶'];
 const TABS=[['street','Phố','map'],['board','Bảng tin','chat'],['market','Chợ','cart'],['inbox','Hộp thư','inbox'],['me','Hồ sơ','user']];
@@ -69,19 +70,35 @@ function profileForm(env,me){
   </form>`;
 }
 
+/** 👤 Hồ sơ (14/10 profile tidy): how the street sees you first (your card, one tap to the whole profile), the form
+ * folded under "Sửa hồ sơ". Before the first save the form is the whole tab. */
+function meTab(env,me){
+  if(!me)return profileForm(env,null);
+  const hidden=me.visible?'':`<div class="notice">${icon('alert',17)}<div>Hồ sơ đang ẩn: hàng xóm không thấy chỗ làm của bạn.</div></div>`;
+  return `${hidden}<div class="player-list">${playerCard(env,{...me,me:true})}</div><details class="card soc-edit"><summary>✏️ Sửa hồ sơ</summary>${profileForm(env,me)}</details>`;
+}
+
 function community(c){
   if(!c)return'';
   const pct=Math.min(100,Math.round(c.progress/c.goal*100));
   return `<article class="card community ${c.done?'done':''}"><div class="row spread"><span class="eyebrow">MỤC TIÊU CẢ PHỐ TUẦN NÀY</span>${c.done?pill('Hoàn thành 🎉','green'):pill(`${c.players} người góp sức`)}</div><h3>${esc(c.label)}</h3><div class="bar big"><i style="width:${pct}%"></i></div><p class="small muted">${c.progress.toLocaleString('vi-VN')} / ${c.goal.toLocaleString('vi-VN')} khách được phục vụ tuần này.</p></article>`;
 }
 
+/** A career chip: "Bán phở · Cấp 3 · 4.5★" (the level as everywhere else in the game, not "Lv"). */
+const careerChip=c=>`<span class="chip">${esc(c.short)} · Cấp ${c.level}${c.rating?` · ${c.rating}★`:''}</span>`;
+
+/** 14/10 (profile tidy): a card in the street list is the avatar, the name with its titles, one line of bio, two
+ * careers (+N) and the ride; the phone, the collection and the auction pieces are on the profile itself. */
 function playerCard(env,p){
-  const shop=p.shop||{},cur=shop.careers?.[0];
+  const shop=p.shop||{},jobs=shop.careers||[];
   const st=stOf(p),fr=frameAttrs(env.api,st);
-  return `<article class="player-card"><span class="avatar big${fr.cls}"${fr.attrs}>${esc(p.avatar)}</span><div class="grow"><h4><span${nameAttrs(env.api,st)}>${esc(p.name)}</span>${titleChip(env.api,st)} ${p.me?pill('Bạn','blue'):''}</h4>${titlesLine(p)}<p class="small muted clip">${esc(p.bio||'Chưa có lời giới thiệu')}</p>
-    <div class="row wrap small">${(shop.careers||[]).slice(0,3).map(c=>`<span class="chip">${esc(c.short)} · Lv${c.level}${c.rating?` · ${c.rating}★`:''}</span>`).join('')}${rideChip(p)}${phoneChip(p)}${luxChip(p)}${uniqChip(p)}</div></div>
-    ${button(p.me?'Chỗ của tôi':'Ghé chỗ làm','workVisit',p.me?{scope:'mine'}:{pid:p.pid},'small primary')}${button('Hồ sơ','socShop',{pid:p.pid},'small ghost')}</article>`;
+  return `<article class="player-card"><span class="avatar big${fr.cls}"${fr.attrs}>${esc(p.avatar)}</span><div class="grow"><h4><span${nameAttrs(env.api,st)}>${esc(p.name)}</span>${titleChip(env.api,st)} ${p.me?pill('Bạn','blue'):''}</h4>${titlesLine(p)}${p.bio?`<p class="small muted clip">${esc(p.bio)}</p>`:''}
+    <div class="row wrap small">${jobs.slice(0,2).map(careerChip).join('')}${jobs.length>2?`<span class="chip" aria-label="${jobs.length-2} nghề nữa">+${jobs.length-2}</span>`:''}${rideChip(p)}</div></div>
+    <div class="player-acts">${button(p.me?'Chỗ của tôi':'Ghé chỗ làm','workVisit',p.me?{scope:'mine'}:{pid:p.pid},'small primary')}${button('Hồ sơ','socShop',{pid:p.pid},'small ghost')}</div></article>`;
 }
+
+/** "Xem thêm": the first `n` items in sight, the rest one tap away (a <details>, so it keeps its state on a redraw). */
+const moreList=(items,n,label,wrap)=>`<div class="${wrap}">${items.slice(0,n).join('')}</div>`+(items.length>n?`<details class="soc-more"><summary>Xem thêm ${items.length-n} ${label}</summary><div class="${wrap}">${items.slice(n).join('')}</div></details>`:'');
 
 function street(env){
   const {ui,api}=env,f=ui.socFilter||{},key=`dir:${f.career||''}:${f.q||''}:${f.follow||''}`;
@@ -94,19 +111,25 @@ function street(env){
 
 function shopView(env,pid){
   const {ui,api}=env,d=load(env,'shop:'+pid,'shop',{pid});
-  const back=button(icon('chevron',13)+' Quay lại phố','socBack',{},'ghost small back-btn');
+  const back=button(icon('back',16)+' Quay lại phố','socBack',{},'ghost small back-btn');   // was a "›" chevron pointing forward
   if(!d)return back+loading;if(d.error)return back+failed(d);
   const p=d.profile,me=p.me;
   const gift=ui.socGift||{sticker:'🌸',coins:0};
   const reviewForm=d.can_review?`<form class="card soc-review-form" data-soc-form="review" data-pid="${esc(pid)}"><h4>${esc(T(p.shop?.current,'rate'))} ${esc(p.name)}</h4><div class="star-pick">${[1,2,3,4,5].map(n=>`<label><input type="radio" name="stars" value="${n}" ${n===5?'checked':''}><span>★</span></label>`).join('')}</div><textarea name="text" data-preserve maxlength="280" minlength="4" required placeholder="Quán bạn này có gì hay? Góp ý thật lòng nhé."></textarea><button class="btn primary small" type="submit">Gửi đánh giá</button></form>`:'';
   const giftForm=d.can_gift?`<details class="card soc-gift"><summary>${icon('gift',16)} Tặng quà</summary><form data-soc-form="gift" data-pid="${esc(pid)}"><div class="sticker-pick">${(api.social?.stickers||['🌸']).map(s=>`<label><input type="radio" name="sticker" value="${s}" ${gift.sticker===s?'checked':''}><span>${s}</span></label>`).join('')}</div><div class="segmented">${[0,10,20].map(c=>`<label><input type="radio" name="coins" value="${c}" ${c===0?'checked':''}><span>${c?c+' xu':'Chỉ sticker'}</span></label>`).join('')}</div><input class="input" name="note" data-preserve maxlength="80" placeholder="Lời nhắn (không bắt buộc)"><button class="btn primary small" type="submit">Gửi quà</button><p class="small muted">Xu lấy từ ví nghề bạn đang chơi. Mỗi ngày tặng mỗi người 1 lần.</p></form></details>`:'';
-  const reviews=d.reviews.map(r=>`<article class="p-review"><div class="row"><span class="avatar">${esc(r.avatar||'🙂')}</span><div class="grow"><b>${esc(r.author)}</b> <span class="stars">${stars(r.stars)}</span>${r.counted===false?` <span class="tag" title="${esc(r.why||'Không tính vào điểm trung bình')}">Không tính điểm</span>`:''}<small class="muted block">${esc(careerName(api,r.career))} · ${ago(r.at)}${r.why?` · ${esc(r.why)}`:''}</small></div>${r.mine||r.owner?'':button(icon('flag',13),'socReport',{kind:'review',id:r.id},'icon-btn small ghost')}</div><p>${esc(r.text)}</p>${r.reply?`<p class="owner-reply">${icon('chat',13)} <b>${esc(T(r.career,'host'))}:</b> ${esc(r.reply)}</p>`:r.owner?`<form class="row" data-soc-form="reply" data-id="${r.id}"><input class="input grow" name="text" data-preserve maxlength="280" placeholder="Trả lời một lần, thật lòng nhé" required><button class="btn small" type="submit">Trả lời</button></form>`:''}</article>`).join('')||`<p class="muted small">Chưa có hàng xóm nào chấm sao.</p>`;
+  const reviews=d.reviews.map(r=>`<article class="p-review"><div class="row"><span class="avatar">${esc(r.avatar||'🙂')}</span><div class="grow"><b>${esc(r.author)}</b> <span class="stars">${stars(r.stars)}</span>${r.counted===false?` <span class="tag" title="${esc(r.why||'Không tính vào điểm trung bình')}">Không tính điểm</span>`:''}<small class="muted block">${esc(careerName(api,r.career))} · ${ago(r.at)}${r.why?` · ${esc(r.why)}`:''}</small></div>${r.mine||r.owner?'':button(icon('flag',13),'socReport',{kind:'review',id:r.id},'icon-btn small ghost')}</div><p>${esc(r.text)}</p>${r.reply?`<p class="owner-reply">${icon('chat',13)} <b>${esc(T(r.career,'host'))}:</b> ${esc(r.reply)}</p>`:r.owner?`<form class="row" data-soc-form="reply" data-id="${r.id}"><input class="input grow" name="text" data-preserve maxlength="280" placeholder="Trả lời một lần, thật lòng nhé" required><button class="btn small" type="submit">Trả lời</button></form>`:''}</article>`);
   const listings=d.listings.length?`<h4 class="section-title">Hàng đang bán</h4><div class="listing-grid">${d.listings.map(m=>listingCard(m)).join('')}</div>`:'';
-  const st=stOf(p),fr=frameAttrs(api,st);
-  return `${back}<section class="shop-hero card"><span class="avatar huge${fr.cls}"${fr.attrs}>${esc(p.avatar)}</span><div class="grow"><h3><span${nameAttrs(api,st)}>${esc(p.name)}</span>${titleChip(api,st)}</h3>${titlesLine(p,'small')}<p class="muted">${esc(p.bio||'')}</p><div class="row wrap small">${pill(`${d.visits} lượt ghé`)} ${d.rating?pill(`${d.rating}★ từ hàng xóm`,'amber'):''} ${pill(`${(p.served||0).toLocaleString('vi-VN')} ${T(p.shop?.current,'served')}`,'green')} ${rideChip(p)}${phoneChip(p)}${luxChip(p)}${uniqChip(p)}</div></div>
-    ${me?'':`<div class="row wrap">${button(p.following?'Đang theo dõi':'Theo dõi',p.following?'socUnfollow':'socFollow',{pid},'small '+(p.following?'ghost':''))}${button(icon('flag',13)+' Báo cáo','socReport',{kind:'profile',id:pid},'small ghost')}${button('Chặn','socBlock',{pid},'small ghost danger')}</div>`}</section>
-    <div class="shop-careers">${(p.shop?.careers||[]).map(c=>`<div class="kv-card"><b>${esc(c.place)}</b><small>Lv${c.level} · ngày ${c.day} · ${c.rating?c.rating+'★':'chưa có sao'} · ${c.served} khách</small></div>`).join('')||'<p class="muted small">Chưa mở chỗ làm nào.</p>'}</div>
-    ${button(me?'Chỗ làm của tôi':'🏪 Ghé chỗ làm','workVisit',me?{scope:'mine'}:{pid},'primary full')}${giftForm}${reviewForm}${listings}<h4 class="section-title">Hàng xóm chấm sao</h4><div class="stack">${reviews}</div>`;
+  const st=stOf(p),fr=frameAttrs(api,st),jobs=p.shop?.careers||[];
+  // 14/10 (profile tidy): header (avatar, name, titles, bio, three numbers), what they own on one row, the one main
+  // button, then the workplaces and the reviews, three of each in sight and "Xem thêm" for the rest.
+  const owns=`${rideChip(p)}${phoneChip(p)}${luxChip(p)}${uniqChip(p)}`;
+  const jobCards=jobs.map(c=>`<div class="kv-card"><b>${esc(c.place)}</b><small>Cấp ${c.level} · ${fmtN(c.served)} khách${c.rating?` · ${c.rating}★`:''}</small></div>`);
+  return `${back}<section class="shop-hero card"><span class="avatar huge${fr.cls}"${fr.attrs}>${esc(p.avatar)}</span><div class="grow"><h3><span${nameAttrs(api,st)}>${esc(p.name)}</span>${titleChip(api,st)}</h3>${titlesLine(p,'small')}${p.bio?`<p class="muted">${esc(p.bio)}</p>`:''}<div class="row wrap small">${pill(`👀 ${fmtN(d.visits)} lượt ghé`)}${d.rating?pill(`${d.rating}★`,'amber'):''}${pill(`${fmtN(p.served)} ${T(p.shop?.current,'served')}`,'green')}</div></div>
+    ${owns?`<div class="row wrap small soc-owns">${owns}</div>`:''}
+    ${me?'':`<div class="row wrap soc-acts">${button(p.following?'Đang theo dõi':'Theo dõi',p.following?'socUnfollow':'socFollow',{pid},'small '+(p.following?'ghost':''))}${button(icon('flag',13)+' Báo cáo','socReport',{kind:'profile',id:pid},'small ghost')}${button('Chặn','socBlock',{pid},'small ghost danger')}</div>`}</section>
+    ${button(me?'Chỗ làm của tôi':'🏪 Ghé chỗ làm','workVisit',me?{scope:'mine'}:{pid},'primary full')}
+    <h4 class="section-title">Nơi làm việc <small class="muted">${jobs.length}</small></h4>${jobs.length?moreList(jobCards,3,'nơi','shop-careers'):'<p class="muted small">Chưa mở chỗ làm nào.</p>'}
+    ${giftForm}${reviewForm}${listings}<h4 class="section-title">Hàng xóm chấm sao <small class="muted">${reviews.length}</small></h4>${reviews.length?moreList(reviews,3,'đánh giá','stack'):'<p class="muted small">Chưa có hàng xóm nào chấm sao.</p>'}`;
 }
 
 function listingCard(m){
@@ -155,7 +178,7 @@ export function socialView(env){
   let body;
   if(!me&&tab!=='street')body=profileForm(env,null);
   else if(ui.socShop)body=shopView(env,ui.socShop);
-  else body={street:()=>street(env),board:()=>board(env),market:()=>market(env),inbox:()=>inbox(env),me:()=>profileForm(env,me)}[tab]();
+  else body={street:()=>street(env),board:()=>board(env),market:()=>market(env),inbox:()=>inbox(env),me:()=>meTab(env,me)}[tab]();
   const intro=!me&&tab==='street'?`<div class="notice soc-guest">${icon('user',17)}<div class="grow"><b>Bạn đang xem với tư cách khách.</b></div>${button('Tạo hồ sơ','socTab',{tab:'me'},'small primary')}</div>`:'';
   return head('Phố nghề','')+`<div class="sheet-body social-v4">${nav}${intro}${body}</div>`;
 }
