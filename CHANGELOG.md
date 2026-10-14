@@ -1,3 +1,7 @@
+# v2.4.6 — 2026-10-14
+
+Gồm wk244: 🏆 Top lời chợ đen theo tuần như Top lỗ (schema 43: chỉ mục; scripts/fair_board_recompute.py --week), 🤖 Tự nhận hàng mở bằng Bộ đếm kho · Bậc 5 (tự đếm, xếp kệ, khiếu nại thiếu; journey/nghề auto_stock tùy chọn). Không có Có gì mới.
+
 # v2.4.5 — 2026-10-14
 
 Gồm fb382: ngày thực đạt chuẩn tính cả việc khách giữ lại từ hôm trước, dòng điều kiện hiện “Hôm nay: …” + “Cách tính” (#382 #383); đảo nhặt rương có “📋 Danh sách rương” cho trình đọc màn hình (#381). Không có Có gì mới.
@@ -14,6 +18,15 @@ Gồm fb374 (nút nâng sức chứa kho riêng, giá nail ×2,5 — góp ý #37
 
 - Ngày thực đạt chuẩn (góp ý #382, #383; Mở rộng nghề và Chuyên môn nghề): việc khách giữ lại từ ngày nghề trước, làm xong hôm nay nay được tính vào việc sạch và ngày thực (trước đây bị bỏ qua: một tiệm quần áo mất 5 việc, 4 việc sạch trong ngày 14/10). Dòng điều kiện hiện tiến độ hôm nay (“Hôm nay: 16/18 việc sạch · đạt, cộng lúc 0h”) và “Cách tính ?” (ngày lịch 0h–24h giờ Việt Nam, ≥3 việc tự làm không lỗi, ≥80% sạch, từ mốc 2 thêm ca quản lý nghiệm thu; khác ngày đạt chuẩn của Tay nghề). Nút bị khóa ghi “Cần thêm N ngày thực đạt chuẩn.” thay cho câu sai “Ngày thực đạt chuẩn đã kết thúc”. Tay nghề lâu năm giữ luật cũ, dòng ngày đạt chuẩn ghi rõ “Ngày nghề có ≥3 việc sạch, ≥80%; cộng khi khép ca”. Save không đổi dạng; bản cũ vẫn đọc được.
 - Đảo chung, nhặt rương cho người dùng trình đọc màn hình (góp ý #381): nút “📋 Danh sách rương” ở đầu màn liệt kê mọi rương, gần nhất trước (“Rương 1 · cách khoảng 12 bước”), mỗi dòng có nút “Đi tới và nhặt” tự đưa nhân vật tới rương và nhặt theo đúng đường chạm rương (máy chủ vẫn xác minh vị trí). Kết quả và lỗi được đọc qua vùng thông báo; danh sách tự cập nhật mỗi giây mà không làm mất tiêu điểm, nhớ trạng thái mở cho lần sau và khi mở sẵn thì tiêu điểm vào danh sách thay vì bản đồ. Chưa dịch tiếng Anh (cả màn đảo chưa có bản dịch).
+
+# Chưa phát hành — wk244 🤖 Tự nhận hàng (góp ý #326 #333 #361; Có gì mới: chủ game quyết định)
+
+- 🤖 Tự nhận hàng: có 📦 Bộ đếm kho · Bậc 5 của nghề (đã bán, giá giữ nguyên) thì thùng hàng tới cửa được máy chủ tự đếm và nhập kệ, đúng như một lần đếm đúng: đủ số thực có, mỗi đơn thành một lô theo giá vốn của đơn, đơn gộp nhận cả thùng một lần; giao thiếu thì tự khiếu nại theo cùng đường hoàn tiền của nút “Khiếu nại phần thiếu” (một lần). Thùng không vừa kệ vẫn chờ ở cửa như trước. Chạy sau mỗi thao tác của nghề và khi tải game (hàng về lúc vắng mặt lên kệ trước khi người chơi xem). Áp dụng cả quầy mẹ & bé / nhà thuốc (kiện cũ), vật tư hợp đồng và vật tư chuyên môn (giữ giá vốn từng lô, FIFO). Sổ nghề ghi “📦 Tự nhận N món: …”.
+- Bảng Kho có công tắc “🤖 Tự nhận hàng: Bật/Tắt” (mặc định Bật khi đã mở; tắt thì quay về đếm tay); chưa mở thì hiện một dòng khóa nêu Bộ đếm kho · Bậc 5. Khóa save tùy chọn `careers.<nghề>.auto_stock = false` chỉ có khi người chơi tắt; 2.4.3 vẫn nhận save có khóa này (đã kiểm bằng git archive rel-2.4.3). Việc sinh nhiệm vụ không đổi.
+
+# Chưa phát hành — wk244 Top lời theo tuần (không có Có gì mới: thay đổi chợ đen)
+
+- Bảng vàng chợ đen: Top lời tính theo tuần như Top lỗ (chủ game 14/10), cùng sổ `fair_loss_week`, cùng tuần thứ Hai 00:00. Lời ròng tuần cộng tiền phạt được hoàn (`refund-cd-…`) trả vào save trong tuần, một lần. 👑 Vua trò chơi / 🎪 Cao thủ chợ đen trao thứ Hai từ 19/10 theo tuần vừa qua, cùng lúc với Top lỗ, không trao hai lần. Dải người chơi vẫn hiện “lời tích lũy cả chợ”. Schema 43 chỉ thêm chỉ mục. `scripts/fair_board_recompute.py --week` cộng các khoản hoàn đã trả trong tuần trước bản này (chạy thử mặc định).
 
 # Chưa phát hành — fb374 (không có Có gì mới)
 

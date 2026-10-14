@@ -7,6 +7,7 @@ CAPACITY = (12, 24, 36, 48, 72, 96, 144, 192, 288, 384, 600)
 LEGACY = ('mother_baby', 'pharmacy')
 SAVE_LINE = LINE[-1]
 SAVE_STOCK = CAPACITY[-1]
+AUTO_TIER = 5   # 🤖 Tự nhận hàng from this Bộ đếm kho tier (game/auto_stock.py TIER)
 
 
 def item_id(career, group, tier):
@@ -56,6 +57,8 @@ def public(c, career):
     if career in LEGACY:
         logistics = tier(c, career, 'logistics')
         out.update(logistics_tier=logistics, line_max=LINE[logistics], capacity=capacity(c, career), reserved=reserved(c, career))
+    from . import auto_stock
+    out['auto'] = auto_stock.public(c, career)   # 🤖 Tự nhận hàng (Bậc 5 trở lên)
     return out
 
 
@@ -68,7 +71,8 @@ def catalogue(careers):
             for n, price in enumerate(PRICES, 1):
                 count = group == 'count'
                 name = 'Bộ đếm kho' if count else 'Kho & đơn nhập'
-                description = (f'Đếm {COUNT[n]} món mỗi lần hoặc nhịp giữ. Vẫn tự kiểm và xác nhận nhận hàng.' if count else
+                description = ((f'Đếm {COUNT[n]} món mỗi lần hoặc nhịp giữ. Mở 🤖 Tự nhận hàng: hàng tới tự đếm và lên kệ.'
+                                if n == AUTO_TIER else f'Đếm {COUNT[n]} món mỗi lần hoặc nhịp giữ. Vẫn tự kiểm và xác nhận nhận hàng.') if count else
                                f'Mỗi dòng đặt tối đa {LINE[n]} món; sức chứa ít nhất {CAPACITY[n]} món mỗi mã, gồm cả hàng đang về.')
                 out.append(dict(id=item_id(career, group, n), name=f'{name} · Bậc {n}', icon='box',
                                 kind='equipment', careers=[career], price=price, min_level=1,

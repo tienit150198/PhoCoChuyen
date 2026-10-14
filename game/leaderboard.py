@@ -489,6 +489,10 @@ def view(store, board: str, limit: int = LIMIT, token: str | None = None) -> dic
     if board == 'fair-loss':
         from . import fair_loss
         return fair_loss.view(store, limit, token)
+    if board in (fh.board(), fh.edition()):
+        from . import fair_loss
+        if fair_loss.weekly_win():   # 🏆 Top lời of this week (owner 14/10), like Top lỗ (game/fair_loss.py)
+            return fair_loss.view_win(store, board, limit, token)
     lbt.ensure(store)
     asked = board
     if board == fh.edition():   # an older client (rolling release) asks for the fair's board by its edition

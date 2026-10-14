@@ -30,7 +30,8 @@ def on_load(store,token,state):
 def on_load_result(store,token,state):
     """Return the committed public view so read routes need not load it again."""
     now=time.time()
-    if not (business_progression.owner_due(state,now=now) or quay_business.due(state,now=now) or workplace_business.due(state,now=now)):
+    from . import auto_stock  # 🤖 Tự nhận hàng: deliveries that came while the player was away
+    if not (business_progression.owner_due(state,now=now) or quay_business.due(state,now=now) or workplace_business.due(state,now=now) or auto_stock.due(state)):
         return None
     # Each transaction rechecks the saved cursor. Concurrent tabs serialize via
     # Store's revision/CAS, so a new request id never means paying an order twice.

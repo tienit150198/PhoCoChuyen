@@ -108,6 +108,12 @@ class WeeklyCrowning(StoreBase):
         p = mock.patch.object(fb, 'now', lambda: self.clock.t)
         p.start()
         self.addCleanup(p.stop)
+        from game import fair_loss as fl   # the week a round is booked in (Top lời/Top lỗ theo tuần)
+        q = mock.patch.object(fl, 'now', lambda: self.clock.t)
+        q.start()
+        self.addCleanup(q.stop)
+        fl.clear_cache()
+        self.addCleanup(fl.clear_cache)
 
     def score(self, tok, rounds):
         self.dice(Dice(faces=['cua'] * (3 * rounds)))
@@ -139,32 +145,45 @@ class WeeklyCrowning(StoreBase):
         view = lb.view(self.store, fh.board(), 20, b)['fair']
         self.assertEqual((view['crowned'], view['next'], view['settled']), ('2026-10-12', int(MON2), True))
         self.assertEqual([(w['rank'], w['name'], w['me']) for w in view['winners']], [(1, 'Anh Ba', False), (2, 'Chị Tư', True)])
-        # the week after: Chị Tư goes ahead, so she is crowned king and Anh Ba master (new rows for both)
+        # from the week of 12/10 Top lời is weekly (owner 14/10): only that week's net counts. Chị Tư wins 4 that week,
+        # Anh Ba nothing: she alone is crowned king on 19/10 (a new row), Anh Ba is not crowned for last week's lead
         self.score(b, 4)
         got = fb.settle(self.store, MON2 + fb.GRACE)
-        self.assertEqual([(w['rank'], w['sid'], w['title']) for w in got], [(1, sb, 'f_king'), (2, sa, 'f_master')])
+        with self.store.connect() as db:
+            week = db.execute('SELECT net FROM fair_loss_week WHERE week=? AND sid=?', (int(MON1), sb)).fetchone()[0]
+        self.assertEqual([(w['rank'], w['sid'], w['title'], w['score']) for w in got], [(1, sb, 'f_king', week)])
         self.assertEqual(self.title_rows(), sorted([f'fair20261009:f_king:{sa}', f'fair20261009:f_master:{sb}',
-                                                    f'fair20261009:f_king:{sb}', f'fair20261009:f_master:{sa}']))
+                                                    f'fair20261009:f_king:{sb}']))
+        self.assertIsNone(fb.settle(self.store, MON2 + 3600))              # once a week
         self.clock.t = MON2 + 3600
         view = lb.view(self.store, fh.board(), 20, b)['fair']
-        self.assertEqual((view['crowned'], view['winners'][0]['name']), ('2026-10-19', 'Chị Tư'))
-        # a third week with the same standings: nobody gets a row twice
+        self.assertEqual((view['crowned'], view['winners'][0]['name'], view['win'], view['week']), ('2026-10-19', 'Chị Tư', True, '2026-10-19'))
+        # a third week with the same winner: nobody gets a row twice
+        self.score(b, 1)
         fb.settle(self.store, at(2026, 10, 26, 0) + fb.GRACE)
-        self.assertEqual(len(self.title_rows()), 4)
+        self.assertEqual(len(self.title_rows()), 3)
         # paid into the save on the next load, once each
         self.assertTrue(lfx.on_load(self.store, b, self.store.read(b)[0]))
         self.assertFalse(lfx.on_load(self.store, b, self.store.read(b)[0]))
         tb = self.store.read(b)[0]['journey']['titles']
         self.assertTrue('f_king' in tb and 'f_master' in tb)
 
-    def test_a_missed_monday_crowns_only_the_latest(self):
-        a = self.player('Anh Ba')
-        self.score(a, 2)
-        got = fb.settle(self.store, at(2026, 11, 4, 12))                   # down from 11/10 to 04/11
-        self.assertEqual([w['title'] for w in got], ['f_king'])
+    def test_a_missed_monday_crowns_every_week_like_top_lo(self):
+        """Weekly from 12/10: a server down from 11/10 to 04/11 crowns each week it missed (as Top lỗ does, at most
+        8 a call), from that week's rows; the week of 05/10 (before the weekly board) is not crowned again."""
+        a, b = self.player('Anh Ba'), self.player('Chị Tư')
+        self.score(a, 2)                                                   # week of 05/10
+        self.clock.t = at(2026, 10, 21, 12)
+        self.score(b, 1)                                                   # week of 19/10
+        self.clock.t = at(2026, 11, 4, 12)
+        got = fb.settle(self.store, self.clock.t)
+        self.assertIsNone(got)                                             # the latest week (26/10) had nobody
         with self.store.connect() as db:
-            keys = [r[0] for r in db.execute("SELECT k FROM leaderboard_meta WHERE k LIKE 'fair:fair20261009%'").fetchall()]
-        self.assertEqual(keys, ['fair:fair20261009@2026-11-02'])
+            rows = {r[0]: json.loads(r[1]) for r in db.execute("SELECT k,v FROM leaderboard_meta WHERE k LIKE 'fair:fair20261009%'").fetchall()}
+        self.assertEqual(sorted(rows), ['fair:fair20261009@2026-10-19', 'fair:fair20261009@2026-10-26', 'fair:fair20261009@2026-11-02'])
+        self.assertEqual([(w['sid'], w['title']) for w in rows['fair:fair20261009@2026-10-26']], [(self.store.key(b), 'f_king')])
+        self.assertEqual(rows['fair:fair20261009@2026-10-19'], [])
+        self.assertEqual(self.title_rows(), [f'fair20261009:f_king:{self.store.key(b)}'])
 
     def test_after_an_end_crowned_by_an_older_server(self):
         """After a rollback to a release with the five days, that server crowned the end ('fair:<edition>'); back on

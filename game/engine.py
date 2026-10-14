@@ -27,6 +27,7 @@ from . import extra_content as extra
 from . import feedback as fbk
 from . import situations as sit
 from . import inventory as inv
+from . import auto_stock  # 🤖 Tự nhận hàng (Bộ đếm kho · Bậc 5): crates at the door counted and shelved
 from . import employment as emp
 from .careers import PLUGINS
 from . import journey as jr
@@ -572,7 +573,9 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     care_notes=[]
     if action==business.ACTION:
         need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
-        return s,dict(message="Đã cập nhật hoạt động các tiệm.")
+        got=auto_stock.run_all(s)  # 🤖 goods that came while the player was away: on the shelf before they look
+        if got:validate_state(s)
+        return s,dict(message="Đã cập nhật hoạt động các tiệm.",**({"effects":got} if got else {}))
     if action=="select_career":
         need(career in CAREERS,"Nghề này đang ở danh mục mở rộng, chưa chơi được.")
         jr.gate(s,career,action,internal,p)
@@ -645,6 +648,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
             need(not emp.required(career) or (c.get('job') or {}).get('status')=='hired','Cần được tuyển dụng trước khi nhận công việc chuyên môn.')
             need(not pm.banned(s,career),'Đang bị đình chỉ; chưa thể nhận công việc mới.')
         result=specialism.action(s,c,career,action,p)
+        got=auto_stock.run(s,c,career)  # 🤖 a bundle just bought: received at its cost (Bậc 5, on)
+        if got:result=dict(result,effects=list(result.get('effects') or [])+got)
         validate_state(s)
         return s,result
     if action.startswith('scale_'):
@@ -659,6 +664,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         if action in scale.ACTIONS:result=scale.action(s,c,career,action,p)
         elif action in scale_stock.ACTIONS:result=scale_stock.action(s,c,career,action,p)
         else:result=scale_contracts.action(s,c,career,action,p)
+        got=auto_stock.run(s,c,career)  # 🤖 contract cartons just bought: received at their cost (Bậc 5, on)
+        if got:result=dict(result,effects=list(result.get('effects') or [])+got)
         validate_state(s)
         return s,result
     # A plugin's repeat of a step already done (florist: Cắm on a bench already arranged, B8 07/10): a quiet OK with
@@ -681,7 +688,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         need(not (desk_task and desk_task.get("desk")),"Hồ sơ này xử lý ở bàn giấy tờ: đánh dấu dòng sai rồi đóng dấu nhé.")
     if plugin_action and action not in mod.SPEC.get('free_actions',()):
         need(c["open"],"Mở ca trước khi xử lý công việc nhé.")
-    no_tick={"task_select","settings","talk","feed_like","photo","decor_move","event_dismiss","quest_claim","chat_clear","reset_career","theme","sit_dismiss","sit_practice","inv_rate","inv_claim","inv_cart","inv_haggle","inv_cancel"}
+    no_tick={"task_select","settings","talk","feed_like","photo","decor_move","event_dismiss","quest_claim","chat_clear","reset_career","theme","sit_dismiss","sit_practice","inv_rate","inv_claim","inv_cart","inv_haggle","inv_cancel",auto_stock.ACTION}
     if mod:no_tick|=set(mod.SPEC.get('no_tick',()))
     no_tick|={"mastery_start","mastery_answer","mastery_finish","competition_start","competition_answer"}
     no_tick|=CARE_FREE
@@ -699,6 +706,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     elif action.startswith("inv_"):
         result.update(inv.action(s,c,career,action,p))
         if mod and hasattr(mod,"on_stock"):mod.on_stock(s,c,action)  # e.g. a rush queue sees the goods just shelved
+    elif action==auto_stock.ACTION:  # 🤖 Tự nhận hàng: Bật/Tắt (Kho)
+        result.update(auto_stock.toggle(c,career,p))
     elif action.startswith("sit_"):
         result.update(sit.action(s,c,career,action,p))
     elif action.startswith("inc_"):
@@ -1224,6 +1233,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if action=='talk' and p.get('npc') in NPC_INDEX:life.on_talk(c,p['npc'])
     if action=='ask':life.on_talk(c,current_task(c,p.get('task'))['npc'])
     result["effects"]=tick_pending(s,c)
+    result["effects"].extend(auto_stock.run(s,c,career))  # 🤖 a crate now at the door (Bậc 5, on): counted and shelved
     if career in dk.CAREERS:result["effects"][:0]=dk.tick(s,c,career)
     result["effects"][:0]=care_notes
     result["effects"].extend(care_tick(s,c,career))
