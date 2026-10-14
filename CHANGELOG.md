@@ -7,6 +7,7 @@
 - Bản đồ phố cổ điển: thông báo nằm trên mặt đường, không đè hàng nút “📋 Danh sách”, “🏝️ Ra đảo nhặt rương”, “Chỉ đường”. (compact.css D3)
 - Bàn văn phòng (HR, thư ký, IT, kế toán…) điện thoại ngang: hồ sơ đang mở không còn bị cắt còn 24 px dưới “Nhận thêm việc”; thẻ kế hoạch không bóp tên thành “Gói / báo / cáo”. (office_kit.css)
 - Hướng dẫn viên điện thoại ngang: nút “Chọn …” và ↶ không đè “Chọn thêm 2 điểm”. (teach.css)
+- Quán ăn (≤ 360 px): chai sốt ớt không còn co còn ~60 px để số lượt đè lên 🌶️. (restaurant.css)
 - Bán hoa: nhãn “Đúng tông”/“Khách cần” nằm trên mép thẻ, không đè bông hoa. (florist.css)
 - Giao hàng tự lái (sân < 420 px): dòng “km/h · Xăng” vẽ phía trên cần lái, không nằm dưới cần lái và bàn đạp Phanh/Ga. (delivery_isometric.js)
 - Nhà, xe, điện thoại (≤ 480 px): giá xuống dưới tên khi không đủ chỗ (trước “Du / thuyền / Hoàng / Hôn”), chip “Giữ xe & bảo dưỡng … xu/tháng” không tràn khỏi thẻ. (house.css)
