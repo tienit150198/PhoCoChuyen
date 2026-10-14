@@ -17,6 +17,7 @@ const st=(seen,journey={story:true,intro:true,life_day:4})=>({settings:seen===un
 assert.equal(due(st('')),true,'an old save that never read the notes');
 assert.equal(due(st(NOTES[1]?.version||'0.9.1')),true,'a player one release behind');
 assert.equal(due(st(LATEST)),false,'read already: not again');
+for(const version of ['2.0.5','2.3.1','2.4.0','2.4.1'])assert.equal(due(st(version)),true,`combined announcement is new after ${version}`);
 assert.equal(due(st('99.0.0')),false,'a newer release was read (rolled-back server)');
 assert.equal(seenVersion(st('0.5.0')),'0.5.0');
 assert.equal(seenVersion(st(undefined)),'','no key in the save and no storage: nothing read');

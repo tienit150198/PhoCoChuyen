@@ -32,6 +32,25 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.2", date="2026-10-14", items=(
+        dict(emoji='✨', text='Gom tin các bản 2.0.6–2.4.1: nghề mới, đi chùa, mở chuỗi, học chuyên môn và gặp nhau trên phố!'),
+        dict(emoji='🎨', text='Thêm 4 nghề: xưởng vẽ, luật sư, giặt ủi và bưu điện. Mỗi nghề có quy trình riêng và đơn khó mở dần.'),
+        dict(emoji='🎓', text='Kinh doanh nhiều quầy cần học chứng chỉ phù hợp. Có khóa cơ bản, nâng cao và quản lý chuỗi; công an có thể kiểm tra.'),
+        dict(emoji='🏅', text='Thêm bậc thăng tiến và tay nghề lâu năm. Cần làm tốt, tích lũy ngày làm và vượt sát hạch để chinh phục bậc cao.'),
+        dict(emoji='🏆', text='Cả 54 nghề có thi đua cùng đồng nghiệp NPC, được ghi nhận và thưởng theo kết quả công việc.'),
+        dict(emoji='🪷', text='Vào chùa đi lại, thắp hương, cầu may và treo thẻ chúc người thân. Làm lại không giới hạn; tinh thần tối đa 100.'),
+        dict(emoji='💌', text='Thẻ chúc ở chùa có thể công khai cho mọi người đọc hoặc chỉ mình xem; đổi quyền xem bất cứ lúc nào.'),
+        dict(emoji='🚶', text='Thêm 14 không gian đi lại: cà phê, spa, karaoke, rạp phim, sách, vẽ, nhạc… Tới quầy để dùng dịch vụ.'),
+        dict(emoji='💬', text='Map 2.5D có nói chuyện gần nhau, lời nói trên đầu và reaction. Đã sửa khung Nói gần đây che nút zoom.'),
+        dict(emoji='🏪', text='54 nghề có 8 bậc mở rộng. Tạp hóa lên minimart, siêu thị rồi chuỗi; công vụ mở phạm vi điều phối, chùa mở công quả.'),
+        dict(emoji='🧑‍💼', text='Mở điểm, tuyển người, xếp việc và nhận hợp đồng quản lý. Mỗi ngày thực thêm 4 suất, tích tối đa 12 suất dùng chung.'),
+        dict(emoji='📚', text='Thăng tiến → Chuyên môn nghề: 540 gói cho 54 nghề. Học, thực hành rồi nhận đơn với vật tư và cách làm riêng.'),
+        dict(emoji='💰', text='Học phí chuyên môn tăng từ 3.000 đến 100 triệu xu/gói; cần đủ tiến trình. Thực hành lại miễn phí, chùa không thu học phí.'),
+        dict(emoji='📦', text='Sức chứa kho, hạn mức nhập mỗi lần và số quầy nâng riêng bằng xu. Kho lớn không tự tăng lượng nhập mỗi lần.'),
+        dict(emoji='🧾', text='Đơn chuyên môn có dự toán và biên nhận. Làm sai có thể lỗ vì vẫn mất vật tư, tiền công; kiểm tra kỹ trước khi nhận.'),
+        dict(emoji='🎪', text='Chiếu trong, lô tô, vé cào: tỷ lệ gốc 55% ở đúng một lượt thường đầu mỗi chuỗi lượt, rồi giảm dần; vẫn chịu luật vận may.'),
+        dict(emoji='🛠️', text='Đám cưới đã hủy không còn hiện trong lịch hay mở cho khách vào. Thu két cũng cho giữ lại vốn theo số xu bạn chọn.'),
+    )),
     dict(version="2.0.5", date="2026-10-12", items=(
         dict(emoji='🚔', text='Công an: thêm Giám đốc CATP (1 ghế) và hàm Thiếu tướng; Phó Giám đốc tối đa 5 người. Thi lên Thiếu úy xong là Học viên.'),
         dict(emoji='🕵️', text='Ca trực mới: kiểm tra cửa hàng (thuế, nguồn hàng, tờ khai), gỡ bài đòi hỏi ngoài dịch vụ, tìm trẻ lạc, phá án buôn lậu.'),

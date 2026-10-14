@@ -1,3 +1,8 @@
+# v2.4.2 — 2026-10-14
+
+- Theo yêu cầu chủ game, gom thay đổi 2.0.6–2.4.1 thành một thẻ Có gì mới: nghề, chứng chỉ, thăng tiến/thi đua, chùa và quyền riêng tư, đi lại/chat/reaction, quy mô/chuỗi, 540 gói chuyên môn, nâng kho/nhập/quầy và các lỗi đã sửa.
+- Thẻ dùng mốc thông báo mới 2.4.2, tự hiện một lần khi người chơi quay lại ở lúc rảnh; xem lại tại Cài đặt → Cách chơi → Xem các cập nhật mới. Giữ cơ chế chờ hết thao tác và không hiện cho người vừa tạo nhân vật.
+
 # v2.4.1 — 2026-10-14
 
 - Sửa khung “Nói gần đây” của map 2.5D che nút zoom: chừa khoảng riêng cho bộ điều khiển máy ảnh ở màn hình nhỏ, ngang và máy tính; chat/reaction vẫn dùng được.
