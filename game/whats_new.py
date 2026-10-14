@@ -32,6 +32,9 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.3", date="2026-10-14", items=(
+        dict(emoji='🧩', text='Ghép ba Phố Mây: 100 màn ở Khu phố. Mỗi màn mới qua lần đầu, tiền làm việc và kinh doanh +0,2%, tối đa +20%!'),
+    )),
     dict(version="2.4.2", date="2026-10-14", items=(
         dict(emoji='✨', text='Gom tin các bản 2.0.6–2.4.1: nghề mới, đi chùa, mở chuỗi, học chuyên môn và gặp nhau trên phố!'),
         dict(emoji='🎨', text='Thêm 4 nghề: xưởng vẽ, luật sư, giặt ủi và bưu điện. Mỗi nghề có quy trình riêng và đơn khó mở dần.'),
