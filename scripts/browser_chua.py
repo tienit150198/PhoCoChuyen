@@ -151,6 +151,8 @@ async def main():
                 await go('nguyen')
                 await page.wait_for_selector('.cv-panel [data-cv="card-recipient"]', timeout=5000)
                 for index in range(2):
+                    if index == 0:
+                        await shot('05-nguyen-who')
                     await page.click('.cv-panel [data-cv="card-recipient"][data-id="cha_me"]')
                     await page.click('.cv-panel [data-cv="card-blessing"][data-id="may_man"]')
                     await page.fill('.cv-panel [name="card-name"]', 'Gia đình Lan')
@@ -163,6 +165,14 @@ async def main():
                     if index == 0:
                         await page.click('.cv-panel [data-cv="again"]')
                 await shot('05b-cards-saved')
+                if await page.locator('.cv-panel [data-cv="share"]').count():
+                    await page.click('.cv-panel [data-cv="share"]')
+                    await page.wait_for_selector('.cv-panel .cv-card-board .cv-card', timeout=8000)
+                    await shot('05c-shared-board', 800)
+                await page.click('.cv-path [data-cv="here"]')
+                await page.wait_for_selector('.cv-panel .cv-tiles', timeout=5000)
+                await shot('05d-quanh-day')
+                await page.click('.cv-panel [data-cv="shut"]')
                 if len(read(db, token)['chua'].get('cards', [])) != 2:
                     problems.append(f'[{tag}] repeated cards not saved')
                 # into the main hall through its door
@@ -181,9 +191,11 @@ async def main():
                 # khấn: the player picks who and what
                 await go('khan')
                 await page.wait_for_selector('.cv-panel [data-cv="who"]', timeout=5000)
+                await shot('07c-khan-who')
                 if await page.locator('.cv-panel [data-act="khan"]:not([disabled])').count():
                     problems.append(f'[{tag}] khấn could be sent before anything was picked')
                 await page.click('.cv-panel [data-cv="who"][data-id="cha_me"]')
+                await shot('07d-khan-what', 250)
                 if await page.locator('.cv-panel [data-cv="what"][data-id="yen_nghi"]:not([disabled])').count():
                     problems.append(f'[{tag}] yên nghỉ offered for cha mẹ')
                 await page.click('.cv-panel [data-cv="what"][data-id="may_man"]')
@@ -254,8 +266,9 @@ async def main():
                     await page.click('#sheet [data-action="stView"][data-view="life"]')
                 await page.click('#sheet .cg-enter')
                 await page.wait_for_selector('.cv-sheet[open] canvas')
-                await go('nguyen')
+                await page.click('.cv-path [data-cv="step"][data-id="board"]')
                 await page.wait_for_selector('.cv-card', timeout=8000)
+                await page.wait_for_timeout(600)
                 if await page.locator('.cv-card').count() != (40 if ARCHIVE else 2):
                     problems.append(f'[{tag}] cards missing after reload/day change')
                 await shot('13-cards-next-day')

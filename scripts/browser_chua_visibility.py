@@ -54,7 +54,7 @@ async def main():
                         await page.click('#sheet [data-action="stView"][data-view="life"]')
                     await page.click('#sheet .cg-enter')
                     await page.wait_for_selector('.cv-sheet[open] canvas')
-                    await page.evaluate('__chua.go("nguyen")')
+                    await page.click('.cv-path [data-cv="step"][data-id="board"]')
                     await page.wait_for_selector('.cv-card-board')
                     await ready(page)
 
@@ -72,6 +72,8 @@ async def main():
                     await ready(page)
 
                 async def create_card(page, message, public=False):
+                    if await page.locator('.cv-panel [data-cv="compose"]').count():
+                        await page.click('.cv-panel [data-cv="compose"]')
                     await page.click('[data-cv="card-recipient"][data-id="ca_nha"]')
                     await page.click('[data-cv="card-blessing"][data-id="binh_an"]')
                     assert await page.locator('[data-cv="card-public"][data-public="false"]').get_attribute('aria-pressed') == 'true'
@@ -81,6 +83,7 @@ async def main():
                         await page.click('[data-cv="card-public"][data-public="true"]')
                     await page.click('[data-cv="card-send"]')
                     await page.wait_for_selector('.cv-result')
+                    await page.click('.cv-panel [data-cv="board"]')
                     await ready(page)
                     row = page.locator('.cv-card').filter(has_text=message)
                     await row.wait_for()
@@ -91,7 +94,6 @@ async def main():
                 await open_fence(owner)
                 private_text, public_text = f'Riêng {tag}', f'Chung {tag}'
                 private_id = await create_card(owner, private_text)
-                await owner.click('[data-cv="again"]')
                 public_id = await create_card(owner, public_text, public=True)
                 await owner.screenshot(path=str(OUT / f'{tag}-owner.png'))
                 await open_fence(reader)

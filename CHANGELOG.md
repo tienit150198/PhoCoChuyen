@@ -1,3 +1,7 @@
+# Chưa phát hành — chua (không có Có gì mới)
+
+- 🛕 Đi chùa gọn và đẹp hơn (chủ game “nhìn lộn xộn quá”): đầu cảnh một dòng (Rằm · cơm chay · thanh tinh thần), khu chùa thành nút nổi trên cảnh, thanh bước đi lễ dưới cảnh 🪔 Thắp hương → 🙏 Khấn → 📜 Lời chúc → 💌 Chia sẻ (chạm là tự đi tới, kể cả qua cửa khu khác; ✓ khi đã làm hôm nay) và 🧭 Quanh đây cho các chỗ còn lại; khấn và lời chúc hỏi từng câu một (cho ai → mong gì, chỉ hiện điều hợp → đọc lại), lời chúc xem trước như mảnh giấy đỏ, sau khi treo có nút “Chia sẻ lên bảng chung”; mỗi khung một nút chính (“Tiếp: …” dẫn sang bước sau), lời giới thiệu vào “?”; trên máy tính khung nằm bên phải và cảnh trượt sang để còn thấy nhân vật; tiếng chuông nhỏ khi thắp hương/treo lời chúc, “✨ +n” bay lên trên nhân vật. Luật, phần thưởng, dữ liệu lưu không đổi; chỉ giao diện (check_task_compat OK).
+
 # v2.4.8 — 2026-10-14
 
 Gồm declutter (#384): bớt chữ nhỏ ở Hành trình/Công việc, Kho, màn làm ca, HUD; chế độ gọn tự bật ở mọi cỡ màn hình với giao diện 2.5D (tắt được trong Cài đặt). Không có Có gì mới.
