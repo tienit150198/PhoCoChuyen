@@ -402,7 +402,8 @@ function stackOf(t,lv=T.level){const st=lv.stacks||[];for(const s of st){const i
  * place in the stack instead, so once the top was taken the tiles under it stayed blank backs: the "missing last
  * tiles" of level 8 on (owner, 14/10). */
 export function above(g,lv,t){const st=stackOf(t,lv);if(!st)return 0;let n=0;for(let i=0;i<st.i;i++)if(g.where[st.s.ids[i]]==='b')n++;return n;}
-/** Where tile t is drawn for the stage geometry `geo`: {px, py, size, zi, back (face down), off (covered)} or null (gone). */
+/** Where tile t is drawn for the stage geometry `geo`: {px, py, size, zi, back (face down), off (covered)} or null (gone).
+ * zi is the paint order: a higher one is drawn over a lower one (tests/test_tile_match.py PageBoards hit-tests it). */
 export function place(geo,lv,g,t){
   const [x,y,z]=lv.tiles[t],w=g.where[t],s=geo.s;
   if(w==='g')return null;
@@ -410,7 +411,11 @@ export function place(geo,lv,g,t){
   if(w==='h'){const i=g.hold.indexOf(t);return {px:geo.hold.x+i*geo.ts,py:geo.hold.y,size:geo.ts,zi:900+i,back:false,off:false};}
   let px=geo.ox+x*s/2,py=geo.oy+y*s/2,zi=z*10+5;
   const k=above(g,lv,t);
-  if(k>0){const dir=x>=lv.w/2-1?-1:1;px+=dir*Math.min(k,10)*Math.max(3,Math.round(s*.09));zi=50-Math.min(k,10);}
+  if(k>0){const dir=x>=lv.w/2-1?-1:1;px+=dir*Math.min(k,10)*Math.max(3,Math.round(s*.09));}
+  // A stack is painted top first: its open top over the backs fanned out under it. 2.4.7–2.4.8 gave the backs 50 − k and
+  // the top its layer (z·10 + 5 = 35 on level 8), so the first back covered the face-up top: a striped tile that never
+  // took a tap, and the stack's three tiles were left over at the end ("3 cái cuối không match", owner 14/10).
+  if(stackOf(t,lv))zi=60-Math.min(k,10);
   return {px,py,size:s,zi,back:k>0,off:k===0&&g.block[t]>0};
 }
 function layout(){

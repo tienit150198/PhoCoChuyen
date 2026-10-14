@@ -1,3 +1,7 @@
+# v2.4.9 — 2026-10-14
+
+🧩 Ghép ba Phố Mây: chồng úp vẽ ô trên cùng (đã lật) ĐÈ LÊN các ô úp bên dưới — 2.4.7–2.4.8 vẽ ngược, ô úp che mất ô mở nên chạm vào chỉ trúng ô úp, chồng không lấy được và cuối màn dư 3 ô không khớp (màn 5 trở đi, 96/100 màn; chủ game báo ở màn 8). Đổi 🪷 thành 🥥 (🪷 hiện ô trống trên iOS 15.0–15.3, từ màn 77). Thêm scripts/browser_tile_levels.py: chơi trọn màn 1–20 bằng chạm thật trên màn hình điện thoại. Màn chơi, nước đi và bản lưu giữ nguyên. Không có Có gì mới.
+
 # v2.4.8 — 2026-10-14
 
 Gồm declutter (#384): bớt chữ nhỏ ở Hành trình/Công việc, Kho, màn làm ca, HUD; chế độ gọn tự bật ở mọi cỡ màn hình với giao diện 2.5D (tắt được trong Cài đặt). Không có Có gì mới.

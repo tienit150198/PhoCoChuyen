@@ -71,9 +71,11 @@ ICE, KEY_TILE, LOCK = 1, 2, 4
 PREFIX = '🧩 Phúc lợi'
 NAME = '🧩 Ghép ba Phố Mây'
 VN = datetime.timezone(datetime.timedelta(hours=7))
-# The town's things, the most distinct first (early levels take from the front).
+# The town's things, the most distinct first (early levels take from the front). Each must draw on the oldest phone the
+# game opens on (iOS 15.0, Emoji 13): 2.4.9 put 🥥 where 🪷 was (Emoji 14, iOS 15.4: a blank box from level 77 on
+# iOS 15.0–15.3); same place in the tuple, so every level keeps its layout and kinds.
 ICONS = ('💄', '📱', '🍜', '🐶', '☕', '👗', '💐', '⌚', '🥖', '👜', '🐱', '🧋', '🍨', '🧴', '👠', '💍',
-         '🎤', '🍉', '🛵', '🏮', '🎁', '🧸', '🌸', '🍚', '🥐', '🪷', '🐠', '💅')
+         '🎤', '🍉', '🛵', '🏮', '🎁', '🧸', '🌸', '🍚', '🥐', '🥥', '🐠', '💅')
 
 
 def _core():
