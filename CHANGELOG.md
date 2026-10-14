@@ -1,6 +1,17 @@
+# v2.4.10 — 2026-10-14
+
+🧩 Ghép ba Phố Mây: chồng úp vẽ ô trên cùng (đã lật) ĐÈ LÊN các ô úp bên dưới — 2.4.7–2.4.9 vẽ ngược, ô úp che mất ô mở nên chạm vào chỉ trúng ô úp, chồng không lấy được và cuối màn dư 3 ô không khớp (màn 5 trở đi, 96/100 màn; chủ game báo ở màn 8). Đổi 🪷 thành 🥥 (🪷 hiện ô trống trên iOS 15.0–15.3, từ màn 77). Thêm scripts/browser_tile_levels.py: chơi trọn màn 1–20 bằng chạm thật trên màn hình điện thoại. Màn chơi, nước đi và bản lưu giữ nguyên. Không có Có gì mới.
 # v2.4.9 — 2026-10-14
 
-🧩 Ghép ba Phố Mây: chồng úp vẽ ô trên cùng (đã lật) ĐÈ LÊN các ô úp bên dưới — 2.4.7–2.4.8 vẽ ngược, ô úp che mất ô mở nên chạm vào chỉ trúng ô úp, chồng không lấy được và cuối màn dư 3 ô không khớp (màn 5 trở đi, 96/100 màn; chủ game báo ở màn 8). Đổi 🪷 thành 🥥 (🪷 hiện ô trống trên iOS 15.0–15.3, từ màn 77). Thêm scripts/browser_tile_levels.py: chơi trọn màn 1–20 bằng chạm thật trên màn hình điện thoại. Màn chơi, nước đi và bản lưu giữ nguyên. Không có Có gì mới.
+Gồm mapart (bản đồ 2.5D và cổ điển đẹp hơn, chim bay; không đổi vị trí cửa/đường) và treasure-free (rương kho báu không giới hạn mỗi đợt/ngày). Không có Có gì mới.
+
+# Chưa phát hành — mapart (không có Có gì mới)
+
+- Bản đồ đẹp hơn (chủ game “map đẹp hơn đi”), không đổi chỗ nào, cửa, đường đi hay vùng chạm. Phố 2.5D: cỏ có khóm cỏ, hoa nhỏ, sỏi và mảng nắng/bóng; đường có viền cỏ, lòng đường sáng hơn ở giữa và đá viền; bóng dưới nhà mềm hơn (bỏ vệt xám to). Tất cả nằm trong ảnh nền đã lưu sẵn, không tốn thêm gì mỗi khung hình; chi tiết nhỏ tắt khi thu nhỏ hết cỡ. Bản đồ phố cổ điển: bãi cỏ, hàng cây và mái nhà phía sau, vỉa hè lát gạch, lề đường, lối đi giữa hai mép cỏ, đèn lồng đỏ ở các cột đèn, tên phố trên đường mờ hơn, dấu x3 trên biển chỉ còn một chấm 🔥 (số x3 vẫn ở thanh trên); trên điện thoại, đủ ba nút ở thanh trên thì ẩn chữ “Khu phố” (trước bị che còn một chữ cái). Thỉnh thoảng có một đàn chim bay ngang (cả hai bản đồ): không có vòng lặp khung hình, tắt khi giảm chuyển động, tab ẩn hoặc đang ở trong nơi làm việc. Đo trên Chrome giả lập CPU chậm 4×: thời gian mỗi khung hình không đổi; dựng lại ảnh nền (thỉnh thoảng khi kéo bản đồ) chậm hơn khoảng 2–5 ms (2.5D) và 5–15 ms (cổ điển, một lần mỗi cỡ màn).
+
+# Chưa phát hành — treasure-free
+
+Rương kho báu bản đồ 2.5D: bỏ giới hạn 1 rương/đợt và 5 rương/ngày (chủ game 14/10 "mỗi người nhặt thoải mái"); rương nhặt xong biến mất với mọi người, ai tới trước nhặt trước. Vẫn cần tài khoản đủ 1 ngày tuổi và đứng gần rương.
 
 # v2.4.8 — 2026-10-14
 

@@ -143,7 +143,7 @@ class Levels(unittest.TestCase):
     def test_icons_are_distinct_and_draw_on_ios_15(self):
         """A kind whose emoji the phone lacks draws as a blank box (two such kinds would look alike). The game opens on
         iOS 15.0 (scripts/check_old_safari.mjs): Emoji 13 at most. Emoji 12+ objects sit from U+1FA70 (🪷 U+1FAB7, Emoji
-        14, was one until 2.4.9); the one Emoji 13 icon in use below that block is listed."""
+        14, was one until 2.4.10); the one Emoji 13 icon in use below that block is listed."""
         self.assertEqual(len(set(tm.ICONS)), len(tm.ICONS))
         newer = {'🧋'}   # Emoji 13.0 (iOS 14.2)
         for icon in tm.ICONS:
@@ -927,8 +927,8 @@ class PageBoards(unittest.TestCase):
     construction. The page drew a stack tile by its place in the stack, though, so the tiles under a taken top stayed
     blank backs. For all 100 levels, at three phone stages: the page's Game clears the server's intended solution,
     every kind comes in threes, every tile the solution takes next is drawn face up and open, nothing face down is
-    open, every stack shows all its tiles in turn, and every board tile sits inside the stage. 2.4.9: the tile the
-    solution takes next is also the one painted on top at its centre (2.4.7–2.4.8 painted a stack's first back over
+    open, every stack shows all its tiles in turn, and every board tile sits inside the stage. 2.4.10: the tile the
+    solution takes next is also the one painted on top at its centre (2.4.7–2.4.9 painted a stack's first back over
     its face-up top, so a tap there hit the back: the stack could never be taken)."""
     def test_page_draws_every_level_face_up_in_turn_and_inside_the_stage(self):
         node = shutil.which('node')

@@ -174,6 +174,10 @@ const hex=v=>{const m=/^#?([0-9a-f]{6})/i.exec(v||'');const n=m?parseInt(m[1],16
 const rgb=a=>`rgb(${a.map(v=>Math.round(Math.max(0,Math.min(255,v)))).join(',')})`;
 const mix=(a,b,t)=>rgb(hex(a).map((v,i)=>v+(hex(b)[i]-v)*t));
 const INK='#4a3a30',CREAM='#fff8ea',WOOD='#a8743f',WOOD_D='#7a5230',GLASS='#cfe6ee',GLASS_D='#9ec3d0';
+/** One palette for the ground (shared in spirit with the 2.5D island: sage lawn, warm stone, soft shade). */
+const G_={lawn:'#c4d2a3',lawnD:'#b2c491',lawnL:'#d3dfb3',tree:'#93b37a',treeD:'#7fa268',treeL:'#a9c58d',trunk:'#8a6a4c',
+  walk:'#ece0c8',walkJ:'#dccdb0',kerb:'#d3c4a6',kerbD:'#b9aa8c',road:'#c9c2b5',roadD:'#b8b0a2',roadL:'#d3ccc0',dash:'#f6f0e2',
+  roof:'#d8b49a',roofD:'#c79f86',wallB:'#ebdfc9',shade:'rgba(74,58,48,.13)'};
 /** A building's colours from its career colour (`col`), or grey when it is locked. */
 function tones(col,lock){
   // Locked: the career's colour faded (the town stays cheerful), the shutter down and a 🔒 on the sign.
@@ -186,9 +190,11 @@ function tones(col,lock){
  * `st(item)` → {color, emoji, name, lock, cur, x3, glow, paused, off} (off: a landmark this save does not have). */
 export function back(c,pl,st,o={}){
   const {W,H}=pl;
-  const sky=c.createLinearGradient(0,0,0,TOP+40);sky.addColorStop(0,'#bfe4f3');sky.addColorStop(1,'#f6efda');
+  const sky=c.createLinearGradient(0,0,0,TOP+40);sky.addColorStop(0,'#b9e0ef');sky.addColorStop(.75,'#e9f1df');sky.addColorStop(1,'#f4eedb');
   c.fillStyle=sky;c.fillRect(-40,-40,W+80,TOP+80);
-  for(let i=0;i<11;i++){const x=i*W/10,r=70+((i*37)%5)*14;E(c,x,TOP-6,r,r*.55,i%2?'#a9cf9a':'#9cc68e');}
+  // Two ranges of soft hills: the far one hazy blue-green, the near one the lawn's green.
+  for(let i=0;i<9;i++){const x=(i+.3)*W/8,r=130+((i*53)%4)*30;E(c,x,TOP+4,r,r*.42,'#bcd6c0');}
+  for(let i=0;i<11;i++){const x=i*W/10,r=70+((i*37)%5)*14;E(c,x,TOP-2,r,r*.5,i%2?G_.treeL:G_.tree);}
   for(const [x,y,s] of [[W*.18,38,1],[W*.55,26,.8],[W*.82,48,1.1]])cloud(c,x,y,s);
   for(const row of pl.rows)rowBand(c,pl,row);
   for(const row of pl.rows)street(c,pl,row);
@@ -208,28 +214,41 @@ function rowBand(c,pl,row){
   const {F,G}=row,W=pl.W;
   if(row.r===0){const g=c.createLinearGradient(0,F-20,0,G);g.addColorStop(0,'#cfe5b4');g.addColorStop(1,'#b9d89a');c.fillStyle=g;c.fillRect(-40,F-20,W+80,G-F+20);
     for(let i=0;i<14;i++){const x=(i+.5)*W/14;tree(c,x,F+46+(i%3)*10,.8);}return;}
-  c.fillStyle=row.r%2?'#f1e5cf':'#efe0c6';c.fillRect(-40,F-8,W+80,G-F+8);
-  for(let i=0;i<16;i++){const x=(i+.3)*W/16,h=40+((i*29)%4)*16;R(c,x-34,F+18-h*.2,68,h,'#e6d5b8',6);}
+  // A lawn behind the shops, the rooftops of the next street over, then a line of round trees in front of them.
+  c.fillStyle=G_.lawn;c.fillRect(-40,F-8,W+80,G-F+8);c.fillStyle=G_.lawnL;c.fillRect(-40,F+10,W+80,46);
+  for(let i=0;i<16;i++){const x=(i+.3)*W/16,h=34+((i*29)%4)*12,y=F+30-h*.2;R(c,x-30,y,60,h,G_.wallB,4);P(c,[[x-38,y+4],[x,y-20-(i%3)*4],[x+38,y+4]],i%2?G_.roof:G_.roofD);}
+  for(let i=0;i<15;i++){const x=(i+.5)*W/15+((i*41)%7-3)*9,s=.66+((i*17)%5)*.07;tree(c,x,F+58+(i%3)*5,s);}
   // A hedge along the back: the street above is behind these buildings, not theirs.
-  R(c,-40,F-8,W+80,18,'#a9cf9a',0);for(let x=-20;x<W+40;x+=34)E(c,x,F-6,22,12,(x/34|0)%2?'#9cc68e':'#8dbf7c');
+  R(c,-40,F-8,W+80,18,G_.tree,0);for(let x=-20;x<W+40;x+=34)E(c,x,F-6,22,12,(x/34|0)%2?G_.tree:G_.treeD);
 }
-function tree(c,x,y,s=1){c.save();c.translate(x,y);c.scale(s,s);R(c,-5,-6,10,30,'#8a6644',3);E(c,0,-28,30,26,'#8dbf7c');E(c,-16,-16,18,15,'#7fb46f');E(c,15,-18,18,15,'#9ccb89');c.restore();}
+function tree(c,x,y,s=1){c.save();c.translate(x,y);c.scale(s,s);E(c,4,22,22,6,G_.shade);R(c,-5,-6,10,30,G_.trunk,3);E(c,0,-28,30,26,G_.tree);E(c,-16,-16,18,15,G_.treeD);E(c,15,-18,18,15,G_.treeL);E(c,-8,-38,10,7,'#bfd6a4');c.restore();}
 /** The street under a row: the pavement by the doors, the road, the far kerb with trees; the lanes up to the street
  * above and the road round both ends; the district name painted on the road (the stage says it too, top left). */
 function street(c,pl,row){
   const {G,F}=row,W=pl.W,y1=G+SH;
-  if(row.r>0)for(const [a,b] of [[0,row.x0],...row.gaps,[row.x1,W]]){if(b-a<20)continue;R(c,a+4,F-10,b-a-8,G-F+24,'#e4d4b6',8);for(let y=F+6;y<G;y+=22)L(c,a+14,y,b-14,y,'#d6c4a2',1.4);}
-  R(c,-40,G,W+80,26,'#eadcc0',0);for(let x=8;x<W;x+=34)L(c,x,G+2,x,G+24,'#dccbaa',1.2);
-  R(c,-40,G+26,W+80,SH-46,'#cbc3b4',0);
-  for(let x=24;x<W;x+=64)R(c,x,G+26+(SH-46)/2-2,30,4,'#f4efe4',2);
-  R(c,-40,y1-20,W+80,20,'#e2d3b6',0);
+  // The lanes up to the street above: paving stones between two grass edges, a bush at each corner.
+  if(row.r>0)for(const [a,b] of [[0,row.x0],...row.gaps,[row.x1,W]]){if(b-a<20)continue;
+    R(c,a+2,F-10,b-a-4,G-F+24,G_.lawnD,8);R(c,a+8,F-10,b-a-16,G-F+24,G_.walk,6);
+    for(let y=F+6,k=0;y<G;y+=22,k++){L(c,a+12,y,b-12,y,G_.walkJ,1.3);const mx=(a+b)/2+(k%2?-8:8);L(c,mx,y,mx,Math.min(G,y+22),G_.walkJ,1.1);}
+    if(b-a>=40){E(c,a+8,F+8,9,7,G_.treeD);E(c,b-8,F+8,9,7,G_.tree);}}
+  // The pavement by the doors: square tiles, a kerb with its shadow on the road.
+  R(c,-40,G,W+80,26,G_.walk,0);for(let x=8;x<W;x+=34)L(c,x,G+2,x,G+22,G_.walkJ,1.2);L(c,-40,G+13,W+40,G+13,G_.walkJ,1);
+  R(c,-40,G+22,W+80,4,G_.kerb,0);
+  const ry=G+26,rh=SH-46;
+  R(c,-40,ry,W+80,rh,G_.road,0);R(c,-40,ry,W+80,4,G_.roadD,0);R(c,-40,ry+rh-3,W+80,3,G_.roadL,0);
+  for(let x=24;x<W;x+=64)R(c,x,ry+rh/2-2,30,4,G_.dash,2);
+  // The far side: a kerb, then a grass verge with small round trees (they stand in front of the next row's hedge).
+  R(c,-40,y1-20,W+80,4,G_.kerb,0);R(c,-40,y1-16,W+80,16,G_.lawnD,0);
+  // The district's name painted on the road, faint: the stage says it too (top left), so it should not shout.
   for(const d of row.districts){
     const cx=(d.x0+d.x1)/2,label=tr(d.name).toUpperCase();   // translated first: the capitals are drawn as they are
-    T(c,label,cx,G+26+(SH-46)/2,fit(c,label,Math.max(120,d.x1-d.x0-40),22,900),'#b8afa0',900);
+    c.save();c.globalAlpha=.55;T(c,label,cx,ry+rh/2,fit(c,label,Math.max(120,d.x1-d.x0-40),19,900),'#aea595',900);c.restore();
   }
-  for(const [a,b] of [[0,row.x0],...row.gaps,[row.x1,W]])if(b-a>=20&&a>0&&b<W)lamp(c,(a+b)/2,G+12);   // at the lane mouths, on the pavement
+  for(const [a,b] of [[0,row.x0],...row.gaps,[row.x1,W]])if(b-a>=20&&a>0&&b<W)lamp(c,(a+b)/2,G+12,row.r);   // at the lane mouths, on the pavement
 }
-function lamp(c,x,y){E(c,x,y+2,8,3,'#00000022');L(c,x,y,x,y-74,'#5a5f68',3.5);L(c,x,y-74,x+10,y-80,'#5a5f68',3);R(c,x+4,y-84,14,10,'#fff1c4',4,'#5a5f68',2);}
+/** A street lamp; every other one carries a red lantern (đèn lồng) under its arm. */
+function lamp(c,x,y,k=0){E(c,x+3,y+2,9,3,G_.shade);L(c,x,y,x,y-74,'#5a5f68',3.5);L(c,x,y-74,x+10,y-80,'#5a5f68',3);R(c,x+4,y-84,14,10,'#fff1c4',4,'#5a5f68',2);
+  if((Math.round(x/97)+k)%2)return;L(c,x+11,y-74,x+11,y-66,'#7a5230',1.2);E(c,x+11,y-58,7,9,'#d9483b');R(c,x+7,y-68,8,3,'#e9b44c',1);R(c,x+7,y-50,8,3,'#e9b44c',1);L(c,x+11,y-47,x+11,y-42,'#e9b44c',1.4);E(c,x+9,y-61,2,4,'#f47b6a');}
 
 /** One building (or cart, or landmark) in its state. */
 function building(c,it,s,o){
@@ -237,6 +256,7 @@ function building(c,it,s,o){
   const t=tones(s.color,s.lock);
   if(s.glow&&!s.lock)glowAt(c,it.cx,it.G-it.h/2,it.w*.9,.55);
   if(s.cur)R(c,it.x0-7,it.G-it.h-14,it.w+14,it.h+20,'#ffd16655',14,'#e8a33a',3);
+  if(it.kind!=='cart'&&it.kind!=='board')P(c,[[it.x1-2,it.G],[it.x1+12,it.G-it.h*.55],[it.x1+12,it.G],[it.x1+4,it.G+4]],G_.shade);   // the afternoon shade beside it
   c.save();if(s.lock)c.globalAlpha=.92;
   (DRAW[it.kind]||shop)(c,it,t,s);
   c.restore();
@@ -252,7 +272,7 @@ function signBoard(c,it,t,s){
   R(c,x,y,w,30,t.sign,10,s.lock?t.trim:t.dark,2);
   if(s.lock){c.save();c.globalAlpha=.45;T(c,s.emoji,it.cx+12,y+15,16,INK,400);c.restore();T(c,'🔒',it.cx-12,y+15,15,INK,400);return;}
   const text=`${s.emoji} ${tr(s.name)}`;T(c,text,it.cx,y+15.5,fit(c,text,w-12,15,800),t.ink,800);   // the name alone translated ("Mẹ & bé" whole, not by its pieces)
-  if(s.x3){R(c,x+w-30,y-12,38,20,'#e8572d',10,'#ffffff',1.5);T(c,'🔥x3',x+w-11,y-2,11,'#ffffff',900);}
+  if(s.x3){E(c,x+w-2,y+1,11,11,'#e8572d');c.lineWidth=1.5;c.strokeStyle='#ffffff';c.stroke();T(c,'🔥',x+w-2,y+1.5,11,'#ffffff',400);}   // ×3 today: one small mark (the top bar says the number)
 }
 function emptyLot(c,it){
   const {x0,w,G,cx}=it;R(c,x0+4,G-34,w-8,34,'#c9dfae',8);
