@@ -311,7 +311,9 @@ def _commit_before(raw:dict)->dict:
     m=raw.get('marriage') if isinstance(raw.get('marriage'),dict) else {}
     holds=[k for k in (m.get('applied') if isinstance(m.get('applied'),list) else []) if isinstance(k,str) and k.startswith('jspend:')]
     from . import cand_roster
-    return dict(_fair_net=fh.money_of(j)[0],_cand=cand_roster.info(raw),name=raw.get('name'),marriage=dict(applied=holds),careers=careers,journey=dict(story=j.get('story'),jail=isinstance(j.get('jail'),dict),
+    # 💸 the gift ids and the wallet: a Chợ đen fine refund paid by this command counts in the week (fair_loss.record)
+    gifts=list(j['gifts']) if isinstance(j.get('gifts'),list) else []
+    return dict(_fair_net=fh.money_of(j)[0],_cand=cand_roster.info(raw),name=raw.get('name'),marriage=dict(applied=holds),careers=careers,journey=dict(story=j.get('story'),jail=isinstance(j.get('jail'),dict),gifts=gifts,wallet=j.get('wallet'),
         life_day=j.get('life_day',0),home=dict(own={k:own.get(k) for k in ('id','kind')} if isinstance(own,dict) else None),
         lux=dict(live=live,own={live:dict(d=villa.get('d'))}) if isinstance(villa,dict) else dict(live=None,own={}),
         quay=dict(stalls=[dict(business=dict(visitor_orders=visitors))])))

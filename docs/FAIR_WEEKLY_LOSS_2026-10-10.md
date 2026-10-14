@@ -2,6 +2,11 @@
 
 Chủ game chọn chỉ tính lỗ phát sinh trong tuần. Bảng vàng có hai lựa chọn Top lời và Top lỗ. Top lời giữ cách tính tích lũy hiện tại; Top lỗ dùng sổ riêng `fair_loss_week` (schema 36).
 
+**Cập nhật 14/10 (chủ game: "Top lời theo tuần như Top lỗ"):** Top lời cũng tính theo tuần, trên cùng sổ `fair_loss_week` và cùng tuần (thứ Hai 00:00 giờ Việt Nam). Lời ròng tuần = các dòng `net > 0`, lớn nhất đứng đầu, đồng điểm ai đạt trước đứng trên (`game/fair_loss.py` `view_win`, chỉ mục `fair_loss_week_win`, schema 43). Tiền phạt chợ đen được hoàn bằng quà hệ thống `refund-cd-…` tính vào tuần quà được trả vào save (lệnh `sys_gift`, một lần nhờ dòng `fair-loss:refund:<mã quà>`; cả Top lỗ cũng giảm theo). 👑 Vua trò chơi / 🎪 Cao thủ chợ đen trao thứ Hai từ tuần 12/10 (lần đầu 19/10) trong cùng giao dịch và khóa tuần với Top lỗ, dùng khóa meta cũ `fair:<edition>@<thứ Hai>` nên bản nào tới trước thì trao, không trao hai lần; mã quà tặng vẫn theo edition/danh hiệu/người chơi. Dải của người chơi vẫn hiện “lời tích lũy” (tổng cả chợ) và ghi rõ. Bảng `fair20261009xu` tích lũy giữ nguyên (Danh hiệu, lời tích lũy). Không có dòng Có gì mới.
+
+Tính lại tuần này: `python scripts/fair_board_recompute.py --week` (chạy thử) / `--week --apply`. Sổ tuần chính là sổ cái (save không lưu giờ thật của từng ván nên không dựng lại được từ save); công cụ chỉ cộng các khoản hoàn phạt đã trả trong tuần trước bản cập nhật, khóa save rồi chỉ đọc, không ghi save.
+
+
 - Tuần từ thứ Hai 00:00 đến thứ Hai kế tiếp, giờ Việt Nam. Lỗ ròng = tiền thua trừ tiền thắng và xu kiếm trong tuần tại Hội chợ. Tiền vốn tặng, vay và trả nợ không tính. Chỉ số âm mới xếp hạng. Khoản thu/chi tính tại thời điểm ghi nhận, kể cả vé mua và nhận thưởng khác tuần.
 - Top 1 nhận `f_loss_king` — 🥀 Vua đen đủi; Top 2–10 nhận `f_loss_club` — ☔ Hội đen đủi. Danh hiệu giữ vĩnh viễn, không thưởng xu. Đồng lỗ xếp theo lần đạt số dư đó trước, sau đó SID để ổn định.
 - Chốt sau ranh giới tuần 60 giây, qua maintenance hoặc lượt đọc Bảng vàng. Snapshot, con trỏ tuần và hiệu ứng danh hiệu cùng giao dịch; ID cố định cho phép chạy lại an toàn. Khi server ngừng lâu, xử lý tối đa 8 tuần mỗi lượt.

@@ -51,6 +51,19 @@ test('profit board keeps cumulative scoring and profit titles',()=>{
  const data={board:'fair-2026',rows:[{rank:1,name:'Lan',xu:350,days:4}],me:{rank:2,visible:true},fair:{weekly:true}};
  const html=harness(data,'win').html();assert.match(html,/\+350 xu/);assert.match(html,/9\.999 xu/);assert.match(html,/4 ngày chơi/);assert.match(html,/Vua trò chơi/);assert.doesNotMatch(html,/Vua đen đủi|lỗ ròng tuần này/);
 });
+test('weekly profit board (fair.win): this week\'s net, its rank, the cumulative kept apart',()=>{
+ const data={board:'fair-2026',rows:[{rank:1,name:'Lan <i>',xu:350,score:350,days:4,me:true}],me:{net:350,xu:350,rank:1,visible:true},
+  fair:{win:true,weekly:true,week:'2026-10-12',next:1791738000,tiers:[{label:'Top 1',emoji:'👑',name:'Vua trò chơi'},{label:'Top 2–10',emoji:'🎪',name:'Cao thủ chợ đen'}],winners:[{rank:1,name:'Minh',score:800,title:'Vua trò chơi',emoji:'👑'}],crowned:'2026-10-12'}};
+ const html=harness(data,'win').html();
+ assert.match(html,/Top lời tuần này/);assert.match(html,/Tuần từ 12\/10\/2026/);assert.match(html,/Lời ròng tuần này/);
+ assert.match(html,/Tuần này bạn đang lời <b>\+350 xu/);assert.match(html,/hạng <b>1/);assert.match(html,/Lời tích lũy cả chợ: <b>9\.999 xu/);
+ assert.match(html,/tuần trước/);assert.match(html,/\+800 xu/);assert.match(html,/cộng tiền phạt được hoàn trong tuần/);
+ assert.match(html,/Lan &lt;i&gt;/);assert.doesNotMatch(html,/4 ngày chơi|Vua đen đủi|Không thưởng xu/);
+ data.rows=[];data.me={net:-40,xu:0,rank:null,visible:true};
+ const lost=harness(data,'win').html();
+ assert.match(lost,/Tuần này bạn đang lỗ <b>-40 xu/);assert.match(lost,/Chỉ ai có lời ròng trong tuần/);assert.doesNotMatch(lost,/hạng <b>/);
+ assert.match(lost,/Chưa ai lời ròng tuần này/);
+});
 test('loading and errors have distinct accessible states and retry control',()=>{
  const h=harness(null);h.S.board.loading=true;
  assert.match(h.html(),/Đang mở Top lỗ/);assert.match(h.html(),/aria-busy="true"/);

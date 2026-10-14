@@ -15,8 +15,12 @@ nhận danh hiệu vua trò chơi nhé").
   same transaction as the grants) and stores the winners there for the board's view; every other call is a no-op
   (a memo per process: no database read after that). Called from the server's housekeeping loop and, best effort,
   from /api/bootstrap and GET /api/leaderboard of the fair board.
+* 🗓️ Weekly from the week of 12/10/2026 (owner 14/10: "Top lời theo tuần như Top lỗ"): the board shown and crowned is
+  the week's net won (game/fair_loss.py view_win, _crown_win: the fair_loss_week rows, net > 0, refunds of fines
+  paid that week included), crowned on Monday 19/10 and every Monday after by fair_loss.settle, on the same meta key
+  as below. The cumulative rows (this board) stay: the player's "lời tích lũy", the Danh hiệu boards.
 * No end (owner 09/10: "chợ đen mở mãi", game/fair.py forever()): the edition never closes, so its titles are crowned
-  every week instead: the first process past Monday 00:00 (Vietnam, +GRACE) takes the board as shown then, the same
+  every week instead (the crownings up to 12/10/2026): the first process past Monday 00:00 (Vietnam, +GRACE) takes the board as shown then, the same
   way (meta 'fair:<edition>@<that Monday>', crown()), and the board's view shows the latest crowning. The board is
   not reset: it keeps counting the edition's xu, so a week's crowning is the standings at that moment. A player
   crowned again gets nothing twice (the row id is per edition, title and player); the titles are kept for good. A
@@ -67,11 +71,13 @@ def settle(store, t: float | None = None, best_effort_ms: int | None = None) -> 
     (fair.past(): a server that was not running at its end) is settled first, the same way, at most once too."""
     t = now() if t is None else t
     from . import fair_loss
-    fair_loss.settle(store, t, best_effort_ms)
+    weekly = fair_loss.settle(store, t, best_effort_ms)   # Top lỗ, and Top lời of each week from 12/10/2026
     for ed, board, closes in fh.past():
         _settle(store, ed, board, closes, t, best_effort_ms)
     if fh.forever():   # no end: this week's crowning (Monday 00:00), once the first one has come
         mark = crown(t)
+        if mark and mark >= fair_loss.WIN_FROM + fair_loss.WEEK:   # 🏆 a weekly Top lời: crowned by fair_loss.settle
+            return weekly
         return _settle(store, fh.edition(), fh.board(), mark, t, best_effort_ms, _week_key(mark)) if mark else None
     return _settle(store, fh.edition(), fh.board(), fh.window()[1], t, best_effort_ms)
 
