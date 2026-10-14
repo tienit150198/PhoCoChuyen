@@ -1,3 +1,7 @@
+# v2.4.5 — 2026-10-14
+
+Gồm fb382: ngày thực đạt chuẩn tính cả việc khách giữ lại từ hôm trước, dòng điều kiện hiện “Hôm nay: …” + “Cách tính” (#382 #383); đảo nhặt rương có “📋 Danh sách rương” cho trình đọc màn hình (#381). Không có Có gì mới.
+
 # v2.4.4 — 2026-10-14
 
 Quầy: nhập hàng mỗi lần mặc định 200 phần (trước 5, chủ game 14/10: quầy hết hàng không mở lại được); các bậc trả phí 300 → 20.000. Vượt mức thì thẻ nhập hàng báo ngay dưới ô nhập. Không có Có gì mới.
