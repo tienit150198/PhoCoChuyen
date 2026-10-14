@@ -1,3 +1,7 @@
+# v2.4.13 — 2026-10-14
+
+Gồm autoreorder (#387): 🔁 Tự đặt hàng mua 350.000 xu mỗi nơi làm (khóa nghề `auto_order` tùy chọn), tự đặt khi dưới ngưỡng từ quỹ tiệm, giữ sàn quỹ + trần 50%/ngày. Có gì mới: 1 dòng.
+
 # Chưa phát hành — autoreorder (🔁 Tự đặt hàng, góp ý #387)
 
 🔁 Tự đặt hàng: mở khóa trả phí cho từng nơi có kho (350.000 xu = bậc 5 của thang giá chung, cùng giá Bộ đếm kho · Bậc 5 mở 🤖 Tự nhận hàng; trả bằng quỹ trước, thiếu lấy ví), mua ở Kho (dòng 🔒 có giá, chỉ hiện khi đã đặt hàng ≥3 lần, #384) hoặc Thiết bị. Mỗi món một công tắc và “còn dưới X thì đặt Y” (mặc định X = 20% kệ, Y lấp tới ~90% trong hạn mức mỗi dòng). Hàng trên kệ + đang về dưới X thì đặt Y với nhà cung cấp dùng lần cuối (không thì Hạt Nắng) qua đúng đường inv_order (giá, giá sỉ, ship, thời gian giao, giao thiếu, lô FIFO); chỉ trả bằng quỹ, giữ sàn (80 xu + hóa đơn chưa trả + một ngày lương), tối đa 50% quỹ đầu ngày mỗi ngày, mỗi món một đơn tự đặt đang về, chừa 2 chuyến cho đơn tay; món vơi nhất đặt trước. Chạy sau mỗi thao tác và khi tải game (cả lúc vắng mặt), sau 🤖 Tự nhận hàng. Sổ tay: “🔁 Tự đặt 40 vắt Mì tươi (Nhà phân phối Hạt Nắng, ~13:15 hôm nay)”; quỹ thiếu: “🔁 Quỹ không đủ để tự đặt.” (một lần/ngày). Bản lưu: khóa tùy chọn `careers.<nghề>.auto_order` (không phải mã nâng cấp: 2.4.11 từ chối mã lạ trong `upgrades`); 2.4.11 đọc được, bỏ qua (tests/test_auto_order.py chạy trên `git archive rel-2.4.11`). Lệnh mới `stock_reorder` (không tốn giờ tiệm). check_task_compat OK. Có gì mới: một dòng 🔁 (đang gắn vào mục 2.4.11; đánh số lại khi phát hành).
