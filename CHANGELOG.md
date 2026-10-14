@@ -1,3 +1,7 @@
+# v2.4.14 — 2026-10-15
+
+🔁 Tự đặt hàng giá 100.000 xu (trước 350.000, chủ game 15/10); người đã mua giá cũ được hoàn phần chênh bằng quà hệ thống. Không có Có gì mới.
+
 # v2.4.13 — 2026-10-14
 
 Gồm autoreorder (#387): 🔁 Tự đặt hàng mua 350.000 xu mỗi nơi làm (khóa nghề `auto_order` tùy chọn), tự đặt khi dưới ngưỡng từ quỹ tiệm, giữ sàn quỹ + trần 50%/ngày. Có gì mới: 1 dòng.

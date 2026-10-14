@@ -57,19 +57,19 @@ class Base(unittest.TestCase):
 
 class Purchase(Base):
     def test_price_paid_from_the_fund(self):
-        self.assertEqual(ao.PRICE, 350000)
+        self.assertEqual(ao.PRICE, 100000)
         j = self.journey(fund=400000)
         pub = public_state(j.state)['careers']['restaurant']['warehouse']['reorder']
-        self.assertEqual((pub['owned'], pub['price'], pub['short']), (False, 350000, 0))
+        self.assertEqual((pub['owned'], pub['price'], pub['short']), (False, 100000, 0))
         with self.assertRaises(GameError):
             j.act('stock_reorder', buy=True)                                  # no confirm
         with self.assertRaises(GameError):
             j.act('stock_reorder', item=ITEM, on=False)                       # not owned yet
         turn = j.c['turn']
         j.act('stock_reorder', buy=True, confirm=True)
-        self.assertEqual(j.c[ao.KEY]['paid'], 350000)
+        self.assertEqual(j.c[ao.KEY]['paid'], 100000)
         self.assertEqual(j.c['turn'], turn)                                   # no shop time
-        row = next(r for r in reversed(j.c['ops']['finance']['ledger']) if r['amount'] == -350000)
+        row = next(r for r in reversed(j.c['ops']['finance']['ledger']) if r['amount'] == -100000)
         self.assertEqual(row['category'], 'upgrade')
         with self.assertRaises(GameError):
             j.act('stock_reorder', buy=True, confirm=True)                    # once

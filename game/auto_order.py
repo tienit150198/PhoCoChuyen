@@ -9,7 +9,7 @@ new id in c['upgrades'] makes their validate refuse the save, so the unlock is N
 (tests/test_auto_order.py proves a save holding it loads on `git archive rel-2.4.11`).
 
     c['auto_order'] = {
-        'paid': 350000,              # xu paid (the unlock)
+        'paid': 100000,              # xu paid (the unlock; 350000 for those who bought before 15/10)
         'on': False,                 # optional: the master switch turned off (absent: on)
         'items': {item: {'on': bool, 'below': int, 'qty': int}},   # the player's own settings (absent: defaults)
         'open': {item: order_id},    # the last automatic order per item (one pending at a time)
@@ -35,7 +35,7 @@ from .progression_prices import PRICES
 
 KEY = 'auto_order'
 ACTION = 'stock_reorder'
-PRICE = PRICES[4]       # 350,000 xu: tier 5 of the shared ladder, the price of Bộ đếm kho · Bậc 5 (🤖 Tự nhận hàng)
+PRICE = 100_000         # owner 15/10: 100.000 xu (was 350.000, tier 5 of the shared ladder)
 LOW_PCT = 20            # default X: 20 % of the shelf
 FILL_PCT = 90           # default Y: back to about 90 % of the shelf
 DAY_SHARE = 50          # at most this % of the fund at the start of the day, per shop day
