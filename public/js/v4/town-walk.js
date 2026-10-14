@@ -22,6 +22,7 @@ import {escapeHTML as esc,icon} from '../icons.js';
 import {choice,next as nextRide,canRide,label as rideLabel,speedOf,drawRide,rider,steer,halfOf,loadSpouse} from './ride.js';
 // 👶 "Bế bé đi chơi": the baby in your arms (v4/baby.js), a toggle under the ride's
 import * as BB from './baby.js';
+import {townBirds} from './town-birds.js';   // 🐦 a flock now and then (no frame loop)
 
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
@@ -156,6 +157,7 @@ function build(){
   W.cv.addEventListener('pointerdown',down);W.cv.addEventListener('pointermove',move);W.cv.addEventListener('pointerup',up);W.cv.addEventListener('pointercancel',()=>{W.down=null;});
   W.cv.addEventListener('wheel',wheel,{passive:false});
   W.cv.addEventListener('keydown',onKey);
+  townBirds(el,visible);
   W.card.addEventListener('click',e=>{if(e.target.closest('[data-tw-x]'))hide();});
   el.addEventListener('keydown',e=>{if(e.key==='Escape'&&!W.card.hidden){e.preventDefault();e.stopPropagation();hide();W.cv.focus({preventScroll:true});}});
   let sizing=0;new ResizeObserver(()=>{cancelAnimationFrame(sizing);sizing=requestAnimationFrame(size);}).observe(el);

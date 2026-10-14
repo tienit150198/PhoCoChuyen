@@ -26,7 +26,7 @@ const blend=(a:number,b:number,t:number)=>[16,8,0].reduce((color,shift)=>color|(
 // A shared warm stone surface runs through every neighbourhood. District character
 // comes from buildings, planting and forecourts instead of overlapping road colours.
 export const STREET_SURFACE={path:0xe5d4b4,edge:0xc8c4a1};
-function ribbon(g:Phaser.GameObjects.Graphics,points:StreetSample[],extra:number,color:number){
+function ribbon(g:Phaser.GameObjects.Graphics,points:StreetSample[],extra:number,color:number,alpha=1,caps=true){
   if(!points.length)return;
   const left:Point[]=[],right:Point[]=[];
   for(let i=0;i<points.length;i++){
@@ -34,10 +34,11 @@ function ribbon(g:Phaser.GameObjects.Graphics,points:StreetSample[],extra:number
     const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy)||1,r=p.radius+extra,nx=-dy/length*r,ny=dx/length*r;
     left.push({x:p.x+nx,y:p.y+ny});right.push({x:p.x-nx,y:p.y-ny});
   }
-  polygon(g,[...left,...right.reverse()],color);
+  polygon(g,[...left,...right.reverse()],color,alpha);
+  if(!caps)return;
   // Only the two terminal caps need circles; curved joins are a continuous outline.
-  disc(g,points[0],points[0].radius+extra,color);
-  disc(g,points[points.length-1],points[points.length-1].radius+extra,color);
+  disc(g,points[0],points[0].radius+extra,color,alpha);
+  disc(g,points[points.length-1],points[points.length-1].radius+extra,color,alpha);
 }
 
 function doorstep(g:Phaser.GameObjects.Graphics,door:StreetDoor,index:number,extra:number,color:number){
@@ -48,8 +49,43 @@ function doorstep(g:Phaser.GameObjects.Graphics,door:StreetDoor,index:number,ext
   });
   polygon(g,points,color);
 }
-/** Static geometry only: the scene flattens this into its existing viewport cache. */
-export function drawNeighbourhoodGround(g:Phaser.GameObjects.Graphics,districts:District[],trails:Trail[],doors:StreetDoor[],navigation:Navigation){
+/** Paved ground (roads, lanes, doorsteps) as half-unit cells: the grass detail keeps off it. */
+export type Paved=(p:Point)=>boolean;
+const cellKey=(x:number,y:number)=>(Math.round(x*2)+512)*4096+(Math.round(y*2)+512);
+function pavedCells(){
+  const cells=new Set<number>();
+  const mark=(c:Point,r:number)=>{for(let x=c.x-r;x<=c.x+r+.01;x+=.5)for(let y=c.y-r;y<=c.y+r+.01;y+=.5)if((x-c.x)**2+(y-c.y)**2<=r*r+.2)cells.add(cellKey(x,y));};
+  return {mark,paved:((p:Point)=>cells.has(cellKey(p.x,p.y))) as Paved};
+}
+/** A cheap deterministic hash in [0,1) for scattering detail without Math.random (same town on every device). */
+const hash=(x:number,y:number)=>{let h=Math.imul((x|0)^Math.imul(y|0,0x27d4eb2d),0x165667b1);h^=h>>>15;h=Math.imul(h,0x85ebca6b);h^=h>>>13;return (h>>>0)/4294967296;};
+// One small meadow palette shared by every district: tufts in two greens, a few flowers in warm pastels.
+export const GRASS_DETAIL={tuft:0x7b9759,tuftLight:0xd7e0b2,sun:0xd0daa6,shade:0x8fa772,verge:0xacbf8e,pebble:0xd6cfae,flowers:[0xfbf4dc,0xf3cd5a,0xeaa0b4,0xc9b2e2,0xf2a46b]};
+/** Grass tufts, small flower clusters, pebbles and sunlit patches on the open lawn, baked into terrain chunks
+ * (`chunk(p)`: the Graphics that holds the ground near p) so a ground-cache rebuild only replays the chunks it shows.
+ * `keep(p)`: false where the lawn is not (sea, paving, footprints, farm terraces). About one mark per unit². */
+export function drawGrassDetail(chunk:(p:Point)=>Phaser.GameObjects.Graphics,bounds:Rect,keep:(p:Point)=>boolean){
+  const S=.9,F=GRASS_DETAIL;let marks=0;
+  for(let i=0,x=bounds.x0;x<bounds.x1;i++,x=bounds.x0+i*S)for(let j=0,y=bounds.y0;y<bounds.y1;j++,y=bounds.y0+j*S){
+    const r=hash(i*7919+13,j*104729+7),at={x:x+hash(i,j+99)*S*.8,y:y+hash(i+55,j)*S*.8};
+    if(r>.62||!keep(at))continue;
+    const g=chunk(at),p=project(at),k=.85+hash(j,i)*.5;marks++;
+    if(r<.42){   // a tuft: one zig-zag of three blades, a lighter blade on the sunny side
+      const w=8*k,h=13*k;
+      g.fillStyle(F.tuft,.62).fillPoints([{x:p.x-w,y:p.y},{x:p.x-w*.7,y:p.y-h*.75},{x:p.x-w*.25,y:p.y-1},{x:p.x,y:p.y-h},{x:p.x+w*.3,y:p.y-1},{x:p.x+w*.8,y:p.y-h*.65},{x:p.x+w,y:p.y}],true);
+      g.fillStyle(F.tuftLight,.6).fillTriangle(p.x+w*.15,p.y-1,p.x+w*.8,p.y-h*.65,p.x+w*.62,p.y-1);
+    }else if(r<.48){   // flowers: three or four dots of one colour, a lighter heart
+      const c=F.flowers[Math.floor(hash(i+3,j+5)*F.flowers.length)];
+      for(let n=0;n<3+(r<.45?1:0);n++){const fx=p.x+Math.cos(n*2.3+r*9)*7*k,fy=p.y+Math.sin(n*2.3+r*9)*3.5*k;g.fillStyle(0x7f9a62,.35).fillEllipse(fx+1,fy+1.5,6,3,6);g.fillStyle(c,.95).fillCircle(fx,fy,2.6*k);g.fillStyle(0xfff6c8,.9).fillCircle(fx,fy,1);}
+    }else if(r<.51){g.fillStyle(0xa79f80,.45).fillEllipse(p.x+1,p.y+2,11*k,5*k,8);g.fillStyle(F.pebble,1).fillEllipse(p.x,p.y,10*k,5.5*k,8);}   // a pebble
+    else if(r<.56)g.fillStyle(F.sun,.28).fillEllipse(p.x,p.y,150*k,58*k,16);   // a sunlit patch
+    else g.fillStyle(F.shade,.16).fillEllipse(p.x,p.y,120*k,46*k,16);   // a cooler patch
+  }
+  return marks;
+}
+/** Static geometry only: the scene flattens this into its existing viewport cache. Returns where it paved.
+ * `detail(p)`: where small marks near p go (the scene's terrain chunks, skipped in the far view). */
+export function drawNeighbourhoodGround(g:Phaser.GameObjects.Graphics,districts:District[],trails:Trail[],doors:StreetDoor[],navigation:Navigation,detail:(p:Point)=>Phaser.GameObjects.Graphics=()=>g):Paved{
   for(const d of districts){
     const p=DISTRICT_PALETTE[d.material],b=d.bounds,c={x:(b.x0+b.x1)/2,y:(b.y0+b.y1)/2};
     // Overlapping soft ground islands, never a visible rectangle enclosing a district.
@@ -63,17 +99,30 @@ export function drawNeighbourhoodGround(g:Phaser.GameObjects.Graphics,districts:
     for(const p of points){const d=Math.hypot(p.x-end.x,p.y-end.y);p.radius+=.23*Math.max(0,1-d/1.1)**2;}
     return {palette:paletteFor(branch.district),points,minor:true};
   }),...trails.map((trail,index)=>({palette:paletteFor(trail.district),points:streetProfile(sampleTrailCurve(trail.points,trail.sampled),trail.width,index),minor:false}))];
+  // A slightly deeper green verge hugs every road (opaque: junctions never darken twice).
+  for(const lane of lanes)ribbon(g,lane.points,.42,GRASS_DETAIL.verge);
   // Draw ALL shoulders before ALL road surfaces. Drawing each complete road in
   // sequence leaves a dark transverse seam across every T/Y junction.
   for(const edge of [true,false]){
     for(const lane of lanes)ribbon(g,lane.points,edge?.13:0,edge?lane.palette.edge:lane.palette.path);
     doors.forEach((door,index)=>{const p=paletteFor(door.district);doorstep(g,door,index,edge?.09:0,edge?p.edge:p.path);});
   }
+  // A lighter, worn crown down the middle of each main road gives the surface some depth (same colour family).
+  for(const lane of lanes)if(!lane.minor)ribbon(g,lane.points.map(p=>({...p,radius:p.radius*.5})),0,0xf1e4c8,.5,false);
   // Sparse grains and worn patches; no repeated paving grid or extra objects.
   for(const lane of lanes){
     if(lane.minor)continue;
     for(let i=3;i<lane.points.length;i+=4){const p=project(lane.points[i]);g.fillStyle(i%3?0xffedca:lane.palette.edge,.22).fillEllipse(p.x+Math.sin(i)*15,p.y+Math.cos(i)*7,9+i%5*3,4+i%3);}
+    // Kerb stones every few steps, alternating sides, just outside the shoulder.
+    for(let i=2;i<lane.points.length-1;i+=5){
+      const p=lane.points[i],a=lane.points[i-1],b=lane.points[i+1],dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,side=(i/5|0)%2?1:-1,r=p.radius+.2;
+      const at={x:p.x-dy/len*r*side,y:p.y+dx/len*r*side},s=project(at),k=detail(at);
+      k.fillStyle(0xa9a283,.4).fillEllipse(s.x+1,s.y+2,13,6,8);k.fillStyle(0xddd3b4,1).fillEllipse(s.x,s.y,12,6,8);k.fillStyle(0xf3ead2,.8).fillEllipse(s.x-2,s.y-1,5,2,6);
+    }
   }
+  const {mark,paved}=pavedCells();
+  for(const lane of lanes)for(const p of lane.points)mark(p,p.radius+.4);
+  for(const door of doors)mark({x:door.at.x-.12,y:door.at.y-.6},1.75);
   // The park has a circular sitting area, a flower meadow and a separate play lawn.
   disc(g,{x:6,y:30},2.55,0xe4d3ad);
   disc(g,{x:4,y:43},2.3,0x91b782);disc(g,{x:24,y:27.5},1.4,0xd5cbb2);
@@ -91,6 +140,10 @@ export function drawNeighbourhoodGround(g:Phaser.GameObjects.Graphics,districts:
   for(let y=30;y<47;y+=1.4){floor(g,{x0:79.45,y0:y,x1:80.15,y1:y+.12},0xa4a98f);const p=project({x:83+Math.sin(y)*1.7,y});g.lineStyle(2,0xe3f4db,.35).lineBetween(p.x-15,p.y,p.x+17,p.y+1);}
   floor(g,{x0:78.4,y0:43.6,x1:84.2,y1:45.2},0xb6946e);
   for(let x=78.4;x<84.2;x+=.35)floor(g,{x0:x,y0:43.65,x1:x+.29,y1:45.15},0xd3b487);
+  // The park's sitting area, the play lawn's path, the terraces, the airfield and the harbour are not lawn.
+  mark({x:6,y:30},2.9);mark({x:24,y:27.5},1.7);
+  for(const r of [{x0:-22.3,y0:23.6,x1:-17,y1:29.6},{x0:56.5,y0:20.1,x1:79.5,y1:24.2},{x0:78.9,y0:29.5,x1:87.5,y1:48.5}])for(let x=r.x0;x<=r.x1;x+=.5)for(let y=r.y0;y<=r.y1;y+=.5)mark({x,y},0);
+  return paved;
 }
 
 /** Small civic props drawn once into a local texture; detailed buildings/trees stay painted WebP sprites. */

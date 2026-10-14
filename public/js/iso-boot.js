@@ -14,6 +14,7 @@ import {cozyPortraits} from './v4/look.js';
 import {homeListFirst,onIsoLand} from './v4/journey.js';
 import {attachGuide,landNewPlayer} from './iso-guide.js';
 import {attachTreasure} from './isometric-treasure.js';
+import {townBirds} from './v4/town-birds.js';
 
 export {updateIsometricShell,isometricAction};
 
@@ -26,6 +27,9 @@ export function bootShell(env){
   homeListFirst();   // v4/journey.js: the career list, not a second (2D) town map, unless this device chose the map
   onIsoLand(landNewPlayer);   // a brand-new player lands on the island after the intro (iso-guide.js)
   bootIsometricShell(env);bootIsometricMovement(env);bootIsometricTown(env);bootCozyPortraits();
+  // 🐦 A flock over the island now and then: the town only (not inside a workplace), nothing between flights.
+  let mode='town';document.addEventListener('mnl:iso-mode',e=>{mode=e.detail?.mode||mode;});
+  townBirds(document.getElementById('stage'),()=>mode==='town'&&!document.querySelector('dialog[open]'));
 }
 
 /** After the first frame (app.js): the Phaser bundle into app.js's stand-in world. A

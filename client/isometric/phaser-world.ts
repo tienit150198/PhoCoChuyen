@@ -22,7 +22,7 @@ import {CIVIC_ASSETS,CIVIC_FACADES,amenityPlacement} from './amenity-art';
 import type {AmenityArt} from './amenity-art';
 import {walkingPose} from './model';
 import {townDistricts,townAmenities,townTrails,townScenery,townShopLots} from './model';
-import {drawNeighbourhoodGround,drawCivicProp} from './town-scenery';
+import {drawNeighbourhoodGround,drawCivicProp,drawGrassDetail} from './town-scenery';
 import {workActorPositions,workEventAnchors,workLayout,workNavigation} from './work-layout';
 import type {WorkFixture} from './work-layout';
 import {drawWorkArchitecture,workFurnitureElevation} from './work-architecture';
@@ -301,6 +301,7 @@ class DioramaScene extends Phaser.Scene {
   private groundCache?:Phaser.GameObjects.Image;
   private groundRegion?:Rect;
   private groundScale=0;
+  private groundDetail=false;
   private marker?:Phaser.GameObjects.Image;
   private speech?:Phaser.GameObjects.Container;
   private speechTarget:string|null=null;
@@ -391,13 +392,15 @@ class DioramaScene extends Phaser.Scene {
     }
     const view={x0:cx-halfW,y0:cy-halfH,x1:cx+halfW,y1:cy+halfH};
     const cache=groundCacheRegion(view,camera.zoom);
-    if(this.groundRegion&&this.groundScale>=cache.scale*.9&&view.x0>=this.groundRegion.x0&&view.y0>=this.groundRegion.y0&&view.x1<=this.groundRegion.x1&&view.y1<=this.groundRegion.y1)return;
+    // Lawn detail (terrain chunks) is a few pixels across below zoom .3: the far view skips it, a closer one brings it back.
+    const detail=camera.zoom>=.3;
+    if(this.groundRegion&&this.groundScale>=cache.scale*.9&&(this.groundDetail||!detail)&&view.x0>=this.groundRegion.x0&&view.y0>=this.groundRegion.y0&&view.x1<=this.groundRegion.x1&&view.y1<=this.groundRegion.y1)return;
     const region=cache.region,canvas=document.createElement('canvas');canvas.width=cache.width;canvas.height=cache.height;
     const cacheCamera=new Phaser.Cameras.Scene2D.Camera(0,0,canvas.width,canvas.height);cacheCamera.setScene(this).setScroll(cache.scroll.x,cache.scroll.y).setZoom(cache.scale);cacheCamera.preRender();
     this.background.setVisible(true);
     // Phaser's public graphics Canvas compositor accepts an explicit context and camera.
     (this.background as any).renderCanvas(this.game.renderer,this.background,cacheCamera,null,canvas.getContext('2d'),false);
-    for(const {graphics,bounds} of this.terrainChunks.values()){
+    if(detail)for(const {graphics,bounds} of this.terrainChunks.values()){
       if(bounds.x1<region.x0||bounds.x0>region.x1||bounds.y1<region.y0||bounds.y0>region.y1)continue;
       (graphics as any).renderCanvas(this.game.renderer,graphics,cacheCamera,null,canvas.getContext('2d'),false);
     }
@@ -405,7 +408,7 @@ class DioramaScene extends Phaser.Scene {
     // A read-only canvas source needs no CanvasTexture pixel buffer. Avoid its full
     // getImageData readback every time the camera crosses the cached region.
     const texture=this.textures.create('iso-ground',canvas)!;texture.add('__BASE',0,0,0,canvas.width,canvas.height);texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
-    this.groundCache=this.add.image(region.x0,region.y0,'iso-ground').setOrigin(0,0).setScale(1/cache.scale).setDepth(-10000);this.staticObjects.push(this.groundCache);this.groundRegion=region;this.groundScale=cache.scale;this.requestRender();
+    this.groundCache=this.add.image(region.x0,region.y0,'iso-ground').setOrigin(0,0).setScale(1/cache.scale).setDepth(-10000);this.staticObjects.push(this.groundCache);this.groundRegion=region;this.groundScale=cache.scale;this.groundDetail=detail;this.requestRender();
   }
   browseCamera(){this.cameraMode='browse';this.islandOverview=false;}
   resetCamera(focusPlayer=true){const view=defaultCamera(this.owner.mode,this.owner.width,this.owner.height);if(focusPlayer&&this.owner.mode==='town'){const p=px(this.owner.player,55);view.scrollX=p.x-this.owner.width/2;view.scrollY=p.y-this.owner.height/2;}this.cameraMode='follow';this.islandOverview=false;this.cameras.main.setZoom(view.zoom).setScroll(view.scrollX,view.scrollY);this.cameraSet=true;this.requestRender();}
@@ -424,10 +427,11 @@ class DioramaScene extends Phaser.Scene {
     this.buildings=townBuildings(this.owner.game?.catalogue||[]);this.navigation=townNavigation(this.buildings);
     this.islandGround();const ground=this.background!;
     const streetDoors=[...this.buildings.map(b=>({id:b.id,district:b.neighbourhood||'market',at:b.door})),...townShopLots().map((lot,index)=>({id:'resident-lot-'+index,district:'resident',at:lot.door}))];
-    drawNeighbourhoodGround(ground,townDistricts(),townTrails(),streetDoors,this.navigation);
+    const paved=drawNeighbourhoodGround(ground,townDistricts(),townTrails(),streetDoors,this.navigation,p=>this.terrainAt(p));
     this.owner.hotspots=[];
     for(const building of this.buildings){
-      const foot=px(building.at);ground.fillStyle(0x7e906b,.18).fillEllipse(foot.x,foot.y-24,340,148);
+      // A soft contact shadow: a wide faint halo and a tighter, slightly warmer core under the walls.
+      const foot=px(building.at);ground.fillStyle(0x6f8458,.09).fillEllipse(foot.x,foot.y-22,330,136);ground.fillStyle(0x5f6a45,.11).fillEllipse(foot.x,foot.y-16,250,92);
       const kind=townBuildingArt(building.meta,building.variant);this.ensureAssets([kind]);const key=this.careerArt(building.id,kind,this.textures.exists('art-'+kind)?'art-'+kind:'art-'+building.variant);
       const source=this.textures.get(key).getSourceImage() as HTMLImageElement|HTMLCanvasElement;
       const width=building.neighbourhood==='garden'?375:building.neighbourhood==='office'?340:355;
@@ -446,6 +450,10 @@ class DioramaScene extends Phaser.Scene {
       const image=this.add.image(at.x,at.y,key).setOrigin(.5,.94).setDisplaySize(width,width).setDepth(at.y+.2);this.staticObjects.push(image);
     }
     this.refreshResidentShops();this.amenities();this.landmarks();
+    // The lawn's tufts, flowers and pebbles: baked per terrain chunk, so a ground-cache rebuild only replays nearby ones.
+    const lawn=islandCoastline(-1.9),feet=[...this.buildings.map(b=>b.footprint),...townShopLots().map(l=>({x0:l.at.x-1.6,y0:l.at.y-1.6,x1:l.at.x+1.2,y1:l.at.y+1.2}))];
+    const onLawn=(p:Point)=>{let yes=false;for(let i=0,j=lawn.length-1;i<lawn.length;j=i++){const a=lawn[i],b=lawn[j];if((a.y>p.y)!==(b.y>p.y)&&p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x)yes=!yes;}return yes;};
+    drawGrassDetail(p=>this.terrainAt(p),{x0:-50,y0:-15,x1:93,y1:65},p=>!paved(p)&&!feet.some(r=>inside(p,r))&&onLawn(p));
     for(const d of townDistricts()){
       const h:Hotspot={id:'district:'+d.id,label:d.name,...d.at,approach:d.at,point:px(d.at),z:0,range:50};this.owner.hotspots.push(h);
       // District names belong to the guide/overview; a second board at each
