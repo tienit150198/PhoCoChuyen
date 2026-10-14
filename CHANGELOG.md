@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # v2.4.10 — 2026-10-14
 
 🧩 Ghép ba Phố Mây: chồng úp vẽ ô trên cùng (đã lật) ĐÈ LÊN các ô úp bên dưới — 2.4.7–2.4.9 vẽ ngược, ô úp che mất ô mở nên chạm vào chỉ trúng ô úp, chồng không lấy được và cuối màn dư 3 ô không khớp (màn 5 trở đi, 96/100 màn; chủ game báo ở màn 8). Đổi 🪷 thành 🥥 (🪷 hiện ô trống trên iOS 15.0–15.3, từ màn 77). Thêm scripts/browser_tile_levels.py: chơi trọn màn 1–20 bằng chạm thật trên màn hình điện thoại. Màn chơi, nước đi và bản lưu giữ nguyên. Không có Có gì mới.
@@ -16,6 +17,11 @@ Rương kho báu bản đồ 2.5D: bỏ giới hạn 1 rương/đợt và 5 rư�
 # Chưa phát hành — daygate
 
 Ngày thực đạt chuẩn (Mở rộng nghề, Chuyên môn nghề) được tính NGAY khi đạt (≥3 việc sạch, ≥80%; mốc có hợp đồng: thêm ca quản lý nghiệm thu), mỗi ngày lịch một lần, lỗi sau đó trong ngày không trừ; không còn chờ 0h. Mốc đầu cần 2 ngày thực thay vì 3. Dòng sống “Hôm nay: x/y việc sạch · đã tính ✓ / còn N việc sạch nữa” ở Mở rộng nghề, Chuyên môn, Tay nghề lâu năm và hàng “ngày tốt” Thăng tiến. Bản lưu: khóa tùy chọn `careers.<nghề>.scale_credit` (2.4.8 đọc được, bỏ qua). Không có Có gì mới.
+=======
+# Chưa phát hành — chua (không có Có gì mới)
+
+- 🛕 Đi chùa gọn và đẹp hơn (chủ game “nhìn lộn xộn quá”): đầu cảnh một dòng (Rằm · cơm chay · thanh tinh thần), khu chùa thành nút nổi trên cảnh, thanh bước đi lễ dưới cảnh 🪔 Thắp hương → 🙏 Khấn → 📜 Lời chúc → 💌 Chia sẻ (chạm là tự đi tới, kể cả qua cửa khu khác; ✓ khi đã làm hôm nay) và 🧭 Quanh đây cho các chỗ còn lại; khấn và lời chúc hỏi từng câu một (cho ai → mong gì, chỉ hiện điều hợp → đọc lại), lời chúc xem trước như mảnh giấy đỏ, sau khi treo có nút “Chia sẻ lên bảng chung”; mỗi khung một nút chính (“Tiếp: …” dẫn sang bước sau), lời giới thiệu vào “?”; trên máy tính khung nằm bên phải và cảnh trượt sang để còn thấy nhân vật; tiếng chuông nhỏ khi thắp hương/treo lời chúc, “✨ +n” bay lên trên nhân vật. Luật, phần thưởng, dữ liệu lưu không đổi; chỉ giao diện (check_task_compat OK).
+>>>>>>> chua
 
 # v2.4.8 — 2026-10-14
 

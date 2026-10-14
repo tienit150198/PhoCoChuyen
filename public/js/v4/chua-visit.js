@@ -9,7 +9,7 @@
  * Reduced motion: the player steps straight to where they tapped, nothing drifts, the chant's ring stays still
  * (the mõ lights up on the beat instead). */
 import {icon,escapeHTML as esc} from '../icons.js';
-import {visitStatus,cardComposer,cardHistory,cardResult,spiritGain,actionDone,actionWhy,createCardBoard,cardBoardHTML,cardBoardTabs} from './chua.js';
+import {cardComposer,cardHistory,cardText,spiritGain,actionDone,actionWhy,createCardBoard,cardBoardHTML,cardBoardTabs,pagodaArt} from './chua.js';
 import {loadOlder} from '../archive.js';
 import {stylesheet} from '../lazy.js';
 import {figure,paintPlayer,CANVAS} from './look.js';
@@ -20,7 +20,8 @@ const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
 const S={env:null,dlg:null,cv:null,ctx:null,stage:null,area:'san',port:false,k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,cam:null,
   me:{x:0,y:0,path:null,pose:'stand',poseUntil:0,step:0},arrive:null,fx:{},panel:null,result:'',chant:null,khan:{who:'',what:''},
-  card:{recipient:'',blessing:'',name:'',message:'',public:false},board:null,talk:{},raf:0,last:0,drawn:0,time:0,fadeAt:-9,busy:false,bound:false,covered:false};
+  card:{recipient:'',blessing:'',name:'',message:'',public:false},board:null,talk:{},raf:0,last:0,drawn:0,time:0,fadeAt:-9,busy:false,bound:false,covered:false,
+  view:'',help:false};
 const C=()=>S.env?.api.state?.chua;
 const day=()=>({lunar:C()?.lunar|0,feast:!!C()?.feast});
 const pl=()=>plan(S.area,S.port,day());
@@ -42,6 +43,12 @@ const INTRO={
   khan:'Bạn quỳ trên chiếu trước điện Phật. Tự chọn khấn cho ai, mong điều gì.',
   tung:'Thầy giữ chuông gia trì, bạn giữ mõ. Gõ đúng lúc vòng sáng khép lại.',
 };
+/** The visit as four steps in the bar under the scene (one tap walks there); everything else is "Quanh đây". */
+const STEPS=[{id:'huong',icon:'🪔',name:'Thắp hương'},{id:'khan',icon:'🙏',name:'Khấn'},{id:'nguyen',icon:'📜',name:'Lời chúc'},{id:'board',icon:'💌',name:'Chia sẻ'}];
+const HELP={...INTRO,
+  board:'Lời chúc Công khai hiện cho cả phố, kèm tên và lời nhắn. Đổi lại lúc nào cũng được.',
+  here:'Chạm vào cảnh để đi tới. Mọi việc ở chùa đều miễn phí và làm lại được.',
+  chant:'Thầy gõ ba tiếng mõ mở đầu. Gõ mõ đúng lúc vòng sáng khép lại.'};
 const VERB={huong:'🪔 Thắp hương',chuong:'🔔 Đứng nghe chuông',ngoi:'🍃 Ngồi xuống',quet:'🧹 Cầm chổi quét',com:'🍚 Ngồi vào bàn',khan:'🙏 Chắp tay khấn',tung:'📿 Bắt đầu tụng'};
 const POSE={huong:'pray',chuong:'pray',ngoi:'sit',nguyen:'pray',quet:'sweep',com:'sit',khan:'kneel',tung:'kneel'};
 const NPC={
@@ -64,7 +71,7 @@ const PERIOD=.95,LEAD=3,WINDOW=.26;
  * no loop on a data-saving connection. */
 const FILES={bell:'chuong-dai-hong-2.mp3',mo:'mo-1.mp3',bowl:'chuong-gia-tri.mp3',voice:'su-tung-kinh.mp3'};
 const LOOPS={san:['nen-chua-sang.mp3',.55],trai:['nen-chua-sang.mp3',.35],dien:['tung-kinh-loop.mp3',.3]};
-const NEEDS={chuong:['bell'],khan:['bowl'],tung:['mo','bowl','voice']};
+const NEEDS={chuong:['bell'],khan:['bowl'],huong:['bowl'],nguyen:['bowl'],tung:['mo','bowl','voice']};
 const soundUrl=f=>globalThis.__mnlBoot?.asset?.(`/audio/chua/${f}`)||`/audio/chua/${f}`;
 const settings=()=>S.env?.api.state?.settings||{};
 const QUIET_KEY='mnl.chua.quiet';
@@ -127,20 +134,20 @@ function dialog(){
   if(S.dlg)return S.dlg;
   const d=document.createElement('dialog');
   d.className='sheet v4-sheet cv-sheet';d.setAttribute('aria-labelledby','cvTitle');
-  d.innerHTML=`<div class="cv-root"><header class="cv-head"><span class="cv-logo" aria-hidden="true">🛕</span><div class="grow"><h2 id="cvTitle">Chùa Gió Lành</h2><p class="cv-day"></p></div>
-      <button type="button" class="btn cream small cv-donate" data-cv="donate" hidden>Công đức</button>
+  d.innerHTML=`<div class="cv-root"><header class="cv-head">${pagodaArt(34,'cv-logo')}<div class="grow"><h2 id="cvTitle">Chùa Gió Lành</h2><p class="cv-day"></p></div>
+      <button type="button" class="btn ghost small cv-donate" data-cv="donate" hidden><span aria-hidden="true">🪷</span><span class="cv-donate-t">Công đức</span></button>
       <button type="button" class="icon-btn cv-mute" data-cv="mute" aria-label="Tiếng chùa" aria-pressed="true"></button>
       <button type="button" class="icon-btn" data-cv="close" aria-label="Ra về">${icon('x',20)}</button></header>
-    <nav class="cv-areas" aria-label="Khu trong chùa"></nav>
-    <div class="cv-stage"><canvas class="cv-canvas" tabindex="0" role="img" aria-label="Chùa Gió Lành"></canvas><div class="cv-panel" hidden></div></div>
-    <div class="cv-here" role="group" aria-label="Ở đây có"></div></div>`;
+    <div class="cv-stage"><canvas class="cv-canvas" tabindex="0" role="img" aria-label="Chùa Gió Lành"></canvas>
+      <nav class="cv-areas" aria-label="Khu trong chùa"></nav><div class="cv-panel" role="region" aria-label="Ở đây" hidden></div></div>
+    <nav class="cv-path" aria-label="Các bước đi lễ"></nav></div>`;
   document.body.append(d);
   S.stage=d.querySelector('.cv-stage');S.cv=d.querySelector('canvas');S.ctx=S.cv.getContext('2d');
   d.addEventListener('click',e=>{const el=e.target.closest('[data-cv]');if(!el||!d.contains(el)||el.disabled)return;e.preventDefault();act(el.dataset.cv,el.dataset);});
   d.addEventListener('pointerdown',e=>{if(e.target.closest('.cv-mo')){e.preventDefault();tapMo();}});
   d.addEventListener('keydown',e=>{if(S.chant?.state==='run'&&(e.key===' '||e.key==='Enter')){e.preventDefault();tapMo();}});
   d.addEventListener('close',onClose);
-  d.addEventListener('input',e=>{const field=e.target.dataset?.cardField;if(field==='name'||field==='message')S.card[field]=e.target.value;});
+  d.addEventListener('input',e=>{const field=e.target.dataset?.cardField;if(field!=='name'&&field!=='message')return;S.card[field]=e.target.value;liveTag();});
   let down=null;
   S.cv.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,t:performance.now()};});
   S.cv.addEventListener('pointerup',e=>{const d0=down;down=null;if(!d0||Math.hypot(e.clientX-d0.x,e.clientY-d0.y)>14||performance.now()-d0.t>800)return;tapAt(e.clientX,e.clientY);});
@@ -150,7 +157,7 @@ function dialog(){
 }
 function bind(){
   if(S.bound)return;S.bound=true;
-  S.env.api.addEventListener('state',()=>{if(!S.dlg?.open)return;S.drawn=0;head();here();if(!S.covered)ambience(S.area);if(S.panel&&!S.result&&S.chant?.state!=='run'&&!S.dlg.contains(document.activeElement?.closest?.('.cv-card-compose')))panel();});
+  S.env.api.addEventListener('state',()=>{if(!S.dlg?.open)return;S.drawn=0;head();path();if(!S.covered)ambience(S.area);if(S.panel&&!S.result&&S.chant?.state!=='run'&&!S.dlg.contains(document.activeElement?.closest?.('.cv-card-compose')))panel();});
 }
 /** Open the pagoda (from ./chua.js's "Vào chùa"); comes in through the gate. */
 export async function openChua(env){
@@ -158,10 +165,11 @@ export async function openChua(env){
   if(!hasScene(C()))return;
   S.card.public=false;S.board=C().sharing?createCardBoard(S.env.api,refreshBoard):null;
   const d=dialog();
-  S.area='san';S.panel=null;S.result='';S.chant=null;S.khan={who:'',what:''};S.fx={};S.me.pose='stand';S.me.path=null;S.arrive=null;
+  S.area='san';S.panel=null;S.result='';S.view='';S.help=false;S.chant=null;S.khan={who:'',what:''};S.fx={};S.me.pose='stand';S.me.path=null;S.arrive=null;
   if(!d.open)d.showModal();
   const toasts=document.getElementById('toasts');if(toasts)d.append(toasts);   // errors show over the scene
-  size();place(pl().entry.gate);head();here();panel();
+  size();place(pl().entry.gate);head();path();panel();
+  S.board?.load('mine');   // the "Chia sẻ" step knows whether a card is already public
   wantAudio('chua',true);ambience(S.area);
   S.cv.focus({preventScroll:true});
   S.last=performance.now();cancelAnimationFrame(S.raf);S.raf=requestAnimationFrame(loop);
@@ -188,15 +196,16 @@ function size(){
  * that follows the player, and keeps them above the panel when the panel spans the stage. */
 function view(dt){
   const [x0,y0,x1,y1]=VIEW[S.port?'port':'land'],vw=x1-x0,vh=y1-y0,cw=S.cw,ch=S.ch;if(!cw)return;
-  const box=S.dlg?.querySelector('.cv-panel'),wide=box&&!box.hidden&&box.offsetWidth>cw*.8;
+  const box=S.dlg?.querySelector('.cv-panel'),open=box&&!box.hidden,wide=open&&box.offsetWidth>cw*.8,avail=open&&!wide?Math.max(cw*.4,box.offsetLeft-8):cw;
   const band=wide?Math.max(ch*.3,box.offsetTop-6):ch,Z=S.port?.72:1;
   const k=Math.min(cw/(vw*Z),band/(vh*Z),Math.max(cw/vw,band/vh)*1.6);
   const want=[S.me.x||(x0+x1)/2,(S.me.y||(y0+y1)/2)-(S.port?110:90)];
   if(!S.cam||still()||!dt)S.cam=want;else{const a=Math.min(1,dt*4);S.cam=[S.cam[0]+(want[0]-S.cam[0])*a,S.cam[1]+(want[1]-S.cam[1])*a];}
-  const fitX=vw*k<=cw,fitY=vh*k<=band;
+  const fitX=vw*k<=avail,fitY=vh*k<=band;
   S.k=k;
-  S.ox=fitX?(cw-vw*k)/2-x0*k:Math.min(-x0*k,Math.max(cw-x1*k,cw/2-S.cam[0]*k));
-  S.oy=fitY?(band-vh*k)/2-y0*k:Math.min(-y0*k,Math.max(band-y1*k,band/2-S.cam[1]*k));
+  const tx=fitX?(avail-vw*k)/2-x0*k:Math.min(-x0*k,Math.max(avail-x1*k,avail/2-S.cam[0]*k));
+  const ty=fitY?(band-vh*k)/2-y0*k:Math.min(-y0*k,Math.max(band-y1*k,band/2-S.cam[1]*k));
+  if(still()||!dt){S.ox=tx;S.oy=ty;}else{const a=Math.min(1,dt*6);S.ox+=(tx-S.ox)*a;S.oy+=(ty-S.oy)*a;}
 }
 function place(p){const q=nearestFree(pl(),p)||p;S.me.x=q[0];S.me.y=q[1];S.me.path=null;}
 const toScene=(cx,cy)=>{const r=S.cv.getBoundingClientRect();return [(cx-r.left-S.ox)/S.k,(cy-r.top-S.oy)/S.k];};
@@ -219,11 +228,11 @@ function tapAt(cx,cy){
   closePanel();walkTo(p);
 }
 function hitSpot(p){let best=null,bd=Infinity;for(const s of pl().spots){const d=Math.hypot(s.hit[0]-p[0],s.hit[1]-p[1]);if(d<=s.r&&d<bd){bd=d;best=s;}}return best;}
-function goSpot(s,after=null){
+function goSpot(s,after=null,view=''){
   if(!s)return;closePanel();
   walkTo(s.stand,()=>{
     if(s.kind==='door'){enterArea(s.to);after?.();}
-    else{S.panel=s;S.result='';if(s.kind==='npc')S.talk[s.who]=S.talk[s.who]??0;if(s.act)prefetch(s.act);panel();if(s.act==='nguyen'&&S.board)S.board.load(S.board.tab);}
+    else{S.panel=s;S.result='';S.view=view;if(s.kind==='npc')S.talk[s.who]=S.talk[s.who]??0;if(s.act)prefetch(s.act);panel();if(s.act==='nguyen'&&S.board)S.board.load(S.board.tab);}
   });
 }
 function goArea(id){
@@ -232,22 +241,32 @@ function goArea(id){
   if(door)goSpot(door);
   else if(S.area!=='san')goSpot(pl().spots.find(s=>s.kind==='door'&&s.to==='san'),()=>goArea(id));
 }
+/** The area a spot is in (any area: the step bar walks through the doors). */
+function areaOf(id){for(const a of AREAS)if(plan(a.id,S.port,day()).spots.some(s=>s.id===id))return a.id;return '';}
+function goTo(id,view=''){
+  if(S.covered||S.chant?.state==='run')return;
+  const area=areaOf(id);if(!area)return;
+  if(area===S.area){goSpot(pl().spots.find(s=>s.id===id),null,view);return;}
+  const door=pl().spots.find(s=>s.kind==='door'&&s.to===area)||pl().spots.find(s=>s.kind==='door'&&s.to==='san');
+  if(door)goSpot(door,()=>goTo(id,view));
+}
 function enterArea(id){
   if(id===S.area||!AREAS.some(a=>a.id===id))return;
   const from=S.area;S.area=id;closePanel();
   place(pl().entry[from]||Object.values(pl().entry)[0]);
   if(!still())S.fadeAt=S.time;
-  head();here();S.drawn=0;ambience(id);
+  head();path();S.drawn=0;ambience(id);
 }
 
-/* ---- the header, the area chips, "here" ---- */
+/* ---- the header, the area tabs, the step bar ---- */
 function head(){
   const c=C();if(!c||!S.dlg)return;
   const m=S.dlg.querySelector('.cv-mute'),on=settings().sound!==false&&!quiet;
   S.dlg.querySelector('.cv-donate').hidden=typeof S.env.onDonate!=='function';
   m.innerHTML=icon(on?'volume':'mute',20);m.setAttribute('aria-pressed',String(on));m.disabled=settings().sound===false;
   m.title=settings().sound===false?'Âm thanh đang tắt trong Cài đặt':on?'Tắt tiếng chùa':'Bật tiếng chùa';
-  S.dlg.querySelector('.cv-day').innerHTML=`<span>${esc(c.label||'')}</span>${c.feast?' · <span>chùa có cơm chay</span>':''}<span class="cv-status">${visitStatus(c)}</span>`;
+  const sp=Math.max(0,Math.min(100,c.spirit|0));
+  S.dlg.querySelector('.cv-day').innerHTML=`<span>${esc(c.label||'')}</span>${c.feast?' · <span>🍚 cơm chay</span>':''}<span class="cv-spirit" title="Tinh thần ${sp}/100"><span class="cv-meter" aria-hidden="true"><i style="width:${sp}%"></i></span><span>Tinh thần ${sp}</span></span>`;
   S.dlg.querySelector('.cv-areas').innerHTML=AREAS.map(a=>`<button type="button" class="cv-chip${a.id===S.area?' on':''}" data-cv="area" data-id="${a.id}" aria-pressed="${a.id===S.area}"><span aria-hidden="true">${a.icon}</span><b>${esc(a.name)}</b></button>`).join('');
 }
 function spotName(s){
@@ -256,10 +275,22 @@ function spotName(s){
   if(s.kind==='look')return LOOK_NAME[s.look]||'👀';
   const a=actOf(s.act);return `${a?.emoji||'•'} ${SHORT[s.act]||a?.name||''}`;
 }
-function here(){
-  if(!S.dlg)return;
-  S.dlg.querySelector('.cv-here').innerHTML=pl().spots.map(s=>{const a=s.kind==='act'?actOf(s.act):null,done=actionDone(C(),a);
-    return `<button type="button" class="cv-spot${done?' done':''}${s.kind==='door'?' door':''}" data-cv="spot" data-id="${esc(s.id)}">${esc(spotName(s))}${done?' <i aria-label="đã làm">✓</i>':''}</button>`;}).join('');
+/** A step is done once today (repeatable anyway); "Chia sẻ" once one of your cards is public. */
+function stepDone(id){return id==='board'?!!S.board?.mine.rows.some(r=>r.public===true):!!actOf(id)?.done;}
+const nextStep=(skip='')=>STEPS.find(x=>x.id!==skip&&(x.id!=='board'||S.board)&&!stepDone(x.id))||null;
+function path(){
+  const bar=S.dlg?.querySelector('.cv-path');if(!bar)return;
+  const cur=nextStep(),here=S.panel?.kind==='act'?S.panel.act:'';
+  bar.innerHTML=`<ol class="cv-steps">${STEPS.filter(x=>x.id!=='board'||S.board).map(x=>{const done=stepDone(x.id),on=x.id==='board'?S.view==='board':here===x.id&&S.view!=='board';
+    return `<li><button type="button" class="cv-step${done?' done':''}${cur?.id===x.id?' next':''}${on?' on':''}" data-cv="step" data-id="${x.id}"${on?' aria-current="step"':''}><span class="cv-step-ico" aria-hidden="true">${x.icon}${done?'<i>✓</i>':''}</span><span class="cv-step-name">${esc(x.name)}</span></button></li>`;}).join('')}</ol>
+    <button type="button" class="cv-step cv-more${S.panel?.kind==='here'?' on':''}" data-cv="here"><span class="cv-step-ico" aria-hidden="true">🧭</span><span class="cv-step-name">Quanh đây</span></button>`;
+}
+/** Kept for older callers: the spots of this area now live in the "Quanh đây" panel. */
+const here=path;
+function hereBody(){
+  const area=AREAS.find(a=>a.id===S.area);
+  return top('🧭','Quanh đây',area?`${area.icon} ${area.name}`:'',HELP.here)+`<div class="cv-tiles">${pl().spots.map(s=>{const a=s.kind==='act'?actOf(s.act):null,done=actionDone(C(),a)||!!a?.done;
+    return `<button type="button" class="cv-spot${done?' done':''}${s.kind==='door'?' door':''}" data-cv="spot" data-id="${esc(s.id)}">${esc(spotName(s))}${done?' <i aria-label="đã làm">✓</i>':''}</button>`;}).join('')}</div>`;
 }
 
 /* ---- the panel: what happens here ---- */
@@ -268,63 +299,88 @@ function gain(a){
   const out=[];if(a.spirit)out.push(`tinh thần +${spiritGain(C(),a.spirit)}`);if(a.wake)out.push(`tỉnh táo +${a.wake}`);if(a.full)out.push(`no bụng +${a.full}`);
   return out.join(' · ');
 }
-const top=(emoji,title,sub='')=>`<div class="cv-p-head"><span class="cv-p-emoji" aria-hidden="true">${emoji}</span><div class="grow"><b>${esc(title)}</b>${sub?`<small>${esc(sub)}</small>`:''}</div>
-  <button type="button" class="icon-btn small" data-cv="shut" aria-label="Đóng">${icon('x',16)}</button></div>`;
+const top=(emoji,title,sub='',help='')=>`<div class="cv-p-head"><span class="cv-p-emoji" aria-hidden="true">${emoji}</span><div class="grow"><b>${esc(title)}</b>${sub?`<small>${esc(sub)}</small>`:''}</div>
+  ${help?`<button type="button" class="icon-btn small cv-q-btn" data-cv="help" aria-expanded="${S.help}" aria-label="Giải thích">?</button>`:''}<button type="button" class="icon-btn small" data-cv="shut" aria-label="Đóng">${icon('x',16)}</button></div>
+  ${help&&S.help?`<p class="cv-help">${esc(help)}</p>`:''}`;
 const why=a=>actionWhy(C(),a);
+const main=(html,cv,data='',off=false)=>`<div class="cv-p-acts"><button type="button" class="btn primary big full" data-cv="${cv}"${data}${off?' disabled':''}>${html}</button></div>`;
 function actBody(a){
   const no=why(a),note=no?`<p class="cv-why">${esc(no)}</p>`:'';
-  if(a.id==='nguyen'&&C().card_choices){
-    if(S.board)return `<p>${esc(INTRO.nguyen)}</p>${note}${cardBoardTabs(S.board)}${S.board.tab==='mine'?cardComposer(C().card_choices,S.card,a.ok,true):''}${cardBoardHTML(S.board,C().card_choices,false)}`;
-    return `<p>${esc(INTRO.nguyen)}</p>${note}${cardComposer(C().card_choices,S.card,a.ok)}${cardHistory(C())}`;
-  }
-  if(a.id==='nguyen')return `<p>${esc(INTRO.nguyen)}</p>${note}<div class="cv-chips">${(C().wishes||[]).map(w=>`<button type="button" class="cv-pick" data-cv="do" data-act="nguyen" data-wish="${esc(w.id)}"${a.ok?'':' disabled'}>📜 ${esc(w.text)}</button>`).join('')}</div>`;
+  if(a.id==='nguyen'&&C().card_choices)return note+cardComposer(C().card_choices,S.card,a.ok,!!S.board);
+  if(a.id==='nguyen')return note+`<div class="cv-chips">${(C().wishes||[]).map(w=>`<button type="button" class="cv-pick" data-cv="do" data-act="nguyen" data-wish="${esc(w.id)}"${a.ok?'':' disabled'}>📜 ${esc(w.text)}</button>`).join('')}</div>`;
   if(a.id==='khan')return khanBody(a,note);
-  if(a.id==='tung')return `<p>${esc(INTRO.tung)}</p>${a.ok?'':`<p class="cv-why">${esc(no)} · vẫn tụng cùng thầy được, chỉ không tính thêm.</p>`}
-    <div class="cv-p-acts"><button type="button" class="btn primary" data-cv="chant">${VERB.tung}</button></div>`;
-  const intro=a.id==='com'&&!C().feast?'Hôm nay không phải rằm hay mùng 1, bàn ăn còn trống.':INTRO[a.id];
-  return `<p>${esc(intro)}</p>${note}<div class="cv-p-acts"><button type="button" class="btn primary" data-cv="do" data-act="${esc(a.id)}"${a.ok?'':' disabled'}>${VERB[a.id]||esc(a.name)}</button></div>`;
+  if(a.id==='tung')return (a.ok?'':`<p class="cv-why">${esc(no)} · vẫn tụng cùng thầy được, chỉ không tính thêm.</p>`)+main(VERB.tung,'chant');
+  return note+main(VERB[a.id]||esc(a.name),'do',` data-act="${esc(a.id)}"`,!a.ok);
 }
+/** Khấn, one question at a time: who for → what for (only what fits) → the prayer, read back before kneeling. */
 function khanBody(a,note){
-  const K=C().khan,who=K.who.find(w=>w.id===S.khan.who),what=K.what.find(w=>w.id===S.khan.what);
-  const whoChips=K.who.map(w=>`<button type="button" class="cv-pick${w.id===S.khan.who?' on':''}" data-cv="who" data-id="${esc(w.id)}" aria-pressed="${w.id===S.khan.who}"${a.ok?'':' disabled'}>${esc(w.text)}</button>`).join('');
-  const whatChips=K.what.map(w=>{const fits=who&&who.what.includes(w.id);return `<button type="button" class="cv-pick${w.id===S.khan.what?' on':''}" data-cv="what" data-id="${esc(w.id)}" aria-pressed="${w.id===S.khan.what}"${a.ok&&fits?'':' disabled'}>${esc(w.text)}</button>`;}).join('');
-  return `<p>${esc(INTRO.khan)}</p>${note}
-    <h4 class="cv-q">Khấn cho ai?</h4><div class="cv-chips">${whoChips}</div>
-    <h4 class="cv-q">Mong điều gì?${who?'':' <small>chọn người trước</small>'}</h4><div class="cv-chips">${whatChips}</div>
-    <p class="cv-prayer">${who&&what?`<b>“${esc(`Con cầu mong ${who.text} ${what.text}.`)}”</b>`:`“<span>Con cầu mong</span> <b>${who?esc(who.text):'…'}</b> <b>…</b>”`}</p>
-    <div class="cv-p-acts"><button type="button" class="btn primary" data-cv="do" data-act="khan"${a.ok&&who&&what?'':' disabled'}>${VERB.khan}</button></div>`;
+  const K=C().khan,who=K.who.find(w=>w.id===S.khan.who),what=who?K.what.find(w=>w.id===S.khan.what&&who.what.includes(w.id)):null;
+  const pick=(kind,w)=>`<button type="button" class="cv-pick" data-cv="${kind}" data-id="${esc(w.id)}" aria-pressed="false"${a.ok?'':' disabled'}>${esc(w.text)}</button>`;
+  const back='<button type="button" class="cv-crumb" data-cv="khan-back" aria-label="Quay lại">‹</button>';
+  const dots=n=>`<span class="cv-dots" aria-hidden="true">${[1,2,3].map(i=>`<i${i<=n?' class="on"':''}></i>`).join('')}</span>`;
+  if(!who)return note+`${dots(1)}<h4 class="cv-q">Khấn cho ai?</h4><div class="cv-chips grid">${K.who.map(w=>pick('who',w)).join('')}</div>`;
+  if(!what)return note+`${dots(2)}<h4 class="cv-q">${back}Mong <b>${esc(who.text)}</b>…</h4><div class="cv-chips">${K.what.filter(w=>who.what.includes(w.id)).map(w=>pick('what',w)).join('')}</div>`;
+  return note+`${dots(3)}<div class="cv-q-row">${back}<p class="cv-prayer"><span>“${esc(`Con cầu mong ${who.text} ${what.text}.`)}”</span></p></div>`+main(VERB.khan,'do',' data-act="khan"',!a.ok);
 }
 function talkBody(who){
   const p=PEOPLE[who],lines=who==='thay'?(C().abbot||[]):who==='nhan'&&C().feast?NPC.nhan_feast:NPC[who]||[];
   const i=(S.talk[who]|0)%Math.max(1,lines.length),line=lines[i]||'';
-  const more=who==='thay'?`<button type="button" class="btn cream small" data-cv="talk" data-who="thay">Thưa thầy, con nghe thêm</button>
-      <button type="button" class="btn primary small" data-cv="tothemo">📿 Xin tụng kinh cùng thầy</button>
-      <button type="button" class="btn ghost small" data-cv="bye" data-who="thay">🙏 Chắp tay chào thầy</button>`
-    :`<button type="button" class="btn cream small" data-cv="talk" data-who="${esc(who)}">Nói chuyện thêm</button><button type="button" class="btn ghost small" data-cv="shut">Chào</button>`;
-  return top(p.icon,p.name,p.role)+`<p class="cv-line">“${esc(line)}”</p><div class="cv-p-acts">${more}</div>`;
+  const more=who==='thay'?`<div class="cv-p-acts"><button type="button" class="btn primary big full" data-cv="tothemo">📿 Xin tụng kinh cùng thầy</button></div>
+      <div class="cv-p-sub"><button type="button" class="btn ghost small" data-cv="talk" data-who="thay">Con nghe thêm</button><button type="button" class="btn ghost small" data-cv="bye" data-who="thay">🙏 Chào thầy</button></div>`
+    :`<div class="cv-p-sub"><button type="button" class="btn ghost small" data-cv="talk" data-who="${esc(who)}">Nói chuyện thêm</button><button type="button" class="btn ghost small" data-cv="shut">Chào</button></div>`;
+  return top(p.icon,p.name,p.role)+`<blockquote class="cv-line">${esc(line)}</blockquote>${more}`;
+}
+function boardBody(){
+  const a=actOf('nguyen');
+  return top('📖','Bảng lời chúc','',HELP.board)+(S.board?cardBoardHTML(S.board,C().card_choices,true):cardHistory(C()))+
+    (a?main('📜 Viết lời chúc','compose'):'');
 }
 function panel(){
   const box=S.dlg?.querySelector('.cv-panel');if(!box)return;
   const s=S.panel;
-  if(!s){box.hidden=true;box.innerHTML='';S.stage.classList.remove('has-panel');return;}
+  if(!s){box.hidden=true;box.innerHTML='';S.stage.classList.remove('has-panel');path();return;}
   let html='';
   if(S.chant)html=chantHTML();
-  else if(S.result)html=S.result+(s.act==='nguyen'?(S.board?cardBoardHTML(S.board,C().card_choices):cardHistory(C())):'');
+  else if(S.result)html=S.result;
+  else if(s.kind==='here')html=hereBody();
   else if(s.kind==='npc')html=talkBody(s.who);
-  else if(s.kind==='look')html=top('👀',spotName(s).replace(/^\S+\s/,''))+`<p>${esc(LOOKS[s.look]||'')}</p>`;
-  else{const a=actOf(s.act);if(!a){closePanel();return;}html=top(a.emoji,a.name,gain(a))+actBody(a);}
-  box.innerHTML=html;box.hidden=false;S.stage.classList.add('has-panel');
+  else if(s.kind==='look')html=top('👀',spotName(s).replace(/^\S+\s/,''))+`<p class="cv-look">${esc(LOOKS[s.look]||'')}</p>`;
+  else if(s.act==='nguyen'&&S.view==='board')html=boardBody();
+  else{const a=actOf(s.act);if(!a){closePanel();return;}
+    html=top(a.emoji,a.name,gain(a),HELP[a.id]||'')+actBody(a);}
+  const kind=S.chant?'chant':S.result?'result':s.kind==='act'&&S.view==='board'?'board':s.kind;
+  box.innerHTML=html;box.hidden=false;box.dataset.kind=kind;S.stage.classList.add('has-panel');
   if(S.chant)S.chant.el=null;
+  path();
 }
-function closePanel(){if(S.chant?.state==='run')return;S.panel=null;S.result='';S.chant=null;stand();panel();}
-function showResult(emoji,title,text,body=null){S.result=top(emoji,title)+`<p class="cv-result">${body??esc(text)}</p><div class="cv-p-acts">${C()?.unlimited&&S.panel?.kind==='act'&&actOf(S.panel.act)?.ok?'<button type="button" class="btn cream small" data-cv="again">Làm thêm lần nữa</button>':''}<button type="button" class="btn primary small" data-cv="shut">Đóng</button></div>`;panel();}
+function closePanel(){if(S.chant?.state==='run')return;S.panel=null;S.result='';S.view='';S.help=false;S.chant=null;stand();panel();}
+/** What came of it: the place's words on a paper slip, then one main button (the next step of the visit, or Xong). */
+function showResult(emoji,title,text,body=null,opt={}){
+  const a=S.panel?.kind==='act'?actOf(S.panel.act):null,next=a?nextStep(a.id):null;
+  const again=C()?.unlimited&&a?.ok?`<button type="button" class="btn ghost small" data-cv="again">${a.id==='nguyen'?'Viết thêm':'Làm lần nữa'}</button>`:'';
+  const go=opt.main||(next?`<button type="button" class="btn primary big full" data-cv="step" data-id="${next.id}">Tiếp: ${next.icon} ${esc(next.name)} ›</button>`:'<button type="button" class="btn primary big full" data-cv="shut">Xong</button>');
+  S.result=top(emoji,title,opt.gain||'')+`<div class="cv-done">${body??`<p class="cv-result">${esc(text)}</p>`}</div><div class="cv-p-acts">${go}</div>${again||opt.main||next||opt.sub?`<div class="cv-p-sub">${again}${opt.sub||''}${opt.main||next?'<button type="button" class="btn ghost small" data-cv="shut">Xong</button>':''}</div>`:''}`;
+  panel();
+}
+/** The card preview follows the name and message as they are typed (no re-render: the field keeps its focus). */
+function liveTag(){
+  const tag=S.dlg?.querySelector('.cv-tag-live');if(!tag)return;
+  const who=tag.querySelector('[data-tag="who"]'),dflt=tag.querySelector('[data-tag="who-default"]'),msg=tag.querySelector('[data-tag="msg"]');
+  if(who)who.textContent=S.card.name.trim();if(dflt)dflt.hidden=!!S.card.name.trim();if(msg)msg.textContent=S.card.message.trim();
+}
+async function shareCard(id){
+  const b=S.board;if(!b||b.busy||!id)return;
+  if(!b.mine.rows.some(r=>r.id===id))await b.load('mine');
+  if(await b.setPublic({id},true)&&S.dlg?.open&&S.panel?.act==='nguyen'){S.result='';S.view='board';b.tab='public';panel();}
+}
 function refreshBoard(board){
-  if(S.board!==board||!S.dlg?.open||S.panel?.act!=='nguyen')return;
+  if(S.board!==board||!S.dlg?.open)return;
+  path();if(S.panel?.act!=='nguyen')return;
   const box=S.dlg.querySelector('.cv-card-board');if(box)box.outerHTML=cardBoardHTML(board,C().card_choices,box.dataset.withTabs==='true');
   for(const tabs of S.dlg.querySelectorAll('.cv-card-tabs'))tabs.outerHTML=cardBoardTabs(board);
 }
 async function readOlderCards(){
-  const pending=loadOlder(S.env.api,'','chua.cards',C()?.cards?.length||0);S.result='';panel();
+  const pending=loadOlder(S.env.api,'','chua.cards',C()?.cards?.length||0);S.result='';S.view='board';panel();
   try{await pending;if(S.dlg?.open&&S.panel?.act==='nguyen')panel();}
   catch(error){if(S.dlg?.open&&S.panel?.act==='nguyen')showResult('📜','Bảng lời chúc',error.message||'Chưa tải được bảng cũ. Bạn thử lại nhé.');}
 }
@@ -338,16 +394,25 @@ async function donate(){
 /* ---- doing ---- */
 async function doAct(id,extra={}){
   const a=actOf(id);if(!a?.ok||S.busy)return;
+  const got=id==='tung'?'':gain(a);
   S.busy=true;S.me.pose=POSE[id]||'pray';S.me.poseUntil=0;
   if(id==='huong')S.fx.lit=S.time+6;
   if(id==='chuong'){S.fx.bell=S.time+4;sfx('bell',.8);}
   if(id==='khan')sfx('bowl',.7);
-  const box=S.dlg.querySelector('.cv-panel .cv-p-acts');if(box)box.innerHTML='<p class="cv-wait" aria-live="polite">…</p>';
+  const box=S.dlg.querySelector('.cv-panel .cv-p-acts');if(box)box.innerHTML='<p class="cv-wait" aria-live="polite"><span class="cv-wait-dots" aria-hidden="true"><i></i><i></i><i></i></span></p>';
   try{
     const [r]=await Promise.all([S.env.cmd('jr_chua_do',{act:id,...extra},{quiet:true}),sleep(still()?0:900)]);
-    if(r?.message){const card=id==='nguyen'?C()?.cards?.at(-1):null;showResult(a.emoji,a.name,r.message,card?cardResult(r.message,card,C().card_choices):null);}else{stand();panel();}
+    if(r?.message){
+      if(id==='huong'||id==='nguyen')sfx('bowl',.35);
+      const spirit=a.spirit&&spiritGain(C(),a.spirit);if(spirit&&!still())S.fx.gain={until:S.time+2.4,text:`✨ +${a.spirit}`};
+      const card=id==='nguyen'?C()?.cards?.at(-1):null;
+      if(card){
+        const shared=r.chua_card?.public===true,share=S.board&&!shared?`<button type="button" class="btn primary big full" data-cv="share" data-id="${esc(card.id)}">💌 Chia sẻ lên bảng chung</button>`:'';
+        showResult(a.emoji,'Đã treo lời chúc',r.message,`<figure class="cv-tag cv-result"><span class="cv-tag-knot" aria-hidden="true"></span><b>${cardText(card,C().card_choices)}</b><figcaption>${shared?'🌏 Công khai':'🔒 Chỉ mình tôi'}</figcaption></figure>`,{gain:got,main:share,sub:'<button type="button" class="btn ghost small" data-cv="board">📖 Bảng</button>'});
+      }else showResult(a.emoji,a.name,r.message,null,{gain:got});
+    }else{stand();panel();}
     if(id==='khan')S.khan={who:'',what:''};
-    if(id==='nguyen'&&r?.message){S.card={...S.card,name:'',message:'',public:false};S.drawn=0;if(S.board){S.board.load('mine');S.board.load('public');}}
+    if(id==='nguyen'&&r?.message){S.card={...S.card,recipient:'',blessing:'',name:'',message:'',public:false};S.drawn=0;if(S.board){S.board.load('mine');S.board.load('public');}}
   }finally{S.busy=false;}
   if(id==='huong'||id==='nguyen'||id==='chuong')S.me.poseUntil=S.time+3;
 }
@@ -361,10 +426,19 @@ function act(kind,data){
     case'area':goArea(data.id);return;
     case'spot':goSpot(pl().spots.find(s=>s.id===data.id));return;
     case'shut':closePanel();return;
+    case'help':S.help=!S.help;panel();return;
+    case'note':{const n=S.dlg.querySelector('.cv-card-note'),el=S.dlg.querySelector('[data-cv="note"]');if(n){n.hidden=!n.hidden;el?.setAttribute('aria-expanded',String(!n.hidden));}return;}
+    case'here':if(S.panel?.kind==='here'){closePanel();return;}if(S.chant?.state==='run')return;closePanel();S.panel={id:'here',kind:'here'};panel();return;
+    case'step':if(data.id==='board')goTo('nguyen','board');else goTo(data.id);return;
+    case'board':S.view='board';S.result='';S.help=false;panel();S.board?.load(S.board.tab);return;
+    case'compose':S.view='';S.result='';S.help=false;panel();return;
+    case'share':shareCard(data.id).catch(error=>S.env.toast?.(error.message,true));return;
+    case'card-back':if(S.card.blessing)S.card.blessing='';else S.card.recipient='';panel();return;
+    case'khan-back':if(S.khan.what)S.khan.what='';else S.khan.who='';panel();return;
     case'again':S.result='';stand();panel();return;
     case'older-cards':readOlderCards();return;
     case'card-public':if(S.board){S.card.public=data.public==='true';panel();}return;
-    case'card-tab':if(S.board&&['mine','public'].includes(data.id)){S.board.tab=data.id;S.result='';panel();S.board.load(data.id);}return;
+    case'card-tab':if(S.board&&['mine','public'].includes(data.id)){S.board.tab=data.id;S.result='';S.view='board';panel();S.board.load(data.id);}return;
     case'card-refresh':S.board?.load(S.board.tab);return;
     case'card-more':S.board?.load(S.board.tab,true);return;
     case'card-toggle':if(S.board)S.board.setPublic({id:data.id},data.public==='true');return;
@@ -373,7 +447,7 @@ function act(kind,data){
     case'card-send':{const who=C().card_choices.recipients.find(x=>x.id===S.card.recipient);if(who?.blessings.includes(S.card.blessing)){const payload={...S.card};if(!C().sharing)delete payload.public;doAct('nguyen',payload);}return;}
     case'do':doAct(data.act,data.act==='nguyen'?{wish:data.wish}:data.act==='khan'?{who:S.khan.who,what:S.khan.what}:{});return;
     case'who':{S.khan.who=data.id;const w=C().khan.who.find(x=>x.id===data.id);if(!w?.what.includes(S.khan.what))S.khan.what='';panel();return;}
-    case'what':S.khan.what=data.id;panel();S.dlg.querySelector('.cv-panel [data-act="khan"]')?.scrollIntoView?.({block:'nearest'});return;
+    case'what':S.khan.what=data.id;panel();return;
     case'talk':S.talk[data.who]=(S.talk[data.who]|0)+1;panel();return;
     case'bye':showResult('🙏','Thầy Huệ Minh','Thầy gật đầu: “Đi đường bình an nhé con.”');return;
     case'tothemo':goSpot(pl().spots.find(s=>s.id==='tung'));return;
@@ -395,7 +469,7 @@ function startChant(){
 function chantHTML(){
   const ch=S.chant;
   if(ch.state==='done')return ch.html;
-  return top('📿','Tụng kinh cùng thầy','Gõ mõ khi vòng sáng khép lại')+`<div class="cv-chant">
+  return top('📿','Tụng kinh cùng thầy','Gõ khi vòng sáng khép lại')+`<div class="cv-chant">
     <ol class="cv-lines" aria-live="off">${CHANT.map(l=>`<li>${esc(l)}</li>`).join('')}</ol>
     <div class="cv-beats" aria-hidden="true">${ch.hits.map(()=>'<i></i>').join('')}</div>
     <button type="button" class="cv-mo" aria-label="Gõ mõ"><span class="cv-ring" aria-hidden="true"></span><svg class="cv-mo-face" viewBox="0 0 60 44" width="54" height="40" aria-hidden="true"><ellipse cx="30" cy="25" rx="25" ry="17" fill="#a5642f"/><ellipse cx="22" cy="18" rx="8" ry="4" fill="#c98a4a"/><path d="M10 27Q30 33 50 27" stroke="#5a3216" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="4" y="38" width="52" height="6" rx="3" fill="#b44a3a"/></svg><b>Gõ mõ</b></button>
@@ -429,7 +503,7 @@ async function finishChant(){
   let text=`Bạn giữ được ${n}/${ch.beats} nhịp mõ. Thầy gật đầu, tụng xong một thời kinh ngắn.`,title='Tụng kinh cùng thầy';
   if(ch.count&&actOf('tung')?.ok){const r=await S.env.cmd('jr_chua_do',{act:'tung',beat:n},{quiet:true});if(r?.message)text=r.message;}
   ch.state='done';stand();
-  ch.html=top('📿',title,`${n}/${ch.beats} nhịp`)+`<p class="cv-result">${esc(text)}</p><div class="cv-p-acts">${again}<button type="button" class="btn primary small" data-cv="shut">Đóng</button></div>`;
+  ch.html=top('📿',title,`${n}/${ch.beats} nhịp`)+`<div class="cv-done"><p class="cv-result">${esc(text)}</p></div><div class="cv-p-acts"><button type="button" class="btn primary big full" data-cv="shut">Xong</button></div><div class="cv-p-sub">${again}</div>`;
   panel();
 }
 
@@ -449,7 +523,7 @@ function loop(now){
   chantTick();
   const was=[S.ox,S.oy,S.k];view(dt);const panned=Math.abs(was[0]-S.ox)+Math.abs(was[1]-S.oy)+Math.abs(was[2]-S.k)*100>.5;
   // ~30 fps when only the ambience moves, still frames at all when motion is reduced
-  const busy=moving||panned||S.chant?.state==='run'||S.time-S.fadeAt<.4||S.fx.bell>S.time;
+  const busy=moving||panned||S.chant?.state==='run'||S.time-S.fadeAt<.4||S.fx.bell>S.time||S.fx.gain?.until>S.time;
   if(!busy&&(still()?S.drawn>0:now-S.drawn<33))return;
   S.drawn=now||1;draw();
 }
@@ -479,6 +553,8 @@ function drawMe(c,s){
   c.restore();
   if(m.pose==='sweep'){L(c,m.x+22*s,m.y-60*s,m.x+40*s,m.y-4*s,'#b88b62',4*s);E(c,m.x+42*s,m.y-2*s,14*s,5*s,'#d9b97a');}
   if(m.pose==='pray'||m.pose==='kneel'){T(c,'🙏',m.x,m.y-(low?120:150)*s,20*s,'#5a3f2c',400);}
+  const g=S.fx.gain;if(g&&g.until>S.time){const k=1-(g.until-S.time)/2.4;c.globalAlpha=Math.max(0,Math.min(1,(1-k)*2.2));
+    T(c,g.text,m.x,m.y-(low?150:185)*s-k*34,22*s,'#b07a1c',800);c.globalAlpha=1;}
 }
 /** Badges over the things to do (dim when done or not today), signs over the doors. */
 function marks(c,p,o){

@@ -210,14 +210,14 @@ html[data-layout="phone"] .task-hud .note-card.nd-has-lunch:not(.calm-card)>.btn
 .cg-wishes{display:flex;flex-wrap:wrap;gap:6px}
 .cg-wishes .btn{min-height:40px;white-space:normal;text-align:left}
 /* 🛕 Vào chùa: the way into the walkable pagoda (v4/chua.js; the scene itself is css/chua.css) */
-.cg-enter{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 10px;padding:12px 14px;border-radius:16px;border:1px solid var(--line-strong);background:linear-gradient(135deg,#fbefd6,#f3e3c1);color:#5a3f2c;font:inherit;text-align:left;cursor:pointer}
-html[data-theme="dem"] .cg-enter{background:var(--surface-2);color:var(--ink)}
+.cg-enter{display:flex;align-items:center;gap:var(--sp-3);width:100%;margin:0 0 var(--sp-2);padding:var(--sp-3) var(--sp-4);border-radius:var(--radius);border:1px solid var(--line-strong);background:linear-gradient(160deg,var(--surface) 0%,var(--warn-soft) 100%);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
 .cg-enter:hover{border-color:var(--accent)}
 .cg-enter:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.cg-enter .grow{flex:1 1 auto}
-.cg-enter b{display:block;font-size:1.02rem}
-.cg-enter small{display:block;font-size:.82rem;opacity:.85}
-.cg-enter-ico{font-size:2rem;line-height:1}
+.cg-enter .grow{flex:1 1 auto;min-width:0}
+.cg-enter b{display:block;font-size:var(--fs-3)}
+.cg-enter small{display:block;margin-top:2px;font-size:var(--fs-1);color:var(--muted)}
+.cg-art{flex:none;display:block}
+.cg-go{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:1.2rem;line-height:1}
 .cg-quick>summary{cursor:pointer;margin:4px 0 8px;font-size:.88rem;color:var(--muted);font-weight:600}
 /* 🎖️ Thăng tiến strip on the morning card and the job sheet (app.js promoStrip, v4/views.js); the sheets: css/promo.css */
 .pm-strip-row{display:flex;gap:6px;margin:0 0 10px}
