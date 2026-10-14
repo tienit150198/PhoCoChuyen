@@ -943,3 +943,6 @@ html[data-game="isometric"] .sheet .inv-tray-slots .inv-good {min-height: 30px;b
   html[data-game="isometric"] .iso-movement[data-mode="work"] {bottom:calc(240px + var(--safe-b));}
   html[data-game="isometric"][data-scene-mode="work"] #isoHUD .iso-camera {bottom:calc(246px + var(--safe-b));}
 }
+/* An open "Tiện ích" list or task card paints over the camera handle (z 35): on 360–375 px phones the handle sat on
+   the list's last row ("Thư giãn"). */
+html[data-game="isometric"] #isoHUD[data-disclosure-open="true"] :is(.iso-quick,.iso-mission) {z-index:36;}

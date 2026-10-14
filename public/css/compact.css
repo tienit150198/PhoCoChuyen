@@ -322,6 +322,10 @@ html.kb-open[data-layout="phone"][data-orientation="landscape"] .sheet{height:va
    read "Hai ly c…", "Định…" and the wardrobe "T…". There it may take a second line instead (full text in title=). */
 @media (max-width:400px){
   html[data-layout="phone"] .sheet-head h2,html[data-layout="phone"] .sheet.cozy-job .sheet-head>.grow>h2{-webkit-line-clamp:2;line-clamp:2;line-height:1.22}
+  /* The wallet + fund chip ("50.000 xu · 320 xu") did not fit its 52 %: the parts shrank into each other (the "·"
+     under "xu", "320 xu" cut at the edge; Người quen, Túi đồ). The two amounts stack instead, right-aligned. */
+  html[data-layout="phone"] :is(.sheet-head,.preparation-topline) .mn-line .mn-chip{flex-direction:column;align-items:flex-end;gap:0;border-radius:12px;line-height:1.25}
+  html[data-layout="phone"] :is(.sheet-head,.preparation-topline) .mn-line .mn-sep{display:none}
 }
 /* D2. A next-step hint in the header ("Chọn câu trả lời đầu tiên cho khách →", customer care) sat beside the chip and
    the three buttons, squeezed to a one-word column 320 px tall. On a phone it takes its own full-width row under the
