@@ -1055,6 +1055,22 @@ def _good_normal(c: dict, summary: dict) -> bool:
     return not stars or sum(stars) / len(stars) >= 3.5
 
 
+def good_today(c: dict, career: str, rec: dict) -> str | None:
+    """Owner 14/10: today's live line for the "ngày tốt" row. A good day is booked when the player closes the day
+    (Khép ngày), so it already counts as soon as the player closes. Only the plain rule (≥2 jobs, today's stars ≥3.5) is
+    previewed; a manager shift or the accounting care track has its own measure at close."""
+    if rec.get('shift') or career in ACCT:
+        return None
+    done = c.get('day_completed') if type(c.get('day_completed')) is int else 0
+    stars = [f['stars'] for f in c.get('feed', ()) if f.get('stars') and f.get('day') == c.get('day') and f.get('kind') == 'review']
+    head = f'Hôm nay: {done} việc xong'
+    if done < 2:
+        return f'{head} · còn {2 - done} việc nữa là ngày tốt'
+    if stars and sum(stars) / len(stars) < 3.5:
+        return f'{head} · sao khách hôm nay dưới 3,5, chưa là ngày tốt'
+    return f'{head} · đã là ngày tốt, khép ngày là tính ✓'
+
+
 def _day_sales(c: dict) -> int:
     rows = ((c.get('ops') or {}).get('finance') or {}).get('ledger') or ()
     return sum(r['amount'] for r in rows if r.get('day') == c['day'] and r.get('category') in TIP_CATS and r.get('amount', 0) > 0)
@@ -1149,6 +1165,9 @@ def _next(s: dict, c: dict, career: str, rec: dict) -> dict | None:
     good = need_good(s, st)
     requirements = [dict(id='good', met=rec['good'] >= good,
                          label=f'{rec["good"]}/{good} ngày tốt từ lần lên bậc gần nhất' + (' (🎓 bằng du học: bớt ngày)' if good < st['good'] else ''))]
+    hint = good_today(c, career, rec) if rec['good'] < good else None
+    if hint:
+        requirements[0]['hint'] = hint
     if st.get('ratio'):
         # Keep the full numerator and compare integers, exactly as ready does. A rounded
         # percentage (e.g. 69.99 -> 70) must never make a blocked review appear eligible.

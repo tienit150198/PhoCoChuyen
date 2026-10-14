@@ -37,4 +37,17 @@ room.promo={org:{due:{k:'course',of:2,n:0,title:'Nghiệp vụ',q:{text:'Câu h�
 assert.match(promoView(env),/Tay nghề lâu năm/,'organization promotion branch retains separate mastery');
 const passport=experienceView('passport','laundry',room,{experiences:{stories:[]}},{place:'Tiệm'}, {},env.api.state);
 assert.match(passport,/data-action="promo"/,'shared passport provides an always available entry');
+// Owner 14/10: the server's live line replaces the static rule on the days row and the "Hôm nay" line.
+const line='Hôm nay: 3/4 việc sạch · còn 1 việc sạch nữa là ngày đạt chuẩn';
+html=masteryCard({...state,today:{...state.today,line},next:{...state.next,requirements:state.next.requirements.map(r=>r.id==='days'?{...r,hint:line}:r)}});
+assert.ok(html.includes(`cm-hint">${line}</small>`),'days row shows the live line');
+assert.ok(html.includes(`<p class="small">${line}.</p>`),'today line comes from the server');
+assert.doesNotMatch(html,/cộng khi khép ca/);
+html=masteryCard({...state,today:{...state.today,line:'<b>x</b>'}});assert.ok(html.includes('&lt;b&gt;x&lt;/b&gt;'),'escaped');
+room.promo={title:'Phụ việc',rank:0,top:7,track:'own',pct:0,ladder:[],log:[],next:{title:'Thợ chính',good:1,need:5,requirements:[
+  {id:'good',met:false,label:'1/5 ngày tốt từ lần lên bậc gần nhất',hint:'Hôm nay: 1 việc xong · còn 1 việc nữa là ngày tốt'},
+  {id:'served',met:true,label:'15 lượt khách (20 rồi)',hint:'không hiện khi đã đạt'}]}};
+html=promoView(env);
+assert.ok(html.includes('<small class="pm-hint">Hôm nay: 1 việc xong · còn 1 việc nữa là ngày tốt</small>'),'promotion good-day row shows the live line');
+assert.ok(!html.includes('không hiện khi đã đạt'),'met rows drop the live line');
 console.log('Mastery UI: gates, accessible counters, retry, reloadable review, escaping, compact and final tier pass');

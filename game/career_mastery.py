@@ -177,6 +177,19 @@ def action(c, career, name, payload):
                 passed=passed, score=score, total=8)
 
 
+def today_line(c, record):
+    """Owner 14/10: today's live line. The career day is booked when the player closes the shift (Khép ca)."""
+    if record['last_closed'] >= c['day']:
+        return 'Hôm nay đã khép ca, ngày nghề sau tính tiếp'
+    jobs = record['today']['jobs'] if record['today']['day'] == c['day'] else []
+    clean, total = sum(j['clean'] for j in jobs), len(jobs)
+    head = f'Hôm nay: {clean}/{total} việc sạch'
+    left = max(0, 3 - clean, 4 * total - 5 * clean)   # clean+k ≥ 3 and clean+k ≥ 80% of total+k
+    if left:
+        return f'{head} · còn {left} việc sạch nữa là ngày đạt chuẩn'
+    return f'{head} · đã đạt, khép ca là tính ✓'
+
+
 def public(c, career):
     record = _record(c)
     tier = record['tier']
@@ -184,6 +197,10 @@ def public(c, career):
     jobs = record['today']['jobs'] if record['today']['day'] == c['day'] else []
     clean = sum(j['clean'] for j in jobs)
     requirements = _requirements(c, record)
+    line = today_line(c, record)
+    for row in requirements:
+        if row['id'] == 'days' and not row['met']:
+            row['hint'] = line
     retry = max(0, record['retry_at'] - record['qualified_days'])
     exam = None
     if record['exam']:
@@ -196,7 +213,8 @@ def public(c, career):
     result = record['last_result']
     return dict(tier=tier, title=step['title'] if step else 'Đang rèn nghề', badge=step['badge'] if step else '🌱',
                 bonus=step['bonus'] if step else 0, clean=record['clean'], qualified_days=record['qualified_days'],
-                today=dict(completed=len(jobs), clean=clean, qualified=clean >= 3 and clean * 100 >= len(jobs) * 80),
+                today=dict(completed=len(jobs), clean=clean, qualified=clean >= 3 and clean * 100 >= len(jobs) * 80,
+                           line=line),
                 next=(dict(tier=tier + 1, title=STEPS[tier]['title'], bonus=STEPS[tier]['bonus'],
                            requirements=requirements) if tier < len(STEPS) else None),
                 ready=tier < len(STEPS) and all(r['met'] for r in requirements) and not retry and exam is None,

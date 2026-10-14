@@ -98,7 +98,7 @@ export function promoView(env){
   const n=p.next,sh=p.shift;
   const line=n?`${n.good}/${n.need} ngày tốt → ${esc(n.title)}`:'Bậc cao nhất rồi!';
   const care=n?.requirements?.find(r=>r.id==='care');
-  const lock=(n?.requirements?.length?`<ul class="pm-rules">${n.requirements.map(r=>`<li>${r.met?'✓':'🔒'} ${esc(r.label)}${r.id==='office'&&r.need?`${bar(r.got,r.need)}<small class="pm-hint">Ngày tốt khi: tự xếp ít nhất 1 việc ở 🗓️ Điều phối và cuối ngày điểm điều hành từ 60/100.</small>`:''}${r.id==='care'&&!r.met&&r.need?bar(r.got,r.need):''}</li>`).join('')}</ul>${care&&!care.met?CARE_HOW:''}`
+  const lock=(n?.requirements?.length?`<ul class="pm-rules">${n.requirements.map(r=>`<li>${r.met?'✓':'🔒'} ${esc(r.label)}${r.hint&&!r.met?`<small class="pm-hint">${esc(r.hint)}</small>`:''}${r.id==='office'&&r.need?`${bar(r.got,r.need)}<small class="pm-hint">Ngày tốt khi: tự xếp ít nhất 1 việc ở 🗓️ Điều phối và cuối ngày điểm điều hành từ 60/100.</small>`:''}${r.id==='care'&&!r.met&&r.need?bar(r.got,r.need):''}</li>`).join('')}</ul>${care&&!care.met?CARE_HOW:''}`
     :[n?.why,n?.wait?`Hẹn xét lại sau ${n.wait} ngày làm`:null].filter(Boolean).map(s=>`<p class="pm-lock">🔒 ${esc(s)}</p>`).join(''))+(n?.wait?lastReview(env,n.wait):'');
   const work=p.rank>=3?'Bạn có thể mở ca quản lý: giao việc cho đội, kiểm tra kết quả và xử lý chuyện trong ca. Mỗi ngày vẫn có thể chọn tự làm ở quầy.'
     :'Công việc ở quầy vẫn như trước. Từ bậc 3, bạn có thêm ca quản lý để giao việc cho đội và kiểm tra kết quả.';

@@ -12,7 +12,7 @@ KEY='specialism'
 FEES=(3000,9000,30000,100000,350000,1200000,4000000,12000000,35000000,100000000)
 LEVELS=(5,12,25,50,90,150,250,400,650,1000)
 CLEAN=(10,30,70,140,260,450,750,1200,1900,3000)
-DAYS=(3,7,14,24,40,65,95,140,200,280)
+DAYS=(2,7,14,24,40,65,95,140,200,280)
 ACTIONS={'special_enrol','special_practice'}|jobs.ACTIONS|stock.ACTIONS
 
 
@@ -62,7 +62,7 @@ def requirements(s,c,cid,tier,now):
     values=[('Cấp kinh nghiệm nghề',1+c['xp']//90,LEVELS[tier-1]),('Việc tự làm không lỗi',r['clean'],CLEAN[tier-1]),
             None,('Đã bắt đầu nghề',int(c.get('started') is True),1),
             ('Đủ điều kiện hành nghề',int(work),1),('Quỹ nghề cho học phí',c['money'],fee(cid,tier))]
-    rows=[scale.days_row(r,DAYS[tier-1]) if v is None else dict(label=v[0],got=v[1],need=v[2],met=v[1]>=v[2]) for v in values]
+    rows=[scale.days_row(r,DAYS[tier-1],projected) if v is None else dict(label=v[0],got=v[1],need=v[2],met=v[1]>=v[2]) for v in values]
     if reason:rows[4]['reason']=reason
     return rows
 

@@ -12,6 +12,12 @@ ACTIONS = frozenset(('scale_upgrade','scale_crew_hire','scale_crew_fire','scale_
                      'scale_resource_unassign','scale_resource_maintain','scale_site_open','scale_site_public'))
 KEYS = {'v','tier','revision','clean','inherited_clean','qualified_days','start_day','today',
         'capital_history','sites','resources','crew','next_crew','recent_ids'}
+# Owner 14/10 ("khi nào coi là 1 ngày để lên"): a real day is credited the moment it qualifies, not at 0h.
+# The mark lives beside the record, in the career (an optional key 2.4.8 ignores), so `scale` keeps its exact 2.4.8
+# shape and meaning: `qualified_days` still holds only the days closed at 0h. CREDIT = the real day already credited;
+# the gates read qualified_days + that day. A later error the same day does not take the credit back, and the
+# 0h roll adds the day once.
+CREDIT = 'scale_credit'
 
 
 def _need(ok, message='Dữ liệu quy mô nghề không hợp lệ.'):
@@ -44,27 +50,58 @@ def _qualified(today):
             and (not today['requires_contract'] or today['accepted']))
 
 
+def _credited(r, c=None):
+    """Today (the real day) already counts: it qualifies now or did earlier today."""
+    return _qualified(r['today']) or (c is not None and c.get(CREDIT)==r['today']['day'])
+
+
+def _mark(c, r):
+    if _qualified(r['today']) and c.get(CREDIT)!=r['today']['day']:
+        c[CREDIT]=r['today']['day']
+
+
+def counted(r, c=None):
+    """Real days that count now: the closed ones plus today once it has qualified."""
+    return r['qualified_days']+int(_credited(r,c))
+
+
+def _clean_left(t):
+    """Clean jobs still needed today: at least 3, and clean ≥ 80% of all (clean+k ≥ 0.8·(total+k) ⇔ k ≥ 4t−5c)."""
+    return max(0,3-t['clean'],4*t['total']-5*t['clean'])
+
+
+def today_line(r, c=None):
+    """The short live line: today's clean jobs and whether today already counts."""
+    t=r['today']; head=f'Hôm nay: {t["clean"]}/{t["total"]} việc sạch'
+    if _credited(r,c):
+        return f'{head} · đã tính ✓'
+    if t['overflow']:
+        return f'{head} · đã quá số việc ghi nhận trong ngày'
+    left=_clean_left(t)
+    if left:
+        return f'{head} · còn {left} việc sạch nữa là tính hôm nay'
+    return f'{head} · còn thiếu ca quản lý nghiệm thu là tính hôm nay'
+
+
 DAY_RULE=('Ngày thực là ngày lịch 0h–24h giờ Việt Nam. Ngày đạt khi bạn tự làm xong ít nhất 3 việc không lỗi và ít nhất '
-          '80% số việc trong ngày không lỗi. Ngày đạt được cộng khi qua 0h. Việc giữ từ ngày nghề trước, làm xong hôm nay '
+          '80% số việc trong ngày không lỗi. Ngày đạt được cộng ngay lúc đạt, mỗi ngày lịch một lần; lỗi sau đó trong '
+          'ngày không trừ lại. Việc giữ từ ngày nghề trước, làm xong hôm nay '
           'vẫn tính. Việc của nhân viên, ca quản lý và đơn người chơi không tính; đổi ngày nghề không tăng ngày thực. '
           'Khác với “ngày đạt chuẩn” của Tay nghề lâu năm, vốn tính theo ngày nghề khi khép ca.')
 DAY_RULE_CONTRACT=('Ngày thực là ngày lịch 0h–24h giờ Việt Nam. Ngày đạt khi bạn tự làm xong ít nhất 3 việc không lỗi và ít '
-                   'nhất 80% số việc trong ngày không lỗi, kèm một ca quản lý được nghiệm thu. Ngày đạt được cộng khi qua 0h. '
+                   'nhất 80% số việc trong ngày không lỗi, kèm một ca quản lý được nghiệm thu. Ngày đạt được cộng ngay lúc đạt, '
+                   'mỗi ngày lịch một lần; lỗi sau đó trong ngày không trừ lại. '
                    'Việc giữ từ ngày nghề trước, làm xong hôm nay vẫn tính. Việc của nhân viên, ca quản lý và đơn người chơi '
                    'không tính; đổi ngày nghề không tăng ngày thực. Khác với “ngày đạt chuẩn” của Tay nghề lâu năm, vốn tính '
                    'theo ngày nghề khi khép ca.')
 
 
-def days_row(r, need):
+def days_row(r, need, c=None):
     """The "Ngày thực đạt chuẩn" requirement with its rule and today's live status (F#382/383).
-    The day counts at 0h, so today's work shows as pending instead of leaving players at 0/3 all day."""
-    t=r['today']; got=r['qualified_days']
-    clean_ok=not t['overflow'] and t['clean']>=3 and t['clean']*100>=t['total']*80
-    status=('đạt, cộng lúc 0h' if _qualified(t) else 'thiếu ca quản lý nghiệm thu' if clean_ok else
-            'cần ≥3 việc sạch, ≥80%')
+    Today counts as soon as it qualifies (owner 14/10), so the gate can open the same day."""
+    t=r['today']; got=counted(r,c)
     return dict(id='real_days',label='Ngày thực đạt chuẩn',got=got,need=need,met=got>=need,
-                hint=f'Hôm nay: {t["clean"]}/{t["total"]} việc sạch · {status}',
-                rule=DAY_RULE_CONTRACT if t['requires_contract'] else DAY_RULE)
+                hint=today_line(r,c),rule=DAY_RULE_CONTRACT if t['requires_contract'] else DAY_RULE)
 
 
 def _block(row):
@@ -74,10 +111,10 @@ def _block(row):
     return row.get('reason') or f'Chưa đủ: {row["label"]}.'
 
 
-def _roll(r, now):
+def _roll(r, now, c=None):
     day = quota.day(now)
     if day > r['today']['day']:
-        r['qualified_days'] += int(_qualified(r['today']))
+        r['qualified_days'] += int(_credited(r,c))
         r['today'] = _today(day,r['tier'])
     return day
 
@@ -88,7 +125,7 @@ def ensure(c,cid,now=None):
         c['scale']=dict(v=1,tier=0,revision=0,clean=inherited,inherited_clean=inherited,
                         qualified_days=0,start_day=day,today=_today(day,0),capital_history=[],
                         sites=[],resources=[],crew=[],next_crew=1,recent_ids=[])
-    r=c['scale']; _roll(r,now)
+    r=c['scale']; _roll(r,now,c)
     return r
 
 
@@ -122,6 +159,7 @@ def completed(c,cid,task,now=None):
     r['recent_ids'].append(tid)
     del r['recent_ids'][:-DAY_MAX]
     r['clean']+=int(clean)
+    _mark(c,r)
     return True
 
 
@@ -130,6 +168,7 @@ def accepted(c,cid,now=None):
     r=ensure(c,cid,now)
     if quota.day(now)==r['today']['day']:
         r['today']['accepted']=True
+        _mark(c,r)
 
 
 def external_slots(s):
@@ -142,7 +181,7 @@ def external_slots(s):
 def _requirements(s,c,cid,r):
     from . import certificates, accounting_jobs, employment
     st=content.stage(cid,r['tier']+1)
-    req=[days_row(r,st.days),dict(label='Việc tự làm không sai tích lũy',got=r['clean'],need=st.clean,met=r['clean']>=st.clean)]
+    req=[days_row(r,st.days,c),dict(label='Việc tự làm không sai tích lũy',got=r['clean'],need=st.clean,met=r['clean']>=st.clean)]
     req.append(dict(label='Đã bắt đầu nghề',got=int(c.get('started') is True),need=1,met=c.get('started') is True))
     ok,reason=accounting_jobs.can_work(s,cid)
     req.append(dict(label='Điều kiện hành nghề hiện có',got=int(ok),need=1,met=ok,reason=reason))
@@ -201,6 +240,7 @@ def action(s,c,cid,name,p,now=None):
         _need(all(x['met'] for x in req),'Chưa đủ ngày thực, việc sạch, chứng chỉ hoặc quỹ nghề.')
         _need(not any(x['busy'] for x in r['resources']),'Hoàn tất hợp đồng đang giữ tài nguyên trước khi nâng quy mô.')
         st=content.stage(cid,r['tier']+1)
+        _mark(c,r)   # the day that opened this tier stays counted after the contract rule starts
         r['tier']=st.tier; r['revision']+=1
         # A day spanning the first upgrade must meet the management requirement.
         r['today']['requires_contract']=True
@@ -289,14 +329,18 @@ def public(s,c,cid,now=None):
                stages=[content.stage_dict(cid,n) for n in range(1,9)],next=nxt,
                limits=dict(stock=capacity_progression.limit(c,cid,base),order=order_progression.limit(c,cid)),
                quota=quota.public(s,now),progress=dict(clean=r['clean'],inherited_clean=r['inherited_clean'],
-                    qualified_days=r['qualified_days'],today=dict(day=r['today']['day'],clean=r['today']['clean'],
+                    qualified_days=counted(r,c),today=dict(day=r['today']['day'],clean=r['today']['clean'],
                     total=r['today']['total'],accepted=r['today']['accepted'],qualified=_qualified(r['today']),
-                    pending=True,requires_contract=r['today']['requires_contract'])),
+                    credited=_credited(r,c),line=today_line(r,c),pending=False,
+                    requires_contract=r['today']['requires_contract'])),
                revision=r['revision'],capital_history=copy.deepcopy(r['capital_history']))
     return out
 
 
 def validate(c,cid):
+    if CREDIT in c:
+        # Lenient on purpose: an older build may reset or roll the record without knowing this key.
+        _int(c[CREDIT],0,1199999)
     if 'scale' not in c: return
     r=c['scale']; _need(type(r) is dict and set(r)==KEYS)
     _int(r['v'],1,1); _int(r['tier'],0,8); _int(r['revision'])
