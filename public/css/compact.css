@@ -337,3 +337,8 @@ html[data-layout="phone"] .sheet-head:has(>.grow>.gd-next:not(.gd-dup))>.grow{di
 html[data-layout="phone"] .sheet-head:has(>.grow>.gd-next:not(.gd-dup))>.grow>h2{flex:1 1 0;min-width:0;order:0}
 html[data-layout="phone"] .sheet-head:has(>.grow>.gd-next:not(.gd-dup))>.grow>:is(.gd-next,p){order:9;flex:1 0 100%;min-width:0}
 html[data-layout="phone"] .sheet-head:has(>.grow>.gd-next:not(.gd-dup))>.grow>.gd-next{margin:2px 0 6px}
+/* D3. Town map (classic "Bản đồ phố", .tw-sheet): its header is a block of chips, not a .sheet-head, so a note
+   meant to sit "under the header" landed on the second row of chips ("📋 Danh sách", "🏝️ Ra đảo") and, in landscape,
+   on "Chỉ đường". There the note sits low over the street instead. */
+html[data-layout="phone"] dialog#sheet.sheet.tw-sheet.tw-sheet .toasts,
+html[data-clean][data-layout="phone"] dialog#sheet.sheet.tw-sheet.tw-sheet .toasts{top:auto;bottom:calc(max(10px,var(--safe-b)) + 80px)}
