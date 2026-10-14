@@ -94,6 +94,9 @@ def action(s,c,cid,name,p,now):
         net=revenue-materials-q['wages']-tax,escrow=o['escrow'],refund=refund,at=now,
         message=f'Nghiệm thu {quality}%. '+('Hoàn thành đủ yêu cầu.' if quality==100 else 'Có bước sai; tiền trả theo phần nghiệm thu, vật tư và công đã dùng vẫn mất.'),
         evidence=[('Đúng. ' if o['answers'][i]==sp.exercise(cid,o['tier'],i,o['quantity'],o['id'])['answer'] else 'Sai. ')+sp.exercise(cid,o['tier'],i,o['quantity'],o['id'])['why'] for i in range(5)])
+    from . import tile_match   # 🧩 Phúc lợi on the job's profit: its own row; the receipt keeps its own sums
+    tile=tile_match.extra(s,max(0,receipt['net']),f"special|{o['id']}")
+    if tile:move(s,c,tile,tile_match.label(s,'Nghiệm thu đơn chuyên môn' if k=='business' else 'Phụ cấp chuyên môn'),o['id'],category='scale_special_settlement')
     if quality>=80:
         from . import career_scale,needs
         career_scale.accepted(c,cid,now)

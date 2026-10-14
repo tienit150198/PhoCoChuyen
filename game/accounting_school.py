@@ -230,6 +230,8 @@ def _action(s,name,p):
             m=salary_multiplier(s,'corp_accounting')
             pay=jobs.pay(round(c['job']['salary']*(.85 if c['job']['probation'] else 1)),m)
             e.money(s,c,pay,f'Lương ca thực hành TT99 · tháng {book["period"]}',f'tt99-salary-{book["period"]}',category='salary')
+            from .tile_match import fund_bonus   # 🧩 Phúc lợi: its own row, to the wallet with the salary
+            pay+=fund_bonus(s,c,pay,f'Lương ca TT99 tháng {book["period"]}',f'tt99-salary-{book["period"]}')
             from . import journey
             if s['journey']['story']:
                 journey._transfer(s,c,-pay,'Lương thực hành chuyển về ví','salary_to_wallet')

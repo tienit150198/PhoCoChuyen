@@ -444,7 +444,7 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         if run.get('continuous'):
             from .quay_business import sale
             _need_stock(st, want)
-            run['m'] += sale(st, want, st['business']['cursor'], stars=stars, total=c['total'], extra_loss=lost + round(waste))
+            run['m'] += sale(st, want, st['business']['cursor'], stars=stars, total=c['total'], extra_loss=lost + round(waste), owner=s)
         run['i'] += 1
         run['u'] += len(want)          # stock and demand count dishes (a 1.5.1 customer buys one)
         run['rv'] += c['total']
@@ -543,7 +543,7 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
             from .quay_business import sale
             _need_stock(st, o['items'])
             run['m'] += sale(st, o['items'], st['business']['cursor'], channel='online', stars=stars, total=o['total'], extra_fee=fee,
-                             extra_loss=round(sum(cost_of(trade, d) for d in extra)))
+                             extra_loss=round(sum(cost_of(trade, d) for d in extra)), owner=s)
         run['on'][jn] = stars
         run['u'] += len(o['items'])
         run['rv'] += o['total'] - app - fee

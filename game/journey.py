@@ -518,6 +518,8 @@ def carry_reset(old: dict, fresh: dict) -> None:
         j[icl.KEY] = copy.deepcopy(oj[icl.KEY])
     n = oj.get(RESET_KEY)
     j[RESET_KEY] = min(10**6, (n if type(n) is int and n > 0 else 0) + 1)
+    from . import tile_match
+    tile_match.carry_reset(old, fresh)   # 🧩 the levels cleared stay (and today's cap)
 
 
 def migrate(s: dict) -> dict:
@@ -683,7 +685,9 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
         boost = job_note.get('boost') if type(job_note.get('boost')) is int else 0
         mastery_bonus = ((result.get('summary') or {}).get('mastery') or {}).get('bonus') or 0
         competition_bonus = ((result.get('summary') or {}).get('competition') or {}).get('bonus') or 0
-        extra = x3.bonus(int((result.get('summary') or {}).get('net') or 0) - int(ot) - boost - int(mastery_bonus) - int(competition_bonus))
+        tile_bonus = (result.get('summary') or {}).get('tile') or 0   # 🧩 Phúc lợi: one multiplier, never twice
+        extra = x3.bonus(int((result.get('summary') or {}).get('net') or 0) - int(ot) - boost - int(mastery_bonus) - int(competition_bonus)
+                         - int(tile_bonus))
         if extra > 0 and not icl.day_paid(s):   # ⏱️ beyond the real-time allowance (1 real hour = 1 paid day): no bonus
             extra = 0
             notes.append(f'⏱️ Hôm nay quá số ngày có thưởng theo giờ thật (1 giờ = 1 ngày): không có thưởng x{x3.X}.')
@@ -971,6 +975,9 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(qy.action(s, name, p))
     elif name.startswith('jr_abroad_'):
         result.update(ab.action(s, name, p))   # ✈️🌏
+    elif name.startswith('jr_tile_'):   # 🧩 Ghép ba Phố Mây: start, boosters, the replayed end (game/tile_match.py)
+        from . import tile_match
+        result.update(tile_match.action(s, name, p))
     else:
         raise e.GameError('Thao tác hành trình không hợp lệ.', 'unknown_action')
     after(s, None, name, p, result)
@@ -1055,7 +1062,13 @@ def public(s: dict) -> dict:
         bank=bk.public(s), home=hs.public(s), household=hh.public(s), cradle=_cradle_public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
         garage=gr.public(s), gadgets=gd.public(s), spend=sp.public(s), pets=pt.public(s), lux=lx.public(s), **({'uniq': u} if (u := auc.public(s)) else {}), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
         **({'quay': qy.public(s)} if qy.visible(s) else {}),   # 🏪 only once a save reaches it (state size)
-        **({'abroad': a} if (a := ab.public(s)) else {}))   # ✈️🌏 story mode
+        **({'abroad': a} if (a := ab.public(s)) else {}),   # ✈️🌏 story mode
+        **({'tile': _tile_public(s)} if j['story'] else {}))   # 🧩 Ghép ba Phố Mây (game/tile_match.py)
+
+
+def _tile_public(s: dict) -> dict:
+    from . import tile_match
+    return tile_match.public(s)
 
 
 def _cradle_public(s: dict):
@@ -1190,3 +1203,5 @@ def validate(s: dict) -> None:
     ab.validate(s)   # ✈️🌏 journey['abroad'] (optional)
     from . import jail
     jail.validate(s)   # 🚔 journey['jail'] (optional)
+    from . import tile_match
+    tile_match.validate(s)   # 🧩 journey['tile'] (optional)

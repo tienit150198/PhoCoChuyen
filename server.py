@@ -642,6 +642,12 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("treasure-get:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,town_treasure.snapshot(self.server.store));return
             if route=="/api/content":self.content(split.query);return
+            if route=="/api/tile/level":  # 🧩 Ghép ba Phố Mây (game/tile_match.py): one level's layout, public, never a save
+                if not self.server.rate_limit("tile:"+self.client_ip(),120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                from game import tile_match
+                raw=(parse_qs(split.query).get("lv") or [""])[0]
+                if not (raw.isdigit() and len(raw)<=3 and 1<=int(raw)<=tile_match.LEVEL_MAX):self.error(400,"Màn chơi không hợp lệ.","bad_request");return
+                self.json(200,tile_match.public_level(int(raw)));return
             if route=="/api/market":
                 # Public prices never load or settle a player's save.
                 if not self.server.rate_limit("market:"+self.client_ip(),120):self.error(429,"Chờ một chút rồi cập nhật giá nhé.");return

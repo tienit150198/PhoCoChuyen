@@ -67,6 +67,8 @@ def completion_bonus(s,c,pay,title,ref):
         money(s,c,bonus,'Thiết bị chất lượng · '+title,ref,category='other_income')
         bonus=c['money']-before
         if _BONUS.get() is not None:_BONUS.set(_BONUS.get()+bonus)
+    from .tile_match import fund_bonus   # 🧩 Phúc lợi: the same terminal jobs, the same base, its own row
+    fund_bonus(s,c,max(0,pay),title,ref)
     return bonus
 
 

@@ -7,6 +7,11 @@
 
 - Bảng vàng chợ đen (Top lời) tính đúng lời ròng: tiền phạt chợ đen đã được hoàn bằng quà hệ thống (mã `refund-cd-…`, 8 người chiều 11/10, 18.538.100 xu) được cộng lại vào điểm (game/fair_refund.py; save không đổi); phạt của công an người chơi (và mọi thay đổi qua marriage._mutate) cập nhật ngay dòng bảng và sổ Top lỗ tuần trong cùng giao dịch, không còn chờ lệnh kế của người bị phạt. Tính lại dòng bảng hiện có: `scripts/fair_board_recompute.py` (mặc định chạy thử, `--apply` để ghi). Không công bố, không đổi schema hay save.
 
+# Chưa phát hành — tile-match (Có gì mới: 1 dòng, bản phát hành quyết định số bản)
+
+- 🧩 Ghép ba Phố Mây (thiết kế của chủ game): trò ghép ba kiểu Tile Master ở Khu phố và trên Bản đồ phố. 100 màn có độ khó tăng dần (thêm loại đồ, tầng, chồng úp, khay sát hơn, hình trái tim/ngôi nhà/chùa/hải đăng…; từ màn 40 có 🔒 khóa cần 🔑, từ màn 55 có 🧊 băng chạm hai lần). Mỗi màn là seed + tham số (game/tile_match_levels.py, dựng bằng scripts/build_tile_levels.py), đã kiểm bằng bộ giải; 4 trợ giúp (hoàn tác, xáo, đẩy ra, thêm ô) miễn phí vài lượt mỗi ngày, sau đó trả xu, giá gấp đôi mỗi lần trong màn. Mỗi màn MỚI qua lần đầu: +0,2% tiền kiếm từ làm việc và kinh doanh (tối đa +20%), ghi thành dòng riêng "🧩 Phúc lợi" ở tiền làm việc, lương, đơn nhân viên, quầy, hợp đồng/chuyên môn và hoa hồng nước ngoài; không áp dụng cho lãi ngân hàng, Mây Coin, vàng, chợ đen, kéo co, đấu giá, chuyển khoản, quà và thu hồi; không nhân lại trong ngày x3. Máy chủ chơi lại các nước đi theo seed để xác nhận thắng, tối thiểu 20 giây/màn và 0,25 giây/lần chạm, tối đa 15 màn mới mỗi ngày. Bản lưu: journey.tile (tùy chọn, 2.4.2 giữ nguyên); không DDL; dữ kiện nhiệm vụ không đổi.
+- Có gì mới (đề xuất): 🧩 Ghép ba Phố Mây: 100 màn ở Khu phố. Mỗi màn mới qua lần đầu, tiền làm việc và kinh doanh +0,2%, tối đa +20%!
+
 # v2.4.2 — 2026-10-14
 
 - Theo yêu cầu chủ game, gom thay đổi 2.0.6–2.4.1 thành một thẻ Có gì mới: nghề, chứng chỉ, thăng tiến/thi đua, chùa và quyền riêng tư, đi lại/chat/reaction, quy mô/chuỗi, 540 gói chuyên môn, nâng kho/nhập/quầy và các lỗi đã sửa.
