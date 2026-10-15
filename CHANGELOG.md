@@ -1,3 +1,12 @@
+# v2.4.25 — 2026-10-16
+
+🫖 Đầu game nhẹ hơn, đợt 2 (chủ game 16/10 "ok sửa đi"). Chỉ nhân vật mới ở chế độ câu chuyện, ngày sống 1–3 (`journey.EASY_DAYS`); không thêm khóa lưu.
+- Trà sữa: sáng ngày sống 2–3 quầy có sẵn 8 phần mỗi loại trà/trân châu/foam đang bán, miễn phí như hàng mở đầu (`boba._ready_pots`); từ ngày 4 tự ủ.
+- Cảnh kết chương 1 / mở chương 2 rút còn 2 câu mỗi cảnh (cho mọi người: chỉ hiện ở lần khép ca đầu).
+- Bảng "Chuẩn bị ngày 2/3": một câu của Cô Ba, mục nồi/đặt hàng gập lại; sổ khách quen gập trong ngày 1–3 (trừ khách "như mọi khi"); nút Trò chuyện ẩn ngày 1; truyện nghề tự bật từ ngày 4; tổng kết ngày 1–3 gập sổ sách/đánh giá/thăng tiến.
+- Số chữ: kết chương 1 175→59, mở chương 2 113→70, Chuẩn bị ngày 2 280→88, quầy ngày 2 127→72.
+- Có gì mới: 1 dòng.
+
 # v2.4.24 — 2026-10-16
 
 🌱 Người mới dễ vào hơn (chủ game 16/10: "giai đoạn đầu quá khó chơi, nhiều chữ thừa, giao diện không tối ưu"). Chỉ áp dụng cho nhân vật mới ở chế độ câu chuyện; số kinh tế và schema không đổi. Ghi chú nghiên cứu: onboarding-notes-1016.md (ngoài repo).
