@@ -394,7 +394,7 @@ class Cards(unittest.TestCase):
                 h['Cookie'] = 'mnl_session=' + token
                 h['X-Game-CSRF'] = self.store.csrf(token)
             h.update(headers or {})
-            con = http.client.HTTPConnection('127.0.0.1', server.server_port, timeout=10)
+            con = http.client.HTTPConnection('127.0.0.1', server.server_port, timeout=60)   # the first page hashes every asset
             con.request(method, path, body if body is not None else json.dumps(payload) if payload is not None else None, h)
             r = con.getresponse()
             out = r.status, r.read(), dict(r.getheaders())
