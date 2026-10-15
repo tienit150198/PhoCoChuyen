@@ -1,12 +1,13 @@
-"""🛕 Vào chùa: a browser walk-through of the walkable pagoda (dev tool, needs `pip install playwright` + chromium).
+"""🛕 Vào chùa: a browser walk-through of the 2.5D pagoda (dev tool, needs `pip install playwright` + chromium).
 
 Runs the real app on a throwaway story-mode server, seeds one save (a named character on a rằm, life day 5), then
-in the browser at 390x844 (phone) and 1280x800 (desktop): the Đời thường sheet's "Vào chùa", the yard, incense at
-the burner, the wish fence, the main hall, talking with thầy Huệ Minh, khấn (who and what picked by tapping), a
-chant with the mõ kept on the beat (taps sent at the beats, three of twelve left out), the dining hall's vegetarian
-lunch. Checks the server took each act (journey.chua.did), the wallet never moved, every hotspot of each area is
-reachable, the page logged no error. Then a reduced-motion pass and an English pass (phone) that lists any
-Vietnamese left on screen (build public/i18n/en.json first: python scripts/i18n_extract.py build).
+in the browser at 390x844 (phone) and 1280x800 (desktop): the Đời thường sheet's "Vào chùa", the courtyard (one 2.5D
+scene since 15/10), incense at the burner, the grove (the wish garden opens over the pagoda and closes back to it),
+talking with thầy Huệ Minh, khấn (who and what picked by tapping), a chant with the mõ kept on the beat (taps sent at
+the beats, three of twelve left out), the vegetarian lunch. Checks the server took each act (journey.chua.did), the
+wallet never moved, every hotspot is reachable, the page logged no error. Then a reduced-motion pass and an English
+pass (phone) that lists any Vietnamese left on screen (build public/i18n/en.json first: python scripts/i18n_extract.py
+build). Wishes themselves: scripts/browser_wish_trees.py.
 
     python scripts/browser_chua.py [out_dir] [--lang en]
 """
@@ -75,7 +76,7 @@ async def main():
             for lang, w, h, reduced, theme, day, new_interface in passes:
                 tag = f'{lang}-{w}x{h}{"-reduced" if reduced else ""}-{theme}-{"new" if new_interface else "classic"}'
                 ctx = await browser.new_context(viewport=dict(width=w, height=h), is_mobile=w < 500, has_touch=w < 500,
-                                                reduced_motion='reduce' if reduced else 'no-preference')
+                                                reduced_motion='reduce' if reduced else 'no-preference', bypass_csp=True)
                 await ctx.add_init_script("try{localStorage.setItem('mnl.wn.seen','99.0.0');localStorage.setItem('mnl.x3.week','blocked')}catch(e){}")
                 page = await ctx.new_page()
                 page.on('console', lambda m: m.type == 'error' and errors.append(m.text))
@@ -122,9 +123,9 @@ async def main():
                     await page.click('#sheet [data-action="stView"][data-view="life"]')
                 await page.wait_for_selector('#sheet[open]', timeout=8000)
                 await page.wait_for_selector('#sheet[open] .cg-enter', timeout=8000)
-                await page.evaluate("document.querySelector('#sheet .cg-enter').scrollIntoView({block:'center'})")
+                await page.evaluate("document.querySelector('#sheet .cg-enter[data-action=lfChuaVisit]').scrollIntoView({block:'center'})")
                 await shot('01-sheet')
-                await page.click('#sheet .cg-enter')
+                await page.click('#sheet .cg-enter[data-action="lfChuaVisit"]')
                 await page.wait_for_selector('.cv-sheet[open] canvas', timeout=8000)
                 await shot('02-yard', 900)
                 await reach('san')
@@ -147,42 +148,16 @@ async def main():
                 await page.click('.cv-panel [data-cv="again"]')
                 await page.click('.cv-panel [data-act="huong"]')
                 await page.wait_for_selector('.cv-panel .cv-result', timeout=8000)
-                # Write two private family cards, using the real composer and API.
-                await go('nguyen')
-                await page.wait_for_selector('.cv-panel [data-cv="card-recipient"]', timeout=5000)
-                for index in range(2):
-                    if index == 0:
-                        await shot('05-nguyen-who')
-                    await page.click('.cv-panel [data-cv="card-recipient"][data-id="cha_me"]')
-                    await page.click('.cv-panel [data-cv="card-blessing"][data-id="may_man"]')
-                    await page.fill('.cv-panel [name="card-name"]', 'Gia đình Lan')
-                    await page.fill('.cv-panel [name="card-message"]', f'Bình an {index} & nhiều niềm vui')
-                    await shot(f'05-nguyen-draft-{index}')
-                    await page.click('.cv-panel [data-cv="card-send"]')
-                    await page.wait_for_selector('.cv-panel .cv-result', timeout=8000)
-                    if await page.locator('.cv-card img').count():
-                        problems.append(f'[{tag}] card HTML was not escaped')
-                    if index == 0:
-                        await page.click('.cv-panel [data-cv="again"]')
-                await shot('05b-cards-saved')
-                if await page.locator('.cv-panel [data-cv="share"]').count():
-                    await page.click('.cv-panel [data-cv="share"]')
-                    await page.wait_for_selector('.cv-panel .cv-card-board .cv-card', timeout=8000)
-                    await shot('05c-shared-board', 800)
+                # the grove: the wish garden opens over the pagoda, closing it comes back to the courtyard
+                await page.click('.cv-path [data-cv="step"][data-id="nguyen"]')
+                await page.wait_for_selector('.wt-sheet[open] .wt-tile', timeout=12000)
+                await shot('05-garden', 600)
+                await page.click('.wt-sheet [data-wt="close"]')
+                await page.wait_for_function('!__chua.state().covered', timeout=5000)
                 await page.click('.cv-path [data-cv="here"]')
                 await page.wait_for_selector('.cv-panel .cv-tiles', timeout=5000)
                 await shot('05d-quanh-day')
                 await page.click('.cv-panel [data-cv="shut"]')
-                if len(read(db, token)['chua'].get('cards', [])) != 2:
-                    problems.append(f'[{tag}] repeated cards not saved')
-                # into the main hall through its door
-                await go('go:dien', 3200)
-                st = await page.evaluate('__chua.state()')
-                if st['area'] != 'dien':
-                    problems.append(f'[{tag}] the hall door did not lead in ({st["area"]})')
-                    await page.evaluate("__chua.enter('dien')")
-                await shot('06-hall', 600)
-                await reach('dien')
                 await go('npc:thay')
                 await page.wait_for_selector('.cv-panel [data-cv="talk"]', timeout=5000)
                 await shot('07-thay')
@@ -219,13 +194,7 @@ async def main():
                 await page.evaluate(BEATS, 3)
                 await page.wait_for_selector('.cv-panel .cv-result', timeout=9000)
                 await shot('11-chant-done', 600)
-                # the dining hall (rằm: the lunch is on)
-                await page.click('.cv-areas [data-id="trai"]')
-                await page.wait_for_timeout(300 if reduced else 4500)
-                st = await page.evaluate('__chua.state()')
-                if st['area'] != 'trai':
-                    problems.append(f'[{tag}] the chip did not lead to the dining hall ({st["area"]})')
-                await reach('trai')
+                # the vegetarian table (rằm: the lunch is on)
                 await go('com')
                 await page.wait_for_selector('.cv-panel [data-act="com"]', timeout=5000)
                 await shot('12-com')
@@ -245,39 +214,21 @@ async def main():
                 await page.wait_for_timeout(300)
                 if await page.locator('.cv-sheet[open]').count():
                     problems.append(f'[{tag}] the pagoda did not close')
-                # Reopen after a reload and day change: cards remain readable at the fence.
-                def next_day(save):
-                    save['journey'].update(life_day=day + 1)
-                    if ARCHIVE:
-                        from game import chua
-                        for index in range(41):
-                            chua.action(save, 'jr_chua_do', dict(act='nguyen', recipient='ca_nha', blessing='binh_an', message=f'Archive marker {index}'))
-                mutate(db, token, next_day)
+                # Reopen after a reload and a day change: the courtyard comes back, the acts are open again.
+                mutate(db, token, lambda save: save['journey'].update(life_day=day + 1))
                 await page.reload()
                 await page.wait_for_selector('#app:not([hidden])', timeout=30000)
                 await page.wait_for_timeout(1200)
                 await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
-                await shot('00-boot')
                 if new_interface:
                     await page.locator('[data-action="isoCareers"]:visible').first.click()
                     await page.locator('#sheet [data-action="jrView"][data-view="life"]').first.click()
                 else:
                     await page.click('#topbar [data-action="status"]')
                     await page.click('#sheet [data-action="stView"][data-view="life"]')
-                await page.click('#sheet .cg-enter')
+                await page.click('#sheet .cg-enter[data-action="lfChuaVisit"]')
                 await page.wait_for_selector('.cv-sheet[open] canvas')
-                await page.click('.cv-path [data-cv="step"][data-id="board"]')
-                await page.wait_for_selector('.cv-card', timeout=8000)
-                await page.wait_for_timeout(600)
-                if await page.locator('.cv-card').count() != (40 if ARCHIVE else 2):
-                    problems.append(f'[{tag}] cards missing after reload/day change')
-                await shot('13-cards-next-day')
-                if ARCHIVE:
-                    await page.click('.cv-panel [data-cv="older-cards"]')
-                    await page.wait_for_function("document.querySelectorAll('.cv-card').length===43")
-                    if 'Bình an 0 & nhiều niềm vui' not in await page.locator('.cv-card-list').inner_text():
-                        problems.append(f'[{tag}] earliest card not readable from archive')
-                    await shot('14-archived-cards')
+                await shot('13-next-day', 900)
                 await page.click('.cv-head [data-cv="close"]')
                 await ctx.close()
             await browser.close()

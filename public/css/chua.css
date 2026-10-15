@@ -2,7 +2,9 @@
    where the player stands. Theme tokens only; phone first.
    2.4.9 (owner "nhìn lộn xộn quá"): one slim header, the area tabs float on the scene, one step bar under it
    (Thắp hương → Khấn → Lời chúc → Chia sẻ, then "Quanh đây"), one question and one main button per panel,
-   intros behind "?". */
+   intros behind "?".
+   15/10 (owner "theo dạng 2.5d trình bày rõ ràng và đẹp"): one 2.5D courtyard (scenes/chua-iso.js), no area tabs; a
+   short hint on the scene until the first tap; the step bar is Thắp hương → Khấn → Ước nguyện → Tụng kinh. */
 .sheet.cv-sheet{width:min(1180px,calc(100vw - 48px));height:min(900px,calc(100dvh - 48px));overflow:hidden;padding:0}
 html[data-layout="phone"] .sheet.cv-sheet{width:100%;max-width:100%;height:calc(100dvh - max(10px,var(--safe-t,0px)));max-height:none}
 .cv-root{display:flex;flex-direction:column;height:100%;min-height:0;background:var(--surface)}
@@ -21,9 +23,11 @@ html[data-layout="phone"] .cv-head{padding-top:var(--sp-3)}
 @media (max-width:420px){.cv-donate-t{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.cv-donate{min-width:44px;padding:6px 10px}}
 
 /* the scene */
-.cv-stage{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;touch-action:manipulation;background:#efe4d2}
-html[data-theme="dem"] .cv-stage{background:#2a2621}
-.cv-canvas{position:absolute;inset:0;display:block;width:100%;height:100%;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;filter:var(--scene-filter,none)}
+.cv-stage{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;touch-action:manipulation;background:#aec48b}
+html[data-theme="dem"] .cv-stage{background:#4d5a3e}
+.cv-hint{position:absolute;left:50%;top:var(--sp-2);z-index:1;margin:0;padding:6px 14px;transform:translateX(-50%);border-radius:var(--radius-pill);background:#fffaf0e8;border:1px solid var(--line);box-shadow:var(--shadow-sm);color:var(--ink-2);font-size:var(--fs-1);font-weight:700;white-space:nowrap;pointer-events:none;transition:opacity .4s}
+.cv-stage.hinted .cv-hint,.cv-stage.has-panel .cv-hint{opacity:0}
+.cv-canvas{position:absolute;inset:0;display:block;width:100%;height:100%;cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;filter:var(--scene-filter,none)}
 .cv-canvas:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
 
 /* the areas: a small segmented control floating on the scene */
@@ -49,6 +53,7 @@ html[data-theme="dem"] .cv-stage{background:#2a2621}
 .cv-step.on .cv-step-ico{transform:translateY(-2px)}
 @media (hover:hover){.cv-step:hover{background:var(--surface-2)}}
 .cv-more{flex:0 0 auto;width:70px;padding:4px 0;border-left:1px solid var(--line);border-radius:0 14px 14px 0}
+@media (max-width:380px){.cv-step-name{font-size:.72rem;letter-spacing:-.01em}}
 @media (min-width:760px){.cv-path{justify-content:center}.cv-steps{flex:0 1 560px}.cv-step{flex-direction:row;gap:var(--sp-2);min-height:48px}.cv-step-name{font-size:var(--fs-2)}.cv-more{width:auto;padding:0 var(--sp-3)}}
 
 /* the panel over the scene: a bottom sheet on a phone, a card on the right on a wide screen */

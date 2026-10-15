@@ -39,13 +39,13 @@ vm.runInContext(move+';globalThis.walk=walkTo',ctx);
 ctx.walk([99,99],()=>arrived++);
 assert.equal(arrived,0,'unreachable spot must never fire its arrival action');
 assert.equal(S.arrive,null);assert.equal(S.me.path,null);assert.deepEqual([S.me.x,S.me.y],[12,34]);
-assert.match(src,/function goArea\(/,'area chips route through connecting doors');
-const nav=src.slice(src.indexOf('function goArea('),src.indexOf('function enterArea('));
-const visited=[],scene={area:'dien'};
-const context=vm.createContext({S:scene,pl:()=>({spots:scene.area==='dien'?[{to:'san',kind:'door'}]:[{to:'trai',kind:'door'}]}),
-  goSpot(door,after){visited.push(door.to);scene.area=door.to;after?.();}});
-vm.runInContext(nav+';goArea("trai")',context);
-assert.deepEqual(visited,['san','trai'],'moving hall to dining goes through courtyard');
+// 15/10 (owner: one 2.5D courtyard): no rooms to switch; a step walks straight to its spot in the courtyard.
+assert.doesNotMatch(src,/function goArea\(|function enterArea\(/,'no area switching left in the 2.5D courtyard');
+const nav=src.slice(src.indexOf('function goTo('),src.indexOf('/** 🌳 A wish tree'));
+const walked=[];
+const navContext=vm.createContext({S:{covered:false,chant:null},pl:()=>({spots:[{id:'huong',stand:[1,2]},{id:'khan',stand:[3,4]}]}),goSpot(s){walked.push(s.id);}});
+vm.runInContext(nav+';goTo("khan");goTo("nope")',navContext);
+assert.deepEqual(walked,['khan'],'a step walks to its own spot only');
 assert.ok(src.includes('async function donate('),'child donation dialog suspends the temple');
 const donation=src.slice(src.indexOf('async function donate('),src.indexOf('/* ---- doing ---- */'));
 let closeDonation;const sound=[];

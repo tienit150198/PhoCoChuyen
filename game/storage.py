@@ -646,6 +646,9 @@ class Store:
                 rentals.command_commit(db,sid,before,current,action)
                 from . import chua_board
                 chua_board.command_commit(db,sid,action,current,result or {})
+                if action=='jr_chua_do':
+                    from . import chua_wish
+                    chua_wish.command_commit(db,sid,action,current,result)  # 🌳 the wish's row (today's limit refuses the command)
                 work_visits.command_commit(db,sid,before,current,career,action,result or {},projected=projected if after is not None else None)
             if db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=? AND revision=?",
                           (serialized,revision+1,sid,revision)).rowcount!=1:
@@ -741,6 +744,9 @@ class Store:
             rentals.command_commit(db,sid,before,raw,action)
             from . import chua_board
             chua_board.command_commit(db,sid,action,raw,result)
+            if action=='jr_chua_do':
+                from . import chua_wish
+                chua_wish.command_commit(db,sid,action,raw,result)  # 🌳 the wish's row (today's limit refuses the command)
             work_visits.command_commit(db,sid,before,raw,career,action,result)
             db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(serialized,revision,sid))
             from . import couple

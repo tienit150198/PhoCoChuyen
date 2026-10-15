@@ -23,6 +23,7 @@ import {Inbox} from './inbox.js';
 import {ChatAdmin} from './chat.js';  // 💬 Chat: reports, hide, mute (live chat)
 import {KaraAdmin} from './karaoke.js';  // 🎤 Phòng hát: reports, banned songs, room tools
 import {GiftAdmin} from './gifts.js';
+import {WishAdmin} from './wishes.js';  // 🌳 Ước nguyện: reported wishes first, hide / show (game/chua_wish.py)
 import {WedInviteAdmin} from './wedinvite.js';  // 💌 Thiệp cưới: the cards sent to the whole server, delete one  // 🎁 Tặng xu: accounts, a gift of coins per player, "Quà đã tặng"
 import {UsersAdmin} from './users.js';
 import {overviewView,liveView,skeleton,skelCard} from './stats.js';
@@ -30,7 +31,7 @@ import {esc,icon,hm,ago,num,toast} from './ui.js';
 
 const api=new AdminAPI();
 const root=document.getElementById('root');
-const VIEWS={'tong-quan':['Tổng quan','chart'],'dau-tu':['Tổng quan đầu tư','trend'],'giu-chan':['Giữ chân','loop'],'nguoi-dung':['Người dùng','user'],'gop-y':['Góp ý','inbox'],'chat':['Chat','chat'],'phong-hat':['Phòng hát','music'],'tang-xu':['Tặng xu','gift'],'thiep-cuoi':['Thiệp cưới','send'],'he-thong':['Hệ thống','server'],
+const VIEWS={'tong-quan':['Tổng quan','chart'],'dau-tu':['Tổng quan đầu tư','trend'],'giu-chan':['Giữ chân','loop'],'nguoi-dung':['Người dùng','user'],'gop-y':['Góp ý','inbox'],'chat':['Chat','chat'],'phong-hat':['Phòng hát','music'],'tang-xu':['Tặng xu','gift'],'thiep-cuoi':['Thiệp cưới','send'],'uoc-nguyen':['Ước nguyện','sparkle'],'he-thong':['Hệ thống','server'],
   'bao-cao':['Báo cáo số liệu','print']};
 const HIDDEN=new Set(['bao-cao']);  // reached from "Xuất báo cáo", not listed in the menu
 const INVEST_VIEWS=new Set(['dau-tu','bao-cao']);  // drawn from …/section?name=invest only (no summary request)
@@ -59,6 +60,7 @@ const chatAdmin=new ChatAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==
 const karaAdmin=new KaraAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='phong-hat')renderView();},forbidden:()=>reauth()});
 const giftAdmin=new GiftAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='tang-xu')renderView();},forbidden:()=>reauth()});
 const wiAdmin=new WedInviteAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='thiep-cuoi')renderView();},forbidden:()=>reauth()});
+const wsAdmin=new WishAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='uoc-nguyen')renderView();},forbidden:()=>reauth()});
 const usersAdmin=new UsersAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='nguoi-dung')renderView();},forbidden:()=>reauth()});
 let retMod=null;  // ./retention.js once imported ("Giữ chân")
 const loadRetMod=()=>retMod?Promise.resolve(retMod):import('./retention.js').then(m=>(retMod=m));
@@ -100,7 +102,7 @@ function reauth(){
   usersAdmin.close(true,false);
   reauthing??=api.bootstrap().then(()=>{
     if(!api.admin)toast(api.account?'Tài khoản này không còn quyền vận hành.':'Phiên đăng nhập đã hết. Đăng nhập lại nhé.','bad');
-    resetStats();inbox.reset();chatAdmin.reset();karaAdmin.reset();giftAdmin.reset();wiAdmin.reset();usersAdmin.reset();decide();
+    resetStats();inbox.reset();chatAdmin.reset();karaAdmin.reset();giftAdmin.reset();wiAdmin.reset();wsAdmin.reset();usersAdmin.reset();decide();
   }).catch(e=>toast(e.message,'bad')).finally(()=>{reauthing=null;});
   return reauthing;
 }
@@ -127,7 +129,7 @@ async function login(form){
 async function logout(){
   try{await api.logout();toast('Đã đăng xuất.');}
   catch(e){toast(e.message,'bad');}
-  resetStats();inbox.reset();chatAdmin.reset();karaAdmin.reset();giftAdmin.reset();wiAdmin.reset();usersAdmin.reset();ui.unread=null;ui.navOpen=false;
+  resetStats();inbox.reset();chatAdmin.reset();karaAdmin.reset();giftAdmin.reset();wiAdmin.reset();wsAdmin.reset();usersAdmin.reset();ui.unread=null;ui.navOpen=false;
   decide();
 }
 
@@ -334,6 +336,11 @@ function renderTools(){
     meta.innerHTML=karaAdmin.meta();
     return;
   }
+  if(ui.view==='uoc-nguyen'){
+    tools.innerHTML=`<button type="button" class="btn ghost sm" data-act="wsReload"${wsAdmin.busy?' disabled':''}>${icon('refresh',15)}<span>Tải lại</span></button>`;
+    meta.innerHTML=wsAdmin.meta();
+    return;
+  }
   if(ui.view==='thiep-cuoi'){
     tools.innerHTML=`<button type="button" class="btn ghost sm" data-act="wiReload"${wiAdmin.busy?' disabled':''}>${icon('refresh',15)}<span>Tải lại</span></button>`;
     meta.innerHTML=wiAdmin.meta();
@@ -392,6 +399,7 @@ function renderView(){
   else if(ui.view==='chat')view.innerHTML=chatAdmin.view();
   else if(ui.view==='tang-xu')view.innerHTML=giftAdmin.view();
   else if(ui.view==='thiep-cuoi')view.innerHTML=wiAdmin.view();
+  else if(ui.view==='uoc-nguyen')view.innerHTML=wsAdmin.view();
   else if(ui.view==='phong-hat')view.innerHTML=karaAdmin.view();
   else if(ui.view==='giu-chan')view.innerHTML=`<div class="stats ret${stats.sections.retention.busy&&stats.sections.retention.data?' is-busy':''}">${retentionBody()}</div>`;
   else if(INVEST_VIEWS.has(ui.view))view.innerHTML=`<div class="stats inv-view${stats.sections.invest.busy&&stats.sections.invest.data?' is-busy':''}">${investBody()}</div>`;
@@ -506,6 +514,7 @@ root.addEventListener('click',async ev=>{
   if(giftAdmin.action(act,el.dataset,el))return;
   if(await karaAdmin.action(act,el.dataset))return;
   if(await wiAdmin.action(act,el.dataset))return;
+  if(await wsAdmin.action(act,el.dataset))return;
   if(await chatAdmin.action(act,el.dataset))return;
   await inbox.action(act,el.dataset);
 });

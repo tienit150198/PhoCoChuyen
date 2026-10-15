@@ -6,6 +6,8 @@ The v1 record keeps unique acts for today's history and a saturated lifetime
 counter. Optional private cards retain the latest 40; older cards go to the
 journey archive in the same Store transaction. Cards survive life-day rollover.
 Older clients can still submit preset wishes and draw the original acts list.
+🌳 Since 15/10 (owner) a wish is the player's own words hung on a wish tree (game/chua_wish.py): 'nguyen' with a
+`tree` gives the same gain, records the same act, and keeps the words out of the save (`wish_trees` in the view).
 """
 from __future__ import annotations
 
@@ -40,6 +42,7 @@ ACTS = {
     'tung': dict(emoji='📿', name='Tụng kinh cùng thầy', spirit=4, wake=0, full=0, feast=False, text=''),
 }
 SCENE_ACTS = ('khan', 'tung')
+WISH_KEYS = {'tree', 'text', 'color', 'anon'}   # 'nguyen' on a 🌳 wish tree (game/chua_wish.py)
 BEATS = 12                # mõ beats in one chant
 WISHES = {
     'nha': 'Cho cả nhà mạnh khỏe.',
@@ -197,15 +200,20 @@ def action(s: dict, name: str, p: dict) -> dict:
     need = e.need
     need(_story(s), 'Đi chùa chỉ có trong hành trình.', 'locked')
     need(name in COMMANDS, 'Thao tác không hợp lệ.', 'unknown_action')
-    need(isinstance(p, dict) and set(p) <= {'act', 'wish', 'who', 'what', 'beat', 'recipient', 'blessing', 'name', 'message', 'public'}
+    need(isinstance(p, dict) and set(p) <= {'act', 'wish', 'who', 'what', 'beat', 'recipient', 'blessing', 'name', 'message', 'public'} | WISH_KEYS
          and isinstance(p.get('act'), str) and p['act'] in ACTS,
          'Chọn một việc ở chùa nhé.')
     act = p['act']
     x = ACTS[act]
     who, what, beat = p.get('who'), p.get('what'), p.get('beat')
-    extra = {k for k in ('wish', 'who', 'what', 'beat', 'recipient', 'blessing', 'name', 'message', 'public') if k in p}
-    card = None
-    if act == 'nguyen':
+    extra = {k for k in ('wish', 'who', 'what', 'beat', 'recipient', 'blessing', 'name', 'message', 'public', *WISH_KEYS) if k in p}
+    card = wish = None
+    if act == 'nguyen' and 'tree' in p:
+        # 🌳 Cây ước nguyện (owner 15/10): the player's own words on a tree, in game/chua_wish.py's table, not the save
+        from . import chua_wish
+        wish = chua_wish.parse(p)
+    elif act == 'nguyen':
+        need(not extra & WISH_KEYS, 'Chọn một việc ở chùa nhé.')
         card = _new_card(p, s['journey']['life_day'])
     elif act == 'khan':
         need(isinstance(who, str) and who in KHAN_WHO, 'Bạn khấn cho ai?')
@@ -241,7 +249,10 @@ def action(s: dict, name: str, p: dict) -> dict:
             parts.append(f'no bụng {n["full"]}')
     if got:
         parts.insert(0, f'tinh thần +{got}')
-    if act == 'nguyen':
+    if wish is not None:
+        from .chua_wish import tree_label
+        text = f'Bạn viết điều ước lên dải lụa, buộc lên {tree_label(wish["tree"])}. “{wish["text"]}”'
+    elif act == 'nguyen':
         text = f'{x["text"]} “{card["text"]}”'
     elif act == 'khan':
         text = f'{x["text"]} “Con cầu mong {KHAN_WHO[who][0]} {KHAN_WHAT[what]}.”'
@@ -253,6 +264,8 @@ def action(s: dict, name: str, p: dict) -> dict:
     result = dict(message=f'{x["emoji"]} {text}{tail}', effects=[])
     if card is not None:
         result['chua_card'] = dict(id=card['id'], public=p.get('public', False))
+    if wish is not None:
+        result['chua_wish'] = wish   # written by chua_wish.command_commit in the save's own transaction
     return result
 
 
@@ -270,7 +283,7 @@ def public(s: dict) -> dict:
         (more if k in SCENE_ACTS else acts).append(
             dict(id=k, emoji=x['emoji'], name=x['name'], spirit=min(x['spirit'], max(0, 100 - spirit)), wake=x['wake'], full=x['full'],
                  feast=x['feast'], done=k in did, ok=not why, why=why))
-    return dict(enabled=True, unlimited=True, sharing=True, spirit=spirit,
+    return dict(enabled=True, unlimited=True, sharing=True, wish_trees=True, spirit=spirit,
                 lunar=lunar(day), label=lunar_label(day), feast=feast_day(day),
                 cards=[dict(row) for row in (j.get('chua') or {}).get('cards', [])],
                 card_choices=dict(recipients=[dict(id=k, text=v[0], blessings=list(v[1])) for k, v in KHAN_WHO.items()],
