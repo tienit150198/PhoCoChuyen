@@ -1,11 +1,8 @@
-# v2.4.17 — 2026-10-15
+# v2.4.18 — 2026-10-15
 
-📈 Tăng lợi nhuận kinh doanh (chủ game 15/10: "mở tiệm cho lãi cao hơn, cho mọi người tăng 60% lãi"; thông báo "Tăng lợi nhuận kinh doanh").
-- Đơn riêng của nhân viên ở nơi làm: lãi mỗi đơn ×1,6 (staff_market.SHOP_BOOST = 160, sau thị trường/🔥 nghề hot); thưởng 40% tính trên lãi đó nên phần chủ nhận cũng ×1,6. Giữ PROFIT_PERCENT = 40 vì bản lưu kiểm `total×100+carry == positive×40` (bản cũ phải đọc được).
-- Quầy: thưởng lãi 40% → 124%, nhân viên bán 110% → 236% (phần chủ nhận (100+p)×1,6). profit_boost chỉ lưu carry/total/costs nên bản cũ đọc được. Hướng dẫn cập nhật số.
-- Chặn khai thác (đã có từ trước, nặng hơn khi thưởng 124%): đơn của khách là người chơi ở quầy chỉ tính thưởng trên tối đa 2× giá gốc món (VISIT_BONUS_RATIO); giá chủ đặt tới 1.000.000 xu vẫn vào két đủ nhưng hệ thống không trả thưởng trên phần đó.
-- Lỗ không bao giờ được nhân. Có gì mới: 1 dòng.
-# Chưa phát hành — wishmerge
+wishmerge (chủ game 15/10: "đưa vào 1 cái đi, sử dụng chung mà"; nhãn cây "sửa nhé"). Không có Có gì mới.
+
+## wishmerge
 
 📜 Một bảng chung duy nhất: Vườn ước nguyện (chủ game 15/10 về “Bảng chung” cũ: “đưa vào 1 cái đi, sử dụng chung mà”); 🏷️ nhãn tên cây trong sân chùa 2.5D luôn hiện đủ trên điện thoại hẹp (“ở mép trái màn hình hẹp, vài nhãn tên cây bị khuất một phần”). Giới hạn giữ nguyên (5 điều ước/ngày, 150 ký tự, 3 báo cáo thì ẩn, khách viết được). Chưa đổi số phiên bản, chưa thêm Có gì mới.
 
@@ -16,6 +13,13 @@
 - Nhãn tên cây (public/js/scenes/chua-iso.js layoutBoards, public/js/v4/chua-visit.js): mỗi bảng tên của cây đang trong khung nằm trọn trong khung hình, không đè bảng khác, biển “VƯỜN ƯỚC NGUYỆN”, biển Nhà trai, huy hiệu việc/💬 hay dòng gợi ý (tìm chỗ gần nhất, ưu tiên dời ngang để vẫn nằm dưới cây); chạm bảng tên ở chỗ nó được vẽ. Lần nhìn đầu trên màn hẹp canh giữa cả vườn (đủ 9 cây và 9 nhãn ở 360×740, 375×667, 390×844, 412×915; 844×390 thấy trọn chiều cao vườn). Cây ra ngoài khung thì không vẽ nhãn (không chất nhãn ở mép). Biển “🌳 VƯỜN ƯỚC NGUYỆN” trượt dọc cột cho khỏi bị cắt ở mép (cột ra ngoài khung thì không vẽ biển).
 - Kiểm: tests/test_chua_wish.py (+ OldCardTrees, OldCardsInTheGarden: thẻ chia sẻ hiện cho người khác, riêng tư/thôi chia sẻ/đặt lại/xóa thì không, 🙏 một lần, 3 báo cáo ẩn, admin gỡ/treo lại kể cả khi chia sẻ lại, phân trang, XOA, schema 45 idempotent, 2.4.16/2.4.15 validate), scripts/check_chua.mjs (72 bố cục nhãn ở các cỡ màn), scripts/browser_wish_trees.py (thêm 375×667, 412×915; `WISH_SIZES=`; kiểm nhãn cây, lời chúc cũ trên Cây Sức khỏe, 🙏, “Thôi chia sẻ”, Quanh đây không còn bảng riêng, admin gỡ thẻ; kiểm đè nút chỉ tính phần thấy được trong khung cuộn). Tiếng Anh: i18n/overrides.json + `scripts/i18n_extract.py build`.
 
+# v2.4.17 — 2026-10-15
+
+📈 Tăng lợi nhuận kinh doanh (chủ game 15/10: "mở tiệm cho lãi cao hơn, cho mọi người tăng 60% lãi"; thông báo "Tăng lợi nhuận kinh doanh").
+- Đơn riêng của nhân viên ở nơi làm: lãi mỗi đơn ×1,6 (staff_market.SHOP_BOOST = 160, sau thị trường/🔥 nghề hot); thưởng 40% tính trên lãi đó nên phần chủ nhận cũng ×1,6. Giữ PROFIT_PERCENT = 40 vì bản lưu kiểm `total×100+carry == positive×40` (bản cũ phải đọc được).
+- Quầy: thưởng lãi 40% → 124%, nhân viên bán 110% → 236% (phần chủ nhận (100+p)×1,6). profit_boost chỉ lưu carry/total/costs nên bản cũ đọc được. Hướng dẫn cập nhật số.
+- Chặn khai thác (đã có từ trước, nặng hơn khi thưởng 124%): đơn của khách là người chơi ở quầy chỉ tính thưởng trên tối đa 2× giá gốc món (VISIT_BONUS_RATIO); giá chủ đặt tới 1.000.000 xu vẫn vào két đủ nhưng hệ thống không trả thưởng trên phần đó.
+- Lỗ không bao giờ được nhân. Có gì mới: 1 dòng.
 # v2.4.16 — 2026-10-15
 
 Gồm nodog, mobileui và wishtree (chủ game 15/10: "xong hết thì deploy rồi bảo 'tối ưu UI'"). Có gì mới: 3 dòng (tối ưu UI, chùa 2.5D + Vườn ước nguyện, nhẹ và mượt hơn).
