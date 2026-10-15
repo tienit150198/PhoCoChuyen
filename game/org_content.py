@@ -76,7 +76,7 @@ CAND_POSTS = (
     _p('pgd', 'Phó Giám đốc Công an Thành phố', 'Phó Giám đốc CATP', 'tp', 'thuong_ta', 'dai_ta', 20, need=45,
        frm=('truong_phong', 'tro_ly'), olv=5, bonus=20, chain='city', extra=dict(nomark=True)),
     _p('gd', 'Giám đốc Công an Thành phố', 'Giám đốc CATP', 'tp', 'dai_ta', 'thieu_tuong', 0, need=45,
-       frm=('pgd',), olv=5, bonus=25, chain='city', extra=dict(nomark=True, clean=20)),
+       frm=('pgd',), olv=5, bonus=25, chain='city', extra=dict(nomark=True, clean=20, viol_max=6)),   # owner spec 14/10: ≤ 6 vi phạm
 )
 # Seats players may hold at once (owner spec 11/10): a post here is appointed only while fewer players hold it
 # (game/cand_roster.py counts them across saves). Thiếu tướng is the Giám đốc's ceiling, so it has one seat too.
@@ -113,6 +113,9 @@ VIOLATIONS = {
     'wrong_discipline': ('Kỷ luật cấp dưới thiếu căn cứ', 'Chỉ xử lý khi có lỗi rõ, đã nhắc từ trước.'),
     'bribe_owned': ('Nhận phong bì rồi tự giác nộp lại', 'Không nhận bất kỳ thứ gì của dân, từ đầu.'),
     'bribe': ('Nhận phong bì', 'Không nhận bất kỳ thứ gì của dân. Lập biên bản hành vi đưa hối lộ.'),
+    # Owner spec 14/10 (kỷ luật: game/gov_rules.py; never a ⚠️ warning, the codes name the reason in the log)
+    'bail_kin': ('Chuộc người thân đang chấp hành án', 'Cán bộ tuyệt đối không bảo lãnh bạn bè, vợ/chồng, người đính hôn đang chấp hành án.'),
+    'gamble': ('Tham gia cá độ, đỏ đen ở chợ đen', 'Cán bộ tuyệt đối không đặt cược bằng xu ở chợ đen.'),
 }
 SEVERE = ('bribe',)   # an immediate one-grade demotion and a permanent integrity mark (owner 06/10)
 

@@ -315,6 +315,12 @@ def run_row(x: dict, n: int) -> dict:
     return dict(id='run', met=k >= n, label=f'{min(k, n)}/{n} ngày làm liên tục không vi phạm')
 
 
+def viol_row(x: dict, mx: int, nv: int | None = None) -> dict:
+    """The hồ sơ công tác has at most `mx` violations over the whole service (owner spec 14/10)."""
+    n = _from_wlog(x) if nv is None else int(nv)
+    return dict(id='viol', met=n <= mx, label=f'Hồ sơ công tác không quá {mx} lần vi phạm (đang có {n})')
+
+
 def barred_grade(o: dict, gid: str) -> bool:
     return gid in o['bar_on_mark']
 
@@ -348,7 +354,9 @@ def target(x: dict) -> str | None:
     return x['aim'] if x['aim'] in aims else aims[0]
 
 
-def post_rows(x: dict, pid: str) -> list[dict]:
+def post_rows(x: dict, pid: str, nv: int | None = None) -> list[dict]:
+    """What an appointment to `pid` needs. `nv`: the hồ sơ công tác's violations (svc_count; the post's extra viol_max,
+    owner spec 14/10: Giám đốc CATP at most 6), read from the org log when not given."""
     o = OC.ORGS[x['org']]
     tp, cur = _post(o, pid), post(x)
     lo = _gi(o, tp['lo'])
@@ -364,6 +372,8 @@ def post_rows(x: dict, pid: str) -> list[dict]:
         rows.append(dict(id='mark', met=x['mark']['b'] is None, label='Chưa từng có dấu liêm chính'))
     if tp['extra'].get('clean'):
         rows.append(run_row(x, tp['extra']['clean']))
+    if tp['extra'].get('viol_max') is not None:
+        rows.append(viol_row(x, tp['extra']['viol_max'], nv))
     if x['g'] < lo:   # promoted on appointment: that step's own gate too
         rows += [r for r in _gate_rows(x, x['g']) if r['id'] != 'mark' or not tp['extra'].get('nomark')]
     return rows
@@ -427,6 +437,8 @@ def violation(x: dict | None, s: dict, c: dict, code: str, key: str, grace: bool
 
 def _warn(x: dict, s: dict, c: dict, code: str, ext: dict | None = None) -> str:
     o = OC.ORGS[x['org']]
+    if code != 'bribe_owned':   # owning up an envelope: the envelope is the fault already counted
+        svc_add(s, x)
     d = _day(s)
     x['warns'] = (x['warns'] + [dict(d=d, c=code)])[-o['demote_on']:]
     x['clean'] = 0
@@ -458,12 +470,102 @@ def _warn(x: dict, s: dict, c: dict, code: str, ext: dict | None = None) -> str:
 def demote_hold(x: dict, s: dict, ext: dict, days: int, why: str) -> str:
     """A grave fault in a case (owner spec 11/10: a child handed to the wrong adult): one grade down at once and the
     grade held `days` worked days. Logged as a demotion; the warnings stay."""
+    svc_add(s, x)
     d = _day(s)
     x['clean'] = 0
     x['adj'] = max(-50, x['adj'] - 10)
     line = _demote(x, d, why[:24])
     add_hold(ext, days)
     return f'{line} Giam hàm {days} ngày làm.'
+
+
+def discipline(x: dict, s: dict, c: dict, ext: dict, grades: int, days: int, why: str, key: str) -> str:
+    """Kỷ luật (owner spec 14/10): giáng `grades` bậc hàm at once (each one as _demote: a suspension at the entry grade, a
+    post stepped down), then the grade held `days` worked days (the ext hold, "kỷ luật N ngày": no grade step and no
+    appointment while it runs). The day counts as a day with a violation; one per `key` a day; counted in the hồ sơ
+    công tác. '' when the same key was already disciplined today."""
+    seen = _today(x, c['day'])
+    if key in seen:
+        return ''
+    if len(seen) < VT_MAX:
+        seen.append(key)
+    svc_add(s, x)
+    d = _day(s)
+    x['clean'] = 0
+    x['adj'] = max(-50, x['adj'] - 10)
+    bits = []
+    for _ in range(max(0, int(grades))):
+        if x['susp'] > 0 and x['g'] <= 0:
+            break   # already suspended at the entry grade: nothing lower
+        bits.append(_demote(x, d, why[:24]))
+    if days:
+        add_hold(ext, days)
+        bits.append(f'Kỷ luật {days} ngày làm (giam hàm: không thăng cấp, không bổ nhiệm).')
+    return ' '.join(bits)
+
+
+# ------------------------------------------------------------------------------------- hồ sơ công tác (owner spec 14/10)
+# journey[SVC_KEY] = {v: 1, <career>: violations}: every violation written into an officer's record over the whole
+# service (a ⚠️ cảnh cáo, an envelope, a grave case, a kỷ luật), across contracts. Optional and top level in the journey
+# (an older build keeps the journey's unknown keys). A career without a count yet starts from what its org record's log
+# shows (_from_wlog), so officers who served before 14/10 are counted from their own history.
+SVC_KEY = 'svc'
+SVC_MAX = 9999
+
+
+def _org_career(oid: str) -> str:
+    return next((cid for cid, (o, _) in OC.CAREER_ORG.items() if o == oid), '')
+
+
+def _from_wlog(x: dict | None) -> int:
+    """The violations an org record's log shows (the warnings, envelopes, grave cases and kỷ luật; a demotion that only
+    followed a warning or an envelope, and the warning of an envelope owned up, are the same fault)."""
+    if not isinstance(x, dict) or not isinstance(x.get('wlog'), list):
+        return 0
+    n = 0
+    for w in x['wlog']:
+        k, code = w.get('k'), w.get('c')
+        if (k == 'warn' and code != 'bribe_owned') or k == 'bribe' or (k in ('demote', 'susp') and code not in ('warn4', 'bribe')):
+            n += 1
+    return n
+
+
+def svc_count(s: dict, career: str) -> int:
+    """The hồ sơ công tác's violations of one state career (0 when never on its ladder)."""
+    j = s.get('journey') if isinstance(s, dict) else None
+    b = j.get(SVC_KEY) if isinstance(j, dict) else None
+    if isinstance(b, dict) and type(b.get(career)) is int:
+        return b[career]
+    rec = ((j or {}).get('promo') or {}).get(career) if isinstance(j, dict) else None
+    return _from_wlog(get(rec))
+
+
+def svc_total(s: dict) -> int:
+    return sum(svc_count(s, cid) for cid in OC.CAREER_ORG)
+
+
+def svc_add(s: dict, x: dict) -> None:
+    """One more violation in the record of the career x belongs to (first: what its log shows so far)."""
+    career = _org_career(x.get('org'))
+    j = s.get('journey') if isinstance(s, dict) else None
+    if not career or not isinstance(j, dict):
+        return
+    b = j.get(SVC_KEY)
+    if not isinstance(b, dict) or b.get('v') != 1:
+        b = j[SVC_KEY] = dict(v=1)
+    if type(b.get(career)) is not int:
+        b[career] = _from_wlog(x)
+    b[career] = min(SVC_MAX, b[career] + 1)
+
+
+def validate_svc(j: dict, need, integer, bad: str) -> None:
+    b = j.get(SVC_KEY)
+    if b is None:
+        return
+    need(isinstance(b, dict) and b.get('v') == 1 and set(b) - {'v'} <= set(OC.CAREER_ORG), bad, 'invalid_save')
+    for k, v in b.items():
+        if k != 'v':
+            integer(v, 0, SVC_MAX)
 
 
 def hold_only(ext: dict, days: int) -> str:
@@ -487,6 +589,7 @@ def bribe(x: dict | None, s: dict, c: dict, key: str) -> str:
         return ''
     if len(seen) < VT_MAX:
         seen.append(key)
+    svc_add(s, x)
     d = _day(s)
     x['bt'] = dict(d=c['day'], g=x['g'], p=x['p'], s=x['susp'])
     x['mark'] = dict(b=d, s=False)
@@ -599,7 +702,7 @@ def _close(x: dict, s: dict, c: dict, career: str, worked: bool, good: bool, day
     # An appointment.
     tp = target(x)
     if tp and x['wait'] == 0:
-        rows = post_rows(x, tp)
+        rows = post_rows(x, tp, svc_count(s, career))
         if tp in OC.SEATS and all(r['met'] for r in rows if r['id'] != 'course'):
             from . import cand_roster as CR
             if CR.full(tp):
@@ -662,6 +765,11 @@ def answer(x: dict, s: dict, c: dict, p: dict, need) -> dict:
         x['courses'] = sorted(set(x['courses'] + [due['to']]))
         return dict(message=f'🎓 Đạt {o["courses"][due["to"]]}.', celebrate=True)
     tp = _post(o, due['to'])
+    mx = tp['extra'].get('viol_max')
+    if mx is not None and svc_count(s, _org_career(x['org'])) > mx:   # a violation since the appointment was booked
+        x['wait'] = RETRY
+        return dict(message=f'Đạt phỏng vấn, nhưng hồ sơ công tác đã quá {mx} lần vi phạm: chưa đủ điều kiện bổ nhiệm {tp["short"]}.',
+                    later=True)
     if tp['id'] in OC.SEATS:
         from . import cand_roster as CR
         if CR.full(tp['id']):
@@ -808,7 +916,7 @@ LOG_WORD = {'warn': '⚠️ Cảnh cáo', 'demote': '⬇️ Hạ bậc', 'susp':
             'bribe': '💵 Nhận phong bì', 'own': '🙇 Tự giác'}
 
 
-def public(x: dict, c: dict, ext: dict | None = None) -> dict:
+def public(x: dict, c: dict, ext: dict | None = None, nv: int | None = None) -> dict:
     o = OC.ORGS[x['org']]
     g, p = shown_grade(x), post(x)
     st = stars(x)
@@ -817,7 +925,7 @@ def public(x: dict, c: dict, ext: dict | None = None) -> dict:
     nxt_post = None
     if tp:
         tpp = _post(o, tp)
-        nxt_post = dict(id=tp, name=tpp['name'], short=tpp['short'], rows=post_rows(x, tp), vac=x['vac'])
+        nxt_post = dict(id=tp, name=tpp['name'], short=tpp['short'], rows=post_rows(x, tp, nv), vac=x['vac'])
     due = None
     if x['due']:
         dd = x['due']

@@ -286,7 +286,12 @@ async function onClick(mr,data,el){
       await post('friend_respond',{id:Number(data.id),answer:data.answer});load();return;
     }
     case'fcancel':await post('friend_cancel',{id:Number(data.id)});load();return;
-    case'jbail':if(await env.confirmAction(`Bảo lãnh cho ${data.name}?`,`Trả ${xu(Number(data.bail))} từ ví của bạn. Bạn ấy được ra trại tạm giữ ngay.`,'Bảo lãnh')){await post('jail_bail',{code:data.code});load();}return;   // 🚔 game/jail.py
+    case'jbail':if(await env.confirmAction(`Bảo lãnh cho ${data.name}?`,`Trả ${xu(Number(data.bail))} từ ví của bạn. Bạn ấy được ra trại tạm giữ ngay.`,'Bảo lãnh')){
+      const r=await post('jail_bail',{code:data.code});
+      // ⚖️ an officer of Công an phường: the rule first (game/gov_rules.py), then the bail only if they still go ahead
+      if(r?.cop_rule&&await env.confirmAction('Cán bộ chuộc người thân?',r.message,'Vẫn bảo lãnh'))await post('jail_bail',{code:data.code,officer_ok:true});
+      else if(r?.cop_rule)S.flash={text:'Không bảo lãnh: giữ đúng điều lệnh.',kind:'good'};
+      load();}return;   // 🚔 game/jail.py
     case'fremove':if(await env.confirmAction(`Hủy kết bạn với ${data.name}?`,'Hai bạn sẽ không còn trong danh sách bạn bè của nhau.','Hủy kết bạn')){await post('friend_remove',{code:data.code});load();}return;
     case'fblock':if(await env.confirmAction(`Chặn ${data.name}?`,'Người này sẽ không tìm thấy bạn, không gửi được lời mời kết bạn hay lời cầu hôn cho bạn nữa.','Chặn')){await post('friend_block',{code:data.code});load();}return;
     case'fpropose':S.tab='home';S.form.code=data.code;S.found=null;render();S.dlg.scrollTop=0;lookup(data.code);return;

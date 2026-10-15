@@ -320,6 +320,21 @@ def case_bonus(s: dict, c: dict, career: str, n: int = 1) -> str:
     return ORG.bonus_days(x, n)
 
 
+def discipline(s: dict, c: dict, career: str, grades: int, days: int, code: str, key: str) -> str:
+    """Kỷ luật (owner spec 14/10, game/gov_rules.py): giáng `grades` bậc hàm + kỷ luật `days` ngày làm (giam hàm) on the
+    career's org ladder, once per `key` a day; '' off the ladder (or already disciplined for it today)."""
+    rec, x = org_live(s, c, career, True)
+    if not x:
+        return ''
+    before = x['p']
+    line = ORG.discipline(x, s, c, ORG.ext_of(rec, x), grades, days, code, key)
+    _org_step(rec, x, before)
+    if not line:
+        return ''
+    why = ORG.OC.VIOLATIONS.get(code, (code,))[0]
+    return f'⚖️ Kỷ luật: {why[:1].lower() + why[1:]}. {line}'
+
+
 GOV = ('police',)   # careers of the state (owner 11/10: an expelled officer may never join again; Hải quan later)
 BAN_KEY = 'gov_ban'
 
@@ -1226,7 +1241,7 @@ def _shift_view(sh: dict) -> dict:
     return v
 
 
-def _org_next(x: dict, rec: dict | None = None) -> dict | None:
+def _org_next(x: dict, rec: dict | None = None, nv: int | None = None) -> dict | None:
     """The strip's line (good/need/title) and requirements: the next grade inside the post, else the next post."""
     ng = ORG.next_grade(x)
     hold = ORG.hold_of((rec or {}).get('cx'))
@@ -1238,7 +1253,7 @@ def _org_next(x: dict, rec: dict | None = None) -> dict | None:
     o = ORG.OC.ORGS[x['org']]
     days = ORG.post(x)['days']
     # The waits (a suspension, a retry, the seat) are listed too, so "all met" on screen never hides what holds it back.
-    return dict(title=ORG._post(o, tp)['short'], good=min(x['tip'], days), need=days, requirements=ORG.post_rows(x, tp) + ORG.waits(x, hold),
+    return dict(title=ORG._post(o, tp)['short'], good=min(x['tip'], days), need=days, requirements=ORG.post_rows(x, tp, nv) + ORG.waits(x, hold),
                 why=None, wait=x['wait'], pct=0)
 
 
@@ -1251,8 +1266,10 @@ def _org_public(s: dict, c: dict, career: str, rec: dict | None) -> dict | None:
         rec = tmp
     if x is None:
         return None
-    ov = ORG.public(x, c, rec.get('cx') if isinstance(rec.get('cx'), dict) else None)
-    v = dict(track='emp', rank=min(_rank(rec), TOP), top=TOP, title=ov['title'], pct=ov['pct'], next=_org_next(x, rec), mgr=can_manage(s, c, career),
+    nv = ORG.svc_count(s, career)
+    ov = ORG.public(x, c, rec.get('cx') if isinstance(rec.get('cx'), dict) else None, nv)
+    ov['svc'] = nv   # 📁 hồ sơ công tác: violations over the whole service (owner spec 14/10)
+    v = dict(track='emp', rank=min(_rank(rec), TOP), top=TOP, title=ov['title'], pct=ov['pct'], next=_org_next(x, rec, nv), mgr=can_manage(s, c, career),
              team=TEAM.get(min(max(_rank(rec), MGR_FROM), TOP)), due=None, log=[], shifts=rec['mgr']['n'], pcts=[], org=ov)
     if x['due']:
         v['due'] = dict(ov['due'], who='Ban chỉ huy')
@@ -1312,6 +1329,9 @@ def validate(s: dict) -> None:
     if isinstance(j, dict) and BAN_KEY in j:
         e0 = _core()
         validate_ban(j, e0.need, e0.integer, e0.clean_text, 'Dữ liệu thăng tiến không hợp lệ.')
+    if isinstance(j, dict) and ORG.SVC_KEY in j:
+        e0 = _core()
+        ORG.validate_svc(j, e0.need, e0.integer, 'Dữ liệu hồ sơ công tác không hợp lệ.')
     if not isinstance(j, dict) or 'promo' not in j:
         return
     e = _core()

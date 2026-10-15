@@ -160,12 +160,22 @@ export async function fairAction(action,data,el,env){
 }
 const animating=()=>S.busy||S.tab==='dg'&&!!DG?.busy()||S.tab==='dt'&&!!KN?.busy()||S.tab==='xs'&&!!XS?.busy()||S.tab==='pb'&&!!PB?.busy()||S.tab==='bc'&&S.bc.phase!=='idle'||S.tab==='xd'&&S.xd.phase!=='idle'||S.tab==='oaq'&&!!S.oaq.anim||S.tab==='ring'&&!!S.ring.finishing;
 
-async function send(action,payload={}){
+/* ⚖️ An officer of Công an phường: a staked round is asked about first (game/gov_rules.py, code cop_gamble); once the
+ * player goes ahead, the rounds of this visit carry cop_ok. */
+const COP_GAMBLE=['fair_bc','fair_xd','fair_loto_buy','fair_xs','fair_dg','fair_kn_start'];
+async function send(action,payload={},again=false){
   const {api}=S.env;
+  if(S.copOk&&COP_GAMBLE.includes(action))payload={...payload,cop_ok:true};
   try{const result=await api.command(action,payload);
     if(result?.fair?.arrest){S.arrest={...result.fair.arrest,titles:result.fair.titles||[]};S.flash=null;sfx('siren');return null;}   // 🕶️ the police caught the round: no outcome, the stall resets
     if(result?.fair?.wealth_raid)S.wealthRaid=result.fair.wealth_raid;if(result?.fair?.audit)S.audit=result.fair.audit;if(result?.fair?.loc)S.loc=result.fair.loc;return result;}
-  catch(e){S.err=e.code||e.data?.code||'';if(String(S.err).startsWith('fair_bm'))api.refresh().then(()=>render()).catch(()=>{/* the next state */});S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
+  catch(e){S.err=e.code||e.data?.code||'';
+    if(S.err==='cop_gamble'&&!again){
+      const ok=await (S.env.confirmAction?S.env.confirmAction('Cán bộ đánh bạc ở chợ đen?',e.message||'','Vẫn chơi'):Promise.resolve(window.confirm(e.message||'')));
+      if(!ok){S.flash={text:'Không chơi nữa: giữ đúng điều lệnh.',kind:'good'};return null;}
+      S.copOk=true;return send(action,payload,true);
+    }
+    if(String(S.err).startsWith('fair_bm'))api.refresh().then(()=>render()).catch(()=>{/* the next state */});S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
 }
 
 /* ---- rendering ----

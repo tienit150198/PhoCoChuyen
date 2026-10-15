@@ -741,6 +741,14 @@ def bail(store, sid: str, display: str, d: dict) -> dict:
         mr.need(fr.are_friends(db, sid, other) and not mr._blocked(db, sid, other), 'Chỉ bạn bè mới bảo lãnh được cho nhau.', 'not_friend', 403)
         name = mr._display(db, other)
     t = now()
+    # ⚖️ An officer of Công an phường bailing out a friend, a spouse or a fiancé(e) (game/gov_rules.py, owner spec 14/10):
+    # the rule first; with officer_ok the bail goes ahead and the officer is disciplined.
+    from . import gov_rules as gr
+    me = mr._read_state(store, sid)
+    ask = gr.bail_ask(me[0]) if me else None
+    if ask and d.get('officer_ok') is not True:
+        return dict(message=ask, cop_rule=True, changed=False, quiet=True)
+    res: dict = {}
 
     def gone(db):
         db.execute('DELETE FROM inbox WHERE kind=? AND ref=?', (INBOX, _ref(code)))
@@ -758,6 +766,7 @@ def bail(store, sid: str, display: str, d: dict) -> dict:
                 'not_enough', 409)
         from . import journey as jr
         jr._wallet(j, -BAIL_XU, mr.KIND, BAIL_LABEL.format(name=name))
+        res['cop'] = gr.bail_discipline(s)
 
     def ops(db):
         mr.need(fr.are_friends(db, sid, other), 'Chỉ bạn bè mới bảo lãnh được cho nhau.', 'not_friend', 403)
@@ -775,7 +784,11 @@ def bail(store, sid: str, display: str, d: dict) -> dict:
             store.transaction(lambda db: (gone(db), unmark(db, other)), 250)
         raise
     _push(store, other, f'🤝 {display} đã bảo lãnh cho bạn. Bạn được về rồi!')
-    return dict(message=f'Đã bảo lãnh cho {name}: −{_fmt(BAIL_XU)} xu. Bạn ấy được về rồi.', changed=True)
+    out = dict(message=f'Đã bảo lãnh cho {name}: −{_fmt(BAIL_XU)} xu. Bạn ấy được về rồi.', changed=True)
+    if res.get('cop'):
+        out['message'] += f' {res["cop"]}'
+        out['cop_discipline'] = res['cop']
+    return out
 
 
 ACTIONS = dict(jail_ask=ask, jail_bail=bail)

@@ -51,6 +51,15 @@ function caseCard(t,x){
   if(t.kind==='desk')return `<article class="card sk-ticket cap-who"><div class="row"><span class="cap-big" aria-hidden="true">${x.esc(n.emoji)}</span><div class="grow"><h3>${x.esc(n.who)}</h3>${clean()?tip(x.esc(n.role),n.who,'p'):`<p class="small muted">${x.esc(n.role)}</p>`}<p class="small">${x.esc(String(t.opening||'').split('): ').slice(1).join('): '))}</p>${waitBar(t)}</div></div></article>`;
   return `<article class="card sk-ticket cap-who"><div class="row"><span class="cap-big" aria-hidden="true">${x.esc(n.emoji)}</span><div class="grow"><h3>${x.esc(n.title)}</h3><p class="small">${x.esc(t.opening)}</p>${waitBar(t)}</div></div></article>`;
 }
+/* ------------------------------------------------------------ 📜 điều lệnh cán bộ (game/gov_rules.py, owner spec 14/10) */
+function rulesCard(x){
+  const rows=cc(x).rules||[];if(!rows.length)return '';
+  return `<details class="card cap-rules"><summary><b>📜 Điều lệnh cán bộ</b> <small class="muted">đọc trước khi làm</small></summary><ul class="small">${rows.map(r=>`<li>${x.esc(r.icon||'•')} ${x.esc(r.text)}</li>`).join('')}</ul></details>`;
+}
+function svcLine(x){
+  const o=x.room.promo?.org;if(!o||typeof o.svc!=='number')return '';
+  return `<p class="small">🗂️ Hồ sơ công tác: <b>${x.esc(o.svc)}</b> lần vi phạm trong cả quá trình công tác.</p>`;
+}
 /* ------------------------------------------------------------ 🎖️ cấp bậc: the rank line, an envelope, owning up */
 function rankBar(x){
   const o=x.room.promo?.org;if(!o)return '';
@@ -377,7 +386,7 @@ export default {
     const td=d.today||{};
     const tiles=[[td.tasks||0,'việc'],[td.helped||0,'lần giúp dân'],[td.reminders||0,'lần nhắc nhở'],[td.reports||0,'biên bản']];
     return `<div class="career-job sk cap">${head}${dayBar(x)}${rankBar(x)}<section class="card cap-today"><h4>👮 Ca hôm nay</h4><div class="cap-tiles">${tiles.map(([v,l])=>`<div><b>${x.esc(v)}</b><small>${x.esc(l)}</small></div>`).join('')}</div></section>
-      ${logCard(x)}<section class="card cap-record"><h4>📁 Hồ sơ của bạn</h4>${record(x)}${recordHow(x)}${restCard(x,ODD_CFG)}</section></div>`;
+      ${logCard(x)}<section class="card cap-record"><h4>📁 Hồ sơ của bạn</h4>${record(x)}${recordHow(x)}${svcLine(x)}${restCard(x,ODD_CFG)}</section>${rulesCard(x)}</div>`;
   },
   tick(root){keepBarAboveFooter(root);},
   actions:{...kitActions,...oddActions,

@@ -1442,11 +1442,17 @@ GATE_FREE = LATE + fc.LATE + ('fair_gift',)
 
 
 def apply(s: dict, name: str, p: dict) -> dict:
-    """`fair_*` commands (a round the police caught: its receipt)."""
+    """`fair_*` commands (a round the police caught: its receipt). ⚖️ An officer of Công an phường's staked round is
+    asked about first and may be found out (game/gov_rules.py, owner spec 14/10)."""
+    from . import gov_rules as gr
+    p, cop = gr.gamble_gate(s, name, p)
     try:
-        return _apply(s, name, p)
+        result = _apply(s, name, p)
     except _Caught as c:
-        return c.result
+        result = c.result
+    if cop:
+        gr.gamble_after(s, result, now())
+    return result
 
 
 def _apply(s: dict, name: str, p: dict) -> dict:

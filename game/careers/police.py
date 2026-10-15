@@ -1877,7 +1877,14 @@ def content() -> dict:
                 post_acts={k: list(PC.POST_ACTS[k]) for k in PC.POST_ACT_IDS}, post_rule=list(PC.POST_RULE),
                 papers={k: list(PC.PAPERS[k]) for k in PC.PAPER_IDS}, verdicts={k: list(PC.VERDICTS[k]) for k in PC.VERDICT_IDS},
                 biz_rule=list(PC.BIZ_RULE), ring_hold=PC.RING_HOLD,
-                people=[dict(name=p[0], role=p[1], note=p[2]) for p in PEOPLE])
+                people=[dict(name=p[0], role=p[1], note=p[2]) for p in PEOPLE],
+                rules=_rules())
+
+
+def _rules() -> list:
+    """📜 Điều lệnh cán bộ (owner spec 14/10, game/gov_rules.py): shown on the station's card before they can be broken."""
+    from .. import gov_rules
+    return gov_rules.content()['police']
 
 
 def hint(c: dict, t: dict) -> str:
@@ -2065,7 +2072,9 @@ SPEC = dict(
                    'Có cán bộ đứng cổng trường, yên tâm hẳn.'],
     situations=PC.SITUATIONS,
     guide='Giao ban, đọc sổ trực ban → việc gấp làm trước → bàn cư trú xem đủ giấy tờ → đồ thất lạc hỏi kỹ người nhận → hòa giải nghe cả hai bên → '
-          'trẻ lạc dỗ bé, xác minh người đón → tuần tra nhắc trước, biên bản sau → không bao giờ nhận phong bì → cuối ca ghi sổ trực ban thật.',
+          'trẻ lạc dỗ bé, xác minh người đón → tuần tra nhắc trước, biên bản sau → không bao giờ nhận phong bì → cuối ca ghi sổ trực ban thật. '
+          'Điều lệnh: không chuộc người thân đang chấp hành án (giáng 2 bậc hàm, kỷ luật 15 ngày); không cá độ, đỏ đen ở chợ đen '
+          '(giáng 1 bậc hàm, kỷ luật 10 ngày); Giám đốc CATP cần hồ sơ không quá 6 lần vi phạm.',
     employment=dict(
         postings=[
             dict(id='cap-kv', org='Công an phường Mây · Tổ cảnh sát khu vực', kind='public', title='Cán bộ cảnh sát khu vực',
