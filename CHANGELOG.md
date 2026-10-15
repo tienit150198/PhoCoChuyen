@@ -1,3 +1,11 @@
+# v2.4.22 — 2026-10-16
+
+🎲 Chợ đen thắng dễ hơn (chủ game 15/10: "tăng tỷ lệ thắng chợ đen lần đầu lên 65% đi, với lâu lâu mỗi ngày cho khoảng 3p (chia ra 1 ngày khoảng 3 - 4 lần) ngẫu nhiên là tỷ lệ thắng tăng cao nhé. Với chỗ xóc đĩa thì cho delay 3s mỗi lần mở nhé để tránh spam"; thông báo chỉ ghi "Tăng tỷ lệ thắng chợ đen").
+- game/fair_boost.py (chỉ máy chủ, không gửi tỷ lệ hay khung giờ ra client): ván đầu tiên mỗi ngày (giờ VN) ở các sạp có rút tỷ lệ (chiếu trong/xóc đĩa, lô tô, vé cào) thắng 65%; mỗi ngày 3–4 khung 3 phút (08:00–24:00, mỗi khung trong một phần bằng nhau của ngày, không chồng nhau, giống nhau cho mọi người, rút từ ngày + muối máy chủ của lịch tin nhà `property_market._salt`) thắng 70%. Cả hai chỉ cho ván dưới 50.000 xu (ván 50k+ vẫn tối đa 40%); công an, dẹp chiếu, phạt giữ nguyên. Vé cào thắng trong lúc được tăng là vé có lời (không tính vé hoàn tiền), như Ngày vàng. Bầu cua (xúc xắc thật) và đua chó (tỷ lệ cố định) không đổi. MNL_BM_BOOST_OFF=1 tắt (tests).
+- Xóc đĩa: mỗi ván cách ván trước của người đó ít nhất 3 giây (máy chủ từ chối, mã `fair_slow`); nút "Xóc!" khóa 3 giây có đếm ngược.
+- Khóa lưu mới (tùy chọn): `journey.fair_bm_day` {d: ngày đã dùng ván đầu, xd: ms ván xóc đĩa trước}. Bản lưu cũ không có vẫn hợp lệ.
+- Có gì mới: 1 dòng.
+
 # v2.4.21 — 2026-10-15
 
 Thông báo "Giờ vàng - lợi nhuận cao" (chủ game 15/10: "triển khai đi xong thông báo 'giờ vàng - lợi nhuận cao'"): một mục Có gì mới, để cả người đã xem 2.4.20 cũng thấy. Không đổi gì khác.

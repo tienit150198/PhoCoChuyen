@@ -48,7 +48,7 @@ const S={dlg:null,env:null,tab:'home',busy:false,lastRound:0,gift:null,loan:{amt
   oaq:{sel:null,anim:null,say:'',fast:false,quit:false,end:null,showEnd:false},
   ring:{round:null,t0:0,taps:[],hits:[],raf:0,result:null,say:''},
   bc:{chip:1,bets:{},phase:'idle',dice:null,last:null,say:''},
-  xd:{side:'chan',stake:10,phase:'idle',coins:null,last:null,raid:null,say:'',hist:[],tally:{w:0,l:0,raid:0}},
+  xd:{side:'chan',stake:10,phase:'idle',coins:null,last:null,raid:null,say:'',hist:[],tally:{w:0,l:0,raid:0},until:0},
   lt:{id:null,shown:0,marks:[],timer:null,speed:1,over:null,won:null,hut:null,claiming:false,check:false,hot:false,say:'',
     act:0,actAt:0,actSay:'',tier:'vua',n:1,cl:null,cls:2,cot:null,cots:2},
   board:{mode:'win',data:null,at:0,loading:false,error:'',request:0,key:''},food:{cart:'candy',say:'',last:null,buying:''}};
@@ -236,6 +236,7 @@ function tickLabels(){
     const k=el.dataset.fhCount;
     if(k==='close')el.textContent=whenText(f);
     if(k==='raid'){const s=raidLeft();el.textContent=clock(s);if(s<=0&&S.xd.phase==='idle')render();}
+    if(k==='xdwait')el.textContent=String(Math.max(1,Math.ceil(xdWait()/1000)));
   });
 }
 const raidLeft=()=>{const f=F();return f.raid_left>0?f.raid_left-(serverNow()/1000-f.now):0;};
@@ -618,6 +619,14 @@ async function shaken(go,open=ROLL_MS,gap=ROUND_GAP){
 function titles(x){if(x.titles?.length)S.flash={text:`🎉 Danh hiệu mới: ${x.titles.map(t=>TITLE_NAMES[t]||t).join(', ')}`,kind:'good'};}
 
 /* ---- 🕯️ Chiếu trong (xóc đĩa) ---- */
+// Owner 15/10 "xóc đĩa thì cho delay 3s mỗi lần mở nhé để tránh spam": after each open the Xóc button waits XD_WAIT_MS
+// with a countdown (the server refuses a round less than 3 s after the last one: game/fair_boost.py XD_GAP_MS).
+const XD_WAIT_MS=3000;
+const xdWait=()=>Math.max(0,(S.xd.until||0)-Date.now());
+function xdHold(){
+  S.xd.until=Date.now()+XD_WAIT_MS;clearTimeout(S.xd.waitTimer);
+  S.xd.waitTimer=setTimeout(()=>{if(S.dlg?.open&&S.tab==='xd'&&S.xd.phase==='idle')render();},XD_WAIT_MS+50);
+}
 /** A raid cancels the stake; a played losing round still costs its stake. */
 const xdWorst=st=>st;
 /** Why a stake cannot be played right now ('' when it can). */
@@ -639,7 +648,7 @@ function xdView(){
   const closed=wait>0?`<section class="fh-card fh-swept"><span aria-hidden="true">🧹</span><div><b>Chiếu dẹp rồi, bày lại sau <span data-fh-count="raid">${clock(wait)}</span></b><small>Ra trước chơi bầu cua, lô tô cho lành nha.</small></div></section>`:'';
   const broke=!wait&&!can.length?`<section class="fh-card fh-enough"><span aria-hidden="true">🍵</span><div><b>${f.today?.done?'Hôm nay chơi vậy đủ rồi, mai ghé tiếp nha.':left<xdWorst(minSt)?`Hôm nay chỉ còn chơi được ${xu(left)}, chiếu trong cần ít nhất ${xu(xdWorst(minSt))}`:'Ví không đủ xu cho chiếu trong'}</b><small>Chiếu trong tính cả tiền phạt nếu công an ghé (cược ${minSt} + phạt ${xdWorst(minSt)-minSt}). Ra trước chơi bầu cua hay ô ăn quan nha.</small>${btn('🦀 Ra chơi bầu cua','tab',{tab:'bc'},'ghost small',' data-fh-key="xd-bc"')}</div></section>`:'';
   const hist=x.hist.length?`<div class="fh-xdhist" aria-label="Mấy ván gần đây"><small>Mấy ván gần đây</small><span class="fh-xdchips">${x.hist.map(h=>`<i class="${h.even?'chan':'le'}${h.win?' win':''}" title="${h.even?'Chẵn':'Lẻ'} · ${h.win?'thắng':'thua'}">${h.even?'C':'L'}</i>`).join('')}</span><small>Bạn: thắng <b>${x.tally.w}</b> · thua <b>${x.tally.l}</b>${x.tally.raid?` · bị kiểm tra ${x.tally.raid}`:''}</small></div>`:'';
-  const dis=busy||wait>0;
+  const dis=busy||wait>0,hold=xdWait();
   return `<section class="fh-stall fh-xd" aria-label="Chiếu trong: xóc đĩa chẵn lẻ">
     ${say(HOST,x.say,'dark')}
     <p class="fh-warn">⚠️ Chiếu trong thỉnh thoảng có công an phường ghé kiểm tra: hủy ván, giữ lại tiền cược và phạt nhẹ.</p>
@@ -648,7 +657,7 @@ function xdView(){
     ${hist}
     <div class="fh-xsides" role="group" aria-label="Chọn chẵn hay lẻ">${[['chan','Chẵn','0, 2 hoặc 4 mặt đỏ'],['le','Lẻ','1 hoặc 3 mặt đỏ']].map(([id,l,s])=>`<button type="button" class="fh-xside${x.side===id?' on':''}" data-fh="side" data-v="${id}" aria-pressed="${x.side===id}" data-fh-key="side-${id}"${dis?' disabled':''}>${x.side===id?'<em class="fh-tick" aria-hidden="true">✓</em>':''}<b>${l}</b><small>${s}</small></button>`).join('')}</div>
     <div class="fh-chips" role="group" aria-label="Tiền cược"><span>Cược</span>${XD_STAKES.map(v=>{const no=xdWhy(v);return `<button type="button" class="fh-chip${x.stake===v?' on':''}" data-fh="stake" data-v="${v}" aria-pressed="${x.stake===v}" data-fh-key="stake-${v}"${dis||no?' disabled':''}${no?` title="${esc(no)}"`:''}>${v}</button>`;}).join('')}${amtBox('xd',XD_STAKES.includes(x.stake)?0:x.stake,dis)}</div>
-    <div class="fh-go"><span>Chọn <b>${x.side==='chan'?'Chẵn':'Lẻ'}</b> · <b>${xu(x.stake)}</b></span>${btn(busy?'Đang xóc…':'🫙 Xóc!','shakexd',{},'primary big',dis||why?' disabled data-fh-key="xd"':' data-fh-key="xd"')}</div>
+    <div class="fh-go"><span>Chọn <b>${x.side==='chan'?'Chẵn':'Lẻ'}</b> · <b>${xu(x.stake)}</b></span>${btn(busy?'Đang xóc…':hold>0?`⏳ Chờ <span data-fh-count="xdwait">${Math.max(1,Math.ceil(hold/1000))}</span> giây`:'🫙 Xóc!','shakexd',{},'primary big',dis||why||hold>0?' disabled data-fh-key="xd"':' data-fh-key="xd"')}</div>
     ${why&&!wait&&can.length?`<p class="fh-why">${esc(why)}: chọn mức cược nhỏ hơn nha (tính cả tiền phạt ${xu(xdWorst(x.stake)-x.stake)} nếu công an ghé).</p>`:''}
     <p class="fh-rule">Bốn đồng xu, mặt đỏ chẵn (0, 2, 4) là Chẵn, lẻ (1, 3) là Lẻ. Đoán trúng ăn 1:1.</p>
   </section>`;
@@ -663,11 +672,11 @@ function raidCard(r){
     <div class="row wrap fh-raid-go">${btn('Dạ, em ra chơi bầu cua','raidok',{tab:'bc'},'primary')}${btn('Đi dò lô tô','raidok',{tab:'lt'},'ghost')}</div></section>`;
 }
 async function shakeXd(){
-  const x=S.xd;if(x.phase!=='idle'||xdWhy(x.stake)||raidLeft()>0)return;
+  const x=S.xd;if(x.phase!=='idle'||xdWhy(x.stake)||raidLeft()>0||xdWait()>0)return;
   const side=x.side,stake=x.stake;
   x.phase='shake';x.say='Xóc nè! Nghe kêu lắc cắc chưa…';S.flash=null;render();sfx('shake');
   const r=await shaken(()=>send('fair_xd',{side,stake}));
-  x.phase='idle';
+  x.phase='idle';xdHold();   // the server counts the 3 s from this round, whatever came back
   if(!r?.fair){x.say=pick(HOST.idle);render();return;}
   const d=r.fair;
   if(d.raid){x.raid={...d};x.coins=null;x.last=null;x.tally.raid++;x.say=pick(HOST.idle);sfx('siren');render();return;}

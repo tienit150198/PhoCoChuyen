@@ -105,6 +105,8 @@
   "còn trống": "bare",
   "Giờ vàng - lợi nhuận cao: mỗi ngày một khung giờ bất ngờ, lãi tiệm và quầy ×2.": "Golden Hour - big profits: every day a surprise window, shop and counter profit ×2.",
   "Có hôm là Ngày vàng: lãi ×1,5 cả ngày. Canh giờ mà bán nhé!": "Some days are a Golden Day: profit ×1.5 all day. Watch the clock and sell!",
+  "Tăng tỷ lệ thắng chợ đen": "Higher win rates at the black market",
+  "⏳ Chờ": "⏳ Wait",
   "Giờ vàng mỗi ngày: một khung giờ bất ngờ, lãi tiệm và quầy ×2. Có hôm là Ngày vàng, lãi ×1,5 cả ngày!": "Golden Hour every day: a surprise window when shop and counter profit is ×2. Some days are a Golden Day, ×1.5 all day!",
   "Quầy tạp hóa lãi hơn; quầy vắng khách quá 10 phút thì tạm ngừng tính tiền thuê, điện và lương.": "Grocery counters earn more; a counter with no customers for 10 minutes stops paying rent, power and wages until the next sale.",
   "🌟 Ngày vàng: lãi tiệm và quầy $1 cả hôm nay": "🌟 Golden Day: shop and counter profit $1 all day",
@@ -23374,6 +23376,7 @@
   "Ngày thực là ngày lịch 0h–24h giờ Việt Nam. Ngày đạt khi bạn tự làm xong ít nhất 3 việc không lỗi và ít nhất 80% số việc trong ngày không lỗi, kèm một ca quản lý được nghiệm thu. Ngày đạt được cộng khi qua 0h. Việc giữ từ ngày nghề trước, làm xong hôm nay vẫn tính. Việc của nhân viên, ca quản lý và đơn người chơi không tính; đổi ngày nghề không tăng ngày thực. Khác với “ngày đạt chuẩn” của Tay nghề lâu năm, vốn tính theo ngày nghề khi khép ca.": "A real day is a calendar day, midnight to midnight, Vietnam time. It qualifies when you finish at least 3 jobs yourself without mistakes, at least 80% of that day's jobs are mistake-free, and one management shift is accepted. A qualifying day is added at midnight. Jobs kept from an earlier career day still count when you finish them today. Staff jobs, management shifts and player orders do not count; changing the career day does not add real days. This differs from the Mastery track's \"qualified days\", which count career days when you close them."
   },
   "patterns": {
+  "Anh Ba đang dọn chén, $1 giây nữa mới xóc ván mới nha!": "Anh Ba is clearing the bowl. Next shake in $1 seconds!",
   "Dải lụa $1": "$1 ribbon",
   "Đọc điều ước $1": "Read wish $1",
   "$1 phút trước": "$1 min ago",
