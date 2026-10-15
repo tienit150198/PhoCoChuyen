@@ -86,6 +86,7 @@ from game import wedding_live
 from game import live_chat
 from game import karaoke  # 🎤 Phòng hát (game/karaoke.py; the rooms: live/karaoke.py)
 from game import karaoke_mic  # 🎙️ its live mic (LIVE_KARAOKE_MIC): the birth year, the headers below
+from game import sticker_event  # 🎨 Thi làm sticker (/sticker; game/sticker_event.py owns its routes)
 from game import dog_bark  # 🐕 Kéo co chó sủa was removed (15/10): only its stale tickets go back (maintenance below)
 from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
@@ -129,7 +130,7 @@ STATIC_TYPES={".html":"text/html; charset=utf-8",".js":"text/javascript; charset
               ".ico":"image/x-icon",".webmanifest":"application/manifest+json",".woff2":"font/woff2",".mp3":"audio/mpeg",".txt":"text/plain; charset=utf-8",
               ".xml":"application/xml; charset=utf-8"}
 COMPRESSIBLE=(".html",".js",".css",".json",".svg",".webmanifest",".txt",".xml")
-PAGES={"/privacy":"privacy.html","/terms":"terms.html","/admin":"admin.html","/":"index.html"}
+PAGES={"/privacy":"privacy.html","/terms":"terms.html","/admin":"admin.html","/sticker":"sticker.html","/":"index.html"}
 env_flag=lambda k,d="0":os.environ.get(k,d).strip().lower() in ("1","true","yes","on")
 CAS_HASH=re.compile(r"[0-9a-f]{12}")
 STATIC_RECHECK=RECHECK  # seconds a resolved static route is trusted before its file is stat()ed again (STATIC_RECHECK_SECONDS, see game/webassets.py)
@@ -139,7 +140,9 @@ SHARED_LIMITS=("ai","acct-","newsession:","fb:","fb-day:","fb-ip:","kara-song:",
 def ui_config()->dict:
     """Client UI switches, sent in /api/bootstrap as `ui`. MNL_CLEAN_UI=off turns the clean phone layout
     (html[data-clean], docs/UI_KIT.md) off for every player at the next page load; unset or anything else = on."""
-    return {"clean":(os.environ.get("MNL_CLEAN_UI") or "on").strip().lower()!="off"}
+    out={"clean":(os.environ.get("MNL_CLEAN_UI") or "on").strip().lower()!="off"}
+    if (stk:=sticker_event.hint()):out["sticker"]=stk  # 🎨 the in-game way to /sticker while submissions are open
+    return out
 
 
 def live_hint()->dict:
@@ -960,6 +963,7 @@ class Handler(BaseHTTPRequestHandler):
                 except PermissionError as e:self.error(403,str(e),"forbidden");return
                 self.require_admin(token)
                 self.json(200,event2010.admin_view(self.server.store));return
+            if route.startswith(("/api/sticker/","/api/admin/sticker")) and sticker_event.http_get(self,route,split.query):return  # 🎨 game/sticker_event.py
             if route.startswith("/api/"):self.error(404,"Không có API này.");return
             if route in ("/","/index.html"):self.page();return
             if route in ("/2010","/2010/") or route.startswith("/2010/c/"):self.event2010_page(route);return
@@ -1011,6 +1015,7 @@ class Handler(BaseHTTPRequestHandler):
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
                 self.error(413,"Góp ý quá lớn. Mỗi góp ý tối đa 3 ảnh, mỗi ảnh tối đa 2 MB.");self.close_connection=True;return
+            if route=="/api/sticker/submit" and length>sticker_event.MAX_BODY:self.error(413,"Ảnh quá lớn: tối đa 400 KB.","too_large");self.close_connection=True;return
             if not self.headers.get("Content-Type","").startswith("application/json"):self.error(415,"Cần gửi JSON.");self.close_connection=True;return
             body=self.rfile.read(length);self.body_read=True
             data=json.loads(body,parse_constant=lambda x:(_ for _ in ()).throw(ValueError("nonfinite")))
@@ -1019,6 +1024,7 @@ class Handler(BaseHTTPRequestHandler):
             if route!="/api/chua/cards/visibility" and not jail.route_open(route):   # 🚔 jailed: only the camp, messages and công ích (game/jail.py, an allowlist)
                 # a light route has not read the save: the jail_marks row tells (no row: free, no save read)
                 if jail.jailed(state) if state is not None else jail.marked_token(self.server.store,token):self.error(409,jail.JAILED,"jailed");return
+            if route.startswith(("/api/sticker/","/api/admin/sticker")) and sticker_event.http_post(self,route,token,state,data):return  # 🎨 game/sticker_event.py
             if route=="/api/admin/users/password":
                 self.require_admin(token)
                 admin=(accounts.status(self.server.store,token) or {}).get("username")
@@ -1138,7 +1144,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
                 rentals.prepare_delete(self.server.store,token)
-                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);wed_invite.forget(self.server.store,token);chua_wish.forget(self.server.store,token);event2010.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);wed_invite.forget(self.server.store,token);chua_wish.forget(self.server.store,token);event2010.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);sticker_event.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return

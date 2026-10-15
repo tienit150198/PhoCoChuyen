@@ -362,6 +362,7 @@ function navItems(c){
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story&&api.content?.journey?.certs)items.push(['jrCerts','clipboard','Thi chứng chỉ',certBadge(api)]);  // 🎓 F#267: in sight on the rail / top of "Thêm", not in a hub (v4/certificates.js)
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
+  if(api.uiConfig?.sticker)items.push(['stickerEvent','sparkle','Thi làm sticker']);  // 🎨 /sticker while submissions are open (game/sticker_event.py hint)
   if(api.state?.fair?.show)items.push(['fair','flag',api.state.fair.soon?'Chợ đen (sắp mở)':'Chợ đen',api.state.fair.open&&!api.state.fair.played?'dot':0]);  // 🏮 Hội chợ dân gian (v4/fair.js, own dialog): only around the fair's days
   // A career with its own shell (the air crew: no Sổ tiệm, a flight log instead) reshapes the list; others keep it.
   const result=careerUI(career())?.nav?.(items,careerContext(env()))||items;
@@ -1699,7 +1700,8 @@ async function handleAction(action,data,el){
       if(action==='workVisit'){await (await import('./v4/workplace-visit.js')).openWorkplaceVisit(env(),data);break;}
       if(action==='workVisitServe'){if(data.kind==='quay'){await (await import('./v4/quay.js')).quayAction('quay',{visitor:data.order},el,env());break;}if(data.career&&data.career!==career()){await selectCareer(data.career);if(career()!==data.career)break;}await openJob(data.task);break;}
       if(action==='quay'){await (await import('./v4/quay.js')).quayAction(action,data,el,env());break;}  // 🏪 Quầy của bạn: lazy
-      if(action==='fair'){await (await import('./v4/fair.js')).fairAction(action,data,el,env());break;}  // 🏮 Hội chợ dân gian: lazy
+      if(action==='fair'){await (await import('./v4/fair.js')).fairAction(action,data,el,env());break;}
+      if(action==='stickerEvent'){const app=matchMedia('(display-mode: standalone)').matches||navigator.standalone,w=app?null:window.open('/sticker','_blank');if(w)w.opener=null;else location.href='/sticker';break;}  // 🎨 Thi làm sticker: its own page (an installed app keeps its own cookies: same window)  // 🏮 Hội chợ dân gian: lazy
       if(action==='jail'){await (await import('./v4/jail.js')).openJail(env());break;}  // 🚔 Trại tạm giữ: lazy
       if(L.people.m&&await L.people.m.closenessAction(action,data,el,env()))break;
       if(await needsAction(action,data,el,env()))break;  // 🍚😴 nd…

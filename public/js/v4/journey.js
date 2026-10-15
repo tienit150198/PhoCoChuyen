@@ -353,7 +353,7 @@ function homeMain(env){
   // A new neighbour's first day (firstDay; feedback 16/10 "nhiều chữ"): the goal, you and the places. Certificates, the
   // house, the fair, the board, abroad and the stories join from day 2.
   const fresh=firstDay(api.state);
-  const more=fresh?'':`${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${abroadEntry(env)}${storiesCard(env)}`;
+  const more=fresh?'':`${stickerCard(env)}${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${abroadEntry(env)}${storiesCard(env)}`;
   return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${fresh?'':ev2010Card(env)}${J.story?chapterCard(env):''}${!J.story||J.finale?resumeCard(env):''}${fresh?'':certsEntry(env)}${meCard(env)}${J.story&&!fresh?houseCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
 }
 
@@ -364,6 +364,13 @@ function abroadEntry(env){
   const line=d?`${d.flag} Đang làm ở ${d.city} · ngày ${w.n}/${w.need}`:sd?`${sd.flag} Đang học ở ${sd.city} · buổi ${st.n}/${st.of}${st.lesson?' · hôm nay chưa học':''}`
     :A.deg.length?`🎓 ${A.deg.length} bằng du học · lương làm thuê +${A.deg_pct}%`:'Học ở nước ngoài, hay sang chi nhánh làm lương cao';
   return `<button type="button" class="jr-card ct-entry" data-action="abroad" data-tab="${w?'work':'study'}"><span class="ct-entry-icon" aria-hidden="true">✈️</span><span class="grow"><b>Du học & đi làm nước ngoài</b><small>${esc(line)}</small></span>${st?.lesson?'<span class="tag green">Vào học</span>':''}${icon('arrow',16)}</button>`;
+}
+
+/* 🎨 Thi làm sticker (/sticker, game/sticker_event.py): one line while submissions are open (`ui.sticker` from the server). */
+function stickerCard(env){
+  const k=env.api.uiConfig?.sticker;if(!k?.until)return '';
+  const d=new Intl.DateTimeFormat('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',day:'2-digit',month:'2-digit'}).format(new Date(k.until*1000));
+  return `<button type="button" class="jr-card ct-entry" data-action="stickerEvent"><span class="ct-entry-icon" aria-hidden="true">🎨</span><span class="grow"><b>Thi làm sticker</b><small>${esc(`Top 1 nhận 3.000.000 xu · hạn ${d}`)}</small></span>${icon('arrow',16)}</button>`;
 }
 
 /* 🏮 Hội chợ dân gian (v4/fair.js, own dialog; game/fair.py): a small banner while the fair is open or about to open. */
