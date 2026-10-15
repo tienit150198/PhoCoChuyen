@@ -22,7 +22,8 @@ import {lazy,skeleton} from '../lazy.js';
 import {FIRST_JOB,quiet,firstDay} from './onboard.js';
 import {highlight} from './guide.js';
 import {acctPlace,acctTag,acctTags} from './acct-jobs.js';   // 💼 kế toán: exam first, ×3/×5 (game/accounting_jobs.py)
-import {fundMoveHTML,shortNum} from './wealth.js';   // 💼 Rút / góp vốn with a typed amount (F#259)
+import {fundMoveHTML,shortNum} from './wealth.js';
+import {ev2010Open} from '../isometric/town-utilities.js';   // 💐 Thiệp 20/10 (game/event2010.py)   // 💼 Rút / góp vốn with a typed amount (F#259)
 // The town map's compact goal card on the clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded for tests.
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
 // 👗 Tủ đồ (v4/wardrobe.js): the sheet loads the first time it opens.
@@ -301,6 +302,13 @@ function lockedTile(env,cid,hidden){
     <div class="jr-place-text"><h3>${esc(m.place||m.short)}</h3><small>${esc(m.short||'')} · 🔒 ${esc(when)}</small></div></article>`;
 }
 
+/** 💐 Thiệp 20/10 (/2010, its own page; game/event2010.py): one line while writing is open, from day 2. */
+function ev2010Card(env){
+  const J=env.api.state.journey||{};if(!ev2010Open())return '';
+  const gift=env.api.account&&(!J.story||Number(J.life_day)>=3)?'Gửi tấm đầu tiên, Phố tặng 100.000 xu':'Viết vài dòng, gửi link cho người thương';
+  return `<a class="jr-card jr-2010" href="/2010"><span class="jr-2010-ico" aria-hidden="true">💐</span><span class="grow"><b>Mùa thiệp 20/10</b><small>${gift}</small></span>${icon('arrow',16)}</a>`;
+}
+
 /** 🔥 Today's x3 careers (game/x3_week.py); the week's list opens from here (v4/x3week.js). */
 function x3Banner(env){
   const x=env.api.state.x3;if(!x?.today?.length)return '';
@@ -346,7 +354,7 @@ function homeMain(env){
   // house, the fair, the board, abroad and the stories join from day 2.
   const fresh=firstDay(api.state);
   const more=fresh?'':`${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${abroadEntry(env)}${storiesCard(env)}`;
-  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${J.story?chapterCard(env):''}${!J.story||J.finale?resumeCard(env):''}${fresh?'':certsEntry(env)}${meCard(env)}${J.story&&!fresh?houseCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
+  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${fresh?'':ev2010Card(env)}${J.story?chapterCard(env):''}${!J.story||J.finale?resumeCard(env):''}${fresh?'':certsEntry(env)}${meCard(env)}${J.story&&!fresh?houseCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
 }
 
 /* ✈️ Du học, 🌏 Làm việc ở nước ngoài (v4/abroad.js, game/abroad.py): one line, under 🎓 Thi chứng chỉ (its styles). */

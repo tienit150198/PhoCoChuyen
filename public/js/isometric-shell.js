@@ -4,7 +4,7 @@ import {uiIcon as icon} from './isometric/ui-icons.js';
 import {hudMoney,shortNum} from './v4/wealth.js';
 import {myPortrait} from './v4/look.js';
 import {openGuide,goTo,firstJob} from './iso-guide.js';
-import {townUtilityGroups} from './isometric/town-utilities.js';
+import {townUtilityGroups,ev2010Open} from './isometric/town-utilities.js';
 
 const ENDED=new Set(['completed','referred','cancelled']);
 /** v4/onboard.js firstDay (story, first life day), inline: the shell's tests run this file without its imports. */
@@ -42,7 +42,7 @@ export function isometricHUDModel(state={},content={},mode='town',social={},conn
     task,taskCount:tasks.length,needsJob,open:Boolean(room?.open),
     missionAction:!current?'isoCareers':needsJob?'isoApply':!room.open?'isoPrepare':task?'isoMission':done?'isoEnd':'isoQueue',
     chatUnread:Math.max(0,Number(social.unread?.())||0),chatOnline,chatOff,chatStatus,
-    fairOpen:Boolean(state.fair?.show),menuOpen:false,cameraOpen:false,
+    fairOpen:Boolean(state.fair?.show),ev2010:ev2010Open(),menuOpen:false,cameraOpen:false,
     utilityGroups:townUtilityGroups(state,content,social)};
 }
 
@@ -71,13 +71,14 @@ export function isometricHUDHTML(model,state={}){
   </header>
   <nav class="iso-quick" aria-label="Lối tắt">
     ${control('Chỉ đường','isoGuide','compass','iso-quick-button iso-guide-button',' aria-label="Chỉ đường: chọn nơi muốn tới, nhân vật tự đi" aria-haspopup="dialog"')}
-    <details class="iso-tools"><summary class="iso-quick-button" data-iso-focus="iso-tools" aria-controls="isoToolsOptions">${icon('menu',22)}<span>Tiện ích</span>${m.fairOpen?'<i class="iso-tools-dot" title="Chợ đen đang mở" aria-label="Chợ đen đang mở"></i>':''}</summary>
+    <details class="iso-tools"><summary class="iso-quick-button" data-iso-focus="iso-tools" aria-controls="isoToolsOptions">${icon('menu',22)}<span>Tiện ích</span>${m.fairOpen?'<i class="iso-tools-dot" title="Chợ đen đang mở" aria-label="Chợ đen đang mở"></i>':m.ev2010?'<i class="iso-tools-dot" title="Mùa thiệp 20/10" aria-label="Mùa thiệp 20/10"></i>':''}</summary>
       <div class="iso-tools-options" id="isoToolsOptions" role="group" aria-label="Tiện ích trong phố">
         <b class="iso-tools-heading">Sổ tay trong phố</b>
         ${control('Sổ việc','isoQueue','clipboard','iso-tool',' aria-label="Sổ việc đang chờ"')}
         ${control('Người quen','people','people','iso-tool',' aria-label="Người quen trong phố"')}
         ${m.current?control('Hôm nay','status','clock','iso-tool',' aria-label="Hôm nay: giờ, tình trạng và chuyện cần để ý"'):''}
         ${control('Túi đồ','isoBag','bag','iso-tool')}
+        ${m.ev2010?control('Thiệp 20/10','ev2010','heart','iso-tool iso-2010',' aria-label="Thiệp 20/10: viết thiệp tặng người thương"'):''}
         ${m.fairOpen?control('Chợ đen','fair','basket','iso-tool iso-fair-button',' aria-label="Chợ đen đang mở"'):''}
         ${control('Cài đặt','settings','settings','iso-tool',' aria-label="Cài đặt"')}
         ${(m.utilityGroups||[]).map(group=>`<details class="iso-outings" data-iso-group="${group.id}"><summary class="iso-tool" data-iso-focus="iso-${group.id}" aria-controls="isoUtility-${group.id}">${icon(group.icon,22)}<span>${group.label}</span>${icon('arrow',16)}</summary><div class="iso-outings-menu" id="isoUtility-${group.id}" role="group" aria-label="${group.label}">${group.items.map(item=>control(item.label,item.action,item.icon,'iso-outing-button',Object.entries({'utility-id':item.id||item.action,...(item.actionData||{})}).map(([k,v])=>" data-"+k+"=\""+esc(v)+"\"").join(''))).join('')}</div></details>`).join('')}

@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 45  # 45: 📜 old shared lời chúc on the wish trees (chua_card_marks, chua_card_prayers: 🙏 / reports / admin hide of chua_public_cards rows, game/chua_wish.py; new tables only, no FK, no backfill, owner 15/10 "đưa vào 1 cái đi"); 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 46  # 46: 💐 Thiệp 20/10 (ev2010_cards, ev2010_reports, ev2010_rewards: game/event2010.py; new tables only, no FK, no save key, owner 16/10 "làm 1 cái / riêng đi"); 45: 📜 old shared lời chúc on the wish trees (chua_card_marks, chua_card_prayers: 🙏 / reports / admin hide of chua_public_cards rows, game/chua_wish.py; new tables only, no FK, no backfill, owner 15/10 "đưa vào 1 cái đi"); 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -680,6 +680,31 @@ CREATE TABLE IF NOT EXISTS chua_card_prayers (
   sid {T} NOT NULL, card_id {T} NOT NULL, by_sid {T} NOT NULL, at double precision NOT NULL, PRIMARY KEY (sid, card_id, by_sid)
 );
 CREATE INDEX IF NOT EXISTS chua_card_prayers_by ON chua_card_prayers(by_sid);
+-- 💐 Thiệp 20/10 (game/event2010.py; SCHEMA_VERSION 46, owner 16/10): one row per card a player wrote on /2010, read by
+-- anyone with its link (`id`: 12 random url-safe characters). status live -> hidden (reports) | removed (admin) | down (the
+-- sender deleted it: its words are emptied, the row stays for today's count). ev2010_reports: once per reader (their save
+-- or their address, hashed). ev2010_rewards: the 100.000 xu, once per account (uid) and per save (sid), with the system
+-- gift it queued (system_gifts.id) and the reader's address hashed (clone rings). New tables only, no FK: older builds
+-- never see them.
+CREATE TABLE IF NOT EXISTS ev2010_cards (
+  id {T} PRIMARY KEY, sid {T} NOT NULL, uid bigint, theme {T} NOT NULL, direction {T} NOT NULL, to_name {T} NOT NULL,
+  from_name {T} NOT NULL, text {T} NOT NULL, raw {T}, stickers {T} NOT NULL DEFAULT '[]', at double precision NOT NULL,
+  day {T} NOT NULL, hearts bigint NOT NULL DEFAULT 0, reports bigint NOT NULL DEFAULT 0, status {T} NOT NULL DEFAULT 'live',
+  reviewed_at double precision, by_admin {T}
+);
+CREATE INDEX IF NOT EXISTS ev2010_cards_sid ON ev2010_cards(sid, day);
+CREATE INDEX IF NOT EXISTS ev2010_cards_mine ON ev2010_cards(sid, at DESC);
+CREATE INDEX IF NOT EXISTS ev2010_cards_at ON ev2010_cards(at DESC);
+CREATE INDEX IF NOT EXISTS ev2010_cards_review ON ev2010_cards(at DESC) WHERE reports>0 AND reviewed_at IS NULL;
+CREATE TABLE IF NOT EXISTS ev2010_reports (
+  card {T} NOT NULL, reporter {T} NOT NULL, reason {T} NOT NULL, at double precision NOT NULL, PRIMARY KEY (card, reporter)
+);
+CREATE TABLE IF NOT EXISTS ev2010_rewards (
+  uid bigint PRIMARY KEY, sid {T} UNIQUE NOT NULL, username {T}, card {T} NOT NULL, gift {T} NOT NULL,
+  coins bigint NOT NULL, life_day bigint NOT NULL, ip {T} NOT NULL, at double precision NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ev2010_rewards_ip ON ev2010_rewards(ip);
+CREATE INDEX IF NOT EXISTS ev2010_rewards_at ON ev2010_rewards(at DESC);
 
 """
 
@@ -1001,6 +1026,9 @@ TABLES = [
     dict(name='chua_wish_prayers', identity=None),
     dict(name='chua_card_marks', identity=None),
     dict(name='chua_card_prayers', identity=None),
+    dict(name='ev2010_cards', identity=None),
+    dict(name='ev2010_reports', identity=None),
+    dict(name='ev2010_rewards', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 

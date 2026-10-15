@@ -5,6 +5,10 @@ const JOURNEY_FEATURES={tileMatch:'tile',garage:'garage',gadgets:'gadgets',pets:
 const CONTENT_FEATURES={quay:'quay',auction:'auction',auctionLands:'auction',jrCerts:'certs'};
 const LIVE_FEATURES={liveWalk:'street',liveDate:'dating',liveWed:'wedding',liveKara:'kara'};
 const owns=(object,key)=>Object.prototype.hasOwnProperty.call(object,key);
+/** 💐 Thiệp 20/10 (/2010, game/event2010.py WRITE_UNTIL; tests/test_event2010.py keeps the two equal): the entries
+ * (Tiện ích, the journey home, the card that opens once: v4/ev2010.js) show until writing closes, 21/10/2026 23:59 VN. */
+export const EV2010_UNTIL=1792601999e3;
+export const ev2010Open=(t=Date.now())=>t<=EV2010_UNTIL;
 
 /** Known optional services use the app's gates; ordinary map actions stay available. */
 export function townServiceAvailable(action,state={},content={},social={},actionData={}){
@@ -14,6 +18,7 @@ export function townServiceAvailable(action,state={},content={},social={},action
   if(owns(LIVE_FEATURES,action))return Boolean(social?.welcomed&&social?.flags?.[LIVE_FEATURES[action]]);
   if(action==='house'||action==='jrInvest')return story;
   if(action==='rui')return Boolean(state?.rui);
+  if(action==='ev2010')return ev2010Open();
   if(action==='fair'){
     if(!state?.fair?.show)return false;
     const feature={dg:'dog',dt:'knife',xs:'scratch',pb:'photo'}[actionData?.tab];
@@ -74,7 +79,7 @@ export function townUtilityGroups(state={},content={},social={}){
       ['liveWalk','map','🚶','Phố đi dạo'],['liveDate','heart','💕','Góc hẹn hò'],
       ['liveWed','heart','💍','Lịch cưới'],['liveKara','music','🎤','Phòng hát'],
       ['tileMatch','grid','🧩','Ghép ba Phố Mây'],
-      ['wedInvite','mail','💌','Thiệp mời cưới'],
+      ['wedInvite','mail','💌','Thiệp mời cưới'],['ev2010','heart','💐','Thiệp 20/10'],
     ])},
   ].filter(group=>group.items.length);
 }

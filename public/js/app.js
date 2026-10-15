@@ -25,6 +25,7 @@ import {moneyBoot,confirmMoney,confirmShort,dialogBalances,isSpend,priceIn} from
 import {quickOpen,firstDay,EASY_DAYS} from './v4/onboard.js';  // a brand-new player's first minutes
 import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} from './v4/wealth.js';  // 💰 Tiền của bạn (top bar chips + sheet)
 import {emojiOf,townOn} from './v4/journey.js';
+import {ev2010Open} from './isometric/town-utilities.js';   // 💐 Thiệp 20/10: while writing is open
 import {lowItems,crates} from './v4/restock.js';  // the bar's Kho badge
 import {setLanguage,t as i18nT} from './v4/i18n.js';
 import {shell} from './v4/shell.js';
@@ -1609,6 +1610,7 @@ async function handleAction(action,data,el){
     // "Thêm" opens on its first page, not inside the hub left open last time.
     case'v4Menu':if(ui.railGroup&&layout()==='phone')railGroup(null,false);await shell.action(action,data,el,env());break;
     case'future':openSheet('future');break;
+    case'ev2010':location.assign('/2010');break;   // 💐 Thiệp 20/10: its own page (game/event2010.py)
     case'choose':await selectCareer(data.career);break;
     case'bossOffer':if(data.career&&api.state.careers[data.career])await selectCareer(data.career);break;
     case'start':await start();break;
@@ -1939,6 +1941,8 @@ try{
   if(!oauthReturned){
     const deep=new URLSearchParams(location.search);
     if(deep.get('social')){history.replaceState(null,'','/');openSocial(deep.get('social'));}
+    // 💐 /2010's "Đăng nhập" / "Tạo tài khoản" (public/js/event2010.js): the account page, then back there (v4/ev2010.js)
+    else if(['login','register'].includes(deep.get('account'))){history.replaceState(null,'','/');handleAction('v4AccountOpen',{mode:deep.get('account')});}
     else if(!isoTownFirst())openSheet('home');
   }
   // Callback feedback gets the first screen. Start automatic cards only after the player closes it;
@@ -1949,6 +1953,7 @@ try{
     lazyBoot=true;whenIdle(()=>bootNext(0),1500);
     import('./v4/whatsnew.js').then(m=>m.whatsNewBoot(env())).catch(e=>console.warn('whatsnew:',e));  // "Có gì mới": lazy, off the first load
     import('./v4/x3week.js').then(m=>m.x3Boot(env())).catch(e=>console.warn('x3week:',e));  // 🔥 Nghề x3 trong tuần (game/x3_week.py)
+    if(ev2010Open())import('./v4/ev2010.js').then(m=>m.ev2010Boot(env())).catch(e=>console.warn('ev2010:',e));  // 💐 Thiệp 20/10: the card once, the way back
     if(api.state?.rui)import('./v4/rui.js').then(m=>m.ruiBoot(env())).catch(e=>console.warn('rui:',e));  // 🛡️ a warning or a card at a calm moment (game/rui.py)
     if(api.gifts?.length)import('./v4/gift.js').then(m=>m.giftBoot(env())).catch(e=>console.warn('gift:',e));  // 🎁 Quà từ Phố Có Chuyện: only for a save with a gift
     // 💌 thiệp mời cưới cả phố not shown yet (game/wed_invite.py): the module only when one is due; an older server 404s

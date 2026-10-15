@@ -217,6 +217,12 @@ class WebAssets:
         csp = observability.content_security_policy(self.base_csp).replace("script-src 'self'", f"script-src 'self' {csp_hash(importmap)} {csp_hash(boot_src)}", 1)
         return Snapshot(files, build, version, importmap, preload, html.encode("utf-8"), csp, self.career_warm(files, preload))
 
+    def versioned(self, html: str) -> str:
+        """Another page of the site rendered by the server (public/2010.html, game/event2010.py): its /js/, /css/, /icons/
+        URLs carry ?v=<hash> like index.html's, so they are cached a year and a release (minified bytes) changes them."""
+        files = self.snapshot().files
+        return _ATTR_URL.sub(lambda m: m.group(1) + (f"{m.group(2)}?v={files[m.group(2)]}" if m.group(2) in files else m.group(2)) + m.group(3), html)
+
     def career_warm(self, files: dict[str, str], preload: list[str]) -> dict[str, str]:
         """career -> the files its first frame waits for beyond app.js's graph, comma-separated URL paths:
         its workbench (+ imports), then its stylesheets (kit first). Mirrors careerAssets() in app.js and
