@@ -7,7 +7,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {emojiOf} from './journey.js';
 import {quiet,turn,want} from './break-gate.js';
-import {firstDay} from './onboard.js';
+import {earlyDays} from './onboard.js';
 
 const KEY='mnl.x3.week',DOW=['Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy','Chủ nhật'];
 let E=null,dlg=null,timer=0,calm=0,back=null,openedAt=0,auto=false;
@@ -62,10 +62,11 @@ function close(){
   if(back?.isConnected&&typeof back.focus==='function')back.focus({preventScroll:true});
   back=null;
 }
-/** The week's card may open by itself: a story player past their first day who has not seen this week yet. */
+/** The week's card may open by itself: a story player past their first days (v4/onboard.js earlyDays: on day 2 it
+ * listed places still locked to them, over the first "Chuẩn bị") who has not seen this week yet. */
 function due(){
   const s=E?.api?.state,x=s?.x3,J=s?.journey;
-  return !!(x?.week&&J?.story&&J.intro&&!firstDay(s)&&seen()!==x.week&&seen()!=='blocked');
+  return !!(x?.week&&J?.story&&J.intro&&!earlyDays(s)&&seen()!==x.week&&seen()!=='blocked');
 }
 function check(){
   if(!due()){calm=0;want('x3',false);return;}

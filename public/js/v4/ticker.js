@@ -55,7 +55,8 @@ function handle(d){
 
 const still=()=>matchMedia('(prefers-reduced-motion: reduce)').matches||document.documentElement.classList.contains('reduce-motion');
 // A modal (a sheet, the welcome card, a confirmation) covers the page: wait until the street is in sight.
-const covered=()=>{try{return Boolean(document.querySelector('dialog:modal'));}catch{return Boolean(document.querySelector('dialog[open]'));}};
+// A new neighbour's first day (html[data-fresh], v4/shell.js) waits too: the lines play from day 2.
+const covered=()=>{if(document.documentElement.hasAttribute('data-fresh'))return true;try{return Boolean(document.querySelector('dialog:modal'));}catch{return Boolean(document.querySelector('dialog[open]'));}};
 async function next(){
   if(!queue.length){playing=false;bar?.remove();bar=null;return;}
   playing=true;

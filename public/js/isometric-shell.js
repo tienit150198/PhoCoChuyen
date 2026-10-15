@@ -3,10 +3,12 @@ import {escapeHTML as esc} from './icons.js';
 import {uiIcon as icon} from './isometric/ui-icons.js';
 import {hudMoney,shortNum} from './v4/wealth.js';
 import {myPortrait} from './v4/look.js';
-import {openGuide,goTo} from './iso-guide.js';
+import {openGuide,goTo,firstJob} from './iso-guide.js';
 import {townUtilityGroups} from './isometric/town-utilities.js';
 
 const ENDED=new Set(['completed','referred','cancelled']);
+/** v4/onboard.js firstDay (story, first life day), inline: the shell's tests run this file without its imports. */
+const firstDay=s=>Boolean(s?.journey?.story&&(Number(s.journey.life_day)||1)<=1);
 const fmt=n=>Number(n).toLocaleString('vi-VN');
 let getEnvironment=null;
 let listening=false;
@@ -32,10 +34,13 @@ export function isometricHUDModel(state={},content={},mode='town',social={},conn
     connection&&!connection.url?'Chưa khả dụng':
     social.state==='connecting'?'Đang kết nối':
     social.state==='down'?'Mất kết nối':social.state==='off'?'Không khả dụng':'Chưa kết nối';
-  return {current,mode:sceneMode,name:state.name||'Bạn',day,place,careerName:meta.name||place,
+  // A new neighbour's first day (v4/onboard.js firstDay): no workplace yet → the first one (walked to); every customer
+  // served → "Khép ca", not the job book.
+  const fresh=firstDay(state),done=Boolean(fresh&&room?.open&&!task&&!needsJob);
+  return {current,mode:sceneMode,name:state.name||'Bạn',day,place,careerName:meta.name||place,fresh,done,
     sceneTitle:sceneMode==='work'?place:'Đảo Hoàng Sa',money:hudMoney(state,current),
     task,taskCount:tasks.length,needsJob,open:Boolean(room?.open),
-    missionAction:!current?'isoCareers':needsJob?'isoApply':!room.open?'isoPrepare':task?'isoMission':'isoQueue',
+    missionAction:!current?'isoCareers':needsJob?'isoApply':!room.open?'isoPrepare':task?'isoMission':done?'isoEnd':'isoQueue',
     chatUnread:Math.max(0,Number(social.unread?.())||0),chatOnline,chatOff,chatStatus,
     fairOpen:Boolean(state.fair?.show),menuOpen:false,cameraOpen:false,
     utilityGroups:townUtilityGroups(state,content,social)};
@@ -53,10 +58,10 @@ function moneyChip(label,value,kind){
 /** Server text is escaped here; portrait art comes from the existing saved wardrobe. */
 export function isometricHUDHTML(model,state={}){
   const m=model;
-  const missionTitle=!m.current?'Hôm nay, thử làm nghề gì?':m.needsJob?`Xin việc tại ${m.place}`:!m.open?'Ca làm đang nghỉ':m.task?.title||'Bạn đã làm hết việc đang chờ';
-  const missionLabel=!m.current?'Chọn nghề':m.needsJob?'Xem tuyển dụng':!m.open?'Chuẩn bị ca':m.task?'Làm tiếp':'Mở sổ việc';
+  const missionTitle=!m.current?(m.fresh?'Đầu hẻm đang cần người phụ quán':'Hôm nay, thử làm nghề gì?'):m.needsJob?`Xin việc tại ${m.place}`:!m.open?'Ca làm đang nghỉ':m.task?.title||(m.done?'Hết khách rồi':'Bạn đã làm hết việc đang chờ');
+  const missionLabel=!m.current?(m.fresh?'Tới quán':'Chọn nghề'):m.needsJob?'Xem tuyển dụng':!m.open?'Chuẩn bị ca':m.task?'Làm tiếp':m.done?'Khép ca':'Mở sổ việc';
   // Only the count earns the small line; "Chọn nghề hôm nay", "Tuyển dụng", "Ca làm của bạn" repeated the title (#384).
-  const missionMeta=m.current&&m.open&&!m.needsJob?`${m.taskCount} việc đang chờ`:'';
+  const missionMeta=m.current&&m.open&&!m.needsJob&&!m.done?`${m.taskCount} việc đang chờ`:'';
   const missionAria=`${missionLabel}: ${missionTitle}`;
   const nav=[['isoCareers','briefcase','Công việc'],['isoMore','menu','Thêm']];
   const active=m.activeTab||(m.mode==='work'?'isoCareers':'isoTown');
@@ -282,9 +287,11 @@ export async function isometricAction(action,data={},el=null,env){
   switch(action){
     case'isoTown':changeMode('town',env);break;
     case'isoWork':
+      if(!model.current&&model.fresh){await firstJob(env);break;}
       if(!model.current){env.openSheet('home',{homeMode:'list',jrView:'home'});break;}
       changeMode('work',env);break;
-    case'isoCareers':env.ui&&(env.ui.isoTab='isoCareers');env.openSheet('home',{homeMode:'list',jrView:'home'});break;
+    case'isoCareers':if(!model.current&&model.fresh){await firstJob(env);break;}   // day 1: the first workplace, not the whole journey page
+      env.ui&&(env.ui.isoTab='isoCareers');env.openSheet('home',{homeMode:'list',jrView:'home'});break;
     case'isoAvatar':env.ui&&(env.ui.isoTab='isoAvatar');env.openSheet('home',{jrView:'wardrobe'});break;
     case'isoBag':env.ui&&(env.ui.isoTab='isoBag');if(model.current)await act('warehouse');else env.openSheet('home',{homeMode:'list',jrView:'home'});break;
     case'isoChat':await act('liveChat');break;
@@ -306,6 +313,7 @@ export async function isometricAction(action,data={},el=null,env){
       else await act('queue');
       break;
     case'isoPrepare':changeMode('work',env);await act('prepare');break;
+    case'isoEnd':changeMode('work',env);await act('end');break;   // first day, every customer served: close the shift (its own confirm)
     case'isoApply':changeMode('work',env);await act('jobapp');break;
     case'isoQueue':if(model.current)await act('queue');else env.openSheet('home',{homeMode:'list',jrView:'home'});break;
     case'isoZoomIn':env.world?.zoomBy?.(1.15);break;

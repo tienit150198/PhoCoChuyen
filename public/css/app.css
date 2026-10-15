@@ -2904,3 +2904,6 @@ input.amt-unread{border-color:var(--warn)!important;border-style:dashed!importan
 .jb-path li.on{background:var(--accent-soft);font-weight:700}
 .jb-path li.done{color:var(--muted)}
 .jb-abroad{margin:8px 0;gap:8px}
+/* A new neighbour's first life day (html[data-fresh], v4/shell.js): one thing at a time. The news ticker (it covered
+   the name and the wallet), the island's camera, the utilities' notice dot and the counter's second "?" come back on day 2. */
+html[data-fresh] .mr-ticker,html[data-fresh] .mt-hud .ui-q,html[data-fresh][data-game] #isoHUD .iso-camera,html[data-fresh][data-game] #isoHUD .iso-tools-dot{display:none}

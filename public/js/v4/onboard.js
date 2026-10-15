@@ -10,6 +10,10 @@ export const MARK='onb1';
 
 /** Story mode, still in the first life day (the intro, the first workplace, the first shift). */
 export const firstDay=s=>!!(s?.journey?.story&&(Number(s.journey.life_day)||1)<=1);
+/** The first EASY_DAYS life days (game/journey.py EASY_DAYS: days 2..3 are calm too): the street's extras (the weekly
+ * x3 card, the news ticker) wait until the player has found their feet. */
+export const EASY_DAYS=3;
+export const earlyDays=s=>!!(s?.journey?.story&&(Number(s.journey.life_day)||1)<=EASY_DAYS);
 /** Customers served so far (every workplace whose metrics are in the view: the current one always is). */
 export const servedAll=s=>Object.values(s?.careers||{}).reduce((n,c)=>n+(Number(c?.metrics?.served)||0),0);
 /** The first 3 customers: nothing modal pops up over the game. */

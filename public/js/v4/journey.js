@@ -342,8 +342,11 @@ function homeMain(env){
   const town=townOK()?btn('🗺️ Bản đồ phố','jrTown',{},'cream small jr-town'):'';
   const top=`<header class="jr-top"><div class="grow"><span class="eyebrow">${J.story?`Khu phố nhỏ · Ngày sống ${fmt(J.life_day)}`:'Khu phố nhỏ · mọi nơi đều mở'}</span><h1>Hành trình của bạn</h1></div>${town}${accountChip(env)}${api.state.current?btn(icon('x',20),'close',{},'ghost small jr-close','aria-label="Đóng"'):''}</header>`;
   // 🎓 F#267: Thi chứng chỉ sits in the first column, right under the goals (it was last in the third, under the places).
-  const more=`${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${abroadEntry(env)}${storiesCard(env)}`;
-  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${J.story?chapterCard(env):''}${!J.story||J.finale?resumeCard(env):''}${certsEntry(env)}${meCard(env)}${J.story?houseCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
+  // A new neighbour's first day (firstDay; feedback 16/10 "nhiều chữ"): the goal, you and the places. Certificates, the
+  // house, the fair, the board, abroad and the stories join from day 2.
+  const fresh=firstDay(api.state);
+  const more=fresh?'':`${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${abroadEntry(env)}${storiesCard(env)}`;
+  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${J.story?chapterCard(env):''}${!J.story||J.finale?resumeCard(env):''}${fresh?'':certsEntry(env)}${meCard(env)}${J.story&&!fresh?houseCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
 }
 
 /* ✈️ Du học, 🌏 Làm việc ở nước ngoài (v4/abroad.js, game/abroad.py): one line, under 🎓 Thi chứng chỉ (its styles). */

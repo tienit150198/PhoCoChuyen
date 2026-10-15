@@ -2,6 +2,7 @@
  * language, background music. Other modules stay unaware of the device. */
 import {setLanguage,language} from './i18n.js';
 import {emojiOf} from './journey.js';
+import {firstDay} from './onboard.js';
 
 /** Keep the phone "Thêm" button's aria-expanded in step with the menu. */
 const syncMenu=()=>{const open=document.documentElement.classList.contains('menu-open');document.querySelectorAll('[data-action="v4Menu"]').forEach(b=>b.setAttribute('aria-expanded',String(open)));};
@@ -81,6 +82,10 @@ function watchViewport(){
 }
 export function setLayoutPref(v){write(['auto','phone','tablet','desktop'].includes(v)?v:'auto');applyLayout();}
 
+/** html[data-fresh]: a new neighbour's first life day (v4/onboard.js firstDay). The street's extras stay out of the way
+ * until day 2 (css/app.css: the news ticker, the island's camera and its notice dot; v4/ticker.js holds its lines). */
+function applyFresh(state){const on=firstDay(state),root=document.documentElement;if(root.hasAttribute('data-fresh')!==on)root.toggleAttribute('data-fresh',on);}
+
 function applyTheme(settings){
   const root=document.documentElement;
   root.dataset.theme=settings.uiTheme||'kem';
@@ -156,7 +161,7 @@ export const shell={
   mark(m){return `<span class="scene-mark" aria-hidden="true">${emojiOf(m||{})}</span>`;},
   boot(env){
     if(env.api.uiConfig)setCleanServer(env.api.uiConfig.clean!==false);
-    applyLayout();applyTheme(env.api.state.settings);watchViewport();
+    applyLayout();applyTheme(env.api.state.settings);applyFresh(env.api.state);watchViewport();
     let t;window.addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(applyLayout,120);});
     window.addEventListener('orientationchange',()=>setTimeout(applyLayout,200));
     // The first tap/key loads the music module (then it hears every tap itself: audio.js onGesture). A tap before
@@ -181,6 +186,7 @@ export const shell={
     // style, which would force a full style recalc right after each re-render).
     const st=env.api.state.settings,key=[st.uiTheme,st.reduceMotion,st.largeText].join('|');
     if(key!==themeKey){themeKey=key;applyTheme(st);}
+    applyFresh(env.api.state);
     if(env.api.state.settings.lang!==language())setLanguage(env.api.state.settings.lang).then(()=>{if(env.api.state.settings.lang==='vi')location.reload();});
     if(music||env.api.state.settings.music)syncMusic(env).catch(()=>{/* the module failed to load: the next tap */});
   },

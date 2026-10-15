@@ -2,7 +2,8 @@
 """First-day sweep (dev tool, needs `pip install playwright` + chromium).
 
 Plays a brand-new STORY-mode player the way production runs (story on, MNL_DEV
-off) on a 390×844 phone: the one intro screen (look, name) → the town (walk to the
+off) on a 390×844 phone: the one intro screen (look, name) → the 2.5D island (the
+character walks to milk tea by itself, iso-guide.js landNewPlayer; the classic 2D town: walk to the
 chapter-1 workplace, "Vào làm"; with the list as home the intro picks it) → day 1 opens by itself → finish the first task, only ever pressing the control the game highlights
 (the first-time pulse), the bottom button (.gd-cta) or the "Bước tiếp theo"
 hint, and saying yes to confirm dialogs. A career passes when its first task is
@@ -176,6 +177,17 @@ async def play(browser, base: str, cid: str, shots: Path | None, max_steps: int 
                 await page.get_by_role('button', name='Vào làm thôi').click()
             else:
                 await page.get_by_role('button', name='Vào phố thôi').click()
+            if not await page.locator('.onb-job').count() and await page.evaluate("document.documentElement.dataset.game==='isometric'"):
+                # The island: no question about the old interface for a new player, and no door to find: the
+                # character walks to the first workplace (milk tea) and its day 1 opens. Other chapter-1 places are
+                # played through the 2D town or --dev.
+                if await page.locator('#interfacePrompt[open]').count():
+                    out['problems'].append('a new player is asked about the old interface')
+                if cid != 'milk_tea':
+                    out.update(ok=True, skipped='island: a new player starts at milk tea')
+                    await ctx.close()
+                    return out
+            elif not await page.locator('.onb-job').count():
                 await page.wait_for_selector('#sheet[open] .tw-stage canvas', timeout=10000)
                 await page.wait_for_timeout(500)
                 tw = await page.evaluate('__townWalk.state()')
@@ -297,7 +309,7 @@ def main():
     a.report.parent.mkdir(parents=True, exist_ok=True)
     a.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     for cid, r in report['careers'].items():
-        print(f"{'PASS' if r['ok'] and not r['problems'] else 'FAIL'} {cid}: {len(r['steps'])} presses")
+        print(f"{'SKIP' if r.get('skipped') else 'PASS' if r['ok'] and not r['problems'] else 'FAIL'} {cid}: {r.get('skipped') or str(len(r['steps'])) + ' presses'}")
         for s in r['steps']:
             print('   ', s)
         for p in r['problems']:

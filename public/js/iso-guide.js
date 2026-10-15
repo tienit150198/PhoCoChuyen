@@ -222,7 +222,7 @@ export async function openGuide(env,{filter='all'}={}){
   await helpers();
   if(!dlg){
     dlg=document.createElement('dialog');dlg.className='sheet v4-sheet medium iso-guide-sheet';dlg.setAttribute('aria-label','Chỉ đường');
-    dlg.innerHTML=`<header class="sheet-head"><div class="grow"><h2>🧭 Chỉ đường</h2><p>Chọn “Đi” để tự đi theo đường, hoặc “Mở” để dùng tiện ích. Chạm đất hoặc di chuyển để dừng đi.</p></div><button type="button" class="icon-btn" data-guide-close aria-label="Đóng">✕</button></header>
+    dlg.innerHTML=`<header class="sheet-head"><div class="grow"><h2>🧭 Chỉ đường</h2><p>Chọn nơi muốn tới, nhân vật tự đi. Chạm đất để dừng.</p></div><button type="button" class="icon-btn" data-guide-close aria-label="Đóng">✕</button></header>
       <div class="iso-guide-search"><input type="search" class="input" placeholder="Tìm khu phố, tiện ích, nghề hoặc người chơi…" aria-label="Tìm nơi muốn tới hoặc tiện ích" autocomplete="off" enterkeyhint="search"></div>
       <nav class="iso-guide-filters" aria-label="Lọc điểm đến">${FILTERS.map(([id,label])=>`<button type="button" data-guide-filter="${id}" aria-pressed="${id==='all'}">${label}</button>`).join('')}</nav>
       <div class="sheet-body iso-guide-body"></div>`;
@@ -300,11 +300,19 @@ export async function goTo(dest,env){
   tick();
 }
 
-/** A brand-new player after the intro (v4/journey.js onIsoLand): on the island, with a pointer to the first job. */
+/** A brand-new player after the intro (v4/journey.js onIsoLand): on the island, already walking to the first job
+ * along the drawn road (goTo: "🧭 Đang tới …"; arriving opens day 1, app.js quickOpen). Feedback 16/10 ("giai đoạn đầu
+ * khó chơi"): the player was left to find a lit door somewhere off screen. A tap on the ground stops the walk; the
+ * door stays lit and the HUD's "Chọn nghề" walks there again (isometric-shell.js firstJob). */
 export async function landNewPlayer(env){
   await helpers();
   env.closeSheet();
-  const real=world;
-  if(real?.stage){const first=real.hotspots.find(h=>h.id==='career:'+FIRST_JOB)||real.hotspots.find(h=>h.id.startsWith('career:'));if(first)real.stage.highlight(first.id);}
-  env.toast('Chào mừng tới đảo! Tự đi tới tiệm có vòng sáng, hoặc bấm 🧭 Chỉ đường để nhân vật dẫn đường.');
+  await firstJob(env);
+}
+/** Walk to the first workplace; the island still being built (no stage yet): straight in, as its door would. */
+export async function firstJob(env){
+  await helpers();
+  const real=world,dest='career:'+FIRST_JOB;
+  if(real?.stage&&real.hotspots.some(h=>h.id===dest)){real.stage.highlight?.(dest);await goTo(dest,env);return;}
+  await env.act('choose',{career:FIRST_JOB});
 }
