@@ -1,3 +1,12 @@
+# v2.4.24 — 2026-10-16
+
+🌱 Người mới dễ vào hơn (chủ game 16/10: "giai đoạn đầu quá khó chơi, nhiều chữ thừa, giao diện không tối ưu"). Chỉ áp dụng cho nhân vật mới ở chế độ câu chuyện; số kinh tế và schema không đổi. Ghi chú nghiên cứu: onboarding-notes-1016.md (ngoài repo).
+- Máy chủ: cả ngày sống 1 khách không mất kiên nhẫn (`engine.LEARNING_LIFE_DAYS`); ngày sống 2–3 luôn "thong thả" (`journey.EASY_DAYS=3`, chốt lúc khép ngày); người mới không bị hỏi "quay về giao diện cũ?" (`journey.interface.interfacePromptSeen`, khóa sẵn có).
+- Đảo: đặt tên xong nhân vật tự đi tới quán đầu tiên và mở ngày 1; HUD "Đầu hẻm đang cần người phụ quán · Tới quán"; hết khách thì "Hết khách rồi · Khép ca".
+- Ngày 1 ẩn băng tin, nút camera, chấm tiện ích, nút "?" thứ hai; trang Hành trình ẩn hội chợ/đời sống/bảng tin/du học/truyện/chứng chỉ/nhà tới ngày 2.
+- Tổng kết lần khép ca đầu: sổ sách, đánh giá, thăng tiến, ghi chú nghề gom vào "Chi tiết cả ngày" (216 → ~103 chữ). Thẻ x3 chờ tới ngày sống 4. Chỉ đường: lời dẫn ngắn hơn.
+- Có gì mới: 1 dòng.
+
 # v2.4.23 — 2026-10-16
 
 ⚡ Bớt lag trên bản lưu lớn (chủ game 15/10: "có mấy cái lỗi gì đó bấm thấy lag lắm, coi tối ưu đi"). Đo trên bản lưu thật 10,6 MB (54 nghề): mỗi lệnh nhanh hơn ~9–12%, mỗi lần tải trạng thái có đồng bộ tiệm (nhân viên làm, 30 giây/lần) ~1,1 s → ~0,8 s. Kết quả game và định dạng bản lưu không đổi.
