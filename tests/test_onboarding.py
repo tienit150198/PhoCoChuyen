@@ -5,7 +5,7 @@ import copy
 import unittest
 
 from game import boba, journey as jr, tips, tip_content as tc, whats_new as wn
-from game.engine import apply_action, new_state, validate_state
+from game.engine import apply_action, new_state, public_state, validate_state
 
 
 def story_save(career='milk_tea', seed=7):
@@ -156,6 +156,61 @@ class NotesAtNaming(unittest.TestCase):
         s['settings']['notesSeen'] = 'guide-v1'
         s, _ = apply_action(s, None, 'jr_profile', {'name': 'Lan Anh', 'gender': 'female'})   # past the intro
         self.assertEqual(s['settings']['notesSeen'], 'guide-v1')
+
+
+class InterfaceQuestionAtNaming(unittest.TestCase):
+    """"Quay về giao diện cũ?" is for returning players: a new neighbour never saw the old interface."""
+    def test_a_new_neighbour_is_not_asked(self):
+        s = story_save()
+        self.assertEqual(s['journey']['interface'], dict(interfacePromptSeen=True))
+        self.assertIs(public_state(s)['settings']['interfacePromptSeen'], True)
+        self.assertIs(public_state(s)['settings']['newInterface'], True)
+        validate_state(copy.deepcopy(s))
+
+    def test_a_choice_already_made_is_kept(self):
+        s = new_state()
+        jr.enable_story(s, 3)
+        s['journey']['interface'] = dict(newInterface=False, interfacePromptSeen=False)
+        s, _ = apply_action(s, None, 'jr_profile', {'name': 'Lan', 'gender': 'female'})
+        self.assertEqual(s['journey']['interface'], dict(newInterface=False, interfacePromptSeen=False))
+
+    def test_not_for_a_save_past_the_intro_nor_the_sandbox(self):
+        s = new_state()
+        s, _ = apply_action(s, None, 'jr_profile', {'name': 'Lan', 'gender': 'female'})
+        self.assertNotIn('interface', s['journey'])
+        s = new_state()
+        jr.enable_story(s, 3)
+        s['journey'].update(intro=True, life_day=5)
+        s, _ = apply_action(s, None, 'jr_profile', {'name': 'Lan', 'gender': 'female'})
+        self.assertNotIn('interface', s['journey'])
+
+
+class CalmFirstDays(unittest.TestCase):
+    """Feedback 16/10 ("giai đoạn đầu khó chơi"): life days 2..EASY_DAYS of a new neighbour are calm days."""
+    def close(self, s):
+        return apply_action(s, 'milk_tea', 'end_day', {'carry_event': True})[0]
+
+    def test_days_two_and_three_are_calm_then_luck_rolls_again(self):
+        s = story_save()
+        s, _ = serve_tea(s)
+        modes = []
+        for _ in range(jr.EASY_DAYS):
+            s = self.close(s)
+            modes.append(s['careers']['milk_tea']['life']['mode'])
+            s, _ = apply_action(s, 'milk_tea', 'start_day', {})
+        self.assertEqual(modes[:jr.EASY_DAYS - 1], ['calm'] * (jr.EASY_DAYS - 1))
+        # Rolled at the close of life day EASY_DAYS: the usual luck of the day, the same as any later player's.
+        day = s['careers']['milk_tea']['day']
+        self.assertEqual(modes[-1], jr.roll_mode(dict(s, journey=dict(s['journey'], life_day=jr.EASY_DAYS)), 'milk_tea', day))
+        self.assertEqual(s['journey']['life_day'], jr.EASY_DAYS + 1)
+        validate_state(copy.deepcopy(s))
+
+    def test_later_players_and_the_sandbox_keep_their_luck(self):
+        s = story_save()
+        rolls = {jr.roll_mode(dict(s, journey=dict(s['journey'], life_day=d)), 'milk_tea', 9) for d in (jr.EASY_DAYS, 40)}
+        self.assertEqual(len(rolls), 1)          # past the first days the life day plays no part
+        sandbox = new_state()
+        self.assertEqual(jr.roll_mode(sandbox, 'milk_tea', 9), jr.roll_mode(dict(sandbox, journey=dict(sandbox['journey'], life_day=40)), 'milk_tea', 9))
 
 
 if __name__ == '__main__':

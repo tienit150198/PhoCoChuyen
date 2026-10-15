@@ -4,7 +4,10 @@ import {setIconRenderer} from './icons.js';
 import {kindOf} from './scenes/vocabulary.js';
 
 export const newInterface=state=>state?.settings?.newInterface!==false;
-export const interfacePromptDue=state=>newInterface(state)&&state?.settings?.interfacePromptSeen!==true;
+/** A new neighbour (story, first life day: v4/onboard.js firstDay) never saw the old interface: no question over the
+ * intro (the server marks it seen at naming, game/journey.py _welcome_settings). */
+const newcomer=state=>Boolean(state?.journey?.story&&(Number(state.journey.life_day)||1)<=1);
+export const interfacePromptDue=state=>newInterface(state)&&state?.settings?.interfacePromptSeen!==true&&!newcomer(state);
 
 /** A full page restart releases the old canvas, listeners and styles after the server confirms the choice. */
 const saving=new WeakMap();

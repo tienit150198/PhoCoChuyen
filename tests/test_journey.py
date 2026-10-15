@@ -443,8 +443,11 @@ class DayLuck(unittest.TestCase):
     def test_mode_is_deterministic_and_stored(self):
         s = story_state()
         self.assertEqual(jr.roll_mode(s, 'milk_tea', 1), 'normal')
-        rolls = [jr.roll_mode(s, 'milk_tea', d) for d in range(2, 402)]
-        self.assertEqual(rolls, [jr.roll_mode(s, 'milk_tea', d) for d in range(2, 402)])
+        self.assertEqual(jr.roll_mode(s, 'milk_tea', 2), 'calm')   # a new neighbour's first life days (EASY_DAYS)
+        late = copy.deepcopy(s)
+        late['journey']['life_day'] = jr.EASY_DAYS
+        rolls = [jr.roll_mode(late, 'milk_tea', d) for d in range(2, 402)]
+        self.assertEqual(rolls, [jr.roll_mode(late, 'milk_tea', d) for d in range(2, 402)])
         counts = {m: rolls.count(m) for m in ('calm', 'normal', 'festival')}
         self.assertTrue(60 <= counts['calm'] <= 140 and 170 <= counts['normal'] <= 270 and 45 <= counts['festival'] <= 120, counts)
         s, _ = act(s, 'milk_tea', 'select_career')

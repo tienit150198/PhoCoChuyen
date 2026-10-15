@@ -532,6 +532,7 @@ def chat_reply(s:dict,c:dict,career:str,npc:str,text:str) -> tuple[str,list[dict
 
 
 LEARNING_TASKS=2  # onboarding: while a career's first jobs are done, waiting costs no patience
+LEARNING_LIFE_DAYS=1  # ...and through a new neighbour's whole first life day (feedback 16/10: "giai đoạn đầu khó chơi")
 # How long customers put up with waiting afterwards: PATIENCE_FACTOR in game/patience.py.
 
 # Set by apply_action(scoped=True): validate_state leaves the careers to the storage layer.
@@ -679,8 +680,10 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     s["current"]=career
     clock_before=dc.minute_now(c,career) if action!="start_day" else None  # giờ trong ngày: closing warnings below
     prior_mistakes={t["id"]:t["mistakes"] for t in c["tasks"]}
-    # Story players learning a place (its first LEARNING_TASKS jobs): customers wait kindly, patience never drops.
-    learning=s.get("journey",{}).get("story") and c["metrics"].get("served",0)<LEARNING_TASKS
+    # Story players learning a place (its first LEARNING_TASKS jobs) or the street (their first life day): customers
+    # wait kindly, patience never drops.
+    jr_=s.get("journey",{})
+    learning=jr_.get("story") and (c["metrics"].get("served",0)<LEARNING_TASKS or jr_.get("life_day",1)<=LEARNING_LIFE_DAYS)
     prior_patience={t["id"]:t.get("patience",100) for t in c["tasks"]} if learning else None  # no field yet = full
     mod=PLUGINS.get(career)
     plugin_action=bool(mod) and action.startswith(mod.SPEC['prefix'])

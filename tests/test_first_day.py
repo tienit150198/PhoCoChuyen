@@ -70,9 +70,10 @@ class FirstDay(unittest.TestCase):
                 if 'patience' in t:
                     t['patience'] = max(25, t['patience'] - 10)
 
-        def play(served):
+        def play(served, life_day=2):
             s, _ = apply_action(story_state(), 'grocery', 'select_career', {})
             s['careers']['grocery']['metrics']['served'] = served
+            s['journey']['life_day'] = life_day   # past the first life day: only the place's first jobs wait kindly
             s, _ = apply_action(s, 'grocery', 'start_day', {})
             tid = s['careers']['grocery']['tasks'][0]['id']
             with mock.patch.object(experiences, 'update_patience', impatient):
@@ -83,6 +84,8 @@ class FirstDay(unittest.TestCase):
         self.assertTrue(all(v == 100 for v in play(0)))
         self.assertTrue(all(v == 100 for v in play(engine.LEARNING_TASKS - 1)))
         self.assertTrue(all(v < 100 for v in play(engine.LEARNING_TASKS)))
+        # A new neighbour's whole first life day waits kindly too (feedback 16/10: "giai đoạn đầu khó chơi").
+        self.assertTrue(all(v == 100 for v in play(engine.LEARNING_TASKS + 3, life_day=engine.LEARNING_LIFE_DAYS)))
 
 
 if __name__ == '__main__':

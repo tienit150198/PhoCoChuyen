@@ -77,6 +77,7 @@ BREADTH_XP = 80       # maturity bonus for every workplace you really worked at
 LIVING = {ch: pi.price(xu, luxury=False) for ch, xu in {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 20}.items()}
 UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}   # the old idle fee per tier: no longer charged (upkeep() is 0)
 MODES = (('calm', .25), ('normal', .55), ('festival', .20))
+EASY_DAYS = 3         # feedback 16/10 ("giai đoạn đầu khó chơi"): a new neighbour's life days 2..EASY_DAYS are calm (roll_mode)
 HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank', 'home', 'fair', 'karaoke')   # 'karaoke': accepted from 1.9.5 (step 1); game/karaoke.py WRITE_KIND says when it is written
 NEWS_KINDS = ('chapter', 'titles')
 # 🏷️ Đang đeo: game titles and certificates worn at once (owner, 01/10: "danh hiệu trò chơi và chứng chỉ được chọn
@@ -569,9 +570,13 @@ def _refund_upkeep(j: dict) -> None:
 
 
 def roll_mode(s: dict, career: str, day: int) -> str:
-    """Luck of the day, fixed by (seed, workplace, day): reloads never reroll."""
+    """Luck of the day, fixed by (seed, workplace, day): reloads never reroll. A new neighbour's first life days
+    are calm (fewer customers, gentler surprises): rolled at the close of life day 1..EASY_DAYS-1, before it turns."""
     if day <= 1:
         return 'normal'
+    j = s.get('journey') or {}
+    if j.get('story') and int(j.get('life_day') or 1) < EASY_DAYS:
+        return 'calm'
     r = random.Random(f"mode|{s['journey'].get('seed', 0)}|{career}|{day}").random()
     edge = 0.0
     for mode, weight in MODES:
@@ -827,11 +832,15 @@ def worn_view(j: dict) -> list:
 
 
 def _welcome_settings(s: dict) -> None:
-    """A brand-new save has just been named (still in the intro): the "Có gì mới" release notes are for
-    returning players, so the current ones count as read, silently; and the save is marked for the
+    """A brand-new save has just been named (still in the intro): the "Có gì mới" release notes and the old-interface
+    question are for returning players, so they count as read, silently; and the save is marked for the
     contextual first-time hints (the marker rides with the other seen-flags in settings.notesSeen)."""
     st = s['settings']
     st['whatsNewSeen'] = wn.newer(st.get('whatsNewSeen', ''), wn.LATEST)
+    # Nor "quay về giao diện cũ?": a new neighbour never saw the old one (the key is journey.interface's own, engine.INTERFACE_DEFAULTS).
+    pref = s['journey'].setdefault('interface', {})
+    if isinstance(pref, dict):
+        pref.setdefault('interfacePromptSeen', True)
     seen = [x for x in str(st.get('notesSeen', '')).split(',') if x]
     if ONBOARD_MARK not in seen and len(seen) < 12:
         st['notesSeen'] = ','.join(seen + [ONBOARD_MARK])
