@@ -56,7 +56,7 @@ class Treasure(unittest.TestCase):
 
     def test_cadence_count_geometry_and_restart(self):
         a = self.tt.snapshot(self.store)
-        self.assertTrue(3 <= len(a['chests']) <= 5)
+        self.assertEqual(len(a['chests']), 10)
         self.assertEqual(a['wave']['reward'], 10000)
         from live.town import clean_point
         for chest in a['chests']:
@@ -136,7 +136,7 @@ class Treasure(unittest.TestCase):
         snap=self.tt.snapshot(self.store)
         restart=Store(self.path,story=True);self.addCleanup(restart.close_pool)
         self.assertEqual(self.tt.snapshot(restart)['chests'], snap['chests'])
-        self.assertLessEqual(snap['total_unclaimed'], 5, 'an idle night leaves one wave, never a backlog')
+        self.assertLessEqual(snap['total_unclaimed'], self.tt.WAVE_CHESTS, 'an idle night leaves one wave, never a backlog')
 
     def test_same_spot_markers_stay_bounded_to_the_kept_waves(self):
         spots=self.tt.locations()[:3]
