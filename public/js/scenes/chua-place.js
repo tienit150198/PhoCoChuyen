@@ -1,4 +1,6 @@
-/** 🛕 Vào chùa (v4/chua-visit.js): chùa Gió Lành as a place to walk around. Three areas:
+/** 🛕 Vào chùa: since 15/10 the pagoda is one 2.5D courtyard (./chua-iso.js); from here it keeps its people (person,
+ * PEOPLE), the Buddha and the "look" lines. The frontal three-area scene below is the 2.4.x one, no longer drawn.
+ * (v4/chua-visit.js before 15/10): chùa Gió Lành as a place to walk around. Three areas:
  *   san   the yard: the three-entrance gate, the bell tower, the main hall's doors, the big incense burner, the
  *         lotus pond, the wish fence, the broom rack, the old bodhi tree, a side gate to the dining hall;
  *   dien  the main hall (chánh điện): the Buddha on his lotus seat, the altar, the wooden fish (mõ), the bowl bell

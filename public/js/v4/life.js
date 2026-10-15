@@ -208,6 +208,7 @@ export async function lifeAction(action,data,el,env){
     case'lfClose':{const r=await cmd('lf_close',{id:data.id},{quiet:true});if(r){const d=document.getElementById('lfScene');if(d?.open)d.close();}return true;}
     case'lfCope':{const r=await cmd('lf_cope',{choice:data.choice});if(r)env.renderSheet?.(false);return true;}
     case'lfChuaVisit':{const m=await import('./venue-routing.js');await m.visitTemple(env);return true;}   // 🛕 Vào chùa
+    case'lfWishTrees':{const m=await import('./wish-trees.js');await m.openWishTrees({...env,onClose:()=>env.renderSheet?.(false)});return true;}   // 🌳 Vườn ước nguyện (owner 15/10)
     case'lfChua':{const r=await cmd('jr_chua_do',data.wish?{act:data.act,wish:data.wish}:{act:data.act});if(r)env.renderSheet?.(false);return true;}
   }
   return false;

@@ -1,0 +1,143 @@
+/* 🌳 Vườn ước nguyện (public/js/v4/wish-trees.js, game/chua_wish.py). Owner 15/10: write your own wish, hang it on one
+   of many trees, everyone reads them, "nhìn rõ ràng và có ý nghĩa". Theme tokens for the frame; the ribbons and the
+   paper keep their own colours (a red ribbon is red at night too). Phone first: one column, the main button always in
+   reach; a wide or landscape screen puts the tree beside its wishes. */
+.sheet.wt-sheet{width:min(1100px,calc(100vw - 48px));height:min(880px,calc(100dvh - 48px));overflow:hidden;padding:0}
+html[data-layout="phone"] .sheet.wt-sheet{width:100%;max-width:100%;height:calc(100dvh - max(10px,var(--safe-t,0px)));max-height:none}
+.wt-root{position:relative;display:flex;flex-direction:column;height:100%;min-height:0;background:var(--surface)}
+.wt-c-do{--rib:#d8402f;--rib-soft:#fdeae4}.wt-c-vang{--rib:#e2a92a;--rib-soft:#fdf3d8}.wt-c-hong{--rib:#e7789b;--rib-soft:#fdebf1}
+.wt-c-xanh{--rib:#479c5b;--rib-soft:#e6f4e6}.wt-c-tim{--rib:#8a68c8;--rib-soft:#f0eafb}
+svg .wt-c-do{fill:#d8402f}svg .wt-c-vang{fill:#e2a92a}svg .wt-c-hong{fill:#e7789b}svg .wt-c-xanh{fill:#479c5b}svg .wt-c-tim{fill:#8a68c8}
+
+/* header */
+.wt-head{display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-3);border-bottom:1px solid var(--line)}
+html[data-layout="phone"] .wt-head{padding-top:var(--sp-3)}
+.wt-head .grow{flex:1 1 auto;min-width:0}
+.wt-head h2{margin:0;font-size:var(--fs-3);line-height:var(--lh);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wt-sub{margin:2px 0 0;font-size:var(--fs-1);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wt-back[hidden]{display:none}
+.wt-body{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;padding:var(--sp-3) var(--sp-3) calc(var(--sp-4) + var(--safe-b,0px))}
+.wt-body:focus{outline:none}
+.wt-wait,.wt-none{margin:var(--sp-4) 0;text-align:center;color:var(--muted);font-size:var(--fs-2)}
+.wt-why{margin:var(--sp-2) 0;color:var(--warn);font-weight:600;font-size:var(--fs-2)}
+.wt-foot{margin:var(--sp-3) 0 0;text-align:center;color:var(--muted);font-size:var(--fs-1)}
+
+/* the garden */
+.wt-intro p{margin:0;font-size:var(--fs-2);line-height:1.5;color:var(--ink-2)}
+.wt-intro b{color:var(--ink)}
+.wt-intro-row{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2);margin-top:var(--sp-2);flex-wrap:wrap}
+.wt-left{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:var(--radius-pill);background:var(--good-soft);color:var(--good);font-weight:700;font-size:var(--fs-1)}
+.wt-left.none{background:var(--surface-2);color:var(--muted)}
+.wt-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2);margin:var(--sp-3) 0 0;padding:0;list-style:none}
+@media (min-width:600px){.wt-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-3)}}
+@media (min-width:980px){.wt-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.wt-tile{display:flex;flex-direction:column;align-items:center;width:100%;height:100%;padding:6px 8px 10px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(#eef5e3,#fbf6ea 62%);color:var(--ink);font:inherit;text-align:center;cursor:pointer;transition:transform var(--dur,.2s) var(--ease,ease),box-shadow var(--dur,.2s)}
+html[data-theme="dem"] .wt-tile{background:linear-gradient(#34402c,var(--surface-2) 62%)}
+@media (hover:hover){.wt-tile:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm);border-color:var(--accent)}}
+.wt-tile:focus-visible,.wt-rib:focus-visible,.wt-card:focus-visible,.wt-sw:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wt-mini{position:relative;display:block;width:78%;max-width:132px;aspect-ratio:768/784}
+.wt-mini img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.wt-mini i{position:absolute;width:7px;height:14px;margin-left:-3.5px;border-radius:2px 2px 3px 3px;background:var(--rib);box-shadow:0 1px 1px rgba(60,30,10,.3)}
+.wt-mini i::before{content:"";position:absolute;left:50%;bottom:100%;width:1px;height:5px;background:#c99a4a}
+.wt-tile-name{margin-top:2px;font-weight:800;font-size:var(--fs-3);line-height:1.25}
+.wt-tile-hint{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px;font-size:var(--fs-1);line-height:1.35;color:var(--muted);min-height:2.7em}
+.wt-count{margin-top:6px;padding:2px 10px;border-radius:var(--radius-pill);background:var(--surface);border:1px solid var(--line);font-size:var(--fs-1);font-weight:700;color:var(--ink-2)}
+
+/* a tree: the big tree with its ribbons, then its wishes; the main button stays in reach (a bar at the bottom of a
+   phone held upright, under the tree when the tree and the list stand side by side) */
+.wt-tree-grid{display:grid;gap:var(--sp-3)}
+@media (min-width:760px),(orientation:landscape) and (max-height:560px){
+  .wt-body[data-view="tree"]{overflow:hidden;display:flex}
+  .wt-tree-grid{flex:1 1 auto;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;min-height:0}
+  .wt-hero{grid-column:1;grid-row:1}.wt-tree-grid .wt-cta{grid-column:1;grid-row:2}.wt-tree-grid .wt-list{grid-column:2;grid-row:1/span 2}
+  .wt-hero,.wt-tree-grid .wt-list{min-height:0;overflow:auto;overscroll-behavior:contain}
+}
+.wt-stage{position:relative;width:100%;max-width:520px;margin:0 auto;aspect-ratio:400/330;border-radius:18px;overflow:hidden;background:linear-gradient(#e7f1f4,#f4efdf 70%,#e7dcc3)}
+html[data-theme="dem"] .wt-stage{background:linear-gradient(#26313a,#3a3a30 70%,#4a4234)}
+@media (orientation:landscape) and (max-height:560px){.wt-stage{max-width:none;max-height:calc(100dvh - 210px);width:auto}}
+.wt-tree{position:absolute;left:50%;bottom:5%;height:92%;aspect-ratio:768/784;transform:translateX(-50%)}
+.wt-tree-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 6px rgba(60,40,20,.18))}
+.wt-ribs{position:absolute;inset:0}
+.wt-stage::after{content:"";position:absolute;left:12%;right:12%;bottom:3%;height:9%;border-radius:50%;background:rgba(110,80,40,.18);z-index:0}
+.wt-tree{z-index:1}
+.wt-rib{position:absolute;width:8%;height:16%;margin:0 0 0 -4%;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transform-origin:50% 0;animation:wtSway 3.4s ease-in-out infinite;animation-delay:var(--d,0s)}
+.wt-rib::before{content:"";position:absolute;left:50%;top:0;width:1.5px;height:26%;margin-left:-.75px;background:#c99a4a}
+.wt-rib i{position:absolute;left:22%;top:22%;width:56%;height:76%;border-radius:3px 3px 6px 6px;background:var(--rib);box-shadow:0 2px 3px rgba(60,30,10,.25);background-image:repeating-linear-gradient(transparent 0 6px,rgba(255,255,255,.28) 6px 7.5px)}
+.wt-rib em{position:absolute;left:50%;top:-8px;margin-left:-8px;width:16px;height:16px;border-radius:50%;background:#fff3c8;color:#b07a1c;font-style:normal;font-size:11px;line-height:16px;text-align:center;box-shadow:0 0 0 2px #e8bf62}
+.wt-rib.mine i{box-shadow:0 0 0 2px #fff6d6,0 0 10px 3px rgba(240,190,80,.75)}
+.wt-rib.fresh i{animation:wtGlow 2.4s ease-out 1}
+/* the town's sheets give every button a 44px minimum (html[data-game="isometric"] .sheet :is(button,…)): a ribbon is
+   sized by its tree, a colour swatch is a circle */
+html .wt-sheet .wt-ribs .wt-rib,html .wt-sheet .wt-sws .wt-sw{min-height:0;min-width:0}
+html .wt-sheet .wt-sws .wt-sw{border-radius:50%}
+@keyframes wtSway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes wtGlow{0%{box-shadow:0 0 0 3px #fff6d6,0 0 22px 10px rgba(255,210,110,.95)}100%{box-shadow:0 0 0 2px #fff6d6,0 0 10px 3px rgba(240,190,80,.75)}}
+.wt-plaque{position:absolute;z-index:2;left:50%;bottom:8px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;padding:4px 14px;border-radius:10px;background:#8a2f22;border:2px solid #e8bf62;color:#f6d98a;white-space:nowrap;box-shadow:0 3px 8px rgba(60,20,10,.3)}
+.wt-plaque b{font-size:var(--fs-2);line-height:1.2}.wt-plaque small{font-size:var(--fs-1);color:#f3e2b8}
+.wt-empty{position:absolute;z-index:2;left:10%;right:10%;top:38%;margin:0;padding:8px 12px;border-radius:12px;background:#fffaf0ee;color:#5a3f2c;font-weight:700;font-size:var(--fs-2);text-align:center}
+.wt-cta{display:grid;gap:4px;text-align:center}
+.wt-cta small{color:var(--muted);font-size:var(--fs-1)}
+@media (max-width:759px) and (min-height:561px){.wt-tree-grid .wt-cta{position:sticky;bottom:calc(-1 * var(--sp-4) - var(--safe-b,0px));z-index:2;margin:0 calc(-1 * var(--sp-3));padding:var(--sp-3) var(--sp-3) calc(var(--sp-3) + var(--safe-b,0px));background:linear-gradient(transparent,var(--surface) 26%)}}
+
+/* the wishes as paper slips */
+.wt-h3{margin:0 0 var(--sp-2);font-size:var(--fs-3)}
+.wt-h3 small{font-weight:500;color:var(--muted);font-size:var(--fs-1)}
+.wt-cards{display:grid;gap:var(--sp-2);margin:0;padding:0;list-style:none}
+.wt-list.wide .wt-cards{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.wt-card{display:grid;gap:6px;width:100%;padding:var(--sp-3) var(--sp-3) var(--sp-2) calc(var(--sp-3) + 6px);border:1px solid #e6d8bf;border-left:6px solid var(--rib);border-radius:12px;background:#fffaf0;color:#3b2a20;font:inherit;text-align:left;cursor:pointer;overflow-wrap:anywhere;position:relative}
+.wt-card.mine{box-shadow:inset 0 0 0 2px #e8bf62}
+.wt-card.fresh{animation:wtCard 2.4s ease-out 1}
+@keyframes wtCard{0%{background:#fff0c2}100%{background:#fffaf0}}
+.wt-card-text{font-size:var(--fs-2);font-weight:600;line-height:1.5;white-space:pre-line}
+.wt-card-foot{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:var(--fs-1);color:#7b6450}
+.wt-by{font-weight:700;color:#5b4232}
+.wt-me{color:#b07a1c;font-weight:800}
+.wt-pray-n{margin-left:auto;font-weight:700}
+.wt-state{padding:1px 8px;border-radius:var(--radius-pill);background:#efe4d0;color:#6b5440;font-weight:700}
+
+/* the layer over a screen: reading a wish, writing one */
+.wt-layer{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:var(--sp-3)}
+.wt-layer[hidden]{display:none}
+.wt-layer[data-kind="compose"]{align-items:flex-end;padding:0}
+.wt-scrim{position:absolute;inset:0;background:rgba(40,30,20,.45);animation:wtFade .2s ease-out}
+@keyframes wtFade{from{opacity:0}}
+.wt-read{position:relative;width:min(440px,100%);max-height:100%;overflow:auto;padding:var(--sp-4) var(--sp-4) var(--sp-3);border-radius:8px 8px 18px 18px;background:var(--rib-soft);border-top:8px solid var(--rib);color:#3b2a20;box-shadow:0 18px 40px rgba(40,20,10,.35);animation:wtDrop .3s var(--ease,ease-out)}
+.wt-read:focus{outline:none}
+@keyframes wtDrop{from{opacity:0;transform:translateY(-18px) rotate(-2deg)}to{opacity:1;transform:none}}
+.wt-knot{position:absolute;top:-16px;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:#d9a441;border:2px solid #fff6e6}
+.wt-x{position:absolute;top:6px;right:6px;color:#6b5440}
+.wt-read-text{margin:var(--sp-2) 0 var(--sp-2);font-size:clamp(1.12rem,4.6vw,1.35rem);font-weight:700;line-height:1.5;white-space:pre-line;overflow-wrap:anywhere;text-align:center}
+.wt-read-by{margin:0;text-align:right;font-weight:700;color:#5b4232}
+.wt-read-meta{margin:4px 0 0;text-align:right;font-size:var(--fs-1);color:#7b6450}
+.wt-read-acts{display:grid;margin-top:var(--sp-3)}
+.wt-read-nav{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2);margin-top:var(--sp-3);padding-top:var(--sp-2);border-top:1px dashed #d9c7a6;color:#7b6450;font-size:var(--fs-1)}
+.wt-read-nav .icon-btn{font-size:1.6rem;line-height:1;color:#5b4232}
+.wt-read-nav .icon-btn[disabled]{opacity:.3}
+.wt-flag{color:#7b6450}
+.wt-report{display:flex;flex-wrap:wrap;gap:var(--sp-1);margin-top:var(--sp-2)}
+.wt-report p{flex-basis:100%;margin:0;font-size:var(--fs-1);font-weight:700;color:#5b4232}
+.wt-compose{position:relative;width:min(560px,100%);max-height:100%;overflow:auto;display:grid;gap:var(--sp-2);padding:var(--sp-3) var(--sp-3) calc(var(--sp-3) + var(--safe-b,0px));border-radius:22px 22px 0 0;background:var(--surface);box-shadow:0 -10px 30px rgba(40,20,10,.25);animation:wtUp .25s var(--ease,ease-out)}
+@media (min-width:760px){.wt-layer[data-kind="compose"]{align-items:center;padding:var(--sp-3)}.wt-compose{border-radius:22px}}
+@keyframes wtUp{from{transform:translateY(40px);opacity:0}}
+.wt-c-head{display:flex;align-items:center;gap:var(--sp-2)}
+.wt-c-head b{font-size:var(--fs-3)}
+.wt-chip{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--fs-1);font-weight:700;color:var(--accent-text)}
+.wt-paper{position:relative;margin-top:10px;padding:var(--sp-3) var(--sp-3) var(--sp-2);border-radius:6px 6px 14px 14px;background:var(--rib-soft);border-top:6px solid var(--rib)}
+.wt-paper textarea{box-sizing:border-box;display:block;width:100%;min-height:96px;border:0;border-radius:8px;padding:6px 4px;background:transparent;color:#3b2a20;font:inherit;font-size:1.08rem;font-weight:600;line-height:1.5;resize:none;outline:none;background-image:repeating-linear-gradient(transparent 0 calc(1.62em - 1px),rgba(120,80,40,.18) calc(1.62em - 1px) 1.62em)}
+.wt-paper textarea::placeholder{color:#9a8470;font-weight:500}
+.wt-paper:focus-within{box-shadow:0 0 0 3px var(--focus)}
+html .wt-sheet .wt-paper textarea[name="wt-text"]:is(:focus,:focus-visible){outline:none;box-shadow:none;border:0}   /* the paper shows the focus */
+.wt-sign{display:block;text-align:right;font-weight:700;color:#5b4232;font-size:var(--fs-2)}
+.wt-c-row{display:flex;align-items:center;gap:var(--sp-2);flex-wrap:wrap}
+.wt-c-label{font-size:var(--fs-1);font-weight:700;color:var(--muted)}
+.wt-sws{display:flex;gap:8px}
+.wt-sw{width:38px;height:38px;padding:0;border-radius:50%;border:3px solid var(--surface);background:var(--rib);box-shadow:0 0 0 1.5px var(--line-strong);cursor:pointer}
+.wt-sw.on{box-shadow:0 0 0 3px var(--ink)}
+.wt-counter{margin-left:auto;font-size:var(--fs-1);color:var(--muted);font-variant-numeric:tabular-nums}
+.wt-counter.near{color:var(--warn);font-weight:700}
+.wt-anon{display:flex;align-items:center;gap:8px;min-height:40px;font-size:var(--fs-2);color:var(--ink-2)}
+.wt-anon input{width:20px;height:20px}
+.wt-c-note{margin:0;font-size:var(--fs-1);color:var(--muted);text-align:center}
+.wt-flyer{position:fixed;left:-11px;top:-20px;z-index:9;width:22px;height:40px;border-radius:3px 3px 7px 7px;background:var(--rib);box-shadow:0 0 14px 4px rgba(255,210,110,.8);pointer-events:none}
+@media (prefers-reduced-motion:reduce){.wt-rib,.wt-rib.fresh i,.wt-card.fresh,.wt-read,.wt-compose,.wt-scrim{animation:none}.wt-tile{transition:none}}
+html.reduce-motion .wt-rib,html.reduce-motion .wt-rib.fresh i,html.reduce-motion .wt-card.fresh,html.reduce-motion .wt-read,html.reduce-motion .wt-compose,html.reduce-motion .wt-scrim{animation:none}

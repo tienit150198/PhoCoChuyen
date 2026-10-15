@@ -115,11 +115,13 @@ export function chuaSection(C){
   if(!C?.enabled||!Array.isArray(C.acts))return '';
   const wishAct=C.acts.find(a=>a.id==='nguyen');
   const acts=C.acts.filter(a=>a.id!=='nguyen').map(a=>actButton(a,C)).join('');
-  const wishes=wishAct?`<div class="cg-wish"><p class="small"><span aria-hidden="true">${wishAct.emoji}</span> <b>${esc(wishAct.name)}</b> <small class="muted">· tinh thần +${spiritGain(C,wishAct.spirit)}${!wishAct.ok?` · ${esc(actionWhy(C,wishAct))}`:''}</small></p><div class="cg-wishes">${(C.wishes||[]).map(w=>`<button type="button" class="btn cream small" data-action="lfChua" data-act="nguyen" data-wish="${esc(w.id)}"${wishAct.ok?'':' disabled'}>${esc(w.text)}</button>`).join('')}</div></div>`:'';
+  // 🌳 owner 15/10: the wish is written by the player and hung on a tree (./wish-trees.js), never picked from a list
+  const trees=C.wish_trees?`<button type="button" class="cg-enter cg-trees" data-action="lfWishTrees"><span class="cg-tree-art" aria-hidden="true">🌳</span><span class="grow"><b>Vườn ước nguyện</b><small>Viết điều ước của bạn, treo lên cây</small></span><span class="cg-go" aria-hidden="true">›</span></button>`:'';
+  const wishes=trees?'':wishAct?`<div class="cg-wish"><p class="small"><span aria-hidden="true">${wishAct.emoji}</span> <b>${esc(wishAct.name)}</b> <small class="muted">· tinh thần +${spiritGain(C,wishAct.spirit)}${!wishAct.ok?` · ${esc(actionWhy(C,wishAct))}`:''}</small></p><div class="cg-wishes">${(C.wishes||[]).map(w=>`<button type="button" class="btn cream small" data-action="lfChua" data-act="nguyen" data-wish="${esc(w.id)}"${wishAct.ok?'':' disabled'}>${esc(w.text)}</button>`).join('')}</div></div>`:'';
   const day=`${esc(C.label||'')}${C.feast?' · 🍚 cơm chay':''}${C.unlimited?'':` · ${visitStatus(C)}`}`;
   const list=`<div class="lf-choices grid cg-acts">${acts}</div>${wishes}`;
   const scene=Array.isArray(C.more)&&C.khan&&C.chant;
   return `<h3 class="jr-sub">🛕 Chùa Gió Lành <small>· ${day}</small></h3>
-    ${scene?`<button type="button" class="cg-enter" data-action="lfChuaVisit">${pagodaArt(56)}<span class="grow"><b>Vào chùa</b><small>Thắp hương · khấn · treo lời chúc</small></span><span class="cg-go" aria-hidden="true">›</span></button>
-    <details class="cg-quick"><summary>Làm nhanh</summary>${list}</details>`:list}`;
+    ${scene?`<button type="button" class="cg-enter" data-action="lfChuaVisit">${pagodaArt(56)}<span class="grow"><b>Vào chùa</b><small>${trees?'Thắp hương · khấn · tụng kinh · vườn ước nguyện':'Thắp hương · khấn · treo lời chúc'}</small></span><span class="cg-go" aria-hidden="true">›</span></button>
+    ${trees}<details class="cg-quick"><summary>Làm nhanh</summary>${list}</details>`:trees+list}`;
 }

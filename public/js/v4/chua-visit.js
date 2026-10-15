@@ -1,59 +1,72 @@
 /** 🛕 Vào chùa: chùa Gió Lành as a place, opened from the "Đi chùa" section of the Đời thường sheet (./chua.js).
- * Its own full-screen dialog with a canvas scene (scenes/chua-place.js): the player walks the yard, the main hall
- * and the dining hall, and what they walk up to opens right there: incense at the burner, the bell at the bell
- * tower, sitting by the lotus pond, a wish at the fence, the broom, the vegetarian lunch (rằm, mùng 1), kneeling
- * on the mat to put a prayer together (khấn: who for, what for; nothing preset), the wooden fish (tụng kinh: the
- * player keeps the beat), thầy Huệ Minh and the others to talk to (free, unlimited, changes nothing).
+ * 15/10 (owner: "tối ưu hết chỗ chùa … đẹp hơn, theo dạng 2.5d trình bày rõ ràng và đẹp"): one 2.5D courtyard drawn
+ * like the town map (scenes/chua-iso.js), everything in sight, no rooms to switch: the main hall with its steps (khấn on
+ * the mat, the mõ for tụng kinh, thầy Huệ Minh), the bell pavilion, the incense burner, the lotus pond and its bench, the
+ * broom rack, the dining table (rằm, mùng 1) and 🌳 Vườn ước nguyện: one tree per wish tree with its newest ribbons.
+ * Walk by tapping the ground (drag to look around), or tap a thing to walk up to it; what you walk up to opens right
+ * there in the panel (the same panels as before: incense, the bell, khấn — who for, what for —, the chant with the mõ
+ * kept on the beat, the people to talk to). A wish tree opens its own dialog (./wish-trees.js): write your wish, hang it.
  * Every rule and gain is game/chua.py (state.chua = chua.public(); jr_chua_do); this file draws and asks.
- * An older server sends no `more`/`khan`/`chant`: ./chua.js then shows no way in (the old button list stays).
- * Reduced motion: the player steps straight to where they tapped, nothing drifts, the chant's ring stays still
- * (the mõ lights up on the beat instead). */
+ * An older server sends no `more`/`khan`/`chant`: ./chua.js then shows no way in (the old button list stays); without
+ * `wish_trees` the grove is not drawn and "Lời chúc" is the old card composer.
+ * Reduced motion: the player steps straight to where they tapped, nothing sways, the camera does not glide, the chant's
+ * ring stays still (the mõ lights up on the beat instead). */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {cardComposer,cardHistory,cardText,spiritGain,actionDone,actionWhy,createCardBoard,cardBoardHTML,cardBoardTabs,pagodaArt} from './chua.js';
 import {loadOlder} from '../archive.js';
 import {stylesheet} from '../lazy.js';
-import {figure,paintPlayer,CANVAS} from './look.js';
+import {figure} from './look.js';
+import {getCharacterStamp} from '../isometric/character-art.js';
 import {audioContext,wantAudio,duck} from '../audio.js';
-import {AREAS,VIEW,PEOPLE,LOOKS,plan,route,nearestFree,paintRoom,areaProps,person,R,E,L,T,fit} from '../scenes/chua-place.js';
+import {VIEW,IMAGES,PEOPLE,LOOKS,GROVE,plan,route,nearestFree,project,unproject,ground,props,treeBoard,groveSign,npc,E,L,T} from '../scenes/chua-iso.js';
 
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
-const S={env:null,dlg:null,cv:null,ctx:null,stage:null,area:'san',port:false,k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,cam:null,
-  me:{x:0,y:0,path:null,pose:'stand',poseUntil:0,step:0},arrive:null,fx:{},panel:null,result:'',chant:null,khan:{who:'',what:''},
-  card:{recipient:'',blessing:'',name:'',message:'',public:false},board:null,talk:{},raf:0,last:0,drawn:0,time:0,fadeAt:-9,busy:false,bound:false,covered:false,
-  view:'',help:false};
+const S={env:null,dlg:null,cv:null,ctx:null,stage:null,area:'san',port:false,k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,cam:null,pan:null,
+  me:{x:0,y:0,path:null,pose:'stand',poseUntil:0,step:0,dir:'se'},arrive:null,fx:{},panel:null,result:'',chant:null,khan:{who:'',what:''},
+  card:{recipient:'',blessing:'',name:'',message:'',public:false},board:null,talk:{},raf:0,last:0,drawn:0,time:0,busy:false,bound:false,covered:false,
+  view:'',help:false,trees:[],plan:null,planKey:''};
 const C=()=>S.env?.api.state?.chua;
 const day=()=>({lunar:C()?.lunar|0,feast:!!C()?.feast});
-const pl=()=>plan(S.area,S.port,day());
+const wishTrees=()=>!!C()?.wish_trees;
+/** The courtyard of today (people change with the lunar day; the grove with the trees the server has). */
+function pl(){const key=`${day().lunar}|${day().feast}|${S.trees.length}`;if(S.planKey!==key){S.plan=plan(day(),wishTrees()?S.trees:[]);S.planKey=key;}return S.plan;}
 const actOf=id=>[...(C()?.acts||[]),...(C()?.more||[])].find(a=>a.id===id)||null;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 /** Can this server take the walkable pagoda? (the fields an older one does not send) */
 export const hasScene=c=>!!(c?.enabled&&Array.isArray(c.more)&&c.khan&&c.chant);
 
+/* ---- the town's paintings (the map's own: cached already for most players) ---- */
+const IMG={};
+function images(){
+  for(const [k,src] of Object.entries(IMAGES))if(!IMG[k]){const i=new Image();i.decoding='async';i.onload=()=>{S.drawn=0;};i.src=globalThis.__mnlBoot?.asset?.(src)||src;IMG[k]=i;}
+  return IMG;
+}
+
 /* ---- the words ---- */
-const SHORT={huong:'Lư hương',chuong:'Gác chuông',ngoi:'Hồ sen',nguyen:'Rào lời nguyện',quet:'Chổi tre',com:'Bàn cơm chay',khan:'Chiếu lễ',tung:'Mõ'};
+const SHORT={huong:'Lư hương',chuong:'Gác chuông',ngoi:'Hồ sen',nguyen:'Vườn ước nguyện',quet:'Chổi tre',com:'Bàn cơm chay',khan:'Chiếu lễ',tung:'Mõ'};
 const LOOK_NAME={bode:'🌳 Cây bồ đề',giatri:'🔔 Chuông gia trì',ban:'🕯️ Bàn thờ',thoikhoa:'📋 Thời khóa',thucdon:'📋 Thực đơn'};
 const INTRO={
   huong:'Lư hương lớn giữa sân. Khách thắp hương ở đây, trong điện chỉ một nén.',
   chuong:'Gác chuông có quả chuông đồng cả làng cùng đúc. Chuông thỉnh chậm, đều, chờ tiếng ngân tắt hẳn.',
   ngoi:'Hồ sen nhỏ, mấy con cá đỏ lượn chậm. Ngồi đây gió sông mát lắm.',
-  nguyen:'Hàng rào tre buộc đầy giấy đỏ. Viết lời chúc cho gia đình rồi tự tay treo lên đây.',
+  nguyen:'Vườn có nhiều cây ước nguyện. Chọn một cây, viết điều bạn mong rồi treo lên.',
   quet:'Mấy cây chổi tre dựng ở giá. Lá bàng rụng đầy sân.',
-  com:'Bàn dài, bà Nhạn đang múc canh nấm.',
+  com:'Bàn dài ngoài sân, bà Nhạn đang múc canh nấm.',
   khan:'Bạn quỳ trên chiếu trước điện Phật. Tự chọn khấn cho ai, mong điều gì.',
   tung:'Thầy giữ chuông gia trì, bạn giữ mõ. Gõ đúng lúc vòng sáng khép lại.',
 };
 /** The visit as four steps in the bar under the scene (one tap walks there); everything else is "Quanh đây". */
-const STEPS=[{id:'huong',icon:'🪔',name:'Thắp hương'},{id:'khan',icon:'🙏',name:'Khấn'},{id:'nguyen',icon:'📜',name:'Lời chúc'},{id:'board',icon:'💌',name:'Chia sẻ'}];
+const STEPS=[{id:'huong',icon:'🪔',name:'Thắp hương'},{id:'khan',icon:'🙏',name:'Khấn'},{id:'nguyen',icon:'🌳',name:'Ước nguyện'},{id:'tung',icon:'📿',name:'Tụng kinh'}];
 const HELP={...INTRO,
   board:'Lời chúc Công khai hiện cho cả phố, kèm tên và lời nhắn. Đổi lại lúc nào cũng được.',
-  here:'Chạm vào cảnh để đi tới. Mọi việc ở chùa đều miễn phí và làm lại được.',
+  here:'Chạm sân để đi, kéo để nhìn quanh. Chạm một chỗ để đi tới. Mọi việc ở chùa đều miễn phí và làm lại được.',
   chant:'Thầy gõ ba tiếng mõ mở đầu. Gõ mõ đúng lúc vòng sáng khép lại.'};
 const VERB={huong:'🪔 Thắp hương',chuong:'🔔 Đứng nghe chuông',ngoi:'🍃 Ngồi xuống',quet:'🧹 Cầm chổi quét',com:'🍚 Ngồi vào bàn',khan:'🙏 Chắp tay khấn',tung:'📿 Bắt đầu tụng'};
 const POSE={huong:'pray',chuong:'pray',ngoi:'sit',nguyen:'pray',quet:'sweep',com:'sit',khan:'kneel',tung:'kneel'};
 const NPC={
-  na:['Bạn ơi, con cá đỏ to nhất tên là Mập đó. Con đặt tên đấy!','Bà con dặn đi trong chùa phải đi chậm, nói nhỏ. Con đang tập.','Sao hoa sen mọc dưới bùn mà vẫn thơm vậy ta?'],
-  quyen:['Chiều nào chị cũng ra đây ngồi một lúc. Không cần nói gì cả.','Nghe chuông xong, tự nhiên thấy nhẹ người.','Cứ ngồi đi, ghế còn rộng mà.'],
+  na:['Bạn ơi, con cá đỏ to nhất tên là Mập đó. Con đặt tên đấy!','Bà con dặn đi trong chùa phải đi chậm, nói nhỏ. Con đang tập.','Sao hoa sen mọc dưới bùn mà vẫn thơm vậy ta?','Con mới treo điều ước lên cây Học hành đó. Bạn treo chưa?'],
+  quyen:['Chiều nào chị cũng ra đây ngồi một lúc. Không cần nói gì cả.','Nghe chuông xong, tự nhiên thấy nhẹ người.','Cứ ngồi đi, ghế còn rộng mà.','Đọc mấy dải lụa trên cây mới thấy ai cũng có điều mong.'],
   bay:['Rằm nào ông cũng lên. Chân yếu rồi, nhưng lên được là vui.','Hồi xưa ông chở đò cho cả xóm qua sông đi chùa đó.','Thắp hương thì một nén thôi con, thành tâm là được.'],
   nhan:['Bữa nay không phải rằm, bà chỉ nhặt rau thôi. Rằm với mùng một ghé ăn cơm chay nhé!','Bếp chùa không dùng hành tỏi, con biết chưa?'],
   nhan_feast:['Ngồi xuống ăn đi con, canh nấm còn nóng!','Ăn chậm thôi. Ăn xong nhớ để chén vô thau giùm bà nha.'],
@@ -65,12 +78,12 @@ const PERIOD=.95,LEAD=3,WINDOW=.26;
 /* ---- sound: recorded CC0 / public-domain files (public/audio/chua/, credits in public/music/CREDITS.md).
  * Like the wedding party's music, the pagoda's sounds are the place's own: they follow the "Âm thanh" switch and
  * its volume (on by default, unlike the background music) and the 🔊 in the pagoda's header (kept per device);
- * the quiet loop of each area plays meanwhile and the game's own music steps aside (audio.js duck).
- * Fetched only once the pagoda is open (the loop of the area, the rest when its spot is reached), decoded at
- * 32 kHz like the music, freed when the pagoda closes; nothing plays before a tap has started the page's audio,
- * no loop on a data-saving connection. */
+ * the courtyard's quiet loop plays meanwhile and the game's own music steps aside (audio.js duck).
+ * Fetched only once the pagoda is open (the loop, the rest when its spot is reached), decoded at 32 kHz like the
+ * music, freed when the pagoda closes; nothing plays before a tap has started the page's audio, no loop on a
+ * data-saving connection. */
 const FILES={bell:'chuong-dai-hong-2.mp3',mo:'mo-1.mp3',bowl:'chuong-gia-tri.mp3',voice:'su-tung-kinh.mp3'};
-const LOOPS={san:['nen-chua-sang.mp3',.55],trai:['nen-chua-sang.mp3',.35],dien:['tung-kinh-loop.mp3',.3]};
+const LOOPS={san:['nen-chua-sang.mp3',.5]};
 const NEEDS={chuong:['bell'],khan:['bowl'],huong:['bowl'],nguyen:['bowl'],tung:['mo','bowl','voice']};
 const soundUrl=f=>globalThis.__mnlBoot?.asset?.(`/audio/chua/${f}`)||`/audio/chua/${f}`;
 const settings=()=>S.env?.api.state?.settings||{};
@@ -107,14 +120,12 @@ function sfx(name,vol=1,delay=0){
 const musicVol=()=>Math.max(0,Math.min(1,(settings().sfxVolume??70)/70));
 function fadeOut(x,c,sec=.5){if(!x||!c)return;try{const t=c.currentTime;x.g.gain.cancelScheduledValues(t);x.g.gain.setValueAtTime(x.g.gain.value,t);x.g.gain.linearRampToValueAtTime(0,t+sec);x.src.stop(t+sec+.05);}catch{/* stopped */}}
 const LOOP={key:'',cur:null};
-/** The area's quiet loop (null: none), crossfaded when the area changes. */
+/** The courtyard's quiet loop (null: none), faded in and out. */
 function ambience(area){
-  const want=area&&S.dlg?.open&&musicOn()?LOOPS[area]:null,key=want?want.join('|'):'';
+  const want=area&&S.dlg?.open&&musicOn()?LOOPS[area]||LOOPS.san:null,key=want?want.join('|'):'';
   if(key===LOOP.key)return;LOOP.key=key;
   const c=audioContext(),old=LOOP.cur;
-  if(old&&want&&old.file===want[0]&&c){LOOP.cur=old;try{old.g.gain.setTargetAtTime(want[1]*musicVol(),c.currentTime,.6);}catch{/* gone */}return;}
   LOOP.cur=null;fadeOut(old,c,1.6);
-  for(const f of [...BUF.keys()])if(Object.values(LOOPS).some(l=>l[0]===f)&&f!==want?.[0])BUF.delete(f);   // a decoded loop is MBs: keep one
   if(!want||!c){duck('chua',false);return;}
   duck('chua',true);
   bufOf(want[0]).then(buf=>{if(!buf||LOOP.key!==key||!S.dlg?.open)return;try{const x=start(buf,c,want[1]*musicVol(),c.currentTime+.05,true,1.6);LOOP.cur={...x,file:want[0]};}catch{/* no audio */}});
@@ -138,8 +149,8 @@ function dialog(){
       <button type="button" class="btn ghost small cv-donate" data-cv="donate" hidden><span aria-hidden="true">🪷</span><span class="cv-donate-t">Công đức</span></button>
       <button type="button" class="icon-btn cv-mute" data-cv="mute" aria-label="Tiếng chùa" aria-pressed="true"></button>
       <button type="button" class="icon-btn" data-cv="close" aria-label="Ra về">${icon('x',20)}</button></header>
-    <div class="cv-stage"><canvas class="cv-canvas" tabindex="0" role="img" aria-label="Chùa Gió Lành"></canvas>
-      <nav class="cv-areas" aria-label="Khu trong chùa"></nav><div class="cv-panel" role="region" aria-label="Ở đây" hidden></div></div>
+    <div class="cv-stage"><canvas class="cv-canvas" tabindex="0" role="img" aria-label="Sân chùa Gió Lành"></canvas>
+      <p class="cv-hint" aria-hidden="true">Chạm sân để đi · kéo để nhìn quanh</p><div class="cv-panel" role="region" aria-label="Ở đây" hidden></div></div>
     <nav class="cv-path" aria-label="Các bước đi lễ"></nav></div>`;
   document.body.append(d);
   S.stage=d.querySelector('.cv-stage');S.cv=d.querySelector('canvas');S.ctx=S.cv.getContext('2d');
@@ -148,10 +159,15 @@ function dialog(){
   d.addEventListener('keydown',e=>{if(S.chant?.state==='run'&&(e.key===' '||e.key==='Enter')){e.preventDefault();tapMo();}});
   d.addEventListener('close',onClose);
   d.addEventListener('input',e=>{const field=e.target.dataset?.cardField;if(field!=='name'&&field!=='message')return;S.card[field]=e.target.value;liveTag();});
+  // a tap walks (or goes to what it hits); a drag looks around (the camera stays there until the next walk)
   let down=null;
-  S.cv.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,t:performance.now()};});
-  S.cv.addEventListener('pointerup',e=>{const d0=down;down=null;if(!d0||Math.hypot(e.clientX-d0.x,e.clientY-d0.y)>14||performance.now()-d0.t>800)return;tapAt(e.clientX,e.clientY);});
-  S.cv.addEventListener('keydown',e=>{if(S.covered)return;const k={arrowleft:[-60,0],a:[-60,0],arrowright:[60,0],d:[60,0],arrowup:[0,-40],w:[0,-40],arrowdown:[0,40],s:[0,40]}[e.key.toLowerCase()];if(!k)return;e.preventDefault();closePanel();walkTo([S.me.x+k[0],S.me.y+k[1]]);});
+  S.cv.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,t:performance.now(),drag:false,id:e.pointerId};});
+  S.cv.addEventListener('pointermove',e=>{if(!down||down.id!==e.pointerId)return;const dx=e.clientX-down.x,dy=e.clientY-down.y;
+    if(!down.drag&&Math.hypot(dx,dy)>12){down.drag=true;try{S.cv.setPointerCapture(e.pointerId);}catch{/* gone */}S.pan=S.pan||[0,0];down.base=[...S.pan];down.x0=e.clientX;down.y0=e.clientY;}
+    if(down.drag){S.pan=[down.base[0]-(e.clientX-down.x0)/S.k,down.base[1]-(e.clientY-down.y0)/S.k];hinted();S.drawn=0;}});
+  const up=e=>{const d0=down;down=null;if(!d0||d0.drag||e.type!=='pointerup')return;if(Math.hypot(e.clientX-d0.x,e.clientY-d0.y)>14||performance.now()-d0.t>800)return;tapAt(e.clientX,e.clientY);};
+  S.cv.addEventListener('pointerup',up);S.cv.addEventListener('pointercancel',up);
+  S.cv.addEventListener('keydown',e=>{if(S.covered)return;const k={arrowleft:[-.7,.7],a:[-.7,.7],arrowright:[.7,-.7],d:[.7,-.7],arrowup:[-.7,-.7],w:[-.7,-.7],arrowdown:[.7,.7],s:[.7,.7]}[e.key.toLowerCase()];if(!k)return;e.preventDefault();closePanel();walkTo([S.me.x+k[0],S.me.y+k[1]]);});
   let sizing=0;new ResizeObserver(()=>{cancelAnimationFrame(sizing);sizing=requestAnimationFrame(size);}).observe(S.stage);
   S.dlg=d;return d;
 }
@@ -159,17 +175,25 @@ function bind(){
   if(S.bound)return;S.bound=true;
   S.env.api.addEventListener('state',()=>{if(!S.dlg?.open)return;S.drawn=0;head();path();if(!S.covered)ambience(S.area);if(S.panel&&!S.result&&S.chant?.state!=='run'&&!S.dlg.contains(document.activeElement?.closest?.('.cv-card-compose')))panel();});
 }
+/** The wish trees for the grove (names, counts, newest ribbons): game/chua_wish.py through ./wish-trees.js. */
+async function loadTrees(){
+  if(!wishTrees())return;
+  try{const {fetchTrees}=await import('./wish-trees.js');const d=await fetchTrees(S.env.api);if(d?.trees){S.trees=d.trees;S.drawn=0;}}
+  catch{/* the grove waits for the next open */}
+}
 /** Open the pagoda (from ./chua.js's "Vào chùa"); comes in through the gate. */
 export async function openChua(env){
   S.env=env;bind();await stylesheet('/css/chua.css');
   if(!hasScene(C()))return;
+  images();
   S.card.public=false;S.board=C().sharing?createCardBoard(S.env.api,refreshBoard):null;
   const d=dialog();
-  S.area='san';S.panel=null;S.result='';S.view='';S.help=false;S.chant=null;S.khan={who:'',what:''};S.fx={};S.me.pose='stand';S.me.path=null;S.arrive=null;
+  S.panel=null;S.result='';S.view='';S.help=false;S.chant=null;S.khan={who:'',what:''};S.fx={};S.me.pose='stand';S.me.path=null;S.arrive=null;S.pan=null;S.stage?.classList.remove('hinted');
   if(!d.open)d.showModal();
   const toasts=document.getElementById('toasts');if(toasts)d.append(toasts);   // errors show over the scene
-  size();place(pl().entry.gate);head();path();panel();
-  S.board?.load('mine');   // the "Chia sẻ" step knows whether a card is already public
+  size();place(pl().entry);S.me.dir='sw';lookAt(FIRST_LOOK);head();path();panel();
+  loadTrees();
+  if(!wishTrees())S.board?.load('mine');   // the old "Chia sẻ" knows whether a card is already public
   wantAudio('chua',true);ambience(S.area);
   S.cv.focus({preventScroll:true});
   S.last=performance.now();cancelAnimationFrame(S.raf);S.raf=requestAnimationFrame(loop);
@@ -180,85 +204,96 @@ function onClose(){
   S.env?.renderSheet?.(false);
 }
 
-/* ---- layout ---- */
+/* ---- layout: the camera ---- */
 function size(){
   if(!S.stage)return;
-  const r=S.stage.getBoundingClientRect(),cw=Math.max(1,r.width),ch=Math.max(1,r.height),was=S.port;
+  const r=S.stage.getBoundingClientRect(),cw=Math.max(1,r.width),ch=Math.max(1,r.height);
   S.port=cw/ch<.95;S.dpr=Math.min(2,globalThis.devicePixelRatio||1);S.cw=cw;S.ch=ch;
   S.cv.width=Math.round(cw*S.dpr);S.cv.height=Math.round(ch*S.dpr);
-  if(was!==S.port&&S.me.x){   // the other composition: keep the player where they were on the floor
-    const a=plan(S.area,was,day()).floor,b=pl().floor,u=(S.me.x-a[0])/(a[2]-a[0]),v=(S.me.y-a[1])/(a[3]-a[1]);
-    place([b[0]+u*(b[2]-b[0]),b[1]+v*(b[3]-b[1])]);
-  }
   S.cam=null;view(0);S.drawn=0;
 }
-/** Scale and offset: the whole place on a wide screen; on a phone a closer view (at least 72% of each side)
- * that follows the player, and keeps them above the panel when the panel spans the stage. */
+/** Scale and offset: the whole courtyard when it fits legibly (a wide screen); on a phone a closer view (never below
+ * MIN_K) that follows the player (or where a drag looked), and keeps them above the panel when the panel spans it. */
+const MIN_K=.62;
 function view(dt){
-  const [x0,y0,x1,y1]=VIEW[S.port?'port':'land'],vw=x1-x0,vh=y1-y0,cw=S.cw,ch=S.ch;if(!cw)return;
+  const [x0,y0,x1,y1]=VIEW,vw=x1-x0,vh=y1-y0,cw=S.cw,ch=S.ch;if(!cw)return;
   const box=S.dlg?.querySelector('.cv-panel'),open=box&&!box.hidden,wide=open&&box.offsetWidth>cw*.8,avail=open&&!wide?Math.max(cw*.4,box.offsetLeft-8):cw;
-  const band=wide?Math.max(ch*.3,box.offsetTop-6):ch,Z=S.port?.72:1;
-  const k=Math.min(cw/(vw*Z),band/(vh*Z),Math.max(cw/vw,band/vh)*1.6);
-  const want=[S.me.x||(x0+x1)/2,(S.me.y||(y0+y1)/2)-(S.port?110:90)];
-  if(!S.cam||still()||!dt)S.cam=want;else{const a=Math.min(1,dt*4);S.cam=[S.cam[0]+(want[0]-S.cam[0])*a,S.cam[1]+(want[1]-S.cam[1])*a];}
+  const band=wide?Math.max(ch*.3,box.offsetTop-6):ch;
+  const k=Math.max(MIN_K,Math.min(cw/vw,ch/vh),S.port?Math.min(1,ch/vh*1.05):0);   // the zoom does not jump when a panel opens
+  const me=project(S.me.x,S.me.y),want=[me[0]+(S.pan?.[0]||0),me[1]-50+(S.pan?.[1]||0)];
+  if(!S.cam||still()||!dt||S.pan)S.cam=want;else{const a=Math.min(1,dt*4);S.cam=[S.cam[0]+(want[0]-S.cam[0])*a,S.cam[1]+(want[1]-S.cam[1])*a];}
   const fitX=vw*k<=avail,fitY=vh*k<=band;
   S.k=k;
   const tx=fitX?(avail-vw*k)/2-x0*k:Math.min(-x0*k,Math.max(avail-x1*k,avail/2-S.cam[0]*k));
   const ty=fitY?(band-vh*k)/2-y0*k:Math.min(-y0*k,Math.max(band-y1*k,band/2-S.cam[1]*k));
-  if(still()||!dt){S.ox=tx;S.oy=ty;}else{const a=Math.min(1,dt*6);S.ox+=(tx-S.ox)*a;S.oy+=(ty-S.oy)*a;}
+  if(S.pan){   // a drag past the courtyard's edge goes no further
+    const cx=fitX?null:(avail/2-tx)/k,cy=fitY?null:(band/2-ty)/k;
+    if(cx!==null&&Math.abs(cx-want[0])>2)S.pan[0]+=cx-want[0];if(cy!==null&&Math.abs(cy-want[1])>2)S.pan[1]+=cy-want[1];
+  }
+  if(still()||!dt||S.pan){S.ox=tx;S.oy=ty;}else{const a=Math.min(1,dt*6);S.ox+=(tx-S.ox)*a;S.oy+=(ty-S.oy)*a;}
 }
+/** The first view: the grove and the hall's steps together (the player stands at the gate, a tap walks in). */
+const FIRST_LOOK=[-90,250];
+/** Point the camera at a scene point (as a drag would); the next walk brings it back to the player. */
+function lookAt([sx,sy]){const m=project(S.me.x,S.me.y);S.pan=[sx-m[0],sy-(m[1]-50)];S.cam=null;view(0);S.drawn=0;}
 function place(p){const q=nearestFree(pl(),p)||p;S.me.x=q[0];S.me.y=q[1];S.me.path=null;}
+/** A point of the canvas (client px) in scene px. */
 const toScene=(cx,cy)=>{const r=S.cv.getBoundingClientRect();return [(cx-r.left-S.ox)/S.k,(cy-r.top-S.oy)/S.k];};
 
 /* ---- moving ---- */
 function stand(){if(S.me.pose!=='stand'){S.me.pose='stand';S.me.poseUntil=0;}}
 function walkTo(p,then=null){
   if(S.covered||S.chant?.state==='run')return;
-  stand();const path=route(pl(),[S.me.x,S.me.y],p);
-  if(!path?.length){S.arrive=null;S.me.path=null;return;}
+  stand();S.pan=null;const path=route(pl(),[S.me.x,S.me.y],p);
+  if(!path){S.arrive=null;S.me.path=null;return;}
   S.arrive=then;
-  if(still()||path.length===1){const end=path[path.length-1];S.me.x=end[0];S.me.y=end[1];S.me.path=null;S.drawn=0;arrived();return;}
-  S.me.path=path.slice(1);
+  if(!path.length||still()){const end=path[path.length-1]||[S.me.x,S.me.y];S.me.x=end[0];S.me.y=end[1];S.me.path=null;S.drawn=0;arrived();return;}
+  S.me.path=path;
 }
+/** The first tap or drag hides "Chạm sân để đi · kéo để nhìn quanh". */
+function hinted(){S.stage?.classList.add('hinted');}
 function arrived(){const f=S.arrive;S.arrive=null;S.me.path=null;if(f)f();}
 function tapAt(cx,cy){
   if(S.covered||S.chant?.state==='run')return;
+  hinted();
   const p=toScene(cx,cy),spot=hitSpot(p);
   if(spot){goSpot(spot);return;}
-  closePanel();walkTo(p);
+  closePanel();walkTo(unproject(p[0],p[1]));
 }
-function hitSpot(p){let best=null,bd=Infinity;for(const s of pl().spots){const d=Math.hypot(s.hit[0]-p[0],s.hit[1]-p[1]);if(d<=s.r&&d<bd){bd=d;best=s;}}return best;}
-function goSpot(s,after=null,view=''){
+/** The spot under a scene point: the thing itself (lifted above its foot), its badge, or a tree's name board. */
+function hitSpot(p){
+  let best=null,bd=Infinity;const ls=labelScale();
+  for(const s of pl().spots){if(!s.r)continue;const a=project(...s.at),d=Math.min(Math.hypot(a[0]-p[0],a[1]-s.lift-p[1]),s.kind==='tree'?Math.hypot((a[0]-p[0])*.6,(a[1]+8+12*ls)-p[1])*1.2:Infinity);
+    if(d<=s.r&&d<bd){bd=d;best=s;}}
+  return best;
+}
+function goSpot(s,view=''){
   if(!s)return;closePanel();
   walkTo(s.stand,()=>{
-    if(s.kind==='door'){enterArea(s.to);after?.();}
-    else{S.panel=s;S.result='';S.view=view;if(s.kind==='npc')S.talk[s.who]=S.talk[s.who]??0;if(s.act)prefetch(s.act);panel();if(s.act==='nguyen'&&S.board)S.board.load(S.board.tab);}
+    S.me.dir=faceTo(s.at);
+    if(s.kind==='tree'){openTree(s.tree);return;}
+    if(s.kind==='grove'&&wishTrees()){openTree('');return;}
+    S.panel=s.kind==='grove'?{...s,kind:'act'}:s;S.result='';S.view=view;if(s.kind==='npc')S.talk[s.who]=S.talk[s.who]??0;if(s.act)prefetch(s.act);panel();
+    if(s.act==='nguyen'&&S.board&&!wishTrees())S.board.load(S.board.tab);
   });
 }
-function goArea(id){
-  if(id===S.area||S.chant?.state==='run')return;
-  const door=pl().spots.find(s=>s.kind==='door'&&s.to===id);
-  if(door)goSpot(door);
-  else if(S.area!=='san')goSpot(pl().spots.find(s=>s.kind==='door'&&s.to==='san'),()=>goArea(id));
-}
-/** The area a spot is in (any area: the step bar walks through the doors). */
-function areaOf(id){for(const a of AREAS)if(plan(a.id,S.port,day()).spots.some(s=>s.id===id))return a.id;return '';}
+/** The four facings of the town's character (sw, se, nw, ne) toward a world point. */
+function faceTo(q){const dx=q[0]-S.me.x,dy=q[1]-S.me.y,sx=dx-dy,sy=dx+dy;return sy<0?(sx<0?'nw':'ne'):(sx<0?'sw':'se');}
 function goTo(id,view=''){
   if(S.covered||S.chant?.state==='run')return;
-  const area=areaOf(id);if(!area)return;
-  if(area===S.area){goSpot(pl().spots.find(s=>s.id===id),null,view);return;}
-  const door=pl().spots.find(s=>s.kind==='door'&&s.to===area)||pl().spots.find(s=>s.kind==='door'&&s.to==='san');
-  if(door)goSpot(door,()=>goTo(id,view));
+  const s=pl().spots.find(q=>q.id===id);if(s)goSpot(s,view);
 }
-function enterArea(id){
-  if(id===S.area||!AREAS.some(a=>a.id===id))return;
-  const from=S.area;S.area=id;closePanel();
-  place(pl().entry[from]||Object.values(pl().entry)[0]);
-  if(!still())S.fadeAt=S.time;
-  head();path();S.drawn=0;ambience(id);
+/** 🌳 A wish tree (or the whole garden: tree ''): its own dialog over the pagoda; the grove refreshes after. */
+async function openTree(tree){
+  if(S.covered)return;
+  S.covered=true;S.me.pose='pray';
+  try{const m=await import('./wish-trees.js');
+    const ok=await m.openWishTrees({...S.env,onClose:()=>{S.covered=false;stand();S.last=performance.now();S.drawn=0;if(S.dlg?.open){loadTrees();S.cv.focus({preventScroll:true});}}},tree?{tree}:{});
+    if(!ok){S.covered=false;stand();}}
+  catch(error){S.covered=false;stand();S.env.toast?.(error.message||'Chưa mở được vườn ước nguyện.',true);}
 }
 
-/* ---- the header, the area tabs, the step bar ---- */
+/* ---- the header, the step bar ---- */
 function head(){
   const c=C();if(!c||!S.dlg)return;
   const m=S.dlg.querySelector('.cv-mute'),on=settings().sound!==false&&!quiet;
@@ -267,30 +302,29 @@ function head(){
   m.title=settings().sound===false?'Âm thanh đang tắt trong Cài đặt':on?'Tắt tiếng chùa':'Bật tiếng chùa';
   const sp=Math.max(0,Math.min(100,c.spirit|0));
   S.dlg.querySelector('.cv-day').innerHTML=`<span>${esc(c.label||'')}</span>${c.feast?' · <span>🍚 cơm chay</span>':''}<span class="cv-spirit" title="Tinh thần ${sp}/100"><span class="cv-meter" aria-hidden="true"><i style="width:${sp}%"></i></span><span>Tinh thần ${sp}</span></span>`;
-  S.dlg.querySelector('.cv-areas').innerHTML=AREAS.map(a=>`<button type="button" class="cv-chip${a.id===S.area?' on':''}" data-cv="area" data-id="${a.id}" aria-pressed="${a.id===S.area}"><span aria-hidden="true">${a.icon}</span><b>${esc(a.name)}</b></button>`).join('');
 }
 function spotName(s){
-  if(s.kind==='door'){const a=AREAS.find(x=>x.id===s.to);return `${a.icon} ${a.name} ›`;}
   if(s.kind==='npc')return `${PEOPLE[s.who].icon} ${PEOPLE[s.who].name}`;
   if(s.kind==='look')return LOOK_NAME[s.look]||'👀';
-  const a=actOf(s.act);return `${a?.emoji||'•'} ${SHORT[s.act]||a?.name||''}`;
+  if(s.kind==='tree'){const t=S.trees.find(x=>x.id===s.tree);return t?`${t.emoji} Cây ${t.name}`:'🌳';}
+  const a=actOf(s.act);return `${s.kind==='grove'?'🌳':a?.emoji||'•'} ${SHORT[s.act]||a?.name||''}`;
 }
-/** A step is done once today (repeatable anyway); "Chia sẻ" once one of your cards is public. */
-function stepDone(id){return id==='board'?!!S.board?.mine.rows.some(r=>r.public===true):!!actOf(id)?.done;}
-const nextStep=(skip='')=>STEPS.find(x=>x.id!==skip&&(x.id!=='board'||S.board)&&!stepDone(x.id))||null;
+/** A step is done once today (repeatable anyway). */
+function stepDone(id){return !!actOf(id)?.done;}
+const nextStep=(skip='')=>STEPS.find(x=>x.id!==skip&&!stepDone(x.id))||null;
 function path(){
   const bar=S.dlg?.querySelector('.cv-path');if(!bar)return;
   const cur=nextStep(),here=S.panel?.kind==='act'?S.panel.act:'';
-  bar.innerHTML=`<ol class="cv-steps">${STEPS.filter(x=>x.id!=='board'||S.board).map(x=>{const done=stepDone(x.id),on=x.id==='board'?S.view==='board':here===x.id&&S.view!=='board';
+  bar.innerHTML=`<ol class="cv-steps">${STEPS.map(x=>{const done=stepDone(x.id),on=here===x.id&&S.view!=='board';
     return `<li><button type="button" class="cv-step${done?' done':''}${cur?.id===x.id?' next':''}${on?' on':''}" data-cv="step" data-id="${x.id}"${on?' aria-current="step"':''}><span class="cv-step-ico" aria-hidden="true">${x.icon}${done?'<i>✓</i>':''}</span><span class="cv-step-name">${esc(x.name)}</span></button></li>`;}).join('')}</ol>
     <button type="button" class="cv-step cv-more${S.panel?.kind==='here'?' on':''}" data-cv="here"><span class="cv-step-ico" aria-hidden="true">🧭</span><span class="cv-step-name">Quanh đây</span></button>`;
 }
-/** Kept for older callers: the spots of this area now live in the "Quanh đây" panel. */
-const here=path;
+/** "Quanh đây": every place in the courtyard, one tap walks there; the old card board when the player has cards. */
 function hereBody(){
-  const area=AREAS.find(a=>a.id===S.area);
-  return top('🧭','Quanh đây',area?`${area.icon} ${area.name}`:'',HELP.here)+`<div class="cv-tiles">${pl().spots.map(s=>{const a=s.kind==='act'?actOf(s.act):null,done=actionDone(C(),a)||!!a?.done;
-    return `<button type="button" class="cv-spot${done?' done':''}${s.kind==='door'?' door':''}" data-cv="spot" data-id="${esc(s.id)}">${esc(spotName(s))}${done?' <i aria-label="đã làm">✓</i>':''}</button>`;}).join('')}</div>`;
+  const spots=pl().spots.filter(s=>s.kind!=='tree');
+  const old=(C()?.cards||[]).length>0&&S.board?`<button type="button" class="cv-spot" data-cv="board">📜 Bảng lời chúc cũ</button>`:'';
+  return top('🧭','Quanh đây','🌿 Sân chùa',HELP.here)+`<div class="cv-tiles">${spots.map(s=>{const a=s.kind==='act'?actOf(s.act):null,done=actionDone(C(),a)||!!a?.done;
+    return `<button type="button" class="cv-spot${done?' done':''}" data-cv="spot" data-id="${esc(s.id)}">${esc(spotName(s))}${done?' <i aria-label="đã làm">✓</i>':''}</button>`;}).join('')}${old}</div>`;
 }
 
 /* ---- the panel: what happens here ---- */
@@ -333,7 +367,7 @@ function talkBody(who){
 function boardBody(){
   const a=actOf('nguyen');
   return top('📖','Bảng lời chúc','',HELP.board)+(S.board?cardBoardHTML(S.board,C().card_choices,true):cardHistory(C()))+
-    (a?main('📜 Viết lời chúc','compose'):'');
+    (a&&!wishTrees()?main('📜 Viết lời chúc','compose'):'');
 }
 function panel(){
   const box=S.dlg?.querySelector('.cv-panel');if(!box)return;
@@ -343,12 +377,13 @@ function panel(){
   if(S.chant)html=chantHTML();
   else if(S.result)html=S.result;
   else if(s.kind==='here')html=hereBody();
+  else if(s.kind==='board')html=boardBody();
   else if(s.kind==='npc')html=talkBody(s.who);
   else if(s.kind==='look')html=top('👀',spotName(s).replace(/^\S+\s/,''))+`<p class="cv-look">${esc(LOOKS[s.look]||'')}</p>`;
   else if(s.act==='nguyen'&&S.view==='board')html=boardBody();
   else{const a=actOf(s.act);if(!a){closePanel();return;}
     html=top(a.emoji,a.name,gain(a),HELP[a.id]||'')+actBody(a);}
-  const kind=S.chant?'chant':S.result?'result':s.kind==='act'&&S.view==='board'?'board':s.kind;
+  const kind=S.chant?'chant':S.result?'result':s.kind==='board'||s.kind==='act'&&S.view==='board'?'board':s.kind;
   box.innerHTML=html;box.hidden=false;box.dataset.kind=kind;S.stage.classList.add('has-panel');
   if(S.chant)S.chant.el=null;
   path();
@@ -375,14 +410,14 @@ async function shareCard(id){
 }
 function refreshBoard(board){
   if(S.board!==board||!S.dlg?.open)return;
-  path();if(S.panel?.act!=='nguyen')return;
+  path();if(S.panel?.act!=='nguyen'&&S.panel?.kind!=='board')return;
   const box=S.dlg.querySelector('.cv-card-board');if(box)box.outerHTML=cardBoardHTML(board,C().card_choices,box.dataset.withTabs==='true');
   for(const tabs of S.dlg.querySelectorAll('.cv-card-tabs'))tabs.outerHTML=cardBoardTabs(board);
 }
 async function readOlderCards(){
   const pending=loadOlder(S.env.api,'','chua.cards',C()?.cards?.length||0);S.result='';S.view='board';panel();
-  try{await pending;if(S.dlg?.open&&S.panel?.act==='nguyen')panel();}
-  catch(error){if(S.dlg?.open&&S.panel?.act==='nguyen')showResult('📜','Bảng lời chúc',error.message||'Chưa tải được bảng cũ. Bạn thử lại nhé.');}
+  try{await pending;if(S.dlg?.open)panel();}
+  catch(error){if(S.dlg?.open)showResult('📜','Bảng lời chúc',error.message||'Chưa tải được bảng cũ. Bạn thử lại nhé.');}
 }
 async function donate(){
   if(S.covered||S.chant?.state==='run'||S.busy||!S.env.onDonate)return;
@@ -423,14 +458,13 @@ function act(kind,data){
     case'mute':quiet=!quiet;try{localStorage.setItem(QUIET_KEY,quiet?'1':'0');}catch{/* storage blocked */}
       if(quiet){voice(false);ambience(null);}else ambience(S.area);head();return;
     case'donate':donate().catch(error=>S.env.toast?.(error.message,true));return;
-    case'area':goArea(data.id);return;
     case'spot':goSpot(pl().spots.find(s=>s.id===data.id));return;
     case'shut':closePanel();return;
     case'help':S.help=!S.help;panel();return;
     case'note':{const n=S.dlg.querySelector('.cv-card-note'),el=S.dlg.querySelector('[data-cv="note"]');if(n){n.hidden=!n.hidden;el?.setAttribute('aria-expanded',String(!n.hidden));}return;}
     case'here':if(S.panel?.kind==='here'){closePanel();return;}if(S.chant?.state==='run')return;closePanel();S.panel={id:'here',kind:'here'};panel();return;
-    case'step':if(data.id==='board')goTo('nguyen','board');else goTo(data.id);return;
-    case'board':S.view='board';S.result='';S.help=false;panel();S.board?.load(S.board.tab);return;
+    case'step':goTo(data.id);return;
+    case'board':S.view='board';S.result='';S.help=false;if(S.panel?.kind==='here'||!S.panel)S.panel={id:'board',kind:'board'};panel();S.board?.load(S.board.tab);return;
     case'compose':S.view='';S.result='';S.help=false;panel();return;
     case'share':shareCard(data.id).catch(error=>S.env.toast?.(error.message,true));return;
     case'card-back':if(S.card.blessing)S.card.blessing='';else S.card.recipient='';panel();return;
@@ -508,6 +542,7 @@ async function finishChant(){
 }
 
 /* ---- the loop ---- */
+const SPEED=4.2;   // tiles a second
 function loop(now){
   if(!S.dlg?.open)return;
   S.raf=requestAnimationFrame(loop);
@@ -515,64 +550,71 @@ function loop(now){
   const dt=Math.min(.05,(now-S.last)/1000);S.last=now;S.time+=dt;
   const m=S.me;let moving=false;
   if(m.path?.length){
-    const sp=(S.port?230:270)*dt,[tx,ty]=m.path[0],dx=tx-m.x,dy=ty-m.y,d=Math.hypot(dx,dy);moving=true;
+    const sp=SPEED*dt,[tx,ty]=m.path[0],dx=tx-m.x,dy=ty-m.y,d=Math.hypot(dx,dy);moving=true;
+    if(d>.001){const sx=dx-dy,sy=dx+dy;m.dir=sy<0?(sx<0?'nw':'ne'):(sx<0?'sw':'se');}
     if(d<=sp){m.x=tx;m.y=ty;m.path.shift();if(!m.path.length)arrived();}else{m.x+=dx/d*sp;m.y+=dy/d*sp;}
-    m.step+=dt*9;
+    m.step+=dt*7;
   }
   if(m.poseUntil&&S.time>m.poseUntil){m.pose='stand';m.poseUntil=0;}
   chantTick();
   const was=[S.ox,S.oy,S.k];view(dt);const panned=Math.abs(was[0]-S.ox)+Math.abs(was[1]-S.oy)+Math.abs(was[2]-S.k)*100>.5;
-  // ~30 fps when only the ambience moves, still frames at all when motion is reduced
-  const busy=moving||panned||S.chant?.state==='run'||S.time-S.fadeAt<.4||S.fx.bell>S.time||S.fx.gain?.until>S.time;
-  if(!busy&&(still()?S.drawn>0:now-S.drawn<33))return;
-  S.drawn=now||1;draw();
+  // ~20 fps when only the ribbons and the smoke move, still frames at all when motion is reduced
+  const busy=moving||panned||S.chant?.state==='run'||S.fx.bell>S.time||S.fx.gain?.until>S.time;
+  if(!busy&&(still()?S.drawn>0:now-S.drawn<50))return;
+  S.drawn=now||1;draw(moving);
 }
-function fxOpts(){const reduced=still();return {t:S.time,reduced,feast:!!C()?.feast,lit:S.fx.lit>S.time,bell:S.fx.bell>S.time?1-(S.fx.bell-S.time)/4:0,wish:!!actOf('nguyen')?.done,cards:C()?.cards||[],mo:S.fx.mo>S.time};}
-function draw(){
+/** The tree the player stands at (its board lights up). */
+function nearTree(){for(const s of pl().spots)if(s.kind==='tree'&&Math.hypot(S.me.x-s.stand[0],S.me.y-s.stand[1])<.6)return s.tree;return '';}
+function fxOpts(){const reduced=still();return {t:S.time,reduced,feast:!!C()?.feast,lit:S.fx.lit>S.time,bell:S.fx.bell>S.time?1-(S.fx.bell-S.time)/4:0,mo:S.fx.mo>S.time,
+  images:IMG,trees:wishTrees()?S.trees:[],near:nearTree(),night:document.documentElement.dataset.theme==='dem',ls:labelScale()};}
+/** Labels (tree boards, badges) never shrink under ~11 px on screen however far the camera is. */
+const labelScale=()=>Math.max(1,.82/S.k);
+function draw(moving=false){
   const c=S.ctx;if(!c||!S.cw)return;
-  c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,S.cv.width,S.cv.height);
+  c.setTransform(1,0,0,1,0,0);c.fillStyle=document.documentElement.dataset.theme==='dem'?'#4d5a3e':'#aec48b';c.fillRect(0,0,S.cv.width,S.cv.height);
   c.setTransform(S.dpr*S.k,0,0,S.dpr*S.k,S.dpr*S.ox,S.dpr*S.oy);
-  const o=fxOpts(),w={ctx:c,isPortrait:()=>S.port,reduced:o.reduced,time:S.time,c:null},p=pl();
+  const o=fxOpts(),p=pl();
   try{
-    paintRoom(w,S.area,o);
-    const f=p.floor,depth=y=>.9+.18*(y-f[1])/Math.max(1,f[3]-f[1]),base=S.port?.9:.74;
-    const items=[...areaProps(c,S.area,S.port,o)];
-    for(const q of p.people)items.push([q.y,()=>person(c,q.x,q.y,base*depth(q.y)*1.05,q.who,{t:S.time,pose:q.sit?'sit':''})]);
-    items.push([S.me.y+.5,()=>drawMe(c,base*depth(S.me.y))]);
+    ground(c,o);
+    const items=props(c,o);
+    for(const q of p.people)items.push([project(q.x,q.y)[1],()=>npc(c,q,.44,S.time)]);
+    items.push([project(S.me.x,S.me.y)[1]+.5,()=>drawMe(c,moving)]);
     items.sort((a,b)=>a[0]-b[0]);for(const [,fn] of items)fn();
+    if(o.trees.length)groveSign(c,o);
+    o.trees.slice(0,GROVE.length).forEach((t,i)=>treeBoard(c,t,i,o));
     marks(c,p,o);
   }catch(e){console.warn('chùa: draw',e);}
-  if(S.time-S.fadeAt<.32&&!o.reduced){c.setTransform(1,0,0,1,0,0);c.globalAlpha=Math.max(0,1-(S.time-S.fadeAt)/.32)*.85;c.fillStyle='#fff6ed';c.fillRect(0,0,S.cv.width,S.cv.height);c.globalAlpha=1;}
 }
-function drawMe(c,s){
-  const m=S.me,F=figure(S.env.api.state);c.save();c.translate(m.x,m.y);c.scale(s,s);
-  const low=m.pose==='sit'||m.pose==='kneel';
-  if(low){E(c,0,2,30,8,'#81644823');c.translate(0,22);c.beginPath();c.rect(-80,-220,160,196);c.clip();}
-  else if(m.path?.length&&!still())c.translate(0,-Math.abs(Math.sin(m.step))*3);
-  try{paintPlayer(c,F,CANVAS);}catch{/* look not ready */}
-  c.restore();
-  if(m.pose==='sweep'){L(c,m.x+22*s,m.y-60*s,m.x+40*s,m.y-4*s,'#b88b62',4*s);E(c,m.x+42*s,m.y-2*s,14*s,5*s,'#d9b97a');}
-  if(m.pose==='pray'||m.pose==='kneel'){T(c,'🙏',m.x,m.y-(low?120:150)*s,20*s,'#5a3f2c',400);}
+/** The player: the town map's own character (its four facings, three walking frames), the pose shown over it. */
+function drawMe(c,moving){
+  const m=S.me,[x,y]=project(m.x,m.y),F=figure(S.env.api.state);
+  E(c,x,y,14,5,'#4a3a2630');
+  const low=m.pose==='sit'||m.pose==='kneel',bob=moving&&!still()?-Math.abs(Math.sin(m.step))*2:0;
+  const st=getCharacterStamp({look:F.L,gender:F.g,direction:m.dir||'se',walkFrame:moving&&!still()?Math.floor(m.step)%3:0,onReady:()=>{S.drawn=0;}});
+  const w=54,h=72;
+  if(st?.canvas){c.save();if(low){c.beginPath();c.rect(x-w,y-h-20,w*2,h+6);c.clip();}c.drawImage(st.canvas,x-w/2,y-h+(low?12:0)+bob,w,h);c.restore();}
+  if(m.pose==='sweep'){L(c,x+10,y-30,x+20,y-2,'#b88b62',3);E(c,x+21,y-1,8,3,'#d9b97a');}
+  if(m.pose==='pray'||m.pose==='kneel')T(c,'🙏',x,y-h-6+(low?12:0),16,'#5a3f2c',400);
   const g=S.fx.gain;if(g&&g.until>S.time){const k=1-(g.until-S.time)/2.4;c.globalAlpha=Math.max(0,Math.min(1,(1-k)*2.2));
-    T(c,g.text,m.x,m.y-(low?150:185)*s-k*34,22*s,'#b07a1c',800);c.globalAlpha=1;}
+    T(c,g.text,x,y-h-26-k*30,18,'#b07a1c',800);c.globalAlpha=1;}
 }
-/** Badges over the things to do (dim when done or not today), signs over the doors. */
+/** Badges over the things to do (dim when done or not today), 💬 over the people. */
 function marks(c,p,o){
-  const big=S.port?1.25:1;
+  const big=labelScale();
   for(const s of p.spots){
-    const [x,y]=s.hit;
-    if(s.kind==='door'){const a=AREAS.find(q=>q.id===s.to),label=`${a.icon} ${a.name} ›`;c.font=`800 ${14*big}px "Trebuchet MS", sans-serif`;
-      const wd=Math.max(90,c.measureText(label).width+26),h=26*big,[v0,,v1]=VIEW[S.port?'port':'land'],tx=Math.max(v0+wd/2+4,Math.min(v1-wd/2-4,x));
-      R(c,tx-wd/2,y-h/2-20,wd,h,'#fffaf0ee',h/2,'#c9b49a',1.5);T(c,label,tx,y-19,fit(c,label,wd-14,13*big),'#5a3f2c',800);continue;}
-    if(s.kind==='act'){const a=actOf(s.act);if(!a||Math.hypot(S.me.x-s.stand[0],S.me.y-s.stand[1])<30)continue;const done=actionDone(C(),a),dim=done||!a.ok,bob=o.reduced||dim?0:Math.sin(o.t*2+x)*3;
-      c.globalAlpha=dim?.55:1;E(c,x,y-26+bob,17*big,17*big,dim?'#efe6d8':'#fffaf0');c.strokeStyle=dim?'#c9b49a':'#d9a441';c.lineWidth=2;c.beginPath();c.arc(x,y-26+bob,17*big,0,Math.PI*2);c.stroke();
-      T(c,done?'✓':a.emoji,x,y-25+bob,16*big,done?'#6b8f4a':'#5a3f2c',700);c.globalAlpha=1;continue;}
-    if(s.kind==='npc'){E(c,x+18,y-6,12*big,10*big,'#fffaf0');T(c,'💬',x+18,y-5,11*big,'#5a3f2c',400);}
+    const [x,y0]=project(...s.at),y=y0-s.lift;
+    if(s.kind==='act'){const a=actOf(s.act);if(!a||Math.hypot(S.me.x-s.stand[0],S.me.y-s.stand[1])<.5)continue;const done=actionDone(C(),a)||!!a.done,dim=done||!a.ok,bob=o.reduced||dim?0:Math.sin(o.t*2+x)*2.5;
+      const by=y-22*big+bob;c.globalAlpha=dim?.6:1;E(c,x,by,15*big,15*big,dim?'#efe6d8':'#fffaf0');c.strokeStyle=dim?'#c9b49a':'#d9a441';c.lineWidth=2;c.beginPath();c.arc(x,by,15*big,0,Math.PI*2);c.stroke();
+      T(c,done?'✓':a.emoji,x,by+1,14*big,done?'#6b8f4a':'#5a3f2c',700);c.globalAlpha=1;continue;}
+    if(s.kind==='npc'){E(c,x+16*big,y-6,11*big,9*big,'#fffaf0');T(c,'💬',x+16*big,y-5,10*big,'#5a3f2c',400);}
   }
 }
 
 /* ---- test hooks (scripts/browser_chua.py) ---- */
-globalThis.__chua={state:()=>({open:!!S.dlg?.open,area:S.area,port:S.port,me:[S.me.x,S.me.y],pose:S.me.pose,panel:S.panel?.id||null,spots:pl().spots.map(s=>s.id),
-  chant:S.chant?{state:S.chant.state,hits:S.chant.hits.reduce((a,b)=>a+b,0)}:null}),
+globalThis.__chua={state:()=>({open:!!S.dlg?.open,area:S.area,port:S.port,k:S.k,me:[S.me.x,S.me.y],pose:S.me.pose,panel:S.panel?.id||null,spots:pl().spots.map(s=>s.id),
+  trees:S.trees.length,covered:S.covered,chant:S.chant?{state:S.chant.state,hits:S.chant.hits.reduce((a,b)=>a+b,0)}:null}),
   chantClock:()=>S.chant?{start:S.chant.start,period:PERIOD,beats:S.chant.beats}:null,
-  go:id=>goSpot(pl().spots.find(s=>s.id===id)),enter:id=>enterArea(id),route:(id)=>{const s=pl().spots.find(q=>q.id===id);return s?route(pl(),[S.me.x,S.me.y],s.stand):null;}};
+  /** where a spot's badge / thing is on the page (client px), to tap it like a player */
+  screen:id=>{const s=pl().spots.find(q=>q.id===id);if(!s)return null;const [x,y]=project(...s.at),r=S.cv.getBoundingClientRect();return [r.left+S.ox+x*S.k,r.top+S.oy+(y-s.lift)*S.k];},
+  look:id=>{const s=pl().spots.find(q=>q.id===id);if(s){const [x,y]=project(...s.at);lookAt([x,y-s.lift]);}},
+  go:id=>goSpot(pl().spots.find(s=>s.id===id)),route:id=>{const s=pl().spots.find(q=>q.id===id);return s?route(pl(),[S.me.x,S.me.y],s.stand):null;}};

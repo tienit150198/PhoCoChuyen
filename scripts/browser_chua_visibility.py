@@ -1,5 +1,10 @@
 """Two real players exercise temple card privacy on a disposable local PostgreSQL server.
 
+Since 15/10 a new wish is hung on a 🌳 wish tree (scripts/browser_wish_trees.py); the old blessing cards stay in the save
+and their board is reached from the pagoda's "Quanh đây" → "📜 Bảng lời chúc cũ" (shown to players who have cards).
+The cards here are written on the server as an older client would (jr_chua_do with recipient/blessing), then shared,
+withdrawn and paged through that board in the browser.
+
 python scripts/browser_chua_visibility.py [output_dir]
 """
 import asyncio
@@ -52,9 +57,10 @@ async def main():
                     else:
                         await page.click('#topbar [data-action="status"]')
                         await page.click('#sheet [data-action="stView"][data-view="life"]')
-                    await page.click('#sheet .cg-enter')
+                    await page.click('#sheet .cg-enter[data-action="lfChuaVisit"]')
                     await page.wait_for_selector('.cv-sheet[open] canvas')
-                    await page.click('.cv-path [data-cv="step"][data-id="board"]')
+                    await page.click('.cv-path [data-cv="here"]')
+                    await page.click('.cv-panel [data-cv="board"]')
                     await page.wait_for_selector('.cv-card-board')
                     await ready(page)
 
@@ -71,32 +77,29 @@ async def main():
                     await page.click('[data-cv="card-refresh"]')
                     await ready(page)
 
-                async def create_card(page, message, public=False):
-                    if await page.locator('.cv-panel [data-cv="compose"]').count():
-                        await page.click('.cv-panel [data-cv="compose"]')
-                    await page.click('[data-cv="card-recipient"][data-id="ca_nha"]')
-                    await page.click('[data-cv="card-blessing"][data-id="binh_an"]')
-                    assert await page.locator('[data-cv="card-public"][data-public="false"]').get_attribute('aria-pressed') == 'true'
-                    await page.fill('[name="card-name"]', 'Gia đình Lan')
-                    await page.fill('[name="card-message"]', message)
-                    if public:
-                        await page.click('[data-cv="card-public"][data-public="true"]')
-                    await page.click('[data-cv="card-send"]')
-                    await page.wait_for_selector('.cv-result')
-                    await page.click('.cv-panel [data-cv="board"]')
-                    await ready(page)
+                async def create_card(page, who, message, public=False):
+                    """A card as an older client writes it (the new pagoda hangs wishes on trees), shared from the board."""
+                    def write(save):
+                        from game import chua
+                        chua.action(save, 'jr_chua_do', dict(act='nguyen', recipient='ca_nha', blessing='binh_an', name='Gia đình Lan', message=message))
+                    mutate(db, who, write)
+                    await page.reload()
+                    await open_fence(page)
                     row = page.locator('.cv-card').filter(has_text=message)
                     await row.wait_for()
-                    return await row.get_attribute('data-card-id')
+                    card_id = await row.get_attribute('data-card-id')
+                    if public:
+                        await page.locator(f'[data-cv="card-toggle"][data-id="{card_id}"]').click()
+                        await ready(page)
+                    return card_id
 
                 owner_context, owner, token = await setup('Lan')
                 reader_context, reader, reader_token = await setup('Minh')
-                await open_fence(owner)
                 private_text, public_text = f'Riêng {tag}', f'Chung {tag}'
-                private_id = await create_card(owner, private_text)
-                public_id = await create_card(owner, public_text, public=True)
+                private_id = await create_card(owner, token, private_text)
+                public_id = await create_card(owner, token, public_text, public=True)
                 await owner.screenshot(path=str(OUT / f'{tag}-owner.png'))
-                await open_fence(reader)
+                await create_card(reader, reader_token, f'Của Minh {tag}')   # the old board shows to players with cards
                 await public_board(reader)
                 assert await reader.locator(f'.cv-card[data-card-id="{public_id}"]').count() == 1
                 assert private_text not in await reader.locator('.cv-card-board').inner_text()

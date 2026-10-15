@@ -76,6 +76,7 @@ from game import family as family_babies  # 👶 the shared child at home (GET /
 from game import system_gift
 from game import town_treasure
 from game import wed_invite  # 💌 Thiệp mời cưới cả phố (game/wed_invite.py)
+from game import chua_wish  # 🌳 Cây ước nguyện (game/chua_wish.py)
 from game import live_effects, live_dating
 from game import quay_hire
 from game import rentals
@@ -739,6 +740,16 @@ class Handler(BaseHTTPRequestHandler):
                 from game import chua_board
                 query=chua_board.parse_query(parse_qs(split.query,keep_blank_values=True,max_num_fields=3))
                 self.json(200,chua_board.page(self.server.store,token,**query));return
+            if route in ("/api/chua/trees","/api/chua/wishes"):  # 🌳 Cây ước nguyện: the trees, a tree's wishes / mine (game/chua_wish.py)
+                token,_,_,_=self.require_session(light=True)
+                if not self.server.rate_limit("chua-wishes:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                if route=="/api/chua/trees":self.json(200,chua_wish.trees(self.server.store,token));return
+                self.json(200,chua_wish.page(self.server.store,token,**chua_wish.parse_query(parse_qs(split.query,keep_blank_values=True,max_num_fields=4))));return
+            if route=="/api/admin/wishes":  # 🌳 reported wishes first, then the newest (game/chua_wish.py); admin only
+                try:token,_,_,_=self.guarded(light=True)
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                self.json(200,chua_wish.admin_view(self.server.store));return
             if route=="/api/archive":  # older rows of a history (game/archive.py), owner only
                 token=self.token()
                 if not token:raise GameError("Tải lại trang để bắt đầu phiên chơi.","session_missing")
@@ -984,7 +995,7 @@ class Handler(BaseHTTPRequestHandler):
             route=urlsplit(self.path).path
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility") or route.startswith("/api/work-visits/"))
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes") or route.startswith("/api/work-visits/"))
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
@@ -1010,6 +1021,7 @@ class Handler(BaseHTTPRequestHandler):
                 if str(data.get("action",""))[:5]=="fair_" and not self.server.rate_limit("fair:"+token,int(os.environ.get("FAIR_PER_MINUTE","40"))):self.error(429,"Từ từ thôi, chợ đen còn dài mà!","rate_limited");return  # 🏮 game/fair.py
                 if str(data.get("action",""))[:8]=="jr_bark_" and not self.server.rate_limit("bark-join:"+token,int(os.environ.get("BARK_JOINS_PER_MINUTE","10"))):self.error(429,"Từ từ thôi, mỗi phút đặt vài kèo thôi nha!","rate_limited");return  # 🐕 game/dog_bark.py
                 if str(data.get("action",""))[:7]=="jr_auc_" and not self.server.rate_limit("aucbid:"+token,int(os.environ.get("AUCTION_BIDS_PER_MINUTE","12"))):self.error(429,"Từ từ thôi, mỗi phút trả giá vài lần thôi nhé!","rate_limited");return  # 🔨 game/auction.py
+                if data.get("action")=="jr_chua_do" and isinstance(data.get("payload"),dict) and "tree" in data["payload"] and not (self.server.rate_limit("chua-wish:"+token,int(os.environ.get("WISHES_PER_MINUTE","6"))) and self.server.rate_limit("chua-wish-ip:"+self.client_ip(),30)):self.error(429,"Từ từ thôi, viết chậm cho lòng thành nhé 🙏","rate_limited");return  # 🌳 game/chua_wish.py (PER_DAY is the real cap)
                 if str(data.get("action",""))[:8]=="jr_deco_" and not self.server.rate_limit("deco:"+token,int(os.environ.get("DECO_PER_MINUTE","150"))):self.error(429,"Từ từ thôi, bày trí chậm lại chút nhé!","rate_limited");return  # 🪴 game/deco.py: drags send one move each
                 if length>256*1024 and data.get("action")!="import_save":
                     # B10 (07/10: 3 iPhone commands refused, sender unknown): which action, how big, and its biggest
@@ -1025,6 +1037,14 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("chua-visibility:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 from game import chua_board
                 self.json(200,chua_board.set_visibility(self.server.store,token,data));return
+            if route=="/api/chua/wishes":  # 🌳 🙏 cùng cầu, báo cáo, gỡ điều ước của mình (game/chua_wish.py act)
+                if not self.server.rate_limit("chua-wish-act:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                if data.get("op")=="report" and not self.server.rate_limit("chua-wish-report:"+token,10,600):self.error(429,"Bạn báo cáo hơi nhiều, nghỉ tay chút nhé.","rate_limited");return
+                self.json(200,chua_wish.act(self.server.store,token,data));return
+            if route=="/api/admin/wishes":  # 🌳 hide / show a wish (game/chua_wish.py admin_act); admin only
+                if not self.server.rate_limit("admin-wish:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.require_admin(token)
+                self.json(200,chua_wish.admin_act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
             if route=="/api/town/treasure/claim":
                 if not self.server.rate_limit("treasure-claim:"+token,20):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,town_treasure.claim(self.server.store,token,data),known=FULL);return
@@ -1097,7 +1117,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
                 rentals.prepare_delete(self.server.store,token)
-                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);wed_invite.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);wed_invite.forget(self.server.store,token);chua_wish.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
