@@ -16,7 +16,7 @@ from game import org as ORG
 from game import org_content as OC
 from game import promotion as pm
 from game.employment import hired_record
-from game.engine import GameError, apply_action, public_state, validate_state
+from game.engine import GameError, apply_action, dormant_out, migrate_state, public_state, validate_state
 from tests.test_fair import Dice, FairBase, story
 from tests.test_jail import StoreBase
 from tests.test_org_police import answer_due, gi, officer, org, view
@@ -265,10 +265,10 @@ class Rollback(unittest.TestCase):
                 'c=s["careers"][cur]\n'
                 'if c["open"]:\n s,_=apply_action(s,cur,"end_day",{"carry_event":True})\n'
                 's,_=apply_action(s,cur,"start_day",{})\npublic_state(s)\nprint(json.dumps(s))')
-        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(s), capture_output=True, text=True, cwd=old,
+        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(dormant_out(s)), capture_output=True, text=True, cwd=old,
                              env=dict(os.environ, PYTHONPATH=old, PYTHONUTF8='1'), encoding='utf-8')
         self.assertEqual(out.returncode, 0, out.stderr[-2000:])
-        back = json.loads(out.stdout)
+        back = migrate_state(json.loads(out.stdout))   # 💤 customs (never used here) woken again
         validate_state(back)
         self.assertEqual(back['journey'][ORG.SVC_KEY], s['journey'][ORG.SVC_KEY])
         self.assertEqual(grade(back['journey']['promo']['police']['org']), grade(s['journey']['promo']['police']['org']))

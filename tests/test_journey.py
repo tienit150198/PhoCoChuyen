@@ -145,7 +145,9 @@ class Chapters(unittest.TestCase):
             s, _ = poke(s)
         self.assertEqual(s['journey']['chapter'], jr.LAST + 1)
         self.assertEqual(s['journey']['done'], list(range(1, jr.LAST + 1)))
-        self.assertEqual(set(s['journey']['unlocked']), set(CAREERS))
+        # 🛃 customs opens once 3 chapters are done (gov_rules.opens), never through the unlocked list (2.4.24 checks it)
+        self.assertEqual(set(s['journey']['unlocked']), set(CAREERS) - {'customs'})
+        self.assertTrue(jr.is_unlocked(s, 'customs'))
         self.assertTrue(public_state(s)['journey']['finale'])
         validate_state(s)
 

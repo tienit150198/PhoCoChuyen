@@ -15,7 +15,7 @@ from game import org as ORG
 from game import org_content as OC
 from game import promotion as pm
 from game import promotion_office as OF
-from game.engine import GameError, apply_action, public_state, validate_state
+from game.engine import GameError, apply_action, dormant_out, migrate_state, public_state, validate_state
 from tests.helpers import Journey
 from tests.test_promotion import day
 
@@ -639,10 +639,10 @@ class Saves(unittest.TestCase):
         for s in saves:
             validate_state(s)
             env = dict(os.environ, PYTHONPATH=old)
-            out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(s), capture_output=True, text=True, cwd=old, env=env,
+            out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(dormant_out(s)), capture_output=True, text=True, cwd=old, env=env,
                                  encoding='utf-8')
             self.assertEqual(out.returncode, 0, out.stderr[-2000:])
-            back = json.loads(out.stdout)
+            back = migrate_state(json.loads(out.stdout))
             validate_state(back)
             self.assertEqual(back['journey']['promo']['police']['org']['g'], s['journey']['promo']['police']['org']['g'])
             back, _ = apply_action(back, 'police', 'end_day', {'carry_event': True})

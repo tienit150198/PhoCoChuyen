@@ -414,7 +414,8 @@ def _step_down(x: dict, d: int, why: str) -> str:
     new_p = o['posts'][i]
     x['p'], x['tip'], x['aim'], x['due'], x['vac'] = new_p['id'], 0, None, None, None   # the seat waited for is another post's
     _hist(x, d, 'p', old['id'], new_p['id'], why)
-    who = OC.SEAT_NPC[_rng('seat', d, old['id']).randrange(len(OC.SEAT_NPC))]
+    names = o.get('seat_npc') or OC.SEAT_NPC
+    who = names[_rng('seat', d, old['id']).randrange(len(names))]
     return f'Chức vụ: {old["short"]} → {new_p["short"]}. {who} nhận ghế {old["short"]}.'
 
 
@@ -558,13 +559,56 @@ def svc_add(s: dict, x: dict) -> None:
     b[career] = min(SVC_MAX, b[career] + 1)
 
 
+def _grade_index(o: dict, gid) -> int:
+    return next((i for i, g in enumerate(o['grades']) if g['id'] == gid), -1)
+
+
+def top_grade(s: dict, career: str) -> int:
+    """The highest grade (an index of the career's org grades) the save ever held on that ladder, -1 never: the
+    record's grade and history now, and journey[SVC_KEY]['top'] kept when a new contract started the record again
+    (keep_top). 🛃 Hải quan asks for a Hạ sĩ of Công an (owner spec 14/10)."""
+    oid = org_id(career)
+    j = s.get('journey') if isinstance(s, dict) else None
+    if not oid or not isinstance(j, dict):
+        return -1
+    o = OC.ORGS[oid]
+    b = j.get(SVC_KEY)
+    top = b.get('top') if isinstance(b, dict) else None
+    best = top.get(career, -1) if isinstance(top, dict) and type(top.get(career)) is int else -1
+    x = get(((j.get('promo') or {}).get(career)) if isinstance(j.get('promo'), dict) else None)
+    if x is not None and x.get('org') == oid and type(x.get('g')) is int:
+        best = max(best, x['g'])
+        for h in x.get('hist') or ():
+            if isinstance(h, dict) and h.get('k') == 'g':
+                best = max(best, _grade_index(o, h.get('fr')), _grade_index(o, h.get('to')))
+    return best
+
+
+def keep_top(s: dict, career: str) -> None:
+    """Before a new contract starts the record again: remember the highest grade held so far (top_grade)."""
+    n = top_grade(s, career)
+    j = s.get('journey') if isinstance(s, dict) else None
+    if n < 0 or not isinstance(j, dict):
+        return
+    b = j.get(SVC_KEY)
+    if not isinstance(b, dict) or b.get('v') != 1:
+        b = j[SVC_KEY] = dict(v=1)
+    top = b.get('top') if isinstance(b.get('top'), dict) else {}
+    top[career] = max(n, top.get(career, -1) if type(top.get(career)) is int else -1)
+    b['top'] = top
+
+
 def validate_svc(j: dict, need, integer, bad: str) -> None:
     b = j.get(SVC_KEY)
     if b is None:
         return
-    need(isinstance(b, dict) and b.get('v') == 1 and set(b) - {'v'} <= set(OC.CAREER_ORG), bad, 'invalid_save')
+    need(isinstance(b, dict) and b.get('v') == 1 and set(b) - {'v', 'top'} <= set(OC.CAREER_ORG), bad, 'invalid_save')
     for k, v in b.items():
-        if k != 'v':
+        if k == 'top':
+            need(isinstance(v, dict) and set(v) <= set(OC.CAREER_ORG), bad, 'invalid_save')
+            for cid, gi in v.items():
+                integer(gi, 0, len(OC.ORGS[OC.CAREER_ORG[cid][0]]['grades']) - 1)
+        elif k != 'v':
             integer(v, 0, SVC_MAX)
 
 
@@ -948,7 +992,7 @@ def public(x: dict, c: dict, ext: dict | None = None, nv: int | None = None) -> 
                 eval=dict((k, lab) for _, k, lab in o['evals'])[ev['g']] if ev else None, evn=x['evn'], window=o['eval_window'],
                 next_grade=nb, next_post=nxt_post, aims=[dict(id=a, short=_post(o, a)['short']) for a in _aims(x)], aim=tp,
                 due=due, wait=x['wait'], susp=x['susp'], waits=waits(x, hold_of(ext)), pct=raise_pct(x), own=can_own(x, c),
-                ladder=_ladder(x), boss=OC.BOSS, seats=dict(OC.SEATS), hold=hold_of(ext),
+                ladder=_ladder(x), boss=o.get('boss') or OC.BOSS, seats={k: v for k, v in OC.SEATS.items() if k in o['next']}, hold=hold_of(ext),
                 red=int(ext['red']) if ext else len(x['warns']), red_expel=o.get('red_expel'),
                 insp=insp_public(x, c) if p.get('olv') == 4 else None)
 

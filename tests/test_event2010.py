@@ -375,7 +375,7 @@ class Cards(unittest.TestCase):
             self.assertTrue(pg_schema.ensure(db))
             self.assertFalse(pg_schema.ensure(db))
             self.assertEqual(pg_schema.installed_version(db), pg_schema.SCHEMA_VERSION)
-            self.assertEqual(pg_schema.SCHEMA_VERSION, 46)
+            self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 46)   # 48: hq_* (customs)
         self.write(self.lan)
         self.assertEqual(len(self.rows('SELECT 1 FROM ev2010_rewards')), 1)
 

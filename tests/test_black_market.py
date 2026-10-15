@@ -20,7 +20,7 @@ from game import fair_bm as bm
 from game import fair_knife as knife
 from game import fair_scratch as scratch
 from game import journey as jr
-from game.engine import GameError, new_state, validate_state
+from game.engine import GameError, dormant_out, new_state, validate_state
 
 ROOT = Path(__file__).resolve().parents[1]
 VN = fh.VN
@@ -574,7 +574,7 @@ class OldServer(BlackMarketBase):
                 'out=[]\nfor s in json.load(sys.stdin):\n validate_state(s);s=migrate_state(s);validate_state(s);'
                 'out.append(s["journey"].get("fair_bm"))\nprint(json.dumps(out))')
         env = dict(os.environ, PYTHONPATH=os.pathsep.join(x for x in (str(old), os.environ.get('PYTHONPATH', '')) if x))
-        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps([paid, banned, s2] + historical), capture_output=True,
+        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps([dormant_out(x) for x in [paid, banned, s2] + historical]), capture_output=True,
                              text=True, cwd=old, env=env, encoding='utf-8', timeout=300)
         self.assertEqual(out.returncode, 0, out.stderr[-3000:])
         self.assertEqual(json.loads(out.stdout), [None, None, None] +

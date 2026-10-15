@@ -4,7 +4,7 @@ import {createSitePresence,createSiteBubbles} from './site-presence.js';
 /** Owned sites reuse the game's collision-tested isometric walking room. */
 const PROP={laundry:'machine',homestay:'bed',salon:'chair',nail:'table',photobooth:'screen',art_studio:'easel',
   library:'shelf',grocery:'counter',clothing:'shelf',pet_care:'play',farm:'flowerbed',pagoda:'bench'};
-const OFFICE=new Set(['accounting','lawyer','tax_payroll','corp_accounting','group_accounting','hr_admin','secretary','it_helpdesk','police','rescue','post_office']);
+const OFFICE=new Set(['accounting','lawyer','tax_payroll','corp_accounting','group_accounting','hr_admin','secretary','it_helpdesk','police','rescue','post_office','customs']);
 
 export function scaleRoom(scale,site){
   const resources=(scale.resources||[]).filter(r=>r.site===site.id),props=[],stations=[],actors=[];

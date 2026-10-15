@@ -811,3 +811,18 @@ Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chun
 8. Phân tuyến thay thế theo sức chứa
 9. Đối soát bằng chứng giao hàng đến muộn
 10. Điều phối và khép hồ sơ phục hồi tuyến
+
+## 55. Hải quan (`customs`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Đối chiếu tờ khai luồng vàng với chứng từ
+2. Lập biên bản kiểm hóa có người chứng kiến
+3. Tính thuế nhập khẩu theo trị giá khai báo
+4. Xét hồ sơ miễn thuế quà biếu
+5. Kiểm hồ sơ hoàn thuế hàng tái xuất
+6. Soi chiếu hành lý nghi giấu hàng cấm
+7. Bàn giao động vật hoang dã bị tạm giữ
+8. Lập hồ sơ nghi vấn khai sai xuất xứ
+9. Kiểm kê kho hàng tạm giữ có biên lai
+10. Điều phối chuyên án chống buôn lậu qua cảng

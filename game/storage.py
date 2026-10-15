@@ -25,7 +25,7 @@ import sys
 import threading
 import time
 from pathlib import Path
-from .engine import GameError,new_state,apply_action,public_state,validate_state,validate_career,migrate_state,needs_migration,tree_copy,stamped,BUILD
+from .engine import GameError,new_state,apply_action,public_state,validate_state,validate_career,migrate_state,needs_migration,tree_copy,stamped,BUILD,DORMANT,wake,idle_digest
 from .journey import enable_story
 from . import archive as ar
 from . import leaderboard as lb
@@ -252,7 +252,11 @@ def serialize_bytes(raw:dict,known:dict|None=None,full:bool=False,snap:dict|None
             d=_digest(piece)
             piece=piece.encode()
         if known is not None and known.get(cid)!=d:_validate_moved(c,cid,same)
-        pieces.extend((_dumps(cid).encode(),b":",piece,b","));digests[cid]=d
+        digests[cid]=d
+        if cid in DORMANT and d==idle_digest(cid,_digest):continue  # 💤 never touched: not written (engine.DORMANT)
+        pieces.extend((_dumps(cid).encode(),b":",piece,b","))
+    for cid in DORMANT:  # 💤 read without wake (json.loads of a stored text): still the untouched record, same stamp
+        if cid not in careers and cid in CAREERS:digests[cid]=idle_digest(cid,_digest)
     if known is not None or full:raw["check"]=dict(build=BUILD,careers=digests)
     else:raw.pop("check",None)
     if pieces:pieces.pop()
@@ -343,7 +347,7 @@ def _commit_before(raw:dict)->dict:
     from . import cand_roster
     # 💸 the gift ids and the wallet: a Chợ đen fine refund paid by this command counts in the week (fair_loss.record)
     gifts=list(j['gifts']) if isinstance(j.get('gifts'),list) else []
-    return dict(_fair_net=fh.money_of(j)[0],_cand=cand_roster.info(raw),name=raw.get('name'),marriage=dict(applied=holds),careers=careers,journey=dict(story=j.get('story'),jail=isinstance(j.get('jail'),dict),gifts=gifts,wallet=j.get('wallet'),
+    return dict(_fair_net=fh.money_of(j)[0],_cand=cand_roster.info(raw),_hq=cand_roster.info(raw,'customs'),name=raw.get('name'),marriage=dict(applied=holds),careers=careers,journey=dict(story=j.get('story'),jail=isinstance(j.get('jail'),dict),gifts=gifts,wallet=j.get('wallet'),
         life_day=j.get('life_day',0),home=dict(own={k:own.get(k) for k in ('id','kind')} if isinstance(own,dict) else None),
         lux=dict(live=live,own={live:dict(d=villa.get('d'))}) if isinstance(villa,dict) else dict(live=None,own={}),
         quay=dict(stalls=[dict(business=dict(visitor_orders=visitors))])))
@@ -417,7 +421,9 @@ class Store:
             state=new_state()
             if self.story:enable_story(state,int(hashlib.sha256(("seed:"+sid).encode()).hexdigest()[:8],16)%2**31)
             return state
-        return fj.loads(text)
+        state=fj.loads(text)
+        wake(state)  # 💤 the dormant careers the stored text left out (engine.DORMANT)
+        return state
 
     def session(self,token:str|None=None)->tuple[str,str,bool]:
         if token and isinstance(token,str) and len(token)==64:
@@ -434,7 +440,7 @@ class Store:
         # LAZY_SAVES=1: the save itself is created at the first command (FRESH), so a visit
         # that never plays costs ~200 bytes, not ~90 KB.
         lazy=os.environ.get("LAZY_SAVES","0").strip().lower() in ("1","true","yes","on")
-        text=FRESH if lazy else fj.dumps(self.parse_state(FRESH,sid))
+        text=FRESH if lazy else serialize(self.parse_state(FRESH,sid))  # 💤 without the dormant careers
         with self.connect() as db:
             db.execute("INSERT INTO sessions(sid,csrf,state) VALUES(?,?,?)",(sid,csrf,text))
             rt.write_marks(db,sid,[("created",None,None)],1)  # Giữ chân: the first step of the funnel, same transaction

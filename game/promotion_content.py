@@ -33,6 +33,7 @@ EMP_TITLES = {
     'rescue': ('Điều phối viên chính', 'Trưởng ca tổng đài', 'Phó giám đốc Trung tâm điều phối', 'Giám đốc Trung tâm điều phối'),
     'lifeguard': ('Cứu hộ chính', 'Trưởng ca cứu hộ', 'Đội trưởng cứu hộ', 'Quản lý an toàn hồ bơi'),
     'police': ('Cán bộ khu vực chính thức', 'Tổ phó cảnh sát khu vực', 'Tổ trưởng cảnh sát khu vực', 'Phó trưởng Công an phường'),
+    'customs': ('Kiểm tra viên chính thức', 'Tổ phó Tổ kiểm hóa', 'Tổ trưởng Tổ kiểm hóa', 'Phó Đội trưởng Đội Thủ tục'),
 }
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
@@ -79,6 +80,7 @@ _EMP_HIGH = {
     'rescue': ('Giám đốc điều phối liên vùng', 'Giám đốc đào tạo ứng cứu', 'Cố vấn điều phối khẩn cấp'),
     'lifeguard': ('Quản lý an toàn cụm hồ bơi', 'Giám đốc đào tạo cứu hộ nước', 'Cố vấn an toàn dưới nước'),
     'police': ('Trưởng Công an phường', 'Phụ trách nghiệp vụ địa bàn', 'Cố vấn nghiệp vụ khu vực'),
+    'customs': ('Đội trưởng Đội Thủ tục', 'Phụ trách nghiệp vụ cửa khẩu', 'Cố vấn nghiệp vụ hải quan'),
 }
 for _career, _titles in _EMP_HIGH.items():
     EMP_TITLES[_career] += _titles
@@ -139,7 +141,7 @@ GROUP = {
     'pool': ('lifeguard',),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
                 'homemaker', 'giupviec', 'naucom', 'babysitter', 'library', 'pagoda',
-                'mother_baby', 'nurse', 'police', 'art_studio', 'laundry'),
+                'mother_baby', 'nurse', 'police', 'art_studio', 'laundry', 'customs'),
     'call': ('rescue',),
 }   # every other career: 'trade'
 

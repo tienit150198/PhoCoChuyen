@@ -729,6 +729,8 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/save/export":
                 token,state,revision,_=self.require_session()
                 from game import save_guard  # 💾 the signature a guest's import checks (game/save_guard.py)
+                from game.engine import dormant_out
+                state=dormant_out(state)  # 💤 an untouched new career is left out: the backup still imports on the build before
                 data=dict(format="mot-ngay-lam-nghe/save-v4",app_version=__version__,state=state,archive=self.server.store.archive_export(token),
                           sign=save_guard.sign(self.server.store.resolve(token)[0],revision,state))
                 self.json(200,data,{"Content-Disposition":"attachment; filename=mot-ngay-lam-nghe-save.json"});return

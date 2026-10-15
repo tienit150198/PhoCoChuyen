@@ -8,6 +8,10 @@ save, kept by the save's own command transaction (command_commit, like jail_mark
 
 A seat holder who has not played for SEEN_DAYS real days no longer counts (the seat is free for the next appointment;
 the holder keeps the post). Not in the save: an older build never sees the table.
+
+🛃 The same for Hải quan (SCHEMA_VERSION 48): hq_roster, one row per save on the customs ladder (LADDERS), counted with
+cand_roster for the seats (Chi cục trưởng ≤ 5, Cục trưởng ≤ 1, Tổng cục trưởng ≤ 1: post ids never overlap) and read
+for the reviewers of a warehouse case (game/hq_ops.py).
 """
 from __future__ import annotations
 
@@ -19,6 +23,7 @@ from . import org_content as OC
 
 CAREER = 'police'
 ORG_ID = 'cand'
+LADDERS = {'police': ('cand', 'cand_roster'), 'customs': ('hq', 'hq_roster')}   # career: (org, table)
 SEEN_DAYS = 14
 TOUCH_S = 6 * 3600        # a seat holder's row is refreshed at most this often
 CACHE_S = 60              # the seat counts a worker keeps for the screens
@@ -33,26 +38,33 @@ def now() -> float:
     return time.time()
 
 
-def info(state) -> dict | None:
-    """(post, grade, sev, out) of a save on the CAND ladder now, else None."""
+def info(state, career: str = CAREER) -> dict | None:
+    """(post, grade, sev, out) of a save on the CAND (customs: the Hải quan) ladder now, else None."""
     if not isinstance(state, dict):
         return None
-    c = (state.get('careers') or {}).get(CAREER)
-    rec = (((state.get('journey') or {}).get('promo') or {}).get(CAREER)) if isinstance(state.get('journey'), dict) else None
+    oid = LADDERS[career][0]
+    c = (state.get('careers') or {}).get(career)
+    rec = (((state.get('journey') or {}).get('promo') or {}).get(career)) if isinstance(state.get('journey'), dict) else None
     if not isinstance(c, dict) or not isinstance(rec, dict):
         return None
-    x = ORG.active(CAREER, c, rec)
-    if not x or x.get('org') != ORG_ID:
+    x = ORG.active(career, c, rec)
+    if not x or x.get('org') != oid:
         return None
     e = rec.get('cx') if isinstance(rec.get('cx'), dict) else {}
     sev = max((int(r.get('t') or 0) for r in e.get('sev') or ()), default=0)
     code = next((r.get('c') for r in reversed(e.get('sev') or ()) if int(r.get('t') or 0) == sev), '') if sev else ''
-    return dict(post=x['p'], grade=OC.ORGS[ORG_ID]['grades'][x['g']]['id'], sev=sev, code=code or '')
+    return dict(post=x['p'], grade=OC.ORGS[oid]['grades'][x['g']]['id'], sev=sev, code=code or '')
+
+
+def before_of(state) -> dict:
+    """Every ladder's row of a save before a change (marriage._mutate keeps only this)."""
+    return {k: info(state, k) for k in LADDERS}
 
 
 def _counts(db) -> dict:
     cut = now() - SEEN_DAYS * 86400
-    rows = db.execute('SELECT post, COUNT(*) AS n FROM cand_roster WHERE seen>=? GROUP BY post', (cut,)).fetchall()
+    rows = db.execute('SELECT post, COUNT(*) AS n FROM (SELECT post, seen FROM cand_roster UNION ALL SELECT post, seen FROM hq_roster) r '
+                      'WHERE seen>=? GROUP BY post', (cut,)).fetchall()
     return {r['post']: int(r['n']) for r in rows}
 
 
@@ -81,44 +93,55 @@ def full(post: str) -> bool:
 def command_commit(db, sid: str, before, after, action: str = '') -> None:
     """The roster row follows the save, in its transaction. A new appointment to a capped post is checked again here:
     two appointments at once never pass the cap together."""
-    # the main path's before is storage._commit_before (no promo, no careers): it carries info(raw) as _cand
+    # the main path's before is storage._commit_before (no promo, no careers): it carries info(raw) as _cand / _hq
     a = before['_cand'] if isinstance(before, dict) and '_cand' in before else info(before)
     commit_info(db, sid, a, after)
+    h = before['_hq'] if isinstance(before, dict) and '_hq' in before else info(before, 'customs')
+    commit_info(db, sid, h, after, 'customs')
 
 
-def commit_info(db, sid: str, a: dict | None, after) -> None:
+def commit_rows(db, sid: str, rows: dict, after) -> None:
+    """command_commit with before_of(the save before) (marriage._mutate)."""
+    for career in LADDERS:
+        commit_info(db, sid, (rows or {}).get(career), after, career)
+
+
+def commit_info(db, sid: str, a: dict | None, after, career: str = CAREER) -> None:
     """command_commit with the save before already read (info(before)): marriage._mutate keeps only that."""
-    b = info(after)
+    oid, table = LADDERS[career]
+    b = info(after, career)
+    key = (career, sid)
     if b is None:
         if a is not None:
-            db.execute('DELETE FROM cand_roster WHERE sid=?', (sid,))
-            _touched.pop(sid, None)
+            db.execute(f'DELETE FROM {table} WHERE sid=?', (sid,))
+            _touched.pop(key, None)
         return
     t = now()
-    if a == b and t - _touched.get(sid, 0) < TOUCH_S:
+    if a == b and t - _touched.get(key, 0) < TOUCH_S:
         return
     name = str((after or {}).get('name') or '')[:40]
-    db.execute('INSERT INTO cand_roster(sid,name,post,grade,seen,sev,sev_code) VALUES(?,?,?,?,?,?,?) '
+    db.execute(f'INSERT INTO {table}(sid,name,post,grade,seen,sev,sev_code) VALUES(?,?,?,?,?,?,?) '
                'ON CONFLICT(sid) DO UPDATE SET name=excluded.name,post=excluded.post,grade=excluded.grade,seen=excluded.seen,'
                'sev=excluded.sev,sev_code=excluded.sev_code', (sid, name, b['post'], b['grade'], t, b['sev'], b['code']))
-    _touched[sid] = t
+    _touched[key] = t
     if len(_touched) > 5000:
         _touched.clear()
     cap = OC.SEATS.get(b['post'])
     if cap is not None and (a is None or a['post'] != b['post']):   # a move into a capped post, never a seated holder
         db.execute('SELECT pg_advisory_xact_lock(17842, hashtext(?))', (b['post'],))   # two appointments at once: one waits
-        n = db.execute('SELECT COUNT(*) AS n FROM cand_roster WHERE post=? AND seen>=?', (b['post'], t - SEEN_DAYS * 86400)).fetchone()['n']
+        n = db.execute(f'SELECT COUNT(*) AS n FROM {table} WHERE post=? AND seen>=?', (b['post'], t - SEEN_DAYS * 86400)).fetchone()['n']
         if int(n) > cap:
             from .engine import GameError
-            raise GameError(f'Ghế {ORG._post(OC.ORGS[ORG_ID], b["post"])["short"]} vừa đủ {cap} người. Thử lại sau nhé.', 'seat_taken')
+            raise GameError(f'Ghế {ORG._post(OC.ORGS[oid], b["post"])["short"]} vừa đủ {cap} người. Thử lại sau nhé.', 'seat_taken')
 
 
-def roster(db, limit: int = 60) -> list[dict]:
+def roster(db, limit: int = 60, career: str = CAREER) -> list[dict]:
     """The force, highest post first (the commanders' list)."""
+    oid, table = LADDERS[career]
     cut = now() - SEEN_DAYS * 86400
-    rows = db.execute('SELECT sid,name,post,grade,seen,sev,sev_code FROM cand_roster WHERE seen>=? ORDER BY seen DESC LIMIT ?',
+    rows = db.execute(f'SELECT sid,name,post,grade,seen,sev,sev_code FROM {table} WHERE seen>=? ORDER BY seen DESC LIMIT ?',
                       (cut, max(1, min(200, limit)))).fetchall()
-    o = OC.ORGS[ORG_ID]
+    o = OC.ORGS[oid]
     order = {p['id']: i for i, p in enumerate(o['posts'])}
     out = [dict(r) for r in rows]
     out.sort(key=lambda r: (-order.get(r['post'], 0), r['name']))
@@ -127,3 +150,4 @@ def roster(db, limit: int = 60) -> list[dict]:
 
 def forget(db, sid: str) -> None:
     db.execute('DELETE FROM cand_roster WHERE sid=?', (sid,))
+    db.execute('DELETE FROM hq_roster WHERE sid=?', (sid,))

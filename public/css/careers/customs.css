@@ -1,0 +1,34 @@
+/* 🛃 Hải quan cửa khẩu Bến Mây (public/js/careers/customs.js): built on street_kit.css (loaded first, v4/careers.js
+   CSS_KIT). A customs green with a warm gold for the lane chips and the decisions, red only for an offer; theme tokens
+   for surfaces and text, so the dark theme works. Touch targets stay ≥ 44 px; everything reflows at 360–390 px. */
+.career-job.sk.hq{--sk-accent:#2f6b4f;--sk-accent-2:#c9a23a;--hq-soft:#e3f1e8;--hq-red:#c0533f;--hq-amber:#c98a2b;--hq-green:#3f8a5b}
+html[data-theme="dem"] .career-job.sk.hq{--sk-accent:#7cc3a0;--sk-accent-2:#d8b54e;--hq-soft:#1d2e26}
+
+.career-job.sk.hq .grow{flex:1 1 auto;min-width:0}
+.career-job.sk.hq .card .row{display:flex;gap:10px;align-items:flex-start}
+.career-job.sk.hq .hq-big{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--hq-soft);font-size:24px}
+.career-job.sk.hq .hq-decl{margin:6px 0 0;padding:6px 10px;border-left:4px solid var(--sk-accent-2);background:var(--sk-surface-2);border-radius:0 8px 8px 0}
+.career-job.sk.hq .hq-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.career-job.sk.hq .tag{white-space:normal;line-height:1.35;max-width:100%}
+.career-job.sk.hq .hq-lane.hq-green{background:#dff3e4;color:#1f6b3a}
+.career-job.sk.hq .hq-lane.hq-yellow{background:#fbf0cf;color:#7a5a00}
+.career-job.sk.hq .hq-lane.hq-red{background:#f9dcd6;color:#8f2e1e}
+html[data-theme="dem"] .career-job.sk.hq .hq-lane{filter:brightness(.85)}
+.career-job.sk.hq .hq-step h4{margin:0 0 6px}
+.career-job.sk.hq .hq-ev{margin:0 0 10px;font-size:14px;line-height:1.45}
+.career-job.sk.hq .hq-tempt{border:2px solid var(--hq-red)}
+.career-job.sk.hq .sk-opt{white-space:normal;text-align:left;min-height:44px}
+.career-job.sk.hq .hq-num{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.career-job.sk.hq .hq-num .input{flex:1 1 auto;min-height:44px;font-size:16px}
+.career-job.sk.hq .hq-trail ul,.career-job.sk.hq .hq-notes{margin:0;padding-left:18px;line-height:1.5}
+.career-job.sk.hq .hq-rank{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0;font-size:14px}
+.career-job.sk.hq .hq-rank svg{flex:none}
+.career-job.sk.hq .hq-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.career-job.sk.hq .hq-tiles div{display:grid;gap:2px;padding:8px;border-radius:var(--sk-rs);background:var(--hq-soft);text-align:center}
+.career-job.sk.hq .hq-tiles b{font-size:18px}
+.career-job.sk.hq .hq-cmp-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.career-job.sk.hq .hq-cmp{padding:8px 10px;border-radius:var(--sk-rs);background:var(--sk-surface-2)}
+.career-job.sk.hq .hq-cmp.open{border-left:4px solid var(--hq-amber)}
+.career-job.sk.hq .hq-cmp p{margin:0 0 4px;line-height:1.4}
+.career-job.sk.hq .hq-rules ul{margin:6px 0 0;padding-left:18px;line-height:1.5}
+@media (max-width:420px){.career-job.sk.hq .hq-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}

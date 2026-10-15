@@ -18,7 +18,7 @@ import urllib.request
 from pathlib import Path
 
 from game import social
-from game.engine import GameError, new_state
+from game.engine import GameError, new_state, wake
 from game.storage import FRESH, Conflict, Store
 from tests.helpers import Journey
 from tests.pg_support import on_pg
@@ -308,7 +308,10 @@ class LazySaveTests(Base):
         with unittest.mock.patch.dict(os.environ, {'LAZY_SAVES': '0'}):
             token, _, _ = self.store.session()
         text = self.raw('SELECT state FROM sessions WHERE sid=?', (self.store.digest(token),))[0][0]
-        self.assertEqual(json.loads(text), self.store.read(token)[0])  # old servers can read it
+        stored = json.loads(text)
+        self.assertNotIn('customs', stored['careers'])   # 💤 untouched: left out, so old servers can read it
+        wake(stored)
+        self.assertEqual(stored, self.store.read(token)[0])
 
     def test_never_played_guest_registers_exports_and_is_skipped_by_stats(self):
         from game import accounts, admin_stats

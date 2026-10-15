@@ -17,7 +17,7 @@ from game import pg_schema
 from game import social
 from game import wed_invite as wi
 from game import wedding_live as wl
-from game.engine import validate_state
+from game.engine import dormant_out, validate_state
 from tests.test_marriage import DAY, PLAN, Base
 from tests import test_admin_gift as _ag
 from tests.live_support import HAVE_WS, LiveCase
@@ -344,7 +344,7 @@ class OlderServer(InvBase):
                 '    validate_state(s)\n'
                 "print('ok')\n")
         env = dict(os.environ, PYTHONPATH=old + os.pathsep + os.environ.get('PYTHONPATH', ''))
-        r = subprocess.run([sys.executable, '-c', code], cwd=old, input=json.dumps([self.state(a), self.state(b), self.state(c)]),
+        r = subprocess.run([sys.executable, '-c', code], cwd=old, input=json.dumps([dormant_out(x) for x in (self.state(a), self.state(b), self.state(c))]),
                            capture_output=True, text=True, encoding='utf-8', env=env)
         self.assertEqual((r.returncode, r.stdout.strip()), (0, 'ok'), r.stderr[-2000:])
 

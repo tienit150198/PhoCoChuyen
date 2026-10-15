@@ -1885,6 +1885,42 @@ ARCS = {
                 ('long', 'Chìa khóa phòng máy chủ, từ giờ em giữ một chiếc.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ Chi cục Hải quan cửa khẩu Bến Mây (sau chương 3)
+    'customs': dict(
+        title='Chiếc kìm kẹp chì của chị Lam', emoji='🔩',
+        keepsake=dict(emoji='🔩', name='Chiếc kìm kẹp chì của chị Lam', desc='Chiếc kìm bấm niêm phong đã mòn tay cầm. Chị Lam dùng nó hai mươi năm, chưa kẹp chì một lô hàng nào khi chưa kiểm đủ.'),
+        cast={'lam': _p('Chị Lam Thục', '🛃', 'Đội trưởng Đội Thủ tục'),
+              'tuan': _p('Anh Tuấn', '🚚', 'Chủ một công ty giao nhận'),
+              'mai': _p('Cô Mai', '🧳', 'Hành khách chuyến bay đêm'),
+              'quang': _p('Anh Quang', '📈', 'Phó Chi cục trưởng')},
+        beats=[
+            _b('Ba màu đèn', '🚦', 'Ngày đầu ở bàn tiếp nhận tờ khai.', [
+                ('lam', 'Xanh, vàng, đỏ là hệ thống phân. Mình làm đúng việc của màu đó, không thêm, không bớt.'),
+                ('me', 'Luồng đỏ mà chủ hàng xin kiểm giấy thôi thì sao chị?'),
+                ('lam', 'Thì mình vẫn mở thùng. Ai xin gì cũng vậy.')]),
+            _b('Hộp bánh trung thu', '🥮', 'Anh Tuấn ghé bàn, đặt hộp bánh lên chồng hồ sơ.', [
+                ('tuan', 'Quà Trung thu thôi em, không có gì đâu. Lô hàng chiều nay em nhờ chút.'),
+                ('me', 'Em cảm ơn anh, nhưng em không nhận được. Lô hàng chiều nay vẫn làm theo luồng.'),
+                ('tuan', 'Ờ… thôi được. Em làm đúng là được.')],
+                _c('Sau đó bạn làm gì?',
+                   _o('a', 'Báo chị Lam, ghi vào sổ việc anh Tuấn mang quà tới', [('lam', 'Ghi rõ vậy là đúng. Sau này có ai hỏi, sổ trả lời thay em.')]),
+                   _o('b', 'Hướng dẫn anh Tuấn khai đúng từ đầu để khỏi phải nhờ', [('tuan', 'Khai đúng thì luồng xanh nhiều hơn thật. Lẽ ra anh nên hỏi sớm.')]))),
+            _b('Chuyến bay đêm', '🧳', 'Cô Mai đứng lúng túng trước hai cửa.', [
+                ('mai', 'Cô mang ít tiền đô về cho con đi học, cô không biết đi cửa nào.'),
+                ('me', 'Cô ơi, số này vượt định mức rồi, mình qua cửa báo Hải quan khai là xong, không sao đâu ạ.'),
+                ('mai', 'Vậy hả con. Cô cứ sợ khai ra là bị giữ hết.')],
+                days=4, served=10, gap=1),
+            _b('Con số đẹp', '📈', 'Anh Quang treo bảng thu ngân sách ở phòng giao ban.', [
+                ('quang', 'Đội mình tháng này thu thấp. Mấy lô gia hạn nộp thuế, ghi thông quan trước cho đẹp số được không?'),
+                ('me', 'Dạ, sổ ghi thông quan khi chưa đủ điều kiện là làm sai lệch hồ sơ ạ.'),
+                ('lam', 'Anh Quang, số thật thấp mà sạch còn hơn số đẹp mà phải giải trình.')],
+                days=6, served=14, gap=1),
+            _b('Chiếc kìm kẹp chì', '🔩', 'Chị Lam lên Chi cục, bàn giao bàn kiểm hóa lại cho bạn.', [
+                ('lam', 'Hai mươi năm, chị chưa bấm chì một lô nào mà chưa đếm đủ.'),
+                ('lam', 'Cửa khẩu yên không nhờ tịch thu nhiều. Nhờ doanh nghiệp tin là khai đúng thì đi nhanh.'),
+                ('me', 'Em sẽ giữ như chị: đúng luồng, đúng số, không nhận của ai cái gì.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
     # ------------------------------------------------------------ Công an phường Mây (chương 4)
     'police': dict(
         title='Cuốn sổ hẻm của anh Định', emoji='📓',

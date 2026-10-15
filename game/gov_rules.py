@@ -17,11 +17,22 @@ RULES) and each act asks first:
 Only an officer on duty's ladder counts (promotion.org_live: hired at a posting that wears the org, not on the way out);
 a part-time helper at the ward desk is not an officer. Nothing here is in the save but the effects (the org record, the
 journey's hồ sơ công tác count).
+
+🛃 Hải quan (owner spec 14/10, I.): who may apply (ENTRY: at least 3 chapters of the story done, served in Công an up to
+Hạ sĩ or above, at most 3 violations in the hồ sơ công tác, never expelled from a state career; entry_rows shows each
+one), and the kỷ luật of an officer's own wrongdoing (HQ, rolled by hq_found when the act is chosen and applied at the
+shift's close as "thanh tra phát hiện", hq_apply):
+* thông đồng, bao che doanh nghiệp (trục lợi hoàn thuế included): giáng 1 bậc + kỷ luật 10 ngày (COLLUDE_P found);
+* cố ý làm sai lệch hồ sơ, kết quả kiểm tra: kỷ luật 15 ngày (FALSIFY_P);
+* lợi dụng chức vụ (phong bì, giữ hàng tạm giữ không biên lai, chiếm đoạt tiền thuế): khai trừ + gov_ban (ABUSE_P);
+  what was taken is confiscated.
+Inspections of players' shops (game/hq_ops.py) use WRONG_CASE (giáng 1 bậc + giam hàm 15 ngày) and expel the hostile.
 """
 from __future__ import annotations
 
 import random
 import secrets
+import time
 
 CAREER = 'police'
 BAIL = dict(grades=2, days=15)
@@ -39,6 +50,16 @@ RULES = {
         dict(id='gamble', icon='🎲', text=(f'TUYỆT ĐỐI không tham gia cá độ, đỏ đen có dùng xu ở chợ đen. Bị phát hiện: giáng {GAMBLE["grades"]} '
                                           f'bậc hàm, kỷ luật {GAMBLE["days"]} ngày.')),
         dict(id='svc', icon='📁', text='Mỗi lần vi phạm (cảnh cáo, phong bì, kỷ luật) đều ghi vào hồ sơ công tác, theo bạn qua mọi đơn vị nhà nước.'),
+    ],
+    'customs': [
+        dict(id='lane', icon='🚦', text='Đúng luồng: xanh miễn kiểm, vàng kiểm hồ sơ giấy, đỏ kiểm hồ sơ và thực tế hàng hóa.'),
+        dict(id='collude', icon='🤝', text='Thông đồng, bao che doanh nghiệp gian lận, trốn thuế, trục lợi hoàn thuế: giáng 1 bậc, kỷ luật 10 ngày.'),
+        dict(id='falsify', icon='📝', text='Cố ý làm sai lệch hồ sơ, kết quả kiểm tra, hồ sơ xử lý vi phạm về thuế: kỷ luật 15 ngày.'),
+        dict(id='abuse', icon='🚫', text=('Lợi dụng chức vụ giữ lại, chiếm đoạt tiền thuế, nhận hối lộ, tuồn hàng không biên lai, chứng từ: '
+                                         'khai trừ, không được xét tuyển vào bất kỳ ngành nghề chính quyền nào.')),
+        dict(id='inspect', icon='🏪', text=('Kiểm tra kho cửa hàng: chỉ đề xuất khi hồ sơ có căn cứ, qua cấp có thẩm quyền duyệt. Xử lý sai, chèn ép: '
+                                           'giáng 1 bậc, giam hàm 15 ngày; nghiêm trọng: khai trừ.')),
+        dict(id='svc', icon='📁', text='Mỗi lần vi phạm đều ghi vào hồ sơ công tác, theo bạn qua mọi đơn vị nhà nước.'),
     ],
 }
 BAIL_ASK = (f'⚖️ Điều lệnh: cán bộ Công an TUYỆT ĐỐI không chuộc người thân (bạn bè, vợ/chồng, người đính hôn) đang chấp hành án. '
@@ -125,3 +146,106 @@ def gamble_after(s: dict, result: dict, t: float) -> None:
 
 def content() -> dict:
     return {k: [dict(r) for r in v] for k, v in RULES.items()}
+
+
+# ---------------------------------------------------------------- 🛃 Hải quan: who may apply (owner spec 14/10, I.)
+HQ_CAREER = 'customs'
+ENTRY = dict(chapters=3, grade='ha_si', viol=3)
+
+
+def _story(s) -> bool:
+    j = s.get('journey') if isinstance(s, dict) else None
+    return isinstance(j, dict) and bool(j.get('story'))
+
+
+def chapters_done(s) -> int:
+    j = s.get('journey') if isinstance(s, dict) else None
+    return len(j.get('done') or ()) if isinstance(j, dict) else 0
+
+
+def opens(s, career: str) -> bool:
+    """The Hải quan door is open (the place shows, its postings and conditions too) once 3 chapters are done."""
+    return career == HQ_CAREER and (not _story(s) or chapters_done(s) >= ENTRY['chapters'])
+
+
+def entry_rows(s) -> list[dict]:
+    """What applying to Hải quan asks, each {id, met, label} (all met: the application may open)."""
+    from . import org as ORG
+    from . import org_content as OC
+    pm = _pm()
+    grades = OC.ORGS['cand']['grades']
+    need_g = next(i for i, g in enumerate(grades) if g['id'] == ENTRY['grade'])
+    top = ORG.top_grade(s, CAREER)
+    nv = ORG.svc_total(s)
+    n = chapters_done(s)
+    rows = [dict(id='chapters', met=not _story(s) or n >= ENTRY['chapters'],
+                 label=f'Trải qua ít nhất {ENTRY["chapters"]} chương của nhân vật ({min(n, ENTRY["chapters"])}/{ENTRY["chapters"]})'),
+            dict(id='police', met=top >= need_g,
+                 label=(f'Đã làm Công an, đạt cấp bậc {grades[need_g]["name"]} trở lên '
+                        f'({"cao nhất: " + grades[top]["name"] if top >= 0 else "chưa từng làm Công an"})')),
+            dict(id='viol', met=nv <= ENTRY['viol'], label=f'Hồ sơ công tác không quá {ENTRY["viol"]} lần vi phạm (đang có {nv})'),
+            dict(id='ban', met=not isinstance((s.get('journey') or {}).get(pm.BAN_KEY), dict),
+                 label='Chưa từng bị khai trừ khỏi ngành nghề chính quyền')]
+    return rows
+
+
+def entry_block(s) -> str | None:
+    """Why the application may not open now (the first unmet row), None when every row is met."""
+    bad = [r for r in entry_rows(s) if not r['met']]
+    return f'Chưa đủ điều kiện xét tuyển Hải quan: {bad[0]["label"]}.' if bad else None
+
+
+# ---------------------------------------------------------------- 🛃 an officer's own wrongdoing (owner spec 14/10, I.2)
+HQ = {
+    'hq_collude': dict(grades=1, days=10, p=0.45, expel=False),
+    'hq_falsify': dict(grades=0, days=15, p=0.40, expel=False),
+    'hq_abuse': dict(grades=0, days=0, p=0.50, expel=True),
+}
+WRONG_CASE = dict(grades=1, days=15)   # game/hq_ops.py: a confiscation proposed without grounds
+
+
+def _hq_roll(key: str, p: float) -> bool:
+    """The thanh tra's draw for an act (tests patch it). Never shown."""
+    return random.Random(f'hq-audit|{key}|{_SALT}|{secrets.token_hex(4)}').random() < p
+
+
+def hq_found(code: str, key: str) -> bool:
+    return _hq_roll(key, HQ[code]['p'])
+
+
+def hq_apply(s: dict, c: dict, code: str, key: str) -> str:
+    """At the close: an act the thanh tra found. Collusion / falsification: the kỷ luật on the ladder; abuse: the
+    expulsion (done by promotion.after_close: the contract ended, gov_ban). '' off the ladder."""
+    pm = _pm()
+    rule = HQ[code]
+    if rule['expel']:
+        rec, x = pm.org_live(s, c, HQ_CAREER, True)
+        if not x or pm.expel_due(rec):
+            return ''
+        from . import org as ORG
+        ORG.svc_add(s, x)
+        ORG.add_sev(ORG.ext_of(rec, x), code, time.time())
+        pm.mark_expel(rec, x, s, code)
+        why = ORG.OC.VIOLATIONS[code][0]
+        return f'🚨 Thanh tra phát hiện: {why[:1].lower() + why[1:]}. Quyết định khai trừ khỏi ngành Hải quan từ hết ca này.'
+    line = pm.discipline(s, c, HQ_CAREER, rule['grades'], rule['days'], code, key)
+    return f'🔎 Thanh tra phát hiện. {line}' if line else ''
+
+
+def hq_wrong(s: dict, key: str, serious: bool) -> str:
+    """🏪 A warehouse case handled without grounds (game/hq_ops.py): WRONG_CASE on the customs ladder, or (serious: the
+    WRONG_MAX-th within WRONG_DAYS) khai trừ + gov_ban at the next close. '' off the ladder."""
+    pm = _pm()
+    c = (s.get('careers') or {}).get(HQ_CAREER)
+    if not isinstance(c, dict):
+        return ''
+    if serious:
+        rec, x = pm.org_live(s, c, HQ_CAREER, True)
+        if not x or pm.expel_due(rec):
+            return ''
+        from . import org as ORG
+        ORG.svc_add(s, x)
+        ORG.add_sev(ORG.ext_of(rec, x), 'hq_wrongcase', int(time.time()))
+        pm.mark_expel(rec, x, s, 'hq_wrongcase')
+        return 'Nhiều lần xử lý sai, chèn ép doanh nghiệp: quyết định khai trừ khỏi ngành Hải quan từ hết ca này.'
+    return pm.discipline(s, c, HQ_CAREER, WRONG_CASE['grades'], WRONG_CASE['days'], 'hq_wrongcase', key)

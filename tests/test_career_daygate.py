@@ -222,7 +222,7 @@ def test_old_release_reads_the_save():
         subprocess.run(['tar', '-x', '-C', tmp.name], input=archive, check=True)
         tree = tmp.name
     try:
-        played = json.dumps(_played_state(), ensure_ascii=False)
+        played = json.dumps(e.dormant_out(_played_state()), ensure_ascii=False)
         prog = ('import json,sys\nfrom game.engine import migrate_state,validate_state\nfrom game import career_scale as sc\n'
                 's=migrate_state(json.loads(sys.stdin.read()))\nvalidate_state(s)\n'
                 'c=s["careers"]["grocery"];sc.ensure(c,"grocery",%d)\nvalidate_state(s)\n'

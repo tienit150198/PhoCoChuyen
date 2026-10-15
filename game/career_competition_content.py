@@ -429,6 +429,17 @@ _profile('police', 'Minh Quân | Thanh Hà | Đức Trung',
     'đã đối chiếu lời trình bày hai bên và bàn giao hồ sơ đủ căn cứ cho chỉ huy // checked both parties\' statements and handed a supported file to command',
     'nguồn tài liệu và lời trình bày hai bên // document sources and statements from both parties')
 
+_profile('customs', 'Hữu Phước | Minh Thư | Gia Khang',
+    'Chị Lam Thục · đội trưởng Đội Thủ tục // Lam Thục · head of the clearance team',
+    'đúng luồng, đủ chứng từ và kết quả kiểm hóa có căn cứ // the right lane, complete documents, and supported inspection results',
+    'đọc tờ khai | kiểm hóa thực tế | tính thuế // reading declarations | physical inspection | duty calculation',
+    'Ca chiều có ba lô hàng: một luồng vàng thiếu C/O, một luồng đỏ chờ kiểm hóa và một tờ khai cần tính lại thuế. // The afternoon shift has three lots: a yellow-lane file missing a C/O, a red-lane lot awaiting inspection, and a declaration needing a duty recalculation.',
+    'Giao {a} kiểm hồ sơ giấy, {b} kiểm hóa thực tế có biên bản, {c} tính thuế và đối chiếu chứng từ trước khi thông quan. // Have {a} check the paper file, {b} inspect the goods with a record, and {c} calculate duties and reconcile documents before clearance.',
+    'Biên bản kiểm hóa ghi khớp nhưng số thùng đếm thực tế chưa được ký xác nhận. // The inspection record says the lot matches, but the physical carton count is not signed off.',
+    'Đếm lại có người chứng kiến, sửa biên bản theo số thực tế và chuyển trưởng đội duyệt trước khi thông quan. // Recount with a witness, correct the record to the actual count, and send it to the team head before clearance.',
+    'đã đối chiếu tờ khai, kiểm hóa và tính thuế đúng trước khi thông quan // reconciled the declaration, inspection, and duties before clearance',
+    'số đếm thực tế có chữ ký và chứng từ thuế // a signed physical count and duty documents')
+
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',
     'nhận diện nguy cơ, xử lý đúng phạm vi và nghiệm thu dòng chảy // hazard recognition, work within scope, and verified drainage',

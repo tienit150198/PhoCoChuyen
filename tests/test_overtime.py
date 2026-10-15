@@ -267,7 +267,7 @@ class Rollback(unittest.TestCase):
         job(j, 7, pay=30)
         j.act('end_day', carry_event=True)
         # 1.9.11: the album shop (zpop) is newer than the old tree; a rollback strips it first (scripts/strip_new_careers.py)
-        played = json.dumps(strip(j.state, ['zpop'])[0], ensure_ascii=False)
+        played = json.dumps(E.dormant_out(strip(j.state, ['zpop'])[0]), ensure_ascii=False)
         prog = ('import json,sys\nfrom game.engine import migrate_state,validate_state\n'
                 's=migrate_state(json.loads(sys.stdin.read()))\nvalidate_state(s)\nprint(json.dumps(s,ensure_ascii=False))')
         env = dict(os.environ, PYTHONPATH=self.tree)

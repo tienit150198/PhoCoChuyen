@@ -17,7 +17,7 @@ from game import promotion as pm
 from game import shop_events as ev
 from game.careers import grocery as G
 from game.careers import kit
-from game.engine import money, new_state, public_state, validate_state
+from game.engine import dormant_out, money, new_state, public_state, validate_state
 from game.incident_content import INCIDENTS, INDEX
 from tests.helpers import Journey
 from tests.test_incidents import fake_c
@@ -268,7 +268,7 @@ class Rollback(unittest.TestCase):
         if not old or not (Path(old) / 'game' / 'engine.py').is_file():
             self.skipTest('no live tree (MNL_LIVE_TREE)')
         from scripts.strip_new_careers import strip   # 1.9.11: the live tree has no album shop (zpop) yet
-        saves = [strip(s, ['zpop'])[0] for s in self.saves()]
+        saves = [dormant_out(strip(s, ['zpop'])[0]) for s in self.saves()]   # 💤 untouched customs stays out
         env = dict(os.environ, PYTHONPATH=old)
         r = subprocess.run([sys.executable, '-c', self.PROG], input=json.dumps(saves), capture_output=True, text=True, cwd=old,
                            env=env, encoding='utf-8')

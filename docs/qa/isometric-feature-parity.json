@@ -4960,6 +4960,72 @@
       "presentation": "shared-sheet",
       "verification": "behavioral-routing",
       "transactions": "not-executed"
+    },
+    {
+      "id": "customs",
+      "name": "Hải quan",
+      "door": "career:customs",
+      "workbench": "public/js/careers/customs.js",
+      "sceneActions": [
+        "queue",
+        "workbench"
+      ],
+      "menuActions": [
+        "home",
+        "prepare",
+        "feedback",
+        "phone",
+        "nhom",
+        "social",
+        "situation",
+        "incident",
+        "jobapp",
+        "operations",
+        "journal",
+        "people",
+        "album",
+        "workshop",
+        "passport",
+        "rank",
+        "jrWardrobe",
+        "liveChat",
+        "liveWalk",
+        "liveDate",
+        "liveWed",
+        "liveKara",
+        "friends",
+        "marriage",
+        "money",
+        "bank",
+        "house",
+        "garage",
+        "gadgets",
+        "pets",
+        "spend",
+        "spendStyle",
+        "lux",
+        "luxFw",
+        "wedInvite",
+        "abroad",
+        "auction",
+        "rui",
+        "jrInvest",
+        "jrCerts",
+        "quay",
+        "fair",
+        "accountingSchool",
+        "historyCourse",
+        "rankWork"
+      ],
+      "phoneDock": [
+        "queue",
+        "workbench",
+        "prepare",
+        "operations"
+      ],
+      "presentation": "shared-sheet",
+      "verification": "behavioral-routing",
+      "transactions": "not-executed"
     }
   ],
   "utilityRoutes": [
@@ -5397,6 +5463,12 @@
     {
       "id": "wedInvite",
       "action": "wedInvite",
+      "data": {},
+      "group": "community"
+    },
+    {
+      "id": "ev2010",
+      "action": "ev2010",
       "data": {},
       "group": "community"
     }

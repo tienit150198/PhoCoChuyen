@@ -63,6 +63,7 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   lawyer:style('scales','civic','books','#54788b','#e5e7cf'),
   laundry:style('washer','awning','trolley','#72a5a7','#e7edda'),
   post_office:style('envelope','workshop','parcels','#c29150','#f3dfb8'),
+  customs:style('seal','civic','luggage','#4f7f66','#eadcae'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -302,6 +303,9 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
       for(const x of [-21,0,21])for(const y of [-3,13,29])round(x-5,y-4,10,8,2,cream);line([[-7,12],[0,19],[13,3]],'#7b9977',5);break;
     case 'laptop':
       round(-37,-32,74,52,5,body);round(-30,-25,60,36,2,'#718f89');line([[-18,-15],[-25,-7],[-18,1]],cream,3);line([[17,-15],[24,-7],[17,1]],cream,3);line([[4,-17],[-3,3]],s.light,3);poly([[-37,20],[37,20],[46,35],[-46,35]],s.light);line([[-9,29],[9,29]],s.main,3);break;
+    case 'seal':  // a round customs stamp over a sealed crate: no emblem copied from any real agency
+      round(-34,6,68,34,4,body);line([[-34,23],[34,23]],cream,3);line([[-12,6],[-12,40]],cream,3);line([[12,6],[12,40]],cream,3);
+      ellipse(0,-14,27,27,cream);ellipse(0,-14,21,21,s.main);star(0,-14,13,'#f1dca1');arc(0,-14,24,.3,2.8,ink,2);break;
     case 'signal':
       line([[-15,-3],[-15,43]],ink,7);round(-33,-43,35,59,9,s.main);ellipse(-15,-27,10,10,'#c5816e');ellipse(-15,-1,10,10,'#b7c685');line([[-7,27],[42,8]],cream,9);for(const x of [5,25])line([[x,22-x*.38],[x+6,20-x*.38]],'#bb806c',7);break;
     case 'heart':

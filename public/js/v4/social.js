@@ -4,6 +4,8 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {T} from './terms.js';
 import {nameAttrs,frameAttrs,titleChip} from './style-tag.js';
 
+/** 🛃 A customs officer past Tập sự (v4/hq.js inspector, kept here so this sheet does not load that module). */
+const hqInspector=st=>{const o=st?.careers?.customs?.promo?.org;return Boolean(o&&!o.susp&&o.post?.id&&o.post.id!=='hq_ts');};
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const button=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
 const pill=(label,kind='')=>`<span class="tag ${kind}">${label}</span>`;
@@ -126,7 +128,7 @@ function shopView(env,pid){
   const jobCards=jobs.map(c=>`<div class="kv-card"><b>${esc(c.place)}</b><small>Cấp ${c.level} · ${fmtN(c.served)} khách${c.rating?` · ${c.rating}★`:''}</small></div>`);
   return `${back}<section class="shop-hero card"><span class="avatar huge${fr.cls}"${fr.attrs}>${esc(p.avatar)}</span><div class="grow"><h3><span${nameAttrs(api,st)}>${esc(p.name)}</span>${titleChip(api,st)}</h3>${titlesLine(p,'small')}${p.bio?`<p class="muted">${esc(p.bio)}</p>`:''}<div class="row wrap small">${pill(`👀 ${fmtN(d.visits)} lượt ghé`)}${d.rating?pill(`${d.rating}★`,'amber'):''}${pill(`${fmtN(p.served)} ${T(p.shop?.current,'served')}`,'green')}</div></div>
     ${owns?`<div class="row wrap small soc-owns">${owns}</div>`:''}
-    ${me?'':`<div class="row wrap soc-acts">${button(p.following?'Đang theo dõi':'Theo dõi',p.following?'socUnfollow':'socFollow',{pid},'small '+(p.following?'ghost':''))}${button(icon('flag',13)+' Báo cáo','socReport',{kind:'profile',id:pid},'small ghost')}${button('Chặn','socBlock',{pid},'small ghost danger')}</div>`}</section>
+    ${me?'':`<div class="row wrap soc-acts">${button(p.following?'Đang theo dõi':'Theo dõi',p.following?'socUnfollow':'socFollow',{pid},'small '+(p.following?'ghost':''))}${button(icon('flag',13)+' Báo cáo','socReport',{kind:'profile',id:pid},'small ghost')}${button('Chặn','socBlock',{pid},'small ghost danger')}${hqInspector(api.state)?button('🛃 Kiểm tra kho','hqInspect',{pid},'small ghost'):''}</div>`}</section>
     ${button(me?'Chỗ làm của tôi':'🏪 Ghé chỗ làm','workVisit',me?{scope:'mine'}:{pid},'primary full')}
     <h4 class="section-title">Nơi làm việc <small class="muted">${jobs.length}</small></h4>${jobs.length?moreList(jobCards,3,'nơi','shop-careers'):'<p class="muted small">Chưa mở chỗ làm nào.</p>'}
     ${giftForm}${reviewForm}${listings}<h4 class="section-title">Hàng xóm chấm sao <small class="muted">${reviews.length}</small></h4>${reviews.length?moreList(reviews,3,'đánh giá','stack'):'<p class="muted small">Chưa có hàng xóm nào chấm sao.</p>'}`;
@@ -164,10 +166,10 @@ function inbox(env){
   const {ui}=env,d=load(env,'inbox','inbox');
   if(!d)return loading;if(d.error)return failed(d);
   if(d.unread&&!ui.socInboxRead){ui.socInboxRead=true;env.api.socialPost('inbox_read').then(()=>{if(env.api.social)env.api.social.unread=0;}).catch(()=>{});}
-  const kindIcon={visit:'👀',review:'⭐',reply:'💬',gift:'🎁',sale:'🧺',comment:'💬',jail:'🚔',jail_out:'🤝'};
+  const kindIcon={visit:'👀',review:'⭐',reply:'💬',gift:'🎁',sale:'🧺',comment:'💬',jail:'🚔',jail_out:'🤝',hq:'🛃'};
   return `${d.notes?.length?`<div class="notice success">${icon('check',17)}<div>${d.notes.map(esc).join('<br>')}</div></div>`:''}
     ${d.gifts.length?`<h4 class="section-title">Quà đã nhận</h4><div class="gift-row">${d.gifts.map(g=>`<div class="gift"><span>${esc(g.sticker)}</span><small><b>${esc(g.author)}</b>${g.coins?` · ${g.coins} xu`:''}${g.note?`<br>“${esc(g.note)}”`:''}</small></div>`).join('')}</div>`:''}
-    <h4 class="section-title">Thông báo</h4>${d.items.length?`<ul class="inbox">${d.items.map(x=>`<li class="${x.read?'':'unread'}"><span>${kindIcon[x.kind]||'🔔'}</span><p class="grow">${esc(x.text)}<small class="muted block">${ago(x.at)}</small></p>${x.ref&&/^[0-9a-f]{16}$/.test(x.ref)?button('Xem','socShop',{pid:x.ref},'small ghost'):x.kind==='jail'?button('Bảo lãnh','friends',{},'small primary'):''}</li>`).join('')}</ul>`:`<div class="empty">${icon('inbox',28)}<p>Chưa có gì mới.</p></div>`}`;
+    <h4 class="section-title">Thông báo</h4>${d.items.length?`<ul class="inbox">${d.items.map(x=>`<li class="${x.read?'':'unread'}"><span>${kindIcon[x.kind]||'🔔'}</span><p class="grow">${esc(x.text)}<small class="muted block">${ago(x.at)}</small></p>${x.ref&&/^[0-9a-f]{16}$/.test(x.ref)?button('Xem','socShop',{pid:x.ref},'small ghost'):x.kind==='jail'?button('Bảo lãnh','friends',{},'small primary'):x.kind==='hq'?button('Hồ sơ','hqMine',{},'small ghost'):''}</li>`).join('')}</ul>`:`<div class="empty">${icon('inbox',28)}<p>Chưa có gì mới.</p></div>`}`;
 }
 
 export function socialView(env){
@@ -191,6 +193,9 @@ export async function socialAction(action,data,el,env){
     case'socTab':ui.socTab=data.tab;ui.socShop=null;if(data.tab==='inbox'){ui.socInboxRead=false;invalidate(ui,'inbox');}renderSheet();return true;
     case'socShop':ui.socShop=data.pid;invalidate(ui,'shop:');renderSheet();return true;
     case'socBack':ui.socShop=null;renderSheet();return true;
+    // 🛃 Hải quan (game/hq_ops.py): an officer inspects this shop; the owner reads the inspections and appeals
+    case'hqInspect':import('./hq.js').then(m=>m.openDesk(env,data.pid)).catch(e=>toast(e.message||'Chưa mở được.',true));return true;
+    case'hqMine':import('./hq.js').then(m=>m.openMine(env)).catch(e=>toast(e.message||'Chưa mở được.',true));return true;
     case'socFollow':await run('follow',{pid:data.pid},true,['shop:','dir:']);return true;
     case'socUnfollow':await run('unfollow',{pid:data.pid},true,['shop:','dir:']);return true;
     case'socBlock':if(await confirmAction('Chặn người chơi này?','Hai bạn sẽ không thấy chỗ làm, bài viết và quà của nhau.','Chặn')){await run('block',{pid:data.pid},true);ui.socShop=null;renderSheet();}return true;

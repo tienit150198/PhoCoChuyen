@@ -59,6 +59,7 @@ from . import relax as rx   # 🏊 Thư giãn ở nhà: hồ bơi, bồn tắm (
 from . import leisure as ls   # 🏝️ 2.5D town: private, free pixel fishing/boat/community-pool rounds (game/leisure.py)
 from . import fridge as fr   # 🧊 Tủ lạnh ở nhà: cất đồ ăn, đói thì ăn (game/fridge.py)
 from . import x3_week as x3   # 🔥 Nghề x3 trong tuần (game/x3_week.py)
+from . import gov_rules as gvr   # 🛃 Hải quan opens after 3 chapters (game/gov_rules.py)
 from . import accounting_jobs as aj   # 💼 Việc làm kế toán: exam gate, entry check, ×3/×5 (game/accounting_jobs.py)
 from . import history_course as hcourse   # 📜 Học lịch sử Việt Nam: its title (game/history_course.py)
 from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
@@ -279,6 +280,7 @@ TITLES = [
     _t('c_lighthouse', 'career', '🗼', 'Người giữ lửa Hòn Gió', 'Đạt cấp 3 ở đèn biển Hòn Gió.', lambda x: x['lv'].get('lighthouse', 1) >= 3),
     _t('c_rescue', 'career', '📞', 'Giọng nói giữ bình tĩnh', 'Đạt cấp 3 ở tổng đài cứu hộ phường Mây.', lambda x: x['lv'].get('rescue', 1) >= 3),
     _t('c_police', 'career', '👮', 'Người giữ bình yên hẻm', 'Đạt cấp 3 ở Công an phường Mây.', lambda x: x['lv'].get('police', 1) >= 3),
+    _t('c_customs', 'career', '🛃', 'Người gác cửa khẩu', 'Đạt cấp 3 ở Chi cục Hải quan cửa khẩu Bến Mây.', lambda x: x['lv'].get('customs', 1) >= 3),
     _t('c_zpop', 'career', '💿', 'Người giữ seal nguyên vẹn', 'Đạt cấp 3 ở tiệm album Mây Pop.', lambda x: x['lv'].get('zpop', 1) >= 3),
     # Skills at level 3.
     _t('k_careful', 'skill', '🔍', 'Mắt tinh', 'Kỹ năng cẩn thận, tỉ mỉ đạt mức 3.', lambda x: x['sk'].get('careful', 0) >= 3),
@@ -588,7 +590,7 @@ def is_unlocked(s: dict, career: str) -> bool:
     if not j or not j.get('story'):
         return True
     # 💼 an accounting place: its certificate opens it early, and without it (nor past work there) it stays shut
-    return (career in j.get('unlocked', ()) or aj.opens(s, career)) and aj.can_work(s, career)[0]
+    return (career in j.get('unlocked', ()) or aj.opens(s, career) or gvr.opens(s, career)) and aj.can_work(s, career)[0]
 
 
 def _playable(s: dict, cid: str) -> bool:
@@ -637,7 +639,7 @@ def gate(s: dict, career: str, action: str, internal: bool = False, p: dict | No
     j = s['journey']
     if internal or not j['story']:
         return
-    e.need(career in j['unlocked'] or aj.opens(s, career), LOCKED, 'locked')
+    e.need(career in j['unlocked'] or aj.opens(s, career) or gvr.opens(s, career), LOCKED, 'locked')   # 🛃 Hải quan: 3 chapters done
     ok, why = aj.can_work(s, career)   # 💼 an accounting place takes you once you pass its exam
     e.need(ok, why, 'need_cert')
     if action == 'start_day' and not s['careers'][career]['open']:
@@ -1053,7 +1055,7 @@ def public(s: dict) -> dict:
     return dict(
         story=j['story'], gender=j['gender'], intro=j['intro'], chapter=j['chapter'], done=list(j['done']),
         finale=j['chapter'] > LAST,
-        unlocked=list(j['unlocked']) + [cid for cid in aj.opened(s) if cid not in j['unlocked']] if j['story'] else list(s['careers']),
+        unlocked=list(j['unlocked']) + [cid for cid in aj.opened(s) + [gvr.HQ_CAREER] if cid in s['careers'] and cid not in j['unlocked'] and (cid != gvr.HQ_CAREER or gvr.opens(s, cid))] if j['story'] else list(s['careers']),
         wallet=j['wallet'], debt=max(0, -j['wallet']), invest_max=min(CAPITAL_MAX, invest_max(s)) if j['story'] else 0,
         life_day=j['life_day'], living=living_cost(j),
         places=places, titles=sorted(([tid, day] for tid, day in j['titles'].items()), key=lambda x: (-x[1], x[0])),

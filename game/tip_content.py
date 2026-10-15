@@ -72,6 +72,8 @@ NORMS = {
     'lifeguard': dict(rate=.06, cash=0, lo=0, hi=0, bill=10),
     # 👮 Công an phường Mây: never money (no envelopes at the desk); a thank-you letter now and then
     'police': dict(rate=.05, cash=0, lo=0, hi=0, bill=10),
+    # 🛃 Hải quan cửa khẩu Bến Mây: never money (an envelope is a bribe); a thank-you letter now and then
+    'customs': dict(rate=.04, cash=0, lo=0, hi=0, bill=10),
     # 💿 Tiệm album Mây Pop: fans round the bill up now and then; a parent leaves the small change
     'zpop': dict(rate=.10, cash=.60, lo=1, hi=4, bill=30),
 }
@@ -250,6 +252,7 @@ CAREER_LINES = {
     'lighthouse': ('Đèn Hòn Gió sáng đúng giờ, tàu về yên tâm.', 'Trạm báo đài rõ ràng, cảm ơn nhiều.'),
     'rescue': ('Cô tổng đài giữ máy với tôi tới lúc xe tới.', 'Hỏi địa chỉ trước, xe tới đúng cửa.', 'Dặn từng bước, tôi làm theo được liền.'),
     'lifeguard': ('Cứu hộ mắt không rời hồ, gửi con yên tâm.', 'Thổi còi đúng lúc mà nói dễ nghe.', 'Có sấm là cho lên bờ liền, chuyên nghiệp.'),
+    'customs': ('Phân luồng rõ ràng, hướng dẫn bổ sung đúng một giấy.', 'Tính thuế minh bạch, có biên lai từng khoản.', 'Kiểm hóa nhanh mà kỹ, hàng về kho kịp.'),
     'police': ('Làm giấy tờ nhanh mà không mất đồng nào.', 'Nghe hai nhà nói hết rồi mới phân xử, phục ghê.', 'Tìm được bé kịp lúc, cảm ơn cán bộ.'),
     'zpop': ('Lấy đúng Digipack bias, không phải nhắc.', 'Poster cuộn ống, không một nếp gấp.', 'Nói thật tỉ lệ fansign, mua yên tâm.'),
 }
@@ -305,6 +308,7 @@ GIFTS = {
     'lighthouse': (('🐟', 'con cá thu ông Sáu Ghe gửi ra đảo'), ('🥭', 'túi xoài cô Thắm mang theo tàu'), ('💌', 'tấm thiệp khách du lịch viết tặng trạm')),
     'rescue': (('💌', 'lá thư cảm ơn gửi hộp thư trung tâm'), ('🎨', 'bức tranh “cô tổng đài” bé Na vẽ'), ('🍊', 'túi quýt người được cứu gửi cả ca')),
     'lifeguard': (('🍧', 'ly chè đậu xanh phụ huynh mang tới'), ('🎨', 'bức tranh cá heo bé Bon vẽ'), ('💌', 'tấm thiệp cảm ơn dán ở ghế trực')),
+    'customs': (('💌', 'lá thư cảm ơn gửi chi cục'), ('📝', 'vài dòng khen trong hòm thư góp ý cửa khẩu'), ('🎨', 'tấm thiệp con của chủ hàng vẽ tặng')),
     'police': (('💌', 'lá thư cảm ơn gửi phường'), ('🎨', 'bức vẽ chú công an của bé Bin'), ('📝', 'vài dòng khen trong sổ góp ý bàn tiếp dân')),
     'zpop': (('🃏', 'tấm card thừa Na tặng lại'), ('🎀', 'cái slogan fanmade thêu tay'), ('🍬', 'bịch kẹo dẻo hội BLINKY chia')),
 }

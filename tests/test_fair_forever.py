@@ -20,7 +20,7 @@ from game import fair_cash as fc
 from game import leaderboard as lb
 from game import live_effects as lfx
 from game import needs as nd
-from game.engine import apply_action, migrate_state, public_state, validate_state
+from game.engine import apply_action, dormant_out, migrate_state, public_state, validate_state
 from tests.test_fair import AFTER, OPEN, Dice, FairBase, StoreBase, at, story
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -250,7 +250,7 @@ class OlderServers(FairBase):
                 old = self.old_tree(rev)
                 env = {k: v for k, v in os.environ.items() if not k.startswith('MNL_FAIR_')}
                 env['PYTHONPATH'] = os.pathsep.join(x for x in (str(old), os.environ.get('PYTHONPATH', '')) if x)
-                out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(saves), capture_output=True,
+                out = subprocess.run([sys.executable, '-c', prog], input=json.dumps([dormant_out(x) for x in saves]), capture_output=True,
                                      text=True, cwd=old, env=env, encoding='utf-8', timeout=300)
                 self.assertEqual(out.returncode, 0, out.stderr[-3000:])
                 self.assertEqual(json.loads(out.stdout), [['fair20261009', dict(ed='fair20261009', p=200, due=240)],

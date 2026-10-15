@@ -16,7 +16,7 @@ from game import accounts, social
 from game import journey as jr
 from game import karaoke as kg
 from game import marriage as mr
-from game.engine import validate_state
+from game.engine import dormant_out, validate_state
 from game.storage import Store
 
 VID = 'dQw4w9WgXcQ'
@@ -386,7 +386,7 @@ print(json.dumps(dict(ok=True)))
             st = self.store.read(tok)[0]
             self.assertTrue(any(h['label'].startswith('🎤') for h in st['journey']['history']), n)
             p = Path(self.tmp.name) / f'{n}.json'
-            p.write_text(json.dumps(st, ensure_ascii=False), encoding='utf-8')
+            p.write_text(json.dumps(dormant_out(st), ensure_ascii=False), encoding='utf-8')
             paths.append(str(p))
         out = subprocess.run([sys.executable, '-c', self.PROG, *paths], cwd=OLD, capture_output=True, text=True, timeout=300)
         self.assertEqual(out.returncode, 0, out.stderr[-3000:])

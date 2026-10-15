@@ -61,6 +61,7 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   lawyer:identity('Đối chiếu chứng cứ · soạn phương án','Bàn đối chiếu hồ sơ','Chứng cứ & lưu trữ','Trao đổi phương án'),
   laundry:identity('Đọc nhãn vải · giặt và trả đúng khách','Bàn xử lý & gấp đồ','Giặt & xử lý vết bẩn','Gấp & kiểm phiếu'),
   post_office:identity('Kiểm bưu gửi · tính cước và chia tuyến','Bàn soạn bưu gửi','Bao gói & chia tuyến','Cân cước & bàn giao'),
+  customs:identity('Phân luồng tờ khai · kiểm hóa và tính thuế','Bàn kiểm tra hồ sơ','Máy soi & hàng tạm giữ','Quầy thủ tục'),
 };
 
 const r=(x0:number,y0:number,x1:number,y1:number):Rect=>({x0,y0,x1,y1});
@@ -101,6 +102,13 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     refurnish('shelf','shelf',117);refurnish('evidence','routeboard',112,blue);
     f('shelf',r(2.8,.55,4.2,1.35),116);f('crate',r(5,.65,6.3,1.55),55,cream);f('crate',r(5.95,3.25,6.45,4.15),45,0xc7a576);
     z(r(2.55,.3,6.6,1.85),'plank');z(r(2.8,2.75,6.7,4.45),'tile',0xe2d0ad);
+  }else if(career==='customs'){
+    // Declaration files on the left wall, the paper check desk in front, the scanner and the held goods behind.
+    clear(false,'tile');s('shelf','bookcase',r(.55,1.9,1.45,3.9),1.95,2.9,116);
+    s('workbench','desk',r(3.1,3.2,5.6,4.15),4.35,4.75,60,mint);
+    s('evidence','console',r(6.85,.55,8.3,1.35),7.55,1.95,82,blue);
+    f('crate',r(2.85,.55,4.05,1.5),56,cream);f('console',r(4.55,.55,6.2,1.55),80,blue);f('crate',r(5.95,3.3,6.45,4.1),44,0xc7a576);
+    z(r(2.6,.3,6.5,1.85),'tile',0xd5e2d6);z(r(2.85,2.95,6.7,4.45),'plank');
   }else if(career==='accounting'){
     clear();s('workbench','desk',r(3,2.9,5.5,3.9),4.2,4.5);
     f('bookcase',r(2.9,.55,4.25,1.25),116);f('desk',r(5,.55,6.3,1.3),55,mint);f('sofa',r(.55,7.7,1.5,8.3),40,blue);

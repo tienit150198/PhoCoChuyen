@@ -16,7 +16,7 @@ from tests.helpers import Journey
 HIGH = ('tour_guide', 'salon', 'delivery', 'homestay', 'restaurant', 'cafe_bakery', 'pet_care')
 MEDIUM = ('milk_tea', 'florist', 'mother_baby', 'grocery')
 NO_CASH = ('pharmacy', 'teacher', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting',
-           'hr_admin', 'secretary', 'it_helpdesk')
+           'hr_admin', 'secretary', 'it_helpdesk', 'customs')   # 🛃 a customs officer never takes money
 
 
 def finished(s, cid, day, slot, stars=5, bill=None, served=10):

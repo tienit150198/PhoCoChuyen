@@ -47,7 +47,7 @@ class FakeStore:
     def __init__(self):
         self.db = sqlite3.connect(':memory:', isolation_level=None)
         self.db.row_factory = sqlite3.Row
-        for t in ('cand_roster', 'cand_stops', 'cand_acts'):
+        for t in ('cand_roster', 'cand_stops', 'cand_acts', 'hq_roster'):
             self.db.execute(_ddl(t))
         self.db.execute('CREATE TABLE profiles (pid TEXT PRIMARY KEY, sid TEXT)')
         self.db.execute('CREATE TABLE accounts (sid TEXT PRIMARY KEY, display TEXT)')

@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 import game.careers.kit as kit
 from game import inventory as I
-from game.engine import GameError, public_state, validate_state
+from game.engine import GameError, dormant_out, public_state, validate_state
 from tests.helpers import Journey
 from tests.test_inventory_flow import empty, public_inv, set_money, wait_until_ready
 from tests.helpers import Journey  # noqa: F811
@@ -794,7 +794,7 @@ class Cancel(unittest.TestCase):
                 's=json.load(sys.stdin);validate_state(s);s=migrate_state(s);validate_state(s);'
                 'print(len(s["careers"]["restaurant"]["ext"]["inv"]["orders"]))')
         env = dict(os.environ, PYTHONPATH=os.pathsep.join(x for x in (str(old), os.environ.get('PYTHONPATH', '')) if x))
-        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(j.state), capture_output=True, text=True,
+        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(dormant_out(j.state)), capture_output=True, text=True,
                              cwd=old, env=env, encoding='utf-8', timeout=300)
         self.assertEqual(out.returncode, 0, out.stderr[-3000:])
         self.assertEqual(int(out.stdout.strip()), len(j.c['ext']['inv']['orders']))

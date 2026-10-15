@@ -181,6 +181,7 @@ LOOK_DEFAULTS = {
 # walk_in / wed_in, apart from the look (older services ignore it, an id this list lacks shows nothing).
 ORG_GRADES = {'cand': ('binh_nhi', 'binh_nhat', 'ha_si', 'trung_si', 'thuong_si', 'thieu_uy', 'trung_uy', 'thuong_uy', 'dai_uy',
                        'thieu_ta', 'trung_ta', 'thuong_ta', 'dai_ta', 'thieu_tuong', 'hoc_vien')}   # 11/10: GĐ's general, Học viên
+ORG_GRADES['hq'] = ('tap_su', 'ktv_1', 'ktv_2', 'ktv_3', 'ktvc_1', 'ktvc_2', 'ktvc_3', 'ktvcc_1', 'ktvcc_2', 'ktvcc_3')   # 🛃 Hải quan (16/10)
 
 # 🐾 The pet walking beside a stroller (game/pets_content.py breed ids -> number of coats; public/js/v4/pet-art.js draws
 # them): `pt` = {b, c, n, a} in walk_in / wed_in, apart from the look (older services ignore it; a breed this list lacks,
@@ -197,7 +198,7 @@ TITLES = {
     'g_places8': '🌈 Đa năng', 'g_places_all': '🗺️ Thuộc từng ngõ nghề', 'g_mature5': '🌿 Vững vàng', 'g_mature10': '🌳 Trưởng thành',
     'g_days30': '📅 Một tháng ở phố', 'g_days100': '🗓️ Trăm ngày thương',
     'c_milk_tea': '🧋 Thợ pha trà sữa', 'c_grocery': '🛒 Chủ quầy tạp hóa', 'c_delivery': '🛵 Shipper thuộc đường',
-    'c_cafe_bakery': '☕ Barista buổi sớm', 'c_florist': '💐 Người cắm hoa', 'c_mother_baby': '🎁 Người gói quà khéo',
+    'c_customs': '🛃 Người gác cửa khẩu', 'c_cafe_bakery': '☕ Barista buổi sớm', 'c_florist': '💐 Người cắm hoa', 'c_mother_baby': '🎁 Người gói quà khéo',
     'c_restaurant': '🍜 Đầu bếp mì cay', 'c_pet_care': '🐾 Bạn của chó mèo', 'c_salon': '💇 Thợ tóc có nghề',
     'c_repair': '🔧 Thợ sửa đồ tin cậy', 'c_farm': '🌾 Nông dân đồi gió', 'c_homestay': '🏡 Chủ nhà hiếu khách',
     'c_customer_care': '🎧 Người lắng nghe', 'c_pharmacy': '💊 Người đọc nhãn kỹ', 'c_tour_guide': '🧭 Người kể chuyện đường xa',
@@ -230,6 +231,7 @@ CERTS = {
     'cert:emergency_call': '📞 Chứng chỉ Tiếp nhận cuộc gọi khẩn cấp',
     'cert:pool_rescue': '🛟 Chứng chỉ Cứu hộ hồ bơi',
     'cert:ward_service': '👮 Chứng chỉ Tiếp dân & hòa giải',
+    'cert:customs_basics': '🛃 Chứng chỉ Nghiệp vụ hải quan cơ bản',
 }
 
 EMOTES = {'wave': '👋', 'heart': '❤️', 'laugh': '😂', 'wow': '😮', 'pray': '🙏', 'dance': '💃'}   # 💃: a wedding's stage (live/wedding.py)

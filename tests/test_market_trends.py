@@ -14,6 +14,7 @@ from game import interest_clock as ic
 from game import invest as iv
 from game import vang
 from game import realtime_market as rm
+from game.engine import dormant_out
 
 
 def coin_state(seed=17, day=1):
@@ -121,7 +122,7 @@ class CoinNews(unittest.TestCase):
                 'from game import invest;s=migrate_state(json.load(sys.stdin));'
                 'validate_state(s);invest.validate(s);invest.public(s);print(json.dumps(s))')
         env = dict(os.environ, PYTHONPATH=str(old) + os.pathsep + os.environ.get('PYTHONPATH', ''))
-        proc = subprocess.run([sys.executable, '-c', code], input=json.dumps(s), capture_output=True,
+        proc = subprocess.run([sys.executable, '-c', code], input=json.dumps(dormant_out(s)), capture_output=True,
                               text=True, encoding='utf-8', cwd=old, env=env, timeout=60)
         self.assertEqual(proc.returncode, 0, proc.stderr)
         back = json.loads(proc.stdout)

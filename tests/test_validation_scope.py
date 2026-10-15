@@ -12,7 +12,7 @@ from pathlib import Path
 from unittest import mock
 
 import game.storage as storage
-from game.engine import BUILD, GameError, migrate_state, public_state, stamped
+from game.engine import BUILD, DORMANT, GameError, migrate_state, public_state, stamped
 from game.storage import Store, serialize
 
 
@@ -48,7 +48,7 @@ class ScopedValidationTests(unittest.TestCase):
         s = json.loads(self.stored())
         self.assertTrue(stamped(s))
         self.assertEqual(s['check']['build'], BUILD)
-        self.assertEqual(set(s['check']['careers']), set(s['careers']))
+        self.assertEqual(set(s['check']['careers']), set(s['careers']) | set(DORMANT))   # 💤 an untouched new career: stamped, not stored
         self.assertNotIn('check', out['state'])
         self.assertNotIn('check', public_state(s))
 

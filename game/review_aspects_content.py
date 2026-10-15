@@ -31,7 +31,7 @@ FAMILY = {
     'teacher': 'school',
     'customer_care': 'office', 'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office',
     'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office',
-    'art_studio': 'service', 'laundry': 'service', 'lawyer': 'office', 'post_office': 'office',
+    'art_studio': 'service', 'laundry': 'service', 'lawyer': 'office', 'post_office': 'office', 'customs': 'office',
 }
 FAMILY_NAME = {'food': 'Ăn uống', 'shop': 'Cửa hàng', 'service': 'Dịch vụ', 'school': 'Lớp học', 'office': 'Văn phòng'}
 
@@ -757,6 +757,8 @@ NV_CAREER = {'art_studio': {'polite': {'male': 'anh họa sĩ', 'female': 'chị
                          'harsh': {'male': 'anh thợ giặt', 'female': 'chị thợ giặt', None: 'thợ giặt'}},
              'lawyer': {'polite': {'male': 'anh chuyên viên hồ sơ', 'female': 'chị chuyên viên hồ sơ', None: 'chuyên viên hồ sơ'},
                         'harsh': {'male': 'anh chuyên viên hồ sơ', 'female': 'chị chuyên viên hồ sơ', None: 'chuyên viên hồ sơ'}},
+             'customs': {'polite': {'male': 'anh kiểm tra viên', 'female': 'chị kiểm tra viên', None: 'kiểm tra viên'},
+                         'harsh': {'male': 'anh kiểm tra viên', 'female': 'chị kiểm tra viên', None: 'kiểm tra viên'}},
              'post_office': {'polite': {'male': 'anh nhân viên bưu điện', 'female': 'chị nhân viên bưu điện', None: 'nhân viên bưu điện'},
                              'harsh': {'male': 'anh nhân viên bưu điện', 'female': 'chị nhân viên bưu điện', None: 'nhân viên bưu điện'}},
              'tour_guide': {'polite': {'male': 'anh hướng dẫn viên', 'female': 'chị hướng dẫn viên', None: 'hướng dẫn viên'},

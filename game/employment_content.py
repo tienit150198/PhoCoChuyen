@@ -114,6 +114,52 @@ EXAMS = {
                'Đoàn trả tiền cho trải nghiệm, không phải cho hoa hồng của người dẫn.'),
         ]),
 }
+# 🛃 Hải quan (owner spec 14/10, 1.1.1 "Bài kiểm tra sát hạch"): the owner's eight questions and answers, verbatim
+# (the only change: the four options are labelled a–d for A–D). Every question is drawn; 6 right of 8 pass; a fail may
+# be taken again the next life day with the questions in another order.
+EXAMS['customs'] = dict(
+    id='hq-exam', name='Bài kiểm tra sát hạch Hải quan', issuer='Chi cục Hải quan cửa khẩu Bến Mây',
+    pass_mark=6, draw=8, emoji='🛃',
+    intro='Tám câu sát hạch về luồng tờ khai, chức danh trong ngành và thủ tục. Đúng từ 6/8 câu là đạt.',
+    bank=[
+        _e('hq_e1', 'Một hành khách đi máy bay quốc tế về thành phố mang theo số lượng ngoại tệ vượt quá định mức quy định. '
+                    'Hành khách này phải đi qua cửa nào tại sân bay?',
+           [('a', 'Cửa miễn khai báo (luồng xanh)'), ('b', 'Cửa báo Hải quan (luồng đỏ)'),
+            ('c', 'Không cần đi qua cửa nào, có thể đi thẳng ra ngoài'), ('d', 'Cửa ưu tiên dành cho phi hành đoàn')], 'b',
+           'Mang ngoại tệ vượt định mức phải khai báo: đi cửa báo Hải quan (luồng đỏ).'),
+        _e('hq_e2', 'Chức danh nghiệp vụ nào dưới đây trực tiếp thực hiện các công việc kiểm tra hồ sơ, kiểm tra thực tế hàng hóa tại cửa khẩu?',
+           [('a', 'Kiểm tra viên Hải quan'), ('b', 'Tổng cục trưởng Tổng cục Hải quan'), ('c', 'Tổng cục phó Tổng cục Hải quan'),
+            ('d', 'Cục trưởng Cục Hải quan Thành phố')], 'a',
+           'Kiểm tra viên Hải quan trực tiếp kiểm tra hồ sơ và kiểm tra thực tế hàng hóa.'),
+        _e('hq_e3', 'Khi một công chức mới trúng tuyển vào ngành Hải quan và đang trong thời gian tập sự để làm quen với công việc, họ được gọi là gì?',
+           [('a', 'Kiểm tra viên chính Hải quan'), ('b', 'Người tập sự công chức Hải quan'), ('c', 'Đội trưởng Hải quan'), ('d', 'Cục trưởng Hải quan')], 'b',
+           'Người mới trúng tuyển, đang tập sự: Người tập sự công chức Hải quan.'),
+        _e('hq_e4', 'Chức vụ nào dưới đây có thẩm quyền cao nhất, chịu trách nhiệm quản lý toàn bộ hoạt động của ngành Hải quan trên phạm vi cả nước?',
+           [('a', 'Đội trưởng Đội Kiểm soát'), ('b', 'Chi Cục trưởng Chi cục Hải quan'), ('c', 'Cục trưởng Cục Hải quan Thành phố'),
+            ('d', 'Tổng cục trưởng Tổng cục Hải quan')], 'd',
+           'Tổng cục trưởng Tổng cục Hải quan quản lý toàn ngành trên cả nước.'),
+        _e('hq_e5', 'Khi doanh nghiệp truyền tờ khai lên hệ thống hải quan điện tử và được phân vào “Luồng xanh”, doanh nghiệp cần làm gì tiếp theo?',
+           [('a', 'Mang toàn bộ hàng hóa ra cho công chức hải quan mở hộp kiểm tra.'),
+            ('b', 'Nộp toàn bộ hồ sơ giấy để công chức hải quan kiểm tra chứng từ.'),
+            ('c', 'Hàng hóa được miễn kiểm tra hồ sơ giấy và miễn kiểm tra thực tế, doanh nghiệp tiến hành nộp thuế (nếu có) và thông quan.'),
+            ('d', 'Chờ hệ thống hủy tờ khai để khai lại từ đầu.')], 'c',
+           'Luồng xanh: miễn kiểm tra hồ sơ giấy và thực tế; nộp thuế (nếu có) rồi thông quan.'),
+        _e('hq_e6', 'Trong lúc kiểm tra thực tế một số lô hàng nhập khẩu (luồng đỏ), công chức hải quan phát hiện số lượng hàng thực tế nhiều hơn so với '
+                    'số lượng khai báo trên tờ khai. Hành vi này của doanh nghiệp được xem là gì?',
+           [('a', 'Khai báo đúng quy định'), ('b', 'Doanh nghiệp được tặng quà miễn phí từ đối tác'), ('c', 'Có dấu hiệu gian lận thương mại'),
+            ('d', 'Lỗi kỹ thuật của máy tính hải quan')], 'c',
+           'Hàng thực tế nhiều hơn khai báo: có dấu hiệu gian lận thương mại.'),
+        _e('hq_e7', 'Khi hệ thống phân luồng tờ khai của doanh nghiệp vào “luồng vàng”, công chức hải quan sẽ thực hiện công việc nào dưới đây?',
+           [('a', 'Kiểm tra thực tế toàn bộ thùng hàng'),
+            ('b', 'Chỉ kiểm tra chi tiết hồ sơ giấy tờ/chứng từ của lô hàng, không kiểm tra thực tế hàng hóa'),
+            ('c', 'Cho phép doanh nghiệp mang hàng về kho ngay mà không cần xem xét bất kỳ giấy tờ gì'), ('d', 'Tịch thu toàn bộ lô hàng')], 'b',
+           'Luồng vàng: kiểm tra chi tiết hồ sơ, chứng từ; không kiểm tra thực tế hàng hóa.'),
+        _e('hq_e8', 'Một doanh nghiệp muốn làm thủ tục xuất khẩu một lô hàng nông sản sang nước ngoài. Bước đầu tiên doanh nghiệp cần thực hiện trên hệ thống là gì?',
+           [('a', 'Gọi điện cho Cục trưởng Hải quan để “em gửi sếp tí bỉm sữa cho con cháu”'), ('b', 'Mang hàng hóa đến thẳng cảng bốc lên tàu trước'),
+            ('c', 'Khai báo thông tin lô hàng và truyền “tờ khai hải quan” điện tử lên hệ thống'),
+            ('d', 'Chụp ảnh lô hàng đăng lên instagram, facebook, thread,v.v.')], 'c',
+           'Bước đầu tiên: khai và truyền tờ khai hải quan điện tử lên hệ thống.'),
+    ])
 
 # ---------------------------------------------------------------- interview / test / trial steps
 QUESTIONS = {

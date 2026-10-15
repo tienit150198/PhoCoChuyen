@@ -219,6 +219,8 @@ def _live(s: dict, c: dict, career: str, create: bool = False) -> dict | None:
         if rec is None:
             return None
         if create:
+            if rec['emp'] != c['job'].get('employer') or rec['hd'] != c['job'].get('hired_day'):
+                ORG.keep_top(s, career)   # 🛃 the highest grade held before this contract (Hải quan's entry rule)
             _sync(rec, c)
         elif rec['emp'] != c['job'].get('employer') or rec['hd'] != c['job'].get('hired_day'):
             return None
@@ -335,7 +337,7 @@ def discipline(s: dict, c: dict, career: str, grades: int, days: int, code: str,
     return f'⚖️ Kỷ luật: {why[:1].lower() + why[1:]}. {line}'
 
 
-GOV = ('police',)   # careers of the state (owner 11/10: an expelled officer may never join again; Hải quan later)
+GOV = ('police', 'customs')   # careers of the state (owner 11/10, 14/10: an expelled officer may never join any of them again)
 BAN_KEY = 'gov_ban'
 
 
@@ -364,15 +366,16 @@ def after_close(s: dict, c: dict, career: str) -> list[str]:
     if not expel_due(rec):
         return []
     x = ORG.active(career, c, rec)
-    o = ORG.OC.ORGS[x['org']] if x else ORG.OC.ORGS['cand']
+    o = ORG.OC.ORGS[x['org']] if x else ORG.OC.ORGS[ORG.org_id(career) or 'cand']
     e = rec['cx']
     t = int(_now())
     e['out']['t'] = t
     j = s['journey']
     j[BAN_KEY] = dict(v=1, t=t, d=int(j.get('life_day') or 1), c=str(e['out']['c'])[:40])
-    lines = ['🚨 Quyết định khai trừ khỏi lực lượng Công an. Không được tuyển lại vào ngành.']
+    lines = [o.get('expel_line') or '🚨 Quyết định khai trừ khỏi lực lượng Công an. Không được tuyển lại vào ngành.']
     from . import jail
-    days = jail.arrest(j, 'cand', int(o.get('expel_jail') or 3))
+    jd = int(o.get('expel_jail', 3))
+    days = jail.arrest(j, 'cand', jd) if jd > 0 else 0
     if days:
         lines.append(f'🚔 Tạm giữ {days} ngày.')
     from . import archive as ar

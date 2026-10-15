@@ -23,7 +23,7 @@ from game import fair_bm as bm
 from game import jail as jl
 from game import journey as jr
 from game import review_police as R
-from game.engine import GameError, apply_action, new_state, public_state, validate_state
+from game.engine import GameError, apply_action, dormant_out, new_state, public_state, validate_state
 from tests.test_black_market import BlackMarketBase, story
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -497,7 +497,7 @@ class OldServer(JailBase):
         old = self.old_tree(release)
         env = dict(os.environ, PYTHONPATH=os.pathsep.join(x for x in (str(old), os.environ.get('PYTHONPATH', '')) if x),
                    MNL_JAIL_OFF='0')
-        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(saves), capture_output=True,
+        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps([dormant_out(x) for x in saves]), capture_output=True,
                              text=True, cwd=old, env=env, encoding='utf-8', timeout=300)
         self.assertEqual(out.returncode, 0, out.stderr[-3000:])
         return json.loads(out.stdout)

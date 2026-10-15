@@ -315,6 +315,21 @@ def _boss_chance(s: dict, career: str) -> float:
     return min(.2, .08 + .02 * others)
 
 
+def entry_block(s: dict, career: str) -> str | None:
+    """Why this save may not apply to `career` now (a plugin's entry_block: 🛃 Hải quan's conditions, game/gov_rules.py)."""
+    from .careers import get as plugin
+    mod = plugin(career)
+    fn = getattr(mod, 'entry_block', None) if mod else None
+    return fn(s) if fn else None
+
+
+def entry_rows(s: dict, career: str) -> list | None:
+    from .careers import get as plugin
+    mod = plugin(career)
+    fn = getattr(mod, 'entry_rows', None) if mod else None
+    return fn(s) if fn else None
+
+
 def _unlocked(s: dict, career: str) -> bool:
     try:
         from . import journey
@@ -346,7 +361,7 @@ def meet_boss(s: dict, career: str, day: int) -> dict | None:
         return None
     options = [(k, p) for k in sorted(s['careers']) if k != career and required(k) and _unlocked(s, k)   # (a place still needing its exam is not)
                and s['careers'][k].get('job', {}).get('status') in ('none', 'rejected') for p in postings(k)
-               if not _needs_exam(s['careers'][k]['job'], k, p)]   # luck never replaces a licence exam
+               if not _needs_exam(s['careers'][k]['job'], k, p) and entry_block(s, k) is None]   # luck never replaces a licence exam nor the entry rules
     if not options:
         return None
     k, post = rng.choice(options)
@@ -373,7 +388,9 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
     need(required(career), 'Nghề này tự mở tiệm, không cần xin việc.')
     if name in ('job_apply', 'job_quick', 'job_backdoor', 'job_accept'):
         from . import promotion as pm
-        need(not pm.banned(s, career), 'Bạn đã bị khai trừ khỏi lực lượng: ngành này không tuyển lại.', 'gov_banned')
+        need(not pm.banned(s, career), 'Bạn đã bị khai trừ khỏi ngành nghề chính quyền: nơi này không tuyển lại.', 'gov_banned')
+        why = entry_block(s, career)   # 🛃 Hải quan: chapters, the police grade, the service record (game/gov_rules.py)
+        need(why is None, why or '', 'entry_rules')
     if name == 'job_apply':
         need(job['status'] in ('none', 'rejected'), 'Bạn đang có hồ sơ hoặc đã có việc.')
         need(today(s, c) >= job['cooldown_day'], f'Nơi tuyển dụng hẹn phỏng vấn lại {_dy().when_day(s, job["cooldown_day"], c)}.', 'retry_later')
@@ -915,6 +932,10 @@ def public(c: dict, career: str, s: dict | None = None) -> dict:
                 job['ladder_pay'] = [boosted(round(_lifted(job['base_salary'], x + deg, away)), job['salary_multiplier']) for x in pcts]
 
     job['certs'] = list(job.get('certs') or [])
+    if s is not None:
+        rows = entry_rows(s, career)
+        if rows is not None:
+            job['entry'] = rows   # 🛃 what applying asks, each met or not (shown before the postings)
     ex = exam(career)
     app = job.get('application')
     sheet = app.get('exam') if isinstance(app, dict) else None

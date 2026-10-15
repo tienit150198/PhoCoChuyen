@@ -45,6 +45,8 @@ class Mapping(unittest.TestCase):
     def test_every_place_opens_on_the_server_once_its_chapter_is_reached(self):
         unlock = {cid: n for n, cids in jr.CH_UNLOCKS.items() for cid in cids}
         for cid in CAREERS:
+            if cid == 'customs':   # 🛃 opens once 3 chapters are done (game/gov_rules.py opens), not by a chapter's list
+                continue
             self.assertIn(cid, unlock, f'{cid} never opens in the story')
         p = Play()
         s = p.s

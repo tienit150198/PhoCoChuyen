@@ -9,6 +9,7 @@ import base64
 import contextvars
 import copy
 import hashlib
+import json
 import math
 import os
 import secrets
@@ -147,6 +148,42 @@ def stamped(state:dict) -> bool:
     check=state.get("check")
     return type(check) is dict and check.get("build")==BUILD
 
+# 💤 Dormant careers (🛃 customs, 16/10): a career added in this build that a save has never touched (its record is
+# exactly initial_career) is left out of the stored text (game/storage.py serialize_bytes keeps its digest in the
+# stamp) and put back on every read (wake: Store.parse_state, migrate_state). A save that never used it so still
+# reads on the build before it (2.4.24 requires exactly its own career list). Once the career is used, its record
+# is stored and that older build refuses the save: never roll back below the build that added it.
+DORMANT=("customs",)
+_IDLE={}
+
+
+def wake(s) -> bool:
+    """Put back the dormant careers a stored save left out (in place). True when one was added."""
+    careers=s.get("careers") if type(s) is dict else None
+    if type(careers) is not dict:return False
+    woke=False
+    for cid in DORMANT:
+        if cid in CAREERS and cid not in careers:careers[cid]=initial_career(cid);woke=True
+    return woke
+
+
+def idle_digest(cid:str,digest) -> str:
+    """The digest of a dormant career's untouched record (digest: storage's text digest)."""
+    d=_IDLE.get(cid)
+    if d is None:d=_IDLE[cid]=digest(json.dumps(initial_career(cid),ensure_ascii=False,allow_nan=False,separators=(",",":")))
+    return d
+
+
+def dormant_out(state:dict) -> dict:
+    """A shallow copy of `state` without the dormant careers it never touched (a backup an older build can read)."""
+    careers=state.get("careers") if type(state) is dict else None
+    if type(careers) is not dict or not any(cid in careers for cid in DORMANT):return state
+    idle=[cid for cid in DORMANT if cid in careers and careers[cid]==initial_career(cid)]
+    if not idle:return state
+    out=dict(state);out["careers"]={k:v for k,v in careers.items() if k not in idle}
+    return out
+
+
 def migrate_state(state:dict,owned:bool=False) -> dict:
     """Upgrade v1 locally without replaying wages, rent, tax or past incidents.
     `owned`: the caller hands over a private copy (freshly parsed JSON) that may be
@@ -154,6 +191,9 @@ def migrate_state(state:dict,owned:bool=False) -> dict:
     A save stamped with this BUILD already went through every step below, and they
     are idempotent on what the reducer produces: it is returned as it is."""
     need(isinstance(state,dict),"Bản lưu cần là một đối tượng.","invalid_save")
+    if isinstance(state.get("careers"),dict) and any(cid not in state["careers"] for cid in DORMANT):
+        if not owned:state=tree_copy(state);owned=True
+        wake(state)  # 💤 a dormant career left out of the stored text
     if stamped(state) and not needs_migration(state):return state if owned else tree_copy(state)
     s=state if owned else tree_copy(state)
     # AI characters are on by default: saves that never went through that change get it once.

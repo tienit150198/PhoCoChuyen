@@ -22,7 +22,7 @@ from game import fair_ring as ring
 from game import journey as jr
 from game import leaderboard as lb
 from game import live_effects as lfx
-from game.engine import GameError, apply_action, migrate_state, new_state, public_state, validate_state
+from game.engine import GameError, apply_action, dormant_out, migrate_state, new_state, public_state, validate_state
 from game.storage import Store
 
 VN = fh.VN
@@ -1447,7 +1447,7 @@ class FairPhotoPreviousServer(FairBase):
                     s, _ = self.act(s, 'fair_photo', mode=mode)
                 validate_state(s)
                 env = dict(os.environ, PYTHONPATH=old)
-                out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(s), capture_output=True, text=True,
+                out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(dormant_out(s)), capture_output=True, text=True,
                                      cwd=old, env=env, encoding='utf-8', timeout=300)
                 self.assertEqual(out.returncode, 0, out.stderr[-3000:])
                 back = json.loads(out.stdout)

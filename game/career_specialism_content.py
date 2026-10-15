@@ -67,11 +67,13 @@ CAREER_IDS = (
     "lawyer",
     "laundry",
     "post_office",
+    "customs",
 )
 _FILES = (
     "career_specialisms.json",
     "career_specialisms_21_37.json",
     "career_specialisms_38_54.json",
+    "career_specialisms_55.json",
 )
 _PACK_KEYS = {"tier", "title", "output_unit", "inputs", "procedure", "check"}
 _INPUT_KEYS = {"name", "unit", "quantity", "unit_cost"}
@@ -132,6 +134,7 @@ _TITLE_DIGESTS = {
     "art_studio": "96afdb97afacd4e7ab94b40e6baf9ff8775a138990cf9884582551b6a93e2f43",
     "lawyer": "cc027551027175b75beed974cfbecc76dda6a9e7f63815e6f8a413ab15a16278",
     "laundry": "efcff125b236f98b659d54509de1a4149683e0e8b30360c4dd2bfc457b3aaf74",
+    "customs": "a09f24b274c73db1cddd38eb50fa34cea34f8847dd22a483fc803445ae276f49",
     "post_office": "2e15eb95dcac32a33c4edc12ac71ed905086b6b2021ddea28b0c7be4c9f92c67",
 }
 

@@ -9,12 +9,17 @@ export const GRADES={cand:{binh_nhi:{base:'nco',v:1},binh_nhat:{base:'nco',v:2},
   thuong_si:{base:'nco',h:3},thieu_uy:{base:'officer',b:1,s:1},trung_uy:{base:'officer',b:1,s:2},thuong_uy:{base:'officer',b:1,s:3},
   dai_uy:{base:'officer',b:1,s:4},thieu_ta:{base:'officer',b:2,s:1},trung_ta:{base:'officer',b:2,s:2},thuong_ta:{base:'officer',b:2,s:3},
   dai_ta:{base:'officer',b:2,s:4},thieu_tuong:{base:'general',s:1},hoc_vien:{base:'cadet'}}};
+/* 🛃 Hải quan (game/org_content.py HQ_GRADES; tests/test_career_customs.py compares them): a copy of the customs ladder's
+ * `ins`, set apart from the CAND's so its line above stays as it is. */
+GRADES.hq={tap_su:{base:'hq_cadet'},ktv_1:{base:'hq',b:1,s:1},ktv_2:{base:'hq',b:1,s:2},ktv_3:{base:'hq',b:1,s:3},ktvc_1:{base:'hq',b:2,s:1},
+  ktvc_2:{base:'hq',b:2,s:2},ktvc_3:{base:'hq',b:2,s:3},ktvcc_1:{base:'hq_senior',b:2,s:1},ktvcc_2:{base:'hq_senior',b:2,s:2},ktvcc_3:{base:'hq_senior',b:2,s:3}};
 /* Công an phường Mây's boards (owner spec 11/10, replacing the teal of 07/10): red #EE0000 with yellow #FFFF00 chevrons
  * pointing up (towards the button) for the enlisted and NCOs; a plain red board for a Học viên; officers red with
  * #FFFF66 bars and #FFFF33 stars 2% larger; the general (Thiếu tướng) #DD0000 with a #FFFF00 star 1% larger again.
  * [fill, edge] per base. */
-const BASE={nco:['#EE0000','#a30000'],officer:['#EE0000','#a30000'],general:['#DD0000','#960000'],cadet:['#EE0000','#a30000']};
-const MARK={nco:'#FFFF00',officer:'#FFFF66',general:'#FFFF00',cadet:'#FFFF00'};
+const BASE={nco:['#EE0000','#a30000'],officer:['#EE0000','#a30000'],general:['#DD0000','#960000'],cadet:['#EE0000','#a30000'],
+  hq:['#1f5a45','#123829'],hq_senior:['#1a4d3b','#0f2f23'],hq_cadet:['#2a6b54','#173f31']};   // 🛃 the customs green
+const MARK={nco:'#FFFF00',officer:'#FFFF66',general:'#FFFF00',cadet:'#FFFF00',hq:'#e9cf6b',hq_senior:'#f2d97a',hq_cadet:'#e9cf6b'};
 const STARS={officer:['#FFFF33',1.02],general:['#FFFF00',1.02*1.01]};   // [colour, size]
 const STAR='#FFFF33',STAR_EDGE='#8a6d00',UNI='#6f8455',UNI_D='#55693f',BAND='#1d5a5f',VISOR='#26221f';
 export const CAP_GOLD='#e7d59a';
@@ -46,7 +51,8 @@ export function paintRank(c,F,K,full=false){
   const ins=insOf(F.rk);if(!ins)return;
   if(full){K.R(c,-23,-52,46,36,UNI,15);K.L(c,0,-50,0,-18,UNI_D,1.2);K.R(c,-18,-40,11,8,UNI_D,2);K.R(c,7,-40,11,8,UNI_D,2);K.P(c,[[-9,-53],[0,-45],[9,-53]],'#e9ead8');K.P(c,[[-3,-49],[3,-49],[1.5,-38],[-1.5,-38]],BAND);}
   board(c,K,ins,-31,-50,18,7,1);board(c,K,ins,13,-50,18,7,-1);
-  badge(c,K,-12,-36,4.2);
+  if(String(ins.base).startsWith('hq')){K.E(c,-12,-36,4.2,4.2,'#8a7640');K.E(c,-12,-36,3.4,3.4,'#e9cf6b');K.E(c,-12,-36,2,2,'#1f5a45');}   // 🛃 a plain gold-and-green customs emblem
+  else badge(c,K,-12,-36,4.2);
 }
 /** The peaked cap (on shift only: it sits over the hair). */
 export function paintCap(c,F,K){

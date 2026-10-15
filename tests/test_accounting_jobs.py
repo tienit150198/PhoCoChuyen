@@ -13,7 +13,7 @@ from game import accounting_school as school
 from game import employment as emp
 from game import journey as jr
 from game import x3_week as x3
-from game.engine import GameError, apply_action, new_state, public_state, validate_state
+from game.engine import GameError, apply_action, dormant_out, migrate_state, new_state, public_state, validate_state
 
 VN = datetime.timezone(datetime.timedelta(hours=7))
 SEED = 7
@@ -384,10 +384,10 @@ class Saves(unittest.TestCase):
         prog = ('import json,sys;from game.engine import validate_state,migrate_state,apply_action;'
                 's=json.load(sys.stdin);validate_state(migrate_state(s));'
                 's,_=apply_action(s,"grocery","select_career");print(json.dumps(s))')
-        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(s), capture_output=True, text=True,
+        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(dormant_out(s)), capture_output=True, text=True,
                              cwd=old, env=dict(os.environ, PYTHONPATH=old + os.pathsep + os.environ.get('PYTHONPATH', '')))
         self.assertEqual(out.returncode, 0, out.stderr[-2000:])
-        back = json.loads(out.stdout)
+        back = migrate_state(json.loads(out.stdout))
         validate_state(back)   # and this build loads what the old one wrote
         self.assertTrue(aj.certified(back, 'corp_accounting'))
 

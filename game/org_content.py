@@ -116,6 +116,15 @@ VIOLATIONS = {
     # Owner spec 14/10 (kỷ luật: game/gov_rules.py; never a ⚠️ warning, the codes name the reason in the log)
     'bail_kin': ('Chuộc người thân đang chấp hành án', 'Cán bộ tuyệt đối không bảo lãnh bạn bè, vợ/chồng, người đính hôn đang chấp hành án.'),
     'gamble': ('Tham gia cá độ, đỏ đen ở chợ đen', 'Cán bộ tuyệt đối không đặt cược bằng xu ở chợ đen.'),
+    # 🛃 Hải quan (owner spec 14/10, I. Bổ sung cập nhật nghề Hải quan; game/careers/customs.py, game/hq_ops.py)
+    'hq_skip': ('Quyết định khi chưa kiểm đủ theo luồng', 'Luồng vàng: kiểm hồ sơ giấy. Luồng đỏ: kiểm hồ sơ và thực tế hàng, rồi mới quyết định.'),
+    'hq_release': ('Cho qua hàng cấm, hàng lậu', 'Hàng cấm, động vật hoang dã, hàng không khai báo: tạm giữ, lập biên bản, bàn giao đúng thẩm quyền.'),
+    'hq_dismiss': ('Gỡ phản ánh chính đáng', 'Phản ánh đúng thì ghi nhận, sửa sai và trả lời người phản ánh.'),
+    'hq_npc_sue': ('Đưa người phản ánh chính đáng đi truy tố', 'Chỉ chuyển Công an khi có dấu hiệu vi phạm (vu khống, đòi tiền).'),
+    'hq_collude': ('Thông đồng, bao che doanh nghiệp gian lận', 'Không bao che bất kỳ ai: khai sai thì xử lý đúng như mọi tờ khai.'),
+    'hq_falsify': ('Cố ý làm sai lệch hồ sơ, kết quả kiểm tra', 'Biên bản ghi đúng điều đã thấy; không sửa kết quả theo lời nhờ.'),
+    'hq_abuse': ('Lợi dụng chức vụ: hối lộ, chiếm đoạt thuế, tuồn hàng', 'Không nhận gì của ai; tiền thuế, hàng tạm giữ có biên lai, chứng từ.'),
+    'hq_wrongcase': ('Đề xuất xử lý sai, chèn ép doanh nghiệp', 'Chỉ đề xuất khi có căn cứ trong hồ sơ kiểm tra, đúng mức.'),
 }
 SEVERE = ('bribe',)   # an immediate one-grade demotion and a permanent integrity mark (owner 06/10)
 
@@ -144,6 +153,24 @@ QUESTIONS = {
            ('Nâng điểm một chút', 0), ('Hỏi thêm ý kiến tổ', 1)),
     ],
 }
+QUESTIONS['hq'] = [
+    _q('hq1', 'Một doanh nghiệp quen nhắn: “Lô này anh em mình, cho qua luồng vàng nhé.”', ('Kiểm đúng theo luồng hệ thống phân, như mọi tờ khai', 2),
+       ('Cho qua một lần', 0), ('Hỏi ý lãnh đạo rồi tính', 1)),
+    _q('hq2', 'Kiểm thực tế thấy thừa 20 thùng so với tờ khai. Bạn làm gì?', ('Lập biên bản, yêu cầu giải trình, xử lý theo quy định', 2),
+       ('Sửa tờ khai cho khớp giúp doanh nghiệp', 0), ('Bỏ qua vì chênh ít', 0)),
+    _q('hq3', 'Chỉ tiêu thu ngân sách tháng còn thiếu, cấp trên giục “ấn thuế cho đủ”.', ('Báo cáo số thật, thu đúng, kiến nghị giải pháp', 2),
+       ('Áp mức thuế cao hơn cho đủ số', 0), ('Im lặng chờ tháng sau', 1)),
+    _q('hq4', 'Hành khách đưa phong bì “cảm ơn” sau khi làm thủ tục nhanh.', ('Từ chối, giải thích, ghi sổ', 2), ('Nhận vì đã làm xong', 0),
+       ('Nhận rồi nộp quỹ chung', 0)),
+    _q('hq5', 'Hàng tạm giữ là mỹ phẩm đắt tiền, đồng nghiệp rủ “chia nhau dùng thử”.', ('Từ chối, niêm phong, vào sổ đủ biên lai', 2),
+       ('Lấy một ít không ai biết', 0), ('Báo lãnh đạo nhưng vẫn để ngoài kho', 1)),
+    _q('hq6', 'Một người dân phản ánh bạn tính thuế sai, và họ nói đúng.', ('Ghi nhận, tính lại, trả lời và sửa quy trình', 2),
+       ('Gỡ phản ánh cho sạch hồ sơ', 0), ('Chuyển Công an vì “nói xấu cơ quan”', 0)),
+    _q('hq7', 'Cấp dưới đề xuất tịch thu hàng của một cửa hàng mà hồ sơ không có căn cứ.', ('Không duyệt, yêu cầu bổ sung căn cứ, nhắc quy trình', 2),
+       ('Duyệt cho nhanh', 0), ('Để đó không trả lời', 1)),
+    _q('hq8', 'Bạn được mời đi ăn tối bởi doanh nghiệp đang chờ hoàn thuế.', ('Từ chối lịch sự, giữ khoảng cách khi hồ sơ đang xử lý', 2),
+       ('Đi cho biết mặt', 0), ('Đi nhưng tự trả tiền', 1)),
+]
 QUESTION_INDEX = {q['id']: q for rows in QUESTIONS.values() for q in rows}
 
 # NPCs named in messages: who fills a seat a demotion leaves, who signs, who approves.
@@ -169,8 +196,55 @@ ORGS = {
         questions='cand', office='cand', badge='cand',
     ),
 }
+# 🛃 Hải quan (owner spec 14/10): ngạch & bậc (grades) and chức vụ (posts) from the Chi cục Hải quan cửa khẩu Bến Mây up
+# to the Cục Hải quan Thành phố and the Tổng cục. Boards: deep green with gold bars and stars (v4/insignia.js GRADES.hq).
+# Everything (the units, the people) is invented.
+HQ, HQ_SENIOR, HQ_CADET = 'hq', 'hq_senior', 'hq_cadet'
+HQ_GRADES = (
+    _g('tap_su', 'Người tập sự', dict(base=HQ_CADET), 3, 30, coef=3.2),
+    _g('ktv_1', 'Kiểm tra viên bậc 1', dict(base=HQ, b=1, s=1), 5, 34, coef=3.6),
+    _g('ktv_2', 'Kiểm tra viên bậc 2', dict(base=HQ, b=1, s=2), 6, 36, coef=4.0),
+    _g('ktv_3', 'Kiểm tra viên bậc 3', dict(base=HQ, b=1, s=3), 8, 38, 'course:hq_chinh', coef=4.4),
+    _g('ktvc_1', 'Kiểm tra viên chính bậc 1', dict(base=HQ, b=2, s=1), 8, 40, coef=5.0),
+    _g('ktvc_2', 'Kiểm tra viên chính bậc 2', dict(base=HQ, b=2, s=2), 10, 42, coef=5.6),
+    _g('ktvc_3', 'Kiểm tra viên chính bậc 3', dict(base=HQ, b=2, s=3), 10, 43, 'course:hq_cao_cap', coef=6.2),
+    _g('ktvcc_1', 'Kiểm tra viên cao cấp bậc 1', dict(base=HQ_SENIOR, b=2, s=1), 12, 45, coef=7.0),
+    _g('ktvcc_2', 'Kiểm tra viên cao cấp bậc 2', dict(base=HQ_SENIOR, b=2, s=2), 12, 45, 'clean:30', coef=7.8),
+    _g('ktvcc_3', 'Kiểm tra viên cao cấp bậc 3', dict(base=HQ_SENIOR, b=2, s=3), None, None, coef=8.6),   # the Tổng cục trưởng's ceiling
+)
+HQ_POSTS = (
+    _p('hq_ts', 'Người tập sự công chức Hải quan', 'Tập sự', 'chi_cuc', 'tap_su', 'tap_su', 3),
+    _p('hq_ktv', 'Kiểm tra viên Hải quan · Đội Thủ tục hàng hóa', 'Kiểm tra viên', 'chi_cuc', 'ktv_1', 'ktv_3', 8, frm=('hq_ts',), bonus=3),
+    _p('hq_ktvc', 'Kiểm tra viên chính Hải quan · Đội Kiểm soát', 'Kiểm tra viên chính', 'chi_cuc', 'ktvc_1', 'ktvc_2', 8, frm=('hq_ktv',), bonus=6),
+    _p('hq_doi', 'Đội trưởng Đội Kiểm soát Hải quan', 'Đội trưởng', 'chi_cuc', 'ktvc_2', 'ktvc_3', 10, need=40, frm=('hq_ktvc',), bonus=8),
+    _p('hq_ccc', 'Chi cục trưởng Chi cục Hải quan cửa khẩu Bến Mây', 'Chi cục trưởng', 'chi_cuc', 'ktvc_3', 'ktvcc_1', 10, need=42,
+       frm=('hq_doi',), bonus=12),
+    _p('hq_cuc', 'Cục trưởng Cục Hải quan Thành phố', 'Cục trưởng', 'cuc', 'ktvcc_1', 'ktvcc_2', 15, need=45, frm=('hq_ccc',), bonus=20,
+       chain='city', extra=dict(nomark=True)),
+    _p('hq_tong', 'Tổng cục trưởng Tổng cục Hải quan', 'Tổng cục trưởng', 'tong_cuc', 'ktvcc_2', 'ktvcc_3', 0, need=45, frm=('hq_cuc',),
+       bonus=25, chain='city', extra=dict(nomark=True, clean=20)),
+)
+HQ_NEXT = {'hq_ts': ('hq_ktv',), 'hq_ktv': ('hq_ktvc',), 'hq_ktvc': ('hq_doi',), 'hq_doi': ('hq_ccc',), 'hq_ccc': ('hq_cuc',),
+           'hq_cuc': ('hq_tong',), 'hq_tong': ()}
+HQ_COURSES = {'hq_chinh': '📚 Bồi dưỡng ngạch Kiểm tra viên chính', 'hq_cao_cap': '📚 Bồi dưỡng ngạch Kiểm tra viên cao cấp'}
+SEATS.update({'hq_ccc': 5, 'hq_cuc': 1, 'hq_tong': 1})   # 🛃 counted from hq_roster (game/cand_roster.py)
+ORGS['hq'] = dict(
+    name='Hải quan', unit='Chi cục Hải quan cửa khẩu Bến Mây', grade_word='Ngạch, bậc', post_word='Chức vụ',
+    grades=HQ_GRADES, posts=HQ_POSTS, next=HQ_NEXT, courses=HQ_COURSES,
+    pay_ref=3.2, eval_window=10, evals=EVALS,
+    warn_max=3, demote_on=3, decay_days=10, susp_days=3, red_kht=2, red_hold=20, red_expel=4, expel_jail=0,
+    severe=SEVERE, bar_on_mark=('hq_cuc', 'hq_tong', 'ktvcc_2', 'ktvcc_3'),
+    start=('hq_ts', 'tap_su'),
+    step={'hq_ts': 0, 'hq_ktv': 1, 'hq_ktvc': 2, 'hq_doi': 3, 'hq_ccc': 4, 'hq_cuc': 4, 'hq_tong': 4},
+    migrate=(('hq_ts', 'tap_su'), ('hq_ktv', 'ktv_1'), ('hq_ktvc', 'ktvc_1'), ('hq_doi', 'ktvc_2'), ('hq_ccc', 'ktvc_3')),
+    questions='hq', office=None, badge='hq',
+    # Who takes a seat a demotion leaves, who signs while no player holds the top seat, the expulsion's line.
+    seat_npc=('Kiểm tra viên chính Lương Hữu Đạt', 'Kiểm tra viên Tạ Minh Châu', 'Kiểm tra viên Kiều Phương', 'Kiểm tra viên chính Âu Gia Bảo'),
+    boss='Tổng cục trưởng Nghiêm Quốc Trung (Tổng cục Hải quan)',
+    expel_line='🚨 Quyết định khai trừ khỏi ngành Hải quan. Không được xét tuyển vào bất kỳ ngành nghề chính quyền nào.',
+)
 # Career → (org, the postings that wear it). A part-time posting (Hỗ trợ tiếp dân) keeps the plain ladder.
-CAREER_ORG = {'police': ('cand', ('cap-kv',))}
+CAREER_ORG = {'police': ('cand', ('cap-kv',)), 'customs': ('hq', ('hq-ktv',))}
 
 # Content stubs (owner 06/10: "nhiều cái khác nữa, cũng thế"): the other careers' ladders, design §2.5–2.6. Not wired:
 # a stub becomes live by moving it into ORGS with grades/posts in the format above and adding it to CAREER_ORG.

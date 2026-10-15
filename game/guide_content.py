@@ -92,7 +92,7 @@ ORDER = ('milk_tea',
  'lifeguard',
  'police',
  'zpop',
- 'laundry', 'art_studio', 'post_office', 'lawyer')
+ 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs')
 # Careers still being built: their entry may be a stub until someone writes it.
 PENDING = ()
 SECTIONS = ('jobs', 'steps', 'stars', 'mistakes', 'prep', 'surprises')
@@ -6847,6 +6847,25 @@ CAREERS.update({
         mistakes=[dict(bad='Chép cân ước tính, ghi sai cước hoặc chọn sai chứng từ.', result='Bước đó giữ lại để sửa; thưởng giảm và phiếu không tính đạt chuẩn.')],
         prep=['Ứng tuyển trước khi làm. Cước thuộc bưu điện; bạn nhận lương hợp đồng và thưởng hiệu suất 4–9 xu mỗi phiếu.'],
         surprises=['Mốc cuối cần 180 phiếu không sai, 45 ngày có phiếu đạt và 12 túi thư cuối tuyến; ca rỗng không tăng tiến trình.'], buttons=[]),
+    'customs': dict(emoji='🛃', name='Hải quan', place='Chi cục Hải quan cửa khẩu Bến Mây',
+        intro='Bạn là công chức hải quan ở cửa khẩu Bến Mây: phân luồng tờ khai, kiểm hóa, chống buôn lậu, tính thuế và kiểm soát hàng cấm. '
+              'Mọi quyết định phải có căn cứ trên hồ sơ, không nhận gì của ai.',
+        jobs=[dict(emoji='🚦', name='Phân luồng tờ khai', how='Xanh: miễn kiểm, nộp thuế rồi thông quan. Vàng: kiểm hồ sơ giấy. Đỏ: kiểm hồ sơ và kiểm thực tế hàng hóa.'),
+              dict(emoji='🔦', name='Chống buôn lậu', how='Đọc ảnh soi, đối chiếu tờ khai; hàng không khai, khai sai, động vật hoang dã, hàng cấm thì tạm giữ, lập biên bản.'),
+              dict(emoji='🧮', name='Tính thuế', how='Thuế nhập khẩu tính trên trị giá; thuế giá trị gia tăng tính trên trị giá đã cộng thuế nhập khẩu. Xét miễn, hoàn thuế theo chứng từ.'),
+              dict(emoji='🛡️', name='Kiểm soát', how='Bưu kiện, vali, xe tải: chọn cách kiểm phù hợp, phối hợp Công an Thành phố khi có dấu hiệu tội phạm.'),
+              dict(emoji='📮', name='Phản ánh sau ca', how='Đọc từng phản ánh: ghi nhận phản ánh đúng, gỡ phản ánh không liên quan, gửi Công an Thành phố hồ sơ đòi tiền, dọa bóc phốt.')],
+        steps=['Đọc tờ khai và luồng hệ thống phân trước khi làm bất cứ việc gì.',
+               'Làm đúng việc luồng đó yêu cầu: không bỏ bước kiểm, không kiểm quá mức.',
+               'Mọi kết luận ghi vào biên bản theo điều thật sự thấy; hàng tạm giữ phải có biên lai.',
+               'Có ai đưa phong bì, nhờ “bỏ qua”: từ chối và báo cấp trên.'],
+        stars=['Đúng luồng, đúng thuế, đúng biên bản.', 'Không thông đồng, không làm sai lệch hồ sơ, không giữ lại hàng tạm giữ.'],
+        mistakes=[dict(bad='Cho qua hàng khai sai, hàng cấm.', result='Vi phạm nghiệp vụ, ghi vào hồ sơ công tác.'),
+                  dict(bad='Nhận phong bì, thông đồng, làm sai lệch kết quả kiểm tra.', result='Thanh tra có thể phát hiện: giáng bậc, kỷ luật hoặc khai trừ.')],
+        prep=['Cần trải qua 3 chương, từng làm Công an đạt Hạ sĩ trở lên, hồ sơ công tác không quá 3 lần vi phạm.',
+              'Thi sát hạch 8 câu, đạt từ 6 câu; trượt thì ngày sống sau thi lại.'],
+        surprises=['Cấp bậc: Người tập sự, Kiểm tra viên, Kiểm tra viên chính, Kiểm tra viên cao cấp; chức vụ tới Đội trưởng, Chi cục trưởng, Cục trưởng, Tổng cục trưởng.',
+                   'Từ Kiểm tra viên trở lên có thể kiểm tra kho của các cửa hàng trên phố: chỉ đề xuất khi hồ sơ có căn cứ.'], buttons=[]),
 })
 
 

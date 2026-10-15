@@ -12,19 +12,19 @@ NEW = ('art_studio', 'lawyer', 'laundry', 'post_office')
 
 class Registration(unittest.TestCase):
     def test_new_careers_have_stable_appended_ids(self):
-        self.assertEqual(ORDER[-4:], NEW)
+        self.assertEqual(ORDER[-5:], NEW + ('customs',))   # 🛃 customs (16/10) appended after the four
         self.assertEqual(len(ORDER), len(set(ORDER)))
 
     def test_fifty_career_save_gains_four_without_resetting_old_work(self):
-        self.assertEqual(len(CAREERS),54)
+        self.assertEqual(len(CAREERS),55)
         state=new_state();state.pop('check',None);state=migrate_state(state);validate_state(state)
         for cid in NEW:state['careers'].pop(cid)
         old=copy.deepcopy(state['careers'])
         migrated=migrate_state(state)
         validate_state(migrated)
-        self.assertEqual(len(migrated['careers']),54)
+        self.assertEqual(len(migrated['careers']),55)
         self.assertEqual({cid:migrated['careers'][cid] for cid in old},old)
-        self.assertEqual(len(state['careers']),50)
+        self.assertEqual(len(state['careers']),51)
         self.assertEqual(migrate_state(migrated),migrated)
 
 

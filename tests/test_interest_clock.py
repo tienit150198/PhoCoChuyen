@@ -18,7 +18,7 @@ from game import bank as bk
 from game import interest_clock as ic
 from game import invest as iv
 from game import journey as jr
-from game.engine import apply_action, new_state, validate_state
+from game.engine import apply_action, dormant_out, new_state, validate_state
 from game import bank_xfer as bx
 from tests.test_bank_xfer import Base as _XferBase
 
@@ -243,7 +243,7 @@ class Rollback(unittest.TestCase):
         d = s['journey']['bank']['demand']
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp, 'save.json')
-            path.write_text(json.dumps(s), encoding='utf-8')
+            path.write_text(json.dumps(dormant_out(s)), encoding='utf-8')
             out = subprocess.run([sys.executable, '-I', '-c', OLD_PROBE, OLD, str(path)], capture_output=True, text=True,
                                  cwd=tmp, timeout=300)
         self.assertEqual(out.returncode, 0, out.stderr[-2000:])

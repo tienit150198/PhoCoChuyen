@@ -671,7 +671,8 @@
     "art_studio",
     "lawyer",
     "laundry",
-    "post_office"
+    "post_office",
+    "customs"
   ],
   "lots": [
     {
@@ -1647,23 +1648,7 @@
       "career": "post_office"
     },
     {
-      "district": "harbour",
-      "at": {
-        "x": 66.8,
-        "y": 46.2
-      },
-      "door": {
-        "x": 67.2,
-        "y": 48.15
-      },
-      "footprint": {
-        "x0": 65,
-        "y0": 43,
-        "x1": 69.2,
-        "y1": 47.2
-      }
-    },
-    {
+      "career": "customs",
       "district": "garden",
       "at": {
         "x": -6.2,
@@ -1678,6 +1663,23 @@
         "y0": 26,
         "x1": -3.8,
         "y1": 30.2
+      }
+    },
+    {
+      "district": "harbour",
+      "at": {
+        "x": 66.8,
+        "y": 46.2
+      },
+      "door": {
+        "x": 67.2,
+        "y": 48.15
+      },
+      "footprint": {
+        "x0": 65,
+        "y0": 43,
+        "x1": 69.2,
+        "y1": 47.2
       }
     }
   ],

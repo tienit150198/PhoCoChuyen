@@ -50,7 +50,7 @@ def _level(c):
 def _group(career):
     # Public-service mastery must not ask the shared service bank's discount or
     # sales questions. The office bank tests evidence, honesty and teamwork.
-    if career in ('police', 'nurse', 'library', 'pagoda', 'teacher'):
+    if career in ('police', 'customs', 'nurse', 'library', 'pagoda', 'teacher'):
         return 'office'
     return next((group for group, ids in PC.GROUP.items() if career in ids), 'trade')
 

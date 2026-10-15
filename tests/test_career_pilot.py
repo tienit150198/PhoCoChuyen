@@ -13,7 +13,7 @@ from pathlib import Path
 from tests.helpers import Journey
 from game.careers import kit, PLUGINS
 from game.content import make_task
-from game.engine import GameError, migrate_state, new_state, public_state, validate_state
+from game.engine import GameError, dormant_out, migrate_state, new_state, public_state, validate_state
 
 PL = PLUGINS.get('pilot')
 
@@ -839,7 +839,7 @@ class OldServer(Base):
                 's,_=apply_action(s,"pilot","pl_gate",{"task":tid,"flown":{"stable":True,"touch":"firm"}});'
                 's,_=apply_action(s,"pilot","pl_park",{"task":tid});validate_state(s);print(json.dumps(s))')
         env = dict(os.environ, PYTHONPATH=old + os.pathsep + os.environ.get('PYTHONPATH', ''))
-        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(j.state), capture_output=True, text=True, cwd=old, env=env,
+        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(dormant_out(j.state)), capture_output=True, text=True, cwd=old, env=env,
                              encoding='utf-8', timeout=300)
         self.assertEqual(out.returncode, 0, out.stderr[-3000:])
         back = migrate_state(json.loads(out.stdout))

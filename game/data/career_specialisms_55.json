@@ -1,0 +1,244 @@
+{
+  "customs": [
+    {
+      "tier": 1,
+      "title": "Đối chiếu tờ khai luồng vàng với chứng từ",
+      "output_unit": "bảng đối chiếu luồng vàng",
+      "inputs": [
+        {
+          "name": "Bộ chứng từ lô hàng hư cấu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Đọc tên hàng, số lượng và trị giá trên tờ khai giả lập.",
+        "So từng dòng với hóa đơn, vận đơn và C/O của lô.",
+        "Ghi dòng lệch kèm chứng từ nguồn để trình đội trưởng."
+      ],
+      "check": {
+        "prompt": "Bảng nào được nghiệm thu?",
+        "good": "Mỗi dòng tờ khai có chứng từ khớp tên hàng và số lượng.",
+        "bad": "Chỉ khớp tổng trị giá nên bỏ qua tên hàng khác.",
+        "why": "Trị giá có thể trùng, tên hàng và số lượng mới xác định lô."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Lập biên bản kiểm hóa có người chứng kiến",
+      "output_unit": "biên bản kiểm hóa",
+      "inputs": [
+        {
+          "name": "Mẫu biên bản kiểm hóa game",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Mời chủ hàng chứng kiến trước khi mở container hư cấu.",
+        "Đếm thùng, ghi mã niêm phong và chụp ảnh từng bước.",
+        "Cho hai bên ký số đếm thực tế trước khi kết luận."
+      ],
+      "check": {
+        "prompt": "Biên bản nào hợp lệ?",
+        "good": "Số đếm thực tế có chữ ký của chủ hàng và người kiểm.",
+        "bad": "Ghi số theo tờ khai vì chủ hàng đã cam kết.",
+        "why": "Kiểm hóa phải ghi đúng điều quan sát được, có người chứng kiến."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Tính thuế nhập khẩu theo trị giá khai báo",
+      "output_unit": "phiếu tính thuế",
+      "inputs": [
+        {
+          "name": "Thẻ biểu thuế hư cấu",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Lấy trị giá tính thuế và mã hàng từ hồ sơ game.",
+        "Áp thuế suất nhập khẩu rồi cộng vào trị giá để tính thuế giá trị gia tăng.",
+        "Ghi từng khoản và tổng số phải nộp cho chủ hàng ký nhận."
+      ],
+      "check": {
+        "prompt": "Phiếu nào tính đúng?",
+        "good": "Thuế giá trị gia tăng tính trên trị giá đã cộng thuế nhập khẩu.",
+        "bad": "Thuế giá trị gia tăng tính trên trị giá chưa cộng thuế nhập khẩu.",
+        "why": "Theo thẻ quy tắc, thuế nhập khẩu là một phần của giá tính thuế giá trị gia tăng."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Xét hồ sơ miễn thuế quà biếu",
+      "output_unit": "phiếu xét miễn thuế",
+      "inputs": [
+        {
+          "name": "Phiếu khai quà biếu game",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đọc trị giá lô quà và định mức miễn trên thẻ quy tắc.",
+        "Xác định lô có nằm trong định mức hay vượt mức.",
+        "Ghi kết luận miễn hoặc tính thuế phần vượt kèm căn cứ."
+      ],
+      "check": {
+        "prompt": "Kết luận nào đúng?",
+        "good": "Lô trong định mức được miễn và có ghi căn cứ.",
+        "bad": "Miễn toàn bộ lô vượt định mức vì người nhận là người quen.",
+        "why": "Miễn thuế dựa vào định mức, không dựa vào quan hệ."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Kiểm hồ sơ hoàn thuế hàng tái xuất",
+      "output_unit": "bảng kiểm hoàn thuế",
+      "inputs": [
+        {
+          "name": "Bộ hồ sơ tái xuất hư cấu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Ghép tờ khai nhập với tờ khai tái xuất theo mã lô.",
+        "Đối chiếu số lượng đã tái xuất với số xin hoàn.",
+        "Chỉ đề xuất hoàn phần có chứng từ xuất thật."
+      ],
+      "check": {
+        "prompt": "Bảng nào được duyệt?",
+        "good": "Số hoàn bằng phần hàng đã có tờ khai tái xuất.",
+        "bad": "Hoàn đủ cả lô dù mới tái xuất một nửa.",
+        "why": "Hoàn thuế chỉ cho phần hàng đã thực xuất có chứng từ."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Soi chiếu hành lý nghi giấu hàng cấm",
+      "output_unit": "phiếu soi chiếu hành lý",
+      "inputs": [
+        {
+          "name": "Ảnh soi chiếu mô phỏng",
+          "unit": "ảnh",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đọc ảnh soi và tờ khai hành lý của hành khách game.",
+        "Đánh dấu vùng mật độ lạ không khớp đồ đã khai.",
+        "Mời hành khách mở kiểm có lập biên bản trước người chứng kiến."
+      ],
+      "check": {
+        "prompt": "Khi ảnh soi có vùng lạ thì làm gì?",
+        "good": "Mở kiểm có biên bản và người chứng kiến.",
+        "bad": "Cho qua vì hành khách nói đó là đồ dùng cá nhân.",
+        "why": "Lời nói không thay được việc kiểm tra khi ảnh soi có dấu hiệu."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Bàn giao động vật hoang dã bị tạm giữ",
+      "output_unit": "biên bản bàn giao cứu hộ",
+      "inputs": [
+        {
+          "name": "Phiếu bàn giao cứu hộ game",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Ghi loài, số lượng và tình trạng từng cá thể trong kịch bản.",
+        "Liên hệ đơn vị cứu hộ hư cấu được thẻ quy tắc chỉ định.",
+        "Ký bàn giao có số lượng khớp biên bản tạm giữ."
+      ],
+      "check": {
+        "prompt": "Biên bản nào đúng?",
+        "good": "Số cá thể bàn giao khớp biên bản tạm giữ, có chữ ký hai bên.",
+        "bad": "Ghi ước lượng vì đếm khó và giao cho người mua quen.",
+        "why": "Hàng tạm giữ phải bàn giao đúng nơi, đúng số, có chứng từ."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Lập hồ sơ nghi vấn khai sai xuất xứ",
+      "output_unit": "hồ sơ nghi vấn xuất xứ",
+      "inputs": [
+        {
+          "name": "Bộ nhãn và C/O hư cấu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 8500
+        }
+      ],
+      "procedure": [
+        "So nhãn in trên hàng với nước xuất xứ ghi trên C/O game.",
+        "Đối chiếu tuyến vận chuyển với cảng xếp hàng trong vận đơn.",
+        "Chuyển hồ sơ có căn cứ lên phòng nghiệp vụ, không tự kết luận."
+      ],
+      "check": {
+        "prompt": "Hồ sơ nào đủ căn cứ?",
+        "good": "Nhãn, C/O và tuyến vận chuyển mâu thuẫn được ghi kèm ảnh.",
+        "bad": "Nghi ngờ chỉ vì doanh nghiệp mới thành lập.",
+        "why": "Nghi vấn phải dựa trên chứng từ mâu thuẫn, không dựa vào cảm tính."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Kiểm kê kho hàng tạm giữ có biên lai",
+      "output_unit": "sổ kiểm kê kho tạm giữ",
+      "inputs": [
+        {
+          "name": "Thẻ kho tạm giữ game",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đọc từng biên lai tạm giữ và mã vị trí kho hư cấu.",
+        "Đếm hàng thực tế tại từng vị trí và so với biên lai.",
+        "Báo cấp trên mọi món thiếu hoặc thừa, không tự bù."
+      ],
+      "check": {
+        "prompt": "Sổ nào được nghiệm thu?",
+        "good": "Mỗi món trong kho có biên lai và số đếm khớp.",
+        "bad": "Bù hàng thiếu bằng hàng thừa ở lô khác cho đủ tổng.",
+        "why": "Hàng tạm giữ của từng lô phải tách bạch theo biên lai."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Điều phối chuyên án chống buôn lậu qua cảng",
+      "output_unit": "kế hoạch chuyên án",
+      "inputs": [
+        {
+          "name": "Bộ thẻ tuyến tàu hư cấu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Tổng hợp dấu hiệu đã xác minh từ các lô nghi vấn trong kịch bản.",
+        "Phân vai kiểm soát, kiểm hóa và phối hợp với Công an Thành phố.",
+        "Trình lãnh đạo duyệt trước khi triển khai và ghi nhật ký quyết định."
+      ],
+      "check": {
+        "prompt": "Kế hoạch nào hợp lệ?",
+        "good": "Có dấu hiệu đã xác minh, phân vai rõ và được lãnh đạo duyệt.",
+        "bad": "Triển khai ngay theo tin đồn để kịp thời gian.",
+        "why": "Chuyên án cần căn cứ đã kiểm chứng và quyết định của cấp có thẩm quyền."
+      }
+    }
+  ]
+}
