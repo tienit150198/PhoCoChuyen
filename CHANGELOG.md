@@ -1,3 +1,13 @@
+# v2.4.23 — 2026-10-16
+
+⚡ Bớt lag trên bản lưu lớn (chủ game 15/10: "có mấy cái lỗi gì đó bấm thấy lag lắm, coi tối ưu đi"). Đo trên bản lưu thật 10,6 MB (54 nghề): mỗi lệnh nhanh hơn ~9–12%, mỗi lần tải trạng thái có đồng bộ tiệm (nhân viên làm, 30 giây/lần) ~1,1 s → ~0,8 s. Kết quả game và định dạng bản lưu không đổi.
+- Giờ vàng: lịch của một ngày rút một lần mỗi tiến trình (game/golden_hour.py), không rút lại cho từng đơn nhân viên.
+- Chuyên môn nghề: chỉ chép khối `scale` thay vì chép sâu cả nghề mỗi lần xem (~25 ms/lần trên bản lưu lớn).
+- GET /api/state: lượt đồng bộ tiệm ngay sau đó dùng lại bản lưu vừa đọc nếu phiên bản chưa đổi (Store.command `own`, truy vấn `_SNAPSHOT_KEPT` không tải lại văn bản bản lưu).
+- game/validate_memo.py: khi lưu nghề vừa đổi, việc/bài đăng/sổ tay/ký ức/chat có JSON giống hệt bản đã kiểm qua trong worker thì không kiểm lại; lỗi thì kiểm đầy đủ lại để báo đúng thông báo cũ. `VALIDATE_MEMO=0` tắt.
+- Shop quần áo: nhân viên đếm hàng đang giữ một lần cho mỗi đơn thay vì mỗi món × cỡ.
+- SCOPED_CAREER_VALIDATION vẫn tắt (mặc định).
+
 # v2.4.22 — 2026-10-15
 
 🎲 Chợ đen thắng dễ hơn (chủ game 15/10: "tăng tỷ lệ thắng chợ đen lần đầu lên 65% đi, với lâu lâu mỗi ngày cho khoảng 3p (chia ra 1 ngày khoảng 3 - 4 lần) ngẫu nhiên là tỷ lệ thắng tăng cao nhé. Với chỗ xóc đĩa thì cho delay 3s mỗi lần mở nhé để tránh spam"; thông báo chỉ ghi "Tăng tỷ lệ thắng chợ đen").
