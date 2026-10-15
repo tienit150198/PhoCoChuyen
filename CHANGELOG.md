@@ -1,4 +1,8 @@
-# Chưa phát hành — nodog
+# v2.4.16 — 2026-10-15
+
+Gồm nodog, mobileui và wishtree (chủ game 15/10: "xong hết thì deploy rồi bảo 'tối ưu UI'"). Có gì mới: 3 dòng (tối ưu UI, chùa 2.5D + Vườn ước nguyện, nhẹ và mượt hơn).
+
+## nodog
 
 🐕 Bỏ trò Kéo co chó sủa (chủ game 15/10: "xóa trò 'kéo co chó sủa' đi cho nhẹ").
 - Người chơi không còn thấy trò ở đâu: bỏ mục Khu phố/menu, mốc 🐕 trên phố cổ điển, tòa "Sân chơi thú cưng" trên bản đồ 2.5D (game/town_layout.json, dựng lại public/js/isometric/phaser-world.js) và phòng `bark` trong venue-place. Xóa public/js/v4/dog-bark.js, dog-bark-board.js, public/css/dog-bark.css, public/audio/bark/ (7 tiếng sủa + CREDITS; bỏ dòng ghi công trong THIRD_PARTY_NOTICES.md), MANIFEST bỏ các file đã xóa. Có gì mới cũ giữ nguyên chữ; nút "Thử ngay" tự ẩn vì không còn nút `liveBark`.
@@ -6,14 +10,7 @@
 - Giữ lại để không mất tiền/dữ liệu và rollback được: bảng `bark_tickets` và mọi dòng (không DROP, SCHEMA_VERSION không đổi); game/dog_bark.py tối giản (apply_fx + fx_commit trả khoản 'bark' còn treo; housekeeping 30 s trả lại vé còn mở do bản cũ để lại, đúng một lần; forget khi xóa dữ liệu); game/dog_bark_board.py tối giản (5 danh hiệu tuần vẫn hợp lệ trong bản lưu, apply_fx trả giải 'bark_weekly' còn treo, forget). Không chốt tuần mới, không tạo giải mới. Bản lưu không có khóa nào của trò. 2.4.15 đọc được mọi thứ bản này ghi (chỉ là dòng vé 'back' + live_effects 'bark' như cũ).
 - Tests: bỏ test_dog_bark*, test_live_dog_bark, dog_bark_*.mjs, scripts browser_dog_bark/dog_bark_rollback_check; thêm tests/test_dog_bark_removed.py; sửa các test đếm tiện ích/tòa nhà/venue. Không có Có gì mới.
 
-# v2.4.15 — 2026-10-15
-
-⚡ Giảm lag (chủ game 15/10). Bản lưu lớn (54 nghề, tới 14 MB) làm mỗi lệnh mất 1–1,6 s: sổ thu chi mỗi nghề giữ tới 1.200 dòng, phần lớn là 4–5 dòng cho từng đơn riêng của nhân viên.
-- Sổ thu chi: đơn riêng của nhân viên (lương, vật tư, doanh thu, thưởng 40%, 🧩 Phúc lợi) cộng vào một dòng mỗi ngày cho từng nhân viên ("Lương đơn riêng · Nhi · 37 đơn", ref `sum:<nhóm>`); tổng tiền, kiểm ví và mọi tổng theo ngày không đổi, chi tiết từng đơn vẫn ở biên nhận. LEDGER_MAX 1200 → 400: phần dư chuyển vào archive như trước (không mất). Bản lưu lớn nhỏ đi 25–40%.
-- Tính bù đơn nhân viên: hàng đợi heap thay cho quét lại mọi nhân viên mỗi đơn (cùng thứ tự, đã so từng byte trên 5 bản lưu thật); mỗi lệnh tính tối đa 0,3 s (SETTLE_SECONDS), phần còn lại lệnh sau tính tiếp.
-- 6 GET không đọc bản lưu nữa (home-guests, garage/spouse, family/baby, wedinvite, wedding, feedback/mine).
-Bản cũ đọc được bản lưu mới (dòng gộp là dòng sổ bình thường). Không có Có gì mới.
-# Chưa phát hành — mobileui
+## mobileui
 
 📱 Màn điện thoại không còn chỗ đè nhau (chủ game 15/10: “nhiều cái UI bị đè nhau ở màn mobile… check cẩn thận từng màn”). Quét tự động mọi màn tới được (HUD 2.5D, Tiện ích + từng nhóm, Thêm + từng nhóm, giao diện cổ điển, màn làm việc của 54 nghề và bước kế tiếp) ở 360×740, 375×667, 390×844, 412×915, 844×390 và 1366×768, có ảnh chụp từng trang cuộn; sửa riêng từng màn, chỉ CSS (một chỗ vẽ canvas của giao hàng), không đổi luật chơi hay bản lưu. Bỏ qua Kéo co chó sủa và Đi chùa (nhánh khác đang làm lại).
 
@@ -28,7 +25,7 @@ Bản cũ đọc được bản lưu mới (dòng gộp là dòng sổ bình th�
 - Nhà, xe, điện thoại (≤ 480 px): giá xuống dưới tên khi không đủ chỗ (trước “Du / thuyền / Hoàng / Hôn”), chip “Giữ xe & bảo dưỡng … xu/tháng” không tràn khỏi thẻ. (house.css)
 - Sưu tập, Đi chơi và các danh sách mua sắm (≤ 400 px): sao và giá xuống dòng dưới tên thay vì bóp tên thành ba dòng (“Tourbillon / Kim / Cương”). (spend.css)
 - Công cụ: `scripts/browser_mobile_sweep.py` + `scripts/mobile_layout_detect.js` (chạy lại toàn bộ lượt quét).
-# Chưa phát hành — wishtree (🌳 Cây ước nguyện + chùa 2.5D, chủ game 15/10)
+## wishtree (🌳 Cây ước nguyện + chùa 2.5D, chủ game 15/10)
 
 🌳 Cây ước nguyện (chủ game 15/10: “mọi người vào 1 cái cây, rồi ghi cái ước nguyện mình muốn chứ k phải chọn chọn… có rất nhiều cái cây ước nguyện”): 9 cây theo chủ đề (Bình an, Gia đạo, Sức khỏe, Học hành, Sự nghiệp, Tài lộc, Tình duyên, Ước mơ, Tưởng nhớ). Người chơi tự viết điều ước (3–150 ký tự, emoji được, tối đa 3 dòng), chọn màu dải lụa (5 màu), tùy chọn ẩn tên, “Treo lên cây” → dải lụa bay lên cây. Mỗi cây: tranh cây đa của bản đồ với 24 dải lụa mới nhất (chạm để đọc, ‹ › đọc tiếp) và danh sách thẻ giấy bên dưới (mới nhất trước, “Xem thêm” theo con trỏ id). 🙏 Cùng cầu (mỗi người một lần mỗi điều ước), ⚑ Báo cáo (bảng `reports` kind `wish`; 3 người báo cáo → tự ẩn chờ admin; người báo cáo không thấy điều ước đó nữa), người viết tự “Gỡ xuống”; “Của tôi” xem mọi điều ước của mình kèm trạng thái. Lọc chữ như chat (live/filters.py: số điện thoại, link, liên hệ, từ nặng bị che; bản gốc chỉ admin thấy). Giới hạn: 5 điều ước / người / ngày VN (đếm trong giao dịch của bản lưu: lần thứ 6 bị từ chối, bản lưu không đổi), 6 lần treo/phút/phiên + 30/phút/IP ở /api/command (`WISHES_PER_MINUTE`), đọc 120/phút, báo cáo 10/10 phút. Admin: mục “Ước nguyện” (bị báo cáo trước; Gỡ / Treo lại; không xóa). Tắt treo mới: `MNL_WISH_OFF=1`. Xóa tài khoản (“XOA”) xóa điều ước + lượt cùng cầu của người đó; ngoài ra không xóa gì (chỉ đổi trạng thái).
 Treo một điều ước = việc `nguyen` của chùa (`jr_chua_do {act:'nguyen', tree, text, color, anon}`): cùng tinh thần +3, cùng `journey.chua.did/n` như trước; chữ KHÔNG vào bản lưu (bảng mới) nên bản lưu đọc được bằng 2.4.14 (test chạy `chua.validate` của origin/main). Thẻ lời chúc cũ (chọn người/điều mong) vẫn nhận từ client cũ, vẫn quản lý chia sẻ ở “Quanh đây → 📜 Bảng lời chúc cũ” (chỉ hiện khi có thẻ).
@@ -36,6 +33,13 @@ Treo một điều ước = việc `nguyen` của chùa (`jr_chua_do {act:'nguye
 DB: SCHEMA_VERSION 44 — chỉ thêm bảng `chua_wishes`, `chua_wish_prayers` (+ chỉ mục), không FK, không backfill; bản 2.4.14 bỏ qua chúng (rollback an toàn, điều ước vẫn giữ). Không khóa mới trong bản lưu. Có gì mới: chưa thêm (chờ chủ game; đề xuất: “🌳 Chùa mới 2.5D với Vườn ước nguyện: tự viết điều ước, treo lên cây, đọc và cùng cầu cho nhau.”).
 Kiểm: tests/test_chua_wish.py, tests/temple-walk-ui.mjs, scripts/check_chua.mjs (sân 2.5D: chỗ đứng, đường đi, vẽ), scripts/browser_wish_trees.py (360×740, 390×844, 844×390, 1280×800, + `--lang en`), scripts/browser_chua.py, scripts/browser_chua_visibility.py.
 
+# v2.4.15 — 2026-10-15
+
+⚡ Giảm lag (chủ game 15/10). Bản lưu lớn (54 nghề, tới 14 MB) làm mỗi lệnh mất 1–1,6 s: sổ thu chi mỗi nghề giữ tới 1.200 dòng, phần lớn là 4–5 dòng cho từng đơn riêng của nhân viên.
+- Sổ thu chi: đơn riêng của nhân viên (lương, vật tư, doanh thu, thưởng 40%, 🧩 Phúc lợi) cộng vào một dòng mỗi ngày cho từng nhân viên ("Lương đơn riêng · Nhi · 37 đơn", ref `sum:<nhóm>`); tổng tiền, kiểm ví và mọi tổng theo ngày không đổi, chi tiết từng đơn vẫn ở biên nhận. LEDGER_MAX 1200 → 400: phần dư chuyển vào archive như trước (không mất). Bản lưu lớn nhỏ đi 25–40%.
+- Tính bù đơn nhân viên: hàng đợi heap thay cho quét lại mọi nhân viên mỗi đơn (cùng thứ tự, đã so từng byte trên 5 bản lưu thật); mỗi lệnh tính tối đa 0,3 s (SETTLE_SECONDS), phần còn lại lệnh sau tính tiếp.
+- 6 GET không đọc bản lưu nữa (home-guests, garage/spouse, family/baby, wedinvite, wedding, feedback/mine).
+Bản cũ đọc được bản lưu mới (dòng gộp là dòng sổ bình thường). Không có Có gì mới.
 # v2.4.14 — 2026-10-15
 
 🔁 Tự đặt hàng giá 100.000 xu (trước 350.000, chủ game 15/10); người đã mua giá cũ được hoàn phần chênh bằng quà hệ thống. Không có Có gì mới.
