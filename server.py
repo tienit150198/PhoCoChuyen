@@ -721,7 +721,7 @@ class Handler(BaseHTTPRequestHandler):
                                    game_version=self.server.game_version(),ui=ui_config(),gifts=gifts,xfers=xfers,quay_invites=0 if created else quay_hire.invite_count(self.server.store,token),lb_titles=[dict(emoji=h["emoji"],name=h["name"],label=h["label"],board=h["board"]) for h in ranks],**live_hint()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]),known=FULL);return
             if route=="/api/state":
                 token,state,revision,_=self.require_session()
-                settled=business.on_load_result(self.server.store,token,state)
+                settled=business.on_load_result(self.server.store,token,state,own=True)  # a sync starts from this read's parse (game/storage.py `own`)
                 view=settled['state'] if settled is not None else public_state(state)
                 if settled is not None:revision=settled['revision']
                 self.json(200,dict(state=view,revision=revision),known=FULL);return

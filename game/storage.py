@@ -60,14 +60,19 @@ except ValueError:COMMAND_CONCURRENCY=4
 _COMMAND_GATE=threading.BoundedSemaphore(COMMAND_CONCURRENCY)
 _COMMAND_POOL=ThreadPoolExecutor(max_workers=COMMAND_CONCURRENCY,thread_name_prefix="save-command")
 _COMMAND_LOCAL=threading.local()
+# The save Store.read last returned in this thread, when it is the stored text of its revision as parsed
+# (not migrated): (store path, sid, revision, id(state)). Only the id is kept, never the save itself.
+# Store.command(own=state) takes that very object over instead of reading and parsing the save again.
+_LAST_READ=threading.local()
 
 
 def _reset_command_gate():
-    global _COMMAND_GATE,_COMMAND_POOL,_COMMAND_LOCAL
+    global _COMMAND_GATE,_COMMAND_POOL,_COMMAND_LOCAL,_LAST_READ
     _COMMAND_GATE=threading.BoundedSemaphore(COMMAND_CONCURRENCY)
     # No executor thread/lock from the parent may be reused after fork.
     _COMMAND_POOL=ThreadPoolExecutor(max_workers=COMMAND_CONCURRENCY,thread_name_prefix="save-command")
     _COMMAND_LOCAL=threading.local()
+    _LAST_READ=threading.local()
 
 
 def _run_admitted(store,args):
@@ -279,8 +284,20 @@ def _snapshot_row(r):
     UTF-8 bytes, both parsed by fastjson) with the request hash as text again."""
     if r is None:return None
     rhash=r["rhash"]
+    keys=r.keys()
     return dict(revision=r["revision"],state=r["state"],rhash=rhash.decode() if isinstance(rhash,bytes) else rhash,rresult=r["rresult"],
-                acct=bool(r["acct"]) if "acct" in r.keys() else False)
+                acct=bool(r["acct"]) if "acct" in keys else False,size=r["size"] if "size" in keys else None)
+
+
+# The command's snapshot query. _SNAPSHOT_KEPT: the same, for a command handed the parsed save of a
+# revision (Store.command `own`): the save's text comes only when the row has moved past that revision.
+_SNAPSHOT=("SELECT s.revision AS revision,s.state AS state,r.request_hash AS rhash,r.result AS rresult,"
+           "EXISTS(SELECT 1 FROM accounts a WHERE a.sid=s.sid) AS acct FROM sessions s "
+           "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?")
+_SNAPSHOT_KEPT=("SELECT s.revision AS revision,CASE WHEN s.revision=? THEN NULL ELSE s.state END AS state,"
+                "octet_length(s.state) AS size,r.request_hash AS rhash,r.result AS rresult,"
+                "EXISTS(SELECT 1 FROM accounts a WHERE a.sid=s.sid) AS acct FROM sessions s "
+                "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?")
 
 
 def _commit_before(raw:dict)->dict:
@@ -426,8 +443,11 @@ class Store:
         csrf=login_csrf or row["csrf"]
         state=self.parse_state(row["state"],sid)
         revision=row["revision"]
+        _LAST_READ.v=None
         for _ in range(OPTIMISTIC_TRIES):
-            if not needs_migration(state):return state,revision,csrf
+            if not needs_migration(state):
+                _LAST_READ.v=(self.path,sid,revision,id(state))  # the stored text of `revision`, as parsed (see command `own`)
+                return state,revision,csrf
             # Migrate outside the write lock; store it only if nobody changed the save meanwhile.
             before=dict(state["careers"]) if isinstance(state.get("careers"),dict) else {}
             with ar.collect() as box:
@@ -445,11 +465,20 @@ class Store:
             state,revision=self.parse_state(row["state"],sid),row["revision"]
         return state,revision,csrf
 
-    def command(self,token:str,request_id:str,expected:int|None,career:str|None,action:str,payload:dict,internal:bool=False)->dict:
+    def command(self,token:str,request_id:str,expected:int|None,career:str|None,action:str,payload:dict,internal:bool=False,own:dict|None=None)->dict:
         """Apply one action atomically. `internal` commands come from the server
         itself (AI reviewer answers); they skip the revision guard because the
-        reducer checks their own preconditions."""
-        args=(token,request_id,expected,career,action,payload,internal)
+        reducer checks their own preconditions.
+
+        `own`: the save that this thread's last Store.read returned, handed over (the caller has only
+        read it and never uses it again). If the save is still at that revision, the command starts
+        from it instead of fetching and parsing the same text again (a load's business_sync,
+        game/business.py). Any other object is ignored: the save is read as usual."""
+        reuse=None
+        if own is not None:
+            last=getattr(_LAST_READ,"v",None);_LAST_READ.v=None
+            if last is not None and last[0]==self.path and last[3]==id(own):reuse=(last[1],last[2],own)
+        args=(token,request_id,expected,career,action,payload,internal,reuse)
         if getattr(_COMMAND_LOCAL,"active",False):
             return self._admitted_command(*args)  # nested internal work owns a slot already
         with _COMMAND_GATE:
@@ -457,7 +486,7 @@ class Store:
             # alone lets every keep-alive thread retain its own large JSON buffers.
             return _COMMAND_POOL.submit(contextvars.copy_context().run,_run_admitted,self,args).result()
 
-    def _admitted_command(self,token,request_id,expected,career,action,payload,internal):
+    def _admitted_command(self,token,request_id,expected,career,action,payload,internal,reuse=None):
         if not isinstance(request_id,str) or not 8<=len(request_id)<=100 or "\x00" in request_id:raise GameError("Mã thao tác không hợp lệ.")
         if not (internal and expected is None) and type(expected) is not int:raise GameError("Thiếu phiên bản tiến trình.")
         if not isinstance(action,str) or not isinstance(payload,dict):raise GameError("Thao tác không hợp lệ.")
@@ -465,7 +494,7 @@ class Store:
         h=self.digest(token)
         who=[None]  # the save id once resolved: rt.count() of a rejected command
         try:
-            out=self._command(h,who,request_id,expected,career,action,payload,internal,fingerprint)
+            out=self._command(h,who,request_id,expected,career,action,payload,internal,fingerprint,reuse)
         except GameError as e:
             kpi.econ_drop()
             if who[0] and not internal and e.code!="session_missing":rt.count(self,who[0],career,action,e)
@@ -477,7 +506,7 @@ class Store:
         if not internal and not out.get("replayed"):rt.count(self,who[0],career,action)  # Giữ chân: a dict update, written every few seconds
         return out
 
-    def _command(self,h:str,who:list,request_id:str,expected,career,action:str,payload:dict,internal:bool,fingerprint:str)->dict:
+    def _command(self,h:str,who:list,request_id:str,expected,career,action:str,payload:dict,internal:bool,fingerprint:str,reuse=None)->dict:
         if action == 'jr_deco_skin':
             from . import home_decor
             return home_decor.command(self,h,who,request_id,expected,career,action,payload,internal,fingerprint)
@@ -486,20 +515,24 @@ class Store:
             # 1. A consistent snapshot of the save and of this request's receipt, without any lock.
             with self.connect() as db:
                 sid,_=self._resolve(db,h)
-                row=_snapshot_row(db.execute("SELECT s.revision AS revision,s.state AS state,r.request_hash AS rhash,r.result AS rresult,"
-                               "EXISTS(SELECT 1 FROM accounts a WHERE a.sid=s.sid) AS acct FROM sessions s "
-                               "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?",(request_id,sid),text_bytes=True).fetchone())
+                kept=reuse if reuse is not None and reuse[0]==sid else None
+                reuse=None  # handed over for the first look only: another one reads the save
+                if kept is not None:row=_snapshot_row(db.execute(_SNAPSHOT_KEPT,(kept[1],request_id,sid),text_bytes=True).fetchone())
+                else:row=_snapshot_row(db.execute(_SNAPSHOT,(request_id,sid),text_bytes=True).fetchone())
                 fh.loc_prepare(db,action)  # a fair luck round: is the hourly 🍀 gate open (no read for other actions)
                 _cand_prepare(db,action)  # 👮 the CAND seat counts (PGĐ ≤ 5, GĐ ≤ 1: game/cand_roster.py)
             if not row:raise GameError("Phiên chơi không tồn tại.","session_missing")
             who[0]=sid
+            # Still at the handed-over revision (no text fetched): start from that parse of its text.
+            parsed=kept[2] if kept is not None and row["state"] is None and row["revision"]==kept[1] else None
+            if row["state"] is None and (parsed is None or row["rhash"] is not None):continue  # a replay needs the text: read it as usual
             if row["rhash"] is not None:return self._replay(sid,row,fingerprint)
             if expected is not None and row["revision"]!=expected:raise Conflict("Tiến trình đã thay đổi ở tab khác. Đã đồng bộ lại; hãy xem trạng thái trước khi thao tác tiếp.","revision_conflict")
             # 2. The heavy part, lock-free.
             t1=time.perf_counter()
             before_out=[]
             try:
-                raw,result,serialized,cut,board,steps=self._compute(sid,row["state"],career,action,tree_copy(payload),internal,row["revision"],before_out=before_out)
+                raw,result,serialized,cut,board,steps=self._compute(sid,row["state"],career,action,tree_copy(payload),internal,row["revision"],before_out=before_out,parsed=parsed)
             except GameError:
                 if self._moved(sid,request_id,row["revision"]):continue  # judged on a save that has moved on: look again
                 raise
@@ -513,7 +546,7 @@ class Store:
                 lb.remember(sid,row["revision"]+1,board[0],synced=bool(board[1]) or board[2] is not None)  # rows written, or unchanged from synced ones
                 if steps[0]:rt.emit_marks(sid,*steps)
                 view=public_state(raw,migrated=True)
-                _slow(action,career,len(row["state"] or ""),t0,t1,t2,t3,time.perf_counter())
+                _slow(action,career,row["size"] if row["size"] is not None else len(row["state"] or ""),t0,t1,t2,t3,time.perf_counter())
                 return dict(state=view,revision=row["revision"]+1,result=result,replayed=False)
         with self.connect() as db:
             sid,_=self._resolve(db,h)
@@ -526,14 +559,15 @@ class Store:
         state=migrate_state(self.parse_state(row["state"],sid),owned=True)
         return dict(state=public_state(state,migrated=True),revision=row["revision"],result=fj.loads(row["rresult"]),replayed=True)
 
-    def _compute(self,sid:str,text:str,career,action:str,payload:dict,internal:bool,revision:int,*,before_out:list|None=None)->tuple[dict,dict,str,list,tuple,tuple]:
+    def _compute(self,sid:str,text:str,career,action:str,payload:dict,internal:bool,revision:int,*,before_out:list|None=None,parsed:dict|None=None)->tuple[dict,dict,str,list,tuple,tuple]:
         """(new save, result, its text, archive rows, board, steps): what the command cut off from the
         save's lists, to be written in the same transaction as the save (see game/archive.py),
         board = (the save's leaderboard rows, whether a number on a board moved, the rows before when they are
         known to be the ones in the table: lb.synced(), else None) (game/leaderboard.py)
         and steps = ([(milestone, career, detail)], life day): the funnel steps this command crossed
-        (game/retention.py: a dozen counters read from the save before and after, no extra parse)."""
-        raw=self.parse_state(text,sid)
+        (game/retention.py: a dozen counters read from the save before and after, no extra parse).
+        `parsed`: `text` as parsed already, handed over (Store.command `own`): used like a fresh parse."""
+        raw=parsed if parsed is not None else self.parse_state(text,sid)
         if before_out is not None:before_out.append(_commit_before(raw))
         before=dict(raw["careers"]) if isinstance(raw.get("careers"),dict) else {}
         hit=lb.recall(sid,revision)

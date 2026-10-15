@@ -27,8 +27,11 @@ def on_load(store,token,state):
     return on_load_result(store,token,state) is not None
 
 
-def on_load_result(store,token,state):
-    """Return the committed public view so read routes need not load it again."""
+def on_load_result(store,token,state,own=False):
+    """Return the committed public view so read routes need not load it again.
+    `own`: `state` is what this thread's Store.read just returned and the caller hands it over (it
+    uses only the returned view afterwards): the sync then starts from it if the save has not moved,
+    instead of reading and parsing the same save a second time (Store.command `own`)."""
     now=time.time()
     from . import auto_stock  # 🤖 Tự nhận hàng: deliveries that came while the player was away
     from . import auto_order  # 🔁 Tự đặt hàng: what ran low while away (staff sales, lots that expired)
@@ -36,4 +39,5 @@ def on_load_result(store,token,state):
         return None
     # Each transaction rechecks the saved cursor. Concurrent tabs serialize via
     # Store's revision/CAS, so a new request id never means paying an order twice.
+    if own:return store.command(token,'business-'+secrets.token_hex(12),None,None,ACTION,{},internal=True,own=state)
     return store.command(token,'business-'+secrets.token_hex(12),None,None,ACTION,{},internal=True)
