@@ -1,3 +1,7 @@
+# v2.4.21 — 2026-10-15
+
+Thông báo "Giờ vàng - lợi nhuận cao" (chủ game 15/10: "triển khai đi xong thông báo 'giờ vàng - lợi nhuận cao'"): một mục Có gì mới, để cả người đã xem 2.4.20 cũng thấy. Không đổi gì khác.
+
 # v2.4.20 — 2026-10-15
 
 ⏰ Giờ vàng + quầy lãi hơn (chủ game 15/10: "chấp nhận, và tăng thêm lãi cho người dùng đi, … 10p hoặc 1h ngẫu nhiên mỗi ngày là khung giờ vàng, hoặc theo ngày").
