@@ -157,9 +157,9 @@ class ContinuousBusiness(unittest.TestCase):
         v0 = b.public(st)
         b.settle(s, now=bz['cursor'] // 1000 + 86400)
         v1 = b.public(st)
-        goods = sum(b.unit_cost(st, d) * (5000 - bz['stock'][d]) for d in b.qs.menu(st)['on'])   # the shelf was free here
         self.assertAlmostEqual(inc['day']['sold'], v1['sold'] - v0['sold'], delta=0.02 * inc['day']['sold'] + 2)
-        self.assertAlmostEqual(inc['day']['net'], v1['net'] - v0['net'] - goods, delta=0.02 * abs(inc['day']['net']) + 20)
+        # 2.4.19: the Lãi line counts the shelf at cost, so what left it is already in v1 - v0 (the shelf was free here)
+        self.assertAlmostEqual(inc['day']['net'], v1['net'] - v0['net'], delta=0.02 * abs(inc['day']['net']) + 20)
         self.assertGreater(inc['hour']['sold'], 0)
         st['staff'] = []
         self.assertIsNone(b.public(st)['income'])
@@ -321,3 +321,26 @@ class ContinuousBusiness(unittest.TestCase):
         self.assertEqual(st['business']['unpaid_fines'],0)
         self.assertEqual(st['business']['expenses']['loss'],0)
         self.assertEqual(st['fund']+st['till'],100)
+
+
+class LaiLine(unittest.TestCase):
+    """2.4.19 (chat 15/10 "kinh doanh mà k có lãi"): a restock still on the shelf does not show as a loss."""
+    def test_restock_on_the_shelf_is_not_a_loss_and_selling_shows_the_margin(self):
+        from game import quay_business as b
+        s, st = fixture(staff=False)
+        b.settle(s, now=1000)
+        bz = st['business']
+        v0 = b.public(st)
+        dish = b.qs.menu(st)['on'][0]
+        st['fund'] = 10**6
+        cost = b.unit_cost(st, dish) * 200
+        bz['stock'][dish] = bz['stock'].get(dish, 0) + 200; bz['expenses']['goods'] += cost   # what a restock books
+        v1 = b.public(st)
+        self.assertEqual(v1['stock_value'] - v0['stock_value'], cost)
+        self.assertEqual(v1['net'], v0['net'])            # money moved onto the shelf: no loss shown
+        before = copy.deepcopy(bz['stock'])
+        b.sale(st, [dish], bz['cursor'], owner=s)
+        v2 = b.public(st)
+        self.assertEqual(bz['stock'][dish], before[dish] - 1)
+        self.assertGreater(v2['net'], v1['net'])          # a sale above cost shows as profit
+

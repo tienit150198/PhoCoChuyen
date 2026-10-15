@@ -1,3 +1,7 @@
+# v2.4.19 — 2026-10-15
+
+📒 Quầy: dòng "Lãi" không còn trừ hàng còn trên kệ (chủ game 15/10 nhờ xem nhóm chat: "kinh doanh mà k có lãi"). Nhập hàng ghi chi phí hàng ngay lúc nhập, nên quầy vừa nhập lô lớn hiện lỗ nặng (7 quầy bánh & cà phê trung bình −57.000 xu, tiền hàng 27× doanh thu) dù hàng vẫn còn. `public()` cộng lại giá vốn hàng còn (`stock_value`, unit_cost × số phần): hàng tính khi bán, hỏng hoặc mất. Tiền, thưởng và sổ không đổi; nhãn "Lãi đã ghi sổ" → "Lãi", thêm "vốn ≈ … xu" dưới Nguyên liệu còn. Tiệm có nhân viên vốn đã tính hàng lúc bán (1.010 tiệm, 2 tiệm ≤ 0). Không có Có gì mới.
+
 # v2.4.18 — 2026-10-15
 
 wishmerge (chủ game 15/10: "đưa vào 1 cái đi, sử dụng chung mà"; nhãn cây "sửa nhé"). Không có Có gì mới.

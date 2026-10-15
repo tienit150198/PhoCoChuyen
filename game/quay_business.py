@@ -49,6 +49,13 @@ def unit_cost(st, dish):
     return max(1, math.ceil(qs.cost_of(st['trade'], dish)))
 
 
+def _stock_value(st):
+    """What the shelf cost to buy (each restock is charged at unit_cost × qty): read-only, for the Lãi line."""
+    b = st.get('business') or {}
+    rows = qs.DISH.get(st['trade'], {})
+    return sum(n * unit_cost(st, d) for d, n in (b.get('stock') or {}).items() if d in rows and n > 0)
+
+
 def _ms(now=None):
     return int((time.time() if now is None else now) * 1000)
 
@@ -587,7 +594,11 @@ def public(st):
         period_seconds=PERIOD, wage=sum(staff_wage(st, e) for e in st['staff']), revenue=b['revenue'], sold=b['sold'],
         speed_factor=b.get('speed_factor', 1),
         profit_bonus=b.get('profit_boost', {}).get('total', 0),
-        net=b['revenue'] + b.get('profit_boost', {}).get('total', 0) - sum(b['expenses'].values()) - b.get('unpaid_fines', 0),
+        # 2.4.19 (chat 15/10 "kinh doanh mà k có lãi"): a restock is booked as a goods expense when it is bought, so the
+        # Lãi line fell by every lot still on the shelf (a counter holding 200 phần showed −57k). The shelf at cost is
+        # added back: goods count when sold, spoiled or lost. Money and the bonus are unchanged; stock_value is shown too.
+        stock_value=_stock_value(st),
+        net=b['revenue'] + b.get('profit_boost', {}).get('total', 0) - sum(b['expenses'].values()) - b.get('unpaid_fines', 0) + _stock_value(st),
         unpaid_fines=b.get('unpaid_fines', 0), expenses=dict(b['expenses']), recent=[dict(x) for x in b['recent']],
         next_at=next_at / 1000 if code == 'running' else None, server_now=b['cursor'] / 1000,
         income=None if code == 'restricted' else income(st, b['cursor']))
