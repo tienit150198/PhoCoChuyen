@@ -177,7 +177,7 @@ def install_command_metrics(store):
     @wraps(real)
     def command(*args, **kwargs):
         # Bound Store.command(token, request_id, expected, career, action, payload,
-        # internal=False): never inspect any other argument or the response body.
+        # internal=False, own=None): never inspect any other argument or the response body.
         action = args[4] if len(args) > 4 else kwargs.get('action')
         started = time.perf_counter()
         failed = True

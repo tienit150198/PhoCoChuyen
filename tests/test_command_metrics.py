@@ -21,7 +21,7 @@ class SignatureStore:
         self.receipt = {'result': {'message': 'private receipt'}, 'replayed': True}
         self.error = None
 
-    def command(self, token, request_id, expected, career, action, payload, internal=False):
+    def command(self, token, request_id, expected, career, action, payload, internal=False, own=None):
         self.calls.append((token, request_id, expected, career, action, payload, internal))
         if self.error is not None:
             raise self.error
