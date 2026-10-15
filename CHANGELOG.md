@@ -1,3 +1,12 @@
+# v2.4.26 — 2026-10-16
+
+💐 Sự kiện Thiệp 20/10 (chủ game 16/10: "1 event riêng… ghi chú gì đó gửi tặng người khác, có share link… không cần chơi game vẫn đọc được… vài theme… tham gia tặng 100k"; "làm nhiều theme cute vào").
+- Trang riêng /2010 (public/2010.html, public/js/event2010.js, game/event2010.py): Nam gửi nữ / Nữ gửi nam / Gửi ai cũng được, 13 mẫu tự vẽ (SVG/CSS), lời nhắn ≤ 400 ký tự, hình dán, xem trước; link /2010/c/<id> ai cũng đọc được (phong bì mở, hoa rơi, thả tim, "Viết thiệp tặng lại"), ảnh xem trước Zalo/Facebook theo mẫu (không lộ lời nhắn).
+- Quà 100.000 xu một lần mỗi tài khoản (đã đăng ký, nhân vật từ ngày sống 3; tối đa 5 quà mỗi địa chỉ mạng), qua system_gifts. Viết đến 21/10 23:59, đọc đến 20/12. MNL_2010_OFF=1 tắt viết/quà.
+- Kiểm duyệt: người gửi xóa, người đọc báo cáo (3 báo cáo ẩn chờ admin), admin "💐 Thiệp 20/10"; che số điện thoại, đường link, từ thô.
+- Công bố trong game: Tiện ích → Thiệp 20/10, dòng trên Hành trình, popup một lần, dòng bảng tin mỗi ngày; Có gì mới có nút mở trang.
+- Schema 46: ev2010_cards, ev2010_reports, ev2010_rewards (bảng mới).
+
 # v2.4.25 — 2026-10-16
 
 🫖 Đầu game nhẹ hơn, đợt 2 (chủ game 16/10 "ok sửa đi"). Chỉ nhân vật mới ở chế độ câu chuyện, ngày sống 1–3 (`journey.EASY_DAYS`); không thêm khóa lưu.
