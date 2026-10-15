@@ -32,7 +32,7 @@ import re
 from pathlib import Path
 
 ENTRIES = (
-    dict(version="2.4.22", date="2026-10-16", items=(
+    dict(version="2.4.22", date="2026-10-15", items=(
         dict(emoji='🎲', text='Tăng tỷ lệ thắng chợ đen'),
     )),
     dict(version="2.4.21", date="2026-10-15", items=(
