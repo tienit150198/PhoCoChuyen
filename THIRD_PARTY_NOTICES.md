@@ -65,11 +65,6 @@ The pagoda ("Vào chùa") plays six recordings in `public/audio/chua/`, each **C
 
 `public/music/CREDITS.md` (section "The pagoda") has the source links and how each file was cut.
 
-🐕 Kéo co chó sủa plays seven short dog barks in `public/audio/bark/`, each **CC0 1.0** on Freesound.org: *Dog Bark.wav*
-by 8bitmyketison, *Single Dog Bark (King Charles Spaniel)* by JovianSounds, *Single bark of a dog* by exe2be, *single bark -
-small to medium dog* by haulaway, *Single Dog Bark* by kwahmah_02, *rose_bark.wav* by nfrae and *Tiny Dog Bark* by qubodup.
-`public/audio/bark/CREDITS.md` has the source links and how each file was cut.
-
 ## YouTube (🎤 Phòng hát)
 
 The karaoke rooms embed videos with the official YouTube IFrame Player API (https://www.youtube.com/iframe_api) on

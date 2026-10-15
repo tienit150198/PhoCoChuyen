@@ -5161,29 +5161,6 @@
       }
     },
     {
-      "id": "bark",
-      "label": "Sân chơi thú cưng",
-      "hint": "Kéo co chó sủa cùng bạn bè",
-      "action": "liveBark",
-      "icon": "🐕",
-      "at": {
-        "x": 22,
-        "y": 46
-      },
-      "art": "civic-pets",
-      "artAt": {
-        "x": 19.5,
-        "y": 48.5
-      },
-      "artWidth": 460,
-      "footprint": {
-        "x0": 17.5,
-        "y0": 46.9,
-        "x1": 21.5,
-        "y1": 50.1
-      }
-    },
-    {
       "id": "homes-rent",
       "label": "Hẻm Trọ Hàng Cau",
       "hint": "Phòng trọ và ký túc xá, sân chung có bóng cây.",

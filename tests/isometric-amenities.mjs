@@ -12,7 +12,8 @@ const overlap=(a,b,margin=0)=>a.x0<b.x1+margin&&a.x1>b.x0-margin&&a.y0<b.y1+marg
 const distanceToRect=(p,r)=>Math.hypot(Math.max(r.x0-p.x,0,p.x-r.x1),Math.max(r.y0-p.y,0,p.y-r.y1));
 
 test('illustrated community places dispatch existing routes, including the actual park and black market',()=>{
-  const expected={walk:['civic-park','liveWalk'],date:['civic-date','liveDate'],fair:['civic-market','fair'],wedding:['civic-wedding','liveWed'],karaoke:['civic-karaoke','liveKara'],bark:['civic-pets','liveBark']};
+  const expected={walk:['civic-park','liveWalk'],date:['civic-date','liveDate'],fair:['civic-market','fair'],wedding:['civic-wedding','liveWed'],karaoke:['civic-karaoke','liveKara']};
+  assert.equal(layout.amenities.some(p=>p.id==='bark'||p.action==='liveBark'),false,'the removed dog tug-of-war has no destination');
   for(const [id,[art,action]] of Object.entries(expected)){
     const p=layout.amenities.find(p=>p.id===id);assert.ok(p,`${id} has a real destination`);
     assert.equal(p.art,art);assert.equal(p.action,action);
@@ -23,7 +24,7 @@ test('illustrated community places dispatch existing routes, including the actua
 });
 
 test('amenity art reserves distinct solid plots clear of every road ribbon and existing entrance',()=>{
-  const art=layout.amenities.filter(p=>p.art);assert.equal(art.length,23);
+  const art=layout.amenities.filter(p=>p.art);assert.equal(art.length,22);
   const original=[...layout.lots,...layout.commons,...layout.shopLots,...layout.planting];
   const lanes=layout.trails.flatMap((t,i)=>trails.streetProfile(trails.sampleTrailCurve(t.points,t.sampled),t.width,i));
   const entrances=[...layout.lots.map(p=>p.door),...layout.shopLots.map(p=>p.door),...layout.amenities.map(p=>p.at),...layout.commons.map(p=>p.approach)];

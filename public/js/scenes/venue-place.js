@@ -1,17 +1,13 @@
 /** Local public rooms. Coordinates, collision and pathfinding share the same furniture layout. */
-export const VENUE_IDS=['cafe','spa','cinema','karaoke','bark','salon','nails','craft','books','art','music','reading','garden','family'];
-const NAMES={cafe:'Quán cà phê',spa:'Spa thư giãn',cinema:'Rạp chiếu phim',karaoke:'Phòng karaoke',bark:'Sân chơi thú cưng',salon:'Tiệm tóc',nails:'Tiệm làm móng',craft:'Góc thủ công',books:'Hiệu sách',art:'Xưởng vẽ',music:'Phòng nhạc',reading:'Thư viện',garden:'Vườn cộng đồng',family:'Góc gia đình'};
+export const VENUE_IDS=['cafe','spa','cinema','karaoke','salon','nails','craft','books','art','music','reading','garden','family'];
+const NAMES={cafe:'Quán cà phê',spa:'Spa thư giãn',cinema:'Rạp chiếu phim',karaoke:'Phòng karaoke',salon:'Tiệm tóc',nails:'Tiệm làm móng',craft:'Góc thủ công',books:'Hiệu sách',art:'Xưởng vẽ',music:'Phòng nhạc',reading:'Thư viện',garden:'Vườn cộng đồng',family:'Góc gia đình'};
 const prop=(kind,x,y,w,h,colour,label='')=>({kind,x,y,w,h,colour,label});
 const station=(id,label,x,y,detail)=>({id,label,x,y,detail});
 export function venueLayout(id){
   if(!VENUE_IDS.includes(id))throw new Error(`Unknown venue: ${id}`);
   const room={id,title:NAMES[id],width:460,height:360,entry:{x:230,y:325},outdoor:id==='garden',floor:'#e9d2ad',wall:'#f3e6cc',accent:'#986a47',props:[],stations:[]};
   const p=room.props,s=room.stations;
-  if(id==='bark'){
-    room.outdoor=true;room.floor='#c4d3a8';room.accent='#8ba572';
-    p.push(prop('bench',35,40,100,32,'#ad8b62'),prop('tree',360,25,60,65,'#88a371'),prop('play',165,28,125,40,'#ddc69a'),prop('cone',65,150,24,24,'#d89461'),prop('cone',365,140,24,24,'#d89461'),prop('dog',310,210,48,32,'#b68c68'),prop('bench',45,255,85,30,'#ad8b62'));
-    s.push(station('game','Kéo co chó sủa',230,115,'Chọn lượt chơi cùng các chú cún'),station('lounge','Góc chơi với cún',240,240,'Xem trò chơi dành cho thú cưng'));
-  }else if(id==='cafe'){
+  if(id==='cafe'){
     room.accent='#a36944';room.floor='#e7c89f';
     p.push(prop('counter',35,25,235,48,room.accent,'Quầy phục vụ'),prop('shelf',320,18,110,28,'#765d45'),prop('table',60,130,65,55,'#c38e58'),prop('table',295,140,68,55,'#c38e58'),prop('chair',70,215,42,36,'#8aab8b'),prop('sofa',305,230,110,40,room.accent));
     s.push(station('counter','Gọi món',185,100,'Xem đồ uống và món tại quầy'),station('lounge','Góc trò chuyện',280,240,'Chọn hoạt động tại quán'));
@@ -102,8 +98,6 @@ function slab(c,p,z,colour){const a=projectVenue(p),b=projectVenue({x:p.x+p.w,y:
 function dot(c,x,y,r,colour){c.fillStyle=colour;c.beginPath();c.ellipse(x,y,r,r*.76,0,0,Math.PI*2);c.fill();}
 function furniture(c,p){
   const center=projectVenue({x:p.x+p.w/2,y:p.y+p.h/2}),z=({shelf:52,counter:35,table:27,bed:22,sofa:21,chair:20,seat:20,bench:19,piano:30,screen:70,mirror:65,easel:55,speaker:48,flowerbed:9,play:8,plant:13,tree:16})[p.kind]||25;
-  if(p.kind==='dog'){dot(c,center.x,center.y,18,'#73613b22');dot(c,center.x,center.y-14,15,p.colour);dot(c,center.x+12,center.y-26,12,p.colour);dot(c,center.x+7,center.y-30,6,'#795d49');dot(c,center.x+20,center.y-22,6,'#e2c6a0');dot(c,center.x+23,center.y-23,2,'#514a43');dot(c,center.x+15,center.y-29,1.5,'#514a43');c.strokeStyle=p.colour;c.lineWidth=5;c.beginPath();c.moveTo(center.x-12,center.y-18);c.lineTo(center.x-22,center.y-28);c.stroke();for(const x of [-8,7]){c.fillStyle=p.colour;c.fillRect(center.x+x,center.y-9,5,11);}return;}
-  if(p.kind==='cone'){dot(c,center.x,center.y,12,'#efd7af');polygon(c,[{x:center.x-9,y:center.y},{x:center.x,y:center.y-26},{x:center.x+9,y:center.y}],p.colour);c.strokeStyle='#fff2ce';c.lineWidth=4;c.beginPath();c.moveTo(center.x-4,center.y-11);c.lineTo(center.x+4,center.y-11);c.stroke();return;}
   const shape=slab(c,p,z,p.colour);
   if(p.kind==='machine'){const q=shape.d;c.strokeStyle='#576979';c.lineWidth=3;c.beginPath();c.ellipse(q.x+16,q.y-14,10,11,0,0,Math.PI*2);c.stroke();c.fillStyle='#dbe6e8';c.fill();c.fillStyle='#4f6d65';c.fillRect(q.x+8,q.y-31,7,3);}
   if(['chair','seat','sofa','bench'].includes(p.kind)){slab(c,{...p,h:8},z+18,p.colour);if(p.kind==='sofa'){slab(c,{...p,w:8},z+10,p.colour);slab(c,{...p,x:p.x+p.w-8,w:8},z+10,p.colour);}}

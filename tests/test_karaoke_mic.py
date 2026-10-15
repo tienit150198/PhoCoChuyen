@@ -114,8 +114,7 @@ class Switch(unittest.TestCase):
         base_perm = 'camera=(), microphone=(), geolocation=(), payment=()'
         self.assertEqual(srv.mic_headers('CSP-X', base_perm, False, 'wss://h'), ('CSP-X', base_perm))
         if csp is not None:   # this process runs with the switch off: the module's headers are today's
-            from game import dog_bark   # 🐕 kéo co on (the tests' default): the microphone for this site, nothing else
-            self.assertEqual(srv.PERMISSIONS, base_perm.replace('microphone=()', 'microphone=(self)') if dog_bark.enabled() else base_perm)
+            self.assertEqual(srv.PERMISSIONS, base_perm)   # 🐕 kéo co chó sủa (removed 15/10) no longer opens the microphone
             self.assertNotIn('jsdelivr', srv.CSP)
             self.assertIn("connect-src 'self';", srv.CSP)
 
@@ -182,10 +181,10 @@ class BirthYear(Base):
             self.assertIsNone(km.birth_of(self.store, self.store.key(a)))
             km.forget(self.store, b)
             self.assertIsNone(km.birth_of(self.store, self.store.key(b)))
-        with patch.dict(os.environ, LIVE_KARAOKE_MIC='0', LIVE_DOG_BARK='0'):
+        with patch.dict(os.environ, LIVE_KARAOKE_MIC='0', LIVE_DOG_BARK='1'):   # the old kéo co switch opens nothing now
             with self.assertRaises(kg.KaraError) as e:
                 km.birth(self.store, a, dict(year=2000))
-            self.assertEqual(e.exception.status, 404)     # switched off: as if the route did not exist (🐕 kéo co off too)
+            self.assertEqual(e.exception.status, 404)     # switched off: as if the route did not exist
 
     def test_no_save_key(self):
         a = self.user('hoa')

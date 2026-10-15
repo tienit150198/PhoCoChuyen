@@ -69,7 +69,7 @@ async def main():
                 await page.keyboard.press('Escape')
                 assert await page.evaluate('testVenue.destroyed && !document.querySelector(".venue-visit")')
                 report['checks'].append(f'{width}px: keyboard movement, input isolation, station path/proximity, service suspend/resume, touch movement/cancel and Escape disposal passed')
-                for venue in ['cafe', 'spa', 'cinema', 'karaoke', 'bark', 'salon', 'nails', 'craft', 'books', 'art', 'music', 'reading', 'garden', 'family']:
+                for venue in ['cafe', 'spa', 'cinema', 'karaoke', 'salon', 'nails', 'craft', 'books', 'art', 'music', 'reading', 'garden', 'family']:
                     await page.evaluate('(id)=>openLocalVenue(id)', venue)
                     await page.wait_for_timeout(90)
                     assert await page.evaluate('document.documentElement.scrollWidth<=innerWidth'), f'{venue}: no horizontal overflow'

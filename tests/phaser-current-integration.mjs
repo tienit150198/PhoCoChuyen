@@ -100,7 +100,7 @@ test('active fireworks welcome is subscribed before live connects, once per page
 
 test('every enabled live feature can keep a welcome connection open on its own',()=>{
   const src=read('public/js/v4/live.js').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
-  for(const flag of ['chat','street','dating','wedding','fair','home','visits','town','kara','bark']){
+  for(const flag of ['chat','street','dating','wedding','fair','home','visits','town','kara']){
     const context=vm.createContext({URLSearchParams,location:{search:''},console,clearTimeout(){},clearInterval(){},setInterval(){}});
     vm.runInContext(src+'\npaint=()=>{};deepLink=()=>{};syncFace=()=>{};adoptName=()=>{};globalThis.h={frame,live};',context);
     context.h.frame({t:'welcome',flags:{[flag]:true},me:{pid:'me'}});

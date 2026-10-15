@@ -1,3 +1,11 @@
+# Chưa phát hành — nodog
+
+🐕 Bỏ trò Kéo co chó sủa (chủ game 15/10: "xóa trò 'kéo co chó sủa' đi cho nhẹ").
+- Người chơi không còn thấy trò ở đâu: bỏ mục Khu phố/menu, mốc 🐕 trên phố cổ điển, tòa "Sân chơi thú cưng" trên bản đồ 2.5D (game/town_layout.json, dựng lại public/js/isometric/phaser-world.js) và phòng `bark` trong venue-place. Xóa public/js/v4/dog-bark.js, dog-bark-board.js, public/css/dog-bark.css, public/audio/bark/ (7 tiếng sủa + CREDITS; bỏ dòng ghi công trong THIRD_PARTY_NOTICES.md), MANIFEST bỏ các file đã xóa. Có gì mới cũ giữ nguyên chữ; nút "Thử ngay" tự ẩn vì không còn nút `liveBark`.
+- Máy chủ: bỏ GET /api/dogbark, POST /api/dogbark/cancel, giới hạn tốc độ `jr_bark_`, header microphone của trò (chỉ còn theo LIVE_KARAOKE_MIC; /api/karaoke/birth cũng chỉ còn theo công tắc đó). Live service: bỏ live/dog_bark.py, cờ `bark` trong welcome và biến LIVE_DOG_BARK (bản này bỏ qua biến đó; drop-in systemd có thể gỡ khi deploy). Lệnh `jr_bark_join` từ chối ("Kéo co chó sủa đã ngừng rồi nha.", mã `bark_off`), không trừ xu.
+- Giữ lại để không mất tiền/dữ liệu và rollback được: bảng `bark_tickets` và mọi dòng (không DROP, SCHEMA_VERSION không đổi); game/dog_bark.py tối giản (apply_fx + fx_commit trả khoản 'bark' còn treo; housekeeping 30 s trả lại vé còn mở do bản cũ để lại, đúng một lần; forget khi xóa dữ liệu); game/dog_bark_board.py tối giản (5 danh hiệu tuần vẫn hợp lệ trong bản lưu, apply_fx trả giải 'bark_weekly' còn treo, forget). Không chốt tuần mới, không tạo giải mới. Bản lưu không có khóa nào của trò. 2.4.15 đọc được mọi thứ bản này ghi (chỉ là dòng vé 'back' + live_effects 'bark' như cũ).
+- Tests: bỏ test_dog_bark*, test_live_dog_bark, dog_bark_*.mjs, scripts browser_dog_bark/dog_bark_rollback_check; thêm tests/test_dog_bark_removed.py; sửa các test đếm tiện ích/tòa nhà/venue. Không có Có gì mới.
+
 # v2.4.15 — 2026-10-15
 
 ⚡ Giảm lag (chủ game 15/10). Bản lưu lớn (54 nghề, tới 14 MB) làm mỗi lệnh mất 1–1,6 s: sổ thu chi mỗi nghề giữ tới 1.200 dòng, phần lớn là 4–5 dòng cho từng đơn riêng của nhân viên.

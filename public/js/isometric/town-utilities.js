@@ -3,7 +3,7 @@
  */
 const JOURNEY_FEATURES={tileMatch:'tile',garage:'garage',gadgets:'gadgets',pets:'pets',spend:'spend',spendStyle:'spend',spendQuan:'spend',spendSpa:'spend',spendRap:'spend',spendChua:'spend',lux:'lux',luxFw:'lux',luxTrip:'lux',luxSuu:'lux',luxNha:'lux',luxBay:'lux',luxTiec:'lux',luxHoc:'lux',luxMtq:'lux',abroad:'abroad'};
 const CONTENT_FEATURES={quay:'quay',auction:'auction',auctionLands:'auction',jrCerts:'certs'};
-const LIVE_FEATURES={liveWalk:'street',liveDate:'dating',liveWed:'wedding',liveKara:'kara',liveBark:'bark'};
+const LIVE_FEATURES={liveWalk:'street',liveDate:'dating',liveWed:'wedding',liveKara:'kara'};
 const owns=(object,key)=>Object.prototype.hasOwnProperty.call(object,key);
 
 /** Known optional services use the app's gates; ordinary map actions stay available. */
@@ -11,7 +11,7 @@ export function townServiceAvailable(action,state={},content={},social={},action
   const journey=state?.journey||{},story=Boolean(journey.story);
   if(owns(JOURNEY_FEATURES,action))return Boolean(story&&journey[JOURNEY_FEATURES[action]]);
   if(owns(CONTENT_FEATURES,action))return Boolean(story&&content?.journey?.[CONTENT_FEATURES[action]]);
-  if(owns(LIVE_FEATURES,action))return Boolean(social?.welcomed&&social?.flags?.[LIVE_FEATURES[action]]&&(action!=='liveBark'||story));
+  if(owns(LIVE_FEATURES,action))return Boolean(social?.welcomed&&social?.flags?.[LIVE_FEATURES[action]]);
   if(action==='house'||action==='jrInvest')return story;
   if(action==='rui')return Boolean(state?.rui);
   if(action==='fair'){
@@ -73,7 +73,6 @@ export function townUtilityGroups(state={},content={},social={}){
       ['nhom','chat','📌','Nhóm phố'],['social','globe','🛍️','Phố nghề'],['rank','award','🏆','Bảng xếp hạng'],
       ['liveWalk','map','🚶','Phố đi dạo'],['liveDate','heart','💕','Góc hẹn hò'],
       ['liveWed','heart','💍','Lịch cưới'],['liveKara','music','🎤','Phòng hát'],
-      ['liveBark','paw','🐕','Kéo co chó sủa'],
       ['tileMatch','grid','🧩','Ghép ba Phố Mây'],
       ['wedInvite','mail','💌','Thiệp mời cưới'],
     ])},

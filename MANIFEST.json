@@ -3925,11 +3925,6 @@
       "sha256": "52da9e1855be7d5b136477029ca8cee8199079437b166e7abb290f3c8439c2a0"
     },
     {
-      "path": "live/dog_bark.py",
-      "bytes": 27065,
-      "sha256": "699f37a0ee41e3bec28fd32c52ce8d04cf4b43e7ae03b1dde90a155d07681094"
-    },
-    {
       "path": "live/effects.py",
       "bytes": 2925,
       "sha256": "83306696c63bd76ae7d1e345bc16edd86e2bcffe3f95defd30102e48ff44ffed"
@@ -4078,46 +4073,6 @@
       "path": "public/admin.html",
       "bytes": 858,
       "sha256": "bed9125ebf71e13df02c8a7231dfacfd2715b96fc41b521d74087a7d46e0a37a"
-    },
-    {
-      "path": "public/audio/bark/CREDITS.md",
-      "bytes": 1748,
-      "sha256": "91ff5f451d1e87c99c6fbf1e6c61e74ee88025bcd5d7e1fc3979df6f261a701a"
-    },
-    {
-      "path": "public/audio/bark/bark-a.mp3",
-      "bytes": 2297,
-      "sha256": "ef83980c26de722afd3f9b945a9a23be48276cfd39bd05eaf601b50837101177"
-    },
-    {
-      "path": "public/audio/bark/bark-b.mp3",
-      "bytes": 2715,
-      "sha256": "d34857f05be6ef2fecbbca8205328b46d05386e542ce2d087812c77cabd0a6c9"
-    },
-    {
-      "path": "public/audio/bark/bark-c.mp3",
-      "bytes": 3133,
-      "sha256": "1996f6ba7f0c16e243c910e1df08382aeb83cdbf4e1f9f2a84619de288e8a39e"
-    },
-    {
-      "path": "public/audio/bark/bark-d.mp3",
-      "bytes": 2088,
-      "sha256": "ffa8df2e29302c334cc92da95ffe29a5afaab40637be6f015a6bc20f86d593d0"
-    },
-    {
-      "path": "public/audio/bark/bark-e.mp3",
-      "bytes": 1879,
-      "sha256": "509cacfcb4fa59b636b8f727f315ea7b1883c6d02eb138b1829906591785c9b2"
-    },
-    {
-      "path": "public/audio/bark/bark-f.mp3",
-      "bytes": 2506,
-      "sha256": "0190ce09575f59933ffe2ef7382667022e414fd9324ccfbfa0f5cac38acf31ee"
-    },
-    {
-      "path": "public/audio/bark/bark-g.mp3",
-      "bytes": 2088,
-      "sha256": "9c9dc705ab00d2814eef6f94735985fb8b09623396be17a23ede68d3fdd63743"
     },
     {
       "path": "public/audio/chua/chuong-dai-hong-2.mp3",
@@ -4583,11 +4538,6 @@
       "path": "public/css/desks.css",
       "bytes": 26991,
       "sha256": "f55076d621068ff6d65f8fa990fdb2903b838adab263fa00b43ee9af3dd0ca44"
-    },
-    {
-      "path": "public/css/dog-bark.css",
-      "bytes": 11572,
-      "sha256": "842324153f99d483186e746f683a8a9e34a9e7912ff056496560ac798187747d"
     },
     {
       "path": "public/css/fair.css",
@@ -6835,16 +6785,6 @@
       "sha256": "9ccbaa85a82d2a0816b01b9af4488d0d8eb4d1c0a0c43b3408c538d488f3f007"
     },
     {
-      "path": "public/js/v4/dog-bark-board.js",
-      "bytes": 3674,
-      "sha256": "6a156829a4ab22151222b9e14886a53272f56749f71fcfece5c13ef0367c78db"
-    },
-    {
-      "path": "public/js/v4/dog-bark.js",
-      "bytes": 23630,
-      "sha256": "b67b274faf2c76f2afe803ed9045d15987adc5c63708fb18b4701ed1de5bffb4"
-    },
-    {
       "path": "public/js/v4/envelope-send.js",
       "bytes": 514,
       "sha256": "4798ad884012f0a4404a9da7b94bfb3d6c3fe9637dbf01459a2b54f7e58c6ba9"
@@ -7760,11 +7700,6 @@
       "sha256": "9a2a112c0dd0fec3f01d4ccb0f39a7564e4a84a20c129b38160b7077ad90d77e"
     },
     {
-      "path": "scripts/browser_dog_bark.py",
-      "bytes": 10873,
-      "sha256": "82a89ac3b4064000ca5be0a57a1f6be892b11a958b6992909c4c42b918d4c105"
-    },
-    {
       "path": "scripts/browser_dorm.py",
       "bytes": 10016,
       "sha256": "5894a4996550848b8906a79e5e977d2d25375398991b066fd5474eb144af222a"
@@ -8143,11 +8078,6 @@
       "path": "scripts/check_word_caps.py",
       "bytes": 23300,
       "sha256": "61cf53579f2128dc0e6cfe8ff47174b5e9b05f5330eaec4fa45a18efafddeae7"
-    },
-    {
-      "path": "scripts/dog_bark_rollback_check.py",
-      "bytes": 7477,
-      "sha256": "ce70923c04cb6f86616cdc22e64512af9ba7eb6dd1cad6452fd5375974f7fd4c"
     },
     {
       "path": "scripts/grant_admin.py",
@@ -8673,16 +8603,6 @@
       "path": "tests/district3d.mjs",
       "bytes": 4655,
       "sha256": "64d5dcc7360a08a27b31b9d3ceaa7dbd1c8d7b5f9b1d61e8127ea519e59ea754"
-    },
-    {
-      "path": "tests/dog_bark_board.mjs",
-      "bytes": 2330,
-      "sha256": "4041f34dccac35b154730b36c14540ebca969602c1f6c072d8c6b29077a35fb6"
-    },
-    {
-      "path": "tests/dog_bark_recovery.mjs",
-      "bytes": 5324,
-      "sha256": "081fa9cfacb359d14559fb3a4cd6c2976540b15da891a6eb078721ce75bdfcf0"
     },
     {
       "path": "tests/envelope_send.mjs",
@@ -10380,16 +10300,6 @@
       "sha256": "20c47a7b1d0e7fd1ab3bbbfff6cc20da854ce04f517570937e007f02f61fef6a"
     },
     {
-      "path": "tests/test_dog_bark.py",
-      "bytes": 25359,
-      "sha256": "47a70607d8e140f75ba25e1a9f3b95f87bef482731f62696312fa7bda9975cfc"
-    },
-    {
-      "path": "tests/test_dog_bark_board.py",
-      "bytes": 14065,
-      "sha256": "50c750936be525343b3d6f595e11cbc348ce800d61acdcf479c785ebdf014204"
-    },
-    {
       "path": "tests/test_economy_pass2.py",
       "bytes": 8730,
       "sha256": "b64adb983a3cc710b752b3ef12016737d1b331560642e310ee2bbe3af3703bc7"
@@ -10998,11 +10908,6 @@
       "path": "tests/test_live_dating.py",
       "bytes": 20834,
       "sha256": "b526cfd3aa8d2a46a8ea1cba4576c278387dcdd126627ea2a25c195dac2a0ebd"
-    },
-    {
-      "path": "tests/test_live_dog_bark.py",
-      "bytes": 14639,
-      "sha256": "60eee4fdd52bd9a38713799ad6487a21b4c3dfc00d1919f35729cf97724631dd"
     },
     {
       "path": "tests/test_live_effects_apply.py",

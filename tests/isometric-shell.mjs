@@ -43,15 +43,16 @@ for(const kind of ['fishing','boat','pool'])assert.match(html,new RegExp(`data-a
 
 const utilityState={...state,rui:{},marriage:{spouse:{name:'An'}},journey:{...state.journey,garage:{},gadgets:{},pets:{},spend:{},lux:{},abroad:{}}};
 const utilityContent={...content,journey:{quay:{},auction:{},certs:{}}};
-const utilityLive={welcomed:true,flags:{street:true,dating:true,wedding:true,kara:true,bark:true}};
+const utilityLive={welcomed:true,flags:{street:true,dating:true,wedding:true,kara:true}};
 const utilityHTML=isometricHUDHTML(isometricHUDModel(utilityState,utilityContent,'town',utilityLive),utilityState);
-for(const action of ['bank','house','garage','gadgets','pets','spend','spendStyle','lux','luxFw','auction','rui','jrInvest','quay','jrCerts','accountingSchool','historyCourse','abroad','friends','marriage','nhom','social','rank','liveWalk','liveDate','liveWed','liveKara','liveBark','wedInvite']){
+for(const action of ['bank','house','garage','gadgets','pets','spend','spendStyle','lux','luxFw','auction','rui','jrInvest','quay','jrCerts','accountingSchool','historyCourse','abroad','friends','marriage','nhom','social','rank','liveWalk','liveDate','liveWed','liveKara','wedInvite']){
   assert.ok(utilityHTML.includes(`data-action="${action}"`),`${action} is discoverable from the town utilities without opening the work menu`);
 }
 assert.equal((utilityHTML.match(/class="iso-quick-button"/g)||[]).length,(html.match(/class="iso-quick-button"/g)||[]).length,'restoring utilities adds no floating map buttons');
 for(const group of ['services','life','learning','community'])assert.match(utilityHTML,new RegExp(`<details[^>]+data-iso-group="${group}"[^>]*><summary`),'utility groups begin collapsed');
 const basicHTML=isometricHUDHTML(isometricHUDModel(state,content,'town'),state);
-for(const action of ['garage','gadgets','pets','spend','spendStyle','lux','luxFw','auction','rui','quay','jrCerts','abroad','liveWalk','liveDate','liveWed','liveKara','liveBark','wedInvite'])assert.equal(basicHTML.includes(`data-action="${action}"`),false,`${action} is hidden until the corresponding server feature is available`);
+for(const action of ['garage','gadgets','pets','spend','spendStyle','lux','luxFw','auction','rui','quay','jrCerts','abroad','liveWalk','liveDate','liveWed','liveKara','wedInvite'])assert.equal(basicHTML.includes(`data-action="${action}"`),false,`${action} is hidden until the corresponding server feature is available`);
+assert.equal(utilityHTML.includes('data-action="liveBark"'),false,'the removed dog tug-of-war is not offered');
 assert.doesNotMatch(utilityHTML,/\bdisabled\b/,'available utilities are real actions, not disabled placeholders');
 
 model=isometricHUDModel({...state,careers:{florist:{...state.careers.florist,active_task:'last'}}},content,'work');

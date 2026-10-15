@@ -60,7 +60,8 @@ class Geometry(unittest.TestCase):
     def test_amenity_art_is_solid_and_all_service_approaches_remain_free(self):
         from live.town import _LAYOUT, town_obstacles
         amenities = _LAYOUT['amenities']
-        self.assertTrue({'karaoke', 'bark'} <= {p['id'] for p in amenities})
+        self.assertIn('karaoke', {p['id'] for p in amenities})
+        self.assertNotIn('bark', {p['id'] for p in amenities})   # 🐕 kéo co chó sủa removed (15/10)
         illustrated = [p for p in amenities if p.get('art')]
         self.assertGreaterEqual(len(illustrated), 17)
         self.assertTrue({'fairgrounds', 'dograce', 'homes-rent', 'homes-apartment',

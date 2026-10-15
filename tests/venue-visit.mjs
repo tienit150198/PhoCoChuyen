@@ -3,7 +3,7 @@ import fs from 'node:fs';
 const modulePath=new URL('../public/js/scenes/venue-place.js',import.meta.url);
 assert.ok(fs.existsSync(modulePath),'Walkable venue scene is implemented');
 const {VENUE_IDS,venueLayout,walkableVenue,venuePath,createVenueWalk,projectVenue,unprojectVenue}=await import(modulePath);
-const ids=['cafe','spa','cinema','karaoke','bark','salon','nails','craft','books','art','music','reading','garden','family'];
+const ids=['cafe','spa','cinema','karaoke','salon','nails','craft','books','art','music','reading','garden','family'];
 assert.deepEqual(VENUE_IDS,ids);
 for(const id of ids){
   const room=venueLayout(id);
@@ -25,8 +25,7 @@ for(const id of ids){
   assert.ok(Math.hypot(roundTrip.x-point.x,roundTrip.y-point.y)<.00001);
 }
 assert.throws(()=>venueLayout('unknown'),/venue/i);
-assert.ok(venueLayout('bark').title.includes('thú cưng'),'Bark venue is the pet playground for the existing dog tug-of-war game');
-assert.equal(venueLayout('bark').props.some(p=>p.kind==='counter'),false,'Pet playground has no bar counter');
+assert.throws(()=>venueLayout('bark'),/venue/i,'the removed dog tug-of-war has no venue');
 const room=venueLayout('cafe');let selected=[];
 assert.ok(venuePath(room,{x:53,y:194},room.stations[0]).length,'A valid position beside a table corner connects to a clear neighboring route node');
 const walk=createVenueWalk(room,{onInteract:s=>selected.push(s.id)});

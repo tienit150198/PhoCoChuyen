@@ -323,7 +323,7 @@ TITLES = [
 ]
 TITLES += fh.titles(_t)   # 🏮 Hội chợ dân gian: secret, granted by a round or after the fair (game/fair.py)
 from . import dog_bark_board as bark_board
-TITLES += bark_board.titles(_t)
+TITLES += bark_board.titles(_t)   # 🐕 the weekly kéo co titles: the game is gone, a save holding one still validates
 TITLE_INDEX = {t['id']: t for t in TITLES}
 STATS = ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary', 'reopened', 'paused', 'max_wallet',
          'debt_repaid', 'calm_days', 'normal_days', 'festival_days', 'homes_bought', 'home_paid')
@@ -949,7 +949,7 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(lx.action(s, name, p))
     elif name.startswith('jr_auc_'):
         result.update(auc.action(s, name, p))
-    elif name.startswith('jr_bark_'):   # 🐕 Kéo co chó sủa: the stake into escrow (game/dog_bark.py)
+    elif name.startswith('jr_bark_'):   # 🐕 Kéo co chó sủa was removed (15/10): refuses, nothing taken (game/dog_bark.py)
         from . import dog_bark
         result.update(dog_bark.action(s, name, p))
     elif name.startswith('jr_spend_'):

@@ -76,7 +76,7 @@ test('guide direct utilities work without changing workplace mode and follow liv
   await x.h.goTo('utility:liveKara',x.env);assert.deepEqual(actions,['historyCourse','liveKara']);
 });
 
-test('all 66 documented utilities dispatch existing actions and reject stale unavailable routes',async()=>{
+test('all 65 documented utilities dispatch existing actions and reject stale unavailable routes',async()=>{
   const inventory=JSON.parse(readFileSync(new URL('../docs/qa/isometric-feature-parity.json',import.meta.url),'utf8'));
   const calls=[],x=harness(false,({env,real})=>{
     real.mode='work';real.go=()=>assert.fail('a shared utility must not start an invented walk');
@@ -84,13 +84,13 @@ test('all 66 documented utilities dispatch existing actions and reject stale una
     Object.assign(env.api.state,{journey:{story:true,garage:{},gadgets:{},pets:{},spend:{},lux:{},abroad:{},deco:{},household:{}},marriage:{spouse:{}},rui:{},fair:{show:true,dog:{},knife:{},scratch:{},photo:{}}});
     env.api.content.journey={quay:{},auction:{},certs:{}};
   });
-  x.socket.welcomed=true;x.socket.flags={street:true,dating:true,wedding:true,kara:true,bark:true};
+  x.socket.welcomed=true;x.socket.flags={street:true,dating:true,wedding:true,kara:true};
   const before=JSON.stringify(x.env.api.state);
   for(const route of inventory.utilityRoutes){
     await x.h.goTo('utility:'+route.id,x.env);
     assert.deepEqual(calls.at(-1),{action:route.action,data:route.data},route.id+' forwards unchanged action data');
   }
-  assert.equal(calls.length,66);assert.equal(JSON.stringify(x.env.api.state),before,'entry routing cannot change money, eligibility or progress');
+  assert.equal(calls.length,65);assert.equal(JSON.stringify(x.env.api.state),before,'entry routing cannot change money, eligibility or progress');
   x.env.api.state={journey:{story:false}};x.env.api.content={};x.socket.welcomed=false;x.socket.flags={};
   const available=new Set(townUtilities.townUtilityGroups(x.env.api.state,x.env.api.content,x.socket).flatMap(g=>g.items.map(i=>i.id)));
   for(const route of inventory.utilityRoutes.filter(route=>!available.has(route.id))){
@@ -127,21 +127,21 @@ test('authored map services follow the same server gates as the compact utility 
   assert.equal(x.destinations().includes('utility:garage'),false,'the now-visible map service replaces its direct-open entry');
 });
 
-test('authored park, karaoke and pet-play destinations use their real action data and live gates',()=>{
+test('authored park and karaoke destinations use their real action data and live gates',()=>{
   const authored=JSON.parse(readFileSync(new URL('../game/town_layout.json',import.meta.url),'utf8')).amenities;
+  assert.equal(authored.some(p=>p.id==='bark'||p.action==='liveBark'),false,'the removed dog tug-of-war has no map destination');
   const actions=[],x=harness(false,({real,stage,env})=>{
-    real.townAmenities=()=>authored.filter(p=>['walk','karaoke','bark'].includes(p.id));
+    real.townAmenities=()=>authored.filter(p=>['walk','karaoke'].includes(p.id));
     stage.navigation.bounds={x0:-40,y0:-10,x1:90,y1:65};stage.navigation.roads=[stage.navigation.bounds];
     env.act=async(action,data)=>actions.push({action,data});
   });
-  x.socket.flags={street:true,kara:true,bark:true};x.socket.welcomed=true;x.socket.emit('welcome');
-  for(const id of ['walk','karaoke','bark'])assert.ok(x.ids().includes('place:'+id),id+' is mapped once enabled');
-  x.real.onInteract('place:walk');x.real.onInteract('place:karaoke');x.real.onInteract('place:bark');
+  x.socket.flags={street:true,kara:true};x.socket.welcomed=true;x.socket.emit('welcome');
+  for(const id of ['walk','karaoke'])assert.ok(x.ids().includes('place:'+id),id+' is mapped once enabled');
+  x.real.onInteract('place:walk');x.real.onInteract('place:karaoke');
   assert.equal(actions[0].action,'liveWalk');assert.equal(actions[0].data.place,'congvien','the illustrated park opens the park instead of a remembered street');
-  assert.deepEqual(actions.slice(1).map(x=>x.action),['liveKara','liveBark']);
-  x.api.state.journey.story=false;x.api.emit('state');x.real.onInteract('place:bark');assert.equal(actions.length,3);
-  assert.equal(x.ids().includes('place:bark'),false);assert.ok(x.ids().includes('place:karaoke'));
-  x.socket.flags={};x.socket.emit('welcome');x.real.onInteract('place:karaoke');assert.equal(actions.length,3);
+  assert.deepEqual(actions.slice(1).map(x=>x.action),['liveKara']);
+  x.api.state.journey.story=false;x.api.emit('state');assert.ok(x.ids().includes('place:karaoke'));
+  x.socket.flags={};x.socket.emit('welcome');x.real.onInteract('place:karaoke');assert.equal(actions.length,2);
   assert.equal(x.ids().includes('place:karaoke'),false);
 });
 
