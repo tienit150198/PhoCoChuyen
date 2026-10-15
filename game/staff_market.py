@@ -105,8 +105,9 @@ def x(career: str, t: float | None = None) -> int:
     t = now() if t is None else t
     m = market(career, t)
     if career == hot(t):
-        return max(HOT_LOW, min(HOT_HIGH, 2 * m))
-    return m
+        m = max(HOT_LOW, min(HOT_HIGH, 2 * m))
+    from . import golden_hour   # ⏰ Giờ vàng / Ngày vàng (owner 15/10): ×2 / ×1.5 at the order's own time
+    return m * golden_hour.mult(t) // 100
 
 
 def shape(margin: int, stars: int = 4) -> int:
@@ -140,11 +141,13 @@ def public(t: float | None = None) -> dict:
     """public_state['market']: today's hot career and every staffed career's multiplier now (hundredths)."""
     t = now() if t is None else t
     h = hot(t)
-    return dict(hot=h, x={c: x(c, t) for c in careers()}, slot=SLOT)
+    from . import golden_hour
+    return dict(hot=h, x={c: x(c, t) for c in careers()}, slot=SLOT, golden=golden_hour.public(t))
 
 
 def view(career: str, t: float | None = None) -> dict:
     """The Sổ tiệm card's market line: now, the trend over the last 2 hours, the hot flag and the 48 h curve."""
     t = now() if t is None else t
     curve = series(career, t)
-    return dict(x=curve[-1], was=curve[-5], hot=career == hot(t), curve=curve, slot=SLOT)
+    from . import golden_hour   # ⏰ now, not at the slot's start: a Giờ vàng may begin mid-slot
+    return dict(x=x(career, t), was=curve[-5], hot=career == hot(t), curve=curve, slot=SLOT, golden=golden_hour.public(t))

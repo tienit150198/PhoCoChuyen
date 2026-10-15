@@ -16,6 +16,7 @@ import {avInner} from './face.js';
 import {visitorSelectionValid} from './workplace-visit-ui.js';
 import {paintCounter} from './quay-scene.js';
 import {figure} from './look.js';
+import {goldenText} from '../market-ui.js';   // ⏰ Giờ vàng (game/golden_hour.py)
 import {confirmPurchase} from './payment.js';
 import {RIDE,rideSVG,turnChoices} from './quay-ride.js';
 import {signalHTML,mountSignals} from './traffic.js';
@@ -657,7 +658,13 @@ function selfRow(st){
 }
 /** #19: what the staffed counter makes an hour (market now) and a day (24 h), from quay_business.income. */
 function quayIncome(b){
- const i=b.income;if(!i||!i.hour||!i.day)return '';
+ const gold=goldenText(S.env?.api?.state?.market?.golden);   // ⏰ Giờ vàng / 🌟 Ngày vàng (game/golden_hour.py)
+ const i=b.income;if(!i||!i.hour||!i.day)return gold?`<p class="qy-golden" data-testid="qy-golden">${esc(gold)}</p>`:'';
+ if(gold)return `<p class="qy-golden" data-testid="qy-golden">${esc(gold)}</p>`+quayIncomeBody(b);
+ return quayIncomeBody(b);
+}
+function quayIncomeBody(b){
+ const i=b.income;
  const sign=n=>`${n>=0?'+':'−'}${xu(Math.abs(n))}`,cls=n=>n<0?'loss':'';
  const h=i.stock_hours,left=h==null?'':h>=24?' Hàng còn đủ bán hơn 1 ngày.':` Hàng còn đủ bán khoảng ${h<1?`${Math.max(1,Math.round(h*60))} phút`:`${fmt(h)} giờ`}.`;
  return `<div class="qy-income" data-testid="qy-income"><div><small>Lãi 1 giờ · chợ ${esc(i.market||'')}</small><strong class="${cls(i.hour.net)}">≈ ${sign(i.hour.net)}</strong><small>${fmt(Math.round(i.hour.sold))} món · thu ${xu(i.hour.revenue)}</small></div><div><small>Lãi 1 ngày (24 giờ)</small><strong class="${cls(i.day.net)}">≈ ${sign(i.day.net)}</strong><small>nếu đủ hàng, đủ vốn</small></div><p>Ước tính theo menu, giá, nhân viên, chợ lúc này${b.status==='running'?'':' (khi quầy bán lại)'}; đã trừ hàng, lương, điện, thuế, cộng thưởng.${left}</p></div>`;

@@ -20,6 +20,7 @@ from . import business_progression as bp
 from .loss_limits import bounded_loss
 
 PERIOD = 600
+QUIET_MS = 10 * 60 * 1000   # 2.4.20: time costs stop this long after the last sale, until the next one (_busy)
 DEN = PERIOD * 1000
 STOCK_MAX = 20000
 PRICE_MAX = 1000000
@@ -236,7 +237,19 @@ def assess_fine(st, amount):
     return paid
 
 
-def _charge(st, elapsed, *, direct=False):
+def _busy(st, start, dt):
+    """2.4.20 (owner 15/10, chi phí cố định khi quầy vắng khách): of [start, start + dt) ms, the part within QUIET_MS of
+    the last sale. Time costs accrue only there: QUIET_MS after a sale with no next one the counter stops paying
+    rent, power, wages… until it sells again. Measured from the last sale's own time, so polling or a catch-up books
+    the same. A counter that never sold pays as before."""
+    recent = st['business'].get('recent') or []
+    if start is None or not recent:
+        return dt
+    last = int(round(recent[-1]['at'] * 1000))
+    return max(0, min(start + dt, last + QUIET_MS) - start)
+
+
+def _charge(st, elapsed, *, direct=False, start=None):
     blocked = st.get('business', {}).get('certificate_block')
     if blocked and not direct:
         return True
@@ -247,6 +260,7 @@ def _charge(st, elapsed, *, direct=False):
     # earlier than a catch-up that reaches the next fractional expense boundary.
     cash = max(0, st['till'] + st['fund'] - 1)
     def cost(dt):
+        dt = _busy(st, start, dt)
         return sum((b['carry'][k] + dt * rate) // DEN for k, rate in rates.items())
     dt = elapsed
     if cost(dt) > cash:
@@ -258,8 +272,9 @@ def _charge(st, elapsed, *, direct=False):
             else:
                 hi = mid - 1
         dt = lo
+    paid = _busy(st, start, dt)
     for k, rate in rates.items():
-        charge, b['carry'][k] = divmod(b['carry'][k] + dt * rate, DEN)
+        charge, b['carry'][k] = divmod(b['carry'][k] + paid * rate, DEN)
         qy._from_till_fund(st, charge)
         b['expenses'][k] += charge
         _profit_state(st)['costs'] += charge
@@ -337,7 +352,9 @@ def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=
         b['expenses']['loss'] += paid
         costs += paid
     costs += charge_income_tax(st, amount, costs)
-    bonus = reward_margin(st, amount, costs, income_gear.profit_percent(st,BONUS_PERCENT if employee is None else STAFF_BONUS_PERCENT), owner)
+    from . import golden_hour   # ⏰ Giờ vàng / Ngày vàng (owner 15/10): the owner's take ×2 / ×1.5 at the sale's own time
+    percent = golden_hour.scale_take(income_gear.profit_percent(st,BONUS_PERCENT if employee is None else STAFF_BONUS_PERCENT), at / 1000)
+    bonus = reward_margin(st, amount, costs, percent, owner)
     ratio = sum(qs.price(st, d) / qs.DISH[st['trade']][d]['base'] for d in items) / len(items)
     price_stars = 5 if ratio <= .9 else 4 if ratio < 1.15 else 3 if ratio < 1.5 else 2 if ratio < 2 else 1
     review = None
@@ -412,12 +429,12 @@ def settle(s, now=None, *, _policy=True, _exclusive=False):
         manual = isinstance(run, dict) and run.get('continuous') and not run.get('x') and not b['paused'] and not b.get('certificate_block')
         intervals = _intervals(st)
         if not st['staff'] and manual:
-            _charge(st, at - cursor)
+            _charge(st, at - cursor, start=cursor)
         while status(st) == 'running':
             arrivals = [(max(cursor, when), d) for d, when in b['arrivals'].items() if _for_staff(st, d) > 0]
             when, dish = min(arrivals)
             end = min(when, at)
-            if not _charge(st, end - cursor):
+            if not _charge(st, end - cursor, start=cursor):
                 break
             cursor = end
             if when > at or (_exclusive and when == at) or status(st) == 'no_funds':

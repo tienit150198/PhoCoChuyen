@@ -1,3 +1,11 @@
+# v2.4.20 — 2026-10-15
+
+⏰ Giờ vàng + quầy lãi hơn (chủ game 15/10: "chấp nhận, và tăng thêm lãi cho người dùng đi, … 10p hoặc 1h ngẫu nhiên mỗi ngày là khung giờ vàng, hoặc theo ngày").
+- game/golden_hour.py: mỗi ngày (giờ VN) bốc từ ngày: ~1/7 là Ngày vàng (×1,5 cả ngày), còn lại một Giờ vàng 10/30/60 phút bắt đầu 07:00–23:00 (×2). Không lưu gì. Nhân lãi lúc đơn/lượt bán xảy ra: đơn nhân viên (staff_market.x), lượt bán quầy (phần chủ nhận, scale_take). Lỗ không nhân. Bảng tin (/api/news `golden`) chạy 1 lần mỗi khung; chip/dòng ở thẻ nghề, Sổ tiệm và quầy. MNL_GOLDEN_OFF=1 tắt (tests).
+- Quầy tạp hóa: giá vốn 68% → 55%.
+- Quầy vắng khách: quá 10 phút kể từ lượt bán cuối thì chi phí theo thời gian (thuê, điện, môi trường, bảo kê, lương) ngừng tính tới lượt bán sau (`_busy`, đo từ thời điểm bán nên poll hay offline như nhau). Quầy chưa bán lần nào trả như cũ. Ca người chơi thuê không đổi.
+- Không thêm khóa lưu. Có gì mới: 2 dòng.
+
 # v2.4.19 — 2026-10-15
 
 📒 Quầy: dòng "Lãi" không còn trừ hàng còn trên kệ (chủ game 15/10 nhờ xem nhóm chat: "kinh doanh mà k có lãi"). Nhập hàng ghi chi phí hàng ngay lúc nhập, nên quầy vừa nhập lô lớn hiện lỗ nặng (7 quầy bánh & cà phê trung bình −57.000 xu, tiền hàng 27× doanh thu) dù hàng vẫn còn. `public()` cộng lại giá vốn hàng còn (`stock_value`, unit_cost × số phần): hàng tính khi bán, hỏng hoặc mất. Tiền, thưởng và sổ không đổi; nhãn "Lãi đã ghi sổ" → "Lãi", thêm "vốn ≈ … xu" dưới Nguyên liệu còn. Tiệm có nhân viên vốn đã tính hàng lúc bán (1.010 tiệm, 2 tiệm ≤ 0). Không có Có gì mới.

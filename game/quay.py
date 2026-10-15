@@ -47,7 +47,7 @@ TRADES = {
     'cafe_bakery': dict(emoji='🥐', name='Bánh & cà phê', price=8, mult=100, cogs=45, spoil=25, nang=100, mua=110, fest=100),
     'milk_tea': dict(emoji='🧋', name='Trà sữa', price=9, mult=82, cogs=40, spoil=10, nang=115, mua=85, fest=100),
     'florist': dict(emoji='💐', name='Hoa', price=18, mult=54, cogs=50, spoil=25, nang=100, mua=85, fest=150),
-    'grocery': dict(emoji='🛒', name='Tạp hóa', price=12, mult=118, cogs=68, spoil=2, nang=100, mua=100, fest=100),
+    'grocery': dict(emoji='🛒', name='Tạp hóa', price=12, mult=118, cogs=55, spoil=2, nang=100, mua=100, fest=100),
     'clothing': dict(emoji='👕', name='Quần áo', price=30, mult=35, cogs=55, spoil=0, nang=100, mua=75, fest=135),
 }
 TRADE_IDS = tuple(TRADES)

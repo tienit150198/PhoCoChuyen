@@ -199,3 +199,7 @@ html[data-clean] .qy-help{width:44px;height:44px}
 .qy-mrow.low .qy-mbtn{border-color:var(--warn);background:var(--warn-soft)}
 .qy-mname{font-weight:700;overflow-wrap:anywhere}
 .qy-mfacts{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* ⏰ Giờ vàng / 🌟 Ngày vàng (game/golden_hour.py): the profit boost on now */
+.qy-golden{margin:0 0 10px;padding:8px 12px;border-radius:12px;background:linear-gradient(90deg,#fff3c4,#ffe08a);color:#6b4500;font-weight:700;font-size:.86rem;line-height:1.4;border:1px solid #f0c040}
+.wb-market.golden{color:#8a5a00;font-weight:700}   /* ⏰ Giờ vàng (game/golden_hour.py) */

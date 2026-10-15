@@ -5,7 +5,7 @@
  * prefers-reduced-motion (or Cài đặt → Giảm chuyển động) gets a still banner. Text goes in with
  * textContent only. The same answer carries my own alerts (badges on "Hôn nhân" and "Bạn bè", a toast
  * when someone proposes, asks to be friends, a plan arrives, the spouse sends something or the wedding day came). */
-const SEEN='mnl.newsSeen',NOTE='mnl.mrNotice',POLL_MS=60000,PASSES=3,STILL_MS=9000;
+const SEEN='mnl.newsSeen',NOTE='mnl.mrNotice',GOLD='mnl.goldenSeen',POLL_MS=60000,PASSES=3,STILL_MS=9000;
 const read=k=>{try{return Number(localStorage.getItem(k))||0;}catch{return 0;}};
 const write=(k,v)=>{try{localStorage.setItem(k,String(v));}catch{/* storage blocked */}};
 let getEnv=null,timer=0,since=0,queue=[],bar=null,playing=false,booted=false,inflight=false;
@@ -30,6 +30,8 @@ async function poll(){
 function handle(d){
   if(!d||!Array.isArray(d.items))return;
   for(const it of d.items)if(it&&typeof it.text==='string'&&!queue.some(q=>q.id===it.id))queue.push({id:Number(it.id)||0,text:it.text.slice(0,200)});
+  // ⏰ Giờ vàng / 🌟 Ngày vàng (game/golden_hour.py): its line plays once a window on this device (id 0: not a news row)
+  const g=d.golden;if(g&&typeof g.text==='string'&&Number(g.ends)>read(GOLD)){write(GOLD,Number(g.ends));queue.unshift({id:0,text:g.text.slice(0,200)});}
   if(typeof d.last==='number')since=d.last;  // polling cursor; SEEN (on this device) moves when a line has played
   if(queue.length&&!playing)next();
   const env=getEnv?.();if(!env)return;

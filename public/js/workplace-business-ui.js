@@ -11,7 +11,7 @@ export function workplaceBusinessView(c){
 /** 📈 The staff's profit multiplier now (game/staff_market.py view): one line, an arrow, the 48 h curve. */
 function market(b){
  const m=b.market;if(!m||!m.x)return '';
- return `<p class="wb-market${m.hot?' hot':m.x>=110?' up':m.x<=90?' down':''}" data-testid="wb-market"><b>${esc(marketLine(m))}</b>${sparkline(m.curve)}</p>`;
+ return `<p class="wb-market${m.golden?' golden':''}${m.hot?' hot':m.x>=110?' up':m.x<=90?' down':''}" data-testid="wb-market"><b>${esc(marketLine(m))}</b>${sparkline(m.curve)}</p>`;
 }
 /** #19 "how xem được thu nhập 1h": the team's profit an hour and a day at its pace now (workplace_business._income). */
 function income(b){

@@ -322,7 +322,7 @@ class Economy(unittest.TestCase):
                     for d in range(1,601):
                         qy._sell(s,st,d)
                         revenue+=st['hist'][-1]['rev'];net+=st['hist'][-1]['net']
-                self.assertTrue(.08 <= net/revenue <= .18,(place,trade,net/revenue))
+                self.assertTrue(.08 <= net/revenue <= (.25 if trade=='grocery' else .18),(place,trade,net/revenue))   # 2.4.20: grocery cogs 68 → 55 (owner 15/10)
 
     def test_bad_days_exist_but_business_recovers(self):
         nets,_,_=simulate('sap','cafe_bakery',600)
@@ -333,7 +333,7 @@ class Economy(unittest.TestCase):
     def test_shift_value(self):
         for place in qy.PLACE_IDS:
             for trade in qy.TRADE_IDS:
-                self.assertTrue(50 <= qy.shift_value(place, trade) <= 160, (place, trade))
+                self.assertTrue(50 <= qy.shift_value(place, trade) <= (200 if trade == 'grocery' else 160), (place, trade))   # 2.4.20: grocery cogs 55
 
 
 class Thieves(unittest.TestCase):

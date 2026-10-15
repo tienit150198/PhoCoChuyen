@@ -878,6 +878,9 @@ def news(store, since, token: str | None = None) -> dict:
         except Exception:  # noqa: BLE001 - the ticker never fails for this
             me = None
     out['me'] = me
+    from . import golden_hour   # ⏰ Giờ vàng / 🌟 Ngày vàng on now: the ticker plays it once a window (public/js/v4/ticker.js)
+    g = golden_hour.public(t)
+    out['golden'] = dict(text=golden_hour.news_line(t), ends=int(g['ends'])) if g else None
     return out
 
 

@@ -6,10 +6,19 @@
 /** ×1,3 (Vietnamese decimal comma; one decimal, ×2 for whole numbers). */
 export function mx(h){const v=Math.round(Number(h||0)/10)/10;return '×'+(Number.isInteger(v)?String(v):v.toFixed(1).replace('.',','));}
 
+/** ⏰ Giờ vàng / 🌟 Ngày vàng (game/golden_hour.py): "⏰ Giờ vàng: lãi ×2 · còn 8 phút", or '' when none is on. */
+export function goldenText(g){
+  if(!g||!g.mult)return '';
+  if(g.kind==='day')return `🌟 Ngày vàng: lãi tiệm và quầy ${mx(g.mult)} cả hôm nay`;
+  const left=Math.max(1,Math.ceil((Number(g.ends)*1000-Date.now())/60000));
+  return `⏰ Giờ vàng: lãi tiệm và quầy ${mx(g.mult)} · còn ${left} phút`;
+}
+
 /** [text, tone] for a career's tag, or null when its staff earn about as usual (×0,9 … ×1,1). */
 export function marketTag(state,cid){
   const m=state?.market;if(!m||!m.x||m.x[cid]==null)return null;
   const x=m.x[cid];
+  if(m.golden)return [`${m.golden.kind==='day'?'🌟 Ngày vàng':'⏰ Giờ vàng'} ${mx(x)}`,'amber'];
   if(m.hot===cid)return [`🔥 Nghề hot ${mx(x)}`,'amber'];
   if(x>=110)return [`📈 Lãi cao ${mx(x)}`,'green'];
   if(x<=90)return [`📉 Lãi thấp ${mx(x)}`,''];
@@ -20,6 +29,7 @@ export function marketTag(state,cid){
 export function marketLine(v){
   if(!v||!v.x)return '';
   const arrow=v.x>v.was?' ↑':v.x<v.was?' ↓':'';
+  if(v.golden)return `${goldenText(v.golden)}${v.hot?' · 🔥 nghề hot':''} (${mx(v.x)})`;
   if(v.hot)return `🔥 Hôm nay lãi cao ${mx(v.x)}`;
   if(v.x>=110)return `📈 Lãi đang cao ${mx(v.x)}${arrow}`;
   if(v.x<=90)return `📉 Lãi đang thấp ${mx(v.x)}${arrow}`;
