@@ -14,6 +14,7 @@ lãi tăng cao hơn".
 from __future__ import annotations
 
 import datetime
+import functools
 import os
 import random
 import time
@@ -36,6 +37,13 @@ def _midnight(day: datetime.date) -> float:
 
 def plan(day: datetime.date) -> dict:
     """The day's draw: {kind: 'day'|'hour', start, end (epoch seconds), mult (hundredths), minutes}."""
+    return dict(_plan(day))
+
+
+@functools.lru_cache(maxsize=16)
+def _plan(day: datetime.date) -> dict:
+    """plan(), drawn once per date and process (a pure function of the date): a settlement asks it for every
+    staff order. Read only: plan() hands out copies."""
     rng = random.Random(f'{SALT}:{day.isoformat()}')
     base = _midnight(day)
     if rng.randrange(DAY_ODDS) == 0:
@@ -54,7 +62,7 @@ def mult(t: float | None = None) -> int:
     if off():
         return 100
     t = time.time() if t is None else t
-    p = plan(_day(t))
+    p = _plan(_day(t))
     return p['mult'] if p['start'] <= t < p['end'] else 100
 
 
@@ -69,7 +77,7 @@ def public(t: float | None = None) -> dict | None:
     if off():
         return None
     t = time.time() if t is None else t
-    p = plan(_day(t))
+    p = _plan(_day(t))
     if not p['start'] <= t < p['end']:
         return None
     return dict(kind=p['kind'], mult=p['mult'], ends=p['end'], minutes=p['minutes'])

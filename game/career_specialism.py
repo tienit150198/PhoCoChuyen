@@ -52,7 +52,11 @@ def validate_answer(q,answer):
 
 
 def requirements(s,c,cid,tier,now):
-    projected=copy.deepcopy(c);r=scale.ensure(projected,cid,now)
+    # scale.ensure creates or rolls projected['scale'] and only reads the rest of the record: a copy of that
+    # block is enough (a deep copy of the whole career cost ~25 ms a view on a large save).
+    projected=dict(c)
+    if 'scale' in c:projected['scale']=copy.deepcopy(c['scale'])
+    r=scale.ensure(projected,cid,now)
     from . import employment,accounting_jobs,promotion
     allowed,reason=accounting_jobs.can_work(s,cid)
     hired=not employment.required(cid) or c.get('job',{}).get('status')=='hired'
