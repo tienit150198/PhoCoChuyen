@@ -16,7 +16,7 @@ export class WishAdmin{
       .catch(e=>{if(e.status===403||e.status===401){this.hooks.forbidden(e);return;}this.error=e.message;})
       .finally(()=>{this.busy=false;this.hooks.rerender();});
   }
-  meta(){const d=this.data;if(!d)return 'Điều ước người chơi treo ở chùa';const open=d.items.filter(x=>x.reports&&!x.reviewed).length;return `${num(open)} điều ước bị báo cáo chờ xem${d.off?' · ĐANG TẮT TREO MỚI (MNL_WISH_OFF)':''}`;}
+  meta(){const d=this.data;if(!d)return 'Điều ước người chơi treo ở chùa';const open=d.items.filter(x=>x.reports&&!x.reviewed).length+(d.cards||[]).filter(x=>x.reports&&!x.reviewed).length;return `${num(open)} điều ước / lời chúc bị báo cáo chờ xem${d.off?' · ĐANG TẮT TREO MỚI (MNL_WISH_OFF)':''}`;}
   view(){
     if(!this.data&&!this.busy&&!this.error)this.load();
     if(this.error&&!this.data)return `<div class="notice bad"><div>${esc(this.error)}<br><button type="button" class="btn ghost sm" data-act="wsReload">Thử lại</button></div></div>`;
@@ -31,14 +31,27 @@ export class WishAdmin{
     return `<div class="gift-admin${this.busy?' is-busy':''}"><section class="card"><div class="card-head"><h2>Bị báo cáo, chờ xem <small>${num(open.length)}</small></h2></div>`+
       `${open.map(row).join('')||'<p class="note">Không có điều ước nào bị báo cáo.</p>'}</section>`+
       `<section class="card"><div class="card-head"><h2>Mới treo <small>${num(rest.length)}</small></h2></div>${rest.map(row).join('')||'<p class="note">Chưa có điều ước nào.</p>'}`+
-      `<p class="note">Gỡ: không ai thấy điều ước đó nữa (dữ liệu vẫn giữ). Ba người báo cáo thì điều ước tự ẩn tới khi bạn xem.</p></section></div>`;
+      `<p class="note">Gỡ: không ai thấy điều ước đó nữa (dữ liệu vẫn giữ). Ba người báo cáo thì điều ước tự ẩn tới khi bạn xem.</p></section>${this.cardsView()}</div>`;
+  }
+  /** 📜 old lời chúc their owners shared (the old "Bảng chung"), hanging in the wish garden since 15/10: the same controls. */
+  cardsView(){
+    const cards=this.data.cards||[];
+    const row=it=>{const [label,tone]=STATUS[it.status]||[it.status,''];
+      const why=Object.entries(it.reasons||{}).map(([k,n])=>`${esc(REASON[k]||k)} ×${num(n)}`).join(', ');
+      return `<div class="gift-user"><div class="grow"><b>📜 ${esc(it.tree_name)}</b> <small class="muted">@${esc(it.username||'khách')} · ngày ${num(it.day)} · 🙏 ${num(it.prayers)}${it.reports?` · ⚑ ${num(it.reports)}${why?` (${why})`:''}`:''}</small><br>`+
+        `${esc(it.text)}<br>${tag(label+(it.by?' · '+esc(it.by):''),tone)}</div>`+
+        `${it.status==='live'||it.status==='hidden'?`<button type="button" class="btn ghost sm" data-act="wsHide" data-card="${it.card}">🚫 Gỡ</button>`:''}`+
+        `${it.status==='hidden'||it.status==='removed'?`<button type="button" class="btn ghost sm" data-act="wsShow" data-card="${it.card}">↩︎ Treo lại</button>`:''}</div>`;};
+    return `<section class="card"><div class="card-head"><h2>📜 Lời chúc cũ người chơi chia sẻ <small>${num(cards.length)}</small></h2></div>${cards.map(row).join('')||'<p class="note">Chưa có lời chúc cũ nào được chia sẻ.</p>'}`+
+      `<p class="note">Thẻ lời chúc cũ chủ thẻ đã chọn Công khai, giờ treo trong Vườn ước nguyện (bị báo cáo lên trước). Gỡ: không ai thấy nữa, kể cả khi chủ chia sẻ lại; thẻ vẫn nằm trong bản lưu của chủ.</p></section>`;
   }
   /** true when the click was ours */
   async action(act,data){
     if(act==='wsReload'){this.reset();this.hooks.rerender();return true;}
     if(act!=='wsHide'&&act!=='wsShow')return false;
-    if(act==='wsHide'&&!confirm('Gỡ điều ước này khỏi cây?'))return true;
-    try{await this.api.post('/api/admin/wishes',{act:act==='wsHide'?'hide':'show',id:Number(data.id)});toast(act==='wsHide'?'Đã gỡ.':'Đã treo lại.');this.reset();this.hooks.rerender();}
+    const card=data.card!==undefined;
+    if(act==='wsHide'&&!confirm(card?'Gỡ lời chúc này khỏi vườn?':'Gỡ điều ước này khỏi cây?'))return true;
+    try{await this.api.post('/api/admin/wishes',{act:act==='wsHide'?'hide':'show',...card?{card:Number(data.card)}:{id:Number(data.id)}});toast(act==='wsHide'?'Đã gỡ.':'Đã treo lại.');this.reset();this.hooks.rerender();}
     catch(e){if(e.status===403||e.status===401){this.hooks.forbidden(e);return true;}toast(e.message||'Chưa được.','bad');}
     return true;
   }

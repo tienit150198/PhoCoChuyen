@@ -20,10 +20,19 @@ their own wish down). Admins (GET/POST /api/admin/wishes): reported ones first, 
 hidden (reports), removed (admin), down (author). Nothing is deleted, except by the player's own "Xóa dữ liệu" (forget).
 Kill switch: MNL_WISH_OFF=1 stops new wishes (reading stays).
 Tables (game/pg_schema.py, SCHEMA_VERSION 44): new ones only, no save key: a rollback never sees them.
+📜 Old lời chúc (owner 15/10 about the old "Bảng chung": "đưa vào 1 cái đi, sử dụng chung mà"): the garden is the one
+shared place. The temple cards their owners shared (game/chua_board.py, chua_public_cards: only those, read where they
+are, never copied) hang on the tree of their theme (card_tree), after the tree's wishes, marked as old: GET
+/api/chua/wishes?tree=&old=1&before=<position>. 🙏, ⚑ and the admin's hide / show work on them like on wishes, through
+chua_card_marks / chua_card_prayers (SCHEMA_VERSION 45, keyed by owner + card: sharing again keeps an admin's
+decision); POST /api/chua/wishes {op, card: position}. The owner's 'down' is the old "Thôi chia sẻ" (the projection
+row goes, the card stays in their save); un-sharing, a reset, an import or deleting the save takes it off the tree at
+once (pages are never cached, only the per-tree counts for COUNTS_TTL s). No author is shown (the old board had none).
 """
 from __future__ import annotations
 
 import datetime
+import json
 import os
 import re
 import secrets
@@ -56,6 +65,11 @@ COLORS = ('do', 'vang', 'hong', 'xanh', 'tim')   # the ribbon: đỏ, vàng, h�
 REASONS = ('spam', 'rude', 'private', 'scam', 'other')   # the Phố nghề report reasons (game/social.py REPORT_REASONS)
 STATUSES = ('live', 'hidden', 'removed', 'down')
 BAD = 'Tham số cây ước nguyện không hợp lệ.'
+# 📜 which tree an old card hangs on: by what it wished for (chua.KHAN_WHAT), a few by who for; any other pair: Bình an
+BLESSING_TREE = {'khoe': 'suc_khoe', 'binh_an': 'binh_an', 'thanh_than': 'binh_an', 'thuong': 'gia_dao', 'sieng': 'su_nghiep',
+                 'kien_nhan': 'uoc_mo', 'yen_nghi': 'tuong_nho', 'may_man': 'tai_loc'}
+PAIR_TREE = {('pho', 'thuong'): 'binh_an'}   # "bà con khu phố luôn thương nhau": the street's peace, not a home's
+CARD_FALLBACK = 'binh_an'
 _cache = dict(at=0.0, data=None)
 _lock = threading.Lock()
 
@@ -108,6 +122,18 @@ def tree_label(tree: str) -> str:
     return f'Cây {TREE[tree][1]}'
 
 
+def card_tree(recipient, blessing) -> str:
+    """The tree an old shared card hangs on (always one of TREES)."""
+    t = PAIR_TREE.get((recipient, blessing)) or BLESSING_TREE.get(blessing) or CARD_FALLBACK
+    return t if t in TREE else CARD_FALLBACK
+
+
+def _card_pairs(tree: str) -> list:
+    """'recipient:blessing' of every card choice (game/chua.py KHAN_WHO) that hangs on this tree."""
+    from . import chua
+    return [f'{r}:{b}' for r, (_, bs) in chua.KHAN_WHO.items() for b in bs if card_tree(r, b) == tree]
+
+
 # ---------------------------------------------------------------- the save's transaction (game/storage.py)
 def command_commit(db, sid: str, action: str, after: dict, result) -> None:
     w = (result or {}).get('chua_wish') if action == 'jr_chua_do' else None
@@ -145,7 +171,12 @@ def _summary(store) -> dict:
                             "(SELECT id, color FROM chua_wishes WHERE tree=t.tree AND status='live' ORDER BY id DESC LIMIT ?) w "
                             'ORDER BY t.tree, w.id DESC', (ids, RIBBONS)):
             colors.setdefault(r['tree'], []).append(r['color'])
-    data = {k: (counts.get(k, 0), colors.get(k, [])) for k in ids}
+        old = {}
+        for r in db.execute("SELECT p.card::jsonb->>'recipient' AS r, p.card::jsonb->>'blessing' AS b, count(*) AS n "
+                            'FROM chua_public_cards p WHERE ' + _CARD_LIVE + ' GROUP BY 1, 2'):
+            k = card_tree(r['r'], r['b'])
+            old[k] = old.get(k, 0) + int(r['n'])
+    data = {k: (counts.get(k, 0), colors.get(k, []), old.get(k, 0)) for k in ids}
     with _lock:
         _cache.update(at=t, data=data)
     return data
@@ -158,27 +189,29 @@ def trees(store, token: str) -> dict:
         sid = _sid(store, db, token)
         used = db.execute('SELECT count(*) FROM chua_wishes WHERE sid=? AND day=?', (sid, vn_day(now()))).fetchone()[0]
         mine = db.execute("SELECT count(*) FROM chua_wishes WHERE sid=? AND status<>'down'", (sid,)).fetchone()[0]
-    return dict(trees=[dict(id=k, name=name, emoji=emoji, hint=hint, count=summary[k][0], ribbons=summary[k][1])
+    return dict(trees=[dict(id=k, name=name, emoji=emoji, hint=hint, count=summary[k][0], ribbons=summary[k][1], old=summary[k][2])
                        for k, name, emoji, hint in TREES],
                 colors=list(COLORS), min=TEXT_MIN, max=TEXT_MAX, per_day=PER_DAY, left=max(0, PER_DAY - int(used)),
-                mine=int(mine), total=sum(v[0] for v in summary.values()), off=off())
+                mine=int(mine), total=sum(v[0] for v in summary.values()), old=sum(v[2] for v in summary.values()), off=off())
 
 
 def parse_query(query: dict) -> dict:
-    """GET /api/chua/wishes (parse_qs lists): tree + before + limit, or mine=1 + before + limit."""
-    need(set(query) <= {'tree', 'before', 'limit', 'mine'} and all(len(v) == 1 for v in query.values()), BAD)
+    """GET /api/chua/wishes (parse_qs lists): tree + before + limit, or mine=1 + before + limit; tree + old=1: the
+    tree's old shared lời chúc (before = a card's position)."""
+    need(set(query) <= {'tree', 'before', 'limit', 'mine', 'old'} and all(len(v) == 1 for v in query.values()), BAD)
     out = {}
     for key, (value,) in query.items():
         if key == 'tree':
             need(value in TREE, BAD)
             out['tree'] = value
-        elif key == 'mine':
+        elif key in ('mine', 'old'):
             need(value == '1', BAD)
-            out['mine'] = True
+            out[key] = True
         else:
             need(len(value) <= 15 and re.fullmatch(r'[0-9]+', value), BAD)
             out[key] = int(value)
     need(('tree' in out) != bool(out.get('mine')), BAD)
+    need(not out.get('old') or 'tree' in out, BAD)
     need(1 <= out.get('limit', 24) <= PAGE_MAX, BAD)
     return out
 
@@ -195,12 +228,49 @@ def _view(r) -> dict:
     return out
 
 
-def page(store, token: str, *, tree: str | None = None, mine: bool = False, before: int | None = None, limit: int = 24) -> dict:
-    """Newest first. A tree: its live wishes, without those I reported. Mine: all of mine, any status."""
+# 📜 an old shared card is on the trees unless reports or an admin took it off (no marks row: live)
+_CARD_LIVE = ('NOT EXISTS (SELECT 1 FROM chua_card_marks m WHERE m.sid=p.sid AND m.card_id=p.card_id '
+              "AND m.status<>'live')")
+_CARD = ("SELECT p.position, p.card, p.sid=? AS mine, COALESCE(m.prayers, 0) AS prayers, COALESCE(m.status, 'live') AS status, "
+         'EXISTS(SELECT 1 FROM chua_card_prayers q WHERE q.sid=p.sid AND q.card_id=p.card_id AND q.by_sid=?) AS prayed '
+         'FROM chua_public_cards p LEFT JOIN chua_card_marks m ON m.sid=p.sid AND m.card_id=p.card_id ')
+_PAIR = "(p.card::jsonb->>'recipient') || ':' || (p.card::jsonb->>'blessing')"
+
+
+def _card_view(r) -> dict | None:
+    """An old card as the garden shows it: its words and when (the life day), never who wrote it."""
+    try:
+        c = json.loads(r['card'])
+        out = dict(kind='card', id=int(r['position']), tree=card_tree(c['recipient'], c['blessing']), text=str(c['text']),
+                   recipient=str(c['recipient']), blessing=str(c['blessing']), name=str(c['name']), message=str(c['message']),
+                   wish=str(c['wish']), day=int(c['day']), prayers=int(r['prayers']), mine=bool(r['mine']), prayed=bool(r['prayed']))
+    except (TypeError, ValueError, KeyError):
+        return None
+    if r['mine']:
+        out['status'] = r['status']
+    return out
+
+
+def _old_page(db, sid: str, tree: str, before: int | None, limit: int) -> dict:
+    from .social import pid_of
+    rows = db.execute(_CARD + f"WHERE {_PAIR} = ANY(?) AND COALESCE(m.status, 'live')='live' AND p.position<? AND NOT EXISTS "
+                      "(SELECT 1 FROM reports r WHERE r.reporter=? AND r.kind='card' AND r.target=p.card_id) "
+                      'ORDER BY p.position DESC LIMIT ?',
+                      (sid, sid, _card_pairs(tree), before if before is not None else 2**62, pid_of(sid), limit + 1)).fetchall()
+    shown = rows[:limit]
+    return dict(rows=[v for v in map(_card_view, shown) if v], before=int(shown[-1]['position']) if len(rows) > limit else None)
+
+
+def page(store, token: str, *, tree: str | None = None, mine: bool = False, old: bool = False, before: int | None = None,
+         limit: int = 24) -> dict:
+    """Newest first. A tree: its live wishes, without those I reported (old: its old shared cards, the same way).
+    Mine: all of mine, any status."""
     from .social import pid_of
     cursor = before if before is not None else 2**62
     with store.connect() as db:
         sid = _sid(store, db, token)
+        if old:
+            return _old_page(db, sid, tree, before, limit)
         if mine:
             rows = db.execute(_ROW + 'WHERE w.sid=? AND w.id<? ORDER BY w.id DESC LIMIT ?',
                               (sid, sid, sid, cursor, limit + 1)).fetchall()
@@ -214,9 +284,12 @@ def page(store, token: str, *, tree: str | None = None, mine: bool = False, befo
 
 # ---------------------------------------------------------------- 🙏 cùng cầu, báo cáo, gỡ xuống
 def act(store, token: str, d: dict) -> dict:
-    """POST /api/chua/wishes {op: pray | report | down, id, reason?}: the wish as the reader now sees it."""
+    """POST /api/chua/wishes {op: pray | report | down, id, reason?}: the wish as the reader now sees it.
+    {op, card: position, reason?}: the same for an old shared card (down = its owner stops sharing it)."""
     from .social import pid_of
     need(isinstance(d, dict) and d.get('op') in ('pray', 'report', 'down'), BAD)
+    if 'card' in d:
+        return _card_act(store, token, d)
     op, wid = d['op'], d.get('id')
     need(type(wid) is int and 1 <= wid <= 2**62, BAD)
     need(set(d) <= {'op', 'id', 'reason'} and (op == 'report' or 'reason' not in d), BAD)
@@ -254,6 +327,52 @@ def act(store, token: str, d: dict) -> dict:
     return out
 
 
+def _card_act(store, token: str, d: dict) -> dict:
+    from .social import pid_of
+    op, pos = d['op'], d.get('card')
+    need(type(pos) is int and 1 <= pos <= 2**62, BAD)
+    need(set(d) <= {'op', 'card', 'reason'} and (op == 'report' or 'reason' not in d), BAD)
+    reason = d.get('reason', 'other')
+    need(reason in REASONS, 'Lý do không hợp lệ.')
+    t = now()
+
+    def run(db):
+        sid = _sid(store, db, token)
+        c = db.execute("SELECT p.sid, p.card_id, COALESCE(m.status, 'live') AS status FROM chua_public_cards p "
+                       'LEFT JOIN chua_card_marks m ON m.sid=p.sid AND m.card_id=p.card_id WHERE p.position=? FOR UPDATE OF p',
+                       (pos,)).fetchone()
+        own = c is not None and c['sid'] == sid
+        need(c is not None and (c['status'] == 'live' or own and op == 'down'), 'Lời chúc này không còn trên cây.', 'gone')
+        key = (c['sid'], c['card_id'])
+        if op == 'pray':
+            need(not own, 'Đây là lời chúc của bạn mà 🙂')
+            if db.execute('INSERT INTO chua_card_prayers(sid, card_id, by_sid, at) VALUES(?,?,?,?) ON CONFLICT DO NOTHING', (*key, sid, t)).rowcount:
+                db.execute('INSERT INTO chua_card_marks(sid, card_id, prayers) VALUES(?,?,1) ON CONFLICT (sid, card_id) '
+                           'DO UPDATE SET prayers=chua_card_marks.prayers+1', key)
+            message = '🙏 Bạn đã cùng cầu cho lời chúc này.'
+        elif op == 'report':
+            need(not own, 'Bạn không cần báo cáo lời chúc của mình.')
+            if db.execute("INSERT INTO reports(reporter, kind, target, reason, at) VALUES(?,'card',?,?,?) ON CONFLICT DO NOTHING",
+                          (pid_of(sid), c['card_id'], reason, t)).rowcount:
+                db.execute("INSERT INTO chua_card_marks(sid, card_id, reports, status) VALUES(?,?,1,CASE WHEN 1>=? THEN 'hidden' ELSE 'live' END) "
+                           'ON CONFLICT (sid, card_id) DO UPDATE SET reports=chua_card_marks.reports+1, '
+                           "status=CASE WHEN chua_card_marks.reports+1>=? AND chua_card_marks.status='live' THEN 'hidden' "
+                           'ELSE chua_card_marks.status END', (*key, HIDE_AFTER, HIDE_AFTER))
+            message = 'Cảm ơn bạn. Lời chúc này sẽ không hiện với bạn nữa và sẽ được xem xét.'
+        else:
+            need(own, 'Chỉ người viết mới thôi chia sẻ được lời chúc này.')
+            # the old "Thôi chia sẻ" (game/chua_board.py set_visibility): the owner's session first, like a command
+            db.execute('SELECT 1 FROM sessions WHERE sid=? FOR UPDATE', (sid,))
+            db.execute('DELETE FROM chua_public_cards WHERE position=? AND sid=?', (pos, sid))
+            return dict(message='Bạn đã thôi chia sẻ lời chúc này. Thẻ vẫn còn trong “Của tôi”, chỉ mình bạn thấy.', card=None)
+        r = db.execute(_CARD + 'WHERE p.position=?', (sid, sid, pos)).fetchone()
+        return dict(message=message, card=_card_view(r))
+    out = store.transaction(run)
+    if op != 'pray':
+        _invalidate()
+    return out
+
+
 # ---------------------------------------------------------------- admins, privacy
 def admin_view(store) -> dict:
     """GET /api/admin/wishes: reported wishes not looked at yet first, then the newest (the original when masked)."""
@@ -268,16 +387,49 @@ def admin_view(store) -> dict:
             for x in db.execute("SELECT target, reason, count(*) AS n FROM reports WHERE kind='wish' AND target=ANY(?) "
                                 'GROUP BY target, reason', (ids,)):
                 reasons.setdefault(x['target'], {})[x['reason']] = int(x['n'])
+        cards = db.execute(f"(SELECT {_ADMIN_CARD} WHERE m.reports>0 AND m.reviewed_at IS NULL ORDER BY p.position DESC LIMIT 100) "
+                           f'UNION ALL (SELECT {_ADMIN_CARD} WHERE NOT (COALESCE(m.reports, 0)>0 AND m.reviewed_at IS NULL) '
+                           'ORDER BY p.position DESC LIMIT 60)').fetchall()
+        card_reasons = {}
+        ids = [r['card_id'] for r in cards if r['reports']]
+        if ids:
+            for x in db.execute("SELECT target, reason, count(*) AS n FROM reports WHERE kind='card' AND target=ANY(?) "
+                                'GROUP BY target, reason', (ids,)):
+                card_reasons.setdefault(x['target'], {})[x['reason']] = int(x['n'])
+    old = []
+    for r in cards:
+        v = _card_view(dict(r, mine=False, prayed=False))
+        if v:
+            old.append(dict(card=v['id'], tree=v['tree'], tree_name=tree_label(v['tree']), text=v['text'], day=v['day'],
+                            username=r['username'] or '', status=r['status'], reports=int(r['reports']),
+                            reasons=card_reasons.get(r['card_id'], {}), prayers=v['prayers'],
+                            reviewed=r['reviewed_at'] is not None, by=r['by_admin'] or ''))
     return dict(off=off(), items=[dict(id=int(r['id']), tree=r['tree'], tree_name=tree_label(r['tree']) if r['tree'] in TREE else r['tree'],
                                        text=r['text'], raw=r['raw'], name=r['name'], username=r['username'] or '', at=float(r['at']),
                                        status=r['status'], reports=int(r['reports']), reasons=reasons.get(str(r['id']), {}),
                                        prayers=int(r['prayers']), reviewed=r['reviewed_at'] is not None, by=r['by_admin'] or '')
-                                  for r in rows])
+                                  for r in rows], cards=old)
+
+
+# 📜 the old shared cards for the admins: the owner's account name, the marks (reported ones first)
+_ADMIN_CARD = ("p.position, p.card, p.card_id, a.username, COALESCE(m.prayers, 0) AS prayers, COALESCE(m.reports, 0) AS reports, "
+               "COALESCE(m.status, 'live') AS status, m.reviewed_at, m.by_admin FROM chua_public_cards p "
+               'LEFT JOIN chua_card_marks m ON m.sid=p.sid AND m.card_id=p.card_id LEFT JOIN accounts a ON a.sid=p.sid')
 
 
 def admin_act(store, admin: str, d: dict) -> dict:
     """POST /api/admin/wishes {act: hide | show, id}: hide = 'removed' (never shown again); show = live again
-    (a wish the author took down stays down)."""
+    (a wish the author took down stays down). {act, card: position}: the same for an old shared card."""
+    if isinstance(d, dict) and 'card' in d:
+        pos = d['card']
+        need(set(d) == {'act', 'card'} and d.get('act') in ('hide', 'show') and type(pos) is int and pos >= 1, 'Thao tác không hợp lệ.', 'bad_admin')
+        status = 'removed' if d['act'] == 'hide' else 'live'
+        n = store.transaction(lambda db: db.execute(
+            'INSERT INTO chua_card_marks(sid, card_id, status, reviewed_at, by_admin) SELECT sid, card_id, ?, ?, ? FROM chua_public_cards '
+            'WHERE position=? ON CONFLICT (sid, card_id) DO UPDATE SET status=EXCLUDED.status, reviewed_at=EXCLUDED.reviewed_at, '
+            'by_admin=EXCLUDED.by_admin', (status, now(), str(admin)[:40], pos)).rowcount)
+        _invalidate()
+        return dict(ok=True, changed=bool(n), status=status)
     wid = d.get('id') if isinstance(d, dict) else None
     need(isinstance(d, dict) and d.get('act') in ('hide', 'show') and type(wid) is int and wid >= 1, 'Thao tác không hợp lệ.', 'bad_admin')
     status = 'removed' if d['act'] == 'hide' else 'live'
@@ -288,10 +440,13 @@ def admin_act(store, admin: str, d: dict) -> dict:
 
 
 def forget(store, token: str) -> None:
-    """Account deletion ("XOA"): this player's wishes and their 🙏."""
+    """Account deletion ("XOA"): this player's wishes and their 🙏 (and the 🙏 / marks of their old cards; the shared
+    cards themselves go with the save: chua_public_cards cascades)."""
     sid = store.key(token)
 
     def run(db):
+        db.execute('DELETE FROM chua_card_prayers WHERE sid=? OR by_sid=?', (sid, sid))
+        db.execute('DELETE FROM chua_card_marks WHERE sid=?', (sid,))
         db.execute('DELETE FROM chua_wish_prayers WHERE wish IN (SELECT id FROM chua_wishes WHERE sid=?)', (sid,))
         db.execute('DELETE FROM chua_wish_prayers WHERE sid=?', (sid,))
         db.execute('DELETE FROM chua_wishes WHERE sid=?', (sid,))

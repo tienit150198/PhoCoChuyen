@@ -18,14 +18,14 @@ import {stylesheet} from '../lazy.js';
 import {figure} from './look.js';
 import {getCharacterStamp} from '../isometric/character-art.js';
 import {audioContext,wantAudio,duck} from '../audio.js';
-import {VIEW,IMAGES,PEOPLE,LOOKS,GROVE,plan,route,nearestFree,project,unproject,ground,props,treeBoard,groveSign,npc,E,L,T} from '../scenes/chua-iso.js';
+import {VIEW,IMAGES,PEOPLE,LOOKS,GROVE,plan,route,nearestFree,project,unproject,ground,props,treeBoard,groveSign,npc,E,L,T,boardRect,treeRect,signRect,stoveSignRect,layoutBoards} from '../scenes/chua-iso.js';
 
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
 const S={env:null,dlg:null,cv:null,ctx:null,stage:null,area:'san',port:false,k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,cam:null,pan:null,
   me:{x:0,y:0,path:null,pose:'stand',poseUntil:0,step:0,dir:'se'},arrive:null,fx:{},panel:null,result:'',chant:null,khan:{who:'',what:''},
   card:{recipient:'',blessing:'',name:'',message:'',public:false},board:null,talk:{},raf:0,last:0,drawn:0,time:0,busy:false,bound:false,covered:false,
-  view:'',help:false,trees:[],plan:null,planKey:''};
+  view:'',help:false,trees:[],plan:null,planKey:'',boards:[],boardsKey:'',sign:null};
 const C=()=>S.env?.api.state?.chua;
 const day=()=>({lunar:C()?.lunar|0,feast:!!C()?.feast});
 const wishTrees=()=>!!C()?.wish_trees;
@@ -191,7 +191,7 @@ export async function openChua(env){
   S.panel=null;S.result='';S.view='';S.help=false;S.chant=null;S.khan={who:'',what:''};S.fx={};S.me.pose='stand';S.me.path=null;S.arrive=null;S.pan=null;S.stage?.classList.remove('hinted');
   if(!d.open)d.showModal();
   const toasts=document.getElementById('toasts');if(toasts)d.append(toasts);   // errors show over the scene
-  size();place(pl().entry);S.me.dir='sw';lookAt(FIRST_LOOK);head();path();panel();
+  size();place(pl().entry);S.me.dir='sw';lookAt(firstLook());head();path();panel();
   loadTrees();
   if(!wishTrees())S.board?.load('mine');   // the old "Chia sẻ" knows whether a card is already public
   wantAudio('chua',true);ambience(S.area);
@@ -232,8 +232,11 @@ function view(dt){
   }
   if(still()||!dt||S.pan){S.ox=tx;S.oy=ty;}else{const a=Math.min(1,dt*6);S.ox+=(tx-S.ox)*a;S.oy+=(ty-S.oy)*a;}
 }
-/** The first view: the grove and the hall's steps together (the player stands at the gate, a tap walks in). */
-const FIRST_LOOK=[-90,250];
+/** The first view: the grove and the hall's steps together when the screen is wide enough (the player stands at the
+ * gate, a tap walks in); on a narrow phone the grove's left edge stays in sight, so every wish tree and its name board
+ * is on screen (owner 15/10: "ở mép trái màn hình hẹp, vài nhãn tên cây bị khuất một phần"). */
+const GROVE_X=[-500,20],GROVE_Y=285;   // the grove's trees with their canopies (scene px), its middle height
+const firstLook=()=>{const w=S.cw/(S.k||1);return [w>=GROVE_X[1]-GROVE_X[0]?Math.min(-90,GROVE_X[0]+w/2):(GROVE_X[0]+GROVE_X[1])/2,GROVE_Y];};
 /** Point the camera at a scene point (as a drag would); the next walk brings it back to the player. */
 function lookAt([sx,sy]){const m=project(S.me.x,S.me.y);S.pan=[sx-m[0],sy-(m[1]-50)];S.cam=null;view(0);S.drawn=0;}
 function place(p){const q=nearestFree(pl(),p)||p;S.me.x=q[0];S.me.y=q[1];S.me.path=null;}
@@ -262,8 +265,10 @@ function tapAt(cx,cy){
 }
 /** The spot under a scene point: the thing itself (lifted above its foot), its badge, or a tree's name board. */
 function hitSpot(p){
-  let best=null,bd=Infinity;const ls=labelScale();
-  for(const s of pl().spots){if(!s.r)continue;const a=project(...s.at),d=Math.min(Math.hypot(a[0]-p[0],a[1]-s.lift-p[1]),s.kind==='tree'?Math.hypot((a[0]-p[0])*.6,(a[1]+8+12*ls)-p[1])*1.2:Infinity);
+  const pad=6/S.k,board=S.boards.find(b=>p[0]>=b.r.x-pad&&p[0]<=b.r.x+b.r.w+pad&&p[1]>=b.r.y-pad&&p[1]<=b.r.y+b.r.h+pad);   // where it is drawn
+  if(board){const s=pl().spots.find(q=>q.id==='tree:'+board.tree);if(s)return s;}
+  let best=null,bd=Infinity;
+  for(const s of pl().spots){if(!s.r)continue;const a=project(...s.at),d=Math.hypot(a[0]-p[0],a[1]-s.lift-p[1]);
     if(d<=s.r&&d<bd){bd=d;best=s;}}
   return best;
 }
@@ -319,10 +324,11 @@ function path(){
     return `<li><button type="button" class="cv-step${done?' done':''}${cur?.id===x.id?' next':''}${on?' on':''}" data-cv="step" data-id="${x.id}"${on?' aria-current="step"':''}><span class="cv-step-ico" aria-hidden="true">${x.icon}${done?'<i>✓</i>':''}</span><span class="cv-step-name">${esc(x.name)}</span></button></li>`;}).join('')}</ol>
     <button type="button" class="cv-step cv-more${S.panel?.kind==='here'?' on':''}" data-cv="here"><span class="cv-step-ico" aria-hidden="true">🧭</span><span class="cv-step-name">Quanh đây</span></button>`;
 }
-/** "Quanh đây": every place in the courtyard, one tap walks there; the old card board when the player has cards. */
+/** "Quanh đây": every place in the courtyard, one tap walks there. The old card board too, but only on a server without
+ * wish trees: since 15/10 (owner: "đưa vào 1 cái đi, sử dụng chung mà") shared old cards hang in the wish garden. */
 function hereBody(){
   const spots=pl().spots.filter(s=>s.kind!=='tree');
-  const old=(C()?.cards||[]).length>0&&S.board?`<button type="button" class="cv-spot" data-cv="board">📜 Bảng lời chúc cũ</button>`:'';
+  const old=(C()?.cards||[]).length>0&&S.board&&!wishTrees()?`<button type="button" class="cv-spot" data-cv="board">📜 Bảng lời chúc cũ</button>`:'';
   return top('🧭','Quanh đây','🌿 Sân chùa',HELP.here)+`<div class="cv-tiles">${spots.map(s=>{const a=s.kind==='act'?actOf(s.act):null,done=actionDone(C(),a)||!!a?.done;
     return `<button type="button" class="cv-spot${done?' done':''}" data-cv="spot" data-id="${esc(s.id)}">${esc(spotName(s))}${done?' <i aria-label="đã làm">✓</i>':''}</button>`;}).join('')}${old}</div>`;
 }
@@ -580,10 +586,38 @@ function draw(moving=false){
     for(const q of p.people)items.push([project(q.x,q.y)[1],()=>npc(c,q,.44,S.time)]);
     items.push([project(S.me.x,S.me.y)[1]+.5,()=>drawMe(c,moving)]);
     items.sort((a,b)=>a[0]-b[0]);for(const [,fn] of items)fn();
-    if(o.trees.length)groveSign(c,o);
-    o.trees.slice(0,GROVE.length).forEach((t,i)=>treeBoard(c,t,i,o));
+    const k=S.k,m=6/k;S.sign=o.trees.length?signRect(o.ls,[-S.ox/k+m,-S.oy/k+m,(S.cw-S.ox)/k-m,(S.ch-S.oy)/k-m]):null;   // whole, or none
+    groveSign(c,o,S.sign);
+    S.boards=boards(c,p,o);
+    for(const b of S.boards)treeBoard(c,b.t,b.i,o,b.r);
     marks(c,p,o);
   }catch(e){console.warn('chùa: draw',e);}
+}
+/** The trees' name boards on screen (scene px): only for a tree in sight, each wholly inside the stage, none on another
+ * board, the grove's sign, Nhà trai's sign, a badge or the hint (owner 15/10: on a narrow phone some were cut off at the
+ * left edge, a few sat on the sign). scenes/chua-iso.js layoutBoards does the moving. */
+function boards(c,p,o){
+  const k=S.k,ls=o.ls,m=6/k,view=[-S.ox/k,-S.oy/k,(S.cw-S.ox)/k,(S.ch-S.oy)/k],inset=[view[0]+m,view[1]+m,view[2]-m,view[3]-m];
+  const seen=r=>Math.min(r.x+r.w,view[2])-Math.max(r.x,view[0])>24/k&&Math.min(r.y+r.h,view[3])-Math.max(r.y,view[1])>24/k;
+  const out=o.trees.slice(0,GROVE.length).map((t,i)=>({t,i,tree:t.id,r:boardRect(c,t,i,ls)})).filter(b=>seen(treeRect(b.i)));
+  const fixed=[...S.sign?[S.sign]:[],stoveSignRect(),...badgeRects(p,o)];
+  const hint=S.stage?.querySelector('.cv-hint');
+  if(hint&&!S.stage.classList.contains('hinted')&&!S.stage.classList.contains('has-panel')){const h=hint.getBoundingClientRect(),cv=S.cv.getBoundingClientRect();
+    if(h.width)fixed.push({x:(h.left-cv.left-S.ox)/k,y:(h.top-cv.top-S.oy)/k,w:h.width/k,h:h.height/k});}
+  const key=[S.ox,S.oy,k,...fixed.flatMap(f=>[f.x,f.y]),...out.map(b=>b.tree+b.r.w)].map(v=>typeof v==='number'?v.toFixed(1):v).join();
+  if(key===S.boardsKey)return S.boards;   // nothing moved: the same places (the search runs only when something did)
+  S.boardsKey=key;layoutBoards(out.map(b=>b.r),fixed,inset,3/k);
+  return out;
+}
+/** The badges over the things to do and the 💬 over the people, as rects (scene px), where marks() draws them. */
+function badgeRects(p,o){
+  const big=labelScale(),out=[];
+  for(const s of p.spots){
+    const [x,y0]=project(...s.at),y=y0-s.lift;
+    if(s.kind==='act'){const a=actOf(s.act);if(!a||Math.hypot(S.me.x-s.stand[0],S.me.y-s.stand[1])<.5)continue;const r=15*big+4;out.push({x:x-r,y:y-22*big-r-3,w:2*r,h:2*r+6});}
+    else if(s.kind==='npc')out.push({x:x+5*big-2,y:y-6-9*big-2,w:22*big+4,h:18*big+4});
+  }
+  return out;
 }
 /** The player: the town map's own character (its four facings, three walking frames), the pose shown over it. */
 function drawMe(c,moving){
@@ -617,4 +651,10 @@ globalThis.__chua={state:()=>({open:!!S.dlg?.open,area:S.area,port:S.port,k:S.k,
   /** where a spot's badge / thing is on the page (client px), to tap it like a player */
   screen:id=>{const s=pl().spots.find(q=>q.id===id);if(!s)return null;const [x,y]=project(...s.at),r=S.cv.getBoundingClientRect();return [r.left+S.ox+x*S.k,r.top+S.oy+(y-s.lift)*S.k];},
   look:id=>{const s=pl().spots.find(q=>q.id===id);if(s){const [x,y]=project(...s.at);lookAt([x,y-s.lift]);}},
+  /** the trees' name boards, the grove's sign and the badges on the page (client px), and the canvas: for checking that
+   * every board is wholly in sight and on nothing else (scripts/browser_wish_trees.py) */
+  labels:()=>{const r=S.cv.getBoundingClientRect(),o=fxOpts(),toC=b=>({x:r.left+S.ox+b.x*S.k,y:r.top+S.oy+b.y*S.k,w:b.w*S.k,h:b.h*S.k});
+    return {canvas:{x:r.left,y:r.top,w:r.width,h:r.height},boards:S.boards.map(b=>({tree:b.tree,...toC(b.r)})),
+      sign:S.sign?toC(S.sign):null,
+      fixed:[...S.sign?[{what:'sign',...toC(S.sign)}]:[],{what:'nha-trai',...toC(stoveSignRect())},...badgeRects(pl(),o).map(b=>({what:'badge',...toC(b)}))]};},
   go:id=>goSpot(pl().spots.find(s=>s.id===id)),route:id=>{const s=pl().spots.find(q=>q.id===id);return s?route(pl(),[S.me.x,S.me.y],s.stand):null;}};

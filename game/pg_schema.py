@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 44  # 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 45  # 45: 📜 old shared lời chúc on the wish trees (chua_card_marks, chua_card_prayers: 🙏 / reports / admin hide of chua_public_cards rows, game/chua_wish.py; new tables only, no FK, no backfill, owner 15/10 "đưa vào 1 cái đi"); 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -666,6 +666,20 @@ CREATE TABLE IF NOT EXISTS chua_wish_prayers (
   wish bigint NOT NULL, sid {T} NOT NULL, at double precision NOT NULL, PRIMARY KEY (wish, sid)
 );
 CREATE INDEX IF NOT EXISTS chua_wish_prayers_sid ON chua_wish_prayers(sid);
+-- 📜 Old shared lời chúc in the wish garden (game/chua_wish.py; SCHEMA_VERSION 45, owner 15/10 "đưa vào 1 cái đi, sử dụng
+-- chung mà"): the cards their owners shared (chua_public_cards, schema 42, read where they are, never copied) hang on a
+-- tree by their theme. chua_card_marks: one row per card someone prayed for, reported or an admin looked at, keyed by
+-- the owner and the card (so un-sharing and sharing again keeps an admin's decision); status live | hidden (reports) |
+-- removed (admin). chua_card_prayers: 🙏 cùng cầu, once per player and card. Reports go to `reports` (kind 'card').
+-- New tables only, no FK, no backfill: 2.4.16 / 2.4.15 never see them (they keep showing the cards their own way).
+CREATE TABLE IF NOT EXISTS chua_card_marks (
+  sid {T} NOT NULL, card_id {T} NOT NULL, prayers bigint NOT NULL DEFAULT 0, reports bigint NOT NULL DEFAULT 0,
+  status {T} NOT NULL DEFAULT 'live', reviewed_at double precision, by_admin {T}, PRIMARY KEY (sid, card_id)
+);
+CREATE TABLE IF NOT EXISTS chua_card_prayers (
+  sid {T} NOT NULL, card_id {T} NOT NULL, by_sid {T} NOT NULL, at double precision NOT NULL, PRIMARY KEY (sid, card_id, by_sid)
+);
+CREATE INDEX IF NOT EXISTS chua_card_prayers_by ON chua_card_prayers(by_sid);
 
 """
 
@@ -985,6 +999,8 @@ TABLES = [
     dict(name='fair_loss_week', identity=None),
     dict(name='chua_wishes', identity='id'),
     dict(name='chua_wish_prayers', identity=None),
+    dict(name='chua_card_marks', identity=None),
+    dict(name='chua_card_prayers', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 

@@ -5,14 +5,16 @@
 //   • random taps give paths whose every step is free floor (no walking through the burner, the pond, a tree or a
 //     person), or no walk at all;
 //   • no two hotspots sit on the same place; the grove's trees each have a spot;
-//   • drawing the whole courtyard (without the images too: they may still be loading) throws nothing.
+//   • drawing the whole courtyard (without the images too: they may still be loading) throws nothing;
+//   • the trees' name boards (owner 15/10: cut off at the left edge of a narrow phone): for the stage of each phone size
+//     (and a drag), layoutBoards puts every board wholly inside the view, on no other board, the sign or a badge.
 // The older frontal scene (public/js/scenes/chua-place.js) keeps its people, the Buddha and the "look" lines.
 // Usage: node scripts/check_chua.mjs [--seed N]
 const noop=()=>{};
 const ctx2d=()=>new Proxy({measureText:s=>({width:String(s).length*7}),createRadialGradient:()=>({addColorStop:noop}),createLinearGradient:()=>({addColorStop:noop}),getImageData:()=>({data:[]}),getLineDash:()=>[]},{get:(t,k)=>k in t?t[k]:noop,set:(t,k,v)=>{t[k]=v;return true;}});
 globalThis.document={hidden:false,createElement:()=>({getContext:ctx2d})};
 globalThis.location={search:''};
-const {N,GROVE,plan,route,free,project,unproject,ground,props,treeBoard,groveSign,npc}=await import('../public/js/scenes/chua-iso.js');
+const {N,GROVE,plan,route,free,project,unproject,ground,props,treeBoard,groveSign,npc,boardRect,treeRect,signRect,stoveSignRect,layoutBoards}=await import('../public/js/scenes/chua-iso.js');
 const {buddha}=await import('../public/js/scenes/chua-place.js');
 
 const args=process.argv.slice(2);
@@ -46,6 +48,20 @@ for(const day of DAYS)for(const n of [0,4,9]){
       ground(c,o);for(const [,fn] of props(c,o))fn();for(const q of pl.people)npc(c,q,.44,3);groveSign(c,o);trees.forEach((t,i)=>treeBoard(c,t,i,o));buddha(c,600,400,300);}
     catch(e){problems.push(`${tag}: drawing threw ${e.stack||e}`);}
 }
+// the name boards: the stages of 360×740 … 412×915 portrait, 844×390 landscape (css px, the zoom chua-visit.js picks),
+// looking at the grove's middle and dragged to either side
+let layouts=0;
+for(const [cw,ch,k] of [[360,575,.745],[375,500,.65],[390,680,.88],[412,750,.97],[844,270,.62],[1280,640,.79]])
+  for(const cx of [-240,-420,-60,-300])for(const cy of [285,200,380]){
+    const c=ctx2d(),ls=Math.max(1,.82/k),view=[cx-cw/2/k,cy-ch/2/k,cx+cw/2/k,cy+ch/2/k],m=6/k,inset=[view[0]+m,view[1]+m,view[2]-m,view[3]-m];
+    const seen=r=>Math.min(r.x+r.w,view[2])-Math.max(r.x,view[0])>24/k&&Math.min(r.y+r.h,view[3])-Math.max(r.y,view[1])>24/k;
+    const rects=TREES.map((t,i)=>seen(treeRect(i))?boardRect(c,t,i,ls):null).filter(Boolean),fixed=[signRect(ls),stoveSignRect()];
+    const stuck=layoutBoards(rects,fixed,inset,3/k);layouts++;
+    const tag=`boards ${cw}×${ch} at ${cx},${cy}`;
+    if(stuck)problems.push(`${tag}: ${stuck} boards found no clear place`);
+    for(const r of rects){if(r.x<inset[0]-1e-6||r.y<inset[1]-1e-6||r.x+r.w>inset[2]+1e-6||r.y+r.h>inset[3]+1e-6)problems.push(`${tag}: a board leaves the view`);
+      for(const q of [...rects,...fixed])if(q!==r&&Math.min(r.x+r.w,q.x+q.w)-Math.max(r.x,q.x)>0&&Math.min(r.y+r.h,q.y+q.h)-Math.max(r.y,q.y)>0){problems.push(`${tag}: boards overlap`);break;}}
+  }
 for(const p of problems)console.log('✗ '+p);
-console.log(`${problems.length?'✗':'✓'} chùa 2.5D: ${DAYS.length} days × 3 groves, ${paths} paths, ${problems.length} problems`);
+console.log(`${problems.length?'✗':'✓'} chùa 2.5D: ${DAYS.length} days × 3 groves, ${paths} paths, ${layouts} board layouts, ${problems.length} problems`);
 process.exit(problems.length?1:0);
