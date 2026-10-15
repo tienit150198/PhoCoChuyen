@@ -54,6 +54,19 @@ class ClothingStaffStockTests(unittest.TestCase):
         self.assertEqual(inventory.count(c,'shirt'),2);self.assertEqual(sum(c['ext']['data']['grid']['shirt'].values()),2)
         self.assertEqual(inventory.count(c,'tee'),16)
 
+    def test_staff_size_with_counted_bills_matches_the_per_size_count(self):
+        # staff_order counts the open bills and parcels once (a._held_all) instead of once per item and size.
+        s,c,e=self.sample();row=c['ext']['data']['grid']['tee']
+        c['tasks']=[dict(id='bill',career='clothing',status='waiting',picks=[dict(item='tee',size=size) for size,qty in row.items() for _ in range(qty-1)]),
+                    dict(id='parcel',career='clothing',status='waiting',parcel=dict(items=[dict(item='shirt',size=next(iter(a.SIZES['shirt'])))])),
+                    dict(id='done',career='clothing',status='completed',picks=[dict(item='tee',size=size) for size in row])]
+        held=a._held_all(c)
+        for item in a.ITEM:
+            for size in a.SIZES[item]:self.assertEqual(held.get((item,size),0),a._held(c,item,size))
+            for keep in (0,1,3):self.assertEqual(a.staff_size(c,item,keep,held),a.staff_size(c,item,keep))
+        c['tasks'][0]['picks'].append(dict(item=['tee'],size='M'))  # not a plain line: the per-size count decides
+        self.assertIsNone(a._held_all(c))
+
     def test_rotation_is_same_when_polled_offline_or_replayed(self):
         s,c,e=self.sample();other=copy.deepcopy(s);first=self.next(c);step=wb._seconds(c,e)
         for at in range(first,first+step*20,step):wb.settle(s,at)

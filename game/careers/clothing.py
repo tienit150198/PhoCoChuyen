@@ -697,19 +697,36 @@ def _free(c: dict, item: str, size: str, t: dict | None = None) -> int:
 
 
 
-def staff_size(c: dict, item: str, keep: int = 0) -> str | None:
+def _held_all(c: dict) -> dict | None:
+    """{(item, size): _held(c, item, size)} for every pair at once (one pass over the tasks instead of one per pair);
+    None when an open pick or parcel line is not a plain {item: str, size: str, ...} (then _held decides, as before)."""
+    n: dict = {}
+    for t in c['tasks']:
+        if not _open(t):
+            continue
+        for p in [*(t.get('picks') or []), *((t.get('parcel') or {}).get('items') or [])]:
+            if type(p) is not dict or type(p.get('item')) is not str or type(p.get('size')) is not str:
+                return None
+            k = (p['item'], p['size'])
+            n[k] = n.get(k, 0) + 1
+    return n
+
+
+def staff_size(c: dict, item: str, keep: int = 0, held: dict | None = None) -> str | None:
     """Read-only size allocation; picked counter/parcel pieces stay reserved.
 
     `keep` (the owner's "giữ lại cho ca" floor, workplace_business.keep): staff sell nothing once the free pieces are
     down to it, and above it they take from the fullest size, so the pieces left for the owner keep every size they
-    can. 0 (the default) picks as before: the first size with a free piece."""
+    can. 0 (the default) picks as before: the first size with a free piece.
+    `held`: _held_all(c), for a caller that asks about many items of an unchanged record (staff_order)."""
     original=c['ext']['data'].get('grid',{}).get(item,{})
     row={size:original.get(size,0) for size in SIZES[item]}
     delta=kit.stock(c,item)-sum(row.values())
     if delta>0:_fill(row,item,delta)
     elif delta<0:_drain(row,item,-delta)
-    if keep<=0:return next((size for size,qty in row.items() if qty>_held(c,item,size)),None)
-    free={size:qty-_held(c,item,size) for size,qty in row.items()}
+    on=(lambda size:_held(c,item,size)) if held is None else (lambda size:held.get((item,size),0))
+    if keep<=0:return next((size for size,qty in row.items() if qty>on(size)),None)
+    free={size:qty-on(size) for size,qty in row.items()}
     if sum(max(0,n) for n in free.values())<=keep:return None
     return max((size for size in free if free[size]>0),key=lambda size:free[size],default=None)
 
@@ -723,7 +740,8 @@ def staff_order(c: dict, served: int) -> tuple | None:
     # Rotate over the goods on the rack only: skipping gaps in the full catalogue would hand every sale after an
     # unstocked run (the 14 goods added in WP3 start at 0) to the next stocked item.
     from ..workplace_business import keep
-    items=[item for item in ITEM if staff_size(c,item,keep(c,item)) is not None]
+    held=_held_all(c)  # the open bills and parcels, counted once for every item below
+    items=[item for item in ITEM if staff_size(c,item,keep(c,item),held) is not None]
     if not items:
         return None
     item=items[served%len(items)]
