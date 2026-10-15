@@ -9,7 +9,8 @@ only says "Tăng tỷ lệ thắng chợ đen").
 * Giờ vàng (internal name only): WINDOWS_MIN..WINDOWS_MAX windows of WINDOW_S seconds a Vietnam day, the same for every
   player, drawn from the date and the server's secret (property_market._salt: the house-news calendar's salt, which a
   public server sets), so the client code cannot predict them. They are spread over OPEN_H..CLOSE_H (one in each equal
-  slice of those hours), never overlapping. A luck round inside one wins WINDOW_P.
+  slice of those hours), never overlapping. A luck round inside one wins WINDOW_P while the player's Chợ đen net today
+  is at most NET_STOP (300,000 xu, the golden days' stop).
 * Both only below fair.BIG_WIN_FROM (50,000 xu): a 50k+ round still draws at most fair.BIG_WIN_P. The fair's police,
   raids and fines are untouched (they run before the draw, as before).
 * Xóc đĩa: a new round XD_GAP_MS after the player's previous one at the earliest (journey[KEY]['xd'], ms).
@@ -33,6 +34,7 @@ WINDOW_S = 180
 WINDOWS_MIN, WINDOWS_MAX = 3, 4
 OPEN_H, CLOSE_H = 8, 24        # Vietnam hours the windows fall in
 XD_GAP_MS = 3000
+NET_STOP = 300_000             # a window boosts no one already this much up at Chợ đen today (as the golden days' stop)
 
 
 def off() -> bool:
@@ -79,9 +81,10 @@ def _rec(j: dict) -> dict:
     return r
 
 
-def rate(j: dict, game: str, t: float, stake: int | None, big_from: int) -> float | None:
+def rate(j: dict, game: str, t: float, stake: int | None, big_from: int, net: int = 0) -> float | None:
     """The boosted draw of this luck round (None: no boost). The day's first round of GAMES is used up here, whatever
-    its stake (a round of big_from xu or more is the day's first round too, at its capped rate)."""
+    its stake (a round of big_from xu or more is the day's first round too, at its capped rate). A window boosts only
+    while today's Chợ đen net is at most NET_STOP."""
     if off() or game not in GAMES:
         return None
     r = _rec(j)
@@ -91,7 +94,7 @@ def rate(j: dict, game: str, t: float, stake: int | None, big_from: int) -> floa
         r['d'] = today
     if type(stake) is not int or stake >= big_from:
         return None
-    if in_window(t):
+    if in_window(t) and net <= NET_STOP:
         return WINDOW_P
     return FIRST_P if first else None
 

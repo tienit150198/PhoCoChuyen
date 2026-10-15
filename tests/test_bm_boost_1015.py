@@ -75,6 +75,15 @@ class Rates(On):
                 self.assertEqual(fh.luck_p(j, None, game, OPEN + 31, stake=50_000), .40)
                 self.assertEqual(fh.luck_p(j, None, game, OPEN + 32, stake=49_999), .70)
 
+    def test_a_window_stops_once_the_day_is_300k_up(self):
+        self.window(True)
+        day = fh.vn_date(OPEN)
+        up = dict(date=day, net=300_001, rounds=5, earn=fh._earn0())
+        even = dict(date=day, net=300_000, rounds=5, earn=fh._earn0())
+        j = {'fair_bm_day': {'d': fh.boost.vn_day(OPEN).isoformat()}}   # the first round already used
+        self.assertLess(fh.luck_p(dict(j), up, 'xd', OPEN, stake=20), .70)
+        self.assertEqual(fh.luck_p(dict(j), even, 'xd', OPEN, stake=20), .70)
+
     def test_honest_and_free_stalls_are_unchanged(self):
         self.window(True)
         j = {}

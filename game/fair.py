@@ -702,7 +702,7 @@ def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = 
     n = _heat(j, game, t, stake or 0)
     p = _golden_rate(j, f, game, t, stake)
     p = run_rate(game, n) if p is None else p
-    b = boost.rate(j, game, t, stake, BIG_WIN_FROM)   # owner 15/10: the day's first round, the short windows (< 50k)
+    b = boost.rate(j, game, t, stake, BIG_WIN_FROM, _today(f, t)['net'])   # owner 15/10: the day's first round, the short windows (< 50k)
     if b is not None:
         p = max(p, b)
     if type(stake) is int and stake >= BIG_WIN_FROM and game in BIG_WIN_GAMES:
