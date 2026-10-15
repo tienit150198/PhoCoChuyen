@@ -109,9 +109,10 @@ class StaffOrders(unittest.TestCase):
                 normal = self.margins(self.run_orders(career, 'pho'), career)
                 hot = self.margins(self.run_orders(career, career), career)
                 self.assertTrue(all(m > 0 for m in normal))
-                self.assertEqual(hot, [m * 2 for m in normal])
+                # 2.4.17: ×SHOP_BOOST after the market, so each order may round one xu apart
+                self.assertTrue(all(abs(h - m * 2) <= 1 for h, m in zip(hot, normal)), (hot, normal))
                 low = self.margins(self.run_orders(career, 'pho', market=60), career)
-                self.assertEqual(low, [m * 60 // 100 for m in normal])
+                self.assertTrue(all(abs(lo - m * 60 // 100) <= 1 for lo, m in zip(low, normal)), (low, normal))
 
     def test_clothing_staff_margin_is_in_the_normal_band(self):
         rows = self.run_orders('clothing', None, n=10)
@@ -119,11 +120,11 @@ class StaffOrders(unittest.TestCase):
         for r, m in zip(rows, self.margins(rows, 'clothing')):
             item = next(iter(r['items']))
             shelf = clothing.PRICES[item] * (80 + 4 * r['stars']) // 100 - r['cash_expenses'] - clothing.ITEM[item]['cost']
-            self.assertLessEqual(m, sm.CEIL * (80 + 4 * r['stars']) // 96)
+            self.assertLessEqual(m, sm.CEIL * (80 + 4 * r['stars']) // 96 * sm.SHOP_BOOST // 100)   # 2.4.17: ×1.6
             if shelf > 2 * sm.CEIL:
-                self.assertLess(m * 2, shelf)        # was the whole shelf margin (~100 xu); now a capped share
+                self.assertLess(m * 2 * 100, shelf * sm.SHOP_BOOST)   # was the whole shelf margin (~100 xu); now a capped share
             else:
-                self.assertLessEqual(m, shelf)       # socks, a hat: a small margin stays (nearly) as it was
+                self.assertLessEqual(m * 100, shelf * sm.SHOP_BOOST)  # socks, a hat: a small margin stays (nearly) as it was
         # Per order, clothing now sits beside the other shops, not 10× an office job.
         office = self.margins(self.run_orders('accounting', None, n=10), 'accounting')
         self.assertLess(sum(self.margins(rows, 'clothing')) / len(rows), 4 * sum(office) / len(office))
@@ -131,7 +132,7 @@ class StaffOrders(unittest.TestCase):
     def test_small_margins_are_left_as_they_were(self):
         for m in range(-5, sm.KNEE + 1):
             self.assertEqual(sm.shape(m), m)
-        self.assertEqual(sm.staff_revenue(18, 4, 5, 0), 18 * 96 // 100)
+        self.assertEqual(sm.staff_revenue(18, 4, 5, 0), 5 + (18 * 96 // 100 - 5) * sm.SHOP_BOOST // 100)   # 2.4.17: the margin ×1.6
         self.assertEqual(sm.staff_revenue(10, 1, 9, 5), 10 * 84 // 100)   # a loss is never multiplied
         self.assertEqual(sm.staff_revenue(10, 1, 9, 5, 250), 10 * 84 // 100)
 

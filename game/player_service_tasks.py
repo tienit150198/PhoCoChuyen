@@ -11,6 +11,7 @@ import math
 from contextlib import contextmanager
 
 DONE = frozenset(('completed', 'cancelled', 'referred'))
+VISIT_BONUS_RATIO = 2  # a player-visitor's counter order earns the profit bonus on at most 2× the dish's usual price (2.4.17)
 _COMMAND = contextvars.ContextVar('player_service_command', default=None)
 _GLOBAL = frozenset(('start_day','end_day','more_work','task_select','select_career',
     'reset_career','import_save','settings','buy_upgrade','advance','defer','talk',
@@ -307,7 +308,13 @@ def credit_visit(state,stall_id,order_id,price):
     paid_tax=qb.charge_income_tax(st,price,costs)
     qy._log(st,state['journey']['life_day'],'Khách người chơi thanh toán đơn '+order_id,price)
     if row is not None:
-        qb.reward_margin(st,price,costs+paid_tax)
+        # 2.4.17: the profit bonus (124% since owner 15/10 "tăng 60% lãi") counts at most VISIT_BONUS_RATIO × the dish's
+        # usual price: a friend paying the owner's 1,000,000 xu price for a bowl only moves their own money, it must not
+        # make the system pay a bonus on it. The till still gets the whole price.
+        from . import quay_self as qs
+        cap=qs.DISH[st['trade']][row['dish']]['base']*VISIT_BONUS_RATIO if row['dish'] in qs.DISH.get(st['trade'],{}) else price
+        basis=min(price,cap)
+        qb.reward_margin(st,basis,costs+paid_tax*basis//price)
         row['settled']=True
     return price-paid_tax
 

@@ -172,8 +172,8 @@ class IncomeGearTests(unittest.TestCase):
         s,st=fixture();qb.initialize(s,st,1000)
         equip(s['careers']['milk_tea'],'quality',career='milk_tea');qb.reconcile(s)
         before=copy.deepcopy(st);view=qb.public(st)
-        self.assertEqual(view['bonus_percent'],82)
-        self.assertEqual(view['staff_bonus_percent'],173)
+        self.assertEqual(view['bonus_percent'],191)   # 2.4.17: 124 + 224×30% (was 40 + 140×30% = 82)
+        self.assertEqual(view['staff_bonus_percent'],336)   # 236 + 336×30% (was 110 + 210×30% = 173)
         self.assertEqual(st,before)
 
     def test_online_not_offered_without_an_online_counter(self):

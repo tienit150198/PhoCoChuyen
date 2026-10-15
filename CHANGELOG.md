@@ -1,3 +1,11 @@
+# v2.4.17 — 2026-10-15
+
+📈 Tăng lợi nhuận kinh doanh (chủ game 15/10: "mở tiệm cho lãi cao hơn, cho mọi người tăng 60% lãi"; thông báo "Tăng lợi nhuận kinh doanh").
+- Đơn riêng của nhân viên ở nơi làm: lãi mỗi đơn ×1,6 (staff_market.SHOP_BOOST = 160, sau thị trường/🔥 nghề hot); thưởng 40% tính trên lãi đó nên phần chủ nhận cũng ×1,6. Giữ PROFIT_PERCENT = 40 vì bản lưu kiểm `total×100+carry == positive×40` (bản cũ phải đọc được).
+- Quầy: thưởng lãi 40% → 124%, nhân viên bán 110% → 236% (phần chủ nhận (100+p)×1,6). profit_boost chỉ lưu carry/total/costs nên bản cũ đọc được. Hướng dẫn cập nhật số.
+- Chặn khai thác (đã có từ trước, nặng hơn khi thưởng 124%): đơn của khách là người chơi ở quầy chỉ tính thưởng trên tối đa 2× giá gốc món (VISIT_BONUS_RATIO); giá chủ đặt tới 1.000.000 xu vẫn vào két đủ nhưng hệ thống không trả thưởng trên phần đó.
+- Lỗ không bao giờ được nhân. Có gì mới: 1 dòng.
+
 # v2.4.16 — 2026-10-15
 
 Gồm nodog, mobileui và wishtree (chủ game 15/10: "xong hết thì deploy rồi bảo 'tối ưu UI'"). Có gì mới: 3 dòng (tối ưu UI, chùa 2.5D + Vườn ước nguyện, nhẹ và mượt hơn).

@@ -247,12 +247,26 @@ class PlayerServiceTasks(unittest.TestCase):
         pst.serve_visit(st,dict(stall='q1',visitor_id='pay-quay',items=[dish],change=0,smile=True))
         stock=copy.deepcopy(st['business']['stock']);cash=st['till']+st['fund']
         net=pst.credit_visit(s,'q1','pay-quay',price)
-        bonus=(net-qb.unit_cost(st,dish))*40//100
+        bonus=(net-qb.unit_cost(st,dish))*qb.BONUS_PERCENT//100
         self.assertEqual(st['business']['profit_boost']['total'],bonus)
         self.assertEqual(st['fund']+st['till'],cash+net+bonus)
         self.assertEqual(st['business']['stock'],stock)
         self.assertEqual(st['business']['sold'],1)
         with self.assertRaises(e.GameError):pst.credit_visit(s,'q1','pay-quay',price)
+
+    def test_quay_visitor_bonus_counts_at_most_twice_the_usual_price(self):
+        """2.4.17: a friend paying the owner's 1,000,000 xu price moves only their money; the bonus is on 2× the base."""
+        from tests.test_quay_business import fixture
+        from game import quay_business as qb,quay_self as qs
+        s,st=fixture(staff=False);qb.settle(s,now=1000);dish=next(iter(st['business']['stock']))
+        st['menu']=dict(on=list(qs.menu(st)['on']),p={dish:1000000});price=qs.price(st,dish);self.assertEqual(price,1000000)
+        pst.accept_visit(s,'q1',dict(id='pay-big',offer_id=dish,items=[dish],price=price,buyer=BUYER,note=''),now=1000)
+        pst.serve_visit(st,dict(stall='q1',visitor_id='pay-big',items=[dish],change=0,smile=True))
+        till=st['till']
+        net=pst.credit_visit(s,'q1','pay-big',price)
+        cap=qs.DISH[st['trade']][dish]['base']*pst.VISIT_BONUS_RATIO
+        self.assertLessEqual(st['business']['profit_boost']['total'],cap*qb.BONUS_PERCENT//100)
+        self.assertEqual(st['till']-till,net+st['business']['profit_boost']['total'])   # the whole price still lands
         qb.validate(st,lambda ok,*args:e.need(ok,'invalid'),lambda v,lo,hi:type(v)is int and lo<=v<=hi)
 
     def test_quay_no_cash_cannot_complete_reserved_visitor_order(self):

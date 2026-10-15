@@ -32,6 +32,8 @@ HOT_LOW, HOT_HIGH = 200, 250         # the hot career: 2× the market, held at �
 # (amplitude, period in slots): 2 days, ~32 h, ~20 h. Incommensurate, so a career's curve does not repeat for weeks.
 WAVES = ((0.30, 96), (0.20, 61), (0.10, 37))
 KNEE, CEIL = 16, 24                  # margin shaping, xu per order at a 4-star service
+SHOP_BOOST = 160                     # owner 15/10 "mở tiệm cho lãi cao hơn, cho mọi người tăng 60% lãi": the margin ×1.6
+                                     # (the 40% profit bonus is on it, so the owner's take is ×1.6 too; a loss stays)
 SERIES = 96                          # slots in the public curve: the last 48 h
 # Day 0 of the hot rotation (VN). The rotation's cycles count from here.
 EPOCH = datetime.date(2026, 10, 1).toordinal()
@@ -124,7 +126,7 @@ def staff_revenue(price: int, stars: int, cash: int, goods: int, mult: int = 100
     margin = revenue - cash - goods
     if margin <= 0:
         return revenue
-    return cash + goods + max(0, shape(margin, stars) * mult // 100)
+    return cash + goods + max(0, shape(margin, stars) * mult * SHOP_BOOST // 10000)
 
 
 def series(career: str, t: float | None = None, n: int = SERIES) -> list:

@@ -26,11 +26,13 @@ PRICE_MAX = 1000000
 LEGACY_EXPENSES = ('goods', 'wages', 'rent', 'power', 'online', 'tax', 'loss')
 EXPENSES = LEGACY_EXPENSES + ('income_tax', 'environment', 'protection')
 TIME_COSTS = ('wages', 'rent', 'power', 'environment', 'protection')   # billed by elapsed open time (_rates)
-# Margin bonus, percent of the realized margin after costs and income tax.
+# Margin bonus, percent of the realized margin after costs and income tax (2.4.17: ×1.6, see below).
 # Owner self-serve and player-visitor orders keep 40%. Staff-run sales (settle())
 # get 110%: the owner's take, margin x (1 + bonus), goes from 1.4x to 2.1x, i.e. x1.5.
-BONUS_PERCENT = 40
-STAFF_BONUS_PERCENT = 110
+# Owner 15/10 "cho mọi người tăng 60% lãi": the owner's take ×1.6, (100 + percent) × 1.6 − 100: 40 → 124, 110 → 236.
+# No save checks the percent (profit_boost holds only carry/total/costs), so older builds read what these write.
+BONUS_PERCENT = 124
+STAFF_BONUS_PERCENT = 236
 
 
 def staff_wage(st, member):

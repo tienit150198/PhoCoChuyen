@@ -22,7 +22,7 @@ class ProfitBoost(unittest.TestCase):
         cost = qb.unit_cost(st, 'hong_tra')
         qb.sale(st, ['hong_tra'], 1000000)
         tax = (100 - cost) * 7 // 100
-        expected = (100 - cost - tax) * 40 // 100
+        expected = (100 - cost - tax) * qb.BONUS_PERCENT // 100
         self.assertEqual(st['business']['profit_boost']['total'], expected)
         self.assertEqual(st['business']['revenue'], 100)
         self.assertEqual(st['till'] + st['fund'] - before, 100 - tax + expected)
@@ -39,11 +39,11 @@ class ProfitBoost(unittest.TestCase):
         before = st['till'] + st['fund']
         self_bonus = qb.sale(copy.deepcopy(st), ['hong_tra'], 1000000)
         staff_bonus = qb.sale(st, ['hong_tra'], 1000000, employee=employee)
-        self.assertEqual(self_bonus, margin * 40 // 100)
-        self.assertEqual(staff_bonus, margin * 110 // 100)
+        self.assertEqual(self_bonus, margin * qb.BONUS_PERCENT // 100)
+        self.assertEqual(staff_bonus, margin * qb.STAFF_BONUS_PERCENT // 100)
         self.assertEqual(st['till'] + st['fund'] - before - cost, margin + staff_bonus)
-        self.assertEqual(qb.public(st)['staff_bonus_percent'], 110)
-        self.assertEqual(qb.public(st)['bonus_percent'], 40)
+        self.assertEqual(qb.public(st)['staff_bonus_percent'], 236)  # 2.4.17: ×1.6 (was 110)
+        self.assertEqual(qb.public(st)['bonus_percent'], 124)  # 2.4.17: ×1.6 (was 40)
 
     def test_staffed_day_take_rises_by_half_and_self_serve_is_unchanged(self):
         def take(percent):
@@ -59,7 +59,9 @@ class ProfitBoost(unittest.TestCase):
         old, new = take(40), take(110)
         self.assertGreater(old, 0)
         self.assertAlmostEqual(new / old, 1.5, delta=0.01)
-        self.assertEqual(qb.BONUS_PERCENT, 40)
+        # 2.4.17 (owner 15/10 "tăng 60% lãi"): 110 → 236 is the owner's take ×1.6 again, and self-serve 40 → 124
+        self.assertAlmostEqual(take(236) / new, 1.6, delta=0.01)
+        self.assertEqual((qb.BONUS_PERCENT, qb.STAFF_BONUS_PERCENT), (124, 236))
 
     def test_bonus_respects_money_cap(self):
         _, st = self.shop()
@@ -73,7 +75,7 @@ class ProfitBoost(unittest.TestCase):
         for _ in range(5):
             qb.sale(st, ['hong_tra'], 1000000, total=cost + 1)
         tax = st['business']['expenses']['income_tax']
-        self.assertEqual(st['business']['profit_boost']['total'], (5-tax)*40//100)
+        self.assertEqual(st['business']['profit_boost']['total'], (5-tax)*qb.BONUS_PERCENT//100)
 
     def test_operating_cost_and_overchange_reduce_bonus_basis(self):
         _, st = self.shop()
@@ -82,7 +84,7 @@ class ProfitBoost(unittest.TestCase):
         cost = qb.unit_cost(st, 'hong_tra')
         qb.sale(st, ['hong_tra'], 1600000, total=100, extra_loss=10)
         tax = (100-cost-overhead-10)*7//100
-        self.assertEqual(st['business']['profit_boost']['total'], (100-cost-tax-overhead-10)*40//100)
+        self.assertEqual(st['business']['profit_boost']['total'], (100-cost-tax-overhead-10)*qb.BONUS_PERCENT//100)
         self.assertEqual(st['business']['expenses']['loss'], 10)
 
     def test_loss_and_unpaid_fine_are_not_rewarded(self):
@@ -106,7 +108,7 @@ class ProfitBoost(unittest.TestCase):
         self.assertEqual(st['business']['profit_boost']['total'], 0)
         qb.sale(st, ['hong_tra'], 1000000, total=100)
         tax = st['business']['expenses']['income_tax']
-        self.assertEqual(st['business']['profit_boost']['total'], (101-2*cost-tax)*40//100)
+        self.assertEqual(st['business']['profit_boost']['total'], (101-2*cost-tax)*qb.BONUS_PERCENT//100)
 
     def test_polling_and_offline_bonuses_match(self):
         s, st = fixture(); qb.settle(s, now=1000)
