@@ -6,7 +6,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {avatar,emojiOf} from './journey.js';
 import {lookOf} from './look.js';
-import {firstDay} from './onboard.js';
+import {earlyDays} from './onboard.js';
 import {quiet,turn,want,whenQuiet} from './break-gate.js';
 import {acctPlace} from './acct-jobs.js';
 
@@ -91,7 +91,9 @@ export function maybeStory(){
   const st=stories();if(!st||!E)return;
   const J=E.api.state.journey;
   if(J?.story&&!J.intro)return;                     // the first-run intro comes first
-  if(firstDay(E.api.state))return;                  // a brand-new player's first day stays on the work: stories from day 2
+  // A new neighbour's first days (earlyDays, 16/10): no card over the counter; the beat waits on the journey home
+  // (storiesCard, from day 2) and comes by itself from day 4.
+  if(earlyDays(E.api.state))return;
   if(document.getElementById('stScene')?.open)return;
   if(J?.news?.length)return;                        // a chapter or title scene is about to open
   // Only the workplace you are at tells its story; the others wait on the journey home.

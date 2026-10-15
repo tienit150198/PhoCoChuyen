@@ -22,7 +22,7 @@ import {applyGuide,guideAction,nextHint,stepCta,plainText,firstTime,barParts} fr
 import {inventoryView,stockBoot,stockBatchButton,autoStockRow,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {certBadge} from './v4/certificates.js';
 import {moneyBoot,confirmMoney,confirmShort,dialogBalances,isSpend,priceIn} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
-import {quickOpen,firstDay} from './v4/onboard.js';  // a brand-new player's first minutes
+import {quickOpen,firstDay,EASY_DAYS} from './v4/onboard.js';  // a brand-new player's first minutes
 import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} from './v4/wealth.js';  // 💰 Tiền của bạn (top bar chips + sheet)
 import {emojiOf,townOn} from './v4/journey.js';
 import {lowItems,crates} from './v4/restock.js';  // the bar's Kho badge
@@ -1378,9 +1378,10 @@ function summaryView(){
   const stat=(cls,big,label,sub='')=>`<div class="sum-stat ${cls}"><strong>${big}</strong><small>${label}</small>${sub?`<em${sub.startsWith('<span')?' class="ck-chips"':''}>${sub}</em>`:''}</div>`;
   const stats=`<div class="sum-stats">${stat(net>=0?'good':'bad',`${net>=0?'+':'−'}${fmt(Math.abs(net))}<span> xu</span>`,'Thay đổi trong ca',`<span class="ck-delta up">thu ${fmt(s.income)}</span><span class="ck-delta down">chi ${fmt(s.cost)}</span>`)}${stat('',`${s.completed}`,'Việc đã xong',s.carried?`${s.carried} việc để mai`:'')}${stat('star',rv.count?`★ ${rv.average}`:'—',rv.count?`${rv.count} ${pagoda?'cảm nhận':'đánh giá'} mới`:pagoda?'Chưa có cảm nhận mới':'Chưa có đánh giá mới')}</div>`;
   const notes=[];
-  // A new neighbour's very first close (feedback 16/10 "nhiều chữ"): the day's result, the wallet and the tips up front;
-  // the shop's books, reviews, mood, promotion track and stock notes one tap away under "Chi tiết cả ngày".
-  const J0=api.state.journey,first=Boolean(J0?.story&&(Number(J0.life_day)||1)<=2&&s.day===1),later=first?[]:notes;
+  // A new neighbour's closes of life days 1..EASY_DAYS (feedback 16/10 "nhiều chữ"; end_day has already turned the
+  // life day): the day's result, the wallet and the tips up front; the shop's books, reviews, mood, promotion track and
+  // stock notes one tap away under "Chi tiết cả ngày".
+  const J0=api.state.journey,first=Boolean(J0?.story&&(Number(J0.life_day)||1)<=EASY_DAYS+1),later=first?[]:notes;
   if(job?.boss)notes.push(`<article class="sum-boss"><span class="eyebrow">Một cuộc gặp may mắn</span><h3>${esc(job.boss.org)} · ${esc(job.boss.title)}</h3><p>${esc(job.boss.text)}</p>${button(icon('mail',15)+' Xem thư mời','bossOffer',{career:job.boss.career},'primary small')}</article>`);
   if(s.incidents&&L.inc.use())notes.push(L.inc.m.incidentSummary(s.incidents));
   if(s.happen&&L.happen.use())notes.push(L.happen.m.happenSummary(s.happen));

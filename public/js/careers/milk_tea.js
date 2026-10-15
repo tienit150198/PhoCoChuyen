@@ -10,6 +10,7 @@ import {nextHint,stepCta,barParts,finalGo,pending as nextOf,firstTime,stepLine,t
 import {actBar,clean,tip,headChip,helpBtn,whyAttrs} from '../ui-kit.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY} from '../qty-input.js';
+import {earlyDays} from '../v4/onboard.js';
 
 const ICE=[['none','Không đá'],['little','Ít đá'],['normal','Đá vừa'],['extra','Nhiều đá']];
 const ICE_TEXT={none:'không đá',little:'ít đá',normal:'đá vừa',extra:'nhiều đá'};
@@ -38,6 +39,11 @@ const closedNow=x=>!!x?.room&&!x.room.open;
 const BREW=new Set(['tea_cup','tea_add','tea_ice','tea_sugar','tea_seal','tea_seal_start','tea_check','tea_discard','tea_serve','tea_greet','tea_swap']);
 const OPEN_GO={act:'startHere',label:'☀️ Mở ca'};
 const shutAttrs=()=>whyAttrs({why:'Mở ca trước',fix:OPEN_GO});
+/** A new neighbour's next mornings (v4/onboard.js earlyDays, life days 2..3): game/boba.py _ready_pots fills the pots
+ * at opening, so the evening board does not ask for brewing, last night's dumped portions or toppings the walk-ins
+ * will not order anyway (boba._avoid); the pots and the supplier rows stay one tap away. */
+const easyNight=x=>closedNow(x)&&Number(x.room.day)>1&&earlyDays(x.state);
+const EASY_POTS='🫖 Cô Ba ủ sẵn trà, nấu sẵn trân châu trước giờ mở cửa.';
 const jb=(x,label,op,payload={},style='',disabled=false)=>BREW.has(op)&&closedNow(x)
   ?`<button type="button" class="btn ${style} is-why"${shutAttrs()}>${label}</button>`
   :`<button type="button" class="btn ${style}" ${cmdAttr(x,op,payload)}${disabled?' disabled':''}>${label}</button>`;
@@ -187,7 +193,7 @@ function alerts(x){
   if(b.office)out.push(`<p class="mt-alert info">💼 Đơn văn phòng: ${b.office.done}/${b.office.count} ly · còn ${b.office.deadline_in} nhịp${b.office.bonus?` · thưởng ${b.office.bonus} xu nếu kịp`:''}</p>`);
   if(b.mess)out.push(`<div class="mt-alert warn row-inline"><span>💦 Quầy còn vệt trà đổ.</span>${jb(x,'🧽 Lau quầy','tea_wipe',{},'small')}</div>`);
   if(b.sealer?.state==='dirty')out.push(`<div class="mt-alert warn row-inline"><span>⚙️ Máy dán nắp bám keo (${b.sealer.wear} ly): khó dán đẹp.</span>${jb(x,'🧽 Lau máy · 20 phút','tea_clean',{},'small')}</div>`);
-  const w=(b.warnings||[]).filter(v=>v.where==='stock');
+  const w=(b.warnings||[]).filter(v=>v.where==='stock'&&!(easyNight(x)&&['pearls','base'].includes(v.id)));
   if(w.length)out.push(`<div class="mt-alert warn row-inline"><span>⚠ ${w.map(v=>x.esc(v.text)).join(' · ')}</span>${x.button('🧺 Mở kho','prepare',{},'small')}</div>`);
   return out.join('');
 }
@@ -312,7 +318,7 @@ function notebookFor(t,x){
   const notes=row.notes||[];
   if(!(t.usual&&t.known)&&!notes.length)return '';
   const greet=notes.length&&!t.greeted?jb(x,'👋 “Như mọi khi hả?”','tea_greet',{task:t.id},'small cream'):t.greeted?'<span class="tag green">✓ Đã chào khách quen</span>':'';
-  return `<details class="mt-notebook" ${t.usual||!t.greeted?'open':''}><summary>📒 Sổ khách quen · ${x.esc(row.name)} · ghé ${row.visits} lần</summary>
+  return `<details class="mt-notebook" ${t.usual||!t.greeted&&!earlyDays(x.state)?'open':''}><summary>📒 Sổ khách quen · ${x.esc(row.name)} · ghé ${row.visits} lần</summary>
     ${t.usual&&t.known&&row.usual?`<p>${x.esc(usualText(x,row.usual))}.</p>`:''}
     ${notes.length?`<ul class="mt-notes">${notes.map(n=>`<li><span aria-hidden="true">${x.esc(n.emoji)}</span> ${x.esc(n.text)}</li>`).join('')}</ul>`:''}
     ${row.next_note?`<small>Ghé đủ ${row.next_note} lần để biết thêm.</small>`:''}${greet?`<div class="mt-greet">${greet}</div>`:''}</details>`;
@@ -699,9 +705,10 @@ function stockTab(x){
     return buyRow(i.id,i.emoji,i.name,s.stock,`${s.on===false?'🚫 ngừng bán · ':''}${i.cost} xu/phần${exp!=null&&exp<=day+1?` · ${exp<=day?'hết hạn tối nay':'dùng hết ngày mai'}`:''}`,s.on===false);};
   // What needs doing first: on the menu and out, low, past its best, or going off tonight.
   const madeOpen=madeIds.filter(i=>!shut.includes(i)),boughtOpen=boughtIds.filter(i=>!shut.includes(i));
-  const needMade=madeOpen.filter(i=>{const s=station(x,i.id);return s.on!==false&&(s.stock===0||s.tired>0);});
+  const easy=easyNight(x);
+  const needMade=easy?[]:madeOpen.filter(i=>{const s=station(x,i.id);return s.on!==false&&(s.stock===0||s.tired>0);});
   const needCups=['M','L'].filter(size=>(cups[size]||0)<LOW_CUPS);
-  const needBought=boughtOpen.filter(i=>{const s=station(x,i.id),exp=lot(i.id);return s.on!==false&&(s.stock<=LOW_PORTIONS||(exp!=null&&exp<=day));});
+  const needBought=easy?[]:boughtOpen.filter(i=>{const s=station(x,i.id),exp=lot(i.id);return s.on!==false&&(s.stock<=LOW_PORTIONS||(exp!=null&&exp<=day));});
   // A hint from yesterday's book (boba history), never a number put into the form.
   const last=(b.history||[]).filter(h=>Number(h.day)<Number(day)).at(-1);
   const yday=last&&last.served!=null?`<p class="mt-need-hint"><span>📒 Ngày ${last.day} bán ${last.served} ly</span>${last.dumped?`<span>🗑️ Bỏ cuối ca ${last.dumped} phần</span>`:''}${b.left!=null?`<span>👥 Hôm nay còn ${b.left} khách</span>`:''}</p>`:'';
@@ -710,7 +717,7 @@ function stockTab(x){
   const restMade=madeOpen.filter(i=>!needMade.includes(i)),restCups=['M','L'].filter(s=>!needCups.includes(s)),restBought=boughtOpen.filter(i=>!needBought.includes(i));
   const lockedFold=shut.length?(()=>{const lv=shut.map(i=>station(x,i.id).level||i.level||1),lo=Math.min(...lv),hi=Math.max(...lv);
     return `<details class="mt-locked"><summary>🔒 ${shut.length} món mở ở tay nghề cấp ${lo===hi?lo:`${lo}–${hi}`}</summary><p>${shut.map((i,n)=>`${x.esc(i.emoji)} ${x.esc(i.name)} (cấp ${lv[n]})`).join(' · ')}</p></details>`;})():'';
-  const night=(b.night||[]).length?`<div class="mt-night">${b.night.map(l=>`<p>${x.esc(l)}</p>`).join('')}</div>`:'';
+  const night=easy?`<p class="mt-need-hint"><span>${x.esc(EASY_POTS)}</span></p>`:(b.night||[]).length?`<div class="mt-night">${b.night.map(l=>`<p>${x.esc(l)}</p>`).join('')}</div>`:'';
   const wait=x.room.open&&(b.orders||[]).length?jb(x,'⏳ Chờ thêm 20 phút','tea_wait',{},'ghost small'):'';
   // The money every paid button here comes out of, in sight; when it cannot pay for a full batch of
   // something on the menu, the ways that cost nothing are named.
@@ -719,11 +726,12 @@ function stockTab(x){
   const clock=now.is_open?`🕑 <b>${x.esc(now.time||b.clock||'')}</b>${overtime(b)?' · tăng ca, nhà cung cấp đã nghỉ':''}`:`🕑 Đóng cửa · mở lại ${x.esc(now.open||'08:00')}`;
   const purse=`<div class="mt-fund${poor?' poor':''}" role="status"><p>${poor?`🏪 Quỹ tiệm <b>${money.toLocaleString('vi-VN')} xu</b> · `:''}${clock}</p>${poor?`<p class="mt-fund-tip">Quỹ mỏng: bán ly từ hàng còn trong kho để có thêm xu, tắt bớt món ở 🏷️ Giá bán${wallet>0?', hoặc góp tiền từ ví vào quỹ':''}.</p>${wallet>0?topUp(x):''}`:''}</div>`;
   const nOrd=(b.orders||[]).length,maxOrd=b.max_orders||12;
-  const care=b.care||[],bad=care.filter(r=>r.tone!=='ok').length,danger=care.some(r=>r.tone==='danger');
+  const care=(b.care||[]).filter(r=>!(easy&&(r.id.startsWith('pot-')||r.id==='tea-empty'))),bad=care.filter(r=>r.tone!=='ok').length,danger=care.some(r=>r.tone==='danger');
   const careBox=care.length?`<details class="mt-care-fold"${x.ui.mtPrepCare??danger?' open':''}><summary data-action="car:fold" data-key="mtPrepCare"><span>🧋 Việc chăm quầy</span>${bad?`<em class="mt-care-count ${danger?'danger':''}">${bad}</em>`:'<em class="mt-care-count ok">ổn</em>'}</summary>${careRows(x,care,true)}</details>`:'';
+  const pots=restMade.length?`<div class="mt-rows">${restMade.map(madeRow).join('')}</div>`:'',shop=restCups.length||restBought.length?`<div class="mt-rows">${restCups.map(cupRow).join('')}${restBought.map(boughtRow).join('')}</div>`:'';
   return `${purse}${night}${need}
-    ${restMade.length?`<h3 class="section-title">🫖 Nồi, bình & mẻ hôm nay</h3><div class="mt-rows">${restMade.map(madeRow).join('')}</div>`:''}
-    ${restCups.length||restBought.length?`<h3 class="section-title">🛒 Đặt hàng</h3><div class="mt-rows">${restCups.map(cupRow).join('')}${restBought.map(boughtRow).join('')}</div>`:''}${lockedFold}
+    ${easy?`${pots?`<details class="mt-locked"><summary>🫖 Nồi, bình & mẻ</summary>${pots}</details>`:''}${shop?`<details class="mt-locked"${pick?' open':''}><summary>🛒 Đặt hàng</summary>${shop}</details>`:''}`
+      :`${pots?`<h3 class="section-title">🫖 Nồi, bình & mẻ hôm nay</h3>${pots}`:''}${shop?`<h3 class="section-title">🛒 Đặt hàng</h3>${shop}`:''}`}${lockedFold}
     ${nOrd?`<h3 class="section-title">📦 Đang giao <small>${nOrd}/${maxOrd} đơn${nOrd>=maxOrd?' · đợi hàng tới rồi mới đặt thêm':''}</small></h3>${orderRows(x)}${wait?`<p class="row wrap">${wait}</p>`:''}`:''}
     ${careBox}
     <details class="mt-how"><summary>❔ Ủ, nấu & đặt hàng thế nào?</summary><p class="muted small">Ủ trà, nấu trân châu, đặt hàng đều trừ vào quỹ tiệm. Ủ trà, nấu trân châu mất 20 phút khi quán mở; làm trước giờ mở cửa thì không mất thời gian. Trà ủ và trân châu không để qua đêm.</p><p class="muted small">Trả tiền khi đặt. Mỗi nhà giao một kiểu: hỏa tốc 15–30 phút, xe bốn chuyến mỗi ngày, chợ chiều nay hoặc sáng mai, xưởng 1–2 ngày.</p></details>`;
@@ -769,7 +777,8 @@ function recapTab(x){
 /** Chuẩn bị opens on the work: a compact head (shop name, a one-line level bar), the day and its missions
  * folded into one line (open by itself when a gift can be claimed), the warnings, then the tabs (Kho first). */
 function prepare(x,tab){
-  const c=x.room,b=B(x),mod=b.modifier||{},w=b.warnings||[],tm=b.tomorrow||{};
+  const c=x.room,b=B(x),mod=b.modifier||{},tm=b.tomorrow||{};
+  const w=(b.warnings||[]).filter(v=>!(easyNight(x)&&['pearls','base'].includes(v.id)));
   tab=TABS.some(v=>v[0]===tab)?tab:'stock';
   const panel={stock:stockTab,upgrade:upgradeTab,price:priceTab,reviews:reviewsTab,recap:recapTab}[tab](x);
   const list=c.life?.goals||[],n=list.length,claim=list.some(g=>!g.claimed&&g.current>=g.goal),done=list.filter(g=>g.claimed||g.current>=g.goal).length;
@@ -867,7 +876,7 @@ export default {
       :{ok:null,label:'Khép ca hôm nay',go:{act:'end',label:'🌙 Khép ca hôm nay'}};
     const next=stepCta(x,[step],{label:'',go:null,ready:false},{style:'primary'});
     const wait=x.room.open&&orders.length&&!waiting.length?jb(x,'⏳ Chờ hàng · 20 phút','tea_wait',{},'ghost'):'';
-    const night=(b.night||[]).length?`<div class="mt-night">${b.night.map(l=>`<p>${x.esc(l)}</p>`).join('')}</div>`:'';
+    const night=easyNight(x)?'':(b.night||[]).length?`<div class="mt-night">${b.night.map(l=>`<p>${x.esc(l)}</p>`).join('')}</div>`:'';
     return `<div class="career-job mt">${B(x).event?'':nextHint(x,[step])}${hud(x)}${eventCard(x)}${alerts(x)}${night}${careFold(x)}${orders.length?`<section class="mt-orders"><h4>📦 Đang giao</h4>${orderRows(x)}</section>`:''}<div class="row wrap">${next}${wait}${x.button('🧺 Kho & đặt hàng','prepare',{},'ghost')}</div></div>`;
   },
   page(view,x){

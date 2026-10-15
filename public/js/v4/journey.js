@@ -518,11 +518,13 @@ function chapterScene(n,page=0){
   }
   const story=C.titles.find(t=>t.id===['st_newcomer','st_familiar','st_skilled','st_trusted','st_office','st_local'][n-1]);
   const opened=(next?.unlocks||[]).filter(id=>api.state.careers[id]);
+  // Chapter 1 opens a dozen places at once: their signs only (name on hover / screen readers), not 40 words (16/10).
+  const many=opened.length>6;
   const final=!next;
   return `<div class="jr-scene-card celebrate">${confetti()}<div class="jr-ch-art big" aria-hidden="true">${final?'🏮':ch.art}</div><span class="eyebrow">Hoàn thành chương ${ch.n}</span><h2 id="jrSceneTitle">${esc(ch.title)}</h2>
     <div class="jr-lines">${ch.outro.map(l=>say(l,g)).join('')}</div>
     ${story?`<div class="jr-award"><span aria-hidden="true">${story.emoji}</span><div><small>Danh hiệu mới</small><b>${esc(story.name)}</b></div>${btn('Đeo ngay','jrEquip',{title:story.id,keep:'1'},'cream small')}</div>`:''}
-    ${opened.length?`<div class="jr-unlocks"><small>Nơi làm việc mới mở</small><div class="jr-unlock-row">${opened.map(id=>{const m=meta(api,id);return `<span class="jr-unlock" style="--career:${colour(m.color)}"><span aria-hidden="true">${emojiOf(m)}</span>${esc(m.place||m.short)}</span>`;}).join('')}</div></div>`:''}
+    ${opened.length?`<div class="jr-unlocks"><small>Nơi làm việc mới mở</small><div class="jr-unlock-row${many?' icons':''}">${opened.map(id=>{const m=meta(api,id),name=esc(m.place||m.short);return many?`<span class="jr-unlock" style="--career:${colour(m.color)}" role="img" aria-label="${name}" title="${name}">${emojiOf(m)}</span>`:`<span class="jr-unlock" style="--career:${colour(m.color)}"><span aria-hidden="true">${emojiOf(m)}</span>${name}</span>`;}).join('')}</div></div>`:''}
     ${final?`<p class="jr-epilogue">Từ một căn gác lạ, bạn đã có một nơi để gọi là nhà. Hành trình vẫn tiếp tục, theo nhịp của riêng bạn.</p>`:''}
     ${next?btn(`Tiếp tục ${icon('arrow',15)}`,'jrSceneNext',{n:String(n)},'primary big full'):btn('Về hành trình','jrSceneClose',{},'primary big full')}</div>`;
 }

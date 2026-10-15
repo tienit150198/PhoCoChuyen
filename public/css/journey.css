@@ -419,3 +419,4 @@ html[data-layout="phone"] .jr-chapter>.jr-line.compact{display:none}
 .qy-license summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
 .qy-up:has(.qy-license-requirement){flex-wrap:wrap}
 .qy-up>.qy-license-requirement{flex-basis:100%;padding-left:4px}
+.jr-unlock-row.icons .jr-unlock{padding:6px 10px;font-size:1.1rem}
