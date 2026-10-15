@@ -92,16 +92,16 @@ class WishReducer(unittest.TestCase):
         validate_state(s)
 
     def test_the_previous_release_validates_a_save_with_tree_wishes(self):
-        """Rollback: the save after tree wishes (did/n only) passes the chua.validate of origin/main (2.4.14)."""
+        """Rollback: the save after tree wishes (did/n only) passes the chua.validate of 2.4.15 (f17d9d70, the release before the trees)."""
         try:
-            src = subprocess.run(['git', 'show', 'origin/main:game/chua.py'], cwd=ROOT, capture_output=True, text=True, check=True).stdout
+            src = subprocess.run(['git', 'show', 'f17d9d70:game/chua.py'], cwd=ROOT, capture_output=True, text=True, check=True).stdout
         except (OSError, subprocess.CalledProcessError):
-            self.skipTest('origin/main not available')
+            self.skipTest('2.4.15 (f17d9d70) not available')
         self.assertNotIn('chua_wish', src)
         spec = importlib.util.spec_from_loader('game._chua_previous', loader=None)
         old = importlib.util.module_from_spec(spec)
         old.__package__ = 'game'
-        exec(compile(src, 'origin/main:game/chua.py', 'exec'), old.__dict__)
+        exec(compile(src, '2.4.15:game/chua.py', 'exec'), old.__dict__)
         s = story()
         for _ in range(3):
             s, _ = do(s, **wish())
@@ -130,8 +130,8 @@ class QueryParsing(unittest.TestCase):
         self.assertTrue(all(t[1] and t[2] and t[3] for t in cw.TREES))
 
 
-@unittest.skipUnless(PG, 'requires isolated TEST_DATABASE_URL without DATABASE_URL')
-class WishTable(unittest.TestCase):
+class Garden(unittest.TestCase):
+    """Four players with story saves (Lan, Minh, Hoa, Tú) on one store."""
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
@@ -157,6 +157,9 @@ class WishTable(unittest.TestCase):
     def sid(self, u):
         return self.store.key(self.users[u]['token'])
 
+
+@unittest.skipUnless(PG, 'requires isolated TEST_DATABASE_URL without DATABASE_URL')
+class WishTable(Garden):
     def test_hang_read_page_and_never_leak_the_sid(self):
         out = self.hang(0, color='hong')
         key = out['result']['chua_wish']['key']
@@ -318,8 +321,10 @@ class WishTable(unittest.TestCase):
         status, raw = request('/api/chua/wishes?tree=binh_an&limit=5', 1)
         self.assertEqual(status, 200, raw)
         wid = json.loads(raw)['rows'][0]['id']
-        for q in ('', '?tree=x', '?tree=binh_an&limit=99', '?mine=1&tree=binh_an', '?tree=binh_an&sid=1'):
+        for q in ('', '?tree=x', '?tree=binh_an&limit=99', '?mine=1&tree=binh_an', '?tree=binh_an&sid=1', '?old=1', '?mine=1&old=1'):
             self.assertEqual(request('/api/chua/wishes' + q, 1)[0], 400, q)
+        status, raw = request('/api/chua/wishes?tree=binh_an&old=1&before=99&limit=5', 1)   # 📜 the tree's old shared cards
+        self.assertEqual((status, json.loads(raw)['rows']), (200, []), raw)
         self.assertEqual(request('/api/chua/wishes', 1, 'POST', dict(op='pray', id=wid), csrf=False)[0], 403)
         status, raw = request('/api/chua/wishes', 1, 'POST', dict(op='pray', id=wid))
         self.assertEqual((status, json.loads(raw)['wish']['prayers']), (200, 1))
@@ -333,6 +338,214 @@ class WishTable(unittest.TestCase):
             self.assertEqual(status, 200, raw)
             status, raw = request('/api/command', 2, 'POST', dict(body(2), expected_revision=json.loads(raw)['revision']))
             self.assertEqual(status, 429, raw)
+
+
+class OldCardTrees(unittest.TestCase):
+    def test_every_card_choice_hangs_on_a_fitting_tree(self):
+        for who, (_, blessings) in chua.KHAN_WHO.items():
+            for b in blessings:
+                self.assertIn(cw.card_tree(who, b), cw.TREE, (who, b))
+                self.assertIn(f'{who}:{b}', cw._card_pairs(cw.card_tree(who, b)))
+        self.assertEqual(cw.card_tree('ca_nha', 'khoe'), 'suc_khoe')
+        self.assertEqual(cw.card_tree('ong_ba', 'yen_nghi'), 'tuong_nho')
+        self.assertEqual(cw.card_tree('minh', 'sieng'), 'su_nghiep')
+        self.assertEqual(cw.card_tree('pho', 'thuong'), 'binh_an')
+        self.assertEqual(cw.card_tree('ca_nha', 'thuong'), 'gia_dao')
+        self.assertEqual(cw.card_tree('nope', 'nope'), cw.CARD_FALLBACK)
+        pairs = [p for t in cw.TREE for p in cw._card_pairs(t)]
+        self.assertEqual(len(pairs), len(set(pairs)), 'a card hangs on one tree only')
+
+    def test_query_for_old_cards(self):
+        q = lambda **kw: cw.parse_query({k: [v] for k, v in kw.items()})
+        self.assertEqual(q(tree='suc_khoe', old='1', before='7'), dict(tree='suc_khoe', old=True, before=7))
+        for bad in (dict(old='1'), dict(mine='1', old='1'), dict(tree='suc_khoe', old='0'), dict(tree='suc_khoe', old='yes')):
+            with self.assertRaises(GameError, msg=bad):
+                q(**bad)
+
+
+@unittest.skipUnless(PG, 'requires isolated TEST_DATABASE_URL without DATABASE_URL')
+class OldCardsInTheGarden(Garden):
+    """📜 owner 15/10 ("đưa vào 1 cái đi, sử dụng chung mà"): the old shared board's cards hang in the wish garden."""
+
+    def card(self, u=0, public=True, recipient='ca_nha', blessing='khoe', message='Mong mẹ vui khỏe.'):
+        user = self.users[u]
+        user['n'] += 1
+        p = dict(act='nguyen', recipient=recipient, blessing=blessing, name='Mẹ', message=message)
+        if public is not None:
+            p['public'] = public
+        out = self.store.command(user['token'], f'card-{u}-{user["n"]:04d}', user['rev'], None, 'jr_chua_do', p)
+        user['rev'] = out['revision']
+        return out['state']['chua']['cards'][-1]
+
+    def old(self, u, tree='suc_khoe', **kw):
+        return cw.page(self.store, self.users[u]['token'], tree=tree, old=True, **kw)['rows']
+
+    def test_only_shared_cards_show_for_everyone_on_their_tree_and_unsharing_takes_them_off(self):
+        private = self.card(0, public=None)
+        self.card(0, public=False)
+        shared = self.card(0, public=True)
+        grief = self.card(1, recipient='ong_ba', blessing='yen_nghi', message='')
+        rows = self.old(2)
+        self.assertEqual([r['text'] for r in rows], [shared['text']])
+        row = rows[0]
+        self.assertEqual((row['kind'], row['tree'], row['name'], row['message'], row['mine'], row['prayers']),
+                         ('card', 'suc_khoe', 'Mẹ', 'Mong mẹ vui khỏe.', False, 0))
+        self.assertNotIn('status', row)
+        raw = json.dumps(rows, ensure_ascii=False)
+        for u in range(4):
+            self.assertNotIn(self.sid(u), raw, 'never the owner')
+        self.assertNotIn(private['id'], raw)
+        self.assertEqual(self.old(2, 'binh_an'), [])
+        self.assertEqual(self.old(3, 'tuong_nho')[0]['text'], grief['text'])
+        self.assertTrue(self.old(0)[0]['mine'])
+        by = {t['id']: t for t in cw.trees(self.store, self.users[3]['token'])['trees']}
+        self.assertEqual((by['suc_khoe']['old'], by['tuong_nho']['old'], by['binh_an']['old']), (1, 1, 0))
+        self.assertEqual(by['suc_khoe']['count'], 0, 'wishes and old cards are counted apart')
+        # the owner stops sharing on the old route: off the tree at the next read (nothing cached)
+        from game import chua_board
+        chua_board.set_visibility(self.store, self.users[0]['token'], dict(id=shared['id'], public=False))
+        self.assertEqual(self.old(2), [])
+        chua_board.set_visibility(self.store, self.users[0]['token'], dict(id=private['id'], public=True))
+        self.assertEqual([r['text'] for r in self.old(2)], [private['text']])
+        # ... or from the garden ("Gỡ xuống" of my own card): the card stays in the save, private
+        pos = self.old(0)[0]['id']
+        with self.assertRaises(GameError):
+            cw.act(self.store, self.users[1]['token'], dict(op='down', card=pos))
+        out = cw.act(self.store, self.users[0]['token'], dict(op='down', card=pos))
+        self.assertIsNone(out['card'])
+        self.assertEqual(self.old(2), [])
+        mine = chua_board.page(self.store, self.users[0]['token'], scope='mine')['rows']
+        self.assertEqual(len(mine), 3)
+        self.assertFalse(any(r['public'] for r in mine))
+        state, _, _ = self.store.read(self.users[0]['token'])
+        self.assertEqual(len(state['journey']['chua']['cards']), 3, 'the cards themselves are never touched')
+        with self.assertRaises(GameError):
+            cw.act(self.store, self.users[1]['token'], dict(op='pray', card=pos))
+
+    def test_reset_import_and_deleting_the_save_take_the_card_off(self):
+        self.card(0)
+        self.assertEqual(len(self.old(1)), 1)
+        user = self.users[0]
+        out = self.store.command(user['token'], 'card-reset-0001', user['rev'], None, 'reset_all', dict(confirm='BAT DAU LAI'))
+        user['rev'] = out['revision']
+        self.assertEqual(self.old(1), [])
+        self.card(2)
+        self.assertEqual(len(self.old(1)), 1)
+        self.store.delete(self.users[2]['token'])
+        self.assertEqual(self.old(1), [])
+
+    def test_pray_report_hide_and_admin_like_wishes(self):
+        self.card(0)
+        pos = self.old(1)[0]['id']
+        with self.assertRaises(GameError):
+            cw.act(self.store, self.users[0]['token'], dict(op='pray', card=pos))
+        for _ in range(2):
+            out = cw.act(self.store, self.users[1]['token'], dict(op='pray', card=pos))
+        self.assertEqual((out['card']['prayers'], out['card']['prayed']), (1, True))
+        self.assertEqual(self.old(0)[0]['prayers'], 1)
+        # one report: gone for the reporter only; three: hidden for everyone until an admin looks
+        cw.act(self.store, self.users[1]['token'], dict(op='report', card=pos, reason='rude'))
+        self.assertEqual(self.old(1), [])
+        self.assertEqual(len(self.old(2)), 1)
+        with self.assertRaises(GameError):
+            cw.act(self.store, self.users[0]['token'], dict(op='report', card=pos))
+        cw.act(self.store, self.users[1]['token'], dict(op='report', card=pos, reason='rude'))   # once per reporter
+        cw.act(self.store, self.users[2]['token'], dict(op='report', card=pos, reason='spam'))
+        self.assertEqual(len(self.old(3)), 1)
+        cw.act(self.store, self.users[3]['token'], dict(op='report', card=pos, reason='other'))
+        for u in range(4):
+            self.assertEqual(self.old(u), [], u)
+        from game import chua_board
+        self.assertEqual(chua_board.page(self.store, self.users[3]['token'])['rows'], [], 'off the older board too')
+        self.assertEqual(cw.trees(self.store, self.users[3]['token'])['old'], 0)
+        view = cw.admin_view(self.store)
+        item = view['cards'][0]
+        self.assertEqual((item['card'], item['reports'], item['status'], item['tree']), (pos, 3, 'hidden', 'suc_khoe'))
+        self.assertEqual(item['reasons'], dict(rude=1, spam=1, other=1))
+        self.assertEqual(item['text'], self.store.read(self.users[0]['token'])[0]['journey']['chua']['cards'][-1]['text'])
+        self.assertTrue(cw.admin_act(self.store, 'admin', dict(act='show', card=pos))['changed'])
+        cw._invalidate()
+        self.assertEqual(len(self.old(0)), 1)
+        self.assertEqual(self.old(3), [], 'reporters keep it hidden for themselves')
+        self.assertEqual(len(chua_board.page(self.store, self.users[3]['token'])['rows']), 1)
+        cw.admin_act(self.store, 'admin', dict(act='hide', card=pos))
+        self.assertEqual(self.old(0), [])
+        self.assertEqual(chua_board.page(self.store, self.users[2]['token'])['rows'], [])
+        # sharing again keeps the admin's decision (keyed by owner + card, not by the board row)
+        card = self.store.read(self.users[0]['token'])[0]['journey']['chua']['cards'][-1]
+        chua_board.set_visibility(self.store, self.users[0]['token'], dict(id=card['id'], public=False))
+        chua_board.set_visibility(self.store, self.users[0]['token'], dict(id=card['id'], public=True))
+        self.assertEqual(self.old(2), [])
+        self.assertFalse(cw.admin_act(self.store, 'admin', dict(act='hide', card=10**9))['changed'])
+        for bad in (dict(act='hide', card='1'), dict(act='x', card=pos), dict(act='hide', card=pos, id=1)):
+            with self.assertRaises(GameError, msg=bad):
+                cw.admin_act(self.store, 'admin', bad)
+        for bad in (dict(op='pray', card='1'), dict(op='pray', card=0), dict(op='pray', card=pos, id=1),
+                    dict(op='pray', card=pos, reason='rude'), dict(op='report', card=pos, reason='bad')):
+            with self.assertRaises(GameError, msg=bad):
+                cw.act(self.store, self.users[1]['token'], bad)
+
+    def test_paging_newest_first(self):
+        for i in range(5):
+            self.card(i % 2, message=f'Lời chúc {i}')
+        seen, before = [], None
+        while True:
+            page = cw.page(self.store, self.users[2]['token'], tree='suc_khoe', old=True, before=before, limit=2)
+            seen += [r['message'] for r in page['rows']]
+            before = page['before']
+            if before is None:
+                break
+        self.assertEqual(seen, [f'Lời chúc {i}' for i in range(4, -1, -1)])
+
+    def test_account_deletion_forgets_the_marks(self):
+        self.card(0)
+        pos = self.old(1)[0]['id']
+        cw.act(self.store, self.users[1]['token'], dict(op='pray', card=pos))
+        cw.act(self.store, self.users[2]['token'], dict(op='pray', card=pos))
+        cw.forget(self.store, self.users[1]['token'])
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT count(*) FROM chua_card_prayers').fetchone()[0], 1)
+        cw.forget(self.store, self.users[0]['token'])
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT count(*) FROM chua_card_prayers').fetchone()[0], 0)
+            self.assertEqual(db.execute('SELECT count(*) FROM chua_card_marks').fetchone()[0], 0)
+
+    def test_schema_45_is_additive_and_idempotent(self):
+        self.card(0)
+        with self.store.connect() as db:
+            db.execute('DROP TABLE chua_card_prayers')
+            db.execute('DROP TABLE chua_card_marks')
+            db.execute("UPDATE mnl_meta SET value='44' WHERE key='schema_version'")
+        with self.store.connect() as db:
+            self.assertTrue(pg_schema.ensure(db))
+            self.assertFalse(pg_schema.ensure(db))
+            self.assertEqual(pg_schema.installed_version(db), pg_schema.SCHEMA_VERSION)
+            self.assertEqual(db.execute('SELECT count(*) FROM chua_public_cards').fetchone()[0], 1, 'shared cards untouched')
+        self.assertEqual(len(self.old(1)), 1)
+
+    def test_the_previous_releases_read_the_same_saves(self):
+        """Nothing new in the save: a save with shared cards and garden acts passes 2.4.16's and 2.4.15's chua.validate."""
+        self.card(0)
+        self.hang(0)
+        pos = self.old(1)[0]['id']
+        cw.act(self.store, self.users[1]['token'], dict(op='pray', card=pos))
+        state, _, _ = self.store.read(self.users[0]['token'])
+        validate_state(state)
+        checked = 0
+        for release, ref in (('2.4.16', 'e535140b'), ('2.4.15', 'f17d9d70')):
+            try:
+                src = subprocess.run(['git', 'show', f'{ref}:game/chua.py'], cwd=ROOT, capture_output=True, text=True, check=True).stdout
+            except (OSError, subprocess.CalledProcessError):
+                continue
+            spec = importlib.util.spec_from_loader(f'game._chua_{release}', loader=None)
+            old = importlib.util.module_from_spec(spec)
+            old.__package__ = 'game'
+            exec(compile(src, f'{release}:game/chua.py', 'exec'), old.__dict__)
+            old.validate(state)
+            self.assertTrue(old.public(state)['enabled'], release)
+            checked += 1
+        if not checked:
+            self.skipTest('the previous releases are not in this checkout')
 
 
 if __name__ == '__main__':

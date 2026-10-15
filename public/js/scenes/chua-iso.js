@@ -262,18 +262,68 @@ function wishTree(c,img,t,x,y,i,o){
   ribs.forEach((col,k)=>{const u=((k*.618+i*.13)%1),v=((k*.382+i*.29)%1),rx=p[0]+(u-.5)*w*.74,ry=p[1]-w*.92+v*w*.42+Math.abs(u-.5)*w*.2,sw=o.reduced?0:Math.sin(o.t*1.6+k+i)*1.6;
     L(c,rx,ry-7,rx+sw*.4,ry,'#f3d590',1.2);c.save();c.translate(rx+sw,ry);c.rotate(sw*.03);R(c,-3.5,0,7,15,RIBBON[col]||RIBBON.do,1.5);R(c,-3.5,11,7,4,'#00000022',1);c.restore();});
 }
-/** The grove's sign by the path (drawn with the labels, before the tree boards). */
-export function groveSign(c,o){
-  const p=at(11.3,11.6),ls=Math.min(1.2,o.ls||1);R(c,p[0]-2,p[1]-38,4,38,'#6a4a2f',2);c.save();c.translate(p[0],p[1]-55);c.scale(ls,ls);
+/** The grove's sign by the path: its board (scene px rect at label scale `ls`; the name boards keep off it). Given the
+ * `view` [x0,y0,x1,y1], a board the screen's edge would cut slides along to stay whole (its post stays under it), and
+ * there is none (null) while its post is out of sight. */
+export function signRect(ls=1,view=null){
+  const p=at(11.3,11.6),k=Math.min(1.2,ls||1),r={x:p[0]-70*k,y:p[1]-55-17*k,w:140*k,h:34*k};
+  if(!view)return r;
+  if(p[0]<view[0]||p[0]>view[2])return null;
+  r.x=Math.max(view[0],Math.min(r.x,view[2]-r.w));return r;
+}
+/** The grove's sign by the path (drawn with the labels, before the tree boards), its board at `r` (signRect). */
+export function groveSign(c,o,r=signRect(o.ls)){
+  if(!r)return;
+  const p=at(11.3,11.6),ls=Math.min(1.2,o.ls||1);R(c,p[0]-2,p[1]-38,4,38,'#6a4a2f',2);c.save();c.translate(r.x+r.w/2,r.y+r.h/2);c.scale(ls,ls);
   R(c,-70,-17,140,34,'#8a2f22',8,'#e8bf62',2);T(c,'🌳 VƯỜN ƯỚC NGUYỆN',0,0,fit(c,'🌳 VƯỜN ƯỚC NGUYỆN',126,12,800),'#f6d98a',800);c.restore();
 }
-/** The name board of a wish tree (drawn after everything: a label is never hidden by the tree in front). */
-export function treeBoard(c,t,i,o){
-  const [x,y]=GROVE[i],near=o.near===t.id,label=`${t.emoji||''} ${t.name||''}`.trim(),ls=o.ls||1,q=project(x,y);
-  c.save();c.translate(q[0],q[1]+8);c.scale(ls,ls);const p=[0,-8];   // labels keep a readable size on a phone (o.ls)
-  const n=String(t.count|0);
+/** Nhà trai's sign (scene px rect): a board keeps off it too. */
+export const stoveSignRect=()=>{const s=at(17.2,15.4);return {x:s[0]-66,y:s[1]-80,w:132,h:34};};
+const boardLabel=t=>`${t.emoji||''} ${t.name||''}`.trim();
+/** What a tree's board counts: its wishes and its old shared lời chúc. */
+const boardCount=t=>String((t.count|0)+(t.old|0));
+/** A tree's name board where it sits before layout: centred just under the tree's foot (scene px rect, label scale ls). */
+export function boardRect(c,t,i,ls=1){
+  const [x,y]=GROVE[i],q=project(x,y);
+  c.save();c.font='800 13px "Trebuchet MS", sans-serif';const tw=c.measureText(boardLabel(t)).width;c.font='800 11px "Trebuchet MS", sans-serif';const nw=Math.max(18,c.measureText(boardCount(t)).width+10);c.restore();
+  const w=(tw+nw+22)*ls,h=24*ls;return {x:q[0]-w/2,y:q[1]+8,w,h};
+}
+/** The part of a wish tree's painting on the ground and in the air (scene px rect): is the tree in sight at all? */
+export function treeRect(i){const [x,y]=GROVE[i],q=project(x,y),w=TREE_W[i%TREE_W.length];return {x:q[0]-w*.37,y:q[1]-w*.95,w:w*.74,h:w*.95};}
+const cross=(a,b)=>[Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x),Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y)];
+const clash=(a,b,gap)=>{const [w,h]=cross(a,b);return w>-gap&&h>-gap?Math.max(0,w+gap)*Math.max(0,h+gap):0;};
+/** The name boards on a narrow screen (owner 15/10: "ở mép trái màn hình hẹp, vài nhãn tên cây bị khuất một phần"):
+ * each `boards` rect (moved in place, in order) goes to the place nearest its own (just under its tree) that is wholly
+ * inside `view` [x0,y0,x1,y1] (scene px, already inset) and on nothing: not on a `fixed` rect (the grove's sign, the
+ * badges, the hint) nor on a board placed before it, `gap` apart. Small moves first, sideways ones cost less (a board
+ * moved along stays under its tree). Pure. Returns how many boards found no clear place (they take the least crowded). */
+export function layoutBoards(boards,fixed,view,gap=2){
+  const [x0,y0,x1,y1]=view,placed=[];let stuck=0;
+  const clamp=r=>({x:Math.max(x0,Math.min(r.x,x1-r.w)),y:Math.max(y0,Math.min(r.y,y1-r.h)),w:r.w,h:r.h});
+  for(const r of boards){
+    const home=clamp(r),steps=[];
+    for(let j=-12;j<=12;j++)for(let i=-8;i<=8;i++)steps.push([i*r.w/8,j*r.h/2]);
+    steps.sort((a,b)=>Math.hypot(a[0]*.55,a[1])-Math.hypot(b[0]*.55,b[1]));
+    let best=null,least=Infinity;
+    for(const [dx,dy] of steps){
+      const q=clamp({x:home.x+dx,y:home.y+dy,w:r.w,h:r.h});
+      let hit=0;for(const f of fixed)hit+=clash(q,f,gap);for(const o of placed)hit+=clash(q,o,gap);
+      if(!hit){best=q;least=0;break;}
+      if(hit<least){least=hit;best=q;}
+    }
+    if(least)stuck++;
+    r.x=best.x;r.y=best.y;placed.push(r);
+  }
+  return stuck;
+}
+/** The name board of a wish tree at `r` (boardRect, maybe moved by layoutBoards), drawn after everything: a label is
+ * never hidden by the tree in front. */
+export function treeBoard(c,t,i,o,r=null){
+  const ls=o.ls||1,near=o.near===t.id,label=boardLabel(t),n=boardCount(t);
+  r=r||boardRect(c,t,i,ls);
+  c.save();c.translate(r.x+r.w/2,r.y);c.scale(ls,ls);   // labels keep a readable size on a phone (o.ls)
   c.font='800 13px "Trebuchet MS", sans-serif';const tw=c.measureText(label).width;c.font='800 11px "Trebuchet MS", sans-serif';const nw=Math.max(18,c.measureText(n).width+10);
-  const bw=tw+nw+22,b=[p[0]-bw/2,p[1]+8];
+  const bw=tw+nw+22,b=[-bw/2,0];
   c.save();c.globalAlpha=.22;R(c,b[0]+1.5,b[1]+2.5,bw,24,'#3a2a1a',12);c.restore();
   R(c,b[0],b[1],bw,24,near?'#8a2f22':'#fff7e6',12,near?'#f1cf76':'#c9a36a',1.5);
   T(c,label,b[0]+8,b[1]+12.5,13,near?'#fff3cf':'#6b3b22',800,'left');

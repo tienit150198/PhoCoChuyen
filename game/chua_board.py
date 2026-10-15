@@ -85,11 +85,14 @@ def page(store, token: str, *, scope='public', before=None, limit=20) -> dict:
             db.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY')
         sid, session = _session(store, db, token, with_state=scope == 'mine')
         if scope == 'public':
-            rows = list(db.execute('SELECT position,card FROM chua_public_cards WHERE position<? '
-                                   'ORDER BY position DESC LIMIT ?',
+            # 📜 since the wish garden shows these cards (game/chua_wish.py), what reports or an admin took off the
+            # trees is off this older board too (an older client still reads it)
+            rows = list(db.execute('SELECT p.position,p.card FROM chua_public_cards p WHERE p.position<? AND NOT EXISTS '
+                                   '(SELECT 1 FROM chua_card_marks m WHERE m.sid=p.sid AND m.card_id=p.card_id '
+                                   "AND m.status<>'live') ORDER BY p.position DESC LIMIT ?",
                                    (before if before is not None else MAX_CURSOR, limit + 1)))
             visible = rows[:limit]
-            return dict(rows=[dict(json.loads(r['card']), public=True, position=r['position']) for r in visible],
+            return dict(rows=[_tree(dict(json.loads(r['card']), public=True, position=r['position'])) for r in visible],
                         before=visible[-1]['position'] if len(rows) > limit else None)
         state = store.parse_state(session['state'], sid)
         live = (state.get('journey', {}).get('chua') or {}).get('cards', [])
@@ -115,7 +118,15 @@ def page(store, token: str, *, scope='public', before=None, limit=20) -> dict:
             'SELECT card_id FROM chua_public_cards WHERE sid=? AND card_id=ANY(?)', (sid, ids))} if ids else set()
     for row in rows:
         row['public'] = row['id'] in shared
+        _tree(row)
     return dict(rows=rows, before=start if start > 0 else None, total=total)
+
+
+def _tree(row: dict) -> dict:
+    """📜 the wish tree a card hangs on once shared (game/chua_wish.py card_tree; the garden says where it is)."""
+    from .chua_wish import card_tree
+    row['tree'] = card_tree(row.get('recipient'), row.get('blessing'))
+    return row
 
 
 def set_visibility(store, token: str, payload: dict) -> dict:

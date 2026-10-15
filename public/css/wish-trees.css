@@ -141,3 +141,14 @@ html .wt-sheet .wt-paper textarea[name="wt-text"]:is(:focus,:focus-visible){outl
 .wt-flyer{position:fixed;left:-11px;top:-20px;z-index:9;width:22px;height:40px;border-radius:3px 3px 7px 7px;background:var(--rib);box-shadow:0 0 14px 4px rgba(255,210,110,.8);pointer-events:none}
 @media (prefers-reduced-motion:reduce){.wt-rib,.wt-rib.fresh i,.wt-card.fresh,.wt-read,.wt-compose,.wt-scrim{animation:none}.wt-tile{transition:none}}
 html.reduce-motion .wt-rib,html.reduce-motion .wt-rib.fresh i,html.reduce-motion .wt-card.fresh,html.reduce-motion .wt-read,html.reduce-motion .wt-compose,html.reduce-motion .wt-scrim{animation:none}
+
+/* 📜 old shared lời chúc (owner 15/10: "đưa vào 1 cái đi, sử dụng chung mà"): a cream paper slip with a red edge
+   (the old "mảnh giấy đỏ"), never a coloured ribbon, so an old one reads as old at a glance */
+.wt-old{--rib:#b4483a;--rib-soft:#fbf1e2}
+.wt-rib.wt-old i{left:16%;width:68%;height:70%;border-radius:2px;background:#fbf1dc;border:2px solid #b4483a;background-image:repeating-linear-gradient(transparent 0 4px,rgba(180,72,58,.28) 4px 5px)}
+.wt-card.wt-old{border-left-style:double;border-left-width:7px;background:#fdf7ec}
+.wt-old-h{margin-top:var(--sp-4)}
+.wt-mine-old{margin-top:var(--sp-4)}
+.wt-mycard{cursor:default}
+.wt-mycard .wt-share{margin-left:auto}
+.wt-mycard.on .wt-state{background:#e3f1df;color:#2f6b3a}
