@@ -94,7 +94,7 @@ class TreasureSockets(LiveCase):
             await self.app.by_name['treasure'].checkpoint()
             snapshot=await self.app.by_name['treasure'].refresh()
             self.assertNotIn(chest['id'],[row['id'] for row in snapshot['chests']])
-            self.assertTrue(3<=snapshot['wave']['added']<=5)
+            self.assertEqual(snapshot['wave']['added'],10)
             refused=await c.call('town_treasure_prepare','error',chest_id=chest['id'])
             self.assertEqual(refused['code'],'treasure_missing')
 
@@ -170,5 +170,5 @@ class TreasureSockets(LiveCase):
         c,_,_=await self.enter()
         await feature.refresh(broadcast=True)
         notice=await c.expect('town_treasure')
-        self.assertTrue(3 <= len(notice['chests']) <= 5)
+        self.assertEqual(len(notice["chests"]), 10)
         self.assertEqual(notice['wave']['reward'],10000)

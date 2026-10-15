@@ -88,6 +88,9 @@ class FairBase(unittest.TestCase):
         g = mock.patch.object(fh, 'BC_GAP_MS', 0)   # the test clock steps 2 s a call; test_the_bowl_opens_after_5_s checks the gap
         g.start()
         self.addCleanup(g.stop)
+        x = mock.patch.object(fh.boost, 'XD_GAP_MS', 0)   # the same for xóc đĩa's 3 s (tests/test_bm_boost_1015.py checks it)
+        x.start()
+        self.addCleanup(x.stop)
         # The same 2 s steps would make every knife throw arrive "late" (fair_knife.FRESH_MS); tests/test_exploit_fixes.py
         # checks the freshness with the real value.
         k = mock.patch.object(fh.knife, 'FRESH_MS', 10**9)

@@ -26,6 +26,7 @@ from .storage import serialize, _archive_rows, _write_archive
 from . import archive, journey, leaderboard
 
 PERIOD = 600
+WAVE_CHESTS = 10        # owner 15/10: "10 rương/10 phút" (was 3–5 a wave); at most 10 (the chest id's last digit)
 REWARD = 10000
 RADIUS = 1.6
 PROOF_TTL = 5.0
@@ -39,7 +40,7 @@ DAY = 86400
 MAP_ID = 'iso-town-v1'
 START = (6.0, 6.0)
 REQUEST = re.compile(r'[A-Za-z0-9._:-]{8,80}')
-CHEST = re.compile(r'tt-[0-9]{1,12}-[0-4]')
+CHEST = re.compile(r'tt-[0-9]{1,12}-[0-9]')
 INSERT_WAVE = 'INSERT INTO town_treasure_waves(bucket) VALUES(?) ON CONFLICT(bucket) DO NOTHING RETURNING bucket'
 INSERT_CHEST = 'INSERT INTO town_treasure_chests(id,bucket,map_id,x,y) VALUES(?,?,?,?,?)'
 # Unclaimed chests of the last KEEP_WAVES waves (parameters: chest_args()), one
@@ -113,7 +114,7 @@ def locations():
 
 
 def spawn_rows(bucket):
-    points = secrets.SystemRandom().sample(locations(), 3 + secrets.randbelow(3))
+    points = secrets.SystemRandom().sample(locations(), WAVE_CHESTS)
     return [(f'tt-{bucket}-{i}', bucket, MAP_ID, x, y) for i, (x, y) in enumerate(points)]
 
 

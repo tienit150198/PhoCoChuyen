@@ -15,6 +15,9 @@ os.environ.setdefault("MNL_X3_OFF", "1")
 os.environ.setdefault("MNL_MARKET_OFF", "1")
 # ⏰ Giờ vàng (game/golden_hour.py): a test's money must not depend on the hour it runs; tests/test_golden_hour.py turns it on.
 os.environ.setdefault("MNL_GOLDEN_OFF", "1")
+# 🎲 Chợ đen's first round of the day and its short windows (game/fair_boost.py) follow the real clock: off, so a fair
+# test's odds do not depend on the hour it runs; tests/test_bm_boost_1015.py turns them on.
+os.environ.setdefault("MNL_BM_BOOST_OFF", "1")
 # 💼 Lương kế toán ×5 ngày lễ (game/accounting_jobs.py) follows the real calendar too: off unless a test turns it on.
 os.environ.setdefault("MNL_HOLIDAY_OFF", "1")
 # 🎁 Quà cả phố (game/system_gift.py BROADCASTS) follows the real calendar: off, so a test's gifts and wallet do not

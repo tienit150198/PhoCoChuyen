@@ -4,6 +4,9 @@ The ordinary rules below resume automatically outside the one-shot golden-days
 promotion (game/fair_golden_days.py). During its persisted 48-hour window only
 chiếu trong, lô tô and vé cào use the event draw; scratch wins then exclude refunds.
 
+Owner 15/10 (game/fair_boost.py, server only): the day's first round of chiếu trong / lô tô / vé cào draws 65%, and
+3–4 secret ~3-minute windows a day draw 70%, both only below BIG_WIN_FROM; xóc đĩa rounds are 3 s apart at least.
+
 Owner 14/10: chiếu trong, lô tô and vé cào start at 55% for ONE ordinary round per run,
 then decrease 1.5 percentage points every round from round 2 (53.5%, 52%, 50.5%, ...).
 Floors, streak caps, large-stake caps, reset rules and payouts stay unchanged. Existing saved
@@ -89,6 +92,7 @@ from . import fair_watch as watch   # 🕶️ the police's eye on the skill stal
 from . import fair_hai as hai     # 👴 Ông Hai's table: games a day, the police after a run of wins
 from . import fair_dog as dog    # 🐕 đua chó: the roster, the lineups, the draw
 from . import fair_golden_days as golden  # one persisted, server-only 48-hour luck event
+from . import fair_boost as boost  # 🎲 the day's first round and the short windows (owner 15/10), xóc đĩa's 3 s gap
 
 VERSION = 1
 FAIR_START = '2026-10-09'      # first day (Vietnam date), 00:00 UTC+7 (owner 08/10: the fair opens again)
@@ -698,6 +702,9 @@ def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = 
     n = _heat(j, game, t, stake or 0)
     p = _golden_rate(j, f, game, t, stake)
     p = run_rate(game, n) if p is None else p
+    b = boost.rate(j, game, t, stake, BIG_WIN_FROM, _today(f, t)['net'])   # owner 15/10: the day's first round, the short windows (< 50k)
+    if b is not None:
+        p = max(p, b)
     if type(stake) is int and stake >= BIG_WIN_FROM and game in BIG_WIN_GAMES:
         p = min(p, BIG_WIN_P)   # owner 11/10: a 50k+ round wins BIG_WIN_P at most, event or not ("tránh bị spam")
     return p
@@ -1141,8 +1148,9 @@ def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
          f'Vé số cào có giá {", ".join(map(str, scratch.TIERS))} xu thôi nha.')
     _guard_free(e, f, j, t, price)
     _police(j, f, t, 'xs', price)
-    boosted = _golden_rate(j, f, 'xs', t, price) == golden.WIN_P
-    win = _draw_luck(j, 'xs', luck_p(j, f, 'xs', t, stake=price))
+    p = luck_p(j, f, 'xs', t, stake=price)
+    boosted = p > chance_rate('xs', t) + 1e-9   # golden days or fair_boost: a won ticket is a profit (no refund)
+    win = _draw_luck(j, 'xs', p)
     mult = scratch.prize_mult(_rng, profit_only=boosted) if win else 0
     cells = scratch.layout(price, mult, _rng)
     prize = mult * price
@@ -1514,7 +1522,10 @@ def _apply(s: dict, name: str, p: dict) -> dict:
              'fair_raided')
         fine = min(max(0, j['wallet']), xd_fine(stake))   # ≤ the stake, which _guard_round makes the wallet cover
         want = None
+        gap = boost.xd_wait_ms(j, t)   # owner 15/10 "xóc đĩa thì cho delay 3s mỗi lần mở nhé để tránh spam"
+        need(gap <= 0, f'Anh Ba đang dọn chén, {-(-gap // 1000)} giây nữa mới xóc ván mới nha!', 'fair_slow')
         _guard_round(e, f, j, t, stake, max(stake, fine))
+        boost.xd_mark(j, t)
         _police(j, f, t, 'xd', stake)
         st['xd'] += 1
         probability = luck_p(j, f, 'xd', t, stake=stake)
@@ -1939,6 +1950,7 @@ def validate(j: dict) -> None:
     """journey['fair'] and journey['fair_cash'] (both optional)."""
     fc.validate(j)
     bm.validate(j)
+    boost.validate(j)
     watch.validate(j)
     hai.validate(j)
     if 'fair_balance' in j:
