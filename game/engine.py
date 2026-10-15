@@ -65,6 +65,7 @@ from . import promotion as pm
 from . import career_mastery as cm  # Persistent manual-work mastery, separate from formal promotion.
 from . import career_competition as competition  # Earned NPC standings and recognition.
 from . import career_specialism as specialism
+from . import validate_memo as vm  # checks this worker already ran on the same JSON (storage.serialize_bytes only)
 from . import career_scale_quota as scale_quota
 from . import career_scale as scale, career_scale_contracts as scale_contracts, career_scale_inventory as scale_stock
 from . import rui as rui_  # 🛡️ Rủi ro & bảo hiểm
@@ -1513,7 +1514,11 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
     build. A group of checks that reads only such values passes again and is skipped: the
     per-task regeneration, the long lists (reviews, chats, journal, memories, album, ...) and
     the cash book's rows. Everything else runs, in the same order, so a record that fails
-    fails with the same message. Empty (the default): every check runs."""
+    fails with the same message. Empty (the default): every check runs.
+
+    Inside validate_memo.active() (storage.serialize_bytes, for the careers a command moved), a task, a
+    post, the journal, the memories or the chats whose JSON already passed these checks in this worker
+    are not checked again (game/validate_memo.py)."""
     from . import consequences as cq
     from . import classroom
     need(isinstance(c,dict),"Tiến trình nghề không hợp lệ.")
@@ -1550,7 +1555,13 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
     need(all(l in LOT_INDEX for l in c["held_lots"]),"Lô tạm giữ không hợp lệ.")
     need(len(c["tasks"])<=80,"Quá nhiều công việc trong bản lưu.")
     taskids=[]
-    for t in (() if "tasks" in same else c["tasks"]):  # same tasks: the regeneration below passes again
+    memo=vm.on()
+    tdig=vm.digests(c["tasks"]) if memo and "tasks" not in same else None
+    tnew=[]
+    for i,t in enumerate(() if "tasks" in same else c["tasks"]):  # same tasks: the regeneration below passes again
+        if tdig is not None:
+            if vm.known(cid,"task",tdig[i]):taskids.append(t["id"]);continue  # this JSON passed below already
+            tnew.append((tdig[i],t))
         player_services.validate(t)
         if "patience" in t:integer(t["patience"],25,100)
         need(isinstance(t,dict) and t.get("career")==cid and t.get("npc") in NPC_INDEX,"Công việc không hợp lệ.")
@@ -1634,6 +1645,7 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
             integer(t.get("ready_turn"),0,10**9)
             for key in ("identity","confirmed","handed_over"):need(type(t.get(key)) is bool,"Trạng thái xử lý thiếu.")
             need(t.get("proposal") in (None,"reship","trace","exchange","refund","guide"),"Phương án đề nghị không hợp lệ.")
+    if tnew:vm.remember(cid,"task",tnew)
     if "tasks" in same:taskids=[t["id"] for t in c["tasks"]]
     need(len(taskids)==len(set(taskids)),"Công việc bị trùng mã.")
     need(c["active_task"] is None or c["active_task"] in taskids,"Công việc đang chọn không tồn tại.")
@@ -1643,12 +1655,18 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
         need(e.get("stage") in ("noticed","investigating","proposed","executing","resolved"),"Bước sự kiện sai.")
         need(e.get("chosen") in (None,"a","b") and isinstance(e.get("read"),list) and type(e.get("practice")) is bool,"Dữ liệu sự kiện thiếu.")
         integer(e.get("step"),0,2)
-    for f in (() if "feed" in same else c["feed"]):
+    # A post's checks are this loop and the one further down (the same list, nothing in between changes it).
+    fdig=vm.digests(c["feed"]) if memo and "feed" not in same else None
+    fold=[vm.known(cid,"post",d) for d in fdig] if fdig is not None else None
+    for i,f in enumerate(() if "feed" in same else c["feed"]):
+        if fold is not None and fold[i]:continue
         need(isinstance(f,dict) and _feed_author(f.get("npc")) and isinstance(f.get("comments"),list),"Bài đăng không hợp lệ.")
         clean_text(f.get("text"),3000);clean_text(f.get("id"),100)
         need(f.get("stars") in (None,1,2,3,4,5),"Số sao không hợp lệ.")
         fbk.validate_post(f)
-    for npc,chat in (() if "chats" in same else c["chats"].items()):
+    whole={k:vm.digest(c[k]) for k in ("chats","memories","journal") if k not in same} if memo else {}
+    old={k for k,d in whole.items() if vm.known(cid,k,d)}  # the whole list (dict) passed already
+    for npc,chat in (() if "chats" in same or "chats" in old else c["chats"].items()):
         need(npc in NPC_INDEX and isinstance(chat,list) and len(chat)<=40,"Chat bản lưu không hợp lệ.")
         for row in chat:need(row.get("role") in ("user","npc"),"Vai chat không hợp lệ.");clean_text(row.get("text"),2000)
     need(isinstance(c["relationships"],dict) and isinstance(c["decor"],dict),"Dữ liệu quan hệ/trang trí không hợp lệ.")
@@ -1666,18 +1684,22 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
         need(isinstance(pending,dict) and pending.get("kind") in ("return_note","event_followup","comment"),"Thông báo chờ không hợp lệ.")
         integer(pending.get("day"),1,999999);integer(pending.get("turn"),0,10**9);clean_text(pending.get("ref"),200);clean_text(pending.get("text"),3000)
         need(pending.get("npc") in NPC_INDEX,"Thông báo thiếu nhân vật.")
-    for memory in (() if "memories" in same else c["memories"]):
+    for memory in (() if "memories" in same or "memories" in old else c["memories"]):
         need(isinstance(memory,dict) and memory.get("npc") in NPC_INDEX,"Ký ức sai nhân vật.")
         clean_text(memory.get("text"),3000);clean_text(memory.get("source"),200)
-    for row in (() if "journal" in same else c["journal"]):
+    for row in (() if "journal" in same or "journal" in old else c["journal"]):
         for key in ("id","kind","text"):clean_text(row.get(key),4000)
         integer(row.get("day"),1,999999);integer(row.get("turn"),0,10**9)
-    for post in (() if "feed" in same else c["feed"]):
+    for i,post in enumerate(() if "feed" in same else c["feed"]):
+        if fold is not None and fold[i]:continue
         for key in ("author","source","kind"):clean_text(post.get(key),200)
         integer(post.get("day"),1,999999);need(type(post.get("liked")) is bool,"Trạng thái bài đăng thiếu.")
         for comment in post["comments"]:
             clean_text(comment.get("author"),100);clean_text(comment.get("text"),3000);integer(comment.get("day"),1,999999)
             need(_feed_author(comment.get("npc")),"Người bình luận không hợp lệ.")
+    if fdig is not None:vm.remember(cid,"post",[(d,f) for d,f,seen in zip(fdig,c["feed"],fold) if not seen])
+    for k,d in whole.items():
+        if k not in old:vm.remember(cid,k,[(d,c[k])])
     need(len(c["album"])<=6,"Album quá lớn.")
     for photo in (() if "album" in same else c["album"]):
         need(isinstance(photo.get("image"),str) and len(photo["image"])<=450000 and photo["image"].startswith(("data:image/webp;base64,","data:image/png;base64,","data:image/jpeg;base64,")),"Ảnh lưu không hợp lệ.")

@@ -37,6 +37,7 @@ from . import db as dbm
 from . import fastjson as fj
 from . import pg_schema
 from . import settle_scope
+from . import validate_memo as vm
 from . import fair as fh  # 🍀 Lộc trời cho: the server-wide hourly gate (loc_prepare / loc_claim)
 from . import fair_refund  # 💸 Chợ đen fines paid back: added to the Bảng vàng score (game/fair_refund.py)
 
@@ -250,9 +251,7 @@ def serialize_bytes(raw:dict,known:dict|None=None,full:bool=False,snap:dict|None
                 validate_career(c,cid);raise  # NaN/Infinity: the same GameError as a full validation
             d=_digest(piece)
             piece=piece.encode()
-        if known is not None and known.get(cid)!=d:
-            if same:validate_career(c,cid,same=same)
-            else:validate_career(c,cid)
+        if known is not None and known.get(cid)!=d:_validate_moved(c,cid,same)
         pieces.extend((_dumps(cid).encode(),b":",piece,b","));digests[cid]=d
     if known is not None or full:raw["check"]=dict(build=BUILD,careers=digests)
     else:raw.pop("check",None)
@@ -268,6 +267,20 @@ def serialize_bytes(raw:dict,known:dict|None=None,full:bool=False,snap:dict|None
     out=SaveText(b"".join(body))
     if b"\xed" in out and _SURROGATE.search(out):return out.decode('utf-8','surrogatepass')
     return out
+
+
+def _validate_moved(c,cid:str,same)->None:
+    """validate_career of a career the command moved, skipping what this worker already checked on the very
+    same JSON (game/validate_memo.py). When that raises, the full validation runs again: a refused command
+    is refused with the message of the first check that fails, as before."""
+    try:
+        with vm.active():
+            if same:validate_career(c,cid,same=same)
+            else:validate_career(c,cid)
+    except GameError:
+        if same:validate_career(c,cid,same=same)
+        else:validate_career(c,cid)
+        raise
 
 
 def _places(raw:dict):
