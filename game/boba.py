@@ -904,6 +904,32 @@ def care(c: dict) -> list[dict]:
 
 
 # ---------------------------------------------------------------- day hooks
+EASY_STOCK = 8  # portions of each pot a new neighbour finds ready (the opening stock: experiences.py, 8 a level-1 item)
+
+
+def easy(s: dict) -> bool:
+    """A new neighbour's first life days (journey.EASY_DAYS, from life_day: no saved key)."""
+    from .journey import EASY_DAYS
+    j = s.get('journey') or {}
+    return bool(j.get('story')) and int(j.get('life_day') or 1) <= EASY_DAYS
+
+
+def _ready_pots(s: dict, c: dict) -> None:
+    """Feedback 16/10 ("giai đoạn đầu khó chơi"): on day 2 the counter opened with every pot empty (tea and pearls
+    never stay overnight), so the first customer's cup stopped at the tea. A new neighbour's mornings (easy) start
+    like the first one: what is made at the counter, on the menu and unlocked, is ready, free like the opening stock.
+    Brewing by hand is taught later, when the days get busy."""
+    st = stock(c)
+    off = menu_off(c)
+    done = []
+    for item in (x['id'] for x in data.INGREDIENTS if x['id'] in MADE):
+        if unlocked(c, item) and item not in off and st[item] < EASY_STOCK:
+            add_lot(s, c, item, EASY_STOCK - st[item], 0, made=opening_abs(c))
+            done.append(item)
+    if done:
+        _e().log(s, c, 'stock', 'Cô Ba ghé sớm, ủ sẵn trà và nấu sẵn trân châu cho quầy.')
+
+
 def on_start(s: dict, c: dict) -> None:
     b = state(c)
     if b['day'] == c['day'] and b['turn0']:
@@ -912,6 +938,8 @@ def on_start(s: dict, c: dict) -> None:
     mod = MOD_INDEX[roll_mod(c['day'])]
     b.update(day=c['day'], turn0=c['turn'], mod=mod['id'], served=0, perfect=0, returned=0, walkouts=0, revenue=0, fines=0, bonus=0,
              events_today=0, last_event_beat=-99, today_kinds=[], sold_out=[], sealer_off=0, dome=False, office=None)
+    if easy(s) and c['day'] > 1:
+        _ready_pots(s, c)
     active = [t for t in c['tasks'] if t['status'] not in ('completed', 'referred', 'cancelled')]
     b['arrived'] = len(active)
     base = 2 if c['life'].get('mode') == 'calm' else 4 if c['life'].get('mode') == 'festival' else 3

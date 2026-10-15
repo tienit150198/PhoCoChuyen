@@ -213,5 +213,61 @@ class CalmFirstDays(unittest.TestCase):
         self.assertEqual(jr.roll_mode(sandbox, 'milk_tea', 9), jr.roll_mode(dict(sandbox, journey=dict(sandbox['journey'], life_day=40)), 'milk_tea', 9))
 
 
+class ReadyPots(unittest.TestCase):
+    """Feedback 16/10: on day 2 a new neighbour's counter opened with every pot empty (tea and pearls never stay
+    overnight), and the first cup stopped at the tea. Life days 2..EASY_DAYS open with the pots ready, like day 1."""
+    def close_open(self, s):
+        s, _ = apply_action(s, 'milk_tea', 'end_day', {'carry_event': True})
+        return apply_action(s, 'milk_tea', 'start_day', {})[0]
+
+    def pots(self, s):
+        c = s['careers']['milk_tea']
+        st = boba.stock(c)
+        return {k: st[k] for k in boba.MADE if boba.unlocked(c, k) and k not in boba.menu_off(c)}
+
+    def test_early_mornings_find_the_pots_ready_then_brewing_comes_back(self):
+        s = story_save()
+        for _ in range(3):
+            s, _ = serve_tea(s)
+            if not s['careers']['milk_tea']['active_task']:
+                break
+        for day in range(2, jr.EASY_DAYS + 1):
+            s = self.close_open(s)
+            self.assertEqual(s['journey']['life_day'], day)
+            pots = self.pots(s)
+            self.assertTrue(pots and all(n == boba.EASY_STOCK for n in pots.values()), pots)
+            self.assertFalse({'pearls', 'base'} & {w['id'] for w in boba.warnings(s['careers']['milk_tea'])})
+            fresh = [l for l in s['careers']['milk_tea']['life']['pantry'] if l['item'] in pots and l['qty'] > 0]
+            self.assertTrue(all(l['unit_cost'] == 0 for l in fresh))
+            # Plain lots: the keys every build already reads (2.4.23 loads this save).
+            self.assertTrue(all(set(l) <= {'id', 'item', 'qty', 'unit_cost', 'expires', 'received', 'made'} for l in fresh))
+            s, t = serve_tea(s)
+            validate_state(copy.deepcopy(s))
+        s = self.close_open(s)                      # life day EASY_DAYS + 1: brewing is the counter's own job again
+        self.assertEqual(set(self.pots(s).values()), {0})
+        self.assertIn('base', {w['id'] for w in boba.warnings(s['careers']['milk_tea'])})
+
+    def test_later_players_and_the_sandbox_brew_as_before(self):
+        s = story_save()
+        s['journey']['life_day'] = 30
+        s = self.close_open(s)
+        self.assertEqual(set(self.pots(s).values()), {0})
+        sandbox = new_state()
+        sandbox, _ = apply_action(sandbox, 'milk_tea', 'select_career', {})
+        sandbox, _ = apply_action(sandbox, 'milk_tea', 'start_day', {})
+        sandbox = self.close_open(sandbox)
+        self.assertEqual(set(self.pots(sandbox).values()), {0})
+
+
+class ShortChapterTurn(unittest.TestCase):
+    def test_the_first_close_reads_in_a_few_lines(self):
+        """The chapter 1 close and chapter 2 intro come one after the other at the first close: a few lines only."""
+        ch1, ch2 = jr.CHAPTERS[0], jr.CHAPTERS[1]
+        text = lambda ln: ln['text'] if isinstance(ln['text'], str) else ln['text']['female']
+        words = sum(len(text(ln).split()) for ln in ch1['outro'] + ch2['intro']) + len(ch2['tagline'].split())
+        self.assertLessEqual(len(ch1['outro']) + len(ch2['intro']), 4)
+        self.assertLess(words, 80)          # 2.4.24: 9 lines, 170 words
+
+
 if __name__ == '__main__':
     unittest.main()
