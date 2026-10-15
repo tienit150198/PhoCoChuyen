@@ -295,8 +295,10 @@ export function createIsometricRenderer({createCanvas=surface,ImageClass=globalT
     }
   }
   function dash(c,state,o,w,h){
-    const speed=Math.round(Math.abs(state.v||0)*3.6),fuel=clamp(Number(o.fuel)||0,0,100),width=110,x=w*.5-width*.5,y=h-48;
-    paper(c,x,y,width,34);c.fillStyle=INK;c.font='700 11px "Be Vietnam Pro",system-ui';c.textAlign='center';c.textBaseline='middle';c.fillText(`${speed} km/h  ·  ${tr('Xăng')} ${Math.round(fuel)}%`,w*.5,y+16);
+    // A phone-narrow stage (< 420 px) has the stick and both pedals side by side along the bottom with ~60 px
+    // between them: the speed line rides above the stick there instead of under both (mobile sweep, 15/10).
+    const narrow=w<420,speed=Math.round(Math.abs(state.v||0)*3.6),fuel=clamp(Number(o.fuel)||0,0,100),width=110,x=narrow?10:w*.5-width*.5,y=narrow?h-170:h-48;
+    paper(c,x,y,width,34);c.fillStyle=INK;c.font='700 11px "Be Vietnam Pro",system-ui';c.textAlign='center';c.textBaseline='middle';c.fillText(`${speed} km/h  ·  ${tr('Xăng')} ${Math.round(fuel)}%`,x+width*.5,y+16);
   }
   function drawScene(c,state,W,o,now,camera){
     const w=state.w,h=state.h,k=camera.scale,T=W.marks?.[o.target];

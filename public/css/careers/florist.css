@@ -366,6 +366,9 @@ html.reduce-motion .career-job.fl .fl-fill{transition:none}
 .career-job.fl .fl-fcard .tile.wanted::before{display:none}
 .career-job.fl .fl-fcard .asm-stepper{padding:0 6px}
 .career-job.fl .fl-fcard .fl-fill-n{margin:0 6px;min-height:40px;font-weight:800}
+/* Mobile sweep: on a phone's small cooler tile the "Đúng tông" / "Khách cần" tag sat on the flower itself; it rides
+   on the card's top edge instead. */
+@media (max-width:699px),(max-height:520px){.career-job.fl .fl-fcard>.asm-need{top:-9px;left:8px}}
 .career-job.fl .fl-prep-in{display:grid;gap:4px;margin-top:14px;padding:10px 12px;border-radius:var(--fl-r);border:1px dashed var(--fl-line);background:var(--fl-surface)}
 .career-job.fl .fl-prep-in>.section-title{margin:0}
 .career-job.fl .fl-prep-in .section-title{font-size:.85rem}

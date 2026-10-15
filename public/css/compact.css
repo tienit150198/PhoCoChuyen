@@ -316,3 +316,29 @@ html.kb-open[data-layout="phone"] .toasts{display:none}
    keyboard); the tabs and the place picker come back when the keyboard goes. */
 html.kb-open[data-layout="phone"][data-orientation="landscape"] :is(.ch-head,.ch-tabs,.wk-head,.wk-places){display:none}
 html.kb-open[data-layout="phone"][data-orientation="landscape"] .sheet{height:var(--vvh,100dvh);max-height:var(--vvh,100dvh)}
+
+/* ---------- D. Mobile sweep (15/10, owner: "nhiều cái UI bị đè nhau ở màn mobile") ------------------------------ */
+/* D1. Sheet header, narrow phones (≤ 400 px): the money chip, ⋯, ❔ and ✕ left the title ~110 px, so a work title
+   read "Hai ly c…", "Định…" and the wardrobe "T…". There it may take a second line instead (full text in title=). */
+@media (max-width:400px){
+  html[data-layout="phone"] .sheet-head h2,html[data-layout="phone"] .sheet.cozy-job .sheet-head>.grow>h2{-webkit-line-clamp:2;line-clamp:2;line-height:1.22}
+  /* The wallet + fund chip ("50.000 xu · 320 xu") did not fit its 52 %: the parts shrank into each other (the "·"
+     under "xu", "320 xu" cut at the edge; Người quen, Túi đồ). The two amounts stack instead, right-aligned. */
+  html[data-layout="phone"] :is(.sheet-head,.preparation-topline) .mn-line .mn-chip{flex-direction:column;align-items:flex-end;gap:0;border-radius:12px;line-height:1.25}
+  html[data-layout="phone"] :is(.sheet-head,.preparation-topline) .mn-line .mn-sep{display:none}
+  /* A short button in a header ("Quay lại", "🛵 Sổ shipper") broke onto two lines and doubled the header's height. */
+  html[data-layout="phone"] .sheet-head>.btn,html[data-layout="phone"] .sheet-head>.grow>.btn{white-space:nowrap}
+}
+/* D2. A next-step hint in the header ("Chọn câu trả lời đầu tiên cho khách →", customer care) sat beside the chip and
+   the three buttons, squeezed to a one-word column 320 px tall. On a phone it takes its own full-width row under the
+   title row: the header's text column dissolves (display:contents) so the header can wrap the hint alone. */
+html[data-layout="phone"] .sheet-head:has(>.grow>.gd-next:not(.gd-dup)){flex-wrap:wrap;row-gap:0}
+html[data-layout="phone"] .sheet-head:has(>.grow>.gd-next:not(.gd-dup))>.grow{display:contents}
+html[data-layout="phone"] .sheet-head:has(>.grow>.gd-next:not(.gd-dup))>.grow>h2{flex:1 1 0;min-width:0;order:0}
+html[data-layout="phone"] .sheet-head:has(>.grow>.gd-next:not(.gd-dup))>.grow>:is(.gd-next,p){order:9;flex:1 0 100%;min-width:0}
+html[data-layout="phone"] .sheet-head:has(>.grow>.gd-next:not(.gd-dup))>.grow>.gd-next{margin:2px 0 6px}
+/* D3. Town map (classic "Bản đồ phố", .tw-sheet): its header is a block of chips, not a .sheet-head, so a note
+   meant to sit "under the header" landed on the second row of chips ("📋 Danh sách", "🏝️ Ra đảo") and, in landscape,
+   on "Chỉ đường". There the note sits low over the street instead. */
+html[data-layout="phone"] dialog#sheet.sheet.tw-sheet.tw-sheet .toasts,
+html[data-clean][data-layout="phone"] dialog#sheet.sheet.tw-sheet.tw-sheet .toasts{top:auto;bottom:calc(max(10px,var(--safe-b)) + 80px)}

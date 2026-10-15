@@ -130,3 +130,12 @@ html[data-clean] .hs-next>small{display:none}
 .hs-list-fold>summary{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2);min-height:44px;cursor:pointer;font-size:var(--fs-3)}
 .hs-list-fold>summary small{color:var(--muted);font-weight:600}
 .hs-rent-row{padding:var(--sp-2)}
+/* Mobile sweep (≤ 480 px): a market card (homes, vehicles, phones) squeezed its name to one word a line beside the
+   tile and the price ("Du / thuyền / Hoàng / Hôn  54.000 xu"), and a long perk chip ran past the card's edge. The
+   price drops under the name when both do not fit; a chip wraps inside the card. */
+@media (max-width:480px){
+  .hs-home .hs-home-top{flex-wrap:wrap;row-gap:4px}
+  .hs-home .hs-home-top>.grow{flex:1 1 9em}
+  .hs-home .hs-home-top>.hs-price{margin-left:auto}
+  .hs-chips span{max-width:100%;white-space:normal}
+}

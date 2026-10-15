@@ -487,6 +487,11 @@ html.reduce-motion .tt-meter b,html.reduce-motion .tt-card{transition:none}
   .tt-split .tt-map{max-height:none}
   .tt-map.small{max-height:240px;aspect-ratio:21/8}
 }
+/* Mobile sweep: a landscape phone's sheet is wide (≥ 760 px) but its bottom bar is only the right pane (~400 px):
+   the 240 px "Chọn …" button and ↶ overflowed their slot leftwards and sat on "Chọn thêm 2 điểm". On a phone the
+   buttons share the slot the bar gives them. */
+html[data-layout="phone"] .tt-bar-btns{flex:1 1 auto;min-width:0}
+html[data-layout="phone"] .tt-bar-btns .btn.primary{min-width:0}
 
 /* ---- phase 2 compaction (phone first): one top row, folded board/seats/map, handled events as one line ---- */
 .tt-toprow{display:flex;gap:8px;align-items:center}

@@ -109,7 +109,9 @@
   .career-job.rs .rs-bowlbox .bowl-shell{transform:none;margin:0}
   .career-job.rs .rs-bowlbox .bowl-art{padding:14px 6px 8px}
 }
-@media (max-width:360px){.career-job.rs .rs-cookline{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.career-job.rs .rs-chili{grid-column:1/-1;grid-template-columns:auto 1fr;justify-items:start}.career-job.rs .rs-bottle{min-height:74px}}
+@media (max-width:360px){.career-job.rs .rs-cookline{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.career-job.rs .rs-chili{grid-column:1/-1;grid-template-columns:auto 1fr;justify-items:start}.career-job.rs .rs-bottle{min-height:74px}
+  /* Mobile sweep: in this one-column row the bottle shrank to ~60 px and its stock badge sat on the 🌶️. */
+  .career-job.rs .rs-chili>.rs-bottle{min-width:104px}}
 
 /* ---------- Side jobs ---------- */
 .career-job.rs .rs-batch h4{margin:0}
