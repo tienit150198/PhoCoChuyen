@@ -1,6 +1,11 @@
 /** Existing app routes shared by the compact HUD and searchable town guide.
  * Availability mirrors app.js navItems: no feature is invented by the map.
  */
+import {choice as rideChoice,canRide,label as rideLabel,next as nextRide} from '../v4/ride.js';
+/** 🚗 The HUD's "đi xe / đi bộ" toggle (the same choice as the old interface's walks, remembered in this browser):
+ * its words while the player owns something to ride, else ''. nextTownRide switches to the next one. */
+export const townRideLabel=(state,content)=>canRide(state,content)?rideLabel(rideChoice(state,content)):'';
+export const nextTownRide=(state,content)=>nextRide(state,content);
 const JOURNEY_FEATURES={tileMatch:'tile',garage:'garage',gadgets:'gadgets',pets:'pets',spend:'spend',spendStyle:'spend',spendQuan:'spend',spendSpa:'spend',spendRap:'spend',spendChua:'spend',lux:'lux',luxFw:'lux',luxTrip:'lux',luxSuu:'lux',luxNha:'lux',luxBay:'lux',luxTiec:'lux',luxHoc:'lux',luxMtq:'lux',abroad:'abroad'};
 const CONTENT_FEATURES={quay:'quay',auction:'auction',auctionLands:'auction',jrCerts:'certs'};
 const LIVE_FEATURES={liveWalk:'street',liveDate:'dating',liveWed:'wedding',liveKara:'kara'};

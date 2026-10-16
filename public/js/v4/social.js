@@ -42,6 +42,7 @@ const uniqChip=p=>{const x=p.shop?.uniq;if(!x||typeof x!=='object')return '';con
   if(typeof x.plate==='string')out.push(`<span class="chip uq-plate" data-no-translate style="background:linear-gradient(160deg,#fff6d5,#f3d27a);color:#3b2a06;font-family:ui-monospace,Menlo,monospace;font-weight:800">${esc(x.plate)}</span>`);
   if(typeof x.phone==='string')out.push(`<span class="chip" data-no-translate>📱 ${esc(x.phone)}</span>`);
   for(const t of (Array.isArray(x.land)?x.land:[]).slice(0,1))out.push(`<span class="chip" data-no-translate>🏞️ ${esc(t)}</span>`);
+  for(const t of (Array.isArray(x.vehicle)?x.vehicle:[]).slice(0,1))out.push(`<span class="chip" data-no-translate>🏎️ ${esc(t)}</span>`);   // a limited edition
   const art=Array.isArray(x.art)?x.art.length:0;if(art)out.push(`<span class="chip" title="Tranh độc bản">🖼️ ${art}</span>`);
   return out.join('');};
 /** 🎨 The colour, frame and title of the week (shop.style, game/spend.py; absent in older snapshots, hidden once over). */

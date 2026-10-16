@@ -1,6 +1,7 @@
 """🛵 Vợ chồng chung xe (owner, feedback #136): a married couple share their vehicles on the strolls and at the fair.
 
-* A vehicle on the wire is `r` {v, c, o?}: `o` is its owner's pid when it is not the rider's own (live/street.py
+* A vehicle on the wire is `r` {v, c, o?, p?}: `p` an auction plate on the rider's own vehicle (live/plates.py keeps
+  it only when they won it); `o` is its owner's pid when it is not the rider's own (live/street.py
   clean_ride). Only the rider or their spouse (game/marriage.py: couples.status 'married') may own what they ride;
   anything else rides on foot, never an error.
 * First come drives: a vehicle the spouse is riding now (on a stroll or at the fair, any room) cannot be ridden by
@@ -18,6 +19,7 @@ import re
 import time
 
 from .auth import pid_of
+from . import plates   # 🔨 an auction plate on the rider's own vehicle (live/plates.py)
 
 SPOUSE_TTL = 60.0
 PID = re.compile(r'[0-9a-f]{16}')
@@ -63,7 +65,8 @@ async def check(db, hub, p, r: dict | None) -> tuple:
     o = r.get('o')
     if o and o != p.pid and o != sp:
         return None, None
-    r = dict(v=r['v'], c=r['c'], o=o) if o and o != p.pid else dict(v=r['v'], c=r['c'])
+    r = dict(v=r['v'], c=r['c'], o=o) if o and o != p.pid else dict(v=r['v'], c=r['c'], **({'p': r['p']} if r.get('p') else {}))
+    r = await plates.keep(db, p, r)   # kept only when this player won that plate
     theirs = _riding(hub, sp) if sp else None
     if theirs and theirs['v'] == r['v'] and owner(theirs, sp) == owner(r, p.pid):
         return None, sp

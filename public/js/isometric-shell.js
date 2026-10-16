@@ -4,7 +4,7 @@ import {uiIcon as icon} from './isometric/ui-icons.js';
 import {hudMoney,shortNum} from './v4/wealth.js';
 import {myPortrait} from './v4/look.js';
 import {openGuide,goTo,firstJob} from './iso-guide.js';
-import {townUtilityGroups,ev2010Open} from './isometric/town-utilities.js';
+import {townUtilityGroups,ev2010Open,townRideLabel,nextTownRide} from './isometric/town-utilities.js';
 
 const ENDED=new Set(['completed','referred','cancelled']);
 /** v4/onboard.js firstDay (story, first life day), inline: the shell's tests run this file without its imports. */
@@ -43,7 +43,8 @@ export function isometricHUDModel(state={},content={},mode='town',social={},conn
     missionAction:!current?'isoCareers':needsJob?'isoApply':!room.open?'isoPrepare':task?'isoMission':done?'isoEnd':'isoQueue',
     chatUnread:Math.max(0,Number(social.unread?.())||0),chatOnline,chatOff,chatStatus,
     fairOpen:Boolean(state.fair?.show),ev2010:ev2010Open(),menuOpen:false,cameraOpen:false,
-    utilityGroups:townUtilityGroups(state,content,social)};
+    utilityGroups:townUtilityGroups(state,content,social),
+    ride:sceneMode==='town'?townRideLabel(state,content):''};
 }
 
 const control=(label,action,ico,cls='',extra='')=>`<button type="button" class="${cls}" data-action="${action}"${extra}>${icon(ico,22)}<span>${label}</span></button>`;
@@ -78,6 +79,7 @@ export function isometricHUDHTML(model,state={}){
         ${control('Người quen','people','people','iso-tool',' aria-label="Người quen trong phố"')}
         ${m.current?control('Hôm nay','status','clock','iso-tool',' aria-label="Hôm nay: giờ, tình trạng và chuyện cần để ý"'):''}
         ${control('Túi đồ','isoBag','bag','iso-tool')}
+        ${m.ride?control(esc(m.ride),'isoRide','bike','iso-tool',` aria-label="${esc(m.ride)}: chạm để đổi xe hoặc đi bộ"`):''}
         ${m.ev2010?control('Thiệp 20/10','ev2010','heart','iso-tool iso-2010',' aria-label="Thiệp 20/10: viết thiệp tặng người thương"'):''}
         ${m.fairOpen?control('Chợ đen','fair','basket','iso-tool iso-fair-button',' aria-label="Chợ đen đang mở"'):''}
         ${control('Cài đặt','settings','settings','iso-tool',' aria-label="Cài đặt"')}
@@ -294,6 +296,7 @@ export async function isometricAction(action,data={},el=null,env){
     case'isoCareers':if(!model.current&&model.fresh){await firstJob(env);break;}   // day 1: the first workplace, not the whole journey page
       env.ui&&(env.ui.isoTab='isoCareers');env.openSheet('home',{homeMode:'list',jrView:'home'});break;
     case'isoAvatar':env.ui&&(env.ui.isoTab='isoAvatar');env.openSheet('home',{jrView:'wardrobe'});break;
+    case'isoRide':nextTownRide(env.api?.state,env.api?.content);if(env.api?.state&&env.api?.content)env.world?.update?.(env.api.state,env.api.content);updateIsometricShell(env);break;
     case'isoBag':env.ui&&(env.ui.isoTab='isoBag');if(model.current)await act('warehouse');else env.openSheet('home',{homeMode:'list',jrView:'home'});break;
     case'isoChat':await act('liveChat');break;
     case'isoGuide':await openGuide(env);break;   // 🧭 iso-guide.js

@@ -2,7 +2,10 @@
  * Every rule and number lives in game/garage.py; this file renders api.state.journey.garage with the static list
  * (content.journey.garage) and sends `jr_garage_*` commands. Its own dialog (like Nhà của bạn), opened with
  * data-action="garage" from the menu, the profile's ride chip and the house card. The art is the emoji on a tile
- * in the vehicle's paint, with its plate under it. Styles: /css/bank.css + /css/house.css + /css/garage.css. */
+ * in the vehicle's paint, with its plate under it. Styles: /css/bank.css + /css/house.css + /css/garage.css.
+ * 🔨 16/10: the auction's plates (gold) are attached to a vehicle here (jr_garage_plate); the vehicle ridden with one
+ * shows its "+x % lợi nhuận mỗi ca" (game/garage.py bonus_now); the limited editions are listed with their number,
+ * never in the shop and never sold back. */
 import {icon,escapeHTML as esc} from '../icons.js';
 
 const S={dlg:null,env:null,tab:'',view:'list',pick:null,busy:false,flash:null,listening:false};
@@ -33,10 +36,14 @@ const ensureCss=()=>cssReady??=Promise.all([link('/css/bank.css','bk-css'),link(
 /** The vehicle's picture: its emoji on a tile in its paint, the plate under it (the owner's words, escaped). */
 export function tileHTML(v,color,plate='',size='',uq=false){
   const p=paint(color||v?.paint);
-  return `<span class="gr-tile ${size}" style="--gr-paint:${esc(p.hex)}" aria-hidden="true"><span class="gr-emoji">${v?.emoji||'🚗'}</span>${plate?`<span class="gr-plate${uq?' uq':''}">${esc(plate)}</span>`:''}</span>`;
+  return `<span class="gr-tile ${size}${v?.limited?' limited':''}" style="--gr-paint:${esc(p.hex)}" aria-hidden="true"><span class="gr-emoji">${v?.emoji||'🚗'}</span>${plate?`<span class="gr-plate${uq?' uq':''}">${esc(plate)}</span>`:''}</span>`;
 }
-/** 🔨 A vanity plate won at the auction house (game/auction.py): gold, on the vehicle in use. */
-const uqPlate=()=>{const o=J().uniq?.own||{};const x=Object.values(o).filter(v=>v?.k==='plate').sort((a,b)=>(b.p||0)-(a.p||0))[0];return x?.t||'';};
+/** 🔨 A vanity plate won at the auction house (game/auction.py): gold. An older server (no `plates`): its dearest
+ * plate showed on the vehicle in use; a newer one says which vehicle carries which plate (car.uq). */
+const uqPlate=()=>{if(V()&&'plates' in V())return '';const o=J().uniq?.own||{};const x=Object.values(o).filter(v=>v?.k==='plate').sort((a,b)=>(b.p||0)-(a.p||0))[0];return x?.t||'';};
+const KIND_WORD={plate:'Biển số',reg:'Số đăng ký',hull:'Biển tên'};
+/** The plates won that fit this vehicle (pedal bikes carry none). */
+const fitting=(v,it)=>(v?.plates||[]).filter(p=>(p.fit||[]).includes(it?.group)&&!['xe_dap','xe_dap_dien'].includes(it?.base||it?.id));
 
 function dialog(){
   if(S.dlg)return S.dlg;
@@ -105,6 +112,8 @@ async function onClick(op,data){
     case'sell':{const c=(v.cars||[]).find(x=>x.id===data.id),it=item(data.id);if(!c||!it)return;
       if(await ask(`Bán ${lname(it.name)}?`,`Mua ${xu(c.paid)}, bán lại được ${xu(c.sell)} (${CAT().sell_pct}% giá đã trả). Tiền vào ví. Bán rồi là không lấy lại được.`,`Bán · nhận ${xu(c.sell)}`))send('jr_garage_sell',{id:c.id,confirm:true});return;}
     case'house':S.dlg.close();(await import('./house.js')).openHouse(S.env);return;
+    case'plates':S.view='plates';S.pick=data.id?{id:data.id}:null;S.flash=null;render();S.dlg.querySelector('.gr-body')?.scrollTo?.(0,0);return;
+    case'attach':{const r=await send('jr_garage_plate',{item:data.item,id:data.id||null});if(r&&S.view==='plates'&&S.pick?.id){S.view='list';S.pick=null;render();}return;}
   }
 }
 
@@ -129,7 +138,7 @@ function page(){
   const note=(t,p)=>head()+`<div class="sheet-body bk hs-body gr-body"><section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🚗</div><h3>${t}</h3><p>${p}</p></section></div>`;
   if(!v)return note('Nhà xe đang mở cửa','Cửa hàng đang sắp xe ra. Mở lại sau ít phút nhé.');   // an older server: no garage yet
   if(!v.story)return note('Mua xe chỉ có trong chế độ hành trình','Vào hành trình để sắm xe cho nhân vật của bạn.');
-  const inner=S.view==='buy'?buyView(v):S.view==='edit'?editView(v):(tabs(v)+(S.tab==='mine'?mineView(v):groupView(v,S.tab)));
+  const inner=S.view==='buy'?buyView(v):S.view==='edit'?editView(v):S.view==='plates'?platesView(v):(tabs(v)+(S.tab==='mine'?mineView(v):groupView(v,S.tab)));
   return head()+`<div class="sheet-body bk hs-body gr-body">${flash()}${inner}</div>`;
 }
 function tabs(v){
@@ -152,24 +161,53 @@ function mineView(v){
   }
   const cards=v.cars.map(c=>{
     const it=item(c.id);if(!it)return '';
-    const on=v.ride===c.id,g=group(it.group);
-    return `<li class="hs-home gr-car${on?' mine':''}" style="--hs-tone:${esc(g.color||'')}"><div class="hs-home-top">${on&&uqPlate()?tileHTML(it,c.color,uqPlate(),'',true):tileHTML(it,c.color,c.plate)}<div class="grow"><b>${esc(it.name)}</b><small>${on?'🛞 Đang đi':`Mua ngày ${fmt(c.day)}`} · ${esc(paint(c.color).name)}</small></div></div>
-      ${perkChips(it,c.upkeep)}
+    const on=v.ride===c.id,g=group(it.group),uq=c.uq?.t||(on?uqPlate():''),fits=fitting(v,it);
+    const perk=c.uq?.pct?`<p class="gr-perk${on?' on':''}">💰 Biển đẹp: lợi nhuận mỗi ca +${fmt(c.uq.pct)}%${on?'':' khi đi chiếc này'}</p>`:'';
+    const plateBtn=fits.length?btn(c.uq?'🔨 Đổi biển':'🔨 Gắn biển','plates',{id:c.id},'ghost'):'';
+    return `<li class="hs-home gr-car${on?' mine':''}${c.limited?' limited':''}" style="--hs-tone:${esc(g.color||'')}"><div class="hs-home-top">${uq?tileHTML(it,c.color,uq,'',true):tileHTML(it,c.color,c.plate)}<div class="grow"><b>${esc(it.name)}</b><small>${on?'🛞 Đang đi':c.limited?`🏎️ Bản giới hạn ${esc(it.serial||'')}`:`Mua ngày ${fmt(c.day)}`} · ${esc(paint(c.color).name)}</small></div></div>
+      ${perk}${perkChips(it,c.upkeep)}
       ${Number.isInteger(c.broken)?`<div class="bk-actions">${btn(`🔧 Đang hỏng · Sửa ${xu(c.broken)}`,'fix',{id:c.id},'primary')}</div>`:''}
-      <div class="bk-actions">${btn(`${esc(it.trip)}${it.fuel?` · ${xu(it.fuel)}`:''}`,'trip',{id:c.id},'primary',c.trip_why||'')}${on?'':btn('Đi chiếc này','ride',{id:c.id},'ghost')}${btn('🎨 Sơn & biển tên','edit',{id:c.id},'ghost')}</div>
+      <div class="bk-actions">${btn(`${esc(it.trip)}${it.fuel?` · ${xu(it.fuel)}`:''}`,'trip',{id:c.id},'primary',c.trip_why||'')}${on?'':btn('Đi chiếc này','ride',{id:c.id},'ghost')}${plateBtn}${btn(c.uq?'🎨 Sơn xe':'🎨 Sơn & biển tên','edit',{id:c.id},'ghost')}</div>
       ${c.trip_why&&!v.tripped?`<p class="bk-hint">${esc(c.trip_why)}</p>`:''}
-      <p class="gr-sell"><small>Bán lại được ${xu(c.sell)}</small>${btn('Bán','sell',{id:c.id},'ghost small danger')}</p></li>`;
+      ${c.limited?'<p class="gr-sell"><small>Bản giới hạn của Nhà đấu giá · không bán lại</small></p>':`<p class="gr-sell"><small>Bán lại được ${xu(c.sell)}</small>${btn('Bán','sell',{id:c.id},'ghost small danger')}</p>`}</li>`;
   }).join('');
   const off=v.ride?`<div class="bk-actions">${btn('Không khoe xe trên hồ sơ','ride',{},'ghost small')}</div>`:'';
   const U=v.upkeep,day=J().life_day||0;
   const bill=U?.month?`<p class="bk-hint gr-bill">🧾 Phí giữ xe & bảo dưỡng khoảng ${xu(U.month)}/tháng, trừ cùng hóa đơn Ngày ${fmt(U.next)}${U.next===day?' (hôm nay)':` (còn ${fmt(U.next-day)} ngày)`}: tiền mặt trước, thiếu thì lấy từ tài khoản, không bao giờ làm ví âm.</p>`:'';
-  return `${today}<section class="bk-card"><h3>Xe của bạn</h3><p class="bk-hint">Chiếc “đang đi” hiện trên hồ sơ, trước nhà và trong Phố nghề.</p>${bill}<ul class="hs-market">${cards}</ul>${off}</section>`;
+  return `${today}${bonusCard(v)}<section class="bk-card"><h3>Xe của bạn</h3><p class="bk-hint">Chiếc “đang đi” hiện trên hồ sơ, trước nhà và trong Phố nghề.</p>${bill}<ul class="hs-market">${cards}</ul>${off}</section>${platesCard(v)}`;
+}
+
+/* 🔨 Biển đẹp: the bonus of the vehicle ridden now, the plates won and where each one is. */
+function bonusCard(v){
+  const b=v.bonus,it=b&&item(b.id);if(!b||!it)return '';
+  const cap=CAT().plate_pct?.shift_cap;
+  return `<p class="bk-alert good gr-bonus">💰 Đang đi ${esc(it.name)} gắn biển <b class="gr-gold" data-no-translate>${esc(b.t)}</b>: lợi nhuận mỗi ca +${fmt(b.pct)}%${cap?` (tối đa ${xu(cap)} một ca)`:''}.</p>`;
+}
+function platesCard(v){
+  const list=v.plates||[];if(!list.length)return '';
+  const rows=list.map(p=>{const c=p.on&&(v.cars||[]).find(x=>x.id===p.on),it=c&&item(c.id);
+    return `<li class="gr-plate-row"><span class="gr-plate uq" data-no-translate>${esc(p.t)}</span><small>${esc(KIND_WORD[p.k]||'Biển')} · ${it?`trên ${esc(it.name)}`:'đang cất'}</small>${it?btn('Tháo','attach',{item:p.id},'ghost small'):''}</li>`;}).join('');
+  return `<section class="bk-card gr-plates"><h3>🔨 Biển đẹp của bạn</h3><p class="bk-hint">${platesHint()}</p><ul class="gr-plate-list">${rows}</ul></section>`;
+}
+function platesHint(){
+  const t=CAT().plate_pct;if(!t?.table)return 'Gắn biển lên xe đang đi để lời thêm mỗi ca.';
+  const span=a=>`${Math.min(...a)}–${Math.max(...a)}%`;
+  return `Gắn lên chiếc đang đi: lợi nhuận mỗi ca tăng. Xe máy ${span(t.table.bike)}, ô tô ${span(t.table.car)}, du thuyền ${span(t.table.boat)}, máy bay ${span(t.table.plane)}; bản giới hạn +${fmt(t.limited)}%, tối đa ${fmt(t.cap)}%. Chỉ tính một chiếc, khóa lúc mở ca.`;
+}
+/* Attach a plate to one vehicle: each plate that fits it, where it is now. */
+function platesView(v){
+  const c=(v.cars||[]).find(x=>x.id===S.pick?.id),it=c&&item(c.id);if(!it){S.view='list';return mineView(v);}
+  const rows=fitting(v,it).map(p=>{const here=p.on===c.id,other=p.on&&!here&&item(p.on);
+    return `<li class="gr-plate-row"><span class="gr-plate uq" data-no-translate>${esc(p.t)}</span><small>${here?'Đang gắn trên chiếc này':other?`Đang trên ${esc(other.name)}`:'Đang cất'}</small>${here?btn('Tháo','attach',{item:p.id},'ghost small'):btn('Gắn lên','attach',{item:p.id,id:c.id},'primary small')}</li>`;}).join('');
+  return `<section class="bk-card"><h3>🔨 Gắn biển · ${esc(it.name)}</h3><div class="gr-preview">${tileHTML(it,c.color,c.uq?.t||c.plate,'big',Boolean(c.uq))}</div>
+    <ul class="gr-plate-list">${rows||'<li class="bk-hint">Chưa có biển hợp với chiếc này.</li>'}</ul><p class="bk-hint">${platesHint()}</p>
+    <div class="bk-actions">${btn('Quay lại','back',{},'ghost')}</div></section>`;
 }
 
 /* One tab of the shop: the listings of a group, cheapest first, "thiếu N xu" when the money is not there yet. */
 function groupView(v,gid){
   const g=group(gid),why=new Map(v.market.map(m=>[m.id,m.why])),mine=new Set(v.cars.map(c=>c.id));
-  const list=CAT().vehicles.filter(x=>x.group===gid).sort((a,b)=>a.price-b.price);
+  const list=CAT().vehicles.filter(x=>x.group===gid&&!x.limited).sort((a,b)=>a.price-b.price);   // 🏎️ limited ones: the auction only
   const rows=list.map(it=>{
     const owned=mine.has(it.id),w=why.get(it.id);
     const status=owned?'<span class="hs-ok">✓ Đã có trong nhà xe</span>':w?`<span class="hs-miss">${esc(w)}</span>`:'<span class="hs-ok">✓ Đủ tiền mua</span>';
@@ -181,7 +219,8 @@ function groupView(v,gid){
 }
 
 function swatches(){
-  return `<div class="gr-swatches" role="radiogroup" aria-label="Màu sơn">${CAT().paints.map(p=>`<button type="button" class="gr-swatch${S.pick?.color===p.id?' on':''}" role="radio" aria-checked="${S.pick?.color===p.id}" style="--gr-paint:${esc(p.hex)}" data-gr="paint" data-color="${esc(p.id)}" title="${esc(p.name)}"${S.busy?' disabled':''}><span class="sr-only">${esc(p.name)}</span></button>`).join('')}</div><p class="bk-hint">Màu: <b>${esc(paint(S.pick?.color).name)}</b>. Đổi màu sau này không tốn xu.</p>`;
+  const lim=Boolean(item(S.pick?.id)?.limited);   // the special paints are the limited editions' own
+  return `<div class="gr-swatches" role="radiogroup" aria-label="Màu sơn">${CAT().paints.filter(p=>!p.limited||lim).map(p=>`<button type="button" class="gr-swatch${S.pick?.color===p.id?' on':''}" role="radio" aria-checked="${S.pick?.color===p.id}" style="--gr-paint:${esc(p.hex)}" data-gr="paint" data-color="${esc(p.id)}" title="${esc(p.name)}"${S.busy?' disabled':''}><span class="sr-only">${esc(p.name)}</span></button>`).join('')}</div><p class="bk-hint">Màu: <b>${esc(paint(S.pick?.color).name)}</b>. Đổi màu sau này không tốn xu.</p>`;
 }
 function plateField(){
   const max=CAT().plate_max||10;
@@ -201,8 +240,9 @@ function buyView(v){
 }
 function editView(v){
   const c=v.cars.find(x=>x.id===S.pick?.id),it=c&&item(c.id);if(!it){S.view='list';return mineView(v);}
+  const uq=c.uq?.t;   // 🔨 a gold plate on it: the free "biển tên" waits under it
   return `<section class="bk-card"><h3>🎨 Sơn &amp; biển tên · ${esc(it.name)}</h3>
-    <div class="gr-preview">${tileHTML(it,S.pick.color,(S.pick.plate||'').trim(),'big')}</div>
-    ${swatches()}${plateField()}
+    <div class="gr-preview">${uq?tileHTML(it,S.pick.color,uq,'big',true):tileHTML(it,S.pick.color,(S.pick.plate||'').trim(),'big')}</div>
+    ${swatches()}${uq?'<p class="bk-hint">Đang gắn biển đấu giá. Tháo biển ra thì biển tên tự đặt hiện lại.</p>':''}${plateField()}
     <div class="bk-actions">${btn('Lưu lại','save',{},'primary')}${btn('Quay lại','back',{},'ghost')}</div></section>`;
 }

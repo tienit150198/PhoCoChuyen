@@ -3,7 +3,11 @@ the median earns ~262 xu a day). Story mode.
 
 Only the street sells (system lots, never a player's: nothing to launder). Each lot is one item that exactly one player
 will ever own (game/auction_content.py): a vanity plate, a phone number, a painting, the right to name a landmark, a
-title. Cosmetic and status only: nothing here pays xu, speeds up work or helps an exam.
+title, and since 16/10 a limited-edition vehicle, a plane registration and a yacht's name. Status, with one exception
+decided by the owner on 16/10 (it replaces the earlier "cosmetic only, never pays xu" rule for plates): a plate attached
+to the vehicle the player rides adds 3-10 % to each shift's career income (💰 Biển đẹp: game/auction_content.py
+PLATE_PCT, paid by game/journey.py _end_of_day, game/garage.py bonus_now). Nothing else here pays xu, speeds up work or
+helps an exam.
 
 Schedule (plan(), ensure_plan()): 1–3 lots a Vietnam day, deterministic from the date and the pool of unsold items,
 opening 20:30 / 21:00 / 21:30 and running 24 hours. An admin may add a lot (admin_add, POST /api/admin/auction).
@@ -34,6 +38,14 @@ Save `journey.uniq` (absent until the first bid; journey.validate allows extra k
     hold   {lot id: {a: xu held, b: the part taken from the bank account}}   escrow, shown as "đang giữ cho đấu giá"
     own    {item id: {k: kind, t: text, d: life day won, p: price paid, lot: lot id}}
     stats  {bids, won, xu (burned)}
+Save `journey.uniq_x` (16/10; absent until needed): every build that knows `uniq` validates its `own` strictly (the five
+first kinds, exact keys), so what came later lives beside it, kept untouched by older builds:
+    v      X_VERSION
+    own    {item id: {k: 'vehicle' | 'reg' | 'hull', t, d, p, lot}}   the newer kinds won (same record as uniq.own)
+    on     {plate item id: vehicle id}   the auction plates attached in the garage (game/garage.py jr_garage_plate)
+Absent, the dearest road plate rides on the road vehicle in use (the rule until 16/10, plates_on); the first write seeds
+`on` with it, so nothing moves under the player. An older build that wins a newer kind leaves the 'win' row pending
+(live_effects): the item arrives once a build that knows it loads the save.
 Tables: auction_lots, auction_bids (game/pg_schema.py, SCHEMA_VERSION 29).
 """
 from __future__ import annotations
@@ -58,6 +70,12 @@ FX = 'auction'                     # live_effects kind
 LOT_RE = re.compile(r'[0-9a-z][0-9a-z\-]{1,23}')
 ITEM_RE = re.compile(r'[a-z0-9_]{1,32}')
 KINDS = tuple(k for k, _, _ in C.KINDS)
+OLD_KINDS = C.OLD_KINDS            # what journey.uniq.own may hold (older builds validate it strictly)
+X_KEY = 'uniq_x'
+X_VERSION = 1
+X_KEYS = frozenset({'v', 'own', 'on'})
+X_ON_MAX = 64
+VID_RE = re.compile(r'[a-z0-9_]{1,24}')   # game/garage.py ID_RE
 HOLD_MAX = 24
 OWN_MAX = 200
 TEXT_MAX = 48
@@ -143,8 +161,8 @@ def _hold_ok(h) -> bool:
     return isinstance(h, dict) and set(h) == {'a', 'b'} and _int(h['a'], 1, MAX_BID) and _int(h['b'], 0, h['a'])
 
 
-def _own_ok(k, x) -> bool:
-    return (_item(k) and isinstance(x, dict) and set(x) == OWN_KEYS and x['k'] in KINDS and isinstance(x['t'], str)
+def _own_ok(k, x, kinds=OLD_KINDS) -> bool:
+    return (_item(k) and isinstance(x, dict) and set(x) == OWN_KEYS and x['k'] in kinds and isinstance(x['t'], str)
             and 0 < len(x['t']) <= TEXT_MAX and _int(x['d'], 1, 10**6) and _int(x['p'], 0, MAX_BID) and _lot(x['lot']))
 
 
@@ -165,14 +183,113 @@ def validate(s: dict) -> None:
     need(isinstance(st, dict) and set(st) <= set(STATS) and all(_int(v) for v in st.values()))
 
 
+def x_validate(s: dict) -> None:
+    """``s['journey']['uniq_x']`` (optional). Shape only: an older build may sell a vehicle a plate is on (it does not
+    know this block), so `on` may name a vehicle no longer owned; the views skip it, upgrade() drops it."""
+    e = _core()
+    j = s.get('journey')
+    x = j.get(X_KEY) if isinstance(j, dict) else None
+    if x is None:
+        return
+    need = lambda ok: e.need(ok, 'Dữ liệu đấu giá trong bản lưu không hợp lệ.', 'invalid_save')
+    need(isinstance(x, dict) and set(x) == X_KEYS and x['v'] == X_VERSION)
+    need(isinstance(x['own'], dict) and len(x['own']) <= OWN_MAX and all(_own_ok(k, o, C.NEW_KINDS) for k, o in x['own'].items()))
+    need(isinstance(x['on'], dict) and len(x['on']) <= X_ON_MAX and all(_item(k) and isinstance(v, str) and VID_RE.fullmatch(v)
+                                                                         for k, v in x['on'].items())
+         and len(set(x['on'].values())) == len(x['on']))
+
+
+def x_initial() -> dict:
+    return dict(v=X_VERSION, own={}, on={})
+
+
+def x_get(s: dict) -> dict | None:
+    j = s.get('journey')
+    x = j.get(X_KEY) if isinstance(j, dict) else None
+    return x if isinstance(x, dict) else None
+
+
+def x_on(s: dict) -> dict | None:
+    x = x_get(s)
+    return x['on'] if x else None
+
+
+def legacy_on(s: dict) -> dict:
+    """Before uniq_x: the dearest plate on the road vehicle ridden (how a plate showed until 16/10)."""
+    b = get(s)
+    j = s.get('journey') or {}
+    g = j.get('garage') if isinstance(j.get('garage'), dict) else None
+    ride = g.get('ride') if g else None
+    if not b or not isinstance(ride, str) or not isinstance(g.get('cars'), dict) or ride not in g['cars']:
+        return {}
+    from .garage import VEHICLES
+    if VEHICLES.get(ride, {}).get('group') not in C.PLATE_FIT['plate'] or ride in C.NO_PLATE:
+        return {}
+    best = max(((k, x) for k, x in b['own'].items() if x['k'] == 'plate'), key=lambda kx: (kx[1]['p'], kx[0]), default=None)
+    return {best[0]: ride} if best else {}
+
+
+def plates_on(s: dict) -> dict:
+    """{plate item: vehicle id} as written (game/garage.py attached() checks it against the garage)."""
+    on = x_on(s)
+    return dict(on) if on is not None else legacy_on(s)
+
+
+def x_ensure(s: dict) -> dict:
+    """The block, created on its first write with the legacy plate where it showed."""
+    j = s['journey']
+    if not isinstance(j.get(X_KEY), dict):
+        j[X_KEY] = dict(x_initial(), on=legacy_on(s))
+    return j[X_KEY]
+
+
+def owned(s: dict) -> dict:
+    """Every item won, both blocks: {item: {k, t, d, p, lot}}."""
+    b, x = get(s), x_get(s)
+    out = dict(b['own']) if b and isinstance(b.get('own'), dict) else {}
+    if x and isinstance(x.get('own'), dict):
+        out.update(x['own'])
+    return out
+
+
+def x_upgrade(j: dict) -> None:
+    """Keep what still makes sense in uniq_x; the attachments of a vehicle no longer owned (sold by an older build)
+    go back to their box. Absent stays absent."""
+    if not isinstance(j, dict) or X_KEY not in j:
+        return
+    x = j[X_KEY]
+    if not isinstance(x, dict):
+        j[X_KEY] = x_initial()
+        return
+    out = x_initial()
+    for k, o in list((x.get('own') if isinstance(x.get('own'), dict) else {}).items())[:OWN_MAX]:
+        if isinstance(o, dict) and set(o) >= OWN_KEYS:
+            o = {f: o[f] for f in OWN_KEYS}
+            if _own_ok(k, o, C.NEW_KINDS):
+                out['own'][k] = o
+    g = j.get('garage') if isinstance(j.get('garage'), dict) else {}
+    cars = g.get('cars') if isinstance(g.get('cars'), dict) else {}
+    b = j.get(KEY) if isinstance(j.get(KEY), dict) else {}
+    mine = set(out['own']) | set(b.get('own') or {})
+    used = set()
+    for k, v in list((x.get('on') if isinstance(x.get('on'), dict) else {}).items())[:X_ON_MAX]:
+        if _item(k) and k in mine and isinstance(v, str) and VID_RE.fullmatch(v) and v in cars and v not in used:
+            out['on'][k] = v
+            used.add(v)
+    if out != x:
+        j[X_KEY] = out
+
+
 def upgrade(j: dict) -> None:
     """A block a newer build wrote with extra fields: keep what still makes sense. Absent stays absent. Never drops a
     hold (it is money): a hold of an odd shape keeps its total."""
     if not isinstance(j, dict) or KEY not in j:
+        x_upgrade(j)
         return
     b = j[KEY]
     if not isinstance(b, dict):
         j[KEY] = initial()
+        x_upgrade(j)
         return
     out = initial()
     for k, h in list((b.get('hold') if isinstance(b.get('hold'), dict) else {}).items())[:HOLD_MAX]:
@@ -194,6 +311,7 @@ def upgrade(j: dict) -> None:
     for iid, x in out['own'].items():
         if x['k'] == 'art' and C.ITEM.get(iid, {}).get('kind') == 'art' and f'uq_{iid}' not in have:
             _grant({'journey': j}, iid, 'art')
+    x_upgrade(j)
 
 
 # ---------------------------------------------------------------- money
@@ -297,8 +415,14 @@ def apply_fx(s: dict, p: dict, amount: int) -> str:
     need(_item(item) and kind in KINDS and isinstance(text, str) and 0 < len(text) <= TEXT_MAX, 'Dữ liệu đấu giá không hợp lệ.')
     if h and h['a'] > amount:   # held more than the price (never written today): the difference goes back
         _give_back(s, h['a'] - amount, max(0, h['b'] - amount), f'🔨 Trả lại phần dư · {name}')
-    if item not in b['own'] and len(b['own']) < OWN_MAX:
-        b['own'][item] = dict(k=kind, t=text, d=j['life_day'], p=amount, lot=lot)
+    rec = dict(k=kind, t=text, d=j['life_day'], p=amount, lot=lot)
+    if kind in OLD_KINDS:
+        if item not in b['own'] and len(b['own']) < OWN_MAX:
+            b['own'][item] = rec
+    else:   # 🏎️ ✈️ ⚓ the newer kinds: beside the block an older build validates strictly
+        x = x_ensure(s)
+        if item not in x['own'] and len(x['own']) < OWN_MAX:
+            x['own'][item] = rec
     b['stats']['won'] = b['stats'].get('won', 0) + 1
     b['stats']['xu'] = b['stats'].get('xu', 0) + amount
     extra = _grant(s, item, kind)
@@ -324,6 +448,11 @@ def _grant(s: dict, item: str, kind: str) -> str:
             if not any(x.get('k') == k for x in r['items']):
                 r['items'].append(dict(id=rn.new_uid(r), k=k, r=None, x=None))
             return ' Tranh nằm trong túi đồ trang trí, treo lên tường nhé.'
+    if kind == 'vehicle':   # 🏎️ a limited edition parks in the garage (game/garage.py)
+        from . import garage as gr
+        return gr.grant_limited(s, item)
+    if kind in C.PLATE_KINDS:
+        return ' Gắn biển ở Nhà xe nhé.'
     return ''
 
 
@@ -334,12 +463,11 @@ def collection_score(s: dict) -> tuple[int, int, int]:
     Unknown operator-created numbers remain owned but unscored: their tier isn't in a save.
     Future catalogue ids can be scored on upgrade without rewriting ownership records.
     """
-    b = get(s)
-    own = b.get('own') if b else None
-    if not isinstance(own, dict):
+    own = owned(s)
+    if not own:
         return 0, 0, 0
     items = [C.ITEM[k] for k, x in own.items()
-             if k in C.ITEM and _own_ok(k, x) and x['k'] == C.ITEM[k]['kind']]
+             if k in C.ITEM and _own_ok(k, x, KINDS) and x['k'] == C.ITEM[k]['kind']]
     return (sum(it['collector_points'] for it in items), len(items), sum(it['tier'] == 3 for it in items))
 
 
@@ -349,21 +477,25 @@ def public(s: dict) -> dict | None:
     if not b:
         return None
     return dict(hold={k: h['a'] for k, h in b['hold'].items()}, held=sum(h['a'] for h in b['hold'].values()),
-                own={k: dict(k=x['k'], t=x['t'], p=x['p']) for k, x in b['own'].items()}, stats=dict(b['stats']))
+                own={k: dict(k=x['k'], t=x['t'], p=x['p']) for k, x in owned(s).items()}, stats=dict(b['stats']))
 
 
 def show_view(s: dict) -> dict | None:
     """The player's card (game/social.py snapshot): the plate, the phone number, the titles, paintings and lands won."""
-    b = get(s)
-    if not b or not b['own']:
+    own = owned(s)
+    if not own:
         return None
     out = {}
-    for k, x in sorted(b['own'].items(), key=lambda kv: -kv[1]['p']):
+    from .garage import bonus_now
+    on_ride = bonus_now(s)
+    if on_ride and on_ride['k'] == 'plate':   # 🔨 the plate on the vehicle ridden first
+        out['plate'] = on_ride['t']
+    for k, x in sorted(own.items(), key=lambda kv: -kv[1]['p']):
         if x['k'] in ('plate', 'phone') and x['k'] not in out:
             out[x['k']] = x['t']
-        elif x['k'] in ('art', 'land', 'title'):
+        elif x['k'] in ('art', 'land', 'title', 'vehicle'):
             out.setdefault(x['k'], []).append(x['t'])
-    for k in ('art', 'land', 'title'):
+    for k in ('art', 'land', 'title', 'vehicle'):
         if k in out:
             out[k] = out[k][:3]
     return out
@@ -390,7 +522,7 @@ def fold_plate(text: str) -> str:
     return re.sub(r'[^A-Z0-9]', '', t)
 
 
-_PLATES = frozenset(fold_plate(it['name']) for it in C.ITEMS if it['kind'] == 'plate')
+_PLATES = frozenset(fold_plate(it['name']) for it in C.ITEMS if it['kind'] in C.PLATE_KINDS)
 
 
 def catalogue() -> dict:
@@ -435,7 +567,8 @@ def _taken(db) -> set:
 
 def _insert_lot(db, lid: str, it: dict, tier_n: int, t0: float, t1: float, src: str) -> bool:
     T = tier(tier_n)
-    extra = {k: it[k] for k in ('artist', 'year', 'colors', 'motif', 'base', 'where', 'medium', 'story') if k in it}
+    extra = {k: it[k] for k in ('artist', 'year', 'colors', 'motif', 'base', 'where', 'medium', 'story', 'paint', 'serial')
+             if k in it}
     return db.execute(
         'INSERT INTO auction_lots(id, item, kind, tier, name, emoji, data, start, step, starts_at, ends_at, planned_end, '
         "status, src, created) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,'open',?,?) ON CONFLICT DO NOTHING",
@@ -745,7 +878,7 @@ def view(store, token: str | None) -> dict:
 # ---------------------------------------------------------------- admin (POST /api/admin/auction)
 def admin_add(store, by: str, data: dict) -> dict:
     """Add a lot: {item} from the catalogue (free: not open, not sold), or {kind: plate|phone, text} made up by the
-    operator; tier 1–3, hours 1–72, starts in `delay` minutes (0–10080)."""
+    operator (or reg|hull: a plane registration, a yacht's name); tier 1–3, hours 1–72, starts in `delay` minutes (0–10080)."""
     from .social import SocialError
     def need(ok, msg):
         if not ok:
@@ -760,7 +893,7 @@ def admin_add(store, by: str, data: dict) -> dict:
         it = C.ITEM[iid]
     else:
         kind, text = data.get('kind'), data.get('text')
-        need(kind in ('plate', 'phone') and isinstance(text, str) and 3 <= len(text.strip()) <= 16, 'Biển số/số điện thoại 3–16 ký tự.')
+        need(kind in ('plate', 'phone', 'reg', 'hull') and isinstance(text, str) and 3 <= len(text.strip()) <= 16, 'Biển số/số điện thoại 3–16 ký tự.')
         text = text.strip()
         it = dict(id='x_' + hashlib.sha256(f'{kind}|{text}'.encode()).hexdigest()[:12], kind=kind, name=text, emoji=C.KIND_EMOJI[kind])
     tier_n = data.get('tier', it.get('tier', 1))

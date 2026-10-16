@@ -16,6 +16,21 @@ Kinds:
 * land   🏞️ Quyền đặt tên danh thắng: a lake, a hill, a pier named after the winner for good ("Hồ Lan Mây"), on the
          town map's 🏞️ Danh thắng board.
 * title  👑 Danh hiệu độc bản: beside the name in chat (`tt`, live/honours.py) and worn from Phong cách (spend.py).
+* vehicle 🏎️ Xe bản giới hạn (owner 16/10): a numbered car, motorbike, yacht or private plane in a special paint, one of a
+         kind. Won, it joins the garage like a bought vehicle (game/garage.py: the base model's ride, fuel, trip and
+         upkeep), never sold in the shop and never sold back (the xu were burned at the auction: nothing to refund).
+* reg    ✈️ Số đăng ký tàu bay ("VN-A888"): the plate of a private plane.
+* hull   ⚓ Biển tên du thuyền: the name painted on a yacht's hull.
+  The three plate kinds (plate, reg, hull) are attached to one of the owner's vehicles of the right group (PLATE_FIT,
+  jr_garage_plate in game/garage.py) and moved between them at will; one plate a vehicle.
+
+💰 Biển đẹp +x % (owner 16/10, "gắn biển số vào và tăng % lợi nhuận (3-10% tùy mỗi cái)"): this OVERRIDES the earlier
+"cosmetic and status only" rule for plates. The vehicle the player rides (garage `ride`) and that carries an auction
+plate adds PLATE_PCT[its group][the plate's tier] percent (+LIMITED_PCT for a limited edition, never above PCT_CAP) to
+the career income of each shift closed (game/journey.py _end_of_day: the day's base net, the same base as the 🔥 x3
+bonus, at most BONUS_CAP xu a shift). One vehicle only, never stacked; locked at the shift's start (the smaller of the
+start and the close counts), so switching vehicles mid-shift gains nothing. Nothing else: not the fair, the black
+market, interest, investments, transfers, gifts, lì xì, the auction or selling anything.
 """
 from __future__ import annotations
 
@@ -47,7 +62,28 @@ KINDS = (
     ('art', '🖼️', 'Tranh độc bản'),
     ('land', '🏞️', 'Đặt tên danh thắng'),
     ('title', '👑', 'Danh hiệu độc bản'),
+    ('vehicle', '🏎️', 'Xe bản giới hạn'),
+    ('reg', '✈️', 'Số đăng ký tàu bay'),
+    ('hull', '⚓', 'Biển tên du thuyền'),
 )
+# The kinds journey.uniq.own holds: every build since it opened validates that block strictly (game/auction.py), so
+# the newer kinds live in journey.uniq_x (game/auction.py X_KEY), which an older build keeps without reading.
+OLD_KINDS = ('plate', 'phone', 'art', 'land', 'title')
+NEW_KINDS = ('vehicle', 'reg', 'hull')
+
+# ---------------------------------------------------------------- 💰 Biển đẹp +x % (see the module's docstring)
+PLATE_KINDS = ('plate', 'reg', 'hull')
+PLATE_FIT = {'plate': ('bike', 'car'), 'reg': ('plane',), 'hull': ('boat',)}   # the garage groups a plate goes on
+NO_PLATE = ('xe_dap', 'xe_dap_dien')   # pedal bikes carry no plate (game/garage.py ids)
+PLATE_PCT = {                  # percent by the vehicle's group and the plate's tier (1, 2, 3)
+    'bike': (3, 4, 5),
+    'car': (4, 5, 7),
+    'boat': (5, 6, 8),
+    'plane': (5, 7, 9),
+}
+LIMITED_PCT = 1                # a limited edition (kind vehicle) carrying the plate: one point more
+PCT_CAP = 10                   # never more, whatever the table says
+BONUS_CAP = 2000               # xu one shift's bonus pays at most
 KIND_EMOJI = {k: e for k, e, _ in KINDS}
 KIND_NAME = {k: n for k, _, n in KINDS}
 
@@ -70,6 +106,20 @@ def _land(iid, tier, base, emoji, where):
 
 def _title(iid, tier, emoji, name, short):
     return dict(id=iid, kind='title', tier=tier, name=name, emoji=emoji, short=short)
+
+
+def _veh(iid, tier, emoji, name, base, paint, serial, desc):
+    """A limited edition: `iid` is also its garage id (≤ 24 characters, game/garage.py ID_RE); `base` the shop model
+    whose ride, fuel, trip and upkeep it keeps; `paint` one of game/garage.py SPECIAL_PAINTS; `serial` its number."""
+    return dict(id=iid, kind='vehicle', tier=tier, name=name, emoji=emoji, base=base, paint=paint, serial=serial, desc=desc)
+
+
+def _reg(iid, tier, text):
+    return dict(id=iid, kind='reg', tier=tier, name=text, emoji='✈️')
+
+
+def _hull(iid, tier, text):
+    return dict(id=iid, kind='hull', tier=tier, name=text, emoji='⚓')
 
 
 ITEMS = (
@@ -124,6 +174,23 @@ ITEMS = (
     _title('dh_thuyen_truong', 2, '⛵', 'Thuyền Trưởng Sông Mây', 'Thuyền Trưởng'), _title('dh_cong_tuoc', 2, '🦚', 'Công Tước Phố Mây', 'Công Tước'),
     _title('dh_bac_dau', 1, '🌟', 'Ngôi Sao Bắc Đẩu', 'Sao Bắc Đẩu'), _title('dh_den_long', 1, '🏮', 'Chủ Nhân Đèn Lồng Vàng', 'Đèn Lồng Vàng'),
     _title('dh_nghe_si', 1, '🎻', 'Nghệ Sĩ Không Tên', 'Nghệ Sĩ'), _title('dh_gio_mua', 1, '🍃', 'Người Gọi Gió Mùa', 'Gọi Gió Mùa'),
+    # 🏎️ limited editions (16/10): the id is the garage id too (never renamed)
+    _veh('lx_xe_so_81', 1, '🏍️', 'Cub Kỷ Niệm số 81', 'xe_so', 'kem_co', '81/81',
+         'Chiếc Cub cuối của lô kỷ niệm: yên da nâu, tem số 81 trên ốp sườn.'),
+    _veh('lx_xe_ga_01', 2, '🛵', 'Tay ga Ngọc Bích số 01', 'xe_ga', 'ngoc_bich', '01/01',
+         'Sơn ngọc bích pha nhũ, mạ crôm từng con ốc. Chạy ngang chợ là ai cũng hỏi.'),
+    _veh('lx_mui_tran_07', 2, '🏎️', 'Mui trần Rượu Vang số 07', 'mui_tran', 'do_ruou', '07/07',
+         'Đỏ rượu vang, vô lăng gỗ, ghế da khâu tay. Chiếc thứ bảy và cũng là chiếc cuối.'),
+    _veh('lx_sieu_xe_01', 3, '🚘', 'Tia Chớp Vàng Kim số 01', 'sieu_xe', 'vang_kim', '01/01',
+         'Siêu xe phủ vàng kim, cửa cánh chim. Cả phố chỉ có một chiếc.'),
+    _veh('lx_du_thuyen_01', 3, '🛳️', 'Ngọc Trai Đêm số 01', 'sieu_du_thuyen', 'xanh_dem', '01/01',
+         'Siêu du thuyền sơn xanh đêm, boong gỗ, đèn sao trên mũi. Neo ở bến là cả vịnh ngoái nhìn.'),
+    _veh('lx_phan_luc_01', 3, '✈️', 'Phản lực Cánh Mây số 01', 'phan_luc', 'bach_kim', '01/01',
+         'Phản lực tám ghế phủ bạch kim, cánh vẽ mây bạc. Đậu ở sân bay tư nhân.'),
+    # ✈️ plane registrations, ⚓ yacht names (as painted)
+    _reg('rg_vna888', 3, 'VN-A888'), _reg('rg_vna168', 2, 'VN-A168'), _reg('rg_vna686', 2, 'VN-A686'),
+    _reg('rg_vna123', 1, 'VN-A123'),
+    _hull('hn_hoang_hon', 3, 'HOÀNG HÔN VÀNG'), _hull('hn_ngoc_may', 2, 'NGỌC MÂY'), _hull('hn_sao_bien', 1, 'SAO BIỂN 01'),
 )
 # Fixed collection points, never a resale quote or a multiplier for money earned.
 COLLECTOR_POINTS = {1: 10, 2: 40, 3: 120}
@@ -160,18 +227,23 @@ ART_NOTES = {
     'seasons': ('Bộ tứ bình trên lụa', 'Mai, sen, cúc, trúc chia bốn ô trong cùng một khung, kể hết một vòng mùa.'),
 }
 KIND_STORY = {
-    'plate': 'Biển độc bản gắn trên chiếc xe bạn đang đi, hiện cả khi dạo phố.',
+    'plate': 'Biển độc bản gắn lên xe máy hoặc ô tô, hiện cả khi dạo phố. Đi xe có biển đẹp: lợi nhuận mỗi ca tăng thêm.',
     'phone': 'Số độc bản hiện trên điện thoại và hồ sơ của chủ nhân.',
     'land': 'Tên chủ nhân gắn với danh thắng của phố sau khi thắng phiên.',
     'title': 'Danh hiệu độc bản để đeo cạnh tên, chỉ một người trong phố sở hữu.',
+    'reg': 'Số đăng ký độc bản gắn lên máy bay riêng. Đi máy bay có biển đẹp: lợi nhuận mỗi ca tăng thêm.',
+    'hull': 'Tên độc bản sơn trên mạn du thuyền. Đi du thuyền có biển đẹp: lợi nhuận mỗi ca tăng thêm.',
 }
 for _it in ITEMS:
     _it['collector_points'] = COLLECTOR_POINTS[_it['tier']]
     if _it['kind'] == 'art':
         _it['medium'], _it['story'] = ART_NOTES[_it['motif']]
+    elif _it['kind'] == 'vehicle':
+        _it['story'] = _it['desc']
     else:
         _it['story'] = KIND_STORY[_it['kind']]
 ITEM = {it['id']: it for it in ITEMS}
+LIMITED = tuple(it for it in ITEMS if it['kind'] == 'vehicle')   # game/garage.py adds them to its catalogue
 
 # 👑 the titles, as game/spend_content.py style items (worn from Phong cách for good, never sold)
 EARN = 'Thắng đấu giá'

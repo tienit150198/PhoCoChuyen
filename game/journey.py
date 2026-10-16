@@ -44,6 +44,7 @@ from . import gadgets as gd   # 📱 Cửa hàng điện thoại (game/gadgets.p
 from . import pets as pt   # 🐾 Nuôi thú cưng (game/pets.py)
 from . import spend as sp   # ☕ Đi quán, spa, rạp, 🙏 công đức, 🎨 phong cách tuần (game/spend.py)
 from . import auction as auc   # 🔨 Nhà đấu giá đồ độc bản (game/auction.py)
+from . import auction_content as AC   # 🔨 Biển đẹp +x % (BONUS_CAP)
 from . import lux as lx   # 🛍️ Mua sắm: du lịch, sưu tập, dinh thự, tiệc, khóa học, 🎆 Mạnh Thường Quân (game/lux.py)
 from . import estates as es   # 🏰 Dinh thự: living in a villa (game/estates.py)
 from . import upkeep as up   # 🧾 Hóa đơn tháng: phí giữ xe, bảo trì nhà (game/upkeep.py)
@@ -699,21 +700,24 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     # 🔥 This career's x3 day (game/x3_week.py): the day's net once more, twice, into the wallet.
     extra = 0
     if x3.on(career):
-        # ⏱️ Tăng ca ×2 and ⚡ năng suất (game/overtime.py) stay out of the boosted net: they never stack with x3.
-        ot = ((result.get('summary') or {}).get('ot') or {}).get('total') or 0
-        # 💼 Nor does the accounting salary's ×3 / ×5 part (09/10 audit: x3 paid twice the boosted salary again).
-        boost = job_note.get('boost') if type(job_note.get('boost')) is int else 0
-        mastery_bonus = ((result.get('summary') or {}).get('mastery') or {}).get('bonus') or 0
-        competition_bonus = ((result.get('summary') or {}).get('competition') or {}).get('bonus') or 0
-        tile_bonus = (result.get('summary') or {}).get('tile') or 0   # 🧩 Phúc lợi: one multiplier, never twice
-        extra = x3.bonus(int((result.get('summary') or {}).get('net') or 0) - int(ot) - boost - int(mastery_bonus) - int(competition_bonus)
-                         - int(tile_bonus))
+        extra = x3.bonus(_base_net(result, job_note))
         if extra > 0 and not icl.day_paid(s):   # ⏱️ beyond the real-time allowance (1 real hour = 1 paid day): no bonus
             extra = 0
             notes.append(f'⏱️ Hôm nay quá số ngày có thưởng theo giờ thật (1 giờ = 1 ngày): không có thưởng x{x3.X}.')
         if extra > 0:
             _wallet(j, extra, 'salary', f'🔥 Thưởng ngày x{x3.X} · {_place(career)}', career)
             notes.append(f'🔥 Hôm nay {_place(career)} lời x{x3.X}: thưởng thêm {extra} xu vào ví.')
+    # 🔨 Biển đẹp +x % (game/garage.py, owner 16/10): the plated vehicle ridden since the shift's start, on the same base
+    # net as x3 (never on the x3 bonus, overtime, a boost or itself), so an x3 day pays net × (1 + 2 + x %).
+    plate, pct, plated = 0, *gr.shift_pct(s, career)
+    if pct > 0:
+        plate = min(AC.BONUS_CAP, max(0, _base_net(result, job_note)) * pct // 100)
+        if plate > 0 and icl.day_paid(s):
+            V = gr.VEHICLES[plated['id']]
+            _wallet(j, plate, 'salary', f'{V["emoji"]} Biển đẹp +{pct}% · {_place(career)}', career)
+            notes.append(f'{V["emoji"]} Biển đẹp +{pct}%: +{plate} xu.')
+        else:
+            plate = 0
     # Rent and meals for the day that just ended.
     cost = living_cost(j)
     _wallet(j, -cost['total'], 'living', cost['label'])
@@ -734,8 +738,22 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     summary = result.get('summary')
     if isinstance(summary, dict):
         summary['journey'] = dict(life_day=day, living=cost['total'], upkeep=idle_total, salary=pay, wallet=j['wallet'],
-                                  **({'gift': WELCOME_GIFT} if gift else {}), **({'x3': extra} if extra > 0 else {}))
+                                  **({'gift': WELCOME_GIFT} if gift else {}), **({'x3': extra} if extra > 0 else {}),
+                                  **({'plate': plate, 'plate_pct': pct} if plate > 0 else {}))
     result.setdefault('effects', []).extend(notes)
+
+
+def _base_net(result: dict, job_note: dict) -> int:
+    """A shift's base net, what a multiplier of its income may apply to: the day's net (its costs and salary included)
+    without ⏱️ Tăng ca ×2 and ⚡ năng suất (game/overtime.py), the 💼 accounting salary's ×3 / ×5 part (09/10 audit),
+    🎖️ mastery, 🏆 competition and 🧩 Phúc lợi bonuses: one multiplier, never on top of another."""
+    summary = result.get('summary') or {}
+    ot = (summary.get('ot') or {}).get('total') or 0
+    boost = job_note.get('boost') if type(job_note.get('boost')) is int else 0
+    mastery_bonus = (summary.get('mastery') or {}).get('bonus') or 0
+    competition_bonus = (summary.get('competition') or {}).get('bonus') or 0
+    tile_bonus = summary.get('tile') or 0
+    return int(summary.get('net') or 0) - int(ot) - boost - int(mastery_bonus) - int(competition_bonus) - int(tile_bonus)
 
 
 def _news(j: dict, kind: str, ref: str, items: list | None = None) -> None:
@@ -803,6 +821,8 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
             result.setdefault('effects', []).append(line)
     if not j['story']:
         return
+    if action == 'start_day' and career in s['careers']:
+        gr.lock_shift(s, career)   # 🔨 Biển đẹp: the percent of the plated vehicle ridden as the shift starts
     if action == 'start_day' and career in s['careers'] and career not in j['unlocked'] and s['careers'][career].get('started'):
         j['unlocked'].append(career)   # 💼 opened early by a certificate: kept once worked (an older build accepts it)
     for cid in list(j['paused']):
@@ -1224,6 +1244,7 @@ def validate(s: dict) -> None:
     pt.validate(s)   # 🐾 journey['pets'] (optional)
     lx.validate(s)   # 🛍️ journey['lux'] (optional)
     auc.validate(s)   # 🔨 journey['uniq'] (optional)
+    auc.x_validate(s)   # 🔨 journey['uniq_x'] (optional): vehicles, registrations, yacht names won; plates attached
     up.validate(s)   # 🧾 journey['upk'] (optional)
     rui.validate(s)   # 🛡️ journey['rui'] (optional)
     vang.validate(s)   # 💰 journey['vang'] (optional)
