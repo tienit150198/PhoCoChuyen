@@ -987,7 +987,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         cap = capacity(career, c)
         need(count(c, it['id']) + reserved(c, career, it['id']) + _in_transit(x, it['id']) + _drafted(x, it['id']) + qty <= cap,
              f'Kho chứa tối đa {cap} phần mỗi loại (tính cả hàng đang giao).' + full_hint(c, career))
-        need(_shipments(x) < TRANSIT_CAP, 'Đang có nhiều đơn chờ giao. Nhận bớt rồi đặt tiếp nhé.')
+        need(_shipments(x, c) < TRANSIT_CAP, 'Đang có nhiều đơn chờ giao. Nhận bớt rồi đặt tiếp nhé.')
         need(_transit_lines(x) < TRANSIT_LINES, 'Đang có nhiều hàng chờ giao. Nhận bớt rồi đặt tiếp nhé.')
         price = line_price(it, qty, sup)
         cost, fee = price['cost'], ship_fee(sup, price['cost'])
@@ -1188,9 +1188,18 @@ def _cancel(s: dict, c: dict, career: str, x: dict, p: dict) -> dict:
     return dict(message=f'Đã hủy {what} với {sup["name"]} · nhận lại {refund} xu (đã trả {paid} xu).', refund=refund, paid=paid)
 
 
-def _shipments(x: dict) -> int:
-    """Deliveries on the way: a merged order is one van however many lines it has."""
-    return len({o.get('group') or o['id'] for o in x['orders'] if o['status'] == 'in_transit'})
+def _shipments(x: dict, c: dict | None = None) -> int:
+    """Deliveries on the way: a merged order is one van however many lines it has; with 📦 Gộp thùng tự đặt owned
+    (game/auto_order.py box_ids), every automatic order on the way rides in that one crate too (player feedback #400:
+    18 items set to auto-order, only 10 ordered: each line took a van of TRANSIT_CAP)."""
+    boxed = _auto().box_ids(c) if c is not None else set()
+    return len({o.get('group') or ('auto-box' if o['id'] in boxed else o['id'])
+                for o in x['orders'] if o['status'] == 'in_transit'})
+
+
+def _auto():
+    from . import auto_order
+    return auto_order
 
 
 def _transit_lines(x: dict) -> int:
@@ -1356,7 +1365,7 @@ def _cart_place(s: dict, c: dict, career: str, x: dict, p: dict, level: int) -> 
              + _drafted(x, it['id'], sup['id']) + qty <= cap,
              f'Kệ {it["name"]} không đủ chỗ cho {qty} {it.get("unit", "phần")} (tính cả hàng đang giao). Bớt lại nhé.'
              + full_hint(c, career))
-    need(_shipments(x) < TRANSIT_CAP, 'Đang có nhiều đơn chờ giao. Nhận bớt rồi đặt tiếp nhé.')
+    need(_shipments(x, c) < TRANSIT_CAP, 'Đang có nhiều đơn chờ giao. Nhận bớt rồi đặt tiếp nhé.')
     need(_transit_lines(x) + len(lines) <= TRANSIT_LINES, 'Đang có nhiều hàng chờ giao. Nhận bớt rồi đặt tiếp nhé.')
     deal = cart.get('deal')
     q = cart_price(career, sup, lines, deal, day)
@@ -1606,8 +1615,10 @@ def public(c: dict, career: str) -> dict | None:
     from . import auto_order
     boxed = auto_order.box_ids(c)
     for o in v['orders']:
-        if o['id'] in boxed and o.get('ready_now') and not o.get('group'):
-            o['box'] = 'auto'
+        if o['id'] in boxed and not o.get('group'):
+            o['van'] = 'auto'   # one van for every automatic order on the way (restock.js vans(), _shipments)
+            if o.get('ready_now'):
+                o['box'] = 'auto'
     ratings = x['supplier_ratings']
     placing = clock(c, career, c['turn'] + 1)['abs']  # an order ticks the clock once before it is placed
     v['suppliers'] = [dict(_static(sp, career), quote=quote(sp, career, placing),

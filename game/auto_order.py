@@ -156,7 +156,10 @@ def plan(s: dict, c: dict, career: str) -> tuple[list, str | None]:
     r = rec(c)
     level = 1 + c['xp'] // 90
     cap, line = limits(c, career)
-    slots = inv.TRANSIT_CAP - SLOTS_FREE - inv._shipments(x)
+    slots = inv.TRANSIT_CAP - SLOTS_FREE - inv._shipments(x, c)
+    # #400 (18 items on auto, 10 ordered): with 📦 Gộp thùng every automatic line rides in the one crate, one van for all
+    boxed = box_owned(c)
+    van = boxed and any(o['id'] in box_ids(c) for o in x['orders'] if o['status'] == 'in_transit')
     lines = inv.TRANSIT_LINES - SLOTS_FREE - inv._transit_lines(x)
     fund = c['money'] - floor(s, c)
     left = budget(c) - spent(c)
@@ -171,7 +174,7 @@ def plan(s: dict, c: dict, career: str) -> tuple[list, str | None]:
     low.sort(key=lambda t: t[0])   # the emptiest shelf first: the free delivery slots go to it
     out, why = [], None
     for _, it, ru, have, coming in low:
-        if slots <= 0 or lines <= 0:
+        if (slots <= 0 and not van) or lines <= 0:
             break
         room = cap - have - inv.reserved(c, career, it['id']) - coming - inv._drafted(x, it['id'])
         qty = min(ru['qty'], room, line)
@@ -189,7 +192,9 @@ def plan(s: dict, c: dict, career: str) -> tuple[list, str | None]:
         out.append((it, qty, sup, total))
         fund -= total
         left -= total
-        slots -= 1
+        if not van:
+            slots -= 1
+            van = boxed
         lines -= 1
     return out, why
 
