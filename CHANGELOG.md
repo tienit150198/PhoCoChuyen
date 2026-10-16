@@ -1,3 +1,13 @@
+# v2.4.27 — 2026-10-16
+
+🛃 Nội dung cập nhật 14/10 của chủ game ("triển khai thêm cái này rồi thông báo nữa nhé").
+- 👮 Điều lệnh Công an (game/gov_rules.py): bổ nhiệm Giám đốc CATP khi hồ sơ không quá 6 vi phạm; chuộc người thân/bạn bè/vợ chồng/hôn phu đang chấp hành án → giáng 2 bậc hàm + kỷ luật 15 ngày; cá độ ở chợ đen → giáng 1 bậc hàm + kỷ luật 10 ngày. Ghi trong Điều lệnh và hồ sơ công tác.
+- 🛃 Nghề mới Hải quan (game/careers/customs.py, customs_content.py): điều kiện 3 chương + đã làm Công an tới Hạ sĩ + không quá 3 vi phạm; thi tuyển 8 câu (qua 6/8); thang hàm hq; bốn mảng việc (kiểm tra/giám sát, chống buôn lậu, thuế xuất nhập khẩu, phòng chống tội phạm); NPC phản ánh cuối ca, gỡ hoặc chuyển CATP truy tố (game/npc_complaints.py); vi phạm trong nghề (bao che → giáng 1 bậc + 10 ngày, làm sai lệch hồ sơ → 15 ngày, tham ô/nhận hối lộ → khai trừ).
+- 🛃 Kiểm tra kho tiệm người chơi (game/hq_ops.py): chỉ dựa trên nợ thuế quá hạn thật trong save; nhắc nộp / cưỡng chế trích tiền (≥2 ngày trễ) / kê biên hàng tồn (≥5 ngày, quỹ không đủ), phải được cấp trên (người chơi hoặc Cục tự duyệt sau 6 giờ) duyệt; chủ tiệm khiếu nại trong 3 ngày, sai thì hoàn trả; xử lý sai → giáng 1 bậc + 15 ngày, 3 lần trong 14 ngày → khai trừ + cấm ngành nhà nước. Không kiểm tra bạn bè/vợ chồng/chính mình; giới hạn lượt mỗi ngày, mỗi tiệm.
+- Schema 48: hq_roster, hq_cases (bảng mới). 47 để dành cho cuộc thi sticker.
+- ⚠️ Save đã dùng Hải quan không mở được trên bản cũ hơn: không rollback dưới 2.4.27 khi đã có người vào nghề.
+- Có gì mới: 2 dòng.
+
 # v2.4.26 — 2026-10-16
 
 💐 Sự kiện Thiệp 20/10 (chủ game 16/10: "1 event riêng… ghi chú gì đó gửi tặng người khác, có share link… không cần chơi game vẫn đọc được… vài theme… tham gia tặng 100k"; "làm nhiều theme cute vào").
