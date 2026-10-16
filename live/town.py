@@ -10,6 +10,12 @@ activity is a cosmetic 320x200 outdoor pose, or null to return to town. It never
 authorizes a leisure round, checkpoint, catch or reward; those remain HTTP-owned.
 town {room,ev:[{k:'in'|'mv'|'out',...}]} batches changes at most 10 times/second.
 One player's second tab takes over and sends town_left {why:'other'} to the first.
+🚗 town_in / town_mv may carry `r` {v, c, p?} (owner 16/10: vehicles really on the map): the garage vehicle the player
+rides (a car or motorbike under them, a yacht moored at the harbour, a plane parked at the airfield: the client
+decides from the catalogue's group), its paint, and `p` an auction plate (live/plates.py keeps it only when they won
+it; gold). Only a garage id (game/garage.py VEHICLES); anything odd is on foot, never an error. A walker's public entry
+has `r` while set; a `mv` carries `r` (null: on foot) only when it changed. Riding stays within the movement budget
+(the client rides at most 1.8× its walk, under SPEED). Older clients ignore `r`; an older service drops it.
 """
 from __future__ import annotations
 
@@ -20,10 +26,12 @@ import time
 from pathlib import Path
 
 from game.content import CAREERS
+from game.garage import VEHICLES as GARAGE   # 🚗 the ids a town ride may name
 from . import faces
 from .auth import pid_of
 from .protocol import Feature, LiveError, on
 from .street import clean_look
+from . import plates
 from .town_social import TownSocial
 from .scale_sites import ScaleSites, SITE_PREFIX, site_point
 
@@ -85,6 +93,18 @@ def clean_point(x, y):
     return round(float(x), 3), round(float(y), 3)
 
 
+def clean_ride(r):
+    """🚗 {v, c, p?} of a garage vehicle, or None (on foot): never refused."""
+    if not isinstance(r, dict) or not isinstance(r.get('v'), str) or r['v'] not in GARAGE:
+        return None
+    c = r.get('c')
+    out = dict(v=r['v'], c=c if isinstance(c, str) and len(c) <= 24 and c.replace('_', '').isalnum() and c.isascii() else '')
+    p = plates.clean(r.get('p'))
+    if p:
+        out['p'] = p
+    return out
+
+
 def clean_direction(value):
     return value if isinstance(value, str) and value in DIRECTIONS else 'se'
 
@@ -135,8 +155,9 @@ def activity_credit(w, activity, now):
 
 
 class Walker:
-    def __init__(self, player, look, gender, point, direction, activity=None):
+    def __init__(self, player, look, gender, point, direction, activity=None, ride=None):
         self.player, self.pid = player, player.pid
+        self.ride = ride
         self.look, self.gender = look, gender
         self.x, self.y = point
         self.direction = direction
@@ -149,6 +170,8 @@ class Walker:
                    fc=self.player.fc or '', x=self.x, y=self.y, direction=self.direction)
         if self.activity is not None:
             out['activity'] = dict(self.activity)
+        if self.ride:
+            out['r'] = dict(self.ride)
         return out
 
 
@@ -278,6 +301,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
         point = clean_point(f.get('x'), f.get('y'))
         activity = clean_activity(f.get('activity'))
         look, gender = clean_look(f.get('look'), f.get('g'))
+        ride = await plates.keep(self.db, conn.player, clean_ride(f.get('r')))   # 🚗 (an auction plate: only if won)
         await self._ensure_loaded(conn.player)
         treasure = getattr(self.app, 'by_name', {}).get('treasure')
         if treasure is not None and treasure.enabled():
@@ -285,7 +309,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
         self._leave(conn, 'other', takeover=True)
         room = self._pick(conn.player)
         room.add(conn)
-        w = Walker(conn.player, look, gender, point, clean_direction(f.get('direction')), activity)
+        w = Walker(conn.player, look, gender, point, clean_direction(f.get('direction')), activity, ride)
         room.data['people'][w.pid] = w
         conn.ext['town'] = conn.player.ext['town'] = room.id
         self._queue(room, w.pid, dict(k='in', **w.public()))
@@ -312,6 +336,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
 
     @on('town_mv', rate=(4, 1.0))
     async def town_mv(self, conn, f):
+        ride = await plates.keep(self.db, conn.player, clean_ride(f['r'])) if 'r' in f else None   # 🚗 before any change
         room, w = self._me(conn)
         x, y = (site_point(room.data['site_layout'], f.get('x'), f.get('y'))
                 if 'site_key' in room.data else clean_point(f.get('x'), f.get('y')))
@@ -333,6 +358,11 @@ class TownFeature(ScaleSites, TownSocial, Feature):
             event.update(lk=w.look, g=w.gender)
         if changed_activity:
             event['activity'] = dict(activity) if activity is not None else None
+        if 'r' in f:
+            ride = None if 'site_key' in room.data else ride
+            if ride != w.ride:
+                w.ride = ride
+                event['r'] = dict(ride) if ride else None
         self._queue(room, w.pid, event)
 
     async def _refresh_blocks(self):

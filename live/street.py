@@ -18,7 +18,8 @@ Moving (memory only, never the database)
   last. Speech bubbles and emotes go out at once.
 * Blocks: blocked players are never put in the same instance; a block made during a stroll makes both
   invisible to each other at once (an `out` for each), and every frame from one never reaches the other.
-* 🛵 Riding (public/js/v4/ride.js): `walk_in` may carry `r` {v: a two-wheeler's id, c: its paint id}, and `ride {r}`
+* 🛵 Riding (public/js/v4/ride.js): `walk_in` may carry `r` {v: a two-wheeler's id, c: its paint id, p?: the text of an
+  auction plate on it, kept only when that player won it (live/plates.py), drawn in gold}, and `ride {r}`
   (r null: on foot again) changes it during a stroll. A rider moves RIDE_FAST times as fast: their public entry has
   `r` and `v` (their speed, units a second) only while riding, an `rd` diff {pid, r, v, p, at} tells the room, and
   their path is re-stamped from where they are. Optional everywhere: an older client sends none and ignores them
@@ -74,7 +75,7 @@ import re
 import secrets
 import time
 
-from . import babies, coride, effects, honours, styles
+from . import babies, coride, effects, honours, plates, styles
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
 from .street_data import ORG_GRADES, PET_ACCS, PET_BREEDS
@@ -104,7 +105,7 @@ SEEN_MAX = 6              # rooms a player may still report bubbles of (the last
 STEP = 5.0                # sampling step when checking that a segment stays walkable
 # 🛵 The vehicles a player may ride on a stroll (and at the fair): game/garage.py's two-wheelers (tests/test_ride.py
 # keeps the two lists together). A car stays outside: these are walking places.
-RIDES = frozenset({'xe_dap', 'xe_dap_dien', 'xe_so', 'xe_ga'})
+RIDES = frozenset({'xe_dap', 'xe_dap_dien', 'xe_so', 'xe_ga', 'lx_xe_so_81', 'lx_xe_ga_01'})   # 🏎️ + the auction's limited ones
 RIDE_FAST = 1.6
 _WORD = re.compile(r'[a-z0-9_]{1,24}')
 
@@ -219,7 +220,7 @@ GEO = {k: Geo(k, v) for k, v in PLACES.items()}
 
 
 def clean_ride(r) -> dict | None:
-    """The vehicle a player rides ({v, c, o?}) or None (on foot): never refused, anything odd counts as on foot.
+    """The vehicle a player rides ({v, c, o?, p?}) or None (on foot): never refused, anything odd counts as on foot.
     `o`: its owner's pid when it is the spouse's (live/coride.py checks it), kept only when it looks like one."""
     if not isinstance(r, dict) or not isinstance(r.get('v'), str) or r['v'] not in RIDES:
         return None
@@ -227,6 +228,9 @@ def clean_ride(r) -> dict | None:
     out = dict(v=r['v'], c=c if isinstance(c, str) and _WORD.fullmatch(c) else '')
     if isinstance(o, str) and coride.PID.fullmatch(o):
         out['o'] = o
+    p = plates.clean(r.get('p'))
+    if p:   # 🔨 an auction plate: coride.check keeps it only when this player won it (live/plates.py)
+        out['p'] = p
     return out
 
 
