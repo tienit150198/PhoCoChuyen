@@ -310,6 +310,7 @@ class LazySaveTests(Base):
         text = self.raw('SELECT state FROM sessions WHERE sid=?', (self.store.digest(token),))[0][0]
         stored = json.loads(text)
         self.assertNotIn('customs', stored['careers'])   # 💤 untouched: left out, so old servers can read it
+        self.assertNotIn('hotel', stored['careers'])
         wake(stored)
         self.assertEqual(stored, self.store.read(token)[0])
 

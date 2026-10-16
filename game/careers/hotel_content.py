@@ -339,7 +339,7 @@ DESK = [
 
 MILESTONES = [
     dict(id='desk', label='Đứng vững một quầy', jobs=15, days=5, posts=3),
-    dict(id='rota', label='Thạo cả năm vị trí', jobs=60, days=20, posts=6),
+    dict(id='rota', label='Thạo cả sáu vị trí', jobs=60, days=20, posts=6),
     dict(id='host', label='Người giữ lửa Sông Mây', jobs=160, days=40, posts=6),
 ]
 NOTEBOOK = [

@@ -440,7 +440,7 @@ _profile('customs', 'Hữu Phước | Minh Thư | Gia Khang',
     'đã đối chiếu tờ khai, kiểm hóa và tính thuế đúng trước khi thông quan // reconciled the declaration, inspection, and duties before clearance',
     'số đếm thực tế có chữ ký và chứng từ thuế // a signed physical count and duty documents')
 
-_profile('hotel', 'Ngọc Trâm | Đức Huy | Minh Khoa',
+_profile('hotel', 'Quỳnh Như | Hữu Tâm | Minh Khoa',
     'Chị Hằng · trưởng ca lễ tân // Hằng · front desk shift lead',
     'phòng sạch đúng yêu cầu, thẻ đúng phòng và đồ thất lạc có sổ // clean rooms that match requests, the right key cards, and logged lost property',
     'lễ tân | buồng phòng | bảo trì // front desk | housekeeping | maintenance',

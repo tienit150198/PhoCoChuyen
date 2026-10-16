@@ -672,7 +672,8 @@
     "lawyer",
     "laundry",
     "post_office",
-    "customs"
+    "customs",
+    "hotel"
   ],
   "lots": [
     {
@@ -1663,6 +1664,24 @@
         "y0": 26,
         "x1": -3.8,
         "y1": 30.2
+      }
+    },
+    {
+      "career": "hotel",
+      "district": "park",
+      "at": {
+        "x": 2.3,
+        "y": 30.2
+      },
+      "door": {
+        "x": 2.7,
+        "y": 32.15
+      },
+      "footprint": {
+        "x0": 0.5,
+        "y0": 27,
+        "x1": 4.7,
+        "y1": 31.2
       }
     },
     {

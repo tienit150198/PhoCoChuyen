@@ -139,7 +139,7 @@ def _checkin(r, day, slot):
         _step('checkin', 'key', 'choice', 'Giao thẻ phòng', f'Khách nhận phòng: {present} người. 1 khách 1 thẻ, từ 2 khách giao 2 thẻ.',
               _opts(r, [(f'{target[0]}-1', f'Thẻ phòng {target[0]} · 1 thẻ'), (f'{target[0]}-2', f'Thẻ phòng {target[0]} · 2 thẻ'),
                         (f'{alt}-{cards}', f'Thẻ phòng {alt} · {cards} thẻ')])),
-        _step('checkin', 'breakfast', 'choice', 'Dặn giờ ăn sáng', f'Sáng mai là {tomorrow}. Phiếu {"có" if breakfast else "không"} kèm bữa sáng.',
+        _step('checkin', 'breakfast', 'choice', 'Dặn giờ ăn sáng', f'Sáng mai là {tomorrow}. {"Phiếu có kèm bữa sáng." if breakfast else "Phiếu không kèm bữa sáng."}',
               _opts(r, hc.BREAKFAST)),
     ]
     key = {'checkin.booking': answer, 'checkin.papers': paper, 'checkin.room': target[0], 'checkin.key': f'{target[0]}-{cards}', 'checkin.breakfast': bf}
@@ -606,7 +606,7 @@ def validate_task(t: dict, original: dict) -> None:
     kit.need(isinstance(errors, list) and all(isinstance(e, str) for e in errors), 'Nhật ký lỗi khách sạn sai.')
     kit.need(len(errors) == len(set(errors)) and set(errors) <= set(ids[:min(at + 1, len(ids))]), 'Nhật ký lỗi khách sạn sai.')
     wrong = kit.integer(t.get('wrong'), 0, 100000)
-    kit.need(len(errors) <= wrong <= t.get('mistakes', 0), 'Số lần làm lại sai.')
+    kit.need(len(errors) <= wrong <= t.get('mistakes', 0) and (wrong == 0) == (not errors), 'Số lần làm lại sai.')
     kit.need(t.get('quality') == _quality(wrong), 'Điểm chất lượng khách sạn không khớp.')
     kit.need(type(t.get('paid')) is int and t['paid'] == (_bonus(t) if at == len(steps) else 0), 'Tiền thưởng khách sạn không khớp.')
     kit.need(isinstance(t.get('lines'), list) and len(t['lines']) <= 24 and all(isinstance(x, str) and len(x) < 500 for x in t['lines']),

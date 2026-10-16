@@ -1,0 +1,52 @@
+/* Khách sạn Sông Mây: a lavender front desk, the room board as a tiled grid and one step at a time. */
+.career-job.hotel{--sk-accent:#7a5a9e;--sk-accent-2:#d8c39a;min-width:0;overflow-wrap:anywhere}
+.hotel .ht-season{padding:10px 12px;border-radius:10px;background:var(--sk-surface-2,#f6efe2);border-left:4px solid var(--sk-accent-2);font-size:13px;line-height:1.5}
+.hotel .ht-post{border:1px solid var(--sk-line,#d9c7ad);border-left:5px solid var(--sk-accent);border-radius:12px;padding:14px 16px;background:var(--sk-surface,#fffaf0);margin:12px 0}
+.hotel .ht-post small{display:block;letter-spacing:.04em;color:var(--sk-muted,#6e5f74)}
+.hotel .ht-post h3{margin:5px 0 0}
+.hotel .ht-ask{margin:8px 0 0;line-height:1.5}
+.hotel .ht-step{padding:16px}
+.hotel .ht-step-count{font-size:13px;color:var(--sk-muted,#6e5f74);margin:0 0 6px}
+.hotel progress{display:block;width:100%;height:7px;accent-color:var(--sk-accent);margin-bottom:14px}
+.hotel .ht-evidence{padding:12px;border-left:3px solid var(--sk-accent-2);background:var(--sk-surface-2,#f6efe2);line-height:1.55}
+.hotel .ht-options,.hotel .ht-picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
+.hotel .ht-options button,.hotel .ht-picks button{min-height:48px;white-space:normal;text-align:left;padding:12px;line-height:1.4}
+.hotel .ht-pick{display:flex;gap:8px;align-items:flex-start}
+.hotel .ht-pick.on{border-color:var(--sk-accent);box-shadow:inset 0 0 0 2px var(--sk-accent)}
+.hotel .ht-num{flex:0 0 auto;min-width:22px;height:22px;border-radius:11px;background:var(--sk-accent);color:#fff;font-style:normal;font-size:12px;display:inline-flex;align-items:center;justify-content:center}
+.hotel .ht-row{display:flex;flex-wrap:wrap;gap:9px;justify-content:flex-end;margin-top:12px}
+.hotel .ht-row .btn{min-height:44px}
+.hotel .ht-counts{display:grid;gap:9px;margin-top:12px}
+.hotel .ht-count{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hotel .ht-count input{width:96px;max-width:40%;min-height:44px;font-size:18px;text-align:center}
+.hotel .ht-send{margin-top:12px;width:100%;min-height:48px}
+.hotel .ht-board{margin:12px 0}
+.hotel .ht-board h4,.hotel .ht-list h4{margin:0 0 8px}
+.hotel .ht-board ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.hotel .ht-room{display:grid;gap:2px;padding:8px 10px;border:1px solid var(--sk-line,#d9c7ad);border-radius:8px;font-size:12px;line-height:1.35}
+.hotel .ht-room b{font-size:15px;font-variant-numeric:tabular-nums}
+.hotel .ht-room em{font-style:normal;font-weight:600}
+.hotel .ht-room.st-clean{border-color:#4f8a63;background:#eef6ee}
+.hotel .ht-room.st-clean em{color:#2f6b45}
+.hotel .ht-room.st-dirty em{color:#9a5a2e}
+.hotel .ht-room.st-maintenance em{color:#a03f3f}
+.hotel .ht-list ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.hotel .ht-list li{display:grid;gap:3px;padding:9px 11px;border:1px solid var(--sk-line,#d9c7ad);border-radius:8px;font-size:13px;line-height:1.45}
+.hotel .ht-notes{color:#a03f3f;font-weight:600}
+.hotel .ht-last,.hotel .ht-finished{padding:12px;background:var(--sk-surface-2,#f6efe2);border-radius:10px;font-size:13px;line-height:1.5}
+.hotel .ht-progress,.hotel .ht-notebook{border-top:1px solid var(--sk-line,#d9c7ad);padding:12px 0;margin-top:10px}
+.hotel summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.hotel .ht-progress ul{list-style:none;padding:0;display:grid;gap:10px}
+.hotel .ht-progress li{display:grid;gap:5px}
+.hotel .ht-progress li span{font-size:13px;color:var(--sk-muted,#6e5f74)}
+.hotel .ht-rules{padding-left:20px}
+.hotel .ht-rules li{margin:6px 0;line-height:1.5}
+.hotel button:focus-visible,.hotel summary:focus-visible,.hotel input:focus-visible{outline:3px solid var(--sk-accent);outline-offset:3px}
+.hotel .sk-amt-in{min-width:0}
+.hotel .sk-amt input{max-width:100%;font-size:18px}
+html[data-theme="dem"] .career-job.hotel{--sk-accent:#b79be0;--sk-accent-2:#8d7650}
+html[data-theme="dem"] .hotel .ht-room.st-clean{background:#1f3326}
+html[data-theme="dem"] .hotel .ht-room.st-clean em{color:#9fd3ad}
+html[data-theme="dem"] .hotel .ht-room.st-dirty em{color:#e7b48a}
+html[data-theme="dem"] .hotel .ht-notes,html[data-theme="dem"] .hotel .ht-room.st-maintenance em{color:#f0a3a3}
+@media(max-width:480px){.hotel .ht-options,.hotel .ht-picks{grid-template-columns:minmax(0,1fr)}.hotel .ht-step,.hotel .ht-post{padding:13px}}
