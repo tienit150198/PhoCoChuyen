@@ -32,6 +32,9 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.28", date="2026-10-16", items=(
+        dict(emoji='🛠️', text='Sửa lỗi "Nơi làm việc mở sớm hơn chương hiện tại" sau khi làm lại nghề Hải quan.'),
+    )),
     dict(version="2.4.27", date="2026-10-16", items=(
         dict(emoji='🛃', text='Nghề mới Hải quan: thi tuyển 8 câu, phân luồng tờ khai, kiểm hóa, tính thuế, kiểm tra kho tiệm. Mở sau khi xong 3 chương.'),
         dict(emoji='👮', text='Điều lệnh Công an: không chuộc người thân đang chấp hành án, không cá độ ở chợ đen; Giám đốc CATP tối đa 6 lần vi phạm.'),

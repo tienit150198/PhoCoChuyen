@@ -215,6 +215,22 @@ class Entry(unittest.TestCase):
         self.assertTrue(gr.opens(s, 'customs'))
         self.assertTrue(self.rows(s)['chapters']['met'])
 
+    def test_applied_then_reset_still_validates(self):
+        """16/10: applied (customs listed in journey.unlocked), then reset (started False): the save must stay valid
+        while the door is open, and stays refused when listed before 3 chapters."""
+        from game import journey as jr
+        s = new_state()
+        jr.enable_story(s, 7)
+        j = s['journey']
+        j['unlocked'].append('customs')
+        with self.assertRaises(GameError):
+            validate_state(s)
+        for n in (1, 2, 3):
+            j['done'].append(n)
+            j['chapter'] += 1
+        self.assertFalse(s['careers']['customs'].get('started'))
+        validate_state(s)
+
     def test_luck_never_skips_the_entry_rules(self):
         s = new_state()
         self.assertIsNotNone(emp.entry_block(s, 'customs'))

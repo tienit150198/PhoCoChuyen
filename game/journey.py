@@ -1130,6 +1130,9 @@ def validate(s: dict) -> None:
          'Danh sách nơi làm việc đã mở không hợp lệ.')
     allowed = {cid for n in range(1, min(j['chapter'], LAST) + 1) for cid in CH_UNLOCKS[n]}
     allowed |= {cid for cid, c in s['careers'].items() if c.get('started')}
+    # 🛃 Hải quan is in no chapter: it opens after 3 chapters (gov_rules.opens). Once applied to and then reset (started
+    # again False) it stays listed, so the door itself allows it (16/10: a reset left a save refusing every action).
+    allowed |= {cid for cid in j['unlocked'] if gvr.opens(s, cid)}
     need(set(j['unlocked']) <= allowed, 'Nơi làm việc mở sớm hơn chương hiện tại.')
     need({cid for cid in CH_UNLOCKS[1] if cid in CAREERS} <= set(j['unlocked']), 'Thiếu nơi làm việc của chương đầu.')
     integer(j['wallet'], -10**7, 10**9)

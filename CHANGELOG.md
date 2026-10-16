@@ -1,3 +1,7 @@
+# v2.4.28 — 2026-10-16
+
+🛠️ Hotfix Hải quan: ứng tuyển rồi "làm lại nghề" (reset_career, started = False) để customs trong journey.unlocked mà không thuộc chương nào (CH_UNLOCKS) → mọi thao tác bị từ chối "Nơi làm việc mở sớm hơn chương hiện tại" (1 người chơi, 16/10). journey.validate cho phép nơi mà gov_rules.opens đã mở. Test: tests/test_career_customs.py test_applied_then_reset_still_validates.
+
 # v2.4.27 — 2026-10-16
 
 🛃 Nội dung cập nhật 14/10 của chủ game ("triển khai thêm cái này rồi thông báo nữa nhé").
