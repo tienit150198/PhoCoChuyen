@@ -173,7 +173,9 @@ function bootLive(m){
   m.live.on('auction_outbid',f=>import('./v4/auction.js').then(a=>a.onOutbid(env(),f)).catch(e=>console.warn('auction:',e)));
   m.live.on('auction_won',f=>import('./v4/auction.js').then(a=>a.onWon(env(),f)).catch(e=>console.warn('auction:',e)));
   const fw=f=>import('./v4/fireworks.js').then(a=>a.onFireworks(env(),f)).catch(e=>console.warn('fireworks:',e));
-  m.live.on('fireworks',fw);m.live.on('welcome',f=>{if(f.fw)fw(f.fw);if(f.isl_inv)import('./v4/island.js').then(a=>a.onIslandWelcome(env(),f.isl_inv)).catch(e=>console.warn('island:',e));});   // 🏝️ invitations waiting
+  m.live.on('fireworks',fw);m.live.on('welcome',f=>{if(f.fw)fw(f.fw);if(f.isl_inv)import('./v4/island.js').then(a=>a.onIslandWelcome(env(),f.isl_inv)).catch(e=>console.warn('island:',e));if(f.lx)lx('onWelcome',f.lx);});   // 🏝️ invitations waiting
+  const lx=(fn,f)=>import('./v4/lixi.js').then(a=>a[fn](env(),f)).catch(e=>console.warn('lixi:',e));   // 🧧 Lì xì: envelopes on screen, cards in Cả phố
+  m.live.on('lixi',f=>lx('onLixi',f));m.live.on('lixi_upd',f=>lx('onUpdate',f));
   m.live.on('wedinvite',f=>import('./v4/wedinvite.js').then(a=>a.onWedInvite(env(),f)).catch(e=>console.warn('wedinvite:',e)));
   m.live.on('cand',f=>import('./v4/cand.js').then(a=>a.onLive(env(),f)).catch(e=>console.warn('cand:',e)));   // 👮 a patrol's check (game/cand_ops.py)
   m.live.on('island_ping',f=>import('./v4/island.js').then(a=>a.onIslandPing(env(),f)).catch(e=>console.warn('island:',e)));   // 🏝️ an invitation to a friend's island
@@ -357,6 +359,7 @@ function navItems(c){
   if(api.state?.journey?.story&&api.state.journey.pets)items.push(['pets','paw','Thú cưng']);  // 🐾 v4/pets.js (own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.spend)items.push(['spend','coffee','Đi chơi'],['spendStyle','sparkle','Phong cách']);  // ☕🙏 quán, spa, rạp, công đức; 🎨 màu tên tuần (v4/spend.js, own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.lux)items.push(['lux','bag','Mua sắm'],['luxFw','sparkle','Bắn pháo hoa']);  // 🎆 #274 "bắn pháo hoa chỗ nào": one tap from Khu phố
+  if(api.state?.journey?.story&&api.content?.journey?.lixi)items.push(['lixi','gift','Lì xì']);  // 🧧 phát & giật lì xì (v4/lixi.js, own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.marriage?.spouse)items.push(['wedInvite','mail','Thiệp mời cưới']);  // 💌 thiệp mời cưới cả phố (v4/wedinvite.js): engaged or married
   if(api.state?.journey?.story&&api.state.journey.abroad)items.push(['abroad','globe','Du học & nước ngoài',api.state.journey.abroad.study?.lesson?'dot':0]);  // ✈️🌏 v4/abroad.js: a dot when today's lesson waits
   if(api.state?.journey?.story&&api.content?.journey?.auction)items.push(['auction','award','Nhà đấu giá']);  // 🔨 đồ độc bản (v4/auction.js, own dialog): only once the server has it  // 🛍️ du lịch, sưu tập, dinh thự, tiệc, khóa học, Mạnh Thường Quân (v4/lux.js, own dialog): only once the server has it
@@ -395,7 +398,7 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()))||(x[0]==='fair'&&!api.state?.fair?.over);
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['fair','luxFw','wedInvite','spend','pets','sharedIsland','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank','townProjects']],
+  ['pho','building','Khu phố',['fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank','townProjects']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','island','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
@@ -1687,6 +1690,7 @@ async function handleAction(action,data,el){
       if(action==='liveWed'){await (await import('./v4/wedding.js')).openWeddings(env());break;}  // 💍 Lịch cưới (v4/wedding.js): its own dialog
       if(action==='liveKara'){await (await import('./v4/venue-routing.js')).visitVenue(env(),'karaoke',async()=>{await (await import('./v4/karaoke.js')).openKaraoke(env(),data);});break;}  // 🎤 Phòng hát (v4/karaoke.js): its own dialog
       if(action==='tileMatch'){await (await import('./v4/tile-match.js')).openTileMatch(env());break;}  // 🧩 Ghép ba Phố Mây: its own dialog
+      if(action==='lixi'){await (await import('./v4/lixi.js')).openLixi(env(),data.tab||'list');break;}  // 🧧 Lì xì: its own dialog
       if(action==='wedInvite'){await (await import('./v4/wedinvite.js')).openWedInvite(env());break;}  // 💌 Gửi thiệp mời cưới cả phố: its own dialog
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy

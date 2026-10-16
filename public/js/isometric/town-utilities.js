@@ -7,7 +7,7 @@ import {choice as rideChoice,canRide,label as rideLabel,next as nextRide} from '
 export const townRideLabel=(state,content)=>canRide(state,content)?rideLabel(rideChoice(state,content)):'';
 export const nextTownRide=(state,content)=>nextRide(state,content);
 const JOURNEY_FEATURES={tileMatch:'tile',garage:'garage',gadgets:'gadgets',pets:'pets',spend:'spend',spendStyle:'spend',spendQuan:'spend',spendSpa:'spend',spendRap:'spend',spendChua:'spend',lux:'lux',luxFw:'lux',luxTrip:'lux',luxSuu:'lux',luxNha:'lux',luxBay:'lux',luxTiec:'lux',luxHoc:'lux',luxMtq:'lux',abroad:'abroad'};
-const CONTENT_FEATURES={quay:'quay',auction:'auction',auctionLands:'auction',jrCerts:'certs',island:'island'};
+const CONTENT_FEATURES={quay:'quay',auction:'auction',auctionLands:'auction',jrCerts:'certs',island:'island',lixi:'lixi'};
 const LIVE_FEATURES={liveWalk:'street',liveDate:'dating',liveWed:'wedding',liveKara:'kara'};
 const owns=(object,key)=>Object.prototype.hasOwnProperty.call(object,key);
 /** 💐 Thiệp 20/10 (/2010, game/event2010.py WRITE_UNTIL; tests/test_event2010.py keeps the two equal): the entries
@@ -58,7 +58,7 @@ export function townUtilityGroups(state={},content={},social={}){
       ['pets','award','🏆','Bé cưng của tuần',{tab:'board'},'pets-board'],
       ['stView','home','👶','Chăm con riêng & thú cưng',{view:'household'},'household'],
       ['spendQuan','coffee','☕','Cà phê & quán ăn'],['spendSpa','sparkle','🪷','Spa'],['spendRap','camera','🎬','Rạp phim'],['spendChua','home','🙏','Công đức'],
-      ['spendStyle','sparkle','🎨','Phong cách'],['luxFw','sparkle','🎆','Bắn pháo hoa'],
+      ['spendStyle','sparkle','🎨','Phong cách'],['lixi','gift','🧧','Lì xì'],['luxFw','sparkle','🎆','Bắn pháo hoa'],
       ['luxTrip','pilot','✈️','Du lịch'],['luxSuu','award','🏺','Sưu tầm'],['luxNha','home','🏰','Dinh thự'],['luxBay','pilot','🛩️','Bay riêng'],
       ['luxTiec','people','🎉','Mở tiệc'],['luxHoc','book','📚','Khóa học'],['luxMtq','heart','💝','Mạnh Thường Quân'],
     ])},

@@ -794,6 +794,31 @@ CREATE TABLE IF NOT EXISTS island_guests (
   status {T} NOT NULL CHECK (status IN ('invited','aboard','declined','left','removed')),
   invited double precision NOT NULL, answered double precision, PRIMARY KEY (trip, guest)
 );
+-- 🧧 Lì xì (game/lixi.py, live/lixi.py; SCHEMA_VERSION 51, owner 16/10 "cho phép người ta phát lì xì và giật lì xì"):
+-- one row per packet a player gave, written in the giver's own save transaction (jr_lixi_give: the debit and this row,
+-- both or neither), locked FOR UPDATE by every grab and by the 24 h sweep (`seq` moves on every change). left_n/left_xu:
+-- what is still in it; status open | done | expired | gone (the giver erased their data); `back` the xu returned to the
+-- giver (live_effects 'lixi:<id>:back'); `raw` a custom line before the chat mask, for admins only. New tables only.
+CREATE TABLE IF NOT EXISTS lixi_packets (
+  id {T} PRIMARY KEY, sid {T} NOT NULL, pid {T} NOT NULL, name {T} NOT NULL DEFAULT '', total bigint NOT NULL CHECK(total > 0),
+  n integer NOT NULL CHECK(n BETWEEN 1 AND 100), left_n integer NOT NULL CHECK(left_n >= 0), left_xu bigint NOT NULL CHECK(left_xu >= 0),
+  wish {T} NOT NULL DEFAULT '', text {T} NOT NULL DEFAULT '', raw {T} NOT NULL DEFAULT '', status {T} NOT NULL DEFAULT 'open',
+  day {T} NOT NULL, at double precision NOT NULL, expires double precision NOT NULL, done_at double precision,
+  back bigint NOT NULL DEFAULT 0, seq bigint NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS lixi_packets_sid ON lixi_packets(sid, at);
+CREATE INDEX IF NOT EXISTS lixi_packets_due ON lixi_packets(status, expires);
+CREATE INDEX IF NOT EXISTS lixi_packets_at ON lixi_packets(at);
+-- One row per envelope taken (one per player per packet), its amount drawn under the packet's lock and paid into the
+-- grabber's save through the live_effects row 'lixi:<packet>:<pid>' (game/live_effects.py: once). `day` the Vietnam day
+-- (the grabber's caps), `giver` the packet's sid (one giver's packets a day), `ip` a keyed hash (one per address).
+CREATE TABLE IF NOT EXISTS lixi_grabs (
+  packet {T} NOT NULL, sid {T} NOT NULL, pid {T} NOT NULL, name {T} NOT NULL DEFAULT '', giver {T} NOT NULL DEFAULT '',
+  amount bigint NOT NULL CHECK(amount > 0), day {T} NOT NULL, ip {T} NOT NULL DEFAULT '', at double precision NOT NULL,
+  PRIMARY KEY(packet, sid)
+);
+CREATE INDEX IF NOT EXISTS lixi_grabs_day ON lixi_grabs(sid, day);
+CREATE INDEX IF NOT EXISTS lixi_grabs_ip ON lixi_grabs(packet, ip) WHERE ip <> '';
 
 """
 
@@ -1136,6 +1161,8 @@ TABLES = [
     dict(name='town_gifts', identity=None),
     dict(name='island_trips', identity=None),
     dict(name='island_guests', identity=None),
+    dict(name='lixi_packets', identity=None),
+    dict(name='lixi_grabs', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 

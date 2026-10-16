@@ -36,10 +36,11 @@ import time
 ACTION = 'live_fx'                  # internal command (game/engine.py), never accepted from a client
 RID = 'live-'                       # request id prefix: live-<hash>
 KIND = 'life'                       # journey wallet history kind (journey.HISTORY_KINDS): old saves stay valid
-PAYS = ('coins', 'spirit', 'title', 'quay', 'quay_refund', 'auction', 'mishap', 'bark', 'bark_weekly', 'town')  # quay_refund preserves the original wage-funding pocket;
+PAYS = ('coins', 'spirit', 'title', 'quay', 'quay_refund', 'auction', 'mishap', 'bark', 'bark_weekly', 'town', 'lixi')  # quay_refund preserves the original wage-funding pocket;
 # 'auction' (game/auction.py): an escrow refund or a won lot; its row flips in the save's own transaction (auction.fx_commit)
 # 'bark' (game/dog_bark.py): 🐕 a tug-of-war's pot, a draw's or a cancel's stake; its row flips there too (dog_bark.fx_commit)
 # 'town' (game/town_projects.py): 🏗️ a finished project's titles for one sponsor (amount 1, data {project, rank, xu, titles})
+# 'lixi' (game/lixi.py): 🧧 an envelope grabbed, or what nobody took back to the giver (an older build leaves it pending)
 BESIDE = ('closeness',)             # kinds this build applies beside the save (player_closeness, game/wedding_live.py)
 LABELS = dict(envelope='🧧 Lì xì dạo phố', date='💕 Buổi hẹn trên phố', guest='💍 Đi ăn cưới', host='💍 Khách tới dự đám cưới',
               anniv='💞 Kỷ niệm ngày cưới', anniv_npc='🧧 Hàng xóm mừng kỷ niệm cưới', race='🥇 Khách mời của tuần', env='🧧 Phong bì mừng cưới',
@@ -80,7 +81,7 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     kind = p.get('kind')
     e.need(kind in PAYS, 'Loại phần thưởng không hợp lệ.')
     transfer_refund = kind == 'coins' and p.get('src') == 'xfer_back'
-    amount = e.integer(p.get('amount'), SPIRIT_DOWN if kind == 'spirit' else 1, 2_000_000 if kind == 'bark_weekly' else 10**9 if transfer_refund or kind in ('auction', 'mishap', 'bark') else AMOUNT_MAX)
+    amount = e.integer(p.get('amount'), SPIRIT_DOWN if kind == 'spirit' else 1, 2_000_000 if kind == 'bark_weekly' else 10**9 if transfer_refund or kind in ('auction', 'mishap', 'bark') else 10**7 if kind == 'lixi' else AMOUNT_MAX)
     e.need(amount != 0, 'Số lượng không hợp lệ.')
     h = short(eid)
     got = j.get('live_fx') if isinstance(j.get('live_fx'), list) else []
@@ -98,6 +99,9 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     elif kind == 'bark':   # 🐕 Kéo co chó sủa: a pot won, a stake back (game/dog_bark.py)
         from . import dog_bark
         message = dog_bark.apply_fx(s, p, amount)
+    elif kind == 'lixi':   # 🧧 an envelope grabbed, or the rest of a packet back to its giver (game/lixi.py)
+        from . import lixi
+        message = lixi.apply_fx(s, p, amount)
     elif kind == 'bark_weekly':
         from . import dog_bark_board
         message = dog_bark_board.apply_fx(s, p, amount)
@@ -182,7 +186,7 @@ def on_load(store, token: str, state: dict | None) -> bool:
                 payload.update(wage=data.get('wage'),source=data.get('source'))
         elif r['kind'] == 'quay_refund':
             payload.update(source=data.get('source'),label=data.get('label'))
-        elif r['kind'] in ('auction', 'bark', 'bark_weekly', 'town'):
+        elif r['kind'] in ('auction', 'bark', 'bark_weekly', 'town', 'lixi'):
             payload['data'] = data
         elif r['kind'] == 'mishap':
             payload['sub'] = data.get('sub')
