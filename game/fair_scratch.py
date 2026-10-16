@@ -10,14 +10,13 @@ its prize in exactly 3 boxes and every other amount at most twice, a losing one 
 rule on the ticket, "3 ô giống nhau trúng số đó", always reads the same as the result). The client only scratches it
 open; nothing it sends decides anything.
 
-Owner 14/10: 55% of tickets win on the first ordinary round of a run at every price
-(game.fair.BASES['xs']); round 2 is 53.5%, then 52%, 50.5%, ... down to 40%.
-Four consecutive wins still cap the next draw at 45%; existing reset and large-stake rules remain.
-A refund counts as a winning ticket. The unchanged PRIZES table averages 1.801× a won ticket,
-so the first ordinary round returns 99.055% before streak cooling, police or Lộc.
+Owner 16/10 (the rebalance): a ticket wins with game.fair.luck_p (.57 a ticket, .60 winning back a small loss, lower
+once the day is well up or tickets are bought too fast; never below .40) and a won ticket pays PRIZES: 1.5× 800,
+2× 140, 3× 40, 5× 15, 20× 5 per 1000 won tickets, a mean of 1.775× (no 1× "refund" prize any more), the prize
+rounded down to whole xu (amount(): the 2-xu vé's 1.5× pays 3). A .57 ticket returns 101.2% before streak cooling,
+police or Lộc. Four consecutive wins still cap the next draw at 45%, a 50k+ stake (none on this menu) at 40%.
 Already purchased tickets retain their layout and payment.
-The temporary golden-days event uses only PRIZES multipliers above one for its
-winning draw, so an event win is positive net. Normal tickets keep the full table.
+The temporary golden-days event uses only PRIZES multipliers above one for its winning draw (now all of them).
 """
 from __future__ import annotations
 
@@ -26,20 +25,26 @@ NAMES = {2: 'Vé Lộc Nhỏ', 5: 'Vé Phát Tài', 10: 'Vé Như Ý', 20: 'Vé 
          50: 'Vé Tài Lộc', 100: 'Vé Phú Quý', 200: 'Vé Thịnh Vượng', 500: 'Vé Đại Lộc', 1000: 'Vé Ngàn Lộc'}
 CELLS = 9                       # a 3 × 3 grid under the silver
 MATCH = 3                       # 3 boxes of the same amount: that amount is won
-# (multiple of price, weight per 1000 winning tickets): E[multiple | win] = 1.801 (08/10; was 675 230 60 25 8 1 1: 1.59)
-PRIZES = ((1, 655), (2, 230), (3, 62), (5, 32), (10, 14), (20, 5), (50, 2))
+# (multiple of price, weight per 1000 winning tickets): E[multiple | win] = 1.775 (owner 16/10; 08/10–15/10:
+# (1, 655) (2, 230) (3, 62) (5, 32) (10, 14) (20, 5) (50, 2), 1.801 with refunds)
+PRIZES = ((1.5, 800), (2, 140), (3, 40), (5, 15), (20, 5))
 MULTS = tuple(m for m, _ in PRIZES)
-# Historical API retained at the current fixed base probability.
-P_HI, P_LO = .55, .55   # game.fair.BASES['xs']
+# Historical API retained at the current base probability.
+P_HI, P_LO = .57, .57   # game.fair.BASES['xs']
 RUN_STEP = 0
+
+
+def amount(price: int, mult) -> int:
+    """What a ticket of `price` pays at multiple `mult` (0: nothing), rounded down to whole xu."""
+    return int(price * mult) if mult else 0
 
 
 def win_p(net: int) -> float:
     return P_HI
 
 
-def prize_mult(rng, *, profit_only: bool = False) -> int:
-    """A winning ticket's multiple; the golden event excludes break-even refunds."""
+def prize_mult(rng, *, profit_only: bool = False):
+    """A winning ticket's multiple (1.5 or a whole number); the golden event excludes break-even refunds (none left)."""
     prizes = tuple((m, w) for m, w in PRIZES if m > 1) if profit_only else PRIZES
     x = rng.randrange(sum(w for _, w in prizes))
     for m, w in prizes:
@@ -49,16 +54,16 @@ def prize_mult(rng, *, profit_only: bool = False) -> int:
     return prizes[0][0]
 
 
-def layout(price: int, mult: int, rng) -> list[int]:
-    """The CELLS amounts under the silver: `mult` (0: a losing ticket) × price in exactly MATCH boxes, every other
-    amount of the table at most MATCH - 1 times."""
-    cells = [mult * price] * MATCH if mult else []
+def layout(price: int, mult, rng) -> list[int]:
+    """The CELLS amounts under the silver: amount(price, mult) (mult 0: a losing ticket) in exactly MATCH boxes, every
+    other amount of the table at most MATCH - 1 times."""
+    cells = [amount(price, mult)] * MATCH if mult else []
     left = {m: MATCH - 1 for m in MULTS if m != mult}
     while len(cells) < CELLS:
         pool = [m for m, n in left.items() if n > 0]
         m = rng.choice(pool)
         left[m] -= 1
-        cells.append(m * price)
+        cells.append(amount(price, m))
     rng.shuffle(cells)
     return cells
 

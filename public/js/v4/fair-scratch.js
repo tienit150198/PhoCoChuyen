@@ -21,6 +21,8 @@ const MIN_R=16;
 
 export function setup(ctx){
   const {S,F,btn,say,xu,esc,send,render,sfx,pick,reduce}=ctx;
+  const payX=ctx.payX||(x=>String(x).replace('.',','));   // 1.5 → "1,5"
+  const amount=(price,m)=>Math.floor(price*m);   // the server's fair_scratch.amount: rounded down to whole xu
   const D=S.xs={tier:5,t:null,done:false,cov:null,pct:0,strokes:[],say:'',buying:false,fading:false,sound:0};
   const R=()=>F().scratch||null;
 
@@ -46,23 +48,23 @@ export function setup(ctx){
     const t=D.t;
     if(!t.prize)return `<div class="fh-result bad"><b>Chưa trúng</b><small>−${xu(t.price)}</small></div>`;
     if(t.prize===t.price)return `<div class="fh-result good"><b>Hoàn vé ${xu(t.prize)}</b><small>Ba ô đúng bằng giá vé</small></div>`;
-    return `<div class="fh-result good"><b>🎉 Trúng ${xu(t.prize)}!</b><small>Lời ${xu(t.net)} · gấp ${t.mult} lần giá vé</small></div>`;
+    return `<div class="fh-result good"><b>🎉 Trúng ${xu(t.prize)}!</b><small>Lời ${xu(t.net)} · gấp ${payX(t.mult)} lần giá vé</small></div>`;
   }
   function view(){
     const f=F(),r=R(),tiers=r?.tiers||[2,5,10,20],wallet=f.wallet||0,on=live(),busy=D.buying||S.busy;
     if(!tiers.includes(D.tier))D.tier=tiers[1]||tiers[0];
     if(!D.say)D.say=pick(SELLER.idle);
     const shown=wallet-hold(),why=!on&&D.tier>shown?'Ví không đủ xu':'';
-    const mults=r?.mults||[1,2,3,5,10,20,50],price=on?D.t.price:D.tier;
+    const mults=r?.mults||[1.5,2,3,5,20],price=on?D.t.price:D.tier;
     const go=on?`<div class="fh-go"><span>Đã cào <b class="fh-xs-pct">${Math.round(D.pct*100)}%</b></span>${btn('🪙 Cào hết','xsall',{},'cream big',' data-fh-key="xsall"')}</div>`
-      :`<div class="fh-go"><span>Vé <b>${xu(D.tier)}</b> · trúng đến <b>${xu(D.tier*mults[mults.length-1])}</b></span>${btn(busy?'Đang lấy vé…':'🎟️ Mua vé','xsbuy',{},'primary big',busy||why?' disabled data-fh-key="xsbuy"':' data-fh-key="xsbuy"')}</div>`;
+      :`<div class="fh-go"><span>Vé <b>${xu(D.tier)}</b> · trúng đến <b>${xu(amount(D.tier,mults[mults.length-1]))}</b></span>${btn(busy?'Đang lấy vé…':'🎟️ Mua vé','xsbuy',{},'primary big',busy||why?' disabled data-fh-key="xsbuy"':' data-fh-key="xsbuy"')}</div>`;
     return `<section class="fh-stall fh-xs" aria-label="Vé số cào">
       ${say(SELLER,D.say)}
       ${card()}${result()}
       <div class="fh-chips" role="group" aria-label="Loại vé"><span>Vé</span>${tiers.map(v=>`<button type="button" class="fh-chip${D.tier===v?' on':''}" data-fh="xstier" data-v="${v}" aria-pressed="${D.tier===v}" data-fh-key="xst-${v}"${on||busy||v>shown?' disabled':''}${v>shown?' title="Ví không đủ xu"':''}>${v}</button>`).join('')}</div>
       ${go}
       ${why&&!busy?`<p class="fh-why">${esc(why)}: chọn vé rẻ hơn nha.</p>`:''}
-      <details class="fh-how" data-fh-key="xshow"><summary>Cơ cấu giải vé ${xu(price)}</summary><ul>${mults.map(m=>`<li>3 ô <b>${xu(m*price)}</b> → trúng <b>${xu(m*price)}</b>${m===1?' (hoàn vé)':''}</li>`).join('')}</ul><p class="small muted">Mỗi vé trúng nhiều nhất một giải. Không có 3 ô giống nhau là vé không trúng.</p></details>
+      <details class="fh-how" data-fh-key="xshow"><summary>Cơ cấu giải vé ${xu(price)}</summary><ul>${mults.map(m=>`<li>3 ô <b>${xu(amount(price,m))}</b> → trúng <b>${xu(amount(price,m))}</b> (gấp ${payX(m)} lần giá vé)</li>`).join('')}</ul><p class="small muted">Mỗi vé trúng nhiều nhất một giải. Không có 3 ô giống nhau là vé không trúng.</p></details>
       <p class="fh-rule">Chọn loại vé, mua rồi cào lớp bạc bằng ngón tay (hoặc kéo chuột). Ba ô cùng một số tiền là trúng đúng số tiền đó, tiền thưởng vô ví liền.</p>
     </section>`;
   }

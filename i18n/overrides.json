@@ -959,6 +959,8 @@
   "Giờ vàng - lợi nhuận cao: mỗi ngày một khung giờ bất ngờ, lãi tiệm và quầy ×2.": "Golden Hour - big profits: every day a surprise window, shop and counter profit ×2.",
   "Có hôm là Ngày vàng: lãi ×1,5 cả ngày. Canh giờ mà bán nhé!": "Some days are a Golden Day: profit ×1.5 all day. Watch the clock and sell!",
   "Tăng tỷ lệ thắng chợ đen": "Higher win rates at the black market",
+  "🥶 Chơi dồn dập quá, vận đang nguội. Chậm tay lại chút là vận ấm lại.": "🥶 You are playing too fast, your luck has cooled. Slow down a little and it warms up again.",
+  "Bốn đồng xu, mặt đỏ chẵn (0, 2, 4) là Chẵn, lẻ (1, 3) là Lẻ. Đoán trúng ăn 0,75 lần tiền cược (nhà cái giữ 25%).": "Four coins: an even number of red faces (0, 2, 4) is Even, odd (1, 3) is Odd. A right guess wins 0.75× your stake (the house keeps 25%).",
   "Hoàn cước 20 xu": "Refund 20 coins postage",
   "Kho hàng: mua thêm Gộp thùng tự đặt (10.000 xu), hàng tự đặt về tới cửa gom chung một thùng, mở và kiểm một lần.": "Stock room: buy Merge auto-orders (10,000 coins): auto-ordered goods at the door come in one crate, opened and checked once.",
   "📦 Gộp thùng tự đặt": "📦 Merge auto-orders",
@@ -24264,6 +24266,8 @@
   "Ngày thực là ngày lịch 0h–24h giờ Việt Nam. Ngày đạt khi bạn tự làm xong ít nhất 3 việc không lỗi và ít nhất 80% số việc trong ngày không lỗi, kèm một ca quản lý được nghiệm thu. Ngày đạt được cộng khi qua 0h. Việc giữ từ ngày nghề trước, làm xong hôm nay vẫn tính. Việc của nhân viên, ca quản lý và đơn người chơi không tính; đổi ngày nghề không tăng ngày thực. Khác với “ngày đạt chuẩn” của Tay nghề lâu năm, vốn tính theo ngày nghề khi khép ca.": "A real day is a calendar day, midnight to midnight, Vietnam time. It qualifies when you finish at least 3 jobs yourself without mistakes, at least 80% of that day's jobs are mistake-free, and one management shift is accepted. A qualifying day is added at midnight. Jobs kept from an earlier career day still count when you finish them today. Staff jobs, management shifts and player orders do not count; changing the career day does not add real days. This differs from the Mastery track's \"qualified days\", which count career days when you close them."
   },
   "patterns": {
+  "Ra mấy con trùng mặt đặt thì ăn bấy nhiêu lần tiền cược, kèm tiền vốn. Ba con giống nhau (bão) ăn $1 lần; lắc dồn dập quá hoặc hôm nay đã lời đậm thì bão ăn $2 lần.": "Each die showing your animal pays your stake once, plus your stake back. Three of a kind (a triple) pays $1 times; shaking too fast, or after a big winning day, a triple pays $2 times.",
+  "(gấp $1 lần giá vé)": "($1× the ticket price)",
   "Mời $1 mang đủ chứng từ tới bộ phận một cửa, chi cục đối chiếu lại từng dòng ạ.": "We invite $1 to bring all documents to the one-stop desk so the Branch can recheck them line by line.",
   "Chi cục kiểm theo luồng hệ thống phân: xanh, vàng hay đỏ đều có căn cứ. Hôm đó $1 ạ.": "The Branch inspects by the system-assigned channel: green, yellow, or red, each has its grounds. That day, $1.",
   "Định mức không phải khai: $1 xu quy đổi.": "No-declaration allowance: $1 coins equivalent.",

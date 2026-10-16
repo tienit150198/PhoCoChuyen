@@ -4,25 +4,39 @@ The ordinary rules below resume automatically outside the one-shot golden-days
 promotion (game/fair_golden_days.py). During its persisted 48-hour window only
 chiếu trong, lô tô and vé cào use the event draw; scratch wins then exclude refunds.
 
-Owner 15/10 (game/fair_boost.py, server only): the day's first round of chiếu trong / lô tô / vé cào draws 65%, and
-3–4 secret ~3-minute windows a day draw 70%, both only below BIG_WIN_FROM; xóc đĩa rounds are 3 s apart at least.
+Owner 16/10 (rebalance, "tỷ lệ là 55 - 60% thôi … đừng cho lỗ nhưng đừng cho lãi nhiều", "phải tính cả trường hợp
+người ta cheat, hoặc chơi kiểu ít tiền thua sau đó chơi tiền lớn, hoặc cheat spam ăn nhiều", "đừng giới hạn 600 ván,
+thay vì đó là mình cho spam 1 game nhanh quá thì thua cao hơn"). Supersedes the 14/10 55%-then-decay draw and the
+15/10 boosts (game/fair_boost.py: the day's first round at 65% and the secret 70% windows are gone; xóc đĩa's 3 s gap
+stays). Chiếu trong / xóc đĩa, lô tô and vé cào (DRAWN) draw, in luck_p:
 
-Owner 14/10: chiếu trong, lô tô and vé cào start at 55% for ONE ordinary round per run,
-then decrease 1.5 percentage points every round from round 2 (53.5%, 52%, 50.5%, ...).
-Floors, streak caps, large-stake caps, reset rules and payouts stay unchanged. Existing saved
-heat is retained. Ném vòng keeps its own ten-round grace. This supersedes the historical
-08/10 goal that every paid stall must always have a house edge: the initial xd/lt RTP now exceeds 100%.
-Single fresh ordinary round, before police and streak cooling (docs/FAIR_HOUSE_EDGE.md;
-scripts/sim_fair_odds.py keeps the real draws/payouts and omits enforcement):
+* By today's Chợ đen net (all paid stalls, Vietnam day, _today(f, t)['net'], before this round): net ≥ HOT_FROM
+  (100,000) P_HOT .45; net > UP_FROM (30,000) P_UP .52; net < 0 and a stake ≤ min(−net, BACK_MAX 5,000) P_BACK .60
+  (winning back what was lost, small stakes only, so losing a little then betting big gains nothing); else BASES .57.
+* Pace (spam one stall too fast): this player's rounds at THAT stall in the last PACE_S (60) seconds, this one
+  included (journey[PACE_KEY], _pace): up to 10 nothing, 11–15 −.05, 16 or more −.12 (PACE_STEPS). Never below P_MIN
+  (.40). The same pace (11+) and net (≥ HOT_FROM) also lower bầu cua's bão (BAO 20 → BAO_LOW 10, bc_bao) and đua
+  chó's payouts (fair_dog.CLASSES → the 15/10 OLD prices). cold() tells the stall "chơi dồn dập quá" (no number).
+* Unchanged: four wins in a row cool the next draws to WIN_P_LOW (45%); a stake of BIG_WIN_FROM (50,000) or more
+  draws at most BIG_WIN_P (40%); the police (game/fair_bm.py); 🍀 Lộc; the free ném vòng's own draw and decay.
+* Payouts: chiếu trong pays XD_PAY_PCT (75) % of the stake on a win (the house keeps 25%, xâu); lô tô LOTO_PAY 1.8×
+  the tờ; vé cào's won tickets average 1.775× (fair_scratch.PRIZES, no refund prizes); bầu cua bão BAO:1.
+  No daily round cap (owner 16/10).
 
-  stall        how                                            return  with 🍀 Lộc (gate always open)
-  bầu cua      three honest dice, 1:1 a die, bão BAO:1         95.4%   96.5%
-  chiếu trong  even money, 55% win draw                       110.0%  111.5%
-  lô tô        55% draw, timely Kinh at 2.1×                  115.5%  117.0%   (2- and 5-xu tờ: 110.0%)
-  vé cào       55% tickets win, mean prize 1.801×              99.1%   99.5%
-  đua chó      fixed odds, the outsider at best               95.0%   95.0%   (the favourite: 92.8%)
+Single ordinary round before police, streak cooling and Lộc (docs/FAIR_HOUSE_EDGE.md; scripts/sim_bm_strategies.py
+plays the real luck_p/_draw_luck and payouts per Vietnam day):
 
-Ordinary draw reductions remain: the cool-off after STREAK wins (WIN_P_LOW), the spam decay (RUN_STEP down to P_FLOOR),
+  stall        how                                      .57 draw  winning back (.60)  net > 30k (.52)  net ≥ 100k (.45)
+  bầu cua      three honest dice, 1:1 a die, bão 20:1   100.0%    (bão 10:1 when fast or ≥ 100k up: 95.4%)
+  chiếu trong  a win pays 0.75× the stake               99.75%    105.0%              91.0%            78.75%
+  lô tô        timely Kinh at 1.8× the tờ               102.6%    108.0%              93.6%            81.0%
+  vé cào       won tickets average 1.775×               101.2%    106.5%              92.3%            79.9%
+  đua chó      fixed odds, +5% (old prices when fast)   96–100%   (old: 92.8–95.0%)
+
+With 🍀 Lộc's gate always open, at the .57 draw: bầu cua 101.1%, chiếu trong 101.3%, lô tô 104.2%, vé cào 102.8%,
+đua chó (the best dog) 100.0%. Four wins in a row cool the next draws (above), so a steady player gets about 98%.
+
+Ordinary draw reductions remain: the cool-off after STREAK wins (WIN_P_LOW), the pace penalty (above),
 a Kinh called late, the police (raids, the asset check). The lô tô side bets are closed (SIDE_OPEN: the minute's
 calls are the same for everyone, so a player who saw them could pick the likely chẵn/lẻ or cột). 🍀 Lộc trời cho stays
 (LOC_P lower: on a busy server it still comes about once an hour). Phóng dao is a skill game (owner 05/10: no chance
@@ -37,12 +51,11 @@ xuống còn 40%, công an sẽ đòi chứng minh tài sản ở đâu ra và t
 
 * Per-player, per-stall winning streaks: after four wins in a row the next rounds cool off to WIN_P_LOW (45%), a draw
   already lower stays lower. The sure win after four losses is gone (07/10: bet small four times, then big).
-* Spam decay (journey[COOL_KEY], _heat): past RUN_FREE rounds of the same luck stall, each round's draw is RUN_STEP
-  lower, down to P_FLOOR (40% won rounds; xóc đĩa XD_FLOOR so its won rounds stop at 40% too). Only two things bring a
-  stall back to the full rate: SWITCH_ROUNDS rounds of other paid luck stalls (PAID_LUCK, any mix) since its last
-  round, each staking at least switch_min (max(SWITCH_MIN, ¼ of the last stake there)), or a RUN_GAP pause from it.
-  Free or skill stalls (ném vòng, ô ăn quan, phóng dao) change nothing. Bầu cua (honest dice) never cools.
-  The stall shows "Vận đang nguội vì chơi liền một trò" (public: cold).
+* Spam decay (journey[COOL_KEY], _heat): since 16/10 it lowers only the free ném vòng's draw (past RING_RUN_FREE
+  rounds, RUN_STEP a round down to P_FLOOR). Its counts are still kept for every stall (an older server reads them;
+  SWITCH_ROUNDS rounds of other paid luck stalls, each staking at least switch_min, or a RUN_GAP pause reset a run),
+  but chiếu trong, lô tô and vé cào draw from the pace penalty instead (above). The stall's "Vận đang nguội" hint
+  (public: cold) now tells the pace penalty.
 * Knife and o an quan remain skill games with unchanged opponents/collisions.
 * Normal back-corner raids: 0.88% (owner 07/10, "giảm bớt bị công an bắt xuống 50%": half of 1.76%). Paid chance
   rounds can also trigger a 35% enforcement check (was 70%) above 50,000 daily net xu, at most once per 30 minutes;
@@ -92,7 +105,7 @@ from . import fair_watch as watch   # 🕶️ the police's eye on the skill stal
 from . import fair_hai as hai     # 👴 Ông Hai's table: games a day, the police after a run of wins
 from . import fair_dog as dog    # 🐕 đua chó: the roster, the lineups, the draw
 from . import fair_golden_days as golden  # one persisted, server-only 48-hour luck event
-from . import fair_boost as boost  # 🎲 the day's first round and the short windows (owner 15/10), xóc đĩa's 3 s gap
+from . import fair_boost as boost  # 🎲 xóc đĩa's 3 s gap (owner 15/10; its boosts are gone since 16/10)
 
 VERSION = 1
 FAIR_START = '2026-10-09'      # first day (Vietnam date), 00:00 UTC+7 (owner 08/10: the fair opens again)
@@ -114,12 +127,27 @@ KIND = 'fair'                  # journey wallet history kind (journey.HISTORY_KI
 # puts on the saved counters (rolling release), which therefore stop there.
 DAY_CAP = 150
 ROUNDS_DAY = 400
-# Owner 14/10: one initial ordinary round at 55% in xd/lt/xs; payouts remain unchanged.
-# The initial xd/lt return now exceeds break-even (docs/FAIR_HOUSE_EDGE.md).
-# xóc đĩa: even money, its raids (RAID_PCT) come first; lô tô: a Kinh pays LOTO_PAY tenths of the tờ; vé cào: a won
-# ticket pays scratch.PRIZES; ném vòng takes no stake (3 decimals: a ring round keeps its draw as p/1000).
-# Skill games, honest dice, fixed dog odds and the free ring draw stay unchanged.
-BASES = dict(xd=.55, lt=.55, xs=.55, ring=.503)
+# Owner 16/10: xd/lt/xs draw BASES (.57) unless today's net or the pace says otherwise (luck_p, the module docstring).
+# xóc đĩa: a win pays XD_PAY_PCT % of the stake, its raids (RAID_PCT) come first; lô tô: a Kinh pays LOTO_PAY tenths of
+# the tờ; vé cào: a won ticket pays scratch.PRIZES; ném vòng takes no stake (3 decimals: a ring round keeps its draw as
+# p/1000). Skill games, honest dice and the free ring draw stay unchanged.
+BASES = dict(xd=.57, lt=.57, xs=.57, ring=.503)
+DRAWN = ('xd', 'lt', 'xs')     # the stalls whose rounds are drawn at a rate (luck_p's bands and pace)
+# Today's Chợ đen net (before the round): ≥ HOT_FROM draws P_HOT, > UP_FROM P_UP; below 0 a stake of at most
+# min(−net, BACK_MAX) draws P_BACK (winning back, small stakes only). Never below P_MIN. Server only, never shown.
+HOT_FROM, P_HOT = 100_000, .45
+UP_FROM, P_UP = 30_000, .52
+BACK_MAX, P_BACK = 5_000, .60
+P_MIN = .40
+# The pace (owner 16/10 "cho spam 1 game nhanh quá thì thua cao hơn", no round cap): a player's rounds at one stall in
+# the last PACE_S seconds, this one included; PACE_STEPS (from, cut) the largest first. PACE_SLOW: from that many
+# rounds bầu cua's bão pays BAO_LOW and đua chó its old prices. journey[PACE_KEY] {game: [epoch s of the last ≤ PACE_KEEP
+# rounds]} (optional: an older server keeps unknown journey keys as they are).
+PACE_KEY, PACE_S, PACE_KEEP = 'fair_pace', 60, 20
+PACE_STEPS = ((16, .12), (11, .05))
+PACE_SLOW = 11
+PACE_GAMES = ('bc', 'xd', 'lt', 'xs', 'dg')
+XD_PAY_PCT = 75                # a won chiếu trong round: the stake back + XD_PAY_PCT % of it, rounded down (xâu 25%)
 WIN_P, WIN_P_LOW = .50, .45   # the older single rate (rules.luck_pct for an older client), and the streak cool-off
 LOTO_WIN_P = BASES['lt']
 LUCK_BASE = BASES['ring']      # the draw of a stall without its own BASES entry
@@ -166,7 +194,8 @@ STAKE_MAX = 10**7             # owner 11/10 (later) "mức cược 1 ván không
 NET_SAFE = 5 * 10**8           # (wallet ≤ 10**9, today's net within ±10**9) are the only limit; the police's STAKE_CURVE
 WALLET_SAFE = 9 * 10**8        # makes such stakes a bad bet. A win moves several Sổ ví rows (_pay_big).
 BC_MAX = STAKE_MAX
-BAO = 10                       # three dice on the face you bet: BAO:1 (standard rules: 3:1)
+BAO = 20                       # three dice on the face you bet: BAO:1 (owner 16/10: one face returns exactly 100%)
+BAO_LOW = 10                   # ... BAO_LOW:1 while the bầu cua pace is PACE_SLOW or more, or today's net ≥ HOT_FROM
 # 🕯️ Chiếu trong
 XD_MIN, XD_MAX = 10, STAKE_MAX
 SIDES = ('chan', 'le')
@@ -202,11 +231,11 @@ LOC_LABEL = '🍀 Lộc trời cho ×10'
 LOC_ACTIONS = ('fair_bc', 'fair_xd', 'fair_xs', 'fair_loto_kinh', 'fair_dg')
 # 🎱 Lô tô
 LOTO_PRICE = 5
-LOTO_PRIZE = 10                # the older client's plain card: prize_of('thuong', LOTO_PRICE, 1) (was 23, a pot)
+LOTO_PRIZE = 9                 # the older client's plain card: prize_of('thuong', LOTO_PRICE, 1) (was 23, a pot)
 LOTO_NPCS = 4
-# Loto: BASES['lt'] of the rounds go the player's way, and a Kinh pays LOTO_PAY tenths of what the tờ cost, rounded
-# down (07/10: 2.1×, was 2.2× / 2.3×): a fresh 55% round returns 115.5% (110% on the 2- and 5-xu tờ).
-LOTO_PAY = dict(thuong=21, nguoc=21, doi=21, dem=21)
+# Loto: luck_p's share of the rounds go the player's way, and a Kinh pays LOTO_PAY tenths of what the tờ cost, rounded
+# down (owner 16/10: 1.8×, was 2.1×): a .57 round returns 102.6% (the 2-xu tờ pays 3: 85.5%).
+LOTO_PAY = dict(thuong=18, nguoc=18, doi=18, dem=18)
 LOTO_TRIES = 300               # round ids tried for the outcome drawn (≈2..8 needed); the last one tried after that
 LOTO_TTL = 20 * 60             # a card can be claimed this long after it was bought
 NEIGHBOURS = (('Bác Tư', '👴'), ('Bà Năm', '👵'), ('Chú Sáu', '🧔'), ('Cô Ba', '👩'), ('Anh Tèo', '🧑'), ('Chị Mận', '👧'))
@@ -648,8 +677,66 @@ def featured_game(t: float) -> str:
 
 
 def chance_rate(game: str, t: float, stake: int | None = None, net: int = 0) -> float:
-    """The draw of a fresh round of a stall (BASES), independent of money or time: the most it ever is."""
-    return BASES.get(game, LUCK_BASE)
+    """The most an ordinary round of a stall ever draws (xd/lt/xs: P_BACK, winning back; ring: BASES). A draw above it
+    is a locked or event one (_draw_luck)."""
+    return P_BACK if game in DRAWN else BASES.get(game, LUCK_BASE)
+
+
+def base_p(net: int, stake: int | None) -> float:
+    """Owner 16/10: the draw of an xd/lt/xs round by today's Chợ đen net (before the round) and its stake."""
+    if net >= HOT_FROM:
+        return P_HOT
+    if net > UP_FROM:
+        return P_UP
+    if net < 0 and type(stake) is int and stake <= min(-net, BACK_MAX):
+        return P_BACK
+    return BASES['xd']
+
+
+def pace_cut(n: int) -> float:
+    """How much the pace (rounds at the stall in the last PACE_S seconds, this one included) takes off the draw."""
+    return next((cut for k, cut in PACE_STEPS if n >= k), 0.0)
+
+
+def _pace_list(j: dict, game: str, t: float) -> list:
+    """This stall's saved round times still inside the pace window (a clock gone back keeps them: they still count)."""
+    c = j.get(PACE_KEY)
+    lst = c.get(game) if isinstance(c, dict) else None
+    now = int(t)
+    return [x for x in lst if now - x < PACE_S] if isinstance(lst, list) else []
+
+
+def _pace(j: dict, game: str, t: float) -> int:
+    """Count this round at `game` (journey[PACE_KEY], pruned to the window and PACE_KEEP); returns the rounds there in
+    the last PACE_S seconds, this one included."""
+    lst = _pace_list(j, game, t) + [int(t)]
+    c = j.get(PACE_KEY)
+    if not isinstance(c, dict):
+        c = j[PACE_KEY] = {}
+    for g in [g for g in c if g != game]:   # the other stalls: only what is still inside the window
+        left = _pace_list(j, g, t)
+        if left:
+            c[g] = left
+        else:
+            del c[g]
+    c[game] = lst[-PACE_KEEP:]
+    return len(lst)
+
+
+def pace_now(j: dict, game: str, t: float) -> int:
+    """The rounds this player played at `game` in the last PACE_S seconds (read only)."""
+    return len(_pace_list(j, game, t))
+
+
+def bc_bao(f: dict | None, n: int, t: float) -> int:
+    """A bão's multiple for a bầu cua round whose pace is n (this round included): BAO, or BAO_LOW when it is
+    PACE_SLOW or more or today's net (before the round) is HOT_FROM or more."""
+    return BAO_LOW if n >= PACE_SLOW or _today(f, t)['net'] >= HOT_FROM else BAO
+
+
+def slow_odds(f: dict | None, n: int, t: float) -> bool:
+    """Đua chó pays its old prices (fair_dog.OLD) for a bet whose pace is n (this bet included) or past HOT_FROM."""
+    return n >= PACE_SLOW or _today(f, t)['net'] >= HOT_FROM
 
 
 def switch_min(r: dict) -> int:
@@ -695,16 +782,19 @@ def run_rate(game: str, n: int) -> float:
 
 
 def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = None) -> float:
-    """Count the round and choose its draw. Golden days (golden.rate): 300,000 xu or more draws at 40%; the boost only
-    for a stake under golden.SMALL_STAKE while today's net is at most golden.NET_STOP; otherwise, and outside the
-    event, the ordinary run rate applies."""
+    """Count the round and choose its draw. Golden days (golden.rate, a past event): its own draw. Otherwise xd/lt/xs
+    draw base_p (today's net, the stake) less pace_cut (this stall's rounds in the last minute), never below P_MIN;
+    ném vòng its run rate. Bầu cua counts its pace here (its dice stay honest: bc_bao). A 50k+ round: BIG_WIN_P at most.
+    The 15/10 boosts are gone (fair_boost.rate is None); the spam decay's counts (_heat) are still kept for the ring."""
     _run(j, game, t)
     n = _heat(j, game, t, stake or 0)
+    pace = _pace(j, game, t) if game in PACE_GAMES else 0
     p = _golden_rate(j, f, game, t, stake)
-    p = run_rate(game, n) if p is None else p
-    b = boost.rate(j, game, t, stake, BIG_WIN_FROM, _today(f, t)['net'])   # owner 15/10: the day's first round, the short windows (< 50k)
-    if b is not None:
-        p = max(p, b)
+    if p is None:
+        if game in DRAWN:
+            p = max(P_MIN, round(base_p(_today(f, t)['net'], stake) - pace_cut(pace), 3))
+        else:
+            p = run_rate(game, n)
     if type(stake) is int and stake >= BIG_WIN_FROM and game in BIG_WIN_GAMES:
         p = min(p, BIG_WIN_P)   # owner 11/10: a 50k+ round wins BIG_WIN_P at most, event or not ("tránh bị spam")
     return p
@@ -719,19 +809,18 @@ def _golden_rate(j: dict, f: dict | None, game: str, t: float, stake: int | None
 
 
 def cold(j: dict, t: float) -> dict | None:
-    """The most recently played stall whose next round is cooled by a long run (public: the "Vận đang nguội" hint),
-    else None. switch: the rounds of another paid luck stall still needed to warm it up again, each staking ≥ min."""
-    c = j.get(COOL_KEY)
+    """The most recently played stall whose NEXT round would be slowed by the pace (owner 16/10: "chơi dồn dập quá",
+    public: the "Vận đang nguội" hint), else None: {game, pace: True, n: its rounds in the last PACE_S seconds,
+    gap: 1 (an older client words it "nghỉ 1 phút")}. No rate and no threshold."""
+    c = j.get(PACE_KEY)
     out = None
     event = golden.public(j, t)
-    for g, r in (c.items() if isinstance(c, dict) else ()):
-        if event and g in golden.GAMES:
+    for g in (c if isinstance(c, dict) else ()):
+        if g not in PACE_GAMES or event and g in golden.GAMES:
             continue
-        if not 0 <= int(t) - r['at'] <= RUN_GAP or r['sw'] >= SWITCH_ROUNDS:
-            continue
-        p = run_rate(g, r['n'] + 1)
-        if p < chance_rate(g, t) and (out is None or r['at'] >= out[0]):
-            out = r['at'], dict(game=g, n=r['n'], gap=RUN_GAP // 60, switch=SWITCH_ROUNDS - r['sw'], min=switch_min(r))
+        lst = _pace_list(j, g, t)
+        if len(lst) + 1 >= PACE_SLOW and (out is None or max(lst) >= out[0]):
+            out = max(lst), dict(game=g, pace=True, n=len(lst), gap=1)
     return out and out[1]
 
 
@@ -754,12 +843,12 @@ def win_p(f: dict | None, t: float) -> float:
     return odds(_today(f, t)['net'])
 
 
-def bc_back(bets: dict, dice: list) -> int:
-    """What a bầu cua round pays back (stakes included): 1:1 a die on the face, BAO:1 for all three."""
+def bc_back(bets: dict, dice: list, bao: int = BAO) -> int:
+    """What a bầu cua round pays back (stakes included): 1:1 a die on the face, bao:1 for all three (bc_bao)."""
     back = 0
     for face, b in bets.items():
         k = dice.count(face)
-        back += b * (1 + BAO) if k == 3 else b * (1 + k) if k else 0
+        back += b * (1 + bao) if k == 3 else b * (1 + k) if k else 0
     return back
 
 
@@ -774,7 +863,8 @@ def bc_roll(bets: dict, want: bool) -> list:
 
 
 def bc_fair_roll() -> list:
-    """Three honest dice (owner 06/10): uniform over the 216 outcomes, whatever was bet. Single-face EV −10/216 a xu."""
+    """Three honest dice (owner 06/10): uniform over the 216 outcomes, whatever was bet. Single-face EV with a bão at
+    BAO (20): exactly 0; at BAO_LOW (10): −10/216 a xu."""
     return [_rng.choice(FACES) for _ in range(3)]
 
 
@@ -784,6 +874,11 @@ def xd_toss(side: str, want: bool) -> list:
     if ((side == 'chan') == (sum(coins) % 2 == 0)) != want:
         coins[_rng.randrange(4)] ^= 1   # one coin turned (a uniform wrong pattern and coin give a uniform right one)
     return coins
+
+
+def xd_win(stake: int) -> int:
+    """What a won chiếu trong round gains over its stake: XD_PAY_PCT % of it, rounded down (owner 16/10, xâu 25%)."""
+    return stake * XD_PAY_PCT // 100
 
 
 def xd_fine(stake: int) -> int:
@@ -1149,11 +1244,11 @@ def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
     _guard_free(e, f, j, t, price)
     _police(j, f, t, 'xs', price)
     p = luck_p(j, f, 'xs', t, stake=price)
-    boosted = p > chance_rate('xs', t) + 1e-9   # golden days or fair_boost: a won ticket is a profit (no refund)
+    boosted = p > chance_rate('xs', t) + 1e-9   # the golden days' draw: a won ticket is a profit (no refund)
     win = _draw_luck(j, 'xs', p)
     mult = scratch.prize_mult(_rng, profit_only=boosted) if win else 0
     cells = scratch.layout(price, mult, _rng)
-    prize = mult * price
+    prize = scratch.amount(price, mult)
     _pay(j, f, 'xs', prize - price)
     out = dict(game='xs', id=_rng.getrandbits(31), price=price, name=scratch.NAMES[price], cells=cells, prize=prize,
                mult=mult, net=prize - price, hits=[i for i, v in enumerate(cells) if prize and v == prize])
@@ -1166,8 +1261,9 @@ def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
 def _dog(e, j: dict, f: dict, p: dict, t: float) -> dict:
     """🐕 Đua chó {race, lane, stake}: a dog of race `race`'s lineup (game/fair_dog.py; this race, the one before or the
     next: the client's clock), any whole stake from DG_MIN to STAKE_MAX the wallet holds. The winner is drawn at once
-    from the classes' weights, honest fixed odds like the bầu cua's dice (no cool-off, no spam decay; a race counts as
-    a switch for the cooled stalls, PAID_LUCK); the client plays the race out (the 📣 cổ vũ changes nothing)."""
+    from the classes' weights, honest fixed odds like the bầu cua's dice (no cool-off; a race counts as a switch for
+    the cooled stalls, PAID_LUCK); owner 16/10: PACE_SLOW bets in a minute or today's net ≥ HOT_FROM pay the old prices
+    (fair_dog.OLD, the receipt's mult). The client plays the race out (the 📣 cổ vũ changes nothing)."""
     need = e.need
     n, lane, stake = p.get('race'), p.get('lane'), p.get('stake')
     need(set(p) == {'race', 'lane', 'stake'} and type(n) is int and type(lane) is int and 0 <= lane < dog.LANES,
@@ -1179,14 +1275,15 @@ def _dog(e, j: dict, f: dict, p: dict, t: float) -> dict:
     _guard_round(e, f, j, t, stake, stake)
     _heat(j, 'dg', t, stake)   # a switch for the cooled stalls only: đua chó itself never cools (nothing is saved for it)
     _police(j, f, t, 'dg', stake)
+    old = slow_odds(f, _pace(j, 'dg', t), t)   # owner 16/10: fast bets or a day ≥ HOT_FROM up get the old prices
     lanes = dog.lineup(n)
     order = dog.draw(lanes, _rng)
     won = order[0] == lane
     cls = lanes[lane][1]
-    back = dog.back(stake, cls) if won else 0
+    back = dog.back(stake, cls, old) if won else 0
     delta = back - stake
     _pay_big(j, f, 'dg', delta)
-    out = dict(game='dg', race=n, lane=lane, stake=stake, order=order, won=won, mult=dog.pay(cls), back=back,
+    out = dict(game='dg', race=n, lane=lane, stake=stake, order=order, won=won, mult=dog.pay(cls, old), back=back,
                net=delta, photo=_rng.random() < dog.PHOTO_P, seed=_rng.getrandbits(31))
     loc = _loc(j, f, 'dg', stake, delta, t)
     if loc:
@@ -1498,13 +1595,14 @@ def _apply(s: dict, name: str, p: dict) -> dict:
         need(stake <= BC_MAX, TOO_BIG, 'fair_big')
         need(f is None or int(t * 1000) - f['last'] >= BC_GAP_MS or f['last'] > int(t * 1000),
              'Chờ chú Tám mở bát đã nha!', 'fair_slow')
-        luck_p(j, f, 'bc', t, stake=stake)   # the run counters only
+        luck_p(j, f, 'bc', t, stake=stake)   # the run counters and the pace only
+        bao_x = bc_bao(f, pace_now(j, 'bc', t), t)   # owner 16/10: this round's pace (counted above), today's net before it
         _guard_round(e, f, j, t, stake, stake)
         _police(j, f, t, 'bc', stake)
         # Owner 06/10 ("ra cua nhiều quá, bị cheat, cho random lại"): three honest dice, each face 1/6, nothing
         # decided before the roll and no sure win after a losing streak (bets no longer pull the dice their way).
         dice = bc_fair_roll()
-        back = bc_back(bets, dice)
+        back = bc_back(bets, dice, bao_x)
         bao = next((face for face in bets if dice.count(face) == 3), None)
         st['bc'] += 1
         delta = back - stake
@@ -1513,7 +1611,7 @@ def _apply(s: dict, name: str, p: dict) -> dict:
         if bao:
             st['bao'] += 1
             _grant(j, 'f_bao', got)
-        result['fair'] = dict(game='bc', dice=dice, bets=dict(bets), stake=stake, back=back, net=delta, bao=bao)
+        result['fair'] = dict(game='bc', dice=dice, bets=dict(bets), stake=stake, back=back, net=delta, bao=bao, bao_x=bao_x)
         if loc:
             result['fair']['loc'] = loc
         result['message'] = (f'Bão {FACE_NAMES[bao].lower()}! +{delta} xu.' if bao else
@@ -1551,13 +1649,13 @@ def _apply(s: dict, name: str, p: dict) -> dict:
             coins = xd_toss(p['side'], want)
             even = sum(coins) % 2 == 0
             win = (p['side'] == 'chan') == even
-            delta = stake if win else -stake
+            delta = xd_win(stake) if win else -stake
             _pay_big(j, f, 'xd', delta)
             loc = _loc(j, f, 'xd', stake, delta, t)
             result['fair'] = dict(game='xd', raid=False, side=p['side'], stake=stake, coins=coins, even=even, net=delta)
             if loc:
                 result['fair']['loc'] = loc
-            result['message'] = f'{"Chẵn" if even else "Lẻ"}! ' + (f'Thắng {stake} xu.' if win else f'Thua {stake} xu.')
+            result['message'] = f'{"Chẵn" if even else "Lẻ"}! ' + (f'Thắng {_xu(delta)} xu.' if win else f'Thua {_xu(stake)} xu.')
     elif name == 'fair_loto_buy':
         slot = int(t // 60)
         if p:   # the newer client: a tier, 1..LOTO_CARDS tờ, side bets, the vòng it showed; the older one sends {}
@@ -1887,7 +1985,7 @@ def public(s: dict) -> dict:
                 earn={g: dict(today=earn[g], cap=EARN_DAY[g], left=max(0, EARN_DAY[g] - earn[g])) if g not in EARN_UNCAPPED
                       else dict(today=0, cap=0, left=1, nocap=True) for g in EARN_GAMES},
                 raid_left=max(0, int((f or {}).get('raid_until', 0) - t)) if f else 0,
-                rules=dict(bc_open=BC_OPEN_MS, cap=DAY_CAP, bc_max=BC_MAX, bao=BAO, xd_min=XD_MIN, xd_max=XD_MAX, fine_min=FINE_MIN,
+                rules=dict(bc_open=BC_OPEN_MS, cap=DAY_CAP, bc_max=BC_MAX, bao=BAO, bao_low=BAO_LOW, xd_pay=XD_PAY_PCT, xd_min=XD_MIN, xd_max=XD_MAX, fine_min=FINE_MIN,
                            loto_price=LOTO_PRICE, loto_prize=LOTO_PRIZE, loto_npcs=LOTO_NPCS, faces=list(FACES),
                            oaq_prize=dict(OAQ_PRIZE), oaq_people={k: list(v) for k, v in OAQ_PEOPLE.items()}, quan=oaq.QUAN,
                            quan_non=oaq.QUAN_NON, ring_hit=RING_HIT, ring_all=RING_ALL, rings=ring.RINGS, ring_tol=ring.TOL,
@@ -1897,8 +1995,8 @@ def public(s: dict) -> dict:
                            run_gap_min=RUN_GAP // 60, run_switch=SWITCH_ROUNDS, run_switch_min=SWITCH_MIN,
                            audit_pct=AUDIT_PCT,
                            audit_from=AUDIT_FROM, loc_mult=LOC_MULT),
-                # the stall whose run has cooled its luck ("Vận đang nguội"), or None; under a new name and without its
-                # rate, so an older client (which printed "khoảng N% thắng" from `cold`) shows nothing
+                # the stall played too fast for its next round ("Vận đang nguội", owner 16/10: the pace), or None; under
+                # a new name and without its rate, so an older client (which printed "khoảng N% thắng" from `cold`) shows nothing
                 cool=cold(j, t), golden_days=golden.public(j, t),
                 oaq=oaq_view(o) if o and (o['stage'] == 'play' or t - o['at'] < 6 * 3600) else None,
                 ring=ring_view((f or {}).get('ring'), t, j),
@@ -1912,7 +2010,7 @@ def public(s: dict) -> dict:
                 knife=knife_public(j, f, t),
                 # 🐕 đua chó: the roster, the lineups and their payouts (prices), the stake bounds (absent from older
                 # servers: the client then leaves the stall out)
-                dog=dog.public(t),
+                dog=dog.public(t, slow_odds(f, pace_now(j, 'dg', t) + 1, t)),
                 # 🎟️ vé số cào (absent from older servers: the client then leaves the stall out)
                 scratch=dict(tiers=list(scratch.TIERS), names={str(k): v for k, v in scratch.NAMES.items()},
                              cells=scratch.CELLS, match=scratch.MATCH, mults=list(scratch.MULTS)),
@@ -1971,6 +2069,14 @@ def validate(j: dict) -> None:
              'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
         integer(a['base'], -10**10, 10**10)
         integer(a['at'], 0, 10**11)
+    if PACE_KEY in j:   # 16/10, optional: an older server keeps it as is (the journey keeps unknown keys)
+        from .engine import need, integer
+        c = j[PACE_KEY]
+        need(isinstance(c, dict) and set(c) <= set(PACE_GAMES), 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
+        for lst in c.values():
+            need(isinstance(lst, list) and len(lst) <= PACE_KEEP, 'Dữ liệu chợ đen không hợp lệ.', 'invalid_save')
+            for x in lst:
+                integer(x, 0, 10**11)
     if COOL_KEY in j:   # 07/10, optional: an older server keeps it as is
         from .engine import need, integer
         c = j[COOL_KEY]

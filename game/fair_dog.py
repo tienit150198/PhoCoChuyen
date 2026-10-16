@@ -10,10 +10,12 @@ CLASSES[k] = (weight per 1000, payout in tenths of the stake, stake included). T
 the server draws the winner at once from the classes' weights (draw(); never shown, never sent) and the rest of the
 finishing order (for the show), and pays a winning stake × payout / 10 (rounded down: the house's side).
 
-House edge (owner 08/10 "đảm bảo nhà cái luôn thắng"): every dog returns weight × payout / 10000 per xu staked,
-92.8% (the favourite) to 95.0% (the outsider), so no pick comes out ahead (scripts/sim_fair_odds.py,
-docs/FAIR_HOUSE_EDGE.md). Honest fixed odds like the bầu cua's dice: no cool-off and no spam decay (nothing to lower),
-the 🍀 Lộc gate as for the other paid luck stalls, the police as on every paid round.
+Owner 16/10 (the rebalance, "đừng cho lỗ nhưng đừng cho lãi nhiều"): every payout is about 5% higher (CLASSES), so
+a dog returns weight × payout / 10000 per xu staked, 96.0% (the favourite) to 100.0% (the outsider), never more
+(scripts/sim_fair_odds.py, docs/FAIR_HOUSE_EDGE.md). A bet placed while the player is betting too fast (fair.PACE_SLOW
+bets or more in a minute, this one included) or once today's Chợ đen net is fair.HOT_FROM (100,000) or more pays the
+08/10 prices (OLD: 92.8% to 95.0%). Honest fixed odds like the bầu cua's dice: the winner's draw never changes, the
+🍀 Lộc gate as for the other paid luck stalls, the police as on every paid round.
 
 No save: a race is settled in its one command (the receipt is the result; the Sổ ví row "🐕 Đua chó chợ đen · N lượt"
 counts the races), so an older server has nothing new to validate.
@@ -24,8 +26,10 @@ import random
 
 from . import pets_content as pc
 
-# (weight per 1000 races, payout in tenths of the stake): weight × payout ≤ 9500 per 10000 for every class
-CLASSES = ((320, 29), (240, 39), (180, 52), (120, 78), (90, 105), (50, 190))
+# (weight per 1000 races, payout in tenths of the stake): weight × payout ≤ 10000 per 10000 for every class (16/10:
+# the 08/10 prices, OLD, raised ~5% and rounded to a tenth)
+CLASSES = ((320, 30), (240, 41), (180, 55), (120, 82), (90, 110), (50, 200))
+OLD = ((320, 29), (240, 39), (180, 52), (120, 78), (90, 105), (50, 190))   # fast bets / a day ≥ 100k up
 LANES = len(CLASSES)
 TOP = max(m for _, m in CLASSES)        # the biggest payout, tenths
 SLOT_S = 120                            # a new lineup every two minutes
@@ -57,14 +61,14 @@ def lineup(n: int) -> list[list[int]]:
     return [[d, k] for d, k in zip(dogs, classes)]
 
 
-def pay(cls: int) -> int:
-    """The payout of a class, tenths of the stake (stake included)."""
-    return CLASSES[cls][1]
+def pay(cls: int, old: bool = False) -> int:
+    """The payout of a class, tenths of the stake (stake included); old: the 08/10 price (OLD)."""
+    return (OLD if old else CLASSES)[cls][1]
 
 
-def back(stake: int, cls: int) -> int:
+def back(stake: int, cls: int, old: bool = False) -> int:
     """What a winning stake on a dog of class `cls` brings back (stake included, rounded down)."""
-    return stake * pay(cls) // 10
+    return stake * pay(cls, old) // 10
 
 
 def draw(lanes: list[list[int]], rng) -> list[int]:
@@ -92,10 +96,10 @@ def racer(i: int) -> dict:
     return dict(name=name, breed=b['name'], shape=b['shape'], size=b['size'], b=c['b'], m=c['m'], l=c['l'], e=c['e'])
 
 
-def public(t: float) -> dict:
-    """api.state.fair.dog: the roster, this race's lineup and the next ones (payouts are prices: shown), the stake
-    bounds. No weight, no chance, nothing about the draw."""
+def public(t: float, old: bool = False) -> dict:
+    """api.state.fair.dog: the roster, this race's lineup and the next ones (payouts are prices: shown, the ones this
+    player's next bet gets: old), the stake bounds. No weight, no chance, nothing about the draw."""
     from .fair import STAKE_MAX
     n = race(t)
     return dict(min=DG_MIN, max=STAKE_MAX, slot=SLOT_S, dogs=[racer(i) for i in range(len(RACERS))],
-                races=[[k, [[d, pay(c)] for d, c in lineup(k)]] for k in range(n, n + SLOTS_AHEAD + 1)])
+                races=[[k, [[d, pay(c, old)] for d, c in lineup(k)]] for k in range(n, n + SLOTS_AHEAD + 1)])

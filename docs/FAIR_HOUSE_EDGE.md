@@ -1,10 +1,97 @@
-# 🕶️ Chợ đen (was Hội chợ): ordinary odds, returns and free entry (updated 14/10/2026)
+# 🕶️ Chợ đen (was Hội chợ): ordinary odds, returns and free entry (updated 16/10/2026)
 
 Owner 08/10: "mở hội chợ nhé, tỷ lệ chỉnh lại làm sao cho phù hợp, đảm bảo nhà cái luôn thắng", then "chợ đen để
 luôn ở ngoài nhé". This edition opened on 09/10 (`FAIR_START` 2026-10-09, edition `fair20261009`). Its entry stays in
 sight: a 🏮 Hội chợ chip in the town's top bar and a main menu entry. The 🏮 gate on Phố hàng rong is still there too.
 
-## Current ordinary odds — 14/10/2026
+## Current ordinary odds — 16/10/2026
+
+Owner 16/10: "tỷ lệ là 55 - 60% thôi … đừng cho lỗ nhưng đừng cho lãi nhiều", "phải tính cả trường hợp người ta
+cheat, hoặc chơi kiểu ít tiền thua sau đó chơi tiền lớn, hoặc cheat spam ăn nhiều", "đừng giới hạn 600 ván, thay vì đó
+là mình cho spam 1 game nhanh quá thì thua cao hơn". This supersedes the 14/10 one-round-then-decay rule (below) and
+the 15/10 boosts (the day's first round at 65% and the 70% windows: `fair_boost.rate` now always returns `None`;
+xóc đĩa's 3 s gap between rounds stays).
+
+**The draw** (chiếu trong `xd`, lô tô `lt`, vé cào `xs`; `fair.luck_p` → `base_p`, `pace_cut`), by today's Chợ đen
+net (all paid stalls, Vietnam day, before this round):
+
+| Today's net | Draw |
+|---|---:|
+| ≥ 100,000 xu (`HOT_FROM`) | 45% (`P_HOT`) |
+| > 30,000 xu (`UP_FROM`) | 52% (`P_UP`) |
+| < 0 and stake ≤ min(−net, 5,000) (`BACK_MAX`) | 60% (`P_BACK`, winning back a loss with small stakes) |
+| otherwise | 57% (`BASES`) |
+
+**The pace**, per stall: this player's rounds at that stall in the last 60 s (`PACE_S`), this one included, kept in
+the optional journey key `fair_pace` = `{game: [epoch seconds, at most 20]}` (validated: games `bc xd lt xs dg`,
+whole seconds). Up to 10: nothing; 11–15: −5 points; 16 or more: −12 points. Never below 40% (`P_MIN`). The stall
+shows "🥶 Chơi dồn dập quá, vận đang nguội. Chậm tay lại chút là vận ấm lại." when its next round would be slowed
+(`public.fair.cool` = `{game, pace: true, n, gap: 1}`; no number). The round-by-round decay (`RUN_STEP`) no longer
+lowers xd/lt/xs; `fair_cool` is still written and validated (an older server reads it; the free ném vòng still cools
+by it). No daily round cap.
+
+**Unchanged:** a stake of 50,000 xu or more draws at most 40% (`BIG_WIN_P`); four wins in a row cool the next draws to
+45% (`WIN_P_LOW`); the police; 🍀 Lộc; ném vòng; the golden-days code (its 70% draw still wins over the streak cap).
+
+**Payouts:**
+
+- Chiếu trong: a win pays `stake + floor(stake × 75 / 100)` (`XD_PAY_PCT`, the house keeps 25%).
+- Lô tô: every mode pays 1.8× the tờ (`LOTO_PAY` 18).
+- Vé cào: a won ticket pays, per 1,000 won tickets, ×1.5 (800), ×2 (140), ×3 (40), ×5 (15), ×20 (5): mean 1.775×,
+  rounded down (`fair_scratch.amount`; the 2-xu ticket's ×1.5 pays 3). No refund prize any more.
+- Bầu cua: honest dice; a bão (three of the bet face) pays 20:1 (`BAO`), 10:1 (`BAO_LOW`) when today's net is ≥
+  100,000 or the bầu cua pace is 11+ (`bc_bao`; the receipt's `bao_x` and `bc_back` use the same value).
+- Đua chó: about 5% more per class (`fair_dog.CLASSES`, table below); the 15/10 prices (`OLD`) when the đua chó pace
+  is 11+ or today's net ≥ 100,000 (`slow_odds`; the board shows the prices the player's next race gets).
+
+### Exact single-round return before police
+
+Expected money back per xu staked, one ordinary round, no streak cap, lô tô with a timely Kinh, no police. Lộc
+assumes its server gate is always open (`python scripts/sim_fair_odds.py`).
+
+| Stall | 57% | +Lộc | 60% (winning back) | 52% (> 30k up) | 45% (≥ 100k up) |
+|---|---:|---:|---:|---:|---:|
+| Bầu cua (bão 20) | 100.00% | 101.10% | — | — | bão 10: 95.37% |
+| Chiếu trong (0.75×) | 99.75% | 101.33% | 105.0% | 91.0% | 78.75% |
+| Lô tô (1.8×) | 102.60% | 104.17% | 108.0% | 93.6% | 81.0% |
+| Vé cào (1.775×) | 101.17% | 102.76% | 106.5% | 92.3% | 79.9% |
+| Đua chó, best dog | 100.00% | 100.00% | — | — | old prices 92.8–95.0% |
+
+Lô tô's 2-xu tờ (pays 3) returns 85.5%; a random dog 98.47%, the favourite 96%.
+
+### 16/10 verification: `python scripts/sim_fair_odds.py 300000`
+
+| Stall | Fresh | Spam (1 s) | Press | Fresh + Lộc |
+|---|---:|---:|---:|---:|
+| Bầu cua | 100.02% | 95.41% | 100.02% | 101.43% |
+| Chiếu trong | 97.97% | 78.70% | 99.72% | 99.97% |
+| Lô tô | 100.69% | 80.95% | 102.35% | 101.90% |
+| Vé cào | 99.05% | 80.25% | 101.38% | 100.83% |
+| Đua chó (random dog) | 97.74% | 94.31% | 98.35% | 99.18% |
+
+Fresh is lower than the exact 57% column because of the four-win cool-off (≈ 98.2% of it). 300 lô tô card rounds:
+drawn for the player 57.62%, cards agree 100%.
+
+### 16/10 strategies per Vietnam day: `python scripts/sim_bm_strategies.py` (4,000 days, seed 1)
+
+Every round through the real code (net bands, pace, 50k cap, streak cool-off, payouts); no police, no Lộc.
+
+| Strategy | Rounds/day | Won | Mean day net | RTP | P(day > 0) |
+|---|---:|---:|---:|---:|---:|
+| Chiếu trong normal (1,000 xu, 8 s apart) | 200 | 57.14% | −8 | 100.00% | 47.25% |
+| Chiếu trong martingale (1,000 doubled after a loss, ≤ 49,000) | 200 | 55.89% | −5,796 | 98.95% | 66.47% |
+| Chiếu trong lose small then 45,000 | 200 | 53.43% | −13,400 | 98.31% | 94.45% |
+| Chiếu trong bot (5,000 xu, every 3 s) | 3,000 | 47.87% | −2,434,388 | 83.77% | 0% |
+| Chiếu trong probe (10 xu until 3 wins, then 49,000) | 400 | 55.02% | −101,012 | 94.22% | 36.23% |
+| Vé cào normal / fast | 200 / 3,000 | 57.28% / 47.82% | 326 / −45,350 | 101.63% / 84.88% | 51.70% / 0% |
+| Lô tô normal / fast | 200 / 3,000 | 56.87% / 47.93% | 475 / −41,174 | 102.37% / 86.28% | 65.15% / 0% |
+| Bầu cua normal / fast | 200 / 3,000 | 42.06% / 42.15% | −671 / −133,605 | 99.66% / 95.55% | 44.52% / 4.00% |
+| Đua chó normal / fast | 200 / 3,000 | 16.67% / 16.68% | −3,468 / −186,612 | 98.27% / 93.78% | 43.60% / 8.50% |
+
+Normal play is about even (the owner's "đừng cho lỗ nhưng đừng cho lãi nhiều"); lô tô and vé cào at a calm pace sit
+slightly above 100% under these rules. Fast play, a bot and big stakes after a probe all lose.
+
+## Superseded ordinary odds — 14/10/2026
 
 The latest owner instruction supersedes the historical requirement that every paid stall always have a house edge.
 Only chiếu trong (`xd`), lô tô (`lt`) and vé cào (`xs`) change: **one initial round at 55% per run**, then subtract
@@ -66,7 +153,7 @@ Finite samples vary, especially scratch jackpots; tests compare simulation to th
 20,000 additional lô tô card rounds agreed with their drawn outcome in 100% of cases; 55.66% were drawn for the player.
 These are before-police samples under the current ordinary rules, not a guarantee for a particular player.
 
-The dated tables and change notes below are historical and do not define the current 55%/one-round rule.
+The dated tables and change notes below are historical; the 16/10 section above defines the current rules.
 
 ## No end (owner 09/10: "chợ đen mở mãi đi, k có thời hạn nhé")
 
@@ -213,24 +300,28 @@ client `public/js/v4/fair-dog.js`). Each race number (one every `SLOT_S` = 120 s
 of six dogs from `RACERS` (the pet system's breeds and coats) and gives each one a class. A class is a weight (out of
 1000, never sent) and a payout in tenths of the stake (shown on the board next to the dog: a price):
 
-| class | weight | payout (stake included) | return per xu |
-|---|---|---|---|
-| favourite | 320 | ×2.9 | 92.8% |
-| 2 | 240 | ×3.9 | 93.6% |
-| 3 | 180 | ×5.2 | 93.6% |
-| 4 | 120 | ×7.8 | 93.6% |
-| 5 | 90 | ×10.5 | 94.5% |
-| outsider | 50 | ×19 | 95.0% |
+| class | weight | payout since 16/10 (stake included) | return per xu | 15/10 price (`OLD`) | its return |
+|---|---|---|---|---|---|
+| favourite | 320 | ×3.0 | 96.0% | ×2.9 | 92.8% |
+| 2 | 240 | ×4.1 | 98.4% | ×3.9 | 93.6% |
+| 3 | 180 | ×5.5 | 99.0% | ×5.2 | 93.6% |
+| 4 | 120 | ×8.2 | 98.4% | ×7.8 | 93.6% |
+| 5 | 90 | ×11 | 99.0% | ×10.5 | 94.5% |
+| outsider | 50 | ×20 | 100.0% | ×19 | 95.0% |
+
+Owner 16/10: the `OLD` prices apply when the player raced 11 or more times in the last minute (`fair_pace['dg']`) or
+today's Chợ đen net is ≥ 100,000 (`fair.slow_odds`); the board shows the prices the player's next race gets.
 
 - **The draw:** the player sends `{race, lane, stake}` (the race shown, the one before or the next: the client's
   clock). The server draws the finishing order at once from the weights (`draw`, `fair._rng`), pays a winning stake
   `stake × payout // 10` (rounded down) and sends the order, a photo-finish flag and a seed for the show. The client
   plays a ~16 s race that ends in that order; the 📣 cổ vũ button sends nothing and changes nothing.
 - **Stakes** like bầu cua / chiếu trong: any whole stake from 10 xu (`DG_MIN`) to `STAKE_MAX` the wallet holds. An
-  outsider on the biggest stake pays 18,000,000 over the stake: the Sổ ví gets it in rows of at most 10,000,000
+  outsider on a 1,000,000 stake pays 19,000,000 over it (×20 since 16/10): the Sổ ví gets it in rows of at most 10,000,000
   (`fair._pay_big`), counted as one race.
-- **No cool-off, no spam decay:** fixed odds like the bầu cua's honest dice (nothing to lower); a race counts as a
-  switch for a cooled stall (`PAID_LUCK`). 🍀 Lộc: yes (`LOC_ACTIONS`), within the table above (the ×19 dog already
+- **No cool-off, no spam decay:** fixed odds like the bầu cua's honest dice (only the 16/10 pace/net switch to the
+  `OLD` prices above); a race counts as a
+  switch for a cooled stall (`PAID_LUCK`). 🍀 Lộc: yes (`LOC_ACTIONS`), within the table above (the ×20 dog already
   wins more than ×10). The police: the bảo kê gate, the arrest roll, the wealth check and the asset check, as on every
   paid round; a jailed player cannot race (`game/jail.py` blocks every `fair_*`).
 - **Nothing about the chances reaches the client:** `api.state.fair.dog` has the roster, the lineups with their
@@ -238,7 +329,8 @@ of six dogs from `RACERS` (the pet system's breeds and coats) and gives each one
 - **Save:** nothing new. A race settles in its command; its Sổ ví row (`🐕 Đua chó chợ đen · N lượt`) counts the races,
   today's net and the Bảng vàng's won/lost take it like any paid stall. `journey['fair_cool']`, `fair_balance` and
   `fair_run` never get a `dg` key, so a 1.9.30 / 1.9.31 server validates a save after a race, won, lost or caught
-  (`tests/test_fair_dog.py` OldServer).
+  (`tests/test_fair_dog.py` OldServer). Since 16/10 the race's time goes in the new optional `journey['fair_pace']`
+  (`dg` list), a key older servers ignore.
 
 ## Not a wager
 
