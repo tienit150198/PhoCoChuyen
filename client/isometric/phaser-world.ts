@@ -56,6 +56,9 @@ const noOp=()=>{};
 const CHARACTER_SCALE=.65;
 const assetURL=(path:string)=>(window as any).__mnlBoot?.asset?.(path)||path;
 
+/** 🏝️ Đảo riêng (public/js/v4/island-scene.js) reuses this bundle's Phaser. */
+export {PrivateIslandRenderer} from './private-island';
+
 /** Phaser owns the scene and draw list; server mechanics stay in the existing DOM modules. */
 export class PhaserWorld {
   readonly canvas:HTMLCanvasElement;

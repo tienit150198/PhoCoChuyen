@@ -46,6 +46,7 @@ from . import spend as sp   # ☕ Đi quán, spa, rạp, 🙏 công đức, 🎨
 from . import auction as auc   # 🔨 Nhà đấu giá đồ độc bản (game/auction.py)
 from . import auction_content as AC   # 🔨 Biển đẹp +x % (BONUS_CAP)
 from . import lux as lx   # 🛍️ Mua sắm: du lịch, sưu tập, dinh thự, tiệc, khóa học, 🎆 Mạnh Thường Quân (game/lux.py)
+from . import island as isl   # 🏝️ Đảo riêng: buy, keep, sell a private island (game/island.py)
 from . import estates as es   # 🏰 Dinh thự: living in a villa (game/estates.py)
 from . import upkeep as up   # 🧾 Hóa đơn tháng: phí giữ xe, bảo trì nhà (game/upkeep.py)
 from . import rui   # 🛡️ Rủi ro & bảo hiểm (game/rui.py)
@@ -555,6 +556,7 @@ def upgrade(j: dict) -> None:
     sp.upgrade(j)   # ☕
     pt.upgrade(j)   # 🐾
     lx.upgrade(j)   # 🛍️
+    isl.upgrade(j)   # 🏝️
     auc.upgrade(j)   # 🔨
     from . import town_projects
     town_projects.upgrade(j)   # 🏗️
@@ -812,6 +814,7 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
     dc.on_life_day(s, result)   # 🪴 follow the player home, a rented room's Ấm cúng morning, a neighbour drops by
     up.on_life_day(s, result)   # 🧾 the monthly bills of the vehicles and homes owned (after the home's morning)
     lx.on_life_day(s, result)   # 🛍️ phí hạng sang: villas, crewed vehicles, insured collection pieces
+    isl.on_life_day(s, result)   # 🏝️ phí giữ đảo (game/island.py)
     rui.on_life_day(s, result)   # 🛡️ warnings, cards and premiums (after the bills: a waived bill raises the odds)
     qy.on_life_day(s, result)   # 🏪 each counter runs the day that just ended (after the month's bills)
     qy.on_shift(s, career, action, result)   # 💼 a hired shift at another player's counter ends with its day (game/quay_hire.py)
@@ -993,6 +996,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(gd.action(s, name, p))
     elif name.startswith('jr_lux_'):
         result.update(lx.action(s, name, p))
+    elif name.startswith('jr_island_'):
+        result.update(isl.action(s, name, p))   # 🏝️ Đảo riêng
     elif name.startswith('jr_auc_'):
         result.update(auc.action(s, name, p))
     elif name.startswith('jr_town_'):   # 🏗️ Công trình của phố (game/town_projects.py)
@@ -1112,6 +1117,7 @@ def public(s: dict) -> dict:
         bank=bk.public(s), home=hs.public(s), household=hh.public(s), cradle=_cradle_public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
         garage=gr.public(s), gadgets=gd.public(s), spend=sp.public(s), pets=pt.public(s), lux=lx.public(s), **({'uniq': u} if (u := auc.public(s)) else {}), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
         **({'quay': qy.public(s)} if qy.visible(s) else {}),   # 🏪 only once a save reaches it (state size)
+        **({'island': ip} if (ip := isl.public(s)) else {}),   # 🏝️ only once an island was bought (state size)
         **({'abroad': a} if (a := ab.public(s)) else {}),   # ✈️🌏 story mode
         **({'tile': _tile_public(s)} if j['story'] else {}))   # 🧩 Ghép ba Phố Mây (game/tile_match.py)
 
@@ -1148,7 +1154,7 @@ def content() -> dict:
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
         unlock_chapter={cid: n for n, ids in [*CH_UNLOCKS.items(), *((n, (c,)) for c, n in LATE_UNLOCKS.items())] for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
-        garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), pets=pt.catalogue(), lux=lx.catalogue(), auction=auc.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content(),
+        garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), pets=pt.catalogue(), lux=lx.catalogue(), island=isl.catalogue(), auction=auc.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content(),
         abroad=ab.catalogue())
 
 
@@ -1248,6 +1254,7 @@ def validate(s: dict) -> None:
     sp.validate(s)   # ☕ journey['spend'] (optional)
     pt.validate(s)   # 🐾 journey['pets'] (optional)
     lx.validate(s)   # 🛍️ journey['lux'] (optional)
+    isl.validate(s)   # 🏝️ journey['island'] (optional)
     auc.validate(s)   # 🔨 journey['uniq'] (optional)
     auc.x_validate(s)   # 🔨 journey['uniq_x'] (optional): vehicles, registrations, yacht names won; plates attached
     from . import town_projects

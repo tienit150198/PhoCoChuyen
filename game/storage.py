@@ -735,6 +735,9 @@ class Store:
                 if action.startswith('jr_town_'):
                     from . import town_projects
                     town_projects.command_commit(db,sid,action,current)  # 🏗️ the town_gifts row under the project's row lock (over the goal refuses)
+                if action in ('jr_island_sell','reset_all','import_save'):
+                    from . import island_trips
+                    island_trips.command_commit(db,sid,action,current)  # 🏝️ an island no longer owned ends its open trip
                 if action.startswith('jr_auc_') or action=='live_fx':
                     from . import auction
                     if action=='live_fx':auction.fx_commit(db,sid,result)  # 🔨 a refund / a won item: its row flips here, once
@@ -830,6 +833,9 @@ class Store:
             if action.startswith('jr_town_'):
                 from . import town_projects
                 town_projects.command_commit(db,sid,action,raw)  # 🏗️ the town_gifts row under the project's row lock (over the goal refuses)
+            if action in ('jr_island_sell','reset_all','import_save'):
+                from . import island_trips
+                island_trips.command_commit(db,sid,action,raw)  # 🏝️ an island no longer owned ends its open trip
             if action.startswith('jr_auc_') or action=='live_fx':
                 from . import auction
                 if action=='live_fx':auction.fx_commit(db,sid,result)  # 🔨 a refund / a won item: its row flips here, once
@@ -877,6 +883,8 @@ class Store:
             lux.forget(db,sid)  # 🎆 plaques and sponsorships stay, as anonymous
             from . import town_projects
             town_projects.forget(db,sid)  # 🏗️ the town's plaques keep what they gave, as anonymous
+            from . import island_trips
+            island_trips.forget(db,sid)  # 🏝️ their open trip ends, their seats go
             from . import auction
             auction.forget(db,sid)  # 🔨 past wins stay in the history under the name shown then
             from . import dog_bark
