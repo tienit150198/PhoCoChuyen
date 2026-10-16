@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 49  # 49: 🎨 Thi làm sticker (sticker_entries, sticker_rewards: game/sticker_event.py; new tables only, no FK, owner 16/10); 48: 🛃 Hải quan across players (hq_roster: the customs ladder's seats and reviewers, game/cand_roster.py; hq_cases: warehouse inspections of players' shops, game/hq_ops.py; new tables and indexes only, no FK, no backfill: 2.4.26 and older never read them); 47: unused (the sticker contest took 49); 46: 💐 Thiệp 20/10 (ev2010_cards, ev2010_reports, ev2010_rewards: game/event2010.py; new tables only, no FK, no save key, owner 16/10 "làm 1 cái / riêng đi"); 45: 📜 old shared lời chúc on the wish trees (chua_card_marks, chua_card_prayers: 🙏 / reports / admin hide of chua_public_cards rows, game/chua_wish.py; new tables only, no FK, no backfill, owner 15/10 "đưa vào 1 cái đi"); 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 50  # 50: 🎨 sticker packs (sticker_packs, sticker_pack_images: one pack of ≥ 12 stickers per account, owner 16/10 afternoon; new tables only); 49: 🎨 Thi làm sticker (sticker_entries, sticker_rewards: game/sticker_event.py; new tables only, no FK, owner 16/10); 48: 🛃 Hải quan across players (hq_roster: the customs ladder's seats and reviewers, game/cand_roster.py; hq_cases: warehouse inspections of players' shops, game/hq_ops.py; new tables and indexes only, no FK, no backfill: 2.4.26 and older never read them); 47: unused (the sticker contest took 49); 46: 💐 Thiệp 20/10 (ev2010_cards, ev2010_reports, ev2010_rewards: game/event2010.py; new tables only, no FK, no save key, owner 16/10 "làm 1 cái / riêng đi"); 45: 📜 old shared lời chúc on the wish trees (chua_card_marks, chua_card_prayers: 🙏 / reports / admin hide of chua_public_cards rows, game/chua_wish.py; new tables only, no FK, no backfill, owner 15/10 "đưa vào 1 cái đi"); 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -744,6 +744,26 @@ CREATE TABLE IF NOT EXISTS sticker_rewards (
   by_admin {T}, revoked_at double precision, life_day bigint, ip_tag {T}
 );
 CREATE UNIQUE INDEX IF NOT EXISTS sticker_rewards_once ON sticker_rewards(sid, kind);
+-- 🎨 Sticker packs (game/sticker_event.py; SCHEMA_VERSION 50, owner 16/10 afternoon: a whole set of one character's
+-- expressions, not single stickers). One pack per account (sid UNIQUE), replaced in place before the deadline (version
+-- + 1, its images rewritten): kind sheet (one picture of the whole set, `count` as the author declares it) | set (one
+-- 512x512 image per sticker, count = images); ai: the author says AI helped. status live | rejected (admin); rank
+-- 1..10 from the Facebook votes; a prize row (sticker_rewards.kind='prize') names the pack in `entry`. sticker_entries
+-- keeps the single stickers sent under the first rules (2.4.29), read only. New tables only, no FK.
+CREATE TABLE IF NOT EXISTS sticker_packs (
+  id {ID} PRIMARY KEY, sid {T} UNIQUE NOT NULL, username {T} NOT NULL, display {T} NOT NULL DEFAULT '',
+  kind {T} NOT NULL CHECK(kind IN ('sheet','set')), count integer NOT NULL CHECK(count BETWEEN 1 AND 200), ai boolean NOT NULL,
+  bytes integer NOT NULL, sha {T} NOT NULL, created double precision NOT NULL, updated double precision NOT NULL,
+  version integer NOT NULL DEFAULT 1, life_day bigint NOT NULL DEFAULT 0, ip_tag {T} NOT NULL DEFAULT '',
+  status {T} NOT NULL DEFAULT 'live', rank smallint CHECK(rank BETWEEN 1 AND 10), reviewed_at double precision,
+  by_admin {T}, note {T} NOT NULL DEFAULT ''
+);
+CREATE UNIQUE INDEX IF NOT EXISTS sticker_packs_rank ON sticker_packs(rank) WHERE rank IS NOT NULL;
+CREATE TABLE IF NOT EXISTS sticker_pack_images (
+  pack bigint NOT NULL, idx smallint NOT NULL, mime {T} NOT NULL CHECK(mime IN ('image/png','image/webp')),
+  width integer NOT NULL, height integer NOT NULL, byte_size integer NOT NULL CHECK(byte_size BETWEEN 1 AND 3145728),
+  data bytea NOT NULL, thumb bytea NOT NULL, sha {T} NOT NULL, PRIMARY KEY (pack, idx), CHECK(octet_length(data)=byte_size)
+);
 
 """
 
@@ -1077,6 +1097,8 @@ TABLES = [
     dict(name='hq_cases', identity=None),
     dict(name='sticker_entries', identity='id'),
     dict(name='sticker_rewards', identity=None),
+    dict(name='sticker_packs', identity='id'),
+    dict(name='sticker_pack_images', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 

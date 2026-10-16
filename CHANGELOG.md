@@ -1,3 +1,13 @@
+# v2.4.30 — 2026-10-16
+
+🎨 Thi sticker đổi sang BỘ sticker (chủ game 16/10 chiều, kèm ảnh mẫu 16 chú mèo: "phải làm như này"; "hoặc là từng cái, hoặc là 1 nhóm"; ít nhất 12; AI "cho, nhưng phải ghi rõ"; 1 bộ mỗi tài khoản, được thay; hashtag #PhoCoChuyen; link nhóm Facebook).
+- Trang /sticker làm lại: người chơi tự làm bằng app bất kỳ rồi tải lên; bỏ trình vẽ trên trang (public/js/sticker/editor.js). Hai cách nộp: một ảnh ghép cả bộ (tự ghi số sticker, 12–100, tối đa 3 MB, cạnh 300–4096) hoặc từng sticker (12–24 ảnh, máy người chơi thu mỗi ảnh vào khung 512×512, tối đa 250 KB). Bắt buộc chọn "Tự vẽ" / "Có dùng AI"; chú thích đăng nhóm tự ghi "(có dùng AI)". Nộp lại là thay bộ cũ (bộ đã xếp hạng thì khóa). Nút tải ảnh để đăng: ảnh cả bộ có nhãn @tên, hoặc ảnh ghép từng sticker.
+- game/sticker_event.py: POST /api/sticker/pack, GET /api/sticker/pack/<id>/<idx>; /api/sticker/submit (sticker lẻ) trả 410. Xếp hạng, trao giải, kết quả theo bộ. Quà tham gia 200.000 xu một lần mỗi tài khoản: 17 tài khoản đã nhận theo thể lệ cũ giữ quà, nộp bộ không nhận thêm; trang báo họ nộp bộ để được xét giải.
+- Admin "🎨 Thi sticker": danh sách bộ (ảnh, số sticker, AI, lần nộp), lọc "Có dùng AI", cảnh báo ảnh trùng tài khoản khác; sticker lẻ thể lệ cũ chỉ để xem.
+- Schema 50: sticker_packs, sticker_pack_images (bảng mới).
+- Link nhóm: https://www.facebook.com/groups/1985137015484964. Hashtag #PhoCoChuyen.
+- Có gì mới: 3 dòng.
+
 # v2.4.29 — 2026-10-16
 
 🎨 Cuộc thi làm sticker (chủ game 16/10: "tạo sticker chủ đề bất kì, đăng nhóm facebook, ai được vote nhiều hơn thì thắng, tham gia tặng 200k, top 1 3m, top 2–3 1.5m, top 10 500k, có cả username, top 10 có sticker dùng trong chat").

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="Cuộc thi làm sticker của Phố Có Chuyện: vẽ sticker, đăng lên nhóm Facebook, rinh xu thưởng.">
+<meta name="description" content="Cuộc thi làm bộ sticker của Phố Có Chuyện: tự làm bằng app nào cũng được, đăng lên nhóm Facebook, rinh xu thưởng.">
 <meta name="theme-color" content="#ffb84d">
 <title>Thi làm sticker · Phố Có Chuyện</title>
 <link rel="icon" href="/icons/logo-64.png" type="image/png" sizes="64x64">
@@ -16,10 +16,10 @@
 <header class="top"><a class="brand" href="/"><img src="/icons/logo-64.png" alt="" width="28" height="28">Phố Có Chuyện</a><a class="back" href="/">Về phố ↗</a></header>
 <main class="wrap">
   <section class="hero">
-    <div class="hero-art" aria-hidden="true"><span>😎</span><span>🧋</span><span>🔥</span></div>
+    <div class="hero-art" aria-hidden="true"><span>😹</span><span>😭</span><span>😡</span></div>
     <p class="eyebrow" id="deadline">Hạn nộp: 23:59 ngày 27/10/2026</p>
-    <h1>Làm sticker, rinh <em>3.000.000 xu</em></h1>
-    <p class="lead">Vẽ gì cũng được. Đăng lên nhóm Facebook của phố, nhiều lượt thả cảm xúc nhất thì thắng. Top 10 sticker được đưa vào chat để cả phố dùng!</p>
+    <h1>Làm bộ sticker, rinh <em>3.000.000 xu</em></h1>
+    <p class="lead">Một nhân vật, nhiều biểu cảm: vui, buồn, giận, ngủ, đói, thả tim… Làm bằng app nào cũng được, từ <b id="lead-min">12</b> sticker trở lên. Nộp ở đây, đăng lên nhóm Facebook của phố, nhiều lượt thả cảm xúc nhất thì thắng. Top 10 bộ được đưa vào chat để cả phố dùng!</p>
     <ul class="prizes" id="prizes" aria-label="Giải thưởng">
       <li class="p1"><b>Top 1</b><span>3.000.000 xu</span></li>
       <li class="p2"><b>Top 2–3</b><span>1.500.000 xu</span></li>
@@ -30,58 +30,60 @@
 
   <section class="card who" id="who" aria-live="polite"><p class="muted">Đang xem bạn là ai…</p></section>
 
-  <section class="card maker" id="maker" aria-label="Làm sticker" hidden>
-    <div class="stage-wrap">
-      <div class="stage" id="stage"><canvas id="cv" width="512" height="512" aria-label="Khung vẽ sticker 512 × 512"></canvas></div>
-      <div class="toolbar" role="toolbar" aria-label="Thao tác">
-        <button type="button" data-do="undo" title="Hoàn tác" aria-label="Hoàn tác">↶</button>
-        <button type="button" data-do="redo" title="Làm lại" aria-label="Làm lại">↷</button>
-        <span class="sep" aria-hidden="true"></span>
-        <button type="button" data-do="dup" title="Nhân đôi" aria-label="Nhân đôi lớp đang chọn">⧉</button>
-        <button type="button" data-do="front" title="Đưa lên trên" aria-label="Đưa lớp lên trên cùng">⇡</button>
-        <button type="button" data-do="back" title="Đưa xuống dưới" aria-label="Đưa lớp xuống dưới cùng">⇣</button>
-        <button type="button" data-do="del" class="danger" title="Xóa lớp" aria-label="Xóa lớp đang chọn">🗑</button>
+  <section class="card mine" id="mine" hidden></section>
+
+  <section class="card pack" id="pack" aria-labelledby="pack-title" hidden>
+    <h2 id="pack-title">Nộp bộ sticker</h2>
+    <div class="seg" role="radiogroup" aria-label="Cách nộp">
+      <button type="button" role="radio" data-kind="sheet" aria-checked="true">🖼️<span>Một ảnh cả bộ</span></button>
+      <button type="button" role="radio" data-kind="set" aria-checked="false">🧩<span>Từng sticker</span></button>
+    </div>
+    <p class="hint" id="kind-hint"></p>
+    <div id="sheet-box">
+      <button type="button" class="drop" id="sheet-drop" data-do="pick" aria-label="Chọn ảnh cả bộ sticker">
+        <span class="drop-empty" id="sheet-empty"><span class="drop-icon" aria-hidden="true">🖼️</span><b>Chọn ảnh cả bộ</b><small>hoặc kéo thả ảnh vào đây</small></span>
+        <canvas id="sheet-cv" hidden></canvas>
+      </button>
+      <div id="sheet-tools" hidden>
+        <label class="field inline"><span>Số sticker trong ảnh</span><input type="number" id="sheet-count" inputmode="numeric" min="12" max="100" step="1" placeholder="12"></label>
+        <label class="check"><input type="checkbox" id="sheet-stamp"> Đóng nhãn <b class="uname">@tên</b> vào góc ảnh</label>
+        <button type="button" class="chip" data-do="pick">🔁 Đổi ảnh khác</button>
       </div>
     </div>
-    <nav class="tabs" role="tablist" aria-label="Công cụ">
-      <button type="button" role="tab" data-tab="move" aria-selected="true">✋<span>Chọn</span></button>
-      <button type="button" role="tab" data-tab="draw" aria-selected="false">🖌️<span>Vẽ</span></button>
-      <button type="button" role="tab" data-tab="text" aria-selected="false">🔤<span>Chữ</span></button>
-      <button type="button" role="tab" data-tab="deco" aria-selected="false">😎<span>Hình</span></button>
-      <button type="button" role="tab" data-tab="photo" aria-selected="false">🖼️<span>Ảnh</span></button>
-      <button type="button" role="tab" data-tab="bg" aria-selected="false">🎨<span>Nền</span></button>
-    </nav>
-    <div class="panel" id="panel" role="tabpanel"></div>
-    <input type="file" id="file" accept="image/*" hidden>
-  </section>
-
-  <section class="card send" id="send" hidden>
-    <div class="send-row">
-      <button type="button" class="btn ghost" data-do="download">⬇️ Tải về</button>
-      <button type="button" class="btn ghost" data-do="share" hidden>📤 Chia sẻ</button>
-      <button type="button" class="btn primary" data-do="submit">📮 Nộp bài</button>
+    <div id="set-box" hidden>
+      <div class="set-grid" id="set-grid"></div>
+      <div class="row"><button type="button" class="btn ghost" data-do="pick" id="set-add">➕ Thêm sticker</button><span class="count" id="set-count">0/12</span></div>
     </div>
+    <input type="file" id="file" accept="image/png,image/webp,image/jpeg,image/*" hidden>
+    <fieldset class="ai" id="ai">
+      <legend>Bộ sticker này làm thế nào?</legend>
+      <label class="choice"><input type="radio" name="ai" value="0"> ✍️ Tự vẽ, tự thiết kế</label>
+      <label class="choice"><input type="radio" name="ai" value="1"> 🤖 Có dùng AI (ChatGPT, Gemini…)</label>
+    </fieldset>
+    <button type="button" class="btn primary wide" data-do="submit" id="submit">📮 Nộp bộ sticker</button>
     <p class="msg" id="msg" role="status" aria-live="polite"></p>
-    <div class="caption" id="caption"></div>
   </section>
 
-  <section class="card mine" id="mine" hidden><h2>Sticker bạn đã nộp</h2><div class="grid" id="mine-grid"></div></section>
+  <section class="card post" id="post" hidden>
+    <h2>Đăng lên nhóm Facebook</h2>
+    <p class="hint">Đăng bộ sticker vào nhóm, chép chú thích bên dưới (có tên tài khoản và hashtag) để ban tổ chức nhận ra bạn.</p>
+    <div class="cap-row"><code id="cap-text"></code><button type="button" class="btn ghost sm" data-do="copy">Chép</button></div>
+    <div class="row"><button type="button" class="btn ghost" data-do="download" id="download" hidden>⬇️ Tải ảnh để đăng</button><a class="btn fb" id="fb" href="#" target="_blank" rel="noopener" hidden>Mở nhóm Facebook</a></div>
+    <p class="msg" id="post-msg" role="status" aria-live="polite"></p>
+  </section>
 
-  <section class="card results" id="results" hidden><h2>🏆 Kết quả</h2><div class="grid" id="results-grid"></div></section>
+  <section class="card results" id="results" hidden><h2>🏆 Kết quả</h2><div id="results-list"></div></section>
 
   <section class="card rules" id="rules">
     <h2>Thể lệ</h2>
     <ol id="rules-list">
-      <li>Làm sticker chủ đề gì cũng được ngay trên trang này. Tên <b>@tài khoản</b> của bạn luôn có trên sticker.</li>
-      <li>Bấm <b>Nộp bài</b> để gửi cho ban tổ chức (tối đa 3 sticker mỗi tài khoản), rồi <b>Tải về</b> và đăng vào nhóm Facebook của phố, ghi kèm tên tài khoản và <b>#StickerMotNgayLamNghe</b>.</li>
-      <li>Bình chọn bằng lượt thả cảm xúc trên bài đăng trong nhóm, tính đến 23:59 ngày 27/10/2026.</li>
-      <li>Tham gia: 200.000 xu mỗi người, vào ví khi bạn quay lại phố (sticker đầu tiên được nhận, nhân vật từ ngày thứ 3 trở lên).</li>
-      <li>Top 1: 3.000.000 xu · Top 2–3: 1.500.000 xu · Top 4–10: 500.000 xu. Mỗi người nhận một giải.</li>
-      <li>Top 10 sticker sẽ được đưa vào chat trong game để mọi người dùng.</li>
-      <li>Sticker chép của người khác, phản cảm hay thiếu tên tài khoản sẽ bị loại.</li>
+      <li>Làm một <b>bộ sticker</b> (một nhân vật, nhiều biểu cảm, chủ đề gì cũng được), ít nhất 12 sticker, bằng ứng dụng nào cũng được.</li>
+      <li>Nộp một ảnh ghép cả bộ, hoặc tải lên từng sticker. Mỗi tài khoản một bộ, nộp lại để thay trước hạn.</li>
+      <li>Có dùng AI thì chọn “Có dùng AI” khi nộp và ghi rõ trong bài đăng.</li>
+      <li>Đăng bộ sticker vào nhóm Facebook của phố, ghi kèm @tên tài khoản và <b>#PhoCoChuyen</b>. Bình chọn bằng lượt thả cảm xúc, tính đến hạn nộp.</li>
     </ol>
   </section>
-  <noscript><p class="card">Trang làm sticker cần bật JavaScript.</p></noscript>
+  <noscript><p class="card">Trang thi sticker cần bật JavaScript.</p></noscript>
 </main>
 <footer class="foot"><a href="/privacy">Quyền riêng tư</a> · <a href="/terms">Điều khoản</a> · <a href="/">Về phố</a></footer>
 </body>

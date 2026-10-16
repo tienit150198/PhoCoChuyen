@@ -1015,7 +1015,7 @@ class Handler(BaseHTTPRequestHandler):
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
                 self.error(413,"Góp ý quá lớn. Mỗi góp ý tối đa 3 ảnh, mỗi ảnh tối đa 2 MB.");self.close_connection=True;return
-            if route=="/api/sticker/submit" and length>sticker_event.MAX_BODY:self.error(413,"Ảnh quá lớn: tối đa 400 KB.","too_large");self.close_connection=True;return
+            if route=="/api/sticker/pack" and length>sticker_event.MAX_BODY:self.error(413,"Bộ sticker quá lớn: tối đa 3 MB ảnh cả bộ hoặc 250 KB mỗi sticker.","too_large");self.close_connection=True;return
             if not self.headers.get("Content-Type","").startswith("application/json"):self.error(415,"Cần gửi JSON.");self.close_connection=True;return
             body=self.rfile.read(length);self.body_read=True
             data=json.loads(body,parse_constant=lambda x:(_ for _ in ()).throw(ValueError("nonfinite")))
