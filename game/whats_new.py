@@ -36,6 +36,7 @@ ENTRIES = (
         dict(emoji='✈️', text='Nữ phi công giờ có lời thoại riêng: khách tán tỉnh, mai mối, em họ… gọi đúng chị/em, không còn toàn tình huống cho nam.'),
         dict(emoji='🗂️', text='Hành chính nhân sự, Hỗ trợ IT: văn phòng đóng cửa mà còn hồ sơ dở thì vẫn có nút Khép ca, việc dở giữ sang mai.'),
         dict(emoji='📮', text='Bưu điện: trả lời đánh giá giờ có thêm Hoàn cước 20 xu để bù cho người gửi khi mình sai.'),
+        dict(emoji='📦', text='Kho hàng: mua thêm Gộp thùng tự đặt (10.000 xu), hàng tự đặt về tới cửa gom chung một thùng, mở và kiểm một lần.'),
         dict(emoji='🧭', text='Giao diện cũ: bấm Đổi nghề không còn nhảy sang màn Đầu tư vàng, tiền ảo nữa.'),
     )),
     dict(version="2.4.31", date="2026-10-16", items=(

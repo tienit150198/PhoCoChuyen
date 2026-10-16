@@ -29,7 +29,8 @@ class CreativeCivicBackend(unittest.TestCase):
             for key in ('books', 'confirm', 'daily', 'end_text'):
                 self.assertEqual(career_voice.shop_words(cid, row[key]), [], (cid, key))
             self.assertNotIn('tiền thuê', row['end_text'])
-            self.assertFalse(career_voice.offer_ok(cid, 'refund'))
+            # Owner 16/10 (F#393): the post office makes it up with a postage refund; the lawyer pays nothing.
+            self.assertEqual(career_voice.offer_ok(cid, 'refund'), cid == 'post_office')
         for cid in ('art_studio', 'laundry'):
             self.assertTrue(career_voice.commerce(cid))
 
