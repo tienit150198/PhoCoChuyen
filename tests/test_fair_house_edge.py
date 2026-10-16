@@ -52,7 +52,7 @@ class HouseEdge(unittest.TestCase):
                 self.assertGreater(ex[g]['loc'], ex[g]['rtp'])
         self.assertAlmostEqual(ex['bc']['rtp'], 216 / 216)      # bão 20: even
         self.assertAlmostEqual(ex['bc']['low'], 206 / 216)      # bão 10 when fast or >= 100k up
-        self.assertAlmostEqual(ex['dg']['rtp'], 1.0)            # the best dog, +5% (owner 16/10)
+        self.assertAlmostEqual(ex['dg']['rtp'], .95)            # the best dog (owner 16/10 night: 5% below)
         for g in ('bc', 'dg'):
             self.assertLessEqual(ex[g]['rtp'], 1)
             self.assertGreaterEqual(ex[g]['loc'], ex[g]['rtp'])
@@ -94,7 +94,7 @@ class HouseEdge(unittest.TestCase):
                     if how == 'spam':
                         self.assertLess(back, .96, back)
                     else:
-                        self.assertLess(abs(back - 1), .04, back)
+                        self.assertLess(abs(back - 1), .09 if g == 'dg' else .04, back)   # đua chó: 5% under (16/10 night)
                     if how == 'fresh':
                         self.assertAlmostEqual(back, ex[g].get('fresh', ex[g]['rtp']) * factor,
                                                delta=.035 if g == 'xs' else .05 if g == 'dg' else .02)

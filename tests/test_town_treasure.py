@@ -56,7 +56,8 @@ class Treasure(unittest.TestCase):
 
     def test_cadence_count_geometry_and_restart(self):
         a = self.tt.snapshot(self.store)
-        self.assertEqual(len(a['chests']), 10)
+        self.assertTrue(10 <= len(a['chests']) <= 15)   # owner 16/10 night: 10–15 a wave
+        self.assertEqual(len(a['chests']), a['wave']['added'])
         self.assertEqual(a['wave']['reward'], 10000)
         from live.town import clean_point
         for chest in a['chests']:
@@ -188,6 +189,20 @@ class Treasure(unittest.TestCase):
             self.assertNotIsInstance(pick(other,osid,fresh[1]),dict,'already picked: gone for the other account')
             self.now+=600
         self.assertEqual(self.store.read(token)[0]['journey']['wallet']-start[0],got*10000)
+
+    def test_a_wave_has_ten_to_fifteen_chests_with_valid_ids(self):
+        """Owner 16/10 night: every 10 minutes 10–15 chests at random (ids up to tt-<bucket>-14 still match CHEST)."""
+        sizes=set()
+        for b in range(200):
+            rows=self.tt.spawn_rows(1000+b)
+            self.assertTrue(10<=len(rows)<=15,len(rows))
+            self.assertEqual(len({(r[3],r[4]) for r in rows}),len(rows))   # distinct spots
+            for r in rows:self.assertTrue(self.tt.CHEST.fullmatch(r[0]),r[0])
+            sizes.add(len(rows))
+        self.assertEqual(sizes,set(range(10,16)))
+        self.assertFalse(self.tt.CHEST.fullmatch('tt-1-100'))
+        added=self.tt.snapshot(self.store)['wave']['added']
+        self.assertTrue(10<=added<=15,added)
 
     def test_daily_cap_resets_at_vietnam_midnight(self):
         """Owner 16/10: 300 chests a person a day, reset at 0h Vietnam time (UTC+7), not a rolling 24 hours."""

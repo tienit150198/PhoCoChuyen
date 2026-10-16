@@ -239,18 +239,18 @@ class Payouts(unittest.TestCase):
         self.assertEqual(low, 206)
 
     def test_dog_prices(self):
-        self.assertEqual(dog.OLD, ((320, 29), (240, 39), (180, 52), (120, 78), (90, 105), (50, 190)))
+        """Owner 16/10 night: 5% below the day's prices (= the 08/10 board, 92.8–95%); OLD (fast / ≥ 100k up) 5% below too."""
+        self.assertEqual(dog.CLASSES, ((320, 29), (240, 39), (180, 52), (120, 78), (90, 105), (50, 190)))
+        self.assertEqual(dog.OLD, ((320, 28), (240, 37), (180, 49), (120, 74), (90, 100), (50, 180)))
         for (w, m), (w0, m0) in zip(dog.CLASSES, dog.OLD):
             self.assertEqual(w, w0)
-            self.assertLessEqual(w * m, 10_000)                    # no dog returns more than 100%
-            self.assertLessEqual(abs(m - m0 * 1.05), .55)          # about 5% up, to a tenth
+            self.assertTrue(9_280 <= w * m <= 9_500, (w, m))       # 92.8–95%
+            self.assertTrue(8_800 <= w0 * m0 <= 9_000, (w0, m0))   # 88–90%
             self.assertGreater(m, m0)
         self.assertEqual(sum(w for w, _ in dog.CLASSES), 1000)
-        self.assertEqual([dog.pay(c) for c in range(6)], [30, 41, 55, 82, 110, 200])
-        self.assertEqual([dog.pay(c, True) for c in range(6)], [29, 39, 52, 78, 105, 190])
-        self.assertEqual(dog.back(1000, 5), 20_000)
-        self.assertEqual(dog.back(1000, 5, True), 19_000)
-        self.assertEqual(dog.back(15, 0), 45)
+        self.assertEqual(dog.back(1000, 5), 19_000)
+        self.assertEqual(dog.back(1000, 5, True), 18_000)
+        self.assertEqual(dog.back(15, 0), 43)
 
     def test_boosts_are_gone(self):
         for game in ('xd', 'lt', 'xs', 'bc', 'ring', 'dg'):

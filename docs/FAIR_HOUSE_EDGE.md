@@ -41,7 +41,8 @@ by it). No daily round cap.
   rounded down (`fair_scratch.amount`; the 2-xu ticket's ×1.5 pays 3). No refund prize any more.
 - Bầu cua: honest dice; a bão (three of the bet face) pays 20:1 (`BAO`), 10:1 (`BAO_LOW`) when today's net is ≥
   100,000 or the bầu cua pace is 11+ (`bc_bao`; the receipt's `bao_x` and `bc_back` use the same value).
-- Đua chó: about 5% more per class (`fair_dog.CLASSES`, table below); the 15/10 prices (`OLD`) when the đua chó pace
+- Đua chó (superseded the same night, owner "tỷ lệ ăn cao quá … giảm 5% so với hiện tại thôi": `CLASSES` (29, 39, 52, 78, 105, 190)
+  = 92.8–95.0%, `OLD` (28, 37, 49, 74, 100, 180) = 88.2–90.0%; the figures below are the earlier ones): about 5% more per class (`fair_dog.CLASSES`, table below); the 15/10 prices (`OLD`) when the đua chó pace
   is 11+ or today's net ≥ 100,000 (`slow_odds`; the board shows the prices the player's next race gets).
 
 ### Exact single-round return before police

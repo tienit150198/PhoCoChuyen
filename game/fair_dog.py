@@ -10,11 +10,12 @@ CLASSES[k] = (weight per 1000, payout in tenths of the stake, stake included). T
 the server draws the winner at once from the classes' weights (draw(); never shown, never sent) and the rest of the
 finishing order (for the show), and pays a winning stake × payout / 10 (rounded down: the house's side).
 
-Owner 16/10 (the rebalance, "đừng cho lỗ nhưng đừng cho lãi nhiều"): every payout is about 5% higher (CLASSES), so
-a dog returns weight × payout / 10000 per xu staked, 96.0% (the favourite) to 100.0% (the outsider), never more
+Owner 16/10 night ("đua chó tỷ lệ ăn cao quá, cho ăn tỷ lệ thấp lại, lãi nhiều quá … giảm 5% so với hiện tại thôi"):
+every price 5% below the day's (30, 41, 55, 82, 110, 200), rounded to a tenth, which is the 08/10 board again: a dog
+returns weight × payout / 10000 per xu staked, 92.8% (the favourite) to 95.0% (the outsider) (CLASSES)
 (scripts/sim_fair_odds.py, docs/FAIR_HOUSE_EDGE.md). A bet placed while the player is betting too fast (fair.PACE_SLOW
 bets or more in a minute, this one included) or once today's Chợ đen net is fair.HOT_FROM (100,000) or more pays the
-08/10 prices (OLD: 92.8% to 95.0%). Honest fixed odds like the bầu cua's dice: the winner's draw never changes, the
+prices 5% below the earlier fast prices (OLD: 88.2% to 90.0%). The board always shows the prices the player's next bet gets. Honest fixed odds like the bầu cua's dice: the winner's draw never changes, the
 🍀 Lộc gate as for the other paid luck stalls, the police as on every paid round.
 
 No save: a race is settled in its one command (the receipt is the result; the Sổ ví row "🐕 Đua chó chợ đen · N lượt"
@@ -26,10 +27,10 @@ import random
 
 from . import pets_content as pc
 
-# (weight per 1000 races, payout in tenths of the stake): weight × payout ≤ 10000 per 10000 for every class (16/10:
-# the 08/10 prices, OLD, raised ~5% and rounded to a tenth)
-CLASSES = ((320, 30), (240, 41), (180, 55), (120, 82), (90, 110), (50, 200))
-OLD = ((320, 29), (240, 39), (180, 52), (120, 78), (90, 105), (50, 190))   # fast bets / a day ≥ 100k up
+# (weight per 1000 races, payout in tenths of the stake): weight × payout 9,280–9,500 per 10,000 (owner 16/10 night:
+# 5% below (30, 41, 55, 82, 110, 200), rounded to a tenth = the 08/10 prices)
+CLASSES = ((320, 29), (240, 39), (180, 52), (120, 78), (90, 105), (50, 190))
+OLD = ((320, 28), (240, 37), (180, 49), (120, 74), (90, 100), (50, 180))   # fast bets / a day ≥ 100k up: 5% below too
 LANES = len(CLASSES)
 TOP = max(m for _, m in CLASSES)        # the biggest payout, tenths
 SLOT_S = 120                            # a new lineup every two minutes
@@ -62,7 +63,7 @@ def lineup(n: int) -> list[list[int]]:
 
 
 def pay(cls: int, old: bool = False) -> int:
-    """The payout of a class, tenths of the stake (stake included); old: the 08/10 price (OLD)."""
+    """The payout of a class, tenths of the stake (stake included); old: the lower price (OLD: fast bets, a day ≥ 100k up)."""
     return (OLD if old else CLASSES)[cls][1]
 
 

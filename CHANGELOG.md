@@ -1,3 +1,9 @@
+# v2.4.35 — 2026-10-16
+
+🎁 Kho báu trong phố (chủ game 16/10 tối: "10p thì sẽ từ 10 - 15 rương random"): mỗi đợt 10 phút ngẫu nhiên 10–15 rương (town_treasure.WAVE_MIN/WAVE_CHESTS, 92 điểm đặt); mã rương nhận số thứ tự 2 chữ số (CHEST). Lùi về 2.4.34 thì rương số 10–14 của đợt đang có không nhặt được tới khi hết hạn (≤ 30 phút).
+
+🐕 Đua chó (chủ game 16/10 tối: "tỷ lệ ăn cao quá, cho ăn tỷ lệ thấp lại, lãi nhiều quá … giảm nhẹ xíu thôi, giảm 5% so với hiện tại"): giá trả thưởng giảm 5% so với 2.4.34, làm tròn tới 0,1: fair_dog.CLASSES (29, 39, 52, 78, 105, 190) = bảng 08/10, mỗi chó trả 92,8–95% tiền cược; giá khi cược dồn dập (≥ 11 ván/phút) hoặc lãi chợ đen trong ngày ≥ 100.000 (OLD) cũng giảm 5%: (28, 37, 49, 74, 100, 180) = 88,2–90%. Bảng vẫn hiện đúng giá ván kế tiếp của người chơi.
+
 # v2.4.34 — 2026-10-16
 
 🛎️ Nghề mới Khách sạn Sông Mây (chủ game 16/10 "thêm nghề khách sạn đi"): nghề làm công (operations.SALARIED, lương hợp đồng khi khép ca + thưởng mỗi việc theo chất lượng), xoay 6 vị trí: lễ tân, dọn phòng, giặt là, bữa sáng, sửa chữa, trang trí sảnh; mỗi việc vài bước kiểm ở server, sai bước làm lại và trừ chất lượng. Mùa Valentine / Tết / Noel (ngày Việt Nam): thêm một khách, thưởng ×1,5, sảnh trang trí theo mùa. 12 chuyện quầy lễ tân, truyện 5 phần, chứng chỉ, nấc thăng tiến, nhà isometric, lô ở khu công viên, tiếng Anh. Mở từ chương 3 qua journey.LATE_UNLOCKS (không ghi vào unlocked của mọi save), chưa làm thì không lưu (engine.DORMANT như hải quan): rollback xuống 2.4.33 vẫn đọc được save chưa đụng tới khách sạn.
