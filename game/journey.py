@@ -555,6 +555,8 @@ def upgrade(j: dict) -> None:
     pt.upgrade(j)   # 🐾
     lx.upgrade(j)   # 🛍️
     auc.upgrade(j)   # 🔨
+    from . import town_projects
+    town_projects.upgrade(j)   # 🏗️
     if j.get('story'):
         for n in range(1, min(int(j.get('chapter', 1)), LAST) + 1):
             _unlock_chapter(j, n)
@@ -973,6 +975,9 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(lx.action(s, name, p))
     elif name.startswith('jr_auc_'):
         result.update(auc.action(s, name, p))
+    elif name.startswith('jr_town_'):   # 🏗️ Công trình của phố (game/town_projects.py)
+        from . import town_projects
+        result.update(town_projects.action(s, name, p))
     elif name.startswith('jr_bark_'):   # 🐕 Kéo co chó sủa was removed (15/10): refuses, nothing taken (game/dog_bark.py)
         from . import dog_bark
         result.update(dog_bark.action(s, name, p))
@@ -1224,6 +1229,8 @@ def validate(s: dict) -> None:
     pt.validate(s)   # 🐾 journey['pets'] (optional)
     lx.validate(s)   # 🛍️ journey['lux'] (optional)
     auc.validate(s)   # 🔨 journey['uniq'] (optional)
+    from . import town_projects
+    town_projects.validate(s)   # 🏗️ journey['town'] (optional)
     up.validate(s)   # 🧾 journey['upk'] (optional)
     rui.validate(s)   # 🛡️ journey['rui'] (optional)
     vang.validate(s)   # 💰 journey['vang'] (optional)
