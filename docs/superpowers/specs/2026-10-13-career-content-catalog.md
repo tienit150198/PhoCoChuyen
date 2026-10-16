@@ -826,3 +826,18 @@ Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chun
 8. Lập hồ sơ nghi vấn khai sai xuất xứ
 9. Kiểm kê kho hàng tạm giữ có biên lai
 10. Điều phối chuyên án chống buôn lậu qua cảng
+
+## 56. Khách sạn (`hotel`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Đối chiếu phiếu đặt phòng trùng tên
+2. Lập bảng phòng sạch theo yêu cầu khách
+3. Kiểm phòng trả theo thứ tự buồng phòng
+4. Tính tiền minibar khi trả phòng
+5. Đếm và đối chiếu mẻ giặt chăn gối
+6. Sắp bữa sáng theo lưu ý dị ứng
+7. Xử lý điều hòa chảy nước an toàn
+8. Lên phương án trang trí mùa lễ trong ngân sách
+9. Quản lý sổ đồ thất lạc của khách
+10. Điều phối ca khách sạn ngày cao điểm

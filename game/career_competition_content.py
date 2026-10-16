@@ -440,6 +440,17 @@ _profile('customs', 'Hữu Phước | Minh Thư | Gia Khang',
     'đã đối chiếu tờ khai, kiểm hóa và tính thuế đúng trước khi thông quan // reconciled the declaration, inspection, and duties before clearance',
     'số đếm thực tế có chữ ký và chứng từ thuế // a signed physical count and duty documents')
 
+_profile('hotel', 'Quỳnh Như | Hữu Tâm | Minh Khoa',
+    'Chị Hằng · trưởng ca lễ tân // Hằng · front desk shift lead',
+    'phòng sạch đúng yêu cầu, thẻ đúng phòng và đồ thất lạc có sổ // clean rooms that match requests, the right key cards, and logged lost property',
+    'lễ tân | buồng phòng | bảo trì // front desk | housekeeping | maintenance',
+    'Sáng mùa lễ có ba việc: đoàn khách tới sớm, hai phòng vừa trả cần dọn và một phòng báo điều hòa chảy nước. // A holiday morning has three jobs: a group arriving early, two checked-out rooms to turn over, and a room reporting a leaking air conditioner.',
+    'Giao {a} làm thủ tục và báo giờ có phòng thật, {b} dọn hai phòng theo đúng thứ tự, {c} ngắt điện rồi xử lý điều hòa và báo tình trạng phòng. // Have {a} handle check-in with honest room times, {b} turn over both rooms in order, and {c} isolate power, fix the air conditioner, and report the room status.',
+    'Phòng được báo sẵn sàng nhưng vòi bồn rửa vẫn nhỏ giọt và hộ chiếu của khách trước còn trong ngăn kéo. // A room is reported ready, but the basin tap still drips and the previous guest\'s passport is still in a drawer.',
+    'Khóa phòng chờ bảo trì, báo lễ tân gọi khách trước nhận lại hộ chiếu, ghi sổ đồ thất lạc rồi kiểm lại phòng. // Hold the room for maintenance, have the desk call the previous guest about the passport, log it, and reinspect the room.',
+    'đã giao đúng phòng sạch, ghi sổ đồ thất lạc và khóa phòng hỏng trước khi bán // gave out only clean matching rooms, logged lost property, and held faulty rooms before selling them',
+    'sổ bàn giao phòng và sổ đồ thất lạc // the room handover log and the lost property log')
+
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',
     'nhận diện nguy cơ, xử lý đúng phạm vi và nghiệm thu dòng chảy // hazard recognition, work within scope, and verified drainage',

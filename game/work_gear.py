@@ -33,6 +33,7 @@ NAMES = {
  'laundry':'Bộ máy giặt và bàn ủi chăm vải',
  'post_office':'Cân kiện và máy in nhãn bưu gửi',
  'customs':'Máy soi hành lý và bộ kìm kẹp chì niêm phong',
+ 'hotel':'Xe đẩy buồng phòng và máy cài thẻ từ',
 }
 RATES=(100,115,135,160)
 PRICES=(0,90,220,480)

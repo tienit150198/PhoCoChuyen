@@ -93,6 +93,7 @@ ORDERS = {
     'laundry': ('Đơn riêng: giặt và gấp một túi đồ thường', 18, 4, {}),
     'post_office': ('Việc riêng: đóng gói và phân tuyến một lô thư', 16, 3, {}),
     'customs': ('Việc riêng: hướng dẫn một hộ kinh doanh khai tờ khai', 16, 3, {}),
+    'hotel': ('Việc riêng: dọn và bày lại một phòng cho khách quen', 16, 3, {}),
 }
 REASONS = {
     'working': 'Nhân viên đang xử lý đơn riêng.', 'closed': 'Nơi làm việc đã đóng ca.',

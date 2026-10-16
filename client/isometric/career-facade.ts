@@ -64,6 +64,7 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   laundry:style('washer','awning','trolley','#72a5a7','#e7edda'),
   post_office:style('envelope','workshop','parcels','#c29150','#f3dfb8'),
   customs:style('seal','civic','luggage','#4f7f66','#eadcae'),
+  hotel:style('bell','banner','luggage','#7a5a9e','#efe0c8'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -306,6 +307,9 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
     case 'seal':  // a round customs stamp over a sealed crate: no emblem copied from any real agency
       round(-34,6,68,34,4,body);line([[-34,23],[34,23]],cream,3);line([[-12,6],[-12,40]],cream,3);line([[12,6],[12,40]],cream,3);
       ellipse(0,-14,27,27,cream);ellipse(0,-14,21,21,s.main);star(0,-14,13,'#f1dca1');arc(0,-14,24,.3,2.8,ink,2);break;
+    case 'bell':  // a front-desk service bell on its plate, a room key tag hanging beside it
+      round(-42,24,84,11,4,s.main);c.beginPath();c.arc(0,22,31,Math.PI,Math.PI*2);finish(body);line([[-29,19],[29,19]],cream,3);
+      round(-4,-20,8,11,3,ink);ellipse(0,-22,8,4,cream);ellipse(-13,3,5,9,s.light);line([[31,-36],[31,-14]],ink,2);round(25,-14,13,20,3,s.light);break;
     case 'signal':
       line([[-15,-3],[-15,43]],ink,7);round(-33,-43,35,59,9,s.main);ellipse(-15,-27,10,10,'#c5816e');ellipse(-15,-1,10,10,'#b7c685');line([[-7,27],[42,8]],cream,9);for(const x of [5,25])line([[x,22-x*.38],[x+6,20-x*.38]],'#bb806c',7);break;
     case 'heart':

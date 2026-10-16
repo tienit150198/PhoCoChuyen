@@ -96,6 +96,10 @@ CH_UNLOCKS = {
     5: ('corp_accounting', 'tax_payroll', 'hr_admin', 'secretary', 'it_helpdesk'),
     6: ('group_accounting',),
 }
+# 🛎️ A workplace added after a release opens from a chapter without entering `unlocked` until it is worked: a
+# chapter list would put it in every story save (upgrade() re-runs the chapters), and an older build, whose CAREERS
+# lacks it, refuses such a save. Untouched it stays dormant (engine.DORMANT), so a rollback keeps loading the save.
+LATE_UNLOCKS = {'hotel': 3}
 OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 
 CAST = {
@@ -280,6 +284,7 @@ TITLES = [
     _t('c_lighthouse', 'career', '🗼', 'Người giữ lửa Hòn Gió', 'Đạt cấp 3 ở đèn biển Hòn Gió.', lambda x: x['lv'].get('lighthouse', 1) >= 3),
     _t('c_rescue', 'career', '📞', 'Giọng nói giữ bình tĩnh', 'Đạt cấp 3 ở tổng đài cứu hộ phường Mây.', lambda x: x['lv'].get('rescue', 1) >= 3),
     _t('c_police', 'career', '👮', 'Người giữ bình yên hẻm', 'Đạt cấp 3 ở Công an phường Mây.', lambda x: x['lv'].get('police', 1) >= 3),
+    _t('c_hotel', 'career', '🛎️', 'Người giữ chìa khóa Sông Mây', 'Đạt cấp 3 ở Khách sạn Sông Mây.', lambda x: x['lv'].get('hotel', 1) >= 3),
     _t('c_customs', 'career', '🛃', 'Người gác cửa khẩu', 'Đạt cấp 3 ở Chi cục Hải quan cửa khẩu Bến Mây.', lambda x: x['lv'].get('customs', 1) >= 3),
     _t('c_zpop', 'career', '💿', 'Người giữ seal nguyên vẹn', 'Đạt cấp 3 ở tiệm album Mây Pop.', lambda x: x['lv'].get('zpop', 1) >= 3),
     # Skills at level 3.
@@ -585,12 +590,23 @@ def roll_mode(s: dict, career: str, day: int) -> str:
     return 'normal'
 
 
+def late_opens(s: dict, career: str) -> bool:
+    """A LATE_UNLOCKS workplace is open: its chapter reached (or a save outside the story)."""
+    n = LATE_UNLOCKS.get(career)
+    if n is None:
+        return False
+    j = s.get('journey') if isinstance(s, dict) else None
+    if not isinstance(j, dict) or not j.get('story'):
+        return True
+    return type(j.get('chapter')) is int and j['chapter'] >= n
+
+
 def is_unlocked(s: dict, career: str) -> bool:
     j = s.get('journey')
     if not j or not j.get('story'):
         return True
     # 💼 an accounting place: its certificate opens it early, and without it (nor past work there) it stays shut
-    return (career in j.get('unlocked', ()) or aj.opens(s, career) or gvr.opens(s, career)) and aj.can_work(s, career)[0]
+    return (career in j.get('unlocked', ()) or aj.opens(s, career) or gvr.opens(s, career) or late_opens(s, career)) and aj.can_work(s, career)[0]
 
 
 def _playable(s: dict, cid: str) -> bool:
@@ -639,7 +655,7 @@ def gate(s: dict, career: str, action: str, internal: bool = False, p: dict | No
     j = s['journey']
     if internal or not j['story']:
         return
-    e.need(career in j['unlocked'] or aj.opens(s, career) or gvr.opens(s, career), LOCKED, 'locked')   # 🛃 Hải quan: 3 chapters done
+    e.need(career in j['unlocked'] or aj.opens(s, career) or gvr.opens(s, career) or late_opens(s, career), LOCKED, 'locked')   # 🛃 Hải quan: 3 chapters done
     ok, why = aj.can_work(s, career)   # 💼 an accounting place takes you once you pass its exam
     e.need(ok, why, 'need_cert')
     if action == 'start_day' and not s['careers'][career]['open']:
@@ -1017,7 +1033,8 @@ def suggested(s: dict, ctx: dict | None = None) -> str | None:
     j = s['journey']
     cs = s['careers']
     ctx = ctx or _context(s)
-    open_ids = [cid for cid in (j['unlocked'] if j['story'] else cs) if _playable(s, cid)]
+    open_ids = [cid for cid in ((j['unlocked'] + [c for c in LATE_UNLOCKS if c not in j['unlocked'] and late_opens(s, c)])
+                                 if j['story'] else cs) if _playable(s, cid)]
     goals = {g['id']: g for g in _goals_view(ctx, j['chapter']) if not g['done']}
     fresh = [cid for cid in open_ids if not cs[cid]['metrics'].get('served')]
     if 'office_hired' in goals or 'office_days' in goals:
@@ -1055,7 +1072,7 @@ def public(s: dict) -> dict:
     return dict(
         story=j['story'], gender=j['gender'], intro=j['intro'], chapter=j['chapter'], done=list(j['done']),
         finale=j['chapter'] > LAST,
-        unlocked=list(j['unlocked']) + [cid for cid in aj.opened(s) + [gvr.HQ_CAREER] if cid in s['careers'] and cid not in j['unlocked'] and (cid != gvr.HQ_CAREER or gvr.opens(s, cid))] if j['story'] else list(s['careers']),
+        unlocked=list(j['unlocked']) + [cid for cid in aj.opened(s) + [gvr.HQ_CAREER] + list(LATE_UNLOCKS) if cid in s['careers'] and cid not in j['unlocked'] and (cid not in (gvr.HQ_CAREER, *LATE_UNLOCKS) or gvr.opens(s, cid) or late_opens(s, cid))] if j['story'] else list(s['careers']),
         wallet=j['wallet'], debt=max(0, -j['wallet']), invest_max=min(CAPITAL_MAX, invest_max(s)) if j['story'] else 0,
         life_day=j['life_day'], living=living_cost(j),
         places=places, titles=sorted(([tid, day] for tid, day in j['titles'].items()), key=lambda x: (-x[1], x[0])),
@@ -1097,14 +1114,14 @@ def content() -> dict:
     """Static story data for the client (bootstrap only). Secret titles stay hidden."""
     return dict(
         chapters=[dict(n=ch['n'], title=ch['title'], art=ch['art'], tagline=ch['tagline'],
-                       unlocks=[cid for cid in CH_UNLOCKS[ch['n']] if cid in CAREERS],
+                       unlocks=[cid for cid in CH_UNLOCKS[ch['n']] + tuple(c for c, n in LATE_UNLOCKS.items() if n == ch['n']) if cid in CAREERS],
                        intro=[_content_line(x) for x in ch['intro']], outro=[_content_line(x) for x in ch['outro']],
                        goals=[dict(id=g['id'], text=g['text'], goal=g['goal']) for g in ch['goals']]) for ch in CHAPTERS],
         cast=CAST, cats=[dict(id=k, name=v) for k, v in TITLE_CATS],
         titles=[dict(id=t['id'], cat=t['cat'], secret=True) if t['secret'] else
                 {k: t[k] for k in ('id', 'cat', 'emoji', 'name', 'desc')} for t in TITLES],
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
-        unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
+        unlock_chapter={cid: n for n, ids in [*CH_UNLOCKS.items(), *((n, (c,)) for c, n in LATE_UNLOCKS.items())] for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
         garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), pets=pt.catalogue(), lux=lx.catalogue(), auction=auc.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content(),
         abroad=ab.catalogue())
@@ -1132,7 +1149,7 @@ def validate(s: dict) -> None:
     allowed |= {cid for cid, c in s['careers'].items() if c.get('started')}
     # 🛃 Hải quan is in no chapter: it opens after 3 chapters (gov_rules.opens). Once applied to and then reset (started
     # again False) it stays listed, so the door itself allows it (16/10: a reset left a save refusing every action).
-    allowed |= {cid for cid in j['unlocked'] if gvr.opens(s, cid)}
+    allowed |= {cid for cid in j['unlocked'] if gvr.opens(s, cid) or late_opens(s, cid)}   # 🛎️ LATE_UNLOCKS
     need(set(j['unlocked']) <= allowed, 'Nơi làm việc mở sớm hơn chương hiện tại.')
     need({cid for cid in CH_UNLOCKS[1] if cid in CAREERS} <= set(j['unlocked']), 'Thiếu nơi làm việc của chương đầu.')
     integer(j['wallet'], -10**7, 10**9)

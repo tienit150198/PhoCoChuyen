@@ -68,12 +68,14 @@ CAREER_IDS = (
     "laundry",
     "post_office",
     "customs",
+    "hotel",
 )
 _FILES = (
     "career_specialisms.json",
     "career_specialisms_21_37.json",
     "career_specialisms_38_54.json",
     "career_specialisms_55.json",
+    "career_specialisms_56.json",
 )
 _PACK_KEYS = {"tier", "title", "output_unit", "inputs", "procedure", "check"}
 _INPUT_KEYS = {"name", "unit", "quantity", "unit_cost"}
@@ -136,6 +138,7 @@ _TITLE_DIGESTS = {
     "laundry": "efcff125b236f98b659d54509de1a4149683e0e8b30360c4dd2bfc457b3aaf74",
     "customs": "a09f24b274c73db1cddd38eb50fa34cea34f8847dd22a483fc803445ae276f49",
     "post_office": "2e15eb95dcac32a33c4edc12ac71ed905086b6b2021ddea28b0c7be4c9f92c67",
+    "hotel": "372bd9593dbb412193fe6a5c9e7aa88c81328689c5c02d017269eeecabe7ee97",
 }
 
 

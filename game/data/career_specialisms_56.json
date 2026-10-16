@@ -1,0 +1,244 @@
+{
+  "hotel": [
+    {
+      "tier": 1,
+      "title": "Đối chiếu phiếu đặt phòng trùng tên",
+      "output_unit": "bảng đối chiếu phiếu đặt",
+      "inputs": [
+        {
+          "name": "Bộ phiếu đặt phòng hư cấu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Đọc đủ họ tên, mã đặt và số khách trên từng phiếu giả lập.",
+        "Đánh dấu các phiếu trùng tên nhưng khác mã hoặc đảo số.",
+        "Ghi phiếu đúng kèm giấy tờ đã đối chiếu để trưởng ca duyệt."
+      ],
+      "check": {
+        "prompt": "Bảng nào được nghiệm thu?",
+        "good": "Mỗi khách được ghép với phiếu khớp cả họ tên lẫn mã đặt.",
+        "bad": "Ghép theo tên gần đúng vì mã chỉ đảo một số.",
+        "why": "Tên gần giống là chuyện thường; mã đặt mới tách được hai khách."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Lập bảng phòng sạch theo yêu cầu khách",
+      "output_unit": "bảng phòng trong ca",
+      "inputs": [
+        {
+          "name": "Bảng phòng mô phỏng",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Cập nhật tình trạng sạch, chưa dọn, có khách và bảo trì từng phòng.",
+        "Lọc phòng theo giường, hướng nhìn, tầng và lối tiếp cận.",
+        "Giữ chỗ phòng đạt yêu cầu và ghi giờ có phòng thật cho khách."
+      ],
+      "check": {
+        "prompt": "Bảng phòng nào đạt?",
+        "good": "Chỉ phòng sạch và đủ yêu cầu được giữ cho khách.",
+        "bad": "Giao phòng chưa dọn rồi hứa dọn nhanh.",
+        "why": "Phòng chưa dọn giao trước là lỗi đầu tiên khách nhớ."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Kiểm phòng trả theo thứ tự buồng phòng",
+      "output_unit": "phiếu kiểm phòng trả",
+      "inputs": [
+        {
+          "name": "Phiếu kiểm phòng game",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Thay ga gối, vệ sinh phòng tắm từ cao xuống thấp.",
+        "Bổ sung tiện nghi theo sức chứa, kiểm minibar và đồ để quên.",
+        "Báo lễ tân đúng tình trạng phòng sau khi kiểm."
+      ],
+      "check": {
+        "prompt": "Phiếu nào được duyệt?",
+        "good": "Đủ các bước theo thứ tự và ghi rõ đồ hỏng nếu có.",
+        "bad": "Báo sẵn sàng rồi ghi đồ hỏng sau.",
+        "why": "Phòng còn đồ hỏng mà bán là khách sau gánh chịu."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Tính tiền minibar khi trả phòng",
+      "output_unit": "phiếu minibar",
+      "inputs": [
+        {
+          "name": "Thẻ giá minibar hư cấu",
+          "unit": "thẻ",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đếm từng món minibar đầu kỳ và còn lại.",
+        "Nhân số đã dùng với giá trong bảng; nước suối miễn phí.",
+        "Ghi tổng và chữ ký người kiểm vào phiếu trả phòng."
+      ],
+      "check": {
+        "prompt": "Phiếu minibar nào đúng?",
+        "good": "Tiền = số đã dùng × giá từng món, không tính nước miễn phí.",
+        "bad": "Tính theo số món còn lại trong tủ.",
+        "why": "Khách trả tiền cho món đã dùng, không phải món còn lại."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Đếm và đối chiếu mẻ giặt chăn gối",
+      "output_unit": "biên bản giao nhận đồ giặt",
+      "inputs": [
+        {
+          "name": "Phiếu giao đồ giặt game",
+          "unit": "phiếu",
+          "quantity": 3,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đếm thực tế từng loại ga, áo gối, khăn theo phòng.",
+        "So với phiếu buồng phòng và ghi chênh lệch.",
+        "Tách đồ có vết bẩn để xử lý trước khi chọn chương trình giặt."
+      ],
+      "check": {
+        "prompt": "Biên bản nào được nhận?",
+        "good": "Số đếm thực tế có ghi chênh lệch so với phiếu.",
+        "bad": "Chép lại số trên phiếu cho nhanh.",
+        "why": "Chép phiếu thì đồ thất lạc không bao giờ được tìm ra."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Sắp bữa sáng theo lưu ý dị ứng",
+      "output_unit": "phiếu báo bếp bữa sáng",
+      "inputs": [
+        {
+          "name": "Thẻ lưu ý dị ứng hư cấu",
+          "unit": "thẻ",
+          "quantity": 5,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Đọc lưu ý ăn chay, dị ứng và trẻ em của từng phòng.",
+        "Đổi món trái lưu ý theo quy tắc của bếp.",
+        "Báo bếp đủ suất, đóng hộp mang đi cho khách đi sớm."
+      ],
+      "check": {
+        "prompt": "Phiếu báo bếp nào đạt?",
+        "good": "Mỗi khách một suất hợp lưu ý, không dư không thiếu.",
+        "bad": "Nấu dư mỗi món vài suất cho chắc.",
+        "why": "Dư là bỏ phí, sai lưu ý là nguy hiểm."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Xử lý điều hòa chảy nước an toàn",
+      "output_unit": "phiếu bảo trì điều hòa",
+      "inputs": [
+        {
+          "name": "Bộ dụng cụ vệ sinh điều hòa game",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Ngắt aptomat điều hòa trước khi mở dàn lạnh.",
+        "Vệ sinh lưới lọc, thông ống thoát và thử lại.",
+        "Gọi nhà thầu nếu có dấu hiệu rò gas, báo lễ tân tình trạng phòng."
+      ],
+      "check": {
+        "prompt": "Phiếu bảo trì nào đạt?",
+        "good": "Có bước ngắt điện, nguyên nhân và tình trạng phòng sau sửa.",
+        "bad": "Tự nạp gas bằng bình mua ngoài.",
+        "why": "Gas lạnh là việc của thợ có chứng chỉ."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Lên phương án trang trí mùa lễ trong ngân sách",
+      "output_unit": "bảng phương án trang trí",
+      "inputs": [
+        {
+          "name": "Thẻ đồ trang trí hư cấu",
+          "unit": "thẻ",
+          "quantity": 6,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Chọn món hợp dịp, bỏ món trái lưu ý của khách.",
+        "Cộng tiền, vượt ngân sách thì bỏ món đắt nhất.",
+        "Bố trí chừa lối đi, lối thoát hiểm và bình chữa cháy."
+      ],
+      "check": {
+        "prompt": "Phương án nào được duyệt?",
+        "good": "Đúng dịp, trong ngân sách và không chắn lối thoát hiểm.",
+        "bad": "Đặt cây thông chắn cửa thoát hiểm cho nổi bật.",
+        "why": "Trang trí đẹp mấy cũng không được chắn đường thoát."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Quản lý sổ đồ thất lạc của khách",
+      "output_unit": "sổ đồ thất lạc",
+      "inputs": [
+        {
+          "name": "Túi niêm đồ thất lạc game",
+          "unit": "túi",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi món, phòng, giờ tìm thấy và người nhặt.",
+        "Niêm túi, gửi két lễ tân; giấy tờ và thuốc thì gọi khách ngay.",
+        "Trả đồ khi khách xác nhận đúng món, ký nhận."
+      ],
+      "check": {
+        "prompt": "Sổ nào đạt?",
+        "good": "Mỗi món có dòng ghi, túi niêm và chữ ký khi trả.",
+        "bad": "Giữ đồ trong tủ cá nhân chờ khách hỏi.",
+        "why": "Đồ của khách phải có sổ để ai trực cũng trả được."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Điều phối ca khách sạn ngày cao điểm",
+      "output_unit": "kế hoạch ca cao điểm",
+      "inputs": [
+        {
+          "name": "Bảng phân ca hư cấu",
+          "unit": "bảng",
+          "quantity": 2,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Dự báo lượt nhận và trả phòng theo giờ.",
+        "Phân người cho lễ tân, buồng phòng, giặt là và bảo trì.",
+        "Đặt mốc kiểm phòng và giờ có phòng thật cho từng đoàn."
+      ],
+      "check": {
+        "prompt": "Kế hoạch nào được duyệt?",
+        "good": "Mỗi vị trí có người, có mốc kiểm phòng trước giờ nhận.",
+        "bad": "Dồn mọi người ra quầy, phòng dọn sau.",
+        "why": "Khách tới mà phòng chưa dọn thì quầy đông mấy cũng vô ích."
+      }
+    }
+  ]
+}
