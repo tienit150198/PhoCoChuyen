@@ -43,9 +43,12 @@ const tabs=(items,active,action)=>`<nav class="pill-tabs" role="tablist">${items
 /* ---------------------------------------------------------------- Stock */
 /** Lines of a merged order (đơn gộp, game/inventory.py) share a `group`: one van, one crate, one claim.
  * Returns shipments {id, lines, o (first line), group} in the order the lines came. */
+/** 📦 Gộp thùng tự đặt (game/auto_order.py): the automatic orders at the door carry `box` and are one crate too
+ * (`box` set: received with inv_receive {box, counts}; their suppliers may differ). */
 const shipments=list=>{const out=[],seen=new Map();
-  for(const o of list){if(!o.group){out.push({id:o.id,lines:[o],o,group:false});continue;}
-    let g=seen.get(o.group);if(!g){g={id:o.group,lines:[],o,group:true};seen.set(o.group,g);out.push(g);}g.lines.push(o);}
+  for(const o of list){const key=o.group||(o.box&&o.status==='in_transit'?'box-'+o.box:'');
+    if(!key){out.push({id:o.id,lines:[o],o,group:false});continue;}
+    let g=seen.get(key);if(!g){g={id:key,lines:[],o,group:true,box:o.group?'':o.box};seen.set(key,g);out.push(g);}g.lines.push(o);}
   return out;};
 /** What a shipment cost: the goods of every line plus the one shipping fee (kept on its first line). */
 const paidOf=g=>g.lines.reduce((n,o)=>n+Number(o.cost||0)+Number(o.ship||0),0);
@@ -90,7 +93,15 @@ export function reorderRow(r,ui,byId){
       `<label>đặt <input type="number" inputmode="numeric" min="1" max="${r.line}" value="${i.qty}" id="ro-q-${esc(i.id)}"${i.on?'':' disabled'}></label>`+
       `<button type="button" class="btn ghost small" data-action="v4RoSave" data-item="${esc(i.id)}" aria-label="Lưu ${esc(it.name)}"${i.on?'':' disabled'}>${icon('check',14)}</button></div>`;};
   const sw=`<button type="button" class="inv-auto${r.on?' on':''}" role="switch" aria-checked="${r.on}" data-command="stock_reorder" data-payload="${esc(JSON.stringify({on:!r.on}))}"><span>Tự đặt: <b>${r.on?'Bật':'Tắt'}</b></span><i aria-hidden="true"></i></button>`;
-  return `<section class="inv-ro" aria-label="Tự đặt hàng">${head}${sw}<p class="inv-ro-note">Quỹ trả · giữ ${fmt(r.floor)} xu · hôm nay ${fmt(r.spent)}/${fmt(r.budget)} xu</p>${items.map(row).join('')}</section>`;
+  return `<section class="inv-ro" aria-label="Tự đặt hàng">${head}${sw}<p class="inv-ro-note">Quỹ trả · giữ ${fmt(r.floor)} xu · hôm nay ${fmt(r.spent)}/${fmt(r.budget)} xu</p>${boxRow(r.box,fmt)}${items.map(row).join('')}</section>`;
+}
+/** 📦 Gộp thùng tự đặt (game/auto_order.py; `reorder.box`, an older server sends none): the automatic orders at the
+ * door come as one crate, counted and received once. Not owned: a line with the price and "Mua". */
+function boxRow(b,fmt){
+  if(!b)return '';
+  if(b.owned)return '<p class="inv-ro-note">📦 Hàng tự đặt về tới cửa gom chung một thùng, kiểm một lần.</p>';
+  const q=`Mua 📦 Gộp thùng tự đặt cho nơi này? ${fmt(b.price)} xu: quỹ trả trước, thiếu thì lấy ví. Hàng tự đặt về tới cửa sẽ gom chung một thùng, mở và kiểm một lần.`;
+  return `<div class="inv-ro-lock"><span>📦 Gộp thùng tự đặt · ${fmt(b.price)} xu</span>${confirmCmd(b.short?`Thiếu ${fmt(b.short)}`:'Mua','stock_reorder',{buy_box:true},q,'primary small',b.short>0)}</div>`;
 }
 export function stockCountStep(env){return Math.max(1,Math.min(100,Math.floor(Number(env?.api?.state?.careers?.[env.api.state.current]?.warehouse?.count_step)||1)));}
 export function tallyBatch(ui,order,indices,limit=1){
@@ -200,7 +211,7 @@ export function inventoryView(env){
       continue;}
     if(!opened(g)){steps.push({ok:null,label:`Mở thùng gộp ${g.lines.length} món`,go:{act:'v4InvOpen',data:{order:g.id},label:`📦 Mở thùng gộp · ${g.lines.length} món`}});continue;}
     for(const o of g.lines)steps.push({label:`Đếm ${byId[o.item]?.name||''}`,...counted(o)});
-    steps.push({ok:null,label:'Nhận cả thùng vào kệ',go:{act:'v4ReceiveGroup',data:{group:g.id},label:'✅ Nhận cả thùng lên kệ'}});
+    steps.push({ok:null,label:'Nhận cả thùng vào kệ',go:{act:'v4ReceiveGroup',data:g.box?{box:g.box}:{group:g.id},label:'✅ Nhận cả thùng lên kệ'}});
   }
   // A crate that came short (and no order form in hand): the claim is offered right here, not only deep in the order list (player feedback #28).
   const shorts=unclaimed(orders,c.day),shortS=shipments(shorts);
@@ -279,9 +290,10 @@ export function inventoryView(env){
     const s=sup(g.o),isOpen=opened(g),list=g.lines.map(o=>`${esc(byId[o.item]?.emoji||'📦')} ${esc(byId[o.item]?.name||o.item)}${sizeNote(o)} ×${o.qty}`).join(' · ');
     const body=isOpen?`<p class="inv-tip">${g.lines.some(trayed)?TRAY_TIP:COUNT_TIP}</p>`+g.lines.map(o=>{const i=byId[o.item]||{name:o.item};
         return `<div class="inv-gline" id="crate-${esc(o.id)}"><div class="inv-slip"><span>${name(i)}${sizeNote(o)}</span><b>${o.qty} ${esc(unit(i))}</b></div><ul class="inv-crate${trayed(o)?' inv-trays':''}" aria-label="${esc(i.name)} trong thùng">${goodsOf(o,i)}</ul>${pages(o)}<div class="inv-receive"><label for="count-${esc(o.id)}">Đếm được</label>${counter(o)}${stockBatchButton(o.id,env)}</div></div>`;}).join('')+
-      `<button class="btn primary big full" type="button" data-action="v4ReceiveGroup" data-group="${esc(g.id)}">${icon('check',15)} Nhận cả thùng lên kệ</button><p class="muted small">Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`
-      :`<p class="inv-gnames">${list}</p>${button(`📦 Mở thùng gộp · ${g.lines.length} món`,'v4InvOpen',{order:g.id},'primary big full inv-open')}`;
-    return `<article class="card inv-crate-card inv-group${isOpen?' open':''}" id="crate-${esc(g.id)}"><div class="row spread"><div><strong>🛒 Đơn gộp · ${g.lines.length} món</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(paidOf(g))} xu${g.o.arrives_time?` · tới lúc ${esc(g.o.arrives_time)}`:''}</small></div>${pill('ĐÃ TỚI','green')}</div>${body}</article>`;};
+      `<button class="btn primary big full" type="button" data-action="v4ReceiveGroup" ${g.box?`data-box="${esc(g.box)}"`:`data-group="${esc(g.id)}"`}>${icon('check',15)} Nhận cả thùng lên kệ</button><p class="muted small">Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`
+      :`<p class="inv-gnames">${list}</p>${button(`📦 Mở thùng ${g.box?'tự đặt':'gộp'} · ${g.lines.length} món`,'v4InvOpen',{order:g.id},'primary big full inv-open')}`;
+    const from=g.box?[...new Set(g.lines.map(o=>{const x=sup(o);return `${x?.emoji||''} ${x?.name||''}`.trim();}))].map(esc).join(', '):`${esc(s?.emoji||'')} ${esc(s?.name||'')}`;
+    return `<article class="card inv-crate-card inv-group${isOpen?' open':''}" id="crate-${esc(g.id)}"><div class="row spread"><div><strong>${g.box?'📦 Thùng tự đặt':'🛒 Đơn gộp'} · ${g.lines.length} món</strong><small class="muted block">${from} · đã trả ${fmt(paidOf(g))} xu${g.o.arrives_time?` · tới lúc ${esc(g.o.arrives_time)}`:''}</small></div>${pill('ĐÃ TỚI','green')}</div>${body}</article>`;};
   const shortCard=g=>{const s=sup(g.o),miss=g.lines.reduce((n,o)=>n+o.qty-o.actual,0);
     const title=g.group?`🛒 Đơn gộp · thiếu ${g.lines.map(o=>`${o.qty-o.actual} ${esc(byId[o.item]?.name||o.item)}`).join(', ')}`:`${name(byId[g.o.item]||{name:g.o.item})} · nhận ${g.o.actual}/${g.o.qty}`;
     const go=claimGo(g),isNext=nx?.go?.cmd==='inv_claim'&&JSON.stringify(nx.go.payload)===JSON.stringify(go.payload);
@@ -993,14 +1005,15 @@ export async function v4Action(action,data,el,env){
       if(await cmd('inv_order_cart',{supplier:k.supplier,confirm:true})){ui.invCart=null;ui.invTab='orders';renderSheet(false);}
       return true;}
     case'v4ReceiveGroup':{
-      const inv=api.state.careers[api.state.current]?.inventory,lines=(inv?.orders||[]).filter(o=>o.group===data.group&&o.status==='in_transit'),counts={};
+      const inv=api.state.careers[api.state.current]?.inventory,gid=data.box?'box-'+data.box:data.group;
+      const lines=(inv?.orders||[]).filter(o=>(data.box?!o.group&&o.box===data.box:o.group===data.group)&&o.status==='in_transit'),counts={};
       for(const o of lines){const inp=document.getElementById('count-'+o.id),raw=String(inp?.value??ui.invCount?.[o.id]??'').trim();
         if(raw===''){const it=api.content.inventory.items[api.state.current].find(i=>i.id===o.item);toastOr(env,`Đếm ${it?.name||'từng món'} trong thùng trước đã nhé.`);inp?.focus();return true;}
         counts[o.id]=Number(raw);}
       // Same check as one crate (countOff): a line that cannot match is pointed out before inv_receive refuses the lot.
       for(const o of lines){const it=api.content.inventory.items[api.state.current].find(i=>i.id===o.item);if(countOff(env,o.id,counts[o.id],it?.name||''))return true;}
-      if(lines.length&&await cmd('inv_receive',{group:data.group,counts})){for(const o of lines)for(const k of ['invCount','invTally','invTyped'])if(ui[k])delete ui[k][o.id];
-        if(ui.invOpen===data.group||lines.some(o=>o.id===ui.invOpen))ui.invOpen=null;renderSheet();}
+      if(lines.length&&await cmd('inv_receive',data.box?{box:data.box,counts}:{group:data.group,counts})){for(const o of lines)for(const k of ['invCount','invTally','invTyped'])if(ui[k])delete ui[k][o.id];
+        if(ui.invOpen===gid||lines.some(o=>o.id===ui.invOpen))ui.invOpen=null;renderSheet();}
       return true;}
     case'v4Supplier':ui.orderSupplier=data.supplier;renderSheet();return true;
     case'v4OrderSize':{(ui.orderSize??={})[data.item]=data.size||null;renderSheet();return true;}

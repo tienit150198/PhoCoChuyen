@@ -274,6 +274,84 @@ class Switches(Base):
                 validate_state(j.state)
 
 
+class Box(Base):
+    """📦 Gộp thùng tự đặt (owner 16/10, feedback #391: "bật 18 món là 18 lần mở thùng"; "mất 10k xu để mua"): after
+    🔁 Tự đặt hàng, 10.000 xu; the automatic orders at the door are one crate, received in one step."""
+    def two(self, fund=50000):
+        j = self.journey(fund=fund)
+        own(j)
+        j.c[ao.KEY]['items'].pop('chili', None)
+        j.c[ao.KEY]['items']['chili'] = dict(below=10, qty=20)
+        shelf(j, 0)
+        shelf(j, 0, 'chili')
+        return j
+
+    def test_bought_after_reorder_for_10000(self):
+        self.assertEqual(ao.BOX_PRICE, 10000)
+        j = self.journey(fund=200000)
+        with self.assertRaises(GameError):
+            j.act('stock_reorder', buy_box=True, confirm=True)                # Tự đặt hàng first
+        j.act('stock_reorder', buy=True, confirm=True)
+        pub = public_state(j.state)['careers']['restaurant']['warehouse']['reorder']
+        self.assertEqual(pub['box'], dict(owned=False, price=10000, short=0))
+        with self.assertRaises(GameError):
+            j.act('stock_reorder', buy_box=True)                              # no confirm
+        money, turn = j.c['money'], j.c['turn']
+        j.act('stock_reorder', buy_box=True, confirm=True)
+        self.assertEqual((j.c['money'], j.c['turn'], j.c[ao.BOX_KEY]), (money - 10000, turn, dict(paid=10000)))
+        with self.assertRaises(GameError):
+            j.act('stock_reorder', buy_box=True, confirm=True)                # once
+        self.assertTrue(public_state(j.state)['careers']['restaurant']['warehouse']['reorder']['box']['owned'])
+        validate_state(j.state)
+        forged = copy.deepcopy(j.state)
+        forged['careers']['restaurant'][ao.BOX_KEY] = dict(paid=10000, free=True)
+        with self.assertRaises(GameError):
+            validate_state(forged)
+        forged = copy.deepcopy(j.state)
+        forged['careers']['restaurant'].pop(ao.KEY)                         # a box without Tự đặt hàng
+        with self.assertRaises(GameError):
+            validate_state(forged)
+
+    def test_the_automatic_crates_at_the_door_are_received_once(self):
+        j = self.two()
+        j.c[ao.BOX_KEY] = dict(paid=ao.BOX_PRICE)
+        j.act('inv_wait')
+        orders = auto_orders(j) + auto_orders(j, 'chili')
+        self.assertEqual(len(orders), 2)
+        for o in orders:
+            wait_until_ready(j, o['id'])
+        pub = public_state(j.state)['careers']['restaurant']['inventory']['orders']
+        self.assertEqual({o['id'] for o in pub if o.get('box') == 'auto'}, {o['id'] for o in orders})
+        counts = {o['id']: o['actual'] for o in orders}
+        before = copy.deepcopy(j.state)
+        with self.assertRaises(GameError):                                   # one line counted wrong: nothing received
+            j.act('inv_receive', box='auto', counts={**counts, orders[0]['id']: orders[0]['actual'] + 1})
+        with self.assertRaises(GameError):                                   # the crate holds both lines
+            j.act('inv_receive', box='auto', counts={orders[0]['id']: orders[0]['actual']})
+        self.assertEqual(j.state, before)
+        turn = j.c['turn']
+        r = j.act('inv_receive', box='auto', counts=counts)
+        self.assertIn('cả thùng tự đặt', r['message'])
+        self.assertEqual(j.c['turn'], turn + 1)                              # one shop step for the lot
+        now = {o['id']: o for o in j.c['ext']['inv']['orders']}
+        self.assertTrue(all(now[k]['status'] == 'received' for k in counts))
+        self.assertEqual(inventory.count(j.c, ITEM), next(o['actual'] for o in orders if o['item'] == ITEM))
+        validate_state(j.state)
+
+    def test_without_the_box_each_crate_stays_its_own(self):
+        j = self.two()
+        j.act('inv_wait')
+        orders = auto_orders(j) + auto_orders(j, 'chili')
+        for o in orders:
+            wait_until_ready(j, o['id'])
+        pub = public_state(j.state)['careers']['restaurant']['inventory']['orders']
+        self.assertFalse(any(o.get('box') for o in pub))
+        with self.assertRaises(GameError):
+            j.act('inv_receive', box='auto', counts={o['id']: o['actual'] for o in orders})
+        j.act('inv_receive', order=orders[0]['id'], count=orders[0]['actual'])
+        self.assertEqual(next(o for o in j.c['ext']['inv']['orders'] if o['id'] == orders[0]['id'])['status'], 'received')
+
+
 class RollbackTo2411(unittest.TestCase):
     """Saves holding 🔁 Tự đặt hàng (bought, settings, automatic orders on the way and received, the switch off) validate,
     migrate, render and take a command on 2.4.11 and 2.4.12 (`git archive`), which keep the key without reading it."""

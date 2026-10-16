@@ -24,6 +24,13 @@ manual order. Paid from the fund only, and only while it keeps a floor (jr.RESER
 and today's automatic spend stays within DAY_SHARE % of the fund at the start of the day. At most one pending automatic
 order per item, and SLOTS_FREE deliveries on the way are always left for the player's own orders.
 
+📦 Gộp thùng tự đặt (owner 16/10, player feedback #391: "bật 18 món là 18 lần mở thùng rồi 18 lần kiểm hàng"; "mất
+10k xu để mua"): a second paid unlock, BOX_PRICE, once 🔁 Tự đặt hàng is owned. Every automatic order at the door then
+shows as ONE crate (inventory.public tags it `box: 'auto'`) and is received in ONE inv_receive {box: 'auto', counts}
+(one shop step instead of one per crate; each line still counted, a short line claimed as before). The orders
+themselves are not changed (still one per item, its own supplier and van), so nothing new is saved on them. Save: an
+OPTIONAL career key c[BOX_KEY] = {'paid': int} (absent: not owned), outside c[KEY] whose keys an older release checks.
+
 When: after every command of that workplace and on the server's settlement of a load (the same points as 🤖 Tự nhận
 hàng, which runs first), so it works while the player is away. Task generation is not touched.
 """
@@ -42,6 +49,9 @@ DAY_SHARE = 50          # at most this % of the fund at the start of the day, pe
 SLOTS_FREE = 2          # deliveries on the way kept free for the player's own orders
 TEASE_ORDERS = 3        # the locked line shows once the player has placed this many orders (#384: no ads for a newcomer)
 NAME = '🔁 Tự đặt hàng'
+BOX_KEY = 'auto_box'
+BOX_PRICE = 10_000      # owner 16/10: "mất 10k xu để mua"
+BOX_NAME = '📦 Gộp thùng tự đặt'
 
 
 def _inv():
@@ -60,6 +70,16 @@ def rec(c: dict) -> dict | None:
 
 def owned(c: dict) -> bool:
     return rec(c) is not None
+
+
+def box_owned(c: dict) -> bool:
+    return isinstance(c, dict) and isinstance(c.get(BOX_KEY), dict)
+
+
+def box_ids(c: dict) -> set:
+    """The automatic orders that ride in the one crate (📦 Gộp thùng tự đặt owned), else none."""
+    r = rec(c)
+    return set((r.get('open') or {}).values()) if r is not None and box_owned(c) else set()
 
 
 def on(c: dict) -> bool:
@@ -243,35 +263,58 @@ def run_all(s: dict) -> list[str]:
 
 
 # ---------------------------------------------------------------- the command
-def _buy(s: dict, c: dict, career: str, p: dict) -> dict:
+def _pay(s: dict, c: dict, career: str, price: int, name: str) -> int:
+    """Pay `price` from the workplace fund first, then the wallet (story mode). Returns what the wallet paid."""
     from . import engine as e
     from . import journey as jr
+    j = s.get('journey') or {}
+    from_fund = min(max(0, c['money']), price)
+    from_wallet = price - from_fund
+    if from_wallet:
+        wallet = j.get('wallet', 0) if j.get('story') else 0
+        e.need(wallet >= from_wallet, f'Thiếu {max(0, from_wallet - max(0, wallet)):,} xu (quỹ + ví).'.replace(',', '.'))
+        jr._transfer(s, c, from_wallet, f'Góp vốn từ ví · {name}', 'owner_capital')
+        jr._wallet(j, -from_wallet, 'invest', f'Góp vốn cho {jr._place(career)}', career)
+        j['stats']['invested'] += from_wallet
+    e.money(s, c, -price, f'Mua {name}', category='upgrade')
+    return from_wallet
+
+
+def _buy(s: dict, c: dict, career: str, p: dict) -> dict:
+    from . import engine as e
     need = e.need
     need(not owned(c), f'{NAME} đã mở ở nơi này rồi.')
     need(p.get('confirm') is True, f'Xác nhận mua {NAME} trước nhé.')
-    j = s.get('journey') or {}
-    from_fund = min(max(0, c['money']), PRICE)
-    from_wallet = PRICE - from_fund
-    if from_wallet:
-        wallet = j.get('wallet', 0) if j.get('story') else 0
-        need(wallet >= from_wallet, f'Thiếu {max(0, from_wallet - max(0, wallet)):,} xu (quỹ + ví).'.replace(',', '.'))
-        jr._transfer(s, c, from_wallet, f'Góp vốn từ ví · {NAME}', 'owner_capital')
-        jr._wallet(j, -from_wallet, 'invest', f'Góp vốn cho {jr._place(career)}', career)
-        j['stats']['invested'] += from_wallet
-    e.money(s, c, -PRICE, f'Mua {NAME}', category='upgrade')
+    from_wallet = _pay(s, c, career, PRICE, NAME)
     c[KEY] = dict(paid=PRICE)
     e.log(s, c, 'upgrade', f'Đã mở {NAME}: kho tự đặt khi sắp hết.')
     return dict(message=f'{NAME} đã mở.' + (f' Ví trả {from_wallet:,} xu.'.replace(',', '.') if from_wallet else ''),
                 celebrate=True)
 
 
+def _buy_box(s: dict, c: dict, career: str, p: dict) -> dict:
+    from . import engine as e
+    need = e.need
+    need(owned(c), f'Mua {NAME} trước, rồi mới gộp thùng được nhé.')
+    need(not box_owned(c), f'{BOX_NAME} đã mở ở nơi này rồi.')
+    need(p.get('confirm') is True, f'Xác nhận mua {BOX_NAME} trước nhé.')
+    from_wallet = _pay(s, c, career, BOX_PRICE, BOX_NAME)
+    c[BOX_KEY] = dict(paid=BOX_PRICE)
+    e.log(s, c, 'upgrade', f'Đã mở {BOX_NAME}: hàng tự đặt về tới cửa gom chung một thùng, kiểm một lần.')
+    return dict(message=f'{BOX_NAME} đã mở: hàng tự đặt về tới cửa gom chung một thùng.'
+                + (f' Ví trả {from_wallet:,} xu.'.replace(',', '.') if from_wallet else ''), celebrate=True)
+
+
 def action(s: dict, c: dict, career: str, p: dict) -> dict:
-    """stock_reorder: {buy: true, confirm: true} · {on: bool} (all items) · {item, on?, below?, qty?}. No shop time."""
+    """stock_reorder: {buy: true, confirm: true} · {buy_box: true, confirm: true} · {on: bool} (all items) ·
+    {item, on?, below?, qty?}. No shop time."""
     from . import engine as e
     need = e.need
     need(eligible(career), 'Nơi này không có kho hàng.')
     if p.get('buy') is True:
         return _buy(s, c, career, p)
+    if p.get('buy_box') is True:
+        return _buy_box(s, c, career, p)
     need(owned(c), f'Mua {NAME} trước nhé.')
     r = rec(c)
     if 'item' not in p:
@@ -327,11 +370,23 @@ def public(s: dict, c: dict, career: str) -> dict | None:
     items = [dict(id=it['id'], **rule(c, career, it['id']), auto=_pending(x, (r.get('open') or {}).get(it['id'])))
              for it in inv.catalogue(career) if it.get('unlock', 1) <= level]
     return dict(owned=True, price=PRICE, on=on(c), items=items, cap=cap, line=line, floor=floor(s, c),
-                budget=budget(c), spent=spent(c), warn=r.get('warn') == c['day'])
+                budget=budget(c), spent=spent(c), warn=r.get('warn') == c['day'],
+                box=dict(owned=box_owned(c), price=BOX_PRICE,
+                         short=0 if box_owned(c) else max(0, BOX_PRICE - max(0, c['money']) - _wallet_of(s))))
+
+
+def _wallet_of(s: dict) -> int:
+    j = s.get('journey') or {}
+    return max(0, j.get('wallet', 0)) if j.get('story') else 0
 
 
 def validate(c: dict, career: str) -> None:
     from .engine import need, integer, clean_text
+    b = c.get(BOX_KEY)
+    if b is not None:
+        need(eligible(career) and c.get(KEY) is not None and isinstance(b, dict) and set(b) == {'paid'},
+             'Gộp thùng tự đặt không hợp lệ.')
+        integer(b['paid'], 0, 10**9)
     r = c.get(KEY)
     if r is None:
         return

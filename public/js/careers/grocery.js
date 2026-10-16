@@ -608,7 +608,11 @@ function incoming(x){
     const lines=o.group?orders.filter(l=>l.group===o.group):[o],paid=lines.reduce((n,l)=>n+Number(l.cost||0)+Number(l.ship||0),0),back=Math.floor(paid*(Number(inv.cancel_pct)||80)/100);
     const what=o.group?`đơn gộp ${lines.length} món`:`${o.qty} ${item(x,o.item).name}`;
     return x.confirmCmd(o.group?'✖ Hủy đơn gộp':'✖ Hủy','inv_cancel',o.group?{group:o.group}:{order:o.id},`Hủy ${what}? Nhận lại ${back} xu (đã trả ${paid} xu).`,'small ghost');};
+  // 📦 Gộp thùng tự đặt (game/auto_order.py): the automatic orders at the door are one crate, one row.
+  const boxed=orders.filter(o=>o.box&&o.status==='in_transit'&&!o.group);let boxShown=false;
   return `<div class="gr-incoming"><h4>🚚 Hàng đang về</h4>${orders.map(o=>{const it=item(x,o.item);
+    if(o.box&&o.status==='in_transit'&&!o.group){if(boxShown)return '';boxShown=true;
+      return `<div class="gr-inrow"><span>📦 Thùng tự đặt · ${boxed.length} món</span>${x.button('📦 Mở thùng & xếp lên kệ','v4InvOpen',{order:o.id},'small primary')}</div>`;}
     if(o.status==='received')return `<div class="gr-inrow"><span>${it.emoji} ${x.esc(it.name)}: nhận ${o.actual}/${o.qty}</span>${x.cmd('📝 Báo thiếu','inv_claim',{order:o.id},'small ghost')}</div>`;
     return `<div class="gr-inrow"><span>${it.emoji} ${x.esc(it.name)} × ${o.qty}</span>${o.ready_now?x.button('📦 Mở thùng & xếp lên kệ','v4InvOpen',{order:o.id},'small primary'):`<small class="muted">⏱ ${x.esc(o.left_label||'đang trên đường…')}</small>${cancel(o)}`}</div>`;}).join('')}</div>`;
 }

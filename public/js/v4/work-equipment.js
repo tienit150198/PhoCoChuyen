@@ -24,8 +24,18 @@ export function equipmentView(c,career,upgrades){
  }).join('');
  // 🔁 Tự đặt hàng (game/auto_order.py, warehouse.reorder): one paid unlock per workplace with a stock room; quỹ first, then the wallet.
  const ro=c.warehouse?.reorder,esq=v=>esc(JSON.stringify(v));
- const roCard=ro?`<section class="space-top" data-gear-group="reorder" aria-label="Tự đặt hàng"><div class="row spread wrap"><h3>🔁 Tự đặt hàng</h3><span class="tag green">${ro.owned?'Đã mở':'Chưa mở'}</span></div><div class="upgrade-grid"><article class="upgrade-card"><div class="row spread">${icon('box',27)}<span class="tag">Kho tự đặt</span></div><h3>🔁 Tự đặt hàng</h3><p>Món nào sắp hết thì tự đặt lại, trả bằng quỹ. Chỉnh ở Kho.</p>${ro.owned?`<button class="btn ghost full" type="button" disabled>Đã mở</button>`:`<button class="btn primary full" type="button" data-action="v4Cmd" data-op="stock_reorder" data-payload="${esq({buy:true})}" data-confirm="${esc(`Mua 🔁 Tự đặt hàng? ${fmt(ro.price)} xu: quỹ trả trước, thiếu thì lấy ví.`)}"${ro.short?' disabled':''}>${ro.short?`Thiếu ${fmt(ro.short)} xu`:`Mua · ${fmt(ro.price)} xu`}</button>`}</article></div></section>`:'';
+ const roCard=ro?`<section class="space-top" data-gear-group="reorder" aria-label="Tự đặt hàng"><div class="row spread wrap"><h3>🔁 Tự đặt hàng</h3><span class="tag green">${ro.owned?'Đã mở':'Chưa mở'}</span></div><div class="upgrade-grid"><article class="upgrade-card"><div class="row spread">${icon('box',27)}<span class="tag">Kho tự đặt</span></div><h3>🔁 Tự đặt hàng</h3><p>Món nào sắp hết thì tự đặt lại, trả bằng quỹ. Chỉnh ở Kho.</p>${ro.owned?`<button class="btn ghost full" type="button" disabled>Đã mở</button>`:`<button class="btn primary full" type="button" data-action="v4Cmd" data-op="stock_reorder" data-payload="${esq({buy:true})}" data-confirm="${esc(`Mua 🔁 Tự đặt hàng? ${fmt(ro.price)} xu: quỹ trả trước, thiếu thì lấy ví.`)}"${ro.short?' disabled':''}>${ro.short?`Thiếu ${fmt(ro.short)} xu`:`Mua · ${fmt(ro.price)} xu`}</button>`}</article>${boxCard(ro)}</div></section>`:'';
  return `<section class="work-equipment" aria-labelledby="work-equipment-title"><span class="eyebrow">THIẾT BỊ NGHỀ</span><h3 id="work-equipment-title">Đầu tư để kiếm thêm</h3><p>Trả bằng quỹ của nghề này. Mỗi nhóm nâng riêng; bậc cao thay bậc thấp. Khách đang chờ giữ lịch cũ, lượt kế tiếp dùng nhịp mới. Thu nhập phụ thuộc hàng tồn, giá bán và chi phí.</p>${sections}${roCard}</section>`;
+}
+
+/** 📦 Gộp thùng tự đặt (game/auto_order.py `box`): bought after 🔁 Tự đặt hàng; an older server sends no `box`. */
+function boxCard(ro){
+  const b=ro.box,fmt=n=>Number(n||0).toLocaleString('vi-VN'),esq=v=>esc(JSON.stringify(v));
+  if(ro.owned&&!b)return '';
+  const price=b?.price||10000,state=b?.owned?`<button class="btn ghost full" type="button" disabled>Đã mở</button>`
+    :!ro.owned?`<button class="btn ghost full" type="button" disabled>Mở 🔁 Tự đặt hàng trước</button>`
+    :`<button class="btn primary full" type="button" data-action="v4Cmd" data-op="stock_reorder" data-payload="${esq({buy_box:true})}" data-confirm="${esc(`Mua 📦 Gộp thùng tự đặt? ${fmt(price)} xu: quỹ trả trước, thiếu thì lấy ví.`)}"${b.short?' disabled':''}>${b.short?`Thiếu ${fmt(b.short)} xu`:`Mua · ${fmt(price)} xu`}</button>`;
+  return `<article class="upgrade-card"><div class="row spread">${icon('box',27)}<span class="tag">Kho tự đặt</span></div><h3>📦 Gộp thùng tự đặt</h3><p>Hàng tự đặt về tới cửa gom chung một thùng: mở và kiểm một lần.</p>${state}</article>`;
 }
 
 // Reads only confirmed state. No sales, currency or clocks are simulated here.

@@ -1054,6 +1054,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         return _cancel(s, c, career, x, p)
     if p.get('group') is not None and name in ('inv_receive', 'inv_claim', 'inv_rate'):
         return _group_action(s, c, career, x, name, p)
+    if p.get('box') is not None and name == 'inv_receive':
+        return _box_receive(s, c, career, x, p)
     order = next((o for o in x['orders'] if o['id'] == p.get('order')), None)
     if name == 'inv_receive':
         need(order and order['status'] == 'in_transit', 'Đơn đã nhận hoặc không tồn tại.')
@@ -1429,6 +1431,48 @@ def _cart_place(s: dict, c: dict, career: str, x: dict, p: dict, level: int) -> 
                 oos=gone['item'] if gone else None, later=placing != now)
 
 
+def _box_receive(s: dict, c: dict, career: str, x: dict, p: dict) -> dict:
+    """inv_receive {box: 'auto', counts: {order_id: n}}: every automatic order at the door in ONE step (📦 Gộp thùng tự
+    đặt, game/auto_order.py). Each line is counted and checked as a single crate; one shop step for the lot. A short
+    line keeps its own claim (inv_claim {order}): the lines may come from different suppliers."""
+    from . import engine as e
+    from . import auto_order
+    need = e.need
+    need(p.get('box') == 'auto' and auto_order.box_owned(c), f'Mua {auto_order.BOX_NAME} trước nhé.')
+    boxed = auto_order.box_ids(c)
+    door = clock(c, career, turn=c['turn'] - 1)
+    lines = [o for o in x['orders'] if o['id'] in boxed and o['status'] == 'in_transit' and not o.get('group')
+             and door['abs'] >= o['at']]
+    need(lines, 'Chưa có hàng tự đặt nào tới cửa.')
+    counts = p.get('counts')
+    need(isinstance(counts, dict), 'Đếm từng món trong thùng trước nhé.')
+    need(set(counts) == {o['id'] for o in lines}, 'Thùng vừa có thêm hàng tới. Mở ra đếm lại cả thùng nhé.')
+    for o in lines:
+        it = item(career, o['item'])
+        counted = e.integer(counts.get(o['id']), 0, max(999, o['qty']))
+        need(counted == o['actual'], f'Số đếm {it["name"]} chưa khớp số hàng thực có trong thùng. Đếm lại nhé.')
+        room = _receive_room(c, career, o, it['id'])
+        need(o['actual'] <= room, f'Kệ {it["name"]} chỉ còn chỗ cho {max(0, room)} {it.get("unit", "phần")}. '
+             'Bán hoặc bỏ bớt lô cũ rồi nhận thùng này nhé.')
+    got, short = [], []
+    for o in lines:
+        it = item(career, o['item'])
+        _receive_lot(c, career, o, it, _known(career, o['supplier']))
+        o['status'] = 'received'
+        e.metric(c, 'restocked')
+        got.append(f'{o["actual"]}/{o["qty"]} {it["name"]}')
+        if o['actual'] < o['qty']:
+            short.append(dict(order=o['id'], item=it['id'], missing=o['qty'] - o['actual'], refund=_refund(o)))
+    e.log(s, c, 'stock', f'Kiểm nhận thùng tự đặt: {", ".join(got)}.'[:300], ref=lines[0]['id'])
+    msg = f'Đã nhập kho cả thùng tự đặt: {", ".join(got)}.'
+    if short:
+        refund = sum(v['refund'] for v in short)
+        msg += f' Giao thiếu {len(short)} món: bấm “Khiếu nại phần thiếu” ngay trong kho để được hoàn {refund} xu.'
+        return dict(message=msg, short=dict(order=short[0]['order'], lines=short,
+                                            missing=sum(v['missing'] for v in short), refund=refund))
+    return dict(message=msg)
+
+
 def _group_action(s: dict, c: dict, career: str, x: dict, name: str, p: dict) -> dict:
     """inv_receive / inv_claim / inv_rate on a whole merged order (`group`)."""
     from . import engine as e
@@ -1558,6 +1602,12 @@ def public(c: dict, career: str) -> dict | None:
             if not o['ready_now']:
                 o.pop('at', None)
             o.pop('late', None)
+    # 📦 Gộp thùng tự đặt (game/auto_order.py): the automatic orders at the door are one crate (inv_receive {box}).
+    from . import auto_order
+    boxed = auto_order.box_ids(c)
+    for o in v['orders']:
+        if o['id'] in boxed and o.get('ready_now') and not o.get('group'):
+            o['box'] = 'auto'
     ratings = x['supplier_ratings']
     placing = clock(c, career, c['turn'] + 1)['abs']  # an order ticks the clock once before it is placed
     v['suppliers'] = [dict(_static(sp, career), quote=quote(sp, career, placing),
