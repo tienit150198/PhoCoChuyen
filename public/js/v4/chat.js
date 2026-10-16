@@ -28,6 +28,7 @@ import {avInner} from './face.js';
 import {faceCode} from './face-code.js';
 import {nameAttrs,frameAttrs,titleChip} from './style-tag.js';   // 🎨 `st` of the week (live/styles.py)
 import {chips as hnChips,list as hnList,titles as hnTitles,inlineMax} from './honours.js';   // 🏅 `tt`: every honour title held now (live/honours.py)
+import {interleave as lxCards,cardHTML as lxCard,onChange as lxChange,refresh as lxRefresh} from './lixi-cards.js';   // 🧧 lì xì cards in Cả phố (v4/lixi.js)
 
 const S={dlg:null,env:null,tab:'town',thread:null,view:null,bodyHTML:null,threads:new Map(),
   town:{msgs:[],more:false,joined:false,why:'ok',wait:0,n:0,loaded:false,pin:null},pinOpen:false,reactFor:null,lp:null,
@@ -216,6 +217,7 @@ function bind(){
   // Resume is capped at 50 oldest missed messages. Fetch a complete latest page
   // after reconnect so a long absence cannot leave a gap in cached history.
   live.resume=()=>({});
+  lxChange(()=>{if(S.dlg?.open&&!S.thread&&S.tab==='town'&&!S.view)render();});   // 🧧 a packet came, an envelope was taken
   live.on('welcome',()=>{S.threads.clear();S.older=false;S.town.joined=false;if(S.dlg?.open){enter();render();}});
   live.on('down',()=>{S.town.joined=false;if(S.dlg?.open)render();});
   live.on('renamed',f=>{
@@ -338,6 +340,7 @@ function markRead(ch){const c=live.chan(ch),t=S.threads.get(ch),last=t?.msgs.at(
 /** What the screen shows needs: join Cả phố while it is on screen, load an open chat. */
 function enter(){
   const onTown=S.dlg?.open&&!S.thread&&S.tab==='town'&&!S.view;
+  if(onTown)lxRefresh(S.env?.api);   // 🧧 the last day's packets (at most every 15 s)
   if(onTown&&!S.town.joined&&live.state==='open'){S.town.joined=live.send({t:'join',ch:'town',...(lastId(S.town.msgs)?{after:lastId(S.town.msgs)}:{})});}
   if(!onTown&&S.town.joined){live.send({t:'leave',ch:'town'});S.town.joined=false;}
   if(S.thread){const t=currentThread(S.thread);if(!t.loaded&&!t.busy&&live.state==='open'){t.error=false;t.busy=live.send({t:'history',ch:S.thread});}}
@@ -352,6 +355,8 @@ function onAct(act,d,el){
   switch(act){
     case'honours':S.honFor=S.honFor===d.id?null:d.id;break;   // 🏅 tapping a name with titles (or "+N"): all of them
     case'workvisit':S.dlg.close();S.env.act('workVisit',{pid:d.pid});return;
+    case'lixi':import('./lixi.js').then(m=>m.cardTap(S.env,d.id,d.do)).catch(e=>console.warn('lixi:',e));return;   // 🧧 Giật / Xem ai giật
+    case'lixiGive':import('./lixi.js').then(m=>m.openLixi(S.env,'give')).catch(e=>console.warn('lixi:',e));return;
     case'friend':{
       const id=Number(d.id);if(!live.me?.account||!live.me?.friend_card||friendRequests.has(id))return;
       friendRequests.set(id,'pending');
@@ -498,6 +503,7 @@ function msgList(list,kind,more){
   let out=more?`<button type="button" class="ch-older" data-ch-act="older"${S.older?' disabled':''}>${S.older?'Đang tải…':'Xem cũ hơn'}</button>`:'';
   let prev=null;
   for(const m of list){
+    if(m.lixi){out+=lxCard(m.lixi);prev=null;continue;}   // 🧧 a packet, between the messages by time (v4/lixi-cards.js)
     if(m.sys){if(m.sys==='date'&&Date.now()/1000-m.at<CALL_SHOW)out+=callLine(m);prev=null;continue;}
     const mine=m.pid===me(),first=!prev||prev.pid!==m.pid||m.at-prev.at>300;
     const name=!mine&&first&&kind!=='dm'?nameRow(m):'';   // 🎨 colour + title of the week, 🏅 honour titles
@@ -598,7 +604,8 @@ function body(){
   if(S.tab==='town'){
     const T=S.town;
     if(!T.loaded)return empty('chats','Đang vào phố…');
-    return (T.n?`<p class="ch-here">${icon('eye',13)} ${T.n} người đang xem</p>`:'')+(T.msgs.length?msgList(T.msgs,'town',T.more):empty('chats','Phố đang yên. Mở lời trước nhé!'));
+    const L=lxCards(T.msgs),give=S.env?.api?.state?.journey?.story&&S.env.api.content?.journey?.lixi?`<button type="button" class="ch-mini ch-lixi" data-ch-act="lixiGive">🧧 Phát lì xì</button>`:'';
+    return (T.n||give?`<p class="ch-here">${T.n?`${icon('eye',13)} ${T.n} người đang xem`:''}${give}</p>`:'')+(L.length?msgList(L,'town',T.more):empty('chats','Phố đang yên. Mở lời trước nhé!'));
   }
   if(S.tab==='inbox'){
     const sel=DEL()?S.sel:null;   // 🗑️ "Chọn": rows become tick boxes

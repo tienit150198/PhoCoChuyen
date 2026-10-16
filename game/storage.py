@@ -732,6 +732,9 @@ class Store:
                 if action.startswith('jr_lux_'):
                     from . import lux
                     lux.command_commit(db,sid,action,current)  # 🎆 the lux_gifts row, the ticker line (a taken plaque refuses)
+                if action.startswith('jr_lixi_'):
+                    from . import lixi
+                    lixi.command_commit(db,sid,action,current,result)  # 🧧 the lixi_packets row (too soon / too many refuses: nothing paid)
                 if action.startswith('jr_auc_') or action=='live_fx':
                     from . import auction
                     if action=='live_fx':auction.fx_commit(db,sid,result)  # 🔨 a refund / a won item: its row flips here, once
@@ -824,6 +827,9 @@ class Store:
             if action.startswith('jr_lux_'):
                 from . import lux
                 lux.command_commit(db,sid,action,raw)  # 🎆 the lux_gifts row, the ticker line (a taken plaque refuses)
+            if action.startswith('jr_lixi_'):
+                from . import lixi
+                lixi.command_commit(db,sid,action,raw,result)  # 🧧 the lixi_packets row (too soon / too many refuses: nothing paid)
             if action.startswith('jr_auc_') or action=='live_fx':
                 from . import auction
                 if action=='live_fx':auction.fx_commit(db,sid,result)  # 🔨 a refund / a won item: its row flips here, once

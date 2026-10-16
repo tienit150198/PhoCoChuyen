@@ -80,6 +80,7 @@ from game import chua_wish  # 🌳 Cây ước nguyện (game/chua_wish.py)
 from game import event2010  # 💐 Thiệp 20/10: its own page /2010, cards anyone opens by link (game/event2010.py)
 from game import live_effects, live_dating
 from game import quay_hire
+from game import lixi  # 🧧 Lì xì: phát và giật (game/lixi.py)
 from game import rentals
 from game import bank_xfer  # 💸 Chuyển khoản bạn bè (game/bank_xfer.py)
 from game import wedding_live
@@ -788,6 +789,15 @@ class Handler(BaseHTTPRequestHandler):
                 self.require_admin(token)
                 from game import auction
                 self.json(200,auction.admin_view(self.server.store));return
+            if route=="/api/lixi":  # 🧧 Lì xì (game/lixi.py view): the last day's packets, mine, my caps; ?id= who got how much; cached ~2 s
+                token=self.token()
+                if not self.server.rate_limit("lixi:"+(token or self.client_ip()),90):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,lixi.view(self.server.store,token,(parse_qs(split.query).get("id") or [None])[0]));return
+            if route=="/api/admin/lixi":  # 🧧 the operator's list of packets and today's takers; admin only
+                try:token,_,_,_=self.guarded(light=True)
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                self.json(200,lixi.admin_view(self.server.store));return
             if route=="/api/mtq":  # 🎆 Bảng Mạnh Thường Quân tuần, plaques, banners (game/lux.py board): cached ~10 s
                 token=self.token()
                 if not self.server.rate_limit("mtq:"+(token or self.client_ip()),60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -1144,7 +1154,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
                 rentals.prepare_delete(self.server.store,token)
-                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);wed_invite.forget(self.server.store,token);chua_wish.forget(self.server.store,token);event2010.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);sticker_event.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);wed_invite.forget(self.server.store,token);chua_wish.forget(self.server.store,token);event2010.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);sticker_event.forget(self.server.store,token);lixi.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
@@ -1183,6 +1193,11 @@ class Handler(BaseHTTPRequestHandler):
             if route.startswith("/api/rentals/"):
                 if not self.server.rate_limit("rentals:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 out=rentals.act(self.server.store,token,route[len("/api/rentals/"):],data)
+                self.json(200,out,known=FULL);return
+            if route=="/api/lixi/grab":  # 🧧 giật một bao lì xì (game/lixi.py grab): the amount under the packet's lock, paid now through live_effects
+                if not self.server.rate_limit("lixi-grab:"+token,30):self.error(429,"Từ từ thôi, bao nào cũng có phần mà!","rate_limited");return
+                out=lixi.grab(self.server.store,token,data,state,self.client_ip())
+                if live_effects.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route.startswith("/api/quay/"):  # 💼 post / cancel / accept / decline / quit / flush (game/quay_hire.py)
                 if not self.server.rate_limit("quay:"+token,30):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
@@ -1738,6 +1753,7 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         step("push",lambda:push.deliver_due(store))
         lb_titles.run_refresh(store)  # 🏅 Danh hiệu tuần: once a Vietnam day (and the week's freeze on Monday 00:00)
         fair_board.run_settle(store)  # 🏆 Bảng vàng hội chợ: the titles, once, after the fair closes
+        lixi.run_housekeeping(store)  # 🧧 Lì xì: what nobody took in 24 h goes back to its giver (row locks: exactly once)
         auction.run_housekeeping(store)  # 🔨 Nhà đấu giá: today's lots, then settle the ones that ended (row locks: exactly once)
         dog_bark.run_housekeeping(store)  # 🐕 Kéo co chó sủa (removed): a ticket left open by 2.4.15 or older goes back to its wallet (guarded: exactly once)
 

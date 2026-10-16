@@ -14,7 +14,7 @@ function harness(){
     on(type,fn){listeners.set(type,fn);},send(frame){sent.push(frame);return this.state==='open';},
     chan(ch){return this.chans.find(c=>c.id===ch);},friend(){return null;},unread(){return 0;},quiet(){return false;}};
   const ctx=vm.createContext({live,document:{visibilityState:'visible'},icon:()=>'',esc:value=>String(value??''),
-    avInner:()=>'',stylesheet:async()=>{},faceCode:()=>'',setTimeout,clearTimeout,console});
+    avInner:()=>'',stylesheet:async()=>{},faceCode:()=>'',setTimeout,clearTimeout,console,lxCards:m=>m,lxCard:()=>"",lxChange:()=>()=>{},lxRefresh:()=>{}});
   vm.runInContext(source+'\nrender=()=>{};globalThis.chat={S,bind,thread,enter,openThread,body};',ctx);
   const chat=ctx.chat;
   chat.bind();

@@ -973,6 +973,9 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(lx.action(s, name, p))
     elif name.startswith('jr_auc_'):
         result.update(auc.action(s, name, p))
+    elif name.startswith('jr_lixi_'):   # 🧧 phát lì xì cho cả phố (game/lixi.py)
+        from . import lixi
+        result.update(lixi.action(s, name, p))
     elif name.startswith('jr_bark_'):   # 🐕 Kéo co chó sủa was removed (15/10): refuses, nothing taken (game/dog_bark.py)
         from . import dog_bark
         result.update(dog_bark.action(s, name, p))
@@ -1124,7 +1127,12 @@ def content() -> dict:
         unlock_chapter={cid: n for n, ids in [*CH_UNLOCKS.items(), *((n, (c,)) for c, n in LATE_UNLOCKS.items())] for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
         garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), pets=pt.catalogue(), lux=lx.catalogue(), auction=auc.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content(),
-        abroad=ab.catalogue())
+        abroad=ab.catalogue(), lixi=_lixi_catalogue())
+
+
+def _lixi_catalogue() -> dict:
+    from . import lixi   # 🧧 Lì xì (game/lixi.py): the rules the page shows
+    return lixi.catalogue()
 
 
 def validate(s: dict) -> None:
