@@ -1,3 +1,12 @@
+# v2.4.29 — 2026-10-16
+
+🎨 Cuộc thi làm sticker (chủ game 16/10: "tạo sticker chủ đề bất kì, đăng nhóm facebook, ai được vote nhiều hơn thì thắng, tham gia tặng 200k, top 1 3m, top 2–3 1.5m, top 10 500k, có cả username, top 10 có sticker dùng trong chat").
+- Trang riêng /sticker (public/sticker.html, public/js/sticker/, game/sticker_event.py): vẽ/ghép sticker 512×512 với tên tài khoản đóng dấu sẵn, tải ảnh về, gửi tối đa 3 bài; hướng dẫn đăng nhóm Facebook với hashtag #StickerMotNgayLamNghe. Hạn gửi 27/10 23:59.
+- Quà tham gia 200.000 xu một lần mỗi tài khoản (đã đăng ký, ngày sống ≥ 3) qua system_gifts; giải top 1–10 do admin trao sau khi chốt bình chọn trên Facebook (trang admin "🎨 Thi sticker": duyệt, từ chối, xếp hạng, trao/thu hồi giải).
+- Schema 49: sticker_entries, sticker_rewards (bảng mới). 47 bỏ trống.
+- Link nhóm Facebook (sticker_event.FB_GROUP_URL) chưa có: trang ghi "sẽ có ở đây sớm".
+- Có gì mới: 3 dòng.
+
 # v2.4.28 — 2026-10-16
 
 🛠️ Hotfix Hải quan: ứng tuyển rồi "làm lại nghề" (reset_career, started = False) để customs trong journey.unlocked mà không thuộc chương nào (CH_UNLOCKS) → mọi thao tác bị từ chối "Nơi làm việc mở sớm hơn chương hiện tại" (1 người chơi, 16/10). journey.validate cho phép nơi mà gov_rules.opens đã mở. Test: tests/test_career_customs.py test_applied_then_reset_still_validates.
