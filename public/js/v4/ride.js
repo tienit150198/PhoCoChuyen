@@ -273,35 +273,49 @@ const BOX={x:116,up:228,down:16};   // the bitmap: 232 wide, from 228 above the 
 const CACHE=new Map();
 /** The pen without the character's own ground shadow (it sits on a seat, not on the ground). */
 const SEATED={...CANVAS};
+/** Paint the vehicle and its rider(s) on c, already moved so (0,0) is the ground under its middle. */
+function paintBody(c,F,v,face,px,rider,two,F2){
+  const A=ART[v.kind]||ART.scooter,P=paints(v.hex),fl=face<0?1:-1;
+  c.save();c.scale(fl,1);A.back(c,P,v);c.restore();
+  if(two){   // 💑 the spouse behind the driver, a little higher, hands on the driver
+    c.save();const [sx,sy]=A.seat,ps=A.ps*.93;c.translate((sx+36)*fl,sy-12);c.scale(ps,ps);
+    let first=true;SEATED.E=(cc,...a)=>{if(first){first=false;return;}CANVAS.E(cc,...a);};
+    paintPlayer(c,F2,SEATED,fl>0?{l:[-30,-62],r:[-26,-58]}:{l:[26,-58],r:[30,-62]});
+    c.restore();
+  }
+  if(rider&&F){
+    c.save();
+    if(A.clip){c.scale(fl,1);c.beginPath();A.clip(c);c.clip();c.scale(fl,1);}
+    const [sx,sy]=A.seat,ps=A.ps;c.translate(sx*fl,sy);c.scale(ps,ps);
+    let arms=null;
+    if(A.grips){const g=A.grips.map(([x,y])=>[(x*fl-sx*fl)/ps,(y-sy)/ps]);arms=fl>0?{l:g[0],r:g[1]}:{l:g[1],r:g[0]};}
+    let first=true;SEATED.E=(cc,...a)=>{if(first){first=false;return;}CANVAS.E(cc,...a);};
+    paintPlayer(c,F,SEATED,arms);
+    c.restore();
+  }
+  c.save();c.scale(fl,1);A.front?.(c,P,v);if(A.plate){const [x,y,w,h]=A.plate;plateAt(c,x,y,w,h,v.plate,fl,px);}c.restore();
+}
+const lost=e=>!e.c||e.c.isContextLost?.()||e.cv.width===0;
+const drop=e=>{try{e.cv.width=e.cv.height=0;}catch{/* already gone */}};
+/** Forget every cached bitmap: Android Chrome may blank them while the app sits in the background (#402). */
+function forget(){for(const e of CACHE.values())drop(e);CACHE.clear();}
+globalThis.document?.addEventListener?.('visibilitychange',()=>{if(document.visibilityState==='visible')forget();});
+/** The cached bitmap of the vehicle and rider, or null when no canvas can be had (then drawRide paints them directly). */
 function body(F,fkey,v,face,px,rider,F2=null,fkey2=''){
   const two=F2&&TWO.has(v.kind);
   const key=`${fkey}|${v.id}|${v.kind}|${v.hex}|${v.plate||''}|${face}|${Math.round(px*100)}|${rider?1:0}|${two?fkey2:''}`;
-  let cv=CACHE.get(key);if(cv)return cv;
-  if(CACHE.size>96)CACHE.clear();
-  cv=document.createElement('canvas');cv.width=Math.ceil(BOX.x*2*px);cv.height=Math.ceil((BOX.up+BOX.down)*px);
-  const c=cv.getContext('2d'),A=ART[v.kind]||ART.scooter,P=paints(v.hex),fl=face<0?1:-1;
-  c.setTransform(px,0,0,px,BOX.x*px,BOX.up*px);
+  let e=CACHE.get(key);
+  if(e&&!lost(e))return e.cv;
+  if(e){drop(e);CACHE.delete(key);}
+  if(CACHE.size>96)forget();
   try{
-    c.save();c.scale(fl,1);A.back(c,P,v);c.restore();
-    if(two){   // 💑 the spouse behind the driver, a little higher, hands on the driver
-      c.save();const [sx,sy]=A.seat,ps=A.ps*.93;c.translate((sx+36)*fl,sy-12);c.scale(ps,ps);
-      let first=true;SEATED.E=(cc,...a)=>{if(first){first=false;return;}CANVAS.E(cc,...a);};
-      paintPlayer(c,F2,SEATED,fl>0?{l:[-30,-62],r:[-26,-58]}:{l:[26,-58],r:[30,-62]});
-      c.restore();
-    }
-    if(rider&&F){
-      c.save();
-      if(A.clip){c.scale(fl,1);c.beginPath();A.clip(c);c.clip();c.scale(fl,1);}
-      const [sx,sy]=A.seat,ps=A.ps;c.translate(sx*fl,sy);c.scale(ps,ps);
-      let arms=null;
-      if(A.grips){const g=A.grips.map(([x,y])=>[(x*fl-sx*fl)/ps,(y-sy)/ps]);arms=fl>0?{l:g[0],r:g[1]}:{l:g[1],r:g[0]};}
-      let first=true;SEATED.E=(cc,...a)=>{if(first){first=false;return;}CANVAS.E(cc,...a);};
-      paintPlayer(c,F,SEATED,arms);
-      c.restore();
-    }
-    c.save();c.scale(fl,1);A.front?.(c,P,v);if(A.plate){const [x,y,w,h]=A.plate;plateAt(c,x,y,w,h,v.plate,fl,px);}c.restore();
-  }catch(e){console.warn('ride: art',e);}
-  CACHE.set(key,cv);return cv;
+    const cv=document.createElement('canvas');cv.width=Math.ceil(BOX.x*2*px);cv.height=Math.ceil((BOX.up+BOX.down)*px);
+    const c=cv.getContext('2d');if(!c||c.isContextLost?.())return null;
+    c.setTransform(px,0,0,px,BOX.x*px,BOX.up*px);
+    try{paintBody(c,F,v,face,px,rider,two,F2);}catch(err){console.warn('ride: art',err);}
+    e={cv,c};cv.addEventListener?.('contextlost',()=>{if(CACHE.get(key)===e)CACHE.delete(key);});
+    CACHE.set(key,e);return cv;
+  }catch(err){console.warn('ride: bitmap',err);return null;}
 }
 
 /** A rider's motion state: which side it faces, the turn under way, the wheels' angle. */
@@ -321,7 +335,8 @@ export function drawRide(c,{x,y,s,px,F=null,fkey='',F2=null,fkey2='',v,r,bob=0})
   c.scale(s*Math.max(.06,Math.abs(k)),s);c.translate(0,-bob);
   c.save();c.scale(face<0?1:-1,1);wheels(c,A,v.kind,r.ang);c.restore();
   const cv=body(F,fkey,v,face,s*px,Boolean(F),F2,fkey2);
-  c.drawImage(cv,-BOX.x,-BOX.up,BOX.x*2,BOX.up+BOX.down);
+  if(cv)c.drawImage(cv,-BOX.x,-BOX.up,BOX.x*2,BOX.up+BOX.down);
+  else try{paintBody(c,F,v,face,s*px,Boolean(F),F2&&TWO.has(v.kind),F2);}catch(err){console.warn('ride: art',err);}   // no bitmap: straight on the street
   c.restore();
 }
 /** How far the vehicle reaches either side of its middle (character units): where to park it beside a door. */

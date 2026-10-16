@@ -297,8 +297,15 @@ class Box(Base):
         with self.assertRaises(GameError):
             j.act('stock_reorder', buy_box=True)                              # no confirm
         money, turn = j.c['money'], j.c['turn']
+        lines = sum(1 for o in j.c['ext']['inv']['orders'] if o['status'] == 'in_transit')
         j.act('stock_reorder', buy_box=True, confirm=True)
-        self.assertEqual((j.c['money'], j.c['turn'], j.c[ao.BOX_KEY]), (money - 10000, turn, dict(paid=10000)))
+        self.assertEqual((j.c['turn'], j.c[ao.BOX_KEY]), (turn, dict(paid=10000)))
+        # #400: the crate frees the vans the automatic lines took, so the items still low are ordered at once (their
+        # price from the fund too): the shop's 18 items, not 10
+        now = [o for o in j.c['ext']['inv']['orders'] if o['status'] == 'in_transit']
+        self.assertEqual(lines, inventory.TRANSIT_CAP - ao.SLOTS_FREE)
+        self.assertGreater(len(now), lines)
+        self.assertLess(j.c['money'], money - 10000)
         with self.assertRaises(GameError):
             j.act('stock_reorder', buy_box=True, confirm=True)                # once
         self.assertTrue(public_state(j.state)['careers']['restaurant']['warehouse']['reorder']['box']['owned'])
@@ -350,6 +357,46 @@ class Box(Base):
             j.act('inv_receive', box='auto', counts={o['id']: o['actual'] for o in orders})
         j.act('inv_receive', order=orders[0]['id'], count=orders[0]['actual'])
         self.assertEqual(next(o for o in j.c['ext']['inv']['orders'] if o['id'] == orders[0]['id'])['status'], 'received')
+
+
+class ManyItems(Base):
+    """Player feedback #400 (17/10): 18 items of the mì cay shop set to auto-order, only 10 ever ordered: each automatic
+    line took one of TRANSIT_CAP vans (minus SLOTS_FREE). With 📦 Gộp thùng they all ride in the one crate."""
+    def all_on(self, box):
+        j = self.journey(fund=10**7)
+        j.c['xp'] = 90 * 50                     # every item unlocked
+        items = [i['id'] for i in inventory.catalogue(j.career)]
+        j.c[ao.KEY] = dict(paid=ao.PRICE, items={i: dict(below=5, qty=5) for i in items})
+        if box:
+            j.c[ao.BOX_KEY] = dict(paid=ao.BOX_PRICE)
+        for i in items:
+            shelf(j, 0, i)
+        validate_state(j.state)
+        return j, items
+
+    def placed(self, j, items):
+        return {i for i in items if auto_orders(j, i)}
+
+    def test_with_the_box_every_low_item_is_ordered(self):
+        j, items = self.all_on(True)
+        self.assertGreater(len(items), inventory.TRANSIT_CAP)
+        j.act('inv_wait')
+        got = self.placed(j, items)
+        self.assertEqual(got, set(items))                                    # all of them, not 10
+        x = j.c['ext']['inv']
+        self.assertEqual(inventory._shipments(x, j.c), 1)                    # one van: the crate
+        self.assertLessEqual(inventory._transit_lines(x), inventory.TRANSIT_LINES)
+        vans = {o.get('van') for o in public_state(j.state)['careers']['restaurant']['inventory']['orders']
+                if o['status'] == 'in_transit'}
+        self.assertEqual(vans, {'auto'})
+        self.assertLess(inventory._shipments(x, j.c), inventory.TRANSIT_CAP)
+        validate_state(j.state)
+
+    def test_without_the_box_the_free_vans_still_bound_it(self):
+        j, items = self.all_on(False)
+        j.act('inv_wait')
+        self.assertEqual(len(self.placed(j, items)), inventory.TRANSIT_CAP - ao.SLOTS_FREE)
+        self.assertEqual(inventory._shipments(j.c['ext']['inv'], j.c), inventory.TRANSIT_CAP - ao.SLOTS_FREE)
 
 
 class RollbackTo2411(unittest.TestCase):

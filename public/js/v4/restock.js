@@ -29,9 +29,10 @@ export function crates(inv,items=[]){
 }
 
 /** Deliveries on the way and the most game/inventory.py inv_order allows at once (TRANSIT_CAP; lines of a
- * merged order share a `group`: one van; and at most TRANSIT_LINES lines in all). {n, cap, full}. */
+ * merged order share a `group`: one van, so do the automatic orders of 📦 Gộp thùng (`van: 'auto'`, F#400); and at most
+ * TRANSIT_LINES lines in all). {n, cap, full}. */
 export function vans(inv){
-  const on=(inv?.orders||[]).filter(o=>o&&o.status==='in_transit'),n=new Set(on.map(o=>o.group||o.id)).size,cap=Number(inv?.transit_cap)||8;
+  const on=(inv?.orders||[]).filter(o=>o&&o.status==='in_transit'),n=new Set(on.map(o=>o.group||(o.van?'van-'+o.van:o.id))).size,cap=Number(inv?.transit_cap)||8;
   return {n,cap,full:n>=cap||on.length>=(Number(inv?.transit_lines)||1e9)};
 }
 /** "🚚 7/8 đơn đang về" once the order book is nearly full ('' before that). */
