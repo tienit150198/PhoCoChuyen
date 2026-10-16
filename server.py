@@ -788,6 +788,19 @@ class Handler(BaseHTTPRequestHandler):
                 self.require_admin(token)
                 from game import auction
                 self.json(200,auction.admin_view(self.server.store));return
+            if route in ("/api/town","/api/town/board"):  # 🏗️ Công trình của phố (game/town_projects.py view / board): cached ~5 s, finishes what is built on the way
+                token=self.token()
+                if not self.server.rate_limit("town:"+(token or self.client_ip()),60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                from game import town_projects
+                if route=="/api/town":self.json(200,town_projects.view(self.server.store,token));return
+                q=parse_qs(split.query)
+                self.json(200,town_projects.board(self.server.store,token,(q.get("p") or [""])[0],(q.get("page") or ["0"])[0]));return
+            if route=="/api/admin/town":  # 🏗️ the projects and their totals for the operator; admin only
+                try:token,_,_,_=self.guarded(light=True)
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                from game import town_projects
+                self.json(200,town_projects.admin_view(self.server.store));return
             if route=="/api/mtq":  # 🎆 Bảng Mạnh Thường Quân tuần, plaques, banners (game/lux.py board): cached ~10 s
                 token=self.token()
                 if not self.server.rate_limit("mtq:"+(token or self.client_ip()),60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -1037,6 +1050,7 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 if str(data.get("action",""))[:5]=="fair_" and not self.server.rate_limit("fair:"+token,int(os.environ.get("FAIR_PER_MINUTE","40"))):self.error(429,"Từ từ thôi, chợ đen còn dài mà!","rate_limited");return  # 🏮 game/fair.py
                 if str(data.get("action",""))[:7]=="jr_auc_" and not self.server.rate_limit("aucbid:"+token,int(os.environ.get("AUCTION_BIDS_PER_MINUTE","12"))):self.error(429,"Từ từ thôi, mỗi phút trả giá vài lần thôi nhé!","rate_limited");return  # 🔨 game/auction.py
+                if str(data.get("action",""))[:8]=="jr_town_" and not self.server.rate_limit("town-give:"+token,int(os.environ.get("TOWN_GIFTS_PER_MINUTE","12"))):self.error(429,"Từ từ thôi, góp chậm lại chút nhé!","rate_limited");return  # 🏗️ game/town_projects.py
                 if data.get("action")=="jr_chua_do" and isinstance(data.get("payload"),dict) and "tree" in data["payload"] and not (self.server.rate_limit("chua-wish:"+token,int(os.environ.get("WISHES_PER_MINUTE","6"))) and self.server.rate_limit("chua-wish-ip:"+self.client_ip(),30)):self.error(429,"Từ từ thôi, viết chậm cho lòng thành nhé 🙏","rate_limited");return  # 🌳 game/chua_wish.py (PER_DAY is the real cap)
                 if str(data.get("action",""))[:8]=="jr_deco_" and not self.server.rate_limit("deco:"+token,int(os.environ.get("DECO_PER_MINUTE","150"))):self.error(429,"Từ từ thôi, bày trí chậm lại chút nhé!","rate_limited");return  # 🪴 game/deco.py: drags send one move each
                 if length>256*1024 and data.get("action")!="import_save":
@@ -1738,6 +1752,8 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         step("push",lambda:push.deliver_due(store))
         lb_titles.run_refresh(store)  # 🏅 Danh hiệu tuần: once a Vietnam day (and the week's freeze on Monday 00:00)
         fair_board.run_settle(store)  # 🏆 Bảng vàng hội chợ: the titles, once, after the fair closes
+        from game import town_projects
+        town_projects.run_housekeeping(store)  # 🏗️ Công trình của phố: finish what is built, open the next project (guarded: exactly once)
         auction.run_housekeeping(store)  # 🔨 Nhà đấu giá: today's lots, then settle the ones that ended (row locks: exactly once)
         dog_bark.run_housekeeping(store)  # 🐕 Kéo co chó sủa (removed): a ticket left open by 2.4.15 or older goes back to its wallet (guarded: exactly once)
 

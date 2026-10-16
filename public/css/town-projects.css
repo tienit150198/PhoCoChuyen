@@ -1,0 +1,41 @@
+/* ==========================================================================
+   🏗️ Công trình của phố (public/js/v4/town-projects.js), over /css/spend.css (sd-*). Theme tokens only.
+   Phone first (375px): one column, 44px targets, the main button in the sticky bottom bar.
+   ========================================================================== */
+.tp-card h3{display:flex;align-items:center;gap:6px}
+.tp-blurb{margin:0 0 10px;color:var(--ink-2);line-height:1.45}
+.tp-money{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;margin:0 0 6px}
+.tp-money b{font-size:1.45rem;font-weight:900;color:var(--ink)}
+.tp-money span{font-weight:700;color:var(--muted)}
+.tp-bar{position:relative;height:14px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;margin:0 0 8px}
+.tp-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--good));transition:width .4s ease}
+.tp-bar.build i{background:repeating-linear-gradient(135deg,var(--warn) 0 10px,var(--accent) 10px 20px)}
+.tp-line{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 10px;font-size:.92rem;color:var(--ink-2)}
+.tp-stage{margin:0 0 6px;font-weight:800;color:var(--ink)}
+.tp-note{margin:0 0 10px;font-size:.88rem;line-height:1.45;color:var(--muted)}
+.tp-center{text-align:center}
+.tp-big{margin:0;text-align:center;font-size:2.4rem}
+.tp-typed{display:inline-flex;align-items:center;gap:6px;min-height:44px}
+.tp-typed .qty-in{min-height:44px;font-weight:800}
+.tp-board{margin:0 0 10px}
+.tp-card h4,.tp-h{margin:12px 0 6px;font-size:.95rem}
+.tp-help{margin-top:6px}
+.sd-main.tp-arm{background:var(--warn);border-color:var(--warn)}
+.tp-road{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:6px}
+.tp-step{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.tp-step>span{flex:none;font-size:1.4rem}
+.tp-step>div{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}
+.tp-step b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tp-step small{color:var(--muted);font-weight:700}
+.tp-step em{flex:none;font-style:normal}
+.tp-step.soon{opacity:.72}
+.tp-step.funding,.tp-step.building{border-color:var(--accent);background:var(--accent-soft)}
+.tp-plaques{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.tp-plaque{padding:12px;border:2px solid var(--line);border-radius:16px;background:var(--surface)}
+.tp-plaque.on{border-color:var(--accent)}
+.tp-plaque h3{margin:0 0 6px;font-size:1.05rem}
+.tp-more{width:100%;min-height:44px}
+@media (max-width:400px){
+  .tp-line{font-size:.86rem}
+  .sd-amounts .sd-chip{padding:0 10px}
+}

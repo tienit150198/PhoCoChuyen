@@ -36,9 +36,10 @@ import time
 ACTION = 'live_fx'                  # internal command (game/engine.py), never accepted from a client
 RID = 'live-'                       # request id prefix: live-<hash>
 KIND = 'life'                       # journey wallet history kind (journey.HISTORY_KINDS): old saves stay valid
-PAYS = ('coins', 'spirit', 'title', 'quay', 'quay_refund', 'auction', 'mishap', 'bark', 'bark_weekly')  # quay_refund preserves the original wage-funding pocket;
+PAYS = ('coins', 'spirit', 'title', 'quay', 'quay_refund', 'auction', 'mishap', 'bark', 'bark_weekly', 'town')  # quay_refund preserves the original wage-funding pocket;
 # 'auction' (game/auction.py): an escrow refund or a won lot; its row flips in the save's own transaction (auction.fx_commit)
 # 'bark' (game/dog_bark.py): 🐕 a tug-of-war's pot, a draw's or a cancel's stake; its row flips there too (dog_bark.fx_commit)
+# 'town' (game/town_projects.py): 🏗️ a finished project's titles for one sponsor (amount 1, data {project, rank, xu, titles})
 BESIDE = ('closeness',)             # kinds this build applies beside the save (player_closeness, game/wedding_live.py)
 LABELS = dict(envelope='🧧 Lì xì dạo phố', date='💕 Buổi hẹn trên phố', guest='💍 Đi ăn cưới', host='💍 Khách tới dự đám cưới',
               anniv='💞 Kỷ niệm ngày cưới', anniv_npc='🧧 Hàng xóm mừng kỷ niệm cưới', race='🥇 Khách mời của tuần', env='🧧 Phong bì mừng cưới',
@@ -100,6 +101,9 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     elif kind == 'bark_weekly':
         from . import dog_bark_board
         message = dog_bark_board.apply_fx(s, p, amount)
+    elif kind == 'town':   # 🏗️ Công trình của phố: titles for a finished project's sponsor (game/town_projects.py)
+        from . import town_projects
+        message = town_projects.apply_fx(s, p, amount)
     elif kind == 'quay_refund':
         from . import quay_hire
         source,label = p.get('source'),p.get('label')
@@ -178,7 +182,7 @@ def on_load(store, token: str, state: dict | None) -> bool:
                 payload.update(wage=data.get('wage'),source=data.get('source'))
         elif r['kind'] == 'quay_refund':
             payload.update(source=data.get('source'),label=data.get('label'))
-        elif r['kind'] in ('auction', 'bark', 'bark_weekly'):
+        elif r['kind'] in ('auction', 'bark', 'bark_weekly', 'town'):
             payload['data'] = data
         elif r['kind'] == 'mishap':
             payload['sub'] = data.get('sub')

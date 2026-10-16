@@ -5407,6 +5407,126 @@
         "tab": "car"
       },
       "hint": "Ô tô · mua, đổi màu, biển số và lái đi chơi"
+    },
+    {
+      "id": "tp_cong_vien",
+      "label": "Công viên ven sông",
+      "action": "townProjects",
+      "icon": "🌳",
+      "at": {
+        "x": 14.75,
+        "y": 50.25
+      },
+      "footprint": {
+        "x0": 16,
+        "y0": 47,
+        "x1": 19.5,
+        "y1": 50
+      },
+      "actionData": {
+        "id": "cong_vien"
+      },
+      "hint": "Công trình của phố · cả phố góp tiền xây"
+    },
+    {
+      "id": "tp_rap_phim",
+      "label": "Rạp chiếu phim",
+      "action": "townProjects",
+      "icon": "🎬",
+      "at": {
+        "x": 45,
+        "y": 29.75
+      },
+      "footprint": {
+        "x0": 46.5,
+        "y0": 26.5,
+        "x1": 49.5,
+        "y1": 29.5
+      },
+      "actionData": {
+        "id": "rap_phim"
+      },
+      "hint": "Công trình của phố · cả phố góp tiền xây"
+    },
+    {
+      "id": "tp_thu_vien",
+      "label": "Thư viện lớn",
+      "action": "townProjects",
+      "icon": "📚",
+      "at": {
+        "x": -6.75,
+        "y": 12
+      },
+      "footprint": {
+        "x0": -10.5,
+        "y0": 13,
+        "x1": -7.5,
+        "y1": 16
+      },
+      "actionData": {
+        "id": "thu_vien"
+      },
+      "hint": "Công trình của phố · cả phố góp tiền xây"
+    },
+    {
+      "id": "tp_san_van_dong",
+      "label": "Sân vận động",
+      "action": "townProjects",
+      "icon": "🏟️",
+      "at": {
+        "x": 22,
+        "y": 30.75
+      },
+      "footprint": {
+        "x0": 23,
+        "y0": 27,
+        "x1": 27,
+        "y1": 30.5
+      },
+      "actionData": {
+        "id": "san_van_dong"
+      },
+      "hint": "Công trình của phố · cả phố góp tiền xây"
+    },
+    {
+      "id": "tp_cau_ra_dao",
+      "label": "Cầu ra đảo",
+      "action": "townProjects",
+      "icon": "🌉",
+      "at": {
+        "x": 53.25,
+        "y": -0.25
+      },
+      "footprint": {
+        "x0": 49,
+        "y0": -5,
+        "x1": 53,
+        "y1": -1.5
+      },
+      "actionData": {
+        "id": "cau_ra_dao"
+      },
+      "hint": "Công trình của phố · cả phố góp tiền xây"
+    },
+    {
+      "id": "tp_benh_vien",
+      "label": "Bệnh viện phường",
+      "action": "townProjects",
+      "icon": "🏥",
+      "at": {
+        "x": 16.75,
+        "y": -1.5
+      },
+      "footprint": {
+        "x0": 13,
+        "y0": -6,
+        "x1": 16.5,
+        "y1": -2.5
+      },
+      "actionData": {
+        "id": "benh_vien"
+      },
+      "hint": "Công trình của phố · cả phố góp tiền xây"
     }
   ],
   "shopLots": [

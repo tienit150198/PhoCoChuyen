@@ -732,6 +732,9 @@ class Store:
                 if action.startswith('jr_lux_'):
                     from . import lux
                     lux.command_commit(db,sid,action,current)  # 🎆 the lux_gifts row, the ticker line (a taken plaque refuses)
+                if action.startswith('jr_town_'):
+                    from . import town_projects
+                    town_projects.command_commit(db,sid,action,current)  # 🏗️ the town_gifts row under the project's row lock (over the goal refuses)
                 if action.startswith('jr_auc_') or action=='live_fx':
                     from . import auction
                     if action=='live_fx':auction.fx_commit(db,sid,result)  # 🔨 a refund / a won item: its row flips here, once
@@ -824,6 +827,9 @@ class Store:
             if action.startswith('jr_lux_'):
                 from . import lux
                 lux.command_commit(db,sid,action,raw)  # 🎆 the lux_gifts row, the ticker line (a taken plaque refuses)
+            if action.startswith('jr_town_'):
+                from . import town_projects
+                town_projects.command_commit(db,sid,action,raw)  # 🏗️ the town_gifts row under the project's row lock (over the goal refuses)
             if action.startswith('jr_auc_') or action=='live_fx':
                 from . import auction
                 if action=='live_fx':auction.fx_commit(db,sid,result)  # 🔨 a refund / a won item: its row flips here, once
@@ -869,6 +875,8 @@ class Store:
             pets.forget(db,sid)  # 🐾 their pets leave the weekly board
             from . import lux
             lux.forget(db,sid)  # 🎆 plaques and sponsorships stay, as anonymous
+            from . import town_projects
+            town_projects.forget(db,sid)  # 🏗️ the town's plaques keep what they gave, as anonymous
             from . import auction
             auction.forget(db,sid)  # 🔨 past wins stay in the history under the name shown then
             from . import dog_bark

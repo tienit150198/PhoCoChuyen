@@ -148,5 +148,19 @@ TITLES = TITLES + LUX_TITLES
 # 🔨 One-of-a-kind titles won at the auction house (game/auction_content.py): granted for good like the ones above, `uq`.
 from .auction_content import STYLE_TITLES as _AUC_TITLES   # noqa: E402
 TITLES = TITLES + _AUC_TITLES
+# 🏗️ Công trình của phố (game/town_projects.py): a finished project's top sponsors and every sponsor, granted for good
+# like the ones above through a live_effects row of kind 'town' (an older build leaves the row pending).
+TOWN_TITLES = (
+    dict(id='t_ct_cong_vien', emoji='🌳', name='Người dựng công viên', price=0, need={}, earn='Góp nhiều nhất xây công viên'),
+    dict(id='t_ct_rap_phim', emoji='🎬', name='Người dựng rạp phim', price=0, need={}, earn='Góp nhiều nhất xây rạp phim'),
+    dict(id='t_ct_thu_vien', emoji='📚', name='Người dựng thư viện', price=0, need={}, earn='Góp nhiều nhất xây thư viện'),
+    dict(id='t_ct_san_vd', emoji='🏟️', name='Người dựng sân vận động', price=0, need={}, earn='Góp nhiều nhất xây sân vận động'),
+    dict(id='t_ct_cau_dao', emoji='🌉', name='Người nối cầu ra đảo', price=0, need={}, earn='Góp nhiều nhất xây cầu ra đảo'),
+    dict(id='t_ct_benh_vien', emoji='🏥', name='Người dựng bệnh viện', price=0, need={}, earn='Góp nhiều nhất xây bệnh viện'),
+    dict(id='t_ct_vang', emoji='🏗️', name='Nhà tài trợ vàng', price=0, need={}, earn='Vào top 3 góp xây một công trình'),
+    dict(id='t_ct_bac', emoji='🏗️', name='Nhà tài trợ bạc', price=0, need={}, earn='Vào top 10 góp xây một công trình'),
+    dict(id='t_ct_gach', emoji='🧱', name='Góp gạch xây phố', price=0, need={}, earn='Góp xây một công trình'),
+)
+TITLES = TITLES + TOWN_TITLES
 STYLE_ITEMS = {x['id']: dict(x, kind=k) for k, rows in (('color', COLORS), ('frame', FRAMES), ('title', TITLES)) for x in rows}
 TITLE_TEXT = {x['id']: f"{x['emoji']} {x['name']}" for x in TITLES}
