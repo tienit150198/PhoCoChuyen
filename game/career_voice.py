@@ -56,7 +56,7 @@ _ROWS = {
                         served='bưu gửi đã bàn giao', record='phiếu bưu gửi', review='góp ý về bưu gửi', reply='phản hồi', books='Sổ bưu gửi',
                         rail_in='Ở quầy bưu gửi', confirm='Xác nhận phiếu bưu gửi', team='Tổ quầy và chia tuyến',
                         daily='Túi thư mới đã đến. Vào ca kiểm phiếu và chia tuyến nhé!',
-                        invite_label='Mời tra cứu phiếu', offers=dict(drink=None, gift=None, refund=None),
+                        invite_label='Mời tra cứu phiếu', offers=dict(drink=None, gift=None, refund='Hoàn cước 20 xu'),
                         invite='Mời {who} đọc mã phiếu, bưu điện sẽ đối chiếu chứng từ bàn giao ạ.',
                         process='Bưu điện đối chiếu địa chỉ, cân, tính cước rồi chia tuyến và lưu chứng từ. Hôm đó {fact} ạ.'),
     'accounting': dict(place='Góc Sổ Xinh', self='bên mình', people='khách thuê sổ', who='anh chị', owner='kế toán',

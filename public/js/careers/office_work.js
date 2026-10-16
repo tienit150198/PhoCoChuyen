@@ -10,7 +10,7 @@
  * The server keeps the clock and the score: every move is a command. Only the open card, the word being
  * fixed, the meeting being placed and the step list being built live in x.ui. */
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,mateCards,trackFold,careSummary,foldToggle,
-  goto,gotoAction,guideOf,summaryCard,note,envelope,deskHelp,shutWork} from './office_kit.js';
+  goto,gotoAction,guideOf,summaryCard,note,envelope,deskHelp,shut,shutWork,shutBar} from './office_kit.js';
 import {pending,stepLine} from '../v4/guide.js';
 import {clean,whyAttrs} from '../ui-kit.js';
 
@@ -317,6 +317,7 @@ export function officeWork(c){
     id:c.id,
     css:true,
     next(t,x){
+      if(x&&t.known&&shut(x))return `Văn phòng đóng cửa lúc ${x.room.data.office.limit_time} — khép ca`;
       try{const n=x&&pending(guideFor(t,x,c).steps);if(n)return stepLine(n);}catch{/* the line below */}
       return t.known?'Làm hồ sơ rồi nộp':'Nhận hồ sơ, đọc yêu cầu';
     },
@@ -327,13 +328,13 @@ export function officeWork(c){
       const gd=guideFor(t,x,c),g=guideOf(x,t,gd.steps,gd.final);
       const ev=deskCard(x,c);
       if(!t.known)return desk(x,t,{cls:`ow ${c.cls}`,tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules:rules(x),
-        doc:`${ev}${envelope(x,t)}`},bar:bar(x,t,'',g,true)});
+        doc:`${ev}${envelope(x,t)}`},bar:shut(x)?shutBar(x,t):bar(x,t,'',g,true)});
       const view=VIEW[W(t).type],work=html=>shutWork(x,html,SHUT);
       const doc=`${ev}${twistBanner(t,x)}${t.filed?resultView(t,x):view?view(t,x,c):''}${hintBox(t,x,c)}${papersView(t,x)}`;
       // Clean layout: while a step is left its pointer says what to do; the server's "what is missing" waits for the finish.
       const nx=t.filed?'Đã nộp hồ sơ.':clean()&&pending(gd.steps)?'':readyLine(t,x);
       // The bar's left slot: the guide's pointer or its reason when it has one, else what the server says is missing.
-      return desk(x,t,{cls:`ow ${c.cls}`,tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules:rules(x),doc:work(doc)},bar:work(bar(x,t,g.next?'':x.esc(nx),g))});
+      return desk(x,t,{cls:`ow ${c.cls}`,tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules:rules(x),doc:work(doc)},bar:shut(x)?shutBar(x,t):bar(x,t,g.next?'':x.esc(nx),g)});
     },
     idle(x){
       const d=x.room.data||{};if(!d.office)return '';

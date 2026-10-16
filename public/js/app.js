@@ -551,7 +551,7 @@ function taskCards(c){
   else if(!c.open)main=`<article class="note-card calm-card">${button(icon('sun',16)+' Chuẩn bị ngày mới'+(c.day_clock?` · mở ${esc(c.day_clock.open_time)}`:''),'prepare',{},'primary big grow'+first)}${eveningDue()?'<button type="button" class="icon-btn hud-sum nd-moon-btn" data-action="evening" aria-label="Buổi tối: ăn gì, ngủ mấy giờ"><span aria-hidden="true">🌙</span></button>':''}${c.shift_summary?`<button type="button" class="icon-btn hud-sum" data-action="summary" aria-label="Xem ngày vừa qua">${icon('clipboard',18)}</button>`:''}${bell}</article>`;
   // The one line is the work screen's "Bước tiếp theo" (career modules' next() = guide.stepLine of the next
   // step, plain text); "Làm tiếp" opens the work screen, whose bottom button (stepCta) does that step.
-  else if(t)main=`<article class="note-card calm-card task-card">${closingNote(c.day_clock,true,moreGate(c))}<button type="button" class="calm-what" data-action="job" data-task="${esc(t.id)}" title="${esc(t.title)}"><span class="npc-mini">${customerPortrait(visitCustomer(t,npc(t.npc)),34)}</span><b>${esc(plainText(taskNext(t)))}</b></button>${bell}${button('Làm tiếp '+icon('arrow',14),'job',{task:t.id},'primary'+first)}</article>`;
+  else if(t)main=`<article class="note-card calm-card task-card">${closingNote(c.day_clock,true,moreGate(c))}<button type="button" class="calm-what" data-action="job" data-task="${esc(t.id)}" title="${esc(t.title)}"><span class="npc-mini">${customerPortrait(visitCustomer(t,npc(t.npc)),34)}</span><b>${esc(plainText(taskNext(t)))}</b></button>${bell}${button('Làm tiếp '+icon('arrow',14),'job',{task:t.id},'primary'+first)}${c.data?.office?.closed?button(icon('exit',16)+' Khép ca hôm nay','end',{},'ghost calm-end'):''}</article>`;
   // Day one, its three jobs done: closing the day is the next step (and the chapter goal).
   // Closing time with nobody in hand: close the day (the summary follows).
   // So is a day whose customers are all dealt, or whose next customer would arrive at closing time (more_gate).
@@ -1604,7 +1604,7 @@ async function handleAction(action,data,el){
     case'tourPlan':await cmd('tour_plan',{task:activeTask().id,route:ui.tourRoute});break;
     case'teaConfig':await cmd('tea_config',{task:activeTask().id,size:$('#tea-size').value,sugar:Number($('#tea-sugar').value),ice:$('#tea-ice').value});break;
     case'expVisit':ui.townPlace=data.place;await cmd('life_town',{place:data.place});renderSheet();break;
-    case'home':openSheet('home',{homeMode:null});break;  // 🗺️ the setting's choice again (Bản đồ phố / Danh sách)
+    case'home':openSheet('home',{homeMode:null,jrView:'home'});break;  // 🗺️ the setting's choice again (Bản đồ phố / Danh sách)
     case'accountingSchool':if(await (await viaLazy(L.accountingSchool,el)).accountingSchoolOpen(env()))openSheet('accountingSchool');break;
     case'historyCourse':if(await (await viaLazy(L.historyCourse,el)).historyCourseOpen(env()))openSheet('historyCourse');break;
     case'v4Group':railGroup(data.group||'');break;

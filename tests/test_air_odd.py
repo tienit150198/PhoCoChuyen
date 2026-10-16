@@ -457,5 +457,51 @@ class Saves(unittest.TestCase):
             self.assertGreater(seen, 0)
 
 
+class Gender(unittest.TestCase):
+    """F#394 (16/10, a woman pilot): "nữ phi công mà toàn tình huống nam". A script rewords itself for her (x['female'])."""
+    def test_the_female_wording_is_well_formed(self):
+        self.assertGreaterEqual(sum(bool(x.get('female')) for x in PILOT), 10)
+        for x in PILOT + CABIN:
+            f = x.get('female')
+            if not f:
+                continue
+            self.assertLessEqual(set(f), {'who', 'title', 'text', 'push', 'words', 'back', 'give'}, x['id'])
+            self.assertLessEqual(set(f.get('words', {})), set(ao.WORDS[x['kind']]), x['id'])
+            self.assertGreaterEqual(len(f.get('push', x['push'])), 2, x['id'])
+            y = ao.script(PILOT + CABIN, x['id'], 'female')
+            self.assertEqual((y['text'], y['who']), (f.get('text', x['text']), f.get('who', x['who'])))
+            for line in [f.get(k) for k in ('text', 'back', 'give')] + list(f.get('push', [])):
+                self.assertFalse(line and ROUGH.search(line), (x['id'], line))
+        self.assertIs(ao.script(PILOT, 'pl-bar', 'male'), ao.script(PILOT, 'pl-bar'))
+        self.assertIs(ao.script(PILOT, 'pl-bar', None), ao.script(PILOT, 'pl-bar'))
+
+    def test_a_woman_pilot_gets_her_lines_through_the_encounter_and_the_save(self):
+        if PL is None:
+            raise unittest.SkipTest('air careers filtered out')
+        bar = ao.script(PILOT, 'pl-bar')
+        for gender, opening in (('female', bar['female']['text']), ('male', bar['text']), (None, bar['text'])):
+            j = journey('pilot')
+            j.state['journey']['gender'] = gender
+            odd = ao.ensure(j.c['ext']['data'])
+            odd.update(ev=None, plan=['open'], fired=0)
+            self.assertEqual(ao.tick(j.state, j.c, 'pilot', odd, [bar])['text'], opening)
+            self.assertEqual(odd['ev'].get('g'), 'female' if gender == 'female' else None)
+            self.assertEqual(public_state(j.state)['careers']['pilot']['data']['odd']['ev']['line'], opening)
+            st = json.loads(json.dumps(j.state))
+            validate_state(st)
+            if gender == 'female':
+                j.act('pl_odd', tone='soft', say=[next(iter(ao.WORDS['charm']))], to='self')
+                ev = j.c['ext']['data']['odd']['ev']
+                if ev:
+                    self.assertIn(public_state(j.state)['careers']['pilot']['data']['odd']['ev']['line'], bar['female']['push'])
+                else:
+                    self.assertEqual(j.c['ext']['data']['odd']['log'][-1].get('g'), 'female')
+                validate_state(json.loads(json.dumps(j.state)))
+                forged = copy.deepcopy(st)
+                forged['careers']['pilot']['ext']['data']['odd']['ev']['g'] = 'robot'
+                with self.assertRaises(GameError):
+                    validate_state(forged)
+
+
 if __name__ == '__main__':
     unittest.main()

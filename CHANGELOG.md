@@ -1,3 +1,13 @@
+# v2.4.33 — 2026-10-16
+
+🧰 Kho báu trong phố (chủ game 16/10: "giới hạn 1 ngày 1 người 300 rương (0h thì reset), k cần thông báo"): town_treasure.DAY_MAX = 300, đếm từ 0h giờ Việt Nam (UTC+7) thay vì 24 giờ trượt; quá số thì báo "Hôm nay bạn đã nhặt đủ 300 rương rồi. Sau 0 giờ đêm nay nhặt tiếp nhé!" (treasure_day). Không có dòng Có gì mới cho phần này (chủ game dặn).
+
+Sửa theo góp ý người chơi:
+- ✈️ #394 nữ phi công gặp toàn tình huống cho nam: chuyện oái oăm (air_odd) nhận bản lời riêng theo giới tính nhân vật (x['female']), giới tính ghi vào chuyện lúc mở (ev.g) để cả lượt đẩy, kết quả và nhật ký dùng đúng bản. 10 chuyện của phi công có bản nữ (rượu ở Phú Quốc, TikToker, du thuyền đối tác, gõ cửa khách sạn, mảnh giấy, cầu hôn qua loa, đổi ca, phóng viên, mai mối, em họ). Ba câu trong pilot.py viết lại trung tính.
+- 🗂️ #395/#396 Hành chính nhân sự không khép ca được khi văn phòng đóng cửa còn hồ sơ dở: bàn làm việc chung (office_work.js: hr_admin, it_helpdesk) dùng thanh "Khép ca · xem tổng kết" như các bàn kế toán; màn ca làm thêm nút Khép ca cạnh "Làm tiếp" khi văn phòng đã đóng.
+- 📮 #393 Bưu điện trả lời đánh giá "xin lỗi + sửa sai" thiếu bù tiền: thêm bù đắp "Hoàn cước 20 xu".
+- 🧭 #397 giao diện cũ bấm Đổi nghề nhảy sang Đầu tư: nút Đổi nghề mở lại trang chính của Hành trình (jrView='home').
+
 # v2.4.32 — 2026-10-16
 
 🎨 Thể lệ thi bộ sticker (chủ game 16/10: "mấy bên đạt giải giữ ảnh gốc, đạt giải thì đưa vào làm sticker chính thức của game, note chỗ event thôi"): trang /sticker thêm hai dòng thể lệ (bộ đạt giải thành sticker chính thức của game; người đạt giải giữ file ảnh gốc để ban tổ chức liên hệ lấy). Chỉ ghi ở trang sự kiện: không có dòng Có gì mới (chủ game dặn).

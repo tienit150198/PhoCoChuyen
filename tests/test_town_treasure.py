@@ -171,8 +171,8 @@ class Treasure(unittest.TestCase):
             self.assertEqual(db.execute('SELECT COUNT(*) FROM town_treasure_chests WHERE id=?',(chest['id'],)).fetchone()[0],0)
             self.assertGreater(db.execute('SELECT COUNT(*) FROM town_treasure_chests WHERE winner IS NULL').fetchone()[0],0)
 
-    def test_no_per_wave_or_daily_cap_a_picked_chest_is_gone(self):
-        """Owner 14/10: each player picks as many chests as they reach; a picked chest is gone for everyone."""
+    def test_no_per_wave_cap_a_picked_chest_is_gone(self):
+        """Owner 14/10: each player picks as many chests as they reach (up to the daily cap); a picked chest is gone for everyone."""
         token,sid=self.account()
         other,osid=self.account()
         start=[self.store.read(t)[0]['journey']['wallet'] for t in (token,other)]
@@ -188,6 +188,26 @@ class Treasure(unittest.TestCase):
             self.assertNotIsInstance(pick(other,osid,fresh[1]),dict,'already picked: gone for the other account')
             self.now+=600
         self.assertEqual(self.store.read(token)[0]['journey']['wallet']-start[0],got*10000)
+
+    def test_daily_cap_resets_at_vietnam_midnight(self):
+        """Owner 16/10: 300 chests a person a day, reset at 0h Vietnam time (UTC+7), not a rolling 24 hours."""
+        self.assertEqual(self.tt.DAY_MAX,300)
+        p=patch.object(self.tt,'DAY_MAX',3);p.start();self.addCleanup(p.stop)
+        token,sid=self.account()
+        def pick():
+            chests=self.tt.snapshot(self.store)['chests']
+            try:return self.tt.claim(self.store,token,self.proof(sid,chests[0]))
+            except self.tt.TreasureError as e:return e.code
+        midnight=self.tt.vn_midnight(self.now)+86400
+        self.assertEqual((midnight+7*3600)%86400,0)
+        self.now=midnight-3*3600
+        for _ in range(3):self.assertIsInstance(pick(),dict);self.now+=600
+        self.assertEqual(pick(),'treasure_day')
+        self.now=midnight-30
+        self.assertEqual(pick(),'treasure_day','still the same Vietnam day')
+        self.now=midnight+5
+        self.assertIsInstance(pick(),dict,'0h Vietnam time: a new day')
+        self.assertIsInstance(pick(),dict)
 
     def test_new_account_cannot_claim(self):
         token,sid=self.account()

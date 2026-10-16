@@ -42,6 +42,7 @@ CHANNELS = ('self', 'crew', 'company')
 KINDS = ('charm', 'harass', 'demand', 'corner', 'bargain')
 RANKS = ('pax', 'crew', 'boss', 'kin')
 REACTIONS = ('push', 'back', 'report', 'give', 'stuck', 'deal', 'lawful', 'penalty', 'lapse')
+GENDERS = ('female', 'male')    # a script may reword itself for the player's gender (x['female'] / x['male'])
 # How much each thing said moves the other side, by kind ('yes' is giving in: it ends the encounter).
 WORDS = {
     'charm': dict(no=2, duty=1, rule=2, alt=1, joke=-1, later=-3, yes=None),
@@ -109,8 +110,21 @@ def ensure(d: dict) -> dict:
     return odd
 
 
-def script(scripts: list, sid: str) -> dict | None:
-    return next((x for x in scripts if x['id'] == sid), None)
+def script(scripts: list, sid: str, gender: str | None = None) -> dict | None:
+    """A script by id; `gender` ('female' | 'male', the player's when the encounter began: ev['g']) takes that
+    script's own wording for such a player (x['female'] / x['male']: the keys it rewords, e.g. a woman pilot is
+    flirted with by a man; F#394 16/10 "nữ phi công mà toàn tình huống nam")."""
+    x = next((x for x in scripts if x['id'] == sid), None)
+    return {**x, **x[gender]} if x and gender in GENDERS and x.get(gender) else x
+
+
+def gender_of(s: dict) -> str | None:
+    j = s.get('journey') if isinstance(s.get('journey'), dict) else {}
+    return j.get('gender') if j.get('gender') in GENDERS else None
+
+
+def _g(ev: dict) -> dict:
+    return {'g': ev['g']} if ev.get('g') else {}
 
 
 def level(points: int) -> tuple:
@@ -189,6 +203,10 @@ def tick(s: dict, c: dict, career: str, odd: dict, scripts: list, busy: bool = F
             break
     odd['seq'] += 1
     odd['ev'] = dict(id=f'odd-{odd["seq"]}', script=x['id'], day=c['day'], at=at, said=[])
+    g = gender_of(s)
+    if g and x.get(g):
+        odd['ev']['g'] = g
+        x = script(scripts, x['id'], g)
     kit.log(s, c, 'surprise', f'{x["emoji"]} {x["title"]}: {x["text"]}', None, odd['ev']['id'])
     return x
 
@@ -271,7 +289,7 @@ def reply(s: dict, c: dict, career: str, odd: dict, scripts: list, p: dict, cfg:
     """The player's answer: tone, words, whom to bring in (and in a bargain, how many units). Returns the result."""
     ev = odd['ev']
     kit.need(ev is not None, 'Không có chuyện nào đang chờ trả lời.')
-    x = script(scripts, ev['script'])
+    x = script(scripts, ev['script'], ev.get('g'))
     kit.need(x, 'Chuyện này không còn nữa.')
     rp = dict(tone=kit.one_of(p.get('tone'), TONES, 'Chọn giọng nói.'), say=_words(p, x),
               to=kit.one_of(p.get('to', 'self'), channels(x), 'Chọn người để báo.'), n=None, r='push')
@@ -358,7 +376,7 @@ def _resolve(s: dict, c: dict, career: str, odd: dict, x: dict, out: dict, cfg: 
         notes.append(_conduct(c, odd, conduct, cfg))
     outcome = ' '.join([text] + [n for n in notes if n]).strip()[:600]
     odd['last'] = dict(script=x['id'], title=x['title'], emoji=x['emoji'], outcome=outcome, good=good, day=c['day'], how=how)
-    odd['log'] = ar.last(odd['log'] + [dict(id=ev['id'], script=x['id'], day=c['day'], how=how, good=good)], LOG_MAX, 'odd.log', c)
+    odd['log'] = ar.last(odd['log'] + [dict(id=ev['id'], script=x['id'], day=c['day'], how=how, good=good, **_g(ev))], LOG_MAX, 'odd.log', c)
     odd['ev'] = None
     kit.metric(c, 'surprises')
     if good is True:
@@ -428,14 +446,14 @@ def close(s: dict, c: dict, odd: dict, scripts: list) -> str | None:
     ev = odd['ev']
     if ev is None:
         return None
-    x = script(scripts, ev['script'])
+    x = script(scripts, ev['script'], ev.get('g'))
     odd['ev'] = None
     if not x:
         return None
     if x['kind'] == 'harass' and x.get('follow'):
         odd['marks'][x['follow']] = c['day']
     odd['last'] = dict(script=x['id'], title=x['title'], emoji=x['emoji'], outcome='Hết ca, chuyện bỏ ngỏ.', good=None, day=c['day'], how='lapse')
-    odd['log'] = ar.last(odd['log'] + [dict(id=ev['id'], script=x['id'], day=c['day'], how='lapse', good=None)], LOG_MAX, 'odd.log', c)
+    odd['log'] = ar.last(odd['log'] + [dict(id=ev['id'], script=x['id'], day=c['day'], how='lapse', good=None, **_g(ev))], LOG_MAX, 'odd.log', c)
     return f'{x["emoji"]} {x["title"]}: hết ca vẫn bỏ ngỏ.'
 
 
@@ -485,7 +503,7 @@ def public(c: dict, odd: dict, scripts: list, career: str, cfg: dict) -> dict:
     ev = odd.get('ev')
     view = None
     if ev:
-        x = script(scripts, ev['script'])
+        x = script(scripts, ev['script'], ev.get('g'))
         if x:
             # A career may word the answers its own way (cfg['labels'][kind]); a script's own words come last.
             words = {**LABELS[x['kind']], **(cfg.get('labels') or {}).get(x['kind'], {}), **x.get('words', {})}
@@ -504,7 +522,7 @@ def public(c: dict, odd: dict, scripts: list, career: str, cfg: dict) -> dict:
     lv = level(cd['points'])
     log = []
     for h in odd.get('log', [])[-6:]:
-        x = script(scripts, h['script'])
+        x = script(scripts, h['script'], h.get('g'))
         if x:
             log.append(dict(title=x['title'], emoji=x['emoji'], day=h['day'], how=h['how'], good=h['good']))
     return dict(ev=view, last=odd.get('last'), log=log,
@@ -534,13 +552,14 @@ def validate(odd, scripts: list) -> None:
     ids = {x['id']: x for x in scripts}
     kit.need(isinstance(odd['log'], list) and len(odd['log']) <= LOG_MAX, 'Lịch sử chuyện oái oăm sai.')
     for h in odd['log']:
-        kit.need(isinstance(h, dict) and h.get('script') in ids and h.get('how') in REACTIONS and h.get('good') in (True, False, None),
+        kit.need(isinstance(h, dict) and h.get('script') in ids and h.get('how') in REACTIONS and h.get('good') in (True, False, None)
+                 and h.get('g', 'female') in GENDERS,
                  'Lịch sử chuyện oái oăm sai.')
         kit.integer(h.get('day'), 0, 10 ** 7)
     ev = odd['ev']
     if ev is not None:
-        kit.need(isinstance(ev, dict) and set(ev) == {'id', 'script', 'day', 'at', 'said'} and ev['script'] in ids
-                 and ev['at'] in ('open', 'between'), 'Chuyện oái oăm sai.')
+        kit.need(isinstance(ev, dict) and {'id', 'script', 'day', 'at', 'said'} <= set(ev) <= {'id', 'script', 'day', 'at', 'said', 'g'}
+                 and ev['script'] in ids and ev['at'] in ('open', 'between') and ev.get('g', 'female') in GENDERS, 'Chuyện oái oăm sai.')
         kit.text(ev['id'], 40)
         kit.integer(ev['day'], 1, 10 ** 7)
         x = ids[ev['script']]

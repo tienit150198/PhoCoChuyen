@@ -149,7 +149,7 @@ REG_STORY = {
              'Chị Thu mang vào buồng lái hai ly trà gừng: “Uống cho ấm, đêm qua mưa cả đêm.”',
              'Chị Thu bảo cả tổ tiếp viên thích bay với bạn: “Báo trước rung lắc, tụi chị kịp cất xe đẩy.”'),
     GRANNY: ('Bà Chín dúi cho bạn túi xoài cát: “Của nhà bà trồng, phi công ăn cho khỏe.”',
-             'Bà Chín bảo lần này không còn sợ rung nữa: “Nghe cậu phi công nói trước là bà yên bụng.”',
+             'Bà Chín bảo lần này không còn sợ rung nữa: “Nghe phi công nói trước là bà yên bụng.”',
              'Bà Chín khoe cháu nội vừa thi đỗ, bà bay ra đảo ăn mừng.'),
     KIET: ('Anh Kiệt càu nhàu: “Trễ thế này là lỡ cuộc họp đấy.”',
            'Anh Kiệt bảo lần trước nghe thông báo rõ ràng nên gọi điện dời họp kịp.',
@@ -231,7 +231,7 @@ DESK = [
          options=[dict(id='safety', label='Vâng, nhưng an toàn vẫn đi trước. Trễ thì em báo rõ lý do.', hint='Đúng nguyên tắc',
                        effects=dict(xp=8), good=True, outcome='Chị Vân nghe được, gật đầu: “Nói vậy là đúng.”'),
                   dict(id='yes', label='Dạ, em sẽ cố không để chậm', hint='Dễ nghe',
-                       effects=dict(review=[3, 'Cậu cơ phó hứa không trễ chuyến nào. Nghe thì vui, mà chị lo cậu ấy sẽ vội.']), good=False,
+                       effects=dict(review=[3, 'Cơ phó hứa không trễ chuyến nào. Nghe thì vui, mà chị lo tổ bay sẽ vội.']), good=False,
                        outcome='Chị Vân nhắc riêng: “Đừng hứa điều mình không được phép hứa.”')],
          default='safety'),
     dict(id='visit', title='Bé Na xin xem buồng lái', emoji='👧', npc=NA, min_day=2, tone='gentle', at='between', weight=2,
@@ -515,8 +515,8 @@ def make_task(day: int, slot: int, serial: int) -> dict:
     opening = {CAPTAIN: f'Chị Vân: “Chặng {leg["to"]} nhé em. Nhận bản tin, tính dầu, rồi mình đi một vòng quanh tàu.”',
                KIET: 'Anh Kiệt nhìn đồng hồ lần thứ ba: “Chuyến này có đi đúng giờ không đấy?”',
                PURSER: f'Chị Thu ló vào buồng lái: “{pax} khách, có vài cụ lớn tuổi. Chị báo trước để em biết.”',
-               GRANNY: 'Bà Chín nắm chặt quai túi xoài: “Máy bay có rung không cậu?”',
-               NA: 'Bé Na áp mặt vào cửa kính phòng chờ, chỉ vào chiếc Cò Trắng: “Tàu của chú đấy ạ?”'}[npc]
+               GRANNY: 'Bà Chín nắm chặt quai túi xoài: “Máy bay có rung không con?”',
+               NA: 'Bé Na áp mặt vào cửa kính phòng chờ, chỉ vào chiếc Cò Trắng: “Tàu của phi công đấy ạ?”'}[npc]
     return kit.base_task(ID, day, slot, serial, npc, title, opening, kind=kind, needs=needs, gen=GEN, stage='brief', fuel=None, fog=None,
                          checked=[], found=None, handled=None, switches=[], pa=None, delay=0, decision=None, arrive=None, at=None,
                          ap=0, gate=0, arounds=0, gates_log=[], extra=False, reason=None, air_late=0, story=None)
