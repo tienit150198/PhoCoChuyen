@@ -46,6 +46,8 @@ SEATS = {
     'phan_luc': (8, 'plane'),            # ✈️ Phản lực riêng: tám ghế da
     'truc_thang_vip': (6, 'heli'),       # 🚁 Trực thăng VIP (Mua sắm)
     'chuyen_co': (16, 'plane'),          # 🛫 Chuyên cơ thân rộng (Mua sắm)
+    'lx_du_thuyen_01': (12, 'boat'),     # 🏎️ Ngọc Trai Đêm số 01 (Nhà đấu giá, bản giới hạn: a superyacht)
+    'lx_phan_luc_01': (8, 'plane'),      # 🏎️ Phản lực Cánh Mây số 01 (Nhà đấu giá, bản giới hạn: a jet)
 }
 GROUP_SEATS = {'boat': (4, 'boat'), 'plane': (4, 'plane')}   # a garage boat / plane this table does not list yet
 SEATS_MAX = 40
