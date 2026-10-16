@@ -2,7 +2,7 @@
  * Availability mirrors app.js navItems: no feature is invented by the map.
  */
 const JOURNEY_FEATURES={tileMatch:'tile',garage:'garage',gadgets:'gadgets',pets:'pets',spend:'spend',spendStyle:'spend',spendQuan:'spend',spendSpa:'spend',spendRap:'spend',spendChua:'spend',lux:'lux',luxFw:'lux',luxTrip:'lux',luxSuu:'lux',luxNha:'lux',luxBay:'lux',luxTiec:'lux',luxHoc:'lux',luxMtq:'lux',abroad:'abroad'};
-const CONTENT_FEATURES={quay:'quay',auction:'auction',auctionLands:'auction',jrCerts:'certs'};
+const CONTENT_FEATURES={quay:'quay',auction:'auction',auctionLands:'auction',jrCerts:'certs',island:'island'};
 const LIVE_FEATURES={liveWalk:'street',liveDate:'dating',liveWed:'wedding',liveKara:'kara'};
 const owns=(object,key)=>Object.prototype.hasOwnProperty.call(object,key);
 /** 💐 Thiệp 20/10 (/2010, game/event2010.py WRITE_UNTIL; tests/test_event2010.py keeps the two equal): the entries
@@ -44,7 +44,7 @@ export function townUtilityGroups(state={},content={},social={}){
       ['gadgets','phone','📱','Điện thoại & đồ công nghệ'],
       ['rui','shield','🛡️','Bảo hiểm'],['jrInvest','coin','📈','Đầu tư'],
       ['quay','store','🏪','Quầy của bạn'],
-      ['lux','bag','🛍️','Mua sắm'],['auction','award','🔨','Nhà đấu giá'],
+      ['lux','bag','🛍️','Mua sắm'],['island','boat','🏝️','Đảo riêng'],['auction','award','🔨','Nhà đấu giá'],
       ['auctionLands','map','🏞️','Đấu giá danh thắng'],
     ])},
     {id:'life',icon:'paw',label:'Đời sống & đi chơi',items:entries([

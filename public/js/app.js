@@ -173,9 +173,10 @@ function bootLive(m){
   m.live.on('auction_outbid',f=>import('./v4/auction.js').then(a=>a.onOutbid(env(),f)).catch(e=>console.warn('auction:',e)));
   m.live.on('auction_won',f=>import('./v4/auction.js').then(a=>a.onWon(env(),f)).catch(e=>console.warn('auction:',e)));
   const fw=f=>import('./v4/fireworks.js').then(a=>a.onFireworks(env(),f)).catch(e=>console.warn('fireworks:',e));
-  m.live.on('fireworks',fw);m.live.on('welcome',f=>{if(f.fw)fw(f.fw);});
+  m.live.on('fireworks',fw);m.live.on('welcome',f=>{if(f.fw)fw(f.fw);if(f.isl_inv)import('./v4/island.js').then(a=>a.onIslandWelcome(env(),f.isl_inv)).catch(e=>console.warn('island:',e));});   // 🏝️ invitations waiting
   m.live.on('wedinvite',f=>import('./v4/wedinvite.js').then(a=>a.onWedInvite(env(),f)).catch(e=>console.warn('wedinvite:',e)));
   m.live.on('cand',f=>import('./v4/cand.js').then(a=>a.onLive(env(),f)).catch(e=>console.warn('cand:',e)));   // 👮 a patrol's check (game/cand_ops.py)
+  m.live.on('island_ping',f=>import('./v4/island.js').then(a=>a.onIslandPing(env(),f)).catch(e=>console.warn('island:',e)));   // 🏝️ an invitation to a friend's island
   m.liveBoot(env());
 }
 const env=()=>({api,ui,cmd,confirmAction,toast,renderSheet,renderMain,openSheet,closeSheet,world,bootLive,sound,act:(action,data={})=>handleAction(action,data,null),live:()=>L.live.m?.live||null});
@@ -351,6 +352,7 @@ function navItems(c){
   {const bk=api.state?.journey?.bank;items.push(['bank','coin','Ngân hàng',bk?.unread||(bk?.overdue?'dot':0)]);}  // 🏦 Ngân hàng Phố (v4/bank.js, own dialog)
   if(api.state?.journey?.story)items.push(['house','home','Nhà của bạn',api.state.journey.home?.own?.loan?.overdue?'dot':0]);  // 🏠 Nhà của bạn (v4/house.js, own dialog)
   if(api.state?.journey?.story&&api.state.journey.garage)items.push(['garage','bike','Xe & phương tiện']);  // 🚗 (v4/garage.js, own dialog): only once the server has it
+  if(api.state?.journey?.story&&api.content?.journey?.island)items.push(['island','sun','Đảo riêng']);  // 🏝️ v4/island.js (own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.gadgets)items.push(['gadgets','phone','Điện thoại & đồ công nghệ']);  // 📱 (v4/gadgets.js, own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.pets)items.push(['pets','paw','Thú cưng']);  // 🐾 v4/pets.js (own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.spend)items.push(['spend','coffee','Đi chơi'],['spendStyle','sparkle','Phong cách']);  // ☕🙏 quán, spa, rạp, công đức; 🎨 màu tên tuần (v4/spend.js, own dialog): only once the server has it
@@ -394,7 +396,7 @@ const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREE
 const RAIL_GROUPS=[
   ['pho','building','Khu phố',['fair','luxFw','wedInvite','spend','pets','sharedIsland','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
-  ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','gadgets','rui','quay']],
+  ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','island','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
   ['minh','gift','Của mình',['jrWardrobe','spendStyle','album','passport','workshop','journal','accountingSchool','historyCourse','abroad']],
 ];
@@ -1689,6 +1691,7 @@ async function handleAction(action,data,el){
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
       if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy
       if(action==='garage'){await (await import('./v4/garage.js')).garageAction(action,data,el,env());break;}  // 🚗 Xe & phương tiện: lazy
+      if(action==='island'||action==='islandInvites'){await (await import('./v4/island.js')).islandAction(action,data,el,env());break;}  // 🏝️ Đảo riêng: lazy
       if(action==='pets'){await (await import('./v4/pets.js')).petsAction(action,data,el,env());break;}  // 🐾 Nuôi thú cưng: lazy
       if(action==='gadgets'){await (await import('./v4/gadgets.js')).gadgetsAction(action,data,el,env());break;}  // 📱 Cửa hàng điện thoại: lazy
       if(SPEND_OPEN.has(action)){await (await import('./v4/spend.js')).spendAction(action,data,el,env());break;}  // ☕ Đi quán, spa, rạp, 🙏 công đức, 🎨 phong cách: lazy

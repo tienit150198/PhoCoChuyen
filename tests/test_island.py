@@ -242,6 +242,8 @@ class SaveBlock(unittest.TestCase):
         s, _ = act(s, 'jr_lux_buy', id='chuyen_co', confirm=True)
         got = isl.vehicles(s)
         self.assertEqual([(v['id'], v['seats'], v['arrive']) for v in got], [('chuyen_co', 16, 'plane'), ('du_thuyen', 8, 'boat')])
+        s, _ = act(s, 'jr_island_buy', id='dao_dua', confirm=True)
+        self.assertEqual([v['id'] for v in public_state(s)['journey']['island']['rides']], ['chuyen_co', 'du_thuyen'])
 
 
 if __name__ == '__main__':

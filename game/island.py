@@ -323,7 +323,8 @@ def public(s: dict) -> dict | None:
     j = s['journey']
     return dict(own={i: dict(p=x['p'], d=x['d'], sell=sell_price(x['p']), m=month_of(i, x['p'])) for i, x in b['own'].items() if i in ISLAND},
                 month=monthly(s), next=(j['life_day'] // bk.MONTH_DAYS + 1) * bk.MONTH_DAYS,
-                due=(b['upk']['acc'] // 1000) if b['upk'] else 0, paid=b['upk']['paid'] if b['upk'] else 0)
+                due=(b['upk']['acc'] // 1000) if b['upk'] else 0, paid=b['upk']['paid'] if b['upk'] else 0,
+                rides=vehicles(s))   # what can take friends out (the 🏝️ dialog's "Ra đảo" list)
 
 
 def worth(j: dict) -> int:
