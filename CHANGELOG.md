@@ -1,3 +1,7 @@
+# v2.4.32 — 2026-10-16
+
+🎨 Thể lệ thi bộ sticker (chủ game 16/10: "mấy bên đạt giải giữ ảnh gốc, đạt giải thì đưa vào làm sticker chính thức của game, note chỗ event thôi"): trang /sticker thêm hai dòng thể lệ (bộ đạt giải thành sticker chính thức của game; người đạt giải giữ file ảnh gốc để ban tổ chức liên hệ lấy). Chỉ ghi ở trang sự kiện: không có dòng Có gì mới (chủ game dặn).
+
 # v2.4.31 — 2026-10-16
 
 🏆 Tăng giải thi bộ sticker (chủ game 16/10: "tăng giải thưởng lên giải nhất 5M, tăng các giải còn lại luôn"): Top 1 5.000.000 xu (từ 3.000.000), top 2–3 2.500.000 xu (từ 1.500.000), top 4–10 1.000.000 xu (từ 500.000). Quà tham gia giữ 200.000 xu. sticker_event.PRIZES, trang /sticker, thẻ trong game. Có gì mới: 1 dòng.

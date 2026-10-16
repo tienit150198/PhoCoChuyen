@@ -52,7 +52,9 @@ function renderRules(){
     `Có dùng AI (ChatGPT, Gemini, Midjourney…) vẫn được thi, nhưng phải chọn <b>“Có dùng AI”</b> khi nộp và ghi rõ trong bài đăng.`,
     `Đăng bộ sticker vào nhóm Facebook của phố, ghi kèm <b>@tên tài khoản</b> và <b>${esc(r.hashtag)}</b>. Bình chọn bằng lượt thả cảm xúc trên bài đăng, tính đến ${end}.`,
     `Tham gia: ${xu(r.join)} mỗi tài khoản, vào ví khi bạn quay lại phố (nhân vật từ ngày thứ ${r.min_days} trở lên).`,
-    `Top 1: ${xu(r.prizes[0].coins)} · Top ${esc(r.prizes[1].ranks)}: ${xu(r.prizes[1].coins)} · Top ${esc(r.prizes[2].ranks)}: ${xu(r.prizes[2].coins)}. Top 10 bộ được đưa vào chat trong game để mọi người dùng.`,
+    `Top 1: ${xu(r.prizes[0].coins)} · Top ${esc(r.prizes[1].ranks)}: ${xu(r.prizes[1].coins)} · Top ${esc(r.prizes[2].ranks)}: ${xu(r.prizes[2].coins)}.`,
+    '🌟 Các bộ đạt giải sẽ được đưa vào làm <b>sticker chính thức của game</b>, dùng trong chat cho cả phố.',
+    '📁 Bạn nào đạt giải nhớ <b>giữ lại file ảnh gốc</b> (bản nét nhất, nền trong suốt nếu có) để ban tổ chức liên hệ lấy khi đưa vào game.',
     'Bộ chép của người khác, phản cảm, không đủ số sticker hay không ghi tên tài khoản trong bài đăng sẽ bị loại.',
   ].map(x=>`<li>${x}</li>`).join('');
 }
