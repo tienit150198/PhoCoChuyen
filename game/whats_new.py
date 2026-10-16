@@ -32,6 +32,9 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.31", date="2026-10-16", items=(
+        dict(emoji='🏆', text='Tăng giải thi bộ sticker: Top 1 nhận 5.000.000 xu, top 2–3 nhận 2.500.000 xu, top 4–10 nhận 1.000.000 xu!', go=dict(action='stickerEvent', data={})),
+    )),
     dict(version="2.4.30", date="2026-10-16", items=(
         dict(emoji='🎨', text='Thi sticker đổi thể lệ: làm cả bộ từ 12 sticker trở lên (một nhân vật, nhiều biểu cảm), bằng app nào cũng được.', go=dict(action='stickerEvent', data={})),
         dict(emoji='📮', text='Nộp một ảnh ghép cả bộ hoặc từng sticker. Dùng AI vẫn được, chỉ cần ghi rõ. Đăng nhóm Facebook kèm #PhoCoChuyen.', go=dict(action='stickerEvent', data={})),

@@ -187,7 +187,7 @@ class StickerHTTP(unittest.TestCase):
         self.assertEqual((out['account'], out['can'], out['why'], out['pack']), (None, False, 'login', None))
         r = out['rules']
         self.assertEqual(r['join'], 200_000)
-        self.assertEqual([p['coins'] for p in r['prizes']], [3_000_000, 1_500_000, 500_000])
+        self.assertEqual([p['coins'] for p in r['prizes']], [5_000_000, 2_500_000, 1_000_000])
         self.assertEqual((r['min'], r['max_set'], r['size'], r['hashtag']), (12, 24, 512, '#PhoCoChuyen'))
         self.assertTrue(r['fb'].startswith('https://www.facebook.com/groups/'))
         self.assertNotIn('csrf', out)
@@ -485,7 +485,7 @@ class StickerHTTP(unittest.TestCase):
             status, out = act(act='award')
             self.assertEqual(status, 200, out)
             self.assertEqual([(g['rank'], g['coins'], g['username']) for g in out['given']],
-                             [(1, 3_000_000, 'stk_a'), (2, 1_500_000, 'stk_b'), (4, 500_000, 'stk_c')])
+                             [(1, 5_000_000, 'stk_a'), (2, 2_500_000, 'stk_b'), (4, 1_000_000, 'stk_c')])
             self.assertEqual(act(act='award')[1]['given'], [], 'idempotent')
             self.assertEqual(act(act='rank', id=pa['id'], rank=3)[1]['code'], 'locked')
             self.assertEqual(act(act='rank', id=pa['id'], rank=None)[1]['code'], 'locked')
@@ -493,16 +493,16 @@ class StickerHTTP(unittest.TestCase):
             # the results are public now, and so are the winners' images (only theirs)
             status, me = self.req({}, '/api/sticker/me')
             self.assertEqual([(r['rank'], r['username'], r['coins'], r['ai'], len(r['images'])) for r in me['results']],
-                             [(1, 'stk_a', 3_000_000, False, 12), (2, 'stk_b', 1_500_000, True, 1), (4, 'stk_c', 500_000, False, 12)])
+                             [(1, 'stk_a', 5_000_000, False, 12), (2, 'stk_b', 2_500_000, True, 1), (4, 'stk_c', 1_000_000, False, 12)])
             self.assertEqual(self.req({}, pa['images'][0]['img'], raw=True)[0], 200)
             self.assertEqual(self.req({}, pd['images'][0]['img'], raw=True)[0], 404)
         after = {n: self.wallet(x) for n, x in (('a', a), ('b', b), ('c', c))}
-        self.assertEqual(after, dict(a=before['a'] + 3_000_000, b=before['b'] + 1_500_000, c=before['c'] + 500_000))
+        self.assertEqual(after, dict(a=before['a'] + 5_000_000, b=before['b'] + 2_500_000, c=before['c'] + 1_000_000))
         self.assertEqual(self.wallet(a), after['a'], 'paid once')
         status, view = self.req(self.admin, '/api/admin/sticker')
         self.assertTrue(view['awarded'])
         self.assertEqual(sorted((w['kind'], w['coins']) for w in view['rewards'] if w['kind'] == 'prize'),
-                         [('prize', 500_000), ('prize', 1_500_000), ('prize', 3_000_000)])
+                         [('prize', 1_000_000), ('prize', 2_500_000), ('prize', 5_000_000)])
         self.assertEqual(act(act='nope')[1]['code'], 'bad_admin')
 
     def test_account_deletion_takes_the_pack(self):

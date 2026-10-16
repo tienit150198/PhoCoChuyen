@@ -370,7 +370,7 @@ function abroadEntry(env){
 function stickerCard(env){
   const k=env.api.uiConfig?.sticker;if(!k?.until)return '';
   const d=new Intl.DateTimeFormat('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',day:'2-digit',month:'2-digit'}).format(new Date(k.until*1000));
-  return `<button type="button" class="jr-card ct-entry" data-action="stickerEvent"><span class="ct-entry-icon" aria-hidden="true">🎨</span><span class="grow"><b>Thi làm sticker</b><small>${esc(`Top 1 nhận 3.000.000 xu · hạn ${d}`)}</small></span>${icon('arrow',16)}</button>`;
+  return `<button type="button" class="jr-card ct-entry" data-action="stickerEvent"><span class="ct-entry-icon" aria-hidden="true">🎨</span><span class="grow"><b>Thi làm sticker</b><small>${esc(`Top 1 nhận 5.000.000 xu · hạn ${d}`)}</small></span>${icon('arrow',16)}</button>`;
 }
 
 /* 🏮 Hội chợ dân gian (v4/fair.js, own dialog; game/fair.py): a small banner while the fair is open or about to open. */

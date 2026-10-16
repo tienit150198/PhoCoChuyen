@@ -1,3 +1,7 @@
+# v2.4.31 — 2026-10-16
+
+🏆 Tăng giải thi bộ sticker (chủ game 16/10: "tăng giải thưởng lên giải nhất 5M, tăng các giải còn lại luôn"): Top 1 5.000.000 xu (từ 3.000.000), top 2–3 2.500.000 xu (từ 1.500.000), top 4–10 1.000.000 xu (từ 500.000). Quà tham gia giữ 200.000 xu. sticker_event.PRIZES, trang /sticker, thẻ trong game. Có gì mới: 1 dòng.
+
 # v2.4.30 — 2026-10-16
 
 🎨 Thi sticker đổi sang BỘ sticker (chủ game 16/10 chiều, kèm ảnh mẫu 16 chú mèo: "phải làm như này"; "hoặc là từng cái, hoặc là 1 nhóm"; ít nhất 12; AI "cho, nhưng phải ghi rõ"; 1 bộ mỗi tài khoản, được thay; hashtag #PhoCoChuyen; link nhóm Facebook).
