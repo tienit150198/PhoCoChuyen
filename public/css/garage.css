@@ -31,3 +31,16 @@
 .gr-swatch:focus-visible{outline:3px solid var(--accent,var(--good));outline-offset:2px}
 /* 🔨 a vanity plate won at the auction house (game/auction.py): gold, on the vehicle in use */
 .gr-plate.uq{background:linear-gradient(160deg,#fff6d5,#f3d27a);border-color:#b8862f;color:#3b2a06;font-weight:800}
+
+/* 🏎️ a limited edition (the auction house): a thin gold ring on its tile and card */
+.gr-tile.limited{box-shadow:inset 0 -4px 0 rgba(0,0,0,.14),0 0 0 2px #d4a838,0 1px 3px rgba(0,0,0,.2)}
+.gr-car.limited{border-color:#d4a838}
+/* 🔨 Biển đẹp: the bonus of the vehicle ridden, the plates owned and where each one is (phone: one column, 44px taps) */
+.gr-perk{margin:8px 0 0;font-weight:700;color:var(--muted)}
+.gr-perk.on{color:var(--good)}
+.gr-gold{padding:0 5px;border-radius:4px;background:linear-gradient(160deg,#fff6d5,#f3d27a);color:#3b2a06;white-space:nowrap}
+.gr-plate-list{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.gr-plate-row{display:flex;align-items:center;gap:10px;min-height:44px;flex-wrap:wrap}
+.gr-plate-row>.gr-plate{position:static;transform:none;max-width:60%;font-size:.8rem;padding:2px 8px}
+.gr-plate-row>small{flex:1;min-width:120px;color:var(--muted)}
+.gr-plate-row>.btn{min-height:44px}

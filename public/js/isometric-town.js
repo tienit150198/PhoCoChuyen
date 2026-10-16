@@ -1,6 +1,7 @@
 /** Real shared-map presence over the existing authenticated /live socket.
  * Phaser owns drawing and feet coordinates; game tasks/saves never enter this transport.
  * All careers use iso-town-v1. A room holds at most 30 real players and updates at 4/s.
+ * 🚗 `r` (live/town.py): the vehicle ridden (world.getRide, isometric/vehicle-art.js), sent on joining and when it changes.
  */
 import {live} from './v4/live.js';
 import {sitePresence} from './v4/site-presence.js';
@@ -16,6 +17,11 @@ function publicPoint(value){
   return {x:Math.round(value.x*1000)/1000,y:Math.round(value.y*1000)/1000,
     direction:DIRECTIONS.has(value.direction)?value.direction:'se'};
 }
+/** 🚗 {v, c, p?} short strings, or null (the scene checks it again: model.ts publicRide). */
+function publicRide(r){
+  if(!r||typeof r!=='object'||typeof r.v!=='string'||r.v.length>24)return null;
+  return {v:r.v,c:typeof r.c==='string'?r.c.slice(0,24):'',...(typeof r.p==='string'&&r.p&&r.p.length<=24?{p:r.p}:{})};
+}
 function publicPeer(value){
   const point=publicPoint(value);
   if(!point||typeof value.pid!=='string'||!value.pid||value.pid.length>40)return null;
@@ -23,7 +29,7 @@ function publicPeer(value){
   if(value.activity!=null&&!activity)return null;
   return {pid:value.pid,name:typeof value.name==='string'?value.name.slice(0,24):'Mây',
     look:value.lk&&typeof value.lk==='object'?value.lk:{},
-    gender:value.g==='female'||value.g==='male'?value.g:null,fc:typeof value.fc==='string'?value.fc:'',...point,...(activity?{activity}:{})};
+    gender:value.g==='female'||value.g==='male'?value.g:null,fc:typeof value.fc==='string'?value.fc:'',...point,...(activity?{activity}:{}),...(publicRide(value.r)?{r:publicRide(value.r)}:{})};
 }
 function appearance(state){
   const look=lookOf(state),g=state?.journey?.gender==='female'?'female':state?.journey?.gender==='male'?'male':null;
@@ -38,7 +44,9 @@ export function createTownPresence(envGetter,options={}){
   let room=null,me=null,joining=null,joinedPoint=null,lastPoint=null,lastSent=0,
     joinedAppearance=null,lastAppearance=null,
     anchor=null,joinedActivity=null,lastActivity=null,pendingActivityClear=false,
-    interval=null,started=false,taken=false,seq=0,retryAt=0,statusNode=null,lastStatus='',lastWorld=null;
+    interval=null,started=false,taken=false,seq=0,retryAt=0,statusNode=null,lastStatus='',lastWorld=null,
+    joinedRide='null',lastRide='null';
+  const ride=()=>{try{return publicRide(world()?.getRide?.())}catch{return null;}};
   const peers=new Map(),off=[];
   const env=()=>typeof envGetter==='function'?envGetter():envGetter;
   const world=()=>env()?.world;
@@ -88,7 +96,7 @@ export function createTownPresence(envGetter,options={}){
     if(statusNode){statusNode.hidden=!inTown||unavailable;statusNode.dataset.connected=room?'true':'false';
       if(text!==lastStatus){statusNode.textContent=text;lastStatus=text;}}
   }
-  function clear(){socialEnabled=false;room=null;me=null;joining=null;joinedPoint=null;lastPoint=null;joinedAppearance=null;lastAppearance=null;joinedActivity=null;lastActivity=null;pendingActivityClear=false;peers.clear();draw();status();}
+  function clear(){joinedRide='null';lastRide='null';socialEnabled=false;room=null;me=null;joining=null;joinedPoint=null;lastPoint=null;joinedAppearance=null;lastAppearance=null;joinedActivity=null;lastActivity=null;pendingActivityClear=false;peers.clear();draw();status();}
   function leave(){
     if(room||joining)socket.send({t:'town_out',cid:`town-out-${++seq}`});
     clear();
@@ -97,9 +105,9 @@ export function createTownPresence(envGetter,options={}){
     if(!wanted()||!enabled()||room||joining||now()<retryAt)return;
     const at=point(),state=env()?.api?.state,activity=leisure.current;
     if(!at)return;
-    const cid=`town-in-${++seq}`,look=appearance(state);
-    if(socket.send({t:'town_in',cid,map:MAP,...at,look:look.look,g:look.g,...(activity?{activity}:{})})){
-      joining={cid,at:now()};joinedPoint=at;joinedAppearance=look.key;joinedActivity=activity;status();
+    const cid=`town-in-${++seq}`,look=appearance(state),r=ride();
+    if(socket.send({t:'town_in',cid,map:MAP,...at,look:look.look,g:look.g,...(activity?{activity}:{}),...(r?{r}:{})})){
+      joining={cid,at:now()};joinedPoint=at;joinedAppearance=look.key;joinedActivity=activity;joinedRide=JSON.stringify(r);status();
     }
   }
   function sync(){
@@ -109,10 +117,10 @@ export function createTownPresence(envGetter,options={}){
     if(!room){join();return;}
     const at=point(),activity=pendingActivityClear?null:leisure.current;
     if(!at||now()-lastSent<GAP)return;
-    const look=appearance(env()?.api?.state),lookChanged=look.key!==lastAppearance;
-    if(!lookChanged&&lastPoint&&at.x===lastPoint.x&&at.y===lastPoint.y&&at.direction===lastPoint.direction&&JSON.stringify(activity)===JSON.stringify(lastActivity))return;
+    const look=appearance(env()?.api?.state),lookChanged=look.key!==lastAppearance,r=ride(),rideKey=JSON.stringify(r),rideChanged=rideKey!==lastRide;
+    if(!lookChanged&&!rideChanged&&lastPoint&&at.x===lastPoint.x&&at.y===lastPoint.y&&at.direction===lastPoint.direction&&JSON.stringify(activity)===JSON.stringify(lastActivity))return;
     // Update the public outfit in this room; rejoining would reset the treasure lease/checkpoint.
-    if(socket.send({t:'town_mv',...at,...(lookChanged?{look:look.look,g:look.g}:{}),...(activity||lastActivity?{activity}:{})})){lastSent=now();lastPoint=at;lastAppearance=look.key;lastActivity=activity;pendingActivityClear=false;}
+    if(socket.send({t:'town_mv',...at,...(lookChanged?{look:look.look,g:look.g}:{}),...(activity||lastActivity?{activity}:{}),...(rideChanged?{r}:{})})){lastSent=now();lastPoint=at;lastAppearance=look.key;lastActivity=activity;lastRide=rideKey;pendingActivityClear=false;}
   }
   function onActivity(sample){
     // Preserve the exit even if another scene opens before the next 4 Hz send.
@@ -132,7 +140,7 @@ export function createTownPresence(envGetter,options={}){
         if(socket.flags?.treasure&&Number.isFinite(f.x)&&Number.isFinite(f.y)){
           world()?.correctPresence?.({x:f.x,y:f.y});joinedPoint=point();
         }
-        socialEnabled=f.social===true;room=f.room;me=f.me;joining=null;lastPoint=joinedPoint;lastAppearance=joinedAppearance;lastActivity=joinedActivity;lastSent=now();peers.clear();
+        socialEnabled=f.social===true;room=f.room;me=f.me;joining=null;lastPoint=joinedPoint;lastAppearance=joinedAppearance;lastActivity=joinedActivity;lastRide=joinedRide;lastSent=now();peers.clear();
         for(const value of Array.isArray(f.people)?f.people:[]){const p=publicPeer(value);if(p&&p.pid!==me)peers.set(p.pid,p);}
         draw();status();
       }),
@@ -149,6 +157,7 @@ export function createTownPresence(envGetter,options={}){
               const peer=peers.get(e.pid);Object.assign(peer,at);
               if(Object.hasOwn(e,'lk')){peer.look=e.lk&&typeof e.lk==='object'?e.lk:{};peer.gender=e.g==='female'||e.g==='male'?e.g:null;}
               if(Object.hasOwn(e,'activity')){if(activity)peer.activity=activity;else delete peer.activity;}
+              if(Object.hasOwn(e,'r')){const r=publicRide(e.r);if(r)peer.r=r;else delete peer.r;}
               changed=true;
             }
           }

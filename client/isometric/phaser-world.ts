@@ -7,6 +7,17 @@ import type {AlphaMask,OccludingShape} from './visibility';
 import {figure,defaultLook} from '/js/v4/look.js';
 // @ts-ignore The illustrated atlas adapter preserves the game's actual wardrobe.
 import {getCharacterStamp,preloadIllustratedCharacters} from '/js/isometric/character-art.js';
+// 🚗 Vehicles in the town (owner 16/10): ridden in the streets, yachts at the harbour, planes on the airfield.
+// A namespace import: a scene without the module (an older cached copy, a test double) simply shows no vehicles.
+// @ts-ignore runtime module (public/js/isometric/vehicle-art.js)
+import * as VehicleArt from '/js/isometric/vehicle-art.js';
+const VA:any=VehicleArt;
+const townVehicles=(state:any,content:any)=>VA.townVehicles?VA.townVehicles(state,content):{ride:null,fleet:[],fly:'',wire:null};
+const peerVehicle=(r:any,content:any)=>VA.peerVehicle?VA.peerVehicle(r,content):null;
+const rideSpeed=(v:any):number=>VA.rideSpeed?VA.rideSpeed(v):1;
+const parkedFleet=(mine:any,peers:any,content:any):any[]=>VA.parkedFleet?VA.parkedFleet(mine,peers,content):[];
+const rideOrigin=()=>VA.RIDE_ORIGIN||{x:.5,y:1};
+const rideRes=():number=>VA.RES||1;
 // @ts-ignore The catalogue scene family mapping remains the source of truth.
 import {kindOf,wordsFor} from '/js/scenes/vocabulary.js';
 import {activeTasks,advanceRoute,CAMERA_ZOOM,canvasDescription,cameraWorldPoint,defaultCamera,effectFrameState,findRoute,followCamera,gestureIsDrag,groundCacheRegion,inside,interpolateRoute,isWalkable,landmarkPlaneGeometry,landmarkSpritePlacement,makeNavigation,moveOnGround,nearestReachableHotspot,nearestWalkable,normalizeMovementInput,presenceDirection,project,publicTownPlayers,resizedCamera,roomAppearance,townBuildingArt,townBuildings,townGarden,townLandmarks,townNavigation,townRoads,unproject,WORK_FOOD_SHELF,WORK_WINDOW,workWindowAnchors} from './model';
@@ -31,7 +42,7 @@ import type {ArchitectureInk} from './work-architecture';
 export type WorldMode = 'town' | 'work';
 type StaticVisual=Phaser.GameObjects.Image|Phaser.GameObjects.Text|Phaser.GameObjects.Container;
 type Occluder=OccludingShape&{image:Phaser.GameObjects.Image;sign?:Phaser.GameObjects.Container;alpha:number;target:number};
-type RemoteActor={peer:RemotePlayer;look:Record<string,any>;appearance:string;pose:string;artRevision:number;at:Point;from:Point;path:Point[];started:number;image:Phaser.GameObjects.Image;tag:Phaser.GameObjects.Text;texture:string};
+type RemoteActor={peer:RemotePlayer;look:Record<string,any>;appearance:string;pose:string;artRevision:number;at:Point;from:Point;path:Point[];started:number;image:Phaser.GameObjects.Image;tag:Phaser.GameObjects.Text;texture:string;ride?:any;rideKey?:string};
 interface Hotspot extends Point {id:string;label:string;approach:Point;interactionPoint?:Point;point:Point;z:number;range:number}
 type PublicState = {current?:string;focus?:string;careers?:Record<string,any>;journey?:any;settings?:any;[key:string]:any};
 type Content = {catalogue?:Career[];npcs?:any[];[key:string]:any};
@@ -56,6 +67,9 @@ export class PhaserWorld {
   player:Point & {path:Point[];goal:Point|null;look:number}={x:6.2,y:6.2,path:[],goal:null,look:1};
   hotspots:Hotspot[]=[];
   remotePlayers:RemotePlayer[]=[];
+  /** 🚗 {ride, fleet, fly, wire} (vehicle-art.js townVehicles): what this player shows in the town. */
+  vehicles:any={ride:null,fleet:[],fly:'',wire:null};
+  private vehicleSignature='';
   treasure:Array<Point&{id:string;count:number}>=[];
   direction:Facing='se';
   reduced=false;
@@ -143,6 +157,8 @@ export class PhaserWorld {
     return {x:rect.left+at.x*rect.width/this.width,y:rect.top+at.y*rect.height/this.height};
   }
   getPresence(){return this.mode==='town'?{x:this.player.x,y:this.player.y,direction:this.direction}:null;}
+  /** 🚗 The live presence's `r` (isometric-town.js): the vehicle ridden, or the yacht/plane "đang đi"; null on foot. */
+  getRide(){return this.mode==='town'?this.vehicles?.wire||null:null;}
   correctPresence(at:Point){if(this.mode!=='town'||!this.stage||!isWalkable(this.stage.navigation,at))return;Object.assign(this.player,at,{path:[],goal:null});this.pending=null;this.stage.positionPlayer(false);if(this.cameraMode==='follow')this.recenter();this.wake();}
   setTreasure(value:unknown){
     const rows=Array.isArray(value)?value.filter(c=>c&&typeof c.id==='string'&&Number.isFinite(c.x)&&Number.isFinite(c.y)).map(c=>({id:c.id,x:c.x,y:c.y,count:Number.isFinite(c.count)?Math.max(1,Math.floor(c.count)):1})):[];
@@ -167,7 +183,9 @@ export class PhaserWorld {
     this.updateCanvasLabel();
     const changed=signature!==this.layoutSignature;
     if(changed){this.layoutSignature=signature;this.stage?.rebuild();}
-    const lookChanged=this.stage?.refreshPlayer();if(changed||lookChanged)this.wake();
+    const vehicles=townVehicles(state,content),vehicleSignature=JSON.stringify(vehicles),vehiclesChanged=vehicleSignature!==this.vehicleSignature;
+    if(vehiclesChanged){this.vehicles=vehicles;this.vehicleSignature=vehicleSignature;this.stage?.refreshVehicles();}
+    const lookChanged=this.stage?.refreshPlayer(this.stage.riderFrame());if(changed||lookChanged||vehiclesChanged)this.wake();
   }
   private updateCanvasLabel(){const meta=this.game?.catalogue?.find(c=>c.id===this.career);this.canvas.setAttribute('aria-label',canvasDescription(this.mode,String(this.c.life?.shop_name||meta?.place||meta?.short||this.career)));}
   setMode(mode:WorldMode){if(mode!==this.mode){this.clearMovementControls();this.mode=mode;this.currentArea='main';this.player.path=[];this.pending=null;this.layoutSignature='';this.stage?.rebuild();this.resetCamera();this.updateCanvasLabel();document.dispatchEvent(new CustomEvent('mnl:iso-mode',{bubbles:true,detail:{mode}}));}this.wake();}
@@ -233,10 +251,10 @@ export class PhaserWorld {
   step(dt:number){
     if(this.shouldSleep()){this.clearMovementControls();this.engine.loop.sleep();return;}
     const stage=this.stage;if(!stage)return;
-    let moving=false;const before={x:this.player.x,y:this.player.y};
+    let moving=false;const before={x:this.player.x,y:this.player.y},fast=this.mode==='town'&&this.vehicles?.ride?rideSpeed(this.vehicles?.ride):1;
     if(this.keys.size||this.movementInput.x||this.movementInput.y){let sx=this.movementInput.x,sy=this.movementInput.y;if(this.keys.has('a')||this.keys.has('arrowleft'))sx--;if(this.keys.has('d')||this.keys.has('arrowright'))sx++;if(this.keys.has('w')||this.keys.has('arrowup'))sy--;if(this.keys.has('s')||this.keys.has('arrowdown'))sy++;
-      const next=moveOnGround(stage.navigation,this.player,normalizeMovementInput(sx,sy),dt);this.player.path=[];this.player.goal=null;this.pending=null;moving=Math.hypot(next.x-this.player.x,next.y-this.player.y)>1e-8;Object.assign(this.player,next);
-    }else if(this.player.path.length){const next=advanceRoute(this.player,this.player.path,170*dt,'screen',stage.navigation);Object.assign(this.player,next.point);this.player.path=next.path;moving=true;if(next.arrived){this.player.goal=null;const cb=this.pending;this.pending=null;cb?.();}}
+      const next=moveOnGround(stage.navigation,this.player,normalizeMovementInput(sx,sy),Math.min(.06,dt)*fast);this.player.path=[];this.player.goal=null;this.pending=null;moving=Math.hypot(next.x-this.player.x,next.y-this.player.y)>1e-8;Object.assign(this.player,next);
+    }else if(this.player.path.length){const next=advanceRoute(this.player,this.player.path,170*dt*fast,'screen',stage.navigation);Object.assign(this.player,next.point);this.player.path=next.path;moving=true;if(next.arrived){this.player.goal=null;const cb=this.pending;this.pending=null;cb?.();}}
     if(moving&&stage.cameraMode==='follow'){const camera=stage.cameras.main,view=followCamera({width:this.width,height:this.height,scrollX:camera.scrollX,scrollY:camera.scrollY,zoom:camera.zoom},px(this.player,55),dt);camera.setScroll(view.scrollX,view.scrollY);}
     if(moving){this.direction=presenceDirection(before,this.player,this.direction);const delta=project({x:this.player.x-before.x,y:this.player.y-before.y});this.walkDistance+=Math.hypot(delta.x,delta.y);}
     stage.positionPlayer(moving);
@@ -319,6 +337,10 @@ class DioramaScene extends Phaser.Scene {
   private previousCareer='';
   private remoteActors=new Map<string,RemoteActor>();
   private remoteVisualRevision=0;
+  private riding=false;
+  private parked:Phaser.GameObjects.Image[]=[];
+  private parkedSignature='';
+  private flown='';
   private npcArt:Array<{image:Phaser.GameObjects.Image;look:any;gender:string;uniformColor:string;texture:string;seed:number}>=[];
   private requestedAssets=new Set<string>();
   private assetWakeQueued=false;
@@ -348,12 +370,12 @@ class DioramaScene extends Phaser.Scene {
   rebuild(){
     if(!this.sys.isActive())return;
     this.terrainChunks.clear();this.occluderIndex.clear();this.occluders=[];this.fadingOccluders.clear();this.occlusionPosition='';this.occludedCount=0;this.actorRing?.setVisible(false);this.staticIndex.clear();this.shownStatics.clear();this.visibilityView='';this.signZoom=-1;this.signMounts.clear();
-    for(const object of this.staticObjects)object.destroy();this.staticObjects=[];this.residentObjects=[];for(const seed of new Set(this.npcArt.map(n=>n.seed)))this.characterFrames.release('iso-person-'+seed);this.npcArt=[];this.groundCache=undefined;this.groundRegion=undefined;this.hits=[];this.placards=[];this.imageById.clear();this.marker?.destroy();this.marker=undefined;this.selected?.destroy();this.selected=undefined;this.clearSpeech();
+    for(const object of this.staticObjects)object.destroy();this.staticObjects=[];this.residentObjects=[];this.parked=[];this.parkedSignature='';for(const seed of new Set(this.npcArt.map(n=>n.seed)))this.characterFrames.release('iso-person-'+seed);this.npcArt=[];this.groundCache=undefined;this.groundRegion=undefined;this.hits=[];this.placards=[];this.imageById.clear();this.marker?.destroy();this.marker=undefined;this.selected?.destroy();this.selected=undefined;this.clearSpeech();
     const modeChanged=this.previousMode!==this.owner.mode,changed=modeChanged||this.owner.mode==='work'&&this.previousCareer!==this.owner.career;
     this.previousMode=this.owner.mode;this.previousCareer=this.owner.career;this.cameras.main.setBackgroundColor(this.owner.mode==='town'?SEA_COLOR:'#ede3ce');this.background=this.add.graphics().setDepth(-10000);this.staticObjects.push(this.background);
     if(this.owner.mode==='town')this.town();else this.work();
     if(changed||!isWalkable(this.navigation,this.owner.player)){const home=this.owner.mode==='town'?{x:6.2,y:6.2}:{x:6.4,y:6.4};const at=nearestWalkable(this.navigation,home)||home;Object.assign(this.owner.player,at,{path:[],goal:null});this.owner.pending=null;if(modeChanged||!this.cameraSet||this.cameraMode==='follow')this.resetCamera(false);}
-    this.treasureObjects.clear();this.syncTreasure();this.reindexStatics();this.refreshPlayer();this.positionPlayer(false);this.updateOcclusion(1/60);this.syncRemotePlayers();if(this.fxImage)this.fxImage.setVisible(this.owner.mode==='work');this.requestRender();
+    this.refreshVehicles();this.treasureObjects.clear();this.syncTreasure();this.reindexStatics();this.refreshPlayer(this.riderFrame());this.positionPlayer(false);this.updateOcclusion(1/60);this.syncRemotePlayers();if(this.fxImage)this.fxImage.setVisible(this.owner.mode==='work');this.requestRender();
   }
   syncTreasure(){
     // The server groups cumulative chests by their exact spawn point. Keep one
@@ -924,7 +946,7 @@ class DioramaScene extends Phaser.Scene {
   }
   syncRemotePlayers(){
     if(!this.sys.isActive())return false;const revision=this.remoteVisualRevision,peers=this.owner.mode==='town'?publicTownPlayers(this.owner.remotePlayers,this.navigation):[],present=new Set(peers.map(p=>p.pid));
-    for(const [pid,actor] of this.remoteActors)if(!present.has(pid)){if(actor.image.visible||actor.tag.visible)this.remoteVisualRevision++;actor.image.destroy();actor.tag.destroy();this.characterFrames.release('iso-peer-'+pid);this.remoteActors.delete(pid);}
+    for(const [pid,actor] of this.remoteActors)if(!present.has(pid)){if(actor.image.visible||actor.tag.visible)this.remoteVisualRevision++;actor.image.destroy();actor.tag.destroy();this.characterFrames.release('iso-peer-'+pid);this.characterFrames.release('iso-ride-peer-'+pid);this.remoteActors.delete(pid);}
     for(const peer of peers){
       const appearance=JSON.stringify([peer.gender,peer.look]);
       let actor=this.remoteActors.get(peer.pid);
@@ -939,7 +961,11 @@ class DioramaScene extends Phaser.Scene {
         }
         if(actor.peer.name!==peer.name){actor.tag.setText(peer.name);if(actor.tag.visible)this.remoteVisualRevision++;}actor.peer=peer;
       }
+      // 🚗 a two-wheeler or car under them (a yacht/plane waits at the harbour/airfield: refreshVehicles)
+      const v=peer.r?peerVehicle(peer.r,this.owner.game):null,road=v&&(v.group==='bike'||v.group==='car')?v:null,rideKey=road?JSON.stringify([road.id,road.kind,road.hex,road.plate,road.uq]):'';
+      if(actor.rideKey!==rideKey){actor.ride=road;actor.rideKey=rideKey;actor.pose='';}
     }
+    this.refreshVehicles();
     const moving=this.stepRemotePlayers(this.owner.time),changed=revision!==this.remoteVisualRevision||moving;if(changed)this.requestRender();return changed;
   }
   stepRemotePlayers(now:number){
@@ -963,8 +989,10 @@ class DioramaScene extends Phaser.Scene {
       active||=moving;
       const walkFrame=moving&&!this.owner.reduced?1+Math.floor(now*7)%2:0,pose=actor.peer.direction+':'+walkFrame;
       if(pose!==actor.pose||actor.artRevision!==this.characterRevision){
-        const key=this.characterTexture('iso-peer-'+actor.peer.pid,actor.look,actor.peer.gender,actor.peer.direction,'#8ba77a',walkFrame);
-        if(key!==actor.texture){actor.image.setTexture(key);actor.texture=key;this.remoteVisualRevision++;}actor.pose=pose;actor.artRevision=this.characterRevision;
+        const key=actor.ride?this.rideTexture('iso-ride-peer-'+actor.peer.pid,actor.look,actor.peer.gender,actor.ride,actor.peer.direction,walkFrame):this.characterTexture('iso-peer-'+actor.peer.pid,actor.look,actor.peer.gender,actor.peer.direction,'#8ba77a',walkFrame);
+        if(key!==actor.texture){actor.image.setTexture(key);actor.texture=key;this.remoteVisualRevision++;
+          if(actor.ride)actor.image.setOrigin(rideOrigin().x,rideOrigin().y).setScale(1/rideRes());else actor.image.setOrigin(.5,1).setScale(CHARACTER_SCALE);}
+        actor.pose=pose;actor.artRevision=this.characterRevision;
       }
       if(actor.image.x!==point.x||actor.image.y!==point.y){actor.image.setPosition(point.x,point.y);this.remoteVisualRevision++;}
       if(actor.image.depth!==point.y+.5)actor.image.setDepth(point.y+.5);
@@ -1066,11 +1094,51 @@ class DioramaScene extends Phaser.Scene {
     this.navigation.obstacles.push({x0:p.x-.27,y0:p.y-.2,x1:p.x+.27,y1:p.y+.2});const approach=nearestWalkable(this.navigation,{x:p.x-.6,y:p.y+.35});if(!approach)return;
     const h:Hotspot={id,label,...p,approach,point:f,z:100,range:42};this.owner.hotspots.push(h);this.hits.push({hotspot:h,rect:new Phaser.Geom.Rectangle(f.x-38,f.y-108,76,118)});const tag=this.label(label,f.x,f.y-119,12,136,0x879771);tag.setDepth(f.y+.4);
   }
+  /** 🚗 The wheel frame of the vehicle ridden (0 still, 1..2 rolling) or the walk frame on foot. */
+  riderFrame(moving=false){return moving&&!this.owner.reduced?1+Math.floor(this.owner.walkDistance/26)%2:0;}
+  private rideTexture(prefix:string,look:any,gender:string,v:any,direction:Facing,frame:number){
+    const face=VA.faceOf(direction);
+    return this.characterFrames.get(prefix,JSON.stringify([look,gender,v.id,v.kind,v.hex,v.plate||'',!!v.uq]),face+':'+frame,key=>{
+      const canvas=VA.rideStamp({look,gender,v,face,frame}),texture=this.textures.create(key,canvas)!;texture.add('__BASE',0,0,0,canvas.width,canvas.height);texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+    });
+  }
+  /** 🛥️ ✈️ Yachts moored at the harbour and planes on the airfield (this player's, then peers' "đang đi"), static and
+   * culled like the rest of the town; a plane taken out today flies over once ("Bay ngắm phố"). */
+  refreshVehicles(){
+    if(!this.sys.isActive())return;
+    const town=this.owner.mode==='town',list=town?parkedFleet(this.owner.vehicles?.fleet,this.owner.remotePlayers,this.owner.game):[],signature=JSON.stringify(list);
+    if(signature!==this.parkedSignature){
+      this.parkedSignature=signature;
+      for(const image of this.parked||[]){this.staticObjects=this.staticObjects.filter(o=>o!==image);image.destroy();}this.parked=[];
+      for(const f of list){
+        const key=VA.stampKey(f);if(!this.textures.exists(key)){const canvas=VA.stampOf(f),texture=this.textures.create(key,canvas)!;texture.add('__BASE',0,0,0,canvas.width,canvas.height);texture.setFilter(Phaser.Textures.FilterMode.LINEAR);}
+        const at=px(VA.slotOf(f)),o=VA.stampOrigin(f),image=this.add.image(at.x,at.y,key).setOrigin(o.x,o.y).setScale(1/rideRes()).setDepth(at.y);
+        this.parked.push(image);this.staticObjects.push(image);
+      }
+      this.reindexStatics();this.requestRender();
+    }
+    const fly=town?String(this.owner.vehicles?.fly||''):'',plane=fly&&this.owner.vehicles?.fleet?.find((f:any)=>f.id===fly),day=fly+':'+(this.owner.state?.journey?.life_day??'');
+    if(!plane||day===this.flown)return;
+    this.flown=day;
+    try{if(sessionStorage.getItem('mnl.iso.fly')===day)return;sessionStorage.setItem('mnl.iso.fly',day);}catch{/* storage blocked: once per visit */}
+    if(this.owner.reduced)return;
+    const key=VA.stampKey(plane)+'-fly';if(!this.textures.exists(key)){const canvas=VA.planeStamp(plane,1,true),texture=this.textures.create(key,canvas)!;texture.add('__BASE',0,0,0,canvas.width,canvas.height);texture.setFilter(Phaser.Textures.FilterMode.LINEAR);}
+    const view=this.cameras.main.worldView,y=view.y+view.height*.24,image=this.add.image(view.x-180,y,key).setScale(1.3/rideRes()).setDepth(19000);
+    this.effects.push(image);
+    this.tweens.add({targets:image,x:view.right+180,y:y-view.height*.12,duration:7000,ease:'Sine.easeInOut',onComplete:()=>{image.destroy();this.effects=this.effects.filter(e=>e!==image);this.requestRender();}});
+    this.requestRender();
+  }
   refreshPlayer(walkFrame=0){
+    const ride=this.owner.mode==='town'?this.owner.vehicles?.ride:null;
+    if(ride){
+      const F=figure(this.owner.state),key=this.rideTexture('iso-ride-player',F.L,F.g||'none',ride,this.owner.direction,walkFrame);this.actorDirection=this.owner.direction;this.actorWalkFrame=walkFrame;
+      if(key===this.actorKey)return false;if(this.actor)this.actor.setTexture(key);else this.actor=this.add.image(0,0,key);this.actor.setOrigin(rideOrigin().x,rideOrigin().y);this.actorKey=key;this.riding=true;return true;
+    }
+    if(this.riding){this.riding=false;this.actorKey='';this.actor?.setOrigin(.5,1);}
     const F=figure(this.owner.state),uniformColor=this.owner.mode==='work'?this.owner.game?.catalogue?.find(c=>c.id===this.owner.career)?.color||'#8ba77a':'#8ba77a',key=this.characterTexture('iso-player',F.L,F.g||'none',this.owner.direction,uniformColor,walkFrame);this.actorDirection=this.owner.direction;this.actorWalkFrame=walkFrame;
     if(key===this.actorKey)return false;if(this.actor)this.actor.setTexture(key);else this.actor=this.add.image(0,0,key).setOrigin(.5,1).setScale(CHARACTER_SCALE);this.actorKey=key;return true;
   }
-  positionPlayer(moving:boolean){const pose=walkingPose(this.owner.walkDistance,moving,this.owner.reduced);if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==pose.frame)this.refreshPlayer(pose.frame);if(!this.actor)return;const f=px(this.owner.player);if(this.actor.x!==f.x||this.actor.y!==f.y)this.actor.setPosition(f.x,f.y);if(this.actor.depth!==f.y+.5)this.actor.setDepth(f.y+.5);this.actor.setRotation(pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*pose.squash);if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138};this.speech.setPosition(at.x,at.y);} }
+  positionPlayer(moving:boolean){const pose=walkingPose(this.owner.walkDistance,moving,this.owner.reduced),riding=this.owner.mode==='town'&&!!this.owner.vehicles?.ride,frame=riding?this.riderFrame(moving):pose.frame;if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==frame||riding!==this.riding)this.refreshPlayer(frame);if(!this.actor)return;const f=px(this.owner.player);if(this.actor.x!==f.x||this.actor.y!==f.y)this.actor.setPosition(f.x,f.y);if(this.actor.depth!==f.y+.5)this.actor.setDepth(f.y+.5);if(riding)this.actor.setRotation(0).setScale(1/rideRes());else this.actor.setRotation(pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*pose.squash);if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138};this.speech.setPosition(at.x,at.y);} }
   hitTest(point:Point){const ground=unproject(point),hits=this.hits.filter(h=>h.rect?.contains(point.x,point.y)||h.footprint&&inside(ground,h.footprint)||h.object?.visible&&h.object.alpha>.6&&h.object.getBounds().contains(point.x,point.y)).sort((a,b)=>b.hotspot.point.y-a.hotspot.point.y||Number(b.hotspot.id.startsWith('treasure:'))-Number(a.hotspot.id.startsWith('treasure:')));return hits[0]?.hotspot;}
   highlight(id:string){
     this.selected?.destroy();const h=this.owner.hotspots.find(h=>h.id===id);if(!h)return;const f=px(h.approach),key='illustrated-selection';this.textureObject(key,160,80,ctx=>{ctx.strokeStyle='#f7d391';ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(80,40,65,27,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#aa875a';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(80,40,69,31,0,0,Math.PI*2);ctx.stroke();});this.selected=this.add.image(f.x,f.y,key).setScale(.5).setDepth(f.y-1);this.requestRender();

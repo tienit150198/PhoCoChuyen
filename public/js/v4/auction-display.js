@@ -3,6 +3,8 @@ import {escapeHTML as esc} from '../icons.js';
 import {paintingSVG,landmarkSVG} from './auction-art.js';
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const TIERS={1:'Phổ thông',2:'Quý hiếm',3:'Huyền thoại'};
+/* 🏎️ the limited editions' own paints (game/garage.py SPECIAL_PAINTS): their card shows the car in it */
+const LTD_PAINT={vang_kim:'#d4a838',do_ruou:'#7b2335',ngoc_bich:'#1f8a7a',bach_kim:'#dfe3e6',xanh_dem:'#1b2a52',kem_co:'#efe0bf'};
 
 export function lotPicker(lots,selected){
   return `<nav class="au-lots" aria-label="Chọn món đấu giá">${lots.map(l=>`<button class="au-pick${l.id===selected?' on':''}" type="button" data-au="lot" data-id="${esc(l.id)}" aria-pressed="${l.id===selected}" aria-label="${esc(l.name)}"><span class="au-mini" aria-hidden="true">${l.kind==='art'?paintingSVG(l.item):esc(l.emoji)}</span><span class="au-lot-name" data-no-translate>${esc(l.name)}</span></button>`).join('')}</nav>`;
@@ -13,6 +15,9 @@ export function itemArt(l){
   if(l.kind==='art')return `<figure class="au-art au-painting">${paintingSVG(l.item||l.id)}<figcaption>${esc(d.artist||'')}${d.year?` · ${Number(d.year)}`:''}</figcaption></figure>`;
   if(l.kind==='plate')return `<div class="au-art au-plate au-tier-${tier}" aria-hidden="true"><small>PHỐ MÂY · ĐỘC BẢN</small><span>${esc(l.name)}</span><i>◆ &nbsp; 01 / 01 &nbsp; ◆</i></div>`;
   if(l.kind==='phone')return `<div class="au-art au-phone au-tier-${tier}" aria-hidden="true"><div class="au-handset"><small>PHỐ MÂY</small><span>✦</span><b>${esc(l.name)}</b><i>SIM ĐỘC BẢN · 01/01</i></div></div>`;
+  if(l.kind==='vehicle')return `<div class="au-art au-ltd au-tier-${tier}" style="--au-paint:${LTD_PAINT[d.paint]||'#d4a838'}" aria-hidden="true"><span>${esc(l.emoji||'🏎️')}</span><small>BẢN GIỚI HẠN${d.serial?` · ${esc(d.serial)}`:''}</small></div>`;
+  if(l.kind==='reg')return `<div class="au-art au-plate au-reg au-tier-${tier}" aria-hidden="true"><small>✈️ SỐ ĐĂNG KÝ TÀU BAY</small><span>${esc(l.name)}</span><i>◆ &nbsp; 01 / 01 &nbsp; ◆</i></div>`;
+  if(l.kind==='hull')return `<div class="au-art au-plate au-hull au-tier-${tier}" aria-hidden="true"><small>⚓ BIỂN TÊN DU THUYỀN</small><span>${esc(l.name)}</span><i>◆ &nbsp; 01 / 01 &nbsp; ◆</i></div>`;
   if(l.kind==='land')return `<figure class="au-art au-landscape">${landmarkSVG(l.item||l.id)}<figcaption>${esc(d.where||'')}</figcaption></figure>`;
   return `<div class="au-art au-emblem au-tier-${tier}" aria-hidden="true"><svg viewBox="0 0 260 160"><path d="M55 128Q12 75 60 29M205 128Q248 75 200 29" fill="none" stroke="currentColor" stroke-width="3"/>${[0,1,2,3,4].map(i=>`<ellipse cx="${36+i*2}" cy="${49+i*16}" rx="6" ry="12" transform="rotate(-35 ${36+i*2} ${49+i*16})"/><ellipse cx="${224-i*2}" cy="${49+i*16}" rx="6" ry="12" transform="rotate(35 ${224-i*2} ${49+i*16})"/>`).join('')}<path d="M80 26L130 10L180 26V80Q180 122 130 142Q80 122 80 80Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M73 129H187L177 149H83Z" fill="currentColor"/></svg><span>${esc(l.emoji||'👑')}</span><small>ĐỘC BẢN · 01/01</small></div>`;
 }

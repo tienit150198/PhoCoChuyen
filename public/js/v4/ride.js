@@ -8,7 +8,9 @@
  *                                 the garage's "đang đi" first, else the first owned in catalogue order
  *   next(...)                     the toggle: each owned vehicle in turn, then walking, then the first again
  *                                 (remembered in this browser: localStorage mnl.ride / mnl.ride.pick)
- *   wire(v) / fromWire(r,content) what the live presence carries ({v: id, c: paint id}), and back
+ *   wire(v) / fromWire(r,content) what the live presence carries ({v: id, c: paint id, p?: an auction plate}), and
+ *                                 back; `p` only for a plate won at the auction (gold), which the live service keeps
+ *                                 only when that player really won it (live/plates.py); a free "biển tên" stays home
  *   drawRide(c,o)                 the vehicle with the character seated on it (or parked, empty), wheels turning;
  *                                 the body and the rider are one cached bitmap per look, vehicle, side and size,
  *                                 a frame adds only the shadow and the two wheels (cheap phones)
@@ -20,12 +22,15 @@ import {carrying,setCarry} from './baby.js';
 import {R,E,L,P,bloom} from '../scenes/kit.js';
 
 /** Garage vehicle id → how it is drawn. An id this build does not know: by its group (bike: a scooter, car: a small car). */
-export const KINDS={xe_dap:'bicycle',xe_dap_dien:'ebike',xe_so:'cub',xe_ga:'scooter',o_to_mini:'mini',o_to_suv:'suv',mui_tran:'convertible',sieu_xe:'super'};
+export const KINDS={xe_dap:'bicycle',xe_dap_dien:'ebike',xe_so:'cub',xe_ga:'scooter',o_to_mini:'mini',o_to_suv:'suv',mui_tran:'convertible',sieu_xe:'super',
+  lx_xe_so_81:'cub',lx_xe_ga_01:'scooter',lx_mui_tran_07:'convertible',lx_sieu_xe_01:'super'};   // 🏎️ the auction's limited editions: their base model's look
 const BY_GROUP={bike:'scooter',car:'mini'};
 export const TWO=new Set(['bicycle','ebike','cub','scooter']);
 /** How much faster than walking. */
 export const FAST={bicycle:1.45,ebike:1.6,cub:1.8,scooter:1.8,mini:2,suv:2,convertible:2.1,super:2.3};
-const PREF='mnl.ride',PICK='mnl.ride.pick',PAINT_ID=/^[a-z0-9_]{1,24}$/;
+const PREF='mnl.ride',PICK='mnl.ride.pick',PAINT_ID=/^[a-z0-9_]{1,24}$/,PLATE_MAX=24;
+/** A plate text off the wire or the save: a short string without control characters, or ''. */
+const plateText=t=>typeof t==='string'&&t.length<=PLATE_MAX&&!/[\u0000-\u001f\u007f]/.test(t)?t.trim():'';
 const TURN_S=.24;
 
 /* ------------------------------------------------------------ which vehicle */
@@ -57,8 +62,9 @@ function entries(cars,cat,two,owner){
     const it=(cat.vehicles||[]).find(v=>v.id===c.id),kind=it&&kindOf(it.id,it.group);
     if(!kind||(two&&!TWO.has(kind)))continue;
     const paint=(cat.paints||[]).find(p=>p.id===c.color)||(cat.paints||[]).find(p=>p.id===it.paint);
+    const uq=owner?'':plateText(c.uq?.t);   // 🔨 an auction plate attached in the garage (game/garage.py): gold
     out.push({id:it.id,key:owner?`${owner.pid}:${it.id}`:it.id,kind,name:it.name||'',emoji:it.emoji||'🛵',hex:/^#[0-9a-f]{6}$/i.test(paint?.hex||'')?paint.hex:'#d9534f',
-      paint:paint?.id||'',plate:typeof c.plate==='string'?c.plate:'',...(owner?{o:owner.pid,owner:owner.name}:{})});
+      paint:paint?.id||'',plate:uq||(typeof c.plate==='string'?c.plate:''),...(uq?{uq:true}:{}),...(it.limited?{limited:true}:{}),...(owner?{o:owner.pid,owner:owner.name}:{})});
   }
   return out;
 }
@@ -70,7 +76,8 @@ export function options(state,content,{two=false}={}){
   const out=g&&Array.isArray(g.cars)?entries(g.cars,cat,two,null):[];
   const main=out.findIndex(v=>v.id===g?.ride);
   if(main>0)out.unshift(...out.splice(main,1));
-  const uq=uniqPlate(J);if(uq&&out[0]&&g?.ride===out[0].id)out[0]={...out[0],plate:uq,uq:true};   // 🔨 a vanity plate won at auction, on the vehicle in use
+  // 🔨 An older server (no `plates`): its dearest vanity plate showed on the vehicle in use.
+  const uq=g&&!('plates' in g)?uniqPlate(J):'';if(uq&&out[0]&&g?.ride===out[0].id)out[0]={...out[0],plate:uq,uq:true};
   if(SP){const theirs=entries(SP.cars,cat,two,SP),m=theirs.findIndex(v=>v.id===SP.ride);if(m>0)theirs.unshift(...theirs.splice(m,1));out.push(...theirs);}
   return out;
 }
@@ -104,14 +111,15 @@ export function next(state,content,o){
 export const label=v=>v?v.owner?`${v.emoji} Xe của ${v.owner}`:`${v.emoji} Đi xe`:'🚶 Đi bộ';
 export const speedOf=v=>v?FAST[v.kind]||1.5:1;
 /** For the live presence: {v, c} (the plate stays the owner's own: game/garage.py). */
-export const wire=v=>v?{v:v.id,c:v.paint||'',...(v.o?{o:v.o}:{})}:null;
+export const wire=v=>v?{v:v.id,c:v.paint||'',...(v.o?{o:v.o}:{}),...(v.uq&&v.plate&&!v.o?{p:v.plate}:{})}:null;
 /** Someone else's vehicle from the live presence (null: walking, or one this build cannot draw). */
 export function fromWire(r,content){
   if(!r||typeof r!=='object'||typeof r.v!=='string')return null;
   const cat=content?.journey?.garage,it=(cat?.vehicles||[]).find(v=>v.id===r.v),kind=kindOf(r.v,it?.group);
   if(!kind)return null;
   const paint=(cat?.paints||[]).find(p=>p.id===(PAINT_ID.test(r.c||'')?r.c:it?.paint));
-  return {id:r.v,kind,name:it?.name||'',emoji:it?.emoji||'🛵',hex:/^#[0-9a-f]{6}$/i.test(paint?.hex||'')?paint.hex:'#d9534f',paint:paint?.id||'',plate:''};
+  const p=plateText(r.p);   // 🔨 only an auction plate travels (the live service checked it): gold
+  return {id:r.v,kind,name:it?.name||'',emoji:it?.emoji||'🛵',hex:/^#[0-9a-f]{6}$/i.test(paint?.hex||'')?paint.hex:'#d9534f',paint:paint?.id||'',plate:p,...(p?{uq:true}:{})};
 }
 
 /* ------------------------------------------------------------ colours */
@@ -127,12 +135,13 @@ const TIRE='#3f3a38',RIM='#e4dfd6',HUB='#9b938d',CHROME='#c9c3bb',SEAT='#6f5a4f'
 const arc=(c,x,y,r,a0,a1,col,w)=>{c.beginPath();c.arc(x,y,r,a0,a1);c.strokeStyle=col;c.lineWidth=w;c.lineCap='round';c.stroke();};
 /** One more closed shape on the current path (the windows: several shapes make one clip). */
 const poly=(c,pts)=>{pts.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();};
-/** The plate (biển tên) at the back; its words only when they can be read at this size, always left to right. */
-function plateAt(c,x,y,w,h,text,fl,px){
-  R(c,x,y,w,h,'#fffaf0',2.5,'#8b8480',1);
+/** The plate (biển tên) at the back; its words only when they can be read at this size, always left to right.
+ * gold: a plate won at the auction house (gold on dark ink, a darker rim). */
+export function plateAt(c,x,y,w,h,text,fl,px,gold=false){
+  R(c,x,y,w,h,gold?'#f2cf5b':'#fffaf0',2.5,gold?'#9a6b12':'#8b8480',gold?1.4:1);
   if(!text||h*px<7)return;
   c.save();c.translate(x+w/2,y+h/2+.5);c.scale(fl,1);
-  c.font=`800 ${h*.72}px "Trebuchet MS",sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillStyle='#3a3230';
+  c.font=`800 ${h*.72}px "Trebuchet MS",sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillStyle=gold?'#4a3000':'#3a3230';
   const tw=c.measureText(text).width;if(tw>w-2)c.scale((w-2)/tw,1);
   c.fillText(text,0,0);c.restore();
 }
@@ -275,7 +284,7 @@ const CACHE=new Map();
 const SEATED={...CANVAS};
 function body(F,fkey,v,face,px,rider,F2=null,fkey2=''){
   const two=F2&&TWO.has(v.kind);
-  const key=`${fkey}|${v.id}|${v.kind}|${v.hex}|${v.plate||''}|${face}|${Math.round(px*100)}|${rider?1:0}|${two?fkey2:''}`;
+  const key=`${fkey}|${v.id}|${v.kind}|${v.hex}|${v.plate||''}|${v.uq?1:0}|${face}|${Math.round(px*100)}|${rider?1:0}|${two?fkey2:''}`;
   let cv=CACHE.get(key);if(cv)return cv;
   if(CACHE.size>96)CACHE.clear();
   cv=document.createElement('canvas');cv.width=Math.ceil(BOX.x*2*px);cv.height=Math.ceil((BOX.up+BOX.down)*px);
@@ -299,7 +308,7 @@ function body(F,fkey,v,face,px,rider,F2=null,fkey2=''){
       paintPlayer(c,F,SEATED,arms);
       c.restore();
     }
-    c.save();c.scale(fl,1);A.front?.(c,P,v);if(A.plate){const [x,y,w,h]=A.plate;plateAt(c,x,y,w,h,v.plate,fl,px);}c.restore();
+    c.save();c.scale(fl,1);A.front?.(c,P,v);if(A.plate){const [x,y,w,h]=A.plate,wide=v.uq?Math.max(w,Math.min(44,v.plate.length*3.4)):w;plateAt(c,x-(wide-w)/2,y,wide,h,v.plate,fl,px,Boolean(v.uq));}c.restore();
   }catch(e){console.warn('ride: art',e);}
   CACHE.set(key,cv);return cv;
 }

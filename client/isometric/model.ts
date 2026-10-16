@@ -9,7 +9,13 @@ export interface Navigation { bounds: Rect; roads: Rect[]; obstacles: Rect[]; st
 export interface Building { id: string; meta: Career; at: Point; door: Point; footprint: Rect; variant: 'grocery' | 'home' | 'cafe'; district: number; slot:number; neighbourhood?:string }
 export interface CameraView {width:number;height:number;scrollX:number;scrollY:number;zoom:number}
 export type Facing='se'|'sw'|'ne'|'nw';
-export interface RemotePlayer extends Point {pid:string;name:string;look:Record<string,any>;gender:'male'|'female'|'none';direction:Facing}
+export interface RemotePlayer extends Point {pid:string;name:string;look:Record<string,any>;gender:'male'|'female'|'none';direction:Facing;r?:{v:string;c:string;p?:string}}
+/** 🚗 A peer's vehicle off the wire (live/town.py `r`): short ids and an auction plate's words, or undefined. */
+export function publicRide(r:any):{v:string;c:string;p?:string}|undefined{
+  if(!r||typeof r!=='object'||typeof r.v!=='string'||!/^[a-z0-9_]{1,24}$/.test(r.v))return undefined;
+  const c=typeof r.c==='string'&&/^[a-z0-9_]{0,24}$/.test(r.c)?r.c:'',p=typeof r.p==='string'&&r.p.length<=24&&!/[\u0000-\u001f\u007f]/.test(r.p)?r.p:'';
+  return {v:r.v,c,...(p?{p}:{})};
+}
 export interface TownLandmark {id:'outing:fishing'|'outing:boat'|'outing:pool';label:string;kind:'pond'|'boat'|'pool';at:Point;approach:Point;footprint:Rect}
 export const CAMERA_ZOOM={min:.24,max:1.6};
 export {ISLAND_PLAN,ISLAND_REFERENCE,activeIslandRegions,islandCoastline,insideIsland,islandWorldBounds,islandOverviewCamera} from './island';
@@ -101,6 +107,7 @@ export function publicTownPlayers(peers:unknown,nav?:Navigation):RemotePlayer[]{
     if(typeof source.uniform==='boolean')look.uniform=source.uniform;
     if(source.tint&&typeof source.tint==='object'&&!Array.isArray(source.tint)){look.tint=Object.create(null);for(const [item,color] of Object.entries(source.tint))if(typeof color==='string'&&item.length<=48)look.tint[item]=color.slice(0,48);}
     seen.add(peer.pid);result.push({pid:peer.pid,name:typeof peer.name==='string'?peer.name.slice(0,64):'Người chơi',look,gender:peer.gender==='male'||peer.gender==='female'?peer.gender:'none',...at,direction:['se','sw','ne','nw'].includes(peer.direction)?peer.direction:'se'});
+    const r=publicRide(peer.r);if(r)result[result.length-1].r=r;
   }
   return result;
 }
