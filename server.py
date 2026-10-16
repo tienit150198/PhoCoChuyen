@@ -52,6 +52,7 @@ from game import business
 from game import social
 from game import work_visits
 from game import home_guests
+from game import island_trips  # 🏝️ Đảo riêng: trips with friends
 from game import push
 from game import jail  # 🚔 jailed: the POST routes that stay open (game/jail.py route_open)
 from game import accounts
@@ -847,6 +848,10 @@ class Handler(BaseHTTPRequestHandler):
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("deco-mate:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,deco_mate.view(self.server.store,token,state));return
+            if route=="/api/island":  # 🏝️ Đảo riêng: my trip, invitations, seats (game/island_trips.py; the save is not read)
+                token,state,_,_=self.require_session(light=True)
+                if not self.server.rate_limit("island-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,island_trips.get(self.server.store,token,{k:v[0] for k,v in parse_qs(split.query).items()}));return
             if route=="/api/home-guests" or route.startswith("/api/home-guests/"):
                 token,state,_,_=self.require_session(light=True)  # 2.4.15: the save is not read here (light: no parse of a 10 MB save per poll)
                 if not self.server.rate_limit("home-guests-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -1010,7 +1015,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
             if route in ("/api/2010/heart","/api/2010/report"):self.event2010_reader(route);return  # 💐 anyone with the link: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/"))
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/island/"))
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
@@ -1195,6 +1200,9 @@ class Handler(BaseHTTPRequestHandler):
                 out=bank_xfer.act(self.server.store,token,route[len("/api/bank/xfer/"):],data)
                 if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 self.json(200,out,known=FULL);return
+            if route.startswith("/api/island/"):  # 🏝️ start, invite, answer, leave, remove, end (game/island_trips.py)
+                if not self.server.rate_limit("island:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,island_trips.post(self.server.store,token,route[len("/api/island/"):],data));return
             if route.startswith("/api/home-guests/deco/"):  # 🎨 Cho trang trí: each move a friend makes is one request (game/home_coop.py)
                 if not self.server.rate_limit("home-deco:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,home_guests.post(self.server.store,token,state,route[len("/api/home-guests/"):],data));return

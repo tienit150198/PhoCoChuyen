@@ -30,6 +30,7 @@ Two parts, both read from the save itself (never the database, never a live pric
          + 🚗 every vehicle at the garage's buy-back price   garage.sell_price(p), journey.garage.cars[*].p
          + 📱 every phone and gadget at the shop's buy-back   gadgets.sell_price(p), journey.gadgets.own[*].p
          + 🛍️ every villa, crewed vehicle, collection piece  lux.worth: lux.sell_price(p) (60 %), journey.lux.own
+         + 🏝️ every private island at its buy-back price     island.worth: island.sell_price(p) (60 %), journey.island.own
          + 🏪 every Quầy riêng at its sang nhượng price     quay.sell_back() without its floor: place price ×
                                                              SELL_PCT + upgrades × UPGRADE_BACK + till + fund,
                                                              journey.quay.stalls[*]
@@ -149,6 +150,9 @@ def _extras(j) -> tuple[int, int]:
     if type(j.get('lux')) is dict:   # 🛍️ villas, crewed vehicles, collection pieces at their 60 % buy-back (game/lux.py)
         from .lux import worth as lux_worth
         assets += lux_worth(j)
+    if type(j.get('island')) is dict:   # 🏝️ private islands at their 60 % buy-back (game/island.py)
+        from .island import worth as island_worth
+        assets += island_worth(j)
     if type(j.get('uniq')) is dict:   # 🔨 escrow held for auction bids: still the player's money (game/auction.py)
         from .auction import worth as auction_worth
         assets += auction_worth(j)
