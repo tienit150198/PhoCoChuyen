@@ -37,8 +37,9 @@ class Catalogue(unittest.TestCase):
     def test_tiers_and_groups(self):
         self.assertEqual({v['group'] for v in gr.VEHICLES.values()}, set(gr.GROUP_IDS))
         for gid in gr.GROUP_IDS:
-            prices = [v['price'] for v in gr.VEHICLES.values() if v['group'] == gid]
-            self.assertEqual(prices, sorted(prices), gid)   # cheapest first within a tab
+            # cheapest first within a tab (the auction's limited editions are not in the shop's tabs)
+            prices = [v['price'] for v in gr.VEHICLES.values() if v['group'] == gid and not v.get('limited')]
+            self.assertEqual(prices, sorted(prices), gid)
         cheapest = min(v['price'] for v in gr.VEHICLES.values())
         self.assertLessEqual(cheapest, jr.START_WALLET + 3 * 50)          # a bicycle within a few days of pay
         self.assertLess(max(v['price'] for v in gr.VEHICLES.values() if v['group'] == 'bike'), 1800)  # < the cheapest home
@@ -189,7 +190,7 @@ class Saves(unittest.TestCase):
         validate_state(s)
         v = public_state(s)['journey']['garage']
         self.assertEqual((v['cars'], v['ride'], v['tripped']), ([], None, False))
-        self.assertEqual(len(v['market']), len(gr.VEHICLES))
+        self.assertEqual(len(v['market']), len([1 for x in gr.VEHICLES.values() if not x.get('limited')]))   # the shop: no limited edition
         s2 = migrate_state(copy.deepcopy(s))
         self.assertNotIn('garage', s2['journey'])        # absent stays absent
 
