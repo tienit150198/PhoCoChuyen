@@ -1925,10 +1925,10 @@ ARCS = {
     'hotel': dict(
         title='Chùm chìa khóa của chị Hằng', emoji='🗝️',
         keepsake=dict(emoji='🗝️', name='Chùm chìa khóa cơ của chị Hằng', desc='Mười sáu chiếc chìa khóa đồng từ hồi Sông Mây chưa dùng thẻ từ. Chị Hằng giữ nó hai mươi năm, giờ nó treo trong ngăn quầy của bạn.'),
-        cast={'hang': _p('Chị Hằng', '🛎️', 'Trưởng ca lễ tân'),
-              'tu': _p('Cô Tư', '🧹', 'Trưởng buồng phòng'),
-              'khai': _p('Bác Khải', '🧓', 'Khách quen tầng 3'),
-              'ngan': _p('Chị Ngân', '👩‍👧', 'Khách đi cùng gia đình')},
+        cast={'hang': _p('Chị Hằng', '🛎️', 'Trưởng ca lễ tân', 'hotel_npc_01'),
+              'tu': _p('Cô Tư', '🧹', 'Trưởng buồng phòng', 'hotel_npc_03'),
+              'khai': _p('Bác Khải', '🧓', 'Khách quen tầng 3', 'hotel_npc_04'),
+              'ngan': _p('Chị Ngân', '👩‍👧', 'Khách đi cùng gia đình', 'hotel_npc_07')},
         beats=[
             _b('Mười sáu phòng', '🛎️', 'Ngày đầu ở quầy lễ tân, chị Hằng mở bảng phòng.', [
                 ('hang', 'Phòng nào sạch, phòng nào chờ thợ, bảng này nói hết. Chưa xanh thì chưa giao, khách gắt mấy cũng vậy.'),
