@@ -76,7 +76,7 @@ test('guide direct utilities work without changing workplace mode and follow liv
   await x.h.goTo('utility:liveKara',x.env);assert.deepEqual(actions,['historyCourse','liveKara']);
 });
 
-test('all 66 documented utilities dispatch existing actions and reject stale unavailable routes',async()=>{
+test('all 67 documented utilities dispatch existing actions and reject stale unavailable routes',async()=>{
   const inventory=JSON.parse(readFileSync(new URL('../docs/qa/isometric-feature-parity.json',import.meta.url),'utf8'));
   const calls=[],x=harness(false,({env,real})=>{
     real.mode='work';real.go=()=>assert.fail('a shared utility must not start an invented walk');
@@ -90,7 +90,7 @@ test('all 66 documented utilities dispatch existing actions and reject stale una
     await x.h.goTo('utility:'+route.id,x.env);
     assert.deepEqual(calls.at(-1),{action:route.action,data:route.data},route.id+' forwards unchanged action data');
   }
-  assert.equal(calls.length,66);assert.equal(JSON.stringify(x.env.api.state),before,'entry routing cannot change money, eligibility or progress');
+  assert.equal(calls.length,67);assert.equal(JSON.stringify(x.env.api.state),before,'entry routing cannot change money, eligibility or progress');
   x.env.api.state={journey:{story:false}};x.env.api.content={};x.socket.welcomed=false;x.socket.flags={};
   const available=new Set(townUtilities.townUtilityGroups(x.env.api.state,x.env.api.content,x.socket).flatMap(g=>g.items.map(i=>i.id)));
   for(const route of inventory.utilityRoutes.filter(route=>!available.has(route.id))){

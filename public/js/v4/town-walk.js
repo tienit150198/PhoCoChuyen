@@ -23,13 +23,15 @@ import {choice,next as nextRide,canRide,label as rideLabel,speedOf,drawRide,ride
 // 👶 "Bế bé đi chơi": the baby in your arms (v4/baby.js), a toggle under the ride's
 import * as BB from './baby.js';
 import {townBirds} from './town-birds.js';   // 🐦 a flock now and then (no frame loop)
+import {loadTown,onTown,peekTown,stagesOf} from './town-projects-data.js';   // 🏗️ each project lot's stage
 
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
 const ME=.5;                  // the character (about 140 units tall) in town pixels
 const SPEED=270,MAX_WALK=2.4; // town pixels a second; no walk takes longer than MAX_WALK seconds
 const IDLE_MS=84,MAX_PX=7e6;  // the glow's frame gap; the cached town bitmap's pixel budget
-const LM_COLOR={bank:'#8d7b4c',garage:'#5a6f88',gadgets:'#6f8fb8',pets:'#d98a6a',quan:'#9a6a43',spa:'#b07aa8',rap:'#6c4f8f',congduc:'#b8862f',style:'#c0607a',fair:'#c8423a',board:'#a8743f',walk:'#5f8f3e',house:'#d9573b',quay:'#e0892b',square:'#418d94',karaoke:'#9b4f96',ghepba:'#3f8f7a',travel:'#4f8fd1',duhoc:'#3f7fb0',hanghieu:'#b8862f',mtq:'#c8423a',dinhthu:'#3f9a78',daugia:'#8a5a2b',danhthang:'#4f8a5b'};
+const LM_COLOR={bank:'#8d7b4c',garage:'#5a6f88',gadgets:'#6f8fb8',pets:'#d98a6a',quan:'#9a6a43',spa:'#b07aa8',rap:'#6c4f8f',congduc:'#b8862f',style:'#c0607a',fair:'#c8423a',board:'#a8743f',walk:'#5f8f3e',house:'#d9573b',quay:'#e0892b',square:'#418d94',karaoke:'#9b4f96',ghepba:'#3f8f7a',travel:'#4f8fd1',duhoc:'#3f7fb0',hanghieu:'#b8862f',mtq:'#c8423a',dinhthu:'#3f9a78',daugia:'#8a5a2b',danhthang:'#4f8a5b',
+  tp_cong_vien:'#5f8f3e',tp_rap_phim:'#6c4f8f',tp_thu_vien:'#a4543d',tp_san_van_dong:'#3f8f5a',tp_cau_ra_dao:'#418d94',tp_benh_vien:'#c0392b'};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 
 const W={env:null,h:null,el:null,cv:null,c:null,where:null,whereText:'',card:null,pl:null,bg:null,bgKey:'',bs:1,k:1,cw:0,ch:0,dpr:1,
@@ -74,6 +76,7 @@ function landmarkOn(lm){
     case'house':return !!J.story;
     case'quay':return !!(J.story&&api.content.journey?.quay);
     case'square':return !!(s.current&&api.content.experiences?.town);
+    case'tp_cong_vien':case'tp_rap_phim':case'tp_thu_vien':case'tp_san_van_dong':case'tp_cau_ra_dao':case'tp_benh_vien':return !!J.story;   // 🏗️ v4/town-projects.js
     default:return true;   // bank, board: always in the menu too
   }
 }
@@ -88,8 +91,9 @@ function guide(){
 /** Each building's look: colour, sign, and its state (locked, current, ×3, lit, closed for now). */
 function stateFn(){
   const s=S(),J=s.journey||{},g=guide(),x3=new Set(s.x3?.today||[]),lit=new Set(g.lit);
+  const lots=Object.fromEntries(stagesOf(peekTown()).map(x=>['tp_'+x.id,x]));
   return it=>{
-    if(it.lm){const L=LANDMARKS[it.lm];return {color:LM_COLOR[it.lm],emoji:L.emoji,name:L.name,off:!landmarkOn(it.lm)};}
+    if(it.lm){const L=LANDMARKS[it.lm],lot=lots[it.lm];return {color:LM_COLOR[it.lm],emoji:L.emoji,name:L.name,off:!landmarkOn(it.lm),...(lot?{stage:lot.stage,pct:lot.pct,left:lot.left}:{})};}
     const m=meta(it.id),sg=SIGNS[it.id]||[W.h.emojiOf(m),m.short||m.place||it.id];
     return {color:/^#[0-9a-f]{6}/i.test(m.color||'')?m.color:'#c4a27a',emoji:sg[0],name:sg[1],lock:!g.open.has(it.id),cur:it.id===s.current,
       x3:x3.has(it.id),glow:lit.has(it.id),paused:!!J.places?.[it.id]?.paused};
@@ -169,7 +173,7 @@ export function townMount(env,h){
   const slot=document.querySelector('#sheet [data-tw-slot]');
   if(!slot)return;
   if(!W.el)build();
-  if(!W.hooked){W.hooked=true;env.api.addEventListener('state',()=>{if(visible())refresh();});BB.onChange(()=>{if(visible()){setRide();setBaby();}});}
+  if(!W.hooked){W.hooked=true;env.api.addEventListener('state',()=>{if(visible())refresh();});onTown(()=>{if(visible())refresh();});BB.onChange(()=>{if(visible()){setRide();setBaby();}});}
   if(W.el.parentNode!==slot){slot.prepend(W.el);W.cw=0;}
   refresh();
   if(!W.cw)size();
@@ -192,7 +196,8 @@ function refresh(){
     select.disabled=!choices.length;W.el.querySelector('.tw-route-picker button').disabled=!choices.length;
   }
   const t=tint();W.tintNow=t;
-  W.stKey=JSON.stringify([W.pl.items.map(it=>{const s=st(it);return [s.lock,s.cur,s.x3,s.glow,s.paused,s.off,s.name];}),t?.m??-1,language()]);
+  W.stKey=JSON.stringify([W.pl.items.map(it=>{const s=st(it);return [s.lock,s.cur,s.x3,s.glow,s.paused,s.off,s.name,s.stage,s.pct,s.left];}),t?.m??-1,language()]);
+  if(S().journey?.story)loadTown(W.env.api);   // 🏗️ at most a request a minute; a new page repaints the lots (townMount)
   const cur=S().current||null;
   setRide(false);loadSpouse(W.env.api).then(()=>setRide(false));   // 💑 the spouse's vehicles too (cached a minute)
   setBaby();BB.loadFamily(W.env.api).then(()=>{if(visible())BB.greet(W.env);});   // 👶 the shared child too (cached a minute)
@@ -339,8 +344,8 @@ const tag=(t,kind='')=>`<span class="tw-tag ${kind}">${t}</span>`;
 const act=(label,action,data={},style='primary')=>`<button type="button" class="btn ${style} tw-go" data-action="${action}"${Object.entries(data).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')}>${label}</button>`;
 function cardHTML(it){
   const s=S(),J=s.journey||{},st=W.st(it),x=`<button type="button" class="tw-card-x" data-tw-x aria-label="Đóng">×</button>`;
-  if(it.lm){const L=LANDMARKS[it.lm],soft=it.lm==='garage'&&!canRide(s,W.env.api.content)?'<small>Mua xe để chạy quanh phố</small>':'';
-    return `<span class="tw-card-ico" aria-hidden="true">${L.emoji}</span><div class="tw-card-text"><b>${esc(L.name)}</b>${soft}</div>${act(`Vào ${icon('arrow',14)}`,L.action)}${x}`;}
+  if(it.lm){const L=LANDMARKS[it.lm],soft=it.lm==='garage'&&!canRide(s,W.env.api.content)?'<small>Mua xe để chạy quanh phố</small>':projectNote(st);
+    return `<span class="tw-card-ico" aria-hidden="true">${L.emoji}</span><div class="tw-card-text"><b>${esc(L.name)}</b>${soft}</div>${act(`${st.stage==='funding'?'Góp xây':'Vào'} ${icon('arrow',14)}`,L.action,L.data||{})}${x}`;}
   const m=meta(it.id),c=s.careers[it.id]||{},h=W.h;
   if(st.lock){const n=(W.env.api.content.journey?.unlock_chapter||{})[it.id];
     // How it opens (feedback #140 "sao không mở tiệm được"): its chapter, reached by the goals in 📋 Danh sách.
@@ -360,6 +365,12 @@ function cardHTML(it){
   const button=aj&&!aj.ok?act(`Đi học ${icon('arrow',14)}`,'accountingSchool',{},'cream'):st.paused?act('Mở lại','jrReopen',{career:it.id,go:1},'primary'):
     act(`${cur&&c.started?'Vào tiếp':'Vào làm'} ${icon('arrow',14)}`,'choose',{career:it.id});
   return `<span class="tw-card-ico" aria-hidden="true">${esc(st.emoji)}</span><div class="tw-card-text"><b>${esc(m.place||m.short)}</b><small>${esc(m.short||'')}</small>${why}${tags.length?`<div class="tw-tags">${tags.join('')}</div>`:''}</div>${button}${x}`;
+}
+/** 🏗️ A project lot's stage, under its name on the card. */
+function projectNote(st){
+  if(!st.stage)return '';
+  const text=st.stage==='funding'?`💰 Đang góp tiền xây · ${st.pct}%`:st.stage==='building'?`🚧 Đang xây · còn ${st.left} giờ`:st.stage==='done'?'🎉 Đã khánh thành':'🪧 Sắp xây';
+  return `<small>${esc(text)}</small>`;
 }
 function showCard(it,focus=false){
   if(!W.card)return;

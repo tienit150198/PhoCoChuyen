@@ -105,6 +105,7 @@ class Contribution(unittest.TestCase):
     def test_validation(self):
         s = rich()
         refused(self, s, 'jr_town_give', project='cong_vien', amount=999, confirm=True)         # under the minimum
+        refused(self, s, 'jr_town_give', project='cong_vien', amount=1_500, confirm=True)       # whole thousands only
         refused(self, s, 'jr_town_give', project='cong_vien', amount=10_000_001, confirm=True)  # more than once allows
         refused(self, s, 'jr_town_give', project='cong_vien', amount=1000.0, confirm=True)
         refused(self, s, 'jr_town_give', project='cong_vien', amount=True, confirm=True)
@@ -236,7 +237,7 @@ class Database(unittest.TestCase):
         self.give(a, 5_000_000)
         self.assertEqual(self.wallet(a), 45_000_000)
         with self.assertRaises(GameError) as cm:                         # more than what is left: refused, nothing paid
-            self.give(b, 5_000_001)
+            self.give(b, 6_000_000)
         self.assertEqual(cm.exception.code, 'over')
         self.assertIn('5.000.000', str(cm.exception))
         self.assertEqual(self.wallet(b), 60_000_000)

@@ -5,7 +5,8 @@
  *   2  💇 Phố dịch vụ                          (salon, nail, photos, pets, repair, pharmacy, clothes; Gara)
  *   3  🛒 Phố chợ                              (the seven first-chapter shops, phở, cơm tấm, album ZPOP): a new player starts here
  *   4  🧺 Phố hàng rong                        (carts: trà đá, trái cây, kem, rác, cống; Cổng hội chợ, Nhóm phố, Đi dạo, 🎤 Phòng hát)
- *   5  🏠 Hẻm nhà                              (Nhà mình, the home careers, Quầy của bạn, Quảng trường)
+ *   5  🏠 Hẻm nhà · 🏗️ Công trình phố          (Nhà mình, the home careers, Quầy của bạn, Quảng trường; the six town
+ *                                              projects, each painted for its stage: v4/town-projects-data.js)
  * Lanes between every few buildings (and a road round both ends) join one street to the next. A career this file
  * does not know yet joins the row of its kind, so a new career always has a door.
  * Walking: the walkable floor is a handful of rectangles (the streets, the lanes); a path goes from rectangle to
@@ -25,7 +26,8 @@ export const ROWS=[
   [{id:'dich_vu',name:'Phố dịch vụ',emoji:'💇',items:['art_studio','laundry','salon','nail','photobooth','pet_care','repair','pharmacy','nurse','police','rescue','clothing','pet_shop','customs','hotel','lm:pets','lm:garage','lm:gadgets','lm:spa','lm:style','lm:hanghieu']}],
   [{id:'pho_cho',name:'Phố chợ',emoji:'🛒',items:['post_office','florist','cafe_bakery','grocery','milk_tea','mother_baby','restaurant','delivery','pho','com','zpop','lm:quan']}],
   [{id:'hang_rong',name:'Phố hàng rong',emoji:'🧺',items:['lm:fair','tra_da','fruit','ice_cream','lm:board','garbage','drain','lm:walk','lm:rap','lm:karaoke','lm:ghepba','lm:mtq','lifeguard']}],
-  [{id:'hem',name:'Hẻm nhà',emoji:'🏠',items:['lm:house','homemaker','giupviec','naucom','babysitter','lm:quay','lm:square','lm:dinhthu']}],
+  [{id:'hem',name:'Hẻm nhà',emoji:'🏠',items:['lm:house','homemaker','giupviec','naucom','babysitter','lm:quay','lm:square','lm:dinhthu']},
+    {id:'cong_trinh',name:'Công trình phố',emoji:'🏗️',items:['lm:tp_cong_vien','lm:tp_rap_phim','lm:tp_thu_vien','lm:tp_san_van_dong','lm:tp_cau_ra_dao','lm:tp_benh_vien']}],
 ];
 /** Landmarks: what they open (an existing data-action) and their sign. */
 export const LANDMARKS={
@@ -44,6 +46,10 @@ export const LANDMARKS={
   mtq:{emoji:'🎆',name:'Mạnh Thường Quân',action:'luxMtq'},dinhthu:{emoji:'🏰',name:'Dinh thự',action:'luxNha'},
   // 🔨 Nhà đấu giá đồ độc bản (v4/auction.js, game/auction.py); 🏞️ the plaques of the landmarks named at auction
   daugia:{emoji:'🔨',name:'Nhà đấu giá',action:'auction'},danhthang:{emoji:'🏞️',name:'Danh thắng',action:'auctionLands'},
+  // 🏗️ Công trình của phố (v4/town-projects.js, game/town_projects.py): each lot opens the panel on its project
+  tp_cong_vien:{emoji:'🌳',name:'Công viên ven sông',action:'townProjects',data:{id:'cong_vien'}},tp_rap_phim:{emoji:'🎬',name:'Rạp chiếu phim',action:'townProjects',data:{id:'rap_phim'}},
+  tp_thu_vien:{emoji:'📚',name:'Thư viện lớn',action:'townProjects',data:{id:'thu_vien'}},tp_san_van_dong:{emoji:'🏟️',name:'Sân vận động',action:'townProjects',data:{id:'san_van_dong'}},
+  tp_cau_ra_dao:{emoji:'🌉',name:'Cầu ra đảo',action:'townProjects',data:{id:'cau_ra_dao'}},tp_benh_vien:{emoji:'🏥',name:'Bệnh viện phường',action:'townProjects',data:{id:'benh_vien'}},
 };
 /** The sign over each door: an emoji and a short name (the card says the full place name). */
 export const SIGNS={
@@ -62,9 +68,10 @@ export const SIGNS={
 const KIND={art_studio:'shop',lawyer:'office',laundry:'shop',post_office:'office',customs:'office',hotel:'lodge',pagoda:'pagoda',farm:'farm',homestay:'lodge',teacher:'school',library:'school',tour_guide:'kiosk',pilot:'air',flight_attendant:'air',oil:'air',railway:'kiosk',lighthouse:'kiosk',
   tra_da:'cart',fruit:'cart',ice_cream:'cart',garbage:'cart',drain:'cart',homemaker:'house',giupviec:'house',naucom:'house',babysitter:'house',
   accounting:'office',customer_care:'office',corp_accounting:'office',tax_payroll:'office',group_accounting:'office',hr_admin:'office',secretary:'office',it_helpdesk:'office',nurse:'office',rescue:'office',lifeguard:'pool',police:'office',
-  'lm:bank':'bank','lm:garage':'garage','lm:fair':'gate','lm:board':'board','lm:walk':'park','lm:house':'home','lm:quay':'quay','lm:square':'plaza','lm:congduc':'kiosk','lm:rap':'office','lm:travel':'kiosk','lm:duhoc':'kiosk','lm:mtq':'board','lm:dinhthu':'home','lm:daugia':'bank','lm:danhthang':'board'};
-const WIDE={pool:150,shop:128,office:128,cart:112,house:124,pagoda:208,farm:196,lodge:142,school:150,kiosk:120,air:156,bank:142,garage:132,gate:152,board:104,park:124,home:132,quay:118,plaza:134};
-const HIGH={pool:150,shop:150,office:176,cart:122,house:136,pagoda:178,farm:140,lodge:150,school:160,kiosk:124,air:172,bank:160,garage:136,gate:168,board:112,park:118,home:144,quay:126,plaza:118};
+  'lm:bank':'bank','lm:garage':'garage','lm:fair':'gate','lm:board':'board','lm:walk':'park','lm:house':'home','lm:quay':'quay','lm:square':'plaza','lm:congduc':'kiosk','lm:rap':'office','lm:travel':'kiosk','lm:duhoc':'kiosk','lm:mtq':'board','lm:dinhthu':'home','lm:daugia':'bank','lm:danhthang':'board',
+  'lm:tp_cong_vien':'project','lm:tp_rap_phim':'project','lm:tp_thu_vien':'project','lm:tp_san_van_dong':'project','lm:tp_cau_ra_dao':'project','lm:tp_benh_vien':'project'};
+const WIDE={pool:150,shop:128,office:128,cart:112,house:124,pagoda:208,farm:196,lodge:142,school:150,kiosk:120,air:156,bank:142,garage:132,gate:152,board:104,park:124,home:132,quay:118,plaza:134,project:150};
+const HIGH={pool:150,shop:150,office:176,cart:122,house:136,pagoda:178,farm:140,lodge:150,school:160,kiosk:124,air:172,bank:160,garage:136,gate:168,board:112,park:118,home:144,quay:126,plaza:118,project:170};
 export const kindOf=key=>KIND[key]||'shop';
 
 /** Sizes in town pixels. A row: the band its buildings stand in (FH), then its street (SH). */
@@ -418,7 +425,69 @@ function pool(c,it,t){
   R(c,x0-8,G-22,w*.36,20,'#7fd0ee',6,'#4fb3dc',1.5);for(let x=x0-2;x<x0+w*.36-12;x+=9)E(c,x+3,G-12,3,2,(Math.floor((x-x0)/9)%2)?'#d6453a':'#ffffff');
   L(c,x0+w-30,G,x0+w-24,G-56,WOOD_D,3);L(c,x0+w-6,G,x0+w-12,G-56,WOOD_D,3);R(c,x0+w-28,G-62,20,8,WOOD,3);P(c,[[x0+w-34,G-66],[x0+w-18,G-84],[x0+w-2,G-66]],'#d6453a');
 }
-const DRAW={shop,office,house,cart,pagoda,farm,lodge,school,kiosk,air,bank,garage,gate,board,park,home,quay,plaza,pool};
+/** 🏗️ A town project's lot (s.stage from v4/town-projects-data.js): an empty plot with a "Sắp xây" board (bunting
+ * and how much is raised while the street gives), a frame in scaffolding under a crane, or the finished building. */
+function project(c,it,t,s){
+  const {x0,w,G,h,cx}=it,x1=x0+w,top=G-h,stage=s.stage||'soon',id=(it.lm||'').slice(3);
+  if(stage==='soon'||stage==='funding'){
+    R(c,x0+2,G-12,w-4,12,'#cdb38a',4);for(let i=0;i<4;i++)E(c,x0+20+i*(w-40)/3,G-8,8,3,'#b49a72');
+    for(let x=x0+6;x<=x1-6;x+=12)L(c,x,G-2,x,G-26,'#a07c55',3);L(c,x0+4,G-18,x1-4,G-18,'#c49d6f',3);
+    L(c,cx-34,G,cx-34,top+44,WOOD_D,4);L(c,cx+34,G,cx+34,top+44,WOOD_D,4);
+    R(c,x0+12,G-64,30,18,'#c97f5d',3);R(c,x0+16,G-80,22,16,'#cf8a66',3);R(c,x1-44,G-46,32,10,'#9c9b95',3);
+    R(c,cx-44,top+52,88,26,'#fff3da',6,'#8a6a48',2);T(c,'Sắp xây',cx,top+65.5,fit(c,'Sắp xây',80,13,800),'#8a4f2d',800);
+    if(stage==='funding'){
+      const pct=Math.max(0,Math.min(100,Number(s.pct)||0));
+      R(c,cx-44,top+84,88,12,'#efe3cc',6,'#8a6a48',1.5);R(c,cx-43,top+85,Math.max(4,86*pct/100),10,'#6aa56a',5);T(c,`${pct}%`,cx,top+104,12,'#4f6a3f',800);
+      const flags=['#e07a5f','#f2cc8f','#81b29a','#3d85c6'];L(c,x0+2,top+50,x1-2,top+50,'#8a6a48',1.5);
+      for(let i=0;i<9;i++){const x=x0+8+i*(w-16)/8;P(c,[[x-5,top+50],[x+5,top+50],[x,top+60]],flags[i%4]);}
+    }
+    return;
+  }
+  if(stage==='building'){
+    R(c,x0+4,G-10,w-8,10,'#b3b0a8',3);
+    const fh=h*.62,fx0=x0+20,fx1=x1-20;R(c,fx0,G-fh,fx1-fx0,fh,'#d9d5cc',2,'#9b968c',2);
+    for(let y=G-fh;y<G;y+=fh/3)L(c,fx0,y,fx1,y,'#9b968c',3);for(let x=fx0;x<=fx1+.5;x+=(fx1-fx0)/3)L(c,x,G,x,G-fh,'#8c877d',3);
+    c.save();c.globalAlpha=.35;R(c,fx0-8,G-fh-10,fx1-fx0+16,fh+10,'#7aaa6e',2);c.restore();
+    for(let x=fx0-8;x<=fx1+8;x+=16)L(c,x,G,x,G-fh-14,'#d39a3d',2.5);for(let y=G-14;y>G-fh-12;y-=20)L(c,fx0-10,y,fx1+10,y,'#c48a2f',2);
+    L(c,x0+10,G,x0+10,top+48,'#e0a419',5);L(c,x0-6,top+48,x1+4,top+52,'#e0a419',4);L(c,x1-20,top+52,x1-20,top+76,'#555',1.5);R(c,x1-27,top+76,14,9,'#c97f5d',2);
+    if(s.left){const text=`⏳ ${s.left}h`;R(c,cx-30,G-fh/2-11,60,22,'#fff3d6',11,'#c98a1b',1.5);T(c,text,cx,G-fh/2,12,'#7a4a00',800);}
+    return;
+  }
+  if(id==='cong_vien'){
+    R(c,x0+2,G-30,w-4,30,'#a9cb88',10);E(c,cx,G-12,26,7,'#8cc3d8');R(c,cx-3,G-38,6,26,'#d9d4c8',2);E(c,cx,G-40,9,4,'#bfe2ef');
+    tree(c,x0+22,G-14,.8);tree(c,x1-22,G-14,.8);tree(c,x0+52,G-24,.55);R(c,x1-62,G-24,30,6,WOOD,3);L(c,x1-58,G-18,x1-58,G-10,WOOD_D,2);L(c,x1-36,G-18,x1-36,G-10,WOOD_D,2);
+    return;
+  }
+  if(id==='san_van_dong'){
+    P(c,[[x0,G],[x0+10,top+70],[x1-10,top+70],[x1,G]],'#c7c1b4');R(c,x0+16,top+78,w-32,G-top-90,'#6fae5a',4,'#f4f4ee',2);L(c,cx,top+80,cx,G-14,'#f4f4ee',1.5);
+    for(let i=0;i<3;i++)L(c,x0+12+i*4,top+74+i*6,x1-12-i*4,top+74+i*6,['#e07a5f','#3d85c6','#f2cc8f'][i],3);
+    for(const x of [x0+6,x1-6]){L(c,x,G,x,top+10,'#6d6d6d',3);R(c,x-10,top,20,10,'#fff7d0',2,'#6d6d6d',1.5);}
+    return;
+  }
+  if(id==='cau_ra_dao'){
+    R(c,x0,G-22,w,22,'#9cc6cb',4);for(let i=0;i<5;i++)L(c,x0+10+i*28,G-10+(i%2)*5,x0+24+i*28,G-10+(i%2)*5,'#c4e1e3',2);
+    R(c,x0-4,G-40,w+8,10,'#d9d3c6',3,'#aaa397',1.5);for(const x of [x0+20,x1-20])R(c,x-4,G-30,8,22,'#9c968c',2);
+    R(c,cx-6,top+20,12,G-40-top-20,'#eae6dc',2,'#c4bfb3',1.5);
+    for(let i=1;i<=4;i++){L(c,cx,top+30,cx-i*(w/2-6)/4,G-40,'#8f8a80',1.2);L(c,cx,top+30,cx+i*(w/2-6)/4,G-40,'#8f8a80',1.2);}
+    for(let x=x0+6;x<x1;x+=24){L(c,x,G-40,x,G-56,'#4f5a5e',2);E(c,x,G-58,3,3,'#ffe9a8');}
+    return;
+  }
+  if(id==='rap_phim'){
+    R(c,x0+6,top+40,w-12,h-40,'#6c4f8f',4,'#4c3566',2);R(c,x0+14,top+52,w-28,26,'#2d2a36',3);T(c,'CINEMA',cx,top+65.5,13,'#ffd36b',800);
+    for(let x=x0+18;x<x1-14;x+=10)E(c,x,top+82,2,2,'#ffe9a8');R(c,x0+14,G-50,w-28,8,'#c0392b',2);
+    for(const x of [x0+18,x1-48])R(c,x,G-40,30,40,'#f4e9d0',2,'#8a6a48',1.5);door(c,cx,G,t,26,48);
+    return;
+  }
+  if(id==='thu_vien'){
+    R(c,x0+8,top+70,w-16,h-70,'#e9dcc0',3,'#c2b49a',2);P(c,[[x0,top+72],[cx,top+34],[x1,top+72]],'#a4543d');
+    for(let x=x0+20;x<x1-14;x+=22)R(c,x,top+80,8,h-90,'#f6efe0',2,'#d8ccb4',1);R(c,x0+4,G-8,w-8,8,'#d8ccb4',2);door(c,cx,G-8,t,24,44);
+    return;
+  }
+  R(c,x0+10,top+30,w-50,h-30,'#f4f4f2',4,'#c9c9c4',2);R(c,x1-44,top+90,38,h-90,'#efefec',3,'#c9c9c4',2);
+  for(let r=0;r<3;r++)for(let i=0;i<3;i++)R(c,x0+18+i*26,top+84+r*24,18,14,'#8fb7d1',2);
+  R(c,cx-30,top+50,28,28,'#ffffff',6,'#c0392b',2);R(c,cx-20,top+55,8,18,'#d64541',1);R(c,cx-25,top+60,18,8,'#d64541',1);door(c,x0+40,G,t,30,40);
+}
+const DRAW={shop,office,house,cart,pagoda,farm,lodge,school,kiosk,air,bank,garage,gate,board,park,home,quay,plaza,pool,project};
 
 /* ------------------------------------------------------------ what moves */
 /** The live layer, over the cached town: a soft pulse round the lit shops, the bobbing arrow over the suggested

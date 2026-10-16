@@ -57,6 +57,16 @@ function syncShops(env){
     mappedWorld=world;mappedKey=key;world.setResidentShops(shops);
   }
 }
+/** 🏗️ Công trình của phố: each project lot painted for its stage (v4/town-projects-data.js, loaded on first use). */
+let projectData=null,projectLoading=false;
+function syncProjects(env){
+  if(!world||typeof world.setTownProjects!=='function')return;
+  if(projectData){projectData.syncWorld(world,env.api);return;}
+  if(projectLoading)return;projectLoading=true;
+  import('./v4/town-projects-data.js').then(m=>{
+    projectData=m;m.onTown(v=>world?.setTownProjects?.(m.stagesOf(v)));m.syncWorld(world,env.api);
+  }).catch(e=>console.warn('Công trình:',e)).finally(()=>{projectLoading=false;});
+}
 async function loadShops(env){
   const target=world,request=directory.load(env.api);
   if(dlg?.open)render(env);
@@ -108,7 +118,7 @@ export function attachGuide(real,getEnv){
     }
     if(changed){s.requestRender?.();real.wake?.();}
   };
-  const refresh=()=>{const env=getEnv();syncShops(env);decorate();if(dlg?.open)render(env);};
+  const refresh=()=>{const env=getEnv();syncShops(env);syncProjects(env);decorate();if(dlg?.open)render(env);};
   const originalRebuild=s.rebuild;
   // The first town with its buildings: back at the spot remembered on this device.
   let restored=false;const restore=()=>{if(!restored&&real.mode==='town'&&layoutKey(real)>0){restored=true;restoreSpot(real);}};

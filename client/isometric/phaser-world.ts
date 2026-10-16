@@ -20,6 +20,8 @@ import {StaticLodCache} from './static-lod';
 import {wayfindingMount} from './sign-placement';
 import {CIVIC_ASSETS,CIVIC_FACADES,amenityPlacement} from './amenity-art';
 import type {AmenityArt} from './amenity-art';
+import {drawTownProject,normalizeTownProjects,townProjectBadge,townProjectCanvas} from './town-projects';
+import type {TownProjectLot} from './town-projects';
 import {walkingPose} from './model';
 import {townDistricts,townAmenities,townTrails,townScenery,townShopLots} from './model';
 import {drawNeighbourhoodGround,drawCivicProp,drawGrassDetail} from './town-scenery';
@@ -99,6 +101,12 @@ export class PhaserWorld {
   setResidentShops(value:unknown){
     const seen=new Set<string>(),shops=Array.isArray(value)?value.filter(s=>s&&typeof s.id==='string'&&s.id.length<=160&&!seen.has(s.id)&&(seen.add(s.id),true)).slice(0,8).map(s=>({id:s.id,name:String(s.name||'Quán hàng xóm').slice(0,80),kind:s.kind,target:s.target,ownerName:String(s.ownerName||'').slice(0,24),career:s.career})):[];
     if(JSON.stringify(shops)===JSON.stringify(this.residentShops))return;this.residentShops=shops;if(this.mode==='town'){this.stage?.refreshResidentShops();this.wake();}
+  }
+  /** 🏗️ Công trình của phố: each lot's stage (v4/town-projects-data.js). Repaints only the six lots. */
+  townProjects:TownProjectLot[]=[];
+  setTownProjects(value:unknown){
+    const list=normalizeTownProjects(value);
+    if(JSON.stringify(list)===JSON.stringify(this.townProjects))return;this.townProjects=list;if(this.mode==='town'){this.stage?.refreshTownProjects();this.wake();}
   }
 
   constructor(canvas:HTMLCanvasElement,onInteract:(id:string)=>void){
@@ -348,7 +356,7 @@ class DioramaScene extends Phaser.Scene {
   rebuild(){
     if(!this.sys.isActive())return;
     this.terrainChunks.clear();this.occluderIndex.clear();this.occluders=[];this.fadingOccluders.clear();this.occlusionPosition='';this.occludedCount=0;this.actorRing?.setVisible(false);this.staticIndex.clear();this.shownStatics.clear();this.visibilityView='';this.signZoom=-1;this.signMounts.clear();
-    for(const object of this.staticObjects)object.destroy();this.staticObjects=[];this.residentObjects=[];for(const seed of new Set(this.npcArt.map(n=>n.seed)))this.characterFrames.release('iso-person-'+seed);this.npcArt=[];this.groundCache=undefined;this.groundRegion=undefined;this.hits=[];this.placards=[];this.imageById.clear();this.marker?.destroy();this.marker=undefined;this.selected?.destroy();this.selected=undefined;this.clearSpeech();
+    for(const object of this.staticObjects)object.destroy();this.staticObjects=[];this.residentObjects=[];this.projectObjects=[];for(const seed of new Set(this.npcArt.map(n=>n.seed)))this.characterFrames.release('iso-person-'+seed);this.npcArt=[];this.groundCache=undefined;this.groundRegion=undefined;this.hits=[];this.placards=[];this.imageById.clear();this.marker?.destroy();this.marker=undefined;this.selected?.destroy();this.selected=undefined;this.clearSpeech();
     const modeChanged=this.previousMode!==this.owner.mode,changed=modeChanged||this.owner.mode==='work'&&this.previousCareer!==this.owner.career;
     this.previousMode=this.owner.mode;this.previousCareer=this.owner.career;this.cameras.main.setBackgroundColor(this.owner.mode==='town'?SEA_COLOR:'#ede3ce');this.background=this.add.graphics().setDepth(-10000);this.staticObjects.push(this.background);
     if(this.owner.mode==='town')this.town();else this.work();
@@ -449,7 +457,7 @@ class DioramaScene extends Phaser.Scene {
       const key='civic-'+prop.kind;this.textureObject(key,256,256,ctx=>drawCivicProp(ctx,prop.kind));const at=px(prop.at),width=prop.kind==='playground'?240:prop.kind==='pergola'?210:130;
       const image=this.add.image(at.x,at.y,key).setOrigin(.5,.94).setDisplaySize(width,width).setDepth(at.y+.2);this.staticObjects.push(image);
     }
-    this.refreshResidentShops();this.amenities();this.landmarks();
+    this.refreshResidentShops();this.amenities();this.refreshTownProjects();this.landmarks();
     // The lawn's tufts, flowers and pebbles: baked per terrain chunk, so a ground-cache rebuild only replays nearby ones.
     const lawn=islandCoastline(-1.9),feet=[...this.buildings.map(b=>b.footprint),...townShopLots().map(l=>({x0:l.at.x-1.6,y0:l.at.y-1.6,x1:l.at.x+1.2,y1:l.at.y+1.2}))];
     const onLawn=(p:Point)=>{let yes=false;for(let i=0,j=lawn.length-1;i<lawn.length;j=i++){const a=lawn[i],b=lawn[j];if((a.y>p.y)!==(b.y>p.y)&&p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x)yes=!yes;}return yes;};
@@ -476,6 +484,25 @@ class DioramaScene extends Phaser.Scene {
       const h:Hotspot={id:'resident:'+shop.id,label:shop.name,...lot.at,approach:lot.door,point:px(lot.door),z:0,range:45};this.owner.hotspots.push(h);this.hits.push({hotspot:h,object:image},{hotspot:h,object:sign});
     });
     this.residentObjects=this.staticObjects.slice(before);this.reindexStatics();this.requestRender();
+  }
+  private projectObjects:Phaser.GameObjects.GameObject[]=[];
+  refreshTownProjects(){
+    if(this.owner.mode!=='town')return;
+    const old=new Set(this.projectObjects);for(const object of old)object.destroy();this.staticObjects=this.staticObjects.filter(o=>!old.has(o));
+    this.occluders=this.occluders.filter(o=>!old.has(o.image));this.occluderIndex.clear();for(const o of this.occluders)this.occluderIndex.add(o,o.bounds);for(const o of this.fadingOccluders)if(old.has(o.image))this.fadingOccluders.delete(o);this.occlusionPosition='';
+    const before=this.staticObjects.length;
+    for(const p of townAmenities()){
+      if(!p.id.startsWith('tp_')||!('footprint' in p)||!p.footprint)continue;
+      const id=p.id.slice(3),r=p.footprint,lot=this.owner.townProjects.find(l=>l.id===id)||{id,stage:'soon' as const,pct:0,left:0};
+      const size=townProjectCanvas(r),key=this.textureObject('town-project-'+id+'-'+lot.stage,size.width,size.height,ctx=>drawTownProject(ctx,id,lot.stage,r));
+      const corner=px({x:r.x0,y:r.y0}),centre=px({x:(r.x0+r.x1)/2,y:(r.y0+r.y1)/2});
+      const image=this.add.image(corner.x,corner.y,key).setOrigin(size.originX/size.width,size.originY/size.height).setDepth(centre.y+.2);this.staticObjects.push(image);
+      // The guide's tap target follows the repainted lot (iso-guide.js addAmenityVisual).
+      const previous=this.imageById.get('amenity:'+p.id);if(previous)for(const hit of this.hits)if(hit.object===previous)hit.object=image;
+      this.imageById.set('amenity:'+p.id,image);this.registerOccluder(image);
+      const badge=townProjectBadge(lot);if(badge)this.label(badge,centre.x,centre.y-(lot.stage==='building'?150:170),14,120,0xd39a3d).setDepth(centre.y+.5);
+    }
+    this.projectObjects=this.staticObjects.slice(before);this.reindexStatics();this.requestRender();
   }
   private reindexStatics(){
     this.staticIndex.clear();this.shownStatics.clear();this.visibilityView='';this.staticLodZoom=NaN;

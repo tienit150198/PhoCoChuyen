@@ -168,6 +168,8 @@ def action(s: dict, name: str, p: dict) -> dict:
     amount = p['amount']
     need(type(amount) is int and C.MIN_GIFT <= amount, f'Góp từ {fmt(C.MIN_GIFT)} xu trở lên nhé.')
     need(amount <= min(C.MAX_GIFT, pr['goal']), f'Mỗi lần góp tối đa {fmt(min(C.MAX_GIFT, pr["goal"]))} xu nhé.')
+    # Goals are whole thousands: whole-thousand gifts always leave a remainder someone can give (never 1–999 xu).
+    need(amount % C.MIN_GIFT == 0, f'Góp theo bội số {fmt(C.MIN_GIFT)} xu nhé.')
     anon = p.get('anon', False)
     need(type(anon) is bool, 'Thông tin không hợp lệ.')
     need(p.get('confirm') is True, f'Xác nhận góp {fmt(amount)} xu xây {pr["name"]}.')
