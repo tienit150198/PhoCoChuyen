@@ -32,6 +32,13 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.34", date="2026-10-16", items=(
+        dict(emoji='🛎️', text='Nghề mới: Khách sạn Sông Mây (mở từ chương 3)! Lễ tân, dọn phòng, giặt là, bữa sáng, sửa chữa, trang trí sảnh.'),
+        dict(emoji='💝', text='Khách sạn vào dịp Valentine, Tết, Noel đông khách hơn, thưởng ×1,5 và trang trí sảnh theo mùa.'),
+        dict(emoji='🎲', text='Chợ đen cân lại: chiếu trong, lô tô, vé cào dễ thắng hơn; vé cào trúng là có lãi, bầu cua bão ăn 20, đua chó trả cao hơn.'),
+        dict(emoji='🀄', text='Chiếu trong: đoán trúng ăn 0,75 lần tiền cược (nhà cái giữ xâu 25%). Lô tô kinh ăn 1,8 lần.'),
+        dict(emoji='🥶', text='Chơi dồn dập một trò quá nhanh thì vận nguội đi, chậm tay lại chút là vận ấm lại.'),
+    )),
     dict(version="2.4.33", date="2026-10-16", items=(
         dict(emoji='✈️', text='Nữ phi công giờ có lời thoại riêng: khách tán tỉnh, mai mối, em họ… gọi đúng chị/em, không còn toàn tình huống cho nam.'),
         dict(emoji='🗂️', text='Hành chính nhân sự, Hỗ trợ IT: văn phòng đóng cửa mà còn hồ sơ dở thì vẫn có nút Khép ca, việc dở giữ sang mai.'),

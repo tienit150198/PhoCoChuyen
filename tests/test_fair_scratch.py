@@ -32,14 +32,15 @@ class Table(unittest.TestCase):
         return p * sum(m * w for m, w in xs.PRIZES) / total
 
     def test_rebalanced_prize_table_prefers_small_prizes(self):
-        self.assertEqual((xs.P_HI, xs.P_LO), (fh.BASES['xs'],) * 2)    # owner 07/10: about 50% of tickets win
-        self.assertAlmostEqual(self.ev(xs.P_HI), .55 * 1.801)            # 14/10: 99.055% back before cool-off
-        self.assertAlmostEqual(self.ev(xs.P_LO), .55 * 1.801)
+        self.assertEqual((xs.P_HI, xs.P_LO), (fh.BASES['xs'],) * 2)    # owner 16/10: 57% of tickets win at net 0
+        self.assertAlmostEqual(self.ev(xs.P_HI), .57 * 1.775)            # 16/10: 101.175% back before cool-off
+        self.assertAlmostEqual(self.ev(xs.P_LO), .57 * 1.775)
         weights = dict(xs.PRIZES)
-        self.assertGreater(weights[1], sum(weights.values()) / 2)        # still mostly a refund
+        self.assertGreater(weights[1.5], sum(weights.values()) / 2)      # mostly the smallest profit
         self.assertEqual(sorted(weights.values(), reverse=True), [weights[m] for m in xs.MULTS])   # rarer as they grow
         self.assertEqual(xs.P_HI, xs.P_LO)
-        self.assertEqual(xs.MULTS[0], 1)                                  # hoàn vé
+        self.assertEqual(xs.MULTS[0], 1.5)                                # no hoàn vé any more: every win is a profit
+        self.assertGreater(min(xs.MULTS), 1)
         self.assertEqual(sorted(xs.MULTS), list(xs.MULTS))
         self.assertEqual(len(set(xs.MULTS)), len(xs.MULTS))
 
@@ -66,13 +67,15 @@ class Table(unittest.TestCase):
             mult = 0 if i % 3 else xs.prize_mult(rng)
             cells = xs.layout(price, mult, rng)
             self.assertEqual(len(cells), xs.CELLS)
-            self.assertEqual(xs.read(cells), mult * price, cells)
+            prize = xs.amount(price, mult)
+            self.assertEqual(xs.read(cells), prize, cells)
+            amounts = {xs.amount(price, m) for m in xs.MULTS}
             for v in set(cells):
-                self.assertIn(v // price, xs.MULTS)
-                self.assertEqual(v % price, 0)
-                self.assertLessEqual(cells.count(v), xs.MATCH if v == mult * price else xs.MATCH - 1, cells)
+                self.assertIn(v, amounts)
+                self.assertEqual(type(v), int)
+                self.assertLessEqual(cells.count(v), xs.MATCH if mult and v == prize else xs.MATCH - 1, cells)
             if mult:
-                self.assertEqual(cells.count(mult * price), xs.MATCH)
+                self.assertEqual(cells.count(prize), xs.MATCH)
 
 
 class Scratch(FairBase):
@@ -116,32 +119,30 @@ class Scratch(FairBase):
         s = story(100)
         s['journey']['fair'] = fh.initial()
         s['journey']['fair']['date'] = fh.vn_date(self.clock.t + 2)
-        for net in (3500, 9000, -400):                              # 06/10: the same draw at any net
+        # owner 16/10: the draw follows today's Chợ đen net (a small ticket wins back a loss at .60)
+        for net, p in ((3500, .57), (30_000, .57), (30_001, .52), (99_999, .52), (100_000, .45), (-400, .60), (-1, .57)):
             s['journey']['fair']['net'] = net
-            self.clock.t += fh.RUN_GAP + 1  # compare fresh draws, without repetition cooling
-            s, r = self.buy(s, 2, [fh.BASES['xs'] + .001])
-            self.assertEqual(r['fair']['mult'], 0)
+            self.clock.t += fh.RUN_GAP + 1  # compare fresh draws, without the pace
+            s, r = self.buy(s, 2, [p + .001])
+            self.assertEqual(r['fair']['mult'], 0, net)
+            s['journey']['fair']['net'] = net
             self.clock.t += fh.RUN_GAP + 1
-            s, r = self.buy(s, 2, [fh.BASES['xs'] - .001])
-            self.assertGreater(r['fair']['mult'], 0)
+            s, r = self.buy(s, 2, [p - .001])
+            self.assertGreater(r['fair']['mult'], 0, net)
 
     @mock.patch.object(fh, 'featured_game', return_value='xs')
-    def test_a_long_run_of_tickets_cools_to_the_floor(self, _featured):
+    def test_a_long_run_of_tickets_slows_by_its_pace(self, _featured):
+        """Owner 16/10: no round-by-round decay; 12 tickets a minute (5 s apart) draw .57 − .05 from the 11th on."""
         j, f = {}, dict(fh.initial(), date=fh.vn_date(OPEN))
         ps = [fh.luck_p(j, f, 'xs', OPEN + 5 * i, stake=2) for i in range(40)]
-        self.assertEqual(ps[:fh.RUN_FREE], [fh.BASES['xs']] * fh.RUN_FREE)   # 07/10: a long run of tickets cools
-        self.assertEqual(ps[-1], fh.P_FLOOR)
-        self.assertGreaterEqual(min(ps), fh.P_FLOOR)
-        self.assertEqual(set(j), {'fair_run2', fh.COOL_KEY})
+        self.assertEqual(ps[:10], [fh.BASES['xs']] * 10)
+        self.assertEqual(ps[10:], [.52] * 30)
+        self.assertGreaterEqual(min(ps), fh.P_MIN)
+        self.assertEqual(set(j), {'fair_run2', fh.COOL_KEY, fh.PACE_KEY})
         fh.luck_p(j, f, 'bc', OPEN + 300, stake=20)                 # another stall: one older run key at a time
-        self.assertEqual(set(j), {'fair_run', fh.COOL_KEY})
-        self.assertEqual(fh.luck_p(json.loads(json.dumps(j)), f, 'xs', OPEN + 305, stake=2), fh.P_FLOOR)   # one round: still cold
-        fh.luck_p(j, f, 'bc', OPEN + 301, stake=19)                 # under 20 xu: not counted
-        fh.luck_p(j, f, 'bc', OPEN + 302, stake=20)
-        self.assertEqual(fh.luck_p(json.loads(json.dumps(j)), f, 'xs', OPEN + 304, stake=2), fh.P_FLOOR)
-        fh.luck_p(j, f, 'bc', OPEN + 303, stake=20)                 # three paid rounds of 20 xu elsewhere: warm again
-        self.assertEqual(fh.luck_p(j, f, 'xs', OPEN + 305, stake=2), fh.BASES['xs'])
-        self.assertEqual(set(j), {'fair_run2', fh.COOL_KEY})
+        self.assertEqual(set(j), {'fair_run', fh.COOL_KEY, fh.PACE_KEY})
+        self.assertEqual(fh.luck_p(j, f, 'xs', OPEN + 305, stake=2), fh.BASES['xs'])   # a minute away: warm again
+        self.assertEqual(set(j), {'fair_run2', fh.COOL_KEY, fh.PACE_KEY})
         s = story(100)
         s['journey']['fair_run2'] = dict(g='xs', n=3, at=1)
         validate_state(s)
@@ -163,11 +164,12 @@ class Scratch(FairBase):
             s['journey'].setdefault('fair', fh.initial())['net'] = 0   # the generous odds
             s['journey'].pop('fair_run2', None)                       # not one long run
             s['journey'].pop(fh.COOL_KEY, None)
+            s['journey'].pop(fh.PACE_KEY, None)                       # nor one fast minute
             s, r = self.act(s, 'fair_xs', price=2)
             wins += r['fair']['mult'] > 0
             paid += 2
             back += r['fair']['prize']
-        self.assertTrue(fh.BASES['xs'] - .035 < wins / 1200 < fh.BASES['xs'] + .03, wins)   # the cool-off after 4 wins
+        self.assertTrue(fh.BASES['xs'] - .045 < wins / 1200 < fh.BASES['xs'] + .03, wins)   # the cool-off after 4 wins
         # A 1,200-ticket sample includes rare x50 prizes; compare to its sampling uncertainty, not a fixed RTP cap.
         # The exact house edge (including Loc) is checked separately in test_fair_house_edge.
         total = sum(w for _, w in xs.PRIZES)

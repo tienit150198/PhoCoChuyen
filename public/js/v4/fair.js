@@ -321,9 +321,9 @@ function arrestCard(){
     ${r.titles?.includes('f_raid')?'<p class="fh-award">🚨 Danh hiệu mới: <b>Bị công an hỏi thăm</b></p>':''}
     ${btn(r.jail?'🚔 Về trại tạm giữ':'Dạ, em biết rồi','arrestok',{},'primary',' data-fh-key="bm-arrestok"')}</section>`;
 }
-// 🥶 a long run of one luck stall cools its luck (server: fair.cold); honest about it, in that stall only
+// 🥶 playing one stall too fast cools its luck (server: fair.cold, the pace, owner 16/10); honest, no number, that stall only
 const coldLine=tab=>{const c=F().cool||F().cold;if(!c||c.game!==tab)return '';
-  return `<p class="fh-cold" role="note">🥶 Vận đang nguội vì chơi liền một trò. ${c.switch?`Cần thêm ${c.switch} ván ≥ ${xu(c.min||20)} ở trò khác (bầu cua, chiếu trong, lô tô, vé cào, đua chó)`:'Đổi trò khác'} hoặc nghỉ ${c.gap} phút là vận ấm lại; ném vòng, ô ăn quan, phóng dao không tính.</p>`;};
+  return '<p class="fh-cold" role="note">🥶 Chơi dồn dập quá, vận đang nguội. Chậm tay lại chút là vận ấm lại.</p>';};
 // 🍀 Lộc trời cho: shown once the stall's own result has played out
 function locCard(){
   const r=S.loc;if(!r||animating())return '';
@@ -601,7 +601,7 @@ function bcView(){
     <div class="fh-chips" role="group" aria-label="Mỗi lần chạm đặt"><span>Mỗi chạm</span>${CHIPS.map(c=>`<button type="button" class="fh-chip${b.chip===c?' on':''}" data-fh="chip" data-v="${c}" aria-pressed="${b.chip===c}" data-fh-key="chip-${c}">${c}</button>`).join('')}${amtBox('bc',CHIPS.includes(b.chip)?0:b.chip)}${btn('Gom lại','clear',{},'ghost small',total&&!rolling?' data-fh-key="gom"':' disabled data-fh-key="gom"')}</div>
     ${stop?'<p class="fh-rule"><b>Hôm nay chơi đủ rồi, mai ghé lắc tiếp nha.</b></p>':''}<div class="fh-go"><span>Đặt <b>${xu(total)}</b></span>${btn(rolling?'Đang lắc…':'🥣 Lắc!','roll',{},'primary big',total&&!rolling&&!stop&&!why?' data-fh-key="roll"':' disabled data-fh-key="roll"')}</div>
     ${why&&!stop&&!rolling?`<p class="fh-why">${esc(why)}: bớt tiền đặt nha (Gom lại rồi đặt ít hơn).</p>`:''}
-    <p class="fh-rule">Ra mấy con trùng mặt đặt thì ăn bấy nhiêu lần tiền cược, kèm tiền vốn. Ba con giống nhau (bão) ăn ${r.bao||10} lần.</p>
+    <p class="fh-rule">${r.bao_low?`Ra mấy con trùng mặt đặt thì ăn bấy nhiêu lần tiền cược, kèm tiền vốn. Ba con giống nhau (bão) ăn ${r.bao} lần; lắc dồn dập quá hoặc hôm nay đã lời đậm thì bão ăn ${r.bao_low} lần.`:`Ra mấy con trùng mặt đặt thì ăn bấy nhiêu lần tiền cược, kèm tiền vốn. Ba con giống nhau (bão) ăn ${r.bao||10} lần.`}</p>
     <p class="fh-rule">🎲 Ba con xúc xắc lăn ngẫu nhiên thật, đặt mặt nào cũng như nhau.</p>
   </section>`;
 }
@@ -669,7 +669,7 @@ function xdView(){
     <div class="fh-chips" role="group" aria-label="Tiền cược"><span>Cược</span>${XD_STAKES.map(v=>{const no=xdWhy(v);return `<button type="button" class="fh-chip${x.stake===v?' on':''}" data-fh="stake" data-v="${v}" aria-pressed="${x.stake===v}" data-fh-key="stake-${v}"${dis||no?' disabled':''}${no?` title="${esc(no)}"`:''}>${v}</button>`;}).join('')}${amtBox('xd',XD_STAKES.includes(x.stake)?0:x.stake,dis)}</div>
     <div class="fh-go"><span>Chọn <b>${x.side==='chan'?'Chẵn':'Lẻ'}</b> · <b>${xu(x.stake)}</b></span>${btn(busy?'Đang xóc…':hold>0?`⏳ Chờ <span data-fh-count="xdwait">${Math.max(1,Math.ceil(hold/1000))}</span> giây`:'🫙 Xóc!','shakexd',{},'primary big',dis||why||hold>0?' disabled data-fh-key="xd"':' data-fh-key="xd"')}</div>
     ${why&&!wait&&can.length?`<p class="fh-why">${esc(why)}: chọn mức cược nhỏ hơn nha (tính cả tiền phạt ${xu(xdWorst(x.stake)-x.stake)} nếu công an ghé).</p>`:''}
-    <p class="fh-rule">Bốn đồng xu, mặt đỏ chẵn (0, 2, 4) là Chẵn, lẻ (1, 3) là Lẻ. Đoán trúng ăn 1:1.</p>
+    <p class="fh-rule">Bốn đồng xu, mặt đỏ chẵn (0, 2, 4) là Chẵn, lẻ (1, 3) là Lẻ. Đoán trúng ăn 0,75 lần tiền cược (nhà cái giữ 25%).</p>
   </section>`;
 }
 function raidCard(r){
@@ -1047,7 +1047,7 @@ const kn=()=>KN??=knifeSetup({S,F,btn,say,xu,esc,send,render,sfx,pick,reduce,ser
 
 /* ---- 🎟️ Vé số cào: ./fair-scratch.js (set up on first use); its prize is in the wallet before it is scratched open ---- */
 let XS=null;
-const xs=()=>XS??=scratchSetup({S,F,btn,say,xu,esc,send,render,sfx,pick,reduce});
+const xs=()=>XS??=scratchSetup({S,F,btn,say,xu,esc,send,render,sfx,pick,reduce,payX});
 const xsHold=()=>XS?XS.hold():0;
 const dgHold=k=>DG?DG.hold(k):0;   // 🐕 a race already paid but still running: not shown yet
 

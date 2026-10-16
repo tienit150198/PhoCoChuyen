@@ -151,7 +151,7 @@ class GoldenDraws(FairBase):
         j = {golden.DISPLAY_KEY: dict(id=golden.KEY, starts=int(OPEN))}
         self.assertEqual(fh.luck_p(j, None, 'xs', OPEN + 1, stake=10), fh.BASES['xs'])
 
-    def test_absent_event_retains_ordinary_streak_decay_and_refund_prizes(self):
+    def test_absent_event_retains_ordinary_streak_pace_and_prizes(self):
         golden.clear()
         j = dict(fair_balance={'xs': fh.STREAK})
         p = fh.luck_p(j, None, 'xs', OPEN, stake=10)
@@ -160,8 +160,8 @@ class GoldenDraws(FairBase):
         self.assertFalse(fh._draw_luck(j, 'xs', p))
         for n in range(100):
             p = fh.luck_p(j, None, 'xs', OPEN + n, stake=10)
-        self.assertEqual(p, fh.P_FLOOR)
-        self.assertEqual(scratch.prize_mult(Dice(coins=[0])), 1)
+        self.assertAlmostEqual(p, fh.BASES['xs'] - .12)   # owner 16/10: the pace, 16+ tickets in a minute
+        self.assertEqual(scratch.prize_mult(Dice(coins=[0])), scratch.MULTS[0])
 
     def test_ineligible_games_keep_normal_rules(self):
         for game in ('bc', 'dg', 'ring', 'kn', 'oaq'):
@@ -185,7 +185,7 @@ class GoldenDraws(FairBase):
                 self.assertEqual(scratch.read(ticket['cells']), ticket['prize'])
                 self.assertEqual(s['journey']['wallet'], 100000 + ticket['net'])
                 if won:
-                    self.assertGreaterEqual(ticket['mult'], 2)
+                    self.assertGreater(ticket['mult'], 1)
                 engine.validate_state(s)
 
     def test_seeded_distribution_is_near_target_including_positive_net_scratch_prizes(self):
@@ -233,7 +233,7 @@ class GoldenDraws(FairBase):
         j = story()['journey']
         end = OPEN + golden.DURATION
         for n in range(40):
-            fh.luck_p(j, None, 'xs', end - 100 + n, stake=10)
+            fh.luck_p(j, None, 'xs', end - 40 + n, stake=10)   # 40 tickets in the event's last minute
         j = json.loads(json.dumps(j))
         golden.clear()  # a public read on another worker has no command context
         self.assertIsNone(fh.cold(j, end - 1))

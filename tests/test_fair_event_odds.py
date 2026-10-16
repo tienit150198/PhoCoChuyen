@@ -1,5 +1,5 @@
-"""Owner 05/10: one repetition floor, 20% fewer raids. Owner 07/10: 50% won rounds, a long run of one stall cools to
-40% (bầu cua exempt: honest dice)."""
+"""Owner 05/10: one repetition floor, 20% fewer raids. Owner 07/10: a long run of one stall cools to 40% (bầu cua
+exempt: honest dice); since 16/10 only the free ném vòng still cools that way, xd/lt/xs by their pace."""
 import unittest
 
 from game import fair as fh
@@ -18,37 +18,50 @@ class EventOdds(unittest.TestCase):
         self.assertEqual((xs.P_HI, xs.P_LO), (fh.BASES['xs'], fh.BASES['xs']))
 
     def test_repetition_cools_every_luck_stall_but_bau_cua(self):
+        """The free ném vòng still decays round by round; owner 16/10: xd/lt/xs slow by their pace only (12 rounds a
+        minute: .57 − .05 from the 11th); bầu cua's draw is honest dice."""
         for game in fh.CHANCE_GAMES:
             j = {}
             rates = [fh.luck_p(j, None, game, OPEN + i * 5) for i in range(100)]
-            base = fh.chance_rate(game, OPEN)
+            base = fh.BASES.get(game, fh.LUCK_BASE)
             if game == 'bc':   # honest dice: exempt
                 self.assertEqual(set(rates), {base})
                 continue
-            floor = fh.XD_FLOOR if game == 'xd' else fh.P_FLOOR
-            free = 10 if game == 'ring' else 1
+            if game in fh.DRAWN:
+                self.assertEqual(rates[:10], [base] * 10)
+                self.assertEqual(rates[10:], [round(base - .05, 3)] * 90)
+                continue
+            free = 10
             self.assertEqual(rates[:free], [base] * free)
             self.assertAlmostEqual(rates[free], base - fh.RUN_STEP)
             self.assertEqual(rates, sorted(rates, reverse=True))
-            self.assertEqual(rates[30:], [floor] * 70)
+            self.assertEqual(rates[30:], [fh.P_FLOOR] * 70)
 
     def test_switch_or_break_resets_run(self):
         j = {}
         for i in range(40):
             fh.luck_p(j, None, 'bc', OPEN + i)
-        self.assertEqual(fh.luck_p(j, None, 'lt', OPEN + 40), fh.chance_rate('lt', OPEN + 40))
+        self.assertEqual(fh.luck_p(j, None, 'lt', OPEN + 40), fh.BASES['lt'])
         self.assertEqual(fh.luck_p(j, None, 'bc', OPEN + 41), fh.chance_rate('bc', OPEN + 41))
         for i in range(40):
             fh.luck_p(j, None, 'bc', OPEN + 42 + i)
         self.assertEqual(fh.luck_p(j, None, 'bc', OPEN + 82 + 181), fh.chance_rate('bc', OPEN + 263))
+        for i in range(20):
+            fh.luck_p(j, None, 'xs', OPEN + 300 + i)
+        self.assertLess(fh.luck_p(j, None, 'xs', OPEN + 320), fh.BASES['xs'])
+        self.assertEqual(fh.luck_p(j, None, 'xs', OPEN + 320 + fh.PACE_S), fh.BASES['xs'])   # a minute's break
 
-    def test_profit_does_not_matter_and_spam_never_breaches_the_floor(self):
+    def test_profit_matters_and_spam_never_breaches_the_floor(self):
+        """Owner 16/10: a day 100k up draws .45 at xd/lt/xs, spam then .40 at most; never below P_MIN."""
         f = dict(fh.initial(), date=fh.vn_date(OPEN), net=100000)
         for game in fh.CHANCE_GAMES:
             j = {}
             rates = [fh.luck_p(j, f, game, OPEN + i) for i in range(300)]
             self.assertTrue(all(p >= fh.P_FLOOR for p in rates))
-            self.assertEqual(rates[0], fh.chance_rate(game, OPEN))
+            self.assertTrue(all(p >= fh.P_MIN for p in rates))
+            self.assertEqual(rates[0], fh.P_HOT if game in fh.DRAWN else fh.chance_rate(game, OPEN))
+            if game in fh.DRAWN:
+                self.assertEqual(min(rates), fh.P_MIN)
 
 
 class RaidOdds(FairBase):

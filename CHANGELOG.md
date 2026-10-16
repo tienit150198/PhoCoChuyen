@@ -1,3 +1,14 @@
+# v2.4.34 — 2026-10-16
+
+🛎️ Nghề mới Khách sạn Sông Mây (chủ game 16/10 "thêm nghề khách sạn đi"): nghề làm công (operations.SALARIED, lương hợp đồng khi khép ca + thưởng mỗi việc theo chất lượng), xoay 6 vị trí: lễ tân, dọn phòng, giặt là, bữa sáng, sửa chữa, trang trí sảnh; mỗi việc vài bước kiểm ở server, sai bước làm lại và trừ chất lượng. Mùa Valentine / Tết / Noel (ngày Việt Nam): thêm một khách, thưởng ×1,5, sảnh trang trí theo mùa. 12 chuyện quầy lễ tân, truyện 5 phần, chứng chỉ, nấc thăng tiến, nhà isometric, lô ở khu công viên, tiếng Anh. Mở từ chương 3 qua journey.LATE_UNLOCKS (không ghi vào unlocked của mọi save), chưa làm thì không lưu (engine.DORMANT như hải quan): rollback xuống 2.4.33 vẫn đọc được save chưa đụng tới khách sạn.
+
+🎲 Cân lại chợ đen (chủ game 16/10: "tỷ lệ 55 - 60% … đừng cho lỗ nhưng đừng cho lãi nhiều", tính cả cheat / thua nhỏ rồi cược lớn / spam; "đừng giới hạn 600 ván, … spam 1 game nhanh quá thì thua cao hơn"):
+- Chiếu trong, lô tô, vé cào rút 57%; theo lãi/lỗ chợ đen hôm nay: lãi ≥ 100.000 → 45%, lãi > 30.000 → 52%, đang lỗ mà cược ≤ min(số lỗ, 5.000) → 60%. Cược từ 50.000: tối đa 40% + công an như cũ. Bốn ván thắng liền vẫn nguội 45%.
+- Nhịp chơi (journey.fair_pace, không giới hạn số ván): một quầy quá 10 ván trong 60 giây −5 điểm, từ 16 ván −12 điểm, sàn 40%; bầu cua bão 10 và đua chó giá cũ khi chơi dồn hoặc lãi ≥ 100.000. Gợi ý "🥶 Chơi dồn dập quá" thay cho "Vận đang nguội vì chơi liền một trò".
+- Bỏ ván đầu ngày 65% và các khung 70% bí mật (fair_boost.rate luôn None), giữ khoảng cách 3 giây của xóc đĩa; giảm dần theo chuỗi ván (RUN_STEP) không còn áp cho chiếu trong / lô tô / vé cào.
+- Trả thưởng: chiếu trong thắng ăn 0,75 lần tiền cược (xâu 25%), lô tô kinh 1,8×, vé cào trúng trung bình 1,775× (không còn giải hoàn vé), bầu cua bão 20:1, đua chó +~5%.
+- Mô phỏng (scripts/sim_bm_strategies.py, docs/FAIR_HOUSE_EDGE.md): chơi thường 57% thắng, RTP ~100%; gấp thếp 99%, thua nhỏ rồi cược 45k 98%, bot 3 giây 84%, dò 3 ván rồi 49k 94%.
+
 # v2.4.33 — 2026-10-16
 
 🧰 Kho báu trong phố (chủ game 16/10: "giới hạn 1 ngày 1 người 300 rương (0h thì reset), k cần thông báo"): town_treasure.DAY_MAX = 300, đếm từ 0h giờ Việt Nam (UTC+7) thay vì 24 giờ trượt; quá số thì báo "Hôm nay bạn đã nhặt đủ 300 rương rồi. Sau 0 giờ đêm nay nhặt tiếp nhé!" (treasure_day). Không có dòng Có gì mới cho phần này (chủ game dặn).

@@ -9,16 +9,17 @@ from tests.test_fair import FairBase, Dice, OPEN, story
 
 
 class EvenRates(unittest.TestCase):
-    """Owner 07/10: one rate a stall whatever the price, time or net (a long run of one stall cools); 08/10: each
-    stall's own (BASES), below what breaks even."""
+    """Owner 07/10: one rate a stall whatever the price or time; 08/10: each stall's own (BASES). Owner 16/10: today's
+    net sets the band of xd/lt/xs (tests/test_bm_balance_1016.py); at net 0 every price and hour draws BASES."""
     def test_every_price_time_and_net_has_the_same_base_rate(self):
         for game in fh.CHANCE_GAMES:
             want = fh.BASES.get(game, fh.LUCK_BASE)
+            top = fh.P_BACK if game in fh.DRAWN else want   # chance_rate: the most an ordinary round ever draws
             for i in range(100):
                 for price in (2, 10, 50, 500, 1000):
-                    self.assertEqual(fh.chance_rate(game, OPEN + i*1800, price, 100000), want)
+                    self.assertEqual(fh.chance_rate(game, OPEN + i*1800, price, 100000), top)
                     j = {}   # the first round of a run
-                    self.assertEqual(fh.luck_p(j, None, game, OPEN+i, stake=price), want)
+                    self.assertEqual(fh.luck_p(j, None, game, OPEN+i*1800, stake=price), want)
 
     def test_no_sure_win_after_losses(self):
         # 07/10: the sure win after four losses is gone (bet small four times, then big): a bad stream loses on.

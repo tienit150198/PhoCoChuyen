@@ -21,7 +21,9 @@ class Rotation(unittest.TestCase):
             self.assertIn(selected, games)
             self.assertEqual(fh.featured_game(t + 1799.999), selected)
             self.assertNotEqual(fh.featured_game(t + 1800), selected)
-            self.assertTrue(all(fh.chance_rate(g, t) == fh.BASES.get(g, fh.LUCK_BASE) for g in games))
+            self.assertTrue(all(fh.chance_rate(g, t) == (fh.P_BACK if g in fh.DRAWN else fh.BASES.get(g, fh.LUCK_BASE))
+                                for g in games))
+            self.assertTrue(all(fh.luck_p({}, None, g, t, stake=10) == fh.BASES[g] for g in fh.DRAWN))
         self.assertEqual(set(picked[:5]), set(games))
         self.assertEqual(picked[:5], picked[5:])
 
@@ -39,26 +41,29 @@ class Rotation(unittest.TestCase):
                         self.assertTrue(all(low <= fh.chance_rate(game, OPEN, stake, net) <= rate
                                             for stake, rate in zip(range(minimum, 501), rates)))
 
-    def test_repeat_floor_never_increases_an_already_lower_rate(self):
-        x, low = fh.XD_BASE, fh.XD_FLOOR   # 07/10: a long run of xóc đĩa cools to its floor (40% won rounds)
-        for selected, stake, base, floor in [('xd', 10, x, low), ('xd', 500, x, low),
-                                              ('ring', 10, x, low), ('ring', 500, x, low)]:
+    def test_the_pace_never_increases_an_already_lower_rate(self):
+        x = fh.XD_BASE   # owner 16/10: a fast minute of xóc đĩa draws .05, then .12 lower (never below P_MIN)
+        for selected, stake in [('xd', 10), ('xd', 500), ('ring', 10), ('ring', 500)]:
             with self.subTest(selected=selected, stake=stake), mock.patch.object(fh, 'featured_game', return_value=selected):
                 j = {}
                 rates = [fh.luck_p(j, None, 'xd', OPEN + i, stake=stake) for i in range(80)]
-                self.assertEqual(rates[:4], [base, .535, .52, .505])
-                self.assertAlmostEqual(rates[-1], floor)
+                self.assertEqual(rates[:4], [x] * 4)
+                self.assertEqual(rates[10:16], [.52] * 5 + [.45])
+                self.assertAlmostEqual(rates[-1], round(x - .12, 3))
+                self.assertGreaterEqual(min(rates), fh.P_MIN)
                 self.assertEqual(rates, sorted(rates, reverse=True))
 
-    def test_scratch_return_is_below_cost_for_most_tiers_even_when_boosted(self):
+    def test_scratch_return_is_the_same_at_every_tier_and_below_cost_once_up(self):
         mean = sum(m * w for m, w in xs.PRIZES) / sum(w for _, w in xs.PRIZES)
         with mock.patch.object(fh, 'featured_game', return_value='xs'):
-            returns = [fh.chance_rate('xs', OPEN, p) * mean for p in xs.TIERS]
-        # Owner 14/10: first draw 55%; unchanged mean prize 1.801 gives 99.055% RTP.
-        self.assertAlmostEqual(returns[0], fh.BASES['xs'] * 1.801)
+            returns = [fh.luck_p({}, None, 'xs', OPEN, stake=p) * mean for p in xs.TIERS]
+        # Owner 16/10: 57% at net 0, a won ticket averages 1.775 (no refund prize): 101.175% before the cool-off.
+        self.assertAlmostEqual(mean, 1.775)
+        self.assertAlmostEqual(returns[0], fh.BASES['xs'] * 1.775)
         self.assertTrue(all(abs(r - returns[0]) < 1e-9 for r in returns))
-        self.assertAlmostEqual(returns[0], .99055)
-        self.assertLess(returns[0], 1)
+        self.assertAlmostEqual(returns[0], 1.01175)
+        self.assertLess(fh.P_UP * mean, 1)                         # a day more than 30k up: 92.3%
+        self.assertLess(fh.P_HOT * mean, .8)                       # 100k up: 79.9%
 
 
 class RotationCommands(FairBase):

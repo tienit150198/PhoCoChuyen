@@ -176,8 +176,9 @@ class KnifeAndRing(unittest.TestCase):
 
 
 class FairWinRate(FairBase):
-    """Owner 07/10: every luck stall is won about 50% of the time in normal play (a long winning streak cools off to
-    50%); a long run of one stall cools to 40%. Real commands, a seeded source standing in for the OS one."""
+    """Owner 07/10: every luck stall is won at its own rate in normal play (a long winning streak cools off to
+    WIN_P_LOW); since 16/10 chiếu trong, lô tô and vé cào draw .57 (.60 winning back a small loss) and cool by their pace,
+    the free ném vòng's long run cools to 40%. Real commands, a seeded source standing in for the OS one."""
     N = 1500
 
     def setUp(self):
@@ -192,7 +193,7 @@ class FairWinRate(FairBase):
             if i == skip:
                 wins = 0
             if run and i and i % run == 0:
-                for key in ('fair_run', 'fair_run2', 'fair_run3', fh.COOL_KEY):   # as if 3 rounds elsewhere
+                for key in ('fair_run', 'fair_run2', 'fair_run3', fh.COOL_KEY, fh.PACE_KEY):   # 3 rounds elsewhere, a minute
                     s['journey'].pop(key, None)
             f = s['journey'].get('fair')
             if f:
@@ -225,15 +226,23 @@ class FairWinRate(FairBase):
             with self.subTest(game=game):
                 rate = self.play(game)
                 want = fh.BASES[game] * (1 - fh.RAID_PCT / 100) if game == 'xd' else fh.BASES[game]   # a raid is a loss
-                self.assertAlmostEqual(rate, want, delta=.03, msg=(game, rate))
-                if game in ('xd', 'lt'):
-                    self.assertLess(want, .5)   # the even-money stalls
+                if game in fh.DRAWN:   # owner 16/10: .57, or .60 winning back a small loss; the streak cool-off
+                    self.assertTrue(want * .98 - .03 <= rate <= fh.P_BACK + .03, (game, rate))
+                else:
+                    self.assertAlmostEqual(rate, want, delta=.03, msg=(game, rate))
+                if game == 'xd':
+                    self.assertLess(want * (1 + fh.XD_PAY_PCT / 100), 1)   # chiếu trong pays 0.75×: the house keeps a bit
 
-    def test_spamming_one_stall_cools_to_40_percent(self):
+    def test_spamming_one_stall_cools(self):
+        """The free ném vòng's long run cools to 40%; since 16/10 chiếu trong and vé cào cool by their pace instead
+        (a round every few seconds: .12 off today's band, .57 or .60 winning back a small loss)."""
         for game in ('xd', 'xs', 'ring'):
             with self.subTest(game=game):
                 rate = self.play(game, run=None, n=1000, skip=fh.RUN_FREE + 12)
-                self.assertAlmostEqual(rate, .40, delta=.035, msg=(game, rate))
+                if game == 'ring':
+                    self.assertAlmostEqual(rate, .40, delta=.035, msg=(game, rate))
+                else:
+                    self.assertTrue(fh.P_MIN < rate < fh.BASES[game] - .04, (game, rate))
 
     def test_long_streaks_cool_only_to_win_p_low(self):
         for game, base in (('bc', fh.LUCK_BASE), ('xd', fh.XD_BASE)):
@@ -247,9 +256,11 @@ class FairWinRate(FairBase):
             with patch.object(fh, '_rng', Spy(77)):
                 results = [fh._draw_luck(j, game, base) for _ in range(60000)]
             rate = sum(results) / len(results)
-            self.assertAlmostEqual(rate, base, delta=.01, msg=game)   # the stall's own rate (fair.BASES), streaks and all
+            p, q = base, fh.WIN_P_LOW   # the stall's own rate (fair.BASES) less the share of draws after 4 wins in a row
+            capped = p**4 / ((1 - q) * sum(p**i for i in range(4)) + p**4)
+            self.assertAlmostEqual(rate, p - (p - q) * capped, delta=.01, msg=game)
             if game == 'xd':
-                self.assertLess(base * (1 - fh.RAID_PCT / 100), .5)
+                self.assertLess(base * (1 - fh.RAID_PCT / 100) * (1 + fh.XD_PAY_PCT / 100), 1)
             windows = [sum(results[i:i + 1000]) / 1000 for i in range(0, 60000, 1000)]
             self.assertGreaterEqual(min(windows), fh.WIN_P_LOW - .02, game)   # 1000 draws at .485: some noise
             streak = 0   # after four wins in a row the next draw is never worse than WIN_P_LOW
