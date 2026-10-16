@@ -92,7 +92,7 @@ ORDER = ('milk_tea',
  'lifeguard',
  'police',
  'zpop',
- 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel')
+ 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet')
 # Careers still being built: their entry may be a stub until someone writes it.
 PENDING = ()
 SECTIONS = ('jobs', 'steps', 'stars', 'mistakes', 'prep', 'surprises')
@@ -6882,6 +6882,22 @@ CAREERS.update({
         mistakes=[dict(bad='Giao phòng chưa dọn, chép số phiếu giặt, quên ngắt điện khi sửa.', result='Phải sửa bước đó; chất lượng và thưởng giảm.')],
         prep=['Ứng tuyển ở Sông Mây trước khi làm (mở từ chương 3). Bạn nhận lương hợp đồng; thưởng chất lượng nhỏ theo từng việc.'],
         surprises=['Quầy lễ tân hay có chuyện lạ: khách mang vịt, đòi phòng số 8, nhờ giấu bánh sinh nhật… chọn cách xử lý cho khéo.'], buttons=[]),
+    'banquet': dict(emoji='👨‍🍳', name='Nhà hàng tiệc', place='Nhà hàng tiệc Hồng Mây',
+        intro='Bạn là nhân viên ca ở nhà hàng tiệc Hồng Mây: đầu ca chọn vào bếp (phụ bếp, sau thử việc là đầu bếp) hay ra sảnh sự kiện.',
+        jobs=[dict(emoji='🔪', name='Phụ bếp: sơ chế', how='Chọn thớt đúng màu, làm sạch hoặc rã đông đúng cách, cân đủ gam theo số suất, cất đúng ngăn tủ.'),
+              dict(emoji='🥗', name='Phụ bếp: salad và dụng cụ', how='Rửa rau đúng thứ tự, bỏ món trái lưu ý của khách; lấy đủ dụng cụ, đếm chén đĩa cộng 10% dự phòng, kiểm dao.'),
+              dict(emoji='📋', name='Đầu bếp: kiểm nguyên liệu', how='Đo nhiệt, xem cảm quan, trả hàng không đạt có biên bản, cân phần nhận, cất hàng lạnh trước.'),
+              dict(emoji='🍲', name='Đầu bếp: nấu và ra món', how='Đúng thứ tự công thức, kiểm độ chín chắc chắn, nếm bằng muỗng riêng; bày đúng dụng cụ, trang trí theo phiếu, kiểm nhiệt trước khi ra.'),
+              dict(emoji='🎀', name='Sảnh sự kiện', how='Tính số bàn, chọn phòng nhỏ nhất đủ chỗ, chốt chủ đề, thực đơn trong ngân sách, đồ uống, trang trí, thử âm thanh, kiểm điện, xử lý sự cố.')],
+        steps=['Đầu ca chọn vị trí: Phụ bếp, Đầu bếp (sau thử việc) hoặc Sảnh sự kiện.',
+               'Ca bếp: làm vệ sinh đầu ca (rửa tay, sát khuẩn, mũ, bao tay, kiểm bếp) trước khi nấu.',
+               'Làm lần lượt từng bước của phiếu; sai thì sửa tại chỗ, chất lượng giảm.',
+               'Ca bếp: dọn bếp và tắt hết thiết bị điện trước khi khép ca.'],
+        stars=['Không sai bước nào giữ chất lượng 100%.', 'Ngày lễ theo giờ Việt Nam: thêm phiếu việc, thưởng ×1.5 nhưng sai một bước trừ chất lượng nhiều hơn.'],
+        mistakes=[dict(bad='Quên vệ sinh đầu ca khi đoàn kiểm tra ghé.', result='Bị nhắc nhở, đánh giá 2 sao, ca đó không tính thử việc.'),
+                  dict(bad='Về mà chưa tắt thiết bị điện.', result='Có thể cháy bếp: đền bù 8% lương ca (2 đến 6 xu) trừ vào ví, không bao giờ quá số tiền đang có.')],
+        prep=['Ứng tuyển ở Hồng Mây trước khi làm (mở từ chương 3). Phụ bếp thử việc 3 ca bếp đạt thì lên Đầu bếp.'],
+        surprises=['Nhà hàng hay có chuyện lạ: khách nhờ giấu nhẫn cầu hôn, chú cún muốn làm phù dâu, chú rể xin vào bếp nếm… chọn cách xử lý cho khéo.'], buttons=[]),
 })
 
 

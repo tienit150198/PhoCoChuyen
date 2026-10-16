@@ -27,7 +27,7 @@ def sources():
 
 class BuildIdTests(unittest.TestCase):
     def test_each_reachable_specialism_shard_changes_build_by_exact_bytes(self):
-        names = ('career_specialisms.json', 'career_specialisms_21_37.json', 'career_specialisms_38_54.json', 'career_specialisms_55.json', 'career_specialisms_56.json')
+        names = ('career_specialisms.json', 'career_specialisms_21_37.json', 'career_specialisms_38_54.json', 'career_specialisms_55.json', 'career_specialisms_56.json', 'career_specialisms_57.json')
         with tempfile.TemporaryDirectory() as root:
             os.mkdir(os.path.join(root, 'data'))
             for name in names:

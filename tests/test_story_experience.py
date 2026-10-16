@@ -98,8 +98,8 @@ class StoryExperienceTest(unittest.TestCase):
             self.assertEqual(a['keepsake'], stories.ARCS[cid]['keepsake'])
             self.assertEqual(s, before)
             validate_state(s)
-        self.assertEqual(len(stories.ARCS), 52)   # + hotel (khách sạn); + customs (hải quan); + library (thư viện), oil (thợ dầu khí), railway (gác chắn đường sắt), nurse (điều dưỡng), lighthouse (gác hải đăng), rescue (tổng đài cứu hộ), lifeguard (cứu hộ hồ bơi), police (công an phường), zpop (bán album ZPOP)
-        self.assertEqual(sum(len(a['beats']) for a in stories.ARCS.values()), 260)   # + hotel's five; + customs' five; + library's, oil's, railway's, nurse's, lighthouse's, rescue's, lifeguard's and police's and zpop's five beats each
+        self.assertEqual(len(stories.ARCS), 53)   # + banquet (nhà hàng tiệc); + hotel (khách sạn); + customs (hải quan); + library (thư viện), oil (thợ dầu khí), railway (gác chắn đường sắt), nurse (điều dưỡng), lighthouse (gác hải đăng), rescue (tổng đài cứu hộ), lifeguard (cứu hộ hồ bơi), police (công an phường), zpop (bán album ZPOP)
+        self.assertEqual(sum(len(a['beats']) for a in stories.ARCS.values()), 265)   # + banquet's five; + hotel's five; + customs' five; + library's, oil's, railway's, nurse's, lighthouse's, rescue's, lifeguard's and police's and zpop's five beats each
 
 
 if __name__ == '__main__':

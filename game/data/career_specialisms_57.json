@@ -1,0 +1,244 @@
+{
+  "banquet": [
+    {
+      "tier": 1,
+      "title": "Lập quy trình vệ sinh đầu ca bếp tiệc",
+      "output_unit": "bảng vệ sinh đầu ca",
+      "inputs": [
+        {
+          "name": "Bộ thẻ quy trình vệ sinh hư cấu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Ghi thứ tự rửa tay, sát khuẩn, đội mũ, đeo bao tay cho từng vị trí bếp giả lập.",
+        "Đặt điểm kiểm bếp gas, máy hút mùi và nhiệt độ tủ mát trước giờ nấu.",
+        "Dán bảng ở cửa bếp và cho bếp trưởng ký duyệt."
+      ],
+      "check": {
+        "prompt": "Bảng nào được nghiệm thu?",
+        "good": "Mọi việc vệ sinh tay làm trước khi đeo bao tay và chạm thực phẩm.",
+        "bad": "Đeo bao tay trước rồi rửa tay sau cho đỡ tốn bao.",
+        "why": "Bao tay chỉ sạch khi đôi tay đã sạch trước đó."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Phân thớt màu cho khu sơ chế",
+      "output_unit": "sơ đồ khu sơ chế",
+      "inputs": [
+        {
+          "name": "Bộ thớt màu mô phỏng",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Gán thớt xanh lá cho rau, đỏ cho thịt sống, xanh dương cho hải sản, vàng cho đồ chín.",
+        "Vẽ khu đặt riêng từng màu thớt và bồn rửa đi kèm.",
+        "Kiểm thử ba phiếu sơ chế xem có lẫn thớt giữa đồ sống và đồ chín không."
+      ],
+      "check": {
+        "prompt": "Sơ đồ nào đạt?",
+        "good": "Đồ sống và đồ chín không bao giờ dùng chung thớt.",
+        "bad": "Dùng một thớt to cho mọi thứ, chỉ cần lau qua giữa hai món.",
+        "why": "Tách thớt là cách đơn giản nhất chặn nhiễm chéo."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Kiểm nhận lô nguyên liệu tiệc cưới",
+      "output_unit": "biên bản kiểm nhận",
+      "inputs": [
+        {
+          "name": "Phiếu giao hàng tiệc hư cấu",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đo nhiệt độ hàng mát, hàng đông và xem cảm quan từng món trên phiếu giả lập.",
+        "Lập biên bản trả hàng không đạt, cân lại phần nhận vào kho.",
+        "Cất hàng lạnh trước, hàng mới xếp sau hàng cũ rồi ghi sổ kho."
+      ],
+      "check": {
+        "prompt": "Biên bản nào được duyệt?",
+        "good": "Hàng không đạt có biên bản trả, tổng nhận chỉ tính hàng đạt.",
+        "bad": "Nhận cả lô cho kịp tiệc, hàng lỗi nấu thật chín là được.",
+        "why": "Nấu chín không cứu được hàng đã hỏng hay rã đông lại."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Tính lượng sơ chế theo số suất tiệc",
+      "output_unit": "bảng định lượng sơ chế",
+      "inputs": [
+        {
+          "name": "Thẻ định lượng món hư cấu",
+          "unit": "thẻ",
+          "quantity": 6,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Đọc số suất từng món trong phiếu tiệc giả lập.",
+        "Nhân số suất với gam mỗi suất cho từng nguyên liệu.",
+        "Đối chiếu tổng gam với tồn kho và báo bếp trưởng phần thiếu."
+      ],
+      "check": {
+        "prompt": "Bảng định lượng nào đúng?",
+        "good": "Mỗi dòng ghi số suất × gam mỗi suất, có đối chiếu tồn kho.",
+        "bad": "Ước chừng bằng mắt rồi làm dư cho chắc.",
+        "why": "Định lượng đúng giữ món đều tay và không phí nguyên liệu."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Ra món nóng đúng nhiệt độ",
+      "output_unit": "phiếu kiểm quầy ra món",
+      "inputs": [
+        {
+          "name": "Nhiệt kế đầu dò mô phỏng",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Đo nhiệt từng món ở quầy ra món giả lập và ghi giờ món nằm chờ.",
+        "Phân loại: ra ngay, hâm lại từ 75°C, hay bỏ vì chờ quá 2 giờ.",
+        "Ghi phiếu kiểm và báo bếp nấu bù phần phải bỏ."
+      ],
+      "check": {
+        "prompt": "Phiếu kiểm nào đạt?",
+        "good": "Món dưới 60°C được hâm lại hoặc bỏ đúng theo thời gian chờ.",
+        "bad": "Món nguội thì quạt thêm cho khách khỏi bỏng rồi ra luôn.",
+        "why": "Món nóng nguội dần là lúc vi khuẩn sinh sôi nhanh nhất."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Đổi món theo lưu ý dị ứng của bàn tiệc",
+      "output_unit": "phiếu báo bếp theo bàn",
+      "inputs": [
+        {
+          "name": "Thẻ lưu ý dị ứng bàn tiệc hư cấu",
+          "unit": "thẻ",
+          "quantity": 5,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Gom lưu ý dị ứng, ăn chay, kiêng của từng bàn trong phiếu giả lập.",
+        "Đổi món hoặc bỏ thành phần theo quy tắc bếp, dán thẻ ở khay ra món.",
+        "Cho người ra món đọc lại thẻ trước khi bưng ra bàn."
+      ],
+      "check": {
+        "prompt": "Phiếu nào được nghiệm thu?",
+        "good": "Bàn có lưu ý nhận đúng món đã đổi, khay có thẻ dị ứng.",
+        "bad": "Nói miệng với người bưng, khỏi dán thẻ cho nhanh.",
+        "why": "Lưu ý dị ứng phải theo món tới tận bàn, không dựa vào trí nhớ."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Chọn phòng tiệc vừa số khách",
+      "output_unit": "phiếu chốt phòng tiệc",
+      "inputs": [
+        {
+          "name": "Sơ đồ phòng tiệc hư cấu",
+          "unit": "tờ",
+          "quantity": 3,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Quy đổi số khách ra số bàn, làm tròn lên và cộng bàn dự phòng nếu là tiệc cưới.",
+        "So số bàn với sức chứa từng phòng và giá thuê.",
+        "Chốt phòng nhỏ nhất đủ chỗ và báo giá cho chủ tiệc."
+      ],
+      "check": {
+        "prompt": "Phiếu chốt nào đúng?",
+        "good": "Phòng nhỏ nhất đủ số bàn, có bàn dự phòng cho tiệc cưới.",
+        "bad": "Lấy sảnh lớn nhất cho rộng rãi, giá tính sau.",
+        "why": "Phòng quá lớn làm khách tốn tiền, phòng quá nhỏ làm tiệc chật."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Lên phương án trang trí sảnh theo chủ đề",
+      "output_unit": "bảng phương án trang trí sảnh",
+      "inputs": [
+        {
+          "name": "Thẻ đồ trang trí sảnh hư cấu",
+          "unit": "thẻ",
+          "quantity": 6,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Liệt kê đồ trang trí hợp dịp và hợp chủ đề khách chọn.",
+        "Đổi hoa tươi sang hoa lụa khi có khách dị ứng phấn hoa; bỏ nến lửa thật trong sảnh kín.",
+        "Trình chủ tiệc duyệt bảng phương án kèm ảnh mẫu."
+      ],
+      "check": {
+        "prompt": "Phương án nào đạt?",
+        "good": "Đủ đồ hợp dịp, hợp chủ đề và tôn trọng mọi lưu ý của khách.",
+        "bad": "Bày càng nhiều càng sang, thêm nến lửa cho lung linh.",
+        "why": "Trang trí đẹp mà không an toàn thì không dùng được."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Kiểm điện và âm thanh trước giờ đón khách",
+      "output_unit": "biên bản kiểm điện sảnh",
+      "inputs": [
+        {
+          "name": "Phiếu kiểm điện sảnh game",
+          "unit": "phiếu",
+          "quantity": 4,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Đi một vòng sảnh giả lập, ghi ổ cắm nối chồng, dây tróc vỏ, máy khói sát rèm, bình chữa cháy bị che.",
+        "Xử lý từng điểm, thử mic, loa và đèn ở bàn đầu.",
+        "Ký biên bản với kỹ thuật âm thanh trước giờ mở cửa."
+      ],
+      "check": {
+        "prompt": "Biên bản nào được duyệt?",
+        "good": "Mọi điểm nguy hiểm được xử lý và thử lại trước khi khách vào.",
+        "bad": "Ghi chú lại để tan tiệc sửa một lượt.",
+        "why": "Sự cố điện giữa tiệc đông người nguy hiểm hơn nhiều lúc sảnh trống."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Điều phối bếp và sảnh ngày lễ cao điểm",
+      "output_unit": "kế hoạch ca ngày lễ",
+      "inputs": [
+        {
+          "name": "Bảng phân ca nhà hàng hư cấu",
+          "unit": "bảng",
+          "quantity": 2,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Chia phụ bếp, đầu bếp và người chạy sảnh theo số tiệc trong ngày lễ giả lập.",
+        "Đặt giờ vệ sinh đầu ca, giờ ra món và người kiểm tắt điện cuối ca.",
+        "Họp giao ca năm phút và ghi người chịu trách nhiệm từng việc."
+      ],
+      "check": {
+        "prompt": "Kế hoạch nào đạt?",
+        "good": "Ngày đông vẫn có người phụ trách vệ sinh đầu ca và tắt điện cuối ca.",
+        "bad": "Ngày đông bỏ qua dọn bếp cuối ca, mai làm bù.",
+        "why": "Ngày càng đông càng dễ quên một thiết bị còn bật."
+      }
+    }
+  ]
+}

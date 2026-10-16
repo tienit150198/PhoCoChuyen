@@ -451,6 +451,17 @@ _profile('hotel', 'Quỳnh Như | Hữu Tâm | Minh Khoa',
     'đã giao đúng phòng sạch, ghi sổ đồ thất lạc và khóa phòng hỏng trước khi bán // gave out only clean matching rooms, logged lost property, and held faulty rooms before selling them',
     'sổ bàn giao phòng và sổ đồ thất lạc // the room handover log and the lost property log')
 
+_profile('banquet', 'Bảo Trân | Gia Huy | Thanh Tùng',
+    'Chú Tâm · bếp trưởng nhà hàng tiệc // Tâm · banquet head chef',
+    'bếp sạch từ đầu ca, món đúng lưu ý của bàn và sảnh tắt điện an toàn // a kitchen clean from the start of the shift, dishes that follow each table\'s notes, and a hall powered down safely',
+    'sơ chế | nấu và ra món | bày trí sảnh // prep | cooking and the pass | hall setup',
+    'Tối thứ bảy có hai tiệc: một đám cưới ba mươi bàn, một tiệc mừng thọ có bàn khách dị ứng hải sản, và sảnh còn chưa kiểm điện. // Saturday night has two parties: a thirty-table wedding, a longevity dinner with a table allergic to seafood, and a hall whose wiring has not been checked.',
+    'Giao {a} sơ chế theo định lượng và thớt màu, {b} nấu và ra món theo thẻ dị ứng từng bàn, {c} kiểm điện, âm thanh rồi bày sảnh theo chủ đề. // Have {a} prep to the portion sheet with colour-coded boards, {b} cook and plate to each table\'s allergy cards, and {c} check the wiring and sound, then set the hall to the theme.',
+    'Món đã lên quầy ra món nhưng nhiệt kế đo 48°C và khay của bàn dị ứng chưa có thẻ. // The dishes are at the pass, but the thermometer reads 48°C and the allergy table\'s tray has no card.',
+    'Giữ khay lại, hâm món tới từ 75°C, dán thẻ dị ứng đúng bàn rồi đo lại trước khi ra món. // Hold the tray, reheat the food to at least 75°C, label the allergy table\'s tray, and measure again before it goes out.',
+    'đã sát khuẩn đầu ca, ra món đúng nhiệt và đúng thẻ dị ứng, tắt điện cuối ca // sanitised at the start of the shift, served at the right temperature with the right allergy cards, and powered down at closing',
+    'sổ vệ sinh đầu ca và phiếu kiểm quầy ra món // the opening hygiene log and the pass temperature sheet')
+
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',
     'nhận diện nguy cơ, xử lý đúng phạm vi và nghiệm thu dòng chảy // hazard recognition, work within scope, and verified drainage',

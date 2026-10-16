@@ -311,6 +311,7 @@ class LazySaveTests(Base):
         stored = json.loads(text)
         self.assertNotIn('customs', stored['careers'])   # 💤 untouched: left out, so old servers can read it
         self.assertNotIn('hotel', stored['careers'])
+        self.assertNotIn('banquet', stored['careers'])
         wake(stored)
         self.assertEqual(stored, self.store.read(token)[0])
 

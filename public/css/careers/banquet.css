@@ -1,0 +1,51 @@
+/* Nhà hàng tiệc Hồng Mây: a warm brick-red kitchen pass, the role picker, the shift checklists and one step at a time. */
+.career-job.banquet{--sk-accent:#b5473a;--sk-accent-2:#e3b35c;min-width:0;overflow-wrap:anywhere}
+.banquet .bq-rush{padding:10px 12px;border-radius:10px;background:var(--sk-surface-2,#f6efe2);border-left:4px solid var(--sk-accent-2);font-size:13px;line-height:1.5}
+.banquet .bq-roles{margin:12px 0}
+.banquet .bq-roles h4,.banquet .bq-shift h4,.banquet .bq-brief h4{margin:0 0 8px}
+.banquet .bq-role-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.banquet .bq-role-row button{min-height:64px;white-space:normal;text-align:left;padding:10px 12px;line-height:1.35;display:grid;gap:3px;align-content:start}
+.banquet .bq-role-row button small{font-size:12px;color:var(--sk-muted,#6e5f5a);font-weight:400}
+.banquet .bq-role.on{border-color:var(--sk-accent);box-shadow:inset 0 0 0 2px var(--sk-accent)}
+.banquet .bq-role.locked{opacity:.72}
+.banquet .bq-shift{padding:14px 16px;margin:12px 0;border-left:5px solid var(--sk-accent-2)}
+.banquet .bq-close summary{font-weight:600}
+.banquet .bq-fire{padding:10px 12px;border-radius:10px;background:#fbebe6;border-left:4px solid #c0392b;font-size:13px;line-height:1.5;margin:8px 0}
+.banquet .bq-post{border:1px solid var(--sk-line,#e0c8b8);border-left:5px solid var(--sk-accent);border-radius:12px;padding:14px 16px;background:var(--sk-surface,#fffaf4);margin:12px 0}
+.banquet .bq-post small{display:block;letter-spacing:.04em;color:var(--sk-muted,#6e5f5a)}
+.banquet .bq-post h3{margin:5px 0 0}
+.banquet .bq-brief{margin:12px 0;padding:12px 14px;border:1px solid var(--sk-line,#e0c8b8);border-radius:10px}
+.banquet .bq-brief ul{margin:0 0 10px;padding-left:20px;line-height:1.5}
+.banquet .bq-halls{width:100%;border-collapse:collapse;font-size:13px}
+.banquet .bq-halls caption{text-align:left;font-weight:600;padding-bottom:4px}
+.banquet .bq-halls th,.banquet .bq-halls td{padding:6px 8px;border-top:1px solid var(--sk-line,#e0c8b8);text-align:left;font-variant-numeric:tabular-nums}
+.banquet .bq-step{padding:16px}
+.banquet .bq-step-count{font-size:13px;color:var(--sk-muted,#6e5f5a);margin:0 0 6px}
+.banquet progress{display:block;width:100%;height:7px;accent-color:var(--sk-accent);margin-bottom:14px}
+.banquet .bq-evidence{padding:12px;border-left:3px solid var(--sk-accent-2);background:var(--sk-surface-2,#f6efe2);line-height:1.55}
+.banquet .bq-options,.banquet .bq-picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
+.banquet .bq-options button,.banquet .bq-picks button{min-height:48px;white-space:normal;text-align:left;padding:12px;line-height:1.4}
+.banquet .bq-pick{display:flex;gap:8px;align-items:flex-start}
+.banquet .bq-pick.on{border-color:var(--sk-accent);box-shadow:inset 0 0 0 2px var(--sk-accent)}
+.banquet .bq-num{flex:0 0 auto;min-width:22px;height:22px;border-radius:11px;background:var(--sk-accent);color:#fff;font-style:normal;font-size:12px;display:inline-flex;align-items:center;justify-content:center}
+.banquet .bq-row{display:flex;flex-wrap:wrap;gap:9px;justify-content:flex-end;margin-top:12px}
+.banquet .bq-row .btn{min-height:44px}
+.banquet .bq-send{min-height:48px}
+.banquet .bq-last,.banquet .bq-finished{padding:12px;background:var(--sk-surface-2,#f6efe2);border-radius:10px;font-size:13px;line-height:1.5}
+.banquet .bq-progress,.banquet .bq-notebook{border-top:1px solid var(--sk-line,#e0c8b8);padding:12px 0;margin-top:10px}
+.banquet summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.banquet .bq-progress ul{list-style:none;padding:0;display:grid;gap:10px}
+.banquet .bq-progress li{display:grid;gap:5px}
+.banquet .bq-progress li span{font-size:13px;color:var(--sk-muted,#6e5f5a)}
+.banquet .bq-rules{padding-left:20px}
+.banquet .bq-rules li{margin:6px 0;line-height:1.5}
+.banquet button:focus-visible,.banquet summary:focus-visible,.banquet input:focus-visible{outline:3px solid var(--sk-accent);outline-offset:3px}
+.banquet .sk-amt-in{min-width:0}
+.banquet .sk-amt input{max-width:100%;font-size:18px}
+html[data-theme="dem"] .career-job.banquet{--sk-accent:#e58a7c;--sk-accent-2:#a8843e}
+html[data-theme="dem"] .banquet .bq-fire{background:#3a201c;border-left-color:#f08a7a}
+@media(max-width:480px){
+  .banquet .bq-options,.banquet .bq-picks,.banquet .bq-role-row{grid-template-columns:minmax(0,1fr)}
+  .banquet .bq-step,.banquet .bq-post,.banquet .bq-shift{padding:13px}
+  .banquet .bq-role-row button{min-height:52px}
+}

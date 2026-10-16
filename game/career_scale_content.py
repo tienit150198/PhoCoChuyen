@@ -153,6 +153,7 @@ lawyer|luật sư phụ trách;soát hồ sơ|Gói hồ sơ tư vấn|hồ sơ|P
 laundry|phân loại đồ;vận hành máy|Mẻ giặt có giao nhận|mẻ|Đồ gắn mã, chất giặt đúng loại, chu kỳ máy và gói trả từng khách|Tách màu chất liệu, đúng nhãn đồ và truy được món thất lạc|Chốt loại vải và chu kỳ trước đặt lịch máy~Gộp mọi chất liệu vào chu kỳ nhanh|Khóa máy theo chu kỳ, tách bàn phân loại và gấp~Xếp hai mẻ chồng giờ trên cùng máy|Treo gói thiếu món, truy mã và báo khách~Bù món tương tự của khách khác|Đối mã món, độ sạch khô và phiếu trả~Chỉ cân tổng đồ trả|Phiếu đồ và chu kỳ;Lịch máy không chồng;Phiếu truy món thiếu;Biên nhận từng mã đồ
 post_office|phân kiện;đối soát bưu chính|Tuyến bưu gửi|tuyến|Mười bưu gửi có mã, lịch tuyến, xác nhận phát và sổ COD riêng|Đúng người nhận, giữ hạn chuyển và tách tiền giữ hộ|Chốt tuyến theo hạn phát, loại kiện và COD~Chia đều kiện bỏ qua hạn phát|Giao tổ phân kiện và tổ tuyến theo tải lịch~Gán cùng tổ cho hai tuyến trùng giờ|Ghi lý do hoàn, giữ nguyên mã và sổ COD~Ghi phát thành công cho kiện bị hoàn|Đối mã phát hoàn và tiền COD giữ hộ~Cộng tiền COD thành thu nhập cá nhân|Bảng tuyến và hạn phát;Lịch tổ phân kiện và tuyến;Phiếu hoàn theo mã;Đối soát phát hoàn và COD
 customs|kiểm tra hồ sơ;kiểm hóa thực tế|Chuyên đề kiểm soát cửa khẩu|lô hàng|Tờ khai điện tử, kết quả phân luồng, biên bản kiểm hóa và sổ hàng tạm giữ|Đúng luồng, đủ chứng từ, không nhận gì của doanh nghiệp|Chốt danh mục lô theo luồng và hạn thông quan~Gom mọi lô vào luồng xanh cho nhanh|Chia tổ kiểm hồ sơ với tổ kiểm thực tế~Để một người vừa khai vừa kiểm|Niêm phong hàng tạm giữ, ghi biên lai từng món~Để hàng tạm giữ ngoài kho không sổ|Đối chiếu tờ khai, biên bản và số thuế đã thu~Đánh giá theo số lô thông quan nhanh|Danh mục lô theo luồng;Phân công kiểm hồ sơ và thực tế;Sổ hàng tạm giữ có biên lai;Đối soát tờ khai và thuế
+banquet|bếp tiệc;sảnh sự kiện|Ca nhà hàng tiệc|ca|Phiếu tiệc, định lượng sơ chế, phiếu kiểm nhận hàng, sơ đồ sảnh và sổ vệ sinh đầu, cuối ca|Bếp sạch, món đúng lưu ý từng bàn, sảnh đúng yêu cầu khách và tắt điện an toàn|Chốt số bàn, phòng tiệc và thực đơn theo phiếu đặt~Nhận tiệc trước rồi mới tính số bàn|Chia phụ bếp, đầu bếp và người chạy sảnh theo giờ ra món~Để một người vừa nấu vừa bày sảnh|Dừng món sai nhiệt, đổi món theo thẻ dị ứng và báo bàn~Ra món nguội cho kịp giờ|Đối chiếu sổ vệ sinh đầu ca, phiếu ra món và biên bản tắt điện~Chỉ đếm số bàn đã phục vụ|Phiếu tiệc và sơ đồ sảnh;Lịch phụ bếp, đầu bếp và sảnh;Phiếu kiểm quầy ra món;Sổ vệ sinh và tắt điện cuối ca
 hotel|lễ tân;buồng phòng|Ca vận hành khách sạn|ca|Bảng phòng, phiếu đặt, lịch buồng phòng, sổ giặt là và lịch bảo trì của một ca|Phòng sạch đúng yêu cầu, không giao trùng phòng, đồ khách thất lạc có sổ|Chốt bảng phòng theo phiếu đặt và tình trạng buồng~Giao phòng chưa dọn cho khách tới sớm|Chia lễ tân, buồng phòng, giặt là và bảo trì theo giờ cao điểm~Để một người vừa trực quầy vừa dọn cả tầng|Khóa phòng hỏng, đổi phòng cho khách và hẹn nhà thầu~Bán phòng hỏng rồi xin lỗi sau|Đối chiếu phòng sạch, đồ thất lạc và phiếu giặt từng ca~Chỉ đếm số phòng đã bán|Bảng phòng và phiếu đặt;Lịch ca theo vị trí;Sổ phòng khóa và hẹn thợ;Sổ đồ thất lạc và phiếu giặt'''
 
 # Procurement uses divisible real base units, not a monetary leftover without
@@ -214,7 +215,8 @@ lawyer|Giấy hồ sơ tư vấn|tờ|500
 laundry|Nước giặt|ml|1000
 post_office|Giấy gói bưu gửi|tờ|100
 customs|Tem niêm phong hải quan|cái|100
-hotel|Bộ tiện nghi phòng|bộ|100'''
+hotel|Bộ tiện nghi phòng|bộ|100
+banquet|Bao tay dùng một lần|đôi|100'''
 
 # Approved scope names; static runtime data, no documentation import.
 _SCOPES = '''mother_baby|retail|Tiệm chuyên đồ sơ sinh;Cửa hàng mẹ bé;Trung tâm mẹ bé;Hai cửa hàng;Cụm ba tiệm;Chuỗi năm tiệm;Chuỗi khu vực;Mạng lưới mẹ bé|Tư vấn theo tuổi, truy lô, đổi trả liên điểm|quầy tư vấn
@@ -272,6 +274,7 @@ lawyer|professional|Bàn tư vấn;Văn phòng luật;Hãng luật nhỏ;Hai nh�
 laundry|service|Tiệm giặt lớn;Tiệm nhiều máy;Xưởng giặt;Hai cơ sở;Cụm ba điểm;Chuỗi năm điểm;Chuỗi khu vực;Mạng giặt và giao nhận|Máy có chu kỳ, chia đồ, lịch giao, đồ thất lạc và bảo trì|máy có lịch chạy
 post_office|agency|Kèm giao dịch viên;Điều phối quầy;Dự án bưu cục;Hai tổ;Cụm bưu cục;Chương trình liên tuyến;Điều phối khu vực;Chương trình bưu chính|Chia tuyến, phân kiện, COD, thời hạn và hàng hoàn|tổ bưu chính
 customs|agency|Kèm kiểm tra viên;Phối hợp đội;Chuyên đề luồng hàng;Phối hợp hai đội;Chuyên đề liên đội;Dự án liên cửa khẩu;Phối hợp khu vực;Chương trình kiểm soát hải quan|Phân luồng, kiểm hóa, thuế, hàng tạm giữ; chức vụ qua bổ nhiệm|đội nghiệp vụ
+banquet|agency|Kèm bếp trưởng;Phụ trách một bếp;Dự án mùa cưới;Hai ca phối hợp;Cụm nhà hàng tiệc;Chương trình liên cơ sở;Điều phối khu vực;Chương trình ẩm thực tiệc|Phiếu tiệc, sơ chế, ra món, sảnh sự kiện, vệ sinh và an toàn điện|ca bếp và sảnh
 hotel|agency|Kèm trưởng ca;Điều phối một tầng;Dự án mùa lễ;Hai ca phối hợp;Cụm khách sạn;Chương trình liên cơ sở;Điều phối khu vực;Chương trình vận hành lưu trú|Bảng phòng, buồng phòng, giặt là, bữa sáng, bảo trì và mùa lễ|ca vận hành'''
 
 
