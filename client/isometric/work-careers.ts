@@ -62,6 +62,7 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   laundry:identity('Đọc nhãn vải · giặt và trả đúng khách','Bàn xử lý & gấp đồ','Giặt & xử lý vết bẩn','Gấp & kiểm phiếu'),
   post_office:identity('Kiểm bưu gửi · tính cước và chia tuyến','Bàn soạn bưu gửi','Bao gói & chia tuyến','Cân cước & bàn giao'),
   hotel:identity('Nhận phòng · dọn phòng và lo cả ca','Quầy lễ tân','Buồng phòng & giặt là','Bảng phòng & chìa khóa'),
+  banquet:identity('Sát khuẩn đầu ca · nấu, bày tiệc và tắt điện cuối ca','Bếp tiệc','Sơ chế & bếp nóng','Sảnh tiệc & quầy ra món'),
   customs:identity('Phân luồng tờ khai · kiểm hóa và tính thuế','Bàn kiểm tra hồ sơ','Máy soi & hàng tạm giữ','Quầy thủ tục'),
 };
 
@@ -110,6 +111,13 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,110,cream);
     f('rack',r(2.9,.6,4.2,1.5),104,0xb9a3cf);f('sofa',r(4.7,.7,6.3,1.5),42,mint);f('planter',r(6,3.35,6.5,4.15),70,0x9fb98f);
     z(r(2.6,.3,6.6,1.9),'carpet',0xcdbfd8);z(r(2.85,2.95,6.75,4.45),'checker',0xe6dccb);
+  }else if(career==='banquet'){
+    // The hot line against the back wall, the colour-board prep table in front, the pass to the hall and a set banquet table.
+    clear(false,'tile');s('shelf','shelf',r(.55,1.9,1.45,3.9),1.95,2.9,116,cream);
+    s('workbench','counter',r(3.1,3.2,5.6,4.15),4.35,4.75,60,0xd9a08f);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,108,cream);
+    f('stove',r(2.85,.55,4.2,1.45),64,0xb5473a);f('sink',r(4.6,.6,5.2,1.45),62,blue);f('coldcabinet',r(5.5,.55,6.4,1.5),112,mint);f('desk',r(5.95,3.3,6.5,4.1),46,0xf3dcb4);
+    z(r(2.6,.3,6.6,1.85),'tile',0xe6d2c8);z(r(2.85,2.95,6.75,4.45),'checker',0xf0e2cf);
   }else if(career==='customs'){
     // Declaration files on the left wall, the paper check desk in front, the scanner and the held goods behind.
     clear(false,'tile');s('shelf','bookcase',r(.55,1.9,1.45,3.9),1.95,2.9,116);

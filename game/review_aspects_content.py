@@ -32,7 +32,7 @@ FAMILY = {
     'customer_care': 'office', 'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office',
     'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office',
     'art_studio': 'service', 'laundry': 'service', 'lawyer': 'office', 'post_office': 'office', 'customs': 'office',
-    'hotel': 'service',
+    'hotel': 'service', 'banquet': 'service',
 }
 FAMILY_NAME = {'food': 'Ăn uống', 'shop': 'Cửa hàng', 'service': 'Dịch vụ', 'school': 'Lớp học', 'office': 'Văn phòng'}
 
@@ -76,6 +76,15 @@ ASPECTS = dict((
     A('hotel_view', ('service',), 'Cảnh nhìn từ phòng', 'cảnh phòng chưa hợp ý', topic='ambience', only=('hotel',), subjective=True,
       neg=['mình thích phòng nhìn ra sông hơn một chút'], pos=['cửa sổ nhìn ra cảnh đúng kiểu mình thích'],
       word=('Thích nhìn sông hơn.', 'Cảnh đẹp.')),
+    A('banquet_dish', ('service',), 'Món đúng chuẩn', 'có món phải làm lại trong bếp', topic='clean', only=('banquet',),
+      neg=['có món phải làm lại mới ra bàn'], pos=['món ra nóng, đúng công thức, bày đẹp'],
+      word=('Phải làm lại.', 'Món chuẩn.'), sig_neg=('crit:steps:lo',), sig_pos=('crit:steps:hi',)),
+    A('banquet_hall', ('service',), 'Tiệc đúng ý', 'sảnh còn vài chỗ chưa như đã dặn', topic='comms', only=('banquet',),
+      neg=['mình phải nhắc lại vài điều đã dặn khi đặt tiệc'], pos=['sảnh bày đúng chủ đề, thực đơn đúng điều nhà mình dặn'],
+      word=('Phải nhắc lại.', 'Đúng ý nhà.'), sig_neg=('crit:care:lo',), sig_pos=('crit:care:hi',)),
+    A('banquet_decor', ('service',), 'Màu trang trí', 'màu trang trí chưa hợp ý', topic='ambience', only=('banquet',), subjective=True,
+      neg=['mình thích màu khăn bàn nhạt hơn một chút'], pos=['màu hoa và khăn bàn đúng kiểu mình thích'],
+      word=('Thích màu nhạt hơn.', 'Màu đẹp.')),
     A('lawyer_evidence', ('office',), 'Căn cứ hồ sơ', 'đối chiếu hồ sơ còn phải sửa', topic='method', only=('lawyer',),
       neg=['có phần chứng cứ hoặc tính toán phải đối chiếu lại'],
       pos=['chứng cứ và các khoản đã nhận được đối chiếu rõ ràng'],
@@ -768,6 +777,8 @@ NV_CAREER = {'art_studio': {'polite': {'male': 'anh họa sĩ', 'female': 'chị
                          'harsh': {'male': 'anh thợ giặt', 'female': 'chị thợ giặt', None: 'thợ giặt'}},
              'lawyer': {'polite': {'male': 'anh chuyên viên hồ sơ', 'female': 'chị chuyên viên hồ sơ', None: 'chuyên viên hồ sơ'},
                         'harsh': {'male': 'anh chuyên viên hồ sơ', 'female': 'chị chuyên viên hồ sơ', None: 'chuyên viên hồ sơ'}},
+             'banquet': {'polite': {'male': 'anh nhân viên nhà hàng', 'female': 'chị nhân viên nhà hàng', None: 'nhân viên nhà hàng'},
+                         'harsh': {'male': 'anh nhân viên nhà hàng', 'female': 'chị nhân viên nhà hàng', None: 'nhân viên nhà hàng'}},
              'hotel': {'polite': {'male': 'anh nhân viên khách sạn', 'female': 'chị nhân viên khách sạn', None: 'nhân viên khách sạn'},
                        'harsh': {'male': 'anh nhân viên khách sạn', 'female': 'chị nhân viên khách sạn', None: 'nhân viên khách sạn'}},
              'customs': {'polite': {'male': 'anh kiểm tra viên', 'female': 'chị kiểm tra viên', None: 'kiểm tra viên'},

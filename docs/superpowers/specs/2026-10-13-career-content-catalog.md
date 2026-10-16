@@ -841,3 +841,18 @@ Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chun
 8. Lên phương án trang trí mùa lễ trong ngân sách
 9. Quản lý sổ đồ thất lạc của khách
 10. Điều phối ca khách sạn ngày cao điểm
+
+## 57. Nhà hàng tiệc (`banquet`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập quy trình vệ sinh đầu ca bếp tiệc
+2. Phân thớt màu cho khu sơ chế
+3. Kiểm nhận lô nguyên liệu tiệc cưới
+4. Tính lượng sơ chế theo số suất tiệc
+5. Ra món nóng đúng nhiệt độ
+6. Đổi món theo lưu ý dị ứng của bàn tiệc
+7. Chọn phòng tiệc vừa số khách
+8. Lên phương án trang trí sảnh theo chủ đề
+9. Kiểm điện và âm thanh trước giờ đón khách
+10. Điều phối bếp và sảnh ngày lễ cao điểm

@@ -1961,6 +1961,45 @@ ARCS = {
                 ('me', 'Em sẽ giữ quầy như chị: đúng phiếu, đúng phòng, sai thì sửa liền.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ 👨‍🍳 Nhà hàng tiệc Hồng Mây (sau chương 3)
+    'banquet': dict(
+        title='Chiếc mũ trắng của chú Tâm', emoji='👨‍🍳',
+        keepsake=dict(emoji='👨‍🍳', name='Chiếc mũ trắng của chú Tâm', desc='Chiếc mũ đầu bếp sờn mép, ba mươi năm treo ở cửa bếp Hồng Mây. Chú Tâm đội nó qua cả nghìn đám cưới, giờ nó treo ở móc của bạn.'),
+        cast={'tam': _p('Chú Tâm', '👨‍🍳', 'Bếp trưởng', 'banquet_npc_01'),
+              'loan': _p('Chị Loan', '🙂', 'Quản lý nhà hàng', 'banquet_npc_02'),
+              'thao': _p('Duy và Thảo', '💒', 'Cặp đôi sắp cưới', 'banquet_npc_05'),
+              'sau': _p('Bà Sáu', '👵', 'Khách quen đặt tiệc', 'banquet_npc_06')},
+        beats=[
+            _b('Vạch trắng ở cửa bếp', '🧼', 'Ngày đầu làm phụ bếp, chú Tâm chỉ vạch sơn trắng ở cửa bếp.', [
+                ('tam', 'Qua vạch này là rửa tay, sát khuẩn, đội mũ, đeo bao tay. Đầu bếp giỏi mấy mà tay bẩn cũng bằng không.'),
+                ('me', 'Dạ, con làm theo thứ tự dán trên cửa.'),
+                ('tam', 'Ừ. Mai đoàn phường ghé thì mình khỏi lo.')]),
+            _b('Bốn màu thớt', '🔪', 'Chú Tâm xếp bốn tấm thớt lên bàn sơ chế.', [
+                ('tam', 'Xanh lá cho rau, đỏ cho thịt sống, xanh dương cho hải sản, vàng cho đồ chín. Lẫn một lần là cả bàn tiệc đau bụng.'),
+                ('me', 'Con thái gà xong lỡ cầm thớt đỏ thái dưa leo thì sao chú?'),
+                ('tam', 'Thì bỏ phần dưa đó, rửa thớt, làm lại. Phí chút dưa còn hơn phí cả tiệc.')],
+                _c('Cuối ca, chú Tâm hỏi bạn việc gì làm sau cùng?',
+                   _o('a', 'Đi một vòng tắt bếp gas, lò, nồi cơm, ấm; tủ mát tủ đông để chạy', [('tam', 'Đúng. Bếp cháy thường bắt đầu từ cái ấm ai cũng tưởng đã tắt.')], rel='tam'),
+                   _o('b', 'Lau sàn rồi về cho kịp xe buýt', [('tam', 'Lau sàn xong còn một vòng điện nữa nghe con. Mai nhớ.')], rel='tam'))),
+            _b('Màu khăn trải bàn', '💒', 'Duy và Thảo tới chốt tiệc cưới, cãi nhau vui vẻ.', [
+                ('thao', 'Em muốn pastel. Anh Duy đòi đỏ vàng cho bà nội vui.'),
+                ('me', 'Dạ hay mình làm cổng hoa pastel, còn bàn gia đình hai bên trải khăn đỏ viền vàng. Bà nội ngồi bàn đó.'),
+                ('thao', 'Ơ được đó! Anh Duy hết cãi rồi.')],
+                days=4, served=10, gap=1),
+            _b('Đĩa gà riêng', '👵', 'Bà Sáu đặt tiệc mừng thọ năm thứ mười ở Hồng Mây.', [
+                ('sau', 'Ông nhà chỉ ăn gà luộc lá chanh non, chấm muối tiêu chanh. Năm nào bà cũng phải dặn.'),
+                ('me', 'Dạ năm nay con ghi sẵn vào phiếu bếp bàn ông rồi, chú Tâm làm riêng một đĩa ạ.'),
+                ('sau', 'Trời, khỏi dặn luôn. Năm sau bà lại đặt ở đây.')],
+                _c('Bà Sáu dúi cho bạn gói kẹo, bạn làm gì?',
+                   _o('a', 'Cảm ơn bà, đem chia cả bếp', [('sau', 'Ừ, chia cho chú Tâm phần nhiều nhất nghe.')], rel='sau'),
+                   _o('b', 'Xin bà viết vài dòng vào sổ góp ý cho bếp', [('sau', 'Được, bà khen cả bếp với con luôn.')], rel='sau')),
+                days=6, served=14, gap=1),
+            _b('Chiếc mũ trắng', '👨‍🍳', 'Chú Tâm nghỉ hưu, trao lại chiếc mũ đầu bếp.', [
+                ('tam', 'Ba mươi năm, chú chưa để bếp cháy lần nào. Không phải vì may, mà vì tối nào cũng đi thêm một vòng điện.'),
+                ('loan', 'Từ mai bếp với sảnh đều trông vào em đó.'),
+                ('me', 'Con sẽ giữ như chú: tay sạch mới vào bếp, khách dặn gì làm nấy, về thì tắt hết điện.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
     # ------------------------------------------------------------ Công an phường Mây (chương 4)
     'police': dict(
         title='Cuốn sổ hẻm của anh Định', emoji='📓',

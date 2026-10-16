@@ -94,6 +94,7 @@ ORDERS = {
     'post_office': ('Việc riêng: đóng gói và phân tuyến một lô thư', 16, 3, {}),
     'customs': ('Việc riêng: hướng dẫn một hộ kinh doanh khai tờ khai', 16, 3, {}),
     'hotel': ('Việc riêng: dọn và bày lại một phòng cho khách quen', 16, 3, {}),
+    'banquet': ('Việc riêng: nấu một mâm cỗ nhỏ cho nhà khách quen', 18, 4, {}),
 }
 REASONS = {
     'working': 'Nhân viên đang xử lý đơn riêng.', 'closed': 'Nơi làm việc đã đóng ca.',
