@@ -1921,6 +1921,46 @@ ARCS = {
                 ('me', 'Em sẽ giữ như chị: đúng luồng, đúng số, không nhận của ai cái gì.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ 🛎️ Khách sạn Sông Mây (sau chương 3)
+    'hotel': dict(
+        title='Chùm chìa khóa của chị Hằng', emoji='🗝️',
+        keepsake=dict(emoji='🗝️', name='Chùm chìa khóa cơ của chị Hằng', desc='Mười sáu chiếc chìa khóa đồng từ hồi Sông Mây chưa dùng thẻ từ. Chị Hằng giữ nó hai mươi năm, giờ nó treo trong ngăn quầy của bạn.'),
+        cast={'hang': _p('Chị Hằng', '🛎️', 'Trưởng ca lễ tân'),
+              'tu': _p('Cô Tư', '🧹', 'Trưởng buồng phòng'),
+              'khai': _p('Bác Khải', '🧓', 'Khách quen tầng 3'),
+              'ngan': _p('Chị Ngân', '👩‍👧', 'Khách đi cùng gia đình')},
+        beats=[
+            _b('Mười sáu phòng', '🛎️', 'Ngày đầu ở quầy lễ tân, chị Hằng mở bảng phòng.', [
+                ('hang', 'Phòng nào sạch, phòng nào chờ thợ, bảng này nói hết. Chưa xanh thì chưa giao, khách gắt mấy cũng vậy.'),
+                ('me', 'Khách đặt bằng tên gần giống nhau thì sao chị?'),
+                ('hang', 'Thì đọc mã đặt. Tên trùng là chuyện thường, mã thì không.')]),
+            _b('Góc ga vuông', '🧹', 'Cô Tư dắt bạn lên tầng 2, chỉ cái giường vừa trải.', [
+                ('tu', 'Ga gấp góc vuông, khăn tắm gấp ba. Khách không để ý đâu, nhưng khách nhớ cái cảm giác phòng gọn.'),
+                ('me', 'Dạ, con làm lại góc này cho vuông.'),
+                ('tu', 'Ừ, chậm mà đúng. Nhanh là chuyện của tháng sau.')],
+                _c('Dọn xong thấy vòi nước nhỏ giọt, bạn làm gì?',
+                   _o('a', 'Báo lễ tân phòng sạch nhưng chờ bảo trì, chưa bán', [('tu', 'Đúng rồi. Khách sau không phải gánh cái vòi đó.')], rel='tu'),
+                   _o('b', 'Gọi anh Bảo lên coi luôn rồi mới báo phòng', [('tu', 'Siêng ghê. Nhớ ghi vào sổ phòng khóa nghe.')], rel='tu'))),
+            _b('Phòng yên tĩnh', '🧓', 'Bác Khải về Sông Mây như mọi năm.', [
+                ('khai', 'Năm nay bác xin phòng cũ tầng 3, xa thang máy. Già rồi, ngủ không sâu.'),
+                ('me', 'Dạ phòng đó đang chờ thợ sửa điều hòa. Con giữ cho bác phòng kế bên, cũng hướng sông, cũng yên.'),
+                ('khai', 'Ừ, nói thật vậy bác thích. Năm sau bác lại về.')],
+                days=4, served=10, gap=1),
+            _b('Hộp ăn sáng', '👩‍👧', 'Chị Ngân dắt hai bé xuống nhà hàng lúc 5 giờ 20.', [
+                ('ngan', 'Nhà chị đi tour sớm, mà bé út dị ứng đậu phộng. Chị sợ nhất bữa sáng khách sạn.'),
+                ('me', 'Dạ phòng chị có hộp mang đi rồi, phần của bé đổi xôi sang cháo gà, có dán thẻ dị ứng ạ.'),
+                ('ngan', 'Trời, chị chưa kịp dặn mà em nhớ hết. Đi chơi yên tâm rồi.')],
+                _c('Chị Ngân muốn cảm ơn cả ca, bạn nói gì?',
+                   _o('a', 'Xin chị viết vài dòng vào sổ góp ý cho bếp', [('ngan', 'Ừ, chị khen bếp với cả em luôn.')], rel='ngan'),
+                   _o('b', 'Dặn chị lần sau báo trước lưu ý khi đặt phòng', [('ngan', 'Ừ, lần sau chị ghi luôn trong phiếu đặt.')], rel='ngan')),
+                days=6, served=14, gap=1),
+            _b('Chùm chìa khóa', '🗝️', 'Chị Hằng chuyển lên làm quản lý, bàn giao quầy lại cho bạn.', [
+                ('hang', 'Hồi Sông Mây chưa có thẻ từ, chị giữ chùm chìa này. Mười sáu chiếc, chưa giao nhầm phòng nào.'),
+                ('hang', 'Khách sạn tốt không nhờ đèn chùm. Nhờ khách tin là phòng mình giao đã được kiểm kỹ.'),
+                ('khai', 'Năm sau bác về, vẫn tìm em ở quầy đó nghe.'),
+                ('me', 'Em sẽ giữ quầy như chị: đúng phiếu, đúng phòng, sai thì sửa liền.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
     # ------------------------------------------------------------ Công an phường Mây (chương 4)
     'police': dict(
         title='Cuốn sổ hẻm của anh Định', emoji='📓',

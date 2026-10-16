@@ -38,6 +38,7 @@ ORDER = (
     'zpop',                        # bán album ZPOP: chị Thơ's Tiệm album Mây Pop on Phố chợ (BLANKPINK, 7GIÓ, KIWIZ; all fictional)
     'art_studio', 'lawyer', 'laundry', 'post_office',
     'customs',                     # hải quan: Chi cục Hải quan cửa khẩu Bến Mây (lanes, smuggling, duties, controls; org ladder 'hq')
+    'hotel',                       # khách sạn: Khách sạn Sông Mây, salaried shift staff rotating desk, rooms, laundry, breakfast, repairs, decor
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}
