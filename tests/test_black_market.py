@@ -532,7 +532,7 @@ class NothingShown(BlackMarketBase):
 
     def test_the_client_prints_no_percentage(self):
         js = (ROOT / 'public/js/v4/fair.js').read_text(encoding='utf-8')
-        part = js[js.index('/* ---- 🕶️ Chợ đen'):js.index('// 🥶 a long run')]
+        part = js[js.index('/* ---- 🕶️ Chợ đen'):js.index('// 🥶 playing one stall too fast')]
         self.assertIn('bmGate', part)
         self.assertNotRegex(part, r'\d+\s*%')
         self.assertNotIn('30', re.sub(r'#[0-9a-f]{3,6}|\b\d{1,2}px', '', part))

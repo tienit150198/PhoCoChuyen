@@ -92,53 +92,53 @@ class Lineups(unittest.TestCase):
 class Race(DogBase):
     def test_a_won_race_pays_the_price_on_the_board(self):
         s = self.inside()
-        lane = self.lane_of(2)   # ×5.2
+        lane = self.lane_of(2)   # ×5.5 (owner 16/10: ×5.2 + ~5%)
         s, r = self.bet(s, lane, 1000, first=lane)
         x = r['fair']
         self.assertEqual((x['game'], x['won'], x['lane'], x['stake'], x['mult'], x['back'], x['net']),
-                         ('dg', True, lane, 1000, 52, 5200, 4200))
+                         ('dg', True, lane, 1000, 55, 5500, 4500))
         self.assertEqual(x['order'][0], lane)
-        self.assertEqual(s['journey']['wallet'], 50000 + 4200)
+        self.assertEqual(s['journey']['wallet'], 50000 + 4500)
         row = s['journey']['history'][-1]
-        self.assertEqual((row['amount'], row['kind'], row['label']), (4200, 'fair', '🐕 Đua chó chợ đen · 1 lượt'))
+        self.assertEqual((row['amount'], row['kind'], row['label']), (4500, 'fair', '🐕 Đua chó chợ đen · 1 lượt'))
         f = s['journey']['fair']
-        self.assertEqual((f['net'], f['stats']['won'], f['rounds']), (4200, 4200, 1))
-        self.assertEqual(fh.money_of(s['journey'])[0], 4200)   # the Bảng vàng
-        self.assertEqual(fh.public(s)['today_xu']['dg'], 4200)
+        self.assertEqual((f['net'], f['stats']['won'], f['rounds']), (4500, 4500, 1))
+        self.assertEqual(fh.money_of(s['journey'])[0], 4500)   # the Bảng vàng
+        self.assertEqual(fh.public(s)['today_xu']['dg'], 4500)
         self.assertIn('về nhất', r['message'])
-        self.assertIn('4.200', r['message'])
+        self.assertIn('4.500', r['message'])
         validate_state(s)
 
     def test_a_lost_race_takes_the_stake_on_the_same_row(self):
         s = self.inside()
         lane = self.lane_of(0)
-        s, _ = self.bet(s, lane, 300, first=lane)                  # +570
+        s, _ = self.bet(s, lane, 300, first=lane)                  # +600 (×3.0)
         s, r = self.bet(s, lane, 500, first=(lane + 1) % dg.LANES)  # −500
         self.assertFalse(r['fair']['won'])
         self.assertEqual((r['fair']['back'], r['fair']['net']), (0, -500))
-        self.assertEqual(s['journey']['wallet'], 50000 + 570 - 500)
+        self.assertEqual(s['journey']['wallet'], 50000 + 600 - 500)
         row = s['journey']['history'][-1]
-        self.assertEqual((row['amount'], row['label']), (70, '🐕 Đua chó chợ đen · 2 lượt'))
+        self.assertEqual((row['amount'], row['label']), (100, '🐕 Đua chó chợ đen · 2 lượt'))
         f = s['journey']['fair']
-        self.assertEqual((f['net'], f['stats']['won'], f['stats']['lost']), (70, 570, 500))
+        self.assertEqual((f['net'], f['stats']['won'], f['stats']['lost']), (100, 600, 500))
         self.assertIn('Thua 500 xu', r['message'])
         validate_state(s)
 
     def test_the_payout_rounds_down(self):
         s = self.inside()
-        lane = self.lane_of(0)   # ×2.9
+        lane = self.lane_of(1)   # ×4.1
         s, r = self.bet(s, lane, 15, first=lane)
-        self.assertEqual(r['fair']['back'], 43)   # 43.5
-        self.assertEqual(s['journey']['wallet'], 50000 + 28)
+        self.assertEqual(r['fair']['back'], 61)   # 61.5
+        self.assertEqual(s['journey']['wallet'], 50000 + 46)
 
     def test_an_outsider_on_the_biggest_stake_is_paid_in_valid_rows(self):
         s = self.inside(fh.STAKE_MAX + 5)
-        lane = self.lane_of(dg.LANES - 1)   # ×19
+        lane = self.lane_of(dg.LANES - 1)   # ×20
         s, r = self.bet(s, lane, fh.STAKE_MAX, first=lane)
-        self.assertEqual(r['fair']['net'], 18 * fh.STAKE_MAX)
-        self.assertEqual(s['journey']['wallet'], 19 * fh.STAKE_MAX + 5)
+        self.assertEqual(r['fair']['net'], 19 * fh.STAKE_MAX)
+        self.assertEqual(s['journey']['wallet'], 20 * fh.STAKE_MAX + 5)
         rows = [x for x in s['journey']['history'] if x['label'].startswith(dg.RACE_LABEL)]
-        self.assertEqual(sum(x['amount'] for x in rows), 18 * fh.STAKE_MAX)
+        self.assertEqual(sum(x['amount'] for x in rows), 19 * fh.STAKE_MAX)
         self.assertTrue(all(abs(x['amount']) <= bm.ROW_MAX for x in rows), rows)
         self.assertTrue(all(x['label'].endswith('· 1 lượt') for x in rows), rows)   # one race, counted once
         validate_state(s)
@@ -181,28 +181,39 @@ class Race(DogBase):
                 lane = next(i for i, (_, k) in enumerate(lanes) if k == 1)
                 with mock.patch.object(dg, 'draw', lambda ls, rng: [lane] + [i for i in range(dg.LANES) if i != lane]):
                     s, r = self.act(s, 'fair_dg', race=n, lane=lane, stake=100)
-                self.assertEqual((r['fair']['race'], r['fair']['mult']), (n, 39))
+                self.assertEqual((r['fair']['race'], r['fair']['mult']), (n, 41))
 
-    def test_never_cools_and_saves_nothing_of_its_own(self):
+    def test_its_draw_never_cools_only_its_pace_is_saved(self):
+        """The winner's draw is honest (no streak, no decay); owner 16/10: only the pace is kept (fair_pace), which pays
+        the old prices from the 11th bet in a minute (the clock steps 6 s a call: 10 bets a minute)."""
         s = self.inside(10**6)
         with mock.patch.object(fh, '_rng', random.Random(5)):
             for i in range(40):
-                s, _ = self.bet(s, 0, 100)
+                s, r = self.bet(s, 0, 100)
+                self.assertEqual(r['fair']['mult'], dg.pay(dg.lineup(r['fair']['race'])[0][1]))   # never 11 a minute
         j = s['journey']
         self.assertNotIn('dg', j.get('fair_cool', {}))
         self.assertNotIn('dg', j.get('fair_balance', {}))
         self.assertNotIn('fair_run', j)
         self.assertNotIn('dg', j['fair']['stats'])
-        self.assertIsNone(fh.cold(j, self.clock.t))
+        self.assertEqual(len(j[fh.PACE_KEY]['dg']), 10)
+        self.assertEqual(fh.cold(j, self.clock.t), dict(game='dg', pace=True, n=10, gap=1))   # the next one would be slowed
+        j[fh.PACE_KEY]['dg'] = [int(self.clock.t) + 6] * 10   # ten bets in the minute of the next one
+        with mock.patch.object(fh, '_rng', random.Random(5)):
+            s, r = self.bet(s, 0, 100)
+        self.assertEqual(r['fair']['mult'], dg.pay(dg.lineup(r['fair']['race'])[0][1], True))
+        validate_state(s)
 
-    def test_it_counts_as_a_switch_for_a_cooled_stall(self):
+    def test_it_counts_as_a_switch_in_the_kept_run_counts(self):
+        """The old spam-decay counts (fair_cool) are still kept for older servers: a race still counts as a switch."""
         s = self.inside(10**6)
         with mock.patch.object(fh, '_rng', random.Random(5)):
             for _ in range(fh.RUN_FREE + 2):
                 s, _ = self.act(s, 'fair_xs', price=100)
-            self.assertEqual(fh.cold(s['journey'], self.clock.t)['game'], 'xs')
+            self.assertEqual(s['journey'][fh.COOL_KEY]['xs']['n'], fh.RUN_FREE + 2)
             for _ in range(fh.SWITCH_ROUNDS):
                 s, _ = self.bet(s, 0, 100)
+        self.assertNotIn('xs', s['journey'].get(fh.COOL_KEY, {}))
         self.assertIsNone(fh.cold(s['journey'], self.clock.t))
 
 
@@ -289,15 +300,19 @@ class NothingShown(DogBase):
 
 
 class HouseEdge(unittest.TestCase):
-    def test_no_dog_returns_its_stake(self):
+    def test_no_dog_returns_more_than_its_stake(self):
+        """Owner 16/10: about 5% more a price, no dog past 100%; the old prices (fast bets, a day ≥ 100k up) keep 95%."""
         for w, m in dg.CLASSES:
+            self.assertLessEqual(w * m, 10_000)
+        for w, m in dg.OLD:
             self.assertLessEqual(w * m, 9500)
         self.assertEqual(sum(w for w, _ in dg.CLASSES), 1000)
         rows = [(w / 1000, m / 10) for w, m in dg.CLASSES]
         best = max(p * b for p, b in rows)
-        self.assertAlmostEqual(best, .95)
+        self.assertAlmostEqual(best, 1.0)
+        self.assertAlmostEqual(min(p * b for p, b in rows), .96)
         with_loc = max(p * (b + fh.LOC_P * max(0, fh.LOC_MULT - (b - 1))) for p, b in rows)
-        self.assertLess(with_loc, .951)
+        self.assertLessEqual(with_loc, 1.0 + 1e-9)
 
 
 class Idempotent(StoreBase):

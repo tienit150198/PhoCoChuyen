@@ -1,8 +1,8 @@
-"""Historical edition rules and current 14/10 returns. Owner 08/10: the fair opens again (the edition from 09/10) and the house always wins (game/fair.py BASES, LOC_P,
+"""Historical edition rules and current 16/10 returns. Owner 08/10: the fair opens again (the edition from 09/10) and the house always wins (game/fair.py BASES, LOC_P,
 SIDE_OPEN; game/fair_scratch.py PRIZES; scripts/sim_fair_odds.py; docs/FAIR_HOUSE_EDGE.md).
 
-* Exact before-police returns follow current 55% initial draws and unchanged payouts.
-  Monte-Carlo checks use real draws, streak caps and spam decay; fresh/press may exceed 100%.
+* Exact before-police returns follow the 16/10 draw (.57 at net 0) and payouts (chiếu trong 0.75×, lô tô 1.8×,
+  vé cào 1.775×, bão 20, đua chó +5%). Monte-Carlo checks use real draws, streak caps and the pace; fast play loses.
 * The new edition: its dates, the entry ("sắp mở" before, "đã tàn" after), a save from the last edition starting afresh
   (money, days, gift, the police's mark; its loan collected), the last edition's titles settled once even by a server
   that missed its end."""
@@ -29,41 +29,45 @@ LAST_OPEN = at(2026, 10, 4, 20)       # day 2 of the last edition (03/10 → 07/
 
 class HouseEdge(unittest.TestCase):
     def test_before_police_simulator_returns_even_money_without_a_raid_roll(self):
-        self.assertAlmostEqual(sim.exact()['xd']['rtp'], 2 * fh.chance_rate('xd', 0))
+        self.assertAlmostEqual(sim.exact()['xd']['rtp'], (1 + fh.XD_PAY_PCT / 100) * fh.BASES['xd'])
         with mock.patch.object(sim.random, 'Random', return_value=Dice(draws=[0])):
-            self.assertEqual(sim.play('xd', 'fresh', 1), 2)
+            self.assertEqual(sim.play('xd', 'fresh', 1), 1.75)   # owner 16/10: a won 100 xu round gets 175 back
 
     def test_gentler_fresh_draws_win_between_old_and_new_cutoffs(self):
         for game, old in (('xd', .49), ('lt', .46), ('xs', .51)):
             with self.subTest(game=game):
-                self.assertEqual(fh.chance_rate(game, OPEN), .55)
-                draw = (old + .55) / 2
+                self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=10), .57)
+                draw = (old + .57) / 2
                 with mock.patch.object(fh._rng, 'random', return_value=draw):
                     self.assertFalse(fh._draw_luck({}, game, old))
                     self.assertTrue(fh._draw_luck({}, game, fh.luck_p({}, None, game, OPEN, stake=10)))
-        self.assertEqual((xs.P_HI, xs.P_LO), (.55, .55))
+        self.assertEqual((xs.P_HI, xs.P_LO), (.57, .57))
 
     def test_exact_fresh_returns_follow_unchanged_payouts(self):
         ex = sim.exact()
-        for g, expected in (('xd', 1.10), ('lt', 1.155), ('xs', .99055)):
+        for g, expected, back in (('xd', .9975, 1.05), ('lt', 1.026, 1.08), ('xs', 1.01175, 1.065)):
             with self.subTest(game=g):
                 self.assertAlmostEqual(ex[g]['rtp'], expected)
+                self.assertAlmostEqual(ex[g]['back'], back)      # winning back (.60), small stakes only
                 self.assertGreater(ex[g]['loc'], ex[g]['rtp'])
-        self.assertAlmostEqual(ex['bc']['rtp'], 206 / 216)
-        self.assertAlmostEqual(ex['dg']['rtp'], .95)
+        self.assertAlmostEqual(ex['bc']['rtp'], 216 / 216)      # bão 20: even
+        self.assertAlmostEqual(ex['bc']['low'], 206 / 216)      # bão 10 when fast or >= 100k up
+        self.assertAlmostEqual(ex['dg']['rtp'], 1.0)            # the best dog, +5% (owner 16/10)
         for g in ('bc', 'dg'):
-            self.assertLess(ex[g]['loc'], 1)
+            self.assertLessEqual(ex[g]['rtp'], 1)
+            self.assertGreaterEqual(ex[g]['loc'], ex[g]['rtp'])
         self.assertTrue(.9 < ex['dg']['low'] <= ex['dg']['fresh'] < ex['dg']['rtp'])
-        self.assertAlmostEqual(ex['lt']['low'], 1.10)
+        self.assertAlmostEqual(ex['lt']['low'], .855)           # the 2-xu tờ
+        doc = fh.__doc__
         for g in PAID:
-            self.assertIn(f'{ex[g]["rtp"]:.1%}', fh.__doc__, g)
-            self.assertIn(f'{ex[g]["loc"]:.1%}', fh.__doc__, g)
+            self.assertTrue(any(f'{ex[g]["rtp"]:.{k}%}' in doc for k in (1, 2)), g)
+            self.assertIn(f'{ex[g]["loc"]:.1%}', doc, g)
 
     def test_the_fresh_draw_is_the_most_an_ordinary_round_gets(self):
         for g in ('xd', 'lt', 'xs'):
             self.assertEqual([fh.chance_rate(g, OPEN + i * 977, st, net) for i, st, net in ((1, 2, 0), (9, 1000, 10**6))],
-                             [.55, .55])
-            self.assertTrue(all(fh.run_rate(g, n) <= .55 for n in range(1, 300)))
+                             [fh.P_BACK, fh.P_BACK])   # winning back is the most an ordinary round draws
+            self.assertTrue(all(fh.run_rate(g, n) <= fh.P_BACK for n in range(1, 300)))
         rng = __import__('random').Random(5)
         for g in ('xd', 'lt', 'xs'):
             j, t = {}, OPEN
@@ -77,9 +81,9 @@ class HouseEdge(unittest.TestCase):
                         fh._draw_luck(j, game, p)
 
     def test_monte_carlo_on_the_real_draws(self):
-        """Cooling lowers spam returns; fresh/press xd and lt can exceed their stake."""
+        """The pace lowers spam returns below the stake; fresh and press stay close to even (owner 16/10)."""
         ex = sim.exact()
-        p, q = .55, .45
+        p, q = fh.BASES['xd'], fh.WIN_P_LOW
         capped_share = p**4 / ((1 - q) * sum(p**i for i in range(4)) + p**4)
         fresh_factor = (p - (p - q) * capped_share) / p
         for g in PAID:
@@ -87,10 +91,10 @@ class HouseEdge(unittest.TestCase):
             for how in ('fresh', 'spam', 'press'):
                 with self.subTest(game=g, how=how):
                     back = sim.play(g, how, 40_000, seed=7)
-                    if how == 'spam' or g in ('bc', 'dg'):
-                        self.assertLess(back, 1, back)
-                    elif g in ('xd', 'lt'):
-                        self.assertGreater(back, 1, back)
+                    if how == 'spam':
+                        self.assertLess(back, .96, back)
+                    else:
+                        self.assertLess(abs(back - 1), .04, back)
                     if how == 'fresh':
                         self.assertAlmostEqual(back, ex[g].get('fresh', ex[g]['rtp']) * factor,
                                                delta=.035 if g == 'xs' else .05 if g == 'dg' else .02)
@@ -151,7 +155,7 @@ class Reopen(FairBase):
                 s, _ = self.act(s, 'fair_bc', bets={'cua': 10})
             s, _ = self.act(s, 'fair_borrow', amount=100)
             s['journey'][fh.AUDIT_KEY] = dict(ed='fair20261003', base=60000, at=int(LAST_OPEN))
-            self.assertEqual(fh.money_of(s['journey']), (300, 1))   # three bão: +100 each
+            self.assertEqual(fh.money_of(s['journey']), (600, 1))   # three bão: +200 each (BAO 20, owner 16/10)
             validate_state(s)
         return json.loads(json.dumps(s))
 

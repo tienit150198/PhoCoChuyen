@@ -67,14 +67,14 @@ class TenMillionStake(FairBase):
         for n in range(1, 4):
             self.dice(Dice(draws=[.99, 0]))   # no dẹp chiếu (a big stake is watched), then a won round
             state, result = self.act(state, 'fair_xd', side='chan', stake=5 * 10**6)
-            self.assertEqual(result['fair']['net'], 5 * 10**6)
-            self.assertEqual(state['journey']['wallet'], 3 * 10**7 + n * 5 * 10**6)
+            self.assertEqual(result['fair']['net'], 3_750_000)       # owner 16/10: a win pays 0.75×
+            self.assertEqual(state['journey']['wallet'], 3 * 10**7 + n * 3_750_000)
             rows = self.fair_rows(state)
-            self.assertEqual(sum(rows), n * 5 * 10**6)
+            self.assertEqual(sum(rows), n * 3_750_000)
             self.assertTrue(all(abs(a) <= 10**7 for a in rows), rows)
             validate_state(json.loads(json.dumps(state)))
-        self.assertEqual(self.fair_rows(state), [10**7, 5 * 10**6])   # the row fills up to 10**7, then a new one
-        self.assertEqual(state['journey']['fair']['net'], 15 * 10**6)
+        self.assertEqual(self.fair_rows(state), [7_500_000, 3_750_000])   # a win that would pass 10**7 starts a new row
+        self.assertEqual(state['journey']['fair']['net'], 11_250_000)
 
     def test_a_bao_on_a_big_stake_takes_several_rows(self):
         state = story(3 * 10**7)

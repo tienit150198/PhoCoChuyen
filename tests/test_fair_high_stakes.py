@@ -33,7 +33,8 @@ class GoldenHighStakes(FairBase):
 
     def test_today_s_net_stops_the_boost(self):
         """luck_p reads today's net from journey['fair'] (an older day's does not count)."""
-        for net, expected in [(0, .70), (300_000, .70), (300_001, fh.BASES['xd']), (10**6, fh.BASES['xd'])]:
+        # past the event's stop: the ordinary draw, owner 16/10's band for a day ≥ 100k up (fh.P_HOT)
+        for net, expected in [(0, .70), (300_000, .70), (300_001, fh.P_HOT), (10**6, fh.P_HOT)]:
             with self.subTest(net=net):
                 f = dict(fh.initial(), date=fh.vn_date(OPEN), net=net)
                 self.assertEqual(fh.luck_p({}, f, 'xd', OPEN, stake=49_999), expected)
@@ -61,7 +62,7 @@ class GoldenHighStakes(FairBase):
             self.dice(Dice(draws=[.99, .50] if watched else [.50]))  # No raid; the same draw straddles the rates.
             before = s['journey']['wallet']
             s, result = self.act(s, 'fair_xd', side='chan', stake=stake)
-            self.assertEqual(result['fair']['net'], stake if won else -stake)
+            self.assertEqual(result['fair']['net'], fh.xd_win(stake) if won else -stake)   # a win pays 0.75× (16/10)
             self.assertEqual(s['journey']['wallet'], before + result['fair']['net'])
             engine.validate_state(s)
 

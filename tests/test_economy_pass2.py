@@ -13,7 +13,8 @@ class PaidStakeLimits(FairBase):
         state=story(10000)
         state['journey']['fair']=dict(fh.initial(), date=fh.vn_date(self.clock.t), net=fh.NET_SAFE-1000)
         self.dice(random.Random(11))   # 07/10: a seed whose raid draw is under WEALTH_RAID_P .35 (seed 1's .445 was under .70)
-        with patch.object(xs, 'prize_mult', return_value=50):
+        # owner 16/10: a day this far up draws only .45; the ticket is a won one here, the prize the point
+        with patch.object(xs, 'prize_mult', return_value=50), patch.object(fh, '_draw_luck', return_value=True):
             state,result=self.act(state,'fair_xs',price=500)
         self.assertEqual(result['fair']['prize'],25000)
         self.assertNotIn('wealth_raid',result['fair'])   # owner 11/10: the wallet raid is off (fh.WALLET_CHECKS)
