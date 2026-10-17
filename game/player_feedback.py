@@ -213,6 +213,25 @@ def edit(store, token: str, data: dict) -> dict:
     return dict(ok=True, item=_row(row, images=images), message=EDITED)
 
 
+DELETED = 'Đã xóa góp ý.'
+NOT_DELETABLE = 'Góp ý này đã có lời đáp nên không xóa được nữa.'
+
+
+def delete(store, token: str, data: dict) -> dict:
+    """F#412 "cái nút xóa góp ý": the player's own note (and its images, ON DELETE CASCADE) while it has no reply yet.
+    One DELETE by id AND owner (as edit / list_mine) AND reply IS NULL, so a reply written meanwhile wins."""
+    need(isinstance(data, dict), 'Dữ liệu góp ý không hợp lệ.')
+    fid = _int(data.get('id'), 'Mã góp ý')
+    need(fid is not None, 'Thiếu mã góp ý.')
+    sid = store.key(token)
+    account = account_of(store, token)
+    with store.connect() as db:
+        row = db.execute('DELETE FROM player_feedback WHERE id=? AND (sid=? OR (account IS NOT NULL AND account=?)) '
+                         'AND reply IS NULL RETURNING id', (fid, sid, account or '')).fetchone()
+    need(row, NOT_DELETABLE, 'not_deletable', 409)
+    return dict(ok=True, id=fid, message=DELETED)
+
+
 def list_mine(store, token: str, limit: int = MINE_LIMIT) -> list[dict]:
     sid = store.key(token)
     account = account_of(store, token)

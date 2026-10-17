@@ -136,19 +136,21 @@ def answer_text(st: dict, value) -> str:
     if typ == 'counts':
         names = {f['id']: f['label'] for f in st.get('fields') or []}
         return ', '.join(f'{names.get(k, k)} {n}' for k, n in (value or {}).items())
-    names = {o['id']: o['label'] for o in st.get('options') or []}
+    # a sentence-like label loses its full stop, so the list reads "a; b" and not "a., b." (feedback #412's screenshot)
+    names = {o['id']: str(o['label']).strip().rstrip('.').strip() for o in st.get('options') or []}
     if typ == 'choice':
         return str(names.get(value, value))
     if typ == 'order':
         return ' → '.join(str(names.get(k, k)) for k in value)
-    return ', '.join(str(names.get(k, k)) for k in value) if value else 'không chọn món nào'
+    labels = [str(names.get(k, k)) for k in value or ()]
+    return ('; ' if any(',' in x for x in labels) else ', ').join(labels) if labels else 'không chọn món nào'
 
 
 def step_help(t: dict, st: dict, value, how: str, again: str, who: str) -> str:
     """What a wrong answer says: the way to work it out on the first slip (`how`, else `again`), the answer itself
     from the REVEAL_AFTER-th slip on the same step (said by `who`)."""
     if tries_on_step(t.get('lines')) + 1 >= REVEAL_AFTER:
-        return f'{who} chỉ: {answer_text(st, value)}.'
+        return f'{who} chỉ: {answer_text(st, value).rstrip(".")}.'
     return how or again
 
 

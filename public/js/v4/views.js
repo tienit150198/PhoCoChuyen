@@ -85,7 +85,9 @@ export function reorderRow(r,ui,byId){
     return `<div class="inv-ro-lock"><span>🔒 Tự đặt hàng · ${fmt(r.price)} xu</span>${confirmCmd(r.short?`Thiếu ${fmt(r.short)}`:'Mua','stock_reorder',{buy:true},q,'primary small',r.short>0)}</div>`;
   }
   const items=r.items||[],n=items.filter(i=>i.on).length,open=Boolean(ui.roOpen);
-  const head=`<button type="button" class="inv-auto inv-ro-head${r.on?' on':''}" data-action="v4RoOpen" aria-expanded="${open}"><span>🔁 Tự đặt hàng: <b>${r.on?`Bật · ${n} món`:'Tắt'}</b>${r.warn?' <em class="inv-ro-warn">· quỹ thiếu</em>':''}</span><span class="inv-ro-caret" aria-hidden="true">${open?'▴':'▾'}</span></button>`;
+  // #411: "hết mức hôm nay" (today's cap) is not "quỹ thiếu" (the fund floor); an older server sends no `why`
+  const why='why' in r?r.why:(r.warn?'fund':null),warn=why==='cap'?'hết mức hôm nay':why?'quỹ thiếu':'';
+  const head=`<button type="button" class="inv-auto inv-ro-head${r.on?' on':''}" data-action="v4RoOpen" aria-expanded="${open}"><span>🔁 Tự đặt hàng: <b>${r.on?`Bật · ${n} món`:'Tắt'}</b>${warn?` <em class="inv-ro-warn">· ${warn}</em>`:''}</span><span class="inv-ro-caret" aria-hidden="true">${open?'▴':'▾'}</span></button>`;
   if(!open)return head;
   const row=i=>{const it=byId[i.id]||{name:i.id};
     return `<div class="inv-ro-row${i.on?'':' off'}"><button type="button" class="inv-ro-item" role="switch" aria-checked="${i.on}" data-command="stock_reorder" data-payload="${esc(JSON.stringify({item:i.id,on:!i.on}))}"><i aria-hidden="true"></i>${esc(it.emoji||'📦')} ${esc(it.name)}${i.auto?' 🚚':''}</button>`+
@@ -93,7 +95,7 @@ export function reorderRow(r,ui,byId){
       `<label>đặt <input type="number" inputmode="numeric" min="1" max="${r.line}" value="${i.qty}" id="ro-q-${esc(i.id)}"${i.on?'':' disabled'}></label>`+
       `<button type="button" class="btn ghost small" data-action="v4RoSave" data-item="${esc(i.id)}" aria-label="Lưu ${esc(it.name)}"${i.on?'':' disabled'}>${icon('check',14)}</button></div>`;};
   const sw=`<button type="button" class="inv-auto${r.on?' on':''}" role="switch" aria-checked="${r.on}" data-command="stock_reorder" data-payload="${esc(JSON.stringify({on:!r.on}))}"><span>Tự đặt: <b>${r.on?'Bật':'Tắt'}</b></span><i aria-hidden="true"></i></button>`;
-  return `<section class="inv-ro" aria-label="Tự đặt hàng">${head}${sw}<p class="inv-ro-note">Quỹ trả · giữ ${fmt(r.floor)} xu · hôm nay ${fmt(r.spent)}/${fmt(r.budget)} xu</p>${boxRow(r.box,fmt)}${items.map(row).join('')}</section>`;
+  return `<section class="inv-ro" aria-label="Tự đặt hàng">${head}${sw}<p class="inv-ro-note">Quỹ trả · giữ ${fmt(r.floor)} xu · hôm nay ${fmt(r.spent)}/${fmt(r.budget)} xu</p>${why?`<p class="inv-ro-note inv-ro-why">${why==='cap'?`Mỗi ngày tự đặt tối đa nửa quỹ lúc mở cửa (${fmt(r.budget)} xu), hôm nay đã gần hết. Món còn thiếu sẽ đặt bớt cho vừa, hoặc đặt tiếp ngày mai. Bấm 📈 Góp vốn cho quỹ dày hơn (mức ngày sau cao hơn) hay giảm số “đặt” để đủ cho nhiều món.`:`Quỹ phải giữ lại ${fmt(r.floor)} xu (lương, hóa đơn), phần còn lại không đủ cho đơn tự đặt. Bấm 📈 Góp vốn hoặc giảm số “đặt”.`}</p>`:''}${boxRow(r.box,fmt)}${items.map(row).join('')}</section>`;
 }
 /** 📦 Gộp thùng tự đặt (game/auto_order.py; `reorder.box`, an older server sends none): the automatic orders at the
  * door come as one crate, counted and received once. Not owned: a line with the price and "Mua". */

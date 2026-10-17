@@ -24,6 +24,11 @@ manual order. Paid from the fund only, and only while it keeps a floor (jr.RESER
 and today's automatic spend stays within DAY_SHARE % of the fund at the start of the day. At most one pending automatic
 order per item, and SLOTS_FREE deliveries on the way are always left for the player's own orders.
 
+Player feedback #411 ("cài dưới 52 đặt 182 mà nó cứ để tuột xuống 0 mới bổ sung"): when what is left of the fund or of
+today's cap covers only part of Y, a smaller order (the most it covers, at least Y / PART_MIN) is placed instead of
+none, so a shelf is topped up a little rather than left to run dry until the next day. The view tells "hết mức hôm
+nay" (the daily cap) apart from "quỹ thiếu" (the fund floor), `reorder.why`.
+
 📦 Gộp thùng tự đặt (owner 16/10, player feedback #391: "bật 18 món là 18 lần mở thùng rồi 18 lần kiểm hàng"; "mất
 10k xu để mua"): a second paid unlock, BOX_PRICE, once 🔁 Tự đặt hàng is owned. Every automatic order at the door then
 shows as ONE crate (inventory.public tags it `box: 'auto'`) and is received in ONE inv_receive {box: 'auto', counts}
@@ -48,6 +53,7 @@ FILL_PCT = 90           # default Y: back to about 90 % of the shelf
 DAY_SHARE = 50          # at most this % of the fund at the start of the day, per shop day
 SLOTS_FREE = 2          # deliveries on the way kept free for the player's own orders
 TEASE_ORDERS = 3        # the locked line shows once the player has placed this many orders (#384: no ads for a newcomer)
+PART_MIN = 4            # #411: when the money left covers only part of Y, order what it covers, at least Y / PART_MIN
 NAME = '🔁 Tự đặt hàng'
 BOX_KEY = 'auto_box'
 BOX_PRICE = 10_000      # owner 16/10: "mất 10k xu để mua"
@@ -140,6 +146,25 @@ def supplier_for(c: dict, career: str, item_id: str) -> dict | None:
     return next((sp for sp in inv.suppliers(career) if inv.sells(sp, item_id)), None)
 
 
+def _total(it: dict, qty: int, sup: dict) -> int:
+    inv = _inv()
+    cost = inv.line_price(it, qty, sup)['cost']
+    return cost + inv.ship_fee(sup, cost)
+
+
+def _most(it: dict, qty: int, sup: dict, money: int, least: int) -> tuple[int, int] | None:
+    """(qty, total) of the largest order below `qty`, at least `least`, whose total fits `money`; None when none does."""
+    lo, hi, best = least, qty - 1, None
+    while lo <= hi:   # the total grows with the quantity (a wholesale tier may dip it: the found one is checked)
+        mid = (lo + hi) // 2
+        t = _total(it, mid, sup)
+        if t <= money:
+            best, lo = (mid, t), mid + 1
+        else:
+            hi = mid - 1
+    return best
+
+
 def _pending(x: dict, oid) -> bool:
     return bool(oid) and any(o['id'] == oid and o['status'] == 'in_transit' for o in x['orders'])
 
@@ -181,14 +206,14 @@ def plan(s: dict, c: dict, career: str) -> tuple[list, str | None]:
         sup = supplier_for(c, career, it['id']) if qty >= 1 else None
         if not sup:
             continue
-        price = inv.line_price(it, qty, sup)
-        total = price['cost'] + inv.ship_fee(sup, price['cost'])
-        if total > fund:
-            why = why or 'fund'
-            continue
-        if total > left:
-            why = why or 'cap'
-            continue
+        total = _total(it, qty, sup)
+        if total > min(fund, left):
+            # #411: what is left covers part of it: order that part (at least Y / PART_MIN) rather than nothing
+            part = _most(it, qty, sup, min(fund, left), max(1, math.ceil(ru['qty'] / PART_MIN)))
+            if not part:
+                why = why or ('fund' if total > fund else 'cap')
+                continue
+            qty, total = part
         out.append((it, qty, sup, total))
         fund -= total
         left -= total
@@ -376,6 +401,7 @@ def public(s: dict, c: dict, career: str) -> dict | None:
              for it in inv.catalogue(career) if it.get('unlock', 1) <= level]
     return dict(owned=True, price=PRICE, on=on(c), items=items, cap=cap, line=line, floor=floor(s, c),
                 budget=budget(c), spent=spent(c), warn=r.get('warn') == c['day'],
+                why=plan(s, c, career)[1] if r.get('warn') == c['day'] else None,
                 box=dict(owned=box_owned(c), price=BOX_PRICE,
                          short=0 if box_owned(c) else max(0, BOX_PRICE - max(0, c['money']) - _wallet_of(s))))
 

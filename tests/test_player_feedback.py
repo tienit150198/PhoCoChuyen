@@ -195,6 +195,25 @@ class FeedbackModuleTests(unittest.TestCase):
             with self.subTest(bad=bad), self.assertRaises(pfb.FeedbackError):
                 pfb.edit(self.store, self.token, bad)
 
+    def test_delete_own_note_until_it_has_a_reply(self):
+        """F#412 "cập nhập thêm cái nút xóa góp ý": the owner deletes a note (and its images) while it has no reply."""
+        keep = self.send('Góp ý giữ lại')['id']
+        fid = self.send('Góp ý gửi nhầm')['id']
+        other, _, _ = self.store.session()
+        with self.assertRaises(pfb.FeedbackError) as e:
+            pfb.delete(self.store, other, dict(id=fid))                       # someone else's: refused
+        self.assertEqual((e.exception.status, e.exception.code), (409, 'not_deletable'))
+        self.assertEqual(pfb.delete(self.store, self.token, dict(id=fid)), dict(ok=True, id=fid, message='Đã xóa góp ý.'))
+        self.assertEqual([x['id'] for x in pfb.list_mine(self.store, self.token)], [keep])
+        pfb.update(self.store, keep, reply='Cảm ơn bạn!')
+        with self.assertRaises(pfb.FeedbackError) as e:
+            pfb.delete(self.store, self.token, dict(id=keep))                 # replied: kept
+        self.assertEqual(e.exception.status, 409)
+        self.assertEqual(len(pfb.list_mine(self.store, self.token)), 1)
+        for bad in (dict(id='abc'), dict(), 'x'):
+            with self.subTest(bad=bad), self.assertRaises(pfb.FeedbackError):
+                pfb.delete(self.store, self.token, bad)
+
     def test_edit_follows_the_account(self):
         self.send('Trước khi đăng ký')
         signed = accounts.register(self.store, self.token, dict(REG, username='sua_gop_y'))['token']
@@ -327,6 +346,16 @@ class FeedbackHTTPTests(unittest.TestCase):
             self.server.limits.clear()
             codes = [self.req(a, '/api/feedback/edit', 'POST', dict(id=fid, text=f'Sửa lần {i}'))[0] for i in range(2)]
         self.assertEqual(codes, [200, 429])
+
+    def test_delete_route(self):
+        a, b = self.device(), self.device()
+        fid = self.send(a, 'Góp ý gửi nhầm rồi')[1]['id']
+        self.assertEqual(self.req(b, '/api/feedback/delete', 'POST', dict(id=fid))[0], 409)
+        self.assertEqual(self.req(a, '/api/feedback/delete', 'POST', dict(id=fid), csrf=False)[0], 403)
+        status, data = self.req(a, '/api/feedback/delete', 'POST', dict(id=fid))
+        self.assertEqual((status, data.get('message')), (200, 'Đã xóa góp ý.'))
+        self.assertEqual(self.req(a, '/api/feedback/mine')[1]['items'], [])
+        self.assertEqual(self.req(a, '/api/feedback/delete', 'POST', dict(id=fid))[0], 409)
 
     def test_admin_routes_are_gated(self):
         anon = self.device()

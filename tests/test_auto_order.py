@@ -203,11 +203,43 @@ class Money(Base):
         self.assertEqual(len(auto_orders(j, missed)), 1)
         self.assertEqual(j.c[ao.KEY]['day'], j.c['day'])
 
+    def test_411_a_part_is_ordered_when_the_cap_left_covers_only_part(self):
+        """#411 "cài dưới 52 đặt 182 mà nó cứ để tuột xuống 0": what is left of today's cap buys a smaller order."""
+        j = self.journey()
+        own(j, below=10, qty=40)
+        sup = inventory.supplier('restaurant', 'partner')
+        full, part = ao._total(inventory.item('restaurant', ITEM), 40, sup), ao._total(inventory.item('restaurant', ITEM), 20, sup)
+        j.c['day_start_money'] = 2 * part                                     # the cap: about half the full order
+        shelf(j, 0)
+        r = j.act('inv_wait')
+        got = auto_orders(j)
+        self.assertEqual(len(got), 1)
+        self.assertTrue(10 <= got[0]['qty'] < 40, got[0]['qty'])            # at least Y / PART_MIN, less than Y
+        self.assertLessEqual(j.c[ao.KEY]['spent'], ao.budget(j.c))
+        self.assertLess(j.c[ao.KEY]['spent'], full)
+        self.assertTrue(any('Tự đặt 1 món' in x for x in r['effects']))
+
+    def test_411_too_little_for_a_quarter_still_waits_and_says_why(self):
+        j = self.journey()
+        own(j, below=10, qty=40)
+        sup = inventory.supplier('restaurant', 'partner')
+        j.c['day_start_money'] = 2 * (ao._total(inventory.item('restaurant', ITEM), 10, sup) - 1)   # not even Y / 4
+        shelf(j, 0)
+        r = j.act('inv_wait')
+        self.assertEqual(auto_orders(j), [])
+        self.assertIn('🔁 Hết mức tự đặt hôm nay.', r['effects'])
+        ro = public_state(j.state)['careers']['restaurant']['warehouse']['reorder']
+        self.assertTrue(ro['warn'])
+        self.assertEqual(ro['why'], 'cap')                                    # "hết mức hôm nay", not "quỹ thiếu"
+        set_money(j.c, ao.floor(j.state, j.c) + 1)
+        self.assertEqual(public_state(j.state)['careers']['restaurant']['warehouse']['reorder']['why'], 'fund')
+
     def test_never_the_wallet(self):
         j = self.journey(fund=100)
         jr.enable_story(j.state, 7)
         j.state['journey']['wallet'] = 10**6
         own(j)
+        set_money(j.c, ao.floor(j.state, j.c) + 1)                          # not even a part of the order fits (#411)
         shelf(j, 0)
         j.act('inv_wait')
         self.assertEqual(auto_orders(j), [])

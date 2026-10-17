@@ -1,3 +1,12 @@
+# v2.4.41 — 2026-10-17
+
+🛵 Xe trên đảo 2.5D (chủ game 17/10 "chỗ xe chạy map 2.5d cho khác tí", chọn: cảm giác lái, xe đẹp hơn, xe đỗ / sân bay): client/isometric/phaser-world.ts — xe tăng tốc dần (RIDE_RAMP 0,7 s, ease-out; tốc độ tối đa không đổi, vẫn ≤ live/town.py SPEED), nghiêng đầu khi bốc tốc, nảy nhẹ theo quãng đường, khói xả sau đuôi xe máy/ô tô (MOTOR, tối đa 8 cụm); bóng mềm dưới xe (vehicle-art.js rideStamp). Nút 📯 Còi (🔔 với xe đạp) bên phải khi đang đi xe trong khu phố: tiếng còi xe thật CC0 (public/audio/sfx/horn.mp3, freesound keweldog #182474, ghi trong CREDITS.md), chuông xe đạp dùng ting.mp3; chữ "📯 Bíp bíp!" trên đầu (0,8 s một lần). Tới cửa một nơi thì xe đỗ bên cạnh, người đi bộ vào; bước tiếp là lên xe lại. Du thuyền dập dềnh, sóng vỗ mạn; sân bay có đèn viền đường băng và cờ gió; máy bay bay qua có bóng lướt trên phố và vệt khói trắng.
+
+Sửa theo góp ý:
+- #411 🔁 Tự đặt hàng (game/auto_order.py): khi tiền còn lại (mức trong ngày = 50% quỹ lúc mở cửa, hoặc quỹ trên mức giữ lại) chỉ đủ một phần, đặt phần vừa đủ (ít nhất 1/4 số "đặt", PART_MIN) thay vì bỏ qua đến khi kệ về 0. `reorder.why` ('cap' / 'fund') — dòng Tự đặt hàng ghi "hết mức hôm nay" hoặc "quỹ thiếu" kèm một dòng giải thích (bản server cũ không gửi why: như trước).
+- #412 Góp ý: nút 🗑️ Xóa (bấm hai lần) cho góp ý chưa có lời đáp; POST /api/feedback/delete (player_feedback.delete: một DELETE theo id + chủ + reply IS NULL, ảnh xóa theo ON DELETE CASCADE; giới hạn như sửa).
+- Nhà hàng tiệc / Khách sạn: câu "… chỉ: đáp án" bỏ dấu chấm cuối của từng lựa chọn và ngăn bằng "; " khi lựa chọn có dấu phẩy (kit.answer_text), hết cảnh "cột., …..".
+
 # v2.4.40 — 2026-10-17
 
 🧧 Lì xì (chủ game 17/10: "giật lì xì mỗi người không giới hạn, giật thoải mái … mỗi người phát không giới hạn … ưu tiên cái nào chưa giật hoặc còn lên trên"): game/lixi.py bỏ GRAB_DAY / GRAB_DAY_XU / PAIR_DAY (None; đặt số là bật lại), bỏ DAY_MAX / OPEN_MAX khi phát, GAP 60 → 5 giây (chống bấm đúp). Vẫn giữ: một bao mỗi người mỗi lượt phát, không tự giật bao của mình, tài khoản ≥3 ngày, ngày sống ≥10, một bao mỗi mạng mỗi lượt phát, chặn nhau thì không giật. GET /api/lixi liệt kê mọi bao còn mở (tối đa 300) và 30 bao đã xong gần nhất; danh sách 🧧 xếp bao mình còn giật được lên đầu (lixi-cards.js ranked/grabbable) và ghi "N bao đang chờ bạn giật". live/lixi.py giữ 120 bao mở cho trang mới vào.

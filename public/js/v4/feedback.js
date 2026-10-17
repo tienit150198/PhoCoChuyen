@@ -122,7 +122,7 @@ function mineItem(it,fb={}){
   return `<article class="fb-item"><div class="fb-item-top"><span class="fb-item-kind"><span aria-hidden="true">${emo}</span> ${label}</span>${pill(st,cls)}<small class="muted">${ago(it.created_at)}</small></div>
     ${editing?editForm(fb,it):`<p class="fb-text" data-no-translate>${esc(it.text)}</p>`}
     ${imageGallery(it.images)}
-    ${it.reply?`<div class="fb-reply"><b>${icon('chat',14)} Nhà làm game trả lời</b><p data-no-translate>${esc(it.reply)}</p>${it.replied_at?`<small class="muted">${ago(it.replied_at)}</small>`:''}</div>`:editing?'':`<div class="row fb-edit-row">${button('✏️ Sửa','fbEdit',{id:it.id},'ghost small')}</div>`}</article>`;
+    ${it.reply?`<div class="fb-reply"><b>${icon('chat',14)} Nhà làm game trả lời</b><p data-no-translate>${esc(it.reply)}</p>${it.replied_at?`<small class="muted">${ago(it.replied_at)}</small>`:''}</div>`:editing?'':`<div class="row fb-edit-row">${fb.del===it.id?`<span class="small muted">Xóa góp ý này?</span>${button('Xóa thật','fbDeleteYes',{id:it.id},'danger small')}${button('Không','fbDeleteNo',{},'ghost small')}`:`${button('🗑️ Xóa','fbDelete',{id:it.id},'ghost small')}${button('✏️ Sửa','fbEdit',{id:it.id},'ghost small')}`}</div>`}</article>`;
 }
 function mineList(env){
   const fb=fbState(env.ui);loadMine(env);
@@ -211,6 +211,14 @@ export async function feedbackAction(action,data,el,env){
     case'fbEdit':{const fb=fbState(ui),it=fb.mine?.items?.find(x=>x.id===Number(data.id));if(!it||it.reply)return true;
       fb.edit={id:it.id,draft:it.text,sending:false};env.renderSheet(false);setTimeout(()=>{const t=document.getElementById(`fb-edit-${it.id}`);if(t){t.focus();t.setSelectionRange?.(t.value.length,t.value.length);}},0);return true;}
     case'fbEditCancel':fbState(ui).edit=null;env.renderSheet(false);return true;
+    // 🗑️ F#412 "cái nút xóa góp ý": a note with no reply yet, after a second tap (game/player_feedback.py delete)
+    case'fbDelete':{const fb=fbState(ui);fb.del=Number(data.id);fb.edit=null;env.renderSheet(false);return true;}
+    case'fbDeleteNo':fbState(ui).del=null;env.renderSheet(false);return true;
+    case'fbDeleteYes':{const fb=fbState(ui),id=Number(data.id);if(fb.deleting)return true;fb.deleting=true;
+      try{const d=await env.api.post('/api/feedback/delete',{id});if(fb.mine?.items)fb.mine.items=fb.mine.items.filter(x=>x.id!==id);env.toast(d.message||'Đã xóa góp ý.','good');}
+      catch(err){if(err.status===409)fb.mine=null;env.toast(err.status?err.message:'Mất kết nối, thử lại sau nhé.',true);}
+      finally{fb.deleting=false;fb.del=null;env.renderSheet(false);}
+      return true;}
     case'fbClearReply':{const it=await adminUpdate(env,{id:Number(data.id),reply:''});if(it)env.toast('Đã xóa lời đáp.');return true;}
   }
   return statsAction(action,data,el,env);
