@@ -115,11 +115,15 @@ class Levels(unittest.TestCase):
                     self.assertTrue(any(b['tiles'][k][4] & tm.KEY_TILE for k in b['b'][t]))
 
     def test_levels_101_to_200_keep_the_icons_and_stack_deeper(self):
-        """Owner 17/10: past 100, harder by more layers ("xếp nhiều lớp hơn"), not by more icons. Levels 1–100 are
-        the 2.4.7 table, unchanged (the stored rows are what --extend kept)."""
+        """Owner 17/10: past 100, harder by more layers ("xếp nhiều lớp hơn"); 18/10: and more icons ("thêm 30 40 loại
+        thoải mái"). Levels 1–100 are the 2.4.7 table, unchanged (the stored rows are what --extend kept)."""
         old = [tm.build(lv) for lv in range(91, 101)]
         hi = [tm.build(lv) for lv in range(101, 201)]
-        self.assertTrue(all(len(b['icons']) == 20 for b in hi))
+        kinds = [len(b['icons']) for b in hi]
+        self.assertEqual(kinds, sorted(kinds), 'icons never go down')
+        self.assertGreaterEqual(kinds[0], 21)
+        self.assertGreaterEqual(kinds[-1], 38)
+        self.assertTrue(all(len(set(b['icons'])) == len(b['icons']) for b in hi))
         depth = lambda b: 1 + max(t[2] for t in b['tiles'][:b['board']])
         self.assertTrue(all(depth(b) >= 8 for b in hi), [depth(b) for b in hi])   # 91–100: 4 to 7
         self.assertTrue(all(depth(b) >= 11 for b in hi[-20:]), [depth(b) for b in hi[-20:]])
@@ -484,6 +488,25 @@ class PastHundred(unittest.TestCase):
         self.assertEqual(e.exception.code, 'tile_level')
 
     @with_clock
+    def test_a_level_played_on_the_2443_table_still_counts(self):
+        """2.4.44 rebuilt levels 101–200 (table 3); a page of 2.4.43 played table 2's level and says v=2."""
+        self.assertNotEqual(tm.level(101, 2)['tiles'], tm.level(101)['tiles'])
+        self.assertEqual(tm.level(57, 2)['tiles'], tm.level(57)['tiles'], 'levels 1–100 are the same in every table')
+        s = cleared(100)
+        s['journey']['tile']['cur'] = dict(lv=100, t=int(T0 * 1000), b={}, p={})
+        sol = tm.level(101, 2)['solution']
+        self.clock.tick(tm.need_ms(len(sol)) / 1000)
+        with self.assertRaises(GameError) as e:   # table 2's taps do not win table 3's level
+            end(s, 101, moves=sol)
+        self.assertEqual(e.exception.code, 'tile_invalid')
+        s, r = end(s, 101, moves=sol, v=2)
+        self.assertTrue(r['first'])
+        self.assertEqual(tm.cleared(s), 101)
+        with self.assertRaises(GameError) as e:
+            end(s, 102, v=4)
+        self.assertEqual(e.exception.code, 'tile_level')
+
+    @with_clock
     def test_the_last_level(self):
         s = cleared(199)
         s['journey']['tile']['cur'] = dict(lv=100, t=int(T0 * 1000), b={}, p={})
@@ -788,7 +811,7 @@ class Buff(unittest.TestCase):
         auctions, transfers, gifts and mishaps never reach it."""
         callers = set()
         for p in (ROOT / 'game').rglob('*.py'):
-            if p.name in ('tile_match.py', 'tile_match_levels.py', 'tile_match_levels_v1.py'):
+            if p.name in ('tile_match.py', 'tile_match_levels.py', 'tile_match_levels_v1.py', 'tile_match_levels_v2.py'):
                 continue
             src = p.read_text(encoding='utf-8')
             if re.search(r'tile_match|fund_bonus', src):

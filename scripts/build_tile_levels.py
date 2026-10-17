@@ -59,7 +59,7 @@ def curve_hi(lv: int) -> dict:
     u = (lv - BASE - 1) / 99
     target = 3 * round(50 + 20 * u)                   # 150 at 101 … 210 at 200 (level 100: 174 aimed, 114 built)
     shape = HI_LANDMARK.get(lv) or HI_SHAPES[lv % len(HI_SHAPES)]
-    kinds = 20                                        # level 100's; harder by layers, not more icons (owner 17/10)
+    kinds = 22 + round(18 * u)                        # 22 … 40 icons (owner 18/10 "thêm 30 40 loại thoải mái"; 100: 20)
     layers = 9 + round(4 * u)                         # 9 … 13 high (built at least one less): some layers straight on the one below
     stacks = (10 + round(2 * u),) * 2 + (8 + round(2 * u),)
     locks = 8 + round(4 * u)

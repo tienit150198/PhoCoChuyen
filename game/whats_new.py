@@ -32,6 +32,9 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.44", date="2026-10-18", items=(
+        dict(emoji='🧩', text="Ghép ba màn 101–200 thêm nhiều loại đồ: từ 22 lên tới 40 loại (thêm 🍩 🎸 🍕 🐼 🦋…), càng về sau càng khó."),
+    )),
     dict(version="2.4.43", date="2026-10-17", items=(
         dict(emoji='🧩', text="Ghép ba Phố Mây mở thêm màn 101–200: vẫn 20 loại đồ nhưng xếp chồng cao 8–14 lớp, càng về sau càng khó."),
         dict(emoji='🛵', text="Bỏ nút 📯 Còi khi đi xe trên đảo 2.5D cho khỏi che nút Góc nhìn."),

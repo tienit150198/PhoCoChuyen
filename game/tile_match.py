@@ -13,8 +13,8 @@ Play (public/js/v4/tile-match.js draws it; this file is the authority):
   here (`build`). Generation plays a hidden intended solution while it assigns the items, so every level is
   solvable by construction; `solve` (an independent search) and the tests check it again. Later levels
   add 🔒 locked tiles (open once their 🔑 key tile is taken) and 🧊 ice tiles (two taps). Levels 101–200 (2.4.43)
-  keep level 100's 20 icons and stack higher instead (owner 17/10 "xếp nhiều lớp hơn"): 8 to 14 layers (91–100: 4 to 7),
-  some straight on the one below (STRAIGHT).
+  stack higher (owner 17/10 "xếp nhiều lớp hơn"): 8 to 14 layers (91–100: 4 to 7), some straight on the one below
+  (STRAIGHT); since 2.4.44 also more icons, 22 at 101 to 40 at 200 (owner 18/10 "thêm 30 40 loại thoải mái").
 
 Reward (a money buff, so the server checks everything): each NEW level cleared for the first time gives +0.2 % to
 the money a player EARNS from work and business, +20 % at level 100, then +0.1 % a level, +30 % at 200 (`permille`). It is booked as its own row
@@ -83,7 +83,9 @@ VN = datetime.timezone(datetime.timedelta(hours=7))
 # game opens on (iOS 15.0, Emoji 13): 2.4.10 put 🥥 where 🪷 was (Emoji 14, iOS 15.4: a blank box from level 77 on
 # iOS 15.0–15.3); same place in the tuple, so every level keeps its layout and kinds.
 ICONS = ('💄', '📱', '🍜', '🐶', '☕', '👗', '💐', '⌚', '🥖', '👜', '🐱', '🧋', '🍨', '🧴', '👠', '💍',
-         '🎤', '🍉', '🛵', '🏮', '🎁', '🧸', '🌸', '🍚', '🥐', '🥥', '🐠', '💅')
+         '🎤', '🍉', '🛵', '🏮', '🎁', '🧸', '🌸', '🍚', '🥐', '🥥', '🐠', '💅',
+         # 2.4.44 (owner 18/10 "thêm 30 40 loại thoải mái"): appended, so a level of ≤ 20 kinds draws from the same 28
+         '🍩', '🎈', '📷', '🎸', '🍓', '🍕', '🧁', '🎒', '👒', '🌻', '🍔', '🐰', '🐸', '🥭', '🎧', '📚', '🐼', '🦋', '👟', '🎮')
 
 
 def _core():
@@ -308,12 +310,16 @@ def _assign(rng: Rng, order: list[int], kinds: int, peak: int, eager: int) -> li
     raise Gen('assign')
 
 
-TABLE = 2   # the level table this build serves (2.4.7: harder from level 5); 1 = 2.4.5–2.4.6's, still replayed
+TABLE = 3   # the level table this build serves (2.4.44: levels 101–200 with up to 40 icons); older ones still replayed:
+            # 1 = 2.4.5–2.4.6's (100 levels), 2 = 2.4.7–2.4.43's (101–200 with 20 icons since 2.4.43)
+TABLES = (1, 2, TABLE)
 
 
 def table(v: int = TABLE) -> tuple:
     if v == 1:
         from .tile_match_levels_v1 import LEVELS
+    elif v == 2:
+        from .tile_match_levels_v2 import LEVELS
     else:
         from .tile_match_levels import LEVELS
     return LEVELS
@@ -754,10 +760,10 @@ def _end(s: dict, p: dict, e) -> dict:
     need = e.need
     new = 'n' in p
     need(({'n', 'moves'} <= set(p) <= {'n', 'moves', 'ms', 'v'}) if new else set(p) == {'lv', 'moves'}, 'Thao tác không hợp lệ.')
-    need(type(p.get('v', TABLE)) is int and p.get('v', TABLE) in (1, TABLE), 'Màn chơi không hợp lệ.', 'tile_level')
+    need(type(p.get('v', TABLE)) is int and p.get('v', TABLE) in TABLES, 'Màn chơi không hợp lệ.', 'tile_level')
     lv = p['n'] if new else p['lv']
     need(type(lv) is int and 1 <= lv <= LEVEL_MAX, 'Màn chơi không hợp lệ.', 'tile_level')
-    need(lv <= BASE_MAX or p.get('v', TABLE) == TABLE, 'Màn chơi không hợp lệ.', 'tile_level')   # table 1 has 100 levels
+    need(lv <= BASE_MAX or p.get('v', TABLE) != 1, 'Màn chơi không hợp lệ.', 'tile_level')   # table 1 has 100 levels
     moves = p['moves']
     need(isinstance(moves, list) and len(moves) <= MOVES_MAX and all(type(m) is int for m in moves), 'Ván chơi không hợp lệ.', 'tile_invalid')
     t = _ensure(s)
