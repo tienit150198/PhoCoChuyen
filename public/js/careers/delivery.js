@@ -79,6 +79,76 @@ function stopsAt(x,node){
   return {pick,drop};
 }
 
+/* ---------- 📅 Đơn hẹn giờ: the customer's window (server: delivery.py APPT_*), in shift minutes ---------- */
+const REMIND_KEY='mnl.dlRemind';
+/** An open window of today's shift (server delivery._appt: one left from an earlier shift is not shown). */
+const apptOf=t=>t?.appt&&!t.appt.done&&t.appt.day===(t.run?.day??t.appt.day)?t.appt:null;
+const apptText=a=>`${hm(a.start)}–${hm(a.end)}`;
+const stairsAt=(x,node)=>Number((x.cc.stairs||{})[node])||0;
+/** Where the clock stands against a window: before (opens in `n`), in (closes in `n`; `soon` in its last 10′), late (by `n`). */
+export function apptPhase(a,now){
+  now=Number(now)||0;
+  if(now<a.start)return {phase:'before',n:a.start-now};
+  if(now<=a.end)return {phase:'in',n:a.end-now,soon:a.end-now<=10};
+  return {phase:'late',n:now-a.end};
+}
+/** "📅 18:30–19:00 · còn 12 phút": the window and a countdown (the clean layout's chip is shorter; its words stay in aria-label). */
+export function apptChip(a,now,{esc=s=>String(s),terse=false}={}){
+  const p=apptPhase(a,now),w=apptText(a);
+  const cls=p.phase==='late'?'bad':p.phase==='in'?(p.soon?'warn':'good'):p.n<=15?'info':'';
+  const say=p.phase==='before'?`Hẹn giao ${w}, mở sau ${p.n} phút`:p.phase==='in'?(p.soon?`Hẹn giao ${w}, sắp trễ, còn ${p.n} phút`:`Hẹn giao ${w}, đang trong giờ hẹn, còn ${p.n} phút`):`Hẹn giao ${w}, đã trễ ${p.n} phút`;
+  const tail=terse?(p.phase==='before'?`⏳ ${p.n}′`:p.phase==='in'?(p.soon?`⚠️ ${p.n}′`:`✅ ${p.n}′`):`❌ +${p.n}′`)
+    :(p.phase==='before'?`mở sau ${p.n} phút`:p.phase==='in'?(p.soon?`sắp trễ · còn ${p.n} phút`:`đang trong giờ hẹn · còn ${p.n} phút`):`trễ ${p.n} phút`);
+  return `<span class="dl-appt ${cls}" role="timer" aria-label="${esc(say)}" title="${esc(say)}">📅 <b>${esc(w)}</b> · ${esc(tail)}</span>`;
+}
+/** A draft route that takes the pick-ups first (nearest next), then the hand-overs by their window (or deadline). */
+export function apptRoute(tasks,from,distance){
+  const open=tasks.filter(t=>t.known&&!t.run?.outcome);
+  const picks=[...new Set(open.filter(t=>!t.run.loaded).map(t=>t.needs.pickup))].filter(n=>n!==from);
+  const out=[];let at=from;
+  while(picks.length){picks.sort((a,b)=>distance(at,a)-distance(at,b)||a.localeCompare(b));at=picks.shift();out.push(at);}
+  const key=t=>apptOf(t)?.start??t.due??9999;
+  for(const t of [...open].sort((a,b)=>key(a)-key(b))){const dest=t.dest||t.run?.dest||t.needs.dest;if(out[out.length-1]!==dest&&!(out.length===0&&dest===from))out.push(dest);}
+  return out.slice(0,10);
+}
+const readRemind=()=>{try{return JSON.parse(localStorage.getItem(REMIND_KEY)||'{}')||{};}catch{return {};}};
+const saveRemind=v=>{try{localStorage.setItem(REMIND_KEY,JSON.stringify(v));}catch{/* private mode: this visit only */}};
+const remindKey=(t,a)=>`${t.id}@${a.day}:${a.start}`;
+/** Reminders that are due now: on, not yet shown, the clock within APPT_REMIND minutes before the window (or in it). */
+export function remindDue(tasks,now,lead,marks){
+  return tasks.filter(t=>{const a=apptOf(t);if(!a)return false;const m=marks[remindKey(t,a)];return m&&!m.fired&&now>=a.start-lead&&now<=a.end;});
+}
+function apptReminders(x){
+  const d=x.room.data||{},marks=readRemind(),due=remindDue(live(x),Number(d.clock)||0,Number(x.cc.appt?.remind)||10,marks);
+  for(const t of due){const a=apptOf(t);marks[remindKey(t,a)].fired=true;
+    x.toast?.(`⏰ Sắp tới giờ hẹn: ${(t.needs||{}).item||t.preview?.emoji||''} · ${apptText(a)} · ${place(x,destOf(t)||t.preview?.dest)}`);}
+  if(due.length)saveRemind(marks);
+}
+/** The window, what the hand-over earns or costs there (said before it can happen), calling ahead and the reminder. */
+function apptBox(t,x){
+  const a=apptOf(t);if(!a)return '';
+  const d=x.room.data||{},now=Number(d.clock)||0,c=clean(),cfg=x.cc.appt||{},dest=destOf(t),here=d.at===dest&&t.run?.loaded;
+  const bonus=cfg.bonus??4,late=cfg.late??4,more=cfg.late_more??8,step=cfg.late_step??15,max=cfg.wait_max??45;
+  const gap=a.start-now-stairsAt(x,dest),on=!!readRemind()[remindKey(t,a)];
+  const rule=c?`<p class="small muted dl-appt-rule" aria-label="${x.esc(`Đúng khung hẹn cộng ${bonus} xu. Trễ trừ ${late} xu phí ship, trễ quá ${step} phút trừ ${more} xu. Chỉ bớt phí ship, không trừ vào ví.`)}">✅ +${bonus} · ❌ −${late}/−${more} (>${step}′)</p>`
+    :`<p class="small muted dl-appt-rule">Đúng khung hẹn: +${bonus} xu. Trễ hẹn: phí ship −${late} xu (trễ quá ${step} phút: −${more} xu), khách có thể phàn nàn. Chỉ bớt phí ship, không bao giờ trừ vào ví.</p>`;
+  const said={early:c?'📞 Khách cho giao sớm':'📞 Khách cho giao sớm (không có thưởng đúng hẹn).',neighbour:c?'📞 Gửi hàng xóm được':'📞 Khách cho gửi hàng xóm nhận giúp.',later:c?`📞 Đúng ${hm(a.start)} khách mới về`:`📞 Khách dặn: đúng ${hm(a.start)} mới về tới.`}[a.call]||'';
+  const btns=[];
+  if(here&&a.call!=='early'&&gap>0)btns.push(gap<=max?x.cmd(c?`⏳ Chờ ${gap}′`:`⏳ Chờ tới giờ hẹn · ${gap} phút`,'dl_appt',{task:t.id,how:'wait'},'ghost'):`<span class="small muted">${x.esc(c?`⏳ Còn ${gap}′: giao đơn khác trước`:`Còn ${gap} phút mới tới giờ hẹn — giao đơn khác trước rồi quay lại.`)}</span>`);
+  // On the door card "📞 Gọi khách" asks the same question until it is used (server dl_call); elsewhere this one does.
+  if(!a.call&&now<a.start&&(!t.run?.loaded||t.run.called))btns.push(x.cmd(c?'📞 Hỏi giao sớm':'📞 Gọi hỏi giao sớm · 2 phút','dl_appt',{task:t.id,how:'call'},'ghost'));
+  btns.push(`<button type="button" class="btn ghost small dl-remind${on?' on':''}" ${carAttr(x,'remind',{task:t.id})} aria-pressed="${on}">${on?'⏰ Đã hẹn nhắc':`⏰ Nhắc trước ${cfg.remind??10}′`}</button>`);
+  return `<div class="dl-apptbox"><p class="dl-line">${apptChip(a,now,{esc:x.esc,terse:c})}</p>${said?`<p class="small">${x.esc(said)}</p>`:''}${rule}<div class="row wrap">${btns.join('')}</div></div>`;
+}
+
+/** The route estimate at a stop where a scheduled parcel is handed over: early by / on time / late by. */
+function apptMarks(x,marks){
+  if(!marks?.length)return '';
+  const c=clean();
+  return marks.map(m=>{const w=`${hm(m.start)}–${hm(m.end)}`,txt=m.state==='early'?(c?`sớm ${m.by}′`:`tới sớm ${m.by} phút`):m.state==='late'?(c?`trễ ${m.by}′`:`trễ hẹn ${m.by} phút`):'đúng hẹn';
+    return `<em class="dl-eta-appt ${m.state}" aria-label="${x.esc(`Hẹn giao ${w}: ${txt}`)}">📅 ${x.esc(w)} · ${x.esc(txt)}</em>`;}).join('');
+}
+
 /* ---------- status bar ---------- */
 function status(x){
   const d=x.room.data||{},fuel=Number(d.fuel)||0,load=Number(d.load)||0,limit=Number(d.limit)||200,cap=Number(d.cap)||250;
@@ -235,11 +305,11 @@ function map(x){
   const d=x.room.data||{},all={},status={};
   for(const [id,n] of Object.entries(nodes(x))){
     all[id]={...n,name:t(n.name),label:clean()?shortName(x,id):language()==='en'?enLabel(t(n.name)):n.name.split(' ').slice(0,2).join(' ')};
-    const s=stopsAt(x,id);status[id]={pick:s.pick.length,drop:s.drop.length};
+    const s=stopsAt(x,id);status[id]={pick:s.pick.length,drop:s.drop.length,appt:s.drop.some(apptOf)};
   }
   return renderNeighborhoodMap({nodes:all,at:d.at,route:d.route||[],draft:ui(x).draft,status,signs:d.road?.signs||[],minutes:d.mpu,
     text:{title:t('Khu phố Mây Chiều'),here:t('Bạn đang ở'),planned:t('Tuyến đã chốt'),draft:t('Tuyến nháp'),pick:t('Điểm lấy hàng'),drop:t('Điểm giao hàng'),
-      residential:t('Khu dân cư'),services:t('Khu dịch vụ'),garden:t('Khu nhà vườn'),order:t('Thứ tự điểm dừng'),scale:t(`Mỗi ô phố ${d.mpu} phút`)},bare:clean()});
+      residential:t('Khu dân cư'),services:t('Khu dịch vụ'),garden:t('Khu nhà vườn'),order:t('Thứ tự điểm dừng'),appt:t('Đơn hẹn giờ'),scale:t(`Mỗi ô phố ${d.mpu} phút`)},bare:clean()});
 }
 
 /* ---------- route planner ---------- */
@@ -249,11 +319,16 @@ function planner(x,ride=true){
   let body='';
   if(planned.length){
     const next=eta[0]||{node:planned[0],blocks:dist(x,d.at,planned[0]),minutes:dist(x,d.at,planned[0])*mpu,at:(d.clock||0)+dist(x,d.at,planned[0])*mpu,fuel:(d.fuel||0)-dist(x,d.at,planned[0])*rate,notes:[]};
-    body+=`<ol class="dl-eta">${eta.map((r,i)=>`<li class="${r.fuel<0?'bad':''}"><span>${i+1}</span><b>${x.esc(place(x,r.node))}</b><small>${x.esc(hm(r.at))} · ${r.blocks} ô · ${c?'⛽':'xăng còn '}${r.fuel}%${(r.notes||[]).length?' · '+x.esc(r.notes.join(', ')):''}</small></li>`).join('')}</ol>`+(ride?rideChoice(x,next):'');
+    body+=`<ol class="dl-eta">${eta.map((r,i)=>`<li class="${r.fuel<0?'bad':''}"><span>${i+1}</span><b>${x.esc(place(x,r.node))}</b><small>${x.esc(hm(r.at))} · ${r.blocks} ô · ${c?'⛽':'xăng còn '}${r.fuel}%${(r.notes||[]).length?' · '+x.esc(r.notes.join(', ')):''}</small>${apptMarks(x,r.appt)}</li>`).join('')}</ol>`+(ride?rideChoice(x,next):'');
   }
   const from=u.draft.length?u.draft[u.draft.length-1]:(planned.length?planned[planned.length-1]:d.at);
   let clock=planned.length&&eta.length?eta[eta.length-1].at:(d.clock||0),fuel=planned.length&&eta.length?eta[eta.length-1].fuel:(d.fuel||0),prev=planned.length?planned[planned.length-1]:d.at;
-  const draftRows=u.draft.map((id,i)=>{const b=dist(x,prev,id);clock+=b*mpu;fuel-=b*rate;prev=id;return `<li class="${fuel<0?'bad':''}"><span>${planned.length+i+1}</span><b>${x.esc(place(x,id))}</b><small>~${x.esc(hm(clock))} · ${b} ô · ${c?'⛽':'xăng '}~${fuel}%</small></li>`;}).join('');
+  const sched=live(x).filter(t=>t.known&&apptOf(t)),carried=new Set(sched.filter(t=>t.run.loaded||t.needs.pickup===d.at||planned.includes(t.needs.pickup)).map(t=>t.id));
+  const draftRows=u.draft.map((id,i)=>{const b=dist(x,prev,id);clock+=b*mpu;fuel-=b*rate;prev=id;
+    const marks=sched.filter(t=>carried.has(t.id)&&destOf(t)===id).map(t=>{const a=t.appt,door=clock+stairsAt(x,id),st=door<a.start&&a.call!=='early'?'early':door>a.end?'late':'ok';return {start:a.start,end:a.end,state:st,by:st==='early'?a.start-door:st==='late'?door-a.end:0};});
+    for(const t of sched)if(t.needs.pickup===id)carried.add(t.id);
+    return `<li class="${fuel<0?'bad':''}"><span>${planned.length+i+1}</span><b>${x.esc(place(x,id))}</b><small>~${x.esc(hm(clock))} · ${b} ô · ${c?'⛽':'xăng '}~${fuel}%</small>${apptMarks(x,marks)}</li>`;}).join('');
+  const booked=live(x).some(t=>t.known&&apptOf(t));
   const tiles=Object.entries(all).map(([id,n])=>{
     const s=stopsAt(x,id),b=dist(x,from,id),bits=[];
     if(s.pick.length)bits.push(`lấy ${s.pick.length}`);
@@ -270,6 +345,7 @@ function planner(x,ride=true){
     ${u.draft.length?`<ol class="dl-eta draft">${draftRows}</ol>`:''}
     <div class="row wrap">
       <button type="button" class="btn primary" ${carAttr(x,'plan')} ${sameAsPlan?'disabled':''}>🗺️ Chốt lộ trình</button>
+      ${booked?`<button type="button" class="btn ghost small" ${carAttr(x,'apptPlan')} title="${x.esc('Nháp tuyến: lấy hàng trước, rồi giao theo giờ hẹn sớm nhất')}">${c?'📅 Theo giờ hẹn':'📅 Xếp tuyến theo giờ hẹn'}</button>`:''}
       <button type="button" class="btn ghost small" ${carAttr(x,'undo')} ${u.draft.length?'':'disabled'}${c?' aria-label="Bỏ điểm cuối"':''}>${c?'↶':'↶ Bỏ điểm cuối'}</button>
       <button type="button" class="btn ghost small" ${carAttr(x,'clear')} ${u.draft.length?'':'disabled'}${c?' aria-label="Xóa nháp"':''}>${c?'✕':'✕ Xóa nháp'}</button>
     </div>
@@ -349,6 +425,7 @@ function pickupCard(t,x){
     if(r.missing)body+=`<p class="small">Đã bổ sung: ${x.esc(r.missing)}.</p>`;
     return body;
   }
+  body+=apptBox(t,x);
   body+=r.checked?'<p class="dl-done">✓ Đã cân & kiểm</p>':`<div class="row wrap">${x.cmd('⚖️ Cân & kiểm hàng','dl_check',{task:t.id},'primary')}</div>`;
   if(r.checked){
     const diff=r.w!==n.w;
@@ -374,6 +451,7 @@ function pickupClean(t,x){
     if(r.missing)body+=`<p class="small">+ ${x.esc(r.missing)}</p>`;
     return body;
   }
+  body+=apptBox(t,x);
   if(r.checked){
     const diff=r.w!==n.w;
     body+=`<p class="dl-line" aria-label="${x.esc(`Cân thực tế ${kg(r.w)}${diff?`, shop khai ${kg(n.w)}`:', khớp'}. Vỏ thùng ${r.seam?'hở mép keo':'nguyên vẹn'}`)}">⚖️ <b class="${diff?'warn-text':''}">${kg(r.w)}</b>${diff?` ≠ khai ${kg(n.w)}`:' ✓'} · 📦 ${r.seam?'<b class="warn-text">⚠️ hở keo</b>':'✓'}</p>`;
@@ -396,6 +474,7 @@ function dropCard(t,x){
   let body='';
   if(t.due!=null)body+=`<p class="dl-line">⏰ Hẹn trước <b>${x.esc(hm(t.due))}</b>${(d.clock||0)>t.due?` · <span class="bad-text">đang trễ ${(d.clock||0)-t.due} phút</span>`:''}</p>`;
   if(r.back!=null)body+=`<p class="dl-line">🏃 Khách hẹn về lúc <b>${x.esc(hm(r.back))}</b></p>`;
+  body+=apptBox(t,x);
   if(r.discount)body+=`<p class="notice amber">Đã hứa bớt ${r.discount} xu: khách trả ${n.cod-r.discount} xu, túi COD hụt ${r.discount} xu (tự bù khi nộp).</p>`;
   if(r.dog==='ok')body+=`<p class="dl-line">🐕 Chó đã được giữ lại, vào giao được rồi.</p>`;
   if(r.knocks)body+=`<p class="notice amber">Đã bấm chuông ${r.knocks} lần, chưa ai mở.</p>`;
@@ -414,7 +493,7 @@ function dropCard(t,x){
   }else if(!blocked){
     body+=`<div class="row wrap">${x.cmd('✅ Giao tận tay','dl_deliver',{task:t.id},'primary big')}
       ${n.safe_drop&&!n.cod?x.confirmCmd('📸 Gửi chòi bảo vệ','dl_safedrop',{task:t.id},'Gửi hàng ở chòi bảo vệ và chụp ảnh làm bằng chứng? Khách đã cho phép trong ghi chú.',''):''}
-      ${!n.safe_drop&&!n.cod&&!n.paper?x.confirmCmd('📦 Gửi người nhận hộ','dl_safedrop',{task:t.id},'Khách chưa cho phép gửi người khác. Vẫn gửi nhận hộ và chụp ảnh?','ghost small'):''}</div>`;
+      ${!n.safe_drop&&!n.cod&&!n.paper?(t.appt?.call==='neighbour'&&!t.appt.done?x.confirmCmd('📦 Gửi hàng xóm nhận giúp','dl_safedrop',{task:t.id},'Khách đã cho gửi hàng xóm nhận giúp. Gửi và chụp ảnh làm bằng chứng?',''):x.confirmCmd('📦 Gửi người nhận hộ','dl_safedrop',{task:t.id},'Khách chưa cho phép gửi người khác. Vẫn gửi nhận hộ và chụp ảnh?','ghost small')):''}</div>`;
   }
   if(r.knocks||blocked)body+=`<div class="row wrap">${x.confirmCmd('📝 Báo giao thất bại','dl_fail',{task:t.id},r.broken_seen?'Lập biên bản hàng hỏng? Bạn đền một phần giá trị hàng, bảo hiểm trả phần còn lại.':'Báo giao thất bại cho đơn này?','danger small')}</div>`;
   return body;
@@ -427,6 +506,7 @@ function dropClean(t,x){
   let body='';
   const times=[t.due!=null?`⏰ <b>${x.esc(hm(t.due))}</b>${now>t.due?` · <span class="bad-text">trễ ${now-t.due}′</span>`:''}`:'',r.back!=null?`🏃 về <b>${x.esc(hm(r.back))}</b>`:''].filter(Boolean);
   if(times.length)body+=`<p class="dl-line">${times.join(' · ')}</p>`;
+  body+=apptBox(t,x);
   if(r.discount)body+=`<p class="notice amber">🏷️ Bớt ${r.discount}: thu ${n.cod-r.discount}, túi COD hụt ${r.discount}</p>`;
   if(r.dog==='ok')body+='<p class="dl-line">🐕 Đã giữ chó</p>';
   if(r.knocks)body+=`<p class="notice amber">🔔 ×${r.knocks}, chưa ai mở</p>`;
@@ -443,7 +523,7 @@ function dropClean(t,x){
       ${keypad(x,'note',given,given,{task:t.id})}</div>`;
   }else if(!blocked){
     const alt=[n.safe_drop&&!n.cod?x.confirmCmd('📸 Gửi bảo vệ','dl_safedrop',{task:t.id},'Gửi hàng ở chòi bảo vệ và chụp ảnh làm bằng chứng? Khách đã cho phép trong ghi chú.',''):'',
-      !n.safe_drop&&!n.cod&&!n.paper?x.confirmCmd('📦 Gửi nhận hộ','dl_safedrop',{task:t.id},'Khách chưa cho phép gửi người khác. Vẫn gửi nhận hộ và chụp ảnh?','ghost small'):''].join('');
+      !n.safe_drop&&!n.cod&&!n.paper?(t.appt?.call==='neighbour'&&!t.appt.done?x.confirmCmd('📦 Gửi hàng xóm','dl_safedrop',{task:t.id},'Khách đã cho gửi hàng xóm nhận giúp. Gửi và chụp ảnh làm bằng chứng?',''):x.confirmCmd('📦 Gửi nhận hộ','dl_safedrop',{task:t.id},'Khách chưa cho phép gửi người khác. Vẫn gửi nhận hộ và chụp ảnh?','ghost small')):''].join('');
     if(alt)body+=`<div class="row wrap">${alt}</div>`;
   }
   if(r.knocks||blocked)body+=`<div class="row wrap">${x.confirmCmd('📝 Báo thất bại','dl_fail',{task:t.id},r.broken_seen?'Lập biên bản hàng hỏng? Bạn đền một phần giá trị hàng, bảo hiểm trả phần còn lại.':'Báo giao thất bại cho đơn này?','danger small')}</div>`;
@@ -527,11 +607,11 @@ function board(x,active,folded=false){
 function orderRow(x,t){
   const st=stage(t),n=t.needs||{},p=t.preview||{},neu=st==='new';
   const from=neu?p.pickup:n.pickup,to=neu?p.dest:destOf(t),a=nodeOf(x,from),b=nodeOf(x,to);
-  const due=neu?(p.due!=null?hm(p.due):p.within?`${Number(p.within)}′`:''):t.due!=null?hm(t.due):'';
+  const ap=apptOf(t),due=ap?apptText(ap):neu?(p.due!=null?hm(p.due):p.within?`${Number(p.within)}′`:''):t.due!=null?hm(t.due):'';
   const tags=neu?[]:[n.cod?[`💵 ${n.cod}`,`thu hộ ${n.cod} xu`]:null,n.fragile?['⚠️','dễ vỡ']:null,n.cold?['❄️','giữ lạnh']:null].filter(Boolean);
   const where=neu?'đơn mới':st==='bag'?'trên xe':'chờ lấy';
-  const say=`${neu?'':`${n.item}, `}${a.name} → ${b.name}${due?`, hạn ${due}`:''}${tags.length?', '+tags.map(([,w])=>w).join(', '):''} (${where})`;
-  const label=`<span class="dl-orow-in" aria-label="${x.esc(say)}"><span aria-hidden="true">${x.esc(neu?p.emoji||'📦':n.emoji||'📦')}${neu?'🆕':st==='bag'?'🛵':''} ${x.esc(a.emoji)}→${x.esc(b.emoji)}</span> ${x.esc(shortName(x,to))}${due?` <b>⏰ ${x.esc(due)}</b>`:''}${tags.map(([ic])=>` <i>${x.esc(ic)}</i>`).join('')}</span>`;
+  const say=`${neu?'':`${n.item}, `}${a.name} → ${b.name}${due?`, ${ap?'hẹn giao':'hạn'} ${due}`:''}${tags.length?', '+tags.map(([,w])=>w).join(', '):''} (${where})`;
+  const label=`<span class="dl-orow-in" aria-label="${x.esc(say)}"><span aria-hidden="true">${x.esc(neu?p.emoji||'📦':n.emoji||'📦')}${neu?'🆕':st==='bag'?'🛵':''} ${x.esc(a.emoji)}→${x.esc(b.emoji)}</span> ${x.esc(shortName(x,to))}${due?` <b>${ap?'📅':'⏰'} ${x.esc(due)}</b>`:''}${tags.map(([ic])=>` <i>${x.esc(ic)}</i>`).join('')}</span>`;
   return x.cmd(label,'task_select',{task:t.id},'ghost small dl-orow');
 }
 /** A new order's deadline before ✋ Nhận đơn (its clock may already run): the time, or on day 1 how long after accept. */
@@ -554,10 +634,10 @@ function boardCards(x,rows,active,ask=true){
     if(st==='new'){
       const route=c?`${x.esc(place(x,p.pickup))} → ${x.esc(place(x,p.dest))}`:`${x.esc(nodeOf(x,p.pickup).name)} → ${x.esc(nodeOf(x,p.dest).name)}`;
       const btn=ask?x.cmd('✋ Nhận đơn','ask',{task:t.id},c&&active?'full':'primary full'):'';   // a work screen's one primary is the bar's
-      return `<article class="dl-card new ${t.id===active?'active':''}"><div class="row"><span class="dl-oemoji">${x.esc(p.emoji||'📦')}</span><div class="grow"><b${c?` aria-label="${x.esc(`${nodeOf(x,p.pickup).name} → ${nodeOf(x,p.dest).name}`)}"`:''}>${route}</b><small>${x.esc(who.display_name)}: “${x.esc(t.opening)}”</small>${dueLine(x,p)}</div></div>${btn}</article>`;
+      return `<article class="dl-card new ${t.id===active?'active':''}"><div class="row"><span class="dl-oemoji">${x.esc(p.emoji||'📦')}</span><div class="grow"><b${c?` aria-label="${x.esc(`${nodeOf(x,p.pickup).name} → ${nodeOf(x,p.dest).name}`)}"`:''}>${route}</b><small>${x.esc(who.display_name)}: “${x.esc(t.opening)}”</small>${dueLine(x,p)}${apptOf(t)?`<small class="dl-due">${apptChip(t.appt,x.room.data?.clock,{esc:x.esc,terse:c})}</small>`:''}</div></div>${btn}</article>`;
     }
     const label=c?{pickup:`Chờ lấy · ${place(x,n.pickup)}`,bag:`→ ${place(x,destOf(t))}`}[st]||'':{pickup:`Chờ lấy · ${nodeOf(x,n.pickup).name}`,bag:`Trên xe → ${nodeOf(x,destOf(t)).name}`}[st]||'';
-    return `<article class="dl-card ${st} ${t.id===active?'active':''}"><div class="row"><span class="dl-oemoji">${x.esc(n.emoji)}</span><div class="grow"><b>${x.esc(n.item)}</b><small>${x.esc(label)}${t.due!=null?` · hẹn ${x.esc(hm(t.due))}`:''}${n.cod?` · COD ${n.cod}`:''}</small></div>${t.id===active?'':x.cmd('Xem','task_select',{task:t.id},'ghost small')}</div></article>`;
+    return `<article class="dl-card ${st} ${t.id===active?'active':''}"><div class="row"><span class="dl-oemoji">${x.esc(n.emoji)}</span><div class="grow"><b>${x.esc(n.item)}</b><small>${x.esc(label)}${t.due!=null?` · hẹn ${x.esc(hm(t.due))}`:''}${n.cod?` · COD ${n.cod}`:''}</small>${apptOf(t)?`<small class="dl-due">${apptChip(t.appt,x.room.data?.clock,{esc:x.esc,terse:c})}</small>`:''}</div>${t.id===active?'':x.cmd('Xem','task_select',{task:t.id},'ghost small')}</div></article>`;
   }).join('')||'<p class="muted small">Chưa có đơn.</p>'}`;
 }
 /* ---------- next step: one list of steps drives the checklist, the header hint and the bottom button ---------- */
@@ -740,6 +820,12 @@ function dropSteps(t,x,S){
   // The COD bag is full: hand the cash in at the hub before collecting more.
   if(full)S.push({...travel(x,'hub'),label:`Về ${place(x,'hub')} nộp COD (túi đầy)`},...settleSteps(x));
   S.push(travel(x,dest));
+  const ap=apptOf(t);
+  if(ap&&ap.call!=='early'){
+    const gap=ap.start-(Number(d.clock)||0)-stairsAt(x,dest),max=x.cc.appt?.wait_max??45;
+    if(gap>0)S.push({ok:null,label:`Chờ tới giờ hẹn ${apptText(ap)}`,note:ap.call==='neighbour'?'hoặc gửi hàng xóm':gap>max?'giao đơn khác trước':'',
+      go:here&&gap<=max?{cmd:'dl_appt',payload:{task:t.id,how:'wait'},label:`⏳ Chờ tới ${hm(ap.start)} · ${gap}${mn()}`}:null});
+  }
   const kinds=x.cc.care_kinds||{};
   for(const o of notes)if(kinds[o.kind])S.push({ok:r.care.includes(o.kind)?true:null,label:`${kinds[o.kind].label} (khách dặn)`,go:here&&!r.care.includes(o.kind)?{cmd:'dl_care',payload:{task:t.id,kind:o.kind},label:`${KIND_EMOJI[o.kind]} ${x.esc(kinds[o.kind].label)}`}:null});
   let given=0;
@@ -847,10 +933,23 @@ export default {
     // <details> toggles natively before this runs; just remember the state for the next render.
     async fold(data,el,x){const u=ui(x);(u.open??={})[data.key]=!!el.closest('details')?.open;},
     async pane(data,el,x){(ui(x).pane??={})[data.key]=data.open!=='1';x.render();},
+    async remind(data,el,x){
+      const t=live(x).find(r=>r.id===data.task),a=apptOf(t);if(!a)return;
+      const marks=readRemind(),k=remindKey(t,a);
+      for(const key of Object.keys(marks))if(!live(x).some(r=>key.startsWith(r.id+'@')))delete marks[key];   // finished orders
+      if(marks[k])delete marks[k];else marks[k]={fired:false};
+      saveRemind(marks);
+      x.toast?.(marks[k]?`⏰ Sẽ nhắc trước giờ hẹn ${apptText(a)} ${x.cc.appt?.remind??10} phút.`:'⏰ Đã tắt nhắc giờ hẹn.');
+      x.render();
+    },
+    async apptPlan(data,el,x){
+      const d=x.room.data||{},planned=d.route||[],from=planned.length?planned[planned.length-1]:d.at;
+      ui(x).draft=apptRoute(live(x),from,(a,b)=>dist(x,a,b)).slice(0,Math.max(0,10-planned.length));x.render();
+    },
     async fix(data,el,x){const u=ui(x),f=u.fix||[];u.fix=f.includes(data.part)?f.filter(p=>p!==data.part):[...f,data.part];x.render();},
   },
   // The sticky next-step bar rides above the sheet's own sticky footer.
-  tick(root,x){keepBarAboveFooter(root);shortHead(root,x);try{driveTick(root,x);}catch(error){console.error(error);}},
+  tick(root,x){keepBarAboveFooter(root);shortHead(root,x);try{apptReminders(x);}catch(error){console.error(error);}try{driveTick(root,x);}catch(error){console.error(error);}},
   // Day summary: "Ngày mai" first (tomorrow's road, fuel, a worn part, supplies), one way to the supplies, the day's
   // figures folded.
   summary(data,x){

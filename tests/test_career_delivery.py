@@ -11,6 +11,19 @@ from game.compensation import comp
 from tests.helpers import Journey
 
 
+# 📅 Scheduled orders (D.APPT_SHARE) have their own suite (tests/test_delivery_appt.py): the scenarios here
+# exercise the rest of the shift on orders without a booked window.
+_SHARE = D.APPT_SHARE
+
+
+def setUpModule():
+    D.APPT_SHARE = 0
+
+
+def tearDownModule():
+    D.APPT_SHARE = _SHARE
+
+
 def slot_of(key, day):
     for slot in range(12):                       # the engine allows 12 orders per day
         if D.make_task(day, slot, 1)['needs']['order'] == key:

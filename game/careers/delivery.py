@@ -264,6 +264,37 @@ REGULARS = {
 NOTE_INDEX = {x['id']: dict(x, who=i) for i, rows in REGULARS.items() for x in rows}
 REGULAR_IDS = tuple(kit.npc_id(ID, i) for i in REGULARS)
 
+# --- 📅 Đơn hẹn giờ (scheduled orders, 2.4.x) ---------------------------------------------
+# From day 2 some parcels carry a delivery window the customer chose ("Giao 18:30–19:00"), in game time.
+# The server rolls it when the order appears (seeded by the order id and the day, from the shift clock then),
+# and rolls it again when an unfinished one carries over to the next shift (the customer books a new time).
+# * inside the window: +APPT_BONUS xu on the fee and a happy customer;
+# * too early: nobody is home. Wait at the door until the window opens (game minutes) or call to ask
+#   (one call, its answer is fixed per order: come now / leave it with a neighbour / only at the booked time);
+# * late: the fee loses APPT_LATE (more after APPT_LATE_STEP minutes) and the customer complains like any late
+#   order. Both only lower what the order pays (the fee never goes below its floor, a complaint at most takes the
+#   whole fee): nothing is ever taken from the wallet.
+# Rollback safety: the window lives in an optional task-level key `appt` (not in `run`, `needs`, the data or
+# FIXED), so an older build, which checks only those, still loads a save that used it.
+APPT_MIN_DAY = 2
+APPT_SHARE = 45           # % of the eligible parcels (no deadline, customer not out, hand-over in person)
+APPT_WIDTH = 30           # minutes of the window …
+APPT_WIDTH_PRO = 20       # … from day 10 (tier 3)
+APPT_SLACK = 15           # minutes past the shortest ride before a window may open
+APPT_SPREAD = 9           # extra 0–40 minutes in 5-minute steps
+APPT_BONUS = 4            # on time: like LATE_FEE, the other way
+APPT_LATE = 4             # late: off the fee …
+APPT_LATE_MORE = 8        # … late by more than APPT_LATE_STEP minutes
+APPT_LATE_STEP = 15
+APPT_WAIT_MAX = 45        # longest wait at the door before the window opens
+APPT_CALL_MIN = 2
+APPT_REMIND = 10          # the client's "⏰ nhắc" fires this many game minutes before the window
+APPT_CALLS = ('early', 'neighbour', 'later')
+APPT_DONE = ('on_time', 'early', 'drop', 'late')
+APPT_KEYS = frozenset(('day', 'base', 'start', 'end', 'call', 'waited', 'done', 'late'))
+APPT_HAPPY = ('Đúng giờ hẹn luôn, cảm ơn em nha!', 'Vừa về tới là có hàng, chuẩn ghê!',
+              'Hẹn sao giao vậy, lần sau đặt tiếp nè.', 'Đúng khung giờ, khỏi phải canh điện thoại. Cảm ơn nhé!')
+
 
 # --- small helpers --------------------------------------------------------------
 def weather(day: int) -> str:
@@ -288,6 +319,72 @@ def _window(o: dict, day: int) -> int:
     mpu = MPU[weather(day)]
     need = max(o['prep'], dist('hub', o['pickup']) * mpu) + dist(o['pickup'], o['dest']) * mpu + 4 + STAIRS.get(o['dest'], 0) + 10
     return -(-need // 5) * 5
+
+
+def appt_width(day: int) -> int:
+    return APPT_WIDTH_PRO if kit.tier(day) >= 3 else APPT_WIDTH
+
+
+def appt_eligible(t: dict) -> bool:
+    """Parcels without a deadline whose customer is home to sign (the order list decides, never the save)."""
+    n = t['needs']
+    return (n['kind'] == 'parcel' and not n['by'] and not t['_away'] and not n['safe_drop'] and t['_w'] <= LOAD_LIMIT
+            and not t.get('_moved'))
+
+
+def appt_chosen(task_id: str) -> bool:
+    """Whether the customer of this order books a time (fixed per order id)."""
+    return kit.rng(ID, 'appt', task_id).randrange(100) < APPT_SHARE
+
+
+def appt_window(task_id: str, day: int, base: int, n: dict) -> tuple[int, int]:
+    """(start, end) in shift minutes for an order planned at `base` on `day` (deterministic)."""
+    mpu = MPU[weather(day)]
+    ride = (dist('hub', n['pickup']) + dist(n['pickup'], n['dest'])) * mpu + STAIRS.get(n['dest'], 0)
+    start = base + ride + APPT_SLACK + 5 * kit.rng(ID, 'appt-at', task_id, day).randrange(APPT_SPREAD)
+    start = -(-start // 5) * 5
+    start = min(start, 1999 - appt_width(day))
+    return start, start + appt_width(day)
+
+
+def appt_answer(t: dict, day: int) -> str:
+    """What the customer says when the courier calls before the window (fixed per order and day)."""
+    n = t['needs']
+    roll = kit.rng(ID, 'appt-call', t['id'], day).randrange(100)
+    if roll < 35:
+        return 'early'
+    if roll < 60 and not n['cod'] and not n['paper']:
+        return 'neighbour'
+    return 'later'
+
+
+def appt_cut(late: int) -> int:
+    return APPT_LATE_MORE if late > APPT_LATE_STEP else APPT_LATE
+
+
+def _appt(t: dict) -> dict | None:
+    """The order's window. One left open from an earlier shift (an older build opened today's shift without booking a
+    new time) is not today's: the order plays as a plain one until the next shift books again."""
+    a = t.get('appt')
+    if not isinstance(a, dict) or (a.get('done') is None and a.get('day') != t['run'].get('day')):
+        return None
+    return a
+
+
+def _appt_plan(c: dict, t: dict) -> None:
+    """Roll (or roll again, on a new shift) the customer's window from the order's clock."""
+    if t['status'] in DONE or t['run']['outcome']:
+        return
+    if not isinstance(t.get('appt'), dict):
+        if c['day'] < APPT_MIN_DAY or not appt_eligible(t) or not appt_chosen(t['id']):
+            return
+    base = t['run']['t0']
+    start, end = appt_window(t['id'], c['day'], base, t['needs'])
+    t['appt'] = dict(day=c['day'], base=base, start=start, end=end, call=None, waited=0, done=None, late=0)
+
+
+def appt_text(a: dict) -> str:
+    return f'{hm(a["start"])}–{hm(a["end"])}'
 
 
 RUN_V2 = dict(dog=None, dest=None, spilled=False, discount=0, bomb=None, moved=None)
@@ -726,6 +823,10 @@ def known_request(c: dict, t: dict) -> str:
         parts.append(f'Quán báo xong món lúc {hm(_ready(t))}, hẹn khách trước {hm(_due(t))}')
     elif n['by']:
         parts.append(f'Phải tới trước {hm(_due(t))}')
+    a = _appt(t)
+    if a and a['done'] is None:
+        parts.append(f'📅 Khách hẹn nhận {appt_text(a)}: tới sớm thì chưa có ai ở nhà, đúng khung +{APPT_BONUS} xu, '
+                     f'trễ thì phí ship −{APPT_LATE} xu (trễ quá {APPT_LATE_STEP} phút −{APPT_LATE_MORE} xu)')
     if n['safe_drop']:
         parts.append('Khách cho phép gửi bảo vệ')
     return ' · '.join(parts) + '. “' + n['note'] + '”'
@@ -747,7 +848,8 @@ def _at(d: dict, node: str, what: str) -> None:
     kit.need(d['at'] == node, f'Bạn đang ở {NODES[d["at"]]["name"]}. {what} ở {NODES[node]["name"]} — lên lộ trình và chạy tới đó.')
 
 
-def _fee(c: dict, t: dict) -> int:
+def _fee(c: dict, t: dict, deduct: bool = True) -> int:
+    """The order's fee. deduct=False: before the flat late deductions (a complaint's cut replaces them)."""
     n, r = t['needs'], t['run']
     fee = (8 if n['kind'] == 'food' else 10) + 2 * dist(n['pickup'], n['dest'])
     if weather(c['day']) == 'rain':
@@ -758,6 +860,11 @@ def _fee(c: dict, t: dict) -> int:
         fee += 2
     if r['late'] > 0:
         fee -= LATE_FEE
+    a = _appt(t)
+    if a and a['done'] == 'on_time':
+        fee += APPT_BONUS
+    elif a and a['done'] == 'late' and deduct:
+        fee -= appt_cut(a['late'])
     if r.get('moved') == 'accept':
         fee += REDIRECT_FEE
     if t.get('gen') and (rating(kit.data(c)) or 0) >= TOP_RATING:
@@ -795,6 +902,11 @@ def _slips(t: dict) -> None:
         cq.slip(t, 'wet', 1, 'Thùng hàng ướt nhẹp, không bọc túi chống nước gì hết.', 'thùng hàng bị ướt')
     if r['burst']:
         cq.slip(t, 'burst', 1, 'Thùng bung mép keo, hàng suýt rơi ra ngoài.', 'thùng bung keo')
+    a = _appt(t)
+    if a and a['done'] == 'late':
+        cq.slip(t, 'late', 1 if a['late'] <= APPT_LATE_STEP else 2,
+                f'Hẹn giao {appt_text(a)} mà {hm(a["end"] + a["late"])} mới tới, trễ {a["late"]} phút — tôi ngồi canh cả buổi.',
+                f'trễ hẹn {a["late"]} phút')
     if r['late']:
         food = n['kind'] == 'food'
         cq.slip(t, 'late', 1 if r['late'] <= 15 else 2,
@@ -810,9 +922,19 @@ def _finish(s: dict, c: dict, t: dict, how: str) -> dict:
     due = _due(t)
     r['late'] = max(0, d['clock'] - due) if due is not None else 0
     r['outcome'] = how
+    a = _appt(t)
+    if a and a['done'] is None:
+        if how == 'safedrop':
+            a['done'] = 'drop'
+        elif d['clock'] > a['end']:
+            a['done'], a['late'] = 'late', min(2000, d['clock'] - a['end'])
+        elif d['clock'] >= a['start']:
+            a['done'] = 'on_time'
+        else:
+            a['done'] = 'early'          # the customer said on the phone to come now
     fee = _fee(c, t)
     late, r['late'] = r['late'], 0
-    base = _fee(c, t)            # the fee before the app's flat late deduction
+    base = _fee(c, t, deduct=False)    # the fee before the app's flat late deductions
     r['late'] = late
     _care_record(c, t)
     _slips(t)
@@ -841,19 +963,28 @@ def _finish(s: dict, c: dict, t: dict, how: str) -> dict:
     msg = f'{"📸 Đã gửi bảo vệ và chụp ảnh" if how == "safedrop" else "✅ Giao thành công"} lúc {hm(d["clock"])} · phí ship +{fee} xu.'
     if r['late']:
         msg += f' Trễ {r["late"]} phút so với hẹn' + ('.' if react['cut'] else f' (−{LATE_FEE} xu).')
+    if a and a['done'] == 'on_time':
+        kit.metric(c, 'deliveries_on_appt')
+        line = APPT_HAPPY[kit.rng(ID, 'appt-happy', t['id']).randrange(len(APPT_HAPPY))]
+        msg += f' 📅 Đúng khung hẹn {appt_text(a)}: +{APPT_BONUS} xu. {_who(t)}: “{line}”'
+    elif a and a['done'] == 'early':
+        msg += f' 📅 {_who(t)}: “May mà em gọi trước, chị về sớm rồi.” (Giao trước khung hẹn: không có thưởng đúng hẹn.)'
+    elif a and a['done'] == 'late':
+        msg += (f' 📅 Trễ hẹn {appt_text(a)} {a["late"]} phút' +
+                ('.' if react['cut'] else f' (−{appt_cut(a["late"])} xu phí ship).'))
     if notes:
         msg += ' Khách phàn nàn: ' + '; '.join(notes) + '.'
     if react['message']:
         msg += ' ' + react['message']
     if cash:
         msg += ' ' + cash
-    clean = not notes and not r['late'] and not cq.slips(t)
+    clean = not notes and not r['late'] and not cq.slips(t) and not (a and a['done'] == 'late')
     msg += _score(s, c, t, clean=clean)
     msg += _care_after(s, c, t, clean)
     msg += _area(_data(c), _dest(t))
     if d['owed'] and d['at'] != 'hub':
         msg += f' Túi COD đang giữ {d["owed"]} xu của bưu cục.'
-    return dict(message=msg, celebrate=not notes and not r['late'])
+    return dict(message=msg, celebrate=not notes and not r['late'] and not (a and a['done'] == 'late'))
 
 
 def _where(t: dict) -> str:
@@ -1188,14 +1319,21 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         if t.get('_moved') and r['moved'] is None:
             _fire(s, c, 'DE-MOVED', t)
             return dict(message=msg + f'{_who(t)}: “Ủa quên báo, mình mới chuyển qua {NODES[t["_moved"]]["name"]} rồi!”')
+        a = _appt(t)
         if t['_away'] and d['clock'] < r['t0'] + t['_away']:
             r['back'] = r['t0'] + t['_away']
             msg += f'{_who(t)} đang ra ngoài: “Khoảng {hm(r["back"])} mới về tới, giao sau giờ đó nha.”'
+        elif a and a['done'] is None and d['clock'] < a['start']:
+            # 📅 Calling before the booked time is asking whether to come early (the same fixed answer as dl_appt).
+            a['call'] = a['call'] or appt_answer(t, a['day'])
+            msg += _appt_call_line(t, a)
         elif n['kind'] == 'food':
             msg += f'{_who(t)}: “Dạ, mình chờ nha!”'
         else:
             msg += f'{_who(t)}: “Có nhà, cứ tới nha.”'
         return dict(message=msg.strip())
+    if name == 'dl_appt':
+        return _appt_cmd(c, d, t, p)
     if name == 'dl_care':
         kind = kit.one_of(p.get('kind'), CARE_KINDS, 'Việc chăm khách không hợp lệ.')
         _at(d, _dest(t), 'Chăm khách tận cửa')
@@ -1353,6 +1491,39 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
     raise kit.eng().GameError('Thao tác giao hàng không hợp lệ.')
 
 
+def _appt_call_line(t: dict, a: dict) -> str:
+    who = _who(t)
+    if a['call'] == 'early':
+        return f'{who}: “À chị về rồi, em tới giao luôn cũng được!” — giao sớm được, nhưng không có thưởng đúng hẹn.'
+    if a['call'] == 'neighbour':
+        return (f'{who}: “Chị chưa về kịp, em gửi chị hàng xóm sát vách nhận giúp nha.” — '
+                'được gửi người nhận hộ, khách không phàn nàn.')
+    return f'{who}: “Đúng {hm(a["start"])} chị mới về tới, em ghé đúng giờ giúp chị nha.”'
+
+
+def _appt_cmd(c: dict, d: dict, t: dict, p: dict) -> dict:
+    """📅 Before the window: call the customer (once, from anywhere) or wait at their door until it opens."""
+    n, r, a = t['needs'], t['run'], _appt(t)
+    kit.need(a is not None, 'Đơn này không có giờ hẹn.')
+    kit.need(a['done'] is None, 'Đơn hẹn giờ này đã xong.')
+    how = kit.one_of(p.get('how'), ('call', 'wait'), 'Chọn gọi khách hoặc chờ tới giờ hẹn.')
+    if how == 'call':
+        kit.need(a['call'] is None, 'Đã gọi hỏi khách rồi.')
+        kit.need(d['clock'] < a['start'], f'Đã tới giờ hẹn {appt_text(a)} — cứ tới giao thôi.')
+        _clock(d, APPT_CALL_MIN)
+        a['call'] = appt_answer(t, a['day'])
+        return dict(message='📞 ' + _appt_call_line(t, a))
+    _at(d, _dest(t), 'Chờ khách theo giờ hẹn')
+    kit.need(r['loaded'], 'Hàng chưa lên xe.')
+    gap = a['start'] - d['clock'] - STAIRS.get(n['dest'], 0)
+    kit.need(gap > 0, f'Đã tới giờ hẹn {appt_text(a)} — giao luôn.')
+    kit.need(gap <= APPT_WAIT_MAX, f'Còn {gap} phút nữa mới tới giờ hẹn — đi giao đơn khác rồi quay lại cho đỡ phí thời gian '
+                                   f'(chờ tại cửa tối đa {APPT_WAIT_MAX} phút).')
+    _clock(d, gap)
+    a['waited'] = min(2000, a['waited'] + gap)
+    return dict(message=f'⏳ Đứng chờ {gap} phút trước cửa… {hm(d["clock"])}, tới giờ hẹn rồi — bấm chuông giao thôi.')
+
+
 def _deliver(s: dict, c: dict, d: dict, t: dict, name: str, p: dict) -> dict:
     n, r = t['needs'], t['run']
     _at(d, _dest(t), 'Giao hàng')
@@ -1373,6 +1544,19 @@ def _deliver(s: dict, c: dict, d: dict, t: dict, name: str, p: dict) -> dict:
         _fire(s, c, 'DE-MOVED', t)
         return dict(message=f'🚪 Bấm chuông không ai mở. Hàng xóm nói: “Người đó mới chuyển qua {NODES[t["_moved"]]["name"]} rồi.” '
                             'Gọi trước thì đỡ một chuyến!')
+    a = _appt(t)
+    if (a and a['done'] is None and name == 'dl_deliver' and a['call'] != 'early'
+            and d['clock'] + STAIRS.get(n['dest'], 0) < a['start']):
+        _clock(d, 1)
+        gap = a['start'] - d['clock']
+        msg = (f'📅 Bấm chuông không ai mở: {_who(t)} hẹn nhận {appt_text(a)}, giờ mới {hm(d["clock"])} (còn {gap} phút). ')
+        if a['call'] == 'neighbour':
+            msg += 'Khách đã cho gửi hàng xóm — bấm “Gửi người nhận hộ”.'
+        elif a['call'] == 'later':
+            msg += 'Khách đã nói đúng giờ hẹn mới về: chờ ở cửa hoặc đi giao đơn khác rồi quay lại.'
+        else:
+            msg += 'Chờ tới giờ hẹn, gọi hỏi khách, hoặc đi giao đơn khác rồi quay lại.'
+        return dict(message=msg, early=True)
     if t.get('_bomb') and n['cod'] and r['bomb'] is None:
         _clock(d, 3)
         d['stats']['bombs'] += 1
@@ -1386,7 +1570,7 @@ def _deliver(s: dict, c: dict, d: dict, t: dict, name: str, p: dict) -> dict:
             r['broken_seen'] = True
             t['mistakes'] += 1
             return dict(message='📸 Chú bảo vệ mở ra kiểm: hàng đã vỡ/hỏng trên đường. Không gửi được — báo giao thất bại.')
-        if not n['safe_drop']:
+        if not n['safe_drop'] and not (a and a['call'] == 'neighbour'):
             t['mistakes'] += 1
             cq.slip(t, 'handed_over', 2, 'Tôi dặn giao tận tay mà shipper gửi người khác nhận hộ, suýt thất lạc.', 'gửi người khác nhận hộ khi khách chưa cho phép')
         return _finish(s, c, t, 'safedrop')
@@ -1443,8 +1627,12 @@ def _deliver(s: dict, c: dict, d: dict, t: dict, name: str, p: dict) -> dict:
 
 
 def _eta(c: dict, d: dict) -> list[dict]:
-    """Main-road estimate for the planned route, with the alley shortcut of each leg beside it."""
+    """Main-road estimate for the planned route, with the alley shortcut of each leg beside it. A stop where a
+    scheduled parcel (on the bike, or picked up earlier on this route) is handed over carries its window and
+    whether the ride gets there early, on time or late (`appt`)."""
     at, clock, fuel, rows = d['at'], d['clock'], d['fuel'], []
+    sched = [t for t in _open(c) if t['known'] and _appt(t) and t['appt']['done'] is None]
+    carried = {t['id'] for t in sched if t['run']['loaded'] or t['needs']['pickup'] == at}   # picked up before leaving
     for node in d['route']:
         leg = _leg(c, at, node, clock, 'main')
         alt = _leg(c, at, node, clock, 'short') if dist(at, node) >= 2 else None
@@ -1454,6 +1642,16 @@ def _eta(c: dict, d: dict) -> list[dict]:
                          short=dict(blocks=alt['blocks'], minutes=alt['minutes'], fuel=alt['fuel'], notes=alt['notes'],
                                     stall=alt['stall'], smooth=alt['smooth'], local=alt['local'],
                                     brake=(d.get('parts') or {}).get('brake', 100) < PART_INFO['brake']['low']) if alt else None))
+        marks = []
+        for t in sched:
+            if t['id'] in carried and _dest(t) == node:
+                a, door = t['appt'], clock + STAIRS.get(node, 0)
+                state = 'early' if door < a['start'] and a['call'] != 'early' else 'late' if door > a['end'] else 'ok'
+                marks.append(dict(task=t['id'], start=a['start'], end=a['end'], state=state,
+                                  by=a['start'] - door if state == 'early' else door - a['end'] if state == 'late' else 0))
+        if marks:
+            rows[-1]['appt'] = marks
+        carried |= {t['id'] for t in sched if t['needs']['pickup'] == node}
         at = node
     return rows
 
@@ -1489,7 +1687,14 @@ def feedback(c: dict, t: dict) -> dict:
         rows.append(dict(key='time', label='Thời gian', score=3, note='chưa nhận được hàng'))
         return dict(criteria=rows, cap=3)
     due = _due(t)
-    if due is not None:
+    a = _appt(t)
+    if a and a['done']:
+        late = a['late']
+        rows.append(dict(key='time', label='Đúng hẹn',
+                         score={'on_time': 5, 'early': 5, 'drop': 4}.get(a['done']) or (4 if late <= 5 else 3 if late <= APPT_LATE_STEP else 2),
+                         note={'on_time': f'giao đúng khung {appt_text(a)}', 'early': 'gọi trước, khách cho giao sớm',
+                               'drop': f'gửi nhận hộ thay vì giao trong khung {appt_text(a)}'}.get(a['done']) or f'trễ hẹn {late} phút'))
+    elif due is not None:
         late = r['late']
         rows.append(dict(key='time', label='Đúng giờ', score=5 if not late else 4 if late <= 5 else 3 if late <= 15 else 2,
                          note=f'tới trước {hm(due)}' if not late else f'trễ {late} phút'))
@@ -1653,6 +1858,24 @@ def validate_task(t: dict, original: dict) -> None:
         kit.need(isinstance(v, list) and len(set(v)) == len(v) and all(isinstance(x, str) and x in NOTE_INDEX and NOTE_INDEX[x]['who'] == who for x in v)
                  and (not v or r['outcome'] in ('delivered', 'safedrop')), 'Lời dặn khách quen sai.')
     kit.need(not set(r['kept']) & set(r['missed']), 'Lời dặn khách quen sai.')
+    if 'appt' in t:
+        _validate_appt(t)
+
+
+def _validate_appt(t: dict) -> None:
+    """📅 The optional window: rolled by the server from the order id, the day and the clock it was planned at."""
+    a, bad = t['appt'], 'Giờ hẹn giao sai.'
+    kit.need(isinstance(a, dict) and set(a) == APPT_KEYS and appt_eligible(t), bad)
+    day = kit.integer(a['day'], APPT_MIN_DAY, 10**6)
+    base = kit.integer(a['base'], 0, 2000)
+    kit.need((a['start'], a['end']) == appt_window(t['id'], day, base, t['needs']), bad)
+    kit.need(a['call'] in (None, *APPT_CALLS) and a['done'] in (None, *APPT_DONE), bad)
+    kit.integer(a['waited'], 0, 2000)
+    late = kit.integer(a['late'], 0, 2000)
+    kit.need((a['done'] == 'late') == (late > 0), bad)
+    kit.need(a['done'] is None or t['run']['outcome'] in ('delivered', 'safedrop'), bad)
+    kit.need(a['done'] != 'drop' or t['run']['outcome'] == 'safedrop', bad)
+    kit.need(a['done'] != 'early' or a['call'] == 'early', bad)
 
 
 def validate_data(c: dict) -> None:
@@ -1725,6 +1948,7 @@ def validate_data(c: dict) -> None:
 def on_task(s: dict, c: dict, t: dict) -> None:
     t['run']['t0'] = kit.data(c)['clock']
     t['run']['day'] = c['day']
+    _appt_plan(c, t)
 
 
 def on_start(s: dict, c: dict) -> None:
@@ -1736,6 +1960,8 @@ def on_start(s: dict, c: dict) -> None:
         r = t['run']
         if not r['expired']:
             r.update(t0=0, day=c['day'], called=False, unit=None, back=None, knocks=0, care=[])
+            if isinstance(t.get('appt'), dict):
+                _appt_plan(c, t)      # an order from an earlier shift: the customer books a new time today
     m = mod_of(c['day'])
     d['today'] = dict(day=c['day'], mod=m['id'])
     goal, bonus = _goal(c['day'])
@@ -1784,6 +2010,10 @@ def on_close(s: dict, c: dict) -> dict:
     friends = [(PEOPLE[REGULAR_IDS.index(npc)][0], reg['bond']) for npc, reg in d['regulars'].items() if reg['bond']]
     if friends:
         lines.append('💛 Khách quen: ' + ', '.join(f'{name} {bond}/{BOND_MAX}' for name, bond in sorted(friends, key=lambda x: -x[1])) + '.')
+    booked = [t for t in c['tasks'] if t.get('career') == ID and _appt(t) and t['appt']['day'] == c['day'] and t['appt']['done']]
+    if booked:
+        ok = sum(t['appt']['done'] in ('on_time', 'early') for t in booked)
+        lines.append(f'📅 Đơn hẹn giờ: {ok}/{len(booked)} giao đúng hẹn.')
     fc = _forecast(c, d)
     lines.append(f'📡 Dự báo ngày mai: {fc["emoji"]} {fc["name"]}. ' + ' '.join(fc['advice'][:3]))
     if surprise:
@@ -1816,8 +2046,12 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
     role = e['role']
     if role == 'sorter':
         route = _nearest_route(c)
-        return ('Xếp đơn theo tuyến gần nhất: ' + ' → '.join(NODES[x]['name'] for x in route) + '. (Chỉ gợi ý — nhớ ưu tiên đơn đồ ăn sắp trễ.)'
-                if route else 'Đã phân loại hàng lên kệ theo khu phố.')
+        booked = sorted((t for t in _open(c) if t['known'] and _appt(t) and t['appt']['done'] is None),
+                        key=lambda t: t['appt']['start'])
+        times = (' Đơn hẹn giờ: ' + ', '.join(f'{t["needs"]["item"].lower()} {appt_text(t["appt"])}' for t in booked) +
+                 ' — tới đúng khung, đừng tới sớm.') if booked else ''
+        return ('Xếp đơn theo tuyến gần nhất: ' + ' → '.join(NODES[x]['name'] for x in route) + '. (Chỉ gợi ý — nhớ ưu tiên đơn đồ ăn sắp trễ.)' + times
+                if route else 'Đã phân loại hàng lên kệ theo khu phố.' + times)
     if not t or t['career'] != ID or not t['known'] or t['status'] in DONE:
         return None
     n, r = t['needs'], t['run']
@@ -1846,7 +2080,7 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
 
 def hint(c: dict, t: dict) -> str:
     return ('Nhận đơn → chọn điểm dừng, chốt lộ trình, chạy xe → ở điểm lấy: cân/kiểm hàng, đóng gói đúng loại, nhận lên xe '
-            '(báo nếu lệch cân) → ở điểm giao: gọi khách nếu thiếu số phòng, làm theo lời dặn trong sổ tay khách quen, thối tiền COD '
+            '(báo nếu lệch cân) → đơn 📅 hẹn giờ: tới đúng khung khách chọn (sớm thì chờ hoặc gọi hỏi) → ở điểm giao: gọi khách nếu thiếu số phòng, làm theo lời dặn trong sổ tay khách quen, thối tiền COD '
             'cho đúng → cuối cùng về bưu cục nộp COD. Xem dự báo ngày mai và ghé tiệm Chú Bảy khi xe báo đỏ.')
 
 
@@ -1864,7 +2098,9 @@ def content() -> dict:
                             price=PART_INFO[k]['price'], effect=PART_INFO[k]['effect']) for k in PARTS],
                 fix_minutes=FIX_MIN, rim_cost=RIM_COST, care_kinds=CARE_KINDS, note_at=list(NOTE_AT), bond_max=BOND_MAX,
                 bond_tip=[dict(at=at, tip=tip, label=label) for at, tip, label in BOND_TIP],
-                area_smooth=AREA_SMOOTH, area_local=AREA_LOCAL)
+                area_smooth=AREA_SMOOTH, area_local=AREA_LOCAL,
+                appt=dict(bonus=APPT_BONUS, late=APPT_LATE, late_more=APPT_LATE_MORE, late_step=APPT_LATE_STEP,
+                          wait_max=APPT_WAIT_MAX, call_minutes=APPT_CALL_MIN, remind=APPT_REMIND))
 
 
 # --- situations --------------------------------------------------------------------
