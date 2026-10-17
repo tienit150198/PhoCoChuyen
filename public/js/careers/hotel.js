@@ -90,6 +90,7 @@ function stepCard(t,x){
     <p class="ht-step-count" role="status">Bước ${t.at+1}/${steps.length} · chất lượng ${x.esc(t.quality??100)}%</p>
     <progress value="${t.at}" max="${steps.length}" aria-label="Tiến trình phiếu việc"></progress>
     <h3 id="ht-step-title">${x.esc(st.title)}</h3><p class="ht-evidence">${x.esc(st.evidence)}</p>
+    ${st.id==='decor.items'&&t.needs?.rule?`<p class="ht-rule" role="note"><span aria-hidden="true">📌</span> ${x.esc(t.needs.rule)}</p>`:''}
     ${st.id==='checkin.room'?roomBoard(t,x):''}${body}</section>`;
 }
 

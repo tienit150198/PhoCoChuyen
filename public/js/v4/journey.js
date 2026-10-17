@@ -269,6 +269,17 @@ function findWire(env){
     env.ui.jrQ=t.value;findApply(document.getElementById('sheet'),env.ui);});
 }
 
+/** 💵 #406 ("để giá xu/ngày lên chỗ ngành nghề"): an honest pay line for a career row, or null. Worked there: what the
+ * last closed shift made (career_summary last_net, the full view's shift_summary). Else a job with a contract: its posted
+ * salary range (catalogue pay, the job offer's numbers). A shop never worked has no number: none is made up.
+ * {n: for "Nhiều xu trước", text}. */
+export function payOf(api,cid){
+  const c=api.state.careers?.[cid],m=meta(api,cid),net=c?.summary?c.last_net:c?.shift_summary?.net;
+  if(c?.started&&Number.isInteger(net))return {n:net,text:net>=0?`💵 ~${fmt(net)} xu/ngày · ca gần nhất`:`💵 Ca gần nhất lỗ ${fmt(-net)} xu`};
+  if(Array.isArray(m.pay)&&m.pay.length===2)return {n:(m.pay[0]+m.pay[1])/2,text:`💵 Lương ${fmt(m.pay[0])}–${fmt(m.pay[1])} xu/ngày`};
+  return null;
+}
+
 /** One career row: the name, what it is, where you are with it (day · level · fund) or how it opens, its tags. */
 function placeCard(env,cid,st,hidden){
   const {api}=env,J=api.state.journey,m=meta(api,cid),c=api.state.careers[cid],p=J.places[cid];
@@ -281,6 +292,7 @@ function placeCard(env,cid,st,hidden){
   if(api.state.x3?.today?.includes(cid))tags.push(tag(`🔥 Lời x${api.state.x3.x} hôm nay`,'amber'));   // game/x3_week.py
   {const mk=marketTag(api.state,cid);if(mk&&mk[1])tags.push(tag(esc(mk[0]),mk[1]));}   // only hot/high: a "📉 Lãi thấp" chip on most cards was noise (#384)   // 📈 staff profit ×market, 🔥 nghề hot hôm nay (game/staff_market.py)
   if(acctTag(aj))tags.push(tag(acctTag(aj),'amber'));
+  {const pay=payOf(api,cid);if(pay)tags.push(tag(esc(pay.text),'jr-pay-tag'));}   // 💵 #406
   // One quiet line under the name: day · level · the fund (or the salary), or the step that opens it.
   const line=[];
   if(c.started)line.push(`Ngày ${c.day} · Cấp ${c.level||1}`);
@@ -328,11 +340,12 @@ function placesSection(env){
     open:all.filter(id=>open.has(id)&&!C(id).started).sort((a,b)=>rank(a)-rank(b)),
     lock:all.filter(id=>!open.has(id)).sort((a,b)=>rank(a)-rank(b)),
   };
+  if(ui.jrPay){const n=id=>payOf(api,id)?.n??-Infinity;for(const st of ['mine','open'])groups[st].sort((a,b)=>n(b)-n(a)||rank(a)-rank(b));}   // 💰 #406
   const f=findOf(ui),rows=FIND_ST.flatMap(([st])=>groups[st].map(id=>({id,st,k:foldVi(`${meta(api,id).place||''} ${meta(api,id).short||''} ${CATS[catOf(meta(api,id))]||''} ${id}`),cat:catOf(meta(api,id))})));
   const plan=findPlan(rows,f);
   const chip=(act,key,val,text,n,on)=>`<button type="button" class="chip ${on?'active':''}" data-action="${act}" data-${key}="${val}" aria-pressed="${on}">${text}${n==null?'':` <em>${n}</em>`}</button>`;
   const cats=Object.keys(CATS).filter(k=>all.some(id=>catOf(meta(api,id))===k));
-  const chips=`<nav class="home-filters jr-filters" aria-label="Lọc nơi làm việc">${chip('jrFindSt','st','','Tất cả',all.length,!f.st)}${FIND_ST.filter(([st])=>groups[st].length).map(([st,l])=>chip('jrFindSt','st',st,l,groups[st].length,f.st===st)).join('')}</nav><nav class="home-filters jr-filters jr-cats" aria-label="Nhóm nghề">${chip('jrFindCat','cat','','Mọi nhóm',null,!f.cat)}${cats.map(k=>chip('jrFindCat','cat',k,CATS[k],null,f.cat===k)).join('')}</nav>`;
+  const chips=`<nav class="home-filters jr-filters" aria-label="Lọc nơi làm việc">${chip('jrFindSt','st','','Tất cả',all.length,!f.st)}${FIND_ST.filter(([st])=>groups[st].length).map(([st,l])=>chip('jrFindSt','st',st,l,groups[st].length,f.st===st)).join('')}</nav><nav class="home-filters jr-filters jr-cats" aria-label="Nhóm nghề">${chip('jrFindCat','cat','','Mọi nhóm',null,!f.cat)}${cats.map(k=>chip('jrFindCat','cat',k,CATS[k],null,f.cat===k)).join('')}${chip('jrPaySort','pay','1','💰 Nhiều xu trước',null,!!ui.jrPay)}</nav>`;
   const search=`<label class="jr-find-q"><span class="sr-only">Tìm nghề</span>${icon('search',17)}<input type="search" class="input" data-jr-find data-preserve enterkeyhint="search" autocomplete="off" placeholder="Tìm nghề: phở, trà sữa, y tá…" value="${esc(ui.jrQ||'')}"></label>`;
   let i=0;
   const grp=([st,label])=>{
@@ -639,8 +652,9 @@ export async function journeyAction(action,data,el,env){
       else if(action==='jrFindCat'){ui.jrCat=data.cat&&ui.jrCat!==data.cat?data.cat:'';ui.jrMore={};}
       else ui.jrMore={...(ui.jrMore||{}),[data.st]:true};
       const sheet=document.getElementById('sheet');
-      for(const c of sheet?.querySelectorAll?.('.jr-filters .chip')||[]){const on=c.dataset.action==='jrFindSt'?(c.dataset.st||'')===(ui.jrSt||''):(c.dataset.cat||'')===(ui.jrCat||'');c.classList.toggle('active',on);c.setAttribute('aria-pressed',String(on));}
+      for(const c of sheet?.querySelectorAll?.('.jr-filters .chip')||[]){if(c.dataset.action==='jrPaySort')continue;const on=c.dataset.action==='jrFindSt'?(c.dataset.st||'')===(ui.jrSt||''):(c.dataset.cat||'')===(ui.jrCat||'');c.classList.toggle('active',on);c.setAttribute('aria-pressed',String(on));}
       findApply(sheet,ui);return true;}
+    case'jrPaySort':ui.jrPay=!ui.jrPay;ui.jrMore={};renderSheet(false);return true;   // 💰 #406: Nhiều xu trước
     case'jrPlaces':{ui.homeMode='list';ui.jrView='home';ui.homeCat='all';ui.jrSt=ui.jrCat=ui.jrQ='';ui.jrMore={};renderSheet(false);const places=document.querySelector('.jr-places');places?.scrollIntoView?.({block:'start'});places?.focus?.({preventScroll:true});return true;}
     case'jrView':ui.jrView=data.view||'home';renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);return true;
     case'jrStep':ui.jrStep=data.step;renderSheet(false);return true;

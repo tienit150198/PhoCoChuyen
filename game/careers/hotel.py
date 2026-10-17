@@ -332,6 +332,40 @@ def decor_brief(day: int, slot: int, theme: str) -> tuple[dict, list, dict]:
     return brief, steps, key
 
 
+DECOR_RULE = 'Chọn TẤT CẢ món hợp dịp {title}, bỏ món khách dặn tránh; tổng tiền vượt ngân sách thì bỏ món đắt nhất.'
+
+
+def decor_rule(brief: dict) -> str:
+    """The rule of the decoration step in one line (feedback #404: a budget-fitting combo is not the answer)."""
+    return DECOR_RULE.format(title=str(brief.get('title') or '').lower())
+
+
+def decor_hint(brief: dict, chosen: list, good: list) -> str:
+    """What is wrong with a decoration pick, without giving the list away (feedback #404): the chosen items that
+    do not fit the occasion (and which occasion they are for), the items the guest asked to avoid, the priciest
+    item over budget, and how many fitting items are still missing. Not part of the task: generation is unchanged."""
+    items = {i[0]: i for i in hc.ITEMS}
+    theme, title = brief.get('theme'), str(brief.get('title') or '').lower()
+    cat = next((c for text, c in hc.LIMITS.values() if text == brief.get('limit')), '')
+    picked = [items[i] for i in chosen if i in items]
+    unfit = [i for i in picked if theme not in i[3]]
+    avoid = [i for i in picked if theme in i[3] and cat and i[4] == cat]
+    extra = [i for i in picked if theme in i[3] and i not in avoid and i[0] not in good]
+    missing = sum(1 for i in good if i not in chosen)
+    out = []
+    if unfit:
+        def other(i):
+            return ', '.join(hc.THEMES[x][0].lower() for x in i[3] if x in hc.THEMES)
+        out.append(f'Có món không hợp dịp {title}: ' + ', '.join(f'{i[1]} (dành cho {other(i)})' for i in unfit) + '.')
+    if avoid:
+        out.append('Có món khách dặn tránh: ' + ', '.join(i[1] for i in avoid) + '.')
+    if extra:
+        out.append(f'Tổng tiền vượt ngân sách {brief.get("budget")} xu: bỏ món đắt nhất trong các món hợp dịp.')
+    if missing:
+        out.append(f'Còn thiếu {missing} món hợp dịp {title}.')
+    return ' '.join(out)[:400]
+
+
 def _decor(r, day, slot):
     theme = hc.YEAR_ROUND[(day + slot) % len(hc.YEAR_ROUND)]
     brief, _, key = decor_brief(day, slot, theme)
@@ -428,7 +462,7 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     kit.desk_block(desk, 'Có chuyện ở quầy, quyết xong rồi làm tiếp nhé.')
     t = kit.task(c, p)
     kit.need(t['career'] == ID and t['known'], 'Đọc phiếu việc trước khi làm nhé.')
-    _, steps, key = _active(t)
+    brief, steps, key = _active(t)
     kit.need(t['at'] < len(steps), 'Việc này đã xong.')
     st = steps[t['at']]
     kit.need(isinstance(p.get('step'), str) and p['step'] == st['id'], 'Làm theo bước đang mở trên phiếu nhé.')
@@ -442,6 +476,10 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
         t['mistakes'] += 1
         t['quality'] = _quality(t['wrong'])
         again = 'Đếm lại từng món nhé.' if st['id'] == 'laundry.tally' else 'Đọc lại phiếu và sổ quy trình rồi làm lại bước này.'
+        if st['id'] == 'decor.items':
+            again = decor_hint(brief, value, key[st['id']]) or again
+        elif st['id'] == 'decor.cost':
+            again = f'Cộng giá các món đã chọn ở bước trước ({len(t["work"].get("decor.items", []))} món) rồi ghi tổng.'
         message = f'Chưa đúng: {st["title"].lower()}. {again}'
         t['lines'] = (t['lines'] + [message])[-24:]
         result = dict(message=message, correct=False)
@@ -540,7 +578,9 @@ def known_request(c: dict, t: dict) -> str:
 def hint(c: dict, t: dict) -> str:
     if not t.get('known'):
         return 'Đọc phiếu việc để biết vị trí hôm nay và yêu cầu của khách.'
-    _, steps, _ = _active(t)
+    brief, steps, _ = _active(t)
+    if t['at'] < len(steps) and steps[t['at']]['id'] == 'decor.items':
+        return decor_rule(brief)   # the brief is on screen; the helper says the rule (#404)
     return steps[t['at']]['evidence'] if t['at'] < len(steps) else 'Việc đã xong; nhận việc tiếp theo.'
 
 
@@ -558,6 +598,8 @@ def public_task(t: dict) -> dict:
     else:
         brief, _, _ = _active(t)
         v['needs'] = deepcopy(brief)
+        if t['kind'] == 'decor':
+            v['needs']['rule'] = decor_rule(brief)   # shown on the screen only: not part of the task (#404)
     post = hc.POSTS[t['kind']]
     v['post'] = dict(id=t['kind'], label=post[0], emoji=post[1], work=post[2])
     v['season_info'] = season_view(t.get('season', 'none'))
@@ -586,7 +628,8 @@ def content() -> dict:
                         'Bạn nhận lương ca theo hợp đồng và thưởng chất lượng nhỏ; mùa lễ khách đông hơn, thưởng ×1.5.',
                    work=[['🛎️', 'Nhận khách, chọn phòng, giao thẻ'], ['🧹', 'Dọn phòng, giặt chăn gối, sắp bữa sáng'], ['🔧', 'Sửa trong phòng, trang trí theo dịp']],
                    meet=[['🙂', 'Chị Hằng trưởng ca lễ tân'], ['🧰', 'Anh Bảo tổ bảo trì'], ['🧺', 'Cô Tư trưởng buồng phòng']],
-                   stars=[['✓', 'Đọc kỹ phiếu, chọn đúng phòng sạch'], ['✓', 'Đếm thực tế, an toàn trước khi sửa']]))
+                   stars=[['✓', 'Đọc kỹ phiếu, chọn đúng phòng sạch'], ['✓', 'Đếm thực tế, an toàn trước khi sửa'],
+                          ['✓', 'Trang trí: chọn tất cả món hợp dịp (không phải một combo vừa tiền), bỏ món khách dặn tránh']]))
 
 
 # ---------------------------------------------------------------- validation

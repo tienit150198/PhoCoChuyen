@@ -403,6 +403,13 @@ function mainTabs(){
     `<button type="button" role="tab" aria-selected="${S.tab===k}" class="${S.tab===k?'active':''}" data-qy="tab" data-tab="${k}">${l}</button>`).join('')}</div>`;
 }
 
+/* #408: an invitation still locked by its trade ("Cần làm 10 việc ở nghề 🛒 Tạp hóa (bạn đã làm 3/10)") offers that
+ * career right on the card, when the journey has it open. */
+function unlockBtn(u){
+  const id=u?.career,open=S.env?.api?.state?.journey?.unlocked||J()?.unlocked;if(!id||!open?.includes?.(id))return '';
+  return btn(`Vào nghề ${esc(trade(id).name||id)} · ${fmt(Math.min(u.served|0,u.need|0))}/${fmt(u.need|0)}`,'go',{career:id},'small ghost qy-unlock');
+}
+
 /* 💼 Làm thêm: my shift, then the counters that need someone. */
 function jobsView(){
   const h=S.hire,sh=V()?.shift;
@@ -415,7 +422,7 @@ function jobsView(){
     ${why('shift',`Ca làm ở tiệm ${esc(trade(sh.career).name)} của chính bạn: hàng nhập dùng quỹ nghề của bạn, nên quỹ đó hết thì nhập hàng không được. Vốn quầy chủ góp ở lại quầy của chủ, không chuyển sang bạn. Xong ca: bạn nhận ${xu(sh.wage)} lương, quầy chủ nhận phần doanh thu.`)}
     <div class="bk-actions">${btn('Vào làm','go',{career:sh.career},'primary')}${btn('Bỏ ca','quit',{},'ghost')}</div></section>`:'';
   const rows=(h.board||[]).map(b=>`<li class="qy-person"><div class="grow"><b>${b.emoji} ${esc(b.name)}</b>${b.invite?' <span class="qy-tag">Mời bạn</span>':''}<small>${esc(b.owner)} · ${xu(b.wage)}</small>${b.locked&&!h.lock?`<small class="qy-locked">🔒 ${esc(b.locked)}</small>`:''}</div>
-      <div class="qy-person-act">${btn('Nhận ca','accept',{id:b.id},'small primary',sh?'Bạn đang có một ca':b.locked?'Chưa nhận được':'')}${b.invite?btn('Từ chối','decline',{id:b.id},'small ghost'):''}</div></li>`).join('');
+      <div class="qy-person-act">${btn('Nhận ca','accept',{id:b.id},'small primary',sh?'Bạn đang có một ca':b.locked?'Chưa nhận được':'')}${b.locked&&!h.lock?unlockBtn(b.unlock):''}${b.invite?btn('Từ chối','decline',{id:b.id},'small ghost'):''}</div></li>`).join('');
   const board=`<section class="bk-card"><h3>Quầy cần người ${helpBtn('jobs')}</h3>
     ${helpText('jobs',`Nhận một ca, làm một ngày đúng nghề đó. Xong ${R.tasks||2} việc rồi khép ca là lương vào ví. Bỏ ca lúc nào cũng được, không mất gì.`)}
     ${h.lock?`<p class="bk-hint">${esc(h.lock)}</p>`:''}${rows?`<ul class="qy-list">${rows}</ul>`:h.lock?'':'<p class="bk-hint">Chưa có quầy nào cần người. Ghé lại sau nhé.</p>'}</section>`;
@@ -626,7 +633,7 @@ function openView(v){
   const p=S.pick||{},cat=CAT(),P=place(p.place);
   const requirement=v.open_requirements?.[p.place],cost=(P.price||0)+(P.fund||0);
   const trades=Object.keys(cat.trades).map(id=>{const T=cat.trades[id],ok=v.can.includes(id);
-    return `<button type="button" class="qy-chip${p.trade===id?' on':''}" data-qy="trade" data-id="${id}"${ok&&!S.busy?'':' disabled'}${ok?'':` title="Làm ${cat.served} việc ở nghề này trước"`}>${T.emoji} ${esc(T.name)}</button>`;}).join('');
+    return `<button type="button" class="qy-chip${p.trade===id?' on':''}" data-qy="trade" data-id="${id}"${ok&&!S.busy?'':' disabled'}${ok?'':` title="${esc(`Cần làm ${cat.served} việc ở nghề ${T.emoji} ${T.name} để mở`)}"`}>${T.emoji} ${esc(T.name)}</button>`;}).join('');
   const places=cat.places.map(x=>`<button type="button" class="qy-place${p.place===x.id?' on':''}" data-qy="place" data-id="${x.id}"><span class="qy-up-emoji" aria-hidden="true">${x.emoji}</span>
     <span class="grow"><b>${esc(x.name)}</b><small>${xu(x.price)} · ${x.slots} người · thuê ${xu(x.rent)}/tháng</small></span></button>`).join('');
   return `${slotsPart(v)}<section class="bk-card"><h3>Bán gì?</h3><div class="qy-chips">${trades}</div></section>

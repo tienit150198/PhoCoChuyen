@@ -224,6 +224,10 @@ def public_content() -> dict:
         c['terms']=copy.deepcopy(career_voice.terms(c["id"]))
         c['playable'] = c['id'] in CAREERS   # 🏝️ the 2.5D town draws a door only for a career one can play
         if c['id'] in REVIEW_FOLLOWUP:c['review_followup'] = True
+        # #406 "để giá xu/ngày lên chỗ ngành nghề": a job with a contract shows its posted salary range (xu/ngày),
+        # the same numbers its job offer uses (employment postings); a shop has no fixed pay, so nothing is made up.
+        posts=[p['salary'] for p in employment.postings(c["id"]) if p.get('salary')]
+        if posts:c['pay']=[min(x[0] for x in posts),max(x[1] for x in posts)]
         if c["id"] in PLUGINS:  # its work needs the shift open (engine: "Mở ca trước…"): greyed out while closed
             sp=PLUGINS[c["id"]].SPEC;c["shift_gate"]=dict(prefix=sp["prefix"],free=list(sp.get("free_actions",())))
     # Parts share the whole catalogue's hash: change this version when moving

@@ -15,13 +15,20 @@
  *   Whatever lands within ~1.5 s is one ting and one line. The voice (speechSynthesis, vi-VN; English UI:
  *   en-US) speaks for shop transfers, salary and anything from VOICE_MIN xu; smaller sums only ting.
  *   No Vietnamese voice: a "🔔 +N xu" chip, never another language.
+ * - Feedback #407 (17/10, Android Chrome): the voice went quiet for good, "dù đã bật". Android's speech queue stays
+ *   stuck after the page was hidden (the phone locked, another app) or after an utterance the browser dropped
+ *   before it ended; every later line waited behind it, unheard, until a reload. And Android lists its voices late
+ *   (getVoices() is [] until 'voiceschanged'): a payment then got the chip, never the voice. sayLine() now clears a
+ *   stuck queue and resumes a paused one before each line, keeps the line referenced until it ends, and a line
+ *   with no voice listed yet waits for the list (VOICES_WAIT) before falling back to the chip. The silent warm-up
+ *   line is spoken on iPhone only (where speech needs it); elsewhere the first tap just asks for the voices.
  *
  * Nothing runs before the first tap: listeners only. Nodes are made per sound; the bell (~9 KB) is fetched once,
  * on the first tap with sound on. */
 import {loadSample,setTing} from '../audio.js';
 const ENDED=new Set(['completed','referred','cancelled']);
 const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-const WINDOW=1500,QUIET=600,SAY_DELAY=420,VOICE_MIN=10;
+const WINDOW=1500,QUIET=600,SAY_DELAY=420,VOICE_MIN=10,VOICES_WAIT=2000,CANCEL_GAP=80;
 const TING_URL='/audio/sfx/ting.mp3';
 
 /* ---- voices ---- */
@@ -51,6 +58,32 @@ function pickVoice(want){
   if(!fit.length)return null;
   const score=v=>(langOf(v)===(want==='vi'?'vi-vn':'en-us')?4:0)+(v.localService?2:0)+(/linh|an\b|female|nữ|samantha|google/i.test(v.name||'')?1:0);
   return fit.sort((a,b)=>score(b)-score(a))[0];
+}
+/** The voices, now or once the browser lists them (Android: [] until 'voiceschanged'), at most `ms` later. */
+export function voicesReady(synth=globalThis.speechSynthesis,ms=VOICES_WAIT){
+  let list=[];try{list=synth?.getVoices?.()||[];}catch{/* no voices */}
+  if(!synth||list.length)return Promise.resolve(list);
+  return new Promise(done=>{
+    let t=0;
+    const end=()=>{clearTimeout(t);try{synth.removeEventListener?.('voiceschanged',end);}catch{/* old API */}
+      let v=[];try{v=synth.getVoices()||[];}catch{/* none */}done(v);};
+    try{synth.addEventListener?.('voiceschanged',end);}catch{/* old API */}
+    t=setTimeout(end,ms);
+  });
+}
+let saying=null;   // the line being read: referenced until it ends (a collected utterance never ends: the queue sticks)
+/** Read one line now: a queue left stuck (an earlier line that never ended, the page hidden mid-line) or paused
+ * (Android after the screen was off) would keep it silent for good, so it is cleared and resumed first (#407). */
+export function sayLine(u,synth=globalThis.speechSynthesis,after=CANCEL_GAP){
+  let cleared=false;
+  try{if(synth.speaking||synth.pending){synth.cancel();cleared=true;}}catch{/* nothing queued */}
+  try{synth.resume?.();}catch{/* not paused */}
+  saying=u;
+  const done=()=>{if(saying===u)saying=null;};
+  try{u.onend=done;u.onerror=done;}catch{/* a read-only stub */}
+  // Right after cancel() some engines drop the next line too (Safari, some Android TTS): a short gap first.
+  const go=()=>{try{synth.speak(u);if(synth.paused)synth.resume();}catch{/* no speech */}};
+  if(cleared&&after>0)setTimeout(go,after);else go();
 }
 export function bankText(amounts,en){
   const total=amounts.reduce((a,b)=>a+b,0),n=amounts.length;
@@ -123,10 +156,13 @@ export function soundsBoot({api,world,sound}){
   const warm=()=>{
     if(warmed)return;warmed=true;
     const synth=globalThis.speechSynthesis,s=settings();if(!synth||s.bankVoice===false||s.sound===false){warmed=false;return;}
-    try{synth.getVoices();const u=new SpeechSynthesisUtterance(' ');u.volume=0;synth.speak(u);}catch{/* no speech */}
+    // The silent line on iPhone only: Android may never end it, and every later line would wait behind it (#407).
+    try{synth.getVoices();if(isIOS()){const u=new SpeechSynthesisUtterance(' ');u.volume=0;synth.speak(u);}}catch{/* no speech */}
   };
   addEventListener('pointerdown',warm,{capture:true,passive:true});
   addEventListener('keydown',warm,{capture:true,passive:true});
+  // Back from a locked screen or another app: Android leaves the speech queue paused.
+  globalThis.document?.addEventListener?.('visibilitychange',()=>{if(!document.hidden)try{globalThis.speechSynthesis?.resume?.();}catch{/* no speech */}});
 
   /* "ting ting": the recorded bell, fetched on the first tap with sound on (audio.js loadSample) */
   const tingUrl=()=>globalThis.__mnlBoot?.asset?.(TING_URL)||TING_URL;
@@ -147,16 +183,22 @@ export function soundsBoot({api,world,sound}){
     const en=s.lang==='en',total=list.reduce((a,x)=>a+x.amount,0),note=`🔔 +${total} ${en?'coins':'xu'}`;
     sound.configure(s);if(ding)ting();
     if(!speak)return;
-    const voice=pickVoice(en?'en':'vi');
-    if(!voice){chip(note);return;}
-    setTimeout(()=>{
-      try{
-        const u=new SpeechSynthesisUtterance(moneyText(list,en));
-        u.voice=voice;u.lang=en?(langOf(voice).startsWith('en-')?voice.lang.replace('_','-'):'en-US'):'vi-VN';
-        u.rate=en?1.05:1.12;u.pitch=1.05;u.volume=Math.max(.2,Math.min(1,(s.sfxVolume??70)/70));
-        sound.hush();globalThis.speechSynthesis.speak(u);
-      }catch{chip(note);}
-    },ding?SAY_DELAY:0);
+    const synth=globalThis.speechSynthesis;
+    if(!synth){chip(note);return;}
+    const asked=Date.now();
+    // The voices may not be listed yet (Android, the first payment of a visit): wait for them, then read.
+    voicesReady(synth).then(()=>{
+      const voice=pickVoice(en?'en':'vi');
+      if(!voice){chip(note);return;}
+      setTimeout(()=>{
+        try{
+          const u=new SpeechSynthesisUtterance(moneyText(list,en));
+          u.voice=voice;u.lang=en?(langOf(voice).startsWith('en-')?voice.lang.replace('_','-'):'en-US'):'vi-VN';
+          u.rate=en?1.05:1.12;u.pitch=1.05;u.volume=Math.max(.2,Math.min(1,(s.sfxVolume??70)/70));
+          sound.hush();sayLine(u,synth);
+        }catch{chip(note);}
+      },Math.max(0,(ding?SAY_DELAY:0)-(Date.now()-asked)));
+    });
   }
   /* A page may keep the news back a moment (the fair's vé số cào: its prize is in the wallet before the silver is
    * scratched off): while globalThis.__mnlMoneyHold?.() says so, what comes in waits; __mnlMoneyGo() tells it. */

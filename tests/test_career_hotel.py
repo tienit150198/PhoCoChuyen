@@ -301,7 +301,8 @@ class Seasons(unittest.TestCase):
         self.assertEqual(t['season'], 'noel')
         brief = H.public_task(dict(t, known=True))['needs']
         self.assertEqual(brief['theme'], 'noel')
-        self.assertEqual(brief, H.decor_brief(3, slot_of('decor'), 'noel')[0])
+        season = H.decor_brief(3, slot_of('decor'), 'noel')[0]
+        self.assertEqual(brief, dict(season, rule=H.decor_rule(season)))   # + the rule line shown on screen (#404)
         self.assertNotEqual(brief, t['needs'])   # the stored year-round brief stays as made
         roundtrip(j)   # validates on another (out of season) date too: the brief is a pure function
         done = solve(j)
@@ -435,6 +436,77 @@ class Content(unittest.TestCase):
         st['posts'].update(checkin=10, laundry=5, decor=5)
         self.assertEqual(H.public_data(j.c)['progress']['earned'], ['desk'])
         validate_state(j.state)
+
+
+@unittest.skipUnless(H, 'hotel filtered out by MNL_CAREERS')
+class DecorHints(unittest.TestCase):
+    """Feedback #404: a wrong decoration pick says what is wrong (items off the occasion and what they are for,
+    items the guest avoids, over budget, how many fitting items are missing) and the step shows the rule. The
+    generated brief and its key are unchanged (the hint is computed beside them)."""
+
+    def brief(self, theme='honeymoon', limit='pollen', budget=16):
+        return dict(theme=theme, title=HC.THEMES[theme][0], limit=HC.LIMITS[limit][0], budget=budget)
+
+    def test_the_players_honeymoon_combo(self):
+        # 17/10, room 204: Khung ảnh cưới 7 + Thiên nga 4 + Bóng bay trái tim 5 = 16 xu, "đúng ngân sách" yet wrong.
+        hint = H.decor_hint(self.brief(), ['frame', 'heart', 'swan'], ['candle', 'card', 'swan'])
+        self.assertIn('Có món không hợp dịp phòng trăng mật: Khung ảnh cưới in sẵn (dành cho kỷ niệm ngày cưới), '
+                      'Bóng bay trái tim (dành cho sảnh valentine).', hint)
+        self.assertIn('Còn thiếu 2 món hợp dịp phòng trăng mật.', hint)
+        self.assertNotIn('Nến', hint)   # the missing items are counted, never named
+
+    def test_avoided_and_over_budget_items(self):
+        hint = H.decor_hint(self.brief(), ['candle', 'card', 'petal', 'swan'], ['candle', 'card', 'swan'])
+        self.assertEqual(hint, 'Có món khách dặn tránh: Cánh hồng rải giường.')
+        avoid = {text: cat for text, cat in HC.LIMITS.values()}
+        found = None
+        for day in range(1, 40):
+            for slot in range(6):
+                for theme in HC.THEMES:
+                    b, _, k = H.decor_brief(day, slot, theme)
+                    left = [i[0] for i in HC.ITEMS if theme in i[3] and i[0] not in k['decor.items'] and i[4] != avoid[b['limit']]]
+                    if left and not found:
+                        found = (b, k, left[0])
+        b, k, top = found
+        self.assertIn(f'Tổng tiền vượt ngân sách {b["budget"]} xu', H.decor_hint(b, k['decor.items'] + [top], k['decor.items']))
+
+    def test_every_wrong_pick_gets_a_hint(self):
+        import random
+        rng = random.Random(404)
+        for day in range(1, 25):
+            for slot in range(6):
+                for theme in HC.THEMES:
+                    b, steps, k = H.decor_brief(day, slot, theme)
+                    ids = [o['id'] for o in steps[0]['options']]
+                    for _ in range(4):
+                        pick = sorted(rng.sample(ids, rng.randint(0, len(ids))))
+                        if pick != k['decor.items']:
+                            hint = H.decor_hint(b, pick, k['decor.items'])
+                            self.assertTrue(hint, (day, slot, theme, pick))
+                            self.assertLess(len(hint), 420)
+
+    def test_the_step_shows_the_rule_and_a_wrong_pick_explains_itself(self):
+        j = Journey('hotel', day=3, slot=slot_of('decor'))
+        tid = j.task['id']
+        j.task['season'] = 'none'
+        j.act('ask', task=tid)
+        brief, steps, key = H._active(j.get(tid))
+        view = public_state(j.state)['careers']['hotel']['tasks']
+        needs = next(t for t in view if t['id'] == tid)['needs']
+        self.assertEqual(needs['rule'], f'Chọn TẤT CẢ món hợp dịp {brief["title"].lower()}, bỏ món khách dặn tránh; '
+                                        'tổng tiền vượt ngân sách thì bỏ món đắt nhất.')
+        self.assertIn(needs['rule'], H.hint(j.c, j.get(tid)))
+        r = j.act('ht_step', task=tid, step='decor.items', value=key['decor.items'][:-1])
+        self.assertFalse(r['correct'])
+        self.assertTrue(r['message'].startswith('Chưa đúng: chọn đồ trang trí. Còn thiếu 1 món hợp dịp'), r['message'])
+        self.assertEqual(j.get(tid)['lines'][-1], r['message'])
+        r = j.act('ht_step', task=tid, step='decor.items', value=key['decor.items'])
+        self.assertTrue(r['correct'])
+        r = j.act('ht_step', task=tid, step='decor.cost', value=key['decor.cost'] + 1)
+        self.assertIn(f'({len(key["decor.items"])} món)', r['message'])
+        roundtrip(j)
+        again, _, key2 = H.decor_brief(3, slot_of('decor'), brief['theme'])
+        self.assertEqual((brief, key), (again, key2))
 
 
 if __name__ == '__main__':

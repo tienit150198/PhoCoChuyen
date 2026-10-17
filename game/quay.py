@@ -479,7 +479,9 @@ def action(s: dict, name: str, p: dict) -> dict:
         need(paid.slots(q,external_slots(s))['remaining'] > 0, 'Đã hết chỗ mở quầy. Nâng bậc số quầy sở hữu trước nhé.', 'quay_slots')
         trade, place = p.get('trade'), p.get('place')
         need(trade in TRADES, 'Chọn một món để bán.')
-        need(served(s, trade) >= UNLOCK_SERVED, f'Làm {UNLOCK_SERVED} việc ở nghề này trước nhé.', 'locked')
+        T = TRADES[trade]   # #408: name the trade and how far along (not "nghề này")
+        need(served(s, trade) >= UNLOCK_SERVED, f'Cần làm {UNLOCK_SERVED} việc ở nghề {T["emoji"]} {T["name"]} (bạn đã làm {served(s, trade)}/{UNLOCK_SERVED}). '
+             f'Vào nghề {T["name"]} làm thêm để mở.', 'locked')
         need(place in PLACES, 'Chọn một chỗ đặt quầy.')
         from . import business_progression as bp
         license = bp.open_requirement(s, place)

@@ -157,5 +157,23 @@ class TingFileTest(unittest.TestCase):
         self.assertIn('CC0', credits)
 
 
+
+class BrowserVoiceTest(unittest.TestCase):
+    """#407 (17/10, Android Chrome): the voice went quiet for good. public/js/v4/sounds.js clears a stuck speech queue,
+    resumes a paused one and waits for a voice list that arrives late (tests/bank_voice.mjs, node)."""
+
+    def test_android_speech_queue(self):
+        import shutil
+        import subprocess
+        from pathlib import Path
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        root = Path(__file__).resolve().parents[1]
+        out = subprocess.run([node, '--test', str(root / 'tests' / 'bank_voice.mjs')], cwd=root, capture_output=True, text=True,
+                             encoding='utf-8', timeout=120)
+        self.assertEqual(out.returncode, 0, out.stderr + out.stdout)
+
+
 if __name__ == '__main__':
     unittest.main()

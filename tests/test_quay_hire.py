@@ -241,6 +241,24 @@ class HireWorkPay(Base):
         self.owner_load(boss)
         self.assertEqual(self.money(boss), total + 30)
 
+    def test_a_locked_invite_names_the_trade_and_the_count(self):
+        """#408 (17/10): "🔒 Làm 10 việc ở nghề này trước nhé." did not say which nghề. The card now names it with the
+        invitee's own count and carries what the "Vào nghề …" button needs; the inviter sees the trade, not the count."""
+        boss, ann = self.user('boss'), self.user('ann', trade='grocery', served=3)
+        self.open_stall(boss)
+        mr.ensure_person(self.store, self.sid(ann))
+        with self.store.connect() as db:
+            code = db.execute('SELECT code FROM marriage_people WHERE sid=?', (self.sid(ann),)).fetchone()['code']
+        t = mr.now() - 3 * 86400
+        self.store.transaction(lambda db: [db.execute('INSERT INTO friends(sid,friend,since) VALUES(?,?,?)', (x, y, t))
+                                           for x, y in ((self.sid(boss), self.sid(ann)), (self.sid(ann), self.sid(boss)))])
+        job = self.post(boss, to=code)
+        card = self.view(ann)['board'][0]
+        self.assertEqual(card['locked'], 'Cần làm 10 việc ở nghề 🧋 Trà sữa (bạn đã làm 0/10). Vào nghề Trà sữa làm thêm để mở.')
+        self.assertEqual(card['unlock'], dict(career='milk_tea', served=0, need=10))
+        self.assertEqual(self.refused('cannot', self.act, ann, 'accept', id=job['id']), card['locked'])
+        self.assertEqual(self.view(boss)['mine'][0]['blocked'], 'Ann chưa nhận được: cần làm 10 việc ở nghề 🧋 Trà sữa.')
+
     def test_new_friend_can_be_invited_immediately(self):
         boss, ann = self.user('boss'), self.user('ann')
         self.open_stall(boss)

@@ -368,15 +368,28 @@ def cancel(store, sid: str, display: str, d: dict) -> dict:
 
 
 # ---------------------------------------------------------------- worker: accept, decline, quit
-def _can_work(s: dict, trade: str) -> str | None:
+def trade_lock(s: dict, trade: str, mine: bool = True) -> str | None:
+    """Why `trade` is still closed to this save, naming the trade and (for the player's own save) the progress
+    (feedback #408: "Làm 10 việc ở nghề này" did not say which nghề, nor how far along). None once UNLOCK_SERVED
+    jobs are done there. A friend's count is not shown to the one who invited them."""
+    done, need = qy.served(s, trade), qy.UNLOCK_SERVED
+    if done >= need:
+        return None
+    T = qy.TRADES.get(trade) or {}
+    line = f'Cần làm {need} việc ở nghề {T.get("emoji", "💼")} {T.get("name") or trade}'
+    return f'{line} (bạn đã làm {done}/{need}).' if mine else line + '.'
+
+
+def _can_work(s: dict, trade: str, mine: bool = True) -> str | None:
     j = s['journey']
     if not j.get('story'):
         return 'Làm thêm chỉ có trong hành trình.'
     if int(j['life_day']) < LIFE_DAYS:
         return f'Làm thêm mở từ ngày sống {LIFE_DAYS}.'
-    if qy.served(s, trade) < qy.UNLOCK_SERVED:
-        return f'Làm {qy.UNLOCK_SERVED} việc ở nghề này trước nhé.'
-    return None
+    why = trade_lock(s, trade, mine)
+    if why and mine:
+        return f'{why} Vào nghề {(qy.TRADES.get(trade) or {}).get("name") or trade} làm thêm để mở.'
+    return why
 
 
 def accept(store, sid: str, display: str, d: dict) -> dict:
@@ -582,7 +595,7 @@ def _friend_why(store, job: dict) -> str | None:
     loaded = mr._read_state(store, r['friend'])
     if not loaded:
         return None
-    why = _can_work(loaded[0], r['trade'])
+    why = _can_work(loaded[0], r['trade'], mine=False)
     return f'{name} chưa nhận được: {why[0].lower() + why[1:]}' if why else None
 
 
@@ -618,6 +631,9 @@ def view(store, sid: str, state: dict) -> dict:
             row = _job(r, db, sid)
             if why:   # an invite to me that I cannot take yet: shown, with the reason, so nobody waits in silence
                 row['locked'] = why
+                lock = trade_lock(state, r['trade'])
+                if lock and why.startswith(lock):   # #408: the card offers that career, with the count
+                    row['unlock'] = dict(career=r['trade'], served=qy.served(state, r['trade']), need=qy.UNLOCK_SERVED)
             board.append(row)
         friends = []
         if stalls:

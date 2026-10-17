@@ -52,3 +52,25 @@ test('long groups fold after six rows behind "Xem thêm"; a search or a chip sho
   assert.equal(lock.length,14);
   assert.ok(lock.every(x=>x.st==='lock'));
 });
+test('💵 #406: an honest pay chip (the last shift there, else the posted salary) and "Nhiều xu trước"',async()=>{
+  const {payOf}=await import('../public/js/v4/journey.js');
+  const cat=catalogue.map((m,i)=>i===10?{...m,pay:[52,66]}:i===11?{...m,pay:[80,140]}:m);
+  const cs=Object.fromEntries(Object.entries(careers).map(([id,c])=>[id,{...c,summary:true}]));
+  cs.c5={...cs.c5,last_net:340};cs.c6={...cs.c6,last_net:-12};
+  const mk=ui=>{const e=env(ui);e.api.content.catalogue=cat;e.api.state.careers=cs;return e;};
+  const e=mk();
+  assert.deepEqual(payOf(e.api,'c5'),{n:340,text:'💵 ~340 xu/ngày · ca gần nhất'});
+  assert.equal(payOf(e.api,'c6').text,'💵 Ca gần nhất lỗ 12 xu');
+  assert.deepEqual(payOf(e.api,'c11'),{n:110,text:'💵 Lương 80–140 xu/ngày'});
+  assert.equal(payOf(e.api,'c12'),null,'a shop never worked there: no number is made up');
+  const h=journeyHome(e);
+  assert.match(h,/💵 ~340 xu\/ngày · ca gần nhất/);
+  assert.match(h,/💵 Lương 52–66 xu\/ngày/);
+  assert.match(h,/data-action="jrPaySort"/);
+  const ids=(s,st)=>rows(s).filter(x=>x.st===st).map(x=>x.k.split(' ').pop());
+  assert.deepEqual(ids(h,'open').slice(0,3),['c9','c10','c11'],'catalogue order by default');
+  const hs=journeyHome(mk({jrPay:true}));
+  assert.deepEqual(ids(hs,'open').slice(0,3),['c11','c10','c9'],'the higher salary first, then the rest in catalogue order');
+  assert.deepEqual(ids(hs,'mine').slice(0,2),['c5','c6'],'the best last shift leads Đang làm');
+  assert.equal(ids(hs,'lock').length,14,'Khóa keeps its chapter order');
+});

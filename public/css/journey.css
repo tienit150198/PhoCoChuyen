@@ -125,6 +125,7 @@ button.jr-stat:hover{border-color:var(--line-strong)}
 .jr-tags:empty{display:none}
 /* A long tag ("🔒 Cần thi chứng nhận") wraps inside a narrow place card instead of running past its edge. */
 .jr-tags .tag{white-space:normal;overflow-wrap:anywhere}
+.jr-tags .tag.jr-pay-tag{color:var(--ink)}
 .jr-fund{margin:5px 0 0;font-size:.8rem;color:var(--ink-2);font-weight:600}
 .jr-place>.btn{flex:none;align-self:center}
 .jr-locked-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
@@ -391,7 +392,7 @@ html[data-layout="phone"] .jr-find .jr-place-text h3{font-size:var(--fs-2)}
 html[data-layout="phone"] .jr-find .jr-place>.btn{flex:none;min-height:44px;margin:0;padding-inline:10px;font-size:var(--fs-2)}
 html[data-layout="phone"] .jr-find .ct-place{min-height:36px;padding:4px 8px;font-size:var(--fs-1)}
 html[data-layout="phone"] .jr-find .jr-pay{min-height:36px;margin-top:4px;font-size:var(--fs-1)}
-html[data-layout="phone"] .jr-find .jr-tags .tag:nth-child(n+3){display:none}
+html[data-layout="phone"] .jr-find .jr-tags .tag:not(.jr-pay-tag):nth-child(n+3){display:none}   /* 💵 the pay line stays (#406) */
 /* Phone: the fair is a one-line banner (the games are listed inside the fair). */
 html[data-layout="phone"] .jr-fair-games{display:none}
 html[data-layout="phone"] .jr-fair-row{min-height:56px;padding:14px 12px 10px}
