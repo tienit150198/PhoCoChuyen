@@ -32,6 +32,13 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.37", date="2026-10-17", items=(
+        dict(emoji='🏗️', text='Công trình của phố: cả phố góp tiền xây công viên, rạp phim, sân vận động... có bảng tài trợ, xây xong sau 2 ngày.'),
+        dict(emoji='🔢', text='Đấu giá biển số, xe, máy bay: xe chạy thật trên phố cả map cũ lẫn mới, gắn biển số đấu giá được cộng thêm thu nhập.'),
+        dict(emoji='🏝️', text='Đảo riêng: mua đảo, rủ bạn bè ra chơi bằng du thuyền hoặc phi cơ, mỗi loại chở số người khác nhau.'),
+        dict(emoji='🧧', text='Lì xì: phát lì xì cho cả phố, ai nhanh tay thì giật được, số tiền ngẫu nhiên!'),
+        dict(emoji='🍽️', text='Nghề mới: Nhà hàng tiệc Hồng Mây (mở từ chương 3)! Phụ bếp lên đầu bếp, hoặc trang trí sảnh tiệc cưới, sự kiện.'),
+    )),
     dict(version="2.4.36", date="2026-10-17", items=(
         dict(emoji='📦', text='Gộp thùng tự đặt: giờ mọi đơn tự đặt đi chung một thùng, đặt đủ hết mặt hàng sắp hết thay vì dừng ở 10 xe.'),
         dict(emoji='🛵', text='Sửa lỗi đi xe trên phố chỉ thấy bánh xe (nhất là khi quay lại game trên điện thoại).'),

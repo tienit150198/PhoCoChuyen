@@ -1,3 +1,12 @@
+# v2.4.37 — 2026-10-17
+
+Bản cho người chơi nhiều tiền (chủ game 16/10) + nghề mới từ góp ý #401:
+- 🏗️ Công trình của phố (game/town_projects.py, schema 52): 6 công trình, cả phố góp tiền tới mục tiêu, bảng tài trợ, xây 48 giờ; lô riêng ở map mới (tp_*) và map cũ. Admin chỉ có API /api/admin/town. Lô Sân vận động dời sang (26–30, 46,5–50) để không đè lô nhà hàng tiệc.
+- 🔢 Đấu giá biển số / xe / máy bay (feat/vehicles-plates): xe chạy trên cả hai map với biển số; xe đang đi có biển đấu giá cộng 3–10% thu nhập làm việc (không cộng dồn, tối đa 2.000 xu/ca).
+- 🏝️ Đảo riêng (game/island_trips.py, live/island.py, schema 54): mua đảo, chuyến đi bằng du thuyền/phi cơ theo số ghế, mời bạn bè, map riêng ở cả hai giao diện.
+- 🧧 Lì xì (game/lixi.py, live/lixi.py, schema 51): phát 10.000–10.000.000 xu trong 1–100 bao; giật ngẫu nhiên; mỗi người giật tối đa 20 bao / 300.000 xu một ngày, 3 bao của cùng một người phát; bao không ai giật sau 24 giờ trả lại người phát.
+- 🍽️ Nghề Nhà hàng tiệc Hồng Mây (banquet, góp ý #401): bếp (phụ bếp thử việc 3 ca → đầu bếp, vệ sinh đầu ca, tắt thiết bị cuối ca, đoàn kiểm tra VSATTP ~30% ngày, cháy bếp 2–6 xu) và sảnh sự kiện (số bàn → phòng Sen/Cúc/Lan/Hồng Mây, chủ đề, thực đơn, trang trí, âm thanh ánh sáng, sự cố); ngày lễ thưởng ×1,5. Mở từ chương 3, ngủ khi chưa làm (rollback an toàn cho save chưa đụng tới).
+
 # v2.4.36 — 2026-10-17
 
 📦 Tự đặt hàng (góp ý #400: 18 mặt hàng sắp hết mà chỉ 10 được đặt): có 📦 Gộp thùng tự đặt thì mọi đơn tự đặt đang đi đường tính chung là một xe (inventory._shipments nhận c, auto_order.box_ids), nên auto_order.pick đặt hết mặt hàng thiếu thay vì dừng ở TRANSIT_CAP − SLOTS_FREE = 10 xe; chưa có thùng thì như cũ. public: o.van='auto' cho đơn trong thùng, restock.js đếm xe theo đó.
