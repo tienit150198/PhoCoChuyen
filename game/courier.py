@@ -120,10 +120,15 @@ def on_action(s, career, action_name, p, result):
     x = CONTRACTS[a['kind']]
     if a['done'] >= x['target'] or (x['category'] != 'all' and t['needs']['kind'] != x['category']):
         return
-    a['done'] += 1; h['delivered'] += 1
-    if t['run'].get('late') or t.get('mistakes'):
+    # 📅 A scheduled order (delivery.py `appt`): handed over inside the customer's window it counts twice toward
+    # "Chuyến giao đúng hẹn"; delivered after the window it is a late order for every contract.
+    appt = t.get('appt') if isinstance(t.get('appt'), dict) else {}
+    step = min(2 if a['kind'] == 'express' and appt.get('done') == 'on_time' else 1, x['target'] - a['done'])
+    a['done'] += step; h['delivered'] += step
+    if t['run'].get('late') or t.get('mistakes') or appt.get('done') == 'late':
         a['bad'] += 1
-    result.setdefault('effects', []).append(f'📦 {x["name"]}: {a["done"]}/{x["target"]} đơn.' + (' Đủ đơn rồi, mở Sổ shipper nhận thưởng nhé.' if a['done'] == x['target'] else ''))
+    extra = ' 📅 Đúng khung hẹn: tính 2 đơn.' if step == 2 else ''
+    result.setdefault('effects', []).append(f'📦 {x["name"]}: {a["done"]}/{x["target"]} đơn.{extra}' + (' Đủ đơn rồi, mở Sổ shipper nhận thưởng nhé.' if a['done'] == x['target'] else ''))
 
 
 def validate(s):

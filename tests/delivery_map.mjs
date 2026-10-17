@@ -30,4 +30,8 @@ const bare=renderNeighborhoodMap({...options,nodes:quiet,route:[],draft:[],bare:
 assert.ok(!/dl-map-head|dm-district-label|dl-map-legend/.test(bare),'bare map: no title bar, district names or legend');
 assert.equal((bare.match(/class="dm-label"/g)||[]).length,3,'bare map: names only where you are, a pick-up or a drop');
 assert.match(bare,/<title>Cây xăng<\/title>/,'a quiet stop keeps its name in the pin title');
+const booked=renderNeighborhoodMap({...options,status:{apt:{drop:1,appt:true}}});
+assert.match(booked,/class="dm-appt"/,'a stop with a 📅 scheduled hand-over is marked');
+assert.match(booked,/Chung cư[^<]*· 📅 Đơn hẹn giờ<\/title>/,'and says so in its title');
+assert.equal((html.match(/class="dm-appt"/g)||[]).length,0,'no mark without a booked time');
 console.log('delivery planner map: route geometry, markers, scenery and escaping passed');
