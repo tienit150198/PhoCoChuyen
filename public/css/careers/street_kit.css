@@ -125,7 +125,7 @@
 .career-job.sk .sk-amt-row .sk-amt-in.sk-amt-in input:is([type=number],.qty-in){width:100%;min-width:0;min-height:0;padding:0;border:0;border-radius:0;box-shadow:none;background:transparent;color:var(--sk-ink);font:inherit;font-size:22px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
 .career-job.sk .sk-amt-row .sk-amt-in.sk-amt-in input:is([type=number],.qty-in):focus-visible{outline:none;box-shadow:none}
 .career-job.sk .sk-amt-in:focus-within{box-shadow:0 0 0 3px var(--focus,rgba(0,0,0,.15))}
-.career-job.sk .sk-amt-in small{color:var(--sk-muted)}
+.career-job.sk .sk-amt-in small{color:var(--sk-muted);flex:none;white-space:nowrap;overflow-wrap:normal;word-break:normal}   /* a unit (xu, bàn, gam) stays one word, even in an overflow-wrap:anywhere career */
 .career-job.sk .sk-amt-go{width:100%;min-height:48px}
 .career-job.sk .sk-twist h3{font-size:16px;line-height:1.35;font-weight:700}
 .career-job.sk .sk-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}

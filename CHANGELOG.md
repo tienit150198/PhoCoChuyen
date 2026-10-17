@@ -7,6 +7,7 @@ Sửa theo góp ý:
 - #405 Khách sạn / Nhà hàng tiệc: mở 3 lựa chọn bù cho khách khi trả lời đánh giá (6/10/20 xu, trả từ quỹ nghề; career_voice).
 - #406 Danh sách nghề: 💵 ~xu/ngày (ca gần nhất) hoặc lương hợp đồng, chip "💰 Nhiều xu trước".
 - #407 Giọng đọc số tiền (sounds.js): gỡ hàng đợi speechSynthesis bị kẹt/tạm dừng trên Android, resume khi trang hiện lại, chờ danh sách giọng tới 2 s.
+- Nhà hàng tiệc (chủ game 17/10, ảnh): 📋 Tờ dán cửa bếp (dòng sổ bếp) ngay dưới bước vệ sinh đầu ca / dọn bếp cuối ca; đơn vị ô nhập số (sk-amt-in small) không co, không ngắt chữ ("bàn" bị bẻ thành cột dọc).
 - #408 Quầy cần người: "Cần làm 10 việc ở nghề 🛒 Tạp hóa (bạn đã làm 3/10)…" + nút vào nghề.
 
 # v2.4.37 — 2026-10-17

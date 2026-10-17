@@ -69,6 +69,12 @@ function stepBody(st,x,cmd,payload,id,t){
   return numberStep(t,st,x);
 }
 
+/** 📋 The sheet on the kitchen door (the notebook's own line): the order the step asks for, one tap away. */
+function poster(x,head){
+  const line=(cc(x).notebook||[]).find(n=>String(n).startsWith(head));
+  return line?`<details class="bq-poster"><summary>📋 Tờ dán cửa bếp</summary><p>${x.esc(line)}</p></details>`:'';
+}
+
 /** The kitchen's opening hygiene and closing power-off checklists (a kitchen role, or once the kitchen was used). */
 function shiftCard(x,t){
   const d=data(x),sh=d.shift||{},kitchen=(d.role||'prep')!=='hall'||sh.kitchen;
@@ -78,14 +84,14 @@ function shiftCard(x,t){
   let body='';
   if(!sh.open.done){
     const st=sh.open.step;
-    body=`<h4>🧼 Đầu ca: ${x.esc(st.title)}</h4><p class="bq-evidence">${x.esc(st.evidence)}</p>${stepBody(st,x,'bq_shift',{part:'open'},'open',null)}`;
+    body=`<h4>🧼 Đầu ca: ${x.esc(st.title)}</h4><p class="bq-evidence">${x.esc(st.evidence)}</p>${poster(x,'Đầu ca bếp:')}${stepBody(st,x,'bq_shift',{part:'open'},'open',null)}`;
   }else if(!sh.close.done){
     const st=sh.close.step;
     const head=`<p class="small">✓ Đã vệ sinh đầu ca.${sh.insp==='pass'?' 🔎 Đoàn kiểm tra: đạt.':sh.insp==='fail'?' 🔎 Đoàn kiểm tra: bị nhắc nhở.':''}</p>`;
     const warn=`<p class="bq-fire" role="note">🔥 Về mà chưa tắt thiết bị điện: đêm đó có thể cháy bếp (khoảng ${x.esc(f.chance??40)}% số lần). Tiền đền bù ${x.esc(fine)} xu (${x.esc(f.pct??8)}% lương ca, tối đa ${x.esc(f.cap??6)} xu) trừ vào ví, không bao giờ quá số tiền đang có.</p>`;
     body=busy?`${head}${warn}<p class="small">Xong món đang làm rồi mới dọn bếp.</p>`:
       `${head}<details class="bq-close"${sh.close.at>0?' open':''}><summary>🔌 Cuối ca: dọn bếp và tắt điện (${sh.close.at}/${sh.close.total})</summary>${warn}
-        <h4>${x.esc(st.title)}</h4><p class="bq-evidence">${x.esc(st.evidence)}</p>${stepBody(st,x,'bq_shift',{part:'close'},'close',null)}</details>`;
+        <h4>${x.esc(st.title)}</h4><p class="bq-evidence">${x.esc(st.evidence)}</p>${poster(x,'Cuối ca bếp:')}${stepBody(st,x,'bq_shift',{part:'close'},'close',null)}</details>`;
   }else{
     body='<p class="small">✓ Đã vệ sinh đầu ca. ✓ Đã dọn bếp, khóa gas, tắt điện. Việc bếp còn lại để ca sau.</p>';
   }

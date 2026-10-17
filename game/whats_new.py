@@ -39,6 +39,7 @@ ENTRIES = (
         dict(emoji='💵', text='Danh sách nghề hiện số xu mỗi ngày, có nút "Nhiều xu trước" để xếp nghề nhiều xu lên đầu.'),
         dict(emoji='🔊', text='Sửa giọng đọc số tiền đôi khi không phát trên điện thoại Android.'),
         dict(emoji='🛒', text='Lời mời làm thêm ở quầy ghi rõ cần làm bao nhiêu việc ở nghề nào, có nút vào nghề đó luôn.'),
+        dict(emoji='🍽️', text='Nhà hàng tiệc: thêm 📋 tờ dán cửa bếp ngay ở bước vệ sinh đầu ca, dọn bếp cuối ca; sửa ô nhập số bị bóp chữ trên điện thoại.'),
     )),
     dict(version="2.4.37", date="2026-10-17", items=(
         dict(emoji='🏗️', text='Công trình của phố: cả phố góp tiền xây công viên, rạp phim, sân vận động... có bảng tài trợ, xây xong sau 2 ngày.'),

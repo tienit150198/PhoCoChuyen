@@ -7,7 +7,8 @@ export default [
   {"emoji":"💸","text":"Khách sạn và nhà hàng tiệc: trả lời đánh giá giờ có thể mời trà bánh, tặng bữa sáng hoặc giảm tiền cho khách."},
   {"emoji":"💵","text":"Danh sách nghề hiện số xu mỗi ngày, có nút \"Nhiều xu trước\" để xếp nghề nhiều xu lên đầu."},
   {"emoji":"🔊","text":"Sửa giọng đọc số tiền đôi khi không phát trên điện thoại Android."},
-  {"emoji":"🛒","text":"Lời mời làm thêm ở quầy ghi rõ cần làm bao nhiêu việc ở nghề nào, có nút vào nghề đó luôn."}
+  {"emoji":"🛒","text":"Lời mời làm thêm ở quầy ghi rõ cần làm bao nhiêu việc ở nghề nào, có nút vào nghề đó luôn."},
+  {"emoji":"🍽️","text":"Nhà hàng tiệc: thêm 📋 tờ dán cửa bếp ngay ở bước vệ sinh đầu ca, dọn bếp cuối ca; sửa ô nhập số bị bóp chữ trên điện thoại."}
  ]},
  {"version":"2.4.37","date":"2026-10-17","items":[
   {"emoji":"🏗️","text":"Công trình của phố: cả phố góp tiền xây công viên, rạp phim, sân vận động... có bảng tài trợ, xây xong sau 2 ngày."},

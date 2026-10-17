@@ -37,6 +37,8 @@
 .banquet .bq-progress ul{list-style:none;padding:0;display:grid;gap:10px}
 .banquet .bq-progress li{display:grid;gap:5px}
 .banquet .bq-progress li span{font-size:13px;color:var(--sk-muted,#6e5f5a)}
+.banquet .bq-poster{margin:8px 0 0;padding:0 12px;border:1px dashed var(--sk-accent-2);border-radius:10px;background:var(--sk-surface,#fffaf4)}
+.banquet .bq-poster p{margin:0 0 10px;line-height:1.55;font-size:14px}
 .banquet .bq-rules{padding-left:20px}
 .banquet .bq-rules li{margin:6px 0;line-height:1.5}
 .banquet button:focus-visible,.banquet summary:focus-visible,.banquet input:focus-visible{outline:3px solid var(--sk-accent);outline-offset:3px}
