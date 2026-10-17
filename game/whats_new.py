@@ -32,6 +32,14 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.38", date="2026-10-17", items=(
+        dict(emoji='📅', text='Shipper có Đơn hẹn giờ: giao đúng khung khách chọn +4 xu, tới sớm thì chờ hoặc gọi hỏi, có nút nhắc giờ và xếp tuyến theo giờ hẹn.'),
+        dict(emoji='🎀', text='Khách sạn: bài trang trí ghi rõ luật và báo cụ thể món nào không hợp dịp, còn thiếu mấy món.'),
+        dict(emoji='💸', text='Khách sạn và nhà hàng tiệc: trả lời đánh giá giờ có thể mời trà bánh, tặng bữa sáng hoặc giảm tiền cho khách.'),
+        dict(emoji='💵', text='Danh sách nghề hiện số xu mỗi ngày, có nút "Nhiều xu trước" để xếp nghề nhiều xu lên đầu.'),
+        dict(emoji='🔊', text='Sửa giọng đọc số tiền đôi khi không phát trên điện thoại Android.'),
+        dict(emoji='🛒', text='Lời mời làm thêm ở quầy ghi rõ cần làm bao nhiêu việc ở nghề nào, có nút vào nghề đó luôn.'),
+    )),
     dict(version="2.4.37", date="2026-10-17", items=(
         dict(emoji='🏗️', text='Công trình của phố: cả phố góp tiền xây công viên, rạp phim, sân vận động... có bảng tài trợ, xây xong sau 2 ngày.'),
         dict(emoji='🔢', text='Đấu giá biển số, xe, máy bay: xe chạy thật trên phố cả map cũ lẫn mới, gắn biển số đấu giá được cộng thêm thu nhập.'),

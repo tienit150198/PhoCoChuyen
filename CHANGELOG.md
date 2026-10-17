@@ -1,3 +1,14 @@
+# v2.4.38 — 2026-10-17
+
+📅 Đơn hẹn giờ cho shipper (chủ game 17/10 "shipper thêm cái hẹn giờ"; game/careers/delivery.py, khóa tùy chọn `appt` trên đơn): từ ngày 2 ~45% đơn đủ điều kiện (~1/5 tổng đơn, không có đơn đồ ăn) có khung 30 phút (20 phút từ ngày 10); đúng giờ +4 xu, sớm thì chờ (≤45 phút) hoặc gọi hỏi (dl_appt), trễ −4 / −8 xu (phí không âm, không trừ ví); hợp đồng "Chuyến giao đúng hẹn" tính 2 đơn; nhắc giờ phía client.
+
+Sửa theo góp ý:
+- #404 Khách sạn · Trang trí: báo sai cụ thể (món không hợp dịp + dịp của nó, món khách tránh, thiếu N món, vượt ngân sách) và dòng luật trên bước; đề bài, đáp án không đổi (tương thích task cũ).
+- #405 Khách sạn / Nhà hàng tiệc: mở 3 lựa chọn bù cho khách khi trả lời đánh giá (6/10/20 xu, trả từ quỹ nghề; career_voice).
+- #406 Danh sách nghề: 💵 ~xu/ngày (ca gần nhất) hoặc lương hợp đồng, chip "💰 Nhiều xu trước".
+- #407 Giọng đọc số tiền (sounds.js): gỡ hàng đợi speechSynthesis bị kẹt/tạm dừng trên Android, resume khi trang hiện lại, chờ danh sách giọng tới 2 s.
+- #408 Quầy cần người: "Cần làm 10 việc ở nghề 🛒 Tạp hóa (bạn đã làm 3/10)…" + nút vào nghề.
+
 # v2.4.37 — 2026-10-17
 
 Bản cho người chơi nhiều tiền (chủ game 16/10) + nghề mới từ góp ý #401:
