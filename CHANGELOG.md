@@ -1,3 +1,7 @@
+# v2.4.42 — 2026-10-17
+
+✨ Có gì mới (chủ game 17/10 "deploy thì show có gì mới ra chứ, cả ngày chưa thấy"; save admin trên prod đã ghi whatsNewSeen 2.4.41 dù chủ game không thấy bảng): public/js/v4/whatsnew.js không đánh dấu đã đọc khi bảng tự mở nữa, chỉ khi người chơi đóng (Đã hiểu, ✕, Esc, Thử ngay). Bảng bị thứ khác đóng (sự kiện close mà chưa đọc) thì canh lúc rảnh để mở lại (rearm); tải lại trang khi bảng đang mở thì bảng hiện lại.
+
 # v2.4.41 — 2026-10-17
 
 🛵 Xe trên đảo 2.5D (chủ game 17/10 "chỗ xe chạy map 2.5d cho khác tí", chọn: cảm giác lái, xe đẹp hơn, xe đỗ / sân bay): client/isometric/phaser-world.ts — xe tăng tốc dần (RIDE_RAMP 0,7 s, ease-out; tốc độ tối đa không đổi, vẫn ≤ live/town.py SPEED), nghiêng đầu khi bốc tốc, nảy nhẹ theo quãng đường, khói xả sau đuôi xe máy/ô tô (MOTOR, tối đa 8 cụm); bóng mềm dưới xe (vehicle-art.js rideStamp). Nút 📯 Còi (🔔 với xe đạp) bên phải khi đang đi xe trong khu phố: tiếng còi xe thật CC0 (public/audio/sfx/horn.mp3, freesound keweldog #182474, ghi trong CREDITS.md), chuông xe đạp dùng ting.mp3; chữ "📯 Bíp bíp!" trên đầu (0,8 s một lần). Tới cửa một nơi thì xe đỗ bên cạnh, người đi bộ vào; bước tiếp là lên xe lại. Du thuyền dập dềnh, sóng vỗ mạn; sân bay có đèn viền đường băng và cờ gió; máy bay bay qua có bóng lướt trên phố và vệt khói trắng.

@@ -107,6 +107,7 @@ function build(){
   document.body.append(dlg);
   dlg.addEventListener('click',onClick);
   dlg.addEventListener('cancel',e=>{e.preventDefault();close();});   // Esc
+  dlg.addEventListener('close',rearm);   // closed by something else (another popup): unread, it opens again later
   dlg.addEventListener('keydown',e=>{
     if(e.key==='Escape'){e.preventDefault();close();return;}
     if(e.key!=='Tab')return;
@@ -154,7 +155,10 @@ export async function openWhatsNew(env=E,{byItself=false}={}){
   openedAt=performance.now();
   dlg.querySelector('.wn-body').scrollTop=0;
   dlg.tabIndex=-1;dlg.focus({preventScroll:true});   // no focus ring on the first paint; Tab moves into the card
-  if(auto)markSeen();
+  // Owner 17/10 "deploy thì show có gì mới ra chứ, cả ngày chưa thấy": the notes count as read only when the player
+  // closes the card (Đã hiểu, ✕, Esc, Thử ngay), never just because it opened: a card another popup closed or covered
+  // comes back (rearm), and one open through a reload shows again.
+  if(auto)stopWatch();
 }
 function close(restore=true){
   if(!dlg?.open)return;
@@ -188,6 +192,11 @@ function check(){
   stopWatch();openWhatsNew(E,{byItself:true});
 }
 function stopWatch(){clearInterval(timer);timer=0;}
+/** The card was closed without the player reading it (close() marks it read first): watch for a calm moment again. */
+function rearm(){
+  if(done||timer||!due(E?.api?.state))return;
+  calmTicks=0;want('whatsnew');timer=setInterval(check,700);
+}
 function loadCss(){
   if(cssReady)return cssReady;
   const href=globalThis.__mnlBoot?.asset?.('/css/whatsnew.css')||'/css/whatsnew.css';

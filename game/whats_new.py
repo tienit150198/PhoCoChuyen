@@ -32,6 +32,9 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.42", date="2026-10-17", items=(
+        dict(emoji='✨', text="Bảng \"Có gì mới\" chỉ tính là đã đọc khi bạn bấm Đã hiểu; lỡ bị cửa sổ khác che thì lát sau tự hiện lại."),
+    )),
     dict(version="2.4.41", date="2026-10-17", items=(
         dict(emoji='🛵', text="Đi xe trên đảo 2.5D có cảm giác hơn: tăng tốc dần, bóng xe, khói xe, nút 📯 Còi; tới cửa thì đỗ xe bên cạnh."),
         dict(emoji='🛫', text="Bến du thuyền dập dềnh, sân bay có đèn đường băng và cờ gió, máy bay bay qua có bóng và vệt khói."),
