@@ -249,7 +249,9 @@ _ROWS['hotel'] = dict(place='khách sạn', self='khách sạn', people='khách 
                      served='lượt khách đã lo', record='phiếu phòng', review='góp ý của khách', reply='phản hồi',
                      books='Sổ ca khách sạn', rail_in='Ở khách sạn', confirm='Xác nhận việc trong ca', team='Ca trực Sông Mây',
                      daily='Bảng phòng hôm nay đã cập nhật. Vào ca ở Sông Mây nhé!',
-                     invite_label='Mời ghé lại quầy', offers=dict(drink=None, gift=None, refund=None),
+                     invite_label='Mời ghé lại quầy',
+                     # #405: a hotel makes amends like the nurse's ward (paid from the career fund, game/feedback.py fb_reply)
+                     offers=dict(drink='Trà bánh mời khách · 6 xu', gift='Bữa sáng tặng · 10 xu', refund='Giảm 20 xu tiền phòng'),
                      invite='Mời {who} ghé lại quầy lễ tân, Sông Mây sẽ kiểm lại phòng và phiếu cùng mình ạ.',
                      process='Khách sạn làm theo phiếu: dọn, bổ sung, kiểm minibar rồi mới báo lễ tân. Hôm đó {fact} ạ.')
 
@@ -257,7 +259,8 @@ _ROWS['banquet'] = dict(place='nhà hàng tiệc', self='nhà hàng', people='kh
                        served='bữa tiệc đã lo', record='phiếu tiệc', review='góp ý của khách', reply='phản hồi',
                        books='Sổ ca nhà hàng', rail_in='Ở nhà hàng tiệc', confirm='Xác nhận việc trong ca', team='Ca bếp và sảnh Hồng Mây',
                        daily='Bảng phân ca hôm nay đã treo. Vào bếp hay ra sảnh ở Hồng Mây nhé!',
-                       invite_label='Mời ghé lại nhà hàng', offers=dict(drink=None, gift=None, refund=None),
+                       invite_label='Mời ghé lại nhà hàng',
+                       offers=dict(drink='Món tráng miệng · 6 xu', gift='Phiếu ưu đãi tiệc · 10 xu', refund='Giảm 20 xu hóa đơn'),
                        invite='Mời {who} ghé lại quầy quản lý, Hồng Mây sẽ xem lại phiếu tiệc cùng mình ạ.',
                        process='Nhà hàng làm theo phiếu: bếp sát khuẩn đầu ca, nấu đúng công thức; sảnh bày theo đúng yêu cầu đã chốt. Hôm đó {fact} ạ.')
 

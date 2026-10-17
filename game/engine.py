@@ -1346,7 +1346,13 @@ def career_summary(raw:dict,cid:str) -> dict:
     return dict(summary=True,started=raw["started"],open=raw["open"],day=raw["day"],xp=raw["xp"],level=1+raw["xp"]//90,money=raw["money"],
                 job=dict(required=emp.required(cid),status=raw["job"].get("status")),
                 business_running=raw.get('ops',{}).get('business',{}).get('reason')=='working' or player_services.staff_working(raw),
-                inventory=raw.get("ext",{}).get("inv") is not None,life=dict(shop_name=raw.get("life",{}).get("shop_name")))
+                inventory=raw.get("ext",{}).get("inv") is not None,life=dict(shop_name=raw.get("life",{}).get("shop_name")),
+                **_last_net(raw))
+
+def _last_net(raw:dict) -> dict:
+    """#406: what the last closed shift there made (net, xu), for the "~N xu/ngày" on the career list; {} before any."""
+    net=(raw.get("shift_summary") or {}).get("net")
+    return {"last_net":net} if type(net) is int else {}
 
 
 # public_state rebuilds these from the save (None keeps each one's place in the key order).

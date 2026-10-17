@@ -180,6 +180,38 @@ class ServerTexts(unittest.TestCase):
         pub = next(p for p in public_state(j.state)['careers']['police']['feed'] if p['id'] == post['id'])
         self.assertTrue(pub)
 
+    def test_hotel_and_banquet_make_amends_from_their_fund(self):
+        """Feedback #405 (17/10): the hotel's reply screen had no bù tiền (every offer was None). Like the nurse's
+        ward, the hotel and the banquet hall now offer all three, paid from the career's fund."""
+        for cid in ('hotel', 'banquet'):
+            if cid not in PLUGINS:
+                continue
+            with self.subTest(career=cid):
+                offers = CV.terms(cid)['offers']
+                self.assertTrue(all(offers[k] for k in ('drink', 'gift', 'refund')), offers)
+                self.assertTrue(CV.terms(cid)['offer_field'])
+                for o in ('drink', 'gift', 'refund'):
+                    self.assertTrue(CV.offer_ok(cid, o))
+                    self.assertEqual(CV.shop_words(cid, offers[o]), [], offers[o])
+                j = Journey(cid)
+                s, c = j.state, j.c
+                c['day'] = 4
+                post = None
+                for slot in range(1, 30):
+                    t = make_task(cid, 4, slot, 1)
+                    t.update(status='completed', day=4, mistakes=2, patience=30)
+                    r = F.make_review(s, c, t, 'completed')
+                    if r and r.get('feedback') and r['stars'] and r['stars'] <= 3 and r['feedback']['status'] == 'open':
+                        post = E.add_feed(s, c, t['npc'], r['text'], t['id'], r['stars'], 'review')
+                        F.attach(post, r)
+                        break
+                self.assertIsNotNone(post)
+                c['money'] = max(c['money'], 100)
+                money = c['money']
+                j.act('fb_reply', post=post['id'], text='Thành thật xin lỗi anh chị, lần sau sẽ chu đáo hơn ạ.', offer='refund', tone='sorry')
+                self.assertEqual(j.c['money'], money - F.OFFERS['refund'])
+                validate_state(j.state)
+
     def test_daily_push_in_the_current_careers_words(self):
         from game import push
 

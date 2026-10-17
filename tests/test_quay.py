@@ -121,7 +121,9 @@ class Unlock(unittest.TestCase):
         s = owner(served=3)
         refused(self, s, 'jr_quay_open', 'locked', trade='milk_tea', place='xe', confirm=True)
         s = owner()
-        refused(self, s, 'jr_quay_open', 'locked', trade='florist', place='xe', confirm=True)   # a trade you do not know
+        why = refused(self, s, 'jr_quay_open', 'locked', trade='florist', place='xe', confirm=True)   # a trade you do not know
+        # #408: the trade is named, with the count so far (not "Làm 10 việc ở nghề này")
+        self.assertEqual(why, 'Cần làm 10 việc ở nghề 💐 Hoa (bạn đã làm 0/10). Vào nghề Hoa làm thêm để mở.')
         self.assertEqual(qy.known_trades(s), ['milk_tea'])
 
     def test_view_only_once_reached(self):
