@@ -1,3 +1,9 @@
+# v2.4.40 — 2026-10-17
+
+🧧 Lì xì (chủ game 17/10: "giật lì xì mỗi người không giới hạn, giật thoải mái … mỗi người phát không giới hạn … ưu tiên cái nào chưa giật hoặc còn lên trên"): game/lixi.py bỏ GRAB_DAY / GRAB_DAY_XU / PAIR_DAY (None; đặt số là bật lại), bỏ DAY_MAX / OPEN_MAX khi phát, GAP 60 → 5 giây (chống bấm đúp). Vẫn giữ: một bao mỗi người mỗi lượt phát, không tự giật bao của mình, tài khoản ≥3 ngày, ngày sống ≥10, một bao mỗi mạng mỗi lượt phát, chặn nhau thì không giật. GET /api/lixi liệt kê mọi bao còn mở (tối đa 300) và 30 bao đã xong gần nhất; danh sách 🧧 xếp bao mình còn giật được lên đầu (lixi-cards.js ranked/grabbable) và ghi "N bao đang chờ bạn giật". live/lixi.py giữ 120 bao mở cho trang mới vào.
+
+🍽️🏨 Nhà hàng tiệc và Khách sạn dễ chơi hơn (chủ game 17/10): sai một bước lần đầu thì bước tính số ghi cách tính (HOW), sai lần hai cùng bước thì đồng nghiệp chỉ đáp án (kit.step_help, đếm từ nhật ký phiếu, không thêm khóa mới vào save). Mỗi lần sai trừ 6 điểm chất lượng thay vì 12 (ngày lễ nhà hàng 9 thay vì 18), sàn 60 thay vì 40; phiếu sai trước bản này vẫn hợp lệ với điểm cũ. Nhà hàng: khả năng cháy bếp khi quên tắt điện 40% → 15%. Đề bài và đáp án không đổi (tương thích phiếu cũ).
+
 # v2.4.39 — 2026-10-17
 
 🍽️ Nhà hàng tiệc (chủ game 17/10: "ghi 4200 rồi mà không đúng"): ô nhập số của mọi bước (số bàn, gam, phần, kg, số dụng cụ) gửi thiếu `step` nên server luôn từ chối ("Làm theo bước đang mở"), dù số đúng; banquet.js numberStep gửi {task, step}. tests/banquet-ui.mjs kiểm tra nút Ghi vào phiếu mang đúng bước.

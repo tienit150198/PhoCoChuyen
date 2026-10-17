@@ -10,7 +10,7 @@ from unittest import mock
 
 from tests.helpers import Journey
 from game import journey as jr
-from game.careers import ORDER, PLUGINS
+from game.careers import ORDER, PLUGINS, kit
 from game.engine import DORMANT, GameError, apply_action, dormant_out, initial_career, new_state, public_state, validate_state, wake
 
 H = PLUGINS.get('hotel')
@@ -103,6 +103,19 @@ class Registration(unittest.TestCase):
 
 @unittest.skipUnless(H, 'hotel filtered out by MNL_CAREERS')
 class Posts(unittest.TestCase):
+    def test_a_task_slipped_before_17_10_keeps_its_quality(self):
+        j = Journey('hotel', day=3, slot=slot_of('checkin'))
+        tid = j.task['id']
+        j.act('ask', task=tid)
+        _, steps, key = H._active(j.get(tid))
+        j.act('ht_step', task=tid, step=steps[0]['id'], value=wrong_value(steps[0], key[steps[0]['id']]))
+        t = j.get(tid)
+        t['quality'] = 88                     # one slip under the old rule (12 a slip)
+        validate_state(j.state)
+        t['quality'] = 77
+        with self.assertRaises(GameError):
+            validate_state(j.state)
+
     def test_each_post_end_to_end_with_a_mistake_fixed_in_place(self):
         for kind in HC.KINDS:
             with self.subTest(kind=kind):
@@ -117,7 +130,13 @@ class Posts(unittest.TestCase):
                 r = j.act('ht_step', task=tid, step=st['id'], value=wrong_value(st, key[st['id']]))
                 self.assertFalse(r['correct'])
                 t = j.get(tid)
-                self.assertEqual((t['at'], t['wrong'], t['errors'], t['quality']), (0, 1, [st['id']], 88))
+                self.assertEqual((t['at'], t['wrong'], t['errors'], t['quality']), (0, 1, [st['id']], 94))   # 17/10: 6 a slip
+                self.assertNotIn(' chỉ: ', r['message'])                       # the first slip: the way to work it out
+                answer = kit.answer_text(st, key[st['id']])
+                r = j.act('ht_step', task=tid, step=st['id'], value=wrong_value(st, key[st['id']]))
+                self.assertIn(' chỉ: ' + answer, r['message'])                  # the second: the answer itself (17/10)
+                t = j.get(tid)
+                self.assertEqual((t['at'], t['wrong'], t['errors'], t['quality']), (0, 2, [st['id']], 88))
                 roundtrip(j)   # a half-done job with a mistake is a valid save
                 money = j.c['money']
                 done = solve(j, tid)

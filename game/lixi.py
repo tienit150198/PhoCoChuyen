@@ -6,8 +6,8 @@ this is something to spend them on that everyone online enjoys. Story mode.
   at least ENV_MIN xu, with a wish from WISHES (or a short line of one's own, through the chat's cleaner and mask:
   live/filters.py). Paid from the wallet, then the bank account (never a loan, never with a wallet in debt; wallet rows
   of kind 'life', bank log rows: no closed list grows). command_commit (game/storage.py, the save's own transaction)
-  writes the `lixi_packets` row: a refusal there (no account, GAP seconds since the giver's last packet, DAY_MAX packets
-  this Vietnam day, OPEN_MAX packets open on the street) rolls the whole command back, so nothing is paid. On commit a
+  writes the `lixi_packets` row: a refusal there (no account, GAP seconds since the giver's last packet; owner 17/10:
+  "mỗi người phát không giới hạn", so DAY_MAX and OPEN_MAX are None) rolls the whole command back, so nothing is paid. On commit a
   NOTIFY op 'lixi' that the live service (live/lixi.py) sends to every open page: envelopes fall over the screen (both
   interfaces) and a card sits in Cả phố (public/js/v4/lixi.js, lixi-cards.js) for HOURS or until the last envelope.
   A big packet (NEWS_FROM xu) also gets a line on the street's ticker.
@@ -21,9 +21,9 @@ this is something to spend them on that everyone online enjoys. Story mode.
   empty. A second tap on the same packet answers the first amount again.
 * 🛡️ Not a pipe between one's own accounts: a grabber needs a registered account ACCOUNT_DAYS old and a save at life day
   LIFE_DAYS (game/quay_hire.py's rules), must not have blocked or be blocked by the giver (`blocks` by pid,
-  `marriage_blocks` by sid), opens at most GRAB_DAY envelopes and GRAB_DAY_XU xu a Vietnam day (an envelope is cut to
-  what is left of that and the cut part stays with the giver), PAIR_DAY packets of the same giver a day, and one
-  envelope per network address per packet (ONE_PER_IP; a hash of the address, never the address).
+  `marriage_blocks` by sid), and one envelope per network address per packet. Owner 17/10: "giật lì xì mỗi người không
+  giới hạn, giật thoải mái": GRAB_DAY, GRAB_DAY_XU and PAIR_DAY are None (a number turns that cap back on: an envelope is
+  then cut to what is left of GRAB_DAY_XU and the cut part goes back to the giver) (ONE_PER_IP; a hash of the address, never the address).
 * ⏳ 24 h: an envelope nobody took goes back to the giver (sweep, housekeeping every 30 s and on the page: under the row
   lock, only from 'open', the refund row 'lixi:<packet>:back' is written once whatever the workers). The same happens at
   once when the last envelope was cut by a grabber's cap.
@@ -52,20 +52,21 @@ TOTAL_MIN, TOTAL_MAX = 10_000, 10_000_000
 N_MIN, N_MAX = 1, 100
 ENV_MIN = 100                 # xu an envelope holds at least
 HOURS = 24                    # a packet waits this long, then what is left goes back to the giver
-GAP = 60                      # seconds between two packets of one giver
-DAY_MAX = 10                  # packets a giver sends a Vietnam day
-OPEN_MAX = 40                 # packets open at once on the whole street
+GAP = 5                       # seconds between two packets of one giver (a double tap, not a limit)
+DAY_MAX = None                # packets a giver sends a Vietnam day (None: no cap, owner 17/10)
+OPEN_MAX = None               # packets open at once on the whole street (None: no cap, owner 17/10)
 ACCOUNT_DAYS = qh.ACCOUNT_DAYS   # a grabber's account is this many real days old (3)
 LIFE_DAYS = qh.LIFE_DAYS         # a grabber's save has lived this many days (10)
-GRAB_DAY = 20                 # envelopes a player opens a Vietnam day
-GRAB_DAY_XU = 300_000         # xu a player gets from envelopes a Vietnam day
-PAIR_DAY = 3                  # packets of one giver a player opens a Vietnam day
+GRAB_DAY = None               # envelopes a player opens a Vietnam day (None: no cap, owner 17/10 "giật thoải mái")
+GRAB_DAY_XU = None            # xu a player gets from envelopes a Vietnam day (None: no cap)
+PAIR_DAY = None               # packets of one giver a player opens a Vietnam day (None: no cap)
 ONE_PER_IP = os.environ.get('LIXI_ONE_PER_IP', '1') != '0'   # one envelope per network address per packet
 NEWS_FROM = 500_000           # a packet from this total gets a line on the ticker
 TEXT_MAX = 40                 # a giver's own line
 KIND = 'life'                 # wallet history kind (journey.HISTORY_KINDS): every build knows it
 FX = 'lixi'                   # live_effects kind (game/live_effects.py PAYS)
-LIST_MAX = 30                 # packets GET /api/lixi lists
+LIST_MAX = 30                 # finished packets GET /api/lixi lists (every open one is listed too, up to OPEN_LIST)
+OPEN_LIST = 300
 DAY = 86400
 GONE = 'Một người chơi'
 COMMANDS = ('jr_lixi_give',)
@@ -254,10 +255,12 @@ def command_commit(db, sid: str, action: str, after: dict, result) -> None:
     last = db.execute('SELECT MAX(at) AS at FROM lixi_packets WHERE sid=?', (sid,)).fetchone()
     wait = int(GAP - (t - float(last['at']))) if last and last['at'] is not None else 0
     e.need(wait <= 0, f'Vừa phát xong. Đợi {max(1, wait)} giây nữa nhé.', 'busy')
-    mine = db.execute('SELECT COUNT(*) AS n FROM lixi_packets WHERE sid=? AND day=?', (sid, day)).fetchone()
-    e.need(int(mine['n']) < DAY_MAX, f'Hôm nay bạn đã phát {DAY_MAX} lần lì xì rồi. Mai phát tiếp nhé!', 'limit')
-    busy = db.execute("SELECT COUNT(*) AS n FROM lixi_packets WHERE status='open' AND expires>?", (t,)).fetchone()
-    e.need(int(busy['n']) < OPEN_MAX, 'Phố đang nhiều lì xì quá. Đợi mọi người giật bớt rồi phát nhé!', 'busy')
+    if DAY_MAX is not None:
+        mine = db.execute('SELECT COUNT(*) AS n FROM lixi_packets WHERE sid=? AND day=?', (sid, day)).fetchone()
+        e.need(int(mine['n']) < DAY_MAX, f'Hôm nay bạn đã phát {DAY_MAX} lần lì xì rồi. Mai phát tiếp nhé!', 'limit')
+    if OPEN_MAX is not None:
+        busy = db.execute("SELECT COUNT(*) AS n FROM lixi_packets WHERE status='open' AND expires>?", (t,)).fetchone()
+        e.need(int(busy['n']) < OPEN_MAX, 'Phố đang nhiều lì xì quá. Đợi mọi người giật bớt rồi phát nhé!', 'busy')
     total, n = int(r['total']), int(r['n'])
     pk = 'lx' + secrets.token_hex(7)
     name = _display(db, sid)
@@ -338,13 +341,19 @@ def grab(store, token: str, d: dict, state: dict | None, ip: str = '', rng=None)
         if tag:
             need(not db.execute('SELECT 1 FROM lixi_grabs WHERE packet=? AND ip=?', (pk, tag)).fetchone(),
                  'Mạng này vừa có người giật bao này rồi.', 'same_ip', 409)
-        today = db.execute('SELECT COUNT(*) AS n, COALESCE(SUM(amount), 0) AS xu FROM lixi_grabs WHERE sid=? AND day=?', (sid, day)).fetchone()
-        need(int(today['n']) < GRAB_DAY, f'Hôm nay bạn giật đủ {GRAB_DAY} bao rồi. Mai giật tiếp nhé!', 'limit', 409)
-        room = GRAB_DAY_XU - int(today['xu'])
-        need(room >= ENV_MIN, f'Hôm nay bạn nhận đủ {fmt(GRAB_DAY_XU)} xu lì xì rồi. Mai giật tiếp nhé!', 'limit', 409)
-        pair = db.execute('SELECT COUNT(*) AS n FROM lixi_grabs WHERE sid=? AND giver=? AND day=?', (sid, p['sid'], day)).fetchone()
-        need(int(pair['n']) < PAIR_DAY, f'Hôm nay bạn đã giật {PAIR_DAY} bao của người này rồi.', 'limit', 409)
-        amount = min(split(p['left_xu'], p['left_n'], rng), room)
+        room = None
+        if GRAB_DAY is not None or GRAB_DAY_XU is not None:
+            today = db.execute('SELECT COUNT(*) AS n, COALESCE(SUM(amount), 0) AS xu FROM lixi_grabs WHERE sid=? AND day=?', (sid, day)).fetchone()
+            need(GRAB_DAY is None or int(today['n']) < GRAB_DAY, f'Hôm nay bạn giật đủ {GRAB_DAY} bao rồi. Mai giật tiếp nhé!', 'limit', 409)
+            if GRAB_DAY_XU is not None:
+                room = GRAB_DAY_XU - int(today['xu'])
+                need(room >= ENV_MIN, f'Hôm nay bạn nhận đủ {fmt(GRAB_DAY_XU)} xu lì xì rồi. Mai giật tiếp nhé!', 'limit', 409)
+        if PAIR_DAY is not None:
+            pair = db.execute('SELECT COUNT(*) AS n FROM lixi_grabs WHERE sid=? AND giver=? AND day=?', (sid, p['sid'], day)).fetchone()
+            need(int(pair['n']) < PAIR_DAY, f'Hôm nay bạn đã giật {PAIR_DAY} bao của người này rồi.', 'limit', 409)
+        amount = split(p['left_xu'], p['left_n'], rng)
+        if room is not None:
+            amount = min(amount, room)
         left_n, left_xu = int(p['left_n']) - 1, int(p['left_xu']) - amount
         status = 'open' if left_n > 0 else 'done'
         db.execute('INSERT INTO lixi_grabs(packet, sid, pid, name, giver, amount, day, ip, at) VALUES(?,?,?,?,?,?,?,?,?)',
@@ -432,8 +441,14 @@ def _rows(store) -> list:
         if hit and time.monotonic() - hit[0] < VIEW_SECS:
             return hit[1]
     with store.connect() as db:
-        rows = [_card(r) for r in db.execute('SELECT * FROM lixi_packets WHERE at>? ORDER BY at DESC LIMIT ?',
-                                             (now() - HOURS * 3600, LIST_MAX)).fetchall()]
+        t = now()
+        # every packet still open (owner 17/10: no cap on giving, the open ones must never fall off the list), then
+        # the latest finished ones
+        live = db.execute("SELECT * FROM lixi_packets WHERE status='open' AND expires>? ORDER BY at DESC LIMIT ?",
+                          (t, OPEN_LIST)).fetchall()
+        over = db.execute("SELECT * FROM lixi_packets WHERE at>? AND NOT (status='open' AND expires>?) ORDER BY at DESC LIMIT ?",
+                          (t - HOURS * 3600, t, LIST_MAX)).fetchall()
+        rows = sorted((_card(r) for r in list(live) + list(over)), key=lambda x: -x['at'])
     with _VIEW_LOCK:
         _VIEW.clear()
         _VIEW['v'] = (time.monotonic(), rows)

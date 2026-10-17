@@ -10,7 +10,7 @@ import {escapeHTML as esc} from '../icons.js';
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 export const LX={packets:new Map(),got:new Map(),me:null,loaded:0,listeners:new Set()};
 const valid=p=>p&&typeof p.id==='string'&&/^lx[0-9a-f]{14}$/.test(p.id);
-const KEEP_S=86400;
+const KEEP_S=86400,KEEP_N=400;   // giving has no cap since 17/10: finished packets go first when the store is full
 
 function changed(){for(const f of [...LX.listeners]){try{f();}catch(e){console.warn('lixi:',e);}}}
 /** Called again on every change of the store (the chat re-renders, the dialog too). Returns an unsubscribe. */
@@ -41,11 +41,16 @@ export function grabbed(id,amount){LX.got.set(id,Number(amount)||0);changed();}
 function prune(){
   const t=Date.now()/1000;
   for(const [id,p] of LX.packets)if(t-p.at>KEEP_S)LX.packets.delete(id);
-  if(LX.packets.size>60){const old=[...LX.packets.values()].sort((a,b)=>a.at-b.at).slice(0,LX.packets.size-60);for(const p of old)LX.packets.delete(p.id);}
+  if(LX.packets.size>KEEP_N){const old=[...LX.packets.values()].sort((a,b)=>(openNow(a)-openNow(b))||a.at-b.at).slice(0,LX.packets.size-KEEP_N);for(const p of old)LX.packets.delete(p.id);}
 }
 export const openNow=p=>p.status==='open'&&p.left>0&&(!p.exp||p.exp>Date.now()/1000);
 /** Oldest first. */
 export const list=()=>[...LX.packets.values()].sort((a,b)=>a.at-b.at);
+/** Still mine to grab: open, not grabbed by me, not my own, not from someone hidden. */
+export const grabbable=p=>openNow(p)&&!LX.got.has(p.id)&&!p.own&&!p.no;
+/** The 🧧 list (owner 17/10: "ưu tiên cái nào chưa giật hoặc còn lên trên dễ tìm"): the ones I can still grab, then the
+ * other open ones, then the finished ones; newest first in each group. */
+export const ranked=()=>[...LX.packets.values()].sort((a,b)=>(grabbable(b)-grabbable(a))||(openNow(b)-openNow(a))||b.at-a.at);
 
 /** GET /api/lixi (at most every `every` ms): the last day's packets and what I grabbed. */
 export async function refresh(api,every=15000){

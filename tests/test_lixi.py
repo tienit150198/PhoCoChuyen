@@ -229,14 +229,26 @@ class Db(unittest.TestCase):
             self.give(a, total=10_000, n=1)
         self.assertEqual(cm.exception.code, 'busy')
         self.assertEqual(self.wallet(a), 2_000_000 - 10_000)
-        for _ in range(lixi.DAY_MAX - 1):
+        with patch.object(lixi, 'DAY_MAX', 10):                                  # a cap still works when it is set
+            for _ in range(10 - 1):
+                self.earlier(a)
+                self.give(a, total=10_000, n=1)
+            self.earlier(a)
+            with self.assertRaises(GameError) as cm:                              # DAY_MAX a Vietnam day
+                self.give(a, total=10_000, n=1)
+            self.assertEqual(cm.exception.code, 'limit')
+        self.assertEqual(self.wallet(a), 2_000_000 - 10 * 10_000)
+
+    def test_no_cap_on_giving_by_default(self):
+        """Owner 17/10: "mỗi người phát không giới hạn luôn, cho mọi người phát mà"."""
+        self.assertIsNone(lixi.DAY_MAX)
+        self.assertIsNone(lixi.OPEN_MAX)
+        a = self.player(wallet=5_000_000)
+        for _ in range(15):
             self.earlier(a)
             self.give(a, total=10_000, n=1)
-        self.earlier(a)
-        with self.assertRaises(GameError) as cm:                                  # DAY_MAX a Vietnam day
-            self.give(a, total=10_000, n=1)
-        self.assertEqual(cm.exception.code, 'limit')
-        self.assertEqual(self.wallet(a), 2_000_000 - lixi.DAY_MAX * 10_000)
+        self.assertEqual(self.wallet(a), 5_000_000 - 15 * 10_000)
+        self.assertEqual(len(self.rows("SELECT id FROM lixi_packets WHERE status='open'")), 15)
 
     def test_the_street_holds_at_most_open_max(self):
         a = self.player()
@@ -313,15 +325,16 @@ class Db(unittest.TestCase):
     def test_caps_per_grabber_and_per_giver(self):
         me = self.player('Tôi', wallet=0)
         givers = [self.player(f'G{i}', wallet=10_000_000) for i in range(3)]
-        # one giver's packets: PAIR_DAY a day
-        for k in range(lixi.PAIR_DAY + 1):
-            self.earlier(givers[0])
-            self.give(givers[0], total=10_000, n=2)
-            pk = self.packet()['id']
-            if k < lixi.PAIR_DAY:
-                self.grab(me, pk)
-            else:
-                self.refused('limit', me, pk)
+        # one giver's packets: PAIR_DAY a day (when set; no cap by default since 17/10)
+        with patch.object(lixi, 'PAIR_DAY', 3):
+            for k in range(3 + 1):
+                self.earlier(givers[0])
+                self.give(givers[0], total=10_000, n=2)
+                pk = self.packet()['id']
+                if k < 3:
+                    self.grab(me, pk)
+                else:
+                    self.refused('limit', me, pk)
         # the xu cap: an envelope is cut to what is left of GRAB_DAY_XU; the cut part goes back to the giver
         with patch.object(lixi, 'GRAB_DAY_XU', 30_000):
             have = sum(r['amount'] for r in self.rows('SELECT amount FROM lixi_grabs WHERE sid=?', (self.store.key(me),)))
@@ -343,6 +356,22 @@ class Db(unittest.TestCase):
             self.refused('limit', me, self.packet()['id'])
         mine = self.rows('SELECT COUNT(*) AS n, SUM(amount) AS xu FROM lixi_grabs WHERE sid=?', (self.store.key(me),))[0]
         self.assertEqual(self.wallet(me), mine['xu'])
+
+    def test_grab_without_caps_by_default(self):
+        """Owner 17/10: "giật lì xì mỗi người không giới hạn nhé, giật thoải mái"."""
+        self.assertEqual((lixi.GRAB_DAY, lixi.GRAB_DAY_XU, lixi.PAIR_DAY), (None, None, None))
+        me = self.player('Tôi', wallet=0)
+        g = self.player('Giàu', wallet=10_000_000)
+        got = 0
+        for _ in range(25):                                                       # more than the old 20 a day and 3 a giver
+            self.earlier(g)
+            self.give(g, total=200_000, n=1)                                      # one envelope: the whole 200k, over the old 300k a day
+            got += self.grab(me, self.packet()['id'])['amount']
+        self.assertEqual(got, 25 * 200_000)
+        self.assertEqual(self.wallet(me), got)
+        v = lixi.view(self.store, me)
+        self.assertEqual(v['me']['n'], 25)
+        self.assertEqual(v['caps'], dict(day=None, xu=None, pair=None))
 
     def test_two_grabs_on_the_last_envelope(self):
         a = self.player('Lan')

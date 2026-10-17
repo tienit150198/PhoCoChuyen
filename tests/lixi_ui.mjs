@@ -242,3 +242,18 @@ test('the last envelope gone: the rain says so and ends; a failed grab marks the
   s.remove();
   await wait(400);
 });
+
+test('the 🧧 list puts what I can still grab first (owner 17/10)',()=>{
+  const t=now();
+  const done=cards.upsert(packet({at:t-10,left:0,status:'done'}),true);
+  const mine=cards.upsert(packet({at:t-5,own:true}),true);
+  const got=cards.upsert(packet({at:t-4}),true);cards.LX.got.set(got.id,500);
+  const old=cards.upsert(packet({at:t-300}),true);
+  const fresh2=cards.upsert(packet({at:t-1}),true);
+  const ids=cards.ranked().map(p=>p.id);
+  const at=id=>ids.indexOf(id);
+  assert.ok(at(fresh2.id)<at(old.id),'newest grabbable first');
+  for(const x of [mine,got,done])assert.ok(at(old.id)<at(x.id),'every grabbable one before the rest');
+  assert.ok(at(got.id)<at(done.id)&&at(mine.id)<at(done.id),'open ones before finished ones');
+  assert.ok(cards.grabbable(old)&&!cards.grabbable(got)&&!cards.grabbable(mine)&&!cards.grabbable(done));
+});

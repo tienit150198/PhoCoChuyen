@@ -399,8 +399,24 @@ def _active(t: dict) -> tuple[dict, list, dict]:
     return t['needs'], t['needs']['steps'], t['_key']
 
 
+WRONG_COST, QUALITY_FLOOR = 6, 60   # quality lost per redone step (17/10: was 12, floor 40; owner "dễ chơi hơn")
+
+
 def _quality(wrong: int) -> int:
-    return max(40, 100 - 12 * wrong)
+    return max(QUALITY_FLOOR, 100 - WRONG_COST * wrong)
+
+
+def _quality_ok(t: dict, wrong: int) -> bool:
+    """The quality of `wrong` slips: the current rule, or the one before 17/10 (a task slipped then and not since)."""
+    return t.get('quality') in (_quality(wrong), max(40, 100 - 12 * wrong))
+
+
+# The way to work out a number step, said on its first slip (17/10: "dễ chơi hơn"); the second slip shows the answer.
+HOW = {
+    'housekeeping.minibar': 'Mỗi món: (số lúc đầu − số còn lại) × giá, rồi cộng các món lại. Món miễn phí không tính tiền.',
+    'breakfast.boxes': 'Mỗi khách đi tour sớm một hộp.',
+    'breakfast.kitchen': 'Đếm từng món của các phòng ăn tại nhà hàng (món trái lưu ý tính theo món đã đổi); phòng đi tour không tính.',
+}
 
 
 def _bonus(t: dict) -> int:
@@ -480,8 +496,9 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
             again = decor_hint(brief, value, key[st['id']]) or again
         elif st['id'] == 'decor.cost':
             again = f'Cộng giá các món đã chọn ở bước trước ({len(t["work"].get("decor.items", []))} món) rồi ghi tổng.'
-        message = f'Chưa đúng: {st["title"].lower()}. {again}'
-        t['lines'] = (t['lines'] + [message])[-24:]
+        who = 'Cô Tư' if t['kind'] in ('housekeeping', 'laundry') else 'Anh Bảo' if t['kind'] == 'repair' else 'Chị Hằng'
+        message = f'Chưa đúng: {st["title"].lower()}. {kit.step_help(t, st, key[st["id"]], HOW.get(st["id"], ""), again, who)}'
+        t['lines'] = (t['lines'] + [message[:480]])[-24:]
         result = dict(message=message, correct=False)
         _after(s, c, d, result)
         return result
@@ -650,7 +667,7 @@ def validate_task(t: dict, original: dict) -> None:
     kit.need(len(errors) == len(set(errors)) and set(errors) <= set(ids[:min(at + 1, len(ids))]), 'Nhật ký lỗi khách sạn sai.')
     wrong = kit.integer(t.get('wrong'), 0, 100000)
     kit.need(len(errors) <= wrong <= t.get('mistakes', 0) and (wrong == 0) == (not errors), 'Số lần làm lại sai.')
-    kit.need(t.get('quality') == _quality(wrong), 'Điểm chất lượng khách sạn không khớp.')
+    kit.need(_quality_ok(t, wrong), 'Điểm chất lượng khách sạn không khớp.')
     kit.need(type(t.get('paid')) is int and t['paid'] == (_bonus(t) if at == len(steps) else 0), 'Tiền thưởng khách sạn không khớp.')
     kit.need(isinstance(t.get('lines'), list) and len(t['lines']) <= 24 and all(isinstance(x, str) and len(x) < 500 for x in t['lines']),
              'Nhật ký khách sạn sai.')

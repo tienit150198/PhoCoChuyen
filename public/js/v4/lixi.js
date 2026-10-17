@@ -14,7 +14,7 @@
  * total, envelopes, a wish), and one packet's "ai giật được bao nhiêu" (🏆 Hên nhất once it is finished).
  * Rules and numbers are the server's (content.journey.lixi); this file only shows them. */
 import {icon,escapeHTML as esc} from '../icons.js';
-import {LX,upsert,update,grabbed,refresh,list,openNow,cardHTML,onChange} from './lixi-cards.js';
+import {LX,upsert,update,grabbed,refresh,list,ranked,grabbable,openNow,cardHTML,onChange} from './lixi-cards.js';
 import {fwMode,topModal,idleScreen} from './fireworks.js';
 import {qtyBox,qtyVal,afterTap} from '../qty-input.js';
 
@@ -377,11 +377,12 @@ function page(){
 }
 function listView(c){
   const me=LX.me,day=Number(j_day());
-  const mine=me?`<p class="lxi-sub">Hôm nay bạn đã giật ${me.n}/${c.grab_day} bao · ${fmt(me.xu)}/${fmt(c.grab_day_xu)} xu</p>`:'';
+  const mine=me&&me.n?`<p class="lxi-sub">Hôm nay bạn đã giật ${fmt(me.n)}${c.grab_day?`/${c.grab_day}`:''} bao · ${fmt(me.xu)}${c.grab_day_xu?`/${fmt(c.grab_day_xu)}`:''} xu</p>`:'';
   const why=me&&!me.can?`<p class="lxi-sub">⚠ ${esc(me.why)}</p>`:day&&day<c.life_days?`<p class="lxi-sub">⚠ Giật lì xì mở từ ngày sống ${c.life_days}</p>`:'';
-  const all=list().slice().reverse();
+  const all=ranked(),n=all.filter(grabbable).length;
   const cards=all.map(p=>cardHTML(p,'data-lxd="card"')).join('');
-  return mine+why+(cards||`<div class="sd-empty"><p>Chưa ai phát lì xì hôm nay.</p><button type="button" class="btn primary" data-lxd="tab" data-tab="give">🧧 Phát lì xì đầu tiên</button></div>`);
+  const wait=n&&!why?`<p class="lxi-sub lxi-wait">🧧 <b>${n}</b> bao đang chờ bạn giật</p>`:'';
+  return mine+why+wait+(cards||`<div class="sd-empty"><p>Chưa ai phát lì xì hôm nay.</p><button type="button" class="btn primary" data-lxd="tab" data-tab="give">🧧 Phát lì xì đầu tiên</button></div>`);
 }
 const j_day=()=>J().life_day||0;
 function giveForm(c){

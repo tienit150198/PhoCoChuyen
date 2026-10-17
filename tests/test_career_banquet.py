@@ -13,7 +13,7 @@ from unittest import mock
 
 from tests.helpers import Journey
 from game import journey as jr
-from game.careers import ORDER, PLUGINS
+from game.careers import ORDER, PLUGINS, kit
 from game.engine import DORMANT, GameError, dormant_out, initial_career, new_state, public_state, validate_state, wake
 
 B = PLUGINS.get('banquet')
@@ -191,6 +191,19 @@ class Roles(unittest.TestCase):
 
 @unittest.skipUnless(B, 'banquet filtered out by MNL_CAREERS')
 class Jobs(unittest.TestCase):
+    def test_a_task_slipped_before_17_10_keeps_its_quality(self):
+        j = job_journey('event')
+        tid = j.task['id']
+        j.act('ask', task=tid)
+        _, steps, key = B._active(j.get(tid))
+        j.act('bq_step', task=tid, step=steps[0]['id'], value=wrong_value(steps[0], key[steps[0]['id']]))
+        t = j.get(tid)
+        t['quality'] = 88                     # one slip under the old rule (12 a slip)
+        validate_state(j.state)
+        t['quality'] = 77
+        with self.assertRaises(GameError):
+            validate_state(j.state)
+
     def test_each_job_end_to_end_with_a_mistake_fixed_in_place(self):
         for job in BC.JOBS:
             with self.subTest(job=job):
@@ -202,7 +215,13 @@ class Jobs(unittest.TestCase):
                 r = j.act('bq_step', task=tid, step=st['id'], value=wrong_value(st, key[st['id']]))
                 self.assertFalse(r['correct'])
                 t = j.get(tid)
-                self.assertEqual((t['at'], t['wrong'], t['errors'], t['quality']), (0, 1, [st['id']], 88))
+                self.assertEqual((t['at'], t['wrong'], t['errors'], t['quality']), (0, 1, [st['id']], 94))   # 17/10: 6 a slip
+                self.assertNotIn(' chỉ: ', r['message'])                       # the first slip: the way to work it out
+                answer = kit.answer_text(st, key[st['id']])
+                r = j.act('bq_step', task=tid, step=st['id'], value=wrong_value(st, key[st['id']]))
+                self.assertIn(' chỉ: ' + answer, r['message'])                  # the second: the answer itself (17/10)
+                t = j.get(tid)
+                self.assertEqual((t['at'], t['wrong'], t['errors'], t['quality']), (0, 2, [st['id']], 88))
                 roundtrip(j)   # a half-done job with a mistake is a valid save
                 money = j.c['money']
                 done = solve(j, tid)
@@ -555,7 +574,7 @@ class Rush(unittest.TestCase):
         self.assertEqual(busy.get(tid)['quality'], 100 - BC.RUSH_WRONG_COST)
         done = solve(busy, tid)
         job = B._job(done)
-        self.assertEqual(done['paid'], round(max(3, round(BC.BONUS[job] * 82 / 100)) * 1.5))
+        self.assertEqual(done['paid'], round(max(3, round(BC.BONUS[job] * 91 / 100)) * 1.5))
         self.assertEqual(data(busy)['stats']['rush'], 1)
         roundtrip(busy)   # validates on another (calm) date too: the slip keeps its rush
 

@@ -23,7 +23,7 @@ import time
 from .db import Error as DbError, log
 from .protocol import Feature
 
-KEEP = 40                         # open packets kept for the welcome (game/lixi.py OPEN_MAX)
+KEEP = 120                        # open packets kept for the welcome (game/lixi.py has no OPEN_MAX since 17/10)
 RAIN = 60.0                       # seconds after the start a new socket still gets the falling envelopes (`ago` tells the page)
 ID_RE = re.compile(r'lx[0-9a-f]{14}')
 PID_RE = re.compile(r'[0-9a-f]{16}')

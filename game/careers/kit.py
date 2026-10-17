@@ -111,6 +111,47 @@ def id_list(value: Any, allowed, max_items: int = 12, message: str = 'Danh sách
     return value
 
 
+# ---------------------------------------------------------------- help on a graded step (owner 17/10: "dễ chơi hơn")
+REVEAL_AFTER = 2   # the same step answered wrong this many times: the coworker shows the answer
+
+
+def tries_on_step(lines) -> int:
+    """Wrong tries on the open step so far: the 'Chưa đúng' lines since the last ✓ line (a ✓ closes a step). Read from
+    the task's own log, so nothing new is stored and an older build loads the task as it is."""
+    n = 0
+    for x in reversed(lines if isinstance(lines, list) else []):
+        if isinstance(x, str) and x.startswith('✓'):
+            break
+        if isinstance(x, str) and x.startswith('Chưa đúng'):
+            n += 1
+    return n
+
+
+def answer_text(st: dict, value) -> str:
+    """A step's answer in words: the option labels (in order for an 'order' step), the number with its unit, the
+    count of every field."""
+    typ = st.get('type')
+    if typ == 'number':
+        return f'{value} {st.get("unit") or ""}'.strip()
+    if typ == 'counts':
+        names = {f['id']: f['label'] for f in st.get('fields') or []}
+        return ', '.join(f'{names.get(k, k)} {n}' for k, n in (value or {}).items())
+    names = {o['id']: o['label'] for o in st.get('options') or []}
+    if typ == 'choice':
+        return str(names.get(value, value))
+    if typ == 'order':
+        return ' → '.join(str(names.get(k, k)) for k in value)
+    return ', '.join(str(names.get(k, k)) for k in value) if value else 'không chọn món nào'
+
+
+def step_help(t: dict, st: dict, value, how: str, again: str, who: str) -> str:
+    """What a wrong answer says: the way to work it out on the first slip (`how`, else `again`), the answer itself
+    from the REVEAL_AFTER-th slip on the same step (said by `who`)."""
+    if tries_on_step(t.get('lines')) + 1 >= REVEAL_AFTER:
+        return f'{who} chỉ: {answer_text(st, value)}.'
+    return how or again
+
+
 def rng(*parts) -> random.Random:
     """Deterministic generator: the same day/slot always yields the same task."""
     seed = int(hashlib.sha256('|'.join(map(str, parts)).encode()).hexdigest()[:12], 16)

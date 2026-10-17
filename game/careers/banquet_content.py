@@ -35,10 +35,12 @@ JOBS = {
 ROLE_JOBS = {'prep': ('prep', 'salad', 'tools'), 'chef': ('check', 'cook', 'plate'), 'hall': ('event',)}
 BONUS = dict(prep=5, salad=5, tools=5, check=7, cook=7, plate=7, event=11)
 PROBATION = 3      # good kitchen shifts as Phụ bếp (hygiene + a good job + closing) before Đầu bếp
-WRONG_COST, RUSH_WRONG_COST = 12, 18   # quality lost per redone step; a rush day leaves less room for slips
+WRONG_COST, RUSH_WRONG_COST = 6, 9     # quality lost per redone step; a rush day leaves less room for slips (17/10: was 12, 18)
+QUALITY_FLOOR = 60                     # (17/10: was 40)
+OLD_WRONG_COST, OLD_RUSH_WRONG_COST, OLD_FLOOR = 12, 18, 40   # a task slipped before 17/10 keeps its quality
 
 # 🔥 Leaving the kitchen without the closing check: some nights a forgotten appliance starts a small fire.
-FIRE_CHANCE = 0.4  # only when the closing check was skipped after kitchen work
+FIRE_CHANCE = 0.15  # only when the closing check was skipped after kitchen work (17/10: was 0.4, owner "dễ chơi hơn")
 FIRE_PCT = 8       # the compensation: 8% of the day's contract salary…
 FIRE_MIN, FIRE_CAP = 2, 6   # …at least 2 and at most 6 xu, and never more than the wallet holds
 INSPECT_CHANCE = 0.3        # a ward food-safety inspection visits on about one kitchen day in three (from day 2)

@@ -335,7 +335,24 @@ def _cost(t: dict) -> int:
 
 
 def _quality(wrong: int, cost: int = bc.WRONG_COST) -> int:
-    return max(40, 100 - cost * wrong)
+    return max(bc.QUALITY_FLOOR, 100 - cost * wrong)
+
+
+def _quality_ok(t: dict, wrong: int) -> bool:
+    """The quality of `wrong` slips: the current rule, or the one before 17/10 (a task slipped then and not since)."""
+    old = bc.OLD_RUSH_WRONG_COST if t.get('rush') in bc.RUSH else bc.OLD_WRONG_COST
+    return t.get('quality') in (_quality(wrong, _cost(t)), max(bc.OLD_FLOOR, 100 - old * wrong))
+
+
+# The way to work out a number step, said on its first slip (17/10: "dễ chơi hơn"); the second slip shows the answer.
+HOW = {
+    'prep.grams': 'Lấy số suất nhân số gam mỗi suất.',
+    'salad.grams': 'Lấy số đĩa nhân số gam mỗi đĩa.',
+    'tools.vessels': 'Lấy số suất cộng thêm 10% rồi làm tròn lên (ví dụ 30 suất → 33).',
+    'check.kg': 'Cộng số kg của các món nhận vào kho, bỏ các món đã chọn trả lại.',
+    'cook.portions': 'Số bàn nhân số phần mỗi bàn, cộng thêm phần gọi lẻ.',
+    'event.tables': f'Lấy số khách chia {bc.SEATS}, có lẻ thì làm tròn lên (ví dụ 155 khách → 16 bàn); tiệc cưới cộng thêm 2 bàn dự phòng.',
+}
 
 
 def _bonus(t: dict) -> int:
@@ -475,8 +492,9 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
         t['mistakes'] += 1
         t['quality'] = _quality(t['wrong'], _cost(t))
         again = 'Tính lại cho kỹ nhé.' if st['type'] == 'number' else 'Đọc lại phiếu và sổ bếp rồi làm lại bước này.'
-        message = f'Chưa đúng: {st["title"].lower()}. {again}'
-        t['lines'] = (t['lines'] + [message])[-LINES:]
+        who = 'Chị Loan' if _role(t) == 'hall' else 'Chú Tâm'
+        message = f'Chưa đúng: {st["title"].lower()}. {kit.step_help(t, st, key[st["id"]], HOW.get(st["id"], ""), again, who)}'
+        t['lines'] = (t['lines'] + [message[:480]])[-LINES:]
         result = dict(message=message, correct=False)
         _after(s, c, d, result)
         return result
@@ -760,7 +778,7 @@ def validate_task(t: dict, original: dict) -> None:
     kit.need(len(errors) == len(set(errors)) and set(errors) <= set(ids[:min(at + 1, len(ids))]), 'Nhật ký lỗi nhà hàng sai.')
     wrong = kit.integer(t.get('wrong'), 0, 100000)
     kit.need(len(errors) <= wrong <= t.get('mistakes', 0) and (wrong == 0) == (not errors), 'Số lần làm lại sai.')
-    kit.need(t.get('quality') == _quality(wrong, _cost(t)), 'Điểm chất lượng nhà hàng không khớp.')
+    kit.need(_quality_ok(t, wrong), 'Điểm chất lượng nhà hàng không khớp.')
     kit.need(type(t.get('paid')) is int and t['paid'] == (_bonus(t) if at == len(steps) else 0), 'Tiền thưởng nhà hàng không khớp.')
     kit.need(isinstance(t.get('lines'), list) and len(t['lines']) <= LINES and all(isinstance(x, str) and len(x) < 500 for x in t['lines']),
              'Nhật ký nhà hàng sai.')
