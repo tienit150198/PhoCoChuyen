@@ -1,3 +1,7 @@
+# v2.4.39 — 2026-10-17
+
+🍽️ Nhà hàng tiệc (chủ game 17/10: "ghi 4200 rồi mà không đúng"): ô nhập số của mọi bước (số bàn, gam, phần, kg, số dụng cụ) gửi thiếu `step` nên server luôn từ chối ("Làm theo bước đang mở"), dù số đúng; banquet.js numberStep gửi {task, step}. tests/banquet-ui.mjs kiểm tra nút Ghi vào phiếu mang đúng bước.
+
 # v2.4.38 — 2026-10-17
 
 📅 Đơn hẹn giờ cho shipper (chủ game 17/10 "shipper thêm cái hẹn giờ"; game/careers/delivery.py, khóa tùy chọn `appt` trên đơn): từ ngày 2 ~45% đơn đủ điều kiện (~1/5 tổng đơn, không có đơn đồ ăn) có khung 30 phút (20 phút từ ngày 10); đúng giờ +4 xu, sớm thì chờ (≤45 phút) hoặc gọi hỏi (dl_appt), trễ −4 / −8 xu (phí không âm, không trừ ví); hợp đồng "Chuyến giao đúng hẹn" tính 2 đơn; nhắc giờ phía client.
