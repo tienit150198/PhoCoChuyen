@@ -9,13 +9,15 @@ Play (public/js/v4/tile-match.js draws it; this file is the authority):
 * Boosters: ↩ Hoàn tác (the last tile back), 🔀 Xáo (shuffles the items of the tiles still on the board),
   ⇪ Đẩy ra (the first 3 tray tiles to a holding row; tap them to bring them back), ➕ one more tray slot this level.
   A few are free per real (Vietnam) day; then they cost xu, the price doubling with each paid use in the level.
-* 100 levels from LEVELS (game/tile_match_levels.py): a seed plus parameters each, generated deterministically
+* 200 levels from LEVELS (game/tile_match_levels.py): a seed plus parameters each, generated deterministically
   here (`build`). Generation plays a hidden intended solution while it assigns the items, so every level is
-  solvable by construction; `solve` (an independent search) and the tests check it again for all 100. Later levels
-  add 🔒 locked tiles (open once their 🔑 key tile is taken) and 🧊 ice tiles (two taps).
+  solvable by construction; `solve` (an independent search) and the tests check it again. Later levels
+  add 🔒 locked tiles (open once their 🔑 key tile is taken) and 🧊 ice tiles (two taps). Levels 101–200 (2.4.43)
+  keep level 100's 20 icons and stack higher instead (owner 17/10 "xếp nhiều lớp hơn"): 8 to 14 layers (91–100: 4 to 7),
+  some straight on the one below (STRAIGHT).
 
 Reward (a money buff, so the server checks everything): each NEW level cleared for the first time gives +0.2 % to
-the money a player EARNS from work and business, +20 % at level 100 (`permille`). It is booked as its own row
+the money a player EARNS from work and business, +20 % at level 100, then +0.1 % a level, +30 % at 200 (`permille`). It is booked as its own row
 "🧩 Phúc lợi +X%" next to the earning it multiplies (`fund_bonus`, `till_bonus`, `scale_bonus`, `extra`), at
 these places only: own finished jobs (income_gear.completion_bonus, the hook every guarded terminal job calls),
 the hired job's salary (employment.on_close, the TT99 practice salary), staff orders (workplace_business._finish),
@@ -40,6 +42,8 @@ State (optional, absent until the first play): journey['tile'] = {lv: highest cl
 day of n/u, n: new levels cleared that day, u: {booster: free uses that day}, cur: {lv: the next level (or an older
 page's level), t: the clock (server ms), b: {booster: granted to an older page's attempt}, p: {booster: paid by
 it}}}. The shape is 2.4.5's and 2.4.6's (journey.validate there checks it the same way), so a rollback reads it unchanged.
+Past level 100: journey['tile_hi'] = {lv: cleared past 100 (0..100)}, only beside tile.lv == 100; tile.lv and cur.lv stay
+within 100 (older builds keep an unknown journey key as it is, and count the player at level 100).
 """
 from __future__ import annotations
 
@@ -52,12 +56,15 @@ from . import price_index
 
 VERSION = 1
 KEY = 'tile'
-LEVEL_MAX = 100
+KEY_HI = 'tile_hi'           # levels 101–200 (2.4.43): {lv: 0..100} cleared past 100, its own key so older builds' bounds hold
+BASE_MAX = 100               # journey.tile.lv and cur.lv stay within this (older builds validate <= 100)
+LEVEL_MAX = 200
 CAP_DAY = 15                 # the save's bound on `n` (older builds validate n <= 15); owner 14/10: NO daily cap any more
 DAILY_CAP = False            # owner 14/10 "đừng giới hạn 1 ngày 15 màn, chơi không giới hạn"
 MIN_TAP_MS = 250             # at least this much server time per tap…
 MIN_LEVEL_MS = 20_000        # …and per level
 PERMILLE_PER_LEVEL = 2       # +0.2 % a level
+PERMILLE_PER_HI = 1          # +0.1 % a level past 100: +30 % at 200
 TRAY = 7
 SLOT_MAX = 1                 # ➕ at most once a level
 HOLD = 3                     # ⇪ the holding row's places
@@ -155,6 +162,10 @@ SHAPES = {
 SHAPE_NAMES = {'heart': 'Trái tim', 'house': 'Ngôi nhà', 'pagoda': 'Chùa', 'lighthouse': 'Hải đăng', 'lantern': 'Đèn lồng',
                'boba': 'Ly trà sữa', 'bridge': 'Cây cầu', 'pyramid': 'Kim tự tháp', 'butterfly': 'Cánh bướm'}
 OFFSETS = {'d': (1, 1), 'h': (1, 0), 'v': (0, 1), 's': (0, 0)}
+# Levels 101–200 also stack some layers straight on the one below ("xếp nhiều lớp hơn", owner 17/10), so the 7 × 8 board
+# takes more layers before the shifts shrink it away: an upper-case offset ('H') in pairs (straight, shifted, straight…),
+# a digit 3 after it ('h3') one straight layer in every three. Fully covered tiles make a level much harder.
+STRAIGHT = {1: lambda z: z % 2, 2: lambda z: (z // 2) % 2, 3: lambda z: (z - z // 3) % 2}   # layer z shifted? by period
 COLS, ROWS = 7, 8
 W, H = COLS * 2, ROWS * 2    # the board in half tiles
 STACK_SPOTS = ((0, 17), (12, 17), (6, 17))   # under the board: left, right, middle
@@ -182,9 +193,10 @@ def _layout(rng: Rng, shape: str, layers: int, fill: int, offset: str) -> list[t
     base = [(2 * x, 2 * y, 0) for x, y in _cells(shape)]
     out = list(base)
     below = base
-    dx, dy = OFFSETS[offset]
+    shifted = STRAIGHT[int(offset[1:]) if offset[1:] else 2 if offset.isupper() else 1]
+    dx, dy = OFFSETS[offset[0].lower()]
     for z in range(1, layers):
-        ox, oy = (dx, dy) if z % 2 else (0, 0)
+        ox, oy = (dx, dy) if shifted(z) else (0, 0)
         quarters = {(t[0] + i, t[1] + j) for t in below for i in (0, 1) for j in (0, 1)}
         cand = [(x, y, z) for y in range(oy, H, 2) for x in range(ox, W, 2)
                 if all((x + i, y + j) in quarters for i in (0, 1) for j in (0, 1))]
@@ -648,15 +660,30 @@ def get(s: dict) -> dict | None:
     return t if isinstance(t, dict) else None
 
 
+def _hi(s: dict) -> int:
+    h = (s.get('journey') or {}).get(KEY_HI)
+    lv = h.get('lv') if isinstance(h, dict) else 0
+    return lv if type(lv) is int and 0 <= lv <= LEVEL_MAX - BASE_MAX else 0
+
+
 def cleared(s: dict) -> int:
     t = get(s)
     lv = t.get('lv') if t else 0
-    return lv if type(lv) is int and 0 <= lv <= LEVEL_MAX else 0
+    lv = lv if type(lv) is int and 0 <= lv <= BASE_MAX else 0
+    return lv + _hi(s) if lv == BASE_MAX else lv
+
+
+def _set_cleared(s: dict, t: dict, lv: int) -> None:
+    if lv <= BASE_MAX:
+        t['lv'] = lv
+    else:
+        s['journey'][KEY_HI] = dict(lv=lv - BASE_MAX)
 
 
 def permille(s: dict) -> int:
-    """The buff in ‰ of what is earned: 2 a cleared level, 200 (20 %) at most."""
-    return min(LEVEL_MAX, cleared(s)) * PERMILLE_PER_LEVEL
+    """The buff in ‰ of what is earned: 2 a cleared level to 100 (20 %), then 1 a level (30 % at 200)."""
+    c = cleared(s)
+    return min(BASE_MAX, c) * PERMILLE_PER_LEVEL + max(0, c - BASE_MAX) * PERMILLE_PER_HI
 
 
 def pct_text(pm: int) -> str:
@@ -712,8 +739,9 @@ def _clock(t: dict, now: int) -> int:
 
 
 def _rest(t: dict, clock: int) -> None:
-    """cur between attempts: the next level and the clock, no booster of an older page's attempt (2.4.5's shape)."""
-    t['cur'] = dict(lv=min(LEVEL_MAX, t['lv'] + 1), t=clock, b={}, p={})
+    """cur between attempts: the next level and the clock, no booster of an older page's attempt (2.4.5's shape). Its lv
+    stays within 100 (older builds' bound; only an older page, at most level 100, reads it)."""
+    t['cur'] = dict(lv=min(BASE_MAX, t['lv'] + 1), t=clock, b={}, p={})
 
 
 def need_ms(taps: int) -> int:
@@ -729,13 +757,15 @@ def _end(s: dict, p: dict, e) -> dict:
     need(type(p.get('v', TABLE)) is int and p.get('v', TABLE) in (1, TABLE), 'Màn chơi không hợp lệ.', 'tile_level')
     lv = p['n'] if new else p['lv']
     need(type(lv) is int and 1 <= lv <= LEVEL_MAX, 'Màn chơi không hợp lệ.', 'tile_level')
+    need(lv <= BASE_MAX or p.get('v', TABLE) == TABLE, 'Màn chơi không hợp lệ.', 'tile_level')   # table 1 has 100 levels
     moves = p['moves']
     need(isinstance(moves, list) and len(moves) <= MOVES_MAX and all(type(m) is int for m in moves), 'Ván chơi không hợp lệ.', 'tile_invalid')
     t = _ensure(s)
-    need(lv <= t['lv'] + 1, f'Qua màn {t["lv"] + 1} trước đã nhé.', 'tile_locked')
+    top = cleared(s)
+    need(lv <= top + 1, f'Qua màn {top + 1} trước đã nhé.', 'tile_locked')
     # The table the page played: its own `v`; a 2.4.5–2.4.6 page (no `v`) may hold a level of either table.
     g = None
-    for v in ((p.get('v', TABLE),) if new else (TABLE, 1)):
+    for v in ((p.get('v', TABLE),) if new else (TABLE, 1) if lv <= BASE_MAX else (TABLE,)):
         try:
             g = replay(level(lv, v), moves)
         except Bad:
@@ -763,7 +793,7 @@ def _end(s: dict, p: dict, e) -> dict:
             cost += price(k, n)
             paid[k] = n + 1
     now = _ms()
-    first = lv == t['lv'] + 1
+    first = lv == top + 1
     if first:
         need(not DAILY_CAP or t['n'] < CAP_DAY, f'Hôm nay đã qua {CAP_DAY} màn mới, màn này mai tính nhé.', 'tile_cap')
         least = need_ms(g.taps)
@@ -779,7 +809,7 @@ def _end(s: dict, p: dict, e) -> dict:
         if v:
             t['u'][k] = t['u'].get(k, 0) + v
     if first:
-        t['lv'] = lv
+        _set_cleared(s, t, lv)
         t['n'] = min(CAP_DAY, t['n'] + 1)   # counted for show only; stays within older builds' bound
     _rest(t, now if first or cur is None else cur['t'])
     pm = permille(s)
@@ -801,10 +831,11 @@ def action(s: dict, name: str, p: dict) -> dict:
     if name == 'jr_tile_start':   # an older page: records the level for its boosters; the clock is never moved
         need(set(p) <= {'lv'}, 'Thao tác không hợp lệ.')
         lv = p.get('lv')
-        need(type(lv) is int and 1 <= lv <= LEVEL_MAX, 'Màn chơi không hợp lệ.', 'tile_level')
+        need(type(lv) is int and 1 <= lv <= BASE_MAX, 'Màn chơi không hợp lệ.', 'tile_level')   # older pages stop at 100
         t = _ensure(s)
-        need(lv <= t['lv'] + 1, f'Qua màn {t["lv"] + 1} trước đã nhé.', 'tile_locked')
-        if lv == t['lv'] + 1:
+        top = cleared(s)
+        need(lv <= top + 1, f'Qua màn {top + 1} trước đã nhé.', 'tile_locked')
+        if lv == top + 1:
             need(not DAILY_CAP or t['n'] < CAP_DAY, f'Hôm nay đã qua {CAP_DAY} màn mới. Mai chơi tiếp, giờ chơi lại màn cũ cho vui nhé!', 'tile_cap')
         t['cur'] = dict(lv=lv, t=_clock(t, _ms()), b={}, p={})
         return dict(message=f'🧩 Màn {lv}', tile=public(s))
@@ -847,6 +878,8 @@ def action(s: dict, name: str, p: dict) -> dict:
 def carry_reset(old: dict, fresh: dict) -> None:
     """reset_all keeps the levels cleared and today's counts (they were earned, and the cap must hold)."""
     t = (old.get('journey') or {}).get(KEY)
+    if isinstance((old.get('journey') or {}).get(KEY_HI), dict):
+        fresh['journey'][KEY_HI] = copy.deepcopy(old['journey'][KEY_HI])
     if isinstance(t, dict):
         fresh['journey'][KEY] = keep = {k: copy.deepcopy(v) for k, v in t.items() if k != 'cur'}
         if isinstance(t.get('cur'), dict):   # the clock stays (a reset is no way round the time a level takes)
@@ -856,12 +889,16 @@ def carry_reset(old: dict, fresh: dict) -> None:
 def validate(s: dict) -> None:
     e = _core()
     t = (s.get('journey') or {}).get(KEY)
-    if t is None:
-        return
+    h = (s.get('journey') or {}).get(KEY_HI)
     need, integer = e.need, e.integer
     msg = 'Ghép ba trong bản lưu không hợp lệ.'
+    if h is not None:
+        need(isinstance(h, dict) and set(h) == {'lv'} and isinstance(t, dict) and t.get('lv') == BASE_MAX, msg)
+        integer(h['lv'], 0, LEVEL_MAX - BASE_MAX)
+    if t is None:
+        return
     need(isinstance(t, dict) and {'lv', 'd', 'n', 'u'} <= set(t) <= {'lv', 'd', 'n', 'u', 'cur'}, msg)
-    integer(t['lv'], 0, LEVEL_MAX)
+    integer(t['lv'], 0, BASE_MAX)
     need(isinstance(t['d'], str) and len(t['d']) == 10, msg)
     integer(t['n'], 0, CAP_DAY)
     need(isinstance(t['u'], dict) and set(t['u']) <= set(BOOSTS), msg)
@@ -870,7 +907,7 @@ def validate(s: dict) -> None:
     cur = t.get('cur')
     if cur is not None:
         need(isinstance(cur, dict) and set(cur) == {'lv', 't', 'b', 'p'}, msg)
-        integer(cur['lv'], 1, min(LEVEL_MAX, t['lv'] + 1))
+        integer(cur['lv'], 1, min(BASE_MAX, t['lv'] + 1))
         integer(cur['t'], 0, 10**14)
         for part, top in (('b', FREE['undo'] + PAID_MAX), ('p', PAID_MAX)):
             need(isinstance(cur[part], dict) and set(cur[part]) <= set(BOOSTS), msg)

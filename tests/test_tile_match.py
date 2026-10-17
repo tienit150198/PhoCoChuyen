@@ -1,6 +1,6 @@
-"""🧩 Ghép ba Phố Mây (game/tile_match.py, public/js/v4/tile-match.js): 100 solvable levels with a rising difficulty,
+"""🧩 Ghép ba Phố Mây (game/tile_match.py, public/js/v4/tile-match.js): 200 solvable levels with a rising difficulty,
 the server-authoritative replay (a fake win, too-fast play, a skipped level, boosters not granted), the daily cap and
-booster prices, the Phúc lợi buff (0.2 % a level, 20 % at most) where money is earned and nowhere else, saves an
+booster prices, the Phúc lợi buff (0.2 % a level to 100, then 0.1 %: 30 % at most) where money is earned and nowhere else, saves an
 older build accepts, and the page's rules bit for bit the server's."""
 import copy
 import json
@@ -50,22 +50,25 @@ def with_clock(test):
 
 def cleared(lv, wallet=5000):
     s = story(wallet)
-    s['journey']['tile'] = dict(lv=lv, d=tm.today(), n=0, u={})
+    s['journey']['tile'] = dict(lv=min(lv, tm.BASE_MAX), d=tm.today(), n=0, u={})
+    if lv > tm.BASE_MAX:
+        s['journey']['tile_hi'] = dict(lv=lv - tm.BASE_MAX)
     validate_state(s)
     return s
 
 
 # ---------------------------------------------------------------- levels
 class Levels(unittest.TestCase):
-    def test_hundred_compact_rows(self):
-        self.assertEqual(len(LEVELS), 100)
-        self.assertEqual(len(SCORES), 100)
+    def test_two_hundred_compact_rows(self):
+        self.assertEqual(len(LEVELS), tm.LEVEL_MAX)
+        self.assertEqual(len(SCORES), tm.LEVEL_MAX)
+        self.assertEqual(tm.LEVEL_MAX, 200)
         for row in LEVELS:
             self.assertEqual(len(row), 11)
             self.assertTrue(all(isinstance(x, (int, str, tuple)) for x in row), row)
 
     def test_every_level_is_solvable_by_the_solver_and_its_own_intended_order(self):
-        for lv in range(1, 101):
+        for lv in range(1, tm.LEVEL_MAX + 1):
             level = tm.build(lv)
             n = len(level['tiles'])
             self.assertEqual(n % 3, 0, lv)
@@ -77,7 +80,7 @@ class Levels(unittest.TestCase):
             self.assertTrue(tm.replay(level, level['solution']).won, lv)
 
     def test_generation_is_deterministic_and_the_page_never_gets_the_solution(self):
-        for lv in (1, 37, 100):
+        for lv in (1, 37, 100, 160, 200):
             self.assertEqual(json.dumps(tm.build(lv)), json.dumps(tm.build(lv)))
             pub = tm.public_level(lv)
             self.assertNotIn('solution', pub)
@@ -111,19 +114,38 @@ class Levels(unittest.TestCase):
                 if f & tm.LOCK:
                     self.assertTrue(any(b['tiles'][k][4] & tm.KEY_TILE for k in b['b'][t]))
 
+    def test_levels_101_to_200_keep_the_icons_and_stack_deeper(self):
+        """Owner 17/10: past 100, harder by more layers ("xếp nhiều lớp hơn"), not by more icons. Levels 1–100 are
+        the 2.4.7 table, unchanged (the stored rows are what --extend kept)."""
+        old = [tm.build(lv) for lv in range(91, 101)]
+        hi = [tm.build(lv) for lv in range(101, 201)]
+        self.assertTrue(all(len(b['icons']) == 20 for b in hi))
+        depth = lambda b: 1 + max(t[2] for t in b['tiles'][:b['board']])
+        self.assertTrue(all(depth(b) >= 8 for b in hi), [depth(b) for b in hi])   # 91–100: 4 to 7
+        self.assertTrue(all(depth(b) >= 11 for b in hi[-20:]), [depth(b) for b in hi[-20:]])
+        self.assertGreaterEqual(sum(depth(b) for b in hi[50:]) / 50, 12)
+        self.assertGreater(sum(depth(b) for b in hi[:10]) / 10, max(depth(b) for b in old) + 1, 'deeper from level 101')
+        self.assertGreater(sum(len(b['tiles']) for b in hi[50:]) / 50, sum(len(b['tiles']) for b in old) / 10)
+        straight = lambda b: sum(1 for t in b['tiles'][:b['board']] if [t[0], t[1], t[2] - 1] in [u[:3] for u in b['tiles'][:b['board']]])
+        self.assertTrue(all(straight(b) for b in hi), 'some layers straight on the one below')
+        self.assertTrue(all(straight(tm.build(lv)) == 0 for lv in range(1, 101, 9)), 'never on levels 1–100')
+        self.assertTrue(all(row[5][0] in 'DHV' and len(row[5]) == 1 or row[5][0] in 'dhv' and row[5][1:] == '3' for row in LEVELS[100:]))
+        self.assertTrue(all(row[5] in 'dhv' for row in LEVELS[:100]))
+
     def test_difficulty_rises(self):
         dec = [sum(SCORES[i:i + 10]) / 10 for i in range(0, 100, 10)]
         self.assertEqual(dec, sorted(dec))
         self.assertTrue(all(b - a > 1.5 for a, b in zip(dec, dec[1:])), dec)
         top = 0
-        for lv, d in enumerate(SCORES, 1):
+        for lv, d in enumerate(SCORES[:100], 1):
             self.assertGreater(d, top - 8, f'level {lv} far easier than one before it')
             top = max(top, d)
         # Spearman's rank correlation with the level number
         rank = {i: r for r, i in enumerate(sorted(range(100), key=lambda i: SCORES[i]))}
         rho = 1 - 6 * sum((rank[i] - i) ** 2 for i in range(100)) / (100 * (100 ** 2 - 1))
         self.assertGreater(rho, 0.97)
-        for lv in (1, 30, 60, 100):   # the stored scores are what the code computes
+        self.assertGreaterEqual(sum(SCORES[100:]) / 100, sum(SCORES[90:100]) / 10 - 1, 'levels 101–200 no easier than 91–100')
+        for lv in (1, 30, 60, 100, 150, 200):   # the stored scores are what the code computes
             self.assertAlmostEqual(tm.difficulty(tm.build(lv)), SCORES[lv - 1], places=2)
 
     def test_harder_from_level_5(self):
@@ -139,6 +161,8 @@ class Levels(unittest.TestCase):
         self.assertLess(sum(rate[4:20]) / 16, 0.75)
         self.assertLess(sum(rate[30:60]) / 30, 0.40)
         self.assertLess(sum(rate[70:]) / 30, 0.15)
+        hi = [tm.greedy_rate(tm.level(lv)) for lv in range(101, 201, 7)]
+        self.assertLess(max(hi), 0.15, 'levels 101–200 stay as hard as the last ones')
 
     def test_icons_are_distinct_and_draw_on_ios_15(self):
         """A kind whose emoji the phone lacks draws as a blank box (two such kinds would look alike). The game opens on
@@ -405,6 +429,9 @@ class Commands(unittest.TestCase):
         s, _ = apply_action(s, None, 'reset_all', {'confirm': 'BAT DAU LAI'})
         self.assertEqual(s['journey']['tile']['lv'], 42)
         self.assertEqual(s['journey']['tile']['cur'], dict(lv=43, t=clock, b={}, p={}), 'the clock stays, the attempt goes')
+        s = cleared(160)
+        s, _ = apply_action(s, None, 'reset_all', {'confirm': 'BAT DAU LAI'})
+        self.assertEqual(tm.cleared(s), 160)
 
     def test_public_view_without_a_save_block(self):
         v = tm.public(story())
@@ -423,6 +450,64 @@ class Commands(unittest.TestCase):
             s2['journey']['tile'] = bad
             with self.assertRaises(GameError):
                 validate_state(s2)
+
+
+class PastHundred(unittest.TestCase):
+    """2.4.43, levels 101–200: journey.tile.lv and cur.lv stay within 100 (older builds' bounds), journey.tile_hi counts
+    the levels cleared past 100; +0.1 % a level there, 30 % at 200."""
+    @with_clock
+    def test_clearing_on_past_100(self):
+        s = cleared(100)
+        s['journey']['tile']['cur'] = dict(lv=100, t=int(T0 * 1000), b={}, p={})
+        validate_state(s)
+        self.assertEqual(tm.public(s)['max'], 200)
+        with self.assertRaises(GameError) as e:
+            end(s, 102)
+        self.assertEqual(e.exception.code, 'tile_locked')
+        for lv in (101, 102):
+            self.clock.tick(tm.need_ms(len(tm.level(lv)['solution'])) / 1000)
+            s, r = end(s, lv)
+            self.assertTrue(r['win'] and r['first'], lv)
+            validate_state(s)
+        self.assertEqual(s['journey']['tile']['lv'], 100)
+        self.assertEqual(s['journey']['tile']['cur']['lv'], 100)
+        self.assertEqual(s['journey']['tile_hi'], dict(lv=2))
+        self.assertEqual((tm.cleared(s), tm.permille(s), r['tile']['pct'], r['tile']['lv']), (102, 202, '20,2', 102))
+        s, r = end(s, 101)   # a replay: nothing new
+        self.assertFalse(r['first'])
+        self.assertEqual(tm.cleared(s), 102)
+        with self.assertRaises(GameError) as e:   # 2.4.5's table has 100 levels
+            end(s, 103, v=1)
+        self.assertEqual(e.exception.code, 'tile_level')
+        with self.assertRaises(GameError) as e:   # an older page stops at 100
+            act(s, 'jr_tile_start', lv=101)
+        self.assertEqual(e.exception.code, 'tile_level')
+
+    @with_clock
+    def test_the_last_level(self):
+        s = cleared(199)
+        s['journey']['tile']['cur'] = dict(lv=100, t=int(T0 * 1000), b={}, p={})
+        self.clock.tick(tm.need_ms(len(tm.level(200)['solution'])) / 1000)
+        s, r = end(s, 200)
+        self.assertTrue(r['first'])
+        self.assertEqual((tm.cleared(s), tm.permille(s), r['tile']['pct']), (200, 300, '30'))
+        with self.assertRaises(GameError) as e:
+            act(s, 'jr_tile_end', n=201, moves=[])
+        self.assertEqual(e.exception.code, 'tile_level')
+        validate_state(s)
+
+    def test_validation(self):
+        validate_state(cleared(200))
+        for tile, hi in ((100, dict(lv=101)), (99, dict(lv=1)), (100, dict(lv=1, x=1)), (100, dict(lv='1')), (100, 'x')):
+            s = cleared(tile)
+            s['journey']['tile_hi'] = hi
+            with self.assertRaises(GameError, msg=(tile, hi)):
+                validate_state(s)
+        s = cleared(0)
+        del s['journey']['tile']
+        s['journey']['tile_hi'] = dict(lv=1)
+        with self.assertRaises(GameError):
+            validate_state(s)
 
 
 # ---------------------------------------------------------------- 2.4.6: a level is self-describing (one command)
@@ -584,8 +669,9 @@ class SelfDescribing(unittest.TestCase):
 # ---------------------------------------------------------------- the buff
 class Buff(unittest.TestCase):
     def test_math(self):
-        for lv, pm in ((0, 0), (1, 2), (50, 100), (99, 198), (100, 200)):
+        for lv, pm in ((0, 0), (1, 2), (50, 100), (99, 198), (100, 200), (101, 201), (150, 250), (200, 300)):
             self.assertEqual(tm.permille(cleared(lv)), pm)
+            self.assertEqual(tm.cleared(cleared(lv)), lv)
         self.assertEqual(tm.pct_text(2), '0,2')
         self.assertEqual(tm.pct_text(200), '20')
         s = cleared(100)
@@ -754,11 +840,12 @@ class OlderBuild(unittest.TestCase):
                 '    tm._now=(lambda t=t:t)\n'
                 '    s,r=apply_action(s,None,a,p)\n'
                 '    out.append({k:r.get(k) for k in ("win","first","cost")})\n'
-                'validate_state(s)\nprint(json.dumps([s["journey"].get("tile"),out]))')
+                'validate_state(s)\nprint(json.dumps([s["journey"].get("tile"),out,s["journey"].get("tile_hi")]))')
         r = subprocess.run([sys.executable, '-I', '-c', f'import sys;sys.path.insert(0,{self.tmp!r});' + code],
                            input=json.dumps(dict(s=state, steps=list(steps))), capture_output=True, text=True, cwd=self.tmp)
         self.assertEqual(r.returncode, 0, r.stderr[-800:])
-        return json.loads(r.stdout.strip().splitlines()[-1])
+        tile, out, self.hi = json.loads(r.stdout.strip().splitlines()[-1])
+        return tile, out
 
     @with_clock
     def test_old_build_keeps_and_plays_on_what_this_build_writes(self):
@@ -787,6 +874,23 @@ class OlderBuild(unittest.TestCase):
         self.clock.tick(200)
         back, r = end(back, 4, ms=60_000)
         self.assertTrue(r['first'])
+
+    @with_clock
+    def test_old_build_keeps_a_save_past_level_100(self):
+        """2.4.43's levels 101–200 on a rollback: the old build takes the player as level 100 and keeps tile_hi as it is."""
+        s = cleared(100)
+        s['journey']['tile']['cur'] = dict(lv=100, t=int(T0 * 1000), b={}, p={})
+        self.clock.tick(tm.need_ms(len(tm.level(101)['solution'])) / 1000)
+        s, _ = end(s, 101)
+        mine = json.loads(json.dumps(s))
+        tile, out = self.old(mine, [('settings', {'sound': False}, self.clock.t),
+                                    ('jr_tile_end', {'lv': 100, 'moves': tm.level(100, 1)['solution']}, self.clock.t + 300)])
+        self.assertEqual(self.hi, dict(lv=1))
+        self.assertTrue(out[-1]['win'] and not out[-1]['first'])
+        back = json.loads(json.dumps(s))
+        back['journey']['tile'] = tile
+        validate_state(back)
+        self.assertEqual(tm.cleared(back), 101)
 
     @with_clock
     def test_an_attempt_a_245_page_left_mid_level_counts_here(self):
@@ -921,7 +1025,7 @@ class PageBoards(unittest.TestCase):
     """Owner, 14/10: "3 cái cuối không match với nhau" from level 8 (the first stack). The page never builds a level: it
     draws what /api/tile/level sends (public_level, the server's own build), so the board is the server's by
     construction. The page drew a stack tile by its place in the stack, though, so the tiles under a taken top stayed
-    blank backs. For all 100 levels, at three phone stages: the page's Game clears the server's intended solution,
+    blank backs. For all 200 levels, at three phone stages: the page's Game clears the server's intended solution,
     every kind comes in threes, every tile the solution takes next is drawn face up and open, nothing face down is
     open, every stack shows all its tiles in turn, and every board tile sits inside the stage. 2.4.10: the tile the
     solution takes next is also the one painted on top at its centre (2.4.7–2.4.9 painted a stack's first back over
@@ -933,7 +1037,7 @@ class PageBoards(unittest.TestCase):
         src = (ROOT / 'public' / 'js' / 'v4' / 'tile-match.js').read_text(encoding='utf-8')
         self.assertIn('/api/tile/level?lv=', src)
         self.assertNotIn('function build', src, 'the page draws the server\'s level, it never builds one')
-        levels = [dict(tm.public_level(lv), solution=tm.level(lv)['solution']) for lv in range(1, 101)]
+        levels = [dict(tm.public_level(lv), solution=tm.level(lv)['solution']) for lv in range(1, tm.LEVEL_MAX + 1)]
         script = ROOT / 'public' / 'js' / 'v4' / 'tile-match.js'
         code = f'''
 const {{Game,geometry,place,above}}=await import({json.dumps(script.as_uri())});

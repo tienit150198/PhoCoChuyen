@@ -484,8 +484,14 @@ class RetentionAndPagingTests(LiveCase):
             self.assertEqual(town, [open_report] + newest)
             self.assertEqual(db.execute("SELECT COUNT(*) FROM chat_messages WHERE channel<>'town'").fetchone()[0], len(dm) + len(group))
             self.assertEqual(db.execute("SELECT COUNT(*) FROM reports WHERE target=?", (str(reviewed),)).fetchone()[0], 0)
+            # owner 17/10: what goes is kept in chat_archive, as it was
+            arch = db.execute("SELECT id, channel, text, hidden, reports FROM chat_archive ORDER BY id").fetchall()
+            self.assertEqual([r[0] for r in arch], sorted([reviewed] + old))
+            self.assertTrue(all(r[1] == 'town' and r[2] for r in arch))
+            self.assertEqual([tuple(r[3:]) for r in arch if r[0] == reviewed], [(2, 3)])
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM chat_archive WHERE archived_at > 0').fetchone()[0], 71)
         self.assertEqual(await self.app.chat.prune_town(keep=50), 0)
-        self.assertEqual(lc.TOWN_KEEP, 2000)
+        self.assertEqual(lc.TOWN_KEEP, 500)
 
     async def test_every_load_is_30(self):
         ta, sa = self.account('Lan Anh')

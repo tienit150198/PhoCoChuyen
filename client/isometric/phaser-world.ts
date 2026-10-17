@@ -177,8 +177,6 @@ export class PhaserWorld {
   getPresence(){return this.mode==='town'?{x:this.player.x,y:this.player.y,direction:this.direction}:null;}
   /** 🚗 The live presence's `r` (isometric-town.js): the vehicle ridden, or the yacht/plane "đang đi"; null on foot. */
   getRide(){return this.mode==='town'?this.vehicles?.wire||null:null;}
-  /** 📯 The horn (isometric-shell.js isoHorn): a "Bíp bíp!" over the rider. False when not riding in the town. */
-  honk(){if(this.mode!=='town'||!this.vehicles?.ride)return false;if(this.rideParked){this.rideParked=false;this.stage?.unparkRide();}this.stage?.honk();this.wake();return true;}
   correctPresence(at:Point){if(this.mode!=='town'||!this.stage||!isWalkable(this.stage.navigation,at))return;Object.assign(this.player,at,{path:[],goal:null});this.pending=null;this.stage.positionPlayer(false);if(this.cameraMode==='follow')this.recenter();this.wake();}
   setTreasure(value:unknown){
     const rows=Array.isArray(value)?value.filter(c=>c&&typeof c.id==='string'&&Number.isFinite(c.x)&&Number.isFinite(c.y)).map(c=>({id:c.id,x:c.x,y:c.y,count:Number.isFinite(c.count)?Math.max(1,Math.floor(c.count)):1})):[];
@@ -369,7 +367,6 @@ class DioramaScene extends Phaser.Scene {
   private parkedRide:Phaser.GameObjects.Image|null=null;
   private puffs=0;
   private puffAt=0;
-  private honkAt=-9;
   private flown='';
   private npcArt:Array<{image:Phaser.GameObjects.Image;look:any;gender:string;uniformColor:string;texture:string;seed:number}>=[];
   private requestedAssets=new Set<string>();
@@ -1218,18 +1215,6 @@ class DioramaScene extends Phaser.Scene {
     this.refreshPlayer(0);this.requestRender();
   }
   unparkRide(){if(this.parkedRide){this.parkedRide.destroy();this.parkedRide=null;this.requestRender();}}
-  /** 📯 "Bíp bíp!" floating up over the rider (at most one every 0.8 s). */
-  honk(){
-    if(!this.actor||this.owner.time-this.honkAt<.8)return;this.honkAt=this.owner.time;
-    // a small tag over the rider's head (sized like the name tags and the speech bubble)
-    const f=px(this.owner.player,150),label=this.add.text(f.x,f.y,'📯 Bíp bíp!',{fontFamily:FONT,fontSize:'15px',fontStyle:'800',color:'#7a3b22',backgroundColor:'#fff6dd',padding:{x:6,y:3},resolution:2})
-      .setOrigin(.5,1).setDepth(20000);
-    this.effects.push(label);
-    this.tweens.add({targets:label,y:f.y-(this.owner.reduced?0:26),alpha:{from:1,to:0},duration:1300,ease:'Sine.easeOut',
-      onComplete:()=>{label.destroy();this.effects=this.effects.filter(e=>e!==label);this.requestRender();}});
-    if(!this.owner.reduced&&this.actor)this.tweens.add({targets:this.actor,scaleY:{from:1.06/rideRes(),to:1/rideRes()},duration:220,ease:'Back.easeOut'});
-    this.requestRender();
-  }
   /** ⛵ Moored yachts rock on the water while the town is moving (never by themselves: the scene may sleep). */
   bobParked(time:number){
     if(this.owner.reduced||!this.parked.length)return;

@@ -85,6 +85,8 @@ export class Game{
 
 /* ---------------------------------------------------------------- state from the server */
 const S=()=>T.env?.api?.state?.journey?.tile||{lv:0,max:100,pm:0,pct:'0',n:0,cap:15,free:{},price:{}};
+/** The last level this server has (100 before 2.4.43, 200 since). */
+const MAX=()=>Number.isInteger(S().max)&&S().max>0?S().max:100;
 const wallet=()=>T.env?.api?.state?.journey?.wallet??0;
 const sound=()=>T.env?.sound||null;
 /* ---------------------------------------------------------------- the sync queue (finished levels not confirmed yet) */
@@ -164,12 +166,12 @@ async function act(a,ds){
     case'close':await close();break;
     case'play':await start(Number(ds.lv)||nextLevel());break;
     case'again':await start(T.lv);break;
-    case'next':await start(Math.min(100,T.lv+1));break;
+    case'next':await start(Math.min(MAX(),T.lv+1));break;
     case'home':T.view='home';T.result=null;paint();break;
     case'boost':boost(ds.k);break;
   }
 }
-const nextLevel=()=>Math.min(100,localLv()+1);
+const nextLevel=()=>Math.min(MAX(),localLv()+1);
 function why(text){if(!text)return;T.why=text;paintWhy();clearTimeout(T.whyT);T.whyT=setTimeout(()=>{T.why=null;paintWhy();},4000);sound()?.error?.();}
 function paintWhy(){const el=T.dlg?.querySelector('.tm-why');if(el){el.textContent=T.why?`⚠ ${T.why}`:'';el.hidden=!T.why;}}
 
@@ -179,7 +181,7 @@ async function start(lv){
   if(T.busy)return;
   const top=localLv();
   if(lv>top+1){T.flash=`Qua màn ${top+1} trước đã nhé.`;paint();return;}
-  if(S().capped&&lv===top+1&&lv<=100&&localToday()>=(S().cap||15)){T.flash=`Hôm nay đã qua ${S().cap||15} màn mới. Mai chơi tiếp, giờ chơi lại màn cũ cho vui nhé!`;T.view='home';paint();return;}
+  if(S().capped&&lv===top+1&&lv<=MAX()&&localToday()>=(S().cap||15)){T.flash=`Hôm nay đã qua ${S().cap||15} màn mới. Mai chơi tiếp, giờ chơi lại màn cũ cho vui nhé!`;T.view='home';paint();return;}
   T.busy=true;T.flash=null;
   try{
     const level=await loadLevel(lv);
@@ -300,19 +302,19 @@ function head(){
     ${helpBtn('tile-match','🧩 Ghép ba Phố Mây',[
       {title:'Cách chơi',open:true,body:'<ul><li>Chạm ô sáng để đưa xuống khay. Ô bị ô khác đè (dù một phần) thì mờ, chưa chạm được.</li><li>Ba ô giống nhau trong khay sẽ biến mất. Dọn sạch bàn là qua màn; khay đầy 7 ô là thua.</li><li>Chồng úp: chỉ ô trên cùng mở. 🔒 mở khi đã lấy ô 🔑. 🧊 chạm hai lần.</li></ul>'},
       {title:'Trợ giúp',body:`<ul><li>↩ Hoàn tác ô vừa đưa xuống · 🔀 Xáo các ô còn trên bàn · ⇪ Đẩy 3 ô đầu khay lên hàng chờ · ➕ Thêm 1 ô khay cho màn này.</li><li>Mỗi ngày có vài lượt miễn phí; sau đó trả xu, giá gấp đôi mỗi lần dùng trong cùng màn.</li></ul>`},
-      {title:'Phúc lợi',body:`<ul><li>Mỗi màn MỚI qua lần đầu: +0,2% tiền kiếm từ làm việc và kinh doanh (lương, tiền làm, nhân viên, quầy, hợp đồng). Tối đa +20% ở màn 100.</li><li>Không áp dụng cho lãi ngân hàng, đầu tư, chợ đen, quà, chuyển khoản.</li><li>Chơi bao nhiêu màn mỗi ngày cũng được.</li></ul>`}],{cls:'tm-q'})}
+      {title:'Phúc lợi',body:`<ul><li>Mỗi màn MỚI qua lần đầu: +0,2% tiền kiếm từ làm việc và kinh doanh (lương, tiền làm, nhân viên, quầy, hợp đồng). +20% ở màn 100, rồi +0,1% mỗi màn sau đó: tối đa +30% ở màn 200.</li><li>Không áp dụng cho lãi ngân hàng, đầu tư, chợ đen, quà, chuyển khoản.</li><li>Chơi bao nhiêu màn mỗi ngày cũng được.</li></ul>`}],{cls:'tm-q'})}
     <button type="button" class="tm-x" data-tm="close" aria-label="Đóng">✕</button></header>`;
 }
 function homeView(){
-  const st=S(),top=localLv(),lv=nextLevel(),today=localToday(),capped=!!st.capped&&top<100&&today>=st.cap,done=top>=100,wait=queue().length;
+  const st=S(),top=localLv(),lv=nextLevel(),today=localToday(),max=MAX(),capped=!!st.capped&&top<max&&today>=st.cap,done=top>=max,wait=queue().length;
   const cleared=Array.from({length:top},(_,i)=>i+1).reverse();
   const replay=cleared.length?`<details class="tm-replay"><summary>Chơi lại · ${top} màn</summary><div class="tm-grid">${cleared.map(n=>`<button type="button" class="tm-lvbtn" data-tm="play" data-lv="${n}">${n}</button>`).join('')}</div></details>`:'';
-  const main=done?`<button type="button" class="btn primary big" data-tm="play" data-lv="100">🏆 Chơi lại màn 100</button>`
+  const main=done?`<button type="button" class="btn primary big" data-tm="play" data-lv="${max}">🏆 Chơi lại màn ${max}</button>`
     :`<button type="button" class="btn primary big" data-tm="play" data-lv="${lv}"${capped?` aria-disabled="true" data-why="Hôm nay đã qua ${st.cap} màn mới. Mai chơi tiếp nhé!"`:''}${T.busy?' disabled':''}>▶ Chơi màn ${lv}</button>`;
   return `<div class="tm-lobby">${T.flash?`<p class="tm-flash">${esc(T.flash)}</p>`:''}
     <div class="tm-hero"><div class="tm-hero-tiles" aria-hidden="true"><i>💄</i><i>🍜</i><i>🐶</i></div>
-      <p class="tm-lv"><b>${done?'🏆 100/100':`Màn ${lv}`}</b><span>${top}/100</span></p>
-      <div class="tm-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${top}"><i style="width:${top}%"></i></div>
+      <p class="tm-lv"><b>${done?`🏆 ${max}/${max}`:`Màn ${lv}`}</b><span>${top}/${max}</span></p>
+      <div class="tm-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${max}" aria-valuenow="${top}"><i style="width:${Math.min(100,top*100/max)}%"></i></div>
       ${wait?`<p class="tm-sub" role="status">⏳ ${wait}</p>`:''}</div>
     ${replay}
     <p class="tm-why" role="status" hidden></p></div>
@@ -332,13 +334,13 @@ function playView(){
 function doneView(){
   const r=T.result||{},st=S();
   if(r.win){
-    const last=r.lv>=100;
+    const last=r.lv>=MAX();
     return `<div class="tm-done win"><div class="tm-burst" aria-hidden="true">${['✨','🎉','⭐'].map((c,i)=>`<i style="--i:${i}">${c}</i>`).join('')}</div>
       <h3>🎉 Qua màn ${r.lv}!</h3>
       ${r.first&&r.sync==='ok'?`<p class="tm-gain">🧩 Phúc lợi +${esc(r.pct||st.pct)}%</p>`:''}
       ${syncLine(r)}${r.cost?`<p class="tm-stats">−${fmt(r.cost)} xu</p>`:''}</div>
       ${actBar({next:'<button type="button" class="btn" data-tm="home">Sảnh</button>',
-        main:`<button type="button" class="btn primary big" data-tm="${last?'home':'next'}">${last?'🏆 Xong 100 màn':`Màn ${Math.min(100,r.lv+1)} ▶`}</button>`,cls:'tm-bar'})}`;
+        main:`<button type="button" class="btn primary big" data-tm="${last?'home':'next'}">${last?`🏆 Xong ${MAX()} màn`:`Màn ${Math.min(MAX(),r.lv+1)} ▶`}</button>`,cls:'tm-bar'})}`;
   }
   return `<div class="tm-done lose"><h3>😵 Khay đầy rồi!</h3></div>
     ${actBar({next:'<button type="button" class="btn" data-tm="home">Sảnh</button>',main:`<button type="button" class="btn primary big" data-tm="again">↻ Chơi lại màn ${r.lv}</button>`,cls:'tm-bar'})}`;
@@ -402,6 +404,17 @@ function stackOf(t,lv=T.level){const st=lv.stacks||[];for(const s of st){const i
  * place in the stack instead, so once the top was taken the tiles under it stayed blank backs: the "missing last
  * tiles" of level 8 on (owner, 14/10). */
 export function above(g,lv,t){const st=stackOf(t,lv);if(!st)return 0;let n=0;for(let i=0;i<st.i;i++)if(g.where[st.s.ids[i]]==='b')n++;return n;}
+/** Tiles straight under each board tile, same x and y, one layer down each (levels 101–200 stack some layers straight): the
+ * tile is lifted by that many edges so the pile shows. Levels 1–100 never put a tile straight on the one below. */
+const DEPTHS=new WeakMap();
+export function depth(lv){
+  let d=DEPTHS.get(lv);if(d)return d;
+  const at=new Map();lv.tiles.forEach(([x,y,z],i)=>at.set(`${x},${y},${z}`,i));
+  d=lv.tiles.map(()=>0);
+  const order=lv.tiles.map((_,i)=>i).sort((a,b)=>lv.tiles[a][2]-lv.tiles[b][2]);
+  for(const i of order){const [x,y,z]=lv.tiles[i],j=at.get(`${x},${y},${z-1}`);if(j!==undefined&&!stackOf(i,lv)&&!stackOf(j,lv))d[i]=d[j]+1;}
+  DEPTHS.set(lv,d);return d;
+}
 /** Where tile t is drawn for the stage geometry `geo`: {px, py, size, zi, back (face down), off (covered)} or null (gone).
  * zi is the paint order: a higher one is drawn over a lower one (tests/test_tile_match.py PageBoards hit-tests it). */
 export function place(geo,lv,g,t){
@@ -410,6 +423,7 @@ export function place(geo,lv,g,t){
   if(w==='t'){const i=g.tray.indexOf(t);return {px:geo.tray.x+i*geo.ts,py:geo.tray.y,size:geo.ts,zi:1000+i,back:false,off:false};}
   if(w==='h'){const i=g.hold.indexOf(t);return {px:geo.hold.x+i*geo.ts,py:geo.hold.y,size:geo.ts,zi:900+i,back:false,off:false};}
   let px=geo.ox+x*s/2,py=geo.oy+y*s/2,zi=z*10+5;
+  const d=depth(lv)[t];if(d)py-=Math.min(d,4)*Math.max(1,Math.round(s*.04));
   const k=above(g,lv,t);
   if(k>0){const dir=x>=lv.w/2-1?-1:1;px+=dir*Math.min(k,10)*Math.max(3,Math.round(s*.09));}
   // A stack is painted top first: its open top over the backs fanned out under it. 2.4.7–2.4.9 gave the backs 50 − k and

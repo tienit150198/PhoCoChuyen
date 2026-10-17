@@ -72,7 +72,10 @@ def seed(lv):
         jr._welcome_settings(s)
         s['settings'].update(tutorialDone=True, whatsNewSeen=wn.LATEST)
         j['interface'] = dict(newInterface=False, interfacePromptSeen=True)
-        j['tile'] = dict(lv=lv, d=tm.today(), n=0, u={})
+        j['tile'] = dict(lv=min(lv, tm.BASE_MAX), d=tm.today(), n=0, u={})   # past 100: journey.tile_hi (2.4.43)
+        j.pop(tm.KEY_HI, None)
+        if lv > tm.BASE_MAX:
+            j[tm.KEY_HI] = dict(lv=lv - tm.BASE_MAX)
     return fn
 
 
@@ -146,6 +149,7 @@ async def play_level(page, n, touch, problems, shots, out, tag):
 
 
 async def main():
+    from game import tile_match as tm
     ap = argparse.ArgumentParser()
     ap.add_argument('--levels', default='1-20')
     ap.add_argument('--sizes', default='390x844,360x740')
@@ -165,7 +169,7 @@ async def main():
                 w, h = map(int, size.split('x'))
                 phone = min(w, h) < 600
                 tag = size
-                ctx = await browser.new_context(viewport=dict(width=w, height=h), is_mobile=phone, has_touch=phone)
+                ctx = await browser.new_context(viewport=dict(width=w, height=h), is_mobile=phone, has_touch=phone, bypass_csp=True)
                 await ctx.add_init_script("try{localStorage.setItem('mnl.wn.seen','99.0.0');localStorage.setItem('mnl.x3.week','blocked')}catch(e){}")
                 page = await ctx.new_page()
                 page.on('console', lambda m, tag=tag: m.type == 'error' and errors.append(f'[{tag}] {m.text}'))
@@ -212,9 +216,9 @@ async def main():
                     except Exception:
                         problems.append(f'[{tag}] levels {run[0]}–{last}: the sync queue did not drain')
                     got = {}
-                    mutate(db, token, lambda s: got.update(s['journey'].get('tile') or {}))
+                    mutate(db, token, lambda s: got.update(lv=tm.cleared(s)))
                     if got.get('lv') != last:
-                        problems.append(f'[{tag}] server journey.tile.lv {got.get("lv")} after playing to {last}')
+                        problems.append(f'[{tag}] server cleared level {got.get("lv")} after playing to {last}')
                     if last in shots:
                         await page.screenshot(path=str(out / f'{tag}-level{last}-synced.png'))
                 await ctx.close()

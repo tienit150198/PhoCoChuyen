@@ -114,7 +114,8 @@ REASONS = ('spam', 'rude', 'private', 'scam', 'other', 'minor')   # minor: 🛟 
 HIDE_AFTER = 3            # distinct reports that hide a message until an admin decides
 PAGE = 30                 # messages per load: the first one and each "Xem cũ hơn" (owner, 01/10)
 RESUME = 50               # messages sent after a reconnect, per open chat
-TOWN_KEEP = 2000          # Cả phố keeps its newest 2,000 messages (owner, 01/10); DMs and groups keep everything
+TOWN_KEEP = 500           # Cả phố keeps its newest 500 messages (owner 17/10; 2,000 since 01/10), older ones go to chat_archive;
+                          # DMs and groups keep everything
 PRUNE_EVERY = 300         # seconds between two prunings of Cả phố
 PRUNE_BATCH = 500         # rows per batch, at most 5 batches per pruning
 TITLE_LEN = 40
@@ -1552,9 +1553,15 @@ class ChatFeature(Feature):
             await self.check_del()
 
     async def prune_town(self, keep: int = TOWN_KEEP) -> int:
-        """Delete Cả phố messages older than the newest `keep` (owner, 01/10: only Cả phố; DMs and groups are never
-        touched), with their reports. A message whose report is still open (reported, not reviewed) stays until an
-        admin decides; the pinned message stays while it is pinned. Small batches, a few per call: a long backlog goes over several prunings."""
+        """Move Cả phố messages older than the newest `keep` to chat_archive (owner 17/10; deleted outright 01/10–17/10;
+        only Cả phố: DMs and groups are never touched), dropping their reports, reactions and hides. A message whose
+        report is still open (reported, not reviewed) stays until an admin decides; the pinned message stays while it is
+        pinned. Without chat_archive (a game server older than SCHEMA_VERSION 55 made the database) nothing is pruned.
+        Small batches, a few per call: a long backlog goes over several prunings."""
+        if not getattr(self, '_archive_ok', False):
+            self._archive_ok = bool(await self.db.fetchval("SELECT to_regclass('chat_archive') IS NOT NULL"))
+            if not self._archive_ok:
+                return 0
         cut = await self.db.fetchval("SELECT id FROM chat_messages WHERE channel='town' ORDER BY id DESC LIMIT 1 OFFSET ?", (keep,))
         if cut is None:
             return 0
@@ -1566,6 +1573,11 @@ class ChatFeature(Feature):
                     'AND id NOT IN (SELECT msg FROM chat_pins) ORDER BY id LIMIT ?', (cut, PRUNE_BATCH))]
                 if ids:
                     marks = ','.join('?' * len(ids))
+                    await tx.execute(
+                        'INSERT INTO chat_archive(id, channel, pid, name, av, text, at, hidden, deleted, reports, reviewed_at, adm, raw, '
+                        'reply_to, archived_at) SELECT id, channel, pid, name, av, text, at, hidden, deleted, reports, reviewed_at, adm, raw, '
+                        f"reply_to, ? FROM chat_messages WHERE channel='town' AND id IN ({marks}) ON CONFLICT (id) DO NOTHING",
+                        [time.time(), *ids])
                     await tx.execute(f"DELETE FROM chat_messages WHERE channel='town' AND id IN ({marks})", ids)
                     await tx.execute(f"DELETE FROM reports WHERE kind='chat' AND target IN ({marks})", [str(i) for i in ids])
                     await tx.execute(f'DELETE FROM chat_reacts WHERE msg IN ({marks})', ids)
