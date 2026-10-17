@@ -1,6 +1,6 @@
 """🏝️ Đảo riêng and rollbacks: saves with journey.island validate, migrate and play on the releases production may be
 rolled back to (2.4.34 at 917f0733, the floor 2.4.27 at 04a51030). Those builds keep the block untouched (journey
-allows extra keys), never bill it, and accept the wallet rows a 15M–100M purchase or sale writes (each ≤ 10M xu)."""
+allows extra keys), never bill it, and accept the wallet rows a 15M–200M purchase or sale writes (each ≤ 10M xu)."""
 import io
 import json
 import os
@@ -61,14 +61,14 @@ class OldServer(unittest.TestCase):
         return json.loads(out.stdout)
 
     def saves(self):
-        a = rich(120_000_000)
-        a, _ = buy(a, 'dao_hoang_hon')                    # 10 wallet rows of -10M
+        a = rich(240_000_000)
+        a, _ = buy(a, 'dao_hoang_hon')                    # 20 wallet rows of -10M
         a, _ = buy(a, 'dao_dua')                          # and a second island
         a = next_day(a, 3)                                # fees accruing (not billed yet)
-        b = rich(40_000_000)
+        b = rich(80_000_000)
         b, _ = buy(b, 'dao_san_ho')
         b, _ = act(b, 'jr_island_sell', id='dao_san_ho', confirm=True)   # rows of +10M back, an empty block
-        c = rich(16_000_000)
+        c = rich(32_000_000)
         c, _ = buy(c, 'dao_dua')
         c['journey']['island']['own']['dao_sau_nay'] = dict(d=2, p=150_000_000)   # a newer build's island, kept by shape
         for s in (a, b, c):

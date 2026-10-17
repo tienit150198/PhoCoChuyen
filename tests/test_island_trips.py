@@ -17,7 +17,7 @@ from tests.test_marriage import Base
 class Trips(Base):
     def setUp(self):
         super().setUp()
-        self.a = self.user('chudao', 40_000_000)
+        self.a = self.user('chudao', 80_000_000)
         self.f = [self.user(n, 1000) for n in ('ban1', 'ban2', 'ban3', 'ban4', 'ban5')]
         self.x = self.user('nguoila', 1000)
         self.codes = {t: self.code(t) for t in [self.a, self.x, *self.f]}
@@ -159,7 +159,7 @@ class Trips(Base):
         trip = self.start()
         self.invite(trip, self.f[0])
         self.post(self.f[0], 'answer', trip=trip, answer='accept')
-        b = self.user('chudao2', 40_000_000)
+        b = self.user('chudao2', 80_000_000)
         self.befriend(self.sid(b), self.sid(self.f[0]))
         self.command(b, 'jr_island_buy', id='dao_dua', confirm=True)
         self.command(b, 'jr_garage_buy', id='thuyen_buom', color='trang', confirm=True)

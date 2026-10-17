@@ -5,6 +5,7 @@ export default [
   {"emoji":"🛵","text":"Đi xe trên đảo 2.5D có cảm giác hơn: tăng tốc dần, bóng xe, khói xe, nút 📯 Còi; tới cửa thì đỗ xe bên cạnh."},
   {"emoji":"🛫","text":"Bến du thuyền dập dềnh, sân bay có đèn đường băng và cờ gió, máy bay bay qua có bóng và vệt khói."},
   {"emoji":"🔁","text":"Tự đặt hàng: còn ít tiền thì đặt bớt cho vừa thay vì bỏ qua; ghi rõ \"hết mức hôm nay\" hay \"quỹ thiếu\"."},
+  {"emoji":"🏝️","text":"Đảo riêng lên giá: Đảo Dừa 30 triệu, San Hô 60 triệu, Mây Đá 120 triệu, Hoàng Hôn 200 triệu. Đảo đã mua giữ nguyên giá cũ."},
   {"emoji":"🗑️","text":"Góp ý chưa có lời đáp giờ có nút Xóa, gửi nhầm thì xóa được."}
  ]},
  {"version":"2.4.40","date":"2026-10-17","items":[
