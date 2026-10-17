@@ -59,7 +59,7 @@ function choiceStep(st,x,cmd,payload){
 
 function numberStep(t,st,x){
   return amountBox(x,`bq-${t.id}-${st.id}`,0,{min:0,max:100000,label:'Con số ghi vào phiếu',send:'Ghi vào phiếu',
-    cmd:'bq_step',payload:{task:t.id},field:'value',unit:st.unit||''});
+    cmd:'bq_step',payload:{task:t.id,step:st.id},field:'value',unit:st.unit||''});   // the server takes only the step that is open
 }
 
 function stepBody(st,x,cmd,payload,id,t){

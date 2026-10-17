@@ -61,6 +61,7 @@ for(const [job,task] of Object.entries(tasks)){
         for(const o of st.options)assert.ok(html.includes(esc(JSON.stringify({task:t.id,step:st.id,value:o.id}))),`${st.id} option ${o.id}`);
       }else if(st.type==='number'){
         assert.match(html,/inputmode="numeric"/);assert.match(html,/amtSend/);
+        assert.ok(html.includes(esc(JSON.stringify({task:t.id,step:st.id}))),`${st.id}: the amount box sends the open step (owner 17/10: 4200 g refused)`);
       }else{
         assert.match(html,/bqPick/);
         for(const o of st.options)assert.ok(html.includes(esc(o.label)));
