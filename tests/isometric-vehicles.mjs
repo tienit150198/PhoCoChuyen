@@ -117,6 +117,7 @@ class Image {
   constructor(key){this.key=key;counters.images++;}
   setOrigin(x,y){this.origin=[x,y];return this;} setScale(s){this.scale=s;return this;} setRotation(){return this;} setAlpha(){return this;}
   setPosition(x,y){Object.assign(this,{x,y});return this;} setDepth(depth){this.depth=depth;return this;}
+  setX(x){this.x=x;return this;} setY(y){this.y=y;return this;} setData(k,v){(this.data??={})[k]=v;return this;} getData(k){return this.data?.[k];}
   setVisible(visible){this.visible=visible;return this;} setTexture(key){counters.textureSwaps++;this.key=key;return this;}
   setText(text){this.text=text;return this;} getBounds(){return {left:this.x-10,top:this.y-10,right:this.x+10,bottom:this.y+10,width:20,height:20};}
   destroy(){counters.destroyed++;this.destroyed=true;}
@@ -190,17 +191,19 @@ test('parked yachts and planes: static images, rebuilt only when the list change
   owner.mode='work';scene.refreshVehicles();assert.equal(scene.parked.length,0,'inside a workplace: none');
 });
 
-test('riding speed: at most 1.8× the walk and within live/town.py SPEED',()=>{
+test('riding speed: builds up, then at most 1.8× the walk and within live/town.py SPEED',()=>{
   const speed=Number(/^SPEED = ([\d.]+)/m.exec(readFileSync('live/town.py','utf8'))[1]);
   globalThis.document={hidden:false,querySelector:()=>null};
   const run=ride=>{
     const w=Object.create(PhaserWorld.prototype);
-    Object.assign(w,{destroyed:false,visible:true,_paused:false,keys:new Set(),pointers:new Map(),movementInput:{x:0,y:1},player:{x:0,y:0,path:[],goal:null},mode:'town',reduced:false,direction:'se',walkDistance:0,
+    Object.assign(w,{destroyed:false,visible:true,_paused:false,keys:new Set(),pointers:new Map(),movementInput:{x:0,y:1},player:{x:0,y:0,path:[],goal:null},mode:'town',reduced:false,direction:'se',walkDistance:0,rideBoost:0,rideParked:false,
       vehicles:{ride,fleet:[],fly:'',wire:null},engine:{loop:{sleep(){},wake(){}}}});
     w.stage={navigation:{bounds:{x0:-100,y0:-100,x1:100,y1:100},roads:[{x0:-100,y0:-100,x1:100,y1:100}],obstacles:[],step:.5,clearance:0},cameraMode:'browse',
-      positionPlayer(){},updateOcclusion:()=>false,stepRemotePlayers:()=>false,hasEffects:()=>false,renderRequested:false,settle:()=>true,load:{isLoading:()=>false}};
-    for(let i=0;i<60;i++)w.step(1/60);
-    return Math.hypot(w.player.x,w.player.y);
+      positionPlayer(){},bobParked(){},updateOcclusion:()=>false,stepRemotePlayers:()=>false,hasEffects:()=>false,renderRequested:false,settle:()=>true,load:{isLoading:()=>false}};
+    for(let i=0;i<60;i++)w.step(1/60);   // owner 17/10 "cảm giác lái": the ride speeds up over RIDE_RAMP (0.7 s) first
+    const from=Math.hypot(w.player.x,w.player.y);
+    for(let i=0;i<60;i++)w.step(1/60);   // then one second at its top speed
+    return Math.hypot(w.player.x,w.player.y)-from;
   };
   const walk=run(null),rideD=run({kind:'super'});
   assert.ok(Math.abs(rideD/walk-1.8)<.01,`${rideD/walk}`);

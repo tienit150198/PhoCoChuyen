@@ -4,7 +4,7 @@ import {uiIcon as icon} from './isometric/ui-icons.js';
 import {hudMoney,shortNum} from './v4/wealth.js';
 import {myPortrait} from './v4/look.js';
 import {openGuide,goTo,firstJob} from './iso-guide.js';
-import {townUtilityGroups,ev2010Open,townRideLabel,nextTownRide} from './isometric/town-utilities.js';
+import {townUtilityGroups,ev2010Open,townRideLabel,nextTownRide,townRiding} from './isometric/town-utilities.js';
 
 const ENDED=new Set(['completed','referred','cancelled']);
 /** v4/onboard.js firstDay (story, first life day), inline: the shell's tests run this file without its imports. */
@@ -44,7 +44,7 @@ export function isometricHUDModel(state={},content={},mode='town',social={},conn
     chatUnread:Math.max(0,Number(social.unread?.())||0),chatOnline,chatOff,chatStatus,
     fairOpen:Boolean(state.fair?.show),ev2010:ev2010Open(),menuOpen:false,cameraOpen:false,
     utilityGroups:townUtilityGroups(state,content,social),
-    ride:sceneMode==='town'?townRideLabel(state,content):''};
+    ride:sceneMode==='town'?townRideLabel(state,content):'',riding:sceneMode==='town'?townRiding(state,content):null};
 }
 
 const control=(label,action,ico,cls='',extra='')=>`<button type="button" class="${cls}" data-action="${action}"${extra}>${icon(ico,22)}<span>${label}</span></button>`;
@@ -89,6 +89,7 @@ export function isometricHUDHTML(model,state={}){
     </details>
   </nav>
   <details class="iso-mission"><summary data-iso-focus="iso-mission" aria-controls="isoMissionDetails" aria-label="Việc hôm nay: ${esc(missionTitle)}. Xem chi tiết">${icon('note',20)}<span class="iso-mission-copy">${missionMeta?`<small>${esc(missionMeta)}</small>`:''}<b>${esc(missionTitle)}</b></span>${icon('arrow',16)}</summary><div class="iso-mission-details" id="isoMissionDetails"><b>${esc(missionTitle)}</b><button type="button" class="iso-mission-action" data-action="${m.missionAction}" aria-label="${esc(missionAria)}">${esc(missionLabel)} ${icon('arrow',16)}</button></div></details>
+  ${m.mode==='town'&&m.riding?`<button type="button" class="iso-horn" data-action="isoHorn" aria-label="Bấm còi" title="Bấm còi"><span aria-hidden="true">${m.riding.bell?'🔔':'📯'}</span><small>Còi</small></button>`:''}
   <div class="iso-camera${m.cameraOpen?' is-open':''}" role="group" aria-label="Góc nhìn Đảo Hoàng Sa">
     ${control('Góc nhìn','isoCamera','overview','iso-camera-toggle',' aria-label="Điều chỉnh góc nhìn" aria-expanded="'+Boolean(m.cameraOpen)+'" aria-controls="isoCameraOptions"')}
     <div class="iso-camera-options" id="isoCameraOptions"${m.cameraOpen?'':' hidden'}>
@@ -296,6 +297,7 @@ export async function isometricAction(action,data={},el=null,env){
     case'isoCareers':if(!model.current&&model.fresh){await firstJob(env);break;}   // day 1: the first workplace, not the whole journey page
       env.ui&&(env.ui.isoTab='isoCareers');env.openSheet('home',{homeMode:'list',jrView:'home'});break;
     case'isoAvatar':env.ui&&(env.ui.isoTab='isoAvatar');env.openSheet('home',{jrView:'wardrobe'});break;
+    case'isoHorn':if(env.world?.honk?.()!==false)import('./isometric/horn.js').then(h=>h.honk(env.api?.state?.settings,Boolean(model.riding?.bell))).catch(()=>{});break;
     case'isoRide':nextTownRide(env.api?.state,env.api?.content);if(env.api?.state&&env.api?.content)env.world?.update?.(env.api.state,env.api.content);updateIsometricShell(env);break;
     case'isoBag':env.ui&&(env.ui.isoTab='isoBag');if(model.current)await act('warehouse');else env.openSheet('home',{homeMode:'list',jrView:'home'});break;
     case'isoChat':await act('liveChat');break;

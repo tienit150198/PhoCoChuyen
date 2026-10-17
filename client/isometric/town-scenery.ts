@@ -135,6 +135,10 @@ export function drawNeighbourhoodGround(g:Phaser.GameObjects.Graphics,districts:
   floor(g,{x0:57,y0:20.6,x1:79,y1:23.7},0xa2b1a7);
   for(let x=58;x<78;x+=2.4)floor(g,{x0:x,y0:22.05,x1:x+1.2,y1:22.2},0xefeace);
   for(let y=21;y<23.5;y+=.4){floor(g,{x0:57.5,y0:y,x1:59,y1:y+.16},0xe7dfc5);floor(g,{x0:77,y0:y,x1:78.5,y1:y+.16},0xe7dfc5);}
+  // Runway edge lights and a windsock at its west end (owner 17/10: the airfield should read as one).
+  for(let x=57.6;x<79;x+=1.5)for(const y of [20.8,23.5]){const p=project({x,y});g.fillStyle(0x8d7f6a).fillEllipse(p.x,p.y+1,9,5);g.fillStyle(0xfff1b8).fillCircle(p.x,p.y-1,3);}
+  {const p=project({x:56.9,y:20.3});g.fillStyle(0x6f6253,.25).fillEllipse(p.x+10,p.y+2,30,8);g.lineStyle(3,0x7d6a55).lineBetween(p.x,p.y,p.x,p.y-62);
+    g.fillStyle(0xf07a3a).fillTriangle(p.x,p.y-62,p.x,p.y-48,p.x+40,p.y-57);g.fillStyle(0xfff6e8).fillTriangle(p.x+13,p.y-60,p.x+13,p.y-50,p.x+25,p.y-58);}
   // A working harbour basin (off the walkable shore), quay planks and mooring stones.
   floor(g,{x0:80,y0:30,x1:87,y1:47},0x6faeb1);floor(g,{x0:79.4,y0:30,x1:80.2,y1:48},0xd0c2a1);
   for(let y=30;y<47;y+=1.4){floor(g,{x0:79.45,y0:y,x1:80.15,y1:y+.12},0xa4a98f);const p=project({x:83+Math.sin(y)*1.7,y});g.lineStyle(2,0xe3f4db,.35).lineBetween(p.x-15,p.y,p.x+17,p.y+1);}

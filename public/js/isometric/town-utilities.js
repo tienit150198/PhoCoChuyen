@@ -6,6 +6,10 @@ import {choice as rideChoice,canRide,label as rideLabel,next as nextRide} from '
  * its words while the player owns something to ride, else ''. nextTownRide switches to the next one. */
 export const townRideLabel=(state,content)=>canRide(state,content)?rideLabel(rideChoice(state,content)):'';
 export const nextTownRide=(state,content)=>nextRide(state,content);
+/** 📯 What is ridden now (for the horn button): {kind, bell} (a bicycle rings a bell), or null on foot. */
+export function townRiding(state,content){
+  try{const v=canRide(state,content)?rideChoice(state,content):null;return v?{kind:String(v.kind||''),bell:v.kind==='bicycle'}:null;}catch{return null;}
+}
 const JOURNEY_FEATURES={tileMatch:'tile',garage:'garage',gadgets:'gadgets',pets:'pets',spend:'spend',spendStyle:'spend',spendQuan:'spend',spendSpa:'spend',spendRap:'spend',spendChua:'spend',lux:'lux',luxFw:'lux',luxTrip:'lux',luxSuu:'lux',luxNha:'lux',luxBay:'lux',luxTiec:'lux',luxHoc:'lux',luxMtq:'lux',abroad:'abroad'};
 const CONTENT_FEATURES={quay:'quay',auction:'auction',auctionLands:'auction',jrCerts:'certs',island:'island',lixi:'lixi'};
 const LIVE_FEATURES={liveWalk:'street',liveDate:'dating',liveWed:'wedding',liveKara:'kara'};

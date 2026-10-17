@@ -18,6 +18,10 @@ const rideSpeed=(v:any):number=>VA.rideSpeed?VA.rideSpeed(v):1;
 const parkedFleet=(mine:any,peers:any,content:any):any[]=>VA.parkedFleet?VA.parkedFleet(mine,peers,content):[];
 const rideOrigin=()=>VA.RIDE_ORIGIN||{x:.5,y:1};
 const rideRes=():number=>VA.RES||1;
+const faceOfDir=(d:string):number=>VA.faceOf?VA.faceOf(d):(d==='se'||d==='ne'?1:-1);
+// 🛵 Owner 17/10 "cảm giác lái": a ride starts at walking pace and reaches its speed over RIDE_RAMP s (eased).
+const RIDE_RAMP=.7;
+const easeOut=(t:number)=>1-(1-t)*(1-t);
 // @ts-ignore The catalogue scene family mapping remains the source of truth.
 import {kindOf,wordsFor} from '/js/scenes/vocabulary.js';
 import {activeTasks,advanceRoute,CAMERA_ZOOM,canvasDescription,cameraWorldPoint,defaultCamera,effectFrameState,findRoute,followCamera,gestureIsDrag,groundCacheRegion,inside,interpolateRoute,isWalkable,landmarkPlaneGeometry,landmarkSpritePlacement,makeNavigation,moveOnGround,nearestReachableHotspot,nearestWalkable,normalizeMovementInput,presenceDirection,project,publicTownPlayers,resizedCamera,roomAppearance,townBuildingArt,townBuildings,townGarden,townLandmarks,townNavigation,townRoads,unproject,WORK_FOOD_SHELF,WORK_WINDOW,workWindowAnchors} from './model';
@@ -74,6 +78,9 @@ export class PhaserWorld {
   remotePlayers:RemotePlayer[]=[];
   /** 🚗 {ride, fleet, fly, wire} (vehicle-art.js townVehicles): what this player shows in the town. */
   vehicles:any={ride:null,fleet:[],fly:'',wire:null};
+  /** 🛵 0 → 1 while a ride builds up speed (back to 0 when it stops); `rideParked`: left beside a door, on foot. */
+  rideBoost=0;
+  rideParked=false;
   private vehicleSignature='';
   treasure:Array<Point&{id:string;count:number}>=[];
   direction:Facing='se';
@@ -170,6 +177,8 @@ export class PhaserWorld {
   getPresence(){return this.mode==='town'?{x:this.player.x,y:this.player.y,direction:this.direction}:null;}
   /** 🚗 The live presence's `r` (isometric-town.js): the vehicle ridden, or the yacht/plane "đang đi"; null on foot. */
   getRide(){return this.mode==='town'?this.vehicles?.wire||null:null;}
+  /** 📯 The horn (isometric-shell.js isoHorn): a "Bíp bíp!" over the rider. False when not riding in the town. */
+  honk(){if(this.mode!=='town'||!this.vehicles?.ride)return false;if(this.rideParked){this.rideParked=false;this.stage?.unparkRide();}this.stage?.honk();this.wake();return true;}
   correctPresence(at:Point){if(this.mode!=='town'||!this.stage||!isWalkable(this.stage.navigation,at))return;Object.assign(this.player,at,{path:[],goal:null});this.pending=null;this.stage.positionPlayer(false);if(this.cameraMode==='follow')this.recenter();this.wake();}
   setTreasure(value:unknown){
     const rows=Array.isArray(value)?value.filter(c=>c&&typeof c.id==='string'&&Number.isFinite(c.x)&&Number.isFinite(c.y)).map(c=>({id:c.id,x:c.x,y:c.y,count:Number.isFinite(c.count)?Math.max(1,Math.floor(c.count)):1})):[];
@@ -199,7 +208,7 @@ export class PhaserWorld {
     const lookChanged=this.stage?.refreshPlayer(this.stage.riderFrame());if(changed||lookChanged||vehiclesChanged)this.wake();
   }
   private updateCanvasLabel(){const meta=this.game?.catalogue?.find(c=>c.id===this.career);this.canvas.setAttribute('aria-label',canvasDescription(this.mode,String(this.c.life?.shop_name||meta?.place||meta?.short||this.career)));}
-  setMode(mode:WorldMode){if(mode!==this.mode){this.clearMovementControls();this.mode=mode;this.currentArea='main';this.player.path=[];this.pending=null;this.layoutSignature='';this.stage?.rebuild();this.resetCamera();this.updateCanvasLabel();document.dispatchEvent(new CustomEvent('mnl:iso-mode',{bubbles:true,detail:{mode}}));}this.wake();}
+  setMode(mode:WorldMode){if(mode!==this.mode){this.clearMovementControls();this.rideParked=false;this.rideBoost=0;this.stage?.unparkRide();this.mode=mode;this.currentArea='main';this.player.path=[];this.pending=null;this.layoutSignature='';this.stage?.rebuild();this.resetCamera();this.updateCanvasLabel();document.dispatchEvent(new CustomEvent('mnl:iso-mode',{bubbles:true,detail:{mode}}));}this.wake();}
   scene(){return {id:'iso-'+kindOf(this.career),areas:[{id:'main',name:'Nơi làm việc',main:true}]};}
   words(){return wordsFor(this.career);}
   isPortrait(){return this.width<=620;}
@@ -262,12 +271,17 @@ export class PhaserWorld {
   step(dt:number){
     if(this.shouldSleep()){this.clearMovementControls();this.engine.loop.sleep();return;}
     const stage=this.stage;if(!stage)return;
-    let moving=false;const before={x:this.player.x,y:this.player.y},fast=this.mode==='town'&&this.vehicles?.ride?rideSpeed(this.vehicles?.ride):1;
+    let moving=false;const before={x:this.player.x,y:this.player.y},ride=this.mode==='town'?this.vehicles?.ride:null,intent=!!(this.keys.size||this.movementInput.x||this.movementInput.y||this.player.path.length);
+    if(!ride&&this.rideParked){this.rideParked=false;stage.unparkRide();}
+    if(ride&&intent&&this.rideParked){this.rideParked=false;stage.unparkRide();}   // the next step: back on the vehicle
+    this.rideBoost=ride&&intent&&!this.rideParked?(this.reduced?1:Math.min(1,this.rideBoost+dt/RIDE_RAMP)):Math.max(0,this.rideBoost-dt/.25);
+    const fast=ride&&!this.rideParked?1+(rideSpeed(ride)-1)*easeOut(this.rideBoost):1;
     if(this.keys.size||this.movementInput.x||this.movementInput.y){let sx=this.movementInput.x,sy=this.movementInput.y;if(this.keys.has('a')||this.keys.has('arrowleft'))sx--;if(this.keys.has('d')||this.keys.has('arrowright'))sx++;if(this.keys.has('w')||this.keys.has('arrowup'))sy--;if(this.keys.has('s')||this.keys.has('arrowdown'))sy++;
       const next=moveOnGround(stage.navigation,this.player,normalizeMovementInput(sx,sy),Math.min(.06,dt)*fast);this.player.path=[];this.player.goal=null;this.pending=null;moving=Math.hypot(next.x-this.player.x,next.y-this.player.y)>1e-8;Object.assign(this.player,next);
-    }else if(this.player.path.length){const next=advanceRoute(this.player,this.player.path,170*dt*fast,'screen',stage.navigation);Object.assign(this.player,next.point);this.player.path=next.path;moving=true;if(next.arrived){this.player.goal=null;const cb=this.pending;this.pending=null;cb?.();}}
+    }else if(this.player.path.length){const next=advanceRoute(this.player,this.player.path,170*dt*fast,'screen',stage.navigation);Object.assign(this.player,next.point);this.player.path=next.path;moving=true;if(next.arrived){this.player.goal=null;const cb=this.pending;this.pending=null;if(cb&&ride&&!this.rideParked){this.rideParked=true;this.rideBoost=0;stage.parkRide();}cb?.();}}
     if(moving&&stage.cameraMode==='follow'){const camera=stage.cameras.main,view=followCamera({width:this.width,height:this.height,scrollX:camera.scrollX,scrollY:camera.scrollY,zoom:camera.zoom},px(this.player,55),dt);camera.setScroll(view.scrollX,view.scrollY);}
     if(moving){this.direction=presenceDirection(before,this.player,this.direction);const delta=project({x:this.player.x-before.x,y:this.player.y-before.y});this.walkDistance+=Math.hypot(delta.x,delta.y);}
+    stage.bobParked(this.time);
     stage.positionPlayer(moving);
     const fading=stage.updateOcclusion(dt);
     const remoteMoving=stage.stepRemotePlayers(this.time);
@@ -275,7 +289,7 @@ export class PhaserWorld {
     if(effect.clear){this._fx?.clear?.();this.paintFx();}
     else if(this.mode==='work'&&this._fx&&(effect.needsFrames||stage.renderRequested||this.time-this.fxPaintAt>.2&&ev?.end!=null)){this.paintFx();}
     // Phaser advances its pending image queue on Scene UPDATE, even while the view is still.
-    const active=fading||moving||remoteMoving||this.keys.size>0||!!(this.movementInput.x||this.movementInput.y)||this.pointers.size>0||effect.needsFrames||stage.hasEffects()||stage.load.isLoading();
+    const active=fading||moving||remoteMoving||(!!ride&&this.rideBoost>0)||this.keys.size>0||!!(this.movementInput.x||this.movementInput.y)||this.pointers.size>0||effect.needsFrames||stage.hasEffects()||stage.load.isLoading();
     if(!active&&stage.settle())this.engine.loop.sleep();
   }
   private paintFx(){const ctx=this.fxContext;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,this.fxCanvas.width,this.fxCanvas.height);ctx.setTransform(.5,0,0,.5,425,125);this._fx?.draw?.(this);this.fxPaintAt=this.time;this.stage?.refreshFx(this.fxCanvas);}
@@ -351,6 +365,11 @@ class DioramaScene extends Phaser.Scene {
   private riding=false;
   private parked:Phaser.GameObjects.Image[]=[];
   private parkedSignature='';
+  /** 🛵 The ride left beside a door (World.rideParked), exhaust puffs alive, the walk distance of the last puff. */
+  private parkedRide:Phaser.GameObjects.Image|null=null;
+  private puffs=0;
+  private puffAt=0;
+  private honkAt=-9;
   private flown='';
   private npcArt:Array<{image:Phaser.GameObjects.Image;look:any;gender:string;uniformColor:string;texture:string;seed:number}>=[];
   private requestedAssets=new Set<string>();
@@ -380,6 +399,7 @@ class DioramaScene extends Phaser.Scene {
   lineClear(a:Point,b:Point){return findClear(this.navigation,a,b);}
   rebuild(){
     if(!this.sys.isActive())return;
+    this.unparkRide();
     this.terrainChunks.clear();this.occluderIndex.clear();this.occluders=[];this.fadingOccluders.clear();this.occlusionPosition='';this.occludedCount=0;this.actorRing?.setVisible(false);this.staticIndex.clear();this.shownStatics.clear();this.visibilityView='';this.signZoom=-1;this.signMounts.clear();
     for(const object of this.staticObjects)object.destroy();this.staticObjects=[];this.residentObjects=[];this.parked=[];this.parkedSignature='';this.projectObjects=[];for(const seed of new Set(this.npcArt.map(n=>n.seed)))this.characterFrames.release('iso-person-'+seed);this.npcArt=[];this.groundCache=undefined;this.groundRegion=undefined;this.hits=[];this.placards=[];this.imageById.clear();this.marker?.destroy();this.marker=undefined;this.selected?.destroy();this.selected=undefined;this.clearSpeech();
     const modeChanged=this.previousMode!==this.owner.mode,changed=modeChanged||this.owner.mode==='work'&&this.previousCareer!==this.owner.career;
@@ -1143,6 +1163,7 @@ class DioramaScene extends Phaser.Scene {
       for(const f of list){
         const key=VA.stampKey(f);if(!this.textures.exists(key)){const canvas=VA.stampOf(f),texture=this.textures.create(key,canvas)!;texture.add('__BASE',0,0,0,canvas.width,canvas.height);texture.setFilter(Phaser.Textures.FilterMode.LINEAR);}
         const at=px(VA.slotOf(f)),o=VA.stampOrigin(f),image=this.add.image(at.x,at.y,key).setOrigin(o.x,o.y).setScale(1/rideRes()).setDepth(at.y);
+        image.setData('baseY',at.y).setData('group',f.group);
         this.parked.push(image);this.staticObjects.push(image);
       }
       this.reindexStatics();this.requestRender();
@@ -1155,11 +1176,68 @@ class DioramaScene extends Phaser.Scene {
     const key=VA.stampKey(plane)+'-fly';if(!this.textures.exists(key)){const canvas=VA.planeStamp(plane,1,true),texture=this.textures.create(key,canvas)!;texture.add('__BASE',0,0,0,canvas.width,canvas.height);texture.setFilter(Phaser.Textures.FilterMode.LINEAR);}
     const view=this.cameras.main.worldView,y=view.y+view.height*.24,image=this.add.image(view.x-180,y,key).setScale(1.3/rideRes()).setDepth(19000);
     this.effects.push(image);
-    this.tweens.add({targets:image,x:view.right+180,y:y-view.height*.12,duration:7000,ease:'Sine.easeInOut',onComplete:()=>{image.destroy();this.effects=this.effects.filter(e=>e!==image);this.requestRender();}});
+    // its shadow slides over the streets below, and a thin contrail stays behind it for a moment (owner 17/10)
+    const drop=view.height*.34,shadow=VA.shadowStamp?this.add.image(view.x-180,y+drop,this.texture('iso-plane-shadow',()=>VA.shadowStamp())).setScale(1.05,.9).setAlpha(.55).setDepth(18990):null;
+    if(shadow){this.effects.push(shadow);this.tweens.add({targets:shadow,x:view.right+180,y:y-view.height*.12+drop,duration:7000,ease:'Sine.easeInOut',onComplete:()=>{shadow.destroy();this.effects=this.effects.filter(e=>e!==shadow);}});}
+    let trail=0;const puffKey=VA.puffStamp?this.texture('iso-contrail',()=>VA.puffStamp('255,255,255')):'';
+    this.tweens.add({targets:image,x:view.right+180,y:y-view.height*.12,duration:7000,ease:'Sine.easeInOut',
+      onUpdate:()=>{if(!puffKey||this.time.now-trail<110)return;trail=this.time.now;
+        const p=this.add.image(image.x-100,image.y-22,puffKey).setDepth(18995).setAlpha(.7).setScale(.5);this.effects.push(p);
+        this.tweens.add({targets:p,alpha:0,scale:1.4,duration:1500,onComplete:()=>{p.destroy();this.effects=this.effects.filter(e=>e!==p);}});},
+      onComplete:()=>{image.destroy();this.effects=this.effects.filter(e=>e!==image);this.requestRender();}});
     this.requestRender();
   }
+  /** 🛵 Owner 17/10 ("cảm giác lái", "xe đẹp hơn"): the nose lifts a little while the ride picks up speed, the body
+   * bumps over the road, a motor puffs exhaust from its tail. Nothing of it with reduced motion. */
+  private rideMotion(f:Point,moving:boolean){
+    const a=this.actor!;a.setScale(1/rideRes());
+    if(!moving||this.owner.reduced){a.setRotation(0);return;}
+    const face=faceOfDir(this.owner.direction),b=this.owner.rideBoost;
+    a.setRotation(-face*.07*Math.min(1,b*5)*(1-b));
+    a.setY(f.y-Math.abs(Math.sin(this.owner.walkDistance/11))*1.5);
+    this.puff(f,face);
+  }
+  private texture(key:string,make:()=>HTMLCanvasElement){
+    if(!this.textures.exists(key)){const canvas=make(),texture=this.textures.create(key,canvas)!;texture.add('__BASE',0,0,0,canvas.width,canvas.height);texture.setFilter(Phaser.Textures.FilterMode.LINEAR);}
+    return key;
+  }
+  private puff(f:Point,face:number){
+    const v=this.owner.vehicles?.ride;if(!v||!VA.MOTOR?.has?.(v.kind)||!VA.puffStamp)return;
+    if(this.owner.walkDistance-this.puffAt<20||this.puffs>=8)return;this.puffAt=this.owner.walkDistance;
+    const key=this.texture('iso-puff',()=>VA.puffStamp()),x=f.x-face*VA.rearOf(v),y=f.y-7;   // face -1 (left): the tail is on the right
+    const image=this.add.image(x,y,key).setDepth(f.y+.4).setAlpha(.8).setScale(.4);this.effects.push(image);this.puffs++;
+    this.tweens.add({targets:image,alpha:0,scale:1.35,x:x-face*18,y:y-16,duration:700,ease:'Sine.easeOut',
+      onComplete:()=>{image.destroy();this.effects=this.effects.filter(e=>e!==image);this.puffs--;this.requestRender();}});
+  }
+  /** 🅿️ At a door the ride stays beside it (its tail side) and the rider walks in; the next step hops back on. */
+  parkRide(){
+    const v=this.owner.vehicles?.ride;this.unparkRide();if(!v||!VA.parkedStamp)return;
+    const face=faceOfDir(this.owner.direction),key=this.texture(`iso-park-${v.id}-${v.kind}-${v.hex}-${v.uq?1:0}-${encodeURIComponent(v.plate||'')}-${face}`,()=>VA.parkedStamp(v,face));
+    const f=px(this.owner.player),o=rideOrigin(),half=VA.rearOf?VA.rearOf(v):60;
+    this.parkedRide=this.add.image(f.x-face*(half+26),f.y-2,key).setOrigin(o.x,o.y).setScale(1/rideRes()).setDepth(f.y-2);
+    this.refreshPlayer(0);this.requestRender();
+  }
+  unparkRide(){if(this.parkedRide){this.parkedRide.destroy();this.parkedRide=null;this.requestRender();}}
+  /** 📯 "Bíp bíp!" floating up over the rider (at most one every 0.8 s). */
+  honk(){
+    if(!this.actor||this.owner.time-this.honkAt<.8)return;this.honkAt=this.owner.time;
+    // a small tag over the rider's head (sized like the name tags and the speech bubble)
+    const f=px(this.owner.player,150),label=this.add.text(f.x,f.y,'📯 Bíp bíp!',{fontFamily:FONT,fontSize:'15px',fontStyle:'800',color:'#7a3b22',backgroundColor:'#fff6dd',padding:{x:6,y:3},resolution:2})
+      .setOrigin(.5,1).setDepth(20000);
+    this.effects.push(label);
+    this.tweens.add({targets:label,y:f.y-(this.owner.reduced?0:26),alpha:{from:1,to:0},duration:1300,ease:'Sine.easeOut',
+      onComplete:()=>{label.destroy();this.effects=this.effects.filter(e=>e!==label);this.requestRender();}});
+    if(!this.owner.reduced&&this.actor)this.tweens.add({targets:this.actor,scaleY:{from:1.06/rideRes(),to:1/rideRes()},duration:220,ease:'Back.easeOut'});
+    this.requestRender();
+  }
+  /** ⛵ Moored yachts rock on the water while the town is moving (never by themselves: the scene may sleep). */
+  bobParked(time:number){
+    if(this.owner.reduced||!this.parked.length)return;
+    this.parked.forEach((image,i)=>{const base=image.getData('baseY');if(image.getData('group')!=='boat'||typeof base!=='number')return;
+      image.setY(base+Math.sin(time*1.6+i*1.3)*1.6).setRotation(Math.sin(time*1.1+i)*.012);});
+  }
   refreshPlayer(walkFrame=0){
-    const ride=this.owner.mode==='town'?this.owner.vehicles?.ride:null;
+    const ride=this.owner.mode==='town'&&!this.owner.rideParked?this.owner.vehicles?.ride:null;
     if(ride){
       const F=figure(this.owner.state),key=this.rideTexture('iso-ride-player',F.L,F.g||'none',ride,this.owner.direction,walkFrame);this.actorDirection=this.owner.direction;this.actorWalkFrame=walkFrame;
       if(key===this.actorKey)return false;if(this.actor)this.actor.setTexture(key);else this.actor=this.add.image(0,0,key);this.actor.setOrigin(rideOrigin().x,rideOrigin().y);this.actorKey=key;this.riding=true;return true;
@@ -1168,7 +1246,7 @@ class DioramaScene extends Phaser.Scene {
     const F=figure(this.owner.state),uniformColor=this.owner.mode==='work'?this.owner.game?.catalogue?.find(c=>c.id===this.owner.career)?.color||'#8ba77a':'#8ba77a',key=this.characterTexture('iso-player',F.L,F.g||'none',this.owner.direction,uniformColor,walkFrame);this.actorDirection=this.owner.direction;this.actorWalkFrame=walkFrame;
     if(key===this.actorKey)return false;if(this.actor)this.actor.setTexture(key);else this.actor=this.add.image(0,0,key).setOrigin(.5,1).setScale(CHARACTER_SCALE);this.actorKey=key;return true;
   }
-  positionPlayer(moving:boolean){const pose=walkingPose(this.owner.walkDistance,moving,this.owner.reduced),riding=this.owner.mode==='town'&&!!this.owner.vehicles?.ride,frame=riding?this.riderFrame(moving):pose.frame;if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==frame||riding!==this.riding)this.refreshPlayer(frame);if(!this.actor)return;const f=px(this.owner.player);if(this.actor.x!==f.x||this.actor.y!==f.y)this.actor.setPosition(f.x,f.y);if(this.actor.depth!==f.y+.5)this.actor.setDepth(f.y+.5);if(riding)this.actor.setRotation(0).setScale(1/rideRes());else this.actor.setRotation(pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*pose.squash);if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138};this.speech.setPosition(at.x,at.y);} }
+  positionPlayer(moving:boolean){const pose=walkingPose(this.owner.walkDistance,moving,this.owner.reduced),riding=this.owner.mode==='town'&&!!this.owner.vehicles?.ride&&!this.owner.rideParked,frame=riding?this.riderFrame(moving):pose.frame;if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==frame||riding!==this.riding)this.refreshPlayer(frame);if(!this.actor)return;const f=px(this.owner.player);if(this.actor.x!==f.x||this.actor.y!==f.y)this.actor.setPosition(f.x,f.y);if(this.actor.depth!==f.y+.5)this.actor.setDepth(f.y+.5);if(riding)this.rideMotion(f,moving);else this.actor.setRotation(pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*pose.squash);if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138};this.speech.setPosition(at.x,at.y);} }
   hitTest(point:Point){const ground=unproject(point),hits=this.hits.filter(h=>h.rect?.contains(point.x,point.y)||h.footprint&&inside(ground,h.footprint)||h.object?.visible&&h.object.alpha>.6&&h.object.getBounds().contains(point.x,point.y)).sort((a,b)=>b.hotspot.point.y-a.hotspot.point.y||Number(b.hotspot.id.startsWith('treasure:'))-Number(a.hotspot.id.startsWith('treasure:')));return hits[0]?.hotspot;}
   highlight(id:string){
     this.selected?.destroy();const h=this.owner.hotspots.find(h=>h.id===id);if(!h)return;const f=px(h.approach),key='illustrated-selection';this.textureObject(key,160,80,ctx=>{ctx.strokeStyle='#f7d391';ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(80,40,65,27,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#aa875a';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(80,40,69,31,0,0,Math.PI*2);ctx.stroke();});this.selected=this.add.image(f.x,f.y,key).setScale(.5).setDepth(f.y-1);this.requestRender();

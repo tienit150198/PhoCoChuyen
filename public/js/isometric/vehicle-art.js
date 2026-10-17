@@ -8,8 +8,11 @@
  *   rideStamp / boatStamp / planeStamp  one cached canvas each (immutable: the scene uploads it once)
  * Auction plates (gold, game/garage.py `uq`) are drawn on the vehicle: a road plate at the back, a plane's registration
  * on its tail, a yacht's name on its hull. Phones: a stamp is drawn once per look, vehicle, side and wheel frame; parked
- * yachts and planes are static images, capped (MAX_PARKED) and culled with the rest of the town. */
-import {choice,wire,fromWire,drawRide,plateAt,FAST,TWO} from '../v4/ride.js';
+ * yachts and planes are static images, capped (MAX_PARKED) and culled with the rest of the town.
+ * Owner 17/10 "cho khác tí" (xe đẹp hơn, cảm giác lái, xe đỗ / sân bay): a soft ground shadow under the ride,
+ * parkedStamp (the vehicle alone, left beside a door while the rider walks in), puffStamp / shadowStamp (exhaust,
+ * a plane's contrail and its shadow sliding over the town), MOTOR (what smokes) and rearOf (where the tail is). */
+import {choice,wire,fromWire,drawRide,plateAt,halfOf,FAST,TWO} from '../v4/ride.js';
 import {figureOf} from '../v4/look.js';
 
 /** World px per character unit (the island's characters are about 110 px tall, ride.js draws them 140 units). */
@@ -69,9 +72,37 @@ export function rideStamp({look,gender,v,face,frame=0}){
   cv.width=Math.ceil(BOX.x*2*s);cv.height=Math.ceil((BOX.up+BOX.down)*s);
   const c=cv.getContext('2d');
   try{
+    // a soft shadow on the road under the whole vehicle (ride.js draws a faint line only)
+    const cx=BOX.x*s,cy=(BOX.up+3)*s,rx=(halfOf(v)+10)*s;
+    c.save();c.translate(cx,cy);c.scale(1,.24);const g=c.createRadialGradient(0,0,0,0,0,rx);
+    g.addColorStop(0,'rgba(58,44,30,.34)');g.addColorStop(.7,'rgba(58,44,30,.16)');g.addColorStop(1,'rgba(58,44,30,0)');
+    c.fillStyle=g;c.beginPath();c.arc(0,0,rx,0,Math.PI*2);c.fill();c.restore();
+  }catch(e){/* a context without gradients: no shadow */}
+  try{
     const F=look?figureOf(look,gender):null;
     drawRide(c,{x:BOX.x*s,y:BOX.up*s,s,px:1,F,fkey:JSON.stringify([look,gender]),v,r:{face,from:face,turn:1,ang:frame*Math.PI/3}});
   }catch(e){console.warn('iso ride art',e);}
+  return cv;
+}
+
+/** The vehicle alone (no rider), parked beside a door while its rider walks in. */
+export const parkedStamp=(v,face)=>rideStamp({look:null,gender:'',v,face,frame:0});
+/** What puffs exhaust while it moves (bicycles and the e-bike do not). */
+export const MOTOR=new Set(['cub','scooter','mini','suv','convertible','super']);
+/** World px from the ride's middle to its tail (where the exhaust comes out). */
+export const rearOf=v=>halfOf(v)*RIDE_SCALE*.92;
+/** A soft round puff, 48 × 48 px: grey exhaust, or white for a contrail. */
+export function puffStamp(rgb='120,114,106'){
+  const cv=document.createElement('canvas');cv.width=cv.height=48;const c=cv.getContext('2d');
+  try{const g=c.createRadialGradient(24,24,0,24,24,24);g.addColorStop(0,`rgba(${rgb},.75)`);g.addColorStop(.55,`rgba(${rgb},.35)`);g.addColorStop(1,`rgba(${rgb},0)`);
+    c.fillStyle=g;c.beginPath();c.arc(24,24,24,0,Math.PI*2);c.fill();}catch(e){/* no gradients */}
+  return cv;
+}
+/** A soft dark ellipse, 256 × 64 px: a flying plane's shadow on the town. */
+export function shadowStamp(){
+  const cv=document.createElement('canvas');cv.width=256;cv.height=64;const c=cv.getContext('2d');
+  try{c.translate(128,32);c.scale(1,.25);const g=c.createRadialGradient(0,0,0,0,0,128);g.addColorStop(0,'rgba(40,34,30,.5)');g.addColorStop(.75,'rgba(40,34,30,.22)');g.addColorStop(1,'rgba(40,34,30,0)');
+    c.fillStyle=g;c.beginPath();c.arc(0,0,128,0,Math.PI*2);c.fill();}catch(e){/* no gradients */}
   return cv;
 }
 
@@ -87,6 +118,9 @@ export function boatStamp(v,face=-1){
   const c=cv.getContext('2d');c.scale(RES,RES);c.translate(W/2,H-22);if(face>0)c.scale(-1,1);
   const hex=HEX.test(v?.hex||'')?v.hex:'#1b2a52';
   c.fillStyle='rgba(30,70,80,.22)';c.beginPath();c.ellipse(0,14,104,12,0,0,Math.PI*2);c.fill();
+  // a little water lapping at the hull
+  c.strokeStyle='rgba(255,255,255,.6)';c.lineWidth=2;c.lineCap='round';
+  for(const [x,w] of [[-96,20],[-60,14],[70,18],[92,12],[10,16]]){c.beginPath();c.moveTo(x-w/2,9);c.quadraticCurveTo(x,6,x+w/2,9);c.stroke();}
   // hull
   c.beginPath();c.moveTo(-104,-30);c.lineTo(96,-30);c.quadraticCurveTo(100,0,74,6);c.lineTo(-70,6);c.quadraticCurveTo(-96,-8,-104,-30);c.closePath();
   c.fillStyle=hex;c.fill();c.lineWidth=2;c.strokeStyle=shade(hex,-.35);c.stroke();

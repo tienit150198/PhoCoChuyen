@@ -612,6 +612,12 @@ html[data-game="isometric"]:not([data-layout="phone"]).menu-open #app::after {co
 html[data-game="isometric"].reduce-motion #isoHUD *,html[data-game="isometric"] body.reduce-motion #isoHUD * {animation: none !important;transition: none !important;}
 html[data-game="isometric"] [hidden] {display: none !important;}
 
+/* 📯 The horn while riding in the town (owner 17/10): opposite the stick, in reach of the right thumb. */
+.iso-horn {position:absolute;z-index:32;right:max(16px,var(--safe-r));bottom:calc(var(--iso-nav-h) + var(--iso-scene-h) + 52px + var(--safe-b));width:62px;height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:0;border-radius:50%;border:2px solid var(--iso-wood);background:radial-gradient(circle at 38% 30%,#fff7df,#f1d79c);box-shadow:inset 0 0 0 4px #fff8e275,0 4px 0 #71513730;color:var(--iso-ink);cursor:pointer;touch-action:manipulation;pointer-events:auto;}
+.iso-horn span {font-size:26px;line-height:1;}
+.iso-horn small {font:800 10px/12px var(--font,system-ui,sans-serif);}
+.iso-horn:active {transform:translateY(2px) scale(.96);box-shadow:inset 0 0 0 4px #fff8e275,0 2px 0 #71513730;}
+.iso-horn:focus-visible {outline:3px solid var(--iso-leaf);outline-offset:3px;}
 /* The mobile stick lives beside the scene canvas so HUD updates cannot replace an active touch. */
 .iso-movement {display:none;position:absolute;z-index:32;left:max(16px,var(--safe-l));bottom:calc(var(--iso-nav-h) + var(--iso-scene-h) + 46px + var(--safe-b));width:104px;pointer-events:auto;user-select:none;-webkit-user-select:none;}
 .iso-stick-caption {display:block;margin-bottom:6px;text-align:center;color:var(--iso-ink);font:700 10px/14px var(--font,system-ui,sans-serif);text-shadow:0 1px var(--iso-paper);}
