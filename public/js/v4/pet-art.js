@@ -7,10 +7,13 @@
 
 const OL='#5b4535',PINK='#f59bb0',NOSE='#4a3530',TONGUE='#f08aa0',EYE='#3b2a22';
 const n=v=>Math.round(v*10)/10;
-const E=(cx,cy,rx,ry,f,sw=1.5,x='')=>`<ellipse cx="${n(cx)}" cy="${n(cy)}" rx="${n(rx)}" ry="${n(ry)}" fill="${f}"${sw?` stroke="${OL}" stroke-width="${sw}"`:''}${x}/>`;
-const C=(cx,cy,r,f,sw=1.5,x='')=>`<circle cx="${n(cx)}" cy="${n(cy)}" r="${n(r)}" fill="${f}"${sw?` stroke="${OL}" stroke-width="${sw}"`:''}${x}/>`;
-const R=(x,y,w,h,f,rx=3,sw=1.5,ex='')=>`<rect x="${n(x)}" y="${n(y)}" width="${n(w)}" height="${n(h)}" rx="${n(rx)}" fill="${f}"${sw?` stroke="${OL}" stroke-width="${sw}"`:''}${ex}/>`;
-const Pa=(d,f,sw=1.5,x='')=>`<path d="${d}" fill="${f}"${sw?` stroke="${OL}" stroke-width="${sw}" stroke-linejoin="round" stroke-linecap="round"`:''}${x}/>`;
+/* the outline: OL at `sw` unless the extra attributes `x` bring their own stroke / width (a duplicate attribute breaks
+ * the SVG as an <img>: the walking pet on the town canvas, petURL) */
+const SK=(sw,x,j='')=>sw?(x.includes(' stroke="')?'':` stroke="${OL}"`)+(x.includes(' stroke-width=')?'':` stroke-width="${sw}"`)+j:'';
+const E=(cx,cy,rx,ry,f,sw=1.5,x='')=>`<ellipse cx="${n(cx)}" cy="${n(cy)}" rx="${n(rx)}" ry="${n(ry)}" fill="${f}"${SK(sw,x)}${x}/>`;
+const C=(cx,cy,r,f,sw=1.5,x='')=>`<circle cx="${n(cx)}" cy="${n(cy)}" r="${n(r)}" fill="${f}"${SK(sw,x)}${x}/>`;
+const R=(x,y,w,h,f,rx=3,sw=1.5,ex='')=>`<rect x="${n(x)}" y="${n(y)}" width="${n(w)}" height="${n(h)}" rx="${n(rx)}" fill="${f}"${SK(sw,ex)}${ex}/>`;
+const Pa=(d,f,sw=1.5,x='')=>`<path d="${d}" fill="${f}"${SK(sw,x,' stroke-linejoin="round" stroke-linecap="round"')}${x}/>`;
 const L=(d,c=OL,w=1.4,x='')=>`<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"${x}/>`;
 const heart=(x,y,s,c='#ef7f8f')=>Pa(`M${n(x)} ${n(y+s*.9)}q${n(-s*1.3)} ${n(-s*.8)} ${n(-s*1.1)} ${n(-s*1.6)}q${n(s*.2)} ${n(-s*.8)} ${n(s*1.1)} ${n(-s*.3)}q${n(s*.9)} ${n(-s*.5)} ${n(s*1.1)} ${n(s*.3)}q${n(s*.2)} ${n(s*.8)} ${n(-s*1.1)} ${n(s*1.6)}z`,c,0);
 const lum=h=>{const v=parseInt(String(h).slice(1),16);return isNaN(v)?1:((v>>16)*.299+((v>>8)&255)*.587+(v&255)*.114)/255;};
@@ -83,6 +86,7 @@ const FXCOAT={ngan_ha:{b:'#3d2f7a',m:'#22184f',l:'#8ea2ff',e:'#ffe66b'},hong_ngo
   bang_tinh:{b:'#dff4ff',m:'#9fd3f2',l:'#ffffff',e:'#38c6ff'},cau_vong:{b:'url(#pt-rbs)',m:'url(#pt-rb)',l:'#fffafd',e:'#3b2a22'}};
 const DEFS='<defs><linearGradient id="pt-rb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7a7a"/><stop offset=".2" stop-color="#ffc56b"/><stop offset=".4" stop-color="#fff07a"/><stop offset=".6" stop-color="#7de08a"/><stop offset=".8" stop-color="#6fb6ff"/><stop offset="1" stop-color="#c58cff"/></linearGradient>'
   +'<linearGradient id="pt-rbs" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffc4d2"/><stop offset=".25" stop-color="#ffe0b3"/><stop offset=".45" stop-color="#fff6b8"/><stop offset=".65" stop-color="#c8f0cd"/><stop offset=".82" stop-color="#c4e1ff"/><stop offset="1" stop-color="#dcc8ff"/></linearGradient>'
+  +'<linearGradient id="pt-wing2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb3da"/><stop offset=".3" stop-color="#d9c6ff"/><stop offset=".6" stop-color="#bfe2ff"/><stop offset="1" stop-color="#ffffff"/></linearGradient>'
   +'<linearGradient id="pt-wing" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#fff4fb"/><stop offset=".8" stop-color="#e4dcff"/><stop offset="1" stop-color="#cfe9ff"/></linearGradient>'
   +'<linearGradient id="pt-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".5" stop-color="#ffd24a"/><stop offset="1" stop-color="#e09a1a"/></linearGradient>'
   +'<radialGradient id="pt-glow-b"><stop offset="0" stop-color="#bfe0ff" stop-opacity=".8"/><stop offset="1" stop-color="#7fb8ff" stop-opacity="0"/></radialGradient>'
@@ -102,9 +106,22 @@ function rays(cx,cy,r0,r1,count,cols,op){
 }
 const gem=(x,y,s,c)=>Pa(`M${n(x)} ${n(y-s)}L${n(x+s*.62)} ${n(y)}L${n(x)} ${n(y+s)}L${n(x-s*.62)} ${n(y)}z`,c,0)+Pa(`M${n(x)} ${n(y-s)}L${n(x+s*.62)} ${n(y)}L${n(x)} ${n(y)}z`,'#fff',0,' opacity=".55"');
 const flame=(x,y,h,c,c2)=>Pa(`M${n(x)} ${n(y)}q${n(-h*.42)} ${n(-h*.42)} ${n(-h*.06)} ${n(-h)}q${n(h*.08)} ${n(h*.3)} ${n(h*.26)} ${n(h*.36)}q${n(h*.24)} ${n(h*.28)} ${n(-h*.2)} ${n(h*.64)}z`,c,0)+E(x,y-h*.26,h*.13,h*.2,c2,0);
+/** 🪽 An angel wing (owner 19/10 "cánh cho đẹp tí nhé"): three rows of round-tipped feathers fanning out of (x, y),
+ * long pastel primaries, soft secondaries, white coverts, a glow behind and a twinkle at the tip. */
+function feather(len,ang,wid,fill,edge){
+  const r=ang*Math.PI/180,c=Math.cos(r),s=Math.sin(r),px=-s,py=c,b0=len*.12,m=len*.58;
+  const P=(t,o)=>`${n(c*t+px*o)} ${n(s*t+py*o)}`;
+  const t=len-wid*.55,rr=n(wid*.62);   // a rounded tip
+  return `<path d="M${P(b0,-wid*.35)}Q${P(m,-wid*1.05)} ${P(t,-wid*.62)}A${rr} ${rr} 0 0 1 ${P(t,wid*.62)}Q${P(m,wid*1.05)} ${P(b0,wid*.35)}z" fill="${fill}" stroke="${edge}" stroke-width=".7" stroke-linejoin="round"/>`
+    +`<path d="M${P(b0+1,0)}Q${P(m,wid*.12)} ${P(len*.92,0)}" fill="none" stroke="${edge}" stroke-width=".45" opacity=".7"/>`;
+}
+const PRIM=[[168,24],[178,31],[189,37],[200,41],[211,42],[222,40],[233,35],[244,28],[254,20]];
 const wing=(x,y,s,flip)=>`<g transform="translate(${n(x)} ${n(y)}) scale(${n(flip*s)} ${n(s)})">`
-  +Pa('M0 0q-8-15-27-19q3 4 2 7q-7-2-11 0q5 3 4 6q-7-1-9 2q6 3 5 5q-5 0-6 3q11 6 23 2q12-3 19-6z','url(#pt-wing)',1.1,' stroke="#cdb8e8"')
-  +L('M-4-2q-9-5-19-4M-5 2q-10-1-18 1M-6 5q-8 1-13 3','#d8c8f0',.9)+'</g>';
+  +`<ellipse cx="-17" cy="-16" rx="25" ry="21" fill="url(#pt-glow-sss)" opacity=".8"/>`
+  +PRIM.map(([a,l])=>feather(l,a,5.4,'url(#pt-wing2)','#9f86d6')).join('')
+  +PRIM.slice(1,8).map(([a,l])=>feather(l*.64,a+5,6.2,'url(#pt-wing)','#b7a2e6')).join('')
+  +[[196,13],[212,15.5],[228,15.5],[243,13],[256,10]].map(([a,l])=>feather(l,a,6.4,'#fff','#c9b8f0')).join('')
+  +star(-40,-22,2.8,'#fff')+star(-30,-38,1.8,'#ffe27a')+star(-42,-4,1.5,'#ffd1f0')+'</g>';
 const coin=(x,y,r)=>C(x,y,r,'url(#pt-gold)',.9,' stroke="#b47a10"')+R(x-r*.32,y-r*.32,r*.64,r*.64,'#d39a20',0,0);
 const ingot=(x,y,s)=>Pa(`M${n(x-s*1.5)} ${n(y)}q${n(-s*.4)} ${n(-s*1.2)} ${n(s*.3)} ${n(-s*1.1)}q${n(s*1.2)} ${n(-s*.9)} ${n(s*2.4)} 0q${n(s*.7)} ${n(-s*.1)} ${n(s*.3)} ${n(s*1.1)}z`,'url(#pt-gold)',1,' stroke="#b47a10"')+E(x,y-s*1.05,s*.7,s*.32,'#fff3b0',0);
 const cloud=(x,y,s,c,edge)=>Pa(`M${n(x-s*2)} ${n(y)}q${n(-s*.4)} ${n(-s*1.3)} ${n(s*.7)} ${n(-s*1.2)}q${n(s*.5)} ${n(-s*1.2)} ${n(s*1.6)} ${n(-s*.5)}q${n(s*1.3)} ${n(-s*.4)} ${n(s*1.6)} ${n(s*.9)}q${n(s*.6)} ${n(s*.5)} ${n(-s*.1)} ${n(s*.8)}z`,c,1,` stroke="${edge}"`)
@@ -147,7 +164,7 @@ function aura(r,x,legend,kind,pose,k=1){
   }
   if(top&&!legend){   // 🌈 SSS: angel wings, a halo, rainbow rays and a shower of stars
     back+=rays(0,cy,14,46,12,RB,.3)+`<ellipse class="pet-glow" cx="0" cy="${cy}" rx="42" ry="39" fill="url(#pt-glow-sss)"/>`;
-    if(!sleep)back+=`<g class="pet-wings">${walk?wing(-5*k,-22*k,.72*k,1)+wing(0,-25*k,.6*k,1):wing(-6*k,-29*k,.74*k,1)+wing(6*k,-29*k,.74*k,-1)}</g>`;
+    if(!sleep)back+=`<g class="pet-wings">${walk?wing(-6*k,-22*k,.78*k,1)+wing(-1*k,-26*k,.62*k,1):wing(-7*k,-28*k,.8*k,1)+wing(7*k,-28*k,.8*k,-1)}</g>`;
     front+=`<g class="pet-halo">${E(H.x,H.y,9.5,2.8,'none',0,' stroke="#ffe27a" stroke-width="2.4"')+E(H.x,H.y,9.5,2.8,'none',0,' stroke="#fff" stroke-width=".8" opacity=".9"')}</g>`;
     front+=`<g class="pet-spark">${[[-30,-44,3.4],[27,-54,3],[33,-24,2.4],[-33,-20,2.2],[6,-66,2.8],[-14,-60,2],[20,-8,1.8]].map(([a,b,s],i)=>star(a,b,s,RB[i%6])).join('')}</g>`
       +`<g class="pet-spark b">${[[-20,-52],[30,-40],[-36,-32],[14,-62]].map(([a,b])=>star(a,b,1.6,'#fff')).join('')}</g>`;

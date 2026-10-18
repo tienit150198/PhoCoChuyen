@@ -457,9 +457,11 @@ class PetTest(AdsBase):
             _, r = act(copy.deepcopy(s), 'jr_pet_fuse', pets=ids, confirm=True)
         self.assertTrue(r['fuse']['ok'])
         with rolls(1300):
-            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+            t, r = act(copy.deepcopy(s), 'jr_pet_fuse', pets=ids, confirm=True)
         self.assertFalse(r['fuse']['ok'])
-        self.assertEqual(ads.pet_boost(s), 0)                               # spent
+        self.assertEqual(len(r['fuse']['lost']), 2)                         # from A up the two others are gone
+        self.assertEqual(ads.pet_boost(t), 0)                               # spent
+        s, ids = Fusion.three(None, 5)                                      # no ad
         with rolls(300):                                                   # 3 % again
             _, r = act(copy.deepcopy(s), 'jr_pet_fuse', pets=ids, confirm=True)
         self.assertFalse(r['fuse']['ok'])

@@ -737,7 +737,7 @@ def _power_row(db, sid: str, after: dict) -> None:
 
 def _fuse_news(db, sid: str, after: dict) -> None:
     """🌈 A pet of rank SS or more, or a 🌟 legendary, born from a fusion in the last minutes: a line on the street's
-    ticker for the whole town (once: the ref is the pet's)."""
+    ticker for the whole town (once a rank: the ref is the pet's and its rank, a main pet goes up in place since 19/10)."""
     x = px.get(after)
     if not x:
         return
@@ -751,7 +751,7 @@ def _fuse_news(db, sid: str, after: dict) -> None:
         br = C.BREEDS.get(p['b'], {}).get('name', 'thú cưng')
         text = (f'🌟 {who} vừa ghép ra HUYỀN THOẠI {br}!' if px.is_legend(p)
                 else f'🌈 {who} vừa ghép ra bé {br} hạng {px.RANKS[rec["r"]]}!')
-        marriage._post_news(db, 'pets', f'petfz:{sid[:16]}:{p["id"]}', text, '', '')
+        marriage._post_news(db, 'pets', f'petfz:{sid[:16]}:{p["id"]}:{"L" if px.is_legend(p) else rec["r"]}', text, '', '')
 
 
 def forget(db, sid: str) -> None:

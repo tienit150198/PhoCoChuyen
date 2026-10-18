@@ -1,5 +1,5 @@
 """🏅 Hạng thú cưng, 🧬 ghép ba, 📊 chỉ số, 🧰 linh kiện (game/pet_tiers.py, owner 19/10): ranks rolled on arrival and
-given to older pets, the kennel, the fusion (fees, odds, the three retiring, hybrids, legendaries, the daily limit),
+given to older pets, the kennel, the fusion (fees, odds, the main going up and the two others retiring or lost from A, hybrids, legendaries, the daily limit),
 training and strolls, gear, the walking pet's share of work earnings (capped, a sad pet gives nothing, never on the
 staff orders, kept out of the 🔥 x3 net), saves (older builds keep the block; a rollback loses nothing), the live
 street (its rank only up to one the player has) and the 💪 lực chiến board."""
@@ -166,29 +166,55 @@ class Fusion(unittest.TestCase):
         validate_state(s)
         return s, ids
 
-    def test_success_retires_the_three_and_pays(self):
-        s, ids = self.three(0)
+    def test_success_raises_the_main_and_retires_two(self):
+        # owner 19/10 "chọn 1 giống chính để nó giữ lại giống đó, còn lại 2 giống kia là nguyên liệu"
+        s, ids = self.three(0, ('meo_mun', 'corgi', 'meo_mun'))
         w = s['journey']['wallet']
+        X(s)['t'][ids[1]]['tn'] = [4, 0, 0, 0, 0]
         with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
-            s, r = act(s, 'jr_pet_fuse', pets=ids, nick='Con', confirm=True)
+            s, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[1], confirm=True)
         self.assertTrue(r['fuse']['ok'])
+        self.assertEqual((r['fuse']['pet'], r['fuse']['breed'], r['fuse']['rank']), (ids[1], 'corgi', 'C'))
         self.assertEqual(s['journey']['wallet'], w - px.FUSE_FEE[0])
         kept = px.all_pets(s)
-        self.assertEqual([p['n'] for p in kept], ['Con'])
-        self.assertEqual(X(s)['t'][kept[0]['id']]['r'], 1)                 # D ×3 → C
-        self.assertEqual(([x['n'] for x in X(s)['ret']], X(s)['rn']), (['A', 'B', 'C'], 3))
-        self.assertEqual(P(s)['walk'], kept[0]['id'])
+        self.assertEqual([(p['id'], p['n'], p['b']) for p in kept], [(ids[1], 'B', 'corgi')])   # the same pet, one rank up
+        rec = X(s)['t'][ids[1]]
+        self.assertEqual((rec['r'], rec['tn'][0]), (1, 4))                  # its training stays
+        self.assertEqual(([x['n'] for x in X(s)['ret']], X(s)['rn']), (['A', 'C'], 2))
+        self.assertEqual(P(s)['walk'], ids[1])
         self.assertEqual(X(s)['day']['f'], 1)
+        validate_state(s)
+        s, ids = self.three(0)
+        with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):                    # no main: the first; three alike may mutate
+            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+        self.assertEqual((r['fuse']['pet'], r['fuse']['fx']), (ids[0], 'dot_bien'))
+        refused(self, self.three(0)[0], 'jr_pet_fuse', pets=ids, main='p999', confirm=True)
 
-    def test_failure_keeps_all_three_and_spends_the_fee(self):
-        s, ids = self.three(5)
+    def test_failure_below_a_keeps_all_three(self):
+        s, ids = self.three(2)
         w = s['journey']['wallet']
         with rolls(9999):
-            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+            s, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[2], confirm=True)
         self.assertFalse(r['fuse']['ok'])
         self.assertNotIn('chance', r['fuse'])                              # never shown
-        self.assertEqual(s['journey']['wallet'], w - 5_000_000)
+        self.assertEqual(s['journey']['wallet'], w - px.FUSE_FEE[2])
         self.assertEqual(sorted(p['id'] for p in px.all_pets(s)), sorted(ids))
+
+    def test_failure_from_a_loses_the_two_others(self):
+        # owner 19/10 "nếu nâng cấp thất bại thì sẽ biến mất giống thêm vào … cấp A trở lên mới mất pets phụ"
+        for rank in (3, 5):
+            s, ids = self.three(rank)
+            w = s['journey']['wallet']
+            with rolls(9999):
+                s, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[1], confirm=True)
+            self.assertFalse(r['fuse']['ok'])
+            self.assertEqual(sorted(r['fuse']['lost']), sorted([ids[0], ids[2]]))
+            self.assertEqual(s['journey']['wallet'], w - px.FUSE_FEE[rank])
+            self.assertEqual([p['id'] for p in px.all_pets(s)], [ids[1]])
+            self.assertEqual((X(s)['ret'], X(s)['t'][ids[1]]['r']), ([], rank))   # gone, not at the grandparents'
+            self.assertNotIn(ids[0], X(s)['t'])
+            self.assertEqual(P(s)['walk'], ids[1])
+            validate_state(s)
 
     def test_odds_mix_and_legend(self):
         self.assertEqual(px.chance([0, 0, 0]), 6000)
@@ -196,18 +222,31 @@ class Fusion(unittest.TestCase):
         self.assertEqual(px.chance([6, 6, 6]), 500)
         s, ids = self.three(6, ('corgi',) * 3)
         with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
-            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
-        self.assertEqual((r['fuse']['breed'], r['fuse']['rank']), ('linh_khuyen', 'SSS'))
-        self.assertTrue(px.is_legend(px.all_pets(s)[0]))
+            s, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[2], confirm=True)
+        self.assertEqual((r['fuse']['pet'], r['fuse']['breed'], r['fuse']['rank']), (ids[2], 'linh_khuyen', 'SSS'))
+        legend = px.all_pets(s)[0]
+        self.assertTrue(px.is_legend(legend))
+        self.assertEqual((legend['id'], legend['n']), (ids[2], 'C'))
+        validate_state(s)
+        s, more = self.three(6, ('corgi',) * 2)
+        s, extra = get(s, 'L', 'corgi', 0, 6)
+        p = next(q for q in px.all_pets(s) if q['id'] == extra)
+        p['b'], p['c'] = 'linh_khuyen', 0
+        self.assertIn('huyền thoại', refused(self, s, 'jr_pet_fuse', pets=[extra] + more[:2], main=extra, confirm=True))
 
     def test_hybrid_recipe(self):
         s, ids = self.three(1, ('pom', 'husky', 'samoyed'))
         with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
-            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+            s, r = act(s, 'jr_pet_fuse', pets=ids, mix=True, confirm=True)
         self.assertEqual((r['fuse']['breed'], r['fuse']['rank']), ('pomsky', 'B'))   # its floor is B
+        self.assertEqual(len(X(s)['ret']), 3)
+        s, ids = self.three(1, ('pom', 'husky', 'samoyed'))
+        with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)       # without `mix` the main keeps its breed
+        self.assertEqual((r['fuse']['breed'], r['fuse']['pet']), ('pom', ids[0]))
         s, ids = self.three(0, ('cho_ta',) * 3, coats=(0, 0, 1))             # Chó Lài vằn hổ wants three coats
         with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
-            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+            s, r = act(s, 'jr_pet_fuse', pets=ids, mix=True, confirm=True)
         self.assertEqual(r['fuse']['breed'], 'cho_ta')
 
     def test_dogs_and_cats_together_at_once(self):
@@ -220,7 +259,11 @@ class Fusion(unittest.TestCase):
         s, ids = self.three(6, ('meo_mun', 'corgi', 'corgi'))
         with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
             s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
-        self.assertEqual(r['fuse']['breed'], 'than_tai')                   # the first parent: the cat
+        self.assertEqual(r['fuse']['breed'], 'than_tai')                   # the main (the first): the cat
+        s, ids = self.three(6, ('meo_mun', 'corgi', 'corgi'))
+        with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[1], confirm=True)
+        self.assertEqual(r['fuse']['breed'], 'linh_khuyen')
 
     def test_rules(self):
         s, ids = self.three(0)
@@ -230,8 +273,10 @@ class Fusion(unittest.TestCase):
         poor = copy.deepcopy(s)
         poor['journey']['wallet'] = 10
         refused(self, poor, 'jr_pet_fuse', pets=ids, confirm=True)
-        X(s)['day'] = dict(d=px.vn_day(), f=px.FUSE_DAY, tr=0, w=0, got=0)
-        self.assertIn('Mai ghép tiếp', refused(self, s, 'jr_pet_fuse', pets=ids, confirm=True))
+        X(s)['day'] = dict(d=px.vn_day(), f=500, tr=0, w=0, got=0)   # owner 19/10 "ghép mỗi ngày k giới hạn"
+        with rolls(9999):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+        self.assertEqual(X(s)['day']['f'], 501)
 
 
 class StatsGear(unittest.TestCase):

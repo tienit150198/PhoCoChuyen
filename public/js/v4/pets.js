@@ -16,7 +16,7 @@ const NEEDS=[['f','🍚','No'],['j','💛','Vui'],['cl','🫧','Sạch'],['h','�
 const MOOD={vui:'😊',on:'🙂',buon:'🥺'};
 const S={dlg:null,env:null,tab:'home',sub:'',pet:'',kind:'dog',breed:'',coat:0,item:'',food:'hat',toy:'',clean:'bath',vet:'kham',slot:'head',
   shelter:-1,nick:'',donate:0,pose:'happy',frame:'nang',board:null,boardAt:0,busy:false,flash:null,listening:false,
-  stat:'spd',gslot:'giay',fz:[],gv:'bag',g:'',gbslot:'giay',gmodel:0,grank:0,bkind:'week',ff:{k:'',r:'',at:''}};
+  stat:'spd',gslot:'giay',fz:[],fzMix:false,gv:'bag',g:'',gbslot:'giay',gmodel:0,grank:0,bkind:'week',ff:{k:'',r:'',at:''}};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const J=()=>S.env?.api?.state?.journey||{};
 const V=()=>J().pets;
@@ -120,13 +120,13 @@ const away=()=>S.pet&&allPets().find(p=>p.id===S.pet&&p.at!=='home')||null;
 /** Home full and the kennel too: no room for a new pet. */
 const noRoom=()=>pets().length>=CAT().max&&(!TT()||(X()?.ken||[]).length>=TT().limits.kennel);
 const roomWhy=()=>noRoom()?'Nhà và trại nuôi đều đầy':'';
-/** 🧬 The fusion picked (S.fz): {ps, low, fee, recipe} or null. The odds stay on the server (owner 19/10 "đừng show
- * tỷ lệ ra"). */
+/** 🧬 The fusion picked (S.fz, the first is the 👑 main pet that goes up and keeps its breed, owner 19/10): {ps, low,
+ * fee, recipe, lose} or null. The odds stay on the server (owner 19/10 "đừng show tỷ lệ ra"). */
 function fusion(){
   const t=TT();if(!t)return null;const all=allPets(),ps=S.fz.map(id=>all.find(p=>p.id===id)).filter(Boolean);if(ps.length!==3)return {ps};
   const rk=ps.map(p=>p.legend?6:p.r||0),low=Math.min(...rk),fee=t.ranks[low].fee;
   const ids=ps.map(p=>p.b).sort(),recipe=low<6&&(t.recipes||[]).find(r=>[...r.of].sort().join()===ids.join());
-  return {ps,low,fee,recipe:recipe||null};
+  return {ps,low,fee,recipe:recipe||null,lose:low>=(t.limits.lose_from??3),why:low===6&&ps[0].legend?'Bé chính đã là huyền thoại: chọn bé SSS khác làm bé chính':''};
 }
 /** Why this pet cannot join a fusion now ('' when it can). */
 function fuseWhy(p){
@@ -159,7 +159,7 @@ function main(){
     return [`Đón về · ${fmt(b.price)} xu`,'shopbuy',roomWhy()||readyWhy(b.price)];
   }
   if(S.tab==='lab'){const f=fusion();if(!f)return ['','',''];if(f.ps.length<3)return [`🧬 Chọn ${3-f.ps.length} bé nữa`,'',' '];
-    const t=TT(),x=X();return [`🧬 Ghép · ${fmt(f.fee)} xu`,'fuse',(x?.today?.fuse||0)>=t.limits.fuse_day?'Hôm nay ghép đủ rồi':readyWhy(f.fee)];}
+    return [`🧬 Ghép · ${fmt(f.fee)} xu`,'fuse',f.why?'Chọn bé chính khác':readyWhy(f.fee)];}
   if(S.tab==='gear'){const t=TT();if(!t)return ['','',''];
     if(S.gv==='buy'){const r=Math.min(S.grank,t.gear.shop.length-1),pr=t.gear.shop[r];return [`🛍️ Mua · ${fmt(pr)} xu`,'gbuy',(X()?.gear||[]).length>=t.limits.gear?'Túi đầy rồi':readyWhy(pr)];}
     const g=gearOf(S.g);if(!g)return ['Chọn một món','',' '];
@@ -217,6 +217,8 @@ async function onClick(op,data){
     case'gslot':S.gslot=data.slot;render();return;
     case'gwear':if(p)send('jr_pet_gear_wear',{pet:p.id,slot:S.gslot,gear:data.id||null});return;
     case'fz':{const i=S.fz.indexOf(data.id);if(i>=0)S.fz.splice(i,1);else if(S.fz.length<3)S.fz.push(data.id);render();return;}
+    case'fzmain':{const i=S.fz.indexOf(data.id);if(i>0){S.fz.splice(i,1);S.fz.unshift(data.id);}render();return;}
+    case'fzmix':S.fzMix=!S.fzMix;render();return;
     case'kennel':{const r=await send('jr_pet_kennel',{pet:data.id,to:data.to,...(data.swap?{swap:data.swap}:{}),...(data.walk?{walk:true}:{})});
       if(r){S.fz=S.fz.filter(id=>id!==data.id);if(data.to==='home'&&S.tab==='home'){S.pet=data.id;render();}}return;}
     case'gv':S.gv=data.v;S.g='';render();top();return;
@@ -260,10 +262,12 @@ async function go(){
     case'save':savePhoto();return;
     case'rename':await send('jr_pet_name',{pet:p.id,nick:S.nick.trim()});return;
     case'train':await send('jr_pet_train',{pet:p.id,stat:S.stat});return;
-    case'fuse':{const f=fusion();if(!f||f.ps.length!==3)return;
-      if(!await ask('Ghép ba bé?',`Thành công: ra một bé hạng ${RNAME(Math.min(6,f.low+1))}${f.low===6?' (huyền thoại)':''}, ba bé bố mẹ về quê với bà. Trượt: ba bé vẫn ở lại, mất phí.`,`🧬 Ghép · ${fmt(f.fee)} xu`,f.fee))return;
-      const r=await send('jr_pet_fuse',{pets:[...S.fz],confirm:true});
-      if(r?.fuse){if(r.fuse.ok){S.fz=[];if(pets().some(x=>x.id===r.fuse.pet))S.pet=r.fuse.pet;S.flash={...S.flash,kind:'good win'};}else S.flash={...S.flash,kind:'bad'};render();}
+    case'fuse':{const f=fusion();if(!f||f.ps.length!==3||f.why)return;const m=f.ps[0],mix=S.fzMix&&!!f.recipe,two=f.ps.slice(1).map(p=>p.n).join(' và ');
+      const win=f.low===6?`${m.n} thành 🌟 huyền thoại`:`${m.n} lên hạng ${RNAME(f.low+1)}, giữ nguyên giống`;
+      if(!await ask('Ghép ba bé?',`Thành công: ${mix?`có thể ra bé giống lai (ba bé về quê với bà), không thì ${win}`:win}; ${two} về quê với bà. Trượt: ${f.lose?`⚠️ ${two} sẽ mất, ${m.n} ở lại`:'ba bé vẫn ở lại'}, mất phí.`,`🧬 Ghép · ${fmt(f.fee)} xu`,f.fee))return;
+      const r=await send('jr_pet_fuse',{pets:[...S.fz],main:m.id,...(mix?{mix:true}:{}),confirm:true});
+      if(r?.fuse){if(r.fuse.ok){S.fz=[];S.fzMix=false;if(pets().some(x=>x.id===r.fuse.pet))S.pet=r.fuse.pet;S.flash={...S.flash,kind:'good win'};}
+        else{const lost=r.fuse.lost||[];S.fz=S.fz.filter(id=>!lost.includes(id));S.flash={...S.flash,kind:'bad'};}render();}
       return;}
     case'gup':{const g=gearOf(S.g);if(!g)return;
       if(g.up_fee>=1000&&!await ask(`Cường hóa ${g.name}?`,`Trượt: món đồ vẫn nguyên, mất phí.`,`✨ ${fmt(g.up_fee)} xu`,g.up_fee))return;
@@ -437,10 +441,13 @@ function board(c){
 function lab(v,c){
   const t=TT();if(!t)return '<p class="pt-empty">⏳</p>';
   const x=X(),f=fusion(),all=allPets();
-  const slots=[0,1,2].map(i=>{const p=f.ps[i];return p?`<button type="button" class="pt-slot on" data-pt="fz" data-id="${esc(p.id)}" aria-label="Bỏ chọn ${esc(p.n)}">${petPic(c,p,'sit',64,{})}${rankTag(p)}</button>`:`<span class="pt-slot" aria-hidden="true">＋</span>`;}).join('');
-  let info=`<p class="pt-muted pt-center">Chọn 3 bé bất kỳ, chó mèo đều được. Hôm nay ${x?.today?.fuse||0}/${t.limits.fuse_day} lần.</p>`;
-  if(f.ps.length===3){const to=f.low===6?'🌟 Huyền thoại':`hạng <span class="pt-rk r${f.low+1}">${esc(RNAME(f.low+1))}</span>`;
-    info=`<p class="pt-fz">🎯 Ra bé ${to}${x?.boost?' <small>(📺 may mắn hơn)</small>':''} · 💸 ${fmt(f.fee)} xu${f.recipe?`<br>🧬 Có thể ra giống lai <b>${esc(breedOf(f.recipe.to)?.name||'')}</b>${f.recipe.coats?' (cần 3 màu lông khác nhau)':''}`:''}</p>`;}
+  // 👑 the first pet picked is the main one (it goes up and keeps its breed); the two others are the ingredients (owner 19/10)
+  const slots=[0,1,2].map(i=>{const p=f.ps[i],tag=i?'🧪 Nguyên liệu':'👑 Bé chính';return `<div class="pt-slotw${i?'':' main'}">${p?`<button type="button" class="pt-slot on" data-pt="fz" data-id="${esc(p.id)}" aria-label="Bỏ chọn ${esc(p.n)}">${petPic(c,p,'sit',64,{})}${rankTag(p)}</button>`:`<span class="pt-slot" aria-hidden="true">＋</span>`}<small>${tag}</small>${p&&i?`<button type="button" class="pt-tomain" data-pt="fzmain" data-id="${esc(p.id)}">👑 Làm bé chính</button>`:''}</div>`;}).join('');
+  let info=`<p class="pt-muted pt-center">Chọn 3 bé, chó mèo đều được. Bé chọn đầu là 👑 bé chính: lên hạng và giữ nguyên giống, hai bé kia là nguyên liệu. Ghép bao nhiêu lần cũng được.</p>`;
+  if(f.ps.length===3){const m=f.ps[0],to=f.low===6?'🌟 Huyền thoại':`hạng <span class="pt-rk r${f.low+1}">${esc(RNAME(f.low+1))}</span>`;
+    const mix=f.recipe?`<br>${chip('fzmix',{},S.fzMix,`🧬 Thử ra giống lai <b>${esc(breedOf(f.recipe.to)?.name||'')}</b>`)}${f.recipe.coats?' <small>(cần 3 màu lông khác nhau)</small>':''}${S.fzMix?'<br><small>Ra giống lai thì là bé mới, ba bé về quê với bà.</small>':''}`:'';
+    info=`<p class="pt-fz">⬆️ <b data-no-translate>${esc(m.n)}</b> lên ${to}${x?.boost?' <small>(📺 may mắn hơn)</small>':''} · 💸 ${fmt(f.fee)} xu${mix}</p>`+
+      (f.why?`<p class="pt-fzwarn">${esc(f.why)}</p>`:f.lose?`<p class="pt-fzwarn">⚠️ Từ hạng A trở lên: trượt thì 2 bé nguyên liệu sẽ mất, chỉ còn bé chính.</p>`:'<p class="pt-muted pt-center">Trượt thì ba bé vẫn ở lại, chỉ mất phí.</p>');}
   const group=(at,title)=>{const list=all.filter(p=>p.at===at);if(!list.length)return '';
     return `<h4>${title}</h4><div class="pt-picks sm">${list.map(p=>{const on=S.fz.includes(p.id),why=on?'':fuseWhy(p);
       return `<button type="button" class="pt-pick${on?' on':''}" data-pt="fz" data-id="${esc(p.id)}" aria-pressed="${on}"${why||(!on&&S.fz.length>=3)?' disabled':''}${why?` title="${esc(why)}"`:''}>${petPic(c,p,'sit',64,{})}<b data-no-translate>${esc(p.n)}</b><small>${rankTag(p)}${why?` ${esc(why)}`:''}</small></button>`;}).join('')}</div>`;};

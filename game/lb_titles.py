@@ -10,7 +10,8 @@ Who holds what
   with their own names (TIERS, BOARD_TITLES).
 * Every workplace board: its top 1 is "🏆 Trùm <nghề>" (CAREER_NOUN).
 * Only players the board shows (game/leaderboard.py _VISIBLE: accounts unless hidden, guests who opted in), in
-  the board's own order. 💎 Sưu tầm (`collection`) too since 18/10, and 🦉 Online (`online`, game/online_board.py:
+  the board's own order. 💎 Sưu tầm (`collection`) too since 18/10, 🐾 Thú cưng (`pets`, game/pet_lb.py: the best pet's
+  💪 lực chiến, from pet_board) since 19/10, and 🦉 Online (`online`, game/online_board.py:
   play time this week, read from stat_play, not from the `leaderboard` table). Nothing is written into a save: holding a weekly title is a server fact (table
   `lb_weekly`), shown on the board, under the name in Phố nghề and on the name tag in Đi dạo.
 
@@ -36,7 +37,7 @@ import time
 from .wedding_live import vn_day, vn_week, week_start, VN   # the Vietnam calendar ("Khách mời của tuần" uses it too)
 
 META = 'weekly'                 # leaderboard_meta key: '<VN day>|<ISO week>' of the last refresh
-ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE = 'all', 'titles', 'certs', 'wealth', 'collection', 'online'
+ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS = 'all', 'titles', 'certs', 'wealth', 'collection', 'online', 'pets'
 TOP = 10                        # ranks that hold a title on the main boards
 TIERS = ((1, 1), (2, 3), (4, 10))   # (first rank, last rank) of each tier
 TIER_LABELS = ('Top 1', 'Top 2–3', 'Top 4–10')
@@ -49,8 +50,10 @@ BOARD_TITLES = {                # (emoji, name) per tier
     COLLECTION: (('🏺', 'Bộ sưu tập huyền thoại'), ('🔨', 'Nhà sưu tầm đấu giá'), ('💠', 'Hội sưu tầm')),
     # 18/10 (owner: "cho top các bạn online nhiều nữa nhé, top 1 khung này"): 🦉 play time this week (game/online_board.py).
     ONLINE: (('🦉', 'Cú đêm của phố'), ('🌙', 'Thức cùng ánh trăng'), ('🏮', 'Hội cú đêm')),
+    # 19/10 (owner: "bảng xếp hạng bên ngoài thêm bảng xếp hạng 'Thú cưng'"): 🐾 the best pet's 💪 lực chiến (game/pet_lb.py).
+    PETS: (('🐉', 'Vua thú cưng của phố'), ('🦄', 'Sen cưng siêu cấp'), ('🐾', 'Hội sen yêu bé')),
 }
-MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE)     # the order of honour (a name tag shows the best one: tier first, then this order)
+MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS)     # the order of honour (a name tag shows the best one: tier first, then this order)
 CAREER_EMOJI = '🏆'
 CAREER_NOUN = dict(
     milk_tea='trà sữa', grocery='tạp hóa', delivery='giao hàng', cafe_bakery='bánh & cà phê', florist='tiệm hoa',
@@ -133,6 +136,10 @@ def standings(db, t: float | None = None) -> list:
         n = TOP if board in BOARD_TITLES else 1
         if board == ONLINE:
             out.extend(online_board.standings(db, now() if t is None else t, n))
+            continue
+        if board == PETS:
+            from . import pet_lb
+            out.extend(pet_lb.standings(db, n))
             continue
         rows = db.execute(f"SELECT l.sid,l.score {lb._FROM} WHERE l.board=? AND {lb._VISIBLE} {lb._ORDER} LIMIT ?", (board, n)).fetchall()
         out.extend((board, i + 1, r['sid'], int(r['score'])) for i, r in enumerate(rows))

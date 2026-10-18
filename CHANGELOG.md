@@ -1,3 +1,14 @@
+# v2.4.57 — 2026-10-19
+
+🐾 Thú cưng (chủ game 19/10):
+- Ghép có 👑 bé chính (chủ game "chọn 1 giống chính để nó giữ lại giống đó, còn lại 2 giống kia là nguyên liệu … thất bại thì sẽ biến mất giống thêm vào … cấp A trở lên mới mất pets phụ"): jr_pet_fuse `main` (mặc định bé đầu), thành công thì bé chính lên hạng tại chỗ (giữ giống, lông, tên, huấn luyện, linh kiện; tiềm năng lấy cao hơn), hai bé kia về quê với bà; trượt dưới A giữ cả ba, từ A (LOSE_FROM) mất hai bé phụ (không vào `ret`). 3 SSS: bé chính thành huyền thoại cùng loài. Giống lai chỉ khi chọn `mix` (bé mới, ba bé về quê). Tin 🌈/🌟 trên phố: ref theo bé và hạng.
+- Bỏ giới hạn 10 lần ghép/ngày (chủ game "ghép mỗi ngày k giới hạn nhé"): `day.f` chỉ đếm.
+- 🏆 Bảng xếp hạng chính có mục 🐾 Thú cưng (game/pet_lb.py, đọc pet_board 'LC', theo quyền riêng tư của bảng xếp hạng): bục top 3 có vương miện, khung vàng/bạc/đồng, ảnh bé kèm hào quang; danh hiệu tuần 🐉 Vua thú cưng của phố / 🦄 Sen cưng siêu cấp / 🐾 Hội sen yêu bé với khung riêng (57, 02, 19). Không đổi leaderboard.VERSION (không dựng lại bảng).
+- 🪽 Cánh SSS mới: ba lớp lông vũ đầu tròn, pastel cầu vồng, có phát sáng.
+- Sửa: hình bé hạng B, SSS, huyền thoại có thuộc tính stroke lặp, hỏng khi vẽ thành ảnh (bé dắt đi dạo trên phố 2.5D).
+- 📋 Bé nhà mình: danh sách dạng lưới, dải ảnh kéo ngang.
+Có gì mới 2.4.57: 3 dòng, chỉ về thú cưng.
+
 # v2.4.56 — 2026-10-19
 
 🐾 Thú cưng (chủ game 19/10, sau khi 2.4.55 lên):

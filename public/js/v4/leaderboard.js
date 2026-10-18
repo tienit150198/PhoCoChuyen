@@ -11,6 +11,7 @@ import {myPortrait} from './look.js';
 import {live} from './live.js';
 import {logo as hfLogo,chipClass} from './honour-frames.js';   // 🖼️ the top titles' frames and colours (owner 18/10)
 import {marketTag,mx} from '../market-ui.js';   // 🔥 nghề hot hôm nay, 📈 lãi nhân viên (game/staff_market.py)
+import {petSVG,lookup} from './pet-art.js';      // 🐾 the Thú cưng board draws each best pet with its aura
 
 const FRESH_MS=10000;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -18,7 +19,7 @@ const stars=v=>v?`${Number(v).toLocaleString('vi-VN',{minimumFractionDigits:1,ma
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const btn=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
 const MEDALS=['🥇','🥈','🥉'];
-const OWN=['certs','titles','wealth','collection','online'];   // boards with their own tab
+const OWN=['certs','titles','wealth','collection','online','pets'];   // boards with their own tab
 /** 🦉 "12h05" / "45 phút": the online board's time (game/online_board.py, seconds). */
 const dur=s=>{const m=Math.floor((s||0)/60),h=Math.floor(m/60);return h?`${fmt(h)}h${String(m%60).padStart(2,'0')}`:`${m} phút`;};
 
@@ -33,6 +34,14 @@ function ensureCss(){
     l.onload=l.onerror=()=>done();document.head.append(l);setTimeout(done,1500);
   });
   return cssReady;
+}
+/* 🐾 pets.css: the auras' animations (rays, wings, halo) of the pets drawn on the Thú cưng board */
+let petCss=null;
+function ensurePetCss(){
+  if(petCss||typeof document==='undefined')return;petCss=true;
+  if(document.querySelector('link[data-pt-css]'))return;
+  const href=globalThis.__mnlBoot?.asset?.('/css/pets.css')||'/css/pets.css';
+  const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.setAttribute('data-pt-css','');document.head.append(l);
 }
 
 /* ---- data: one cached answer per board, refreshed after FRESH_MS ---- */
@@ -53,6 +62,7 @@ const placeOf=(api,id)=>{const m=metaOf(api,id);return m.place||m.short||id;};
 const careerIds=api=>api.content.catalogue.map(m=>m.id).filter(id=>api.state.careers?.[id]);
 
 function rule(api,board){
+  if(board==='pets')return 'Mỗi người góp bé mạnh nhất của mình, xếp theo 💪 lực chiến: hạng, chỉ số, huấn luyện và linh kiện. Bằng nhau thì ai đạt trước đứng trên.';
   if(board==='online')return 'Thời gian chơi trong tuần này, từ thứ Hai đến Chủ nhật (giờ Việt Nam). Chỉ tính lúc đang chơi: rời tay quá 10 phút thì dừng đếm. Thứ Hai bắt đầu lại từ đầu.';
   if(board==='collection')return 'Đồ đấu giá đã nhận: phổ thông 10, quý hiếm 40, huyền thoại 120 điểm. Bằng điểm: nhiều món hơn, nhiều huyền thoại hơn, rồi ai đạt trước. Số đặt riêng ngoài danh mục chưa tính điểm. Giá trả không tăng điểm.';
   if(board==='wealth')return 'Tài sản ròng như ở “Tiền của bạn”, cộng tiết kiệm Mây, xe và quầy riêng theo giá bán lại, Mây Coin và vàng theo giá vốn, trừ mọi nợ kể cả vay nóng chợ đen. Không tính Quỹ chung. Bằng nhau: ai nhiều tài sản hơn, rồi ai đạt trước.';
@@ -63,6 +73,7 @@ function rule(api,board){
 }
 /** The small line under a name: the one or two numbers that break ties. */
 function statsLine(board,r){
+  if(board==='pets')return petLine(r);
   if(board==='online')return 'Thời gian chơi tuần này';
   if(board==='collection')return `${fmt(r.items)} độc bản · ${fmt(r.legendary)} huyền thoại`;
   if(board==='wealth')return 'Tài sản ròng · coin/vàng tính theo giá vốn · không tính Quỹ chung';
@@ -72,11 +83,45 @@ function statsLine(board,r){
   return [`Cấp ${fmt(r.level)}`,`${fmt(r.days)} ngày`,stars(r.stars)].filter(Boolean).join(' · ');
 }
 function scoreBox(board,r){
+  if(board==='pets')return `<span class="lb-score"><b>💪 ${fmt(r.score)}</b><small>lực chiến</small></span>`;
   if(board==='online')return `<span class="lb-score"><b>${dur(r.score)}</b><small>online</small></span>`;
   if(board==='collection')return `<span class="lb-score"><b>${fmt(r.score)}</b><small>điểm sưu tầm</small></span>`;
   if(board==='wealth')return `<span class="lb-score"><b>${fmt(r.score)}</b><small>xu</small></span>`;
   if(board==='titles')return `<span class="lb-score"><b>${fmt(r.score)}</b><small>danh hiệu</small></span>`;
   return board==='certs'?`<span class="lb-score"><b>${fmt(r.score)}</b><small>chứng chỉ</small></span>`:`<span class="lb-score"><b>${fmt(r.score)}</b><small>XP</small></span>`;
+}
+/* ---- 🐾 Thú cưng (game/pet_lb.py): each player's best pet, a podium for the top 3 ---- */
+const RK=['D','C','B','A','S','SS','SSS'];
+const petCat=()=>lbApi?.content?.journey?.pets||null;
+let lbApi=null;
+const breedName=r=>(petCat()?.breeds||[]).find(b=>b.id===r.b)?.name||'';
+function petLine(r){return [r.pn?`🐾 ${r.pn}`:'',breedName(r)].filter(Boolean).join(' · ');}
+function petTag(r){return r.b?`<span class="pt-rank r${r.lg?6:r.r||0}${r.lg?' lg':''}">${r.lg?'🌟':''}${RK[r.lg?6:r.r||0]}</span>`:'';}
+function petArt(r,size){
+  const cat=petCat(),L=cat&&lookup(cat,r.b,r.c);if(!L)return '<span class="lb-pet-none" aria-hidden="true">🐾</span>';
+  const acc={};for(const id of r.a||[]){const a=(cat.accs||[]).find(x=>x.id===id);if(a)acc[a.slot]=id;}
+  return petSVG(L.breed,L.coat,'sit',acc,size,'pet-svg',{r:r.r||0,x:r.x||''});
+}
+const POD=[['🥇','gold','👑'],['🥈','silver','💎'],['🥉','bronze','🎀']];
+function podium(rows){
+  const top=rows.slice(0,3);if(!top.length)return '';
+  const card=r=>{const [medal,tone,crown]=POD[r.rank-1],fr=r.title?hfLogo('pets',r.rank):'';
+    return `<li class="lb-pod-card ${tone}${r.me?' me':''}" aria-label="Hạng ${r.rank}"><span class="lb-pod-crown" aria-hidden="true">${crown}</span>
+      <span class="lb-pod-ring"><span class="lb-pod-sparks" aria-hidden="true"><i>✦</i><i>✧</i><i>✦</i><i>✧</i></span>${petArt(r,r.rank===1?118:92)}</span>
+      <span class="lb-pod-medal" aria-hidden="true">${fr||medal}</span>
+      <b class="lb-pod-pet" data-no-translate>${esc(r.pn||'Bé cưng')}</b><span class="lb-pod-tag">${petTag(r)} <small>${esc(breedName(r))}</small></span>
+      <span class="lb-pod-owner"><small>Sen:</small> <b data-no-translate>${esc(r.name)}</b>${r.me?' <span class="tag blue">Bạn</span>':''}</span>
+      ${r.title?`<span class="lb-held hn-chip${chipClass(`lb_pets_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}
+      <span class="lb-pod-power">💪 ${fmt(r.score)}</span></li>`;};
+  const order=[top[1],top[0],top[2]].filter(Boolean);
+  return `<ol class="lb-pod" aria-label="Top 3 thú cưng">${order.map(card).join('')}</ol>`;
+}
+function petRow(r){
+  const fr=r.title?hfLogo('pets',r.rank):'';
+  return `<li class="lb-row lb-prow${r.me?' me':''}${fr?' hf-row':''}"><span class="lb-rank" aria-label="Hạng ${r.rank}">${fr||`<b>${r.rank}</b>`}</span>
+    <span class="lb-pet" aria-hidden="true">${petArt(r,52)}</span>
+    <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.pn||'Bé cưng')}</b> ${petTag(r)}${r.me?'<span class="tag blue">Bạn</span>':''}</span>${r.title?`<span class="lb-held hn-chip${chipClass(`lb_pets_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}<small>Sen: <span data-no-translate>${esc(r.name)}</span>${r.guest?' · khách':''}${breedName(r)?` · ${esc(breedName(r))}`:''}</small></span>
+    ${scoreBox('pets',r)}</li>`;
 }
 function rowHTML(board,r){
   const medal=r.rank<=3?`<span class="lb-medal" aria-hidden="true">${MEDALS[r.rank-1]}</span>`:'';
@@ -113,6 +158,7 @@ function meCard(env,board,d){
     main=board==='wealth'?(api.state.journey?.story===false?'Bảng này chỉ tính người chơi theo câu chuyện: chơi tự do không có ví riêng.':'Tài sản ròng của bạn chưa trên 0 xu. Trả bớt nợ, để dành thêm là có tên trên bảng.')
       :board==='collection'?'Nhận món độc bản đầu tiên từ nhà đấu giá để lên bảng.'
       :board==='online'?'Tuần này bạn chưa có tên trên bảng. Chơi thêm một lúc nữa nhé.'
+      :board==='pets'?'Bạn chưa nuôi bé nào. Nhận nuôi một bé ở 🐾 Thú cưng để có tên trên bảng.'
       :board==='titles'?'Bạn chưa có danh hiệu nào. Hoàn thành việc đầu tiên là có ngay.'
       :board==='certs'?'Bạn chưa có chứng chỉ nào. Thi đỗ chứng chỉ đầu tiên để có tên trên bảng này.'
       :board==='all'?'Hoàn thành việc đầu tiên để có tên trên bảng này.':`Bạn chưa làm ở ${placeOf(api,board)}. Làm việc đầu tiên ở đó để có tên trên bảng này.`;
@@ -128,6 +174,7 @@ function meCard(env,board,d){
 }
 
 function emptyText(api,board){
+  if(board==='pets')return ['Chưa có bé nào lên bảng','Nhận nuôi một bé, chăm, huấn luyện và ghép lên hạng để có tên nhé.'];
   if(board==='online')return ['Tuần mới vừa bắt đầu','Chưa ai lên bảng tuần này. Chơi một lúc là có tên nhé.'];
   if(board==='collection')return ['Chưa có nhà sưu tầm','Nhận món đấu giá đầu tiên để có điểm sưu tầm.'];
   if(board==='wealth')return ['Chưa ai lên bảng','Có tài sản ròng trên 0 xu là có tên trên bảng này.'];
@@ -172,15 +219,15 @@ function wedBody(env){
   return prizes+mine+(d.top.length?`<ol class="lb-list">${d.top.map(row).join('')}</ol>`:`<div class="empty lb-empty">${icon('award',30)}<h3>Tuần này chưa ai dự cưới</h3><p class="muted small">Dự một đám cưới để có tên.</p></div>`)+last;
 }
 
-/** Six board kinds, seven with 💍 Khách mời; two readable columns on a phone. */
+/** Seven board kinds (🐾 Thú cưng since 19/10), eight with 💍 Khách mời; two readable columns on a phone. */
 function kindsHTML(tab){
-  const tabs=[tab('exp','Trải nghiệm','🏆'),tab('titles','Danh hiệu','🎖️'),tab('certs','Chứng chỉ','📜'),tab('wealth','Tài phú','💰'),tab('collection','Sưu tầm','💎'),tab('online','Online','🦉')];
+  const tabs=[tab('exp','Trải nghiệm','🏆'),tab('titles','Danh hiệu','🎖️'),tab('certs','Chứng chỉ','📜'),tab('wealth','Tài phú','💰'),tab('collection','Sưu tầm','💎'),tab('online','Online','🦉'),tab('pets','Thú cưng','🐾')];
   if(wedOn())tabs.push(tab('wed','Khách mời','💍'));
-  return `<div class="segmented lb-kinds ${tabs.length===7?'seven':'six'}" role="tablist" aria-label="Loại bảng">${tabs.join('')}</div>`;
+  return `<div class="segmented lb-kinds ${tabs.length===8?'eight':'seven'}" role="tablist" aria-label="Loại bảng">${tabs.join('')}</div>`;
 }
 
 export function leaderboardView(env){
-  const {api,ui}=env,s=store(ui);ensureCss();
+  const {api,ui}=env,s=store(ui);ensureCss();lbApi=api;
   if(s.kind==='wed'&&wedOn()){
     const tab=(id,label,ico)=>`<button type="button" role="tab" aria-selected="${id==='wed'}" class="${id==='wed'?'active':''}" data-action="lbKind" data-kind="${id}"><span aria-hidden="true">${ico}</span> ${label}</button>`;
     return `<header class="sheet-head"><div class="grow"><span class="eyebrow">KHU PHỐ</span><h2>Khách mời của tuần</h2></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',20)}</button></header>
@@ -197,8 +244,10 @@ export function leaderboardView(env){
   else if(d.error)body=`<div class="notice danger">${icon('alert',17)}<div>${esc(d.error)}</div></div>${btn(icon('refresh',15)+' Thử lại','lbRetry',{board},'small')}`;
   else{
     const [title,text]=emptyText(api,board);
-    body=weeklyHTML(d.weekly,board)+meCard(env,board,d)+(d.rows.length?`<ol class="lb-list" aria-label="Top ${d.rows.length}">${d.rows.map(r=>rowHTML(board,r)).join('')}</ol>`
-      :`<div class="empty lb-empty">${icon('award',30)}<h3>${esc(title)}</h3><p class="muted small">${esc(text)}</p></div>`);
+    if(board==='pets')ensurePetCss();
+    const list=board==='pets'?(d.rows.length?podium(d.rows)+(d.rows.length>3?`<ol class="lb-list lb-plist" aria-label="Top ${d.rows.length}">${d.rows.slice(3).map(petRow).join('')}</ol>`:''):'')
+      :d.rows.length?`<ol class="lb-list" aria-label="Top ${d.rows.length}">${d.rows.map(r=>rowHTML(board,r)).join('')}</ol>`:'';
+    body=weeklyHTML(d.weekly,board)+meCard(env,board,d)+(list||`<div class="empty lb-empty">${icon('award',30)}<h3>${esc(title)}</h3><p class="muted small">${esc(text)}</p></div>`);
   }
   const head=`<header class="sheet-head"><div class="grow"><span class="eyebrow">KHU PHỐ</span><h2>Bảng xếp hạng</h2><p>Ai dày dạn nhất phố? Mọi con số tính từ những gì đã làm trong game.</p></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
   return head+`<div class="sheet-body lb">

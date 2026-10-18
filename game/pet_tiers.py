@@ -10,10 +10,16 @@ The pet games and tournaments come later (owner: "trò chơi của pets chưa l�
   Vietnam day; an SSS with a deep bond (SSS_BOND) more. Its own 'other_income' row (PREFIX), kept out of the 🔥 x3 net.
 * 🧬 jr_pet_fuse: any three pets, dogs and cats alike (owner 19/10 "các pet khác nhau cùng cấp vẫn ghép được",
   "mua về được ghép luôn": no waiting days). The odds are never shown (owner "đừng show tỷ lệ ra"). Success
-  (FUSE_BP of the lowest rank, +MIX_BP for each rank step another one has above it): a pup one rank up; the three
-  retire to the grandparents' for good (never die, never sold: `ret`). A failure keeps all three; the fee (FUSE_FEE)
-  is spent either way. Three SSS: LEGEND_BP for a 🌟 legendary. Three pets of a RECIPE: HYBRID_BP for a 🧬 hybrid
-  (at least its floor rank). At most FUSE_DAY a Vietnam day. An SSS gets one of the FX coats.
+  (FUSE_BP of the lowest rank, +MIX_BP for each rank step another one has above it). Since 19/10 (owner: "chọn 1
+  giống chính để nó giữ lại giống đó, còn lại 2 giống kia là nguyên liệu … thất bại thì sẽ biến mất giống thêm vào,
+  chỉ áp dụng cho cấp A trở lên") one of the three is the main pet (`main`, else the first): a success raises it one
+  rank in place (its breed, coat, name, training and gear stay; its potential takes the better of its own and the
+  trio's) and the two others retire to the grandparents' for good (never die, never sold: `ret`). A failure keeps
+  all three below LOSE_FROM (A); from A up the two others are gone (not even at the grandparents'). The fee
+  (FUSE_FEE) is spent either way. Three SSS: LEGEND_BP for the main to become its kind's 🌟 legendary. Three pets of
+  a RECIPE with `mix`: HYBRID_BP for a 🧬 hybrid pup (at least its floor rank; the three retire), else the main goes
+  up. No daily limit since 19/10 (owner: "ghép mỗi ngày k giới hạn nhé": `day.f` only counts). An SSS gets one
+  of the FX coats.
 * 📊 Five stats: the rank's RANGE × the pet's potential (pt, 0–100, rolled at birth, a pup inherits its parents'
   mean), the breed's lean (pets_content `st`), training (tn, jr_pet_train) and the gear worn. Power = their sum
   (the 'LC' board, game/pets.py command_commit).
@@ -53,7 +59,7 @@ LEGEND_BP = 500
 MIX_BP = 300
 HYBRID_BP = 1000
 MUTANT_BP = 500
-FUSE_DAY = 10
+LOSE_FROM = 3                                                              # A: a failure from here loses the two others
 KENNEL_MAX = 30
 RET_KEEP = 40
 FX = (('cau_vong', '🌈', 'Cầu Vồng'), ('ngan_ha', '🌌', 'Ngân Hà'), ('hong_ngoc', '🔥', 'Hồng Ngọc'), ('bang_tinh', '❄️', 'Băng Tinh'))
@@ -609,10 +615,13 @@ def _fuse(s: dict, p: dict) -> dict:
     pt = _pt()
     j = s['journey']
     day = j['life_day']
-    pt._keys(p, {'pets', 'nick', 'confirm'}, {'pets', 'confirm'})
+    pt._keys(p, {'pets', 'main', 'mix', 'nick', 'confirm'}, {'pets', 'confirm'})
     ids = p['pets']
     _need(isinstance(ids, list) and len(ids) == 3 and all(isinstance(i, str) for i in ids) and len(set(ids)) == 3,
           'Chọn đúng ba bé để ghép nhé.')
+    main_id = p.get('main', ids[0])
+    _need(main_id in ids, 'Bé chính phải là một trong ba bé.')
+    _need(p.get('mix') in (None, True, False), 'Thao tác không hợp lệ.')
     found = [_where(s, i) for i in ids]
     _need(all(f[1] is not None for f in found), 'Không thấy bé này.', 'not_owned')
     pets = [f[1] for f in found]
@@ -624,9 +633,11 @@ def _fuse(s: dict, p: dict) -> dict:
     x = _ensure(s)
     recs = [_record(s, q) for q in pets]
     ranks = [6 if is_legend(q) else r['r'] for q, r in zip(pets, recs)]
-    d = _today(x)
-    _need(d['f'] < FUSE_DAY, f'Hôm nay đã ghép {FUSE_DAY} lần rồi. Mai ghép tiếp nhé.', 'limit')
+    k = ids.index(main_id)
+    main, mrec = pets[k], recs[k]
     low = min(ranks)
+    _need(not (low == TOP and is_legend(main)), f'{main["n"]} đã là huyền thoại rồi: chọn bé SSS khác làm bé chính nhé.')
+    d = _today(x)
     fee = FUSE_FEE[low]
     bp = chance(ranks)
     boost = _ad_boost(s)
@@ -635,54 +646,73 @@ def _fuse(s: dict, p: dict) -> dict:
     nick = pt._name(p['nick']) if p.get('nick') not in (None, '') else None
     _confirm(p, f'Xác nhận ghép ba bé ({_fmt(fee)} xu).')
     how = pt._pay(s, fee, f'Ghép thú cưng · {", ".join(q["n"] for q in pets)}'[:120])
-    d['f'] += 1
+    d['f'] = min(10**9, d['f'] + 1)   # counted only (no daily limit since 19/10)
     if boost:
         _ads().spend_pet_boost(s)
+    b = pt._ensure(s)
+    others = [(f, r) for i, (f, r) in enumerate(zip(found, recs)) if i != k]
+
+    def leave(gone, keep=True):
+        """The pets of `gone` leave (their gear back in the bag, no longer walked); kept in `ret` unless lost."""
+        for (rows, q, _), r in gone:
+            rows.remove(q)
+            x['t'].pop(q['id'], None)
+            if keep:
+                x['ret'].append(dict(b=q['b'], c=q['c'], n=q['n'], r=r['r'], fx=r['fx']))
+            if b['walk'] == q['id']:
+                b['walk'] = None
+        if keep:
+            x['ret'] = x['ret'][-RET_KEEP:]
+            x['rn'] = min(10**7, x['rn'] + len(gone))
+        if b['walk'] is None and b['list']:
+            b['walk'] = b['list'][0]['id']
     if roll(10000) >= bp:
-        return dict(message=f'💨 Lần này chưa thành, ba bé vẫn ở bên bạn. ({how})', fuse=dict(ok=False))
-    # the pup
+        if low >= LOSE_FROM:   # from A up the two others are gone (owner 19/10)
+            lost = [f[1] for f, _ in others]
+            leave(others, keep=False)
+            return dict(message=f'💨 Lần này chưa thành. {main["n"]} vẫn ở bên bạn, {" và ".join(q["n"] for q in lost)} đã mất. ({how})',
+                        fuse=dict(ok=False, main=main_id, lost=[q['id'] for q in lost]))
+        return dict(message=f'💨 Lần này chưa thành, ba bé vẫn ở bên bạn. ({how})', fuse=dict(ok=False, main=main_id, lost=[]))
     rank = low + 1 if low < TOP else TOP
-    fx = ''
     breeds = sorted(q['b'] for q in pets)
-    recipe = RECIPES.get(tuple(breeds))
+    pot = [max(0, min(100, sum(r['pt'][i] for r in recs) // 3 - 8 + roll(24))) for i in range(len(STATS))]
+    recipe = RECIPES.get(tuple(breeds)) if p.get('mix') is True and low < TOP else None
     if recipe and recipe[0] == 'lai_van_ho' and len({q['c'] for q in pets}) < 3:
         recipe = None
-    if low == TOP:
-        bid = LEGEND[C.BREEDS[pets[roll(3)]['b']]['kind']]   # dogs and cats may mix: it takes after one of the three
-        coat = 0
-    elif recipe and roll(10000) < HYBRID_BP:
+    if recipe and roll(10000) < HYBRID_BP:
+        # 🧬 a hybrid pup: the three retire
         bid, floor = recipe
         rank = max(rank, floor)
         coat = roll(len(C.BREEDS[bid]['coats']))
-    else:
-        mom = pets[roll(3)]
-        bid, coat = mom['b'], mom['c']
-        if len(set(breeds)) == 1 and roll(10000) < MUTANT_BP:
-            fx = 'dot_bien'
-    if rank == TOP and low < TOP:
+        leave(list(zip(found, recs)))
+        name = nick or C.SHELTER_NAMES[roll(len(C.SHELTER_NAMES))]
+        pup = pt._new_pet(b, day, bid, coat, name, 'shop', 0)
+        x['t'][pup['id']] = dict(r=rank, fx=FX[roll(len(FX))][0] if rank == TOP else '', pt=pot, tn=[0] * len(STATS),
+                                 g={k: None for k in GSLOT_IDS}, z=int(pt.now()))
+        where = place_new(s, pup)
+        if b['walk'] is None and b['list']:
+            b['walk'] = b['list'][0]['id']
+        place = {'home': 'về nhà', 'ken': 'ở trại nuôi', 'farm': 'ở quê với bà'}.get(where, '')
+        return dict(message=f'🧬 Giống lai hiếm! Ra đời bé {C.BREEDS[bid]["name"]} hạng {RANKS[rank]} tên {name}, {place}. '
+                            f'Ba bé bố mẹ về quê với bà nghỉ ngơi. ({how})',
+                    fuse=dict(ok=True, pet=pup['id'], rank=RANKS[rank], breed=bid, fx=x['t'][pup['id']]['fx']))
+    # ⬆️ the main pet goes up in place
+    fx = mrec['fx']
+    if low == TOP:
+        main['b'], main['c'] = LEGEND[C.BREEDS[main['b']]['kind']], 0
+        fx = ''
+    elif rank == TOP and fx not in tuple(f[0] for f in FX):
         fx = FX[roll(len(FX))][0]
-    pot = [max(0, min(100, sum(r['pt'][i] for r in recs) // 3 - 8 + roll(24))) for i in range(len(STATS))]
-    # the three retire (their gear back in the bag, no longer walked)
-    b = pt._ensure(s)
-    for (rows, q, where), r in zip(found, recs):
-        rows.remove(q)
-        x['t'].pop(q['id'], None)
-        x['ret'].append(dict(b=q['b'], c=q['c'], n=q['n'], r=r['r'], fx=r['fx']))
-        if b['walk'] == q['id']:
-            b['walk'] = None
-    x['ret'] = x['ret'][-RET_KEEP:]
-    x['rn'] = min(10**7, x['rn'] + 3)
-    name = nick or C.SHELTER_NAMES[roll(len(C.SHELTER_NAMES))]
-    pup = pt._new_pet(b, day, bid, coat, name, 'shop', 0)
-    x['t'][pup['id']] = dict(r=rank, fx=fx, pt=pot, tn=[0] * len(STATS), g={k: None for k in GSLOT_IDS}, z=int(pt.now()))
-    where = place_new(s, pup)
-    if b['walk'] is None and b['list']:
-        b['walk'] = b['list'][0]['id']
-    br = C.BREEDS[bid]
-    head = '🌟 HUYỀN THOẠI! ' if br['fuse'] == 'legend' else ('🧬 Giống lai hiếm! ' if br['fuse'] == 'hybrid' else '🎉 ')
-    place = {'home': 'về nhà', 'ken': 'ở trại nuôi', 'farm': 'ở quê với bà'}.get(where, '')
-    return dict(message=f'{head}Ra đời bé {br["name"]} hạng {RANKS[rank]} tên {name}, {place}. Ba bé bố mẹ về quê với bà nghỉ ngơi. ({how})',
-                fuse=dict(ok=True, pet=pup['id'], rank=RANKS[rank], breed=bid, fx=fx))
+    elif len(set(breeds)) == 1 and not fx and roll(10000) < MUTANT_BP:
+        fx = 'dot_bien'
+    mrec.update(r=rank, fx=fx, pt=[max(a, c) for a, c in zip(mrec['pt'], pot)], z=int(pt.now()))
+    leave(others)
+    br = C.BREEDS[main['b']]
+    head = '🌟 HUYỀN THOẠI! ' if br['fuse'] == 'legend' else '🎉 '
+    gone = ' và '.join(f[1]['n'] for f, _ in others)
+    return dict(message=f'{head}{main["n"]} lên hạng {RANKS[rank]}{" thành " + br["name"] if low == TOP else ""}! '
+                        f'{gone} về quê với bà nghỉ ngơi. ({how})',
+                fuse=dict(ok=True, pet=main_id, rank=RANKS[rank], breed=main['b'], fx=fx, up=True))
 
 
 # ---------------------------------------------------------------- views
@@ -752,5 +782,5 @@ def catalogue() -> dict:
         gear=dict(slots=[dict(id=a, emoji=b, name=c, stat=d) for a, b, c, d in GSLOTS],
                   models={k: [dict(emoji=e, name=n) for e, n in v] for k, v in GMODELS.items()},
                   base=list(GBASE), shop=list(GSHOP), up_fee=list(GUP_FEE), fuse_fee=list(GFUSE_FEE), lv_max=GLV_MAX),
-        limits=dict(fuse_day=FUSE_DAY, train_day=TRAIN_DAY, train_max=TRAIN_MAX, train_step=TRAIN_STEP, stroll_day=STROLL_DAY,
-                    kennel=KENNEL_MAX, gear=GEAR_MAX))
+        limits=dict(train_day=TRAIN_DAY, train_max=TRAIN_MAX, train_step=TRAIN_STEP, stroll_day=STROLL_DAY,
+                    kennel=KENNEL_MAX, gear=GEAR_MAX, lose_from=LOSE_FROM))
