@@ -1,3 +1,7 @@
+# v2.4.54 — 2026-10-19
+
+📺 Xác minh trang với Google AdSense (chủ game 19/10: "cứ gắn đi, tí nữa deploy sau"): trang có `<meta name="google-adsense-account" content="ca-pub-9603813200470438">` (game/observability.py head_tags) và `/ads.txt` trả `google.com, pub-9603813200470438, DIRECT, f08c47fec0942fa0` (server.py). Không có script quảng cáo, CSP không đổi, người chơi không thấy gì. Quảng cáo có thưởng làm sau (nhánh feat/rewarded-ads). Không có Có gì mới. Test: tests/test_adsense_verify.py.
+
 # v2.4.53 — 2026-10-19
 
 🏛️ Phí giữ tài sản lớn và thuế/thuê chuỗi quầy áp dụng từ 20/10, có thông báo (chủ game 19/10: "mai rồi trừ nhé, với thông báo cho người ta biết luôn"). game/wealth_fee.py START = 20/10 (giờ Việt Nam): trước ngày đó không trừ; khoản 2.4.52 đã trừ hôm 18–19/10 được hoàn hết vào ví ở lệnh kế tiếp ("🏛️ Hoàn phí giữ tài sản lớn (áp dụng từ 20/10)"); quay_business.chain_scope tính chuỗi = 1 trước START_TS.

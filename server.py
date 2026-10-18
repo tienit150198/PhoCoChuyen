@@ -76,6 +76,7 @@ from game import deco_mate  # 💞 the spouse's furniture in the home both live 
 from game import family as family_babies  # 👶 the shared child at home (GET /api/family/baby, read-only)
 from game import system_gift
 from game import town_treasure
+from game import observability  # 📺 /ads.txt (AdSense site check)
 from game import wed_invite  # 💌 Thiệp mời cưới cả phố (game/wed_invite.py)
 from game import chua_wish  # 🌳 Cây ước nguyện (game/chua_wish.py)
 from game import event2010  # 💐 Thiệp 20/10: its own page /2010, cards anyone opens by link (game/event2010.py)
@@ -639,6 +640,8 @@ class Handler(BaseHTTPRequestHandler):
                 if self.command!='GET':self.respond(405,b'',"text/plain",{'Allow':'GET'},cache='no-store');return
                 self.tiktok_callback(split.query);return
             if route=="/auth/tiktok/confirm":self.tiktok_confirmation_page();return
+            if route=="/ads.txt":  # 📺 AdSense's site check (game/observability.py ads_txt): one public line, no ad script
+                self.respond(200,observability.ads_txt().encode(),"text/plain; charset=utf-8",cache="public, max-age=3600");return
             if route=="/api/health":
                 self.json(200,dict(status="ok",version=__version__,game_version=self.server.game_version(),careers=len(CAREERS)));return
             if route=="/api/town/treasure":

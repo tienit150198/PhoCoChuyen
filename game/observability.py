@@ -44,8 +44,18 @@ def public_config() -> dict:
             'performance': os.environ.get('FIREBASE_PERFORMANCE', '1').lower() in ('1', 'true', 'yes', 'on')}
 
 
+# 📺 AdSense (owner 19/10): the account's site check only, by <meta name="google-adsense-account"> and /ads.txt. No ad
+# script, so nothing is shown and no ad host enters the CSP. Rewarded ads come later, on their own branch.
+ADSENSE_ACCOUNT = 'ca-pub-9603813200470438'
+
+
+def ads_txt() -> str:
+    """/ads.txt: Google's line for this publisher (the IAB format AdSense checks)."""
+    return f'google.com, {ADSENSE_ACCOUNT.replace("ca-pub-", "pub-")}, DIRECT, f08c47fec0942fa0\n'
+
+
 def head_tags() -> list[str]:
-    tags = []
+    tags = [f'<meta name="google-adsense-account" content="{ADSENSE_ACCOUNT}">']
     origin = public_origin()
     if origin:
         tags.append(f'<link rel="canonical" href="{html.escape(origin, quote=True)}/">')
