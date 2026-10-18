@@ -741,9 +741,6 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
             notes.append(f'{V["emoji"]} Biển đẹp +{pct}%: +{plate} xu.')
         else:
             plate = 0
-    from . import ads   # 📺 Thưởng khép ca (game/ads.py): the offer of this shift, on the same base net (replaces the last)
-    if ads.offer_shift(s, career, _base_net(result, job_note), day):
-        result['ad_shift'] = ads.get(s)['sh']['x']
     # Rent and meals for the day that just ended.
     cost = living_cost(j)
     _wallet(j, -cost['total'], 'living', cost['label'])

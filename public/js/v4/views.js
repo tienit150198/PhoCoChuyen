@@ -14,6 +14,7 @@ import {T,isShop,offersOf} from './terms.js';
 import {confirmPurchase} from './payment.js';
 import {orderQuote,fitDraft,vans,vansLine} from './restock.js';
 import {Sound} from '../audio.js';
+import {tvButton} from './bonus-button.js';   // 📺 📝 phỏng vấn lại ngay, 📦 hàng về ngay (game/ads.py)
 import {keepRow} from '../keep-ui.js';   // 🔒 Giữ lại cho ca của tôi (B4 part 2)
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY} from '../qty-input.js';
@@ -363,7 +364,8 @@ export function inventoryView(env){
       const list=g.group?`<p class="inv-gnames">${g.lines.map(l=>`${esc(byId[l.item]?.emoji||'📦')} ${esc(byId[l.item]?.name||l.item)}${sizeNote(l)} ${l.actual}/${l.qty}`).join(' · ')}</p>`:'';
       return `<article class="card order-row"><div class="row spread"><div><strong>${title}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · ${fmt(paidOf(g))} xu · ngày ${o.day}</small></div>${short?pill(due.length?'GIAO THIẾU':'ĐÃ HOÀN TIỀN','amber'):o.rating?pill(stars(o.rating),'amber'):''}</div>${list}${act}</article>`;};
     const done=shipments(orders.filter(o=>o.status==='received').reverse()).slice(0,10);
-    body=(transitS.length?`<h4 class="section-title">🚚 Đang giao</h4>${transitS.map(waiting).join('')}`:'')+
+    const tvRush=transitS.length&&api.state.journey?.story?tvButton(api.state,'rush','Hàng về ngay',{career:api.state.current}):'';
+    body=(transitS.length?`<h4 class="section-title">🚚 Đang giao</h4>${tvRush?`<div class="row wrap">${tvRush}</div>`:''}${transitS.map(waiting).join('')}`:'')+
       (done.length?`<h4 class="section-title">Đã nhận gần đây</h4>${done.map(received).join('')}`:'')||(ready.length?'':nothing());
   }else{
     const lots=inv.lots.filter(l=>l.qty>0&&l.expires>=c.day).sort((a,b)=>a.expires-b.expires||a.received-b.received);
@@ -880,11 +882,12 @@ export function jobView(env){
   const lastPost=job.application&&posts.find(x=>x.id===job.application.posting);
   const rejected=job.status==='rejected'&&lastPost?resultCard(lastPost,job,today,ex,env):'';
   const wait=job.status==='rejected'&&job.cooldown_day>today;
+  const tvJob=wait&&story?tvButton(api.state,'retake',jobStages(lastPost||{}).includes('trial')?'Xin làm thử lại ngay hôm nay':'Phỏng vấn lại ngay hôm nay',{what:'job',career:id}):'';
   const certBanner=!ci?'':ci.held?`<p class="notice success small ct-banner"><span aria-hidden="true">${ci.g.emoji}</span><span class="grow"><b>${esc(ci.g.name)}</b> (${ci.rec.best} điểm): nếu điểm chưa đủ 60, bạn vẫn có ${ci.bonus}% cơ hội được nhận ở đây.</span></p>`
     :rejected?'':`<div class="notice blue small ct-banner"><span aria-hidden="true">🎓</span><span class="grow">Có <b>${esc(ci.g.name)}</b> thì khi điểm chưa đủ 60 vẫn còn ${ci.bonus}% cơ hội được nhận ở đây.</span>${button('Học và thi','jrCerts',{cert:ci.g.id,career:id},'ghost small')}</div>`;
   const certLine=ex?(cert?`<p class="notice success small">${icon('check',15)}<span><b>${esc(ex.name)}</b> đã có (ngày ${cert.day}, đúng ${cert.score}/${ex.draw}). Ứng tuyển sẽ bỏ qua bài thi.</span></p>`:`<p class="notice blue small">${icon('leaf',15)}<span>Nghề này cần <b>${esc(ex.name)}</b>: bài thi ${ex.draw} câu, đạt từ ${ex.pass_mark} câu. Thi ngay khi ứng tuyển.</span></p>`):'';
   const sub=posts.some(p=>jobStages(p).includes('trial'))?'Chủ tiệm cần gặp bạn trước. Gửi vài dòng giới thiệu, làm thử một buổi rồi nhận việc.':'Nghề này cần được tuyển dụng. Chọn nơi phù hợp, viết CV trung thực và đi phỏng vấn.';
-  return head('Xin việc: '+esc(place),sub,'TUYỂN DỤNG')+`<div class="sheet-body">${rejected}${certLine}${certBanner}<div class="stack">${posts.map(p=>`<article class="card posting"><div class="row spread"><div><span class="eyebrow">${esc(p.kind==='private'?(id==='teacher'?'TƯ THỤC':'TƯ NHÂN'):JOB_KIND[p.kind]||'')}</span><h3>${esc(p.title)}</h3><small class="muted">${esc(p.org)}</small></div><b>${p.salary[0]}–${p.salary[1]} xu/ngày</b></div>${p.wage_note?`<p class="small muted">${esc(p.wage_note)}</p>`:''}<p class="small">${esc(p.culture)}</p>${jobPipe(E,p)}<div class="chip-row">${ci?.held?`<span class="chip ct-chip">🎓 +${ci.bonus}% cơ hội</span>`:''}${p.perks.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>
+  return head('Xin việc: '+esc(place),sub,'TUYỂN DỤNG')+`<div class="sheet-body">${rejected}${tvJob?`<div class="row wrap">${tvJob}</div>`:''}${certLine}${certBanner}<div class="stack">${posts.map(p=>`<article class="card posting"><div class="row spread"><div><span class="eyebrow">${esc(p.kind==='private'?(id==='teacher'?'TƯ THỤC':'TƯ NHÂN'):JOB_KIND[p.kind]||'')}</span><h3>${esc(p.title)}</h3><small class="muted">${esc(p.org)}</small></div><b>${p.salary[0]}–${p.salary[1]} xu/ngày</b></div>${p.wage_note?`<p class="small muted">${esc(p.wage_note)}</p>`:''}<p class="small">${esc(p.culture)}</p>${jobPipe(E,p)}<div class="chip-row">${ci?.held?`<span class="chip ct-chip">🎓 +${ci.bonus}% cơ hội</span>`:''}${p.perks.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>
     <div class="row wrap space-top">${wait?`<p class="small muted">📅 ${jobStages(p).includes('trial')?'Xin làm thử':'Ứng tuyển'} lại ${esc(job.retry?.text||`từ Ngày ${job.cooldown_day}`)}.</p>`:''}${cmdBtn(wait?`${jobStages(p).includes('trial')?'Xin làm thử':'Ứng tuyển'} lại · Còn ${job.retry?.left??(job.cooldown_day-today)} ngày`:jobStages(p).includes('trial')?'Xin làm thử':'Ứng tuyển','job_apply',{posting:p.id},'primary',wait)}</div></article>`).join('')}</div></div>`;
 }
 

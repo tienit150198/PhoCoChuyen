@@ -80,6 +80,7 @@ from __future__ import annotations
 import hashlib
 import random
 
+from . import ads   # 📺 💸 note_loss: a theft or a hack, half back for an ad
 from . import archive as ar
 from . import bank as bk
 from . import price_index as pi   # 💹 07/10: GEAR prices and THUOC are the base
@@ -686,6 +687,7 @@ def _fire(s: dict, r: dict, day: int, notes: list) -> None:
         _stat(r, 'events')
         _log(r, day, label, -loss)
         _new_card(r, day, kind, sub, ref, 0, loss, 0)
+        ads.note_loss(s, loss, label)   # 📺 💸 half back for an ad
         notes.append(f'🔐 Tài khoản ngân hàng bị hack: mất {_fmt(loss)} xu trong tài khoản thanh toán.')
         return
     if kind == 'phat' and r['fines'] == 0:   # the first fine: only a warning
@@ -707,6 +709,7 @@ def _fire(s: dict, r: dict, day: int, notes: list) -> None:
         _stat(r, 'events')
         _log(r, day, label, -loss)
         _new_card(r, day, kind, sub, ref, 0, loss, 0)
+        ads.note_loss(s, loss, label)   # 📺 💸 half back for an ad
         notes.append(f'{KIND_META[kind][0]} {label}: mất {_fmt(loss)} xu tiền mặt.')
         return
     cost = min(_projected(s, r, kind, sub, ref), budget)

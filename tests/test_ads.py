@@ -1,7 +1,7 @@
 """📺 Quảng cáo có thưởng (game/ads.py): off without a publisher id, a ticket then a claim at least MIN_WATCH_S later,
-7 views a Vietnam day per save (owner 18/10), the 3rd/7th view's chest, the four places (⏰ Giờ vàng riêng ×1,5 for an
-hour on shops and counters, 🧩 Ghép ba boosters spent after the day's free ones, 🚔 5 minutes off a jail day, 💼 the
-closed shift's bonus), reset_all keeping the count, the page's meta / CSP / ads.txt, and saves an older build keeps."""
+7 views a Vietnam day per save (owner 18/10), the places (⏰ Giờ vàng riêng ×1,5 for an hour on shops and counters, 🧩
+Ghép ba boosters spent after the day's free ones, 🚔 out of the camp at once, 💸 half of a theft back, 📝 a retake today,
+📦 goods now), reset_all keeping the count, the page's meta / CSP, and saves an older build keeps."""
 import copy
 import os
 import unittest
@@ -31,7 +31,7 @@ def act(s, name, **p):
 
 
 class AdsBase(unittest.TestCase):
-    env = {'ADS_FAKE': '1', 'ADS_CLIENT': '', 'MNL_ADS_OFF': ''}
+    env = {'ADS_FAKE': '1', 'ADS_REWARDED': '', 'MNL_ADS_OFF': ''}
 
     def setUp(self):
         e = mock.patch.dict(os.environ, self.env)
@@ -50,7 +50,7 @@ class AdsBase(unittest.TestCase):
 
 
 class OffTest(AdsBase):
-    env = {'ADS_FAKE': '', 'ADS_CLIENT': '', 'MNL_ADS_OFF': ''}
+    env = {'ADS_FAKE': '', 'ADS_REWARDED': '', 'MNL_ADS_OFF': ''}
 
     def test_off_without_a_publisher_id(self):
         s = story()
@@ -61,26 +61,22 @@ class OffTest(AdsBase):
         self.assertEqual(e.exception.code, 'ads_off')
         self.assertEqual(ads.head_tags(), [])
         self.assertEqual(ads.content_security_policy("script-src 'self'"), "script-src 'self'")
-        self.assertIsNone(ads.ads_txt())
-        self.assertEqual(ads.offer_shift(s, 'milk_tea', 1000, 1), 0)
         self.assertNotIn('ads', s['journey'])
 
-    def test_a_malformed_id_is_off(self):
-        with mock.patch.dict(os.environ, {'ADS_CLIENT': 'ca-pub-abc'}):
-            self.assertFalse(ads.enabled())
-        with mock.patch.dict(os.environ, {'ADS_CLIENT': 'ca-pub-1234567890123456', 'MNL_ADS_OFF': '1'}):
+    def test_the_kill_switch(self):
+        with mock.patch.dict(os.environ, {'ADS_REWARDED': '1', 'MNL_ADS_OFF': '1'}):
             self.assertFalse(ads.enabled())
 
 
 class RealTest(AdsBase):
-    env = {'ADS_FAKE': '1', 'ADS_CLIENT': 'ca-pub-1234567890123456', 'MNL_ADS_OFF': ''}
+    env = {'ADS_FAKE': '1', 'ADS_REWARDED': '1', 'MNL_ADS_OFF': ''}
 
     def test_page_meta_csp_and_ads_txt(self):
         self.assertTrue(ads.enabled())
         self.assertFalse(ads.fake())   # a real id wins over the stand-in
         tag, = ads.head_tags()
         self.assertIn('name="mnl-bonus"', tag)
-        self.assertIn('ca-pub-1234567890123456', tag)
+        self.assertIn('ca-pub-9603813200470438', tag)
         base = ("default-src 'self'; script-src 'self' https://www.youtube.com; img-src 'self' data:; "
                 "connect-src 'self'; frame-src https://www.youtube.com; object-src 'none'")
         csp = ads.content_security_policy(base)
@@ -88,7 +84,6 @@ class RealTest(AdsBase):
         self.assertIn('frame-src https://*.googlesyndication.com', csp)
         self.assertIn('https://www.youtube.com', csp)
         self.assertNotIn("'unsafe-eval'", csp)
-        self.assertEqual(ads.ads_txt(), 'google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0\n')
 
 
 class FlowTest(AdsBase):
@@ -127,17 +122,12 @@ class FlowTest(AdsBase):
         with self.assertRaises(GameError):
             apply_action(s, None, 'ad_claim', {'ticket': 5})
 
-    def test_seven_a_day_with_two_chests_then_tomorrow(self):
+    def test_seven_a_day_then_tomorrow(self):
         s = story(wallet=0)
-        got = []
         for i in range(7):
-            s, r = self.watch(s, 'tile' if i % 2 else 'gold')
-            got.append(r.get('chest', 0))
-        self.assertEqual(sum(1 for x in got if x), 2)
-        lo3, hi3 = ads.CHESTS[3]
-        lo7, hi7 = ads.CHESTS[7]
-        self.assertTrue(lo3 <= got[2] <= hi3 and lo7 <= got[6] <= hi7)
-        self.assertEqual(s['journey']['wallet'], got[2] + got[6])
+            s, r = self.watch(s, 'gold' if i < 3 else 'tile')
+        self.assertEqual(r['ad'], dict(place='tile', n=7, left=0))
+        self.assertEqual(s['journey']['wallet'], 0)
         self.assertEqual(ads.public(s)['left'], 0)
         with self.assertRaises(GameError) as e:
             act(s, 'ad_ticket', place='tile')
@@ -235,25 +225,19 @@ class JailTest(AdsBase):
         e.start()
         self.addCleanup(e.stop)
 
-    def test_five_minutes_off_and_nothing_else_inside(self):
+    def test_out_at_once_and_nothing_else_inside(self):
         s = story(50_000)
         jl.arrest(s['journey'], 'bm', 3, self.clock.t)
         validate_state(s)
-        since = s['journey']['jail']['since']
         with self.assertRaises(GameError) as e:
             act(s, 'ad_ticket', place='gold')
         self.assertEqual(e.exception.code, 'jailed')
         s, r = self.watch(s, 'jail')
-        self.assertEqual(s['journey']['jail']['since'], since - ads.JAIL_S)
-        for _ in range(3):
-            s, _ = self.watch(s, 'jail')
-        # 20 minutes, 4 views: the day may end now, a 5th view is refused
-        self.assertLessEqual(jl.public(s)['ready'], self.clock.t)
-        with self.assertRaises(GameError) as e:
-            act(s, 'ad_ticket', place='jail')
-        self.assertEqual(e.exception.code, 'ads_place')
-        s, r = act(s, 'jail_end')
-        self.assertEqual(s['journey']['jail']['left'], 2)
+        self.assertTrue(r['jail']['free'])
+        self.assertFalse(jl.jailed(s))
+        self.assertIsNone(jl.public(s))
+        self.assertNotIn('jail', s['journey'])
+        s, _ = self.watch(s, 'gold')   # free again: everything else is open
 
     def test_not_jailed(self):
         with self.assertRaises(GameError) as e:
@@ -261,24 +245,165 @@ class JailTest(AdsBase):
         self.assertEqual(e.exception.code, 'ads_place')
 
 
-class ShiftTest(AdsBase):
-    def test_the_last_shift_offer_pays_once(self):
-        s = story(wallet=0)
-        with self.assertRaises(GameError) as e:
-            act(s, 'ad_ticket', place='shift')
+class TheftTest(AdsBase):
+    def test_half_of_the_latest_loss_back_once(self):
+        s = story(wallet=1_000)
+        with self.assertRaises(GameError) as e:   # nothing taken yet
+            act(s, 'ad_ticket', place='theft')
         self.assertEqual(e.exception.code, 'ads_place')
-        self.assertEqual(ads.offer_shift(s, 'milk_tea', 9000, 3), ads.SHIFT_CAP)
-        self.assertEqual(ads.offer_shift(s, 'milk_tea', 900, 4), 450)
+        ads.note_loss(s, 3_001, 'Bị móc túi')
         validate_state(s)
-        self.assertEqual(ads.public(s)['shift'], 450)
-        s, r = self.watch(s, 'shift')
-        self.assertEqual(s['journey']['wallet'], 450)
-        self.assertEqual(ads.public(s)['shift'], 0)
+        self.assertEqual(ads.public(s)['theft']['back'], 1_500)
+        s, r = self.watch(s, 'theft')
+        self.assertEqual(s['journey']['wallet'], 2_500)
+        self.assertEqual(s['journey']['history'][-1]['kind'], 'life')
+        self.assertIn('Bị móc túi', s['journey']['history'][-1]['label'])
+        self.assertNotIn('ls', s['journey']['ads'])
+        self.assertIsNone(ads.public(s)['theft'])
+        with self.assertRaises(GameError):   # once
+            act(s, 'ad_ticket', place='theft')
+
+    def test_a_day_to_take_it_and_never_while_off(self):
+        s = story()
+        ads.note_loss(s, 2_000, 'Trộm vào nhà lấy tiền mặt')
+        self.clock.tick(ads.LOSS_TTL + 1)
         with self.assertRaises(GameError):
-            act(s, 'ad_ticket', place='shift')
-        ads.offer_shift(s, 'milk_tea', 900, 5)
-        ads.offer_shift(s, 'milk_tea', -50, 6)   # a losing shift clears the offer
-        self.assertNotIn('sh', s['journey']['ads'])
+            act(s, 'ad_ticket', place='theft')
+        s, _ = act(s, 'reset_all', confirm='BAT DAU LAI')
+        self.assertNotIn('ls', s['journey'].get('ads', {}))
+        with mock.patch.dict(os.environ, {'MNL_ADS_OFF': '1'}):
+            t = story()
+            ads.note_loss(t, 2_000, 'x')
+            self.assertNotIn('ads', t['journey'])
+
+    def test_the_losses_that_count(self):
+        from game import mishap
+        s = story(wallet=50_000)
+        mishap.apply_fx(s, {'sub': 'police'}, 5_000)   # a fine is not a theft
+        self.assertNotIn('ads', s['journey'])
+        w = s['journey']['wallet']
+        p = {'sub': 'thug'}
+        mishap.apply_fx(s, p, 5_000)
+        ls = s['journey']['ads']['ls']
+        self.assertEqual((ls['amt'], ls['w']), (w - s['journey']['wallet'], mishap.LABELS['thug']))
+        self.assertEqual(ls['amt'], p['_taken'])
+        validate_state(s)
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[1] / 'game'
+        for name, n in (('rui.py', 2), ('happenings.py', 2), ('life.py', 1)):
+            self.assertEqual((root / name).read_text(encoding='utf-8').count('ads.note_loss('), n, name)
+
+
+class RetakeTest(AdsBase):
+    def test_the_interview_again_today(self):
+        from tests.test_certificates import interview, story as cstory
+        s, _ = interview(cstory())
+        job = s['careers']['delivery']['job']
+        self.assertEqual(job['status'], 'rejected')
+        with self.assertRaises(GameError):
+            apply_action(s, 'delivery', 'job_apply', {'posting': 'dl-rider'})
+        for p in ({'what': 'job'}, {'what': 'job', 'career': 'nope'}, {'what': 'exam', 'career': 'delivery'}):
+            with self.assertRaises(GameError):
+                act(s, 'ad_ticket', place='retake', **p)
+        s, r = act(s, 'ad_ticket', place='retake', what='job', career='delivery')
+        self.assertEqual(s['journey']['ads']['tk']['k'], 'job:delivery')
+        validate_state(s)
+        self.clock.tick(ads.MIN_WATCH_S)
+        s, r = act(s, 'ad_claim', ticket=r['ad']['ticket'])
+        self.assertIn('ứng tuyển lại', r['message'])
+        s, _ = apply_action(s, 'delivery', 'job_apply', {'posting': 'dl-rider'})
+        with self.assertRaises(GameError):   # nothing left to wait for
+            act(s, 'ad_ticket', place='retake', what='job', career='delivery')
+
+    def test_the_self_study_exam_now(self):
+        from game import certificates as ct
+        from tests.test_certificates import GID, next_life_day, sit, story as cstory
+        s = cstory(wallet=500)
+        s, _ = apply_action(s, None, 'jr_cert_enrol', {'cert': GID, 'mode': 'self'})
+        with self.assertRaises(GameError):   # the first life day: nothing earlier to move it to
+            act(s, 'ad_ticket', place='retake', what='cert')
+        s = cstory(wallet=500)
+        s = next_life_day(s)
+        s, _ = apply_action(s, None, 'jr_cert_enrol', {'cert': GID, 'mode': 'self'})
+        self.assertGreater(s['journey']['study']['ready'], s['journey']['life_day'])
+        s, r = act(s, 'ad_ticket', place='retake', what='cert')
+        self.clock.tick(ads.MIN_WATCH_S)
+        s, r = act(s, 'ad_claim', ticket=r['ad']['ticket'])
+        st = s['journey']['study']
+        self.assertEqual((st['ready'], st['start']), (s['journey']['life_day'], s['journey']['life_day'] - ct.SELF_DAYS))
+        s, r = sit(s, GID, True)
+        self.assertTrue(r['cert']['passed'])
+
+    def test_a_review_again_after_the_next_shift(self):
+        from game import promotion as pm
+        from tests.test_promotion import PC, best, day, employee, until_due
+        j = employee()
+        until_due(j)
+        rec = pm.record(j.state, 'delivery')
+        q1, q2 = rec['due']['qs']
+        ok = next(o['id'] for o in PC.QUESTION_INDEX[q1]['options'] if o['score'] == 1)
+        j.act('pm_answer', question=q1, option=ok)
+        j.act('pm_answer', question=q2, option=best(q2))
+        self.assertTrue(j.act('pm_ask', ask='high')['later'])
+        self.assertEqual(pm.record(j.state, 'delivery')['wait'], pm.RETRY)
+        s, r = act(j.state, 'ad_ticket', place='retake', what='promo', career='delivery')
+        self.clock.tick(ads.MIN_WATCH_S)
+        j.state, r = act(s, 'ad_claim', ticket=r['ad']['ticket'])
+        self.assertEqual(pm.record(j.state, 'delivery')['wait'], 0)
+        day(j)
+        self.assertIsNotNone(pm.record(j.state, 'delivery')['due'])
+
+
+class RushTest(AdsBase):
+    def setUp(self):
+        super().setUp()
+        import game.careers.kit as kit
+        from tests.test_inventory_flow import Clock as KitClock
+        old = kit.clock
+        kit.clock = KitClock()
+        self.addCleanup(setattr, kit, 'clock', old)
+
+    def journey(self, career):
+        from tests.helpers import Journey
+        from tests.test_promotion import story as pstory
+        j = Journey(career)
+        pstory(j, 1)
+        return j
+
+    def test_stock_orders_at_the_door_now(self):
+        from tests.test_inventory_flow import public_inv
+        j = self.journey('restaurant')
+        with self.assertRaises(GameError):   # nothing on the way
+            act(j.state, 'ad_ticket', place='rush', career='restaurant')
+        j.act('inv_order', item='noodle', qty=6, supplier='partner', confirm=True)
+        j.act('inv_order', item='noodle', qty=2, supplier='partner', confirm=True)
+        orders = public_inv(j)['orders']
+        self.assertFalse(any(o['ready_now'] for o in orders))
+        for p in ({}, {'career': 'nope'}, {'career': 'restaurant', 'what': 'x'}):
+            with self.assertRaises(GameError):
+                act(j.state, 'ad_ticket', place='rush', **p)
+        s, r = act(j.state, 'ad_ticket', place='rush', career='restaurant')
+        self.clock.tick(ads.MIN_WATCH_S)
+        j.state, r = act(s, 'ad_claim', ticket=r['ad']['ticket'])
+        self.assertIn('Hàng đã về', r['message'])
+        self.assertTrue(all(o['ready_now'] for o in public_inv(j)['orders'] if o['status'] == 'in_transit'))
+        for o in j.c['ext']['inv']['orders']:
+            j.act('inv_receive', order=o['id'], count=o['actual'])
+        self.assertTrue(all(o['status'] == 'received' for o in j.c['ext']['inv']['orders']))
+
+    def test_stock_desk_parcels_too(self):
+        j = self.journey('mother_baby')
+        j.act('order_stock', item='cat_bag', qty=2, supplier='express')
+        ship = j.c['shipments'][-1]
+        with self.assertRaises(GameError):
+            j.act('receive_stock', shipment=ship['id'], count=ship['actual'])
+        s, r = act(j.state, 'ad_ticket', place='rush', career='mother_baby')
+        self.clock.tick(ads.MIN_WATCH_S)
+        j.state, r = act(s, 'ad_claim', ticket=r['ad']['ticket'])
+        ship = j.c['shipments'][-1]
+        if ship['status'] != 'received':   # the stock desk may shelve it itself
+            j.act('receive_stock', shipment=ship['id'], count=ship['actual'])
+        self.assertEqual(j.c['shipments'][-1]['status'], 'received')
 
 
 class PageTest(AdsBase):

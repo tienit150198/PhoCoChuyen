@@ -9,6 +9,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {asset} from '../assets.js';
 import {skeleton} from '../lazy.js';
+import {tvButton} from './bonus-button.js';   // 📺 📝 thi ngay (game/ads.py)
 import {personalPayment,paymentShortfall} from './money.js';
 import {confirmPurchase,paymentChoices} from './payment.js';
 
@@ -144,7 +145,7 @@ function studyCard(env,k,g,st){
   const notes=st.ready_now?`<details class="ct-box"><summary>📖 Mở sách: ${g.notes.length} ý chính</summary>${list}</details>`
     :`<div class="ct-box"><h4 class="ct-h">📖 Bài học · ${g.notes.length} ý chính</h4>${list}</div>`;
   const status=st.ready_now?examCard(env,k,g,st)
-    :`<p class="notice blue small">${icon('leaf',15)}<span><b>Bài thi mở từ Ngày ${fmt(st.ready)}</b> (còn ${st.days_left} ngày${st.days_left===1?' · sau khi khép ca hôm nay':''}). Làm một ngày ở đâu đó rồi quay lại thi nhé.</span></p>`;
+    :`<p class="notice blue small">${icon('leaf',15)}<span><b>Bài thi mở từ Ngày ${fmt(st.ready)}</b> (còn ${st.days_left} ngày${st.days_left===1?' · sau khi khép ca hôm nay':''}). Làm một ngày ở đâu đó rồi quay lại thi nhé.</span></p>${st.mode!=='class'&&env.api.state.journey?.life_day>1?`<div class="row wrap">${tvButton(env.api.state,'retake','Thi ngay bây giờ',{what:'cert'})}</div>`:''}`;
   return `<section class="jr-card ct-study" aria-label="Khóa đang học"><div class="ct-top"><span class="ct-emoji" aria-hidden="true">${g.emoji}</span><div class="grow"><span class="eyebrow">Đang học · ${MODE[st.mode]}${st.fee?` · đã đóng ${fmt(st.fee)} xu`:''}</span><h3>${esc(g.name)}</h3></div></div>
     ${status}${notes}${st.ready_now?`<details class="ct-box"><summary>✏️ Làm thử trước (không tính điểm)</summary>${practice(env,g)}</details>`:practice(env,g)}
     <div class="row wrap">${btn('Bỏ khóa học','jrCertDrop',{},'ghost small')}</div></section>`;

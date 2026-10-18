@@ -28,6 +28,7 @@ import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} fr
 import {emojiOf,townOn} from './v4/journey.js';
 import {ev2010Open} from './isometric/town-utilities.js';   // 💐 Thiệp 20/10: while writing is open
 import {lowItems,crates} from './v4/restock.js';  // the bar's Kho badge
+import {tvButton} from './v4/bonus-button.js';   // 📺 📦 hàng về ngay at the stock desk (game/ads.py)
 import {setLanguage,t as i18nT} from './v4/i18n.js';
 import {shell} from './v4/shell.js';
 import {workplaceAway,awayFresh,awayToast} from './away-report.js';   // B4: 🧾 Lúc bạn vắng
@@ -1213,7 +1214,8 @@ function stockDesk(cap){
   // Đơn gộp (F#194): tick “Gộp” on several rows, then one order, one payment, one van (engine order_stock `lines`).
   const n=list.filter(p=>picks[p.id]).length;
   const merge=c.open?`<div class="wh-merge"><button type="button" class="btn small${n?' primary':''}" data-wh-merge="1"${n&&!vansFull?'':' disabled'}>🛒 Đặt đơn gộp · <span data-wh-merge-n>${n}</span> mã</button><small class="muted">Tick “Gộp” ở các mã cần nhập, chỉnh số rồi đặt một lần: một chuyến xe, trả một lần (tối đa ${MERGE_CAP} mã).</small></div>`:'';
-  return strip+(waiting.length?`<h3>Kiện hàng</h3>${arrived.map(parcel).join('')}${waiting.filter(s=>!s.ready_now).map(parcel).join('')}<div class="divider"></div>`:'')+pick+merge+`<h3>Hàng trên kệ</h3>${list.map(row).join('')}`;
+  const tvRush=waiting.some(s=>!s.ready_now)&&api.state.journey?.story?tvButton(api.state,'rush','Hàng về ngay',{career:id}):'';
+  return strip+(waiting.length?`<h3>Kiện hàng</h3>${tvRush?`<div class="row wrap">${tvRush}</div>`:''}${arrived.map(parcel).join('')}${waiting.filter(s=>!s.ready_now).map(parcel).join('')}<div class="divider"></div>`:'')+pick+merge+`<h3>Hàng trên kệ</h3>${list.map(row).join('')}`;
 }
 /** A "Gộp" box was ticked: remember it and update the merged-order button without redrawing the rows. */
 function whPick(box){
@@ -1415,8 +1417,6 @@ function summaryView(){
   if(s.life)later.push(lifeSummary(s.life));
   if(s.experiences?.tip_day?.count&&L.tips.use())notes.push(L.tips.m.tipSummary(s.experiences.tip_day));
   const jr=s.journey;
-  // 📺 Thưởng khép ca (game/ads.py, state.ads.shift: the last closed shift's offer): one button, while views are left.
-  {const ad=api.state?.ads;if(ad?.shift>0&&ad.left>0)notes.unshift(notice(`<b>📺 Thưởng khép ca +${fmt(ad.shift)} xu</b><p>Xem một quảng cáo ngắn để nhận thêm vào ví.</p>${button(`📺 Xem quảng cáo nhận thưởng <small>· còn ${ad.left}/${ad.max}</small>`,'bonusVideo',{place:'shift'},'primary small')}`,'success','award'));}
   // The wallet after the day, its moves as chips (owner 03/10 "chữ ít thôi": the title names the life day, the clock card the hour);
   // the 🔥 x3 day's bonus (summary.journey.x3, only when above 0) is a chip of its own; so is 🚗 Biển đẹp (journey.plate, game/garage.py).
   if(jr&&(jr.living||jr.upkeep||jr.salary||jr.x3||jr.plate))notes.push(notice(`<b>Ví còn ${fmt(jr.wallet)} xu</b><p class="ck-chips"><span class="ck-delta down">Phòng & cơm −${fmt(jr.living)}</span>${jr.upkeep?`<span class="ck-delta down">Nơi làm khác −${fmt(jr.upkeep)}</span>`:''}${jr.salary?`<span class="ck-delta up">Lương +${fmt(jr.salary)}</span>`:''}${jr.x3?`<span class="ck-delta up">🔥 x3 +${fmt(jr.x3)}</span>`:''}${jr.plate?`<span class="ck-delta up">🚗 Biển đẹp +${fmt(jr.plate_pct)}%: +${fmt(jr.plate)} xu</span>`:''}${jr.gift?`<span class="ck-delta up">🎁 Quà +${fmt(jr.gift)}</span>`:''}</p>${jr.wallet<0?'<p>Ví đang nợ: trả hết nợ thì câu chuyện mới đi tiếp.</p>':''}`,jr.wallet<0?'amber':'','bag'));
@@ -1710,7 +1710,8 @@ async function handleAction(action,data,el){
       if(action==='liveKara'){await (await import('./v4/venue-routing.js')).visitVenue(env(),'karaoke',async()=>{await (await import('./v4/karaoke.js')).openKaraoke(env(),data);});break;}  // 🎤 Phòng hát (v4/karaoke.js): its own dialog
       if(action==='tileMatch'){await (await import('./v4/tile-match.js')).openTileMatch(env());break;}
       if(action==='bonusVideo'){const m=await import('./v4/bonus-video.js');   // 📺 a place's button (data-place) or the sheet
-        if(data.place){const view=ui.view;await m.watch(env(),data.place,{restore:()=>{if(view)openSheet(view);}});if($('#sheet').open)renderSheet(false);}
+        if(data.place){const view=ui.view,extra={};for(const k of ['what','career'])if(data[k])extra[k]=data[k];   // 📝 what to retake, 📦 whose goods
+          await m.watch(env(),data.place,{extra,restore:()=>{if(view)openSheet(view);}});if($('#sheet').open)renderSheet(false);}
         else await m.openBonus(env());break;}  // 🧩 Ghép ba Phố Mây: its own dialog
       if(action==='lixi'){await (await import('./v4/lixi.js')).openLixi(env(),data.tab||'list');break;}  // 🧧 Lì xì: its own dialog
       if(action==='wedInvite'){await (await import('./v4/wedinvite.js')).openWedInvite(env());break;}  // 💌 Gửi thiệp mời cưới cả phố: its own dialog

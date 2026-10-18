@@ -1,7 +1,8 @@
 /** 📺 Quảng cáo có thưởng (game/ads.py is the authority: the 7 views a day, the places, the rewards).
  *
- * watch(env, place, {restore}) is the whole flow behind every 📺 button:
- *  1. `ad_ticket {place}`: the server checks the day's views and that the place has something to give;
+ * watch(env, place, {restore, extra}) is the whole flow behind every 📺 button:
+ *  1. `ad_ticket {place, ...extra}` (extra: 📝 {what, career}, 📦 {career}): the server checks the day's views and
+ *     that the place has something to give;
  *  2. the ad: Google's rewarded break (AdSense H5 games, adBreak({type:'reward'})) when <meta name="mnl-bonus">
  *     carries a publisher id, else (ADS_FAKE, local play and browser tests) a stand-in with a countdown;
  *  3. adViewed → `ad_claim {ticket}`: the server pays (at least MIN_WATCH_S after the ticket).
@@ -12,11 +13,13 @@
  * dialogs close while it plays and `restore()` (the caller's own way back: openSheet, openJail…) reopens them after.
  * The stand-in is a modal dialog of its own, on top of the others, so nothing closes for it.
  *
- * openBonus(env): the "📺 Quà xem quảng cáo" sheet (☰ Thêm): the day's 7 dots, the chests, ⏰ Giờ vàng riêng, the
- * closed shift's bonus, 🧩 Ghép ba boosters. File name: no "ad" word (blockers hide such files, tests/test_asset_names.py). */
+ * openBonus(env): the "📺 Quà xem quảng cáo" sheet (☰ Thêm): the day's 7 dots, ⏰ Giờ vàng riêng, 🧩 Ghép ba boosters,
+ * 💸 half of the latest theft / scam back, and where the other buttons are (📝 a failed interview / exam / review, 📦
+ * goods on the way, 🚔 the camp). File name: no "ad" word (blockers hide such files, tests/test_asset_names.py). */
 import {escapeHTML as esc} from '../icons.js';
 import {duck} from '../audio.js';
 import {stylesheet} from '../lazy.js';
+import {tvButton} from './bonus-button.js';
 
 const B={cfg:undefined,load:null,busy:false,dlg:null,env:null,timer:0};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -106,12 +109,12 @@ function toastResult(env,r){
 }
 
 /** The whole flow: the server's result of ad_claim, or null (nothing shown, not watched, refused). */
-export async function watch(env,place,{restore}={}){
+export async function watch(env,place,{restore,extra}={}){
   if(B.busy||!config())return null;
   B.busy=true;
   try{
     let tk;
-    try{tk=(await env.api.command('ad_ticket',{place}))?.ad?.ticket;}
+    try{tk=(await env.api.command('ad_ticket',{...(extra||{}),place}))?.ad?.ticket;}
     catch(e){if(e?.message)env.toast?.(e.message,'error');return null;}
     if(!tk)return null;
     const c=config();
@@ -131,11 +134,11 @@ export async function watch(env,place,{restore}={}){
   }finally{B.busy=false;if(B.dlg?.open)paint();}
 }
 
-/** The 📺 button of a place (data-bv-place: the caller's own click handler calls watch()). */
-export function button(env,place,label,cls='primary small'){
-  const a=info(env);if(!a||a.left<=0)return '';
+/** The 📺 button of a place (data-action="bonusVideo": app.js calls watch() with data-what / data-career). */
+export function button(env,place,label,opts){
+  if(!info(env))return '';
   warm();
-  return `<button type="button" class="btn ${cls} bv-btn" data-action="bonusVideo" data-place="${esc(place)}">📺 ${label} <small>· còn ${a.left}/${a.max}</small></button>`;
+  return tvButton(env.api.state,place,label,opts);
 }
 
 /* ---------------------------------------------------------------- the sheet (☰ Thêm → 📺 Quà xem quảng cáo) */
@@ -154,21 +157,21 @@ function dialog(){
   d.addEventListener('close',()=>{clearInterval(B.timer);B.timer=0;});
   B.dlg=d;return d;
 }
-function dots(a){return `<div class="bv-dots" role="img" aria-label="Đã xem ${a.n} trên ${a.max} lượt hôm nay">${Array.from({length:a.max},(_,i)=>`<i class="${i<a.n?'on':''}${i===2||i===6?' gift':''}">${i===2||i===6?'🎁':''}</i>`).join('')}</div>`;}
+function dots(a){return `<div class="bv-dots" role="img" aria-label="Đã xem ${a.n} trên ${a.max} lượt hôm nay">${Array.from({length:a.max},(_,i)=>`<i class="${i<a.n?'on':''}">${i<a.n?'✓':''}</i>`).join('')}</div>`;}
 function row(icon,title,text,btn){return `<article class="bv-row"><span class="bv-ico" aria-hidden="true">${icon}</span><div><b>${title}</b><p>${text}</p>${btn||''}</div></article>`;}
 function paint(){
   const root=B.dlg?.querySelector('.bv-root');if(!root)return;
   const env=B.env,a=info(env);
   if(!a){root.innerHTML=`<header class="sheet-head"><h2 id="bv-title">📺 Quà xem quảng cáo</h2><button type="button" class="icon-btn" data-bv-close aria-label="Đóng">✕</button></header><div class="sheet-body"><p>Quà xem quảng cáo đang tạm nghỉ.</p></div>`;return;}
   const now=Date.now()/1000+(B.skew||0),gold=a.gold>now?a.gold:0,left=a.left>0;
-  const chest=a.chest?`Lượt thứ ${a.chest.at} mở 🎁 rương ${fmt(a.chest.lo)}–${fmt(a.chest.hi)} xu.`:'Hôm nay đã mở đủ rương rồi!';
   const go=(place,label)=>left?`<button type="button" class="btn primary small" data-place="${place}">📺 ${label}</button>`:'';
   root.innerHTML=`<header class="sheet-head"><h2 id="bv-title">📺 Quà xem quảng cáo</h2><button type="button" class="icon-btn" data-bv-close aria-label="Đóng">✕</button></header>
     <div class="sheet-body bv-body">
-      <section class="bv-top">${dots(a)}<p><b>Hôm nay: ${a.n}/${a.max} lượt.</b> ${left?chest:'Mai xem tiếp nhé!'}</p></section>
+      <section class="bv-top">${dots(a)}<p><b>Hôm nay: ${a.n}/${a.max} lượt.</b> ${left?'Cảm ơn bạn đã ủng hộ phố!':'Mai xem tiếp nhé!'}</p></section>
       ${row('⏰','Giờ vàng riêng',`Lãi tiệm và quầy của bạn ×${String(a.mult/100).replace('.',',')} trong 1 giờ.${gold?` <b>Đang bật tới ${hhmm(gold)}</b> (<span data-bv-left>${Math.ceil((gold-now)/60)}</span> phút).`:''}`,go('gold',gold?'Thêm 1 giờ':'Bật 1 giờ'))}
-      ${a.shift?row('💼','Thưởng khép ca',`Ca vừa khép được thưởng thêm <b>+${fmt(a.shift)} xu</b>.`,go('shift','Nhận thưởng')):''}
+      ${a.theft?row('💸','Lấy lại tiền bị mất',`${esc(a.theft.what)}: lấy lại một nửa, <b>${fmt(a.theft.back)} xu</b> vào ví. Hạn tới ${hhmm(a.theft.until)}.`,go('theft','Lấy lại '+fmt(a.theft.back)+' xu')):''}
       ${row('🧩','Ghép ba',`Khay đầy? Xem quảng cáo để hồi sinh. Hoặc nhận ngay +1 Hoàn tác, +1 Xáo, +1 Đẩy ô.`,`${go('tile','Nhận trợ giúp')} <button type="button" class="btn ghost small" data-bv-go="tile">Chơi Ghép ba</button>`)}
+      ${row('📺','Ở các chỗ khác','📝 Trượt phỏng vấn, bài thi chứng chỉ hay buổi xét thăng chức: thi lại ngay. 📦 Hàng đang về: về tới cửa ngay. 🚔 Trong trại: ra trại ngay. Nút 📺 nằm ngay ở chỗ đó.','')}
       <p class="bv-note">Xem hết quảng cáo mới có thưởng. Mỗi tài khoản ${a.max} lượt một ngày, 0 giờ đêm làm mới.</p>
     </div>`;
 }

@@ -172,10 +172,10 @@ function panelHTML(j,id){
 }
 function endButton(j){
   const wait=(j.ready*1000-nowMs())/1000;
-  const ad=S.env?.api?.state?.ads;   // 📺 game/ads.py: a view takes 5 minutes off the day (state.ads only while ads are on)
-  const tv=wait>0&&ad?.left>0?btn(`📺 Xem quảng cáo: bớt ${Math.round((ad.jail_s||300)/60)} phút <small>· còn ${ad.left}/${ad.max}</small>`,'bonus',{},'ghost full',S.busy?' disabled':''):'';
+  const ad=S.env?.api?.state?.ads;   // 📺 game/ads.py: a watched ad lets the player out at once (state.ads only while ads are on)
+  const tv=ad?.left>0?btn(`📺 Xem quảng cáo: ra trại ngay <small>· còn ${ad.left}/${ad.max}</small>`,'bonus',{},'primary full',S.busy?' disabled':''):'';
   return wait>0?btn(`🌙 Hết ngày sau <span data-jl-count="day">${mmss(wait)}</span>`,'end',{},'cream big full',' disabled')+tv
-    :btn(S.sure?'🌙 Chắc chưa? Hết ngày nhé':'🌙 Hết một ngày trong trại','end',{},'primary big full',S.busy?' disabled':'');
+    :btn(S.sure?'🌙 Chắc chưa? Hết ngày nhé':'🌙 Hết một ngày trong trại','end',{},'primary big full',S.busy?' disabled':'')+tv;
 }
 function askButton(j){
   const ask=j.ask_next?(j.ask_next*1000-nowMs())/1000:0;
@@ -453,7 +453,7 @@ async function askBail(){
   }catch(e){S.flash={text:e.message||'Chưa nhờ được. Thử lại nhé.',kind:'bad'};}
   finally{S.busy=false;render();}
 }
-/** 📺 A rewarded ad (v4/bonus-video.js): the camp closes while Google's ad plays and opens again after. */
+/** 📺 A rewarded ad (v4/bonus-video.js): out at once. The camp closes while Google's ad plays; sync() says goodbye. */
 async function bonus(){
   const env=S.env;S.busy=true;render();
   try{await (await import('./bonus-video.js')).watch(env,'jail',{restore:()=>openJail(env)});}

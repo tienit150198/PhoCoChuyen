@@ -490,6 +490,9 @@ def resolve(s: dict, c: dict, career: str, rid: str, auto: bool = False) -> dict
         # Accidental damage is covered without a police file; theft needs one.
         insurance = (lost['fund'] + lost['stock']) * INSURANCE_PERCENT // 100
         lines += _credit(s, c, career, insurance, 'Bảo hiểm tài sản chi trả', live['id'], 'insurance_recovery')
+    if case is None and total > 0 and kind != 'den':   # 📺 💸 what a thief took, not paid back: half back for an ad
+        from . import ads   # (a police file: what it does not get back, when it closes, in _police)
+        ads.note_loss(s, sum(-ln['amount'] for ln in lines if ln['cat'] == 'theft_loss' and ln['amount'] < 0) - insurance, x['label'])
     trust = r.get('trust', 0) + (r.get('trust_win', 0) if won else r.get('trust_lose', 0) if won is False else 0)
     _trust(c, trust)
     if r.get('flag'):
@@ -555,6 +558,10 @@ def _police(s: dict, c: dict, career: str, result: dict) -> None:
             residual = (k['fund'] + stock_value) * (100 - pct) // 100
             insurance = residual * INSURANCE_PERCENT // 100
             lines += _credit(s, c, career, insurance, 'Bảo hiểm tài sản chi trả', k['id'], 'insurance_recovery')
+        if pct < 100:   # 📺 💸 what the police did not get back (nor the insurance paid): half back for an ad
+            from . import ads
+            taken = k['fund'] + k['wallet'] + sum(q * u for _, q, u in k['stock'])
+            ads.note_loss(s, taken * (100 - pct) // 100 - insurance, x['label'])
         if pct:
             _trust(c, 2)
             _feed(s, c, career, 'Nghe nói công an phường vừa bắt được đứa gây chuyện ở tiệm mình quen. Khu mình yên tâm hơn rồi!',

@@ -60,4 +60,7 @@ def apply_fx(s: dict, p: dict, amount: int) -> str:
         bk._log(b, day, 'acc', label, -taken)
         bk._inbox(b, day, 'sms', SMS[sub].format(bank=K.BANK_NAME, no=b['no'][-4:].rjust(len(b['no']), '•')[-8:], amt=_fmt(taken)))
     p['_taken'] = taken
+    if taken and sub != 'police':   # 📺 💸 a theft or a scam (never a fine): half back for an ad
+        from . import ads
+        ads.note_loss(s, taken, label)
     return ''

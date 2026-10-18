@@ -45,15 +45,21 @@ function optBtn(o,i,op,data){
   const why=o.ok===false?(o.why||'Chưa làm được'):'';
   return `<button type="button" class="rui-opt${i===0?' primary':''}" data-rui="${op}"${attrs(data)}${why||S.busy?' disabled':''}><span class="rui-opt-emoji" aria-hidden="true">${o.emoji||'•'}</span><span class="rui-opt-text"><b>${esc(o.label)}</b><small>${why?esc(why):costLine(o)}</small></span></button>`;
 }
+/** 📺 💸 Half of the latest theft / scam back for a rewarded ad (game/ads.py 'theft'; state.ads.theft while it stands). */
+function tvBack(){
+  const a=S.env?.api?.state?.ads;
+  return a?.theft&&a.left>0?`<button type="button" class="btn primary small bv-btn" data-rui="bonus">📺 Xem quảng cáo, lấy lại ${xu(a.theft.back)} <small>· còn ${a.left}/${a.max}</small></button>`:'';
+}
 const flash=()=>S.flash?`<p class="rui-flash ${S.flash.kind}" role="status">${esc(S.flash.text)}</p>`:'';
 
 /* ---- the card (a warning or an event) ---- */
 function popHTML(){
-  if(S.done)return head(S.done.emoji,S.done.title)+`<div class="wn-body"><p class="rui-line">${esc(S.done.text)}</p></div><footer class="wn-foot"><button type="button" class="btn primary big full" data-rui="close">Xong</button></footer>`;
+  if(S.done)return head(S.done.emoji,S.done.title)+`<div class="wn-body"><p class="rui-line">${esc(S.done.text)}</p>${tvBack()?`<p class="rui-chips">${tvBack()}</p>`:''}</div><footer class="wn-foot"><button type="button" class="btn primary big full" data-rui="close">Xong</button></footer>`;
   const r=R(),c=r?.card,w=!c&&r?.warn;
   if(c){
     const chips=[];
     if(c.loss)chips.push(`<span class="rui-chip out">${c.kind==='hack'?`−${xu(c.loss)} trong tài khoản`:`−${xu(c.loss)} tiền mặt`}</span>`);
+    if(c.loss&&tvBack())chips.push(tvBack());
     if(c.cover)chips.push(`<span class="rui-chip good">🛡️ Bảo hiểm trả ${c.cover}%</span>`);
     return head(c.emoji,c.title,c.left?`Chọn trong ${c.left} ngày`:'')+`<div class="wn-body">${flash()}<p class="rui-line">${esc(c.text)}</p>${chips.length?`<p class="rui-chips">${chips.join('')}</p>`:''}`+
       `<div class="rui-opts">${c.opts.map((o,i)=>optBtn(o,i,'choose',{id:c.id,choice:o.id})).join('')}</div>`+
@@ -214,6 +220,7 @@ async function onClick(d,op,data){
   switch(op){
     case'close':close(d);return;
     case'pop':openPop();return;
+    case'bonus':{const pop=d===S.pop;await (await import('./bonus-video.js')).watch(S.env,'theft',{restore:()=>{if(pop)openPop();else if(!d.open)d.showModal();}});render();return;}
     case'choose':case'prevent':{
       const r=R(),src=op==='choose'?r?.card:r?.warn;if(!src)return;
       const res=await send(op==='choose'?'jr_rui_choose':'jr_rui_prevent',op==='choose'?{id:data.id,choice:data.choice}:{opt:data.opt});

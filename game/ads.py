@@ -3,12 +3,12 @@
 clone cũng được, nhưng mỗi acc chỉ cho 7 lần/1 ngày là được", "giờ vàng thì kiểu 1 tiếng x1.5").
 
 The ad itself is Google's (AdSense H5 games, the Ad Placement API's `adBreak({type: 'reward'})`, loaded by
-public/js/v4/ads.js). The web has no server-side verification of a watched ad, so the server keeps what it can:
+public/js/v4/bonus-video.js). The web has no server-side verification of a watched ad, so the server keeps what it can:
 
-* ``ad_ticket {place, kind?}`` (a tap on a 📺 button): a ticket {id, p: place, at: server ms} in the save, refused once the
+* ``ad_ticket {place, what?, career?}`` (a tap on a 📺 button): a ticket {id, p: place, at: server ms} in the save, refused once the
   Vietnam day's DAY_MAX views are used or the place has nothing to give.
 * ``ad_claim {ticket}`` (the ad's adViewed): the ticket of this save, at least MIN_WATCH_S after it was issued and at
-  most TICKET_TTL_S, pays the place's reward, counts one view, and the 3rd / 7th view of the day also opens a 🎁 chest.
+  most TICKET_TTL_S, pays the place's reward and counts one view.
   Amounts and times are the server's; nothing the page sends is a number of xu.
 
 Places (PLACES):
@@ -17,19 +17,30 @@ Places (PLACES):
   (game/quay_business.py sale) read gold_mult() at the sale's own time, like the street's.
 * 'tile'  🧩 Ghép ba (game/tile_match.py): the tray is full → the page takes the last tile back and the save gets
   TILE_PACK more free boosters, kept until used (spent after the day's own free uses, before xu).
-* 'jail'  🚔 Trại tạm giữ (game/jail.py): the jail day may end JAIL_S (5 minutes) sooner (its `since` moves back).
-* 'shift' 💼 Thưởng khép ca: the last closed shift's base net × SHIFT_PCT % (at most SHIFT_CAP) into the wallet, once;
-  journey._end_of_day writes the offer (offer_shift), the next closed shift replaces it.
+* 'jail'  🚔 Trại tạm giữ (game/jail.py): out at once (owner 19/10: "trại giam giữ có thể ra tù ngay nếu xem quảng
+  cáo"); the sentence block goes, jail.mark_commit drops the mark in the same transaction.
+* 'theft' 💸 Bị trộm, bị lừa (owner 19/10 "ok"): half (LOSS_PCT) of the save's latest theft / scam loss back into the
+  wallet, once, within LOSS_TTL. note_loss() keeps that loss where it happens: game/rui.py (móc túi, trộm, hack),
+  game/mishap.py (giả danh, link giả, ATM, côn đồ…; never a police fine), game/happenings.py (theft at work),
+  game/life.py (bị lừa).
+* 'retake' 📝 Trượt thi, phỏng vấn (owner 19/10 "ok luôn"), {what, career?}: 'job' the workplace takes an application
+  again today (employment cooldown_day), 'cert' the free self-study exam opens now (certificates: start and ready move
+  back together, as its validator wants), 'promo' a review that did not pass comes again after the next shift (wait 0).
+* 'rush'  📦 Hàng đang về (owner 19/10 "xem quảng cáo xong về ngay luôn"), {career}: every order still on its way to
+  that workplace is at the door now (game/inventory.py orders and the stock desk's shipments: placed/lo/hi/at move to
+  the door's minute, late cleared, the order their validators want kept).
 
 Save: journey['ads'] (optional; older servers keep it untouched and ignore it)
-  {v, d: VN date, n: views that day, tk?: ticket, g?: gold until (epoch s), tb?: {booster: n}, sh?: {c, x, day}}.
-The count follows the save, so one account has DAY_MAX a day (reset_all carries it: journey.carry_reset). Clones are
-allowed (owner). Off unless ADS_CLIENT (ca-pub-…) or ADS_FAKE=1 (a local stand-in ad, never in production) is set.
+  {v, d: VN date, n: views that day, tk?: ticket {id, p, at, k?}, g?: gold until (epoch s), tb?: {booster: n},
+   ls?: the latest theft / scam loss {amt, w: what, at: epoch s}}.
+The count follows the save, so one account has DAY_MAX a day (reset_all carries it: journey.carry_reset). Many accounts
+on one device are fine (owner 19/10: "1 máy nhiều lần được k cần chặn nhé, dù sao người ta cũng ủng hộ mà").
+Off unless ADS_REWARDED=1 (the AdSense account of game/observability.py, once H5 Games Ads approved it) or ADS_FAKE=1
+(a local stand-in ad, never in production). MNL_ADS_OFF=1 switches everything off.
 """
 from __future__ import annotations
 
 import datetime
-import hashlib
 import html
 import json
 import os
@@ -44,17 +55,16 @@ COMMANDS = ('ad_ticket', 'ad_claim')
 DAY_MAX = 7                      # owner: 7 views a day, per account
 MIN_WATCH_S = 8                  # a ticket is claimed at least this long after it was issued
 TICKET_TTL_S = 15 * 60           # …and at most this long
-PLACES = ('gold', 'tile', 'jail', 'shift')
+PLACES = ('gold', 'tile', 'jail', 'theft', 'retake', 'rush')
+RETAKE = ('job', 'cert', 'promo')
+LOSS_PCT = 50                    # owner: "bị trộm bị lừa", half back
+LOSS_TTL = 86400                 # …within a day of the loss
 GOLD_S = 3600                    # owner: "1 tiếng x1.5"
 GOLD_MULT = 150                  # hundredths
 GOLD_AHEAD = DAY_MAX * GOLD_S    # gold never runs further ahead than a day's views
 TILE_PACK = {'undo': 1, 'shuffle': 1, 'push': 1}
 TILE_KEEP = 30                   # boosters of one kind kept at most
-JAIL_S = 300
-SHIFT_PCT, SHIFT_CAP = 50, 3000  # as 🔥 x3_week.CAP: one shift's bonus at most
-CHESTS = {3: (3000, 8000), 7: (10000, 30000)}   # 🎁 the day's 3rd and 7th views: xu, drawn from the save's seed
 CLIENT = re.compile(r'ca-pub-[0-9]{10,20}')
-NAMES = {'gold': '⏰ Giờ vàng riêng', 'tile': '🧩 Hồi sinh Ghép ba', 'jail': '🚔 Bớt giờ trong trại', 'shift': '💼 Thưởng khép ca'}
 
 
 def _now() -> float:
@@ -70,9 +80,11 @@ def _flag(name: str) -> bool:
 
 
 def client() -> str:
-    """The AdSense publisher id, '' when unset or malformed."""
-    v = os.environ.get('ADS_CLIENT', '').strip()
-    return v if CLIENT.fullmatch(v) else ''
+    """The AdSense publisher id while rewarded ads are switched on (ADS_REWARDED=1), else ''."""
+    if not _flag('ADS_REWARDED'):
+        return ''
+    from .observability import ADSENSE_ACCOUNT
+    return ADSENSE_ACCOUNT if CLIENT.fullmatch(ADSENSE_ACCOUNT) else ''
 
 
 def fake() -> bool:
@@ -84,7 +96,7 @@ def enabled() -> bool:
     return not _flag('MNL_ADS_OFF') and bool(client() or fake())
 
 
-# ---------------------------------------------------------------- the page: meta, CSP, ads.txt
+# ---------------------------------------------------------------- the page: meta, CSP (/ads.txt: game/observability.py)
 def public_config() -> dict:
     if not enabled():
         return {}
@@ -116,12 +128,6 @@ def content_security_policy(base: str) -> str:
     base = base.replace('frame-src ', f'frame-src {CSP_FRAME} ', 1)
     base = base.replace("connect-src 'self'", f"connect-src 'self' {CSP_CONNECT}", 1)
     return base.replace("img-src 'self'", f"img-src 'self' {CSP_IMG}", 1)
-
-
-def ads_txt() -> str | None:
-    """/ads.txt (AdSense asks for it): the publisher line, None while unset."""
-    c = client()
-    return f'google.com, {c.replace("ca-pub-", "pub-")}, DIRECT, f08c47fec0942fa0\n' if c else None
 
 
 # ---------------------------------------------------------------- the save
@@ -193,55 +199,97 @@ def spend_tile(s: dict, kind: str, n: int) -> None:
         del a['tb']
 
 
-def offer_shift(s: dict, career: str, net: int, day: int) -> int:
-    """journey._end_of_day: the closed shift's bonus offer (replaces an older one); 0 and nothing kept when net ≤ 0."""
-    if not enabled():
-        return 0
-    x = min(SHIFT_CAP, max(0, int(net)) * SHIFT_PCT // 100)
-    a = get(s)
-    if x <= 0:
-        if a:
-            a.pop('sh', None)
-        return 0
-    a = _ensure(s, _now())
-    a['sh'] = dict(c=career, x=x, day=day)
-    return x
+def note_loss(s: dict, amount, what: str) -> None:
+    """💸 A theft or scam just took `amount` xu: the loss an ad may give half of back (a newer one replaces it)."""
+    if not enabled() or type(amount) is not int or amount <= 0 or not (s.get('journey') or {}).get('story'):
+        return
+    t = _now()
+    _ensure(s, t)['ls'] = dict(amt=min(amount, 10**9), w=str(what)[:80], at=int(t))
 
 
-def _chest(s: dict, a: dict) -> int:
-    lo, hi = CHESTS[a['n']]
-    seed = s['journey'].get('seed', 0)
-    h = int(hashlib.sha256(f'ads-chest|{seed}|{a["d"]}|{a["n"]}'.encode()).hexdigest()[:8], 16)
-    return lo + h % (hi - lo + 1) // 100 * 100
+def _loss(s: dict, t: float) -> dict | None:
+    ls = (get(s) or {}).get('ls')
+    return ls if isinstance(ls, dict) and t - ls['at'] <= LOSS_TTL else None
+
+
+def loss_back(s: dict, t: float | None = None) -> int:
+    ls = _loss(s, _now() if t is None else t)
+    return max(1, ls['amt'] * LOSS_PCT // 100) if ls else 0
+
+
+def _career(s: dict, k: str | None):
+    cid = (k or '').partition(':')[2]
+    c = (s.get('careers') or {}).get(cid)
+    return cid, (c if isinstance(c, dict) else None)
+
+
+def _on_the_way(c: dict, career: str) -> list:
+    """(order, door minute) of everything still on its way to this workplace: stock orders and stock-desk shipments,
+    each against the minute its own receive check reads."""
+    from . import engine, inventory
+    out = []
+    x = (c.get('ext') or {}).get('inv')
+    if isinstance(x, dict) and isinstance(x.get('orders'), list):
+        door = inventory.clock(c, career, turn=c['turn'] - 1)['abs']
+        out += [(o, door) for o in x['orders'] if o.get('status') == 'in_transit' and 'at' in o and o['at'] > door]
+    if isinstance(c.get('shipments'), list):
+        door = engine._clock(c, career, c['turn'] - 1)['abs']
+        out += [(o, door) for o in c['shipments'] if o.get('status') == 'in_transit' and 'at' in o and o['at'] > door]
+    return out
+
+
+def _retake(s: dict, k: str) -> str | None:
+    """Why `k` ('job:<career>', 'cert', 'promo:<career>') has no wait to skip; None when it has one."""
+    what = k.partition(':')[0]
+    j = s['journey']
+    if what == 'cert':
+        from . import certificates
+        st = j.get('study')
+        if not isinstance(st, dict) or st.get('mode') == 'class' or j['life_day'] >= st['ready']:
+            return 'Không có bài thi chứng chỉ nào đang phải chờ.'
+        return None if j['life_day'] - certificates.SELF_DAYS >= 1 else 'Bài thi chứng chỉ mở vào ngày mai.'
+    cid, c = _career(s, k)
+    if c is None:
+        return 'Nơi làm việc không hợp lệ.'
+    if what == 'job':
+        from . import employment
+        job = c.get('job') or {}
+        late = job.get('status') == 'rejected' and employment.today(s, c) < (job.get('cooldown_day') or 0)
+        return None if late else 'Nơi này không hẹn bạn phỏng vấn lại.'
+    from . import promotion
+    rec = promotion.record(s, cid)
+    return None if isinstance(rec, dict) and rec.get('wait', 0) > 0 else 'Không có buổi xét nào phải chờ.'
 
 
 def _hhmm(t: float) -> str:
     return datetime.datetime.fromtimestamp(t, VN).strftime('%H:%M')
 
 
-def _can(s: dict, place: str, t: float) -> None:
+def _can(s: dict, place: str, t: float, k: str | None = None) -> None:
     """What the place gives, or why it gives nothing now."""
     e = _core()
     need = e.need
     from . import jail
     inside = jail.jailed(s, t)
-    need(place == 'jail' or not inside, 'Trong trại chỉ xem quảng cáo để bớt giờ thôi nhé.', 'jailed')
+    need(place == 'jail' or not inside, 'Trong trại chỉ xem quảng cáo để ra trại thôi nhé.', 'jailed')
     if place == 'jail':
         need(inside, 'Bạn đang không ở trong trại.', 'ads_place')
-        b = s['journey'][jail.KEY]
-        d = jail.day_of(s['journey'])
-        need(b['since'] + jail._rules(d)[1] - int(t) > 0, 'Ngày trong trại đã có thể kết thúc rồi.', 'ads_place')
-    elif place == 'shift':
-        sh = (get(s) or {}).get('sh')
-        need(isinstance(sh, dict), 'Chưa có ca nào vừa khép để nhận thưởng.', 'ads_place')
     elif place == 'gold':
         need(gold_until(s) < t + GOLD_AHEAD - GOLD_S + 1, 'Giờ vàng riêng đã đủ dài rồi, dùng bớt rồi xem tiếp nhé.', 'ads_place')
     elif place == 'tile':
         tb = tile_credits(s)
-        need(all(tb.get(k, 0) < TILE_KEEP for k in TILE_PACK), 'Bạn còn nhiều trợ giúp Ghép ba lắm rồi.', 'ads_place')
+        need(all(tb.get(b, 0) < TILE_KEEP for b in TILE_PACK), 'Bạn còn nhiều trợ giúp Ghép ba lắm rồi.', 'ads_place')
+    elif place == 'theft':
+        need(_loss(s, t) is not None, 'Không có khoản tiền nào vừa bị trộm hay bị lừa để lấy lại.', 'ads_place')
+    elif place == 'retake':
+        why = _retake(s, k or '')
+        need(why is None, why or '', 'ads_place')
+    elif place == 'rush':
+        cid, c = _career(s, k)
+        need(c is not None and bool(_on_the_way(c, cid)), 'Không có hàng nào đang trên đường tới.', 'ads_place')
 
 
-def _give(s: dict, a: dict, place: str, t: float, result: dict) -> None:
+def _give(s: dict, a: dict, place: str, t: float, result: dict, k: str | None = None) -> None:
     from . import journey as jr
     j = s['journey']
     if place == 'gold':
@@ -254,13 +302,36 @@ def _give(s: dict, a: dict, place: str, t: float, result: dict) -> None:
         result['message'] = '🧩 Hồi sinh! +1 Hoàn tác, +1 Xáo, +1 Đẩy ô.'
     elif place == 'jail':
         from . import jail
-        b = j[jail.KEY]
-        b['since'] = max(0, int(b['since']) - JAIL_S)
-        result['message'] = f'🚔 Ngày trong trại ngắn lại {JAIL_S // 60} phút.'
-    elif place == 'shift':
-        sh = a.pop('sh')
-        jr._wallet(j, sh['x'], 'salary', f'📺 Thưởng khép ca · {jr._place(sh["c"])}'[:120], sh['c'])
-        result['message'] = f'💼 Thưởng khép ca: +{sh["x"]:,} xu vào ví.'.replace(',', '.')
+        jail.release(j)
+        result['message'] = '🎉 Bạn được ra trại ngay. Về nhà thôi, sống tử tế nha!'
+        result['jail'] = dict(free=True)
+    elif place == 'theft':
+        x = loss_back(s, t)
+        ls = a.pop('ls')
+        jr._wallet(j, x, 'life', f'📺 Lấy lại một nửa · {ls["w"]}')
+        result['message'] = f'💸 Lấy lại được {x:,} xu vào ví.'.replace(',', '.')
+    elif place == 'retake':
+        what = k.partition(':')[0]
+        cid, c = _career(s, k)
+        if what == 'cert':
+            from . import certificates
+            st = j['study']
+            st['start'], st['ready'] = j['life_day'] - certificates.SELF_DAYS, j['life_day']
+            result['message'] = '📝 Bài thi chứng chỉ mở ngay bây giờ. Chúc bạn thi tốt!'
+        elif what == 'job':
+            from . import employment
+            job = c['job']
+            job['cooldown_day'] = job['retry_told'] = employment.today(s, c)
+            result['message'] = '📝 Nơi tuyển dụng đồng ý cho bạn ứng tuyển lại ngay hôm nay.'
+        else:
+            from . import promotion
+            promotion.record(s, cid)['wait'] = 0
+            result['message'] = '📝 Hẹn xét lại ngay sau ca làm tới.'
+    elif place == 'rush':
+        cid, c = _career(s, k)
+        for o, door in _on_the_way(c, cid):
+            o.update(placed=min(o['placed'], door), lo=door, hi=door, at=door, late=None)
+        result['message'] = '📦 Hàng đã về tới cửa rồi, ra nhận và kiểm đếm nhé!'
 
 
 def action(s: dict, name: str, p: dict) -> tuple[dict, dict]:
@@ -275,12 +346,23 @@ def action(s: dict, name: str, p: dict) -> tuple[dict, dict]:
     ms = int(t * 1000)
     result = dict(message='', effects=[])
     if name == 'ad_ticket':
-        need(set(p) == {'place'} and p['place'] in PLACES, 'Quảng cáo không hợp lệ.', 'ads_place')
+        need({'place'} <= set(p) <= {'place', 'what', 'career'} and p['place'] in PLACES, 'Quảng cáo không hợp lệ.', 'ads_place')
         place = p['place']
+        k = None
+        if place == 'retake':
+            need(p.get('what') in RETAKE and set(p) <= {'place', 'what', 'career'}, 'Quảng cáo không hợp lệ.', 'ads_place')
+            k = 'cert' if p['what'] == 'cert' else f"{p['what']}:{p.get('career')}"
+        elif place == 'rush':
+            need(set(p) == {'place', 'career'}, 'Quảng cáo không hợp lệ.', 'ads_place')
+            k = f"rush:{p['career']}"
+        else:
+            need(set(p) == {'place'}, 'Quảng cáo không hợp lệ.', 'ads_place')
+        need(k is None or (len(k) <= 60 and re.fullmatch(r'[a-z]+(:[a-z0-9_]+)?', k) is not None),
+             'Quảng cáo không hợp lệ.', 'ads_place')
         a = _ensure(s, t)
         need(a['n'] < DAY_MAX, f'Hôm nay bạn đã xem đủ {DAY_MAX} quảng cáo rồi. Mai xem tiếp nhé!', 'ads_day')
-        _can(s, place, t)
-        a['tk'] = dict(id=secrets.token_hex(8), p=place, at=ms)
+        _can(s, place, t, k)
+        a['tk'] = dict(id=secrets.token_hex(8), p=place, at=ms, **({'k': k} if k else {}))
         result['ad'] = dict(ticket=a['tk']['id'], place=place)
     else:
         need(set(p) == {'ticket'} and isinstance(p['ticket'], str), 'Quảng cáo không hợp lệ.', 'ads_ticket')
@@ -291,17 +373,11 @@ def action(s: dict, name: str, p: dict) -> tuple[dict, dict]:
         need(ms - tk['at'] >= MIN_WATCH_S * 1000, 'Xem hết quảng cáo mới nhận được thưởng nhé.', 'ads_fast')
         need(ms - tk['at'] <= TICKET_TTL_S * 1000, 'Lượt quảng cáo này đã hết hạn, xem lại nhé.', 'ads_ticket')
         need(a['n'] < DAY_MAX, f'Hôm nay bạn đã xem đủ {DAY_MAX} quảng cáo rồi. Mai xem tiếp nhé!', 'ads_day')
-        place = tk['p']
-        _can(s, place, t)
+        place, k = tk['p'], tk.get('k')
+        _can(s, place, t, k)
         del a['tk']
         a['n'] += 1
-        _give(s, a, place, t, result)
-        if a['n'] in CHESTS:
-            from . import journey as jr
-            x = _chest(s, a)
-            jr._wallet(j, x, 'life', f'🎁 Rương nhà tài trợ · lượt {a["n"]}')
-            result['effects'].append(f'🎁 Xem đủ {a["n"]} lượt hôm nay: rương nhà tài trợ +{x:,} xu!'.replace(',', '.'))
-            result['chest'] = x
+        _give(s, a, place, t, result, k)
         result['ad'] = dict(place=place, n=a['n'], left=DAY_MAX - a['n'])
     e.validate_state(s)
     return s, result
@@ -311,22 +387,20 @@ def carry_reset(old: dict, fresh: dict) -> None:
     """reset_all: the day's views stay counted (and what was earned with them)."""
     a = (old.get('journey') or {}).get(KEY)
     if isinstance(a, dict):
-        keep = {k: (dict(v) if isinstance(v, dict) else v) for k, v in a.items() if k not in ('tk', 'sh')}
+        keep = {k: (dict(v) if isinstance(v, dict) else v) for k, v in a.items() if k not in ('tk', 'ls')}
         fresh['journey'][KEY] = keep
 
 
 def public(s: dict) -> dict | None:
-    """state.ads (None while ads are off): the day's views left, the gold window, the shift offer, the next chest."""
+    """state.ads (None while ads are off): the day's views left and the gold window."""
     if not enabled() or not (s.get('journey') or {}).get('story'):
         return None
     t = _now()
-    a = get(s) or {}
     n = views_today(s, t)
-    sh = a.get('sh') if isinstance(a.get('sh'), dict) else None
-    nxt = next((k for k in sorted(CHESTS) if k > n), None)
+    ls = _loss(s, t)
     return dict(n=n, max=DAY_MAX, left=DAY_MAX - n, gold=gold_until(s) if gold_until(s) > t else 0,
-                mult=GOLD_MULT, gold_s=GOLD_S, jail_s=JAIL_S, shift=sh['x'] if sh else 0,
-                chest=dict(at=nxt, lo=CHESTS[nxt][0], hi=CHESTS[nxt][1]) if nxt else None, now=int(t))
+                mult=GOLD_MULT, gold_s=GOLD_S, now=int(t),
+                theft=dict(back=loss_back(s, t), what=ls['w'], until=ls['at'] + LOSS_TTL) if ls else None)
 
 
 def validate(s: dict) -> None:
@@ -336,22 +410,24 @@ def validate(s: dict) -> None:
     e = _core()
     need, integer = e.need, e.integer
     msg = 'Quảng cáo trong bản lưu không hợp lệ.'
-    need(isinstance(a, dict) and {'v', 'd', 'n'} <= set(a) <= {'v', 'd', 'n', 'tk', 'g', 'tb', 'sh'}, msg)
+    need(isinstance(a, dict) and {'v', 'd', 'n'} <= set(a) <= {'v', 'd', 'n', 'tk', 'g', 'tb', 'ls'}, msg)
     need(a['v'] == VERSION and isinstance(a['d'], str) and len(a['d']) == 10, msg)
     integer(a['n'], 0, DAY_MAX)
     if 'tk' in a:
         tk = a['tk']
-        need(isinstance(tk, dict) and set(tk) == {'id', 'p', 'at'} and tk['p'] in PLACES, msg)
+        need(isinstance(tk, dict) and {'id', 'p', 'at'} <= set(tk) <= {'id', 'p', 'at', 'k'} and tk['p'] in PLACES, msg)
+        need('k' not in tk or (isinstance(tk['k'], str) and re.fullmatch(r'[a-z]+(:[a-z0-9_]+)?', tk['k']) is not None
+                                and len(tk['k']) <= 60), msg)
         need(isinstance(tk['id'], str) and re.fullmatch(r'[0-9a-f]{16}', tk['id']) is not None, msg)
         integer(tk['at'], 0, 10**14)
     if 'g' in a:
         integer(a['g'], 0, 10**11)
+    if 'ls' in a:
+        ls = a['ls']
+        need(isinstance(ls, dict) and set(ls) == {'amt', 'w', 'at'} and isinstance(ls['w'], str) and len(ls['w']) <= 80, msg)
+        integer(ls['amt'], 1, 10**9)
+        integer(ls['at'], 0, 10**11)
     if 'tb' in a:
         need(isinstance(a['tb'], dict) and a['tb'] and set(a['tb']) <= set(TILE_PACK), msg)
         for v in a['tb'].values():
             integer(v, 1, TILE_KEEP)
-    if 'sh' in a:
-        sh = a['sh']
-        need(isinstance(sh, dict) and set(sh) == {'c', 'x', 'day'} and isinstance(sh['c'], str) and len(sh['c']) <= 40, msg)
-        integer(sh['x'], 1, SHIFT_CAP)
-        integer(sh['day'], 0, 10**7)

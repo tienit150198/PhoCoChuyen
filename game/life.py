@@ -586,6 +586,9 @@ def _fire_hard(s: dict, L: dict, x: dict, day: int, career: str | None, gossip: 
         loss = bounded_loss(s['journey']['wallet'], x['loss']) if x['cat'] == 'lua' else x['loss']
         card['loss'] = -_wallet(s, -loss, _fill(x['title'], s, card))
         card['money'] = -card['loss']
+        if x['cat'] == 'lua' and card['loss'] > 0:   # 📺 💸 a scam: half back for an ad
+            from . import ads
+            ads.note_loss(s, card['loss'], _fill(x['title'], s, card))
     L['recent'][x['id']] = day
     L['stats']['hard'] += 1
     if x['cat'] == 'lua':

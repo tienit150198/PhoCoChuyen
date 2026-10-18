@@ -11,6 +11,7 @@
  *            Shown in the 'manager' sheet while ui.pmOffice is set. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {T} from './terms.js';
+import {tvButton} from './bonus-button.js';   // 📺 📝 xét lại sau ca tới (game/ads.py)
 import {masteryCard} from './career-mastery.js';
 import {competitionCard} from './career-competition.js';
 import {scaleCard,scaleAction} from './career-scale.js';
@@ -81,7 +82,8 @@ function review(p){
  * command (game/promotion.py _later, `review`) and live in ui.pmLast for this session; after a reload only the rule. */
 function lastReview(env,wait){
   const L=env.ui?.pmLast?.career===env.api.state.current?env.ui.pmLast:null;
-  const when=`<p class="small">⏳ Chỉ đếm ngày có làm việc. Làm thêm <b>${wait}</b> ngày là sếp hẹn xét lại ở đầu ca kế tiếp.</p>`;
+  const tv=tvButton(env.api.state,'retake','Xét lại ngay sau ca tới',{what:'promo',career:env.api.state.current});
+  const when=`<p class="small">⏳ Chỉ đếm ngày có làm việc. Làm thêm <b>${wait}</b> ngày là sếp hẹn xét lại ở đầu ca kế tiếp.</p>${tv?`<div class="row wrap">${tv}</div>`:''}`;
   if(!L)return `<div class="pm-last">${when}<p class="small muted">💡 Lần xét trước chưa qua: có câu bị chấm 0 điểm, hoặc chọn “Xin cao” khi chưa trả lời tốt nhất cả hai câu. Lần sau chọn cách đúng quy trình nhất rồi “Xin hợp lý”.</p></div>`;
   const mark=s=>s===2?'✅':s===1?'🟡':'❌';
   return `<div class="pm-last"><p class="pm-eyebrow">📋 Lần xét vừa rồi</p><ul class="pm-rules">${L.rows.map(r=>`<li class="${r.score?'':'bad'}">${mark(r.score)} ${esc(r.q)}<small class="pm-hint">Bạn chọn “${esc(r.a)}” · ${esc(r.word)}</small></li>`).join('')}${L.why==='high'?`<li class="bad">❌ Xin cao<small class="pm-hint">Chỉ được khi cả hai câu đều tốt nhất. Lần sau chọn “Xin hợp lý”.</small></li>`:''}</ul>${when}</div>`;
