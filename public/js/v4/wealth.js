@@ -119,7 +119,9 @@ export function wealthHTML(state,o={}){
       const move=P.story&&state?.journey?.places?.[p.cid]?fundMoveHTML(state,p.cid):'';
       return row(esc(m.emoji||'🏪'),esc(m.name||p.cid),p.fund<0?minus(-p.fund):xu(p.fund),{cls:(p.fund<0?'bad ':'')+(p.cid===o.current?'here':''),id:'fund',sub:p.cid===o.current?'đang ở đây':p.paused?'tạm đóng':p.employed?'làm thuê':'',extra:move});
     }).join('');
-    parts.push(section('Quỹ nơi làm việc',rows));
+    // 👛 Rút hết (F#423 "mong ad thêm phần nút rút tất cả"): every fund's most, one confirm (wlDrawAll).
+    const all=drawAll(state);
+    parts.push(section('Quỹ nơi làm việc',rows,all.list.length>=2?`<button type="button" class="btn small primary wl-all" data-action="wlDrawAll">👛 Rút hết · ${xu(all.total)}</button>`:''));
   }
   if(P.joint!=null)parts.push(section('Quỹ chung',row('💞','Quỹ chung vợ chồng',xu(P.joint),{id:'joint'}),link('Hôn nhân','marriage')));
   if(P.homes.length)parts.push(section('Nhà',P.homes.map(x=>row(esc(x.emoji),esc(x.name),xu(x.value),{id:'home',sub:x.live?'giá thị trường hôm nay':x.let?'đang cho thuê':'đang để trống'})+
@@ -206,9 +208,32 @@ export async function loadJoint(env,force=false){
 /** 'wlMode' / 'wlAmt' (page only, data-quick: they work while a command is on the wire): open or fold Rút số khác /
  * Góp vốn, set its amount (the − / + buttons, the chips and the typed box). 'wlDraw': one tap for the most the fund can
  * give, or (data-typed) the typed amount, after a confirm. 'wlInvest': the typed amount, after a confirm. */
-export const WEALTH_ACTIONS=['wlMode','wlAmt','wlDraw','wlInvest'];
+export const WEALTH_ACTIONS=['wlMode','wlAmt','wlDraw','wlInvest','wlDrawAll'];
+/** 👛 Rút hết: the places whose fund can give something now ([cid, most]) and their total. */
+export function drawAll(state){
+  const j=state?.journey;if(!j?.story)return {list:[],total:0};
+  const list=Object.entries(j.places||{}).map(([cid,p])=>[cid,Math.max(0,Math.floor(num(p.withdraw_max)))]).filter(([,n])=>n>=1);
+  return {list,total:list.reduce((s,[,n])=>s+n,0)};
+}
 export async function wealthAction(action,data,el,env){
   if(!WEALTH_ACTIONS.includes(action))return false;
+  if(action==='wlDrawAll'){
+    // One confirm, then each fund's own jr_withdraw (the same command as 👛 Rút về ví), its most read again from the
+    // state each command returns; the first refusal stops the rest and says why.
+    const all=drawAll(env.api?.state);if(!all.list.length)return true;
+    if(!await env.confirmAction(`Rút hết ${fmt(all.total)} xu về ví?`,
+      `Từ ${all.list.length} quỹ nơi làm việc. Mỗi quỹ vẫn giữ 80 xu dự phòng và đủ tiền hóa đơn chưa trả. Rút nhầm thì bấm Góp vốn để bỏ lại vào quỹ.`,
+      `Rút hết · ${fmt(all.total)} xu`))return true;
+    let got=0,from=0;
+    for(const [cid] of all.list){
+      const most=Math.floor(num(env.api.state?.journey?.places?.[cid]?.withdraw_max));
+      if(!(most>=1))continue;
+      if(!await env.cmd('jr_withdraw',{career:cid,amount:most},{quiet:true}))break;
+      got+=most;from++;delete MOVE.amt[`${cid}:draw`];
+    }
+    if(got)env.toast?.(`Đã rút ${fmt(got)} xu từ ${from} quỹ về ví.`,'good');
+    env.renderSheet();return true;
+  }
   const cid=data.career,state=env.api?.state;
   if(!cid||!state?.journey?.places?.[cid])return true;
   if(action==='wlMode'){

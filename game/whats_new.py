@@ -32,6 +32,11 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.50", date="2026-10-18", items=(
+        dict(emoji='👛', text="Tiền của bạn có nút Rút hết: rút tiền từ mọi quỹ nơi làm việc về ví chỉ với một lần xác nhận."),
+        dict(emoji='📦', text="Kho Mẹ & bé và Nhà thuốc: số bạn gõ không còn tự trả về 1, thêm nút Tối đa để nhập đầy một lần."),
+        dict(emoji='💬', text="Bấm Trò chuyện mở nhanh hơn: phần chat được tải sẵn trong lúc bạn chơi."),
+    )),
     dict(version="2.4.49", date="2026-10-18", items=(
         dict(emoji='🎯', text="Giao diện mới gọn hơn: một nút lớn ở giữa luôn chỉ việc tiếp theo (Chọn nghề, Mở ca, Làm tiếp). Bấm Mở ca là vào ca luôn."),
         dict(emoji='🧹', text="Bớt thẻ che bản đồ: Trò chuyện vào thanh dưới, cần điều khiển nhỏ lại; trong tiệm có nút Ra đảo, chỉ một hàng nút làm việc."),

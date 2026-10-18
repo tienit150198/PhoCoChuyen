@@ -1190,7 +1190,8 @@ function stockDesk(cap){
   const pick=sups.length?`<details class="wh-sups wh-sups-fold" data-fold="wh-sups"><summary><span class="wh-sups-k">Nhập từ</span><b>${sup?`<span aria-hidden="true">${esc(sup.emoji||'🚚')}</span> ${esc(sup.name)}`:''}</b><small>${esc(sup?.quote?.label||sup?.window||'')}</small></summary><div class="wh-sup-list" role="radiogroup" aria-label="Chọn nhà cung cấp">${sups.map(s=>`<button type="button" role="radio" aria-checked="${s.id===supId}" class="wh-sup${s.id===supId?' on':''}" data-wh-sup="${esc(s.id)}"><span class="wh-sup-name"><span aria-hidden="true">${esc(s.emoji||'🚚')}</span> ${esc(s.name)}</span><b>${esc(s.quote?.label||s.window||'')}</b><small>${esc(priceWord(s.factor))} · ${esc(s.window||'')}</small></button>`).join('')}</div>${sup?.note?`<p class="dw-hint">${esc(sup.note)}</p>`:''}</details>`:'';
   const row=p=>{const q=c.stock[p.id],on=onWay(p.id),held=q-c.available[p.id]+(c.warehouse?.reserved?.[p.id]||0),room_=Math.max(0,cap-q-on-(c.warehouse?.reserved?.[p.id]||0)),max=Math.min(lineMax,room_),state=q===0?'out':q+on<=2?'low':'';
     // The bill sits on the order button and follows the number ("Đặt 3 · 108 xu", whBill), priced as whOrder charges.
-    const qty=Math.min(Math.max(1,max),state?Math.min(4,Math.max(1,max)):1),can=!!(max&&c.open&&!vansFull),cost=Math.max(1,Math.ceil(p.cost*qty*(sup?.factor??1)));
+    // A number the player typed or stepped stays put through the 30 s refresh and every redraw (#424: "hay bị lỗi reset").
+    const typed=ui.whQty?.[id]?.[p.id],qty=Math.min(Math.max(1,max),typed||(state?Math.min(4,Math.max(1,max)):1)),can=!!(max&&c.open&&!vansFull),cost=Math.max(1,Math.ceil(p.cost*qty*(sup?.factor??1)));
     const lots=care?.batches?.filter(b=>b.lot===p.id)||[],first=lots.find(b=>!b.flag),flagged=lots.filter(b=>b.flag).reduce((n,b)=>n+b.qty,0);
     return `<div class="inventory-row inv-row ${state}">${itemArt(p.icon||'box',45,p.color)}<div class="grow"><h4>${esc(p.name)}${mb?'':` · ${esc(p.id)}`}</h4><small><b class="inv-big">${q}</b>/${cap} trên kệ${on?` · <span class="inv-flag info">+${on} đang giao</span>`:''}${held?` · đang giữ ${held}`:''} · ${fmt(p.cost)} xu/món</small>${!mb&&(first||flagged)?`<small class="block">${first?`HSD gần nhất: ngày ${first.exp} · ${leftWord(first.days_left)}`:''}${first&&flagged?' · ':''}${flagged?`<b class="wh-bad">${flagged} hộp cần rút</b>`:''}</small>`:''}<span class="inv-bar" aria-hidden="true"><i style="width:${Math.round(q/cap*100)}%"></i><i class="on" style="width:${Math.round(on/cap*100)}%"></i></span>${keepRow(c,p.id,p.name)}</div>`+
       `<span class="inv-row-act">${whQty(p,max,qty)}${can?`<label class="wh-pick"><input type="checkbox" data-wh-pick="${esc(p.id)}"${picks[p.id]?' checked':''}> Gộp</label>`:''}<button type="button" class="btn small${state&&max&&!vansFull?' primary':''}" data-wh-order="${esc(p.id)}"${can?` data-cost="${p.cost}" data-factor="${sup?.factor??1}" data-money="${c.money}"`:''}${can&&cost<=c.money?'':' disabled'}>${!max?'Kệ đầy':vansFull?`Đủ ${SHIP_CAP} kiện`:!c.open?(mb?'Mở tiệm trước':'Mở quầy trước'):whLabel(qty,cost,c.money)}</button>${!mb?(c.held_lots.includes(p.id)?commandButton('Cô Thu kiểm lại','ph_release',{lot:p.id},'small primary'):commandButton('Tạm giữ','ph_quarantine',{lot:p.id},'small ghost')):''}</span></div>`;};
@@ -1216,13 +1217,14 @@ async function whMerge(){
   const cost=lines.reduce((n,l)=>n+Math.max(1,Math.ceil(product(l.item).cost*l.qty*sup.factor)),0);
   const what=lines.map(l=>`${l.qty} × ${product(l.item).name}`).join(', ');
   if(cost>c.money){toast(`Quỹ còn ${fmt(c.money)} xu, đơn gộp cần ${fmt(cost)} xu.`,true);return;}
-  if(await confirmAction(`Đặt đơn gộp ${lines.length} mã?`,`${what} từ ${sup.name}: trả ${fmt(cost)} xu một lần. Dự kiến nhận: ${sup.quote?.eta_label||sup.window||''}, cả đơn một chuyến. Hàng chỉ cộng kho sau khi bạn đếm nhận từng kiện.`,'Đặt đơn gộp')&&await cmd('order_stock',{lines,supplier:supId}))(ui.whPick??={})[id]={};
+  if(await confirmAction(`Đặt đơn gộp ${lines.length} mã?`,`${what} từ ${sup.name}: trả ${fmt(cost)} xu một lần. Dự kiến nhận: ${sup.quote?.eta_label||sup.window||''}, cả đơn một chuyến. Hàng chỉ cộng kho sau khi bạn đếm nhận từng kiện.`,'Đặt đơn gộp')&&await cmd('order_stock',{lines,supplier:supId})){(ui.whPick??={})[id]={};for(const l of lines)delete ui.whQty?.[id]?.[l.item];}
 }
 /** Quantity with − / + (44 px) around the number for a stock-desk row; disabled when the shelf is full. */
-const whQty=(p,max,qty)=>`<span class="wh-qty"><button type="button" class="btn ghost" data-wh-step="-1" aria-label="Bớt một"${max>1?'':' disabled'}>−</button>${qtyBox({value:qty,min:1,max:Math.max(1,max),label:`Số nhập ${p.name}`,cls:'input',attrs:`id="qty-${p.id}"${max?'':' disabled'}`})}<button type="button" class="btn ghost" data-wh-step="1" aria-label="Thêm một"${max>1?'':' disabled'}>+</button></span>`;
+const whQty=(p,max,qty)=>`<span class="wh-qty"><button type="button" class="btn ghost" data-wh-step="-1" aria-label="Bớt một"${max>1?'':' disabled'}>−</button>${qtyBox({value:qty,min:1,max:Math.max(1,max),label:`Số nhập ${p.name}`,cls:'input',attrs:`id="qty-${p.id}"${max?'':' disabled'}`})}<button type="button" class="btn ghost" data-wh-step="1" aria-label="Thêm một"${max>1?'':' disabled'}>+</button><button type="button" class="btn ghost wh-max" data-wh-step="max" aria-label="Tối đa ${max} món"${max>1?'':' disabled'}>Tối đa</button></span>`;
 const whLabel=(q,cost,money)=>cost>money?`Thiếu ${fmt(cost-money)} xu`:`Đặt ${q} · ${fmt(cost)} xu`;
 /** The order button of a stock-desk row as the number changes: what the parcel costs, or the shortfall (disabled). */
 function whBill(input){
+  if(input?.id?.startsWith('qty-')){const n=Math.floor(Number(input.value)),box=(ui.whQty??={})[career()]??={},item=input.id.slice(4);if(input.value!==''&&n>=1)box[item]=n;else delete box[item];}   // kept for the redraws (stockDesk)
   const b=input?.closest('.inv-row')?.querySelector('[data-wh-order][data-cost]');if(!b)return;
   const q=Math.max(1,Math.min(Number(input.max)||1,Math.floor(Number(input.value))||1)),cost=Math.max(1,Math.ceil(Number(b.dataset.cost)*q*Number(b.dataset.factor))),money=Number(b.dataset.money)||0;
   b.disabled=cost>money;b.textContent=whLabel(q,cost,money);
@@ -1232,7 +1234,7 @@ async function whOrder(item){
   const qty=Number(document.getElementById('qty-'+item)?.value);
   if(!Number.isInteger(qty)||qty<1||qty>(c.warehouse?.line_max??6)){toast(`Mỗi lần đặt từ 1 đến ${c.warehouse?.line_max??6} món.`,true);return;}
   const p=product(item),cost=Math.max(1,Math.ceil(p.cost*qty*sup.factor));
-  if(await confirmAction('Đặt một kiện hàng?',`${qty} × ${p.name} từ ${sup.name}: trả ${fmt(cost)} xu ngay. Dự kiến nhận: ${sup.quote?.eta_label||sup.window||''}. Chỉ cộng kho sau khi kiện tới và bạn đếm nhận.`,'Đặt hàng'))await cmd('order_stock',{item,qty,supplier:supId});
+  if(await confirmAction('Đặt một kiện hàng?',`${qty} × ${p.name} từ ${sup.name}: trả ${fmt(cost)} xu ngay. Dự kiến nhận: ${sup.quote?.eta_label||sup.window||''}. Chỉ cộng kho sau khi kiện tới và bạn đếm nhận.`,'Đặt hàng')&&await cmd('order_stock',{item,qty,supplier:supId}))delete ui.whQty?.[id]?.[item];
 }
 function phLotBook(){
   const care=careData();if(!care)return empty('Sổ lô mở khi quầy mở ca','','box');
@@ -1344,7 +1346,7 @@ document.addEventListener('click',async e=>{
   const el=e.target.closest?.('[data-wh-tab],[data-wh-sup],[data-wh-order],[data-wh-open],[data-wh-step],[data-wh-pick],[data-wh-merge],[data-cs-pick]');if(!el||el.disabled||ui.busy)return;
   if(el.dataset.whPick)whPick(el);
   else if(el.dataset.whMerge)await whMerge();
-  else if(el.dataset.whStep){const input=el.parentElement.querySelector('input');if(input){input.value=String(Math.max(1,Math.min(Number(input.max)||1,(Math.floor(Number(input.value))||1)+Number(el.dataset.whStep))));whBill(input);}}
+  else if(el.dataset.whStep){const input=el.parentElement.querySelector('input'),top=Number(input?.max)||1;if(input){input.value=String(el.dataset.whStep==='max'?top:Math.max(1,Math.min(top,(Math.floor(Number(input.value))||1)+Number(el.dataset.whStep))));whBill(input);}}
   else if(el.dataset.whTab){ui.whTab=el.dataset.whTab;renderSheet(false);}
   else if(el.dataset.whSup){(ui.whSup??={})[career()]=el.dataset.whSup;renderSheet();}
   else if(el.dataset.whOrder)await whOrder(el.dataset.whOrder);
@@ -1631,7 +1633,7 @@ async function handleAction(action,data,el){
     case'stPause':closeSheet();setPaused(!ui.paused);break;
     case'stView':openSheet('home',{jrView:data.view});break;
     case'money':openSheet('money');loadJoint(env());break;
-    case'wlDraw':case'wlInvest':case'wlMode':case'wlAmt':await wealthAction(action,data,el,{...env(),placeName:cid=>placeOf(cid).name});break;  // 💼 Rút / góp vốn (F#259)
+    case'wlDraw':case'wlInvest':case'wlMode':case'wlAmt':case'wlDrawAll':await wealthAction(action,data,el,{...env(),placeName:cid=>placeOf(cid).name});break;  // 💼 Rút / góp vốn (F#259)
     case'journal':if(['teacher','tour_guide','milk_tea'].includes(career()))openSheet('passport');else openSheet('journal',{journalTab:'quests'});break;
     case'library':if(['teacher','tour_guide','milk_tea'].includes(career()))openSheet('workshop');else openSheet('journal',{journalTab:'library'});break;
     case'journalTab':ui.journalTab=data.tab;renderSheet(false);break;

@@ -24,7 +24,7 @@ import {faceCode} from './face-code.js';
 const RETRY=[1,2,4,8,15],SLOW=[3,8,20,60,120,300,600],PING_MS=25000,DEAD_MS=60000,CONNECT_MS=20000;
 const listeners=new Map();
 let env=null,ws=null,attempt=0,timer=0,pinger=0,lastFrame=0,tried=0,probing=false,fab=null,shown=false,shownDate=false,renderTimer=0,lastTotal=-1,cssAsked=false,sentFc=null,faceTimer=0;
-let connectTimer=0,probeTimer=0,painted='';
+let connectTimer=0,probeTimer=0,painted='',chatWarm=false;
 /** The face code of this save ('' while the save is not loaded). */
 const myFc=()=>{try{return env?.api?.state?faceCode(env.api.state):'';}catch(e){console.warn('face:',e);return '';}};
 /** 🙂 After a change of face or clothes: tell a service that knows faces (once per change). */
@@ -143,6 +143,9 @@ function frame(f){
       // evidence of a dead socket: ask for a fresh reply before replacing it.
       clearInterval(pinger);pinger=setInterval(()=>{if(Date.now()-lastFrame>DEAD_MS){probe();return;}live.send({t:'ping'});},PING_MS);
       deepLink();syncFace();   // the save may have loaded after the hello
+      // 💬 the chat's code (≈60 KB with honours/frames/lì xì) comes while the player looks around, so the first tap
+      // on Trò chuyện opens at once instead of downloading it then (owner 18/10: "bấm trò chuyện cũng load lâu")
+      if(live.flags.chat&&!chatWarm){chatWarm=true;(window.requestIdleCallback||setTimeout)(()=>import('./chat.js').catch(()=>{chatWarm=false;}),{timeout:5000});}
       break;
     case'state':
       if(f.friends)live.friends=f.friends;if(f.chans)live.chans=f.chans;if(f.me)live.me=f.me;

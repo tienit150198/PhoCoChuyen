@@ -1,5 +1,8 @@
 {
   "strings": {
+  "Tiền của bạn có nút Rút hết: rút tiền từ mọi quỹ nơi làm việc về ví chỉ với một lần xác nhận.": "Your money has a Withdraw all button: every workplace fund goes to your wallet with one confirmation.",
+  "Kho Mẹ & bé và Nhà thuốc: số bạn gõ không còn tự trả về 1, thêm nút Tối đa để nhập đầy một lần.": "Mother & Baby and Pharmacy stock rooms: the number you type no longer jumps back to 1, and a Max button fills the order at once.",
+  "Bấm Trò chuyện mở nhanh hơn: phần chat được tải sẵn trong lúc bạn chơi.": "Chat opens faster: it now loads in the background while you play.",
   "Giao diện mới gọn hơn: một nút lớn ở giữa luôn chỉ việc tiếp theo (Chọn nghề, Mở ca, Làm tiếp). Bấm Mở ca là vào ca luôn.": "The new interface is tidier: one big button in the middle always shows the next step (Choose a career, Open shift, Continue). Open shift starts the shift at once.",
   "Bớt thẻ che bản đồ: Trò chuyện vào thanh dưới, cần điều khiển nhỏ lại; trong tiệm có nút Ra đảo, chỉ một hàng nút làm việc.": "Fewer cards over the map: Chat moved to the bottom bar and the joystick is smaller; inside a shop there is a To the island button and a single row of work buttons.",
   "Chữ trên nút to, dễ đọc hơn và to thêm khi bật Chữ lớn. Đang dở ca thì mở game là vào thẳng tiệm.": "Button labels are bigger and easier to read, and grow with Large text. In the middle of a shift, opening the game takes you straight into your shop.",
