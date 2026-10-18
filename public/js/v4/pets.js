@@ -122,7 +122,8 @@ const roomWhy=()=>noRoom()?'Nhà và trại nuôi đều đầy':'';
 function fusion(){
   const t=TT();if(!t)return null;const all=allPets(),ps=S.fz.map(id=>all.find(p=>p.id===id)).filter(Boolean);if(ps.length!==3)return {ps};
   const rk=ps.map(p=>p.legend?6:p.r||0),low=Math.min(...rk),fee=t.ranks[low].fee;
-  const bp=low===6?t.limits.legend:Math.min(90,t.ranks[low].fuse+t.limits.mix*rk.reduce((a,r)=>a+r-low,0));
+  let bp=low===6?t.limits.legend:Math.min(90,t.ranks[low].fuse+t.limits.mix*rk.reduce((a,r)=>a+r-low,0));
+  const ad=Number(X()?.boost)||0;if(ad)bp=Math.min(95,bp+ad);   // 📺 a rewarded ad: +10 points on the next fusion
   const ids=ps.map(p=>p.b).sort(),recipe=low<6&&(t.recipes||[]).find(r=>[...r.of].sort().join()===ids.join());
   return {ps,low,fee,bp:Math.round(bp*100)/100,recipe:recipe||null};
 }
@@ -402,7 +403,7 @@ function lab(v,c){
   const slots=[0,1,2].map(i=>{const p=f.ps[i];return p?`<button type="button" class="pt-slot on" data-pt="fz" data-id="${esc(p.id)}" aria-label="Bỏ chọn ${esc(p.n)}">${petPic(c,p,'sit',64,{})}${rankTag(p)}</button>`:`<span class="pt-slot" aria-hidden="true">＋</span>`;}).join('');
   let info=`<p class="pt-muted pt-center">Chọn 3 bé cùng loài. Hôm nay ${x?.today?.fuse||0}/${t.limits.fuse_day} lần.</p>`;
   if(f.ps.length===3){const to=f.low===6?`🌟 ${esc(breedOf(t.legend[breedOf(f.ps[0].b)?.kind])?.name||'Huyền thoại')}`:`hạng <span class="pt-rk r${f.low+1}">${esc(RNAME(f.low+1))}</span>`;
-    info=`<p class="pt-fz">🎯 <b>${f.bp}%</b> ra bé ${to} · 💸 ${fmt(f.fee)} xu${f.recipe?`<br>🧬 ${t.limits.hybrid}% ra giống lai <b>${esc(breedOf(f.recipe.to)?.name||'')}</b>${f.recipe.coats?' (cần 3 màu lông khác nhau)':''}`:''}</p>`;}
+    info=`<p class="pt-fz">🎯 <b>${f.bp}%</b>${x?.boost?` <small>(📺 +${x.boost}%)</small>`:''} ra bé ${to} · 💸 ${fmt(f.fee)} xu${f.recipe?`<br>🧬 ${t.limits.hybrid}% ra giống lai <b>${esc(breedOf(f.recipe.to)?.name||'')}</b>${f.recipe.coats?' (cần 3 màu lông khác nhau)':''}`:''}</p>`;}
   const group=(at,title)=>{const list=all.filter(p=>p.at===at);if(!list.length)return '';
     return `<h4>${title}</h4><div class="pt-picks sm">${list.map(p=>{const on=S.fz.includes(p.id),why=on?'':fuseWhy(p);
       return `<button type="button" class="pt-pick${on?' on':''}" data-pt="fz" data-id="${esc(p.id)}" aria-pressed="${on}"${why||(!on&&S.fz.length>=3)?' disabled':''}${why?` title="${esc(why)}"`:''}>${petPic(c,p,'sit',64,{})}<b data-no-translate>${esc(p.n)}</b><small>${rankTag(p)}${why?` ${esc(why)}`:''}</small></button>`;}).join('')}</div>`;};

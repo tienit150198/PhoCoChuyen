@@ -20,7 +20,7 @@ Chủ game chốt (18–19/10/2026):
 | 💸 Khoản vừa bị trộm / bị lừa | `ads.note_loss()` gọi ở `game/rui.py` (móc túi, trộm vào nhà, hack), `game/mishap.py` (giả danh, link giả, ATM, "tin nội bộ", côn đồ; **không** tính tiền phạt), `game/happenings.py` (trộm ở tiệm, phần không được đền lại), `game/life.py` (bị lừa) |
 | 📝 Thi lại | `employment` `cooldown_day`, `certificates` `study.start/ready`, `promotion` `wait` |
 | 📦 Hàng về ngay | `game/inventory.py` đơn nhập hàng (các bước của `inv_receive`), `c['shipments']` của quầy kho (nhà thuốc, Mẹ & bé: `engine.stock_received`) |
-| 🐾 Ghép thú cưng | `ads.pet_boost` / `ads.spend_pet_boost`, gọi trong `game/pet_tiers.py` `_fuse` (gắn khi bản thú cưng hạng D–SSS lên nhánh chính) |
+| 🐾 Ghép thú cưng | `ads.pet_boost` / `ads.spend_pet_boost`, gọi trong `game/pet_tiers.py` `_fuse` (đã gắn từ 2.4.55) |
 | Trang web: meta `mnl-bonus`, CSP, Referrer-Policy | `game/ads.py`, `game/webassets.py`, `server.py` (`/ads.txt` và meta `google-adsense-account`: `game/observability.py`) |
 | Client | `public/js/v4/bonus-video.js` (luồng xem, bảng ☰ Thêm), `public/js/v4/bonus-button.js` (nút 📺 vẽ từ `state.ads`), `public/css/bonus-video.css` |
 | Nút ở từng chỗ | `tile-match.js` (màn thua), `jail.js` (trại), `rui.js` (thẻ bị trộm / hack), `views.js` (trượt phỏng vấn, 🚚 Đang giao), `certificates.js` (chờ bài thi tự học), `promo.js` (hẹn xét lại), `app.js` (quầy kho, ☰ Thêm) |

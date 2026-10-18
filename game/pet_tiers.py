@@ -572,6 +572,20 @@ def chance(ranks: list) -> int:
     return min(9000, FUSE_BP[low] + MIX_BP * sum(r - low for r in ranks))
 
 
+def _ads():
+    try:
+        from . import ads
+    except ImportError:   # a build without rewarded ads
+        return None
+    return ads
+
+
+def _ad_boost(s: dict) -> int:
+    """📺 What a rewarded ad adds to the next fusion (per 10 000), 0 without one (or without ads)."""
+    a = _ads()
+    return a.pet_boost(s) if a and hasattr(a, 'pet_boost') else 0
+
+
 def _fuse(s: dict, p: dict) -> dict:
     pt = _pt()
     j = s['journey']
@@ -600,10 +614,15 @@ def _fuse(s: dict, p: dict) -> dict:
     low = min(ranks)
     fee = FUSE_FEE[low]
     bp = chance(ranks)
+    boost = _ad_boost(s)
+    if boost:   # 📺 a rewarded ad: +10 points on this fusion at any rank, still a roll (game/ads.py)
+        bp = min(_ads().PET_TOP, bp + boost)
     nick = pt._name(p['nick']) if p.get('nick') not in (None, '') else None
     _confirm(p, f'Xác nhận ghép ba bé ({_fmt(fee)} xu, tỷ lệ thành công {bp / 100:g}%).')
     how = pt._pay(s, fee, f'Ghép thú cưng · {", ".join(q["n"] for q in pets)}'[:120])
     d['f'] += 1
+    if boost:
+        _ads().spend_pet_boost(s)
     if roll(10000) >= bp:
         return dict(message=f'💨 Lần này chưa thành, ba bé vẫn ở bên bạn. ({how})', fuse=dict(ok=False, chance=bp))
     # the pup
@@ -682,7 +701,7 @@ def public(s: dict) -> dict:
     pct, cap = bonus_rate(s, p) if p else (0, 0)
     return dict(ken=[lite(s, q) for q in x['ken']] if x else [], ret=list(x['ret']) if x else [], rn=x['rn'] if x else 0,
                 gear=[gear_view(x, g) for g in x['gear']] if x else [],
-                today=dict(fuse=d['f'], train=d['tr'], stroll=d['w'], got=d['got']),
+                today=dict(fuse=d['f'], train=d['tr'], stroll=d['w'], got=d['got']), boost=_ad_boost(s) / 100,
                 bonus=dict(on=bool(p), pet=p['id'] if p else None, pct=pct, cap=cap, got=d['got']))
 
 

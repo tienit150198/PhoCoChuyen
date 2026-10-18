@@ -1,3 +1,13 @@
+# v2.4.55 — 2026-10-19
+
+🐾 Thú cưng hạng D–SSS (chủ game 19/10; trò chơi/giải đấu thú cưng để sau). game/pet_tiers.py, mọi dữ liệu mới ở `journey.petx` (bản cũ giữ khóa lạ nên rollback về 2.4.53/2.4.54 không mất gì; bé ở trại nuôi bản cũ không thấy):
+- Hạng khi nhận (Chân Nhỏ D70 C22 B6 A1,8 S0,18 SS0,02; tiệm D55 C28 B11 A4,5 S1,3 SS0,19 SSS0,0001 %); bé cũ: nhận nuôi D, mua C. Bé đang dắt và không buồn cộng 2/3/5/8/12/20/30 % tiền làm việc của chính mình (tile_match.fund_bonus, không tính lệnh quầy), trần 20k…1M/ngày, SSS thân ≥100/200: 40 %/1,25M, 50 %/1,5M; dòng "🐾 Thú cưng hạng…" không tính vào x3.
+- Ghép 3 bé cùng loài (≥3 ngày, không buồn): 60/45/30/15/6/3 %, 3 SSS → huyền thoại 5 % (phí 500…5M, 10M), lệch hạng +3 %/bậc, 14 công thức lai 10 %, cùng giống 5 % đột biến; thành công: ba bé về quê với bà; trượt: giữ cả ba, mất phí; 10 lần/ngày; SS+ và huyền thoại báo cả phố (bảng tin). Trại nuôi 30 chỗ. 14 giống mới ở tiệm, 14 giống lai, 2 huyền thoại (Linh Khuyển Hoàng Kim, Mèo Thần Tài).
+- 5 chỉ số + luyện (10 buổi/ngày), linh kiện 5 ô D–SSS (+1…+10, trượt không mất; ghép 3 món; dạo tìm 3 lần/ngày), bảng 💪 Lực chiến (pet_board week 'LC', GET /api/pets/board?kind=power).
+- Dắt bé ở phố/đám cưới/thị trấn 2.5D (client/isometric/pet-walkers.ts, live `pt` có r/x; live/pet_rank.py chỉ giữ hạng người chơi thật có). Chó ×1,3.
+- 📺 Quảng cáo (vẫn tắt): lần ghép tới +10 điểm % (ads.pet_boost trong pet_tiers._fuse, ≤95 %).
+Có gì mới 2.4.55: 4 dòng, chỉ về thú cưng (chủ game).
+
 # v2.4.54 — 2026-10-19
 
 📺 Xác minh trang với Google AdSense (chủ game 19/10: "cứ gắn đi, tí nữa deploy sau"): trang có `<meta name="google-adsense-account" content="ca-pub-9603813200470438">` (game/observability.py head_tags) và `/ads.txt` trả `google.com, pub-9603813200470438, DIRECT, f08c47fec0942fa0` (server.py). Không có script quảng cáo, CSP không đổi, người chơi không thấy gì. Quảng cáo có thưởng làm sau (nhánh feat/rewarded-ads). Không có Có gì mới. Test: tests/test_adsense_verify.py.

@@ -446,6 +446,22 @@ class PetTest(AdsBase):
         with self.assertRaises(GameError):
             validate_state(bad)
 
+    def test_a_fusion_uses_it(self):
+        """game/pet_tiers.py _fuse: SS ×3 → SSS goes 3 % → 13 %, still a roll, and only once."""
+        from game import pet_tiers as px
+        from tests.test_pet_tiers import Fusion, rolls
+        s, ids = Fusion.three(None, 5)
+        s, _ = self.watch(s, 'pet')
+        self.assertEqual(px.public(s)['boost'], 10)
+        with rolls(9999):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+        self.assertEqual((r['fuse']['ok'], r['fuse']['chance']), (False, 1300))
+        self.assertEqual(ads.pet_boost(s), 0)
+        with rolls(9999):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+        self.assertEqual(r['fuse']['chance'], 300)
+        validate_state(s)
+
 
 class PageTest(AdsBase):
     def test_the_game_page_carries_the_meta(self):
