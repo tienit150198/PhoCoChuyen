@@ -32,6 +32,11 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.56", date="2026-10-19", items=(
+        dict(emoji='📋', text="Bé nhà mình hiện đủ mọi bé, cả bé ở trại nuôi. Lọc theo chó, mèo, theo hạng; đón bé ở trại về nhà chỉ một chạm.", go=dict(action='pets', data={'tab': 'home'})),
+        dict(emoji='✨', text="Hào quang mới cho bé hạng B đến SS. SSS có cánh thiên thần, vầng hào quang, lông cầu vồng; Mèo Thần Tài vẫy lộc, mưa đồng vàng."),
+        dict(emoji='🧬', text="Mua về là ghép được ngay, chó mèo ghép chung cũng được. Bé và linh kiện ở tiệm chỉ có hạng D, C: muốn hạng cao thì ghép lên.", go=dict(action='pets', data={'tab': 'lab'})),
+    )),
     dict(version="2.4.55", date="2026-10-19", items=(
         dict(emoji='🐾', text="Dắt thú cưng đi khắp nơi: ngoài phố và trong thị trấn, ai cũng thấy bé của bạn đi theo. Cún được vẽ to hơn.", go=dict(action='pets', data={})),
         dict(emoji='🏅', text="Thú cưng có hạng D đến SSS: bé đang dắt cộng thêm 2–30% tiền làm việc, SSS thân thiết tới 50%. Hạng cao có hào quang."),

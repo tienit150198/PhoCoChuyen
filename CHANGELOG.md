@@ -1,3 +1,12 @@
+# v2.4.56 — 2026-10-19
+
+🐾 Thú cưng (chủ game 19/10, sau khi 2.4.55 lên):
+- "Bé nhà mình sao k hiển thị full các bé": dải ảnh trên cùng có mọi bé (nhà, rồi trại 🏠, quê 🌾); 📋 danh sách lọc theo chó/mèo, hạng, nơi ở; bấm bé ở trại: đón về, hoặc nhà đủ 3 thì đổi chỗ với một bé ở nhà (jr_pet_kennel `swap`, `walk`).
+- Hào quang mới (pet-art.js aura): B vòng đôi + kim cương, A ngọc tím + pha lê bay, S tia nắng vàng xoay, SS tia lửa + lửa chân + đốm lửa, SSS cánh thiên thần + vầng hào quang + tia cầu vồng + mưa sao, lông 🌈 Cầu Vồng pastel; huyền thoại tia vàng, mây lành, Mèo Thần Tài vẫy lộc + mưa đồng + thỏi vàng, Linh Khuyển rồng vàng. SSS/huyền thoại vẽ to hơn một chút (khung rộng hơn).
+- Luật: ghép ngay khi mua về (bỏ 3 ngày), chó mèo ghép chung (huyền thoại theo một bé bố mẹ); bé nhận nuôi/mua chỉ hạng D/C (trại D80 C20, tiệm D60 C40), linh kiện ở tiệm D/C, dạo tìm D/C; hạng cao chỉ từ ghép.
+- Ẩn mọi tỷ lệ (chủ game "đừng show tỷ lệ ra"): catalogue không còn shelter/shop/fuse/mix/hybrid/legend/mutant/up, kết quả ghép không còn `chance`, linh kiện không còn `up_bp`.
+Có gì mới 2.4.56: 3 dòng, chỉ về thú cưng.
+
 # v2.4.55 — 2026-10-19
 
 🐾 Thú cưng hạng D–SSS (chủ game 19/10; trò chơi/giải đấu thú cưng để sau). game/pet_tiers.py, mọi dữ liệu mới ở `journey.petx` (bản cũ giữ khóa lạ nên rollback về 2.4.53/2.4.54 không mất gì; bé ở trại nuôi bản cũ không thấy):

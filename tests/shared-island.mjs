@@ -50,7 +50,8 @@ await test('load failure and a later jail state leave no island listeners or pau
 await test('classic entry routes load shared island lazily and do not save a renderer preference',()=>{
   const app=readFileSync('public/js/app.js','utf8'),town=readFileSync('public/js/v4/town-walk.js','utf8'),source=readFileSync('public/js/shared-island.js','utf8');
   assert.match(app,/\['sharedIsland','map','Ra đảo nhặt rương'\]/);assert.match(app,/import\('\.\/shared-island\.js'\)/);
-  assert.match(town,/data-action="sharedIsland"/);assert.match(source,/createTownPresence/);assert.match(source,/createTreasureController/);
+  assert.doesNotMatch(town,/data-action="sharedIsland"/);   // owner 19/10: the old town header stays one row (menu + rail keep it)
+  assert.match(source,/createTownPresence/);assert.match(source,/createTreasureController/);
   assert.doesNotMatch(source,/saveInterface|newInterface\s*[:=]\s*true|location\.reload/);
 });
 await test('classic island uses the real shared room and server-proof chest claim without optimistic currency',async()=>{

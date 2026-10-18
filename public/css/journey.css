@@ -319,6 +319,8 @@ html.reduce-motion .jr-scene[open],body.reduce-motion .jr-scene[open]{animation:
 @media (max-width:420px){
   html[data-layout="phone"] .jr-top .acct-chip{width:44px;min-width:44px;min-height:44px;padding:0;justify-content:center}
   html[data-layout="phone"] .jr-top .acct-chip>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  html[data-layout="phone"] .jr-top .jr-town{min-width:44px;min-height:44px;padding:0 10px;justify-content:center}
+  html[data-layout="phone"] .jr-top .jr-town .jr-word{display:none}
 }
 html[data-layout="phone"][data-orientation="landscape"] .jr-gender{grid-template-columns:auto auto;align-items:center;justify-content:center;padding:8px 10px}
 html[data-layout="phone"][data-orientation="landscape"] .jr-gender>svg,html[data-layout="phone"][data-orientation="landscape"] .jr-gender>:first-child{width:56px;height:56px}

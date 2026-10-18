@@ -361,7 +361,7 @@ function placesSection(env){
 
 function homeMain(env){
   const {api}=env,J=api.state.journey;
-  const town=townOK()?btn('🗺️ Bản đồ phố','jrTown',{},'cream small jr-town'):'';
+  const town=townOK()?btn('🗺️<span class="jr-word"> Bản đồ phố</span>','jrTown',{},'cream small jr-town','aria-label="Bản đồ phố"'):'';   // a phone: the emoji only (owner 19/10 "gọn lại")
   const top=`<header class="jr-top"><div class="grow"><span class="eyebrow">${J.story?`Khu phố nhỏ · Ngày sống ${fmt(J.life_day)}`:'Khu phố nhỏ · mọi nơi đều mở'}</span><h1>Hành trình của bạn</h1></div>${town}${accountChip(env)}${api.state.current?btn(icon('x',20),'close',{},'ghost small jr-close','aria-label="Đóng"'):''}</header>`;
   // 🎓 F#267: Thi chứng chỉ sits in the first column, right under the goals (it was last in the third, under the places).
   // A new neighbour's first day (firstDay; feedback 16/10 "nhiều chữ"): the goal, you and the places. Certificates, the

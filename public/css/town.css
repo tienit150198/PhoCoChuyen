@@ -31,7 +31,7 @@ html[data-layout="phone"] .tw-top{padding:18px max(12px,var(--safe-r)) 8px max(1
 @media (max-width:430px){.tw-top:has(.tw-x3):has(.tw-cert) .tw-title,.tw-top:has(.tw-fair):has(.tw-cert) .tw-title{display:none}}
 /* Any three chips on a phone: the title was squeezed to a letter peeking out under the first chip. */
 @media (max-width:430px){.tw-top:has(.tw-chip~.tw-chip~.tw-chip) .tw-title{display:none}}
-.tw-close{flex:none;width:42px;height:42px}
+.tw-close{flex:none;width:42px;height:42px;margin-left:auto}
 .tw-hint{margin:0;padding:8px 16px;background:var(--accent-soft);color:var(--ink);font-weight:800;font-size:.95rem;text-align:center}
 .tw-slot{position:relative;flex:1 1 auto;min-height:240px}
 .tw-stage{position:absolute;inset:0;overflow:hidden;background:#efe0c6;touch-action:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
@@ -93,4 +93,4 @@ html[data-layout="phone"] .tw-stage .rd-toggle[hidden]+.bb-toggle{top:66px}
 .tw-stage:has(.tw-card:not([hidden])) .tw-map-tools{bottom:110px}
 @media(max-height:740px){.tw-goals{max-height:28%}.tw-slot{min-height:320px}}
 /* 🏮 With the fair's chip too, a phone's top bar wraps onto a second line instead of cutting 📋 Danh sách off. */
-@media (max-width:430px){.tw-top:has(.tw-fair){flex-wrap:wrap;row-gap:6px}}
+@media (max-width:430px){.tw-top .tw-fair .tw-word,.tw-top .tw-cert .tw-word{display:none}.tw-top .tw-fair,.tw-top .tw-cert{min-width:44px;justify-content:center;padding:6px 10px}}
