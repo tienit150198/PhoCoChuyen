@@ -10,7 +10,8 @@ Who holds what
   with their own names (TIERS, BOARD_TITLES).
 * Every workplace board: its top 1 is "🏆 Trùm <nghề>" (CAREER_NOUN).
 * Only players the board shows (game/leaderboard.py _VISIBLE: accounts unless hidden, guests who opted in), in
-  the board's own order. 💎 Sưu tầm (`collection`) too since 18/10. Nothing is written into a save: holding a weekly title is a server fact (table
+  the board's own order. 💎 Sưu tầm (`collection`) too since 18/10, and 🦉 Online (`online`, game/online_board.py:
+  play time this week, read from stat_play, not from the `leaderboard` table). Nothing is written into a save: holding a weekly title is a server fact (table
   `lb_weekly`), shown on the board, under the name in Phố nghề and on the name tag in Đi dạo.
 
 When
@@ -35,7 +36,7 @@ import time
 from .wedding_live import vn_day, vn_week, week_start, VN   # the Vietnam calendar ("Khách mời của tuần" uses it too)
 
 META = 'weekly'                 # leaderboard_meta key: '<VN day>|<ISO week>' of the last refresh
-ALL, TITLES, CERTS, WEALTH, COLLECTION = 'all', 'titles', 'certs', 'wealth', 'collection'
+ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE = 'all', 'titles', 'certs', 'wealth', 'collection', 'online'
 TOP = 10                        # ranks that hold a title on the main boards
 TIERS = ((1, 1), (2, 3), (4, 10))   # (first rank, last rank) of each tier
 TIER_LABELS = ('Top 1', 'Top 2–3', 'Top 4–10')
@@ -46,8 +47,10 @@ BOARD_TITLES = {                # (emoji, name) per tier
     WEALTH: (('💎', 'Đại gia của phố'), ('💰', 'Đại gia mới nổi'), ('🤑', 'Hội nhà giàu')),
     # 18/10 (owner: "sưu tầm cũng có nè"): 💎 Sưu tầm (game/auction.py collection_score) holds titles like the others.
     COLLECTION: (('🏺', 'Bộ sưu tập huyền thoại'), ('🔨', 'Nhà sưu tầm đấu giá'), ('💠', 'Hội sưu tầm')),
+    # 18/10 (owner: "cho top các bạn online nhiều nữa nhé, top 1 khung này"): 🦉 play time this week (game/online_board.py).
+    ONLINE: (('🦉', 'Cú đêm của phố'), ('🌙', 'Thức cùng ánh trăng'), ('🏮', 'Hội cú đêm')),
 }
-MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION)     # the order of honour (a name tag shows the best one: tier first, then this order)
+MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE)     # the order of honour (a name tag shows the best one: tier first, then this order)
 CAREER_EMOJI = '🏆'
 CAREER_NOUN = dict(
     milk_tea='trà sữa', grocery='tạp hóa', delivery='giao hàng', cafe_bakery='bánh & cà phê', florist='tiệm hoa',
@@ -121,15 +124,24 @@ def _boards() -> list:
     return list(MAIN) + sorted(CAREER_IDS)
 
 
-def standings(db) -> list:
-    """[(board, rank, sid, score)] of every title holder right now, from the boards as shown."""
+def standings(db, t: float | None = None) -> list:
+    """[(board, rank, sid, score)] of every title holder right now, from the boards as shown (🦉 Online: the week of `t`)."""
     from . import leaderboard as lb
+    from . import online_board
     out = []
     for board in _boards():
         n = TOP if board in BOARD_TITLES else 1
+        if board == ONLINE:
+            out.extend(online_board.standings(db, now() if t is None else t, n))
+            continue
         rows = db.execute(f"SELECT l.sid,l.score {lb._FROM} WHERE l.board=? AND {lb._VISIBLE} {lb._ORDER} LIMIT ?", (board, n)).fetchall()
         out.extend((board, i + 1, r['sid'], int(r['score'])) for i, r in enumerate(rows))
     return out
+
+
+def standings_online(db, t: float) -> list:
+    from . import online_board
+    return online_board.standings(db, t, TOP)
 
 
 def _insert(db, week: str, rows: list, final: int, day: str, t: float) -> None:
@@ -183,12 +195,14 @@ def refresh(store, t: float | None = None, best_effort_ms: int | None = None) ->
                        db.execute('INSERT INTO leaderboard_meta(k,v) VALUES(?,?) ON CONFLICT(k) DO NOTHING', (META, mark)).rowcount)
             if claimed != 1:
                 return False
-            rows = standings(db)
+            rows = standings(db, t)
             last_week = last.split('|')[1] if '|' in last else None
             if last_week and last_week != week:
                 if last_week == prev:   # the week that just ended: its final holders are the standings at its end
                     db.execute('DELETE FROM lb_weekly WHERE final=0 AND week=?', (last_week,))
-                    _insert(db, last_week, rows, 1, day, t)
+                    # 🦉 Online starts again from zero each week: the ended week's own totals
+                    ended = [r for r in rows if r[0] != ONLINE] + [r for r in standings_online(db, week_start(t) - 3600)]
+                    _insert(db, last_week, ended, 1, day, t)
                 else:                   # a week long gone (the server was off): its last daily holders stand
                     db.execute('UPDATE lb_weekly SET final=1 WHERE final=0 AND week=?', (last_week,))
             db.execute('DELETE FROM lb_weekly WHERE final=0')

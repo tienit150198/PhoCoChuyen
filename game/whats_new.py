@@ -32,6 +32,9 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.48", date="2026-10-18", items=(
+        dict(emoji='🦉', text="Bảng xếp hạng thêm mục Online: ai chơi nhiều nhất tuần. Top 1 nhận khung Cú đêm của phố, Top 2–10 cũng có khung riêng."),
+    )),
     dict(version="2.4.47", date="2026-10-18", items=(
         dict(emoji='🖼️', text="Khung chat không còn bị méo hay bị cắt: mèo, thỏ, mái nhà, ống hút… giữ nguyên hình, tin ngắn hay dài đều đẹp."),
         dict(emoji='🔤', text="Tin của chính bạn không còn lật ngược chữ trên khung (TRÙM, TOP 10)."),

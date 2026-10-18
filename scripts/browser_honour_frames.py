@@ -78,14 +78,15 @@ LB = """async ([board]) => {
   const {leaderboardView}=await import('/js/v4/leaderboard.js');
   const names=['Trùm Cuối','Chiến Thần','Á Quân','Dân Cày 4','Dân Cày 5','Dân Cày 6','Dân Cày 7','Dân Cày 8','Dân Cày 9','Dân Cày 10','Hạng 11'];
   const T={all:[['👑','Trùm cuối của phố'],['🔥','Chiến thần cày cuốc'],['⚡','Dân cày top 10']],wealth:[['💎','Đại gia của phố'],['💰','Đại gia mới nổi'],['🤑','Hội nhà giàu']],
-    collection:[['🏺','Bộ sưu tập huyền thoại'],['🔨','Nhà sưu tầm đấu giá'],['💠','Hội sưu tầm']]}[board]||null;
+    collection:[['🏺','Bộ sưu tập huyền thoại'],['🔨','Nhà sưu tầm đấu giá'],['💠','Hội sưu tầm']],
+    online:[['🦉','Cú đêm của phố'],['🌙','Thức cùng ánh trăng'],['🏮','Hội cú đêm']]}[board]||null;
   const tierOf=r=>r===1?0:r<=3?1:2;
   const rows=names.map((name,i)=>{const rank=i+1,t=T?(rank<=10?T[tierOf(rank)]:null):(rank===1?['🏆','Trùm trà sữa']:null);
     return {rank,name,score:9000-i*500,me:rank===3,days:12,level:5,...(t?{title:{emoji:t[0],name:t[1]}}:{})};});
   const tiers=T?T.map(([emoji,name],i)=>({tier:i,label:['Top 1','Top 2–3','Top 4–10'][i],emoji,name,lo:[1,2,4][i],hi:[1,3,10][i],holders:[{rank:[1,2,4][i],name:names[[0,1,3][i]],me:false}]})):
     [{tier:0,label:'Top 1',emoji:'🏆',name:'Trùm trà sữa',lo:1,hi:1,holders:[{rank:1,name:'Trùm Cuối',me:false}]}];
   const data={rows,total:120,me:{rank:3,visible:true,score:8000},weekly:{week:'2026-W42',updated:1791370800,ends:Date.now()/1000+3*86400,tiers},at:Date.now()};
-  const own=['certs','titles','wealth','collection'].includes(board);
+  const own=['certs','titles','wealth','collection','online'].includes(board);
   const ui={view:'rank',lb:{kind:own?board:'exp',board:own?'all':board,data:{[board]:data},busy:{}}};
   const env={api:{content:{catalogue:[{id:'milk_tea',short:'Tiệm trà sữa',place:'Tiệm trà sữa'}]},state:{careers:{milk_tea:{}},journey:{}},json:()=>new Promise(()=>{})},ui,renderSheet(){}};
   document.body.innerHTML=`<div class="sheet open" style="position:static;max-width:100%">${leaderboardView(env)}</div>`;
@@ -190,7 +191,7 @@ def main():
         if shots:
             page.screenshot(path=str(shots / 'chooser.png'), full_page=True)
         ctx.close()
-        for board in ('all', 'wealth', 'collection', 'milk_tea'):
+        for board in ('all', 'wealth', 'collection', 'online', 'milk_tea'):
             ctx = browser.new_context(viewport={'width': 360, 'height': 900}, device_scale_factor=2)
             page = ctx.new_page()
             errors = []

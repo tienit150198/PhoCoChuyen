@@ -49,7 +49,9 @@ LABEL_Y = 688      # the "Khung avatar" / "Khung chat" labels start below this
 
 # Boards whose label or background art touches the frame: a clip box (x0, y0, x1, y1) in board pixels.
 CLIP = {('36', 'av'): [(0, 0, 1254, 672)], ('13', 'av'): [(0, 0, 1254, 684)], ('50', 'av'): [(0, 0, 1254, 686)],
-        ('60', 'av'): [(226, 316, 292, 745), (70, 338, 470, 745), (25, 520, 470, 745)], ('60', 'chat'): [(470, 422, 1230, 750), (1040, 385, 1225, 750)]}
+        ('60', 'av'): [(226, 316, 292, 745), (70, 338, 470, 745), (25, 520, 470, 745)], ('60', 'chat'): [(470, 422, 1230, 750), (1040, 385, 1225, 750)],
+        # 73 "Cú đêm của phố" (owner 18/10, the online board's top 1): its big title comes down to the frame's roof
+        ('73', 'av'): [(0, 262, 248, 745), (248, 287, 470, 745), (470, 293, 1254, 745)]}
 
 
 def region(win_mask, wide, h, w, clip=None):

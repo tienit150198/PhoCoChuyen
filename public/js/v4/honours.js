@@ -14,6 +14,7 @@ const BOARDS={
   certs:['Chứng chỉ',[['🎓','Thủ khoa của phố'],['📜','Học bá chính hiệu'],['🤓','Mọt sách có số má']]],
   wealth:['Tài phú',[['💎','Đại gia của phố'],['💰','Đại gia mới nổi'],['🤑','Hội nhà giàu']]],
   collection:['Sưu tầm',[['🏺','Bộ sưu tập huyền thoại'],['🔨','Nhà sưu tầm đấu giá'],['💠','Hội sưu tầm']]],
+  online:['Online',[['🦉','Cú đêm của phố'],['🌙','Thức cùng ánh trăng'],['🏮','Hội cú đêm']]],
 };
 const tierOf=r=>r===1?0:r<=3?1:2;
 // game/lb_titles.py CAREER_NOUN (a workplace board's top 1 is "🏆 Trùm <noun>"), CAREER_TITLE (no "Trùm" there)

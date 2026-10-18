@@ -18,6 +18,7 @@ DATA = os.path.join(ROOT, 'public', 'js', 'v4', 'honour-frames-data.js')
 IDS = ('03', '14', '16', '18', '20', '21') + tuple(f'{i:02d}' for i in range(25, 69)) + ('72',)
 # 🆓 the everyday frames anyone may wear (honour-frames.js FREE, owner 18/10 "cho người ta chọn khung mặc định nữa")
 IDS += ('01', '02', '05', '19', '22', '23', '24')
+IDS += ('69', '71', '73')   # 🦉 Online: 73 "Cú đêm của phố" (owner's board 18/10, cut with scripts/cut_honour_frames.py), 71, 69
 SQUARE = {'50', '52', '53', '54', '60', '24'}   # a squarish window: the picture keeps rounded corners, not a circle
 AV_D = 120
 CHAT_SCALE = 0.4

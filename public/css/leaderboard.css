@@ -14,6 +14,15 @@
 .lb-kinds{flex-wrap:nowrap}
 .lb-kinds.six{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-1)}
 .lb-kinds.six>button{min-width:0;padding:var(--sp-1);font-size:var(--fs-2)}
+/* 🦉 Online (+ 💍 Khách mời): seven tabs, four then three on a wide screen; two columns on a phone (below) */
+.lb-kinds.seven{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-1)}
+.lb-kinds.seven>button{min-width:0;padding:var(--sp-1);font-size:var(--fs-2)}
+html[data-layout="phone"] .lb-kinds.seven{grid-template-columns:repeat(2,minmax(0,1fr))}
+html[data-layout="phone"] .lb-kinds.seven>button:last-child{grid-column:span 2}
+@media(max-width:700px){
+  .lb-kinds.seven{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lb-kinds.seven>button:last-child{grid-column:span 2}
+}
 .lb-kinds>button{min-height:44px;font-size:.967rem;gap:6px}
 .lb-kinds.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
 .lb-kinds.five{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}   /* + 💍 Khách mời của tuần */
