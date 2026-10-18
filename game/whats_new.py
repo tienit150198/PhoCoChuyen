@@ -32,6 +32,10 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.51", date="2026-10-18", items=(
+        dict(emoji='🍼', text="Mẹ & bé và Nhà thuốc: kệ chứa và mỗi lần đặt hàng từ 80 món như các tiệm khác, cấp kho đã mua được nâng theo."),
+        dict(emoji='📦', text="Kiện hàng lớn ở hai tiệm này chia theo khay, bấm Đếm khay để đếm nhanh cả khay."),
+    )),
     dict(version="2.4.50", date="2026-10-18", items=(
         dict(emoji='👛', text="Tiền của bạn có nút Rút hết: rút tiền từ mọi quỹ nơi làm việc về ví chỉ với một lần xác nhận."),
         dict(emoji='📦', text="Kho Mẹ & bé và Nhà thuốc: số bạn gõ không còn tự trả về 1, thêm nút Tối đa để nhập đầy một lần."),

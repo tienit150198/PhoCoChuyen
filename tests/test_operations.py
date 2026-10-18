@@ -445,15 +445,18 @@ class OperationsTests(unittest.TestCase):
         self.assertLess(len(self.o['finance']['ledger']),1500);self.assertEqual(self.c['money'],1825);self.assert_valid()
 
     def test_stock_capacity_changes_after_room_upgrade(self):
-        item=next(iter(self.c['stock']));self.c['stock'][item]=12
+        # #424 (18/10): the shelf follows the stock-room ladder (80 from the start), above every room's own stock_cap
+        from game import convenience
+        item=next(iter(self.c['stock']));self.c['stock'][item]=80
         with self.assertRaises(GameError):self.j.act('order_stock',item=item,qty=1)
         self.close();self.act('move_property',tier='sunny',confirm=True);self.j.act('start_day')
-        self.j.act('order_stock',item=item,qty=1);self.assertEqual(self.c['shipments'][-1]['qty'],1);self.assert_valid()
+        self.assertEqual(convenience.capacity(self.c,self.j.career),80)
+        self.c['stock'][item]=79;self.j.act('order_stock',item=item,qty=1);self.assertEqual(self.c['shipments'][-1]['qty'],1);self.assert_valid()
 
     def test_downgrade_room_does_not_drop_stock(self):
         self.close();self.act('move_property',tier='sunny',confirm=True)
-        item=next(iter(self.c['stock']));self.c['stock'][item]=13
-        self.no_effect('move_property',tier='cozy',confirm=True);self.assertEqual(self.c['stock'][item],13)
+        item=next(iter(self.c['stock']));self.c['stock'][item]=13   # 13 is over cozy's old stock_cap 12, under the ladder's 80
+        self.act('move_property',tier='cozy',confirm=True);self.assertEqual(self.c['stock'][item],13)
 
 
 class StaffJobBonusTests(unittest.TestCase):

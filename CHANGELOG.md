@@ -1,3 +1,11 @@
+# v2.4.51 — 2026-10-18
+
+🍼 Kho Mẹ & bé / Nhà thuốc cùng thang với các tiệm khác (#424, shii: "tại sao lại giới hạn chỉ có 48 kho trong khi ở các cửa hàng khác thì ít nhất là 80"; chủ game 18/10 duyệt). game/convenience.py: LINE = order_progression.LIMITS (80, 120, 200 … 4000), CAPACITY = capacity_progression.units(80, bậc) (80, 120, 180 … 4000); trước đây 6…200 món mỗi dòng đặt, 12…600 món mỗi mã. Bậc "Kho & đơn nhập" đã mua giữ nguyên vị trí trên thang, chỉ tăng số; mặt bằng (stock_cap 12/18/24) và kệ 'shelf' không còn thấp hơn mức 80. SAVE_STOCK/SAVE_LINE theo bảng mới (4000): save có hơn 600 món một mã hoặc kiện hơn 200 món sẽ bị bản 2.4.50 trở về trước từ chối → không rollback dưới 2.4.51 sau khi người chơi nhập kiện lớn.
+
+📦 Kiện lớn đếm theo khay: app.js crateGoods() — kiện trên 20 món ở quầy Mẹ & bé / Nhà thuốc hiện khay 10 ô, "Đếm khay", trang 10 khay (cratePage của v4/inventory-limits.js, cùng hành động v4TallyTray / v4CratePage với các tiệm khác); kiện nhỏ vẫn chạm từng món như cũ.
+
+Tests: test_warehouse_convenience, test_engine, test_operations (mặt bằng không còn giới hạn dưới 80), test_workplace_business cập nhật theo thang mới.
+
 # v2.4.50 — 2026-10-18
 
 👛 Rút hết (#423, thanhtruc09: "mong ad thêm phần nút rút tất cả"). public/js/v4/wealth.js: Tiền của bạn → Quỹ nơi làm việc có nút "👛 Rút hết · N xu" khi có từ 2 quỹ rút được (drawAll: withdraw_max của từng nơi). Một hộp xác nhận, rồi từng quỹ chạy đúng lệnh jr_withdraw như nút Rút về ví (đọc lại withdraw_max sau mỗi lần, dừng ở lần lỗi đầu tiên); mỗi quỹ vẫn giữ 80 xu dự phòng và tiền hóa đơn chưa trả. app.js chuyển wlDrawAll sang wealthAction; money.css .wl-all.

@@ -53,10 +53,11 @@ class EngineTests(unittest.TestCase):
         j.act('receive_stock',shipment=ship['id'],count=2);self.assertEqual(j.c['stock']['cat_bag'],8)
         with self.assertRaises(GameError):j.act('receive_stock',shipment=ship['id'],count=2)
     def test_in_transit_capacity_counted(self):
-        j=Journey();j.c['money']=1000;j.c['ops']['finance']['opening_balance']=1000;j.act('order_stock',item='cat_bag',qty=6)
+        from game import convenience
+        j=Journey();j.c['money']=10000;j.c['ops']['finance']['opening_balance']=10000;j.act('order_stock',item='cat_bag',qty=convenience.room(j.c,j.career,'cat_bag'))
         with self.assertRaises(GameError):j.act('order_stock',item='cat_bag',qty=1)
     def test_bad_quantity_rollback(self):
-        for quantity in (-1,0,7,'1',True,1.5,None):
+        for quantity in (-1,0,81,'1',True,1.5,None):   # 81: past the first rung of the order ladder (80, #424)
             j=Journey();before=copy.deepcopy(j.state)
             with self.assertRaises(GameError):j.act('order_stock',item='bunny',qty=quantity)
             self.assertEqual(j.state,before)

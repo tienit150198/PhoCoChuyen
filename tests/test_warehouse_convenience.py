@@ -23,21 +23,21 @@ class WarehouseConvenienceTests(unittest.TestCase):
         from game.careers import mother_baby as mb
         case=Registry();case.setUp();j=case.j;to_day(j,5);fund(j.c)
         j.c['upgrades']=[upgrade(j.career,'logistics',n) for n in range(1,11)]
-        j.c['stock']['towel']=600;j.act('gift_care_aside',line='r1')
-        self.assertEqual(j.c['stock']['towel'],598)
+        j.c['stock']['towel']=4000;j.act('gift_care_aside',line='r1')
+        self.assertEqual(j.c['stock']['towel'],3998)
         with self.assertRaises(GameError):j.act('order_stock',item='towel',qty=1)
         self.assertEqual(public_state(j.state)['careers'][j.career]['warehouse']['reserved']['towel'],2)
         mb._shower_failed(j.state,j.c,cr(j),j.c['day'])
-        self.assertEqual(j.c['stock']['towel'],600)
+        self.assertEqual(j.c['stock']['towel'],4000)
         validate_state(j.state)
 
     def test_recovery_uses_paid_room_including_pending_orders(self):
         from game.happenings import _stock_give
         j=Journey('mother_baby');fund(j.c)
         j.c['upgrades']=[upgrade(j.career,'logistics',n) for n in range(1,11)]
-        j.c['stock']['bunny']=590;j.act('order_stock',item='bunny',qty=8)
+        j.c['stock']['bunny']=3990;j.act('order_stock',item='bunny',qty=8)
         self.assertEqual(_stock_give(j.state,j.c,j.career,'bunny',5,36),2)
-        self.assertEqual(j.c['stock']['bunny'],592)
+        self.assertEqual(j.c['stock']['bunny'],3992)
 
     def test_pharmacy_live_batches_never_drop_expiry_identity(self):
         from game.engine import _ph_fresh, _ph_batch, _ph_sync, _ph_validate
@@ -72,7 +72,7 @@ class WarehouseConvenienceTests(unittest.TestCase):
         force_event(j,'fake',dict(seller='Anh Tâm',item='bear',qty=6,unit=20,_fake=True,inspected=False))
         j.act('gift_event',choice='buy')
         self.assertEqual(j.c['stock']['bear'],106)
-        j.act('gift_event_ok');j.c['stock']['bear']=594
+        j.act('gift_event_ok');j.c['stock']['bear']=3994
         j.act('order_stock',item='bear',qty=6)
         force_event(j,'fake',dict(seller='Anh Tâm',item='bear',qty=6,unit=20,_fake=True,inspected=False))
         before=copy.deepcopy(j.state)
@@ -82,7 +82,7 @@ class WarehouseConvenienceTests(unittest.TestCase):
     def test_refund_reserves_room_for_already_paid_shipments(self):
         from tests.test_mother_baby import Returns
         j,tid=Returns().journey(lambda f:f['gift']['ret']['_tag']=='ours' and f['gift']['ret']['_cond']=='new' and f['gift']['ret']['_found'])
-        item=j.task['gift']['ret']['item'];j.c['stock'][item]=599;fund(j.c)
+        item=j.task['gift']['ret']['item'];j.c['stock'][item]=3999;fund(j.c)
         j.c['upgrades']=[upgrade(j.career,'logistics',n) for n in range(1,11)]
         j.act('order_stock',item=item,qty=1)
         before=copy.deepcopy(j.state)
@@ -109,14 +109,16 @@ class WarehouseConvenienceTests(unittest.TestCase):
     def test_base_limits_and_legacy_shelf_are_preserved(self):
         from game import convenience
         j=Journey('mother_baby'); fund(j.c)
-        self.assertEqual(convenience.public(j.c,j.career)['line_max'],6)
-        with self.assertRaises(GameError): j.act('order_stock',item='bunny',qty=7)
+        # #424: the same ladder as the other shops, 80 from the start (was 6 a line, 12 a shelf)
+        self.assertEqual(convenience.public(j.c,j.career)['line_max'],80)
+        self.assertEqual(convenience.capacity(j.c,j.career),80)
+        with self.assertRaises(GameError): j.act('order_stock',item='bunny',qty=81)
         j.c['upgrades'].append('shelf')
-        self.assertEqual(convenience.capacity(j.c,j.career),24)
+        self.assertEqual(convenience.capacity(j.c,j.career),80)
         j.act('buy_upgrade',item=upgrade(j.career,'logistics',1))
-        self.assertEqual(convenience.capacity(j.c,j.career),24)
-        j.act('order_stock',item='bunny',qty=8)
-        with self.assertRaises(GameError): j.act('order_stock',item='bunny',qty=9)
+        self.assertEqual(convenience.capacity(j.c,j.career),120)
+        j.act('order_stock',item='bunny',qty=convenience.room(j.c,j.career,'bunny'))   # the starting shelf + this = 120
+        with self.assertRaises(GameError): j.act('order_stock',item='bunny',qty=1)
 
     def test_ownership_validation_and_max_tier(self):
         s=new_state(); c=s['careers']['mother_baby']; fund(c)
@@ -172,17 +174,17 @@ class WarehouseConvenienceTests(unittest.TestCase):
                 j=Journey(cid); fund(j.c)
                 for tier in range(1,11): j.act('buy_upgrade',item=upgrade(cid,'logistics',tier))
                 view=public_state(j.state)['careers'][cid]
-                self.assertEqual(view['warehouse']['line_max'],200)
-                self.assertEqual(view['warehouse']['capacity'],600)
-                with self.assertRaises(GameError): j.act('order_stock',item=item,qty=201)
-                for qty in [200,200,194]: j.act('order_stock',item=item,qty=qty)
+                self.assertEqual(view['warehouse']['line_max'],4000)
+                self.assertEqual(view['warehouse']['capacity'],4000)
+                with self.assertRaises(GameError): j.act('order_stock',item=item,qty=4001)
+                for qty in [2000,1994]: j.act('order_stock',item=item,qty=qty)
                 self.assertEqual(j.c['stock'][item],6)
                 with self.assertRaises(GameError): j.act('order_stock',item=item,qty=1)
                 for shipment in list(j.c['shipments']):
                     j.c['turn'] += 10
                     j.act('receive_stock',shipment=shipment['id'],count=shipment['actual'])
                     with self.assertRaises(GameError): j.act('receive_stock',shipment=shipment['id'],count=shipment['actual'])
-                self.assertEqual(j.c['stock'][item],600)
+                self.assertEqual(j.c['stock'][item],4000)
                 validate_state(j.state)
 
 

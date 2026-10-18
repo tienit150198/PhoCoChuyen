@@ -486,7 +486,7 @@ class MergedStockOrder(unittest.TestCase):
         validate_state(j.state)
 
     def test_bad_lines_change_nothing(self):
-        for lines in ([], [dict(item='bunny', qty=1)] * 2, [dict(item='nope', qty=1)], [dict(item='bunny', qty=7)],
+        for lines in ([], [dict(item='bunny', qty=1)] * 2, [dict(item='nope', qty=1)], [dict(item='bunny', qty=81)],
                       [dict(item='bunny', qty=6), dict(item='bear', qty=0)], 'bunny', [dict(item=f'x{i}', qty=1) for i in range(13)]):
             with self.subTest(lines=lines):
                 j = self.journey(); before = copy.deepcopy(j.state)

@@ -2,8 +2,13 @@
 from .progression_prices import PRICES, MAX_TIER
 
 COUNT = (1, 2, 3, 5, 8, 12, 20, 30, 45, 65, 100)
-LINE = (6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 200)
-CAPACITY = (12, 24, 36, 48, 72, 96, 144, 192, 288, 384, 600)
+# Mẹ & bé / Nhà thuốc (the LEGACY stock rooms) order and shelve on the same ladder as every other shop (#424, owner
+# 18/10 "theo hướng của bạn"): LINE = order_progression.LIMITS, CAPACITY = capacity_progression.units(80, tier).
+# Was LINE (6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 200) and CAPACITY (12, 24, 36, 48, 72, 96, 144, 192, 288, 384, 600):
+# a tier already bought keeps its place on the ladder and only grows. A save holding more than 600 of an item or a
+# crate over 200 is refused by 2.4.50 and older (SAVE_STOCK / SAVE_LINE below).
+LINE = (80, 120, 200, 350, 550, 800, 1200, 1800, 2500, 3200, 4000)
+CAPACITY = (80, 120, 180, 260, 380, 550, 800, 1200, 1800, 2600, 4000)
 LEGACY = ('mother_baby', 'pharmacy')
 SAVE_LINE = LINE[-1]
 SAVE_STOCK = CAPACITY[-1]
