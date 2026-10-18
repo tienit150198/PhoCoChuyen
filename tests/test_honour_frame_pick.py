@@ -25,7 +25,7 @@ class FramePick(unittest.TestCase):
         s, r = act(s, id='off')
         self.assertEqual(s['journey']['hf_pick'], 'off')
         self.assertIn('Đã cất khung', r['message'])
-        for v in ('t_ct_cong_vien', 'dh_mat_trang', 'lb_milk_tea_1', 'lb_all_10'):
+        for v in ('t_ct_cong_vien', 'dh_mat_trang', 'lb_milk_tea_1', 'lb_all_10', 'k_01', 'k_24'):   # k_: an everyday frame
             s, _ = act(s, id=v)
             self.assertEqual(s['journey']['hf_pick'], v)
         s, r = act(s, id='auto')
@@ -37,7 +37,7 @@ class FramePick(unittest.TestCase):
         validate_state(s)
 
     def test_refuses_anything_else(self):
-        for bad in ('lb_all_11', 'lb_all_0', 'f_bao', 'w_vip', 'hf_off', 'LB_ALL_1', 'lb_all_1 ', 7, ['off'], 'x' * 80):
+        for bad in ('k_03', 'k_72', 'k_', 'lb_all_11', 'lb_all_0', 'f_bao', 'w_vip', 'hf_off', 'LB_ALL_1', 'lb_all_1 ', 7, ['off'], 'x' * 80):
             with self.assertRaises(GameError, msg=repr(bad)):
                 act(self.s, id=bad)
         with self.assertRaises(GameError):

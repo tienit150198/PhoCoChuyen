@@ -67,6 +67,7 @@ CHAT = """async ([me]) => {
     msg('p12','Cất Khung','🙅','Mình cất khung rồi (không khung)',{tt:['hf_off','lb_all_3']}),
     msg('p13','Chọn Công Viên','🎡','Mình chọn khung công viên',{tt:['t_ct_cong_vien','lb_wealth_1'],st:{t:'t_ct_cong_vien'}}),
     msg('p14','Hết Đeo','🎈','Đã thôi đeo nên khung tài phú',{tt:['t_ct_cong_vien','lb_wealth_1'],st:{}}),
+    msg('p15','Khung Mèo','🐱','Mình chưa có top nhưng chọn khung mèo nè',{tt:['k_02']}),
   ];
   window.H={emit:(type,f)=>handlers.get(type)?.(f)};
   await openChat({api:{content:{careers:{repair:{meta:{icon:'wrench',short:'Tiệm sửa đồ'}}}}}},{ch:'town'});
@@ -98,7 +99,7 @@ CHECK = """() => {
   out.deletedPlain=[...document.querySelectorAll('.ch-bub.del')].every(b=>!b.classList.contains('hf'));
   out.avFrames=document.querySelectorAll('.ch-msg .hf-av').length;
   const art=name=>{const m=[...document.querySelectorAll('.ch-msg')].find(m=>m.querySelector('.ch-name')?.textContent?.includes(name));const e=m?.querySelector('.ch-bub.hf');return e?/frames\/(\d+)_chat/.exec(e.getAttribute('style'))?.[1]:null;};
-  out.chosen=[art('Chọn Công Viên'),art('Hết Đeo')];
+  out.chosen=[art('Chọn Công Viên'),art('Hết Đeo'),art('Khung Mèo')];
   out.icon=[...document.querySelectorAll('.hf-av[data-hf-icon]')].map(e=>e.dataset.hfIcon);
   const b=document.querySelector('.ch-body');
   out.overflow=[...document.querySelectorAll('.ch-bub,.ch-name,.hf-av')].filter(e=>{const r=e.getBoundingClientRect();return r.right>innerWidth+0.5;}).length;
@@ -147,8 +148,8 @@ def main():
                 failures.append(f'{name}: no bubble frame for {missing}')
             if not r['plainOk'] or not r['deletedPlain']:
                 failures.append(f'{name}: a plain or deleted message wears a frame')
-            if r['chosen'] != ['62', '28']:
-                failures.append(f'{name}: chosen frames {r["chosen"]} (want the park 62, then wealth 28)')
+            if r['chosen'] != ['62', '28', '02']:
+                failures.append(f'{name}: chosen frames {r["chosen"]} (want the park 62, then wealth 28, the cat 02)')
             if '🔧' not in r['icon']:
                 failures.append(f'{name}: the shared Trùm frame has no workplace icon')
             if r['overflow'] or not r['bodyFits'] or not r['docFits']:
@@ -176,12 +177,15 @@ def main():
             {board:'pagoda',rank:1,emoji:'🪷',name:'Siêng việc chùa nhất tuần',label:'Top 1'}],
             state:{journey:{hf_pick:'lb_milk_tea_1',spend:{wear:{title:'t_ct_cong_vien'}}}},content:{journey:{spend:{titles:[{id:'t_ct_cong_vien',emoji:'🌳',name:'Người dựng công viên'}]}}}};
           document.body.innerHTML=`<div class="sheet open" style="position:static"><div class="sheet-body">${chooser(api)}</div></div>`;
-          const none=chooser({lbTitles:[{board:'pagoda',rank:1}],state:{journey:{}},content:{}});
+          const box=document.createElement('div');box.innerHTML=chooser({lbTitles:[{board:'pagoda',rank:1}],state:{journey:{}},content:{}});
+          const none={ids:[...box.querySelectorAll('.hf-opt')].map(b=>b.dataset.id),on:[...box.querySelectorAll('.hf-opt.on')].map(b=>b.querySelector('b').textContent)};
           await new Promise(r=>setTimeout(r,500));
           return {ids:[...document.querySelectorAll('.hf-opt')].map(b=>b.dataset.id),on:[...document.querySelectorAll('.hf-opt.on')].map(b=>b.dataset.id),
             none,fits:document.documentElement.scrollWidth<=innerWidth+1};}""")
         print('chooser', r)
-        if r['ids'] != ['auto', 'lb_wealth_2', 'lb_milk_tea_1', 't_ct_cong_vien', 'off'] or r['on'] != ['lb_milk_tea_1'] or r['none'] or not r['fits'] or errors:
+        free = ['k_01', 'k_02', 'k_05', 'k_19', 'k_22', 'k_23', 'k_24']
+        if (r['ids'] != ['auto', 'lb_wealth_2', 'lb_milk_tea_1', 't_ct_cong_vien', *free, 'off'] or r['on'] != ['lb_milk_tea_1']
+                or r['none'] != {'ids': [*free, 'auto'], 'on': ['Không dùng khung']} or not r['fits'] or errors):
             failures.append(f'chooser: {r} {errors}')
         if shots:
             page.screenshot(path=str(shots / 'chooser.png'), full_page=True)

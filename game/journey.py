@@ -384,8 +384,10 @@ ROW_MAX = 10**7       # validate(): one Sổ ví row's |amount| (every release),
 # best one (public/js/v4/honour-frames.js pick); 'off': none; else one honour id (a weekly leaderboard title, an auction
 # title, a worn title), worn only while it is held (live/honours.py puts it first; a title gone is simply skipped).
 # Its own key: older builds keep unknown journey keys, so a rollback only forgets the choice.
+# 🆓 k_<n>: an everyday frame anyone may wear (owner 18/10 "cho người ta chọn khung mặc định nữa nhé, nếu k muốn thì bỏ đi").
 HF_PICK = 'hf_pick'
-HF_PICK_RE = re.compile(r'off|lb_[a-z][a-z0-9_]{0,39}_(?:[1-9]|10)|dh_[a-z0-9_]{1,40}|t_[a-z0-9_]{1,40}')
+FREE_FRAMES = ('01', '02', '05', '19', '22', '23', '24')   # public/js/v4/honour-frames.js FREE
+HF_PICK_RE = re.compile(r'off|lb_[a-z][a-z0-9_]{0,39}_(?:[1-9]|10)|dh_[a-z0-9_]{1,40}|t_[a-z0-9_]{1,40}|k_(?:' + '|'.join(FREE_FRAMES) + ')')
 
 
 def withdraw_max(c: dict, j: dict | None = None) -> int:

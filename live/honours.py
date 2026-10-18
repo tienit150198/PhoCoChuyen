@@ -18,7 +18,7 @@ and on a player's card. Never sent by a client; resolved here from the game's ow
 
 🖼️ The frame a player chose (game/journey.py HF_PICK, owner 18/10 "nhiều khung thì chủ động đổi khung được k"): read
 with the fair titles; a held id goes first, a worn title's id (`t_…`) leads (the client wears it only when `st.t` is
-that title), and 'off' sends HF_OFF first: public/js/v4/honour-frames.js pick() then draws no frame (older clients show
+that title), an everyday frame's id (`k_…`) leads too, and 'off' sends HF_OFF first: public/js/v4/honour-frames.js pick() then draws no frame (older clients show
 no chip for either: an unknown id).
 
 Bought titles of the week stay in `st` (live/styles.py); `ti` (the street's text) is unchanged, so an older client
@@ -183,10 +183,11 @@ class Honours:
 
 
 def chosen(ids: list, hf) -> list:
-    """🖼️ The ids with the chosen frame's first: a held id moves up, a worn title (`t_…`) leads, 'off' adds HF_OFF."""
+    """🖼️ The ids with the chosen frame's first: a held id moves up, a worn title (`t_…`) or an everyday frame (`k_…`)
+    leads, 'off' adds HF_OFF."""
     if hf == 'off':
         return [HF_OFF] + ids
-    if isinstance(hf, str) and hf.startswith('t_'):
+    if isinstance(hf, str) and hf.startswith(('t_', 'k_')):
         return [hf] + ids
     if hf in ids:
         return [hf] + [x for x in ids if x != hf]

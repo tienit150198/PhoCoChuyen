@@ -91,6 +91,7 @@ class Unit(unittest.TestCase):
         self.assertEqual(honours.chosen(list(ids), 'lb_certs_1'), ids)                 # not held this week: automatic
         self.assertEqual(honours.chosen(list(ids), 'off'), ['hf_off'] + ids)
         self.assertEqual(honours.chosen(list(ids), 't_ct_cong_vien'), ['t_ct_cong_vien'] + ids)   # the client checks st.t
+        self.assertEqual(honours.chosen([], 'k_02'), ['k_02'])                                     # 🆓 an everyday frame: anyone
         self.assertIsNone(honours._frame(None))
         self.assertIsNone(honours._frame('x' * 60))
 

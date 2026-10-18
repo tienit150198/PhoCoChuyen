@@ -33,7 +33,7 @@ from pathlib import Path
 
 ENTRIES = (
     dict(version="2.4.46", date="2026-10-18", items=(
-        dict(emoji='🖼️', text="Có nhiều danh hiệu top? Vào Hành trình → Danh hiệu để tự chọn khung avatar và khung chat, hoặc tắt khung."),
+        dict(emoji='🖼️', text="Ai cũng chọn được khung avatar và khung chat ở Hành trình → Danh hiệu: 7 khung thường, khung riêng của top, hoặc bỏ khung."),
         dict(emoji='📱', text="Chơi trên điện thoại không còn bị bôi chữ, hiện menu copy khi nhấn giữ hay phóng to màn hình khi chạm."),
     )),
     dict(version="2.4.45", date="2026-10-18", items=(
