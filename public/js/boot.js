@@ -12,6 +12,14 @@
  *   on its way), instead of an import chain after app.js.
  * api.js init() picks all of this up from globalThis.__mnlBoot; without it, it fetches on its own. */
 (()=>{
+  // 18/10 (owner: "nhấn giữ hay copy với zoom ấy, tắt cái đó đi"): iOS Safari ignores user-scalable=no, so its pinch
+  // gesture is refused here; a long press on a phone opens no copy / save menu (typing fields keep theirs). Selection
+  // itself is off in app.css. Listeners on the gesture and menu only: scrolling stays passive.
+  try{
+    for(const g of ['gesturestart','gesturechange'])document.addEventListener(g,e=>e.preventDefault(),{passive:false});
+    const coarse=matchMedia('(pointer:coarse)');
+    document.addEventListener('contextmenu',e=>{if(coarse.matches&&!e.target?.closest?.('input,textarea,[contenteditable]:not([contenteditable="false"])'))e.preventDefault();});
+  }catch{/* an old browser: zoom stays */}
   // Old iPhones (07/10, iOS 15 / 16.0–16.3 could not open the game). Before the polyfills below: is this browser
   // older than the game targets (no regex lookbehind = Safari < 16.4, no Object.hasOwn = Safari < 15.4 / Chrome < 93)?
   // Only used to word the failure panel; scripts/check_old_safari.mjs keeps the game's files parseable there.

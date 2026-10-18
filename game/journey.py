@@ -21,6 +21,7 @@ workplace open and no living costs, so plugin tests can play any career.
 from __future__ import annotations
 
 import copy
+import re
 from .jsoncopy import tree_copy
 import hashlib
 import random
@@ -377,6 +378,14 @@ def upkeep(s: dict, cid: str) -> int:
 
 WALLET_MAX = 10**9    # validate(): the wallet never holds more
 ROW_MAX = 10**7       # validate(): one Sổ ví row's |amount| (every release), so a big draw is written in several rows
+
+
+# 🖼️ Khung danh hiệu (owner 18/10): the frame a player wears beside their messages when they hold several. Absent: the
+# best one (public/js/v4/honour-frames.js pick); 'off': none; else one honour id (a weekly leaderboard title, an auction
+# title, a worn title), worn only while it is held (live/honours.py puts it first; a title gone is simply skipped).
+# Its own key: older builds keep unknown journey keys, so a rollback only forgets the choice.
+HF_PICK = 'hf_pick'
+HF_PICK_RE = re.compile(r'off|lb_[a-z][a-z0-9_]{0,39}_(?:[1-9]|10)|dh_[a-z0-9_]{1,40}|t_[a-z0-9_]{1,40}')
 
 
 def withdraw_max(c: dict, j: dict | None = None) -> int:
@@ -1043,6 +1052,16 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(qy.action(s, name, p))
     elif name.startswith('jr_abroad_'):
         result.update(ab.action(s, name, p))   # ✈️🌏
+    elif name == 'jr_frame':   # 🖼️ owner 18/10 "nhiều khung thì chủ động đổi khung được k": the frame worn in chat (live/honours.py)
+        need(set(p) <= {'id'}, 'Khung không hợp lệ.')
+        v = p.get('id')
+        if v in (None, '', 'auto'):
+            j.pop(HF_PICK, None)
+            result['message'] = 'Khung tự chọn theo danh hiệu cao nhất của bạn.'
+        else:
+            need(isinstance(v, str) and HF_PICK_RE.fullmatch(v) is not None, 'Khung không hợp lệ.')
+            j[HF_PICK] = v
+            result['message'] = 'Đã cất khung danh hiệu.' if v == 'off' else 'Đã đổi khung danh hiệu.'
     elif name.startswith('jr_tile_'):   # 🧩 Ghép ba Phố Mây: start, boosters, the replayed end (game/tile_match.py)
         from . import tile_match
         result.update(tile_match.action(s, name, p))
@@ -1133,7 +1152,8 @@ def public(s: dict) -> dict:
         **({'quay': qy.public(s)} if qy.visible(s) else {}),   # 🏪 only once a save reaches it (state size)
         **({'island': ip} if (ip := isl.public(s)) else {}),   # 🏝️ only once an island was bought (state size)
         **({'abroad': a} if (a := ab.public(s)) else {}),   # ✈️🌏 story mode
-        **({'tile': _tile_public(s)} if j['story'] else {}))   # 🧩 Ghép ba Phố Mây (game/tile_match.py)
+        **({'tile': _tile_public(s)} if j['story'] else {}),
+        **({HF_PICK: j[HF_PICK]} if isinstance(j.get(HF_PICK), str) else {}))   # 🖼️ the frame chosen (absent: automatic)   # 🧩 Ghép ba Phố Mây (game/tile_match.py)
 
 
 def _tile_public(s: dict) -> dict:
@@ -1211,6 +1231,7 @@ def validate(s: dict) -> None:
         need(cid in j['unlocked'], 'Nơi tạm đóng không hợp lệ.')
         integer(day, 1, 10**6)
     need(isinstance(j['titles'], dict) and set(j['titles']) <= set(TITLE_INDEX), 'Danh hiệu không hợp lệ.')
+    need(HF_PICK not in j or (isinstance(j[HF_PICK], str) and HF_PICK_RE.fullmatch(j[HF_PICK]) is not None), 'Khung danh hiệu không hợp lệ.')
     for day in j['titles'].values():
         integer(day, 1, 10**6)
     need(j['equipped'] is None or j['equipped'] in j['titles'], 'Danh hiệu đang đeo không hợp lệ.')

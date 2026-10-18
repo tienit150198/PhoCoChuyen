@@ -32,10 +32,39 @@ export function ofId(id){
   if(r!==1||b==='pagoda')return null;   // a workplace: its top 1 only; nobody is the boss of a pagoda
   return {n:CAREER[b]||CAREER_ANY,tier:3,career:b};
 }
-/** The frame a player wears: {n, tier, career?} or null. */
+/** The frame a player wears: {n, tier, career?} or null. Their own choice leads `tt` (live/honours.py, game/journey.py
+ * HF_PICK): 'hf_off' wears none; a worn title's id (t_…) counts only while `st.t` is that title. */
 export function pick(tt,st){
-  if(Array.isArray(tt))for(const id of tt.slice(0,16)){const f=ofId(id);if(f&&FRAMES[f.n])return f;}
+  if(Array.isArray(tt)){
+    if(tt.includes('hf_off'))return null;
+    for(const id of tt.slice(0,16)){
+      const w=WORN[id];if(w){if(st?.t===id&&FRAMES[w])return {n:w,tier:5};continue;}
+      const f=ofId(id);if(f&&FRAMES[f.n])return f;}
+  }
   const w=WORN[st?.t];return w&&FRAMES[w]?{n:w,tier:5}:null;
+}
+/** 🖼️ The frames this player may choose between (owner 18/10 "nhiều khung thì chủ động đổi khung được k"): the weekly
+ * leaderboard titles held now (api.lbTitles, from the load), the worn title of a town project / an island
+ * (journey.spend.wear.title); [{id, emoji, name, n}]. */
+export function choices(api){
+  const out=[];
+  for(const h of api?.lbTitles||[]){const id=`lb_${h.board}_${h.rank}`,f=ofId(id);if(f&&FRAMES[f.n]&&!out.some(x=>x.id===id))out.push({id,emoji:h.emoji,name:h.name,label:h.label,n:f.n});}
+  const t=api?.state?.journey?.spend?.wear?.title,w=WORN[t];
+  if(w&&FRAMES[w]){const it=(api.content?.journey?.spend?.titles||[]).find(x=>x.id===t);out.push({id:t,emoji:it?.emoji||'🏗️',name:it?.name||'Danh hiệu đang đeo',label:'Phong cách',n:w});}
+  return out;
+}
+const badge=(n,inner,cls='')=>{const d=FRAMES[n]?.av;if(!d)return '';ensureCss();const [w,h,cx,cy,r,sq]=d,box=2*r*PAD;
+  return `<span class="hf-av hf-logo${cls}" aria-hidden="true" style="--hf-img:url('${DIR}${n}_av.webp');--hf-l:${pct(-(cx-box/2)/box)};--hf-t:${pct(-(cy-box/2)/box)};--hf-w:${pct(w/box)};--hf-h:${pct(h/box)}${sq?';--hf-rad:18%':''}"><b>${inner}</b></span>`;};
+/** The "Khung danh hiệu" chooser (Hành trình → Danh hiệu): automatic, each frame held, none. '' when none is held. */
+export function chooser(api){
+  const L=choices(api);if(!L.length)return '';ensureCss();
+  const cur=api.state.journey.hf_pick||'auto',auto=L[0];
+  const opt=(id,art,name,sub)=>`<button type="button" class="hf-opt${cur===id?' on':''}" data-action="jrFrame" data-id="${esc(id)}" aria-pressed="${cur===id}">${art}<span><b>${esc(name)}</b><small>${esc(sub)}</small></span></button>`;
+  const rows=[opt('auto',badge(auto.n,'✨'),'Tự động','Luôn đeo khung của danh hiệu cao nhất'),
+    ...L.map(x=>opt(x.id,badge(x.n,esc(x.emoji)),x.name,x.label)),
+    opt('off','<span class="hf-none" aria-hidden="true">🚫</span>','Không dùng khung','Avatar và tin nhắn như bình thường')];
+  const gone=cur!=='auto'&&cur!=='off'&&!L.some(x=>x.id===cur)?'<p class="muted small">Danh hiệu đã chọn không còn giữ: đang dùng khung tự động.</p>':'';
+  return `<section class="hf-pick" aria-label="Khung danh hiệu"><h3>🖼️ Khung danh hiệu</h3><p class="muted small">Khung hiện quanh avatar và tin nhắn của bạn ở Cả phố, khi đi dạo. Có nhiều danh hiệu top thì chọn khung bạn thích.</p>${gone}<div class="hf-opts">${rows.join('')}</div></section>`;
 }
 
 let ready=false;
@@ -66,6 +95,11 @@ html[data-theme="dem"] .hn-chip.hn-t4{--hn-bg:linear-gradient(120deg,#1f5563,#4a
 .hf-logo{width:34px;height:34px;margin:6px}
 .lb-rank>.hf-logo{margin:0;width:34px;height:34px}.lb-row.hf-row .lb-rank{background:transparent}
 .lb-week-emoji .hf-logo{width:26px;height:26px;margin:5px 12px 5px 6px}.lb-week-emoji .hf-logo>b{font-size:.85rem;background:var(--surface,#fff)}
+.hf-pick{margin:0 0 14px}.hf-pick h3{margin:0 0 4px}.hf-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px}
+.hf-opt{display:flex;align-items:center;gap:8px;min-width:0;padding:6px 10px 6px 4px;border-radius:14px;border:1px solid var(--line,rgba(0,0,0,.1));background:var(--surface,#fff);color:inherit;text-align:left;font:inherit;cursor:pointer}
+.hf-opt.on{border-color:var(--accent,#c44b30);box-shadow:0 0 0 2px var(--accent-soft,rgba(196,75,48,.25))}
+.hf-opt>span:last-child{display:grid;min-width:0}.hf-opt b{font-size:.86rem;line-height:1.25;overflow:hidden;text-overflow:ellipsis}.hf-opt small{font-size:.72rem;color:var(--muted,#8a7768);line-height:1.25}
+.hf-opt .hf-logo{width:30px;height:30px;margin:7px}.hf-none{display:grid;place-items:center;flex:none;width:44px;height:44px;font-size:1.2rem}
 .hf-logo>b{display:grid;place-items:center;width:100%;height:100%;background:var(--surface-2,#f6ecdf);font-size:.95rem;font-weight:800;color:var(--ink,#3a2a20)}`;
   document.head.append(s);
 }

@@ -16,6 +16,11 @@ and on a player's card. Never sent by a client; resolved here from the game's ow
   all (one of a kind). Read from `auction_lots` (status 'sold', kind 'title': a few rows) like the weekly holders, again
   on NOTIFY {op: 'auction_end'}; a database without the table has none.
 
+🖼️ The frame a player chose (game/journey.py HF_PICK, owner 18/10 "nhiều khung thì chủ động đổi khung được k"): read
+with the fair titles; a held id goes first, a worn title's id (`t_…`) leads (the client wears it only when `st.t` is
+that title), and 'off' sends HF_OFF first: public/js/v4/honour-frames.js pick() then draws no frame (older clients show
+no chip for either: an unknown id).
+
 Bought titles of the week stay in `st` (live/styles.py); `ti` (the street's text) is unchanged, so an older client
 shows what it showed before and ignores `tt`. An older service sends no `tt`.
 
@@ -42,6 +47,7 @@ LB_TTL = 300.0        # the weekly leaderboard holders (a NOTIFY reads them agai
 RETRY = 120.0         # a failed read is not tried again before this
 MAX = 12              # ids sent at most
 BATCH = 200
+HF_OFF = 'hf_off'      # 🖼️ the player wears no frame (an id no client shows as a chip)
 # The order of honour after the leaderboard: the fair's awards, the wedding race, then the fair's rounds.
 FAIR = tuple(FAIR_AWARDS) + tuple(t for t, *_ in FAIR_ROWS if t not in FAIR_AWARDS)
 FAIR_SET = frozenset(FAIR)
@@ -63,7 +69,7 @@ def fair_ids(titles) -> tuple:
 class Honours:
     def __init__(self, app):
         self.app = app
-        self.rows = LRU(CACHE)          # pid -> (fetched monotonic, sid | None, fair ids)
+        self.rows = LRU(CACHE)          # pid -> (fetched monotonic, sid | None, fair ids, chosen frame | None)
         self.lb: dict = {}              # sid -> [lb ids, best first]
         self.lb_at = -1e18              # monotonic of the last read
         self.uq: dict = {}              # sid -> [auction title ids] (👑 game/auction.py)
@@ -123,22 +129,23 @@ class Honours:
             p = hub.players.get(pid) if hub is not None else None
             if p is not None and getattr(p, 'sid', None):
                 online[pid] = p.sid
-        got: dict = {}   # pid -> (sid, ids)
-        pick = "CASE WHEN left(s.state, 1) = '{' THEN s.state::json #>> '{journey,titles}' END AS ti"
+        got: dict = {}   # pid -> (sid, ids, frame)
+        pick = ("CASE WHEN left(s.state, 1) = '{' THEN s.state::json #>> '{journey,titles}' END AS ti, "
+                "CASE WHEN left(s.state, 1) = '{' THEN s.state::json #>> '{journey,hf_pick}' END AS hf")
         sids = list(online.values())
         for i in range(0, len(sids), BATCH):
             part = sids[i:i + BATCH]
             for r in await self.app.db.fetch(f"SELECT s.sid, {pick} FROM sessions s WHERE s.sid IN ({','.join('?' * len(part))})", part):
-                got[pid_of(r['sid'])] = (r['sid'], _ids(r['ti']))
+                got[pid_of(r['sid'])] = (r['sid'], _ids(r['ti']), _frame(r['hf']))
         rest = [pid for pid in miss if pid not in online]
         for i in range(0, len(rest), BATCH):
             part = rest[i:i + BATCH]
             for r in await self.app.db.fetch(f"SELECT p.pid, p.sid, {pick} FROM profiles p LEFT JOIN sessions s ON s.sid = p.sid "
                                              f"WHERE p.pid IN ({','.join('?' * len(part))})", part):
-                got[r['pid']] = (r['sid'], _ids(r['ti']))
+                got[r['pid']] = (r['sid'], _ids(r['ti']), _frame(r['hf']))
         for pid in miss:
-            sid, ids = got.get(pid) or (online.get(pid), ())
-            self.rows.put(pid, (mono, sid, ids))
+            sid, ids, hf = got.get(pid) or (online.get(pid), (), None)
+            self.rows.put(pid, (mono, sid, ids, hf))
 
     # ---- reading ---------------------------------------------------------------------------------------------
     async def of(self, pids) -> dict:
@@ -163,16 +170,31 @@ class Honours:
         out = {}
         for pid in ids:
             hit = self.rows.get(pid)
-            sid, fair = (hit[1], hit[2]) if hit else (None, ())
+            sid, fair, hf = (hit[1], hit[2], hit[3]) if hit else (None, (), None)
             got = (list(self.uq.get(sid, ())) + list(self.lb.get(sid, ()))) if sid else []
             r = race.get(pid)
             awards = [x for x in fair if x in FAIR_AWARDS]
             got += awards + ([r] if r in RACE else []) + [x for x in fair if x not in FAIR_AWARDS]
-            out[pid] = got[:MAX]
+            out[pid] = chosen(got, hf)[:MAX]
         return out
 
     async def one(self, pid: str) -> list:
         return (await self.of([pid])).get(pid) or []
+
+
+def chosen(ids: list, hf) -> list:
+    """🖼️ The ids with the chosen frame's first: a held id moves up, a worn title (`t_…`) leads, 'off' adds HF_OFF."""
+    if hf == 'off':
+        return [HF_OFF] + ids
+    if isinstance(hf, str) and hf.startswith('t_'):
+        return [hf] + ids
+    if hf in ids:
+        return [hf] + [x for x in ids if x != hf]
+    return ids
+
+
+def _frame(raw):
+    return raw if isinstance(raw, str) and 0 < len(raw) <= 48 else None
 
 
 def _ids(raw) -> tuple:

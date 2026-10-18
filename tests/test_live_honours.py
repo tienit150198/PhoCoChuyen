@@ -34,7 +34,8 @@ class Unit(unittest.TestCase):
                     return list(DB.lb)
                 if 'FROM profiles' in sql:
                     return [dict(pid=p, sid='sid-' + p, ti=json.loads(DB.state['sid-' + p])['journey']['titles'] and
-                                 json.dumps(json.loads(DB.state['sid-' + p])['journey']['titles'])) for p in args if 'sid-' + p in DB.state]
+                                 json.dumps(json.loads(DB.state['sid-' + p])['journey']['titles']),
+                                 hf=json.loads(DB.state['sid-' + p])['journey'].get('hf_pick')) for p in args if 'sid-' + p in DB.state]
                 return []
 
         class Wed:
@@ -81,6 +82,38 @@ class Unit(unittest.TestCase):
         self.assertEqual(asyncio.run(honours.of_app(app2).of(['c'])), {'c': []})
         self.assertEqual(len(DB.calls), n)
 
+    def test_chosen_frame_leads(self):
+        """🖼️ game/journey.py HF_PICK (owner 18/10): the chosen frame's id first; 'off' sends hf_off; a title gone is skipped."""
+        from live import honours
+        ids = ['lb_all_1', 'lb_wealth_3', 'f_bao']
+        self.assertEqual(honours.chosen(list(ids), None), ids)
+        self.assertEqual(honours.chosen(list(ids), 'lb_wealth_3'), ['lb_wealth_3', 'lb_all_1', 'f_bao'])
+        self.assertEqual(honours.chosen(list(ids), 'lb_certs_1'), ids)                 # not held this week: automatic
+        self.assertEqual(honours.chosen(list(ids), 'off'), ['hf_off'] + ids)
+        self.assertEqual(honours.chosen(list(ids), 't_ct_cong_vien'), ['t_ct_cong_vien'] + ids)   # the client checks st.t
+        self.assertIsNone(honours._frame(None))
+        self.assertIsNone(honours._frame('x' * 60))
+
+        class DB:
+            state = {'sid-a': json.dumps({'journey': {'titles': {'f_bao': 1}, 'hf_pick': 'lb_wealth_3'}})}
+
+            async def fetch(self, sql, args=()):
+                if 'lb_weekly' in sql:
+                    return [dict(sid='sid-a', board='all', rank=1), dict(sid='sid-a', board='wealth', rank=3)]
+                if 'FROM profiles' in sql:
+                    self.sql = sql
+                    j = json.loads(DB.state['sid-a'])['journey']
+                    return [dict(pid='a', sid='sid-a', ti=json.dumps(j['titles']), hf=j.get('hf_pick'))]
+                return []
+
+        app = type('App', (), dict(db=DB(), by_name={}, hub=None))()
+        h = honours.of_app(app)
+        self.assertEqual(asyncio.run(h.of(['a']))['a'], ['lb_wealth_3', 'lb_all_1', 'f_bao'])
+        self.assertIn("{journey,hf_pick}", app.db.sql)
+        DB.state['sid-a'] = json.dumps({'journey': {'titles': {'f_bao': 1}, 'hf_pick': 'off'}})
+        honours.on_notify(app, {'op': 'honours', 'pid': 'a'})   # game/live_chat.py honours_commit on jr_frame
+        self.assertEqual(asyncio.run(h.of(['a']))['a'], ['hf_off', 'lb_all_1', 'lb_wealth_3', 'f_bao'])
+
     def test_fair_ids_are_the_fair_titles_only(self):
         from live import honours
         self.assertEqual(honours.fair_ids({'f_master': 1, 'f_oaq': 2, 'w_vip': 3, 'g_first': 4, 'x': 5}), ('f_master', 'f_oaq'))
@@ -105,8 +138,9 @@ class Unit(unittest.TestCase):
         live_chat.honours_commit(db, 's' * 64, 'live_fx', dict(message='', live=dict(kind='title')))   # already held
         live_chat.honours_commit(db, 's' * 64, 'live_fx', dict(message='+5 xu', live=dict(kind='coins')))
         live_chat.honours_commit(db, 's' * 64, 'jr_spend_style', dict(fair=dict(titles=['f_bao'])))
+        live_chat.honours_commit(db, 's' * 64, 'jr_frame', dict(message='Đã đổi khung danh hiệu.'))   # 🖼️ the frame chosen
         pid = live_chat.pid_of('s' * 64)
-        self.assertEqual(db.sent, [dict(op='honours', pid=pid), dict(op='honours', pid=pid)])
+        self.assertEqual(db.sent, [dict(op='honours', pid=pid)] * 3)
 
 
 class ClientNames(unittest.TestCase):

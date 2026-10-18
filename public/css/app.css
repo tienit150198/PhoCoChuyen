@@ -242,6 +242,12 @@ button.chip{min-height:40px;padding:6px 14px;font-weight:700;transition:backgrou
 .brand img{width:54px;height:54px;border-radius:14px;box-shadow:var(--shadow-sm);transition:transform var(--dur) var(--ease)}
 /* Game art is not a draggable/long-press image preview. Keep touch scrolling and pinch zoom. */
 img,canvas{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
+/* 18/10 (owner: "game bị cái nhấn giữ hay copy với zoom ấy, tắt cái đó đi"): a long press selects and copies nothing and
+ * opens no callout; no pinch or double-tap zoom (with the viewport's user-scalable=no and boot.js for iOS). Typing
+ * fields keep their selection, copy and paste. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:pan-x pan-y}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable]:not([contenteditable="false"]){-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 img{touch-action:manipulation}
 [data-drag-card] img{-webkit-user-drag:auto}
 
@@ -1642,7 +1648,7 @@ a,summary,label,select,input,textarea,[data-action],[data-command]{touch-action:
 html[data-layout="phone"] .sheet::backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}
 /* The phone sheet head is the drag handle (drag down to close, app.js): the browser must not pan it. */
 /* Titles stay scrollable: a swipe cancelled by native scrolling must not dismiss the sheet. */
-html[data-layout="phone"] .sheet .sheet-head,html[data-layout="phone"] .sheet .home-top{touch-action:pan-y pinch-zoom}
+html[data-layout="phone"] .sheet .sheet-head,html[data-layout="phone"] .sheet .home-top{touch-action:pan-y}
 /* Phone and any coarse pointer: 44px targets, 16px inputs (no iOS zoom). */
 html[data-layout="phone"] input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),html[data-layout="phone"] select,html[data-layout="phone"] textarea,html[data-layout="phone"] .input{font-size:16px;min-height:44px}
 @media (pointer:coarse){

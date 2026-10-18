@@ -64,6 +64,9 @@ CHAT = """async ([me]) => {
     msg(me,'Mình','🙂','Mình là thủ khoa của phố tuần này 🎓',{tt:['lb_certs_1']}),
     msg(me,'Mình','🙂','Tin thứ hai liền sau',{tt:['lb_certs_1']}),
     msg('p11','Bỏ tin','🙈','',{tt:['lb_all_2'],del:true}),
+    msg('p12','Cất Khung','🙅','Mình cất khung rồi (không khung)',{tt:['hf_off','lb_all_3']}),
+    msg('p13','Chọn Công Viên','🎡','Mình chọn khung công viên',{tt:['t_ct_cong_vien','lb_wealth_1'],st:{t:'t_ct_cong_vien'}}),
+    msg('p14','Hết Đeo','🎈','Đã thôi đeo nên khung tài phú',{tt:['t_ct_cong_vien','lb_wealth_1'],st:{}}),
   ];
   window.H={emit:(type,f)=>handlers.get(type)?.(f)};
   await openChat({api:{content:{careers:{repair:{meta:{icon:'wrench',short:'Tiệm sửa đồ'}}}}}},{ch:'town'});
@@ -94,6 +97,8 @@ CHECK = """() => {
   out.plainOk=[...document.querySelectorAll('.ch-msg')].filter(m=>/không khung|vẫn như cũ/.test(m.textContent)).every(m=>!m.querySelector('.hf,.hf-av'));
   out.deletedPlain=[...document.querySelectorAll('.ch-bub.del')].every(b=>!b.classList.contains('hf'));
   out.avFrames=document.querySelectorAll('.ch-msg .hf-av').length;
+  const art=name=>{const m=[...document.querySelectorAll('.ch-msg')].find(m=>m.querySelector('.ch-name')?.textContent?.includes(name));const e=m?.querySelector('.ch-bub.hf');return e?/frames\/(\d+)_chat/.exec(e.getAttribute('style'))?.[1]:null;};
+  out.chosen=[art('Chọn Công Viên'),art('Hết Đeo')];
   out.icon=[...document.querySelectorAll('.hf-av[data-hf-icon]')].map(e=>e.dataset.hfIcon);
   const b=document.querySelector('.ch-body');
   out.overflow=[...document.querySelectorAll('.ch-bub,.ch-name,.hf-av')].filter(e=>{const r=e.getBoundingClientRect();return r.right>innerWidth+0.5;}).length;
@@ -142,6 +147,8 @@ def main():
                 failures.append(f'{name}: no bubble frame for {missing}')
             if not r['plainOk'] or not r['deletedPlain']:
                 failures.append(f'{name}: a plain or deleted message wears a frame')
+            if r['chosen'] != ['62', '28']:
+                failures.append(f'{name}: chosen frames {r["chosen"]} (want the park 62, then wealth 28)')
             if '🔧' not in r['icon']:
                 failures.append(f'{name}: the shared Trùm frame has no workplace icon')
             if r['overflow'] or not r['bodyFits'] or not r['docFits']:
@@ -157,6 +164,28 @@ def main():
                     page.wait_for_timeout(150)
                     page.screenshot(path=str(shots / f'chat-{name}-{i}.png'))
             ctx.close()
+        # 🖼️ the chooser (Hành trình → Danh hiệu): automatic, each frame held, none; the chosen one pressed
+        ctx = browser.new_context(viewport={'width': 360, 'height': 800}, device_scale_factor=2)
+        page = ctx.new_page()
+        errors = []
+        page.on('pageerror', lambda e: errors.append(str(e)))
+        page.goto(base + '/lb')
+        r = page.evaluate("""async () => {
+          const {chooser}=await import('/js/v4/honour-frames.js');
+          const api={lbTitles:[{board:'wealth',rank:2,emoji:'💰',name:'Đại gia mới nổi',label:'Top 2–3'},{board:'milk_tea',rank:1,emoji:'🏆',name:'Trùm trà sữa',label:'Top 1'},
+            {board:'pagoda',rank:1,emoji:'🪷',name:'Siêng việc chùa nhất tuần',label:'Top 1'}],
+            state:{journey:{hf_pick:'lb_milk_tea_1',spend:{wear:{title:'t_ct_cong_vien'}}}},content:{journey:{spend:{titles:[{id:'t_ct_cong_vien',emoji:'🌳',name:'Người dựng công viên'}]}}}};
+          document.body.innerHTML=`<div class="sheet open" style="position:static"><div class="sheet-body">${chooser(api)}</div></div>`;
+          const none=chooser({lbTitles:[{board:'pagoda',rank:1}],state:{journey:{}},content:{}});
+          await new Promise(r=>setTimeout(r,500));
+          return {ids:[...document.querySelectorAll('.hf-opt')].map(b=>b.dataset.id),on:[...document.querySelectorAll('.hf-opt.on')].map(b=>b.dataset.id),
+            none,fits:document.documentElement.scrollWidth<=innerWidth+1};}""")
+        print('chooser', r)
+        if r['ids'] != ['auto', 'lb_wealth_2', 'lb_milk_tea_1', 't_ct_cong_vien', 'off'] or r['on'] != ['lb_milk_tea_1'] or r['none'] or not r['fits'] or errors:
+            failures.append(f'chooser: {r} {errors}')
+        if shots:
+            page.screenshot(path=str(shots / 'chooser.png'), full_page=True)
+        ctx.close()
         for board in ('all', 'wealth', 'collection', 'milk_tea'):
             ctx = browser.new_context(viewport={'width': 360, 'height': 900}, device_scale_factor=2)
             page = ctx.new_page()

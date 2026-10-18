@@ -32,6 +32,10 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.46", date="2026-10-18", items=(
+        dict(emoji='🖼️', text="Có nhiều danh hiệu top? Vào Hành trình → Danh hiệu để tự chọn khung avatar và khung chat, hoặc tắt khung."),
+        dict(emoji='📱', text="Chơi trên điện thoại không còn bị bôi chữ, hiện menu copy khi nhấn giữ hay phóng to màn hình khi chạm."),
+    )),
     dict(version="2.4.45", date="2026-10-18", items=(
         dict(emoji='🖼️', text="Top bảng xếp hạng có khung avatar và khung chat riêng theo danh hiệu, hiện ở Cả phố, khi đi dạo và trên bảng xếp hạng."),
         dict(emoji='🌈', text="Chip danh hiệu top đổi màu: Top 1 vàng óng, Top 2–3 bạc, Top 4–10 đồng, Trùm nghề tím hồng."),

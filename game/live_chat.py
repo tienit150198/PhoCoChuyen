@@ -95,6 +95,8 @@ def honours_commit(db, sid: str, action: str, result) -> None:
         got = bool((r.get('fair') or {}).get('titles'))
     elif action == 'live_fx':
         got = (r.get('live') or {}).get('kind') == 'title' and bool(r.get('message'))
+    elif action == 'jr_frame':   # 🖼️ the frame chosen (game/journey.py HF_PICK): read again
+        got = True
     else:
         return
     if got:

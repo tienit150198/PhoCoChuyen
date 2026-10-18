@@ -23,6 +23,7 @@ import {FIRST_JOB,quiet,firstDay} from './onboard.js';
 import {highlight} from './guide.js';
 import {acctPlace,acctTag,acctTags} from './acct-jobs.js';   // 💼 kế toán: exam first, ×3/×5 (game/accounting_jobs.py)
 import {fundMoveHTML,shortNum} from './wealth.js';
+import {chooser as hfChooser} from './honour-frames.js';   // 🖼️ Khung danh hiệu: which frame to wear (owner 18/10)
 import {ev2010Open} from '../isometric/town-utilities.js';   // 💐 Thiệp 20/10 (game/event2010.py)   // 💼 Rút / góp vốn with a typed amount (F#259)
 // The town map's compact goal card on the clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded for tests.
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
@@ -474,7 +475,7 @@ function titlesView(env){
   // What is worn now, on top: one tap on a chip takes it off. Titles and certificates count together.
   const bar=`<section class="jr-wearing" aria-label="Đang đeo"><h3>Đang đeo <small>${worn.length}/${max}</small></h3><p class="muted small">Chọn tối đa ${max} danh hiệu và chứng chỉ. Cái đầu tiên hiện tên, các cái sau hiện biểu tượng.</p>
     <div class="jr-worn">${worn.map(w=>`<button type="button" class="jr-title-chip on" data-action="jrWear" data-item="${esc(w.id)}" aria-label="Cất ${esc(w.name)}"><span aria-hidden="true">${esc(w.emoji)}</span> ${esc(w.name)} <i aria-hidden="true">✕</i></button>`).join('')||'<span class="muted small">Chưa đeo gì. Chạm một danh hiệu hay chứng chỉ bên dưới để đeo.</span>'}</div></section>`;
-  return head('Danh hiệu',`Đã có ${J.titles.length}/${C.titles.length}.`,{back:true})+`<div class="sheet-body jr-body">${bar}${cats}${certTitles(env,ids,full)}</div>`;
+  return head('Danh hiệu',`Đã có ${J.titles.length}/${C.titles.length}.`,{back:true})+`<div class="sheet-body jr-body">${hfChooser(api)}${bar}${cats}${certTitles(env,ids,full)}</div>`;
 }
 
 /* ------------------------------------------------------------------ wallet */
@@ -667,6 +668,7 @@ export async function journeyAction(action,data,el,env){
       if(!cur.includes(id)&&cur.length>=wearMax(J)){env.toast?.(`Đeo tối đa ${wearMax(J)} cái. Chạm một cái đang đeo để cất bớt nhé.`,true);return true;}
       const r=await cmd('jr_equip',{worn:cur.includes(id)?cur.filter(x=>x!==id):[...cur,id]});
       if(r&&ui.view==='home')renderSheet(false);return true;}
+    case'jrFrame':{const r=await cmd('jr_frame',{id:data.id||'auto'});if(r&&ui.view==='home')renderSheet(false);return true;}   // 🖼️ game/journey.py HF_PICK
     case'jrEquip':{   // "Đeo ngay" on a new title: it goes first, the others stay while they fit
       const J=api.state.journey,id=data.title||null;
       const r=await cmd('jr_equip',Array.isArray(J.worn)?{worn:id?[id,...J.worn.map(w=>w.id).filter(x=>x!==id)].slice(0,wearMax(J)):[]}:{title:id});
