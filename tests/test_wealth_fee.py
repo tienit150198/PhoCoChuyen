@@ -38,6 +38,34 @@ class Fee(unittest.TestCase):
         self.assertNotIn(wf.KEY, s['journey'])
 
 
+    def test_workplace_funds_count_and_pay_last(self):
+        from game import journey as jr
+        s = story(0); j = s['journey']
+        cid = next(iter(s['careers'])); c = s['careers'][cid]
+        c['started'] = True
+        c['ops']['finance']['opening_balance'] += 40_000_000 - c['money']; c['money'] = 40_000_000
+        self.assertGreaterEqual(wf.assets(s), 40_000_000)
+        want = wf.daily(wf.assets(s))
+        wf.settle(s, 1_800_000_000)
+        self.assertEqual(j[wf.KEY]['last'], want)
+        self.assertEqual(c['money'], 40_000_000 - want)
+        validate_state(s)
+
+    def test_nothing_before_the_start_and_early_charges_go_back(self):
+        s = story(50_000_000); j = s['journey']
+        before = wf.START_TS - 3600
+        self.assertFalse(wf.settle(s, before))
+        self.assertNotIn(wf.KEY, j)
+        j[wf.KEY] = dict(d=wf.START - 2, paid=640_971, last=640_971)   # what 2.4.52 took on 18/10
+        self.assertTrue(wf.settle(s, before))
+        self.assertEqual(j['wallet'], 50_000_000 + 640_971)
+        self.assertEqual(j[wf.KEY], dict(d=wf.START - 1, paid=0, last=0))
+        self.assertEqual(j['history'][-1]['label'], wf.BACK)
+        self.assertFalse(wf.settle(s, before + 60))
+        wf.settle(s, wf.START_TS + 60)                                 # 20/10: one day, not three
+        self.assertEqual(j[wf.KEY]['last'], wf.daily(50_640_971))
+        validate_state(s)
+
     def test_kill_switch(self):
         import os
         from unittest import mock
@@ -52,13 +80,13 @@ class Chain(unittest.TestCase):
         self.assertEqual([qb.chain_tax(n) for n in (1, 5, 6, 10, 11, 20, 21, 30, 31, 50, 51, 64)],
                          [0, 0, 2, 2, 5, 5, 10, 10, 15, 15, 20, 20])
         st = dict(place='kiot', staff=[], business=dict())
-        base = qb._rates(st)['rent']
-        token = qb._CHAIN.set(64)
-        try:
-            self.assertEqual(qb._rates(st)['rent'], base * 64 // 10)
-            self.assertEqual(qb.tax_percent(), 7 + 20)
-        finally:
-            qb._CHAIN.reset(token)
+        base, power = qb._rates(st)['rent'], qb._rates(st)['power']
+        for n, rent, pw, tax in ((5, base, power, 7), (10, base, power * 2, 9), (64, base * 64 // 10, power * 64 // 5, 27)):
+            token = qb._CHAIN.set(n)
+            try:
+                self.assertEqual((qb._rates(st)['rent'], qb._rates(st)['power'], qb.tax_percent()), (rent, pw, tax), n)
+            finally:
+                qb._CHAIN.reset(token)
         self.assertEqual(qb.tax_percent(), 7)
 
 

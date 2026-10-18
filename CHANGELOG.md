@@ -1,3 +1,11 @@
+# v2.4.53 — 2026-10-19
+
+🏛️ Phí giữ tài sản lớn và thuế/thuê chuỗi quầy áp dụng từ 20/10, có thông báo (chủ game 19/10: "mai rồi trừ nhé, với thông báo cho người ta biết luôn"). game/wealth_fee.py START = 20/10 (giờ Việt Nam): trước ngày đó không trừ; khoản 2.4.52 đã trừ hôm 18–19/10 được hoàn hết vào ví ở lệnh kế tiếp ("🏛️ Hoàn phí giữ tài sản lớn (áp dụng từ 20/10)"); quay_business.chain_scope tính chuỗi = 1 trước START_TS.
+
+⚡ Điện quầy theo chuỗi (chủ game 19/10 "điện nước theo chuỗi thì tăng", chọn mức vừa): trên POWER_FREE = 5 quầy, điện mỗi quầy × n/5 (64 ki-ốt: 15 → 192 xu/10 phút, cả chuỗi ≈1,77 triệu/ngày thay vì 138k). Sổ quầy ghi "điện ×…" cạnh thuế/thuê chuỗi. Có gì mới 2.4.53: 3 dòng (phí tài sản, thuế/thuê chuỗi, hoàn phí).
+
+🔧 Phí giữ tài sản tính cả quỹ mọi nơi làm việc đã bắt đầu, kể cả nơi làm thuê (wealth_fee.assets(): wealth_pricing.total bỏ qua chúng; 19/10 một người top đã chuyển ~80 triệu sang đó), và lấy phí từ quỹ nơi làm việc sau cùng (giữ 80 xu dự phòng và tiền hóa đơn chưa trả, journey._transfer 'owner_draw').
+
 # v2.4.52 — 2026-10-18
 
 🏬 Người giàu tốn tiền hơn (chủ game 18/10: "làm sao cho người giàu tốn tiền nhiều hơn, tăng tiền duy trì, tiền chuỗi, phí… tăng càng nhiều thì phí nhiều đi"; chọn mức nhẹ; không thông báo trong Có gì mới). Kiểm tra top 10 trước đó: top 1 (64 ki-ốt hoa) lãi ≈55 triệu/ngày, chủ yếu từ thưởng lãi nhân viên.

@@ -39,9 +39,11 @@ STAFF_BONUS_PERCENT = 236
 # 🏬 Chuỗi quầy (owner 18/10: "làm sao cho người giàu tốn tiền nhiều hơn… tăng càng nhiều thì phí nhiều đi", the gentle
 # ladder): an owner of more than N counters pays +P points of income tax on every counter's margin (the profit bonus is
 # counted after tax, so it shrinks with it), and above RENT_FREE counters each counter's rent grows × n / RENT_FREE.
+# ⚡ Owner 19/10 ("điện nước theo chuỗi thì tăng", mức vừa): above POWER_FREE counters each counter's power × n / POWER_FREE.
 # The owner's counter count comes from the save being settled (chain_scope); a stall read on its own counts as 1.
 CHAIN_TAX = ((50, 20), (30, 15), (20, 10), (10, 5), (5, 2))
 RENT_FREE = 10
+POWER_FREE = 5
 _CHAIN = contextvars.ContextVar('quay_chain', default=1)
 
 
@@ -56,7 +58,8 @@ def chain_of(s):
 
 @contextlib.contextmanager
 def chain_scope(s):
-    token = _CHAIN.set(max(1, chain_of(s)))
+    from .wealth_fee import START_TS   # from 20/10 (owner 19/10: announced first, then charged)
+    token = _CHAIN.set(max(1, chain_of(s)) if time.time() >= START_TS else 1)
     try:
         yield
     finally:
@@ -232,7 +235,7 @@ def status(st):
 
 def _rates(st):
     p = qy.PLACES[st['place']]
-    return dict(wages=sum(staff_wage(st, e) for e in st['staff']), rent=p['rent'] // qy.MONTH_DAYS * max(RENT_FREE, _CHAIN.get()) // RENT_FREE, power=p['power'],
+    return dict(wages=sum(staff_wage(st, e) for e in st['staff']), rent=p['rent'] // qy.MONTH_DAYS * max(RENT_FREE, _CHAIN.get()) // RENT_FREE, power=p['power'] * max(POWER_FREE, _CHAIN.get()) // POWER_FREE,
                 environment={'xe': 1, 'sap': 2, 'kiot': 4}[st['place']],
                 protection=_protection_plans(st)[st['business'].get('protection', {}).get('level', 'none')]['period_cost'])
 
@@ -640,7 +643,7 @@ def public(st):
         price_effect=price_effect(st), protection=dict(level=b.get('protection', {}).get('level', 'none'), options=[dict(level=k, **v) for k,v in plans.items()], **plans[b.get('protection', {}).get('level', 'none')], quote=dict(b.get('protection_quote', {}))),
         protection_plans=[dict(level=k, **v) for k,v in plans.items()],
         rates=rates, income_tax_percent=tax_percent(), chain=_CHAIN.get(), chain_tax=chain_tax(_CHAIN.get()),
-        rent_x=round(max(RENT_FREE, _CHAIN.get()) / RENT_FREE, 1),
+        rent_x=round(max(RENT_FREE, _CHAIN.get()) / RENT_FREE, 1), power_x=round(max(POWER_FREE, _CHAIN.get()) / POWER_FREE, 1),
         bonus_percent=income_gear.profit_percent(st,BONUS_PERCENT), staff_bonus_percent=income_gear.profit_percent(st,STAFF_BONUS_PERCENT),
         visitor_orders=visitors,
         stock_total=sum(b['stock'].values()), stock=[dict(id=d, qty=b['stock'].get(d, 0), cost=unit_cost(st, d), price=qs.price(st, d), keep=keep(st, d)) for d in rows],

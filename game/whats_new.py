@@ -32,6 +32,11 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.53", date="2026-10-19", items=(
+        dict(emoji='🏛️', text="Từ 20/10, tài sản trên 30 triệu trả phí giữ tài sản mỗi ngày: 0,5% phần trên 30 triệu, 1% phần trên 100 triệu."),
+        dict(emoji='🏬', text="Từ 20/10, chủ trên 5 quầy trả thêm thuế lãi và tiền điện theo số quầy; từ 11 quầy, tiền thuê cũng tăng theo chuỗi."),
+        dict(emoji='💸', text="Ai lỡ bị trừ phí giữ tài sản trước 20/10 sẽ được hoàn đủ vào ví khi vào game."),
+    )),
     dict(version="2.4.51", date="2026-10-18", items=(
         dict(emoji='🍼', text="Mẹ & bé và Nhà thuốc: kệ chứa và mỗi lần đặt hàng từ 80 món như các tiệm khác, cấp kho đã mua được nâng theo."),
         dict(emoji='📦', text="Kiện hàng lớn ở hai tiệm này chia theo khay, bấm Đếm khay để đếm nhanh cả khay."),

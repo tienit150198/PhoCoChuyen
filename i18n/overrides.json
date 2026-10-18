@@ -1,5 +1,8 @@
 {
   "strings": {
+  "Từ 20/10, tài sản trên 30 triệu trả phí giữ tài sản mỗi ngày: 0,5% phần trên 30 triệu, 1% phần trên 100 triệu.": "From 20/10, assets above 30 million pay a daily holding fee: 0.5% of the part above 30 million, 1% of the part above 100 million.",
+  "Từ 20/10, chủ trên 5 quầy trả thêm thuế lãi và tiền điện theo số quầy; từ 11 quầy, tiền thuê cũng tăng theo chuỗi.": "From 20/10, owners of more than 5 counters pay extra profit tax and power by count; from 11 counters, rent grows with the chain too.",
+  "Ai lỡ bị trừ phí giữ tài sản trước 20/10 sẽ được hoàn đủ vào ví khi vào game.": "Anyone charged the holding fee before 20/10 gets it all back in their wallet when they play.",
   "Mẹ & bé và Nhà thuốc: kệ chứa và mỗi lần đặt hàng từ 80 món như các tiệm khác, cấp kho đã mua được nâng theo.": "Mother & Baby and Pharmacy: shelves and each order now start at 80 items like the other shops; stock-room tiers you bought grow with it.",
   "Kiện hàng lớn ở hai tiệm này chia theo khay, bấm Đếm khay để đếm nhanh cả khay.": "Big parcels at these two shops come in trays: tap Count tray to count a whole tray at once.",
   "Tiền của bạn có nút Rút hết: rút tiền từ mọi quỹ nơi làm việc về ví chỉ với một lần xác nhận.": "Your money has a Withdraw all button: every workplace fund goes to your wallet with one confirmation.",
