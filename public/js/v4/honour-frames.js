@@ -15,7 +15,7 @@ const TIERS={all:['25','26','27'],titles:['36','35','34'],certs:['31','32','33']
 const CAREER={milk_tea:'37',clothing:'38',pharmacy:'39',accounting:'40',pilot:'41',grocery:'42',police:'43',flight_attendant:'44',
   it_helpdesk:'45',lawyer:'46',group_accounting:'47',corp_accounting:'48',art_studio:'49',post_office:'50',banquet:'51',hotel:'52',
   customs:'53',delivery:'54',pet_care:'55',cafe_bakery:'21',florist:'14',teacher:'16',tax_payroll:'18',tra_da:'03',pet_shop:'20'};
-const CAREER_ANY='72';
+const CAREER_ANY='56';   // "Cao thủ đa nghề" (owner 18/10: 72 "Top tổng hợp nghề" has the delivery box and helmet, it looked like Trùm giao hàng)
 // game/spend_content.py TOWN_TITLES (the top sponsors) and LUX_TITLES (Chúa đảo), worn as `st.t`
 const WORN={t_ct_cong_vien:'62',t_ct_rap_phim:'63',t_ct_thu_vien:'64',t_ct_san_vd:'65',t_ct_cau_dao:'66',t_ct_benh_vien:'67',
   t_ct_vang:'61',t_chu_dao:'68'};
@@ -82,11 +82,13 @@ function ensureCss(){
 .hf-av>:first-child{border-radius:var(--hf-rad,50%)!important;overflow:hidden}
 .hf-av::after{content:'';position:absolute;left:var(--hf-l);top:var(--hf-t);width:var(--hf-w);height:var(--hf-h);background:var(--hf-img) center/100% 100% no-repeat;pointer-events:none;z-index:1}
 .hf-av[data-hf-icon]::before{content:attr(data-hf-icon);position:absolute;left:50%;top:-14%;transform:translateX(-50%);z-index:2;font-size:max(10px,38%);line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35));pointer-events:none}
-.ch-bub.hf{position:relative;z-index:0;isolation:isolate;background:transparent!important;border:0!important;box-shadow:none!important;color:#3d2a1e!important;margin:var(--hf-mt) var(--hf-mr) var(--hf-mb) var(--hf-ml);padding:10px 22px 8px!important;min-width:min(9.5em,100%);min-height:3.4em!important}
+.ch-bub.hf{position:relative;z-index:0;isolation:isolate;background:transparent!important;border:0!important;box-shadow:none!important;color:#3d2a1e!important;margin:var(--hf-mt) var(--hf-mr) var(--hf-mb) var(--hf-ml);padding:10px 22px 8px!important;min-width:var(--hf-minw,9.5em);min-height:3.4em!important}
 .ch-bub.hf::before{content:'';position:absolute;z-index:-1;pointer-events:none;top:calc(-1*var(--hf-ot));bottom:calc(-1*var(--hf-ob));left:calc(-1*var(--hf-ol));right:calc(-1*var(--hf-or));
-border-style:solid;border-color:transparent;border-width:var(--hf-wt) var(--hf-wr) var(--hf-wb) var(--hf-wl);border-image-source:var(--hf-img);border-image-slice:var(--hf-s) fill;border-image-width:var(--hf-wt) var(--hf-wr) var(--hf-wb) var(--hf-wl);border-image-repeat:stretch}
+border-style:solid;border-color:transparent;border-width:0;border-image-source:var(--hf-img);border-image-slice:var(--hf-s) fill;border-image-width:var(--hf-wt) var(--hf-wr) var(--hf-wb) var(--hf-wl);border-image-repeat:stretch}
 .ch-msg.mine .ch-bub.hf::before{left:calc(-1*var(--hf-or));right:calc(-1*var(--hf-ol));transform:scaleX(-1)}
 .ch-msg.mine .ch-bub.hf{margin-left:var(--hf-mr);margin-right:var(--hf-ml)}
+.ch-msg.mine .ch-bub.hf.hf-nf::before{left:calc(-1*var(--hf-ol));right:calc(-1*var(--hf-or));transform:none}
+.ch-msg.mine .ch-bub.hf.hf-nf{margin-left:var(--hf-ml);margin-right:var(--hf-mr)}
 .ch-bub.hf time{color:#7a6252!important;opacity:1;text-align:center}
 .ch-bub.hf a.ch-link{color:#9a3412!important}
 .hn-chip.hn-top{--hn-bg:linear-gradient(135deg,#fff3c4,#f6c945 55%,#e8a317);--hn-ink:#5a3700;--hn-line:rgba(160,104,0,.45);background:var(--hn-bg);box-shadow:inset 0 0 0 1px var(--hn-line),0 0 6px rgba(246,201,69,.55)}
@@ -128,14 +130,17 @@ export function logo(board,rank){
   return `<span class="hf-av hf-logo" aria-hidden="true" style="--hf-img:url('${DIR}${f.n}_av.webp');--hf-l:${pct(-(cx-box/2)/box)};--hf-t:${pct(-(cy-box/2)/box)};--hf-w:${pct(w/box)};--hf-h:${pct(h/box)}${sq?';--hf-rad:18%':''}"><b>${rank}</b></span>`;
 }
 const K=.5;   // css px per pixel of the saved bubble art (2× for a sharp phone screen)
+// art with words on it ("TRÙM", "TOP 10"): my own bubble keeps it as drawn, not mirrored (it read "MÙRT")
+const WORDS=new Set(['27',...Array.from({length:19},(_,i)=>String(37+i))]);
 /** ` hf` and the style attribute for a chat bubble of a player wearing a frame, or {cls:'',attrs:''}. */
 export function bubble(tt,st){
   const f=pick(tt,st),d=f&&FRAMES[f.n]?.chat;if(!d)return {cls:'',attrs:''};ensureCss();
   const [w,h,x0,y0,x1,y1]=d,ry=Math.min(.32*(y1-y0),40),rx=Math.min(ry,.2*(x1-x0));
-  const s=[y0+ry,w-x1+rx,h-y1+ry,x0+rx].map(Math.round),px=v=>`${Math.round(v*K*10)/10}px`;
+  // the cuts: from the data (scripts/build_honour_frames.py slices(): only a plain strip of the rim stretches), else the rim
+  const s=(d.length>=10?d.slice(6,10):[y0+ry,w-x1+rx,h-y1+ry,x0+rx]).map(Math.round),px=v=>`${Math.round(v*K*10)/10}px`;
   const o=[y0,w-x1,h-y1,x0];
-  return {cls:' hf',attrs:` style="--hf-img:url('${DIR}${f.n}_chat.webp');--hf-s:${s.join(' ')};--hf-wt:${px(s[0])};--hf-wr:${px(s[1])};--hf-wb:${px(s[2])};--hf-wl:${px(s[3])};`+
-    `--hf-ot:${px(o[0])};--hf-or:${px(o[1])};--hf-ob:${px(o[2])};--hf-ol:${px(o[3])};--hf-mt:${px(o[0]*.7)};--hf-mr:${px(o[1])};--hf-mb:${px(o[2]*.8)};--hf-ml:${px(o[3])}"`};
+  return {cls:WORDS.has(f.n)?' hf hf-nf':' hf',attrs:` style="--hf-img:url('${DIR}${f.n}_chat.webp');--hf-s:${s.join(' ')};--hf-wt:${px(s[0])};--hf-wr:${px(s[1])};--hf-wb:${px(s[2])};--hf-wl:${px(s[3])};`+
+    `--hf-minw:${px(x1-x0)};--hf-ot:${px(o[0])};--hf-or:${px(o[1])};--hf-ob:${px(o[2])};--hf-ol:${px(o[3])};--hf-mt:${px(o[0]*.7)};--hf-mr:${px(o[1])};--hf-mb:${px(o[2]*.8)};--hf-ml:${px(o[3])}"`};
 }
 /** The chip class of a title id: the top tiers wear colours (game/lb_titles.py), others the plain chip. */
 export function chipClass(id){

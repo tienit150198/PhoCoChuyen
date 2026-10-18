@@ -32,6 +32,11 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.47", date="2026-10-18", items=(
+        dict(emoji='🖼️', text="Khung chat không còn bị méo hay bị cắt: mèo, thỏ, mái nhà, ống hút… giữ nguyên hình, tin ngắn hay dài đều đẹp."),
+        dict(emoji='🔤', text="Tin của chính bạn không còn lật ngược chữ trên khung (TRÙM, TOP 10)."),
+        dict(emoji='🛠️', text="Trùm các nghề chưa có khung riêng (tiệm ảnh, tiệm sửa đồ…) đổi sang khung Cao thủ đa nghề, không còn giống khung Trùm giao hàng."),
+    )),
     dict(version="2.4.46", date="2026-10-18", items=(
         dict(emoji='🖼️', text="Ai cũng chọn được khung avatar và khung chat ở Hành trình → Danh hiệu: 7 khung thường, khung riêng của top, hoặc bỏ khung."),
         dict(emoji='📱', text="Chơi trên điện thoại không còn bị bôi chữ, hiện menu copy khi nhấn giữ hay phóng to màn hình khi chạm."),
