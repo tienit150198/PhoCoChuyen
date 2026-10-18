@@ -73,6 +73,7 @@ from .auth import clean_name, pid_of
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
 from .street import GEO, Walker, clean_look, clean_pet, clean_rank
+from . import pet_rank
 from . import babies
 
 PREFIX = 'wed:'
@@ -349,7 +350,7 @@ class WeddingFeature(Feature):
                 at = geo.clamp(x + random.uniform(-90, 90), y + random.uniform(-30, 30))
                 title = self.street.title_of(pl, f.get('title'), f.get('titles'))
             bb, _ = babies.claim(self.hub, bb, bsp)
-            self.street._enter(room, conn, Walker(pl, look, g, title, at, now, rk=clean_rank(f.get('rk')), pt=clean_pet(f.get('pt')), bb=bb))
+            self.street._enter(room, conn, Walker(pl, look, g, title, at, now, rk=clean_rank(f.get('rk')), pt=pet_rank.cached(pl, clean_pet(f.get('pt'))), bb=bb))
             overflow = False
         else:
             if len(room.data['watch']) >= WATCHERS_MAX:

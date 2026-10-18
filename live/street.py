@@ -78,7 +78,8 @@ import time
 from . import babies, coride, effects, honours, plates, styles
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
-from .street_data import ORG_GRADES, PET_ACCS, PET_BREEDS
+from .street_data import ORG_GRADES, PET_ACCS, PET_BREEDS, PET_FX
+from . import pet_rank
 from . import filters
 from .street_data import (CERTS, COLOR_IDS, EMOTES, LOOK_DEFAULTS, LOOK_IDS, LOOK_SLOTS, PAINTABLE, PLACES, PUBLIC, TINT_MAX,
                           TINT_SLOTS, TITLES, TOPICS, VENDORS, H, W)
@@ -294,7 +295,7 @@ def clean_pet(pt) -> dict | None:
     game/pets.py walk_ref): kept only when the breed and coat are known here; the name goes through the chat filter
     (heavy words masked, links and contacts dropped), unknown accessories are left out. Anything else shows no pet
     (never refused: an older or newer client still walks in)."""
-    if not isinstance(pt, dict) or set(pt) - {'b', 'c', 'n', 'a'} or pt.get('b') not in PET_BREEDS:
+    if not isinstance(pt, dict) or set(pt) - {'b', 'c', 'n', 'a', 'r', 'x'} or pt.get('b') not in PET_BREEDS:
         return None
     c = pt.get('c', 0)
     if type(c) is not int or not 0 <= c < PET_BREEDS[pt['b']]:
@@ -305,6 +306,11 @@ def clean_pet(pt) -> dict | None:
     out = dict(b=pt['b'], c=c, a=[x for x in acc[:3] if isinstance(x, str) and x in PET_ACCS])
     if n:
         out['n'] = n
+    r = pt.get('r')   # 🏅 the rank (1 C … 6 SSS; D is left out) and an SSS coat effect: live/pet_rank.py keeps them honest
+    if type(r) is int and 1 <= r <= 6:
+        out['r'] = r
+    if pt.get('x') in PET_FX:
+        out['x'] = pt['x']
     return out
 
 
@@ -629,6 +635,7 @@ class StreetFeature(Feature):
         await self._ensure_loaded(p)
         bb = babies.clean_baby(f.get('bb'))   # 👶 the baby carried (optional)
         bsp = await babies.spouse_of(self.db, p, bb)
+        pet = await pet_rank.keep(self.db, p, clean_pet(f.get('pt')))   # 🏅 a rank this player really has
         r, by = await coride.check(self.db, self.hub, p, clean_ride(f.get('r')))   # no await from here on
         bb, bby = babies.claim(self.hub, bb, bsp)
         self._leave_player(p, 'other', keep=conn)
@@ -636,7 +643,7 @@ class StreetFeature(Feature):
         now = time.time()
         sx, sy = GEO[place].spots['spawn']
         at = GEO[place].clamp(sx + random.uniform(-150, 150), sy + random.uniform(-45, 45))
-        w = Walker(p, look, g, title, at, now, r, clean_rank(f.get('rk')), clean_pet(f.get('pt')), bb)
+        w = Walker(p, look, g, title, at, now, r, clean_rank(f.get('rk')), pet, bb)
         w.st = st or None
         w.tt = tt or None
         self._enter(room, conn, w)

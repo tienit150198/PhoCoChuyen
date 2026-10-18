@@ -15,7 +15,7 @@
  * "🛵 Đi xe / 🚶 Đi bộ" button on the stage changes it (each vehicle owned in turn, then walking; remembered here). */
 import {plan,route,nearest,itemAt,districtAt,back,marks,LANDMARKS,SIGNS} from '../scenes/town-place.js';
 import {figure,paintPlayer,CANVAS,lookOf} from './look.js';
-import {refURL} from './pet-art.js';   // 🐾 the pet walking with you (game/pets.py walk_ref)
+import {refURL,refBox} from './pet-art.js';   // 🐾 the pet walking with you (game/pets.py walk_ref)
 import {t as tr,language} from './i18n.js';
 import {lightAt} from './dayclock.js';
 import {escapeHTML as esc,icon} from '../icons.js';
@@ -403,7 +403,8 @@ function petStep(m,dt){
 }
 function drawPet(c,world){
   if(!PET.on||riding())return;const pose=PET.moving?'walk':'sit',im=petImg(pose);if(!im)return;
-  world();const w=pose==='walk'?46:40,h=pose==='walk'?w*62/72:w,foot=pose==='walk'?58/62:64/68;
+  const ref=S()?.journey?.pets?.ref,B=refBox(W.env?.api?.content?.journey?.pets,ref,pose);   // 🐶 bigger dogs, 🏅 the aura's room
+  world();const w=(pose==='walk'?46:40)*B.w/B.base*B.k,h=w*B.h/B.w,foot=B.foot;
   c.save();c.translate(PET.x,PET.y);if(PET.face<0)c.scale(-1,1);c.drawImage(im,-w/2,-h*foot,w,h);c.restore();
 }
 function animating(){return !still()&&!document.hidden&&(W.marks?.glow?.length||W.marks?.arrow);}

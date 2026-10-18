@@ -48,7 +48,63 @@ export const SHAPES={
   sphynx:{k:'cat',ear:'bigcat',tail:'thin',muzzle:'cat',wrinkles:1,bald:1},
   maine:{k:'cat',ear:'tuft',tail:'fluffy',fluff:'ruff',face:'tabby',muzzle:'cat',stripes:1},
   siamese:{k:'cat',ear:'bigcat',tail:'thin',face:'points',muzzle:'cat'},
+  // 19/10: the new shop breeds, the 🧬 hybrids and the 🌟 legendaries (game/pets_content.py)
+  becgie:{k:'dog',ear:'prick',tail:'plume',face:'mask',muzzle:'dog',long:1.15,body:1.05,brows:1},
+  dalmatian:{k:'dog',ear:'flop',tail:'thin',muzzle:'dog',spots:1,smile:1},
+  shihtzu:{k:'dog',ear:'long',tail:'plume',fluff:'ruff',muzzle:'flat',legs:.7,head:1.08,smile:1},
+  beagle:{k:'dog',ear:'long',tail:'thin',face:'blaze',muzzle:'dog',brows:1},
+  border:{k:'dog',ear:'flop',tail:'plume',face:'blaze',fluff:'ruff',muzzle:'dog',smile:1},
+  frenchie:{k:'dog',ear:'huge',tail:'stub',muzzle:'flat',wrinkles:1,legs:.7,chubby:1},
+  chowchow:{k:'dog',ear:'small',tail:'curl',fluff:'ruff',muzzle:'flat',body:1.12,chubby:1},
+  akita:{k:'dog',ear:'prick',tail:'curl',face:'urajiro',muzzle:'dog',body:1.08},
+  lai:{k:'dog',ear:'prick',tail:'thin',muzzle:'dog',stripes:1,brows:1},
+  russian:{k:'cat',ear:'cat',tail:'long',muzzle:'cat'},
+  aby:{k:'cat',ear:'bigcat',tail:'long',muzzle:'cat',face:'tabby'},
+  exotic:{k:'cat',ear:'catsmall',tail:'thick',muzzle:'flatcat',chubby:1},
+  mau:{k:'cat',ear:'cat',tail:'long',muzzle:'cat',spots:1},
+  hmong:{k:'dog',ear:'prick',tail:'stub',fluff:'ruff',muzzle:'dog',body:1.05,brows:1},
+  doodle:{k:'dog',ear:'flop',tail:'plume',fluff:'curly',muzzle:'dog',smile:1},
+  pomsky:{k:'dog',ear:'prick',tail:'plume',face:'mask',fluff:'ruff',muzzle:'dog',legs:.75,head:1.06,smile:1},
+  corgi_inu:{k:'dog',ear:'big',tail:'curl',face:'urajiro',legs:.55,long:1.3,muzzle:'dog',smile:1,brows:1},
+  wolf:{k:'dog',ear:'prick',tail:'plume',face:'mask',fluff:'ruff',muzzle:'dog',body:1.15,long:1.1,brows:1},
+  dom_xe:{k:'dog',ear:'fold',tail:'stub',muzzle:'flat',wrinkles:1,spots:1,head:1.05},
+  himalaya:{k:'cat',ear:'catsmall',tail:'fluffy',fluff:'ruff',muzzle:'flatcat',face:'points',chubby:1},
+  ragamuffin:{k:'cat',ear:'cat',tail:'fluffy',fluff:'ruff',muzzle:'cat',chubby:1,body:1.08},
+  toyger:{k:'cat',ear:'cat',tail:'long',face:'tabby',muzzle:'cat',stripes:1,body:1.05},
+  kilt:{k:'cat',ear:'fold',tail:'thick',legs:.5,muzzle:'cat',chubby:1},
+  jade:{k:'cat',ear:'bigcat',tail:'long',muzzle:'cat',face:'tux2'},
+  linh_khuyen:{k:'dog',ear:'prick',tail:'plume',fluff:'ruff',muzzle:'dog',ridge:1,body:1.12,brows:1,smile:1},
+  than_tai:{k:'cat',ear:'cat',tail:'long',face:'calico',muzzle:'cat',chubby:1},
 };
+/* 🏅 Ranks (game/pet_tiers.py RANKS: 0 D … 6 SSS) and the coat effects of an SSS (FX) or a mutant pup. */
+export const RANK=['D','C','B','A','S','SS','SSS'];
+export const RANK_COLOR=['#9aa0a6','#4caf6a','#3d8bfd','#a259ff','#f2b632','#ff6a3d','#ff4fa3'];
+const FXCOAT={ngan_ha:{b:'#3d2f7a',m:'#22184f',l:'#8ea2ff',e:'#ffe66b'},hong_ngoc:{b:'#c72c48',m:'#7d1426',l:'#ff9db0',e:'#ffd54a'},
+  bang_tinh:{b:'#dff4ff',m:'#9fd3f2',l:'#ffffff',e:'#38c6ff'},cau_vong:{b:'url(#pt-rb)',m:'#b06bd9',l:'#fff3a8',e:'#3b2a22'}};
+const DEFS='<defs><linearGradient id="pt-rb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7a7a"/><stop offset=".2" stop-color="#ffc56b"/><stop offset=".4" stop-color="#fff07a"/><stop offset=".6" stop-color="#7de08a"/><stop offset=".8" stop-color="#6fb6ff"/><stop offset="1" stop-color="#c58cff"/></linearGradient>'
+  +'<radialGradient id="pt-glow-s"><stop offset="0" stop-color="#ffe58a" stop-opacity=".9"/><stop offset="1" stop-color="#ffe58a" stop-opacity="0"/></radialGradient>'
+  +'<radialGradient id="pt-glow-ss"><stop offset="0" stop-color="#ff9a5c" stop-opacity=".9"/><stop offset="1" stop-color="#ff5a3d" stop-opacity="0"/></radialGradient>'
+  +'<radialGradient id="pt-glow-sss"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".45" stop-color="#ffb3e6" stop-opacity=".6"/><stop offset="1" stop-color="#8fd3ff" stop-opacity="0"/></radialGradient>'
+  +'<radialGradient id="pt-glow-lg"><stop offset="0" stop-color="#fff6c2" stop-opacity="1"/><stop offset=".5" stop-color="#ffd24a" stop-opacity=".7"/><stop offset="1" stop-color="#ff9f1a" stop-opacity="0"/></radialGradient>'
+  +'<filter id="pt-mut"><feColorMatrix type="hueRotate" values="150"/></filter></defs>';
+/** What stands behind the pet (its rank's ring and glow) and what floats in front (sparkles, the trail, coins). */
+function aura(r,x,legend,kind,pose){
+  if(!r&&!legend)return ['',''];
+  const col=RANK_COLOR[r]||RANK_COLOR[0],walk=pose==='walk';let back='',front='';
+  const ring=r>=6||legend?'url(#pt-rb)':col;
+  back+=`<ellipse cx="0" cy="-.5" rx="25" ry="5.2" fill="${legend?'#ffd24a':col}" opacity="${r>=4||legend?.32:.2}"/><ellipse cx="0" cy="-.5" rx="25" ry="5.2" fill="none" stroke="${ring}" stroke-width="${r>=4||legend?2.6:1.8}"/>`;
+  if(r>=4||legend){
+    const g=legend?'pt-glow-lg':r>=6?'pt-glow-sss':r>=5?'pt-glow-ss':'pt-glow-s';
+    back=`<ellipse class="pet-glow" cx="0" cy="-24" rx="${legend?40:34}" ry="${legend?36:31}" fill="url(#${g})"/>`+back;
+    const sc=legend?'#ffd24a':r>=6?'#fff':r>=5?'#ffb36b':'#ffe066';
+    front+=`<g class="pet-spark">${star(-24,-40,3.2,sc)+star(22,-48,2.6,sc)+star(27,-18,2,sc)+(r>=6||legend?star(-27,-16,2.4,'#ffd1f0')+star(4,-56,2.8,'#bfe6ff'):'')}</g>`;
+  }
+  if((r>=5||legend)&&walk)front+=`<g class="pet-trail" opacity=".8">${[-34,-28,-22].map((xx,i)=>E(xx,-1.2-(i%2)*1.6,1.9,1.1,legend?'#ffd24a':r>=6?'url(#pt-rb)':'#ff8a4d',0,` opacity="${.35+i*.2}"`)).join('')}</g>`;
+  if(legend&&kind==='dog')front+=L('M-30 -10q-6 -22 10 -34q14 -10 26 2q8 8 2 18','#f2c14e',1.6,' class="pet-dragon" opacity=".75"')+star(6,-30,1.8,'#2fd4c0');
+  if(legend&&kind==='cat')front+=`<g class="pet-coins">${C(-22,-30,3.2,'#ffd24a',1)+C(20,-40,2.6,'#ffd24a',1)+C(26,-22,2.2,'#ffd24a',1)}</g>`+E(-10,-1,9,2.6,'#ff9db0',0,' opacity=".55"')+E(10,-1,9,2.6,'#8fd3ff',0,' opacity=".55"');
+  if(x==='ngan_ha')front+=[[-6,-22],[4,-28],[8,-16],[-2,-12]].map(([a,b])=>C(a,b,.9,'#fff',0)).join('');
+  return [back,front];
+}
 const SIZE={s:.9,m:1,l:1.1};
 
 /* ---------------------------------------------------------------- the head (looking at you), centre (x, y), radius r */
@@ -276,24 +332,35 @@ const coatColor=id=>({ao_len:'#e58b7a',ao_mua:'#f6cf45',ao_vn:'#d8392f',ao_khung
 
 /** The pet's markup, paws on y = 0 (no <svg> wrapper). breed: {shape, size}; coat: {b, m, l, e, name}; pose: sit | walk |
  * sleep | happy; acc: {neck, head, body, bed}. An unknown shape draws a plain dog. */
-export function petInner(breed,coat,pose='sit',acc={}){
-  const S=SHAPES[breed?.shape]||SHAPES.mutt,K={b:'#e2a65a',m:'#c4823a',l:'#fbe3bd',e:EYE,...(coat||{})},k=SIZE[breed?.size]||1,o={acc:acc||{},mood:pose==='happy'?'happy':''};
+export function petInner(breed,coat,pose='sit',acc={},fx={}){
+  const x=fx?.x||'',r=Math.max(0,Math.min(6,Number(fx?.r)||0)),legend=breed?.fuse==='legend';
+  const S=SHAPES[breed?.shape]||SHAPES.mutt,K={b:'#e2a65a',m:'#c4823a',l:'#fbe3bd',e:EYE,...(coat||{}),...(FXCOAT[x]||{})},k=SIZE[breed?.size]||1,o={acc:acc||{},mood:pose==='happy'?'happy':''};
   const body=pose==='walk'?walkPose(S,K,o):pose==='sleep'?sleepPose(S,K,o):sitPose(S,K,o);
   const bed=acc?.bed?bedSVG(acc.bed,pose==='walk'?52:46):'';
-  return `<g class="pet-art pet-${pose}">${bed&&(acc.bed==='nha_go'||acc.bed==='lau_dai')?bed:''}<g transform="scale(${k})">${bed&&!(acc.bed==='nha_go'||acc.bed==='lau_dai')?`<g transform="scale(${n(1/k*100)/100})">${bed}</g>`:''}<g class="pet-bob">${body}</g></g></g>`;
+  const [back,front]=aura(r,x,legend,S.k,pose),mut=x==='dot_bien'?' filter="url(#pt-mut)"':'';
+  return `<g class="pet-art pet-${pose}${r?` pet-r${r}`:''}${legend?' pet-legend':''}">${back||mut||x==='cau_vong'?DEFS:''}${back}${bed&&(acc.bed==='nha_go'||acc.bed==='lau_dai')?bed:''}<g transform="scale(${k})">${bed&&!(acc.bed==='nha_go'||acc.bed==='lau_dai')?`<g transform="scale(${n(1/k*100)/100})">${bed}</g>`:''}<g class="pet-bob"${mut}>${body}</g></g>${front}</g>`;
 }
 /** A whole <svg>, `size` px wide (the box is fitted to the pose). */
-export function petSVG(breed,coat,pose='sit',acc={},size=72,cls='pet-svg'){
-  const vb=pose==='walk'||pose==='sleep'?'-36 -58 72 62':'-34 -64 68 68';
-  return `<svg class="${cls}" viewBox="${vb}" width="${size}" height="${size}" aria-hidden="true" focusable="false">${petInner(breed,coat,pose,acc)}</svg>`;
+export function petSVG(breed,coat,pose='sit',acc={},size=72,cls='pet-svg',fx={}){
+  const big=(Number(fx?.r)||0)>=4||breed?.fuse==='legend',vb=big?(pose==='walk'||pose==='sleep'?'-42 -66 84 70':'-42 -70 84 74'):pose==='walk'||pose==='sleep'?'-36 -58 72 62':'-34 -64 68 68';
+  return `<svg class="${cls}" viewBox="${vb}" width="${size}" height="${size}" aria-hidden="true" focusable="false">${petInner(breed,coat,pose,acc,fx)}</svg>`;
 }
 /** Look a pet up in the catalogue (content.journey.pets): {breed, coat} for a save's {b, c}. */
 export function lookup(cat,b,c){const breed=(cat?.breeds||[]).find(x=>x.id===b);return breed?{breed,coat:breed.coats[c]||breed.coats[0]}:null;}
 /** An <img> source for canvases (town map, the stroll): the pet as a data URL. */
-export function petURL(breed,coat,pose,acc,size=96){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(petSVG(breed,coat,pose,acc,size).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" '));}
+export function petURL(breed,coat,pose,acc,size=96,fx={}){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(petSVG(breed,coat,pose,acc,size,'pet-svg',fx).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" '));}
+/** The box petSVG fits a walking pet in ({w, h} of its viewBox, `foot` the share of the height down to the paws) and
+ * `k`, walkScale: what a canvas needs to draw it paws on the ground at the right size. */
+export function refBox(cat,ref,pose){
+  const b=(cat?.breeds||[]).find(x=>x.id===ref?.b),big=(Number(ref?.r)||0)>=4||b?.fuse==='legend',flat=pose==='walk'||pose==='sleep';
+  const [w,h,top]=big?(flat?[84,70,66]:[84,74,70]):(flat?[72,62,58]:[68,68,64]);
+  return {w,h,foot:top/h,k:walkScale(cat,ref),base:flat?72:68};
+}
+/** 🐶 Owner 19/10 "cún cưng to hơn tí": how much bigger a walking pet is drawn (dogs 1.3×, a high rank a little more). */
+export function walkScale(cat,ref){const b=(cat?.breeds||[]).find(x=>x.id===ref?.b);if(!b)return 1;return (b.kind==='dog'?1.3:1.1)*((Number(ref?.r)||0)>=5||b.fuse==='legend'?1.08:1);}
 /** The pet a save walks with ({b, c, n, a}: game/pets.py walk_ref, live `pt`) as an <img> source, or ''. */
 export function refURL(cat,ref,pose='walk',size=120){
   const L=lookup(cat,ref?.b,ref?.c);if(!L)return '';
   const acc={};for(const id of Array.isArray(ref.a)?ref.a:[]){const a=(cat.accs||[]).find(x=>x.id===id);if(a)acc[a.slot]=id;}
-  return petURL(L.breed,L.coat,pose,acc,size);
+  return petURL(L.breed,L.coat,pose,acc,size,{r:ref.r,x:ref.x});
 }

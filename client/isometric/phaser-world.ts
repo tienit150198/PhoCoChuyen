@@ -37,7 +37,10 @@ import {CIVIC_ASSETS,CIVIC_FACADES,amenityPlacement} from './amenity-art';
 import type {AmenityArt} from './amenity-art';
 import {drawTownProject,normalizeTownProjects,townProjectBadge,townProjectCanvas} from './town-projects';
 import type {TownProjectLot} from './town-projects';
-import {walkingPose} from './model';
+import {walkingPose,publicPet} from './model';
+import {PetWalkers} from './pet-walkers';
+/** 🐾 Pets of other players drawn at most (those on screen, first come). */
+const PEER_PETS=15;
 import {townDistricts,townAmenities,townTrails,townScenery,townShopLots} from './model';
 import {drawNeighbourhoodGround,drawCivicProp,drawGrassDetail} from './town-scenery';
 import {workActorPositions,workEventAnchors,workLayout,workNavigation} from './work-layout';
@@ -282,12 +285,12 @@ export class PhaserWorld {
     stage.bobParked(this.time);
     stage.positionPlayer(moving);
     const fading=stage.updateOcclusion(dt);
-    const remoteMoving=stage.stepRemotePlayers(this.time);
+    const remoteMoving=stage.stepRemotePlayers(this.time),petMoving=!!stage.stepPets?.(dt);
     const ev=this._fx?.ev,effect=effectFrameState(ev,this.time,this.reduced);
     if(effect.clear){this._fx?.clear?.();this.paintFx();}
     else if(this.mode==='work'&&this._fx&&(effect.needsFrames||stage.renderRequested||this.time-this.fxPaintAt>.2&&ev?.end!=null)){this.paintFx();}
     // Phaser advances its pending image queue on Scene UPDATE, even while the view is still.
-    const active=fading||moving||remoteMoving||(!!ride&&this.rideBoost>0)||this.keys.size>0||!!(this.movementInput.x||this.movementInput.y)||this.pointers.size>0||effect.needsFrames||stage.hasEffects()||stage.load.isLoading();
+    const active=fading||moving||remoteMoving||petMoving||(!!ride&&this.rideBoost>0)||this.keys.size>0||!!(this.movementInput.x||this.movementInput.y)||this.pointers.size>0||effect.needsFrames||stage.hasEffects()||stage.load.isLoading();
     if(!active&&stage.settle())this.engine.loop.sleep();
   }
   private paintFx(){const ctx=this.fxContext;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,this.fxCanvas.width,this.fxCanvas.height);ctx.setTransform(.5,0,0,.5,425,125);this._fx?.draw?.(this);this.fxPaintAt=this.time;this.stage?.refreshFx(this.fxCanvas);}
@@ -359,6 +362,7 @@ class DioramaScene extends Phaser.Scene {
   private previousMode:WorldMode|null=null;
   private previousCareer='';
   private remoteActors=new Map<string,RemoteActor>();
+  private pets=new PetWalkers(this,()=>{this.requestRender();this.owner.wake();});
   private remoteVisualRevision=0;
   private riding=false;
   private parked:Phaser.GameObjects.Image[]=[];
@@ -993,7 +997,7 @@ class DioramaScene extends Phaser.Scene {
   }
   syncRemotePlayers(){
     if(!this.sys.isActive())return false;const revision=this.remoteVisualRevision,peers=this.owner.mode==='town'?publicTownPlayers(this.owner.remotePlayers,this.navigation):[],present=new Set(peers.map(p=>p.pid));
-    for(const [pid,actor] of this.remoteActors)if(!present.has(pid)){if(actor.image.visible||actor.tag.visible)this.remoteVisualRevision++;actor.image.destroy();actor.tag.destroy();this.characterFrames.release('iso-peer-'+pid);this.characterFrames.release('iso-ride-peer-'+pid);this.remoteActors.delete(pid);}
+    for(const [pid,actor] of this.remoteActors)if(!present.has(pid)){if(actor.image.visible||actor.tag.visible)this.remoteVisualRevision++;actor.image.destroy();actor.tag.destroy();this.characterFrames.release('iso-peer-'+pid);this.characterFrames.release('iso-ride-peer-'+pid);this.pets.drop('peer:'+pid);this.remoteActors.delete(pid);}
     for(const peer of peers){
       const appearance=JSON.stringify([peer.gender,peer.look]);
       let actor=this.remoteActors.get(peer.pid);
@@ -1014,6 +1018,17 @@ class DioramaScene extends Phaser.Scene {
     }
     this.refreshVehicles();
     const moving=this.stepRemotePlayers(this.owner.time),changed=revision!==this.remoteVisualRevision||moving;if(changed)this.requestRender();return changed;
+  }
+  /** 🐾 Pets trailing their owners (pet-walkers.ts): mine, and up to PEER_PETS of the players on screen; never beside a ride. */
+  stepPets(dt:number){
+    if(!this.sys.isActive())return false;
+    const town=this.owner.mode==='town',cat=this.owner.game?.journey?.pets,riding=!!this.owner.vehicles?.ride&&!this.owner.rideParked,reduced=this.owner.reduced;
+    let moving=this.pets.step('me',town&&!riding?publicPet(this.owner.state?.journey?.pets?.ref):null,this.owner.player,dt,cat,reduced),shown=0;
+    for(const actor of this.remoteActors.values()){
+      const on=town&&!!actor.peer.pt&&!actor.ride&&actor.image.visible&&shown<PEER_PETS;if(on)shown++;
+      moving=this.pets.step('peer:'+actor.peer.pid,on?actor.peer.pt:null,on?actor.at:null,dt,cat,reduced)||moving;
+    }
+    return moving;
   }
   stepRemotePlayers(now:number){
     let active=false;const c=this.cameras.main,cx=c.scrollX+c.width/2,cy=c.scrollY+c.height/2,hw=c.width/c.zoom/2+160,hh=c.height/c.zoom/2+160;

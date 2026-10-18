@@ -953,10 +953,15 @@ def label(s: dict, what: str) -> str:
 
 def fund_bonus(s: dict, c: dict, base: int, what: str, ref: str | None, *, direct: bool = False) -> int:
     """Book the buff on an earning of a workplace fund as its own 'other_income' row (the fund's cash book stays
-    whole: opening balance + rows == fund). `direct`: the staff orders' way (no journal line, like their rows)."""
+    whole: opening balance + rows == fund). `direct`: the staff orders' way (no journal line, like their rows).
+    🐾 Your own work (not `direct`) also gets the walking pet's share (game/pet_tiers.py): its own row, in the total."""
+    pet = 0
+    if not direct and isinstance(s.get('journey'), dict) and s['journey'].get('story'):
+        from . import pet_tiers
+        pet = pet_tiers.fund_bonus(s, c, base, what, ref)
     bonus = extra(s, base, f'{ref}|{what}|{c.get("day")}')
     if not bonus:
-        return 0
+        return pet
     if direct:
         from . import operations as ops
         c['money'] += bonus
@@ -965,11 +970,12 @@ def fund_bonus(s: dict, c: dict, base: int, what: str, ref: str | None, *, direc
         ops.record_money(c, bonus, why, ref, 'other_income', group=why)  # the staff orders' rows: one a day
     else:
         _core().money(s, c, bonus, label(s, what), ref, category='other_income')
-    return bonus
+    return bonus + pet
 
 
 def day_total(c: dict, day: int) -> int:
-    """The buff rows of a workplace's day (kept out of the 🔥 x3 day's net: it never multiplies twice)."""
+    """The buff rows of a workplace's day (kept out of the 🔥 x3 day's net: it never multiplies twice), the 🐾 pet's too."""
+    from .pet_tiers import PREFIX as PET
     rows = c.get('ops', {}).get('finance', {}).get('ledger', [])
     return sum(r['amount'] for r in rows if r.get('day') == day and r.get('amount', 0) > 0
-               and r.get('category') == 'other_income' and str(r.get('reason', '')).startswith(PREFIX))
+               and r.get('category') == 'other_income' and str(r.get('reason', '')).startswith((PREFIX, PET)))

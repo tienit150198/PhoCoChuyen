@@ -98,3 +98,50 @@
 @keyframes pet-breathe{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.04)}}
 @media (prefers-reduced-motion:reduce){.pet-svg *{animation:none!important}}
 html.calm .pet-svg *{animation:none!important}
+/* 🏅 Ranks D…SSS (game/pet_tiers.py; colours = pet-art.js RANK_COLOR), the 🧬 lab, 🧰 gear, the 💪 board */
+.pt-rank,.pt-rk{display:inline-block;min-width:1.6em;padding:1px 6px;border-radius:999px;font-size:.72rem;font-weight:900;line-height:1.35;text-align:center;vertical-align:middle;color:#fff;background:#9aa0a6;letter-spacing:.02em}
+.pt-rank.r1,.pt-rk.r1{background:#4caf6a}.pt-rank.r2,.pt-rk.r2{background:#3d8bfd}.pt-rank.r3,.pt-rk.r3{background:#a259ff}
+.pt-rank.r4,.pt-rk.r4{background:#f2b632;color:#4a3300;box-shadow:0 0 8px #f2b63299}
+.pt-rank.r5,.pt-rk.r5{background:linear-gradient(90deg,#ff6a3d,#ff9a3d);box-shadow:0 0 8px #ff6a3d99}
+.pt-rank.r6,.pt-rk.r6{background:linear-gradient(90deg,#ff4f6d,#ffb340,#4fd67a,#3db5ff,#a45bff);box-shadow:0 0 10px #ff4fa399}
+.pt-rank.lg{color:#4a3300;background:linear-gradient(90deg,#ffe27a,#ffb340,#ffe27a)}
+.pt-item .pt-rk,.pt-item .pt-rank{font-size:.68rem}
+.pt-mini{position:relative}
+.pt-mini .pt-rank{position:absolute;right:2px;bottom:2px;font-size:.6rem;padding:0 4px}
+.pt-chip small.pt-rk{margin-left:2px;font-size:.6rem}
+.pt-shine .pt-stage{background:radial-gradient(ellipse at 50% 70%,#ffe6a8aa,transparent 70%)}
+.pt-bonus{margin:6px 0 0;font-size:.86rem;font-weight:700;color:var(--ink-2)}
+.pt-bonus.on{color:var(--good)}
+.pt-odds{margin:0 0 8px;font-size:.8rem;line-height:1.7;color:var(--ink-2)}
+.pt-odds .pt-rk{font-size:.62rem}
+.pt-slots{display:flex;justify-content:center;gap:8px;margin:2px 0 6px}
+.pt-slot{position:relative;display:grid;place-items:center;width:84px;height:84px;border:2px dashed var(--line);border-radius:16px;background:var(--surface-2);font-size:1.6rem;color:var(--muted);padding:0}
+.pt-slot.on{border-style:solid;border-color:var(--accent);background:var(--accent-soft);cursor:pointer}
+.pt-slot .pt-rank{position:absolute;right:4px;bottom:4px}
+.pt-fz{margin:4px 0 0;font-size:.95rem;line-height:1.5}
+.pt-picks.sm{grid-template-columns:repeat(auto-fill,minmax(84px,1fr))}
+.pt-picks.sm small{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;font-size:.7rem;line-height:1.2;text-align:center}
+.pt-more{margin:8px 0;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:0 12px}
+.pt-more summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer}
+.pt-tbl{overflow-x:auto}
+.pt-tbl table{width:100%;border-collapse:collapse;font-size:.8rem}
+.pt-tbl th,.pt-tbl td{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.pt-recipes{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:6px}
+.pt-recipes li{display:flex;align-items:center;gap:8px;font-size:.86rem}
+.pt-strip.wrap{flex-wrap:wrap}
+.pt-stat b{display:flex;flex-direction:column;gap:3px}
+.pt-bar-s{display:block;height:7px;border-radius:99px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
+.pt-bar-s u{display:block;height:100%;width:var(--v);border-radius:99px;background:var(--accent)}
+.pt-item em small{font-weight:700;color:var(--good)}
+.pt-gear-big{margin:0;font-size:2.6rem;line-height:1.1}
+.pt-flash.win{background:linear-gradient(90deg,#fff1c2,#ffd6ec,#d6ecff);color:#5b3a00;animation:pt-pop .5s ease-out}
+@keyframes pt-pop{from{transform:scale(.94);opacity:.4}to{transform:none;opacity:1}}
+/* the auras' motions (inline SVG: the dialog, home; canvases draw them still) */
+.pet-svg .pet-glow{transform-box:fill-box;transform-origin:50% 50%;animation:pet-glow 2.4s ease-in-out infinite}
+.pet-svg .pet-spark{animation:pet-twinkle 1.8s ease-in-out infinite}
+.pet-svg .pet-trail{animation:pet-float 1.2s ease-in-out infinite}
+.pet-svg .pet-coins{animation:pet-float 1.6s ease-in-out infinite}
+.pet-svg .pet-dragon{animation:pet-twinkle 3s ease-in-out infinite}
+@keyframes pet-glow{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes pet-twinkle{0%,100%{opacity:1}50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.pt-flash.win{animation:none}}
