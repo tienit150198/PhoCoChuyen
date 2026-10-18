@@ -14,9 +14,12 @@ def _c(name, b, m, l, e='#3b2a22'):
     return dict(name=name, b=b, m=m, l=l, e=e)
 
 
-def _b(bid, kind, name, shape, price, trait, line, coats, *, tier='quen', shelter=False, size='s'):
+def _b(bid, kind, name, shape, price, trait, line, coats, *, tier='quen', shelter=False, size='s', shop=True, fuse='',
+       st=(0, 0, 0, 0, 0)):
+    """shop False + fuse 'hybrid' | 'legend': only born from a 3-pet fusion (game/pet_tiers.py). st: the breed's lean
+    on the five stats (game/pet_tiers.py STATS), added to what its rank gives."""
     return bid, dict(id=bid, kind=kind, name=name, shape=shape, price=price, trait=trait, line=line,
-                     coats=list(coats), tier=tier, shelter=shelter, size=size)
+                     coats=list(coats), tier=tier, shelter=shelter, size=size, shop=shop, fuse=fuse, st=tuple(st))
 
 
 # tier: 'ta' (giống ta, cheap), 'quen' (popular), 'hiem' (rare, dear). size: s / m / l (drawn a little bigger).
@@ -81,11 +84,87 @@ BREEDS = dict((
        (_c('Nâu mướp', '#a77a4f', '#5a3f28', '#e9d3b5', '#4fa36a'), _c('Bạc mướp', '#c4c7cc', '#5d6168', '#f1f2f3', '#e9a23b'), _c('Đen khói', '#4a464b', '#2a272b', '#8d878e', '#e9a23b')), tier='hiem', size='m'),
     _b('xiem', 'cat', 'Mèo Xiêm', 'siamese', 3000, 'Hay “nói”', 'Kêu meo meo cả ngày như kể chuyện. Mặt nạ sô-cô-la, mắt xanh.',
        (_c('Seal point', '#f2e3cf', '#4e3a30', '#fbf4ea', '#4a90e2'), _c('Chocolate point', '#f5ead9', '#8a6248', '#fdf8f0', '#4a90e2'))),
+    # ---------------------------------------------------------------- 19/10: more in the shop (owner "thêm các giống nữa")
+    _b('becgie', 'dog', 'Becgie', 'becgie', 12000, 'Cảnh giác', 'Tai dựng, mắt sáng, nghe tiếng lạ là đứng chắn trước cửa.',
+       (_c('Đen vàng', '#c98a4a', '#2f2a2b', '#e9c48f'), _c('Đen tuyền', '#36302f', '#211d1d', '#6c6260')), tier='hiem', size='l', st=(2, 6, 4, -4, 0)),
+    _b('dalmatian', 'dog', 'Dalmatian', 'dalmatian', 11000, 'Lém lỉnh', 'Trắng đốm đen như bò sữa mini, chạy lon ton suốt ngày.',
+       (_c('Đốm đen', '#fbf8f2', '#2f2a2b', '#ffffff'), _c('Đốm nâu', '#fbf8f2', '#8a5a3c', '#ffffff')), tier='hiem', size='m', st=(6, 4, 0, 2, -2)),
+    _b('shihtzu', 'dog', 'Shih Tzu', 'shihtzu', 5000, 'Nhõng nhẽo', 'Lông dài buộc chỏm, đi đâu cũng ngúng nguẩy.',
+       (_c('Trắng vàng', '#fbf6ee', '#e0b070', '#ffffff'), _c('Xám trắng', '#d8d6d4', '#8f8b88', '#ffffff')), st=(-4, -2, 0, 8, 2)),
+    _b('beagle', 'dog', 'Beagle', 'beagle', 6000, 'Mũi thính', 'Đánh hơi ra cả miếng xúc xích giấu trong tủ.',
+       (_c('Ba màu', '#c98a4a', '#3a302c', '#fbf6ee'), _c('Nâu trắng', '#d39a5c', '#b5793f', '#fbf6ee')), size='m', st=(2, 4, 2, 0, 4)),
+    _b('border', 'dog', 'Border Collie', 'border', 13000, 'Siêu thông minh', 'Học lệnh mới trong năm phút, chán là tự lùa gà.',
+       (_c('Đen trắng', '#2f2a2b', '#1c1919', '#fbfbfa', '#7a5236'), _c('Nâu trắng', '#8a5a3c', '#6a4129', '#fbfbfa')), tier='hiem', size='m', st=(4, 2, 8, 0, -2)),
+    _b('bulldog', 'dog', 'Bulldog Pháp', 'frenchie', 9500, 'Lì lợm', 'Tai dơi, mặt nhăn, ngủ ngáy to hơn cả chủ.',
+       (_c('Kem', '#ecd3b0', '#3a302c', '#f8ead6'), _c('Vện', '#5d4a3c', '#2f2520', '#a08a76')), tier='hiem', st=(-2, 6, 0, 4, 0)),
+    _b('chowchow', 'dog', 'Chow Chow', 'chowchow', 16000, 'Oai vệ', 'Như con sư tử bông, lưỡi tím, đi khệnh khạng.',
+       (_c('Đỏ', '#d98b45', '#b86a2c', '#f2c08a'), _c('Kem', '#f3dcb4', '#ddbd8d', '#fbf0dc')), tier='hiem', size='l', st=(-4, 6, 0, 4, 2)),
+    _b('akita', 'dog', 'Akita', 'akita', 15000, 'Trung thành tuyệt đối', 'Ngày nào cũng ngồi ở cổng đợi bạn đi làm về.',
+       (_c('Đỏ', '#d9873f', '#b86a2c', '#fff1de'), _c('Trắng', '#fbf8f2', '#e9e1d4', '#ffffff')), tier='hiem', size='l', st=(2, 6, 2, 0, 0)),
+    _b('cho_lai', 'dog', 'Chó Lài', 'lai', 18000, 'Săn giỏi', 'Giống chó Việt hiếm, sọc vằn, leo dốc nhanh như sóc.',
+       (_c('Vằn nâu', '#b98a55', '#5e4630', '#e8cfa8'), _c('Vằn đen', '#8a7055', '#2f2520', '#cdb592')), tier='hiem', size='m', st=(6, 4, 2, -2, 2)),
+    _b('nga_xanh', 'cat', 'Nga mắt xanh', 'russian', 9000, 'Thanh lịch', 'Lông xám xanh óng như nhung, mắt xanh lá trong veo.',
+       (_c('Xám xanh', '#8e98a6', '#76808e', '#aab3bf', '#5fbf6a'),), tier='hiem', st=(2, 0, 4, 2, 0)),
+    _b('abyssinian', 'cat', 'Abyssinian', 'aby', 11000, 'Tò mò', 'Leo lên tủ cao nhất chỉ để nhìn bạn từ trên xuống.',
+       (_c('Đỏ hung', '#c97a45', '#8a4f2a', '#e8b98f', '#4fa36a'), _c('Xanh tro', '#9aa0a8', '#6f747c', '#c9ccd0', '#e9a23b')), tier='hiem', st=(6, 2, 2, 0, 0)),
+    _b('exotic', 'cat', 'Exotic mặt tịt', 'exotic', 8500, 'Lười dễ thương', 'Mặt tịt như Ba Tư mà lông ngắn, ôm như gối ôm.',
+       (_c('Kem', '#f1d5a4', '#ddb57a', '#fbecd0', '#c98a3a'), _c('Xám', '#a1a7b1', '#7f8692', '#d3d7dd', '#e9a23b')), st=(-4, 2, 0, 8, 0)),
+    _b('mau', 'cat', 'Mèo Ai Cập', 'mau', 12000, 'Nhanh nhẹn', 'Đốm bạc tự nhiên, chạy nhanh nhất họ nhà mèo.',
+       (_c('Bạc đốm', '#d7d9dc', '#4f5359', '#f5f6f7', '#9fd36b'), _c('Đồng đốm', '#d9a86c', '#6a4a2c', '#f2dcbc', '#9fd36b')), tier='hiem', st=(8, 2, 0, 0, 2)),
+    _b('bombay', 'cat', 'Bombay', 'cat', 7000, 'Bí ẩn sang chảnh', 'Báo đen tí hon, mắt đồng như hai đồng xu.',
+       (_c('Đen bóng', '#2d2a2e', '#1b191c', '#45404a', '#d9902f'),), st=(2, 0, 2, 2, 4)),
+    # ---------------------------------------------------------------- 🧬 giống lai: only from a 3-pet fusion (game/pet_tiers.py RECIPES)
+    _b('hmong', 'dog', "H'Mông cộc đuôi", 'hmong', 40000, 'Quốc khuyển', 'Đuôi cộc, lông dày, giữ nhà giữ nương giỏi nhất vùng cao.',
+       (_c('Đen', '#36302f', '#211d1d', '#7a6d68'), _c('Vàng', '#d9a35f', '#b57f3f', '#f5dcb3'), _c('Vện', '#a7743e', '#5b3b20', '#d9b07c')),
+       tier='hiem', size='m', shop=False, fuse='hybrid', st=(4, 8, 6, 0, 2)),
+    _b('lai_van_ho', 'dog', 'Chó Lài vằn hổ', 'lai', 40000, 'Thợ săn', 'Sọc vằn như hổ con, chạy rừng không biết mệt.',
+       (_c('Vằn hổ', '#d99a4a', '#3a2a1c', '#f2d2a2'),), tier='hiem', size='m', shop=False, fuse='hybrid', st=(8, 6, 2, 0, 4)),
+    _b('goldendoodle', 'dog', 'Goldendoodle', 'doodle', 40000, 'Hiền như bông', 'Lông xoăn vàng óng, cười suốt ngày, ai ôm cũng chịu.',
+       (_c('Vàng mơ', '#e5b06a', '#c98d3e', '#f8dca9'), _c('Kem', '#f1d5a4', '#ddb57a', '#fbecd0')), tier='hiem', size='l', shop=False, fuse='hybrid', st=(0, 4, 6, 8, 2)),
+    _b('pomsky', 'dog', 'Pomsky', 'pomsky', 40000, 'Sói tí hon', 'Mặt Husky trong thân Phốc sóc, mắt xanh nhìn là đổ.',
+       (_c('Xám trắng', '#8d939b', '#5d636b', '#fbfbfa', '#5aa9e6'), _c('Đỏ trắng', '#d08850', '#a5683f', '#fbf5ee', '#5aa9e6')), tier='hiem', shop=False, fuse='hybrid', st=(4, 2, 2, 10, 2)),
+    _b('corgi_inu', 'dog', 'Corgi Inu', 'corgi_inu', 40000, 'Lầy có võ', 'Chân ngắn Corgi, mặt khẩy Shiba, đuôi cuộn tròn.',
+       (_c('Đỏ', '#d9873f', '#b86a2c', '#fff1de'), _c('Mè', '#b88a5c', '#5e4630', '#f6e6cf')), tier='hiem', size='m', shop=False, fuse='hybrid', st=(4, 4, 2, 8, 4)),
+    _b('soi_tuyet', 'dog', 'Sói Tuyết', 'wolf', 80000, 'Chúa tể tuyết', 'Trắng muốt như núi tuyết, hú một tiếng cả xóm im phăng phắc.',
+       (_c('Trắng tuyết', '#fdfbf7', '#c9d6e2', '#ffffff', '#5aa9e6'),), tier='hiem', size='l', shop=False, fuse='hybrid', st=(6, 10, 4, 4, 2)),
+    _b('soi_xam', 'dog', 'Sói Xám Tây Bắc', 'wolf', 80000, 'Thủ lĩnh bầy', 'Lông xám khói, bước đi êm như mây trên núi Tây Bắc.',
+       (_c('Xám khói', '#8a8f96', '#4f545b', '#d9dcdf', '#e9c547'),), tier='hiem', size='l', shop=False, fuse='hybrid', st=(8, 8, 6, 0, 2)),
+    _b('dom_mat_xe', 'dog', 'Đốm Mặt Xệ', 'dom_xe', 40000, 'Hề của xóm', 'Mặt xệ như Pug, đốm như Dalmatian. Ai nhìn cũng phì cười.',
+       (_c('Trắng đốm', '#fbf8f2', '#2f2a2b', '#ffffff'),), tier='hiem', shop=False, fuse='hybrid', st=(0, 6, 0, 10, 4)),
+    _b('himalaya', 'cat', 'Himalaya', 'himalaya', 40000, 'Quý tộc', 'Lông Ba Tư, mặt nạ Xiêm, mắt xanh như hồ trên núi.',
+       (_c('Seal point', '#f6eadb', '#6e5446', '#fffaf3', '#4a90e2'), _c('Blue point', '#f2efed', '#8f97a6', '#ffffff', '#4a90e2')),
+       tier='hiem', size='m', shop=False, fuse='hybrid', st=(-2, 2, 4, 10, 2)),
+    _b('ragamuffin', 'cat', 'Ragamuffin', 'ragamuffin', 40000, 'Gối ôm biết kêu', 'To, mềm, nặng trịch, bế lên là ngủ gục trên vai.',
+       (_c('Kem', '#f3e3c9', '#d9b98f', '#fffaf0', '#4a90e2'), _c('Xám khói', '#b9b6bc', '#8d8a90', '#ecebee', '#e9a23b')),
+       tier='hiem', size='m', shop=False, fuse='hybrid', st=(-2, 6, 2, 10, 2)),
+    _b('toyger', 'cat', 'Toyger', 'toyger', 40000, 'Hổ con', 'Sọc hổ rõ nét, gầm khe khẽ khi đòi ăn.',
+       (_c('Cam sọc', '#e8a14f', '#3a2a1c', '#fbe4c0', '#4fa36a'),), tier='hiem', shop=False, fuse='hybrid', st=(8, 4, 2, 4, 2)),
+    _b('scottish_kilt', 'cat', 'Scottish Kilt', 'kilt', 40000, 'Lon ton tai cụp', 'Tai cụp, chân ngắn tũn, ngồi “Phật” giữa sân.',
+       (_c('Kem trắng', '#f0d4a6', '#d9b47c', '#fbf8f2', '#c98a3a'), _c('Xám', '#a1a7b1', '#7f8692', '#d3d7dd', '#e9a23b')), tier='hiem', shop=False, fuse='hybrid', st=(0, 2, 4, 10, 4)),
+    _b('ngoc_bich', 'cat', 'Mèo Ngọc Bích', 'jade', 80000, 'Ngọc quý', 'Lông bạc ánh xanh, mắt xanh ngọc. Người ta bảo nuôi là giữ được lộc.',
+       (_c('Bạc ngọc', '#cfd8d6', '#8fb3ac', '#f2f7f6', '#2fbf9a'),), tier='hiem', shop=False, fuse='hybrid', st=(6, 2, 8, 4, 6)),
+    _b('tam_the_duc', 'cat', 'Mèo tam thể đực', 'calico', 120000, 'Ngàn con có một', 'Ngoài đời ba nghìn con tam thể mới có một bé đực. Bé này là thật.',
+       (_c('Tam thể', '#fbf6ee', '#e39a52', '#3d3533', '#e9c547'),), tier='hiem', shop=False, fuse='hybrid', st=(4, 4, 4, 8, 10)),
+    # ---------------------------------------------------------------- 🌟 huyền thoại: 3 SSS of a kind, 5 % (game/pet_tiers.py)
+    _b('linh_khuyen', 'dog', 'Linh Khuyển Hoàng Kim', 'linh_khuyen', 500000, 'Huyền thoại', 'Lông vàng kim ánh lên dưới nắng, mắt xanh ngọc, hoa văn rồng chạy dọc lưng.',
+       (_c('Hoàng kim', '#f2c14e', '#c98d1e', '#fff1b8', '#2fd4c0'),), tier='hiem', size='l', shop=False, fuse='legend', st=(14, 14, 14, 14, 14)),
+    _b('than_tai', 'cat', 'Mèo Thần Tài', 'than_tai', 500000, 'Huyền thoại', 'Trắng ngọc trai viền vàng, đeo chuông vàng, giơ tay vẫy lộc cả ngày.',
+       (_c('Ngọc trai', '#fffaf2', '#e0a92e', '#ffffff', '#e05a4f'),), tier='hiem', size='m', shop=False, fuse='legend', st=(14, 14, 14, 14, 14)),
 ))
+# 📊 The first breeds' lean on the five stats (Tốc độ, Sức bền, Thông minh, Đáng yêu, May mắn), owner 19/10 "chỉ số".
+for _k, _st in dict(cho_ta=(2, 4, 2, 0, 4), poodle=(0, -2, 6, 6, 0), corgi=(-2, 2, 2, 8, 2), shiba=(4, 2, 2, 4, 2), pom=(-2, -2, 0, 10, 2),
+                    chihuahua=(6, -4, 0, 4, 2), husky=(6, 8, -2, 2, 0), golden=(2, 4, 6, 4, 0), alaska=(0, 10, 0, 4, 0),
+                    phu_quoc=(8, 6, 4, 0, 2), bac_ha=(4, 6, 4, 0, 2), pug=(-4, 0, 0, 10, 4), samoyed=(2, 6, 0, 8, 0),
+                    lap_xuong=(2, 0, 4, 4, 2), meo_muop=(4, 2, 2, 0, 4), tam_the=(0, 0, 2, 4, 8), meo_mun=(4, 0, 4, 0, 4),
+                    aln=(-2, 4, 2, 6, 0), ald=(-2, 2, 2, 8, 0), ba_tu=(-4, 0, 0, 10, 2), scottish=(-2, 2, 2, 8, 2),
+                    munchkin=(-2, 0, 2, 10, 2), ragdoll=(-4, 4, 2, 8, 0), bengal=(8, 4, 2, 0, 0), sphynx=(2, 0, 6, 2, 2),
+                    maine_coon=(0, 8, 4, 2, 0), xiem=(4, 0, 6, 2, 0)).items():
+    BREEDS[_k]['st'] = _st
 ORDER = tuple(BREEDS)
 DOGS = tuple(b for b in ORDER if BREEDS[b]['kind'] == 'dog')
 CATS = tuple(b for b in ORDER if BREEDS[b]['kind'] == 'cat')
 SHELTER = tuple(b for b in ORDER if BREEDS[b]['shelter'])
+SHOP = tuple(b for b in ORDER if BREEDS[b]['shop'])          # 🧬 hybrids and 🌟 legendaries only come from a fusion
 KIND_NAME = dict(dog='Chó', cat='Mèo')
 
 # The shelter of Nhóm cứu hộ Chân Nhỏ (the adoption corner at Tiệm Thú Nhỏ Chú Út): adoption is free, a donation is

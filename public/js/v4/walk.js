@@ -45,7 +45,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
 import {stylesheet} from '../lazy.js';
 import {lookOf,figureOf,paintPlayer,CANVAS,portrait,rankRef} from './look.js';
-import {refURL} from './pet-art.js';   // 🐾 the pets walking beside their owners (`pt`, live/street.py clean_pet)
+import {refURL,refBox} from './pet-art.js';   // 🐾 the pets walking beside their owners (`pt`, live/street.py clean_pet)
 import {envRid,envSettle,envKey,UNKNOWN_TEXT} from './envelope-send.js';
 import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scenes/stroll.js';
 import * as feast from './wedfeast.js';
@@ -714,12 +714,12 @@ function sprite(p){
 /* 🐾 A stroller's pet: beside them, a step behind the way they walk; sits when they stop; on a vehicle it rides along
  * (./ride.js drawRide `pet`: the driver's, else the pillion's). */
 const PETS=new Map();
-function petImg(cat,pt,pose){const key=JSON.stringify([pt.b,pt.c,pt.a,pose]);let im=PETS.get(key);
+function petImg(cat,pt,pose){const key=JSON.stringify([pt.b,pt.c,pt.a,pt.r,pt.x,pose]);let im=PETS.get(key);
   if(!im){if(PETS.size>40)PETS.clear();const url=cat?refURL(cat,pt,pose):'';if(!url)return null;im=new Image();im.src=url;PETS.set(key,im);}
   return im.complete&&im.naturalWidth?im:null;}
 function drawPet(c,p,cat){
   if(p.petx!=null&&Math.abs(p.x-p.petx)>.3)p.pdir=p.x>p.petx?1:-1;p.petx=p.x;const dir=p.pdir||1,pose=p.moving?'walk':'sit',im=petImg(cat,p.pt,pose);if(!im)return;
-  const w=pose==='walk'?38:32,h=pose==='walk'?w*62/72:w,foot=pose==='walk'?58/62:64/68;
+  const B=refBox(cat,p.pt,pose),w=(pose==='walk'?38:32)*B.w/B.base*B.k,h=w*B.h/B.w,foot=B.foot;   // 🐶 bigger dogs, 🏅 the aura's room
   c.save();c.translate(p.x-24*dir,p.y+3);if(dir<0)c.scale(-1,1);c.drawImage(im,-w/2,-h*foot,w,h);c.restore();}
 const npcs=new Map();   // the wedding show's characters (./wedfeast.js), cached like the players' sprites
 function npcSprite(id,lk,g){let p=npcs.get(id);if(!p||p.lk!==lk){p={lk,g,sp:null,spk:''};npcs.set(id,p);}return sprite(p);}

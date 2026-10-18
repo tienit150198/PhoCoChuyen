@@ -778,7 +778,7 @@ class Handler(BaseHTTPRequestHandler):
                 token=self.token()
                 if not self.server.rate_limit("petboard:"+(token or self.client_ip()),60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 from game import pets
-                self.json(200,pets.board(self.server.store,token));return
+                self.json(200,pets.board(self.server.store,token,{k:v[0] for k,v in parse_qs(split.query).items()}.get("kind","")));return  # ?kind=power: 💪 lực chiến
             if route=="/api/auction":  # 🔨 Nhà đấu giá (game/auction.py view): open lots, history, named landmarks, mine; cached ~2 s
                 token=self.token()
                 if not self.server.rate_limit("auc:"+(token or self.client_ip()),90):self.error(429,"Chậm lại một chút nhé.","rate_limited");return

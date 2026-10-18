@@ -2,6 +2,8 @@
  * Phaser owns drawing and feet coordinates; game tasks/saves never enter this transport.
  * All careers use iso-town-v1. A room holds at most 30 real players and updates at 4/s.
  * 🚗 `r` (live/town.py): the vehicle ridden (world.getRide, isometric/vehicle-art.js), sent on joining and when it changes.
+ * 🐾 `pt` (owner 19/10 "đi đâu cũng cho dẫn theo"): the pet walking beside you (journey.pets.ref, game/pets.py walk_ref:
+ * {b, c, n, a, r, x}), the same way; the scene draws everyone's (isometric/phaser-world.ts).
  */
 import {live} from './v4/live.js';
 import {sitePresence} from './v4/site-presence.js';
@@ -22,6 +24,15 @@ function publicRide(r){
   if(!r||typeof r!=='object'||typeof r.v!=='string'||r.v.length>24)return null;
   return {v:r.v,c:typeof r.c==='string'?r.c.slice(0,24):'',...(typeof r.p==='string'&&r.p&&r.p.length<=24?{p:r.p}:{})};
 }
+/** 🐾 {b, c, n?, a?, r?, x?} of a pet, or null (the service cleaned it: live/street.py clean_pet). */
+export function publicPet(p){
+  if(!p||typeof p!=='object'||typeof p.b!=='string'||p.b.length>24||!Number.isInteger(p.c))return null;
+  const out={b:p.b,c:p.c,a:Array.isArray(p.a)?p.a.filter(x=>typeof x==='string').slice(0,3):[]};
+  if(typeof p.n==='string'&&p.n)out.n=p.n.slice(0,16);
+  if(Number.isInteger(p.r)&&p.r>=1&&p.r<=6)out.r=p.r;
+  if(typeof p.x==='string'&&p.x.length<=12)out.x=p.x;
+  return out;
+}
 function publicPeer(value){
   const point=publicPoint(value);
   if(!point||typeof value.pid!=='string'||!value.pid||value.pid.length>40)return null;
@@ -29,7 +40,7 @@ function publicPeer(value){
   if(value.activity!=null&&!activity)return null;
   return {pid:value.pid,name:typeof value.name==='string'?value.name.slice(0,24):'Mây',
     look:value.lk&&typeof value.lk==='object'?value.lk:{},
-    gender:value.g==='female'||value.g==='male'?value.g:null,fc:typeof value.fc==='string'?value.fc:'',...point,...(activity?{activity}:{}),...(publicRide(value.r)?{r:publicRide(value.r)}:{})};
+    gender:value.g==='female'||value.g==='male'?value.g:null,fc:typeof value.fc==='string'?value.fc:'',...point,...(activity?{activity}:{}),...(publicRide(value.r)?{r:publicRide(value.r)}:{}),...(publicPet(value.pt)?{pt:publicPet(value.pt)}:{})};
 }
 function appearance(state){
   const look=lookOf(state),g=state?.journey?.gender==='female'?'female':state?.journey?.gender==='male'?'male':null;
@@ -45,8 +56,9 @@ export function createTownPresence(envGetter,options={}){
     joinedAppearance=null,lastAppearance=null,
     anchor=null,joinedActivity=null,lastActivity=null,pendingActivityClear=false,
     interval=null,started=false,taken=false,seq=0,retryAt=0,statusNode=null,lastStatus='',lastWorld=null,
-    joinedRide='null',lastRide='null';
+    joinedRide='null',lastRide='null',joinedPet='null',lastPet='null';
   const ride=()=>{try{return publicRide(world()?.getRide?.())}catch{return null;}};
+  const myPet=()=>publicPet(env()?.api?.state?.journey?.pets?.ref);
   const peers=new Map(),off=[];
   const env=()=>typeof envGetter==='function'?envGetter():envGetter;
   const world=()=>env()?.world;
@@ -105,9 +117,9 @@ export function createTownPresence(envGetter,options={}){
     if(!wanted()||!enabled()||room||joining||now()<retryAt)return;
     const at=point(),state=env()?.api?.state,activity=leisure.current;
     if(!at)return;
-    const cid=`town-in-${++seq}`,look=appearance(state),r=ride();
-    if(socket.send({t:'town_in',cid,map:MAP,...at,look:look.look,g:look.g,...(activity?{activity}:{}),...(r?{r}:{})})){
-      joining={cid,at:now()};joinedPoint=at;joinedAppearance=look.key;joinedActivity=activity;joinedRide=JSON.stringify(r);status();
+    const cid=`town-in-${++seq}`,look=appearance(state),r=ride(),pt=myPet();
+    if(socket.send({t:'town_in',cid,map:MAP,...at,look:look.look,g:look.g,...(activity?{activity}:{}),...(r?{r}:{}),...(pt?{pt}:{})})){
+      joining={cid,at:now()};joinedPoint=at;joinedAppearance=look.key;joinedActivity=activity;joinedRide=JSON.stringify(r);joinedPet=JSON.stringify(pt);status();
     }
   }
   function sync(){
@@ -118,9 +130,10 @@ export function createTownPresence(envGetter,options={}){
     const at=point(),activity=pendingActivityClear?null:leisure.current;
     if(!at||now()-lastSent<GAP)return;
     const look=appearance(env()?.api?.state),lookChanged=look.key!==lastAppearance,r=ride(),rideKey=JSON.stringify(r),rideChanged=rideKey!==lastRide;
-    if(!lookChanged&&!rideChanged&&lastPoint&&at.x===lastPoint.x&&at.y===lastPoint.y&&at.direction===lastPoint.direction&&JSON.stringify(activity)===JSON.stringify(lastActivity))return;
+    const pt=myPet(),petKey=JSON.stringify(pt),petChanged=petKey!==lastPet;
+    if(!lookChanged&&!rideChanged&&!petChanged&&lastPoint&&at.x===lastPoint.x&&at.y===lastPoint.y&&at.direction===lastPoint.direction&&JSON.stringify(activity)===JSON.stringify(lastActivity))return;
     // Update the public outfit in this room; rejoining would reset the treasure lease/checkpoint.
-    if(socket.send({t:'town_mv',...at,...(lookChanged?{look:look.look,g:look.g}:{}),...(activity||lastActivity?{activity}:{}),...(rideChanged?{r}:{})})){lastSent=now();lastPoint=at;lastAppearance=look.key;lastActivity=activity;lastRide=rideKey;pendingActivityClear=false;}
+    if(socket.send({t:'town_mv',...at,...(lookChanged?{look:look.look,g:look.g}:{}),...(activity||lastActivity?{activity}:{}),...(rideChanged?{r}:{}),...(petChanged?{pt}:{})})){lastSent=now();lastPoint=at;lastAppearance=look.key;lastActivity=activity;lastRide=rideKey;lastPet=petKey;pendingActivityClear=false;}
   }
   function onActivity(sample){
     // Preserve the exit even if another scene opens before the next 4 Hz send.
@@ -140,7 +153,7 @@ export function createTownPresence(envGetter,options={}){
         if(socket.flags?.treasure&&Number.isFinite(f.x)&&Number.isFinite(f.y)){
           world()?.correctPresence?.({x:f.x,y:f.y});joinedPoint=point();
         }
-        socialEnabled=f.social===true;room=f.room;me=f.me;joining=null;lastPoint=joinedPoint;lastAppearance=joinedAppearance;lastActivity=joinedActivity;lastRide=joinedRide;lastSent=now();peers.clear();
+        socialEnabled=f.social===true;room=f.room;me=f.me;joining=null;lastPoint=joinedPoint;lastAppearance=joinedAppearance;lastActivity=joinedActivity;lastRide=joinedRide;lastPet=joinedPet;lastSent=now();peers.clear();
         for(const value of Array.isArray(f.people)?f.people:[]){const p=publicPeer(value);if(p&&p.pid!==me)peers.set(p.pid,p);}
         draw();status();
       }),
@@ -158,6 +171,7 @@ export function createTownPresence(envGetter,options={}){
               if(Object.hasOwn(e,'lk')){peer.look=e.lk&&typeof e.lk==='object'?e.lk:{};peer.gender=e.g==='female'||e.g==='male'?e.g:null;}
               if(Object.hasOwn(e,'activity')){if(activity)peer.activity=activity;else delete peer.activity;}
               if(Object.hasOwn(e,'r')){const r=publicRide(e.r);if(r)peer.r=r;else delete peer.r;}
+              if(Object.hasOwn(e,'pt')){const pt=publicPet(e.pt);if(pt)peer.pt=pt;else delete peer.pt;}
               changed=true;
             }
           }

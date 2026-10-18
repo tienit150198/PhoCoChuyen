@@ -16,6 +16,8 @@ decides from the catalogue's group), its paint, and `p` an auction plate (live/p
 it; gold). Only a garage id (game/garage.py VEHICLES); anything odd is on foot, never an error. A walker's public entry
 has `r` while set; a `mv` carries `r` (null: on foot) only when it changed. Riding stays within the movement budget
 (the client rides at most 1.8× its walk, under SPEED). Older clients ignore `r`; an older service drops it.
+🐾 town_in / town_mv may carry `pt` (owner 19/10 "đi đâu cũng cho dẫn theo"): the pet walking beside them, as on the
+street (live/street.py clean_pet; its rank only up to one they have, live/pet_rank.py). Same rules as `r`.
 """
 from __future__ import annotations
 
@@ -30,7 +32,8 @@ from game.garage import VEHICLES as GARAGE   # 🚗 the ids a town ride may name
 from . import faces
 from .auth import pid_of
 from .protocol import Feature, LiveError, on
-from .street import clean_look
+from .street import clean_look, clean_pet
+from . import pet_rank
 from . import plates
 from .town_social import TownSocial
 from .scale_sites import ScaleSites, SITE_PREFIX, site_point
@@ -155,9 +158,10 @@ def activity_credit(w, activity, now):
 
 
 class Walker:
-    def __init__(self, player, look, gender, point, direction, activity=None, ride=None):
+    def __init__(self, player, look, gender, point, direction, activity=None, ride=None, pet=None):
         self.player, self.pid = player, player.pid
         self.ride = ride
+        self.pet = pet   # 🐾 the pet walking beside them ({b, c, n, a, r, x}: live/street.py clean_pet), owner 19/10
         self.look, self.gender = look, gender
         self.x, self.y = point
         self.direction = direction
@@ -172,6 +176,8 @@ class Walker:
             out['activity'] = dict(self.activity)
         if self.ride:
             out['r'] = dict(self.ride)
+        if self.pet:
+            out['pt'] = dict(self.pet)
         return out
 
 
@@ -302,6 +308,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
         activity = clean_activity(f.get('activity'))
         look, gender = clean_look(f.get('look'), f.get('g'))
         ride = await plates.keep(self.db, conn.player, clean_ride(f.get('r')))   # 🚗 (an auction plate: only if won)
+        pet = await pet_rank.keep(self.db, conn.player, clean_pet(f.get('pt')))   # 🐾 (its rank: only one they have)
         await self._ensure_loaded(conn.player)
         treasure = getattr(self.app, 'by_name', {}).get('treasure')
         if treasure is not None and treasure.enabled():
@@ -309,7 +316,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
         self._leave(conn, 'other', takeover=True)
         room = self._pick(conn.player)
         room.add(conn)
-        w = Walker(conn.player, look, gender, point, clean_direction(f.get('direction')), activity, ride)
+        w = Walker(conn.player, look, gender, point, clean_direction(f.get('direction')), activity, ride, pet)
         room.data['people'][w.pid] = w
         conn.ext['town'] = conn.player.ext['town'] = room.id
         self._queue(room, w.pid, dict(k='in', **w.public()))
@@ -337,6 +344,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
     @on('town_mv', rate=(4, 1.0))
     async def town_mv(self, conn, f):
         ride = await plates.keep(self.db, conn.player, clean_ride(f['r'])) if 'r' in f else None   # 🚗 before any change
+        pet = await pet_rank.keep(self.db, conn.player, clean_pet(f['pt'])) if 'pt' in f else None   # 🐾 likewise
         room, w = self._me(conn)
         x, y = (site_point(room.data['site_layout'], f.get('x'), f.get('y'))
                 if 'site_key' in room.data else clean_point(f.get('x'), f.get('y')))
@@ -363,6 +371,9 @@ class TownFeature(ScaleSites, TownSocial, Feature):
             if ride != w.ride:
                 w.ride = ride
                 event['r'] = dict(ride) if ride else None
+        if 'pt' in f and pet != w.pet:
+            w.pet = pet
+            event['pt'] = dict(pet) if pet else None
         self._queue(room, w.pid, event)
 
     async def _refresh_blocks(self):

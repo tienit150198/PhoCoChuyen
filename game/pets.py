@@ -47,6 +47,7 @@ import threading
 import time
 
 from . import pets_content as C
+from . import pet_tiers as px   # 🏅 ranks, 🧬 fusion, 📊 stats, 🧰 gear (owner 19/10)
 
 VERSION = 1
 KIND = 'life'
@@ -387,20 +388,21 @@ def action(s: dict, name: str, p: dict) -> dict:
     need = e.need
     j = s['journey']
     need(j.get('story'), 'Nuôi thú cưng chỉ có trong hành trình.', 'locked')
-    need(name in COMMANDS, 'Thao tác không hợp lệ.', 'unknown_action')
+    need(name in COMMANDS or name in px.COMMANDS, 'Thao tác không hợp lệ.', 'unknown_action')
     day = j['life_day']
     b0 = get(s)
     if b0:
         for x in b0['list']:
             _tick(x, day)
+    if name in px.COMMANDS:
+        return px.action(s, name, p)
     out: list = []
 
     if name == 'jr_pet_adopt':
         _keys(p, {'from', 'i', 'breed', 'coat', 'nick', 'donate', 'confirm'}, {'from', 'nick', 'confirm'})
         src = p['from']
         need(src in SOURCES, 'Chọn nhận nuôi hoặc mua ở tiệm nhé.')
-        b = get(s)
-        need(not b or len(b['list']) < C.MAX_PETS, f'Nhà đã đủ {C.MAX_PETS} bé rồi. Gửi một bé về quê với bà trước nhé.', 'limit')
+        need(px.has_room(s), f'Nhà và trại nuôi đều đã đầy. Gửi một bé về quê với bà trước nhé.', 'limit')
         pet_name = _name(p['nick'])
         donate = p.get('donate', 0)
         need(_int(donate, 0, C.DONATE_MAX), 'Số xu ủng hộ không hợp lệ.')
@@ -412,7 +414,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         else:
             need(donate == 0, 'Ủng hộ cứu hộ ở góc nhận nuôi nhé.')
             bid = p.get('breed')
-            need(isinstance(bid, str) and bid in C.BREEDS, 'Chọn một giống trong tiệm nhé.')
+            need(isinstance(bid, str) and bid in C.SHOP, 'Chọn một giống trong tiệm nhé.')
             coat = p.get('coat', 0)
             need(_int(coat, 0, len(C.BREEDS[bid]['coats']) - 1), 'Chọn một màu lông nhé.')
             price = C.BREEDS[bid]['price']
@@ -427,9 +429,9 @@ def action(s: dict, name: str, p: dict) -> dict:
         if donate:
             b['stats']['donated'] += donate
         pet = _new_pet(b, day, bid, coat, pet_name, src, price)
-        b['list'].append(pet)
-        if b['walk'] is None:
-            b['walk'] = pet['id']
+        where = px.place_new(s, pet)
+        rec = px.on_new(s, pet, src)
+        rank = px.RANKS[rec['r']]
         if src == 'shelter':
             b['today'].append(f'a{p["i"]}')
             b['stats']['adopted'] += 1
@@ -437,9 +439,12 @@ def action(s: dict, name: str, p: dict) -> dict:
         else:
             b['stats']['bought'] += 1
             msg = f'🐾 {pet_name} về nhà! ({how})'
+        msg += f' Bé là hạng {rank}' + ('!!! 🌈' if rec['r'] >= 5 else '!' if rec['r'] >= 3 else '.')
+        if where == 'ken':
+            msg += ' Nhà đã đủ chỗ nên bé ở trại nuôi.'
         if gift:
             msg += ' 💗 Chân Nhỏ cảm ơn bạn!'
-        return dict(message=msg)
+        return dict(message=msg, rank=rank, pet=pet['id'])
 
     if name == 'jr_pet_donate':
         _keys(p, {'amount', 'confirm'}, {'amount', 'confirm'})
@@ -646,7 +651,7 @@ def walk_ref(s: dict) -> dict | None:
     p = next((x for x in b['list'] if x['id'] == b['walk']), None) if b else None
     if not p or p['b'] not in C.BREEDS:
         return None
-    return dict(b=p['b'], c=p['c'], n=p['n'], a=[v for k, v in p['w'].items() if v in C.ACC and k != 'bed'])
+    return dict(b=p['b'], c=p['c'], n=p['n'], a=[v for k, v in p['w'].items() if v in C.ACC and k != 'bed'], **px.walk_extra(s, p))
 
 
 def public(s: dict) -> dict:
@@ -659,8 +664,8 @@ def public(s: dict) -> dict:
     taken = set(_today(s))
     out['shelter'] = [dict(a, taken=f'a{a["i"]}' in taken) for a in shelter_today(s)]
     if b:
-        out.update(pets=[pet_view(p, day) for p in b['list']],
-                   farm=[dict(id=p['id'], b=p['b'], c=p['c'], n=p['n']) for p in b['farm']],
+        out.update(pets=[dict(pet_view(p, day), **px.pet_extra(s, p)) for p in b['list']],
+                   farm=[px.lite(s, p) for p in b['farm']], petx=px.public(s),
                    walk=b['walk'], own=dict(b['own']), spirit='spirit' in taken, stats=dict(b['stats']),
                    ref=walk_ref(s))
     return out
@@ -675,7 +680,8 @@ def catalogue() -> dict:
                 bath=dict(C.BATH), groom=dict(C.GROOM, cat=C.GROOM_CAT), vet=dict(C.VET), vaccine=dict(C.VACCINE),
                 play_free=C.PLAY_FREE, full=C.FULL, low=C.LOW, max=C.MAX_PETS, name_max=C.NAME_MAX,
                 shelter=C.SHELTER_NAME, shop=C.SHOP_NAME, donate=list(C.DONATE),
-                poses=[dict(id=a, name=b) for a, b in C.POSES], frames=[dict(id=a, emoji=b, name=c) for a, b, c in C.FRAMES])
+                poses=[dict(id=a, name=b) for a, b in C.POSES], frames=[dict(id=a, emoji=b, name=c) for a, b, c in C.FRAMES],
+                tiers=px.catalogue())
 
 
 # ---------------------------------------------------------------- 🏆 Bé cưng của tuần (pet_board, GET /api/pets/board)
@@ -699,6 +705,9 @@ def command_commit(db, sid: str, action: str, after: dict) -> None:
     """Called by the storage layer for jr_pet_* commands, in the save's transaction (game/storage.py)."""
     if not action.startswith('jr_pet_'):
         return
+    _power_row(db, sid, after)
+    if action == 'jr_pet_fuse':
+        _fuse_news(db, sid, after)
     row = board_row(after)
     if not row:
         return
@@ -707,6 +716,42 @@ def command_commit(db, sid: str, action: str, after: dict) -> None:
                'acc=EXCLUDED.acc, pts=EXCLUDED.pts, at=EXCLUDED.at',
                (sid, row['week'], row['name'], row['breed'], row['coat'], row['acc'], row['pts'], now()))
     _BOARD.clear()
+
+
+POWER = 'LC'              # 💪 the lực chiến board: pet_board rows with week = POWER (pts = power, acc = {r, top, x, lg})
+
+
+def _power_row(db, sid: str, after: dict) -> None:
+    top = px.best(after)
+    if not top:
+        db.execute('DELETE FROM pet_board WHERE sid=? AND week=?', (sid, POWER))
+        return
+    p = top['p']
+    acc = json.dumps(dict(r=top['r'], top=top['top'], x=top['fx'], lg=top['legend'],
+                          a=[v for k, v in p['w'].items() if v in C.ACC and k != 'bed']))
+    db.execute('INSERT INTO pet_board(sid, week, name, breed, coat, acc, pts, at) VALUES(?,?,?,?,?,?,?,?) '
+               'ON CONFLICT (sid, week) DO UPDATE SET name=EXCLUDED.name, breed=EXCLUDED.breed, coat=EXCLUDED.coat, '
+               'acc=EXCLUDED.acc, pts=EXCLUDED.pts, at=EXCLUDED.at', (sid, POWER, p['n'], p['b'], p['c'], acc, top['pw'], now()))
+    _BOARD.clear()
+
+
+def _fuse_news(db, sid: str, after: dict) -> None:
+    """🌈 A pet of rank SS or more, or a 🌟 legendary, born from a fusion in the last minutes: a line on the street's
+    ticker for the whole town (once: the ref is the pet's)."""
+    x = px.get(after)
+    if not x:
+        return
+    t = now()
+    for p in px.all_pets(after):
+        rec = x['t'].get(p['id'])
+        if not rec or not rec['z'] or t - rec['z'] > 600 or not (rec['r'] >= 5 or px.is_legend(p)):
+            continue
+        from . import lux, marriage
+        who = lux._display(db, sid, False)
+        br = C.BREEDS.get(p['b'], {}).get('name', 'thú cưng')
+        text = (f'🌟 {who} vừa ghép ra HUYỀN THOẠI {br}!' if px.is_legend(p)
+                else f'🌈 {who} vừa ghép ra bé {br} hạng {px.RANKS[rec["r"]]}!')
+        marriage._post_news(db, 'pets', f'petfz:{sid[:16]}:{p["id"]}', text, '', '')
 
 
 def forget(db, sid: str) -> None:
@@ -732,20 +777,29 @@ def _rows(store, wk: str) -> list:
                           'ORDER BY b.pts DESC, b.at ASC LIMIT ?', (wk, BOARD_TOP)).fetchall()
     out = []
     for r in rows:
+        extra = {}
         try:
-            acc = [x for x in json.loads(r['acc'] or '[]') if x in C.ACC][:3]
+            raw = json.loads(r['acc'] or '[]')
         except (TypeError, ValueError):
-            acc = []
+            raw = []
+        if isinstance(raw, dict):   # 💪 a POWER row: {r, top, x, lg, a}
+            rk = raw.get('r')
+            extra = dict(r=rk if type(rk) is int and 0 <= rk <= px.TOP else 0, x=raw.get('x') if raw.get('x') in px.FX_IDS else '')
+            raw = raw.get('a') if isinstance(raw.get('a'), list) else []
+        acc = [x for x in raw if isinstance(x, str) and x in C.ACC][:3] if isinstance(raw, list) else []
         out.append(dict(sid=r['sid'], name=str(r['name'])[:C.NAME_MAX], b=r['breed'], c=int(r['coat']), a=acc,
-                        pts=int(r['pts']), owner=str(r['display'])[:24] if r['display'] else 'Khách'))
+                        pts=int(r['pts']), owner=str(r['display'])[:24] if r['display'] else 'Khách', **extra))
     with _LOCK:
-        _BOARD.clear()
+        if len(_BOARD) > 4:
+            _BOARD.clear()
         _BOARD[wk] = (time.monotonic(), out)
     return out
 
 
-def board(store, token: str | None) -> dict:
-    wk = week_key()
+def board(store, token: str | None, kind: str = '') -> dict:
+    """GET /api/pets/board: Bé cưng của tuần, or with ?kind=power the 💪 lực chiến board (all time, the best pet)."""
+    wk = POWER if kind == 'power' else week_key()
     rows = _rows(store, wk)
     sid = store.key(token) if isinstance(token, str) and 16 <= len(token) <= 128 else None
-    return dict(week=wk, top=[{k: v for k, v in x.items() if k != 'sid'} | {'me': bool(sid) and x['sid'] == sid} for x in rows])
+    return dict(week=wk, kind='power' if wk == POWER else 'week',
+                top=[{k: v for k, v in x.items() if k != 'sid'} | {'me': bool(sid) and x['sid'] == sid} for x in rows])

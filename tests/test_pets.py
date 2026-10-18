@@ -50,7 +50,7 @@ class Catalogue(unittest.TestCase):
     def test_breeds_coats_prices(self):
         self.assertGreaterEqual(len(C.DOGS), 12)
         self.assertGreaterEqual(len(C.CATS), 12)
-        prices = [b['price'] for b in C.BREEDS.values()]
+        prices = [C.BREEDS[b]['price'] for b in C.SHOP]   # 🧬 hybrids and legendaries are never sold
         self.assertEqual(min(prices), 300)
         self.assertEqual(max(prices), 30000)
         for bid, b in C.BREEDS.items():
@@ -143,8 +143,9 @@ class Owning(unittest.TestCase):
         s = story(wallet=5000)
         for n in ('A', 'B', 'C'):
             s, _ = buy(s, 'meo_mun', 0, n)
-        self.assertIn('đủ 3 bé', refused(self, s, 'jr_pet_adopt', 'limit', **{'from': 'shop'}, breed='meo_mun', nick='D', confirm=True))
-        refused(self, s, 'jr_pet_adopt', 'limit', **{'from': 'shelter'}, i=0, nick='D', confirm=True)
+        s, r = buy(s, 'meo_mun', 0, 'K')   # 🏠 a full home: the 4th waits in the kennel (game/pet_tiers.py)
+        self.assertIn('trại nuôi', r['message'])
+        self.assertEqual((len(P(s)['list']), [p['n'] for p in s['journey']['petx']['ken']]), (3, ['K']))
         first = P(s)['list'][0]['id']
         s, _ = act(s, 'jr_pet_home', pet=first, confirm=True)
         self.assertEqual(len(P(s)['list']), 2)
@@ -229,7 +230,7 @@ class Care(unittest.TestCase):
         s, _ = act(s, 'jr_pet_wear', pet=b, slot='head', id='non_la')
         self.assertEqual(pt.walk_ref(s)['n'], 'Bông')
         s, _ = act(s, 'jr_pet_walk', pet=b)
-        self.assertEqual(pt.walk_ref(s), dict(b='meo_mun', c=0, n='Than', a=['non_la']))
+        self.assertEqual({k: v for k, v in pt.walk_ref(s).items() if k not in ('r', 'x')}, dict(b='meo_mun', c=0, n='Than', a=['non_la']))
 
     def test_names_follow_the_display_name_rules(self):
         refused(self, self.s, 'jr_pet_name', None, pet=self.pid, nick='')

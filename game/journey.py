@@ -572,6 +572,7 @@ def upgrade(j: dict) -> None:
     gd.upgrade(j)   # 📱
     sp.upgrade(j)   # ☕
     pt.upgrade(j)   # 🐾
+    pt.px.upgrade(j)   # 🏅 journey['petx'] (ranks, kennel, gear)
     lx.upgrade(j)   # 🛍️
     isl.upgrade(j)   # 🏝️
     auc.upgrade(j)   # 🔨
@@ -1297,6 +1298,7 @@ def validate(s: dict) -> None:
     gd.validate(s)   # 📱 journey['gadgets'] (optional)
     sp.validate(s)   # ☕ journey['spend'] (optional)
     pt.validate(s)   # 🐾 journey['pets'] (optional)
+    pt.px.validate(s)   # 🏅 journey['petx'] (optional)
     lx.validate(s)   # 🛍️ journey['lux'] (optional)
     isl.validate(s)   # 🏝️ journey['island'] (optional)
     auc.validate(s)   # 🔨 journey['uniq'] (optional)
