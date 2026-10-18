@@ -4,6 +4,7 @@ training and strolls, gear, the walking pet's share of work earnings (capped, a 
 staff orders, kept out of the 🔥 x3 net), saves (older builds keep the block; a rollback loses nothing), the live
 street (its rank only up to one the player has) and the 💪 lực chiến board."""
 import copy
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -32,14 +33,12 @@ def rolls(*values):
 
 
 def get(s, nick, breed='meo_mun', coat=0, rank=0):
-    """Buy a pet and give it a rank (and let it settle in: MIN_AGE life days)."""
+    """Buy a pet and give it a rank (fusable at once: owner 19/10 "mua về được ghép luôn")."""
     s, _ = act(s, 'jr_pet_adopt', **{'from': 'shop'}, breed=breed, coat=coat, nick=nick, confirm=True)
     p = next(q for q in px.all_pets(s) if q['n'] == nick)
     X(s)['t'][p['id']]['r'] = rank
     X(s)['t'][p['id']]['fx'] = px.FX[0][0] if rank == px.TOP else ''
     j = s['journey']
-    j['life_day'] = max(j['life_day'], 1 + px.MIN_AGE)
-    p['d'] = j['life_day'] - px.MIN_AGE
     for q in px.all_pets(s):
         q['t'] = j['life_day']
     validate_state(s)
@@ -58,8 +57,15 @@ class Ranks(unittest.TestCase):
     def test_tables(self):
         self.assertEqual(sum(px.ODDS_SHELTER), px.ODDS)
         self.assertEqual(sum(px.ODDS_SHOP), px.ODDS)
-        self.assertEqual(px.ODDS_SHOP[-1] * 100 / px.ODDS, 0.0001)          # SSS 0,0001 % in the shop
-        self.assertEqual(px.ODDS_SHELTER[-1], 0)                            # never at the shelter
+        # owner 19/10 "đồ ở shop là chỉ có bậc D và C thôi, pets cũng thế": D or C, higher only from a fusion
+        self.assertEqual(px.ODDS_SHELTER[2:], (0,) * 5)
+        self.assertEqual(px.ODDS_SHOP[2:], (0,) * 5)
+        self.assertEqual(px.GEAR_ODDS[2:], (0,) * 5)
+        self.assertEqual(len(px.GSHOP), 2)
+        # owner "đừng show tỷ lệ ra": nothing in the content says a chance
+        cat = json.dumps(px.catalogue())
+        for word in ('shelter', 'fuse"', 'mix', 'hybrid', 'mutant', '"up"', 'min_age'):
+            self.assertNotIn(word, cat)
         self.assertEqual(px.FUSE_BP, (6000, 4500, 3000, 1500, 600, 300))    # owner 19/10 "thấp xuống tí", SSS 3 %
         self.assertEqual(px.FUSE_FEE[5], 5_000_000)                         # SS → SSS 5 triệu a try
         self.assertEqual(px.FUSE_FEE[6], 10_000_000)                        # 3 SSS → legendary 10 triệu
@@ -126,6 +132,28 @@ class Kennel(unittest.TestCase):
         validate_state(s)
         self.assertIn('đầy', refused(self, s, 'jr_pet_adopt', **{'from': 'shop'}, breed='meo_mun', coat=0, nick='Z', confirm=True))
 
+    def test_swap_with_a_home_pet(self):
+        # owner 19/10 "có nhiều hơn mà hiển thị mỗi 3 con": a kennel pet comes home in one tap, trading places
+        s = story(wallet=10**6)
+        for n in 'ABC':
+            s, _ = get(s, n)
+        s, _ = act(s, 'jr_pet_adopt', **{'from': 'shop'}, breed='meo_mun', coat=0, nick='K', confirm=True)
+        k = X(s)['ken'][0]['id']
+        home = [p['id'] for p in P(s)['list']]
+        walked = P(s)['walk']
+        refused(self, s, 'jr_pet_kennel', pet=k, to='home', swap='p999')           # not a home pet
+        refused(self, s, 'jr_pet_kennel', pet=k, to='home', swap=k)
+        s, r = act(s, 'jr_pet_kennel', pet=k, to='home', swap=walked)
+        self.assertIn('🔁', r['message'])
+        self.assertEqual([p['id'] for p in P(s)['list']], [k if i == walked else i for i in home])
+        self.assertEqual([p['id'] for p in X(s)['ken']], [walked])
+        self.assertEqual(P(s)['walk'], k)                                            # the walk goes to the newcomer
+        other = home[2] if home[2] != walked else home[1]
+        s, _ = act(s, 'jr_pet_kennel', pet=walked, to='home', swap=other, walk=True)
+        self.assertEqual(P(s)['walk'], walked)
+        refused(self, s, 'jr_pet_kennel', pet=other, to='home', swap=k, walk='yes')
+        validate_state(s)
+
 
 class Fusion(unittest.TestCase):
     def three(self, rank=0, breeds=('meo_mun',) * 3, wallet=10**8, coats=(0, 0, 0)):
@@ -158,7 +186,7 @@ class Fusion(unittest.TestCase):
         with rolls(9999):
             s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
         self.assertFalse(r['fuse']['ok'])
-        self.assertEqual(r['fuse']['chance'], 300)                         # SS ×3 → SSS: 3 %
+        self.assertNotIn('chance', r['fuse'])                              # never shown
         self.assertEqual(s['journey']['wallet'], w - 5_000_000)
         self.assertEqual(sorted(p['id'] for p in px.all_pets(s)), sorted(ids))
 
@@ -182,16 +210,23 @@ class Fusion(unittest.TestCase):
             s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
         self.assertEqual(r['fuse']['breed'], 'cho_ta')
 
-    def test_rules(self):
+    def test_dogs_and_cats_together_at_once(self):
+        # owner 19/10 "các pet khác nhau cùng cấp vẫn ghép được", "mua về được ghép luôn"
         s, ids = self.three(0, ('meo_mun', 'meo_mun', 'corgi'))
-        self.assertIn('cùng loài', refused(self, s, 'jr_pet_fuse', pets=ids, confirm=True))
+        self.assertTrue(all(p['d'] == s['journey']['life_day'] for p in px.all_pets(s)))
+        with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+        self.assertTrue(r['fuse']['ok'])
+        s, ids = self.three(6, ('meo_mun', 'corgi', 'corgi'))
+        with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+        self.assertEqual(r['fuse']['breed'], 'than_tai')                   # the first parent: the cat
+
+    def test_rules(self):
         s, ids = self.three(0)
         refused(self, s, 'jr_pet_fuse', pets=ids[:2], confirm=True)
         refused(self, s, 'jr_pet_fuse', pets=[ids[0]] * 3, confirm=True)
         refused(self, s, 'jr_pet_fuse', pets=ids, confirm=False)
-        young = copy.deepcopy(s)
-        P(young)['list'][0]['d'] = young['journey']['life_day']
-        self.assertIn('chưa đủ', refused(self, young, 'jr_pet_fuse', pets=ids, confirm=True))
         poor = copy.deepcopy(s)
         poor['journey']['wallet'] = 10
         refused(self, poor, 'jr_pet_fuse', pets=ids, confirm=True)
@@ -340,7 +375,7 @@ class Database(unittest.TestCase):
                 cmd('jr_pet_adopt', **{'from': 'shop'}, breed='corgi', coat=0, nick=nick, confirm=True)
 
         def age(s):
-            s['journey']['life_day'] += px.MIN_AGE
+            s['journey']['life_day'] += 3
             for p in s['journey']['pets']['list']:
                 p['t'] = s['journey']['life_day']
         mr._mutate(store, {store.key(token): age})

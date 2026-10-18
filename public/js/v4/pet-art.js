@@ -80,30 +80,96 @@ export const SHAPES={
 export const RANK=['D','C','B','A','S','SS','SSS'];
 export const RANK_COLOR=['#9aa0a6','#4caf6a','#3d8bfd','#a259ff','#f2b632','#ff6a3d','#ff4fa3'];
 const FXCOAT={ngan_ha:{b:'#3d2f7a',m:'#22184f',l:'#8ea2ff',e:'#ffe66b'},hong_ngoc:{b:'#c72c48',m:'#7d1426',l:'#ff9db0',e:'#ffd54a'},
-  bang_tinh:{b:'#dff4ff',m:'#9fd3f2',l:'#ffffff',e:'#38c6ff'},cau_vong:{b:'url(#pt-rb)',m:'#b06bd9',l:'#fff3a8',e:'#3b2a22'}};
+  bang_tinh:{b:'#dff4ff',m:'#9fd3f2',l:'#ffffff',e:'#38c6ff'},cau_vong:{b:'url(#pt-rbs)',m:'url(#pt-rb)',l:'#fffafd',e:'#3b2a22'}};
 const DEFS='<defs><linearGradient id="pt-rb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7a7a"/><stop offset=".2" stop-color="#ffc56b"/><stop offset=".4" stop-color="#fff07a"/><stop offset=".6" stop-color="#7de08a"/><stop offset=".8" stop-color="#6fb6ff"/><stop offset="1" stop-color="#c58cff"/></linearGradient>'
-  +'<radialGradient id="pt-glow-s"><stop offset="0" stop-color="#ffe58a" stop-opacity=".9"/><stop offset="1" stop-color="#ffe58a" stop-opacity="0"/></radialGradient>'
-  +'<radialGradient id="pt-glow-ss"><stop offset="0" stop-color="#ff9a5c" stop-opacity=".9"/><stop offset="1" stop-color="#ff5a3d" stop-opacity="0"/></radialGradient>'
-  +'<radialGradient id="pt-glow-sss"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".45" stop-color="#ffb3e6" stop-opacity=".6"/><stop offset="1" stop-color="#8fd3ff" stop-opacity="0"/></radialGradient>'
-  +'<radialGradient id="pt-glow-lg"><stop offset="0" stop-color="#fff6c2" stop-opacity="1"/><stop offset=".5" stop-color="#ffd24a" stop-opacity=".7"/><stop offset="1" stop-color="#ff9f1a" stop-opacity="0"/></radialGradient>'
+  +'<linearGradient id="pt-rbs" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffc4d2"/><stop offset=".25" stop-color="#ffe0b3"/><stop offset=".45" stop-color="#fff6b8"/><stop offset=".65" stop-color="#c8f0cd"/><stop offset=".82" stop-color="#c4e1ff"/><stop offset="1" stop-color="#dcc8ff"/></linearGradient>'
+  +'<linearGradient id="pt-wing" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#fff4fb"/><stop offset=".8" stop-color="#e4dcff"/><stop offset="1" stop-color="#cfe9ff"/></linearGradient>'
+  +'<linearGradient id="pt-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".5" stop-color="#ffd24a"/><stop offset="1" stop-color="#e09a1a"/></linearGradient>'
+  +'<radialGradient id="pt-glow-b"><stop offset="0" stop-color="#bfe0ff" stop-opacity=".8"/><stop offset="1" stop-color="#7fb8ff" stop-opacity="0"/></radialGradient>'
+  +'<radialGradient id="pt-glow-a"><stop offset="0" stop-color="#ecd9ff" stop-opacity=".9"/><stop offset=".6" stop-color="#c39bff" stop-opacity=".45"/><stop offset="1" stop-color="#a259ff" stop-opacity="0"/></radialGradient>'
+  +'<radialGradient id="pt-glow-s"><stop offset="0" stop-color="#fff4c4" stop-opacity=".95"/><stop offset=".6" stop-color="#ffd76a" stop-opacity=".5"/><stop offset="1" stop-color="#ffc83a" stop-opacity="0"/></radialGradient>'
+  +'<radialGradient id="pt-glow-ss"><stop offset="0" stop-color="#ffe2b8" stop-opacity=".95"/><stop offset=".55" stop-color="#ff8a4d" stop-opacity=".55"/><stop offset="1" stop-color="#ff4a2d" stop-opacity="0"/></radialGradient>'
+  +'<radialGradient id="pt-glow-sss"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".4" stop-color="#ffd1f0" stop-opacity=".7"/><stop offset=".75" stop-color="#bfe6ff" stop-opacity=".35"/><stop offset="1" stop-color="#c58cff" stop-opacity="0"/></radialGradient>'
+  +'<radialGradient id="pt-glow-lg"><stop offset="0" stop-color="#fffbe0" stop-opacity="1"/><stop offset=".45" stop-color="#ffe07a" stop-opacity=".8"/><stop offset=".8" stop-color="#ffb52e" stop-opacity=".35"/><stop offset="1" stop-color="#ff9f1a" stop-opacity="0"/></radialGradient>'
   +'<filter id="pt-mut"><feColorMatrix type="hueRotate" values="150"/></filter></defs>';
-/** What stands behind the pet (its rank's ring and glow) and what floats in front (sparkles, the trail, coins). */
-function aura(r,x,legend,kind,pose){
+const RB=['#ff7a7a','#ffc56b','#fff07a','#7de08a','#6fb6ff','#c58cff'];
+/** Light rays fanning out of (cx, cy): `count` wedges from r0 to r1 in `cols` (turned slowly by CSS on a dialog). */
+function rays(cx,cy,r0,r1,count,cols,op){
+  let d='';const w=Math.PI/count*.42;
+  for(let i=0;i<count;i++){const a=i*2*Math.PI/count,p=(t,r)=>`${n(cx+Math.cos(t)*r)} ${n(cy+Math.sin(t)*r)}`;
+    d+=Pa(`M${p(a-w*.35,r0)}L${p(a-w,r1)}Q${p(a,r1*1.06)} ${p(a+w,r1)}L${p(a+w*.35,r0)}z`,cols[i%cols.length],0,` opacity="${op}"`);}
+  return `<g class="pet-rays" style="transform-origin:${n(cx)}px ${n(cy)}px">${d}</g>`;
+}
+const gem=(x,y,s,c)=>Pa(`M${n(x)} ${n(y-s)}L${n(x+s*.62)} ${n(y)}L${n(x)} ${n(y+s)}L${n(x-s*.62)} ${n(y)}z`,c,0)+Pa(`M${n(x)} ${n(y-s)}L${n(x+s*.62)} ${n(y)}L${n(x)} ${n(y)}z`,'#fff',0,' opacity=".55"');
+const flame=(x,y,h,c,c2)=>Pa(`M${n(x)} ${n(y)}q${n(-h*.42)} ${n(-h*.42)} ${n(-h*.06)} ${n(-h)}q${n(h*.08)} ${n(h*.3)} ${n(h*.26)} ${n(h*.36)}q${n(h*.24)} ${n(h*.28)} ${n(-h*.2)} ${n(h*.64)}z`,c,0)+E(x,y-h*.26,h*.13,h*.2,c2,0);
+const wing=(x,y,s,flip)=>`<g transform="translate(${n(x)} ${n(y)}) scale(${n(flip*s)} ${n(s)})">`
+  +Pa('M0 0q-8-15-27-19q3 4 2 7q-7-2-11 0q5 3 4 6q-7-1-9 2q6 3 5 5q-5 0-6 3q11 6 23 2q12-3 19-6z','url(#pt-wing)',1.1,' stroke="#cdb8e8"')
+  +L('M-4-2q-9-5-19-4M-5 2q-10-1-18 1M-6 5q-8 1-13 3','#d8c8f0',.9)+'</g>';
+const coin=(x,y,r)=>C(x,y,r,'url(#pt-gold)',.9,' stroke="#b47a10"')+R(x-r*.32,y-r*.32,r*.64,r*.64,'#d39a20',0,0);
+const ingot=(x,y,s)=>Pa(`M${n(x-s*1.5)} ${n(y)}q${n(-s*.4)} ${n(-s*1.2)} ${n(s*.3)} ${n(-s*1.1)}q${n(s*1.2)} ${n(-s*.9)} ${n(s*2.4)} 0q${n(s*.7)} ${n(-s*.1)} ${n(s*.3)} ${n(s*1.1)}z`,'url(#pt-gold)',1,' stroke="#b47a10"')+E(x,y-s*1.05,s*.7,s*.32,'#fff3b0',0);
+const cloud=(x,y,s,c,edge)=>Pa(`M${n(x-s*2)} ${n(y)}q${n(-s*.4)} ${n(-s*1.3)} ${n(s*.7)} ${n(-s*1.2)}q${n(s*.5)} ${n(-s*1.2)} ${n(s*1.6)} ${n(-s*.5)}q${n(s*1.3)} ${n(-s*.4)} ${n(s*1.6)} ${n(s*.9)}q${n(s*.6)} ${n(s*.5)} ${n(-s*.1)} ${n(s*.8)}z`,c,1,` stroke="${edge}"`)
+  +L(`M${n(x-s*.6)} ${n(y-s*.5)}q${n(s*.5)} ${n(-s*.6)} ${n(s*1)} 0`,edge,.9);
+/** Where the head is (a halo above it), by pose; `k` the breed's size. */
+const headAt=(pose,k)=>pose==='walk'?{x:9.5*k,y:-46*k-3}:pose==='sleep'?{x:10*k,y:-27*k}:{x:0,y:-48*k-4};
+/** What stands behind the pet (glow, rays, wings, its rank's ring) and what floats in front (sparkles, halo, embers,
+ * coins). Owner 19/10 "bậc B, A, S, SS cũng cho đẹp đẹp, SSS thì siêu đẹp", "mèo huyền thoại cũng cho nổi hơn". */
+function aura(r,x,legend,kind,pose,k=1){
   if(!r&&!legend)return ['',''];
-  const col=RANK_COLOR[r]||RANK_COLOR[0],walk=pose==='walk';let back='',front='';
-  const ring=r>=6||legend?'url(#pt-rb)':col;
-  back+=`<ellipse cx="0" cy="-.5" rx="25" ry="5.2" fill="${legend?'#ffd24a':col}" opacity="${r>=4||legend?.32:.2}"/><ellipse cx="0" cy="-.5" rx="25" ry="5.2" fill="none" stroke="${ring}" stroke-width="${r>=4||legend?2.6:1.8}"/>`;
-  if(r>=4||legend){
-    const g=legend?'pt-glow-lg':r>=6?'pt-glow-sss':r>=5?'pt-glow-ss':'pt-glow-s';
-    back=`<ellipse class="pet-glow" cx="0" cy="-24" rx="${legend?40:34}" ry="${legend?36:31}" fill="url(#${g})"/>`+back;
-    const sc=legend?'#ffd24a':r>=6?'#fff':r>=5?'#ffb36b':'#ffe066';
-    front+=`<g class="pet-spark">${star(-24,-40,3.2,sc)+star(22,-48,2.6,sc)+star(27,-18,2,sc)+(r>=6||legend?star(-27,-16,2.4,'#ffd1f0')+star(4,-56,2.8,'#bfe6ff'):'')}</g>`;
+  const col=RANK_COLOR[r]||RANK_COLOR[0],walk=pose==='walk',sleep=pose==='sleep',top=r>=6||legend,H=headAt(pose,k);
+  let back='',front='',ring='';
+  const cy=sleep?-12:-25;
+  // the ring on the ground: one line (C), two (B…), a rainbow for SSS, gold for the legendaries
+  const rc=legend?'url(#pt-gold)':top?'url(#pt-rb)':col;
+  ring+=`<ellipse cx="0" cy="-.5" rx="25" ry="5.2" fill="${legend?'#ffd24a':col}" opacity="${r>=4||legend?.3:.18}"/><ellipse cx="0" cy="-.5" rx="25" ry="5.2" fill="none" stroke="${rc}" stroke-width="${r>=4||legend?2.6:1.8}"/>`;
+  if(r>=2||legend)ring+=`<ellipse cx="0" cy="-.5" rx="30" ry="6.6" fill="none" stroke="${rc}" stroke-width="${top?1.6:1}" opacity="${top?.9:.6}"${top?'':' stroke-dasharray="3 3"'}/>`;
+  if(r===1)front+=`<g class="pet-spark">${star(-22,-34,2,'#7ed39a')+star(22,-40,1.6,'#7ed39a')}</g>`;
+  if(r===2&&!legend){
+    back+=`<ellipse class="pet-glow" cx="0" cy="${cy}" rx="30" ry="27" fill="url(#pt-glow-b)"/>`;
+    front+=`<g class="pet-spark">${gem(-24,-36,3.2,'#8cc4ff')+gem(23,-44,2.6,'#b5dbff')+star(26,-20,2,'#d6ecff')}</g>`
+      +`<g class="pet-rise">${C(-28,-14,1.6,'#cfe6ff',.6,' stroke="#8cc4ff"')+C(28,-26,1.2,'#cfe6ff',.6,' stroke="#8cc4ff"')}</g>`;
   }
-  if((r>=5||legend)&&walk)front+=`<g class="pet-trail" opacity=".8">${[-34,-28,-22].map((xx,i)=>E(xx,-1.2-(i%2)*1.6,1.9,1.1,legend?'#ffd24a':r>=6?'url(#pt-rb)':'#ff8a4d',0,` opacity="${.35+i*.2}"`)).join('')}</g>`;
-  if(legend&&kind==='dog')front+=L('M-30 -10q-6 -22 10 -34q14 -10 26 2q8 8 2 18','#f2c14e',1.6,' class="pet-dragon" opacity=".75"')+star(6,-30,1.8,'#2fd4c0');
-  if(legend&&kind==='cat')front+=`<g class="pet-coins">${C(-22,-30,3.2,'#ffd24a',1)+C(20,-40,2.6,'#ffd24a',1)+C(26,-22,2.2,'#ffd24a',1)}</g>`+E(-10,-1,9,2.6,'#ff9db0',0,' opacity=".55"')+E(10,-1,9,2.6,'#8fd3ff',0,' opacity=".55"');
-  if(x==='ngan_ha')front+=[[-6,-22],[4,-28],[8,-16],[-2,-12]].map(([a,b])=>C(a,b,.9,'#fff',0)).join('');
-  return [back,front];
+  if(r===3&&!legend){
+    back+=`<ellipse class="pet-glow" cx="0" cy="${cy}" rx="34" ry="31" fill="url(#pt-glow-a)"/>`;
+    ring+=[[-22,-3],[-9,-5.3],[9,-5.3],[22,-3]].map(([a,b])=>gem(a,b,2.2,'#c9a2ff')).join('');
+    front+=`<g class="pet-spark">${star(-25,-40,3,'#d9b8ff')+star(24,-48,2.6,'#ffd1f0')+star(28,-20,2,'#c9a2ff')+star(-28,-18,1.8,'#ffd1f0')}</g>`
+      +`<g class="pet-rise">${gem(-30,-22,3,'#b98cff')+gem(30,-32,2.4,'#e0c8ff')}</g>`;
+  }
+  if(r===4&&!legend){
+    back+=rays(0,cy,12,38,12,['#ffd76a','#fff1b0'],.42)+`<ellipse class="pet-glow" cx="0" cy="${cy}" rx="34" ry="31" fill="url(#pt-glow-s)"/>`;
+    front+=`<g class="pet-spark">${star(-25,-42,3.4,'#ffd24a')+star(23,-50,2.8,'#ffe066')+star(29,-20,2.2,'#ffd24a')+star(-29,-18,2,'#fff1b0')+star(4,-58,2.4,'#ffe066')}</g>`;
+  }
+  if(r===5&&!legend){
+    back+=rays(0,cy,12,40,14,['#ff8a4d','#ffc06b','#ff5a3d'],.38)+`<ellipse class="pet-glow" cx="0" cy="${cy}" rx="36" ry="33" fill="url(#pt-glow-ss)"/>`;
+    back+=[-24,-12,12,24].map((xx,i)=>flame(xx,-1+(i%3?0:1),9+i%2*3,'#ff7a3d','#ffd27a')).join('');
+    front+=`<g class="pet-spark">${star(-26,-42,3.4,'#ffb36b')+star(24,-52,2.8,'#ffd27a')+star(30,-22,2.2,'#ff8a4d')+star(-30,-20,2,'#ffd27a')+star(4,-60,2.6,'#ffb36b')}</g>`
+      +`<g class="pet-rise">${C(-20,-30,1.3,'#ffb36b',0)+C(18,-38,1.1,'#ffd27a',0)+C(26,-12,1.3,'#ff7a3d',0)+C(-27,-8,1,'#ffd27a',0)}</g>`
+      +flame(-24,-1,9,'#ff9a52','#ffe6a8')+flame(24,-1,10,'#ff9a52','#ffe6a8');
+  }
+  if(top&&!legend){   // 🌈 SSS: angel wings, a halo, rainbow rays and a shower of stars
+    back+=rays(0,cy,14,46,12,RB,.3)+`<ellipse class="pet-glow" cx="0" cy="${cy}" rx="42" ry="39" fill="url(#pt-glow-sss)"/>`;
+    if(!sleep)back+=`<g class="pet-wings">${walk?wing(-5*k,-22*k,.72*k,1)+wing(0,-25*k,.6*k,1):wing(-6*k,-29*k,.74*k,1)+wing(6*k,-29*k,.74*k,-1)}</g>`;
+    front+=`<g class="pet-halo">${E(H.x,H.y,9.5,2.8,'none',0,' stroke="#ffe27a" stroke-width="2.4"')+E(H.x,H.y,9.5,2.8,'none',0,' stroke="#fff" stroke-width=".8" opacity=".9"')}</g>`;
+    front+=`<g class="pet-spark">${[[-30,-44,3.4],[27,-54,3],[33,-24,2.4],[-33,-20,2.2],[6,-66,2.8],[-14,-60,2],[20,-8,1.8]].map(([a,b,s],i)=>star(a,b,s,RB[i%6])).join('')}</g>`
+      +`<g class="pet-spark b">${[[-20,-52],[30,-40],[-36,-32],[14,-62]].map(([a,b])=>star(a,b,1.6,'#fff')).join('')}</g>`;
+    if(x==='cau_vong')front+=L(`M${n(H.x-14)} ${n(H.y-3)}q14 -12 28 0`,'url(#pt-rb)',2.2,' opacity=".85"');
+    if(x==='ngan_ha')front+=[[-6,-22],[4,-28],[8,-16],[-2,-12],[-34,-50],[34,-46]].map(([a,b])=>C(a,b,.9,'#fff',0)).join('');
+    if(x==='hong_ngoc')back+=[-26,-14,14,26].map((xx,i)=>flame(xx,-1,8+i%2*3,'#e2384f','#ffb3c0')).join('');
+    if(x==='bang_tinh')front+=`<g class="pet-rise">${[[-28,-30],[28,-38],[-18,-56]].map(([a,b])=>L(`M${a-3} ${b}h6M${a} ${b-3}v6M${a-2} ${b-2}l4 4M${a+2} ${b-2}l-4 4`,'#9fdcff',1)).join('')}</g>`;
+  }
+  if(legend){   // 🌟 legendaries: golden rays, a gold halo, lucky clouds; the cat's coins and gold, the dog's dragon
+    back+=rays(0,cy,14,48,16,['#ffd24a','#fff1b0','#ffb52e'],.38)+`<ellipse class="pet-glow" cx="0" cy="${cy}" rx="44" ry="40" fill="url(#pt-glow-lg)"/>`;
+    ring+=cloud(-27,0,4.2,'#ffe9b0','#e0a92e')+cloud(29,0,3.6,'#ffd9d0','#e05a4f');
+    front+=`<g class="pet-halo">${E(H.x,H.y,10,3,'none',0,' stroke="url(#pt-gold)" stroke-width="2.8"')+E(H.x,H.y,10,3,'none',0,' stroke="#fff8d0" stroke-width=".8"')}</g>`;
+    front+=`<g class="pet-spark">${[[-30,-46,3.4],[28,-56,3],[34,-24,2.4],[-34,-22,2.2],[6,-68,2.8]].map(([a,b,s])=>star(a,b,s,'#ffd24a')).join('')}${star(-12,-62,2,'#fff')+star(20,-12,1.8,'#fff')}</g>`;
+    if(kind==='cat')front+=`<g class="pet-coins">${coin(-26,-34,3.4)+coin(24,-44,3)+coin(31,-16,2.6)+coin(-32,-12,2.4)}</g><g class="pet-fall">${coin(-14,-58,2.2)+coin(16,-64,2)+coin(-4,-70,1.8)}</g>`
+      +ingot(-17,-1,3.2)+ingot(18,-1,3)+`<g class="pet-spark b">${C(-36,-38,1.2,'#ff6a5a',0)+C(36,-34,1.2,'#ff6a5a',0)}</g>`;
+    if(kind==='dog')back+=L('M-34 -8q-12 -26 6 -42q16 -14 32 -2q12 10 4 24q-6 10 -16 6','url(#pt-gold)',3.2,' class="pet-dragon"')
+      +L('M-34 -8q-12 -26 6 -42q16 -14 32 -2q12 10 4 24q-6 10 -16 6','#fff3b0',1,' class="pet-dragon"')+C(-12,-49,2.6,'url(#pt-gold)',.8,' stroke="#b47a10"')+C(-11.4,-49.6,.7,'#2fd4c0',0);
+    if(kind==='dog')front+=`<g class="pet-rise">${star(-30,-30,2,'#2fd4c0')+star(30,-36,1.8,'#2fd4c0')}</g>`;
+  }
+  if((r>=5||legend)&&walk)front+=`<g class="pet-trail" opacity=".85">${[-36,-29,-22].map((xx,i)=>E(xx,-1.2-(i%2)*1.6,1.9,1.1,legend?'#ffd24a':r>=6?RB[i*2]:'#ff8a4d',0,` opacity="${.35+i*.2}"`)).join('')}</g>`;
+  if(x==='ngan_ha'&&!top)front+=[[-6,-22],[4,-28],[8,-16],[-2,-12]].map(([a,b])=>C(a,b,.9,'#fff',0)).join('');
+  return [back+ring,front];
 }
 const SIZE={s:.9,m:1,l:1.1};
 
@@ -281,7 +347,7 @@ function marks(S,K,cx,cy,rx,ry){   // body markings: tabby stripes, Bengal spots
 }
 function sitPose(S,K,o){
   const sc=S.body||1,legs=S.legs||1,lng=S.long||1,hr=12.5*(S.head||1),bw=13*sc*(S.chubby?1.12:1),bh=17*sc*(S.legs<.7?.85:1);
-  const by=-bh*.62,hy=by-bh*.55-hr*.62,happy=o.mood==='happy';let s='';
+  const by=-bh*.62,hy=by-bh*.55-hr*.62,happy=o.mood==='happy'||o.wave;let s='';
   s+=E(0,-.5,bw*1.2+4,2.4,'#000',0,' opacity=".12"');
   s+=tail(S,K,-bw*.7,-3,-1,1.05*sc);
   s+=E(-bw*.62,-bw*.38,bw*.5,bw*.4,K.b,1.5)+E(bw*.62,-bw*.38,bw*.5,bw*.4,K.b,1.5);   // haunches
@@ -296,7 +362,7 @@ function sitPose(S,K,o){
   if(raise)s+=R(lx-3.4,-lh,6.8,lh+1,K.b,3,1.4)+E(lx,-1.2,4.2,2.6,paw,1.3);
   s+=collar(o.acc?.neck,0,hy+hr*.86,hr*.62);
   s+=head(S,K,0,hy,hr,{mood:o.mood,acc:o.acc});
-  if(happy)s+=`<g class="pet-hearts">${heart(hr*1.25,hy-hr*.9,2.2)+heart(-hr*1.35,hy-hr*.4,1.6,'#f5a9bc')}</g>`;
+  if(o.mood==='happy')s+=`<g class="pet-hearts">${heart(hr*1.25,hy-hr*.9,2.2)+heart(-hr*1.35,hy-hr*.4,1.6,'#f5a9bc')}</g>`;
   return s;
 }
 function walkPose(S,K,o){
@@ -334,16 +400,25 @@ const coatColor=id=>({ao_len:'#e58b7a',ao_mua:'#f6cf45',ao_vn:'#d8392f',ao_khung
  * sleep | happy; acc: {neck, head, body, bed}. An unknown shape draws a plain dog. */
 export function petInner(breed,coat,pose='sit',acc={},fx={}){
   const x=fx?.x||'',r=Math.max(0,Math.min(6,Number(fx?.r)||0)),legend=breed?.fuse==='legend';
-  const S=SHAPES[breed?.shape]||SHAPES.mutt,K={b:'#e2a65a',m:'#c4823a',l:'#fbe3bd',e:EYE,...(coat||{}),...(FXCOAT[x]||{})},k=SIZE[breed?.size]||1,o={acc:acc||{},mood:pose==='happy'?'happy':''};
+  const S=SHAPES[breed?.shape]||SHAPES.mutt,K={b:'#e2a65a',m:'#c4823a',l:'#fbe3bd',e:EYE,...(coat||{}),...(FXCOAT[x]||{})},k=SIZE[breed?.size]||1,o={acc:acc||{},mood:pose==='happy'?'happy':'',wave:breed?.id==='than_tai'};
   const body=pose==='walk'?walkPose(S,K,o):pose==='sleep'?sleepPose(S,K,o):sitPose(S,K,o);
   const bed=acc?.bed?bedSVG(acc.bed,pose==='walk'?52:46):'';
-  const [back,front]=aura(r,x,legend,S.k,pose),mut=x==='dot_bien'?' filter="url(#pt-mut)"':'';
+  const [back,front]=aura(r,x,legend,S.k,pose,k),mut=x==='dot_bien'?' filter="url(#pt-mut)"':'';
   return `<g class="pet-art pet-${pose}${r?` pet-r${r}`:''}${legend?' pet-legend':''}">${back||mut||x==='cau_vong'?DEFS:''}${back}${bed&&(acc.bed==='nha_go'||acc.bed==='lau_dai')?bed:''}<g transform="scale(${k})">${bed&&!(acc.bed==='nha_go'||acc.bed==='lau_dai')?`<g transform="scale(${n(1/k*100)/100})">${bed}</g>`:''}<g class="pet-bob"${mut}>${body}</g></g>${front}</g>`;
 }
-/** A whole <svg>, `size` px wide (the box is fitted to the pose). */
+/** The viewBox [w, h, top] (paws on y = 0, `top` above them): the auras of S and up and the SSS / legendary wings,
+ * rays and halo need room. Square boxes: the drawing's size follows from the width. */
+const BIG_W=84;
+function boxOf(r,legend,flat){
+  if(r>=6||legend)return flat?[104,90,82]:[104,92,84];
+  if(r>=4)return flat?[84,72,66]:[84,76,70];
+  return flat?[72,62,58]:[68,68,64];
+}
+/** A whole <svg>, `size` px wide (the box is fitted to the pose; an SSS or a legendary is drawn a little larger so the
+ * pet itself is not shrunk by its wider aura). */
 export function petSVG(breed,coat,pose='sit',acc={},size=72,cls='pet-svg',fx={}){
-  const big=(Number(fx?.r)||0)>=4||breed?.fuse==='legend',vb=big?(pose==='walk'||pose==='sleep'?'-42 -66 84 70':'-42 -70 84 74'):pose==='walk'||pose==='sleep'?'-36 -58 72 62':'-34 -64 68 68';
-  return `<svg class="${cls}" viewBox="${vb}" width="${size}" height="${size}" aria-hidden="true" focusable="false">${petInner(breed,coat,pose,acc,fx)}</svg>`;
+  const [w,h,top]=boxOf(Number(fx?.r)||0,breed?.fuse==='legend',pose==='walk'||pose==='sleep'),px=Math.round(size*w/BIG_W);
+  return `<svg class="${cls}" viewBox="${-w/2} ${-top} ${w} ${h}" width="${Math.max(size,px)}" height="${Math.max(size,px)}" aria-hidden="true" focusable="false">${petInner(breed,coat,pose,acc,fx)}</svg>`;
 }
 /** Look a pet up in the catalogue (content.journey.pets): {breed, coat} for a save's {b, c}. */
 export function lookup(cat,b,c){const breed=(cat?.breeds||[]).find(x=>x.id===b);return breed?{breed,coat:breed.coats[c]||breed.coats[0]}:null;}
@@ -352,8 +427,8 @@ export function petURL(breed,coat,pose,acc,size=96,fx={}){return 'data:image/svg
 /** The box petSVG fits a walking pet in ({w, h} of its viewBox, `foot` the share of the height down to the paws) and
  * `k`, walkScale: what a canvas needs to draw it paws on the ground at the right size. */
 export function refBox(cat,ref,pose){
-  const b=(cat?.breeds||[]).find(x=>x.id===ref?.b),big=(Number(ref?.r)||0)>=4||b?.fuse==='legend',flat=pose==='walk'||pose==='sleep';
-  const [w,h,top]=big?(flat?[84,70,66]:[84,74,70]):(flat?[72,62,58]:[68,68,64]);
+  const b=(cat?.breeds||[]).find(x=>x.id===ref?.b),flat=pose==='walk'||pose==='sleep';
+  const [w,h,top]=boxOf(Number(ref?.r)||0,b?.fuse==='legend',flat);
   return {w,h,foot:top/h,k:walkScale(cat,ref),base:flat?72:68};
 }
 /** 🐶 Owner 19/10 "cún cưng to hơn tí": how much bigger a walking pet is drawn (dogs 1.3×, a high rank a little more). */

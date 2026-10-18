@@ -16,7 +16,7 @@ const NEEDS=[['f','🍚','No'],['j','💛','Vui'],['cl','🫧','Sạch'],['h','�
 const MOOD={vui:'😊',on:'🙂',buon:'🥺'};
 const S={dlg:null,env:null,tab:'home',sub:'',pet:'',kind:'dog',breed:'',coat:0,item:'',food:'hat',toy:'',clean:'bath',vet:'kham',slot:'head',
   shelter:-1,nick:'',donate:0,pose:'happy',frame:'nang',board:null,boardAt:0,busy:false,flash:null,listening:false,
-  stat:'spd',gslot:'giay',fz:[],gv:'bag',g:'',gbslot:'giay',gmodel:0,grank:0,bkind:'week'};
+  stat:'spd',gslot:'giay',fz:[],gv:'bag',g:'',gbslot:'giay',gmodel:0,grank:0,bkind:'week',ff:{k:'',r:'',at:''}};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const J=()=>S.env?.api?.state?.journey||{};
 const V=()=>J().pets;
@@ -115,24 +115,22 @@ const groomPrice=p=>p?.kind==='cat'?CAT().groom.cat:CAT().groom.price;
 /** Home, kennel or at the grandparents': every pet of this save, with where it is. */
 const allPets=()=>[...pets().map(p=>({...p,at:'home'})),...(X()?.ken||[]).map(p=>({...p,at:'ken'})),...(V()?.farm||[]).map(p=>({...p,at:'farm'}))];
 const petName=id=>allPets().find(p=>p.id===id)?.n||'';
+/** The pet picked on the 📋 list when it is not at home (kennel, grandparents'), or null. */
+const away=()=>S.pet&&allPets().find(p=>p.id===S.pet&&p.at!=='home')||null;
 /** Home full and the kennel too: no room for a new pet. */
 const noRoom=()=>pets().length>=CAT().max&&(!TT()||(X()?.ken||[]).length>=TT().limits.kennel);
 const roomWhy=()=>noRoom()?'Nhà và trại nuôi đều đầy':'';
-/** 🧬 The fusion picked (S.fz): {ps, low, fee, bp, recipe} or null. */
+/** 🧬 The fusion picked (S.fz): {ps, low, fee, recipe} or null. The odds stay on the server (owner 19/10 "đừng show
+ * tỷ lệ ra"). */
 function fusion(){
   const t=TT();if(!t)return null;const all=allPets(),ps=S.fz.map(id=>all.find(p=>p.id===id)).filter(Boolean);if(ps.length!==3)return {ps};
   const rk=ps.map(p=>p.legend?6:p.r||0),low=Math.min(...rk),fee=t.ranks[low].fee;
-  let bp=low===6?t.limits.legend:Math.min(90,t.ranks[low].fuse+t.limits.mix*rk.reduce((a,r)=>a+r-low,0));
-  const ad=Number(X()?.boost)||0;if(ad)bp=Math.min(95,bp+ad);   // 📺 a rewarded ad: +10 points on the next fusion
   const ids=ps.map(p=>p.b).sort(),recipe=low<6&&(t.recipes||[]).find(r=>[...r.of].sort().join()===ids.join());
-  return {ps,low,fee,bp:Math.round(bp*100)/100,recipe:recipe||null};
+  return {ps,low,fee,recipe:recipe||null};
 }
 /** Why this pet cannot join a fusion now ('' when it can). */
 function fuseWhy(p){
-  const t=TT(),first=allPets().find(q=>q.id===S.fz[0]);
-  if(lifeDay()-(Number(p.d)||0)<t.limits.min_age)return `Mới về, đủ ${t.limits.min_age} ngày mới ghép`;
   if(p.at==='home'&&p.mood==='buon')return 'Bé đang buồn';
-  if(first&&first.id!==p.id&&breedOf(first.b)?.kind!==breedOf(p.b)?.kind)return 'Khác loài';
   return '';
 }
 const gearOf=id=>(X()?.gear||[]).find(g=>g.id===id)||null;
@@ -161,12 +159,13 @@ function main(){
     return [`Đón về · ${fmt(b.price)} xu`,'shopbuy',roomWhy()||readyWhy(b.price)];
   }
   if(S.tab==='lab'){const f=fusion();if(!f)return ['','',''];if(f.ps.length<3)return [`🧬 Chọn ${3-f.ps.length} bé nữa`,'',' '];
-    const t=TT(),x=X();return [`🧬 Ghép · ${fmt(f.fee)} xu · ${f.bp}%`,'fuse',(x?.today?.fuse||0)>=t.limits.fuse_day?'Hôm nay ghép đủ rồi':readyWhy(f.fee)];}
+    const t=TT(),x=X();return [`🧬 Ghép · ${fmt(f.fee)} xu`,'fuse',(x?.today?.fuse||0)>=t.limits.fuse_day?'Hôm nay ghép đủ rồi':readyWhy(f.fee)];}
   if(S.tab==='gear'){const t=TT();if(!t)return ['','',''];
     if(S.gv==='buy'){const r=Math.min(S.grank,t.gear.shop.length-1),pr=t.gear.shop[r];return [`🛍️ Mua · ${fmt(pr)} xu`,'gbuy',(X()?.gear||[]).length>=t.limits.gear?'Túi đầy rồi':readyWhy(pr)];}
     const g=gearOf(S.g);if(!g)return ['Chọn một món','',' '];
-    return g.lv>=t.gear.lv_max?['✨ Đã tối đa','',' ']:[`✨ Cường hóa · ${fmt(g.up_fee)} xu · ${g.up_bp/100}%`,'gup',readyWhy(g.up_fee)];}
+    return g.lv>=t.gear.lv_max?['✨ Đã tối đa','',' ']:[`✨ Cường hóa · ${fmt(g.up_fee)} xu`,'gup',readyWhy(g.up_fee)];}
   if(S.tab==='board')return ['🐾 Bé nhà mình','tohome',''];
+  if(S.sub==='all'||away())return ['','',''];
   if(!p)return ['🏠 Nhận nuôi miễn phí','toadopt',''];
   const full=x=>x>=c.full;
   switch(S.sub){
@@ -192,6 +191,8 @@ async function onClick(op,data){
     case'close':S.dlg.close();return;
     case'tab':S.tab=data.tab;S.sub='';S.flash=null;render();top();if(S.tab==='board')loadBoard();return;
     case'pet':S.pet=data.id;S.sub='';render();return;
+    case'pick':S.pet=data.id;S.sub='';render();top();return;
+    case'ff':S.ff[data.key]=data.val;render();return;
     case'sub':S.sub=data.sub;S.flash=null;if(S.sub==='more')S.nick=p?.n||'';render();top();return;
     case'back':S.sub='';render();return;
     case'kind':S.kind=data.kind;S.breed='';S.item='';render();return;
@@ -216,7 +217,8 @@ async function onClick(op,data){
     case'gslot':S.gslot=data.slot;render();return;
     case'gwear':if(p)send('jr_pet_gear_wear',{pet:p.id,slot:S.gslot,gear:data.id||null});return;
     case'fz':{const i=S.fz.indexOf(data.id);if(i>=0)S.fz.splice(i,1);else if(S.fz.length<3)S.fz.push(data.id);render();return;}
-    case'kennel':{const r=await send('jr_pet_kennel',{pet:data.id,to:data.to});if(r)S.fz=S.fz.filter(id=>id!==data.id);return;}
+    case'kennel':{const r=await send('jr_pet_kennel',{pet:data.id,to:data.to,...(data.swap?{swap:data.swap}:{}),...(data.walk?{walk:true}:{})});
+      if(r){S.fz=S.fz.filter(id=>id!==data.id);if(data.to==='home'&&S.tab==='home'){S.pet=data.id;render();}}return;}
     case'gv':S.gv=data.v;S.g='';render();top();return;
     case'gsel':S.g=S.g===data.id?'':data.id;render();return;
     case'gbslot':S.gbslot=data.slot;S.gmodel=0;render();return;
@@ -224,7 +226,7 @@ async function onClick(op,data){
     case'grank':S.grank=Number(data.r)||0;render();return;
     case'stroll':{const r=await send('jr_pet_stroll',{});if(r?.found){S.gv='bag';S.g=r.found;render();}return;}
     case'gfuse':{const g=gearOf(S.g),m=gearMates(g),t=TT();if(!m)return;const fee=t.gear.fuse_fee[g.r];
-      if(!await ask(`Ghép ba ${g.name} hạng ${g.rank}?`,`Thành công ${t.ranks[g.r].fuse}%: ra một món hạng ${RNAME(g.r+1)}. Trượt: ba món vẫn còn, mất phí.`,`🔀 Ghép · ${fmt(fee)} xu`,fee))return;
+      if(!await ask(`Ghép ba ${g.name} hạng ${g.rank}?`,`Thành công: ra một món hạng ${RNAME(g.r+1)}. Trượt: ba món vẫn còn, mất phí.`,`🔀 Ghép · ${fmt(fee)} xu`,fee))return;
       const r=await send('jr_pet_gear_fuse',{gears:[g.id,...m.map(x=>x.id)],confirm:true});if(r){if(r.ok===false)S.flash={...S.flash,kind:'bad'};S.g=r.gear||S.g;render();}return;}
     case'gdrop':{const g=gearOf(S.g);if(!g)return;if(!await ask(`Bỏ ${g.name}?`,`${g.name} ${g.rank}${g.lv?` +${g.lv}`:''} sẽ mất hẳn.`,'🗑️ Bỏ'))return;
       const r=await send('jr_pet_gear_drop',{gear:g.id,confirm:true});if(r){S.g='';render();}return;}
@@ -259,12 +261,12 @@ async function go(){
     case'rename':await send('jr_pet_name',{pet:p.id,nick:S.nick.trim()});return;
     case'train':await send('jr_pet_train',{pet:p.id,stat:S.stat});return;
     case'fuse':{const f=fusion();if(!f||f.ps.length!==3)return;
-      if(!await ask('Ghép ba bé?',`Thành công ${f.bp}%: ra một bé hạng ${RNAME(Math.min(6,f.low+1))}${f.low===6?' (huyền thoại)':''}, ba bé bố mẹ về quê với bà. Trượt: ba bé vẫn ở lại, mất phí.`,`🧬 Ghép · ${fmt(f.fee)} xu`,f.fee))return;
+      if(!await ask('Ghép ba bé?',`Thành công: ra một bé hạng ${RNAME(Math.min(6,f.low+1))}${f.low===6?' (huyền thoại)':''}, ba bé bố mẹ về quê với bà. Trượt: ba bé vẫn ở lại, mất phí.`,`🧬 Ghép · ${fmt(f.fee)} xu`,f.fee))return;
       const r=await send('jr_pet_fuse',{pets:[...S.fz],confirm:true});
       if(r?.fuse){if(r.fuse.ok){S.fz=[];if(pets().some(x=>x.id===r.fuse.pet))S.pet=r.fuse.pet;S.flash={...S.flash,kind:'good win'};}else S.flash={...S.flash,kind:'bad'};render();}
       return;}
     case'gup':{const g=gearOf(S.g);if(!g)return;
-      if(g.up_fee>=1000&&!await ask(`Cường hóa ${g.name}?`,`Thành công ${g.up_bp/100}%. Trượt: món đồ vẫn nguyên, mất phí.`,`✨ ${fmt(g.up_fee)} xu`,g.up_fee))return;
+      if(g.up_fee>=1000&&!await ask(`Cường hóa ${g.name}?`,`Trượt: món đồ vẫn nguyên, mất phí.`,`✨ ${fmt(g.up_fee)} xu`,g.up_fee))return;
       const r=await send('jr_pet_gear_up',{gear:g.id,confirm:true});if(r?.ok===false){S.flash={...S.flash,kind:'bad'};render();}return;}
     case'gbuy':{const t=TT(),r=Math.min(S.grank,t.gear.shop.length-1),pr=t.gear.shop[r],m=t.gear.models[S.gbslot]?.[S.gmodel];if(!m)return;
       if(pr>=1000&&!await ask(`Mua ${m.name} hạng ${RNAME(r)}?`,`Trả ${fmt(pr)} xu.`,`🛍️ ${fmt(pr)} xu`,pr))return;
@@ -299,10 +301,15 @@ const meters=n=>`<div class="pt-needs">${NEEDS.map(([k,e,l])=>`<span class="pt-n
 const chip=(op,data,on,inner,label='')=>`<button type="button" class="pt-chip${on?' on':''}" data-pt="${op}"${Object.entries(data).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')} aria-pressed="${on}"${label?` aria-label="${esc(label)}" title="${esc(label)}"`:''}>${inner}</button>`;
 
 function home(v,c){
-  const list=pets();
-  if(!list.length)return `<section class="pt-card pt-center">${petSVG(breedOf('meo_muop'),breedOf('meo_muop').coats[1],'happy',{},120)}<h3>Chưa có bé nào</h3><p class="pt-muted">Góc Chân Nhỏ có bé chờ nhà mới.</p></section>`+farm(v);
+  const list=pets(),all=allPets(),lst=all.length>1?`<button type="button" class="pt-mini pt-all" data-pt="sub" data-sub="all" aria-label="Lọc các bé" title="Lọc các bé"><span aria-hidden="true">📋</span><small>${all.length}</small></button>`:'';
+  if(S.sub==='all')return roster(v);
+  // owner 19/10 "Bé nhà mình sao k hiển thị full các bé": every pet in the strip, home first, then the kennel (🏠)
+  const out=away(),sel=out?out.id:(cur()?.id||'');
+  const mini=x=>`<button type="button" class="pt-mini${x.id===sel?' on':''}${x.at!=='home'?' away':''}" data-pt="${x.at==='home'?'pet':'pick'}" data-id="${esc(x.id)}" aria-label="${esc(x.n)}" title="${esc(x.n)}${x.at==='ken'?' · trại nuôi':x.at==='farm'?' · ở quê':''}">${petPic(c,x,'sit',44,x.at==='home'?null:{})}${x.at==='ken'?'<small>🏠</small>':x.at==='farm'?'<small>🌾</small>':''}</button>`;
+  const strip=all.length>1?`<div class="pt-strip">${all.map(mini).join('')}${lst}</div>`:'';
+  if(out)return strip+awayCard(v,out);
+  if(!list.length)return `<section class="pt-card pt-center">${petSVG(breedOf('meo_muop'),breedOf('meo_muop').coats[1],'happy',{},120)}<h3>Chưa có bé nào</h3><p class="pt-muted">Góc Chân Nhỏ có bé chờ nhà mới.</p></section>`+strip+farm(v);
   const p=cur();S.pet=p.id;
-  const strip=list.length>1?`<div class="pt-strip">${list.map(x=>`<button type="button" class="pt-mini${x.id===p.id?' on':''}" data-pt="pet" data-id="${esc(x.id)}" aria-label="${esc(x.n)}" title="${esc(x.n)}">${petPic(c,x,'sit',44)}</button>`).join('')}</div>`:'';
   const b=breedOf(p.b);
   if(S.sub)return strip+subView(p,c);
   const pose=p.mood==='vui'?'happy':p.mood==='buon'?'sleep':'sit';
@@ -311,6 +318,36 @@ function home(v,c){
   return strip+`<section class="pt-card pt-hero${p.r>=4||p.legend?' pt-shine':''}"><div class="pt-stage">${petPic(c,p,pose,150)}</div>
     <h3>${rankTag(p)} <span data-no-translate>${esc(p.n)}</span> ${MOOD[p.mood]||''}</h3><p class="pt-muted">${esc(b?.name||'')}${fx?` · ${fx.emoji} ${esc(fx.name)}`:''}${Number.isInteger(p.pw)?` · 💪${p.pw}`:''}${p.pts?` · 🏆${p.pts}`:''}${v.walk===p.id?' · 🦮':''}</p>${meters(p.needs)}${bonusLine(v,p)}</section>
     <div class="pt-acts">${acts.map(([s,e,l])=>`<button type="button" class="pt-act" data-pt="sub" data-sub="${s}"><span aria-hidden="true">${e}</span>${l}</button>`).join('')}</div>`;
+}
+/** 📋 Every pet of this save in one list, filtered by kind, rank and place, best first (owner 19/10 "xem danh sách
+ * all các bé trong nhà … lọc theo bậc, theo loại chó/mèo"). A tap opens it: a home pet's card, or awayCard. */
+const PLACE={home:'🏡 Ở nhà',ken:'🏠 Trại nuôi',farm:'🌾 Ở quê'};
+function roster(v){
+  const all=allPets(),f=S.ff,kindOf=p=>breedOf(p.b)?.kind||'',ranks=TT()?.ranks||[];
+  const ok=p=>(!f.k||kindOf(p)===f.k)&&(f.r===''||(f.r==='lg'?p.legend:!p.legend&&p.r===Number(f.r)))&&(!f.at||p.at===f.at);
+  const rows=all.filter(ok).sort((a,b)=>(b.legend?1:0)-(a.legend?1:0)||(b.r||0)-(a.r||0)||(b.pw||0)-(a.pw||0));
+  const fc=(key,val,inner,label='')=>chip('ff',{key,val},String(f[key])===String(val),inner,label);
+  const has=pred=>all.some(pred);
+  return `<section class="pt-card"><h4>📋 Tất cả các bé · ${rows.length===all.length?all.length:`${rows.length}/${all.length}`}</h4>
+    <div class="pt-chips">${fc('k','','Tất cả')}${fc('k','dog','🐶 Chó')}${fc('k','cat','🐱 Mèo')}</div>
+    <div class="pt-chips">${fc('r','','Mọi hạng')}${ranks.map((x,i)=>has(p=>!p.legend&&p.r===i)||f.r===String(i)?fc('r',i,`<span class="pt-rk r${i}">${esc(x.rank)}</span>`,`Hạng ${x.rank}`):'').join('')}${has(p=>p.legend)?fc('r','lg','🌟','Huyền thoại'):''}</div>
+    <div class="pt-chips">${fc('at','','Mọi nơi')}${Object.entries(PLACE).map(([k,l])=>has(p=>p.at===k)?fc('at',k,l):'').join('')}</div>
+    ${rows.length?`<div class="pt-list">${rows.map(p=>`<button type="button" class="pt-item pt-roster${p.id===S.pet?' on':''}" data-pt="pick" data-id="${esc(p.id)}"><span class="pt-ico" aria-hidden="true">${petPic(CAT(),p,'sit',46,{})}</span><b><span data-no-translate>${esc(p.n)}</span> ${rankTag(p)}<small>${esc(breedOf(p.b)?.name||'')} · ${PLACE[p.at]}${v.walk===p.id?' · 🦮':''}</small></b><em>${Number.isInteger(p.pw)?`💪${p.pw}`:''}</em></button>`).join('')}</div>`:'<p class="pt-muted">Không có bé nào hợp bộ lọc.</p>'}</section>`;
+}
+/** A pet picked on the list that is not at home: what it is, and one tap to bring it home (trading places when home is
+ * full, game/pet_tiers.py jr_pet_kennel `swap`) or to walk it. */
+function awayCard(v,p){
+  const b=breedOf(p.b),fx=fxName(p.fx),full=pets().length>=CAT().max,walked=v.walk&&pets().find(x=>x.id===v.walk);
+  let acts='';
+  if(p.at==='ken'){
+    acts=full?`<p class="pt-muted">Nhà đủ ${CAT().max} bé: chọn một bé ở nhà đổi chỗ vào trại.</p><div class="pt-strip">${pets().map(x=>`<button type="button" class="pt-mini" data-pt="kennel" data-to="home" data-id="${esc(p.id)}" data-swap="${esc(x.id)}" aria-label="Đổi với ${esc(x.n)}" title="Đổi với ${esc(x.n)}">${petPic(CAT(),x,'sit',44)}<small>🔁</small></button>`).join('')}</div>`
+        +(walked?`<div class="pt-chips">${chip('kennel',{to:'home',id:p.id,swap:walked.id,walk:1},false,`🦮 Dắt bé này thay ${esc(walked.n)}`)}</div>`:'')
+      :`<div class="pt-chips">${chip('kennel',{to:'home',id:p.id},false,'🏡 Đón về nhà')}${chip('kennel',{to:'home',id:p.id,walk:1},false,'🦮 Đón về và dắt đi dạo')}</div>`;
+  }else if(p.at==='farm')acts=`<div class="pt-chips">${chip('fetch',{id:p.id},false,'🏡 Đón về nhà')}</div>${full?`<p class="pt-muted">Nhà đủ ${CAT().max} bé rồi.</p>`:''}`;
+  return `<section class="pt-card pt-hero${p.r>=4||p.legend?' pt-shine':''}"><div class="pt-stage">${petPic(CAT(),p,'sit',150,{})}</div>
+    <h3>${rankTag(p)} <span data-no-translate>${esc(p.n)}</span></h3><p class="pt-muted">${esc(b?.name||'')}${fx?` · ${fx.emoji} ${esc(fx.name)}`:''}${Number.isInteger(p.pw)?` · 💪${p.pw}`:''} · ${PLACE[p.at]}</p>
+    ${p.pct?`<p class="pt-bonus">💰 +${p.pct}% tiền làm việc khi dắt đi dạo</p>`:''}${acts}
+    <button type="button" class="pt-link" data-pt="sub" data-sub="all">📋 Về danh sách</button></section>`;
 }
 /** 💰 What the pet adds to work income (only the one walked, only when not sad: game/pet_tiers.py bonus_rate). */
 function bonusLine(v,p){
@@ -366,12 +403,12 @@ function adopt(v,c){
   const cards=list.map(x=>{const b=breedOf(x.b);return `<button type="button" class="pt-pick${S.shelter===x.i?' on':''}" data-pt="shelter" data-i="${x.i}"${x.taken?' disabled':''} aria-pressed="${S.shelter===x.i}">${petPic(c,{b:x.b,c:x.c},x.taken?'sleep':'sit',84,{})}<b data-no-translate>${esc(x.n)}</b><small>${x.taken?'✓':esc(b?.name||'')}</small></button>`;}).join('');
   const form=a?`<section class="pt-card"><label class="pt-name"><span class="sr-only">Tên bé</span><input name="nick" maxlength="${c.name_max}" value="${esc(S.nick)}" autocomplete="off"></label>
     <h4>💗 Ủng hộ Chân Nhỏ</h4><div class="pt-chips">${c.donate.map(n=>chip('donate',{n},S.donate===n,n?fmt(n):'0')).join('')}</div></section>`:'';
-  return odds('shelter')+`<div class="pt-picks">${cards}</div>`+form;
+  return odds()+`<div class="pt-picks">${cards}</div>`+form;
 }
-/** 🎲 The chance of each rank for a pet adopted here (content tiers). */
-function odds(where){
+/** What a new pet can be: D or C (higher ranks come from 🧬 fusions); no odds (owner 19/10 "đừng show tỷ lệ ra"). */
+function odds(){
   const t=TT();if(!t)return '';const kept=pets().length>=CAT().max&&!noRoom();
-  return `<p class="pt-odds">🎲 ${t.ranks.filter(r=>Number(r[where])>0).map(r=>`<span class="pt-rk r${r.id}">${esc(r.rank)}</span> ${esc(String(r[where]).replace('.',','))}%`).join(' · ')}${kept?'<br>🏠 Nhà đủ 3 bé: bé mới vào trại nuôi.':''}</p>`;
+  return `<p class="pt-odds">🎲 Bé mới về hạng <span class="pt-rk r0">D</span> hoặc <span class="pt-rk r1">C</span> · ghép 🧬 để lên hạng cao${kept?'<br>🏠 Nhà đủ 3 bé: bé mới vào trại nuôi.':''}</p>`;
 }
 function shop(v,c){
   const kinds=`<div class="pt-chips">${chip('kind',{kind:'dog'},S.kind==='dog','🐶','Chó')}${chip('kind',{kind:'cat'},S.kind==='cat','🐱','Mèo')}${chip('kind',{kind:'do'},S.kind==='do','🎀','Đồ')}</div>`;
@@ -386,7 +423,7 @@ function shop(v,c){
       <div class="pt-chips pt-coats">${b.coats.map((k,i)=>chip('coat',{c:i},S.coat===i,`<i style="background:${esc(k.b)};box-shadow:inset -6px 0 0 ${esc(k.m)}"></i>`,k.name)).join('')}</div>
       <label class="pt-name"><span class="sr-only">Tên bé</span><input name="nick" maxlength="${c.name_max}" value="${esc(S.nick)}" placeholder="Tên bé" autocomplete="off"></label></section>
       <button type="button" class="pt-link" data-pt="breed" data-id="">↩︎</button>`;}
-  return kinds+odds('shop')+`<div class="pt-picks">${breedList().map(x=>`<button type="button" class="pt-pick" data-pt="breed" data-id="${esc(x.id)}">${petSVG(x,x.coats[0],'sit',{},84)}<b>${esc(x.name)}</b><small>${fmt(x.price)}</small></button>`).join('')}</div>`;
+  return kinds+odds()+`<div class="pt-picks">${breedList().map(x=>`<button type="button" class="pt-pick" data-pt="breed" data-id="${esc(x.id)}">${petSVG(x,x.coats[0],'sit',{},84)}<b>${esc(x.name)}</b><small>${fmt(x.price)}</small></button>`).join('')}</div>`;
 }
 function board(c){
   const kinds=TT()?`<div class="pt-chips">${chip('bkind',{k:'week'},S.bkind!=='power','🏆 Bé cưng tuần')}${chip('bkind',{k:'power'},S.bkind==='power','💪 Lực chiến')}</div>`:'';
@@ -401,16 +438,16 @@ function lab(v,c){
   const t=TT();if(!t)return '<p class="pt-empty">⏳</p>';
   const x=X(),f=fusion(),all=allPets();
   const slots=[0,1,2].map(i=>{const p=f.ps[i];return p?`<button type="button" class="pt-slot on" data-pt="fz" data-id="${esc(p.id)}" aria-label="Bỏ chọn ${esc(p.n)}">${petPic(c,p,'sit',64,{})}${rankTag(p)}</button>`:`<span class="pt-slot" aria-hidden="true">＋</span>`;}).join('');
-  let info=`<p class="pt-muted pt-center">Chọn 3 bé cùng loài. Hôm nay ${x?.today?.fuse||0}/${t.limits.fuse_day} lần.</p>`;
-  if(f.ps.length===3){const to=f.low===6?`🌟 ${esc(breedOf(t.legend[breedOf(f.ps[0].b)?.kind])?.name||'Huyền thoại')}`:`hạng <span class="pt-rk r${f.low+1}">${esc(RNAME(f.low+1))}</span>`;
-    info=`<p class="pt-fz">🎯 <b>${f.bp}%</b>${x?.boost?` <small>(📺 +${x.boost}%)</small>`:''} ra bé ${to} · 💸 ${fmt(f.fee)} xu${f.recipe?`<br>🧬 ${t.limits.hybrid}% ra giống lai <b>${esc(breedOf(f.recipe.to)?.name||'')}</b>${f.recipe.coats?' (cần 3 màu lông khác nhau)':''}`:''}</p>`;}
+  let info=`<p class="pt-muted pt-center">Chọn 3 bé bất kỳ, chó mèo đều được. Hôm nay ${x?.today?.fuse||0}/${t.limits.fuse_day} lần.</p>`;
+  if(f.ps.length===3){const to=f.low===6?'🌟 Huyền thoại':`hạng <span class="pt-rk r${f.low+1}">${esc(RNAME(f.low+1))}</span>`;
+    info=`<p class="pt-fz">🎯 Ra bé ${to}${x?.boost?' <small>(📺 may mắn hơn)</small>':''} · 💸 ${fmt(f.fee)} xu${f.recipe?`<br>🧬 Có thể ra giống lai <b>${esc(breedOf(f.recipe.to)?.name||'')}</b>${f.recipe.coats?' (cần 3 màu lông khác nhau)':''}`:''}</p>`;}
   const group=(at,title)=>{const list=all.filter(p=>p.at===at);if(!list.length)return '';
     return `<h4>${title}</h4><div class="pt-picks sm">${list.map(p=>{const on=S.fz.includes(p.id),why=on?'':fuseWhy(p);
       return `<button type="button" class="pt-pick${on?' on':''}" data-pt="fz" data-id="${esc(p.id)}" aria-pressed="${on}"${why||(!on&&S.fz.length>=3)?' disabled':''}${why?` title="${esc(why)}"`:''}>${petPic(c,p,'sit',64,{})}<b data-no-translate>${esc(p.n)}</b><small>${rankTag(p)}${why?` ${esc(why)}`:''}</small></button>`;}).join('')}</div>`;};
-  const table=`<details class="pt-more"><summary>📜 Hạng, tiền thưởng và tỷ lệ</summary><div class="pt-tbl"><table><thead><tr><th>Hạng</th><th>Thưởng</th><th>Tối đa/ngày</th><th>Ghép lên</th><th>Phí ghép</th></tr></thead><tbody>${t.ranks.map(r=>`<tr><td><span class="pt-rk r${r.id}">${esc(r.rank)}</span> ${esc(r.name)}</td><td>+${r.profit}%</td><td>${fmt(r.cap)}</td><td>${r.id<6?`${r.fuse}%`:`🌟 ${t.limits.legend}%`}</td><td>${fmt(r.fee)}</td></tr>`).join('')}</tbody></table></div>
-    <p class="pt-muted">SSS thân thiết: ${t.sss_bond.map(s=>`từ ${s.at} điểm thân +${s.pct}% (tối đa ${fmt(s.cap)})`).join(', ')}. Ghép bé khác hạng: +${t.limits.mix}% mỗi bậc chênh. Ba bé cùng giống: ${t.limits.mutant}% ra 🧪 đột biến. Lên SSS được bộ lông ${t.fx.filter(f=>f.id!=='dot_bien').map(f=>f.emoji+' '+esc(f.name)).join(', ')}.</p></details>`;
+  const table=`<details class="pt-more"><summary>📜 Hạng và tiền thưởng</summary><div class="pt-tbl"><table><thead><tr><th>Hạng</th><th>Thưởng</th><th>Tối đa/ngày</th><th>Phí ghép</th></tr></thead><tbody>${t.ranks.map(r=>`<tr><td><span class="pt-rk r${r.id}">${esc(r.rank)}</span> ${esc(r.name)}</td><td>+${r.profit}%</td><td>${fmt(r.cap)}</td><td>${fmt(r.fee)}</td></tr>`).join('')}</tbody></table></div>
+    <p class="pt-muted">SSS thân thiết: ${t.sss_bond.map(s=>`từ ${s.at} điểm thân +${s.pct}% (tối đa ${fmt(s.cap)})`).join(', ')}. Ghép bé hạng cao hơn cùng nhóm thì dễ thành hơn. Ba bé cùng giống có thể ra 🧪 đột biến. Lên SSS được bộ lông ${t.fx.filter(f=>f.id!=='dot_bien').map(f=>f.emoji+' '+esc(f.name)).join(', ')}.</p></details>`;
   const recipes=`<details class="pt-more"><summary>🧬 Công thức giống lai (${t.recipes.length})</summary><ul class="pt-recipes">${t.recipes.map(r=>{const to=breedOf(r.to);return `<li>${petPic(c,{b:r.to,c:0},'sit',40,{})}<span><b>${esc(to?.name||r.to)}</b> <small>từ hạng ${esc(r.floor)}</small><br><small>${r.of.map(id=>esc(breedOf(id)?.name||id)).join(' + ')}</small></span></li>`;}).join('')}
-    <li>${petPic(c,{b:t.legend.dog,c:0,r:6},'sit',40,{})}${petPic(c,{b:t.legend.cat,c:0,r:6},'sit',40,{})}<span><b>🌟 Huyền thoại</b><br><small>3 bé SSS cùng loài · ${t.limits.legend}% · ${fmt(t.ranks[6].fee)} xu</small></span></li></ul></details>`;
+    <li>${petPic(c,{b:t.legend.dog,c:0,r:6},'sit',40,{})}${petPic(c,{b:t.legend.cat,c:0,r:6},'sit',40,{})}<span><b>🌟 Huyền thoại</b><br><small>3 bé SSS · ${fmt(t.ranks[6].fee)} xu</small></span></li></ul></details>`;
   const ret=(x?.ret||[]).length?`<details class="pt-more"><summary>👵 Đang nghỉ ở nhà bà (${x.ret.length})</summary><div class="pt-strip wrap">${x.ret.slice().reverse().map(r=>`<span class="pt-mini" title="${esc(r.n)}">${petPic(c,{b:r.b,c:r.c,r:r.r,fx:r.fx},'sleep',44,{})}</span>`).join('')}</div></details>`:'';
   return `<section class="pt-card pt-center"><div class="pt-slots">${slots}</div>${info}</section>`+group('home','🐾 Ở nhà')+group('ken',`🏠 Trại nuôi · ${(x?.ken||[]).length}/${t.limits.kennel}`)+group('farm','🌾 Ở quê')+kennel()+table+recipes+ret;
 }

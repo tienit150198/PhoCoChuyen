@@ -129,6 +129,11 @@ html.calm .pet-svg *{animation:none!important}
 .pt-recipes{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:6px}
 .pt-recipes li{display:flex;align-items:center;gap:8px;font-size:.86rem}
 .pt-strip.wrap{flex-wrap:wrap}
+.pt-mini.pt-all{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:1.3rem;line-height:1}
+.pt-mini.pt-all small,.pt-mini small{font-size:.7rem;font-weight:800}
+.pt-mini.away{position:relative;opacity:.85}.pt-mini.away small{position:absolute;right:-2px;bottom:-2px;font-size:.75rem}
+.pt-roster .pt-ico{width:46px;height:46px;display:grid;place-items:center}
+.pt-roster b small{display:block;font-weight:600;color:var(--muted);font-size:.78rem}
 .pt-stat b{display:flex;flex-direction:column;gap:3px}
 .pt-bar-s{display:block;height:7px;border-radius:99px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
 .pt-bar-s u{display:block;height:100%;width:var(--v);border-radius:99px;background:var(--accent)}
@@ -144,4 +149,14 @@ html.calm .pet-svg *{animation:none!important}
 .pet-svg .pet-dragon{animation:pet-twinkle 3s ease-in-out infinite}
 @keyframes pet-glow{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
 @keyframes pet-twinkle{0%,100%{opacity:1}50%{opacity:.35}}
+.pet-svg .pet-spark.b{animation-delay:-.9s}
+.pet-svg .pet-rays{animation:pet-spin 18s linear infinite}
+.pet-svg .pet-wings{transform-box:fill-box;transform-origin:50% 90%;animation:pet-flap 2.2s ease-in-out infinite}
+.pet-svg .pet-halo{animation:pet-float 2.6s ease-in-out infinite}
+.pet-svg .pet-rise{animation:pet-rise 2.6s ease-in infinite}
+.pet-svg .pet-fall{animation:pet-fall 2.4s linear infinite}
+@keyframes pet-spin{to{transform:rotate(360deg)}}
+@keyframes pet-flap{0%,100%{transform:scale(1,1)}50%{transform:scale(1.07,.95)}}
+@keyframes pet-rise{0%{transform:translateY(4px);opacity:0}25%{opacity:1}100%{transform:translateY(-10px);opacity:0}}
+@keyframes pet-fall{0%{transform:translateY(-6px);opacity:0}20%{opacity:1}100%{transform:translateY(22px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.pt-flash.win{animation:none}}
