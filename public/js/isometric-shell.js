@@ -15,6 +15,10 @@ let listening=false;
 let rendered='';
 let chatLive=null;
 let cameraOpen=false;
+/** "Giao diện cũ (đơn giản)" (owner 18/10: the 2.5D town was hard to play for some): asked from ☰ Thêm, and once by
+ * itself to a newer player who has walked the town for a while without a shift (stuckWatch). */
+const CLASSIC={title:'Dùng giao diện cũ cho dễ chơi?',
+  text:'Giao diện cũ đơn giản hơn: tiệm và các nút làm việc luôn ở trước mặt. Tiến trình giữ nguyên; đổi lại lúc nào cũng được trong Cài đặt.'};
 
 /** Pure presentation state, including the server's task order and chosen career. */
 export function isometricHUDModel(state={},content={},mode='town',social={},connection){
@@ -56,16 +60,29 @@ function moneyChip(label,value,kind){
   return `<button type="button" class="iso-money iso-${kind}${value<0?' is-debt':''}" data-action="money" aria-label="${label}: ${full}. Xem tiền của bạn" title="${label}: ${full}"><span class="iso-money-mark">${icon(kind==='wallet'?'bag':'store',18)}</span><span><small>${label}</small><b data-testid="iso-${kind}">${amount}</b></span></button>`;
 }
 
+/** The town's one main button (owner 18/10: "giao diện mới khiến người ta khó chơi", "chữ nút gọn lại"): the next
+ * step in a short word, the workplace under it. Inside a workplace the work bar and the task card take over: none. */
+export function goButton(m){
+  if(m.mode==='work')return null;
+  const sub=m.current?m.place:'';
+  const [action,ico,label]=!m.current?['isoCareers','briefcase',m.fresh?'Tới quán':'Chọn nghề']:
+    m.needsJob?['isoApply','note','Xin việc']:!m.open?['isoOpen','sun','Mở ca']:m.task?['isoMission','arrow','Làm tiếp']:
+    m.done?['isoEnd','clock','Khép ca']:['isoWork','store','Vào làm'];
+  const what=m.task?.title?` · ${m.task.title}`:'';
+  return {action,icon:ico,label,sub,aria:`${label}${sub?` tại ${sub}`:''}${what}`};
+}
+
 /** Server text is escaped here; portrait art comes from the existing saved wardrobe. */
 export function isometricHUDHTML(model,state={}){
   const m=model;
-  const missionTitle=!m.current?(m.fresh?'Đầu hẻm đang cần người phụ quán':'Hôm nay, thử làm nghề gì?'):m.needsJob?`Xin việc tại ${m.place}`:!m.open?'Ca làm đang nghỉ':m.task?.title||(m.done?'Hết khách rồi':'Bạn đã làm hết việc đang chờ');
-  const missionLabel=!m.current?(m.fresh?'Tới quán':'Chọn nghề'):m.needsJob?'Xem tuyển dụng':!m.open?'Chuẩn bị ca':m.task?'Làm tiếp':m.done?'Khép ca':'Mở sổ việc';
-  // Only the count earns the small line; "Chọn nghề hôm nay", "Tuyển dụng", "Ca làm của bạn" repeated the title (#384).
-  const missionMeta=m.current&&m.open&&!m.needsJob&&!m.done?`${m.taskCount} việc đang chờ`:'';
-  const missionAria=`${missionLabel}: ${missionTitle}`;
-  const nav=[['isoCareers','briefcase','Công việc'],['isoMore','menu','Thêm']];
+  const go=goButton(m);
+  const nav=m.mode==='work'?[['isoTown','leaf','Ra đảo'],['isoCareers','briefcase','Công việc'],['isoChat','chats','Trò chuyện'],['isoMore','menu','Thêm']]:
+    [['isoCareers','briefcase','Công việc'],['isoChat','chats','Trò chuyện'],['isoMore','menu','Thêm']];
   const active=m.activeTab||(m.mode==='work'?'isoCareers':'isoTown');
+  const unread=m.chatUnread>99?'99+':m.chatUnread||'';
+  const tab=([action,ico,label])=>action==='isoChat'?
+    `<button type="button" class="iso-tab iso-chat-tab${m.chatOnline?'':' is-offline'}" data-action="isoChat" aria-label="Trò chuyện · ${esc(m.chatStatus)}${m.chatUnread?` · ${m.chatUnread} tin chưa đọc`:''}" aria-haspopup="dialog" aria-controls="townChat">${icon(ico,22)}<span>${label}</span><em class="iso-chat-unread"${m.chatUnread?'':' hidden'}>${unread}</em></button>`:
+    control(label,action,ico,`iso-tab${action===active?' is-active':''}`,action==='isoMore'?` aria-controls="rail" aria-expanded="${m.menuOpen}"`:action===active?' aria-current="page"':'');
   return `<header class="iso-top" aria-label="Bạn và tiền của bạn">
     <button type="button" class="iso-profile" data-action="isoAvatar" aria-label="Nhân vật của ${esc(m.name)}. Mở tủ đồ"><span class="iso-portrait">${myPortrait(state,42,'Nhân vật của bạn')}</span><span class="iso-profile-copy"><b>${esc(m.name)}</b><small>${m.day!=null?`Ngày ${fmt(m.day)}`:'Phố Có Chuyện'}</small></span></button>
     <div class="iso-pockets">${moneyChip('Ví',m.money.wallet,'wallet')}${moneyChip('Quỹ',m.money.fund,'fund')}</div>
@@ -88,7 +105,7 @@ export function isometricHUDHTML(model,state={}){
       </div>
     </details>
   </nav>
-  <details class="iso-mission"><summary data-iso-focus="iso-mission" aria-controls="isoMissionDetails" aria-label="Việc hôm nay: ${esc(missionTitle)}. Xem chi tiết">${icon('note',20)}<span class="iso-mission-copy">${missionMeta?`<small>${esc(missionMeta)}</small>`:''}<b>${esc(missionTitle)}</b></span>${icon('arrow',16)}</summary><div class="iso-mission-details" id="isoMissionDetails"><b>${esc(missionTitle)}</b><button type="button" class="iso-mission-action" data-action="${m.missionAction}" aria-label="${esc(missionAria)}">${esc(missionLabel)} ${icon('arrow',16)}</button></div></details>
+  ${go?`<button type="button" class="iso-go" data-action="${go.action}" aria-label="${esc(go.aria)}">${icon(go.icon,22)}<span><b>${esc(go.label)}</b>${go.sub?`<small>${esc(go.sub)}</small>`:''}</span></button>`:''}
   <div class="iso-camera${m.cameraOpen?' is-open':''}" role="group" aria-label="Góc nhìn Đảo Hoàng Sa">
     ${control('Góc nhìn','isoCamera','overview','iso-camera-toggle',' aria-label="Điều chỉnh góc nhìn" aria-expanded="'+Boolean(m.cameraOpen)+'" aria-controls="isoCameraOptions"')}
     <div class="iso-camera-options" id="isoCameraOptions"${m.cameraOpen?'':' hidden'}>
@@ -98,10 +115,8 @@ export function isometricHUDHTML(model,state={}){
     ${control('Toàn đảo','isoOverview','overview','iso-round iso-overview',' aria-label="Xem toàn đảo" title="Xem toàn đảo"')}
     </div>
   </div>
-  <button type="button" class="iso-chat${m.chatOnline?'':' is-offline'}" data-action="isoChat" aria-label="Trò chuyện${m.chatUnread?` · ${m.chatUnread} tin chưa đọc`:''}" aria-haspopup="dialog" aria-controls="townChat"><span class="iso-chat-mark">${icon('chats',26)}</span><span class="iso-chat-copy"><b>Trò chuyện</b><small>${esc(m.chatStatus)}</small></span><em class="iso-chat-unread"${m.chatUnread?'':' hidden'}>${m.chatUnread>99?'99+':m.chatUnread||''}</em></button>
   <p class="iso-key-hint"><kbd>W A S D</kbd> / <kbd>↑ ↓ ← →</kbd> di chuyển · Chạm đường để đi</p>
-  <div class="iso-scene"><span class="iso-scene-symbol">${icon(m.mode==='work'?'store':'leaf',24)}</span><span class="iso-scene-copy"><small>Đang ở</small><b title="${esc(m.sceneTitle)}">${esc(m.sceneTitle)}</b></span><button type="button" class="iso-scene-go" data-action="${m.mode==='work'?'isoTown':m.current?'isoWork':'isoCareers'}" aria-label="${esc(m.mode==='work'?'Ra Đảo Hoàng Sa':m.current?`Vào làm tại ${m.place}`:'Chọn một nghề trên đảo')}">${m.mode==='work'?'Ra đảo':m.current?'Vào làm':'Chọn nghề'}${icon('arrow',17)}</button></div>
-  <nav class="iso-nav" aria-label="Điều hướng chính">${nav.map(([action,ico,label])=>control(label,action,ico,`iso-tab${action===active?' is-active':''}`,action==='isoMore'?` aria-controls="rail" aria-expanded="${m.menuOpen}"`:action===active?' aria-current="page"':'')).join('')}</nav>`;
+  <nav class="iso-nav${nav.length>3?' is-four':''}" aria-label="Điều hướng chính">${nav.map(tab).join('')}</nav>`;
 }
 
 function syncMenu(){
@@ -131,7 +146,7 @@ function syncDisclosureLayer(){
   if(typeof document==='undefined')return;
   const hud=document.getElementById('isoHUD');
   if(!hud?.dataset)return;
-  const open=!document.querySelector('dialog[open]')&&(cameraOpen||['iso-tools','iso-mission'].some(name=>document.querySelector(`#isoHUD .${name}[open]`)));
+  const open=!document.querySelector('dialog[open]')&&(cameraOpen||['iso-tools'].some(name=>document.querySelector(`#isoHUD .${name}[open]`)));
   hud.dataset.disclosureOpen=String(Boolean(open));
   document.documentElement?.classList?.toggle?.('iso-disclosure-open',Boolean(open));  // isometric.css hides the guide pill under it (#344)
 }
@@ -149,14 +164,32 @@ function closeDisclosure(name,restoreFocus=false,except=null){
 }
 
 function closeHUDDisclosures(){
-  closeDisclosure('iso-tools');closeDisclosure('iso-mission');
+  closeDisclosure('iso-tools');
   if(cameraOpen)closeCamera();
   syncDisclosureLayer();
 }
 
 function closeActionDisclosure(el){
   if(el?.closest?.('.iso-tools'))closeDisclosure('iso-tools',true);
-  if(el?.closest?.('.iso-mission'))closeDisclosure('iso-mission',true);
+}
+
+/** Once per device: a newer player (life days 2–10) who has spent STUCK_MS in the town (tab in view, no dialog over it)
+ * without a shift open is asked whether the old interface would suit them better. A shift opened ends the watch. */
+const STUCK_MS=5*60e3,STUCK_TICK=15e3,STUCK_KEY='mnl.iso.stuckAsked';
+function stuckWatch(){
+  if(typeof document==='undefined'||typeof setInterval!=='function')return;
+  try{if(localStorage.getItem(STUCK_KEY))return;}catch{return;}
+  let spent=0;
+  const timer=setInterval(()=>{
+    const env=getEnvironment?.(),s=env?.api?.state;if(!s)return;
+    const day=Number(s.journey?.life_day)||0;
+    if(!s.journey?.story||day>10||Object.values(s.careers||{}).some(c=>c?.open)){clearInterval(timer);return;}
+    if(day<2||document.visibilityState!=='visible'||document.querySelector('dialog[open]')||env.world?.mode!=='town')return;
+    if((spent+=STUCK_TICK)<STUCK_MS)return;
+    clearInterval(timer);
+    try{localStorage.setItem(STUCK_KEY,'1');}catch{/* private mode: asked this visit only */}
+    import('./interface-mode.js').then(m=>m.askInterface(env,{title:'Thấy khó chơi?',text:'Bấm "Mở ca" ở giữa màn hình để vào làm. Nếu vẫn rối, giao diện cũ đơn giản hơn: tiệm và các nút làm việc luôn ở trước mặt. Tiến trình giữ nguyên.'})).catch(()=>{});
+  },STUCK_TICK);
 }
 
 /** Called once after the app's real state has loaded. Safe to call again after a recovery. */
@@ -176,6 +209,7 @@ export function bootIsometricShell(envGetter){
     listening=true;
     window.addEventListener('mnl:iso-mode',()=>{closeHUDDisclosures();updateIsometricShell(getEnvironment?.());});
     window.addEventListener('layoutchange',()=>updateIsometricShell(getEnvironment?.()));
+    stuckWatch();
     // Subscribe to the same live data as the real inbox; the entry itself is always discoverable.
     import('./v4/live.js').then(module=>{
       const {live,liveBoot}=module;
@@ -192,7 +226,7 @@ export function bootIsometricShell(envGetter){
       if(records.some(record=>record.target.tagName==='DIALOG'&&record.target.open))closeHUDDisclosures();
     }).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
     const dismissOutside=event=>{
-      for(const name of ['iso-outings','iso-tools','iso-mission']){
+      for(const name of ['iso-outings','iso-tools']){
         const details=document.querySelector(`#isoHUD .${name}[open]`);
         if(details&&!details.contains(event.target))closeDisclosure(name);
       }
@@ -206,18 +240,14 @@ export function bootIsometricShell(envGetter){
       if(button)closeActionDisclosure(button);
     },true);
     window.addEventListener('toggle',event=>{
-      if(!event.target.matches?.('.iso-tools,.iso-mission,.iso-outings'))return;
-      if(event.target.open&&event.target.matches('.iso-tools')){
-        closeDisclosure('iso-mission');if(cameraOpen)closeCamera();
-      }else if(event.target.open&&event.target.matches('.iso-mission')){
-        closeDisclosure('iso-tools');if(cameraOpen)closeCamera();
-      }
+      if(!event.target.matches?.('.iso-tools,.iso-outings'))return;
+      if(event.target.open&&event.target.matches('.iso-tools')&&cameraOpen)closeCamera();
       if(event.target.open&&event.target.matches('.iso-outings'))closeDisclosure('iso-outings',false,event.target);
       syncDisclosureLayer();
     },true);
     window.addEventListener('keydown',event=>{
       if(event.key!=='Escape'||document.querySelector('dialog[open]'))return;
-      const name=['iso-outings','iso-tools','iso-mission'].find(name=>document.querySelector(`#isoHUD .${name}[open]`));
+      const name=['iso-outings','iso-tools'].find(name=>document.querySelector(`#isoHUD .${name}[open]`));
       if(!name&&!cameraOpen)return;
       // The innermost open disclosure owns Escape before the app's pause shortcut.
       event.preventDefault();event.stopPropagation();
@@ -262,7 +292,7 @@ export function updateIsometricShell(env){
     const focusKey=hud.contains(active)?active?.dataset?.isoFocus:null;
     const kind=action==='isoLeisure'?active.dataset.kind:null;
     const utilityId=hud.contains(active)?active?.dataset?.utilityId:null;
-    const openDetails=['iso-tools','iso-mission','iso-outings'].flatMap(name=>disclosures(hud,'.'+name)
+    const openDetails=['iso-tools','iso-outings'].flatMap(name=>disclosures(hud,'.'+name)
       .filter(details=>details.open).map(details=>'.'+name+(name==='iso-outings'?(details.dataset?.isoGroup?`[data-iso-group="${details.dataset.isoGroup}"]`:':not([data-iso-group])'):'')));
     hud.innerHTML=html;
     rendered=html;
@@ -317,6 +347,11 @@ export async function isometricAction(action,data={},el=null,env){
       else await act('queue');
       break;
     case'isoPrepare':changeMode('work',env);await act('prepare');break;
+    case'isoOpen':   // "Mở ca": into the workplace and the shift opens at once; when it cannot (no stock, a check first), the prepare sheet says why
+      changeMode('work',env);await act('start');
+      if(model.current&&!env.api?.state?.careers?.[model.current]?.open&&!(typeof document!=='undefined'&&document.querySelector('dialog[open]')))await act('prepare');
+      break;
+    case'isoClassic':{const {askInterface}=await import('./interface-mode.js');await askInterface(env,CLASSIC);break;}   // ☰ Thêm → "Giao diện cũ"
     case'isoEnd':changeMode('work',env);await act('end');break;   // first day, every customer served: close the shift (its own confirm)
     case'isoApply':changeMode('work',env);await act('jobapp');break;
     case'isoQueue':if(model.current)await act('queue');else env.openSheet('home',{homeMode:'list',jrView:'home'});break;

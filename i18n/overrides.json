@@ -1,5 +1,17 @@
 {
   "strings": {
+  "Giao diện mới gọn hơn: một nút lớn ở giữa luôn chỉ việc tiếp theo (Chọn nghề, Mở ca, Làm tiếp). Bấm Mở ca là vào ca luôn.": "The new interface is tidier: one big button in the middle always shows the next step (Choose a career, Open shift, Continue). Open shift starts the shift at once.",
+  "Bớt thẻ che bản đồ: Trò chuyện vào thanh dưới, cần điều khiển nhỏ lại; trong tiệm có nút Ra đảo, chỉ một hàng nút làm việc.": "Fewer cards over the map: Chat moved to the bottom bar and the joystick is smaller; inside a shop there is a To the island button and a single row of work buttons.",
+  "Chữ trên nút to, dễ đọc hơn và to thêm khi bật Chữ lớn. Đang dở ca thì mở game là vào thẳng tiệm.": "Button labels are bigger and easier to read, and grow with Large text. In the middle of a shift, opening the game takes you straight into your shop.",
+  "Thấy khó chơi? Vào Thêm → Giao diện cũ để dùng giao diện đơn giản, tiến trình giữ nguyên.": "Finding it hard to play? Thêm → Classic UI switches to the simpler interface; your progress stays.",
+  "Giao diện cũ": "Classic UI",
+  "Dùng giao diện cũ cho dễ chơi?": "Use the classic interface to make it easier?",
+  "Giao diện cũ đơn giản hơn: tiệm và các nút làm việc luôn ở trước mặt. Tiến trình giữ nguyên; đổi lại lúc nào cũng được trong Cài đặt.": "The classic interface is simpler: your shop and work buttons are always in front of you. Your progress stays; switch back any time in Settings.",
+  "Thấy khó chơi?": "Finding it hard to play?",
+  "Bấm \"Mở ca\" ở giữa màn hình để vào làm. Nếu vẫn rối, giao diện cũ đơn giản hơn: tiệm và các nút làm việc luôn ở trước mặt. Tiến trình giữ nguyên.": "Tap \"Open shift\" in the middle of the screen to start work. If it still feels confusing, the classic interface is simpler: your shop and work buttons are always in front of you. Your progress stays.",
+  "Bấm Công việc.": "Tap Work.",
+  "Bấm Mở ca.": "Tap Open shift.",
+  "Công việc: việc cần làm và nơi làm khác.": "Work: what to do next and other workplaces.",
   "sắp trễ": "almost late",
   "đang trong giờ hẹn": "window open",
   "đúng hẹn": "on time",

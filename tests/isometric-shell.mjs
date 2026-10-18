@@ -30,15 +30,25 @@ assert.match(html,/id="isoCameraOptions" hidden/,'camera actions are unfocusable
 const toolsHTML=html.match(/<details class="iso-tools">([\s\S]*?)<\/nav>/)?.[1]||'';
 for(const action of ['isoQueue','people','status','isoBag','settings'])assert.ok(toolsHTML.includes(`data-action="${action}"`),`${action} remains available in the compact utilities disclosure`);
 assert.match(toolsHTML,/summary[^>]*aria-controls="isoToolsOptions"/,'utilities has a semantic keyboard-operable disclosure');
-assert.match(html,/<details class="iso-mission">/,'town tasks start as a collapsed chip');
+assert.match(html,/<button type="button" class="iso-go" data-action="isoMission"[^>]*>[\s\S]*?<b>Làm tiếp<\/b><small>Tiệm hoa Mây<\/small>/,'the town has one main button for the next step (owner 18/10)');
+assert.doesNotMatch(html,/iso-mission|iso-scene|class="iso-chat"/,'no task chip, "Đang ở" bar or chat card floats over the map');
 assert.match(html,/data-action="isoGuide"/,'Guide remains outside utilities');
 assert.equal(toolsHTML.includes('data-action="isoGuide"'),false);
 const navHTML=html.match(/<nav class="iso-nav"[\s\S]*?<\/nav>/)?.[0]||'';
-assert.equal((navHTML.match(/<button/g)||[]).length,2,'bottom navigation is reduced to Work and More');
+assert.equal((navHTML.match(/<button/g)||[]).length,3,'bottom navigation: Work, Chat and More');
+assert.ok(navHTML.includes('data-action="isoChat"'),'chat is a tab of the bottom bar');
 assert.ok(navHTML.includes('data-action="isoMore"'),'the complete existing rail remains reachable');
 assert.equal((html.match(/data-action="isoAvatar"/g)||[]).length,1,'the portrait is the single dedicated avatar shortcut');
 assert.equal((html.match(/data-action="settings"/g)||[]).length,1,'settings is not duplicated around the map');
-assert.match(html,/Đang ở/,'the scene name is explicitly a current-place label');
+{const work=isometricHUDHTML(isometricHUDModel(state,content,'work'),state),workNav=work.match(/<nav class="iso-nav[^"]*"[\s\S]*?<\/nav>/)?.[0]||'';
+ assert.equal((workNav.match(/<button/g)||[]).length,4,'inside a workplace: Ra đảo, Work, Chat and More on one bar');
+ assert.match(workNav,/data-action="isoTown"[^>]*>[\s\S]*?Ra đảo/);
+ assert.doesNotMatch(work,/class="iso-go"/,'inside a workplace the work bar takes over from the main button');}
+for(const [room,action,label] of [[{open:false},'isoOpen','Mở ca'],[{open:true,active_task:null,tasks:[]},'isoWork','Vào làm'],[{job:{required:true,status:'applied'}},'isoApply','Xin việc']]){
+ const st={...state,careers:{florist:{...state.careers.florist,...room}}};
+ assert.match(isometricHUDHTML(isometricHUDModel(st,content,'town'),st),new RegExp(`class="iso-go" data-action="${action}"[^]*?<b>${label}</b>`),`${label}: the main button names the next step`);
+}
+assert.match(isometricHUDHTML(isometricHUDModel({journey:{story:true,life_day:3}},content,'town'),{}),/class="iso-go" data-action="isoCareers"[\s\S]*?<b>Chọn nghề<\/b>/);
 for(const kind of ['fishing','boat','pool'])assert.match(html,new RegExp(`data-action="isoLeisure" data-kind="${kind}"`),'outdoor activities have semantic controls');
 
 const utilityState={...state,rui:{},marriage:{spouse:{name:'An'}},journey:{...state.journey,garage:{},gadgets:{},pets:{},spend:{},lux:{},abroad:{}}};
@@ -75,7 +85,7 @@ assert.equal(model.missionAction,'isoPrepare');
 const social={state:'open',unread:()=>104};
 model=isometricHUDModel(state,content,'town',social);
 html=isometricHUDHTML(model,state);
-assert.match(html,/data-action="isoChat"[^>]*aria-label="Trò chuyện · 104 tin chưa đọc"/,'chat is a named dedicated control with the real unread total');
+assert.match(html,/data-action="isoChat"[^>]*aria-label="Trò chuyện · Cả phố · Bạn bè · 104 tin chưa đọc"/,'chat is a named dedicated control with the real unread total');
 assert.match(html,/class="iso-chat-unread"[^>]*>99\+</,'the visible unread count is bounded');
 assert.match(html,/Trò chuyện/);
 html=isometricHUDHTML(isometricHUDModel(state,content,'town',{state:'down',unread:()=>0}),state);
@@ -84,14 +94,14 @@ assert.match(html,/Mất kết nối/);
 assert.match(html,/class="iso-chat-unread"[^>]*hidden/,'zero unread messages do not get an empty badge');
 for(const [state,label] of [['idle','Chưa kết nối'],['connecting','Đang kết nối'],['off','Không khả dụng']]){
   html=isometricHUDHTML(isometricHUDModel({},content,'town',{state}),{});
-  assert.match(html,new RegExp(`<small>${label}</small>`),`chat describes the actual ${state} state`);
+  assert.match(html,new RegExp(`aria-label="Trò chuyện · ${label}"`),`chat describes the actual ${state} state`);
 }
 html=isometricHUDHTML(isometricHUDModel({},content,'town',{state:'open',flags:{chat:false}}),{});
-assert.match(html,/<small>Tạm nghỉ<\/small>/,'a disabled chat does not claim to be connected');
+assert.match(html,/aria-label="Trò chuyện · Tạm nghỉ"/,'a disabled chat does not claim to be connected');
 html=isometricHUDHTML(isometricHUDModel({},content,'town',{state:'idle'}, {url:''}),{});
-assert.match(html,/<small>Chưa khả dụng<\/small>/,'a missing live URL never claims a pending connection');
+assert.match(html,/aria-label="Trò chuyện · Chưa khả dụng"/,'a missing live URL never claims a pending connection');
 html=isometricHUDHTML(isometricHUDModel({},content,'town',{state:'open',me:{account:false}}),{});
-assert.match(html,/<small>Khách · Chỉ xem<\/small>/,'a connected guest sees their actual chat permission at the entry');
+assert.match(html,/aria-label="Trò chuyện · Khách · Chỉ xem"/,'a connected guest sees their actual chat permission at the entry');
 
 const calls=[];
 const env={api:{state,content},ui:{},world:{mode:'town',setMode:mode=>calls.push(['mode',mode]),overviewIsland:()=>calls.push(['overview'])},closeSheet:()=>calls.push(['close']),
@@ -109,6 +119,13 @@ assert.deepEqual(calls.slice(-2),[['close'],['mode','town']]);
 await isometricAction('isoWork',{},null,env);
 assert.deepEqual(calls.slice(-2),[['close'],['mode','work']],'entering a workplace changes no server state');
 assert.equal(await isometricAction('unrelated',{},null,env),false);
+{const closed={...state,careers:{florist:{...state.careers.florist,open:false}}},log=[];
+ const e2={...env,api:{state:closed,content},world:{mode:'town',setMode:mode=>log.push(['mode',mode])},closeSheet:()=>log.push(['close']),act:async (action)=>log.push(['act',action])};
+ await isometricAction('isoOpen',{},null,e2);
+ assert.deepEqual(log,[['close'],['mode','work'],['act','start'],['act','prepare']],'"Mở ca" opens the shift in one tap; when it cannot, the prepare sheet says why');
+ closed.careers.florist.open=true;log.length=0;e2.act=async action=>{log.push(['act',action]);};
+ await isometricAction('isoOpen',{},null,e2);
+ assert.deepEqual(log.filter(x=>x[0]==='act'),[['act','start']],'an opened shift needs no prepare sheet');}
 await isometricAction('isoChat',{},null,env);
 assert.deepEqual(calls.pop(),['act','liveChat',{}],'the HUD opens the existing real chat route');
 await isometricAction('isoOverview',{},null,env);assert.deepEqual(calls.pop(),['overview']);
@@ -143,7 +160,7 @@ for(const show of [false,true]){
 for(const focused of ['summary','boat','garage']){
  const before=globalThis.document,focuses=[],panels=new Map();
  const makePanels=()=>{
-  for(const name of ['iso-tools','iso-outings','iso-mission','iso-outings[data-iso-group="services"]'])panels.set(name,{dataset:name.includes('services')?{isoGroup:'services'}:{},open:false,setAttribute(key){if(key==='open')this.open=true;}});
+  for(const name of ['iso-tools','iso-outings','iso-outings[data-iso-group="services"]'])panels.set(name,{dataset:name.includes('services')?{isoGroup:'services'}:{},open:false,setAttribute(key){if(key==='open')this.open=true;}});
  };
  makePanels();panels.get('iso-tools').open=true;panels.get('iso-outings').open=true;
  if(focused==='garage'){panels.get('iso-outings').open=false;panels.get('iso-outings[data-iso-group="services"]').open=true;}
@@ -161,7 +178,6 @@ for(const focused of ['summary','boat','garage']){
   assert.equal(panels.get('iso-tools').open,true,'utilities remain open across live updates');
   assert.equal(panels.get(focused==='garage'?'iso-outings[data-iso-group="services"]':'iso-outings').open,true,'the correct nested utility group remains open across live updates');
   if(focused==='garage')assert.equal(panels.get('iso-outings').open,false,'refresh does not expand an unrelated group');
-  assert.equal(panels.get('iso-mission').open,false,'updates do not expand task details');
   assert.equal(hud.dataset.disclosureOpen,'true','live refresh retains the compatible elevated layer for the open utilities');
   assert.deepEqual(focuses,[focused==='summary'?'[data-iso-focus="iso-tools"]':focused==='garage'?'[data-action="garage"]':'[data-action="isoLeisure"][data-kind="boat"]'],'focus returns to the same summary or utility');
  }finally{globalThis.document=before;}

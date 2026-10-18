@@ -57,6 +57,7 @@ function nextControl(){
 /** Each step: emoji + 1–2 short lines (text may depend on the moment). `when` =
  * applies now, `plan` = expected in this run (for the progress dots), `find` =
  * the element to ring (null + center = a centred card), `done` = the player did it. */
+const ISO_JOBS='#isoHUD .iso-nav [data-action="isoCareers"]';
 const STEPS=[
   {id:'street',emoji:'🏘️',text:'Khu phố của bạn: một đời, nhiều nghề.',center:true,
     find:()=>vis('#sheet[open] .jr-street')},
@@ -65,9 +66,10 @@ const STEPS=[
     find:()=>vis('#sheet[open] .jr-intro .jr-who')||firstVis('#sheet[open] .jr-intro .btn.primary'),
     done:()=>!inIntro()||introStep()==='job'},
   // Phone: Hành trình sits in the "Thêm" menu; the ring goes to "Thêm" first, then to Hành trình inside it.
-  {id:'journey',emoji:'🧭',text:()=>vis('#rail [data-action="home"]')||vis('#jrHud:not([hidden])')||vis('.brand')?'Bấm mở Hành trình.':'Bấm Thêm, rồi Hành trình.',
+  // 2.5D (isometric-shell.js): the same page is "Công việc" on the bottom bar.
+  {id:'journey',emoji:'🧭',text:()=>vis(ISO_JOBS)?'Bấm Công việc.':vis('#rail [data-action="home"]')||vis('#jrHud:not([hidden])')||vis('.brand')?'Bấm mở Hành trình.':'Bấm Thêm, rồi Hành trình.',
     when:()=>!inIntro()&&sheetView()!=='home',plan:()=>!inIntro(),
-    find:()=>vis('#jrHud:not([hidden])')||vis('#rail [data-action="home"]')||vis('.brand')||vis('#dock [data-action="v4Menu"]'),
+    find:()=>vis(ISO_JOBS)||vis('#jrHud:not([hidden])')||vis('#rail [data-action="home"]')||vis('.brand')||vis('#dock [data-action="v4Menu"]'),
     done:()=>sheetView()==='home'},
   // 🗺️ The town as home (v4/town-walk.js): the card's "Vào làm" once at a door, else the town itself.
   {id:'pick',emoji:'🏪',text:()=>vis('#sheet[open] .tw-stage')&&!firstVis('#sheet[open] [data-action="choose"]')?'Đi tới một tiệm rồi bấm Vào làm.':'Chọn một tiệm để làm.',
@@ -78,20 +80,20 @@ const STEPS=[
     when:()=>{const j=room()?.job;return !!(j?.required&&j.status!=='hired');},plan:()=>false,
     find:()=>ui().view==='jobapp'?firstVis('#sheet[open] .sheet-body .btn.primary'):null,
     done:()=>{const j=room()?.job;return !j?.required||j.status==='hired';}},
-  {id:'open',emoji:'☀️',text:'Bấm Mở cửa.',wait:4000,
+  {id:'open',emoji:'☀️',text:()=>vis('#isoHUD .iso-go[data-action="isoOpen"]')?'Bấm Mở ca.':'Bấm Mở cửa.',wait:4000,
     when:()=>room()&&!room().open,
-    find:()=>firstVis('#sheet[open] [data-action="start"]')||vis('#taskHUD [data-action="prepare"]'),
+    find:()=>firstVis('#sheet[open] [data-action="start"]')||vis('#taskHUD [data-action="prepare"]')||vis('#isoHUD .iso-go[data-action="isoOpen"]'),
     done:()=>!!room()?.open},
   {id:'money',emoji:'🪙',text:'Quỹ tiệm: tiền của tiệm.',stage:true,
-    find:()=>vis('#topbar .hud-fund')||vis('#topbar .cozy-till')},
+    find:()=>vis('#topbar .hud-fund')||vis('#topbar .cozy-till')||vis('#isoHUD .iso-fund')},
   // Calm screen (0.8.4): the wallet chip left the stage; the wallet sits in the status sheet behind the day.
   {id:'wallet',emoji:'👛',stage:true,
     // 0.9.8: the wallet is back in the top bar (👛 chip, v4/wealth.js); tapping it lists every pocket.
     text:()=>vis('#jrHud:not([hidden])')?(run.shown.includes('journey')?'Ví của bạn, trả tiền phòng.':'Ví của bạn. Bấm để mở Hành trình.'):vis('#topbar .hud-wallet')?'Ví của bạn. Bấm để xem hết tiền.':'Bấm ngày: ví của bạn, tinh thần, đánh giá.',
-    when:()=>!!J()?.story,plan:()=>!!J()?.story,find:()=>vis('#jrHud:not([hidden])')||vis('#topbar .hud-wallet')||vis('#topbar .hud-day')},
+    when:()=>!!J()?.story,plan:()=>!!J()?.story,find:()=>vis('#jrHud:not([hidden])')||vis('#topbar .hud-wallet')||vis('#topbar .hud-day')||vis('#isoHUD .iso-wallet')},
   {id:'task',emoji:'📋',text:'Bấm Làm tiếp.',stage:true,
     when:()=>!!room()?.open,
-    find:()=>vis('#taskHUD .task-card')||vis('#taskHUD .note-card'),
+    find:()=>vis('#taskHUD .task-card')||vis('#taskHUD .note-card')||vis('#isoHUD .iso-go[data-action="isoMission"]'),
     done:()=>sheetView()==='job'},
   {id:'do',emoji:'👆',text:'Bấm nút nổi bật.',wait:2500,
     when:()=>sheetView()==='job',find:nextControl,

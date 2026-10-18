@@ -472,7 +472,7 @@ function railHTML(c){
     groups.map(([g,ic,label,items])=>{const on=open===g,cur=items.some(x=>x[0]===ui.view);
       return `<button type="button" class="rail-item rail-group${cur?' active':''}" data-action="v4Group" data-group="${g}" data-menu-stay aria-expanded="${on}"${hide}>${icon(ic,21)}<span>${label}</span>${badgeHTML(groupBadge(items))}<i class="rail-caret" aria-hidden="true">${icon('chevron',12)}</i></button>`+
         `<div class="rail-sub" data-group="${g}" role="group" aria-label="${label}"${on?'':' hidden'}><div class="rail-sub-head"><button type="button" class="icon-btn rail-back" data-action="v4Group" data-group="" data-menu-stay aria-label="Quay lại">${icon('back',20)}</button><b>${label}</b></div>${items.map(x=>railItem(x)).join('')}</div>`;}).join('')+
-    `<div class="rail-foot"${hide}>${mini('tutGuide','question','Hỏi nhanh',' data-topic="quick"')}${mini('gopy','chat','Góp ý')}${mini('settings','settings','Cài đặt')}</div>`;   // ❓ Hỏi nhanh (tutorial/guide.js)
+    `<div class="rail-foot"${hide}>${mini('tutGuide','question','Hỏi nhanh',' data-topic="quick"')}${mini('gopy','chat','Góp ý')}${mini('settings','settings','Cài đặt')}${iso?mini('isoClassic','layout','Giao diện cũ'):''}</div>`;   // ❓ Hỏi nhanh (tutorial/guide.js)
 }
 /** Open or fold a hub (data-group="" folds). Phone: the sheet scrolls back to the top and focus follows. */
 function railGroup(g,focus=true){
@@ -1915,6 +1915,8 @@ try{
   await Promise.all([careerAssets(career(),Boolean(api.state.current&&(!room()?.open||needsJob()))),setLanguage(api.state.settings.lang)]);
   import('./v4/home-guests.js').then(m=>m.homeGuestsBoot(env())).catch(e=>console.warn('homeGuests:',e));
   import('./v4/workplace-visit.js').then(m=>m.workVisitsBoot(env())).catch(e=>console.warn('workVisits:',e));
+  // 2.5D, a shift already open (a reload, back the next morning): straight into the workplace, not the town (owner 18/10)
+  if(iso&&api.state.current&&room()?.open&&!needsJob())world.setMode('work');
   if(iso)iso.bootShell(env);
   shell.boot(env());journeyBoot(env());boardBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
   if(iso)iso.start({env,world,interact,renderMain});

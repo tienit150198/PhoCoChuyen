@@ -7,7 +7,7 @@ async page => {
   for(const [width,height] of [[320,568],[390,844],[667,375],[844,390],[820,1180],[1180,820],[1440,900]]){
     await page.setViewportSize({width,height});
     const measure=()=>{
-      const items=Array.from(document.querySelectorAll('.iso-profile,.iso-pockets,.iso-settings,.iso-quick,.iso-mission,.iso-camera,.iso-camera-options,.iso-chat,.iso-scene,.iso-nav,.iso-movement,#townPresenceStatus,#dock,#taskHUD'))
+      const items=Array.from(document.querySelectorAll('.iso-profile,.iso-pockets,.iso-settings,.iso-quick,.iso-go,.iso-camera,.iso-camera-options,.iso-nav,.iso-movement,#townPresenceStatus,#dock,#taskHUD'))
         .map(e=>({e,name:e.id||e.className,r:e.getBoundingClientRect(),display:getComputedStyle(e).display,visibility:getComputedStyle(e).visibility}))
         .filter(x=>x.r.width&&x.r.height&&x.display!=='none'&&x.visibility!=='hidden');
       const overlap=[];
@@ -17,9 +17,9 @@ async page => {
         if(Math.min(a.r.right,b.r.right)-Math.max(a.r.left,b.r.left)>1&&Math.min(a.r.bottom,b.r.bottom)-Math.max(a.r.top,b.r.top)>1)overlap.push([a.name,b.name]);
       }
       const outside=items.filter(x=>x.r.left<0||x.r.top<0||x.r.right>innerWidth+1||x.r.bottom>innerHeight+1).map(x=>x.name);
-      const chat=document.querySelector('.iso-chat'),r=chat.getBoundingClientRect();
+      const chat=document.querySelector('.iso-chat-tab'),r=chat.getBoundingClientRect();
       const pixelFonts=Array.from(document.querySelectorAll('#isoHUD button,#townPresenceStatus')).filter(e=>/Pixel|VT323/i.test(getComputedStyle(e).fontFamily)).map(e=>e.className);
-      const clippedLabels=Array.from(document.querySelectorAll('.iso-chat-copy b,.iso-chat-copy small,.iso-tab > span')).filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>e.textContent);
+      const clippedLabels=Array.from(document.querySelectorAll('.iso-go b,.iso-tab > span')).filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>e.textContent);
       const smallCamera=Array.from(document.querySelectorAll('.iso-camera button')).filter(e=>e.getClientRects().length).filter(e=>{const r=e.getBoundingClientRect();return r.width<44||r.height<44;}).map(e=>e.getAttribute('aria-label'));
       return {mode:document.documentElement.dataset.sceneMode,width:innerWidth,height:innerHeight,coarse:matchMedia('(pointer:coarse)').matches,stick:items.some(x=>x.name==='isoMovement'),chatHit:chat.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)),presence:items.some(x=>x.name==='townPresenceStatus'),overlap,outside,pixelFonts,clippedLabels,smallCamera};
     };
@@ -34,7 +34,7 @@ async page => {
       if(width===320){
         // Keyboard activation emits no outside pointerdown; a modal still owns Escape.
         await camera.press('Tab');
-        for(let step=0;step<4;step++)await page.keyboard.press('Tab');
+        for(let step=0;step<8&&await page.evaluate(()=>document.activeElement?.dataset.action)!=='isoChat';step++)await page.keyboard.press('Tab');
         if(await page.evaluate(()=>document.activeElement?.dataset.action)!=='isoChat')throw new Error('Camera tab order did not reach chat');
         await page.keyboard.press('Enter');
         await page.locator('#townChat').waitFor({state:'visible'});
@@ -54,7 +54,7 @@ async page => {
     if(!await tools.evaluate(e=>e.open))throw new Error('Utilities did not open with Enter');
     const panel=page.locator('.iso-tools-options');
     const utilityBounds=await panel.evaluate(e=>{
-      const r=e.getBoundingClientRect(),protectedRects=Array.from(document.querySelectorAll('.iso-movement,.iso-chat,.iso-guide-button')).filter(n=>n.getClientRects().length&&getComputedStyle(n).visibility!=='hidden').map(n=>({name:n.className,r:n.getBoundingClientRect()}));
+      const r=e.getBoundingClientRect(),protectedRects=Array.from(document.querySelectorAll('.iso-movement,.iso-go,.iso-guide-button')).filter(n=>n.getClientRects().length&&getComputedStyle(n).visibility!=='hidden').map(n=>({name:n.className,r:n.getBoundingClientRect()}));
       return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,covered:protectedRects.filter(x=>Math.min(r.right,x.r.right)>Math.max(r.left,x.r.left)&&Math.min(r.bottom,x.r.bottom)>Math.max(r.top,x.r.top)).map(x=>x.name)};
     });
     if(utilityBounds.left<0||utilityBounds.right>width||utilityBounds.top<0||utilityBounds.bottom>height||utilityBounds.covered.length)throw new Error('Utilities overlap protected controls: '+JSON.stringify(utilityBounds));
@@ -82,13 +82,6 @@ async page => {
     await toolsSummary.press('Escape');
     if(await tools.evaluate(e=>e.open))throw new Error('Escape did not close utilities');
     if(await page.locator('#pauseOverlay').isVisible())throw new Error('Dismissing utilities also paused the game');
-    if(result.mode==='town'){
-      const mission=page.locator('.iso-mission');
-      await mission.locator('summary').press('Enter');
-      if(!await mission.evaluate(e=>e.open))throw new Error('Task details did not open with Enter');
-      await mission.locator('summary').press('Escape');
-      if(await mission.evaluate(e=>e.open))throw new Error('Escape did not close task details');
-    }
   }
   const failures=output.filter(r=>r.overlap.length||r.outside.length||r.pixelFonts.length||r.clippedLabels.length||r.smallCamera.length||!r.chatHit||r.presence!==(r.mode==='town'));
   if(failures.length)throw new Error(JSON.stringify(failures,null,2));

@@ -128,9 +128,9 @@ SCROLLER = r"""()=>{
   c.sort((a,b)=>b.clientHeight*b.clientWidth-a.clientHeight*a.clientWidth);
   document.querySelectorAll('[data-mob-scroll]').forEach(e=>e.removeAttribute('data-mob-scroll'));
   if(!c[0])return null;c[0].setAttribute('data-mob-scroll','1');return {h:c[0].clientHeight,sh:c[0].scrollHeight};}"""
-OPEN_WORK = [['js', "(()=>{const s=document.querySelector('.iso-mission summary');if(s){if(!s.parentElement.open)s.click();return}"
+OPEN_WORK = [['js', "(()=>{const s=document.querySelector('.iso-go[data-action=isoMission]');if(s&&s.checkVisibility()){s.click();return}"
                     "const b=[...document.querySelectorAll('[data-action=job],[data-action=workbench]')].find(e=>e.checkVisibility());if(b)b.click()})()"],
-             ['js', "(()=>{const b=[...document.querySelectorAll('[data-action=isoMission]')].find(e=>e.checkVisibility());if(b)b.click()})()"]]
+             ['js', "(()=>{})()"]]
 MAIN_BUTTON = ['js', "(()=>{const b=[...document.querySelectorAll('#sheet .gd-cta, #sheet [class*=-bar] .btn.primary, #sheet .btn.primary')]"
                      ".find(e=>e.checkVisibility()&&!e.disabled);if(b)b.click()})()"]
 

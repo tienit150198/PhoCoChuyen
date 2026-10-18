@@ -44,13 +44,19 @@ let offering=null;
 /** One decision per account, before the tutorial and automatic announcement cards. Escape keeps the new look. */
 export function promptInterface(env){
   if(!interfacePromptDue(env.api.state))return Promise.resolve(true);
+  return askInterface(env);
+}
+/** The same question asked on purpose (2.5D ☰ Thêm → "Giao diện cũ", isometric-shell.js): `title`, `text` replace the
+ * first-visit wording. Resolves true when the player keeps the 2.5D town. */
+export function askInterface(env,{title='Bạn có muốn quay về giao diện cũ?',text='Đổi lúc nào cũng được trong Cài đặt → Giao diện, tiến trình giữ nguyên.'}={}){
   if(offering)return offering;
   const back=document.activeElement,dialog=document.createElement('dialog');
   dialog.id='interfacePrompt';dialog.className='confirm-dialog';
   dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-labelledby','interfacePromptTitle');
   dialog.setAttribute('aria-describedby','interfacePromptDescription');
-  dialog.innerHTML='<h2 id="interfacePromptTitle">Bạn có muốn quay về giao diện cũ?</h2>'+
-    '<p id="interfacePromptDescription">Đổi lúc nào cũng được trong Cài đặt → Giao diện, tiến trình giữ nguyên.</p>'+
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+  dialog.innerHTML=`<h2 id="interfacePromptTitle">${esc(title)}</h2>`+
+    `<p id="interfacePromptDescription">${esc(text)}</p>`+
     '<div class="row wrap space-top"><button type="button" class="btn big" data-interface="legacy">Về giao diện cũ</button><button type="button" class="btn primary big" data-interface="new">Giữ giao diện mới</button></div><p role="status" aria-live="polite"></p>';
   let resolve,busy=false;
   offering=new Promise(done=>{resolve=done;});

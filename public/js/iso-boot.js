@@ -28,7 +28,7 @@ export function bootShell(env){
   onIsoLand(landNewPlayer);   // a brand-new player lands on the island after the intro (iso-guide.js)
   bootIsometricShell(env);bootIsometricMovement(env);bootIsometricTown(env);bootCozyPortraits();
   // 🐦 A flock over the island now and then: the town only (not inside a workplace), nothing between flights.
-  let mode='town';document.addEventListener('mnl:iso-mode',e=>{mode=e.detail?.mode||mode;});
+  let mode=(typeof env==='function'?env():env)?.world?.mode||'town';document.addEventListener('mnl:iso-mode',e=>{mode=e.detail?.mode||mode;});
   townBirds(document.getElementById('stage'),()=>mode==='town'&&!document.querySelector('dialog[open]'));
 }
 

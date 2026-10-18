@@ -56,9 +56,8 @@ async def open_work(page, reload=False):
         await page.reload()
     await page.wait_for_selector('#app:not([hidden])', timeout=45000)
     await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
-    if await page.locator('.iso-mission summary').count():
-        await page.locator('.iso-mission summary').click()
-        await page.locator('[data-action="isoMission"]:visible').click(timeout=20000)
+    if await page.locator('.iso-go[data-action="isoMission"]:visible').count():
+        await page.locator('.iso-go[data-action="isoMission"]').click(timeout=20000)
     else:
         await page.locator('[data-action="job"]:visible, [data-action="workbench"]:visible').first.click(timeout=20000)
     await page.wait_for_selector('.career-job', timeout=20000)
