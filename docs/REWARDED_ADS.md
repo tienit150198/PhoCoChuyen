@@ -4,8 +4,8 @@ Chủ game chốt (18–19/10/2026):
 - Chỉ dùng quảng cáo có thưởng (reward), không dùng quảng cáo xen màn hình.
 - Chỉ dùng Google. Meta đã đóng Audience Network cho web từ tháng 4/2020.
 - Mỗi tài khoản xem tối đa **7 lượt mỗi ngày giờ Việt Nam**. Một máy dùng nhiều tài khoản vẫn được, không chặn theo IP hay thiết bị ("dù sao người ta cũng ủng hộ mà").
-- Các chỗ có nút 📺: Ghép ba (hồi sinh kèm trợ giúp), Giờ vàng riêng (1 tiếng ×1,5), bị trộm / bị lừa (lấy lại một nửa), trượt phỏng vấn / thi (thi lại ngay), hàng đang về (về ngay), trại giam (ra trại ngay).
-- 🐾 Thú cưng +10% tỷ lệ ra: chờ phiên khác làm xong hệ thống tỷ lệ thú cưng rồi mới làm.
+- Các chỗ có nút 📺: Ghép ba (hồi sinh kèm trợ giúp), Giờ vàng riêng (1 tiếng ×1,5), bị trộm / bị lừa (lấy lại một nửa), trượt phỏng vấn / thi (thi lại ngay), hàng đang về (về và vào kho luôn: "nếu xem quảng cáo thì cộng vào luôn"), trại giam (ra trại ngay), ghép thú cưng (+10 điểm % tỷ lệ thành công ở mọi hạng: "ví dụ SSS từ 3% lên thành 13% ấy, random nhé").
+- Đưa lên nhưng **chưa hiển thị**: production không đặt `ADS_REWARDED`, chủ game nói lúc nào mới bật.
 - Không làm thưởng khép ca và rương lượt 3 / lượt 7.
 
 ## Mã nguồn
@@ -19,7 +19,8 @@ Chủ game chốt (18–19/10/2026):
 | 🚔 Trại giam: ra ngay | `game/ads.py` → `jail.release`; `game/jail.py` `OPEN_COMMANDS` |
 | 💸 Khoản vừa bị trộm / bị lừa | `ads.note_loss()` gọi ở `game/rui.py` (móc túi, trộm vào nhà, hack), `game/mishap.py` (giả danh, link giả, ATM, "tin nội bộ", côn đồ; **không** tính tiền phạt), `game/happenings.py` (trộm ở tiệm, phần không được đền lại), `game/life.py` (bị lừa) |
 | 📝 Thi lại | `employment` `cooldown_day`, `certificates` `study.start/ready`, `promotion` `wait` |
-| 📦 Hàng về ngay | `game/inventory.py` đơn nhập hàng, `c['shipments']` của quầy kho (nhà thuốc, Mẹ & bé) |
+| 📦 Hàng về ngay | `game/inventory.py` đơn nhập hàng (các bước của `inv_receive`), `c['shipments']` của quầy kho (nhà thuốc, Mẹ & bé: `engine.stock_received`) |
+| 🐾 Ghép thú cưng | `ads.pet_boost` / `ads.spend_pet_boost`, gọi trong `game/pet_tiers.py` `_fuse` (gắn khi bản thú cưng hạng D–SSS lên nhánh chính) |
 | Trang web: meta `mnl-bonus`, CSP, Referrer-Policy | `game/ads.py`, `game/webassets.py`, `server.py` (`/ads.txt` và meta `google-adsense-account`: `game/observability.py`) |
 | Client | `public/js/v4/bonus-video.js` (luồng xem, bảng ☰ Thêm), `public/js/v4/bonus-button.js` (nút 📺 vẽ từ `state.ads`), `public/css/bonus-video.css` |
 | Nút ở từng chỗ | `tile-match.js` (màn thua), `jail.js` (trại), `rui.js` (thẻ bị trộm / hack), `views.js` (trượt phỏng vấn, 🚚 Đang giao), `certificates.js` (chờ bài thi tự học), `promo.js` (hẹn xét lại), `app.js` (quầy kho, ☰ Thêm) |
@@ -48,7 +49,8 @@ File phía client không được có chữ "ads" trong tên. Trình chặn qu�
 | 📝 `retake` `what=job` | Nơi tuyển dụng cho ứng tuyển / thi tuyển lại ngay hôm nay |
 | 📝 `retake` `what=cert` | Bài thi chứng chỉ tự học mở ngay (từ ngày đời thứ 2; lớp học cấp tốc vốn thi được ngay) |
 | 📝 `retake` `what=promo` | Buổi xét thăng chức chưa qua được hẹn lại ngay sau ca làm tới |
-| 📦 `rush` | Mọi đơn đang trên đường tới nơi làm đó về tới cửa ngay, người chơi vẫn tự kiểm đếm và nhận |
+| 📦 `rush` | Mọi đơn đang trên đường tới nơi làm đó về ngay và vào kho luôn, như kiểm đếm đủ ở cửa (đơn giao thiếu vẫn khiếu nại được). Kệ hết chỗ thì thùng đó chờ ở cửa |
+| 🐾 `pet` | Lần ghép thú cưng tới +10 điểm % tỷ lệ thành công ở mọi hạng (tối đa 95%), vẫn tung may rủi. Giữ một lượt tới khi ghép |
 
 Không đặt nút 📺 ở **Chợ đen** (cờ bạc giả lập, rủi ro chính sách AdSense) và ở **lì xì / chuyển khoản**.
 
@@ -75,6 +77,7 @@ dict(version="…", date="…", items=(
     dict(emoji='🧩', text="Ghép ba khay đầy? Xem quảng cáo để hồi sinh, kèm thêm trợ giúp."),
     dict(emoji='💸', text="Bị trộm, bị lừa: xem quảng cáo lấy lại một nửa số tiền."),
     dict(emoji='📝', text="Trượt phỏng vấn, chờ thi chứng chỉ, hẹn xét thăng chức: xem quảng cáo để thi lại ngay."),
-    dict(emoji='📦', text="Hàng đang về: xem quảng cáo là hàng tới cửa ngay. Trong trại: xem quảng cáo là ra trại ngay."),
+    dict(emoji='📦', text="Hàng đang về: xem quảng cáo là hàng về và vào kho ngay. Trong trại: xem quảng cáo là ra trại ngay."),
+    dict(emoji='🐾', text="Ghép thú cưng: xem quảng cáo để lần ghép tới thêm 10% tỷ lệ thành công, hạng nào cũng được."),
 )),
 ```

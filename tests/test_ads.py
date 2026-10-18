@@ -7,7 +7,7 @@ import os
 import unittest
 from unittest import mock
 
-from game import ads, jail as jl, tile_match as tm
+from game import ads, inventory, jail as jl, tile_match as tm
 from game.engine import GameError, apply_action, new_state, validate_state
 from game import webassets
 from tests.test_bank import story
@@ -382,14 +382,30 @@ class RushTest(AdsBase):
         for p in ({}, {'career': 'nope'}, {'career': 'restaurant', 'what': 'x'}):
             with self.assertRaises(GameError):
                 act(j.state, 'ad_ticket', place='rush', **p)
+        before = inventory.count(j.c, 'noodle')
+        got = sum(o['actual'] for o in j.c['ext']['inv']['orders'])
         s, r = act(j.state, 'ad_ticket', place='rush', career='restaurant')
         self.clock.tick(ads.MIN_WATCH_S)
         j.state, r = act(s, 'ad_claim', ticket=r['ad']['ticket'])
-        self.assertIn('Hàng đã về', r['message'])
-        self.assertTrue(all(o['ready_now'] for o in public_inv(j)['orders'] if o['status'] == 'in_transit'))
-        for o in j.c['ext']['inv']['orders']:
-            j.act('inv_receive', order=o['id'], count=o['actual'])
+        self.assertIn('đã nhập kho', r['message'])
         self.assertTrue(all(o['status'] == 'received' for o in j.c['ext']['inv']['orders']))
+        self.assertEqual(inventory.count(j.c, 'noodle'), before + got)
+        validate_state(j.state)
+        with self.assertRaises(GameError):   # nothing left on the way
+            act(j.state, 'ad_ticket', place='rush', career='restaurant')
+
+    def test_a_full_shelf_keeps_the_crate_at_the_door(self):
+        from tests.test_inventory_flow import public_inv
+        j = self.journey('restaurant')
+        j.act('inv_order', item='noodle', qty=6, supplier='partner', confirm=True)
+        with mock.patch.object(inventory, '_receive_room', return_value=0):
+            s, r = act(j.state, 'ad_ticket', place='rush', career='restaurant')
+            self.clock.tick(ads.MIN_WATCH_S)
+            j.state, r = act(s, 'ad_claim', ticket=r['ad']['ticket'])
+        self.assertIn('còn chờ ở cửa', r['message'])
+        o = public_inv(j)['orders'][-1]
+        self.assertEqual(o['status'], 'in_transit')
+        self.assertTrue(o['ready_now'])
 
     def test_stock_desk_parcels_too(self):
         j = self.journey('mother_baby')
@@ -399,11 +415,36 @@ class RushTest(AdsBase):
             j.act('receive_stock', shipment=ship['id'], count=ship['actual'])
         s, r = act(j.state, 'ad_ticket', place='rush', career='mother_baby')
         self.clock.tick(ads.MIN_WATCH_S)
+        before = j.c['stock']['cat_bag']
         j.state, r = act(s, 'ad_claim', ticket=r['ad']['ticket'])
-        ship = j.c['shipments'][-1]
-        if ship['status'] != 'received':   # the stock desk may shelve it itself
-            j.act('receive_stock', shipment=ship['id'], count=ship['actual'])
+        self.assertIn('đã nhập kho', r['message'])
         self.assertEqual(j.c['shipments'][-1]['status'], 'received')
+        self.assertEqual(j.c['stock']['cat_bag'], before + ship['actual'])
+        validate_state(j.state)
+
+
+class PetTest(AdsBase):
+    def test_ten_points_on_the_next_fusion_once(self):
+        s = story()
+        with self.assertRaises(GameError):   # no three pets to fuse
+            act(s, 'ad_ticket', place='pet')
+        with mock.patch.object(ads, '_fusable', return_value=True):
+            s, r = self.watch(s, 'pet')
+            self.assertIn('+10%', r['message'])
+            self.assertEqual(ads.pet_boost(s), 1000)
+            self.assertEqual(ads.public(s)['pet'], 10)
+            validate_state(s)
+            with self.assertRaises(GameError):   # one kept at a time
+                act(s, 'ad_ticket', place='pet')
+            ads.spend_pet_boost(s)
+            self.assertEqual(ads.pet_boost(s), 0)
+            s, _ = self.watch(s, 'pet')
+        with mock.patch.dict(os.environ, {'MNL_ADS_OFF': '1'}):
+            self.assertEqual(ads.pet_boost(s), 0)
+        bad = copy.deepcopy(s)
+        bad['journey']['ads']['pf'] = 2
+        with self.assertRaises(GameError):
+            validate_state(bad)
 
 
 class PageTest(AdsBase):

@@ -15,7 +15,7 @@ Places (PLACES):
 * 'gold'  ⏰ Giờ vàng riêng: the save's shops and counters take ×1,5 (GOLD_MULT) for GOLD_S (one hour) more, on top of
   the street's Giờ vàng (game/golden_hour.py); staff orders (game/workplace_business.py _finish) and counter sales
   (game/quay_business.py sale) read gold_mult() at the sale's own time, like the street's.
-* 'tile'  🧩 Ghép ba (game/tile_match.py): the tray is full → the page takes the last tile back and the save gets
+* 'tile'  🧩 Ghép ba (the Ghép ba module): the tray is full → the page takes the last tile back and the save gets
   TILE_PACK more free boosters, kept until used (spent after the day's own free uses, before xu).
 * 'jail'  🚔 Trại tạm giữ (game/jail.py): out at once (owner 19/10: "trại giam giữ có thể ra tù ngay nếu xem quảng
   cáo"); the sentence block goes, jail.mark_commit drops the mark in the same transaction.
@@ -26,13 +26,18 @@ Places (PLACES):
 * 'retake' 📝 Trượt thi, phỏng vấn (owner 19/10 "ok luôn"), {what, career?}: 'job' the workplace takes an application
   again today (employment cooldown_day), 'cert' the free self-study exam opens now (certificates: start and ready move
   back together, as its validator wants), 'promo' a review that did not pass comes again after the next shift (wait 0).
-* 'rush'  📦 Hàng đang về (owner 19/10 "xem quảng cáo xong về ngay luôn"), {career}: every order still on its way to
-  that workplace is at the door now (game/inventory.py orders and the stock desk's shipments: placed/lo/hi/at move to
-  the door's minute, late cleared, the order their validators want kept).
+* 'rush'  📦 Hàng đang về (owner 19/10 "xem quảng cáo xong về ngay luôn", then "nếu xem quảng cáo thì cộng vào
+  luôn"), {career}: every order still on its way to that workplace arrives now and goes on the shelf, as a full count
+  at the door would (game/inventory.py orders: placed/lo/hi/at moved to the door's minute, late cleared, then
+  inv_receive's own steps; a shelf without room keeps that crate at the door. The stock desk's shipments:
+  engine.stock_received like receive_stock).
+* 'pet'   🐾 Ghép thú cưng (owner 19/10: "+10% tỷ lệ … bất chấp mọi bậc", "ví dụ SSS từ 3% lên thành 13% ấy, random
+  nhé"): the next fusion's success chance PET_BP (10 points) higher at any rank, still a roll, at most PET_TOP. One
+  kept at a time, until a fusion uses it (game/pet_tiers.py _fuse: pet_boost / spend_pet_boost).
 
 Save: journey['ads'] (optional; older servers keep it untouched and ignore it)
   {v, d: VN date, n: views that day, tk?: ticket {id, p, at, k?}, g?: gold until (epoch s), tb?: {booster: n},
-   ls?: the latest theft / scam loss {amt, w: what, at: epoch s}}.
+   ls?: the latest theft / scam loss {amt, w: what, at: epoch s}, pf?: 1 while the next pet fusion is boosted}.
 The count follows the save, so one account has DAY_MAX a day (reset_all carries it: journey.carry_reset). Many accounts
 on one device are fine (owner 19/10: "1 máy nhiều lần được k cần chặn nhé, dù sao người ta cũng ủng hộ mà").
 Off unless ADS_REWARDED=1 (the AdSense account of game/observability.py, once H5 Games Ads approved it) or ADS_FAKE=1
@@ -55,10 +60,12 @@ COMMANDS = ('ad_ticket', 'ad_claim')
 DAY_MAX = 7                      # owner: 7 views a day, per account
 MIN_WATCH_S = 8                  # a ticket is claimed at least this long after it was issued
 TICKET_TTL_S = 15 * 60           # …and at most this long
-PLACES = ('gold', 'tile', 'jail', 'theft', 'retake', 'rush')
+PLACES = ('gold', 'tile', 'jail', 'theft', 'retake', 'rush', 'pet')
 RETAKE = ('job', 'cert', 'promo')
 LOSS_PCT = 50                    # owner: "bị trộm bị lừa", half back
 LOSS_TTL = 86400                 # …within a day of the loss
+PET_BP = 1000                    # owner: "+10%" on a fusion's chance, per 10 000 ("SSS từ 3% lên thành 13%")
+PET_TOP = 9500                   # …still a roll ("random nhé")
 GOLD_S = 3600                    # owner: "1 tiếng x1.5"
 GOLD_MULT = 150                  # hundredths
 GOLD_AHEAD = DAY_MAX * GOLD_S    # gold never runs further ahead than a day's views
@@ -184,7 +191,7 @@ def tile_credits(s: dict) -> dict:
 
 
 def spend_tile(s: dict, kind: str, n: int) -> None:
-    """🧩 n boosters of `kind` used beyond the day's free ones (game/tile_match.py _end)."""
+    """🧩 n boosters of `kind` used beyond the day's free ones (called by Ghép ba's _end)."""
     if n <= 0:
         return
     a = get(s)
@@ -217,6 +224,26 @@ def loss_back(s: dict, t: float | None = None) -> int:
     return max(1, ls['amt'] * LOSS_PCT // 100) if ls else 0
 
 
+def pet_boost(s: dict) -> int:
+    """🐾 What the next pet fusion adds to its chance (per 10 000): PET_BP after an ad, else 0."""
+    return PET_BP if enabled() and (get(s) or {}).get('pf') == 1 else 0
+
+
+def spend_pet_boost(s: dict) -> None:
+    """🐾 A fusion used the boost (success or not)."""
+    a = get(s)
+    if a:
+        a.pop('pf', None)
+
+
+def _fusable(s: dict) -> bool:
+    try:
+        from . import pet_tiers
+    except ImportError:   # a build without fusions
+        return False
+    return len(pet_tiers.all_pets(s)) >= 3
+
+
 def _career(s: dict, k: str | None):
     cid = (k or '').partition(':')[2]
     c = (s.get('careers') or {}).get(cid)
@@ -224,18 +251,46 @@ def _career(s: dict, k: str | None):
 
 
 def _on_the_way(c: dict, career: str) -> list:
-    """(order, door minute) of everything still on its way to this workplace: stock orders and stock-desk shipments,
-    each against the minute its own receive check reads."""
+    """(order, door minute, 'inv' | 'desk') of everything still on its way to this workplace: stock orders and
+    stock-desk shipments, each against the minute its own receive check reads."""
     from . import engine, inventory
     out = []
     x = (c.get('ext') or {}).get('inv')
     if isinstance(x, dict) and isinstance(x.get('orders'), list):
         door = inventory.clock(c, career, turn=c['turn'] - 1)['abs']
-        out += [(o, door) for o in x['orders'] if o.get('status') == 'in_transit' and 'at' in o and o['at'] > door]
+        out += [(o, door, 'inv') for o in x['orders'] if o.get('status') == 'in_transit' and 'at' in o and o['at'] > door]
     if isinstance(c.get('shipments'), list):
         door = engine._clock(c, career, c['turn'] - 1)['abs']
-        out += [(o, door) for o in c['shipments'] if o.get('status') == 'in_transit' and 'at' in o and o['at'] > door]
+        out += [(o, door, 'desk') for o in c['shipments'] if o.get('status') == 'in_transit' and 'at' in o and o['at'] > door]
     return out
+
+
+def _rush(s: dict, c: dict, career: str) -> tuple[list, list]:
+    """📦 Everything on its way is here now and on the shelf, as a count at the door would put it (inv_receive,
+    receive_stock: the full count, so a short delivery still gets its claim). A shelf without room keeps that crate at
+    the door. Returns (what went in, what waits)."""
+    from . import engine, inventory
+    got, wait = [], []
+    for o, door, kind in _on_the_way(c, career):
+        o.update(placed=min(o['placed'], door), lo=door, hi=door, at=door, late=None)
+        if kind == 'inv':   # a stock order (game/inventory.py)
+            it = inventory.item(career, o['item'])
+            unit = it.get('unit', 'phần')
+            if o['actual'] > inventory._receive_room(c, career, o, it['id']):
+                wait.append(it['name'])
+                continue
+            sup = inventory._known(career, o['supplier'])
+            inventory._receive_lot(c, career, o, it, sup)
+            o['status'] = 'received'
+            engine.log(s, c, 'stock', f'📺 Hàng về ngay: nhận {o["actual"]}/{o["qty"]} {it["name"]} từ {sup["name"]}.', ref=o['id'])
+            got.append(f'{o["actual"]} {unit} {it["name"]}')
+        else:                  # a stock-desk parcel (game/engine.py receive_stock)
+            name = engine.PRODUCT_INDEX[o['item']]['name'] if o['item'] in engine.PRODUCT_INDEX else o['item']
+            engine.stock_received(s, c, career, o, o['actual'])
+            engine.log(s, c, 'stock', f'📺 Hàng về ngay: nhận {o["actual"]} × {name}.', ref=o['id'])
+            got.append(f'{o["actual"]} × {name}')
+        engine.metric(c, 'restocked')
+    return got, wait
 
 
 def _retake(s: dict, k: str) -> str | None:
@@ -284,6 +339,9 @@ def _can(s: dict, place: str, t: float, k: str | None = None) -> None:
     elif place == 'retake':
         why = _retake(s, k or '')
         need(why is None, why or '', 'ads_place')
+    elif place == 'pet':
+        need(_fusable(s), 'Cần ít nhất ba bé thú cưng để ghép.', 'ads_place')
+        need((get(s) or {}).get('pf') != 1, 'Lần ghép tới đã được cộng +10% rồi, ghép xong rồi xem tiếp nhé.', 'ads_place')
     elif place == 'rush':
         cid, c = _career(s, k)
         need(c is not None and bool(_on_the_way(c, cid)), 'Không có hàng nào đang trên đường tới.', 'ads_place')
@@ -327,11 +385,14 @@ def _give(s: dict, a: dict, place: str, t: float, result: dict, k: str | None = 
             from . import promotion
             promotion.record(s, cid)['wait'] = 0
             result['message'] = '📝 Hẹn xét lại ngay sau ca làm tới.'
+    elif place == 'pet':
+        a['pf'] = 1
+        result['message'] = f'🐾 Lần ghép thú cưng tới: tỷ lệ thành công +{PET_BP // 100}%.'
     elif place == 'rush':
         cid, c = _career(s, k)
-        for o, door in _on_the_way(c, cid):
-            o.update(placed=min(o['placed'], door), lo=door, hi=door, at=door, late=None)
-        result['message'] = '📦 Hàng đã về tới cửa rồi, ra nhận và kiểm đếm nhé!'
+        got, wait = _rush(s, c, cid)
+        result['message'] = (f'📦 Hàng về ngay, đã nhập kho: {", ".join(got)}.' if got else '📦 Hàng đã về tới cửa.') + (
+            f' Kệ hết chỗ nên {", ".join(wait)} còn chờ ở cửa: bán bớt rồi nhận nhé.' if wait else '')
 
 
 def action(s: dict, name: str, p: dict) -> tuple[dict, dict]:
@@ -400,7 +461,8 @@ def public(s: dict) -> dict | None:
     ls = _loss(s, t)
     return dict(n=n, max=DAY_MAX, left=DAY_MAX - n, gold=gold_until(s) if gold_until(s) > t else 0,
                 mult=GOLD_MULT, gold_s=GOLD_S, now=int(t),
-                theft=dict(back=loss_back(s, t), what=ls['w'], until=ls['at'] + LOSS_TTL) if ls else None)
+                theft=dict(back=loss_back(s, t), what=ls['w'], until=ls['at'] + LOSS_TTL) if ls else None,
+                pet=PET_BP // 100 if pet_boost(s) else 0)
 
 
 def validate(s: dict) -> None:
@@ -410,7 +472,7 @@ def validate(s: dict) -> None:
     e = _core()
     need, integer = e.need, e.integer
     msg = 'Quảng cáo trong bản lưu không hợp lệ.'
-    need(isinstance(a, dict) and {'v', 'd', 'n'} <= set(a) <= {'v', 'd', 'n', 'tk', 'g', 'tb', 'ls'}, msg)
+    need(isinstance(a, dict) and {'v', 'd', 'n'} <= set(a) <= {'v', 'd', 'n', 'tk', 'g', 'tb', 'ls', 'pf'}, msg)
     need(a['v'] == VERSION and isinstance(a['d'], str) and len(a['d']) == 10, msg)
     integer(a['n'], 0, DAY_MAX)
     if 'tk' in a:
@@ -422,6 +484,7 @@ def validate(s: dict) -> None:
         integer(tk['at'], 0, 10**14)
     if 'g' in a:
         integer(a['g'], 0, 10**11)
+    need(a.get('pf', 1) == 1, msg)
     if 'ls' in a:
         ls = a['ls']
         need(isinstance(ls, dict) and set(ls) == {'amt', 'w', 'at'} and isinstance(ls['w'], str) and len(ls['w']) <= 80, msg)

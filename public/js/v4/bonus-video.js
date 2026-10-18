@@ -14,7 +14,7 @@
  * The stand-in is a modal dialog of its own, on top of the others, so nothing closes for it.
  *
  * openBonus(env): the "📺 Quà xem quảng cáo" sheet (☰ Thêm): the day's 7 dots, ⏰ Giờ vàng riêng, 🧩 Ghép ba boosters,
- * 💸 half of the latest theft / scam back, and where the other buttons are (📝 a failed interview / exam / review, 📦
+ * 💸 half of the latest theft / scam back, 🐾 +10 points on the next pet fusion, and where the other buttons are (📝 a failed interview / exam / review, 📦
  * goods on the way, 🚔 the camp). File name: no "ad" word (blockers hide such files, tests/test_asset_names.py). */
 import {escapeHTML as esc} from '../icons.js';
 import {duck} from '../audio.js';
@@ -171,6 +171,7 @@ function paint(){
       ${row('⏰','Giờ vàng riêng',`Lãi tiệm và quầy của bạn ×${String(a.mult/100).replace('.',',')} trong 1 giờ.${gold?` <b>Đang bật tới ${hhmm(gold)}</b> (<span data-bv-left>${Math.ceil((gold-now)/60)}</span> phút).`:''}`,go('gold',gold?'Thêm 1 giờ':'Bật 1 giờ'))}
       ${a.theft?row('💸','Lấy lại tiền bị mất',`${esc(a.theft.what)}: lấy lại một nửa, <b>${fmt(a.theft.back)} xu</b> vào ví. Hạn tới ${hhmm(a.theft.until)}.`,go('theft','Lấy lại '+fmt(a.theft.back)+' xu')):''}
       ${row('🧩','Ghép ba',`Khay đầy? Xem quảng cáo để hồi sinh. Hoặc nhận ngay +1 Hoàn tác, +1 Xáo, +1 Đẩy ô.`,`${go('tile','Nhận trợ giúp')} <button type="button" class="btn ghost small" data-bv-go="tile">Chơi Ghép ba</button>`)}
+      ${row('🐾','Ghép thú cưng',a.pet?`<b>Lần ghép tới đã được +${a.pet}% tỷ lệ thành công.</b> Ghép xong rồi xem tiếp nhé.`:'Lần ghép tới được cộng +10% tỷ lệ thành công ở mọi hạng (ví dụ 3% thành 13%), vẫn là may rủi.',a.pet?'':go('pet','+10% lần ghép tới'))}
       ${row('📺','Ở các chỗ khác','📝 Trượt phỏng vấn, bài thi chứng chỉ hay buổi xét thăng chức: thi lại ngay. 📦 Hàng đang về: về tới cửa ngay. 🚔 Trong trại: ra trại ngay. Nút 📺 nằm ngay ở chỗ đó.','')}
       <p class="bv-note">Xem hết quảng cáo mới có thưởng. Mỗi tài khoản ${a.max} lượt một ngày, 0 giờ đêm làm mới.</p>
     </div>`;
