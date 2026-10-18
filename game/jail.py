@@ -382,7 +382,7 @@ def settle(s: dict, t: float | None = None) -> bool:
 
 
 # What a jailed player may still do (everything else: JAILED). Internal (server) commands always run.
-OPEN_COMMANDS = frozenset({'settings', *COMMANDS,
+OPEN_COMMANDS = frozenset({'settings', *COMMANDS, 'ad_ticket', 'ad_claim',   # 📺 game/ads.py: inside, only the 'jail' place
                            'jr_seen', 'st_seen', 'hap_ack', 'bd_seen', 'jr_bk_read', 'lf_close'})   # acknowledgements
 # HTTP POST routes (server.py _post) open while jailed. GET only reads.
 OPEN_ROUTES = frozenset({'/api/command', '/api/feedback', '/api/feedback/edit', '/api/feedback/delete', '/api/leaderboard/visibility', '/api/live/effects',

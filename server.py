@@ -77,6 +77,7 @@ from game import family as family_babies  # 👶 the shared child at home (GET /
 from game import system_gift
 from game import town_treasure
 from game import observability  # 📺 /ads.txt (AdSense site check)
+from game import ads  # 📺 Quảng cáo có thưởng: /ads.txt and the page's referrer
 from game import wed_invite  # 💌 Thiệp mời cưới cả phố (game/wed_invite.py)
 from game import chua_wish  # 🌳 Cây ước nguyện (game/chua_wish.py)
 from game import event2010  # 💐 Thiệp 20/10: its own page /2010, cards anyone opens by link (game/event2010.py)
@@ -385,7 +386,8 @@ class Handler(BaseHTTPRequestHandler):
         # close so client/proxy pools do not reuse a socket that is being closed.
         if self.command=="POST" and urlsplit(self.path).path=="/api/command":self.send_header("Connection","close")
         self.send_header("X-Content-Type-Options","nosniff")
-        self.send_header("Referrer-Policy","no-referrer")
+        # 📺 AdSense (game/ads.py) needs the page's origin on its requests: the game page sends only the origin then.
+        self.send_header("Referrer-Policy","strict-origin-when-cross-origin" if ctype.startswith("text/html") and ads.client() else "no-referrer")
         self.send_header("Content-Security-Policy",csp)
         # Not on cacheable responses (/api/content): a copy from the browser cache would carry an old version.
         if self.path.startswith("/api/") and cache is None:self.send_header("X-Game-Version",self.server.game_version())

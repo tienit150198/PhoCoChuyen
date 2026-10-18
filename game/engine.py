@@ -674,6 +674,9 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if action.startswith("qn_"):return qn.action(s,career,action,p)  # điểm thân quen: chat, gifts, thanks, invites
     if action.startswith("st_"):return cst.action(s,career,action,p)
     if action.startswith("fair_"):return fh.action(s,action,p)  # 🏮 Hội chợ dân gian (game/fair.py): bầu cua, lô tô, chiếu trong
+    if action.startswith("ad_"):  # 📺 Quảng cáo có thưởng (game/ads.py): the ticket, then the reward
+        from . import ads
+        return ads.action(s,action,p)
     if action.startswith("jail_"):return jl.action(s,action,p)  # 🚔 Trại tạm giữ: hết ngày, công ích (game/jail.py)
     if action==sg.ACTION:  # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py): the server pays a gift into the wallet
         need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
@@ -1387,6 +1390,8 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["closeness"]=qn.public(s,focus)
     v["abandon"]=ab.public(s)
     v["fair"]=fh.public(s)  # 🏮 Hội chợ dân gian (game/fair.py)
+    from . import ads
+    v["ads"]=ads.public(s)  # 📺 Quảng cáo có thưởng (game/ads.py): None while off
     v["jail"]=jl.public(s)  # 🚔 Trại tạm giữ (game/jail.py): None when free
     v["x3"]=x3w.public()  # 🔥 Nghề x3 trong tuần (game/x3_week.py)
     v["market"]=staff_market_.public()  # 📈 lãi nhân viên theo thị trường + 🔥 nghề hot hôm nay (game/staff_market.py)

@@ -544,6 +544,8 @@ def carry_reset(old: dict, fresh: dict) -> None:
     j[RESET_KEY] = min(10**6, (n if type(n) is int and n > 0 else 0) + 1)
     from . import tile_match
     tile_match.carry_reset(old, fresh)   # 🧩 the levels cleared stay (and today's cap)
+    from . import ads
+    ads.carry_reset(old, fresh)   # 📺 the day's views stay counted
 
 
 def migrate(s: dict) -> dict:
@@ -739,6 +741,9 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
             notes.append(f'{V["emoji"]} Biển đẹp +{pct}%: +{plate} xu.')
         else:
             plate = 0
+    from . import ads   # 📺 Thưởng khép ca (game/ads.py): the offer of this shift, on the same base net (replaces the last)
+    if ads.offer_shift(s, career, _base_net(result, job_note), day):
+        result['ad_shift'] = ads.get(s)['sh']['x']
     # Rent and meals for the day that just ended.
     cost = living_cost(j)
     _wallet(j, -cost['total'], 'living', cost['label'])
@@ -1312,3 +1317,5 @@ def validate(s: dict) -> None:
     jail.validate(s)   # 🚔 journey['jail'] (optional)
     from . import tile_match
     tile_match.validate(s)   # 🧩 journey['tile'] (optional)
+    from . import ads
+    ads.validate(s)   # 📺 journey['ads'] (optional)

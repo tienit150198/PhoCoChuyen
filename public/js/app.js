@@ -351,6 +351,7 @@ function navItems(c){
   {const lv=L.live.m?.live;if(lv?.flags.kara&&lv.welcomed)items.push(['liveKara','music','Phòng hát']);}  // 🎤 Phòng hát (v4/karaoke.js): only while the live service has it on (LIVE_KARAOKE)
   {const tm=api.state?.journey?.story&&api.state.journey.tile;if(tm){RAIL_NOTE.tileMatch='🧩 Phúc lợi +'+tm.pct+'%';items.push(['tileMatch','grid','Ghép ba Phố Mây']);}}  // 🧩 Ghép ba Phố Mây (v4/tile-match.js): its badge as the entry's line
   items.push(['friends','user','Bạn bè',api.friendAlerts||0],['marriage','heart','Hôn nhân',api.marriageAlerts||0]);  // Bạn bè + Hôn nhân (v4/marriage.js, own dialog; badges from v4/ticker.js)
+  if(api.state?.ads)items.push(['bonusVideo','sparkle','Quà xem quảng cáo',api.state.ads.left>0?api.state.ads.left:0]);  // 📺 v4/bonus-video.js: only while ads are on (game/ads.py)
   items.push(['money','bag','Tiền của bạn']);  // 💰 the money sheet (v4/wealth.js), also behind the HUD money chips
   {const bk=api.state?.journey?.bank;items.push(['bank','coin','Ngân hàng',bk?.unread||(bk?.overdue?'dot':0)]);}  // 🏦 Ngân hàng Phố (v4/bank.js, own dialog)
   if(api.state?.journey?.story)items.push(['house','home','Nhà của bạn',api.state.journey.home?.own?.loan?.overdue?'dot':0]);  // 🏠 Nhà của bạn (v4/house.js, own dialog)
@@ -1414,6 +1415,8 @@ function summaryView(){
   if(s.life)later.push(lifeSummary(s.life));
   if(s.experiences?.tip_day?.count&&L.tips.use())notes.push(L.tips.m.tipSummary(s.experiences.tip_day));
   const jr=s.journey;
+  // 📺 Thưởng khép ca (game/ads.py, state.ads.shift: the last closed shift's offer): one button, while views are left.
+  {const ad=api.state?.ads;if(ad?.shift>0&&ad.left>0)notes.unshift(notice(`<b>📺 Thưởng khép ca +${fmt(ad.shift)} xu</b><p>Xem một quảng cáo ngắn để nhận thêm vào ví.</p>${button(`📺 Xem quảng cáo nhận thưởng <small>· còn ${ad.left}/${ad.max}</small>`,'bonusVideo',{place:'shift'},'primary small')}`,'success','award'));}
   // The wallet after the day, its moves as chips (owner 03/10 "chữ ít thôi": the title names the life day, the clock card the hour);
   // the 🔥 x3 day's bonus (summary.journey.x3, only when above 0) is a chip of its own; so is 🚗 Biển đẹp (journey.plate, game/garage.py).
   if(jr&&(jr.living||jr.upkeep||jr.salary||jr.x3||jr.plate))notes.push(notice(`<b>Ví còn ${fmt(jr.wallet)} xu</b><p class="ck-chips"><span class="ck-delta down">Phòng & cơm −${fmt(jr.living)}</span>${jr.upkeep?`<span class="ck-delta down">Nơi làm khác −${fmt(jr.upkeep)}</span>`:''}${jr.salary?`<span class="ck-delta up">Lương +${fmt(jr.salary)}</span>`:''}${jr.x3?`<span class="ck-delta up">🔥 x3 +${fmt(jr.x3)}</span>`:''}${jr.plate?`<span class="ck-delta up">🚗 Biển đẹp +${fmt(jr.plate_pct)}%: +${fmt(jr.plate)} xu</span>`:''}${jr.gift?`<span class="ck-delta up">🎁 Quà +${fmt(jr.gift)}</span>`:''}</p>${jr.wallet<0?'<p>Ví đang nợ: trả hết nợ thì câu chuyện mới đi tiếp.</p>':''}`,jr.wallet<0?'amber':'','bag'));
@@ -1705,7 +1708,10 @@ async function handleAction(action,data,el){
       if(action==='liveDate'){(await viaLazy(L.live,el)).openDate(data);break;}  // 💕 Góc hẹn hò (v4/dating.js)
       if(action==='liveWed'){await (await import('./v4/wedding.js')).openWeddings(env());break;}  // 💍 Lịch cưới (v4/wedding.js): its own dialog
       if(action==='liveKara'){await (await import('./v4/venue-routing.js')).visitVenue(env(),'karaoke',async()=>{await (await import('./v4/karaoke.js')).openKaraoke(env(),data);});break;}  // 🎤 Phòng hát (v4/karaoke.js): its own dialog
-      if(action==='tileMatch'){await (await import('./v4/tile-match.js')).openTileMatch(env());break;}  // 🧩 Ghép ba Phố Mây: its own dialog
+      if(action==='tileMatch'){await (await import('./v4/tile-match.js')).openTileMatch(env());break;}
+      if(action==='bonusVideo'){const m=await import('./v4/bonus-video.js');   // 📺 a place's button (data-place) or the sheet
+        if(data.place){const view=ui.view;await m.watch(env(),data.place,{restore:()=>{if(view)openSheet(view);}});if($('#sheet').open)renderSheet(false);}
+        else await m.openBonus(env());break;}  // 🧩 Ghép ba Phố Mây: its own dialog
       if(action==='lixi'){await (await import('./v4/lixi.js')).openLixi(env(),data.tab||'list');break;}  // 🧧 Lì xì: its own dialog
       if(action==='wedInvite'){await (await import('./v4/wedinvite.js')).openWedInvite(env());break;}  // 💌 Gửi thiệp mời cưới cả phố: its own dialog
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy

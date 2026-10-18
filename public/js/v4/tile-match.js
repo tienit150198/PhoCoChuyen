@@ -166,6 +166,7 @@ async function act(a,ds){
     case'close':await close();break;
     case'play':await start(Number(ds.lv)||nextLevel());break;
     case'again':await start(T.lv);break;
+    case'revive':await revive();break;
     case'next':await start(Math.min(MAX(),T.lv+1));break;
     case'home':T.view='home';T.result=null;paint();break;
     case'boost':boost(ds.k);break;
@@ -242,6 +243,23 @@ function win(g){
   T.result={win:true,lv,taps:g.taps,ms,first,id:send?item.id:0,sync:send?'wait':'none',cost};
   T.view='done';paint();sound()?.success?.();
   if(send)pump();
+}
+/** 📺 Hồi sinh (game/ads.py 'tile'): after a watched ad the tile that filled the tray goes back (the level is built
+ * again from every move but that last tap, so the moves the server replays are a real game), and the save has
+ * +1 ↩ / 🔀 / ⇪ more to use (state.journey.tile.free counts them). Google's ad closes this dialog while it plays. */
+async function revive(){
+  const g=T.g,d=dialog();if(!g||!g.lost||T.busy||!T.level)return;
+  T.busy=true;
+  let r=null;
+  try{r=await (await import('./bonus-video.js')).watch(T.env,'tile',{restore:()=>{if(!d.open)d.showModal();}});}
+  finally{T.busy=false;}
+  if(!d.open)d.showModal();
+  if(!r||g!==T.g){paint();return;}
+  const moves=T.moves.slice(0,-1),g2=new Game(T.level);
+  try{for(const m of moves)g2.move(m);}catch{paint();return;}
+  g2.useFree=g.useFree;g2.usePaid=g.usePaid;g2.useCost=g.useCost;
+  T.g=g2;T.moves=moves;T.result=null;T.view='play';
+  paint();
 }
 function lose(){
   sound()?.error?.();
@@ -342,8 +360,9 @@ function doneView(){
       ${actBar({next:'<button type="button" class="btn" data-tm="home">Sảnh</button>',
         main:`<button type="button" class="btn primary big" data-tm="${last?'home':'next'}">${last?`🏆 Xong ${MAX()} màn`:`Màn ${Math.min(MAX(),r.lv+1)} ▶`}</button>`,cls:'tm-bar'})}`;
   }
-  return `<div class="tm-done lose"><h3>😵 Khay đầy rồi!</h3></div>
-    ${actBar({next:'<button type="button" class="btn" data-tm="home">Sảnh</button>',main:`<button type="button" class="btn primary big" data-tm="again">↻ Chơi lại màn ${r.lv}</button>`,cls:'tm-bar'})}`;
+  const ad=T.env?.api?.state?.ads,tv=ad?.left>0&&T.g?.lost?`<button type="button" class="btn primary big tm-revive" data-tm="revive">📺 Hồi sinh · xem quảng cáo <small>còn ${ad.left}/${ad.max}</small></button><p class="tm-sub">Ô vừa đặt quay lại bàn, kèm +1 ↩ 🔀 ⇪.</p>`:'';   // 📺 game/ads.py
+  return `<div class="tm-done lose"><h3>😵 Khay đầy rồi!</h3>${tv}</div>
+    ${actBar({next:'<button type="button" class="btn" data-tm="home">Sảnh</button>',main:`<button type="button" class="btn ${tv?'':'primary '}big" data-tm="again">↻ Chơi lại màn ${r.lv}</button>`,cls:'tm-bar'})}`;
 }
 function syncLine(r){
   if(r.sync==='wait')return `<p class="tm-sub" role="status">⏳ Đang ghi nhận…${r.why?` ${esc(r.why)}`:''}</p>`;

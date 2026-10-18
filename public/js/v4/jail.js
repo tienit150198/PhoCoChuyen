@@ -172,7 +172,9 @@ function panelHTML(j,id){
 }
 function endButton(j){
   const wait=(j.ready*1000-nowMs())/1000;
-  return wait>0?btn(`🌙 Hết ngày sau <span data-jl-count="day">${mmss(wait)}</span>`,'end',{},'cream big full',' disabled')
+  const ad=S.env?.api?.state?.ads;   // 📺 game/ads.py: a view takes 5 minutes off the day (state.ads only while ads are on)
+  const tv=wait>0&&ad?.left>0?btn(`📺 Xem quảng cáo: bớt ${Math.round((ad.jail_s||300)/60)} phút <small>· còn ${ad.left}/${ad.max}</small>`,'bonus',{},'ghost full',S.busy?' disabled':''):'';
+  return wait>0?btn(`🌙 Hết ngày sau <span data-jl-count="day">${mmss(wait)}</span>`,'end',{},'cream big full',' disabled')+tv
     :btn(S.sure?'🌙 Chắc chưa? Hết ngày nhé':'🌙 Hết một ngày trong trại','end',{},'primary big full',S.busy?' disabled':'');
 }
 function askButton(j){
@@ -451,6 +453,12 @@ async function askBail(){
   }catch(e){S.flash={text:e.message||'Chưa nhờ được. Thử lại nhé.',kind:'bad'};}
   finally{S.busy=false;render();}
 }
+/** 📺 A rewarded ad (v4/bonus-video.js): the camp closes while Google's ad plays and opens again after. */
+async function bonus(){
+  const env=S.env;S.busy=true;render();
+  try{await (await import('./bonus-video.js')).watch(env,'jail',{restore:()=>openJail(env)});}
+  finally{S.busy=false;if(S.dlg?.open)render();}
+}
 function onClick(op,data,el){
   if(S.busy&&op!=='close'&&op!=='shut')return;
   switch(op){
@@ -460,6 +468,7 @@ function onClick(op,data,el){
     case'done':done();return;
     case'end':endDay();return;
     case'ask':askBail();return;
+    case'bonus':bonus();return;
     case'go':S.dlg.close();S.env.act?.(data.to);return;
     case'spot':if(S.map)S.map.go(data.id);else{S.panel=data.id;render();}return;   // walk there; its panel opens on arrival
     case'shut':S.panel=null;S.sure=false;S.map?.clearAt();render();return;

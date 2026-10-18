@@ -715,6 +715,13 @@ def free_left(t: dict | None) -> dict:
     return {k: max(0, FREE[k] - int(used.get(k, 0))) for k in BOOSTS}
 
 
+def _free_all(s: dict, t: dict | None) -> dict:
+    """Today's free uses plus the 📺 boosters an ad gave (game/ads.py, kept until used)."""
+    from . import ads
+    tb = ads.tile_credits(s)
+    return {k: v + tb.get(k, 0) for k, v in free_left(t).items()}
+
+
 def price(kind: str, paid: int) -> int:
     return PRICE[kind] * (2 ** paid)
 
@@ -726,7 +733,7 @@ def public(s: dict) -> dict:
     cur = (t or {}).get('cur') if t else None
     pm = permille(s)
     out = dict(lv=cleared(s), max=LEVEL_MAX, pm=pm, pct=pct_text(pm), n=0 if fresh else int(t.get('n', 0)), cap=CAP_DAY, capped=DAILY_CAP, day=today(),
-               free=free_left(t), price=dict(PRICE), slot_max=SLOT_MAX)
+               free=_free_all(s, t), price=dict(PRICE), slot_max=SLOT_MAX)
     if isinstance(cur, dict):
         out['cur'] = dict(lv=cur['lv'], b=dict(cur.get('b') or {}), p=dict(cur.get('p') or {}))
         out['at'] = cur['t']   # the clock: a first clear is counted from need_ms(taps) after it (server ms)
@@ -786,7 +793,8 @@ def _end(s: dict, p: dict, e) -> dict:
     cur = cur if isinstance(cur, dict) else None
     mine = cur if cur is not None and not new and cur['lv'] == lv else None   # an older page's attempt: its boosters are paid
     granted, paid = (mine or {}).get('b') or {}, dict((mine or {}).get('p') or {})
-    free, cost = free_left(t), 0
+    daily = free_left(t)
+    free, cost = _free_all(s, t), 0
     uses = {}
     for k in BOOSTS:
         extra = g.used[k] - granted.get(k, 0)
@@ -811,9 +819,13 @@ def _end(s: dict, p: dict, e) -> dict:
         need(s['journey']['wallet'] >= cost, f'Ví chưa đủ {cost} xu cho trợ giúp đã dùng.', 'tile_poor')
         from . import bank
         bank.pay(s, cost, f'{NAME} · trợ giúp', method='cash', kind='life', short=f'Ví chưa đủ {cost} xu cho trợ giúp.')
+    from . import ads
     for k, v in uses.items():
         if v:
-            t['u'][k] = t['u'].get(k, 0) + v
+            own = min(v, daily[k])   # the day's own free uses first, then the 📺 ones
+            if own:
+                t['u'][k] = t['u'].get(k, 0) + own
+            ads.spend_tile(s, k, v - own)
     if first:
         _set_cleared(s, t, lv)
         t['n'] = min(CAP_DAY, t['n'] + 1)   # counted for show only; stays within older builds' bound

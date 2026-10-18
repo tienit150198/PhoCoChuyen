@@ -51,7 +51,7 @@ Tài liệu này tóm tắt các biện pháp đang có trong mã nguồn và ph
 | Lượt ghé thăm | 30 ngày |
 | Bài bảng tin | 180 ngày |
 
-- Không có analytics, quảng cáo hay SDK theo dõi. Font và icon đều được tự host.
+- Không có analytics hay SDK theo dõi nếu chưa được phép. Font và icon đều được tự host. 📺 Quảng cáo có thưởng (game/ads.py, tắt khi chưa có ADS_CLIENT) chỉ tải thư viện Google AdSense khi đã bật, quảng cáo chỉ chạy khi người chơi bấm nút 📺; máy chủ chỉ đếm lượt xem trong ngày (journey.ads), không gửi dữ liệu người chơi cho Google.
 - Log không ghi cookie hay nội dung người chơi gõ.
 - Ai đọc được DB hoặc bản backup thì thấy được nội dung chơi, nên hãy bảo vệ volume `storage` và các bản sao lưu.
 

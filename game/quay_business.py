@@ -388,6 +388,9 @@ def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=
     costs += charge_income_tax(st, amount, costs)
     from . import golden_hour   # ⏰ Giờ vàng / Ngày vàng (owner 15/10): the owner's take ×2 / ×1.5 at the sale's own time
     percent = golden_hour.scale_take(income_gear.profit_percent(st,BONUS_PERCENT if employee is None else STAFF_BONUS_PERCENT), at / 1000)
+    if owner is not None:   # 📺 ⏰ Giờ vàng riêng (game/ads.py): the owner's take ×1,5 more at the sale's own time
+        from . import ads
+        percent = ads.scale_take(owner, percent, at / 1000)
     bonus = reward_margin(st, amount, costs, percent, owner)
     ratio = sum(qs.price(st, d) / qs.DISH[st['trade']][d]['base'] for d in items) / len(items)
     price_stars = 5 if ratio <= .9 else 4 if ratio < 1.15 else 3 if ratio < 1.5 else 2 if ratio < 2 else 1

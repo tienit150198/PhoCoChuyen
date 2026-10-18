@@ -1,0 +1,25 @@
+/* 📺 Quà xem quảng cáo (public/js/v4/bonus-video.js): the sheet of ☰ Thêm and the stand-in ad (ADS_FAKE). Theme
+   tokens only, phone first (390 × 844, 360 × 780), 44 px targets. */
+.sheet.bv-sheet{width:min(520px,calc(100vw - 24px))}
+.bv-root .sheet-head{display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-3);border-bottom:1px solid var(--line)}
+.bv-root .sheet-head h2{flex:1 1 auto;margin:0;font-size:var(--fs-4)}
+.bv-root .icon-btn{width:44px;height:44px}
+.bv-body{display:flex;flex-direction:column;gap:var(--sp-2);padding:var(--sp-3)}
+.bv-top{display:flex;flex-direction:column;align-items:center;gap:var(--sp-1);padding:var(--sp-3);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-2);text-align:center}
+.bv-top p{margin:0;font-size:var(--fs-2)}
+.bv-dots{display:flex;gap:6px}
+.bv-dots i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:2px solid var(--line-strong);background:var(--surface);font-style:normal;font-size:.9rem}
+.bv-dots i.on{border-color:var(--good);background:var(--good-soft)}
+.bv-row{display:flex;gap:var(--sp-2);align-items:flex-start;padding:var(--sp-2) var(--sp-3);border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface)}
+.bv-row p{margin:2px 0 var(--sp-1);font-size:var(--fs-2);color:var(--ink-2)}
+.bv-row .btn{min-height:44px;margin:2px 4px 0 0}
+.bv-ico{flex:none;font-size:1.6rem;line-height:1.2}
+.bv-note{margin:0;font-size:var(--fs-1);color:var(--ink-2);text-align:center}
+.bv-btn small{opacity:.8;font-weight:500}
+.sheet.bv-fake{width:min(360px,calc(100vw - 24px))}
+.bv-fake-box{display:flex;flex-direction:column;align-items:center;gap:var(--sp-2);padding:var(--sp-4) var(--sp-3);text-align:center}
+.bv-fake-box .btn{min-height:44px}
+.bv-fake-tv{font-size:4rem;line-height:1}
+.bv-fake-count{margin:0;font-size:var(--fs-4);font-weight:700}
+@media (prefers-reduced-motion:no-preference){.bv-fake-tv{animation:bv-bob 1.2s ease-in-out infinite alternate}}
+@keyframes bv-bob{from{transform:translateY(0)}to{transform:translateY(-6px)}}
