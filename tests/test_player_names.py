@@ -143,8 +143,8 @@ class PlayerNames(Base):
         entered, release, repairing = threading.Event(), threading.Event(), threading.Event()
         backend = []
         original = accounts.sync_character_name
-        def paused(db, sid, before, after):
-            original(db, sid, before, after)
+        def paused(db, sid, before, after, again=False):
+            original(db, sid, before, after, again)
             entered.set()
             self.assertTrue(release.wait(8))
         def repair():
@@ -179,3 +179,35 @@ class PlayerNames(Base):
             self.store.command(self.a, str(uuid.uuid4()), self.store.read(self.a)[1], None, 'settings', dict(musicVolume=25))
             notify.assert_not_called()
         self.assertEqual(accounts.status(self.store, self.a)['display'], 'Nameowner')
+
+    # 18/10 (F#420): the v4 rename (Hành trình, jr_profile) left accounts.display (chat, friends, Bảng vàng) on the old name
+    def profile(self, token=None, **payload):
+        token = token or self.a
+        return self.store.command(token, str(uuid.uuid4()), self.store.read(token)[1], None, 'jr_profile', payload)
+
+    def test_journey_rename_updates_account_name_in_both_store_paths(self):
+        original = self.identity()
+        for tries, name in ((4, 'Lan Hành Trình'), (0, 'Tú Hành Trình')):
+            with self.subTest(tries=tries), patch('game.storage.OPTIMISTIC_TRIES', tries):
+                self.assertEqual(self.profile(name=name, gender='female')['state']['name'], name)
+                self.assertEqual(accounts.status(self.store, self.a)['display'], name)
+                with self.store.connect() as db:
+                    self.assertEqual(friends._card(db, self.sid(self.b), self.sid(self.a))['name'], name)
+                self.assertEqual(self.identity(), original)
+
+    def test_journey_same_name_catches_up_a_stale_account_name_once(self):
+        from game import live_chat
+        self.set_legacy_name(self.a, 'Tên Đổi Trước Đây')   # renamed from Hành trình by 2.4.44: display kept "Nameowner"
+        with patch.object(live_chat, 'notify', wraps=live_chat.notify) as notify:
+            self.profile(name='Tên Đổi Trước Đây')
+            self.assertEqual(accounts.status(self.store, self.a)['display'], 'Tên Đổi Trước Đây')
+            self.profile(name='Tên Đổi Trước Đây', gender='male')
+            self.assertEqual(notify.call_count, 1)
+            self.assertEqual(notify.call_args.args[1], dict(op='name', sid=self.sid(self.a)))
+
+    def test_journey_default_name_never_overwrites_account_name(self):
+        self.set_legacy_name(self.b, 'Mây')
+        with patch('game.live_chat.notify') as notify:
+            self.profile(self.b, gender='male')
+            notify.assert_not_called()
+        self.assertEqual(accounts.status(self.store, self.b)['display'], 'Namefriend')

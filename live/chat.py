@@ -1429,6 +1429,8 @@ class ChatFeature(Feature):
                     resident = room.data.get('people', {}).get(pid)
                     if isinstance(resident, dict) and 'name' in resident:
                         resident['name'] = name  # shared-home snapshots for later entrants
+                    elif hasattr(resident, 'name'):
+                        resident.name = name  # 18/10 (F#420): street/fair/booth walkers too (later entrants, the walker card)
         for other in self.hub.players.values():
             if pid in other.friends:
                 other.friends[pid]['name'] = name

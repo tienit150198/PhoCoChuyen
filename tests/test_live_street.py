@@ -519,6 +519,18 @@ class Cards(StreetCase):
         self.assertEqual((await b.call('invite_reply', 'error', id=sent['id'], ok=True))['code'], 'gone')
 
 
+    async def test_renamed_walker_shows_the_new_name_to_later_entrants_and_on_the_card(self):   # 18/10 (F#420)
+        ta, sa = self.account('Tên Cũ Dạo Phố')
+        a = await self.walker('Tên Cũ Dạo Phố', token=ta)
+        with self.store.connect() as db:
+            db.execute('UPDATE accounts SET display=? WHERE sid=?', ('Tên Mới Dạo Phố', sa))
+        await self.app.chat.on_notify(dict(op='name', sid=sa))
+        await a.expect('renamed')
+        b = await self.walker('Người Đến Sau')
+        self.assertIn('Tên Mới Dạo Phố', {p['name'] for p in b.room['people']})
+        self.assertEqual((await b.call('card', 'card', pid=a.welcome['me']['pid']))['name'], 'Tên Mới Dạo Phố')
+
+
 @unittest.skipUnless(HAVE_WS, 'needs websockets')
 class Switch(LiveCase):
     async def test_street_off(self):

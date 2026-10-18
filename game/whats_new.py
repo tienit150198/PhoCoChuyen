@@ -32,6 +32,14 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.45", date="2026-10-18", items=(
+        dict(emoji='🖼️', text="Top bảng xếp hạng có khung avatar và khung chat riêng theo danh hiệu, hiện ở Cả phố, khi đi dạo và trên bảng xếp hạng."),
+        dict(emoji='🌈', text="Chip danh hiệu top đổi màu: Top 1 vàng óng, Top 2–3 bạc, Top 4–10 đồng, Trùm nghề tím hồng."),
+        dict(emoji='🏺', text="Bảng Sưu tầm có danh hiệu tuần: Bộ sưu tập huyền thoại, Nhà sưu tầm đấu giá, Hội sưu tầm."),
+        dict(emoji='💰', text="Sửa lỗi quỹ tiệm trên 1 triệu xu không rút được về ví."),
+        dict(emoji='🐱', text="Đi xe là thú cưng ngồi chung: xe đạp, xe máy ngồi giỏ trước, ô tô ngồi ghế sau; xuống xe lại đi theo bạn."),
+        dict(emoji='✏️', text="Đổi tên ở Hành trình giờ cập nhật cả chat, bạn bè, bảng xếp hạng (đã đổi mà còn tên cũ thì lưu lại tên một lần)."),
+    )),
     dict(version="2.4.44", date="2026-10-18", items=(
         dict(emoji='🧩', text="Ghép ba màn 101–200 thêm nhiều loại đồ: từ 22 lên tới 40 loại (thêm 🍩 🎸 🍕 🐼 🦋…), càng về sau càng khó."),
     )),

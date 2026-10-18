@@ -10,7 +10,7 @@ Who holds what
   with their own names (TIERS, BOARD_TITLES).
 * Every workplace board: its top 1 is "🏆 Trùm <nghề>" (CAREER_NOUN).
 * Only players the board shows (game/leaderboard.py _VISIBLE: accounts unless hidden, guests who opted in), in
-  the board's own order. Nothing is written into a save: holding a weekly title is a server fact (table
+  the board's own order. 💎 Sưu tầm (`collection`) too since 18/10. Nothing is written into a save: holding a weekly title is a server fact (table
   `lb_weekly`), shown on the board, under the name in Phố nghề and on the name tag in Đi dạo.
 
 When
@@ -35,7 +35,7 @@ import time
 from .wedding_live import vn_day, vn_week, week_start, VN   # the Vietnam calendar ("Khách mời của tuần" uses it too)
 
 META = 'weekly'                 # leaderboard_meta key: '<VN day>|<ISO week>' of the last refresh
-ALL, TITLES, CERTS, WEALTH = 'all', 'titles', 'certs', 'wealth'
+ALL, TITLES, CERTS, WEALTH, COLLECTION = 'all', 'titles', 'certs', 'wealth', 'collection'
 TOP = 10                        # ranks that hold a title on the main boards
 TIERS = ((1, 1), (2, 3), (4, 10))   # (first rank, last rank) of each tier
 TIER_LABELS = ('Top 1', 'Top 2–3', 'Top 4–10')
@@ -44,8 +44,10 @@ BOARD_TITLES = {                # (emoji, name) per tier
     TITLES: (('🏅', 'Vua săn danh hiệu'), ('✨', 'Nhà sưu tầm xịn sò'), ('🎖️', 'Hội săn danh hiệu')),
     CERTS: (('🎓', 'Thủ khoa của phố'), ('📜', 'Học bá chính hiệu'), ('🤓', 'Mọt sách có số má')),
     WEALTH: (('💎', 'Đại gia của phố'), ('💰', 'Đại gia mới nổi'), ('🤑', 'Hội nhà giàu')),
+    # 18/10 (owner: "sưu tầm cũng có nè"): 💎 Sưu tầm (game/auction.py collection_score) holds titles like the others.
+    COLLECTION: (('🏺', 'Bộ sưu tập huyền thoại'), ('🔨', 'Nhà sưu tầm đấu giá'), ('💠', 'Hội sưu tầm')),
 }
-MAIN = (ALL, TITLES, CERTS, WEALTH)     # the order of honour (a name tag shows the best one: tier first, then this order)
+MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION)     # the order of honour (a name tag shows the best one: tier first, then this order)
 CAREER_EMOJI = '🏆'
 CAREER_NOUN = dict(
     milk_tea='trà sữa', grocery='tạp hóa', delivery='giao hàng', cafe_bakery='bánh & cà phê', florist='tiệm hoa',
@@ -54,7 +56,8 @@ CAREER_NOUN = dict(
     fruit='trái cây', garbage='thu gom rác', drain='thông cống', homemaker='nội trợ', ice_cream='tiệm kem', pho='quán phở', com='quán cơm', nail='tiệm nail', pagoda='việc chùa', photobooth='tiệm ảnh', library='thư viện', giupviec='giúp việc', naucom='bếp nhà khách', babysitter='trông trẻ', customer_care='chăm sóc khách', pharmacy='nhà thuốc',
     tour_guide='dẫn tour', teacher='bục giảng', accounting='sổ sách', pilot='buồng lái', flight_attendant='khoang khách', oil='giàn khoan',
     corp_accounting='kế toán doanh nghiệp', tax_payroll='thuế & lương', group_accounting='kế toán tập đoàn',
-    hr_admin='nhân sự', secretary='thư ký', it_helpdesk='IT văn phòng', railway='gác chắn', nurse='khoa Nội', lighthouse='hải đăng', rescue='tổng đài cứu hộ', lifeguard='hồ bơi', police='công an phường', zpop='tiệm album', customs='hải quan', hotel='khách sạn', banquet='nhà hàng tiệc')
+    hr_admin='nhân sự', secretary='thư ký', it_helpdesk='IT văn phòng', railway='gác chắn', nurse='khoa Nội', lighthouse='hải đăng', rescue='tổng đài cứu hộ', lifeguard='hồ bơi', police='công an phường', zpop='tiệm album', customs='hải quan', hotel='khách sạn', banquet='nhà hàng tiệc',
+    lawyer='văn phòng luật', art_studio='xưởng vẽ', post_office='bưu điện', laundry='giặt ủi')
 # A workplace whose top 1 is not a "Trùm": nobody is the boss of a pagoda (game/pagoda_voice.py).
 CAREER_TITLE = dict(pagoda=('🪷', 'Siêng việc chùa nhất tuần'))
 HOLDERS_SECONDS = 60.0          # how long a process trusts its copy of the current holders

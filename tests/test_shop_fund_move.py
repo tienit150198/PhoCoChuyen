@@ -114,6 +114,40 @@ class FundMoveTest(unittest.TestCase):
         self.assertTrue(all(abs(r['amount']) <= 10_000_000 for r in rows))
         validate_state(json.loads(json.dumps(s)))
 
+    def test_a_fund_over_a_million_can_be_drawn(self):
+        # F#416 (18/10): "không rút tiền từ quỹ về ví được": a fund past 1,000,080 xu answered "Số lượng không hợp lệ."
+        s = self.s
+        c = s['careers']['milk_tea']
+        c['ops']['finance']['opening_balance'] += 50_000_000 - c['money']
+        c['money'] = 50_000_000
+        wallet0 = s['journey']['wallet']
+        most = public_state(s)['journey']['places']['milk_tea']['withdraw_max']
+        self.assertEqual(most, jr.withdraw_max(c, s['journey']))
+        self.assertGreater(most, 45_000_000)
+        s, r = act(s, 'jr_withdraw', career='milk_tea', amount=45_000_000)
+        self.assertEqual(s['careers']['milk_tea']['money'], 5_000_000)
+        self.assertEqual(s['journey']['wallet'], wallet0 + 45_000_000)
+        rows = [x for x in s['journey']['history'] if x['kind'] == 'draw']
+        self.assertEqual(sum(x['amount'] for x in rows), 45_000_000)
+        self.assertTrue(all(0 < x['amount'] <= jr.ROW_MAX for x in rows))
+        self.assertTrue(ledger_ok(s['careers']['milk_tea']))
+        validate_state(json.loads(json.dumps(s)))
+
+    def test_a_draw_never_fills_the_wallet_past_its_limit(self):
+        s = self.s
+        c = s['careers']['milk_tea']
+        c['ops']['finance']['opening_balance'] += 50_000_000 - c['money']
+        c['money'] = 50_000_000
+        s['journey']['wallet'] = jr.WALLET_MAX - 1000
+        self.assertEqual(jr.withdraw_max(c, s['journey']), 1000)
+        before = copy.deepcopy(s)
+        with self.assertRaisesRegex(GameError, 'tối đa 1000 xu'):
+            act(s, 'jr_withdraw', career='milk_tea', amount=1001)
+        self.assertEqual(s, before)
+        s, _ = act(s, 'jr_withdraw', career='milk_tea', amount=1000)
+        self.assertEqual(s['journey']['wallet'], jr.WALLET_MAX)
+        validate_state(json.loads(json.dumps(s)))
+
     def test_capital_rejects_overflow_before_moving_money(self):
         s = self.s
         s['journey']['wallet'] = 200_000_000

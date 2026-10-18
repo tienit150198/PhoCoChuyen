@@ -748,9 +748,9 @@ class Store:
                 if action=='live_fx':
                     from . import dog_bark
                     dog_bark.fx_commit(db,sid,result)  # 🐕 a pot / a stake back / a weekly prize (paid by 2.4.15 and older): its row flips here, once
-            if action == 'settings':
+            if action in ('settings','jr_profile'):  # 18/10 (F#420): Hành trình's rename (jr_profile) never reached accounts.display
                 from . import accounts
-                accounts.sync_character_name(db,sid,before,current)
+                accounts.sync_character_name(db,sid,before,current,again=action=='jr_profile')
             _write_archive(db,sid,cut)
             if board and board[1]:lb.write(db,sid,board[0],old=board[2] if len(board)>2 else None)  # only when a number on a board moved, only those rows
             if steps[0]:rt.write_marks(db,sid,steps[0],steps[1])  # rare: only when a funnel step was crossed
@@ -849,9 +849,9 @@ class Store:
             if action=='live_fx':
                 from . import dog_bark
                 dog_bark.fx_commit(db,sid,result)  # 🐕 a pot / a stake back / a weekly prize (paid by 2.4.15 and older): its row flips here, once
-            if action == 'settings':
+            if action in ('settings','jr_profile'):  # 18/10 (F#420): see above
                 from . import accounts
-                accounts.sync_character_name(db,sid,before,raw)
+                accounts.sync_character_name(db,sid,before,raw,again=action=='jr_profile')
             _write_archive(db,sid,cut)
             if board[1]:lb.write(db,sid,board[0],old=board[2])
             if steps[0]:rt.write_marks(db,sid,steps[0],steps[1])

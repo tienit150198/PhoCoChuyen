@@ -5,6 +5,7 @@
  * The names mirror game/lb_titles.py, game/fair.py TITLE_ROWS and game/wedding_live.py (tests/test_live_honours.py
  * compares them). An unknown id shows nothing; an older service sends no `tt`. */
 import {escapeHTML as esc} from '../icons.js';
+import {chipClass} from './honour-frames.js';   // 🖼️ the top titles' colours (owner 18/10)
 
 // game/lb_titles.py BOARD_TITLES, TIERS: the main boards' tiers (top 1 / top 2–3 / top 4–10)
 const BOARDS={
@@ -12,6 +13,7 @@ const BOARDS={
   titles:['Danh hiệu',[['🏅','Vua săn danh hiệu'],['✨','Nhà sưu tầm xịn sò'],['🎖️','Hội săn danh hiệu']]],
   certs:['Chứng chỉ',[['🎓','Thủ khoa của phố'],['📜','Học bá chính hiệu'],['🤓','Mọt sách có số má']]],
   wealth:['Tài phú',[['💎','Đại gia của phố'],['💰','Đại gia mới nổi'],['🤑','Hội nhà giàu']]],
+  collection:['Sưu tầm',[['🏺','Bộ sưu tập huyền thoại'],['🔨','Nhà sưu tầm đấu giá'],['💠','Hội sưu tầm']]],
 };
 const tierOf=r=>r===1?0:r<=3?1:2;
 // game/lb_titles.py CAREER_NOUN (a workplace board's top 1 is "🏆 Trùm <noun>"), CAREER_TITLE (no "Trùm" there)
@@ -23,7 +25,9 @@ const NOUN={milk_tea:'trà sữa',grocery:'tạp hóa',delivery:'giao hàng',caf
   customer_care:'chăm sóc khách',pharmacy:'nhà thuốc',tour_guide:'dẫn tour',teacher:'bục giảng',accounting:'sổ sách',
   pilot:'buồng lái',flight_attendant:'khoang khách',oil:'giàn khoan',corp_accounting:'kế toán doanh nghiệp',
   tax_payroll:'thuế & lương',group_accounting:'kế toán tập đoàn',hr_admin:'nhân sự',secretary:'thư ký',it_helpdesk:'IT văn phòng',
-  railway:'gác chắn',nurse:'khoa Nội',lighthouse:'hải đăng',rescue:'tổng đài cứu hộ',lifeguard:'hồ bơi',police:'công an phường',zpop:'tiệm album'};
+  railway:'gác chắn',nurse:'khoa Nội',lighthouse:'hải đăng',rescue:'tổng đài cứu hộ',lifeguard:'hồ bơi',police:'công an phường',zpop:'tiệm album',
+  customs:'hải quan',hotel:'khách sạn',banquet:'nhà hàng tiệc',
+  lawyer:'văn phòng luật',art_studio:'xưởng vẽ',post_office:'bưu điện',laundry:'giặt ủi'};
 const CAREER_TITLE={pagoda:['🪷','Siêng việc chùa nhất tuần','Siêng việc chùa']};
 // game/fair.py TITLE_ROWS (full names) with a short one for the chip; game/wedding_live.py TITLE_NAMES (the race)
 const EVENT={
@@ -38,6 +42,8 @@ const EVENT={
   f_bao:['🌪️','Trúng bão bầu cua','Bão bầu cua','Chợ đen'],
   f_dart:['🎯','Mắt thần phi tiêu','Mắt thần','Chợ đen'],
   f_raid:['🚨','Bị công an hỏi thăm','Bị hỏi thăm','Chợ đen'],
+  f_loss_king:['🥀','Vua đen đủi','Vua đen đủi','Chợ đen'],
+  f_loss_club:['☔','Hội đen đủi','Hội đen đủi','Chợ đen'],
   w_vip:['🥇','Khách quý của phố','Khách quý','Khách mời của tuần'],
   w_pro:['🎊','Ăn cưới chuyên nghiệp','Ăn cưới pro','Khách mời của tuần'],
 };
@@ -61,7 +67,7 @@ export function title(api,id){
 export function titles(api,tt){
   if(!Array.isArray(tt))return [];
   const out=[],seen=new Set();
-  for(const id of tt.slice(0,16)){if(seen.has(id))continue;seen.add(id);const t=title(api,id);if(t)out.push(t);}
+  for(const id of tt.slice(0,16)){if(seen.has(id))continue;seen.add(id);const t=title(api,id);if(t)out.push({...t,id});}
   return out;
 }
 
@@ -88,7 +94,7 @@ html[data-theme="dem"] .hn-more{background:rgba(255,255,255,.1);color:inherit}
 export function chips(api,tt,max=2,more=true){
   const L=titles(api,tt);if(!L.length)return '';ensureCss();
   const n=max>0?Math.min(max,L.length):L.length,rest=more?L.length-n:0;
-  const chip=t=>`<em class="hn-chip" title="${esc(t.full)}"><i aria-hidden="true">${esc(t.emoji)}</i><span>${esc(t.short)}</span></em>`;
+  const chip=t=>`<em class="hn-chip${chipClass(t.id)}" title="${esc(t.full)}"><i aria-hidden="true">${esc(t.emoji)}</i><span>${esc(t.short)}</span></em>`;
   return `<span class="hn-chips" aria-label="Danh hiệu: ${esc(L.map(t=>t.full).join(', '))}">${L.slice(0,n).map(chip).join('')}${rest?`<em class="hn-chip hn-more">+${rest}</em>`:''}</span>`;
 }
 /** How many chips fit inline: 2 on a phone, 3 on a wide screen (the chat column is at most 360 px). */

@@ -382,7 +382,8 @@ function hide(){if(W.card&&!W.card.hidden){W.card.hidden=true;W.card.innerHTML='
 
 /* ---- frames ---- */
 function kick(){if(!W.raf&&visible()){W.last=performance.now();W.raf=requestAnimationFrame(loop);}}
-/* ---- 🐾 the pet that walks with you: trails a step behind, sits when you stop (an image of v4/pet-art.js, cached) ---- */
+/* ---- 🐾 the pet that walks with you: trails a step behind, sits when you stop (an image of v4/pet-art.js, cached);
+ * on the vehicle it rides along (góp ý #413: in the basket / on the back seat, ./ride.js) and hops off with you ---- */
 const PET={img:new Map(),x:0,y:0,on:false,face:1,moving:false};
 function petImg(pose){
   const ref=S()?.journey?.pets?.ref,cat=W.env?.api?.content?.journey?.pets;if(!ref||!cat)return null;
@@ -392,6 +393,7 @@ function petImg(pose){
 }
 function petStep(m,dt){
   if(!S()?.journey?.pets?.ref){PET.on=false;return false;}
+  if(riding()){PET.x=m.x;PET.y=m.y;PET.on=true;PET.moving=false;return false;}   // riding along: off where you get off
   const tx=m.x-26*PET.face,ty=m.y+5;
   if(!PET.on){PET.x=tx;PET.y=ty;PET.on=true;}
   let ex=tx-PET.x,ey=ty-PET.y,d=Math.hypot(ex,ey);
@@ -400,7 +402,7 @@ function petStep(m,dt){
   PET.moving=false;return false;
 }
 function drawPet(c,world){
-  if(!PET.on)return;const pose=PET.moving?'walk':'sit',im=petImg(pose);if(!im)return;
+  if(!PET.on||riding())return;const pose=PET.moving?'walk':'sit',im=petImg(pose);if(!im)return;
   world();const w=pose==='walk'?46:40,h=pose==='walk'?w*62/72:w,foot=pose==='walk'?58/62:64/68;
   c.save();c.translate(PET.x,PET.y);if(PET.face<0)c.scale(-1,1);c.drawImage(im,-w/2,-h*foot,w,h);c.restore();
 }
@@ -467,7 +469,8 @@ function draw(){
   // The player: the cached sprite, a little hop while walking; on the vehicle (./ride.js), or beside it parked.
   const sp=sprite(),m=W.me,hop=m.path?.length&&!still()?Math.abs(Math.sin(m.step))*3:0,v=W.ride,world=()=>c.setTransform(k*d,0,0,k*d,-W.cam.x*k*d,-W.cam.y*k*d);
   const me=()=>{
-    if(riding()){world();if(W.figKey!==W.spriteKey){W.figKey=W.spriteKey;W.fig=figure(S());}drawRide(c,{x:m.x,y:m.y,s:ME,px:k*d,F:W.fig,fkey:W.spriteKey,v,r:W.rv});return;}
+    if(riding()){world();if(W.figKey!==W.spriteKey){W.figKey=W.spriteKey;W.fig=figure(S());}const pet=PET.on?petImg('sit'):null;
+      drawRide(c,{x:m.x,y:m.y,s:ME,px:k*d,F:W.fig,fkey:W.spriteKey,v,r:W.rv,pet,pkey:pet?JSON.stringify(S().journey.pets.ref):''});return;}
     c.setTransform(1,0,0,1,0,0);
     c.drawImage(sp,Math.round((m.x-W.cam.x)*k*d-W.spriteFoot[0]),Math.round((m.y-W.cam.y-hop)*k*d-W.spriteFoot[1]));};
   const pk=v&&W.park,parked=()=>{world();const f=pk.face??1;drawRide(c,{x:pk.x,y:pk.y,s:ME,px:k*d,v,r:{face:f,from:f,turn:1,ang:0}});};

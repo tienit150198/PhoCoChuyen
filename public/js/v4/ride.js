@@ -146,9 +146,11 @@ export function plateAt(c,x,y,w,h,text,fl,px,gold=false){
   c.fillText(text,0,0);c.restore();
 }
 /* Each: wheels [[x, r]], seat [x, y] (the character's feet), ps (its size), grips (hands on the bars), clip (windows),
- * back (behind the rider), front (over the rider), half (shadow), plate [x, y, w, h]. */
+ * back (behind the rider), front (over the rider), half (shadow), plate [x, y, w, h], pet [x, y, w] (🐾 góp ý #413:
+ * the pet riding along sits there, paws at (x, y), w wide: in a two-wheeler's front basket [x, y, w, h, bracket x?],
+ * on a car's back seat). */
 const ART={
-  bicycle:{wheels:[[-44,22],[42,22]],seat:[20,-40],ps:1,half:62,grips:[[-34,-75],[-27,-73]],
+  bicycle:{wheels:[[-44,22],[42,22]],seat:[20,-40],ps:1,half:62,grips:[[-34,-75],[-27,-73]],basket:[-72,-90,32,22],pet:[-56,-79,50],
     back(c,P,v){
       const f=P.p,w=4.5;
       L(c,42,-22,4,-24,f,w);L(c,42,-22,20,-56,f,w);L(c,4,-24,22,-58,f,w);L(c,20,-52,-28,-60,f,w);L(c,4,-24,-28,-56,f,w);
@@ -157,10 +159,10 @@ const ART={
       arc(c,42,-22,26,Math.PI*1.1,Math.PI*1.75,P.d,3);
       L(c,-30,-62,-32,-74,'#8b8480',3);L(c,-38,-74,-22,-76,'#5b524c',4);
       R(c,10,-64,24,7,SEAT,4);
-      if(v.id==='xe_dap'){R(c,-72,-90,32,22,'#c99a5a',6,'#9a6f3c',1.5);for(const x of [-64,-56,-48])L(c,x,-87,x,-70,'#b3844b',1);bloom(c,-62,-92,7,'#f19cb5');bloom(c,-50,-94,6,'#fff3d6');}
+      if(v.id==='xe_dap'){basket(c,[-72,-90,32,22]);bloom(c,-62,-92,7,'#f19cb5');bloom(c,-50,-94,6,'#fff3d6');}
       E(c,-36,-66,3.5,3.5,LAMP);
     }},
-  ebike:{wheels:[[-44,22],[42,22]],seat:[20,-40],ps:1,half:62,grips:[[-34,-75],[-27,-73]],
+  ebike:{wheels:[[-44,22],[42,22]],seat:[20,-40],ps:1,half:62,grips:[[-34,-75],[-27,-73]],basket:[-72,-90,32,22],pet:[-56,-79,50],
     back(c,P){
       const f=P.p;
       c.beginPath();c.moveTo(-29,-60);c.quadraticCurveTo(-18,-26,4,-24);c.strokeStyle=f;c.lineWidth=8;c.lineCap='round';c.stroke();
@@ -174,7 +176,7 @@ const ART={
       R(c,10,-64,24,7,SEAT,4);
       E(c,-37,-66,4.5,4,LAMP);
     }},
-  cub:{wheels:[[-54,19],[50,19]],seat:[22,-62],ps:1,half:78,grips:[[-46,-108],[-37,-106]],plate:[64,-74,22,12],
+  cub:{wheels:[[-54,19],[50,19]],seat:[22,-62],ps:1,half:78,grips:[[-46,-108],[-37,-106]],plate:[64,-74,22,12],basket:[-86,-96,32,22,-47],pet:[-70,-85,50],
     back(c,P){
       R(c,-14,-48,34,24,'#8b8480',7);L(c,4,-26,70,-30,'#d8d2c8',5);
       R(c,-10,-84,74,12,'#3f3a38',6);R(c,48,-86,30,4,'#8b8480',2);
@@ -188,7 +190,7 @@ const ART={
       R(c,-60,-112,30,10,'#6f6a6a',5);E(c,-58,-100,8,9,CHROME);E(c,-59,-100,6,7,LAMP);
       R(c,72,-66,6,9,TAIL,3);
     }},
-  scooter:{wheels:[[-54,17],[50,17]],seat:[24,-64],ps:1,half:84,grips:[[-48,-107],[-36,-105]],plate:[60,-46,22,12],
+  scooter:{wheels:[[-54,17],[50,17]],seat:[24,-64],ps:1,half:84,grips:[[-48,-107],[-36,-105]],plate:[60,-46,22,12],basket:[-90,-94,32,22,-55],pet:[-74,-83,50],
     back(c,P){R(c,-44,-34,62,10,'#efe2cf',5,'#c9b49a',1.2);R(c,-4,-86,62,14,SEAT,7);R(c,4,-84,40,4,'#ffffff30',2);},
     front(c,P){
       R(c,-2,-74,82,50,P.p,24,P.line,1.5);E(c,50,-26,22,7,P.d);R(c,10,-56,56,6,'#ffffff50',3);
@@ -197,7 +199,7 @@ const ART={
       R(c,-64,-112,34,9,'#6f6a6a',4);E(c,-62,-96,7,8,LAMP);L(c,-38,-110,-32,-124,'#8b8480',2.5);E(c,-31,-127,6,4,'#cfe0e6');
       R(c,76,-62,6,10,TAIL,3);
     }},
-  mini:{wheels:[[-48,18],[50,18]],seat:[-20,-12],ps:.74,half:84,plate:[56,-44,24,12],
+  mini:{wheels:[[-48,18],[50,18]],seat:[-20,-12],ps:.74,half:84,plate:[56,-44,24,12],pet:[25,-52,50],
     clip(c){poly(c,[[-46,-58],[-33,-94],[-4,-96],[-4,-58]]);poly(c,[[4,-58],[4,-96],[28,-96],[46,-58]]);},
     back(c,P){
       c.beginPath();c.moveTo(-54,-54);c.bezierCurveTo(-48,-84,-40,-104,-20,-104);c.lineTo(30,-104);c.bezierCurveTo(46,-104,54,-80,60,-54);c.closePath();c.fillStyle=P.p;c.fill();
@@ -211,7 +213,7 @@ const ART={
       R(c,-60,-62,120,5,'#ffffff40',2.5);
       E(c,-78,-46,6,6,LAMP);R(c,74,-54,6,11,TAIL,3);R(c,-86,-32,14,8,CHROME,4);R(c,72,-32,14,8,CHROME,4);
     }},
-  suv:{wheels:[[-56,21],[58,21]],seat:[-28,-16],ps:.8,half:98,plate:[64,-48,26,13],
+  suv:{wheels:[[-56,21],[58,21]],seat:[-28,-16],ps:.8,half:98,plate:[64,-48,26,13],pet:[13,-64,54],
     clip(c){poly(c,[[-58,-68],[-46,-104],[-12,-104],[-12,-68]]);poly(c,[[-4,-68],[-4,-104],[30,-104],[30,-68]]);poly(c,[[38,-68],[38,-104],[66,-104],[72,-68]]);},
     back(c,P){
       P_(c,[[-66,-62],[-52,-112],[72,-114],[84,-62]],P.p);R(c,-44,-122,108,5,'#5b5552',2);L(c,-36,-117,-36,-112,'#5b5552',3);L(c,56,-117,56,-112,'#5b5552',3);
@@ -225,7 +227,7 @@ const ART={
       R(c,-80,-70,160,5,'#ffffff40',2.5);
       R(c,-92,-64,10,10,LAMP,3);R(c,86,-64,7,14,TAIL,3);R(c,-96,-36,18,10,'#5b5552',4);R(c,80,-36,18,10,'#5b5552',4);
     }},
-  convertible:{wheels:[[-58,19],[60,19]],seat:[-6,-26],ps:.8,half:100,grips:[[-34,-74],[-28,-71]],plate:[68,-44,24,12],
+  convertible:{wheels:[[-58,19],[60,19]],seat:[-6,-26],ps:.8,half:100,grips:[[-34,-74],[-28,-71]],plate:[68,-44,24,12],pet:[42,-56,50],
     back(c,P){R(c,-24,-66,84,12,'#8a5a3c',5);R(c,10,-90,16,30,'#8a5a3c',7);R(c,34,-86,14,26,'#8a5a3c',7);},
     front(c,P){
       R(c,-96,-60,192,36,P.p,16,P.line,1.5);c.beginPath();c.moveTo(-96,-46);c.quadraticCurveTo(-70,-66,-40,-60);c.lineTo(-96,-60);c.closePath();c.fillStyle=P.p;c.fill();
@@ -235,7 +237,7 @@ const ART={
       E(c,-32,-68,3,10,'#6b4c34');
       E(c,-90,-50,7,6,LAMP);R(c,88,-56,6,10,TAIL,3);R(c,-100,-32,22,7,CHROME,3.5);R(c,80,-32,22,7,CHROME,3.5);
     }},
-  super:{wheels:[[-58,19],[56,19]],seat:[0,-14],ps:.6,half:100,plate:[66,-40,24,12],
+  super:{wheels:[[-58,19],[56,19]],seat:[0,-14],ps:.6,half:100,plate:[66,-40,24,12],pet:[34,-48,42],
     clip(c){poly(c,[[-40,-50],[-18,-86],[32,-88],[62,-52]]);},
     back(c,P){P_(c,[[-40,-50],[-18,-86],[32,-88],[62,-52]],'#3b4a58');},
     front(c,P){
@@ -250,6 +252,13 @@ const ART={
     }},
 };
 function P_(c,pts,fill){P(c,pts,fill);}
+/** A wicker basket (giỏ xe) [x, y, w, h]; bar: a bracket from it to the handlebar's column at that x. */
+function basket(c,[x,y,w,h],bar=null){
+  if(bar!=null)L(c,x+w-2,y+h*.45,bar,y+h*.45,'#8b8480',3);
+  R(c,x,y,w,h,'#c99a5a',6,'#9a6f3c',1.5);for(let i=1;i<4;i++)L(c,x+w*i/4,y+3,x+w*i/4,y+h-2,'#b3844b',1);
+}
+/** 🐾 The pet riding along (an <img> of ./pet-art.js, the sit pose: paws at 64/68 of its height), at the vehicle's spot. */
+function petOn(c,A,im){const [x,y,w]=A.pet;c.drawImage(im,x-w/2,y-w*64/68,w,w);}
 /** The dark wheel wells over the top of the wheels (drawn in the body: the wheels themselves turn under it). */
 function arches(c,P,wheels){for(const [x,r] of wheels){c.beginPath();c.arc(x,-r,r+4,Math.PI,0);c.closePath();c.fillStyle='#3a3330';c.fill();}}
 /** A soft white shine across the windows (over whoever sits inside). */
@@ -283,9 +292,10 @@ const CACHE=new Map();
 /** The pen without the character's own ground shadow (it sits on a seat, not on the ground). */
 const SEATED={...CANVAS};
 /** Paint the vehicle and its rider(s) on c, already moved so (0,0) is the ground under its middle. */
-function paintBody(c,F,v,face,px,rider,two,F2){
+function paintBody(c,F,v,face,px,rider,two,F2,pet=null){
   const A=ART[v.kind]||ART.scooter,P=paints(v.hex),fl=face<0?1:-1;
   c.save();c.scale(fl,1);A.back(c,P,v);c.restore();
+  if(pet&&!A.basket){c.save();c.scale(fl,1);if(A.clip){c.beginPath();A.clip(c);c.clip();}petOn(c,A,pet);c.restore();}   // 🐾 a car: on the back seat
   if(two){   // 💑 the spouse behind the driver, a little higher, hands on the driver
     c.save();const [sx,sy]=A.seat,ps=A.ps*.93;c.translate((sx+36)*fl,sy-12);c.scale(ps,ps);
     let first=true;SEATED.E=(cc,...a)=>{if(first){first=false;return;}CANVAS.E(cc,...a);};
@@ -302,7 +312,9 @@ function paintBody(c,F,v,face,px,rider,two,F2){
     paintPlayer(c,F,SEATED,arms);
     c.restore();
   }
-  c.save();c.scale(fl,1);A.front?.(c,P,v);if(A.plate){const [x,y,w,h]=A.plate,wide=v.uq?Math.max(w,Math.min(44,v.plate.length*3.4)):w;plateAt(c,x-(wide-w)/2,y,wide,h,v.plate,fl,px,Boolean(v.uq));}c.restore();
+  c.save();c.scale(fl,1);A.front?.(c,P,v);if(A.plate){const [x,y,w,h]=A.plate,wide=v.uq?Math.max(w,Math.min(44,v.plate.length*3.4)):w;plateAt(c,x-(wide-w)/2,y,wide,h,v.plate,fl,px,Boolean(v.uq));}
+  if(pet&&A.basket){petOn(c,A,pet);basket(c,A.basket,A.basket[4]);}   // 🐾 a two-wheeler: in the front basket
+  c.restore();
 }
 const lost=e=>!e.c||e.c.isContextLost?.()||e.cv.width===0;
 const drop=e=>{try{e.cv.width=e.cv.height=0;}catch{/* already gone */}};
@@ -310,9 +322,9 @@ const drop=e=>{try{e.cv.width=e.cv.height=0;}catch{/* already gone */}};
 function forget(){for(const e of CACHE.values())drop(e);CACHE.clear();}
 globalThis.document?.addEventListener?.('visibilitychange',()=>{if(document.visibilityState==='visible')forget();});
 /** The cached bitmap of the vehicle and rider, or null when no canvas can be had (then drawRide paints them directly). */
-function body(F,fkey,v,face,px,rider,F2=null,fkey2=''){
-  const two=F2&&TWO.has(v.kind);
-  const key=`${fkey}|${v.id}|${v.kind}|${v.hex}|${v.plate||''}|${v.uq?1:0}|${face}|${Math.round(px*100)}|${rider?1:0}|${two?fkey2:''}`;
+function body(F,fkey,v,face,px,rider,F2=null,fkey2='',pet=null,pkey=''){
+  const two=F2&&TWO.has(v.kind);pet=rider&&pet?pet:null;
+  const key=`${fkey}|${v.id}|${v.kind}|${v.hex}|${v.plate||''}|${v.uq?1:0}|${face}|${Math.round(px*100)}|${rider?1:0}|${two?fkey2:''}|${pet?pkey:''}`;
   let e=CACHE.get(key);
   if(e&&!lost(e))return e.cv;
   if(e){drop(e);CACHE.delete(key);}
@@ -321,7 +333,7 @@ function body(F,fkey,v,face,px,rider,F2=null,fkey2=''){
     const cv=document.createElement('canvas');cv.width=Math.ceil(BOX.x*2*px);cv.height=Math.ceil((BOX.up+BOX.down)*px);
     const c=cv.getContext('2d');if(!c||c.isContextLost?.())return null;
     c.setTransform(px,0,0,px,BOX.x*px,BOX.up*px);
-    try{paintBody(c,F,v,face,px,rider,two,F2);}catch(err){console.warn('ride: art',err);}
+    try{paintBody(c,F,v,face,px,rider,two,F2,pet);}catch(err){console.warn('ride: art',err);}
     e={cv,c};cv.addEventListener?.('contextlost',()=>{if(CACHE.get(key)===e)CACHE.delete(key);});
     CACHE.set(key,e);return cv;
   }catch(err){console.warn('ride: bitmap',err);return null;}
@@ -336,16 +348,17 @@ export function steer(r,dx,dist,dt,still=false){
   if(!still)r.ang=(r.ang+dist/20)%(Math.PI*200);
 }
 /** Draw at (x, y) in the context's units: s = the character's size there, px = device pixels per unit (for a sharp
- * bitmap), F/fkey = the rider's figure and a key for its look (null F: parked, empty), v = the vehicle, r = rider(). */
-export function drawRide(c,{x,y,s,px,F=null,fkey='',F2=null,fkey2='',v,r,bob=0}){
+ * bitmap), F/fkey = the rider's figure and a key for its look (null F: parked, empty), v = the vehicle, r = rider(),
+ * pet/pkey = 🐾 the rider's pet riding along (a loaded <img> of ./pet-art.js refURL(…,'sit') and a key for it). */
+export function drawRide(c,{x,y,s,px,F=null,fkey='',F2=null,fkey2='',v,r,bob=0,pet=null,pkey=''}){
   const A=ART[v.kind]||ART.scooter,k=r.turn<1?Math.cos(r.turn*Math.PI):1,face=r.turn<.5?r.from:r.face;
   c.save();c.translate(x,y);
   E(c,0,2*s,A.half*s,8*s,'#7a5e4428');
   c.scale(s*Math.max(.06,Math.abs(k)),s);c.translate(0,-bob);
   c.save();c.scale(face<0?1:-1,1);wheels(c,A,v.kind,r.ang);c.restore();
-  const cv=body(F,fkey,v,face,s*px,Boolean(F),F2,fkey2);
+  const cv=body(F,fkey,v,face,s*px,Boolean(F),F2,fkey2,pet,pkey);
   if(cv)c.drawImage(cv,-BOX.x,-BOX.up,BOX.x*2,BOX.up+BOX.down);
-  else try{paintBody(c,F,v,face,s*px,Boolean(F),F2&&TWO.has(v.kind),F2);}catch(err){console.warn('ride: art',err);}   // no bitmap: straight on the street
+  else try{paintBody(c,F,v,face,s*px,Boolean(F),F2&&TWO.has(v.kind),F2,F?pet:null);}catch(err){console.warn('ride: art',err);}   // no bitmap: straight on the street
   c.restore();
 }
 /** How far the vehicle reaches either side of its middle (character units): where to park it beside a door. */

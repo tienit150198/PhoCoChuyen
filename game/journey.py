@@ -375,8 +375,13 @@ def upkeep(s: dict, cid: str) -> int:
     return 0
 
 
-def withdraw_max(c: dict) -> int:
-    return max(0, c['money'] - _unpaid(c) - RESERVE)
+WALLET_MAX = 10**9    # validate(): the wallet never holds more
+ROW_MAX = 10**7       # validate(): one Sổ ví row's |amount| (every release), so a big draw is written in several rows
+
+
+def withdraw_max(c: dict, j: dict | None = None) -> int:
+    most = max(0, c['money'] - _unpaid(c) - RESERVE)
+    return most if j is None else min(most, max(0, WALLET_MAX - j['wallet']))
 
 
 CAPITAL_MAX = 100_000_000
@@ -933,12 +938,17 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         need(cid in j['unlocked'] and c['started'], 'Bạn chưa làm việc ở nơi này.')
         place = _place(cid)
         if name == 'jr_withdraw':
-            amount = e.integer(p.get('amount'), 1, 10**6)
-            most = withdraw_max(c)
+            # 18/10 (F#416): a fund over 1,000,080 xu could not be drawn (the cap was 10**6, "Số lượng không hợp lệ").
+            amount = e.integer(p.get('amount'), 1, FUND_MAX)
+            most = withdraw_max(c, j)
             need(most > 0, f'Quỹ cần giữ lại {RESERVE} xu và đủ tiền các hóa đơn chưa trả, nên chưa rút được.')
             need(amount <= most, f'Chỉ rút được tối đa {most} xu: quỹ cần giữ {RESERVE} xu và tiền các hóa đơn chưa trả.')
             _transfer(s, c, -amount, 'Rút tiền lời về ví', 'owner_draw')
-            _wallet(j, amount, 'draw', f'Rút từ {place}', cid)
+            left = amount
+            while left > 0:
+                part = min(left, ROW_MAX)
+                _wallet(j, part, 'draw', f'Rút từ {place}', cid)
+                left -= part
             j['stats']['withdrawn'] += amount
             result['message'] = f'Đã rút {amount} xu từ {place} về ví. Quỹ còn {c["money"]} xu.'
         elif name == 'jr_invest':
@@ -1099,7 +1109,7 @@ def public(s: dict) -> dict:
         # upkeep(), withdraw_max() without asking twice
         employed, unpaid = _employed(cid), _unpaid(c)
         places[cid] = dict(fund=c['money'], upkeep=0,   # a place you are away from costs nothing (upkeep())
-                           paused=cid in j['paused'], employed=employed, unpaid=unpaid, invest_max=min(CAPITAL_MAX, invest_max(s), capital_room(c)), withdraw_max=max(0, c['money'] - unpaid - RESERVE))
+                           paused=cid in j['paused'], employed=employed, unpaid=unpaid, invest_max=min(CAPITAL_MAX, invest_max(s), capital_room(c)), withdraw_max=withdraw_max(c, j))
     secret = {tid: dict(name=TITLE_INDEX[tid]['name'], emoji=TITLE_INDEX[tid]['emoji'], desc=TITLE_INDEX[tid]['desc'])
               for tid in j['titles'] if TITLE_INDEX[tid]['secret']}
     eq = TITLE_INDEX.get(j['equipped'])

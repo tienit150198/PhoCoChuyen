@@ -171,15 +171,18 @@ def status(store, token: str | None) -> dict | None:
         return public_account(db, a) if a else None
 
 
-def sync_character_name(db, sid: str, before: dict, after: dict) -> None:
-    """Commit a settings rename with its save; login identity/profile nicknames stay separate.
+def sync_character_name(db, sid: str, before: dict, after: dict, again: bool = False) -> None:
+    """Commit a settings / jr_profile rename with its save; login identity/profile nicknames stay separate.
 
     The Store already owns the session row lock. The reducer has validated and
     cleaned this character name, so account-registration naming restrictions do
     not add a second, conflicting validation policy to settings.
+    `again` (jr_profile): an unchanged name is written too (a no-op when it already matches), so a save renamed
+    from Hành trình by 2.4.44 and older (F#420: accounts.display, the chat/friends/leaderboard name, kept the old one)
+    catches up when the player saves the same name once more.
     """
     name = after.get('name')
-    if before.get('name') == name:
+    if before.get('name') == name and not (again and isinstance(name, str) and name.strip() and name != DEFAULT_NAME):
         return
     changed = db.execute('UPDATE accounts SET display=?,updated_at=CURRENT_TIMESTAMP '
                          'WHERE sid=? AND display IS DISTINCT FROM ?', (name, sid, name)).rowcount

@@ -9,6 +9,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {emojiOf} from './journey.js';
 import {myPortrait} from './look.js';
 import {live} from './live.js';
+import {logo as hfLogo,chipClass} from './honour-frames.js';   // 🖼️ the top titles' frames and colours (owner 18/10)
 import {marketTag,mx} from '../market-ui.js';   // 🔥 nghề hot hôm nay, 📈 lãi nhân viên (game/staff_market.py)
 
 const FRESH_MS=10000;
@@ -74,8 +75,9 @@ function scoreBox(board,r){
 }
 function rowHTML(board,r){
   const medal=r.rank<=3?`<span class="lb-medal" aria-hidden="true">${MEDALS[r.rank-1]}</span>`:'';
-  return `<li class="lb-row${r.me?' me':''}${r.rank<=3?` top top${r.rank}`:''}"><span class="lb-rank" aria-label="Hạng ${r.rank}">${medal||`<b>${r.rank}</b>`}</span>
-    <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.name)}</b>${r.guest?'<span class="tag lb-guest">khách</span>':''}${r.me?'<span class="tag blue">Bạn</span>':''}</span>${r.title?`<span class="lb-held">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}<small>${esc(statsLine(board,r))}</small></span>
+  const fr=r.title?hfLogo(board,r.rank):'';   // 🖼️ a holder of this board's title: its frame around the rank
+  return `<li class="lb-row${r.me?' me':''}${r.rank<=3?` top top${r.rank}`:''}${fr?' hf-row':''}"><span class="lb-rank" aria-label="Hạng ${r.rank}">${fr||medal||`<b>${r.rank}</b>`}</span>
+    <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.name)}</b>${r.guest?'<span class="tag lb-guest">khách</span>':''}${r.me?'<span class="tag blue">Bạn</span>':''}</span>${r.title?`<span class="lb-held hn-chip${chipClass(`lb_${board}_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}<small>${esc(statsLine(board,r))}</small></span>
     ${scoreBox(board,r)}</li>`;
 }
 
@@ -86,16 +88,16 @@ function holdersText(list){
   const shown=list.slice(0,3).map(h=>h.me?'<b>Bạn</b>':`<span data-no-translate>${esc(h.name)}</span>`).join(', ');
   return list.length>3?`${shown} <i>+${list.length-3} người</i>`:shown;
 }
-function tierRows(tiers){
-  return tiers.map(t=>`<li class="${t.holders.some(h=>h.me)?'me':''}"><span class="lb-week-emoji" aria-hidden="true">${esc(t.emoji)}</span><span class="lb-week-who"><b>${esc(t.name)}</b><small>${esc(t.label)} · ${holdersText(t.holders)}</small></span></li>`).join('');
+function tierRows(tiers,board){
+  return tiers.map(t=>`<li class="${t.holders.some(h=>h.me)?'me':''}"><span class="lb-week-emoji" aria-hidden="true">${(board&&hfLogo(board,t.lo).replace(/<b>\d+<\/b>/,`<b>${esc(t.emoji)}</b>`))||esc(t.emoji)}</span><span class="lb-week-who"><b>${esc(t.name)}</b><small>${esc(t.label)} · ${holdersText(t.holders)}</small></span></li>`).join('');
 }
-function weeklyHTML(w){
+function weeklyHTML(w,board){
   if(!w)return '';
   const left=Math.max(0,Math.ceil((w.ends-Date.now()/1000)/86400));
   const when=w.updated?`Cập nhật hằng ngày · lần cuối ${vnTime(w.updated)}`:'Cập nhật hằng ngày';
-  const last=w.last?`<details class="lb-week-last"><summary>Tuần trước</summary><ul class="lb-week-tiers">${tierRows(w.last.tiers)}</ul></details>`:'';
+  const last=w.last?`<details class="lb-week-last"><summary>Tuần trước</summary><ul class="lb-week-tiers">${tierRows(w.last.tiers,board)}</ul></details>`:'';
   return `<section class="lb-week" aria-label="Danh hiệu tuần này"><div class="lb-week-head"><b>🏅 Danh hiệu tuần này</b><small>${esc(when)} · chốt sau ${left} ngày</small></div>
-    <ul class="lb-week-tiers">${tierRows(w.tiers)}</ul>${last}</section>`;
+    <ul class="lb-week-tiers">${tierRows(w.tiers,board)}</ul>${last}</section>`;
 }
 
 function meCard(env,board,d){
@@ -188,7 +190,7 @@ export function leaderboardView(env){
   else if(d.error)body=`<div class="notice danger">${icon('alert',17)}<div>${esc(d.error)}</div></div>${btn(icon('refresh',15)+' Thử lại','lbRetry',{board},'small')}`;
   else{
     const [title,text]=emptyText(api,board);
-    body=weeklyHTML(d.weekly)+meCard(env,board,d)+(d.rows.length?`<ol class="lb-list" aria-label="Top ${d.rows.length}">${d.rows.map(r=>rowHTML(board,r)).join('')}</ol>`
+    body=weeklyHTML(d.weekly,board)+meCard(env,board,d)+(d.rows.length?`<ol class="lb-list" aria-label="Top ${d.rows.length}">${d.rows.map(r=>rowHTML(board,r)).join('')}</ol>`
       :`<div class="empty lb-empty">${icon('award',30)}<h3>${esc(title)}</h3><p class="muted small">${esc(text)}</p></div>`);
   }
   const head=`<header class="sheet-head"><div class="grow"><span class="eyebrow">KHU PHỐ</span><h2>Bảng xếp hạng</h2><p>Ai dày dạn nhất phố? Mọi con số tính từ những gì đã làm trong game.</p></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;

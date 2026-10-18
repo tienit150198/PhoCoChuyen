@@ -89,6 +89,14 @@ class PlayerNameTests(LiveCase):
         self.assertEqual((await b.expect('renamed'))['name'], 'Tên Từ Cài Đặt')
         self.assertEqual((await self.post(a, 'post after settings', to=self.pid(sb)))['name'], 'Tên Từ Cài Đặt')
 
+    async def test_journey_profile_command_pushes_rename_without_reconnect(self):   # 18/10 (F#420)
+        ta, sa, a, tb, sb, b = await self.people()
+        _, revision, _ = self.store.read(ta)
+        self.store.command(ta, 'rename-journey-player', revision, None, 'jr_profile', {'name': 'Tên Từ Hành Trình', 'gender': 'female'})
+        self.assertEqual((await b.expect('renamed'))['name'], 'Tên Từ Hành Trình')
+        self.assertEqual(self.app.hub.players[self.pid(sb)].friends[self.pid(sa)]['name'], 'Tên Từ Hành Trình')
+        self.assertEqual((await self.post(a, 'post after journey', to=self.pid(sb)))['name'], 'Tên Từ Hành Trình')
+
     async def test_listener_reconcile_recovers_missed_name_notification(self):
         ta, sa, a, tb, sb, b = await self.people()
         await self.post(a, 'prime cached name', to=self.pid(sb))

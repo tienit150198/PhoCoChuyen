@@ -28,6 +28,7 @@ import {avInner} from './face.js';
 import {faceCode} from './face-code.js';
 import {nameAttrs,frameAttrs,titleChip} from './style-tag.js';   // 🎨 `st` of the week (live/styles.py)
 import {chips as hnChips,list as hnList,titles as hnTitles,inlineMax} from './honours.js';   // 🏅 `tt`: every honour title held now (live/honours.py)
+import {avatar as hfAvatar,bubble as hfBubble} from './honour-frames.js';   // 🖼️ a top title's avatar frame and chat bubble (owner 18/10)
 import {interleave as lxCards,cardHTML as lxCard,onChange as lxChange,refresh as lxRefresh} from './lixi-cards.js';   // 🧧 lì xì cards in Cả phố (v4/lixi.js)
 
 const S={dlg:null,env:null,tab:'town',thread:null,view:null,bodyHTML:null,threads:new Map(),
@@ -440,7 +441,7 @@ function submit(){
 function flash(text){S.flash=text;clearTimeout(S.flashTimer);S.flashTimer=setTimeout(()=>{S.flash='';const f=S.dlg?.querySelector('.ch-flash');if(f)f.hidden=true;},3800);}
 const hm=at=>{const d=new Date(at*1000),now=new Date();const t=d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});return d.toDateString()===now.toDateString()?t:`${d.getDate()}/${d.getMonth()+1}`;};
 /** An avatar: a person or a message {av, fc} (its face, else its emoji), or an emoji string ('👥'). */
-const av=(a,cls='')=>{const fr=typeof a==='object'&&a?.st?frameAttrs(S.env?.api,a.st):{cls:'',attrs:''};return `<span class="ch-av ${cls}${fr.cls}"${fr.attrs} aria-hidden="true">${typeof a==='string'?esc(a):avInner(a)}</span>`;};   // 🎨 a frame of the week (st.f)
+const av=(a,cls='')=>{const fr=typeof a==='object'&&a?.st?frameAttrs(S.env?.api,a.st):{cls:'',attrs:''};const h=`<span class="ch-av ${cls}${fr.cls}"${fr.attrs} aria-hidden="true">${typeof a==='string'?esc(a):avInner(a)}</span>`;return typeof a==='object'&&a?hfAvatar(a.tt,a.st,h,S.env?.api):h;};   // 🎨 a frame of the week (st.f)
 const dot=on=>on?'<i class="ch-on" aria-label="Đang online"></i>':'';
 const lines=t=>esc(t).replace(/\n/g,'<br>');
 /** An admin message (adm): http(s) addresses become links (new tab, no opener, no referrer); the rest escaped. */
@@ -511,8 +512,9 @@ function msgList(list,kind,more){
     const pinned=kind==='town'&&S.town.pin?.id===m.id?'<i class="ch-pinned" aria-label="Đang ghim">📌</i>':'';
     // an admin message with links: a div acting as the button (a link cannot sit inside a <button>)
     const quote=m.del?'':replyQuote(m.reply);
+    const hb=m.del||m.adm?{cls:'',attrs:''}:hfBubble(m.tt,m.st);   // 🖼️ the holder of a top title talks in its bubble
     const bub=m.adm&&!m.del?`<div role="button" tabindex="0" class="ch-bub adm" data-ch-act="msg" data-id="${m.id}">${quote}<span data-no-translate>${text(m)}</span><time>${pinned}${hm(m.at)}</time></div>`:
-      `<button type="button" class="ch-bub${m.del?' del':''}" data-ch-act="msg" data-id="${m.id}"${m.del&&!DEL()?' disabled':''}>${quote}<span data-no-translate>${m.del?'':lines(m.text)}</span>${m.del?'<i>Tin nhắn đã thu hồi</i>':''}<time>${pinned}${hm(m.at)}</time></button>`;
+      `<button type="button" class="ch-bub${m.del?' del':''}${hb.cls}"${hb.attrs} data-ch-act="msg" data-id="${m.id}"${m.del&&!DEL()?' disabled':''}>${quote}<span data-no-translate>${m.del?'':lines(m.text)}</span>${m.del?'<i>Tin nhắn đã thu hồi</i>':''}<time>${pinned}${hm(m.at)}</time></button>`;
     out+=`<div class="ch-msg${mine?' mine':''}${first?' first':''}${m.adm?' adm':''}">${mine?'':first?av(m):'<span class="ch-av gap"></span>'}<div class="ch-col">${name}${bub}${reactBar(m)}${chips(m)}${bar}</div></div>`;
     prev=m;
   }

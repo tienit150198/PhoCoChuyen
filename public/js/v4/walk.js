@@ -50,7 +50,8 @@ import {envRid,envSettle,envKey,UNKNOWN_TEXT} from './envelope-send.js';
 import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scenes/stroll.js';
 import * as feast from './wedfeast.js';
 import {paint as stPaint,nameAttrs as stName} from './style-tag.js';   // 🎨 name colour / frame of the week (`st`, live/styles.py)
-import {chips as hnChips,titles as hnTitles,icons as hnIcons} from './honours.js';   // 🏅 `tt`: every honour title held now (live/honours.py)
+import {chips as hnChips,titles as hnTitles,icons as hnIcons} from './honours.js';
+import {avatar as hfAvatar} from './honour-frames.js';   // 🖼️ a top title's avatar frame (owner 18/10)   // 🏅 `tt`: every honour title held now (live/honours.py)
 import {choice,next as nextRide,canRide,label as rideLabel,wire,fromWire,drawRide,rider,steer,topOf,spouse as spouseOf,loadSpouse} from './ride.js';
 // 👶 the baby in a stroller's arms (`bb`, live/babies.py; v4/baby.js)
 import * as BB from './baby.js';
@@ -657,7 +658,7 @@ function paintOverlays(){
     }
     const more=c.more?(c.report?`<div class="wk-acts wrap">${REASONS.map(([k,l])=>`<button type="button" class="wk-pill" data-wk="reason" data-reason="${k}">${l}</button>`).join('')}</div>`
       :`<div class="wk-acts">${c.said?`<button type="button" class="wk-pill" data-wk="report">${icon('flag',14)} Báo cáo lời vừa nói</button>`:''}<button type="button" class="wk-pill warn" data-wk="block">Chặn</button></div>`):'';
-    cd.innerHTML=`<div class="wk-who">${portrait(c.lk,c.g,48,c.name)}<div class="grow"><b data-no-translate${stName(S.env?.api,c.st)}>${esc(c.name)}</b>${c.ti?`<small>${esc(c.ti)}</small>`:''}${hnTitles(S.env?.api,c.tt).length?`<small class="wk-hn">${hnChips(S.env?.api,c.tt,0)}</small>`:''}${c.friend?'<small class="wk-friend">Bạn bè</small>':''}</div>
+    cd.innerHTML=`<div class="wk-who">${hfAvatar(c.tt,c.st,portrait(c.lk,c.g,48,c.name),S.env?.api)}<div class="grow"><b data-no-translate${stName(S.env?.api,c.st)}>${esc(c.name)}</b>${c.ti?`<small>${esc(c.ti)}</small>`:''}${hnTitles(S.env?.api,c.tt).length?`<small class="wk-hn">${hnChips(S.env?.api,c.tt,0)}</small>`:''}${c.friend?'<small class="wk-friend">Bạn bè</small>':''}</div>
       <button type="button" class="icon-btn" data-wk="cardClose" aria-label="Đóng">${icon('x',18)}</button></div>${c.said&&c.more&&c.report?`<p class="wk-said" data-no-translate>“${esc(c.said.text)}”</p>`:''}
       <div class="wk-acts">${acts.join('')}</div>${more}`;
     cd.hidden=false;
@@ -710,7 +711,8 @@ function sprite(p){
   try{const F=figureOf(p.lk,p.g);if(p.rk)F.rk=p.rk;if(p.bb&&!p.r)F.bb=p.bb;paintPlayer(c,F,CANVAS);}catch(e){console.warn('walk: look',e);}   // 👶 bb: carrying a baby
   p.sp=cv;p.spk=key;return cv;
 }
-/* 🐾 A stroller's pet: beside them, a step behind the way they walk; sits when they stop. */
+/* 🐾 A stroller's pet: beside them, a step behind the way they walk; sits when they stop; on a vehicle it rides along
+ * (./ride.js drawRide `pet`: the driver's, else the pillion's). */
 const PETS=new Map();
 function petImg(cat,pt,pose){const key=JSON.stringify([pt.b,pt.c,pt.a,pose]);let im=PETS.get(key);
   if(!im){if(PETS.size>40)PETS.clear();const url=cat?refURL(cat,pt,pose):'';if(!url)return null;im=new Image();im.src=url;PETS.set(key,im);}
@@ -763,7 +765,8 @@ function draw(ts,t){
     if(p.pid===myPid){c.fillStyle=dark?'rgba(255,170,130,.38)':'rgba(196,75,48,.25)';c.beginPath();c.ellipse(p.x,p.y+2,p.ride&&!p.s?36:22,8,0,0,Math.PI*2);c.fill();}
     if(p.ride&&!p.s){p.fig??=figureOf(p.lk,p.g);const q=pill.get(p.pid);if(q)q.fig??=figureOf(q.lk,q.g);
       if(q?.pid===myPid){c.fillStyle=dark?'rgba(255,170,130,.38)':'rgba(196,75,48,.25)';c.beginPath();c.ellipse(p.x,p.y+2,36,8,0,0,Math.PI*2);c.fill();}
-      drawRide(c,{x:p.x,y:p.y,s:AV,px:dpr*S.k,F:p.fig,fkey:'w'+JSON.stringify([p.lk,p.g]),F2:q?.fig||null,fkey2:q?'w'+JSON.stringify([q.lk,q.g]):'',v:p.ride,r:p.rv});continue;}
+      const pt=p.pt||q?.pt,pet=pt?petImg(ct?.journey?.pets,pt,'sit'):null;   // 🐾 the pet rides along in the basket (góp ý #413)
+      drawRide(c,{x:p.x,y:p.y,s:AV,px:dpr*S.k,F:p.fig,fkey:'w'+JSON.stringify([p.lk,p.g]),F2:q?.fig||null,fkey2:q?'w'+JSON.stringify([q.lk,q.g]):'',v:p.ride,r:p.rv,pet,pkey:pet?JSON.stringify([pt.b,pt.c,pt.a]):''});continue;}
     const sp=sprite(p);
     if(fx&&!p.moving&&!p.s&&onStage(p.x,p.y)){   // 💃 on the dance floor: bob and sway on the beat, a spin on 💃
       const ph=fx.bt.ph,side=fx.bt.n%2?1:-1,spin=p.emo?.e==='💃'&&!calm?(now-p.emo.t0)/1000:9;

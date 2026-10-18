@@ -1,3 +1,17 @@
+# v2.4.45 — 2026-10-18
+
+🖼️ Khung danh hiệu (chủ game 18/10: "thêm logo, danh hiệu vào cho các top nhé, với khung chat"; "chỉ các danh hiệu top này kia có giá trị thôi", "sưu tầm cũng có"): bộ 72 khung (Downloads/Pho_Co_Chuyen_72_Bo_Khung…) cắt bằng scripts/cut_honour_frames.py, đóng gói bằng scripts/build_honour_frames.py → public/icons/frames/NN_av.webp, NN_chat.webp (51 khung, ~1,3 MB, tải khi cần) + public/js/v4/honour-frames-data.js. public/js/v4/honour-frames.js chọn khung từ `tt`/`st` (live/honours.py): bảng chính top 1 / 2–3 / 4–10 (all, titles, certs, wealth, collection), Trùm nghề (khung riêng 25 nghề, còn lại khung chung 72 + icon nghề), danh hiệu đấu giá dh_*, danh hiệu công trình đang đeo; Chợ đen, đám cưới, việc chùa không có khung. Avatar: khung chồng ngoài (::after); chat: border-image 9 phần (::before, lật cho tin của mình), giờ gửi ở giữa để không bị họa tiết che. Bảng xếp hạng: khung quanh số hạng của người giữ danh hiệu và ở Danh hiệu tuần. scripts/browser_honour_frames.py: kiểm trên Chromium (điện thoại sáng/tối, isometric, desktop, 4 bảng).
+
+🌈 Chip danh hiệu top: hn-top (vàng), hn-t1 (bạc), hn-t2 (đồng), hn-t3 (Trùm nghề), hn-t4 (đấu giá), có bản tối.
+
+🏺 game/lb_titles.py: BOARD_TITLES thêm 'collection' (🏺 Bộ sưu tập huyền thoại, 🔨 Nhà sưu tầm đấu giá, 💠 Hội sưu tầm), MAIN thêm COLLECTION. CAREER_NOUN thêm lawyer, art_studio, post_office, laundry; honours.js thêm customs/hotel/banquet/… và f_loss_king, f_loss_club cho khớp.
+
+💰 Góp ý #416: jr_withdraw giới hạn 10**6 nên quỹ > 1.000.080 xu báo "Số lượng không hợp lệ". Giờ tới FUND_MAX, không quá WALLET_MAX (10**9) cho ví, ghi Sổ ví theo từng dòng ≤ ROW_MAX (10**7) để bản cũ (rollback) vẫn validate; places có withdraw_max.
+
+🐱 Góp ý #413: thú cưng ngồi trên xe (public/js/v4/ride.js drawRide `pet`, walk.js, town-walk.js; tests/ride.mjs).
+
+✏️ Góp ý #420: đổi tên ở Hành trình (jr_profile) chưa ghi accounts.display nên chat/bạn bè/bảng xếp hạng giữ tên cũ: Store gọi accounts.sync_character_name cho jr_profile (lưu lại cùng tên cũng đồng bộ), live/chat.py đổi tên cả người đi dạo ở phố/chợ.
+
 # v2.4.44 — 2026-10-18
 
 🧩 Ghép ba màn 101–200 thêm loại đồ (chủ game 18/10 "cần gì 20 loại, thêm 30 40 loại được mà thoải mái", "tăng thoải mái, làm cho khó lên là được"): game/tile_match.py ICONS 28 → 48 (thêm 20 ở CUỐI: 🍩 🎈 📷 🎸 🍓 🍕 🧁 🎒 👒 🌻 🍔 🐰 🐸 🥭 🎧 📚 🐼 🦋 👟 🎮, đều Emoji ≤ 11 cho iOS 15; màn ≤ 20 loại lấy từ đúng 28 cái đầu nên màn 1–100 không đổi, kiểm bằng hash build); scripts/build_tile_levels.py curve_hi kinds 22 → 40 (màn 100: 20), vẫn chồng 8–14 lớp. Bảng màn mới là TABLE 3; bảng của 2.4.43 giữ ở game/tile_match_levels_v2.py để ván chơi trên trang 2.4.43 (gửi v=2) vẫn được tính; jr_tile_end nhận v ∈ TABLES (1, 2, 3), v=1 chỉ tới màn 100.

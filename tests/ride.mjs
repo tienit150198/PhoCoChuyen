@@ -7,7 +7,8 @@ import assert from 'node:assert/strict';
 const store=new Map();
 globalThis.localStorage={getItem:k=>store.has(k)?store.get(k):null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k)};
 const noop=()=>{};
-const ctx2d=()=>new Proxy({measureText:s=>({width:String(s).length*6}),getTransform:()=>({a:1}),createLinearGradient:()=>({addColorStop:noop}),createRadialGradient:()=>({addColorStop:noop})},
+const drawn=[];   // what drawImage was given (🐾 the pet riding along)
+const ctx2d=()=>new Proxy({drawImage:im=>drawn.push(im),measureText:s=>({width:String(s).length*6}),getTransform:()=>({a:1}),createLinearGradient:()=>({addColorStop:noop}),createRadialGradient:()=>({addColorStop:noop})},
   {get:(t,k)=>k in t?t[k]:noop,set:(t,k,v)=>{t[k]=v;return true;}});
 globalThis.document={createElement:()=>({width:0,height:0,getContext:ctx2d})};
 globalThis.Path2D=class{constructor(){return new Proxy({},{get:()=>noop});}};
@@ -124,6 +125,17 @@ for(const kind of ['bicycle','ebike','cub','scooter','mini']){
   for(const face of [-1,1])R.drawRide(c,{x:0,y:0,s:.5,px:2,F,fkey:'a',F2:F,fkey2:'b',v:veh,r:R.rider(face)});
 }
 assert.deepEqual(warned,[],'a pillion draws without an error');
+// 🐾 Góp ý #413: the rider's pet rides along (a two-wheeler's basket, a car's back seat) on every kind, in the cached
+// bitmap (keyed by the pet: a pet loaded later draws it); a parked vehicle never carries it.
+for(const kind of new Set(Object.values(R.KINDS))){
+  const veh={id:'p_'+kind,kind,hex:'#4f8fd1',plate:''},pet={pet:kind};
+  for(const face of [-1,1]){
+    drawn.length=0;R.drawRide(c,{x:0,y:0,s:.5,px:2,F,fkey:'p',v:veh,r:R.rider(face)});assert.ok(!drawn.some(x=>x?.pet),kind+': no pet, none drawn');
+    drawn.length=0;R.drawRide(c,{x:0,y:0,s:.5,px:2,F,fkey:'p',F2:F,fkey2:'q',v:veh,r:R.rider(face),pet,pkey:'meo'});assert.ok(drawn.includes(pet),kind+': the pet rides along');
+    drawn.length=0;R.drawRide(c,{x:0,y:0,s:.5,px:2,v:veh,r:R.rider(face),pet,pkey:'meo'});assert.ok(!drawn.includes(pet),kind+': parked, no pet');
+  }
+}
+assert.deepEqual(warned,[],'a pet on board draws without an error');
 let fetched=0;
 const api={json:async u=>{fetched++;assert.equal(u,'/api/garage/spouse');return {spouse:{pid:SPP,name:'Minh',cars:[]}};}};
 assert.equal((await R.loadSpouse(api,true)).name,'Minh');
