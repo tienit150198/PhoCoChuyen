@@ -32,6 +32,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.58", date="2026-10-19", items=(
+        dict(emoji='🪽', text="Tiệm thú cưng có quầy 🪽 Cánh (24 loại) và 👗 Quần áo mới. Đồ hạng C trở lên cộng thêm % tiền làm việc khi bé đi dạo.", go=dict(action='pets', data={'tab': 'shop', 'kind': 'wing'})),
+        dict(emoji='👗', text="Tủ đồ của bé: chạm một món rồi chạm tên bé để mặc. 3 món giống hệt ghép ra hạng cao hơn, từ hạng A có thể ra 💎 dòng sang.", go=dict(action='pets', data={'tab': 'ward'})),
+        dict(emoji='🌟', text="Bé giống nào cũng lên được SSS và 🌟 huyền thoại, lên hạng được chọn giữ giống hay đổi giống. Trượt từ hạng S mới mất 2 bé phụ.", go=dict(action='pets', data={'tab': 'lab'})),
+        dict(emoji='🦮', text="Nút 🦮 Dắt bé đi dạo rõ ràng ở Bé nhà mình. Thêm 8 giống mới, linh kiện 💎 mẫu xịn, bảng xếp hạng thú cưng cute hơn.", go=dict(action='pets', data={'tab': 'home'})),
+    )),
     dict(version="2.4.57", date="2026-10-19", items=(
         dict(emoji='🧬', text="Ghép mới: 👑 bé chính lên hạng, giữ giống, tên, đồ; hai bé kia là nguyên liệu, từ hạng A trượt thì mất. Ghép không giới hạn lượt.", go=dict(action='pets', data={'tab': 'lab'})),
         dict(emoji='🏆', text="Bảng xếp hạng có mục 🐾 Thú cưng: bé mạnh nhất của từng người, bục vinh danh top 3, danh hiệu và khung riêng mỗi tuần."),

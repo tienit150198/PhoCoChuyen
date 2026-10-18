@@ -11,7 +11,7 @@ import {myPortrait} from './look.js';
 import {live} from './live.js';
 import {logo as hfLogo,chipClass} from './honour-frames.js';   // 🖼️ the top titles' frames and colours (owner 18/10)
 import {marketTag,mx} from '../market-ui.js';   // 🔥 nghề hot hôm nay, 📈 lãi nhân viên (game/staff_market.py)
-import {petSVG,lookup} from './pet-art.js';      // 🐾 the Thú cưng board draws each best pet with its aura
+import {petSVG,lookup,accOf,fxRef} from './pet-art.js';      // 🐾 the Thú cưng board draws each best pet with its aura
 
 const FRESH_MS=10000;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -99,26 +99,26 @@ function petLine(r){return [r.pn?`🐾 ${r.pn}`:'',breedName(r)].filter(Boolean)
 function petTag(r){return r.b?`<span class="pt-rank r${r.lg?6:r.r||0}${r.lg?' lg':''}">${r.lg?'🌟':''}${RK[r.lg?6:r.r||0]}</span>`:'';}
 function petArt(r,size){
   const cat=petCat(),L=cat&&lookup(cat,r.b,r.c);if(!L)return '<span class="lb-pet-none" aria-hidden="true">🐾</span>';
-  const acc={};for(const id of r.a||[]){const a=(cat.accs||[]).find(x=>x.id===id);if(a)acc[a.slot]=id;}
-  return petSVG(L.breed,L.coat,'sit',acc,size,'pet-svg',{r:r.r||0,x:r.x||''});
+  return petSVG(L.breed,L.coat,'sit',accOf(cat,r),size,'pet-svg',fxRef(cat,r));   // 👗 wardrobe pieces, wings, aura, kept-breed 🌟
 }
-const POD=[['🥇','gold','👑'],['🥈','silver','💎'],['🥉','bronze','🎀']];
+// 🎀 owner 19/10 "khung xếp hạng thú cưng cute hơn nhé": pastel cards with cat ears, a paw ribbon, hearts and a cushion
+const POD=[['🥇','gold','👑'],['🥈','silver','🌸'],['🥉','bronze','🎀']];
 function podium(rows){
   const top=rows.slice(0,3);if(!top.length)return '';
   const card=r=>{const [medal,tone,crown]=POD[r.rank-1],fr=r.title?hfLogo('pets',r.rank):'';
-    return `<li class="lb-pod-card ${tone}${r.me?' me':''}" aria-label="Hạng ${r.rank}"><span class="lb-pod-crown" aria-hidden="true">${crown}</span>
-      <span class="lb-pod-ring"><span class="lb-pod-sparks" aria-hidden="true"><i>✦</i><i>✧</i><i>✦</i><i>✧</i></span>${petArt(r,r.rank===1?118:92)}</span>
+    return `<li class="lb-pod-card ${tone}${r.me?' me':''}" aria-label="Hạng ${r.rank}"><span class="lb-pod-ears" aria-hidden="true"><i></i><i></i></span><span class="lb-pod-crown" aria-hidden="true">${crown}</span>
+      <span class="lb-pod-ring"><span class="lb-pod-sparks" aria-hidden="true"><i>♥</i><i>✿</i><i>♡</i><i>✦</i></span>${petArt(r,r.rank===1?118:92)}<span class="lb-pod-cushion" aria-hidden="true"></span></span>
       <span class="lb-pod-medal" aria-hidden="true">${fr||medal}</span>
       <b class="lb-pod-pet" data-no-translate>${esc(r.pn||'Bé cưng')}</b><span class="lb-pod-tag">${petTag(r)} <small>${esc(breedName(r))}</small></span>
       <span class="lb-pod-owner"><small>Sen:</small> <b data-no-translate>${esc(r.name)}</b>${r.me?' <span class="tag blue">Bạn</span>':''}</span>
       ${r.title?`<span class="lb-held hn-chip${chipClass(`lb_pets_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}
       <span class="lb-pod-power">💪 ${fmt(r.score)}</span></li>`;};
   const order=[top[1],top[0],top[2]].filter(Boolean);
-  return `<ol class="lb-pod" aria-label="Top 3 thú cưng">${order.map(card).join('')}</ol>`;
+  return `<div class="lb-podwrap"><span class="lb-pod-ribbon">🐾 Top bé cưng 🐾</span><ol class="lb-pod" aria-label="Top 3 thú cưng">${order.map(card).join('')}</ol></div>`;
 }
 function petRow(r){
   const fr=r.title?hfLogo('pets',r.rank):'';
-  return `<li class="lb-row lb-prow${r.me?' me':''}${fr?' hf-row':''}"><span class="lb-rank" aria-label="Hạng ${r.rank}">${fr||`<b>${r.rank}</b>`}</span>
+  return `<li class="lb-row lb-prow${r.me?' me':''}${fr?' hf-row':''}"><span class="lb-rank" aria-label="Hạng ${r.rank}">${fr||`<b class="lb-paw">${r.rank}</b>`}</span>
     <span class="lb-pet" aria-hidden="true">${petArt(r,52)}</span>
     <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.pn||'Bé cưng')}</b> ${petTag(r)}${r.me?'<span class="tag blue">Bạn</span>':''}</span>${r.title?`<span class="lb-held hn-chip${chipClass(`lb_pets_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}<small>Sen: <span data-no-translate>${esc(r.name)}</span>${r.guest?' · khách':''}${breedName(r)?` · ${esc(breedName(r))}`:''}</small></span>
     ${scoreBox('pets',r)}</li>`;

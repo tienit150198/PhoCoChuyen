@@ -15,8 +15,13 @@ The pet games and tournaments come later (owner: "trò chơi của pets chưa l�
   chỉ áp dụng cho cấp A trở lên") one of the three is the main pet (`main`, else the first): a success raises it one
   rank in place (its breed, coat, name, training and gear stay; its potential takes the better of its own and the
   trio's) and the two others retire to the grandparents' for good (never die, never sold: `ret`). A failure keeps
-  all three below LOSE_FROM (A); from A up the two others are gone (not even at the grandparents'). The fee
-  (FUSE_FEE) is spent either way. Three SSS: LEGEND_BP for the main to become its kind's 🌟 legendary. Three pets of
+  all three below LOSE_FROM (S, owner 19/10 "bậc S trở lên mới mất, bậc A chưa mất"); from S up the two others are
+  gone (not even at the grandparents'). The fee
+  (FUSE_FEE) is spent either way. Three SSS: LEGEND_BP for the main to become 🌟 legendary. Owner 19/10 "con pets nào
+  cũng có thể lên cấp sss và huyền thoại hết, khi lên thì được chọn giữ bé hiện tại hoặc đổi giống": `breed` picks what
+  the main pet is after a success: its own breed (the default), the breed of one of the two others (with that one's
+  coat), or on a legendary fusion its kind's legendary breed; a legendary that keeps its breed is listed in the
+  wardrobe block (game/pet_wardrobe.py `lg`, so an older build sees a plain SSS). Three pets of
   a RECIPE with `mix`: HYBRID_BP for a 🧬 hybrid pup (at least its floor rank; the three retire), else the main goes
   up. No daily limit since 19/10 (owner: "ghép mỗi ngày k giới hạn nhé": `day.f` only counts). An SSS gets one
   of the FX coats.
@@ -59,7 +64,7 @@ LEGEND_BP = 500
 MIX_BP = 300
 HYBRID_BP = 1000
 MUTANT_BP = 500
-LOSE_FROM = 3                                                              # A: a failure from here loses the two others
+LOSE_FROM = 4                                                              # S: a failure from here loses the two others
 KENNEL_MAX = 30
 RET_KEEP = 40
 FX = (('cau_vong', '🌈', 'Cầu Vồng'), ('ngan_ha', '🌌', 'Ngân Hà'), ('hong_ngoc', '🔥', 'Hồng Ngọc'), ('bang_tinh', '❄️', 'Băng Tinh'))
@@ -105,6 +110,18 @@ GMODELS = dict(
     pk=(('🎀', 'Nơ pha lê'), ('👑', 'Vương miện nhỏ'), ('🌸', 'Vòng hoa')),
     bua=(('🍀', 'Bùa cỏ bốn lá'), ('🔮', 'Ngọc may mắn'), ('🧧', 'Túi lộc')),
 )
+# 💎 owner 19/10 "thêm nhiều linh kiện", "đắt vào nhé, giá đồ xịn xịn tí": five premium models a slot (models 3…7),
+# GX_MULT times the price, GX_BONUS more to the stat at every level. The save keeps model 0 in `gear` (an older build
+# reads a plain one) and the premium model in the wardrobe block (game/pet_wardrobe.py `gm`, {gear id: 0…4}).
+GMODELS_X = dict(
+    giay=(('🩰', 'Giày ba lê bạc'), ('⛸️', 'Giày trượt tia chớp'), ('👠', 'Giày pha lê'), ('🔥', 'Giày lửa'), ('☁️', 'Giày mây bay')),
+    giap=(('🥋', 'Võ phục đai đen'), ('🧥', 'Áo choàng bạc'), ('🛡️', 'Giáp hiệp sĩ'), ('💠', 'Giáp pha lê'), ('🐲', 'Giáp rồng vàng')),
+    dau=(('🎓', 'Mũ cử nhân'), ('🤿', 'Kính lặn thông minh'), ('⛑️', 'Mũ cứu hộ'), ('🪖', 'Mũ tướng quân'), ('🧠', 'Vòng trí tuệ')),
+    pk=(('💍', 'Nhẫn kim cương'), ('🦋', 'Kẹp bướm ngọc'), ('🌺', 'Hoa tai dâm bụt'), ('🌠', 'Sao băng cài áo'), ('💖', 'Tim pha lê')),
+    bua=(('🪙', 'Đồng xu cổ'), ('🐚', 'Vỏ ốc thần'), ('🌙', 'Bùa trăng khuyết'), ('🧿', 'Mắt xanh hộ mệnh'), ('🐉', 'Ngọc rồng')),
+)
+GX_MULT = (5, 10, 20, 40, 80)
+GX_BONUS = (3, 5, 8, 12, 16)
 GBASE = (4, 7, 11, 16, 22, 30, 40)            # the stat a gear adds at +0; each level +10 % of it
 GSHOP = (300, 1500)                           # D, C in the shop
 GUP_BP = (10000, 9000, 8000, 7000, 6000, 5000, 4000, 3500, 3000, 2500)   # +lv → +lv+1
@@ -219,19 +236,46 @@ def on_new(s: dict, p: dict, src: str) -> dict:
     return rec
 
 
-def is_legend(p: dict) -> bool:
+def is_legend(p: dict, s=None) -> bool:
+    """A 🌟 legendary: its breed, or (since 19/10) a pet that kept its own breed (game/pet_wardrobe.py `lg`)."""
     br = C.BREEDS.get(p['b'])
-    return bool(br and br.get('fuse') == 'legend')
+    if br and br.get('fuse') == 'legend':
+        return True
+    if not isinstance(s, dict):
+        return False
+    from . import pet_wardrobe
+    x = pet_wardrobe.stored(s)
+    return bool(x) and p['id'] in x['lg']
 
 
-def gear_value(g: dict) -> int:
+def _gm(s) -> dict:
+    """{gear id: premium model 0…4} (game/pet_wardrobe.py), {} without a save."""
+    if not isinstance(s, dict):
+        return {}
+    from . import pet_wardrobe
+    x = pet_wardrobe.stored(s)
+    return x['gm'] if x else {}
+
+
+def model_of(g: dict, s=None) -> int:
+    """The gear's model, 0…7 (3…7 the premium ones)."""
+    x = _gm(s).get(g['id'])
+    return 3 + x if type(x) is int and 0 <= x < len(GX_MULT) else g['m']
+
+
+def model_def(slot: str, m: int) -> tuple:
+    return GMODELS[slot][m] if m < 3 else GMODELS_X[slot][m - 3]
+
+
+def gear_value(g: dict, s=None) -> int:
     base = GBASE[g['r']]
-    return base + base * g['lv'] // 10
+    m = model_of(g, s)
+    return base + base * g['lv'] // 10 + (GX_BONUS[m - 3] if m >= 3 else 0)
 
 
 def stats(s: dict, p: dict, rec: dict | None = None) -> list:
     rec = rec or rec_of(s, p)
-    lo, hi = LEGEND_RANGE if is_legend(p) else RANGE[rec['r']]
+    lo, hi = LEGEND_RANGE if is_legend(p, s) else RANGE[rec['r']]
     lean = (C.BREEDS.get(p['b']) or {}).get('st') or (0,) * len(STATS)
     x = get(s)
     bag = {g['id']: g for g in (x['gear'] if x else [])}
@@ -241,7 +285,7 @@ def stats(s: dict, p: dict, rec: dict | None = None) -> list:
         for slot, gid in rec['g'].items():
             g = bag.get(gid)
             if g and dict((a[0], a[3]) for a in GSLOTS)[slot] == sid:
-                v += gear_value(g)
+                v += gear_value(g, s)
         out.append(max(1, v))
     return out
 
@@ -283,14 +327,16 @@ def fund_bonus(s: dict, c: dict, base: int, what: str, ref: str | None) -> int:
     if not p:
         return 0
     pct, cap = bonus_rate(s, p)
+    from . import pet_wardrobe
+    bp = pct * 100 + pet_wardrobe.bonus_bp(s, p)   # 👗 what it wears adds (the day's cap stays its rank's)
     x = _ensure(s)
     day = _today(x)
-    bonus = min(base * pct // 100, max(0, cap - day['got']))
+    bonus = min(base * bp // 10000, max(0, cap - day['got']))
     if bonus <= 0:
         return 0
     rank = RANKS[rec_of(s, p)['r']]
     from .engine import money
-    money(s, c, bonus, f'{PREFIX} {rank} +{pct}% · {p["n"]} · {what}'[:120], ref, category='other_income')
+    money(s, c, bonus, f'{PREFIX} {rank} +{bp / 100:g}% · {p["n"]} · {what}'[:120], ref, category='other_income')
     day['got'] += bonus
     return bonus
 
@@ -420,8 +466,8 @@ def _new_gear(x: dict, slot: str, rank: int) -> dict:
     return g
 
 
-def gear_name(g: dict) -> str:
-    e, n = GMODELS[g['s']][g['m']]
+def gear_name(g: dict, s=None) -> str:
+    e, n = model_def(g['s'], model_of(g, s))
     return f'{e} {n} {RANKS[g["r"]]}' + (f' +{g["lv"]}' if g['lv'] else '')
 
 
@@ -515,31 +561,35 @@ def action(s: dict, name: str, p: dict) -> dict:
         if luck >= 80:
             rank = max(rank, _pick(GEAR_ODDS, 10000))
         g = _new_gear(x, GSLOT_IDS[roll(len(GSLOT_IDS))], rank)
-        return dict(message=f'🎁 {pet["n"]} tha về {gear_name(g)}!', found=g['id'])
+        return dict(message=f'🎁 {pet["n"]} tha về {gear_name(g, s)}!', found=g['id'])
     x = _ensure(s)
     if name == 'jr_pet_gear_buy':
         pt._keys(p, {'slot', 'model', 'rank', 'confirm'}, {'slot', 'model', 'rank', 'confirm'})
-        _need(p['slot'] in GSLOT_IDS and _int(p['model'], 0, len(GMODELS.get(p['slot'], ())) - 1) and _int(p['rank'], 0, len(GSHOP) - 1),
+        _need(p['slot'] in GSLOT_IDS and _int(p['model'], 0, 3 + len(GX_MULT) - 1) and _int(p['rank'], 0, len(GSHOP) - 1),
               'Chọn một món trong tiệm nhé.')
         _need(len(x['gear']) < GEAR_MAX, f'Túi linh kiện đã đủ {GEAR_MAX} món.', 'limit')
-        e, nm = GMODELS[p['slot']][p['model']]
-        _confirm(p, f'Xác nhận mua {nm} hạng {RANKS[p["rank"]]}.')
-        how = pt._pay(s, GSHOP[p['rank']], f'Linh kiện thú cưng · {nm} {RANKS[p["rank"]]}')
-        g = dict(id=f'g{x["gs"]}', s=p['slot'], m=p['model'], r=p['rank'], lv=0)
+        e, nm = model_def(p['slot'], p['model'])
+        price = gear_price(p['model'], p['rank'])
+        _confirm(p, f'Xác nhận mua {nm} hạng {RANKS[p["rank"]]} ({_fmt(price)} xu).')
+        how = pt._pay(s, price, f'Linh kiện thú cưng · {nm} {RANKS[p["rank"]]}')
+        g = dict(id=f'g{x["gs"]}', s=p['slot'], m=p['model'] if p['model'] < 3 else 0, r=p['rank'], lv=0)
         x['gs'] += 1
         x['gear'].append(g)
-        return dict(message=f'🛍️ Đã mua {gear_name(g)} ({how}).')
+        if p['model'] >= 3:
+            from . import pet_wardrobe
+            pet_wardrobe.set_model(s, g['id'], p['model'] - 3)
+        return dict(message=f'🛍️ Đã mua {gear_name(g, s)} ({how}).', gear=g['id'])
     if name == 'jr_pet_gear_up':
         pt._keys(p, {'gear', 'confirm'}, {'gear', 'confirm'})
         g = _gear(x, p['gear'])
-        _need(g['lv'] < GLV_MAX, f'{gear_name(g)} đã cường hóa tối đa.', 'full')
+        _need(g['lv'] < GLV_MAX, f'{gear_name(g, s)} đã cường hóa tối đa.', 'full')
         fee = GUP_FEE[g['r']] * (g['lv'] + 1)
-        _confirm(p, f'Xác nhận cường hóa {gear_name(g)} ({_fmt(fee)} xu).')
-        how = pt._pay(s, fee, f'Cường hóa linh kiện · {gear_name(g)}')
+        _confirm(p, f'Xác nhận cường hóa {gear_name(g, s)} ({_fmt(fee)} xu).')
+        how = pt._pay(s, fee, f'Cường hóa linh kiện · {gear_name(g, s)}')
         if roll(10000) < GUP_BP[g['lv']]:
             g['lv'] += 1
-            return dict(message=f'✨ Thành công! {gear_name(g)}. ({how})', ok=True)
-        return dict(message=f'💨 Cường hóa trượt, món đồ vẫn nguyên {gear_name(g)}. ({how})', ok=False)
+            return dict(message=f'✨ Thành công! {gear_name(g, s)}. ({how})', ok=True)
+        return dict(message=f'💨 Cường hóa trượt, món đồ vẫn nguyên {gear_name(g, s)}. ({how})', ok=False)
     if name == 'jr_pet_gear_fuse':
         pt._keys(p, {'gears', 'confirm'}, {'gears', 'confirm'})
         ids = p['gears']
@@ -553,10 +603,18 @@ def action(s: dict, name: str, p: dict) -> dict:
         _confirm(p, f'Xác nhận ghép ba {GSLOTS[GSLOT_IDS.index(gs[0]["s"])][2].lower()} hạng {RANKS[r]} ({_fmt(fee)} xu).')
         how = pt._pay(s, fee, f'Ghép linh kiện {RANKS[r]}')
         if roll(10000) < FUSE_BP[r]:
+            best = max(model_of(g, s) for g in gs)   # the new one keeps the best model of the three
             for g in gs:
                 x['gear'].remove(g)
             g = _new_gear(x, gs[0]['s'], r + 1)
-            return dict(message=f'🎉 Ghép thành công: {gear_name(g)}! ({how})', ok=True, gear=g['id'])
+            from . import pet_wardrobe
+            if best >= 3:
+                g['m'] = 0
+                pet_wardrobe.set_model(s, g['id'], best - 3)
+            else:
+                g['m'] = best
+            pet_wardrobe.tidy_models(s)
+            return dict(message=f'🎉 Ghép thành công: {gear_name(g, s)}! ({how})', ok=True, gear=g['id'])
         return dict(message=f'💨 Ghép trượt, ba món vẫn còn nguyên. ({how})', ok=False)
     if name == 'jr_pet_gear_wear':
         pt._keys(p, {'pet', 'slot', 'gear'}, {'pet', 'slot'})
@@ -575,17 +633,19 @@ def action(s: dict, name: str, p: dict) -> dict:
                 if v == g['id']:
                     x['t'][who]['g'][k] = None
         rec['g'][p['slot']] = g['id']
-        return dict(message=f'{pet["n"]} gắn {gear_name(g)}.')
+        return dict(message=f'{pet["n"]} gắn {gear_name(g, s)}.')
     if name == 'jr_pet_gear_drop':
         pt._keys(p, {'gear', 'confirm'}, {'gear', 'confirm'})
         g = _gear(x, p['gear'])
-        _confirm(p, f'Xác nhận bỏ {gear_name(g)}.')
+        _confirm(p, f'Xác nhận bỏ {gear_name(g, s)}.')
         for r in x['t'].values():
             for k, v in r['g'].items():
                 if v == g['id']:
                     r['g'][k] = None
         x['gear'].remove(g)
-        return dict(message=f'Đã bỏ {gear_name(g)}.')
+        from . import pet_wardrobe
+        pet_wardrobe.tidy_models(s)
+        return dict(message=f'Đã bỏ {gear_name(g, s)}.')
     raise AssertionError(name)
 
 
@@ -611,11 +671,25 @@ def _ad_boost(s: dict) -> int:
     return a.pet_boost(s) if a and hasattr(a, 'pet_boost') else 0
 
 
+def breed_choices(pets: list, k: int, low: int) -> list:
+    """The breeds the main pet (pets[k]) may have after a success: its own, the two others', and on a legendary fusion
+    its kind's legendary breed. Never a breed of the other kind for a legendary of its own (a cat stays a cat there)."""
+    main = pets[k]
+    out = [main['b']] + [q['b'] for i, q in enumerate(pets) if i != k and q['b'] in C.BREEDS]
+    if low == TOP:
+        out.append(LEGEND[C.BREEDS[main['b']]['kind']])
+    seen = []
+    for b in out:
+        if b not in seen and (b == main['b'] or C.BREEDS[b].get('fuse') != 'legend' or low == TOP):
+            seen.append(b)
+    return seen
+
+
 def _fuse(s: dict, p: dict) -> dict:
     pt = _pt()
     j = s['journey']
     day = j['life_day']
-    pt._keys(p, {'pets', 'main', 'mix', 'nick', 'confirm'}, {'pets', 'confirm'})
+    pt._keys(p, {'pets', 'main', 'mix', 'breed', 'nick', 'confirm'}, {'pets', 'confirm'})
     ids = p['pets']
     _need(isinstance(ids, list) and len(ids) == 3 and all(isinstance(i, str) for i in ids) and len(set(ids)) == 3,
           'Chọn đúng ba bé để ghép nhé.')
@@ -632,11 +706,15 @@ def _fuse(s: dict, p: dict) -> dict:
             _need(pt.mood(n) != 'buon', f'{q["n"]} đang buồn, chăm bé vui đã rồi hẵng ghép.', 'sad')
     x = _ensure(s)
     recs = [_record(s, q) for q in pets]
-    ranks = [6 if is_legend(q) else r['r'] for q, r in zip(pets, recs)]
+    ranks = [6 if is_legend(q, s) else r['r'] for q, r in zip(pets, recs)]
     k = ids.index(main_id)
     main, mrec = pets[k], recs[k]
     low = min(ranks)
-    _need(not (low == TOP and is_legend(main)), f'{main["n"]} đã là huyền thoại rồi: chọn bé SSS khác làm bé chính nhé.')
+    _need(not (low == TOP and is_legend(main, s)), f'{main["n"]} đã là huyền thoại rồi: chọn bé SSS khác làm bé chính nhé.')
+    # what the main pet becomes (owner 19/10 "được chọn giữ bé hiện tại hoặc đổi giống")
+    kind = C.BREEDS[main['b']]['kind']
+    want = p.get('breed', main['b'])
+    _need(isinstance(want, str) and want in breed_choices(pets, k, low), 'Chọn giống cho bé chính nhé.')
     d = _today(x)
     fee = FUSE_FEE[low]
     bp = chance(ranks)
@@ -698,9 +776,16 @@ def _fuse(s: dict, p: dict) -> dict:
                     fuse=dict(ok=True, pet=pup['id'], rank=RANKS[rank], breed=bid, fx=x['t'][pup['id']]['fx']))
     # ⬆️ the main pet goes up in place
     fx = mrec['fx']
+    old = C.BREEDS[main['b']]['name']
+    if want != main['b']:
+        donor = next((q for i, q in enumerate(pets) if i != k and q['b'] == want), None)
+        main['b'], main['c'] = want, donor['c'] if donor else 0
     if low == TOP:
-        main['b'], main['c'] = LEGEND[C.BREEDS[main['b']]['kind']], 0
-        fx = ''
+        if C.BREEDS[main['b']].get('fuse') == 'legend':
+            fx = ''
+        else:   # 🌟 a legendary that keeps its breed
+            from . import pet_wardrobe
+            pet_wardrobe.set_legend(s, main['id'])
     elif rank == TOP and fx not in tuple(f[0] for f in FX):
         fx = FX[roll(len(FX))][0]
     elif len(set(breeds)) == 1 and not fx and roll(10000) < MUTANT_BP:
@@ -708,18 +793,24 @@ def _fuse(s: dict, p: dict) -> dict:
     mrec.update(r=rank, fx=fx, pt=[max(a, c) for a, c in zip(mrec['pt'], pot)], z=int(pt.now()))
     leave(others)
     br = C.BREEDS[main['b']]
-    head = '🌟 HUYỀN THOẠI! ' if br['fuse'] == 'legend' else '🎉 '
+    head = '🌟 HUYỀN THOẠI! ' if low == TOP else '🎉 '
     gone = ' và '.join(f[1]['n'] for f, _ in others)
-    return dict(message=f'{head}{main["n"]} lên hạng {RANKS[rank]}{" thành " + br["name"] if low == TOP else ""}! '
+    up = f'thành 🌟 huyền thoại' if low == TOP else f'lên hạng {RANKS[rank]}'
+    return dict(message=f'{head}{main["n"]} {up}{" (giống " + br["name"] + ")" if br["name"] != old else ""}! '
                         f'{gone} về quê với bà nghỉ ngơi. ({how})',
                 fuse=dict(ok=True, pet=main_id, rank=RANKS[rank], breed=main['b'], fx=fx, up=True))
 
 
 # ---------------------------------------------------------------- views
-def gear_view(x: dict, g: dict) -> dict:
-    e, n = GMODELS[g['s']][g['m']]
-    return dict(id=g['id'], s=g['s'], m=g['m'], r=g['r'], rank=RANKS[g['r']], lv=g['lv'], emoji=e, name=n,
-                stat=dict((a[0], a[3]) for a in GSLOTS)[g['s']], value=gear_value(g), on=_wearer(x, g['id']),
+def gear_price(model: int, rank: int) -> int:
+    return GSHOP[rank] * (GX_MULT[model - 3] if model >= 3 else 1)
+
+
+def gear_view(x: dict, g: dict, s=None) -> dict:
+    m = model_of(g, s)
+    e, n = model_def(g['s'], m)
+    return dict(id=g['id'], s=g['s'], m=m, r=g['r'], rank=RANKS[g['r']], lv=g['lv'], emoji=e, name=n, vip=m >= 3,
+                stat=dict((a[0], a[3]) for a in GSLOTS)[g['s']], value=gear_value(g, s), on=_wearer(x, g['id']),
                 up_fee=GUP_FEE[g['r']] * (g['lv'] + 1) if g['lv'] < GLV_MAX else 0)
 
 
@@ -728,14 +819,14 @@ def pet_extra(s: dict, p: dict) -> dict:
     rec = rec_of(s, p)
     st = stats(s, p, rec)
     pct, cap = bonus_rate(s, p)
-    return dict(r=rec['r'], rank=RANKS[rec['r']], fx=rec['fx'], legend=is_legend(p), st=st, pw=sum(st), tn=list(rec['tn']),
+    return dict(r=rec['r'], rank=RANKS[rec['r']], fx=rec['fx'], legend=is_legend(p, s), st=st, pw=sum(st), tn=list(rec['tn']),
                 g=dict(rec['g']), pct=pct, cap=cap)
 
 
 def lite(s: dict, p: dict) -> dict:
     rec = rec_of(s, p)
     return dict(id=p['id'], b=p['b'], c=p['c'], n=p['n'], d=p['d'], r=rec['r'], rank=RANKS[rec['r']], fx=rec['fx'],
-                legend=is_legend(p), pw=power(s, p), pct=bonus_rate(s, p)[0])
+                legend=is_legend(p, s), pw=power(s, p), pct=bonus_rate(s, p)[0])
 
 
 def public(s: dict) -> dict:
@@ -744,7 +835,7 @@ def public(s: dict) -> dict:
     p = walker(s)
     pct, cap = bonus_rate(s, p) if p else (0, 0)
     return dict(ken=[lite(s, q) for q in x['ken']] if x else [], ret=list(x['ret']) if x else [], rn=x['rn'] if x else 0,
-                gear=[gear_view(x, g) for g in x['gear']] if x else [],
+                gear=[gear_view(x, g, s) for g in x['gear']] if x else [],
                 today=dict(fuse=d['f'], train=d['tr'], stroll=d['w'], got=d['got']), boost=_ad_boost(s) / 100,
                 bonus=dict(on=bool(p), pet=p['id'] if p else None, pct=pct, cap=cap, got=d['got']))
 
@@ -757,6 +848,8 @@ def walk_extra(s: dict, p: dict) -> dict:
         out['r'] = rec['r']
     if rec['fx']:
         out['x'] = rec['fx']
+    if is_legend(p, s) and (C.BREEDS.get(p['b']) or {}).get('fuse') != 'legend':
+        out['lg'] = True   # 🌟 a legendary that kept its breed (live/pet_rank.py: only with one kept)
     return out
 
 
@@ -767,7 +860,7 @@ def best(s: dict) -> dict | None:
         return None
     pw, r, p = max(rows, key=lambda t: (t[0], t[1]))
     top = max(t[1] for t in rows)
-    return dict(p=p, pw=pw, r=rec_of(s, p)['r'], fx=rec_of(s, p)['fx'], top=top, legend=any(is_legend(t[2]) for t in rows))
+    return dict(p=p, pw=pw, r=rec_of(s, p)['r'], fx=rec_of(s, p)['fx'], top=top, legend=any(is_legend(t[2], s) for t in rows))
 
 
 def catalogue() -> dict:
@@ -780,7 +873,9 @@ def catalogue() -> dict:
         recipes=[dict(of=list(k), to=v[0], floor=RANKS[v[1]], coats=v[0] == 'lai_van_ho') for k, v in RECIPES.items()],
         legend=dict(LEGEND), stats=[dict(id=a, emoji=b, name=c) for a, b, c in STATS],
         gear=dict(slots=[dict(id=a, emoji=b, name=c, stat=d) for a, b, c, d in GSLOTS],
-                  models={k: [dict(emoji=e, name=n) for e, n in v] for k, v in GMODELS.items()},
+                  models={k: [dict(emoji=e, name=n, mult=1, bonus=0) for e, n in v]
+                          + [dict(emoji=e, name=n, mult=GX_MULT[i], bonus=GX_BONUS[i], vip=True) for i, (e, n) in enumerate(GMODELS_X[k])]
+                          for k, v in GMODELS.items()},
                   base=list(GBASE), shop=list(GSHOP), up_fee=list(GUP_FEE), fuse_fee=list(GFUSE_FEE), lv_max=GLV_MAX),
         limits=dict(train_day=TRAIN_DAY, train_max=TRAIN_MAX, train_step=TRAIN_STEP, stroll_day=STROLL_DAY,
                     kennel=KENNEL_MAX, gear=GEAR_MAX, lose_from=LOSE_FROM))

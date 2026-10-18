@@ -268,6 +268,7 @@ function head(S,K,x,y,r,o={}){
   s+=E(x,y,r*pos,r*ry,S.face==='mask'?K.l:headFill,1.6);
   if(S.chubby)s+=E(x-r*.78,y+r*.38,r*.4,r*.28,headFill,0)+E(x+r*.78,y+r*.38,r*.4,r*.28,headFill,0);
   s+=face(S,K,x,y,r,mood,o.blink)+ears(S,K,x,y,r,true);
+  if(o.acc?.eye&&o.blink!=='sleep')s+=eyeX(o.acc.eye,x,y,r);
   if(S.fluff==='curly')s+=[[-.38,-.92,.3],[.38,-.92,.3],[0,-1.02,.32]].map(([a,b,c])=>C(x+a*r,y+b*r,c*r,K.b,1.2)).join('');
   if(o.acc?.head)s+=hat(o.acc.head,x,y,r);
   return s;
@@ -286,10 +287,10 @@ function hat(id,x,y,r){
     case'vuong_mien':return Pa(`M${n(x-r*.5)} ${n(y-r*.86)}l${n(-r*.06)} ${n(-r*.5)}l${n(r*.26)} ${n(r*.22)}l${n(r*.3)} ${n(-r*.38)}l${n(r*.3)} ${n(r*.38)}l${n(r*.26)} ${n(-r*.22)}l${n(-r*.06)} ${n(r*.5)}z`,'#f2c14e',1.2)
       +C(x,y-r*1.06,r*.08,'#ef7f72',0)+C(x-r*.3,y-r*1,r*.06,'#7fb8e0',0)+C(x+r*.3,y-r*1,r*.06,'#7cc47f',0);
   }
-  return '';
+  const it=wd(id);return it?hatX(it,x,y,r):'';
 }
 function collar(id,x,y,w){
-  if(!id)return '';const c={vong_chuong:'#e05a4f',vong_da:'#8a5a3a',vong_ngoc:'#f7f1ea',vong_vang:'#e7b93e'}[id];if(!c)return '';
+  if(!id)return '';const c={vong_chuong:'#e05a4f',vong_da:'#8a5a3a',vong_ngoc:'#f7f1ea',vong_vang:'#e7b93e'}[id];if(!c){const it=wd(id);return it?neckX(it,x,y,w):'';}
   let s=Pa(`M${n(x-w)} ${n(y-1.5)}q${n(w)} ${n(4.5)} ${n(w*2)} 0v3q${n(-w)} ${n(4.5)} ${n(-w*2)} 0z`,c,1.1);
   if(id==='vong_ngoc')s=Array.from({length:7},(_,i)=>{const t=i/6,px=x-w+t*2*w,py=y+Math.sin(t*Math.PI)*2.4;return C(px,py,1.6,'#fbf7f0',.8);}).join('');
   if(id==='vong_chuong')s+=C(x,y+4.4,2.4,'#f2c14e',1)+L(`M${n(x-1.2)} ${n(y+4.4)}h2.4`,OL,.7);
@@ -299,7 +300,7 @@ function collar(id,x,y,w){
 }
 /** Clothes over the torso. sit: (cx, top y, half width, height); walk: the body ellipse (cx, cy, rx, ry). */
 function coat(id,mode,a,b,c,d){
-  const col={ao_len:'#e58b7a',ao_mua:'#f6cf45',ao_vn:'#d8392f',ao_khung_long:'#79b86b',ao_dai:'#d94f6e',vay_cong_chua:'#c8a6ef'}[id];if(!col)return '';
+  const col={ao_len:'#e58b7a',ao_mua:'#f6cf45',ao_vn:'#d8392f',ao_khung_long:'#79b86b',ao_dai:'#d94f6e',vay_cong_chua:'#c8a6ef'}[id];if(!col){const it=wd(id);return it?coatX(it,mode,a,b,c,d):'';}
   let s='';
   if(mode==='sit'){const [x,y,w,h]=[a,b,c,d];
     s=Pa(`M${n(x-w*.82)} ${n(y)}q${n(w*.82)} ${n(-3)} ${n(w*1.64)} 0l${n(w*.2)} ${n(h*.78)}q${n(-w*1.02)} ${n(h*.22)} ${n(-w*2.04)} 0z`,col,1.3);
@@ -326,10 +327,185 @@ export function bedSVG(id,w=44){
   switch(id){
     case'o_bong':return E(0,-3,w*.62,7.5,'#f2b8c6',1.5)+E(0,-5,w*.48,4.5,'#fbe0e7',0);
     case'nem_may':return Pa(`M${n(-w*.62)} 0q-4-7 3-10q2-6 9-4q4-5 10-2q5-4 10 0q7-2 8 5q6 2 3 11z`,'#e4f1fb',1.5)+E(0,-4,w*.4,3.5,'#fff',0,' opacity=".8"');
-    case'nha_go':return Pa(`M${n(-w*.62)} 0v-28l${n(w*.62)} -16l${n(w*.62)} 16v28z`,'#d9a066',1.5)+Pa(`M${n(-w*.7)} -27l${n(w*.7)} -19l${n(w*.7)} 19`,'none',3,' stroke-linecap="round"')
+    case'nha_go':return Pa(`M${n(-w*.62)} 0v-28l${n(w*.62)} -16l${n(w*.62)} 16v28z`,'#d9a066',1.5)+Pa(`M${n(-w*.7)} -27l${n(w*.7)} -19l${n(w*.7)} 19`,'none',3)
       +Pa(`M${n(-w*.34)} 0v-17q${n(w*.34)} -12 ${n(w*.68)} 0v17z`,'#7a5236',1.2)+R(-w*.08,-38,w*.16,6,'#fff6e6',1,1)+E(0,-3,w*.4,4,'#f2b8c6',1);
     case'lau_dai':return R(-w*.72,-34,w*.36,34,'#e6dcf8',0,1.5)+R(w*.36,-34,w*.36,34,'#e6dcf8',0,1.5)+R(-w*.42,-28,w*.84,28,'#cdb8f0',2,1.5)
       +Pa(`M${n(-w*.76)} -34l${n(w*.22)} -14l${n(w*.22)} 14zM${n(w*.32)} -34l${n(w*.22)} -14l${n(w*.22)} 14z`,'#ef7f8f',1.3)+Pa(`M${n(-w*.26)} 0v-15q${n(w*.26)} -10 ${n(w*.52)} 0v15z`,'#8f73c9',1.2)+star(0,-22,3,'#f2c14e')+E(0,-3,w*.36,3.6,'#f2b8c6',1);
+  }
+  const it=wd(id);return it?bedX(it,w):'';
+}
+
+/* ---------------------------------------------------------------- 👗 the wardrobe (game/pet_wardrobe_content.py, owner 19/10)
+ * Each piece names an `art` style painted in its `color` (and `c2`); the first nineteen keep their own drawings above.
+ * lookup() registers the catalogue's pieces (content.journey.pets.wardrobe.items). */
+const WD=new Map();let WSRC=null;
+function register(cat){const w=cat?.wardrobe?.items;if(!w||w===WSRC)return;WSRC=w;WD.clear();for(const it of w)WD.set(it.id,it);}
+const wd=id=>WD.get(id)||null;
+const hasWings=acc=>{const it=wd(acc?.back);return !!(it&&/^w_/.test(it.art||''));};
+const dk=(h,f=.72)=>{const v=parseInt(String(h).slice(1),16);if(isNaN(v)||String(h).length!==7)return OL;const c=x=>Math.max(0,Math.min(255,Math.round(x*f))).toString(16).padStart(2,'0');return '#'+c(v>>16)+c((v>>8)&255)+c(v&255);};
+function flower(x,y,s,c,c2){return [0,1,2,3,4].map(i=>{const a=i*Math.PI*2/5;return C(x+Math.cos(a)*s*.62,y+Math.sin(a)*s*.62,s*.5,c,.6);}).join('')+C(x,y,s*.38,c2||'#ffe27a',0);}
+function hatX(it,x,y,r){
+  const c=it.color,c2=it.c2||'#fff';
+  switch(it.art){
+    case'beanie':return Pa(`M${n(x-r*.98)} ${n(y-r*.42)}q${n(r*.08)} ${n(-r*.9)} ${n(r*.98)} ${n(-r*.92)}q${n(r*.9)} ${n(.02)} ${n(r*.98)} ${n(r*.92)}z`,c,1.3)
+      +[-1,1].map(sx=>Pa(`M${n(x+sx*r*.95)} ${n(y-r*.55)}L${n(x+sx*r*.75)} ${n(y-r*1.55)}L${n(x+sx*r*.25)} ${n(y-r*1.1)}z`,c,1.2)+Pa(`M${n(x+sx*r*.8)} ${n(y-r*.75)}L${n(x+sx*r*.72)} ${n(y-r*1.3)}L${n(x+sx*r*.42)} ${n(y-r*1.05)}z`,c2,0)).join('')
+      +L(`M${n(x-r*.95)} ${n(y-r*.5)}q${n(r*.95)} ${n(r*.2)} ${n(r*1.9)} 0`,dk(c),1.6);
+    case'party':return Pa(`M${n(x-r*.42)} ${n(y-r*.82)}L${n(x+r*.12)} ${n(y-r*2)}L${n(x+r*.55)} ${n(y-r*.72)}z`,c,1.2)+L(`M${n(x-r*.2)} ${n(y-r*1.2)}l${n(r*.5)} ${n(.1)}M${n(x-.02*r)} ${n(y-r*1.55)}l${n(r*.3)} 0`,c2,1.4)+C(x+r*.12,y-r*2.05,r*.18,c2,1);
+    case'sailor':return E(x,y-r*.86,r*.82,r*.26,'#fff',1.2)+Pa(`M${n(x-r*.62)} ${n(y-r*.9)}q${n(r*.62)} ${n(-r*.62)} ${n(r*1.24)} 0z`,'#fff',1.2)+L(`M${n(x-r*.66)} ${n(y-r*.92)}q${n(r*.66)} ${n(r*.12)} ${n(r*1.32)} 0`,c2,1.8)+C(x,y-r*1.15,r*.1,c2,0);
+    case'flower':return flower(x+r*.55,y-r*.85,r*.32,c,c2)+flower(x+r*.05,y-r*1.02,r*.22,'#fff',c2)+flower(x+r*.95,y-r*.48,r*.2,c,c2);
+    case'witch':return E(x,y-r*.82,r*1.25,r*.3,c,1.3)+Pa(`M${n(x-r*.62)} ${n(y-r*.88)}q${n(r*.2)} ${n(-r*.9)} ${n(r*.75)} ${n(-r*1.5)}q${n(r*.2)} ${n(-r*.1)} ${n(r*.18)} ${n(r*.25)}q${n(-r*.22)} ${n(r*.5)} ${n(r*.31)} ${n(r*1.25)}z`,c,1.3)+L(`M${n(x-r*.58)} ${n(y-r*1.02)}q${n(r*.6)} ${n(r*.12)} ${n(r*1.2)} 0`,c2,1.6)+star(x+r*.1,y-r*1.55,r*.16,c2);
+    case'veil':return Pa(`M${n(x-r*.75)} ${n(y-r*.7)}q${n(-r*.6)} ${n(r*1.2)} ${n(-r*.5)} ${n(r*2)}h${n(r*2.5)}q${n(r*.1)} ${n(-r*.8)} ${n(-r*.5)} ${n(-r*2)}z`,c,.8,' opacity=".55"')+[-.5,0,.5].map((t,i)=>flower(x+t*r,y-r*(.92+(i===1?.1:0)),r*.2,c2,'#ffe27a')).join('');
+    case'cowboy':return E(x,y-r*.82,r*1.3,r*.3,c,1.3)+Pa(`M${n(x-r*.62)} ${n(y-r*.86)}q${n(-r*.05)} ${n(-r*.8)} ${n(r*.3)} ${n(-r*.75)}q${n(r*.32)} ${n(-r*.2)} ${n(r*.64)} 0q${n(r*.35)} ${n(-r*.05)} ${n(r*.3)} ${n(r*.75)}z`,c,1.3)+L(`M${n(x-r*.6)} ${n(y-r*1)}q${n(r*.6)} ${n(r*.12)} ${n(r*1.2)} 0`,c2,1.6);
+    case'turban':return Pa(`M${n(x-r*1.02)} ${n(y-r*.45)}q${n(-r*.05)} ${n(-r*.95)} ${n(r*1.02)} ${n(-r*.98)}q${n(r*1.07)} ${n(.03)} ${n(r*1.02)} ${n(r*.98)}q${n(-r*1.02)} ${n(-r*.3)} ${n(-r*2.04)} 0z`,c,1.3)+L(`M${n(x-r*.9)} ${n(y-r*.75)}q${n(r*.9)} ${n(-r*.3)} ${n(r*1.8)} 0M${n(x-r*.75)} ${n(y-r*1.05)}q${n(r*.75)} ${n(-r*.25)} ${n(r*1.5)} 0`,c2,.9,' opacity=".8"');
+    case'crown':return Pa(`M${n(x-r*.7)} ${n(y-r*.82)}l${n(-r*.1)} ${n(-r*.7)}l${n(r*.35)} ${n(r*.3)}l${n(r*.45)} ${n(-r*.55)}l${n(r*.45)} ${n(r*.55)}l${n(r*.35)} ${n(-r*.3)}l${n(-r*.1)} ${n(r*.7)}z`,'#e8eef5',1.2)
+      +gem(x,y-r*1.12,r*.2,c2)+gem(x-r*.45,y-r*1.02,r*.13,'#ff9db0')+gem(x+r*.45,y-r*1.02,r*.13,'#9fdcff')+star(x,y-r*1.55,r*.12,'#fff');
+    case'beret':return E(x-r*.12,y-r*.88,r*.95,r*.36,c,1.3,' transform="rotate(-12 '+n(x)+' '+n(y-r*.88)+')"')+L(`M${n(x-r*.2)} ${n(y-r*1.24)}l${n(r*.04)} ${n(-r*.2)}`,dk(c),1.6);
+    case'bunny':return [-1,1].map(sx=>E(x+sx*r*.42,y-r*1.55,r*.24,r*.7,c,1.3,` transform="rotate(${sx*12} ${n(x+sx*r*.42)} ${n(y-r*1.1)})"`)+E(x+sx*r*.42,y-r*1.5,r*.11,r*.5,c2,0,` transform="rotate(${sx*12} ${n(x+sx*r*.42)} ${n(y-r*1.1)})"`)).join('')
+      +L(`M${n(x-r*.85)} ${n(y-r*.62)}q${n(r*.85)} ${n(-r*.55)} ${n(r*1.7)} 0`,c,1.8);
+    case'helmet':return Pa(`M${n(x-r*1.04)} ${n(y-r*.2)}q${n(-r*.02)} ${n(-r*1.1)} ${n(r*1.04)} ${n(-r*1.12)}q${n(r*1.06)} ${n(.02)} ${n(r*1.04)} ${n(r*1.12)}z`,c,1.3)+Pa(`M${n(x-r*.75)} ${n(y-r*.3)}q${n(r*.75)} ${n(-r*.22)} ${n(r*1.5)} 0l${n(-r*.12)} ${n(r*.22)}q${n(-r*.63)} ${n(-r*.12)} ${n(-r*1.26)} 0z`,c2,1,' opacity=".75"')+L(`M${n(x)} ${n(y-r*1.3)}v${n(r*.4)}`,'#fff',1.4,' opacity=".7"');
+    case'halo':return `<g class="pet-halo">${E(x,y-r*1.35,r*.85,r*.24,'none',0,` stroke="${c}" stroke-width="2.6"`)+E(x,y-r*1.35,r*.85,r*.24,'none',0,` stroke="${c2}" stroke-width=".9"`)}</g>`;
+  }
+  return '';
+}
+function eyeX(id,x,y,r){
+  const it=wd(id);if(!it)return '';const c=it.color,c2=it.c2||'#fff',ex=r*.42,ey=y-r*.04,er=r*.27,P=[-1,1];
+  const bridge=L(`M${n(x-ex+er)} ${n(ey)}q${n(ex-er)} ${n(-er*.5)} ${n((ex-er)*2)} 0`,c,1.1);
+  switch(it.art){
+    case'round':return P.map(sx=>C(x+sx*ex,ey,er,'#fff',0,` fill-opacity=".18" stroke="${c}" stroke-width="1.3"`)).join('')+bridge;
+    case'gemglass':return P.map(sx=>C(x+sx*ex,ey,er,'#dff4ff',0,` fill-opacity=".35" stroke="#e8eef5" stroke-width="1.4"`)+gem(x+sx*(ex+er*.9),ey-er*.7,r*.1,c)).join('')+bridge;
+    case'heart':return P.map(sx=>heart(x+sx*ex,ey-er*.5,er*.95,c).replace('<path ','<path opacity=".82" ')).join('')+bridge;
+    case'shades':return P.map(sx=>R(x+sx*ex-er*1.1,ey-er*.7,er*2.2,er*1.5,c,er*.5,1)).join('')+L(`M${n(x-ex+er)} ${n(ey-er*.4)}h${n((ex-er)*2)}`,c,1.4)+P.map(sx=>L(`M${n(x+sx*ex-er*.6)} ${n(ey-er*.3)}l${n(er*.4)} ${n(-er*.2)}`,'#fff',.8,' opacity=".7"')).join('');
+    case'star':return P.map(sx=>star(x+sx*ex,ey,er*1.25,c)).join('')+P.map(sx=>C(x+sx*ex,ey,er*.42,'#fff',0,' opacity=".5"')).join('');
+    case'mask':return E(x,ey,ex+er*1.75,er*1.2,c,1)+P.map(sx=>E(x+sx*ex,ey,er*.62,er*.5,'#2b1f3a',0)).join('')+star(x,ey-er*1.05,er*.42,c2);
+    case'goggles':return L(`M${n(x-r*1.02)} ${n(ey)}h${n(r*2.04)}`,dk(c),1.8)+P.map(sx=>C(x+sx*ex,ey,er*1.12,c,1.3,' fill-opacity=".45"')+C(x+sx*ex-er*.35,ey-er*.35,er*.25,'#fff',0,' opacity=".8"')).join('');
+    case'monocle':return C(x+ex,ey,er*1.05,'#fff',0,` fill-opacity=".2" stroke="${c}" stroke-width="1.4"`)+L(`M${n(x+ex)} ${n(ey+er*1.05)}q${n(r*.2)} ${n(r*.5)} ${n(r*.4)} ${n(r*.9)}`,c,.8,' stroke-dasharray="1 1"');
+  }
+  return '';
+}
+function neckX(it,x,y,w){
+  const c=it.color,c2=it.c2||'#fff';
+  switch(it.art){
+    case'scarf':return Pa(`M${n(x-w)} ${n(y-2)}q${n(w)} ${n(5.5)} ${n(w*2)} 0v4q${n(-w)} ${n(5.5)} ${n(-w*2)} 0z`,c,1.1)+Pa(`M${n(x+w*.45)} ${n(y+3)}l${n(w*.25)} 8l${n(-w*.35)} 1l${n(-w*.1)} -8z`,c,1)
+      +L(`M${n(x-w*.6)} ${n(y)}v3M${n(x)} ${n(y+1)}v3.4M${n(x+w*.6)} ${n(y)}v3`,c2,1.2,' opacity=".9"');
+    case'bowtie':return Pa(`M${n(x)} ${n(y+2)}l-5 -3.4v7z`,c,1)+Pa(`M${n(x)} ${n(y+2)}l5 -3.4v7z`,c,1)+C(x,y+2,1.6,c2,.8);
+    case'lei':return Array.from({length:6},(_,i)=>{const t=i/5,px=x-w+t*2*w,py=y+Math.sin(t*Math.PI)*2.8;return flower(px,py,2.4,i%2?c:'#fff',c2);}).join('');
+    case'beads':return Array.from({length:8},(_,i)=>{const t=i/7,px=x-w+t*2*w,py=y+Math.sin(t*Math.PI)*2.6;return C(px,py,1.6,i%2?c2:c,.7);}).join('');
+    case'gems':return Array.from({length:7},(_,i)=>{const t=i/6,px=x-w+t*2*w,py=y+Math.sin(t*Math.PI)*2.4;return C(px,py,1.3,'#f4f8ff',.6);}).join('')+gem(x,y+5.4,3,c)+star(x+3.5,y+3,1.2,'#fff');
+    case'pendant':return L(`M${n(x-w)} ${n(y-1)}q${n(w)} ${n(5)} ${n(w*2)} 0`,c2,1)+(it.id.includes('tim')?heart(x,y+4,2.6,c):Pa(`M${n(x+2.4)} ${n(y+2)}a3.4 3.4 0 1 0 0 6.4a2.6 2.6 0 1 1 0 -6.4z`,c,.8));
+  }
+  return '';
+}
+/** Clothes of the wardrobe, over the torso (sit: cx, top, half width, height; walk: the body ellipse). */
+function coatX(it,mode,a,b,c,d){
+  const col=it.color,c2=it.c2||'#fff',art=it.art;if(art==='cape')return '';
+  let s='';
+  if(mode==='sit'){const [x,y,w,h]=[a,b,c,d],base=(ex='')=>Pa(`M${n(x-w*.82)} ${n(y)}q${n(w*.82)} ${n(-3)} ${n(w*1.64)} 0l${n(w*.2)} ${n(h*.78)}q${n(-w*1.02)} ${n(h*.22)} ${n(-w*2.04)} 0z`,col,1.3,ex);
+    switch(art){
+      case'hoodie':s=base()+R(x-w*.45,y+h*.42,w*.9,h*.26,dk(col,.9),3,1)+L(`M${n(x-w*.2)} ${n(y+1)}v${n(h*.25)}M${n(x+w*.2)} ${n(y+1)}v${n(h*.25)}`,c2,1.1);break;
+      case'bib':s=Pa(`M${n(x-w*.55)} ${n(y)}q${n(w*.55)} ${n(-2)} ${n(w*1.1)} 0l${n(w*.05)} ${n(h*.7)}q${n(-w*.6)} ${n(h*.25)} ${n(-w*1.2)} 0z`,col,1.2)+[[-.25,.25],[.2,.2],[0,.45],[-.2,.6],[.25,.55]].map(([p,q])=>E(x+p*w,y+q*h,1,1.3,c2,0)).join('');break;
+      case'stripes':s=base()+[.22,.44,.66].map(t=>L(`M${n(x-w*(.86+t*.2))} ${n(y+h*t)}h${n(w*(1.72+t*.4))}`,c2,2.2,' opacity=".95"')).join('');break;
+      case'tutu':s=base()+Array.from({length:7},(_,i)=>E(x-w*1.15+i*w*.38,y+h*.78,w*.3,h*.16,c2,1)).join('');break;
+      case'space':s=base()+R(x-w*.9,y+h*.5,w*1.8,h*.1,'#9aa0a6',1,.8)+R(x+w*.15,y+h*.12,w*.42,h*.2,c2,1,.8)+C(x-w*.35,y+h*.25,1.3,'#5aa9e6',0);break;
+      case'robe':s=base()+L(`M${n(x-w*.5)} ${n(y)}l${n(w*.5)} ${n(h*.4)}l${n(w*.5)} ${n(-h*.4)}`,c2,1.6)+R(x-w*.95,y+h*.5,w*1.9,h*.14,c2,1,.9);break;
+      case'aodai':s=Pa(`M${n(x-w*.78)} ${n(y)}q${n(w*.78)} ${n(-3)} ${n(w*1.56)} 0l${n(w*.36)} ${n(h*1.05)}h${n(-w*.62)}l${n(-w*.24)} ${n(-h*.3)}l${n(-w*.24)} ${n(h*.3)}h${n(-w*.62)}z`,col,1.3)+flower(x+w*.3,y+h*.32,1.6,c2,'#fff')+flower(x-w*.35,y+h*.6,1.4,c2,'#fff');break;
+      case'pumpkin':s=Pa(`M${n(x-w*.95)} ${n(y+h*.1)}q${n(w*.95)} ${n(-h*.3)} ${n(w*1.9)} 0q${n(w*.25)} ${n(h*.55)} 0 ${n(h*.75)}q${n(-w*.95)} ${n(h*.25)} ${n(-w*1.9)} 0q${n(-w*.25)} ${n(-h*.2)} 0 ${n(-h*.75)}z`,col,1.3)+L(`M${n(x-w*.35)} ${n(y)}q${n(-w*.15)} ${n(h*.4)} 0 ${n(h*.8)}M${n(x+w*.35)} ${n(y)}q${n(w*.15)} ${n(h*.4)} 0 ${n(h*.8)}`,dk(col),1.1)+Pa(`M${n(x-1)} ${n(y-1)}l1 -3l2 .5l-1 3z`,c2,.8);break;
+      case'tux':s=base()+Pa(`M${n(x-w*.3)} ${n(y-1)}l${n(w*.3)} ${n(h*.75)}l${n(w*.3)} ${n(-h*.75)}z`,c2,.9)+Pa(`M${n(x)} ${n(y+2)}l-3 -2v4zM${n(x)} ${n(y+2)}l3 -2v4z`,'#2b2b33',.6)+C(x+w*.55,y+h*.25,1.6,'#fff',.6);break;
+      case'gown':s=Pa(`M${n(x-w*.7)} ${n(y)}q${n(w*.7)} ${n(-3)} ${n(w*1.4)} 0l${n(w*.55)} ${n(h*1)}q${n(-w*1.25)} ${n(h*.25)} ${n(-w*2.5)} 0z`,col,1.3)+Array.from({length:6},(_,i)=>C(x-w*1.15+i*w*.46,y+h*.98,w*.2,c2,.8)).join('')+heart(x,y+h*.25,2,c2);break;
+      case'fluffy':s=base()+Array.from({length:9},(_,i)=>C(x-w*.8+(i%3)*w*.8,y+h*(.15+Math.floor(i/3)*.27),w*.3,col,1)).join('');break;
+      case'shirt':s=base()+[[-.5,.25],[.35,.2],[0,.5],[-.45,.65],[.5,.6]].map(([p,q])=>it.id==='pijama_sao'?star(x+p*w,y+q*h,1.8,c2):flower(x+p*w,y+q*h,1.6,c2,'#fff')).join('');break;
+      case'puffer':s=base()+[.22,.44,.66].map(t=>L(`M${n(x-w*(.86+t*.2))} ${n(y+h*t)}h${n(w*(1.72+t*.4))}`,dk(col),1.1)).join('')+L(`M${n(x)} ${n(y)}v${n(h*.8)}`,dk(col),1);break;
+      default:s=base();
+    }
+  }else{const [cx,cy,rx,ry]=[a,b,c,d];
+    s=Pa(`M${n(cx-rx*.55)} ${n(cy-ry*.98)}q${n(rx*.55)} ${n(-ry*.3)} ${n(rx*1.1)} 0q${n(rx*.12)} ${n(ry*.95)} ${n(-rx*.02)} ${n(ry*1.55)}h${n(-rx*1.06)}q${n(-rx*.14)} ${n(-ry*.6)} ${n(-rx*.02)} ${n(-ry*1.55)}z`,art==='bib'?'none':col,art==='bib'?0:1.3);
+    if(art==='stripes')s+=[-.4,0,.4].map(t=>L(`M${n(cx-rx*.5)} ${n(cy+ry*t)}h${n(rx*1.06)}`,c2,2)).join('');
+    if(art==='tutu'||art==='gown')s+=Array.from({length:5},(_,i)=>C(cx-rx*.6+i*rx*.3,cy+ry*.62,ry*.36,c2,1)).join('');
+    if(art==='robe'||art==='space')s+=R(cx-rx*.56,cy+ry*.1,rx*1.1,ry*.3,c2,1,.8);
+    if(art==='tux')s+=Pa(`M${n(cx+rx*.3)} ${n(cy-ry*.95)}l${n(rx*.22)} ${n(ry*.9)}l${n(rx*.1)} ${n(-ry*.95)}z`,c2,.8);
+    if(art==='shirt'||art==='aodai')s+=[[-.3,-.2],[.2,.3]].map(([p,q])=>it.id==='pijama_sao'?star(cx+p*rx,cy+q*ry,1.8,c2):flower(cx+p*rx,cy+q*ry,1.5,c2,'#fff')).join('');
+    if(art==='fluffy')s+=Array.from({length:5},(_,i)=>C(cx-rx*.45+i*rx*.22,cy-ry*.55+(i%2)*ry*.6,ry*.38,col,.9)).join('');
+    if(art==='pumpkin'||art==='puffer')s+=L(`M${n(cx-rx*.2)} ${n(cy-ry*.9)}v${n(ry*1.5)}M${n(cx+rx*.2)} ${n(cy-ry*.9)}v${n(ry*1.5)}`,dk(col),1);
+    if(art==='bib')s=E(cx+rx*.62,cy+ry*.1,rx*.28,ry*.62,col,1.1)+E(cx+rx*.62,cy+ry*.1,1,1.2,c2,0);
+    if(art==='hoodie')s+=R(cx-rx*.25,cy,rx*.5,ry*.5,dk(col,.9),2,.9);
+  }
+  return s;
+}
+/** 🪽 One wing (pointing left from its root at 0,0; flip -1 points right), by style. */
+function wingX(it,flip,s){
+  const c=it.color,c2=it.c2||'#fff',ed=dk(c,.62);let g='';
+  switch(it.art){
+    case'w_feather':case'w_galaxy':case'w_rainbow':{
+      g+=PRIM.map(([a,l],i)=>feather(l*.62,a,4.6,it.art==='w_rainbow'?RB[i%6]:c,it.art==='w_rainbow'?dk(RB[i%6]):ed)).join('');
+      g+=PRIM.slice(1,8).map(([a,l],i)=>feather(l*.42,a+5,5.2,it.art==='w_rainbow'?RB[(i+2)%6]:c2,ed)).join('');
+      g+=[[196,9],[214,10.5],[232,10],[250,8]].map(([a,l])=>feather(l,a,5.4,it.art==='w_galaxy'?c:'#fff',ed)).join('');
+      if(it.art==='w_galaxy')g+=[[-12,-14],[-20,-8],[-8,-22],[-24,-18],[-16,-26]].map(([x,y],i)=>i%2?C(x,y,.8,'#fff',0):star(x,y,1.5,'#fff')).join('');
+      break;}
+    case'w_peacock':g+=[150,165,180,195,210,225,240].map((a,i)=>feather(32+(i%2)*6,a,4.4,c,ed)).join('')+[150,165,180,195,210,225,240].map((a,i)=>{const r=a*Math.PI/180,l=30+(i%2)*6;return E(Math.cos(r)*l,Math.sin(r)*l,2.6,3.2,c2,.6)+C(Math.cos(r)*l,Math.sin(r)*l,1.3,'#2b1f5a',0)+C(Math.cos(r)*l,Math.sin(r)*l,.5,'#ffd24a',0);}).join('');break;
+    case'w_butterfly':g+=Pa('M0 0C-8 -26 -34 -32 -33 -14C-32 -3 -14 -1 0 0z',c,1)+Pa('M0 0C-5 13 -23 19 -23 9C-22 2 -9 0 0 0z',c,1)+C(-22,-16,3.4,c2,0)+C(-14,-22,1.8,c2,0)+C(-15,6,2.2,c2,0)+C(-27,-10,1.6,'#fff',0,' opacity=".8"');break;
+    case'w_fairy':g+=E(-15,-11,17,7,c,.8,` transform="rotate(-28 -15 -11)" fill-opacity=".62" stroke="${ed}"`)+E(-12,4,11,5,c,.8,` transform="rotate(18 -12 4)" fill-opacity=".62" stroke="${ed}"`)+L('M0 0L-26 -20M-8 -6L-18 -10M0 0L-20 9',c2,.7,' opacity=".8"')+star(-26,-20,1.6,'#fff');break;
+    case'w_dragonfly':g+=E(-17,-6,19,4.2,c,.7,` transform="rotate(-16 -17 -6)" fill-opacity=".6" stroke="${c2}"`)+E(-15,5,16,3.8,c,.7,` transform="rotate(14 -15 5)" fill-opacity=".6" stroke="${c2}"`)+L('M0 0L-33 -10M0 0L-29 9',c2,.6);break;
+    case'w_bat':case'w_dragon':g+=Pa('M0 0L-6 -24L-36 -22Q-33 -13 -30 -8Q-24 -12 -20 -5Q-14 -10 -9 -2Z',c,1.1,` stroke="${ed}"`)+L('M-6 -24L-30 -9M-6 -24L-20 -5M-6 -24L-9 -2',c2,.9)+(it.art==='w_dragon'?Pa('M-6 -24l-2 -4l3 1z',c2,.6)+Pa('M-36 -22l-3 -2l3 -1z',c2,.6):'');break;
+    case'w_petal':g+=[200,220,240,260,180].map((a,i)=>{const r=a*Math.PI/180,l=18-(i===4?4:0);return E(Math.cos(r)*l*.62,Math.sin(r)*l*.62,l*.62,4.6,c,.9,` transform="rotate(${a} ${n(Math.cos(r)*l*.62)} ${n(Math.sin(r)*l*.62)})"`)+E(Math.cos(r)*l*.5,Math.sin(r)*l*.5,l*.36,2,c2,0,` transform="rotate(${a} ${n(Math.cos(r)*l*.5)} ${n(Math.sin(r)*l*.5)})"`);}).join('');break;
+    case'w_crystal':g+=Pa('M0 0L-12 -28L-22 -20Z',c,.8,` fill-opacity=".8" stroke="${c2}"`)+Pa('M0 0L-26 -22L-33 -8Z',c,.8,` fill-opacity=".75" stroke="${c2}"`)+Pa('M0 0L-31 -3L-23 6Z',c,.8,` fill-opacity=".7" stroke="${c2}"`)+L('M-4 -6L-12 -24M-6 -4L-26 -17',c2=== '#fff'?'#fff':'#fff',.7,' opacity=".85"')+star(-20,-22,1.6,'#fff')+star(-30,-6,1.2,'#fff');break;
+    case'w_flame':g+=[[-8,-4,16,-70],[-14,-2,18,-48],[-18,2,15,-25]].map(([x,y,h,a])=>`<g transform="rotate(${a} ${x} ${y})">${flame(x,y,h,c,c2)}</g>`).join('');break;
+  }
+  return `<g transform="scale(${n(flip*s)} ${n(s)})">${g}</g>`;
+}
+/** What is worn on the back, behind the body (wings, a cape, the bouquet) or in front of it (the float ring). */
+function backX(acc,mode,g){
+  const it=wd(acc?.back),cape=wd(acc?.body);let behind='',front='';
+  if(cape&&cape.art==='cape'){const c=cape.color,c2=cape.c2||'#fff';
+    behind+=mode==='sit'?Pa(`M${n(-g.w*.7)} ${n(g.y)}q${n(-g.w*.9)} ${n(g.h*.9)} ${n(-g.w*1.15)} ${n(g.h*1.25)}h${n(g.w*3.7)}q${n(-g.w*.25)} ${n(-g.h*.35)} ${n(-g.w*1.15)} ${n(-g.h*1.25)}z`,c,1.3)
+      :Pa(`M${n(g.x+g.rx*.4)} ${n(g.y-g.ry*.95)}q${n(-g.rx*.9)} ${n(-g.ry*.4)} ${n(-g.rx*1.6)} ${n(g.ry*1.1)}q${n(g.rx*.6)} ${n(g.ry*.2)} ${n(g.rx*1.3)} ${n(-g.ry*.2)}z`,c,1.3);
+    front+=mode==='sit'?C(0,g.y+1,1.8,c2,.8):'';}
+  if(!it)return [behind,front];
+  const c=it.color,c2=it.c2||'#fff';
+  if(/^w_/.test(it.art)){
+    const sz=it.art==='w_peacock'?.66:/^w_(feather|galaxy|rainbow)$/.test(it.art)?1.12:.95,lift=/^w_(feather|galaxy|rainbow|peacock)$/.test(it.art)?-.05:.2;
+    behind+=`<g class="pet-wings">`+(mode==='sit'?`<g transform="translate(${n(-g.w*.45)} ${n(g.y+g.h*lift)})">${wingX(it,1,sz)}</g><g transform="translate(${n(g.w*.45)} ${n(g.y+g.h*lift)})">${wingX(it,-1,sz)}</g>`
+      :`<g transform="translate(${n(g.x-g.rx*.1)} ${n(g.y-g.ry*.75)}) rotate(14)">${wingX(it,1,sz*.8)}</g><g transform="translate(${n(g.x+g.rx*.15)} ${n(g.y-g.ry*.85)}) rotate(4)">${wingX(it,1,sz*.68)}</g>`)+'</g>';
+  }else if(it.art==='pack'){
+    behind+=mode==='sit'?R(g.w*.35,g.y-2,g.w*.9,g.h*.8,c,4,1.3)+E(g.w*.8,g.y+g.h*.38,g.w*.18,g.h*.12,'#fff',.8)+C(g.w*.62,g.y+g.h*.2,1.2,OL,0):'';
+    if(mode!=='sit')front+=Pa(`M${n(g.x-g.rx*.4)} ${n(g.y-g.ry*1.25)}q${n(g.rx*.4)} ${n(-g.ry*.6)} ${n(g.rx*.8)} 0v${n(g.ry*.9)}h${n(-g.rx*.8)}z`,c,1.2)+Pa(`M${n(g.x+g.rx*.4)} ${n(g.y-g.ry*.8)}l4 -2v4z`,c,1);
+  }else if(it.art==='ring'){
+    const y=mode==='sit'?g.y+g.h*.75:g.y+g.ry*.2,rx=mode==='sit'?g.w*1.25:g.rx*1.05,ry=mode==='sit'?4.6:4;
+    front+=E(0+(mode==='sit'?0:g.x),y,rx,ry,'none',0,` stroke="${c}" stroke-width="5"`)+[-.6,0,.6].map(t=>E((mode==='sit'?0:g.x)+rx*t,y+ry*.9*(1-Math.abs(t)),2.4,1.6,c2,0)).join('');
+  }else if(it.art==='bouquet'){
+    const x=mode==='sit'?g.w*.75:g.x-g.rx*.3,y=mode==='sit'?g.y-2:g.y-g.ry*1.3;
+    behind+=L(`M${n(x)} ${n(y+8)}l-3 -8M${n(x)} ${n(y+8)}l1 -9M${n(x)} ${n(y+8)}l4 -7`,'#4f8a3c',1.4)+flower(x-3,y-1,2.6,c,'#ffe27a')+flower(x+1,y-3,2.6,'#fff',c)+flower(x+4,y,2.4,c,'#ffe27a');
+  }
+  return [behind,front];
+}
+/** ✨ Small sparkles by a piece of rank B and up (its rank's colour; SSS a rainbow pair). */
+function shine(pts){
+  return pts.filter(([,,r])=>r>=2).map(([x,y,r],i)=>r>=6?star(x,y,2.2,RB[i%6])+star(x+4,y-3,1.3,'#fff'):star(x,y,r>=4?2:1.5,RANK_COLOR[r])+(r>=5?star(x+3.5,y+2,1.1,'#fff'):'')).join('');
+}
+/** 💖 The cute aura (o 1…3: what is worn adds up) and a whole set's effect (st), around the pet. */
+function wearFx(o,st){
+  let back='',front='';
+  if(o>=2)back+=`<ellipse class="pet-glow" cx="0" cy="-24" rx="34" ry="30" fill="#ffd1e6" opacity="${o>=3?.55:.35}"/>`;
+  if(o>=1)front+=`<g class="pet-hearts">${heart(-26,-46,2.4,'#ff8fb1')+heart(27,-38,2,'#ffb3c9')}${o>=3?heart(-31,-22,1.7,'#ff6fa3')+heart(30,-58,1.8,'#ff8fb1'):''}</g>`;
+  if(o>=3)front+=`<g class="pet-rise">${[[-22,-12],[24,-18],[-14,-60]].map(([x,y])=>C(x,y,2,'#fff',.6,' stroke="#ffb3d1" fill-opacity=".5"')).join('')}</g>`;
+  switch(st){
+    case'thuy_thu':front+=`<g class="pet-rise">${[[-28,-30,2.6],[30,-26,2],[-20,-52,1.8],[22,-56,2.4],[34,-46,1.4]].map(([x,y,r])=>C(x,y,r,'#e6f6ff',.7,' stroke="#5aa9e6" fill-opacity=".45"')).join('')}</g>`;break;
+    case'oct20':front+=`<g class="pet-fall">${[[-26,-56],[18,-62],[30,-36],[-32,-30],[6,-70]].map(([x,y],i)=>E(x,y,2.2,1.3,i%2?'#ff9db0':'#ffc4d2',0,` transform="rotate(${i*40} ${x} ${y})"`)).join('')}</g>`;break;
+    case'halloween':{const bat=(x,y)=>Pa(`M${x} ${y}q-3 -3 -7 -1q2 1 2 3q2 -2 5 -1zM${x} ${y}q3 -3 7 -1q-2 1 -2 3q-2 -2 -5 -1z`,'#3d2f4f',0)+C(x,y,1.2,'#3d2f4f',0);
+      front+=`<g class="pet-rise">${bat(-28,-50)+bat(26,-60)+bat(32,-34)}</g>`+E(-30,-4,4.6,3.8,'#f08a3c',1)+Pa('M-31.5 -5l1 -1.4l1 1.4zM-28.5 -5l1 -1.4l1 1.4z','#3a2a1c',0)+L('M-30 -8v-2','#4f8a3c',1.2);break;}
+    case'cuoi':front+=`<g class="pet-hearts">${heart(-30,-34,2.2,'#ff6f8f')+heart(28,-50,2.4,'#ff9db0')}</g>`+flower(-30,-58,2.6,'#fff','#ffe27a')+flower(32,-24,2.4,'#fff','#ff9db0');break;
+    case'hoang_gia':back+=E(0,-.5,36,6,'#c0262d',0,' opacity=".85"')+E(0,-.5,36,6,'none',0,' stroke="#f2c14e" stroke-width="1.2"')+`<ellipse class="pet-glow" cx="0" cy="-26" rx="38" ry="34" fill="#ffe07a" opacity=".35"/>`;
+      front+=`<g class="pet-spark">${[[-30,-44],[30,-52],[-34,-18],[34,-22]].map(([x,y])=>star(x,y,2.2,'#ffd24a')).join('')}</g>`;break;
+  }
+  return [back,front];
+}
+function bedX(it,w){
+  const c=it.color,c2=it.c2||'#fff';
+  switch(it.art){
+    case'basket':return Pa(`M${n(-w*.62)} -9q${n(w*.62)} 8 ${n(w*1.24)} 0l-3 9h${n(-w*1.24+6)}z`,c,1.5)+L(`M${n(-w*.5)} -5h${n(w)}M${n(-w*.45)} -2h${n(w*.9)}`,dk(c),1)+E(0,-8,w*.5,3.4,c2,1)+flower(-w*.45,-10,2.6,'#ff9db0','#ffe27a')+flower(w*.45,-10,2.6,'#fff','#ff9db0');
+    case'pumpkin':return Pa(`M${n(-w*.7)} 0q-4 -20 ${n(w*.7)} -24q${n(w*.7+4)} 4 ${n(w*.7)} 24z`,c,1.5)+L(`M${n(-w*.25)} -23q-4 11 0 23M${n(w*.25)} -23q4 11 0 23`,dk(c),1.1)+Pa(`M${n(-w*.32)} 0v-11q${n(w*.32)} -9 ${n(w*.64)} 0v11z`,'#3a2a1c',1)+L('M0 -24l1 -5',c2,2)+E(0,-3,w*.3,3,'#f2b8c6',1);
+    case'canopy':return Pa(`M${n(-w*.7)} 0v-10h${n(w*1.4)}v10z`,c,1.5)+E(0,-10,w*.62,3.6,'#fff',1)+Pa(`M${n(-w*.72)} -10q-2 -22 ${n(w*.72)} -30q${n(w*.72+2)} 8 ${n(w*.72)} 30`,c2,1,' fill-opacity=".45"')+heart(0,-30,2.6,'#ff6f8f')+flower(-w*.4,-11,2,'#ff9db0','#fff')+flower(w*.4,-11,2,'#ff9db0','#fff');
+    case'castle':return R(-w*.72,-34,w*.36,34,c,0,1.5,' fill-opacity=".85"')+R(w*.36,-34,w*.36,34,c,0,1.5,' fill-opacity=".85"')+R(-w*.42,-28,w*.84,28,c2,2,1.5,' fill-opacity=".8"')
+      +Pa(`M${n(-w*.76)} -34l${n(w*.22)} -14l${n(w*.22)} 14zM${n(w*.32)} -34l${n(w*.22)} -14l${n(w*.22)} 14z`,'#b28cff',1.3)+gem(0,-20,4,'#fff')+star(-w*.54,-50,2,'#fff')+star(w*.54,-50,2,'#fff')+E(0,-3,w*.36,3.6,'#e6dcff',1);
+    case'cushion':return E(0,-3.5,w*.68,6.5,c,1.5)+Array.from({length:7},(_,i)=>C(-w*.55+i*w*.18,-7+(i%2)*1.5,3,c,1)).join('')+E(0,-5,w*.42,3,c2,0,' opacity=".6"');
   }
   return '';
 }
@@ -366,6 +542,7 @@ function sitPose(S,K,o){
   const sc=S.body||1,legs=S.legs||1,lng=S.long||1,hr=12.5*(S.head||1),bw=13*sc*(S.chubby?1.12:1),bh=17*sc*(S.legs<.7?.85:1);
   const by=-bh*.62,hy=by-bh*.55-hr*.62,happy=o.mood==='happy'||o.wave;let s='';
   s+=E(0,-.5,bw*1.2+4,2.4,'#000',0,' opacity=".12"');
+  const [bk,fr]=backX(o.acc,'sit',{w:bw,y:by-bh*.45,h:bh*.95});s+=bk;   // 👗 wings, a cape: behind
   s+=tail(S,K,-bw*.7,-3,-1,1.05*sc);
   s+=E(-bw*.62,-bw*.38,bw*.5,bw*.4,K.b,1.5)+E(bw*.62,-bw*.38,bw*.5,bw*.4,K.b,1.5);   // haunches
   s+=E(0,by,bw,bh*.62,S.bald?K.b:K.b,1.6);                                         // body
@@ -373,6 +550,7 @@ function sitPose(S,K,o){
   if(chest)s+=E(0,by+bh*.08,bw*.55,bh*.48,K.l,0);
   s+=marks(S,K,0,by+2,bw,bh*.55);
   if(o.acc?.body)s+=coat(o.acc.body,'sit',0,by-bh*.45,bw,bh*.95);
+  s+=fr;
   const lh=Math.max(5,11*legs),lx=bw*.38,paw=S.face==='points'?K.m:(chest?K.l:K.b),raise=happy?1:0;
   s+=R(-lx-3.4,-lh,6.8,lh+1,K.b,3,1.4)+E(-lx,-1.2,4.2,2.6,paw,1.3);
   s+=raise?`<g class="pet-wave" transform="rotate(-40 ${n(bw*.55)} ${n(by+bh*.05)})">${R(bw*.55-3.4,by+bh*.05-12,6.8,13,K.b,3.4,1.4)+E(bw*.55,by+bh*.05-12.5,4.2,3.2,paw,1.3)+E(bw*.55,by+bh*.05-13.5,1.6,1,PINK,0)}</g>`:R(lx-3.4,-lh,6.8,lh+1,K.b,3,1.4)+E(lx,-1.2,4.2,2.6,paw,1.3);
@@ -380,12 +558,14 @@ function sitPose(S,K,o){
   s+=collar(o.acc?.neck,0,hy+hr*.86,hr*.62);
   s+=head(S,K,0,hy,hr,{mood:o.mood,acc:o.acc});
   if(o.mood==='happy')s+=`<g class="pet-hearts">${heart(hr*1.25,hy-hr*.9,2.2)+heart(-hr*1.35,hy-hr*.4,1.6,'#f5a9bc')}</g>`;
+  const wr=o.wr||{};s+=shine([[hr*.95,hy-hr*1.25,wr.head],[-hr*1.05,hy-hr*.05,wr.eye],[hr*.75,hy+hr*1,wr.neck],[bw*.95,by,wr.body],[-bw*1.9,by-bh*.6,wr.back],[bw*1.9,by-bh*.75,wr.back]].filter(p=>p[2]));
   return s;
 }
 function walkPose(S,K,o){
   const sc=S.body||1,legs=S.legs||1,lng=S.long||1,hr=11.5*(S.head||1),rx=13*sc*lng*(S.chubby?1.08:1),ry=8.2*sc,lh=Math.max(4.5,10*legs);
   const cy=-lh-ry*.6,hx=rx*.72,hy=cy-ry-hr*.35;let s='';
   s+=E(0,-.5,rx+5,2.3,'#000',0,' opacity=".12"');
+  const [bk,fr]=backX(o.acc,'walk',{x:0,y:cy,rx,ry});s+=bk;
   const leg=(x,cls)=>`<g class="pet-leg ${cls}">${R(x-2.8,cy+ry*.2,5.6,lh+ry*.4-1,K.b,2.6,1.3)+E(x,-1.1,3.6,2.1,S.face==='points'?K.m:K.l,1.1)}</g>`;
   s+=leg(-rx*.58,'b')+leg(rx*.5,'a');                                                  // far legs
   s+=tail(S,K,-rx*.9,cy-ry*.25,-1,.95*sc);
@@ -393,9 +573,11 @@ function walkPose(S,K,o){
   if(S.face!=='calico'&&(S.face==='mask'||S.face==='urajiro'||S.face==='blaze'||S.fluff==='ruff'||S.face==='tux'&&/^#f|^#e/i.test(K.l)))s+=Pa(`M${n(-rx*.6)} ${n(cy+ry*.6)}q${n(rx*.6)} ${n(ry*.55)} ${n(rx*1.3)} ${n(-ry*.2)}q${n(-rx*.5)} ${n(ry*.05)} ${n(-rx*1.3)} ${n(ry*.2)}z`,K.l,0);
   s+=marks(S,K,0,cy,rx,ry);
   if(o.acc?.body)s+=coat(o.acc.body,'walk',0,cy,rx,ry);
+  s+=fr;
   s+=leg(-rx*.38,'a')+leg(rx*.68,'b');                                                 // near legs
   s+=collar(o.acc?.neck,hx,hy+hr*.84,hr*.58);
   s+=head(S,K,hx,hy,hr,{mood:o.mood,acc:o.acc});
+  const wr=o.wr||{};s+=shine([[hx+hr*.9,hy-hr*1.2,wr.head],[hx+hr*1.1,hy,wr.eye],[hx-hr*.9,hy+hr*.9,wr.neck],[rx*.2,cy+ry*.2,wr.body],[-rx*1.5,cy-ry*2.6,wr.back]].filter(p=>p[2]));
   return s;
 }
 function sleepPose(S,K,o){
@@ -411,22 +593,24 @@ function sleepPose(S,K,o){
   s+=`<g class="pet-zz"><text x="${n(rx*.62+hr)}" y="${n(-hr*2.1)}" font-size="8" font-weight="800" fill="${OL}">z</text><text x="${n(rx*.62+hr+6)}" y="${n(-hr*2.6)}" font-size="6" font-weight="800" fill="${OL}">z</text></g>`;
   return s;
 }
-const coatColor=id=>({ao_len:'#e58b7a',ao_mua:'#f6cf45',ao_vn:'#d8392f',ao_khung_long:'#79b86b',ao_dai:'#d94f6e',vay_cong_chua:'#c8a6ef'})[id]||'#ccc';
+const coatColor=id=>({ao_len:'#e58b7a',ao_mua:'#f6cf45',ao_vn:'#d8392f',ao_khung_long:'#79b86b',ao_dai:'#d94f6e',vay_cong_chua:'#c8a6ef'})[id]||wd(id)?.color||'#ccc';
 
 /** The pet's markup, paws on y = 0 (no <svg> wrapper). breed: {shape, size}; coat: {b, m, l, e, name}; pose: sit | walk |
  * sleep | happy; acc: {neck, head, body, bed}. An unknown shape draws a plain dog. */
 export function petInner(breed,coat,pose='sit',acc={},fx={}){
-  const x=fx?.x||'',r=Math.max(0,Math.min(6,Number(fx?.r)||0)),legend=breed?.fuse==='legend';
-  const S=SHAPES[breed?.shape]||SHAPES.mutt,K={b:'#e2a65a',m:'#c4823a',l:'#fbe3bd',e:EYE,...(coat||{}),...(FXCOAT[x]||{})},k=SIZE[breed?.size]||1,o={acc:acc||{},mood:pose==='happy'?'happy':'',wave:breed?.id==='than_tai'};
+  // fx: r rank, x coat effect, lg a 🌟 legendary that kept its breed, wr {slot: piece rank}, o cute aura, st a whole set
+  const x=fx?.x||'',r=Math.max(0,Math.min(6,Number(fx?.r)||0)),legend=breed?.fuse==='legend'||fx?.lg===true;
+  const S=SHAPES[breed?.shape]||SHAPES.mutt,K={b:'#e2a65a',m:'#c4823a',l:'#fbe3bd',e:EYE,...(coat||{}),...(FXCOAT[x]||{})},k=SIZE[breed?.size]||1,o={acc:acc||{},mood:pose==='happy'?'happy':'',wave:breed?.id==='than_tai',wr:fx?.wr||null};
   const body=pose==='walk'?walkPose(S,K,o):pose==='sleep'?sleepPose(S,K,o):sitPose(S,K,o);
-  const bed=acc?.bed?bedSVG(acc.bed,pose==='walk'?52:46):'';
-  const [back,front]=aura(r,x,legend,S.k,pose,k),mut=x==='dot_bien'?' filter="url(#pt-mut)"':'';
-  return `<g class="pet-art pet-${pose}${r?` pet-r${r}`:''}${legend?' pet-legend':''}">${back||mut||x==='cau_vong'?DEFS:''}${back}${bed&&(acc.bed==='nha_go'||acc.bed==='lau_dai')?bed:''}<g transform="scale(${k})">${bed&&!(acc.bed==='nha_go'||acc.bed==='lau_dai')?`<g transform="scale(${n(1/k*100)/100})">${bed}</g>`:''}<g class="pet-bob"${mut}>${body}</g></g>${front}</g>`;
+  const bed=acc?.bed?bedSVG(acc.bed,pose==='walk'?52:46):'',tall=acc?.bed==='nha_go'||acc?.bed==='lau_dai'||/^(castle|canopy)$/.test(wd(acc?.bed)?.art||'');
+  const [back0,front0]=aura(r,x,legend,S.k,pose,k),[wb,wf]=wearFx(Number(fx?.o)||0,fx?.st||''),back=back0+wb,front=front0+wf,mut=x==='dot_bien'?' filter="url(#pt-mut)"':'';
+  return `<g class="pet-art pet-${pose}${r?` pet-r${r}`:''}${legend?' pet-legend':''}">${back0||mut||x==='cau_vong'?DEFS:''}${back}${bed&&tall?bed:''}<g transform="scale(${k})">${bed&&!tall?`<g transform="scale(${n(1/k*100)/100})">${bed}</g>`:''}<g class="pet-bob"${mut}>${body}</g></g>${front}</g>`;
 }
 /** The viewBox [w, h, top] (paws on y = 0, `top` above them): the auras of S and up and the SSS / legendary wings,
  * rays and halo need room. Square boxes: the drawing's size follows from the width. */
 const BIG_W=84;
-function boxOf(r,legend,flat){
+function boxOf(r,legend,flat,wide=false){
+  if(wide&&r<4)r=4;   // 🪽 wings, a cute aura or a set's effect need the room of an S
   if(r>=6||legend)return flat?[104,90,82]:[104,92,84];
   if(r>=4)return flat?[84,72,66]:[84,76,70];
   return flat?[72,62,58]:[68,68,64];
@@ -434,18 +618,19 @@ function boxOf(r,legend,flat){
 /** A whole <svg>, `size` px wide (the box is fitted to the pose; an SSS or a legendary is drawn a little larger so the
  * pet itself is not shrunk by its wider aura). */
 export function petSVG(breed,coat,pose='sit',acc={},size=72,cls='pet-svg',fx={}){
-  const [w,h,top]=boxOf(Number(fx?.r)||0,breed?.fuse==='legend',pose==='walk'||pose==='sleep'),px=Math.round(size*w/BIG_W);
+  const [w,h,top]=boxOf(Number(fx?.r)||0,breed?.fuse==='legend'||fx?.lg===true,pose==='walk'||pose==='sleep',hasWings(acc)||!!fx?.o||!!fx?.st),px=Math.round(size*w/BIG_W);
   return `<svg class="${cls}" viewBox="${-w/2} ${-top} ${w} ${h}" width="${Math.max(size,px)}" height="${Math.max(size,px)}" aria-hidden="true" focusable="false">${petInner(breed,coat,pose,acc,fx)}</svg>`;
 }
 /** Look a pet up in the catalogue (content.journey.pets): {breed, coat} for a save's {b, c}. */
-export function lookup(cat,b,c){const breed=(cat?.breeds||[]).find(x=>x.id===b);return breed?{breed,coat:breed.coats[c]||breed.coats[0]}:null;}
+export function lookup(cat,b,c){register(cat);const breed=(cat?.breeds||[]).find(x=>x.id===b);return breed?{breed,coat:breed.coats[c]||breed.coats[0]}:null;}
 /** An <img> source for canvases (town map, the stroll): the pet as a data URL. */
 export function petURL(breed,coat,pose,acc,size=96,fx={}){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(petSVG(breed,coat,pose,acc,size,'pet-svg',fx).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" '));}
 /** The box petSVG fits a walking pet in ({w, h} of its viewBox, `foot` the share of the height down to the paws) and
  * `k`, walkScale: what a canvas needs to draw it paws on the ground at the right size. */
 export function refBox(cat,ref,pose){
   const b=(cat?.breeds||[]).find(x=>x.id===ref?.b),flat=pose==='walk'||pose==='sleep';
-  const [w,h,top]=boxOf(Number(ref?.r)||0,b?.fuse==='legend',flat);
+  const acc=accOf(cat,ref);
+  const [w,h,top]=boxOf(Number(ref?.r)||0,b?.fuse==='legend'||ref?.lg===true,flat,hasWings(acc)||!!ref?.o||!!ref?.st);
   return {w,h,foot:top/h,k:walkScale(cat,ref),base:flat?72:68};
 }
 /** 🐶 Owner 19/10 "cún cưng to hơn tí": how much bigger a walking pet is drawn (dogs 1.3×, a high rank a little more). */
@@ -453,6 +638,17 @@ export function walkScale(cat,ref){const b=(cat?.breeds||[]).find(x=>x.id===ref?
 /** The pet a save walks with ({b, c, n, a}: game/pets.py walk_ref, live `pt`) as an <img> source, or ''. */
 export function refURL(cat,ref,pose='walk',size=120){
   const L=lookup(cat,ref?.b,ref?.c);if(!L)return '';
-  const acc={};for(const id of Array.isArray(ref.a)?ref.a:[]){const a=(cat.accs||[]).find(x=>x.id===id);if(a)acc[a.slot]=id;}
-  return petURL(L.breed,L.coat,pose,acc,size,{r:ref.r,x:ref.x});
+  return petURL(L.breed,L.coat,pose,accOf(cat,ref),size,fxRef(cat,ref));
+}
+/** {slot: piece} of a ref's `a` (wardrobe ids; an older catalogue: its accessories). */
+export function accOf(cat,ref){
+  register(cat);const acc={};
+  for(const id of Array.isArray(ref?.a)?ref.a:[]){const a=wd(id)||(cat?.accs||[]).find(x=>x.id===id);if(a)acc[a.slot]=id;}
+  return acc;
+}
+/** The fx of a ref (live `pt`, a board row): rank, coat effect, legendary, piece ranks by slot, cute aura, set. */
+export function fxRef(cat,ref){
+  register(cat);const wr={},ar=Array.isArray(ref?.ar)?ref.ar:[];
+  (Array.isArray(ref?.a)?ref.a:[]).forEach((id,i)=>{const a=wd(id);if(a&&ar[i])wr[a.slot]=ar[i];});
+  return {r:ref?.r,x:ref?.x,lg:ref?.lg===true,wr,o:ref?.o,st:ref?.st};
 }

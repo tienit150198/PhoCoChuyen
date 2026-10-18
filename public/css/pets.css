@@ -170,3 +170,36 @@ html[data-theme="dem"] .pt-fzwarn{background:#4a2410;color:#ffd6b8}
 @keyframes pet-rise{0%{transform:translateY(4px);opacity:0}25%{opacity:1}100%{transform:translateY(-10px);opacity:0}}
 @keyframes pet-fall{0%{transform:translateY(-6px);opacity:0}20%{opacity:1}100%{transform:translateY(22px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.pt-flash.win{animation:none}}
+/* 👗 19/10 tối (owner "chưa thấy chỗ mua cánh, đổi pets dắt đi như nào cũng k biết, làm dễ hiểu hơn"): tabs that say
+   their name, the big 🦮 walk button on the card, the wardrobe's shop (👗 clothes, 🪽 wings) and its 👗 Tủ đồ tab */
+.pt-tabs{gap:4px;padding:8px 10px;overflow-x:auto;scrollbar-width:none}
+.pt-tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:48px;padding:4px 2px;font-size:1.2rem}
+.pt-tabs button small{font-size:.66rem;font-weight:800;line-height:1.1;color:var(--ink-2);white-space:nowrap}
+.pt-tabs button.on small{color:var(--accent-text)}
+.pt-hint{margin:2px 0 6px;font-size:.8rem;color:var(--muted);text-align:center}
+.pt-walkbtn{display:block;width:100%;min-height:48px;margin:8px 0 2px;font-size:1.02rem;border-radius:14px}
+.pt-walking{display:flex;flex-direction:column;align-items:center;gap:2px;margin:8px 0 4px;padding:8px 10px;border-radius:14px;background:var(--good-soft);color:var(--good)}
+.pt-walking small{color:var(--ink-2);font-size:.82rem}
+.pt-walking .pt-chip{min-height:38px;margin-top:4px;font-size:.9rem}
+.pt-mini{position:relative}
+.pt-mini .pt-walkdot{position:absolute;right:-4px;bottom:-4px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--good);font-size:.8rem;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.pt-kinds .pt-chip{font-size:.92rem;padding:0 12px}
+.pt-chip .pt-rk{font-size:.68rem}
+.pt-intro{margin:0 0 6px;padding:8px 10px;border-radius:12px;background:var(--accent-soft);font-size:.86rem;line-height:1.45}
+.pt-desc{margin:4px 0 8px;font-size:.92rem;line-height:1.5}
+.pt-wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.pt-wcard{display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 4px 8px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);cursor:pointer;text-align:center;position:relative}
+.pt-wcard.on{border-color:var(--accent);background:var(--accent-soft)}
+.pt-wcard b{font-size:.82rem;line-height:1.25}
+.pt-wcard small{font-weight:800;color:var(--accent-text);font-size:.8rem}
+.pt-wcard.off{cursor:default;opacity:.8;background:linear-gradient(160deg,#f6f0ff,#fff6e8)}
+.pt-wcard.off small{color:var(--muted)}
+.pt-season{display:inline-block;margin-top:2px;padding:0 6px;border-radius:999px;font-style:normal;font-size:.68rem;font-weight:800;background:#ffe7c7;color:#8a4b00}
+.pt-luxh{margin:14px 0 6px;font-size:.9rem}
+.pt-wsel h3 small{font-size:.8rem;color:var(--muted)}
+.pt-tile.vip{background:linear-gradient(160deg,#fff7d6,#f3e8ff)}
+.pt-fzbreed{margin:6px 0;padding:8px;border-radius:12px;background:var(--surface-2)}
+.pt-fzbreed b{display:block;font-size:.86rem;margin-bottom:2px}
+.pt-fzbreed .pt-chip{display:inline-flex;align-items:center;gap:4px;font-size:.84rem;padding:0 10px 0 4px}
+html[data-theme="dem"] .pt-wcard.off{background:linear-gradient(160deg,#2c2440,#33281c)}
+html[data-theme="dem"] .pt-season{background:#4a3010;color:#ffd6a0}

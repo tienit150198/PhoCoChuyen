@@ -288,7 +288,9 @@ class Live(unittest.TestCase):
     def test_breeds_match_the_game(self):
         from live.street_data import PET_ACCS, PET_BREEDS
         self.assertEqual(PET_BREEDS, {b: len(C.BREEDS[b]['coats']) for b in C.ORDER})
-        self.assertEqual(PET_ACCS, {a['id'] for a in C.ACCS if a['slot'] != 'bed'})
+        from game import pet_wardrobe_content as W
+        self.assertEqual(PET_ACCS, {a['id'] for a in W.ITEMS if a['slot'] != 'bed'})
+        self.assertTrue({a['id'] for a in C.ACCS if a['slot'] != 'bed'} <= PET_ACCS)
 
     def test_clean_pet(self):
         from live.street import Walker, clean_pet

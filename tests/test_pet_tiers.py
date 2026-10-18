@@ -200,9 +200,14 @@ class Fusion(unittest.TestCase):
         self.assertEqual(s['journey']['wallet'], w - px.FUSE_FEE[2])
         self.assertEqual(sorted(p['id'] for p in px.all_pets(s)), sorted(ids))
 
-    def test_failure_from_a_loses_the_two_others(self):
-        # owner 19/10 "nếu nâng cấp thất bại thì sẽ biến mất giống thêm vào … cấp A trở lên mới mất pets phụ"
-        for rank in (3, 5):
+    def test_failure_from_s_loses_the_two_others(self):
+        # owner 19/10 "nếu nâng cấp thất bại thì sẽ biến mất giống thêm vào", then "bậc S trở lên mới mất, bậc A chưa mất"
+        s, ids = self.three(3)
+        with rolls(9999):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[1], confirm=True)
+        self.assertEqual((r['fuse']['ok'], r['fuse']['lost']), (False, []))
+        self.assertEqual(sorted(p['id'] for p in px.all_pets(s)), sorted(ids))
+        for rank in (4, 5):
             s, ids = self.three(rank)
             w = s['journey']['wallet']
             with rolls(9999):
@@ -222,12 +227,23 @@ class Fusion(unittest.TestCase):
         self.assertEqual(px.chance([6, 6, 6]), 500)
         s, ids = self.three(6, ('corgi',) * 3)
         with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
-            s, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[2], confirm=True)
+            s, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[2], breed='linh_khuyen', confirm=True)
         self.assertEqual((r['fuse']['pet'], r['fuse']['breed'], r['fuse']['rank']), (ids[2], 'linh_khuyen', 'SSS'))
         legend = px.all_pets(s)[0]
         self.assertTrue(px.is_legend(legend))
         self.assertEqual((legend['id'], legend['n']), (ids[2], 'C'))
         validate_state(s)
+        # owner 19/10 "con pets nào cũng có thể lên … huyền thoại hết, được chọn giữ bé hiện tại hoặc đổi giống"
+        s, ids = self.three(6, ('corgi',) * 3)
+        with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[0], confirm=True)
+        legend = next(q for q in px.all_pets(s) if q['id'] == ids[0])
+        self.assertEqual((legend['b'], px.is_legend(legend), px.is_legend(legend, s)), ('corgi', False, True))
+        self.assertEqual(px.pet_extra(s, legend)['legend'], True)
+        self.assertEqual(px.stats(s, legend)[0] >= px.LEGEND_RANGE[0], True)
+        self.assertTrue(px.walk_extra(s, legend)['lg'])
+        validate_state(s)
+        refused(self, s, 'jr_pet_fuse', pets=ids, main=ids[0], breed='than_tai', confirm=True)
         s, more = self.three(6, ('corgi',) * 2)
         s, extra = get(s, 'L', 'corgi', 0, 6)
         p = next(q for q in px.all_pets(s) if q['id'] == extra)
@@ -258,12 +274,19 @@ class Fusion(unittest.TestCase):
         self.assertTrue(r['fuse']['ok'])
         s, ids = self.three(6, ('meo_mun', 'corgi', 'corgi'))
         with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
-            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+            s, r = act(s, 'jr_pet_fuse', pets=ids, breed='than_tai', confirm=True)
         self.assertEqual(r['fuse']['breed'], 'than_tai')                   # the main (the first): the cat
         s, ids = self.three(6, ('meo_mun', 'corgi', 'corgi'))
         with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
-            s, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[1], confirm=True)
+            s, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[1], breed='linh_khuyen', confirm=True)
         self.assertEqual(r['fuse']['breed'], 'linh_khuyen')
+        # a rank-up may take an ingredient's breed (with its coat)
+        s, ids = self.three(1, ('meo_mun', 'corgi', 'pom'))
+        with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, breed='pom', confirm=True)
+        self.assertEqual((r['fuse']['pet'], r['fuse']['breed'], r['fuse']['rank']), (ids[0], 'pom', 'B'))
+        validate_state(s)
+        refused(self, self.three(1, ('meo_mun', 'corgi', 'pom'))[0], 'jr_pet_fuse', pets=ids, breed='husky', confirm=True)
 
     def test_rules(self):
         s, ids = self.three(0)

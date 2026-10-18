@@ -78,7 +78,7 @@ import time
 from . import babies, coride, effects, honours, plates, styles
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
-from .street_data import ORG_GRADES, PET_ACCS, PET_BREEDS, PET_FX
+from .street_data import ORG_GRADES, PET_ACCS, PET_BREEDS, PET_FX, PET_SETS
 from . import pet_rank
 from . import filters
 from .street_data import (CERTS, COLOR_IDS, EMOTES, LOOK_DEFAULTS, LOOK_IDS, LOOK_SLOTS, PAINTABLE, PLACES, PUBLIC, TINT_MAX,
@@ -291,11 +291,11 @@ def clean_rank(rk) -> dict | None:
 
 
 def clean_pet(pt) -> dict | None:
-    """🐾 The pet a client says walks beside its character ({b: breed, c: coat, n: name, a: [accessory ids]},
+    """🐾 The pet a client says walks beside its character ({b: breed, c: coat, n: name, a: [wardrobe piece ids]},
     game/pets.py walk_ref): kept only when the breed and coat are known here; the name goes through the chat filter
     (heavy words masked, links and contacts dropped), unknown accessories are left out. Anything else shows no pet
     (never refused: an older or newer client still walks in)."""
-    if not isinstance(pt, dict) or set(pt) - {'b', 'c', 'n', 'a', 'r', 'x'} or pt.get('b') not in PET_BREEDS:
+    if not isinstance(pt, dict) or set(pt) - {'b', 'c', 'n', 'a', 'r', 'x', 'ar', 'o', 'st', 'lg'} or pt.get('b') not in PET_BREEDS:
         return None
     c = pt.get('c', 0)
     if type(c) is not int or not 0 <= c < PET_BREEDS[pt['b']]:
@@ -303,7 +303,19 @@ def clean_pet(pt) -> dict | None:
     n = filters.clean(pt.get('n'), 16, 1)
     n = filters.mask(n) if n else None
     acc = pt.get('a') if isinstance(pt.get('a'), list) else []
-    out = dict(b=pt['b'], c=c, a=[x for x in acc[:3] if isinstance(x, str) and x in PET_ACCS])
+    # 👗 up to five wardrobe pieces with their ranks (`ar`, 0 D … 6 SSS), a cute aura `o` (1…3), a whole set `st`
+    ar = pt.get('ar') if isinstance(pt.get('ar'), list) else []
+    keep = [(x, ar[i] if i < len(ar) and type(ar[i]) is int and 0 <= ar[i] <= 6 else 0) for i, x in enumerate(acc[:5])
+            if isinstance(x, str) and x in PET_ACCS]
+    out = dict(b=pt['b'], c=c, a=[k for k, _ in keep])
+    if any(r for _, r in keep):
+        out['ar'] = [r for _, r in keep]
+    if pt.get('o') in (1, 2, 3):
+        out['o'] = pt['o']
+    if pt.get('st') in PET_SETS:
+        out['st'] = pt['st']
+    if pt.get('lg') is True:
+        out['lg'] = True
     if n:
         out['n'] = n
     r = pt.get('r')   # 🏅 the rank (1 C … 6 SSS; D is left out) and an SSS coat effect: live/pet_rank.py keeps them honest

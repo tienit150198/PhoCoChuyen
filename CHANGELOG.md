@@ -1,3 +1,15 @@
+# v2.4.58 — 2026-10-19
+
+🐾 Thú cưng (chủ game 19/10 "thêm nhiều trang phục thú cưng và linh kiện … mua được cánh nữa, cánh thì nhiều loại", "con pets nào cũng có thể lên cấp sss và huyền thoại hết nhé, khi lên thì được chọn giữ bé hiện tại hoặc đổi giống", "chưa thấy chỗ mua cánh … đổi pets đi như nào cũng k biết", "làm dễ hiểu hơn nhé", "bậc S trở lên mới mất", "khung xếp hạng thú cưng cute hơn nhé"):
+- 👗 Tủ đồ của bé (game/pet_wardrobe.py, pet_wardrobe_content.py, khối journey['petw']): 108 món (24 cánh, áo, mũ, kính, vòng cổ, ổ nằm), mua hạng D/C ở Tiệm (quầy 👗 Quần áo, 🪽 Cánh), 3 món giống hệt ghép lên hạng, từ A có thể ra 💎 dòng sang (không bán), bộ Halloween / 20-10 / thủy thủ / cưới / hoàng gia, đồ hạng C+ cộng % tiền làm việc khi bé đi dạo. Đồ cũ vẫn dùng được.
+- 🌟 Giống nào cũng lên SSS và huyền thoại: lên hạng chọn giữ giống bé chính hoặc đổi sang giống bé phụ; 3 SSS giữ giống thì thành huyền thoại giữ giống (petw.lg), hoặc đổi sang Linh Khuyển / Mèo Thần Tài.
+- Ghép trượt chỉ mất 2 bé phụ từ hạng S (LOSE_FROM 4), hạng A trượt giữ cả ba.
+- 8 giống mới trong tiệm: Maltese, Spitz, Doberman, Cavalier, Chinchilla, Angora, Savannah, Korat.
+- 🧰 Linh kiện 💎 mẫu xịn (5 mẫu mỗi ô, giá ×5–×80, cộng thêm 3–16%); mẫu lưu ở petw.gm để bản cũ vẫn đọc được.
+- Giao diện dễ hiểu hơn: tab có chữ, nút 🦮 Dắt bé đi dạo to rõ, hướng dẫn tủ đồ, thử đồ trên bé trước khi mua, chọn giống khi ghép.
+- 🏆 Bục top 3 bảng xếp hạng thú cưng kiểu pastel tai mèo, ruy băng 🐾, hạng 4+ hình bàn chân; ảnh bé có đồ, cánh, huyền thoại giữ giống. Bé trên phố 2.5D mặc đồ tủ đồ.
+Có gì mới 2.4.58: 4 dòng, chỉ về thú cưng. Bản dịch tiếng Anh cho các chữ mới.
+
 # v2.4.57 — 2026-10-19
 
 🐾 Thú cưng (chủ game 19/10):

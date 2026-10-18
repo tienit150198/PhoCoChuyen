@@ -38,18 +38,19 @@ def _pet(r) -> dict:
     """The pet part of a row: name, breed, coat, rank, coat effect, legendary, accessories (checked like game/pets.py _rows)."""
     from . import pet_tiers as px
     from . import pets_content as C
+    from . import pet_wardrobe
     try:
         raw = json.loads(r['acc'] or '{}')
     except (TypeError, ValueError):
         raw = {}
     raw = raw if isinstance(raw, dict) else {}
     rk = raw.get('r')
-    acc = raw.get('a') if isinstance(raw.get('a'), list) else []
     br = C.BREEDS.get(r['breed']) or {}
+    look = pet_wardrobe.row_look(raw)   # 👗 what it wears (wings, ranks, cute aura, set) and a 🌟 kept-breed legendary
+    kept = look.pop('lg')
     return dict(pn=str(r['pn'] or '')[:C.NAME_MAX], b=r['breed'] if br else '', c=int(r['coat'] or 0),
                 r=rk if type(rk) is int and 0 <= rk <= px.TOP else 0, x=raw.get('x') if raw.get('x') in px.FX_IDS else '',
-                lg=br.get('fuse') == 'legend', a=[a for a in acc if isinstance(a, str) and a in C.ACC][:3],
-                kind=br.get('kind') or '')
+                lg=br.get('fuse') == 'legend' or kept, kind=br.get('kind') or '', **look)
 
 
 _cache: dict = {}

@@ -1301,6 +1301,7 @@ def validate(s: dict) -> None:
     sp.validate(s)   # ☕ journey['spend'] (optional)
     pt.validate(s)   # 🐾 journey['pets'] (optional)
     pt.px.validate(s)   # 🏅 journey['petx'] (optional)
+    pt.pw.validate(s)   # 👗 journey['petw'] (optional)
     lx.validate(s)   # 🛍️ journey['lux'] (optional)
     isl.validate(s)   # 🏝️ journey['island'] (optional)
     auc.validate(s)   # 🔨 journey['uniq'] (optional)
