@@ -9,6 +9,8 @@ are waived once, without charging future receipts or the owner's wallet.
 """
 from __future__ import annotations
 
+import contextlib
+import contextvars
 import math
 import time
 from . import quay as qy
@@ -34,6 +36,35 @@ TIME_COSTS = ('wages', 'rent', 'power', 'environment', 'protection')   # billed 
 # No save checks the percent (profit_boost holds only carry/total/costs), so older builds read what these write.
 BONUS_PERCENT = 124
 STAFF_BONUS_PERCENT = 236
+# 🏬 Chuỗi quầy (owner 18/10: "làm sao cho người giàu tốn tiền nhiều hơn… tăng càng nhiều thì phí nhiều đi", the gentle
+# ladder): an owner of more than N counters pays +P points of income tax on every counter's margin (the profit bonus is
+# counted after tax, so it shrinks with it), and above RENT_FREE counters each counter's rent grows × n / RENT_FREE.
+# The owner's counter count comes from the save being settled (chain_scope); a stall read on its own counts as 1.
+CHAIN_TAX = ((50, 20), (30, 15), (20, 10), (10, 5), (5, 2))
+RENT_FREE = 10
+_CHAIN = contextvars.ContextVar('quay_chain', default=1)
+
+
+def chain_tax(n):
+    """Extra income-tax points for an owner of `n` counters."""
+    return next((p for k, p in CHAIN_TAX if n > k), 0)
+
+
+def chain_of(s):
+    return len((qy.get(s) or {}).get('stalls', []))
+
+
+@contextlib.contextmanager
+def chain_scope(s):
+    token = _CHAIN.set(max(1, chain_of(s)))
+    try:
+        yield
+    finally:
+        _CHAIN.reset(token)
+
+
+def tax_percent():
+    return market.INCOME_TAX_PERCENT + chain_tax(_CHAIN.get())
 
 
 def staff_wage(st, member):
@@ -201,7 +232,7 @@ def status(st):
 
 def _rates(st):
     p = qy.PLACES[st['place']]
-    return dict(wages=sum(staff_wage(st, e) for e in st['staff']), rent=p['rent'] // qy.MONTH_DAYS, power=p['power'],
+    return dict(wages=sum(staff_wage(st, e) for e in st['staff']), rent=p['rent'] // qy.MONTH_DAYS * max(RENT_FREE, _CHAIN.get()) // RENT_FREE, power=p['power'],
                 environment={'xe': 1, 'sap': 2, 'kiot': 4}[st['place']],
                 protection=_protection_plans(st)[st['business'].get('protection', {}).get('level', 'none')]['period_cost'])
 
@@ -320,7 +351,7 @@ def charge_income_tax(st, revenue, costs):
     tax = b['income_tax']
     margin = revenue - costs - tax['loss']
     tax['loss'] = max(0, -margin)
-    charge, tax['carry'] = divmod(tax['carry'] + max(0, margin) * market.INCOME_TAX_PERCENT, 100)
+    charge, tax['carry'] = divmod(tax['carry'] + max(0, margin) * tax_percent(), 100)
     paid = qy._from_till_fund(st, charge)
     b['expenses']['income_tax'] += paid
     return paid
@@ -388,6 +419,11 @@ def due(s, now=None):
 
 
 def settle(s, now=None, *, _policy=True, _exclusive=False):
+    with chain_scope(s):
+        return _settle(s, now, _policy=_policy, _exclusive=_exclusive)
+
+
+def _settle(s, now=None, *, _policy=True, _exclusive=False):
     from .player_service_tasks import settle_visits
     from .shop_events import tick_quay
     from .staff_life import tick_quay as tick_staff
@@ -603,7 +639,8 @@ def public(st):
                     down_minutes=market.DOWN_MINUTES),
         price_effect=price_effect(st), protection=dict(level=b.get('protection', {}).get('level', 'none'), options=[dict(level=k, **v) for k,v in plans.items()], **plans[b.get('protection', {}).get('level', 'none')], quote=dict(b.get('protection_quote', {}))),
         protection_plans=[dict(level=k, **v) for k,v in plans.items()],
-        rates=rates, income_tax_percent=market.INCOME_TAX_PERCENT,
+        rates=rates, income_tax_percent=tax_percent(), chain=_CHAIN.get(), chain_tax=chain_tax(_CHAIN.get()),
+        rent_x=round(max(RENT_FREE, _CHAIN.get()) / RENT_FREE, 1),
         bonus_percent=income_gear.profit_percent(st,BONUS_PERCENT), staff_bonus_percent=income_gear.profit_percent(st,STAFF_BONUS_PERCENT),
         visitor_orders=visitors,
         stock_total=sum(b['stock'].values()), stock=[dict(id=d, qty=b['stock'].get(d, 0), cost=unit_cost(st, d), price=qs.price(st, d), keep=keep(st, d)) for d in rows],

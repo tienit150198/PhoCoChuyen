@@ -608,6 +608,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         business.business_progression.owner_access(s,now=settled_at)
     if business.settle(s,now=settled_at):validate_state(s)
     fh.settle(s)  # 💸 a vay nóng of a fair that has closed is collected (game/fair_cash.py)
+    from . import wealth_fee
+    if not wealth_fee.off():wealth_fee.settle(s)  # 🏛️ Phí giữ tài sản lớn, once per Vietnam day for assets above 30M (owner 18/10)
     p=payload or {}
     need(isinstance(p,dict),"Dữ liệu thao tác không hợp lệ.")
     jl.settle(s)  # 🚔 a sentence whose safety time is over (or MNL_JAIL_OFF): out of the trại tạm giữ

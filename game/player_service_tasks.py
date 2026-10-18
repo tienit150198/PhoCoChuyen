@@ -305,7 +305,7 @@ def credit_visit(state,stall_id,order_id,price):
     st['till']+=price;b['revenue']+=price;b['sold']+=1
     qb.collect_fines(st)
     costs=qb.unit_cost(st,row['dish']) if row is not None else 0
-    paid_tax=qb.charge_income_tax(st,price,costs)
+    with qb.chain_scope(state):paid_tax=qb.charge_income_tax(st,price,costs)
     qy._log(st,state['journey']['life_day'],'Khách người chơi thanh toán đơn '+order_id,price)
     if row is not None:
         # 2.4.17: the profit bonus (124% since owner 15/10 "tăng 60% lãi") counts at most VISIT_BONUS_RATIO × the dish's

@@ -1279,6 +1279,8 @@ def validate(s: dict) -> None:
     cradle.validate(s)   # 👶 journey['cradle'] (optional)
     ls.validate(s)   # 🏝️ journey['leisure'] (optional: only once a leisure round was played)
     fr.validate(s)   # 🧊 journey['fridge'] (optional)
+    from . import wealth_fee
+    wealth_fee.validate(j)   # 🏛️ journey['wfee'] (optional)
     ct.validate(s)
     bk.validate(s)
     wd.validate(s)

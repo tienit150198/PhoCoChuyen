@@ -825,8 +825,9 @@ def _stall_view(s: dict, st: dict) -> dict:
         why = grow_busy(st, g['place']) or g['license']['reason']
         if why:
             g['why'] = why
-    from .quay_business import public as business_public
-    out['business'] = business_public(st)
+    from .quay_business import public as business_public, chain_scope
+    with chain_scope(s):   # 🏬 the chain's tax and rent (owner 18/10)
+        out['business'] = business_public(st)
     out['license_blocked'] = bool(st.get('business', {}).get('certificate_block'))
     out['closed'] = out['closed'] or out['license_blocked']
     from .staff_life import public as staff_public

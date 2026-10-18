@@ -1,3 +1,11 @@
+# v2.4.52 — 2026-10-18
+
+🏬 Người giàu tốn tiền hơn (chủ game 18/10: "làm sao cho người giàu tốn tiền nhiều hơn, tăng tiền duy trì, tiền chuỗi, phí… tăng càng nhiều thì phí nhiều đi"; chọn mức nhẹ; không thông báo trong Có gì mới). Kiểm tra top 10 trước đó: top 1 (64 ki-ốt hoa) lãi ≈55 triệu/ngày, chủ yếu từ thưởng lãi nhân viên.
+- Thuế chuỗi: game/quay_business.py CHAIN_TAX — chủ có trên 5 / 10 / 20 / 30 / 50 quầy trả thêm 2 / 5 / 10 / 15 / 20 điểm thuế thu nhập (7%) trên lãi mỗi quầy; thưởng lãi tính sau thuế nên giảm theo. Số quầy lấy từ save đang tính sổ (chain_scope: settle, quay.public, credit_visit); quầy đọc lẻ tính như 1.
+- Phí duy trì chuỗi: trên RENT_FREE = 10 quầy, tiền thuê mỗi quầy × số quầy / 10 (64 quầy: ×6,4).
+- Màn quầy (v4/quay.js) ghi "🏬 Chuỗi N quầy: thuế thu nhập X% (thêm Y%), tiền thuê ×Z".
+- 🏛️ Phí giữ tài sản lớn: game/wealth_fee.py — mỗi ngày (giờ Việt Nam, thời gian thật) 0,5% phần tài sản (wealth_pricing.total) trên 30 triệu tới 100 triệu và 1% phần trên 100 triệu; ngày vắng tính tối đa 3 ngày; lấy từ ví → tài khoản → tiết kiệm không kỳ hạn → két quầy (đầy nhất trước), không bao giờ thành nợ; ghi sổ "🏛️ Phí giữ tài sản lớn". journey['wfee'] {d, paid, last} (tùy chọn; bản cũ giữ nguyên khóa lạ). Chạy ở engine._apply_action sau fair_cash; MNL_WEALTH_FEE_OFF=1 tắt (mặc định trong tests/__init__.py). tests/test_wealth_fee.py.
+
 # v2.4.51 — 2026-10-18
 
 🍼 Kho Mẹ & bé / Nhà thuốc cùng thang với các tiệm khác (#424, shii: "tại sao lại giới hạn chỉ có 48 kho trong khi ở các cửa hàng khác thì ít nhất là 80"; chủ game 18/10 duyệt). game/convenience.py: LINE = order_progression.LIMITS (80, 120, 200 … 4000), CAPACITY = capacity_progression.units(80, bậc) (80, 120, 180 … 4000); trước đây 6…200 món mỗi dòng đặt, 12…600 món mỗi mã. Bậc "Kho & đơn nhập" đã mua giữ nguyên vị trí trên thang, chỉ tăng số; mặt bằng (stock_cap 12/18/24) và kệ 'shelf' không còn thấp hơn mức 80. SAVE_STOCK/SAVE_LINE theo bảng mới (4000): save có hơn 600 món một mã hoặc kiện hơn 200 món sẽ bị bản 2.4.50 trở về trước từ chối → không rollback dưới 2.4.51 sau khi người chơi nhập kiện lớn.
