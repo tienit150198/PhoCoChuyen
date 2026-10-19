@@ -26840,6 +26840,7 @@
   "bếp sạch từ đầu ca, món đúng lưu ý của bàn và sảnh tắt điện an toàn": "a kitchen clean from the start of the shift, dishes that follow each table's notes, and a hall powered down safely"
   },
   "patterns": {
+  "Chưa đủ điều kiện xét tuyển Hải quan: $1. Cách lên: xin việc lại Công an, làm đều tay mỗi ngày (trung bình từ $2★, không vi phạm): $3, mỗi cấp $4 ngày làm việc. Đạt $5 rồi nghỉ Công an là xin Hải quan được.": "Not yet eligible to apply to Customs: $1. How: join the Police again and work steadily every day (average $2★ or more, no violations): $3, $4 worked days per grade. Once you reach $5, leave the Police and apply to Customs.",
   "Lên hạng $1 · $2 xu": "Rank up to $1 · $2 xu",
   "Cần thêm $1 món hạng $2": "Need $1 more of rank $2",
   "Lên hạng $1 $2 → $3?": "Rank up $1 $2 → $3?",

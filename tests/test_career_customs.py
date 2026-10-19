@@ -183,6 +183,10 @@ class Entry(unittest.TestCase):
         s = new_state()
         s['journey'][ORG.SVC_KEY] = dict(v=1, top={'police': gi_police('binh_nhat')})
         self.assertFalse(self.rows(s)['police']['met'])
+        why = gr.entry_block(s)   # #441: the refusal says how to get there
+        self.assertIn('cao nhất: Binh nhất', why)
+        self.assertIn('xin việc lại Công an', why)
+        self.assertIn('Binh nhì → Binh nhất → Hạ sĩ, mỗi cấp 3 ngày làm việc', why)
         s['journey'][ORG.SVC_KEY]['top']['police'] = gi_police('ha_si')
         self.assertTrue(all(r['met'] for r in gr.entry_rows(s)))
         self.assertIsNone(gr.entry_block(s))
