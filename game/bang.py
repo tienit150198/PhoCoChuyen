@@ -12,6 +12,12 @@ What a player does
   accept an invitation; one bang at a time, no cooldown: joining another bang leaves the current one (a Bang chủ hands
   over or disbands first), a soft anti-churn cap of C.SWITCH_DAY_MAX bangs joined (or founded) a Vietnam day. Members
   cap: the Đại sảnh (C.HALL_CAP, 10 → 30), counted under the bang row's lock.
+* 🚪 Cách nhận người (owner 20/10; POST /api/bang/rules, Phó bang and up; bangs.rules, SCHEMA_VERSION 60): 🚫 Đóng
+  (no join, no request; an officer's invitation still lets a player in, open requests may still be approved), 🔒 Cần
+  duyệt, 🚪 Tự động duyệt (in at once when the requirements hold, else refused with the reason); optional requirements,
+  all applying: a career from a title of its real ladder (game/promotion.py), a title step in any career, the account's
+  age. Checked on the server from the player's real save (parsed before the transaction, only for a bang with
+  requirements) on join, request, invitation and approval; members already in stay when they change.
 * 💰 Quỹ bang: deposits only (the command jr_bang_give {bang, amount, confirm}, C.GIVE_MIN..C.GIVE_MAX, whole thousands),
   written with the save (ledger row 'g:<pid>:<nonce>', the nonce in journey.bang.last.r: never reused after reset_all or
   an imported older save; a clash refuses the whole command) under the bang row's lock, up to the Kho bang's cap.
@@ -192,6 +198,110 @@ def has_title(s: dict) -> bool:
         except (KeyError, TypeError, ValueError, AttributeError):
             continue
     return False
+
+
+# ---------------------------------------------------------------- 🚪 join rules (owner 20/10)
+_LADDER: dict = {}
+
+
+def ladder() -> list:
+    """[{id, name, titles}] of every playable career and its real promotion ladder (game/promotion.py: the titles of
+    steps 1…top), for the requirement picker (GET /api/bang?careers=1)."""
+    if not _LADDER:
+        from . import promotion
+        from .admin_stats import career_names
+        from .content import CAREERS
+        names = career_names()
+        _LADDER['list'] = [dict(id=c, name=names.get(c, c), titles=[title_name(c, n) for n in range(1, promotion.top(c) + 1)])
+                           for c in CAREERS]
+        _LADDER['by'] = {x['id']: x for x in _LADDER['list']}
+    return _LADDER['list']
+
+
+def title_name(career: str, n: int) -> str:
+    """The title of step n of a career's ladder, as a player of no stated gender sees it."""
+    from . import promotion
+    return promotion.title({'journey': {}}, {}, career, n)
+
+
+def rules_of(row: dict) -> dict:
+    """{mode, career, rank, any, days} of a bang row: its `rules` (SCHEMA_VERSION 60; '{}' or missing: the mode
+    from `open`, no requirement). Anything unknown or out of range reads as no requirement."""
+    try:
+        r = json.loads(row.get('rules') or '{}')
+    except (TypeError, ValueError):
+        r = {}
+    r = r if isinstance(r, dict) else {}
+    mode = r.get('mode') if r.get('mode') in C.JOIN_MODES else ('auto' if row.get('open') else 'ask')
+    ladder()
+    career = r.get('career') if isinstance(r.get('career'), str) and r.get('career') in _LADDER['by'] else ''
+    top = len(_LADDER['by'][career]['titles']) if career else 0
+    rank = r.get('rank') if career and _int(r.get('rank'), 1, top) else 0
+    return dict(mode=mode, career=career if rank else '', rank=rank,
+                any=r.get('any') if _int(r.get('any'), 1, C.REQ_RANK_MAX) else 0,
+                days=r.get('days') if _int(r.get('days'), 1, C.REQ_DAYS_MAX) else 0)
+
+
+def has_reqs(rules: dict) -> bool:
+    return bool(rules['rank'] or rules['any'] or rules['days'])
+
+
+def req_lines(rules: dict) -> list:
+    """The requirements in words (the bang's card in Tìm bang, its page, a refusal)."""
+    out = []
+    if rules['rank']:
+        x = _LADDER['by'][rules['career']]
+        out.append(f'{x["name"]} từ {x["titles"][rules["rank"] - 1]} (bậc {rules["rank"]})')
+    if rules['any']:
+        out.append(f'Chức danh bậc {rules["any"]} trở lên ở một nghề bất kỳ')
+    if rules['days']:
+        out.append(f'Tài khoản từ {rules["days"]} ngày')
+    return out
+
+
+def _age_days(created_at) -> int:
+    try:
+        born = datetime.datetime.strptime(str(created_at)[:19], '%Y-%m-%d %H:%M:%S').replace(tzinfo=datetime.timezone.utc).timestamp()
+    except ValueError:
+        return 0
+    return max(0, int((time.time() - born) // 86400))
+
+
+def profile_of(db, sid: str) -> dict:
+    """{ranks: {career: promotion step}, days: account age} of a player, from their real save (parsed once: called
+    before the operation's transaction, never under a bang row's lock) and their account."""
+    from . import promotion
+    acc = db.execute('SELECT created_at FROM accounts WHERE sid=?', (sid,)).fetchone()
+    row = db.execute('SELECT state FROM sessions WHERE sid=?', (sid,)).fetchone()
+    try:
+        st = json.loads(row['state']) if row and row['state'] else {}
+    except (TypeError, ValueError):
+        st = {}
+    ranks = {}
+    for career, c in ((st.get('careers') if isinstance(st, dict) else None) or {}).items():
+        try:
+            n = promotion.rank(st, c, career) if isinstance(c, dict) else 0
+        except (KeyError, TypeError, ValueError, AttributeError):
+            n = 0
+        if n >= 1:
+            ranks[career] = n
+    return dict(ranks=ranks, days=_age_days(acc['created_at']) if acc else 0)
+
+
+def req_problem(rules: dict, prof: dict | None, who: str = 'Bạn') -> str | None:
+    """Why `prof` does not meet the bang's requirements (None: it does, or there are none)."""
+    if not has_reqs(rules):
+        return None
+    if prof is None:
+        return 'Bang vừa đổi yêu cầu. Thử lại nhé.'
+    miss = []
+    if rules['rank'] and prof['ranks'].get(rules['career'], 0) < rules['rank']:
+        miss.append(req_lines(dict(rules, any=0, days=0))[0])
+    if rules['any'] and max(prof['ranks'].values(), default=0) < rules['any']:
+        miss.append(f'chức danh bậc {rules["any"]} trở lên ở một nghề')
+    if rules['days'] and prof['days'] < rules['days']:
+        miss.append(f'tài khoản từ {rules["days"]} ngày (mới {prof["days"]} ngày)')
+    return f'{who} chưa đủ yêu cầu của bang: cần ' + '; '.join(miss) + '.' if miss else None
 
 
 # ---------------------------------------------------------------- the save block
@@ -943,8 +1053,9 @@ def _unlocked(item: str, lv: dict) -> bool:
 
 
 def _card(r: dict, n: int, cap: int, score: int = 0, rank: int = 0) -> dict:
-    return dict(id=r['id'], name=r['name'], emoji=r['emoji'], color=r['color'], motto=r['motto'], open=bool(r['open']),
-                n=n, cap=cap, score=score, rank=rank)
+    rules = rules_of(r)
+    return dict(id=r['id'], name=r['name'], emoji=r['emoji'], color=r['color'], motto=r['motto'], open=rules['mode'] == 'auto',
+                mode=rules['mode'], req=req_lines(rules), n=n, cap=cap, score=score, rank=rank)
 
 
 def search(store, sid: str | None, q: str = '') -> list:
@@ -985,14 +1096,23 @@ def board(store, t: float | None = None) -> dict:
     return dict(week=vn_week(t), ends=week_start(t) + 7 * 86400, top=top, crown=holder)
 
 
+def _seen(updated_at) -> float | None:
+    """A member's last activity (the save's last write, UTC text), to the quarter hour (members see 'hôm nay', '3 ngày')."""
+    try:
+        at = datetime.datetime.strptime(str(updated_at)[:19], '%Y-%m-%d %H:%M:%S').replace(tzinfo=datetime.timezone.utc).timestamp()
+    except ValueError:
+        return None
+    return float(int(at // 900) * 900)
+
+
 def _members(db, bid: str, t: float) -> list:
     week = vn_week(t)
     wk = {r['sid']: int(r['p']) for r in _rows(db, "SELECT sid, SUM(pts) AS p FROM bang_points WHERE bang=? AND week=? AND pts>0 "
                                                   "AND kind IN ('give','checkin','work') GROUP BY sid", (bid, week))}
-    rows = _rows(db, "SELECT m.sid, m.pid, m.role, m.joined, m.points, m.earned, m.given, a.display FROM bang_members m "
-                     "LEFT JOIN accounts a ON a.sid=m.sid WHERE m.bang=? AND m.status='in'", (bid,))
+    rows = _rows(db, "SELECT m.sid, m.pid, m.role, m.joined, m.points, m.earned, m.given, a.display, s.updated_at AS seen FROM bang_members m "
+                     "LEFT JOIN accounts a ON a.sid=m.sid LEFT JOIN sessions s ON s.sid=m.sid WHERE m.bang=? AND m.status='in'", (bid,))
     out = [dict(pid=r['pid'], name=str(r['display'])[:24] if r['display'] else GONE, role=r['role'], joined=float(r['joined']),
-                earned=int(r['earned']), given=int(r['given']), week=wk.get(r['sid'], 0)) for r in rows]
+                earned=int(r['earned']), given=int(r['given']), week=wk.get(r['sid'], 0), last=_seen(r['seen'])) for r in rows]
     out.sort(key=lambda m: (-_rank(m['role']), -m['week'], m['joined']))
     return out
 
@@ -1064,6 +1184,7 @@ def page(store, sid: str, bid: str | None = None) -> dict:
             members=_members(db, bid, t), facilities=_facilities(db, bid, t),
             shop=[dict(id=i, price=_price(i, lv), unlocked=_unlocked(i, lv), owned=owned.get(i, 0)) for i in C.ITEM_ORDER],
             golden=dict(list=_gh_list(db, bid, t), per_week=_gh_rules(lv)[0], minutes=_gh_rules(lv)[1]),
+            rules=rules_of(r),
             log=[dict(text=x['text'], at=float(x['at']), kind=x['kind']) for x in _rows(
                 db, 'SELECT text, at, kind FROM bang_log WHERE bang=? ORDER BY id DESC LIMIT ?', (bid, LOG_SHOWN))],
             slots=C.build_slots(lv[C.HALL]), phao_at=float(r['phao_at']))
@@ -1134,6 +1255,8 @@ def get_view(store, token, query: dict) -> dict:
         return page(store, sid, bid)
     if q.get('friends'):
         return dict(friends=_friends(store, sid))
+    if q.get('careers'):   # 🚪 the requirement picker: careers and their real promotion ladders
+        return dict(careers=ladder(), modes=dict(C.JOIN_MODES), days_max=C.REQ_DAYS_MAX)
     if q.get('found'):
         return dict(found=found_check(store, token))
     out = me_view(store, token)
@@ -1208,8 +1331,13 @@ def _op_join(db, sid, data, t):
     need(bang is not None and bang['status'] == 'active' and not bang['hidden'], 'Không tìm thấy bang này.', 'not_found', 404)
     if mine and mine['bang'] == bid:
         return dict(message=f'Bạn đã ở bang {bang["name"]} rồi.')
+    rules = rules_of(bang)
     invite = _row(db, "SELECT 1 FROM bang_asks WHERE bang=? AND sid=? AND kind='invite' AND status='open'", (bid, sid))
-    if bang['open'] or invite:
+    # 🚫 closed: nobody joins or asks (an invitation still opens the door); the requirements hold for everyone
+    need(invite or rules['mode'] != 'closed', f'Bang {bang["name"]} đang đóng, không nhận thêm người.', 'closed_bang')
+    problem = req_problem(rules, data.get('_who'))
+    need(not problem, problem, 'requirements')
+    if rules['mode'] == 'auto' or invite:
         _join(db, sid, bang, t, locked)
         return dict(message=f'{bang["emoji"]} Chào mừng bạn vào bang {bang["name"]}!', joined=bid)
     db.execute("INSERT INTO bang_asks(bang, sid, kind, by_sid, status, at) VALUES(?, ?, 'ask', ?, 'open', ?) "
@@ -1235,6 +1363,8 @@ def _op_accept(db, sid, data, t):
     locked = _lock(db, bid, mine['bang'] if mine else None)
     bang = locked.get(bid)
     need(bang is not None and bang['status'] == 'active' and not bang['hidden'], 'Bang này không còn nữa.', 'gone')
+    problem = req_problem(rules_of(bang), data.get('_who'))   # an invitation opens a closed bang, not its requirements
+    need(not problem, problem, 'requirements')
     _join(db, sid, bang, t, locked)
     return dict(message=f'{bang["emoji"]} Chào mừng bạn vào bang {bang["name"]}!', joined=bid)
 
@@ -1325,6 +1455,9 @@ def _op_approve(db, sid, data, t):
     now_theirs = _mine(db, other)
     need((now_theirs['bang'] if now_theirs else None) == (theirs['bang'] if theirs else None),
          'Người này vừa đổi bang. Thử lại nhé.', 'retry')
+    who = data.get('_who')
+    problem = req_problem(rules_of(bang), who[1] if who and who[0] == other else None, 'Người này')
+    need(not problem, problem, 'requirements')
     _join(db, other, bang, t, locked, how='approve')
     return dict(message=f'Đã nhận {_display(db, other)} vào bang.')
 
@@ -1373,10 +1506,10 @@ def _op_role(db, sid, data, t):
 def _op_set(db, sid, data, t):
     bang, me = _officer(db, sid, C.SETTINGS_FROM)
     changes = []
-    if 'open' in data:
+    if 'open' in data:   # an older page's switch: tự động duyệt / cần duyệt, the requirements kept
         need(type(data['open']) is bool, 'Thông tin không hợp lệ.')
-        db.execute('UPDATE bangs SET open=? WHERE id=?', (1 if data['open'] else 0, bang['id']))
-        changes.append('mở cửa tự do' if data['open'] else 'vào bang cần duyệt')
+        _write_rules(db, bang, dict(rules_of(bang), mode='auto' if data['open'] else 'ask'))
+        changes.append('tự động duyệt' if data['open'] else 'vào bang cần duyệt')
     if 'motto' in data:
         from .engine import GameError
         try:
@@ -1402,6 +1535,51 @@ def _op_set(db, sid, data, t):
     _notify(db, bang=bang['id'], ch=bang['channel'], pids=pids)   # the live service re-tags these members only
     _isle(db, 'view', bang['id'])
     return dict(message='Đã lưu.')
+
+
+def _write_rules(db, bang: dict, rules: dict) -> None:
+    """Store the rules (only what is set) and keep `open` in step (1: tự động duyệt) for code that reads it."""
+    keep = {k: v for k, v in rules.items() if v and k != 'mode'}
+    if not keep.get('rank'):
+        keep.pop('career', None)
+    db.execute('UPDATE bangs SET rules=?, open=? WHERE id=?',
+               (json.dumps(dict(mode=rules['mode'], **keep), sort_keys=True), 1 if rules['mode'] == 'auto' else 0, bang['id']))
+
+
+def _op_rules(db, sid, data, t):
+    """🚪 The join mode and the requirements (Phó bang and up, owner 20/10). Members already in are never removed when
+    the requirements change. {mode?, career?, rank?, any?, days?}: what is left out stays; 0 / '' clears one."""
+    bang, me = _officer(db, sid, C.RULES_FROM)
+    need(set(data) <= {'mode', 'career', 'rank', 'any', 'days'} and data, 'Thông tin không hợp lệ.')
+    cur = rules_of(bang)
+    new = dict(cur)
+    if 'mode' in data:
+        need(data['mode'] in C.JOIN_MODES, 'Chọn cách nhận người nhé.')
+        new['mode'] = data['mode']
+    if 'career' in data or 'rank' in data:
+        career, rank = data.get('career', cur['career']), data.get('rank', cur['rank'])
+        if not career or not rank:
+            new.update(career='', rank=0)
+        else:
+            ladder()
+            x = _LADDER['by'].get(career) if isinstance(career, str) else None
+            need(x is not None, 'Chọn một nghề trong danh sách nhé.')
+            need(type(rank) is int and 1 <= rank <= len(x['titles']), f'Chọn một chức danh của nghề {x["name"]} nhé.')
+            new.update(career=career, rank=rank)
+    if 'any' in data:
+        need(type(data['any']) is int and 0 <= data['any'] <= C.REQ_RANK_MAX, f'Bậc chức danh từ 0 đến {C.REQ_RANK_MAX} nhé.')
+        new['any'] = data['any']
+    if 'days' in data:
+        need(type(data['days']) is int and 0 <= data['days'] <= C.REQ_DAYS_MAX, f'Tuổi tài khoản từ 0 đến {C.REQ_DAYS_MAX} ngày nhé.')
+        new['days'] = data['days']
+    if new == cur:
+        return dict(message='Không có gì thay đổi.')
+    _write_rules(db, bang, new)
+    reqs = req_lines(new)
+    text = f'{C.JOIN_MODES[new["mode"]]}' + (f'; yêu cầu: {", ".join(reqs)}' if reqs else '; không yêu cầu gì')
+    _log(db, bang['id'], sid, 'set', f'{_display(db, sid)} đổi cách nhận người: {text}.', t)
+    _bump(db, bang['id'])
+    return dict(message=f'Đã lưu: {text}.', rules=rules_of(dict(bang, rules=json.dumps(new), open=1 if new['mode'] == 'auto' else 0)))
 
 
 def _op_disband(db, sid, data, t):
@@ -1603,7 +1781,30 @@ def _op_gh_cancel(db, sid, data, t):
 
 OPS = dict(join=_op_join, cancel=_op_cancel, accept=_op_accept, decline=_op_decline, leave=_op_leave, invite=_op_invite,
            approve=_op_approve, kick=_op_kick, role=_op_role, set=_op_set, disband=_op_disband, checkin=_op_checkin,
-           build=_op_build, buy=_op_buy, wear=_op_wear, fire=_op_fire, gh_set=_op_gh_set, gh_cancel=_op_gh_cancel)
+           build=_op_build, buy=_op_buy, wear=_op_wear, fire=_op_fire, gh_set=_op_gh_set, gh_cancel=_op_gh_cancel, rules=_op_rules)
+
+
+def _pre_profile(store, sid: str, op: str, data: dict) -> None:
+    """🚪 The joining player's ranks and account age (data['_who']), read before the operation's transaction (a save is
+    parsed only when the bang has requirements): join / accept → mine, approve → (the applicant's sid, theirs)."""
+    with store.connect() as db:
+        if op == 'approve':
+            me = _mine(db, sid)
+            pid = data.get('pid')
+            if not me or data.get('ok') is False or not isinstance(pid, str):
+                return
+            bang = _row(db, 'SELECT * FROM bangs WHERE id=?', (me['bang'],))
+            if not bang or not has_reqs(rules_of(bang)):
+                return
+            other = next((r['sid'] for r in _rows(db, "SELECT sid FROM bang_asks WHERE bang=? AND kind='ask' AND status='open'", (me['bang'],))
+                          if pid_of(r['sid']) == pid), None)
+            if other:
+                data['_who'] = (other, profile_of(db, other))
+            return
+        bid = data.get('bang')
+        bang = _row(db, 'SELECT * FROM bangs WHERE id=?', (bid,)) if isinstance(bid, str) and ID_RE.fullmatch(bid) else None
+        if bang and has_reqs(rules_of(bang)):
+            data['_who'] = profile_of(db, sid)
 
 
 def post(store, token, op: str, data) -> dict:
@@ -1612,6 +1813,9 @@ def post(store, token, op: str, data) -> dict:
     sid = _actor(store, token)
     need(isinstance(data, dict), 'Yêu cầu không hợp lệ.')
     need(op in OPS, 'Không tìm thấy mục này.', 'not_found', 404)
+    data = {k: v for k, v in data.items() if not (isinstance(k, str) and k.startswith('_'))}   # '_who' is ours, never the page's
+    if op in ('join', 'accept', 'approve'):
+        _pre_profile(store, sid, op, data)
     out = store.transaction(lambda db: OPS[op](db, sid, data, now()))
     _VIEW.clear()
     return dict(done=out or {}, **get_view(store, token, {}))

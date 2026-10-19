@@ -115,7 +115,7 @@ class Integrated(Base):
             self.assertEqual(json.loads(before)[1]['n'], 2, 'journey.bang as written here (found + give)')
             self.assertRegex(json.loads(before)[1]['last']['r'], r'^[0-9a-f]{16}$', 'the nonce rides along untouched')
 
-    def test_2_4_60_starts_on_schema_59_without_ddl(self):
+    def test_2_4_60_starts_on_schema_60_without_ddl(self):
         self.everything()
         with self.store.connect() as db:
             db.execute("INSERT INTO island_public(trip, owner, island, status, opened) VALUES('t1', 'o', 'dao_dua', 'open', 1)")
@@ -137,6 +137,6 @@ class Integrated(Base):
         self.assertTrue(all(before[2][x] > 0 for x in TABLES), before[2])
         v, n = self.run_old(STARTUP, str(self.store.path), ','.join(TABLES))
         self.assertEqual(int(v), pg_schema.SCHEMA_VERSION)
-        self.assertEqual(pg_schema.SCHEMA_VERSION, 59)
+        self.assertEqual(pg_schema.SCHEMA_VERSION, 60)
         self.assertEqual(n, before[2])
         self.assertEqual(catalog(), before, 'no table or index changed by the old startup')

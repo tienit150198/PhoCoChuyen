@@ -6,6 +6,8 @@ Starts the game server and the live service (LIVE_CHAT, LIVE_STREET, LIVE_TOWN) 
   * Minh (360×740 phone, 2.5D) finds it, joins, gives 1.000.000 xu (two taps), sees the members;
   * Tú (1280×800 desktop, the old interface) joins from its rail;
   * Lan appoints Minh Phó bang, builds a Kho bang level, buys the badge and the uniform with points, sets a Giờ vàng;
+  * 🚪 Lan sets the join rules (Cần duyệt, Trà sữa from bậc 2, account ≥ 10 days): Hà (390×844) sees them on the card in
+    Tìm bang and is refused with the reason; the member list (role, joined, points, last active) and its actions;
   * the 2.5D map: Minh sees Lan's name tag with the bang line and the uniform; the bang's chat carries the tag;
   * landscape 844×390 and desktop shots of the bang pages.
 Screenshots go to OUT (argv[1], else the scratch dir); exit 1 on a failed check, a page error or an HTTP 5xx.
@@ -160,7 +162,8 @@ async def run(base, db, problems, checks):
         phone = w < 600
         ctx = await browser.new_context(viewport=dict(width=w, height=h), has_touch=phone, is_mobile=phone, device_scale_factor=2 if phone else 1, bypass_csp=True)
         page = await ctx.new_page()
-        page.on('console', lambda m: m.type == 'error' and 'favicon' not in m.text and problems.append(f'{name} console: {m.text[:300]}'))
+        page.on('console', lambda m: m.type == 'error' and 'favicon' not in m.text and not (name == 'Hà' and 'status of 400' in m.text)
+                and problems.append(f'{name} console: {m.text[:300]}'))   # Hà's refused join is a 400 on purpose
         page.on('pageerror', lambda e: problems.append(f'{name} exception: {str(e)[:300]}'))
         page.on('response', lambda r: r.status >= 500 and problems.append(f'{name} HTTP {r.status} {r.url}'))
         await page.goto(base + '/')
@@ -298,6 +301,37 @@ async def run(base, db, problems, checks):
         await shot(lan, '14-lan-rank')
         await tap(lan, '[data-bg="tab"][data-tab="more"]')
         await shot(lan, '15-lan-settings')
+
+        # ---- 🚪 how the bang takes people (owner 20/10): mode + requirements, the card in Tìm bang, the member list ----
+        await until(lan, "return s.body.includes('Cách nhận người') && s.body.includes('Tuổi tài khoản')", 'the join rules form (careers loaded)')
+        await lan.page.locator('dialog.bg-sheet[open] select[name="rq-career"]').select_option('milk_tea')
+        await lan.page.wait_for_timeout(300)
+        await lan.page.locator('dialog.bg-sheet[open] select[name="rq-rank"]').select_option('2')
+        await lan.page.locator('dialog.bg-sheet[open] input[name="rq-days"]').fill('10')
+        await lan.page.locator('dialog.bg-sheet[open] input[name="rq-days"]').dispatch_event('change')
+        await tap(lan, '[data-bg="rulesSave"]')
+        await until(lan, "return s.flash.includes('Đã lưu') && s.body.includes('Tài khoản từ 10 ngày')", 'Lan saves the requirements')
+        await tap(lan, '[data-bg="mode"][data-mode="ask"]')
+        await until(lan, "return s.flash.includes('Cần duyệt')", 'Lan switches to Cần duyệt')
+        await lan.page.evaluate("document.querySelector('dialog.bg-sheet[open] .bg-rules')?.scrollIntoView({block:'start'})")
+        await shot(lan, '15b-lan-settings-rules')
+        rules = (await api(lan, '/api/bang'))['page']['rules']
+        check(rules == dict(mode='ask', career='milk_tea', rank=2, any=0, days=10), f'the rules are stored ({rules})')
+        ha = await player(browser, 'Hà', 'havi', (390, 844))
+        await open_bang(ha)
+        await until(ha, "return s.body.includes('Rồng Đỏ') && s.body.includes('Yêu cầu')", 'Hà sees the requirements on the card')
+        await shot(ha, '15c-ha-find-requirements')
+        await tap(ha, f'[data-bg="join"][data-id="{bid}"]')
+        s = await until(ha, "return s.flash.includes('chưa đủ yêu cầu')", 'Hà (bậc 1) is refused with the reason')
+        check('Trà sữa' in s['flash'] or 'trà sữa' in s['flash'].lower(), f'the reason names the career ({s["flash"]})')
+        await shot(ha, '15c2-ha-refused')
+        await open_bang(lan, 'members')
+        await until(lan, "return s.body.includes('vào ') && s.body.includes('Minh')", 'the member list with join dates')
+        await shot(lan, '15d-lan-member-list')
+        await tap(lan, f'[data-bg="sel"][data-pid="{pid_minh}"]')
+        await shot(lan, '15e-lan-member-actions')
+        await api(lan, '/api/bang/rules', dict(mode='auto', career='', rank=0, days=0))
+        await ha.ctx.close()
 
         # ---- the map: Minh sees Lan's tag, badge and uniform ----
         for p in (lan, minh):

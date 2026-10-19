@@ -2,8 +2,11 @@
  * points-only shop, the bang's own Giờ vàng and the weekly ranking. Opened with data-action="bang" (Tiện ích › Bạn bè &
  * khu phố, Thêm › Khu phố, the old interface's rail). Every rule is on the server:
  *   GET  /api/bang (mine + my bang's page, or the list) · ?q= search · ?id= a bang's card · ?friends=1 · ?found=1 checklist
- *   POST /api/bang/<op> (join, accept, leave, invite, approve, kick, role, set, disband, checkin, build, buy, wear, fire,
- *        gh_set, gh_cancel): database only, the answer carries the new page;
+ *   POST /api/bang/<op> (join, accept, leave, invite, approve, kick, role, set, rules, disband, checkin, build, buy, wear,
+ *        fire, gh_set, gh_cancel): database only, the answer carries the new page;
+ *   🚪 how a bang takes people (owner 20/10): mode closed / ask / auto + optional requirements (a career from a title of
+ *        its real ladder, a title step in any career, the account's age), set by Phó bang and up (⚙️), shown on its card;
+ *        the career ladders come from GET /api/bang?careers=1 when ⚙️ opens.
  *   the commands jr_bang_found (5.000.000 xu) and jr_bang_give (the fund) go through the save like any payment.
  * Phone first: one bang a screen, emoji tabs, one main button in the sticky bar. Styles: /css/spend.css + /css/bang.css. */
 import {icon,escapeHTML as esc} from '../icons.js';
@@ -14,7 +17,7 @@ const IN_TABS=[['home','🏯','Bang của tôi'],['members','👥','Thành viên
 const OUT_TABS=[['find','🔎','Tìm bang'],['found','⚔️','Lập bang'],['rank','👑','Xếp hạng tuần']];
 const BIG=1_000_000;
 const S={dlg:null,env:null,view:null,tab:'',flash:null,busy:false,q:'',list:null,found:null,form:null,amount:0,arm:'',armTimer:0,
-  friends:null,sel:'',gh:null,timer:0,at:0,bang:null};
+  friends:null,sel:'',gh:null,timer:0,at:0,bang:null,ladder:null,rules:null};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const J=()=>S.env?.api?.state?.journey||{};
 const cash=()=>Number(J().wallet)||0;
@@ -61,7 +64,8 @@ function dialog(){
     if(t.name?.startsWith('f-')&&S.form){S.form[t.name.slice(2)]=t.type==='checkbox'?t.checked:t.value;return;}
     if(t.matches?.('input[data-qty]')){S.amount=clampGive(qtyVal(t));S.arm='';const b=d.querySelector('[data-bg="give"]');if(b)b.textContent=giveLabel();}
   });
-  d.addEventListener('change',e=>{const t=e.target;if(t.name==='f-open'&&S.form)S.form.open=t.checked;if(t.name?.startsWith('gh-')&&S.gh){S.gh[t.name.slice(3)]=Number(t.value);render();}});
+  d.addEventListener('change',e=>{const t=e.target;if(t.name==='f-open'&&S.form)S.form.open=t.checked;
+    if(t.name?.startsWith('rq-')){const r=draft(),k=t.name.slice(3);r[k]=k==='career'?t.value:Math.max(0,Math.floor(Number(t.value)||0));if(k==='career')r.rank=t.value?Math.max(1,r.rank||1):0;render();return;}if(t.name?.startsWith('gh-')&&S.gh){S.gh[t.name.slice(3)]=Number(t.value);render();}});
   d.addEventListener('close',()=>{S.flash=null;S.arm='';clearInterval(S.timer);S.timer=0;});
   S.dlg=d;return d;
 }
@@ -144,7 +148,7 @@ async function onClick(op,d,el){
   const p=P(),me=ME();
   switch(op){
     case'close':S.dlg.close();return;
-    case'tab':S.tab=d.tab;S.flash=null;S.arm='';S.sel='';if(d.tab==='found'&&!S.found)loadFound();if(d.tab==='members'&&!S.friends&&rank(me?.role)>=3)loadFriends();render();S.dlg.querySelector('.sd-body')?.scrollTo?.(0,0);return;
+    case'tab':S.tab=d.tab;S.flash=null;S.arm='';S.sel='';if(d.tab==='found'&&!S.found)loadFound();if(d.tab==='members'&&!S.friends&&rank(me?.role)>=3)loadFriends();if(d.tab==='more'&&rank(me?.role)>=4){S.rules=null;if(!S.ladder)loadLadder();}render();S.dlg.querySelector('.sd-body')?.scrollTo?.(0,0);return;
     case'join':await post('join',{bang:d.id});return;
     case'cancel':await post('cancel',{bang:d.id});return;
     case'accept':await post('accept',{bang:d.id});return;
@@ -173,6 +177,9 @@ async function onClick(op,d,el){
     case'ghSet':{const t=ghStart();if(!t)return;await post('gh_set',{start:t});return;}
     case'ghCancel':if(!armed('ghc:'+d.id))return;await post('gh_cancel',{id:Number(d.id)});return;
     case'open':await post('set',{open:d.on==='1'});return;
+    case'mode':await post('rules',{mode:d.mode});S.rules=null;return;
+    case'rulesSave':{const r=draft();await post('rules',{career:r.rank?r.career:'',rank:r.career?r.rank:0,any:r.any,days:r.days});S.rules=null;return;}
+    case'rulesClear':await post('rules',{career:'',rank:0,any:0,days:0});S.rules=null;return;
     case'emoji':if(S.form){S.form.emoji=d.e;render();}else await post('set',{emoji:d.e});return;
     case'color':if(S.form){S.form.color=d.c;render();}else await post('set',{color:d.c});return;
     case'motto':{const v=S.dlg.querySelector('input[name="bg-motto"]')?.value||'';await post('set',{motto:v});return;}
@@ -190,6 +197,15 @@ async function loadFound(){
   S.form??={name:'',emoji:(CAT().emojis||['⚔️'])[0],color:'do',motto:'',open:true};
   try{S.found=(await S.env.api.json('/api/bang?found=1')).found;}catch{S.found={};}
   render();
+}
+async function loadLadder(){
+  try{S.ladder=(await S.env.api.json('/api/bang?careers=1')).careers||[];}catch{S.ladder=[];}
+  render();
+}
+/** The requirement form being edited (starts from the bang's rules). */
+function draft(){
+  if(!S.rules){const r=P()?.rules||{};S.rules={career:r.career||'',rank:r.rank||0,any:r.any||0,days:r.days||0};}
+  return S.rules;
 }
 async function loadFriends(){
   try{S.friends=(await S.env.api.json('/api/bang?friends=1')).friends||[];}catch{S.friends=[];}
@@ -248,22 +264,22 @@ function invitesCard(){
 }
 function bangCard(c){
   const full=c.n>=c.cap;
-  const act=c.asked?btn('cancel','Hủy đơn',` data-id="${esc(c.id)}"`,'btn cream'):full?'<span class="bg-full">Đủ người</span>':btn('join',c.open?'Vào':'Xin vào',` data-id="${esc(c.id)}"`,'btn primary');
-  return `<div class="bg-card"><button type="button" class="bg-peek" data-bg="peek" data-id="${esc(c.id)}" aria-label="Xem bang ${esc(c.name)}">${crest(c.emoji,c.color)}<span class="grow"><b data-no-translate>${esc(c.name)}</b>${c.motto?`<small data-no-translate>${esc(c.motto)}</small>`:''}<small>👥 ${c.n}/${c.cap}${c.open?'':' · 🔒 cần duyệt'}${c.rank&&c.score?` · #${c.rank} tuần này`:''}</small></span></button>${act}</div>`;
+  const act=c.asked?btn('cancel','Hủy đơn',` data-id="${esc(c.id)}"`,'btn cream'):full?'<span class="bg-full">Đủ người</span>':modeOf(c)==='closed'?'<span class="bg-full">Đang đóng</span>':btn('join',joinLabel(c),` data-id="${esc(c.id)}"`,'btn primary');
+  return `<div class="bg-card"><button type="button" class="bg-peek" data-bg="peek" data-id="${esc(c.id)}" aria-label="Xem bang ${esc(c.name)}">${crest(c.emoji,c.color)}<span class="grow"><b data-no-translate>${esc(c.name)}</b>${c.motto?`<small data-no-translate>${esc(c.motto)}</small>`:''}<small>👥 ${c.n}/${c.cap} · ${esc(MODES[modeOf(c)])}${c.rank&&c.score?` · #${c.rank} tuần này`:''}</small>${reqLine(c)}</span></button>${act}</div>`;
 }
 function findTab(){
   const list=S.list||S.view?.list||[];
   const box=`<label class="bg-search">🔎<input type="search" name="bg-q" value="${esc(S.q)}" placeholder="Tìm tên bang" maxlength="30" autocomplete="off" enterkeyhint="search"></label>`;
   const rows=list.length?`<div class="bg-list">${list.map(bangCard).join('')}</div>`:`<section class="sd-card bg-center"><p class="tp-big">🏯</p><p class="tp-note">${S.q?'Không có bang nào tên như vậy.':'Chưa có bang nào. Lập bang đầu tiên của phố nhé!'}</p>${btn('tab','⚔️ Lập bang',' data-tab="found"','btn primary')}</section>`;
-  return invitesCard()+box+rows+`<p class="tp-note">Vào bang thoải mái: không điều kiện, đổi bang lúc nào cũng được. Mỗi lúc ở một bang.</p>`;
+  return invitesCard()+box+rows+`<p class="tp-note">Vào bang miễn phí: mỗi bang tự chọn cách nhận người và yêu cầu (📋). Đổi bang lúc nào cũng được, tối đa 10 bang một ngày. Mỗi lúc ở một bang.</p>`;
 }
 function peekView(){
   const b=S.bang;if(!b||!b.bang)return '<p class="sd-empty">⏳</p>';
   const c=b.bang;
-  const act=b.member?'':b.invited?btn('accept','Nhận lời mời',` data-id="${esc(c.id)}"`,'btn primary'):b.asked?btn('cancel','Hủy đơn xin vào',` data-id="${esc(c.id)}"`,'btn cream'):c.n>=c.cap?'<p class="tp-note">Bang đã đủ người.</p>':btn('join',c.open?'Vào bang':'Xin vào',` data-id="${esc(c.id)}"`,'btn primary');
+  const act=b.member?'':b.invited?btn('accept','Nhận lời mời',` data-id="${esc(c.id)}"`,'btn primary'):b.asked?btn('cancel','Hủy đơn xin vào',` data-id="${esc(c.id)}"`,'btn cream'):c.n>=c.cap?'<p class="tp-note">Bang đã đủ người.</p>':modeOf(c)==='closed'?'<p class="tp-note">🚫 Bang đang đóng, chỉ vào được khi được mời.</p>':btn('join',modeOf(c)==='auto'?'Vào bang':'Xin vào',` data-id="${esc(c.id)}"`,'btn primary');
   const lv=b.levels||{};
   return `<button type="button" class="btn cream bg-back" data-bg="unpeek">← Quay lại</button><section class="sd-card bg-hero" style="--bgc:${hex(c.color)}">${crest(c.emoji,c.color,' big')}<h3 data-no-translate>${esc(c.name)}</h3>${c.motto?`<p class="bg-motto" data-no-translate>“${esc(c.motto)}”</p>`:''}
-    <p class="tp-line"><span>👑 ${esc(b.leader_name||'')}</span><span>👥 ${c.n}/${c.cap}</span><span>${c.open?'🚪 Vào tự do':'🔒 Cần duyệt'}</span></p>
+    <p class="tp-line"><span>👑 ${esc(b.leader_name||'')}</span><span>👥 ${c.n}/${c.cap}</span><span>${esc(MODES[modeOf(c)])}</span></p>${(c.req||[]).length?`<ul class="bg-reqs">${c.req.map(x=>`<li>📋 ${esc(x)}</li>`).join('')}</ul>`:''}
     <p class="bg-levels">${(CAT().facilities||[]).filter(f=>lv[f.id]).map(f=>`<span title="${esc(f.name)}">${esc(f.emoji)} ${lv[f.id]}</span>`).join('')}</p>${act}</section>
     ${(b.members||[]).length?`<h4 class="tp-h">Thành viên</h4><ol class="sd-board">${b.members.map(x=>`<li><span>${esc(roleIcon(x.role))}</span><b data-no-translate>${esc(x.name)}</b><em>${esc(ROLES[x.role]||'')}</em></li>`).join('')}</ol>`:''}`;
 }
@@ -301,6 +317,12 @@ function rankTab(){
     <p class="tp-line"><span>Tuần kết thúc sau <b data-bg-until="${data.ends}">${esc(left(data.ends-serverNow()))}</b></span></p>${rows}</section>`;
 }
 const roleIcon=r=>({chu:'👑',pho:'🛡️',lao:'📜',tinh:'⭐',tv:'👤'})[r]||'👤';
+const MODES={closed:'🚫 Đóng',ask:'🔒 Cần duyệt',auto:'🚪 Tự động duyệt'};
+const modeOf=c=>c?.mode||(c?.open?'auto':'ask');
+const reqLine=c=>(c?.req||[]).length?`<small class="bg-req">📋 Yêu cầu: ${esc(c.req.join(' · '))}</small>`:'';
+const joinLabel=c=>modeOf(c)==='auto'?'Vào':'Xin vào';
+const ago=t=>{if(!t)return '';const d=Math.floor((serverNow()-t)/86400);return d<=0?'hôm nay':d===1?'hôm qua':`${d} ngày trước`;};
+const dmy=t=>{const d=vnDate(t),y=d.getUTCFullYear();return `${String(d.getUTCDate()).padStart(2,'0')}/${String(d.getUTCMonth()+1).padStart(2,'0')}${y!==vnDate(serverNow()).getUTCFullYear()?'/'+y:''}`;};
 
 /* -- inside a bang -- */
 function homeTab(){
@@ -312,7 +334,7 @@ function homeTab(){
   const chips=presets.map(x=>`<button type="button" class="sd-chip${n===x?' on':''}" data-bg="amount" data-n="${x}" aria-pressed="${n===x}">${fmt(x)}</button>`).join('');
   const gold=m.golden?`<p class="bg-gold">⏰ Giờ vàng của bang đang diễn ra: lãi tiệm và quầy ×2, còn <b data-bg-until="${m.golden.ends}">${esc(left(m.golden.ends-serverNow()))}</b></p>`:'';
   const hero=`<section class="sd-card bg-hero" style="--bgc:${hex(c.color)}">${crown}${c.motto?`<p class="bg-motto" data-no-translate>“${esc(c.motto)}”</p>`:''}
-    <p class="tp-line"><span>👥 ${c.n}/${c.cap}</span><span>${c.open?'🚪 Vào tự do':'🔒 Cần duyệt'}</span>${p.channel?btn('chat','💬 Chat bang',` data-ch="${esc(p.channel)}"`,'btn cream bg-chat'):''}${S.env?.api?.content?.bang_island?btn('island','🏯 Đảo bang','','btn cream bg-chat'):''}</p></section>`;
+    <p class="tp-line"><span>👥 ${c.n}/${c.cap}</span><span>${esc(MODES[modeOf(c)])}</span>${p.channel?btn('chat','💬 Chat bang',` data-ch="${esc(p.channel)}"`,'btn cream bg-chat'):''}${S.env?.api?.content?.bang_island?btn('island','🏯 Đảo bang','','btn cream bg-chat'):''}</p></section>`;
   const fund=`<section class="sd-card"><h3>💰 Quỹ bang</h3><div class="tp-money"><b>${fmt(p.fund)}</b><span>/ ${fmt(p.fund_cap)} xu</span></div>${bar(pct)}
     <div class="sd-chips sd-amounts">${chips}<label class="tp-typed">${qtyBox({value:n,min:g.min,max:Math.max(g.min,Math.min(g.max,room()||g.max)),step:g.min,money:true,label:'Góp bao nhiêu xu',go:`data-bg="amount" data-n="${QTY}"`})}<small>xu</small></label></div>
     <p class="tp-note">Chỉ góp, không rút: quỹ chỉ dùng xây công trình bang. ${fmt(g.per_point||1000)} xu = 1 điểm cống hiến.</p></section>`;
@@ -360,7 +382,8 @@ function membersTab(){
       if(my>=4&&rank(x.role)<my)can.push(btn('kick',S.arm==='kick:'+x.pid?'Bấm lần nữa: mời ra':'Mời ra khỏi bang',` data-pid="${x.pid}"`,'btn ghost sm bg-kick'));
       acts=can.length?`<div class="bg-acts">${can.join('')}</div>`:'';
     }
-    return `<li class="${self?'me':''}${open?' open':''}"><button type="button" class="bg-mem" data-bg="sel" data-pid="${x.pid}"${self?' disabled':''}><span aria-hidden="true">${roleIcon(x.role)}</span><b data-no-translate>${esc(x.name)}</b><small>${esc(ROLES[x.role]||'')}</small><em>⭐ ${fmt(x.week)}</em></button>${acts}</li>`;
+    const sub=`${esc(ROLES[x.role]||'')} · vào ${esc(dmy(x.joined))}${x.last?` · ${esc(self?'đang chơi':'chơi '+ago(x.last))}`:''}`;
+    return `<li class="${self?'me':''}${open?' open':''}"><button type="button" class="bg-mem" data-bg="sel" data-pid="${x.pid}"${self?' disabled':''}><span aria-hidden="true">${roleIcon(x.role)}</span><span class="grow bg-mem-who"><b data-no-translate>${esc(x.name)}</b><small>${sub}</small></span><em title="Tuần này / tổng">⭐ ${fmt(x.week)}<small>/${fmt(x.earned)}</small></em></button>${acts}</li>`;
   }).join('');
   const asks=(p.asks||[]).length?`<section class="sd-card"><h3>🙋 Xin vào bang (${p.asks.length})</h3>${p.asks.map(a=>`<div class="bg-row"><div class="grow"><b data-no-translate>${esc(a.name)}</b></div>${btn('approve','Nhận',` data-pid="${a.pid}"`,'btn primary')}${btn('approve','✕',` data-pid="${a.pid}" data-ok="0" aria-label="Từ chối"`,'btn cream')}</div>`).join('')}</section>`:'';
   let invite='';
@@ -370,7 +393,8 @@ function membersTab(){
       <div class="bg-code"><input name="bg-code" placeholder="PCC-XXXXXX" maxlength="10" autocomplete="off" autocapitalize="characters">${btn('invite','Mời')}</div></section>`;
   }
   const seats=['pho','lao','tinh'].map(r=>`${ROLES[r]} ${p.members.filter(x=>x.role===r).length}/${CAT().roles?.[r]?.seats||'∞'}`).join(' · ');
-  return asks+`<section class="sd-card"><h3>👥 ${p.members.length}/${p.bang.cap} thành viên</h3><p class="tp-note">${esc(seats)}${me.role==='chu'?'. Chạm một người để phong chức.':''}</p><ol class="bg-members">${rows}</ol><p class="tp-note">⭐: điểm cống hiến tuần này.</p></section>`+invite;
+  const how=me.role==='chu'?'. Chạm một người để phong chức hoặc mời ra.':my>=4?'. Chạm một người dưới chức Phó bang để mời ra.':'';
+  return asks+`<section class="sd-card"><h3>👥 ${p.members.length}/${p.bang.cap} thành viên</h3><p class="tp-note">${esc(seats)}${esc(how)}</p><ol class="bg-members">${rows}</ol><p class="tp-note">⭐ điểm cống hiến tuần này / tổng. Không ai mời ra được người cùng hoặc cao chức hơn.</p></section>`+invite;
 }
 const mineP=()=>P()?.me?.pid||S.view?.mine?.pid||'';
 function buildTab(){
@@ -411,6 +435,26 @@ function shopTab(){
 function itemNote(id){
   return {ao:'Áo màu bang trên nhân vật',huy:'Biểu tượng bang trước tên',co:'Cờ bang treo trong nhà',thuyen:'Du thuyền sơn màu bang',phao:'Bắn pháo hoa cả phố thấy'}[id]||'';
 }
+function rulesCard(){
+  const p=P(),c=p.bang,mode=modeOf(c),r=draft(),lad=S.ladder;
+  const modes=Object.entries(MODES).map(([k,l])=>btn('mode',l,` data-mode="${k}" aria-pressed="${mode===k}"`,`sd-chip${mode===k?' on':''}`)).join('');
+  const what={closed:'Không ai vào hay xin vào được; người được mời vẫn vào.',ask:'Người đủ yêu cầu gửi đơn, Trưởng lão trở lên duyệt.',auto:'Người đủ yêu cầu vào ngay, không cần duyệt.'}[mode];
+  let form='<p class="sd-empty">⏳</p>';
+  if(lad){
+    const job=lad.find(x=>x.id===r.career);
+    const careers=`<option value="">Không yêu cầu nghề</option>`+lad.map(x=>`<option value="${esc(x.id)}"${x.id===r.career?' selected':''}>${esc(x.name)}</option>`).join('');
+    const titles=job?job.titles.map((t,i)=>`<option value="${i+1}"${r.rank===i+1?' selected':''}>Từ ${esc(t)} (bậc ${i+1})</option>`).join(''):'';
+    const anyOpts=[0,1,2,3,4,5,6,7].map(n=>`<option value="${n}"${r.any===n?' selected':''}>${n?`Từ bậc ${n} ở nghề bất kỳ`:'Không yêu cầu'}</option>`).join('');
+    form=`<label class="bg-field"><span>Nghề</span><select name="rq-career">${careers}</select></label>
+      ${job?`<label class="bg-field"><span>Chức danh tối thiểu</span><select name="rq-rank">${titles}</select></label>`:''}
+      <label class="bg-field"><span>Hoặc chức danh ở mọi nghề</span><select name="rq-any">${anyOpts}</select></label>
+      <label class="bg-field"><span>Tuổi tài khoản tối thiểu (ngày)</span><input type="number" name="rq-days" min="0" max="365" inputmode="numeric" value="${r.days||0}"></label>
+      <div class="bg-row">${btn('rulesSave','Lưu yêu cầu','','btn primary')}${(c.req||[]).length?btn('rulesClear','Bỏ hết yêu cầu','','btn cream'):''}</div>`;
+  }
+  return `<section class="sd-card bg-rules"><h3>🚪 Cách nhận người</h3><div class="sd-chips">${modes}</div><p class="tp-note">${esc(what)}</p>
+    <h4 class="tp-h">📋 Yêu cầu (tùy chọn, áp dụng cùng lúc)</h4>${(c.req||[]).length?`<ul class="bg-reqs">${c.req.map(x=>`<li>📋 ${esc(x)}</li>`).join('')}</ul>`:'<p class="tp-note">Chưa có yêu cầu nào.</p>'}${form}
+    <p class="tp-note">Đổi yêu cầu không mời ra người đã ở trong bang.</p></section>`;
+}
 function moreTab(){
   const p=P(),me=p?.me;if(!p)return '<p class="sd-empty">⏳</p>';
   const c=p.bang,lead=me.role==='chu';
@@ -419,11 +463,12 @@ function moreTab(){
     const emojis=(CAT().emojis||[]).map(e=>`<button type="button" class="bg-emo${c.emoji===e?' on':''}" data-bg="emoji" data-e="${esc(e)}" aria-pressed="${c.emoji===e}">${esc(e)}</button>`).join('');
     const colors=Object.keys(COLORS).map(k=>`<button type="button" class="bg-sw${c.color===k?' on':''}" data-bg="color" data-c="${k}" style="--bgc:${hex(k)}" aria-label="${esc((CAT().colors||[]).find(x=>x.id===k)?.name||k)}" aria-pressed="${c.color===k}"></button>`).join('');
     set=`<section class="sd-card"><h3>⚙️ Cài đặt bang</h3>
-      <div class="sd-chips">${btn('open','🚪 Vào tự do',` data-on="1" aria-pressed="${c.open}"`,`sd-chip${c.open?' on':''}`)}${btn('open','🔒 Cần duyệt',` data-on="0" aria-pressed="${!c.open}"`,`sd-chip${c.open?'':' on'}`)}</div>
       <div class="bg-field"><span>Biểu tượng</span><div class="bg-emos">${emojis}</div></div><div class="bg-field"><span>Màu bang</span><div class="bg-sws">${colors}</div></div>
       <div class="bg-code"><input name="bg-motto" value="${esc(c.motto||'')}" maxlength="${CAT().motto||60}" placeholder="Khẩu hiệu">${btn('motto','Lưu')}</div></section>
       <section class="sd-card bg-danger"><h3>Giải tán bang</h3><p class="tp-note">Quỹ ${fmt(p.fund)} xu bị đốt, không trả lại ai. Gõ đúng tên bang để giải tán.</p><div class="bg-code"><input name="bg-disband" placeholder="${esc(c.name)}" autocomplete="off">${btn('disband',S.arm==='disband'?'Bấm lần nữa':'Giải tán','','btn ghost bg-kick')}</div></section>`;
   }
+  const rules=rank(me.role)>=4?rulesCard():(c.req||[]).length||modeOf(c)!=='auto'?`<section class="sd-card"><h3>🚪 Cách nhận người</h3><p>${esc(MODES[modeOf(c)])}</p>${reqLine(c)}</section>`:'';
+  set=rules+set;
   const leave=lead?'<p class="tp-note">Bang chủ muốn rời: trao chức ở 👥 trước.</p>':`<section class="sd-card"><h3>Rời bang</h3><p class="tp-note">Điểm và đồ bang vẫn giữ nếu quay lại. Rời là mất danh hiệu ngay.</p>${btn('leave',S.arm==='leave'?'Bấm lần nữa để rời':'Rời bang','','btn ghost bg-kick')}</section>`;
   const tag=`<section class="sd-card"><h3>🏷️ Thẻ tên của bạn</h3><p>${chip({n:c.name,e:c.emoji,c:c.color,r:me.role,k:p.crowned?1:0},false)}</p><p class="tp-note">Hiện cạnh tên bạn trên bản đồ, trong chat và hồ sơ: ${esc(tagLine({n:c.name,e:c.emoji,c:c.color,r:me.role}))}.</p></section>`;
   return tag+set+leave;

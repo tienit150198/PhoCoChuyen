@@ -73,6 +73,13 @@ Sửa theo hai lượt review (19/10); SCHEMA_VERSION 59 (chỉ thêm bảng/ind
 - 🛑 Công tắc tắt khẩn (mặc định bật): MNL_BANG_OFF, MNL_ISLAND_BUILD_OFF, MNL_PET_ARENA_OFF (và MNL_BANG_ISLAND như cũ) ẩn lối vào (content.off / island build_off) và từ chối thao tác mới nhẹ nhàng; bản lưu, công trình đang xây, giờ vàng đã đặt, giải tuần và bang chiến vẫn chạy.
 - 🏅 Danh hiệu tuần khi chạy lẫn 2.4.60: nếu 2.4.60 làm lượt làm mới trong ngày, tiến trình bản mới kế tiếp dựng lại dòng tuần này của Đảo đẹp, đấu trường, giải pet, bang chiến; ngày đầu tuần còn dựng lại dòng chốt tuần trước của đấu trường, giải pet, bang chiến. Không sửa được: dòng chốt tuần trước của 🏝️ Đảo đẹp (bảng là độ đẹp hiện tại) và quãng vài giờ giữa lượt của 2.4.60 và lượt dựng lại.
 
+## cách nhận người vào bang (chủ game 20/10)
+
+"chủ bang được quyền tắt, mở hoặc tự động duyệt member vào bang tùy chọn, hoặc là yêu cầu nghề gì trên xxx thì được … rồi được xem danh sách member, rồi đá khỏi bang"; SCHEMA_VERSION 60 (cột bangs.rules thêm bằng ADD COLUMN IF NOT EXISTS, mặc định hằng '{}', 2.4.60 không đọc bảng bang):
+- ⚙️ Cài đặt bang › 🚪 Cách nhận người (Bang chủ và Phó bang): 🚫 Đóng (không ai vào/xin vào; người được mời vẫn vào, đơn đang chờ vẫn duyệt được), 🔒 Cần duyệt (đơn chờ Trưởng lão trở lên), 🚪 Tự động duyệt (đủ yêu cầu là vào ngay, chưa đủ thì báo rõ thiếu gì). Cột `open` vẫn giữ khớp (1 = tự động duyệt) cho mã cũ.
+- 📋 Yêu cầu tùy chọn, áp dụng cùng lúc: một nghề từ một chức danh thật của thang thăng tiến (vd. Tiệm trà sữa từ Chủ tiệm có tiếng, bậc 2), chức danh bậc X ở nghề bất kỳ, tuổi tài khoản tối thiểu (ngày). Máy chủ kiểm từ bản lưu thật (đọc trước giao dịch, chỉ khi bang có yêu cầu) khi vào, khi xin, khi nhận lời mời và khi duyệt; đổi yêu cầu không mời ra người đã ở trong bang. Thẻ bang ở 🔎 Tìm bang và trang bang hiện cách nhận người và yêu cầu.
+- 👥 Danh sách thành viên: chức, ngày vào, điểm cống hiến tuần này / tổng, lần chơi gần nhất (theo ngày); Bang chủ phong/giáng chức và mời ra bất kỳ ai, Phó bang mời ra Trưởng lão/Tinh anh/Thành viên, không ai mời ra người cùng hoặc cao chức hơn; ghế: Bang chủ 1, Phó bang 2, Trưởng lão 3, Tinh anh 5.
+
 # v2.4.60 — 2026-10-19
 
 ⚡ Lag (chủ game 19/10 "check ipad phản hồi người dùng rất lag", "máy tính với đth nữa check k để lag"):

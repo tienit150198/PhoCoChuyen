@@ -40,6 +40,14 @@ APPROVE_FROM = 3                                # Trưởng lão and up: accept 
 KICK_FROM = 4                                   # Phó bang and up (never someone of the same or a higher rank)
 BUILD_FROM = 4                                  # Phó bang and up start a facility upgrade and set the Giờ vàng
 SETTINGS_FROM = 5                               # Bang chủ: open / by approval, motto, emoji, colour, disband
+RULES_FROM = 4                                  # Phó bang and up: the join mode and the requirements (owner 20/10)
+# 🚪 How a bang takes new members (owner 20/10 "tắt, mở hoặc tự động duyệt member vào bang tùy chọn"): id -> label.
+# closed: nobody joins or asks (an officer's invitation still lets a player in, and asks already open may still be
+# approved); ask: a request waits for a Trưởng lão or higher; auto: whoever meets the requirements is in at once
+# (someone who does not is refused with the reason).
+JOIN_MODES = {'closed': '🚫 Đóng', 'ask': '🔒 Cần duyệt', 'auto': '🚪 Tự động duyệt'}
+REQ_DAYS_MAX = 365             # a requirement on the account's age, in days, at most
+REQ_RANK_MAX = 7               # the longest promotion ladder (game/promotion.py top)
 
 # ---------------------------------------------------------------- the fund (Quỹ bang): deposits only
 GIVE_MIN = 1_000
