@@ -8,6 +8,7 @@ Sunday, Vietnam time (game/wedding_live.py), and starts again from zero.
 
 What the board shows is SHOWN_OFF less than the real time (owner 18/10: "giảm thời gian thực tế xuống 1h nhé, kiểu
 onl 5 tiếng thì hiển thị 4 tiếng thôi"); a player shows once that is at least SHOWN_MIN. The order is the same.
+Below that, the viewer's own card (view() `me`) tells how much more play puts the name up (F#434), never a bare zero.
 Names follow the boards' privacy (game/leaderboard.py _VISIBLE). Its weekly titles (top 1 / 2–3 / 4–10,
 game/lb_titles.py BOARD_TITLES['online']) are taken once a day like the other boards; the Monday freeze uses the
 totals of the week that ended (standings()).
@@ -113,7 +114,10 @@ def view(store, limit: int, token: str | None = None, t: float | None = None) ->
         if secs >= SHOWN_OFF + SHOWN_MIN:
             me.update(score=shown(secs), rank=1 + sum(1 for s, v, _ in board if v > secs and s != sid))
         else:
-            me['rank'] = None
+            # F#434 (minnie, Monday 01:37–01:55): 18 minutes of a new week show nothing (shown = real − SHOWN_OFF), and the
+            # card only said "not on the board yet", read as "my minutes are not counted". The card now says the time is
+            # counted and how much more play puts the name up: `need` real seconds left, `counted` some time this week.
+            me.update(rank=None, need=SHOWN_OFF + SHOWN_MIN - secs, counted=secs > 0)
         me.pop('show', None)
         me['titles'] = [dict(emoji=h['emoji'], name=h['name'], board=h['board'], label=h['label']) for h in holders.get(sid, ())]
     try:

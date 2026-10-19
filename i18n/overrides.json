@@ -1241,6 +1241,7 @@
   "Trùm các nghề chưa có khung riêng (tiệm ảnh, tiệm sửa đồ…) đổi sang khung Cao thủ đa nghề, không còn giống khung Trùm giao hàng.": "Bosses of workplaces without their own frame (photo booth, repair shop…) now wear the Jack-of-all-trades frame instead of one that looked like the delivery boss frame.",
   "Bảng xếp hạng thêm mục Online: ai chơi nhiều nhất tuần. Top 1 nhận khung Cú đêm của phố, Top 2–10 cũng có khung riêng.": "The leaderboard has a new Online tab: who played the most this week. Top 1 gets the Night Owl of the Street frame, Top 2–10 get frames of their own.",
   "Thời gian chơi trong tuần này, từ thứ Hai đến Chủ nhật (giờ Việt Nam). Chỉ tính lúc đang chơi: rời tay quá 10 phút thì dừng đếm. Thứ Hai bắt đầu lại từ đầu.": "Play time this week, Monday to Sunday (Vietnam time). Only time spent playing counts: after 10 minutes away the clock stops. It starts over every Monday.",
+  "Thời gian chơi trong tuần này, từ thứ Hai đến Chủ nhật (giờ Việt Nam). Chỉ tính lúc đang chơi: rời tay quá 10 phút thì dừng đếm. Thứ Hai bắt đầu lại từ đầu, và giờ chơi đầu tiên của tuần chưa tính lên bảng.": "Play time this week, Monday to Sunday (Vietnam time). Only time spent playing counts: after 10 minutes away the clock stops. It starts over every Monday, and the first hour of play each week is not counted on the board.",
   "Thời gian chơi tuần này": "Play time this week",
   "Tuần này bạn chưa có tên trên bảng. Chơi thêm một lúc nữa nhé.": "You are not on the board this week yet. Play a little longer.",
   "Tuần mới vừa bắt đầu": "A new week has just begun",
@@ -26781,6 +26782,8 @@
   "bếp sạch từ đầu ca, món đúng lưu ý của bàn và sảnh tắt điện an toàn": "a kitchen clean from the start of the shift, dishes that follow each table's notes, and a hall powered down safely"
   },
   "patterns": {
+  "Thời gian chơi tuần này của bạn đã được ghi nhận. Chơi thêm khoảng $1 nữa là có tên trên bảng.": "Your play time this week is being counted. Play about $1 more to get your name on the board.",
+  "Tuần này chưa có thời gian chơi nào. Chơi khoảng $1 là có tên trên bảng.": "No play time yet this week. Play about $1 to get your name on the board.",
   "🦮 Dắt $1 đi dạo": "🦮 Take $1 for a walk",
   "🦮 $1 đang đi dạo cùng bạn": "🦮 $1 is walking with you",
   "Bạn có $1 món này.": "You have $1 of this.",

@@ -63,7 +63,7 @@ const careerIds=api=>api.content.catalogue.map(m=>m.id).filter(id=>api.state.car
 
 function rule(api,board){
   if(board==='pets')return 'Mỗi người góp bé mạnh nhất của mình, xếp theo 💪 lực chiến: hạng, chỉ số, huấn luyện và linh kiện. Bằng nhau thì ai đạt trước đứng trên.';
-  if(board==='online')return 'Thời gian chơi trong tuần này, từ thứ Hai đến Chủ nhật (giờ Việt Nam). Chỉ tính lúc đang chơi: rời tay quá 10 phút thì dừng đếm. Thứ Hai bắt đầu lại từ đầu.';
+  if(board==='online')return 'Thời gian chơi trong tuần này, từ thứ Hai đến Chủ nhật (giờ Việt Nam). Chỉ tính lúc đang chơi: rời tay quá 10 phút thì dừng đếm. Thứ Hai bắt đầu lại từ đầu, và giờ chơi đầu tiên của tuần chưa tính lên bảng.';
   if(board==='collection')return 'Đồ đấu giá đã nhận: phổ thông 10, quý hiếm 40, huyền thoại 120 điểm. Bằng điểm: nhiều món hơn, nhiều huyền thoại hơn, rồi ai đạt trước. Số đặt riêng ngoài danh mục chưa tính điểm. Giá trả không tăng điểm.';
   if(board==='wealth')return 'Tài sản ròng như ở “Tiền của bạn”, cộng tiết kiệm Mây, xe và quầy riêng theo giá bán lại, Mây Coin và vàng theo giá vốn, trừ mọi nợ kể cả vay nóng chợ đen. Không tính Quỹ chung. Bằng nhau: ai nhiều tài sản hơn, rồi ai đạt trước.';
   if(board==='titles')return 'Xếp theo số danh hiệu trò chơi đã có, rồi danh hiệu bí mật, rồi ai có sớm hơn.';
@@ -150,6 +150,13 @@ function weeklyHTML(w,board){
     <ul class="lb-week-tiers">${tierRows(w.tiers,board)}</ul>${last}</section>`;
 }
 
+/** 🦉 The own card before the name is on the online board (F#434): the time is counted, this much more puts it up. */
+function onlineWait(me){
+  const left=Math.ceil(Math.max(0,Number(me.need)||0)/60)*60;
+  if(!left)return 'Tuần này bạn chưa có tên trên bảng. Chơi thêm một lúc nữa nhé.';
+  return me.counted?`Thời gian chơi tuần này của bạn đã được ghi nhận. Chơi thêm khoảng ${dur(left)} nữa là có tên trên bảng.`
+    :`Tuần này chưa có thời gian chơi nào. Chơi khoảng ${dur(left)} là có tên trên bảng.`;
+}
 function meCard(env,board,d){
   const {api}=env,me=d.me;if(!me)return '';
   const where=OWN.includes(board)||board==='all'?'':` ở ${placeOf(api,board)}`;
@@ -157,7 +164,7 @@ function meCard(env,board,d){
   if(me.rank==null){
     main=board==='wealth'?(api.state.journey?.story===false?'Bảng này chỉ tính người chơi theo câu chuyện: chơi tự do không có ví riêng.':'Tài sản ròng của bạn chưa trên 0 xu. Trả bớt nợ, để dành thêm là có tên trên bảng.')
       :board==='collection'?'Nhận món độc bản đầu tiên từ nhà đấu giá để lên bảng.'
-      :board==='online'?'Tuần này bạn chưa có tên trên bảng. Chơi thêm một lúc nữa nhé.'
+      :board==='online'?onlineWait(me)
       :board==='pets'?'Bạn chưa nuôi bé nào. Nhận nuôi một bé ở 🐾 Thú cưng để có tên trên bảng.'
       :board==='titles'?'Bạn chưa có danh hiệu nào. Hoàn thành việc đầu tiên là có ngay.'
       :board==='certs'?'Bạn chưa có chứng chỉ nào. Thi đỗ chứng chỉ đầu tiên để có tên trên bảng này.'
