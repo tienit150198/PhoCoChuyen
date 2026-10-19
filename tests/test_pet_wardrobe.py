@@ -154,6 +154,7 @@ class Gear(unittest.TestCase):
         for _ in range(2):
             s, _ = act(s, 'jr_pet_gear_buy', slot='giay', model=0, rank=1, confirm=True)
         ids = [x['id'] for x in s['journey']['petx']['gear']]
+        s['journey']['petx']['gear'][0]['lv'] = px.GLV_MAX
         with rolls(0, 0):
             s, r = act(s, 'jr_pet_gear_fuse', gears=ids, confirm=True)
         new = s['journey']['petx']['gear'][0]

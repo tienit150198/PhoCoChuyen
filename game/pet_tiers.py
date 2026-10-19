@@ -29,8 +29,10 @@ The pet games and tournaments come later (owner: "trò chơi của pets chưa l�
   mean), the breed's lean (pets_content `st`), training (tn, jr_pet_train) and the gear worn. Power = their sum
   (the 'LC' board, game/pets.py command_commit).
 * 🧰 Gear (GSLOTS, ranks like the pets): bought D or C (GSHOP), found on a stroll (D or C) (jr_pet_stroll, May mắn), enhanced
-  +1…+10 (GUP_BP; a failure loses nothing but the fee), fused three of a slot and rank into one rank up. Stats only,
-  never money.
+  +1…+10 (GUP_BP; a failure loses nothing but the fee). A rank up (jr_pet_gear_fuse, owner 19/10 "bắt buộc cộng 10 rồi
+  mới cho lên bậc, cũng 3 món, bậc S trở đi thì mất đồ nguyên liệu"): the first gear, at +10, plus two more of its slot
+  and rank; on success it goes up IN PLACE (worn or not) and back to +0, the two others are used up; a failure from S
+  (LOSE_FROM) loses the two others, below S only the fee. Stats only, never money.
 * Pets are bound to the account: nothing here gives, sells or moves a pet to anyone.
 
 State `journey['petx']` (absent until the first pet; older builds keep unknown journey keys, and they never see the
@@ -596,26 +598,38 @@ def action(s: dict, name: str, p: dict) -> dict:
         _need(isinstance(ids, list) and len(ids) == 3 and len(set(map(str, ids))) == 3, 'Chọn đúng ba món nhé.')
         gs = [_gear(x, i) for i in ids]
         _need(len({g['s'] for g in gs}) == 1 and len({g['r'] for g in gs}) == 1, 'Ba món phải cùng loại và cùng hạng.')
-        r = gs[0]['r']
+        main, others = gs[0], gs[1:]
+        r = main['r']
         _need(r < TOP, 'Hạng SSS là cao nhất rồi.', 'full')
-        _need(not any(_wearer(x, g['id']) for g in gs), 'Tháo linh kiện khỏi các bé trước khi ghép nhé.', 'worn')
+        # owner 19/10: "bắt buộc cộng 10 rồi mới cho lên bậc": the first one is the one that goes up, at +GLV_MAX
+        _need(main['lv'] >= GLV_MAX, f'Cường hóa {gear_name(main, s)} lên +{GLV_MAX} trước rồi mới lên hạng nhé.', 'level')
+        _need(not any(_wearer(x, g['id']) for g in others), 'Tháo hai món nguyên liệu khỏi các bé trước khi ghép nhé.', 'worn')
         fee = GFUSE_FEE[r]
-        _confirm(p, f'Xác nhận ghép ba {GSLOTS[GSLOT_IDS.index(gs[0]["s"])][2].lower()} hạng {RANKS[r]} ({_fmt(fee)} xu).')
+        _confirm(p, f'Xác nhận ghép ba {GSLOTS[GSLOT_IDS.index(main["s"])][2].lower()} hạng {RANKS[r]} ({_fmt(fee)} xu).')
         how = pt._pay(s, fee, f'Ghép linh kiện {RANKS[r]}')
         if roll(10000) < FUSE_BP[r]:
-            best = max(model_of(g, s) for g in gs)   # the new one keeps the best model of the three
-            for g in gs:
+            # The main one goes up in place (worn or not), back to +0; it takes the best model of the three.
+            best = max(model_of(g, s) for g in gs)
+            for g in others:
                 x['gear'].remove(g)
-            g = _new_gear(x, gs[0]['s'], r + 1)
+            main['r'], main['lv'] = r + 1, 0
             from . import pet_wardrobe
             if best >= 3:
-                g['m'] = 0
-                pet_wardrobe.set_model(s, g['id'], best - 3)
+                main['m'] = 0
+                pet_wardrobe.set_model(s, main['id'], best - 3)
             else:
-                g['m'] = best
+                main['m'] = best
             pet_wardrobe.tidy_models(s)
-            return dict(message=f'🎉 Ghép thành công: {gear_name(g, s)}! ({how})', ok=True, gear=g['id'])
-        return dict(message=f'💨 Ghép trượt, ba món vẫn còn nguyên. ({how})', ok=False)
+            return dict(message=f'🎉 Lên hạng thành công: {gear_name(main, s)} {RANKS[r + 1]}! Cường hóa lại tới +{GLV_MAX} '
+                                f'để lên hạng tiếp. ({how})', ok=True, gear=main['id'])
+        if r >= LOSE_FROM:   # owner 19/10: from S up a failure loses the two ingredients (the main one stays)
+            for g in others:
+                x['gear'].remove(g)
+            from . import pet_wardrobe
+            pet_wardrobe.tidy_models(s)
+            return dict(message=f'💨 Ghép trượt: hai món nguyên liệu đã mất, {gear_name(main, s)} vẫn còn. ({how})',
+                        ok=False, gear=main['id'], lost=[g['id'] for g in others])
+        return dict(message=f'💨 Ghép trượt, ba món vẫn còn nguyên. ({how})', ok=False, gear=main['id'])
     if name == 'jr_pet_gear_wear':
         pt._keys(p, {'pet', 'slot', 'gear'}, {'pet', 'slot'})
         _need(p['slot'] in GSLOT_IDS, 'Thông tin không hợp lệ.')

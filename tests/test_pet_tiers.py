@@ -327,17 +327,35 @@ class StatsGear(unittest.TestCase):
             s, r = act(s, 'jr_pet_gear_up', gear=g[0], confirm=True)
         self.assertTrue(r['ok'])
         self.assertEqual(X(s)['gear'][0]['lv'], 1)
-        refused(self, s, 'jr_pet_gear_fuse', gears=g, confirm=True)        # one is worn
-        s, _ = act(s, 'jr_pet_gear_wear', pet=a, slot='giay')
-        self.assertLess(px.stats(s, P(s)['list'][0])[0], spd + 1)
-        with rolls(9999):
+        self.assertIn('+10', refused(self, s, 'jr_pet_gear_fuse', gears=g, confirm=True))   # owner 19/10: +10 first
+        X(s)['gear'][0]['lv'] = px.GLV_MAX
+        self.assertIn('+10', refused(self, s, 'jr_pet_gear_fuse', gears=[g[1], g[0], g[2]], confirm=True))
+        with rolls(9999):   # the main one may be worn: it goes up in place
             s, r = act(s, 'jr_pet_gear_fuse', gears=g, confirm=True)
-        self.assertEqual((r['ok'], len(X(s)['gear'])), (False, 3))         # a failure loses nothing
+        self.assertEqual((r['ok'], len(X(s)['gear'])), (False, 3))         # a failure below S loses nothing
+        s, _ = act(s, 'jr_pet_gear_wear', pet=a, slot='giay', gear=g[1])
+        self.assertIn('Tháo', refused(self, s, 'jr_pet_gear_fuse', gears=g, confirm=True))    # an ingredient is worn
+        s, _ = act(s, 'jr_pet_gear_wear', pet=a, slot='giay', gear=g[0])
         with rolls(0, 0):
             s, r = act(s, 'jr_pet_gear_fuse', gears=g, confirm=True)
-        self.assertEqual([(x['s'], x['r']) for x in X(s)['gear']], [('giay', 1)])
+        self.assertEqual([(x['id'], x['s'], x['r'], x['lv']) for x in X(s)['gear']], [(g[0], 'giay', 1, 0)])
+        self.assertEqual(X(s)['t'][a]['g']['giay'], g[0])                  # still worn, back to +0
+        s, _ = act(s, 'jr_pet_gear_wear', pet=a, slot='giay')
         s, _ = act(s, 'jr_pet_gear_drop', gear=X(s)['gear'][0]['id'], confirm=True)
         self.assertEqual(X(s)['gear'], [])
+
+    def test_gear_rank_up_from_s_loses_the_ingredients(self):
+        s = story(wallet=10**8)
+        for _ in range(3):
+            s, _ = act(s, 'jr_pet_gear_buy', slot='giap', model=0, rank=0, confirm=True)
+        for x in X(s)['gear']:
+            x['r'] = px.LOSE_FROM
+        g = [x['id'] for x in X(s)['gear']]
+        X(s)['gear'][0]['lv'] = px.GLV_MAX
+        with rolls(9999):
+            s, r = act(s, 'jr_pet_gear_fuse', gears=g, confirm=True)
+        self.assertEqual((r['ok'], r['lost'], [x['id'] for x in X(s)['gear']]), (False, g[1:], g[:1]))
+        self.assertEqual(X(s)['gear'][0]['lv'], px.GLV_MAX)                # the main one stays as it was
 
     def test_stroll(self):
         s = story(wallet=10**6)

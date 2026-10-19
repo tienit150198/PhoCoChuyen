@@ -1,5 +1,10 @@
 {
   "strings": {
+  "Hạng SSS là cao nhất.": "SSS is the highest rank.",
+  "Linh kiện theo hạng": "Gear by rank",
+  "trượt mất 2 món nguyên liệu": "a miss loses the 2 ingredients",
+  "Tháo hai món nguyên liệu khỏi các bé trước khi ghép nhé.": "Take the two ingredients off your pets before fusing.",
+  "Lên hạng D → C → B → A → S → SS → SSS: cường hóa một món tới +10, rồi ghép với 2 món cùng loại, cùng hạng. Từ hạng S, ghép trượt mất 2 món nguyên liệu.": "Rank up D → C → B → A → S → SS → SSS: enhance one item to +10, then fuse it with 2 items of the same kind and rank. From S, a miss loses the 2 ingredients.",
   "Hàng tự đặt tới cửa theo giờ của tiệm và vẫn cần đếm. Bật 🤖 Tự nhận hàng để hàng tự lên kệ.": "Auto orders arrive on the shop clock and still need counting. Turn on 🤖 auto-receive to shelve them by itself.",
   "Hàng tự đặt tới cửa theo giờ của tiệm và vẫn cần đếm. Muốn hàng tự lên kệ: 🤖 Tự nhận hàng (Bộ đếm kho · Bậc 5 ở Thiết bị nghề).": "Auto orders arrive on the shop clock and still need counting. To shelve them by itself: 🤖 auto-receive (Stock counting kit · Tier 5 in Work equipment).",
   "Ghép bé lên hạng S trở lên có khi gặp thần thú: Kỳ Lân, Kỳ Lân Một Sừng, Khủng Long, Rồng Con… Giữ bé cũ hay hóa thần thú tùy bạn.": "Fusing a pet to rank S or more may bring a mythic pet: qilin, unicorn, dinos, a baby dragon… Keep your pet or let it transform.",
@@ -26831,6 +26836,22 @@
   "bếp sạch từ đầu ca, món đúng lưu ý của bàn và sảnh tắt điện an toàn": "a kitchen clean from the start of the shift, dishes that follow each table's notes, and a hall powered down safely"
   },
   "patterns": {
+  "Lên hạng $1 · $2 xu": "Rank up to $1 · $2 xu",
+  "Cần thêm $1 món hạng $2": "Need $1 more of rank $2",
+  "Lên hạng $1 $2 → $3?": "Rank up $1 $2 → $3?",
+  "Dùng thêm hai món $1 cùng loại. Thành công: $2 lên hạng $3, về +0. Trượt: mất hai món nguyên liệu, $4 vẫn còn.": "Uses two more $1 items of the same kind. Success: $2 goes up to $3, back to +0. Miss: the two ingredients are lost, $4 stays.",
+  "Dùng thêm hai món $1 cùng loại. Thành công: $2 lên hạng $3, về +0. Trượt: ba món vẫn còn, chỉ mất phí.": "Uses two more $1 items of the same kind. Success: $2 goes up to $3, back to +0. Miss: all three stay, only the fee is spent.",
+  "Lên hạng · $1 xu": "Rank up · $1 xu",
+  "Lên hạng $1 · $2": "Rank up to $1 · $2",
+  "Lên hạng $1 · $2 xu ·": "Rank up to $1 · $2 xu ·",
+  "Lên hạng $1 · $2 xu · trượt chỉ mất phí": "Rank up to $1 · $2 xu · a miss only costs the fee",
+  "Cường hóa lên +$1": "Enhance to +$1",
+  "Thêm 2 món $1 hạng $2 chưa gắn": "2 more unworn $1 of rank $2",
+  "Cường hóa $1 lên +$2 trước rồi mới lên hạng nhé.": "Enhance $1 to +$2 first, then rank it up.",
+  "Lên hạng thành công: $1 $2! Cường hóa lại tới +$3 để lên hạng tiếp. ($4)": "Ranked up: $1 $2! Enhance it to +$3 again for the next rank. ($4)",
+  "Ghép trượt: hai món nguyên liệu đã mất, $1 vẫn còn. ($2)": "The fusion missed: the two ingredients are gone, $1 stays. ($2)",
+  "$1 $2: $3 · lên hạng được": "$1 $2: $3 · can rank up",
+  "Lên hạng D → C → B → A → S → SS → SSS: cường hóa một món tới +$1, rồi ghép với 2 món cùng loại, cùng hạng. Từ hạng S, ghép trượt mất 2 món nguyên liệu.": "Rank up D → C → B → A → S → SS → SSS: enhance one item to +$1, then fuse it with 2 items of the same kind and rank. From S, a miss loses the 2 ingredients.",
   "✨ Đổi thành $1": "✨ Turn into $1",
   "💛 Giữ $1 như cũ": "💛 Keep $1 as is",
   "Một bé $1 muốn nhập vào $2. Đổi thì $3 hóa thành $4, vẫn giữ hạng, tên, đồ và linh kiện. Không đổi thì $5 bay đi.": "A $1 wants to join $2. If you accept, $3 turns into a $4 and keeps its rank, name, outfit and gear. If not, the $5 flies away.",

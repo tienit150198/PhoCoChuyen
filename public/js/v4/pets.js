@@ -156,11 +156,18 @@ function fuseWhy(p){
   return '';
 }
 const gearOf=id=>(X()?.gear||[]).find(g=>g.id===id)||null;
-/** Two more gears of the same kind and rank, not worn, to fuse with `g` (the lowest levels first), or null. */
+/** Two more gears of the same kind and rank, not worn, to fuse with `g` (the lowest levels first), or null.
+ * `g` itself may be worn: it goes up in place (owner 19/10: it must be +10 first, see gearUp). */
 function gearMates(g){
-  if(!g||g.on||g.r>=6)return null;
+  if(!g||g.r>=6)return null;
   const m=(X()?.gear||[]).filter(x=>x.id!==g.id&&!x.on&&x.s===g.s&&x.r===g.r).sort((a,b)=>a.lv-b.lv).slice(0,2);
   return m.length===2?m:null;
+}
+/** 📈 How `g` goes up a rank: {next, max (at +lv_max), have (free mates, ≤2), ok, lose (a failure loses the two), fee}. */
+function gearUp(g){
+  const t=TT();if(!t||!g||g.r>=6)return null;
+  const have=(X()?.gear||[]).filter(x=>x.id!==g.id&&!x.on&&x.s===g.s&&x.r===g.r).length,max=g.lv>=t.gear.lv_max;
+  return {next:RNAME(g.r+1),max,have:Math.min(2,have),ok:max&&have>=2,lose:g.r>=(t.limits.lose_from??4),fee:t.gear.fuse_fee[g.r]};
 }
 /** The care a pet needs most: [sub view, emoji, label] (the home screen's main button). */
 function nextCare(p){
@@ -187,7 +194,9 @@ function main(){
   if(S.tab==='gear'){const t=TT();if(!t)return ['','',''];
     if(S.gv==='buy'){const r=Math.min(S.grank,t.gear.shop.length-1),m=t.gear.models[S.gbslot]?.[S.gmodel],pr=t.gear.shop[r]*(m?.mult||1);return [`🛍️ Mua · ${fmt(pr)} xu`,'gbuy',(X()?.gear||[]).length>=t.limits.gear?'Túi đầy rồi':readyWhy(pr)];}
     const g=gearOf(S.g);if(!g)return ['Chọn một món','',' '];
-    return g.lv>=t.gear.lv_max?['✨ Đã tối đa','',' ']:[`✨ Cường hóa · ${fmt(g.up_fee)} xu`,'gup',readyWhy(g.up_fee)];}
+    if(g.lv<t.gear.lv_max)return [`✨ Cường hóa · ${fmt(g.up_fee)} xu`,'gup',readyWhy(g.up_fee)];
+    const u=gearUp(g);   // at +10: the main button ranks it up (owner 19/10)
+    return !u?['👑 Đã tối đa','',' ']:u.ok?[`📈 Lên hạng ${u.next} · ${fmt(u.fee)} xu`,'gfuse',readyWhy(u.fee)]:[`📈 Cần thêm ${2-u.have} món hạng ${g.rank}`,'',' '];}
   if(S.tab==='board')return ['🐾 Bé nhà mình','tohome',''];
   if(S.tab==='ward')return ['','',''];
   if(S.sub==='all'||away())return ['','',''];
@@ -264,12 +273,14 @@ async function onClick(op,data){
       if(r){S.fz=S.fz.filter(id=>id!==data.id);if(data.to==='home'&&S.tab==='home'){S.pet=data.id;render();}}return;}
     case'gv':S.gv=data.v;S.g='';render();top();return;
     case'gsel':S.g=S.g===data.id?'':data.id;render();return;
+    case'gpick':{const l=(X()?.gear||[]).filter(x=>x.s===data.slot&&x.r===Number(data.r)).sort((a,b)=>b.lv-a.lv||(a.on?1:0)-(b.on?1:0));if(l[0]){S.g=l[0].id;render();}return;}
+    case'gshop':S.gv='buy';S.gbslot=data.slot;S.grank=Number(data.r)||0;S.gmodel=0;S.g='';render();top();return;
     case'gbslot':S.gbslot=data.slot;S.gmodel=0;render();return;
     case'gmodel':S.gmodel=Number(data.m)||0;render();return;
     case'grank':S.grank=Number(data.r)||0;render();return;
     case'stroll':{const r=await send('jr_pet_stroll',{});if(r?.found){S.gv='bag';S.g=r.found;render();}return;}
-    case'gfuse':{const g=gearOf(S.g),m=gearMates(g),t=TT();if(!m)return;const fee=t.gear.fuse_fee[g.r];
-      if(!await ask(`Ghép ba ${g.name} hạng ${g.rank}?`,`Thành công: ra một món hạng ${RNAME(g.r+1)}. Trượt: ba món vẫn còn, mất phí.`,`🔀 Ghép · ${fmt(fee)} xu`,fee))return;
+    case'gfuse':{const g=gearOf(S.g),m=gearMates(g),u=gearUp(g);if(!m||!u?.ok)return;const fee=u.fee;
+      if(!await ask(`Lên hạng ${g.name} ${g.rank} → ${u.next}?`,`Dùng thêm hai món ${g.rank} cùng loại. Thành công: ${g.name} lên hạng ${u.next}, về +0. Trượt: ${u.lose?`mất hai món nguyên liệu, ${g.name} vẫn còn.`:'ba món vẫn còn, chỉ mất phí.'}`,`📈 Lên hạng · ${fmt(fee)} xu`,fee))return;
       const r=await send('jr_pet_gear_fuse',{gears:[g.id,...m.map(x=>x.id)],confirm:true});if(r){if(r.ok===false)S.flash={...S.flash,kind:'bad'};S.g=r.gear||S.g;render();}return;}
     case'gdrop':{const g=gearOf(S.g);if(!g)return;if(!await ask(`Bỏ ${g.name}?`,`${g.name} ${g.rank}${g.lv?` +${g.lv}`:''} sẽ mất hẳn.`,'🗑️ Bỏ'))return;
       const r=await send('jr_pet_gear_drop',{gear:g.id,confirm:true});if(r){S.g='';render();}return;}
@@ -595,12 +606,21 @@ function gear(v,c){
       <p class="pt-muted pt-center">${st?.emoji||''} +${t.gear.base[r]+(models[S.gmodel]?.bonus||0)} ${esc(st?.name?.toLowerCase()||'')}${models[S.gmodel]?.bonus?` (💎 hàng xịn +${models[S.gmodel].bonus})`:''} · cường hóa tới +${t.gear.lv_max} · hạng cao hơn: dạo tìm hoặc ghép 3 món.</p>`;
   }
   if(!bag.length)return top+'<p class="pt-empty">🎒</p><p class="pt-muted pt-center">Dắt bé đi dạo để tìm đồ, hoặc ghé tiệm.</p>';
-  const g=gearOf(S.g),m=gearMates(g);
+  const g=gearOf(S.g),u=gearUp(g),L=t.gear.lv_max,slotName=id=>(t.gear.slots.find(x=>x.id===id)||{}).name||'';
+  // 📈 the way up (owner 19/10): ✨ +1…+L first, then three of a kind and rank → the next rank, D … SSS
+  const steps=u?`<ol class="pt-gsteps"><li class="${u.max?'ok':'now'}">✨ Cường hóa lên +${L} <b>${g.lv}/${L}</b></li><li class="${u.have>=2?'ok':u.max?'now':''}">🎒 Thêm 2 món ${esc(slotName(g.s).toLowerCase())} hạng ${esc(g.rank)} chưa gắn <b>${u.have}/2</b>${u.have<2&&g.r<t.gear.shop.length?` ${chip('gshop',{slot:g.s,r:g.r},false,'🛍️ Mua')}`:''}</li><li class="${u.ok?'now':''}">📈 Lên hạng ${esc(u.next)} · ${fmt(u.fee)} xu${u.lose?' · <em>trượt mất 2 món nguyên liệu</em>':' · trượt chỉ mất phí'}</li></ol>`
+    :g?'<p class="pt-muted">👑 Hạng SSS là cao nhất.</p>':'';
   const card=g?`<section class="pt-card pt-center"><p class="pt-gear-big" aria-hidden="true">${g.emoji}</p><h3>${esc(g.name)} <span class="pt-rk r${g.r}">${esc(g.rank)}</span>${g.lv?` +${g.lv}`:''}</h3>
-    <p class="pt-muted">${(t.stats.find(s=>s.id===g.stat)||{}).emoji||''} +${g.value}${g.on?` · 🐾 ${esc(petName(g.on))}`:''}</p>
-    <div class="pt-chips">${m?chip('gfuse',{},false,`🔀 Ghép 3 → ${esc(RNAME(g.r+1))} · ${fmt(t.gear.fuse_fee[g.r])}`):''}${chip('gdrop',{},false,'🗑️','Bỏ món này')}</div></section>`:'';
+    <p class="pt-muted">${(t.stats.find(s=>s.id===g.stat)||{}).emoji||''} +${g.value}${g.on?` · 🐾 ${esc(petName(g.on))}`:''}</p>${steps}
+    <div class="pt-chips">${u?.ok?chip('gfuse',{},false,`📈 Lên hạng ${esc(u.next)} · ${fmt(u.fee)}`):''}${chip('gdrop',{},false,'🗑️','Bỏ món này')}</div></section>`:'';
+  // the ladder: each slot × rank, how many (⬆ when one at +L has two free mates)
+  const R7=[0,1,2,3,4,5,6];
+  const ladder=`<div class="pt-gl" role="table" aria-label="Linh kiện theo hạng"><div class="pt-gl-r" role="row"><span role="columnheader"></span>${R7.map(r=>`<span role="columnheader" class="pt-rk r${r}">${esc(RNAME(r))}</span>`).join('')}</div>${t.gear.slots.map(sl=>`<div class="pt-gl-r" role="row"><span role="rowheader" title="${esc(sl.name)}">${sl.emoji}</span>${R7.map(r=>{
+    const l=bag.filter(x=>x.s===sl.id&&x.r===r),up=r<6&&l.some(x=>x.lv>=L&&l.filter(y=>y.id!==x.id&&!y.on).length>=2),on=g&&g.s===sl.id&&g.r===r;
+    return l.length?`<button type="button" role="cell" class="pt-gl-c${up?' up':''}${on?' on':''}" data-pt="gpick" data-slot="${sl.id}" data-r="${r}" aria-label="${esc(sl.name)} ${esc(RNAME(r))}: ${l.length}${up?' · lên hạng được':''}">${l.length}${up?' <i aria-hidden="true">⬆</i>':''}</button>`:'<span role="cell" class="pt-gl-c off">·</span>';}).join('')}</div>`).join('')}</div>`;
+  const how=`<p class="pt-muted pt-center pt-ghow">📈 Lên hạng D → C → B → A → S → SS → SSS: cường hóa một món tới +${L}, rồi ghép với 2 món cùng loại, cùng hạng. Từ hạng S, ghép trượt mất 2 món nguyên liệu.</p>`;
   const order=t.gear.slots.map(s=>s.id),list=bag.slice().sort((a,b)=>order.indexOf(a.s)-order.indexOf(b.s)||b.r-a.r||b.lv-a.lv);
-  return top+card+`<div class="pt-list">${list.map(x=>`<button type="button" class="pt-item${x.id===S.g?' on':''}" data-pt="gsel" data-id="${esc(x.id)}" aria-pressed="${x.id===S.g}"><span class="pt-ico" aria-hidden="true">${x.emoji}</span><b>${esc(x.name)} <span class="pt-rk r${x.r}">${esc(x.rank)}</span>${x.lv?` +${x.lv}`:''}${x.on?`<small> · 🐾 ${esc(petName(x.on))}</small>`:''}</b><em>+${x.value}</em></button>`).join('')}</div>`;
+  return top+card+(g?'':how)+ladder+`<div class="pt-list">${list.map(x=>`<button type="button" class="pt-item${x.id===S.g?' on':''}" data-pt="gsel" data-id="${esc(x.id)}" aria-pressed="${x.id===S.g}"><span class="pt-ico" aria-hidden="true">${x.emoji}</span><b>${esc(x.name)} <span class="pt-rk r${x.r}">${esc(x.rank)}</span>${x.lv?` +${x.lv}`:''}${x.on?`<small> · 🐾 ${esc(petName(x.on))}</small>`:''}</b><em>+${x.value}</em></button>`).join('')}</div>`;
 }
 
 /* ---- 📸 photo booth: the character beside the pet, in a frame; saved as a PNG on this device only ---- */
