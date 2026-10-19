@@ -8,6 +8,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {withWhy,whyTap} from '../ui-kit.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY,afterTap,qtyVal} from '../qty-input.js';
+import {paint as sheetPaint} from './sheet-paint.js';
 
 const TABS=[['trip','✈️','Du lịch'],['suu','💎','Sưu tập'],['nha','🏰','Dinh thự'],['bay','🛫','Phi cơ & du thuyền'],['tiec','🎉','Mở tiệc'],['hoc','🎓','Khóa học'],['mtq','🎆','Mạnh Thường Quân']];
 export const ACTIONS={lux:'',luxTrip:'trip',luxSuu:'suu',luxNha:'nha',luxBay:'bay',luxTiec:'tiec',luxHoc:'hoc',luxMtq:'mtq',luxFw:'mtq'};   // luxFw: 🎆 straight to the fireworks (the menu, the show's banner)
@@ -217,9 +218,7 @@ function shot(r){
 /* ---- rendering ---- */
 function render(){
   if(!S.dlg)return;
-  const body=S.dlg.querySelector('.sd-body'),y=body?.scrollTop;
-  S.dlg.querySelector('.sd-root').innerHTML=page();
-  if(y)S.dlg.querySelector('.sd-body').scrollTop=y;
+  sheetPaint(S.dlg.querySelector('.sd-root'),page(),'.sd-body');   // typing guests / an amount while the wallet moves: kept
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
 const chip=(op,id,label,on,title='')=>`<button type="button" class="sd-chip${on?' on':''}" data-lx="${op}" data-id="${esc(id)}" aria-pressed="${on}"${title?` aria-label="${esc(title)}" title="${esc(title)}"`:''}>${label}</button>`;

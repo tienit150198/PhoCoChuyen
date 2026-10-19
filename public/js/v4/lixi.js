@@ -17,6 +17,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {LX,upsert,update,grabbed,refresh,list,ranked,grabbable,openNow,cardHTML,onChange} from './lixi-cards.js';
 import {fwMode,topModal,idleScreen} from './fireworks.js';
 import {qtyBox,qtyVal,afterTap} from '../qty-input.js';
+import {paint as sheetPaint} from './sheet-paint.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const RAIN_S=9,CHIP_S=10,QUEUE_MAX=4,ENV_MAX=14,LATE_S=60,MINE_MS=30000;
@@ -80,7 +81,8 @@ export function onUpdate(env,f){
   const p=update(f);if(!p)return;
   if(S.cur?.p.id===p.id){if(!openNow(p))endRain(S.cur,true,'Hết bao rồi!');else banner(S.cur);}
   if(S.chip?.p.id===p.id&&!openNow(p))hideChip();
-  if(S.dlg?.open)render();
+  // a grab anywhere in town (lixi_upd): the list and a packet's page show it; the give form has no packet on it
+  if(S.dlg?.open&&S.view!=='give')render();
 }
 /** The giver's own page: the next packet of this size coming back is theirs (no Giật on it). */
 export function markMine(total,n){S.mine=total?{total,n,until:Date.now()+MINE_MS}:null;}
@@ -299,7 +301,8 @@ function dialog(){
 export async function openLixi(env,view='list',pk=null){
   S.env=env||S.env;
   if(!S.listening){S.listening=true;onChange(()=>{if(S.dlg?.open&&S.view==='list')render();});
-    env.api?.addEventListener?.('state',()=>{if(S.dlg?.open&&S.view==='give'&&!S.busy)render();});}
+    // the give form shows the wallet (and what it can give): only a state that moved it redraws (not every command)
+    let seen='';env.api?.addEventListener?.('state',()=>{if(!S.dlg?.open||S.view!=='give'||S.busy)return;const j=J(),key=JSON.stringify([j.wallet,j.bank?.balance,j.story]);if(key===seen)return;seen=key;render();});}
   await ensureCss();css();
   const d=dialog();
   S.view=['list','give','detail'].includes(view)?view:'list';S.pk=pk||S.pk;
@@ -353,9 +356,7 @@ async function give(){
 
 function render(){
   if(!S.dlg)return;
-  const body=S.dlg.querySelector('.sd-body'),y=body?.scrollTop;
-  S.dlg.querySelector('.sd-root').innerHTML=page();
-  if(y)S.dlg.querySelector('.sd-body').scrollTop=y;
+  sheetPaint(S.dlg.querySelector('.sd-root'),page(),'.sd-body');   // typing in Lời riêng / Số khác: patched in place, the keyboard stays
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
 function page(){

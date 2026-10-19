@@ -6,6 +6,7 @@
  * Styles: /css/spend.css. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {nameAttrs,frameAttrs,titleChip} from './style-tag.js';
+import {paint as sheetPaint} from './sheet-paint.js';
 
 const TABS=[['quan','☕','Đi quán'],['spa','💆','Spa'],['rap','🎬','Rạp Mây'],['chua','🙏','Công đức'],['style','🎨','Phong cách']];
 export const ACTIONS={spend:'',spendQuan:'quan',spendSpa:'spa',spendRap:'rap',spendChua:'chua',spendStyle:'style'};
@@ -152,9 +153,7 @@ async function onClick(op,data){
 /* ---- rendering ---- */
 function render(){
   if(!S.dlg)return;
-  const body=S.dlg.querySelector('.sd-body'),y=body?.scrollTop;
-  S.dlg.querySelector('.sd-root').innerHTML=page();
-  if(y)S.dlg.querySelector('.sd-body').scrollTop=y;
+  sheetPaint(S.dlg.querySelector('.sd-root'),page(),'.sd-body');   // typing an amount while the wallet moves: kept
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
 function page(){

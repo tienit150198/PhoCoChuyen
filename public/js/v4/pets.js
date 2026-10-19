@@ -8,6 +8,7 @@
  * walked, 🧬 fusing three pets (tab lab), five stats with training, 🧰 gear (tab gear) and the 💪 lực chiến board.
  * Styles: /css/pets.css. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {paint as sheetPaint} from './sheet-paint.js';
 import {lookOf,figureSVG} from './look.js';
 import {petSVG,petPicture,lookup,accOf,fxRef} from './pet-art.js';
 
@@ -340,11 +341,10 @@ async function go(){
 const top=()=>S.dlg?.querySelector('.pt-body')?.scrollTo?.(0,0);
 function render(){
   if(!S.dlg)return;
-  const body=S.dlg.querySelector('.pt-body'),y=body?.scrollTop,root=S.dlg.querySelector('.pt-root'),html=page();
+  const root=S.dlg.querySelector('.pt-root'),html=page();
   S.dlg.setAttribute('aria-busy',String(S.busy));
   if(root._html===html&&root.firstChild)return;   // 🐢 the same screen (a state that did not change it): nothing rebuilt
-  root.innerHTML=html;root._html=html;
-  if(y)S.dlg.querySelector('.pt-body').scrollTop=y;
+  sheetPaint(root,html,'.pt-body');root._html=html;   // typing a pet's name while the wallet moves: the keyboard stays
 }
 function page(){
   const v=V(),c=CAT(),t=TABS.find(x=>x[0]===S.tab)||TABS[0];

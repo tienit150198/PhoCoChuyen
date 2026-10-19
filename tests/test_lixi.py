@@ -587,6 +587,20 @@ class Client(unittest.TestCase):
                              encoding='utf-8', errors='replace', timeout=120)
         self.assertEqual(out.returncode, 0, out.stdout[-4000:] + out.stderr[-2000:])
 
+    def test_typing_survives_a_background_redraw(self):
+        """Owner 21/10 "gõ text ở phát lì xì thì bị tắt rồi scroll": a lì xì grabbed elsewhere / a moved wallet redrew the
+        give form and threw the focused field away. tests/sheet_paint.mjs: v4/sheet-paint.js keeps it, and the sheets
+        with a field and a background redraw (lì xì, garage, lux, spend, pets, bank, rui, karaoke, chat) go through it.
+        In real browsers: scripts/browser_typing_sheets.py."""
+        import shutil
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        out = subprocess.run([node, str(ROOT / 'tests' / 'sheet_paint.mjs')], cwd=ROOT, capture_output=True, text=True,
+                             encoding='utf-8', errors='replace', timeout=120)
+        self.assertEqual(out.returncode, 0, out.stdout[-4000:] + out.stderr[-2000:])
+        self.assertIn('sheet_paint: ok', out.stdout)
+
     def test_both_interfaces_have_an_entry(self):
         app = (ROOT / 'public/js/app.js').read_text(encoding='utf-8')
         self.assertIn("m.live.on('lixi',", app)

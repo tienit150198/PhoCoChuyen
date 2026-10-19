@@ -6,7 +6,7 @@ import {escapeHTML} from '../public/js/icons.js';
 
 const source=readFileSync(new URL('../public/js/v4/chat.js',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
 // the stripped imports: 🎨 style-tag.js and 🏅 honours.js (a name with no `st` / `tt` draws as before)
-const STUBS={nameAttrs:()=>'',frameAttrs:()=>({cls:'',attrs:''}),titleChip:()=>'',hnChips:()=>'',hnList:()=>'',hnTitles:()=>[],inlineMax:()=>2,lxCards:m=>m,lxCard:()=>"",lxChange:()=>()=>{},lxRefresh:()=>{}};
+const STUBS={nameAttrs:()=>'',frameAttrs:()=>({cls:'',attrs:''}),titleChip:()=>'',hnChips:()=>'',hnList:()=>'',hnTitles:()=>[],inlineMax:()=>2,lxCards:m=>m,lxCard:()=>"",lxChange:()=>()=>{},lxRefresh:()=>{},sheetPaint:(el,html)=>{el.innerHTML=html;}};
 const CH='dm:aaaaaaaaaaaaaaaa:bbbbbbbbbbbbbbbb',OTHER='group:other';
 const message=(id,extra={})=>({t:'msg',ch:CH,id,pid:'bbbbbbbbbbbbbbbb',name:'Bạn <An>',text:'Gốc <img onerror=x>',at:1700000000+id,...extra});
 function harness(ch=CH){
