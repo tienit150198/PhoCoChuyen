@@ -1,12 +1,15 @@
 """🦉 Cú đêm của phố (game/online_board.py): the weekly board of play time read from stat_play, shown an hour less,
 its weekly titles (game/lb_titles.py) and the Monday freeze with the ended week's own totals."""
+import time
 import unittest.mock
 
 from game import lb_titles as lbt
 from game import leaderboard as lb
 from game import online_board as ob
+from game.wedding_live import vn_day
 from tests import test_lb_titles as T
 from tests.test_lb_titles import MON, SUN, TUE, at, with_titles
+from tests.test_leaderboard import ROOT
 
 
 class OnlineBoard(T.Weekly):   # (the module, not the class: pytest would run Weekly's own tests here again)
@@ -86,3 +89,51 @@ class OnlineBoard(T.Weekly):   # (the module, not the class: pytest would run We
         self.assertTrue(lbt.refresh(self.store, at(2026, 10, 7, 9)))
         ranks = sorted(h['rank'] for v in lbt.holders(self.store).values() for h in v if h['board'] == 'online')
         self.assertEqual(ranks, list(range(1, 11)))
+
+    def test_monday_small_hours_are_counted_f434(self):
+        """F#434 (minnie, Monday 19/10 01:37–01:55): the week is the Vietnam week (Monday 01:55 VN is still Sunday in
+        UTC), and 18 minutes of a new week, shown as nothing (shown = real − 1 h), still tell the player they count and
+        how much more puts the name up, not a bare "not on the board"."""
+        self.assertEqual(ob.week_days(at(2026, 10, 19, 1, 55)), ('2026-10-19', '2026-10-25'))
+        late = at(2026, 10, 5, 1, 55)
+        self.assertEqual(ob.week_days(late), ('2026-10-05', '2026-10-11'))
+        m = self.player(with_titles(1), account='Minnie')
+        fresh = self.player(with_titles(1), account='Mới')
+        self.play(m, '2026-10-04', 3 * 3600)                 # Sunday: the week that ended
+        self.play(m, '2026-10-05', 18 * 60)                  # Monday 01:37–01:55
+        self.play(fresh, '2026-10-04', 3600)
+        v = ob.view(self.store, 50, m, t=late)
+        self.assertEqual(v['rows'], [])
+        me = v['me']
+        self.assertIsNone(me['rank'])
+        self.assertNotIn('score', me)
+        self.assertTrue(me['counted'])
+        self.assertEqual(me['need'], ob.SHOWN_OFF + ob.SHOWN_MIN - 18 * 60)   # 43 more minutes
+        me = ob.view(self.store, 50, fresh, t=late)['me']
+        self.assertFalse(me['counted'])
+        self.assertEqual(me['need'], ob.SHOWN_OFF + ob.SHOWN_MIN)
+        self.play(m, '2026-10-05', 2 * 3600)                 # on the board: no `need` any more
+        me = ob.view(self.store, 50, m, t=late)['me']
+        self.assertEqual((me['rank'], me['score']), (1, 3600))
+        self.assertNotIn('need', me)
+
+    def test_real_commands_reach_the_own_card(self):
+        """The whole path: game commands → receipts → trigger stat_play_cmd (Vietnam day) → the own card."""
+        a = self.player(with_titles(1), account='An')
+        sid = self.sid(a)
+        self.cmd(a, 'settings', {'sound': False})
+        self.cmd(a, 'settings', {'sound': True})
+        now = time.time()
+        row = self.rows('SELECT day, cmds, secs FROM stat_play WHERE sid=?', sid)
+        self.assertEqual([r['day'] for r in row], [vn_day(now)])
+        self.assertGreaterEqual(row[0]['cmds'], 3)           # import_save + 2 settings
+        me = ob.view(self.store, 50, a, t=now)['me']
+        self.assertIsNone(me['rank'])
+        self.assertTrue(me['counted'])
+        self.assertEqual(me['need'], ob.SHOWN_OFF + ob.SHOWN_MIN - row[0]['secs'])
+
+    def test_own_card_text_f434(self):
+        js = (ROOT / 'public/js/v4/leaderboard.js').read_text(encoding='utf-8')
+        self.assertIn(":board==='online'?onlineWait(me)", js)
+        self.assertIn('đã được ghi nhận', js)
+        self.assertIn('giờ chơi đầu tiên của tuần chưa tính lên bảng', js)
