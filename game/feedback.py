@@ -21,6 +21,7 @@ more 1★ follow (a pile-on never starts another one).
 """
 from __future__ import annotations
 from copy import deepcopy
+import functools
 import hashlib
 import re
 import unicodedata
@@ -407,6 +408,7 @@ def _has(text: str, words) -> bool:
     return any(re.search(r'(?<!\w)' + re.escape(w) + r'(?!\w)', text) for w in words)
 
 
+@functools.lru_cache(maxsize=8192)   # every public view re-reads the same open reviews (can_police)
 def normalize(text: str) -> str:
     t = unicodedata.normalize('NFD', (text or '').lower()).replace('đ', 'd')
     return ''.join(ch for ch in t if unicodedata.category(ch) != 'Mn')
