@@ -314,11 +314,16 @@ class Db(unittest.TestCase):
         self.refused('blocked', wed, pk)
         self.refused('bad_lixi', self.player('X'), 'lx' + 'z' * 14)
         self.refused('not_found', self.player('Y'), 'lx' + '0' * 14)
+        self.assertEqual(lixi.IP_MAX, 5)
         ok = self.player('Hoa')
         self.grab(ok, pk, ip='1.2.3.4')
-        self.refused('same_ip', self.player('Cùng mạng'), pk, ip='1.2.3.4')        # one envelope per address per packet
+        for i in range(lixi.IP_MAX - 1):                                          # #426: friends on one Wi-Fi all grab
+            self.grab(self.player(f'Bạn {i}'), pk, ip='1.2.3.4')
+        self.refused('same_ip', self.player('Cùng mạng'), pk, ip='1.2.3.4')        # IP_MAX envelopes per address per packet
         self.grab(self.player('Khác mạng'), pk, ip='1.2.3.5')
-        self.assertEqual(self.packet(pk)['left_n'], 18)
+        self.assertEqual(self.packet(pk)['left_n'], 20 - lixi.IP_MAX - 1)
+        with patch.object(lixi, 'IP_MAX', 0):                                     # 0: no cap at all
+            self.grab(self.player('Không giới hạn'), pk, ip='1.2.3.4')
         self.assertIn(lixi.ip_tag('1.2.3.4'), {r['ip'] for r in self.rows('SELECT ip FROM lixi_grabs')})
         self.assertNotIn('1.2.3.4', json.dumps(self.rows('SELECT * FROM lixi_grabs')))
 

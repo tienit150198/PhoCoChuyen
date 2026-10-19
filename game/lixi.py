@@ -21,9 +21,11 @@ this is something to spend them on that everyone online enjoys. Story mode.
   empty. A second tap on the same packet answers the first amount again.
 * 🛡️ Not a pipe between one's own accounts: a grabber needs a registered account ACCOUNT_DAYS old and a save at life day
   LIFE_DAYS (game/quay_hire.py's rules), must not have blocked or be blocked by the giver (`blocks` by pid,
-  `marriage_blocks` by sid), and one envelope per network address per packet. Owner 17/10: "giật lì xì mỗi người không
-  giới hạn, giật thoải mái": GRAB_DAY, GRAB_DAY_XU and PAIR_DAY are None (a number turns that cap back on: an envelope is
-  then cut to what is left of GRAB_DAY_XU and the cut part goes back to the giver) (ONE_PER_IP; a hash of the address, never the address).
+  `marriage_blocks` by sid), and at most IP_MAX envelopes per network address per packet (a hash of the address, never
+  the address; owner 19/10, feedback #426: friends and family on one Wi-Fi all get to grab, a farm of alts still does
+  not). Owner 17/10: "giật lì xì mỗi người không giới hạn, giật thoải mái": GRAB_DAY, GRAB_DAY_XU and PAIR_DAY are None
+  (a number turns that cap back on: an envelope is then cut to what is left of GRAB_DAY_XU and the cut part goes back to
+  the giver).
 * ⏳ 24 h: an envelope nobody took goes back to the giver (sweep, housekeeping every 30 s and on the page: under the row
   lock, only from 'open', the refund row 'lixi:<packet>:back' is written once whatever the workers). The same happens at
   once when the last envelope was cut by a grabber's cap.
@@ -60,7 +62,10 @@ LIFE_DAYS = qh.LIFE_DAYS         # a grabber's save has lived this many days (10
 GRAB_DAY = None               # envelopes a player opens a Vietnam day (None: no cap, owner 17/10 "giật thoải mái")
 GRAB_DAY_XU = None            # xu a player gets from envelopes a Vietnam day (None: no cap)
 PAIR_DAY = None               # packets of one giver a player opens a Vietnam day (None: no cap)
-ONE_PER_IP = os.environ.get('LIXI_ONE_PER_IP', '1') != '0'   # one envelope per network address per packet
+# Envelopes of one packet a network address (hashed) opens: a household or a group of friends on one Wi-Fi is never
+# blocked (owner 19/10, feedback #426: "1 ip có thể cùng nhặt nhiều lần"), a farm of alts still is. 0: no cap.
+# LIXI_IP_MAX sets it; the old switch LIXI_ONE_PER_IP=0 still turns it off.
+IP_MAX = 0 if os.environ.get('LIXI_ONE_PER_IP', '1') == '0' else max(0, int(os.environ.get('LIXI_IP_MAX') or 5))
 NEWS_FROM = 500_000           # a packet from this total gets a line on the ticker
 TEXT_MAX = 40                 # a giver's own line
 KIND = 'life'                 # wallet history kind (journey.HISTORY_KINDS): every build knows it
@@ -325,7 +330,7 @@ def grab(store, token: str, d: dict, state: dict | None, ip: str = '', rng=None)
     need(int(j.get('life_day') or 0) >= LIFE_DAYS, f'Giật lì xì mở từ ngày sống {LIFE_DAYS}.', 'too_new', 403)
     t = now()
     day = vn_day(t)
-    tag = ip_tag(ip) if ONE_PER_IP else ''
+    tag = ip_tag(ip)   # kept with the grab; counted against IP_MAX while that cap is on
 
     def run(db):
         row = db.execute('SELECT * FROM lixi_packets WHERE id=? FOR UPDATE', (pk,)).fetchone()
@@ -338,9 +343,10 @@ def grab(store, token: str, d: dict, state: dict | None, ip: str = '', rng=None)
         need(p['status'] == 'open' and p['expires'] > t and p['left_n'] > 0, 'Hết bao rồi! Lần sau nhanh tay hơn nhé.', 'empty', 409)
         need(_old_enough(db, sid, t), f'Tài khoản cần đủ {ACCOUNT_DAYS} ngày mới giật được lì xì.', 'too_new', 403)
         need(not _blocked(db, sid, p['sid']), 'Bạn không giật được bao này.', 'blocked', 403)
-        if tag:
-            need(not db.execute('SELECT 1 FROM lixi_grabs WHERE packet=? AND ip=?', (pk, tag)).fetchone(),
-                 'Mạng này vừa có người giật bao này rồi.', 'same_ip', 409)
+        if tag and IP_MAX:   # under the packet's row lock: two grabs from one address cannot pass the cap together
+            same = db.execute('SELECT COUNT(*) AS n FROM lixi_grabs WHERE packet=? AND ip=?', (pk, tag)).fetchone()
+            need(int(same['n']) < IP_MAX, f'Mạng này đã có {IP_MAX} người giật bao này rồi (mỗi mạng tối đa {IP_MAX} người '
+                 'một bao). Hẹn bao lì xì sau nhé!', 'same_ip', 409)
         room = None
         if GRAB_DAY is not None or GRAB_DAY_XU is not None:
             today = db.execute('SELECT COUNT(*) AS n, COALESCE(SUM(amount), 0) AS xu FROM lixi_grabs WHERE sid=? AND day=?', (sid, day)).fetchone()
