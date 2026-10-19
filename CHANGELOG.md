@@ -1,4 +1,8 @@
-# Chưa phát hành — island-build
+# v2.4.63 — 2026-10-21
+
+Ra mắt Bang, Đảo bang, Xây trên đảo, Đấu trường pet (chủ game 19–20/10). Gồm các nhánh island-build, bang, pet-arena, bang-island, tích hợp + review fixes + chế độ duyệt thành viên (schema 56–60, chỉ thêm bảng/cột). Phí giữ tài sản lớn nay tính đảo 60% + công trình 20% (chủ game chốt 20/10). Công tắc tắt khẩn: MNL_BANG_OFF, MNL_ISLAND_BUILD_OFF, MNL_PET_ARENA_OFF, MNL_BANG_ISLAND=0. Có gì mới: 4 dòng.
+
+## island-build
 
 🏗️ Xây trên đảo (chủ game 19/10 "công trình trên đảo k kiếm tiền, xây dựng nơi riêng, nhà này kia thôi", "thời gian lên đảo thoải mái"):
 - Ô đất theo đảo (game/island_build_content.py PLOTS = public/js/island-layout.js plots, cùng số, cùng thứ tự; tests/test_island_build.py so hai danh sách): Đảo Dừa 6, San Hô 10, Mây Đá 16, Hoàng Hôn 24, mỗi đảo có ô ⚓ sát biển. Biệt thự San Hô dời sang tây (0,27; 0,47), Hoàng Hôn dời lên bắc (0,40; 0,31) để không ô nào khuất sau biệt thự trên bản đồ 2.5D; vài cây dừa, suối nước nóng/lửa trại Mây Đá dời chỗ; cầu tàu San Hô dài thêm 0,01 chạm bờ (trước đây cuối cầu và bờ hở 0,009, người chơi kẹt trên cầu).
@@ -13,7 +17,7 @@
 🏛️ Phí giữ tài sản lớn và bảng 💰 Tài phú tính đảo theo giá bán lại 60% và công trình theo giá thu hồi 20% (wealth_fee.islands, wealth._extras). Trước đây phí giữ tài sản lớn chưa tính đảo.
 Rollback: SCHEMA_VERSION 56 chỉ thêm bảng/index (island_builds, island_public, island_visitors), không FK, không backfill; 2.4.60 và cũ hơn không đọc. Bản lưu có journey.islb chạy được trên 2.4.60 và 2.4.34 (tests/test_island_build_compat.py), bản cũ không thu/trả gì từ công trình. Nếu lùi bản: khách 🌍 không vào được đảo (ACCESS_SQL cũ chỉ cho bạn bè), chuyến mới hiện "còn ~5 triệu phút" ở client cũ; nếu bán đảo trên bản cũ, công trình nằm yên trong bản lưu (không mất), hiện lại khi mua lại đảo. Web và live nên lên/xuống cùng nhau (live/island.py: sức chứa 40 khi mở cửa).
 
-# Chưa phát hành — bang
+## bang
 
 ⚔️ Bang (chủ game 19/10; game/bang.py, game/bang_content.py, live/bangs.py, public/js/v4/bang.js, bang-tag.js, css/bang.css):
 - Lập bang (lệnh jr_bang_found): tài khoản ≥ 14 ngày, có chức danh (thăng tiến ≥ 1 bậc ở một nghề), 5.000.000 xu đốt hẳn (ví rồi ngân hàng, không vay, dòng ví ≤ 10 triệu, kind 'life'). Tên theo luật tên người chơi, khóa không trùng bỏ dấu/hoa/khoảng trắng (advisory lock theo khóa tên); 16 biểu tượng, 10 màu, khẩu hiệu ≤ 60 ký tự (lọc như chat).
@@ -30,7 +34,7 @@ Rollback: SCHEMA_VERSION 56 chỉ thêm bảng/index (island_builds, island_publ
 - Lối vào: Tiện ích › Bạn bè & khu phố › ⚔️ Bang, Thêm › Khu phố › Bang (cả giao diện cũ).
 SCHEMA_VERSION 57 (56 của nhánh đảo): 11 bảng mới (bangs, bang_members, bang_stints, bang_asks, bang_fund, bang_points, bang_facilities, bang_items, bang_gh, bang_log, bang_week_win), chỉ thêm, không FK, không backfill. Bản lưu: chỉ khóa tùy chọn journey['bang'] {v, n, sum, last} (2.4.60 nhận nguyên, tests/test_bang.py Compat). Lệnh jr_bang_* chỉ client mới gửi. Không có "Có gì mới".
 
-# Chưa phát hành — pet-arena
+## pet-arena
 
 🐾 Đấu trường pet (chủ game 19/10: "thêm thi đua nữa nhé, kết hợp với pet ra tranh đấu với bang nữa"; bang chiến: "mỗi bang đến giờ sẽ chọn các pet ra đánh với nhau, đánh 5v5 và ngẫu nhiên ấy, mỗi người chọn 1 pet … ai thắng nhiều thì vào vòng trong", "phải thêm pet đánh nhau hiệu ứng này kia nữa"). Mở ở Tiện ích → Đời sống & đi chơi (🐾 Đấu trường pet, 🛡️ Bang chiến pet), ☰ Thêm → Khu phố, và nút ⚔️ trong 🐾 Thú cưng.
 - ⚔️ Trận đấu do máy chủ quyết (game/pet_battle.py, ENGINE 1): đội 1–3 bé (ở nhà hoặc trại nuôi), đánh lần lượt, bé thắng giữ máu đánh tiếp. Chỉ số thật của bé (5 chỉ số đã gồm hạng, tiềm năng, giống, huấn luyện, linh kiện) → máu/công/thủ/tốc; ngũ hành theo chỉ số giống thiên về (Hỏa/Thổ/Thủy/Mộc/Kim, khắc ×1,07 / ×0,95) và một chiêu mỗi hệ (☄️ Cầu lửa, 🪨 Khiên đá, 🌊 Sóng nước, 🍃 Dây leo, ✨ Móng vàng); 🐶 chó trụ 1 máu một lần, 🐱 mèo né giỏi hơn, 🌟 huyền thoại/thần thú +6%. RNG riêng (splitmix64) gieo từ mã trận: xem lại là y hệt trận cũ; trang chỉ diễn hoạt cảnh. Mô phỏng 1v1: hơn một hạng thắng ~74%, hơn hai hạng ~89%, đủ bộ linh kiện cùng hạng ~78%, linh kiện +10 so với +0 ~77%, khắc hệ ~62%, chó–mèo 50%, ~10 lượt một trận.
@@ -41,7 +45,7 @@ SCHEMA_VERSION 57 (56 của nhánh đảo): 11 bảng mới (bangs, bang_members
 - 🎬 Hoạt cảnh (public/js/v4/pet-arena.js, css/pet-arena.css): bé lao tới, chớp trắng + rung khi trúng, số máu bay, CHÍ MẠNG rung sân, hiệu ứng từng hệ (cầu lửa bay, sóng nước, lá, tia vàng, khiên đá), thanh máu, gục ngã, bé thắng nhảy + pháo giấy, âm thanh nhỏ theo cài đặt; ⏩ ×2, ⏭ bỏ qua; dòng diễn biến dưới sân; điện thoại dọc/ngang và máy tính.
 - 🐾 Bé không bao giờ bị thương, mất đồ hay đổi gì: không lệnh nào của đấu trường ghi vào bản lưu.
 Kỹ thuật: POST /api/arena/<op> (view, lineup, fight, friend, friends, npc, replay, ladder, cup_join, cup_leave, cup_board, war, war_pick, war_unpick, war_match), giới hạn 90/phút, đánh 12/phút (ARENA_FIGHTS_PER_MINUTE). SCHEMA_VERSION 58 (56, 57 là của nhánh khác): bảng mới pet_arena, pet_arena_season, pet_arena_matches, pet_cup, pet_cup_entries, pet_war, pet_war_picks, pet_war_matches, pet_team_ladder, pet_team_rating (chỉ thêm, không FK). Không khóa save mới. lb_titles: bảng danh hiệu 'arena', 'pet_cup', 'pet_war' (pet_war 2 bậc: hạng 1–5, 6–10; khung honour-frames). Rollback về 2.4.60: không DDL (phiên bản DB cao hơn), bảng mới để nguyên, danh hiệu 'arena' hạng 1 có thể hiện "🏆 Trùm arena" tới lần làm mới hằng ngày kế tiếp (tests/test_pet_arena_compat.py). API cho bang: pet_war.register('bang', provider) với team_of / name / can_pick / facility('san_luyen_pet' → +1%/cấp, tối đa 5%), team_match(a, b, key), standings, ladder, team_rating, training_bonus. Tests: tests/test_pet_arena.py, tests/test_pet_arena_compat.py; scripts/browser_pet_arena.py. Không có Có gì mới.
-# Chưa phát hành — bang-island
+## bang-island
 
 ⚔️ Đảo bang (chủ game duyệt 19/10; tắt mặc định MNL_BANG_ISLAND=0, chưa có Có gì mới):
 - Lãnh địa của bang: bản đồ đảo 2.5D riêng (24 ô, lớn hơn đảo riêng) với 7 ô cố định: Đại sảnh giữa đảo, Kho bang, Xưởng may, Sân luyện pet, Đền vàng, Tượng bang giữa quảng trường, Cổng bang bên bến tàu; vườn hoa, ao sen, rừng trúc, dãy đèn lồng, đồi thông, hình nhân tập võ. Mỗi công trình đổi diện mạo theo bậc cấp 1–3 gỗ / 4–6 đá / 7–10 vàng, giàn giáo tre khi đang xây, đất trống cắm cọc khi chưa xây. Cờ và màu bang trên cổng, đại sảnh, sân đấu, cánh buồm thuyền bang; tên bang trên biển cổng. Giao diện cũ: đi dạo 2D cùng bản đồ.
@@ -49,7 +53,7 @@ Kỹ thuật: POST /api/arena/<op> (view, lineup, fight, friend, friends, npc, r
 - Chạm công trình mở bảng: cấp, cấp tiếp theo, giờ xây còn lại, các nút (Nâng cấp, Góp quỹ, Đấu trường pet…) hiện là chỗ chờ cho nhánh Bang / đấu trường pet nối vào.
 - Hợp đồng dữ liệu với nhánh Bang: game/bang_island.py (BangIslandView, provider), docs/BANG_ISLAND.md (JSON schema, cách nối). Không bảng mới, không khóa save mới.
 
-# Chưa phát hành — tích hợp (feat/island-bang-pets)
+## tích hợp (feat/island-bang-pets)
 
 Gộp 4 nhánh (Xây trên đảo, Bang, Đấu trường pet, Đảo bang) và nối chúng với nhau; SCHEMA_VERSION 58 (56 đảo, 57 bang, 58 pet; Đảo bang không thêm bảng):
 - 🛡️ Bang chiến pet dùng bang thật (game/bang_pets.py, đăng ký loại đội 'bang' ở game/pet_war.py): đội = bang đang ở (bang đang hoạt động, không bị quản trị ẩn), mỗi thành viên chọn 1 bé, 5 người chọn trước ra trận; Sân luyện pet +1%/cấp chỉ số bé trong bang chiến, tối đa 5% (cấp 6–10 chỉ còn tính điểm xếp hạng). Chưa vào bang: nút ⚔️ Tìm bang trong tab Bang chiến.
@@ -510,7 +514,7 @@ Bản cũ đọc được bản lưu mới (dòng gộp là dòng sổ bình th�
 
 Gồm autoreorder (#387): 🔁 Tự đặt hàng mua 350.000 xu mỗi nơi làm (khóa nghề `auto_order` tùy chọn), tự đặt khi dưới ngưỡng từ quỹ tiệm, giữ sàn quỹ + trần 50%/ngày. Có gì mới: 1 dòng.
 
-# Chưa phát hành — autoreorder (🔁 Tự đặt hàng, góp ý #387)
+## autoreorder (🔁 Tự đặt hàng, góp ý #387)
 
 🔁 Tự đặt hàng: mở khóa trả phí cho từng nơi có kho (350.000 xu = bậc 5 của thang giá chung, cùng giá Bộ đếm kho · Bậc 5 mở 🤖 Tự nhận hàng; trả bằng quỹ trước, thiếu lấy ví), mua ở Kho (dòng 🔒 có giá, chỉ hiện khi đã đặt hàng ≥3 lần, #384) hoặc Thiết bị. Mỗi món một công tắc và “còn dưới X thì đặt Y” (mặc định X = 20% kệ, Y lấp tới ~90% trong hạn mức mỗi dòng). Hàng trên kệ + đang về dưới X thì đặt Y với nhà cung cấp dùng lần cuối (không thì Hạt Nắng) qua đúng đường inv_order (giá, giá sỉ, ship, thời gian giao, giao thiếu, lô FIFO); chỉ trả bằng quỹ, giữ sàn (80 xu + hóa đơn chưa trả + một ngày lương), tối đa 50% quỹ đầu ngày mỗi ngày, mỗi món một đơn tự đặt đang về, chừa 2 chuyến cho đơn tay; món vơi nhất đặt trước. Chạy sau mỗi thao tác và khi tải game (cả lúc vắng mặt), sau 🤖 Tự nhận hàng. Sổ tay: “🔁 Tự đặt 40 vắt Mì tươi (Nhà phân phối Hạt Nắng, ~13:15 hôm nay)”; quỹ thiếu: “🔁 Quỹ không đủ để tự đặt.” (một lần/ngày). Bản lưu: khóa tùy chọn `careers.<nghề>.auto_order` (không phải mã nâng cấp: 2.4.11 từ chối mã lạ trong `upgrades`); 2.4.11 đọc được, bỏ qua (tests/test_auto_order.py chạy trên `git archive rel-2.4.11`). Lệnh mới `stock_reorder` (không tốn giờ tiệm). check_task_compat OK. Có gì mới: một dòng 🔁 (đang gắn vào mục 2.4.11; đánh số lại khi phát hành).
 
@@ -529,18 +533,18 @@ Gồm chua (đi chùa từng bước, gọn đẹp) và profnghe (hồ sơ gọn
 
 Gồm mapart (bản đồ 2.5D và cổ điển đẹp hơn, chim bay; không đổi vị trí cửa/đường) và treasure-free (rương kho báu không giới hạn mỗi đợt/ngày). Không có Có gì mới.
 
-# Chưa phát hành — mapart (không có Có gì mới)
+## mapart (không có Có gì mới)
 
 - Bản đồ đẹp hơn (chủ game “map đẹp hơn đi”), không đổi chỗ nào, cửa, đường đi hay vùng chạm. Phố 2.5D: cỏ có khóm cỏ, hoa nhỏ, sỏi và mảng nắng/bóng; đường có viền cỏ, lòng đường sáng hơn ở giữa và đá viền; bóng dưới nhà mềm hơn (bỏ vệt xám to). Tất cả nằm trong ảnh nền đã lưu sẵn, không tốn thêm gì mỗi khung hình; chi tiết nhỏ tắt khi thu nhỏ hết cỡ. Bản đồ phố cổ điển: bãi cỏ, hàng cây và mái nhà phía sau, vỉa hè lát gạch, lề đường, lối đi giữa hai mép cỏ, đèn lồng đỏ ở các cột đèn, tên phố trên đường mờ hơn, dấu x3 trên biển chỉ còn một chấm 🔥 (số x3 vẫn ở thanh trên); trên điện thoại, đủ ba nút ở thanh trên thì ẩn chữ “Khu phố” (trước bị che còn một chữ cái). Thỉnh thoảng có một đàn chim bay ngang (cả hai bản đồ): không có vòng lặp khung hình, tắt khi giảm chuyển động, tab ẩn hoặc đang ở trong nơi làm việc. Đo trên Chrome giả lập CPU chậm 4×: thời gian mỗi khung hình không đổi; dựng lại ảnh nền (thỉnh thoảng khi kéo bản đồ) chậm hơn khoảng 2–5 ms (2.5D) và 5–15 ms (cổ điển, một lần mỗi cỡ màn).
 
-# Chưa phát hành — treasure-free
+## treasure-free
 
 Rương kho báu bản đồ 2.5D: bỏ giới hạn 1 rương/đợt và 5 rương/ngày (chủ game 14/10 "mỗi người nhặt thoải mái"); rương nhặt xong biến mất với mọi người, ai tới trước nhặt trước. Vẫn cần tài khoản đủ 1 ngày tuổi và đứng gần rương.
 
-# Chưa phát hành — daygate
+## daygate
 
 Ngày thực đạt chuẩn (Mở rộng nghề, Chuyên môn nghề) được tính NGAY khi đạt (≥3 việc sạch, ≥80%; mốc có hợp đồng: thêm ca quản lý nghiệm thu), mỗi ngày lịch một lần, lỗi sau đó trong ngày không trừ; không còn chờ 0h. Mốc đầu cần 2 ngày thực thay vì 3. Dòng sống “Hôm nay: x/y việc sạch · đã tính ✓ / còn N việc sạch nữa” ở Mở rộng nghề, Chuyên môn, Tay nghề lâu năm và hàng “ngày tốt” Thăng tiến. Bản lưu: khóa tùy chọn `careers.<nghề>.scale_credit` (2.4.8 đọc được, bỏ qua). Không có Có gì mới.
-# Chưa phát hành — chua (không có Có gì mới)
+## chua (không có Có gì mới)
 
 - 🛕 Đi chùa gọn và đẹp hơn (chủ game “nhìn lộn xộn quá”): đầu cảnh một dòng (Rằm · cơm chay · thanh tinh thần), khu chùa thành nút nổi trên cảnh, thanh bước đi lễ dưới cảnh 🪔 Thắp hương → 🙏 Khấn → 📜 Lời chúc → 💌 Chia sẻ (chạm là tự đi tới, kể cả qua cửa khu khác; ✓ khi đã làm hôm nay) và 🧭 Quanh đây cho các chỗ còn lại; khấn và lời chúc hỏi từng câu một (cho ai → mong gì, chỉ hiện điều hợp → đọc lại), lời chúc xem trước như mảnh giấy đỏ, sau khi treo có nút “Chia sẻ lên bảng chung”; mỗi khung một nút chính (“Tiếp: …” dẫn sang bước sau), lời giới thiệu vào “?”; trên máy tính khung nằm bên phải và cảnh trượt sang để còn thấy nhân vật; tiếng chuông nhỏ khi thắp hương/treo lời chúc, “✨ +n” bay lên trên nhân vật. Luật, phần thưởng, dữ liệu lưu không đổi; chỉ giao diện (check_task_compat OK).
 # (chưa phát hành) — profnghe
@@ -571,25 +575,25 @@ Quầy: nhập hàng mỗi lần mặc định 200 phần (trước 5, chủ gam
 
 Gồm fb374 (nút nâng sức chứa kho riêng, giá nail ×2,5 — góp ý #374 #375 #378), bmrank (Bảng vàng chợ đen cộng lại tiền phạt đã hoàn, phạt công an người chơi cập nhật ngay; scripts/fair_board_recompute.py), tile-match (🧩 Ghép ba Phố Mây, journey.tile tùy chọn, phúc lợi +0,2 %/màn tối đa +20 %).
 
-# Chưa phát hành — declutter (không có Có gì mới)
+## declutter (không có Có gì mới)
 
 - Bớt chữ nhỏ cho người mới (chủ game “xóa bớt các chữ nhỏ kia đi”, góp ý #384): giao diện 2.5D bật “Giao diện gọn” ở mọi cỡ màn (trước chỉ điện thoại; Cài đặt → Giao diện vẫn Tắt được); Hành trình bỏ dòng lý do chung chung trên nút, nhãn nhóm nghề trên thẻ, “Mới mở” ở chương 1, “vắng chủ không tốn phí”, chip “📉 Lãi thấp”, dòng gợi ý danh hiệu, dòng “Học rồi thi…”; Kho bỏ dòng khóa 🤖 Tự nhận hàng khi chưa có Bộ đếm kho · Bậc 5, giờ mở cửa và đơn vị dưới từng ô (vào tooltip), dòng “nâng sức chứa trước”; tạp hóa: cách nhập & sức chứa vào “?”; tủ kính tiệm bánh, thẻ Giới thiệu nghề tiệm áo, mục nhiệm vụ HUD và cần điều khiển gọn chữ hơn; hộp hỏi giao diện ngắn lại. Lý do nút bị khóa, giá, tiền, hạn giữ nguyên. Chỉ giao diện; việc sinh nhiệm vụ không đổi. check_word_caps: Kho ≤ 66 chữ (trước 67–79), màn làm việc bảo mẫu/tiệm bánh/tạp hóa ≤ 22.
 
-# Chưa phát hành — fb382 (không có Có gì mới)
+## fb382 (không có Có gì mới)
 
 - Ngày thực đạt chuẩn (góp ý #382, #383; Mở rộng nghề và Chuyên môn nghề): việc khách giữ lại từ ngày nghề trước, làm xong hôm nay nay được tính vào việc sạch và ngày thực (trước đây bị bỏ qua: một tiệm quần áo mất 5 việc, 4 việc sạch trong ngày 14/10). Dòng điều kiện hiện tiến độ hôm nay (“Hôm nay: 16/18 việc sạch · đạt, cộng lúc 0h”) và “Cách tính ?” (ngày lịch 0h–24h giờ Việt Nam, ≥3 việc tự làm không lỗi, ≥80% sạch, từ mốc 2 thêm ca quản lý nghiệm thu; khác ngày đạt chuẩn của Tay nghề). Nút bị khóa ghi “Cần thêm N ngày thực đạt chuẩn.” thay cho câu sai “Ngày thực đạt chuẩn đã kết thúc”. Tay nghề lâu năm giữ luật cũ, dòng ngày đạt chuẩn ghi rõ “Ngày nghề có ≥3 việc sạch, ≥80%; cộng khi khép ca”. Save không đổi dạng; bản cũ vẫn đọc được.
 - Đảo chung, nhặt rương cho người dùng trình đọc màn hình (góp ý #381): nút “📋 Danh sách rương” ở đầu màn liệt kê mọi rương, gần nhất trước (“Rương 1 · cách khoảng 12 bước”), mỗi dòng có nút “Đi tới và nhặt” tự đưa nhân vật tới rương và nhặt theo đúng đường chạm rương (máy chủ vẫn xác minh vị trí). Kết quả và lỗi được đọc qua vùng thông báo; danh sách tự cập nhật mỗi giây mà không làm mất tiêu điểm, nhớ trạng thái mở cho lần sau và khi mở sẵn thì tiêu điểm vào danh sách thay vì bản đồ. Chưa dịch tiếng Anh (cả màn đảo chưa có bản dịch).
 
-# Chưa phát hành — wk244 🤖 Tự nhận hàng (góp ý #326 #333 #361; Có gì mới: chủ game quyết định)
+## wk244 🤖 Tự nhận hàng (góp ý #326 #333 #361; Có gì mới: chủ game quyết định)
 
 - 🤖 Tự nhận hàng: có 📦 Bộ đếm kho · Bậc 5 của nghề (đã bán, giá giữ nguyên) thì thùng hàng tới cửa được máy chủ tự đếm và nhập kệ, đúng như một lần đếm đúng: đủ số thực có, mỗi đơn thành một lô theo giá vốn của đơn, đơn gộp nhận cả thùng một lần; giao thiếu thì tự khiếu nại theo cùng đường hoàn tiền của nút “Khiếu nại phần thiếu” (một lần). Thùng không vừa kệ vẫn chờ ở cửa như trước. Chạy sau mỗi thao tác của nghề và khi tải game (hàng về lúc vắng mặt lên kệ trước khi người chơi xem). Áp dụng cả quầy mẹ & bé / nhà thuốc (kiện cũ), vật tư hợp đồng và vật tư chuyên môn (giữ giá vốn từng lô, FIFO). Sổ nghề ghi “📦 Tự nhận N món: …”.
 - Bảng Kho có công tắc “🤖 Tự nhận hàng: Bật/Tắt” (mặc định Bật khi đã mở; tắt thì quay về đếm tay); chưa mở thì hiện một dòng khóa nêu Bộ đếm kho · Bậc 5. Khóa save tùy chọn `careers.<nghề>.auto_stock = false` chỉ có khi người chơi tắt; 2.4.3 vẫn nhận save có khóa này (đã kiểm bằng git archive rel-2.4.3). Việc sinh nhiệm vụ không đổi.
 
-# Chưa phát hành — wk244 Top lời theo tuần (không có Có gì mới: thay đổi chợ đen)
+## wk244 Top lời theo tuần (không có Có gì mới: thay đổi chợ đen)
 
 - Bảng vàng chợ đen: Top lời tính theo tuần như Top lỗ (chủ game 14/10), cùng sổ `fair_loss_week`, cùng tuần thứ Hai 00:00. Lời ròng tuần cộng tiền phạt được hoàn (`refund-cd-…`) trả vào save trong tuần, một lần. 👑 Vua trò chơi / 🎪 Cao thủ chợ đen trao thứ Hai từ 19/10 theo tuần vừa qua, cùng lúc với Top lỗ, không trao hai lần. Dải người chơi vẫn hiện “lời tích lũy cả chợ”. Schema 43 chỉ thêm chỉ mục. `scripts/fair_board_recompute.py --week` cộng các khoản hoàn đã trả trong tuần trước bản này (chạy thử mặc định).
 
-# Chưa phát hành — fb374 (không có Có gì mới)
+## fb374 (không có Có gì mới)
 
 - Kho (góp ý #375, #378): bảng Kho có riêng nút “Nâng sức chứa lên …” (Thiết bị → Sức chứa kho nghề) bên cạnh “Nâng nhập mỗi dòng”; trước đây chỉ có nút hạn mức nhập 80 → 120 nên người chơi mua nhầm tưởng là sức chứa. Khi một dòng đã nhập đầy kệ, bảng Kho không mời mua thêm hạn mức nhập; Thiết bị ghi rõ kho đang chứa bao nhiêu. Báo “Kho chứa tối đa …”/“Kệ … không đủ chỗ” chỉ chỗ nâng sức chứa. Không đổi giá, quyền đã mua hay dữ liệu bản lưu.
 - Tiệm nail (góp ý #374): giá dịch vụ ×2,5 (cắt dũa 10, sơn thường 20, sơn gel 38, tháo gel 12, nối móng 50, French 10, vẽ hoa 12, đính đá 10, chăm da tay 15). Ngày 4–7 trước đây trung vị 20 xu/ngày, lỗ nhẹ, so với chăm thú cưng 60, chụp ảnh 73, salon 215. Bảng giá đã lưu theo giá cũ (kể cả giá tự chỉnh 75–125%) chuyển sang cùng vị trí trong khung giá mới một lần khi tải; đơn riêng mặc định của nhân viên nail 12 → 30 xu (= cắt dũa + sơn thường). Không đổi dữ kiện nhiệm vụ; không thêm khóa bản lưu, bản cũ đọc giá mới như giá thường.
@@ -598,7 +602,7 @@ Gồm fb374 (nút nâng sức chứa kho riêng, giá nail ×2,5 — góp ý #37
 
 - Bảng vàng chợ đen (Top lời) tính đúng lời ròng: tiền phạt chợ đen đã được hoàn bằng quà hệ thống (mã `refund-cd-…`, 8 người chiều 11/10, 18.538.100 xu) được cộng lại vào điểm (game/fair_refund.py; save không đổi); phạt của công an người chơi (và mọi thay đổi qua marriage._mutate) cập nhật ngay dòng bảng và sổ Top lỗ tuần trong cùng giao dịch, không còn chờ lệnh kế của người bị phạt. Tính lại dòng bảng hiện có: `scripts/fair_board_recompute.py` (mặc định chạy thử, `--apply` để ghi). Không công bố, không đổi schema hay save.
 
-# Chưa phát hành — tile-match (Có gì mới: 1 dòng, bản phát hành quyết định số bản)
+## tile-match (Có gì mới: 1 dòng, bản phát hành quyết định số bản)
 
 - 🧩 Ghép ba Phố Mây (thiết kế của chủ game): trò ghép ba kiểu Tile Master ở Khu phố và trên Bản đồ phố. 100 màn có độ khó tăng dần (thêm loại đồ, tầng, chồng úp, khay sát hơn, hình trái tim/ngôi nhà/chùa/hải đăng…; từ màn 40 có 🔒 khóa cần 🔑, từ màn 55 có 🧊 băng chạm hai lần). Mỗi màn là seed + tham số (game/tile_match_levels.py, dựng bằng scripts/build_tile_levels.py), đã kiểm bằng bộ giải; 4 trợ giúp (hoàn tác, xáo, đẩy ra, thêm ô) miễn phí vài lượt mỗi ngày, sau đó trả xu, giá gấp đôi mỗi lần trong màn. Mỗi màn MỚI qua lần đầu: +0,2% tiền kiếm từ làm việc và kinh doanh (tối đa +20%), ghi thành dòng riêng "🧩 Phúc lợi" ở tiền làm việc, lương, đơn nhân viên, quầy, hợp đồng/chuyên môn và hoa hồng nước ngoài; không áp dụng cho lãi ngân hàng, Mây Coin, vàng, chợ đen, kéo co, đấu giá, chuyển khoản, quà và thu hồi; không nhân lại trong ngày x3. Máy chủ chơi lại các nước đi theo seed để xác nhận thắng, tối thiểu 20 giây/màn và 0,25 giây/lần chạm, tối đa 15 màn mới mỗi ngày. Bản lưu: journey.tile (tùy chọn, 2.4.2 giữ nguyên); không DDL; dữ kiện nhiệm vụ không đổi.
 - Có gì mới (đề xuất): 🧩 Ghép ba Phố Mây: 100 màn ở Khu phố. Mỗi màn mới qua lần đầu, tiền làm việc và kinh doanh +0,2%, tối đa +20%!
@@ -751,7 +755,7 @@ Lời đáp góp ý của admin tối đa 10.000 ký tự (trước 300), chủ 
 
 Gồm dog-bark-fix: dây chỉ nhích khi có tiếng sủa thật (cả hai bên), cả hai im thì hòa; đo nền ồn, tắt khử vọng; chó nhà Mây sủa thành tiếng mỗi lần kéo. Không có Có gì mới.
 
-# Chưa phát hành — dog-bark-fix (không có Có gì mới)
+## dog-bark-fix (không có Có gì mới)
 
 🐕 Kéo co chó sủa: **phải sủa mới tính**, cả hai bên (chủ game 10/10 "chó sủa sao nhiều trận không thắng", "có trận tự thắng mà không cần sủa"). Lỗi cũ: chó nhà Mây kéo liên tục cả lúc không phát tiếng (tiếng chỉ phát khi lực ≥ 35, lực "sủa một mình" 22–34 nên dây trôi mà không nghe sủa); dây chạy hết nửa sân trong ~2 giây; mic bật khử tiếng vọng nên giọng người chơi bị dìm đúng lúc chó sủa; không trừ tiếng ồn nền nên phòng ồn tự kéo dây.
 - Chó nhà Mây chỉ kéo **trong lúc sủa**: mỗi tiếng sủa server gửi `bark_dog` trước, trang phát tiếng chó thật đúng lúc đó (tắt tiếng 🔇 thì hiện bong bóng "GÂU!" to). Sức chó rút ngẫu nhiên mỗi trận, có nhịp (dồn dập, nghỉ, lấy hơi, mệt), không bám theo người chơi, không trôi.
@@ -765,7 +769,7 @@ Không đổi DDL, không khóa save mới, không đổi tiền/kèo. Kiểm tr
 
 Gồm dog-bark (🐕 Kéo co chó sủa, bật bằng LIVE_DOG_BARK=1 cho cả mot-ngay-lam-nghe và mnl-live; schema 34: bark_tickets; kind thanh toán 'bark'), và sweeper không theo dấu tiền tài khoản admin.
 
-# Chưa phát hành — dog-bark (Có gì mới: 1 dòng, bản 1.9.41)
+## dog-bark (Có gì mới: 1 dòng, bản 1.9.41)
 
 🐕 **Kéo co chó sủa** (chủ game 10/10): trò riêng ở Khu phố và trên Bản đồ phố (cạnh Phòng hát), không thuộc chợ đen (không công an chợ đen, không Lộc trời cho, không Bảng vàng). Đặt cược từ 100 xu tới mức ví trả được (giữ cược trước trận), bấm "Tìm đối thủ": ghép ngẫu nhiên người cùng mức cược, không bao giờ ghép hai máy cùng IP (băm có muối, chỉ trong bộ nhớ live), cùng hai người tối đa 3 trận liên tiếp (reset khi cả hai đấu người khác hoặc sau 2 giờ). Sau 20 giây không có ai thì tự đấu với **🐕 Chó nhà Mây · <tên>** (giống và tên ngẫu nhiên mỗi trận, ghi rõ là chó của game, không có hồ sơ người chơi). Sợi dây có cờ ở giữa, ai sủa to hơn (độ to từ mic, chỉ gửi con số, không gửi âm thanh) kéo cờ về phía mình; tới vạch là thắng, hết 45 giây dây lệch bên nào bên đó thắng, giữa là hòa. Thoát hoặc mất kết nối quá 10 giây là thua.
 💰 Thắng ăn cả hai phần cược (hệ thống trả, phí 0 %); hòa trả cược; thắng chó nhà Mây nhận ×2, thua thì mất cược. Tiền về ví qua live_effects loại 'bark', mỗi vé trả đúng một lần (UPDATE có điều kiện + một dòng trả tiền, lật 'applied' trong giao dịch của save). Vé chờ quá 5 phút / kẹt trận quá 10 phút (live khởi động lại) tự hoàn cược.
@@ -773,7 +777,7 @@ Gồm dog-bark (🐕 Kéo co chó sủa, bật bằng LIVE_DOG_BARK=1 cho cả m
 👀 Người khác xem trận đang kéo và ném 👏🔥. 👑 "Vua sủa" tuần: người lời nhiều nhất tuần hiện ở sảnh (không cấp danh hiệu vào save để rollback an toàn).
 Kỹ thuật: game/dog_bark.py, live/dog_bark.py, public/js/v4/dog-bark.js; công tắc LIVE_DOG_BARK (cả game server: header microphone=(self) và lệnh jr_bark_join; cả live). SCHEMA_VERSION 34: bảng bark_tickets (chỉ thêm). Không có khóa save mới. Bản 1.9.40 rollback: bỏ qua dòng 'bark' (đợi bản mới trả), scripts/dog_bark_rollback_check.py OK.
 
-# Chưa phát hành — chat-head (không có Có gì mới)
+## chat-head (không có Có gì mới)
 
 💬 Đầu khung nhắn riêng hết vỡ (chủ game 10/10 "UI lỗi nè"): tên không còn bị cắt nửa trên, danh hiệu không còn thành cột chip 1 chữ và "+N" không còn đè lên tin nhắn (đầu khung bị co lại khi cuộc trò chuyện dài; giờ giữ nguyên chiều cao). Tên một dòng, dưới là "Đang online" + 1 danh hiệu (2 khi khung ≥ 520 px) + "+N" ngay trong đầu khung, bấm mở hết; "Ghé chỗ làm", 🔔, "Chặn" xuống hàng riêng khi không đủ chỗ, ✕ luôn ở góc phải. Nhóm và Cả phố cũng không bị co.
 
@@ -781,12 +785,12 @@ Kỹ thuật: game/dog_bark.py, live/dog_bark.py, public/js/v4/dog-bark.js; côn
 
 Gồm couple-race (khóa quỹ chung khi ly hôn/rút, hold thẻ chung chốt cùng save, quà tặng không cộng hai lần), mishap kiểu thug/police lấy quỹ tiệm + sweeper theo dấu tiền + bảng tài phú cập nhật, hoa hồng tiệm quần áo nước ngoài 40–50 %, thẻ nhập hàng gọn (kho-compact). Không có Có gì mới.
 
-# Chưa phát hành — couple-race (không có Có gì mới)
+## couple-race (không có Có gì mới)
 
 🏦 Quỹ chung không còn bị chi hai lần khi rút tiền đúng lúc ly hôn / xóa tài khoản: mọi thay đổi quỹ (gửi, rút, thẻ chung, hoàn tiền, chia khi chia tay) khóa theo cùng một thứ tự (dòng couples rồi dòng joint_funds), số dư lúc chia đọc dưới khóa; rút sau khi đã chia tay bị từ chối gọn "Hai bạn đã chia tay, quỹ chung đã được chia rồi." (trước đó có thể deadlock hoặc trả thêm tối đa 10 triệu xu).
 💳 Thẻ chung: khoản giữ (held) được chốt 'done' ngay trong giao dịch ghi bản lưu của lệnh mua (couple.commit_holds trong storage._store/_command_locked, marriage._mutate, home_decor.command), nên 60 lần gửi 1 xu đẩy mã khỏi marriage.applied không còn làm hoàn tiền một căn nhà đã mua. Khoản giữ đã bị hoàn (void) thì lệnh mua bị từ chối 'expired', không bao giờ vừa có nhà vừa được hoàn. Điểm hạnh phúc (couple_stats) đọc-ghi dưới khóa dòng.
 🎁 Phố nghề: tặng quà khóa theo người tặng (pg_advisory_xact_lock), hai lần bấm cùng lúc chỉ ra một món quà (trước đó người nhận được cộng xu hai lần). Không DDL, không khóa save mới.
-# Chưa phát hành — kho-compact (không có Có gì mới)
+## kho-compact (không có Có gì mới)
 
 📦 Thẻ "Nhập …" trong Kho & nhập hàng gọn lại (chủ game 10/10 "dài quá, dài dòng quá"; mọi nghề có kho dùng chung thẻ này): 113–131 chữ còn 26–31, cao ~1.150 px còn ~560 px trên điện thoại 360 px. Số liệu thành biểu tượng (📦 16/80 · 55 xu/cái · ⏳ 20 ngày); hóa đơn một dòng "275 xu · sỉ −4% · nhận ~10:15" (tag ship chỉ khi mất phí); lý do không đặt được (thiếu quỹ, kệ đầy, đủ xe đang về) vẫn hiện chữ đỏ ngay dưới, nút Đặt ngay mờ kèm lý do + nút sửa ("Lấy 5"); nhà cung cấp thành hàng một dòng (Chợ đầu mối / Hạt Nắng / Hỏa tốc · giờ · ×giá); giờ giao & điều kiện từng nơi và đoạn "Trả tiền khi đặt…" vào nút "?" của thẻ; nút Thêm vào đơn / Đặt ngay nằm trong thanh dùng chung (.ui-bar). Điện thoại: đầu sheet kho chỉ hiện Quỹ tiệm (ví không trả tiền nhập hàng) để tiêu đề không bị cắt. Size quần áo thành chip một dòng; nhóm hàng quần áo có tên tiếng Việt (Áo, Quần & chân váy…). Chip số lượng bấm sau khi gõ số giờ đổi đúng số. `check_word_caps.py --kho` giữ thẻ ≤ 35 chữ ở 360 và 390 px.
 
@@ -794,18 +798,18 @@ Gồm couple-race (khóa quỹ chung khi ly hôn/rút, hold thẻ chung chốt c
 
 Gồm góp ý #303 (quay-fix: mở rộng quầy khi có tình huống chờ, tên quầy che từ không còn invalid_save), #307 (share-deco: journey.decor_stay tùy chọn), #304 (teacher-grades: lớp 2–5, ext.data.homeroom, task.grade_room tùy chọn), #306 (clothing-abroad: tasks abroad tùy chọn).
 
-# Chưa phát hành — hoa hồng tiệm quần áo ở nước ngoài
+## hoa hồng tiệm quần áo ở nước ngoài
 
 - Seoul 20→40 %, Osaka/Lyon 25→45 %, Melbourne 30→50 % doanh thu mỗi ngày (chủ game 10/10). Hợp đồng đang chạy giữ mức cũ (pct lưu lúc nhận).
 
-# Chưa phát hành — quay-fix (không có Có gì mới)
+## quay-fix (không có Có gì mới)
 
 🏗️ Mở rộng quầy (#303): tình huống chủ tiệm và việc của nhân viên đang chờ không còn chặn mở rộng (chúng vẫn chờ nguyên); chỉ còn ca tự đứng quầy đang mở và tình huống chỉ xe đẩy mới có (kiểm tra chỗ đặt xe) chặn. Nút Mở rộng mờ kèm lý do ngay khi chưa làm được (quay.grow_busy, `grow[].why` chỉ là trường hiển thị).
 🏪 Tên quầy có từ bị che (••• dài hơn từ 2 chữ) hoặc ký tự điều khiển ở cuối không còn bị từ chối với lỗi "Dữ liệu quầy trong bản lưu không hợp lệ": tên được cắt lại 24 ký tự và bỏ khoảng trắng hai đầu. Khi kiểm tra quầy từ chối một bản lưu, log server ghi một dòng `[quay-invalid] <tệp>:<dòng>` (không có dữ liệu người chơi).
-# Chưa phát hành — teacher-grades (F#304, Có gì mới 1.9.38)
+## teacher-grades (F#304, Có gì mới 1.9.38)
 
 🏫 Giáo viên lớp 2–5 (game/teach_grades.py): mở theo cấp nghề (lớp 2 cấp 2, lớp 3 cấp 4, lớp 4 cấp 6, lớp 5 cấp 8). Cô Hiệu trưởng mời nhận lớp ở đầu tiết (Nhận / Ở lại), đổi lớp trong Kế hoạch lớp (1 lần/ngày). Mỗi lớp 8 bài theo GDPT 2018 (Toán, Tiếng Việt, TN&XH / Khoa học / LS&ĐL) có câu hỏi giơ tay; khoảng 2/3 tiết có một tin nhắn khó chịu (Zalo 22 giờ, quỹ lớp, dạy thêm, xin đề, sửa học bạ, nộp giáo án mẫu mới…), trả lời sai thành phản ánh của phụ huynh. Mỗi lớp trên lớp 1 +5 xu/tiết. Lớp 1 và mọi công việc sinh ra không đổi (task-compat OK). Khóa mới tùy chọn: ext.data.homeroom {g, seen, day} của nghề giáo viên, task.grade_room (tiết lớp 2–5; bản 1.9.37 bỏ qua, coi tiết là chưa bắt đầu).
-# Chưa phát hành — clothing-abroad (góp ý #306)
+## clothing-abroad (góp ý #306)
 
 👗 Shop quần áo đi nước ngoài (game/clothing_abroad.py): ở 🌏 Đi làm nước ngoài có thêm Tiệm Áo Chỉ Mây ở Seoul, Osaka, Lyon, Melbourne (phục vụ đủ 12 khách ở nhà, Chị Vy bao vé, 4–6 ngày, hoa hồng 20–30% doanh thu quầy mỗi ngày có khách vào quỹ tiệm; các nơi làm khác tạm nghỉ như hợp đồng làm thuê). Vẫn là game tiệm áo cũ, khách là người địa phương: tên, lời chào, size kiểu Hàn (55/66, 90/95, tuổi Hàn), Nhật (7号/9号, M/L/LL/3L, cm), Pháp (EU 36/46), Úc (AU 8, vòng ngực inch) với 📏 bảng quy đổi ở quầy; 22 thói quen khó chiều (xin “service”, khăn che mặt phòng thử, miễn thuế, “Bonjour” trước, túi giấy, UPF, “change of mind”…) phải trả lời trước khi chốt bill, câu “tùy tính khách” do tính ẩn quyết định, trả lời sai là lỗi như mọi lỗi khác. Sinh việc không đổi (check_task_compat OK với 1.9.37). Khóa save mới tùy chọn: task tiệm áo `abroad` {to, ask, ans, ok}; hợp đồng journey.abroad.work với career 'clothing', emp None, fee 0 (bản 1.9.37 thấy không có việc làm thuê nên kết thúc hợp đồng, không mất xu).
 
@@ -813,12 +817,12 @@ Gồm góp ý #303 (quay-fix: mở rộng quầy khi có tình huống chờ, t�
 
 Gồm exploit-fixes (nhập bản lưu, reset nơi làm, phóng dao, kế toán × x3, bỏ ngày ăn lương/tiền thuê, ném vòng, giới hạn chuyển tiền tài khoản mới), ong-hai-hard (journey.fair_hai), hot-career (lãi nhân viên theo thị trường + nghề hot), mishap: kiểu police, bán coin. Khóa mới tùy chọn: journey.fair_day, journey.fair_hai.
 
-# Chưa phát hành — share-deco (góp ý #307: ở chung, ở trọ cũng tự trang trí)
+## share-deco (góp ý #307: ở chung, ở trọ cũng tự trang trí)
 
 🏡 Người ở chung (lời mời "Ở chung") bấm 🪴 Dọn đồ sang ở là bày nhà bạn như nhà mình: tự mua, đặt, dời, xoay, bán, sơn tường/sàn bằng túi và ví của mình (khóa tùy chọn journey.decor_stay, chỗ ở deco 'stay'; tường/sàn chỉ hiện ở góc nhìn của người ở chung). Chủ nhà, vợ/chồng và người ở chung thấy đồ của nhau (chỉ xem, không ai bán/dời đồ người khác). Rời nhà, bị thu hồi, hết là bạn hay chủ nhà dọn đi: đồ về túi, cách bày giữ trong decor_away. Ở trọ/thuê nhà người chơi: vẫn tự bày như cũ, ghi chú rõ hơn. Sửa: về lại chỗ cũ thì món đã xoay vẫn xoay. 1.9.37 đọc được (bỏ qua khóa mới, đồ về túi; quay lại bản này thì bày lại như trước).
 Có gì mới (gợi ý cho bản phát hành): 🏡 Ở chung nhà bạn hay ở trọ đều tự mua, bày, bán đồ của mình như nhà mình. Ở chung: Mời bạn → 🪴 Dọn đồ sang ở.
 
-# Chưa phát hành — exploit-fixes (không có Có gì mới, deploy lặng lẽ)
+## exploit-fixes (không có Có gì mới, deploy lặng lẽ)
 
 💾 Nhập bản lưu (game/save_guard.py): save của tài khoản không nhập được nữa (chỉ admin khôi phục); khách chỉ nhập bản xuất nguyên vẹn của máy chủ (chữ ký HMAC `sign` trong tệp, khóa SAVE_SIGN_SECRET, thiếu thì lấy từ DATABASE_URL), không cũ hơn và không nhiều xu hơn save hiện tại. Mỗi lần nhập một dòng `[import]` trong log. Nút Nhập bản lưu tắt cho tài khoản.
 🔁 Bắt đầu lại nghề (hành trình): quỹ nơi làm việc giữ nguyên, tối đa 320 xu (không còn nạp lại 320 để rút tiếp). reset_career được tính vào KPI kinh tế.
@@ -835,17 +839,17 @@ Có gì mới (gợi ý cho bản phát hành): 🏡 Ở chung nhà bạn hay �
 
 Gồm bank-exploit phần 1: lãi theo giờ thật (1 giờ = 1 ngày lãi, tối đa 168; journey.iclock tùy chọn), tái tục tối đa 10M gốc, tài khoản dưới 7 ngày thật chuyển tối đa 500k/ngày, log [day-skip]. Không có Có gì mới.
 
-# Chưa phát hành — bank-exploit (phần 1: lãi theo giờ thật)
+## bank-exploit (phần 1: lãi theo giờ thật)
 
 ⏱️ Lãi chạy theo giờ thật (chủ game 09/10, lỗ hổng bỏ trống ngày để ăn lãi): 1 giờ đời thực = 1 ngày tính lãi, tích tối đa 168 ngày (game/interest_clock.py). Ngày kết thúc vượt hạn mức vẫn trôi (hóa đơn, nợ, thẻ chạy như cũ) nhưng không có lãi: sổ không kỳ hạn, sổ có kỳ hạn (trừ ngày đó khỏi kỳ, cả khi tất toán sớm) và sổ tiết kiệm Đầu tư. Mây Coin không đổi. Khóa save mới tùy chọn journey.iclock; con trỏ ngày của ngân hàng/đầu tư vẫn chạy như cũ nên rollback về 1.9.36 không trả bù.
 🔁 Tái tục: gốc gửi tiếp tối đa 10.000.000 xu (bank.RENEW_MAX), lãi và phần gốc vượt về tài khoản thanh toán (hết lãi kép vô hạn).
 💸 Tài khoản dưới 7 ngày đời thực chuyển khoản tối đa 500.000 xu mỗi ngày (bank_xfer.NEW_DAY_MAX).
 🚨 Save kết thúc hơn 150 ngày trong một ngày đời thực: một dòng "[day-skip]" trong log server.
-# Chưa phát hành — 👴 Ông Hai khó hơn, công an ở bàn Ông Hai (chủ game 09/10; ghi chú nội bộ, không đưa vào "Có gì mới")
+## 👴 Ông Hai khó hơn, công an ở bàn Ông Hai (chủ game 09/10; ghi chú nội bộ, không đưa vào "Có gì mới")
 
 👴 Nguyên nhân: Ông Hai 1.9.36 tìm theo số nước cố định nên cùng bàn luôn đi cùng nước; uid 5952/5226 chỉ lặp 2 đường đi 39 nước (mỗi cách Ông mở một đường), thắng 502/532. Giờ: mở ô giữa (9, hai chiều), mỗi nước bốc thăm trong các nước gần bằng nước tốt nhất (KHO_SPREAD), tìm nhanh gấp đôi mỗi nước (vị trí phẳng, _sow), tối đa KHO_NODES 4000 nước mô phỏng và KHO_MS 35 ms: ~30 ms/nước trên server (trước ~350 ms).
 🚨 Bàn Ông Hai (game/fair_hai.py): thắng 2 ván liền, hoặc 3 ván trong 24 giờ → công an ập vào: thu lại tiền thắng của các ván đó (ví trước, rồi tài khoản ngân hàng, không bao giờ âm), rồi bắt như chợ đen (phạt 30% ví còn lại, trại tạm giữ). Tối đa 30 ván với Ông Hai một ngày. Save mới tùy chọn journey.fair_hai {d, n, s, w}; 1.9.36 giữ nguyên và không đọc. Đột kích 30% ví, kiểm tra tài sản 10%, Lộc trời cho không đổi.
-# Chưa phát hành — 📈 Lãi nhân viên theo thị trường + 🔥 Nghề hot hôm nay (chủ game 09/10)
+## 📈 Lãi nhân viên theo thị trường + 🔥 Nghề hot hôm nay (chủ game 09/10)
 
 - Chỉ đơn riêng của nhân viên (game/workplace_business.py `_finish`) đổi; người chơi tự bán, đơn khách người chơi
   (player_service_tasks) và Bảng giá giữ nguyên. Mới: game/staff_market.py, public/js/market-ui.js.
@@ -949,12 +953,12 @@ Gom một bản các việc từ góp ý người chơi #248–#271 (chủ game 
 
 Gồm kara-sync (người nghe theo video của người hát trừ độ trễ giọng; `kara_vt` qua live, không khóa lưu) và typed-qty (gõ số trong mọi ô − N +, `public/js/qty-input.js`).
 
-# Chưa phát hành — 🎙️ Giọng và nhạc khớp nhau (mic trực tiếp "bị delay xíu")
+## 🎙️ Giọng và nhạc khớp nhau (mic trực tiếp "bị delay xíu")
 
 - Người hát hát theo video của chính họ, giọng tới người nghe trễ hơn (thu, mã hoá, SFU qua TCP, bộ đệm). Nay khi mic bật, máy người hát gửi thời điểm video của mình khoảng mỗi giây (`kara_vt`: thời điểm, tốc độ phát đang chỉnh, vòng mạng; qua máy chủ live, không qua SFU); máy chủ chỉ nhận từ người đang hát có mic, số hợp lệ, tối đa 1 lần/0,6 giây, đóng dấu giờ rồi chuyển cho người đang nghe giọng trong phòng (tôn trọng chặn). Người nghe đang nghe giọng thì video chạy theo video người hát trừ độ trễ của giọng (bộ đệm jitter đo bằng getStats + nửa vòng mạng hai bên + 40 ms; 0–1,5 giây), chỉnh nhẹ tốc độ khi lệch quá 0,12 giây, tua tối đa 2 lần một bài khi lệch quá 0,6 giây. Không có `kara_vt` mới (dưới 3 giây) hoặc không nghe giọng: theo đồng hồ chung như cũ. Người hát đồng bộ như cũ. Đồng hồ chung của phòng đo thêm một lần mỗi 15 giây (giữ lần có vòng ngắn nhất): 5 lần đo lúc vào phòng có thể rơi đúng lúc máy đang bận tải, mà người nghe giờ so đồng hồ của hai máy.
 - Mỗi bài, mỗi người nghe gửi một dòng vào beacon lỗi: "kara_mic sync jb=… rtt=… up=… lag=… off=…" (máy chủ che chữ số nên mỗi số là một chữ cái: a 0–99 ms, b 100–199 ms … p ≥ 1,5 giây; `novt` khi không nhận được thời điểm của người hát).
 - Quay lại bản cũ an toàn: trang cũ bỏ qua `kara_vt`; máy chủ live cũ trả 'unknown' thì trang mới thôi gửi và không báo lỗi. Không thêm khoá lưu, không đổi CSDL.
-# Chưa phát hành — Gõ số thay vì bấm + (chủ game 07/10: "cho nhập số nhé")
+## Gõ số thay vì bấm + (chủ game 07/10: "cho nhập số nhé")
 
 - Con số giữa − và + giờ là ô gõ được (`public/js/qty-input.js` `qtyBox`, docs/UI_KIT.md "Typed quantity"): bàn phím số,
   chạm vào là chọn cả số, chỉ nhận chữ số (dán "1.000" = 1000), Enter hoặc rời ô thì kẹp vào khoảng cho phép (trống/0 = mức
@@ -977,7 +981,7 @@ Gồm "🔒 Giữ lại cho ca của tôi" (ops.business_keep, business.keep tù
 - Món mà 1.9.11..1.9.17 đặt trên ô thứ 7 của quầy bếp Sông Hồng (quầy nay 6 ô như nhà cũ) vào túi đồ khi tải (`deco._v2_fit`); trước đó validate từ chối cả bản lưu (5 bản lưu thật, bắt được ở bước kiểm tra trước deploy).
 - Chuyển chỗ ở: bố cục chỗ cũ được nhớ trong `journey.decor_away` (3 chỗ gần nhất, tùy chọn), quay về là bày lại; món đã bán thì thôi.
 
-# Chưa phát hành — 🔒 Giữ lại cho ca của tôi (B4 phần 2, góp ý #243, #247)
+## 🔒 Giữ lại cho ca của tôi (B4 phần 2, góp ý #243, #247)
 
 - Kho: chạm một món, dòng "🔒 Giữ cho ca bạn − N +" đặt số tối thiểu (0–999) nhân viên không bán; ô hàng hiện "🔒 N". Nhân viên (và khách người chơi họ phục vụ) dừng món đó khi kho còn đúng N, lý do ghi "🔒 Giữ 5 ly giấy cho ca của bạn."; việc của chủ vẫn dùng hết. Thực đơn nhân viên, trọng số món và cỡ áo đều tính phần giữ (quần áo: bán từ cỡ còn nhiều nhất để phần giữ còn đủ cỡ). Quầy: cùng ô ở tab 📦 Hàng. Thẻ "Lúc bạn vắng" thêm dòng "🔒 Giữ lại 5 ly giấy cho bạn". Khóa tùy chọn `ops.business_keep` / `business.keep` của quầy ({món: 1..999}); không đặt thì như cũ, 1.9.17 nhận và giữ nguyên khóa. Không đổi cách sinh việc.
 
@@ -985,12 +989,12 @@ Gồm "🔒 Giữ lại cho ca của tôi" (ops.business_keep, business.keep tù
 
 Gồm r6-misc: thẻ "Lúc bạn vắng" (ops.business_used tùy chọn), ném vòng cách nhau 2 giây, dòng chữ đấu giá và danh hiệu.
 
-# Chưa phát hành — Mic trực tiếp: người nghe nối được và thấy trạng thái (B3)
+## Mic trực tiếp: người nghe nối được và thấy trạng thái (B3)
 
 - SDK LiveKit tải từ chính máy chủ game (`public/js/vendor/livekit-client-2.22.3.umd.js`, cùng SRI), jsDelivr chỉ còn là dự phòng; mỗi nguồn chờ tối đa 15 giây. Người nghe tải SDK trước rồi mới xin vé, nên mạng chậm không làm hết hạn vé 60 giây. Bản phát hành không nén lại thư mục `vendor/`.
 - Người nghe thấy "🎧 Đang nối giọng…", rồi thanh âm lượng (hoặc "🔈 Chạm để nghe giọng" trên iPhone; chạm bất kỳ đâu trong phòng hát cũng được), hoặc "Chưa nghe được giọng · Thử lại" sau 2 lần tự thử lại. Người hát thấy "🎙️ Đang nối mic…", hoặc "Chưa phát được giọng · Thử lại".
 - Ghi bước dừng vào beacon lỗi (`stat_client_errors`, kind toast, "kara_mic listen|sing <bước>: <mã>"): mod → sdk → token → signal → ice → track → audio (người hát có thêm perm), cả khi người nghe bỏ đi lúc còn chờ hơn 8 giây. Mic tắt vì phòng SFU bị xoá không còn báo nhầm "Mic đã ngắt kết nối".
-# Chưa phát hành — r6-misc (B4 báo cáo lúc vắng, B5 ném vòng, WP-5 chữ)
+## r6-misc (B4 báo cáo lúc vắng, B5 ném vòng, WP-5 chữ)
 
 - 🧾 Lúc bạn vắng (B4, góp ý #243, #247): quay lại nơi làm hay quầy sau ít nhất 5 phút, nếu nhân viên đã bán thì hiện
   một thẻ: "Lúc bạn vắng: nhân viên bán 37 đơn, dùng 37 ly giấy, 37 hạt… · lãi 1.240 xu", bấm "Xem chi tiết" để xem
@@ -1320,7 +1324,7 @@ nhiều thứ để mua" (luxury-sinks) và nghề mới "Bán album ZPOP" (care
   hiệu hội chợ, nhận danh hiệu qua live_fx) và `honours_lb` (làm mới bảng tuần, chốt tuần thứ Hai) để cập nhật ngay;
   tuần đã hết thì chip tự mất. Không thêm truy vấn mỗi tin nhắn. Client cũ bỏ qua `tt`, `ti` giữ nguyên chữ.
 - Không thêm khóa bản lưu, không đổi DDL.
-# Chưa phát hành — Phòng điều hành bay, lộ trình kế toán, tạp hóa, ghim nội thất (fix-office-misc)
+## Phòng điều hành bay, lộ trình kế toán, tạp hóa, ghim nội thất (fix-office-misc)
 
 ## Phòng điều hành bay (F#223)
 
@@ -1520,7 +1524,7 @@ Gồm "Giao diện gọn hơn" (ui-foundation + đợt 1: 10 màn, giữ đủ m
 # v1.9.6 — 2026-10-07
 
 Gồm "Thêm chỗ tiêu xu" (spend-1, bảng donations + chat_style, schema 25) và "Phòng hát Mây" (karaoke-p1, schema 26, TẮT mặc định: LIVE_KARAOKE). CSP mở cho YouTube embed. Có gì mới chỉ nói phần tiêu xu; karaoke thông báo khi bật.
-# Chưa phát hành — Giao diện gọn (ui-foundation)
+## Giao diện gọn (ui-foundation)
 
 ## Giao diện gọn hơn
 
@@ -1541,7 +1545,7 @@ Gồm "Thêm chỗ tiêu xu" (spend-1, bảng donations + chat_style, schema 25)
 
 Gồm các mục "Chưa phát hành" bên dưới: nông trại mới (farm-plus), mỗi nghề một cách nói (voice-w1), nghề làm công không đóng thuế tiệm (salary-notax).
 
-# Chưa phát hành — Nghề làm công không đóng thuế tiệm (salary-notax)
+## Nghề làm công không đóng thuế tiệm (salary-notax)
 
 ## Nghề làm công không đóng thuế tiệm
 
@@ -1549,7 +1553,7 @@ Gồm các mục "Chưa phát hành" bên dưới: nông trại mới (farm-plus
 - Từ ca khép tiếp theo: không cộng tiền thuê mỗi ngày, cuối kỳ 7 ca không ra phong bì thuế và mặt bằng, không có thông báo "Kết kỳ thuế". Phần đã tích trong kỳ đang mở cũng không bị thu. Khoản thuế và mặt bằng đã ra (đã trả hay chưa trả), các kỳ đã kết và sổ giao dịch cũ giữ nguyên: không hoàn, không truy thu. Điện nước, lương nhân viên vẫn như cũ.
 - Sổ thu chi của các nghề này ẩn "Phong bì cuối kỳ" (doanh thu kỳ, thuế dự kiến, tiền thuê tích lũy); thẻ Mặt bằng không ghi tiền thuê; tổng kết ngày không còn dòng "thuê … xu".
 - Đo bằng cách chơi cẩn thận 14 ngày ở mặt bằng mặc định: điều dưỡng, công an, cứu hộ, cứu hộ hồ bơi, gác chắn, hải đăng được thêm khoảng 7,6 xu mỗi ngày (6 xu thuê + ~1,6 xu thuế), thợ dầu khí 7,9 xu; mặt bằng lớn hơn thì được thêm 11 hoặc 18 xu thuê mỗi ngày. Không thêm trường mới trong bản lưu; bản 1.9.4 vẫn đọc được bản lưu mới.
-# Chưa phát hành — Phòng hát Mây (karaoke-p1)
+## Phòng hát Mây (karaoke-p1)
 
 ## Phòng hát Mây
 
@@ -1559,7 +1563,7 @@ Gồm các mục "Chưa phát hành" bên dưới: nông trại mới (farm-plus
 - Kiểm duyệt: tên bài, lời nhắn, câu đoán qua bộ lọc chat (từ nặng thành *); báo cáo (🛟 trẻ vị thành niên lên đầu); khóa chat và chặn được tôn trọng; Ban quản lý bỏ bài, mời ra 1 giờ, đóng phòng, cấm bài, khóa chat (trong phòng và tab 🎤 Phòng hát của trang quản trị).
 - Kỹ thuật: CSP chỉ mở thêm khung YouTube, script iframe_api và ảnh i.ytimg.com; Permissions-Policy giữ micro tắt. Khung YouTube tự gửi Referer gốc trang (cả trang vẫn no-referrer; thiếu Referer YouTube báo lỗi 153). CSDL thêm `kara_songs`, `kara_tickets`, `kara_reviews` (SCHEMA_VERSION 26, sau 25 của spend-1). Sổ ví ghi loại `life` (bản 1.9.4 đọc được); loại `karaoke` đã được chấp nhận để bản sau dùng. Không thêm khóa bản lưu.
 
-# Chưa phát hành — Chỗ tiêu xu (spend-1)
+## Chỗ tiêu xu (spend-1)
 
 ## Thêm chỗ tiêu xu
 
@@ -1575,7 +1579,7 @@ Gồm các mục "Chưa phát hành" bên dưới: nông trại mới (farm-plus
 
 - 🏪 Nhân viên tiệm (nơi làm việc) bán nhanh gấp 1,6 lần ngày đầu (góp ý người chơi; lịch sử bản 1.7.8–1.9.3 cho thấy tốc độ chưa từng bị giảm, tiệm thấy chậm chủ yếu do hết hàng).
 - 💬 Góp ý dài tới 10.000 ký tự (trước 1.000).
-# Chưa phát hành — Mỗi nghề một cách nói (voice-w1)
+## Mỗi nghề một cách nói (voice-w1)
 
 ## Mỗi nghề một cách nói
 
@@ -1585,7 +1589,7 @@ Gồm các mục "Chưa phát hành" bên dưới: nông trại mới (farm-plus
 - Trả lời đánh giá: 26 nghề không phải tiệm có câu trả lời mẫu riêng (khoa, bên phường, tổ, thư viện, em thư ký…), nhãn riêng ("Mời làm việc", "Mời gặp", "Hẹn thu bổ sung") và bù đắp hợp nghề (chai nước ấm, gia hạn sách, bớt tiền công). Công an không bao giờ bù đắp thứ gì có giá trị: không hiện mục bù đắp, máy chủ cũng từ chối. Người bình luận dưới đánh giá không còn "bênh quán". Chùa và giáo viên giữ bộ câu riêng như cũ.
 - Chỉ đổi chữ: cùng mã giọng, mã bù đắp, mã khách, cách sinh việc như cũ (cổng task-compat OK). Câu trả lời cũ trong bản lưu giữ nguyên. Thuế 4% và tiền thuê không đổi ở bản này. Không thêm khóa lưu, không đổi bảng. Không có "Có gì mới".
 
-# Chưa phát hành — Nhân viên tiệm (staff-speed)
+## Nhân viên tiệm (staff-speed)
 
 ## Nhân viên tiệm bán nhanh như ngày đầu
 
@@ -1615,10 +1619,10 @@ Gồm các mục "Chưa phát hành" bên dưới: nông trại mới (farm-plus
 
 Có gì mới (chủ game: "sửa lỗi, cập nhật thêm"): sửa lỗi tiệm hoa/giúp việc/chùa/giáo viên/giao hàng/tiệm quần áo; 45 món avatar; cửa hàng điện thoại; bầu cua xúc xắc thật; thăng tiến rõ ràng hơn. Các mục "Chưa phát hành" bên dưới là nội dung của bản này.
 
-# Chưa phát hành — Bầu cua xúc xắc thật
+## Bầu cua xúc xắc thật
 
 - 🎲 Chủ game 06/10 ("ra cua nhiều quá, bị cheat"): bầu cua lăn ba xúc xắc ngẫu nhiên thật, mỗi mặt 1/6, không quyết thắng thua trước và không còn "thua 4 ván thì ván sau chắc thắng" (trước đây xúc xắc chọn theo mặt đặt nên ai đặt cua thì cua ra nhiều). Lâu dài đặt một mặt lỗ khoảng 4,6% (bão vẫn 10:1). Chiếu trong, lô tô, vé cào, ném vòng giữ như cũ. Không đổi bản lưu.
-# Chưa phát hành — Xe giao hàng, tiệm hoa hết hàng, kệ tiệm quần áo, xoay ca phi công (fix-misc)
+## Xe giao hàng, tiệm hoa hết hàng, kệ tiệm quần áo, xoay ca phi công (fix-misc)
 
 - 🛵 Giao hàng (#5): xe không còn đứng khựng trước ngã tư có đèn nằm ngoài chặng đang giao. Máy khách kiểm tra hành lang chặng giống máy chủ (đi vòng tối đa 1 ô) trước khi hỏi đèn: ngoài chặng thì đèn chỉ là cảnh, không hỏi, không giữ xe. Máy chủ từ chối hoặc mạng chậm quá 4 giây thì ngã tư đó được thả, xe không bao giờ bị giữ mãi.
 - 💐 Tiệm hoa (#9): hết thiệp hoặc hết băng rôn thì nút viết thiệp, in băng rôn và "Dùng lời này" tắt, kèm dòng "Hết thiệp: nhập thêm mới viết được." và nút 📦 nhập hàng ngay cạnh. Bước "Viết thiệp" trong gợi ý cũng dẫn sang nhập hàng khi hết.
@@ -1626,26 +1630,26 @@ Có gì mới (chủ game: "sửa lỗi, cập nhật thêm"): sửa lỗi tiệ
 - ✈️ Phòng điều hành (F#212): nói rõ luật xoay ca. "Xem thêm" có dòng 🔁 Xoay ca; mỗi người có thẻ "🔁 N ngày liền" hoặc "🥱 2 ngày liền · nên nghỉ" (cả trong danh sách chọn người); mục 🎯 hôm nay có dòng xoay ca; tổng kết ngày ghi "🥱 Xoay ca: … đã bay liền từ hôm trước nên dễ trễ hơn hẳn". Luật không đổi.
 - Không thêm khóa lưu, không đổi tiền, không đổi cách sinh việc. Máy chủ gửi thêm `tired_at` ở phòng điều hành (chỉ hiển thị). Không có "Có gì mới".
 
-# Chưa phát hành — Tiệm hoa trên điện thoại + Bảng giá (WP-B)
+## Tiệm hoa trên điện thoại + Bảng giá (WP-B)
 
 - Góp ý #204 và chat: trên điện thoại dọc (từ 1.8.0), ở tiệm hoa thẻ "Khách cần" dính trên đầu che kệ hoa, chữ bên cột xem trước đè lên ô hoa, chạm không chọn được loại hoa. Giờ thẻ mở thì cuộn theo trang (thu gọn còn một dòng thì vẫn ghim), cột xem trước nằm đúng chỗ, nơ/băng rôn/giấy bóng không vẽ đè lên thẻ nữa. Sửa chung cho mọi nghề dùng thẻ này: sửa đồ, tiệm quần áo, quán mì. Điện thoại ngang và máy tính giữ như cũ.
 - Tiệm hoa: nút 🏷️ Bảng giá ở bàn làm việc, ở thanh nghề và một dòng giữa hai đơn: giá từng loại hoa đổi trước khi mở ca, tính vào giá trị bó; khách vẫn trả đúng giá đơn đã báo.
 - Chỉ đổi giao diện (CSS/JS): không đổi bản lưu, tiền hay máy chủ. Không có "Có gì mới".
 
-# Chưa phát hành — Thu nhập mỗi giờ, mỗi ngày (WP-D)
+## Thu nhập mỗi giờ, mỗi ngày (WP-D)
 
 - 💰 Sổ tiệm → Đội (#19): khung "Lãi ước tính của đội" ghi lãi mỗi giờ (và số đơn/giờ) và mỗi ngày 24 giờ nếu đủ hàng, đủ quỹ, đã gồm thưởng 40%; kèm số đơn quỹ nghề còn trả được. Tính từ nhịp đơn (`rate_per_hour`) và lãi đơn tiếp theo máy chủ đã có.
 - 🏪 Quầy của bạn: thẻ quầy có nhân viên ghi "Lãi 1 giờ" theo chợ lúc này và "Lãi 1 ngày (24 giờ)", đã trừ hàng, lương, điện, thuế và cộng thưởng nhân viên bán, cùng hàng còn đủ bán bao lâu. Máy chủ tính từ đúng nhịp khách, lịch chợ, giá và chi phí mà sổ quầy dùng (một ngày mô phỏng lệch dưới 1%).
 - 🎪 Hội chợ (#18, chỉ con số): dải trên cùng thêm "📊 Trò lời +X · trò lỗ −Y" hôm nay, cộng theo từng trò. Không đổi tỷ lệ, không đổi Ông Hai.
 - Chỉ hiển thị: không đổi kinh tế, không thêm khóa lưu.
 
-# Chưa phát hành — Thăng tiến rõ ràng, cấp hàm Phó Tổng Giám đốc (WP-C)
+## Thăng tiến rõ ràng, cấp hàm Phó Tổng Giám đốc (WP-C)
 
 - 🏢 "Ngày điều hành tốt" (F#206): Thăng tiến ghi tiến độ "Ngày điều hành tốt: 2/5" kèm thanh và điều kiện (tự xếp ít nhất 1 việc ở 🗓️ Điều phối, cuối ngày điểm điều hành từ 60/100). Phòng điều hành có mục 🎯 "Hôm nay tính ngày tốt?" (đã tự xếp chưa, còn việc cần quyết, ô trống, quỹ lương). Tổng kết ngày ghi điểm và cách tính ("📊 Điểm điều hành 72/100 (đúng giờ 40 + tinh thần 22 + 20 − phàn nàn 12) → ✓ tính 1 ngày điều hành tốt", hoặc lý do chưa tính) và tiến độ n/5. Nhật ký phòng ghi điểm từng ngày. "Xem thêm" giải thích công thức. Thẻ cấp hàm phi công ghi thêm n/5.
 - 🎖️ Phỏng vấn lên chức hụt không còn im lặng (#11): báo câu nào bị chấm 0 điểm và bạn đã chọn gì, hoặc "Xin cao" khi chưa có hai câu tốt nhất; ghi rõ hẹn xét lại sau 3 ngày làm. Thăng tiến hiện thẻ "📋 Lần xét vừa rồi" (từng câu: ✅ tốt nhất / 🟡 tạm được / ❌ chưa ưng) và cách đếm ngày tới lần xét sau. Nút "?" ở câu hỏi và phần xin lương nói rõ luật.
 - ✈️ Cấp hàm Phó Tổng Giám đốc (F#207, chủ game duyệt): một ngôi sao lớn trên cánh chim vàng, kiểu hàng không, thay cho 4 gạch + 3 sao + cành tùng. Nhãn: "1 sao lớn · cánh chim vàng".
 - Không thêm khóa lưu, không đổi tiền. Máy chủ gửi thêm vài trường chỉ để hiển thị (`review` khi hoãn xét, `office.score/good`, `me`, `good_score`, `got/need` ở yêu cầu phòng điều hành, cờ `big/wing` của cấp hàm); bản 1.9.1 bỏ qua chúng.
-# Chưa phát hành — wardrobe-classic
+## wardrobe-classic
 
 ## Tủ đồ: 45 món mới (góp ý #200)
 
@@ -1658,7 +1662,7 @@ Có gì mới (chủ game: "sửa lỗi, cập nhật thêm"): sửa lỗi tiệ
 - Món nào cũng vẽ đủ ở gương Tủ đồ, ảnh tròn, ảnh chat, đám cưới, đi dạo, hội chợ, hẹn hò, cho cả nam và nữ, và đổi màu được bằng Bảng màu (màu đã mở dùng chung).
 - Tủ đồ: nút 🙂 Gương mặt ngay trên đầu (biểu cảm, kiểu mặt khi chat) và lối tới Tên · giới tính ở cuối trang; trên điện thoại 7 mục chia 2 hàng.
 - Bản lưu: thêm khóa gốc tùy chọn `wardrobe_plus` (chỉ có khi đã mua món mới). Khối `wardrobe` cũ chỉ giữ món bản 1.9.2 biết, nên bản 1.9.2 đọc bản lưu mới vẫn hợp lệ, hiện món mặc định ở chỗ món mới và không mất món đã mua. Dịch vụ live cũ cũng hiện món mặc định. Không đổi tiền, không thêm bảng.
-# Chưa phát hành — gadgets-classic (F#205: điện thoại & đồ công nghệ, giao diện quen thuộc)
+## gadgets-classic (F#205: điện thoại & đồ công nghệ, giao diện quen thuộc)
 
 - 📱 Cửa hàng điện thoại Mây Mobile ở Phố dịch vụ trên bản đồ phố (cạnh Gara; Chỉ đường → 📱 Điện thoại), hoặc Thêm → Ngân hàng & nhà. Năm hạng máy: Mây Lite 5 150 xu, Sao Mai S12 600, Mây Pro 16 2.400, Sen Gập Fold 3 6.000, Kim Long Vàng 24K 24.000. Đồ công nghệ: tai nghe Sóc Pods 120, đồng hồ Mây Watch 450, máy tính bảng Mây Tab 1.200, máy chơi game Rồng Con 1.600, máy ảnh Cò Trắng X 3.200. Thương hiệu đều là tên tự đặt.
 - Trả đủ một lần như mua xe (ví trước, thiếu thì lấy tài khoản; ví nợ thì không mua được), không vay, không phí ngày hay phí tháng. Bán lại 65% giá đã trả, vào ví. Tiền đi qua sổ ví và sổ tài khoản như cũ, không sinh xu.
@@ -1666,23 +1670,23 @@ Có gì mới (chủ game: "sửa lỗi, cập nhật thêm"): sửa lỗi tiệ
 - Khoe: nhân vật cầm máy đang dùng (bản đồ phố, ảnh selfie), huy hiệu máy cạnh “Thay đồ” ở Hành trình, thẻ Phố nghề có máy và 3 món đồ đắt nhất. Mỗi hạng máy thêm một món vui, cộng dồn, không món nào làm ra tiền: Chỉ đường nhớ 3 nơi vừa đi, khung selfie (lưu ảnh về máy), viền màu vỏ máy quanh huy hiệu trên hồ sơ, khung ảnh đôi, viền vàng.
 - Hướng dẫn: mục “Lên đời điện thoại”. Tài phú tính điện thoại và đồ công nghệ theo giá bán lại.
 - Bản lưu: thêm khóa tùy chọn `journey.gadgets` (chỉ có từ lần mua đầu). Bản 1.9.2 đọc, giữ nguyên và lưu lại bản lưu có khóa này; bản lưu cũ vẫn đọc bình thường. Thẻ người chơi (Phố nghề) có thêm `phone`, bản cũ bỏ qua. Không đổi bảng, không đổi dịch vụ live.
-# Chưa phát hành — WP-5 Boot / live
+## WP-5 Boot / live
 
 - 💬 Nút Chat hiện ngay sau khung hình đầu: nút xám "đang kết nối…" (chạm thì báo đang kết nối và thử lại liền), sáng lên khi máy chủ chat chào. Kết nối chat khởi động ngay lúc rảnh đầu tiên sau khung hình đầu thay vì cuối hàng chờ (~6 giây). Chưa kết nối được lần nào thì thử lại sau 3, 8, 20 giây rồi mới giãn ra 1–10 phút (trước đây chờ 60 giây, nên ai mở game đúng lúc dịch vụ chat khởi động lại thì không thấy chat cả phút).
 - 🔄 Màn hình tải không còn kẹt: app.js (hoặc một file của nó) tải hỏng, hay một file có phiên bản bị 404 lúc đang cập nhật, thì tự tải lại một lần (chống cache). Hỏng lần nữa trong 2 phút hoặc mất mạng thì hiện nút "Tải lại" kèm phiên bản và mã lỗi. Sau 25 giây vẫn chưa xong thì gợi ý "Tải lại". Stylesheet hỏng được thử lại một lần.
 - 📊 Lỗi tải trang ghi kèm phiên bản và mã HTTP (screen `loading:v1.9.2-<build>:404`, beacon rời trang `p: v<phiên bản>`).
-# Chưa phát hành — phản hồi đánh giá + thanh dưới hướng dẫn viên
+## phản hồi đánh giá + thanh dưới hướng dẫn viên
 
 - Phản hồi đánh giá: chạm bị dội (409 revision_conflict ở fb_reply và các chạm ngay sau, ~29 phiên ở trà sữa, quần áo, cà phê, thư ký, homestay). Lời AI của khách đáp lại chủ quán (`/api/ai/feedback`) và lời đánh giá được viết lại (`/api/ai/review`) ghi vào save ngoài hàng lệnh; giờ chúng xếp hàng như lời AI của giáo viên: các chạm sau chờ chúng xong, tối đa 4 giây (`AI_WAIT`, dùng chung với `VOICE_WAIT`), AI chậm không làm đứng màn hình, câu trả lời AI cũ hơn trạng thái đang hiện thì bỏ qua. Test mới: tests/fb_queue.mjs (tests/test_fb_queue.py).
 - Hướng dẫn viên, bước chọn lộ trình trên điện thoại: thanh dưới bị ép 42% như thanh giáo viên trước đây, chỉ còn thấy ⏱ (🎟 xu và 😊 khách bị cắt), dòng gợi ý và nút dồn vào phần còn lại. Giờ ba con số nằm một dòng riêng đủ rộng trên cùng thanh, dòng gợi ý và nút dùng cả bề ngang (teach.css). Máy tính không đổi.
 - Chỉ sửa phía trình duyệt: không có khóa lưu mới, không đổi máy chủ.
 
-# Chưa phát hành — WP-3 lệnh nghề + giáo viên
+## WP-3 lệnh nghề + giáo viên
 
 - Người chơi mới: chạm đầu tiên ở tiệm trà sữa (Ủ trà…) bị từ chối "Chọn một nghề trước nhé." (14 phiên ngày 06/10). Màn hình vẽ theo nơi đang mở (`focus`) nhưng lệnh gửi theo `current`, còn trống ở tài khoản mới. Trà sữa và Mẹ & bé giờ ghi rõ nghề; `api.command` (và lời AI phản hồi, đánh giá) mặc định theo `current`, không có thì `focus`, như app.js. Bộ kế hoạch nhập hàng / ngày mai đọc kho cũng vậy. Test mới: tests/command_career.mjs (kiểm cả mọi nghề không gọi `api.command` thiếu nghề).
 - Giáo viên (góp ý #211, iPhone 390×797 "các lựa chọn cứ xếp chồng lên nhau"): trên điện thoại, 3 ô giáo án nằm ngay trên thẻ hoạt động thay vì trong thanh dưới (thanh bị ép 42%, các ô xếp thành cột, chữ và nút chồng lên nhau, cao 145 px → 57 px). Huy hiệu thứ tự nằm trong thẻ, không đè thẻ bên cạnh; cuộn tới nút chừa chỗ cho thanh dưới.
 - Giáo viên: chạm bị dội (409 revision_conflict ở lesson_next / lesson_call / lesson_answer / cl_parent, 15 phiên). Lời AI viết lại câu học sinh / phụ huynh ghi vào save ngoài hàng lệnh; giờ nó xếp hàng: các chạm sau chờ nó xong, tối đa 4 giây (VOICE_WAIT), rồi đi tiếp. Không có khóa lưu mới, không đổi máy chủ.
-# Chưa phát hành — WP-2 Giúp việc + Chùa
+## WP-2 Giúp việc + Chùa
 
 - 🧹 Giúp việc: chưa cầm dụng cụ, chưa chọn chai, hay chai đang cầm đã cạn thì các chỗ lau bị khoá, có dòng nhắc cần làm gì (trước đây bấm vào là bị từ chối, hơn 400 lần một ngày). Chai cạn không chọn được nữa; cạnh nó có nút “🧴 Châm” để châm ngay từ kho. Hướng dẫn học nghề cũng nhắc châm chai trước khi dùng.
 - 🧺 Giúp việc: nếu xe đồ nghề chưa soạn thì các tab phòng bị ẩn, thay bằng nút “🧺 Về soạn xe”. Nếu việc soạn xe buổi sáng đã bị huỷ (ví dụ do rời tiệm giữa ca), lệnh mới `gv_cart` mở lại việc đó (vẫn mã slot 0, không thêm khoá lưu), nên không còn bị kẹt cả ngày.

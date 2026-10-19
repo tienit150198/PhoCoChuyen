@@ -32,6 +32,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.63", date="2026-10-21", items=(
+        dict(emoji='⚔️', text='Bang: lập bang, góp quỹ xây 7 công trình, danh hiệu, cửa hàng bang và giờ vàng riêng do chủ bang chọn.'),
+        dict(emoji='🏯', text='Đảo bang: cả bang cùng xây lãnh địa trên đảo, gặp nhau và đi chơi cùng lúc.'),
+        dict(emoji='🏝️', text='Xây trên đảo riêng: nhà sàn, biệt thự, lâu đài, hồ bơi, công viên… mở đảo cho cả phố ghé thăm.'),
+        dict(emoji='🐾', text='Đấu trường pet: đấu xếp hạng, giải tuần và Bang chiến pet 5v5 tối thứ Bảy.'),
+    )),
     dict(version="2.4.62", date="2026-10-20", items=(
         dict(emoji='🖥️', text="Mỗi nghề có cả 2 kiểu: bấm ⋯ trong màn làm việc, chọn Giao diện đầy đủ (cũ) hoặc gọn (mới), game nhớ riêng từng nghề."),
         dict(emoji='📋', text="Đối chiếu nội bộ: bản đầy đủ hiện hết chứng từ như trước, lướt danh sách không còn chọn nhầm thẻ."),
