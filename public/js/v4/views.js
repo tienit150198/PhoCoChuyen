@@ -77,7 +77,7 @@ export function autoStockRow(a){
 /** 🔁 Tự đặt hàng (game/auto_order.py; `warehouse.reorder`, an older server sends none: nothing shows). Not owned: one
  * locked line with the price and "Mua", only once the player has ordered a few times (#384: no advert for a newcomer;
  * Thiết bị always lists it). Owned: one row that opens a compact panel, "còn dưới X thì đặt Y" per item. */
-export function reorderRow(r,ui,byId){
+export function reorderRow(r,ui,byId,auto){
   if(!r)return '';
   const fmt=n=>Number(n||0).toLocaleString('vi-VN');
   if(!r.owned){
@@ -96,7 +96,13 @@ export function reorderRow(r,ui,byId){
       `<label>đặt <input type="number" inputmode="numeric" min="1" max="${r.line}" value="${i.qty}" id="ro-q-${esc(i.id)}"${i.on?'':' disabled'}></label>`+
       `<button type="button" class="btn ghost small" data-action="v4RoSave" data-item="${esc(i.id)}" aria-label="Lưu ${esc(it.name)}"${i.on?'':' disabled'}>${icon('check',14)}</button></div>`;};
   const sw=`<button type="button" class="inv-auto${r.on?' on':''}" role="switch" aria-checked="${r.on}" data-command="stock_reorder" data-payload="${esc(JSON.stringify({on:!r.on}))}"><span>Tự đặt: <b>${r.on?'Bật':'Tắt'}</b></span><i aria-hidden="true"></i></button>`;
-  return `<section class="inv-ro" aria-label="Tự đặt hàng">${head}${sw}<p class="inv-ro-note">Quỹ trả · giữ ${fmt(r.floor)} xu · hôm nay ${fmt(r.spent)}/${fmt(r.budget)} xu</p>${why?`<p class="inv-ro-note inv-ro-why">${why==='cap'?`Mỗi ngày tự đặt tối đa nửa quỹ lúc mở cửa (${fmt(r.budget)} xu), hôm nay đã gần hết. Món còn thiếu sẽ đặt bớt cho vừa, hoặc đặt tiếp ngày mai. Bấm 📈 Góp vốn cho quỹ dày hơn (mức ngày sau cao hơn) hay giảm số “đặt” để đủ cho nhiều món.`:`Quỹ phải giữ lại ${fmt(r.floor)} xu (lương, hóa đơn), phần còn lại không đủ cho đơn tự đặt. Bấm 📈 Góp vốn hoặc giảm số “đặt”.`}</p>`:''}${boxRow(r.box,fmt)}${items.map(row).join('')}</section>`;
+  return `<section class="inv-ro" aria-label="Tự đặt hàng">${head}${sw}<p class="inv-ro-note">Quỹ trả · giữ ${fmt(r.floor)} xu · hôm nay ${fmt(r.spent)}/${fmt(r.budget)} xu</p>${why?`<p class="inv-ro-note inv-ro-why">${why==='cap'?`Mỗi ngày tự đặt tối đa nửa quỹ lúc mở cửa (${fmt(r.budget)} xu), hôm nay đã gần hết. Món còn thiếu sẽ đặt bớt cho vừa, hoặc đặt tiếp ngày mai. Bấm 📈 Góp vốn cho quỹ dày hơn (mức ngày sau cao hơn) hay giảm số “đặt” để đủ cho nhiều món.`:`Quỹ phải giữ lại ${fmt(r.floor)} xu (lương, hóa đơn), phần còn lại không đủ cho đơn tự đặt. Bấm 📈 Góp vốn hoặc giảm số “đặt”.`}</p>`:''}${boxRow(r.box,fmt)}${recvNote(auto)}${items.map(row).join('')}</section>`;
+}
+/** #438/#439 "mua tự đặt rồi mà vẫn phải về tiệm đếm": an automatic order only places the order; the crate comes on the
+ * shop's own clock and is counted like any other unless 🤖 Tự nhận hàng is on (`warehouse.auto`; none: say nothing). */
+function recvNote(a){
+  if(!a||a.on)return '';
+  return `<p class="inv-ro-note">${a.unlocked?'Hàng tự đặt tới cửa theo giờ của tiệm và vẫn cần đếm. Bật 🤖 Tự nhận hàng để hàng tự lên kệ.':'Hàng tự đặt tới cửa theo giờ của tiệm và vẫn cần đếm. Muốn hàng tự lên kệ: 🤖 Tự nhận hàng (Bộ đếm kho · Bậc 5 ở Thiết bị nghề).'}</p>`;
 }
 /** 📦 Gộp thùng tự đặt (game/auto_order.py; `reorder.box`, an older server sends none): the automatic orders at the
  * door come as one crate, counted and received once. Not owned: a line with the price and "Mua". */
@@ -267,7 +273,7 @@ export function inventoryView(env){
   const calm=!ready.length&&!transit.length&&!tonight&&!low.length?`<span class="inv-calm">${icon('check',14)} Kho ổn.</span>`:'';
   const now=clk?`<div class="row spread"><span class="tag blue" title="Mở cửa ${esc(clk.open_time)}–${esc(clk.close_time)}">🕑 ${esc(clk.label)}</span></div>`:'';   // the hours: its tooltip (#384)
   const first=transit[0],next=!ready.length&&first?`<small class="inv-next">${icon('truck',13)} ${first.group?`Đơn gộp ${transitS.find(g=>g.id===first.group)?.lines.length||''} món`:name(byId[first.item])} · <b>${esc(first.left_label||first.eta_label||'')}</b>${first.left_label&&first.eta_label?` <span class="muted">(${esc(first.eta_label)})</span>`:''}</small>`:'';
-  const strip=`<section class="inv-status" aria-label="Tình trạng kho">${now}${autoStockRow(c.warehouse?.auto)}${reorderRow(c.warehouse?.reorder,ui,byId)}<div class="inv-chips">${chip(readyS.length,'thùng đã tới','accent','orders')}${chip(transitS.length,'đơn đang giao','info','orders')}${chip(tonight,'hết hạn tối nay','bad','lots')}${chip(low.length,'loại sắp hết','warn','stock')}${calm}</div>${next}${cta?`<div class="inv-cta">${cta}</div>`:''}</section>`;
+  const strip=`<section class="inv-status" aria-label="Tình trạng kho">${now}${autoStockRow(c.warehouse?.auto)}${reorderRow(c.warehouse?.reorder,ui,byId,c.warehouse?.auto)}<div class="inv-chips">${chip(readyS.length,'thùng đã tới','accent','orders')}${chip(transitS.length,'đơn đang giao','info','orders')}${chip(tonight,'hết hạn tối nay','bad','lots')}${chip(low.length,'loại sắp hết','warn','stock')}${calm}</div>${next}${cta?`<div class="inv-cta">${cta}</div>`:''}</section>`;
 
   /* Crates at the door: always on top, one big button each; opened, the goods are tapped to count. */
   const sup=o=>supOf(o.supplier);

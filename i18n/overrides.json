@@ -1,5 +1,7 @@
 {
   "strings": {
+  "Hàng tự đặt tới cửa theo giờ của tiệm và vẫn cần đếm. Bật 🤖 Tự nhận hàng để hàng tự lên kệ.": "Auto orders arrive on the shop clock and still need counting. Turn on 🤖 auto-receive to shelve them by itself.",
+  "Hàng tự đặt tới cửa theo giờ của tiệm và vẫn cần đếm. Muốn hàng tự lên kệ: 🤖 Tự nhận hàng (Bộ đếm kho · Bậc 5 ở Thiết bị nghề).": "Auto orders arrive on the shop clock and still need counting. To shelve them by itself: 🤖 auto-receive (Stock counting kit · Tier 5 in Work equipment).",
   "Ghép bé lên hạng S trở lên có khi gặp thần thú: Kỳ Lân, Kỳ Lân Một Sừng, Khủng Long, Rồng Con… Giữ bé cũ hay hóa thần thú tùy bạn.": "Fusing a pet to rank S or more may bring a mythic pet: qilin, unicorn, dinos, a baby dragon… Keep your pet or let it transform.",
   "Nhập hàng: đếm món nào nhập món đó, nhân viên trong ca đếm giúp; đếm đúng mà lỡ đóng kho thì hàng vẫn tự lên kệ.": "Receiving: shelve each line as you count it, staff on shift can count for you; counted crates go on the shelf even if you close.",
   "Tiệm Mẹ & bé và Nhà thuốc đã có 🔁 Tự đặt hàng như các tiệm khác: mua ở Kho hoặc Thiết bị nghề.": "Mẹ & bé and the pharmacy now have 🔁 Auto order like other shops: buy it in the stock room or the work equipment.",
