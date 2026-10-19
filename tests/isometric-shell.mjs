@@ -44,11 +44,35 @@ assert.equal((html.match(/data-action="settings"/g)||[]).length,1,'settings is n
  assert.equal((workNav.match(/<button/g)||[]).length,4,'inside a workplace: Ra đảo, Work, Chat and More on one bar');
  assert.match(workNav,/data-action="isoTown"[^>]*>[\s\S]*?Ra đảo/);
  assert.doesNotMatch(work,/class="iso-go"/,'inside a workplace the work bar takes over from the main button');}
-for(const [room,action,label] of [[{open:false},'isoOpen','Mở ca'],[{open:true,active_task:null,tasks:[]},'isoWork','Vào làm'],[{job:{required:true,status:'applied'}},'isoApply','Xin việc']]){
+for(const [room,action,label] of [[{open:false},'isoWork','Về tiệm'],[{open:true,active_task:null,tasks:[]},'isoWork','Vào làm'],[{job:{required:true,status:'applied'}},'isoApply','Xin việc']]){
  const st={...state,careers:{florist:{...state.careers.florist,...room}}};
  assert.match(isometricHUDHTML(isometricHUDModel(st,content,'town'),st),new RegExp(`class="iso-go" data-action="${action}"[^]*?<b>${label}</b>`),`${label}: the main button names the next step`);
 }
 assert.match(isometricHUDHTML(isometricHUDModel({journey:{story:true,life_day:3}},content,'town'),{}),/class="iso-go" data-action="isoCareers"[\s\S]*?<b>Chọn nghề<\/b>/);
+// Feedback #432: back from the town with the shift closed, the main button walks in and opens nothing.
+{const go=(st,cat=content)=>{const h=isometricHUDHTML(isometricHUDModel(st,cat,'town'),st);return [h.match(/class="iso-go" data-action="(\w+)"/)?.[1],h.match(/class="iso-go"[^]*?<b>([^<]*)<\/b>/)?.[1]];};
+ const closed=(career,room={},journey={story:true,life_day:9})=>({name:'Mây',current:career,journey,careers:{[career]:{money:0,open:false,day:5,tasks:[],...room}}});
+ const cat=[{id:'mycay',name:'Bán mỳ cay',place:'Quán Mì Cay Mây',terms:{commerce:true,place:'tiệm'}},
+   {id:'teacher',name:'Giáo viên',place:'Lớp học Mầm Nắng',terms:{commerce:false,place:'lớp'}},
+   {id:'flight_attendant',name:'Tiếp viên',place:'Hãng bay Mây',terms:{commerce:false,place:'khoang khách'}},
+   {id:'florist',name:'Người bán hoa',place:'Tiệm hoa Mây',terms:{commerce:true,place:'tiệm'}},
+   {id:'pet_care',name:'Chăm thú',place:'Pet Care Mèo Mập',terms:{commerce:true,place:'tiệm'}}];
+ const C={catalogue:cat};
+ assert.deepEqual(go(closed('mycay'),C),['isoWork','Về quán'],'restaurant: "Về quán", not "Mở ca"');
+ assert.deepEqual(go(closed('mycay',{life:{shop_name:'Sạp Bé Na'}}),C),['isoWork','Về sạp'],'a renamed shop keeps its own word');
+ assert.deepEqual(go(closed('florist'),C),['isoWork','Về tiệm']);
+ assert.deepEqual(go(closed('pet_care'),C),['isoWork','Về tiệm'],'a shop without a shop word in its name');
+ assert.deepEqual(go(closed('teacher'),C),['isoWork','Về lớp'],'a career that is not a shop: its own place word');
+ assert.deepEqual(go(closed('flight_attendant'),C),['isoWork','Về chỗ làm'],'a long place word stays short');
+ assert.deepEqual(go(closed('teacher'),{catalogue:[{id:'teacher',place:'Lớp học Mầm Nắng'}]}),['isoWork','Về chỗ làm'],'no career words yet: never "tiệm" for a class');
+ assert.deepEqual(go(closed('mycay',{},{story:false}),C),['isoWork','Về quán'],'free play too');
+ // The first workplace's very first day (v4/onboard.js quickOpen): nothing to buy yet, one tap still opens it.
+ assert.deepEqual(go(closed('mycay',{day:1},{story:true,life_day:1}),C),['isoOpen','Mở ca'],'onboarding day 1 keeps its one-tap open');
+ assert.deepEqual(go(closed('mycay',{day:1,shift_summary:{}},{story:true,life_day:1}),C),['isoWork','Về quán'],'a day already closed: no one-tap reopen');
+ assert.deepEqual(go(closed('mycay',{day:2},{story:true,life_day:2}),C),['isoWork','Về quán'],'calm days 2–3: walk in, open inside');
+ {const st=closed('mycay',{day:1},{story:true,life_day:1});st.careers.milk_tea={started:true,open:false,day:3};
+  assert.deepEqual(go(st,C),['isoWork','Về quán'],'a second workplace on day 1 is not the first job');}
+ assert.deepEqual(go(closed('mycay',{open:true,active_task:'a',tasks:[{id:'a',title:'Tô mì',status:'waiting'}]}),C),['isoMission','Làm tiếp'],'a shift already open: straight back to work');}
 for(const kind of ['fishing','boat','pool'])assert.match(html,new RegExp(`data-action="isoLeisure" data-kind="${kind}"`),'outdoor activities have semantic controls');
 
 const utilityState={...state,rui:{},marriage:{spouse:{name:'An'}},journey:{...state.journey,garage:{},gadgets:{},pets:{},spend:{},lux:{},abroad:{}}};
@@ -118,11 +142,15 @@ await isometricAction('isoTown',{},null,env);
 assert.deepEqual(calls.slice(-2),[['close'],['mode','town']]);
 await isometricAction('isoWork',{},null,env);
 assert.deepEqual(calls.slice(-2),[['close'],['mode','work']],'entering a workplace changes no server state');
+{const closed={...state,careers:{florist:{...state.careers.florist,open:false}}},log=[];
+ const e3={...env,api:{state:closed,content},world:{mode:'town',setMode:mode=>log.push(['mode',mode])},closeSheet:()=>log.push(['close']),act:async (action)=>log.push(['act',action]),openSheet:(v)=>log.push(['sheet',v])};
+ await isometricAction('isoWork',{},null,e3);
+ assert.deepEqual(log,[['close'],['mode','work']],'#432 "Về quán" with the shift closed: into the shop, no start_day, no sheet over it');}
 assert.equal(await isometricAction('unrelated',{},null,env),false);
 {const closed={...state,careers:{florist:{...state.careers.florist,open:false}}},log=[];
  const e2={...env,api:{state:closed,content},world:{mode:'town',setMode:mode=>log.push(['mode',mode])},closeSheet:()=>log.push(['close']),act:async (action)=>log.push(['act',action])};
  await isometricAction('isoOpen',{},null,e2);
- assert.deepEqual(log,[['close'],['mode','work'],['act','start'],['act','prepare']],'"Mở ca" opens the shift in one tap; when it cannot, the prepare sheet says why');
+ assert.deepEqual(log,[['close'],['mode','work'],['act','start'],['act','prepare']],'"Mở ca" (first day) opens the shift in one tap; when it cannot, the prepare sheet says why');
  closed.careers.florist.open=true;log.length=0;e2.act=async action=>{log.push(['act',action]);};
  await isometricAction('isoOpen',{},null,e2);
  assert.deepEqual(log.filter(x=>x[0]==='act'),[['act','start']],'an opened shift needs no prepare sheet');}

@@ -80,9 +80,11 @@ const STEPS=[
     when:()=>{const j=room()?.job;return !!(j?.required&&j.status!=='hired');},plan:()=>false,
     find:()=>ui().view==='jobapp'?firstVis('#sheet[open] .sheet-body .btn.primary'):null,
     done:()=>{const j=room()?.job;return !j?.required||j.status==='hired';}},
-  {id:'open',emoji:'☀️',text:()=>vis('#isoHUD .iso-go[data-action="isoOpen"]')?'Bấm Mở ca.':'Bấm Mở cửa.',wait:4000,
+  // 2.5D town, shift closed: the main button is "Mở ca" on the first day only, else "Về quán" (#432: it walks in, the
+  // day opens inside from "Chuẩn bị ngày mới").
+  {id:'open',emoji:'☀️',text:()=>vis('#isoHUD .iso-go[data-action="isoOpen"]')?'Bấm Mở ca.':vis('#isoHUD .iso-go[data-action="isoWork"]')?'Về chỗ làm trước.':'Bấm Mở cửa.',wait:4000,
     when:()=>room()&&!room().open,
-    find:()=>firstVis('#sheet[open] [data-action="start"]')||vis('#taskHUD [data-action="prepare"]')||vis('#isoHUD .iso-go[data-action="isoOpen"]'),
+    find:()=>firstVis('#sheet[open] [data-action="start"]')||vis('#taskHUD [data-action="prepare"]')||vis('#isoHUD .iso-go[data-action="isoOpen"]')||vis('#isoHUD .iso-go[data-action="isoWork"]'),
     done:()=>!!room()?.open},
   {id:'money',emoji:'🪙',text:'Quỹ tiệm: tiền của tiệm.',stage:true,
     find:()=>vis('#topbar .hud-fund')||vis('#topbar .cozy-till')||vis('#isoHUD .iso-fund')},
