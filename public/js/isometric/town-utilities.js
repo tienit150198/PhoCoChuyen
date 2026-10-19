@@ -61,7 +61,7 @@ export function townUtilityGroups(state={},content={},social={}){
       ['pets','paw','🐾','Thú cưng'],['spend','coffee','☕','Đi chơi'],
       ['pets','paw','🐱','Nhận nuôi thú cưng',{tab:'adopt'},'pets-adopt'],['pets','paw','🐶','Tiệm thú cưng',{tab:'shop'},'pets-shop'],
       ['pets','award','🏆','Bé cưng của tuần',{tab:'board'},'pets-board'],
-      ['petArena','award','🐾','Đấu trường pet'],['petArena','shield','🛡️','Bang chiến pet',{tab:'war'},'pet-war'],
+      
       ['stView','home','👶','Chăm con riêng & thú cưng',{view:'household'},'household'],
       ['spendQuan','coffee','☕','Cà phê & quán ăn'],['spendSpa','sparkle','🪷','Spa'],['spendRap','camera','🎬','Rạp phim'],['spendChua','home','🙏','Công đức'],
       ['spendStyle','sparkle','🎨','Phong cách'],['lixi','gift','🧧','Lì xì'],['luxFw','sparkle','🎆','Bắn pháo hoa'],['island','globe','🌍','Đảo mở cửa',{tab:'inv'},'island-open'],

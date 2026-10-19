@@ -324,6 +324,24 @@ def npc_today(sid: str, day: str, like: list) -> list:
 
 
 # ---------------------------------------------------------------- the ops
+BANG_ONLY = True   # owner 21/10: "đấu trường pets ẩn đi, chỉ dành cho bang thôi … bên ngoài k chơi được"
+NO_BANG = 'Đấu trường chỉ dành cho thành viên bang. Vào một bang để cùng đồng đội ra trận nhé!'
+
+
+def bang_of(db, sid: str):
+    """The player's current bang id (active, not hidden) or None."""
+    from . import bang_pets
+    r = bang_pets._member(db, sid)
+    return str(r['bang']) if r else None
+
+
+def need_bang(store, sid: str) -> str:
+    with store.connect() as db:
+        b = bang_of(db, sid)
+    need(b or not BANG_ONLY, NO_BANG, 'no_bang', 403)
+    return b
+
+
 def _gate(state, display, ranked: bool = False) -> dict:
     j = _story(state)
     need(display, 'Tạo tài khoản để vào đấu trường nhé.', 'account_required', 403)
@@ -345,6 +363,11 @@ def view(store, token, state, ip='') -> dict:
     if not mine:
         out['locked'] = 'pet'
         return out
+    if BANG_ONLY:
+        with store.connect() as db:
+            if not bang_of(db, sid):
+                out['locked'] = 'bang'
+                return out
 
     def run(db):
         row = _sync(db, sid, state, display, ip_tag(ip), t)
@@ -389,7 +412,7 @@ def set_lineup(store, token, state, data, ip='') -> dict:
     return dict(ok=True, message='🐾 Đã xếp đội: ' + ', '.join(p['n'] for i in ids for p in candidates(state) if p['id'] == i) + '.')
 
 
-def _opponent(db, sid: str, rating: int, size: int, tag: str, day: str, t: float):
+def _opponent(db, sid: str, rating: int, size: int, tag: str, day: str, t: float, bang=None):
     """A ranked opponent: a similar rating (WINDOWS), never the same network, a blocked player, one met PAIR_DAY times
     today or one of the last RECENT; the same lineup size first. None: nobody fits."""
     from . import lixi
@@ -398,8 +421,13 @@ def _opponent(db, sid: str, rating: int, size: int, tag: str, day: str, t: float
     for r in db.execute("SELECT a, b FROM pet_arena_matches WHERE kind='rank' AND day=? AND (a=? OR b=?)", (day, sid, sid)).fetchall():
         o = r['b'] if r['a'] == sid else r['a']
         met[o] = met.get(o, 0) + 1
-    rows = db.execute('SELECT sid, rating, size, ip, pw FROM pet_arena WHERE sid<>? AND size>0 AND at>? ORDER BY abs(rating-?) LIMIT 60',
-                      (sid, t - ACTIVE_DAYS * DAY, rating)).fetchall()
+    if bang:   # 21/10: only the player's bang mates
+        rows = db.execute("SELECT p.sid, p.rating, p.size, p.ip, p.pw FROM pet_arena p JOIN bang_members m ON m.sid=p.sid AND m.status='in' "
+                          'WHERE m.bang=? AND p.sid<>? AND p.size>0 AND p.at>? ORDER BY abs(p.rating-?) LIMIT 60',
+                          (bang, sid, t - ACTIVE_DAYS * DAY, rating)).fetchall()
+    else:
+        rows = db.execute('SELECT sid, rating, size, ip, pw FROM pet_arena WHERE sid<>? AND size>0 AND at>? ORDER BY abs(rating-?) LIMIT 60',
+                          (sid, t - ACTIVE_DAYS * DAY, rating)).fetchall()
     for w in WINDOWS:
         ok = [r for r in rows if abs(int(r['rating']) - rating) <= w and r['sid'] not in last and met.get(r['sid'], 0) < PAIR_DAY
               and not (tag and r['ip'] == tag)]
@@ -435,7 +463,9 @@ def fight(store, token, state, data, ip='') -> dict:
         me = _row(db, sid)
         mine = _j(me['snap'], []) if me else []
         need(mine, 'Xếp đội trước đã nhé.', 'no_lineup', 409)
-        opp = _opponent(db, sid, season_peek(db, week, sid, int(me['rating'])), len(mine), tag, day, t)
+        bang = bang_of(db, sid)
+        need(bang or not BANG_ONLY, NO_BANG, 'no_bang', 403)
+        opp = _opponent(db, sid, season_peek(db, week, sid, int(me['rating'])), len(mine), tag, day, t, bang)
         for x in sorted({sid, opp['sid']} if opp else {sid}):
             db.execute('SELECT 1 FROM pet_arena WHERE sid=? FOR UPDATE', (x,))
         need(_count(db, sid, day, ('rank', 'spar')) < RANK_DAY, f'Hôm nay đã đấu {RANK_DAY} trận xếp hạng rồi. Mai đấu tiếp nhé!', 'limit', 409)
@@ -497,8 +527,13 @@ def friend(store, token, state, data, ip='') -> dict:
         need(_count(db, sid, day, ('friend',)) < FRIEND_DAY, f'Hôm nay đã đấu {FRIEND_DAY} trận với bạn rồi.', 'limit', 409)
         other = db.execute('SELECT * FROM pet_arena WHERE pid=? AND size>0', (pid,)).fetchone()
         need(other and other['sid'] != sid, 'Bạn ấy chưa xếp đội ở đấu trường.', 'not_found', 404)
-        from . import friends
-        need(friends.are_friends(db, sid, other['sid']), 'Chỉ đấu giao hữu với bạn bè nhé.', 'not_friend', 403)
+        if BANG_ONLY:   # 21/10: a friendly is between bang mates
+            mine_b = bang_of(db, sid)
+            need(mine_b, NO_BANG, 'no_bang', 403)
+            need(bang_of(db, other['sid']) == mine_b, 'Chỉ đấu giao hữu với đồng đội cùng bang nhé.', 'not_mate', 403)
+        else:
+            from . import friends
+            need(friends.are_friends(db, sid, other['sid']), 'Chỉ đấu giao hữu với bạn bè nhé.', 'not_friend', 403)
         mine, theirs = _j(me['snap'], []), _j(other['snap'], [])
         mid = new_id('f')
         res = B.battle(mine, theirs, B.seed_of(mid))
@@ -615,8 +650,13 @@ def friends_list(store, token) -> dict:
     """The friends who set a lineup (pid, name, rating, power)."""
     sid, display = _who(store, token)
     with store.connect() as db:
-        rows = db.execute('SELECT p.pid, p.name, p.rating, p.pw, p.size FROM friends f JOIN pet_arena p ON p.sid=f.friend '
-                          'WHERE f.sid=? AND p.size>0 ORDER BY p.name LIMIT 100', (sid,)).fetchall()
+        if BANG_ONLY:   # 21/10: the bang mates who set a lineup
+            b = bang_of(db, sid)
+            rows = [] if not b else db.execute("SELECT p.pid, p.name, p.rating, p.pw, p.size FROM bang_members m JOIN pet_arena p ON p.sid=m.sid "
+                                               "WHERE m.bang=? AND m.status='in' AND m.sid<>? AND p.size>0 ORDER BY p.name LIMIT 100", (b, sid)).fetchall()
+        else:
+            rows = db.execute('SELECT p.pid, p.name, p.rating, p.pw, p.size FROM friends f JOIN pet_arena p ON p.sid=f.friend '
+                              'WHERE f.sid=? AND p.size>0 ORDER BY p.name LIMIT 100', (sid,)).fetchall()
     return dict(ok=True, friends=[dict(pid=r['pid'], name=r['name'], rating=r['rating'], pw=r['pw'], size=r['size']) for r in rows])
 
 
@@ -646,6 +686,12 @@ def act(store, token, op: str, data: dict, state, ip: str = '') -> dict:
     need(isinstance(data, dict), 'Thông tin không hợp lệ.', 'bad')
     if op == 'view':
         return view(store, token, state, ip)
+    # 21/10 owner: "chỉ mở cho các bang hội đánh nhau thôi": no 1v1 ranked or friendly fights while BANG_ONLY
+    need(not (BANG_ONLY and op in ('fight', 'friend', 'friends')), 'Đấu trường giờ dành cho bang đánh với bang: vào 🛡️ Bang chiến nhé.', 'bang_only', 409)
+    if BANG_ONLY and (op in ('lineup', 'npc') or (op.startswith('cup_') and op != 'cup_board')):
+        # 21/10: only bang members play; the weekly cup (open to the whole town) is closed while BANG_ONLY
+        need(not op.startswith('cup_'), 'Giải tuần đang đóng: đấu trường giờ chỉ dành cho bang.', 'cup_closed', 409)
+        need_bang(store, _who(store, token)[0])
     if op == 'lineup':
         return set_lineup(store, token, state, data, ip)
     if op == 'fight':

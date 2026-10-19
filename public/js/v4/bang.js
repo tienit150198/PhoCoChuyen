@@ -287,7 +287,7 @@ function foundTab(){
   const f=S.form||{},ok=S.found;
   const fee=CAT().fee||5_000_000,days=CAT().account_days||14;
   const tick=(on,label)=>`<li class="${on?'ok':'no'}"><span aria-hidden="true">${on?'✅':'⬜'}</span>${label}</li>`;
-  const checks=ok?`<ul class="bg-checks">${tick(ok.days_ok,`Tài khoản đủ ${days} ngày${Number.isFinite(ok.age)?` (đang ${ok.age} ngày)`:''}`)}${tick(ok.title,ok.title?`Có chức danh: ${esc(ok.title_name||'')}`:'Có chức danh (thăng tiến 1 bậc ở một nghề)')}${tick(ready()>=fee,`Có ${fmt(fee)} xu (ví + ngân hàng)`)}</ul>`:'<p class="sd-empty">⏳</p>';
+  const checks=ok?`<ul class="bg-checks">${tick(ok.days_ok,`Tài khoản đủ ${days} ngày${Number.isFinite(ok.age)?` (đang ${ok.age} ngày)`:''}`)}${tick(ready()>=fee,`Có ${fmt(fee)} xu (ví + ngân hàng)`)}</ul>`:'<p class="sd-empty">⏳</p>';
   const emojis=(CAT().emojis||[]).map(e=>`<button type="button" class="bg-emo${f.emoji===e?' on':''}" data-bg="emoji" data-e="${esc(e)}" aria-pressed="${f.emoji===e}">${esc(e)}</button>`).join('');
   const colors=Object.keys(COLORS).map(c=>`<button type="button" class="bg-sw${f.color===c?' on':''}" data-bg="color" data-c="${c}" style="--bgc:${hex(c)}" aria-label="${esc((CAT().colors||[]).find(x=>x.id===c)?.name||c)}" aria-pressed="${f.color===c}"></button>`).join('');
   const preview=`<div class="bg-preview">${crest(f.emoji,f.color,' big')}<b data-no-translate>${esc(f.name||'Tên bang')}</b>${f.motto?`<small data-no-translate>“${esc(f.motto)}”</small>`:''}</div>`;
@@ -302,7 +302,7 @@ function foundTab(){
 }
 function foundFoot(){
   const ok=S.found,fee=CAT().fee||5_000_000,f=S.form||{};
-  const why=!ok?'':!ok.account?'Cần đăng nhập':!ok.days_ok?`Tài khoản chưa đủ ${CAT().account_days||14} ngày`:!ok.title?'Cần một chức danh':ready()<fee?`Còn thiếu ${fmt(fee-ready())} xu`:String(f.name||'').trim().length<2?'Đặt tên bang':'';
+  const why=!ok?'':!ok.account?'Cần đăng nhập':!ok.days_ok?`Tài khoản chưa đủ ${CAT().account_days||14} ngày`:ready()<fee?`Còn thiếu ${fmt(fee-ready())} xu`:String(f.name||'').trim().length<2?'Đặt tên bang':'';
   const label=S.arm==='found'?`Bấm lần nữa: trả ${fmt(fee)} xu`:`⚔️ Lập bang · ${fmt(fee)} xu`;
   return `<footer class="sd-bar">${why?`<small class="sd-why">${esc(why)}</small>`:''}<button type="button" class="btn primary big sd-main" data-bg="found"${S.busy||why||!ok?' disabled':''}>${esc(label)}</button></footer>`;
 }

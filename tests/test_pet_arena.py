@@ -160,6 +160,11 @@ def pet_save(names, wallet=500_000, rank=3, seed=4242):
 class Store(Base):
     def setUp(self):
         super().setUp()
+        # These classes test the battle/arena machinery itself (1v1, cup); 21/10 the live game runs it bang-only
+        # (A.BANG_ONLY, see BangOnly below).
+        bang_only = A.BANG_ONLY
+        A.BANG_ONLY = False
+        self.addCleanup(setattr, A, 'BANG_ONLY', bang_only)
         self.n_acc = 0
         lbt.clear_cache()
         lbt._done.clear()
@@ -658,3 +663,22 @@ class ReviewFixes(Store):
             from game import content
             self.assertEqual(content._kill_switches()['off'], dict(pet_arena=True))
         self.assertIn('team', self.op(a, 'view'))
+
+
+class BangOnly(Store):
+    """21/10 owner: "đấu trường pets ẩn đi, chỉ dành cho bang" / "chỉ mở cho các bang hội đánh nhau thôi"."""
+    def setUp(self):
+        super().setUp()
+        A.BANG_ONLY = True
+
+    def test_without_a_bang_the_arena_is_locked_and_1v1_and_cup_are_closed(self):
+        tok = self.arena()
+        state = self.store.read(tok)[0]
+        self.assertEqual(A.act(self.store, tok, 'view', {}, state).get('locked'), 'bang')
+        for op, data, code in (('fight', {}, 'bang_only'), ('friend', {'pid': 'x' * 10}, 'bang_only'), ('friends', {}, 'bang_only'),
+                               ('npc', {'stage': 0}, 'no_bang'), ('lineup', {'pets': ['a']}, 'no_bang'), ('cup_join', {}, 'cup_closed')):
+            with self.subTest(op=op):
+                with self.assertRaises(A.ArenaError) as e:
+                    A.act(self.store, tok, op, data, state)
+                self.assertEqual(e.exception.code, code)
+

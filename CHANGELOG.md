@@ -1,3 +1,10 @@
+# v2.4.64 — 2026-10-21
+
+Sửa và đổi luật sau 2.4.63 (chủ game 21/10). Không có Có gì mới.
+- 🐾 Đấu trường: bé thứ 2, 3 ra sân không còn mờ/nghiêng (hiệu ứng gục `fill:'forwards'` của bé trước được hủy khi bé mới vào); một bước hiệu ứng lỗi không còn làm đứng cả trận (bắt lỗi từng bước).
+- 🐾 Đấu trường chỉ dành cho bang ("ẩn đi, chỉ dành cho bang", "chỉ mở cho các bang hội đánh nhau"): bỏ lối vào ở Thêm/Tiện ích/Khu phố và nút ⚔️ ở Thú cưng (mở từ ⚔️ Bang / Đảo bang); tab chỉ còn 🛡️ Bang chiến và 🎯 Luyện pet; đấu xếp hạng 1v1, giao hữu và giải tuần đóng (server từ chối: bang_only / cup_closed); luyện và xếp đội cần đang ở bang (no_bang). `pet_arena.BANG_ONLY` (True). Dữ liệu cũ giữ nguyên.
+- ⚔️ Lập bang: bỏ điều kiện chức danh — chỉ cần tài khoản đủ 14 ngày và 5.000.000 xu ("ai cũng lập được").
+
 # v2.4.63 — 2026-10-21
 
 Ra mắt Bang, Đảo bang, Xây trên đảo, Đấu trường pet (chủ game 19–20/10). Gồm các nhánh island-build, bang, pet-arena, bang-island, tích hợp + review fixes + chế độ duyệt thành viên (schema 56–60, chỉ thêm bảng/cột). Phí giữ tài sản lớn nay tính đảo 60% + công trình 20% (chủ game chốt 20/10). Công tắc tắt khẩn: MNL_BANG_OFF, MNL_ISLAND_BUILD_OFF, MNL_PET_ARENA_OFF, MNL_BANG_ISLAND=0. Có gì mới: 4 dòng.

@@ -148,8 +148,7 @@ class Reducer(unittest.TestCase):
         refused(self, s, 'jr_bang_found', name='Rồng Đỏ', motto='gọi 0912345678 nhé', confirm=True)    # a phone in the motto
         refused(self, s, 'jr_bang_found', name='Rồng Đỏ', extra=1, confirm=True)
         refused(self, s, 'jr_bang_found', name='Rồng Đỏ', open='yes', confirm=True)
-        no_title = story(20_000_000)
-        refused(self, no_title, 'jr_bang_found', 'no_title', name='Rồng Đỏ', confirm=True)
+        # 21/10 owner: no chức danh needed to found a bang any more (14 days + 5M xu)
         poor = titled(4_999_000)
         refused(self, poor, 'jr_bang_found', 'not_enough', name='Rồng Đỏ', confirm=True)
         debt = titled(20_000_000)

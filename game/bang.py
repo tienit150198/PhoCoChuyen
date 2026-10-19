@@ -406,7 +406,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         motto = clean_motto(p.get('motto', ''))
         is_open = p.get('open', True)
         need_(type(is_open) is bool, 'Thông tin không hợp lệ.')
-        need_(has_title(s), 'Cần có một chức danh (thăng tiến ít nhất 1 bậc ở một nghề) mới lập được bang.', 'no_title')
+        # owner 21/10: "ai cũng lập được, đủ 14 ngày và có 5M xu là lập được, k cần chức danh ở nghề" (has_title kept for reuse)
         need_(p.get('confirm') is True, f'Xác nhận trả {fmt(C.FOUND_FEE)} xu để lập bang {bname}.')
         why = _ready_why(s, C.FOUND_FEE)
         need_(not why, why, 'not_enough')

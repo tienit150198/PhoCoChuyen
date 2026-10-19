@@ -8,11 +8,13 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {petSVG,petPicture,lookup,accOf,fxRef} from './pet-art.js';
 
-const TABS=[['fight','⚔️','Đấu'],['npc','🎯','Thử thách'],['rank','🏆','Xếp hạng'],['cup','🏟️','Giải tuần'],['war','🛡️','Bang chiến']];
+// 21/10 owner: the arena is for bang members only — the town-wide weekly cup tab is gone
+// 21/10 owner: "chỉ mở cho các bang hội đánh nhau thôi" — only the bang war and the practice before it
+const TABS=[['war','🛡️','Bang chiến'],['npc','🎯','Luyện pet']];
 const RKS=['D','C','B','A','S','SS','SSS'];
 const EL={hoa:['🔥','Hỏa'],tho:['⛰️','Thổ'],thuy:['💧','Thủy'],moc:['🌿','Mộc'],kim:['🪙','Kim']};
 const STEP=450;   // ms an action at ×1
-const S={dlg:null,env:null,tab:'fight',sub:'',busy:false,flash:null,v:null,lad:null,cup:null,war:null,friends:null,pick:[],npc:1,
+const S={dlg:null,env:null,tab:'war',sub:'',busy:false,flash:null,v:null,lad:null,cup:null,war:null,friends:null,pick:[],npc:1,
   wpet:'',fight:null,fast:false,at:0,watch:0};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const CAT=()=>S.env?.api?.content?.journey?.pets||null;
@@ -58,7 +60,7 @@ export async function openArena(env,tab){
   for(const d of document.querySelectorAll('dialog.pt-sheet[open]'))d.close();   // from the pets sheet: one dialog at a time
   await ensureCss();
   const d=dialog();
-  S.tab=TABS.some(t=>t[0]===tab)?tab:'fight';S.sub='';S.flash=null;S.fight=null;
+  S.tab=TABS.some(t=>t[0]===tab)?tab:'war';S.sub='';S.flash=null;S.fight=null;
   if(!d.open){d.showModal();d.scrollTop=0;}
   render();
   await load();
@@ -124,7 +126,7 @@ async function main(){
   if(op==='npc'){await run('npc',{stage:S.npc},'npc');return;}
   if(op==='cupjoin'){const r=await run('cup_join',{});if(r){await load();await loadTab();}return;}
   if(op==='warpick'){const r=await run('war_pick',{pet:S.wpet});if(r){await loadTab();await load();}return;}
-  if(op==='tofight'){S.tab='fight';S.sub='';render();}
+  if(op==='tofight'){S.tab='war';S.sub='';render();}
 }
 
 /** The bottom bar's one button: [label, op, why]. */
@@ -140,7 +142,7 @@ function mainButton(){
     const p=(v.pets||[]).find(x=>x.id===S.wpet),now=v.war?.pick?.id;
     if(p&&p.id===now)return [`✅ ${p.n} đã ra trận`,'',' '];
     return p?[`🛡️ Cho ${p.n} ra trận`,'warpick','']:['👆 Chọn 1 bé ra trận','',' '];}
-  return ['⚔️ Về đấu xếp hạng','tofight',''];
+  return ['🛡️ Về Bang chiến','tofight',''];
 }
 
 /* ---------------------------------------------------------------- render */
@@ -156,7 +158,7 @@ function render(){
 function page(){
   const t=TABS.find(x=>x[0]===S.tab)||TABS[0];
   const head=`<header class="sheet-head pa-head">${S.sub?`<button class="icon-btn" type="button" data-pa="back" aria-label="Quay lại">${icon('back',21)}</button>`:'<span class="pa-logo" aria-hidden="true">🐾</span>'}
-    <div class="grow"><h2 id="pa-title">${S.sub==='team'?'Xếp đội':S.sub==='friends'?'Đấu với bạn':'Đấu trường pet'}</h2></div>
+    <div class="grow"><h2 id="pa-title">${S.sub==='team'?'Xếp đội':S.sub==='friends'?'Đấu với đồng đội':'Đấu trường bang'}</h2></div>
     ${S.v?.me?`<span class="pa-score" title="Điểm xếp hạng tuần">🏆 ${fmt(S.v.me.rating)}</span>`:''}<button class="icon-btn" type="button" data-pa="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
   const tabs=S.sub?'':`<nav class="pa-tabs" role="tablist" aria-label="Đấu trường">${TABS.map(([id,e,l])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'on':''}" data-pa="tab" data-tab="${id}"><span aria-hidden="true">${e}</span><small>${esc(l)}</small></button>`).join('')}</nav>`;
   const v=S.v;
@@ -174,6 +176,7 @@ function page(){
 }
 function locked(why){
   const [e,t,a]=why==='account'?['🔐','Tạo tài khoản để vào đấu trường nhé.','']:why==='story'?['📖','Đấu trường có trong hành trình.','']:
+    why==='bang'?['🏯','Đấu trường chỉ dành cho thành viên bang. Vào một bang để cùng đồng đội ra trận nhé!','<button type="button" class="btn primary" data-pa="bang">⚔️ Tìm bang</button>']:
     ['🐶','Nuôi một bé đã nhé, rồi cho bé ra đấu trường.','<button type="button" class="btn primary" data-pa="pets">🐾 Nhận nuôi</button>'];
   return `<div class="pa-locked"><span aria-hidden="true">${e}</span><p>${esc(t)}</p>${a}</div>`;
 }
@@ -189,7 +192,7 @@ function fightTab(v){
       <small>${r.kind==='rank'?(r.d>0?'+':'')+r.d:KIND[r.kind]||''}</small><span class="pa-play" aria-label="Xem lại">▶</span></button>`).join('');
   return `<section class="pa-card pa-team"><div class="pa-row-head"><h3>Đội của bạn</h3><button type="button" class="pa-chip" data-pa="team">✏️ Đổi đội</button></div>
       <div class="pa-pets">${team}</div><p class="pa-muted">💪 ${fmt(v.pw)} · Tuần này ${s.w} thắng ${s.l} thua${s.d?` ${s.d} hòa`:''} · Hôm nay ${t.rank}/${t.rank_max} trận</p></section>
-    <div class="pa-chips"><button type="button" class="pa-chip" data-pa="friends">🤝 Đấu với bạn</button><button type="button" class="pa-chip" data-pa="tab" data-tab="npc">🎯 Thử thách</button></div>
+    <div class="pa-chips"><button type="button" class="pa-chip" data-pa="friends">🤝 Đấu với đồng đội</button><button type="button" class="pa-chip" data-pa="tab" data-tab="npc">🎯 Thử thách</button></div>
     ${recent?`<section class="pa-card"><h4>Trận gần đây</h4><div class="pa-list">${recent}</div></section>`:''}
     <details class="pa-help"><summary>Luật đấu</summary>${helpHTML(v)}</details>`;
 }
@@ -212,7 +215,7 @@ function teamPicker(v){
 }
 function friendsList(){
   if(!S.friends)return '<p class="pa-empty">⏳</p>';
-  if(!S.friends.length)return '<div class="pa-locked"><span aria-hidden="true">🤝</span><p>Chưa có bạn nào xếp đội ở đấu trường. Rủ bạn vào chơi nhé!</p></div>';
+  if(!S.friends.length)return '<div class="pa-locked"><span aria-hidden="true">🤝</span><p>Chưa có đồng đội nào xếp đội. Rủ cả bang vào chơi nhé!</p></div>';
   return `<p class="pa-muted">Giao hữu: không tính điểm.</p><div class="pa-list">${S.friends.map(f=>`<button type="button" class="pa-row" data-pa="vsfriend" data-pid="${esc(f.pid)}"${S.busy?' disabled':''}>
     <span class="pa-res" aria-hidden="true">🤝</span><b data-no-translate>${esc(f.name)}</b><small>🏆 ${fmt(f.rating)} · 💪 ${fmt(f.pw)}</small><span class="pa-play">⚔️</span></button>`).join('')}</div>`;
 }
@@ -325,9 +328,12 @@ function sound(kind){
 /** Put pet i of log side s on its spot. */
 function enter(s,i,st){
   const sc=side(s)===0?'l':'r',f=S.fight.m.sides[s].pets[i];if(!f)return;
-  const box=$(`.pa-side.${sc}`);
-  box.classList.remove('ko','win');
-  box.querySelector('.pa-fig').innerHTML=pic(f,figSize());
+  const box=$(`.pa-side.${sc}`),fig=box.querySelector('.pa-fig');
+  box.classList.remove('ko','win','rooted','casting');
+  // 2.4.64: the fallen pet's KO tilt/fade is kept with fill:'forwards' on this same element — cancel it, or the next
+  // pet walks in faded and tilted (players: "bé thứ 2 thứ 3 vào thì bị mờ")
+  try{fig.getAnimations?.().forEach(a=>a.cancel());}catch{/* old browsers */}
+  fig.innerHTML=pic(f,figSize());
   box.querySelector('.pa-nm').textContent=f.n;
   box.querySelector('.pa-tags').innerHTML=`${rk(f.r)}${elTag(f.e)}`;
   st.hp[s]=st.max[s][i];st.cur[s]=i;st.sh[s]=0;
@@ -389,7 +395,8 @@ async function play(my){
   f.st=st;
   for(const e of m.ev){
     if(my!==token)return;
-    await step(e,st);
+    // 2.4.64: one effect that throws (an element gone, an old browser) must not freeze the fight ("hay bị đứng")
+    try{await step(e,st);}catch(err){console.warn('pet fight step',e&&e.k,err);}
     if(my!==token)return;
   }
   finish(my);

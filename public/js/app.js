@@ -372,7 +372,7 @@ function navItems(c){
   if(api.state?.journey?.story&&api.content?.journey?.island)items.push(['island','sun','Đảo riêng'],['islandOpen','globe','Đảo mở cửa']);  // 🏝️ v4/island.js (own dialog): only once the server has it; 🌍 the islands open to everyone (its Ghé đảo tab)
   if(api.content?.bang_island)items.push(['bangIsland','flag','Đảo bang']);  // ⚔️ v4/bang-island.js (own dialog): only while the server has it on (MNL_BANG_ISLAND)
   if(api.state?.journey?.story&&api.state.journey.gadgets)items.push(['gadgets','phone','Điện thoại & đồ công nghệ']);  // 📱 (v4/gadgets.js, own dialog): only once the server has it
-  if(api.state?.journey?.story&&api.state.journey.pets){items.push(['pets','paw','Thú cưng']);if(!api.content?.off?.pet_arena)items.push(['petArena','award','Đấu trường pet']);}  // 🐾 v4/pets.js, ⚔️ v4/pet-arena.js (own dialogs): only once the server has pets; 🛑 MNL_PET_ARENA_OFF hides the arena
+  if(api.state?.journey?.story&&api.state.journey.pets){items.push(['pets','paw','Thú cưng']);}   // 21/10: Đấu trường pet only from ⚔️ Bang  // 🐾 v4/pets.js, ⚔️ v4/pet-arena.js (own dialogs): only once the server has pets; 🛑 MNL_PET_ARENA_OFF hides the arena
   if(api.state?.journey?.story&&api.state.journey.spend)items.push(['spend','coffee','Đi chơi'],['spendStyle','sparkle','Phong cách']);  // ☕🙏 quán, spa, rạp, công đức; 🎨 màu tên tuần (v4/spend.js, own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.lux)items.push(['lux','bag','Mua sắm'],['luxFw','sparkle','Bắn pháo hoa']);  // 🎆 #274 "bắn pháo hoa chỗ nào": one tap from Khu phố
   if(api.state?.journey?.story&&api.content?.journey?.lixi)items.push(['lixi','gift','Lì xì']);  // 🧧 phát & giật lì xì (v4/lixi.js, own dialog): only once the server has it
@@ -415,7 +415,7 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()))||(x[0]==='fair'&&!api.state?.fair?.over);
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['fair','lixi','luxFw','wedInvite','spend','pets','petArena','sharedIsland','islandOpen','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank','townProjects','bang']],
+  ['pho','building','Khu phố',['fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','islandOpen','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank','townProjects','bang']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','island','bangIsland','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
