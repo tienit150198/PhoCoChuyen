@@ -9,7 +9,7 @@
  * Styles: /css/pets.css. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {lookOf,figureSVG} from './look.js';
-import {petSVG,lookup,accOf,fxRef} from './pet-art.js';
+import {petSVG,petPicture,lookup,accOf,fxRef} from './pet-art.js';
 
 // owner 19/10 "chưa thấy chỗ mua cánh, đổi pets dắt đi như nào cũng k biết, làm dễ hiểu hơn": every tab says its name
 const TABS=[['home','🐾','Bé nhà mình','Bé nhà'],['shop','🛍️','Tiệm thú cưng','Tiệm'],['ward','👗','Tủ đồ của bé','Tủ đồ'],['lab','🧬','Ghép bé','Ghép'],
@@ -62,7 +62,7 @@ const ensureCss=()=>cssReady??=link('/css/pets.css','pt-css');
 /** A pet's picture from a save's {b, c, w}. */
 export function petPic(cat,p,pose='sit',size=72,acc=null,fx=null){
   const L=lookup(cat,p?.b,p?.c);if(!L)return `<span class="pt-unknown" aria-hidden="true">🐾</span>`;
-  return petSVG(L.breed,L.coat,pose,acc??p.w??{},size,'pet-svg',fx??fxOf(p));
+  return petPicture(L.breed,L.coat,pose,acc??p.w??{},size,'pet-svg',fx??fxOf(p));
 }
 /** The pet picked (or a default one) trying piece `id` of rank r on. */
 function tryOn(id,r=0,size=96){
@@ -327,10 +327,11 @@ async function go(){
 const top=()=>S.dlg?.querySelector('.pt-body')?.scrollTo?.(0,0);
 function render(){
   if(!S.dlg)return;
-  const body=S.dlg.querySelector('.pt-body'),y=body?.scrollTop;
-  S.dlg.querySelector('.pt-root').innerHTML=page();
-  if(y)S.dlg.querySelector('.pt-body').scrollTop=y;
+  const body=S.dlg.querySelector('.pt-body'),y=body?.scrollTop,root=S.dlg.querySelector('.pt-root'),html=page();
   S.dlg.setAttribute('aria-busy',String(S.busy));
+  if(root._html===html&&root.firstChild)return;   // 🐢 the same screen (a state that did not change it): nothing rebuilt
+  root.innerHTML=html;root._html=html;
+  if(y)S.dlg.querySelector('.pt-body').scrollTop=y;
 }
 function page(){
   const v=V(),c=CAT(),t=TABS.find(x=>x[0]===S.tab)||TABS[0];
@@ -500,7 +501,7 @@ function shop(v,c){
       <div class="pt-chips pt-coats">${b.coats.map((k,i)=>chip('coat',{c:i},S.coat===i,`<i style="background:${esc(k.b)};box-shadow:inset -6px 0 0 ${esc(k.m)}"></i>`,k.name)).join('')}</div>
       <label class="pt-name"><span class="sr-only">Tên bé</span><input name="nick" maxlength="${c.name_max}" value="${esc(S.nick)}" placeholder="Tên bé" autocomplete="off"></label></section>
       <button type="button" class="pt-link" data-pt="breed" data-id="">↩︎</button>`;}
-  return kinds+odds()+`<div class="pt-picks">${breedList().map(x=>`<button type="button" class="pt-pick" data-pt="breed" data-id="${esc(x.id)}">${petSVG(x,x.coats[0],'sit',{},84)}<b>${esc(x.name)}</b><small>${fmt(x.price)}</small></button>`).join('')}</div>`;
+  return kinds+odds()+`<div class="pt-picks">${breedList().map(x=>`<button type="button" class="pt-pick" data-pt="breed" data-id="${esc(x.id)}">${petPicture(x,x.coats[0],'sit',{},84)}<b>${esc(x.name)}</b><small>${fmt(x.price)}</small></button>`).join('')}</div>`;
 }
 /** 🛍️ The wardrobe's shop: 👗 clothes (by slot) or 🪽 wings, each card the picked pet trying it on; a tap opens it. */
 function wshop(){

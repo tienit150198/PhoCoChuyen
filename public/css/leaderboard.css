@@ -203,7 +203,7 @@ html[data-layout="phone"] .lb-kinds.eight{grid-template-columns:repeat(2,minmax(
   background:radial-gradient(circle at 4px 5px,#ffb3d1 0 4px,transparent 4.5px),radial-gradient(circle at 11px 2px,#ffb3d1 0 4px,transparent 4.5px),
     radial-gradient(circle at 19px 2px,#ffb3d1 0 4px,transparent 4.5px),radial-gradient(circle at 26px 5px,#ffb3d1 0 4px,transparent 4.5px)}
 .lb-pet{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:radial-gradient(circle,#fff 0 50%,#ffe3ef 72%,transparent 74%);overflow:visible}
-.lb-pet>svg{max-width:64px;height:auto}
+.lb-pet>:is(svg,img){max-width:64px;height:auto}
 .lb-pet-none{font-size:1.6rem}
 .lb-name-line .pt-rank{display:inline-block;min-width:1.6em;padding:1px 6px;border-radius:999px;font-size:.68rem;font-weight:900;line-height:1.35;color:#fff;background:#9aa0a6}
 .lb-pod-tag .pt-rank{display:inline-block;min-width:1.6em;padding:1px 6px;border-radius:999px;font-size:.68rem;font-weight:900;line-height:1.35;color:#fff;background:#9aa0a6}
@@ -220,5 +220,5 @@ html[data-theme="dem"] .lb-plist .lb-prow{background:var(--surface-2)}
 @media(prefers-reduced-motion:reduce){.lb-pod-crown,.lb-pod-sparks i{animation:none}}
 html[data-layout="phone"] .lb-pod{gap:6px;padding-left:4px;padding-right:4px}
 html[data-layout="phone"] .lb-prow{grid-template-columns:38px 48px minmax(0,1fr) auto}
-@media(max-width:480px){.lb-pod{gap:6px}.lb-prow{grid-template-columns:38px 48px minmax(0,1fr) auto}.lb-pet{width:48px;height:48px}.lb-pet>svg{max-width:54px}
+@media(max-width:480px){.lb-pod{gap:6px}.lb-prow{grid-template-columns:38px 48px minmax(0,1fr) auto}.lb-pet{width:48px;height:48px}.lb-pet>:is(svg,img){max-width:54px}
   .lb-pod-ears i{width:24px;height:22px}}

@@ -670,16 +670,53 @@ function boxOf(r,legend,flat,wide=false){
   if(r>=4)return flat?[84,72,66]:[84,76,70];
   return flat?[72,62,58]:[68,68,64];
 }
+/** 🐢 Perf 19/10 (iPad "phản hồi rất lag"): an animated group inside an inline <svg> is repainted, with the whole
+ * picture, on every frame (no engine composites SVG children), and an SSS pet has ~10 of them. A grid of thumbnails
+ * (the pets strip, the wardrobe shelf, the 🐾 board: 25+ pets, 270+ animations) kept the main thread busy all the
+ * time (a 4× slower phone: 11 fps on the board, a tap waited 76 ms on average). So only a featured picture (the pet on the stage, a podium, the photo: drawn at LIVE_MIN px or
+ * more) carries `pet-live` and moves (css/pets.css); the thumbnails are the same art, still. */
+const LIVE_MIN=90;
 /** A whole <svg>, `size` px wide (the box is fitted to the pose; an SSS or a legendary is drawn a little larger so the
  * pet itself is not shrunk by its wider aura). */
 export function petSVG(breed,coat,pose='sit',acc={},size=72,cls='pet-svg',fx={}){
   const [w,h,top]=boxOf(Number(fx?.r)||0,breed?.fuse==='legend'||fx?.lg===true,pose==='walk'||pose==='sleep',hasWings(acc)||!!fx?.o||!!fx?.st),px=Math.round(size*w/BIG_W);
+  if(size>=LIVE_MIN)cls+=' pet-live';
   return `<svg class="${cls}" viewBox="${-w/2} ${-top} ${w} ${h}" width="${Math.max(size,px)}" height="${Math.max(size,px)}" aria-hidden="true" focusable="false">${petInner(breed,coat,pose,acc,fx)}</svg>`;
 }
 /** Look a pet up in the catalogue (content.journey.pets): {breed, coat} for a save's {b, c}. */
 export function lookup(cat,b,c){register(cat);const breed=(cat?.breeds||[]).find(x=>x.id===b);return breed?{breed,coat:breed.coats[c]||breed.coats[0]}:null;}
-/** An <img> source for canvases (town map, the stroll): the pet as a data URL. */
-export function petURL(breed,coat,pose,acc,size=96,fx={}){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(petSVG(breed,coat,pose,acc,size,'pet-svg',fx).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" '));}
+/** An <img> source for canvases (town map, the stroll): the pet as a data URL. A picture of its own: the gradients it
+ * uses (a D pet's wings, a coat) are defined inside it, not borrowed from another <svg> of the page. */
+export function petURL(breed,coat,pose,acc,size=96,fx={}){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(petFile(breed,coat,pose,acc,size,fx));}
+function petFile(breed,coat,pose,acc,size,fx){
+  const s=petSVG(breed,coat,pose,acc,size,'pet-svg',fx).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" ');
+  return !s.includes('<defs>')&&s.includes('url(#pt-')?s.replace(/(<svg [^>]*>)/,'$1'+DEFS):s;
+}
+/* 🐢 Perf 19/10: a thumbnail as one <img> instead of an inline <svg> of 300–600 shapes. Building a grid of them (the
+ * 🐾 board's 40 rows, the wardrobe shelf, the pets strip) laid out every shape (875 ms of layout for the board on a
+ * 4× slower phone), and a re-render after each command did it again. An <img> is parsed, sized and painted as one
+ * box, and the browser keeps the decoded picture for the same URL. A blob: URL (a short attribute, not 30–60 KB of
+ * data: text per pet in the markup), at most IMG_MAX kept (the oldest let go). Same art, still (thumbnails did not
+ * move since LIVE_MIN either). */
+const IMG=new Map(),IMG_MAX=160;
+function imgURL(key,make){
+  let url=IMG.get(key);
+  if(url!==undefined){IMG.delete(key);IMG.set(key,url);return url;}   // most recently used last
+  try{url=URL.createObjectURL(new Blob([make()],{type:'image/svg+xml'}));}
+  catch{return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(make());}   // no Blob URLs here: a data: URL
+  if(IMG.size>=IMG_MAX){const [old,u]=IMG.entries().next().value;IMG.delete(old);try{URL.revokeObjectURL(u);}catch{/* gone */}}
+  IMG.set(key,url);return url;
+}
+export function petIMG(breed,coat,pose='sit',acc={},size=72,cls='pet-svg',fx={}){
+  const key=JSON.stringify([breed?.id,breed?.shape,breed?.size,breed?.fuse,coat,pose,acc,size,fx]);
+  const url=imgURL(key,()=>petFile(breed,coat,pose,acc,size,fx));
+  const [w]=boxOf(Number(fx?.r)||0,breed?.fuse==='legend'||fx?.lg===true,pose==='walk'||pose==='sleep',hasWings(acc)||!!fx?.o||!!fx?.st),px=Math.max(size,Math.round(size*w/BIG_W));
+  return `<img class="${cls} pet-img" src="${url}" width="${px}" height="${px}" alt="" aria-hidden="true" draggable="false">`;
+}
+/** A picture of a pet for a page: a featured one (LIVE_MIN px or more) inline and moving, a thumbnail as petIMG. */
+export function petPicture(breed,coat,pose='sit',acc={},size=72,cls='pet-svg',fx={}){
+  return size>=LIVE_MIN?petSVG(breed,coat,pose,acc,size,cls,fx):petIMG(breed,coat,pose,acc,size,cls,fx);
+}
 /** The box petSVG fits a walking pet in ({w, h} of its viewBox, `foot` the share of the height down to the paws) and
  * `k`, walkScale: what a canvas needs to draw it paws on the ground at the right size. */
 export function refBox(cat,ref,pose){

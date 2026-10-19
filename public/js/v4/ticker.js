@@ -8,7 +8,7 @@
 const SEEN='mnl.newsSeen',NOTE='mnl.mrNotice',GOLD='mnl.goldenSeen',EVENT='mnl.eventSeen',POLL_MS=60000,PASSES=3,STILL_MS=9000;
 const read=k=>{try{return Number(localStorage.getItem(k))||0;}catch{return 0;}};
 const write=(k,v)=>{try{localStorage.setItem(k,String(v));}catch{/* storage blocked */}};
-let getEnv=null,timer=0,since=0,queue=[],bar=null,playing=false,booted=false,inflight=false;
+let getEnv=null,timer=0,since=0,queue=[],bar=null,playing=false,booted=false,inflight=false,hold=0;
 
 export function tickerBoot(envFn){
   if(booted)return;booted=true;getEnv=envFn;since=read(SEEN);
@@ -72,7 +72,7 @@ async function next(){
     const track=document.createElement('div');track.className='mr-ticker-track';
     const text=document.createElement('span');text.className='mr-ticker-text';track.append(text);
     const x=document.createElement('button');x.type='button';x.className='mr-ticker-x';x.setAttribute('aria-label','Ẩn bảng tin');x.textContent='×';
-    x.addEventListener('click',()=>{queue=[];playing=false;bar?.remove();bar=null;});
+    x.addEventListener('click',()=>{queue=[];playing=false;clearInterval(hold);bar?.remove();bar=null;});
     bar.append(ic,track,x);document.body.append(bar);
   }
   const text=bar.querySelector('.mr-ticker-text');
@@ -82,5 +82,12 @@ async function next(){
   if(still()||!text.animate){setTimeout(next,STILL_MS);return;}
   const track=bar.querySelector('.mr-ticker-track'),w=track.clientWidth,tw=text.scrollWidth,ms=Math.max(7000,(w+tw)*16);
   const anim=text.animate([{transform:`translateX(${w}px)`},{transform:`translateX(${-tw}px)`}],{duration:ms,iterations:PASSES,easing:'linear'});
-  anim.onfinish=()=>next();
+  anim.onfinish=()=>{clearInterval(hold);next();};
+  // 🐢 Perf 19/10 (iPad "phản hồi rất lag"): a sheet opened while the line plays. Under a modal (its blurred ::backdrop
+  // on a tablet, the masked track) every frame of the scroll redrew the sheet: in WebKit (iPad profile) the main thread
+  // was busy ~20 ms of every 50 with the 📊 leaderboard open, 3 ms once paused. The line waits, paused, until the
+  // street is in sight again (one cheap check a second, only while a line plays).
+  clearInterval(hold);
+  hold=setInterval(()=>{if(!bar||!text.isConnected){clearInterval(hold);return;}const stop=covered()||document.hidden;
+    if(stop&&anim.playState==='running')anim.pause();else if(!stop&&anim.playState==='paused')anim.play();},1000);
 }

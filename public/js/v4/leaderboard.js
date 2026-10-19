@@ -11,7 +11,7 @@ import {myPortrait} from './look.js';
 import {live} from './live.js';
 import {logo as hfLogo,chipClass} from './honour-frames.js';   // 🖼️ the top titles' frames and colours (owner 18/10)
 import {marketTag,mx} from '../market-ui.js';   // 🔥 nghề hot hôm nay, 📈 lãi nhân viên (game/staff_market.py)
-import {petSVG,lookup,accOf,fxRef} from './pet-art.js';      // 🐾 the Thú cưng board draws each best pet with its aura
+import {petPicture,lookup,accOf,fxRef} from './pet-art.js';      // 🐾 the Thú cưng board draws each best pet with its aura
 
 const FRESH_MS=10000;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -99,7 +99,7 @@ function petLine(r){return [r.pn?`🐾 ${r.pn}`:'',breedName(r)].filter(Boolean)
 function petTag(r){return r.b?`<span class="pt-rank r${r.lg?6:r.r||0}${r.lg?' lg':''}">${r.lg?'🌟':''}${RK[r.lg?6:r.r||0]}</span>`:'';}
 function petArt(r,size){
   const cat=petCat(),L=cat&&lookup(cat,r.b,r.c);if(!L)return '<span class="lb-pet-none" aria-hidden="true">🐾</span>';
-  return petSVG(L.breed,L.coat,'sit',accOf(cat,r),size,'pet-svg',fxRef(cat,r));   // 👗 wardrobe pieces, wings, aura, kept-breed 🌟
+  return petPicture(L.breed,L.coat,'sit',accOf(cat,r),size,'pet-svg',fxRef(cat,r));   // 👗 wardrobe pieces, wings, aura, kept-breed 🌟
 }
 // 🎀 owner 19/10 "khung xếp hạng thú cưng cute hơn nhé": pastel cards with cat ears, a paw ribbon, hearts and a cushion
 const POD=[['🥇','gold','👑'],['🥈','silver','🌸'],['🥉','bronze','🎀']];
