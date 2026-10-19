@@ -31,6 +31,7 @@ from .db import Error as DbError, log, open_db, wait_for_tables
 from .hub import Conn, Hub
 from .home import HomeFeature
 from .island import IslandFeature   # 🏝️ Đảo riêng together (live/island.py)
+from .bang_island import BangIslandFeature   # ⚔️ Đảo bang together (live/bang_island.py, MNL_BANG_ISLAND)
 from .market import MarketFeature
 from .work_visits import WorkVisitsFeature
 from .limits import LRU, Keyed
@@ -55,7 +56,7 @@ except ImportError:  # pragma: no cover
     websockets = None
 
 # Phase 2 adds live.street.StreetFeature, phase 3 live.dating.DatingFeature (one line each).
-FEATURES = [ChatFeature, StreetFeature, DatingFeature, WeddingFeature, FairFeature, BoothFeature, HomeFeature, WorkVisitsFeature, MarketFeature, TownFeature, TownTreasureFeature, KaraokeFeature, AuctionFeature, FireworksFeature, LixiFeature, WedInviteFeature, CandFeature, IslandFeature, BangFeature]
+FEATURES = [ChatFeature, StreetFeature, DatingFeature, WeddingFeature, FairFeature, BoothFeature, HomeFeature, WorkVisitsFeature, MarketFeature, TownFeature, TownTreasureFeature, KaraokeFeature, AuctionFeature, FireworksFeature, LixiFeature, WedInviteFeature, CandFeature, IslandFeature, BangFeature, BangIslandFeature]
 HELLO_SECS = 10.0
 NOTIFY_CHANNEL = 'mnl_live'
 

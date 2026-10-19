@@ -237,7 +237,14 @@ def public_content() -> dict:
                 careers={cid:(PLUGINS[cid].content() if hasattr(PLUGINS[cid],'content') else {}) for cid in PLUGINS},operations=operations.content(),catalogue=catalogue,npcs=NPCS,products=PRODUCTS,ph_products=PH_PRODUCTS,lots=list(LOT_INDEX.values()),
                 papers=PAPERS,ribbons=RIBBONS,upgrades=UPGRADES,quests=QUESTS,
                 event_catalogue=[dict(id=e["id"],career=e["career_id"],title=e["title"],category=e["category"],min_day=e["min_game_day"]) for e in EVENT_SEEDS],
-                journey=journey.content())
+                journey=journey.content(),**_bang_island())
+
+
+def _bang_island() -> dict:
+    """⚔️ Đảo bang's menu entry (game/bang_island.py): only while MNL_BANG_ISLAND=1."""
+    from . import bang_island
+    c = bang_island.content()
+    return {'bang_island': c} if c else {}
 
 
 # Parts of the catalogue the first frame never needs (GET /api/content?v=<hash>&part=more): job postings and exams,
