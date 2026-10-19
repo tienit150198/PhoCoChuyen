@@ -98,7 +98,9 @@
 @keyframes pet-step{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
 @keyframes pet-breathe{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.04)}}
 @media (prefers-reduced-motion:reduce){.pet-svg *{animation:none!important}}
-html.calm .pet-svg *{animation:none!important}
+html.calm .pet-svg *,.reduce-motion .pet-svg *{animation:none!important}
+/* 🐢 only a featured picture moves (pet-art.js LIVE_MIN): thumbnails in grids and lists stay still (perf on iPad) */
+svg.pet-svg:not(.pet-live) *{animation:none!important}
 /* 🏅 Ranks D…SSS (game/pet_tiers.py; colours = pet-art.js RANK_COLOR), the 🧬 lab, 🧰 gear, the 💪 board */
 .pt-rank,.pt-rk{display:inline-block;min-width:1.6em;padding:1px 6px;border-radius:999px;font-size:.72rem;font-weight:900;line-height:1.35;text-align:center;vertical-align:middle;color:#fff;background:#9aa0a6;letter-spacing:.02em}
 .pt-rank.r1,.pt-rk.r1{background:#4caf6a}.pt-rank.r2,.pt-rk.r2{background:#3d8bfd}.pt-rank.r3,.pt-rk.r3{background:#a259ff}
