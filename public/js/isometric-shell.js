@@ -9,6 +9,26 @@ import {townUtilityGroups,ev2010Open,townRideLabel,nextTownRide,townRiding} from
 const ENDED=new Set(['completed','referred','cancelled']);
 /** v4/onboard.js firstDay (story, first life day), inline: the shell's tests run this file without its imports. */
 const firstDay=s=>Boolean(s?.journey?.story&&(Number(s.journey.life_day)||1)<=1);
+/** v4/onboard.js quickOpen, inline (same reason): the first workplace's day 1 on the first life day opens at once. */
+const quickOpen=(s,cid)=>{
+  const c=s?.careers?.[cid];
+  if(!firstDay(s)||!c||c.open||Number(c.day)!==1||c.shift_summary)return false;
+  return Object.entries(s.careers).every(([id,x])=>id===cid||!x?.started);
+};
+/** Feedback #432 (mỳ cay, 2.4.52): back from the town with the shift closed, the main button took the player back
+ * to the workplace AND opened a new day in the same tap, before any stock was bought. It now only says where it goes:
+ * the shop's own word from its name (Quán Mì Cay → "Về quán"), any other shop "Về tiệm", a career that is not a shop
+ * its own short place word (game/career_voice.py terms.place: "Về lớp", "Về chùa", "Về khoa"…) or "Về chỗ làm". */
+const SHOP_WORDS=['quán','tiệm','sạp','xưởng','salon','chợ'];
+function homeLabel(meta,shopName){
+  const t=meta?.terms;
+  if(t&&t.commerce===false)return t.place&&String(t.place).length<=10?'Về '+t.place:'Về chỗ làm';
+  for(const name of [shopName,meta?.place]){
+    const word=String(name||'').trim().normalize('NFC').split(/\s+/)[0].toLocaleLowerCase('vi');
+    if(SHOP_WORDS.includes(word))return 'Về '+word;
+  }
+  return t?'Về tiệm':'Về chỗ làm';   // no words yet (catalogue not in): nothing that would name a classroom "tiệm"
+}
 const fmt=n=>Number(n).toLocaleString('vi-VN');
 let getEnvironment=null;
 let listening=false;
@@ -44,6 +64,7 @@ export function isometricHUDModel(state={},content={},mode='town',social={},conn
   return {current,mode:sceneMode,name:state.name||'Bạn',day,place,careerName:meta.name||place,fresh,done,
     sceneTitle:sceneMode==='work'?place:'Đảo Hoàng Sa',money:hudMoney(state,current),
     task,taskCount:tasks.length,needsJob,open:Boolean(room?.open),
+    home:current?homeLabel(meta,room?.life?.shop_name):'',firstOpen:Boolean(current&&quickOpen(state,current)),
     missionAction:!current?'isoCareers':needsJob?'isoApply':!room.open?'isoPrepare':task?'isoMission':done?'isoEnd':'isoQueue',
     chatUnread:Math.max(0,Number(social.unread?.())||0),chatOnline,chatOff,chatStatus,
     fairOpen:Boolean(state.fair?.show),ev2010:ev2010Open(),menuOpen:false,cameraOpen:false,
@@ -61,12 +82,15 @@ function moneyChip(label,value,kind){
 }
 
 /** The town's one main button (owner 18/10: "giao diện mới khiến người ta khó chơi", "chữ nút gọn lại"): the next
- * step in a short word, the workplace under it. Inside a workplace the work bar and the task card take over: none. */
+ * step in a short word, the workplace under it. Inside a workplace the work bar and the task card take over: none.
+ * Shift closed (#432): "Về quán" only walks in; the day opens inside, from the work bar's "Chuẩn bị ngày mới", once
+ * the player has bought what they need. The one exception is the first workplace's very first day (quickOpen):
+ * nothing to buy yet, so "Mở ca" still opens it in one tap, as arriving at its door does. */
 export function goButton(m){
   if(m.mode==='work')return null;
   const sub=m.current?m.place:'';
   const [action,ico,label]=!m.current?['isoCareers','briefcase',m.fresh?'Tới quán':'Chọn nghề']:
-    m.needsJob?['isoApply','note','Xin việc']:!m.open?['isoOpen','sun','Mở ca']:m.task?['isoMission','arrow','Làm tiếp']:
+    m.needsJob?['isoApply','note','Xin việc']:!m.open?(m.firstOpen?['isoOpen','sun','Mở ca']:['isoWork','store',m.home||'Về tiệm']):m.task?['isoMission','arrow','Làm tiếp']:
     m.done?['isoEnd','clock','Khép ca']:['isoWork','store','Vào làm'];
   const what=m.task?.title?` · ${m.task.title}`:'';
   return {action,icon:ico,label,sub,aria:`${label}${sub?` tại ${sub}`:''}${what}`};
@@ -188,7 +212,7 @@ function stuckWatch(){
     if((spent+=STUCK_TICK)<STUCK_MS)return;
     clearInterval(timer);
     try{localStorage.setItem(STUCK_KEY,'1');}catch{/* private mode: asked this visit only */}
-    import('./interface-mode.js').then(m=>m.askInterface(env,{title:'Thấy khó chơi?',text:'Bấm "Mở ca" ở giữa màn hình để vào làm. Nếu vẫn rối, giao diện cũ đơn giản hơn: tiệm và các nút làm việc luôn ở trước mặt. Tiến trình giữ nguyên.'})).catch(()=>{});
+    import('./interface-mode.js').then(m=>m.askInterface(env,{title:'Thấy khó chơi?',text:'Bấm nút lớn ở giữa màn hình để về chỗ làm, rồi Chuẩn bị ngày mới. Nếu vẫn rối, giao diện cũ đơn giản hơn: tiệm và các nút làm việc luôn ở trước mặt. Tiến trình giữ nguyên.'})).catch(()=>{});
   },STUCK_TICK);
 }
 
@@ -347,7 +371,7 @@ export async function isometricAction(action,data={},el=null,env){
       else await act('queue');
       break;
     case'isoPrepare':changeMode('work',env);await act('prepare');break;
-    case'isoOpen':   // "Mở ca": into the workplace and the shift opens at once; when it cannot (no stock, a check first), the prepare sheet says why
+    case'isoOpen':   // "Mở ca" (the first day only, see goButton): into the workplace and the shift opens at once; when it cannot, the prepare sheet says why
       changeMode('work',env);await act('start');
       if(model.current&&!env.api?.state?.careers?.[model.current]?.open&&!(typeof document!=='undefined'&&document.querySelector('dialog[open]')))await act('prepare');
       break;
