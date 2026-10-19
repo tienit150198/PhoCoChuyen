@@ -8,6 +8,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {Sound} from '../audio.js';
 import {bindXfer,xferOpen,xferPage,xferClick,xferInput} from './bank-xfer.js';
+import {paint as sheetPaint} from './sheet-paint.js';
 // Clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded so node tests can load this file.
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');   // 💸 Chuyển khoản bạn bè (game/bank_xfer.py)
 
@@ -220,7 +221,8 @@ function keepFocus(fn){
 }
 function render(){
   if(!S.dlg)return;
-  keepFocus(()=>{S.dlg.querySelector('.bk-root').innerHTML=page();});
+  // ⌨️ typing an amount while the wallet moves (a staff refresh): patched in place, the typed number and keyboard stay
+  keepFocus(()=>{sheetPaint(S.dlg.querySelector('.bk-root'),page());});
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
 function head(sub){

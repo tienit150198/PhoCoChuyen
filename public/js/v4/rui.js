@@ -10,6 +10,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {quiet,turn,want} from './break-gate.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY} from '../qty-input.js';
+import {paint as sheetPaint} from './sheet-paint.js';
 
 const S={env:null,pop:null,page:null,view:'',busy:false,flash:null,done:null,timer:0,calm:0,seen:new Set(),qty:10,listening:false};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -169,11 +170,9 @@ function dialog(kind){
   S[key]=d;return d;
 }
 function render(){
-  if(S.pop?.open)S.pop.querySelector('.wn-card').innerHTML=popHTML();
+  if(S.pop?.open)sheetPaint(S.pop.querySelector('.wn-card'),popHTML());
   if(S.page?.open){
-    const body=S.page.querySelector('.wn-body'),top=body?.scrollTop;
-    S.page.querySelector('.wn-card').innerHTML=S.view==='vang'?vangPage():ruiPage();
-    if(top)S.page.querySelector('.wn-body').scrollTop=top;
+    sheetPaint(S.page.querySelector('.wn-card'),S.view==='vang'?vangPage():ruiPage(),'.wn-body');   // typing a quantity while gold moves: kept
     S.page.setAttribute('aria-labelledby',S.view==='vang'?'vangTitle':'ruiPageTitle');
   }
 }

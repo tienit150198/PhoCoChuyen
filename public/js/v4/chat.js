@@ -31,6 +31,7 @@ import {chips as hnChips,list as hnList,titles as hnTitles,inlineMax} from './ho
 import {avatar as hfAvatar,bubble as hfBubble} from './honour-frames.js';   // 🖼️ a top title's avatar frame and chat bubble (owner 18/10)
 import {chip as bgChip,badgeHTML as bgBadge} from './bang-tag.js';   // ⚔️ `bg`: the bang tag and role (live/bangs.py)
 import {interleave as lxCards,cardHTML as lxCard,onChange as lxChange,refresh as lxRefresh} from './lixi-cards.js';   // 🧧 lì xì cards in Cả phố (v4/lixi.js)
+import {paint as sheetPaint} from './sheet-paint.js';
 
 const S={dlg:null,env:null,tab:'town',thread:null,view:null,bodyHTML:null,threads:new Map(),
   town:{msgs:[],more:false,joined:false,why:'ok',wait:0,n:0,loaded:false,pin:null},pinOpen:false,reactFor:null,lp:null,
@@ -680,7 +681,8 @@ function render(bottom=false,keepFromBottom=false){
   // Presence/read updates usually change only the header. Keep message nodes (and focus) intact.
   // Forms still redraw from state: a locally toggled preference may have failed to save.
   const html=body(),messages=!S.view&&(S.thread||S.tab==='town');
-  if(!messages||html!==S.bodyHTML)b.innerHTML=html;
+  // ⌨️ a form view (Tên nhóm…) redraws on every frame (presence, read, a message): patched while its field is typed in
+  if(!messages)sheetPaint(b,html);else if(html!==S.bodyHTML)b.innerHTML=html;
   S.bodyHTML=messages?html:null;
   b.dataset.view=S.view||(S.thread?'thread':S.tab);
   if(keepFromBottom)b.scrollTop=b.scrollHeight-b.clientHeight-fromBottom;

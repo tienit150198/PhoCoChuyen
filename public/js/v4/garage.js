@@ -7,6 +7,7 @@
  * shows its "+x % lợi nhuận mỗi ca" (game/garage.py bonus_now); the limited editions are listed with their number,
  * never in the shop and never sold back. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {paint as sheetPaint} from './sheet-paint.js';
 
 const S={dlg:null,env:null,tab:'',view:'list',pick:null,busy:false,flash:null,listening:false};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -120,9 +121,7 @@ async function onClick(op,data){
 /* ---- rendering ---- */
 function render(){
   if(!S.dlg)return;
-  const body=S.dlg.querySelector('.gr-body'),top=body?.scrollTop;
-  S.dlg.querySelector('.gr-root').innerHTML=page();
-  if(top)S.dlg.querySelector('.gr-body').scrollTop=top;
+  sheetPaint(S.dlg.querySelector('.gr-root'),page(),'.gr-body');   // typing a plate while the wallet moves: the keyboard stays
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
 function head(){

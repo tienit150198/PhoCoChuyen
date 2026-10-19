@@ -5,7 +5,7 @@ import test from 'node:test';
 import {escapeHTML} from '../public/js/icons.js';
 const source=readFileSync(new URL('../public/js/v4/chat.js',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
 // the stripped imports: 🎨 style-tag.js and 🏅 honours.js (a name with no `st` / `tt` draws as before)
-const STUBS={nameAttrs:()=>'',frameAttrs:()=>({cls:'',attrs:''}),titleChip:()=>'',hnChips:()=>'',hnList:()=>'',hnTitles:()=>[],inlineMax:()=>2,lxCards:m=>m,lxCard:()=>"",lxChange:()=>()=>{},lxRefresh:()=>{}};
+const STUBS={nameAttrs:()=>'',frameAttrs:()=>({cls:'',attrs:''}),titleChip:()=>'',hnChips:()=>'',hnList:()=>'',hnTitles:()=>[],inlineMax:()=>2,lxCards:m=>m,lxCard:()=>"",lxChange:()=>()=>{},lxRefresh:()=>{},sheetPaint:(el,html)=>{el.innerHTML=html;}};
 function harness(){
   const listeners=new Map(),nodes=new Map();let writes=0,html='';
   const body={dataset:{},scrollHeight:1000,scrollTop:200,clientHeight:200,onlineChecked:false,get innerHTML(){return html;},set innerHTML(v){writes++;html=v;this.onlineChecked=/data-ch-field="online" checked/.test(v);}};

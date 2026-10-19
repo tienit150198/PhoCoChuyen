@@ -27,6 +27,7 @@ import {live} from './live.js';
 import {stylesheet} from '../lazy.js';
 import {duck} from '../audio.js';
 import {error as beacon} from '../telemetry.js';
+import {paint as sheetPaint} from './sheet-paint.js';
 
 const DRIFT=.35,REACT=['👏','❤️','🔥','🌹'],YT_HOST='https://www.youtube-nocookie.com';
 const K={dlg:null,env:null,bound:false,view:'list',rooms:null,room:null,stage:null,queue:[],round:null,n:0,people:[],said:[],fx:{},cheer:0,
@@ -371,7 +372,8 @@ function paint(){
   if(K.panel==='add'){const l=dyn.querySelector('[data-kr-link]');if(l)K.link=l.value;}else if(K.panel==='round')readRound();   // keep what is typed
   const n=K.dlg.querySelector('[data-kr-n]');if(n)n.textContent=K.n;
   K.dlg.querySelector('.kr-video').hidden=!K.stage;
-  dyn.innerHTML=K.panel?panelHTML():stageHTML()+(live.flags?.kara_mic?'':'<p class="kr-note kr-nomic">🎤 Mic trực tiếp sắp có; giờ hát theo video, cả phòng xem chung</p>')+roundHTML()+queueHTML();   // B3: no voice yet, say so
+  // B3: no voice yet, say so. ⌨️ a frame (the queue, votes, a round) while a link / a clue is typed: patched, the keyboard stays
+  sheetPaint(dyn,K.panel?panelHTML():stageHTML()+(live.flags?.kara_mic?'':'<p class="kr-note kr-nomic">🎤 Mic trực tiếp sắp có; giờ hát theo video, cả phòng xem chung</p>')+roundHTML()+queueHTML());
   paintBar();paintSaid();paintMeter();
   if(K.focus){K.focus=false;dyn.querySelector('[data-kr-focus]')?.focus({preventScroll:true});}
 }
