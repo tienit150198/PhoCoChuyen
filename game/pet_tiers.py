@@ -131,6 +131,7 @@ GUP_FEE = (100, 300, 1000, 3000, 10_000, 30_000, 100_000)                # × (l
 GFUSE_FEE = (50, 200, 1000, 5000, 30_000, 500_000)
 GLV_MAX = 10
 GEAR_MAX = 60
+GEAR_QTY_MAX = 20                             # 🛍️ owner 21/10 "cho chọn số lượng mua": a purchase of one model × rank (and the bag's room)
 STROLL_DAY = 3
 GEAR_ODDS = (7000, 3000, 0, 0, 0, 0, 0)        # per 10 000, a find on a stroll: D or C
 COMMANDS = ('jr_pet_fuse', 'jr_pet_train', 'jr_pet_kennel', 'jr_pet_stroll', 'jr_pet_gear_buy', 'jr_pet_gear_up',
@@ -566,21 +567,36 @@ def action(s: dict, name: str, p: dict) -> dict:
         return dict(message=f'🎁 {pet["n"]} tha về {gear_name(g, s)}!', found=g['id'])
     x = _ensure(s)
     if name == 'jr_pet_gear_buy':
-        pt._keys(p, {'slot', 'model', 'rank', 'confirm'}, {'slot', 'model', 'rank', 'confirm'})
+        # 🛍️ owner 21/10 "mua linh kiện cho chọn số lượng": qty (absent: 1, an older client) pieces of one model and rank,
+        # each exactly the piece one purchase makes, one charge of qty × the price; none bought if the bag lacks room.
+        pt._keys(p, {'slot', 'model', 'rank', 'qty', 'confirm'}, {'slot', 'model', 'rank', 'confirm'})
         _need(p['slot'] in GSLOT_IDS and _int(p['model'], 0, 3 + len(GX_MULT) - 1) and _int(p['rank'], 0, len(GSHOP) - 1),
               'Chọn một món trong tiệm nhé.')
+        qty = p.get('qty', 1)
+        _need(_int(qty, 1, GEAR_QTY_MAX), f'Mua từ 1 đến {GEAR_QTY_MAX} món một lần nhé.')
         _need(len(x['gear']) < GEAR_MAX, f'Túi linh kiện đã đủ {GEAR_MAX} món.', 'limit')
+        room = GEAR_MAX - len(x['gear'])
+        _need(qty <= room, f'Túi linh kiện chỉ còn chỗ cho {room} món.', 'limit')
         e, nm = model_def(p['slot'], p['model'])
         price = gear_price(p['model'], p['rank'])
-        _confirm(p, f'Xác nhận mua {nm} hạng {RANKS[p["rank"]]} ({_fmt(price)} xu).')
-        how = pt._pay(s, price, f'Linh kiện thú cưng · {nm} {RANKS[p["rank"]]}')
-        g = dict(id=f'g{x["gs"]}', s=p['slot'], m=p['model'] if p['model'] < 3 else 0, r=p['rank'], lv=0)
-        x['gs'] += 1
-        x['gear'].append(g)
-        if p['model'] >= 3:
-            from . import pet_wardrobe
-            pet_wardrobe.set_model(s, g['id'], p['model'] - 3)
-        return dict(message=f'🛍️ Đã mua {gear_name(g, s)} ({how}).', gear=g['id'])
+        total = price * qty
+        times = f' ×{qty}' if qty > 1 else ''
+        _confirm(p, f'Xác nhận mua {nm} hạng {RANKS[p["rank"]]}{times} ({_fmt(total)} xu).')
+        how = pt._pay(s, total, f'Linh kiện thú cưng · {nm} {RANKS[p["rank"]]}{times}')
+        made = []
+        for _ in range(qty):
+            g = dict(id=f'g{x["gs"]}', s=p['slot'], m=p['model'] if p['model'] < 3 else 0, r=p['rank'], lv=0)
+            x['gs'] += 1
+            x['gear'].append(g)
+            made.append(g)
+            if p['model'] >= 3:
+                from . import pet_wardrobe
+                pet_wardrobe.set_model(s, g['id'], p['model'] - 3)
+        g = made[0]
+        out = dict(message=f'🛍️ Đã mua {gear_name(g, s)}{times} ({how}).', gear=g['id'])
+        if qty > 1:
+            out['gears'] = [q['id'] for q in made]
+        return out
     if name == 'jr_pet_gear_up':
         pt._keys(p, {'gear', 'confirm'}, {'gear', 'confirm'})
         g = _gear(x, p['gear'])
@@ -895,4 +911,4 @@ def catalogue() -> dict:
                           for k, v in GMODELS.items()},
                   base=list(GBASE), shop=list(GSHOP), up_fee=list(GUP_FEE), fuse_fee=list(GFUSE_FEE), lv_max=GLV_MAX),
         limits=dict(train_day=TRAIN_DAY, train_max=TRAIN_MAX, train_step=TRAIN_STEP, stroll_day=STROLL_DAY,
-                    kennel=KENNEL_MAX, gear=GEAR_MAX, lose_from=LOSE_FROM))
+                    kennel=KENNEL_MAX, gear=GEAR_MAX, lose_from=LOSE_FROM, gear_qty=GEAR_QTY_MAX))

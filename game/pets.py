@@ -367,14 +367,45 @@ def _ready_why(s: dict, price: int) -> str:
 
 
 def _pay(s: dict, price: int, label: str) -> str:
-    """Wallet first, then the bank account; the caller checked _ready_why. The sentence saying where it came from."""
+    """Wallet first, then the bank account; the caller checked _ready_why. The sentence saying where it came from.
+    One charge, however many things it pays for (a 🛍️ purchase of several, owner 21/10); a wallet part over the
+    Sổ ví row limit (journey.ROW_MAX, every release validates it) is written in several rows, as game/bang.py does."""
     if price <= 0:
         return ''
     why = _ready_why(s, price)
     _core().need(not why, why, 'not_enough')
-    how = _gr()._take(s, price, label[:120])
+    from . import journey as jr
+    j = s['journey']
+    cash = min(max(0, j['wallet']), price)
+    if cash > jr.ROW_MAX:
+        left = cash
+        while left > 0:
+            part = min(left, jr.ROW_MAX)
+            jr._wallet(j, -part, _gr().KIND, label[:120])
+            left -= part
+        rest = price - cash
+        if rest:
+            _gr()._take(s, rest, label[:120])   # the wallet is empty now: the rest comes from the account
+        how = f'{_fmt(cash)} xu tiền mặt và {_fmt(rest)} xu từ tài khoản' if rest else f'{_fmt(price)} xu tiền mặt'
+    else:
+        how = _gr()._take(s, price, label[:120])
     _ensure(s)['stats']['xu'] += price
     return how
+
+
+def room_left(s: dict) -> int:
+    """How many new pets fit at home and in the kennel (jr_pet_adopt never sends one to the grandparents')."""
+    b = get(s)
+    x = px.get(s)
+    return max(0, C.MAX_PETS - (len(b['list']) if b else 0)) + max(0, px.KENNEL_MAX - (len(x['ken']) if x else 0))
+
+
+def _nth_name(name: str, i: int) -> str:
+    """The name of the i-th pet (from 0) of one purchase: Mây, Mây 2, Mây 3 … within NAME_MAX."""
+    if not i:
+        return name
+    tail = f' {i + 1}'
+    return (name[:C.NAME_MAX - len(tail)].rstrip() or name[:1]) + tail
 
 
 def _new_pet(b: dict, day: int, bid: str, coat: int, name: str, src: str, paid: int) -> dict:
@@ -403,10 +434,18 @@ def action(s: dict, name: str, p: dict) -> dict:
     out: list = []
 
     if name == 'jr_pet_adopt':
-        _keys(p, {'from', 'i', 'breed', 'coat', 'nick', 'donate', 'confirm'}, {'from', 'nick', 'confirm'})
+        # 🛍️ owner 21/10 "mua bé … cho chọn số lượng": from the shop, qty pets of one breed and coat (absent: 1, an older
+        # client), each made exactly as one purchase makes it (its own rank roll, `p` its own price), one charge of
+        # qty × the price; none bought unless all fit at home and in the kennel. The shelter: one at a time.
+        _keys(p, {'from', 'i', 'breed', 'coat', 'nick', 'donate', 'qty', 'confirm'}, {'from', 'nick', 'confirm'})
         src = p['from']
         need(src in SOURCES, 'Chọn nhận nuôi hoặc mua ở tiệm nhé.')
         need(px.has_room(s), f'Nhà và trại nuôi đều đã đầy. Gửi một bé về quê với bà trước nhé.', 'limit')
+        qty = p.get('qty', 1)
+        need(_int(qty, 1, C.BUY_QTY_MAX if src == 'shop' else 1),
+             f'Mua từ 1 đến {C.BUY_QTY_MAX} bé một lần nhé.' if src == 'shop' else 'Nhận nuôi từng bé một nhé.')
+        room = room_left(s)
+        need(qty <= room, f'Nhà và trại nuôi chỉ còn chỗ cho {room} bé.', 'limit')
         pet_name = _name(p['nick'])
         donate = p.get('donate', 0)
         need(_int(donate, 0, C.DONATE_MAX), 'Số xu ủng hộ không hợp lệ.')
@@ -423,32 +462,47 @@ def action(s: dict, name: str, p: dict) -> dict:
             need(_int(coat, 0, len(C.BREEDS[bid]['coats']) - 1), 'Chọn một màu lông nhé.')
             price = C.BREEDS[bid]['price']
         br = C.BREEDS[bid]
-        need(p['confirm'] is True, f'Xác nhận đón bé {br["name"]} về nhà.')
-        total = price + donate
+        times = f' ×{qty}' if qty > 1 else ''
+        need(p['confirm'] is True, f'Xác nhận đón bé {br["name"]}{times} về nhà.')
+        total = price * qty + donate
         why = _ready_why(s, total)
         need(not why, why, 'not_enough')
-        how = _pay(s, price, f'Thú cưng · {br["name"]} {pet_name}') if price else ''
+        how = _pay(s, price * qty, f'Thú cưng · {br["name"]} {pet_name}{times}') if price else ''
         gift = _pay(s, donate, 'Ủng hộ Nhóm cứu hộ Chân Nhỏ') if donate else ''
         b = _ensure(s)
         if donate:
             b['stats']['donated'] += donate
-        pet = _new_pet(b, day, bid, coat, pet_name, src, price)
-        where = px.place_new(s, pet)
-        rec = px.on_new(s, pet, src)
-        rank = px.RANKS[rec['r']]
+        made = []
+        for k in range(qty):
+            pet = _new_pet(b, day, bid, coat, _nth_name(pet_name, k), src, price)
+            where = px.place_new(s, pet)
+            rec = px.on_new(s, pet, src)
+            made.append((pet, where, rec['r']))
+        pet, where, r0 = made[0]
+        rank = px.RANKS[r0]
+        top = max(r for _, _, r in made)
         if src == 'shelter':
             b['today'].append(f'a{p["i"]}')
             b['stats']['adopted'] += 1
             msg = f'🏠 {pet_name} về nhà mới rồi!'
         else:
-            b['stats']['bought'] += 1
-            msg = f'🐾 {pet_name} về nhà! ({how})'
-        msg += f' Bé là hạng {rank}' + ('!!! 🌈' if rec['r'] >= 5 else '!' if rec['r'] >= 3 else '.')
-        if where == 'ken':
+            b['stats']['bought'] += qty
+            msg = f'🐾 {pet_name} về nhà! ({how})' if qty == 1 else f'🐾 {qty} bé {br["name"]} về nhà! ({how})'
+        if qty == 1:
+            msg += f' Bé là hạng {rank}' + ('!!! 🌈' if r0 >= 5 else '!' if r0 >= 3 else '.')
+        else:
+            msg += ' Hạng: ' + ', '.join(f'{q["n"]} {px.RANKS[r]}' for q, _, r in made) + ('!!! 🌈' if top >= 5 else '!' if top >= 3 else '.')
+        ken = sum(1 for _, w, _ in made if w == 'ken')
+        if ken and qty == 1:
             msg += ' Nhà đã đủ chỗ nên bé ở trại nuôi.'
+        elif ken:
+            msg += f' Nhà đã đủ chỗ nên {ken} bé ở trại nuôi.'
         if gift:
             msg += ' 💗 Chân Nhỏ cảm ơn bạn!'
-        return dict(message=msg, rank=rank, pet=pet['id'])
+        out = dict(message=msg, rank=rank, pet=pet['id'])
+        if qty > 1:
+            out['pets'] = [q['id'] for q, _, _ in made]
+        return out
 
     if name == 'jr_pet_donate':
         _keys(p, {'amount', 'confirm'}, {'amount', 'confirm'})
@@ -689,7 +743,7 @@ def catalogue() -> dict:
                 slots=[dict(id=a, emoji=b, name=c) for a, b, c in C.SLOTS],
                 tricks={k: [dict(id=t[0], emoji=t[1], name=t[2], at=t[3]) for t in v] for k, v in C.TRICKS.items()},
                 bath=dict(C.BATH), groom=dict(C.GROOM, cat=C.GROOM_CAT), vet=dict(C.VET), vaccine=dict(C.VACCINE),
-                play_free=C.PLAY_FREE, full=C.FULL, low=C.LOW, max=C.MAX_PETS, name_max=C.NAME_MAX,
+                play_free=C.PLAY_FREE, full=C.FULL, low=C.LOW, max=C.MAX_PETS, name_max=C.NAME_MAX, buy_qty=C.BUY_QTY_MAX,
                 shelter=C.SHELTER_NAME, shop=C.SHOP_NAME, donate=list(C.DONATE),
                 poses=[dict(id=a, name=b) for a, b in C.POSES], frames=[dict(id=a, emoji=b, name=c) for a, b, c in C.FRAMES],
                 tiers=px.catalogue(), wardrobe=pw.catalogue())
