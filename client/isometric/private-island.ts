@@ -1,18 +1,21 @@
 import Phaser from 'phaser';
 // @ts-ignore The illustrated atlas adapter preserves the game's actual wardrobe.
 import {getCharacterStamp} from '/js/isometric/character-art.js';
+import {paintPlot,type BuiltItem} from './island-builds';
 
 /** 🏝️ Đảo riêng on the new interface: one private island (public/js/island-layout.js) drawn isometrically.
  * The scene controller (public/js/v4/island-scene.js) owns walking, the live room and the overlays (names, bubbles);
  * this only paints: the sea, the coast, the villa, palms, the island's own art, the people and the boat or plane that
- * brought them. Map positions are fractions of the island's square (x east, y south), as on the old interface. */
+ * brought them. Map positions are fractions of the island's square (x east, y south), as on the old interface.
+ * 🏗️ setBuilds(): the building plots and what stands on them (island-builds.ts), painted again when they change. */
 type Pt=[number,number];
 type Facing='se'|'sw'|'ne'|'nw';
 interface Rect {x:number;y:number;w:number;h:number}
 export interface IslandLayout {
   sea:string;deep:string;sand:string;grass:string;grassDark:string;rock?:string;shore:Pt[];sandWidth:number;palms:Pt[];
   villa:Rect&{floors:number;roof:string;wall:string};dock:Rect;pad:{x:number;y:number;kind:string};
-  spots:Array<{id:string;emoji:string;x:number;y:number}>;deco:Array<{t:string;x:number;y:number;r?:number;w?:number;h?:number}>;walk?:Rect[];
+  spots:Array<{id:string;emoji:string;x:number;y:number;build?:unknown}>;deco:Array<{t:string;x:number;y:number;r?:number;w?:number;h?:number}>;walk?:Rect[];
+  plots?:Array<[number,number,number]>;
 }
 export interface IslandPerson {id:string;x:number;y:number;look:any;gender:string;dir:Facing;walking:boolean;pose?:string;hidden?:boolean}
 export interface IslandFrame {people:IslandPerson[];vehicle?:{kind:string;big?:boolean;x:number;y:number;lift:number;dir:number}|null;focus?:Pt|null}
@@ -44,6 +47,9 @@ export class PrivateIslandRenderer {
   private canvas:HTMLCanvasElement;
   private destroyed=false;
   private resizeObserver:ResizeObserver|null=null;
+  private plotArt:Phaser.GameObjects.GameObject[]=[];
+  private built:BuiltItem[]|null=null;
+  private builtKey='';
 
   constructor(canvas:HTMLCanvasElement,layout:IslandLayout){
     this.canvas=canvas;this.layout=layout;
@@ -54,6 +60,19 @@ export class PrivateIslandRenderer {
       render:{antialias:true,roundPixels:false,pixelArt:false},scale:{mode:Phaser.Scale.NONE,autoCenter:Phaser.Scale.NO_CENTER},
       scene:{key:'private-island',create(this:Phaser.Scene){owner.scene=this;owner.paint();owner.resize();done();},update(this:Phaser.Scene){owner.tick(this.time.now);}}});
     if(typeof ResizeObserver==='function'){this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(canvas.parentElement||canvas);}
+  }
+
+  /** 🏗️ What stands on the plots now (public/js/island-layout.js withBuilds().built): painted again only when it changed. */
+  setBuilds(built:BuiltItem[]){
+    const key=JSON.stringify(built.map(b=>[b.plot,b.kind,b.level,b.work,b.next]));
+    if(key===this.builtKey&&this.built)return;
+    this.builtKey=key;this.built=built;if(this.scene)this.paintPlots();
+  }
+  private paintPlots(){
+    const s=this.scene;if(!s||this.destroyed)return;
+    for(const o of this.plotArt)o.destroy();this.plotArt=[];
+    const plots=this.layout.plots||[],rand=seeded(plots.length*131+7);
+    plots.forEach(([x,y,coast],i)=>{const it=(this.built||[]).find(b=>b.plot===i)||null;this.plotArt.push(...paintPlot(s,it,{x,y,coast:Boolean(coast)},rand));});
   }
 
   /** The newest people and vehicle; Phaser draws them on its next tick. */
@@ -133,7 +152,8 @@ export class PrivateIslandRenderer {
     }
     const v=L.villa;this.box(v.x,v.y,v.w,v.h,34*v.floors,hex(v.wall),hex(v.roof),26,v.floors);
     for(const [x,y] of L.palms)this.palm(x,y,rand);
-    for(const sp of L.spots){const [a,b]=iso(sp.x,sp.y);
+    this.paintPlots();
+    for(const sp of L.spots){if(sp.build)continue;const [a,b]=iso(sp.x,sp.y);
       const ring=s.add.ellipse(a,b,46,22,0xffffff,.28).setStrokeStyle(2,0xffffff,.8).setDepth(b-2);
       const icon=s.add.text(a,b-30,sp.emoji,{fontSize:'26px'}).setOrigin(.5,1).setDepth(b+1);
       s.tweens.add({targets:icon,y:b-38,duration:1400+rand()*500,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});void ring;}

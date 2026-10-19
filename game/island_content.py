@@ -13,7 +13,11 @@ cheapest island sits around the top-10 wallets and the dearest is a long goal ev
   game/lux_content.py ASSETS (those ids are stored in saves and never renamed; this table never renames them either).
   ARRIVE: where it lands (boat: the pier, heli: the helipad, plane: the island's strip). A boat or plane id this table
   does not know yet (a newer garage model) takes GROUP_SEATS of its garage group; anything else cannot carry guests.
-* A trip (game/island_trips.py) lasts SESSION_MIN minutes, the owner can end it sooner; going alone needs no vehicle.
+* A trip (game/island_trips.py) has no time limit since 19/10 (owner: "thời gian lên đảo thoải mái"): it stays open
+  until the owner ends it, the island is sold, the save is reset or imported; going alone needs no vehicle. Its row
+  still gets an `ends` (UNLIMITED_SECS ahead) so an older build reading island_trips.ends keeps the trip open.
+  SESSION_MIN stays for the catalogue of older clients only. The owner may open it to everyone (PUBLIC_CAP people on
+  the island at most, the owner and friends aboard included).
 Ids are stored in saves and in the island_trips table: never rename or remove one (retire it with `gone: True`).
 """
 
@@ -32,7 +36,9 @@ ISLANDS = (
          desc='Đường băng riêng, ngọn hải đăng, dinh thự ba tầng và hồ bơi tràn bờ.'),
 )
 SELL_PCT = 60                 # bought back at 60 % of the price paid (like the villas)
-SESSION_MIN = 60              # one trip on the island: 60 minutes, the owner may end it sooner
+SESSION_MIN = 60              # before 19/10 a trip lasted 60 minutes: kept for older clients' catalogue only
+UNLIMITED_SECS = 10 * 365 * 86400   # 19/10: no limit; island_trips.ends is filled this far ahead (older builds read it)
+PUBLIC_CAP = 40               # 🌍 an island open to everyone: at most this many people on it (the live room's cap)
 INVITE_MAX = 30               # invitations (pending or aboard) on one trip at most
 
 # vehicle id -> (seats, the owner included; where it arrives). Never rename a key: they are game/garage.py and

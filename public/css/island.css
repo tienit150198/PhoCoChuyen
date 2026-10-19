@@ -34,7 +34,7 @@
 /* On the island: a fullscreen dialog, the canvas in the middle. */
 dialog.isl-scene{position:fixed;inset:0;margin:0;padding:0;width:100vw;max-width:none;height:100vh;height:100dvh;max-height:none;border:0;border-radius:0;background:#2f8aa6;color:#4a3628;overflow:hidden;box-sizing:border-box}
 .isl-scene::backdrop{background:#16384a}
-.isl-layout{display:flex;flex-direction:column;height:100%;min-height:0}
+.isl-layout{position:relative;display:flex;flex-direction:column;height:100%;min-height:0}
 .isl-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:max(8px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) 8px max(14px,env(safe-area-inset-left));background:#fff6e4;border-bottom:1px solid #e0c79f;flex:none}
 .isl-title{min-width:0}
 .isl-top h2{font-size:18px;line-height:1.2;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -64,3 +64,55 @@ dialog.isl-scene{position:fixed;inset:0;margin:0;padding:0;width:100vw;max-width
 .isl-scene .btn{border-radius:12px}
 @media(max-width:600px){.isl-top h2{font-size:16px}.isl-top-actions .btn{padding:6px 10px;font-size:13px}.isl-top p{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.isl-ping,.isl-emote{animation:none}}
+
+/* 🏗️ Xây: the island's plots on a small map (v4/island.js build tab), one square button per plot at its map position. */
+.isl-build{padding:8px}
+.isl-map{position:relative;width:100%;max-width:520px;margin:0 auto;border-radius:14px;overflow:hidden;background:#58b4c8;box-shadow:inset 0 0 0 1px #0000001a}
+.isl-mini{position:absolute;inset:0;width:100%;height:100%;display:block}
+.isl-sheet .isl-map>.isl-plot{position:absolute;transform:translate(-50%,-50%);min-width:26px;min-height:26px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:0;
+  border:2px dashed #ffffffcc;border-radius:10px;background:#ffffff33;color:#3b2a1d;font:inherit;cursor:pointer;touch-action:manipulation}
+.isl-plot span{font-size:clamp(14px,3.8vw,26px);line-height:1}
+.isl-plot small{position:absolute;right:-5px;bottom:-5px;min-width:15px;font-size:10px;font-weight:800;line-height:15px;text-align:center;white-space:nowrap;color:#3b2a1d;background:#ffd75a;border-radius:8px;padding:0 3px;box-shadow:0 1px 2px #0003}
+.isl-plot.work small{background:#fff}
+.isl-sheet .isl-map>.isl-plot.built{border-style:solid;border-color:#fffaf0;background:#fffaf0b3}
+.isl-sheet .isl-map>.isl-plot.work{border-color:#f2b630;background:#ffe9a8cc}
+.isl-sheet .isl-map>.isl-plot.on{outline:3px solid var(--accent,#c0603a);outline-offset:1px;z-index:1}
+.isl-sheet .isl-map>.isl-plot:focus-visible{outline:3px solid #ffd75a;outline-offset:2px}
+.isl-crews{text-align:center;margin:8px 0 0}
+.isl-why{background:var(--bad-soft,#fde4dc)!important;color:var(--bad,#a0452c)!important}
+.sd-item[aria-disabled="true"]{opacity:.62}
+
+/* 🌍 Đảo mở cửa: the owner's switch, the list of open islands */
+.isl-pub{display:flex;align-items:center;gap:10px;margin:10px 0;padding:10px 12px;border:1px solid var(--line,#e2d4bf);border-radius:14px;background:var(--surface-2,#fbf5ea)}
+.isl-pub.on{border-color:var(--good,#3d7d4f);background:var(--good-soft,#e6f3e8)}
+.isl-pub>div{flex:1;min-width:0;display:grid;gap:2px}
+.isl-pub small{color:var(--muted,#7a6a5c)}
+.isl-pub .btn{flex:none;min-height:44px}
+.isl-opens{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.isl-open{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line,#e2d4bf);border-radius:14px;background:var(--surface-2,#fbf5ea)}
+.isl-open>div{flex:1;min-width:0;display:grid;gap:2px}
+.isl-open b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.isl-open small{color:var(--muted,#7a6a5c);overflow:hidden;text-overflow:ellipsis}
+.isl-open .btn{flex:none;min-height:44px;min-width:92px}
+.isl-open-ico{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;font-size:24px;background:linear-gradient(180deg,#bfe7f0,#7ac3d6 60%,#f2dfae 61%)}
+.isl-open-ico.isl-san_ho{background:linear-gradient(180deg,#c9f1ef,#62c9cc 60%,#f7ead0 61%)}
+.isl-open-ico.isl-may_da{background:linear-gradient(180deg,#d6e2ea,#7fa9bd 60%,#cbb994 61%)}
+.isl-open-ico.isl-hoang_hon{background:linear-gradient(180deg,#ffd6a5,#e59a6a 55%,#f6d6a6 61%)}
+
+/* On the island: the owner's 🏗️, the buildings' spot chips, ⏳ under each construction site, a home's inside */
+.isl-build-btn{font-size:20px;padding:0 8px}
+.isl-chip-b{border-color:#9bc48a;background:#f3fbec}
+.isl-sign{position:absolute;left:0;top:0;padding:1px 7px;border-radius:9px;background:#f2b630;color:#3b2a1d;font-size:11px;font-weight:800;white-space:nowrap;box-shadow:0 1px 4px #0003}
+.isl-inside{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));background:#1b3242e6;animation:isl-up .25s ease-out}
+.isl-room{position:relative;width:min(520px,100%,calc((100vh - 130px) * 1.6));aspect-ratio:16/10;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px #0006;background:var(--floor)}
+.isl-room-wall{position:absolute;left:0;right:0;top:0;height:58%;background:linear-gradient(180deg,#0000,#0000002e),var(--wall)}
+.isl-room-floor{position:absolute;left:0;right:0;bottom:0;height:42%;background:repeating-linear-gradient(90deg,#0000 0 38px,#00000024 38px 40px),var(--floor)}
+.isl-room-window{position:absolute;left:38%;top:14%;width:24%;height:52%;border:5px solid #fff8ea;border-radius:8px;background:linear-gradient(180deg,#9fd7ef,#58b4c8 62%,#f2dfae 63%);box-shadow:inset 0 0 0 2px #0001}
+.isl-room-lamp{position:absolute;left:50%;top:0;transform:translateX(-50%);font-size:26px}
+.isl-room-item{position:absolute;transform:translateX(-50%);line-height:1;filter:drop-shadow(0 3px 2px #0003)}
+.isl-inside-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;width:min(520px,100%);padding:8px 12px;border-radius:14px;background:#fff6e4}
+.isl-inside-bar p{flex:1;min-width:160px;margin:0;font-size:14px}
+.isl-inside-bar .btn{min-height:44px}
+@media(max-height:500px){.isl-inside{gap:8px;padding:8px max(16px,env(safe-area-inset-right)) 8px max(16px,env(safe-area-inset-left))}.isl-room{width:min(520px,100%,calc((100vh - 96px) * 1.6))}}
+@media(prefers-reduced-motion:reduce){.isl-inside{animation:none}}

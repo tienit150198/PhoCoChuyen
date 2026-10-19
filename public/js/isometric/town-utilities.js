@@ -53,7 +53,7 @@ export function townUtilityGroups(state={},content={},social={}){
       ['gadgets','phone','📱','Điện thoại & đồ công nghệ'],
       ['rui','shield','🛡️','Bảo hiểm'],['jrInvest','coin','📈','Đầu tư'],
       ['quay','store','🏪','Quầy của bạn'],
-      ['lux','bag','🛍️','Mua sắm'],['island','boat','🏝️','Đảo riêng'],['auction','award','🔨','Nhà đấu giá'],
+      ['lux','bag','🛍️','Mua sắm'],['island','boat','🏝️','Đảo riêng'],['island','home','🏗️','Xây trên đảo',{tab:'build'},'island-build'],['auction','award','🔨','Nhà đấu giá'],
       ['auctionLands','map','🏞️','Đấu giá danh thắng'],
     ])},
     {id:'life',icon:'paw',label:'Đời sống & đi chơi',items:entries([
@@ -62,7 +62,7 @@ export function townUtilityGroups(state={},content={},social={}){
       ['pets','award','🏆','Bé cưng của tuần',{tab:'board'},'pets-board'],
       ['stView','home','👶','Chăm con riêng & thú cưng',{view:'household'},'household'],
       ['spendQuan','coffee','☕','Cà phê & quán ăn'],['spendSpa','sparkle','🪷','Spa'],['spendRap','camera','🎬','Rạp phim'],['spendChua','home','🙏','Công đức'],
-      ['spendStyle','sparkle','🎨','Phong cách'],['lixi','gift','🧧','Lì xì'],['luxFw','sparkle','🎆','Bắn pháo hoa'],
+      ['spendStyle','sparkle','🎨','Phong cách'],['lixi','gift','🧧','Lì xì'],['luxFw','sparkle','🎆','Bắn pháo hoa'],['island','globe','🌍','Đảo mở cửa',{tab:'inv'},'island-open'],
       ['luxTrip','pilot','✈️','Du lịch'],['luxSuu','award','🏺','Sưu tầm'],['luxNha','home','🏰','Dinh thự'],['luxBay','pilot','🛩️','Bay riêng'],
       ['luxTiec','people','🎉','Mở tiệc'],['luxHoc','book','📚','Khóa học'],['luxMtq','heart','💝','Mạnh Thường Quân'],
     ])},

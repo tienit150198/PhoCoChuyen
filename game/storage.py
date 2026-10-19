@@ -738,6 +738,9 @@ class Store:
                 if action in ('jr_island_sell','reset_all','import_save'):
                     from . import island_trips
                     island_trips.command_commit(db,sid,action,current)  # 🏝️ an island no longer owned ends its open trip
+                if action.startswith('jr_isle_') or action in ('jr_island_sell','jr_island_buy','reset_all','import_save'):
+                    from . import island_build
+                    island_build.command_commit(db,sid,action,current)  # 🏗️ island_builds follows the save; a use is checked on the island
                 if action.startswith('jr_lixi_'):
                     from . import lixi
                     lixi.command_commit(db,sid,action,current,result)  # 🧧 the lixi_packets row (too soon / too many refuses: nothing paid)
@@ -839,6 +842,9 @@ class Store:
             if action in ('jr_island_sell','reset_all','import_save'):
                 from . import island_trips
                 island_trips.command_commit(db,sid,action,raw)  # 🏝️ an island no longer owned ends its open trip
+            if action.startswith('jr_isle_') or action in ('jr_island_sell','jr_island_buy','reset_all','import_save'):
+                from . import island_build
+                island_build.command_commit(db,sid,action,raw)  # 🏗️ island_builds follows the save; a use is checked on the island
             if action.startswith('jr_lixi_'):
                 from . import lixi
                 lixi.command_commit(db,sid,action,raw,result)  # 🧧 the lixi_packets row (too soon / too many refuses: nothing paid)
@@ -891,6 +897,8 @@ class Store:
             town_projects.forget(db,sid)  # 🏗️ the town's plaques keep what they gave, as anonymous
             from . import island_trips
             island_trips.forget(db,sid)  # 🏝️ their open trip ends, their seats go
+            from . import island_build
+            island_build.forget(db,sid)  # 🏗️ their buildings leave the open-island list and the board
             from . import auction
             auction.forget(db,sid)  # 🔨 past wins stay in the history under the name shown then
             from . import dog_bark

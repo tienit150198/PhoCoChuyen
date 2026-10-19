@@ -16,6 +16,7 @@ const BOARDS={
   collection:['Sưu tầm',[['🏺','Bộ sưu tập huyền thoại'],['🔨','Nhà sưu tầm đấu giá'],['💠','Hội sưu tầm']]],
   online:['Online',[['🦉','Cú đêm của phố'],['🌙','Thức cùng ánh trăng'],['🏮','Hội cú đêm']]],
   pets:['Thú cưng',[['🐉','Vua thú cưng của phố'],['🦄','Sen cưng siêu cấp'],['🐾','Hội sen yêu bé']]],
+  island:['Đảo đẹp',[['🏝️','Đảo đẹp nhất phố'],['🌴','Chủ đảo mộng mơ'],['⛱️','Hội chủ đảo xinh']]],   // 🏝️ game/island_lb.py (19/10)
 };
 const tierOf=r=>r===1?0:r<=3?1:2;
 // game/lb_titles.py CAREER_NOUN (a workplace board's top 1 is "🏆 Trùm <noun>"), CAREER_TITLE (no "Trùm" there)

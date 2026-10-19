@@ -66,7 +66,8 @@ class Trips(Base):
         out = self.post(self.a, 'start', island='dao_dua', vehicle='thuyen_buom')
         t = out['trip']
         self.assertEqual((t['seats'], t['kind'], t['aboard'], t['island']['id']), (4, 'boat', 1, 'dao_dua'))
-        self.assertAlmostEqual(t['ends'] - mr.now(), C.SESSION_MIN * 60)
+        self.assertAlmostEqual(t['ends'] - mr.now(), C.UNLIMITED_SECS)   # 19/10: no time limit (older builds read `ends`)
+        self.assertTrue(t['unlimited'])
         self.err(self.a, 'start', 'busy', island='dao_dua', vehicle='')                    # one open trip at a time
         self.assertEqual(self.access(t['id'], self.a), 'owner')
 
@@ -169,12 +170,17 @@ class Trips(Base):
         self.assertEqual((self.seat(trip, self.f[0]), self.seat(other, self.f[0])), ('left', 'aboard'))
 
     # ---- the hour, the end, a sale ------------------------------------------------------------------------------
-    def test_the_hour_ends_it(self):
+    def test_no_time_limit_but_an_older_builds_hour_still_ends_its_trip(self):
         trip = self.start()
         self.invite(trip, self.f[0])
         self.post(self.f[0], 'answer', trip=trip, answer='accept')
         self.assertEqual(self.access(trip, self.f[0]), 'guest')
-        self.clock.t += C.SESSION_MIN * 60 + 1
+        self.clock.t += 30 * 86400                                                            # a month later: still there
+        self.assertEqual(self.access(trip, self.f[0]), 'guest')
+        self.assertEqual(self.get(self.a)['trip']['id'], trip)
+        # a trip an older build started (2.4.60: ends = created + 60 min) still ends when its hour is over
+        self.store.transaction(lambda db: db.execute('UPDATE island_trips SET ends=? WHERE id=?', (mr.now() + 60, trip)))
+        self.clock.t += 61
         self.assertIsNone(self.access(trip, self.f[0]))
         self.assertIsNone(self.access(trip, self.a))
         self.assertIsNone(self.get(self.a)['trip'])

@@ -9,7 +9,8 @@
   (never below 0, kind 'upkeep'), then the bank account; what both lack is waived, never owed. Nothing before
   `upk.since` is billed.
 * Selling back (jr_island_sell {id, confirm}): SELL_PCT % of the price paid into the wallet (rows of ≤ ROW_MAX); an
-  open trip to it ends with the sale (game/island_trips.py command_commit, in the save's transaction).
+  open trip to it ends with the sale (game/island_trips.py command_commit, in the save's transaction). Its buildings
+  (game/island_build.py, journey.islb) are razed with it: their salvage comes back too.
 * Trips with friends live in PostgreSQL (game/island_trips.py) and the live service (live/island.py), never here.
 
 State `s['journey']['island']` (absent until the first purchase; journey.validate allows extra keys, so 2.4.34 and
@@ -303,15 +304,19 @@ def _sell(s: dict, p: dict) -> dict:
     it = ISLAND.get(p['id']) if isinstance(p['id'], str) else None
     need(it is not None and b is not None and it['id'] in b['own'], 'Bạn chưa có hòn đảo này.', 'not_owned')
     back = sell_price(b['own'][it['id']]['p'])
+    from . import island_build as ib
+    built = ib.sell_back(s, it['id'])   # 🏗️ its buildings are razed with it: their salvage comes back too
     j = s['journey']
-    need(j['wallet'] + back <= PRICE_MAX, 'Ví đã quá đầy. Gửi bớt vào ngân hàng rồi bán nhé.', 'limit')
-    need(p.get('confirm') is True, f'Xác nhận bán {it["name"]} lấy {_fmt(back)} xu.')
+    need(j['wallet'] + back + built <= PRICE_MAX, 'Ví đã quá đầy. Gửi bớt vào ngân hàng rồi bán nhé.', 'limit')
+    need(p.get('confirm') is True, f'Xác nhận bán {it["name"]} lấy {_fmt(back + built)} xu.')
     b = _ensure(s)
     b['own'].pop(it['id'])
     b['stats']['sold'] += 1
     if back:
         _wallet_rows(j, back, KIND, f'Bán lại · {it["name"]}')
-    return dict(message=f'Đã bán {it["name"]}, nhận {_fmt(back)} xu vào ví. Chuyến ra đảo đang mở (nếu có) cũng kết thúc.')
+    built = ib.on_sell(s, it['id'])
+    extra = f' Công trình trên đảo được phá dỡ, thu hồi vật liệu {_fmt(built)} xu.' if built else ''
+    return dict(message=f'Đã bán {it["name"]}, nhận {_fmt(back)} xu vào ví.{extra} Chuyến ra đảo đang mở (nếu có) cũng kết thúc.')
 
 
 # ---------------------------------------------------------------- views
@@ -339,6 +344,7 @@ def worth(j: dict) -> int:
 def catalogue() -> dict:
     """Static lists for the client (bootstrap content, cached)."""
     from . import garage
+    from . import island_build as ib
     seats = {vid: dict(seats=n, arrive=k) for vid, (n, k) in C.SEATS.items()}
     for vid, v in garage.VEHICLES.items():
         if vid not in seats and v['group'] in C.GROUP_SEATS:
@@ -346,4 +352,5 @@ def catalogue() -> dict:
             seats[vid] = dict(seats=n, arrive=k)
     return dict(islands=[dict(i, month=month_of(i['id'], i['price']), sell=sell_price(i['price'])) for i in C.ISLANDS if not i.get('gone')],
                 seats=seats, arrive=dict(C.ARRIVE), sell_pct=C.SELL_PCT, minutes=C.SESSION_MIN, invite_max=C.INVITE_MAX,
-                month_days=bk.MONTH_DAYS)
+                month_days=bk.MONTH_DAYS, unlimited=True, public_cap=C.PUBLIC_CAP,   # 19/10: a trip has no time limit (`minutes`: for older clients)
+                build=ib.catalogue())   # 🏗️ Xây trên đảo (game/island_build.py)

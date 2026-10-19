@@ -23,6 +23,16 @@ html[data-layout="phone"] .lb-kinds.seven>button:last-child{grid-column:span 2}
   .lb-kinds.seven{grid-template-columns:repeat(2,minmax(0,1fr))}
   .lb-kinds.seven>button:last-child{grid-column:span 2}
 }
+/* 🏝️ Đảo đẹp (19/10): eight tabs (nine with 💍), four a row; two a row on a phone, the odd last one wide */
+.lb-kinds.eight,.lb-kinds.nine{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-1)}
+.lb-kinds.eight>button,.lb-kinds.nine>button{min-width:0;padding:var(--sp-1);font-size:var(--fs-2)}
+.lb-kinds.nine>button:last-child{grid-column:span 4}
+html[data-layout="phone"] .lb-kinds.eight,html[data-layout="phone"] .lb-kinds.nine{grid-template-columns:repeat(2,minmax(0,1fr))}
+html[data-layout="phone"] .lb-kinds.nine>button:last-child{grid-column:span 2}
+@media(max-width:700px){
+  .lb-kinds.eight,.lb-kinds.nine{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lb-kinds.nine>button:last-child{grid-column:span 2}
+}
 .lb-kinds>button{min-height:44px;font-size:.967rem;gap:6px}
 .lb-kinds.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
 .lb-kinds.five{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}   /* + 💍 Khách mời của tuần */

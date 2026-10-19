@@ -19,7 +19,7 @@ const stars=v=>v?`${Number(v).toLocaleString('vi-VN',{minimumFractionDigits:1,ma
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const btn=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
 const MEDALS=['🥇','🥈','🥉'];
-const OWN=['certs','titles','wealth','collection','online','pets'];   // boards with their own tab
+const OWN=['certs','titles','wealth','collection','online','pets','island'];   // boards with their own tab
 /** 🦉 "12h05" / "45 phút": the online board's time (game/online_board.py, seconds). */
 const dur=s=>{const m=Math.floor((s||0)/60),h=Math.floor(m/60);return h?`${fmt(h)}h${String(m%60).padStart(2,'0')}`:`${m} phút`;};
 
@@ -62,6 +62,7 @@ const placeOf=(api,id)=>{const m=metaOf(api,id);return m.place||m.short||id;};
 const careerIds=api=>api.content.catalogue.map(m=>m.id).filter(id=>api.state.careers?.[id]);
 
 function rule(api,board){
+  if(board==='island')return 'Hòn đảo đẹp nhất của mỗi người: mỗi cấp công trình đã xây xong cộng điểm (lâu đài nhiều nhất), thêm điểm cho mỗi loại công trình khác nhau. Đang xây chưa tính. Chỉ có danh hiệu, không có tiền.';
   if(board==='pets')return 'Mỗi người góp bé mạnh nhất của mình, xếp theo 💪 lực chiến: hạng, chỉ số, huấn luyện và linh kiện. Bằng nhau thì ai đạt trước đứng trên.';
   if(board==='online')return 'Thời gian chơi trong tuần này, từ thứ Hai đến Chủ nhật (giờ Việt Nam). Chỉ tính lúc đang chơi: rời tay quá 10 phút thì dừng đếm. Thứ Hai bắt đầu lại từ đầu, và giờ chơi đầu tiên của tuần chưa tính lên bảng.';
   if(board==='collection')return 'Đồ đấu giá đã nhận: phổ thông 10, quý hiếm 40, huyền thoại 120 điểm. Bằng điểm: nhiều món hơn, nhiều huyền thoại hơn, rồi ai đạt trước. Số đặt riêng ngoài danh mục chưa tính điểm. Giá trả không tăng điểm.';
@@ -73,6 +74,7 @@ function rule(api,board){
 }
 /** The small line under a name: the one or two numbers that break ties. */
 function statsLine(board,r){
+  if(board==='island')return [r.island?`${r.island.emoji} ${r.island.name}`:'',r.built?`🏗️ ${fmt(r.built)} công trình`:''].filter(Boolean).join(' · ');
   if(board==='pets')return petLine(r);
   if(board==='online')return 'Thời gian chơi tuần này';
   if(board==='collection')return `${fmt(r.items)} độc bản · ${fmt(r.legendary)} huyền thoại`;
@@ -83,6 +85,7 @@ function statsLine(board,r){
   return [`Cấp ${fmt(r.level)}`,`${fmt(r.days)} ngày`,stars(r.stars)].filter(Boolean).join(' · ');
 }
 function scoreBox(board,r){
+  if(board==='island')return `<span class="lb-score"><b>✨ ${fmt(r.score)}</b><small>điểm đẹp</small></span>`;
   if(board==='pets')return `<span class="lb-score"><b>💪 ${fmt(r.score)}</b><small>lực chiến</small></span>`;
   if(board==='online')return `<span class="lb-score"><b>${dur(r.score)}</b><small>online</small></span>`;
   if(board==='collection')return `<span class="lb-score"><b>${fmt(r.score)}</b><small>điểm sưu tầm</small></span>`;
@@ -166,6 +169,7 @@ function meCard(env,board,d){
       :board==='collection'?'Nhận món độc bản đầu tiên từ nhà đấu giá để lên bảng.'
       :board==='online'?onlineWait(me)
       :board==='pets'?'Bạn chưa nuôi bé nào. Nhận nuôi một bé ở 🐾 Thú cưng để có tên trên bảng.'
+      :board==='island'?'Mua một hòn đảo rồi xây nhà, hồ bơi, công viên… trên đó để có tên trên bảng.'
       :board==='titles'?'Bạn chưa có danh hiệu nào. Hoàn thành việc đầu tiên là có ngay.'
       :board==='certs'?'Bạn chưa có chứng chỉ nào. Thi đỗ chứng chỉ đầu tiên để có tên trên bảng này.'
       :board==='all'?'Hoàn thành việc đầu tiên để có tên trên bảng này.':`Bạn chưa làm ở ${placeOf(api,board)}. Làm việc đầu tiên ở đó để có tên trên bảng này.`;
@@ -181,6 +185,7 @@ function meCard(env,board,d){
 }
 
 function emptyText(api,board){
+  if(board==='island')return ['Chưa đảo nào lên bảng','Xây công trình đầu tiên trên đảo riêng để mở hàng nhé.'];
   if(board==='pets')return ['Chưa có bé nào lên bảng','Nhận nuôi một bé, chăm, huấn luyện và ghép lên hạng để có tên nhé.'];
   if(board==='online')return ['Tuần mới vừa bắt đầu','Chưa ai lên bảng tuần này. Chơi một lúc là có tên nhé.'];
   if(board==='collection')return ['Chưa có nhà sưu tầm','Nhận món đấu giá đầu tiên để có điểm sưu tầm.'];
@@ -228,9 +233,9 @@ function wedBody(env){
 
 /** Seven board kinds (🐾 Thú cưng since 19/10), eight with 💍 Khách mời; two readable columns on a phone. */
 function kindsHTML(tab){
-  const tabs=[tab('exp','Trải nghiệm','🏆'),tab('titles','Danh hiệu','🎖️'),tab('certs','Chứng chỉ','📜'),tab('wealth','Tài phú','💰'),tab('collection','Sưu tầm','💎'),tab('online','Online','🦉'),tab('pets','Thú cưng','🐾')];
+  const tabs=[tab('exp','Trải nghiệm','🏆'),tab('titles','Danh hiệu','🎖️'),tab('certs','Chứng chỉ','📜'),tab('wealth','Tài phú','💰'),tab('collection','Sưu tầm','💎'),tab('online','Online','🦉'),tab('pets','Thú cưng','🐾'),tab('island','Đảo đẹp','🏝️')];
   if(wedOn())tabs.push(tab('wed','Khách mời','💍'));
-  return `<div class="segmented lb-kinds ${tabs.length===8?'eight':'seven'}" role="tablist" aria-label="Loại bảng">${tabs.join('')}</div>`;
+  return `<div class="segmented lb-kinds ${['seven','eight','nine'][tabs.length-7]||'nine'}" role="tablist" aria-label="Loại bảng">${tabs.join('')}</div>`;
 }
 
 export function leaderboardView(env){
