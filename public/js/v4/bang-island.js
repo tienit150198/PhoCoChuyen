@@ -40,7 +40,8 @@ const DEFAULT_HOOKS={
   thanh_vien:sheet('bang',{tab:'members'}), moi_khach:sheet('bang',{tab:'members'}),
   gop_quy:sheet('bang',{tab:'home'}), gio_vang:sheet('bang',{tab:'home'}),
   xuong_may:sheet('bang',{tab:'shop'}), xep_hang:sheet('bang',{tab:'rank'}),
-  dau_truong:sheet('petArena',{tab:'war'},false), luyen_pet:sheet('petArena',{tab:'npc'},false),
+  dau_truong:sheet('petArena',{tab:'war',sec:'war'},false), luyen_pet:sheet('petArena',{tab:'npc'},false),
+  thach_dau:sheet('petArena',{tab:'war',sec:'tc'}),   // ⚔️ Thách đấu bang (owner 21/10): members only, the bang's roster and its challenges
 };
 for(const [op,fn] of Object.entries(DEFAULT_HOOKS))HOOKS.set(op,fn);
 

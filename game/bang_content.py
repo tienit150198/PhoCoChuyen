@@ -92,9 +92,27 @@ KHO_CAP = (FUND_BASE_CAP, 30_000_000, 50_000_000, 80_000_000, 120_000_000, 180_0
            500_000_000, 700_000_000, 1_000_000_000)
 KHO_BONUS = 2                  # +2 % points on deposits per Kho bang level
 XUONG_OFF = 5                  # −5 % on the uniform, the badge and the boat paint per Xưởng may level
-TUONG_BONUS = 2                # +2 % weekly score per Tượng bang level
-FAC_SCORE = 100                # weekly score per facility level the bang holds
-PET_WAR_SCORE = 100            # weekly score per point of the week's 🛡️ Bang chiến pet ladder (a win 3, the title 5 more)
+# 👑 Bang mạnh nhất tuần (owner 21/10, final: "đừng để cống hiến bang tính điểm nhé, hãy tính điểm của pets, công trình và
+# cấp bang làm điểm nhé"): three parts, heaviest first (game/bang.py standings), the sum × the Tượng bang's bonus. Điểm cống
+# hiến never counts (it buys from the bang shop only).
+#   🐾 Pets = the week's Bang chiến pet ladder points × PET_WAR_SCORE (a win 3 → 1.500, the champion of 3 rounds
+#      3 × 3 + 5 = 14 → 7.000; counted once the war's matches have been shown) + the week's ⚔️ Thách đấu bang (CHAL_WIN a
+#      win, CHAL_DRAW a draw, at most CHAL_WEEK_MAX) + 💪 Chiến lực ÷ POWER_DIV (each current member's strongest pet power,
+#      the top POWER_TOP: 20 members with A-rank pets ≈ 6.000 → 3.000);
+#   🏗️ Công trình = Σ levels of the facilities but the Đại sảnh × FAC_SCORE (all 45 levels 6.750, a usual bang 10–20 levels
+#      1.500–3.000);
+#   ⭐ Cấp bang = the Đại sảnh's level (the bang's level: its member cap), + its island's level when the island branch
+#      gives one (game/bang.py island_level), × LEVEL_SCORE (level 1 → 500, level 5 → 2.500).
+# So pets weigh most (the champion, 7.500 with its level 1, beats a level-5 bang of 25 facility levels, 6.250); a bang
+# that only gave xu (no pets, no buildings) ranks low.
+PET_WAR_SCORE = 500
+CHAL_WIN, CHAL_DRAW = 200, 70
+CHAL_WEEK_MAX = 2_000
+POWER_DIV = 2
+POWER_TOP = 30
+FAC_SCORE = 150
+LEVEL_SCORE = 500
+TUONG_BONUS = 2                # +2 % of the whole score per Tượng bang level
 PET_WAR_MAX = 5                # % the Sân luyện pet adds in the war at most (game/pet_war.py TRAINING_MAX, 1 %/level)
 SLOTS = ((1, 1), (3, 2))       # builds at once: 1, 2 from hall level 3
 

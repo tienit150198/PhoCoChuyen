@@ -4,6 +4,9 @@
  * The server decides every battle (POST /api/arena/<op>, one request) and sends its whole log; this file only
  * animates it: lunges, hit flashes, damage numbers, crits, the five elements' skills, HP bars, KO, a victory pose and
  * confetti. Short (≈ 0.45 s an action, ⏩ ×2), skippable (⏭), phone first: one main button in the bottom bar.
+ * ⚔️ Thách đấu bang (owner 21/10, game/bang_challenge.py): the 🛡️ tab has two sections, ⚔️ Thách đấu (any day: the bang's
+ * roster and its order, challenges to answer or send, results and the town's latest matches, each a 5-duel replay) and
+ * 🗓️ Bang chiến tuần (the weekly war). data-sec="tc" | "war" opens one, data-watch="<challenge id>" plays a replay.
  * Styles: /css/pet-arena.css (and /css/pets.css for the pets' own motions). */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {petSVG,petPicture,lookup,accOf,fxRef} from './pet-art.js';
@@ -15,7 +18,9 @@ const RKS=['D','C','B','A','S','SS','SSS'];
 const EL={hoa:['🔥','Hỏa'],tho:['⛰️','Thổ'],thuy:['💧','Thủy'],moc:['🌿','Mộc'],kim:['🪙','Kim']};
 const STEP=450;   // ms an action at ×1
 const S={dlg:null,env:null,tab:'war',sub:'',busy:false,flash:null,v:null,lad:null,cup:null,war:null,friends:null,pick:[],npc:1,
-  wpet:'',fight:null,fast:false,at:0,watch:0};
+  wpet:'',fight:null,fast:false,at:0,watch:0,
+  // ⚔️ Thách đấu bang (game/bang_challenge.py): the 🛡️ tab's section, its view, sub-screens (find | order), the search, the pet picked
+  wsec:'tc',tc:null,tcAt:0,tcsub:'',tfind:null,tq:'',tpet:'',ord:null};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const CAT=()=>S.env?.api?.content?.journey?.pets||null;
 const hm=t=>{try{return new Date(t*1000).toLocaleString('vi-VN',{weekday:'long',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Ho_Chi_Minh'});}catch{return '';}};
@@ -50,25 +55,29 @@ function dialog(){
     const el=e.target.closest('[data-pa]');if(!el||!d.contains(el)||el.disabled)return;
     e.preventDefault();onClick(el.dataset.pa,el.dataset);
   });
-  d.addEventListener('close',()=>{S.flash=null;S.sub='';S.watch++;stopFight();S.fight=null;});
+  d.addEventListener('input',e=>{const t=e.target;if(t.name==='pa-tq'){S.tq=t.value;clearTimeout(S.tqT);S.tqT=setTimeout(findLoad,300);}});
+  d.addEventListener('close',()=>{S.flash=null;S.sub='';S.tcsub='';S.watch++;stopFight();S.fight=null;});
   S.dlg=d;return d;
 }
 function close(){S.dlg?.close();}
-export async function openArena(env,tab){
+export async function openArena(env,tab,extra={}){
   S.env=env;
   const sheet=document.getElementById('sheet');if(sheet?.open)env.closeSheet?.();
-  for(const d of document.querySelectorAll('dialog.pt-sheet[open]'))d.close();   // from the pets sheet: one dialog at a time
+  for(const d of document.querySelectorAll('dialog.pt-sheet[open],dialog.bg-sheet[open]'))d.close();   // from the pets or the bang sheet: one dialog at a time
   await ensureCss();
   const d=dialog();
-  S.tab=TABS.some(t=>t[0]===tab)?tab:'war';S.sub='';S.flash=null;S.fight=null;
+  S.tab=TABS.some(t=>t[0]===tab)?tab:'war';S.sub='';S.tcsub='';S.flash=null;S.fight=null;
+  if(extra?.sec==='tc'||extra?.sec==='war')S.wsec=extra.sec;
   if(!d.open){d.showModal();d.scrollTop=0;}
   render();
   await load();
-  if(S.tab!=='fight')loadTab();
+  if(S.tab!=='fight')await loadTab();
+  if(extra?.find&&S.tab==='war'&&S.wsec==='tc'&&S.tc?.mine?.officer){S.tcsub='find';S.tfind=null;render();findLoad();}   // ⚔️ Gửi thách đấu from the Bang sheet
+  if(extra?.watch)await watchChallenge(String(extra.watch));
 }
 export async function petArenaAction(action,data,el,env){
   if(action!=='petArena')return false;
-  await openArena(env,data?.tab);return true;
+  await openArena(env,data?.tab,data||{});return true;
 }
 
 async function post(op,data={}){return S.env.api.post('/api/arena/'+op,data,20000);}
@@ -80,7 +89,7 @@ async function loadTab(){
   try{
     if(S.tab==='rank')S.lad=await post('ladder');
     else if(S.tab==='cup')S.cup=await post('cup_board');
-    else if(S.tab==='war'){S.war=await post('war');if(!S.wpet)S.wpet=S.v?.war?.pick?.id||'';}
+    else if(S.tab==='war'){const [w]=await Promise.all([post('war'),tcLoad(false)]);S.war=w;if(!S.wpet)S.wpet=S.v?.war?.pick?.id||'';}
   }catch(e){S.flash={text:e.message||'Chưa tải được.',kind:'bad'};}
   if(S.dlg?.open)render();
 }
@@ -88,7 +97,7 @@ async function run(op,data,after){
   S.busy=true;render();
   try{
     const r=await post(op,data);
-    if(r.match){startFight(r.match,after);}
+    if(r.match&&typeof r.match==='object'){startFight(r.match,after);}
     else if(r.message)S.flash={text:r.message,kind:'good'};
     return r;
   }catch(e){S.flash={text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
@@ -101,7 +110,17 @@ async function onClick(op,data){
   if(op==='pets'){close();S.env.act?.('pets',{tab:'adopt'});return;}
   if(op==='bang'){close();S.env.act?.('bang',{});return;}   // ⚔️ no bang yet: v4/bang.js (find or found one)
   if(op==='tab'){S.tab=data.tab;S.sub='';S.flash=null;render();loadTab();return;}
-  if(op==='back'){S.sub='';render();return;}
+  if(op==='back'){S.sub='';S.tcsub='';render();return;}
+  if(op==='wsec'){S.wsec=data.sec;S.tcsub='';S.flash=null;render();return;}
+  if(op==='tpet'){S.tpet=S.tpet===data.id?'':data.id;render();return;}
+  if(op==='tcunreg'){const r=await run('tc_unreg',{});if(r){S.tpet='';await tcLoad();}return;}
+  if(op==='tcmode'){const r=await run('tc_set',{mode:data.mode});if(r)await tcLoad();return;}
+  if(op==='tcyes'||op==='tcno'){const r=await run('tc_answer',{id:data.id,ok:op==='tcyes'});if(r){await tcLoad();if(r.match)await watchChallenge(r.match);}return;}
+  if(op==='tccancel'){const r=await run('tc_cancel',{id:data.id});if(r)await tcLoad();return;}
+  if(op==='tcsend'){const r=await run('tc_send',{bang:data.id,rid:rid()});if(r){S.tcsub='';await tcLoad();if(r.match)await watchChallenge(r.match);}return;}
+  if(op==='tcorder'){S.tcsub='order';S.ord=(S.tc?.roster||[]).map(x=>x.pid);render();return;}
+  if(op==='tcmove'){const i=Number(data.i),j=i+Number(data.d);if(S.ord&&j>=0&&j<S.ord.length)[S.ord[i],S.ord[j]]=[S.ord[j],S.ord[i]];render();return;}
+  if(op==='tcwatch'){await watchChallenge(data.id);return;}
   if(op==='team'){S.sub='team';S.pick=[...(S.v?.lineup||[])];render();return;}
   if(op==='tog'){const i=S.pick.indexOf(data.id);if(i>=0)S.pick.splice(i,1);else if(S.pick.length<(S.v?.rules?.lineup||3))S.pick.push(data.id);render();return;}
   if(op==='friends'){S.sub='friends';render();try{S.friends=(await post('friends')).friends;}catch{S.friends=[];}render();return;}
@@ -127,6 +146,18 @@ async function main(){
   if(op==='cupjoin'){const r=await run('cup_join',{});if(r){await load();await loadTab();}return;}
   if(op==='warpick'){const r=await run('war_pick',{pet:S.wpet});if(r){await loadTab();await load();}return;}
   if(op==='tofight'){S.tab='war';S.sub='';render();}
+  if(op==='tcreg'){const r=await run('tc_reg',{pet:S.tpet});if(r){S.tpet='';await tcLoad();}return;}
+  if(op==='tcfind'){S.tcsub='find';S.tfind=null;render();findLoad();return;}
+  if(op==='tcsave'){const r=await run('tc_order',{order:S.ord||[]});if(r){S.tcsub='';await tcLoad();}}
+}
+const rid=()=>'tc-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
+async function tcLoad(draw=true){
+  try{S.tc=await post('tc');S.tcAt=Date.now();}catch(e){S.tc={error:e.message||'Chưa tải được.'};}
+  if(draw&&S.dlg?.open)render();
+}
+async function findLoad(){
+  try{S.tfind=await post('tc_find',{q:S.tq.slice(0,30)});}catch(e){S.tfind={error:e.message||'Chưa tải được.'};}
+  if(S.dlg?.open)render();
 }
 
 /** The bottom bar's one button: [label, op, why]. */
@@ -138,11 +169,26 @@ function mainButton(){
   if(S.tab==='fight')return ['⚔️ Tìm đối thủ','fight',t.rank>=t.rank_max?'Hôm nay đã đấu đủ, mai đấu tiếp nhé':''];
   if(S.tab==='npc'){const st=(v.npc||[])[S.npc];return [st?`🎯 Thử thách ${st.name}`:'🎯 Thử thách','npc',t.npc>=t.npc_max?'Hôm nay đã thử đủ':''];}
   if(S.tab==='cup'){const c=v.cup||{};if(!c.open)return ['🏟️ Giải tuần sau mở từ thứ Hai','',' '];return c.joined?['✅ Đã đăng ký giải tuần','',' ']:['🏟️ Đăng ký giải tuần','cupjoin',''];}
+  if(S.tab==='war'&&S.wsec==='tc')return tcButton(v);
   if(S.tab==='war'){const w=S.war||{};if(!w.team)return ['','',''];if(w.phase!=='pick')return ['','',''];
     const p=(v.pets||[]).find(x=>x.id===S.wpet),now=v.war?.pick?.id;
     if(p&&p.id===now)return [`✅ ${p.n} đã ra trận`,'',' '];
     return p?[`🛡️ Cho ${p.n} ra trận`,'warpick','']:['👆 Chọn 1 bé ra trận','',' '];}
   return ['🛡️ Về Bang chiến','tofight',''];
+}
+
+/** ⚔️ Thách đấu's bottom button: save the order, register the picked pet, or (an officer) find a bang to challenge. */
+function tcButton(v){
+  const t=S.tc,m=t?.mine;if(!m)return ['','',''];
+  if(S.tcsub==='order')return ['💾 Lưu thứ tự','tcsave',''];
+  if(S.tcsub==='find')return ['','',''];
+  const p=(v.pets||[]).find(x=>x.id===S.tpet);
+  if(p&&p.id!==m.pet)return [`🐾 Ghi danh ${p.n}`,'tcreg',''];
+  if(m.officer){const r=t.rules||{},d=m.today||{};
+    const why=m.ready<(r.min||3)?`Cần ${r.min||3} bé trong đội hình`:d.played>=d.play_max?'Hôm nay đã đấu đủ, mai đấu tiếp nhé':d.sent>=d.send_max?'Hôm nay đã gửi đủ':'';
+    return ['⚔️ Gửi thách đấu','tcfind',why];}
+  if(!m.pet)return ['👆 Chọn 1 bé để ghi danh','',' '];
+  return ['','',''];
 }
 
 /* ---------------------------------------------------------------- render */
@@ -151,16 +197,19 @@ function render(){
   const root=S.dlg.querySelector('.pa-root');
   if(S.fight){if(!root.querySelector('.pa-fight'))root.innerHTML=fightHTML();return;}
   const body=root.querySelector('.pa-body'),y=body?.scrollTop;
+  const a=document.activeElement,keep=a&&S.dlg.contains(a)&&a.name==='pa-tq'?{value:a.value,pos:a.selectionStart}:null;   // typing in the search: keep it
   root.innerHTML=page();
   if(y)root.querySelector('.pa-body').scrollTop=y;
+  if(keep){const b=root.querySelector('input[name="pa-tq"]');if(b){b.value=keep.value;b.focus({preventScroll:true});try{b.setSelectionRange(keep.pos,keep.pos);}catch{/* not text */}}}
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
 function page(){
   const t=TABS.find(x=>x[0]===S.tab)||TABS[0];
-  const head=`<header class="sheet-head pa-head">${S.sub?`<button class="icon-btn" type="button" data-pa="back" aria-label="Quay lại">${icon('back',21)}</button>`:'<span class="pa-logo" aria-hidden="true">🐾</span>'}
-    <div class="grow"><h2 id="pa-title">${S.sub==='team'?'Xếp đội':S.sub==='friends'?'Đấu với đồng đội':'Đấu trường bang'}</h2></div>
+  const sub=S.sub||(S.tab==='war'&&S.wsec==='tc'?S.tcsub:'');
+  const head=`<header class="sheet-head pa-head">${sub?`<button class="icon-btn" type="button" data-pa="back" aria-label="Quay lại">${icon('back',21)}</button>`:'<span class="pa-logo" aria-hidden="true">🐾</span>'}
+    <div class="grow"><h2 id="pa-title">${S.sub==='team'?'Xếp đội':S.sub==='friends'?'Đấu với đồng đội':sub==='find'?'Chọn bang':sub==='order'?'Xếp đội hình':'Đấu trường bang'}</h2></div>
     ${S.v?.me?`<span class="pa-score" title="Điểm xếp hạng tuần">🏆 ${fmt(S.v.me.rating)}</span>`:''}<button class="icon-btn" type="button" data-pa="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
-  const tabs=S.sub?'':`<nav class="pa-tabs" role="tablist" aria-label="Đấu trường">${TABS.map(([id,e,l])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'on':''}" data-pa="tab" data-tab="${id}"><span aria-hidden="true">${e}</span><small>${esc(l)}</small></button>`).join('')}</nav>`;
+  const tabs=sub?'':`<nav class="pa-tabs" role="tablist" aria-label="Đấu trường">${TABS.map(([id,e,l])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'on':''}" data-pa="tab" data-tab="${id}"><span aria-hidden="true">${e}</span><small>${esc(l)}</small></button>`).join('')}</nav>`;
   const v=S.v;
   let inner;
   if(!v)inner='<p class="pa-empty">⏳</p>';
@@ -168,6 +217,8 @@ function page(){
   else if(v.locked)inner=locked(v.locked);
   else if(S.sub==='team')inner=teamPicker(v);
   else if(S.sub==='friends')inner=friendsList();
+  else if(sub==='find')inner=findView();
+  else if(sub==='order')inner=orderView();
   else inner=S.tab==='npc'?npcTab(v):S.tab==='rank'?rankTab():S.tab==='cup'?cupTab(v):S.tab==='war'?warTab(v):fightTab(v);
   const [label,,why]=mainButton(),w=why&&why.trim();
   const bar=label?`<footer class="pa-bar">${w?`<small class="pa-why">${esc(why)}</small>`:''}<button type="button" class="btn primary big pa-main" data-pa="go"${S.busy||w||why===' '?' disabled':''}>${esc(label)}</button></footer>`:'';
@@ -253,7 +304,15 @@ function cupTab(v){
   return card+st+(top?`<section class="pa-card"><h4>Kết quả ${esc(b.cup.week)} · ${b.cup.n} người · ${b.cup.rounds} vòng</h4><ol class="pa-ladder">${top}</ol></section>`:'')+
     (mine?`<section class="pa-card"><h4>Trận của bạn</h4><div class="pa-list">${mine}</div></section>`:'')+titlesBlock(b.weekly);
 }
+function seg(){
+  const n=S.tc?.incoming?.length||0;
+  return `<div class="pa-seg" role="tablist" aria-label="Bang chiến">${[['tc','⚔️ Thách đấu'],['war','🗓️ Bang chiến tuần']].map(([k,l])=>`<button type="button" role="tab" aria-selected="${S.wsec===k}" class="${S.wsec===k?'on':''}" data-pa="wsec" data-sec="${k}">${l}${k==='tc'&&n?` <em class="pa-badge">${n}</em>`:''}</button>`).join('')}</div>`;
+}
 function warTab(v){
+  if(S.wsec==='tc')return seg()+tcTab(v);
+  return seg()+warWeek(v);
+}
+function warWeek(v){
   const w=S.war;if(!w)return '<p class="pa-empty">⏳</p>';
   const when=`<p>${w.phase==='pick'?`Đấu <b>${esc(hm(w.start))}</b> · chốt đội ${esc(clock(w.lock))}`:w.phase==='live'?'🔴 Đang diễn ra':w.phase==='done'?'Đã xong tuần này':w.phase==='cancelled'?'Tuần này không đủ bang':'Đang xếp cặp…'}</p>`;
   const head=`<section class="pa-card pa-war-card"><h3>🛡️ Bang chiến pet</h3>${when}<p class="pa-muted">Mỗi người chọn 1 bé, mỗi bang ${w.size} bé. Xếp cặp ngẫu nhiên ${w.size} trận 1–1, thắng nhiều hơn vào vòng trong.</p></section>`;
@@ -280,6 +339,86 @@ function bracket(w){
 function warLadder(w){
   if(!w.ladder?.length)return w.last?`<p class="pa-muted">Tuần trước: 🏆 ${esc(w.last.champ||'—')}</p>`:'';
   return `<section class="pa-card"><h4>Bảng xếp hạng bang</h4><ol class="pa-ladder">${w.ladder.map(r=>`<li><span class="pa-rank r${Math.min(r.rank,4)}">${r.champ?'🏆':r.rank}</span><b data-no-translate>${esc(r.name)}</b><small>${r.w}–${r.l}</small><em>${fmt(r.pts)} đ</em></li>`).join('')}</ol></section>`;
+}
+
+/* ---------------------------------------------------------------- ⚔️ Thách đấu bang */
+const RES={win:'🏅',loss:'💤',draw:'🤝'};
+const tnow=()=>(Number(S.tc?.now)||Date.now()/1000)+Math.max(0,Date.now()-S.tcAt)/1000;
+function until(t){const m=Math.ceil(Math.max(0,t-tnow())/60);return m>=1?`còn ${m} phút`:'sắp hết giờ';}
+function tcTab(v){
+  const t=S.tc;if(!t)return '<p class="pa-empty">⏳</p>';
+  if(t.error)return `<p class="pa-empty">${esc(t.error)}</p>`;
+  const m=t.mine,r=t.rules||{},modes=t.modes||{};
+  if(!m)return locked('bang')+townCard(t);
+  const d=m.today||{},busy=S.busy?' disabled':'';
+  const modeRow=m.boss?`<p class="pa-muted pa-modes-l">Khi có bang thách:</p><div class="pa-modes" aria-label="Khi có bang thách">${Object.entries(modes).map(([k,l])=>`<button type="button" class="pa-chip${m.mode===k?' on':''}" data-pa="tcmode" data-mode="${k}" aria-pressed="${m.mode===k}"${busy}>${esc(l)}</button>`).join('')}</div>`:`<p class="pa-muted">${esc(modes[m.mode]||'')}</p>`;
+  const head=`<section class="pa-card pa-tc-head"><h3 data-no-translate>${esc(m.name)}</h3>
+    <p class="pa-tc-rec"><b>🏆 ${fmt(m.rating)}</b><span>${m.w} thắng · ${m.l} thua${m.d?` · ${m.d} hòa`:''}</span><span>💪 ${fmt(m.power)}</span></p>
+    <p class="pa-muted">Hôm nay đấu ${d.played}/${d.play_max} · gửi ${d.sent}/${d.send_max}</p>${modeRow}</section>`;
+  const inc=(t.incoming||[]).map(c=>`<div class="pa-tc-row in"><span class="pa-res" aria-hidden="true">⚔️</span><span class="grow"><b data-no-translate>${esc(c.vs)}</b><small>${c.foe?`🏆 ${fmt(c.foe.rating)} · 💪 ${fmt(c.foe.power)} · `:''}⏳ ${esc(until(c.expires))}</small></span>
+    ${m.officer?`<button type="button" class="btn primary" data-pa="tcyes" data-id="${esc(c.id)}"${busy}>Nhận</button><button type="button" class="btn cream" data-pa="tcno" data-id="${esc(c.id)}" aria-label="Từ chối"${busy}>✕</button>`:'<small class="pa-wait">Chờ Trưởng lão</small>'}</div>`).join('');
+  const out=(t.outgoing||[]).map(c=>`<div class="pa-tc-row"><span class="pa-res" aria-hidden="true">⏳</span><span class="grow"><b data-no-translate>${esc(c.vs)}</b><small>Chờ trả lời · ${esc(until(c.expires))}</small></span>${m.officer?`<button type="button" class="btn cream" data-pa="tccancel" data-id="${esc(c.id)}"${busy}>Hủy</button>`:''}</div>`).join('');
+  const box=inc||out?`<section class="pa-card pa-tc-box"><h4>📨 Lời thách đấu</h4><div class="pa-list">${inc}${out}</div></section>`:'';
+  const ros=(t.roster||[]).map(x=>`<li class="${x.me?'me':''}${x.start?' start':''}${x.ok?'':' off'}"><em>${x.n}</em>${x.pet?pic(x.pet,40):'<span class="pa-unknown" aria-hidden="true">🐾</span>'}
+    <span class="grow"><b data-no-translate>${esc(x.pet?.n||'—')}</b><small data-no-translate>${esc(x.name)}</small></span><small class="pa-tag">${x.ok?(x.start?'Ra sân':'Dự bị'):'Vắng'}${x.pet?`<br>💪 ${fmt(x.pet.pw)}`:''}</small></li>`).join('');
+  const roster=`<section class="pa-card"><div class="pa-row-head"><h4>🐾 Đội hình · ${m.ready}/${r.size||5} ra sân</h4>${m.officer&&(t.roster||[]).length>1?'<button type="button" class="pa-chip" data-pa="tcorder">✏️ Xếp</button>':''}</div>
+    ${ros?`<ol class="pa-roster">${ros}</ol>`:'<p class="pa-muted">Chưa ai ghi danh. Mỗi người ghi danh 1 bé nhé!</p>'}<p class="pa-muted">${r.size||5} bé đầu ra sân, còn lại dự bị. Cần ${r.min||3} bé để thách đấu.</p></section>`;
+  const mine=(t.roster||[]).find(x=>x.me),cur=S.tpet||m.pet;
+  const pick=`<details class="pa-card pa-mypet"${mine?'':' open'}><summary>${mine?`🐾 Bé của bạn: <b data-no-translate>${esc(mine.pet?.n||'—')}</b> · Đổi`:'🐾 Ghi danh 1 bé'}</summary>
+    <div class="pa-picks sm">${(v.pets||[]).map(p=>`<button type="button" class="pa-pick${cur===p.id?' on':''}" data-pa="tpet" data-id="${esc(p.id)}" aria-pressed="${cur===p.id}">${pic(p,52)}<b data-no-translate>${esc(p.n)}</b><small>${rk(p.r)}${elTag(p.e)} 💪${fmt(p.pw)}</small></button>`).join('')}</div>
+    ${mine?`<button type="button" class="pa-chip" data-pa="tcunreg"${busy}>Rút bé</button>`:''}</details>`;
+  const rec=(t.recent||[]).map(c=>c.status==='done'?`<button type="button" class="pa-row ${c.res}" data-pa="tcwatch" data-id="${esc(c.id)}"><span class="pa-res" aria-hidden="true">${RES[c.res]||''}</span><b data-no-translate>${esc(c.vs)}</b><small>${c.mine===0?`${c.wa}–${c.wb}`:`${c.wb}–${c.wa}`}</small><span class="pa-play" aria-label="Xem lại">▶</span></button>`
+    :`<div class="pa-row muted"><span class="pa-res" aria-hidden="true">${{declined:'🙅',expired:'⌛',cancelled:'↩️'}[c.status]||''}</span><b data-no-translate>${esc(c.vs)}</b><small>${{declined:'Từ chối',expired:'Hết hạn',cancelled:'Đã hủy'}[c.status]||''}</small></div>`).join('');
+  const recent=rec?`<section class="pa-card"><h4>Trận của bang</h4><div class="pa-list">${rec}</div></section>`:'';
+  const help=`<details class="pa-help"><summary>Luật thách đấu</summary><ul class="pa-rules"><li>Trưởng lão trở lên gửi và nhận lời, trong ${Math.round((r.window||1800)/60)} phút.</li>
+    <li>${r.size||5} trận 1–1 ghép ngẫu nhiên, thắng nhiều hơn là thắng. Thiếu bé thì thua trận đó.</li>
+    <li>Mỗi ngày: gửi ${r.send_day}, đấu ${r.play_day} trận, gặp cùng 1 bang ${r.pair_day} trận.</li>
+    <li>Thắng: +${fmt(r.score_win)} điểm 🐾 xếp hạng bang tuần, mỗi bé ra sân +${r.pts_win} điểm cống hiến (tối đa ${r.pts_day}/ngày). Không có xu.</li>
+    <li>🐾 Sân luyện pet: +1% chỉ số mỗi cấp, tối đa ${r.training}%.</li></ul></details>`;
+  return head+box+roster+pick+recent+townCard(t)+help;
+}
+function townCard(t){
+  const rows=(t.town||[]).map(c=>`<button type="button" class="pa-match done" data-pa="tcwatch" data-id="${esc(c.id)}"><span class="${c.win===0?'won':''}" data-no-translate>${esc(c.a)}</span><em>${c.wa}–${c.wb}</em><span class="${c.win===1?'won':''}" data-no-translate>${esc(c.b)}</span><i aria-hidden="true">👀</i></button>`).join('');
+  return rows?`<section class="pa-card"><h4>👀 Khắp phố</h4>${rows}</section>`:'';
+}
+function findView(){
+  const box=`<label class="pa-search"><span aria-hidden="true">🔎</span><input type="search" name="pa-tq" value="${esc(S.tq)}" placeholder="Tìm tên bang" maxlength="30" autocomplete="off" enterkeyhint="search"></label>`;
+  const f=S.tfind;if(!f)return box+'<p class="pa-empty">⏳</p>';
+  if(f.error)return box+`<p class="pa-empty">${esc(f.error)}</p>`;
+  const rows=(f.list||[]).map(c=>`<div class="pa-tc-row${c.why?' off':''}"><span class="pa-crest" aria-hidden="true">${esc(c.emoji)}</span><span class="grow"><b data-no-translate>${esc(c.name)}</b>
+    <small>🏆 ${fmt(c.rating)} · ${c.w}–${c.l} · 💪 ${fmt(c.power)}${c.auto?' · 🤖':''}</small>${c.why?`<small class="pa-why-s">${esc(c.why)}</small>`:''}</span>
+    ${c.why?'':`<button type="button" class="btn primary" data-pa="tcsend" data-id="${esc(c.id)}"${S.busy?' disabled':''}>⚔️ Thách</button>`}</div>`).join('');
+  return box+`<p class="pa-muted">Bang mình 💪 ${fmt(f.power)} · sức gần nhau ở trên · 🤖 tự nhận lời</p>`+(rows?`<div class="pa-list">${rows}</div>`:'<p class="pa-muted">Chưa có bang nào khác.</p>');
+}
+function orderView(){
+  const by=Object.fromEntries((S.tc?.roster||[]).map(x=>[x.pid,x])),size=S.tc?.rules?.size||5,list=(S.ord||[]).filter(p=>by[p]);
+  let n=0;
+  return `<p class="pa-muted">${size} bé sẵn sàng đầu tiên ra sân, còn lại dự bị. Bấm ▲ ▼ để xếp.</p><ol class="pa-roster edit">${list.map((pid,i)=>{const x=by[pid],st=x.ok&&n++<size,at=S.ord.indexOf(pid);
+    return `<li class="${st?'start':''}${x.ok?'':' off'}"><em>${i+1}</em>${x.pet?pic(x.pet,40):''}<span class="grow"><b data-no-translate>${esc(x.pet?.n||'—')}</b><small data-no-translate>${esc(x.name)} · ${x.ok?(st?'Ra sân':'Dự bị'):'Vắng'}</small></span>
+      <button type="button" class="pa-mv" data-pa="tcmove" data-i="${at}" data-d="-1" aria-label="Lên"${i?'':' disabled'}>▲</button><button type="button" class="pa-mv" data-pa="tcmove" data-i="${at}" data-d="1" aria-label="Xuống"${i<list.length-1?'':' disabled'}>▼</button></li>`;}).join('')}</ol>`;
+}
+/** ▶ A played challenge: its five duels one after another (the same fights from the server's log), the viewer's bang on the left. */
+async function watchChallenge(id){
+  let mv;
+  try{mv=await post('tc_match',{id});}catch(e){S.flash={text:e.message,kind:'bad'};render();return;}
+  let i=0;const score=[0,0];
+  const watching=++S.watch;
+  const flip=mv.me===1,L=flip?mv.b:mv.a,R=flip?mv.a:mv.b;
+  const next=()=>{
+    if(watching!==S.watch||!S.dlg?.open||(i&&!S.fight))return;
+    if(i>=mv.duels.length){
+      const after=$('.pa-after');if(!after)return;
+      const sc=flip?[mv.wb,mv.wa]:[mv.wa,mv.wb];
+      const line=mv.win===2?'🤝 Hai bang hòa!':mv.me==null?`🏆 ${mv.win===0?mv.a:mv.b} thắng!`:mv.win===mv.me?'🎉 Bang mình thắng!':'💪 Bang mình thua, lần sau nhé!';
+      after.insertAdjacentHTML('beforeend',`<p class="pa-msg">${esc(line)}</p><div class="pa-after-btns"><button type="button" class="btn primary big" data-pa="done">👌 Xong · ${sc[0]}–${sc[1]}</button></div>`);return;
+    }
+    const d=mv.duels[i++];
+    if(d.w===0)score[0]++;else if(d.w===1)score[1]++;
+    const sc=flip?[score[1],score[0]]:score;
+    const m={kind:'tc',sides:d.sides,ev:d.ev,hp:d.hp,max:d.max,w:d.w,me:mv.me??null,message:`Trận ${d.i+1}/${mv.total} · ${L} ${sc[0]}–${sc[1]} ${R}`};
+    startFight(m,'tc',{title:`⚔️ ${mv.a} – ${mv.b}`,sub:`Trận ${d.i+1}/${mv.total}`,next:()=>{timer=setTimeout(next,S.fast?900:1800);}});
+  };
+  next();
 }
 
 /* ---------------------------------------------------------------- the battle */
