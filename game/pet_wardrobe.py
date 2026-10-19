@@ -54,6 +54,7 @@ LUX_BONUS = 100
 SET_BONUS = 100
 BONUS_MAX = 2500
 ITEM_MAX = 150
+BUY_QTY_MAX = 20                                   # 🛍️ owner 21/10 "trang phục cũng thế": one purchase of one piece × rank (and the room)
 CUTE_AT = (6, 15, 24)                              # the worn ranks' sum for cute aura 1, 2, 3
 COMMANDS = ('jr_pet_wbuy', 'jr_pet_wwear', 'jr_pet_wfuse', 'jr_pet_wdrop', 'jr_pet_morph')
 VN = datetime.timezone(datetime.timedelta(hours=7))
@@ -392,19 +393,29 @@ def action(s: dict, name_: str, p: dict) -> dict:
     _need(name_ in COMMANDS, 'Thao tác không hợp lệ.', 'unknown_action')
     _need(isinstance(p, dict), 'Thông tin không hợp lệ.')
     if name_ == 'jr_pet_wbuy':
-        pt._keys(p, {'id', 'rank', 'confirm'}, {'id', 'confirm'})
+        # 🛍️ owner 21/10: qty (absent: 1, an older client) items of one piece and rank, each the item one purchase makes,
+        # one charge of qty × the price; none bought if the wardrobe lacks room.
+        pt._keys(p, {'id', 'rank', 'qty', 'confirm'}, {'id', 'confirm'})
         it = W.ITEM.get(p['id']) if isinstance(p['id'], str) else None
         _need(it is not None, 'Chọn một món trong tiệm nhé.')
         r = p.get('rank', 0)
         _need(_int(r, 0, SHOP_RANKS - 1), 'Tiệm chỉ bán hạng D và C. Hạng cao hơn thì ghép nhé.')
+        qty = p.get('qty', 1)
+        _need(_int(qty, 1, BUY_QTY_MAX), f'Mua từ 1 đến {BUY_QTY_MAX} món một lần nhé.')
         _need(not it.get('lux'), f'{it["name"]} không bán: chỉ có khi ghép đồ hạng A trở lên.', 'not_for_sale')
         _need(on_sale(it), f'{it["name"]} đã hết mùa bán.', 'not_for_sale')
-        _need(p['confirm'] is True, f'Xác nhận mua {it["name"]} hạng {RANKS[r]}.')
+        times = f' ×{qty}' if qty > 1 else ''
+        _need(p['confirm'] is True, f'Xác nhận mua {it["name"]} hạng {RANKS[r]}{times}.')
         x = _ensure(s)
         _need(len(x['it']) < ITEM_MAX, f'Tủ đồ đã đủ {ITEM_MAX} món. Ghép hoặc bỏ bớt nhé.', 'limit')
-        how = pt._pay(s, price(it, r), f'Đồ thú cưng · {it["name"]} {RANKS[r]}')
-        i = _new(x, it['id'], r)
-        return dict(message=f'🛍️ Đã mua {name(i)} ({how}).', item=i['id'])
+        room = ITEM_MAX - len(x['it'])
+        _need(qty <= room, f'Tủ đồ chỉ còn chỗ cho {room} món. Ghép hoặc bỏ bớt nhé.', 'limit')
+        how = pt._pay(s, price(it, r) * qty, f'Đồ thú cưng · {it["name"]} {RANKS[r]}{times}')
+        made = [_new(x, it['id'], r) for _ in range(qty)]
+        out = dict(message=f'🛍️ Đã mua {name(made[0])}{times} ({how}).', item=made[0]['id'])
+        if qty > 1:
+            out['items'] = [i['id'] for i in made]
+        return out
     x = _ensure(s)
     if name_ == 'jr_pet_morph':
         return _morph(s, x, p)
@@ -520,4 +531,4 @@ def catalogue() -> dict:
                 items=[dict(it, sale=list(it['sale']) if it.get('sale') else None, on_sale=on_sale(it, date)) for it in W.ITEMS],
                 sets=[dict(st) for st in W.SETS], ranks=list(RANKS), shop_ranks=SHOP_RANKS, c_mult=C_MULT,
                 fee=list(FUSE_FEE), bonus=[b / 100 for b in BONUS_BP], lux_bonus=LUX_BONUS / 100, set_bonus=SET_BONUS / 100,
-                bonus_max=BONUS_MAX / 100, limit=ITEM_MAX, cute_at=list(CUTE_AT))
+                bonus_max=BONUS_MAX / 100, limit=ITEM_MAX, cute_at=list(CUTE_AT), qty_max=BUY_QTY_MAX)

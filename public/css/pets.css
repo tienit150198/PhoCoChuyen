@@ -237,3 +237,15 @@ html[data-theme="dem"] .pt-myth h4{color:#d6c2ff}
 .pt-gl-c i{font-style:normal;color:#c77d00;font-weight:900}
 html[data-theme="dem"] .pt-gl-c{background:#2a2633;border-color:#fff2}html[data-theme="dem"] .pt-gl-c.up{background:#4a3b12}html[data-theme="dem"] .pt-gsteps li{background:#2a2633}html[data-theme="dem"] .pt-gsteps li.ok{background:#1d3a26}html[data-theme="dem"] .pt-gsteps li.now{background:#3d3214}
 .pt-arena{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin:10px 0 0;font-weight:800}   /* ⚔️ → v4/pet-arena.js */
+/* 🛍️ owner 21/10: how many to buy (pet shop, wardrobe shop, gear shop) */
+.pt-qty{margin:4px 0 8px;padding:8px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);text-align:center}
+.pt-qty-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.pt-qty-l{font-weight:800;color:var(--ink)}
+.pt-qty-step{display:inline-flex;align-items:center;gap:6px}
+.pt-qty-b{width:44px;height:44px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-size:1.3rem;font-weight:800;color:var(--ink);cursor:pointer}
+.pt-qty-b:disabled{opacity:.4;cursor:default}
+.pt-qty-step input.qty-in:not([type=checkbox]){min-height:44px;border:1px solid var(--field-line);border-radius:12px;background:var(--surface)}
+.pt-qty-chips{justify-content:center;gap:5px;margin:8px 0 4px}
+.pt-qty-chips .pt-chip{min-width:42px;font-size:.88rem;padding:0 8px}
+.pt-qty-sum{margin:2px 0 0;font-size:.92rem;color:var(--ink-2)}
+.pt-qty-sum b{color:var(--ink)}
