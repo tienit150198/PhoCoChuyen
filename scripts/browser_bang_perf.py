@@ -100,7 +100,7 @@ def seed_bang(db, lan_sid, members=29, others=15):
             return login
         for fac, lv in (('dai_sanh', 5), ('kho', 6), ('xuong_may', 3), ('cong', 3), ('tuong', 2)):
             sql(db, 'INSERT INTO bang_facilities(bang, fac, level) VALUES(?,?,?) ON CONFLICT(bang, fac) DO UPDATE SET level=excluded.level', (bid, fac, lv))
-        sql(db, 'UPDATE bangs SET fund=? WHERE id=?', (150_000_000, bid))
+        sql(db, 'UPDATE bangs SET fund=?, isle=5 WHERE id=?', (150_000_000, bid))   # 🏝️ cấp 5: no island gate on Cổng bang 4–5 (21/10)
         for i in range(members):
             bang.post(store, person(f'Thành viên {i + 1}'), 'join', dict(bang=bid))
         for b in range(others):
@@ -269,11 +269,15 @@ async def main():
                     await step(f'tab {t}', f'[data-bg="tab"][data-tab="{t}"]')
             # 📅 check-in, 💰 contribute three times in a row (owner 21/10: the amount stays chosen, one more tap gives again)
             await step('checkin', '[data-bg="checkin"]')
-            await step('contribute: amount 500.000', '[data-bg="amount"][data-n="500000"]')
+            # (the fund has no cap since 21/10: the chips are 1tr · 10tr · 100tr · Tất cả, and 1 triệu or more takes two taps)
+            await step('contribute: amount 1 triệu', '[data-bg="amount"][data-n="1000000"]')
             for rep in range(3):
-                await step('contribute 500.000', '[data-bg="give"]')
+                await step('contribute 1 triệu: arm', '[data-bg="give"]')
+                await page.wait_for_timeout(250)   # past ARM_GAP: the confirming tap, not a double tap
+                await step('contribute 1 triệu', '[data-bg="give"]')
                 s = await state()
-                check(s['tab'] == 'home' and s['chip'] == '500000' and '500.000' in s['main'], f'contribute #{rep + 1}: still on 🏯 with 500.000 chosen ({s})')
+                check(s['tab'] == 'home' and s['chip'] == '1000000' and '1.000.000' in s['main'] and 'Bấm lần nữa' not in s['main'],
+                      f'contribute #{rep + 1}: still on 🏯 with 1 triệu chosen ({s})')
             # ⏰ the fund is enough now: Bang chủ builds Đền vàng from the Giờ vàng card (two taps), the card counts down
             g = await page.evaluate(gold)
             check(bool(g) and 'Xây Đền vàng · 10 triệu · 4 giờ' in g['btn'] and not g['off'], f'⏰ the Đền vàng build is the card\'s main button ({g})')
