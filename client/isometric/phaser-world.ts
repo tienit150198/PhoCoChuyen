@@ -56,6 +56,8 @@ interface Hotspot extends Point {id:string;label:string;approach:Point;interacti
 type PublicState = {current?:string;focus?:string;careers?:Record<string,any>;journey?:any;settings?:any;[key:string]:any};
 type Content = {catalogue?:Career[];npcs?:any[];[key:string]:any};
 const FONT='"Be Vietnam Pro", "Segoe UI", sans-serif';
+/** ⚔️ A remote player's name tag: the 🎖️ badge before the name, the bang and role on a second line (model.ts RemotePlayer). */
+const nameTag=(p:RemotePlayer)=>`${p.badge?p.badge+' ':''}${p.name}${p.tag?'\n'+p.tag:''}`;
 const COLORS={grass:0xb6c598,grassLight:0xc2cda8,road:0xe7d3b5,edge:0xc5ac89,ink:0x6e5141,cream:0xfff3da,roof:0xb86c4e,sage:0x8ba77a,water:0x98bfb8};
 const asHex=(s:string|undefined,fallback=COLORS.sage)=>s&&/^#[0-9a-f]{6}$/i.test(s)?parseInt(s.slice(1),16):fallback;
 const px=(p:Point,z=0):Point=>{const q=project(p);return {x:q.x,y:q.y-z};};
@@ -1001,7 +1003,7 @@ class DioramaScene extends Phaser.Scene {
     for(const peer of peers){
       const appearance=JSON.stringify([peer.gender,peer.look]);
       let actor=this.remoteActors.get(peer.pid);
-      if(!actor){const image=this.add.image(0,0,'__DEFAULT').setOrigin(.5,1).setScale(CHARACTER_SCALE).setVisible(false),tag=this.add.text(0,0,peer.name,{fontFamily:FONT,fontSize:'13px',color:'#654a39',backgroundColor:'#fff3da',padding:{x:6,y:3}}).setOrigin(.5,1).setVisible(false);actor={peer,look:{...defaultLook(peer.gender),...peer.look},appearance,pose:'',artRevision:-1,at:{x:peer.x,y:peer.y},from:{x:peer.x,y:peer.y},path:[],started:0,image,tag,texture:''};this.remoteActors.set(peer.pid,actor);}
+      if(!actor){const image=this.add.image(0,0,'__DEFAULT').setOrigin(.5,1).setScale(CHARACTER_SCALE).setVisible(false),tag=this.add.text(0,0,nameTag(peer),{fontFamily:FONT,fontSize:'13px',color:peer.ink||'#654a39',backgroundColor:'#fff3da',padding:{x:6,y:3},align:'center'}).setOrigin(.5,1).setVisible(false);actor={peer,look:{...defaultLook(peer.gender),...peer.look},appearance,pose:'',artRevision:-1,at:{x:peer.x,y:peer.y},from:{x:peer.x,y:peer.y},path:[],started:0,image,tag,texture:''};this.remoteActors.set(peer.pid,actor);}
       else{
         if(actor.appearance!==appearance){actor.look={...defaultLook(peer.gender),...peer.look};actor.appearance=appearance;actor.pose='';}
         if(Math.hypot(actor.peer.x-peer.x,actor.peer.y-peer.y)>1e-5){
@@ -1010,7 +1012,7 @@ class DioramaScene extends Phaser.Scene {
           if(actor.path.length)actor.at=interpolateRoute(actor.from,actor.path,Math.min(1,(this.owner.time-actor.started)/.24));
           actor.from={...actor.at};actor.path=this.owner.reduced?[]:findRoute(this.navigation,actor.at,peer);actor.started=this.owner.time;if(!actor.path.length)actor.at={x:peer.x,y:peer.y};
         }
-        if(actor.peer.name!==peer.name){actor.tag.setText(peer.name);if(actor.tag.visible)this.remoteVisualRevision++;}actor.peer=peer;
+        if(nameTag(actor.peer)!==nameTag(peer)||actor.peer.ink!==peer.ink){actor.tag.setText(nameTag(peer)).setColor(peer.ink||'#654a39');if(actor.tag.visible)this.remoteVisualRevision++;}actor.peer=peer;
       }
       // 🚗 a two-wheeler or car under them (a yacht/plane waits at the harbour/airfield: refreshVehicles)
       const v=peer.r?peerVehicle(peer.r,this.owner.game):null,road=v&&(v.group==='bike'||v.group==='car')?v:null,rideKey=road?JSON.stringify([road.id,road.kind,road.hex,road.plate,road.uq]):'';

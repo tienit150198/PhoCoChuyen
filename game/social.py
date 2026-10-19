@@ -509,7 +509,12 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
             rating = weigh_reviews(db, t['sid'], reviews)   # paid 5★: weighed, never deleted
             reviews = reviews[:30]
             reviewed = bool(db.execute('SELECT 1 FROM previews WHERE from_pid=? AND to_pid=? AND day=?', (mine, t['pid'], today())).fetchone())
-            return dict(profile=_public_profile(t, mine, db, ranks), visits=visits, rating=rating,
+            profile = _public_profile(t, mine, db, ranks)
+            from . import bang   # ⚔️ the bang tag and role beside the name (game/bang.py tag_of; an older client ignores it)
+            bt = bang.tag_of(store, db, t['sid'])
+            if bt:
+                profile['bang'] = bt
+            return dict(profile=profile, visits=visits, rating=rating,
                         counted=sum(1 for r in reviews if r.get('counted')),
                         reviews=[_review(r, mine) for r in reviews], listings=[_listing(db, m, mine) for m in listings],
                         can_review=t['pid'] != mine and bool(me['name']) and not reviewed,

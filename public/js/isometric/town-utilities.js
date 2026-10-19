@@ -25,7 +25,7 @@ export function townServiceAvailable(action,state={},content={},social={},action
   if(owns(JOURNEY_FEATURES,action))return Boolean(story&&journey[JOURNEY_FEATURES[action]]);
   if(owns(CONTENT_FEATURES,action))return Boolean(story&&content?.journey?.[CONTENT_FEATURES[action]]);
   if(owns(LIVE_FEATURES,action))return Boolean(social?.welcomed&&social?.flags?.[LIVE_FEATURES[action]]);
-  if(action==='house'||action==='jrInvest'||action==='townProjects')return story;
+  if(action==='house'||action==='jrInvest'||action==='townProjects'||action==='bang')return story;
   if(action==='rui')return Boolean(state?.rui);
   if(action==='ev2010')return ev2010Open();
   if(action==='fair'){
@@ -85,7 +85,7 @@ export function townUtilityGroups(state={},content={},social={}){
       ['marriage','home','👨‍👩‍👧','Nhà & gia đình chung',{tab:'family'},'family'],
       ['marriage','heart','👶','Chăm con chung',{tab:'family',section:'children'},'family-children'],
       ['nhom','chat','📌','Nhóm phố'],['social','globe','🛍️','Phố nghề'],['rank','award','🏆','Bảng xếp hạng'],
-      ['townProjects','building','🏗️','Công trình của phố'],
+      ['townProjects','building','🏗️','Công trình của phố'],['bang','shield','⚔️','Bang'],
       ['liveWalk','map','🚶','Phố đi dạo'],['liveDate','heart','💕','Góc hẹn hò'],
       ['liveWed','heart','💍','Lịch cưới'],['liveKara','music','🎤','Phòng hát'],
       ['tileMatch','grid','🧩','Ghép ba Phố Mây'],

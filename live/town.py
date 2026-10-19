@@ -16,6 +16,8 @@ decides from the catalogue's group), its paint, and `p` an auction plate (live/p
 it; gold). Only a garage id (game/garage.py VEHICLES); anything odd is on foot, never an error. A walker's public entry
 has `r` while set; a `mv` carries `r` (null: on foot) only when it changed. Riding stays within the movement budget
 (the client rides at most 1.8× its walk, under SPEED). Older clients ignore `r`; an older service drops it.
+⚔️ A walker's public entry may carry `bg` (live/bangs.py: the bang tag and role, read at town_in from the game's tables,
+never from a frame); a change comes as a `mv` with `bg` (null: no bang). Older clients ignore it.
 🐾 town_in / town_mv may carry `pt` (owner 19/10 "đi đâu cũng cho dẫn theo"): the pet walking beside them, as on the
 street (live/street.py clean_pet; its rank only up to one they have, live/pet_rank.py). Same rules as `r`.
 """
@@ -29,7 +31,7 @@ from pathlib import Path
 
 from game.content import CAREERS
 from game.garage import VEHICLES as GARAGE   # 🚗 the ids a town ride may name
-from . import faces
+from . import bangs, faces
 from .auth import pid_of
 from .protocol import Feature, LiveError, on
 from .street import clean_look, clean_pet
@@ -168,6 +170,7 @@ class Walker:
         self.last, self.credit = time.monotonic(), JITTER
         self.activity = activity
         self.activity_last, self.activity_credit = self.last, ACTIVITY_JITTER
+        self.bg = None   # ⚔️ the bang tag (live/bangs.py)
 
     def public(self):
         out = dict(pid=self.pid, name=self.player.name or 'Mây', lk=self.look, g=self.gender,
@@ -178,6 +181,8 @@ class Walker:
             out['r'] = dict(self.ride)
         if self.pet:
             out['pt'] = dict(self.pet)
+        if self.bg:
+            out['bg'] = dict(self.bg)
         return out
 
 
@@ -317,6 +322,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
         room = self._pick(conn.player)
         room.add(conn)
         w = Walker(conn.player, look, gender, point, clean_direction(f.get('direction')), activity, ride, pet)
+        w.bg = await bangs.of_app(self.app).one(w.pid)   # ⚔️ once per entry, never per move
         room.data['people'][w.pid] = w
         conn.ext['town'] = conn.player.ext['town'] = room.id
         self._queue(room, w.pid, dict(k='in', **w.public()))

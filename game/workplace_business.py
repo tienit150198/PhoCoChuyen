@@ -378,7 +378,8 @@ def _finish(s,c,career,e,at,order=None):
     # lot never drags the price under a restock.
     basis=max(goods,_replacement(career,inputs))
     from . import ads   # 📺 ⏰ Giờ vàng riêng (game/ads.py): ×1,5 at the order's own time, on top of the street's
-    revenue=staff_market.staff_revenue(base,quality,cash,basis,staff_market.x(career,at)*ads.gold_mult(s,at)//100)
+    from . import bang   # ⚔️ ⏰ Giờ vàng của bang (game/bang.py): ×2 at the order's own time, the larger of it and the street's
+    revenue=staff_market.staff_revenue(base,quality,cash,basis,staff_market.x(career,at,bang.gold_mult(at))*ads.gold_mult(s,at)//100)
     from .income_gear import improved_revenue
     revenue=improved_revenue(c,revenue,cash+basis)
     _count_used(c,inputs)

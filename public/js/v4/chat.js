@@ -29,6 +29,7 @@ import {faceCode} from './face-code.js';
 import {nameAttrs,frameAttrs,titleChip} from './style-tag.js';   // 🎨 `st` of the week (live/styles.py)
 import {chips as hnChips,list as hnList,titles as hnTitles,inlineMax} from './honours.js';   // 🏅 `tt`: every honour title held now (live/honours.py)
 import {avatar as hfAvatar,bubble as hfBubble} from './honour-frames.js';   // 🖼️ a top title's avatar frame and chat bubble (owner 18/10)
+import {chip as bgChip,badgeHTML as bgBadge} from './bang-tag.js';   // ⚔️ `bg`: the bang tag and role (live/bangs.py)
 import {interleave as lxCards,cardHTML as lxCard,onChange as lxChange,refresh as lxRefresh} from './lixi-cards.js';   // 🧧 lì xì cards in Cả phố (v4/lixi.js)
 
 const S={dlg:null,env:null,tab:'town',thread:null,view:null,bodyHTML:null,threads:new Map(),
@@ -493,7 +494,7 @@ function head(){
 
 /** A message's name row: 🎨 colour and bought title, 🏅 honour chips (tap: every title, in a small popover). */
 function nameRow(m){
-  const api=S.env?.api,inner=`<span data-no-translate${nameAttrs(api,m.st)}>${esc(m.name)}</span>${titleChip(api,m.st)}${badge(m)}`;
+  const api=S.env?.api,inner=`${bgBadge(m.bg)}<span data-no-translate${nameAttrs(api,m.st)}>${esc(m.name)}</span>${bgChip(m.bg)}${titleChip(api,m.st)}${badge(m)}`;
   if(!hnTitles(api,m.tt).length)return `<b class="ch-name">${inner}</b>`;
   const key=String(m.id),open=S.honFor===key;
   return `<button type="button" class="ch-name hn-btn" data-ch-act="honours" data-id="${key}" aria-expanded="${open}">${inner}${hnChips(api,m.tt,inlineMax())}</button>`+

@@ -876,6 +876,18 @@ class Handler(BaseHTTPRequestHandler):
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("deco-mate:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,deco_mate.view(self.server.store,token,state));return
+            if route in ("/api/bang","/api/bang/me"):  # ⚔️ Bang: mine, a bang's page, the list, the week's board (game/bang.py; the save is not read)
+                token,state,_,_=self.require_session(light=True)
+                if not self.server.rate_limit("bang-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                from game import bang
+                if route=="/api/bang/me":self.json(200,bang.me_view(self.server.store,token));return
+                self.json(200,bang.get_view(self.server.store,token,{k:v[0] for k,v in parse_qs(split.query).items()}));return
+            if route=="/api/admin/bang":  # ⚔️ every bang for the operator (hide / rename an offensive one); admin only
+                try:token,_,_,_=self.guarded(light=True)
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                from game import bang
+                self.json(200,bang.admin_view(self.server.store,(parse_qs(split.query).get("q") or [""])[0][:30]));return
             if route=="/api/island":  # 🏝️ Đảo riêng: my trip, invitations, seats (game/island_trips.py; the save is not read)
                 token,state,_,_=self.require_session(light=True)
                 if not self.server.rate_limit("island-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -1043,7 +1055,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
             if route in ("/api/2010/heart","/api/2010/report"):self.event2010_reader(route);return  # 💐 anyone with the link: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/island/"))
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang")
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
@@ -1238,6 +1250,15 @@ class Handler(BaseHTTPRequestHandler):
                 out=bank_xfer.act(self.server.store,token,route[len("/api/bank/xfer/"):],data)
                 if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 self.json(200,out,known=FULL);return
+            if route.startswith("/api/bang/"):  # ⚔️ join, leave, invite, roles, build, shop, Giờ vàng… (game/bang.py; database only, no save)
+                if not self.server.rate_limit("bang:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                from game import bang
+                self.json(200,bang.post(self.server.store,token,route[len("/api/bang/"):],data));return
+            if route=="/api/admin/bang":  # ⚔️ hide / show / rename a bang (game/bang.py admin_act); admin only, never a delete
+                if not self.server.rate_limit("admin-bang:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.require_admin(token)
+                from game import bang
+                self.json(200,bang.admin_act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
             if route.startswith("/api/island/"):  # 🏝️ start, invite, answer, leave, remove, end (game/island_trips.py)
                 if not self.server.rate_limit("island:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,island_trips.post(self.server.store,token,route[len("/api/island/"):],data));return

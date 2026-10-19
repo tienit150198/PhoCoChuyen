@@ -4,12 +4,16 @@
  * 🚗 `r` (live/town.py): the vehicle ridden (world.getRide, isometric/vehicle-art.js), sent on joining and when it changes.
  * 🐾 `pt` (owner 19/10 "đi đâu cũng cho dẫn theo"): the pet walking beside you (journey.pets.ref, game/pets.py walk_ref:
  * {b, c, n, a, r, x}), the same way; the scene draws everyone's (isometric/phaser-world.ts).
+ * ⚔️ `bg` (live/bangs.py): another walker's bang tag, drawn as a second line of their name tag in the bang's ink
+ * (v4/bang-tag.js tagLine); a 🎖️ badge goes before the name. My own look carries the bang uniform while I wear it
+ * (bang-tag.js withBang), so everyone sees it.
  */
 import {live} from './v4/live.js';
 import {sitePresence} from './v4/site-presence.js';
 import {createTownSocial} from './isometric-social.js';
 import {lookOf} from './v4/look.js';
 import {leisurePresence,publicActivity} from './isometric/leisure-presence.js';
+import {withBang,tagLine,tagInk,badge} from './v4/bang-tag.js';
 
 const MAP='iso-town-v1',GAP=270,POLL=100,JOIN_WAIT=12000;
 const DIRECTIONS=new Set(['se','sw','ne','nw']);
@@ -40,10 +44,15 @@ function publicPeer(value){
   if(value.activity!=null&&!activity)return null;
   return {pid:value.pid,name:typeof value.name==='string'?value.name.slice(0,24):'Mây',
     look:value.lk&&typeof value.lk==='object'?value.lk:{},
-    gender:value.g==='female'||value.g==='male'?value.g:null,fc:typeof value.fc==='string'?value.fc:'',...point,...(activity?{activity}:{}),...(publicRide(value.r)?{r:publicRide(value.r)}:{}),...(publicPet(value.pt)?{pt:publicPet(value.pt)}:{})};
+    gender:value.g==='female'||value.g==='male'?value.g:null,fc:typeof value.fc==='string'?value.fc:'',...point,...(activity?{activity}:{}),...(publicRide(value.r)?{r:publicRide(value.r)}:{}),...(publicPet(value.pt)?{pt:publicPet(value.pt)}:{}),...bangOf(value.bg)};
+}
+/** ⚔️ {tag, ink, badge} for the name tag, or {} without a bang. */
+export function bangOf(bg){
+  const tag=tagLine(bg,true);if(!tag)return {};
+  const b=badge(bg);return {tag:tag.slice(0,40),ink:tagInk(bg),...(b?{badge:b}:{}),...(bg.u===1?{bu:1}:{})};   // bu: the bang uniform is worn
 }
 function appearance(state){
-  const look=lookOf(state),g=state?.journey?.gender==='female'?'female':state?.journey?.gender==='male'?'male':null;
+  const look=withBang(lookOf(state)),g=state?.journey?.gender==='female'?'female':state?.journey?.gender==='male'?'male':null;
   return {look,g,key:JSON.stringify([look,g])};
 }
 
@@ -173,6 +182,7 @@ export function createTownPresence(envGetter,options={}){
               if(Object.hasOwn(e,'activity')){if(activity)peer.activity=activity;else delete peer.activity;}
               if(Object.hasOwn(e,'r')){const r=publicRide(e.r);if(r)peer.r=r;else delete peer.r;}
               if(Object.hasOwn(e,'pt')){const pt=publicPet(e.pt);if(pt)peer.pt=pt;else delete peer.pt;}
+              if(Object.hasOwn(e,'bg')){delete peer.tag;delete peer.ink;delete peer.badge;delete peer.bu;Object.assign(peer,bangOf(e.bg));}
               changed=true;
             }
           }

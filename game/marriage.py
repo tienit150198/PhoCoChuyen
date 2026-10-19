@@ -870,6 +870,7 @@ def news(store, since, token: str | None = None) -> dict:
         items = [r for r in rows if r['at'] > t - NEWS_FIRST][:3]
     out = dict(items=[dict(id=r['id'], kind=r['kind'], text=r['text'], at=int(r['at'])) for r in reversed(items)], last=last)
     me = None
+    sid = None
     if token:
         try:
             sid, display = whoami(store, token)
@@ -881,6 +882,14 @@ def news(store, since, token: str | None = None) -> dict:
     from . import golden_hour   # ⏰ Giờ vàng / 🌟 Ngày vàng on now: the ticker plays it once a window (public/js/v4/ticker.js)
     g = golden_hour.public(t)
     out['golden'] = dict(text=golden_hour.news_line(t), ends=int(g['ends'])) if g else None
+    if sid and (not g or g['mult'] < 200):   # ⚔️ my bang's own Giờ vàng (game/bang.py; the minute's snapshot, no query per poll)
+        try:
+            from . import bang
+            bg = bang.gold_now(store, sid, t)
+            if bg:
+                out['golden'] = dict(text=bang.news_line(bg), ends=int(bg['ends']), bang=1)
+        except Exception:  # noqa: BLE001 - the ticker never fails for this
+            pass
     from . import event2010   # 💐 Thiệp 20/10 while writing is open: once a day on a device (an older page ignores it)
     out['event'] = event2010.news_line(t)
     return out

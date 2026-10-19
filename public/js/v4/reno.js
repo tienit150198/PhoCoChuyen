@@ -30,6 +30,7 @@ import {morph,railScroll,railRestore} from './home-morph.js';
 import * as BB from './baby.js';
 import {babyRoom,babyPortrait} from './baby-art.js';
 import {PALETTE} from './look.js';
+import {flagSVG,flagBadge} from './bang-tag.js';   // ⚔️ 🚩 the bang's flag on the wall of my first room (the 3D view: in its corner), while I am in that bang
 import {sceneSession} from './home-3d.js';
 
 const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',busy:false,flash:null,
@@ -406,6 +407,7 @@ function roomMarkup(rm,opts={}){
   const v=V(),G=A.geom(rm),Lt=A.lightAt(minuteNow()),edit=!!opts.edit,photo=!!opts.photo,uid=(photo?'p':'')+rm.id;
   const skin={...(rm.skin0||{}),...(rm.skin||{})};if(S.try&&S.try.room===rm.id)skin[S.try.part==='wall'?'w':'f']=S.try.skin==='auto'?undefined:S.try.skin;
   const list=inRoom(rm),theirs=mateIn(rm),all=theirs.length?[...list,...theirs]:list,out=[A.roomBack(rm,G,partsMap(),Lt,uid,skin)];
+  if(!S.remote&&rm.wrows&&V()?.rooms?.[0]?.id===rm.id){const fl=flagSVG(0,0);if(fl)out.push(`<g transform="translate(${G.W-A.PX-58} ${G.WY+4}) scale(${Math.min(1,rm.wrows*A.WR/80).toFixed(2)})" pointer-events="none">${fl}</g>`);}
   if(edit&&!photo&&S.held&&!S.drag)out.push(zoneMarkup(rm,heldItem(),G,list.filter(o=>o.id!==S.held.uid)));
   out.push('<g class="dc-zonelayer" pointer-events="none"></g>');
   const glows=[];
@@ -1013,7 +1015,7 @@ function decoPage(v){
     ?`<div class="dc-actions">${btn('↶ Hoàn tác','undo',{},'ghost',S.undo.length?'':' disabled')}${btn('🎒 Cất hết','pickAll',{},'ghost',v.items.length?'':' disabled')}${btn('✓ Xong','done',{},'primary')}</div>`
     :`<div class="dc-actions">${btn(v.items.length?'✏️ Bày trí phòng':'✏️ Bắt đầu bày trí','edit',{},'primary')}${btn('📸 Chụp phòng','photo',{},'ghost')}</div>`;
   const viewControls=`<div class="home3d-controls" aria-label="Góc nhìn căn nhà">${btn('◈ Nhà 3D','view3d',{mode:'3d'},'ghost small',` aria-pressed="${S.view3d}"`)}${btn('▧ Minh họa','view3d',{mode:'2d'},'ghost small',` aria-pressed="${!S.view3d}"`)}${S.view3d?`${btn('−','camera',{action:'out'},'ghost small',' aria-label="Thu nhỏ"')}${btn('+','camera',{action:'in'},'ghost small',' aria-label="Phóng to"')}${btn('⌂ Góc đầu','camera',{action:'reset'},'ghost small')}`:''}</div>`;
-  const stage=`<div class="dc-stage">${roomTabs(v)}${viewControls}<div class="dc-roomwrap${S.view3d?' dc-roomwrap-3d':''}">${svg}${S.edit?'':`${S.view3d?'':hw().hint(use,rm)}${hw().sayHTML()}`}</div>${hw().socialPanel()}${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(use,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
+  const stage=`<div class="dc-stage">${roomTabs(v)}${viewControls}<div class="dc-roomwrap${S.view3d?' dc-roomwrap-3d':''}">${svg}${S.view3d&&!S.remote?flagBadge():''}${S.edit?'':`${S.view3d?'':hw().hint(use,rm)}${hw().sayHTML()}`}</div>${hw().socialPanel()}${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(use,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
   const side=S.coop?`${coopCard()}${S.edit&&wide?drawer(v):''}`:S.remote?`<section class="bk-card"><h3>🏡 Nhà ${esc(S.remote.owner.name)}</h3><p>${S.remote.access?.kind==='stay'?'Bạn ở chung tại đây, có thể vào khi chủ nhà vắng mặt.':'Bạn đang ghé chơi theo lời mời.'}</p><p class="bk-hint">Chạm sàn để đi lại, gặp bạn trong phòng và giao lưu.</p></section>`:`${S.edit?'':babyCard()}${relaxCard(use,rm)}${S.edit&&wide?drawer(v):''}${cozyCard(v)}${coopOwnerCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}`;
   return `<div class="dc-grid">${stage}<div class="dc-side">${side}</div></div>`;
 }

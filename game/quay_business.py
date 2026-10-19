@@ -387,7 +387,9 @@ def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=
         costs += paid
     costs += charge_income_tax(st, amount, costs)
     from . import golden_hour   # ⏰ Giờ vàng / Ngày vàng (owner 15/10): the owner's take ×2 / ×1.5 at the sale's own time
-    percent = golden_hour.scale_take(income_gear.profit_percent(st,BONUS_PERCENT if employee is None else STAFF_BONUS_PERCENT), at / 1000)
+    from . import bang   # ⚔️ ⏰ Giờ vàng của bang (game/bang.py): ×2 at the sale's own time, the larger of it and the street's
+    percent = golden_hour.scale_take(income_gear.profit_percent(st,BONUS_PERCENT if employee is None else STAFF_BONUS_PERCENT), at / 1000,
+                                     bang.gold_mult(at / 1000) if owner is not None else 100)
     if owner is not None:   # 📺 ⏰ Giờ vàng riêng (game/ads.py): the owner's take ×1,5 more at the sale's own time
         from . import ads
         percent = ads.scale_take(owner, percent, at / 1000)

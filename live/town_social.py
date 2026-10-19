@@ -153,8 +153,11 @@ class TownSocial:
         if current is not room or current_w is not w:
             raise LiveError('gone', 'Bạn đã rời khu phố này.')
         other = self._social_other(room, w, other.pid)
-        return self._social_reply(dict(t='town_card', room=room.id, pid=other.pid, name=other.player.name,
-                                      friend=friend, account=other.player.account, code=code), f)
+        out = dict(t='town_card', room=room.id, pid=other.pid, name=other.player.name,
+                   friend=friend, account=other.player.account, code=code)
+        if getattr(other, 'bg', None):   # ⚔️ the bang tag (live/bangs.py)
+            out['bg'] = dict(other.bg)
+        return self._social_reply(out, f)
 
     async def prune_social_messages(self, now=None, batch=200):
         """Keep a day for recall; pending reports remain until an admin reviews them.

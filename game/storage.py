@@ -100,6 +100,14 @@ def _cand_prepare(db,action:str)->None:
     except Exception:  # noqa: BLE001 - never fails a command: without counts no cap is known
         pass
 
+def _bang_prepare(db)->None:
+    """⏰ Every bang member's Giờ vàng windows (game/bang.py prepare): read at most once a minute; never fails a command."""
+    try:
+        from . import bang
+        bang.prepare(db)
+    except Exception:  # noqa: BLE001 - without windows nobody gets the bang's ×2
+        pass
+
 class Conflict(GameError):
     pass
 
@@ -540,6 +548,7 @@ class Store:
                 else:row=_snapshot_row(db.execute(_SNAPSHOT,(request_id,sid),text_bytes=True).fetchone())
                 fh.loc_prepare(db,action)  # a fair luck round: is the hourly 🍀 gate open (no read for other actions)
                 _cand_prepare(db,action)  # 👮 the CAND seat counts (PGĐ ≤ 5, GĐ ≤ 1: game/cand_roster.py)
+                _bang_prepare(db)  # ⏰ the bangs' Giờ vàng windows (game/bang.py): one read a minute per process
             if not row:raise GameError("Phiên chơi không tồn tại.","session_missing")
             who[0]=sid
             # Still at the handed-over revision (no text fetched): start from that parse of its text.
@@ -594,8 +603,12 @@ class Store:
         ranked=hit if hit is not None else lb.summary(raw,refund)  # read before the reducer changes raw in place
         marked=rt.marks(raw,ranked) if rt.ENABLED and action!="import_save" else None  # likewise
         x0=kpi.xu(raw) if action not in kpi.ECON_SKIP else None  # likewise: the xu held before (a few dict reads)
-        with ar.collect() as box:
-            raw,result,full,known,extra,snap=self._apply(raw,text,career,action,payload,internal,revision,sid=sid)
+        from . import bang
+        gh=bang.bind(sid)  # ⏰ this player's bang Giờ vàng windows for the orders and sales this command books
+        try:
+            with ar.collect() as box:
+                raw,result,full,known,extra,snap=self._apply(raw,text,career,action,payload,internal,revision,sid=sid)
+        finally:bang.unbind(gh)
         kpi.econ_mark(action,x0,kpi.xu(raw) if x0 is not None else None)
         serialized=serialize_bytes(raw,known,full,snap)
         del snap
@@ -735,6 +748,12 @@ class Store:
                 if action.startswith('jr_town_'):
                     from . import town_projects
                     town_projects.command_commit(db,sid,action,current)  # 🏗️ the town_gifts row under the project's row lock (over the goal refuses)
+                if action.startswith('jr_bang_'):
+                    from . import bang
+                    bang.command_commit(db,sid,action,current,result)  # ⚔️ the bang / its fund row under the bang's row lock (a refusal: nothing paid)
+                if action=='end_day':
+                    from . import bang
+                    bang.work_commit(db,sid)  # ⚔️ a work day's điểm cống hiến for a bang member (a few a day)
                 if action in ('jr_island_sell','reset_all','import_save'):
                     from . import island_trips
                     island_trips.command_commit(db,sid,action,current)  # 🏝️ an island no longer owned ends its open trip
@@ -797,6 +816,7 @@ class Store:
             before_out=[]
             fh.loc_prepare(db,action)
             _cand_prepare(db,action)
+            _bang_prepare(db)
             first=tree_copy(payload) if action in fh.LOC_ACTIONS else payload
             raw,result,serialized,cut,board,steps=self._compute(sid,row["state"],career,action,first,internal,row["revision"],before_out=before_out)
             if not fh.loc_claim(db,result):  # 🍀 taken by another worker meanwhile: the same command, gate shut
@@ -839,6 +859,12 @@ class Store:
             if action.startswith('jr_town_'):
                 from . import town_projects
                 town_projects.command_commit(db,sid,action,raw)  # 🏗️ the town_gifts row under the project's row lock (over the goal refuses)
+            if action.startswith('jr_bang_'):
+                from . import bang
+                bang.command_commit(db,sid,action,raw,result)  # ⚔️ the bang / its fund row under the bang's row lock (a refusal: nothing paid)
+            if action=='end_day':
+                from . import bang
+                bang.work_commit(db,sid)  # ⚔️ a work day's điểm cống hiến for a bang member
             if action in ('jr_island_sell','reset_all','import_save'):
                 from . import island_trips
                 island_trips.command_commit(db,sid,action,raw)  # 🏝️ an island no longer owned ends its open trip
@@ -895,6 +921,8 @@ class Store:
             lux.forget(db,sid)  # 🎆 plaques and sponsorships stay, as anonymous
             from . import town_projects
             town_projects.forget(db,sid)  # 🏗️ the town's plaques keep what they gave, as anonymous
+            from . import bang
+            bang.forget(db,sid)  # ⚔️ out of their bang (a leader hands over), the ledgers keep what they gave, as anonymous
             from . import island_trips
             island_trips.forget(db,sid)  # 🏝️ their open trip ends, their seats go
             from . import island_build

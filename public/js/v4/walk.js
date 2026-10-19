@@ -55,6 +55,7 @@ import {avatar as hfAvatar} from './honour-frames.js';   // 🖼️ a top title'
 import {choice,next as nextRide,canRide,label as rideLabel,wire,fromWire,drawRide,rider,steer,topOf,spouse as spouseOf,loadSpouse} from './ride.js';
 // 👶 the baby in a stroller's arms (`bb`, live/babies.py; v4/baby.js)
 import * as BB from './baby.js';
+import {withBang,tagLine,badge as bgBadge,chip as bgChip} from './bang-tag.js';   // ⚔️ `bg`: the bang tag (live/bangs.py) and my bang uniform
 
 const W=WORLD.w,H=WORLD.h,AV=.5,LOG_MAX=40,BUBBLE_MS=6000,EMO_MS=2600,MOVE_GAP=260,PLACE_KEY='mnl.walk.place',WSOUND_KEY='mnl.wed.sound';
 const EMOTES=[['wave','👋'],['heart','❤️'],['laugh','😂'],['wow','😮'],['pray','🙏'],['dance','💃']];   // 💃: weddings only
@@ -176,7 +177,7 @@ function onClose(){
 function leaveLocal(){S.log=[];S.logOpen=false;S.envp=null;S.tray=null;S.toss=null;S.dj=false;paintLog();S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];S.photo=null;syncMusic();paintOverlays();}
 
 function enter(place){
-  const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined,...(rankRef(st)?{rk:rankRef(st)}:{}),...(st.journey?.pets?.ref?{pt:st.journey.pets.ref}:{}),...(BB.wire(st)?{bb:BB.wire(st)}:{})};   // 🐾 pt: the pet with me · 👶 bb: the baby in my arms (older services ignore both)   // 🎖️ rk: the rank worn (live/street.py clean_rank; older services ignore it)
+  const st=S.env?.api?.state||{},me={look:withBang(lookOf(st)),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined,...(rankRef(st)?{rk:rankRef(st)}:{}),...(st.journey?.pets?.ref?{pt:st.journey.pets.ref}:{}),...(BB.wire(st)?{bb:BB.wire(st)}:{})};   // 🐾 pt: the pet with me · 👶 bb: the baby in my arms (older services ignore both)   // 🎖️ rk: the rank worn (live/street.py clean_rank; older services ignore it)
   if(S.wedding!==null){S.want='wed';live.send({t:'wed_in',id:S.wedding,...me});return;}
   S.want=place;
   const r=wire(choice(st,S.env?.api?.content,TWO));
@@ -219,6 +220,8 @@ function bind(){
       else if(e.k==='in'){if(!S.people.has(e.pid))S.people.set(e.pid,person(e));co=true;}
       else if(e.k==='out'){S.people.delete(e.pid);co=true;if(S.card?.pid===e.pid)S.card=null;if(S.invite?.pid===e.pid)S.invite=null;seats=true;}
       else if(e.k==='tb'){S.tables[e.i]=Object.assign(S.tables[e.i]||{},e);seats=true;}
+      else if(e.k==='bg'){const p=S.people.get(e.pid);if(!p)continue;p.bg=e.bg&&typeof e.bg==='object'?e.bg:null;   // ⚔️ joined, left, a new role
+        p.name=bgName({name:p.nm,bg:p.bg});p.ti=tagTitle({ti:p.ti0,tt:p.tt,bg:p.bg});co=true;}
       else if(e.k==='rd'){const p=S.people.get(e.pid);if(!p)continue;const q=riding(e);p.r=q.r;p.v=q.v;p.ride=undefined;   // 🛵 on or off the vehicle
         if(Array.isArray(e.p)&&e.p.length){p.p=e.p;p.at=e.at;p.pred=null;}co=true;}
     }
@@ -292,11 +295,14 @@ function sample(at){if(typeof at!=='number')return;S.offs.push(at-Date.now()/100
 /** 🏅 The name tag's line: `ti` (the best honour or what is worn) and the emojis of the other honour titles (`tt`,
  * live/honours.py); with no `ti`, the first honour by its short name. */
 function tagTitle(p){
-  const api=S.env?.api,L=hnTitles(api,p.tt);if(!L.length)return p.ti||null;
+  const api=S.env?.api,L=hnTitles(api,p.tt),bang=tagLine(p.bg,true);   // ⚔️ the bang first ("🐉 Rồng Đỏ · Phó"), then the honours
+  const with_=t=>bang?(t?`${bang} · ${t}`:bang):t;
+  if(!L.length)return with_(p.ti||null);
   const lead=p.ti||`${L[0].emoji} ${L[0].short}`,more=hnIcons(api,p.tt,lead);
-  return more?`${lead} ${more}`:lead;
+  return with_(more?`${lead} ${more}`:lead);
 }
-function person(p){const q={pid:p.pid,name:p.name,ti:tagTitle(p),tt:Array.isArray(p.tt)?p.tt:null,lk:p.lk,rk:p.rk||null,pt:p.pt&&typeof p.pt==='object'?p.pt:null,bb:p.bb&&typeof p.bb==='object'?p.bb:null,g:p.g,st:p.st&&typeof p.st==='object'?p.st:null,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
+const bgName=p=>bgBadge(p.bg)?`${bgBadge(p.bg)} ${p.name}`:p.name;   // 🎖️ the bang badge worn before the name
+function person(p){const q={pid:p.pid,name:bgName(p),nm:p.name,ti0:p.ti??null,bg:p.bg&&typeof p.bg==='object'?p.bg:null,ti:tagTitle(p),tt:Array.isArray(p.tt)?p.tt:null,lk:p.lk,rk:p.rk||null,pt:p.pt&&typeof p.pt==='object'?p.pt:null,bb:p.bb&&typeof p.bb==='object'?p.bb:null,g:p.g,st:p.st&&typeof p.st==='object'?p.st:null,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
 /** 💑 Sitting behind someone (`b`: the driver's pid, optional, from a newer live service): their speed is the driver's. */
 function behind(q,e){const b=typeof e.b==='string'?e.b:null,v=Number(e.v);if(b)q.v=v>0&&v<2000?v:q.v;else if(q.b&&!q.r)q.v=undefined;q.b=b;}
 /** 🛵 A people entry's vehicle (r, v: optional, from a newer live service), the rider's motion. */
@@ -658,7 +664,7 @@ function paintOverlays(){
     }
     const more=c.more?(c.report?`<div class="wk-acts wrap">${REASONS.map(([k,l])=>`<button type="button" class="wk-pill" data-wk="reason" data-reason="${k}">${l}</button>`).join('')}</div>`
       :`<div class="wk-acts">${c.said?`<button type="button" class="wk-pill" data-wk="report">${icon('flag',14)} Báo cáo lời vừa nói</button>`:''}<button type="button" class="wk-pill warn" data-wk="block">Chặn</button></div>`):'';
-    cd.innerHTML=`<div class="wk-who">${hfAvatar(c.tt,c.st,portrait(c.lk,c.g,48,c.name),S.env?.api)}<div class="grow"><b data-no-translate${stName(S.env?.api,c.st)}>${esc(c.name)}</b>${c.ti?`<small>${esc(c.ti)}</small>`:''}${hnTitles(S.env?.api,c.tt).length?`<small class="wk-hn">${hnChips(S.env?.api,c.tt,0)}</small>`:''}${c.friend?'<small class="wk-friend">Bạn bè</small>':''}</div>
+    cd.innerHTML=`<div class="wk-who">${hfAvatar(c.tt,c.st,portrait(c.lk,c.g,48,c.name),S.env?.api)}<div class="grow"><b data-no-translate${stName(S.env?.api,c.st)}>${esc(c.name)}</b>${c.bg?bgChip(c.bg,false):''}${c.ti?`<small>${esc(c.ti)}</small>`:''}${hnTitles(S.env?.api,c.tt).length?`<small class="wk-hn">${hnChips(S.env?.api,c.tt,0)}</small>`:''}${c.friend?'<small class="wk-friend">Bạn bè</small>':''}</div>
       <button type="button" class="icon-btn" data-wk="cardClose" aria-label="Đóng">${icon('x',18)}</button></div>${c.said&&c.more&&c.report?`<p class="wk-said" data-no-translate>“${esc(c.said.text)}”</p>`:''}
       <div class="wk-acts">${acts.join('')}</div>${more}`;
     cd.hidden=false;
