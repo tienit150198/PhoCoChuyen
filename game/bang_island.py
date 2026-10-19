@@ -22,7 +22,6 @@ HTTP (server.py): GET /api/bang-island[?bang=<id>]  → {now, me: {kind, role}, 
 """
 from __future__ import annotations
 
-import importlib
 import math
 import os
 import re
@@ -237,8 +236,9 @@ def provider() -> BangIslandProvider | None:
     if not _looked:
         _looked = True
         try:
-            _provider = getattr(importlib.import_module('game.bang_island_source'), 'PROVIDER', None)
-        except ModuleNotFoundError:
+            from . import bang_island_source   # the Bang branch's module (absent until it merges)
+            _provider = getattr(bang_island_source, 'PROVIDER', None)
+        except ImportError:
             _provider = None
         if _provider is None and os.environ.get('MNL_BANG_ISLAND_STUB', '').strip() in ('1', 'true', 'yes', 'on'):
             _provider = StubProvider.from_env()
