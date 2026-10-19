@@ -9,6 +9,7 @@ lãi tăng cao hơn".
   - staff orders (game/staff_market.py x(): the margin after shaping, like the market and the hot career);
   - counter sales (game/quay_business.py sale(): the owner's take, margin + profit bonus, ×mult).
   A loss is never multiplied (both paths only scale a positive margin).
+* ⚔️ A bang's own Giờ vàng (game/bang.py, set by its leader) is ×2 too: where both are on, the larger applies, never both.
 * MNL_GOLDEN_OFF=1 turns it off (tests/__init__.py sets it, so a test's money does not depend on the hour it runs).
 """
 from __future__ import annotations
@@ -66,9 +67,10 @@ def mult(t: float | None = None) -> int:
     return p['mult'] if p['start'] <= t < p['end'] else 100
 
 
-def scale_take(percent: int, t: float) -> int:
-    """A profit-bonus percent such that the owner's take (margin × (100 + percent)) is ×mult(t) inside a window."""
-    g = mult(t)
+def scale_take(percent: int, t: float, other: int = 100) -> int:
+    """A profit-bonus percent such that the owner's take (margin × (100 + percent)) is ×mult(t) inside a window.
+    `other`: another window's multiplier at t (⚔️ the bang's Giờ vàng, game/bang.py): the larger of the two applies."""
+    g = max(mult(t), other)
     return percent if g == 100 else (100 + percent) * g // 100 - 100
 
 

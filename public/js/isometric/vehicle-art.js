@@ -14,6 +14,7 @@
  * a plane's contrail and its shadow sliding over the town), MOTOR (what smokes) and rearOf (where the tail is). */
 import {choice,wire,fromWire,drawRide,plateAt,halfOf,FAST,TWO} from '../v4/ride.js';
 import {figureOf} from '../v4/look.js';
+import {boatPaint} from '../v4/bang-tag.js';   // ⚔️ ⛵ Sơn thuyền màu bang (game/bang.py): my yachts in the bang's paint while worn
 
 /** World px per character unit (the island's characters are about 110 px tall, ride.js draws them 140 units). */
 export const RIDE_SCALE=.78;
@@ -41,12 +42,12 @@ export function townVehicles(state,content){
       if(!it||!(it.group in count)||car.broken!=null||count[it.group]>=MAX_PARKED[it.group])continue;
       count[it.group]++;
       const uq=text(car.uq?.t);
-      fleet.push({id:it.id,group:it.group,name:String(it.name||''),emoji:String(it.emoji||''),hex:paintHex(c,car.color,it.paint),
+      fleet.push({id:it.id,group:it.group,name:String(it.name||''),emoji:String(it.emoji||''),hex:paintHex(c,boatPaint(car.color,it.group),it.paint),   // ⚔️ ⛵ the bang's paint while worn
         plate:uq||text(car.plate),uq:Boolean(uq),mine:true,...(it.limited?{limited:true}:{})});
     }
     const shown=fleet.find(f=>f.id===g.ride);   // the yacht/plane "đang đi": the live presence carries it
     const fly=typeof g.trip_id==='string'&&g.tripped&&fleet.some(f=>f.id===g.trip_id&&f.group==='plane')?g.trip_id:'';
-    const r=ride?wire(ride):shown?{v:shown.id,c:(g.cars.find(x=>x.id===shown.id)?.color)||'',...(shown.uq?{p:shown.plate}:{})}:null;
+    const r=ride?wire(ride):shown?{v:shown.id,c:boatPaint((g.cars.find(x=>x.id===shown.id)?.color)||'',shown.group)||'',...(shown.uq?{p:shown.plate}:{})}:null;
     return {ride:ride?{...ride,group:TWO.has(ride.kind)?'bike':'car'}:null,fleet,fly,wire:r};
   }catch(e){console.warn('iso vehicles',e);return none;}
 }

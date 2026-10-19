@@ -3,6 +3,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {T} from './terms.js';
 import {nameAttrs,frameAttrs,titleChip} from './style-tag.js';
+import {chip as bgChip,badgeHTML as bgBadge} from './bang-tag.js';   // ⚔️ profile.bang (game/bang.py tag_of): the bang and role
 
 /** 🛃 A customs officer past Tập sự (v4/hq.js inspector, kept here so this sheet does not load that module). */
 const hqInspector=st=>{const o=st?.careers?.customs?.promo?.org;return Boolean(o&&!o.susp&&o.post?.id&&o.post.id!=='hq_ts');};
@@ -127,7 +128,7 @@ function shopView(env,pid){
   // button, then the workplaces and the reviews, three of each in sight and "Xem thêm" for the rest.
   const owns=`${rideChip(p)}${phoneChip(p)}${luxChip(p)}${uniqChip(p)}`;
   const jobCards=jobs.map(c=>`<div class="kv-card"><b>${esc(c.place)}</b><small>Cấp ${c.level} · ${fmtN(c.served)} khách${c.rating?` · ${c.rating}★`:''}</small></div>`);
-  return `${back}<section class="shop-hero card"><span class="avatar huge${fr.cls}"${fr.attrs}>${esc(p.avatar)}</span><div class="grow"><h3><span${nameAttrs(api,st)}>${esc(p.name)}</span>${titleChip(api,st)}</h3>${titlesLine(p,'small')}${p.bio?`<p class="muted">${esc(p.bio)}</p>`:''}<div class="row wrap small">${pill(`👀 ${fmtN(d.visits)} lượt ghé`)}${d.rating?pill(`${d.rating}★`,'amber'):''}${pill(`${fmtN(p.served)} ${T(p.shop?.current,'served')}`,'green')}</div></div>
+  return `${back}<section class="shop-hero card"><span class="avatar huge${fr.cls}"${fr.attrs}>${esc(p.avatar)}</span><div class="grow"><h3>${bgBadge(p.bang)}<span${nameAttrs(api,st)}>${esc(p.name)}</span>${titleChip(api,st)}</h3>${p.bang?`<p class="small">${bgChip(p.bang,false)}</p>`:''}${titlesLine(p,'small')}${p.bio?`<p class="muted">${esc(p.bio)}</p>`:''}<div class="row wrap small">${pill(`👀 ${fmtN(d.visits)} lượt ghé`)}${d.rating?pill(`${d.rating}★`,'amber'):''}${pill(`${fmtN(p.served)} ${T(p.shop?.current,'served')}`,'green')}</div></div>
     ${owns?`<div class="row wrap small soc-owns">${owns}</div>`:''}
     ${me?'':`<div class="row wrap soc-acts">${button(p.following?'Đang theo dõi':'Theo dõi',p.following?'socUnfollow':'socFollow',{pid},'small '+(p.following?'ghost':''))}${button(icon('flag',13)+' Báo cáo','socReport',{kind:'profile',id:pid},'small ghost')}${button('Chặn','socBlock',{pid},'small ghost danger')}${hqInspector(api.state)?button('🛃 Kiểm tra kho','hqInspect',{pid},'small ghost'):''}</div>`}</section>
     ${button(me?'Chỗ làm của tôi':'🏪 Ghé chỗ làm','workVisit',me?{scope:'mine'}:{pid},'primary full')}

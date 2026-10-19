@@ -100,14 +100,15 @@ def hot(t: float | None = None) -> str | None:
     return hot_on(_day(now() if t is None else t))
 
 
-def x(career: str, t: float | None = None) -> int:
-    """The multiplier staff orders of this career earn at time t, in hundredths: the market, or the hot day's."""
+def x(career: str, t: float | None = None, gold: int = 100) -> int:
+    """The multiplier staff orders of this career earn at time t, in hundredths: the market, or the hot day's.
+    `gold`: the bang's Giờ vàng multiplier at t (game/bang.py gold_mult): the larger of it and the town's applies."""
     t = now() if t is None else t
     m = market(career, t)
     if career == hot(t):
         m = max(HOT_LOW, min(HOT_HIGH, 2 * m))
     from . import golden_hour   # ⏰ Giờ vàng / Ngày vàng (owner 15/10): ×2 / ×1.5 at the order's own time
-    return m * golden_hour.mult(t) // 100
+    return m * max(golden_hour.mult(t), gold) // 100
 
 
 def shape(margin: int, stars: int = 4) -> int:

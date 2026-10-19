@@ -181,6 +181,10 @@ function bootLive(m){
   m.live.on('wedinvite',f=>import('./v4/wedinvite.js').then(a=>a.onWedInvite(env(),f)).catch(e=>console.warn('wedinvite:',e)));
   m.live.on('cand',f=>import('./v4/cand.js').then(a=>a.onLive(env(),f)).catch(e=>console.warn('cand:',e)));   // 👮 a patrol's check (game/cand_ops.py)
   m.live.on('island_ping',f=>import('./v4/island.js').then(a=>a.onIslandPing(env(),f)).catch(e=>console.warn('island:',e)));   // 🏝️ an invitation to a friend's island
+  // ⚔️ Bang (v4/bang-tag.js): my bang's tag, uniform, flag and boat paint; read again when the bang changes for me
+  const bangMine=(force=false)=>import('./v4/bang-tag.js').then(b=>b.loadMine(api,{force})).catch(e=>console.warn('bang:',e));
+  m.live.on('welcome',()=>bangMine());m.live.on('bang_me',()=>bangMine(true));
+  m.live.on('bang_invite',f=>{toast(`📨 ${f.e||'⚔️'} Bang ${String(f.name||'').slice(0,24)} mời bạn vào bang. Mở ⚔️ Bang để nhận nhé.`,'hint');api.bangAlerts=(api.bangAlerts||0)+1;renderMain();});
   m.liveBoot(env());
 }
 const env=()=>({api,ui,cmd,confirmAction,toast,renderSheet,renderMain,openSheet,closeSheet,world,bootLive,sound,act:(action,data={})=>handleAction(action,data,null),live:()=>L.live.m?.live||null});
@@ -371,6 +375,7 @@ function navItems(c){
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story)items.push(['townProjects','building','Công trình của phố']);  // 🏗️ cả phố góp tiền xây (v4/town-projects.js, own dialog)
+  if(api.state?.journey?.story)items.push(['bang','shield','Bang',api.bangAlerts||0]);  // ⚔️ Bang: lập bang, vào bang, quỹ, công trình, giờ vàng (v4/bang.js, own dialog)
   if(api.state?.journey?.story&&api.content?.journey?.certs)items.push(['jrCerts','clipboard','Thi chứng chỉ',certBadge(api)]);  // 🎓 F#267: in sight on the rail / top of "Thêm", not in a hub (v4/certificates.js)
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
   if(api.uiConfig?.sticker)items.push(['stickerEvent','sparkle','Thi làm sticker']);  // 🎨 /sticker while submissions are open (game/sticker_event.py hint)
@@ -403,7 +408,7 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()))||(x[0]==='fair'&&!api.state?.fair?.over);
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank','townProjects']],
+  ['pho','building','Khu phố',['fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank','townProjects','bang']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','island','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
@@ -1730,6 +1735,7 @@ async function handleAction(action,data,el){
       if(LUX_OPEN.has(action)){await (await import('./v4/lux.js')).luxAction(action,data,el,env());break;}  // 🛍️ Mua sắm: lazy
       if(AUC_OPEN.has(action)){await (await import('./v4/auction.js')).auctionAction(action,data,el,env());break;}  // 🔨 Nhà đấu giá: lazy
       if(action==='townProjects'){await (await import('./v4/town-projects.js')).openTownProjects(env(),data);break;}  // 🏗️ Công trình của phố: lazy
+      if(action==='bang'){api.bangAlerts=0;await (await import('./v4/bang.js')).openBang(env(),data);break;}  // ⚔️ Bang: lazy
       if(action==='vang'){ui.ivMarket='gold';await journeyAction('jrInvest',data,el,env());break;}
       if(action==='rui'){await (await import('./v4/rui.js')).ruiAction(action,data,el,env());break;}
       if(action==='homeGuests'){await (await import('./v4/home-guests.js')).openHomeGuests(env(),data);break;}

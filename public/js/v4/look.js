@@ -265,7 +265,11 @@ export const SVG={
 export const FRONT={short:'M-31 -80C-35 -118 24 -124 32 -84Q26 -95 12 -99Q-4 -92 -18 -97Q-26 -92 -31 -80Z',
   soft:'M-30 -88C-33 -119 19 -120 31 -90Q19 -93 7 -105Q5 -88 -12 -84Q-17 -91 -16 -101Q-21 -89 -30 -88Z'};
 /** Resolved colours and shapes of the player's look (from the state, or a look + gender). */
-export const figure=state=>{const L=lookOf(state),h=state?.journey?.gadgets?.hand?.color;if(typeof h==='string'&&/^#[0-9a-f]{6}$/i.test(h))L.held=h;const F=figureOf(L,state?.journey?.gender),rk=rankRef(state);if(rk)F.rk=rk;return F;};
+/** ⚔️ A look worn over the saved one where the character walks (v4/bang-tag.js: the bang uniform while worn); the wardrobe
+ * and lookOf stay the save's own. */
+let OVER=null;
+export function setLookOver(fn){OVER=typeof fn==='function'?fn:null;}
+export const figure=state=>{const L=OVER?OVER(lookOf(state)):lookOf(state),h=state?.journey?.gadgets?.hand?.color;if(typeof h==='string'&&/^#[0-9a-f]{6}$/i.test(h))L.held=h;const F=figureOf(L,state?.journey?.gender),rk=rankRef(state);if(rk)F.rk=rk;return F;};
 /** 🎖️ The rank the character wears (game/org.py, v4/insignia.js): the current career's org grade, while "Mặc đồ làm việc"
  * is on. {o: org id, g: grade id}; never in lookOf (live frames carry it apart, as `rk`). */
 export function rankRef(state){

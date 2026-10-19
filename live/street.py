@@ -75,7 +75,7 @@ import re
 import secrets
 import time
 
-from . import babies, coride, effects, honours, plates, styles
+from . import babies, bangs, coride, effects, honours, plates, styles
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
 from .street_data import ORG_GRADES, PET_ACCS, PET_BREEDS, PET_FX, PET_SETS
@@ -327,7 +327,7 @@ def clean_pet(pt) -> dict | None:
 
 
 class Walker:
-    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk', 'tt', 'pt', 'bb')
+    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk', 'tt', 'pt', 'bb', 'bg')
 
     def __init__(self, player, look: dict, g, title, at: tuple, now: float, ride: dict | None = None, rk: dict | None = None,
                  pt: dict | None = None, bb: dict | None = None):
@@ -340,6 +340,7 @@ class Walker:
         self.back = self.pill = None   # 🛵 the driver I sit behind / who sits behind me (pids, live/coride.py)
         self.st = None                 # 🎨 name colour / frame / title of the week (live/styles.py), outside the look
         self.tt = None                 # 🏅 every honour title held now (live/honours.py): ids, best first
+        self.bg = None                 # ⚔️ the bang tag (live/bangs.py)
 
     @property
     def speed(self) -> float:
@@ -365,6 +366,8 @@ class Walker:
             d['st'] = self.st
         if self.tt:
             d['tt'] = self.tt
+        if self.bg:
+            d['bg'] = self.bg
         return d
 
 
@@ -658,6 +661,7 @@ class StreetFeature(Feature):
         w = Walker(p, look, g, title, at, now, r, clean_rank(f.get('rk')), pet, bb)
         w.st = st or None
         w.tt = tt or None
+        w.bg = await bangs.of_app(self.app).one(p.pid)   # ⚔️ once per entry (live/bangs.py)
         self._enter(room, conn, w)
         out = self._snapshot(room, p, now)
         if by:
@@ -890,7 +894,7 @@ class StreetFeature(Feature):
                 log('card code:', type(e).__name__)
         return dict(t='card', pid=w.pid, name=w.name, ti=w.title, lk=w.look, g=w.g, friend=friend, account=o.account,
                     code=code, cafe=room.id.startswith(PREFIX) and not GEO[room.data['place']].private, **({'st': w.st} if w.st else {}),
-                    **({'tt': w.tt} if w.tt else {}))
+                    **({'tt': w.tt} if w.tt else {}), **({'bg': w.bg} if w.bg else {}))
 
     @on('invite', rate=(4, 60))
     async def invite(self, conn, f):
@@ -939,7 +943,7 @@ class StreetFeature(Feature):
         for k, (p, conns, old) in enumerate(moving):
             sx, sy = g.spots['spawn']
             w = Walker(p, old.look, old.g, old.title, g.clamp(sx + (50 if k == 0 else -50), sy), now, rk=old.rk)   # seat 0 is on the right
-            w.st, w.tt = old.st, old.tt
+            w.st, w.tt, w.bg = old.st, old.tt, old.bg
             for c in conns:
                 self._enter(cafe, c, w)
             tb = cafe.data['tables'][0]

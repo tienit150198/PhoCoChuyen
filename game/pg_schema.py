@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 55  # 55: 🗄️ chat_archive (Cả phố's messages past the newest 500, moved by live/chat.py prune_town; a new table only, no FK: older releases never read it, owner 17/10); 54: 🏝️ Đảo riêng trips with friends (island_trips, island_guests: game/island_trips.py, live/island.py; new tables and indexes only, no FK, no backfill: 2.4.34 and older never read them; 51 and 53: other branches' steps); 52: 🏗️ Công trình của phố (town_projects, town_gifts: game/town_projects.py; new tables and indexes only, no FK, no backfill: older releases never read them, owner 16/10); 50: 🎨 sticker packs (sticker_packs, sticker_pack_images: one pack of ≥ 12 stickers per account, owner 16/10 afternoon; new tables only); 49: 🎨 Thi làm sticker (sticker_entries, sticker_rewards: game/sticker_event.py; new tables only, no FK, owner 16/10); 48: 🛃 Hải quan across players (hq_roster: the customs ladder's seats and reviewers, game/cand_roster.py; hq_cases: warehouse inspections of players' shops, game/hq_ops.py; new tables and indexes only, no FK, no backfill: 2.4.26 and older never read them); 47: unused (the sticker contest took 49); 46: 💐 Thiệp 20/10 (ev2010_cards, ev2010_reports, ev2010_rewards: game/event2010.py; new tables only, no FK, no save key, owner 16/10 "làm 1 cái / riêng đi"); 45: 📜 old shared lời chúc on the wish trees (chua_card_marks, chua_card_prayers: 🙏 / reports / admin hide of chua_public_cards rows, game/chua_wish.py; new tables only, no FK, no backfill, owner 15/10 "đưa vào 1 cái đi"); 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 57  # 57: ⚔️ Bang, player guilds (bangs, bang_members, bang_stints, bang_asks, bang_fund, bang_points, bang_facilities, bang_items, bang_gh, bang_log, bang_week_win: game/bang.py, live/bangs.py; new tables and indexes only, no FK, no backfill: 2.4.60 and older never read them, owner 19/10); 56: 🏝️ Xây trên đảo (another branch's step); 55: 🗄️ chat_archive (Cả phố's messages past the newest 500, moved by live/chat.py prune_town; a new table only, no FK: older releases never read it, owner 17/10); 54: 🏝️ Đảo riêng trips with friends (island_trips, island_guests: game/island_trips.py, live/island.py; new tables and indexes only, no FK, no backfill: 2.4.34 and older never read them; 51 and 53: other branches' steps); 52: 🏗️ Công trình của phố (town_projects, town_gifts: game/town_projects.py; new tables and indexes only, no FK, no backfill: older releases never read them, owner 16/10); 50: 🎨 sticker packs (sticker_packs, sticker_pack_images: one pack of ≥ 12 stickers per account, owner 16/10 afternoon; new tables only); 49: 🎨 Thi làm sticker (sticker_entries, sticker_rewards: game/sticker_event.py; new tables only, no FK, owner 16/10); 48: 🛃 Hải quan across players (hq_roster: the customs ladder's seats and reviewers, game/cand_roster.py; hq_cases: warehouse inspections of players' shops, game/hq_ops.py; new tables and indexes only, no FK, no backfill: 2.4.26 and older never read them); 47: unused (the sticker contest took 49); 46: 💐 Thiệp 20/10 (ev2010_cards, ev2010_reports, ev2010_rewards: game/event2010.py; new tables only, no FK, no save key, owner 16/10 "làm 1 cái / riêng đi"); 45: 📜 old shared lời chúc on the wish trees (chua_card_marks, chua_card_prayers: 🙏 / reports / admin hide of chua_public_cards rows, game/chua_wish.py; new tables only, no FK, no backfill, owner 15/10 "đưa vào 1 cái đi"); 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -827,6 +827,94 @@ CREATE TABLE IF NOT EXISTS lixi_grabs (
 );
 CREATE INDEX IF NOT EXISTS lixi_grabs_day ON lixi_grabs(sid, day);
 CREATE INDEX IF NOT EXISTS lixi_grabs_ip ON lixi_grabs(packet, ip) WHERE ip <> '';
+-- ⚔️ Bang (game/bang.py, live/bangs.py; SCHEMA_VERSION 57, owner 19/10): player guilds. New tables and indexes only, no
+-- FK, no backfill, nothing in any save but the optional journey['bang'] counter of the two paid commands: older releases
+-- never read these tables. Nothing is ever deleted: a member who leaves keeps a row with status 'out' (points and items
+-- stay with that bang), a disbanded bang keeps its row (status 'disbanded', its fund burned into `burned`), the fund's
+-- ledger only grows. Lock order everywhere: the save row (sessions, when a command pays), then bangs rows in id order,
+-- then bang_members rows. `seq` moves on every change a cache must see (name tags, the page).
+-- Rows a later Đảo bang reuses: anything keyed by `bang` (facilities have a free `place` for an island map).
+CREATE TABLE IF NOT EXISTS bangs (
+  id {T} PRIMARY KEY, name {T} NOT NULL, key {T} NOT NULL, emoji {T} NOT NULL, color {T} NOT NULL, motto {T} NOT NULL DEFAULT '',
+  open bigint NOT NULL DEFAULT 1, leader {T} NOT NULL, status {T} NOT NULL DEFAULT 'active' CHECK(status IN ('active','disbanded')),
+  hidden bigint NOT NULL DEFAULT 0, fund bigint NOT NULL DEFAULT 0 CHECK(fund >= 0), given bigint NOT NULL DEFAULT 0,
+  spent bigint NOT NULL DEFAULT 0, burned bigint NOT NULL DEFAULT 0, channel {T} NOT NULL DEFAULT '',
+  created double precision NOT NULL, created_by {T} NOT NULL, ended double precision, seq bigint NOT NULL DEFAULT 0,
+  phao_at double precision NOT NULL DEFAULT 0, admin_note {T} NOT NULL DEFAULT ''
+);
+CREATE UNIQUE INDEX IF NOT EXISTS bangs_key ON bangs(key) WHERE status='active';
+-- One row per (bang, player) ever: status 'in' (one bang at a time: bangs_one) or 'out'. points: điểm cống hiến to spend;
+-- earned: all ever earned here; given: xu given here; act_day/act_pts/work_n: today's activity points (the daily cap);
+-- wear: bang items worn (1 uniform, 2 badge, 4 flag at home, 8 boat paint), uniform: its style.
+CREATE TABLE IF NOT EXISTS bang_members (
+  bang {T} NOT NULL, sid {T} NOT NULL, pid {T} NOT NULL, status {T} NOT NULL CHECK(status IN ('in','out')),
+  role {T} NOT NULL DEFAULT 'tv', joined double precision NOT NULL, left_at double precision, why {T} NOT NULL DEFAULT '',
+  points bigint NOT NULL DEFAULT 0 CHECK(points >= 0), earned bigint NOT NULL DEFAULT 0, given bigint NOT NULL DEFAULT 0,
+  act_day {T} NOT NULL DEFAULT '', act_pts bigint NOT NULL DEFAULT 0, work_n bigint NOT NULL DEFAULT 0,
+  checkin_day {T} NOT NULL DEFAULT '', wear bigint NOT NULL DEFAULT 0, uniform {T} NOT NULL DEFAULT 'polo',
+  PRIMARY KEY (bang, sid)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS bang_members_one ON bang_members(sid) WHERE status='in';
+CREATE INDEX IF NOT EXISTS bang_members_pid ON bang_members(pid) WHERE status='in';
+CREATE INDEX IF NOT EXISTS bang_members_in ON bang_members(bang) WHERE status='in';
+-- Every membership's time span (the bang's Giờ vàng counts for a window that started while the player was in).
+CREATE TABLE IF NOT EXISTS bang_stints (
+  id {ID} PRIMARY KEY, bang {T} NOT NULL, sid {T} NOT NULL, joined double precision NOT NULL, left_at double precision,
+  why {T} NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS bang_stints_sid ON bang_stints(sid, joined);
+CREATE INDEX IF NOT EXISTS bang_stints_bang ON bang_stints(bang) WHERE left_at IS NULL;
+-- A player asking to join (kind 'ask') or invited by an officer (kind 'invite'); answered rows stay.
+CREATE TABLE IF NOT EXISTS bang_asks (
+  bang {T} NOT NULL, sid {T} NOT NULL, kind {T} NOT NULL CHECK(kind IN ('ask','invite')), by_sid {T} NOT NULL,
+  status {T} NOT NULL CHECK(status IN ('open','done','declined','cancelled')), at double precision NOT NULL,
+  answered double precision, PRIMARY KEY (bang, sid, kind)
+);
+CREATE INDEX IF NOT EXISTS bang_asks_sid ON bang_asks(sid) WHERE status='open';
+CREATE INDEX IF NOT EXISTS bang_asks_bang ON bang_asks(bang) WHERE status='open';
+-- 💰 Quỹ bang's ledger: 'give' (+, a member's deposit written in their save's own transaction, id '<pid>:<n>'),
+-- 'build' (−, a facility), 'burn' (−, the fund of a disbanded bang). There is no other kind: no withdrawal exists.
+CREATE TABLE IF NOT EXISTS bang_fund (
+  id {T} PRIMARY KEY, bang {T} NOT NULL, sid {T} NOT NULL, kind {T} NOT NULL CHECK(kind IN ('give','build','burn')),
+  amount bigint NOT NULL, balance bigint NOT NULL CHECK(balance >= 0), note {T} NOT NULL DEFAULT '', at double precision NOT NULL,
+  CHECK((kind='give' AND amount > 0) OR (kind<>'give' AND amount <= 0))
+);
+CREATE INDEX IF NOT EXISTS bang_fund_bang ON bang_fund(bang, at);
+-- ⭐ Điểm cống hiến's ledger (unique ids: idempotent). week: the Vietnam ISO week (Bang mạnh nhất tuần), day: its day.
+CREATE TABLE IF NOT EXISTS bang_points (
+  id {T} PRIMARY KEY, bang {T} NOT NULL, sid {T} NOT NULL, kind {T} NOT NULL, pts bigint NOT NULL, week {T} NOT NULL,
+  day {T} NOT NULL, at double precision NOT NULL
+);
+CREATE INDEX IF NOT EXISTS bang_points_week ON bang_points(week, bang);
+CREATE INDEX IF NOT EXISTS bang_points_sid ON bang_points(sid, bang);
+-- 🏗️ Công trình bang: one row per (bang, facility) once built or building (target/ready_at while building).
+CREATE TABLE IF NOT EXISTS bang_facilities (
+  bang {T} NOT NULL, fac {T} NOT NULL, level integer NOT NULL DEFAULT 0, target integer, started double precision,
+  ready_at double precision, paid bigint NOT NULL DEFAULT 0, place {T} NOT NULL DEFAULT '', PRIMARY KEY (bang, fac)
+);
+-- 🛍️ Bang items a member bought with points: kept after leaving, usable only while in that bang (n: fireworks held).
+CREATE TABLE IF NOT EXISTS bang_items (
+  bang {T} NOT NULL, sid {T} NOT NULL, item {T} NOT NULL, n integer NOT NULL DEFAULT 1 CHECK(n >= 0), at double precision NOT NULL,
+  PRIMARY KEY (bang, sid, item)
+);
+CREATE INDEX IF NOT EXISTS bang_items_sid ON bang_items(sid);
+-- ⏰ Giờ vàng của bang: windows the leader set ahead (never moved once started; cancelled ones stay).
+CREATE TABLE IF NOT EXISTS bang_gh (
+  id {ID} PRIMARY KEY, bang {T} NOT NULL, start double precision NOT NULL, ends double precision NOT NULL, by_sid {T} NOT NULL,
+  status {T} NOT NULL CHECK(status IN ('set','cancelled')), at double precision NOT NULL, CHECK(ends > start)
+);
+CREATE INDEX IF NOT EXISTS bang_gh_bang ON bang_gh(bang, start);
+CREATE INDEX IF NOT EXISTS bang_gh_ends ON bang_gh(ends) WHERE status='set';
+-- 📜 What happened in a bang (joins, roles, builds, admin renames…), for its page and the operator.
+CREATE TABLE IF NOT EXISTS bang_log (
+  id {ID} PRIMARY KEY, bang {T} NOT NULL, sid {T} NOT NULL DEFAULT '', kind {T} NOT NULL, text {T} NOT NULL,
+  at double precision NOT NULL
+);
+CREATE INDEX IF NOT EXISTS bang_log_bang ON bang_log(bang, id);
+-- 👑 Bang mạnh nhất tuần: the week's winner, frozen once after the week ended (its members wear the title the next week).
+CREATE TABLE IF NOT EXISTS bang_week_win (
+  week {T} PRIMARY KEY, bang {T} NOT NULL, score bigint NOT NULL, at double precision NOT NULL
+);
 
 """
 
@@ -1172,6 +1260,17 @@ TABLES = [
     dict(name='island_guests', identity=None),
     dict(name='lixi_packets', identity=None),
     dict(name='lixi_grabs', identity=None),
+    dict(name='bangs', identity=None),
+    dict(name='bang_members', identity=None),
+    dict(name='bang_stints', identity='id'),
+    dict(name='bang_asks', identity=None),
+    dict(name='bang_fund', identity=None),
+    dict(name='bang_points', identity=None),
+    dict(name='bang_facilities', identity=None),
+    dict(name='bang_items', identity=None),
+    dict(name='bang_gh', identity='id'),
+    dict(name='bang_log', identity='id'),
+    dict(name='bang_week_win', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 

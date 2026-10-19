@@ -580,6 +580,8 @@ def upgrade(j: dict) -> None:
     auc.upgrade(j)   # 🔨
     from . import town_projects
     town_projects.upgrade(j)   # 🏗️
+    from . import bang
+    bang.upgrade(j)   # ⚔️
     if j.get('story'):
         for n in range(1, min(int(j.get('chapter', 1)), LAST) + 1):
             _unlock_chapter(j, n)
@@ -1028,6 +1030,9 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
     elif name.startswith('jr_town_'):   # 🏗️ Công trình của phố (game/town_projects.py)
         from . import town_projects
         result.update(town_projects.action(s, name, p))
+    elif name.startswith('jr_bang_'):   # ⚔️ Bang: lập bang, góp quỹ (game/bang.py; everything else is database only)
+        from . import bang
+        result.update(bang.action(s, name, p))
     elif name.startswith('jr_lixi_'):   # 🧧 phát lì xì cho cả phố (game/lixi.py)
         from . import lixi
         result.update(lixi.action(s, name, p))
@@ -1308,6 +1313,8 @@ def validate(s: dict) -> None:
     auc.x_validate(s)   # 🔨 journey['uniq_x'] (optional): vehicles, registrations, yacht names won; plates attached
     from . import town_projects
     town_projects.validate(s)   # 🏗️ journey['town'] (optional)
+    from . import bang
+    bang.validate(s)   # ⚔️ journey['bang'] (optional)
     up.validate(s)   # 🧾 journey['upk'] (optional)
     rui.validate(s)   # 🛡️ journey['rui'] (optional)
     vang.validate(s)   # 💰 journey['vang'] (optional)

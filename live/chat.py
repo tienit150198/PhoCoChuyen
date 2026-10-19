@@ -5,6 +5,8 @@ Channels
   needs a name, a session older than 10 minutes, and waits 10 s between two messages (slow mode).
 * `dm:<pidA>:<pidB>` (pids sorted): two friends (`friends` both ways, no block either way). Created by the
   first `send {to: pid}`. A friend with no socket gets one web push per chat per 10 minutes at most.
+* ⚔️ A bang's chat (game/bang.py) is a group too, owner_pid 'bang': the game adds and removes its members with the bang
+  (up to its cap, 30), so nobody adds, kicks or leaves it here; live/bangs.py drops its cached members on NOTIFY.
 * `g:<10 hex>`: a group made by its owner from their friends, at most 20 members; the owner adds and removes,
   anyone leaves (the oldest member becomes owner when the owner leaves). Members with no socket get the same
   web push as a DM (since 1.2.4, feedback #66).
@@ -99,6 +101,7 @@ from . import faces as facemod
 from . import filters
 from . import chat_reply
 from . import honours
+from . import bangs
 from . import player_names
 from . import styles
 from .auth import pid_of, profile
@@ -134,6 +137,7 @@ RECALL_SECS = 86400       # 🗑️ a message can be taken back (Thu hồi) for 
 CLEAR_MAX = 20            # 🗑️ chats emptied by one `clear`
 BLOCKS_LISTED = 50        # 🚫 people listed under "Đã chặn"
 DEL_POLL = 60             # 🗑️ seconds between two looks for the tables of "xóa ở phía tôi" while they are missing
+BANG_OWNER = 'bang'       # ⚔️ chat_channels.owner_pid of a bang's group (game/bang.py): nobody adds, kicks or leaves by hand
 SLOW_TOWN = 'town'        # 🐢 chat_slow row that slows Cả phố for everyone (game/live_chat.py; SCHEMA_VERSION 24)
 
 
@@ -646,6 +650,9 @@ class ChatFeature(Feature):
         tt = await honours.of_app(self.app).one(p.pid)   # 🏅 every honour title held now (live/honours.py)
         if tt:
             frame['tt'] = tt
+        bg = await bangs.of_app(self.app).one(p.pid)   # ⚔️ the bang tag and role (live/bangs.py)
+        if bg:
+            frame['bg'] = bg
         return frame
 
     # ---- 🙂 faces ---------------------------------------------------------------------------------------------
@@ -689,6 +696,7 @@ class ChatFeature(Feature):
                     m.pop('fc', None)
             out.append(m)
         out = await styles.with_styles(self.app, out)   # 🎨 and their `st` now (live/styles.py)
+        out = await bangs.with_bangs(self.app, out)   # ⚔️ and their `bg` now (live/bangs.py)
         return await honours.with_honours(self.app, out)   # 🏅 and their `tt` now (live/honours.py)
 
     async def store_face(self, p, code: str) -> bool:
@@ -1268,6 +1276,8 @@ class ChatFeature(Feature):
         c = await self.member_chan(p, f.get('ch'))
         if c.kind != 'group':
             raise LiveError('bad', 'Đây không phải nhóm.')
+        if c.owner == BANG_OWNER:   # ⚔️ a bang's chat follows its members (game/bang.py): leaving the bang leaves the chat
+            raise LiveError('bang', 'Đây là nhóm chat của bang: rời bang ở mục ⚔️ Bang để rời nhóm nhé.')
 
         async def run(tx):
             await tx.execute('DELETE FROM chat_members WHERE channel=? AND pid=?', (c.id, p.pid))
