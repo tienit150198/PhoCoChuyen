@@ -38,6 +38,15 @@ OPTIONAL career key c[BOX_KEY] = {'paid': int} (absent: not owned), outside c[KE
 
 When: after every command of that workplace and on the server's settlement of a load (the same points as 🤖 Tự nhận
 hàng, which runs first), so it works while the player is away. Task generation is not touched.
+
+🍼 💊 The older stock desks (Mẹ & bé, Nhà thuốc: game/convenience.py LEGACY, c['stock'] and c['shipments'], player
+feedback #433 "Sao trong tiệm mẹ và bé lại ko có nút nhập hàng tự động vậy?"): the same unlock (PRICE, fund then
+wallet, the same Thiết bị card and Kho line), the same rule per item, floor, daily cap, partial order (#411) and one
+pending order per item, placed THROUGH engine.order_stock (the desk's own prices, suppliers, schedule, van limit and
+shelf check). The desk merges orders by itself (F#194: one van, one payment), so the lines a pass orders from one
+supplier go as one merged order and 📦 Gộp thùng tự đặt is not sold there (`box` None). Save: c[DESK_KEY], the same
+shape as c[KEY]. Not c[KEY]: 2.4.58 and older validate c[KEY] only where game/inventory.py's stock room is and would
+refuse it on these careers, while they ignore an unknown career key.
 """
 from __future__ import annotations
 
@@ -58,6 +67,8 @@ NAME = '🔁 Tự đặt hàng'
 BOX_KEY = 'auto_box'
 BOX_PRICE = 10_000      # owner 16/10: "mất 10k xu để mua"
 BOX_NAME = '📦 Gộp thùng tự đặt'
+DESK_KEY = 'auto_order_desk'            # 🍼 💊 the older stock desks: the same shape as c[KEY]
+DESK = ('mother_baby', 'pharmacy')      # game/convenience.py LEGACY: c['stock'], c['shipments'], engine.order_stock
 
 
 def _inv():
@@ -65,13 +76,45 @@ def _inv():
     return inventory
 
 
+def desk(career: str) -> bool:
+    """🍼 💊 an older stock desk (c['stock'], c['shipments'], engine.order_stock) rather than the stock room."""
+    return career in DESK
+
+
 def eligible(career: str) -> bool:
-    return career != 'pagoda' and bool(_inv().catalogue(career))
+    return career != 'pagoda' and (desk(career) or bool(_inv().catalogue(career)))
+
+
+def key_of(career: str) -> str:
+    return DESK_KEY if desk(career) else KEY
 
 
 def rec(c: dict) -> dict | None:
-    r = c.get(KEY) if isinstance(c, dict) else None
+    if not isinstance(c, dict):
+        return None
+    r = c.get(KEY)
+    if r is None:
+        r = c.get(DESK_KEY)   # one or the other: validate allows each only on its own kind of workplace
     return r if isinstance(r, dict) else None
+
+
+def catalogue(career: str) -> list[dict]:
+    """What an automatic order may place: the stock room's catalogue, or the desk's products / valid lots."""
+    if not desk(career):
+        return _inv().catalogue(career)
+    from .content import PRODUCTS, LOT_INDEX
+    if career == 'mother_baby':
+        return PRODUCTS
+    return [x for x in LOT_INDEX.values() if x['status'] == 'available']
+
+
+def _item(career: str, item_id) -> dict:
+    if not desk(career):
+        return _inv().item(career, item_id)
+    from .engine import need
+    it = next((x for x in catalogue(career) if x['id'] == item_id), None)
+    need(it is not None, 'Mã hàng không hợp lệ.')
+    return it
 
 
 def owned(c: dict) -> bool:
@@ -95,6 +138,9 @@ def on(c: dict) -> bool:
 
 # ---------------------------------------------------------------- the rule of an item
 def limits(c: dict, career: str) -> tuple[int, int]:
+    if desk(career):   # what engine.order_stock checks: Kho & đơn nhập (logistics) sets the shelf and the line
+        from . import convenience as cv
+        return cv.capacity(c, career), cv.LINE[cv.tier(c, career, 'logistics')]
     from . import order_progression
     return _inv().capacity(career, c), order_progression.limit(c, career)
 
@@ -152,12 +198,14 @@ def _total(it: dict, qty: int, sup: dict) -> int:
     return cost + inv.ship_fee(sup, cost)
 
 
-def _most(it: dict, qty: int, sup: dict, money: int, least: int) -> tuple[int, int] | None:
-    """(qty, total) of the largest order below `qty`, at least `least`, whose total fits `money`; None when none does."""
+def _most(it: dict, qty: int, sup: dict, money: int, least: int, total=None) -> tuple[int, int] | None:
+    """(qty, total) of the largest order below `qty`, at least `least`, whose total fits `money`; None when none does.
+    `total`: the price of a quantity (default the stock room's _total; the desk passes _desk_total)."""
+    total = total or _total
     lo, hi, best = least, qty - 1, None
     while lo <= hi:   # the total grows with the quantity (a wholesale tier may dip it: the found one is checked)
         mid = (lo + hi) // 2
-        t = _total(it, mid, sup)
+        t = total(it, mid, sup)
         if t <= money:
             best, lo = (mid, t), mid + 1
         else:
@@ -169,11 +217,112 @@ def _pending(x: dict, oid) -> bool:
     return bool(oid) and any(o['id'] == oid and o['status'] == 'in_transit' for o in x['orders'])
 
 
+def _waiting(c: dict, career: str, oid) -> bool:
+    """The automatic order `oid` is still on the way (the stock room's order, or the desk's shipment)."""
+    if desk(career):
+        return bool(oid) and any(x['id'] == oid and x['status'] == 'in_transit' for x in c.get('shipments') or ())
+    return _pending(c['ext']['inv'], oid)
+
+
+# ---------------------------------------------------------------- 🍼 💊 the older stock desks
+def _desk_supplier(c: dict, career: str, item_id: str) -> dict | None:
+    """The item's last-used supplier (if it still delivers), else the desk's default one."""
+    from . import engine as e
+    for x in reversed(c.get('shipments') or []):
+        if x['item'] == item_id:
+            sup = e._stock_supplier(career, x.get('supplier'))
+            if sup:
+                return sup
+            break
+    return e._stock_supplier(career, e.STOCK_DEFAULT)
+
+
+def _desk_total(it: dict, qty: int, sup: dict) -> int:
+    return max(1, math.ceil(it['cost'] * qty * sup['factor']))   # engine.order_stock's price (no shipping fee)
+
+
+def _desk_plan(s: dict, c: dict, career: str) -> tuple[list, str | None]:
+    """plan() for an older stock desk. The lines one supplier gets in a pass ride in one merged order (one van, at
+    most STOCK_LINES lines); SLOTS_FREE vans stay free for the player's own orders."""
+    from . import convenience as cv
+    from . import engine as e
+    r = rec(c)
+    line = limits(c, career)[1]
+    slots = e.STOCK_VANS - SLOTS_FREE - e.stock_vans(c)
+    held = set(c.get('held_lots') or ())   # 💊 a lot the player held back is not ordered again
+    fund = c['money'] - floor(s, c)
+    left = budget(c) - spent(c)
+    low = []
+    for it in catalogue(career):
+        if it['id'] in held or _waiting(c, career, (r.get('open') or {}).get(it['id'])):
+            continue
+        ru = rule(c, career, it['id'])
+        have = c['stock'].get(it['id'], 0)
+        coming = sum(x['qty'] for x in c['shipments'] if x['item'] == it['id'] and x['status'] != 'received')
+        if ru['on'] and have + coming < ru['below']:
+            low.append(((have + coming) / ru['below'], it, ru))
+    low.sort(key=lambda t: t[0])   # the emptiest shelf first: the free vans go to it
+    out, why, lines = [], None, {}
+    for _, it, ru in low:
+        qty = min(ru['qty'], cv.room(c, career, it['id']), line)
+        sup = _desk_supplier(c, career, it['id']) if qty >= 1 else None
+        if not sup:
+            continue
+        n = lines.get(sup['id'], 0)
+        if n % e.STOCK_LINES == 0 and slots <= 0:
+            continue   # this supplier would need one more van: none is left for an automatic order
+        total = _desk_total(it, qty, sup)
+        if total > min(fund, left):
+            # #411: what is left covers part of it: order that part (at least Y / PART_MIN) rather than nothing
+            part = _most(it, qty, sup, min(fund, left), max(1, math.ceil(ru['qty'] / PART_MIN)), _desk_total)
+            if not part:
+                why = why or ('fund' if total > fund else 'cap')
+                continue
+            qty, total = part
+        out.append((it, qty, sup, total))
+        fund -= total
+        left -= total
+        if n % e.STOCK_LINES == 0:
+            slots -= 1
+        lines[sup['id']] = n + 1
+    return out, why
+
+
+def _desk_place(s: dict, c: dict, career: str, got: list) -> tuple[int, int]:
+    """Place the planned lines through engine.order_stock: one merged order per supplier (≤ STOCK_LINES lines).
+    Returns (lines placed, xu paid)."""
+    from . import engine as e
+    r = rec(c)
+    groups: dict = {}
+    for row in got:
+        groups.setdefault(row[2]['id'], []).append(row)
+    n = paid = 0
+    for sid, rows in groups.items():
+        for k in range(0, len(rows), e.STOCK_LINES):
+            part = rows[k:k + e.STOCK_LINES]
+            before = c['money']
+            try:
+                res = e.order_stock(s, c, career, dict(supplier=sid, lines=[dict(item=it['id'], qty=qty) for it, qty, _, _ in part]))
+            except e.GameError:
+                continue   # refused as the player's own order would be: nothing was paid
+            cost = before - c['money']
+            r['spent'] += cost
+            paid += cost
+            eta = (res.get('eta') or {}).get('eta_label', '')
+            for (it, qty, sup, _), x in zip(part, c['shipments'][-len(part):]):
+                r['open'][it['id']] = x['id']
+                n += 1
+                e.log(s, c, 'stock', f'🔁 Tự đặt {qty} món {it["name"]} ({sup["name"]}, {eta}).'[:300], ref=x['id'])
+    return n, paid
+
+
 def plan(s: dict, c: dict, career: str) -> tuple[list, str | None]:
     """([(item, qty, supplier, total xu)], why) the orders a pass would place now (read only).
     why: 'fund' (the fund is below its floor for one of them), 'cap' (today's cap reached) or None."""
     if not on(c) or not eligible(career):
         return [], None
+    if desk(career):
+        return _desk_plan(s, c, career)
     x = (c.get('ext') or {}).get('inv')
     if not isinstance(x, dict):
         return [], None
@@ -249,13 +398,29 @@ def run(s: dict, c: dict, career: str) -> list[str]:
     if not on(c) or _skip(s, career):
         return []
     from . import engine as e
-    inv = _inv()
     got, why = plan(s, c, career)
     r = rec(c)
     if r.get('day') != c['day']:
         r['day'], r['spent'] = c['day'], 0
+    r['open'] = {k: v for k, v in (r.get('open') or {}).items() if _waiting(c, career, v)}
+    n, paid = (_desk_place if desk(career) else _place)(s, c, career, got)
+    out = [f'🔁 Tự đặt {n} món · {paid:,} xu.'.replace(',', '.')] if n else []
+    if why and not got and r.get('warn') != c['day']:
+        r['warn'] = c['day']
+        text = '🔁 Quỹ không đủ để tự đặt.' if why == 'fund' else '🔁 Hết mức tự đặt hôm nay.'
+        e.log(s, c, 'stock', text)
+        out.append(text)
+    if not r['open']:
+        r.pop('open', None)
+    return out
+
+
+def _place(s: dict, c: dict, career: str, got: list) -> tuple[int, int]:
+    """Place the planned lines through inventory's inv_order, one order per item. Returns (lines placed, xu paid)."""
+    from . import engine as e
+    inv = _inv()
+    r = rec(c)
     x = c['ext']['inv']
-    r['open'] = {k: v for k, v in (r.get('open') or {}).items() if _pending(x, v)}
     n = paid = 0
     for it, qty, sup, _ in got:
         before = c['money']
@@ -272,15 +437,7 @@ def run(s: dict, c: dict, career: str) -> list[str]:
         clk = inv.clock(c, career)
         eta = inv._eta(o, clk['abs'], c, career, clk)['eta_label']
         e.log(s, c, 'stock', f'🔁 Tự đặt {qty} {it.get("unit", "phần")} {it["name"]} ({sup["name"]}, {eta}).'[:300], ref=o['id'])
-    out = [f'🔁 Tự đặt {n} món · {paid:,} xu.'.replace(',', '.')] if n else []
-    if why and not got and r.get('warn') != c['day']:
-        r['warn'] = c['day']
-        text = '🔁 Quỹ không đủ để tự đặt.' if why == 'fund' else '🔁 Hết mức tự đặt hôm nay.'
-        e.log(s, c, 'stock', text)
-        out.append(text)
-    if not r['open']:
-        r.pop('open', None)
-    return out
+    return n, paid
 
 
 def run_all(s: dict) -> list[str]:
@@ -316,7 +473,7 @@ def _buy(s: dict, c: dict, career: str, p: dict) -> dict:
     need(not owned(c), f'{NAME} đã mở ở nơi này rồi.')
     need(p.get('confirm') is True, f'Xác nhận mua {NAME} trước nhé.')
     from_wallet = _pay(s, c, career, PRICE, NAME)
-    c[KEY] = dict(paid=PRICE)
+    c[key_of(career)] = dict(paid=PRICE)
     e.log(s, c, 'upgrade', f'Đã mở {NAME}: kho tự đặt khi sắp hết.')
     return dict(message=f'{NAME} đã mở.' + (f' Ví trả {from_wallet:,} xu.'.replace(',', '.') if from_wallet else ''),
                 celebrate=True)
@@ -325,6 +482,7 @@ def _buy(s: dict, c: dict, career: str, p: dict) -> dict:
 def _buy_box(s: dict, c: dict, career: str, p: dict) -> dict:
     from . import engine as e
     need = e.need
+    need(not desk(career), 'Kho này tự gộp hàng tự đặt của một nhà cung cấp vào một chuyến rồi.')
     need(owned(c), f'Mua {NAME} trước, rồi mới gộp thùng được nhé.')
     need(not box_owned(c), f'{BOX_NAME} đã mở ở nơi này rồi.')
     need(p.get('confirm') is True, f'Xác nhận mua {BOX_NAME} trước nhé.')
@@ -355,7 +513,7 @@ def action(s: dict, c: dict, career: str, p: dict) -> dict:
         else:
             r['on'] = False
         return dict(message=f'{NAME}: {"Bật" if value else "Tắt"}.')
-    it = _inv().item(career, p.get('item'))
+    it = _item(career, p.get('item'))
     cap, line = limits(c, career)
     mine = dict((r.get('items') or {}).get(it['id']) or {})
     if 'on' in p:
@@ -392,18 +550,24 @@ def public(s: dict, c: dict, career: str) -> dict | None:
         j = s.get('journey') or {}
         wallet = max(0, j.get('wallet', 0)) if j.get('story') else 0
         return dict(owned=False, price=PRICE, short=max(0, PRICE - max(0, c['money']) - wallet),
-                    tease=c['metrics'].get('purchases', 0) >= TEASE_ORDERS)
-    inv = _inv()
-    x = c['ext']['inv']
+                    tease=_orders_placed(c, career) >= TEASE_ORDERS)
     level = 1 + c['xp'] // 90
     cap, line = limits(c, career)
-    items = [dict(id=it['id'], **rule(c, career, it['id']), auto=_pending(x, (r.get('open') or {}).get(it['id'])))
-             for it in inv.catalogue(career) if it.get('unlock', 1) <= level]
+    items = [dict(id=it['id'], **rule(c, career, it['id']), auto=_waiting(c, career, (r.get('open') or {}).get(it['id'])))
+             for it in catalogue(career) if it.get('unlock', 1) <= level]
     return dict(owned=True, price=PRICE, on=on(c), items=items, cap=cap, line=line, floor=floor(s, c),
                 budget=budget(c), spent=spent(c), warn=r.get('warn') == c['day'],
                 why=plan(s, c, career)[1] if r.get('warn') == c['day'] else None,
-                box=dict(owned=box_owned(c), price=BOX_PRICE,
+                box=None if desk(career) else dict(owned=box_owned(c), price=BOX_PRICE,
                          short=0 if box_owned(c) else max(0, BOX_PRICE - max(0, c['money']) - _wallet_of(s))))
+
+
+def _orders_placed(c: dict, career: str) -> int:
+    """Orders the player has placed (the locked line's tease). The desk keeps no `purchases` metric: its parcels on the
+    way and received count instead (the 40 newest received are kept, enough for TEASE_ORDERS)."""
+    if desk(career):
+        return max(c['metrics'].get('restocked', 0), len(c.get('shipments') or ()))
+    return c['metrics'].get('purchases', 0)
 
 
 def _wallet_of(s: dict) -> int:
@@ -415,10 +579,12 @@ def validate(c: dict, career: str) -> None:
     from .engine import need, integer, clean_text
     b = c.get(BOX_KEY)
     if b is not None:
-        need(eligible(career) and c.get(KEY) is not None and isinstance(b, dict) and set(b) == {'paid'},
+        need(eligible(career) and not desk(career) and c.get(KEY) is not None and isinstance(b, dict) and set(b) == {'paid'},
              'Gộp thùng tự đặt không hợp lệ.')
         integer(b['paid'], 0, 10**9)
-    r = c.get(KEY)
+    # each kind of workplace keeps its own key (DESK_KEY: an older release refuses c[KEY] on a desk career)
+    need(c.get(DESK_KEY if not desk(career) else KEY) is None, 'Tự đặt hàng không hợp lệ.')
+    r = c.get(key_of(career))
     if r is None:
         return
     need(eligible(career) and isinstance(r, dict) and set(r) <= {'paid', 'on', 'items', 'open', 'day', 'spent', 'warn'}
@@ -428,7 +594,7 @@ def validate(c: dict, career: str) -> None:
     for k in ('day', 'spent', 'warn'):
         if k in r:
             integer(r[k], 0, 10**9)
-    ids = {it['id'] for it in _inv().catalogue(career)}
+    ids = {it['id'] for it in catalogue(career)}
     items = r.get('items', {})
     need(isinstance(items, dict) and set(items) <= ids, 'Tự đặt hàng không hợp lệ.')
     for v in items.values():

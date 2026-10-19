@@ -28,10 +28,11 @@ export function equipmentView(c,career,upgrades){
  return `<section class="work-equipment" aria-labelledby="work-equipment-title"><span class="eyebrow">THIẾT BỊ NGHỀ</span><h3 id="work-equipment-title">Đầu tư để kiếm thêm</h3><p>Trả bằng quỹ của nghề này. Mỗi nhóm nâng riêng; bậc cao thay bậc thấp. Khách đang chờ giữ lịch cũ, lượt kế tiếp dùng nhịp mới. Thu nhập phụ thuộc hàng tồn, giá bán và chi phí.</p>${sections}${roCard}</section>`;
 }
 
-/** 📦 Gộp thùng tự đặt (game/auto_order.py `box`): bought after 🔁 Tự đặt hàng; an older server sends no `box`. */
+/** 📦 Gộp thùng tự đặt (game/auto_order.py `box`): bought after 🔁 Tự đặt hàng; an older server sends no `box`.
+ * `box: null`: not sold there (🍼 💊 the older stock desks merge an automatic pass into one van by themselves). */
 function boxCard(ro){
   const b=ro.box,fmt=n=>Number(n||0).toLocaleString('vi-VN'),esq=v=>esc(JSON.stringify(v));
-  if(ro.owned&&!b)return '';
+  if(b===null||ro.owned&&!b)return '';
   const price=b?.price||10000,state=b?.owned?`<button class="btn ghost full" type="button" disabled>Đã mở</button>`
     :!ro.owned?`<button class="btn ghost full" type="button" disabled>Mở 🔁 Tự đặt hàng trước</button>`
     :`<button class="btn primary full" type="button" data-action="v4Cmd" data-op="stock_reorder" data-payload="${esq({buy_box:true})}" data-confirm="${esc(`Mua 📦 Gộp thùng tự đặt? ${fmt(price)} xu: quỹ trả trước, thiếu thì lấy ví.`)}"${b.short?' disabled':''}>${b.short?`Thiếu ${fmt(b.short)} xu`:`Mua · ${fmt(price)} xu`}</button>`;
