@@ -21,7 +21,7 @@ const cssEsc=s=>globalThis.CSS?.escape?CSS.escape(s):String(s).replace(/["\\]/g,
 
 export function paint(root,html,body=null,doc=globalThis.document){
   if(!root)return false;
-  const was=body?root.querySelector(body):null,y=was?was.scrollTop:0;
+  const was=body?root.querySelector?.(body):null,y=was?was.scrollTop:0;   // (a bare test double has no querySelector)
   const a=typingIn(root,doc);
   if(a&&root.firstChild){
     const key=keyOf(a),value=a.value,start=a.selectionStart,end=a.selectionEnd;
@@ -31,6 +31,6 @@ export function paint(root,html,body=null,doc=globalThis.document){
       if(el){if(el.value!==value)el.value=value;el.focus({preventScroll:true});try{if(start!=null)el.setSelectionRange(start,end);}catch{/* number inputs */}}
     }
   }else root.innerHTML=html;
-  if(y){const now=root.querySelector(body);if(now&&now!==was&&now.scrollTop!==y)now.scrollTop=y;}
+  if(y){const now=root.querySelector?.(body);if(now&&now!==was&&now.scrollTop!==y)now.scrollTop=y;}
   return Boolean(a);
 }
