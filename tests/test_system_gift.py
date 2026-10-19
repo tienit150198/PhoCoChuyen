@@ -460,5 +460,44 @@ class TownWide(Base):
             self.assertEqual(self.load(tok), (False, []))
 
 
+
+class Wheel2010(Base):
+    """Owner 19/10: a 🎡 spin 100k → 1m (520, 666, 888, 1314…) for every save, new or old, that loads on 20/10."""
+
+    def setUp(self):
+        super().setUp()
+        self.b = next(b for b in sg.BROADCASTS if b['prefix'] == 'wheel2010')
+        for p in (patch.object(sg, 'BROADCASTS', (self.b,)), patch.dict(os.environ, {'MNL_BROADCAST_OFF': '0'})):
+            p.start()
+            self.addCleanup(p.stop)
+
+    def test_a_spin_on_20_10_only_once(self):
+        tok = self.guest()
+        with patch.object(sg, 'now', lambda: self.b['since'] - 1):
+            self.assertEqual(self.load(tok), (False, []))
+        with patch.object(sg, 'now', lambda: self.b['until']):
+            self.assertEqual(self.load(tok), (False, []))
+        w0 = self.wallet(tok)
+        with patch.object(sg, 'now', lambda: self.b['since'] + 3600):
+            changed, shown = self.load(tok)
+            self.assertTrue(changed)
+            (g,) = shown
+            coins = sg.WHEEL[sg.wheel_slot('wheel2010', self.store.key(tok))][0]
+            self.assertEqual(g['coins'], coins)
+            self.assertEqual([x['coins'] for x in g['wheel']['slots']], [c for c, _, _ in sg.WHEEL])
+            self.assertEqual(self.wallet(tok), w0 + coins)
+            self.assertTrue(sg.seen(self.store, tok, g['id']))
+            self.assertEqual(self.load(tok), (False, []))
+        self.assertEqual(self.wallet(tok), w0 + coins)
+
+    def test_the_slots_by_weight(self):
+        got = [sg.wheel_slot('wheel2010', f'sid-{i}') for i in range(20000)]
+        total = sum(w for _, w, _ in sg.WHEEL)
+        for i, (c, w, _) in enumerate(sg.WHEEL):
+            self.assertTrue(100_000 <= c <= 1_314_000)
+            self.assertAlmostEqual(got.count(i) / len(got), w / total, delta=0.015)
+        self.assertIsNone(sg.wheel_of('all1004-abc'))
+
+
 if __name__ == '__main__':
     unittest.main()

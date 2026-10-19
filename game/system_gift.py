@@ -120,7 +120,42 @@ BROADCASTS = (
          title='Quà cả phố 🎁', text='Phố Có Chuyện gửi mỗi người 100 xu, cảm ơn bạn đã chơi cùng cả phố! Chơi vui nha 💛'),
     dict(prefix='fair1005', coins=300, until=1791727200,
          title='300 xu chơi chợ đen 🎪', text='Phố gửi bạn 300 xu vào ví để vui chợ đen! Tỷ lệ thắng đã tăng, ghé các gian chơi và thử vận may nhé 💛'),
+    # 🎡 20/10 (owner 19/10 "vòng quay từ 100k -> 1m … mốc 666k 888k, 1314, 520 cho có ý nghĩa", "tài khoản mới/cũ,
+    # miễn sao trong 20/10 vào là được tặng"): every save that loads on 20/10 (VN) gets one spin. The server draws
+    # the slot (WHEEL, by weight, from the save's own hash: the same save always lands on the same slot), pays it
+    # like any gift, and the card (v4/gift.js) spins the wheel onto it before "Nhận quà". Mean ≈ 360k.
+    dict(prefix='wheel2010', since=1792429200, until=1792515600,   # 20/10 00:00 → 21/10 00:00 (VN)
+         wheel=True, title='Vòng quay mừng 20/10 🎡',
+         text='Chúc mừng ngày Phụ nữ Việt Nam 20/10! Phố Có Chuyện gửi bạn một lượt quay may mắn. Chúc bạn và những người phụ nữ bạn thương luôn vui, khỏe và thật nhiều niềm vui 💐'),
 )
+# 🎡 the wheel's slots (coins, weight, the meaning under the number), in the wheel's order
+WHEEL = (
+    (100_000, 30, 'Lộc đầu tuần'),
+    (520_000, 12, '520 · Anh yêu em'),
+    (168_000, 20, '168 · Nhất lộ phát'),
+    (666_000, 9, '666 · Thuận buồm xuôi gió'),
+    (200_000, 15, 'Lộc đôi'),
+    (888_000, 7, '888 · Phát phát phát'),
+    (1_000_000, 5, 'Tròn một triệu'),
+    (1_314_000, 2, '1314 · Trọn đời trọn kiếp'),
+)
+
+
+def wheel_slot(prefix: str, sid: str) -> int:
+    """The save's slot on the wheel: by weight, from a hash of the prefix and the sid (no state, the same each time)."""
+    n = int(hashlib.sha256(f'{prefix}\x1f{sid}'.encode()).hexdigest()[:12], 16) % sum(w for _, w, _ in WHEEL)
+    for i, (_, w, _) in enumerate(WHEEL):
+        if n < w:
+            return i
+        n -= w
+    return 0
+
+
+def wheel_of(gid: str) -> dict | None:
+    """The card's wheel for a wheel gift id ({slots: [{coins, note}]}), None for any other gift."""
+    if not any(b.get('wheel') and gid.startswith(b['prefix'] + '-') for b in BROADCASTS):
+        return None
+    return dict(slots=[dict(coins=c, note=t) for c, _, t in WHEEL])
 
 
 def _broadcast_id(prefix: str, sid: str) -> str:
@@ -133,13 +168,14 @@ def _broadcasts(store, sid: str) -> None:
         return
     t = now()
     for b in BROADCASTS:
-        if t >= b['until']:
+        if t >= b['until'] or t < b.get('since', 0):
             continue
         gid = _broadcast_id(b['prefix'], sid)
         with store.connect() as db:
             if db.execute('SELECT 1 FROM system_gifts WHERE id=?', (gid,)).fetchone():
                 continue
-        grant(store, sid, b['coins'], b['title'], b['text'], gid=gid)
+        coins = WHEEL[wheel_slot(b['prefix'], sid)][0] if b.get('wheel') else b['coins']
+        grant(store, sid, coins, b['title'], b['text'], gid=gid)
 
 
 def on_load(store, token: str, state: dict | None) -> tuple[bool, list]:
@@ -170,7 +206,11 @@ def on_load(store, token: str, state: dict | None) -> tuple[bool, list]:
             "UPDATE system_gifts SET status='applied',applied_at=? WHERE id=? AND sid=? AND status='pending'", (t, gid, sid)))
         r['status'] = 'applied'
         changed = True
-    shown = [dict(id=r['id'], coins=int(r['coins']), title=r['title'], text=r['text']) for r in rows if r['status'] == 'applied']
+    shown = []
+    for r in rows:
+        if r['status'] == 'applied':
+            g, w = dict(id=r['id'], coins=int(r['coins']), title=r['title'], text=r['text']), wheel_of(r['id'])
+            shown.append(dict(g, wheel=w) if w else g)
     return changed, shown[:SHOWN]
 
 

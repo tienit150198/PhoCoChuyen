@@ -192,7 +192,26 @@ def entry_rows(s) -> list[dict]:
 def entry_block(s) -> str | None:
     """Why the application may not open now (the first unmet row), None when every row is met."""
     bad = [r for r in entry_rows(s) if not r['met']]
-    return f'Chưa đủ điều kiện xét tuyển Hải quan: {bad[0]["label"]}.' if bad else None
+    if not bad:
+        return None
+    text = f'Chưa đủ điều kiện xét tuyển Hải quan: {bad[0]["label"]}.'
+    if bad[0]['id'] == 'police':   # player feedback #441 "phải apply lại Công an mới ứng tuyển Hải quan được hả": say how
+        text += ' ' + police_path()
+    return text
+
+
+def police_path() -> str:
+    """How to reach ENTRY's grade in Công an (a new contract starts again at the first grade): the grades on the way,
+    the worked days in each and the ★ the last days need (org_content CAND_GRADES)."""
+    from . import org_content as OC
+    grades = OC.ORGS['cand']['grades']
+    need_g = next(i for i, g in enumerate(grades) if g['id'] == ENTRY['grade'])
+    way = ' → '.join(g['name'] for g in grades[:need_g + 1])
+    days = sorted({g['days'] for g in grades[:need_g]})
+    stars = max(g['need'] for g in grades[:need_g]) / 10
+    d = str(days[0]) if len(days) == 1 else f'{days[0]}–{days[-1]}'
+    return (f'Cách lên: xin việc lại Công an, làm đều tay mỗi ngày (trung bình từ {stars:g}★, không vi phạm): {way}, '
+            f'mỗi cấp {d} ngày làm việc. Đạt {grades[need_g]["name"]} rồi nghỉ Công an là xin Hải quan được.')
 
 
 # ---------------------------------------------------------------- 🛃 an officer's own wrongdoing (owner spec 14/10, I.2)

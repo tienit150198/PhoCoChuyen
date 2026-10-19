@@ -81,7 +81,9 @@ function dialog(){
     const el=e.target.closest('[data-pt]');if(!el||!d.contains(el)||el.disabled)return;
     e.preventDefault();onClick(el.dataset.pt,el.dataset);
   });
-  d.addEventListener('input',e=>{if(e.target.name==='nick')S.nick=e.target.value;});
+  d.addEventListener('input',e=>{if(e.target.name!=='nick')return;S.nick=e.target.value;
+    // ✓ Đổi tên is drawn disabled while the name is unchanged: wake it as the player types (#446), no re-render (keeps the caret)
+    if(S.sub==='more'){const b=d.querySelector('.pt-main'),p=cur(),v=S.nick.trim();if(b&&p)b.disabled=S.busy||!v||v===p.n;}});
   d.addEventListener('close',()=>{S.flash=null;S.sub='';});
   S.dlg=d;return d;
 }

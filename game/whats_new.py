@@ -32,6 +32,11 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.61", date="2026-10-19", items=(
+        dict(emoji='🎡', text="Mừng 20/10: vào game trong ngày 20/10 là được một lượt quay may mắn từ 100k tới 1.314k xu, có mốc 520k, 666k, 888k."),
+        dict(emoji='🛃', text="Hải quan: chưa đủ cấp bậc Công an thì game chỉ rõ đường lên Hạ sĩ để xin vào."),
+        dict(emoji='🐾', text="Đổi tên bé: nút ✓ Đổi tên sáng lên ngay khi bạn gõ tên mới."),
+    )),
     dict(version="2.4.60", date="2026-10-19", items=(
         dict(emoji='⚡', text="Mượt hơn trên iPad, điện thoại và máy tính: mở thú cưng, tủ đồ, bảng xếp hạng nhanh hơn, chạm phản hồi ngay."),
         dict(emoji='🧰', text="Linh kiện: cường hóa đủ +10 rồi ghép với 2 món cùng loại, cùng hạng để lên hạng. Từ hạng S, ghép trượt mất 2 món nguyên liệu.", go=dict(action='pets', data={'tab': 'gear'})),
