@@ -27,6 +27,7 @@ export function townServiceAvailable(action,state={},content={},social={},action
   if(owns(LIVE_FEATURES,action))return Boolean(social?.welcomed&&social?.flags?.[LIVE_FEATURES[action]]);
   if(action==='house'||action==='jrInvest'||action==='townProjects')return story;
   if(action==='rui')return Boolean(state?.rui);
+  if(action==='bangIsland')return Boolean(content?.bang_island);   // ⚔️ Đảo bang: only while MNL_BANG_ISLAND=1 (game/bang_island.py)
   if(action==='ev2010')return ev2010Open();
   if(action==='fair'){
     if(!state?.fair?.show)return false;
@@ -53,7 +54,7 @@ export function townUtilityGroups(state={},content={},social={}){
       ['gadgets','phone','📱','Điện thoại & đồ công nghệ'],
       ['rui','shield','🛡️','Bảo hiểm'],['jrInvest','coin','📈','Đầu tư'],
       ['quay','store','🏪','Quầy của bạn'],
-      ['lux','bag','🛍️','Mua sắm'],['island','boat','🏝️','Đảo riêng'],['auction','award','🔨','Nhà đấu giá'],
+      ['lux','bag','🛍️','Mua sắm'],['island','boat','🏝️','Đảo riêng'],['bangIsland','flag','⚔️','Đảo bang'],['auction','award','🔨','Nhà đấu giá'],
       ['auctionLands','map','🏞️','Đấu giá danh thắng'],
     ])},
     {id:'life',icon:'paw',label:'Đời sống & đi chơi',items:entries([

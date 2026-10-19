@@ -65,6 +65,8 @@ const assetURL=(path:string)=>(window as any).__mnlBoot?.asset?.(path)||path;
 
 /** 🏝️ Đảo riêng (public/js/v4/island-scene.js) reuses this bundle's Phaser. */
 export {PrivateIslandRenderer} from './private-island';
+/** ⚔️ Đảo bang (public/js/v4/bang-island-scene.js) reuses it too. */
+export {BangIslandRenderer} from './bang-island';
 
 /** Phaser owns the scene and draw list; server mechanics stay in the existing DOM modules. */
 export class PhaserWorld {

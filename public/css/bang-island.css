@@ -1,0 +1,77 @@
+/* ⚔️ Đảo bang (v4/bang-island-scene.js): a fullscreen dialog, the island in the middle, the facility labels and panel
+   over it, the chips, gestures and chat below. --bang is the bang's colour (set on the dialog). */
+dialog.bisl-scene{--bang:#c2410c;position:fixed;inset:0;margin:0;padding:0;width:100vw;max-width:none;height:100vh;height:100dvh;max-height:none;border:0;border-radius:0;background:#2b7f9e;color:#4a3628;overflow:hidden;box-sizing:border-box}
+.bisl-scene::backdrop{background:#16384a}
+.bisl-layout{display:flex;flex-direction:column;height:100%;min-height:0}
+.bisl-top{display:flex;align-items:center;gap:10px;padding:max(8px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) 8px max(14px,env(safe-area-inset-left));background:#fff6e4;border-bottom:3px solid var(--bang);flex:none}
+.bisl-flag{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px 10px 10px 2px;background:var(--bang);font-size:22px;line-height:1;box-shadow:inset 0 -4px 0 #0002}
+.bisl-title{flex:1;min-width:0}
+.bisl-top h2{font-size:18px;line-height:1.2;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bisl-top p{font-size:12px;line-height:1.35;margin:3px 0 0;color:#6d5544;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bisl-top-actions{display:flex;gap:6px;flex:none}
+.bisl-scene button{min-width:44px;min-height:44px;font:inherit;font-weight:700;touch-action:manipulation;cursor:pointer}
+.bisl-scene button:focus-visible,.bisl-scene canvas:focus-visible{outline:3px solid #ffd75a;outline-offset:2px}
+.bisl-scene .btn{border-radius:12px}
+.bisl-stage{position:relative;flex:1;min-height:0;overflow:hidden}
+.bisl-stage canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
+.bisl-loading{position:absolute;inset:0;display:grid;place-items:center;margin:0;background:#2b7f9ecc;color:#fff;font-weight:800;font-size:18px;z-index:4}
+.bisl-notice{position:absolute;left:50%;top:12px;transform:translateX(-50%);max-width:min(520px,calc(100% - 24px));width:max-content;box-sizing:border-box;margin:0;padding:9px 14px;border-radius:12px;background:#fff8ea;box-shadow:0 3px 12px #1b324233;text-align:center;font-size:14px;pointer-events:none;z-index:3}
+.bisl-notice[hidden]{display:none}
+.bisl-tags,.bisl-labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.bisl-tag,.bisl-label{position:absolute;left:0;top:0;display:flex;flex-direction:column;align-items:center;gap:3px;will-change:transform}
+.bisl-tag b{font-size:12px;font-weight:800;color:#fff;background:#1d3b4cb0;padding:1px 7px;border-radius:9px;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.bisl-tag.me b{background:#c0603ad0}
+.bisl-bubble{max-width:180px;padding:6px 10px;border-radius:12px;background:#fff;color:#3b2a1d;font-size:13px;line-height:1.3;box-shadow:0 2px 8px #0003;word-break:break-word;text-align:center}
+.bisl-emote{font-size:30px;line-height:1;animation:bisl-pop .5s ease-out}
+@keyframes bisl-pop{from{transform:scale(.3) translateY(10px);opacity:0}to{transform:none;opacity:1}}
+/* A facility's label: name, level, the build timer. */
+.bisl-label{gap:0;padding:2px 8px 3px;border-radius:10px;background:#fffaf0e8;border:1.5px solid var(--bang);box-shadow:0 2px 8px #0003;text-align:center;line-height:1.2}
+.bisl-label::after{content:"";position:absolute;bottom:-6px;left:50%;width:9px;height:9px;transform:translateX(-50%) rotate(45deg);background:#fffaf0;border-right:1.5px solid var(--bang);border-bottom:1.5px solid var(--bang)}
+.bisl-label b{font-size:12px;font-weight:800;color:#3b2a1d;white-space:nowrap}
+.bisl-label em{display:inline-grid;place-items:center;min-width:18px;height:18px;margin-left:2px;padding:0 4px;border-radius:9px;background:var(--bang);color:#fff;font-style:normal;font-size:11px;box-sizing:border-box;vertical-align:1px}
+.bisl-label i{font-style:normal;font-size:11px;font-weight:800;color:#a0452c;white-space:nowrap}
+.bisl-label.is-building{background:#fff3cf;border-style:dashed}
+.bisl-label.is-chip{padding:1px 6px 2px;opacity:.94}
+.bisl-label.is-chip b{font-size:13px}
+/* The facility panel: a sheet over the bottom of the stage (a side panel when the screen is wide or short). */
+.bisl-panel{position:absolute;left:8px;right:8px;bottom:8px;z-index:3;max-height:62%;overflow:auto;box-sizing:border-box;padding:12px 14px 14px;border-radius:16px;background:#fffaf0;border-top:4px solid var(--bang);box-shadow:0 8px 28px #1b32424d;animation:bisl-up .25s ease-out}
+.bisl-panel[hidden]{display:none}
+.bisl-panel header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bisl-panel h3{margin:0;font-size:18px}
+.bisl-panel p{margin:6px 0;font-size:14px;line-height:1.4}
+.bisl-lv{font-weight:700;color:#6d5544}
+.bisl-desc{color:#5b4636}
+.bisl-build{padding:6px 10px;border-radius:10px;background:#fff1c9;color:#7a4b12}
+.bisl-note{padding:6px 10px;border-radius:10px;background:#eef6ea;color:#3d6b34}
+.bisl-x{padding:0;border:0;border-radius:50%;background:#f1e4cd;color:#4a3628;font-size:16px}
+.bisl-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.bisl-acts .btn{flex:1;min-width:130px;min-height:44px}
+.bisl-msg{padding:8px 10px;border-radius:10px;background:#eef6ea;color:#2f5f2a;font-weight:600}
+.bisl-msg.soon{background:#eef1fb;color:#34437a}
+.bisl-msg.bad{background:#fdeceb;color:#9b2f22}
+@keyframes bisl-up{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.bisl-bar{flex:none;display:grid;gap:6px;padding:6px max(10px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));background:#fff6e4;border-top:1px solid #e0c79f}
+.bisl-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.bisl-row::-webkit-scrollbar{display:none}
+.bisl-more>div{display:flex;gap:6px;flex:none}
+.bisl-chip{flex:none;padding:6px 12px;border:1px solid #d7bd93;border-radius:22px;background:#fffdf7;color:#4a3628;white-space:nowrap;font-size:13px}
+.bisl-chip b{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:2px;padding:0 5px;border-radius:10px;background:var(--bang);color:#fff;font-size:11px;box-sizing:border-box}
+.bisl-chip.is-building{border-style:dashed;background:#fff3cf}
+.bisl-chip.ghost{background:transparent}
+.bisl-emo{flex:none;padding:0;border:1px solid #d7bd93;border-radius:50%;background:#fffdf7;font-size:22px;line-height:1}
+.bisl-say{display:flex;gap:6px}
+.bisl-say input{flex:1;min-width:0;min-height:44px;padding:0 12px;border:1px solid #d7bd93;border-radius:12px;background:#fff;color:#3b2a1d;font:inherit;font-size:16px}
+@media(max-width:600px){.bisl-top h2{font-size:16px}.bisl-top-actions .btn{padding:6px 10px;font-size:13px}.bisl-top p{font-size:11px}.bisl-flag{width:34px;height:34px;font-size:19px}}
+@media(min-width:900px){.bisl-panel{left:auto;right:12px;top:12px;bottom:auto;width:360px;max-height:calc(100% - 24px)}}
+/* A phone held sideways: one slim bar below (chips and gestures scroll, the chat line beside), the panel on the side. */
+@media(max-height:500px) and (orientation:landscape){
+  .bisl-top{padding-top:max(4px,env(safe-area-inset-top));padding-bottom:4px}
+  .bisl-top h2{font-size:15px}.bisl-top p{margin-top:1px}.bisl-flag{width:30px;height:30px;font-size:17px}
+  .bisl-top-actions .btn{min-height:38px;padding:4px 10px}
+  .bisl-bar{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(200px,.9fr);align-items:center;padding-top:4px;padding-bottom:max(4px,env(safe-area-inset-bottom))}
+  .bisl-scene .bisl-bar button{min-height:40px}
+  .bisl-emo{width:40px;min-width:40px;font-size:19px}
+  .bisl-say input{min-height:40px}
+  .bisl-panel{left:auto;right:8px;top:8px;bottom:8px;width:min(330px,48%);max-height:none}
+}
+@media(prefers-reduced-motion:reduce){.bisl-emote,.bisl-panel{animation:none}}

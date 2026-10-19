@@ -1,3 +1,11 @@
+# Chưa phát hành — bang-island
+
+⚔️ Đảo bang (chủ game duyệt 19/10; tắt mặc định MNL_BANG_ISLAND=0, chưa có Có gì mới):
+- Lãnh địa của bang: bản đồ đảo 2.5D riêng (24 ô, lớn hơn đảo riêng) với 7 ô cố định: Đại sảnh giữa đảo, Kho bang, Xưởng may, Sân luyện pet, Đền vàng, Tượng bang giữa quảng trường, Cổng bang bên bến tàu; vườn hoa, ao sen, rừng trúc, dãy đèn lồng, đồi thông, hình nhân tập võ. Mỗi công trình đổi diện mạo theo bậc cấp 1–3 gỗ / 4–6 đá / 7–10 vàng, giàn giáo tre khi đang xây, đất trống cắm cọc khi chưa xây. Cờ và màu bang trên cổng, đại sảnh, sân đấu, cánh buồm thuyền bang; tên bang trên biển cổng. Giao diện cũ: đi dạo 2D cùng bản đồ.
+- Phòng trực tiếp mỗi bang (live/bang_island.py, tối đa 40 người): thành viên và khách cùng đi, vẫy tay/vái chào/hô khẩu hiệu, nói (qua kho chat: lọc, báo cáo), đứng ở công trình; quyền vào hỏi lại mỗi 10 giây và ngay khi game server báo; di chuyển không đụng DB.
+- Chạm công trình mở bảng: cấp, cấp tiếp theo, giờ xây còn lại, các nút (Nâng cấp, Góp quỹ, Đấu trường pet…) hiện là chỗ chờ cho nhánh Bang / đấu trường pet nối vào.
+- Hợp đồng dữ liệu với nhánh Bang: game/bang_island.py (BangIslandView, provider), docs/BANG_ISLAND.md (JSON schema, cách nối). Không bảng mới, không khóa save mới.
+
 # v2.4.60 — 2026-10-19
 
 ⚡ Lag (chủ game 19/10 "check ipad phản hồi người dùng rất lag", "máy tính với đth nữa check k để lag"):
