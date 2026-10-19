@@ -72,7 +72,7 @@ export function bootIsometricMovement(environment){
     if(force||mode!==lastMode||world!==lastWorld){control.reset();if(lastWorld&&lastWorld!==world)lastWorld.setMovementInput?.(0,0);}
     if(next!==allowed){control.enable(next);allowed=next;}
     if(element.hidden===next)element.hidden=!next;
-    element.dataset.mode=mode||'';lastMode=mode;lastWorld=world;
+    if(element.dataset.mode!==(mode||''))element.dataset.mode=mode||'';lastMode=mode;lastWorld=world;
   }
   function listen(target,type,fn,options){target.addEventListener(type,fn,options);listeners.push(()=>target.removeEventListener(type,fn,options));}
   const handled=fn=>e=>{sync();if(fn(e)){e.preventDefault();e.stopPropagation();}};

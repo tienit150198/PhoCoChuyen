@@ -105,7 +105,8 @@ export function createTownPresence(envGetter,options={}){
     }
     // A server without the shared town (LIVE_TOWN off, no live service) says nothing: there is nothing to wait for.
     const unavailable=!room&&(!env()?.api?.live?.url||socket.state==='off'||socket.state==='open'&&!socket.flags?.town);
-    if(statusNode){statusNode.hidden=!inTown||unavailable;statusNode.dataset.connected=room?'true':'false';
+    if(statusNode){const hide=!inTown||unavailable,on=room?'true':'false';   // written only when they change: this runs 10 times a second
+      if(statusNode.hidden!==hide)statusNode.hidden=hide;if(statusNode.dataset.connected!==on)statusNode.dataset.connected=on;
       if(text!==lastStatus){statusNode.textContent=text;lastStatus=text;}}
   }
   function clear(){joinedRide='null';lastRide='null';socialEnabled=false;room=null;me=null;joining=null;joinedPoint=null;lastPoint=null;joinedAppearance=null;lastAppearance=null;joinedActivity=null;lastActivity=null;pendingActivityClear=false;peers.clear();draw();status();}

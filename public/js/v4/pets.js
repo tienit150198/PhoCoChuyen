@@ -89,7 +89,7 @@ export async function openPets(env,tab,kind){
   S.env=env;
   if(!S.listening){
     S.listening=true;
-    let seen='';env.api.addEventListener('state',()=>{const key=JSON.stringify([J().wallet,J().pets,J().bank?.balance]);if(key===seen)return;seen=key;if(S.dlg?.open&&!S.busy)render();});
+    let seen='';env.api.addEventListener('state',()=>{if(!S.dlg?.open)return;const key=JSON.stringify([J().wallet,J().pets,J().bank?.balance]);if(key===seen)return;seen=key;if(!S.busy)render();});   // closed: no work per command
   }
   const sheet=document.getElementById('sheet');if(sheet?.open)env.closeSheet();
   await ensureCss();
